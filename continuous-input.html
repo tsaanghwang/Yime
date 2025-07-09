@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>连续输入演示</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .input-focus {
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+        }
+        .key-press {
+            transform: scale(0.95);
+            transition: transform 0.1s ease;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col items-center justify-center p-4">
+    <div class="w-full max-w-md mx-auto">
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h1 class="text-2xl font-bold text-gray-800 mb-6">连续输入演示</h1>
+            
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-gray-700 mb-2">输入区域</label>
+                <div class="relative">
+                    <div 
+                        id="input-area"
+                        class="w-full h-16 border-2 border-gray-300 rounded-lg p-4 text-xl font-mono bg-gray-100 focus:input-focus outline-none"
+                        contenteditable="true"
+                        tabindex="0"
+                    ></div>
+                    <div class="absolute right-3 top-3 text-sm text-gray-500">
+                        <span id="char-count">0</span>/100
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-gray-700 mb-2">按键记录</label>
+                <div 
+                    id="key-log"
+                    class="w-full h-32 border border-gray-300 rounded-lg p-4 text-sm font-mono bg-gray-50 overflow-y-auto"
+                ></div>
+            </div>
+
+
+            
+            <div class="flex justify-between items-center">
+                <button 
+                    id="clear-btn"
+                    class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition"
+                >
+                    清空记录
+                </button>
+                <div class="text-sm text-gray-500">
+                    已输入: <span id="total-chars">0</span> 字符
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const inputArea = document.getElementById('input-area');
+            const keyLog = document.getElementById('key-log');
+            const symbolOutput = document.getElementById('symbol-output');
+            const charCount = document.getElementById('char-count');
+            const totalChars = document.getElementById('total-chars');
+            const clearBtn = document.getElementById('clear-btn');
+
+            const keySymbolMap = {
+                "A": "󰌾",
+                "B": "󰎄",
+                "C": "ĉ",
+                "D": "ń",
+                "E": "󰍡",
+                "F": "󰍢",
+                "G": "󰎘",
+                "H": "󰎜",
+                "I": "í",
+                "J": "ī",
+                "K": "󰎙",
+                "L": "󰍵",
+                "M": "󰎈",
+                "N": "ǹ",
+                "O": "󰍒",
+                "P": "󰎅",
+                "Q": "󰍶",
+                "R": "󰌿",
+                "S": "ŝ",
+                "T": "󰎔",
+                "U": "ú",
+                "V": "󰌵",
+                "W": "ū",
+                "X": "󰍓",
+                "Y": "󰌴",
+                "Z": "ẑ",
+                "a": "󰍂",
+                "b": "b",
+                "c": "c",
+                "d": "d",
+                "e": "󰍥",
+                "f": "f",
+                "g": "g",
+                "h": "h",
+                "i": "ì",
+                "j": "j",
+                "k": "k",
+                "l": "l",
+                "m": "m",
+                "n": "n",
+                "o": "󰍖",
+                "p": "p",
+                "q": "q",
+                "r": "r",
+                "s": "s",
+                "t": "t",
+                "u": "ù",
+                "v": "ŋ",
+                "w": "󰍹",
+                "x": "x",
+                "y": "󰌸",
+                "z": "z"
+            };
+            
+            let charCounter = 0;
+            let totalCharCounter = 0;
+            
+            // 聚焦输入区域
+            inputArea.focus();
+            
+            // 键盘事件处理
+            inputArea.addEventListener('keydown', (e) => {
+                // 防止默认行为（如Tab键切换焦点）
+                if (e.key === 'Tab') {
+                    e.preventDefault();
+                    return;
+                }
+                
+                // 创建按键记录元素
+                const keyElement = document.createElement('div');
+                keyElement.className = 'mb-1 p-2 bg-blue-50 rounded inline-block key-press';
+                
+                // 特殊键处理
+                if (e.key === ' ') {
+                    keyElement.textContent = '[空格]';
+                } else if (e.key === 'Enter') {
+                    keyElement.textContent = '[回车]';
+                } else if (e.key === 'Backspace') {
+                    keyElement.textContent = '[退格]';
+                } else if (e.key.length > 1) {
+                    keyElement.textContent = `[${e.key}]`;
+                } else {
+                    keyElement.textContent = e.key;
+                }
+                
+                // 添加时间戳
+                const timeElement = document.createElement('span');
+                timeElement.className = 'text-xs text-gray-500 ml-2';
+                timeElement.textContent = new Date().toLocaleTimeString();
+                keyElement.appendChild(timeElement);
+                
+                // 添加到日志
+                keyLog.appendChild(keyElement);
+                keyLog.scrollTop = keyLog.scrollHeight;
+                
+                // 触发按键动画
+                setTimeout(() => {
+                    keyElement.classList.remove('key-press');
+                }, 100);
+            });
+            
+            // 输入内容变化处理
+            inputArea.addEventListener('input', (e) => {
+                const text = inputArea.textContent;
+                charCounter = text.length;
+                charCount.textContent = charCounter;
+                
+                if (charCounter > 0) {
+                    totalCharCounter += 1;
+                    totalChars.textContent = totalCharCounter;
+                }
+                
+                if (charCounter >= 100) {
+                    charCount.classList.add('text-red-500');
+                } else {
+                    charCount.classList.remove('text-red-500');
+                }
+
+
+            });
+            
+            // 清空按钮
+            clearBtn.addEventListener('click', () => {
+                inputArea.textContent = '';
+                keyLog.innerHTML = '';
+
+                charCounter = 0;
+                totalCharCounter = 0;
+                charCount.textContent = '0';
+                totalChars.textContent = '0';
+                charCount.classList.remove('text-red-500');
+                inputArea.focus();
+            });
+            
+            // 聚焦/失焦样式
+            inputArea.addEventListener('focus', () => {
+                inputArea.classList.add('input-focus');
+            });
+            
+            inputArea.addEventListener('blur', () => {
+                inputArea.classList.remove('input-focus');
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Git仓库推送指南</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.bootcdn.net/ajax/libs/daisyui/4.12.10/full.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <div class="card bg-base-100 shadow-xl mb-8">
+            <div class="card-body">
+                <h1 class="card-title text-3xl font-bold text-gray-800">Git仓库推送指南</h1>
+                <p class="text-gray-600">将本地仓库内容推送到远程仓库的完整流程</p>
+            </div>
+        </div>
+
+        <div class="space-y-6">
+            <!-- 步骤1：初始化本地仓库 -->
+            <div class="card bg-base-100 shadow-md">
+                <div class="card-body">
+                    <h2 class="card-title text-xl font-semibold">步骤1: 初始化本地Git仓库</h2>
+                    <div class="mockup-code bg-gray-800 text-gray-100 mt-4">
+                        <pre data-prefix="$"><code>git init</code></pre>
+                    </div>
+                    <p class="mt-2 text-gray-600">在当前项目目录执行此命令初始化Git仓库</p>
+                </div>
+            </div>
+
+            <!-- 步骤2：添加Python项目.gitignore -->
+            <div class="card bg-base-100 shadow-md">
+                <div class="card-body">
+                    <h2 class="card-title text-xl font-semibold">步骤2: 创建Python项目.gitignore文件</h2>
+                    <div class="mockup-code bg-gray-800 text-gray-100 mt-4">
+                        <pre data-prefix="$"><code>echo "__pycache__/" > .gitignore</code></pre>
+                        <pre data-prefix="$"><code>echo "*.py[cod]" >> .gitignore</code></pre>
+                        <pre data-prefix="$"><code>echo "venv/" >> .gitignore</code></pre>
+                        <pre data-prefix="$"><code>echo ".env" >> .gitignore</code></pre>
+                    </div>
+                    <p class="mt-2 text-gray-600">为Python项目添加必要的忽略规则，避免提交不必要的文件</p>
+                </div>
+            </div>
+
+            <!-- 步骤3：添加文件到暂存区 -->
+            <div class="card bg-base-100 shadow-md">
+                <div class="card-body">
+                    <h2 class="card-title text-xl font-semibold">步骤3: 添加文件到暂存区</h2>
+                    <div class="mockup-code bg-gray-800 text-gray-100 mt-4">
+                        <pre data-prefix="$"><code>git add .</code></pre>
+                    </div>
+                    <p class="mt-2 text-gray-600">添加所有文件到Git暂存区，准备提交</p>
+                </div>
+            </div>
+
+            <!-- 步骤4：提交更改 -->
+            <div class="card bg-base-100 shadow-md">
+                <div class="card-body">
+                    <h2 class="card-title text-xl font-semibold">步骤4: 提交更改</h2>
+                    <div class="mockup-code bg-gray-800 text-gray-100 mt-4">
+                        <pre data-prefix="$"><code>git commit -m "初始提交"</code></pre>
+                    </div>
+                    <p class="mt-2 text-gray-600">创建第一个提交，记录当前项目状态</p>
+                </div>
+            </div>
+
+            <!-- 步骤5：关联远程仓库 -->
+            <div class="card bg-base-100 shadow-md">
+                <div class="card-body">
+                    <h2 class="card-title text-xl font-semibold">步骤5: 关联远程仓库</h2>
+                    <div class="mockup-code bg-gray-800 text-gray-100 mt-4">
+                        <pre data-prefix="$"><code>git remote add origin 您的远程仓库URL</code></pre>
+                    </div>
+                    <p class="mt-2 text-gray-600">将本地仓库与远程仓库关联，替换"您的远程仓库URL"为实际URL</p>
+                </div>
+            </div>
+
+            <!-- 步骤6：推送更改 -->
+            <div class="card bg-base-100 shadow-md">
+                <div class="card-body">
+                    <h2 class="card-title text-xl font-semibold">步骤6: 推送更改到远程仓库</h2>
+                    <div class="mockup-code bg-gray-800 text-gray-100 mt-4">
+                        <pre data-prefix="$"><code>git push -u origin main</code></pre>
+                    </div>
+                    <p class="mt-2 text-gray-600">将本地提交推送到远程仓库的主分支</p>
+                    <div class="alert alert-info mt-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <span>如果是第一次推送，可能需要使用 <code>git push -u origin main --force</code> 强制推送</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 状态检查 -->
+            <div class="card bg-base-100 shadow-md">
+                <div class="card-body">
+                    <h2 class="card-title text-xl font-semibold">状态检查命令</h2>
+                    <div class="mockup-code bg-gray-800 text-gray-100 mt-4">
+                        <pre data-prefix="$"><code>git status</code></pre>
+                        <pre data-prefix="$"><code>git remote -v</code></pre>
+                        <pre data-prefix="$"><code>git log --oneline</code></pre>
+                    </div>
+                    <p class="mt-2 text-gray-600">这些命令可以帮助您检查当前Git仓库的状态</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

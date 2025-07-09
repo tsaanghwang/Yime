@@ -1,0 +1,16 @@
+{
+  "timestamp": "2025-06-22T08:50:35.337273",
+  "workflows": {
+    "backend": {
+      "status": "pending",
+      "coverage": 0
+    },
+    "frontend": {
+      "status": "pending",
+      "tests": 0
+    },
+    "docs": {
+      "status": "pending"
+    }
+  }
+}

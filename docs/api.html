@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>音元输入法 - API文档</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@3.9.4/dist/full.css" rel="stylesheet" type="text/css" />
+</head>
+<body class="min-h-screen bg-base-100 text-base-content">
+    <div class="navbar bg-base-200">
+        <div class="navbar-start">
+            <div class="dropdown">
+                <label tabindex="0" class="btn btn-ghost lg:hidden">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" /></svg>
+                </label>
+                <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
+                    <li><a href="index.html">首页</a></li>
+                    <li><a href="overview.html">项目概述</a></li>
+                    <li><a href="quickstart.html">快速开始</a></li>
+                    <li><a href="architecture.html">系统架构</a></li>
+                    <li><a class="active" href="api.html">API文档</a></li>
+                    <li><a href="configuration.html">配置说明</a></li>
+                    <li><a href="development.html">开发指南</a></li>
+                    <li><a href="manual.html">使用手册</a></li>
+                </ul>
+            </div>
+            <a class="btn btn-ghost normal-case text-xl" href="index.html">音元输入法</a>
+        </div>
+        <div class="navbar-center hidden lg:flex">
+            <ul class="menu menu-horizontal px-1">
+                <li><a href="index.html">首页</a></li>
+                <li><a href="overview.html">项目概述</a></li>
+                <li><a href="quickstart.html">快速开始</a></li>
+                <li><a href="architecture.html">系统架构</a></li>
+                <li><a class="active" href="api.html">API文档</a></li>
+                <li><a href="configuration.html">配置说明</a></li>
+                <li><a href="development.html">开发指南</a></li>
+                <li><a href="manual.html">使用手册</a></li>
+            </ul>
+        </div>
+        <div class="navbar-end">
+            <a href="https://gitcode.net/2302_77644309/Yinyuanxitong" class="btn btn-ghost">项目来源</a>
+        </div>
+    </div>
+
+    <div class="container mx-auto px-4 py-8">
+        <div class="prose max-w-none">
+            <h1 class="text-4xl font-bold mb-6">音元输入法API文档</h1>
+            
+            <div class="alert alert-info mb-8">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <span>本API文档适用于音元输入法核心引擎和前端接口</span>
+            </div>
+
+            <h2 class="text-2xl font-bold mt-8 mb-4">接口分类</h2>
+            
+            <div class="tabs mb-8">
+                <a class="tab tab-lifted tab-active">核心引擎API</a>
+                <a class="tab tab-lifted">前端接口API</a>
+                <a class="tab tab-lifted">插件系统API</a>
+            </div>
+
+            <h3 class="text-xl font-bold mt-8 mb-4">韵母转换API</h3>
+            
+            <div class="card bg-base-200 shadow mb-8">
+                <div class="card-body">
+                    <h4 class="card-title">YunmuConverter 类</h4>
+                    <div class="mockup-code">
+                        <pre><code>class pinyin.yunmu_to_keys.YunmuConverter</code></pre>
+                    </div>
+                    <p>核心韵母转换器，负责将标准拼音韵母转换为音元键位</p>
+                    
+                    <div class="overflow-x-auto mt-4">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>方法</th>
+                                    <th>参数</th>
+                                    <th>返回值</th>
+                                    <th>说明</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>convert</td>
+                                    <td>yunmu_dict: Dict[str, str]</td>
+                                    <td>Dict[str, str]</td>
+                                    <td>批量转换韵母字典</td>
+                                </tr>
+                                <tr>
+                                    <td>convert_single</td>
+                                    <td>yunmu: str</td>
+                                    <td>str</td>
+                                    <td>转换单个韵母</td>
+                                </tr>
+                                <tr>
+                                    <td>get_stats</td>
+                                    <td>None</td>
+                                    <td>Dict[str, Any]</td>
+                                    <td>获取转换统计信息</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="text-xl font-bold mt-8 mb-4">干音分析API</h3>
+            
+            <div class="card bg-base-200 shadow mb-8">
+                <div class="card-body">
+                    <h4 class="card-title">GanyinAnalyzer 类</h4>
+                    <div class="mockup-code">
+                        <pre><code>class tools.ganyin_analyzer.GanyinAnalyzer</code></pre>
+                    </div>
+                    <p>干音分析器，用于分析汉字干音特征</p>
+                    
+                    <div class="overflow-x-auto mt-4">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>方法</th>
+                                    <th>参数</th>
+                                    <th>返回值</th>
+                                    <th>说明</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>analyze</td>
+                                    <td>hanzi: str</td>
+                                    <td>Dict[str, Any]</td>
+                                    <td>分析单个汉字干音特征</td>
+                                </tr>
+                                <tr>
+                                    <td>batch_analyze</td>
+                                    <td>hanzi_list: List[str]</td>
+                                    <td>List[Dict[str, Any]]</td>
+                                    <td>批量分析汉字干音特征</td>
+                                </tr>
+                                <tr>
+                                    <td>get_feature_names</td>
+                                    <td>None</td>
+                                    <td>List[str]</td>
+                                    <td>获取所有干音特征名称</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="text-xl font-bold mt-8 mb-4">前端接口API</h3>
+            
+            <div class="card bg-base-200 shadow mb-8">
+                <div class="card-body">
+                    <h4 class="card-title">InputMethod 类</h4>
+                    <div class="mockup-code">
+                        <pre><code>class src/App.tsx.InputMethod</code></pre>
+                    </div>
+                    <p>前端输入法核心接口，负责处理用户输入和候选词展示</p>
+                    
+                    <div class="overflow-x-auto mt-4">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>方法</th>
+                                    <th>参数</th>
+                                    <th>返回值</th>
+                                    <th>说明</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>handleInput</td>
+                                    <td>key: string</td>
+                                    <td>void</td>
+                                    <td>处理用户按键输入</td>
+                                </tr>
+                                <tr>
+                                    <td>getCandidates</td>
+                                    <td>None</td>
+                                    <td>string[]</td>
+                                    <td>获取当前候选词列表</td>
+                                </tr>
+                                <tr>
+                                    <td>selectCandidate</td>
+                                    <td>index: number</td>
+                                    <td>string</td>
+                                    <td>选择候选词</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <h2 class="text-2xl font-bold mt-8 mb-4">错误码说明</h2>
+            
+            <div class="overflow-x-auto mb-8">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>错误码</th>
+                            <th>说明</th>
+                            <th>解决方案</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>40001</td>
+                            <td>无效的韵母输入</td>
+                            <td>检查输入是否为标准拼音韵母</td>
+                        </tr>
+                        <tr>
+                            <td>40002</td>
+                            <td>转换规则冲突</td>
+                            <td>检查规则优先级设置</td>
+                        </tr>
+                        <tr>
+                            <td>50001</td>
+                            <td>干音分析失败</td>
+                            <td>检查汉字是否在字库中</td>
+                        </tr>
+                        <tr>
+                            <td>60001</td>
+                            <td>前端输入超时</td>
+                            <td>减少输入延迟或优化性能</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer footer-center p-10 bg-base-200 text-base-content rounded">
+        <div>
+            <p>Copyright © 2025 - 音元输入法开发团队</p>
+            <p>项目来源: <a href="https://gitcode.net/2302_77644309/Yinyuanxitong" class="link">GitCode仓库</a></p>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,29 @@
+{
+    "python.testing.unittestArgs": [
+        "-v",
+        "-s",
+        ".",
+        "-p",
+        "*test.py"
+    ],
+    "python.testing.pytestEnabled": false,
+    "python.testing.unittestEnabled": true,
+    "python.analysis.extraPaths": [
+        "./tools"
+    ],
+    "workbench.editor.autoLockGroups": {
+        "pdf.preview": true,
+        "mainThreadWebview-markdown.preview": true,
+        "workbench.input.interactive": true
+    },
+    "cSpell.words": [
+        "abstractmethod",
+        "gitcode",
+        "Ladefoged",
+        "Pianyin",
+        "Putonghua",
+        "Unpitched",
+        "yinyuan"
+    ],
+    "wolf.disableHotModeWarning": true
+}

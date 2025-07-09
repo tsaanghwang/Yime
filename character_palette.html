@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>字符映射表</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@3.9.4/dist/full.css" rel="stylesheet" type="text/css" />
+    <style>
+        .character-btn {
+            transition: all 0.2s;
+        }
+        .character-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        }
+        .favorite {
+            background-color: #fef3c7 !important;
+            border-color: #f59e0b !important;
+        }
+    </style>
+</head>
+<body class="p-4 bg-base-100">
+    <div class="max-w-6xl mx-auto bg-base-200 rounded-xl shadow-lg p-6">
+        <h1 class="text-2xl font-bold mb-6 text-center">特殊字符输入面板</h1>
+        
+        <div class="flex flex-wrap gap-4 mb-6">
+            <div class="join w-full max-w-md">
+                <input type="text" id="searchInput" placeholder="搜索字符..." 
+                       class="input input-bordered join-item w-full" />
+                <button class="btn btn-primary join-item" onclick="searchCharacters()" title="搜索">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </button>
+            </div>
+
+            <div class="join w-full max-w-md">
+                <input type="text" id="unicodeInput" placeholder="输入U+XXXX格式的Unicode码点" 
+                       class="input input-bordered join-item w-full" />
+                <button class="btn btn-accent join-item" onclick="convertUnicode()" title="Unicode转换">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="dropdown dropdown-end">
+                <label tabindex="0" class="btn btn-outline">管理字符集</label>
+                <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
+                    <li><a onclick="showCustomSetModal()">创建自定义字符集</a></li>
+                    <li><a onclick="exportCharacterSets()">导出字符集配置</a></li>
+                    <li><a onclick="importCharacterSets()">导入字符集配置</a></li>
+                </ul>
+            </div>
+            
+            <div class="dropdown dropdown-end">
+                <label tabindex="0" class="btn btn-outline">主题设置</label>
+                <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
+                    <li><a onclick="setTheme('light')">明亮主题</a></li>
+                    <li><a onclick="setTheme('dark')">暗黑主题</a></li>
+                    <li><a onclick="setTheme('coffee')">咖啡主题</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="tabs mb-4">
+            <a class="tab tab-bordered tab-active" onclick="showCategory('phonetics')">音标</a> 
+            <a class="tab tab-bordered" onclick="showCategory('symbols')">符号</a>
+            <a class="tab tab-bordered" onclick="showCategory('math')">数学</a>
+            <a class="tab tab-bordered" onclick="showCategory('arrows')">箭头</a>
+            <a class="tab tab-bordered" onclick="showCategory('favorites')">收藏夹</a>
+            <a class="tab tab-bordered" onclick="showCategory('history')">历史记录</a>
+        </div>
+
+        <div id="phonetics" class="character-category grid grid-cols-8 gap-2 mb-6">
+            <!-- 音标字符 (同之前) -->
+        </div>
+
+        <div id="symbols" class="character-category hidden grid grid-cols-8 gap-2 mb-6">
+            <!-- 符号字符 (同之前) -->
+        </div>
+
+        <div id="math" class="character-category hidden grid grid-cols-8 gap-2 mb-6">
+            <!-- 数学字符 (同之前) -->
+        </div>
+
+        <div id="arrows" class="character-category hidden grid grid-cols-8 gap-2 mb-6">
+            <!-- 箭头字符 (同之前) -->
+        </div>
+
+        <div id="favorites" class="character-category hidden grid grid-cols-8 gap-2 mb-6">
+            <!-- 收藏夹内容由JS动态生成 -->
+        </div>
+
+        <div id="history" class="character-category hidden grid grid-cols-8 gap-2 mb-6">
+            <!-- 历史记录内容由JS动态生成 -->
+        </div>
+
+        <!-- Unicode转换结果区域 -->
+        <div id="unicodeResult" class="mb-6"></div>
+
+        <!-- 自定义字符集模态框 -->
+        <div id="customSetModal" class="modal">
+            <div class="modal-box">
+                <h3 class="font-bold text-lg">创建自定义字符集</h3>
+                <div class="py-4">
+                    <input type="text" id="customSetName" placeholder="字符集名称" class="input input-bordered w-full mb-4">
+                    <textarea id="customSetChars" class="textarea textarea-bordered w-full h-32" placeholder="输入字符，每行一个"></textarea>
+                </div>
+                <div class="modal-action">
+                    <button class="btn btn-primary" onclick="saveCustomSet()">保存</button>
+                    <button class="btn" onclick="document.getElementById('customSetModal').close()">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 存储用户数据
+        let userData = {
+            favorites: [],
+            history: [],
+            customSets: {},
+            theme: 'light'
+        };
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            loadUserData();
+            showCategory('phonetics');
+            renderFavorites();
+            renderHistory();
+        });
+
+        // 加载用户数据
+        function loadUserData() {
+            const savedData = localStorage.getItem('characterPaletteData');
+            if (savedData) {
+                userData = JSON.parse(savedData);
+                if (userData.theme) {
+                    document.documentElement.setAttribute('data-theme', userData.theme);
+                }
+            }
+        }
+
+        // 保存用户数据
+        function saveUserData() {
+            localStorage.setItem('characterPaletteData', JSON.stringify(userData));
+        }
+
+        // 插入字符
+        function insertCharacter(char) {
+            // 添加到历史记录
+            if (!userData.history.includes(char)) {
+                userData.history.unshift(char);
+                if (userData.history.length > 20) userData.history.pop();
+                renderHistory();
+                saveUserData();
+            }
+            
+            // 复制到剪贴板
+            navigator.clipboard.writeText(char).then(() => {
+                console.log('字符已复制到剪贴板');
+            });
+        }
+
+        // 添加到收藏夹
+        function toggleFavorite(char, element) {
+            const index = userData.favorites.indexOf(char);
+            if (index === -1) {
+                userData.favorites.push(char);
+                element.classList.add('favorite');
+            } else {
+                userData.favorites.splice(index, 1);
+                element.classList.remove('favorite');
+            }
+            saveUserData();
+            renderFavorites();
+        }
+
+        // 渲染收藏夹
+        function renderFavorites() {
+            const container = document.getElementById('favorites');
+            container.innerHTML = '';
+            
+            userData.favorites.forEach(char => {
+                const btn = createCharacterButton(char, true);
+                container.appendChild(btn);
+            });
+        }
+
+        // 渲染历史记录
+        function renderHistory() {
+            const container = document.getElementById('history');
+            container.innerHTML = '';
+            
+            userData.history.forEach(char => {
+                const btn = createCharacterButton(char, false);
+                container.appendChild(btn);
+            });
+        }
+
+        // 创建字符按钮
+        function createCharacterButton(char, isFavorite) {
+            const btn = document.createElement('button');
+            btn.className = 'character-btn btn btn-outline text-xl';
+            btn.textContent = char;
+            btn.onclick = () => insertCharacter(char);
+            
+            if (isFavorite || userData.favorites.includes(char)) {
+                btn.classList.add('favorite');
+            }
+            
+            btn.oncontextmenu = (e) => {
+                e.preventDefault();
+                toggleFavorite(char, btn);
+                return false;
+            };
+            
+            return btn;
+        }
+
+        // 显示分类
+        function showCategory(categoryId) {
+            document.querySelectorAll('.character-category').forEach(el => {
+                el.classList.add('hidden');
+            });
+            
+            document.getElementById(categoryId).classList.remove('hidden');
+            
+            document.querySelectorAll('.tabs .tab').forEach(tab => {
+                tab.classList.remove('tab-active');
+            });
+            event.target.classList.add('tab-active');
+        }
+
+        // 搜索字符
+        function searchCharacters() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            if (!searchTerm) return;
+            
+            // 在实际实现中搜索所有字符
+            alert(`搜索: ${searchTerm}\n(实际实现中会过滤显示匹配字符)`);
+        }
+
+        // 主题设置
+        function setTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            userData.theme = theme;
+            saveUserData();
+        }
+
+        // 显示自定义字符集模态框
+        function showCustomSetModal() {
+            document.getElementById('customSetModal').showModal();
+        }
+
+        // 保存自定义字符集
+        function saveCustomSet() {
+            const name = document.getElementById('customSetName').value;
+            const chars = document.getElementById('customSetChars').value
+                .split('\n')
+                .filter(c => c.trim() !== '');
+            
+            if (name && chars.length > 0) {
+                userData.customSets[name] = chars;
+                saveUserData();
+                document.getElementById('customSetModal').close();
+                
+                // 添加新的标签页
+                const tabsContainer = document.querySelector('.tabs');
+                const newTab = document.createElement('a');
+                newTab.className = 'tab tab-bordered';
+                newTab.textContent = name;
+                newTab.onclick = () => showCustomSet(name);
+                tabsContainer.appendChild(newTab);
+                
+                // 添加新的字符集容器
+                const container = document.createElement('div');
+                container.id = `custom-${name}`;
+                container.className = 'character-category hidden grid grid-cols-8 gap-2 mb-6';
+                document.querySelector('.character-category').parentNode.appendChild(container);
+                
+                renderCustomSet(name);
+            }
+        }
+
+        // 渲染自定义字符集
+        function renderCustomSet(name) {
+            const container = document.getElementById(`custom-${name}`);
+            container.innerHTML = '';
+            
+            userData.customSets[name].forEach(char => {
+                const btn = createCharacterButton(char, false);
+                container.appendChild(btn);
+            });
+        }
+
+        // 导出字符集配置
+        function exportCharacterSets() {
+            const dataStr = JSON.stringify(userData.customSets);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = 'character-sets.json';
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+        }
+
+        // Unicode码点转换
+        function convertUnicode() {
+            const input = document.getElementById('unicodeInput').value.trim();
+            const resultContainer = document.getElementById('unicodeResult');
+            
+            // 验证输入格式
+            if (!/^U\+[0-9A-Fa-f]{4,6}$/.test(input)) {
+                alert('请输入有效的Unicode码点格式，如U+4E00');
+                return;
+            }
+            
+            // 提取码点数值
+            const codePoint = parseInt(input.substring(2), 16);
+            
+            // 验证码点范围
+            if (codePoint < 0 || codePoint > 0x10FFFF) {
+                alert('无效的Unicode码点范围');
+                return;
+            }
+            
+            // 转换为字符
+            const char = String.fromCodePoint(codePoint);
+            
+            // 显示结果
+            resultContainer.innerHTML = `
+                <div class="alert alert-success shadow-lg">
+                    <div>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span>转换结果: ${char} (可点击复制)</span>
+                    </div>
+                    <button class="btn btn-sm" onclick="insertCharacter('${char}')">复制</button>
+                </div>
+            `;
+            
+            // 添加到历史记录
+            if (!userData.history.includes(char)) {
+                userData.history.unshift(char);
+                if (userData.history.length > 20) userData.history.pop();
+                renderHistory();
+                saveUserData();
+            }
+        }
+
+        // 导入字符集配置
+        function importCharacterSets() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            
+            input.onchange = e => {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                
+                reader.onload = event => {
+                    try {
+                        const importedSets = JSON.parse(event.target.result);
+                        userData.customSets = importedSets;
+                        saveUserData();
+                        
+                        // 重新渲染所有自定义字符集
+                        Object.keys(importedSets).forEach(name => {
+                            if (!document.getElementById(`custom-${name}`)) {
+                                // 添加标签页和容器
+                                const tabsContainer = document.querySelector('.tabs');
+                                const newTab = document.createElement('a');
+                                newTab.className = 'tab tab-bordered';
+                                newTab.textContent = name;
+                                newTab.onclick = () => showCustomSet(name);
+                                tabsContainer.appendChild(newTab);
+                                
+                                const container = document.createElement('div');
+                                container.id = `custom-${name}`;
+                                container.className = 'character-category hidden grid grid-cols-8 gap-2 mb-6';
+                                document.querySelector('.character-category').parentNode.appendChild(container);
+                            }
+                            
+                            renderCustomSet(name);
+                        });
+                        
+                        alert('字符集导入成功！');
+                    } catch (error) {
+                        alert('导入失败：文件格式不正确');
+                    }
+                };
+                
+                reader.readAsText(file);
+            };
+            
+            input.click();
+        }
+    </script>
+</body>
+</html>

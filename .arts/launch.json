@@ -1,0 +1,347 @@
+{
+    // 使用 IntelliSense 了解相关属性。 
+    // 悬停以查看现有属性的描述。
+    // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "merge_pinyin",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\pinyin\\merge_pinyin.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}\\pinyin",
+            "addSourceRootsToPythonpath": true
+        },
+        {
+            "name": "yaml_to_json",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\pinyin\\yaml_to_json.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}\\pinyin",
+            "addSourceRootsToPythonpath": true
+        },
+        {
+            "name": "calculate_speech_pentatonic_value_1",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\pianyin\\calculate_speech_pentatonic_value_1.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}\\pianyin",
+            "addSourceRootsToPythonpath": true
+        },
+        {
+            "name": "calculate_speech_pentatonic_value",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\pianyin\\calculate_speech_pentatonic_value.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}\\pianyin",
+            "addSourceRootsToPythonpath": true,
+            "noDebug": true
+        },
+        {
+            "name": "test_pianyin_test",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\tests\\test_pianyin_test.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}\\tests",
+            "addSourceRootsToPythonpath": true
+        },
+        {
+            "name": "tone_statistics_analyzer",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\pianyin\\tone_statistics_analyzer.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}\\pianyin",
+            "addSourceRootsToPythonpath": true
+        },
+        {
+            "name": "calculate_tone_median",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\pianyin\\calculate_tone_median.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}\\pianyin",
+            "addSourceRootsToPythonpath": true
+        },
+        {
+            "name": "calculate_pentatonic_value",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\pianyin\\calculate_pentatonic_value.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}\\pianyin",
+            "addSourceRootsToPythonpath": true
+        },
+        {
+            "name": "test_yinyuan",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\tests\\test_yinyuan.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}\\tests",
+            "addSourceRootsToPythonpath": true
+        },
+        {
+            "name": "generate_yinyuan",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\generate_yinyuan.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}",
+            "addSourceRootsToPythonpath": true
+        },
+        {
+            "name": "generate_pitched_yinyuan",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\generate_pitched_yinyuan.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}",
+            "addSourceRootsToPythonpath": true
+        },
+        {
+            "name": "generate_unpitched_yinyuan",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\yinyuan\\generate_unpitched_yinyuan.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}\\yinyuan",
+            "addSourceRootsToPythonpath": true
+        },
+        {
+            "name": "extract_pitch_and_quality",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\yinyuan\\extract_pitch_and_quality.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}\\yinyuan",
+            "addSourceRootsToPythonpath": true
+        },
+        {
+            "name": "define_pitched_yinyuan",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\yinyuan\\pitch_mark.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}\\yinyuan",
+            "addSourceRootsToPythonpath": true
+        },
+        {
+            "name": "generate_unpitched_yinyuan",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\generate_unpitched_yinyuan.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}",
+            "addSourceRootsToPythonpath": true
+        },
+        {
+            "name": "generate_unpitched_yinyuan",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\generate_unpitched_yinyuan.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}",
+            "addSourceRootsToPythonpath": true
+        },
+        {
+            "name": "generate_shouyin",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\generate_shouyin.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}",
+            "addSourceRootsToPythonpath": true
+        },
+        {
+            "name": "generate_yueyin",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\generate_yueyin.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}",
+            "addSourceRootsToPythonpath": true
+        },
+        {
+            "name": "generate_shouyin_map",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\generate_shouyin_map.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}",
+            "addSourceRootsToPythonpath": true
+        },
+        {
+            "name": "initial",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\tools\\initial.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}\\tools",
+            "addSourceRootsToPythonpath": true,
+            "noDebug": true
+        },
+        {
+            "name": "push_all",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\scripts\\push_all.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}\\scripts",
+            "addSourceRootsToPythonpath": true,
+            "noDebug": true
+        },
+        {
+            "name": "test_yunmu_to_keys",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\pinyin\\test_yunmu_to_keys.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}\\pinyin",
+            "addSourceRootsToPythonpath": true
+        },
+        {
+            "name": "test_yunmu_to_keys",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\tests\\test_yunmu_to_keys.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}\\tests",
+            "addSourceRootsToPythonpath": true,
+            "noDebug": true
+        },
+        {
+            "name": "keys_to_yunmu",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\pinyin\\keys_to_yunmu.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}\\pinyin",
+            "addSourceRootsToPythonpath": true
+        },
+        {
+            "name": "test_yunmu_converter",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\tests\\test_yunmu_converter.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}\\tests",
+            "addSourceRootsToPythonpath": true,
+            "noDebug": true
+        },
+        {
+            "name": "yunmu_to_keys",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\pinyin\\yunmu_to_keys.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}\\pinyin",
+            "addSourceRootsToPythonpath": true,
+            "noDebug": true
+        },
+        {
+            "name": "data",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\syllable\\data.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}\\syllable",
+            "addSourceRootsToPythonpath": true
+        },
+        {
+            "name": "copy2",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\tools\\copy2.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}\\tools",
+            "addSourceRootsToPythonpath": true
+        },
+        {
+            "name": "copy",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\tools\\copy.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}\\tools",
+            "addSourceRootsToPythonpath": true,
+            "noDebug": true
+        },
+        {
+            "name": "duplicate_checker",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\tools\\duplicate_checker.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}\\tools",
+            "addSourceRootsToPythonpath": true
+        },
+        {
+            "name": "Learn_test",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\tools\\Learn_test.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}\\tools",
+            "addSourceRootsToPythonpath": true
+        },
+        {
+            "name": "pianyin_counter",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\tools\\pianyin_counter.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}\\tools",
+            "addSourceRootsToPythonpath": true,
+            "noDebug": true
+        },
+        {
+            "name": "yinyuan",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\tools\\yinyuan.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}\\tools",
+            "addSourceRootsToPythonpath": true,
+            "noDebug": true
+        },
+        {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "currentFileConfiguration": true,
+            "cwd": "${fileDirname}",
+            "addSourceRootsToPythonpath": true,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder};${env:PYTHONPATH}"
+            }
+        },
+        {
+            "name": "Launch Edge",
+            "request": "launch",
+            "type": "msedge",
+            "url": "http://localhost:8080",
+            "webRoot": "${workspaceFolder}"
+        },
+        {
+            "name": "Attach to Edge",
+            "port": 9222,
+            "request": "attach",
+            "type": "msedge",
+            "webRoot": "${workspaceFolder}"
+        },
+        {
+            "type": "msedge",
+            "request": "launch",
+            "name": "Launch Edge against localhost",
+            "url": "http://localhost:8080",
+            "webRoot": "${workspaceFolder}"
+        }
+    ]
+}

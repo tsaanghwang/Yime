@@ -1,0 +1,35 @@
+{
+  "start_time": "2025-05-28T18:50:17.084427",
+  "steps": [
+    {
+      "script": "finals_classifier.py",
+      "start_time": "2025-05-28T18:50:17.084482",
+      "status": "completed",
+      "end_time": "2025-05-28T18:50:17.106653",
+      "output": "\u97f5\u6bcd\u5206\u7c7b\u7edf\u8ba1\u62a5\u544a:\n========================================\n\u5355\u8d28\u97f5\u6bcd    : 13\u4e2a (30.2%)\n\u540e\u957f\u97f5\u6bcd    :  6\u4e2a (14.0%)\n\u524d\u957f\u97f5\u6bcd    :  8\u4e2a (18.6%)\n\u4e09\u8d28\u97f5\u6bcd    : 16\u4e2a (37.2%)\n========================================\n\u603b\u8ba1: 43\u4e2a\u97f5\u6bcd"
+    },
+    {
+      "script": "pianyin_analyzer.py",
+      "start_time": "2025-05-28T18:50:17.106722",
+      "status": "completed",
+      "end_time": "2025-05-28T18:50:17.128862",
+      "output": "\u5e72\u97f3\u5206\u6790\u5b8c\u6210\uff0c\u7ed3\u679c\u5df2\u4fdd\u5b58\u5230 internal_data/pianyin_analyzer.json"
+    },
+    {
+      "script": "pianyin_counter.py",
+      "start_time": "2025-05-28T18:50:17.128953",
+      "status": "completed",
+      "end_time": "2025-05-28T18:50:17.147957",
+      "output": "\u97f3\u6807\u548c\u7247\u97f3\u7edf\u8ba1\u5b8c\u6210\uff0c\u7ed3\u679c\u5df2\u4fdd\u5b58\u5230 internal_data/pianyin_counter.json"
+    },
+    {
+      "script": "yinyuan_pianyin_mapping.py",
+      "start_time": "2025-05-28T18:50:17.148024",
+      "status": "completed",
+      "end_time": "2025-05-28T18:50:17.166327",
+      "output": "\u97f3\u5143\u6620\u5c04\u6587\u4ef6\u5df2\u6210\u529f\u751f\u6210\uff1ainternal_data/yinyuan_pianyin_mapping.json"
+    }
+  ],
+  "success": true,
+  "end_time": "2025-05-28T18:50:17.166374"
+}

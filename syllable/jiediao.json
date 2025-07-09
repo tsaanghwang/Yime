@@ -1,0 +1,21 @@
+{
+  "tone_categories": {
+    "high_tone": { "pattern": "1", "value": "55", "mark": "̄" },
+    "rising_tone": { "pattern": "2", "value": "35", "mark": "́" },
+    "low_tone": { "pattern": "3", "value": "21", "mark": "̌" },
+    "falling_tone": { "pattern": "4", "value": "51", "mark": "̀" }
+  },
+  "pitch_levels": {
+    "high level": { "mark": "˥", "value": "5" },
+    "mid-high level": { "mark": "˦", "value": "4" },
+    "mid level": { "mark": "˧", "value": "3" },
+    "mid-low level": { "mark": "˨", "value": "2" },
+    "low level": { "mark": "˩", "value": "1" },
+    "": { "mark": "0", "value": "0" }
+  },
+  "tonemes": {
+    "high tone": { "mark": "˥", "letter": "H" },
+    "mid tone": { "mark": "˦", "letter": "M" },
+    "low level": { "mark": "˩", "letter": "L" }
+  }
+}

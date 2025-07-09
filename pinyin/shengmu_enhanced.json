@@ -1,0 +1,235 @@
+{
+  "metadata": {
+    "version": "0.01",
+    "description": "Enhanced Chinese initial consonants mapping with IPA notation",
+    "created": "2025-06-08",
+    "author": "Yinyuan System",
+    "standards": {
+      "primary": "Standard Mandarin (Putonghua)",
+      "secondary": ["Cantonese", "Min Nan", "Wu", "Hakka", "Gan", "Xiang"]
+    },
+    "conventions": {
+      "separator_character": "U+0027",
+      "ipa_notation": "X-SAMPA compatible"
+    }
+  },
+  "content": {
+    "b": {
+      "standard": ["p"],
+      "dialect_instances": {
+        "Cantonese": ["p"],
+        "Wu": ["p", "b"],
+        "Min": ["p", "b"]
+      },
+      "description": "Unaspirated bilabial plosive"
+    },
+    "p": {
+      "standard": ["pʰ"],
+      "dialect_instances": {
+        "Cantonese": ["pʰ"],
+        "Wu": ["pʰ"],
+        "Min": ["pʰ"]
+      },
+      "description": "Aspirated bilabial plosive"
+    },
+    "m": {
+      "standard": ["m"],
+      "dialect_instances": {
+        "Cantonese": ["m"],
+        "Wu": ["m"],
+        "Min": ["m"]
+      },
+      "description": "Bilabial nasal"
+    },
+    "f": {
+      "standard": ["f"],
+      "dialect_instances": {
+        "Cantonese": ["f"],
+        "Wu": ["f"],
+        "Min": ["f", "h"]
+      },
+      "description": "Labiodental fricative"
+    },
+    "d": {
+      "standard": ["t"],
+      "dialect_instances": {
+        "Cantonese": ["t"],
+        "Wu": ["t", "d"],
+        "Min": ["t", "d"]
+      },
+      "description": "Unaspirated alveolar plosive"
+    },
+    "t": {
+      "standard": ["tʰ"],
+      "dialect_instances": {
+        "Cantonese": ["tʰ"],
+        "Wu": ["tʰ"],
+        "Min": ["tʰ"]
+      },
+      "description": "Aspirated alveolar plosive"
+    },
+    "n": {
+      "standard": ["n"],
+      "dialect_instances": {
+        "Cantonese": ["n", "l"],
+        "Wu": ["n"],
+        "Min": ["n"]
+      },
+      "description": "Alveolar nasal"
+    },
+    "l": {
+      "standard": ["l"],
+      "dialect_instances": {
+        "Cantonese": ["l"],
+        "Wu": ["l"],
+        "Min": ["l"]
+      },
+      "description": "Alveolar lateral approximant"
+    },
+    "g": {
+      "standard": ["k"],
+      "dialect_instances": {
+        "Cantonese": ["k"],
+        "Wu": ["k", "g"],
+        "Min": ["k", "g"]
+      },
+      "description": "Unaspirated velar plosive"
+    },
+    "k": {
+      "standard": ["kʰ"],
+      "dialect_instances": {
+        "Cantonese": ["kʰ"],
+        "Wu": ["kʰ"],
+        "Min": ["kʰ"]
+      },
+      "description": "Aspirated velar plosive"
+    },
+    "h": {
+      "standard": ["x"],
+      "dialect_instances": {
+        "Cantonese": ["h"],
+        "Wu": ["h"],
+        "Min": ["h"]
+      },
+      "description": "Velar fricative"
+    },
+    "'": {
+      "standard": ["ʔ", "ɣ", "ŋ"],
+      "dialect_instances": {
+        "Cantonese": ["ʔ", "ŋ"],
+        "Wu": ["ʔ", "ɦ"],
+        "Min": ["ʔ", "h"]
+      },
+      "description": "Glottal stop/separator",
+      "note": "Used as syllable separator in pinyin"
+    },
+    "j": {
+      "standard": ["tɕ"],
+      "dialect_instances": {
+        "Cantonese": ["ts"],
+        "Wu": ["tɕ"],
+        "Min": ["ts"]
+      },
+      "description": "Voiceless alveolo-palatal affricate"
+    },
+    "q": {
+      "standard": ["tɕʰ"],
+      "dialect_instances": {
+        "Cantonese": ["tsʰ"],
+        "Wu": ["tɕʰ"],
+        "Min": ["tsʰ"]
+      },
+      "description": "Aspirated alveolo-palatal affricate"
+    },
+    "x": {
+      "standard": ["ɕ"],
+      "dialect_instances": {
+        "Cantonese": ["s"],
+        "Wu": ["ɕ"],
+        "Min": ["s"]
+      },
+      "description": "Voiceless alveolo-palatal fricative"
+    },
+    "zh": {
+      "standard": ["ʈʂ"],
+      "dialect_instances": {
+        "Cantonese": ["tʃ"],
+        "Wu": ["ts"],
+        "Southern": ["tɕ"]
+      },
+      "description": "Voiceless retroflex affricate"
+    },
+    "ch": {
+      "standard": ["ʈʂʰ"],
+      "dialect_instances": {
+        "Cantonese": ["tʃʰ"],
+        "Wu": ["tsʰ"],
+        "Southern": ["tɕʰ"]
+      },
+      "description": "Aspirated retroflex affricate"
+    },
+    "sh": {
+      "standard": ["ʂ"],
+      "dialect_instances": {
+        "Cantonese": ["ʃ"],
+        "Wu": ["ɕ"],
+        "Southern": ["ɕ"]
+      },
+      "description": "Voiceless retroflex fricative"
+    },
+    "r": {
+      "standard": ["ɻ", "ʐ", "ɹ", "z"],
+      "dialect_instances": {
+        "Cantonese": ["j"],
+        "Wu": ["z"],
+        "Min": ["l"]
+      },
+      "description": "Voiced retroflex fricative"
+    },
+    "z": {
+      "standard": ["ts"],
+      "dialect_instances": {
+        "Cantonese": ["ts"],
+        "Wu": ["ts"],
+        "Min": ["ts"]
+      },
+      "description": "Unaspirated alveolar affricate"
+    },
+    "c": {
+      "standard": ["tsʰ"],
+      "dialect_instances": {
+        "Cantonese": ["tsʰ"],
+        "Wu": ["tsʰ"],
+        "Min": ["tsʰ"]
+      },
+      "description": "Aspirated alveolar affricate"
+    },
+    "s": {
+      "standard": ["s"],
+      "dialect_instances": {
+        "Cantonese": ["s"],
+        "Wu": ["s"],
+        "Min": ["s"]
+      },
+      "description": "Voiceless alveolar fricative"
+    },
+    "classification": {
+      "place": {
+        "bilabial": ["b", "p", "m"],
+        "labiodental": ["f"],
+        "alveolar": ["d", "t", "n", "l"],
+        "velar": ["g", "k", "h"],
+        "retroflex": ["zh", "ch", "sh", "r"],
+        "alveolo-palatal": ["j", "q", "x"],
+        "dental": ["z", "c", "s"]
+      },
+      "manner": {
+        "plosive": ["b", "p", "d", "t", "g", "k"],
+        "fricative": ["f", "h", "x", "sh", "s"],
+        "affricate": ["j", "q", "zh", "ch", "z", "c"],
+        "nasal": ["m", "n"],
+        "liquid": ["l", "r"]
+      }
+    }
+  }
+}

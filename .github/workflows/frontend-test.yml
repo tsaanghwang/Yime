@@ -1,0 +1,35 @@
+name: Frontend Test
+
+on:
+  push:
+    paths:
+      - '**.js'
+      - '**.html'
+      - '!coverage/**'
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+    
+    - name: Install dependencies
+      run: npm install
+    
+    - name: Run Jest tests
+      run: |
+        npm test
+        [ -f "coverage/lcov.info" ] || exit 1
+    
+    - name: Upload coverage
+      uses: codecov/codecov-action@v3
+      with:
+        files: coverage/lcov.info
+        flags: frontend

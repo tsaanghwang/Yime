@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>音元输入法 - 开发指南</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@3.9.4/dist/full.css" rel="stylesheet" type="text/css" />
+</head>
+<body class="min-h-screen bg-base-100 text-base-content">
+    <div class="navbar bg-base-200">
+        <div class="navbar-start">
+            <div class="dropdown">
+                <label tabindex="0" class="btn btn-ghost lg:hidden">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" /></svg>
+                </label>
+                <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
+                    <li><a href="index.html">首页</a></li>
+                    <li><a href="overview.html">项目概述</a></li>
+                    <li><a href="quickstart.html">快速开始</a></li>
+                    <li><a href="architecture.html">系统架构</a></li>
+                    <li><a href="api.html">API文档</a></li>
+                    <li><a href="configuration.html">配置说明</a></li>
+                    <li><a class="active" href="development.html">开发指南</a></li>
+                    <li><a href="manual.html">使用手册</a></li>
+                </ul>
+            </div>
+            <a class="btn btn-ghost normal-case text-xl" href="index.html">音元输入法</a>
+        </div>
+        <div class="navbar-center hidden lg:flex">
+            <ul class="menu menu-horizontal px-1">
+                <li><a href="index.html">首页</a></li>
+                <li><a href="overview.html">项目概述</a></li>
+                <li><a href="quickstart.html">快速开始</a></li>
+                <li><a href="architecture.html">系统架构</a></li>
+                <li><a href="api.html">API文档</a></li>
+                <li><a href="configuration.html">配置说明</a></li>
+                <li><a class="active" href="development.html">开发指南</a></li>
+                <li><a href="manual.html">使用手册</a></li>
+            </ul>
+        </div>
+        <div class="navbar-end">
+            <a href="https://gitcode.net/2302_77644309/Yinyuanxitong" class="btn btn-ghost">项目来源</a>
+        </div>
+    </div>
+
+    <div class="container mx-auto px-4 py-8">
+        <div class="prose max-w-none">
+            <h1 class="text-4xl font-bold mb-6">音元输入法开发指南</h1>
+            
+            <div class="alert alert-info mb-8">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <span>本指南为开发者提供音元输入法的开发环境搭建、代码规范和贡献流程说明</span>
+            </div>
+
+            <h2 class="text-2xl font-bold mt-8 mb-4">开发环境搭建</h2>
+            
+            <div class="card bg-base-200 shadow mb-8">
+                <div class="card-body">
+                    <h3 class="card-title">系统要求</h3>
+                    <ul class="list-disc pl-5">
+                        <li>操作系统: Linux/macOS/Windows (WSL2推荐)</li>
+                        <li>Python: 3.10+</li>
+                        <li>Node.js: 18+</li>
+                        <li>Git: 2.30+</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card bg-base-200 shadow mb-8">
+                <div class="card-body">
+                    <h3 class="card-title">环境配置步骤</h3>
+                    <div class="mockup-code">
+                        <pre><code># 克隆仓库
+git clone git@gitcode.net:2302_77644309/Yinyuanxitong.git
+cd Yinyuanxitong
+
+# 安装Python依赖
+pip install -r requirements.txt
+
+# 安装前端依赖
+npm install
+
+# 配置开发环境变量
+cp .env.example .env.development</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <h2 class="text-2xl font-bold mt-8 mb-4">代码规范</h2>
+            
+            <div class="card bg-base-200 shadow mb-8">
+                <div class="card-body">
+                    <h3 class="card-title">Python代码规范</h3>
+                    <ul class="list-disc pl-5">
+                        <li>遵循PEP 8风格指南</li>
+                        <li>使用类型注解(Type Hints)</li>
+                        <li>模块级docstring必须包含功能说明和示例</li>
+                        <li>函数级docstring必须包含参数、返回值和示例</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card bg-base-200 shadow mb-8">
+                <div class="card-body">
+                    <h3 class="card-title">TypeScript代码规范</h3>
+                    <ul class="list-disc pl-5">
+                        <li>使用ESLint和Prettier进行代码格式化</li>
+                        <li>严格类型检查(noImplicitAny)</li>
+                        <li>React组件使用函数式组件和Hooks</li>
+                        <li>接口定义使用I前缀(如IProps)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h2 class="text-2xl font-bold mt-8 mb-4">测试指南</h2>
+            
+            <div class="card bg-base-200 shadow mb-8">
+                <div class="card-body">
+                    <h3 class="card-title">运行测试</h3>
+                    <div class="mockup-code">
+                        <pre><code># 运行Python测试
+pytest --cov=pinyin --cov-report=html
+
+# 运行前端测试
+npm test</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <h2 class="text-2xl font-bold mt-8 mb-4">贡献指南</h2>
+            
+            <div class="card bg-base-200 shadow mb-8">
+                <div class="card-body">
+                    <h3 class="card-title">贡献流程</h3>
+                    <ol class="list-decimal pl-5">
+                        <li>Fork项目仓库</li>
+                        <li>创建特性分支 (git checkout -b feature/your-feature)</li>
+                        <li>提交代码变更 (git commit -am 'Add some feature')</li>
+                        <li>推送到远程分支 (git push origin feature/your-feature)</li>
+                        <li>创建Pull Request</li>
+                    </ol>
+                </div>
+            </div>
+
+            <h2 class="text-2xl font-bold mt-8 mb-4">发布流程</h2>
+            
+            <div class="card bg-base-200 shadow mb-8">
+                <div class="card-body">
+                    <h3 class="card-title">版本发布步骤</h3>
+                    <div class="mockup-code">
+                        <pre><code># 更新版本号
+npm version patch  # 或 minor/major
+
+# 构建发布包
+npm run build
+python setup.py sdist bdist_wheel
+
+# 发布到PyPI
+twine upload dist/*
+
+# 创建Git标签
+git push origin --tags</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer footer-center p-10 bg-base-200 text-base-content rounded">
+        <div>
+            <p>Copyright © 2025 - 音元输入法开发团队</p>
+            <p>项目来源: <a href="https://gitcode.net/2302_77644309/Yinyuanxitong" class="link">GitCode仓库</a></p>
+        </div>
+    </footer>
+</body>
+</html>

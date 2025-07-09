@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>音标-拼音转换面板</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@3.9.4/dist/full.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3b82f6',
+                        success: '#10b981',
+                        warning: '#f59e0b',
+                        danger: '#ef4444'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- 标题卡片 -->
+        <div class="card bg-base-100 shadow-xl mb-6">
+            <div class="card-body">
+                <h1 class="card-title text-2xl font-bold text-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    音标-拼音转换系统
+                </h1>
+                <p class="text-gray-600">专业音标与拼音转换工具</p>
+            </div>
+        </div>
+
+        <!-- 主面板 -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- 文件信息卡片 -->
+            <div class="card bg-base-100 shadow-xl">
+                <div class="card-body">
+                    <h2 class="card-title text-lg font-semibold">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        文件信息
+                    </h2>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="label">
+                                <span class="label-text font-medium">源文件路径</span>
+                            </label>
+                            <div class="input input-bordered w-full bg-gray-50">
+                                data_json_files/tone_final_mapping.json
+                            </div>
+                        </div>
+                        <div>
+                            <label class="label">
+                                <span class="label-text font-medium">目标文件路径</span>
+                            </label>
+                            <div class="input input-bordered w-full bg-gray-50">
+                                data_json_files/ipa_pinyin_mapping.json
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 转换统计卡片 -->
+            <div class="card bg-base-100 shadow-xl">
+                <div class="card-body">
+                    <h2 class="card-title text-lg font-semibold">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
+                        转换统计
+                    </h2>
+                    <div class="stats shadow">
+                        <div class="stat">
+                            <div class="stat-figure text-primary">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-8 h-8 stroke-current">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                </svg>
+                            </div>
+                            <div class="stat-title">总条目数</div>
+                            <div class="stat-value text-primary">128</div>
+                            <div class="stat-desc">音标-拼音对</div>
+                        </div>
+                        
+                        <div class="stat">
+                            <div class="stat-figure text-success">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-8 h-8 stroke-current">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                </svg>
+                            </div>
+                            <div class="stat-title">转换成功率</div>
+                            <div class="stat-value text-success">100%</div>
+                            <div class="stat-desc">所有条目已转换</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 进度条卡片 -->
+            <div class="card bg-base-100 shadow-xl lg:col-span-2">
+                <div class="card-body">
+                    <h2 class="card-title text-lg font-semibold">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
+                        转换进度
+                    </h2>
+                    <div class="space-y-4">
+                        <div class="flex justify-between">
+                            <span class="text-sm font-medium">数据提取</span>
+                            <span class="text-sm font-medium text-success">已完成</span>
+                        </div>
+                        <progress class="progress progress-success w-full" value="100" max="100"></progress>
+
+                        <div class="flex justify-between">
+                            <span class="text-sm font-medium">结构转换</span>
+                            <span class="text-sm font-medium text-success">已完成</span>
+                        </div>
+                        <progress class="progress progress-success w-full" value="100" max="100"></progress>
+
+                        <div class="flex justify-between">
+                            <span class="text-sm font-medium">文件保存</span>
+                            <span class="text-sm font-medium text-success">已完成</span>
+                        </div>
+                        <progress class="progress progress-success w-full" value="100" max="100"></progress>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 示例数据卡片 -->
+            <div class="card bg-base-100 shadow-xl lg:col-span-2">
+                <div class="card-body">
+                    <h2 class="card-title text-lg font-semibold">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                        </svg>
+                        示例数据
+                    </h2>
+                    <div class="overflow-x-auto">
+                        <table class="table table-zebra w-full">
+                            <thead>
+                                <tr>
+                                    <th>音标</th>
+                                    <th>拼音编码</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>ā</td>

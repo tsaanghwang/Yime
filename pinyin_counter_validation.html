@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>音标统计验证</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@3.9.4/dist/full.css" rel="stylesheet">
+</head>
+<body class="min-h-screen bg-base-100 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold text-center mb-8">音标统计验证</h1>
+        
+        <div class="card bg-base-200 shadow-xl mb-8">
+            <div class="card-body">
+                <h2 class="card-title text-2xl">键名修改验证</h2>
+                <p class="text-lg">已成功将"unique_phonemes"修改为"unique_phonetics"</p>
+                <div class="mockup-code mt-4">
+                    <pre><code>{
+    "不同音标统计": {
+        "description": "所有不同的音标及其总数",
+        "data": {
+            "unique_phonetics": [...],
+            "total_count": ...
+        }
+    }
+}</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="card bg-base-200 shadow-xl">
+                <div class="card-body">
+                    <h2 class="card-title">修改前</h2>
+                    <div class="mockup-code">
+                        <pre><code>"unique_phonemes": [...]</code></pre>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card bg-primary text-primary-content shadow-xl">
+                <div class="card-body">
+                    <h2 class="card-title">修改后</h2>
+                    <div class="mockup-code bg-primary">
+                        <pre><code>"unique_phonetics": [...]</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-8 text-center">
+            <button class="btn btn-primary" onclick="location.reload()">重新验证</button>
+        </div>
+    </div>
+</body>
+</html>
