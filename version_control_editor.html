@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>版本控制代码编辑器</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@3.9.4/dist/full.css" rel="stylesheet" type="text/css" />
+    <style>
+        .editor-container {
+            height: calc(100vh - 80px);
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 1rem;
+        }
+        #editor {
+            height: 100%;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            line-height: 1.5;
+            tab-size: 4;
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+        }
+        .history-panel {
+            height: 100%;
+            overflow-y: auto;
+            background-color: #252526;
+            border-right: 1px solid #3c3c3c;
+        }
+        .commit-card {
+            transition: all 0.2s;
+        }
+        .commit-card:hover {
+            background-color: #2a2d2e;
+        }
+        .branch-tag {
+            border-radius: 0.5rem;
+            padding: 0.2rem 0.5rem;
+            font-size: 0.8rem;
+        }
+        .diff-viewer {
+            background-color: #1e1e1e;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+        }
+        .diff-added {
+            background-color: rgba(48, 128, 48, 0.3);
+        }
+        .diff-removed {
+            background-color: rgba(128, 48, 48, 0.3);
+        }
+    </style>
+</head>
+<body class="bg-base-100">
+    <div class="navbar bg-base-200 shadow-lg">
+        <div class="flex-1">
+            <a class="btn btn-ghost normal-case text-xl">版本控制编辑器</a>
+        </div>
+        <div class="flex-none gap-2">
+            <div class="dropdown dropdown-end">
+                <label tabindex="0" class="btn btn-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v3.586L7.707 9.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 10.586V7z" clip-rule="evenodd" />
+                    </svg>
+                    提交
+                </label>
+                <div tabindex="0" class="dropdown-content z-[1] card card-compact w-64 p-2 shadow bg-base-100">
+                    <div class="card-body">
+                        <input id="commit-message" type="text" placeholder="提交信息" class="input input-bordered">
+                        <button id="commit-btn" class="btn btn-primary">确认提交</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="dropdown dropdown-end">
+                <label tabindex="0" class="btn btn-secondary">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M7.707 3.293a1 1 0 010 1.414L5.414 7H11a7 7 0 017 7v2a1 1 0 11-2 0v-2a5 5 0 00-5-5H5.414l2.293 2.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                    </svg>
+                    分支
+                </label>
+                <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
+                    <li><a id="create-branch">创建分支</a></li>
+                    <li><a id="switch-branch">切换分支</a></li>
+                    <li><a id="merge-branch">合并分支</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="editor-container p-4">
+        <div class="history-panel p-4">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold">版本历史</h3>
+                <div id="current-branch" class="badge badge-primary">main</div>
+            </div>
+            <div id="commit-history" class="space-y-2">
+                <!-- 提交历史将在这里动态生成 -->
+            </div>
+        </div>
+        <textarea id="editor" class="textarea w-full" placeholder="在此输入代码..."></textarea>
+    </div>
+
+    <!-- 分支创建模态框 -->
+    <div id="branch-modal" class="modal">
+        <div class="modal-box">
+            <h3 class="font-bold text-lg">创建新分支</h3>
+            <div class="py-4">
+                <input id="new-branch-name" type="text" placeholder="分支名称" class="input input-bordered w-full">
+                <div class="form-control mt-2">
+                    <label class="label cursor-pointer">
+                        <span class="label-text">基于当前提交创建</span> 
+                        <input type="checkbox" checked="checked" class="checkbox">
+                    </label>
+                </div>
+            </div>
+            <div class="modal-action">
+                <button id="cancel-branch" class="btn">取消</button>
+                <button id="confirm-branch" class="btn btn-primary">创建</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 分支切换模态框 -->
+    <div id="switch-modal" class="modal">
+        <div class="modal-box">
+            <h3 class="font-bold text-lg">切换分支</h3>
+            <div class="py-4">
+                <ul id="branch-list" class="menu bg-base-100 rounded-box">
+                    <!-- 分支列表将在这里动态生成 -->
+                </ul>
+            </div>
+            <div class="modal-action">
+                <button id="cancel-switch" class="btn">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 合并分支模态框 -->
+    <div id="merge-modal" class="modal">
+        <div class="modal-box">
+            <h3 class="font-bold text-lg">合并分支</h3>
+            <div class="py-4">
+                <div class="form-control">
+                    <label class="label" for="merge-source">
+                        <span class="label-text">选择要合并的分支</span>
+                    </label>
+                    <select id="merge-source" class="select select-bordered w-full" aria-label="选择要合并的分支">
+                        <!-- 分支选项将在这里动态生成 -->
+                    </select>
+                </div>
+                <div id="diff-viewer" class="diff-viewer hidden">
+                    <h4 class="text-sm font-semibold mb-2">变更预览</h4>
+                    <div id="diff-content"></div>
+                </div>
+            </div>
+            <div class="modal-action">
+                <button id="cancel-merge" class="btn">取消</button>
+                <button id="confirm-merge" class="btn btn-primary">合并</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class VersionControlSystem {
+            constructor() {
+                this.branches = {
+                    'main': {
+                        history: [],
+                        currentIndex: -1
+                    }
+                };
+                this.currentBranch = 'main';
+                this.commits = {};
+                this.nextCommitId = 1;
+            }
+
+            commit(message, content) {
+                const commitId = `commit-${this.nextCommitId++}`;
+                const timestamp = new Date().toISOString();
+                
+                if (!this.branches[this.currentBranch]) {
+                    this.branches[this.currentBranch] = {
+                        history: [],
+                        currentIndex: -1
+                    };
+                }
+                
+                const branch = this.branches[this.currentBranch];
+                
+                // 如果在历史中间提交，则删除后面的提交
+                if (branch.currentIndex < branch.history.length - 1) {
+                    branch.history = branch.history.slice(0, branch.currentIndex + 1);
+                }
+                
+                const commit = {
+                    id: commitId,
+                    message: message,
+                    content: content,
+                    timestamp: timestamp,
+                    branch: this.currentBranch
+                };
+                
+                this.commits[commitId] = commit;
+                branch.history.push(commitId);
+                branch.currentIndex = branch.history.length - 1;
+                
+                return commit;
+            }
+
+            createBranch(name, fromCommitId = null) {
+                if (this.branches[name]) {
+                    throw new Error(`分支 ${name} 已存在`);
+                }
+                
+                const sourceBranch = this.currentBranch;
+                const sourceHistory = this.branches[sourceBranch].history;
+                let startIndex = 0;
+                
+                if (fromCommitId) {
+                    startIndex = sourceHistory.indexOf(fromCommitId);
+                    if (startIndex === -1) {
+                        throw new Error(`提交 ${fromCommitId} 不存在`);
+                    }
+                }
+                
+                this.branches[name] = {
+                    history: sourceHistory.slice(0, startIndex + 1),
+                    currentIndex: startIndex
+                };
+                
+                return name;
+            }
+
+            switchBranch(name) {
+                if (!this.branches[name]) {
+                    throw new Error(`分支 ${name} 不存在`);
+                }
+                
+                this.currentBranch = name;
+                return this.getCurrentCommit();
+            }
+
+            getCurrentCommit() {
+                const branch = this.branches[this.currentBranch];
+                if (branch.history.length === 0) return null;
+                
+                const commitId = branch.history[branch.currentIndex];
+                return this.commits[commitId];
+            }
+
+            getCommitHistory(branchName = null) {
+                const branch = branchName ? this.branches[branchName] : this.branches[this.currentBranch];
+                return branch.history.map(commitId => this.commits[commitId]);
+            }
+
+            getAllBranches() {
+                return Object.keys(this.branches);
+            }
+
+            getBranchHead(branchName) {
+                const branch = this.branches[branchName];
+                if (!branch || branch.history.length === 0) return null;
+                
+                const commitId = branch.history[branch.currentIndex];
+                return this.commits[commitId];
+            }
+
+            diffBranches(sourceBranch, targetBranch) {
+                const sourceHead = this.getBranchHead(sourceBranch);
+                const targetHead = this.getBranchHead(targetBranch);
+                
+                if (!sourceHead || !targetHead) {
+                    return { added: [], removed: [] };
+                }
+                
+                const sourceLines = sourceHead.content.split('\n');
+                const targetLines = targetHead.content.split('\n');
+                
+                const diff = {
+                    added: [],
+                    removed: []
+                };
+                
+                // 简单比较行差异
+                for (let i = 0; i < Math.max(sourceLines.length, targetLines.length); i++) {
+                    if (i >= sourceLines.length) {
+                        diff.added.push(targetLines[i]);
+                    } else if (i >= targetLines.length) {
+                        diff.removed.push(sourceLines[i]);
+                    } else if (sourceLines[i] !== targetLines[i]) {
+                        diff.added.push(targetLines[i]);
+                        diff.removed.push(sourceLines[i]);
+                    }
+                }
+                
+                return diff;
+            }
+
+            mergeBranch(sourceBranch) {
+                const sourceHead = this.getBranchHead(sourceBranch);
+                const targetHead = this.getBranchHead(this.currentBranch);
+                
+                if (!sourceHead) {
+                    throw new Error(`源分支 ${sourceBranch} 没有提交`);
+                }
+                
+                // 简单合并策略：使用源分支的内容
+                const mergedContent = sourceHead.content;
+                const commitMessage = `Merge branch '${sourceBranch}' into '${this.currentBranch}'`;
+                
+                return this.commit(commitMessage, mergedContent);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const editor = document.getElementById('editor');
+            const commitBtn = document.getElementById('commit-btn');
+            const commitMessage = document.getElementById('commit-message');
+            const commitHistory = document.getElementById('commit-history');
+            const currentBranch = document.getElementById('current-branch');
+            
+            // 分支操作元素
+            const createBranchBtn = document.getElementById('create-branch');
+            const switchBranchBtn = document.getElementById('switch-branch');
+            const mergeBranchBtn = document.getElementById('merge-branch');
+            const branchModal = document.getElementById('branch-modal');
+            const switchModal = document.getElementById('switch-modal');
+            const mergeModal = document.getElementById('merge-modal');
+            
+            const vcs = new VersionControlSystem();
+            
+            // 初始化编辑器
+            updateBranchDisplay();
+            updateCommitHistory();
+            
+            // 提交功能
+            commitBtn.addEventListener('click', () => {
+                const message = commitMessage.value.trim();
+                if (message === '') {
+                    alert('请输入提交信息');
+                    return;
+                }
+                
+                vcs.commit(message, editor.value);
+                commitMessage.value = '';
+                updateCommitHistory();
+            });
+            
+            // 创建分支
+            createBranchBtn.addEventListener('click', () => {
+                branchModal.showModal();
+            });
+            
+            document.getElementById('confirm-branch').addEventListener('click', () => {
+                const branchName = document.getElementById('new-branch-name').value.trim();
+                if (branchName === '') {
+                    alert('请输入分支名称');
+                    return;
+                }
+                
+                try {
+                    vcs.createBranch(branchName);
+                    document.getElementById('new-branch-name').value = '';
+                    branchModal.close();
+                    updateBranchDisplay();
+                } catch (error) {
+                    alert(error.message);
+                }
+            });
+            
+            document.getElementById('cancel-branch').addEventListener('click', () => {
+                branchModal.close();
+                document.getElementById('new-branch-name').value = '';
+            });
+            
+            // 切换分支
+            switchBranchBtn.addEventListener('click', () => {
+                updateBranchList();
+                switchModal.showModal();
+            });
+            
+            document.getElementById('cancel-switch').addEventListener('click', () => {
+                switchModal.close();
+            });
+            
+            // 合并分支
+            mergeBranchBtn.addEventListener('click', () => {
+                updateMergeOptions();
+                mergeModal.showModal();
+            });
+            
+            document.getElementById('merge-source').addEventListener('change', (e) => {
+                const sourceBranch = e.target.value;
+                if (sourceBranch === '') return;
+                
+                const diff = vcs.diffBranches(sourceBranch, vcs.currentBranch);
+                const diffContent = document.getElementById('diff-content');
+                diffContent.innerHTML = '';
+                
+                // 显示差异
+                if (diff.added.length > 0 || diff.removed.length > 0) {
+                    document.getElementById('diff-viewer').classList.remove('hidden');
+                    
+                    diff.added.forEach(line => {
+                        if (line) {
+                            const div = document.createElement('div');
+                            div.className = 'diff-added';
+                            div.textContent = `+ ${line}`;
+                            diffContent.appendChild(div);
+                        }
+                    });
+                    
+                    diff.removed.forEach(line => {
+                        if (line) {
+                            const div = document.createElement('div');
+                            div.className = 'diff-removed';
+                            div.textContent = `- ${line}`;
+                            diffContent.appendChild(div);
+                        }
+                    });
+                } else {
+                    document.getElementById('diff-viewer').classList.add('hidden');
+                }
+            });
+            
+            document.getElementById('confirm-merge').addEventListener('click', () => {
+                const sourceBranch = document.getElementById('merge-source').value;
+                if (sourceBranch === '') {
+                    alert('请选择要合并的分支');
+                    return;
+                }
+                
+                try {
+                    vcs.mergeBranch(sourceBranch);
+                    editor.value = vcs.getCurrentCommit().content;
+                    updateCommitHistory();
+                    mergeModal.close();
+                } catch (error) {
+                    alert(error.message);
+                }
+            });
+            
+            document.getElementById('cancel-merge').addEventListener('click', () => {
+                mergeModal.close();
+            });
+            
+            // 更新分支显示
+            function updateBranchDisplay() {
+                currentBranch.textContent = vcs.currentBranch;
+            }
+            
+            // 更新提交历史
+            function updateCommitHistory() {
+                commitHistory.innerHTML = '';
+                const history = vcs.getCommitHistory();
+                
+                history.forEach((commit, index) => {
+                    const isCurrent = index === vcs.branches[vcs.currentBranch].currentIndex;
+                    
+                    const card = document.createElement('div');
+                    card.className = `commit-card card bg-base-200 shadow cursor-pointer ${isCurrent ? 'ring-2 ring-primary' : ''}`;
+                    card.addEventListener('click', () => {
+                        vcs.branches[vcs.currentBranch].currentIndex = index;
+                        editor.value = commit.content;
+                        updateCommitHistory();
+                    });
+                    
+                    const cardBody = document.createElement('div');
+                    cardBody.className = 'card-body p-4';
+                    
+                    const title = document.createElement('h3');
+                    title.className = 'card-title text-sm';
+                    title.textContent = commit.message;
+                    
+                    const meta = document.createElement('div');
+                    meta.className = 'flex justify-between items-center text-xs text-gray-400';
+                    
+                                const time = document.createElement('span');
+                                time.textContent = new Date(commit.timestamp).toLocaleString();
+            
+                                meta.appendChild(time);
+                                cardBody.appendChild(title);
+                                cardBody.appendChild(meta);
+                                card.appendChild(cardBody);
+                                commitHistory.appendChild(card);
+                            });
+                        }
+                        // 你可以在这里添加更多的辅助函数
+                    });

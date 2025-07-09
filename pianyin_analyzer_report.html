@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>片音分析器生成报告</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@3.9.4/dist/full.css" rel="stylesheet">
+</head>
+<body class="bg-base-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- 标题区 -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-primary mb-2">片音分析器生成报告</h1>
+            <p class="text-lg text-gray-600">internal_data/pianyin_analyzer.json 文件来源分析</p>
+        </div>
+
+        <!-- 分析结果卡片 -->
+        <div class="card bg-base-200 shadow-xl mb-8">
+            <div class="card-body">
+                <h2 class="card-title text-2xl mb-4">生成来源分析结果</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- 生成路径 -->
+                    <div class="bg-base-100 p-6 rounded-box shadow">
+                        <h3 class="text-xl font-semibold mb-3">生成路径</h3>
+                        <div class="space-y-2">
+                            <div class="flex items-center">
+                                <div class="badge badge-primary mr-2">1</div>
+                                <span>finals_classifier.py → classified_finals.json</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="badge badge-primary mr-2">2</div>
+                                <span>pianyin_analyzer.py → pianyin_analyzer.json</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="badge badge-primary mr-2">3</div>
+                                <span>pianyin_counter.py → pianyin_counter.json</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 关键结论 -->
+                    <div class="bg-base-100 p-6 rounded-box shadow">
+                        <h3 class="text-xl font-semibold mb-3">分析结论</h3>
+                        <div class="space-y-3">
+                            <div class="flex items-start">
+                                <div class="badge badge-success mr-2">✓</div>
+                                <span>文件由单一脚本(pianyin_analyzer.py)生成</span>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="badge badge-error mr-2">✗</div>
+                                <span>未发现由两个不同脚本生成的证据</span>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="badge badge-info mr-2">ℹ</div>
+                                <span>文件结构一致，无混合生成痕迹</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 文件内容摘要 -->
+        <div class="card bg-base-200 shadow-xl mb-8">
+            <div class="card-body">
+                <h2 class="card-title text-2xl mb-4">文件内容摘要</h2>
+                
+                <div class="overflow-x-auto">
+                    <table class="table table-zebra">
+                        <thead>
+                            <tr>
+                                <th>数据类型</th>
+                                <th>条目数量</th>
+                                <th>描述</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>三质韵母</td>
+                                <td>16种/声调</td>
+                                <td>三个不同音质的韵母组合</td>
+                            </tr>
+                            <tr>
+                                <td>前长韵母</td>
+                                <td>8种/声调</td>
+                                <td>第一个音标重复表示</td>
+                            </tr>
+                            <tr>
+                                <td>后长韵母</td>
+                                <td>6种/声调</td>
+                                <td>第二个音标重复表示</td>
+                            </tr>
+                            <tr>
+                                <td>单质韵母</td>
+                                <td>13种/声调</td>
+                                <td>音标重复三次表示</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 相关脚本 -->
+        <div class="card bg-base-200 shadow-xl">
+            <div class="card-body">
+                <h2 class="card-title text-2xl mb-4">相关脚本信息</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <!-- 生成脚本 -->
+                    <div class="bg-base-100 p-4 rounded-box shadow">
+                        <h3 class="text-lg font-semibold mb-2">生成脚本</h3>
+                        <p class="text-sm mb-2">tools/pianyin_analyzer.py</p>
+                        <p class="text-xs text-gray-500">输入: classified_finals.json</p>
+                        <p class="text-xs text-gray-500">输出: pianyin_analyzer.json</p>
+                    </div>
+                    
+                    <!-- 上游脚本 -->
+                    <div class="bg-base-100 p-4 rounded-box shadow">
+                        <h3 class="text-lg font-semibold mb-2">上游脚本</h3>
+                        <p class="text-sm mb-2">tools/finals_classifier.py</p>
+                        <p class="text-xs text-gray-500">生成输入文件</p>
+                    </div>
+                    
+                    <!-- 下游脚本 -->
+                    <div class="bg-base-100 p-4 rounded-box shadow">
+                        <h3 class="text-lg font-semibold mb-2">下游脚本</h3>
+                        <p class="text-sm mb-2">tools/pianyin_counter.py</p>
+                        <p class="text-xs text-gray-500">处理分析结果</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文件名修改演示</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@3.9.4/dist/full.css" rel="stylesheet">
+</head>
+<body class="bg-base-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <div class="card bg-base-200 shadow-xl">
+            <div class="card-body">
+                <h1 class="text-2xl font-bold text-center mb-6">文件名修改演示</h1>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- 原始代码 -->
+                    <div class="bg-base-100 p-4 rounded-lg shadow">
+                        <h2 class="text-lg font-semibold mb-3 text-error">修改前代码</h2>
+                        <div class="mockup-code bg-neutral text-neutral-content">
+                            <pre><code># 写入结果文件
+with open("internal_data/yinyuan_pinyin_mapping.json", 
+          "w", encoding="utf-8") as f:
+    json.dump(output, f, ensure_ascii=False, indent=2)
+    
+print("音元映射文件已成功生成：internal_data/yinyuan_pinyin_mapping.json")</code></pre>
+                        </div>
+                    </div>
+                    
+                    <!-- 修改后代码 -->
+                    <div class="bg-base-100 p-4 rounded-lg shadow">
+                        <h2 class="text-lg font-semibold mb-3 text-success">修改后代码</h2>
+                        <div class="mockup-code bg-neutral text-neutral-content">
+                            <pre><code># 写入结果文件
+with open("internal_data/yinyuan_pianyin_mapping.json", 
+          "w", encoding="utf-8") as f:
+    json.dump(output, f, ensure_ascii=False, indent=2)
+    
+print("音元映射文件已成功生成：internal_data/yinyuan_pianyin_mapping.json")</code></pre>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="divider"></div>
+                
+                <!-- 操作说明 -->
+                <div class="bg-base-100 p-4 rounded-lg shadow">
+                    <h2 class="text-lg font-semibold mb-3">操作说明</h2>
+                    <div class="prose">
+                        <ol class="list-decimal pl-5 space-y-2">
+                            <li>将输出文件名从 <code>yinyuan_pinyin_mapping.json</code> 改为 <code>yinyuan_pianyin_mapping.json</code></li>
+                            <li>修改了打印语句中的文件名以保持一致</li>
+                            <li>保持了文件路径不变 (<code>internal_data/</code>)</li>
+                            <li>文件内容和格式保持不变</li>
+                        </ol>
+                        <p class="mt-4">此修改确保文件名与脚本名称保持一致，提高项目一致性。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

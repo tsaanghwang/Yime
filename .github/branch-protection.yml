@@ -1,0 +1,18 @@
+# 主分支保护规则
+branches:
+  - name: main
+    protection:
+      required_status_checks:
+        contexts:
+          - "Python CI"
+          - "Frontend Test"
+          - "Docs Check"
+        strict: true
+      required_pull_request_reviews:
+        required_approving_review_count: 1
+        dismiss_stale_reviews: true
+      enforce_admins: false
+      restrictions: null
+      required_linear_history: true
+      allow_force_pushes: false
+      allow_deletions: false

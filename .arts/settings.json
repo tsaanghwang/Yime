@@ -1,0 +1,71 @@
+{
+    "python.testing.unittestArgs": [
+        "-v",
+        "-s",
+        ".",
+        "-p",
+        "*test.py"
+    ],
+    "python.testing.pytestEnabled": false,
+    "python.testing.unittestEnabled": true,
+    "chat.editor.fontSize": 24,
+    "python.django.project.supportEnabled": false,
+    "python.project.sourceRoots": [
+        ".",
+        "src"
+    ],
+    "python.project.excluded": [],
+    "python.missingDependencies.doNotShow": true,
+    "editor.codeLensFontSize": 20,
+    "editor.inlayHints.fontSize": 20,
+    "editor.suggestFontSize": 20,
+    "editor.fontSize": 20,
+    "editor.fontFamily": "'YinYuan Regular', Consolas, 'Courier New', monospace",
+    "notebook.markup.fontSize": 20,
+    "notebook.output.fontSize": 20,
+    "workbench.editor.autoLockGroups": {
+        "default": true,
+        "workbench.editor.chatSession": true,
+        "workbench.editorinputs.searchEditorInput": true,
+        "imagePreview.previewEditor": true,
+        "vscode.audioPreview": true,
+        "vscode.videoPreview": true,
+        "jsProfileVisualizer.cpuprofile.table": true,
+        "jsProfileVisualizer.heapprofile.table": true,
+        "jsProfileVisualizer.heapsnapshot.table": true,
+        "smartassist.javaClass": true,
+        "jupyter-notebook": true,
+        "workbench.editors.welcomePageInput": true,
+        "workbench.input.interactive": true,
+        "mainThreadWebview-markdown.preview": true
+    },
+    "workbench.editor.centeredLayoutFixedWidth": true,
+    "workbench.editor.enablePreviewFromCodeNavigation": true,
+    "workbench.editor.enablePreviewFromQuickOpen": true,
+    "workbench.editor.highlightModifiedTabs": true,
+    "workbench.editor.ignoreClosedWhileNavigating": true,
+    "workbench.settings.editor": "ui",
+    "debug.console.fontSize": 20,
+    "scm.inputFontSize": 20,
+    "terminal.integrated.fontSize": 20,
+    "markdown.preview.fontSize": 24,
+    "csv-edit.fontSizeInPx": 20,
+    "codebot.configuration.fontSize": 16,
+    "cSpell.words": [
+        "ˈɪnsʌlt",
+        "ˈsyl",
+        "cepstrum",
+        "initial",
+        "isochrony",
+        "ɪnˈsʌlt",
+        "Libri",
+        "Multifeature",
+        "pianyin",
+        "Unpitched",
+        "unpitched_yinyuan",
+        "yinyuan"
+    ],
+    "editor.codeActionsOnSave": {
+        
+    }
+}

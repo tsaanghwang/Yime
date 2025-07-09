@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>音元字符验证工具</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@3.9.4/dist/full.css" rel="stylesheet" type="text/css" />
+    <style>
+        .code-font {
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .invalid-char {
+            background-color: rgba(239, 68, 68, 0.3);
+            border-bottom: 2px dashed #ef4444;
+        }
+        .hidden-custom-char {
+            display: none;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-base-200 p-6">
+    <div class="max-w-7xl mx-auto">
+        <!-- 标题区 -->
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-primary">音元字符验证工具</h1>
+            <p class="text-lg text-gray-400">验证Private Use Area-A字符合规性</p>
+        </div>
+
+        <!-- 主内容区 -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- 文件内容展示区 -->
+            <div class="card bg-base-100 shadow-xl">
+                <div class="card-body">
+                    <h2 class="card-title">文件内容</h2>
+                    <div class="mockup-code bg-base-200 p-4 code-font" id="fileContent">
+                        <!-- 文件内容将通过JavaScript动态加载 -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- 验证结果面板 -->
+            <div class="card bg-base-100 shadow-xl">
+                <div class="card-body">
+                    <h2 class="card-title">验证结果</h2>
+                    <div class="stats shadow bg-base-200 mb-4">
+                        <div class="stat">
+                            <div class="stat-title">总字符数</div>
+                            <div class="stat-value" id="totalChars">0</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-title">合规字符</div>
+                            <div class="stat-value text-success" id="validChars">0</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-title">不合规字符</div>
+                            <div class="stat-value text-error" id="invalidChars">0</div>
+                        </div>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="table table-zebra">
+                            <thead>
+                                <tr>
+                                    <th>字符</th>
+                                    <th>位置</th>
+                                    <th>编码</th>
+                                    <th>建议</th>
+                                </tr>
+                            </thead>
+                            <tbody id="invalidCharsTable">
+                                <!-- 不合规字符将通过JavaScript动态加载 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 替换操作区 -->
+        <div class="card bg-base-100 shadow-xl mt-6">
+            <div class="card-body">
+                <h2 class="card-title">替换操作</h2>
+                <div class="flex flex-col space-y-4">
+                    <div class="form-control">
+                        <label class="label" for="replaceStrategy">
+                            <span class="label-text">选择替换策略</span>
+                        </label>
+                        <select class="select select-bordered w-full" id="replaceStrategy" aria-label="选择替换策略">
+                            <option value="remove">删除不合规字符</option>
+                            <option value="placeholder">使用占位符替换</option>
+                            <option value="custom">自定义替换字符</option>
+                        </select>
+                    <div class="form-control hidden-custom-char" id="customCharContainer">
+                        <label class="label" for="customChar">
+                            <span class="label-text">自定义替换字符</span>
+                        </label>
+                        <input type="text" class="input input-bordered w-full" id="customChar" maxlength="1" placeholder="请输入替换字符" title="自定义替换字符">
+                    </div>
+                    
+                    <button class="btn btn-primary" id="executeReplace">执行替换</button>
+                    <button class="btn btn-outline" id="downloadModified">下载修改后的文件</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 文件内容
+        const fileContent = `import json
+
+# 音元符号定义
+YINYUAN_SYMBOLS = {
+    "high_tone_i": "󰌠",
+    "mid_tone_i": "󰌡", 
+    "low_tone_i": "󰌤",
+    "high_tone_u": "󰌪",
+    "mid_tone_u": "󰌫",
+    "low_tone_u": "󰌮",
+    "high_tone_ü": "󰌴",
+    "mid_tone_ü": "󰌵",
+    "low_tone_ü": "󰌸",
+    "high_tone_a": "󰌾",
+    "mid_tone_a": "󰌿",
+    "low_tone_a": "󰍂",
+    "high_tone_o": "󰍒",
+    "mid_tone_o": "󰍓",
+    "low_tone_o": "󰍖",
+    "high_tone_e": "󰍡",
+    "mid_tone_e": "󰍢",
+    "low_tone_e": "󰍥",
+    "high_tone_-i": "󰍵",
+    "mid_tone_-i": "󰍶",
+    "low_tone_-i": "󰍹",
+    "high_tone_er": "󰎄",
+    "mid_tone_er": "󰎅",
+    "low_tone_er": "󰎈",
+    "high_tone_m": "󰎎",
+    "mid_tone_m": "󰎏",
+    "low_tone_m": "󰎒",
+    "high_tone_n": "󰎓",
+    "mid_tone_n": "󰎔",
+    "low_tone_n": "󰎗",
+    "high_tone_ng": "󰎘",
+    "mid_tone_ng": "󰎙",
+    "low_tone_ng": "󰎜"
+}
+
+# 调型模式规则
+TONE_PATTERNS = {
+    "first_tone": ["high", "high", "high"],
+    "second_tone": ["low", "mid", "high"],
+    "third_tone": ["low", "low", "low"],
+    "fourth_tone": ["high", "mid", "low"]
+}
+
+def get_yinyuan_symbol(vowel, pitch_level):
+    """根据韵腹和调级获取对应的音元符号"""
+    vowel_map = {
+        # 单韵母
+        "i": "i", "u": "u", "ʏ": "ü", "ᴀ": "a", "o": "o", 
+        "ɤ": "e", "ᴇ": "e", "ʅ": "-i", "ɚ": "er",
+        "m": "m", "n̍": "n", "ŋ̩": "ng",
+        
+        # 复合韵母中的特殊音标
+        "æ": "a",  # 如 ai 中的 æ
+        "ɪ": "i",  # 如 ei 中的 ɪ
+        "ʊ": "u",  # 如 ou 中的 ʊ
+        "ə": "e",  # 中性元音
+        "ɛ": "e",  # 开元音e
+        "ɔ": "o",  # 开o
+        "ɨ": "i",  # 中央不圆唇元音
+        "ʉ": "u"   # 中央圆唇元音
+    }
+    base = vowel_map.get(vowel, vowel)
+    try {
+        return YINYUAN_SYMBOLS[f"{pitch_level}_tone_{base}"]
+    } catch (KeyError) {
+        # 如果找不到对应符号，使用中性调符号
+        try {
+            return YINYUAN_SYMBOLS[f"mid_tone_{base}"]
+        } catch (KeyError) {
+            # 如果连中性调符号都找不到，使用默认的a符号
+            return YINYUAN_SYMBOLS["mid_tone_a"]
+        }
+    }
+}`;
+
+        // 检查字符是否在Private Use Area-A范围内 (U+F0000..U+FFFFD)
+        function isPrivateUseAreaA(char) {
+            const code = char.codePointAt(0);
+            return code >= 0xF0000 && code <= 0xFFFFD;
+        }
+
+        // 分析文件内容
+        function analyzeContent() {
+            const contentElement = document.getElementById('fileContent');
+            const invalidCharsTable = document.getElementById('invalidCharsTable');
+            let totalChars = 0;
+            let validChars = 0;
+            let invalidChars = 0;
+            const invalidCharsList = [];
+            
+            // 清空表格
+            invalidCharsTable.innerHTML = '';
+            
+            // 逐行处理文件内容
+            const lines = fileContent.split('\n');
+            contentElement.innerHTML = '';
+            
+            lines.forEach((line, lineIndex) => {
+                const lineElement = document.createElement('pre');
+                lineElement.className = 'px-4 py-1';
+                lineElement.setAttribute('data-line', lineIndex + 1);
+                
+                // 处理行中的每个字符
+                for (let i = 0; i < line.length; i++) {
+                    const char = line[i];
+                    totalChars++;
+                    
+                    // 检查字符是否为Private Use Area-A
+                    const isValid = isPrivateUseAreaA(char);
+                    
+                    if (isValid) {
+                        validChars++;
+                        lineElement.innerHTML += `<span>${char}</span>`;
+                    } else {
+                        // 如果不是空格、换行等空白字符且不是ASCII字符
+                        if (char.trim() !== '' && char.codePointAt(0) > 127) {
+                            invalidChars++;
+                            lineElement.innerHTML += `<span class="invalid-char" data-line="${lineIndex + 1}" data-pos="${i + 1}">${char}</span>`;
+                            
+                            // 添加到不合规字符列表
+                            invalidCharsList.push({
+                                char: char,
+                                line: lineIndex + 1,
+                                position: i + 1,
+                                code: 'U+' + char.codePointAt(0).toString(16).toUpperCase().padStart(4, '0')
+                            });
+                        } else {
+                            lineElement.innerHTML += `<span>${char}</span>`;
+                        }
+                    }
+                }
+                
+                contentElement.appendChild(lineElement);
+            });
+            
+            // 更新统计信息
+            document.getElementById('totalChars').textContent = totalChars;
+            document.getElementById('validChars').textContent = validChars;
+            document.getElementById('invalidChars').textContent = invalidChars;
+            
+            // 填充不合规字符表格
+            invalidCharsList.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.char}</td>
+                    <td>第${item.line}行, 第${item.position}列</td>
+                    <td>${item.code}</td>
+                    <td>建议替换为合规Private Use Area-A字符</td>
+                `;
+                invalidCharsTable.appendChild(row);
+            });
+        }
+
+        // 初始化页面
+        document.addEventListener('DOMContentLoaded', () => {
+            analyzeContent();
+
+            // 选择替换策略时显示/隐藏自定义字符输入框
+            const replaceStrategy = document.getElementById('replaceStrategy');
+            const customCharContainer = document.getElementById('customCharContainer');
+            replaceStrategy.addEventListener('change', (e) => {
+                if (e.target.value === 'custom') {
+                    customCharContainer.classList.remove('hidden-custom-char');
+                } else {
+                    customCharContainer.classList.add('hidden-custom-char');
+                }
+            });
+
+            // 执行替换按钮事件
+            document.getElementById('executeReplace').addEventListener('click', () => {
+                alert('替换功能将在完整版本中实现');
+            });
+            
+            // 下载修改后的文件按钮事件
+            document.getElementById('downloadModified').addEventListener('click', () => {
+                alert('下载功能将在完整版本中实现');
+            });
+        });
+    </script>
+</body>
+</html>

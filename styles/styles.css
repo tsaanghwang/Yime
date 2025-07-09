@@ -1,0 +1,39 @@
+/* 定义字体 */
+
+@font-face {
+    font-family: 'YinYuan';
+    /* 自定义字体名称 */
+    src: url('../fonts/YinYuan-Regular.woff2') format('woff2');
+    /* 字体文件路径 */
+    font-weight: neutral;
+    /* 字体粗细 */
+    font-style: neutral;
+    /* 字体样式 */
+}
+
+.custom-font {
+    font-family: 'YinYuan';
+    src: url('../fonts/YinYuan-Regular.woff2') format('woff2');
+    font-weight: neutral;
+    /* 字体粗细 */
+    font-style: neutral;
+    color: #333;
+    /* 字体颜色 */
+}
+
+
+/* 使用字体 */
+
+body {
+    font-family: 'YinYuan', sans-serif;
+    font-family: 'YinYuan', serif;
+}
+
+h1 {
+    font-family: 'YinYuan', serif;
+    /* 在标题中使用自定义字体 */
+}
+
+table {
+    font-family: 'YinYuan', sans-serif;
+}

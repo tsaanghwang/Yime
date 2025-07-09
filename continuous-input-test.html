@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>键值映射连续输入测试</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .key-display {
+            transition: all 0.2s ease;
+        }
+        .key-display:hover {
+            transform: scale(1.05);
+        }
+        .progress-bar-width {
+            width: 0%;
+            transition: width 0.2s ease;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-100 min-h-screen p-6">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold mb-6 text-center">键值映射连续输入测试</h1>
+        
+        <div class="bg-gray-800 rounded-lg p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4">测试输入区</h2>
+            <input type="text" id="testInput" 
+                   class="w-full p-3 bg-gray-700 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none" 
+                   placeholder="在此输入测试字符...">
+            <div class="flex justify-between mt-4">
+                <button id="startTest" class="px-4 py-2 bg-blue-600 rounded-md hover:bg-blue-700">开始测试</button>
+                <button id="resetTest" class="px-4 py-2 bg-gray-600 rounded-md hover:bg-gray-700">重置</button>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-gray-800 rounded-lg p-6">
+                <h2 class="text-xl font-semibold mb-4">键值映射表</h2>
+                <div id="keyMapDisplay" class="grid grid-cols-3 gap-2 max-h-96 overflow-y-auto"></div>
+            </div>
+            
+            <div class="bg-gray-800 rounded-lg p-6">
+                <h2 class="text-xl font-semibold mb-4">实时测试结果</h2>
+                <div id="testResults" class="space-y-2 max-h-96 overflow-y-auto"></div>
+                <div class="mt-4">
+                    <div class="flex justify-between mb-1">
+                        <div id="progressBar" class="bg-blue-600 h-2.5 rounded-full progress-bar-width"></div>
+                        <span id="progressText" class="text-sm">0/0</span>
+                    </div>
+                    <div class="w-full bg-gray-700 rounded-full h-2.5">
+                        <div id="progressBar" class="bg-blue-600 h-2.5 rounded-full progress-bar-width"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 从外部文件加载键值映射表
+        let keySymbolMap = {};
+        
+        // 加载键值映射表
+        fetch('key_symbol_map.json')
+            .then(response => response.json())
+            .then(data => {
+                keySymbolMap = data;
+                displayKeyMap();
+            })
+            .catch(error => {
+                console.error('加载键值映射表失败:', error);
+                // 使用默认映射表作为后备
+                keySymbolMap = {
+                    "A": "󰌾", "B": "󰎄", "C": "ĉ", "D": "ń", "E": "󰍡",
+                    // 其他默认映射...
+                };
+                displayKeyMap();
+            });
+
+        // 初始化页面
+        document.addEventListener('DOMContentLoaded', () => {
+            displayKeyMap();
+            setupTest();
+        });
+
+        // 显示键值映射表
+        function displayKeyMap() {
+            const container = document.getElementById('keyMapDisplay');
+            for (const [key, value] of Object.entries(keySymbolMap)) {
+                const item = document.createElement('div');
+                item.className = 'key-display bg-gray-700 p-2 rounded-md text-center';
+                item.innerHTML = `<span class="font-bold">${key}</span> → <span>${value}</span>`;
+                container.appendChild(item);
+            }
+        }
+
+        // 设置测试功能
+        function setupTest() {
+            const testInput = document.getElementById('testInput');
+            const startBtn = document.getElementById('startTest');
+            const resetBtn = document.getElementById('resetTest');
+            const resultsContainer = document.getElementById('testResults');
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+
+            let testActive = false;
+            let testChars = [];
+            let currentIndex = 0;
+            let correctCount = 0;
+
+            // 添加回车键触发功能
+            testInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !testActive) {
+                    startBtn.click();
+                }
+            });
+
+            startBtn.addEventListener('click', () => {
+                if (!testActive) {
+                    testChars = testInput.value.split('');
+                    if (testChars.length === 0) {
+                        alert('请输入测试字符');
+                        return;
+                    }
+                    testActive = true;
+                    currentIndex = 0;
+                    correctCount = 0;
+                    resultsContainer.innerHTML = '';
+                    progressBar.classList.remove('w-full');
+                    progressBar.style.width = '0%';
+                    progressText.textContent = `0/${testChars.length}`;
+                    processNextChar();
+                    testInput.disabled = true;
+                    progressBar.style.width = '0%';
+                    progressText.textContent = `0/${testChars.length}`;
+                    processNextChar();
+                }
+            });
+
+            resetBtn.addEventListener('click', () => {
+                testActive = false;
+                testChars = [];
+                currentIndex = 0;
+                correctCount = 0;
+                progressBar.classList.remove('w-full');
+                progressBar.style.width = '0%';
+                progressText.textContent = `0/0`;
+                startBtn.classList.remove('bg-yellow-600');
+                startBtn.classList.add('bg-blue-600');
+                testInput.disabled = false;
+                progressBar.style.width = '0%';
+                progressText.textContent = `0/0`;
+            });
+
+            function processNextChar() {
+                if (currentIndex >= testChars.length) {
+                    testActive = false;
+                    startBtn.textContent = '开始测试';
+                    startBtn.classList.remove('bg-yellow-600');
+                    startBtn.classList.add('bg-blue-600');
+                    testInput.disabled = false;
+                    
+                    // 显示最终结果
+                    const resultItem = document.createElement('div');
+                    resultItem.className = 'bg-gray-700 p-3 rounded-md';
+                    resultItem.innerHTML = `
+                        <div class="font-bold text-lg">测试完成</div>
+                        <div>正确率: ${Math.round((correctCount / testChars.length) * 100)}%</div>
+                        <div>正确: ${correctCount} / 总数: ${testChars.length}</div>
+                    `;
+                    resultsContainer.appendChild(resultItem);
+                    return;
+                }
+
+                const char = testChars[currentIndex];
+                const expectedSymbol = keySymbolMap[char] || '无映射';
+                
+                // 显示当前测试结果
+                const resultItem = document.createElement('div');
+                resultItem.className = 'bg-gray-700 p-2 rounded-md';
+                resultItem.innerHTML = `
+                    <div><span class="font-bold">${char}</span> → <span>${expectedSymbol}</span></div>
+                `;
+                resultsContainer.appendChild(resultItem);
+                
+                // 更新进度
+                currentIndex++;
+                if (expectedSymbol !== '无映射') {
+                    correctCount++;
+                }
+                const progress = (currentIndex / testChars.length) * 100;
+                progressBar.style.width = `${progress}%`;
+                progressText.textContent = `${currentIndex}/${testChars.length}`;
+                
+                // 滚动到最新结果
+                resultsContainer.scrollTop = resultsContainer.scrollHeight;
+                
+                // 处理下一个字符
+                setTimeout(processNextChar, 200);
+            }
+        }
+    </script>
+</body>
+</html>

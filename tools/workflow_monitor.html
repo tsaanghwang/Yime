@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>音元系统工作流监控</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@3.9.4/dist/full.css" rel="stylesheet">
+    <style>
+        .workflow-line {
+            position: relative;
+            height: 2px;
+            background-color: #e5e7eb;
+            margin: 20px 0;
+        }
+        .workflow-line::after {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: 0;
+            width: 100%;
+            height: 10px;
+            background: linear-gradient(90deg, #3b82f6 0%, #10b981 100%);
+            transform-origin: left;
+            transform: scaleX(0);
+            transition: transform 0.5s ease;
+        }
+        .workflow-line.active::after {
+            transform: scaleX(1);
+        }
+        .log-entry {
+            transition: all 0.3s ease;
+        }
+        .log-entry:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        #progress-bar {
+            width: var(--progress-width, 0%);
+            transition: width 0.3s;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-800">音元系统工作流监控</h1>
+            <div class="flex space-x-4">
+                <button id="refresh-btn" class="btn btn-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    刷新状态
+                </button>
+                <div class="dropdown dropdown-end">
+                    <label tabindex="0" class="btn btn-outline">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+                        </svg>
+                        主题
+                    </label>
+                    <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
+                        <li><a data-set-theme="light">明亮</a></li>
+                        <li><a data-set-theme="dark">暗黑</a></li>
+                        <li><a data-set-theme="cupcake">柔和</a></li>
+                        <li><a data-set-theme="business">商务</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- 工作流状态 -->
+            <div class="bg-white rounded-lg shadow p-6 col-span-2">
+                <h2 class="text-xl font-semibold mb-4 text-gray-700">工作流执行状态</h2>
+                
+                <div class="mb-8">
+                    <div class="flex justify-between mb-2">
+                        <!-- Removed redundant empty progress bar div -->
+                        <span id="progress-percent" class="text-sm font-medium text-primary">0%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2.5">
+                        <div id="progress-bar" class="bg-primary h-2.5 rounded-full"></div>
+                    </div>
+                </div>
+
+                <div class="space-y-8">
+                    <!-- 缺失的finals_classifier步骤 -->
+                    <div class="step-card bg-red-50 border-l-4 border-red-500 p-4 rounded">
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 pt-1">
+                                <div class="flex items-center justify-center h-8 w-8 rounded-full bg-red-100">
+                                    <svg class="h-5 w-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="ml-3">
+                                <h3 class="text-lg font-medium text-red-800">缺失步骤: finals_classifier.py</h3>
+                                <div class="mt-2 text-sm text-red-700">
+                                    <p>当前工作流配置中缺少finals_classifier.py脚本的执行步骤，这可能导致分类功能无法正常工作。</p>
+                                </div>
+                                <div class="mt-4">
+                                    <button id="fix-workflow-btn" class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                                        修复工作流配置
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 现有工作流步骤 -->
+                    <div id="workflow-steps" class="space-y-4">
+                        <!-- 步骤将通过JavaScript动态加载 -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- 执行日志 -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <h2 class="text-xl font-semibold mb-4 text-gray-700">执行日志</h2>
+                <div class="space-y-2" id="execution-logs">
+                    <!-- 日志条目将通过JavaScript动态加载 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 主题切换
+        document.querySelectorAll('[data-set-theme]').forEach(el => {
+            el.addEventListener('click', () => {
+                const theme = el.getAttribute('data-set-theme');
+                document.documentElement.setAttribute('data-theme', theme);
+                localStorage.setItem('theme', theme);
+            });
+        });
+
+        // 加载保存的主题
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+
+        // 模拟工作流数据
+        const workflowData = {
+            steps: [
+                {
+                    script: "finals_classifier.py",
+                    status: "missing",
+                    description: "音元分类器，生成classified_finals.json",
+                    input: "待确认",
+                    output: "internal_data/classified_finals.json"
+                },
+                {
+                    script: "pianyin_analyzer.py",
+                    status: "pending",
+                    description: "干音分析，生成音元序列",
+                    input: "internal_data/classified_finals.json",
+                    output: "internal_data/pianyin_analyzer.json"
+                },
+                {
+                    script: "pianyin_counter.py",
+                    status: "pending",
+                    description: "统计音标和片音出现频率",
+                    input: "internal_data/pianyin_analyzer.json",
+                    output: "internal_data/pianyin_counter.json"
+                },
+                {
+                    script: "yinyuan_pianyin_mapping.py",
+                    status: "pending",
+                    description: "建立音元到片音的映射关系",
+                    input: "internal_data/pianyin_counter.json",
+                    output: "internal_data/yinyuan_pianyin_mapping.json"
+                }
+            ],
+            logs: [
+                {
+                    time: new Date().toISOString(),
+                    level: "error",
+                    message: "工作流配置中缺少finals_classifier.py步骤"
+                },
+                {
+                    time: new Date().toISOString(),
+                    level: "info",
+                    message: "加载了3个工作流步骤"
+                }
+            ]
+        };
+
+        // 渲染工作流步骤
+        function renderWorkflowSteps() {
+            const container = document.getElementById('workflow-steps');
+            container.innerHTML = '';
+            
+            workflowData.steps.forEach((step, index) => {
+                if (step.status === 'missing') return;
+                
+                const stepEl = document.createElement('div');
+                stepEl.className = `step-card bg-white border rounded-lg p-4 shadow-sm ${step.status === 'completed' ? 'border-green-500' : step.status === 'failed' ? 'border-red-500' : 'border-gray-200'}`;
+                
+                stepEl.innerHTML = `
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 pt-1">
+                            <div class="flex items-center justify-center h-8 w-8 rounded-full ${step.status === 'completed' ? 'bg-green-100' : step.status === 'failed' ? 'bg-red-100' : 'bg-blue-100'}">
+                                <svg class="h-5 w-5 ${step.status === 'completed' ? 'text-green-500' : step.status === 'failed' ? 'text-red-500' : 'text-blue-500'}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    ${step.status === 'completed' ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />' : 
+                                    step.status === 'failed' ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />' :
+                                    '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />'}
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="ml-3 flex-1">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-lg font-medium ${step.status === 'completed' ? 'text-green-800' : step.status === 'failed' ? 'text-red-800' : 'text-gray-800'}">
+                                    ${step.script}
+                                </h3>
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${step.status === 'completed' ? 'bg-green-100 text-green-800' : step.status === 'failed' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800'}">
+                                    ${step.status === 'completed' ? '已完成' : step.status === 'failed' ? '失败' : '待执行'}
+                                </span>
+                            </div>
+                            <div class="mt-1 text-sm text-gray-600">
+                                <p>${step.description}</p>
+                            </div>
+                            <div class="mt-2 grid grid-cols-2 gap-2 text-sm">
+                                <div>
+                                    <span class="font-medium text-gray-500">输入:</span>
+                                    <span class="ml-1 text-gray-700">${step.input}</span>
+                                </div>
+                                <div>
+                                    <span class="font-medium text-gray-500">输出:</span>
+                                    <span class="ml-1 text-gray-700">${step.output}</span>
+                                </div>
+                            </div>
+                            ${step.status === 'failed' ? `
+                            <div class="mt-2 text-sm text-red-600">
+                                <p>错误: ${step.error || '未知错误'}</p>
+                            </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(stepEl);
+            });
+            
+            // 更新进度条
+            document.getElementById('progress-percent').textContent = `${progress}%`;
+            document.getElementById('progress-bar').style.setProperty('--progress-width', `${progress}%`);
+        }
+            
+        document.getElementById('progress-percent').textContent = `${progress}%`;
+        document.getElementById('progress-bar').style.width = `${progress}%`;
+
+        // 渲染日志
+        function renderLogs() {
+            const container = document.getElementById('execution-logs');
+            container.innerHTML = '';
+            
+            workflowData.logs.forEach(log => {
+                const logEl = document.createElement('div');
+                logEl.className = `log-entry p-3 rounded ${log.level === 'error' ? 'bg-red-50 text-red-800' : log.level === 'warning' ? 'bg-yellow-50 text-yellow-800' : 'bg-blue-50 text-blue-800'}`;
+                
+                logEl.innerHTML = `
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 pt-0.5">
+                            <svg class="h-4 w-4 ${log.level === 'error' ? 'text-red-500' : log.level === 'warning' ? 'text-yellow-500' : 'text-blue-500'}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                ${log.level === 'error' ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />' : 
+                                log.level === 'warning' ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />' :
+                                '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />'}
+                            </svg>
+                        </div>
+                        <div class="ml-2 flex-1">
+                            <div class="text-sm">
+                                <span class="font-medium">${new Date(log.time).toLocaleString()}</span>
+                                <span class="ml-2">${log.message}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                container.prepend(logEl);
+            });
+        }
+
+        // 修复工作流按钮
+        document.getElementById('fix-workflow-btn').addEventListener('click', () => {
+            // 这里应该发送请求到后端实际修复工作流配置
+            workflowData.steps.find(s => s.script === 'finals_classifier.py').status = 'pending';
+            workflowData.logs.push({
+                time: new Date().toISOString(),
+                level: 'info',
+                message: '已添加finals_classifier.py到工作流配置'
+            });
+            
+            renderWorkflowSteps();
+            renderLogs();
+            
+            // 显示成功提示
+            alert('工作流配置已更新，请重新运行orchestrator.py');
+        });
+
+        // 刷新按钮
+        document.getElementById('refresh-btn').addEventListener('click', () => {
+            // 这里应该发送请求到后端获取最新状态
+            workflowData.logs.push({
+                time: new Date().toISOString(),
+                level: 'info',
+                message: '刷新工作流状态'
+            });
+            
+            renderLogs();
+        });
+
+        // 初始渲染
+        renderWorkflowSteps();
+        renderLogs();
+    </script>
+</body>
+</html>

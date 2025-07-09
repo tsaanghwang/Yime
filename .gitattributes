@@ -1,0 +1,2 @@
+tatus filter=lfs diff=lfs merge=lfs -text
+internal_data/pinyin_source_db/source_pinyin.db filter=lfs diff=lfs merge=lfs -text

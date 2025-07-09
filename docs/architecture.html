@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>音元输入法 - 系统架构</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@3.9.4/dist/full.css" rel="stylesheet" type="text/css" />
+</head>
+<body class="min-h-screen bg-base-100 text-base-content">
+    <div class="navbar bg-base-200">
+        <div class="navbar-start">
+            <div class="dropdown">
+                <label tabindex="0" class="btn btn-ghost lg:hidden">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" /></svg>
+                </label>
+                <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
+                    <li><a href="index.html">首页</a></li>
+                    <li><a href="overview.html">项目概述</a></li>
+                    <li><a href="quickstart.html">快速开始</a></li>
+                    <li><a class="active" href="architecture.html">系统架构</a></li>
+                    <li><a href="api.html">API文档</a></li>
+                    <li><a href="configuration.html">配置说明</a></li>
+                    <li><a href="development.html">开发指南</a></li>
+                    <li><a href="manual.html">使用手册</a></li>
+                </ul>
+            </div>
+            <a class="btn btn-ghost normal-case text-xl" href="index.html">音元输入法</a>
+        </div>
+        <div class="navbar-center hidden lg:flex">
+            <ul class="menu menu-horizontal px-1">
+                <li><a href="index.html">首页</a></li>
+                <li><a href="overview.html">项目概述</a></li>
+                <li><a href="quickstart.html">快速开始</a></li>
+                <li><a class="active" href="architecture.html">系统架构</a></li>
+                <li><a href="api.html">API文档</a></li>
+                <li><a href="configuration.html">配置说明</a></li>
+                <li><a href="development.html">开发指南</a></li>
+                <li><a href="manual.html">使用手册</a></li>
+            </ul>
+        </div>
+        <div class="navbar-end">
+            <a href="https://gitcode.net/2302_77644309/Yinyuanxitong" class="btn btn-ghost">项目来源</a>
+        </div>
+    </div>
+
+    <div class="container mx-auto px-4 py-8">
+        <div class="prose max-w-none">
+            <h1 class="text-4xl font-bold mb-6">音元输入法系统架构</h1>
+            
+            <div class="alert alert-info mb-8">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <span>音元输入法采用分层架构设计，核心引擎与前端界面分离</span>
+            </div>
+
+            <h2 class="text-2xl font-bold mt-8 mb-4">目录结构</h2>
+            
+            <div class="mockup-code mb-8">
+                <pre><code>Yinyuanxitong/
+├── pinyin/            # 核心拼音处理模块
+│   ├── constants.py   # 音元常量定义
+│   ├── yunmu_to_keys.py # 韵母转换核心逻辑
+│   └── ...
+├── tools/             # 辅助工具集
+│   ├── ganyin.py      # 干音分析工具
+│   ├── pianyin.py     # 拼音分析工具
+│   └── ...
+├── src/               # 前端源代码
+│   ├── App.tsx        # 主应用组件
+│   └── ...
+├── tests/             # 测试代码
+│   ├── test_yunmu_to_keys.py
+│   └── ...
+└── docs/              # 项目文档
+    ├── THEORY.md      # 理论文档
+    └── ...</code></pre>
+            </div>
+
+            <h2 class="text-2xl font-bold mt-8 mb-4">模块划分</h2>
+            
+            <div class="grid md:grid-cols-3 gap-6 mb-8">
+                <div class="card bg-base-200 shadow">
+                    <div class="card-body">
+                        <h3 class="card-title">核心引擎</h3>
+                        <ul class="list-disc pl-5">
+                            <li>韵母转换模块</li>
+                            <li>干音分析模块</li>
+                            <li>拼音分析模块</li>
+                            <li>音元映射模块</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="card bg-base-200 shadow">
+                    <div class="card-body">
+                        <h3 class="card-title">前端界面</h3>
+                        <ul class="list-disc pl-5">
+                            <li>输入法主界面</li>
+                            <li>候选词展示</li>
+                            <li>用户配置管理</li>
+                            <li>词库管理</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="card bg-base-200 shadow">
+                    <div class="card-body">
+                        <h3 class="card-title">辅助工具</h3>
+                        <ul class="list-disc pl-5">
+                            <li>数据验证工具</li>
+                            <li>统计分析工具</li>
+                            <li>批量处理工具</li>
+                            <li>测试框架</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <h2 class="text-2xl font-bold mt-8 mb-4">数据流图</h2>
+            
+            <div class="card bg-base-200 shadow mb-8">
+                <div class="card-body">
+                    <div class="mockup-code">
+                        <pre><code>用户输入 → 前端界面 → 核心引擎 → 候选词生成 → 前端展示</code></pre>
+                        <pre><code>          ↓                     ↑</code></pre>
+                        <pre><code>      用户配置           词库数据</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <h2 class="text-2xl font-bold mt-8 mb-4">架构图表</h2>
+            
+            <div class="card bg-base-200 shadow mb-8">
+                <div class="card-body">
+                    <div class="mockup-code">
+                        <pre><code>+----------------+    +----------------+    +----------------+</code></pre>
+                        <pre><code>|                |    |                |    |                |</code></pre>
+                        <pre><code>|   前端界面     |----|   核心引擎     |----|   数据存储     |</code></pre>
+                        <pre><code>|                |    |                |    |                |</code></pre>
+                        <pre><code>+----------------+    +----------------+    +----------------+</code></pre>
+                        <pre><code>       ↑                     ↑                     ↑</code></pre>
+                        <pre><code>       |                     |                     |</code></pre>
+                        <pre><code>+----------------+    +----------------+    +----------------+</code></pre>
+                        <pre><code>|                |    |                |    |                |</code></pre>
+                        <pre><code>|   用户配置     |    |   辅助工具     |    |   测试框架     |</code></pre>
+                        <pre><code>|                |    |                |    |                |</code></pre>
+                        <pre><code>+----------------+    +----------------+    +----------------+</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <h2 class="text-2xl font-bold mt-8 mb-4">设计模式</h2>
+            
+            <div class="overflow-x-auto mb-8">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>设计模式</th>
+                            <th>应用场景</th>
+                            <th>实现模块</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>策略模式</td>
+                            <td>韵母转换规则</td>
+                            <td>yunmu_to_keys.py</td>
+                        </tr>
+                        <tr>
+                            <td>观察者模式</td>
+                            <td>用户配置变更</td>
+                            <td>src/App.tsx</td>
+                        </tr>
+                        <tr>
+                            <td>工厂模式</td>
+                            <td>插件系统</td>
+                            <td>pinyin/rule_plugin.py</td>
+                        </tr>
+                        <tr>
+                            <td>装饰器模式</td>
+                            <td>性能统计</td>
+                            <td>tools/orchestrator.py</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer footer-center p-10 bg-base-200 text-base-content rounded">
+        <div>
+            <p>Copyright © 2025 - 音元输入法开发团队</p>
+            <p>项目来源: <a href="https://gitcode.net/2302_77644309/Yinyuanxitong" class="link">GitCode仓库</a></p>
+        </div>
+    </footer>
+</body>
+</html>

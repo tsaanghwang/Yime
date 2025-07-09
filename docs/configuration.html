@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>音元输入法 - 配置说明</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@3.9.4/dist/full.css" rel="stylesheet" type="text/css" />
+</head>
+<body class="min-h-screen bg-base-100 text-base-content">
+    <div class="navbar bg-base-200">
+        <div class="navbar-start">
+            <div class="dropdown">
+                <label tabindex="0" class="btn btn-ghost lg:hidden">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" /></svg>
+                </label>
+                <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
+                    <li><a href="index.html">首页</a></li>
+                    <li><a href="overview.html">项目概述</a></li>
+                    <li><a href="quickstart.html">快速开始</a></li>
+                    <li><a href="architecture.html">系统架构</a></li>
+                    <li><a href="api.html">API文档</a></li>
+                    <li><a class="active" href="configuration.html">配置说明</a></li>
+                    <li><a href="development.html">开发指南</a></li>
+                    <li><a href="manual.html">使用手册</a></li>
+                </ul>
+            </div>
+            <a class="btn btn-ghost normal-case text-xl" href="index.html">音元输入法</a>
+        </div>
+        <div class="navbar-center hidden lg:flex">
+            <ul class="menu menu-horizontal px-1">
+                <li><a href="index.html">首页</a></li>
+                <li><a href="overview.html">项目概述</a></li>
+                <li><a href="quickstart.html">快速开始</a></li>
+                <li><a href="architecture.html">系统架构</a></li>
+                <li><a href="api.html">API文档</a></li>
+                <li><a class="active" href="configuration.html">配置说明</a></li>
+                <li><a href="development.html">开发指南</a></li>
+                <li><a href="manual.html">使用手册</a></li>
+            </ul>
+        </div>
+        <div class="navbar-end">
+            <a href="https://gitcode.net/2302_77644309/Yinyuanxitong" class="btn btn-ghost">项目来源</a>
+        </div>
+    </div>
+
+    <div class="container mx-auto px-4 py-8">
+        <div class="prose max-w-none">
+            <h1 class="text-4xl font-bold mb-6">音元输入法配置说明</h1>
+            
+            <div class="alert alert-info mb-8">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <span>本页面详细介绍音元输入法的各项配置选项和设置方法</span>
+            </div>
+
+            <h2 class="text-2xl font-bold mt-8 mb-4">配置文件列表</h2>
+            
+            <div class="mockup-code mb-8">
+                <pre><code>Yinyuanxitong/
+├── config/
+│   ├── sort_rules.json      # 候选词排序规则
+│   └── ...
+├── pinyin/
+│   ├── constants.py         # 音元常量定义
+│   ├── yunmu_to_keys.json   # 韵母转换规则
+│   └── ...
+└── src/
+    ├── App.tsx              # 前端配置
+    └── ...</code></pre>
+            </div>
+
+            <h2 class="text-2xl font-bold mt-8 mb-4">核心配置项详解</h2>
+            
+            <div class="card bg-base-200 shadow mb-8">
+                <div class="card-body">
+                    <h3 class="card-title">韵母转换规则 (yunmu_to_keys.json)</h3>
+                    <div class="mockup-code">
+                        <pre><code>{
+  "a": "a",
+  "ai": "l",
+  "an": "j",
+  "ang": "h",
+  "ao": "k",
+  "e": "e",
+  "ei": "z",
+  "en": "f",
+  "eng": "g",
+  "er": "r",
+  "i": "i",
+  "ia": "x",
+  "ian": "m",
+  "iang": "n",
+  "iao": "c",
+  "ie": "p",
+  "in": "b",
+  "ing": "v",
+  "iong": "s",
+  "iu": "q",
+  "o": "o",
+  "ong": "s",
+  "ou": "d",
+  "u": "u",
+  "ua": "x",
+  "uai": "y",
+  "uan": "w",
+  "uang": "n",
+  "ue": "t",
+  "ui": "v",
+  "un": "y",
+  "uo": "o",
+  "v": "v",
+  "ve": "t"
+}</code></pre>
+                    </div>
+                    <p class="mt-4">此配置文件定义了标准拼音韵母到音元键位的映射关系，修改此文件可以调整输入法的核心转换逻辑。</p>
+                </div>
+            </div>
+
+            <div class="card bg-base-200 shadow mb-8">
+                <div class="card-body">
+                    <h3 class="card-title">候选词排序规则 (sort_rules.json)</h3>
+                    <div class="mockup-code">
+                        <pre><code>{
+  "default_weights": {
+    "frequency": 0.6,
+    "length": 0.2,
+    "recent_use": 0.2
+  },
+  "custom_rules": [
+    {
+      "pattern": "^[a-z]+$",
+      "weights": {
+        "frequency": 0.4,
+        "length": 0.3,
+        "recent_use": 0.3
+      }
+    }
+  ]
+}</code></pre>
+                    </div>
+                    <p class="mt-4">此配置文件控制候选词的排序算法，可以调整不同因素的权重来优化输入体验。</p>
+                </div>
+            </div>
+
+            <h2 class="text-2xl font-bold mt-8 mb-4">环境变量</h2>
+            
+            <div class="overflow-x-auto mb-8">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>变量名</th>
+                            <th>默认值</th>
+                            <th>说明</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>YYIM_DEBUG</td>
+                            <td>false</td>
+                            <td>启用调试模式，输出更多日志信息</td>
+                        </tr>
+                        <tr>
+                            <td>YYIM_CACHE_SIZE</td>
+                            <td>1000</td>
+                            <td>设置候选词缓存大小</td>
+                        </tr>
+                        <tr>
+                            <td>YYIM_MAX_SUGGESTIONS</td>
+                            <td>9</td>
+                            <td>设置最大候选词数量</td>
+                        </tr>
+                        <tr>
+                            <td>YYIM_THEME</td>
+                            <td>light</td>
+                            <td>设置界面主题(light/dark)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2 class="text-2xl font-bold mt-8 mb-4">部署配置</h2>
+            
+            <div class="card bg-base-200 shadow mb-8">
+                <div class="card-body">
+                    <h3 class="card-title">生产环境推荐配置</h3>
+                    <div class="mockup-code">
+                        <pre><code># 生产环境推荐配置
+YYIM_DEBUG=false
+YYIM_CACHE_SIZE=5000
+YYIM_MAX_SUGGESTIONS=5
+YYIM_THEME=light</code></pre>
+                    </div>
+                    <p class="mt-4">在生产环境中，建议关闭调试模式以提高性能，同时根据实际使用情况调整缓存大小。</p>
+                </div>
+            </div>
+
+            <h2 class="text-2xl font-bold mt-8 mb-4">配置示例</h2>
+            
+            <div class="tabs mb-8">
+                <a class="tab tab-lifted tab-active">开发环境</a>
+                <a class="tab tab-lifted">测试环境</a>
+                <a class="tab tab-lifted">生产环境</a>
+            </div>
+
+            <div class="card bg-base-200 shadow mb-8">
+                <div class="card-body">
+                    <h3 class="card-title">开发环境配置示例</h3>
+                    <div class="mockup-code">
+                        <pre><code># .env.development
+YYIM_DEBUG=true
+YYIM_CACHE_SIZE=1000
+YYIM_MAX_SUGGESTIONS=9
+YYIM_THEME=dark</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer footer-center p-10 bg-base-200 text-base-content rounded">
+        <div>
+            <p>Copyright © 2025 - 音元输入法开发团队</p>
+            <p>项目来源: <a href="https://gitcode.net/2302_77644309/Yinyuanxitong" class="link">GitCode仓库</a></p>
+        </div>
+    </footer>
+</body>
+</html>

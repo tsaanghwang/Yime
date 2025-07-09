@@ -1,0 +1,30 @@
+{
+  "name": "yinyuan-input",
+  "displayName": "音元输入法",
+  "version": "1.0.0",
+  "description": "A phonetic input method for Chinese.",
+  "main": "main.js",
+  "scripts": {
+    "test": "jest",
+    "start": "node main.js"
+  },
+  "keywords": [
+    "input-method",
+    "chinese",
+    "yinyuan"
+  ],
+  "author": "Huang Chang (黄畅)",
+  "license": "ISC",
+  "dependencies": {
+    "chalk": "^5.4.1",
+    "json5": "^2.2.3",
+    "node-gyp": "^11.2.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.1.6",
+    "@types/react-dom": "^19.1.5",
+    "jest": "^29.7.0"
+  }
+}
