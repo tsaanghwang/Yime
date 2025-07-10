@@ -14,7 +14,7 @@
 # - 示例格式："汉字\tpinyin1 pinyin2"
 #
 # 输出格式：
-# - JSON字典，结构为{"pinyin": "汉字1"}
+# - JSON字典，结构为{"pinyin": "汉字"}
 
 import yaml
 import json
