@@ -5,6 +5,25 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "pinyin_to_hanzi_1",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\pinyin\\pinyin_to_hanzi_1.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}\\pinyin",
+            "addSourceRootsToPythonpath": true
+        },
+        {
+            "name": "pinyin_to_hanzi_enhanced",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\pinyin\\pinyin_to_hanzi_enhanced.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}\\pinyin",
+            "addSourceRootsToPythonpath": true,
+            "noDebug": true
+        },
+        {
             "name": "merge_pinyin",
             "type": "python",
             "request": "launch",
