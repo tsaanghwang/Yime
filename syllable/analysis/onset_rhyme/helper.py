@@ -53,8 +53,13 @@ class OnsetRhymeAnalysisHelper:
 
         if self._is_zero_onset(base):
             return "'", base + tone
+
+        # 检查双字母声母 (zh/ch/sh)
+        if len(base) >= 2 and base[:2] in {'zh', 'ch', 'sh'}:
+            return base[:2], base[2:] + tone if len(base) > 2 else tone
         elif len(base) > 0:
             return base[0], base[1:] + tone if len(base) > 1 else tone
+
         return '', tone
 
     def perform_analysis(self, syllable):
