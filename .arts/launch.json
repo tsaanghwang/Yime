@@ -5,6 +5,25 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "actual_onset_rhyme",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\syllable\\analysis\\onset_rhyme\\actual_onset_rhyme.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}\\syllable\\analysis\\onset_rhyme",
+            "addSourceRootsToPythonpath": true
+        },
+        {
+            "name": "generate_onset_rhyme",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\syllable\\analysis\\onset_rhyme\\generate_onset_rhyme.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}\\syllable\\analysis\\onset_rhyme",
+            "addSourceRootsToPythonpath": true,
+            "noDebug": true
+        },
+        {
             "name": "pinyin_to_hanzi_1",
             "type": "python",
             "request": "launch",
