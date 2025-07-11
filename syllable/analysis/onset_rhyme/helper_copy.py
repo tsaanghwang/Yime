@@ -1,21 +1,35 @@
-# syllable/analysis/onset_rhyme/helper_1.py
+# syllable/analysis/onset_rhyme/helper_copy.py
 
 # 声韵分析
-# 功能：把音节切分成"声母"+"带调韵母（'韵母'+'声调'）"两个部分
+# 功能：分别把两种形式的拼音把音节切分成"声母"+"带调韵母（'韵母'+'声调'）"两个部分
 #
 # 处理流程：
-# 1. 读取JSON文件，析出标准拼音并把音节切分成"声母"+"带调韵母（'韵母'+'声调'）"两个部分
+# 1. 读取JSON文件，分别把两种形式的拼音切分成"声母"+"带调韵母（'韵母'+'声调'）"两个部分
 # 2. a/o/e开头的音节（零声母音节）用隔音符号"'"作为键，用除声母外的部分（'韵母'+'声调'）作为值
 # 3. 非零声母音节用声母作为键，用除声母外的部分（'韵母'+'声调'）作为值
 # 4. 零声母按韵母首字母排序，非零声母按拼音首字母排序，带调韵母按韵母首字母排序，然后按调类排序
 # 5. 将最终字典以JSON格式保存到指定文件中
 #
-# 输入文件格式要求：
-# - JSON字典，结构为{"pinyin": "汉字"}
-# - 路径：syllable\analysis\onset_rhyme\pinyin_to_single_hanzi.json
+# 输入文件格式：
+# - JSON字典，结构为{"数字标调拼音": "调号标调拼音"}
+# - 路径：syllable\analysis\onset_rhyme\actual_pinyin.json
 #
 # 输出格式：
-# - JSON字典，结构示例：{"b": ["a1", "a2", ...], "c": [...]}
+# - JSON字典，结构示例：
+"""
+{
+    "b": {
+        "a1": "ā",
+        "a2": "á", 
+        ...
+    },
+    "c": {
+        ...
+    },
+    "ch": {
+        ...
+    }
+"""
 # - 路径：syllable\analysis\onset_rhyme\onset_rhyme.json
 
 # syllable/analysis/onset_rhyme/helper.py
