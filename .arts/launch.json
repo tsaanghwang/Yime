@@ -5,6 +5,25 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "onset_rhyme_analyzer",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\syllable\\analysis\\onset_rhyme\\onset_rhyme_analyzer.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}\\syllable\\analysis\\onset_rhyme",
+            "addSourceRootsToPythonpath": true
+        },
+        {
+            "name": "reverse_key_value_pairs",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\syllable\\analysis\\onset_rhyme\\reverse_key_value_pairs.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}\\syllable\\analysis\\onset_rhyme",
+            "addSourceRootsToPythonpath": true,
+            "noDebug": true
+        },
+        {
             "name": "pinyin_normalizer",
             "type": "python",
             "request": "launch",
