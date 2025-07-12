@@ -12,7 +12,7 @@ class OnsetRhymeAnalyzer(SyllableAnalyzerStrategy):
         return {'onset': 'b', 'rhyme': ['a', 'n']}
 
 
-class SegmentAnalyzer(SyllableAnalyzerStrategy):
+class SliceAnalyzer(SyllableAnalyzerStrategy):
     def analyze(self, syllable):
         # 音段分析法实现
         return {'segments': ['b', 'a', 'n']}
@@ -29,6 +29,6 @@ class Syllable:
         current = self.analyze()
         if isinstance(self._analyzer, OnsetRhymeAnalyzer) and target_format == "segment":
             return OnsetRhymeToSegmentMapper.to_other_format(current)
-        elif isinstance(self._analyzer, SegmentAnalyzer) and target_format == "onset_rhyme":
+        elif isinstance(self._analyzer, SliceAnalyzer) and target_format == "onset_rhyme":
             return SegmentToOnsetRhymeMapper.to_other_format(current)
         return current
