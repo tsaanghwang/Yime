@@ -1,6 +1,6 @@
 # syllable/analysis/onset_rhyme/onset_rhyme_analyzer.py
-from syllable.syllable_analyzer_strategy import SyllableAnalyzerStrategy
 from .helper import OnsetRhymeAnalysisHelper
+from syllable.syllable_analyzer_strategy import SyllableAnalyzerStrategy
 
 
 class OnsetRhymeAnalyzer(SyllableAnalyzerStrategy):
