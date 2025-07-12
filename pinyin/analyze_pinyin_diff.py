@@ -3,7 +3,7 @@ import json
 from collections import defaultdict
 
 def load_data():
-    with open('pinyin/toned_pinyin.json', 'r', encoding='utf-8') as f:
+    with open('pinyin/pinyin_to_hanzi.json', 'r', encoding='utf-8') as f:
         toned_data = json.load(f)
     with open('pinyin/pinyin_to_hanzi.json', 'r', encoding='utf-8') as f:
         pinyin_data = json.load(f)

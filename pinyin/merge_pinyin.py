@@ -43,7 +43,7 @@ def merge_duplicate_pinyin(input_file, output_file):
 
 
 if __name__ == "__main__":
-    input_file = 'pinyin/toned_pinyin.yaml'
+    input_file = 'pinyin/hanzi_pinyin.yaml'
     output_file = 'pinyin/toned_pinyin_merged.yaml'
     merge_duplicate_pinyin(input_file, output_file)
     print(f"合并完成，结果已保存到 {output_file}")

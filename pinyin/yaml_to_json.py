@@ -183,10 +183,14 @@ class YAMLToJSONConverter:
 def main():
     """主函数，处理命令行参数"""
     parser = argparse.ArgumentParser(description='将YAML格式的拼音数据转换为JSON格式')
-    parser.add_argument('yaml_file', nargs='?', default='pinyin/toned_pinyin.yaml',
-                        help='输入的YAML文件路径 (默认: pinyin/toned_pinyin.yaml)')
-    parser.add_argument('json_file', nargs='?', default='pinyin/toned_pinyin.json',
-                        help='输出的JSON文件路径 (默认: pinyin/toned_pinyin.json)')
+    parser.add_argument('yaml_file', nargs='?',
+                        default=os.path.join(os.path.dirname(
+                            __file__), 'hanzi_to_pinyin.yaml'),
+                        help='输入的YAML文件路径 (默认: 同目录下的hanzi_to_pinyin.yaml)')
+    parser.add_argument('json_file', nargs='?',
+                        default=os.path.join(os.path.dirname(
+                            __file__), 'pinyin_to_hanzi.json'),
+                        help='输出的JSON文件路径 (默认: 同目录下的pinyin_to_hanzi.json)')
     parser.add_argument('--verbose', '-v', action='store_true', help='显示详细输出')
 
     args = parser.parse_args()
