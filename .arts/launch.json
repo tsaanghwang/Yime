@@ -5,13 +5,41 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "convert_json_to_json",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\pinyin\\convert_json_to_json.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}\\pinyin",
+            "addSourceRootsToPythonpath": true
+        },
+        {
+            "name": "pinyin_to_single_hanzi",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\syllable\\analysis\\onset_rhyme\\pinyin_to_single_hanzi.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}\\syllable\\analysis\\onset_rhyme",
+            "addSourceRootsToPythonpath": true
+        },
+        {
+            "name": "pinyin_to_single_hanzi",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\pinyin\\pinyin_to_single_hanzi.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}\\pinyin",
+            "addSourceRootsToPythonpath": true
+        },
+        {
             "name": "pinyin_to_hanzi",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}\\pinyin\\pinyin_to_hanzi.py",
             "currentFileConfiguration": false,
             "cwd": "${workspaceFolder}\\pinyin",
-            "addSourceRootsToPythonpath": true
+            "addSourceRootsToPythonpath": true,
+            "noDebug": true
         },
         {
             "name": "onset_rhyme_analyzer",

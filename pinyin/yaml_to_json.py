@@ -189,8 +189,8 @@ def main():
                         help='输入的YAML文件路径 (默认: 同目录下的hanzi_to_pinyin.yaml)')
     parser.add_argument('json_file', nargs='?',
                         default=os.path.join(os.path.dirname(
-                            __file__), 'pinyin_to_hanzi.json'),
-                        help='输出的JSON文件路径 (默认: 同目录下的pinyin_to_hanzi.json)')
+                            __file__), 'hanzi_to_pinyin.json'),
+                        help='输出的JSON文件路径 (默认: 同目录下的hanzi_to_pinyin.json)')
     parser.add_argument('--verbose', '-v', action='store_true', help='显示详细输出')
 
     args = parser.parse_args()

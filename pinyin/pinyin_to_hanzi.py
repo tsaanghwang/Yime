@@ -1,4 +1,4 @@
-# 读取pinyin\hanzi_pinyin.yaml文件数据
+# 读取pinyin\hanzi_to_pinyin.yaml文件数据
 # 创建由带调拼音到汉字的映射字典
 # 1. 保留原yaml文件包含的所有不同的拼音形式
 # 2. 保留每个不同的拼音对应的所有的不同字词
@@ -42,7 +42,7 @@ def convert_yaml_to_json(yaml_file, json_file):
 
 
 if __name__ == "__main__":
-    input_file = os.path.join(os.path.dirname(__file__), "hanzi_pinyin.yaml")
+    input_file = os.path.join(os.path.dirname(__file__), "hanzi_to_pinyin.yaml")
     output_file = os.path.join(os.path.dirname(
         __file__), "pinyin_to_hanzi.json")
 
