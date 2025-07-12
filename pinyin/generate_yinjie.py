@@ -18,7 +18,7 @@ def generate_yinjie():
     # 2. 定义拼音规则
     conventions = {
         "pinyin_notation": "syllable = (initial + final) with a tone",
-        "sorting_rule": "sorted by uppercase letters",
+        "sorting_rule": "sorted by alphabetical sequence",
         "tone_marks": {
             "1": "̄ (high tone)",
             "2": "́ (rising tone)",
@@ -38,7 +38,7 @@ def generate_yinjie():
 
     # 4. 计算统计信息
     statistics = {
-        "syllable_count_by_initial": {k: len(v)//5 for k, v in syllables.items()},
+        "syllable_count_by_first_letter": {k: len(v)//5 for k, v in syllables.items()},
         "total_syllables": sum(len(v) for v in syllables.values()),
         "original_syllables": len(syllables),
         "tone_patterns": 5
