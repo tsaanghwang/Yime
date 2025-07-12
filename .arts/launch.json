@@ -5,6 +5,15 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "pinyin_to_hanzi",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\pinyin\\pinyin_to_hanzi.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}\\pinyin",
+            "addSourceRootsToPythonpath": true
+        },
+        {
             "name": "onset_rhyme_analyzer",
             "type": "python",
             "request": "launch",
@@ -30,7 +39,8 @@
             "program": "${workspaceFolder}\\syllable\\analysis\\onset_rhyme\\pinyin_normalizer.py",
             "currentFileConfiguration": false,
             "cwd": "${workspaceFolder}\\syllable\\analysis\\onset_rhyme",
-            "addSourceRootsToPythonpath": true
+            "addSourceRootsToPythonpath": true,
+            "noDebug": true
         },
         {
             "name": "pinyin_classifier",

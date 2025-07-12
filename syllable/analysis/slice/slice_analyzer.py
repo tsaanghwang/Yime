@@ -1,8 +1,6 @@
 # syllable/analysis/slice/slice_analyzer.py
 from syllable_analyzer_strategy import SyllableAnalyzerStrategy
-
-from .slicer import Slicer
-
+from syllable.analysis.slice.slicer import Slicer
 
 class SliceAnalyzer(SyllableAnalyzerStrategy):
     def __init__(self):
