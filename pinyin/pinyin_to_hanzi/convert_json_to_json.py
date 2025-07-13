@@ -1,5 +1,5 @@
 # 读取pinyin\hanzi_to_pinyin.json文件数据
-# 创建由带调拼音到汉字的映射字典
+# 创建由带调拼音到汉字的映射关系的字典
 # 1. 保留原json文件包含的所有不同的拼音形式
 # 2. 保留每个不同的拼音对应的所有的不同字词
 # 3. 生成字典写入pinyin/pinyin_to_hanzi_temp.json文件
