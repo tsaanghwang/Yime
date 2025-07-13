@@ -122,7 +122,7 @@ if __name__ == "__main__":
     parent_dir = os.path.dirname(script_dir)
     
     # 修正路径 - 直接从脚本所在目录(pinyin)查找文件
-    input_file = os.path.join(script_dir, "hanzi_to_pinyin.yaml")
+    input_file = os.path.join(script_dir, "hanzi_pinyin.yaml")
     output_file = os.path.join(script_dir, "pinyin_to_single_hanzi.json")
 
     print(f"正在从 {input_file} 转换数据...")

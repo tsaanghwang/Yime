@@ -5,6 +5,15 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "remove_percent",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\pinyin\\hanzi_pinyin\\remove_percent.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}\\pinyin\\hanzi_pinyin",
+            "addSourceRootsToPythonpath": true
+        },
+        {
             "name": "convert_json_to_json",
             "type": "python",
             "request": "launch",
