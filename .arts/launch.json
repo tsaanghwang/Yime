@@ -5,13 +5,32 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "merge_duplicate_keys",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\pinyin\\hanzi_pinyin\\merge_duplicate_keys.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}\\pinyin\\hanzi_pinyin",
+            "addSourceRootsToPythonpath": true
+        },
+        {
+            "name": "split_yaml",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\pinyin\\hanzi_pinyin\\split_yaml.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}\\pinyin\\hanzi_pinyin",
+            "addSourceRootsToPythonpath": true
+        },
+        {
             "name": "remove_percent",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}\\pinyin\\hanzi_pinyin\\remove_percent.py",
             "currentFileConfiguration": false,
             "cwd": "${workspaceFolder}\\pinyin\\hanzi_pinyin",
-            "addSourceRootsToPythonpath": true
+            "addSourceRootsToPythonpath": true,
+            "noDebug": true
         },
         {
             "name": "convert_json_to_json",

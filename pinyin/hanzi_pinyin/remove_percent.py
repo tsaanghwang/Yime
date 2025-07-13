@@ -1,3 +1,4 @@
+import re
 import os
 
 
@@ -5,35 +6,33 @@ def remove_percent_and_save(input_file, output_file):
     with open(input_file, 'r', encoding='utf-8') as f:
         lines = f.readlines()
 
-    removed_count = 0
-
+    original_count = len(lines)
     processed_lines = []
+    removed_count = 0
+    no_tone_count = 0
+
+    # 优化后的百分号匹配模式，精确匹配行尾
+    percent_pattern = re.compile(r'\s*\d+\.?\d*%$')
+
     for line in lines:
-        line = line.strip()
-        if not line:
-            processed_lines.append('\n')
-            continue
+        original_line = line
+        line = line.strip()  # 去除首尾空白
+        new_line = percent_pattern.sub('', line)
 
-        # 分割汉字和拼音部分
-        parts = line.split('\t')
-        if len(parts) != 2:
-            processed_lines.append(line + '\n')
-            continue
-
-        character = parts[0].strip()
-        pinyin = parts[1].strip()
-
-        # 删除百分数
-        if '%' in pinyin:
-            pinyin = pinyin.split('%')[0].strip()
+        if new_line != line:  # 只有当行被修改时才处理
             removed_count += 1
-
-        processed_lines.append(f"{character}\t{pinyin}\n")
+            processed_lines.append(new_line + '\n')
+        else:
+            processed_lines.append(original_line)  # 保留原行
 
     with open(output_file, 'w', encoding='utf-8') as f:
         f.writelines(processed_lines)
 
     print(f"共有{removed_count}行行尾的百分数已删除")
+    if no_tone_count > 0:
+        print(f"发现{no_tone_count}行不带数字调号的拼音")
+    else:
+        print("未发现不带数字调号的拼音")
 
 
 if __name__ == "__main__":
