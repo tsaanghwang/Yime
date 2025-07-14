@@ -1,10 +1,10 @@
-# 在pinyin\hanzi_pinyin\danzi_converter.py中：
-# 将pinyin\hanzi_pinyin\danzi_pinyin.yaml转换为pinyin\hanzi_pinyin\danzi_pinyin.json
-# 1.当yaml文件的条目中的汉字不重复时，将键值对存入json文件中，键为汉字，值为拼音列表
-# 2.当yaml文件的条目中的汉字重复时，将键值对存入json文件中，键为汉字，值为拼音列表
-# 3.字典结构：
 """
-{
-    "汉字": ["拼音1", "拼音2", ...],
-}
+    创建由拼音到汉字的映射字典
+
+    数据转换流程：
+    1. 读取JSON文件，解析每行带调拼音
+    2. 检查不带调的拼音并记录
+    3. 构建字典结构：以带调拼音为键，以对应的不同汉字为值
+    4. 按拼音首字母排序
+    5. 将最终字典以JSON格式保存到指定文件
 """
