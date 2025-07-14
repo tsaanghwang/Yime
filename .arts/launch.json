@@ -5,13 +5,33 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "right_click_converter",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\pinyin\\hanzi_pinyin\\right_click_converter.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}\\pinyin\\hanzi_pinyin",
+            "addSourceRootsToPythonpath": true
+        },
+        {
+            "name": "danzi_converter",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\pinyin\\hanzi_pinyin\\danzi_converter.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}\\pinyin\\hanzi_pinyin",
+            "addSourceRootsToPythonpath": true,
+            "noDebug": true
+        },
+        {
             "name": "merge_duplicate_keys",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}\\pinyin\\hanzi_pinyin\\merge_duplicate_keys.py",
             "currentFileConfiguration": false,
             "cwd": "${workspaceFolder}\\pinyin\\hanzi_pinyin",
-            "addSourceRootsToPythonpath": true
+            "addSourceRootsToPythonpath": true,
+            "noDebug": true
         },
         {
             "name": "split_yaml",
@@ -20,7 +40,8 @@
             "program": "${workspaceFolder}\\pinyin\\hanzi_pinyin\\split_yaml.py",
             "currentFileConfiguration": false,
             "cwd": "${workspaceFolder}\\pinyin\\hanzi_pinyin",
-            "addSourceRootsToPythonpath": true
+            "addSourceRootsToPythonpath": true,
+            "noDebug": true
         },
         {
             "name": "remove_percent",

@@ -15,10 +15,17 @@ def merge_duplicate_keys(yaml_data, mode="single-char"):
         for key, value in yaml_data.items():
             if key in merged_data:
                 duplicate_count += 1
-            if isinstance(value, list):
-                merged_data[key].extend(value)
+                # 对于单字模式，只合并键不合并值(拼音)
+                if isinstance(value, list):
+                    merged_data[key].extend(value)
+                else:
+                    merged_data[key].append(value)
             else:
-                merged_data[key].append(value)
+                # 新键，直接添加
+                if isinstance(value, list):
+                    merged_data[key] = value.copy()
+                else:
+                    merged_data[key] = [value]
 
     elif mode == "multi-char":
         for key, value in yaml_data.items():
@@ -99,8 +106,8 @@ def process_file(input_file, output_file, mode="single-char", output_format='jso
 def menu_execute():
     """菜单执行模式，使用预设路径"""
     script_dir = Path(__file__).parent.absolute()
-    input_file = script_dir / "hanzi_pinyin.yaml"
-    output_file = script_dir / "merged_pinyin.json"
+    input_file = script_dir / "danzi_pinyin.json"  # 修改为json格式
+    output_file = script_dir / "duozi_pinyin.json"  # 修改为json格式
 
     print("="*50)
     print("合并重复键工具 - 菜单执行模式")
