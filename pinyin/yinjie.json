@@ -11,7 +11,7 @@
   },
   "conventions": {
     "pinyin_notation": "syllable = (initial + final) with a tone",
-    "sorting_rule": "sorted by uppercase letters",
+    "sorting_rule": "sorted by alphabetical sequence",
     "tone_marks": {
       "1": "̄ (high tone)",
       "2": "́ (rising tone)",
@@ -21,7 +21,7 @@
     }
   },
   "statistics": {
-    "syllable_count_by_initial": {
+    "syllable_count_by_first_letter": {
       "A": 5,
       "B": 16,
       "C": 36,

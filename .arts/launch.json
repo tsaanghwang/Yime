@@ -5,6 +5,186 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "duozi_converter",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\pinyin\\hanzi_pinyin\\duozi_converter.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}\\pinyin\\hanzi_pinyin",
+            "addSourceRootsToPythonpath": true
+        },
+        {
+            "name": "check_yaml_format",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\pinyin\\hanzi_pinyin\\check_yaml_format.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}\\pinyin\\hanzi_pinyin",
+            "addSourceRootsToPythonpath": true
+        },
+        {
+            "name": "right_click_converter",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\pinyin\\hanzi_pinyin\\right_click_converter.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}\\pinyin\\hanzi_pinyin",
+            "addSourceRootsToPythonpath": true
+        },
+        {
+            "name": "danzi_converter",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\pinyin\\hanzi_pinyin\\danzi_converter.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}\\pinyin\\hanzi_pinyin",
+            "addSourceRootsToPythonpath": true,
+            "noDebug": true
+        },
+        {
+            "name": "merge_duplicate_keys",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\pinyin\\hanzi_pinyin\\merge_duplicate_keys.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}\\pinyin\\hanzi_pinyin",
+            "addSourceRootsToPythonpath": true,
+            "noDebug": true
+        },
+        {
+            "name": "split_yaml",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\pinyin\\hanzi_pinyin\\split_yaml.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}\\pinyin\\hanzi_pinyin",
+            "addSourceRootsToPythonpath": true,
+            "noDebug": true
+        },
+        {
+            "name": "remove_percent",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\pinyin\\hanzi_pinyin\\remove_percent.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}\\pinyin\\hanzi_pinyin",
+            "addSourceRootsToPythonpath": true,
+            "noDebug": true
+        },
+        {
+            "name": "convert_json_to_json",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\pinyin\\convert_json_to_json.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}\\pinyin",
+            "addSourceRootsToPythonpath": true
+        },
+        {
+            "name": "pinyin_to_single_hanzi",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\syllable\\analysis\\onset_rhyme\\pinyin_to_single_hanzi.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}\\syllable\\analysis\\onset_rhyme",
+            "addSourceRootsToPythonpath": true
+        },
+        {
+            "name": "pinyin_to_single_hanzi",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\pinyin\\pinyin_to_single_hanzi.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}\\pinyin",
+            "addSourceRootsToPythonpath": true
+        },
+        {
+            "name": "pinyin_to_hanzi",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\pinyin\\pinyin_to_hanzi.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}\\pinyin",
+            "addSourceRootsToPythonpath": true,
+            "noDebug": true
+        },
+        {
+            "name": "onset_rhyme_analyzer",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\syllable\\analysis\\onset_rhyme\\onset_rhyme_analyzer.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}\\syllable\\analysis\\onset_rhyme",
+            "addSourceRootsToPythonpath": true
+        },
+        {
+            "name": "reverse_key_value_pairs",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\syllable\\analysis\\onset_rhyme\\reverse_key_value_pairs.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}\\syllable\\analysis\\onset_rhyme",
+            "addSourceRootsToPythonpath": true,
+            "noDebug": true
+        },
+        {
+            "name": "pinyin_normalizer",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\syllable\\analysis\\onset_rhyme\\pinyin_normalizer.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}\\syllable\\analysis\\onset_rhyme",
+            "addSourceRootsToPythonpath": true,
+            "noDebug": true
+        },
+        {
+            "name": "pinyin_classifier",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\syllable\\analysis\\onset_rhyme\\pinyin_classifier.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}\\syllable\\analysis\\onset_rhyme",
+            "addSourceRootsToPythonpath": true
+        },
+        {
+            "name": "actual_onset_rhyme",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\syllable\\analysis\\onset_rhyme\\actual_onset_rhyme.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}\\syllable\\analysis\\onset_rhyme",
+            "addSourceRootsToPythonpath": true
+        },
+        {
+            "name": "generate_onset_rhyme",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\syllable\\analysis\\onset_rhyme\\generate_onset_rhyme.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}\\syllable\\analysis\\onset_rhyme",
+            "addSourceRootsToPythonpath": true,
+            "noDebug": true
+        },
+        {
+            "name": "pinyin_to_hanzi_1",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\pinyin\\pinyin_to_hanzi_1.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}\\pinyin",
+            "addSourceRootsToPythonpath": true
+        },
+        {
+            "name": "pinyin_to_hanzi_enhanced",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\pinyin\\pinyin_to_hanzi_enhanced.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}\\pinyin",
+            "addSourceRootsToPythonpath": true,
+            "noDebug": true
+        },
+        {
             "name": "merge_pinyin",
             "type": "python",
             "request": "launch",
