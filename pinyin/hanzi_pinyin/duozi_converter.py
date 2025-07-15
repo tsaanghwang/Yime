@@ -143,7 +143,7 @@ def save_as_json(data: dict, output_path: Path) -> None:
 def main():
     """主执行函数"""
     # 定义默认输入输出文件路径
-    default_input = get_absolute_path("duozi_pinyin.yaml")
+    default_input = get_absolute_path("hanzi_pinyin_duozi.yaml")
     default_output = get_absolute_path("duozi_pinyin.json")
 
     try:
