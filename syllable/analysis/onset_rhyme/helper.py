@@ -9,15 +9,16 @@ class OnsetRhymeAnalysisHelper:
     """声韵母分析辅助类，封装复杂分析逻辑"""
 
     def __init__(self):
-        self.input_path = os.path.join(
+        self.input_path = os.path.normpath(os.path.join(
             os.path.dirname(__file__),
-            'actual_pinyin.json'
-        )
+            '..', '..', '..', 'pinyin', 'hanzi_pinyin', 'pinyin_normalized.json'
+        ))
         self.output_path = os.path.join(
             os.path.dirname(__file__),
             'onset_rhyme.json'
         )
 
+    # 其余方法保持不变...
     def _is_zero_onset(self, syllable):
         """判断是否为零声母音节"""
         return syllable[0] in {'a', 'o', 'e'}
