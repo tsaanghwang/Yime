@@ -5,6 +5,15 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "extract_pinyin",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\pinyin\\hanzi_pinyin\\extract_pinyin.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}\\pinyin\\hanzi_pinyin",
+            "addSourceRootsToPythonpath": true
+        },
+        {
             "name": "pinyin_duozi",
             "type": "python",
             "request": "launch",
