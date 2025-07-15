@@ -8,18 +8,11 @@ def extract_pinyin():
     功能：析取由拼音到汉字的映射字典的拼音
 
     数据转换流程：
-    1. 读取JSON文件，析取键值对象的每个音节的拼音
-        -  输入格式示例：
-    {
-        "ai1 yo1": ["哎喲", "唉唷"],
-        "an1 le4 yi3": ["安樂椅"],
-        "an1 na4 ka3 lie4 ni2 na4": ["安娜·卡列尼娜"],
-        ...
-    }
+    1. 读取JSON文件，析取键值对象的拼音
     2. 检查不带调的拼音并作记录
     3. 按拼音首字母排序
     4. 构建字典结构：以带调拼音为键和值（键值相同）
-        -  输出格式示例：
+    -  输出格式示例：
     {
         "a1": "a1",
         "ba1": "ba1",
@@ -30,7 +23,7 @@ def extract_pinyin():
     """
     # 定义输入输出文件路径
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    input_file = os.path.join(script_dir, 'pinyin_duozi.json')
+    input_file = os.path.join(script_dir, 'pinyin_danzi.json')
     output_file = os.path.join(script_dir, 'pinyin_1.json')
 
     # 读取输入JSON文件
