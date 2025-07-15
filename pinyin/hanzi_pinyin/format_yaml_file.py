@@ -80,7 +80,7 @@ def format_yaml_file(input_file, output_file=None):
 
 def main():
     if len(sys.argv) < 2:
-        print("Usage: python check_yaml_format.py <input.yaml> [output.yaml]")
+        print("Usage: python format_yaml_file.py <input.yaml> [output.yaml]")
         print("如果未指定输出文件，将直接修改输入文件")
         sys.exit(1)
 
