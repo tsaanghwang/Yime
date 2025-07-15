@@ -3,15 +3,15 @@ class SyllableFactory:
     def create_syllable(method):
         if method == "onset_rhyme":
             return OnsetRhymeSyllable()
-        elif method == "segment":
-            return SegmentSyllable()
+        elif method == "slice":
+            return SliceSyllable()
 
 class OnsetRhymeSyllable:
     def analyze(self):
         # 声韵母分析实现
         pass
 
-class SegmentSyllable:
+class SliceSyllable:
     def analyze(self):
-        # 音段分析实现
+        # 片音分析实现
         pass
