@@ -38,9 +38,9 @@ def split_yaml(input_file, output_single, output_multi):
 
 if __name__ == "__main__":
     input_file = os.path.join(os.path.dirname(
-        __file__), 'hanzi_to_pinyin.yaml')
+        __file__), 'hanzi_pinyin_v2.yaml')
     output_single = os.path.join(
-        os.path.dirname(__file__), 'danzi_pinyin.yaml')
-    output_multi = os.path.join(os.path.dirname(__file__), 'duozi_pinyin.yaml')
+        os.path.dirname(__file__), 'hanzi_pinyin_danzi.yaml')
+    output_multi = os.path.join(os.path.dirname(__file__), 'hanzi_pinyin_duozi.yaml')
 
     split_yaml(input_file, output_single, output_multi)
