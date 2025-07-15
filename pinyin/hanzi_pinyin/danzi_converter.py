@@ -21,7 +21,7 @@ from pathlib import Path
 
 # 定义绝对路径
 SCRIPT_DIR = Path(__file__).parent
-INPUT_FILE = SCRIPT_DIR / "danzi_pinyin.yaml"
+INPUT_FILE = SCRIPT_DIR / "hanzi_pinyin_danzi.yaml"
 OUTPUT_FILE = SCRIPT_DIR / "danzi_pinyin.json"
 
 

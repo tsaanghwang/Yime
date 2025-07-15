@@ -33,10 +33,10 @@
             "addSourceRootsToPythonpath": true
         },
         {
-            "name": "check_yaml_format",
+            "name": "format_yaml_file",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}\\pinyin\\hanzi_pinyin\\check_yaml_format.py",
+            "program": "${workspaceFolder}\\pinyin\\hanzi_pinyin\\format_yaml_file.py",
             "currentFileConfiguration": false,
             "cwd": "${workspaceFolder}\\pinyin\\hanzi_pinyin",
             "addSourceRootsToPythonpath": true
