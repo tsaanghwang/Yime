@@ -18,7 +18,6 @@ class OnsetRhymeAnalysisHelper:
             'onset_rhyme.json'
         )
 
-    # 其余方法保持不变...
     def _is_zero_onset(self, syllable):
         """判断是否为零声母音节"""
         return syllable[0] in {'a', 'o', 'e'}
