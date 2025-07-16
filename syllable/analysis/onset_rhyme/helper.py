@@ -70,7 +70,7 @@ class OnsetRhymeAnalysisHelper:
                 rhymes = onset_rhyme_map[onset]
                 sorted_rhymes = dict(sorted(rhymes.items(),
                                             key=lambda item: (item[0][0] if item[0] else '',
-                                                              int(item[0][-1]) if item[0] and item[0][-1].isdigit() else 0)))
+                                                            int(item[0][-1]) if item[0] and item[0][-1].isdigit() else 0)))
                 sorted_result[onset] = sorted_rhymes
 
             with open(self.output_path, 'w', encoding='utf-8') as f:
