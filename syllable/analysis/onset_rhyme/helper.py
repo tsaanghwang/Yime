@@ -8,6 +8,45 @@ from collections import defaultdict
 class OnsetRhymeAnalysisHelper:
     """声韵母分析辅助类，封装复杂分析逻辑"""
 
+    # 定义特殊音节映射
+    SPECIAL_SYLLABLES = {
+        "ê1": "ê̄",
+        "ê2": "ế",
+        "ê3": "ê̌",
+        "ê4": "ề",
+        "ê5": "ê",
+        "m1": "m̄",
+        "m2": "ḿ",
+        "m3": "m̌",
+        "m4": "m̀",
+        "m5": "m",
+        "n1": "n̄",
+        "n2": "ń",
+        "n3": "ň",
+        "n4": "ǹ",
+        "n5": "n",
+        "ng1": "n̄g",
+        "ng2": "ńg",
+        "ng3": "ňg",
+        "ng4": "ǹg",
+        "ng5": "ng",
+        "hm1": "hm̄",
+        "hm2": "hḿ",
+        "hm3": "hm̌",
+        "hm4": "hm̀",
+        "hm5": "hm",
+        "hn1": "hn̄",
+        "hn2": "hń",
+        "hn3": "hň",
+        "hn4": "hǹ",
+        "hn5": "hn",
+        "hng1": "hn̄g",
+        "hng2": "hńg",
+        "hng3": "hňg",
+        "hng4": "hǹg",
+        "hng5": "hng"
+    }
+
     def __init__(self):
         self.input_path = os.path.normpath(os.path.join(
             os.path.dirname(__file__),
@@ -20,12 +59,28 @@ class OnsetRhymeAnalysisHelper:
 
     def _is_zero_onset(self, syllable):
         """判断是否为零声母音节"""
-        return syllable[0] in {'a', 'o', 'e'}
+        return syllable[0] in {'a', 'o', 'e', 'ê'}
+
+    def _is_special_syllable(self, syllable):
+        """判断是否为特殊音节"""
+        return syllable in self.SPECIAL_SYLLABLES
 
     def _split_syllable(self, syllable):
         """切分音节为声母和带调韵母"""
         if len(syllable) == 0:
             return '', ''
+
+        # 处理特殊音节
+        if self._is_special_syllable(syllable):
+            if syllable.startswith('h'):
+                # 处理以h开头的特殊音节
+                return 'h', syllable[1:]
+            elif syllable.startswith(('m', 'n', 'ng')):
+                # 处理m/n/ng开头的特殊音节
+                return "'", syllable
+            elif syllable.startswith('ê'):
+                # 处理ê开头的特殊音节
+                return "'", syllable
 
         # 处理带数字声调的情况 (如 'a1', 'ban3')
         tone = syllable[-1] if syllable[-1].isdigit() else ''
