@@ -1,4 +1,4 @@
-# syllable/analysis/onset_rhyme/actual_onset_rhyme.py
+# syllable/analysis/initial_divrhyme/initial_final.py
 import json
 import os
 from collections import defaultdict
@@ -15,17 +15,17 @@ def main():
     # 输入文件路径
     input_path = os.path.join(
         os.path.dirname(__file__),
-        'onset_rhyme.json'
+        'initial_divisional_rhyme.json'
     )
 
     # 输出文件路径
     output_path = os.path.join(
         os.path.dirname(__file__),
-        'actual_onset_rhyme.json'
+        'initial_final.json'
     )
 
     try:
-        # 读取 onset_rhyme.json 文件
+        # 读取 initial_divisional_rhyme.json 文件
         with open(input_path, 'r', encoding='utf-8') as f:
             onset_rhyme_data = json.load(f)
 
@@ -56,13 +56,13 @@ def main():
         # 统计并输出数量
         onset_count = len(result["onset"])
         rhyme_count = len(result["rhyme"])
-        print(f"成功生成 actual_onset_rhyme.json 文件")
+        print(f"成功生成 initial_final.json 文件")
         print(f"声母总数: {onset_count}")
         print(f"韵母总数: {rhyme_count}")
         return True
 
     except Exception as e:
-        print(f"Error processing onset_rhyme data: {e}")
+        print(f"Error processing initial_divrhyme data: {e}")
         return False
 
 

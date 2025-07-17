@@ -1,12 +1,12 @@
 class SyllableFactory:
     @staticmethod
     def create_syllable(method):
-        if method == "onset_rhyme":
-            return OnsetRhymeSyllable()
+        if method == "initial_divisional_rhyme":
+            return InitialDivRhymeSyllable()
         elif method == "slice":
             return SliceSyllable()
 
-class OnsetRhymeSyllable:
+class InitialDivRhymeSyllable:
     def analyze(self):
         # 声韵母分析实现
         pass

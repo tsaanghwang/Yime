@@ -1,11 +1,11 @@
-# syllable/analysis/onset_rhyme/helper.py
+# syllable/analysis/initial_divrhyme/helper.py
 
 import json
 import os
 from collections import defaultdict
 
 
-class OnsetRhymeAnalysisHelper:
+class InitialDivisionalRhymeAnalysisExecutor:
     """声韵母分析辅助类，封装复杂分析逻辑"""
 
     # 定义特殊音节映射
@@ -54,7 +54,7 @@ class OnsetRhymeAnalysisHelper:
         ))
         self.output_path = os.path.join(
             os.path.dirname(__file__),
-            'onset_rhyme.json'
+            'initial_divisional_rhyme.json'
         )
 
     def _is_zero_onset(self, syllable):
@@ -143,7 +143,7 @@ class OnsetRhymeAnalysisHelper:
 
 
 if __name__ == "__main__":
-    helper = OnsetRhymeAnalysisHelper()
+    helper = InitialDivisionalRhymeAnalysisExecutor()
     if helper.analyze_pinyin_file():
         print("声韵分析完成，结果已保存到:", helper.output_path)
     else:

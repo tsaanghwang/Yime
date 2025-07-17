@@ -1,4 +1,4 @@
-# syllable/analysis/onset_rhyme/pinyin_validator.py
+# syllable/analysis/initial_divrhyme/pinyin_validator.py
 import json
 from typing import Dict, List, Tuple, Optional, Union
 from collections import defaultdict

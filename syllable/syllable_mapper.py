@@ -6,7 +6,7 @@ class SyllableMapper:
         pass
 
 
-class OnsetRhymeToSliceMapper(SyllableMapper):
+class InitialDivRhymeToSliceMapper(SyllableMapper):
     @staticmethod
     def to_other_format(onset_rhyme_result):
         # 将声母韵母声调分析结果转换为片音分析格式
@@ -17,7 +17,7 @@ class OnsetRhymeToSliceMapper(SyllableMapper):
         return {'slices': slices}
 
 
-class SliceToOnsetRhymeMapper(SyllableMapper):
+class SliceToInitialDivRhymeMapper(SyllableMapper):
     @staticmethod
     def to_other_format(slice_result):
         # 将片音分析结果转换为声母韵母声调格式
