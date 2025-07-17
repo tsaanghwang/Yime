@@ -1,5 +1,5 @@
 """
-在syllable\analysis\onset_rhyme\helper.py中，不以"h"开头的SPECIAL_SYLLABLES的分析结果，目前结果如下：
+在syllable\analysis\initial_divrhyme\helper.py中，不以"h"开头的SPECIAL_SYLLABLES的分析结果，目前结果如下：
     "'": {
     "m1": "̄",
     "m2": "́",

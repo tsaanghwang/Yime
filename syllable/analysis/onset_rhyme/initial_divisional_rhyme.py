@@ -1,5 +1,5 @@
-# syllable/analysis/onset_rhyme/generate_onset_rhyme.py
-from helper import OnsetRhymeAnalysisHelper
+# syllable/analysis/initial_divrhyme/initial_divisional_rhyme.py
+from helper import InitialDivisionalRhymeAnalysisExecutor
 import json
 import argparse
 import logging
@@ -13,7 +13,7 @@ def setup_logging():
 
 
 def main(input_path=None, output_path=None):
-    helper = OnsetRhymeAnalysisHelper()
+    helper = InitialDivisionalRhymeAnalysisExecutor()
     if input_path:
         helper.input_path = input_path
     if output_path:
@@ -33,7 +33,7 @@ def main(input_path=None, output_path=None):
         except Exception as e:
             logging.error(f"读取结果文件失败: {e}")
     else:
-        logging.error("生成 onset_rhyme.json 文件失败")
+        logging.error("生成 initial_divisional_rhyme.json 文件失败")
 
 
 if __name__ == "__main__":

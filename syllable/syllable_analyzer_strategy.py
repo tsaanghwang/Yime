@@ -1,4 +1,4 @@
-from syllable_mapper import OnsetRhymeToSliceMapper, SliceToOnsetRhymeMapper
+from syllable_mapper import InitialDivRhymeToSliceMapper, SliceToInitialDivRhymeMapper
 
 
 class SyllableAnalyzerStrategy:
@@ -6,7 +6,7 @@ class SyllableAnalyzerStrategy:
         raise NotImplementedError("Subclasses should implement this!")
 
 
-class OnsetRhymeAnalyzer(SyllableAnalyzerStrategy):
+class InitialDivisionalRhymeAnalyzer(SyllableAnalyzerStrategy):
     def analyze(self, syllable):
         # 声韵分析法实现
         return {'onset': 'b', 'rhyme': ['a', 'n']}
@@ -27,8 +27,8 @@ class Syllable:
 
     def convert_to(self, target_format):
         current = self.analyze()
-        if isinstance(self._analyzer, OnsetRhymeAnalyzer) and target_format == "slice":
-            return OnsetRhymeToSliceMapper.to_other_format(current)
-        elif isinstance(self._analyzer, SliceAnalyzer) and target_format == "onset_rhyme":
-            return SliceToOnsetRhymeMapper.to_other_format(current)
+        if isinstance(self._analyzer, InitialDivisionalRhymeAnalyzer) and target_format == "slice":
+            return InitialDivRhymeToSliceMapper.to_other_format(current)
+        elif isinstance(self._analyzer, SliceAnalyzer) and target_format == "initial_division_rhyme":
+            return SliceToInitialDivRhymeMapper.to_other_format(current)
         return current
