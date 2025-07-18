@@ -1,39 +1,21 @@
 """
-在syllable\analysis\initial_divrhyme\helper.py中，不以"h"开头的SPECIAL_SYLLABLES的分析结果，目前结果如下：
-    "'": {
-    "m1": "̄",
-    "m2": "́",
-    "m3": "̌",
-    "m4": "̀",
-    "m5": "",
-    "n1": "̄",
-    "ng1": "̄g",
-    "n2": "́",
-    "ng2": "́g",
-    "n3": "̌",
-    "ng3": "̌g",
-    "n4": "̀",
-    "ng4": "̀g",
-    "n5": "",
-    "ng5": "g"
+在syllable\analysis\initial_divrhyme\initial_final.py中，修改代码：
+1. 对initial，以键为值；
+2. 对divrhyme的键和值，分别析出divrhyme的键和值的调，
+例如，对    "ang3": "ǎng" 分别析出"3":"̌"，得到 "ang": "ang"；
+把生成的字典结构改成如下结构：
+{
+  "initials": {
+    {
+      "b": "b",
+      ...
+    },
+    {
+      "finals": {
+      "a": "a",
+      ...,
+      "v": "ü",
+    "ve": "üe"
+    ...
     }
-请把这些因因饥饿分析为以"'"为"onset"、以"m"、"n"或"ng"为"rhyme"的音节。要求结果如下：
-
-"'": {
-    "m1": "m̄",
-    "m2": "ḿ",
-    "m3": "m̌",
-    "m4": "m̀",
-    "m5": "m",
-    "n1": "n̄",
-    "n2": "ń",
-    "n3": "ň",
-    "n4": "ǹ",
-    "n5": "n",
-    "ng1": "n̄g",
-    "ng2": "ńg",
-    "ng3": "ňg,
-    "ng4": "ǹg",
-    "ng5": "ng",
-}
 """

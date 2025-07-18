@@ -1,4 +1,4 @@
-# syllable/analysis/initial_divrhyme/helper.py
+# syllable/analysis/initial_divrhyme/analysis_executor.py
 
 import json
 import os
@@ -6,7 +6,7 @@ from collections import defaultdict
 
 
 class InitialDivisionalRhymeAnalysisExecutor:
-    """声韵母分析辅助类，封装复杂分析逻辑"""
+    """声母等韵分析执行类，封装复杂分析逻辑"""
 
     # 定义特殊音节映射
     SPECIAL_SYLLABLES = {
@@ -54,7 +54,7 @@ class InitialDivisionalRhymeAnalysisExecutor:
         ))
         self.output_path = os.path.join(
             os.path.dirname(__file__),
-            'initial_divisional_rhyme.json'
+            'initial_divrhyme.json'
         )
 
     def _is_zero_onset(self, syllable):
@@ -129,7 +129,7 @@ class InitialDivisionalRhymeAnalysisExecutor:
                 rhymes = onset_rhyme_map[onset]
                 sorted_rhymes = dict(sorted(rhymes.items(),
                                             key=lambda item: (item[0][0] if item[0] else '',
-                                                              int(item[0][-1]) if item[0] and item[0][-1].isdigit() else 0)))
+                                                            int(item[0][-1]) if item[0] and item[0][-1].isdigit() else 0)))
                 sorted_result[onset] = sorted_rhymes
 
             with open(self.output_path, 'w', encoding='utf-8') as f:
@@ -143,8 +143,8 @@ class InitialDivisionalRhymeAnalysisExecutor:
 
 
 if __name__ == "__main__":
-    helper = InitialDivisionalRhymeAnalysisExecutor()
-    if helper.analyze_pinyin_file():
-        print("声韵分析完成，结果已保存到:", helper.output_path)
+    analysis_executor = InitialDivisionalRhymeAnalysisExecutor()
+    if analysis_executor.analyze_pinyin_file():
+        print("声韵分析完成，结果已保存到:", analysis_executor.output_path)
     else:
         print("声韵分析失败，请检查输入文件")
