@@ -165,10 +165,10 @@
             "noDebug": true
         },
         {
-            "name": "initial_divisional_rhyme_analyzer",
+            "name": "initial_divrhyme_analyzer",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}\\syllable\\analysis\\initial_divrhyme\\initial_divisional_rhyme_analyzer.py",
+            "program": "${workspaceFolder}\\syllable\\analysis\\initial_divrhyme\\initial_divrhyme_analyzer.py",
             "currentFileConfiguration": false,
             "cwd": "${workspaceFolder}\\syllable\\analysis\\initial_divrhyme",
             "addSourceRootsToPythonpath": true
@@ -215,7 +215,7 @@
             "name": "initial_divisional_rhyme",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}\\syllable\\analysis\\initial_divrhyme\\initial_divisional_rhyme.py",
+            "program": "${workspaceFolder}\\syllable\\analysis\\initial_divrhyme\\initial_divrhyme.py",
             "currentFileConfiguration": false,
             "cwd": "${workspaceFolder}\\syllable\\analysis\\initial_divrhyme",
             "addSourceRootsToPythonpath": true,

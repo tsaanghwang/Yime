@@ -1,5 +1,5 @@
-# syllable/analysis/initial_divrhyme/initial_divisional_rhyme_analyzer.py
-from .helper import InitialDivisionalRhymeAnalysisExecutor
+# syllable/analysis/initial_divrhyme/initial_divrhyme_analyzer.py
+from .analysis_executor import InitialDivisionalRhymeAnalysisExecutor
 from syllable.syllable_analyzer_strategy import SyllableAnalyzerStrategy
 
 

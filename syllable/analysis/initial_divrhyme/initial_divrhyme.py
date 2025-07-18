@@ -1,5 +1,5 @@
-# syllable/analysis/initial_divrhyme/initial_divisional_rhyme.py
-from helper import InitialDivisionalRhymeAnalysisExecutor
+# syllable/analysis/initial_divrhyme/initial_divrhyme.py
+from analysis_executor import InitialDivisionalRhymeAnalysisExecutor
 import json
 import argparse
 import logging
@@ -13,19 +13,19 @@ def setup_logging():
 
 
 def main(input_path=None, output_path=None):
-    helper = InitialDivisionalRhymeAnalysisExecutor()
+    analysis_executor = InitialDivisionalRhymeAnalysisExecutor()
     if input_path:
-        helper.input_path = input_path
+        analysis_executor.input_path = input_path
     if output_path:
-        helper.output_path = output_path
+        analysis_executor.output_path = output_path
 
     logging.info("开始声韵分析...")
-    success = helper.analyze_pinyin_file()
+    success = analysis_executor.analyze_pinyin_file()
 
     if success:
-        logging.info(f"成功生成 {helper.output_path}")
+        logging.info(f"成功生成 {analysis_executor.output_path}")
         try:
-            with open(helper.output_path, 'r', encoding='utf-8') as f:
+            with open(analysis_executor.output_path, 'r', encoding='utf-8') as f:
                 data = json.load(f)
                 logging.info(f"共生成 {len(data)} 个声母条目")
                 for onset, rhymes in list(data.items())[:5]:
@@ -33,7 +33,7 @@ def main(input_path=None, output_path=None):
         except Exception as e:
             logging.error(f"读取结果文件失败: {e}")
     else:
-        logging.error("生成 initial_divisional_rhyme.json 文件失败")
+        logging.error("生成 initial_divrhyme.json 文件失败")
 
 
 if __name__ == "__main__":
