@@ -17,7 +17,7 @@ class PinyinValidator:
                     'hm': 'm', 'hn': 'n', 'hng': 'ng'  # 特殊音节规则
                 }
             },
-            'valid_onsets': ['b', 'p', 'm', 'f', 'd', 't', 'n', 'l', 'g', 'k',
+            'valid_initials': ['b', 'p', 'm', 'f', 'd', 't', 'n', 'l', 'g', 'k',
                              'h', 'j', 'q', 'x', 'zh', 'ch', 'sh', 'r', 'z', 'c', 's'],
             'valid_finals': [...]  # 完整韵母列表可补充
         }
@@ -119,9 +119,9 @@ class PinyinValidator:
             return True
 
         # 检查声母有效性
-        onset = base[:2] if len(base) > 1 and base[:2] in {
+        initial = base[:2] if len(base) > 1 and base[:2] in {
             'zh', 'ch', 'sh'} else base[0]
-        return onset in self.standard_rules['valid_onsets']
+        return initial in self.standard_rules['valid_initials']
 
     def generate_report(self, results: Dict[str, List[Tuple[str, str, Optional[str]]]]) -> str:
         """生成验证报告"""

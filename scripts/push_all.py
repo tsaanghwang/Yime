@@ -40,7 +40,7 @@ def check_branch_status(remote: str, branch: str) -> Tuple[int, int]:
     try:
         # 检查本地领先多少提交
         ahead = subprocess.run(["git", "rev-list", remote + "/" + branch + "..HEAD", "--count"],
-                               capture_output=True, text=True, check=True)
+                            capture_output=True, text=True, check=True)
         # 检查本地落后多少提交
         behind = subprocess.run(["git", "rev-list", "HEAD.." + remote + "/" + branch, "--count"],
                                 capture_output=True, text=True, check=True)

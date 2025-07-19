@@ -8,12 +8,12 @@ class SyllableMapper:
 
 class InitialDivRhymeToSliceMapper(SyllableMapper):
     @staticmethod
-    def to_other_format(onset_rhyme_result):
+    def to_other_format(initial_divrhyme_result):
         # 将声母韵母声调分析结果转换为片音分析格式
         slices = []
-        if onset_rhyme_result['onset']:
-            slices.append(onset_rhyme_result['onset'])
-        slices.extend(onset_rhyme_result['rhyme'])
+        if initial_divrhyme_result['initial']:
+            slices.append(initial_divrhyme_result['initial'])
+        slices.extend(initial_divrhyme_result['divrhyme'])
         return {'slices': slices}
 
 
@@ -21,8 +21,8 @@ class SliceToInitialDivRhymeMapper(SyllableMapper):
     @staticmethod
     def to_other_format(slice_result):
         # 将片音分析结果转换为声母韵母声调格式
-        onset = slice_result['slices'][0] if len(
+        initial = slice_result['slices'][0] if len(
             slice_result['slices']) > 0 else ''
-        rhyme = slice_result['slices'][1:] if len(
+        divrhyme = slice_result['slices'][1:] if len(
             slice_result['slices']) > 1 else []
-        return {'onset': onset, 'rhyme': rhyme}
+        return {'initial': initial, 'divrhyme': divrhyme}

@@ -57,7 +57,7 @@ class InitialDivisionalRhymeAnalysisExecutor:
             'initial_divrhyme.json'
         )
 
-    def _is_zero_onset(self, syllable):
+    def _is_zero_initial(self, syllable):
         """判断是否为零声母音节"""
         return syllable[0] in {'a', 'o', 'e', 'ê'}
 
@@ -84,7 +84,7 @@ class InitialDivisionalRhymeAnalysisExecutor:
         base = syllable[:-1] if tone else syllable
 
         # 检查是否为零声母音节（包括ê）
-        if self._is_zero_onset(base):
+        if self._is_zero_initial(base):
             return "'", base + tone
 
         # 检查双字母声母 (zh/ch/sh)
@@ -106,11 +106,11 @@ class InitialDivisionalRhymeAnalysisExecutor:
             with open(self.input_path, 'r', encoding='utf-8') as f:
                 pinyin_data = json.load(f)
 
-            onset_rhyme_map = defaultdict(dict)
+            initial_divrhyme_map = defaultdict(dict)
 
             for num_pinyin, tone_pinyin in pinyin_data.items():
                 # 处理数字标调拼音
-                onset, rhyme = self._split_syllable(num_pinyin)
+                initial, divrhyme = self._split_syllable(num_pinyin)
 
                 # 处理调号标调拼音 - 特殊处理
                 if self._is_special_syllable(num_pinyin):
@@ -120,17 +120,17 @@ class InitialDivisionalRhymeAnalysisExecutor:
                     # 普通音节按常规处理
                     _, tone_rhyme = self._split_syllable(tone_pinyin)
 
-                onset_rhyme_map[onset][rhyme] = tone_rhyme
+                initial_divrhyme_map[initial][divrhyme] = tone_rhyme
 
             # 排序规则保持不变...
             sorted_result = {}
-            for onset in sorted(onset_rhyme_map.keys(),
+            for initial in sorted(initial_divrhyme_map.keys(),
                                 key=lambda x: (x == "'", x)):
-                rhymes = onset_rhyme_map[onset]
+                rhymes = initial_divrhyme_map[initial]
                 sorted_rhymes = dict(sorted(rhymes.items(),
                                             key=lambda item: (item[0][0] if item[0] else '',
                                                             int(item[0][-1]) if item[0] and item[0][-1].isdigit() else 0)))
-                sorted_result[onset] = sorted_rhymes
+                sorted_result[initial] = sorted_rhymes
 
             with open(self.output_path, 'w', encoding='utf-8') as f:
                 json.dump(sorted_result, f, ensure_ascii=False, indent=2)
