@@ -8,8 +8,8 @@ class SyllableAnalyzerStrategy:
 
 class InitialDivisionalRhymeAnalyzer(SyllableAnalyzerStrategy):
     def analyze(self, syllable):
-        # 声韵分析法实现
-        return {'onset': 'b', 'rhyme': ['a', 'n']}
+        # 声母等韵分析法实现
+        return {'initial': 'b', 'divrhyme': ['a', 'n']}
 
 
 class SliceAnalyzer(SyllableAnalyzerStrategy):
@@ -29,6 +29,6 @@ class Syllable:
         current = self.analyze()
         if isinstance(self._analyzer, InitialDivisionalRhymeAnalyzer) and target_format == "slice":
             return InitialDivRhymeToSliceMapper.to_other_format(current)
-        elif isinstance(self._analyzer, SliceAnalyzer) and target_format == "initial_division_rhyme":
+        elif isinstance(self._analyzer, SliceAnalyzer) and target_format == "initial_divisional_rhyme":
             return SliceToInitialDivRhymeMapper.to_other_format(current)
         return current

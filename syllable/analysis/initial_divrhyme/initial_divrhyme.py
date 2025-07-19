@@ -28,8 +28,8 @@ def main(input_path=None, output_path=None):
             with open(analysis_executor.output_path, 'r', encoding='utf-8') as f:
                 data = json.load(f)
                 logging.info(f"共生成 {len(data)} 个声母条目")
-                for onset, rhymes in list(data.items())[:5]:
-                    logging.info(f"{onset}: 包含 {len(rhymes)} 个韵母")
+                for initial, rhymes in list(data.items())[:5]:
+                    logging.info(f"{initial}: 包含 {len(rhymes)} 个韵母")
         except Exception as e:
             logging.error(f"读取结果文件失败: {e}")
     else:

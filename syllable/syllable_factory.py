@@ -8,7 +8,7 @@ class SyllableFactory:
 
 class InitialDivRhymeSyllable:
     def analyze(self):
-        # 声母等韵分析实现或首音干音分析
+        # 声母等韵分析(首音干音分析)实现
         pass
 
 class SliceSyllable:
