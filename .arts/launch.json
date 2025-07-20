@@ -5,6 +5,15 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "potential_syllable",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\syllable\\analysis\\initial_divrhyme\\potential_syllable.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}\\syllable\\analysis\\initial_divrhyme",
+            "addSourceRootsToPythonpath": true
+        },
+        {
             "name": "pinyin_validator",
             "type": "python",
             "request": "launch",
