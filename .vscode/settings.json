@@ -19,6 +19,7 @@
     "cSpell.words": [
         "abstractmethod",
         "divrhyme",
+        "ganyin",
         "gitcode",
         "hanzi",
         "hńg",
@@ -29,8 +30,11 @@
         "levelname",
         "Pianyin",
         "Putonghua",
+        "shouyin",
         "Unpitched",
+        "Yinjie",
         "yinyuan"
     ],
-    "wolf.disableHotModeWarning": true
+    "wolf.disableHotModeWarning": true,
+    "editor.defaultFormatter": "Metatype.copilot-vscode"
 }

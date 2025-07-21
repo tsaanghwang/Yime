@@ -1,15 +1,4 @@
-# 音元分析流程
-
-<div style="display: flex; justify-content: center;">
-
-```mermaid
-graph TD
-   音元分析流程[音元分析流程] 
-
-```
-
-</div>
-
+"""
 ```mermaid
 graph TD
    subgraph 分析对象["分析对象"]
@@ -145,3 +134,4 @@ graph TD
    干音 --> 音节[音节]
    end
 ```
+"""
