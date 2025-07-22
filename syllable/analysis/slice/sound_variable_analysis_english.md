@@ -4,23 +4,25 @@
 
 **Start**
 
-- Begin the yinyuan(phonetic variable) analysis
+- Begin the yinyuan (phonetic variable) analysis
 
 **Yinjie Analysis**
 
-- Syllables are analyzed into yinyuan sequence
+- Each Yinjie (syllable) is analyzed into a yinyuan sequence
 
 **Shouyin and Ganyin**
 
-- A syllable consists of an shouyin(initial) and a ganyin(divisional rhyme or final with tone)
+- A syllable consists of a shouyin (initial) and a ganyin (final with tone  or divisional rhyme)
   - **Shouyin**
-    - Composed of an shouyin tone and an shouyin quality
-      - The shouyin tone is the tonal segment connected to the shouyin quality
+    - Composed of a shoudiao and a shouzhi
+      - The shoudiao is the tonal segment connected to the shouzhi
       - The shouyin is represented by unpitched sound
   - **Ganyin**
     - Composed of a ganyin tone and a final
       - The ganyin tone is the tonal segment connected to the final
       - The ganyin is represented by sequences of pitched sound
+  - **Yinyuan**
+    - The yinyuan is the set of unpitched and pitched sounds that make up all syllables
 
 **Ganyin Classification**
 
@@ -28,38 +30,38 @@
   - **Tri-quality Ganyin**
     - Composed of a ganyin tone and a tri-quality final
       - The tri-quality final consists of a medial, nucleus, and coda
-      - The ganyin tone is divided into onset tone, main tone, and coda tone
+      - The ganyin tone is divided into second tone, main tone, and coda tone
       - Onset tone and medial form the onset sound
       - Main tone and nucleus form the main sound
-      - Coda tone and coda form the coda sound
+      - Modiao and coda form the coda sound
   - **Front Long Ganyin**
     - Composed of a ganyin tone and a front long final
     - The front long final consists of a nucleus and coda
     - The ganyin tone is divided into medial tone and coda tone
-      - Medial tone and nucleus form the medial sound
-      - Medial tone is further divided into onset tone and main tone
+      - Hudiao and nucleus form the medial sound
+      - Hudiao is further divided into second tone and main tone
       - The nucleus is divided into onset quality and main quality (anterior and posterior parts of the nucleus)
       - Onset tone and onset quality form the onset sound
       - Main tone and main quality form the main sound
-      - Coda tone and coda form the coda sound
+      - Modiao and coda form the coda sound
   - **Back Long Ganyin**
     - Composed of a ganyin tone and a back long final
     - The back long final consists of a medial and a nucleus
-    - The ganyin tone is divided into onset tone and rhyme tone
+    - The ganyin tone is divided into second tone and rhyme tone
       - Onset tone and medial form the onset sound
       - Rhyme tone and nucleus form the rhyme sound
       - Rhyme tone is further divided into main tone and coda tone
       - The nucleus is divided into main quality and coda quality (anterior and posterior parts of the nucleus)
       - Main tone and main quality form the main sound
-      - Coda tone and coda quality form the coda sound
+      - Modiao and coda quality form the coda sound
   - **Single Quality Ganyin**
     - Composed of a ganyin tone and a single quality final
     - The single quality final is represented by the nucleus
-    - The ganyin tone is divided into onset tone, main tone, and coda tone
+    - The ganyin tone is divided into second tone, main tone, and coda tone
     - The final is divided into onset quality, main quality, and coda quality (anterior, middle, and posterior parts of the final)
       - Onset tone and onset quality form the onset sound
       - Main tone and main quality form the main sound
-      - Coda tone and coda quality form the coda sound
+      - Modiao and coda quality form the coda sound
 
 **End**
 
@@ -67,25 +69,26 @@
 
 ## Further Directions
 
-**Detailed Explanation of Yinyuan Classification**:
-The yinyuan analysis is a way to analyze syllables into yinyuan sequence.
+**Detailed Explanation of Yinyuan Analysis**:
+In the yinyuan analysis model, each syllable is analyzed into a yinyuan sequence.
+In this model, the syllable is first split into jiediao (tonal layer) and jiezhi (qualitative layer). The tonal layer is further divided into shoudiao (initial tone) and gandiao (rime tone), while the qualitative layer is split into shengmu (onset quality) and yunmu (rime quality). These components are then recombined into huyin (onset+second tone), zhuyin (rime core+rime core tone), and moyin (rime tail+rime tail tone), which finally merge into yunyin (rime complex) to complete the syllable.
 
-In this analysis, a syllable consists of an shouyin and a ganyin. The shouyin is the segment at the beginning of the syllable, composed of an shouyin tone and an shouyin quality. The shouyin tone is the tonal segment connected to the shouyin quality. The ganyin is the segment excluding the shouyin, composed of a ganyin tone and a final. The ganyin tone is the tonal segment connected to the final. Phonetic variables are divided into noise and musical sound. The shouyin is always represented by unpitched sound. The ganyin is always represented by sequences of pitched sound.
+In this analysis, a syllable consists of a shouyin and a ganyin. The shouyin is the segment at the beginning of the syllable, composed of a shoudiao and a shouzhi. The shoudiao is the tonal segment connected to the shouzhi. The ganyin is the segment excluding the shouyin, composed of a ganyin tone and a final. The ganyin tone is the tonal segment connected to the final. Phonetic variables are divided into noise and musical sound. The shouyin is always represented by unpitched sound. The ganyin is always represented by sequences of pitched sound.
 
 Ganyin, according to the structure of the final, is divided into tri-quality ganyin, front long ganyin, back long ganyin, and single quality ganyin. Tri-quality ganyin is composed of a ganyin tone and a tri-quality final. Front long ganyin is composed of a ganyin tone and a front long final. Back long ganyin is composed of a ganyin tone and a back long final. Single quality ganyin is composed of a ganyin tone and a single quality final.
 
-In tri-quality ganyin, the tri-quality final consists of a medial, nucleus, and coda. Correspondingly, the ganyin tone is divided into three segments: the segment connected to the medial, the segment connected to the nucleus, and the segment connected to the coda, abbreviated as onset tone, main tone, and coda tone. Onset tone and medial form the onset sound. Main tone and nucleus form the main sound. Coda tone and coda form the coda sound. The onset sound is simply the second yinyuan in the syllable. The main sound is the most important yinyuan in the syllable. The coda sound is the yinyuan at the end of the syllable.
+In tri-quality ganyin, the tri-quality final consists of a medial, nucleus, and coda. Correspondingly, the ganyin tone is divided into three segments: the segment connected to the medial, the segment connected to the nucleus, and the segment connected to the coda, abbreviated as second tone, main tone, and coda tone. Onset tone and medial form the onset sound. Main tone and nucleus form the main sound. Modiao and coda form the coda sound. The onset sound is simply the second yinyuan in the syllable. The main sound is the most important yinyuan in the syllable. The coda sound is the yinyuan at the end of the syllable.
 
-In front long ganyin, the front long final consists of a nucleus and coda. Correspondingly, the ganyin tone is divided into two segments: the segment connected to the nucleus and the segment connected to the coda, abbreviated as medial tone and coda tone. Medial tone and nucleus form the medial sound. Coda tone and coda form the coda sound. The medial sound is the segment between the shouyin and the coda sound. Since the medial tone corresponds to the onset tone and main tone of the tri-quality ganyin, the medial tone is divided into onset tone and main tone. Correspondingly, the medial sound is divided into onset sound and main sound.
+In front long ganyin, the front long final consists of a nucleus and coda. Correspondingly, the ganyin tone is divided into two segments: the segment connected to the nucleus and the segment connected to the coda, abbreviated as medial tone and coda tone. Hudiao and nucleus form the medial sound. Modiao and coda form the coda sound. The medial sound is the segment between the shouyin and the coda sound. Since the medial tone corresponds to the second tone and main tone of the tri-quality ganyin, the medial tone is divided into second tone and main tone. Correspondingly, the medial sound is divided into onset sound and main sound.
 
-In back long ganyin, the back long final consists of a medial and a nucleus. Correspondingly, the ganyin tone is divided into two segments: the segment connected to the medial and the segment connected to the nucleus, abbreviated as onset tone and rhyme tone. Onset tone and medial form the onset sound. Rhyme tone and nucleus form the rhyme sound. The rhyme sound refers to the segment formed by the rhyme tone and the rhyme base or rhyme body. Since the rhyme tone corresponds to the main tone and coda tone of the tri-quality ganyin, the rhyme tone is divided into main tone and coda tone. Correspondingly, the rhyme sound is divided into main sound and coda sound.
+In back long ganyin, the back long final consists of a medial and a nucleus. Correspondingly, the ganyin tone is divided into two segments: the segment connected to the medial and the segment connected to the nucleus, abbreviated as second tone and rhyme tone. Onset tone and medial form the onset sound. Rhyme tone and nucleus form the rhyme sound. The rhyme sound refers to the segment formed by the rhyme tone and the rhyme base or rhyme body. Since the rhyme tone corresponds to the main tone and coda tone of the tri-quality ganyin, the rhyme tone is divided into main tone and coda tone. Correspondingly, the rhyme sound is divided into main sound and coda sound.
 
-In single quality ganyin, the single quality final is represented by the nucleus. Correspondingly, the ganyin tone is the segment connected to the final, which is the tone of the ganyin. Since the ganyin tone corresponds to the onset tone, main tone, and coda tone of the tri-quality ganyin, the ganyin tone is divided into onset tone, main tone, and coda tone. Correspondingly, the ganyin is divided into onset sound, main sound, and coda sound.
+In single quality ganyin, the single quality final is represented by the nucleus. Correspondingly, the ganyin tone is the segment connected to the final, which is the tone of the ganyin. Since the ganyin tone corresponds to the second tone, main tone, and coda tone of the tri-quality ganyin, the ganyin tone is divided into second tone, main tone, and coda tone. Correspondingly, the ganyin is divided into onset sound, main sound, and coda sound.
 
-**Application Scenarios of the Yinyuan Analysis Method**:
+**Application Scenarios of Yinyuan Analysis**:
 Specific applications of the yinyuan analysis in speech recognition and speech synthesis.
 
-**History and Development of the Yinyuan Analysis Method**:
+**History and Development of Yinyuan Analysis**:
 The development history of the yinyuan analysis.
 
 ### Yinyuan Analysis Process
@@ -94,188 +97,198 @@ The development history of the yinyuan analysis.
 
 ```mermaid
 graph TD
-   PhoneticVariableAnalysisProcess[Yinyuan Analysis Process]
+   YinyuanAnalysisProcess[Yinyuan Analysis Process]
+
 ```
 
 </div>
 
 ```mermaid
 graph TD
-   subgraph AnalysisObject["Analysis Object"]
-   InputSyllable[Yinjie]
+   subgraph PreSegmentationSyllable["SyllableDecompositionReady"]
+   DecomposingSyllable[Syllable]
    end
 
-   subgraph QualityToneLayer["Yinjie Divided into Tone and Quality Layers"]
-   InputSyllable --> SyllableTone[Tone: Yinjie Tone]
-   InputSyllable --> SyllableQuality[Quality: Yinjie Quality]
+   subgraph ExtractToneQuality["Syllable Divided into Tone and Quality Layers"]
+   DecomposingSyllable --> |Extract|SyllabicTone[Tone]
+   DecomposingSyllable --> |Extract|SyllabicQuality[Quality]
    end
 
-   subgraph SyllableToneLayer["Yinjie Tone Divided into Shouyin Tone and Ganyin Tone"]
-   SyllableTone --> InitialTone[Shouyin Tone: Tone of Shouyin]
-   SyllableTone --> DivRhymeTone[Ganyin Tone: Tone of Ganyin]
+   subgraph SyllableToneLayer["Syllabic Tone Divided into Shoudiao and Gandiao"]
+   SyllabicTone --> |Segment|Shoudiao[Shoudiao]
+   SyllabicTone --> |Segment|Gandiao[Gandiao]
    end
 
-   subgraph SyllableQualityLayer["Yinjie Quality Divided into Shouyin and Final"]
-   SyllableQuality --> InitialConsonant[Shouyin: Quality of Shouyin]
-   SyllableQuality --> Final[Final: Quality of Ganyin]
+   subgraph SyllableQualityLayer["Syllabic Quality Divided into Initial and Final"]
+   SyllabicQuality --> |Segment|Initial[Initial]
+   SyllabicQuality --> |Segment|Final[Final]
    end
 
-   subgraph InitialFormation["Shouyin Formed by Shouyin Tone and Shouyin Consonant"]
-   InitialTone --> InputInitial[Shouyin]
-   InitialConsonant --> InputInitial[Shouyin]
+   subgraph ShouyinComposition["Shouyin Composed of Shoudiao and Initial"]
+   Shoudiao --> |Compose|DecomposingShouyin[Shouyin]
+   Initial --> |Compose|DecomposingShouyin[Shouyin]
    end
 
-   subgraph DivRhymeFormation["Ganyin Formed by Ganyin Tone and Final"]
-   DivRhymeTone --> InputDivRhyme[Ganyin]
-   Final --> InputDivRhyme[Ganyin]
+   subgraph GanyinComposition["Ganyin Composed of Gandiao and Final"]
+   Gandiao --> |Compose|DecomposingGanyin[Ganyin]
+   Final --> |Compose|DecomposingGanyin[Ganyin]
    end
 
-   subgraph DivRhymeTypes["Ganyin Divided into Four Types by Final Structure"]
-   InputDivRhyme --> TriQualityDivRhyme[Tri-quality Ganyin]
-   InputDivRhyme --> FrontLongDivRhyme[Front Long Ganyin]
-   InputDivRhyme --> BackLongDivRhyme[Back Long Ganyin]
-   InputDivRhyme --> SingleQualityDivRhyme[Single Quality Ganyin]
+   subgraph GanyinCategories["Ganyin Divided into Four Categories by Final Structure"]
+   DecomposingGanyin --> |Categorize|TriQualityGanyin[Tri-quality Ganyin]
+   DecomposingGanyin --> |Categorize|FrontLongGanyin[Front Long Ganyin]
+   DecomposingGanyin --> |Categorize|BackLongGanyin[Back Long Ganyin]
+   DecomposingGanyin --> |Categorize|SingleQualityGanyin[Single Quality Ganyin]
    end
 
-   subgraph SingleQualityDivRhymeAnalysis["Single Quality Ganyin Analysis Process"]
+   subgraph DecomposingSingleQualityGanyin["Single Quality Ganyin Decompose"]
 
-   SingleQualityDivRhyme --> SQDivRhymeTone[Ganyin Tone]
-   SQDivRhymeTone --> SQDivRhymeRhymeTone[Rhyme Tone]
-   SQDivRhymeTone --> SQDivRhymeOnsetTone[Onset Tone]
-   SQDivRhymeRhymeTone --> SQDivRhymeMainTone[Main Tone]
-   SQDivRhymeRhymeTone --> SQDivRhymeCodaTone[Coda Tone]
+   SingleQualityGanyin --> |Extract|SQGandiao[Gandiao]
+   SQGandiao --> |Segment|SQHudiao[Hudiao]
+   SQGandiao --> |Segment|SQYundiao[Yundiao]
+   SQYundiao --> |Segment|SQZhudiao[Zhudiao]
+   SQYundiao --> |Segment|SQModiao[Modiao]
 
-   SingleQualityDivRhyme --> SQDivRhymeQuality[Single Quality Final]
-   SQDivRhymeQuality --> SQDivRhymeRhymeQuality[Rhyme Quality]
-   SQDivRhymeQuality --> SQDivRhymeOnsetQuality[Final Anterior]
-   SQDivRhymeRhymeQuality --> SQDivRhymeMainQuality[Final Middle]
-   SQDivRhymeRhymeQuality --> SQDivRhymeCodaQuality[Final Posterior]
+   SingleQualityGanyin --> |Extract|SQGanzhi[Single Quality Final]
+   SQGanzhi --> |Segment|SQHuzhi[Final Anterior]
+   SQGanzhi --> |Segment|SQYunzhi[Rhyme Quality]
+   SQYunzhi --> |Segment|SQZhuzhi[Final Middle]
+   SQYunzhi --> |Segment|SQMozhi[Final Posterior]
 
    end
 
-   subgraph BackLongDivRhymeAnalysis["Back Long Ganyin Analysis Process"]
+   subgraph DecomposingBackLongGanyin["Back Long Ganyin Decompose"]
 
-   BackLongDivRhyme --> BLDivRhymeQuality[Back Long Final]
-   BLDivRhymeQuality --> BLDivRhymeOnsetQuality[Medial]
-   BLDivRhymeQuality --> BLDivRhymeRhymeQuality[Nucleus]
-   BLDivRhymeRhymeQuality --> BLDivRhymeMainQuality[Nucleus Anterior]
-   BLDivRhymeRhymeQuality --> BLDivRhymeCodaQuality[Nucleus Posterior]
+   BackLongGanyin --> |Extract|BLGandiao[Gandiao]
+   BLGandiao --> |Segment|BLHudiao[Hudiao]
+   BLGandiao --> |Segment|BLYundiao[Yundiao]
+   BLYundiao --> |Segment|BLZhudiao[Zhudiao]
+   BLYundiao --> |Segment|Modiao[Modiao]
 
-   BackLongDivRhyme --> BLDivRhymeTone[Ganyin Tone]
-   BLDivRhymeTone --> BLDivRhymeOnsetTone[Onset Tone]
-   BLDivRhymeTone --> BLDivRhymeRhymeTone[Rhyme Tone]
-   BLDivRhymeRhymeTone --> BLDivRhymeMainTone[Main Tone]
-   BLDivRhymeRhymeTone --> BLDivRhymeCodaTone[Coda Tone]
+   BackLongGanyin --> |Extract|BLGanzhi[Back Long Final]
+   BLGanzhi --> |Segment|BLHuzhi[Head of the Final]
+   BLGanzhi --> |Segment|BLYunzhi[Nucleus]
+   BLYunzhi --> |Segment|BLZhuzhi[Nucleus Anterior]
+   BLYunzhi --> |Segment|BLMozhi[Nucleus Posterior]
+
    end
 
-   subgraph FrontLongDivRhymeAnalysis["Front Long Ganyin Analysis Process"]
+   subgraph DecomposingFrontLongGanyin["Front Long Ganyin Decompose"]
 
-   FrontLongDivRhyme --> FLDivRhymeQuality[Front Long Final]
-   FLDivRhymeQuality --> FLDivRhymeMedialQuality[Nucleus]
-   FLDivRhymeMedialQuality --> FLDivRhymeOnsetQuality[Nucleus Anterior]
-   FLDivRhymeMedialQuality --> FLDivRhymeMainQuality[Nucleus Posterior]
-   FLDivRhymeQuality --> FLDivRhymeCodaQuality[Coda]
+   FrontLongGanyin --> |Extract|FLGandiao[Gandiao]
+   FLGandiao --> |Segment|FLJiandiao[Jiandiao]
+   FLJiandiao --> |Segment|FLHudiao[Hudiao]
+   FLJiandiao --> |Segment|FLZhudiao[Zhudiao]
+   FLGandiao --> |Segment|FLModiao[Modiao]
 
-   FrontLongDivRhyme --> FLDivRhymeTone[Ganyin Tone]
-   FLDivRhymeTone --> FLDivRhymeMedialTone[Medial Tone]
-   FLDivRhymeMedialTone --> FLDivRhymeOnsetTone[Onset Tone]
-   FLDivRhymeMedialTone --> FLDivRhymeMainTone[Main Tone]
-   FLDivRhymeTone --> FLDivRhymeCodaTone[Coda Tone]
+   FrontLongGanyin --> |Extract|FLGanzhi[Front Long Final]
+   FLGanzhi --> |Segment|FLJianzhi[Nucleus]
+   FLJianzhi --> |Segment|FLHuzhi[Nucleus Anterior]
+   FLJianzhi --> |Segment|FLZhuzhi[Nucleus Posterior]
+   FLGanzhi --> |Segment|FLMozhi[Tail of the Final]
+
    end
 
-   subgraph TriQualityDivRhymeAnalysis["Tri-quality Ganyin Analysis Process"]
-   TriQualityDivRhyme --> TQDivRhymeQuality[Tri-quality Final]
-   TQDivRhymeQuality --> TQDivRhymeOnsetQuality[Medial]
-   TQDivRhymeQuality --> TQDivRhymeRhymeQuality[Rhyme Quality]
-   TQDivRhymeRhymeQuality --> TQDivRhymeMainQuality[Nucleus]
-   TQDivRhymeRhymeQuality --> TQDivRhymeCodaQuality[Coda]
+   subgraph DecomposingTriQualityGanyin["Tri-quality Ganyin Decompose"]
 
-   TriQualityDivRhyme --> TQDivRhymeTone[Ganyin Tone]
-   TQDivRhymeTone --> TQDivRhymeOnsetTone[Onset Tone]
-   TQDivRhymeTone --> TQDivRhymeRhymeTone[Rhyme Tone]
-   TQDivRhymeRhymeTone --> TQDivRhymeMainTone[Main Tone]
-   TQDivRhymeRhymeTone --> TQDivRhymeCodaTone[Coda Tone]
+   TriQualityGanyin --> |Extract|TQGandiao[Gandiao]
+   TQGandiao --> |Segment|TQHudiao[Hudiao]
+   TQGandiao --> |Segment|TQYundiao[Yundiao]
+   TQYundiao --> |Segment|TQZhudiao[Zhudiao]
+   TQYundiao --> |Segment|TQModiao[Modiao]
+
+   TriQualityGanyin --> |Extract|TQGanzhi[Tri-quality Final]
+   TQGanzhi --> |Segment|TQHuzhi[Head of the Final]
+   TQGanzhi --> |Segment|TQYunzhi[Rhyme Quality]
+   TQYunzhi --> |Segment|TQZhuzhi[Nucleus]
+   TQYunzhi --> |Segment|TQMozhi[Tail of the Final]
+
    end
 
-   SQDivRhymeOnsetTone --> OnsetSound[Onset Sound]
-   SQDivRhymeOnsetQuality --> OnsetSound[Onset Sound]
-   SQDivRhymeMainTone --> MainSound[Main Sound]
-   SQDivRhymeMainQuality --> MainSound[Main Sound]
-   SQDivRhymeCodaTone --> CodaSound[Coda Sound]
-   SQDivRhymeCodaQuality --> CodaSound[Coda Sound]
+   SQHudiao --> |Compose Yinyuan|Huyin[Huyin]  %% Identify as Yinyuan --> Categorize into Pitched Yinyuan --> Decompose into Constituent
+   SQHuzhi --> |Compose Yinyuan|Huyin[Huyin]
+   SQZhudiao --> |Compose Yinyuan|Zhuyin[Zhuyin]
+   SQZhuzhi --> |Compose Yinyuan|Zhuyin[Zhuyin]
+   SQModiao --> |Compose Yinyuan|Moyin[Moyin]
+   SQMozhi --> |Compose Yinyuan|Moyin[Moyin]
 
-   BLDivRhymeOnsetTone --> OnsetSound[Onset Sound]
-   BLDivRhymeOnsetQuality --> OnsetSound[Onset Sound]
-   BLDivRhymeMainTone --> MainSound[Main Sound]
-   BLDivRhymeMainQuality --> MainSound[Main Sound]
-   BLDivRhymeCodaTone --> CodaSound[Coda Sound]
-   BLDivRhymeCodaQuality --> CodaSound[Coda Sound]
+   BLHudiao --> |Compose Yinyuan|Huyin[Huyin]
+   BLHuzhi --> |Compose Yinyuan|Huyin[Huyin]
+   BLZhudiao --> |Compose Yinyuan|Zhuyin[Zhuyin]
+   BLZhuzhi --> |Compose Yinyuan|Zhuyin[Zhuyin]
+   Modiao --> |Compose Yinyuan|Moyin[Moyin]
+   BLMozhi --> |Compose Yinyuan|Moyin[Moyin]
 
-   FLDivRhymeOnsetTone --> OnsetSound[Onset Sound]
-   FLDivRhymeOnsetQuality --> OnsetSound[Onset Sound]
-   FLDivRhymeMainTone --> MainSound[Main Sound]
-   FLDivRhymeMainQuality --> MainSound[Main Sound]
-   FLDivRhymeCodaTone --> CodaSound[Coda Sound]
-   FLDivRhymeCodaQuality --> CodaSound[Coda Sound]
+   FLHudiao --> |Compose Yinyuan|Huyin[Huyin]
+   FLHuzhi --> |Compose Yinyuan|Huyin[Huyin]
+   FLZhudiao --> |Compose Yinyuan|Zhuyin[Zhuyin]
+   FLZhuzhi --> |Compose Yinyuan|Zhuyin[Zhuyin]
+   FLModiao --> |Compose Yinyuan|Moyin[Moyin]
+   FLMozhi --> |Compose Yinyuan|Moyin[Moyin]
 
-   TQDivRhymeOnsetTone --> OnsetSound[Onset Sound]
-   TQDivRhymeOnsetQuality --> OnsetSound[Onset Sound]
-   TQDivRhymeMainTone --> MainSound[Main Sound]
-   TQDivRhymeMainQuality --> MainSound[Main Sound]
-   TQDivRhymeCodaTone --> CodaSound[Coda Sound]
-   TQDivRhymeCodaQuality --> CodaSound[Coda Sound]
+   TQHudiao --> |Compose Yinyuan|Huyin[Huyin]
+   TQHuzhi --> |Compose Yinyuan|Huyin[Huyin]
+   TQZhudiao --> |Compose Yinyuan|Zhuyin[Zhuyin]
+   TQZhuzhi --> |Compose Yinyuan|Zhuyin[Zhuyin]
+   TQModiao --> |Compose Yinyuan|Moyin[Moyin]
+   TQMozhi --> |Compose Yinyuan|Moyin[Moyin]
 
-   subgraph PhoneticVariableAnalysis["Yinjie Structure Model of the Yinyuan Analysis Method"]
-   MainSound --> RhymeSound[Rhyme Sound]
-   CodaSound --> RhymeSound[Rhyme Sound]
-   OnsetSound --> RhymeLayerOnsetSound[Onset Sound] --> Ganyin[Ganyin]
-   RhymeSound --> Ganyin[Ganyin]
-   InputInitial --> Shouyin[Shouyin] --> RhymeLayerInitial[Shouyin] --> DivRhymeLayerInitial[Shouyin] --> Yinjie[Yinjie]
-   Ganyin --> Yinjie[Yinjie]
+   subgraph SyllableStructureModel["Syllable Structure Model of Yinyuan Analysis"]
+   Zhuyin --> |Combine|Yunyin[Yunyin]
+   Moyin --> |Combine|Yunyin[Yunyin]
+   Huyin --> |Ascend to Parent Level|YunyinLayerHuyin[Huyin] --> |Combine|Ganyin[Ganyin]
+   Yunyin --> |Combine|Ganyin[Ganyin]
+   DecomposingShouyin --> |Analyze as Yinyuan|Shouyin[Shouyin] --> |Ascend to Parent Level|YunyinLayerShouyin[Shouyin] --> |Ascend to Parent Level|GanyinLayerShouyin[Shouyin] --> |Combine|Yinjie[Yinjie]
+   Ganyin --> |Combine|Yinjie[Yinjie]
    end
 ```
 
 ### Key Terminology
 
-1. **Yinyuan (音元)**
-   - Yinjie → **Shouyin** + **Ganyin**
-   - Yinjie → **Tone** + **Syllabic Quality**
-     - Tone (Yinjie Tone)
-     - Syllabic Quality (Yinjie Quality)
-     - Syllabic Quality = Shouyin (Shouyin Consonant) + Final
+1. **Yinjie(Mandarin Syllable)**
+   - Yinjie = **Shouyin** + **Ganyin**
+   - Yinjie = **Jiediao** + **Jiezhi**
+     - Jiediao (Syllabic Tone or Tonal Layer)
+     - Jiezhi (Syllabic Quality or Qualitative Layer)
+     - Jiediao = Shoudiao + Gandiao
+       - Shoudiao = Tone of Shouyin
+       - Gandiao = Tone of Ganyin
+     - Jiezhi = Initial + Final
+       - Initial = Quality of Shouyin = Shengmu
+       - Final = Quality of Ganyin = Yunmu
 
 2. **Shouyin**
-   - Shouyin Tone (Tonal Segment Connected to the Shouyin Consonant) + Shouyin Consonant
+   - Shouyin = Shoudiao + Shouzhi
+     - Shoudiao = Tonal Segment Connected to the Initial
+     - Shouzhi = Quality of the Shouyin = Shengmu = Initial
 3. **Ganyin**
-   - Ganyin Tone (Tonal Segment Connected to the Final) + Final
-4. **Four Types of Ganyin**
-   - Tri-quality Ganyin
-   - Front Long Ganyin
-   - Back Long Ganyin
-   - Single Quality Ganyin
-5. **Tone Segmentation**
-   - Onset Tone (Tonal Segment Connected to the Medial)
-   - Main Tone (Tonal Segment Connected to the Nucleus of the Tri-quality Final)
-   - Coda Tone (Tonal Segment Connected to the Coda)
-   - Medial Tone (Tonal Segment Connected to the Nucleus of the Front Long Final)
-   - Rhyme Tone (Tonal Segment Connected to the Nucleus of the Back Long Final)
-6. **Yinyuan Formation**
-   - Onset Sound (Onset Tone + Onset Quality)
-     - Onset Quality = Medial / Anterior part of the nucleus in front long final / Anterior part of single quality final
-   - Main Sound (Main Tone + Main Quality)
-     - Main Quality = Nucleus of tri-quality final / Posterior part of the nucleus in front long final / Anterior part of the nucleus in back long final / Middle part of single quality final
-   - Coda Sound (Coda Tone + Coda Quality)
-     - Coda Quality = Coda / Posterior part of the nucleus in back long final / Posterior part of single quality final
-7. **Yinjie Structure**
-   - Yinjie = Shouyin + Onset Sound + Main Sound + Coda Sound
-   - Yinjie = Shouyin + Onset Sound + Rhyme Sound
-   - Rhyme Sound = Main Sound + Coda Sound
+   - Ganyin = Gandiao + Ganzhi
+     - Gandiao = Tonal Segment Connected to the Final
+     - Ganzhi = Quality of the Ganyin = Yunmu = Final
+4. **Categories of Ganyin**
+   - Tri-quality Ganyin = Gandiao + Tri-Quality Final
+   - Front Long Ganyin = Gandiao + Front Long Final
+   - Back Long Ganyin = Gandiao + Back Long Final
+   - Single Quality Ganyin = Gandiao + Single Quality Final
+5. **Yinyuan Composition**
+   - Huyin = Hudiao + Huzhi
+   - Zhuyin = Zhudiao + Zhuzhi
+   - Moyin = Modiao + Mozhi
+     - Hudiao = Tonal Segment Connected to the Huzhi
+     - Zhudiao = Tonal Segment Connected to the Zhuzhi
+     - Modiao = Tonal Segment Connected to the Mozhi
+     - Jiandiao = Tonal Segment Connected to the Jianzhi
+     - Yundiao = Tonal Segment Connected to the Yunzhi
+     - Huzhi = Head of the Final / Anterior part of the nucleus in front long final / Anterior part of single quality final
+     - Zhuzhi = Nucleus of the tri-quality final / Posterior part of the nucleus in front long final / Anterior part of the nucleus in back long final / Middle part of single quality final
+     - Mozhi = Tail of the Final / Posterior part of the nucleus in back long final / Posterior part of single quality final
+6. **Yinjie Structure**
+   - Yinjie = Shouyin + Huyin + Zhuyin + Moyin
+   - Yinjie = Shouyin + Huyin + Yunyin
    - Yinjie = Shouyin + Ganyin
-   - Ganyin = Onset Sound + Rhyme Sound
-   - Yinjie = Shouyin + Medial Sound + Coda Sound
-   - Medial Sound = Onset Sound + Main Sound
 
-  The standard English translation for “把音节分成四段" is:
-
-  Divide the syllable into four segments. These four segments are named: Shouyin, Onset Sound, Main Sound, and Coda Sound.
-  把音节音节分成四段，英语的标准译法是:
+   - Ganyin = Huyin + Yunyin
+   - Yunyin = Zhuyin + Moyin
+   -
+   - Yinjie = Shouyin + Jianyin + Moyin
+   - Jianyin = Huyin + Zhuyin
