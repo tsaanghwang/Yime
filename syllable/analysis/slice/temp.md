@@ -187,3 +187,12 @@ stateDiagram-v2
   PendingDecompositionSyllable --> PreSegmentationSyllable: 特征提取完成
   PreSegmentationSyllable --> DecomposedSyllable: 执行拆解算法
 ```
+
+```mermaid
+
+graph TD
+    A[Initial Tone Segment Extraction] --> B[Tonal Feature Analysis]
+    B --> C{Is Tone Stable?}
+    C -->|Yes| D[Final Tone Classification]
+    C -->|No| E[Tone Correction Segment]
+```
