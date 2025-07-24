@@ -10,12 +10,12 @@
 
 - Each Syllable (syllable) is analyzed into a yinyuan sequence
 
-**首音 and SubsequentSound**
+**InitialSound and SubsequentSound**
 
 - A syllable consists of a initial sound and a subsequent sound (final with tone  or divisional rhyme)
-  - **首音**
-    - Composed of a shoudiao and a shouzhi
-      - The shoudiao is the tonal segment connected to the shouzhi
+  - **InitialSound**
+    - Composed of an initial tone and its quality
+      - The initial tone is the tonal segment connected to the initial quality
       - The initial sound is represented by unpitched sound
   - **SubsequentSound**
     - Composed of a subsequent sound tone and a final
@@ -27,14 +27,14 @@
 **SubsequentSound Classification**
 
 - SubsequentSound is divided into four types:
-  - **三质干音**
+  - **Tri-Quality Subsequent Sound**
     - Composed of a subsequent sound tone and a tri-quality final
       - The tri-quality final consists of a medial, nucleus, and coda
       - The subsequent sound tone is divided into second tone, main tone, and coda tone
       - Onset tone and medial form the onset sound
       - Main tone and nucleus form the main sound
       - LastPitch and coda form the coda sound
-  - **前长干音**
+  - **Front Long Subsequent Sound**
     - Composed of a subsequent sound tone and a front long final
     - The front long final consists of a nucleus and coda
     - The subsequent sound tone is divided into medial tone and coda tone
@@ -44,7 +44,7 @@
       - Onset tone and onset quality form the onset sound
       - Main tone and main quality form the main sound
       - LastPitch and coda form the coda sound
-  - **后长干音**
+  - **Back Long Subsequent Sound**
     - Composed of a subsequent sound tone and a back long final
     - The back long final consists of a medial and a nucleus
     - The subsequent sound tone is divided into second tone and rhyme tone
@@ -54,7 +54,7 @@
       - The nucleus is divided into main quality and coda quality (anterior and posterior parts of the nucleus)
       - Main tone and main quality form the main sound
       - LastPitch and coda quality form the coda sound
-  - **单质干音**
+  - **Single Quality Subsequent Sound**
     - Composed of a subsequent sound tone and a single quality final
     - The single quality final is represented by the nucleus
     - The subsequent sound tone is divided into second tone, main tone, and coda tone
@@ -71,9 +71,9 @@
 
 **Detailed Explanation of Yinyuan Analysis**:
 In the yinyuan analysis model, each syllable is analyzed into a yinyuan sequence.
-In this model, the syllable is first split into jiediao (tonal layer) and jiezhi (qualitative layer). The tonal layer is further divided into shoudiao (initial tone) and subsequent Tone segment, while the qualitative layer is split into shengmu (onset quality) and yunmu (rime quality). These components are then recombined into huyin (onset+second tone), zhuyin (rime core+rime core tone), and moyin (rime tail+rime tail tone), which finally merge into yunyin (rime complex) to complete the syllable.
+In this model, the syllable is first split into syllabic tone (tonal layer) and syllabic quality (qualitative layer). The tonal layer is further divided into initial tone (initial tone) and subsequent Tone segment, while the qualitative layer is split into initial (onset quality) and final (rime quality). These components are then recombined into second sound (onset+second tone), main sound (rime core+rime core tone), and last sound (rime tail+rime tail tone), which finally merge into rime (rime complex) to complete the syllable.
 
-In this analysis, a syllable consists of a initial sound and a subsequent sound. The initial sound is the segment at the beginning of the syllable, composed of a shoudiao and a shouzhi. The shoudiao is the tonal segment connected to the shouzhi. The subsequent sound is the segment excluding the initial sound, composed of a subsequent sound tone and a final. The subsequent sound tone is the tonal segment connected to the final. Phonetic variables are divided into noise and musical sound. The initial sound is always represented by unpitched sound. The subsequent sound is always represented by sequences of pitched sound.
+In this analysis, a syllable consists of a initial sound and a subsequent sound. The initial sound is the segment at the beginning of the syllable, composed of a initial tone and a initial quality. The initial tone is the tonal segment connected to the initial quality. The subsequent sound is the segment excluding the initial sound, composed of a subsequent sound tone and a final. The subsequent sound tone is the tonal segment connected to the final. Phonetic variables are divided into noise and musical sound. The initial sound is always represented by unpitched sound. The subsequent sound is always represented by sequences of pitched sound.
 
 SubsequentSound, according to the structure of the final, is divided into tri-quality subsequent sound, front long subsequent sound, back long subsequent sound, and single quality subsequent sound. Tri-quality subsequent sound is composed of a subsequent sound tone and a tri-quality final. Front long subsequent sound is composed of a subsequent sound tone and a front long final. Back long subsequent sound is composed of a subsequent sound tone and a back long final. Single quality subsequent sound is composed of a subsequent sound tone and a single quality final.
 
@@ -146,11 +146,11 @@ graph LR
     end
    subgraph InitialAndSubsequentSoundDecompose["首音和干音的分析"]
     subgraph InitialSoundAnalysis["虚实首音分析"]
-        InsubstantialInitialSound --> |析取|InsubstantialInitialSoundTone[首调] --> |分析--非稳定的规律性的音调且非区别性特征|InitialSoundTone[首调]
-        InsubstantialInitialSound --> |析取|InsubstantialInitialSoundQuality[零声母] --> |分析并更名--除阻辅音的音质且非区别性特征|InitialSoundQuality[首质]
+        InsubstantialInitialSound --> |析取|InsubstantialInitialSoundTone[虚首音的音调] --> |分析: 非稳定非规律性且非区别性特征|InitialSoundTone[首调]
+        InsubstantialInitialSound --> |析取|InsubstantialInitialSoundQuality[虚首音的音质对应零声母] --> |分析: 除阻辅音的音质且非区别性特征|InitialSoundQuality[首质]
 
-        SubstantialInitialSound --> |析取|SubstantialInitialSoundTone[首调] --> |分析--非稳定的规律性的音调且非区别性特征|InitialSoundTone[首调]
-        SubstantialInitialSound --> |析取|SubstantialInitialSoundQuality[非零声母] --> |分析并更名--除阻辅音的音质且是区别性特征|InitialSoundQuality[首质]
+        SubstantialInitialSound --> |析取|SubstantialInitialSoundTone[实首音的音调] --> |分析: 非稳定非规律性且非区别性特征|InitialSoundTone[首调]
+        SubstantialInitialSound --> |析取|SubstantialInitialSoundQuality[实首音音质对应非零声母] --> |分析: 除阻辅音的音质且是区别性特征|InitialSoundQuality[首质]
       end
 
       subgraph DecomposingSingleQualitySubsequentSound["单质干音分析"]
@@ -257,33 +257,33 @@ graph LR
    subgraph SyllableStructureModel["音元分析的音节层次结构模型"]
     subgraph ThirdLayer["音元层"]
     UnpitchedSound --> |充当|ThirdLayerInitial[首音]
-    SQPitchedSound1 --> |充当|Huyin[呼音]
-    SQPitchedSound2 --> |充当|Zhuyin[主音]
-    SQPitchedSound3 --> |充当|Moyin[末音]
+    SQPitchedSound1 --> |充当|SecondSound[呼音]
+    SQPitchedSound2 --> |充当|MainSound[主音]
+    SQPitchedSound3 --> |充当|LastSound[末音]
 
-    BLPitchedSound1 --> |充当|Huyin[呼音]
-    BLPitchedSound2 --> |充当|Zhuyin[主音]
-    BLPitchedSound3 --> |充当|Moyin[末音]
+    BLPitchedSound1 --> |充当|SecondSound[呼音]
+    BLPitchedSound2 --> |充当|MainSound[主音]
+    BLPitchedSound3 --> |充当|LastSound[末音]
 
-    FLPitchedSound1 --> |充当|Huyin[呼音]
-    FLPitchedSound2 --> |充当|Zhuyin[主音]
-    FLPitchedSound3 --> |充当|Moyin[末音]
+    FLPitchedSound1 --> |充当|SecondSound[呼音]
+    FLPitchedSound2 --> |充当|MainSound[主音]
+    FLPitchedSound3 --> |充当|LastSound[末音]
 
-    TQPitchedSound1 --> |充当|Huyin[呼音]
-    TQPitchedSound2 --> |充当|Zhuyin[主音]
-    TQPitchedSound3 --> |充当|Moyin[末音]
+    TQPitchedSound1 --> |充当|SecondSound[呼音]
+    TQPitchedSound2 --> |充当|MainSound[主音]
+    TQPitchedSound3 --> |充当|LastSound[末音]
     end
 
     subgraph SecondLayer["韵音层"]
       ThirdLayerInitial --> |升级|SecondLayerInitial[首音]
-      Huyin --> |升级|SecondLayerHuyin[呼音]
-      Zhuyin --> |构成|Yunyin[韵音]
-      Moyin --> |构成|Yunyin[韵音]
+      SecondSound --> |升级|SecondLayerSecondSound[呼音]
+      MainSound --> |构成|Rime[韵音]
+      LastSound --> |构成|Rime[韵音]
     end
     subgraph FirstLayer["干音层"]
       SecondLayerInitial --> |升级|InitialSound[首音]
-      SecondLayerHuyin --> |构成|SubsequentSound[干音]
-      Yunyin --> |构成|SubsequentSound[干音]
+      SecondLayerSecondSound --> |构成|SubsequentSound[干音]
+      Rime --> |构成|SubsequentSound[干音]
     end
     subgraph SyllableLayer["音元序列"]
       InitialSound --> |构成|Syllable[音节]
@@ -295,49 +295,49 @@ graph LR
 ### Key Terminology
 
 1. **Syllable(Mandarin Syllable)**
-   - Syllable = **首音** + **SubsequentSound**
-   - Syllable = **节调** + **节质**
-     - 节调 (Syllabic Tone or Tonal Layer)
-     - 节质 (Syllabic Quality or Qualitative Layer)
-     - 节调 = 首调 + 干调
-       - 首调 = Tone of 首音
-       - 干调 = Tone of SubsequentSound
-     - 节质 = 声母 + 韵母
-       - 声母 = Quality of 首音 = 声母
-       - 韵母 = Quality of SubsequentSound = 韵母
+   - Syllable = **InitialSound** + **SubsequentSound**
+   - Syllable = **SyllabicTone** + **SyllabicQuality**
+     - SyllabicTone (Syllabic Tone or Tonal Layer)
+     - SyllabicQuality (Syllabic Quality or Qualitative Layer)
+     - SyllabicTone = InitialTonalSegment + SubsequentTonalSegment
+       - InitialTonalSegment = Tone of InitialSound
+       - SubsequentTonalSegment = Tone of SubsequentSound
+     - SyllabicQuality = Initial + Final
+       - Initial = Quality of InitialSound = Initial
+       - Final = Quality of SubsequentSound = Final
 
-2. **首音**
-   - 首音 = 首调 + Shouzhi
-     - 首调 = Tonal Segment Connected to the 声母
-     - Shouzhi = Quality of the 首音 = 声母 = 声母
+2. **InitialSound**
+   - InitialSound = InitialTonalSegment + InitialQuality
+     - InitialTonalSegment = Tonal Segment Connected to the Initial
+     - InitialQuality = Quality of the InitialSound = Initial = Initial
 3. **SubsequentSound**
-   - SubsequentSound = 干调 + Final
-     - 干调 = Tonal Segment Connected to the 韵母
-     - Final = Quality of the SubsequentSound = 韵母 = 韵母
+   - SubsequentSound = SubsequentTonalSegment + Final
+     - SubsequentTonalSegment = Tonal Segment Connected to the Final
+     - Final = Quality of the SubsequentSound = Final = Final
 4. **Categories of SubsequentSound**
-   - 三质干音 = 干调 + 三质韵母
-   - 前长干音 = 干调 + 前长韵母
-   - 后长干音 = 干调 + 后长韵母
-   - 单质干音 = 干调 + 单质韵母
+   - TriQualitySubsequentSound = SubsequentTonalSegment + TriQualityFinal
+   - FrontLongSubsequentSound = SubsequentTonalSegment +FrontLongFinal
+   - BackLongSubsequentSound = SubsequentTonalSegment + BackLongFinal
+   - SingleQualitySubsequentSound = SubsequentTonalSegment + SingleQualityFinal
 5. **Yinyuan Composition**
-   - Huyin = SecondPitch + SecondQualitySegment
-   - Zhuyin = MainPitch + Zhuzhi
-   - Moyin = LastPitch + Mozhi
+   - SecondSound = SecondPitch + SecondQualitySegment
+   - MainSound = MainPitch + MainQuality
+   - LastSound = LastPitch + LastQuality
      - SecondPitch = Tonal Segment Connected to the SecondQualitySegment
-     - MainPitch = Tonal Segment Connected to the Zhuzhi
-     - LastPitch = Tonal Segment Connected to the Mozhi
-     - Jiandiao = Tonal Segment Connected to the Jianzhi
+     - MainPitch = Tonal Segment Connected to the MainQuality
+     - LastPitch = Tonal Segment Connected to the LastQuality
+     - IntermediateTone = Tonal Segment Connected to the IntermediateQuality
      - RimeTone = Tonal Segment Connected to the RimeQuality
-     - SecondQualitySegment = Head of the 韵母 / Anterior part of the nucleus in front long final / Anterior part of single quality final
-     - Zhuzhi = Nucleus of the tri-quality final / Posterior part of the nucleus in front long final / Anterior part of the nucleus in back long final / Middle part of single quality final
-     - Mozhi = Tail of the 韵母 / Posterior part of the nucleus in back long final / Posterior part of single quality final
+     - SecondQualitySegment = Head of the Final / Anterior part of the nucleus in front long final / Anterior part of single quality final
+     - MainQuality = Nucleus of the tri-quality final / Posterior part of the nucleus in front long final / Anterior part of the nucleus in back long final / Middle part of single quality final
+     - LastQuality = Tail of the Final / Posterior part of the nucleus in back long final / Posterior part of single quality final
 6. **Syllable Structure**
-   - Syllable = 首音 + Huyin + Zhuyin + Moyin
-   - Syllable = 首音 + Huyin + Yunyin
-   - Syllable = 首音 + SubsequentSound
+   - Syllable = InitialSound + SecondSound + MainSound + LastSound
+   - Syllable = InitialSound + SecondSound + Rime
+   - Syllable = InitialSound + SubsequentSound
 
-   - SubsequentSound = Huyin + Yunyin
-   - Yunyin = Zhuyin + Moyin
+   - SubsequentSound = SecondSound + Rime
+   - Rime = MainSound + LastSound
    -
-   - Syllable = 首音 + Jianyin + Moyin
-   - Jianyin = Huyin + Zhuyin
+   - Syllable = InitialSound + IntermediateSound + LastSound
+   - IntermediateSound = SecondSound + MainSound
