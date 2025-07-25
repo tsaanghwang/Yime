@@ -105,10 +105,10 @@ graph TD
 
 ```mermaid
 graph LR
-  subgraph InputSyllable["输入音节"]
+  subgraph Input["输入"]
       DecomposingSyllable[音节]
   end
-  subgraph ExtractTonalQuality["质调二分"]
+  subgraph ExtractQualityTone["析取质调"]
       DecomposingSyllable --> |析取|SyllabicTone[节调]
       DecomposingSyllable --> |析取|SyllabicQuality[节质]
   end
@@ -122,7 +122,7 @@ graph LR
         SyllabicQuality --> |切分|Final[韵母]
       end
   end
-  subgraph HeadBody["首干二分"]
+  subgraph SyllableDichotomy["音节二分"]
       subgraph SyllableInitialSound["音节首音"]
         InitialTonalSegment --> |构成|DecomposingInitialSound[首音]
         InitialConsonant --> |构成|DecomposingInitialSound[首音]
@@ -146,75 +146,67 @@ graph LR
     end
    subgraph InitialAndSubsequentSoundDecompose["首音和干音的分析"]
     subgraph InitialSoundAnalysis["虚实首音分析"]
-        InsubstantialInitialSound --> |析取|InsubstantialInitialSoundTone[虚首音的音调] --> |分析: 非稳定非规律性且非区别性特征|InitialSoundTone[首调]
-        InsubstantialInitialSound --> |析取|InsubstantialInitialSoundQuality[虚首音的音质对应零声母] --> |分析: 除阻辅音的音质且非区别性特征|InitialSoundQuality[首质]
+        InsubstantialInitialSound --> |析取|InsubstantialInitialSoundTone[首调] --> |非稳定、非规律性且非区别性特征|InitialSoundTone[首调]
+        InsubstantialInitialSound --> |析取|InsubstantialInitialSoundQuality[零声母] --> |除阻辅音音质且非区别性特征|InitialSoundQuality[首质]
 
-        SubstantialInitialSound --> |析取|SubstantialInitialSoundTone[实首音的音调] --> |分析: 非稳定非规律性且非区别性特征|InitialSoundTone[首调]
-        SubstantialInitialSound --> |析取|SubstantialInitialSoundQuality[实首音音质对应非零声母] --> |分析: 除阻辅音的音质且是区别性特征|InitialSoundQuality[首质]
+        SubstantialInitialSound --> |析取|SubstantialInitialSoundTone[首调] --> |非稳定、非规律性且非区别性特征|InitialSoundTone[首调]
+        SubstantialInitialSound --> |析取|SubstantialInitialSoundQuality[非零声母] --> |除阻辅音音质且为区别性特征|InitialSoundQuality[首质]
       end
 
       subgraph DecomposingSingleQualitySubsequentSound["单质干音分析"]
+        SingleQualitySubsequentSound --> |析取|SQTone[干调]
+        SQTone --> |切分|SQSecondPitch[呼调]
+        SQTone --> |切分|SQRimeTone[韵调]
+        SQPitch --> |切分|SQMainPitch[主调]
+        SQRimeTone --> |切分|SQLastPitch[末调]
 
-      SingleQualitySubsequentSound --> |析取|SQTone[干调]
-      SQTone --> |切分|SQSecondPitch[呼调]
-      SQTone --> |切分|SQRimeTone[韵调]
-      SQPitch --> |切分|SQMainPitch[主调]
-      SQRimeTone --> |切分|SQLastPitch[末调]
-
-      SingleQualitySubsequentSound --> |析取|SQFinal[单质韵母]
-      SQFinal --> |切分|SQFinalAnteriorSegment[韵母前段]
-      SQFinal --> |切分|SQRimeQuality[韵质]
-      SQRimeQuality --> |切分|SQFinalMiddleSegment[韵母中段]
-      SQRimeQuality --> |切分|SQFinalPosteriorSegment[韵母后段]
-
+        SingleQualitySubsequentSound --> |析取|SQFinal[单质韵母]
+        SQFinal --> |切分|SQFinalAnteriorSegment[韵母前段]
+        SQFinal --> |切分|SQRimeQuality[韵质]
+        SQRimeQuality --> |切分|SQFinalMiddleSegment[韵母中段]
+        SQRimeQuality --> |切分|SQFinalPosteriorSegment[韵母后段]
       end
 
       subgraph DecomposingBackLongSubsequentSound["后长干音分析"]
+        BackLongSubsequentSound --> |析取|BLTone[干调]
+        BLTone --> |切分|BLSecondPitch[呼调]
+        BLTone --> |切分|BLRimeTone[韵调]
+        BLRimeTone --> |切分|BLMainPitch[主调]
+        BLRimeTone --> |切分|LastPitch[末调]
 
-      BackLongSubsequentSound --> |析取|BLTone[干调]
-      BLTone --> |切分|BLSecondPitch[呼调]
-      BLTone --> |切分|BLRimeTone[韵调]
-      BLRimeTone --> |切分|BLMainPitch[主调]
-      BLRimeTone --> |切分|LastPitch[末调]
-
-      BackLongSubsequentSound --> |析取|BLFinal[后长韵母]
-      BLFinal --> |切分|BLFinalHead[韵头]
-      BLFinal --> |切分|BLRimeQuality[韵腹]
-      BLRimeQuality --> |切分|BLFinalNucleusAnteriorSegment[韵腹前段]
-      BLRimeQuality --> |切分|BLFinalNucleusPosteriorSegment[韵腹后段]
-
+        BackLongSubsequentSound --> |析取|BLFinal[后长韵母]
+        BLFinal --> |切分|BLFinalHead[韵头]
+        BLFinal --> |切分|BLRimeQuality[韵腹]
+        BLRimeQuality --> |切分|BLFinalNucleusAnteriorSegment[韵腹前段]
+        BLRimeQuality --> |切分|BLFinalNucleusPosteriorSegment[韵腹后段]
       end
 
       subgraph DecomposingFrontLongSubsequentSound["前长干音分析"]
+        FrontLongSubsequentSound --> |析取|FLTone[干调]
+        FLTone --> |切分|FLIntermediateTonalSegment[间调]
+        FLIntermediateTonalSegment --> |切分|FLSecondPitch[呼调]
+        FLIntermediateTonalSegment --> |切分|FLMainPitch[主调]
+        FLTone --> |切分|FLLastPitch[末调]
 
-      FrontLongSubsequentSound --> |析取|FLTone[干调]
-      FLTone --> |切分|FLIntermediateTonalSegment[间调]
-      FLIntermediateTonalSegment --> |切分|FLSecondPitch[呼调]
-      FLIntermediateTonalSegment --> |切分|FLMainPitch[主调]
-      FLTone --> |切分|FLLastPitch[末调]
-
-      FrontLongSubsequentSound --> |析取|FLFinal[前长韵母]
-      FLFinal --> |切分|FLIntermediateQuality[韵腹]
-      FLIntermediateQuality --> |切分|FLFinalNucleusAnteriorSegment[韵腹前段]
-      FLIntermediateQuality --> |切分|FLFinalNucleusPosteriorSegment[韵腹后段]
-      FLFinal --> |切分|FLFinalRail[韵尾]
-
+        FrontLongSubsequentSound --> |析取|FLFinal[前长韵母]
+        FLFinal --> |切分|FLIntermediateQuality[韵腹]
+        FLIntermediateQuality --> |切分|FLFinalNucleusAnteriorSegment[韵腹前段]
+        FLIntermediateQuality --> |切分|FLFinalNucleusPosteriorSegment[韵腹后段]
+        FLFinal --> |切分|FLFinalRail[韵尾]
       end
 
       subgraph DecomposingTriQualitySubsequentSound["三质干音分析"]
+        TriQualitySubsequentSound --> |析取|TQTone[干调]
+        TQTone --> |切分|TQSecondPitch[呼调]
+        TQTone --> |切分|TQRimeTone[韵调]
+        TQRimeTone --> |切分|TQMainPitch[主调]
+        TQRimeTone --> |切分|TQLastPitch[末调]
 
-      TriQualitySubsequentSound --> |析取|TQTone[干调]
-      TQTone --> |切分|TQSecondPitch[呼调]
-      TQTone --> |切分|TQRimeTone[韵调]
-      TQRimeTone --> |切分|TQMainPitch[主调]
-      TQRimeTone --> |切分|TQLastPitch[末调]
-
-      TriQualitySubsequentSound --> |析取|TQFinal[三质韵母]
-      TQFinal --> |切分|TQFinalHead[韵头]
-      TQFinal --> |切分|TQRimeQuality[韵质]
-      TQRimeQuality --> |切分|TQFinalMain[韵腹]
-      TQRimeQuality --> |切分|TQFinalTail[韵尾]
-
+        TriQualitySubsequentSound --> |析取|TQFinal[三质韵母]
+        TQFinal --> |切分|TQFinalHead[韵头]
+        TQFinal --> |切分|TQRimeQuality[韵质]
+        TQRimeQuality --> |切分|TQFinalMain[韵腹]
+        TQRimeQuality --> |切分|TQFinalTail[韵尾]
       end
    end
 
@@ -256,22 +248,22 @@ graph LR
    end
    subgraph SyllableStructureModel["音元分析的音节层次结构模型"]
     subgraph ThirdLayer["音元层"]
-    UnpitchedSound --> |充当|ThirdLayerInitial[首音]
-    SQPitchedSound1 --> |充当|SecondSound[呼音]
-    SQPitchedSound2 --> |充当|MainSound[主音]
-    SQPitchedSound3 --> |充当|LastSound[末音]
+      UnpitchedSound --> |充当|ThirdLayerInitial[首音]
+      SQPitchedSound1 --> |充当|SecondSound[呼音]
+      SQPitchedSound2 --> |充当|MainSound[主音]
+      SQPitchedSound3 --> |充当|LastSound[末音]
 
-    BLPitchedSound1 --> |充当|SecondSound[呼音]
-    BLPitchedSound2 --> |充当|MainSound[主音]
-    BLPitchedSound3 --> |充当|LastSound[末音]
+      BLPitchedSound1 --> |充当|SecondSound[呼音]
+      BLPitchedSound2 --> |充当|MainSound[主音]
+      BLPitchedSound3 --> |充当|LastSound[末音]
 
-    FLPitchedSound1 --> |充当|SecondSound[呼音]
-    FLPitchedSound2 --> |充当|MainSound[主音]
-    FLPitchedSound3 --> |充当|LastSound[末音]
+      FLPitchedSound1 --> |充当|SecondSound[呼音]
+      FLPitchedSound2 --> |充当|MainSound[主音]
+      FLPitchedSound3 --> |充当|LastSound[末音]
 
-    TQPitchedSound1 --> |充当|SecondSound[呼音]
-    TQPitchedSound2 --> |充当|MainSound[主音]
-    TQPitchedSound3 --> |充当|LastSound[末音]
+      TQPitchedSound1 --> |充当|SecondSound[呼音]
+      TQPitchedSound2 --> |充当|MainSound[主音]
+      TQPitchedSound3 --> |充当|LastSound[末音]
     end
 
     subgraph SecondLayer["韵音层"]
@@ -285,7 +277,7 @@ graph LR
       SecondLayerSecondSound --> |构成|SubsequentSound[干音]
       Rime --> |构成|SubsequentSound[干音]
     end
-    subgraph SyllableLayer["音元序列"]
+    subgraph SyllableLayer["shu'ch"]
       InitialSound --> |构成|Syllable[音节]
       SubsequentSound --> |构成|Syllable[音节]
     end
@@ -295,15 +287,15 @@ graph LR
 ### Key Terminology
 
 1. **Syllable(Mandarin Syllable)**
-   - Syllable = **InitialSound** + **SubsequentSound**
-   - Syllable = **SyllabicTone** + **SyllabicQuality**
+   - **Syllable** = **InitialSound** + **SubsequentSound**
+   - **Syllable** = **SyllabicTone** + **SyllabicQuality**
      - SyllabicTone (Syllabic Tone or Tonal Layer)
      - SyllabicQuality (Syllabic Quality or Qualitative Layer)
-     - SyllabicTone = InitialTonalSegment + SubsequentTonalSegment
+     - **SyllabicTone** = **InitialTonalSegment** + **SubsequentTonalSegment**
        - InitialTonalSegment = Tone of InitialSound
        - SubsequentTonalSegment = Tone of SubsequentSound
-     - SyllabicQuality = Initial + Final
-       - Initial = Quality of InitialSound = Initial
+     - **SyllabicQuality** = **Initial** + **Final**
+       - Initial = Quality of InitialSound = InitialConsonant
        - Final = Quality of SubsequentSound = Final
 
 2. **InitialSound**
