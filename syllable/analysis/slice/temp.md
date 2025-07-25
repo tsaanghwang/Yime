@@ -196,3 +196,16 @@ graph TD
     C -->|Yes| D[Final Tone Classification]
     C -->|No| E[Tone Correction Segment]
 ```
+
+```mermaid
+graph TD
+    A[开始] --> B{条件判断}
+    B -->|选项1| C[执行操作1]
+    B -->|选项2| D[执行操作2]
+    B -->|选项3| E[执行操作3]
+    B -->|选项4| F[执行操作4]
+    C --> G[结束]
+    D --> G
+    E --> G
+    F --> G
+```

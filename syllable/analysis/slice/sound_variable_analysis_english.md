@@ -104,46 +104,50 @@ graph TD
 </div>
 
 ```mermaid
-graph LR
+flowchart TB
   subgraph Input["输入"]
       DecomposingSyllable[音节]
   end
   subgraph ExtractQualityTone["析取质调"]
-      DecomposingSyllable --> |析取|SyllabicTone[节调]
-      DecomposingSyllable --> |析取|SyllabicQuality[节质]
+      subgraph ToneOfSyllable["音节音调"]
+        DecomposingSyllable --> |析取|SyllabicTone[节调]
+      end
+      subgraph QualityOfSyllable["音节音质"]
+        DecomposingSyllable --> |析取|SyllabicQuality[节质]
+      end
   end
   subgraph QualitativeLayer["质调分段"]
       subgraph ToneDichotomy["节调二分"]
-        SyllabicTone --> |切分|InitialTonalSegment[首调]
-        SyllabicTone --> |切分|SubsequentTonalSegment[干调]
+        subgraph InitialTone["与声母联结的调段"]
+          SyllabicTone --> |切分|InitialTonalSegment[首调]
+        end
+        subgraph FinalTone["与韵母联结的调段"]
+          SyllabicTone --> |切分|SubsequentTonalSegment[干调]
+        end
       end
       subgraph QualityDichotomy["节质二分"]
         SyllabicQuality --> |切分|InitialConsonant[声母]
         SyllabicQuality --> |切分|Final[韵母]
       end
   end
-  subgraph SyllableDichotomy["音节二分"]
-      subgraph SyllableInitialSound["音节首音"]
+  subgraph SyllableDichotomy["两段二分"]
         InitialTonalSegment --> |构成|DecomposingInitialSound[首音]
         InitialConsonant --> |构成|DecomposingInitialSound[首音]
-      end
-      subgraph SyllableSubsequentSound["音节干音"]
         SubsequentTonalSegment --> |构成|DecomposingSubsequentSound[干音]
         Final --> |构成|DecomposingSubsequentSound[干音]
-      end
   end
+
   subgraph InitialAndSubsequentSoundCategories["首音和干音的分类"]
-      subgraph InitialSoundCategories["首音类型"]
-        DecomposingInitialSound --> |分类|InsubstantialInitialSound[虚首音]
-        DecomposingInitialSound --> |分类|SubstantialInitialSound[实首音]
-      end
-      subgraph SubsequentSoundCategories["干音类型"]
-        DecomposingSubsequentSound --> |分类|TriQualitySubsequentSound[三质干音]
-        DecomposingSubsequentSound --> |分类|FrontLongSubsequentSound[前长干音]
-        DecomposingSubsequentSound --> |分类|BackLongSubsequentSound[后长干音]
-        DecomposingSubsequentSound --> |分类|SingleQualitySubsequentSound[单质干音]
-      end
+      DecomposingInitialSound --> |分类|IsNotZeroInitial{声母类型}
+      IsNotZeroInitial -->|是零声母|InsubstantialInitialSound[虚首音]
+      IsNotZeroInitial -->|非零声母|SubstantialInitialSound[实首音]
+      DecomposingSubsequentSound --> |分类|ChoiceFinalCategories{韵母类型}
+      ChoiceFinalCategories -->|三质韵母|TriQualitySubsequentSound[三质干音]
+      ChoiceFinalCategories -->|前长韵母|FrontLongSubsequentSound[前长干音]
+      ChoiceFinalCategories -->|后长韵母|BackLongSubsequentSound[后长干音]
+      ChoiceFinalCategories -->|单质韵母|SingleQualitySubsequentSound[单质干音]
     end
+
    subgraph InitialAndSubsequentSoundDecompose["首音和干音的分析"]
     subgraph InitialSoundAnalysis["虚实首音分析"]
         InsubstantialInitialSound --> |析取|InsubstantialInitialSoundTone[首调] --> |非稳定、非规律性且非区别性特征|InitialSoundTone[首调]
@@ -157,7 +161,7 @@ graph LR
         SingleQualitySubsequentSound --> |析取|SQTone[干调]
         SQTone --> |切分|SQSecondPitch[呼调]
         SQTone --> |切分|SQRimeTone[韵调]
-        SQPitch --> |切分|SQMainPitch[主调]
+        SQRimeTone --> |切分|SQMainPitch[主调]
         SQRimeTone --> |切分|SQLastPitch[末调]
 
         SingleQualitySubsequentSound --> |析取|SQFinal[单质韵母]
@@ -210,7 +214,7 @@ graph LR
       end
    end
 
-   subgraph Yinyuan["音元分类"]
+   subgraph Yinyuan["音元分析"]
     subgraph YinyuanAnalysis["噪音分析"]
       InitialSoundTone --> |构成|UnpitchedSound[噪音]
       InitialSoundQuality --> |构成|UnpitchedSound[噪音]
@@ -277,7 +281,7 @@ graph LR
       SecondLayerSecondSound --> |构成|SubsequentSound[干音]
       Rime --> |构成|SubsequentSound[干音]
     end
-    subgraph SyllableLayer["shu'ch"]
+    subgraph SyllableLayer["输出"]
       InitialSound --> |构成|Syllable[音节]
       SubsequentSound --> |构成|Syllable[音节]
     end
