@@ -98,7 +98,7 @@ graph TD
 </div>
 
 ```mermaid
-graph TD
+graph TB
    subgraph 分析对象["分析对象"]
    输入音节[音节]
    end
