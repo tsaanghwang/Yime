@@ -40,7 +40,7 @@ def check_branch_status(remote: str, branch: str) -> Tuple[int, int]:
     try:
         # 检查本地领先多少提交
         ahead = subprocess.run(["git", "rev-list", remote + "/" + branch + "..HEAD", "--count"],
-                            capture_output=True, text=True, check=True)
+                               capture_output=True, text=True, check=True)
         # 检查本地落后多少提交
         behind = subprocess.run(["git", "rev-list", "HEAD.." + remote + "/" + branch, "--count"],
                                 capture_output=True, text=True, check=True)
@@ -114,7 +114,7 @@ def main():
     print(f"已切换到git仓库根目录: {git_root}")
 
     # 检查远程仓库是否存在
-    remotes = ["origin", "gitcode"]
+    remotes = ["origin"]
     for remote in remotes.copy():
         if not get_remote_url(remote):
             print(f"警告: 远程仓库 {remote} 不存在，跳过")
