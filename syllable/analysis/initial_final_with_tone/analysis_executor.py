@@ -98,10 +98,6 @@ class InitialFinalWithToneAnalysisExecutor:
         return '', tone
 
     def analyze_pinyin_file(self):
-        """
-        从JSON文件读取数字标调拼音和调号标调拼音的映射，
-        切分成"声母"+"带调韵母"两部分并保存结果
-        """
         try:
             with open(self.input_path, 'r', encoding='utf-8') as f:
                 pinyin_data = json.load(f)
@@ -109,27 +105,27 @@ class InitialFinalWithToneAnalysisExecutor:
             initial_final_with_tone_map = defaultdict(dict)
 
             for num_pinyin, tone_pinyin in pinyin_data.items():
-                # 处理数字标调拼音
                 initial, final_with_tone = self._split_syllable(num_pinyin)
 
-                # 处理调号标调拼音 - 特殊处理
+                # 特殊处理特殊音节
                 if self._is_special_syllable(num_pinyin):
-                    # 对于特殊音节，直接使用预定义的调号形式
                     final_with_tone = self.SPECIAL_SYLLABLES[num_pinyin]
+                    # 键使用原始形式，值使用带声调形式
+                    if num_pinyin not in initial_final_with_tone_map[initial]:
+                        initial_final_with_tone_map[initial][num_pinyin] = final_with_tone
                 else:
-                    # 普通音节按常规处理
+                    # 普通音节：键使用原始形式，值使用带声调形式
                     _, final_with_tone = self._split_syllable(tone_pinyin)
+                    initial_final_with_tone_map[initial][num_pinyin] = final_with_tone
 
-                initial_final_with_tone_map[initial][final_with_tone] = final_with_tone
-
-            # 排序规则保持不变...
+            # 排序逻辑保持不变...
             sorted_result = {}
             for initial in sorted(initial_final_with_tone_map.keys(),
-                                key=lambda x: (x == "'", x)):
+                                  key=lambda x: (x == "'", x)):
                 final_with_tone_items = initial_final_with_tone_map[initial]
                 sorted_final_with_tone_items = dict(sorted(final_with_tone_items.items(),
-                                            key=lambda item: (item[0][0] if item[0] else '',
-                                                            int(item[0][-1]) if item[0] and item[0][-1].isdigit() else 0)))
+                                                           key=lambda item: (item[0][0] if item[0] else '',
+                                                                             int(item[0][-1]) if item[0] and item[0][-1].isdigit() else 0)))
                 sorted_result[initial] = sorted_final_with_tone_items
 
             with open(self.output_path, 'w', encoding='utf-8') as f:
