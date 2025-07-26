@@ -1,5 +1,5 @@
 {
-    // 使用 IntelliSense 了解相关属性。 
+    // 使用 IntelliSense 了解相关属性。
     // 悬停以查看现有属性的描述。
     // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
@@ -8,9 +8,9 @@
             "name": "potential_syllable",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}\\syllable\\analysis\\initial_divrhyme\\potential_syllable.py",
+            "program": "${workspaceFolder}\\syllable\\analysis\\initial_final_with_tone\\potential_syllable.py",
             "currentFileConfiguration": false,
-            "cwd": "${workspaceFolder}\\syllable\\analysis\\initial_divrhyme",
+            "cwd": "${workspaceFolder}\\syllable\\analysis\\initial_final_with_tone",
             "addSourceRootsToPythonpath": true
         },
         {
@@ -149,9 +149,9 @@
             "name": "pinyin_to_single_hanzi",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}\\syllable\\analysis\\initial_divrhyme\\pinyin_to_single_hanzi.py",
+            "program": "${workspaceFolder}\\syllable\\analysis\\initial_final_with_tone\\pinyin_to_single_hanzi.py",
             "currentFileConfiguration": false,
-            "cwd": "${workspaceFolder}\\syllable\\analysis\\initial_divrhyme",
+            "cwd": "${workspaceFolder}\\syllable\\analysis\\initial_final_with_tone",
             "addSourceRootsToPythonpath": true
         },
         {
@@ -174,21 +174,21 @@
             "noDebug": true
         },
         {
-            "name": "initial_divrhyme_analyzer",
+            "name": "initial_final_with_tone_analyzer",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}\\syllable\\analysis\\initial_divrhyme\\initial_divrhyme_analyzer.py",
+            "program": "${workspaceFolder}\\syllable\\analysis\\initial_final_with_tone\\initial_final_with_tone_analyzer.py",
             "currentFileConfiguration": false,
-            "cwd": "${workspaceFolder}\\syllable\\analysis\\initial_divrhyme",
+            "cwd": "${workspaceFolder}\\syllable\\analysis\\initial_final_with_tone",
             "addSourceRootsToPythonpath": true
         },
         {
             "name": "reverse_key_value_pairs",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}\\syllable\\analysis\\initial_divrhyme\\reverse_key_value_pairs.py",
+            "program": "${workspaceFolder}\\syllable\\analysis\\initial_final_with_tone\\reverse_key_value_pairs.py",
             "currentFileConfiguration": false,
-            "cwd": "${workspaceFolder}\\syllable\\analysis\\initial_divrhyme",
+            "cwd": "${workspaceFolder}\\syllable\\analysis\\initial_final_with_tone",
             "addSourceRootsToPythonpath": true,
             "noDebug": true
         },
@@ -196,9 +196,9 @@
             "name": "pinyin_normalizer",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}\\syllable\\analysis\\initial_divrhyme\\pinyin_normalizer.py",
+            "program": "${workspaceFolder}\\syllable\\analysis\\initial_final_with_tone\\pinyin_normalizer.py",
             "currentFileConfiguration": false,
-            "cwd": "${workspaceFolder}\\syllable\\analysis\\initial_divrhyme",
+            "cwd": "${workspaceFolder}\\syllable\\analysis\\initial_final_with_tone",
             "addSourceRootsToPythonpath": true,
             "noDebug": true
         },
@@ -206,27 +206,27 @@
             "name": "pinyin_classifier",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}\\syllable\\analysis\\initial_divrhyme\\pinyin_classifier.py",
+            "program": "${workspaceFolder}\\syllable\\analysis\\initial_final_with_tone\\pinyin_classifier.py",
             "currentFileConfiguration": false,
-            "cwd": "${workspaceFolder}\\syllable\\analysis\\initial_divrhyme",
+            "cwd": "${workspaceFolder}\\syllable\\analysis\\initial_final_with_tone",
             "addSourceRootsToPythonpath": true
         },
         {
             "name": "initial_final",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}\\syllable\\analysis\\initial_divrhyme\\initial_final.py",
+            "program": "${workspaceFolder}\\syllable\\analysis\\initial_final_with_tone\\initial_final.py",
             "currentFileConfiguration": false,
-            "cwd": "${workspaceFolder}\\syllable\\analysis\\initial_divrhyme",
+            "cwd": "${workspaceFolder}\\syllable\\analysis\\initial_final_with_tone",
             "addSourceRootsToPythonpath": true
         },
         {
-            "name": "initial_divisional_rhyme",
+            "name": "initial_final_with_tone",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}\\syllable\\analysis\\initial_divrhyme\\initial_divrhyme.py",
+            "program": "${workspaceFolder}\\syllable\\analysis\\initial_final_with_tone\\initial_final_with_tone.py",
             "currentFileConfiguration": false,
-            "cwd": "${workspaceFolder}\\syllable\\analysis\\initial_divrhyme",
+            "cwd": "${workspaceFolder}\\syllable\\analysis\\initial_final_with_tone",
             "addSourceRootsToPythonpath": true,
             "noDebug": true
         },

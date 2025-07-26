@@ -1,5 +1,5 @@
-# syllable/analysis/initial_divrhyme/initial_divrhyme.py
-from analysis_executor import InitialDivisionalRhymeAnalysisExecutor
+# syllable/analysis/initial_final_with_tone/initial_final_with_tone.py
+from analysis_executor import InitialFinalWithToneAnalysisExecutor
 import json
 import argparse
 import logging
@@ -13,7 +13,7 @@ def setup_logging():
 
 
 def main(input_path=None, output_path=None):
-    analysis_executor = InitialDivisionalRhymeAnalysisExecutor()
+    analysis_executor = InitialFinalWithToneAnalysisExecutor()
     if input_path:
         analysis_executor.input_path = input_path
     if output_path:
@@ -28,12 +28,12 @@ def main(input_path=None, output_path=None):
             with open(analysis_executor.output_path, 'r', encoding='utf-8') as f:
                 data = json.load(f)
                 logging.info(f"共生成 {len(data)} 个声母条目")
-                for initial, rhymes in list(data.items())[:5]:
-                    logging.info(f"{initial}: 包含 {len(rhymes)} 个韵母")
+                for initial, final_with_tone_items in list(data.items())[:5]:
+                    logging.info(f"{initial}: 包含 {len(final_with_tone_items)} 个韵母")
         except Exception as e:
             logging.error(f"读取结果文件失败: {e}")
     else:
-        logging.error("生成 initial_divrhyme.json 文件失败")
+        logging.error("生成 initial_final_with_tone.json 文件失败")
 
 
 if __name__ == "__main__":

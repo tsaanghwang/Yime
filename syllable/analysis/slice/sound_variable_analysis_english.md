@@ -12,7 +12,7 @@
 
 **InitialSound and SubsequentSound**
 
-- A syllable consists of a initial sound and a subsequent sound (final with tone  or divisional rhyme)
+- A syllable consists of a initial sound and a subsequent sound (final with tone  or final with tone)
   - **InitialSound**
     - Composed of an initial tone and its quality
       - The initial tone is the tonal segment connected to the initial quality
@@ -47,9 +47,9 @@
   - **Back Long Subsequent Sound**
     - Composed of a subsequent sound tone and a back long final
     - The back long final consists of a medial and a nucleus
-    - The subsequent sound tone is divided into second tone and rhyme tone
+    - The subsequent sound tone is divided into second tone and the tone of the rhyme
       - Onset tone and medial form the onset sound
-      - Rhyme tone and nucleus form the rhyme sound
+      - Rhyme tone and nucleus form the sound of the rhyme
       - Rhyme tone is further divided into main tone and coda tone
       - The nucleus is divided into main quality and coda quality (anterior and posterior parts of the nucleus)
       - Main tone and main quality form the main sound
@@ -81,7 +81,7 @@ In tri-quality subsequent sound, the tri-quality final consists of a medial, nuc
 
 In front long subsequent sound, the front long final consists of a nucleus and coda. Correspondingly, the subsequent sound tone is divided into two segments: the segment connected to the nucleus and the segment connected to the coda, abbreviated as medial tone and coda tone. SecondPitch and nucleus form the medial sound. LastPitch and coda form the coda sound. The medial sound is the segment between the initial sound and the coda sound. Since the medial tone corresponds to the second tone and main tone of the tri-quality subsequent sound, the medial tone is divided into second tone and main tone. Correspondingly, the medial sound is divided into onset sound and main sound.
 
-In back long subsequent sound, the back long final consists of a medial and a nucleus. Correspondingly, the subsequent sound tone is divided into two segments: the segment connected to the medial and the segment connected to the nucleus, abbreviated as second tone and rhyme tone. Onset tone and medial form the onset sound. Rhyme tone and nucleus form the rhyme sound. The rhyme sound refers to the segment formed by the rhyme tone and the rhyme base or rhyme body. Since the rhyme tone corresponds to the main tone and coda tone of the tri-quality subsequent sound, the rhyme tone is divided into main tone and coda tone. Correspondingly, the rhyme sound is divided into main sound and coda sound.
+In back long subsequent sound, the back long final consists of a medial and a nucleus. Correspondingly, the subsequent sound tone is divided into two segments: the segment connected to the medial and the segment connected to the nucleus, abbreviated as second tone and the tone of the rhyme. Onset tone and medial form the onset sound. Rhyme tone and nucleus form the sound of the rhyme. The sound of the rhyme refers to the segment formed by the the tone of the rhyme and the rhyme base or rhyme body. Since the the tone of the rhyme corresponds to the main tone and coda tone of the tri-quality subsequent sound, the the tone of the rhyme is divided into main tone and coda tone. Correspondingly, the sound of the rhyme is divided into main sound and coda sound.
 
 In single quality subsequent sound, the single quality final is represented by the nucleus. Correspondingly, the subsequent sound tone is the segment connected to the final, which is the tone of the subsequent sound. Since the subsequent sound tone corresponds to the second tone, main tone, and coda tone of the tri-quality subsequent sound, the subsequent sound tone is divided into second tone, main tone, and coda tone. Correspondingly, the subsequent sound is divided into onset sound, main sound, and coda sound.
 
