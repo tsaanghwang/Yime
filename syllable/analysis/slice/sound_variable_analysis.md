@@ -236,7 +236,7 @@ graph TB
 ### Key Terminology
 
 1. **音元 (Phonetic Variable)**
-   - 音节(Syllable) → **Initial（首音）** + **Divrhyme（干音）**
+   - 音节(Syllable) → **Initial（首音）** + **FinalWithTone（干音）**
    - 音节(Syllable) → **Tone（节调）** + **Syllabic Quality（节质）**
      - 节调 (音节的音调 Tone)
      - 节质 (音节的音质 Syllabic Quality)
@@ -247,10 +247,10 @@ graph TB
 3. **干音 (干音)**
    - 干调 (Tonal Segment Connected to the Final) + 韵母 (Final)
 4. **四类干音 (干音 Types)**
-   - 三质干音 (Tri_Quality Divrhyme)
-   - 前长干音 (Front Long Divrhyme)
-   - 后长干音 (Back Long Divrhyme)
-   - 单质干音 (Single Quality Divrhyme)
+   - 三质干音 (TriQualityFinalWithTone)
+   - 前长干音 (FrontLongFinalWithTone)
+   - 后长干音 (BackLongFinalWithTone)
+   - 单质干音 (SingleQualityFinalWithTone)
 5. **调段 (Tone Segmentation)**
    - 呼调 (Tonal Segment Connected to the Medial)
    - 主调 (Tonal Segment Connected to the Nucleus of the Tri_Quality Final)

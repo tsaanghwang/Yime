@@ -1,11 +1,11 @@
-# syllable/analysis/initial_divrhyme/initial_divrhyme_analyzer.py
-from .analysis_executor import InitialDivisionalRhymeAnalysisExecutor
+# syllable/analysis/initial_final_with_tone/initial_final_with_tone_analyzer.py
+from .analysis_executor import InitialFinalWithToneAnalysisExecutor
 from syllable.syllable_analyzer_strategy import SyllableAnalyzerStrategy
 
 
-class InitialDivisionalRhymeAnalyzer(SyllableAnalyzerStrategy):
+class InitialFinalWithToneAnalyzer(SyllableAnalyzerStrategy):
     def __init__(self):
-        self._helper = InitialDivisionalRhymeAnalysisExecutor()
+        self._helper = InitialFinalWithToneAnalysisExecutor()
         if not self._helper.analyze_pinyin_file():
             raise RuntimeError("Failed to initialize pinyin analysis data")
 

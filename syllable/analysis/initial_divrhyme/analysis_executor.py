@@ -1,11 +1,11 @@
-# syllable/analysis/initial_divrhyme/analysis_executor.py
+# syllable/analysis/initial_final_with_tone/analysis_executor.py
 
 import json
 import os
 from collections import defaultdict
 
 
-class InitialDivisionalRhymeAnalysisExecutor:
+class InitialFinalWithToneAnalysisExecutor:
     """声母等韵分析执行类，封装复杂分析逻辑"""
 
     # 定义特殊音节映射
@@ -54,7 +54,7 @@ class InitialDivisionalRhymeAnalysisExecutor:
         ))
         self.output_path = os.path.join(
             os.path.dirname(__file__),
-            'initial_divrhyme.json'
+            'initial_final_with_tone.json'
         )
 
     def _is_zero_initial(self, syllable):
@@ -106,31 +106,31 @@ class InitialDivisionalRhymeAnalysisExecutor:
             with open(self.input_path, 'r', encoding='utf-8') as f:
                 pinyin_data = json.load(f)
 
-            initial_divrhyme_map = defaultdict(dict)
+            initial_final_with_tone_map = defaultdict(dict)
 
             for num_pinyin, tone_pinyin in pinyin_data.items():
                 # 处理数字标调拼音
-                initial, divrhyme = self._split_syllable(num_pinyin)
+                initial, final_with_tone = self._split_syllable(num_pinyin)
 
                 # 处理调号标调拼音 - 特殊处理
                 if self._is_special_syllable(num_pinyin):
                     # 对于特殊音节，直接使用预定义的调号形式
-                    tone_rhyme = self.SPECIAL_SYLLABLES[num_pinyin]
+                    final_with_tone = self.SPECIAL_SYLLABLES[num_pinyin]
                 else:
                     # 普通音节按常规处理
-                    _, tone_rhyme = self._split_syllable(tone_pinyin)
+                    _, final_with_tone = self._split_syllable(tone_pinyin)
 
-                initial_divrhyme_map[initial][divrhyme] = tone_rhyme
+                initial_final_with_tone_map[initial][final_with_tone] = final_with_tone
 
             # 排序规则保持不变...
             sorted_result = {}
-            for initial in sorted(initial_divrhyme_map.keys(),
+            for initial in sorted(initial_final_with_tone_map.keys(),
                                 key=lambda x: (x == "'", x)):
-                rhymes = initial_divrhyme_map[initial]
-                sorted_rhymes = dict(sorted(rhymes.items(),
+                final_with_tone_items = initial_final_with_tone_map[initial]
+                sorted_final_with_tone_items = dict(sorted(final_with_tone_items.items(),
                                             key=lambda item: (item[0][0] if item[0] else '',
                                                             int(item[0][-1]) if item[0] and item[0][-1].isdigit() else 0)))
-                sorted_result[initial] = sorted_rhymes
+                sorted_result[initial] = sorted_final_with_tone_items
 
             with open(self.output_path, 'w', encoding='utf-8') as f:
                 json.dump(sorted_result, f, ensure_ascii=False, indent=2)
@@ -143,7 +143,7 @@ class InitialDivisionalRhymeAnalysisExecutor:
 
 
 if __name__ == "__main__":
-    analysis_executor = InitialDivisionalRhymeAnalysisExecutor()
+    analysis_executor = InitialFinalWithToneAnalysisExecutor()
     if analysis_executor.analyze_pinyin_file():
         print("声韵分析完成，结果已保存到:", analysis_executor.output_path)
     else:
