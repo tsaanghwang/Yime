@@ -19,7 +19,7 @@ def main(input_path=None, output_path=None):
     if output_path:
         analysis_executor.output_path = output_path
 
-    logging.info("开始声韵分析...")
+    logging.info("开始声母韵母声调分析...")
     success = analysis_executor.analyze_pinyin_file()
 
     if success:
@@ -38,7 +38,7 @@ def main(input_path=None, output_path=None):
 
 if __name__ == "__main__":
     setup_logging()
-    parser = argparse.ArgumentParser(description='声韵分析生成工具')
+    parser = argparse.ArgumentParser(description='声母韵母声调分析生成工具')
     parser.add_argument('--input', help='输入文件路径')
     parser.add_argument('--output', help='输出文件路径')
     args = parser.parse_args()

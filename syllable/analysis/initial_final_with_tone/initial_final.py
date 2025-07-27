@@ -2,46 +2,35 @@
 import json
 import os
 from collections import defaultdict
+import unicodedata
+import re
 
 
 def remove_tone(final_with_tone):
-    """从韵母中去除所有声调标记"""
+    """只去除韵母中的声调标记，不改变 ê、ü 等本身字符"""
     if not final_with_tone:
         return final_with_tone
 
-    # 定义所有可能的声调标记
-    tone_marks = [
-        '̄', '́', '̌', '̀',  # 基本声调符号
-        '̂', '̇', '̈', '̊',  # 其他可能的变音符号
-        'ń', 'ň', 'ǹ', 'ḿ',  # 带声调的字母
-        'ế', 'ề', 'ê',  # 特殊拼音字符
-        '1', '2', '3', '4', '5'  # 数字声调
-    ]
+    # 针对 y 开头的音节，将值中的 'u' 替换为 'ü'（调号不变）
+    if final_with_tone and final_with_tone[0] == 'y':
+        # 将字符串转换为列表以便修改
+        chars = list(final_with_tone)
+        # 检查 y 后是否跟着 u
+        if len(chars) > 1 and chars[1] == 'u':
+            # 将 u 替换为 ü
+            chars[1] = 'ü'
+            # 重新组合为字符串
+            final_with_tone = ''.join(chars)
 
-    # 特殊字符映射表
-    special_char_map = {
-        'ń': 'n',
-        'ň': 'n',
-        'ǹ': 'n',
-        'ḿ': 'm',
-        'ế': 'e',
-        'ề': 'e',
-        'ê': 'e'
-    }
+    # 只去除组合用声调符号（Mn），但保留 ê、ü 等本身字符
+    def is_tone_mark(c):
+        # 只去除声调符号，不去除本身带变音符的字母
+        return unicodedata.category(c) == 'Mn' and c not in ['\u0308', '\u0302']
 
-    # 先去除数字声调
-    if final_with_tone[-1].isdigit():
-        final_with_tone = final_with_tone[:-1]
-
-    # 处理特殊字符
-    for char, replacement in special_char_map.items():
-        final_with_tone = final_with_tone.replace(char, replacement)
-
-    # 处理基本声调符号
-    for mark in tone_marks:
-        final_with_tone = final_with_tone.replace(mark, '')
-
-    return final_with_tone
+    return ''.join(
+        c for c in unicodedata.normalize('NFD', final_with_tone)
+        if not is_tone_mark(c)
+    )
 
 
 def main():
@@ -71,13 +60,6 @@ def main():
         # 特殊声母列表
         special_initials = ["z", "c", "s", "zh", "ch", "sh", "r"]
 
-        # 特殊韵母列表 (hm -> m, hn -> n, hng -> ng)
-        special_finals_map = {
-            "hm": "m",
-            "hn": "n",
-            "hng": "ng"
-        }
-
         # 处理每个 initial 和对应的 final_with_tone_items
         for initial, final_with_tone_items in initial_final_with_tone_data.items():
             # 声母部分：以键为值
@@ -85,22 +67,17 @@ def main():
 
             # 处理每个 final_with_tone
             for final_with_tone_key, final_with_tone_value in final_with_tone_items.items():
-                # 检查是否是特殊韵母 (hm, hn, hng)
-                if final_with_tone_key in special_finals_map:
-                    result["finals"].add(
-                        special_finals_map[final_with_tone_key])
-                    continue
+                # 键保持原样
+                final_key = final_with_tone_key
 
-                # 从键中去除声调得到韵母
-                final_key = remove_tone(final_with_tone_key)
-
-                # 从值中去除声调得到韵母
+                # 只对值部分去除声调得到韵母
                 final_value = remove_tone(final_with_tone_value)
 
                 # 特殊处理：只有特殊声母的i韵母才用"_i"
                 if (initial in special_initials and
                     final_with_tone_key.startswith("i") and
-                        len(remove_tone(final_with_tone_key)) == 1):  # 只处理单韵母i
+                        # 只处理单韵母i
+                        len(final_with_tone_key.replace(final_with_tone_key[-1], '') if final_with_tone_key[-1].isdigit() else final_with_tone_key) == 1):
                     result["finals"].add("_i")  # 特殊声母对应的形式
                     result["finals"].add("i")    # 普通形式
                 else:
