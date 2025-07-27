@@ -6,9 +6,9 @@ from collections import defaultdict
 
 
 class InitialFinalWithToneAnalysisExecutor:
-    """声母等韵分析执行类，封装复杂分析逻辑"""
+    """声母韵母声调分析执行类，封装复杂分析逻辑"""
 
-    # 定义特殊音节映射
+    # 定义特殊音节映射（已移除所有h开头的特殊音节）
     SPECIAL_SYLLABLES = {
         "ê1": "ê̄",
         "ê2": "ế",
@@ -29,22 +29,7 @@ class InitialFinalWithToneAnalysisExecutor:
         "ng2": "ńg",
         "ng3": "ňg",
         "ng4": "ǹg",
-        "ng5": "ng",
-        "hm1": "hm̄",
-        "hm2": "hḿ",
-        "hm3": "hm̌",
-        "hm4": "hm̀",
-        "hm5": "hm",
-        "hn1": "hn̄",
-        "hn2": "hń",
-        "hn3": "hň",
-        "hn4": "hǹ",
-        "hn5": "hn",
-        "hng1": "hn̄g",
-        "hng2": "hńg",
-        "hng3": "hňg",
-        "hng4": "hǹg",
-        "hng5": "hng"
+        "ng5": "ng"
     }
 
     def __init__(self):
@@ -72,28 +57,25 @@ class InitialFinalWithToneAnalysisExecutor:
 
         # 首先检查是否为特殊音节
         if self._is_special_syllable(syllable):
-            if syllable.startswith('h'):
-                # h开头的特殊音节：h作为声母，剩余部分作为韵母
-                return 'h', syllable[1:]
-            elif syllable.startswith(('m', 'n', 'ng', 'ê')):
-                # m/n/ng/ê开头的特殊音节：零声母，整个音节作为韵母
+            # 只处理m/n/ng/ê开头的特殊音节：零声母，整个音节作为韵母
+            if syllable.startswith(('m', 'n', 'ng', 'ê')):
                 return "'", syllable
 
-        # 处理带数字声调的情况
+        # 处理带数字声调的情况, 声调在最后一个字符并且是数字, 定义：quality = 声母 + 韵母
         tone = syllable[-1] if syllable[-1].isdigit() else ''
-        base = syllable[:-1] if tone else syllable
+        quality = syllable[:-1] if tone else syllable
 
         # 检查是否为零声母音节（包括ê）
-        if self._is_zero_initial(base):
-            return "'", base + tone
+        if self._is_zero_initial(quality):
+            return "'", quality + tone
 
         # 检查双字母声母 (zh/ch/sh)
-        if len(base) >= 2 and base[:2] in {'zh', 'ch', 'sh'}:
-            return base[:2], base[2:] + tone if len(base) > 2 else tone
+        if len(quality) >= 2 and quality[:2] in {'zh', 'ch', 'sh'}:
+            return quality[:2], quality[2:] + tone if len(quality) > 2 else tone
 
         # 默认处理：第一个字母作为声母，剩余部分作为韵母
-        if len(base) > 0:
-            return base[0], base[1:] + tone if len(base) > 1 else tone
+        if len(quality) > 0:
+            return quality[0], quality[1:] + tone if len(quality) > 1 else tone
 
         return '', tone
 
@@ -110,13 +92,22 @@ class InitialFinalWithToneAnalysisExecutor:
                 # 特殊处理特殊音节
                 if self._is_special_syllable(num_pinyin):
                     final_with_tone = self.SPECIAL_SYLLABLES[num_pinyin]
-                    # 键使用原始形式，值使用带声调形式
                     if num_pinyin not in initial_final_with_tone_map[initial]:
                         initial_final_with_tone_map[initial][num_pinyin] = final_with_tone
                 else:
-                    # 普通音节：键使用原始形式，值使用带声调形式
-                    _, final_with_tone = self._split_syllable(tone_pinyin)
-                    initial_final_with_tone_map[initial][num_pinyin] = final_with_tone
+                    # 普通音节：键只保留韵母部分，值使用带声调形式
+                    # 确保只处理真正的韵母部分
+                    if initial == "'":  # 零声母音节
+                        final_part = num_pinyin  # 整个音节作为韵母
+                    else:
+                        # 确保去掉的是完整的声母部分
+                        final_part = num_pinyin[len(initial):] if len(
+                            num_pinyin) > len(initial) else ""
+
+                    # 确保final_part不为空且包含声调数字
+                    if final_part and final_part[-1].isdigit():
+                        _, final_with_tone = self._split_syllable(tone_pinyin)
+                        initial_final_with_tone_map[initial][final_part] = final_with_tone
 
             # 排序逻辑保持不变...
             sorted_result = {}
@@ -141,6 +132,6 @@ class InitialFinalWithToneAnalysisExecutor:
 if __name__ == "__main__":
     analysis_executor = InitialFinalWithToneAnalysisExecutor()
     if analysis_executor.analyze_pinyin_file():
-        print("声韵分析完成，结果已保存到:", analysis_executor.output_path)
+        print("声母韵母声调分析完成，结果已保存到:", analysis_executor.output_path)
     else:
-        print("声韵分析失败，请检查输入文件")
+        print("声母韵母声调分析失败，请检查输入文件")

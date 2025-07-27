@@ -8,7 +8,7 @@ class SyllableAnalyzerStrategy:
 
 class InitialFinalWithToneAnalyzer(SyllableAnalyzerStrategy):
     def analyze(self, syllable):
-        # 声母等韵分析法实现
+        # 声母韵母声调分析法实现
         return {'initial': 'b', 'final_with_tone': ['a', 'n']}
 
 
