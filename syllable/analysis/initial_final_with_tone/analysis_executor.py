@@ -107,6 +107,11 @@ class InitialFinalWithToneAnalysisExecutor:
                     # 确保final_part不为空且包含声调数字
                     if final_part and final_part[-1].isdigit():
                         _, final_with_tone = self._split_syllable(tone_pinyin)
+
+                        # 特殊处理y开头的音节，将韵母中的u替换为ü
+                        if initial == 'y' and final_with_tone.startswith('u'):
+                            final_with_tone = 'ü' + final_with_tone[1:]
+
                         initial_final_with_tone_map[initial][final_part] = final_with_tone
 
             # 排序逻辑保持不变...

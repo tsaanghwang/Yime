@@ -11,17 +11,6 @@ def remove_tone(final_with_tone):
     if not final_with_tone:
         return final_with_tone
 
-    # 针对 y 开头的音节，将值中的 'u' 替换为 'ü'（调号不变）
-    if final_with_tone and final_with_tone[0] == 'y':
-        # 将字符串转换为列表以便修改
-        chars = list(final_with_tone)
-        # 检查 y 后是否跟着 u
-        if len(chars) > 1 and chars[1] == 'u':
-            # 将 u 替换为 ü
-            chars[1] = 'ü'
-            # 重新组合为字符串
-            final_with_tone = ''.join(chars)
-
     # 只去除组合用声调符号（Mn），但保留 ê、ü 等本身字符
     def is_tone_mark(c):
         # 只去除声调符号，不去除本身带变音符的字母
