@@ -114,7 +114,7 @@ def main():
     print(f"已切换到git仓库根目录: {git_root}")
 
     # 检查远程仓库是否存在
-    remotes = ["origin"]
+    remotes = ["origin", "gitee"]
     for remote in remotes.copy():
         if not get_remote_url(remote):
             print(f"警告: 远程仓库 {remote} 不存在，跳过")
