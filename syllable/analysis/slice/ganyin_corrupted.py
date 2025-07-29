@@ -9,6 +9,63 @@
     - 前长干音（Front Long Ganyin），例如 "āi", "ēi", "āo", "ōu", "ān", "ēn", "āng", "ēng"
     - 后长干音（Back Long Ganyin），例如 "iā", "iē", "iō", "uō", "īn", "īng", "ǖn", "ǖng"
     - 三质干音（Triple Quality Ganyin）, 例如 "iāo", "iōu", "uān", "uēn", "iāng", "uāng", "uēng"
+"""用于分析干音的特征、成分和类型
+要求：
+1. 导入syllable\analysis\slice\Syllable.py对干音的定义：
+干音：由韵母和与其联结的调段构成，即 Ganyin=Rest_Segment（Final+Tone）
+2. 定义一个干音分类工具类 GanyinCategorizer，根据韵母的类型把干音分成四个子类：
+    - 单质干音（Single Quality Ganyin），例如 "ī", "ǒ", "ń", "ǹg", "-ī",  "èr"
+    - 前长干音（Front Long Ganyin），例如 "āi", "ēi", "āo", "ōu", "ān", "ēn", "āng", "ēng"
+    - 后长干音（Back Loif __name__ == "__if __name__ ==if __name__ == "__main__":
+    print("=== 开始测试韵母分类 ===")
+    # 保留原有示例用法
+    samples = ["ī", "āi", "iā", "iāo"]
+    for final in samples:
+        normalized = GanyinCategorizer._normalize_final(final)
+        category = GanyinCategorizer.categorize(final)
+        print(f"韵母 '{final}' -> 标准化: '{normalized}' -> 分类: {category}")
+
+    print("=== 开始分析和保存 ===")
+    # 新增分析执行
+    analyzer = GanyinCategorizer.GanyinAnalyzer()
+    if analyzer.analyze_and_save():
+        print("分析完成，结果已保存到:")
+        print(f"- 首音数据: {analyzer.shouyin_path}")
+        print(f"- 干音数据: {analyzer.ganyin_path}")
+    else:
+        print("分析失败，请检查错误信息")  # 保留原有示例用法
+    samples = ["ī", "āi", "iā", "iāo"]
+    for final in samples:
+        normalized = GanyinCategorizer._normalize_final(final)
+        category = GanyinCategorizer.categorize(final)
+        print(f"韵母 '{final}' -> 标准化: '{normalized}' -> 分类: {category}")
+
+    # 新增分析执行
+    analyzer = GanyinCategorizer.GanyinAnalyzer()
+    if analyzer.analyze_and_save():
+        print("分析完成，结果已保存到:")
+        print(f"- 首音数据: {analyzer.shouyin_path}")
+        print(f"- 干音数据: {analyzer.ganyin_path}")
+    else:
+        print("分析失败，请检查错误信息")保留原有示例用法
+    samples = ["ī", "āi", "iā", "iāo"]
+    for final in samples:
+        normalized = GanyinCategorizer._normalize_final(final)
+        category = GanyinCategorizer.categorize(final)
+        print(f"韵母 '{final}' -> 标准化: '{normalized}' -> 分类: {category}")
+        # 调试信息
+        if category == "未知类型":
+            print(f"  调试: '{normalized}' in SINGLE_QUALITY_FINALS = {'i' in GanyinCategorizer.SINGLE_QUALITY_FINALS}")
+
+    # 新增分析执行
+    analyzer = GanyinCategorizer.GanyinAnalyzer()
+    if analyzer.analyze_and_save():
+        print("分析完成，结果已保存到:")
+        print(f"- 首音数据: {analyzer.shouyin_path}")
+        print(f"- 干音数据: {analyzer.ganyin_path}")
+    else:
+        print("分析失败，请检查错误信息")iā", "iē", "iō", "uō", "īn", "īng", "ǖn", "ǖng"
+    - 三质干音（Triple Quality Ganyin）, 例如 "iāo", "iōu", "uān", "uēn", "iāng", "uāng", "uēng"
 """
 import json
 import os
@@ -65,6 +122,31 @@ class Ganyin:
     def __repr__(self):
         return self.__str__()
 
+    def _generate_ganyin_data(self, pinyin_data: Dict[str, str]) -> Dict[str, str]:
+        """生成干音数据(切除首音后的剩余部分)
+
+        参数:
+            pinyin_data: 拼音数据字典 {数字标调拼音: 调号标调拼音}
+
+        返回:
+            干音数据字典 {数字标调干音: 调号标调干音}
+        """
+        ganyin_data = {}
+
+        for num_pinyin, tone_pinyin in pinyin_data.items():
+            # 切分音节，获取韵母部分
+            _, final_with_tone = GanyinCategorizer.split_syllable(num_pinyin)
+
+            # 特殊处理特殊音节
+            if GanyinCategorizer._is_special_syllable(num_pinyin):
+                final_with_tone = GanyinCategorizer.SPECIAL_SYLLABLES.get(
+                    num_pinyin, final_with_tone)
+
+            # 存储干音数据
+            ganyin_data[final_with_tone] = final_with_tone
+
+        return ganyin_data
+
 
 class GanyinCategorizer:
     """
@@ -77,21 +159,20 @@ class GanyinCategorizer:
         "n1": "n̄", "n2": "ń", "n3": "ň", "n4": "ǹ", "n5": "n",
         "ng1": "n̄g", "ng2": "ńg", "ng3": "ňg", "ng4": "ǹg", "ng5": "ng"
     }
-
+    
     # 创建反向映射：从调号标调到数字标调
     REVERSE_SPECIAL_SYLLABLES = {v: k for k, v in SPECIAL_SYLLABLES.items()}
-
-    # 四类韵母定义（使用可变集合，支持动态添加）
-    SINGLE_QUALITY_FINALS = {'i', 'u', 'ü', 'v', 'a', 'o', 'e', 'ê', '_i', 'er', 'm', 'n', 'ng'}
+    
+    # 四类韵母定义
+    SINGLE_QUALITY_FINALS = {'i', 'u', 'ü', 'a', 'o', 'e', 'er', 'n', 'ng', 'm', 'ê'}
     FRONT_LONG_FINALS = {'ai', 'ei', 'ao', 'ou', 'an', 'en', 'ang', 'eng'}
-    BACK_LONG_FINALS = {'ia', 'ua', 'ie', 'ue', 've', 'io', 'uo'}
-    TRIPLE_QUALITY_FINALS = {'iao', 'iou', 'iu', 'uai', 'uei', 'ui', 'ian', 'uan', 'üan', 'van', 'iang', 'uang', 'in', 'uen', 'un', 'ün', 'ing', 'ueng', 'ong', 'iong', 'üng'}
-
+    BACK_LONG_FINALS = {'ia', 'ie', 'io', 'uo', 'in', 'ing', 'ün', 'üng'}
+    TRIPLE_QUALITY_FINALS = {'iao', 'iou', 'uan', 'uen', 'iang', 'uang', 'ueng'}
 
     @staticmethod
     def _is_special_syllable(syllable: str) -> bool:
         """判断是否为特殊音节（支持数字标调和调号标调）"""
-        return (syllable in GanyinCategorizer.SPECIAL_SYLLABLES or
+        return (syllable in GanyinCategorizer.SPECIAL_SYLLABLES or 
                 syllable in GanyinCategorizer.REVERSE_SPECIAL_SYLLABLES)
 
     @staticmethod
@@ -136,16 +217,8 @@ class GanyinCategorizer:
         """
         # 去除声调数字
         if final and final[-1].isdigit():
-            final = final[:-1]
-
-        # 处理带占位符的韵母（如"_i"开头的）
-        if final.startswith('_'):
-            prefix = '_'
-            final_part = final[1:]
-        else:
-            prefix = ''
-            final_part = final
-
+            return final[:-1]
+        
         # 声调符号到基本字符的映射
         tone_mapping = {
             'ā': 'a', 'á': 'a', 'ǎ': 'a', 'à': 'a',
@@ -158,100 +231,13 @@ class GanyinCategorizer:
             'ḿ': 'm', 'm̌': 'm', 'm̀': 'm', 'm̄': 'm',
             'ế': 'ê', 'ê̌': 'ê', 'ề': 'ê', 'ê̄': 'ê'
         }
-
+        
         # 转换带调号的字符
         result = ''
-        for char in final_part:
+        for char in final:
             result += tone_mapping.get(char, char)
-
-        return prefix + result
-
-    @staticmethod
-    def _add_final_to_category(final: str) -> bool:
-        """
-        将韵母动态添加到合适的分类中
-
-        参数:
-            final: 标准化后的韵母字符串
-
-        返回:
-            是否成功添加韵母
-        """
-        if not final:
-            return False
-
-        # 检查是否已存在于任何分类中
-        all_finals = (GanyinCategorizer.SINGLE_QUALITY_FINALS |
-                     GanyinCategorizer.FRONT_LONG_FINALS |
-                     GanyinCategorizer.BACK_LONG_FINALS |
-                     GanyinCategorizer.TRIPLE_QUALITY_FINALS)
-
-        if final in all_finals:
-            return False  # 已存在，不需要添加
-
-        # 根据韵母特征进行分类判断
-        if GanyinCategorizer._should_be_single_quality(final):
-            GanyinCategorizer.SINGLE_QUALITY_FINALS.add(final)
-            return True
-        elif GanyinCategorizer._should_be_front_long(final):
-            GanyinCategorizer.FRONT_LONG_FINALS.add(final)
-            return True
-        elif GanyinCategorizer._should_be_back_long(final):
-            GanyinCategorizer.BACK_LONG_FINALS.add(final)
-            return True
-        elif GanyinCategorizer._should_be_triple_quality(final):
-            GanyinCategorizer.TRIPLE_QUALITY_FINALS.add(final)
-            return True
-        else:
-            # 默认添加到单质干音类别
-            GanyinCategorizer.SINGLE_QUALITY_FINALS.add(final)
-            return True
-
-    @staticmethod
-    def _should_be_single_quality(final: str) -> bool:
-        """判断是否应该归为单质干音"""
-        # 单个字符韵母或特殊韵母
-        if len(final) <= 2:
-            return True
-        # 带下划线前缀的韵母
-        if final.startswith('_'):
-            return True
-        return False
-
-    @staticmethod
-    def _should_be_front_long(final: str) -> bool:
-        """判断是否应该归为前长干音"""
-        # 以 a, e, o 开头的复合韵母，或以 n, ng 结尾但不以 i, u, ü 开头
-        if len(final) >= 2:
-            if final[0] in {'a', 'e', 'o'} and len(final) == 2:
-                return True
-            if final.endswith(('n', 'ng')) and not final[0] in {'i', 'u', 'ü'}:
-                return True
-        return False
-
-    @staticmethod
-    def _should_be_back_long(final: str) -> bool:
-        """判断是否应该归为后长干音"""
-        # 以 i, u, ü 开头的复合韵母（但不是三质干音）
-        if len(final) >= 2 and final[0] in {'i', 'u', 'ü'}:
-            # 检查不是三质干音
-            if not GanyinCategorizer._should_be_triple_quality(final):
-                return True
-        return False
-
-    @staticmethod
-    def _should_be_triple_quality(final: str) -> bool:
-        """判断是否应该归为三质干音"""
-        # 长度为3或4的复合韵母，通常包含三个音质成分
-        if len(final) >= 3:
-            # 典型的三质韵母模式
-            triple_patterns = ['iao', 'iou', 'uan', 'uen', 'iang', 'uang', 'ueng']
-            if final in triple_patterns:
-                return True
-            # 其他长复合韵母也可能是三质
-            if len(final) >= 4:
-                return True
-        return False
+        
+        return result
 
     @staticmethod
     def get_all_categories() -> Tuple[str, str, str, str]:
@@ -312,7 +298,7 @@ class GanyinCategorizer:
         # 处理特殊音节（数字标调形式）
         if syllable in GanyinCategorizer.SPECIAL_SYLLABLES:
             return "'", GanyinCategorizer.SPECIAL_SYLLABLES[syllable]
-
+            
         # 处理特殊音节（调号标调形式）
         if syllable in GanyinCategorizer.REVERSE_SPECIAL_SYLLABLES:
             return "'", syllable
@@ -377,14 +363,13 @@ class GanyinCategorizer:
                 干音数据字典 {数字标调干音: 调号标调干音}
             """
             ganyin_data = {}
-            new_finals_added = []  # 记录新添加的韵母
 
             for num_pinyin, tone_pinyin in pinyin_data.items():
                 # 切分数字标调拼音，获取干音部分
-                initial_num, num_final = GanyinCategorizer.split_syllable(num_pinyin)
+                _, num_final = GanyinCategorizer.split_syllable(num_pinyin)
 
                 # 切分调号标调拼音，获取干音部分
-                initial_tone, tone_final = GanyinCategorizer.split_syllable(tone_pinyin)
+                _, tone_final = GanyinCategorizer.split_syllable(tone_pinyin)
 
                 # 特殊处理特殊音节
                 if GanyinCategorizer._is_special_syllable(num_pinyin):
@@ -392,35 +377,9 @@ class GanyinCategorizer:
                     num_final = num_pinyin  # 特殊音节本身就是干音
                     tone_final = GanyinCategorizer.SPECIAL_SYLLABLES.get(
                         num_pinyin, tone_final)
-                else:
-                    # 处理舌尖音：当声母为 z, c, s, zh, ch, sh, r 且韵母为"i"时，添加占位符"_"
-                    if initial_num in {'z', 'c', 's', 'zh', 'ch', 'sh', 'r'}:
-                        # 检查数字标调干音是否以"i"开头
-                        if num_final.startswith('i'):
-                            num_final = '_' + num_final
-                        # 检查调号标调干音是否以"i"或带调号的"i"开头
-                        if tone_final and tone_final[0] in {'i', 'ī', 'í', 'ǐ', 'ì'}:
-                            tone_final = '_' + tone_final
-
-                # 提取韵母并检查是否需要添加到预定义集合中
-                if num_final:
-                    # 标准化韵母（去除声调标记）
-                    normalized_final = GanyinCategorizer._normalize_final(num_final)
-
-                    # 尝试添加到韵母分类中
-                    if GanyinCategorizer._add_final_to_category(normalized_final):
-                        new_finals_added.append(normalized_final)
 
                 # 存储干音数据 - 数字标调干音作键，调号标调干音作值
                 ganyin_data[num_final] = tone_final
-
-            # 如果有新韵母添加，打印信息
-            if new_finals_added:
-                print(f"新添加的韵母: {sorted(set(new_finals_added))}")
-                print("更新后的韵母分类:")
-                all_finals = GanyinCategorizer.get_all_finals()
-                for category, finals in all_finals.items():
-                    print(f"  {category}: {sorted(finals)}")
 
             return ganyin_data
 
@@ -456,20 +415,12 @@ class GanyinCategorizer:
 
 
 if __name__ == "__main__":
-    print("=== 测试韵母分类功能 ===")
     # 保留原有示例用法
-    samples = ["ī", "āi", "iā", "iāo"]
+    samples = ["ī", "āi", "iā", "iāo"]
     for final in samples:
-        normalized = GanyinCategorizer._normalize_final(final)
         category = GanyinCategorizer.categorize(final)
-        print(f"韵母 '{final}' -> 标准化: '{normalized}' -> 分类: {category}")
+        print(f"韵母 '{final}' 的分类是: {category}")
 
-    print("\\n=== 四类韵母数据 ===")
-    all_finals = GanyinCategorizer.get_all_finals()
-    for category, finals in all_finals.items():
-        print(f"{category}: {sorted(finals)}")
-
-    print("\\n=== 开始分析和保存 ===")
     # 新增分析执行
     analyzer = GanyinCategorizer.GanyinAnalyzer()
     if analyzer.analyze_and_save():
