@@ -7,10 +7,10 @@
 2. 定义一个干音分类工具类 GanyinCategorizer：
 - 根据韵母的类型把干音分成四类：
     - 单质干音（Single Quality Ganyin），例如 "ī", "ǒ", "ń", "ǹg", "-ī",  "èr"
-    - 前长干音（Front Long Ganyin），例如 "ai", "ei", "ao", "ou", "an", "en", "ang", "eng"
-    - 后长干音（Back Long Ganyin），例如 "ia", "ie", "io", "uo", "in", "ing", "ün", "üng"
-    - 三质干音（Triple Quality Ganyin）, 例如 "iao", "iou", "uan", "uen", "iang", "uang", "ueng"
-"""
+- 前长干音（Front Long Ganyin），例如 "āi", "ēi", "āo", "ōu", "ān", "ēn", "āng", "ēng"
+    - 后长干音（Back Long Ganyin），例如 "iā", "iē", "iō", "uō", "īn", "īng", "ǖn", "ǖng"
+    - 三质干音（Triple Quality Ganyin）, 例如 "iāo", "iōu", "uān", "uēn", "iāng", "uāng", "uēng"    """
+
 
 class GanyinAnalyzer:
     """干音分析器类"""
