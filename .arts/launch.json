@@ -5,6 +5,15 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "ganyin",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\syllable\\analysis\\slice\\ganyin.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
+            "addSourceRootsToPythonpath": true
+        },
+        {
             "name": "potential_syllable",
             "type": "python",
             "request": "launch",

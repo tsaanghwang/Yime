@@ -8,7 +8,7 @@ from collections import defaultdict
 class InitialFinalWithToneAnalysisExecutor:
     """声母韵母声调分析执行类，封装复杂分析逻辑"""
 
-    # 定义特殊音节映射（已移除所有h开头的特殊音节）
+    # 定义特殊音节映射
     SPECIAL_SYLLABLES = {
         "ê1": "ê̄",
         "ê2": "ế",
