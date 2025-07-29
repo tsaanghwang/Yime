@@ -8,10 +8,17 @@
     - 单质干音（Single Quality Ganyin），例如 "ī", "ǒ", "ń", "ǹg", "-ī",  "èr"
     - 前长干音（Front Long Ganyin），例如 "āi", "ēi", "āo", "ōu", "ān", "ēn", "āng", "ēng"
     - 后长干音（Back Long Ganyin），例如 "iā", "iē", "iō", "uō", "īn", "īng", "ǖn", "ǖng"
-    - 三质干音（Triple Quality Ganyin）, 例如 "iāo", "iōu", "uān", "uēn", "iāng", "uāng", "uēng"    
+    - 三质干音（Triple Quality Ganyin）, 例如 "iāo", "iōu", "uān", "uēn", "iāng", "uāng", "uēng"
 """
-from typing import Tuple, Dict
-from .Syllable import Syllable
+import json
+import os
+from collections import defaultdict
+from typing import Dict, Tuple
+
+try:
+    from .Syllable import Syllable  # When imported as part of a package
+except ImportError:
+    from Syllable import Syllable  # When run directly as a script
 
 
 class Ganyin:
@@ -58,11 +65,48 @@ class Ganyin:
     def __repr__(self):
         return self.__str__()
 
+    def _generate_ganyin_data(self, pinyin_data: Dict[str, str]) -> Dict[str, str]:
+        """生成干音数据(切除首音后的剩余部分)
+
+        参数:
+            pinyin_data: 拼音数据字典 {数字标调拼音: 调号标调拼音}
+
+        返回:
+            干音数据字典 {数字标调干音: 调号标调干音}
+        """
+        ganyin_data = {}
+
+        for num_pinyin, tone_pinyin in pinyin_data.items():
+            # 切分音节，获取韵母部分
+            _, final_with_tone = GanyinCategorizer.split_syllable(num_pinyin)
+
+            # 特殊处理特殊音节
+            if GanyinCategorizer._is_special_syllable(num_pinyin):
+                final_with_tone = GanyinCategorizer.SPECIAL_SYLLABLES.get(
+                    num_pinyin, final_with_tone)
+
+            # 存储干音数据
+            ganyin_data[final_with_tone] = final_with_tone
+
+        return ganyin_data
+
 
 class GanyinCategorizer:
     """
     干音分类工具类，根据韵母类型将干音分类
     """
+    SPECIAL_SYLLABLES = {
+        "ê1": "ê̄", "ê2": "ế", "ê3": "ê̌", "ê4": "ề", "ê5": "ê",
+        "m1": "m̄", "m2": "ḿ", "m3": "m̌", "m4": "m̀", "m5": "m",
+        "n1": "n̄", "n2": "ń", "n3": "ň", "n4": "ǹ", "n5": "n",
+        "ng1": "n̄g", "ng2": "ńg", "ng3": "ňg", "ng4": "ǹg", "ng5": "ng"
+    }
+
+    @staticmethod
+    def _is_special_syllable(syllable: str) -> bool:
+        """判断是否为特殊音节"""
+        return syllable in GanyinCategorizer.SPECIAL_SYLLABLES
+
     @staticmethod
     def categorize(final: str) -> str:
         """
@@ -126,3 +170,150 @@ class GanyinCategorizer:
             包含所有分类类型的元组
         """
         return ("单质干音", "前长干音", "后长干音", "三质干音")
+
+    @staticmethod
+    def split_syllable(syllable: str) -> Tuple[str, str]:
+        """切分音节为首音和干音部分
+
+        参数:
+            syllable: 拼音字符串 (如 "zhang1" 或 "zhāng")
+        返回:
+            元组 (首音部分, 干音部分)
+        """
+        if not syllable:
+            return "", ""
+
+        # 处理特殊音节
+        if syllable in GanyinCategorizer.SPECIAL_SYLLABLES:
+            return "'", GanyinCategorizer.SPECIAL_SYLLABLES[syllable]
+
+        # 零声母处理 (适用于数字标调和调号标调)
+        if syllable[0] in {'a', 'o', 'e', 'ê', 'ā', 'ō', 'ē', 'ế'}:
+            return "'", syllable
+
+        # 双字母声母 (zh, ch, sh) - 检查调号标调情况
+        if len(syllable) >= 2:
+            initial_candidate = syllable[:2].lower()
+            if initial_candidate in {'zh', 'ch', 'sh'}:
+                return initial_candidate, syllable[2:]
+
+        # 默认处理：第一个字母作为声母
+        return syllable[0], syllable[1:] if len(syllable) > 1 else ""
+
+    @staticmethod
+    def generate_shouyin_data(pinyin_data: Dict[str, str]) -> Dict[str, str]:
+        """生成首音数据字典
+
+        参数:
+            pinyin_data: 拼音数据字典 {数字标调拼音: 调号标调拼音}
+
+        返回:
+            首音数据字典 {"首音": "首音"}
+        """
+        shouyin_data = {}
+
+        for num_pinyin, tone_pinyin in pinyin_data.items():
+            # 从调号标调拼音中切分首音
+            initial, _ = GanyinCategorizer.split_syllable(tone_pinyin)
+
+            # 存储首音数据
+            if initial not in shouyin_data:
+                shouyin_data[initial] = initial
+
+        return shouyin_data
+
+    class GanyinAnalyzer:
+        """干音分析器，用于处理文件输入输出和批量分析"""
+
+        def __init__(self):
+            self.input_path = os.path.normpath(os.path.join(
+                os.path.dirname(__file__),
+                '..', '..', '..', 'pinyin', 'hanzi_pinyin', 'pinyin_normalized.json'
+            ))
+            self.shouyin_path = os.path.join(
+                os.path.dirname(__file__), 'shouyin.json'
+            )
+            self.ganyin_path = os.path.join(
+                os.path.dirname(__file__), 'ganyin.json'
+            )
+
+        def _generate_ganyin_data(self, pinyin_data: Dict[str, str]) -> Dict[str, str]:
+            """生成干音数据(切除首音后的剩余部分)
+
+            参数:
+                pinyin_data: 拼音数据字典 {数字标调拼音: 调号标调拼音}
+
+            返回:
+                干音数据字典 {数字标调干音: 调号标调干音}
+            """
+            ganyin_data = {}
+
+            for num_pinyin, tone_pinyin in pinyin_data.items():
+                # 切分数字标调拼音，获取干音部分
+                _, num_final = GanyinCategorizer.split_syllable(num_pinyin)
+
+                # 切分调号标调拼音，获取干音部分
+                _, tone_final = GanyinCategorizer.split_syllable(tone_pinyin)
+
+                # 特殊处理特殊音节
+                if GanyinCategorizer._is_special_syllable(num_pinyin):
+                    # 保持数字标调形式作为键
+                    num_final = num_pinyin  # 特殊音节本身就是干音
+                    tone_final = GanyinCategorizer.SPECIAL_SYLLABLES.get(
+                        num_pinyin, tone_final)
+
+                # 存储干音数据 - 数字标调干音作键，调号标调干音作值
+                ganyin_data[num_final] = tone_final
+
+            return ganyin_data
+
+        def analyze_and_save(self):
+            """分析拼音数据并保存结果"""
+            try:
+                with open(self.input_path, 'r', encoding='utf-8') as f:
+                    pinyin_data = json.load(f)
+
+                # 生成首音数据
+                shouyin_data = {}
+                for num_pinyin in pinyin_data.keys():
+                    initial, _ = GanyinCategorizer.split_syllable(num_pinyin)
+                    if initial not in shouyin_data:
+                        shouyin_data[initial] = ""  # 值为空字符串
+
+                # 生成干音数据
+                ganyin_data = self._generate_ganyin_data(pinyin_data)
+
+                # 转换为要求的输出格式
+                output_shouyin = {"shouyin": dict(
+                    sorted(shouyin_data.items()))}
+                output_ganyin = {"ganyin": dict(sorted(ganyin_data.items()))}
+
+                # 保存文件
+                with open(self.shouyin_path, 'w', encoding='utf-8') as f:
+                    json.dump(output_shouyin, f, ensure_ascii=False, indent=2)
+
+                with open(self.ganyin_path, 'w', encoding='utf-8') as f:
+                    json.dump(output_ganyin, f, ensure_ascii=False, indent=2)
+
+                return True
+
+            except Exception as e:
+                print(f"分析过程中出错: {e}")
+                return False
+
+
+if __name__ == "__main__":
+    # 保留原有示例用法
+    samples = ["ī", "āi", "iā", "iāo"]
+    for final in samples:
+        category = GanyinCategorizer.categorize(final)
+        print(f"韵母 '{final}' 的分类是: {category}")
+
+    # 新增分析执行
+    analyzer = GanyinCategorizer.GanyinAnalyzer()
+    if analyzer.analyze_and_save():
+        print("分析完成，结果已保存到:")
+        print(f"- 首音数据: {analyzer.shouyin_path}")
+        print(f"- 干音数据: {analyzer.ganyin_path}")
+    else:
+        print("分析失败，请检查错误信息")

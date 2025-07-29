@@ -1,6 +1,9 @@
+"""
 
 """
-我在syllable\analysis\slice\Syllable.py中定义了一个音节类（Syllable），用于提取音节的特征，包括首音和干音等信息。
-又在syllable\analysis\slice\shouyin.py中定义了一个首音类（Initial），用于表示汉语音节的首音（声母）及其相关属性。
-现在我需要这两个类的关联起来并从音节中把首音切分出来。
+"""
+在syllable\analysis\slice\ganyin.py中，对 split_syllable 这个方法：
+类推 _generate_ganyin_data 的方法，把参数改为拼音数据字典 {数字标调拼音: 调号标调拼音}即pinyin_data.items的"值"（tone_pinyin），
+同样分成首音，将生成的首音部分拼音数据，表示成{"首音": "首音"}键值对的形式：
+即从数字标调拼音中切分出来的首音部分作键gyin_data的键，后者作的值，存入字典中。
 """
