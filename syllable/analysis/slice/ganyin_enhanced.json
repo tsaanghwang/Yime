@@ -1,0 +1,967 @@
+{
+  "ganyin": {
+    "single quality ganyin": {
+      "_i1": {
+        "numeric_tone": "_i1",
+        "tone_mark": "_ī",
+        "ipa": "_i˥"
+      },
+      "_i2": {
+        "numeric_tone": "_i2",
+        "tone_mark": "_í",
+        "ipa": "_i˧˥"
+      },
+      "_i3": {
+        "numeric_tone": "_i3",
+        "tone_mark": "_ǐ",
+        "ipa": "_i˨˩˨"
+      },
+      "_i4": {
+        "numeric_tone": "_i4",
+        "tone_mark": "_ì",
+        "ipa": "_i˥˩"
+      },
+      "_i5": {
+        "numeric_tone": "_i5",
+        "tone_mark": "_i",
+        "ipa": "_i"
+      },
+      "a1": {
+        "numeric_tone": "a1",
+        "tone_mark": "ā",
+        "ipa": "a˥"
+      },
+      "a2": {
+        "numeric_tone": "a2",
+        "tone_mark": "á",
+        "ipa": "a˧˥"
+      },
+      "a3": {
+        "numeric_tone": "a3",
+        "tone_mark": "ǎ",
+        "ipa": "a˨˩˨"
+      },
+      "a4": {
+        "numeric_tone": "a4",
+        "tone_mark": "à",
+        "ipa": "a˥˩"
+      },
+      "a5": {
+        "numeric_tone": "a5",
+        "tone_mark": "a",
+        "ipa": "a"
+      },
+      "e1": {
+        "numeric_tone": "e1",
+        "tone_mark": "ē",
+        "ipa": "ɤ˥"
+      },
+      "e2": {
+        "numeric_tone": "e2",
+        "tone_mark": "é",
+        "ipa": "ɤ˧˥"
+      },
+      "e3": {
+        "numeric_tone": "e3",
+        "tone_mark": "ě",
+        "ipa": "ɤ˨˩˨"
+      },
+      "e4": {
+        "numeric_tone": "e4",
+        "tone_mark": "è",
+        "ipa": "ɤ˥˩"
+      },
+      "e5": {
+        "numeric_tone": "e5",
+        "tone_mark": "e",
+        "ipa": "ɤ"
+      },
+      "er1": {
+        "numeric_tone": "er1",
+        "tone_mark": "ēr",
+        "ipa": "ɚ˥"
+      },
+      "er2": {
+        "numeric_tone": "er2",
+        "tone_mark": "ér",
+        "ipa": "ɚ˧˥"
+      },
+      "er3": {
+        "numeric_tone": "er3",
+        "tone_mark": "ěr",
+        "ipa": "ɚ˨˩˨"
+      },
+      "er4": {
+        "numeric_tone": "er4",
+        "tone_mark": "èr",
+        "ipa": "ɚ˥˩"
+      },
+      "er5": {
+        "numeric_tone": "er5",
+        "tone_mark": "er",
+        "ipa": "ɚ"
+      },
+      "i1": {
+        "numeric_tone": "i1",
+        "tone_mark": "ī",
+        "ipa": "i˥"
+      },
+      "i2": {
+        "numeric_tone": "i2",
+        "tone_mark": "í",
+        "ipa": "i˧˥"
+      },
+      "i3": {
+        "numeric_tone": "i3",
+        "tone_mark": "ǐ",
+        "ipa": "i˨˩˨"
+      },
+      "i4": {
+        "numeric_tone": "i4",
+        "tone_mark": "ì",
+        "ipa": "i˥˩"
+      },
+      "i5": {
+        "numeric_tone": "i5",
+        "tone_mark": "i",
+        "ipa": "i"
+      },
+      "m1": {
+        "numeric_tone": "m1",
+        "tone_mark": "m̄",
+        "ipa": "m̩˥"
+      },
+      "m2": {
+        "numeric_tone": "m2",
+        "tone_mark": "ḿ",
+        "ipa": "m̩˧˥"
+      },
+      "m3": {
+        "numeric_tone": "m3",
+        "tone_mark": "m̌",
+        "ipa": "m̩˨˩˨"
+      },
+      "m4": {
+        "numeric_tone": "m4",
+        "tone_mark": "m̀",
+        "ipa": "m̩˥˩"
+      },
+      "m5": {
+        "numeric_tone": "m5",
+        "tone_mark": "m",
+        "ipa": "m̩"
+      },
+      "n1": {
+        "numeric_tone": "n1",
+        "tone_mark": "n̄",
+        "ipa": "n̩˥"
+      },
+      "n2": {
+        "numeric_tone": "n2",
+        "tone_mark": "ń",
+        "ipa": "n̩˧˥"
+      },
+      "n3": {
+        "numeric_tone": "n3",
+        "tone_mark": "ň",
+        "ipa": "n̩˨˩˨"
+      },
+      "n4": {
+        "numeric_tone": "n4",
+        "tone_mark": "ǹ",
+        "ipa": "n̩˥˩"
+      },
+      "n5": {
+        "numeric_tone": "n5",
+        "tone_mark": "n",
+        "ipa": "n̩"
+      },
+      "ng1": {
+        "numeric_tone": "ng1",
+        "tone_mark": "n̄g",
+        "ipa": "ŋ̩˥"
+      },
+      "ng2": {
+        "numeric_tone": "ng2",
+        "tone_mark": "ńg",
+        "ipa": "ŋ̩˧˥"
+      },
+      "ng3": {
+        "numeric_tone": "ng3",
+        "tone_mark": "ňg",
+        "ipa": "ŋ̩˨˩˨"
+      },
+      "ng4": {
+        "numeric_tone": "ng4",
+        "tone_mark": "ǹg",
+        "ipa": "ŋ̩˥˩"
+      },
+      "ng5": {
+        "numeric_tone": "ng5",
+        "tone_mark": "ng",
+        "ipa": "ŋ̩"
+      },
+      "o1": {
+        "numeric_tone": "o1",
+        "tone_mark": "ō",
+        "ipa": "o˥"
+      },
+      "o2": {
+        "numeric_tone": "o2",
+        "tone_mark": "ó",
+        "ipa": "o˧˥"
+      },
+      "o3": {
+        "numeric_tone": "o3",
+        "tone_mark": "ǒ",
+        "ipa": "o˨˩˨"
+      },
+      "o4": {
+        "numeric_tone": "o4",
+        "tone_mark": "ò",
+        "ipa": "o˥˩"
+      },
+      "o5": {
+        "numeric_tone": "o5",
+        "tone_mark": "o",
+        "ipa": "o"
+      },
+      "u1": {
+        "numeric_tone": "u1",
+        "tone_mark": "ū",
+        "ipa": "u˥"
+      },
+      "u2": {
+        "numeric_tone": "u2",
+        "tone_mark": "ú",
+        "ipa": "u˧˥"
+      },
+      "u3": {
+        "numeric_tone": "u3",
+        "tone_mark": "ǔ",
+        "ipa": "u˨˩˨"
+      },
+      "u4": {
+        "numeric_tone": "u4",
+        "tone_mark": "ù",
+        "ipa": "u˥˩"
+      },
+      "u5": {
+        "numeric_tone": "u5",
+        "tone_mark": "u",
+        "ipa": "u"
+      },
+      "v2": {
+        "numeric_tone": "v2",
+        "tone_mark": "ǘ",
+        "ipa": "y˧˥"
+      },
+      "v3": {
+        "numeric_tone": "v3",
+        "tone_mark": "ǚ",
+        "ipa": "y˨˩˨"
+      },
+      "v4": {
+        "numeric_tone": "v4",
+        "tone_mark": "ǜ",
+        "ipa": "y˥˩"
+      },
+      "ê1": {
+        "numeric_tone": "ê1",
+        "tone_mark": "ê̄",
+        "ipa": "e˥"
+      },
+      "ê2": {
+        "numeric_tone": "ê2",
+        "tone_mark": "ế",
+        "ipa": "e˧˥"
+      },
+      "ê3": {
+        "numeric_tone": "ê3",
+        "tone_mark": "ê̌",
+        "ipa": "e˨˩˨"
+      },
+      "ê4": {
+        "numeric_tone": "ê4",
+        "tone_mark": "ề",
+        "ipa": "e˥˩"
+      },
+      "ê5": {
+        "numeric_tone": "ê5",
+        "tone_mark": "ê",
+        "ipa": "e"
+      }
+    },
+    "front long ganyin": {
+      "ai1": {
+        "numeric_tone": "ai1",
+        "tone_mark": "āi",
+        "ipa": "aɪ˥"
+      },
+      "ai2": {
+        "numeric_tone": "ai2",
+        "tone_mark": "ái",
+        "ipa": "aɪ˧˥"
+      },
+      "ai3": {
+        "numeric_tone": "ai3",
+        "tone_mark": "ǎi",
+        "ipa": "aɪ˨˩˨"
+      },
+      "ai4": {
+        "numeric_tone": "ai4",
+        "tone_mark": "ài",
+        "ipa": "aɪ˥˩"
+      },
+      "ai5": {
+        "numeric_tone": "ai5",
+        "tone_mark": "ai",
+        "ipa": "aɪ"
+      },
+      "an1": {
+        "numeric_tone": "an1",
+        "tone_mark": "ān",
+        "ipa": "an˥"
+      },
+      "an2": {
+        "numeric_tone": "an2",
+        "tone_mark": "án",
+        "ipa": "an˧˥"
+      },
+      "an3": {
+        "numeric_tone": "an3",
+        "tone_mark": "ǎn",
+        "ipa": "an˨˩˨"
+      },
+      "an4": {
+        "numeric_tone": "an4",
+        "tone_mark": "àn",
+        "ipa": "an˥˩"
+      },
+      "an5": {
+        "numeric_tone": "an5",
+        "tone_mark": "an",
+        "ipa": "an"
+      },
+      "ang1": {
+        "numeric_tone": "ang1",
+        "tone_mark": "āng",
+        "ipa": "aŋ˥"
+      },
+      "ang2": {
+        "numeric_tone": "ang2",
+        "tone_mark": "áng",
+        "ipa": "aŋ˧˥"
+      },
+      "ang3": {
+        "numeric_tone": "ang3",
+        "tone_mark": "ǎng",
+        "ipa": "aŋ˨˩˨"
+      },
+      "ang4": {
+        "numeric_tone": "ang4",
+        "tone_mark": "àng",
+        "ipa": "aŋ˥˩"
+      },
+      "ang5": {
+        "numeric_tone": "ang5",
+        "tone_mark": "ang",
+        "ipa": "aŋ"
+      },
+      "ao1": {
+        "numeric_tone": "ao1",
+        "tone_mark": "āo",
+        "ipa": "aʊ˥"
+      },
+      "ao2": {
+        "numeric_tone": "ao2",
+        "tone_mark": "áo",
+        "ipa": "aʊ˧˥"
+      },
+      "ao3": {
+        "numeric_tone": "ao3",
+        "tone_mark": "ǎo",
+        "ipa": "aʊ˨˩˨"
+      },
+      "ao4": {
+        "numeric_tone": "ao4",
+        "tone_mark": "ào",
+        "ipa": "aʊ˥˩"
+      },
+      "ao5": {
+        "numeric_tone": "ao5",
+        "tone_mark": "ao",
+        "ipa": "aʊ"
+      },
+      "ei1": {
+        "numeric_tone": "ei1",
+        "tone_mark": "ēi",
+        "ipa": "eɪ˥"
+      },
+      "ei2": {
+        "numeric_tone": "ei2",
+        "tone_mark": "éi",
+        "ipa": "eɪ˧˥"
+      },
+      "ei3": {
+        "numeric_tone": "ei3",
+        "tone_mark": "ěi",
+        "ipa": "eɪ˨˩˨"
+      },
+      "ei4": {
+        "numeric_tone": "ei4",
+        "tone_mark": "èi",
+        "ipa": "eɪ˥˩"
+      },
+      "ei5": {
+        "numeric_tone": "ei5",
+        "tone_mark": "ei",
+        "ipa": "eɪ"
+      },
+      "en1": {
+        "numeric_tone": "en1",
+        "tone_mark": "ēn",
+        "ipa": "ən˥"
+      },
+      "en2": {
+        "numeric_tone": "en2",
+        "tone_mark": "én",
+        "ipa": "ən˧˥"
+      },
+      "en3": {
+        "numeric_tone": "en3",
+        "tone_mark": "ěn",
+        "ipa": "ən˨˩˨"
+      },
+      "en4": {
+        "numeric_tone": "en4",
+        "tone_mark": "èn",
+        "ipa": "ən˥˩"
+      },
+      "en5": {
+        "numeric_tone": "en5",
+        "tone_mark": "en",
+        "ipa": "ən"
+      },
+      "eng1": {
+        "numeric_tone": "eng1",
+        "tone_mark": "ēng",
+        "ipa": "ɤŋ˥"
+      },
+      "eng2": {
+        "numeric_tone": "eng2",
+        "tone_mark": "éng",
+        "ipa": "ɤŋ˧˥"
+      },
+      "eng3": {
+        "numeric_tone": "eng3",
+        "tone_mark": "ěng",
+        "ipa": "ɤŋ˨˩˨"
+      },
+      "eng4": {
+        "numeric_tone": "eng4",
+        "tone_mark": "èng",
+        "ipa": "ɤŋ˥˩"
+      },
+      "eng5": {
+        "numeric_tone": "eng5",
+        "tone_mark": "eng",
+        "ipa": "ɤŋ"
+      },
+      "ou1": {
+        "numeric_tone": "ou1",
+        "tone_mark": "ōu",
+        "ipa": "ɤʊ˥"
+      },
+      "ou2": {
+        "numeric_tone": "ou2",
+        "tone_mark": "óu",
+        "ipa": "ɤʊ˧˥"
+      },
+      "ou3": {
+        "numeric_tone": "ou3",
+        "tone_mark": "ǒu",
+        "ipa": "ɤʊ˨˩˨"
+      },
+      "ou4": {
+        "numeric_tone": "ou4",
+        "tone_mark": "òu",
+        "ipa": "ɤʊ˥˩"
+      },
+      "ou5": {
+        "numeric_tone": "ou5",
+        "tone_mark": "ou",
+        "ipa": "ɤʊ"
+      }
+    },
+    "back long ganyin": {
+      "ia1": {
+        "numeric_tone": "ia1",
+        "tone_mark": "iā",
+        "ipa": "ia˥"
+      },
+      "ia2": {
+        "numeric_tone": "ia2",
+        "tone_mark": "iá",
+        "ipa": "ia˧˥"
+      },
+      "ia3": {
+        "numeric_tone": "ia3",
+        "tone_mark": "iǎ",
+        "ipa": "ia˨˩˨"
+      },
+      "ia4": {
+        "numeric_tone": "ia4",
+        "tone_mark": "ià",
+        "ipa": "ia˥˩"
+      },
+      "ia5": {
+        "numeric_tone": "ia5",
+        "tone_mark": "ia",
+        "ipa": "ia"
+      },
+      "ie1": {
+        "numeric_tone": "ie1",
+        "tone_mark": "iē",
+        "ipa": "ie˥"
+      },
+      "ie2": {
+        "numeric_tone": "ie2",
+        "tone_mark": "ié",
+        "ipa": "ie˧˥"
+      },
+      "ie3": {
+        "numeric_tone": "ie3",
+        "tone_mark": "iě",
+        "ipa": "ie˨˩˨"
+      },
+      "ie4": {
+        "numeric_tone": "ie4",
+        "tone_mark": "iè",
+        "ipa": "ie˥˩"
+      },
+      "ie5": {
+        "numeric_tone": "ie5",
+        "tone_mark": "ie",
+        "ipa": "ie"
+      },
+      "ua1": {
+        "numeric_tone": "ua1",
+        "tone_mark": "uā",
+        "ipa": "ua˥"
+      },
+      "ua2": {
+        "numeric_tone": "ua2",
+        "tone_mark": "uá",
+        "ipa": "ua˧˥"
+      },
+      "ua3": {
+        "numeric_tone": "ua3",
+        "tone_mark": "uǎ",
+        "ipa": "ua˨˩˨"
+      },
+      "ua4": {
+        "numeric_tone": "ua4",
+        "tone_mark": "uà",
+        "ipa": "ua˥˩"
+      },
+      "ua5": {
+        "numeric_tone": "ua5",
+        "tone_mark": "ua",
+        "ipa": "ua"
+      },
+      "ue1": {
+        "numeric_tone": "ue1",
+        "tone_mark": "uē",
+        "ipa": "ue˥"
+      },
+      "ue2": {
+        "numeric_tone": "ue2",
+        "tone_mark": "ué",
+        "ipa": "ue˧˥"
+      },
+      "ue3": {
+        "numeric_tone": "ue3",
+        "tone_mark": "uě",
+        "ipa": "ue˨˩˨"
+      },
+      "ue4": {
+        "numeric_tone": "ue4",
+        "tone_mark": "uè",
+        "ipa": "ue˥˩"
+      },
+      "ue5": {
+        "numeric_tone": "ue5",
+        "tone_mark": "ue",
+        "ipa": "ue"
+      },
+      "uo1": {
+        "numeric_tone": "uo1",
+        "tone_mark": "uō",
+        "ipa": "uo˥"
+      },
+      "uo2": {
+        "numeric_tone": "uo2",
+        "tone_mark": "uó",
+        "ipa": "uo˧˥"
+      },
+      "uo3": {
+        "numeric_tone": "uo3",
+        "tone_mark": "uǒ",
+        "ipa": "uo˨˩˨"
+      },
+      "uo4": {
+        "numeric_tone": "uo4",
+        "tone_mark": "uò",
+        "ipa": "uo˥˩"
+      },
+      "uo5": {
+        "numeric_tone": "uo5",
+        "tone_mark": "uo",
+        "ipa": "uo"
+      },
+      "ve4": {
+        "numeric_tone": "ve4",
+        "tone_mark": "üè",
+        "ipa": "ye˥˩"
+      }
+    },
+    "triple quality ganyin": {
+      "ian1": {
+        "numeric_tone": "ian1",
+        "tone_mark": "iān",
+        "ipa": "ian˥"
+      },
+      "ian2": {
+        "numeric_tone": "ian2",
+        "tone_mark": "ián",
+        "ipa": "ian˧˥"
+      },
+      "ian3": {
+        "numeric_tone": "ian3",
+        "tone_mark": "iǎn",
+        "ipa": "ian˨˩˨"
+      },
+      "ian4": {
+        "numeric_tone": "ian4",
+        "tone_mark": "iàn",
+        "ipa": "ian˥˩"
+      },
+      "ian5": {
+        "numeric_tone": "ian5",
+        "tone_mark": "ian",
+        "ipa": "ian"
+      },
+      "iang1": {
+        "numeric_tone": "iang1",
+        "tone_mark": "iāng",
+        "ipa": "iaŋ˥"
+      },
+      "iang2": {
+        "numeric_tone": "iang2",
+        "tone_mark": "iáng",
+        "ipa": "iaŋ˧˥"
+      },
+      "iang3": {
+        "numeric_tone": "iang3",
+        "tone_mark": "iǎng",
+        "ipa": "iaŋ˨˩˨"
+      },
+      "iang4": {
+        "numeric_tone": "iang4",
+        "tone_mark": "iàng",
+        "ipa": "iaŋ˥˩"
+      },
+      "iang5": {
+        "numeric_tone": "iang5",
+        "tone_mark": "iang",
+        "ipa": "iaŋ"
+      },
+      "iao1": {
+        "numeric_tone": "iao1",
+        "tone_mark": "iāo",
+        "ipa": "iaʊ˥"
+      },
+      "iao2": {
+        "numeric_tone": "iao2",
+        "tone_mark": "iáo",
+        "ipa": "iaʊ˧˥"
+      },
+      "iao3": {
+        "numeric_tone": "iao3",
+        "tone_mark": "iǎo",
+        "ipa": "iaʊ˨˩˨"
+      },
+      "iao4": {
+        "numeric_tone": "iao4",
+        "tone_mark": "iào",
+        "ipa": "iaʊ˥˩"
+      },
+      "iao5": {
+        "numeric_tone": "iao5",
+        "tone_mark": "iao",
+        "ipa": "iaʊ"
+      },
+      "in1": {
+        "numeric_tone": "in1",
+        "tone_mark": "īn",
+        "ipa": "in˥"
+      },
+      "in2": {
+        "numeric_tone": "in2",
+        "tone_mark": "ín",
+        "ipa": "in˧˥"
+      },
+      "in3": {
+        "numeric_tone": "in3",
+        "tone_mark": "ǐn",
+        "ipa": "in˨˩˨"
+      },
+      "in4": {
+        "numeric_tone": "in4",
+        "tone_mark": "ìn",
+        "ipa": "in˥˩"
+      },
+      "in5": {
+        "numeric_tone": "in5",
+        "tone_mark": "in",
+        "ipa": "in"
+      },
+      "ing1": {
+        "numeric_tone": "ing1",
+        "tone_mark": "īng",
+        "ipa": "iŋ˥"
+      },
+      "ing2": {
+        "numeric_tone": "ing2",
+        "tone_mark": "íng",
+        "ipa": "iŋ˧˥"
+      },
+      "ing3": {
+        "numeric_tone": "ing3",
+        "tone_mark": "ǐng",
+        "ipa": "iŋ˨˩˨"
+      },
+      "ing4": {
+        "numeric_tone": "ing4",
+        "tone_mark": "ìng",
+        "ipa": "iŋ˥˩"
+      },
+      "ing5": {
+        "numeric_tone": "ing5",
+        "tone_mark": "ing",
+        "ipa": "iŋ"
+      },
+      "iong1": {
+        "numeric_tone": "iong1",
+        "tone_mark": "iōng",
+        "ipa": "yɤŋ˥"
+      },
+      "iong2": {
+        "numeric_tone": "iong2",
+        "tone_mark": "ióng",
+        "ipa": "yɤŋ˧˥"
+      },
+      "iong3": {
+        "numeric_tone": "iong3",
+        "tone_mark": "iǒng",
+        "ipa": "yɤŋ˨˩˨"
+      },
+      "iong4": {
+        "numeric_tone": "iong4",
+        "tone_mark": "iòng",
+        "ipa": "yɤŋ˥˩"
+      },
+      "iong5": {
+        "numeric_tone": "iong5",
+        "tone_mark": "iong",
+        "ipa": "yɤŋ"
+      },
+      "iu1": {
+        "numeric_tone": "iu1",
+        "tone_mark": "īu",
+        "ipa": "iʊ˥"
+      },
+      "iu2": {
+        "numeric_tone": "iu2",
+        "tone_mark": "íu",
+        "ipa": "iʊ˧˥"
+      },
+      "iu3": {
+        "numeric_tone": "iu3",
+        "tone_mark": "ǐu",
+        "ipa": "iʊ˨˩˨"
+      },
+      "iu4": {
+        "numeric_tone": "iu4",
+        "tone_mark": "ìu",
+        "ipa": "iʊ˥˩"
+      },
+      "iu5": {
+        "numeric_tone": "iu5",
+        "tone_mark": "iu",
+        "ipa": "iʊ"
+      },
+      "ong1": {
+        "numeric_tone": "ong1",
+        "tone_mark": "ōng",
+        "ipa": "ʊŋ˥"
+      },
+      "ong2": {
+        "numeric_tone": "ong2",
+        "tone_mark": "óng",
+        "ipa": "ʊŋ˧˥"
+      },
+      "ong3": {
+        "numeric_tone": "ong3",
+        "tone_mark": "ǒng",
+        "ipa": "ʊŋ˨˩˨"
+      },
+      "ong4": {
+        "numeric_tone": "ong4",
+        "tone_mark": "òng",
+        "ipa": "ʊŋ˥˩"
+      },
+      "ong5": {
+        "numeric_tone": "ong5",
+        "tone_mark": "ong",
+        "ipa": "ʊŋ"
+      },
+      "uai1": {
+        "numeric_tone": "uai1",
+        "tone_mark": "uāi",
+        "ipa": "uaɪ˥"
+      },
+      "uai2": {
+        "numeric_tone": "uai2",
+        "tone_mark": "uái",
+        "ipa": "uaɪ˧˥"
+      },
+      "uai3": {
+        "numeric_tone": "uai3",
+        "tone_mark": "uǎi",
+        "ipa": "uaɪ˨˩˨"
+      },
+      "uai4": {
+        "numeric_tone": "uai4",
+        "tone_mark": "uài",
+        "ipa": "uaɪ˥˩"
+      },
+      "uai5": {
+        "numeric_tone": "uai5",
+        "tone_mark": "uai",
+        "ipa": "uaɪ"
+      },
+      "uan1": {
+        "numeric_tone": "uan1",
+        "tone_mark": "uān",
+        "ipa": "uan˥"
+      },
+      "uan2": {
+        "numeric_tone": "uan2",
+        "tone_mark": "uán",
+        "ipa": "uan˧˥"
+      },
+      "uan3": {
+        "numeric_tone": "uan3",
+        "tone_mark": "uǎn",
+        "ipa": "uan˨˩˨"
+      },
+      "uan4": {
+        "numeric_tone": "uan4",
+        "tone_mark": "uàn",
+        "ipa": "uan˥˩"
+      },
+      "uan5": {
+        "numeric_tone": "uan5",
+        "tone_mark": "uan",
+        "ipa": "uan"
+      },
+      "uang1": {
+        "numeric_tone": "uang1",
+        "tone_mark": "uāng",
+        "ipa": "uaŋ˥"
+      },
+      "uang2": {
+        "numeric_tone": "uang2",
+        "tone_mark": "uáng",
+        "ipa": "uaŋ˧˥"
+      },
+      "uang3": {
+        "numeric_tone": "uang3",
+        "tone_mark": "uǎng",
+        "ipa": "uaŋ˨˩˨"
+      },
+      "uang4": {
+        "numeric_tone": "uang4",
+        "tone_mark": "uàng",
+        "ipa": "uaŋ˥˩"
+      },
+      "uang5": {
+        "numeric_tone": "uang5",
+        "tone_mark": "uang",
+        "ipa": "uaŋ"
+      },
+      "ui1": {
+        "numeric_tone": "ui1",
+        "tone_mark": "uī",
+        "ipa": "uɪ˥"
+      },
+      "ui2": {
+        "numeric_tone": "ui2",
+        "tone_mark": "uí",
+        "ipa": "uɪ˧˥"
+      },
+      "ui3": {
+        "numeric_tone": "ui3",
+        "tone_mark": "uǐ",
+        "ipa": "uɪ˨˩˨"
+      },
+      "ui4": {
+        "numeric_tone": "ui4",
+        "tone_mark": "uì",
+        "ipa": "uɪ˥˩"
+      },
+      "ui5": {
+        "numeric_tone": "ui5",
+        "tone_mark": "ui",
+        "ipa": "uɪ"
+      },
+      "un1": {
+        "numeric_tone": "un1",
+        "tone_mark": "ūn",
+        "ipa": "un˥"
+      },
+      "un2": {
+        "numeric_tone": "un2",
+        "tone_mark": "ún",
+        "ipa": "un˧˥"
+      },
+      "un3": {
+        "numeric_tone": "un3",
+        "tone_mark": "ǔn",
+        "ipa": "un˨˩˨"
+      },
+      "un4": {
+        "numeric_tone": "un4",
+        "tone_mark": "ùn",
+        "ipa": "un˥˩"
+      },
+      "un5": {
+        "numeric_tone": "un5",
+        "tone_mark": "un",
+        "ipa": "un"
+      },
+      "van2": {
+        "numeric_tone": "van2",
+        "tone_mark": "üán",
+        "ipa": "yan˧˥"
+      },
+      "van3": {
+        "numeric_tone": "van3",
+        "tone_mark": "üǎn",
+        "ipa": "yan˨˩˨"
+      }
+    }
+  }
+}
