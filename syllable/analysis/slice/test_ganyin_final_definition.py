@@ -8,31 +8,31 @@ from ganyin import GanyinCategorizer
 def test_ganyin_final_logic():
     """测试干音和韵母的处理逻辑"""
     print("=== 验证干音和韵母的定义 ===")
-    
+
     # 测试用例：拼音 -> (声母, 干音)
     test_cases = [
         ("zhāng", "zh", "āng"),  # 干音 = āng, 韵母 = ang
-        ("lǐ", "l", "ǐ"),        # 干音 = ǐ, 韵母 = i  
+        ("lǐ", "l", "ǐ"),        # 干音 = ǐ, 韵母 = i
         ("piāo", "p", "iāo"),    # 干音 = iāo, 韵母 = iao
         ("chuáng", "ch", "uáng"), # 干音 = uáng, 韵母 = uang
     ]
-    
+
     print("测试拼音切分:")
     for pinyin, expected_initial, expected_ganyin in test_cases:
         initial, ganyin = GanyinCategorizer.split_syllable(pinyin)
         final = GanyinCategorizer._normalize_final(ganyin)
         category = GanyinCategorizer.categorize(ganyin)
-        
+
         print(f"  拼音: {pinyin}")
         print(f"    声母: {initial} (预期: {expected_initial})")
         print(f"    干音: {ganyin} (预期: {expected_ganyin})")
         print(f"    韵母: {final}")
         print(f"    分类: {category}")
         print()
-    
+
     print("=== 验证预定义韵母集合 ===")
     all_finals = GanyinCategorizer.get_all_finals()
-    
+
     for category, finals in all_finals.items():
         print(f"{category}:")
         # 检查是否都是不带声调的韵母
