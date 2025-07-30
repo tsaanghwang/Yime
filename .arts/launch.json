@@ -5,6 +5,15 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "run_analyzer",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\syllable\\analysis\\slice\\run_analyzer.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
+            "addSourceRootsToPythonpath": true
+        },
+        {
             "name": "ganyin",
             "type": "python",
             "request": "launch",

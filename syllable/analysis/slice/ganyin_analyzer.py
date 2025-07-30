@@ -145,7 +145,6 @@ class GanyinAnalyzer:
                     # 处理调号标调的情况
                     if tone_final[0] in {'i', 'ī', 'í', 'ǐ', 'ì'}:
                         tone_final = '_' + tone_final
-
                 ganyin_data[num_final] = tone_final
 
         return ganyin_data
