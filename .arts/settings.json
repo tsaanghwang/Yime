@@ -64,7 +64,8 @@
         "pianyin",
         "Unpitched",
         "unpitched_yinyuan",
-        "yinyuan"
+        "yinyuan",
+        "Yueyin"
     ],
     "editor.codeActionsOnSave": {
         

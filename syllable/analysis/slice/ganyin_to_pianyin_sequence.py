@@ -8,30 +8,30 @@ class GanyinToPianyinSequence:
     # 片音的音质用音标（phonetic symbol）来表示
     # 片音的音调用调号（tone mark）来表示
     # 干音分析系统将干音分析成由三个片音构成的序列
-    
+
     def __init__(self):
-        self.tone_patterns = {
+        self.tone_segments = {
             "first_tone": ["high level", "high level", "high level"],  # 高平 -> 高平 -> 高平
             "second_tone": ["mid level", "mid-high level", "high level"],  # 中平 -> 半高平 -> 高平
             "third_tone": ["mid-low level", "low level", "low level"],  # 半低平 -> 低平 -> 低平
             "fourth_tone": ["high level", "mid-high level", "low level"]  # 高平 -> 半高平 -> 低平
         }
-        
-        self.tone_marks = {
+
+        self.tone_segments = {
             "high level": "˥",
             "mid-high level": "˦",
             "mid level": "˧",
             "mid-low level": "˨",
             "low level": "˩"
         }
-    
+
     def analyze_ganyin(self, final: Dict, tone: str, is_front_long: bool = False, is_back_long: bool = False, is_single_quality: bool = False) -> List[str]:
         """
         分析干音，生成片音序列
 
         参数:
             final: 韵母字典，必须包含"音标"字段，如{"音标": "uan", "拼音": "uan"}
-            tone: 声调类型，必须是self.tone_patterns中的调型
+            tone: 声调类型，必须是self.tone_segments中的调型
             is_front_long: 是否为前长韵母
             is_back_long: 是否为后长韵母
             is_single_quality: 是否为单质韵母
@@ -96,8 +96,8 @@ class GanyinToPianyinSequence:
             if len(ipa) != 3:
                 raise ValueError(f"三质韵母音标应为3个字符，当前值: {ipa}")
 
-        if tone not in self.tone_patterns:
-            valid_tones = list(self.tone_patterns.keys())
+        if tone not in self.tone_segments:
+            valid_tones = list(self.tone_segments.keys())
             raise ValueError(
                 f"无效的声调类型: {tone}，有效值为: {valid_tones}"
             )
@@ -113,27 +113,27 @@ class GanyinToPianyinSequence:
             ipa = ipa * 3  # 如"o"变为"ooo"
 
         # 生成片音序列
-        pitch_levels = self.tone_patterns[tone]
+        pitch_levels = self.tone_segments[tone]
         try:
             return [
-                f"{char}{self.tone_marks[level]}"
+                f"{char}{self.tone_segments[level]}"
                 for char, level in zip(ipa, pitch_levels)
             ]
         except Exception as e:
             raise ValueError(
                 f"生成片音序列失败: {str(e)}，音标: {ipa}, 声调: {tone}"
             ) from e
-    
+
     def analyze_all_finals(self, finals_data: Dict) -> Dict:
         """
         分析所有韵母的干音组合
-        
+
         参数:
             finals_data: 包含韵母分类的字典
-            
+
         返回:
             包含所有干音分析结果的字典
-            
+
         异常:
             ValueError: 如果数据中缺少必要的韵母分类
         """
@@ -141,15 +141,15 @@ class GanyinToPianyinSequence:
         missing = [cat for cat in required_categories if cat not in finals_data]
         if missing:
             raise ValueError(f"输入数据必须包含以下分类: {missing}")
-            
+
         # 分析三质韵母、前长韵母、后长韵母和单质韵母
         triphone_finals = finals_data["三质韵母"]
         front_long_finals = finals_data["前长韵母"]
         back_long_finals = finals_data["后长韵母"]
         single_quality_finals = finals_data["单质韵母"]
-        
+
         results = {}
-        for tone in self.tone_patterns:
+        for tone in self.tone_segments:
             results[tone] = {
                 "三质韵母": [
                     self.analyze_ganyin(final, tone)
@@ -168,7 +168,7 @@ class GanyinToPianyinSequence:
                     for final in single_quality_finals
                 ]
             }
-            
+
             # 验证每个韵母分类都成功分析
             for category in ["三质韵母", "前长韵母", "后长韵母", "单质韵母"]:
                 analyzed_count = len(results[tone][category])
@@ -177,7 +177,7 @@ class GanyinToPianyinSequence:
                     raise ValueError(
                         f"分析结果不完整({category}): 预期{original_count}个韵母, 实际分析{analyzed_count}个"
                     )
-                
+
         return results
 
 
@@ -191,7 +191,7 @@ def main():
     """主函数：执行干音分析并保存结果"""
     analyzer = GanyinToPianyinSequence()
     finals_data = load_finals_data()
-    
+
     analysis_results = {
   "description": "干音分析结果(包含三质干音、前长干音、后长干音和单质干音)",
   "encoding_rules": {
@@ -228,14 +228,14 @@ def main():
         "fourth_tone": "o˥o˦o˩"
       }
     },
-    "pattern_rules": analyzer.tone_patterns,
+    "pattern_rules": analyzer.tone_segments,
     "analysis_results": analyzer.analyze_all_finals(finals_data)
     }
 }
-    
+
     with open("internal_data/pianyin_sequence_of_ganyin.json", "w", encoding="utf-8") as f:
         json.dump(analysis_results, f, ensure_ascii=False, indent=2)
-    
+
     print("干音分析完成，结果已保存到 internal_data/pianyin_sequence_of_ganyin.json")
 
 

@@ -22,41 +22,38 @@ class Ganyin:
     干音类，表示由韵母和与其联结的调段构成的音段
     """
 
-def __init__(self, final: str, tone_segment: str = None, tone: str = None):
-    """
-    初始化干音对象
+    def __init__(self, final: str, tone_segment: str = None):
+        """
+        初始化干音对象
 
-    参数:
-        final: 韵母部分
-        tone_segment: 与韵母联结的调段
-        tone: 声调
-    """
-    self.final = final
-    self.tone_segment = tone_segment
-    self.tone = tone
+        参数:
+            final: 韵母部分
+            tone_segment: 声调（原 tone）
+        """
+        self.final = final
+        self.tone_segment = tone_segment
 
-@classmethod
-def from_syllable(cls, syllable: Syllable):
-    """
-    从Syllable对象创建Ganyin对象
+    @classmethod
+    def from_syllable(cls, syllable: Syllable):
+        """
+        从Syllable对象创建Ganyin对象
 
-    参数:
-        syllable: Syllable对象
+        参数:
+            syllable: Syllable对象
 
-    返回:
-        Ganyin对象
-    """
-    if not isinstance(syllable, Syllable):
-       raise TypeError("输入必须是Syllable对象")
+        返回:
+            Ganyin对象
+        """
+        if not isinstance(syllable, Syllable):
+            raise TypeError("输入必须是Syllable对象")
 
-    return cls(
-        final=syllable.final,
-        tone_segment=syllable.final_tone_segment,
-        tone=syllable.tone
-    )
+        return cls(
+            final=syllable.final,
+            tone_segment=syllable.tone  # 直接用 tone 作为 tone_segment
+        )
 
-def __str__(self):
-    return f"Ganyin(final={self.final}, tone_segment={self.tone_segment}, tone={self.tone})"
+    def __str__(self):
+        return f"Ganyin(final={self.final}, tone_segment={self.tone_segment})"
 
-def __repr__(self):
-    return self.__str__()
+    def __repr__(self):
+        return
