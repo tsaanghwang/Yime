@@ -2,7 +2,7 @@ import json
 from typing import Dict, List
 
 from ganyin import Ganyin
-from pitched_pianyin import Yueyin
+# from pitched_pianyin import Yueyin
 
 
 class GanyinSlicer:

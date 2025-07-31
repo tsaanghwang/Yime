@@ -5,6 +5,15 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "generate_ganyin",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\generate_ganyin.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}",
+            "addSourceRootsToPythonpath": true
+        },
+        {
             "name": "ganyin_slicer",
             "type": "python",
             "request": "launch",
