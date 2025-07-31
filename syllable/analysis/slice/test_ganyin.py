@@ -27,7 +27,7 @@ def test_categorization():
     all_finals = GanyinCategorizer.get_all_finals()
     for category, finals in all_finals.items():
         print(f"{category}: {sorted(finals)}")
-        def test_normalize_final_removes_tone_marks():
+        def test_normalize_final_removes_tone_segments():
             cases = [
                 ("ā", "a"),
                 ("á", "a"),
