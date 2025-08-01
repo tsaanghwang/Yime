@@ -7,11 +7,13 @@
 3. 音长(duration) - 默认'neutral'
 4. 音强(loudness) - 默认'neutral'
 
-音元分为三类：
-- 有调音元(PitchedYinyuan): 有稳定音调
-- 不稳定音高音元(UnstablePitchYinyuan): 有不稳定/非规律性音高
-- 无调音元(UnpitchedYinyuan): 完全无调
+音元分类体系：
+1. 有调音元(PitchedYinyuan): 有稳定音调
+2. 不定调音元(IndeterminatePitchYinyuan/NoiseYinyuan): 
+   - 无调音元(UnpitchedYinyuan): 完全无调(如清辅音)
+   - 不稳定音高音元(UnstablePitchYinyuan): 有不稳定/非规律性音高(如浊阻音)
 """
+
 from typing import Optional, Union, Literal
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
@@ -20,7 +22,6 @@ from dataclasses import dataclass
 DurationType = Literal['short', 'neutral', 'long']
 LoudnessType = Literal['weak', 'neutral', 'strong']
 PitchType = Union[str, bool, None]
-
 
 @dataclass
 class YinyuanBase(ABC):
@@ -32,12 +33,7 @@ class YinyuanBase(ABC):
     @property
     @abstractmethod
     def pitch(self) -> PitchType:
-        """
-        返回音调信息：
-        - 对于有稳定音调的音元：返回具体的音调字符串
-        - 对于有不稳定/非规律性音高的音元：返回True
-        - 对于完全无调的音元：返回None
-        """
+        """返回音调信息"""
         pass
 
     @property
@@ -60,11 +56,12 @@ class YinyuanBase(ABC):
         ]
         return f"{self.__class__.__name__}({', '.join(attrs)})"
 
-
 @dataclass
 class PitchedYinyuan(YinyuanBase):
     """有稳定音调的音元"""
-    pitch_value: str
+    pitch_value: str  # 必须放在没有默认值的参数前面
+    duration: DurationType = 'neutral'
+    loudness: LoudnessType = 'neutral'
 
     @property
     def pitch(self) -> str:
@@ -75,47 +72,49 @@ class PitchedYinyuan(YinyuanBase):
         return "pitched"
 
     def is_valid(self) -> bool:
-        """需要音质和音调都有效"""
         return bool(self.quality.strip()) and bool(self.pitch_value.strip())
 
     def __str__(self) -> str:
         base_str = super().__str__()
         return base_str[:-1] + f", pitch={repr(self.pitch_value)})"
 
+@dataclass
+class IndeterminatePitchYinyuan(YinyuanBase, ABC):
+    """
+    不定调音元(NoiseYinyuan)基类
+    包含无调音元和不稳定音高音元的共同特性
+    """
+    @property
+    def type(self) -> str:
+        return "noise"
 
 @dataclass
-class UnstablePitchYinyuan(YinyuanBase):
+class UnstablePitchYinyuan(IndeterminatePitchYinyuan):
     """有不稳定/非规律性音高的音元"""
-
     @property
     def pitch(self) -> bool:
         return True
 
     @property
-    def type(self) -> str:
+    def subtype(self) -> str:
         return "unstable_pitch"
 
     def is_valid(self) -> bool:
-        """只需要有音质即可有效"""
         return bool(self.quality.strip())
 
-
 @dataclass
-class UnpitchedYinyuan(YinyuanBase):
+class UnpitchedYinyuan(IndeterminatePitchYinyuan):
     """完全无调的音元"""
-
     @property
     def pitch(self) -> None:
         return None
 
     @property
-    def type(self) -> str:
+    def subtype(self) -> str:
         return "unpitched"
 
     def is_valid(self) -> bool:
-        """只需要有音质即可有效"""
         return bool(self.quality.strip())
-
 
 def create_yinyuan(
     quality: str,
