@@ -4,7 +4,7 @@ syllable.analysis.slice 包初始化文件
 """
 
 from .ganyin import Ganyin
-from .ganyin_categorizer import GanyinCategorizer
+# 清理不必要导入
 from .ganyin_analyzer import GanyinAnalyzer
 
 __all__ = ['Ganyin', 'GanyinCategorizer', 'GanyinAnalyzer']

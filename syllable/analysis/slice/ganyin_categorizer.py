@@ -2,7 +2,7 @@
 干音分类工具类
 功能：根据韵母类型将干音分为四类（单质、前长、后长、三质）
 """
-from ganyin import Ganyin  # 导入基础类
+from .ganyin import Ganyin  # 改为相对导入
 from typing import Dict, Tuple, Set
 
 

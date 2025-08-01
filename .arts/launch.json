@@ -5,13 +5,23 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "generate_musical_yinyuan",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\syllable\\analysis\\slice\\generate_musical_yinyuan.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
+            "addSourceRootsToPythonpath": true
+        },
+        {
             "name": "generate_noise_yinyuan",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}\\syllable\\analysis\\slice\\generate_noise_yinyuan.py",
             "currentFileConfiguration": false,
             "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
-            "addSourceRootsToPythonpath": true
+            "addSourceRootsToPythonpath": true,
+            "noDebug": true
         },
         {
             "name": "generate_ganyin",
