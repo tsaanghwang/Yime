@@ -1,6 +1,7 @@
 {
   "name": "噪音类音元(Noise Yinyuan)",
-  "description": "由 ClearNoise/VoicedNoise 直接生成的噪音类音元数据",
+  "description": "噪音类音元是噪音类片音的另一种符号化表示形式",
+  "note": "包含无调音元(Unpitched)和不稳定音高音元(Unstable Pitch)",
   "unpitched_yinyuan": {
     "b": [
       "p"
@@ -94,12 +95,12 @@
   "codes": {
     "b": "UPY_B",
     "p": "UPY_P",
-    "m": "UPY_M",
+    "m": "UY_M",
     "f": "UPY_F",
     "d": "UPY_D",
     "t": "UPY_T",
-    "n": "UPY_N",
-    "l": "UPY_L",
+    "n": "UY_N",
+    "l": "UY_L",
     "g": "UPY_G",
     "k": "UPY_K",
     "h": "UPY_H",
@@ -109,12 +110,12 @@
     "zh": "UPY_ZH",
     "ch": "UPY_CH",
     "sh": "UPY_SH",
-    "r": "UPY_R",
+    "r": "UY_R",
     "z": "UPY_Z",
     "c": "UPY_C",
     "s": "UPY_S",
-    "'": "UPY_'",
-    "w": "UPY_W",
-    "y": "UPY_Y"
+    "'": "UY_'",
+    "w": "UY_W",
+    "y": "UY_Y"
   }
 }

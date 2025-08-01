@@ -9,7 +9,7 @@
 
 音元分类体系：
 1. 有调音元(PitchedYinyuan): 有稳定音调
-2. 不定调音元(IndeterminatePitchYinyuan/NoiseYinyuan):
+2. 不定调音元(IndeterminatePitchYinyuan):
    - 无调音元(UnpitchedYinyuan): 完全无调(如清辅音)
    - 不稳定音高音元(UnstablePitchYinyuan): 有不稳定/非规律性音高(如浊阻音)
 """
@@ -84,12 +84,12 @@ class UnstablePitchYinyuan(IndeterminatePitchYinyuan):
 
     def is_valid(self) -> bool:
         return bool(self.quality.strip())
-        
+
     @staticmethod
     def _get_yinyuan_code(initial: str) -> str:
         """生成音元代码"""
         return f"UPY_{initial.upper()}"
-        
+
     @staticmethod
     def _get_yinyuan_code(initial: str) -> str:
         """生成音元代码"""
@@ -112,7 +112,7 @@ class UnpitchedYinyuan(IndeterminatePitchYinyuan):
 
     def is_valid(self) -> bool:
         return bool(self.quality.strip())
-        
+
     @staticmethod
     def _get_yinyuan_code(initial: str) -> str:
         """生成音元代码"""

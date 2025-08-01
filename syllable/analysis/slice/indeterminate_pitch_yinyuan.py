@@ -10,12 +10,13 @@
 
 from dataclasses import dataclass
 from typing import Optional
-from syllable.analysis.slice.yinyuan import (
-    IndeterminatePitchYinyuan,
+from yinyuan import (
+    UnpitchedYinyuan,
+    UnstablePitchYinyuan,
     DurationType,
-    LoudnessType
+    LoudnessType,
+    IndeterminatePitchYinyuan,  # Add this import
 )
-
 
 @dataclass
 class NoiseYinyuan(IndeterminatePitchYinyuan):
@@ -42,8 +43,11 @@ class ClearNoise(NoiseYinyuan):
         return "unpitched"
 
     def is_valid(self) -> bool:
-        """只需要有音质即可有效"""
         return bool(self.quality.strip())
+
+    @staticmethod
+    def get_yinyuan_code(initial: str) -> str:
+        return f"UPY_{initial.upper()}"
 
 
 @dataclass
@@ -59,5 +63,8 @@ class VoicedNoise(NoiseYinyuan):
         return "unstable_pitch"
 
     def is_valid(self) -> bool:
-        """只需要有音质即可有效"""
         return bool(self.quality.strip())
+
+    @staticmethod
+    def get_yinyuan_code(initial: str) -> str:
+        return f"UPY_{initial.upper()}"
