@@ -9,14 +9,14 @@
 
 音元分类体系：
 1. 有调音元(PitchedYinyuan): 有稳定音调
-2. 不定调音元(IndeterminatePitchYinyuan/NoiseYinyuan): 
+2. 不定调音元(IndeterminatePitchYinyuan/NoiseYinyuan):
    - 无调音元(UnpitchedYinyuan): 完全无调(如清辅音)
    - 不稳定音高音元(UnstablePitchYinyuan): 有不稳定/非规律性音高(如浊阻音)
 """
 
-from typing import Optional, Union, Literal
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
+from typing import Optional, Union, Literal
 
 # 类型别名定义
 DurationType = Literal['short', 'neutral', 'long']
@@ -57,28 +57,6 @@ class YinyuanBase(ABC):
         return f"{self.__class__.__name__}({', '.join(attrs)})"
 
 @dataclass
-class PitchedYinyuan(YinyuanBase):
-    """有稳定音调的音元"""
-    pitch_value: str  # 必须放在没有默认值的参数前面
-    duration: DurationType = 'neutral'
-    loudness: LoudnessType = 'neutral'
-
-    @property
-    def pitch(self) -> str:
-        return self.pitch_value
-
-    @property
-    def type(self) -> str:
-        return "pitched"
-
-    def is_valid(self) -> bool:
-        return bool(self.quality.strip()) and bool(self.pitch_value.strip())
-
-    def __str__(self) -> str:
-        base_str = super().__str__()
-        return base_str[:-1] + f", pitch={repr(self.pitch_value)})"
-
-@dataclass
 class IndeterminatePitchYinyuan(YinyuanBase, ABC):
     """
     不定调音元(NoiseYinyuan)基类
@@ -88,9 +66,14 @@ class IndeterminatePitchYinyuan(YinyuanBase, ABC):
     def type(self) -> str:
         return "noise"
 
+# 修改 UnstablePitchYinyuan 和 UnpitchedYinyuan 类
 @dataclass
 class UnstablePitchYinyuan(IndeterminatePitchYinyuan):
     """有不稳定/非规律性音高的音元"""
+    quality: str
+    duration: DurationType = 'neutral'
+    loudness: LoudnessType = 'neutral'
+
     @property
     def pitch(self) -> bool:
         return True
@@ -101,10 +84,24 @@ class UnstablePitchYinyuan(IndeterminatePitchYinyuan):
 
     def is_valid(self) -> bool:
         return bool(self.quality.strip())
+        
+    @staticmethod
+    def _get_yinyuan_code(initial: str) -> str:
+        """生成音元代码"""
+        return f"UPY_{initial.upper()}"
+        
+    @staticmethod
+    def _get_yinyuan_code(initial: str) -> str:
+        """生成音元代码"""
+        return f"UY_{initial.upper()}"
 
 @dataclass
 class UnpitchedYinyuan(IndeterminatePitchYinyuan):
     """完全无调的音元"""
+    quality: str
+    duration: DurationType = 'neutral'
+    loudness: LoudnessType = 'neutral'
+
     @property
     def pitch(self) -> None:
         return None
@@ -115,25 +112,10 @@ class UnpitchedYinyuan(IndeterminatePitchYinyuan):
 
     def is_valid(self) -> bool:
         return bool(self.quality.strip())
+        
+    @staticmethod
+    def _get_yinyuan_code(initial: str) -> str:
+        """生成音元代码"""
+        return f"UPY_{initial.upper()}"
 
-def create_yinyuan(
-    quality: str,
-    pitch: Optional[str] = None,
-    unstable_pitch: bool = False,
-    duration: DurationType = 'neutral',
-    loudness: LoudnessType = 'neutral'
-) -> YinyuanBase:
-    """
-    创建音元对象的工厂函数
-    :param quality: 音质(必选)
-    :param pitch: 音调(有调音元必选)
-    :param unstable_pitch: 是否为不稳定音高
-    :param duration: 音长
-    :param loudness: 音强
-    :return: 对应的音元对象
-    """
-    if unstable_pitch:
-        return UnstablePitchYinyuan(quality, duration, loudness)
-    if pitch is not None:
-        return PitchedYinyuan(quality, pitch, duration, loudness)
-    return UnpitchedYinyuan(quality, duration, loudness)
+# (Removed incomplete create_yinyuan function and duplicate UnpitchedYinyuan class)
