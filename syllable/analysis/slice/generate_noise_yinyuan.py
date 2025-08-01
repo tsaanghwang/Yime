@@ -1,3 +1,4 @@
+from syllable.analysis.slice.yinyuan import UnpitchedYinyuan, UnstablePitchYinyuan
 import json
 from collections import defaultdict
 # 确保从正确路径导入
@@ -5,16 +6,14 @@ import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))  # 添加项目根目录
 
-from syllable.analysis.slice.yinyuan import UnpitchedYinyuan, UnstablePitchYinyuan
-import sys
-from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent))  # 修改为使用当前目录
 
 
 def generate_noise_yinyuan():
     """生成噪音类音元(Noise Yinyuan)数据文件"""
     # 1. 加载原始数据
-    pinyin_initial_path = Path(__file__).parent / 'pianyin_initial.json'
+    pinyin_initial_path = Path(__file__).parent / \
+        'yinyuan/pianyin_initial.json'
     with open(pinyin_initial_path, 'r', encoding='utf-8') as f:
         noise_pianyin = json.load(f)
 
@@ -54,35 +53,36 @@ def generate_noise_yinyuan():
         return ''
 
     # 处理清音(无调音元)
-    for ipa, initial_list in noise_pianyin['unpitched_pianyin']['voiceless'].items():
+    for ipa, initial_list in noise_pianyin['unpitched_pianyin']['unpitched'].items():
         for initial in initial_list:
             merged_mapping[initial].append(ipa)
 
     # 处理浊音(不稳定音高音元)
-    for ipa, initial_list in noise_pianyin['unpitched_pianyin']['voiced'].items():
+    for ipa, initial_list in noise_pianyin['unpitched_pianyin']['unstable_pitch'].items():
         for initial in initial_list:
             merged_mapping[initial].append(ipa)
 
     # 4. 按声母排列顺序排序
     sorted_initial = sorted(merged_mapping.keys(),
-                          key=lambda x: (INITIAL_ORDER.index(get_initial(x))
-                                         if get_initial(x) in INITIAL_ORDER
-                                         else len(INITIAL_ORDER), x))
+                            key=lambda x: (INITIAL_ORDER.index(get_initial(x))
+                                           if get_initial(x) in INITIAL_ORDER
+                                           else len(INITIAL_ORDER), x))
 
     for initial in sorted_initial:
         # 根据音元类型分类存储
-        if any(initial in lst for lst in noise_pianyin['unpitched_pianyin']['voiced'].values()):
+        if any(initial in lst for lst in noise_pianyin['unpitched_pianyin']['unstable_pitch'].values()):
             yinyuan_data['unstable_pitch_yinyuan'][initial] = merged_mapping[initial]
         else:
             yinyuan_data['unpitched_yinyuan'][initial] = merged_mapping[initial]
-        
+
         # 为每个拼音生成音元代码
-        code = UnpitchedYinyuan._get_yinyuan_code(initial) if initial in yinyuan_data['unpitched_yinyuan'] else UnstablePitchYinyuan._get_yinyuan_code(initial)
+        code = UnpitchedYinyuan._get_yinyuan_code(
+            initial) if initial in yinyuan_data['unpitched_yinyuan'] else UnstablePitchYinyuan._get_yinyuan_code(initial)
         if code is not None:
             yinyuan_data['codes'][initial] = code
 
     # 5. 写入输出文件
-    output_path = 'syllable/analysis/slice/noise_yinyuan.json'
+    output_path = 'yinyuan/noise_yinyuan.json'
     Path(output_path).parent.mkdir(parents=True, exist_ok=True)
     with open(output_path, 'w', encoding='utf-8') as f:
         json.dump(yinyuan_data, f, ensure_ascii=False, indent=2)
