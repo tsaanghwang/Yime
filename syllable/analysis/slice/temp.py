@@ -1,54 +1,17 @@
 """
-请提供由syllable\analysis\slice\ganyin.json生成的syllable\analysis\slice\ganyin_enhanced.json文件的脚本。
-
-输入文件的格式如下：
-{
-  "ganyin": {
-    "single quality ganyin": {
-      "_i1": "_ī",
-      "_i2": "_í",
-      "_i3": "_ǐ",
-      "_i4": "_ì",
-      "_i5": "_i",
-      "a1": "ā",
-      "a2": "á",
-      "a3": "ǎ",
-      ...
+在syllable\analysis\slice\ganyin_slicer.py中处理
+这组输入数据：
+    "_i1": {
+      "呼音": "ɿ˥/ʅ˥",
+      "主音": "ɿ˥/ʅ˥",
+      "末音": "ɿ˥/ʅ˥"
     },
-    "front long ganyin": {
-      ...
     },
-    ...
-  }
-}
-输出文件的格式如下：
-{
-  "ganyin": {
-    "single quality ganyin": {
-      "_i1": {
-        "numeric_tone": "_i1",
-        "tone_mark": "_ī",
-        "ipa": "ʅ˥"
-      },
-      "_i2": {
-        "numeric_tone": "_i2",
-        "tone_mark": "_í",
-        "ipa": "ʅ˧˥"
-      },
-      "_i3": {
-        "numeric_tone": "_i3",
-        "tone_mark": "_ǐ",
-        "ipa": "ʅ˨˩˨"
-      },
-...
-
+    "_i5": {
+      "ime": "_i5",
+      "pinyin": "_i",
+      "ipa": "ɿ˦˦/ʅ˦˦"
     },
-... 其他分类同上
-    "front long ganyin": {
-      ...
-    },
-    ...
-  }
 }
 """
 
@@ -71,12 +34,14 @@ IPA_MAP = {
     # ... 其他音素映射 ...
 }
 
+
 def get_tone_mark(base: str, tone_num: str) -> str:
     # 处理下划线前缀
     if base.startswith("_"):
         base = base[1:]
     mark = TONE_MARK_MAP.get(tone_num, "")
     return base + mark
+
 
 def get_ipa(base: str, tone_num: str) -> str:
     # 这里只是示例，实际应根据 base 和 tone_num 查表
@@ -90,6 +55,7 @@ def get_ipa(base: str, tone_num: str) -> str:
         "5": "",
     }
     return ipa_base + tone_ipa.get(tone_num, "")
+
 
 def enhance_ganyin(input_path, output_path):
     with open(input_path, "r", encoding="utf-8") as f:
@@ -114,6 +80,7 @@ def enhance_ganyin(input_path, output_path):
 
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump({"ganyin": enhanced}, f, ensure_ascii=False, indent=2)
+
 
 if __name__ == "__main__":
     base_dir = Path(__file__).parent
