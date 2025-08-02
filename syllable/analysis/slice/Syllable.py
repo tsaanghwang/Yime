@@ -1,11 +1,13 @@
 """
-定义一个音节类，用于提取音节的特征
-1. 音节的声调（Tone）和音质（Quality）
-2. 音质层的声母（Initial）和韵母（Final）
-3. 音调层的与声母联结的调段和与韵母联结的调段
-4. 音节的首音和干音：
-- 首音（Initial）指由声母和与其联结的调段构成的音段，实际就是声母（Initial consonant）
-- 干音（Rest）指由韵母和与其联结的调段构成的音段，实际就是带调韵母(声调与韵母构成的音段 （Final with tone））
+定义音节类
+功能：切分音节的首音和干音
+要求：
+1. 提取音节的声调(Tone)和音质(Quality)
+2. 提取音质层的声母(Initial)和韵母(Final)
+3. 提取音调层的与声母联结的调段和与韵母联结的调段
+4. 切分音节的首音和干音：
+- 首音(Shouyin)指由声母和与其联结的调段构成的音段，实际就是声母(Initial consonant)
+- 干音(Ganyin)指由韵母和与其联结的调段构成的音段，实际就是带调韵母(声调与韵母构成的音段 (Final with tone))
 """
 
 
@@ -24,8 +26,8 @@ class Syllable:
         self.tone = tone        # 声调
 
         # 调段部分
-        self.initial_tone_segment = None  # 与声母联结的调段
-        self.final_tone_segment = None    # 与韵母联结的调段
+        self.shouyin_de_tone  = None  # 首音的音调 = 与声母联结的调段
+        self.ganyin_de_tone  = None  # 干音的音调 = 与韵母联结的调段
 
     @property
     def quality(self):
@@ -33,26 +35,25 @@ class Syllable:
         return (self.initial, self.final)
 
     @property
-    def initial_segment(self):
+    def first_segment(self):
         """首音：由声母和与其联结的调段构成"""
-        return (self.initial, self.initial_tone_segment)
+        return (self.initial, self.shouyin_de_tone )
 
     @property
     def rest_segment(self):
         """干音：由韵母和与其联结的调段构成"""
-        return (self.final, self.final_tone_segment)
+        return (self.final, self.ganyin_de_tone )
 
-    def set_tone_segments(self, initial_tone=None, final_tone=None):
+    def set_tone_segments(self, first_tonal_segment=None, rest_tonal_segment=None):
         """
         设置调段信息
 
         参数:
-            initial_tone: 与声母联结的调段
-            final_tone: 与韵母联结的调段
+            first_tonal_segment: 与声母联结的调段
+            rest_tonal_segment: 与韵母联结的调段
         """
-        self.initial_tone_segment = initial_tone
-        self.final_tone_segment = final_tone
-
+        self.shouyin_de_tone  = first_tonal_segment
+        self.ganyin_de_tone  = rest_tonal_segment
     def __str__(self):
         return f"Syllable(initial={self.initial}, final={self.final}, tone={self.tone})"
 
