@@ -1,0 +1,109 @@
+{
+  "finals": {
+    "single quality finals": {
+      "_i": {
+        "input method": "_i",
+        "pinyin": "i",
+        "ipa": "i"
+      },
+      "a": {
+        "input method": "a",
+        "pinyin": "a",
+        "ipa": "ᴀ"
+      },
+      "e": {
+        "input method": "e",
+        "pinyin": "e",
+        "ipa": "ɤ"
+      },
+      "er": {
+        "input method": "er",
+        "pinyin": "er",
+        "ipa": "ɚ"
+      },
+      "i": {
+        "input method": "i",
+        "pinyin": "i",
+        "ipa": "i"
+      },
+      "m": {
+        "input method": "m",
+        "pinyin": "m",
+        "ipa": "m̩"
+      },
+      "n": {
+        "input method": "n",
+        "pinyin": "n",
+        "ipa": "n̩"
+      },
+      "ng": {
+        "input method": "ng",
+        "pinyin": "ng",
+        "ipa": "ŋ̩"
+      },
+      "o": {
+        "input method": "o",
+        "pinyin": "o",
+        "ipa": "o"
+      },
+      "u": {
+        "input method": "u",
+        "pinyin": "u",
+        "ipa": "u"
+      },
+      "v": {
+        "input method": "v",
+        "pinyin": "ü",
+        "ipa": "ʏ"
+      },
+      "ê": {
+        "input method": "ê",
+        "pinyin": "ê",
+        "ipa": "ᴇ"
+      }
+    },
+    "front long finals": {
+      "ai": {
+        "input method": "ai",
+        "pinyin": "ai",
+        "ipa": "æɪ"
+      },
+      "an": {
+        "input method": "an",
+        "pinyin": "an",
+        "ipa": "an"
+      },
+      "ang": {
+        "input method": "ang",
+        "pinyin": "ang",
+        "ipa": "ɑŋ"
+      },
+      "ao": {
+        "input method": "ao",
+        "pinyin": "ao",
+        "ipa": "ɑᴜ"
+      },
+      "ei": {
+        "input method": "ei",
+        "pinyin": "ei",
+        "ipa": "eɪ"
+      },
+      "en": {
+        "input method": "en",
+        "pinyin": "en",
+        "ipa": "ən"
+      },
+      "eng": {
+        "input method": "eng",
+        "pinyin": "eng",
+        "ipa": "ɤŋ"
+      },
+      "ou": {
+        "input method": "ou",
+        "pinyin": "ou",
+        "ipa": "ɤᴜ"
+      }
+    }
+    // 其余 finals 类别同理处理
+  }
+}

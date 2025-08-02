@@ -87,21 +87,13 @@ class GanyinSlicer:
             return f"{base1}{self.pitch_levels.get(pitch, '')}/{base2}{self.pitch_levels.get(pitch, '')}"
         return f"{quality}{self.pitch_levels.get(pitch, '')}"
 
-    def _is_valid_phoneme(self, char: str) -> bool:
-        """检查字符是否为有效音素"""
-        valid_phonemes = ["ə", "ɚ", "ŋ", "ɪ", "ʊ", "ʌ", "ɔ", "y", "e", "o", "a", "m", "n", "i", "u"]
-        return char.isalpha() or char in valid_phonemes
-
     def _slice_single_quality(self, ipa: str, tone_pattern: List[str]) -> Dict:
-        """切分单质干音"""
-        # 处理双变体 IPA (如 "ɿ˥˥/ʅ˥˥")
+        # 保留双变体 IPA (如 "ɿ˥˥/ʅ˥˥")
         base_ipa = ipa.split("/")[0] if "/" in ipa else ipa
         base_ipa = base_ipa.split("˥")[0].split("˦")[0].split("˧")[0].split("˨")[0].split("˩")[0]
 
-        # 提取有效音素
-        chars = [c for c in base_ipa if self._is_valid_phoneme(c)]
-        
-        # 处理音素不足情况
+        chars = [c for c in base_ipa if c.isalpha() or c in ["ə", "ɚ", "ŋ",
+                                                        "ɪ", "ʊ", "ʌ", "ɔ", "y", "e", "o", "a", "m", "n", "i", "u"]]
         if len(chars) == 1:
             chars = chars * 3
         if len(chars) < 3:
@@ -112,7 +104,6 @@ class GanyinSlicer:
                 "末音": self._create_yueyin(chars[2], tone_pattern[2]) if chars[2] else None,
                 "warning": f"IPA too short: {ipa}"
             }
-            
         return {
             "呼音": self._create_yueyin(chars[0], tone_pattern[0]),
             "主音": self._create_yueyin(chars[1], tone_pattern[1]),
@@ -120,8 +111,8 @@ class GanyinSlicer:
         }
 
     def _slice_back_long(self, ipa: str, tone_pattern: List[str]) -> Dict:
-        """切分后长干音"""
-        chars = [c for c in ipa if self._is_valid_phoneme(c)]
+        chars = [c for c in ipa if c.isalpha() or c in ["ə", "ɚ", "ŋ",
+                                                        "ɪ", "ʊ", "ʌ", "ɔ", "y", "e", "o", "a", "m", "n", "i", "u"]]
         if len(chars) == 2:
             chars = [chars[0], chars[1], chars[1]]
         if len(chars) < 3:
@@ -139,8 +130,8 @@ class GanyinSlicer:
         }
 
     def _slice_front_long(self, ipa: str, tone_pattern: List[str]) -> Dict:
-        """切分前长干音"""
-        chars = [c for c in ipa if self._is_valid_phoneme(c)]
+        chars = [c for c in ipa if c.isalpha() or c in ["ə", "ɚ", "ŋ",
+                                                        "ɪ", "ʊ", "ʌ", "ɔ", "y", "e", "o", "a", "m", "n", "i", "u"]]
         if len(chars) == 2:
             chars = [chars[0], chars[0], chars[1]]
         if len(chars) < 3:
@@ -158,7 +149,6 @@ class GanyinSlicer:
         }
 
     def _slice_triple_quality(self, ipa: str, tone_pattern: List[str]) -> Dict:
-        """切分三质干音"""
         ipa_stripped = ipa.split("˥")[0].split("˦")[0].split("˧")[0].split("˨")[0].split("˩")[0]
         if ipa_stripped in ["in", "un", "yn"]:
             chars = [ipa_stripped[0], "ə", ipa_stripped[1]]
