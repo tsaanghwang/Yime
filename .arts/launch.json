@@ -5,6 +5,15 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "ganyin_analyzer",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\syllable\\analysis\\slice\\ganyin_analyzer.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
+            "addSourceRootsToPythonpath": true
+        },
+        {
             "name": "generate_musical_yinyuan",
             "type": "python",
             "request": "launch",
@@ -39,7 +48,8 @@
             "program": "${workspaceFolder}\\syllable\\analysis\\slice\\ganyin_slicer.py",
             "currentFileConfiguration": false,
             "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
-            "addSourceRootsToPythonpath": true
+            "addSourceRootsToPythonpath": true,
+            "noDebug": true
         },
         {
             "name": "run_analyzer",

@@ -12,7 +12,13 @@
 
 
 class Syllable:
-    def __init__(self, initial=None, final=None, tone=None):
+    """
+    音节类
+    - 切分音节的首音和干音
+    - 管理音质层和音调层
+    """
+
+    def __init__(self, initial: str = None, final: str = None, tone: str = None):
         """
         初始化音节对象
 
@@ -21,13 +27,13 @@ class Syllable:
             final (str): 韵母部分
             tone (str/int): 声调
         """
-        self.initial = initial  # 声母
-        self.final = final      # 韵母
-        self.tone = tone        # 声调
+        self.initial = initial
+        self.final = final
+        self.tone = tone
 
         # 调段部分
-        self.shouyin_de_tone  = None  # 首音的音调 = 与声母联结的调段
-        self.ganyin_de_tone  = None  # 干音的音调 = 与韵母联结的调段
+        self.shoudiao = None  # 与声母联结的调段
+        self.gandiao = None   # 与韵母联结的调段
 
     @property
     def quality(self):
@@ -35,25 +41,27 @@ class Syllable:
         return (self.initial, self.final)
 
     @property
-    def first_segment(self):
+    def shouyin(self):
         """首音：由声母和与其联结的调段构成"""
-        return (self.initial, self.shouyin_de_tone )
+        return (self.initial, self.shoudiao)
 
     @property
-    def rest_segment(self):
+    def ganyin(self):
         """干音：由韵母和与其联结的调段构成"""
-        return (self.final, self.ganyin_de_tone )
+        return (self.final, self.gandiao)
 
-    def set_tone_segments(self, first_tonal_segment=None, rest_tonal_segment=None):
+    def tone(self, shoudiao=None, gandiao=None):
         """
-        设置调段信息
+        设置调段信息，并返回调段元组
 
         参数:
-            first_tonal_segment: 与声母联结的调段
-            rest_tonal_segment: 与韵母联结的调段
+            shoudiao: 与声母联结的调段
+            gandiao: 与韵母联结的调段
         """
-        self.shouyin_de_tone  = first_tonal_segment
-        self.ganyin_de_tone  = rest_tonal_segment
+        self.shoudiao = shoudiao
+        self.gandiao = gandiao
+        return (self.shoudiao, self.gandiao)
+
     def __str__(self):
         return f"Syllable(initial={self.initial}, final={self.final}, tone={self.tone})"
 

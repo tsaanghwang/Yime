@@ -2,7 +2,7 @@
 干音分类工具类
 功能：根据韵母类型将干音分为四类（单质、前长、后长、三质）
 """
-from .ganyin import Ganyin  # 改为相对导入
+from ganyin import Ganyin  # 改为相对导入
 from typing import Dict, Tuple, Set
 
 
@@ -111,7 +111,7 @@ class GanyinCategorizer:
         """从拼音中提取韵母部分
 
         参数:
-            pinyin: 拼音字符串 (如 "zhang1" 或 "zhāng")
+            pinyin: 拼音字符串
 
         返回:
             final: 韵母字符串
@@ -270,7 +270,7 @@ class GanyinCategorizer:
         """切分音节为首音和干音部分
 
         参数:
-            syllable: 拼音字符串 (如 "zhang1" 或 "zhāng")
+            syllable: 拼音字符串
         返回:
             元组 (首音部分, 干音部分)
         """

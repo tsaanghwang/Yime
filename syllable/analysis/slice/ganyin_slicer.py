@@ -1,8 +1,7 @@
 import json
 from typing import Dict, List
-
 from ganyin import Ganyin
-# from pitched_pianyin import Yueyin
+from pathlib import Path
 
 
 class GanyinSlicer:
@@ -11,9 +10,10 @@ class GanyinSlicer:
             "high_tone": ["5", "5", "5"],  # 高平调
             "rising_tone": ["3", "4", "5"],  # 上升调
             "low_tone": ["2", "1", "1"],  # 低平调
-            "falling_tone": ["5", "4", "1"]  # 下降调
+            "falling_tone": ["5", "4", "1"],  # 下降调
+            "neutral_tone": ["4", "4", "4"]  # 中性调
         }
-        self.tone_marks = {
+        self.pitch_levels = {
             "5": "˥",
             "4": "˦",
             "3": "˧",
@@ -23,13 +23,13 @@ class GanyinSlicer:
 
     def slice_ganyin(self, ganyin_type: str, ganyin_data: Dict[str, Dict]) -> Dict:
         """
-        按干音类型切分ganyin_enhanced.json中的数据，返回Yueyin对象表示的片音
+        按干音类型切分干音，返回片音
         """
         results = {}
         for key, value in ganyin_data.items():
-            ganyin_obj = Ganyin(
+            ganyin = Ganyin(
                 final=value.get("numeric_tone", ""),
-                tone_segment=value.get("ipa", "")
+                gandiao=value.get("ipa", "")
             )
 
             # 获取调型模式
@@ -38,16 +38,16 @@ class GanyinSlicer:
 
             if ganyin_type == "single quality ganyin":
                 sliced = self._slice_single_quality(
-                    ganyin_obj.tone_segment, tone_pattern)
+                    ganyin.gandiao, tone_pattern)
             elif ganyin_type == "back long ganyin":
                 sliced = self._slice_back_long(
-                    ganyin_obj.tone_segment, tone_pattern)
+                    ganyin.gandiao, tone_pattern)
             elif ganyin_type == "front long ganyin":
                 sliced = self._slice_front_long(
-                    ganyin_obj.tone_segment, tone_pattern)
+                    ganyin.gandiao, tone_pattern)
             elif ganyin_type == "triple quality ganyin":
                 sliced = self._slice_triple_quality(
-                    ganyin_obj.tone_segment, tone_pattern)
+                    ganyin.gandiao, tone_pattern)
             else:
                 raise ValueError(f"未知的干音类型: {ganyin_type}")
 
@@ -65,11 +65,11 @@ class GanyinSlicer:
         elif tone_num == "4":
             return self.tone_patterns["falling_tone"]
         else:
-            return self.tone_patterns["high_tone"]  # 默认使用高平调
+            return self.tone_patterns["neutral_tone"]  # 默认使用中性调
 
-    def _create_yueyin(self, quality: str, tone: str) -> str:
+    def _create_yueyin(self, quality: str, pitch: str) -> str:
         """创建乐音表示字符串"""
-        return f"{quality}{self.tone_marks.get(tone, '')}"
+        return f"{quality}{self.pitch_levels.get(pitch, '')}"
 
     def _slice_single_quality(self, ipa: str, tone_pattern: List[str]) -> Dict:
         chars = [c for c in ipa if c.isalpha() or c in ["ə", "ɚ", "ŋ",
@@ -156,8 +156,10 @@ class GanyinSlicer:
 
 
 def load_ganyin_data() -> Dict:
-    """从syllable/analysis/slice/ganyin_enhanced.json加载干音数据"""
-    with open("syllable/analysis/slice/ganyin_enhanced.json", "r", encoding="utf-8") as f:
+    """加载干音数据"""
+    base_dir = Path(__file__).parent
+    file_path = base_dir / "ganyin_enhanced.json"
+    with open(file_path, "r", encoding="utf-8") as f:
         return json.load(f)["ganyin"]
 
 
@@ -169,7 +171,7 @@ def main():
         if ganyin_type in ganyin_data:
             results[ganyin_type] = slicer.slice_ganyin(
                 ganyin_type, ganyin_data[ganyin_type])
-    with open("syllable/analysis/slice/ganyin_slicer_output.json", "w", encoding="utf-8") as f:
+    with open("ganyin_slicer_output.json", "w", encoding="utf-8") as f:
         json.dump(results, f, ensure_ascii=False, indent=2)
     print("干音分析完成，结果已保存到 syllable/analysis/slice/ganyin_slicer_output.json")
 

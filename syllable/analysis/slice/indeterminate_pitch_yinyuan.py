@@ -5,7 +5,7 @@
 1. 无调音元(UnpitchedYinyuan): 清辅音，没有音调
 2. 不稳定音高音元(UnstablePitchYinyuan): 除阻浊辅音，有非规律性音高特征
 
-在通用现代汉语中，噪音类音元通常对应音节中的声母实际发音。
+在通用现代汉语中，噪音类音元通常对应音节的声母的实际发音。
 """
 
 from dataclasses import dataclass
