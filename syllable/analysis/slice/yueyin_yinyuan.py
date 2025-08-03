@@ -21,7 +21,7 @@ class YueyinYinyuan(MusicalYinyuan):
     继承所有 MusicalYinyuan 的功能，并添加中文语境专用方法。
     """
 
-    def __init__(self, quality: str, pitch: str, duration: str = 'neutral', 
+    def __init__(self, quality: str, pitch: str, duration: str = 'neutral',
                  loudness: str = 'neutral', pitch_style: str = 'number'):
         super().__init__(
             quality=quality,
@@ -56,7 +56,7 @@ class YueyinYinyuan(MusicalYinyuan):
             '类型': '乐音',
             '音质': self.quality,
             '音调': self.pitch,
-            '显示风格': self.pitch_style,
+            '音高表示方式': self.pitch_style,
             '音长': self.duration,
             '音强': self.loudness
         }

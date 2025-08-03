@@ -18,13 +18,13 @@ from pianyin.pianyin import PitchedPianyin
 class Yueyin(PitchedPianyin):
     """
     Represents the pitched_yinyuan sound of a Chinese syllable.
-    表示汉语音节的乐音 (yueyin) 
+    表示汉语音节的乐音 (yueyin)
 
     Attributes:
         quality (str): The quality of the pitched_yinyuan sound (音质/quality)
         tone_segment (str): The tone segment (音调/pitch) using 5-level notation (1-5)
         representation (str): Representation method (pianyin/yinyuan)
-        tone_style (str): Tone display style ('number' or 'mark')
+        音高表示方式 (str): Tone display style ('number' or 'mark')
     """
 
     TONE_SEGMENT_MARKS = {
@@ -35,7 +35,7 @@ class Yueyin(PitchedPianyin):
         "1": "˩",  # 低平调
     }
 
-    def __init__(self, quality, tone_segment, representation="pianyin", tone_style="number"):
+    def __init__(self, quality, tone_segment, representation="pianyin", 音高表示方式="number"):
         """
         Initializes a Yueyin instance.
 
@@ -43,16 +43,16 @@ class Yueyin(PitchedPianyin):
             quality (str): The quality of the pitched_yinyuan sound.
             tone_segment (str): The tone segment (1-5).
             representation (str): Representation method ('pianyin' or 'yinyuan').
-            tone_style (str): Tone display style ('number' or 'mark').
+            音高表示方式 (str): Tone display style ('number' or 'mark').
         """
         super().__init__(quality, tone_segment)
         self.representation = representation
-        self.tone_style = tone_style
+        self.音高表示方式 = 音高表示方式
 
     def __str__(self):
         """
         Returns the string representation of the pitched_yinyuan sound.
-        Format depends on representation and tone_style attributes.
+        Format depends on representation and 音高表示方式 attributes.
         """
         if self.representation == "yinyuan":
             return self._yinyuan_representation()
@@ -60,7 +60,7 @@ class Yueyin(PitchedPianyin):
 
     def _pianyin_representation(self):
         """Returns pianyin-style representation with tone marks or numbers"""
-        if self.tone_style == "mark":
+        if self.音高表示方式 == "mark":
             return f"{self.quality}{self.TONE_SEGMENT_MARKS.get(self.pitch, '')}"
         return f"{self.quality}{self.pitch}"
 
@@ -76,7 +76,7 @@ class Yueyin(PitchedPianyin):
             "quality": self.quality,
             "pitch": self.pitch,
             "representation": self.representation,
-            "tone_style": self.tone_style,
+            "音高表示方式": self.音高表示方式,
             "duration": self.duration,
             "loudness": self.loudness
         }
@@ -88,5 +88,5 @@ class Yueyin(PitchedPianyin):
             quality=data.get("quality"),
             tone_segment=data.get("pitch"),
             representation=data.get("representation", "pianyin"),
-            tone_style=data.get("tone_style", "number")
+            音高表示方式=data.get("音高表示方式", "number")
         )
