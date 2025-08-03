@@ -32,9 +32,9 @@ class YueyinPianyin(PitchedPianyin):
 
     Attributes:
         quality(str): The quality of the pitched segment(音质/quality)
-        tone_segment(str): The tone segment(音调/pitch) using 5-level notation(1-5)
+        pitch(str): The pitch(音高) using 5-level notation(1-5)
         representation(str): Representation method(pianyin/yinyuan)
-        tone_style(str): Tone display style('number' or 'mark')
+        pitch_style(str): Tone display style('number' or 'mark')
     """
 
     PITCH_LEVELS = {
@@ -45,24 +45,24 @@ class YueyinPianyin(PitchedPianyin):
         "1": "˩",  # 低平调
     }
 
-    def __init__(self, quality, tone_segment, representation="pianyin", tone_style="number"):
+    def __init__(self, quality, pitch, representation="pianyin", pitch_style="number"):
         """
         Initializes a YueyinPianyin instance.
 
         Args:
             quality(str): The quality of the pitched segment.
-            tone_segment(str): The tone segment(1-5).
+            pitch(str): The tone segment(1-5).
             representation(str): Representation method('pianyin' or 'yinyuan').
-            tone_style(str): Tone display style('number' or 'mark').
+            pitch_style(str): Tone display style('number' or 'mark').
         """
-        super().__init__(quality, tone_segment)
+        super().__init__(quality, pitch)
         self.representation = representation
-        self.tone_style = tone_style
+        self.pitch_style = pitch_style
 
     def __str__(self):
         """
         Returns the string representation of the pitched segment.
-        Format depends on representation and tone_style attributes.
+        Format depends on representation and pitch_style attributes.
         """
         if self.representation == "yinyuan":
             return self._yinyuan_representation()
@@ -70,7 +70,7 @@ class YueyinPianyin(PitchedPianyin):
 
     def _pianyin_representation(self):
         """Returns pianyin-style representation with tone marks or numbers"""
-        if self.tone_style == "mark":
+        if self.pitch_style == "mark":
             return f"{self.quality}{self.PITCH_LEVELS.get(self.pitch, '')}"
         return f"{self.quality}{self.pitch}"
 
@@ -86,7 +86,7 @@ class YueyinPianyin(PitchedPianyin):
             "quality": self.quality,
             "pitch": self.pitch,
             "representation": self.representation,
-            "tone_style": self.tone_style,
+            "pitch_style": self.pitch_style,
             "duration": self.duration,
             "loudness": self.loudness
         }
@@ -96,28 +96,28 @@ class YueyinPianyin(PitchedPianyin):
         """Creates a YueyinPianyin instance from a dictionary"""
         return cls(
             quality=data.get("quality"),
-            tone_segment=data.get("pitch"),
+            pitch=data.get("pitch"),
             representation=data.get("representation", "pianyin"),
-            tone_style=data.get("tone_style", "number")
+            pitch_style=data.get("pitch_style", "number")
         )
 
     @classmethod
-    def create_yueyin(cls, quality, pitch, representation="pianyin", tone_style="number"):
+    def create_yueyin(cls, quality, pitch, representation="pianyin", pitch_style="number"):
         """
         创建乐音类片音实例的便捷方法
-        
+
         Args:
             quality (str): 音质/quality
             pitch (str): 音高/pitch (1-5)
             representation (str): 表示方法 ('pianyin' 或 'yinyuan')
-            tone_style (str): 声调显示样式 ('number' 或 'mark')
-            
+            pitch_style (str): 声调显示样式 ('number' 或 'mark')
+
         Returns:
             YueyinPianyin: 创建的乐音类片音实例
         """
         return cls(
             quality=quality,
-            tone_segment=pitch,
+            pitch=pitch,
             representation=representation,
-            tone_style=tone_style
+            pitch_style=pitch_style
         )

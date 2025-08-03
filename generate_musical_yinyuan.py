@@ -1,6 +1,6 @@
 # yinyuan/generate_pitched_yinyuan.py
 import json
-from yinyuan.pitched_yinyuan import PitchedYinyuan
+from .yinyuan import PitchedYinyuan
 
 
 def generate_pitched_yinyuan():

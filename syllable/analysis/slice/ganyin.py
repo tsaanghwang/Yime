@@ -12,9 +12,10 @@ from collections import defaultdict
 from typing import Dict, Tuple
 
 try:
-    from .Syllable import Syllable # When imported as part of a package
+    from syllable import Syllable  # When imported as part of a package
 except ImportError:
-    from Syllable import Syllable # When run directly as a script
+    from syllable import Syllable  # When run directly as a script
+
 
 class Ganyin:
     """
