@@ -2,6 +2,7 @@ import json
 from typing import Dict, List
 from ganyin import Ganyin
 from pathlib import Path
+from pitched_pianyin import YueyinPianyin
 
 
 class GanyinSlicer:
@@ -33,7 +34,8 @@ class GanyinSlicer:
             first_ipa = ipa.split("/")[0] if "/" in ipa else ipa
             ganyin = Ganyin(
                 final=value.get("ime", ""),
-                gandiao=first_ipa.split("˥")[0].split("˦")[0].split("˧")[0].split("˨")[0].split("˩")[0]
+                gandiao=first_ipa.split("˥")[0].split("˦")[0].split("˧")[
+                    0].split("˨")[0].split("˩")[0]
             )
 
             # 获取调型模式 - 从IPA中提取调号
@@ -81,22 +83,27 @@ class GanyinSlicer:
 
     def _create_yueyin(self, quality: str, pitch: str) -> str:
         """创建乐音表示字符串"""
-        # 处理双变体 quality (如 "ɿ/ʅ")
-        if "/" in quality:
-            base1, base2 = quality.split("/")
-            return f"{base1}{self.pitch_levels.get(pitch, '')}/{base2}{self.pitch_levels.get(pitch, '')}"
-        return f"{quality}{self.pitch_levels.get(pitch, '')}"
+        # 使用 YueyinPianyin.create_yueyin 工厂方法创建实例
+        yueyin = YueyinPianyin.create_yueyin(
+            quality=quality,
+            pitch=pitch,
+            representation="pianyin",
+            tone_style="mark"
+        )
+        return str(yueyin)
 
     def _is_valid_phoneme(self, char: str) -> bool:
         """检查字符是否为有效音素"""
-        valid_phonemes = ["ə", "ɚ", "ŋ", "ɪ", "ʊ", "ʌ", "ɔ", "y", "e", "o", "a", "m", "n", "i", "u"]
+        valid_phonemes = ["ə", "ɚ", "ŋ", "ɪ", "ʊ", "ʌ",
+                          "ɔ", "y", "e", "o", "a", "m", "n", "i", "u"]
         return char.isalpha() or char in valid_phonemes
 
     def _slice_single_quality(self, ipa: str, tone_pattern: List[str]) -> Dict:
         """切分单质干音"""
         # 处理双变体 IPA (如 "ɿ˥˥/ʅ˥˥")
         first_ipa = ipa.split("/")[0] if "/" in ipa else ipa
-        first_ipa = first_ipa.split("˥")[0].split("˦")[0].split("˧")[0].split("˨")[0].split("˩")[0]
+        first_ipa = first_ipa.split("˥")[0].split("˦")[0].split("˧")[
+            0].split("˨")[0].split("˩")[0]
 
         # 提取有效音素
         chars = [c for c in first_ipa if self._is_valid_phoneme(c)]
@@ -107,16 +114,31 @@ class GanyinSlicer:
         if len(chars) < 3:
             chars += [None] * (3 - len(chars))
             return {
-                "呼音": self._create_yueyin(chars[0], tone_pattern[0]) if chars[0] else None,
-                "主音": self._create_yueyin(chars[1], tone_pattern[1]) if chars[1] else None,
-                "末音": self._create_yueyin(chars[2], tone_pattern[2]) if chars[2] else None,
+                "呼音": str(YueyinPianyin.create_yueyin(
+                    quality=chars[0],
+                    pitch=tone_pattern[0],
+                    representation="pianyin",
+                    tone_style="mark"
+                )) if chars[0] else None,
+                "主音": str(YueyinPianyin.create_yueyin(
+                    quality=chars[1],
+                    pitch=tone_pattern[1],
+                    representation="pianyin",
+                    tone_style="mark"
+                )) if chars[1] else None,
+                "末音": str(YueyinPianyin.create_yueyin(
+                    quality=chars[2],
+                    pitch=tone_pattern[2],
+                    representation="pianyin",
+                    tone_style="mark"
+                )) if chars[2] else None,
                 "warning": f"IPA too short: {ipa}"
             }
 
         return {
-            "呼音": self._create_yueyin(chars[0], tone_pattern[0]),
-            "主音": self._create_yueyin(chars[1], tone_pattern[1]),
-            "末音": self._create_yueyin(chars[2], tone_pattern[2])
+            "呼音": str(YueyinPianyin.create_yueyin(chars[0], tone_pattern[0], "pianyin", "mark")),
+            "主音": str(YueyinPianyin.create_yueyin(chars[1], tone_pattern[1], "pianyin", "mark")),
+            "末音": str(YueyinPianyin.create_yueyin(chars[2], tone_pattern[2], "pianyin", "mark"))
         }
 
     def _slice_back_long(self, ipa: str, tone_pattern: List[str]) -> Dict:
@@ -127,15 +149,30 @@ class GanyinSlicer:
         if len(chars) < 3:
             chars += [None] * (3 - len(chars))
             return {
-                "呼音": self._create_yueyin(chars[0], tone_pattern[0]) if chars[0] else None,
-                "主音": self._create_yueyin(chars[1], tone_pattern[1]) if chars[1] else None,
-                "末音": self._create_yueyin(chars[2], tone_pattern[2]) if chars[2] else None,
+                "呼音": str(YueyinPianyin.create_yueyin(
+                    quality=chars[0],
+                    pitch=tone_pattern[0],
+                    representation="pianyin",
+                    tone_style="mark"
+                )) if chars[0] else None,
+                "主音": str(YueyinPianyin.create_yueyin(
+                    quality=chars[1],
+                    pitch=tone_pattern[1],
+                    representation="pianyin",
+                    tone_style="mark"
+                )) if chars[1] else None,
+                "末音": str(YueyinPianyin.create_yueyin(
+                    quality=chars[2],
+                    pitch=tone_pattern[2],
+                    representation="pianyin",
+                    tone_style="mark"
+                )) if chars[2] else None,
                 "warning": f"IPA too short: {ipa}"
             }
         return {
-            "呼音": self._create_yueyin(chars[0], tone_pattern[0]),
-            "主音": self._create_yueyin(chars[1], tone_pattern[1]),
-            "末音": self._create_yueyin(chars[2], tone_pattern[2])
+            "呼音": str(YueyinPianyin.create_yueyin(chars[0], tone_pattern[0], "pianyin", "mark")),
+            "主音": str(YueyinPianyin.create_yueyin(chars[1], tone_pattern[1], "pianyin", "mark")),
+            "末音": str(YueyinPianyin.create_yueyin(chars[2], tone_pattern[2], "pianyin", "mark"))
         }
 
     def _slice_front_long(self, ipa: str, tone_pattern: List[str]) -> Dict:
@@ -146,20 +183,36 @@ class GanyinSlicer:
         if len(chars) < 3:
             chars += [None] * (3 - len(chars))
             return {
-                "呼音": self._create_yueyin(chars[0], tone_pattern[0]) if chars[0] else None,
-                "主音": self._create_yueyin(chars[1], tone_pattern[1]) if chars[1] else None,
-                "末音": self._create_yueyin(chars[2], tone_pattern[2]) if chars[2] else None,
+                "呼音": str(YueyinPianyin.create_yueyin(
+                    quality=chars[0],
+                    pitch=tone_pattern[0],
+                    representation="pianyin",
+                    tone_style="mark"
+                )) if chars[0] else None,
+                "主音": str(YueyinPianyin.create_yueyin(
+                    quality=chars[1],
+                    pitch=tone_pattern[1],
+                    representation="pianyin",
+                    tone_style="mark"
+                )) if chars[1] else None,
+                "末音": str(YueyinPianyin.create_yueyin(
+                    quality=chars[2],
+                    pitch=tone_pattern[2],
+                    representation="pianyin",
+                    tone_style="mark"
+                )) if chars[2] else None,
                 "warning": f"IPA too short: {ipa}"
             }
         return {
-            "呼音": self._create_yueyin(chars[0], tone_pattern[0]),
-            "主音": self._create_yueyin(chars[1], tone_pattern[1]),
-            "末音": self._create_yueyin(chars[2], tone_pattern[2])
+            "呼音": str(YueyinPianyin.create_yueyin(chars[0], tone_pattern[0], "pianyin", "mark")),
+            "主音": str(YueyinPianyin.create_yueyin(chars[1], tone_pattern[1], "pianyin", "mark")),
+            "末音": str(YueyinPianyin.create_yueyin(chars[2], tone_pattern[2], "pianyin", "mark"))
         }
 
     def _slice_triple_quality(self, ipa: str, tone_pattern: List[str]) -> Dict:
         """切分三质干音"""
-        ipa_stripped = ipa.split("˥")[0].split("˦")[0].split("˧")[0].split("˨")[0].split("˩")[0]
+        ipa_stripped = ipa.split("˥")[0].split("˦")[0].split("˧")[
+            0].split("˨")[0].split("˩")[0]
         if ipa_stripped in ["in", "un", "yn"]:
             chars = [ipa_stripped[0], "ə", ipa_stripped[1]]
         elif ipa_stripped in ["iŋ", "iʊ", "ʊŋ", "yŋ"]:
@@ -178,9 +231,9 @@ class GanyinSlicer:
                     "warning": f"IPA too short: {ipa}"
                 }
         return {
-            "呼音": self._create_yueyin(chars[0], tone_pattern[0]),
-            "主音": self._create_yueyin(chars[1], tone_pattern[1]),
-            "末音": self._create_yueyin(chars[2], tone_pattern[2])
+            "呼音": str(YueyinPianyin.create_yueyin(chars[0], tone_pattern[0], "pianyin", "mark")),
+            "主音": str(YueyinPianyin.create_yueyin(chars[1], tone_pattern[1], "pianyin", "mark")),
+            "末音": str(YueyinPianyin.create_yueyin(chars[2], tone_pattern[2], "pianyin", "mark"))
         }
 
 
@@ -220,7 +273,6 @@ def main():
     with open("ganyin_slicer_output.json", "w", encoding="utf-8") as f:
         json.dump(results, f, ensure_ascii=False, indent=2)
     print("干音分析完成，结果已保存到 syllable/analysis/slice/ganyin_slicer_output.json")
-
 
 
 if __name__ == "__main__":
