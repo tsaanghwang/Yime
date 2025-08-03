@@ -11,7 +11,7 @@ class GanyinSlicer:
             "rising_tone": ["3", "4", "5"],  # 上升调
             "low_tone": ["2", "1", "1"],  # 低平调
             "falling_tone": ["5", "4", "1"],  # 下降调
-            "neutral_tone": ["4", "4", "4"]  # 中性调
+            "neutral_tone": ["4", "4", "4"]  # 中性调(轻声调)
         }
         self.pitch_levels = {
             "5": "˥",
@@ -23,21 +23,21 @@ class GanyinSlicer:
 
     def slice_ganyin(self, ganyin_type: str, ganyin_data: Dict[str, Dict]) -> Dict:
         """
-        按干音类型切分干音，返回片音
+        按干音类型切分干音，返回乐音类片音
         """
         results = {}
         for key, value in ganyin_data.items():
             # 保留原始 IPA 用于后续处理
             ipa = value["ipa"]
             # 仅用于创建 Ganyin 对象时取第一个变体
-            base_ipa = ipa.split("/")[0] if "/" in ipa else ipa
+            first_ipa = ipa.split("/")[0] if "/" in ipa else ipa
             ganyin = Ganyin(
                 final=value.get("ime", ""),
-                gandiao=base_ipa.split("˥")[0].split("˦")[0].split("˧")[0].split("˨")[0].split("˩")[0]
+                gandiao=first_ipa.split("˥")[0].split("˦")[0].split("˧")[0].split("˨")[0].split("˩")[0]
             )
 
             # 获取调型模式 - 从IPA中提取调号
-            tone_num = "5"  # 默认中性调
+            tone_num = "5"  # 默认中性调(轻声调)
             if "˥˥" in value["ipa"]:
                 tone_num = "1"
             elif "˧˥" in value["ipa"]:
@@ -95,12 +95,12 @@ class GanyinSlicer:
     def _slice_single_quality(self, ipa: str, tone_pattern: List[str]) -> Dict:
         """切分单质干音"""
         # 处理双变体 IPA (如 "ɿ˥˥/ʅ˥˥")
-        base_ipa = ipa.split("/")[0] if "/" in ipa else ipa
-        base_ipa = base_ipa.split("˥")[0].split("˦")[0].split("˧")[0].split("˨")[0].split("˩")[0]
+        first_ipa = ipa.split("/")[0] if "/" in ipa else ipa
+        first_ipa = first_ipa.split("˥")[0].split("˦")[0].split("˧")[0].split("˨")[0].split("˩")[0]
 
         # 提取有效音素
-        chars = [c for c in base_ipa if self._is_valid_phoneme(c)]
-        
+        chars = [c for c in first_ipa if self._is_valid_phoneme(c)]
+
         # 处理音素不足情况
         if len(chars) == 1:
             chars = chars * 3
@@ -112,7 +112,7 @@ class GanyinSlicer:
                 "末音": self._create_yueyin(chars[2], tone_pattern[2]) if chars[2] else None,
                 "warning": f"IPA too short: {ipa}"
             }
-            
+
         return {
             "呼音": self._create_yueyin(chars[0], tone_pattern[0]),
             "主音": self._create_yueyin(chars[1], tone_pattern[1]),

@@ -57,7 +57,7 @@
                             <div class="stat-value text-error" id="invalidChars">0</div>
                         </div>
                     </div>
-                    
+
                     <div class="overflow-x-auto">
                         <table class="table table-zebra">
                             <thead>
@@ -97,7 +97,7 @@
                         </label>
                         <input type="text" class="input input-bordered w-full" id="customChar" maxlength="1" placeholder="请输入替换字符" title="自定义替换字符">
                     </div>
-                    
+
                     <button class="btn btn-primary" id="executeReplace">执行替换</button>
                     <button class="btn btn-outline" id="downloadModified">下载修改后的文件</button>
                 </div>
@@ -112,7 +112,7 @@
 # 音元符号定义
 YINYUAN_SYMBOLS = {
     "high_tone_i": "󰌠",
-    "mid_tone_i": "󰌡", 
+    "mid_tone_i": "󰌡",
     "low_tone_i": "󰌤",
     "high_tone_u": "󰌪",
     "mid_tone_u": "󰌫",
@@ -158,10 +158,10 @@ def get_yinyuan_symbol(vowel, pitch_level):
     """根据韵腹和调级获取对应的音元符号"""
     vowel_map = {
         # 单韵母
-        "i": "i", "u": "u", "ʏ": "ü", "ᴀ": "a", "o": "o", 
+        "i": "i", "u": "u", "ʏ": "ü", "ᴀ": "a", "o": "o",
         "ɤ": "e", "ᴇ": "e", "ʅ": "-i", "ɚ": "er",
         "m": "m", "n̍": "n", "ŋ̩": "ng",
-        
+
         # 复合韵母中的特殊音标
         "æ": "a",  # 如 ai 中的 æ
         "ɪ": "i",  # 如 ei 中的 ɪ
@@ -176,11 +176,11 @@ def get_yinyuan_symbol(vowel, pitch_level):
     try {
         return YINYUAN_SYMBOLS[f"{pitch_level}_tone_{base}"]
     } catch (KeyError) {
-        # 如果找不到对应符号，使用中性调符号
+        # 如果找不到对应符号，使用中性调(轻声调)符号
         try {
             return YINYUAN_SYMBOLS[f"mid_tone_{base}"]
         } catch (KeyError) {
-            # 如果连中性调符号都找不到，使用默认的a符号
+            # 如果连中性调(轻声调)符号都找不到，使用默认的a符号
             return YINYUAN_SYMBOLS["mid_tone_a"]
         }
     }
@@ -200,27 +200,27 @@ def get_yinyuan_symbol(vowel, pitch_level):
             let validChars = 0;
             let invalidChars = 0;
             const invalidCharsList = [];
-            
+
             // 清空表格
             invalidCharsTable.innerHTML = '';
-            
+
             // 逐行处理文件内容
             const lines = fileContent.split('\n');
             contentElement.innerHTML = '';
-            
+
             lines.forEach((line, lineIndex) => {
                 const lineElement = document.createElement('pre');
                 lineElement.className = 'px-4 py-1';
                 lineElement.setAttribute('data-line', lineIndex + 1);
-                
+
                 // 处理行中的每个字符
                 for (let i = 0; i < line.length; i++) {
                     const char = line[i];
                     totalChars++;
-                    
+
                     // 检查字符是否为Private Use Area-A
                     const isValid = isPrivateUseAreaA(char);
-                    
+
                     if (isValid) {
                         validChars++;
                         lineElement.innerHTML += `<span>${char}</span>`;
@@ -229,7 +229,7 @@ def get_yinyuan_symbol(vowel, pitch_level):
                         if (char.trim() !== '' && char.codePointAt(0) > 127) {
                             invalidChars++;
                             lineElement.innerHTML += `<span class="invalid-char" data-line="${lineIndex + 1}" data-pos="${i + 1}">${char}</span>`;
-                            
+
                             // 添加到不合规字符列表
                             invalidCharsList.push({
                                 char: char,
@@ -242,15 +242,15 @@ def get_yinyuan_symbol(vowel, pitch_level):
                         }
                     }
                 }
-                
+
                 contentElement.appendChild(lineElement);
             });
-            
+
             // 更新统计信息
             document.getElementById('totalChars').textContent = totalChars;
             document.getElementById('validChars').textContent = validChars;
             document.getElementById('invalidChars').textContent = invalidChars;
-            
+
             // 填充不合规字符表格
             invalidCharsList.forEach(item => {
                 const row = document.createElement('tr');
@@ -283,7 +283,7 @@ def get_yinyuan_symbol(vowel, pitch_level):
             document.getElementById('executeReplace').addEventListener('click', () => {
                 alert('替换功能将在完整版本中实现');
             });
-            
+
             // 下载修改后的文件按钮事件
             document.getElementById('downloadModified').addEventListener('click', () => {
                 alert('下载功能将在完整版本中实现');
