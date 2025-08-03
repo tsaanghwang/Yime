@@ -88,7 +88,7 @@ class GanyinSlicer:
             quality=quality,
             pitch=pitch,
             representation="pianyin",
-            tone_style="mark"
+            pitch_style="mark"
         )
         return str(yueyin)
 
@@ -118,19 +118,19 @@ class GanyinSlicer:
                     quality=chars[0],
                     pitch=tone_pattern[0],
                     representation="pianyin",
-                    tone_style="mark"
+                    pitch_style="mark"
                 )) if chars[0] else None,
                 "主音": str(YueyinPianyin.create_yueyin(
                     quality=chars[1],
                     pitch=tone_pattern[1],
                     representation="pianyin",
-                    tone_style="mark"
+                    pitch_style="mark"
                 )) if chars[1] else None,
                 "末音": str(YueyinPianyin.create_yueyin(
                     quality=chars[2],
                     pitch=tone_pattern[2],
                     representation="pianyin",
-                    tone_style="mark"
+                    pitch_style="mark"
                 )) if chars[2] else None,
                 "warning": f"IPA too short: {ipa}"
             }
@@ -153,19 +153,19 @@ class GanyinSlicer:
                     quality=chars[0],
                     pitch=tone_pattern[0],
                     representation="pianyin",
-                    tone_style="mark"
+                    pitch_style="mark"
                 )) if chars[0] else None,
                 "主音": str(YueyinPianyin.create_yueyin(
                     quality=chars[1],
                     pitch=tone_pattern[1],
                     representation="pianyin",
-                    tone_style="mark"
+                    pitch_style="mark"
                 )) if chars[1] else None,
                 "末音": str(YueyinPianyin.create_yueyin(
                     quality=chars[2],
                     pitch=tone_pattern[2],
                     representation="pianyin",
-                    tone_style="mark"
+                    pitch_style="mark"
                 )) if chars[2] else None,
                 "warning": f"IPA too short: {ipa}"
             }
@@ -187,19 +187,19 @@ class GanyinSlicer:
                     quality=chars[0],
                     pitch=tone_pattern[0],
                     representation="pianyin",
-                    tone_style="mark"
+                    pitch_style="mark"
                 )) if chars[0] else None,
                 "主音": str(YueyinPianyin.create_yueyin(
                     quality=chars[1],
                     pitch=tone_pattern[1],
                     representation="pianyin",
-                    tone_style="mark"
+                    pitch_style="mark"
                 )) if chars[1] else None,
                 "末音": str(YueyinPianyin.create_yueyin(
                     quality=chars[2],
                     pitch=tone_pattern[2],
                     representation="pianyin",
-                    tone_style="mark"
+                    pitch_style="mark"
                 )) if chars[2] else None,
                 "warning": f"IPA too short: {ipa}"
             }

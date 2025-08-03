@@ -5,6 +5,15 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "generate_yueyin_yinyuan",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\syllable\\analysis\\slice\\generate_yueyin_yinyuan.py",
+            "currentFileConfiguration": false,
+            "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
+            "addSourceRootsToPythonpath": true
+        },
+        {
             "name": "extract_yueyin",
             "type": "python",
             "request": "launch",
