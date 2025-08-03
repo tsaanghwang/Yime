@@ -1,5 +1,5 @@
 """
-乐音(Pitched Yinyuan/Musical Yinyuan/Yueyin)表示模块
+乐音(Pitched Yinyuan/MusicalYinyuan/YueyinYinyuan)表示模块
 
 定义汉语音节中有稳定音调的音元表示方法，继承自 yinyuan.py 中的 PitchedYinyuan 基类。
 """
@@ -10,19 +10,20 @@ from syllable.analysis.slice.yinyuan import PitchedYinyuan, DurationType, Loudne
 
 ToneStyle = Literal['number', 'mark']
 
+
 @dataclass
 class MusicalYinyuan(PitchedYinyuan):
     """
-    乐音类音元(Musical Yinyuan/Yueyin)，表示有稳定音调的音元
-    
+    乐音类音元(MusicalYinyuan/YueyinYinyuan)，表示有稳定音调的音元
+
     属性:
         quality: 音质(必选)
         pitch_value: 音调值(1-5数字表示)
         tone_style: 音调显示风格('number'或'mark')
     """
     tone_style: ToneStyle = 'number'
-    
-    TONE_MARKS = {
+
+    PITCH_MARKS = {
         "5": "˥",  # 高平调
         "4": "˦",  # 次高平调
         "3": "˧",  # 中平调
@@ -33,7 +34,7 @@ class MusicalYinyuan(PitchedYinyuan):
     def __str__(self) -> str:
         """返回音元的字符串表示，根据 tone_style 显示音调"""
         if self.tone_style == 'mark':
-            return f"{self.quality}{self.TONE_MARKS.get(self.pitch_value, '')}"
+            return f"{self.quality}{self.PITCH_MARKS.get(self.pitch_value, '')}"
         return f"{self.quality}{self.pitch_value}"
 
     def to_dict(self) -> dict:
@@ -57,3 +58,7 @@ class MusicalYinyuan(PitchedYinyuan):
             loudness=data.get('loudness', 'neutral'),
             tone_style=data.get('tone_style', 'number')
         )
+
+
+class YueyinYinyuan():
+    pass

@@ -118,4 +118,27 @@ class UnpitchedYinyuan(IndeterminatePitchYinyuan):
         """生成音元代码"""
         return f"UPY_{initial.upper()}"
 
-# (Removed incomplete create_yinyuan function and duplicate UnpitchedYinyuan class)
+@dataclass
+class PitchedYinyuan(YinyuanBase):
+    """有稳定音调的音元"""
+    pitch: str  # 使用1-5表示音高
+    quality: str
+    duration: DurationType = 'neutral'
+    loudness: LoudnessType = 'neutral'
+
+    @property
+    def type(self) -> str:
+        return "pitched"
+
+    def is_valid(self) -> bool:
+        return bool(self.quality.strip()) and self.pitch in ['1', '2', '3', '4', '5']
+
+    def __str__(self) -> str:
+        """友好的字符串表示"""
+        attrs = [
+            f"quality={repr(self.quality)}",
+            f"pitch={repr(self.pitch)}",
+            f"duration={repr(self.duration)}",
+            f"loudness={repr(self.loudness)}"
+        ]
+        return f"{self.__class__.__name__}({', '.join(attrs)})"

@@ -9,7 +9,7 @@ from pathlib import Path
 from yinyuan import PitchedYinyuan
 
 
-def generate_pitched_yinyuan():
+def generate_yueyin_yinyuan():
     """生成乐音类音元(Pitched Yinyuan/Musical Yinyuan/Yueyin)数据文件"""
     yinyuan = PitchedYinyuan()
 
@@ -44,4 +44,4 @@ def generate_pitched_yinyuan():
 
 
 if __name__ == '__main__':
-    generate_pitched_yinyuan()
+    generate_yueyin_yinyuan()
