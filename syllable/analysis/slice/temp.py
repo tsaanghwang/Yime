@@ -62,7 +62,7 @@
   "末音": "ɿ˦/ʅ˦"
 }
 
-在syllable\analysis\slice\ganyin_slicer.py中处理
+在syllable\analysis\slice\ganyin_to_pianyin_sequence.py中处理
 这组输入数据：
     "_i1": {
       "呼音": "ɿ˥/ʅ˥",

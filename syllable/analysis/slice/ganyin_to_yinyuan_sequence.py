@@ -6,7 +6,7 @@
 import json
 from pathlib import Path
 from yueyin_yinyuan import YueyinYinyuan
-from ganyin_slicer import enhance_i_variants
+from ganyin_to_pianyin_sequence import enhance_i_variants
 
 
 class GanyinToYinyuanSequence:
@@ -98,7 +98,7 @@ class GanyinToYinyuanSequence:
 
 if __name__ == "__main__":
     converter = GanyinToYinyuanSequence()
-    input_file = Path(__file__).parent / "ganyin_slicer_output.json"
-    output_file = Path(__file__).parent / "ganyin_to_yinyuan_output.json"
+    input_file = Path(__file__).parent / "ganyin_to_pianyin_sequence.json"
+    output_file = Path(__file__).parent / "ganyin_to_yinyuan_sequence.json"
     result = converter.run(str(input_file), str(output_file))
     print(f"转换完成，结果已保存到 {output_file}")
