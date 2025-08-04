@@ -248,17 +248,16 @@ def load_ganyin_data() -> Dict:
 
 def enhance_i_variants(ganyin_dict: dict) -> dict:
     """
-    将所有 _i* 项的 '呼音'/'主音'/'末音' 字段中的 'ɿX' 替换为 'ɿX/ʅX'
+    将所有 _i* 项的 '呼音'/'主音'/'末音' 字段中的 'ɿX' 或 'ʅX' 替换为 'ɿX/ʅX'
     """
     for key, value in ganyin_dict.items():
         if key.startswith("_i"):
             for field in ["呼音", "主音", "末音"]:
                 ipa = value.get(field, "")
-                if ipa and ipa.startswith("ɿ"):
+                if ipa and (ipa.startswith("ɿ") or ipa.startswith("ʅ")):
                     tone = ipa[1:]
                     value[field] = f"ɿ{tone}/ʅ{tone}"
     return ganyin_dict
-
 
 def main():
     slicer = GanyinSlicer()

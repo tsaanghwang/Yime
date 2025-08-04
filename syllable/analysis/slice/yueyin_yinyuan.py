@@ -75,7 +75,7 @@ class YueyinYinyuan(MusicalYinyuan):
         else:
             return cls(
                 quality=pianyin.quality,
-                pitch='3',  # 默认中平调
+                pitch='4',  # 默认中性调
                 duration='neutral',
                 loudness='neutral',
                 pitch_style='number'
