@@ -269,9 +269,9 @@ def main():
             if ganyin_type == "single quality ganyin":
                 sliced = enhance_i_variants(sliced)
             results[ganyin_type] = sliced
-    with open("ganyin_slicer_output.json", "w", encoding="utf-8") as f:
+    with open("ganyin_to_pianyin_sequence.json", "w", encoding="utf-8") as f:
         json.dump(results, f, ensure_ascii=False, indent=2)
-    print("干音分析完成，结果已保存到 syllable/analysis/slice/ganyin_slicer_output.json")
+    print("干音分析完成，结果已保存到 syllable/analysis/slice/ganyin_to_pianyin_sequence.json")
 
 
 if __name__ == "__main__":

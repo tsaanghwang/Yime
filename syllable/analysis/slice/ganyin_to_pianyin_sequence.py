@@ -1,242 +1,277 @@
 import json
-from typing import Dict, List, Tuple
+from typing import Dict, List
+from ganyin import Ganyin
+from pathlib import Path
+from pitched_pianyin import YueyinPianyin
 
-class GanyinToPianyinSequence:
-    # 干音分析系统
-    # 干音是由声调与韵母构成的音段
-    # 在通用现代汉语中，片音是由音质和音调构成的语音基本结构单元
-    # 片音的音质用音标（phonetic symbol）来表示
-    # 片音的音调用调号（tone mark）来表示
-    # 干音分析系统将干音分析成由三个片音构成的序列
 
+class GanyinSlicer:
     def __init__(self):
-        self.tone_segments = {
-            "first_tone": ["high level", "high level", "high level"],  # 高平 -> 高平 -> 高平
-            "second_tone": ["mid level", "mid-high level", "high level"],  # 中平 -> 半高平 -> 高平
-            "third_tone": ["mid-low level", "low level", "low level"],  # 半低平 -> 低平 -> 低平
-            "fourth_tone": ["high level", "mid-high level", "low level"]  # 高平 -> 半高平 -> 低平
+        self.tone_patterns = {
+            "high_tone": ["5", "5", "5"],  # 高平调
+            "rising_tone": ["3", "4", "5"],  # 上升调
+            "low_tone": ["2", "1", "1"],  # 低平调
+            "falling_tone": ["5", "4", "1"],  # 下降调
+            "neutral_tone": ["4", "4", "4"]  # 中性调(轻声调)
+        }
+        self.pitch_levels = {
+            "5": "˥",
+            "4": "˦",
+            "3": "˧",
+            "2": "˨",
+            "1": "˩"
         }
 
-        self.tone_segments = {
-            "high level": "˥",
-            "mid-high level": "˦",
-            "mid level": "˧",
-            "mid-low level": "˨",
-            "low level": "˩"
-        }
-
-    def analyze_ganyin(self, final: Dict, tone: str, is_front_long: bool = False, is_back_long: bool = False, is_single_quality: bool = False) -> List[str]:
+    def slice_ganyin(self, ganyin_type: str, ganyin_data: Dict[str, Dict]) -> Dict:
         """
-        分析干音，生成片音序列
-
-        参数:
-            final: 韵母字典，必须包含"音标"字段，如{"音标": "uan", "拼音": "uan"}
-            tone: 声调类型，必须是self.tone_segments中的调型
-            is_front_long: 是否为前长韵母
-            is_back_long: 是否为后长韵母
-            is_single_quality: 是否为单质韵母
-
-        返回:
-            片音列表，如["u˥", "a˥", "n˥"](三质韵母)或["a˥", "a˥", "n˥"](前长韵母)或["u˥", "o˥", "o˥"](后长韵母)或["o˥", "o˥", "o˥"](单质韵母)
-
-        异常:
-            ValueError: 如果输入数据格式不正确
+        按干音类型切分干音，返回乐音类片音
         """
-        # 预处理音标：仅针对特定音标例如"n̍"和"ŋ̩"移除附加符号
-        def normalize_ipa(ipa: str) -> str:
-            """规范化国际音标字符串，移除特定辅音上的附加符号。
-
-            该函数专门处理附加在鼻音和边音上的附加符号，如音节性符号(◌̩)等。
-            当前支持的替换规则：
-                - "m̩" -> "m" (音节性双唇鼻音)
-                - "n̍" -> "n" (音节性齿龈鼻音)
-                - "ŋ̩" -> "ŋ" (音节性软腭鼻音)
-
-            Args:
-                ipa: 包含可能带有附加符号的国际音标字符串
-
-            Returns:
-                移除指定附加符号后的规范化音标字符串
-            """
-            # 定义需要处理的音标替换规则
-            IPA_NORMALIZATION_RULES = {
-                "m̩": "m",  # 音节性双唇鼻音
-                "m̍": "m",  # 音节性齿龈鼻音
-                "n̩": "n",  # 音节性齿龈鼻音
-                "n̍": "n",  # 音节性齿龈鼻音
-                "ŋ̩": "ŋ",  # 音节性软腭鼻音
-                "ŋ̍": "ŋ",  # 音节性软腭鼻音
-                "l̩": "l",  # 音节性齿龈边音
-                "l̍": "l",  # 音节性齿龈边音
-            }
-
-            # 应用所有替换规则
-            for pattern, replacement in IPA_NORMALIZATION_RULES.items():
-                ipa = ipa.replace(pattern, replacement)
-
-            return ipa
-
-        # 验证输入字典结构
-        required_fields = {"音标", "拼音"}
-        if not all(field in final for field in required_fields):
-            missing = required_fields - final.keys()
-            raise ValueError(f"韵母数据缺少必要字段: {missing}")
-
-        ipa = normalize_ipa(final["音标"])
-        if not isinstance(ipa, str):
-            raise ValueError(f"音标必须是字符串类型，当前值: {ipa} (类型: {type(ipa)})")
-
-        # 对于单质韵母，不检查长度，因为可能包含组合字符
-        if is_single_quality:
-            pass
-        elif is_front_long or is_back_long:
-            if len(ipa) != 2:
-                raise ValueError(f"前/后长韵母音标应为2个字符，当前值: {ipa}")
-        else:  # 三质韵母
-            if len(ipa) != 3:
-                raise ValueError(f"三质韵母音标应为3个字符，当前值: {ipa}")
-
-        if tone not in self.tone_segments:
-            valid_tones = list(self.tone_segments.keys())
-            raise ValueError(
-                f"无效的声调类型: {tone}，有效值为: {valid_tones}"
+        results = {}
+        for key, value in ganyin_data.items():
+            # 保留原始 IPA 用于后续处理
+            ipa = value["ipa"]
+            # 仅用于创建 Ganyin 对象时取第一个变体
+            first_ipa = ipa.split("/")[0] if "/" in ipa else ipa
+            ganyin = Ganyin(
+                final=value.get("ime", ""),
+                gandiao=first_ipa.split("˥")[0].split("˦")[0].split("˧")[
+                    0].split("˨")[0].split("˩")[0]
             )
 
-        # 处理前长韵母：将第一个音标重复
-        if is_front_long:
-            ipa = ipa[0] + ipa  # 如"an"变为"aan"
-        # 处理后长韵母：将第二个音标重复
-        elif is_back_long:
-            ipa = ipa + ipa[1]  # 如"uo"变为"uoo"
-        # 处理单质韵母：将音标重复三次
-        elif is_single_quality:
-            ipa = ipa * 3  # 如"o"变为"ooo"
+            # 获取调型模式 - 从IPA中提取调号
+            tone_num = "5"  # 默认中性调(轻声调)
+            if "˥˥" in value["ipa"]:
+                tone_num = "1"
+            elif "˧˥" in value["ipa"]:
+                tone_num = "2"
+            elif "˨˩" in value["ipa"]:
+                tone_num = "3"
+            elif "˥˩" in value["ipa"]:
+                tone_num = "4"
+            tone_pattern = self._get_tone_pattern(tone_num)
 
-        # 生成片音序列
-        pitch_levels = self.tone_segments[tone]
-        try:
-            return [
-                f"{char}{self.tone_segments[level]}"
-                for char, level in zip(ipa, pitch_levels)
-            ]
-        except Exception as e:
-            raise ValueError(
-                f"生成片音序列失败: {str(e)}，音标: {ipa}, 声调: {tone}"
-            ) from e
+            if ganyin_type == "single quality ganyin":
+                sliced = self._slice_single_quality(
+                    ipa, tone_pattern)  # 传入完整 IPA 而不是处理后的 gandiao
+            elif ganyin_type == "back long ganyin":
+                sliced = self._slice_back_long(
+                    ganyin.gandiao, tone_pattern)
+            elif ganyin_type == "front long ganyin":
+                sliced = self._slice_front_long(
+                    ganyin.gandiao, tone_pattern)
+            elif ganyin_type == "triple quality ganyin":
+                sliced = self._slice_triple_quality(
+                    ganyin.gandiao, tone_pattern)
+            else:
+                raise ValueError(f"未知的干音类型: {ganyin_type}")
 
-    def analyze_all_finals(self, finals_data: Dict) -> Dict:
-        """
-        分析所有韵母的干音组合
-
-        参数:
-            finals_data: 包含韵母分类的字典
-
-        返回:
-            包含所有干音分析结果的字典
-
-        异常:
-            ValueError: 如果数据中缺少必要的韵母分类
-        """
-        required_categories = ["三质韵母", "前长韵母", "后长韵母", "单质韵母"]
-        missing = [cat for cat in required_categories if cat not in finals_data]
-        if missing:
-            raise ValueError(f"输入数据必须包含以下分类: {missing}")
-
-        # 分析三质韵母、前长韵母、后长韵母和单质韵母
-        triphone_finals = finals_data["三质韵母"]
-        front_long_finals = finals_data["前长韵母"]
-        back_long_finals = finals_data["后长韵母"]
-        single_quality_finals = finals_data["单质韵母"]
-
-        results = {}
-        for tone in self.tone_segments:
-            results[tone] = {
-                "三质韵母": [
-                    self.analyze_ganyin(final, tone)
-                    for final in triphone_finals
-                ],
-                "前长韵母": [
-                    self.analyze_ganyin(final, tone, is_front_long=True)
-                    for final in front_long_finals
-                ],
-                "后长韵母": [
-                    self.analyze_ganyin(final, tone, is_back_long=True)
-                    for final in back_long_finals
-                ],
-                "单质韵母": [
-                    self.analyze_ganyin(final, tone, is_single_quality=True)
-                    for final in single_quality_finals
-                ]
-            }
-
-            # 验证每个韵母分类都成功分析
-            for category in ["三质韵母", "前长韵母", "后长韵母", "单质韵母"]:
-                analyzed_count = len(results[tone][category])
-                original_count = len(finals_data[category])
-                if analyzed_count != original_count:
-                    raise ValueError(
-                        f"分析结果不完整({category}): 预期{original_count}个韵母, 实际分析{analyzed_count}个"
-                    )
-
+            results[key] = sliced
         return results
 
+    def _get_tone_pattern(self, tone_num: str) -> List[str]:
+        """根据调号获取对应的调型模式"""
+        if tone_num == "1":
+            return self.tone_patterns["high_tone"]
+        elif tone_num == "2":
+            return self.tone_patterns["rising_tone"]
+        elif tone_num == "3":
+            return self.tone_patterns["low_tone"]
+        elif tone_num == "4":
+            return self.tone_patterns["falling_tone"]
+        else:
+            return self.tone_patterns["neutral_tone"]  # 默认使用中性调
 
-def load_finals_data() -> Dict:
-    """从JSON文件加载韵母分类数据"""
-    with open("internal_data/classified_finals.json", "r", encoding="utf-8") as f:
-        return json.load(f)
+    def _create_yueyin(self, quality: str, pitch: str) -> str:
+        """创建乐音表示字符串"""
+        # 使用 YueyinPianyin.create_yueyin 工厂方法创建实例
+        yueyin = YueyinPianyin.create_yueyin(
+            quality=quality,
+            pitch=pitch,
+            representation="pianyin",
+            pitch_style="mark"
+        )
+        return str(yueyin)
 
+    def _is_valid_phoneme(self, char: str) -> bool:
+        """检查字符是否为有效音素"""
+        valid_phonemes = ["ə", "ɚ", "ŋ", "ɪ", "ʊ", "ʌ",
+                          "ɔ", "y", "e", "o", "a", "m", "n", "i", "u"]
+        return char.isalpha() or char in valid_phonemes
+
+    def _slice_single_quality(self, ipa: str, tone_pattern: List[str]) -> Dict:
+        """切分单质干音"""
+        # 处理双变体 IPA (如 "ɿ˥˥/ʅ˥˥")
+        first_ipa = ipa.split("/")[0] if "/" in ipa else ipa
+        first_ipa = first_ipa.split("˥")[0].split("˦")[0].split("˧")[
+            0].split("˨")[0].split("˩")[0]
+
+        # 提取有效音素
+        chars = [c for c in first_ipa if self._is_valid_phoneme(c)]
+
+        # 处理音素不足情况
+        if len(chars) == 1:
+            chars = chars * 3
+        if len(chars) < 3:
+            chars += [None] * (3 - len(chars))
+            return {
+                "呼音": str(YueyinPianyin.create_yueyin(
+                    quality=chars[0],
+                    pitch=tone_pattern[0],
+                    representation="pianyin",
+                    pitch_style="mark"
+                )) if chars[0] else None,
+                "主音": str(YueyinPianyin.create_yueyin(
+                    quality=chars[1],
+                    pitch=tone_pattern[1],
+                    representation="pianyin",
+                    pitch_style="mark"
+                )) if chars[1] else None,
+                "末音": str(YueyinPianyin.create_yueyin(
+                    quality=chars[2],
+                    pitch=tone_pattern[2],
+                    representation="pianyin",
+                    pitch_style="mark"
+                )) if chars[2] else None,
+                "warning": f"IPA too short: {ipa}"
+            }
+
+        return {
+            "呼音": str(YueyinPianyin.create_yueyin(chars[0], tone_pattern[0], "pianyin", "mark")),
+            "主音": str(YueyinPianyin.create_yueyin(chars[1], tone_pattern[1], "pianyin", "mark")),
+            "末音": str(YueyinPianyin.create_yueyin(chars[2], tone_pattern[2], "pianyin", "mark"))
+        }
+
+    def _slice_back_long(self, ipa: str, tone_pattern: List[str]) -> Dict:
+        """切分后长干音"""
+        chars = [c for c in ipa if self._is_valid_phoneme(c)]
+        if len(chars) == 2:
+            chars = [chars[0], chars[1], chars[1]]
+        if len(chars) < 3:
+            chars += [None] * (3 - len(chars))
+            return {
+                "呼音": str(YueyinPianyin.create_yueyin(
+                    quality=chars[0],
+                    pitch=tone_pattern[0],
+                    representation="pianyin",
+                    pitch_style="mark"
+                )) if chars[0] else None,
+                "主音": str(YueyinPianyin.create_yueyin(
+                    quality=chars[1],
+                    pitch=tone_pattern[1],
+                    representation="pianyin",
+                    pitch_style="mark"
+                )) if chars[1] else None,
+                "末音": str(YueyinPianyin.create_yueyin(
+                    quality=chars[2],
+                    pitch=tone_pattern[2],
+                    representation="pianyin",
+                    pitch_style="mark"
+                )) if chars[2] else None,
+                "warning": f"IPA too short: {ipa}"
+            }
+        return {
+            "呼音": str(YueyinPianyin.create_yueyin(chars[0], tone_pattern[0], "pianyin", "mark")),
+            "主音": str(YueyinPianyin.create_yueyin(chars[1], tone_pattern[1], "pianyin", "mark")),
+            "末音": str(YueyinPianyin.create_yueyin(chars[2], tone_pattern[2], "pianyin", "mark"))
+        }
+
+    def _slice_front_long(self, ipa: str, tone_pattern: List[str]) -> Dict:
+        """切分前长干音"""
+        chars = [c for c in ipa if self._is_valid_phoneme(c)]
+        if len(chars) == 2:
+            chars = [chars[0], chars[0], chars[1]]
+        if len(chars) < 3:
+            chars += [None] * (3 - len(chars))
+            return {
+                "呼音": str(YueyinPianyin.create_yueyin(
+                    quality=chars[0],
+                    pitch=tone_pattern[0],
+                    representation="pianyin",
+                    pitch_style="mark"
+                )) if chars[0] else None,
+                "主音": str(YueyinPianyin.create_yueyin(
+                    quality=chars[1],
+                    pitch=tone_pattern[1],
+                    representation="pianyin",
+                    pitch_style="mark"
+                )) if chars[1] else None,
+                "末音": str(YueyinPianyin.create_yueyin(
+                    quality=chars[2],
+                    pitch=tone_pattern[2],
+                    representation="pianyin",
+                    pitch_style="mark"
+                )) if chars[2] else None,
+                "warning": f"IPA too short: {ipa}"
+            }
+        return {
+            "呼音": str(YueyinPianyin.create_yueyin(chars[0], tone_pattern[0], "pianyin", "mark")),
+            "主音": str(YueyinPianyin.create_yueyin(chars[1], tone_pattern[1], "pianyin", "mark")),
+            "末音": str(YueyinPianyin.create_yueyin(chars[2], tone_pattern[2], "pianyin", "mark"))
+        }
+
+    def _slice_triple_quality(self, ipa: str, tone_pattern: List[str]) -> Dict:
+        """切分三质干音"""
+        ipa_stripped = ipa.split("˥")[0].split("˦")[0].split("˧")[
+            0].split("˨")[0].split("˩")[0]
+        if ipa_stripped in ["in", "un", "yn"]:
+            chars = [ipa_stripped[0], "ə", ipa_stripped[1]]
+        elif ipa_stripped in ["iŋ", "iʊ", "ʊŋ", "yŋ"]:
+            chars = [ipa_stripped[0], "ɤ", ipa_stripped[1:]]
+        elif ipa_stripped == "uɪ":
+            chars = ["u", "e", "ɪ"]
+        else:
+            chars = [c for c in ipa if c.isalpha() or c in [
+                "ə", "ɚ", "ŋ", "ɪ", "ʊ", "ʌ", "ɔ", "y", "e", "o", "a", "m", "n", "i", "u"]]
+            if len(chars) < 3:
+                chars += [None] * (3 - len(chars))
+                return {
+                    "呼音": self._create_yueyin(chars[0], tone_pattern[0]) if chars[0] else None,
+                    "主音": self._create_yueyin(chars[1], tone_pattern[1]) if chars[1] else None,
+                    "末音": self._create_yueyin(chars[2], tone_pattern[2]) if chars[2] else None,
+                    "warning": f"IPA too short: {ipa}"
+                }
+        return {
+            "呼音": str(YueyinPianyin.create_yueyin(chars[0], tone_pattern[0], "pianyin", "mark")),
+            "主音": str(YueyinPianyin.create_yueyin(chars[1], tone_pattern[1], "pianyin", "mark")),
+            "末音": str(YueyinPianyin.create_yueyin(chars[2], tone_pattern[2], "pianyin", "mark"))
+        }
+
+
+def load_ganyin_data() -> Dict:
+    """加载干音数据"""
+    base_dir = Path(__file__).parent
+    file_path = base_dir / "ganyin_enhanced.json"
+    with open(file_path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+        return data["ganyin"] if "ganyin" in data else data
+
+
+def enhance_i_variants(ganyin_dict: dict) -> dict:
+    """
+    将所有 _i* 项的 '呼音'/'主音'/'末音' 字段中的 'ɿX' 或 'ʅX' 替换为 'ɿX/ʅX'
+    """
+    for key, value in ganyin_dict.items():
+        if key.startswith("_i"):
+            for field in ["呼音", "主音", "末音"]:
+                ipa = value.get(field, "")
+                if ipa and (ipa.startswith("ɿ") or ipa.startswith("ʅ")):
+                    tone = ipa[1:]
+                    value[field] = f"ɿ{tone}/ʅ{tone}"
+    return ganyin_dict
 
 def main():
-    """主函数：执行干音分析并保存结果"""
-    analyzer = GanyinToPianyinSequence()
-    finals_data = load_finals_data()
-
-    analysis_results = {
-  "description": "干音分析结果(包含三质干音、前长干音、后长干音和单质干音)",
-  "encoding_rules": {
-    "general_pattern": {
-      "first_tone_GanyinToPianyinSequence": "三个高平片音的组合",
-      "second_tone_GanyinToPianyinSequence": "中平片音、半高平片音、高平片音的组合",
-      "third_tone_GanyinToPianyinSequence": "半低平片音、低平片音、低平片音的组合",
-      "fourth_tone_GanyinToPianyinSequence": "高平片音、中平片音、低平片音的组合"
-    },
-    "front_long_special_rule": {
-      "description": "在前长干音中，前长韵母的第一个音标重复表示，如'an'变为'aan'",
-      "example": {
-        "first_tone": "a˥a˥n˥",
-        "second_tone": "a˧a˦n˥",
-        "third_tone": "a˨a˩n˩",
-        "fourth_tone": "a˥a˦n˩"
-      }
-    },
-    "back_long_special_rule": {
-      "description": "在后长干音中，后长韵母的第二个音标重复表示，如'uo'变为'uoo'",
-      "example": {
-        "first_tone": "u˥o˥o˥",
-        "second_tone": "u˧o˦o˥",
-        "third_tone": "u˨o˩o˩",
-        "fourth_tone": "u˥o˦o˩"
-      }
-    },
-    "single_quality_special_rule": {
-      "description": "在单质干音中，单质韵母的音标重复三次表示，如'o'变为'ooo'",
-      "example": {
-        "first_tone": "o˥o˥o˥",
-        "second_tone": "o˧o˦o˥",
-        "third_tone": "o˨o˩o˩",
-        "fourth_tone": "o˥o˦o˩"
-      }
-    },
-    "pattern_rules": analyzer.tone_segments,
-    "analysis_results": analyzer.analyze_all_finals(finals_data)
-    }
-}
-
-    with open("internal_data/pianyin_sequence_of_ganyin.json", "w", encoding="utf-8") as f:
-        json.dump(analysis_results, f, ensure_ascii=False, indent=2)
-
-    print("干音分析完成，结果已保存到 internal_data/pianyin_sequence_of_ganyin.json")
+    slicer = GanyinSlicer()
+    ganyin_data = load_ganyin_data()
+    results = {}
+    for ganyin_type in ["single quality ganyin", "front long ganyin", "back long ganyin", "triple quality ganyin"]:
+        if ganyin_type in ganyin_data:
+            sliced = slicer.slice_ganyin(ganyin_type, ganyin_data[ganyin_type])
+            if ganyin_type == "single quality ganyin":
+                sliced = enhance_i_variants(sliced)
+            results[ganyin_type] = sliced
+    with open("ganyin_to_pianyin_sequence.json", "w", encoding="utf-8") as f:
+        json.dump(results, f, ensure_ascii=False, indent=2)
+    print("干音分析完成，结果已保存到 syllable/analysis/slice/ganyin_to_pianyin_sequence.json")
 
 
 if __name__ == "__main__":
