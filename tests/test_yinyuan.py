@@ -23,7 +23,7 @@ class TestYinyuanProcessing(unittest.TestCase):
             __file__), '../yinyuan/variables_of_pitch_and_quality.json')
         self.yinyuan = Yinyuan(config_path=config_path)
 
-        self.test_data_dynamic_tonal_elements_model = {
+        self.test_data_mid_high_level_modal_median_model = {
             "key1": ("i", "˥"),
             "key2": ("u", "˦"),
             "key3": ("ᴀ", "˩"),
@@ -31,7 +31,7 @@ class TestYinyuanProcessing(unittest.TestCase):
             "key5": ("ɑ", "˩")   # ᴀ的变体
         }
 
-        self.test_data_isochronous_tonal_elements_model = {
+        self.test_data_mid_level_median_model = {
             "key1": ("i", "˥"),
             "key2": ("u", "˦"),
             "key3": ("ᴀ", "˩"),
@@ -39,10 +39,10 @@ class TestYinyuanProcessing(unittest.TestCase):
             "key5": ("ᴇ", "˨")
         }
 
-    def test_process_pitched_yinyuan_dynamic_tonal_elements_model(self):
-        """测试dynamic_tonal_elements_model的音元处理"""
+    def test_process_pitched_yinyuan_mid_high_level_modal_median_model(self):
+        """测试mid_high_level_modal_median_model的音元处理"""
         result = self.yinyuan.process_pitched_yinyuan(
-            self.test_data_dynamic_tonal_elements_model, is_isochronous_tonal_elements_model=False)
+            self.test_data_mid_high_level_modal_median_model, is_mid_level_median_model=False)
 
         # 验证输出
         self.assertIn("i˥", result)
@@ -57,12 +57,12 @@ class TestYinyuanProcessing(unittest.TestCase):
         self.assertEqual(len(result["i˥"]), 2)  # i˥和ɪ˥应归为一组
         self.assertEqual(len(result["ᴀ˩"]), 2)  # ᴀ˩和ɑ˩应归为一组
 
-    def test_process_pitched_yinyuan_isochronous_tonal_elements_model(self):
-        """测试isochronous_tonal_elements_model的音元处理"""
+    def test_process_pitched_yinyuan_mid_level_median_model(self):
+        """测试mid_level_median_model的音元处理"""
         result = self.yinyuan.process_pitched_yinyuan(
-            self.test_data_isochronous_tonal_elements_model, is_isochronous_tonal_elements_model=True)
+            self.test_data_mid_level_median_model, is_mid_level_median_model=True)
 
-        # 验证isochronous_tonal_elements_model特有的音调处理
+        # 验证mid_level_median_model特有的音调处理
         self.assertIn("i˥", result)  # ˥保持不变
         self.assertIn("u˥", result)  # ˦应提升为˥
         self.assertIn("ᴀ˩", result)  # ˩保持不变
@@ -72,21 +72,21 @@ class TestYinyuanProcessing(unittest.TestCase):
     def test_process_empty_input(self):
         """测试空输入处理"""
         result = self.yinyuan.process_pitched_yinyuan(
-            {}, is_isochronous_tonal_elements_model=False)
+            {}, is_mid_level_median_model=False)
         self.assertEqual(result, {})
 
     def test_process_invalid_quality(self):
         """测试无效音质处理"""
         invalid_data = {"key1": ("x", "˥")}  # 无效音质
         result = self.yinyuan.process_pitched_yinyuan(
-            invalid_data, is_isochronous_tonal_elements_model=False)
+            invalid_data, is_mid_level_median_model=False)
         self.assertEqual(result, {})
 
     def test_process_invalid_pitch(self):
         """测试无效音调处理"""
         invalid_data = {"key1": ("i", "x")}  # 无效音调
         result = self.yinyuan.process_pitched_yinyuan(
-            invalid_data, is_isochronous_tonal_elements_model=False)
+            invalid_data, is_mid_level_median_model=False)
         self.assertEqual(result, {})
 
     def test_process_performance(self):
@@ -95,7 +95,7 @@ class TestYinyuanProcessing(unittest.TestCase):
 
         start_time = time.time()
         result = self.yinyuan.process_pitched_yinyuan(
-            large_data, is_isochronous_tonal_elements_model=False)
+            large_data, is_mid_level_median_model=False)
         end_time = time.time()
 
         self.assertLess(end_time - start_time, 1.0)  # 应在1秒内完成
@@ -157,7 +157,7 @@ class TestYinyuan(unittest.TestCase):
         self.assertEqual(p.pitch, "˥")
         self.assertEqual(p.pitch, "˥")
 
-        # 测试噪音音元 - 修改为使用有效噪音符号
+        # 测试噪音类音元 - 修改为使用有效噪音符号
         y_unpitched_yinyuan = Yinyuan(0, notation="m", config_path=self.config_path)
         p_unpitched_yinyuan = y_unpitched_yinyuan.to_pianyin()
         self.assertIsInstance(p_unpitched_yinyuan, UnpitchedPianyin)

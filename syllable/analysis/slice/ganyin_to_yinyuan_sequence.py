@@ -49,7 +49,7 @@ class GanyinToYinyuanSequence:
         quality = pianyin[:-1] if len(pianyin) > 1 else pianyin
         pitch = pianyin[-1] if len(pianyin) > 1 else ""
 
-        processed = self.yueyin_yinyuan._process_dynamic_tonal_elements_model(
+        processed = self.yueyin_yinyuan._process_yueyin(
             {"temp": (quality, pitch)}
         )
 

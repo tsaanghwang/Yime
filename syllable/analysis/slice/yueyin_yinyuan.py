@@ -63,7 +63,7 @@ class YueyinYinyuan(MusicalYinyuan):
 
     @classmethod
     def from_pianyin(cls, pianyin: Union[PitchedPianyin, UnpitchedPianyin]) -> 'YueyinYinyuan':
-        """从片音对象创建乐音音元对象 (中文版)"""
+        """从片音对象创建乐音类音元对象 (中文版)"""
         if isinstance(pianyin, PitchedPianyin):
             return cls(
                 quality=pianyin.quality,
@@ -83,18 +83,18 @@ class YueyinYinyuan(MusicalYinyuan):
 
     def __str__(self) -> str:
         """中文友好的字符串表示"""
-        return f"乐音音元(音质={self.quality}, 音调={self.pitch})"
+        return f"乐音类音元(音质={self.quality}, 音调={self.pitch})"
 
-    def process_pitched_yinyuan(self, input_data, is_isochronous_tonal_elements_model=False):
+    def process_pitched_yinyuan(self, input_data, is_mid_level_median_model=False):
         """处理乐音类音元数据"""
-        if is_isochronous_tonal_elements_model:
-            return self._process_isochronous_tonal_elements_model(input_data)
+        if is_mid_level_median_model:
+            return self._process_mid_level_median_model_yueyin(input_data)
         else:
-            return self._process_dynamic_tonal_elements_model(input_data)
+            return self._process_yueyin(input_data)
 
-    def _process_dynamic_tonal_elements_model(self, input_data):
-        """处理dynamic_tonal_elements_model的乐音类音元数据"""
-        pitch_class = self.pitch_variables['dynamic_tonal_elements_model']
+    def _process_yueyin(self, input_data):
+        """处理音元系统的乐音类音元数据"""
+        pitch_class = self.pitch_variables['mid_high_level_modal_median_model']
         output = {}
 
         for key, (quality, pitch) in input_data.items():
@@ -106,7 +106,7 @@ class YueyinYinyuan(MusicalYinyuan):
                 (k for k, v in self.quality_variables.items() if quality in v), None)
 
             if quality_unit:
-                # dynamic_tonal_elements_model模式处理流程
+                # mid_high_level_modal_median_model模式处理流程
                 if pitch in pitch_class['H']:
                     final_pitch = pitch  # H类保持不变
                 elif pitch in pitch_class['M']:
@@ -121,9 +121,9 @@ class YueyinYinyuan(MusicalYinyuan):
 
         return output
 
-    def _process_isochronous_tonal_elements_model(self, input_data):
-        """处理isochronous_tonal_elements_model的乐音类音元数据"""
-        pitch_class = self.pitch_variables['isochronous_tonal_elements_model']
+    def _process_mid_level_median_model_yueyin(self, input_data):
+        """处理mid_level_median_model的乐音类音元数据"""
+        pitch_class = self.pitch_variables['mid_level_median_model']
         output = {}
 
         for key, (quality, pitch) in input_data.items():
@@ -131,7 +131,7 @@ class YueyinYinyuan(MusicalYinyuan):
                 (k for k, v in self.quality_variables.items() if quality in v), None)
 
             if quality_unit:
-                # isochronous_tonal_elements_model模式处理流程
+                # mid_level_median_model模式处理流程
                 if pitch in pitch_class['H']:  # 高平"˥"和半高平"˦"
                     final_pitch = '˥'  # H类提升为˥
                 elif pitch in pitch_class['M']:  # 中平"˧"
@@ -170,7 +170,7 @@ class YueyinYinyuan(MusicalYinyuan):
             __file__), 'variables_of_pitch_and_quality.json')
         with open(config_path, 'r', encoding='utf-8') as f:
             config = json.load(f)
-            pitch_variables = config['pitch_variables']['dynamic_tonal_elements_model']
+            pitch_variables = config['pitch_variables']['mid_high_level_modal_median_model']
 
         # 检查音调属于哪一类(H/M/L)并返回对应的调元
         if pitch in pitch_variables['H']:
@@ -187,7 +187,7 @@ class YueyinYinyuan(MusicalYinyuan):
             return False
 
         # 检查音调是否在任一调类中
-        for model in ['dynamic_tonal_elements_model', 'isochronous_tonal_elements_model']:
+        for model in ['mid_high_level_modal_median_model', 'mid_level_median_model']:
             if model in self.pitch_variables:
                 for pitch_class in ['H', 'M', 'L']:
                     if pitch in self.pitch_variables[model].get(pitch_class, []):

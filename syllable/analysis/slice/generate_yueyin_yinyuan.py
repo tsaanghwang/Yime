@@ -14,8 +14,8 @@ def generate_yueyin_yinyuan():
 
     # 输入输出文件路径
     input_path = base_dir / 'pitched_pianyin.json'
-    output_dynamic_path = base_dir / 'pitched_yinyuan_of_dynamic_model.json'
-    output_isochronous_path = base_dir / 'pitched_yinyuan_of_isochronous_model.json'
+    output_mid_high_level_modal_median_model_path = base_dir / 'pitched_yinyuan_of_mid_high_level_modal_median_model.json'
+    output_mid_level_median_model_path = base_dir / 'pitched_yinyuan_of_mid_level_median_model.json'
 
     # 读取输入数据
     with open(input_path, 'r', encoding='utf-8') as f:
@@ -34,21 +34,21 @@ def generate_yueyin_yinyuan():
     )
 
     # 处理数据 - 使用实例方法
-    output_dynamic = yueyin._process_dynamic_tonal_elements_model(
+    mid_high_level_modal_median_model = yueyin._process_yueyin(
         converted_data)
-    output_isochronous = yueyin._process_isochronous_tonal_elements_model(
+    output_mid_level_median_model = yueyin._process_mid_level_median_model_yueyin(
         converted_data)
 
     # 保存结果
-    with open(output_dynamic_path, 'w', encoding='utf-8') as f:
-        json.dump(output_dynamic, f, ensure_ascii=False, indent=2)
+    with open(output_mid_high_level_modal_median_model_path, 'w', encoding='utf-8') as f:
+        json.dump(mid_high_level_modal_median_model, f, ensure_ascii=False, indent=2)
 
-    with open(output_isochronous_path, 'w', encoding='utf-8') as f:
-        json.dump(output_isochronous, f, ensure_ascii=False, indent=2)
+    with open(output_mid_level_median_model_path, 'w', encoding='utf-8') as f:
+        json.dump(output_mid_level_median_model, f, ensure_ascii=False, indent=2)
 
     print("处理完成，结果已保存到:")
-    print(f"- {output_dynamic_path}")
-    print(f"- {output_isochronous_path}")
+    print(f"- {output_mid_high_level_modal_median_model_path}")
+    print(f"- {output_mid_level_median_model_path}")
 
 
 if __name__ == '__main__':
