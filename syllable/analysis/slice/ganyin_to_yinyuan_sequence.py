@@ -5,6 +5,7 @@
 """
 import json
 from pathlib import Path
+from typing import Dict, Any
 from yueyin_yinyuan import YueyinYinyuan
 from ganyin_to_pianyin_sequence import enhance_i_variants
 
@@ -15,90 +16,72 @@ class GanyinToYinyuanSequence:
     def __init__(self):
         self.yueyin_yinyuan = YueyinYinyuan(quality="", pitch="")
 
-    def load_ganyin_data(self, input_path: str) -> dict:
+    def load_ganyin_data(self, input_path: Path) -> Dict[str, Any]:
         """加载干音数据"""
-        with open(input_path, 'r', encoding='utf-8', errors='strict') as f:
+        with input_path.open('r', encoding='utf-8') as f:
             return json.load(f)
 
-    def save_yinyuan_data(self, output_path: str, data: dict):
+    def save_yinyuan_data(self, output_path: Path, data: Dict[str, Any]) -> None:
         """保存音元数据"""
-        def ensure_unicode(obj):
-            if isinstance(obj, str):
-                return obj.encode('utf-8').decode('utf-8')
-            elif isinstance(obj, dict):
-                return {k: ensure_unicode(v) for k, v in obj.items()}
-            elif isinstance(obj, list):
-                return [ensure_unicode(v) for v in obj]
-            return obj
-
-        with open(output_path, 'w', encoding='utf-8', errors='strict') as f:
-            json.dump(ensure_unicode(data), f,
-                      ensure_ascii=False,
-                      indent=2,
-                      separators=(',', ': '))
+        with output_path.open('w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False,
+                      indent=2, separators=(',', ': '))
 
     def convert_pianyin_to_yinyuan(self, pianyin: str) -> str:
         """将片音转换为音元表示"""
         if not pianyin:
             return ""
-
-        # 处理多值情况（用斜杠分隔）
-        if "/" in pianyin:
-            pianyin = pianyin.split("/")[0]
-
+        pianyin = pianyin.split("/")[0]  # 处理多值情况
         quality = pianyin[:-1] if len(pianyin) > 1 else pianyin
         pitch = pianyin[-1] if len(pianyin) > 1 else ""
-
         processed = self.yueyin_yinyuan._process_yueyin(
-            {"temp": (quality, pitch)}
-        )
+            {"temp": (quality, pitch)})
+        return next(iter(processed.keys())) if processed else ""
 
-        if processed:
-            return next(iter(processed.keys()))
-        return ""
-
-    def process_ganyin(self, ganyin_data: dict) -> dict:
+    def process_ganyin(self, ganyin_data: Dict[str, Any]) -> Dict[str, Any]:
         """处理干音数据"""
         result = {}
-
         for ganyin_type, ganyin_list in ganyin_data.items():
-            result[ganyin_type] = {}
-
-            for ganyin_name, parts in ganyin_list.items():
-                result[ganyin_type][ganyin_name] = {
+            result[ganyin_type] = {
+                ganyin_name: {
                     "呼音": self.convert_pianyin_to_yinyuan(parts.get("呼音", "")),
                     "主音": self.convert_pianyin_to_yinyuan(parts.get("主音", "")),
                     "末音": self.convert_pianyin_to_yinyuan(parts.get("末音", ""))
                 }
-
+                for ganyin_name, parts in ganyin_list.items()
+            }
         return result
 
-    def run(self, input_path: str, output_path: str):
+    def run(self, input_path: Path, output_path: Path) -> Dict[str, Any]:
         """执行转换流程"""
         ganyin_data = self.load_ganyin_data(input_path)
         yinyuan_data = self.process_ganyin(ganyin_data)
 
-        # 只对 single quality ganyin 调用 enhance_i_variants
         if "single quality ganyin" in yinyuan_data:
             yinyuan_data["single quality ganyin"] = enhance_i_variants(
                 yinyuan_data["single quality ganyin"]
             )
 
         self.save_yinyuan_data(output_path, yinyuan_data)
-
-        # 可选：验证处理结果
-        for category, items in yinyuan_data.items():
-            for key, value in items.items():
-                if key.startswith("_i"):
-                    print(f"验证 {key}:")
-                    print(json.dumps(value, ensure_ascii=False, indent=2))
-
         return yinyuan_data
 
 
-if __name__ == "__main__":
+def main():
     converter = GanyinToYinyuanSequence()
-    input_file = Path(__file__).parent / "ganyin_to_pianyin_sequence.json"
-    output_file = Path(__file__).parent / "ganyin_to_yinyuan_sequence.json"
-    result = converter.run(str(input_file), str(output_file))
+    base_dir = Path(__file__).parent
+    input_file = base_dir / "ganyin_to_pianyin_sequence.json"
+    output_file = base_dir / "ganyin_to_yinyuan_sequence.json"
+    result = converter.run(input_file, output_file)
+
+    # 转换音调标记方式并保存新格式结果
+    marks_data = converter.yueyin_yinyuan._change_pitch_style(result)
+    marks_output_path = output_file.with_name(
+        "ganyin_to_yinyuan_seq_marks.json")
+    converter.save_yinyuan_data(marks_output_path, marks_data)
+
     print(f"转换完成，结果已保存到 {output_file}")
+    print(f"音调标记转换结果已保存到 {marks_output_path}")
+
+
+if __name__ == "__main__":
+    main()

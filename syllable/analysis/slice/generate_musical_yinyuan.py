@@ -26,7 +26,7 @@ def generate_musical_yinyuan():
         yinyuan = MusicalYinyuan(
             quality=quality,
             pitch_value=pitch,
-            音高表示方式='number'
+            pitch_style='number'
         )
 
         # 转换为字典格式
