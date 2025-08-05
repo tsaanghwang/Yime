@@ -19,7 +19,7 @@ class MusicalYinyuan(PitchedYinyuan):
     属性:
         quality: 音质(必选)
         pitch: 音调值(1-5数字表示)
-        pitch_style: 音高表示方式('number'或'mark')
+        pitch_style: pitch_style('number'或'mark')
     """
     pitch_style: PitchStyle = 'number'
 

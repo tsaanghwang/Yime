@@ -4,7 +4,7 @@ syllable/analysis/slice/syllable_segmenter.py
 音节切分模块 - 负责从Syllable对象中提取首音和干音
 """
 
-from .Syllable import Syllable
+from .syllable import Syllable
 from .shouyin import Initial
 
 
@@ -19,14 +19,14 @@ class SyllableSegmenter:
     """
 
     @staticmethod
-    def extract_initial(syllable: Syllable, representation='pinyin', 音高表示方式='number') -> Initial:
+    def extract_initial(syllable: Syllable, representation='pinyin', pitch_style='number') -> Initial:
         """
         从音节对象中提取首音并创建Initial对象
 
         参数:
             syllable: Syllable对象
             representation: 表示方法(pinyin/phonetic/pianyin/yinyuan)
-            音高表示方式: 声调表示方式('number'或'mark')
+            pitch_style: 声调表示方式('number'或'mark')
 
         返回:
             Initial对象
@@ -43,31 +43,31 @@ class SyllableSegmenter:
             consonant=consonant,
             tone_segment=tone_segment,
             representation=representation,
-            音高表示方式=音高表示方式
+            pitch_style=pitch_style
         )
 
         return initial_obj
 
     @staticmethod
-    def split_syllable(syllable: Syllable, representation='pinyin', 音高表示方式='number'):
+    def split_syllable(syllable: Syllable, representation='pinyin', pitch_style='number'):
         """
         切分音节对象，返回首音和剩余部分
 
         参数:
             syllable: Syllable对象
             representation: 表示方法
-            音高表示方式: 声调表示方式
+            pitch_style: 声调表示方式
 
         返回:
             tuple: (Initial对象, rest部分信息)
         """
         initial_obj = SyllableSegmenter.extract_initial(
-            syllable, representation, 音高表示方式)
+            syllable, representation, pitch_style)
 
         # 获取剩余部分(干音)信息
         rest_info = {
             'final': syllable.final,
-            'final_tone_segment': syllable.final_tone_segment,
+            'gandiao': syllable.gandiao,
             'tone': syllable.tone
         }
 

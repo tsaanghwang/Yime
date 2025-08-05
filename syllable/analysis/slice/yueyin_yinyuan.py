@@ -14,6 +14,7 @@ import json
 
 PitchStyle = Literal['number', 'mark']
 
+
 class YueyinYinyuan(MusicalYinyuan):
     """
     乐音类音元(YueyinYinyuan) - MusicalYinyuan 的中文别名类
@@ -33,7 +34,8 @@ class YueyinYinyuan(MusicalYinyuan):
 
         # 使用绝对路径加载配置文件
         config_dir = os.path.dirname(os.path.abspath(__file__))
-        config_path = os.path.join(config_dir, 'variables_of_pitch_and_quality.json')
+        config_path = os.path.join(
+            config_dir, 'variables_of_pitch_and_quality.json')
 
         with open(config_path, 'r', encoding='utf-8') as f:
             self.config = json.load(f)
@@ -56,7 +58,7 @@ class YueyinYinyuan(MusicalYinyuan):
             '类型': '乐音',
             '音质': self.quality,
             '音调': self.pitch,
-            '音高表示方式': self.pitch_style,
+            'pitch_style': self.pitch_style,
             '音长': self.duration,
             '音强': self.loudness
         }
@@ -111,8 +113,10 @@ class YueyinYinyuan(MusicalYinyuan):
                     final_pitch = pitch  # H类保持不变
                 elif pitch in pitch_class['M']:
                     final_pitch = pitch  # M类保持不变
+                elif pitch in pitch_class['L']:  # 半低平"˨"和"˩"
+                    final_pitch = pitch_class['L'][-1]  # 取L类的最后一个值
                 else:  # L类
-                    final_pitch = '˩'  # 所有L类音调统一为˩
+                    continue  # 跳过无效音调
 
                 final_key = quality_unit + final_pitch
                 if final_key not in output:
@@ -127,17 +131,21 @@ class YueyinYinyuan(MusicalYinyuan):
         output = {}
 
         for key, (quality, pitch) in input_data.items():
+            # 先检查音调和音质是否有效
+            if not self._is_valid_pitch(pitch) or not self._is_valid_quality(quality):
+                continue
+
             quality_unit = next(
                 (k for k, v in self.quality_variables.items() if quality in v), None)
 
             if quality_unit:
                 # mid_level_median_model模式处理流程
                 if pitch in pitch_class['H']:  # 高平"˥"和半高平"˦"
-                    final_pitch = '˥'  # H类提升为˥
+                    final_pitch = pitch_class['H'][0]  # H类取第一个值高平"˥"
                 elif pitch in pitch_class['M']:  # 中平"˧"
-                    final_pitch = '˧'  # M类保持不变
+                    final_pitch = pitch  # M类保持不变
                 elif pitch in pitch_class['L']:  # 半低平"˨"和"˩"
-                    final_pitch = '˩'  # L类保持为˩
+                    final_pitch = pitch_class['L'][-1]  # 取L类的最后一个值
                 else:
                     continue  # 跳过无效音调
 
@@ -147,6 +155,45 @@ class YueyinYinyuan(MusicalYinyuan):
                 output[final_key].append(quality + pitch)
 
         return output
+
+    def _change_pitch_style(self, input_data: dict) -> dict:
+        """转换音高标记风格
+        
+        参数:
+            input_data: 包含原始音高标记的字典数据
+            
+        返回:
+            转换后的字典数据，音高标记已替换为对应的标记符号
+        """
+        result = {}
+        pitch_marks = self.config["pitch_variables"]["pitch_marks"]
+        
+        for ganyin_type, ganyin_list in input_data.items():
+            result[ganyin_type] = {}
+            for ganyin_name, parts in ganyin_list.items():
+                result[ganyin_type][ganyin_name] = {}
+                for field in ["呼音", "主音", "末音"]:
+                    ipa = parts.get(field, "")
+                    if not ipa:
+                        result[ganyin_type][ganyin_name][field] = ipa
+                        continue
+                    
+                    # 处理"/"分隔的两部分
+                    if "/" in ipa:
+                        left, right = ipa.split("/", 1)
+                        # 处理左边部分
+                        if left and left[-1] in pitch_marks:
+                            left = left[:-1] + pitch_marks[left[-1]][0]
+                        # 处理右边部分
+                        if right and right[-1] in pitch_marks:
+                            right = right[:-1] + pitch_marks[right[-1]][0]
+                        result[ganyin_type][ganyin_name][field] = f"{left}/{right}"
+                    else:
+                        # 处理没有"/"的情况
+                        if ipa and ipa[-1] in pitch_marks:
+                            ipa = ipa[:-1] + pitch_marks[ipa[-1]][0]
+                        result[ganyin_type][ganyin_name][field] = ipa
+        return result
 
     @classmethod
     def _define_variables_for_qualities(cls, quality: str) -> str:
@@ -174,11 +221,11 @@ class YueyinYinyuan(MusicalYinyuan):
 
         # 检查音调属于哪一类(H/M/L)并返回对应的调元
         if pitch in pitch_variables['H']:
-            return "˥"
+            return pitch_variables['H'][0]  # H类取第一个值
         elif pitch in pitch_variables['M']:
-            return "˦"
+            return pitch_variables['M'][-1]  # M类取最后一个值
         elif pitch in pitch_variables['L']:
-            return "˩"
+            return pitch_variables['L'][-1]  # L类取最后一个值
         return ""  # 如果没有匹配，返回空字符串
 
     def _is_valid_pitch(self, pitch: str) -> bool:
