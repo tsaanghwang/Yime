@@ -13,23 +13,23 @@ def generate_pitched_yinyuan():
     converted_data = {key: [key[:-1], key[-1]] for key in input_data.keys()}
 
     # 直接使用PitchedYinyuan类的方法
-    output_dynamic_tonal_elements_model = yinyuan.process_pitched_yinyuan(
+    output_mid_high_level_modal_median_model = yinyuan.process_pitched_yinyuan(
         converted_data, False)
-    output_isochronous_tonal_elements_model = yinyuan.process_pitched_yinyuan(
+    output_mid_level_median_model = yinyuan.process_pitched_yinyuan(
         converted_data, True)
 
     # 保存结果
-    with open('yinyuan/pitched_yinyuan_of_dynamic_model.json', 'w', encoding='utf-8') as f:
-        json.dump(output_dynamic_tonal_elements_model,
+    with open('yinyuan/pitched_yinyuan_of_mid_high_level_modal_median_model.json', 'w', encoding='utf-8') as f:
+        json.dump(output_mid_high_level_modal_median_model,
                   f, ensure_ascii=False, indent=2)
 
-    with open('pitched_yinyuan_of_isochronous_model.json', 'w', encoding='utf-8') as f:
-        json.dump(output_isochronous_tonal_elements_model,
+    with open('pitched_yinyuan_of_mid_level_median_model.json', 'w', encoding='utf-8') as f:
+        json.dump(output_mid_level_median_model,
                   f, ensure_ascii=False, indent=2)
 
     print("处理完成，结果已保存到:")
-    print("- yinyuan/pitched_yinyuan_of_dynamic_model.json")
-    print("- yinyuan/pitched_yinyuan_of_isochronous_model.json")
+    print("- yinyuan/pitched_yinyuan_of_mid_high_level_modal_median_model.json")
+    print("- yinyuan/pitched_yinyuan_of_mid_level_median_model.json")
 
 
 if __name__ == '__main__':

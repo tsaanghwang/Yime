@@ -5,6 +5,15 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "extract_pitched_pianyin",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\extract_pitched_pianyin.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
+      "addSourceRootsToPythonpath": true
+    },
+    {
       "name": "ganyin_to_yinyuan_sequence",
       "type": "python",
       "request": "launch",

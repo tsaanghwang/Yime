@@ -20,12 +20,12 @@
     "˩": 1
   },
   "pitch_variables": {
-    "dynamic_tonal_elements_model": {
+    "mid_high_level_modal_median_model": {
       "H": ["˥"],
       "M": ["˦"],
       "L": ["˧", "˨", "˩"]
     },
-    "isochronous_tonal_elements_model": {
+    "mid_level_median_model": {
       "H": ["˥", "˦"],
       "M": ["˧"],
       "L": ["˨", "˩"]
