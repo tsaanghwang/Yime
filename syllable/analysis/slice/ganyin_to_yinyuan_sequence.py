@@ -7,7 +7,7 @@ import json
 from pathlib import Path
 from typing import Dict, Any
 from yueyin_yinyuan import YueyinYinyuan
-from ganyin_to_pianyin_sequence import enhance_i_variants
+
 
 
 class GanyinToYinyuanSequence:
@@ -28,7 +28,7 @@ class GanyinToYinyuanSequence:
                       indent=2, separators=(',', ': '))
 
     def convert_pianyin_to_yinyuan(self, pianyin: str) -> str:
-        """将片音转换为音元表示"""
+        """将片音转换为音元"""
         if not pianyin:
             return ""
         pianyin = pianyin.split("/")[0]  # 处理多值情况
@@ -56,12 +56,6 @@ class GanyinToYinyuanSequence:
         """执行转换流程"""
         ganyin_data = self.load_ganyin_data(input_path)
         yinyuan_data = self.process_ganyin(ganyin_data)
-
-        if "single quality ganyin" in yinyuan_data:
-            yinyuan_data["single quality ganyin"] = enhance_i_variants(
-                yinyuan_data["single quality ganyin"]
-            )
-
         self.save_yinyuan_data(output_path, yinyuan_data)
         return yinyuan_data
 
