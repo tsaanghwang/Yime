@@ -104,7 +104,7 @@
     "Zhuzhi"
   ],
   "wolf.disableHotModeWarning": true,
-  "editor.defaultFormatter": "Metatype.copilot-vscode",
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
   "[jsonc]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   }

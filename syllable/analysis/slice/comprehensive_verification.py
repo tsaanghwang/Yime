@@ -3,8 +3,9 @@
 最终验证：干音和韵母的定义与处理
 """
 
-from ganyin import GanyinCategorizer
+from ganyin_categorizer import GanyinCategorizer
 import json
+
 
 def comprehensive_verification():
     """全面验证干音和韵母的定义与处理"""
@@ -19,7 +20,13 @@ def comprehensive_verification():
 
     # 2. 运行完整分析
     print("2. 执行完整分析...")
-    analyzer = GanyinCategorizer.GanyinAnalyzer()
+    # Ensure GanyinAnalyzer is defined in ganyin_categorizer.py
+    try:
+        from ganyin_analyzer import GanyinAnalyzer
+    except ImportError:
+        raise ImportError(
+            "GanyinAnalyzer is not defined in ganyin_categorizer.py. Please check the module and ensure the class exists.")
+    analyzer = GanyinAnalyzer(file='ganyin_data.json')
     success = analyzer.analyze_and_save()
 
     if not success:
@@ -59,10 +66,11 @@ def comprehensive_verification():
     for key, expected in examples:
         if key in ganyin_dict:
             actual = ganyin_dict[key]
-            print(f"     {key} -> {actual} (预期: {expected}) {'✓' if actual == expected else '✗'}")
+            print(
+                f"     {key} -> {actual} (预期: {expected}) {'✓' if actual == expected else '✗'}")
 
             # 提取韵母
-            final = GanyinCategorizer._normalize_final(key)
+            final = GanyinCategorizer._remove_tone_from_ganyin(key)
             category = GanyinCategorizer.categorize(actual)
             print(f"       提取的韵母: {final}, 分类: {category}")
         else:
@@ -83,6 +91,7 @@ def comprehensive_verification():
     print(f"   - 预期比例: ~5:1 (每个韵母5个声调)")
     print(f"   - 实际比例: {actual_ratio:.2f}:1")
     print(f"   - 特殊音节数: {special_count}")
+
 
 if __name__ == "__main__":
     comprehensive_verification()

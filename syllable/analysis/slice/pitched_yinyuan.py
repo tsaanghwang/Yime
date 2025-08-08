@@ -23,18 +23,10 @@ class MusicalYinyuan(PitchedYinyuan):
     """
     pitch_style: PitchStyle = 'number'
 
-    PITCH_LEVELS = {
-        "5": "˥",  # 高平调
-        "4": "˦",  # 次高平调
-        "3": "˧",  # 中平调
-        "2": "˨",  # 次低平调
-        "1": "˩",  # 低平调
-    }
-
     def __str__(self) -> str:
         """返回音元的字符串表示，根据 pitch_style 显示音调"""
         if self.pitch_style == 'mark':
-            return f"{self.quality}{self.PITCH_LEVELS.get(self.pitch, '')}"
+            return f"{self.quality}{self.pitch_style.get(self.pitch, '')}"
         return f"{self.quality}{self.pitch}"
 
     def to_dict(self) -> dict:
@@ -56,7 +48,7 @@ class MusicalYinyuan(PitchedYinyuan):
             pitch=data['pitch'],
             duration=data.get('duration', 'neutral'),
             loudness=data.get('loudness', 'neutral'),
-            pitch_style=data.get('pitch_style', 'number')
+            pitch_style=data.get('pitch_style', 'number'),
         )
 
 

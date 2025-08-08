@@ -20,7 +20,7 @@
     "˩": 1
   },
   "pitch_variables": {
-    "mid_high_level_modal_median_model": {
+    "mid_high_median_model": {
       "H": ["˥"],
       "M": ["˦"],
       "L": ["˧", "˨", "˩"]

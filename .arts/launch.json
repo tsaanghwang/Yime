@@ -1,26 +1,71 @@
 {
-  // 使用 IntelliSense 了解相关属性。
-  // 悬停以查看现有属性的描述。
-  // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "extract_pitched_pianyin",
+      "name": "test_ganyin",
       "type": "python",
       "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\extract_pitched_pianyin.py",
+      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\test_ganyin.py",
       "currentFileConfiguration": false,
       "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
       "addSourceRootsToPythonpath": true
     },
     {
-      "name": "ganyin_to_yinyuan_sequence",
+      "name": "test_ganyin_final_definition",
       "type": "python",
       "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\ganyin_to_yinyuan_sequence.py",
+      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\test_ganyin_final_definition.py",
       "currentFileConfiguration": false,
       "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
       "addSourceRootsToPythonpath": true
+    },
+    {
+      "name": "test_dynamic_finals",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\test_dynamic_finals.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
+      "addSourceRootsToPythonpath": true
+    },
+    {
+      "name": "pitched_yinyuan",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\pitched_yinyuan.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
+      "addSourceRootsToPythonpath": true,
+      "noDebug": true
+    },
+    {
+      "name": "pianyin",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\pianyin.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
+      "addSourceRootsToPythonpath": true
+    },
+    {
+      "name": "run_analyzer",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\run_analyzer.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
+      "addSourceRootsToPythonpath": true,
+      "noDebug": true
+    },
+    {
+      "name": "ganyin_slicer",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\ganyin_slicer.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
+      "addSourceRootsToPythonpath": true,
+      "noDebug": true
     },
     {
       "name": "generate_yueyin_yinyuan",
@@ -29,62 +74,8 @@
       "program": "${workspaceFolder}\\syllable\\analysis\\slice\\generate_yueyin_yinyuan.py",
       "currentFileConfiguration": false,
       "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
-      "addSourceRootsToPythonpath": true
-    },
-    {
-      "name": "extract_yueyin",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\extract_yueyin.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
-      "addSourceRootsToPythonpath": true
-    },
-    {
-      "name": "ganyin_enhanced",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\ganyin_enhanced.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
-      "addSourceRootsToPythonpath": true
-    },
-    {
-      "name": "ganyin_analyzer",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\ganyin_analyzer.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
-      "addSourceRootsToPythonpath": true
-    },
-    {
-      "name": "generate_musical_yinyuan",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\generate_musical_yinyuan.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
-      "addSourceRootsToPythonpath": true
-    },
-    {
-      "name": "generate_noise_yinyuan",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\generate_noise_yinyuan.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
       "addSourceRootsToPythonpath": true,
       "noDebug": true
-    },
-    {
-      "name": "generate_ganyin",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\generate_ganyin.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}",
-      "addSourceRootsToPythonpath": true
     },
     {
       "name": "ganyin_to_pianyin_sequence",
@@ -97,585 +88,54 @@
       "noDebug": true
     },
     {
-      "name": "run_analyzer",
+      "name": "Python: Django Server",
+      "type": "debug",
+      "request": "launch",
+      "django": {
+        "host": "",
+        "port": 8000,
+        "runBrowser": true,
+        "runBrowserUri": "http://127.0.0.1:8000/",
+        "commandLineOptions": [],
+        "noReload": false,
+        "testServer": false,
+        "fixtures": []
+      },
+      "subProcess": true,
+      "justMyCode": true,
+      "addSourceRootsToPythonpath": true
+    },
+    {
+      "args": ["--extensionDevelopmentPath=${workspaceFolder}"],
+      "name": "启动扩展",
+      "outFiles": ["${workspaceFolder}/out/**/*.js"],
+      "preLaunchTask": "npm",
+      "request": "launch",
+      "type": "extensionHost"
+    },
+    {
+      "name": "ganyin_to_yinyuan_sequence",
       "type": "python",
       "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\run_analyzer.py",
+      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\ganyin_to_yinyuan_sequence.py",
       "currentFileConfiguration": false,
       "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
-      "addSourceRootsToPythonpath": true
-    },
-    {
-      "name": "ganyin",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\ganyin.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
-      "addSourceRootsToPythonpath": true
-    },
-    {
-      "name": "potential_syllable",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\initial_final_with_tone\\potential_syllable.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\syllable\\analysis\\initial_final_with_tone",
-      "addSourceRootsToPythonpath": true
-    },
-    {
-      "name": "pinyin_validator",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\pinyin\\hanzi_pinyin\\pinyin_validator.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\pinyin\\hanzi_pinyin",
-      "addSourceRootsToPythonpath": true
-    },
-    {
-      "name": "pinyin_normalizer",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\pinyin\\hanzi_pinyin\\pinyin_normalizer.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\pinyin\\hanzi_pinyin",
       "addSourceRootsToPythonpath": true,
       "noDebug": true
     },
     {
-      "name": "merge_json",
-      "type": "python",
+      "name": "Launch Chrome",
       "request": "launch",
-      "program": "${workspaceFolder}\\pinyin\\hanzi_pinyin\\merge_json.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\pinyin\\hanzi_pinyin",
-      "addSourceRootsToPythonpath": true
+      "type": "chrome",
+      "url": "http://localhost:8080",
+      "webRoot": "${workspaceFolder}"
     },
     {
-      "name": "extract_pinyin",
-      "type": "python",
+      "name": "Launch Edge",
       "request": "launch",
-      "program": "${workspaceFolder}\\pinyin\\hanzi_pinyin\\extract_pinyin.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\pinyin\\hanzi_pinyin",
-      "addSourceRootsToPythonpath": true
-    },
-    {
-      "name": "pinyin_duozi",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\pinyin\\hanzi_pinyin\\pinyin_duozi.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\pinyin\\hanzi_pinyin",
-      "addSourceRootsToPythonpath": true
-    },
-    {
-      "name": "pinyin_danzi",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\pinyin\\hanzi_pinyin\\pinyin_danzi.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\pinyin\\hanzi_pinyin",
-      "addSourceRootsToPythonpath": true,
-      "noDebug": true
-    },
-    {
-      "name": "duozi_converter",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\pinyin\\hanzi_pinyin\\duozi_converter.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\pinyin\\hanzi_pinyin",
-      "addSourceRootsToPythonpath": true
-    },
-    {
-      "name": "format_yaml_file",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\pinyin\\hanzi_pinyin\\format_yaml_file.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\pinyin\\hanzi_pinyin",
-      "addSourceRootsToPythonpath": true
-    },
-    {
-      "name": "right_click_converter",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\pinyin\\hanzi_pinyin\\right_click_converter.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\pinyin\\hanzi_pinyin",
-      "addSourceRootsToPythonpath": true
-    },
-    {
-      "name": "danzi_converter",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\pinyin\\hanzi_pinyin\\danzi_converter.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\pinyin\\hanzi_pinyin",
-      "addSourceRootsToPythonpath": true,
-      "noDebug": true
-    },
-    {
-      "name": "merge_duplicate_keys",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\pinyin\\hanzi_pinyin\\merge_duplicate_keys.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\pinyin\\hanzi_pinyin",
-      "addSourceRootsToPythonpath": true,
-      "noDebug": true
-    },
-    {
-      "name": "split_yaml",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\pinyin\\hanzi_pinyin\\split_yaml.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\pinyin\\hanzi_pinyin",
-      "addSourceRootsToPythonpath": true,
-      "noDebug": true
-    },
-    {
-      "name": "remove_percent",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\pinyin\\hanzi_pinyin\\remove_percent.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\pinyin\\hanzi_pinyin",
-      "addSourceRootsToPythonpath": true,
-      "noDebug": true
-    },
-    {
-      "name": "convert_json_to_json",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\pinyin\\convert_json_to_json.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\pinyin",
-      "addSourceRootsToPythonpath": true
-    },
-    {
-      "name": "pinyin_to_single_hanzi",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\initial_final_with_tone\\pinyin_to_single_hanzi.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\syllable\\analysis\\initial_final_with_tone",
-      "addSourceRootsToPythonpath": true
-    },
-    {
-      "name": "pinyin_to_single_hanzi",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\pinyin\\pinyin_to_single_hanzi.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\pinyin",
-      "addSourceRootsToPythonpath": true
-    },
-    {
-      "name": "pinyin_to_hanzi",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\pinyin\\pinyin_to_hanzi.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\pinyin",
-      "addSourceRootsToPythonpath": true,
-      "noDebug": true
-    },
-    {
-      "name": "initial_final_with_tone_analyzer",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\initial_final_with_tone\\initial_final_with_tone_analyzer.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\syllable\\analysis\\initial_final_with_tone",
-      "addSourceRootsToPythonpath": true
-    },
-    {
-      "name": "reverse_key_value_pairs",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\initial_final_with_tone\\reverse_key_value_pairs.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\syllable\\analysis\\initial_final_with_tone",
-      "addSourceRootsToPythonpath": true,
-      "noDebug": true
-    },
-    {
-      "name": "pinyin_normalizer",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\initial_final_with_tone\\pinyin_normalizer.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\syllable\\analysis\\initial_final_with_tone",
-      "addSourceRootsToPythonpath": true,
-      "noDebug": true
-    },
-    {
-      "name": "pinyin_classifier",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\initial_final_with_tone\\pinyin_classifier.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\syllable\\analysis\\initial_final_with_tone",
-      "addSourceRootsToPythonpath": true
-    },
-    {
-      "name": "initial_final",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\initial_final_with_tone\\initial_final.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\syllable\\analysis\\initial_final_with_tone",
-      "addSourceRootsToPythonpath": true
-    },
-    {
-      "name": "initial_final_with_tone",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\initial_final_with_tone\\initial_final_with_tone.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\syllable\\analysis\\initial_final_with_tone",
-      "addSourceRootsToPythonpath": true,
-      "noDebug": true
-    },
-    {
-      "name": "pinyin_to_hanzi_1",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\pinyin\\pinyin_to_hanzi_1.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\pinyin",
-      "addSourceRootsToPythonpath": true
-    },
-    {
-      "name": "pinyin_to_hanzi_enhanced",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\pinyin\\pinyin_to_hanzi_enhanced.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\pinyin",
-      "addSourceRootsToPythonpath": true,
-      "noDebug": true
-    },
-    {
-      "name": "merge_pinyin",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\pinyin\\merge_pinyin.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\pinyin",
-      "addSourceRootsToPythonpath": true
-    },
-    {
-      "name": "yaml_to_json",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\pinyin\\yaml_to_json.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\pinyin",
-      "addSourceRootsToPythonpath": true
-    },
-    {
-      "name": "calculate_speech_pentatonic_value_1",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\pianyin\\calculate_speech_pentatonic_value_1.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\pianyin",
-      "addSourceRootsToPythonpath": true
-    },
-    {
-      "name": "calculate_speech_pentatonic_value",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\pianyin\\calculate_speech_pentatonic_value.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\pianyin",
-      "addSourceRootsToPythonpath": true,
-      "noDebug": true
-    },
-    {
-      "name": "test_pianyin_test",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\tests\\test_pianyin_test.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\tests",
-      "addSourceRootsToPythonpath": true
-    },
-    {
-      "name": "tone_statistics_analyzer",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\pianyin\\tone_statistics_analyzer.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\pianyin",
-      "addSourceRootsToPythonpath": true
-    },
-    {
-      "name": "calculate_tone_median",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\pianyin\\calculate_tone_median.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\pianyin",
-      "addSourceRootsToPythonpath": true
-    },
-    {
-      "name": "calculate_pentatonic_value",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\pianyin\\calculate_pentatonic_value.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\pianyin",
-      "addSourceRootsToPythonpath": true
-    },
-    {
-      "name": "test_yinyuan",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\tests\\test_yinyuan.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\tests",
-      "addSourceRootsToPythonpath": true
-    },
-    {
-      "name": "generate_yinyuan",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\generate_yinyuan.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}",
-      "addSourceRootsToPythonpath": true
-    },
-    {
-      "name": "generate_pitched_yinyuan",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\generate_pitched_yinyuan.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}",
-      "addSourceRootsToPythonpath": true
-    },
-    {
-      "name": "generate_unpitched_yinyuan",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\yinyuan\\generate_unpitched_yinyuan.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\yinyuan",
-      "addSourceRootsToPythonpath": true
-    },
-    {
-      "name": "extract_pitch_and_quality",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\yinyuan\\extract_pitch_and_quality.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\yinyuan",
-      "addSourceRootsToPythonpath": true
-    },
-    {
-      "name": "define_pitched_yinyuan",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\yinyuan\\pitch_mark.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\yinyuan",
-      "addSourceRootsToPythonpath": true
-    },
-    {
-      "name": "generate_unpitched_yinyuan",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\generate_unpitched_yinyuan.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}",
-      "addSourceRootsToPythonpath": true
-    },
-    {
-      "name": "generate_unpitched_yinyuan",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\generate_unpitched_yinyuan.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}",
-      "addSourceRootsToPythonpath": true
-    },
-    {
-      "name": "generate_shouyin",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\generate_shouyin.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}",
-      "addSourceRootsToPythonpath": true
-    },
-    {
-      "name": "generate_yueyin",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\generate_yueyin.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}",
-      "addSourceRootsToPythonpath": true
-    },
-    {
-      "name": "generate_shouyin_map",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\generate_shouyin_map.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}",
-      "addSourceRootsToPythonpath": true
-    },
-    {
-      "name": "initial",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\tools\\initial.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\tools",
-      "addSourceRootsToPythonpath": true,
-      "noDebug": true
-    },
-    {
-      "name": "push_all",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\scripts\\push_all.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\scripts",
-      "addSourceRootsToPythonpath": true,
-      "noDebug": true
-    },
-    {
-      "name": "test_yunmu_to_keys",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\pinyin\\test_yunmu_to_keys.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\pinyin",
-      "addSourceRootsToPythonpath": true
-    },
-    {
-      "name": "test_yunmu_to_keys",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\tests\\test_yunmu_to_keys.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\tests",
-      "addSourceRootsToPythonpath": true,
-      "noDebug": true
-    },
-    {
-      "name": "keys_to_yunmu",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\pinyin\\keys_to_yunmu.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\pinyin",
-      "addSourceRootsToPythonpath": true
-    },
-    {
-      "name": "test_yunmu_converter",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\tests\\test_yunmu_converter.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\tests",
-      "addSourceRootsToPythonpath": true,
-      "noDebug": true
-    },
-    {
-      "name": "yunmu_to_keys",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\pinyin\\yunmu_to_keys.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\pinyin",
-      "addSourceRootsToPythonpath": true,
-      "noDebug": true
-    },
-    {
-      "name": "data",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\data.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\syllable",
-      "addSourceRootsToPythonpath": true
-    },
-    {
-      "name": "copy2",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\tools\\copy2.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\tools",
-      "addSourceRootsToPythonpath": true
-    },
-    {
-      "name": "copy",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\tools\\copy.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\tools",
-      "addSourceRootsToPythonpath": true,
-      "noDebug": true
-    },
-    {
-      "name": "duplicate_checker",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\tools\\duplicate_checker.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\tools",
-      "addSourceRootsToPythonpath": true
-    },
-    {
-      "name": "Learn_test",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\tools\\Learn_test.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\tools",
-      "addSourceRootsToPythonpath": true
-    },
-    {
-      "name": "pianyin_counter",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\tools\\pianyin_counter.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\tools",
-      "addSourceRootsToPythonpath": true,
-      "noDebug": true
-    },
-    {
-      "name": "yinyuan",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\tools\\yinyuan.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\tools",
-      "addSourceRootsToPythonpath": true,
-      "noDebug": true
-    },
-    {
-      "name": "Python: Current File",
-      "type": "python",
-      "request": "launch",
-      "program": "${file}",
-      "currentFileConfiguration": true,
-      "cwd": "${fileDirname}",
-      "addSourceRootsToPythonpath": true,
-      "env": {
-        "PYTHONPATH": "${workspaceFolder};${env:PYTHONPATH}"
-      }
+      "type": "msedge",
+      "url": "http://localhost:8080",
+      "webRoot": "${workspaceFolder}"
     },
     {
       "name": "Launch Edge",

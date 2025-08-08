@@ -3,7 +3,8 @@
 验证干音和韵母的定义和处理逻辑
 """
 
-from ganyin import GanyinCategorizer
+from ganyin_categorizer import GanyinCategorizer
+
 
 def test_ganyin_final_logic():
     """测试干音和韵母的处理逻辑"""
@@ -14,13 +15,13 @@ def test_ganyin_final_logic():
         ("zhāng", "zh", "āng"),  # 干音 = āng, 韵母 = ang
         ("lǐ", "l", "ǐ"),        # 干音 = ǐ, 韵母 = i
         ("piāo", "p", "iāo"),    # 干音 = iāo, 韵母 = iao
-        ("chuáng", "ch", "uáng"), # 干音 = uáng, 韵母 = uang
+        ("chuáng", "ch", "uáng"),  # 干音 = uáng, 韵母 = uang
     ]
 
     print("测试拼音切分:")
     for pinyin, expected_initial, expected_ganyin in test_cases:
         initial, ganyin = GanyinCategorizer.split_syllable(pinyin)
-        final = GanyinCategorizer._normalize_final(ganyin)
+        final = GanyinCategorizer._remove_tone_from_ganyin(ganyin)
         category = GanyinCategorizer.categorize(ganyin)
 
         print(f"  拼音: {pinyin}")
@@ -37,12 +38,14 @@ def test_ganyin_final_logic():
         print(f"{category}:")
         # 检查是否都是不带声调的韵母
         for final in sorted(finals):
-            has_tone = any(char in final for char in 'āáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ')
+            has_tone = any(
+                char in final for char in 'āáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ')
             if has_tone:
                 print(f"  ⚠ {final} - 包含声调标记")
             else:
                 print(f"  ✓ {final} - 不带声调")
         print()
+
 
 if __name__ == "__main__":
     test_ganyin_final_logic()

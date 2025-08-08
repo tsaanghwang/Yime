@@ -29,7 +29,7 @@ class YueyinYinyuan(MusicalYinyuan):
             pitch=pitch,
             duration=duration,
             loudness=loudness,
-            pitch_style=pitch_style
+            pitch_style=pitch_style,
         )
 
         # 使用绝对路径加载配置文件
@@ -96,7 +96,7 @@ class YueyinYinyuan(MusicalYinyuan):
 
     def _process_yueyin(self, input_data):
         """处理音元系统的乐音类音元数据"""
-        pitch_class = self.pitch_variables['mid_high_level_modal_median_model']
+        pitch_class = self.pitch_variables['mid_high_median_model']
         output = {}
 
         for key, (quality, pitch) in input_data.items():
@@ -158,16 +158,16 @@ class YueyinYinyuan(MusicalYinyuan):
 
     def _change_pitch_style(self, input_data: dict) -> dict:
         """转换音高标记风格
-        
+
         参数:
             input_data: 包含原始音高标记的字典数据
-            
+
         返回:
             转换后的字典数据，音高标记已替换为对应的标记符号
         """
         result = {}
         pitch_marks = self.config["pitch_variables"]["pitch_marks"]
-        
+
         for ganyin_type, ganyin_list in input_data.items():
             result[ganyin_type] = {}
             for ganyin_name, parts in ganyin_list.items():
@@ -177,7 +177,7 @@ class YueyinYinyuan(MusicalYinyuan):
                     if not ipa:
                         result[ganyin_type][ganyin_name][field] = ipa
                         continue
-                    
+
                     # 处理"/"分隔的两部分
                     if "/" in ipa:
                         left, right = ipa.split("/", 1)
@@ -235,7 +235,7 @@ class YueyinYinyuan(MusicalYinyuan):
 
         # 检查音调是否在任一调类中
         for model in ['mid_high_level_modal_median_model', 'mid_level_median_model']:
-            if model in self.pitch_variables:
+            if model in self.pitch_variables and model != 'pitch_marks':
                 for pitch_class in ['H', 'M', 'L']:
                     if pitch in self.pitch_variables[model].get(pitch_class, []):
                         return True

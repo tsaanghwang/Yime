@@ -3,7 +3,7 @@
 测试韵母动态添加功能
 """
 
-from ganyin import GanyinCategorizer
+from ganyin_categorizer import GanyinCategorizer
 
 def test_dynamic_finals():
     """测试韵母动态添加功能"""
@@ -44,7 +44,7 @@ def test_dynamic_finals():
     test_cases = ['ian2', 'ōng', 'uá', 'uài', 'iū', 'vè', 'ióng']
 
     for final in test_cases:
-        normalized = GanyinCategorizer._normalize_final(final)
+        normalized = GanyinCategorizer._remove_tone_from_ganyin(final)
         category = GanyinCategorizer.categorize(final)
         print(f"韵母 '{final}' -> 标准化: '{normalized}' -> 分类: {category}")
 
