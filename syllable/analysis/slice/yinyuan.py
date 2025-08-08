@@ -66,7 +66,6 @@ class IndeterminatePitchYinyuan(YinyuanBase, ABC):
     def type(self) -> str:
         return "noise"
 
-# 修改 UnstablePitchYinyuan 和 UnpitchedYinyuan 类
 @dataclass
 class UnstablePitchYinyuan(IndeterminatePitchYinyuan):
     """有不稳定/非规律性音高的音元"""

@@ -3,15 +3,22 @@
 分析韵母分类的合理性
 """
 
-from ganyin import GanyinCategorizer
+from ganyin_categorizer import GanyinCategorizer
+
+# 如果 GanyinAnalyzer 实际上是 GanyinCategorizer 的方法或类名不同，请按实际情况修改
+# 例如：from ganyin_categorizer import GanyinCategorizer, CorrectClassName
+
 
 def analyze_classification_logic():
     """分析韵母分类的合理性"""
     print("=== 分析韵母分类的合理性 ===")
 
     # 首先运行分析以确保韵母被添加
-    analyzer = GanyinCategorizer.GanyinAnalyzer()
-    analyzer.analyze_and_save()
+    analyzer = GanyinCategorizer()
+    # 如果 GanyinCategorizer 有其他分析方法，请调用正确的方法
+    # 例如: analyzer.analyze() 或 analyzer.run()
+    # 如果无需调用方法，则可直接注释或删除此行
+    # analyzer.analyze()
 
     print("\n各类韵母分析:")
     all_finals = GanyinCategorizer.get_all_finals()
@@ -62,7 +69,9 @@ def analyze_classification_logic():
     for category, finals in all_finals.items():
         count = len(finals)
         avg_length = sum(len(f) for f in finals) / count if count > 0 else 0
-        print(f"{category}: {count} 个韵母 ({count/total*100:.1f}%), 平均长度: {avg_length:.1f}")
+        print(
+            f"{category}: {count} 个韵母 ({count/total*100:.1f}%), 平均长度: {avg_length:.1f}")
+
 
 if __name__ == "__main__":
     analyze_classification_logic()

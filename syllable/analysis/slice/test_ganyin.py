@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from ganyin import GanyinCategorizer
-import pytest
+from ganyin_categorizer import GanyinCategorizer
+
 
 def test_categorization():
     print("=== 测试韵母分类功能 ===")
@@ -11,23 +11,28 @@ def test_categorization():
     samples = ["ī", "āi", "iā", "iāo"]
 
     for final in samples:
-        normalized = GanyinCategorizer._normalize_final(final)
+        normalized = GanyinCategorizer._remove_tone_from_ganyin(final)
         category = GanyinCategorizer.categorize(final)
         print(f"韵母 '{final}' -> 标准化: '{normalized}' -> 分类: {category}")
 
         # 调试信息
         if category == "未知类型":
             print(f"  调试: 标准化结果 '{normalized}' 在各个集合中的检查:")
-            print(f"    SINGLE_QUALITY_FINALS: {normalized in GanyinCategorizer.SINGLE_QUALITY_FINALS}")
-            print(f"    FRONT_LONG_FINALS: {normalized in GanyinCategorizer.FRONT_LONG_FINALS}")
-            print(f"    BACK_LONG_FINALS: {normalized in GanyinCategorizer.BACK_LONG_FINALS}")
-            print(f"    TRIPLE_QUALITY_FINALS: {normalized in GanyinCategorizer.TRIPLE_QUALITY_FINALS}")
+            print(
+                f"    SINGLE_QUALITY_FINALS: {normalized in GanyinCategorizer.SINGLE_QUALITY_FINALS}")
+            print(
+                f"    FRONT_LONG_FINALS: {normalized in GanyinCategorizer.FRONT_LONG_FINALS}")
+            print(
+                f"    BACK_LONG_FINALS: {normalized in GanyinCategorizer.BACK_LONG_FINALS}")
+            print(
+                f"    TRIPLE_QUALITY_FINALS: {normalized in GanyinCategorizer.TRIPLE_QUALITY_FINALS}")
 
     print("\n=== 四类韵母数据 ===")
     all_finals = GanyinCategorizer.get_all_finals()
     for category, finals in all_finals.items():
         print(f"{category}: {sorted(finals)}")
-        def test_normalize_final_removes_tone_segments():
+
+        def test_remove_tone_from_ganyin_removes_tone_segments():
             cases = [
                 ("ā", "a"),
                 ("á", "a"),
@@ -77,7 +82,8 @@ def test_categorization():
                 ("ǖng", "üng"),
             ]
             for original, expected in cases:
-                assert GanyinCategorizer._normalize_final(original) == expected
+                assert GanyinCategorizer._remove_tone_from_ganyin(
+                    original) == expected
 
         def test_categorize_returns_correct_category():
             samples = [
@@ -147,5 +153,7 @@ def test_categorization():
             result = GanyinCategorizer.generate_shouyin_data(pinyin_data)
             # Should contain initials: z, ', m, n
             assert set(result.values()) >= {"z", "'", "m", "n"}
+
+
 if __name__ == "__main__":
     test_categorization()

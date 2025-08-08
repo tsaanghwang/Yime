@@ -4,17 +4,12 @@
 要求：
 导入音节类对干音的定义：干音由韵母和与其联结的调段构成，即 Ganyin = Final+Tone
 """
-from typing import Dict
-import sys
-import json
-import os
-from collections import defaultdict
-from typing import Dict, Tuple
-
 try:
-    from syllable import Syllable  # When imported as part of a package
-except ImportError:
-    from syllable import Syllable  # When run directly as a script
+    # Try relative import (for package context)
+    from .syllable import Syllable
+except (ImportError, SystemError, ValueError):
+    # Fallback to absolute import (for module context)
+    from syllable import Syllable
 
 
 class Ganyin:
@@ -56,4 +51,4 @@ class Ganyin:
         return f"Ganyin(final={self.final}, gandiao={self.gandiao})"
 
     def __repr__(self):
-        return
+        return self.__str__()

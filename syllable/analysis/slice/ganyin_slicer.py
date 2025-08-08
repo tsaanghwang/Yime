@@ -34,7 +34,7 @@ class GanyinSlicer:
             first_ipa = ipa.split("/")[0] if "/" in ipa else ipa
             ganyin = Ganyin(
                 final=value.get("ime", ""),
-                pitch_style=first_ipa.split("˥")[0].split("˦")[0].split("˧")[
+                gandiao=first_ipa.split("˥")[0].split("˦")[0].split("˧")[
                     0].split("˨")[0].split("˩")[0]
             )
 
@@ -52,16 +52,16 @@ class GanyinSlicer:
 
             if ganyin_type == "single quality ganyin":
                 sliced = self._slice_single_quality(
-                    ipa, tone_pattern)  # 传入完整 IPA 而不是处理后的 pitch_style
+                    ipa, tone_pattern)  # 传入完整 IPA 而不是处理后的 gandiao
             elif ganyin_type == "back long ganyin":
                 sliced = self._slice_back_long(
-                    ganyin.pitch_style, tone_pattern)
+                    ganyin.gandiao, tone_pattern)
             elif ganyin_type == "front long ganyin":
                 sliced = self._slice_front_long(
-                    ganyin.pitch_style, tone_pattern)
+                    ganyin.gandiao, tone_pattern)
             elif ganyin_type == "triple quality ganyin":
                 sliced = self._slice_triple_quality(
-                    ganyin.pitch_style, tone_pattern)
+                    ganyin.gandiao, tone_pattern)
             else:
                 raise ValueError(f"未知的干音类型: {ganyin_type}")
 
@@ -258,6 +258,7 @@ def enhance_i_variants(ganyin_dict: dict) -> dict:
                     tone = ipa[1:]
                     value[field] = f"ɿ{tone}/ʅ{tone}"
     return ganyin_dict
+
 
 def main():
     slicer = GanyinSlicer()

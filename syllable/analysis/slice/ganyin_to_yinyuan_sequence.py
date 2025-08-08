@@ -8,7 +8,10 @@ from pathlib import Path
 from typing import Dict, Any
 from yueyin_yinyuan import YueyinYinyuan
 
-
+import sys
+from pathlib import Path
+sys.path.append(str(Path(__file__).parent))
+from syllable import Syllable  # When run directly as a
 
 class GanyinToYinyuanSequence:
     """将干音转换为音元序列的处理器"""
