@@ -15,7 +15,7 @@ class Syllable:
     """
     音节类
     - 切分音节的首音和干音
-    - 管理音质层和音调层
+    - 提取音节的音调和音质
     """
 
     def __init__(self, initial: str = None, final: str = None, tone: str = None):
@@ -33,7 +33,7 @@ class Syllable:
 
         # 调段部分
         self.shoudiao = None  # 与声母联结的调段
-        self.gandiao = None   # 与韵母联结的调段
+        self.gandiao = tone   # 与韵母联结的调段
 
     @property
     def quality(self):
