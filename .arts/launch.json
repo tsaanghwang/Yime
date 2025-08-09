@@ -2,6 +2,45 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "unicode_pua",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\unicode_pua.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}",
+      "addSourceRootsToPythonpath": true
+    },
+    {
+      "name": "Python: Current File",
+      "type": "python",
+      "request": "launch",
+      "program": "${file}",
+      "currentFileConfiguration": true,
+      "cwd": "${fileDirname}",
+      "addSourceRootsToPythonpath": true,
+      "env": {
+        "PYTHONPATH": "${workspaceFolder};${env:PYTHONPATH}"
+      }
+    },
+    {
+      "name": "unicode_pua",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\tools\\unicode_pua.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\tools",
+      "addSourceRootsToPythonpath": true
+    },
+    {
+      "name": "test_shejian",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\test_shejian.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
+      "addSourceRootsToPythonpath": true
+    },
+    {
       "name": "test_ganyin",
       "type": "python",
       "request": "launch",

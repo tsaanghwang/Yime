@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from ganyin import GanyinCategorizer
+from ganyin_categorizer import GanyinCategorizer
 import json
+
 
 def test_shejian_processing():
     """测试舌尖音处理功能"""
@@ -52,6 +53,7 @@ def test_shejian_processing():
             print(f"  '_i' 已包含在 {cat_name} 中 ✓")
 
     print("\n测试完成！")
+
 
 if __name__ == "__main__":
     test_shejian_processing()
