@@ -3,9 +3,11 @@
 完整测试韵母动态添加功能
 """
 
-from ganyin import GanyinCategorizer
+from ganyin_categorizer import GanyinCategorizer
+from ganyin_analyzer import GanyinAnalyzer
 import json
 import os
+
 
 def test_complete_workflow():
     """测试完整的工作流程"""
@@ -19,7 +21,7 @@ def test_complete_workflow():
 
     # 2. 执行分析过程
     print("\n2. 执行分析过程...")
-    analyzer = GanyinCategorizer.GanyinAnalyzer()
+    analyzer = GanyinAnalyzer(__file__)
 
     # 检查输入文件是否存在
     if not os.path.exists(analyzer.input_path):
@@ -42,7 +44,8 @@ def test_complete_workflow():
 
     # 4. 测试新韵母分类
     print("\n4. 测试新韵母分类:")
-    new_finals = ['ian', 'iong', 'iu', 'ong', 'ua', 'uai', 'ue', 'ui', 'un', 'v', 'van', 've']
+    new_finals = ['ian', 'iong', 'iu', 'ong', 'ua',
+                  'uai', 'ue', 'ui', 'un', 'v', 'van', 've']
 
     for final in new_finals:
         category = GanyinCategorizer.categorize(final)
@@ -65,6 +68,7 @@ def test_complete_workflow():
                 print(f"   ✓ 找到: {entry} -> {ganyin_finals[entry]}")
             else:
                 print(f"   ✗ 未找到: {entry}")
+
 
 if __name__ == "__main__":
     test_complete_workflow()

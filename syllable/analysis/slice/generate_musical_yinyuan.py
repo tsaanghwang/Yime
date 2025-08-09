@@ -1,9 +1,10 @@
-import sys, os
+from pathlib import Path
+import json
+from yueyin_yinyuan import YueyinYinyuan  # 使用具体的子类
+import sys
+import os
 sys.path.insert(0, os.path.dirname(__file__))
 
-import json
-from pathlib import Path
-from yinyuan import PitchedYinyuan, DurationType, LoudnessType, MusicalYinyuan
 
 def generate_musical_yinyuan():
     """生成乐音类音元(Musical Yinyuan/Yueyin)数据文件"""
@@ -23,20 +24,23 @@ def generate_musical_yinyuan():
         pitch = pinyin[-1]
 
         # 创建MusicalYinyuan实例
-        yinyuan = MusicalYinyuan(
-            quality=quality,
-            pitch_value=pitch,
-            pitch_style='number'
-        )
+    yueyin = YueyinYinyuan(
+        quality='neutral',
+        pitch='4',
+        duration='neutral',
+        loudness='neutral',
+        pitch_style='number'
+    )
 
-        # 转换为字典格式
-        musical_yinyuan_data[pinyin] = yinyuan.to_dict()
+    # 转换为字典格式
+    musical_yinyuan_data[pinyin] = yueyin.to_dict()
 
     # 保存结果
     with open(output_path, 'w', encoding='utf-8') as f:
         json.dump(musical_yinyuan_data, f, ensure_ascii=False, indent=2)
 
     print(f"处理完成，结果已保存到: {output_path}")
+
 
 if __name__ == '__main__':
     generate_musical_yinyuan()

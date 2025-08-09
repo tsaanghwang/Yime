@@ -52,8 +52,18 @@ def extract_yueyin(input_path, output_path):
                     value = f"{quality}{pitch}"
                     yueyin_map[key] = value
 
+    # 将字典转换为列表并保持音质顺序不变，同音质内部按音高降序
+    sorted_items = sorted(
+        yueyin_map.items(),
+        key=lambda x: (x[1][:-1], -int(x[1][-1]))  # 先按音质分组，再按音高降序
+    )
+    
+    # 转换为有序字典
+    from collections import OrderedDict
+    ordered_yueyin = OrderedDict(sorted_items)
+    
     with open(output_path, "w", encoding="utf-8") as f:
-        json.dump(yueyin_map, f, ensure_ascii=False, indent=2)
+        json.dump(ordered_yueyin, f, ensure_ascii=False, indent=2)
 
 if __name__ == "__main__":
     base_dir = Path(__file__).parent
