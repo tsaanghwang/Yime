@@ -3,14 +3,16 @@
 验证新添加韵母的分类是否合理
 """
 
-from ganyin import GanyinCategorizer
+from ganyin_categorizer import GanyinCategorizer
+
 
 def analyze_new_finals():
     """分析新添加韵母的分类合理性"""
     print("=== 验证新添加韵母分类的合理性 ===")
 
     # 从运行结果中提取的新添加韵母
-    new_finals = ['ian', 'iong', 'iu', 'ong', 'ua', 'uai', 'ue', 'ui', 'un', 'v', 'van', 've']
+    new_finals = ['ian', 'iong', 'iu', 'ong', 'ua',
+                  'uai', 'ue', 'ui', 'un', 'v', 'van', 've']
 
     print("新添加的韵母及其分类:")
     for final in new_finals:
@@ -60,6 +62,7 @@ def analyze_new_finals():
         print(f"{category}: {count} 个韵母 ({percentage:.1f}%)")
 
     print(f"\n总韵母数量: {total}")
+
 
 if __name__ == "__main__":
     analyze_new_finals()
