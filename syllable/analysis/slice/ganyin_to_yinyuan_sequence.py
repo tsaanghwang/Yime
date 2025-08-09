@@ -3,6 +3,7 @@
 功能：生成干音的音元序列
 流程：读取干音与片音序列的映射数据，并将其转换为干音与音元序列的映射数据。
 """
+from syllable import Syllable  # When run directly as a
 import json
 from pathlib import Path
 from typing import Dict, Any
@@ -11,7 +12,7 @@ from yueyin_yinyuan import YueyinYinyuan
 import sys
 from pathlib import Path
 sys.path.append(str(Path(__file__).parent))
-from syllable import Syllable  # When run directly as a
+
 
 class GanyinToYinyuanSequence:
     """将干音转换为音元序列的处理器"""
@@ -66,8 +67,8 @@ class GanyinToYinyuanSequence:
 def main():
     converter = GanyinToYinyuanSequence()
     base_dir = Path(__file__).parent
-    input_file = base_dir / "ganyin_to_pianyin_sequence.json"
-    output_file = base_dir / "ganyin_to_yinyuan_sequence.json"
+    input_file = base_dir / 'yinyuan' / 'ganyin_to_pianyin_sequence.json'
+    output_file = base_dir / 'yinyuan' / 'ganyin_to_yinyuan_sequence.json'
     result = converter.run(input_file, output_file)
 
     # 转换音调标记方式并保存新格式结果
