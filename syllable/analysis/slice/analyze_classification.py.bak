@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# type: ignore[reportMissingImports]
 """
 分析韵母分类的合理性
 """
