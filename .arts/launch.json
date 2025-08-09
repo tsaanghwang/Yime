@@ -2,6 +2,15 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "push_all",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\scripts\\push_all.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\scripts",
+      "addSourceRootsToPythonpath": true
+    },
+    {
       "name": "unicode_pua",
       "type": "python",
       "request": "launch",
