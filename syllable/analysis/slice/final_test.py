@@ -3,7 +3,8 @@
 韵母动态添加功能总结测试
 """
 
-from ganyin import GanyinCategorizer
+from ganyin_categorizer import GanyinCategorizer
+from ganyin_analyzer import GanyinAnalyzer
 import json
 import os
 
@@ -18,7 +19,7 @@ def final_test():
 
     # 2. 执行完整分析
     print("\n2. 执行完整分析...")
-    analyzer = GanyinCategorizer.GanyinAnalyzer()
+    analyzer = GanyinAnalyzer(__file__)
     success = analyzer.analyze_and_save()
 
     if not success:
