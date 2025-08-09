@@ -14,7 +14,7 @@ def generate_yueyin_yinyuan():
 
     # 输入输出文件路径
     input_path = base_dir / 'pitched_pianyin.json'
-    output_mid_high_level_modal_median_model_path = base_dir / 'pitched_yinyuan_of_mid_high_level_modal_median_model.json'
+    output_mid_high_median_model_path = base_dir / 'pitched_yinyuan_of_mid_high_median_model.json'
     output_mid_level_median_model_path = base_dir / 'pitched_yinyuan_of_mid_level_median_model.json'
 
     # 读取输入数据
@@ -34,20 +34,20 @@ def generate_yueyin_yinyuan():
     )
 
     # 处理数据 - 使用实例方法
-    mid_high_level_modal_median_model = yueyin._process_yueyin(
+    mid_high_median_model = yueyin._process_yueyin(
         converted_data)
     output_mid_level_median_model = yueyin._process_mid_level_median_model_yueyin(
         converted_data)
 
     # 保存结果
-    with open(output_mid_high_level_modal_median_model_path, 'w', encoding='utf-8') as f:
-        json.dump(mid_high_level_modal_median_model, f, ensure_ascii=False, indent=2)
+    with open(output_mid_high_median_model_path, 'w', encoding='utf-8') as f:
+        json.dump(mid_high_median_model, f, ensure_ascii=False, indent=2)
 
     with open(output_mid_level_median_model_path, 'w', encoding='utf-8') as f:
         json.dump(output_mid_level_median_model, f, ensure_ascii=False, indent=2)
 
     print("处理完成，结果已保存到:")
-    print(f"- {output_mid_high_level_modal_median_model_path}")
+    print(f"- {output_mid_high_median_model_path}")
     print(f"- {output_mid_level_median_model_path}")
 
 

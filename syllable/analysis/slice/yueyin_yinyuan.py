@@ -35,7 +35,7 @@ class YueyinYinyuan(MusicalYinyuan):
         # 使用绝对路径加载配置文件
         config_dir = os.path.dirname(os.path.abspath(__file__))
         config_path = os.path.join(
-            config_dir, 'variables_of_pitch_and_quality.json')
+            config_dir, 'variables_of_attributes.json')
 
         with open(config_path, 'r', encoding='utf-8') as f:
             self.config = json.load(f)
@@ -108,7 +108,7 @@ class YueyinYinyuan(MusicalYinyuan):
                 (k for k, v in self.quality_variables.items() if quality in v), None)
 
             if quality_unit:
-                # mid_high_level_modal_median_model模式处理流程
+                # mid_high_median_model模式处理流程
                 if pitch in pitch_class['H']:
                     final_pitch = pitch  # H类保持不变
                 elif pitch in pitch_class['M']:
@@ -157,7 +157,7 @@ class YueyinYinyuan(MusicalYinyuan):
         return output
 
     def _change_pitch_style(self, input_data: dict) -> dict:
-        """转换音高标记风格
+        """转换音高标记方式
 
         参数:
             input_data: 包含原始音高标记的字典数据
@@ -199,7 +199,7 @@ class YueyinYinyuan(MusicalYinyuan):
     def _define_variables_for_qualities(cls, quality: str) -> str:
         """根据音质返回对应的质元"""
         config_path = os.path.join(os.path.dirname(
-            __file__), 'variables_of_pitch_and_quality.json')
+            __file__), 'variables_of_attributes.json')
         with open(config_path, 'r', encoding='utf-8') as f:
             config = json.load(f)
             quality_variables = config['quality_variables']
@@ -211,13 +211,19 @@ class YueyinYinyuan(MusicalYinyuan):
         return ""  # 如果没有匹配，返回空字符串
 
     @classmethod
-    def _define_variables_for_pitches(cls, pitch: str) -> str:
-        """根据音调返回对应的调元"""
+    def _define_variables_for_pitches(cls, pitch: str, use_mid_level_model: bool = False) -> str:
+        """根据音调返回对应的调元
+
+        参数:
+            pitch: 音调字符串
+            use_mid_level_model: 是否使用 mid_level_median_model（默认为 False，使用 mid_high_median_model）
+        """
         config_path = os.path.join(os.path.dirname(
-            __file__), 'variables_of_pitch_and_quality.json')
+            __file__), 'variables_of_attributes.json')
         with open(config_path, 'r', encoding='utf-8') as f:
             config = json.load(f)
-            pitch_variables = config['pitch_variables']['mid_high_level_modal_median_model']
+            # 从配置文件中定义的两种模式中选择一种
+            pitch_variables = config['pitch_variables']['mid_level_median_model'] if use_mid_level_model else config['pitch_variables']['mid_high_median_model']
 
         # 检查音调属于哪一类(H/M/L)并返回对应的调元
         if pitch in pitch_variables['H']:
@@ -234,7 +240,7 @@ class YueyinYinyuan(MusicalYinyuan):
             return False
 
         # 检查音调是否在任一调类中
-        for model in ['mid_high_level_modal_median_model', 'mid_level_median_model']:
+        for model in ['mid_high_median_model', 'mid_level_median_model']:
             if model in self.pitch_variables and model != 'pitch_marks':
                 for pitch_class in ['H', 'M', 'L']:
                     if pitch in self.pitch_variables[model].get(pitch_class, []):
