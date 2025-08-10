@@ -90,11 +90,11 @@ class YueyinYinyuan(MusicalYinyuan):
     def process_pitched_yinyuan(self, input_data, is_mid_level_median_model=False):
         """处理乐音类音元数据"""
         if is_mid_level_median_model:
-            return self._process_mid_level_median_model_yueyin(input_data)
+            return self._process_mid_level_model(input_data)
         else:
-            return self._process_yueyin(input_data)
+            return self._process_mid_high_model(input_data)
 
-    def _process_yueyin(self, input_data):
+    def _process_mid_high_model(self, input_data):
         """处理音元系统的乐音类音元数据"""
         pitch_class = self.pitch_variables['mid_high_median_model']
         output = {}
@@ -125,7 +125,7 @@ class YueyinYinyuan(MusicalYinyuan):
 
         return output
 
-    def _process_mid_level_median_model_yueyin(self, input_data):
+    def _process_mid_level_model(self, input_data):
         """处理mid_level_median_model的乐音类音元数据"""
         pitch_class = self.pitch_variables['mid_level_median_model']
         output = {}

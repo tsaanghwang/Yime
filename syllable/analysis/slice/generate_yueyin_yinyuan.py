@@ -36,9 +36,9 @@ def generate_yueyin_yinyuan():
     )
 
     # 处理数据 - 使用实例方法
-    mid_high_median_model = yueyin._process_yueyin(
+    mid_high_median_model = yueyin._process_mid_high_model(
         converted_data)
-    output_mid_level_median_model = yueyin._process_mid_level_median_model_yueyin(
+    output_mid_level_median_model = yueyin._process_mid_level_model(
         converted_data)
 
     # 保存结果
