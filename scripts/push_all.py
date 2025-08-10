@@ -50,7 +50,7 @@ def check_branch_status(remote: str, branch: str) -> Tuple[int, int]:
         return 0, 0
 
 
-def git_pull(remote: str, branch: str = "main") -> bool:
+def git_pull(remote: str, branch: str = "Mybranch") -> bool:
     """从远程仓库拉取变更"""
     try:
         print(f"正在从 {remote} 仓库拉取 {branch} 分支最新变更...")
@@ -73,7 +73,7 @@ def git_pull(remote: str, branch: str = "main") -> bool:
         return False
 
 
-def git_push(remote: str, branch: str = "main", force: bool = False) -> bool:
+def git_push(remote: str, branch: str = "Mybranch", force: bool = False) -> bool:
     """推送代码到远程仓库"""
     try:
         print(f"正在推送代码到 {remote} 仓库...")
@@ -100,7 +100,7 @@ def git_push(remote: str, branch: str = "main", force: bool = False) -> bool:
 def main():
     parser = argparse.ArgumentParser(description="Git 自动推送脚本")
     parser.add_argument("--force", "-f", action="store_true", help="使用强制推送")
-    parser.add_argument("--branch", "-b", default="main", help="指定分支名称")
+    parser.add_argument("--branch", "-b", default="Mybranch", help="指定分支名称")
     args = parser.parse_args()
 
     # 查找git仓库根目录
