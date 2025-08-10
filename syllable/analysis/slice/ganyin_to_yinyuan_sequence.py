@@ -38,7 +38,7 @@ class GanyinToYinyuanSequence:
         pianyin = pianyin.split("/")[0]  # 处理多值情况
         quality = pianyin[:-1] if len(pianyin) > 1 else pianyin
         pitch = pianyin[-1] if len(pianyin) > 1 else ""
-        processed = self.yueyin_yinyuan._process_yueyin(
+        processed = self.yueyin_yinyuan._process_mid_high_model(
             {"temp": (quality, pitch)})
         return next(iter(processed.keys())) if processed else ""
 
