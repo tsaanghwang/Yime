@@ -58,11 +58,11 @@ def get_ipa(base: str, tone_num: str) -> str:
         "4": "˥˩",   # 高降调
         "5": "˦˦",     # 轻声调
     }
-    
+
     # 特殊处理 "_i" 韵母，返回两种变体
     if base_key == "_i":
         return f"ɿ{tone_ipa.get(tone_num, '')}/ʅ{tone_ipa.get(tone_num, '')}"
-    
+
     return ipa_base + tone_ipa.get(tone_num, "")
 
 
@@ -94,5 +94,8 @@ def enhance_ganyin(input_path, output_path):
 if __name__ == "__main__":
     base_dir = Path(__file__).parent
     input_path = base_dir / "ganyin.json"
-    output_path = base_dir / "ganyin_enhanced.json"
+    output_path = base_dir / 'yinyuan' / 'ganyin_enhanced.json'
     enhance_ganyin(input_path, output_path)
+
+    print(f"转换完成，结果已保存到 {output_path}")
+

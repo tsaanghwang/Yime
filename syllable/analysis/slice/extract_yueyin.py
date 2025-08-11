@@ -57,16 +57,16 @@ def extract_yueyin(input_path, output_path):
         yueyin_map.items(),
         key=lambda x: (x[1][:-1], -int(x[1][-1]))  # 先按音质分组，再按音高降序
     )
-    
+
     # 转换为有序字典
     from collections import OrderedDict
     ordered_yueyin = OrderedDict(sorted_items)
-    
+
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(ordered_yueyin, f, ensure_ascii=False, indent=2)
 
 if __name__ == "__main__":
     base_dir = Path(__file__).parent
-    input_path = base_dir / "ganyin_to_pianyin_sequence.json"
+    input_path = base_dir / "yinyuan" /  "ganyin_to_pianyin_sequence.json"
     output_path = base_dir / "pitched_pianyin.json"
     extract_yueyin(input_path, output_path)
