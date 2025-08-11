@@ -10,7 +10,7 @@ class GanyinSlicer:
         self.tone_patterns = {
             "high_tone": ["5", "5", "5"],  # 高平调
             "rising_tone": ["3", "4", "5"],  # 上升调
-            "low_tone": ["2", "1", "1"],  # 低平调
+            "low_tone": ["2", "1", "2"],  # 低平调
             "falling_tone": ["5", "4", "1"],  # 下降调
             "neutral_tone": ["4", "4", "4"]  # 中性调(轻声调)
         }

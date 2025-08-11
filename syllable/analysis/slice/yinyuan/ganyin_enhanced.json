@@ -3,963 +3,963 @@
     "_i1": {
       "ime": "_i1",
       "pinyin": "_ī",
-      "ipa": "ɿ˥˥/ʅ˥˥"
+      "ipa": "ɿ˥˥˥/ʅ˥˥˥"
     },
     "_i2": {
       "ime": "_i2",
       "pinyin": "_í",
-      "ipa": "ɿ˧˥/ʅ˧˥"
+      "ipa": "ɿ˧˦˥/ʅ˧˦˥"
     },
     "_i3": {
       "ime": "_i3",
       "pinyin": "_ǐ",
-      "ipa": "ɿ˨˩/ʅ˨˩"
+      "ipa": "ɿ˨˩˨/ʅ˨˩˨"
     },
     "_i4": {
       "ime": "_i4",
       "pinyin": "_ì",
-      "ipa": "ɿ˥˩/ʅ˥˩"
+      "ipa": "ɿ˥˦˩/ʅ˥˦˩"
     },
     "_i5": {
       "ime": "_i5",
       "pinyin": "_i",
-      "ipa": "ɿ˦˦/ʅ˦˦"
+      "ipa": "ɿ˦˦˦/ʅ˦˦˦"
     },
     "a1": {
       "ime": "a1",
       "pinyin": "ā",
-      "ipa": "ᴀ˥˥"
+      "ipa": "ᴀ˥˥˥"
     },
     "a2": {
       "ime": "a2",
       "pinyin": "á",
-      "ipa": "ᴀ˧˥"
+      "ipa": "ᴀ˧˦˥"
     },
     "a3": {
       "ime": "a3",
       "pinyin": "ǎ",
-      "ipa": "ᴀ˨˩"
+      "ipa": "ᴀ˨˩˨"
     },
     "a4": {
       "ime": "a4",
       "pinyin": "à",
-      "ipa": "ᴀ˥˩"
+      "ipa": "ᴀ˥˦˩"
     },
     "a5": {
       "ime": "a5",
       "pinyin": "a",
-      "ipa": "ᴀ˦˦"
+      "ipa": "ᴀ˦˦˦"
     },
     "e1": {
       "ime": "e1",
       "pinyin": "ē",
-      "ipa": "ɤ˥˥"
+      "ipa": "ɤ˥˥˥"
     },
     "e2": {
       "ime": "e2",
       "pinyin": "é",
-      "ipa": "ɤ˧˥"
+      "ipa": "ɤ˧˦˥"
     },
     "e3": {
       "ime": "e3",
       "pinyin": "ě",
-      "ipa": "ɤ˨˩"
+      "ipa": "ɤ˨˩˨"
     },
     "e4": {
       "ime": "e4",
       "pinyin": "è",
-      "ipa": "ɤ˥˩"
+      "ipa": "ɤ˥˦˩"
     },
     "e5": {
       "ime": "e5",
       "pinyin": "e",
-      "ipa": "ɤ˦˦"
+      "ipa": "ɤ˦˦˦"
     },
     "er1": {
       "ime": "er1",
       "pinyin": "ēr",
-      "ipa": "ɚ˥˥"
+      "ipa": "ɚ˥˥˥"
     },
     "er2": {
       "ime": "er2",
       "pinyin": "ér",
-      "ipa": "ɚ˧˥"
+      "ipa": "ɚ˧˦˥"
     },
     "er3": {
       "ime": "er3",
       "pinyin": "ěr",
-      "ipa": "ɚ˨˩"
+      "ipa": "ɚ˨˩˨"
     },
     "er4": {
       "ime": "er4",
       "pinyin": "èr",
-      "ipa": "ɚ˥˩"
+      "ipa": "ɚ˥˦˩"
     },
     "er5": {
       "ime": "er5",
       "pinyin": "er",
-      "ipa": "ɚ˦˦"
+      "ipa": "ɚ˦˦˦"
     },
     "i1": {
       "ime": "i1",
       "pinyin": "ī",
-      "ipa": "i˥˥"
+      "ipa": "i˥˥˥"
     },
     "i2": {
       "ime": "i2",
       "pinyin": "í",
-      "ipa": "i˧˥"
+      "ipa": "i˧˦˥"
     },
     "i3": {
       "ime": "i3",
       "pinyin": "ǐ",
-      "ipa": "i˨˩"
+      "ipa": "i˨˩˨"
     },
     "i4": {
       "ime": "i4",
       "pinyin": "ì",
-      "ipa": "i˥˩"
+      "ipa": "i˥˦˩"
     },
     "i5": {
       "ime": "i5",
       "pinyin": "i",
-      "ipa": "i˦˦"
+      "ipa": "i˦˦˦"
     },
     "m1": {
       "ime": "m1",
       "pinyin": "m̄",
-      "ipa": "m̩˥˥"
+      "ipa": "m̩˥˥˥"
     },
     "m2": {
       "ime": "m2",
       "pinyin": "ḿ",
-      "ipa": "m̩˧˥"
+      "ipa": "m̩˧˦˥"
     },
     "m3": {
       "ime": "m3",
       "pinyin": "m̌",
-      "ipa": "m̩˨˩"
+      "ipa": "m̩˨˩˨"
     },
     "m4": {
       "ime": "m4",
       "pinyin": "m̀",
-      "ipa": "m̩˥˩"
+      "ipa": "m̩˥˦˩"
     },
     "m5": {
       "ime": "m5",
       "pinyin": "m",
-      "ipa": "m̩˦˦"
+      "ipa": "m̩˦˦˦"
     },
     "n1": {
       "ime": "n1",
       "pinyin": "n̄",
-      "ipa": "n̩˥˥"
+      "ipa": "n̩˥˥˥"
     },
     "n2": {
       "ime": "n2",
       "pinyin": "ń",
-      "ipa": "n̩˧˥"
+      "ipa": "n̩˧˦˥"
     },
     "n3": {
       "ime": "n3",
       "pinyin": "ň",
-      "ipa": "n̩˨˩"
+      "ipa": "n̩˨˩˨"
     },
     "n4": {
       "ime": "n4",
       "pinyin": "ǹ",
-      "ipa": "n̩˥˩"
+      "ipa": "n̩˥˦˩"
     },
     "n5": {
       "ime": "n5",
       "pinyin": "n",
-      "ipa": "n̩˦˦"
+      "ipa": "n̩˦˦˦"
     },
     "ng1": {
       "ime": "ng1",
       "pinyin": "n̄g",
-      "ipa": "ŋ̩˥˥"
+      "ipa": "ŋ̩˥˥˥"
     },
     "ng2": {
       "ime": "ng2",
       "pinyin": "ńg",
-      "ipa": "ŋ̩˧˥"
+      "ipa": "ŋ̩˧˦˥"
     },
     "ng3": {
       "ime": "ng3",
       "pinyin": "ňg",
-      "ipa": "ŋ̩˨˩"
+      "ipa": "ŋ̩˨˩˨"
     },
     "ng4": {
       "ime": "ng4",
       "pinyin": "ǹg",
-      "ipa": "ŋ̩˥˩"
+      "ipa": "ŋ̩˥˦˩"
     },
     "ng5": {
       "ime": "ng5",
       "pinyin": "ng",
-      "ipa": "ŋ̩˦˦"
+      "ipa": "ŋ̩˦˦˦"
     },
     "o1": {
       "ime": "o1",
       "pinyin": "ō",
-      "ipa": "o˥˥"
+      "ipa": "o˥˥˥"
     },
     "o2": {
       "ime": "o2",
       "pinyin": "ó",
-      "ipa": "o˧˥"
+      "ipa": "o˧˦˥"
     },
     "o3": {
       "ime": "o3",
       "pinyin": "ǒ",
-      "ipa": "o˨˩"
+      "ipa": "o˨˩˨"
     },
     "o4": {
       "ime": "o4",
       "pinyin": "ò",
-      "ipa": "o˥˩"
+      "ipa": "o˥˦˩"
     },
     "o5": {
       "ime": "o5",
       "pinyin": "o",
-      "ipa": "o˦˦"
+      "ipa": "o˦˦˦"
     },
     "u1": {
       "ime": "u1",
       "pinyin": "ū",
-      "ipa": "u˥˥"
+      "ipa": "u˥˥˥"
     },
     "u2": {
       "ime": "u2",
       "pinyin": "ú",
-      "ipa": "u˧˥"
+      "ipa": "u˧˦˥"
     },
     "u3": {
       "ime": "u3",
       "pinyin": "ǔ",
-      "ipa": "u˨˩"
+      "ipa": "u˨˩˨"
     },
     "u4": {
       "ime": "u4",
       "pinyin": "ù",
-      "ipa": "u˥˩"
+      "ipa": "u˥˦˩"
     },
     "u5": {
       "ime": "u5",
       "pinyin": "u",
-      "ipa": "u˦˦"
+      "ipa": "u˦˦˦"
     },
     "v2": {
       "ime": "v2",
       "pinyin": "ǘ",
-      "ipa": "ʏ˧˥"
+      "ipa": "ʏ˧˦˥"
     },
     "v3": {
       "ime": "v3",
       "pinyin": "ǚ",
-      "ipa": "ʏ˨˩"
+      "ipa": "ʏ˨˩˨"
     },
     "v4": {
       "ime": "v4",
       "pinyin": "ǜ",
-      "ipa": "ʏ˥˩"
+      "ipa": "ʏ˥˦˩"
     },
     "ê1": {
       "ime": "ê1",
       "pinyin": "ê̄",
-      "ipa": "ᴇ˥˥"
+      "ipa": "ᴇ˥˥˥"
     },
     "ê2": {
       "ime": "ê2",
       "pinyin": "ế",
-      "ipa": "ᴇ˧˥"
+      "ipa": "ᴇ˧˦˥"
     },
     "ê3": {
       "ime": "ê3",
       "pinyin": "ê̌",
-      "ipa": "ᴇ˨˩"
+      "ipa": "ᴇ˨˩˨"
     },
     "ê4": {
       "ime": "ê4",
       "pinyin": "ề",
-      "ipa": "ᴇ˥˩"
+      "ipa": "ᴇ˥˦˩"
     },
     "ê5": {
       "ime": "ê5",
       "pinyin": "ê",
-      "ipa": "ᴇ˦˦"
+      "ipa": "ᴇ˦˦˦"
     }
   },
   "front long ganyin": {
     "ai1": {
       "ime": "ai1",
       "pinyin": "āi",
-      "ipa": "ai˥˥"
+      "ipa": "ai˥˥˥"
     },
     "ai2": {
       "ime": "ai2",
       "pinyin": "ái",
-      "ipa": "ai˧˥"
+      "ipa": "ai˧˦˥"
     },
     "ai3": {
       "ime": "ai3",
       "pinyin": "ǎi",
-      "ipa": "ai˨˩"
+      "ipa": "ai˨˩˨"
     },
     "ai4": {
       "ime": "ai4",
       "pinyin": "ài",
-      "ipa": "ai˥˩"
+      "ipa": "ai˥˦˩"
     },
     "ai5": {
       "ime": "ai5",
       "pinyin": "ai",
-      "ipa": "ai˦˦"
+      "ipa": "ai˦˦˦"
     },
     "an1": {
       "ime": "an1",
       "pinyin": "ān",
-      "ipa": "an˥˥"
+      "ipa": "an˥˥˥"
     },
     "an2": {
       "ime": "an2",
       "pinyin": "án",
-      "ipa": "an˧˥"
+      "ipa": "an˧˦˥"
     },
     "an3": {
       "ime": "an3",
       "pinyin": "ǎn",
-      "ipa": "an˨˩"
+      "ipa": "an˨˩˨"
     },
     "an4": {
       "ime": "an4",
       "pinyin": "àn",
-      "ipa": "an˥˩"
+      "ipa": "an˥˦˩"
     },
     "an5": {
       "ime": "an5",
       "pinyin": "an",
-      "ipa": "an˦˦"
+      "ipa": "an˦˦˦"
     },
     "ang1": {
       "ime": "ang1",
       "pinyin": "āng",
-      "ipa": "ɑŋ˥˥"
+      "ipa": "ɑŋ˥˥˥"
     },
     "ang2": {
       "ime": "ang2",
       "pinyin": "áng",
-      "ipa": "ɑŋ˧˥"
+      "ipa": "ɑŋ˧˦˥"
     },
     "ang3": {
       "ime": "ang3",
       "pinyin": "ǎng",
-      "ipa": "ɑŋ˨˩"
+      "ipa": "ɑŋ˨˩˨"
     },
     "ang4": {
       "ime": "ang4",
       "pinyin": "àng",
-      "ipa": "ɑŋ˥˩"
+      "ipa": "ɑŋ˥˦˩"
     },
     "ang5": {
       "ime": "ang5",
       "pinyin": "ang",
-      "ipa": "ɑŋ˦˦"
+      "ipa": "ɑŋ˦˦˦"
     },
     "ao1": {
       "ime": "ao1",
       "pinyin": "āo",
-      "ipa": "ɑᴜ˥˥"
+      "ipa": "ɑᴜ˥˥˥"
     },
     "ao2": {
       "ime": "ao2",
       "pinyin": "áo",
-      "ipa": "ɑᴜ˧˥"
+      "ipa": "ɑᴜ˧˦˥"
     },
     "ao3": {
       "ime": "ao3",
       "pinyin": "ǎo",
-      "ipa": "ɑᴜ˨˩"
+      "ipa": "ɑᴜ˨˩˨"
     },
     "ao4": {
       "ime": "ao4",
       "pinyin": "ào",
-      "ipa": "ɑᴜ˥˩"
+      "ipa": "ɑᴜ˥˦˩"
     },
     "ao5": {
       "ime": "ao5",
       "pinyin": "ao",
-      "ipa": "ɑᴜ˦˦"
+      "ipa": "ɑᴜ˦˦˦"
     },
     "ei1": {
       "ime": "ei1",
       "pinyin": "ēi",
-      "ipa": "eɪ˥˥"
+      "ipa": "eɪ˥˥˥"
     },
     "ei2": {
       "ime": "ei2",
       "pinyin": "éi",
-      "ipa": "eɪ˧˥"
+      "ipa": "eɪ˧˦˥"
     },
     "ei3": {
       "ime": "ei3",
       "pinyin": "ěi",
-      "ipa": "eɪ˨˩"
+      "ipa": "eɪ˨˩˨"
     },
     "ei4": {
       "ime": "ei4",
       "pinyin": "èi",
-      "ipa": "eɪ˥˩"
+      "ipa": "eɪ˥˦˩"
     },
     "ei5": {
       "ime": "ei5",
       "pinyin": "ei",
-      "ipa": "eɪ˦˦"
+      "ipa": "eɪ˦˦˦"
     },
     "en1": {
       "ime": "en1",
       "pinyin": "ēn",
-      "ipa": "ən˥˥"
+      "ipa": "ən˥˥˥"
     },
     "en2": {
       "ime": "en2",
       "pinyin": "én",
-      "ipa": "ən˧˥"
+      "ipa": "ən˧˦˥"
     },
     "en3": {
       "ime": "en3",
       "pinyin": "ěn",
-      "ipa": "ən˨˩"
+      "ipa": "ən˨˩˨"
     },
     "en4": {
       "ime": "en4",
       "pinyin": "èn",
-      "ipa": "ən˥˩"
+      "ipa": "ən˥˦˩"
     },
     "en5": {
       "ime": "en5",
       "pinyin": "en",
-      "ipa": "ən˦˦"
+      "ipa": "ən˦˦˦"
     },
     "eng1": {
       "ime": "eng1",
       "pinyin": "ēng",
-      "ipa": "ɤŋ˥˥"
+      "ipa": "ɤŋ˥˥˥"
     },
     "eng2": {
       "ime": "eng2",
       "pinyin": "éng",
-      "ipa": "ɤŋ˧˥"
+      "ipa": "ɤŋ˧˦˥"
     },
     "eng3": {
       "ime": "eng3",
       "pinyin": "ěng",
-      "ipa": "ɤŋ˨˩"
+      "ipa": "ɤŋ˨˩˨"
     },
     "eng4": {
       "ime": "eng4",
       "pinyin": "èng",
-      "ipa": "ɤŋ˥˩"
+      "ipa": "ɤŋ˥˦˩"
     },
     "eng5": {
       "ime": "eng5",
       "pinyin": "eng",
-      "ipa": "ɤŋ˦˦"
+      "ipa": "ɤŋ˦˦˦"
     },
     "ou1": {
       "ime": "ou1",
       "pinyin": "ōu",
-      "ipa": "ɤᴜ˥˥"
+      "ipa": "ɤᴜ˥˥˥"
     },
     "ou2": {
       "ime": "ou2",
       "pinyin": "óu",
-      "ipa": "ɤᴜ˧˥"
+      "ipa": "ɤᴜ˧˦˥"
     },
     "ou3": {
       "ime": "ou3",
       "pinyin": "ǒu",
-      "ipa": "ɤᴜ˨˩"
+      "ipa": "ɤᴜ˨˩˨"
     },
     "ou4": {
       "ime": "ou4",
       "pinyin": "òu",
-      "ipa": "ɤᴜ˥˩"
+      "ipa": "ɤᴜ˥˦˩"
     },
     "ou5": {
       "ime": "ou5",
       "pinyin": "ou",
-      "ipa": "ɤᴜ˦˦"
+      "ipa": "ɤᴜ˦˦˦"
     }
   },
   "back long ganyin": {
     "ia1": {
       "ime": "ia1",
       "pinyin": "iā",
-      "ipa": "iᴀ˥˥"
+      "ipa": "iᴀ˥˥˥"
     },
     "ia2": {
       "ime": "ia2",
       "pinyin": "iá",
-      "ipa": "iᴀ˧˥"
+      "ipa": "iᴀ˧˦˥"
     },
     "ia3": {
       "ime": "ia3",
       "pinyin": "iǎ",
-      "ipa": "iᴀ˨˩"
+      "ipa": "iᴀ˨˩˨"
     },
     "ia4": {
       "ime": "ia4",
       "pinyin": "ià",
-      "ipa": "iᴀ˥˩"
+      "ipa": "iᴀ˥˦˩"
     },
     "ia5": {
       "ime": "ia5",
       "pinyin": "ia",
-      "ipa": "iᴀ˦˦"
+      "ipa": "iᴀ˦˦˦"
     },
     "ie1": {
       "ime": "ie1",
       "pinyin": "iē",
-      "ipa": "iᴇ˥˥"
+      "ipa": "iᴇ˥˥˥"
     },
     "ie2": {
       "ime": "ie2",
       "pinyin": "ié",
-      "ipa": "iᴇ˧˥"
+      "ipa": "iᴇ˧˦˥"
     },
     "ie3": {
       "ime": "ie3",
       "pinyin": "iě",
-      "ipa": "iᴇ˨˩"
+      "ipa": "iᴇ˨˩˨"
     },
     "ie4": {
       "ime": "ie4",
       "pinyin": "iè",
-      "ipa": "iᴇ˥˩"
+      "ipa": "iᴇ˥˦˩"
     },
     "ie5": {
       "ime": "ie5",
       "pinyin": "ie",
-      "ipa": "iᴇ˦˦"
+      "ipa": "iᴇ˦˦˦"
     },
     "ua1": {
       "ime": "ua1",
       "pinyin": "uā",
-      "ipa": "uᴀ˥˥"
+      "ipa": "uᴀ˥˥˥"
     },
     "ua2": {
       "ime": "ua2",
       "pinyin": "uá",
-      "ipa": "uᴀ˧˥"
+      "ipa": "uᴀ˧˦˥"
     },
     "ua3": {
       "ime": "ua3",
       "pinyin": "uǎ",
-      "ipa": "uᴀ˨˩"
+      "ipa": "uᴀ˨˩˨"
     },
     "ua4": {
       "ime": "ua4",
       "pinyin": "uà",
-      "ipa": "uᴀ˥˩"
+      "ipa": "uᴀ˥˦˩"
     },
     "ua5": {
       "ime": "ua5",
       "pinyin": "ua",
-      "ipa": "uᴀ˦˦"
+      "ipa": "uᴀ˦˦˦"
     },
     "ue1": {
       "ime": "ue1",
       "pinyin": "uē",
-      "ipa": "ʏᴇ˥˥"
+      "ipa": "ʏᴇ˥˥˥"
     },
     "ue2": {
       "ime": "ue2",
       "pinyin": "ué",
-      "ipa": "ʏᴇ˧˥"
+      "ipa": "ʏᴇ˧˦˥"
     },
     "ue3": {
       "ime": "ue3",
       "pinyin": "uě",
-      "ipa": "ʏᴇ˨˩"
+      "ipa": "ʏᴇ˨˩˨"
     },
     "ue4": {
       "ime": "ue4",
       "pinyin": "uè",
-      "ipa": "ʏᴇ˥˩"
+      "ipa": "ʏᴇ˥˦˩"
     },
     "ue5": {
       "ime": "ue5",
       "pinyin": "ue",
-      "ipa": "ʏᴇ˦˦"
+      "ipa": "ʏᴇ˦˦˦"
     },
     "uo1": {
       "ime": "uo1",
       "pinyin": "uō",
-      "ipa": "uo˥˥"
+      "ipa": "uo˥˥˥"
     },
     "uo2": {
       "ime": "uo2",
       "pinyin": "uó",
-      "ipa": "uo˧˥"
+      "ipa": "uo˧˦˥"
     },
     "uo3": {
       "ime": "uo3",
       "pinyin": "uǒ",
-      "ipa": "uo˨˩"
+      "ipa": "uo˨˩˨"
     },
     "uo4": {
       "ime": "uo4",
       "pinyin": "uò",
-      "ipa": "uo˥˩"
+      "ipa": "uo˥˦˩"
     },
     "uo5": {
       "ime": "uo5",
       "pinyin": "uo",
-      "ipa": "uo˦˦"
+      "ipa": "uo˦˦˦"
     },
     "ve4": {
       "ime": "ve4",
       "pinyin": "üè",
-      "ipa": "ʏᴇ˥˩"
+      "ipa": "ʏᴇ˥˦˩"
     }
   },
   "triple quality ganyin": {
     "ian1": {
       "ime": "ian1",
       "pinyin": "iān",
-      "ipa": "iæn˥˥"
+      "ipa": "iæn˥˥˥"
     },
     "ian2": {
       "ime": "ian2",
       "pinyin": "ián",
-      "ipa": "iæn˧˥"
+      "ipa": "iæn˧˦˥"
     },
     "ian3": {
       "ime": "ian3",
       "pinyin": "iǎn",
-      "ipa": "iæn˨˩"
+      "ipa": "iæn˨˩˨"
     },
     "ian4": {
       "ime": "ian4",
       "pinyin": "iàn",
-      "ipa": "iæn˥˩"
+      "ipa": "iæn˥˦˩"
     },
     "ian5": {
       "ime": "ian5",
       "pinyin": "ian",
-      "ipa": "iæn˦˦"
+      "ipa": "iæn˦˦˦"
     },
     "iang1": {
       "ime": "iang1",
       "pinyin": "iāng",
-      "ipa": "iɑŋ˥˥"
+      "ipa": "iɑŋ˥˥˥"
     },
     "iang2": {
       "ime": "iang2",
       "pinyin": "iáng",
-      "ipa": "iɑŋ˧˥"
+      "ipa": "iɑŋ˧˦˥"
     },
     "iang3": {
       "ime": "iang3",
       "pinyin": "iǎng",
-      "ipa": "iɑŋ˨˩"
+      "ipa": "iɑŋ˨˩˨"
     },
     "iang4": {
       "ime": "iang4",
       "pinyin": "iàng",
-      "ipa": "iɑŋ˥˩"
+      "ipa": "iɑŋ˥˦˩"
     },
     "iang5": {
       "ime": "iang5",
       "pinyin": "iang",
-      "ipa": "iɑŋ˦˦"
+      "ipa": "iɑŋ˦˦˦"
     },
     "iao1": {
       "ime": "iao1",
       "pinyin": "iāo",
-      "ipa": "iɑᴜ˥˥"
+      "ipa": "iɑᴜ˥˥˥"
     },
     "iao2": {
       "ime": "iao2",
       "pinyin": "iáo",
-      "ipa": "iɑᴜ˧˥"
+      "ipa": "iɑᴜ˧˦˥"
     },
     "iao3": {
       "ime": "iao3",
       "pinyin": "iǎo",
-      "ipa": "iɑᴜ˨˩"
+      "ipa": "iɑᴜ˨˩˨"
     },
     "iao4": {
       "ime": "iao4",
       "pinyin": "iào",
-      "ipa": "iɑᴜ˥˩"
+      "ipa": "iɑᴜ˥˦˩"
     },
     "iao5": {
       "ime": "iao5",
       "pinyin": "iao",
-      "ipa": "iɑᴜ˦˦"
+      "ipa": "iɑᴜ˦˦˦"
     },
     "in1": {
       "ime": "in1",
       "pinyin": "īn",
-      "ipa": "iᵊn˥˥"
+      "ipa": "iᵊn˥˥˥"
     },
     "in2": {
       "ime": "in2",
       "pinyin": "ín",
-      "ipa": "iᵊn˧˥"
+      "ipa": "iᵊn˧˦˥"
     },
     "in3": {
       "ime": "in3",
       "pinyin": "ǐn",
-      "ipa": "iᵊn˨˩"
+      "ipa": "iᵊn˨˩˨"
     },
     "in4": {
       "ime": "in4",
       "pinyin": "ìn",
-      "ipa": "iᵊn˥˩"
+      "ipa": "iᵊn˥˦˩"
     },
     "in5": {
       "ime": "in5",
       "pinyin": "in",
-      "ipa": "iᵊn˦˦"
+      "ipa": "iᵊn˦˦˦"
     },
     "ing1": {
       "ime": "ing1",
       "pinyin": "īng",
-      "ipa": "i𐞑ŋ˥˥"
+      "ipa": "i𐞑ŋ˥˥˥"
     },
     "ing2": {
       "ime": "ing2",
       "pinyin": "íng",
-      "ipa": "i𐞑ŋ˧˥"
+      "ipa": "i𐞑ŋ˧˦˥"
     },
     "ing3": {
       "ime": "ing3",
       "pinyin": "ǐng",
-      "ipa": "i𐞑ŋ˨˩"
+      "ipa": "i𐞑ŋ˨˩˨"
     },
     "ing4": {
       "ime": "ing4",
       "pinyin": "ìng",
-      "ipa": "i𐞑ŋ˥˩"
+      "ipa": "i𐞑ŋ˥˦˩"
     },
     "ing5": {
       "ime": "ing5",
       "pinyin": "ing",
-      "ipa": "i𐞑ŋ˦˦"
+      "ipa": "i𐞑ŋ˦˦˦"
     },
     "iong1": {
       "ime": "iong1",
       "pinyin": "iōng",
-      "ipa": "y𐞑ŋ˥˥"
+      "ipa": "y𐞑ŋ˥˥˥"
     },
     "iong2": {
       "ime": "iong2",
       "pinyin": "ióng",
-      "ipa": "y𐞑ŋ˧˥"
+      "ipa": "y𐞑ŋ˧˦˥"
     },
     "iong3": {
       "ime": "iong3",
       "pinyin": "iǒng",
-      "ipa": "y𐞑ŋ˨˩"
+      "ipa": "y𐞑ŋ˨˩˨"
     },
     "iong4": {
       "ime": "iong4",
       "pinyin": "iòng",
-      "ipa": "y𐞑ŋ˥˩"
+      "ipa": "y𐞑ŋ˥˦˩"
     },
     "iong5": {
       "ime": "iong5",
       "pinyin": "iong",
-      "ipa": "y𐞑ŋ˦˦"
+      "ipa": "y𐞑ŋ˦˦˦"
     },
     "iu1": {
       "ime": "iu1",
       "pinyin": "īu",
-      "ipa": "iɤᴜ˥˥"
+      "ipa": "iɤᴜ˥˥˥"
     },
     "iu2": {
       "ime": "iu2",
       "pinyin": "íu",
-      "ipa": "iɤᴜ˧˥"
+      "ipa": "iɤᴜ˧˦˥"
     },
     "iu3": {
       "ime": "iu3",
       "pinyin": "ǐu",
-      "ipa": "iɤᴜ˨˩"
+      "ipa": "iɤᴜ˨˩˨"
     },
     "iu4": {
       "ime": "iu4",
       "pinyin": "ìu",
-      "ipa": "iɤᴜ˥˩"
+      "ipa": "iɤᴜ˥˦˩"
     },
     "iu5": {
       "ime": "iu5",
       "pinyin": "iu",
-      "ipa": "iɤᴜ˦˦"
+      "ipa": "iɤᴜ˦˦˦"
     },
     "ong1": {
       "ime": "ong1",
       "pinyin": "ōng",
-      "ipa": "ᴜ𐞑ŋ˥˥"
+      "ipa": "ᴜ𐞑ŋ˥˥˥"
     },
     "ong2": {
       "ime": "ong2",
       "pinyin": "óng",
-      "ipa": "ᴜ𐞑ŋ˧˥"
+      "ipa": "ᴜ𐞑ŋ˧˦˥"
     },
     "ong3": {
       "ime": "ong3",
       "pinyin": "ǒng",
-      "ipa": "ᴜ𐞑ŋ˨˩"
+      "ipa": "ᴜ𐞑ŋ˨˩˨"
     },
     "ong4": {
       "ime": "ong4",
       "pinyin": "òng",
-      "ipa": "ᴜ𐞑ŋ˥˩"
+      "ipa": "ᴜ𐞑ŋ˥˦˩"
     },
     "ong5": {
       "ime": "ong5",
       "pinyin": "ong",
-      "ipa": "ᴜ𐞑ŋ˦˦"
+      "ipa": "ᴜ𐞑ŋ˦˦˦"
     },
     "uai1": {
       "ime": "uai1",
       "pinyin": "uāi",
-      "ipa": "uæɪ˥˥"
+      "ipa": "uæɪ˥˥˥"
     },
     "uai2": {
       "ime": "uai2",
       "pinyin": "uái",
-      "ipa": "uæɪ˧˥"
+      "ipa": "uæɪ˧˦˥"
     },
     "uai3": {
       "ime": "uai3",
       "pinyin": "uǎi",
-      "ipa": "uæɪ˨˩"
+      "ipa": "uæɪ˨˩˨"
     },
     "uai4": {
       "ime": "uai4",
       "pinyin": "uài",
-      "ipa": "uæɪ˥˩"
+      "ipa": "uæɪ˥˦˩"
     },
     "uai5": {
       "ime": "uai5",
       "pinyin": "uai",
-      "ipa": "uæɪ˦˦"
+      "ipa": "uæɪ˦˦˦"
     },
     "uan1": {
       "ime": "uan1",
       "pinyin": "uān",
-      "ipa": "uan˥˥"
+      "ipa": "uan˥˥˥"
     },
     "uan2": {
       "ime": "uan2",
       "pinyin": "uán",
-      "ipa": "uan˧˥"
+      "ipa": "uan˧˦˥"
     },
     "uan3": {
       "ime": "uan3",
       "pinyin": "uǎn",
-      "ipa": "uan˨˩"
+      "ipa": "uan˨˩˨"
     },
     "uan4": {
       "ime": "uan4",
       "pinyin": "uàn",
-      "ipa": "uan˥˩"
+      "ipa": "uan˥˦˩"
     },
     "uan5": {
       "ime": "uan5",
       "pinyin": "uan",
-      "ipa": "uan˦˦"
+      "ipa": "uan˦˦˦"
     },
     "uang1": {
       "ime": "uang1",
       "pinyin": "uāng",
-      "ipa": "uɑŋ˥˥"
+      "ipa": "uɑŋ˥˥˥"
     },
     "uang2": {
       "ime": "uang2",
       "pinyin": "uáng",
-      "ipa": "uɑŋ˧˥"
+      "ipa": "uɑŋ˧˦˥"
     },
     "uang3": {
       "ime": "uang3",
       "pinyin": "uǎng",
-      "ipa": "uɑŋ˨˩"
+      "ipa": "uɑŋ˨˩˨"
     },
     "uang4": {
       "ime": "uang4",
       "pinyin": "uàng",
-      "ipa": "uɑŋ˥˩"
+      "ipa": "uɑŋ˥˦˩"
     },
     "uang5": {
       "ime": "uang5",
       "pinyin": "uang",
-      "ipa": "uɑŋ˦˦"
+      "ipa": "uɑŋ˦˦˦"
     },
     "ui1": {
       "ime": "ui1",
       "pinyin": "uī",
-      "ipa": "ueɪ˥˥"
+      "ipa": "ueɪ˥˥˥"
     },
     "ui2": {
       "ime": "ui2",
       "pinyin": "uí",
-      "ipa": "ueɪ˧˥"
+      "ipa": "ueɪ˧˦˥"
     },
     "ui3": {
       "ime": "ui3",
       "pinyin": "uǐ",
-      "ipa": "ueɪ˨˩"
+      "ipa": "ueɪ˨˩˨"
     },
     "ui4": {
       "ime": "ui4",
       "pinyin": "uì",
-      "ipa": "ueɪ˥˩"
+      "ipa": "ueɪ˥˦˩"
     },
     "ui5": {
       "ime": "ui5",
       "pinyin": "ui",
-      "ipa": "ueɪ˦˦"
+      "ipa": "ueɪ˦˦˦"
     },
     "un1": {
       "ime": "un1",
       "pinyin": "ūn",
-      "ipa": "uən˥˥"
+      "ipa": "uən˥˥˥"
     },
     "un2": {
       "ime": "un2",
       "pinyin": "ún",
-      "ipa": "uən˧˥"
+      "ipa": "uən˧˦˥"
     },
     "un3": {
       "ime": "un3",
       "pinyin": "ǔn",
-      "ipa": "uən˨˩"
+      "ipa": "uən˨˩˨"
     },
     "un4": {
       "ime": "un4",
       "pinyin": "ùn",
-      "ipa": "uən˥˩"
+      "ipa": "uən˥˦˩"
     },
     "un5": {
       "ime": "un5",
       "pinyin": "un",
-      "ipa": "uən˦˦"
+      "ipa": "uən˦˦˦"
     },
     "van2": {
       "ime": "van2",
       "pinyin": "üán",
-      "ipa": "ʏæn˧˥"
+      "ipa": "ʏæn˧˦˥"
     },
     "van3": {
       "ime": "van3",
       "pinyin": "üǎn",
-      "ipa": "ʏæn˨˩"
+      "ipa": "ʏæn˨˩˨"
     }
   }
 }
