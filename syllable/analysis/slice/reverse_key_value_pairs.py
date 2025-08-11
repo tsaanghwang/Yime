@@ -56,7 +56,7 @@ if __name__ == "__main__":
     # 使用从项目根目录开始的绝对路径
     project_root = Path(__file__).parent.parent.parent.parent  # 根据实际目录层级调整
     input_file = project_root / "pinyin" / "hanzi_pinyin" / "pinyin_normalized.json"
-    output_file = Path(__file__).parent / "standard_pinyin.json"
+    output_file = Path(__file__).parent / "yinyuan" / "standard_pinyin.json"
 
     success, original, new, merged = reverse_key_value_pairs(
         input_file, output_file)

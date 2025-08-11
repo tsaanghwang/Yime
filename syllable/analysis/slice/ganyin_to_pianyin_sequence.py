@@ -240,7 +240,7 @@ class GanyinSlicer:
 def load_ganyin_data() -> Dict:
     """加载干音数据"""
     base_dir = Path(__file__).parent
-    file_path = base_dir / "ganyin_enhanced.json"
+    file_path = base_dir / "yinyuan" / "ganyin_enhanced.json"
     with open(file_path, "r", encoding="utf-8") as f:
         data = json.load(f)
         return data["ganyin"] if "ganyin" in data else data
