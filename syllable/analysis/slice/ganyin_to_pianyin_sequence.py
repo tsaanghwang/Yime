@@ -10,7 +10,7 @@ class GanyinSlicer:
         self.tone_patterns = {
             "high_tone": ["5", "5", "5"],  # 高平调
             "rising_tone": ["3", "4", "5"],  # 上升调
-            "low_tone": ["2", "1", "1"],  # 低平调
+            "low_tone": ["2", "1", "2"],  # 低平调
             "falling_tone": ["5", "4", "1"],  # 下降调
             "neutral_tone": ["4", "4", "4"]  # 中性调(轻声调)
         }
@@ -40,13 +40,13 @@ class GanyinSlicer:
 
             # 获取调型模式 - 从IPA中提取调号
             tone_num = "5"  # 默认中性调(轻声调)
-            if "˥˥" in value["ipa"]:
+            if "˥˥˥" in value["ipa"]:
                 tone_num = "1"
-            elif "˧˥" in value["ipa"]:
+            elif "˧˦˥" in value["ipa"]:
                 tone_num = "2"
-            elif "˨˩" in value["ipa"]:
+            elif "˨˩˨" in value["ipa"]:
                 tone_num = "3"
-            elif "˥˩" in value["ipa"]:
+            elif "˥˦˩" in value["ipa"]:
                 tone_num = "4"
             tone_pattern = self._get_tone_pattern(tone_num)
 
@@ -269,10 +269,12 @@ def main():
             if ganyin_type == "single quality ganyin":
                 sliced = enhance_i_variants(sliced)
             results[ganyin_type] = sliced
-    with open("ganyin_to_pianyin_sequence.json", "w", encoding="utf-8") as f:
-        json.dump(results, f, ensure_ascii=False, indent=2)
-    print("干音分析完成，结果已保存到 syllable/analysis/slice/ganyin_to_pianyin_sequence.json")
 
+    base_dir = Path(__file__).parent
+    output_path = base_dir / "yinyuan" / "ganyin_to_pianyin_sequence.json"
+    with open(output_path, "w", encoding="utf-8") as f:
+        json.dump(results, f, ensure_ascii=False, indent=2)
+    print(f"干音分析完成，结果已保存到 {output_path}")
 
 if __name__ == "__main__":
     main()
