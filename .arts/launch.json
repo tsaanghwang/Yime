@@ -2,6 +2,34 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "standard_pinyin",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\pinyin\\hanzi_pinyin\\standard_pinyin.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\pinyin\\hanzi_pinyin",
+      "addSourceRootsToPythonpath": true
+    },
+    {
+      "name": "pinyin_hanzi",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\pinyin\\hanzi_pinyin\\pinyin_hanzi.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\pinyin\\hanzi_pinyin",
+      "addSourceRootsToPythonpath": true
+    },
+    {
+      "name": "unicode_hanzi_pinyin",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\pinyin\\hanzi_pinyin\\unicode_hanzi_pinyin.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\pinyin\\hanzi_pinyin",
+      "addSourceRootsToPythonpath": true,
+      "noDebug": true
+    },
+    {
       "name": "ganyin_enhanced",
       "type": "python",
       "request": "launch",

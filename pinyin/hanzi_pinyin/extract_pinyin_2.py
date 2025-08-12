@@ -5,7 +5,7 @@ from collections import defaultdict
 
 def extract_pinyin():
     """
-    功能：析取由拼音到汉字的映射字典的拼音
+    功能：析取由拼音与汉字构成的映射字典的拼音
 
     数据转换流程：
     1. 读取JSON文件，析取键值对象的每个音节的拼音
@@ -39,7 +39,7 @@ def extract_pinyin():
 
     # 存储所有单个拼音音节
     pinyin_set = set()
-    
+
     # 遍历所有拼音键，分割成单个音节并添加到集合中
     for pinyin_key in pinyin_data.keys():
         syllables = pinyin_key.split()
