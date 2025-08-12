@@ -2,7 +2,7 @@
 在pinyin\hanzi_pinyin\pinyin_normalizer.py中，在适当位置添加代码：
 检查输入拼音是否有由特殊音质
 "special_qualities = ["ê", "m", "n", "ng", "hm", "hn", "hng"]"
-与声调
+与声调ňńǹ
 "tones = ["1", "2", "3", "4", "5"]"
 构成的音节
 - 如果有，则将其值转换为带声调符号的标准拼音

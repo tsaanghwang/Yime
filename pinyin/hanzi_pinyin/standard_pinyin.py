@@ -45,7 +45,7 @@ def extract_pinyin():
     }
 
     def handle_combining_chars(pinyin):
-        """处理组合字符 ê̄ (ê + ̄)、ê̌ (ê + ̌) 和 m̄ (m + ̄)、m̀ (m + ̀)、ḿ (m + ́)"""
+        """处理组合字符 ê̄ (ê + ̄)、ê̌ (ê + ̌) , m̄ (m + ̄)、ḿ (m + ́)、m̌ (m + ̌)、m̀ (m + ̀)和n̄ (n + ̄)"""
         # 处理 ê̄ 和 ê̌
         if 'ê̄' in pinyin:
             return pinyin.replace('ê̄', 'ê') + '1'
@@ -55,10 +55,14 @@ def extract_pinyin():
         # 处理 m̄、m̀ 和 ḿ
         if 'm̄' in pinyin:
             return pinyin.replace('m̄', 'm') + '1'
-        if 'm̀' in pinyin:
-            return pinyin.replace('m̀', 'm') + '4'
         if 'ḿ' in pinyin:
             return pinyin.replace('ḿ', 'm') + '2'
+        if 'm̌' in pinyin:
+            return pinyin.replace('m̌', 'm') + '3'
+        if 'm̀' in pinyin:
+            return pinyin.replace('m̀', 'm') + '4'
+        if 'n̄' in pinyin:
+            return pinyin.replace('n̄', 'n') + '1'
 
         return None
 
