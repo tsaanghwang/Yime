@@ -5,7 +5,7 @@ from collections import defaultdict
 
 def extract_pinyin():
     """
-    功能：析取由拼音到汉字的映射字典的拼音
+    功能：析取由拼音与汉字构成的映射字典的拼音
 
     数据转换流程：
     1. 读取JSON文件，析取键值对象的拼音

@@ -4,7 +4,10 @@
   "python.testing.unittestEnabled": true,
   "chat.editor.fontSize": 24,
   "python.django.project.supportEnabled": false,
-  "python.project.sourceRoots": [".", "src"],
+  "python.project.sourceRoots": [
+    ".",
+    "src"
+  ],
   "python.project.excluded": [],
   "python.missingDependencies.doNotShow": true,
   "editor.codeLensFontSize": 20,

@@ -22,18 +22,18 @@ def create_pinyin_to_hanzi_mapping():
     try:
         # 1. 读取输入JSON文件
         with open(input_file, 'r', encoding='utf-8') as f:
-            hanzi_to_pinyin = json.load(f)
+            hanzi_to_pinyin_list = json.load(f)
 
         # 2. 构建拼音到汉字的映射字典
-        pinyin_to_hanzi = defaultdict(list)
+        pinyin_to_hanzi_list = defaultdict(list)
 
-        for hanzi, pinyins in hanzi_to_pinyin.items():
-            for pinyin in pinyins:
-                pinyin_to_hanzi[pinyin].append(hanzi)
+        for hanzi, pinyin_list in hanzi_to_pinyin_list.items():
+            for pinyin in pinyin_list:
+                pinyin_to_hanzi_list[pinyin].append(hanzi)
 
         # 3. 按拼音首字母排序
         sorted_pinyin_to_hanzi = dict(
-            sorted(pinyin_to_hanzi.items(), key=lambda x: x[0]))
+            sorted(pinyin_to_hanzi_list.items(), key=lambda x: x[0]))
 
         # 4. 保存结果到输出文件
         with open(output_file, 'w', encoding='utf-8') as f:
