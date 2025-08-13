@@ -16,6 +16,7 @@
 import json
 from pathlib import Path
 from typing import Dict, Tuple
+from collections import OrderedDict
 
 # 特殊音质列表
 SPECIAL_QUALITIES = ["ê", "m", "n", "ng", "hm", "hn", "hng"]
@@ -72,11 +73,11 @@ def supplement_special_pinyin(pinyin_dict: Dict[str, str], input_file: Path) -> 
         input_file: 输入文件路径
     """
     # 查看原始输入文件中是否包含这些特殊拼音
-    with open(input_file) as f:
+    with open(input_file, 'r', encoding='utf-8') as f:  # 添加 encoding='utf-8'
         original_dict = json.load(f)
 
-    special_pinyins = [f"{sq}{tone}" for sq in SPECIAL_QUALITIES for tone in TONES]
-    missing = [p for p in special_pinyins if p not in original_dict]
+    special_pinyin_list = [f"{sq}{tone}" for sq in SPECIAL_QUALITIES for tone in TONES]
+    missing = [p for p in special_pinyin_list if p not in original_dict]
     print(f"新增补充的特殊拼音数量: {len(missing)}")
 
 def normalize_pinyin(pinyin_with_tone: str) -> str:
@@ -84,10 +85,10 @@ def normalize_pinyin(pinyin_with_tone: str) -> str:
     将带数字调号的拼音转换为带声调符号的标准拼音
 
     参数:
-        pinyin_with_tone: 带数字调号的拼音 (如 "zhong1")
+        pinyin_with_tone: 带数字调号的拼音
 
     返回:
-        带声调符号的标准拼音 (如 "zhōng")
+        带声调符号的标准拼音
     """
     if not pinyin_with_tone or not pinyin_with_tone[-1].isdigit():
         return pinyin_with_tone  # 没有调号，直接返回
@@ -128,6 +129,7 @@ def process_pinyin_dict(input_dict: Dict[str, str], input_file: Path) -> Tuple[D
 
     return normalized_dict, mismatch_count
 
+
 def main():
     """主处理函数"""
     # 定义输入输出文件路径
@@ -143,12 +145,15 @@ def main():
         print("正在处理拼音字典...")
         normalized_dict, mismatch_count = process_pinyin_dict(pinyin_dict, input_file)
 
+        # 对字典按键进行排序
+        sorted_dict = OrderedDict(sorted(normalized_dict.items(), key=lambda x: x[0]))
+
         print(f"正在写入输出文件: {output_file}")
         with open(output_file, 'w', encoding='utf-8') as f:
-            json.dump(normalized_dict, f, ensure_ascii=False, indent=2)
+            json.dump(sorted_dict, f, ensure_ascii=False, indent=2)
 
         print(f"拼音标准化完成，结果已保存到: {output_file}")
-        print(f"共处理 {len(normalized_dict)} 个拼音，其中 {mismatch_count} 个键值不匹配")
+        print(f"共处理 {len(sorted_dict)} 个拼音，其中 {mismatch_count} 个键值不匹配")
 
     except FileNotFoundError:
         print(f"错误: 输入文件 {input_file} 不存在")

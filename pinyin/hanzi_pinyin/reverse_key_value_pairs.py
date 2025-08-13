@@ -56,7 +56,7 @@ if __name__ == "__main__":
     # 使用从项目根目录开始的绝对路径
     script_dir = os.path.dirname(os.path.abspath(__file__))
     input_file = os.path.join(script_dir, 'standard_pinyin.json')
-    output_file = os.path.join(script_dir, 'standard_pinyin_1.json')
+    output_file = os.path.join(script_dir, 'standard_pinyin_reversed.json')
 
     success, original, new, merged = reverse_key_value_pairs(
         input_file, output_file)

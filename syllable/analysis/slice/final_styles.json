@@ -56,6 +56,11 @@
         "pinyin": "ü",
         "ipa": "ʏ"
       },
+      "ü": {
+        "ime": "v",
+        "pinyin": "ü",
+        "ipa": "ʏ"
+      },
       "ê": {
         "ime": "ê",
         "pinyin": "ê",
@@ -134,6 +139,11 @@
         "ime": "ve",
         "pinyin": "üe",
         "ipa": "ʏᴇ"
+      },
+      "üe": {
+        "ime": "ve",
+        "pinyin": "üe",
+        "ipa": "ʏᴇ"
       }
     },
     "triple quality finals": {
@@ -202,7 +212,22 @@
         "pinyin": "uen",
         "ipa": "uən"
       },
+      "vn": {
+        "ime": "vn",
+        "pinyin": "ün",
+        "ipa": "ʏən"
+      },
+      "ün": {
+        "ime": "vn",
+        "pinyin": "ün",
+        "ipa": "ʏən"
+      },
       "van": {
+        "ime": "van",
+        "pinyin": "üan",
+        "ipa": "ʏæn"
+      },
+      "üan": {
         "ime": "van",
         "pinyin": "üan",
         "ipa": "ʏæn"
