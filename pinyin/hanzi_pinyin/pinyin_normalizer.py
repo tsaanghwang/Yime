@@ -63,19 +63,21 @@ def normalize_special_pinyin(syllable: str, tone: str) -> str:
     return syllable
 
 
-def supplement_special_pinyin(pinyin_dict: Dict[str, str]) -> None:
+def supplement_special_pinyin(pinyin_dict: Dict[str, str], input_file: Path) -> None:
     """
     补充缺失的特殊音质拼音
 
     参数:
         pinyin_dict: 待补充的拼音字典
+        input_file: 输入文件路径
     """
-    for sq in SPECIAL_QUALITIES:
-        for tone in TONES:
-            key = f"{sq}{tone}"
-            if key not in pinyin_dict:
-                pinyin_dict[key] = normalize_special_pinyin(sq, tone)
+    # 查看原始输入文件中是否包含这些特殊拼音
+    with open(input_file) as f:
+        original_dict = json.load(f)
 
+    special_pinyins = [f"{sq}{tone}" for sq in SPECIAL_QUALITIES for tone in TONES]
+    missing = [p for p in special_pinyins if p not in original_dict]
+    print(f"新增补充的特殊拼音数量: {len(missing)}")
 
 def normalize_pinyin(pinyin_with_tone: str) -> str:
     """
@@ -108,32 +110,23 @@ def normalize_pinyin(pinyin_with_tone: str) -> str:
     return pinyin
 
 
-def process_pinyin_dict(input_dict: Dict[str, str]) -> Tuple[Dict[str, str], int]:
-    """
-    处理拼音字典，转换为标准拼音格式
-
-    参数:
-        input_dict: 输入拼音字典 {"pinyin1":"pinyin1", ...}
-
-    返回:
-        Tuple[标准化后的字典, 不同键值对的数量]
-    """
+def process_pinyin_dict(input_dict: Dict[str, str], input_file: Path) -> Tuple[Dict[str, str], int]:
     normalized_dict = {}
     mismatch_count = 0
 
-    # 首先处理原始字典中的拼音
     for key, value in input_dict.items():
         if key != value:
             mismatch_count += 1
+            # 明确以键为值进行标准化
             normalized_dict[key] = normalize_pinyin(key)
         else:
-            normalized_dict[key] = normalize_pinyin(value)
+            # 对于键值相同的也统一使用key进行标准化
+            normalized_dict[key] = normalize_pinyin(key)
 
     # 补充特殊拼音
-    supplement_special_pinyin(normalized_dict)
+    supplement_special_pinyin(normalized_dict, input_file)
 
     return normalized_dict, mismatch_count
-
 
 def main():
     """主处理函数"""
@@ -148,7 +141,7 @@ def main():
             pinyin_dict = json.load(f)
 
         print("正在处理拼音字典...")
-        normalized_dict, mismatch_count = process_pinyin_dict(pinyin_dict)
+        normalized_dict, mismatch_count = process_pinyin_dict(pinyin_dict, input_file)
 
         print(f"正在写入输出文件: {output_file}")
         with open(output_file, 'w', encoding='utf-8') as f:

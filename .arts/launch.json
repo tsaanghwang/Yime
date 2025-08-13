@@ -2,13 +2,33 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "pinyin_normalizer",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\pinyin\\hanzi_pinyin\\pinyin_normalizer.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\pinyin\\hanzi_pinyin",
+      "addSourceRootsToPythonpath": true
+    },
+    {
+      "name": "compare_files",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\pinyin\\hanzi_pinyin\\compare_files.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\pinyin\\hanzi_pinyin",
+      "addSourceRootsToPythonpath": true,
+      "noDebug": true
+    },
+    {
       "name": "standard_pinyin",
       "type": "python",
       "request": "launch",
       "program": "${workspaceFolder}\\pinyin\\hanzi_pinyin\\standard_pinyin.py",
       "currentFileConfiguration": false,
       "cwd": "${workspaceFolder}\\pinyin\\hanzi_pinyin",
-      "addSourceRootsToPythonpath": true
+      "addSourceRootsToPythonpath": true,
+      "noDebug": true
     },
     {
       "name": "pinyin_hanzi",
@@ -17,7 +37,8 @@
       "program": "${workspaceFolder}\\pinyin\\hanzi_pinyin\\pinyin_hanzi.py",
       "currentFileConfiguration": false,
       "cwd": "${workspaceFolder}\\pinyin\\hanzi_pinyin",
-      "addSourceRootsToPythonpath": true
+      "addSourceRootsToPythonpath": true,
+      "noDebug": true
     },
     {
       "name": "unicode_hanzi_pinyin",
