@@ -213,7 +213,7 @@ class GanyinSlicer:
         """切分三质干音"""
         ipa_stripped = ipa.split("˥")[0].split("˦")[0].split("˧")[
             0].split("˨")[0].split("˩")[0]
-        if ipa_stripped in ["in", "un", "yn"]:
+        if ipa_stripped in ["in", "un", "vn", "ün", "yn"]:
             chars = [ipa_stripped[0], "ə", ipa_stripped[1]]
         elif ipa_stripped in ["iŋ", "iʊ", "ʊŋ", "yŋ"]:
             chars = [ipa_stripped[0], "ɤ", ipa_stripped[1:]]

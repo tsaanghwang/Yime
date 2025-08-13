@@ -1,44 +1,5 @@
 {
-  "added": {
-    "bin5": "bin",
-    "biang4": "biàng",
-    "biang2": "biáng",
-    "bong4": "bòng",
-    "cui5": "cui",
-    "cou2": "cóu",
-    "dei1": "dēi",
-    "e5": "e",
-    "huai5": "huai",
-    "hang3": "hǎng",
-    "kun5": "kun",
-    "len4": "lèn",
-    "lüe4": "lüè",
-    "lüe3": "lüě",
-    "lü2": "lǘ",
-    "lü3": "lǚ",
-    "lü4": "lǜ",
-    "min5": "min",
-    "niao5": "niao",
-    "nin5": "nin",
-    "nüe4": "nüè",
-    "nü2": "nǘ",
-    "nü3": "nǚ",
-    "nü4": "nǜ",
-    "pu5": "pu",
-    "ru5": "ru",
-    "re2": "ré",
-    "shuo2": "shuó",
-    "te5": "te",
-    "yun5": "yun",
-    "ze5": "ze",
-    "zen5": "zen",
-    "zhuan2": "zhuán",
-    "zhei4": "zhèi",
-    "zong5": "zong",
-    "za4": "zà",
-    "zun2": "zún",
-    "ei4": "èi"
-  },
+  "added": {},
   "removed": {
     "bang5": "bang",
     "bao5": "bao",
@@ -110,6 +71,21 @@
     "ji5": "ji",
     "jiang5": "jiang",
     "jin5": "jin",
+    "jv1": "jǖ",
+    "jv2": "jǘ",
+    "jv3": "jǚ",
+    "jv4": "jǜ",
+    "jv5": "jü",
+    "jvan1": "jüān",
+    "jvan3": "jüǎn",
+    "jvan4": "jüàn",
+    "jve1": "jüē",
+    "jve2": "jüé",
+    "jve3": "jüě",
+    "jve4": "jüè",
+    "jvn1": "jǖn",
+    "jvn3": "jǚn",
+    "jvn4": "jǜn",
     "ka4": "kà",
     "kai5": "kai",
     "kan5": "kan",
@@ -172,6 +148,23 @@
     "qin5": "qin",
     "qiu5": "qiu",
     "qun5": "qun",
+    "qv1": "qǖ",
+    "qv2": "qǘ",
+    "qv3": "qǚ",
+    "qv4": "qǜ",
+    "qv5": "qü",
+    "qvan1": "qüān",
+    "qvan2": "qüán",
+    "qvan3": "qüǎn",
+    "qvan4": "qüàn",
+    "qvan5": "qüan",
+    "qve1": "qüē",
+    "qve2": "qüé",
+    "qve4": "qüè",
+    "qvn1": "qǖn",
+    "qvn2": "qǘn",
+    "qvn3": "qǚn",
+    "qvn5": "qün",
     "ran5": "ran",
     "rang5": "rang",
     "re5": "re",
@@ -216,6 +209,24 @@
     "xiong5": "xiong",
     "xuan5": "xuan",
     "xun5": "xun",
+    "xv1": "xǖ",
+    "xv2": "xǘ",
+    "xv3": "xǚ",
+    "xv4": "xǜ",
+    "xv5": "xü",
+    "xvan1": "xüān",
+    "xvan2": "xüán",
+    "xvan3": "xüǎn",
+    "xvan4": "xüàn",
+    "xvan5": "xüan",
+    "xve1": "xüē",
+    "xve2": "xüé",
+    "xve3": "xüě",
+    "xve4": "xüè",
+    "xvn1": "xǖn",
+    "xvn2": "xǘn",
+    "xvn4": "xǜn",
+    "xvn5": "xün",
     "yai2": "yái",
     "yan5": "yan",
     "yao5": "yao",
@@ -224,6 +235,25 @@
     "yong5": "yong",
     "yuan5": "yuan",
     "yue5": "yue",
+    "yv1": "yǖ",
+    "yv2": "yǘ",
+    "yv3": "yǚ",
+    "yv4": "yǜ",
+    "yv5": "yü",
+    "yvan1": "yüān",
+    "yvan2": "yüán",
+    "yvan3": "yüǎn",
+    "yvan4": "yüàn",
+    "yvan5": "yüan",
+    "yve1": "yüē",
+    "yve2": "yüé",
+    "yve3": "yüě",
+    "yve4": "yüè",
+    "yve5": "yüe",
+    "yvn1": "yǖn",
+    "yvn2": "yǘn",
+    "yvn3": "yǚn",
+    "yvn4": "yǜn",
     "za5": "za",
     "zai5": "zai",
     "zao5": "zao",
@@ -239,22 +269,7 @@
     "zhuang5": "zhuang",
     "zhui5": "zhui",
     "zong2": "zóng",
-    "zou5": "zou",
-    "ê5": "ê",
-    "m5": "m",
-    "hm1": "hm̄",
-    "hm2": "hḿ",
-    "hm3": "hm̌",
-    "hm4": "hm̀",
-    "hn1": "hn̄",
-    "hn2": "hń",
-    "hn3": "hň",
-    "hn4": "hǹ",
-    "hn5": "hn",
-    "hng1": "hn̄g",
-    "hng2": "hńg",
-    "hng3": "hňg",
-    "hng4": "hǹg"
+    "zou5": "zou"
   },
   "changed": {
     "a1": {
@@ -477,6 +492,14 @@
       "old": "biàn",
       "new": "biàn"
     },
+    "biang2": {
+      "old": "biáng",
+      "new": "biáng"
+    },
+    "biang4": {
+      "old": "biàng",
+      "new": "biàng"
+    },
     "biao1": {
       "old": "biāo",
       "new": "biāo"
@@ -544,6 +567,10 @@
     "bo4": {
       "old": "bò",
       "new": "bò"
+    },
+    "bong4": {
+      "old": "bòng",
+      "new": "bòng"
     },
     "bu1": {
       "old": "bū",
@@ -989,6 +1016,10 @@
       "old": "cōu",
       "new": "cōu"
     },
+    "cou2": {
+      "old": "cóu",
+      "new": "cóu"
+    },
     "cou3": {
       "old": "cǒu",
       "new": "cǒu"
@@ -1144,6 +1175,10 @@
     "de2": {
       "old": "dé",
       "new": "dé"
+    },
+    "dei1": {
+      "old": "dēi",
+      "new": "dēi"
     },
     "dei3": {
       "old": "děi",
@@ -1368,6 +1403,10 @@
     "ei3": {
       "old": "ěi",
       "new": "ěi"
+    },
+    "ei4": {
+      "old": "èi",
+      "new": "èi"
     },
     "en1": {
       "old": "ēn",
@@ -1824,6 +1863,10 @@
     "hang2": {
       "old": "háng",
       "new": "háng"
+    },
+    "hang3": {
+      "old": "hǎng",
+      "new": "hǎng"
     },
     "hang4": {
       "old": "hàng",
@@ -2549,6 +2592,10 @@
       "old": "lèi",
       "new": "lèi"
     },
+    "len4": {
+      "old": "lèn",
+      "new": "lèn"
+    },
     "leng1": {
       "old": "lēng",
       "new": "lēng"
@@ -2780,6 +2827,30 @@
     "luo4": {
       "old": "luò",
       "new": "luò"
+    },
+    "lü2": {
+      "old": "lǘ",
+      "new": "lǘ"
+    },
+    "lü3": {
+      "old": "lǚ",
+      "new": "lǚ"
+    },
+    "lü4": {
+      "old": "lǜ",
+      "new": "lǜ"
+    },
+    "lüe3": {
+      "old": "lüě",
+      "new": "lüě"
+    },
+    "lüe4": {
+      "old": "lüè",
+      "new": "lüè"
+    },
+    "m2": {
+      "old": "ḿ",
+      "new": "ḿ"
     },
     "ma1": {
       "old": "mā",
@@ -3029,6 +3100,18 @@
       "old": "mù",
       "new": "mù"
     },
+    "n2": {
+      "old": "ń",
+      "new": "ń"
+    },
+    "n3": {
+      "old": "ň",
+      "new": "ň"
+    },
+    "n4": {
+      "old": "ǹ",
+      "new": "ǹ"
+    },
     "na1": {
       "old": "nā",
       "new": "nā"
@@ -3140,6 +3223,18 @@
     "neng4": {
       "old": "nèng",
       "new": "nèng"
+    },
+    "ng2": {
+      "old": "ńg",
+      "new": "ńg"
+    },
+    "ng3": {
+      "old": "ňg",
+      "new": "ňg"
+    },
+    "ng4": {
+      "old": "ǹg",
+      "new": "ǹg"
     },
     "ni1": {
       "old": "nī",
@@ -3316,6 +3411,22 @@
     "nuo4": {
       "old": "nuò",
       "new": "nuò"
+    },
+    "nü2": {
+      "old": "nǘ",
+      "new": "nǘ"
+    },
+    "nü3": {
+      "old": "nǚ",
+      "new": "nǚ"
+    },
+    "nü4": {
+      "old": "nǜ",
+      "new": "nǜ"
+    },
+    "nüe4": {
+      "old": "nüè",
+      "new": "nüè"
     },
     "o1": {
       "old": "ō",
@@ -3869,6 +3980,10 @@
       "old": "rào",
       "new": "rào"
     },
+    "re2": {
+      "old": "ré",
+      "new": "ré"
+    },
     "re3": {
       "old": "rě",
       "new": "rě"
@@ -4316,6 +4431,10 @@
     "shuo1": {
       "old": "shuō",
       "new": "shuō"
+    },
+    "shuo2": {
+      "old": "shuó",
+      "new": "shuó"
     },
     "shuo4": {
       "old": "shuò",
@@ -5325,6 +5444,10 @@
       "old": "zǎ",
       "new": "zǎ"
     },
+    "za4": {
+      "old": "zà",
+      "new": "zà"
+    },
     "zai1": {
       "old": "zāi",
       "new": "zāi"
@@ -5509,6 +5632,10 @@
       "old": "zhè",
       "new": "zhè"
     },
+    "zhei4": {
+      "old": "zhèi",
+      "new": "zhèi"
+    },
     "zhen1": {
       "old": "zhēn",
       "new": "zhēn"
@@ -5620,6 +5747,10 @@
     "zhuan1": {
       "old": "zhuān",
       "new": "zhuān"
+    },
+    "zhuan2": {
+      "old": "zhuán",
+      "new": "zhuán"
     },
     "zhuan3": {
       "old": "zhuǎn",
@@ -5765,6 +5896,10 @@
       "old": "zūn",
       "new": "zūn"
     },
+    "zun2": {
+      "old": "zún",
+      "new": "zún"
+    },
     "zun3": {
       "old": "zǔn",
       "new": "zǔn"
@@ -5796,34 +5931,6 @@
     "ê4": {
       "old": "ề",
       "new": "ề"
-    },
-    "m2": {
-      "old": "ḿ",
-      "new": "ḿ"
-    },
-    "n2": {
-      "old": "ń",
-      "new": "ń"
-    },
-    "n3": {
-      "old": "ň",
-      "new": "ň"
-    },
-    "n4": {
-      "old": "ǹ",
-      "new": "ǹ"
-    },
-    "ng2": {
-      "old": "ńg",
-      "new": "ńg"
-    },
-    "ng3": {
-      "old": "ňg",
-      "new": "ňg"
-    },
-    "ng4": {
-      "old": "ǹg",
-      "new": "ǹg"
     }
   },
   "normalization_changes": {},
@@ -5895,6 +6002,8 @@
       "bian3": "biǎn",
       "bian4": "biàn",
       "bian5": "bian",
+      "biang2": "biáng",
+      "biang4": "biàng",
       "biao1": "biāo",
       "biao2": "biáo",
       "biao3": "biǎo",
@@ -5907,6 +6016,7 @@
       "bin1": "bīn",
       "bin3": "bǐn",
       "bin4": "bìn",
+      "bin5": "bin",
       "bing1": "bīng",
       "bing3": "bǐng",
       "bing4": "bìng",
@@ -5916,6 +6026,7 @@
       "bo3": "bǒ",
       "bo4": "bò",
       "bo5": "bo",
+      "bong4": "bòng",
       "bu1": "bū",
       "bu2": "bú",
       "bu3": "bǔ",
@@ -6044,6 +6155,7 @@
       "cong3": "cǒng",
       "cong4": "còng",
       "cou1": "cōu",
+      "cou2": "cóu",
       "cou3": "cǒu",
       "cou4": "còu",
       "cu1": "cū",
@@ -6056,6 +6168,7 @@
       "cui1": "cuī",
       "cui3": "cuǐ",
       "cui4": "cuì",
+      "cui5": "cui",
       "cun1": "cūn",
       "cun2": "cún",
       "cun3": "cǔn",
@@ -6091,6 +6204,7 @@
       "de1": "dē",
       "de2": "dé",
       "de5": "de",
+      "dei1": "dēi",
       "dei3": "děi",
       "den4": "dèn",
       "deng1": "dēng",
@@ -6157,9 +6271,11 @@
       "e2": "é",
       "e3": "ě",
       "e4": "è",
+      "e5": "e",
       "ei1": "ēi",
       "ei2": "éi",
       "ei3": "ěi",
+      "ei4": "èi",
       "en1": "ēn",
       "en3": "ěn",
       "en4": "èn",
@@ -6304,6 +6420,7 @@
       "han5": "han",
       "hang1": "hāng",
       "hang2": "háng",
+      "hang3": "hǎng",
       "hang4": "hàng",
       "hang5": "hang",
       "hao1": "hāo",
@@ -6327,6 +6444,8 @@
       "heng2": "héng",
       "heng4": "hèng",
       "heng5": "heng",
+      "hm5": "hm",
+      "hng5": "hng",
       "hong1": "hōng",
       "hong2": "hóng",
       "hong3": "hǒng",
@@ -6348,6 +6467,7 @@
       "hua5": "hua",
       "huai2": "huái",
       "huai4": "huài",
+      "huai5": "huai",
       "huan1": "huān",
       "huan2": "huán",
       "huan3": "huǎn",
@@ -6432,6 +6552,21 @@
       "jun1": "jūn",
       "jun3": "jǔn",
       "jun4": "jùn",
+      "jv1": "jǖ",
+      "jv2": "jǘ",
+      "jv3": "jǚ",
+      "jv4": "jǜ",
+      "jv5": "jü",
+      "jvan1": "jüān",
+      "jvan3": "jüǎn",
+      "jvan4": "jüàn",
+      "jve1": "jüē",
+      "jve2": "jüé",
+      "jve3": "jüě",
+      "jve4": "jüè",
+      "jvn1": "jǖn",
+      "jvn3": "jǚn",
+      "jvn4": "jǜn",
       "ka1": "kā",
       "ka3": "kǎ",
       "ka4": "kà",
@@ -6497,6 +6632,7 @@
       "kun1": "kūn",
       "kun3": "kǔn",
       "kun4": "kùn",
+      "kun5": "kun",
       "kuo4": "kuò",
       "la1": "lā",
       "la2": "lá",
@@ -6529,6 +6665,7 @@
       "lei3": "lěi",
       "lei4": "lèi",
       "lei5": "lei",
+      "len4": "lèn",
       "leng1": "lēng",
       "leng2": "léng",
       "leng3": "lěng",
@@ -6607,6 +6744,14 @@
       "lvan2": "lüán",
       "lvan3": "lüǎn",
       "lve4": "lüè",
+      "lü2": "lǘ",
+      "lü3": "lǚ",
+      "lü4": "lǜ",
+      "lüe3": "lüě",
+      "lüe4": "lüè",
+      "m1": "m̄",
+      "m2": "ḿ",
+      "m4": "m̀",
       "ma1": "m̄",
       "ma2": "ḿ",
       "ma3": "m̌",
@@ -6666,6 +6811,7 @@
       "mie5": "m",
       "min2": "ḿ",
       "min3": "m̌",
+      "min5": "m",
       "ming2": "ḿ",
       "ming3": "m̌",
       "ming4": "m̀",
@@ -6685,6 +6831,10 @@
       "mu3": "m̌",
       "mu4": "m̀",
       "mu5": "m",
+      "n2": "ń",
+      "n3": "ň",
+      "n4": "ǹ",
+      "n5": "n",
       "na1": "n̄",
       "na2": "ń",
       "na3": "ň",
@@ -6720,6 +6870,10 @@
       "neng2": "ń",
       "neng3": "ň",
       "neng4": "ǹ",
+      "ng2": "ńg",
+      "ng3": "ňg",
+      "ng4": "ǹg",
+      "ng5": "ng",
       "ni1": "n̄",
       "ni2": "ń",
       "ni3": "ň",
@@ -6736,6 +6890,7 @@
       "niang5": "n",
       "niao3": "ň",
       "niao4": "ǹ",
+      "niao5": "n",
       "nie1": "n̄",
       "nie2": "ń",
       "nie3": "ň",
@@ -6743,6 +6898,7 @@
       "nie5": "n",
       "nin2": "ń",
       "nin3": "ň",
+      "nin5": "n",
       "ning2": "ń",
       "ning3": "ň",
       "ning4": "ǹ",
@@ -6774,6 +6930,10 @@
       "nv3": "ň",
       "nv4": "ǹ",
       "nve4": "ǹ",
+      "nü2": "ń",
+      "nü3": "ň",
+      "nü4": "ǹ",
+      "nüe4": "ǹ",
       "o1": "ō",
       "o2": "ó",
       "o3": "ǒ",
@@ -6859,6 +7019,7 @@
       "pu2": "pú",
       "pu3": "pǔ",
       "pu4": "pù",
+      "pu5": "pu",
       "qi1": "qī",
       "qi2": "qí",
       "qi3": "qǐ",
@@ -6923,6 +7084,23 @@
       "qun2": "qún",
       "qun3": "qǔn",
       "qun5": "qun",
+      "qv1": "qǖ",
+      "qv2": "qǘ",
+      "qv3": "qǚ",
+      "qv4": "qǜ",
+      "qv5": "qü",
+      "qvan1": "qüān",
+      "qvan2": "qüán",
+      "qvan3": "qüǎn",
+      "qvan4": "qüàn",
+      "qvan5": "qüan",
+      "qve1": "qüē",
+      "qve2": "qüé",
+      "qve4": "qüè",
+      "qvn1": "qǖn",
+      "qvn2": "qǘn",
+      "qvn3": "qǚn",
+      "qvn5": "qün",
       "ran2": "rán",
       "ran3": "rǎn",
       "ran4": "ràn",
@@ -6935,6 +7113,7 @@
       "rao2": "ráo",
       "rao3": "rǎo",
       "rao4": "rào",
+      "re2": "ré",
       "re3": "rě",
       "re4": "rè",
       "re5": "re",
@@ -6959,6 +7138,7 @@
       "ru2": "rú",
       "ru3": "rǔ",
       "ru4": "rù",
+      "ru5": "ru",
       "rua2": "ruá",
       "ruan2": "ruán",
       "ruan3": "ruǎn",
@@ -7071,6 +7251,7 @@
       "shun4": "shùn",
       "shun5": "shun",
       "shuo1": "shuō",
+      "shuo2": "shuó",
       "shuo4": "shuò",
       "shuo5": "shuo",
       "si1": "sī",
@@ -7135,6 +7316,7 @@
       "tao4": "tào",
       "tao5": "tao",
       "te4": "tè",
+      "te5": "te",
       "tei1": "tēi",
       "teng1": "tēng",
       "teng2": "téng",
@@ -7306,6 +7488,24 @@
       "xun2": "xún",
       "xun4": "xùn",
       "xun5": "xun",
+      "xv1": "xǖ",
+      "xv2": "xǘ",
+      "xv3": "xǚ",
+      "xv4": "xǜ",
+      "xv5": "xü",
+      "xvan1": "xüān",
+      "xvan2": "xüán",
+      "xvan3": "xüǎn",
+      "xvan4": "xüàn",
+      "xvan5": "xüan",
+      "xve1": "xüē",
+      "xve2": "xüé",
+      "xve3": "xüě",
+      "xve4": "xüè",
+      "xvn1": "xǖn",
+      "xvn2": "xǘn",
+      "xvn4": "xǜn",
+      "xvn5": "xün",
       "ya1": "yā",
       "ya2": "yá",
       "ya3": "yǎ",
@@ -7378,9 +7578,30 @@
       "yun2": "yún",
       "yun3": "yǔn",
       "yun4": "yùn",
+      "yun5": "yun",
+      "yv1": "yǖ",
+      "yv2": "yǘ",
+      "yv3": "yǚ",
+      "yv4": "yǜ",
+      "yv5": "yü",
+      "yvan1": "yüān",
+      "yvan2": "yüán",
+      "yvan3": "yüǎn",
+      "yvan4": "yüàn",
+      "yvan5": "yüan",
+      "yve1": "yüē",
+      "yve2": "yüé",
+      "yve3": "yüě",
+      "yve4": "yüè",
+      "yve5": "yüe",
+      "yvn1": "yǖn",
+      "yvn2": "yǘn",
+      "yvn3": "yǚn",
+      "yvn4": "yǜn",
       "za1": "zā",
       "za2": "zá",
       "za3": "zǎ",
+      "za4": "zà",
       "za5": "za",
       "zai1": "zāi",
       "zai3": "zǎi",
@@ -7402,10 +7623,12 @@
       "ze2": "zé",
       "ze3": "zě",
       "ze4": "zè",
+      "ze5": "ze",
       "zei2": "zéi",
       "zen1": "zēn",
       "zen3": "zěn",
       "zen4": "zèn",
+      "zen5": "zen",
       "zeng1": "zēng",
       "zeng3": "zěng",
       "zeng4": "zèng",
@@ -7437,6 +7660,7 @@
       "zhe3": "zhě",
       "zhe4": "zhè",
       "zhe5": "zhe",
+      "zhei4": "zhèi",
       "zhen1": "zhēn",
       "zhen2": "zhén",
       "zhen3": "zhěn",
@@ -7471,6 +7695,7 @@
       "zhuai3": "zhuǎi",
       "zhuai4": "zhuài",
       "zhuan1": "zhuān",
+      "zhuan2": "zhuán",
       "zhuan3": "zhuǎn",
       "zhuan4": "zhuàn",
       "zhuan5": "zhuan",
@@ -7499,6 +7724,7 @@
       "zong2": "zóng",
       "zong3": "zǒng",
       "zong4": "zòng",
+      "zong5": "zong",
       "zou1": "zōu",
       "zou3": "zǒu",
       "zou4": "zòu",
@@ -7516,6 +7742,7 @@
       "zui4": "zuì",
       "zui5": "zui",
       "zun1": "zūn",
+      "zun2": "zún",
       "zun3": "zǔn",
       "zun4": "zùn",
       "zuo1": "zuō",
@@ -7526,38 +7753,7 @@
       "ê1": "ê̄",
       "ê2": "ế",
       "ê3": "ê̌",
-      "ê4": "ề",
-      "ê5": "ê",
-      "m1": "m̄",
-      "m2": "ḿ",
-      "m3": "m̌",
-      "m4": "m̀",
-      "m5": "m",
-      "n1": "n̄",
-      "n2": "ń",
-      "n3": "ň",
-      "n4": "ǹ",
-      "n5": "n",
-      "ng1": "n̄g",
-      "ng2": "ńg",
-      "ng3": "ňg",
-      "ng4": "ǹg",
-      "ng5": "ng",
-      "hm1": "h̄m",
-      "hm2": "h́m",
-      "hm3": "ȟm",
-      "hm4": "h̀m",
-      "hm5": "hm",
-      "hn1": "h̄n",
-      "hn2": "h́n",
-      "hn3": "ȟn",
-      "hn4": "h̀n",
-      "hn5": "hn",
-      "hng1": "h̄ng",
-      "hng2": "h́ng",
-      "hng3": "ȟng",
-      "hng4": "h̀ng",
-      "hng5": "hng"
+      "ê4": "ề"
     },
     "file2_normalized": {
       "a5": "a",
@@ -8299,7 +8495,6 @@
       "mu3": "m̌",
       "m4": "m̀",
       "m1": "m̄",
-      "m3": "m̌",
       "n5": "n",
       "na5": "n",
       "nang5": "n",
@@ -8383,8 +8578,6 @@
       "nü2": "ń",
       "nü3": "ň",
       "nü4": "ǹ",
-      "n1": "n̄",
-      "ng1": "n̄g",
       "o5": "o",
       "ou5": "ou",
       "pian4": "piàn",

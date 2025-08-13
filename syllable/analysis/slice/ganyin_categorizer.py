@@ -24,9 +24,9 @@ class GanyinCategorizer:
     SINGLE_QUALITY_FINALS = {'i', 'u', 'ü', 'v', 'a',
                              'o', 'e', 'ê', '_i', 'er', 'm', 'n', 'ng'}
     FRONT_LONG_FINALS = {'ai', 'ei', 'ao', 'ou', 'an', 'en', 'ang', 'eng'}
-    BACK_LONG_FINALS = {'ia', 'ua', 'ie', 'ue', 've', 'io', 'uo'}
+    BACK_LONG_FINALS = {'ia', 'ua', 'ie', 'ue', 'üe', 've', 'io', 'uo'}
     TRIPLE_QUALITY_FINALS = {'iao', 'iou', 'iu', 'uai', 'uei', 'ui', 'ian', 'uan', 'üan',
-                             'van', 'iang', 'uang', 'in', 'uen', 'un', 'ün', 'ing', 'ueng', 'ong', 'iong'}
+                             'van', 'iang', 'uang', 'in', 'uen', 'un', 'ün', 'vn', 'ing', 'ueng', 'ong', 'iong'}
 
     @staticmethod
     def _is_special_syllable(syllable: str) -> bool:
@@ -303,6 +303,13 @@ class GanyinCategorizer:
         # 单字母声母 (z, c, s, r) - 检查后接 "i" 的情况
         if syllable[0] in {'z', 'c', 's', 'r'} and len(syllable) > 1 and syllable[1] == 'i':
             return syllable[0], '_' + syllable[1:]
+
+        # 处理 ju, qu, xu, yu 的情况
+        if len(syllable) >= 2 and syllable[0].lower() in {'j', 'q', 'x', 'y'} and syllable[1].lower() == 'u':
+            initial = syllable[0]
+            # 将干音中的 u 改为 ü
+            final = 'ü' + syllable[2:] if len(syllable) > 2 else 'ü'
+            return initial, final
 
         # 默认处理：第一个字母作为声母
         return syllable[0], syllable[1:] if len(syllable) > 1 else ""

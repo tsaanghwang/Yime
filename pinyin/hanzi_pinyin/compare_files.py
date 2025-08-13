@@ -85,7 +85,7 @@ def main():
     # 定义输入输出文件路径
     script_dir = os.path.dirname(os.path.abspath(__file__))
     input_file1 = os.path.join(script_dir, 'pinyin_normalized.json') # 请根据实际情况修改文件名
-    input_file2 = os.path.join(script_dir, 'standard_pinyin_1.json') # 请根据实际情况修改文件名
+    input_file2 = os.path.join(script_dir, 'standard_pinyin_reversed.json') # 请根据实际情况修改文件名
     output_file = os.path.join(script_dir, 'compare_report.json')# 输出报告文件名
 
 

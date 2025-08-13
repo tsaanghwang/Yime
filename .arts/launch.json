@@ -2,13 +2,42 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "ganyin",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\ganyin.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
+      "addSourceRootsToPythonpath": true
+    },
+    {
+      "name": "ganyin_categorizer",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\ganyin_categorizer.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
+      "addSourceRootsToPythonpath": true
+    },
+    {
+      "name": "reverse_key_value_pairs",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\pinyin\\hanzi_pinyin\\reverse_key_value_pairs.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\pinyin\\hanzi_pinyin",
+      "addSourceRootsToPythonpath": true,
+      "noDebug": true
+    },
+    {
       "name": "pinyin_normalizer",
       "type": "python",
       "request": "launch",
       "program": "${workspaceFolder}\\pinyin\\hanzi_pinyin\\pinyin_normalizer.py",
       "currentFileConfiguration": false,
       "cwd": "${workspaceFolder}\\pinyin\\hanzi_pinyin",
-      "addSourceRootsToPythonpath": true
+      "addSourceRootsToPythonpath": true,
+      "noDebug": true
     },
     {
       "name": "compare_files",
@@ -57,7 +86,8 @@
       "program": "${workspaceFolder}\\syllable\\analysis\\slice\\ganyin_enhanced.py",
       "currentFileConfiguration": false,
       "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
-      "addSourceRootsToPythonpath": true
+      "addSourceRootsToPythonpath": true,
+      "noDebug": true
     },
     {
       "name": "generate_noise_element",
