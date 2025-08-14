@@ -38,6 +38,6 @@ def remove_percent_and_save(input_file, output_file):
 if __name__ == "__main__":
     # 使用绝对路径
     base_dir = os.path.dirname(os.path.abspath(__file__))
-    input_file = os.path.join(base_dir, "hanzi_pinyin_v1.yaml")
-    output_file = os.path.join(base_dir, "hanzi_pinyin_v2.yaml")
+    input_file = os.path.join(base_dir, "hanzi_pinyin_raw.yaml")
+    output_file = os.path.join(base_dir, "hanzi_pinyin.yaml")
     remove_percent_and_save(input_file, output_file)

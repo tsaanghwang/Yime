@@ -185,8 +185,8 @@ def main():
     parser = argparse.ArgumentParser(description='将YAML格式的拼音数据转换为JSON格式')
     parser.add_argument('yaml_file', nargs='?',
                         default=os.path.join(os.path.dirname(
-                            __file__), 'hanzi_pinyin_v1.yaml'),
-                        help='输入的YAML文件路径 (默认: 同目录下的hanzi_pinyin_v1.yaml)')
+                            __file__), 'hanzi_pinyin_raw.yaml'),
+                        help='输入的YAML文件路径 (默认: 同目录下的hanzi_pinyin_raw.yaml)')
     parser.add_argument('json_file', nargs='?',
                         default=os.path.join(os.path.dirname(
                             __file__), 'hanzi_to_pinyin.json'),
