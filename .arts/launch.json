@@ -2,6 +2,15 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "reverse_key_value_pairs",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\reverse_key_value_pairs.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
+      "addSourceRootsToPythonpath": true
+    },
+    {
       "name": "extract_pinyin_2",
       "type": "python",
       "request": "launch",
@@ -26,7 +35,8 @@
       "program": "${workspaceFolder}\\pinyin\\hanzi_pinyin\\extract_pinyin.py",
       "currentFileConfiguration": false,
       "cwd": "${workspaceFolder}\\pinyin\\hanzi_pinyin",
-      "addSourceRootsToPythonpath": true
+      "addSourceRootsToPythonpath": true,
+      "noDebug": true
     },
     {
       "name": "pinyin_duozi",

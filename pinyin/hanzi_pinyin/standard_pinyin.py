@@ -90,6 +90,9 @@ def extract_pinyin():
         # 添加到结果字典
         pinyin_dict[pinyin] = num_tone_pinyin
 
+        # 对字典按键进行字母顺序排序
+    pinyin_dict = dict(sorted(pinyin_dict.items(), key=lambda x: x[0]))
+
     # 保存到输出文件
     try:
         with open(output_file, 'w', encoding='utf-8') as f:

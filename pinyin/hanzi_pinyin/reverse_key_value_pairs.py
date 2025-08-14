@@ -38,7 +38,12 @@ def reverse_key_value_pairs(input_path, output_path):
         # 检查是否有合并
         has_merge = original_count > new_count
 
+        # 对字典按键进行字母顺序排序
+        reversed_data = dict(sorted(reversed_data.items(), key=lambda x: x[0]))
+
         # 写入输出文件
+        output_dir = Path(output_path).parent
+        output_dir.mkdir(parents=True, exist_ok=True)        # 写入输出文件
         output_dir = Path(output_path).parent
         output_dir.mkdir(parents=True, exist_ok=True)
 
