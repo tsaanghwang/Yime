@@ -78,30 +78,62 @@ def format_yaml_file(input_file, output_file=None):
         return False
 
 
+def get_input_file():
+    """获取用户输入的文件路径并进行验证"""
+    while True:
+        input_file = input("请输入要格式化的YAML文件路径: ").strip()
+        if not input_file:
+            print("错误: 文件路径不能为空")
+            continue
+
+        if not os.path.exists(input_file):
+            print(f"错误: 文件不存在 - {input_file}")
+            continue
+
+        return input_file
+
+
+def get_output_file(input_file):
+    """获取用户输出的文件路径"""
+    while True:
+        output_option = input(f"是否覆盖原文件 {input_file}? (y/n): ").strip().lower()
+        if output_option == 'y':
+            return None
+        elif output_option == 'n':
+            output_file = input("请输入输出文件路径: ").strip()
+            if not output_file:
+                print("错误: 输出文件路径不能为空")
+                continue
+            return output_file
+        else:
+            print("错误: 请输入 y 或 n")
+
+
 def main():
-    if len(sys.argv) < 2:
-        print("Usage: python format_yaml_file.py <input.yaml> [output.yaml]")
-        print("如果未指定输出文件，将直接修改输入文件")
-        sys.exit(1)
-
-    input_file = sys.argv[1]
-    output_file = sys.argv[2] if len(sys.argv) > 2 else None
-
-    if not os.path.exists(input_file):
-        logging.error(f"输入文件不存在: {input_file}")
-        sys.exit(1)
+    print("YAML文件格式化工具")
+    print("=" * 30)
 
     try:
+        # 获取输入文件
+        input_file = get_input_file()
+
+        # 获取输出选项
+        output_file = get_output_file(input_file)
+
+        # 执行格式化
         success = format_yaml_file(input_file, output_file)
         if success:
-            logging.info(
-                f"文件格式化成功: {input_file} → {output_file or input_file}")
+            output_path = output_file if output_file else input_file
+            print(f"文件格式化成功: {output_path}")
         else:
-            logging.error("文件格式化失败")
+            print("文件格式化失败")
             sys.exit(1)
 
+    except KeyboardInterrupt:
+        print("\n操作已取消")
+        sys.exit(0)
     except Exception as e:
-        logging.error(f"格式化失败: {str(e)}")
+        print(f"发生错误: {str(e)}")
         sys.exit(1)
 
 

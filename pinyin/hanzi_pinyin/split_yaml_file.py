@@ -1,5 +1,5 @@
-import yaml
 import os
+import yaml
 
 
 def split_yaml(input_file, output_single, output_multi):
@@ -38,7 +38,7 @@ def split_yaml(input_file, output_single, output_multi):
 
 if __name__ == "__main__":
     input_file = os.path.join(os.path.dirname(
-        __file__), 'hanzi_pinyin_v2.yaml')
+        __file__), 'hanzi_pinyin.yaml')
     output_single = os.path.join(
         os.path.dirname(__file__), 'hanzi_pinyin_danzi.yaml')
     output_multi = os.path.join(os.path.dirname(__file__), 'hanzi_pinyin_duozi.yaml')
