@@ -84,10 +84,9 @@ def compare_pinyin_dicts(dict1, dict2):
 def main():
     # 定义输入输出文件路径
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    input_file1 = os.path.join(script_dir, 'pinyin_normalized.json') # 请根据实际情况修改文件名
+    input_file1 = os.path.join(script_dir, 'pinyin.json') # 请根据实际情况修改文件名
     input_file2 = os.path.join(script_dir, 'standard_pinyin_reversed.json') # 请根据实际情况修改文件名
     output_file = os.path.join(script_dir, 'compare_report.json')# 输出报告文件名
-
 
     try:
         # 加载两个拼音字典文件
@@ -109,6 +108,12 @@ def main():
 
         # 保存差异报告
         save_json_file(diff_report, output_file)
+
+        # 将新增项添加到input_file1中
+        if diff_report["added"]:
+            dict1.update(diff_report["added"])
+            save_json_file(dict1, input_file1)
+            print(f"已将 {len(diff_report['added'])} 个新增项添加到 {input_file1}")
 
         print(f"比较完成，结果已保存到 {output_file}")
         print(f"新增项: {len(diff_report['added'])}")

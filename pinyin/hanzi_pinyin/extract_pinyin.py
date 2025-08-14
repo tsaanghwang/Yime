@@ -106,7 +106,7 @@ def check_syllabic_consonants(pinyin_dict):
     无条件添加所有可能的成音节辅音字母及其组合与调号构成的音节到字典中，
     并将"r+调号"音节替换为"er+调号"
     """
-    syllabic_consonants = ["m", "n", "ng", "hm", "r"]
+    syllabic_consonants = ["m", "n", "ng", "hm", "hn", "hng", "r"]
     tones = ["1", "2", "3", "4", "5"]
 
     added_syllables = []

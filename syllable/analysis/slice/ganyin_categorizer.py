@@ -21,12 +21,10 @@ class GanyinCategorizer:
     REVERSE_SPECIAL_SYLLABLES = {v: k for k, v in SPECIAL_SYLLABLES.items()}
 
     # 四类韵母定义（使用可变集合，支持动态添加）
-    SINGLE_QUALITY_FINALS = {'i', 'u', 'ü', 'v', 'a',
-                             'o', 'e', 'ê', '_i', 'er', 'm', 'n', 'ng'}
-    FRONT_LONG_FINALS = {'ai', 'ei', 'ao', 'ou', 'an', 'en', 'ang', 'eng'}
-    BACK_LONG_FINALS = {'ia', 'ua', 'ie', 'ue', 'üe', 've', 'io', 'uo'}
-    TRIPLE_QUALITY_FINALS = {'iao', 'iou', 'iu', 'uai', 'uei', 'ui', 'ian', 'uan', 'üan',
-                             'van', 'iang', 'uang', 'in', 'uen', 'un', 'ün', 'vn', 'ing', 'ueng', 'ong', 'iong'}
+    SINGLE_QUALITY_FINALS = {'_i', 'a', 'e', 'er', 'i', 'm', 'n', 'ng', 'o', 'u', 'v', 'ê', 'ü'}
+    FRONT_LONG_FINALS = {'ai', 'an', 'ang', 'ao', 'ei', 'en', 'eng', 'ou'}
+    BACK_LONG_FINALS = {'ia', 'ie', 'io', 'ua', 'ue', 'uo', 've', 'üe'}
+    TRIPLE_QUALITY_FINALS = {'ian', 'iang', 'iao', 'in', 'ing', 'iong', 'iou', 'iu', 'ong', 'uai', 'uan', 'uang', 'uei', 'uen', 'ueng', 'ui', 'un', 'van', 'vn', 'üan', 'ün'}
 
     @staticmethod
     def _is_special_syllable(syllable: str) -> bool:
