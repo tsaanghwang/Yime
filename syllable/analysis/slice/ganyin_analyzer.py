@@ -9,18 +9,26 @@ import os
 
 class GanyinAnalyzer:
     def __init__(self, file):
-        # 修正输入文件路径
-        base_dir = os.path.dirname(os.path.dirname(
-            os.path.dirname(os.path.dirname(file))))
-        self.input_path = os.path.join(
-            base_dir, 'pinyin', 'hanzi_pinyin', 'pinyin_normalized.json')
-        self.shouyin_path = os.path.join(
-            os.path.dirname(file), 'yinyuan', 'shouyin.json')
-        self.ganyin_path = os.path.join(
-            os.path.dirname(file), 'yinyuan', 'ganyin.json')
+        # 获取当前脚本的绝对路径
+        current_dir = os.path.dirname(os.path.abspath(file))
+
+        # 构建输入文件路径 - 使用 os.path 确保跨平台兼容性
+        project_root = os.path.dirname(os.path.dirname(os.path.dirname(current_dir)))
+        self.input_path = os.path.normpath(os.path.join(
+            project_root,
+            'pinyin',
+            'hanzi_pinyin',
+            'pinyin_normalized.json'
+        ))
+
+        # 输出目录
+        self.output_dir = os.path.normpath(os.path.join(current_dir, 'yinyuan'))
+        self.shouyin_path = os.path.normpath(os.path.join(self.output_dir, 'shouyin.json'))
+        self.ganyin_path = os.path.normpath(os.path.join(self.output_dir, 'ganyin.json'))
 
         # 打印路径用于调试
         print(f"输入文件路径: {self.input_path}")
+        print(f"输出目录: {self.output_dir}")
         print(f"首音输出路径: {self.shouyin_path}")
         print(f"干音输出路径: {self.ganyin_path}")
 

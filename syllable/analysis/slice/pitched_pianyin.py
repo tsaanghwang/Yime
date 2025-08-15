@@ -19,6 +19,11 @@ from pitched_yinyuan import MusicalYinyuan
 
 class PitchedPianyin:
     def __init__(self, quality, pitch):
+        if not quality:
+            raise ValueError("quality cannot be empty")
+        if not pitch:
+            raise ValueError("pitch cannot be empty")
+
         self.quality = quality
         self.pitch = pitch
         self.duration = None

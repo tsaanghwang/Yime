@@ -1,14 +1,9 @@
 #!/usr/bin/env python3
-# type: ignore[reportMissingImports]
 """
 分析韵母分类的合理性
 """
 
 from ganyin_categorizer import GanyinCategorizer
-
-# 如果 GanyinAnalyzer 实际上是 GanyinCategorizer 的方法或类名不同，请按实际情况修改
-# 例如：from ganyin_categorizer import GanyinCategorizer, CorrectClassName
-
 
 def analyze_classification_logic():
     """分析韵母分类的合理性"""
@@ -16,17 +11,13 @@ def analyze_classification_logic():
 
     # 首先运行分析以确保韵母被添加
     analyzer = GanyinCategorizer()
-    # 如果 GanyinCategorizer 有其他分析方法，请调用正确的方法
-    # 例如: analyzer.analyze() 或 analyzer.run()
-    # 如果无需调用方法，则可直接注释或删除此行
-    # analyzer.analyze()
 
     print("\n各类韵母分析:")
     all_finals = GanyinCategorizer.get_all_finals()
 
-    # 分析单质干音
-    print("\n1. 单质干音 (应该是单个音质成分):")
-    single_quality = sorted(all_finals["单质干音"])
+    # 分析单质韵母
+    print("\n1. 单质韵母 (应该是单个音质成分):")
+    single_quality = sorted(all_finals["单质韵母"])
     for final in single_quality:
         if final.startswith('_'):
             print(f"   '{final}' - 舌尖音占位符")
@@ -37,9 +28,9 @@ def analyze_classification_logic():
         else:
             print(f"   '{final}' - 可能误分类")
 
-    # 分析前长干音
-    print("\n2. 前长干音 (通常以a/e/o开头或以n/ng结尾但不以i/u/ü开头):")
-    front_long = sorted(all_finals["前长干音"])
+    # 分析前长韵母
+    print("\n2. 前长韵母 (通常以a/e/o开头或以n/ng结尾但不以i/u/ü开头):")
+    front_long = sorted(all_finals["前长韵母"])
     for final in front_long:
         if final[0] in 'aeo':
             print(f"   '{final}' - 以 {final[0]} 开头")
@@ -48,18 +39,18 @@ def analyze_classification_logic():
         else:
             print(f"   '{final}' - 其他模式")
 
-    # 分析后长干音
-    print("\n3. 后长干音 (通常以i/u/ü开头的复合韵母):")
-    back_long = sorted(all_finals["后长干音"])
+    # 分析后长韵母
+    print("\n3. 后长韵母 (通常以i/u/ü开头的复合韵母):")
+    back_long = sorted(all_finals["后长韵母"])
     for final in back_long:
         if final[0] in 'iuü':
             print(f"   '{final}' - 以 {final[0]} 开头")
         else:
             print(f"   '{final}' - 特殊情况")
 
-    # 分析三质干音
-    print("\n4. 三质干音 (通常是长复合韵母，包含三个音质成分):")
-    triple_quality = sorted(all_finals["三质干音"])
+    # 分析三质韵母
+    print("\n4. 三质韵母 (通常是长复合韵母，包含三个音质成分):")
+    triple_quality = sorted(all_finals["三质韵母"])
     for final in triple_quality:
         print(f"   '{final}' - 长度: {len(final)}")
 
