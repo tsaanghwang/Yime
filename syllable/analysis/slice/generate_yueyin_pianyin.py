@@ -68,7 +68,7 @@ def extract_yueyin(input_path, output_path):
 if __name__ == "__main__":
     base_dir = Path(__file__).parent
     input_path = base_dir / "yinyuan" / "ganyin_to_pianyin_sequence.json"
-    output_path = base_dir / "pitched_pianyin.json"
+    output_path = base_dir / "yinyuan" / "pitched_pianyin.json"
     extract_yueyin(input_path, output_path)
 
     # 添加提示信息

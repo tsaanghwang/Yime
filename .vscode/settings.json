@@ -108,5 +108,6 @@
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "[jsonc]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
-  }
+  },
+  "editor.fontFamily": "\"YinYuan Regular\", \"音元 常规\", Consolas, 'Courier New', monospace"
 }

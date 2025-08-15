@@ -4,11 +4,9 @@ from pathlib import Path
 """将数字标调的干音数据转换为带声调标记和IPA的格式"""
 
 # 韵母与国际音标（IPA）的映射
-
-
 def load_final_styles():
     """加载韵母与IPA的映射关系"""
-    final_styles_path = Path(__file__).parent / "final_styles.json"
+    final_styles_path = Path(__file__).parent / "yinyuan" / "final_styles.json"
     with open(final_styles_path, "r", encoding="utf-8") as f:
         data = json.load(f)
 
@@ -58,25 +56,6 @@ def get_ipa(base: str, tone_num: str) -> str:
         "4": "˥˦˩",   # 高降调
         "5": "˦˦˦",     # 轻声调
     }
-    """
-    # 字体引用逻辑
-    def get_ipa(base: str, tone_num: str) -> str:
-        tone_ipa = {
-            "1": "<span class='tone'>\uE001</span>",  # 使用PUA字符
-            "3": "<span class='tone'>\uE002</span>",
-            # ...其他调值
-        }
-    """
-    """
-    # 修改tone_ipa字典，添加长调专用符号
-    tone_ipa = {
-        "1": "\uE001",  # 自定义长高平调PUA字符
-        "2": "˧˦˥",    # 中升调保持不变
-        "3": "\uE002",  # 自定义长低平调PUA字符
-        "4": "˥˦˩",    # 高降调保持不变
-        "5": "\uE003",  # 自定义长轻声调
-    }
-    """
 
     # 特殊处理 "_i" 韵母，返回两种变体
     if base_key == "_i":
@@ -112,9 +91,8 @@ def enhance_ganyin(input_path, output_path):
 
 if __name__ == "__main__":
     base_dir = Path(__file__).parent
-    input_path = base_dir / "ganyin.json"
+    input_path = base_dir / "yinyuan" / "ganyin.json"
     output_path = base_dir / 'yinyuan' / 'ganyin_enhanced.json'
     enhance_ganyin(input_path, output_path)
 
     print(f"转换完成，结果已保存到 {output_path}")
-
