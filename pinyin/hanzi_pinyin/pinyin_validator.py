@@ -5,7 +5,7 @@ from collections import defaultdict
 
 
 class PinyinValidator:
-    """拼音标准验证器，用于检查拼音标注是否符合国家标准"""
+    """拼音合规验证，检查拼音标注是否符合国家标准"""
 
     def __init__(self, pinyin_file='pinyin_normalized.json'):
         self.pinyin_file = pinyin_file
@@ -56,23 +56,24 @@ class PinyinValidator:
         """验证声调标注位置"""
         if not pinyin[-1].isdigit():  # 无数字声调
             return True
-            if len(pinyin) < 2:
-                return True
+        if len(pinyin) < 2:
+            return True
+
+        # 首先检查hng系列拼音
+        if pinyin.startswith('hng'):
+            normalized = self._normalize_hng(pinyin)
+            return normalized == self.load_pinyin_data().get(pinyin, '')
+
         tone = int(pinyin[-1])
         base = pinyin[:-1]
 
         # 处理单字符拼音（如 m, n, ng, ê）
         if len(base) <= 1 or base == 'ê':
-            return True  # 单字符拼音和ê的声调位置总是正确的
+            return True
 
-        # 检查特殊复合韵母和特殊音节(hm, hn, hng)
+        # 检查其他特殊复合韵母
         for pattern, target in self.standard_rules['tone_placement']['compound_rules'].items():
-            if pattern in base:
-                # 对于hng系列，确保声调标在n上
-                if pattern == 'hng':
-                    # 检查标准化后的形式是否正确（如 hng1 → hn̄g）
-                    normalized = self._normalize_hng(pinyin)
-                    return normalized == self.load_pinyin_data().get(pinyin, '')
+            if pattern in base and pattern != 'hng':  # 已单独处理hng
                 return base.endswith(target)
 
         # 常规优先级检查

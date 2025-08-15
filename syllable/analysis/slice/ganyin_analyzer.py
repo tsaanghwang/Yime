@@ -68,7 +68,7 @@ class GanyinAnalyzer:
             with open(self.ganyin_path, 'w', encoding='utf-8') as f:
                 json.dump(output_ganyin, f, ensure_ascii=False, indent=2)
 
-            print("分析完成，结果已保存到:")
+            print("音节分析完成，结果已保存到:")
             print(f"- 首音数据: {self.shouyin_path}")
             print(f"- 干音数据: {self.ganyin_path}")
             return True
