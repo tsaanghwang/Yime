@@ -3,6 +3,7 @@ import sys
 import os
 import unittest
 import time
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 # 确保能正确导入项目模块
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -20,7 +21,7 @@ class TestYinyuanProcessing(unittest.TestCase):
         """测试前置准备"""
         # 使用绝对路径初始化
         config_path = os.path.join(os.path.dirname(
-            __file__), 'variables_of_attributes.json')
+            __file__), 'yinyuan', 'variables_of_attributes.json')
         self.yinyuan = YueyinYinyuan(config_path=config_path)
 
         self.test_data_mid_high_median_model = {
@@ -41,7 +42,7 @@ class TestYinyuanProcessing(unittest.TestCase):
 
     def test_process_pitched_yinyuan_mid_high_median_model(self):
         """测试mid_high_median_model的音元处理"""
-        result = self.YueyinYinyuan.process_pitched_yinyuan(
+        result = self.yinyuan.process_pitched_yinyuan(
             self.test_data_mid_high_median_model, is_mid_level_median_model=False)
 
         # 验证输出
@@ -109,7 +110,7 @@ class TestYinyuan(unittest.TestCase):
         """测试前置准备"""
         # 使用绝对路径初始化
         self.config_path = os.path.join(os.path.dirname(
-            __file__), 'variables_of_attributes.json')
+            __file__), 'yinyuan', 'variables_of_attributes.json')
 
     def test_from_pianyin_basic(self):
         """测试基本片音到音元的转换"""

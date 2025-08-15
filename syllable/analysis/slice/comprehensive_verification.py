@@ -14,7 +14,7 @@ def comprehensive_verification():
     # 1. 确认定义
     print("1. 术语定义确认:")
     print("   - 干音 (ganyin) = final with tone (带声调的韵母)")
-    print("   - 韵母 (final) = ganyin without tone (去掉声调的干音)")
+    print("   - 韵母 (final) = ganyin without tone (析出声调的干音)")
     print("   - 预定义韵母集合包含的都是不带声调的韵母")
     print()
 

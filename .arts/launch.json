@@ -2,13 +2,43 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "test_yinyuan",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\tests\\test_yinyuan.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\tests",
+      "addSourceRootsToPythonpath": true
+    },
+    {
+      "name": "comprehensive_verification",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\comprehensive_verification.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
+      "addSourceRootsToPythonpath": true,
+      "noDebug": true
+    },
+    {
+      "name": "analyze_classification",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\analyze_classification.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
+      "addSourceRootsToPythonpath": true,
+      "noDebug": true
+    },
+    {
       "name": "generate_yueyin_pianyin",
       "type": "python",
       "request": "launch",
       "program": "${workspaceFolder}\\syllable\\analysis\\slice\\generate_yueyin_pianyin.py",
       "currentFileConfiguration": false,
       "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
-      "addSourceRootsToPythonpath": true
+      "addSourceRootsToPythonpath": true,
+      "noDebug": true
     },
     {
       "name": "pinyin",
@@ -253,7 +283,8 @@
       "program": "${workspaceFolder}\\syllable\\analysis\\slice\\generate_zaoyin_yinyuan.py",
       "currentFileConfiguration": false,
       "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
-      "addSourceRootsToPythonpath": true
+      "addSourceRootsToPythonpath": true,
+      "noDebug": true
     },
     {
       "name": "generate_noise_yinyuan",
@@ -310,7 +341,8 @@
       "program": "${workspaceFolder}\\scripts\\push_all.py",
       "currentFileConfiguration": false,
       "cwd": "${workspaceFolder}\\scripts",
-      "addSourceRootsToPythonpath": true
+      "addSourceRootsToPythonpath": true,
+      "noDebug": true
     },
     {
       "name": "unicode_pua",
