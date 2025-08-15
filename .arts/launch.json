@@ -2,6 +2,15 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "generate_yueyin_pianyin",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\generate_yueyin_pianyin.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
+      "addSourceRootsToPythonpath": true
+    },
+    {
       "name": "pinyin",
       "type": "python",
       "request": "launch",
@@ -262,7 +271,8 @@
       "program": "${workspaceFolder}\\syllable\\analysis\\slice\\extract_yueyin.py",
       "currentFileConfiguration": false,
       "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
-      "addSourceRootsToPythonpath": true
+      "addSourceRootsToPythonpath": true,
+      "noDebug": true
     },
     {
       "name": "pitched_pianyin",

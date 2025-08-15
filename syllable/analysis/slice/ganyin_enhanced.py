@@ -58,6 +58,25 @@ def get_ipa(base: str, tone_num: str) -> str:
         "4": "˥˦˩",   # 高降调
         "5": "˦˦˦",     # 轻声调
     }
+    """
+    # 字体引用逻辑
+    def get_ipa(base: str, tone_num: str) -> str:
+        tone_ipa = {
+            "1": "<span class='tone'>\uE001</span>",  # 使用PUA字符
+            "3": "<span class='tone'>\uE002</span>",
+            # ...其他调值
+        }
+    """
+    """
+    # 修改tone_ipa字典，添加长调专用符号
+    tone_ipa = {
+        "1": "\uE001",  # 自定义长高平调PUA字符
+        "2": "˧˦˥",    # 中升调保持不变
+        "3": "\uE002",  # 自定义长低平调PUA字符
+        "4": "˥˦˩",    # 高降调保持不变
+        "5": "\uE003",  # 自定义长轻声调
+    }
+    """
 
     # 特殊处理 "_i" 韵母，返回两种变体
     if base_key == "_i":
