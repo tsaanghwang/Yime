@@ -15,9 +15,9 @@ class GanyinAnalyzer:
         self.input_path = os.path.join(
             base_dir, 'pinyin', 'hanzi_pinyin', 'pinyin_normalized.json')
         self.shouyin_path = os.path.join(
-            os.path.dirname(file), 'shouyin.json')
+            os.path.dirname(file), 'yinyuan', 'shouyin.json')
         self.ganyin_path = os.path.join(
-            os.path.dirname(file), 'ganyin.json')
+            os.path.dirname(file), 'yinyuan', 'ganyin.json')
 
         # 打印路径用于调试
         print(f"输入文件路径: {self.input_path}")

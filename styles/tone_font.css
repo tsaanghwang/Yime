@@ -1,7 +1,4 @@
-# 创建字体定义文件
-<write_file>
-<path>styles/tone_font.css</path>
-<content>
+/* 创建字体定义文件 */
 @font-face {
     font-family: 'ToneFont';
     src: url('../fonts/custom_tone.otf') format('opentype');
@@ -11,5 +8,3 @@
 .tone {
     font-family: 'ToneFont', sans-serif;
 }
-</content>
-</write_file>

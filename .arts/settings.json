@@ -14,7 +14,7 @@
   "editor.inlayHints.fontSize": 20,
   "editor.suggestFontSize": 20,
   "editor.fontSize": 20,
-  "editor.fontFamily": "'Noto serif Condensed Medium', 'YinYuan Regular', Consolas, 'Courier New', monospace",
+  "editor.fontFamily": "\"YinYuan Regular\", \"音元 常规\", Consolas, 'Courier New', monospace",
   "notebook.markup.fontSize": 20,
   "notebook.output.fontSize": 20,
   "workbench.editor.autoLockGroups": {
