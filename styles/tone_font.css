@@ -1,0 +1,15 @@
+# 创建字体定义文件
+<write_file>
+<path>styles/tone_font.css</path>
+<content>
+@font-face {
+    font-family: 'ToneFont';
+    src: url('../fonts/custom_tone.otf') format('opentype');
+    unicode-range: U+E000-E0FF; /* PUA区域 */
+}
+
+.tone {
+    font-family: 'ToneFont', sans-serif;
+}
+</content>
+</write_file>

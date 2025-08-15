@@ -68,7 +68,7 @@ def final_test():
     print(f"\n✅ 韵母动态添加功能测试完成!")
     print(f"   - 成功添加 {added_count} 个新韵母到预定义分类中")
     print(f"   - 所有韵母都能正确分类")
-    print(f"   - 生成的干音和首音数据文件完整")
+    print(f"   - 生成的首音和干音数据文件完整")
 
 if __name__ == "__main__":
     final_test()
