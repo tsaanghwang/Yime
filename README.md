@@ -38,11 +38,11 @@
 
 一种是采用重新布置键位的美式键盘。在全拼状态下，按照一音一码的原则，在 52 个音元中，47 个音元对应的音符设置在初始（下档）状态下，5 个音元对应的音符设置在上档（Shift）状态下。在这种键盘上，音元的分布草图如图：
 
-![YinYuan.jpg](Assets/YinYuan.jpg)
+![YinYuan.jpg](Assets/Images/YinYuan.jpg)
 
 图 1 音元在键盘上的分布
 
-![YinYuanShft.jpg](Assets/YinYuanShft.jpg)
+![YinYuanShft.jpg](Assets/Images/YinYuanShft.jpg)
 
 图 2 音元在键盘上的分布
 
