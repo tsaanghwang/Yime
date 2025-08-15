@@ -111,7 +111,8 @@ def main():
 
         # 将新增项添加到input_file1中
         if diff_report["added"]:
-            dict1.update(diff_report["added"])
+            # 以键为值的方式更新字典
+            dict1.update({k: k for k in diff_report["added"].keys()})
             save_json_file(dict1, input_file1)
             print(f"已将 {len(diff_report['added'])} 个新增项添加到 {input_file1}")
 

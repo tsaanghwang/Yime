@@ -18,10 +18,10 @@ def main():
 
         # 执行分析并保存结果
         if analyzer.analyze_and_save():
-            print("干音分析完成，结果已保存到 ganyin.json")
+            # print("音节分析完成，结果已保存到 shouyin.json和ganyin.json")
             return 0
         else:
-            print("干音分析失败", file=sys.stderr)
+            # print("音节分析失败", file=sys.stderr)
             return 1
 
     except Exception as e:
