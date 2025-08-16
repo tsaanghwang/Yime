@@ -19,58 +19,59 @@ def extract_yueyin(input_path, output_path):
     # 处理所有干音类别
     for category in data.values():
         for sound_data in category.values():
-            # 提取呼音、主音和末音
-            for sound_type in ["呼音", "主音", "末音"]:
-                sound = sound_data[sound_type]
+                # 提取呼音、主音和末音
+                for sound_type in ["呼音", "主音", "末音"]:
+                    sound = sound_data[sound_type]
 
-                # 处理可能的分隔符"/"
-                for variant in sound.split("/"):
-                    # 提取音素和声调
-                    if "˥" in variant:
-                        pitch = "5"
-                        quality = variant.split("˥")[0]
-                    elif "˦" in variant:
-                        pitch = "4"
-                        quality = variant.split("˦")[0]
-                    elif "˧" in variant:
-                        pitch = "3"
-                        quality = variant.split("˧")[0]
-                    elif "˨" in variant:
-                        pitch = "2"
-                        quality = variant.split("˨")[0]
-                    elif "˩" in variant:
-                        pitch = "1"
-                        quality = variant.split("˩")[0]
-                    else:
-                        continue  # 忽略无声调的音素
+                    # 处理可能的分隔符"/"
+                    for variant in sound.split("/"):
+                        # 提取音素和声调
+                        if "˥" in variant:
+                            pitch = "5"
+                            quality = variant.split("˥")[0]
+                        elif "˦" in variant:
+                            pitch = "4"
+                            quality = variant.split("˦")[0]
+                        elif "˧" in variant:
+                            pitch = "3"
+                            quality = variant.split("˧")[0]
+                        elif "˨" in variant:
+                            pitch = "2"
+                            quality = variant.split("˨")[0]
+                        elif "˩" in variant:
+                            pitch = "1"
+                            quality = variant.split("˩")[0]
+                        else:
+                            continue  # 忽略无声调的音素
 
-                    # 构建乐音类片音映射
-                    key = f"{quality}˥" if pitch == "5" else \
-                          f"{quality}˦" if pitch == "4" else \
-                          f"{quality}˧" if pitch == "3" else \
-                          f"{quality}˨" if pitch == "2" else \
-                          f"{quality}˩"
+                        # 构建乐音类片音映射
+                        key = f"{quality}˥" if pitch == "5" else \
+                              f"{quality}˦" if pitch == "4" else \
+                              f"{quality}˧" if pitch == "3" else \
+                              f"{quality}˨" if pitch == "2" else \
+                              f"{quality}˩"
 
-                    value = f"{quality}{pitch}"
-                    yueyin_map[key] = value
+                        value = f"{quality}{pitch}"
+                        yueyin_map[key] = value
 
-            # 定义音质优先级顺序
-            priority_order = [
-                "i", "ɪ", "u", "ᴜ", "ʏ", "y", "ᴀ", "a", "æ", "ɑ", "o", "ɤ", "𐞑",
-                "ᴇ", "e", "ə", "ᵊ", "ʅ", "ɿ", "ɚ", "m", "n", "ŋ"
-            ]
+    # ---- moved sorting here: 定义音质优先级顺序并排序 ----
+    priority_order = [
+        "i", "ɪ", "u", "ᴜ", "ʏ", "y", "ᴀ", "a", "æ", "ɑ", "o", "ɤ", "𐞑",
+        "ᴇ", "e", "ə", "ᵊ", "ʅ", "ɿ", "ɚ", "m", "n", "ŋ"
+    ]
+    quality_priority = {quality: idx for idx, quality in enumerate(priority_order)}
 
-            # 创建音质到优先级的映射字典
-            quality_priority = {quality: idx for idx, quality in enumerate(priority_order)}
-
-            # 将字典转换为列表并按指定顺序排序
-            sorted_items = sorted(
-                yueyin_map.items(),
-                key=lambda x: (
-                    quality_priority.get(x[1][:-1], len(priority_order)),  # 按音质优先级排序
-                    -int(x[1][-1])  # 同音质内部按音高降序
-                )
+    # 如果 yueyin_map 为空，sorted_items 设为空列表，避免未定义错误
+    if yueyin_map:
+        sorted_items = sorted(
+            yueyin_map.items(),
+            key=lambda x: (
+                quality_priority.get(x[1][:-1], len(priority_order)),  # 按音质优先级排序
+                -int(x[1][-1])  # 同音质内部按音高降序
             )
+        )
+    else:
+        sorted_items = []
 
     # 转换为有序字典
     ordered_yueyin = OrderedDict(sorted_items)
