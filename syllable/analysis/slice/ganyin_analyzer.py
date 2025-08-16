@@ -108,17 +108,31 @@ class GanyinAnalyzer:
             "三质干音": "triple quality ganyin"
         }
 
+        # 先分类
         for num_final, tone_final in ganyin_data.items():
-            # 提取韵母仅用于分类，不影响存储的键值对
             final = GanyinCategorizer._remove_tone_from_ganyin(num_final)
             category_cn = GanyinCategorizer.categorize(final)
-            category_en = category_map.get(
-                category_cn, "single quality ganyin")
+            category_en = category_map.get(category_cn, "single quality ganyin")
             categorized[category_en][num_final] = tone_final
 
-        # 对每个分类中的条目按拼音排序
-        for category in categorized:
-            categorized[category] = dict(sorted(categorized[category].items()))
+        # 获取排序后的韵母分类
+        sorted_finals = GanyinCategorizer.sort_finals_by_category(GanyinCategorizer.get_all_finals())
+
+        # 按排序后的韵母顺序对干音进行排序
+        for category_en, finals in zip(categorized.keys(), sorted_finals.values()):
+            # 获取当前分类的中文名
+            category_cn = next(k for k, v in category_map.items() if v == category_en)
+
+            # 按韵母排序干音
+            sorted_ganyin = sorted(
+                categorized[category_en].items(),
+                key=lambda item: (
+                    finals.index(GanyinCategorizer._remove_tone_from_ganyin(item[0]))
+                    if GanyinCategorizer._remove_tone_from_ganyin(item[0]) in finals
+                    else len(finals)
+                )
+            )
+            categorized[category_en] = dict(sorted_ganyin)
 
         return categorized
 

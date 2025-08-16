@@ -34,7 +34,7 @@ def comprehensive_verification():
         return
 
     # 3. 验证韵母集合
-    print("\n3. 验证预定义韵母集合（应该都是不带声调的）:")
+    print("\n3. 验证预定义韵母集合（都是不带声调的）:")
     all_finals = GanyinCategorizer.get_all_finals()
 
     for category, finals_set in all_finals.items():
@@ -44,7 +44,7 @@ def comprehensive_verification():
             tone_chars = 'āáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜếề'
             has_tone = any(char in final for char in tone_chars)
             if has_tone:
-                print(f"     ⚠ {final} - 包含声调标记（可能有问题）")
+                print(f"     ⚠ {final} - 包含声调标记（不符韵母定义）")
             else:
                 print(f"     ✓ {final} - 韵母（不带声调）")
 

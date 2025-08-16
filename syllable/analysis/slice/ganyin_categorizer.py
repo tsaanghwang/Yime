@@ -333,3 +333,63 @@ class GanyinCategorizer:
                 shouyin_data[initial] = initial
 
         return shouyin_data
+
+    @staticmethod
+    def sort_finals_by_category(finals: Dict[str, set]) -> Dict[str, list]:
+        """按类别对韵母进行排序
+
+        参数:
+            finals: 包含各类韵母的字典，格式为 {"分类名": set(韵母)}
+
+        返回:
+            排序后的韵母字典 {"分类名": [排序后的韵母列表]}
+        """
+        sorted_finals = {}
+
+        # 单质韵母排序规则
+        if "单质韵母" in finals:
+            priority_order = ['i', 'u', 'ü', 'v', 'a', 'o', 'e', 'ê', '_i', 'er', 'm', 'n', 'ng']
+            single_quality = sorted(finals["单质韵母"],
+                                key=lambda x: (
+                                    priority_order.index(x) if x in priority_order else len(priority_order)
+                                ))
+            sorted_finals["单质韵母"] = single_quality
+
+        # 前长韵母排序规则
+        if "前长韵母" in finals:
+            priority_order = ['i', 'o', 'u', 'n', 'ng']
+            front_long = sorted(finals["前长韵母"],
+                            key=lambda x: (
+                                priority_order.index(x[1]) if len(x) > 1 and x[1] in priority_order else len(priority_order),
+                                x[2] if len(x) > 2 else '',
+                                x[1] if len(x) > 1 else '',
+                                x[0]
+                            ))
+            sorted_finals["前长韵母"] = front_long
+
+        # 后长韵母排序规则
+        if "后长韵母" in finals:
+            priority_order = ['a', 'o', 'e', 'n', 'ng']
+            back_long = sorted(finals["后长韵母"],
+                            key=lambda x: (
+                                priority_order.index(x[1]) if len(x) > 1 and x[1] in priority_order else len(priority_order),
+                                x[2] if len(x) > 2 else '',
+                                x[1] if len(x) > 1 else '',
+                                0 if x[0] == 'i' else (1 if x[0] == 'u' else (2 if x[0] == 'ü' else 3)),
+                                x[0]
+                            ))
+            sorted_finals["后长韵母"] = back_long
+
+        # 三质韵母排序规则
+        if "三质韵母" in finals:
+            priority_order = ['ai', 'ei', 'i', 'ao', 'ou', 'u', 'an', 'en', 'n', 'ang', 'eng', 'ng', 'ong']
+            triple_quality = sorted(finals["三质韵母"],
+                                key=lambda x: (
+                                    priority_order.index(x[1:]) if len(x) > 1 and x[1:] in priority_order else len(priority_order),
+                                    x[2] if len(x) > 2 else '',
+                                    x[1] if len(x) > 1 else '',
+                                    0 if x[0] == 'i' else (1 if x[0] == 'u' else (2 if x[0] == 'ü' else 3)),
+                                ))
+            sorted_finals["三质韵母"] = triple_quality
+
+        return sorted_finals
