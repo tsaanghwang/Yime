@@ -1,3 +1,4 @@
+
 """
 提取乐音类片音
 功能：从被切分成乐音序列的干音中提取乐音类片音
@@ -7,6 +8,7 @@
 
 import json
 from pathlib import Path
+from collections import OrderedDict
 
 def extract_yueyin(input_path, output_path):
     with open(input_path, "r", encoding="utf-8") as f:
@@ -52,14 +54,25 @@ def extract_yueyin(input_path, output_path):
                     value = f"{quality}{pitch}"
                     yueyin_map[key] = value
 
-    # 将字典转换为列表并保持音质顺序不变，同音质内部按音高降序
-    sorted_items = sorted(
-        yueyin_map.items(),
-        key=lambda x: (x[1][:-1], -int(x[1][-1]))  # 先按音质分组，再按音高降序
-    )
+            # 定义音质优先级顺序
+            priority_order = [
+                "i", "ɪ", "u", "ᴜ", "ʏ", "y", "ᴀ", "a", "æ", "ɑ", "o", "ɤ", "𐞑",
+                "ᴇ", "e", "ə", "ᵊ", "ʅ", "ɿ", "ɚ", "m", "n", "ŋ"
+            ]
+
+            # 创建音质到优先级的映射字典
+            quality_priority = {quality: idx for idx, quality in enumerate(priority_order)}
+
+            # 将字典转换为列表并按指定顺序排序
+            sorted_items = sorted(
+                yueyin_map.items(),
+                key=lambda x: (
+                    quality_priority.get(x[1][:-1], len(priority_order)),  # 按音质优先级排序
+                    -int(x[1][-1])  # 同音质内部按音高降序
+                )
+            )
 
     # 转换为有序字典
-    from collections import OrderedDict
     ordered_yueyin = OrderedDict(sorted_items)
 
     with open(output_path, "w", encoding="utf-8") as f:

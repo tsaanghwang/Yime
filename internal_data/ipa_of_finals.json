@@ -1,7 +1,5 @@
-"""
-在syllable\analysis\slice\generate_yueyin_pianyin.py中，修改55-59的排序逻辑，
-改成按照以下顺序进行排序：
-priority_order = [
+{
+  "": [
     "i",
     "ɪ",
     "u",
@@ -26,4 +24,4 @@ priority_order = [
     "n",
     "ŋ"
   ]
-   """
+}

@@ -84,6 +84,7 @@ def analyze_classification_logic():
     for final in triple_quality:
         processed_final = final.replace('io', 'Y')
         if processed_final == 'Yu':  # 处理"iou"情况
+            length = len(processed_final.replace('ng', 'N'))
             print(f"   '{final}' - 长度: {length}：正常三质韵母")
         else:
             length = len(processed_final.replace('ng', 'N'))
