@@ -57,10 +57,25 @@ data = {
     },
     "notes": "此编码系统暂不扩展到其他干音。其它干音的编码遵循不同模式规则。"
 }
+"""
+yinyuan_list = [
+    "i˥", "i˦", "i˩", "u˥", "u˦", "u˩", "ʏ˥", "ʏ˦", "ʏ˩",
+    "ᴀ˥", "ᴀ˦", "ᴀ˩", "o˥", "o˦", "o˩", "ᴇ˥", "ᴇ˦", "ᴇ˩",
+    "ʅ˥", "ʅ˦", "ʅ˩", "ɚ˥", "ɚ˦", "ɚ˩", "m˥", "m˦", "m˩",
+    "n˥", "n˦", "n˩", "ŋ˥", "ŋ˦", "ŋ˩"
+]
+
+def create_yinyuan_mapping(yinyuan_list):
+    start_codepoint = 0x100000  # 从补充私用区开始
+    return {yinyuan: chr(start_codepoint + i)
+           for i, yinyuan in enumerate(yinyuan_list)}
+
+# 使用示例
+mapping = create_yinyuan_mapping(yinyuan_list)
+print(mapping["i˥"])  # 输出:  (U+100000)
+"""
 
 # 校验所有符号字符是否在key_symbol_mapping.json中定义
-
-
 def validate_private_use_chars():
     """校验字符是否在key_symbol_mapping.json文件中定义"""
     # 加载key_symbol_mapping.json文件

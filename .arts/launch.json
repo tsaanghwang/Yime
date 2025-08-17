@@ -2,6 +2,15 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "convert_pitch_style",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\convert_pitch_style.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
+      "addSourceRootsToPythonpath": true
+    },
+    {
       "name": "test_yinyuan",
       "type": "python",
       "request": "launch",
@@ -450,10 +459,10 @@
       "noDebug": true
     },
     {
-      "name": "generate_yueyin_yinyuan",
+      "name": "extract_yueyin_yinyuan",
       "type": "python",
       "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\generate_yueyin_yinyuan.py",
+      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\extract_yueyin_yinyuan.py",
       "currentFileConfiguration": false,
       "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
       "addSourceRootsToPythonpath": true,

@@ -1,5 +1,5 @@
 """
-乐音类音元生成器 - 使用具体的音元类生成音元数据文件
+析取乐音类音元 - 使用具体的音元类生成音元数据文件
 """
 
 import json
@@ -7,7 +7,7 @@ from pathlib import Path
 from yueyin_yinyuan import YueyinYinyuan  # 使用具体的子类
 
 
-def generate_yueyin_yinyuan():
+def extract_yueyin_yinyuan():
     """生成乐音类音元数据文件"""
 
     base_dir = Path(__file__).parent
@@ -55,4 +55,4 @@ def generate_yueyin_yinyuan():
 
 
 if __name__ == '__main__':
-    generate_yueyin_yinyuan()
+    extract_yueyin_yinyuan()

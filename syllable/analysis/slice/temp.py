@@ -1,29 +1,45 @@
 """
-在syllable\analysis\slice\generate_yueyin_pianyin.py中，修改55-59的排序逻辑，
-改成按照以下顺序进行排序：
-priority_order = [
-    "i",
-    "ɪ",
-    "u",
-    "ᴜ",
-    "ʏ",
-    "y",
-    "ᴀ",
-    "a",
-    "æ",
-    "ɑ",
-    "o",
-    "ɤ",
-    "𐞑",
-    "ᴇ",
-    "e",
-    "ə",
-    "ᵊ",
-    "ʅ",
-    "ɿ",
-    "ɚ",
-    "m",
-    "n",
-    "ŋ"
+把下列列表中的音元（组合字符）一一映射成unicode私用区的码点，
+一个音元一个码点，在构造字典时用码点作键还是用用音元作键好？
+ [
+    "i˥",
+    "i˦",
+    "i˩",
+    "u˥",
+    "u˦",
+    "u˩",
+    "ʏ˥",
+    "ʏ˦",
+    "ʏ˩",
+    "ᴀ˥",
+    "ᴀ˦",
+    "ᴀ˩",
+    "o˥",
+    "o˦",
+    "o˩",
+    "ᴇ˥",
+    "ᴇ˦",
+    "ᴇ˩",
+    "ʅ˥",
+    "ʅ˦",
+    "ʅ˩",
+    "ɚ˥",
+    "ɚ˦",
+    "ɚ˩",
+    "m˥",
+    "m˦",
+    "m˩",
+    "n˥",
+    "n˦",
+    "n˩",
+    "ŋ˥",
+    "ŋ˦",
+    "ŋ˩"
   ]
    """
+"""
+  在syllable\analysis\slice\ganyin_encoder.py中，
+  对create_yinyuan_codepoint_mapping(yinyuan_list)函数，
+如果输入参数不是音元预定义的 yinyuan_list ，而是
+syllable\analysis\slice\yinyuan\yueyin_yinyuan.json的key，
+  """
