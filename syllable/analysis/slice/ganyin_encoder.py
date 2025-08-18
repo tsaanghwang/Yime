@@ -1,177 +1,121 @@
 import json
-# 原始数据
-data = {
-    "description": "干音编码系统。干音是由声调与韵母构成的音段的统称，俗名带调韵母。这套编码系统使用三个音元组合表示不同干音。在通用现代汉语中，音元特指音高特征或音质特征不同的短音，是语音的基本结构单元。",
-    "encoding_rules": {
-        "general_pattern": {
-            "first_tone_ganyin": "三个高调音元的组合",
-            "second_tone_ganyin": "低调音元、中调音元、高调音元的组合",
-            "third_tone_ganyin": "三个低调音元的组合",
-            "fourth_tone_ganyin": "高调音元、中调音元、低调音元的组合"
-        }
-    },
-
-
-    # 音元符号定义 - 确保所有字符都在Private Use Area-A (U+E000..U+F8FF)
-    "yinyuan_symbols": {
-        "high_tone_i": "󰌠",  # U+F0300
-        "mid_tone_i": "󰌡",   # U+F0301
-        "low_tone_i": "󰌤",   # U+F0304
-        "high_tone_u": "󰌪",  # U+F032A
-        "mid_tone_u": "󰌫",   # U+F032B
-        "low_tone_u": "󰌮",   # U+F032E
-        "high_tone_ü": "󰌴",  # U+F0334
-        "mid_tone_ü": "󰌵",   # U+F0335
-        "low_tone_ü": "󰌸",   # U+F0338
-        "high_tone_a": "󰌾",  # U+F033E
-        "mid_tone_a": "󰌿",   # U+F033F
-        "low_tone_a": "󰍂",   # U+F0342
-        "high_tone_o": "󰍒",  # U+F0352
-        "mid_tone_o": "󰍓",   # U+F0353
-        "low_tone_o": "󰍖",   # U+F0356
-        "high_tone_e": "󰍡",  # U+F0361
-        "mid_tone_e": "󰍢",   # U+F0362
-        "low_tone_e": "󰍥",   # U+F0365
-        "high_tone_-i": "󰍵",  # U+F0375
-        "mid_tone_-i": "󰍶",  # U+F0376
-        "low_tone_-i": "󰍹",  # U+F0379
-        "high_tone_er": "󰎄",  # U+F0384
-        "mid_tone_er": "󰎅",  # U+F0385
-        "low_tone_er": "󰎈",  # U+F0388
-        "high_tone_m": "󰎎",  # U+F038E
-        "mid_tone_m": "󰎏",   # U+F038F
-        "low_tone_m": "󰎒",   # U+F0392
-        "high_tone_n": "󰎓",  # U+F0393
-        "mid_tone_n": "󰎔",   # U+F0394
-        "low_tone_n": "󰎗",   # U+F0397
-        "high_tone_ng": "󰎘",  # U+F0398
-        "mid_tone_ng": "󰎙",  # U+F0399
-        "low_tone_ng": "󰎜"   # U+F039C
-    },
-
-    "pattern_rules": {
-        "first_tone": ["high", "high", "high"],
-        "second_tone": ["low", "mid", "high"],
-        "third_tone": ["low", "low", "low"],
-        "fourth_tone": ["high", "mid", "low"]
-    },
-    "notes": "此编码系统暂不扩展到其他干音。其它干音的编码遵循不同模式规则。"
-}
-"""
-yinyuan_list = [
-    "i˥", "i˦", "i˩", "u˥", "u˦", "u˩", "ʏ˥", "ʏ˦", "ʏ˩",
-    "ᴀ˥", "ᴀ˦", "ᴀ˩", "o˥", "o˦", "o˩", "ᴇ˥", "ᴇ˦", "ᴇ˩",
-    "ʅ˥", "ʅ˦", "ʅ˩", "ɚ˥", "ɚ˦", "ɚ˩", "m˥", "m˦", "m˩",
-    "n˥", "n˦", "n˩", "ŋ˥", "ŋ˦", "ŋ˩"
-]
+from pathlib import Path
+from typing import Dict, Any
+from yueyin_yinyuan import YueyinYinyuan
 
 def create_yinyuan_mapping(yinyuan_list):
-    start_codepoint = 0x100000  # 从补充私用区开始
+    """从音元符号列表创建音元到编码点的映射
+
+    Args:
+        yinyuan_list: 音元符号列表(如从yueyin_yinyuan.json的keys获取)
+
+    Returns:
+        返回一个字典，key是音元符号(如"ɪ́")，value是对应的编码点字符
+    """
+    start_codepoint = 0x100020  # 从补充私用区开始
     return {yinyuan: chr(start_codepoint + i)
            for i, yinyuan in enumerate(yinyuan_list)}
 
-# 使用示例
-mapping = create_yinyuan_mapping(yinyuan_list)
-print(mapping["i˥"])  # 输出:  (U+100000)
-"""
+class GanyinEncoder:
+    """干音编码处理器，整合音元映射和音元序列生成功能"""
 
-# 校验所有符号字符是否在key_symbol_mapping.json中定义
-def validate_private_use_chars():
-    """校验字符是否在key_symbol_mapping.json文件中定义"""
-    # 加载key_symbol_mapping.json文件
-    with open("internal_data/key_symbol_mapping.json", "r", encoding="utf-8") as f:
-        symbol_mapping = json.load(f)
+    def __init__(self):
+        self.yueyin_yinyuan = YueyinYinyuan(quality="", pitch="")
 
-    # 获取所有允许的字符
-    allowed_chars = set(symbol_mapping.values())
+    def load_ganyin_data(self, input_path: Path) -> Dict[str, Any]:
+        """加载干音数据"""
+        with input_path.open('r', encoding='utf-8') as f:
+            return json.load(f)
 
-    invalid_chars = []
-    for key, char in data["yinyuan_symbols"].items():
-        if char not in allowed_chars:
-            invalid_chars.append({
-                'key': key,
-                'char': char,
-                'code': f"U+{ord(char):05X}",
-                'status': 'Invalid (Not in key_symbol_mapping.json)'
-            })
+    def save_yinyuan_data(self, output_path: Path, data: Dict[str, Any]) -> None:
+        """保存音元数据"""
+        with output_path.open('w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
 
-    if invalid_chars:
-        print("发现不在key_symbol_mapping.json中的字符:")
-        for item in invalid_chars:
-            print(f"{item['key']}: {item['char']} ({item['code']})")
-        return False
-    return True
+    def convert_pianyin_to_yinyuan(self, pianyin: str) -> str:
+        """将片音转换为音元"""
+        if not pianyin:
+            return ""
+        pianyin = pianyin.split("/")[0]  # 处理多值情况
+        quality = pianyin[:-1] if len(pianyin) > 1 else pianyin
+        pitch = pianyin[-1] if len(pianyin) > 1 else ""
+        processed = self.yueyin_yinyuan._process_mid_high_model(
+            {"temp": (quality, pitch)})
+        return next(iter(processed.keys())) if processed else ""
 
-# 根据定义在internal_data/classified_finals.json中的韵母类型对干音编码
-# 对三质干音
+    def process_ganyin(self, ganyin_data: Dict[str, Any]) -> Dict[str, Any]:
+        """处理干音数据生成音元序列"""
+        result = {}
+        for ganyin_type, ganyin_list in ganyin_data.items():
+            result[ganyin_type] = {
+                ganyin_name: {
+                    "呼音": self.convert_pianyin_to_yinyuan(parts.get("呼音", "")),
+                    "主音": self.convert_pianyin_to_yinyuan(parts.get("主音", "")),
+                    "末音": self.convert_pianyin_to_yinyuan(parts.get("末音", ""))
+                }
+                for ganyin_name, parts in ganyin_list.items()
+            }
+        return result
 
+    def generate_encoding_files(self):
+        """生成所有编码相关文件"""
+        base_dir = Path(__file__).parent
 
-# 示例 finals_tone_mapping 定义（请根据实际 classified_finals.json 内容调整）
-finals_tone_mapping = {
-    "i": {
-        "base": "i",
-        "diacritics": ["ī", "í", "ǐ", "ì"]
-    },
-    "u": {
-        "base": "u",
-        "diacritics": ["ū", "ú", "ǔ", "ù"]
-    },
-    "ü": {
-        "base": "ü",
-        "diacritics": ["ǖ", "ǘ", "ǚ", "ǜ"]
-    },
-    "a": {
-        "base": "a",
-        "diacritics": ["ā", "á", "ǎ", "à"]
-    },
-    "o": {
-        "base": "o",
-        "diacritics": ["ō", "ó", "ǒ", "ò"]
-    },
-    "e": {
-        "base": "e",
-        "diacritics": ["ē", "é", "ě", "è"]
-    }
-    # 可根据需要添加更多韵母系列
-}
+        # 1. 生成音元编码映射
+        yueyin_yinyuan_path = base_dir / "yinyuan" / "yueyin_yinyuan.json"
+        with open(yueyin_yinyuan_path, "r", encoding="utf-8") as f:
+            yueyin_yinyuan_data = json.load(f)
 
-# 生成干音编码
+        yinyuan_symbols = create_yinyuan_mapping(list(yueyin_yinyuan_data.keys()))
+        encoding_data = {"yinyuan_symbols": yinyuan_symbols}
+        encoding_path = base_dir / "yinyuan" / "yueyin_yinyuan_encoding.json"
+        self.save_yinyuan_data(encoding_path, encoding_data)
 
+        # 2. 生成音元序列数据
+        input_file = base_dir / 'yinyuan' / 'ganyin_to_pianyin_sequence.json'
+        output_file = base_dir / 'yinyuan' / 'ganyin_to_yinyuan_sequence.json'
+        ganyin_data = self.load_ganyin_data(input_file)
+        yinyuan_data = self.process_ganyin(ganyin_data)
+        self.save_yinyuan_data(output_file, yinyuan_data)
 
-def generate_ganyin_encoding(data):
-    ganyin_encoding = {}
+        # 3. 生成音调标记格式数据
+        marks_data = self.yueyin_yinyuan._change_pitch_style(yinyuan_data)
+        marks_output_path = output_file.with_name("ganyin_to_yinyuan_seq_marks.json")
+        self.save_yinyuan_data(marks_output_path, marks_data)
 
-    for series_name, series_info in finals_tone_mapping.items():
-        base = series_info["base"]
-        series_data = {}
+        # 4. 生成干音音符格式数据
+        notes_data = {
+            ganyin_type: {
+                ganyin_name: {
+                    part: yinyuan_symbols.get(symbol, symbol)
+                    for part, symbol in parts.items()
+                }
+                for ganyin_name, parts in marks_data[ganyin_type].items()
+            }
+            for ganyin_type in marks_data
+        }
+        notes_output_path = output_file.with_name("ganyin_to_yinyuan_seq_notes.json")
+        self.save_yinyuan_data(notes_output_path, notes_data)
 
-        # 第一声
-        high_symbol = data["yinyuan_symbols"][f"high_tone_{base}"]
-        series_data[series_info["diacritics"][0]] = high_symbol * 3
+        # 5. 新增: 生成简化版干音音符数据
+        simplified_notes_data = {
+            ganyin_name: "".join(parts.values())
+            for ganyin_type in notes_data
+            for ganyin_name, parts in notes_data[ganyin_type].items()
+        }
+        simplified_output_path = output_file.with_name("ganyin_to_yinyuan_seq_simplified.json")
+        self.save_yinyuan_data(simplified_output_path, simplified_notes_data)
 
-        # 第二声
-        low_symbol = data["yinyuan_symbols"][f"low_tone_{base}"]
-        mid_symbol = data["yinyuan_symbols"][f"mid_tone_{base}"]
-        series_data[series_info["diacritics"][1]
-                    ] = low_symbol + mid_symbol + high_symbol
+        print(f"音元编码文件已生成:")
+        print(f"- 音元符号映射: {encoding_path}")
+        print(f"- 音元序列数据: {output_file}")
+        print(f"- 音调标记数据: {marks_output_path}")
+        print(f"- 干音音元字典详版: {notes_output_path}")
+        print(f"- 干音音元字典简版: {simplified_output_path}")
 
-        # 第三声
-        series_data[series_info["diacritics"][2]] = low_symbol * 3
+def main():
+    encoder = GanyinEncoder()
+    encoder.generate_encoding_files()
 
-        # 第四声
-        series_data[series_info["diacritics"][3]
-                    ] = high_symbol + mid_symbol + low_symbol
-
-        ganyin_encoding[f"{base}_series"] = series_data
-
-    return ganyin_encoding
-
-
-# 生成完整的JSON数据
-data["ganyin_encoding"] = generate_ganyin_encoding(data)
-
-# 保存到文件
-with open("ganyin_encoding.json", "w", encoding="utf-8") as f:
-    json.dump(data, f, ensure_ascii=False, indent=2)
-
-print("干音编码已生成并保存到 ganyin_encoding.json")
+if __name__ == "__main__":
+    main()
