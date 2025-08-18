@@ -97,21 +97,40 @@ class GanyinEncoder:
         notes_output_path = output_file.with_name("ganyin_to_yinyuan_seq_notes.json")
         self.save_yinyuan_data(notes_output_path, notes_data)
 
-        # 5. 新增: 生成简化版干音音符数据
+        # 5. 生成简化版干音音符数据
         simplified_notes_data = {
             ganyin_name: "".join(parts.values())
             for ganyin_type in notes_data
             for ganyin_name, parts in notes_data[ganyin_type].items()
         }
-        simplified_output_path = output_file.with_name("ganyin_to_yinyuan_seq_simplified.json")
-        self.save_yinyuan_data(simplified_output_path, simplified_notes_data)
+        fixed_length_encoding_output_path = output_file.with_name("ganyin_to_yinyuan_seq_fixed_length_encoding.json")
+        self.save_yinyuan_data(fixed_length_encoding_output_path, simplified_notes_data)
+
+        # 6. 生成干音简式拼式字典
+        def simplify_consecutive_chars(s):
+            """合并连续相同的音元字符"""
+            if not s:
+                return s
+            result = [s[0]]
+            for char in s[1:]:
+                if char != result[-1]:
+                    result.append(char)
+            return "".join(result)
+
+        simplified_dict = {
+            ganyin_name: [value, simplify_consecutive_chars(value)]
+            for ganyin_name, value in simplified_notes_data.items()
+        }
+        variable_length_encoding_output_path = output_file.with_name("ganyin_to_yinyuan_seq_variable_length_encoding.json")
+        self.save_yinyuan_data(variable_length_encoding_output_path, simplified_dict)
 
         print(f"音元编码文件已生成:")
         print(f"- 音元符号映射: {encoding_path}")
         print(f"- 音元序列数据: {output_file}")
         print(f"- 音调标记数据: {marks_output_path}")
         print(f"- 干音音元字典详版: {notes_output_path}")
-        print(f"- 干音音元字典简版: {simplified_output_path}")
+        print(f"- 干音完整拼式字典: {fixed_length_encoding_output_path}")
+        print(f"- 干音简式拼式字典: {variable_length_encoding_output_path}")
 
 def main():
     encoder = GanyinEncoder()
