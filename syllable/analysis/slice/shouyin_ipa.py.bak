@@ -13,7 +13,7 @@ def shouyin_ipa_mapping():
     读取声母与音标的映射字典，生成首音与音标的映射字典
     """
     base_dir = Path(__file__).parent
-    input_path = base_dir / 'yinyuan' / 'pianyin_initial.json'
+    input_path = base_dir / 'pinyin' / 'pianyin_initial.json'
     output_path = base_dir / 'yinyuan' / 'zaoyin_yinyuan.json'
 
     if not input_path.exists():
