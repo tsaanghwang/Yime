@@ -320,9 +320,20 @@ class GanyinCategorizer:
             pinyin_data: 拼音数据字典 {数字标调拼音: 调号标调拼音}
 
         返回:
-            首音数据字典 {"首音": "首音"}
+            首音数据字典 {"首音": "首音"}，按预定义顺序排序
         """
+        # 预定义的首音顺序
+        initial_order = [
+            'b', 'p', 'f', 'm',
+            'd', 't', 'l', 'n',
+            'g', 'k', 'h',
+            'z', 'c', 's',
+            'zh', 'ch', 'sh', 'r',
+            'j', 'q', 'x'
+        ]
+
         shouyin_data = {}
+        ordered_shouyin_data = {}
 
         for num_pinyin, tone_pinyin in pinyin_data.items():
             # 从调号标调拼音中切分首音
@@ -332,7 +343,17 @@ class GanyinCategorizer:
             if initial not in shouyin_data:
                 shouyin_data[initial] = initial
 
-        return shouyin_data
+        # 按照预定义顺序排序
+        for initial in initial_order:
+            if initial in shouyin_data:
+                ordered_shouyin_data[initial] = shouyin_data[initial]
+
+        # 添加可能遗漏的首音（如零声母"'")
+        for initial in shouyin_data:
+            if initial not in ordered_shouyin_data:
+                ordered_shouyin_data[initial] = shouyin_data[initial]
+
+        return ordered_shouyin_data
 
     @staticmethod
     def sort_finals_by_category(finals: Dict[str, set]) -> Dict[str, list]:

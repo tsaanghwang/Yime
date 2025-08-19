@@ -62,7 +62,7 @@ class GanyinAnalyzer:
             categorized_ganyin = self.categorize_ganyin_data(ganyin_data)
 
             # 转换为要求的输出格式
-            output_shouyin = {"shouyin": dict(sorted(shouyin_data.items()))}
+            output_shouyin = {"shouyin": shouyin_data}
             output_ganyin = {"ganyin": categorized_ganyin}
 
             # 确保输出目录存在

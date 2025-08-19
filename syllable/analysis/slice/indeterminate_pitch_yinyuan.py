@@ -1,11 +1,11 @@
 """
-不定调音元(IndeterminatePitchYinyuan/NoiseYinyuan/Zaoyin)表示法
+不定调音元(IndeterminatePitchYinyuan/NoiseYinyuan/ZaoyinYinyuan)表示法
 
 噪音类音元分为两类：
 1. 无调音元(UnpitchedYinyuan): 清辅音，没有音调
 2. 不稳定音高音元(UnstablePitchYinyuan): 除阻浊辅音，有非规律性音高特征
 
-在通用现代汉语中，噪音类音元通常对应音节的声母的实际发音。
+在通用现代汉语中，噪音类音元实际就是声母。
 """
 
 from dataclasses import dataclass
