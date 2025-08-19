@@ -1,20 +1,20 @@
-"""噪音类音元数据生成模块
-
-根据 indeterminate_pitch_yinyuan.py 中的 ClearNoise 和 VoicedNoise 类，
-直接生成噪音类音元(Noise Yinyuan)的 JSON 数据文件。
+"""
+首音分析
+功能：确定首音的音标并划分首音的类别。
 """
 
 import json
 from pathlib import Path
 from indeterminate_pitch_yinyuan import ClearNoise, VoicedNoise
 
-def generate_noise_yinyuan():
+
+def shouyin_ipa_mapping():
     """
-    读取 yinyuan/pianyin_initial.json，生成噪音类音元 JSON 文件。
+    读取 yinyuan/initial_ipa.json，生成首音与音标的字典文件
     """
     base_dir = Path(__file__).parent
     input_path = base_dir / 'yinyuan' / 'pianyin_initial.json'
-    output_path = base_dir / 'yinyuan' / 'noise_yinyuan.json'
+    output_path = base_dir / 'yinyuan' / 'zaoyin_yinyuan.json'
 
     if not input_path.exists():
         raise FileNotFoundError(f"找不到输入文件: {input_path}")
@@ -28,10 +28,12 @@ def generate_noise_yinyuan():
         for ipa, initials in pianyin_data['unpitched_pianyin'][yinyuan_type].items():
             for initial in initials:
                 if initial not in merged_mapping:
-                    merged_mapping[initial] = {"ipa": [], "type": yinyuan_type, "code": ""}
+                    merged_mapping[initial] = {
+                        "ipa": [], "type": yinyuan_type, "code": ""}
                 merged_mapping[initial]["ipa"].append(ipa)
                 merged_mapping[initial]["type"] = yinyuan_type
-                merged_mapping[initial]["code"] = NoiseClass.get_yinyuan_code(initial)
+                merged_mapping[initial]["code"] = NoiseClass.get_yinyuan_code(
+                    initial)
 
     # 按预定义顺序排序
     initial_order = pianyin_data.get('initial_order', [
@@ -44,7 +46,8 @@ def generate_noise_yinyuan():
     ])
     sorted_initials = sorted(
         merged_mapping.keys(),
-        key=lambda x: (initial_order.index(x) if x in initial_order else len(initial_order), x)
+        key=lambda x: (initial_order.index(
+            x) if x in initial_order else len(initial_order), x)
     )
 
     # 组织输出结构
@@ -71,5 +74,6 @@ def generate_noise_yinyuan():
     print(f"无调音元: {len(result['unpitched_yinyuan'])} 个，"
           f"不稳定音高音元: {len(result['unstable_pitch_yinyuan'])} 个")
 
+
 if __name__ == "__main__":
-    generate_noise_yinyuan()
+    shouyin_ipa_mapping()
