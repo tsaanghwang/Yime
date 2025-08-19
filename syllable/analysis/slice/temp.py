@@ -1,45 +1,9 @@
 """
-把下列列表中的音元（组合字符）一一映射成unicode私用区的码点，
-一个音元一个码点，在构造字典时用码点作键还是用用音元作键好？
- [
-    "i˥",
-    "i˦",
-    "i˩",
-    "u˥",
-    "u˦",
-    "u˩",
-    "ʏ˥",
-    "ʏ˦",
-    "ʏ˩",
-    "ᴀ˥",
-    "ᴀ˦",
-    "ᴀ˩",
-    "o˥",
-    "o˦",
-    "o˩",
-    "ᴇ˥",
-    "ᴇ˦",
-    "ᴇ˩",
-    "ʅ˥",
-    "ʅ˦",
-    "ʅ˩",
-    "ɚ˥",
-    "ɚ˦",
-    "ɚ˩",
-    "m˥",
-    "m˦",
-    "m˩",
-    "n˥",
-    "n˦",
-    "n˩",
-    "ŋ˥",
-    "ŋ˦",
-    "ŋ˩"
-  ]
-   """
-"""
-  在syllable\analysis\slice\ganyin_encoder.py中，
-  对create_yinyuan_codepoint_mapping(yinyuan_list)函数，
-如果输入参数不是音元预定义的 yinyuan_list ，而是
-syllable\analysis\slice\yinyuan\yueyin_yinyuan.json的key，
+  在syllable\analysis\slice\shouyin_analyzer.py中，更改处理逻辑：
+  1. 从shouyin_analyzer.py中添加一个函数或更改当前函数
+  2. 在函数中调用dict=GanyinCategorizer.generate_shouyin_data(pinyin_data)方法，生成shouyin_data字典
+  3. 从输入的initial_ipa字典中读取声母对应的的音标
+  4. 当shouyin_data字典的key与initial_ipa字典的key相同时，用后者的的值替换shouyin_data字典的value
+  5. 返回shouyin_data字典并按现有逻辑写入pianyin_initial.json文件
+
   """

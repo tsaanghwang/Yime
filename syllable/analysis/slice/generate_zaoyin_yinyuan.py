@@ -26,16 +26,16 @@ def generate_noise_yinyuan():
 
     # 合并所有初始音
     merged_mapping = {}
-    for yinyuan_type, NoiseClass in [('unpitched', ClearNoise), ('unstable_pitch', VoicedNoise)]:
-        for ipa, initials in pianyin_data['unpitched_pianyin'][yinyuan_type].items():
-            for initial in initials:
+    for yinyuan_type, NoiseClass in [('unpitched_pianyin', ClearNoise), ('unstable_pitch_pianyin', VoicedNoise)]:
+        # 确保访问正确的嵌套结构
+        if yinyuan_type in pianyin_data['indeterminate_pitch_pianyin']:
+            for initial, ipas in pianyin_data['indeterminate_pitch_pianyin'][yinyuan_type].items():
                 if initial not in merged_mapping:
                     merged_mapping[initial] = {
                         "ipa": [], "type": yinyuan_type, "code": ""}
-                merged_mapping[initial]["ipa"].append(ipa)
+                merged_mapping[initial]["ipa"].extend(ipas)
                 merged_mapping[initial]["type"] = yinyuan_type
-                merged_mapping[initial]["code"] = NoiseClass.get_yinyuan_code(
-                    initial)
+                merged_mapping[initial]["code"] = NoiseClass.get_yinyuan_code(initial)
 
     # 按预定义顺序排序
     initial_order = pianyin_data.get('initial_order', [
@@ -62,7 +62,7 @@ def generate_noise_yinyuan():
     }
     for initial in sorted_initials:
         entry = merged_mapping[initial]
-        if entry["type"] == "unpitched":
+        if entry["type"] == "unpitched_pianyin":
             result["unpitched_yinyuan"][initial] = entry["ipa"]
         else:
             result["unstable_pitch_yinyuan"][initial] = entry["ipa"]

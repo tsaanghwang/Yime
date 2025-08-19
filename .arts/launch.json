@@ -2,6 +2,24 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "shouyin_analyzer",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\shouyin_analyzer.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
+      "addSourceRootsToPythonpath": true
+    },
+    {
+      "name": "generate_yinyuan",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\generate_yinyuan.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}",
+      "addSourceRootsToPythonpath": true
+    },
+    {
       "name": "shouyin_ipa",
       "type": "python",
       "request": "launch",
@@ -17,7 +35,8 @@
       "program": "${workspaceFolder}\\generate_noise.py",
       "currentFileConfiguration": false,
       "cwd": "${workspaceFolder}",
-      "addSourceRootsToPythonpath": true
+      "addSourceRootsToPythonpath": true,
+      "noDebug": true
     },
     {
       "name": "ganyin_encoder",

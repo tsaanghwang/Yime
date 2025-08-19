@@ -3,62 +3,66 @@
 功能：确定首音音标和划分首音类别。
 """
 
-
 import json
-from pathlib import Path
 from indeterminate_pitch_yinyuan import ClearNoise, VoicedNoise
+from ganyin_categorizer import GanyinCategorizer
 
 
-# 根据语音事实预定浊音列表
-VOICED_CONSONANTS = {
-    'm', 'n', 'n̠', 'ŋ', 'l', 'ɾ', 'ʐ', 'ɻ', 'ɹ', 'z',
-    'w', 'ʋ', 'j', 'ɥ', 'ɣ'
+# 根据语音事实预定浊音列表, 双隔音符表示浊零声母
+VOICED_INITIALS = {
+    'm', 'n', 'l', 'r', 'w', 'y', "''"
 }
 
 
-def create_unpitched_pianyin_individuals(unpitched_pianyin_data):
+def create_indeterminate_pitch_pianyin(initial_ipa):
     """创建噪音对象并分类为清音和浊音"""
     voiceless = {}
     voiced = {}
 
-    for unpitched_pianyin, initials in unpitched_pianyin_data.items():
+    for initial, ipa_list in initial_ipa.items():
         # 判断是否为浊音
-        if unpitched_pianyin in VOICED_CONSONANTS:
-            unpitched_pianyin_individual = VoicedUnpitchedPianyin(quality=unpitched_pianyin)
-            if unpitched_pianyin_individual.is_valid():
-                voiced[unpitched_pianyin] = initials
+        if initial in VOICED_INITIALS:
+            indeterminate_pitch_pianyin = VoicedNoise(quality=initial)
+            if indeterminate_pitch_pianyin.is_valid():
+                voiced[initial] = ipa_list
         else:
-            unpitched_pianyin_individual = ClearPianyin(quality=unpitched_pianyin)
-            if unpitched_pianyin_individual.is_valid():
-                voiceless[unpitched_pianyin] = initials
+            indeterminate_pitch_pianyin = ClearNoise(quality=initial)
+            if indeterminate_pitch_pianyin.is_valid():
+                voiceless[initial] = ipa_list
 
-    return {"voiceless": voiceless, "voiced": voiced}
+    return {"unpitched_pianyin": voiceless, "unstable_pitch_pianyin": voiced}
 
 
-def reverse_initial_mapping(initial_data):
-    """反转声母-噪音映射关系"""
-    reversed_mapping = {}
-    for initial, unpitched_pianyin_list in initial_data.items():
-        for unpitched_pianyin in unpitched_pianyin_list:
-            if unpitched_pianyin not in reversed_mapping:
-                reversed_mapping[unpitched_pianyin] = []
-            reversed_mapping[unpitched_pianyin].append(initial)
-    return reversed_mapping
+def merge_shouyin_data(initial_ipa):
+    """
+    生成并合并首音数据
+    1. 调用GanyinCategorizer生成首音数据
+    2. 用initial_ipa中的音标列表替换匹配的声母音标
+    """
+    # 生成原始首音数据 - 创建一个模拟的拼音字典，只包含声母
+    mock_pinyin_data = {initial: initial for initial in initial_ipa.keys()}
+    shouyin_data = GanyinCategorizer.generate_shouyin_data(mock_pinyin_data)
 
+    # 替换匹配的声母音标，保持原始列表形式
+    for initial, ipa_list in initial_ipa.items():
+        if initial in shouyin_data:
+            shouyin_data[initial] = ipa_list  # 直接使用整个音标列表
+
+    return shouyin_data
 
 def main():
-    # 1. 读取声母-噪音映射文件
-    with open('pianyin/initial_pianyin.json', 'r', encoding='utf-8') as f:
-        initial_pianyin = json.load(f)
+    # 1. 读取声母与音标的映射文件
+    with open('yinyuan/initial_ipa.json', 'r', encoding='utf-8') as f:
+        initial_ipa = json.load(f)
 
-    # 2. 反转映射关系
-    reversed_mapping = reverse_initial_mapping(initial_pianyin['initial'])
+    # 2. 生成并合并首音数据
+    shouyin_data = merge_shouyin_data(initial_ipa['initial'])
 
     # 3. 使用UnpitchedPianyin类验证噪音数据并分类
-    classified_unpitched_pianyin = create_unpitched_pianyin_individuals(reversed_mapping)
+    classified_noise = create_indeterminate_pitch_pianyin(initial_ipa['initial'])
 
-    # 4. 读取现有的噪音-声母文件
-    with open('pianyin/pianyin_initial.json', 'r', encoding='utf-8') as f:
+    # 4. 读取现有的噪音声母文件
+    with open('yinyuan/pianyin_initial.json', 'r', encoding='utf-8') as f:
         pianyin_initial = json.load(f)
 
     # 5. 更新噪音部分并保留元数据
@@ -66,15 +70,15 @@ def main():
         "name": pianyin_initial["name"],
         "description": pianyin_initial["description"],
         "note": pianyin_initial["note"],
-        "unpitched_pianyin": classified_unpitched_pianyin
-
+        "initial": shouyin_data,
+        "indeterminate_pitch_pianyin": classified_noise
     }
 
     # 6. 保存结果
-    with open('pianyin/pianyin_initial.json', 'w', encoding='utf-8') as f:
+    with open('yinyuan/pianyin_initial.json', 'w', encoding='utf-8') as f:
         json.dump(output, f, ensure_ascii=False, indent=2)
 
-    print("噪音-声母映射已成功生成并更新在 pianyin/pianyin_initial.json")
+    print("首音和噪音声母映射已成功生成并更新在 pianyin_initial.json中")
 
 
 if __name__ == '__main__':
