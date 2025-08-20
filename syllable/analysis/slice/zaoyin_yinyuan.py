@@ -27,11 +27,7 @@ class NoiseYinyuan(IndeterminatePitchYinyuan):
     quality: str = ""  # 音质特征
     duration: DurationType = 'neutral'  # 时长类型
     loudness: LoudnessType = 'neutral'  # 响度类型
-
-    @property
-    def pitch(self) -> Optional[bool]:
-        """返回音调信息，None表示无调，True表示有不稳定音高"""
-        return None  # 默认实现返回None，子类可以覆盖
+    pitch: Optional[bool] = None  # 改为普通实例属性，None表示无调，True表示有不稳定音高
 
     def is_valid(self) -> bool:
         """验证音元是否有效"""
@@ -42,37 +38,33 @@ class NoiseYinyuan(IndeterminatePitchYinyuan):
         self.pitch = None
 
     def _process_mid_high_model(self, data: Dict) -> Dict:
-        """处理中高模型数据，将音质和音高信息转换为音元符号
-
-        Args:
-            data: 包含音质和音高信息的字典，格式为 {temp: (quality, pitch)}
-
-        Returns:
-            处理后的音元符号字典
-        """
+        """处理中高模型数据，将音质和音高信息转换为音元符号"""
         result = {}
         for key, (quality, pitch) in data.items():
             self.quality = quality
-            if pitch:  # 如果有音高信息
-                self.pitch = True  # 设置为不稳定音高
-            else:
-                self.pitch = None  # 设置为无调音元
+            self.pitch = pitch  # 现在可以直接设置
             if self.is_valid():
                 result[key] = f"{self.quality}{'ˊ' if self.pitch else ''}"
         return result
 
     def _change_pitch_style(self, data: Dict) -> Dict:
-        """修改音调标记风格"""
-        return {
-            shouyin_type: {
-                shouyin_name: {
-                    part: symbol.replace("ˊ", "ˉ") if isinstance(symbol, str) else symbol
-                    for part, symbol in parts.items()
-                }
-                for shouyin_name, parts in shouyin_data.items()
-            }
-            for shouyin_type, shouyin_data in data.items()
-        }
+        """
+        修改音调标记风格：将所有字符串中的 'ˊ' 替换为 'ˉ'，并兼容 parts 既可能为 dict 也可能为 str 的情况。
+        """
+        result = {}
+        for shouyin_type, shouyin_data in data.items():
+            result[shouyin_type] = {}
+            for shouyin_name, parts in shouyin_data.items():
+                if isinstance(parts, dict):
+                    result[shouyin_type][shouyin_name] = {
+                        part: (symbol.replace("ˊ", "ˉ") if isinstance(symbol, str) else symbol)
+                        for part, symbol in parts.items()
+                    }
+                elif isinstance(parts, str):
+                    result[shouyin_type][shouyin_name] = parts.replace("ˊ", "ˉ")
+                else:
+                    result[shouyin_type][shouyin_name] = parts
+        return result
 
 @dataclass
 class ClearNoise(NoiseYinyuan):

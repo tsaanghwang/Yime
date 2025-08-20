@@ -15,7 +15,7 @@
         "description": "由 ClearNoise和VoicedNoise 两类音元组成",
         indeterminate_pitch_yinyuan: {
         "unpitched_yinyuan": {},
-        "unstable_pitch_yinyuyuan": {},
+        "unstable_pitch_yinyuan": {},
         "codes": {}
         },
         并修改相应代码
