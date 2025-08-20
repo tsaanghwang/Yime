@@ -50,20 +50,25 @@ class ShouyinEncoder:
     def process_shouyin(self, shouyin_data: Dict[str, Any]) -> Dict[str, Any]:
         """处理首音数据生成音元序列"""
         result = {}
-        for shouyin_type, shouyin_list in shouyin_data.items():
-            if isinstance(shouyin_list, dict):  # 如果是字典结构
+        for shouyin_type, shouyin_content in shouyin_data.items():
+            if isinstance(shouyin_content, dict):  # 如果是字典结构
                 result[shouyin_type] = {
-                    shouyin_name: {
-                        "首音": self.convert_pianyin_to_yinyuan(parts.get("首音", "")) if isinstance(parts, dict) else self.convert_pianyin_to_yinyuan(parts),
+                    "name": shouyin_content.get("name", ""),
+                    "description": shouyin_content.get("description", ""),
+                    "yinyuan": {
+                        shouyin_name: {
+                            "首音": self.convert_pianyin_to_yinyuan(parts.get("首音", "")) if isinstance(parts, dict) else self.convert_pianyin_to_yinyuan(parts),
+                        }
+                        for shouyin_name, parts in shouyin_content.get("indeterminate_pitch_yinyuan", {}).items()
                     }
-                    for shouyin_name, parts in shouyin_list.items()
                 }
-            else:  # 如果是列表或其他结构
+            elif isinstance(shouyin_content, list):  # 明确处理列表类型
                 result[shouyin_type] = {
-                    shouyin_name: {
-                        "首音": self.convert_pianyin_to_yinyuan(shouyin_name),
-                    }
-                    for shouyin_name in shouyin_list
+                    "首音": [self.convert_pianyin_to_yinyuan(item) for item in shouyin_content]
+                }
+            else:  # 其他类型(如字符串)
+                result[shouyin_type] = {
+                    "首音": self.convert_pianyin_to_yinyuan(shouyin_content),
                 }
         return result
 
@@ -76,8 +81,22 @@ class ShouyinEncoder:
         with open(noise_yinyuan_path, "r", encoding="utf-8") as f:
             noise_yinyuan_data = json.load(f)
 
-        yinyuan_symbols = map_shouyin_to_codepoint(list(noise_yinyuan_data.keys()))
-        encoding_data = {"yinyuan_symbols": yinyuan_symbols}
+        # 从新的数据结构中提取音元符号
+        yinyuan_symbols = []
+        if "indeterminate_pitch_yinyuan" in noise_yinyuan_data:
+            for category in ["unpitched_yinyuan", "unstable_pitch_yinyuan"]:
+                if category in noise_yinyuan_data["indeterminate_pitch_yinyuan"]:
+                    yinyuan_symbols.extend(noise_yinyuan_data["indeterminate_pitch_yinyuan"][category].keys())
+
+        yinyuan_mapping = map_shouyin_to_codepoint(yinyuan_symbols)
+        encoding_data = {
+            "name": noise_yinyuan_data.get("name", {}),
+            "description": noise_yinyuan_data.get("description", ""),
+            "indeterminate_pitch_yinyuan": {
+                "codes": yinyuan_mapping
+            }
+        }
+
         encoding_path = base_dir / "yinyuan" / "noise_yinyuan_encoding.json"
         self.save_yinyuan_data(encoding_path, encoding_data)
 
@@ -96,10 +115,12 @@ class ShouyinEncoder:
         # 4. 生成首音音符格式数据
         notes_data = {
             shouyin_type: {
-                shouyin_name: {
-                    part: yinyuan_symbols.get(symbol, symbol)
-                    for part, symbol in parts.items()
-                }
+                shouyin_name: (
+                    {part: yinyuan_mapping.get(symbol, symbol) for part, symbol in parts.items()}
+                    if isinstance(parts, dict)
+                    else yinyuan_mapping.get(parts, parts) if isinstance(parts, str)
+                    else parts
+                )
                 for shouyin_name, parts in marks_data[shouyin_type].items()
             }
             for shouyin_type in marks_data
@@ -109,7 +130,7 @@ class ShouyinEncoder:
 
         # 5. 生成简化版首音音符数据
         simplified_notes_data = {
-            shouyin_name: "".join(parts.values())
+            shouyin_name: "".join(parts.values()) if isinstance(parts, dict) else str(parts)
             for shouyin_type in notes_data
             for shouyin_name, parts in notes_data[shouyin_type].items()
         }
