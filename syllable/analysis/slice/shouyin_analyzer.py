@@ -2,7 +2,7 @@
 首音分析
 功能：确定首音音标和划分首音类别。
 """
-
+import os
 import json
 from zaoyin_yinyuan import ClearNoise, VoicedNoise
 from ganyin_categorizer import GanyinCategorizer
@@ -116,7 +116,11 @@ def main():
         classified_noise = create_indeterminate_pitch_pianyin()
 
         # 3. 读取现有的噪音声母文件
-        with open('yinyuan/pianyin_initial.json', 'r', encoding='utf-8') as f:
+
+        base_dir = os.path.dirname(__file__)
+        pianyin_initial_path = os.path.join(base_dir, 'yinyuan', 'pianyin_initial.json')
+
+        with open(pianyin_initial_path, 'r', encoding='utf-8') as f:
             pianyin_initial = json.load(f)
 
         # 4. 更新噪音部分并保留元数据
@@ -128,7 +132,7 @@ def main():
         }
 
         # 5. 保存结果
-        with open('yinyuan/pianyin_initial.json', 'w', encoding='utf-8') as f:
+        with open(pianyin_initial_path, 'w', encoding='utf-8') as f:
             json.dump(output, f, ensure_ascii=False, indent=2)
 
         print("首音和噪音声母映射已成功生成并更新在 pianyin_initial.json中")

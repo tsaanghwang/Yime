@@ -3,18 +3,18 @@ from pathlib import Path
 from typing import Dict, Any
 from yueyin_yinyuan import YueyinYinyuan
 
-def map_yinyuan_to_codepoint(yinyuan_list):
+def map_yueyin_to_codepoint(yueyin_list):
     """从音元符号列表创建音元到编码点的映射
 
     Args:
-        yinyuan_list: 音元符号列表(如从yueyin_yinyuan.json的keys获取)
+        yueyin_list: 音元符号列表(如从yueyin_yinyuan.json的keys获取)
 
     Returns:
         返回一个字典，key是音元符号(如"ɪ́")，value是对应的编码点字符
     """
     start_codepoint = 0x100020  # 从补充私用区开始
     return {yinyuan: chr(start_codepoint + i)
-           for i, yinyuan in enumerate(yinyuan_list)}
+           for i, yinyuan in enumerate(yueyin_list)}
 
 class GanyinEncoder:
     """干音编码处理器，整合音元映射和音元序列生成功能"""
@@ -66,7 +66,7 @@ class GanyinEncoder:
         with open(yueyin_yinyuan_path, "r", encoding="utf-8") as f:
             yueyin_yinyuan_data = json.load(f)
 
-        yinyuan_symbols = map_yinyuan_to_codepoint(list(yueyin_yinyuan_data.keys()))
+        yinyuan_symbols = map_yueyin_to_codepoint(list(yueyin_yinyuan_data.keys()))
         encoding_data = {"yinyuan_symbols": yinyuan_symbols}
         encoding_path = base_dir / "yinyuan" / "yueyin_yinyuan_encoding.json"
         self.save_yinyuan_data(encoding_path, encoding_data)
