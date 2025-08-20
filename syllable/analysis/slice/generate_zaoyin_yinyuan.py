@@ -24,18 +24,26 @@ def generate_noise_yinyuan():
     with open(input_path, 'r', encoding='utf-8') as f:
         pianyin_data = json.load(f)
 
+    # 检查数据结构是否包含所需字段
+    if 'indeterminate_pitch_pinyin' not in pianyin_data:
+        raise KeyError("输入文件中缺少 'indeterminate_pitch_pinyin' 字段")
+
     # 合并所有初始音
     merged_mapping = {}
-    for yinyuan_type, NoiseClass in [('unpitched_pianyin', ClearNoise), ('unstable_pitch_pianyin', VoicedNoise)]:
-        # 确保访问正确的嵌套结构
-        if yinyuan_type in pianyin_data['indeterminate_pitch_pianyin']:
-            for initial, ipas in pianyin_data['indeterminate_pitch_pianyin'][yinyuan_type].items():
-                if initial not in merged_mapping:
-                    merged_mapping[initial] = {
-                        "ipa": [], "type": yinyuan_type, "code": ""}
-                merged_mapping[initial]["ipa"].extend(ipas)
-                merged_mapping[initial]["type"] = yinyuan_type
-                merged_mapping[initial]["code"] = NoiseClass.get_yinyuan_code(initial)
+    for yinyuan_type, NoiseClass in [('unpitched_pianyin', ClearNoise), ('unstable_pitch_pinyin', VoicedNoise)]:
+        if yinyuan_type not in pianyin_data['indeterminate_pitch_pinyin']:
+            continue
+
+        for initial, ipas in pianyin_data['indeterminate_pitch_pinyin'][yinyuan_type].items():
+            if initial not in merged_mapping:
+                merged_mapping[initial] = {
+                    "ipa": [],
+                    "type": yinyuan_type,
+                    "code": ""
+                }
+            merged_mapping[initial]["ipa"].extend(ipas)
+            merged_mapping[initial]["type"] = yinyuan_type
+            merged_mapping[initial]["code"] = NoiseClass.get_yinyuan_code(initial)
 
     # 按预定义顺序排序
     initial_order = pianyin_data.get('initial_order', [
@@ -48,8 +56,7 @@ def generate_noise_yinyuan():
     ])
     sorted_initials = sorted(
         merged_mapping.keys(),
-        key=lambda x: (initial_order.index(
-            x) if x in initial_order else len(initial_order), x)
+        key=lambda x: (initial_order.index(x) if x in initial_order else len(initial_order), x)
     )
 
     # 组织输出结构

@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Dict, Any
 from yueyin_yinyuan import YueyinYinyuan
 
-def create_yinyuan_mapping(yinyuan_list):
+def map_yinyuan_to_codepoint(yinyuan_list):
     """从音元符号列表创建音元到编码点的映射
 
     Args:
@@ -66,7 +66,7 @@ class GanyinEncoder:
         with open(yueyin_yinyuan_path, "r", encoding="utf-8") as f:
             yueyin_yinyuan_data = json.load(f)
 
-        yinyuan_symbols = create_yinyuan_mapping(list(yueyin_yinyuan_data.keys()))
+        yinyuan_symbols = map_yinyuan_to_codepoint(list(yueyin_yinyuan_data.keys()))
         encoding_data = {"yinyuan_symbols": yinyuan_symbols}
         encoding_path = base_dir / "yinyuan" / "yueyin_yinyuan_encoding.json"
         self.save_yinyuan_data(encoding_path, encoding_data)
