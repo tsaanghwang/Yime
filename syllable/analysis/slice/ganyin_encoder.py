@@ -66,10 +66,26 @@ class GanyinEncoder:
         with open(yueyin_yinyuan_path, "r", encoding="utf-8") as f:
             yueyin_yinyuan_data = json.load(f)
 
-        yinyuan_symbols = map_yueyin_to_codepoint(list(yueyin_yinyuan_data.keys()))
-        encoding_data = {"yinyuan_symbols": yinyuan_symbols}
-        encoding_path = base_dir / "yinyuan" / "yueyin_yinyuan_encoding.json"
-        self.save_yinyuan_data(encoding_path, encoding_data)
+        yueyin = map_yueyin_to_codepoint(list(yueyin_yinyuan_data.keys()))
+        encoding_path = base_dir / "yinyuan" / "yinyuan.json"
+
+        # 修改后的文件保存逻辑：检查文件是否为空
+        encoding_data = {"yueyin": yueyin}
+        try:
+            if encoding_path.exists():
+                with open(encoding_path, "r", encoding="utf-8") as f:
+                    content = f.read()
+                    if content.strip():  # 检查文件内容是否非空
+                        existing_data = json.loads(content)
+                        existing_data["yueyin"] = yueyin
+                        encoding_data = existing_data
+        except json.JSONDecodeError:
+            # 如果文件内容不是有效的JSON，仍然使用新数据覆盖
+            pass
+
+        with open(encoding_path, "w", encoding="utf-8") as f:
+            json.dump(encoding_data, f, ensure_ascii=False, indent=2)
+
 
         # 2. 生成音元序列数据
         input_file = base_dir / 'yinyuan' / 'ganyin_to_pianyin_sequence.json'
@@ -87,7 +103,7 @@ class GanyinEncoder:
         notes_data = {
             ganyin_type: {
                 ganyin_name: {
-                    part: yinyuan_symbols.get(symbol, symbol)
+                    part: yueyin.get(symbol, symbol)
                     for part, symbol in parts.items()
                 }
                 for ganyin_name, parts in marks_data[ganyin_type].items()

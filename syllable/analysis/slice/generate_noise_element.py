@@ -22,7 +22,7 @@ def generate_noise_yinyuan():
     with open(input_path, 'r', encoding='utf-8') as f:
         pianyin_data = json.load(f)
 
-    # 合并所有初始音
+    # 合并所有声母
     merged_mapping = {}
     for yinyuan_type, NoiseClass in [('unpitched', ClearNoise), ('unstable_pitch', VoicedNoise)]:
         for ipa, initials in pianyin_data['unpitched_pianyin'][yinyuan_type].items():

@@ -76,29 +76,39 @@ class ShouyinEncoder:
         """生成所有编码相关文件"""
         base_dir = Path(__file__).parent
 
-        # 1. 生成音元编码映射
-        noise_yinyuan_path = base_dir / "yinyuan" / "noise_yinyuan.json"
+        # 1. 生成音元编码映射 - 修改为使用简化版文件
+        noise_yinyuan_path = base_dir / "yinyuan" / "noise_yinyuan_simplified.json"
         with open(noise_yinyuan_path, "r", encoding="utf-8") as f:
             noise_yinyuan_data = json.load(f)
 
-        # 从新的数据结构中提取音元符号
-        yinyuan_symbols = []
-        if "indeterminate_pitch_yinyuan" in noise_yinyuan_data:
-            for category in ["unpitched_yinyuan", "unstable_pitch_yinyuan"]:
-                if category in noise_yinyuan_data["indeterminate_pitch_yinyuan"]:
-                    yinyuan_symbols.extend(noise_yinyuan_data["indeterminate_pitch_yinyuan"][category].keys())
+        zaoyin = list(noise_yinyuan_data.get("shouyin", {}).keys())
+        zaoyin = map_shouyin_to_codepoint(zaoyin)
 
-        yinyuan_mapping = map_shouyin_to_codepoint(yinyuan_symbols)
+        # 简化输出结构，只保留编码映射部分
         encoding_data = {
-            "name": noise_yinyuan_data.get("name", {}),
-            "description": noise_yinyuan_data.get("description", ""),
-            "indeterminate_pitch_yinyuan": {
-                "codes": yinyuan_mapping
-            }
+            "zaoyin": zaoyin
         }
 
-        encoding_path = base_dir / "yinyuan" / "noise_yinyuan_encoding.json"
+        encoding_path = base_dir / "yinyuan" / "yinyuan.json"
+
+        # 修改后的文件处理逻辑 - 处理空文件或不存在的情况
+        existing_data = {}
+        if encoding_path.exists():
+            try:
+                with open(encoding_path, "r", encoding="utf-8") as f:
+                    content = f.read()
+                    if content.strip():  # 检查文件是否非空
+                        existing_data = json.loads(content)
+            except json.JSONDecodeError:
+                # 如果文件内容不是有效的JSON，创建新文件
+                existing_data = {}
+
+        # 更新数据
+        existing_data.update(encoding_data)
+        encoding_data = existing_data
+
         self.save_yinyuan_data(encoding_path, encoding_data)
+
 
         # 2. 生成音元序列数据
         input_file = base_dir / 'yinyuan' / 'shouyin.json'
@@ -116,9 +126,9 @@ class ShouyinEncoder:
         notes_data = {
             shouyin_type: {
                 shouyin_name: (
-                    {part: yinyuan_mapping.get(symbol, symbol) for part, symbol in parts.items()}
+                    {part: zaoyin.get(symbol, symbol) for part, symbol in parts.items()}
                     if isinstance(parts, dict)
-                    else yinyuan_mapping.get(parts, parts) if isinstance(parts, str)
+                    else zaoyin.get(parts, parts) if isinstance(parts, str)
                     else parts
                 )
                 for shouyin_name, parts in marks_data[shouyin_type].items()
