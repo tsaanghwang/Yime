@@ -20,7 +20,7 @@ class ShouyinEncoder:
     """首音编码处理器，整合音元映射和音元序列生成功能"""
 
     def __init__(self):
-        self.noise_yinyuan = NoiseYinyuan(quality="", pitch="")
+        self.noise_yinyuan = NoiseYinyuan(quality="")
 
     def load_shouyin_data(self, input_path: Path) -> Dict[str, Any]:
         """加载首音数据"""
@@ -36,24 +36,35 @@ class ShouyinEncoder:
         """将片音转换为音元"""
         if not pianyin:
             return ""
-        pianyin = pianyin.split("/")[0]  # 处理多值情况
-        quality = pianyin[:-1] if len(pianyin) > 1 else pianyin
-        pitch = pianyin[-1] if len(pianyin) > 1 else ""
-        processed = self.noise_yinyuan._process_mid_high_model(
-            {"temp": (quality, pitch)})
-        return next(iter(processed.keys())) if processed else ""
+        try:
+            pianyin = pianyin.split("/")[0]  # 处理多值情况
+            quality = pianyin[:-1] if len(pianyin) > 1 else pianyin
+            pitch = bool(pianyin[-1]) if len(pianyin) > 1 else False
+            processed = self.noise_yinyuan._process_mid_high_model(
+                {"temp": (quality, pitch)})
+            return next(iter(processed.values())) if processed else ""
+        except Exception as e:
+            print(f"转换片音到音元时出错: {e}")
+            return ""
 
     def process_shouyin(self, shouyin_data: Dict[str, Any]) -> Dict[str, Any]:
         """处理首音数据生成音元序列"""
         result = {}
         for shouyin_type, shouyin_list in shouyin_data.items():
-            result[shouyin_type] = {
-                shouyin_name: {
-                    "首音": self.convert_pianyin_to_yinyuan(parts.get("首音", "")),
-                    "尾音": self.convert_pianyin_to_yinyuan(parts.get("尾音", ""))
+            if isinstance(shouyin_list, dict):  # 如果是字典结构
+                result[shouyin_type] = {
+                    shouyin_name: {
+                        "首音": self.convert_pianyin_to_yinyuan(parts.get("首音", "")) if isinstance(parts, dict) else self.convert_pianyin_to_yinyuan(parts),
+                    }
+                    for shouyin_name, parts in shouyin_list.items()
                 }
-                for shouyin_name, parts in shouyin_list.items()
-            }
+            else:  # 如果是列表或其他结构
+                result[shouyin_type] = {
+                    shouyin_name: {
+                        "首音": self.convert_pianyin_to_yinyuan(shouyin_name),
+                    }
+                    for shouyin_name in shouyin_list
+                }
         return result
 
     def generate_encoding_files(self):
