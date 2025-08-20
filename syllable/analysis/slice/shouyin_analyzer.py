@@ -81,7 +81,7 @@ def create_indeterminate_pitch_pianyin():
             if indeterminate_pitch_pianyin.is_valid():
                 voiceless[initial] = ipa_list
 
-    return {"unpitched_pianyin": voiceless, "unstable_pitch_pinyin": voiced}
+    return {"unpitched_pianyin": voiceless, "unstable_pitch_pianyin": voiced}
 
 def merge_shouyin_data():
     """
@@ -128,7 +128,7 @@ def main():
             "name": pianyin_initial["name"],
             "description": pianyin_initial["description"],
             "note": pianyin_initial["note"],
-            "indeterminate_pitch_pinyin": classified_noise
+            "indeterminate_pitch_pianyin": classified_noise
         }
 
         # 5. 保存结果

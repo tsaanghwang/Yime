@@ -2,13 +2,23 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "shouyin_encoder",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\shouyin_encoder.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
+      "addSourceRootsToPythonpath": true
+    },
+    {
       "name": "shouyin_analyzer",
       "type": "python",
       "request": "launch",
       "program": "${workspaceFolder}\\syllable\\analysis\\slice\\shouyin_analyzer.py",
       "currentFileConfiguration": false,
       "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
-      "addSourceRootsToPythonpath": true
+      "addSourceRootsToPythonpath": true,
+      "noDebug": true
     },
     {
       "name": "generate_yinyuan",
