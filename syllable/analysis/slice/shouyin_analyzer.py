@@ -4,7 +4,7 @@
 """
 
 import json
-from indeterminate_pitch_yinyuan import ClearNoise, VoicedNoise
+from zaoyin_yinyuan import ClearNoise, VoicedNoise
 from ganyin_categorizer import GanyinCategorizer
 
 

@@ -1,13 +1,13 @@
 """
 噪音类音元数据生成模块
 
-根据 indeterminate_pitch_yinyuan.py 中的 ClearNoise 和 VoicedNoise 类，
+根据 zaoyin_yinyuan.py 中的 ClearNoise 和 VoicedNoise 类，
 直接生成噪音类音元(Noise Yinyuan)的 JSON 数据文件。
 """
 
 import json
 from pathlib import Path
-from indeterminate_pitch_yinyuan import ClearNoise, VoicedNoise
+from zaoyin_yinyuan import ClearNoise, VoicedNoise
 
 
 def generate_noise_yinyuan():
