@@ -17,6 +17,7 @@ def generate_noise_yinyuan():
     base_dir = Path(__file__).parent
     input_path = base_dir / 'yinyuan' / 'pianyin_initial.json'
     output_path = base_dir / 'yinyuan' / 'noise_yinyuan.json'
+    simplified_output_path = base_dir / 'yinyuan' / 'noise_yinyuan_simplified.json'
 
     if not input_path.exists():
         raise FileNotFoundError(f"找不到输入文件: {input_path}")
@@ -28,7 +29,7 @@ def generate_noise_yinyuan():
     if 'indeterminate_pitch_pianyin' not in pianyin_data:
         raise KeyError("输入文件中缺少 'indeterminate_pitch_pianyin' 字段")
 
-    # 合并所有初始音
+    # 合并所有声母
     merged_mapping = {}
     for yinyuan_type, NoiseClass in [('unpitched_pianyin', ClearNoise), ('unstable_pitch_pianyin', VoicedNoise)]:
         if yinyuan_type not in pianyin_data['indeterminate_pitch_pianyin']:
@@ -59,29 +60,41 @@ def generate_noise_yinyuan():
         key=lambda x: (initial_order.index(x) if x in initial_order else len(initial_order), x)
     )
 
-# 组织输出结构
+    # 组织输出结构
     result = {
         "name": {"Indeterminate Pitch Yinyuan": "不定调音元或噪音类音元"},
         "description": "由 ClearNoise和VoicedNoise 两类音元组成",
         "indeterminate_pitch_yinyuan": {
             "unpitched_yinyuan": {},
-            "unstable_pitch_yinyuan": {},
-            "codes": {}
-        }
+            "unstable_pitch_yinyuan": {}
+        },
+        "codes": {}
     }
+
+    # 创建简化版数据结构
+    simplified_result = {}
+
     for initial in sorted_initials:
         entry = merged_mapping[initial]
         if entry["type"] == "unpitched_pianyin":
             result["indeterminate_pitch_yinyuan"]["unpitched_yinyuan"][initial] = entry["ipa"]
         else:
             result["indeterminate_pitch_yinyuan"]["unstable_pitch_yinyuan"][initial] = entry["ipa"]
-        result["indeterminate_pitch_yinyuan"]["codes"][initial] = entry["code"]
+        result["codes"][initial] = entry["code"]
+
+        # 添加到简化版数据结构
+        simplified_result[initial] = entry["ipa"]
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with open(output_path, 'w', encoding='utf-8') as f:
         json.dump(result, f, ensure_ascii=False, indent=2)
 
+    # 保存简化版文件
+    with open(simplified_output_path, 'w', encoding='utf-8') as f:
+        json.dump({"shouyin": simplified_result}, f, ensure_ascii=False, indent=2)
+
     print(f"已生成噪音类音元文件: {output_path}")
+    print(f"已生成简化版噪音类音元文件: {simplified_output_path}")
     print(f"无调音元: {len(result['indeterminate_pitch_yinyuan']['unpitched_yinyuan'])} 个，"
         f"不稳定音高音元: {len(result['indeterminate_pitch_yinyuan']['unstable_pitch_yinyuan'])} 个")
 

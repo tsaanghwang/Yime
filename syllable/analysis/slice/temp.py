@@ -1,22 +1,9 @@
 """
-  在syllable\analysis\slice\generate_zaoyin_yinyuan.py中，更改输出文件结构：
-把当前结构：
-    result = {
-        "name": {"Indeterminate Pitch Yinyuan": "不定调音元或噪音类音元"},
-        "description": "由 ClearNoise和VoicedNoise 两类音元组成",
-        "unpitched_yinyuan": {},
-        "unstable_pitch_yinyuan": {},
-        "codes": {}
+  在syllable\analysis\slice\generate_zaoyin_yinyuan.py中，在生成noise_yinyuan.json时，同时
+  输入文件改成使用简化版的noise_yinyuan_simplified.json.
+  输出文件结构:
+      result = {
+        "shouyin": ["ipa1", "ipa2"], ...
     }
 
-改为：
-    result = {
-        "name": {"Indeterminate Pitch Yinyuan": "不定调音元或噪音类音元"},
-        "description": "由 ClearNoise和VoicedNoise 两类音元组成",
-        indeterminate_pitch_yinyuan: {
-        "unpitched_yinyuan": {},
-        "unstable_pitch_yinyuan": {},
-        "codes": {}
-        },
-        并修改相应代码
   """
