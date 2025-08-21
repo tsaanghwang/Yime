@@ -10,14 +10,14 @@ from pathlib import Path
 from zaoyin_yinyuan import ClearNoise, VoicedNoise
 
 
-def generate_noise_yinyuan():
+def generate_zaoyin_yinyuan():
     """
     读取 yinyuan/pianyin_initial.json，生成噪音类音元 JSON 文件。
     """
     base_dir = Path(__file__).parent
     input_path = base_dir / 'yinyuan' / 'pianyin_initial.json'
-    output_path = base_dir / 'yinyuan' / 'noise_yinyuan.json'
-    simplified_output_path = base_dir / 'yinyuan' / 'noise_yinyuan_simplified.json'
+    output_path = base_dir / 'yinyuan' / 'zaoyin_yinyuan.json'
+    simplified_output_path = base_dir / 'yinyuan' / 'zaoyin_yinyuan_simplified.json'
 
     if not input_path.exists():
         raise FileNotFoundError(f"找不到输入文件: {input_path}")
@@ -99,4 +99,4 @@ def generate_noise_yinyuan():
         f"不稳定音高音元: {len(result['indeterminate_pitch_yinyuan']['unstable_pitch_yinyuan'])} 个")
 
 if __name__ == "__main__":
-    generate_noise_yinyuan()
+    generate_zaoyin_yinyuan()
