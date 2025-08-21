@@ -1,7 +1,8 @@
 # 音节分成首音和干音两段
 # 干音分成呼音和韵音两段
 # 韵音分成主音和末音两段
-# 首音由噪音充当，呼音、主音和末音由乐音充当
+# 首音由噪音充当
+# 呼音、主音和末音由乐音充当
 #  噪音和乐音统称音元
 
 class Yinjie:
@@ -14,22 +15,22 @@ class Yinjie:
         - 主音(乐音)
         - 末音(乐音)
     """
-    
+
     def __init__(self, initial=None, ascender=None, peak=None, descender=None):
         """
         初始化音节对象
-        
+
         参数:
             initial: 首音(噪音)
             ascender: 呼音(乐音)
             peak: 主音(乐音)
             descender: 末音(乐音)
         """
-        self.initial = initial  # 首音(音节的第一部分)
-        self.ascender = ascender    # 呼音(干音的第一部分)
-        self.peak = peak  # 主音(韵音的第一部分)
-        self.descender = descender        # 末音(韵音的第二部分)
-    
+        self.initial = initial  # 首音(音节的首段)
+        self.ascender = ascender    # 呼音(韵音、干音和音节的呼段——峰前段)
+        self.peak = peak  # 主音(韵音、干音和音节的主段——峰值段)
+        self.descender = descender        # 末音(韵音、干音和音节的末段——峰后段)
+
     @property
     def ganyin(self):
         """干音部分，由呼音和韵音组成"""
@@ -40,7 +41,7 @@ class Yinjie:
                 'descender': self.descender
             }
         }
-    
+
     def __str__(self):
         """返回音节的字符串表示"""
         parts = []
