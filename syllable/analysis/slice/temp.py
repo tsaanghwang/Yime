@@ -2,7 +2,7 @@
   在syllable\analysis\slice\shouyin_encoder.py中，修改105-110行：
   "        # 2. 生成音元序列数据
         input_file = base_dir / 'yinyuan' / 'shouyin.json'
-        output_file = base_dir / 'yinyuan' / 'shouyin_to_yinyuan.json'
+        output_file = base_dir / 'yinyuan' / 'shouyin_yinyuan.json'
         shouyin_data = self.load_shouyin_data(input_file)
         yinyuan_data = self.process_shouyin(shouyin_data)
         self.save_yinyuan_data(output_file, yinyuan_data)

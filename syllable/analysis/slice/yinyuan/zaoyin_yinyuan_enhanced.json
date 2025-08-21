@@ -1,0 +1,128 @@
+{
+  "name": {
+    "Indeterminate Pitch Yinyuan": "不定调音元或噪音类音元"
+  },
+  "description": "由 ClearNoise和VoicedNoise 两类音元组成",
+  "indeterminate_pitch_yinyuan": {
+    "unpitched_yinyuan": {
+      "b": [
+        "p"
+      ],
+      "p": [
+        "pͪ"
+      ],
+      "f": [
+        "f",
+        "ɸ"
+      ],
+      "d": [
+        "t"
+      ],
+      "t": [
+        "tͪ"
+      ],
+      "g": [
+        "k"
+      ],
+      "k": [
+        "kͪ"
+      ],
+      "h": [
+        "x",
+        "χ",
+        "h"
+      ],
+      "z": [
+        "ʦ"
+      ],
+      "c": [
+        "ʦͪ"
+      ],
+      "s": [
+        "s"
+      ],
+      "zh": [
+        "ʈʂ",
+        "ꭧ"
+      ],
+      "ch": [
+        "ʈʂͪ",
+        "ꭧͪ"
+      ],
+      "sh": [
+        "ʂ"
+      ],
+      "j": [
+        "ʨ"
+      ],
+      "q": [
+        "ʨͪ"
+      ],
+      "x": [
+        "ɕ"
+      ],
+      "'": [
+        "ʔ",
+        ""
+      ]
+    },
+    "unstable_pitch_yinyuan": {
+      "m": [
+        "m"
+      ],
+      "l": [
+        "l",
+        "ɾ"
+      ],
+      "n": [
+        "n",
+        "n̠"
+      ],
+      "r": [
+        "ɻ",
+        "ʐ",
+        "ɹ",
+        "z"
+      ],
+      "''": [
+        "ɣ",
+        "ŋ"
+      ],
+      "w": [
+        "w",
+        "ʋ"
+      ],
+      "y": [
+        "j",
+        "ɥ"
+      ]
+    }
+  },
+  "codes": {
+    "b": "UPY_B",
+    "p": "UPY_P",
+    "f": "UPY_F",
+    "m": "UPY_M",
+    "d": "UPY_D",
+    "t": "UPY_T",
+    "l": "UPY_L",
+    "n": "UPY_N",
+    "g": "UPY_G",
+    "k": "UPY_K",
+    "h": "UPY_H",
+    "z": "UPY_Z",
+    "c": "UPY_C",
+    "s": "UPY_S",
+    "zh": "UPY_ZH",
+    "ch": "UPY_CH",
+    "sh": "UPY_SH",
+    "r": "UPY_R",
+    "j": "UPY_J",
+    "q": "UPY_Q",
+    "x": "UPY_X",
+    "'": "UPY_'",
+    "''": "UPY_''",
+    "w": "UPY_W",
+    "y": "UPY_Y"
+  }
+}

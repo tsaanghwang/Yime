@@ -48,41 +48,62 @@ class ShouyinEncoder:
         return {}
 
     def generate_encoding_files(self):
-        """生成所有编码相关文件"""
-        base_dir = Path(__file__).parent
+            """生成所有编码相关文件"""
+            base_dir = Path(__file__).parent
 
-        # 1. 生成音元编码映射
-        zaoyin_yinyuan_path = base_dir / "yinyuan" / "zaoyin_yinyuan_simplified.json"
-        with open(zaoyin_yinyuan_path, "r", encoding="utf-8") as f:
-            zaoyin_yinyuan_data = json.load(f)
+            # 1. 生成音元编码映射 - 修改为使用简化版文件
+            zaoyin_yinyuan_path = base_dir / "yinyuan" / "zaoyin_yinyuan.json"
+            with open(zaoyin_yinyuan_path, "r", encoding="utf-8") as f:
+                zaoyin_yinyuan_data = json.load(f)
 
-        zaoyin = list(zaoyin_yinyuan_data.get("shouyin", {}).keys())
-        zaoyin = map_shouyin_to_codepoint(zaoyin)
+            zaoyin = list(zaoyin_yinyuan_data.get("shouyin", {}).keys())
+            zaoyin = map_shouyin_to_codepoint(zaoyin)
 
-        # 保存编码映射
-        encoding_path = base_dir / "yinyuan" / "yinyuan.json"
-        self.save_yinyuan_data(encoding_path, {"zaoyin": zaoyin})
+            # 简化输出结构，只保留编码映射部分
+            encoding_data = {
+                "zaoyin": zaoyin
+            }
 
-        # 2. 生成首音符号映射
-        input_file = base_dir / 'yinyuan' / 'zaoyin_yinyuan_simplified.json'
-        output_file = base_dir / 'yinyuan' / 'shouyin_to_yinyuan.json'
+            encoding_path = base_dir / "yinyuan" / "yinyuan.json"
 
-        shouyin_data = self.load_shouyin_data(input_file)
-        yinyuan_data = self.process_shouyin(shouyin_data)
+            # 恢复文件追加逻辑 - 处理空文件或不存在的情况
+            existing_data = {}
+            if encoding_path.exists():
+                try:
+                    with open(encoding_path, "r", encoding="utf-8") as f:
+                        content = f.read()
+                        if content.strip():  # 检查文件是否非空
+                            existing_data = json.loads(content)
+                except json.JSONDecodeError:
+                    # 如果文件内容不是有效的JSON，创建新文件
+                    existing_data = {}
 
-        # 获取首音列表并映射为编码点
-        shouyin_list = yinyuan_data.get("首音", [])
-        codepoint_mapping = map_shouyin_to_codepoint(shouyin_list)
+            # 更新数据
+            existing_data.update(encoding_data)
+            encoding_data = existing_data
 
-        # 保存结果
-        result_data = {
-            "首音": {shouyin: codepoint for shouyin, codepoint in codepoint_mapping.items()}
-        }
-        self.save_yinyuan_data(output_file, result_data)
+            self.save_yinyuan_data(encoding_path, encoding_data)
 
-        print(f"首音编码文件已生成:")
-        print(f"- 音元符号映射: {encoding_path}")
-        print(f"- 首音符号映射: {output_file}")
+            # 2. 生成首音符号映射
+            input_file = base_dir / 'yinyuan' / 'zaoyin_yinyuan.json'
+            output_file = base_dir / 'yinyuan' / 'shouyin_yinyuan.json'
+
+            shouyin_data = self.load_shouyin_data(input_file)
+            yinyuan_data = self.process_shouyin(shouyin_data)
+
+            # 获取首音列表并映射为编码点
+            shouyin_list = yinyuan_data.get("首音", [])
+            codepoint_mapping = map_shouyin_to_codepoint(shouyin_list)
+
+            # 保存结果
+            result_data = {
+                "首音": {shouyin: codepoint for shouyin, codepoint in codepoint_mapping.items()}
+            }
+            self.save_yinyuan_data(output_file, result_data)
+
+            print(f"  首音编码字典:")
+            print(f"- 噪音码元映射: {encoding_path}")
+            print(f"- 首音码元映射: {output_file}")
 
 def main():
     encoder = ShouyinEncoder()

@@ -16,8 +16,8 @@ def generate_zaoyin_yinyuan():
     """
     base_dir = Path(__file__).parent
     input_path = base_dir / 'yinyuan' / 'pianyin_initial.json'
-    output_path = base_dir / 'yinyuan' / 'zaoyin_yinyuan.json'
-    simplified_output_path = base_dir / 'yinyuan' / 'zaoyin_yinyuan_simplified.json'
+    output_path = base_dir / 'yinyuan' / 'zaoyin_yinyuan_enhanced.json'
+    simplified_output_path = base_dir / 'yinyuan' / 'zaoyin_yinyuan.json'
 
     if not input_path.exists():
         raise FileNotFoundError(f"找不到输入文件: {input_path}")
