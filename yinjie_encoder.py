@@ -8,56 +8,64 @@
     4. 调用syllable\analysis\slice\ganyin_encoder.py将干音类对象转换为code序列
     5. 将shouyin_code和ganyin_code序列拼接为音节code
     6. 将音节code写入文件
-    7. 将音节code写入数据库
-    8. 将音节code写入redis
 
 """
-import sys
-from pathlib import Path
 from typing import Dict, Any
 import json
-sys.path.append(str(Path(__file__).parent / "syllable" / "analysis" / "slice"))
+import sys
+from pathlib import Path
 
-from syllable.analysis.slice.run_analyzer import analyze_syllable
+# 添加项目根目录到 Python 路径
+project_root = Path(__file__).parent.parent  # 注意这里改为.parent.parent
+sys.path.append(str(project_root))
+
+# 然后进行其他导入
+sys.path.append(str(Path(__file__).parent / "syllable" / "analysis" / "slice"))
 from syllable.analysis.slice.run_analyzer import analyze_syllable
 from syllable.analysis.slice.ganyin_categorizer import GanyinCategorizer
-from syllable.analysis.slice.ganyin_encoder import encode_ganyin
-from syllable.analysis.slice.shouyin_encoder import encode_shouyin
+from syllable.analysis.slice.ganyin_encoder import GanyinEncoder
+from syllable.analysis.slice.shouyin_encoder import ShouyinEncoder
 
-sys.path.append(str(Path(__file__).parent))
+sys.path.append(str(Path(__file__).parent.parent.parent))  # Adjust the path as needed
+from pianyin import pitched_yinyuan
+# from pinyin.hanzi_pinyin import pinyin_normalizer
 
 # 步骤1：定义读取音节数据的路径
-PINYIN_JSON_PATH = Path(__file__).parent / "pinyin" / "hanzi_pinyin" / "pinyin_normalized.json"
+sys.path.append(str(Path(__file__).parent / "pinyin" / "hanzi_pinyin"))
+# import pinyin_normalizer
+# PINYIN_JSON_PATH = Path(__file__).parent / "pinyin" / "hanzi_pinyin" / "pinyin_normalized.json"
 
 # 步骤2-4：导入音节切分和编码相关模块
 
-def encode_yinjie_syllable(syllable: str) -> str:
+def encode_single_yinjie(syllable: str) -> str:
     """
     对单个音节进行编码，返回编码字符串
     """
-    # 步骤2：切分音节为首音和干音
+    # 切分音节为首音和干音
     shouyin, ganyin = analyze_syllable(syllable)
-    # 步骤3：编码首音
-    shouyin_code = encode_shouyin(shouyin)
-    # 步骤4：编码干音
-    ganyin_code = encode_ganyin(ganyin)
-    # 步骤5：拼接编码
-    return shouyin_code + ganyin_code
+    # 编码首音
+    shouyin_code = ShouyinEncoder.encode_shouyin('', shouyin = Dict)
+    # 编码干音
+    ganyin_code = GanyinEncoder.encode_ganyin('', ganyin_data = Dict)
+    # 拼接编码
+    yinjie = shouyin_code["首音"] + ganyin_code["呼音"] + ganyin_code["主音"] + ganyin_code["末音"]
+    # 返回编码
+    return yinjie
 
 def encode_all_yinjie():
     """
     读取音节数据，批量编码所有音节，写入文件/数据库/redis
     """
     # 步骤1：读取音节数据
-    with open(PINYIN_JSON_PATH, "r", encoding="utf-8") as f:
+    with open(Path(__file__) / "pinyin_normalized.json", "r", encoding="utf-8") as f:
         pinyin_data = json.load(f)
     yinjie_list = list(pinyin_data.keys())
 
-    # 步骤5：生成音节编码字典
+    # 生成音节编码字典
     yinjie_code_dict = {}
     for yinjie in yinjie_list:
         try:
-            code = encode_yinjie_syllable(yinjie)
+            code = encode_single_yinjie(yinjie)
             yinjie_code_dict[yinjie] = code
         except Exception as e:
             # 可以记录日志或跳过异常音节
@@ -69,20 +77,16 @@ def encode_all_yinjie():
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(yinjie_code_dict, f, ensure_ascii=False, indent=2)
 
-    # 步骤7/8：写入数据库/redis（此处仅预留接口，具体实现视项目需求）
-    # save_to_database(yinjie_code_dict)
-    # save_to_redis(yinjie_code_dict)
-
 def map_yinjie_to_codepoint(yinjie_list):
-    """从音节列表创建音节到编码点的映射
+    """从音节列表创建音节到单编码点的映射
 
     Args:
         yinjie_list: 音节列表
 
     Returns:
-        返回一个字典，key是音节，value是对应的编码点字符
+        返回一个字典，key是音节，value是对应的单编码点字符
     """
-    start_codepoint = 0x100000  # 从补充私用区开始
+    start_codepoint = 0x100800  # 从补充私用区U+100800开始
     return {yinjie: chr(start_codepoint + i)
            for i, yinjie in enumerate(yinjie_list)}
 

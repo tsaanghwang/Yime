@@ -66,6 +66,23 @@ class NoiseYinyuan(IndeterminatePitchYinyuan):
                     result[shouyin_type][shouyin_name] = parts
         return result
 
+    def convert(self, pinyin_data: dict) -> dict:
+            """将拼音数据转换为音元表示
+
+            Args:
+                pinyin_data: 包含拼音信息的字典
+
+            Returns:
+                返回音元表示字典，包含音质、音高和类型信息
+            """
+            if not isinstance(pinyin_data, dict):
+                return {}
+
+            return {
+                "quality": pinyin_data.get("pinyin", ""),
+                "pitch": self.pitch,
+                "type": "unpitched" if self.pitch is None else "unstable_pitch"
+            }
 @dataclass
 class ClearNoise(NoiseYinyuan):
     """
