@@ -148,6 +148,8 @@ class GanyinEncoder:
         print(f"- 干音完整拼式字典: {fixed_length_encoding_output_path}")
         print(f"- 干音简式拼式字典: {variable_length_encoding_output_path}")
 
+
+
 def main():
     encoder = GanyinEncoder()
     encoder.generate_encoding_files()
