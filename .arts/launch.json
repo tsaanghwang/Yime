@@ -2,13 +2,23 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "ganyin_encoded",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\ganyin_encoded.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
+      "addSourceRootsToPythonpath": true
+    },
+    {
       "name": "yinjie_encoder",
       "type": "python",
       "request": "launch",
       "program": "${workspaceFolder}\\yinjie_encoder.py",
       "currentFileConfiguration": false,
       "cwd": "${workspaceFolder}",
-      "addSourceRootsToPythonpath": true
+      "addSourceRootsToPythonpath": true,
+      "noDebug": true
     },
     {
       "name": "shouyin_encoder",

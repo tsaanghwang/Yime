@@ -1,16 +1,16 @@
 import json
 from pathlib import Path
 from typing import Dict, Any
-from yueyin_yinyuan import YueyinYinyuan
+from .yueyin_yinyuan import YueyinYinyuan
 
 def map_yueyin_to_codepoint(yueyin_list):
-    """从音元符号列表创建音元到编码点的映射
+    """从音元符号列表创建音元到单编码点的映射
 
     Args:
         yueyin_list: 音元符号列表(如从yueyin_yinyuan.json的keys获取)
 
     Returns:
-        返回一个字典，key是音元符号(如"ɪ́")，value是对应的编码点字符
+        返回一个字典，key是音元符号(如"ɪ́")，value是对应的单编码点字符
     """
     start_codepoint = 0x100020  # 从补充私用区开始
     return {yinyuan: chr(start_codepoint + i)
@@ -56,6 +56,22 @@ class GanyinEncoder:
                 for ganyin_name, parts in ganyin_list.items()
             }
         return result
+
+    def encode_ganyin(self, ganyin_data: dict) -> dict:
+        """对单个干音进行编码的接口方法
+
+        Args:
+            ganyin_name: 干音名称(如"宫")
+            ganyin_data: 包含呼音/主音/末音信息的字典
+
+        Returns:
+            返回编码后的音元字典，包含呼音/主音/末音的音元表示
+        """
+        return {
+            "呼音": self.convert_pianyin_to_yinyuan(ganyin_data.get("呼音", "")),
+            "主音": self.convert_pianyin_to_yinyuan(ganyin_data.get("主音", "")),
+            "末音": self.convert_pianyin_to_yinyuan(ganyin_data.get("末音", ""))
+        }
 
     def generate_encoding_files(self):
         """生成所有编码相关文件"""
