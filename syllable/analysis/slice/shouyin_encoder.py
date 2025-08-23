@@ -86,10 +86,11 @@ class ShouyinEncoder:
         # 情况2：处理带有shouyin字段的结构
         elif "shouyin" in shouyin_data:
             shouyin = shouyin_data.get("shouyin", {})
+            # 直接返回原始键名，不进行任何拆分
             return {"首音": list(shouyin.keys())}
 
         # 其他情况返回空字典
-            return {}
+        return {}
 
     def generate_encoding_files(self):
         """生成所有编码相关文件"""
@@ -102,7 +103,7 @@ class ShouyinEncoder:
 
         zaoyin_list = list(zaoyin_yinyuan_data.get("shouyin", {}).keys())
         # 对列表中的每个元素调用map_yinyuan_to_codepoint
-        zaoyin = [self.map_yinyuan_to_codepoint(shouyin) for shouyin in zaoyin_list]
+        zaoyin = self.map_yinyuan_to_codepoint(zaoyin_list)
 
         # 简化输出结构，只保留编码映射部分
         encoding_data = {
@@ -138,7 +139,7 @@ class ShouyinEncoder:
 
         # 获取首音列表并映射为编码点
         shouyin_list = yinyuan_data.get("首音", [])
-        # 修改这里：使用类方法并添加self.
+        # 确保复合首音(如"zh", "ch", "sh")保持完整
         codepoint_mapping = self.map_yinyuan_to_codepoint(shouyin_list)
 
         # 保存结果

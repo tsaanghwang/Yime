@@ -4,30 +4,24 @@ from typing import Dict, Any
 # from syllable.analysis.slice.yueyin_yinyuan import YueyinYinyuan
 from yueyin_yinyuan import YueyinYinyuan
 
+def map_yueyin_to_codepoint(yueyin_list):
+    """根据音元列表创建由音元到单编码点的映射
+
+    Args:
+        yueyin_list: 音元符号列表(如从yueyin_yinyuan.json的keys获取)
+
+    Returns:
+        返回一个字典，key是音元符号(如"ɪ́")，value是对应的单编码点字符
+    """
+    start_codepoint = 0x100020  # 从补充私用区开始
+    return {yinyuan: chr(start_codepoint + i)
+           for i, yinyuan in enumerate(yueyin_list)}
+
 class GanyinEncoder:
     """干音编码处理器，整合音元映射和音元序列生成功能"""
 
     def __init__(self):
         self.yueyin_yinyuan = YueyinYinyuan(quality="", pitch="")
-        # 预加载固定长度编码字典
-        self.fixed_length_encoding = self._load_fixed_length_encoding()
-
-    def _load_fixed_length_encoding(self) -> Dict[str, str]:
-        """加载固定长度编码字典"""
-        encoding_path = Path(__file__).parent / "yinyuan" / "ganyin_to_yinyuan_seq_fixed_length_encoding.json"
-        with encoding_path.open('r', encoding='utf-8') as f:
-            return json.load(f)
-
-    def encode_ganyin(self, ganyin_name: str) -> str:
-        """对单个干音进行编码的接口方法(基于预加载编码字典)
-
-        Args:
-            ganyin_name: 干音名称(如"i1", "u3", "ang4"等)
-
-        Returns:
-            返回对应的固定长度编码字符串，如果干音不存在则返回空字符串
-        """
-        return self.fixed_length_encoding.get(ganyin_name, "")
 
     def load_ganyin_data(self, input_path: Path) -> Dict[str, Any]:
         """加载干音数据"""
@@ -77,6 +71,22 @@ class GanyinEncoder:
                 for ganyin_name, parts in ganyin_list.items()
             }
         return result
+
+    def encode_ganyin(self, ganyin_data: dict) -> dict:
+        """对单个干音进行编码的接口方法
+
+        Args:
+            ganyin_name: 干音名称(如"宫")
+            ganyin_data: 包含呼音/主音/末音信息的字典
+
+        Returns:
+            返回编码后的音元字典，包含呼音/主音/末音的音元表示
+        """
+        return {
+            "呼音": self.convert_pianyin_to_yinyuan(ganyin_data.get("呼音", "")),
+            "主音": self.convert_pianyin_to_yinyuan(ganyin_data.get("主音", "")),
+            "末音": self.convert_pianyin_to_yinyuan(ganyin_data.get("末音", ""))
+        }
 
     def generate_encoding_files(self):
         """生成所有编码相关文件"""

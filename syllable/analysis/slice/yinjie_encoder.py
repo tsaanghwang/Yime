@@ -12,6 +12,9 @@ import logging
 from pathlib import Path
 from typing import Dict, Any, Optional
 import sys
+from run_analyzer import analyze_syllable
+from shouyin_encoder import ShouyinEncoder
+from ganyin_encoder import GanyinEncoder
 
 # 配置日志
 logging.basicConfig(
@@ -41,39 +44,38 @@ class YinjieEncoder:
         return path
 
     def encode_single_yinjie(self, syllable: str) -> str:
-        """
-        编码单个音节
-
-        Args:
-            syllable: 要编码的音节字符串
-
-        Returns:
-            编码后的字符串
-
-        Raises:
-            ValueError: 如果音节格式无效
-        """
+        # 验证音节格式
         if not syllable or not isinstance(syllable, str):
-            raise ValueError("无效的音节输入")
+            raise ValueError("音节参数必须是非空字符串")
 
+        # 切分音节并验证结果
         try:
-            from run_analyzer import analyze_syllable
-            from shouyin_encoder import ShouyinEncoder
-            from ganyin_encoder import GanyinEncoder
-
-            shouyin, ganyin = analyze_syllable(syllable)
-            shouyin_code = ShouyinEncoder.encode_shouyin(shouyin)
-            ganyin_code = GanyinEncoder.encode_ganyin(ganyin)
-
-            return (
-                shouyin_code["首音"] +
-                ganyin_code["呼音"] +
-                ganyin_code["主音"] +
-                ganyin_code["末音"]
-            )
+            parts = analyze_syllable(syllable)
+            if len(parts) != 2:
+                raise ValueError("音节切分结果无效，应返回(首音,干音)元组")
+            shouyin, ganyin = parts
         except Exception as e:
-            logger.error(f"编码音节 '{syllable}' 失败: {str(e)}")
-            raise
+            raise ValueError(f"音节切分失败: {str(e)}") from e
+
+        # 统一编码调用方式
+        shouyin_encoder = ShouyinEncoder()
+        shouyin_code = shouyin_encoder.encode_shouyin(shouyin)
+        ganyin_encoder = GanyinEncoder()
+        ganyin_code = ganyin_encoder.encode_ganyin(ganyin)
+
+        # 安全拼接编码
+        required_keys = {"首音", "呼音", "主音", "末音"}
+        if not all(k in shouyin_code for k in {"首音"}):
+            raise ValueError("首音编码缺少必要字段")
+        if not all(k in ganyin_code for k in {"呼音", "主音", "末音"}):
+            raise ValueError("干音编码缺少必要字段")
+
+        return (
+            shouyin_code["首音"]
+            + ganyin_code["呼音"]
+            + ganyin_code["主音"]
+            + ganyin_code["末音"]
+        )
 
     def encode_all_yinjie(self, output_subdir: str = "yinyuan") -> Path:
         """

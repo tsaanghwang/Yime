@@ -2,6 +2,15 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "shouyin_encoder.bak",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\shouyin_encoder.bak.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
+      "addSourceRootsToPythonpath": true
+    },
+    {
       "name": "yinjie_encoder",
       "type": "python",
       "request": "launch",
