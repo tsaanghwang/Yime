@@ -5,7 +5,7 @@ from typing import Dict, Any
 from yueyin_yinyuan import YueyinYinyuan
 
 def map_yueyin_to_codepoint(yueyin_list):
-    """从音元符号列表创建音元到单编码点的映射
+    """根据音元列表创建由音元到单编码点的映射
 
     Args:
         yueyin_list: 音元符号列表(如从yueyin_yinyuan.json的keys获取)
