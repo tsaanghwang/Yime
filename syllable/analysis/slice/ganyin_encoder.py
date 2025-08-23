@@ -1,7 +1,8 @@
 import json
 from pathlib import Path
 from typing import Dict, Any
-from .yueyin_yinyuan import YueyinYinyuan
+# from syllable.analysis.slice.yueyin_yinyuan import YueyinYinyuan
+from yueyin_yinyuan import YueyinYinyuan
 
 def map_yueyin_to_codepoint(yueyin_list):
     """从音元符号列表创建音元到单编码点的映射

@@ -1,7 +1,9 @@
 # 干音分析器类
 # 功能：分析拼音数据并生成分类后的干音数据
 
+# from syllable.analysis.slice.ganyin_categorizer import GanyinCategorizer
 from ganyin_categorizer import GanyinCategorizer
+
 from typing import Dict
 import json
 import sys

@@ -6,6 +6,7 @@
 
 from dataclasses import dataclass
 from typing import Literal
+# from syllable.analysis.slice.yinyuan import PitchedYinyuan, DurationType, LoudnessType
 from yinyuan import PitchedYinyuan, DurationType, LoudnessType
 
 PitchStyle = Literal['number', 'mark']

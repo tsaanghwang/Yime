@@ -22,6 +22,7 @@ from typing import Optional, Union, Literal
 DurationType = Literal['short', 'neutral', 'long']
 LoudnessType = Literal['weak', 'neutral', 'strong']
 PitchType = Union[str, bool, None]
+PitchStyle = Literal['number', 'mark']
 
 @dataclass
 class YinyuanBase(ABC):

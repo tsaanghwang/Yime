@@ -21,11 +21,25 @@ class ShouyinEncoder:
 
     def __init__(self):
         self.zaoyin_yinyuan = NoiseYinyuan(quality="")
+        self.shouyin_data = None
 
-    def load_shouyin_data(self, input_path: Path) -> Dict[str, Any]:
-        """加载首音数据"""
-        with input_path.open('r', encoding='utf-8') as f:
-            return json.load(f)
+    def load_all_shouyin_data(self):
+        """预加载所有首音数据"""
+        base_dir = Path(__file__).parent
+        # 加载噪音音元数据
+        zaoyin_path = base_dir / 'yinyuan' / 'zaoyin_yinyuan.json'
+        self.shouyin_data = self.load_yinjie_data(zaoyin_path)
+
+    def encode_shouyin(self, shouyin: str) -> str:
+        """带预加载的编码方法"""
+        if self.shouyin_data is None:
+            self.load_all_shouyin_data()
+        # 使用预加载的数据进行编码
+        return {
+            "首音": self.convert_pianyin_to_yinyuan(
+                self.shouyin_data.get("shouyin", {}).get(shouyin, "")
+            )
+        }
 
     def save_yinyuan_data(self, output_path: Path, data: Dict[str, Any]) -> None:
         """保存音元数据"""
@@ -47,19 +61,6 @@ class ShouyinEncoder:
         # 其他情况返回空字典
             return {}
 
-    def encode_shouyin(self, shouyin: dict) -> dict:
-            """对单个干音进行编码的接口方法
-
-            Args:
-                ganyin_name: 干音名称(如"宫")
-                ganyin_data: 包含呼音/主音/末音信息的字典
-
-            Returns:
-                返回编码后的音元字典，包含呼音/主音/末音的音元表示
-            """
-            return {
-                "首音": self.convert_pianyin_to_yinyuan(shouyin.get("首音", "")),
-            }
 
 
     def generate_encoding_files(self):
@@ -103,7 +104,7 @@ class ShouyinEncoder:
             input_file = base_dir / 'yinyuan' / 'zaoyin_yinyuan.json'
             output_file = base_dir / 'yinyuan' / 'shouyin_yinyuan.json'
 
-            shouyin_data = self.load_shouyin_data(input_file)
+            shouyin_data = self.load_all_shouyin_data(input_file)
             yinyuan_data = self.process_shouyin(shouyin_data)
 
             # 获取首音列表并映射为编码点
