@@ -20,13 +20,13 @@ def comprehensive_verification():
 
     # 2. 运行完整分析
     print("2. 执行完整分析...")
-    # Ensure GanyinAnalyzer is defined in syllable_categorizer.py
+    # Ensure YinjieAnalyzer is defined in syllable_categorizer.py
     try:
-        from syllable_analyzer import GanyinAnalyzer
+        from syllable_analyzer import YinjieAnalyzer
     except ImportError:
         raise ImportError(
-            "GanyinAnalyzer is not defined in syllable_categorizer.py. Please check the module and ensure the class exists.")
-    analyzer = GanyinAnalyzer(file='ganyin_data.json')
+            "YinjieAnalyzer is not defined in syllable_categorizer.py. Please check the module and ensure the class exists.")
+    analyzer = YinjieAnalyzer(file='ganyin_data.json')
     success = analyzer.analyze_and_save()
 
     if not success:

@@ -5,7 +5,7 @@
 
 import os
 import sys
-from syllable_analyzer import GanyinAnalyzer
+from syllable_analyzer import YinjieAnalyzer
 
 def main():
     try:
@@ -13,7 +13,7 @@ def main():
         current_file = os.path.abspath(__file__)
 
         # 初始化分析器
-        analyzer = GanyinAnalyzer(current_file)
+        analyzer = YinjieAnalyzer(current_file)
 
         # 执行分析并保存结果
         if analyzer.analyze_and_save():
