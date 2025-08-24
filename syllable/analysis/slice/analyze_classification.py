@@ -3,17 +3,17 @@
 分析韵母分类的合理性
 """
 
-from syllable.analysis.slice.syllable_categorizer import GanyinCategorizer
+from syllable_categorizer import SyllableCategorizer
 
 def analyze_classification_logic():
     """分析韵母分类的合理性"""
     print("=== 分析韵母分类的合理性 ===")
 
     # 首先运行分析以确保韵母被添加
-    analyzer = GanyinCategorizer()
+    analyzer = ()
 
     print("\n各类韵母分析:")
-    all_finals = GanyinCategorizer.get_all_finals()
+    all_finals = SyllableCategorizer.get_all_finals()
 
     # 分析单质韵母
     print("\n1. 单质韵母 (根据音质（音标）判断只含单一音质成分):")

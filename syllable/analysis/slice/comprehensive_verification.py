@@ -3,7 +3,7 @@
 最终验证：干音和韵母的定义与处理
 """
 
-from syllable.analysis.slice.syllable_categorizer import GanyinCategorizer
+from syllable_categorizer import SyllableCategorizer
 import json
 
 
@@ -22,7 +22,7 @@ def comprehensive_verification():
     print("2. 执行完整分析...")
     # Ensure GanyinAnalyzer is defined in syllable_categorizer.py
     try:
-        from syllable.analysis.slice.syllable_analyzer import GanyinAnalyzer
+        from syllable_analyzer import GanyinAnalyzer
     except ImportError:
         raise ImportError(
             "GanyinAnalyzer is not defined in syllable_categorizer.py. Please check the module and ensure the class exists.")
@@ -35,7 +35,7 @@ def comprehensive_verification():
 
     # 3. 验证韵母集合
     print("\n3. 验证预定义韵母集合（都是不带声调的）:")
-    all_finals = GanyinCategorizer.get_all_finals()
+    all_finals = SyllableCategorizer.get_all_finals()
 
     for category, finals_set in all_finals.items():
         print(f"   {category}: {len(finals_set)} 个韵母")
@@ -70,8 +70,8 @@ def comprehensive_verification():
                 f"     {key} -> {actual} (预期: {expected}) {'✓' if actual == expected else '✗'}")
 
             # 提取韵母
-            final = GanyinCategorizer._remove_tone_from_ganyin(key)
-            category = GanyinCategorizer.categorize(actual)
+            final =SyllableCategorizer._remove_tone_from_ganyin(key)
+            category = SyllableCategorizer.categorize(actual)
             print(f"       提取的韵母: {final}, 分类: {category}")
         else:
             print(f"     {key} -> 未找到")
@@ -85,7 +85,7 @@ def comprehensive_verification():
 
     # 验证比例关系
     expected_ganyin_count = total_finals * 5  # 每个韵母5个声调
-    special_count = len(GanyinCategorizer.SPECIAL_SYLLABLES)
+    special_count = len(SyllableCategorizer.SPECIAL_SYLLABLES)
     actual_ratio = len(ganyin_dict) / total_finals if total_finals > 0 else 0
 
     print(f"   - 预期比例: ~5:1 (每个韵母5个声调)")

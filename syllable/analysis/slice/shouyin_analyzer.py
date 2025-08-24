@@ -5,7 +5,7 @@
 import os
 import json
 from zaoyin_yinyuan import ClearNoise, VoicedNoise
-from syllable.analysis.slice.syllable_categorizer import GanyinCategorizer
+from syllable.analysis.slice.syllable_categorizer import SyllableCategorizer
 
 
 # 根据语音事实预定浊音列表, 双隔音符表示浊零声母
@@ -86,7 +86,7 @@ def create_indeterminate_pitch_pianyin():
 def merge_shouyin_data():
     """
     生成并合并首音数据
-    1. 调用GanyinCategorizer生成首音数据
+    1. 调用生成首音数据
     2. 用map_shouyin_to_ipa中的音标列表替换匹配的声母音标
     """
     # 获取所有可能的声母
@@ -95,7 +95,7 @@ def merge_shouyin_data():
 
     # 生成原始首音数据 - 创建一个模拟的拼音字典，只包含声母
     mock_pinyin_data = {initial: initial for initial in initials}
-    shouyin_data = GanyinCategorizer.generate_shouyin_data(mock_pinyin_data)
+    shouyin_data = SyllableCategorizer.generate_shouyin_data(mock_pinyin_data)
 
     # 替换匹配的声母音标，保持原始列表形式
     for initial in initials:

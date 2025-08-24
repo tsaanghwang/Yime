@@ -3,7 +3,7 @@
 验证干音和韵母的定义和处理逻辑
 """
 
-from syllable.analysis.slice.syllable_categorizer import GanyinCategorizer
+from syllable_categorizer import SyllableCategorizer
 
 
 def test_ganyin_final_logic():
@@ -20,9 +20,9 @@ def test_ganyin_final_logic():
 
     print("测试拼音切分:")
     for pinyin, expected_initial, expected_ganyin in test_cases:
-        initial, ganyin = GanyinCategorizer.split_syllable(pinyin)
-        final = GanyinCategorizer._remove_tone_from_ganyin(ganyin)
-        category = GanyinCategorizer.categorize(ganyin)
+        initial, ganyin = SyllableCategorizer.split_syllable(pinyin)
+        final = SyllableCategorizer._remove_tone_from_ganyin(ganyin)
+        category = SyllableCategorizer.categorize(ganyin)
 
         print(f"  拼音: {pinyin}")
         print(f"    声母: {initial} (预期: {expected_initial})")
@@ -32,7 +32,7 @@ def test_ganyin_final_logic():
         print()
 
     print("=== 验证预定义韵母集合 ===")
-    all_finals = GanyinCategorizer.get_all_finals()
+    all_finals = SyllableCategorizer.get_all_finals()
 
     for category, finals in all_finals.items():
         print(f"{category}:")

@@ -1,5 +1,5 @@
 """
-乐音类音元生成器 - 使用具体的音元类生成音元数据文件
+析取乐音类音元 - 使用具体的音元类生成音元数据文件
 """
 
 import json
@@ -13,7 +13,7 @@ def extract_yueyin_yinyuan():
     base_dir = Path(__file__).parent
 
     # 输入输出文件路径
-    input_path = base_dir / 'pitched_pianyin.json'
+    input_path = base_dir / 'yinyuan' / 'pitched_pianyin.json'
     output_mid_high_median_model_path = base_dir / 'yinyuan' / \
         'pitched_yinyuan_of_mid_high_median_model.json'
     output_mid_level_median_model_path = base_dir / 'yinyuan' / \

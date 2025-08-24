@@ -3,7 +3,7 @@
 验证新添加韵母的分类是否合理
 """
 
-from syllable.analysis.slice.syllable_categorizer import GanyinCategorizer
+from syllable_categorizer import SyllableCategorizer
 
 
 def analyze_new_finals():
@@ -16,7 +16,7 @@ def analyze_new_finals():
 
     print("新添加的韵母及其分类:")
     for final in new_finals:
-        category = GanyinCategorizer.categorize(final)
+        category = SyllableCategorizer.categorize(final)
         print(f"  '{final}' -> {category}")
 
         # 分析分类合理性
@@ -53,7 +53,7 @@ def analyze_new_finals():
             print(f"    ⚠ 预期: {expected}, 实际: {category}")
 
     print("\n=== 韵母分类统计 ===")
-    all_finals = GanyinCategorizer.get_all_finals()
+    all_finals = SyllableCategorizer.get_all_finals()
     total = sum(len(finals) for finals in all_finals.values())
 
     for category, finals in all_finals.items():

@@ -23,7 +23,7 @@ sys.path.append(str(project_root))
 
 # 然后进行其他导入
 sys.path.append(str(Path(__file__).parent / "syllable" / "analysis" / "slice"))
-from syllable.analysis.slice.syllable_categorizer import GanyinCategorizer
+from syllable.analysis.slice.syllable_categorizer import
 from syllable.analysis.slice.ganyin_encoder import GanyinEncoder
 from syllable.analysis.slice.shouyin_encoder import ShouyinEncoder
 
@@ -38,7 +38,7 @@ def encode_single_yinjie(syllable: str) -> str:
     对单个音节进行编码，返回编码字符串
     """
     # 切分音节为首音和干音
-    shouyin, ganyin = GanyinCategorizer.analyze_syllable(syllable)
+    shouyin, ganyin = .analyze_syllable(syllable)
     # 编码首音
     shouyin_code = ShouyinEncoder.encode_shouyin('', shouyin = Dict)
     # 编码干音
