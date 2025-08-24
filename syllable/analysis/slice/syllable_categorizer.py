@@ -6,7 +6,7 @@ from ganyin import Ganyin  # 改为相对导入
 from typing import Dict, Tuple, Set
 
 
-class GanyinCategorizer:
+class SyllableCategorizer:
     """
     干音分类工具类，干音根据韵母类型分类
     """
@@ -29,8 +29,8 @@ class GanyinCategorizer:
     @staticmethod
     def _is_special_syllable(syllable: str) -> bool:
         """判断是否为特殊音节（支持数字标调和调号标调）"""
-        return (syllable in GanyinCategorizer.SPECIAL_SYLLABLES or
-                syllable in GanyinCategorizer.REVERSE_SPECIAL_SYLLABLES)
+        return (syllable in SyllableCategorizer.SPECIAL_SYLLABLES or
+                syllable in SyllableCategorizer.REVERSE_SPECIAL_SYLLABLES)
 
     @staticmethod
     def categorize(ganyin: str) -> str:
@@ -47,16 +47,16 @@ class GanyinCategorizer:
             return "未知类型"
 
         # 提取韵母，去除声调标记
-        final = GanyinCategorizer._remove_tone_from_ganyin(ganyin)
+        final = SyllableCategorizer._remove_tone_from_ganyin(ganyin)
 
         # 使用类常量进行分类
-        if final in GanyinCategorizer.SINGLE_QUALITY_FINALS:
+        if final in SyllableCategorizer.SINGLE_QUALITY_FINALS:
             return "单质干音"
-        elif final in GanyinCategorizer.FRONT_LONG_FINALS:
+        elif final in SyllableCategorizer.FRONT_LONG_FINALS:
             return "前长干音"
-        elif final in GanyinCategorizer.BACK_LONG_FINALS:
+        elif final in SyllableCategorizer.BACK_LONG_FINALS:
             return "后长干音"
-        elif final in GanyinCategorizer.TRIPLE_QUALITY_FINALS:
+        elif final in SyllableCategorizer.TRIPLE_QUALITY_FINALS:
             return "三质干音"
         else:
             return "未知类型"
@@ -118,10 +118,10 @@ class GanyinCategorizer:
             return ""
 
         # 切分音节，获取干音部分
-        _, ganyin = GanyinCategorizer.split_syllable(pinyin)
+        _, ganyin = SyllableCategorizer.split_syllable(pinyin)
 
         # 提取韵母，去除声调标记
-        final = GanyinCategorizer._remove_tone_from_ganyin(ganyin)
+        final = SyllableCategorizer._remove_tone_from_ganyin(ganyin)
 
         return final
 
@@ -140,30 +140,30 @@ class GanyinCategorizer:
             return False
 
         # 检查是否已存在于任何分类中
-        all_finals = (GanyinCategorizer.SINGLE_QUALITY_FINALS |
-                      GanyinCategorizer.FRONT_LONG_FINALS |
-                      GanyinCategorizer.BACK_LONG_FINALS |
-                      GanyinCategorizer.TRIPLE_QUALITY_FINALS)
+        all_finals = (SyllableCategorizer.SINGLE_QUALITY_FINALS |
+                      SyllableCategorizer.FRONT_LONG_FINALS |
+                      SyllableCategorizer.BACK_LONG_FINALS |
+                      SyllableCategorizer.TRIPLE_QUALITY_FINALS)
 
         if final in all_finals:
             return False  # 已存在，不需要添加
 
         # 根据韵母特征进行分类判断
-        if GanyinCategorizer._should_be_single_quality(final):
-            GanyinCategorizer.SINGLE_QUALITY_FINALS.add(final)
+        if SyllableCategorizer._should_be_single_quality(final):
+            SyllableCategorizer.SINGLE_QUALITY_FINALS.add(final)
             return True
-        elif GanyinCategorizer._should_be_front_long(final):
-            GanyinCategorizer.FRONT_LONG_FINALS.add(final)
+        elif SyllableCategorizer._should_be_front_long(final):
+            SyllableCategorizer.FRONT_LONG_FINALS.add(final)
             return True
-        elif GanyinCategorizer._should_be_back_long(final):
-            GanyinCategorizer.BACK_LONG_FINALS.add(final)
+        elif SyllableCategorizer._should_be_back_long(final):
+            SyllableCategorizer.BACK_LONG_FINALS.add(final)
             return True
-        elif GanyinCategorizer._should_be_triple_quality(final):
-            GanyinCategorizer.TRIPLE_QUALITY_FINALS.add(final)
+        elif SyllableCategorizer._should_be_triple_quality(final):
+            SyllableCategorizer.TRIPLE_QUALITY_FINALS.add(final)
             return True
         else:
             # 默认添加到单质干音类别
-            GanyinCategorizer.SINGLE_QUALITY_FINALS.add(final)
+            SyllableCategorizer.SINGLE_QUALITY_FINALS.add(final)
             return True
 
     @staticmethod
@@ -200,7 +200,7 @@ class GanyinCategorizer:
         # 以 i, u, ü 开头的复合韵母（但不是三质干音）
         if len(final) >= 2 and final[0] in {'i', 'u', 'ü'}:
             # 检查不是三质干音
-            if not GanyinCategorizer._should_be_triple_quality(final):
+            if not SyllableCategorizer._should_be_triple_quality(final):
                 return True
         return False
 
@@ -241,10 +241,10 @@ class GanyinCategorizer:
             对应分类的韵母集合
         """
         category_mapping = {
-            "单质韵母": GanyinCategorizer.SINGLE_QUALITY_FINALS,
-            "前长韵母": GanyinCategorizer.FRONT_LONG_FINALS,
-            "后长韵母": GanyinCategorizer.BACK_LONG_FINALS,
-            "三质韵母": GanyinCategorizer.TRIPLE_QUALITY_FINALS
+            "单质韵母": SyllableCategorizer.SINGLE_QUALITY_FINALS,
+            "前长韵母": SyllableCategorizer.FRONT_LONG_FINALS,
+            "后长韵母": SyllableCategorizer.BACK_LONG_FINALS,
+            "三质韵母": SyllableCategorizer.TRIPLE_QUALITY_FINALS
         }
         return category_mapping.get(category, set())
 
@@ -257,10 +257,10 @@ class GanyinCategorizer:
             包含所有分类及其韵母的字典
         """
         return {
-            "单质韵母": GanyinCategorizer.SINGLE_QUALITY_FINALS,
-            "前长韵母": GanyinCategorizer.FRONT_LONG_FINALS,
-            "后长韵母": GanyinCategorizer.BACK_LONG_FINALS,
-            "三质韵母": GanyinCategorizer.TRIPLE_QUALITY_FINALS
+            "单质韵母": SyllableCategorizer.SINGLE_QUALITY_FINALS,
+            "前长韵母": SyllableCategorizer.FRONT_LONG_FINALS,
+            "后长韵母": SyllableCategorizer.BACK_LONG_FINALS,
+            "三质韵母": SyllableCategorizer.TRIPLE_QUALITY_FINALS
         }
 
     @staticmethod
@@ -276,11 +276,11 @@ class GanyinCategorizer:
             return "", ""
 
         # 处理特殊音节（数字标调形式）
-        if syllable in GanyinCategorizer.SPECIAL_SYLLABLES:
-            return "'", GanyinCategorizer.SPECIAL_SYLLABLES[syllable]
+        if syllable in SyllableCategorizer.SPECIAL_SYLLABLES:
+            return "'", SyllableCategorizer.SPECIAL_SYLLABLES[syllable]
 
         # 处理特殊音节（调号标调形式）
-        if syllable in GanyinCategorizer.REVERSE_SPECIAL_SYLLABLES:
+        if syllable in SyllableCategorizer.REVERSE_SPECIAL_SYLLABLES:
             return "'", syllable
 
         # 处理 hm/hn/hng 系列音节（数字标调）
@@ -346,7 +346,7 @@ class GanyinCategorizer:
 
         for num_pinyin, tone_pinyin in pinyin_data.items():
             # 从调号标调拼音中切分首音
-            initial, _ = GanyinCategorizer.split_syllable(tone_pinyin)
+            initial, _ = SyllableCategorizer.split_syllable(tone_pinyin)
 
             # 存储首音数据
             if initial not in shouyin_data:
@@ -434,7 +434,7 @@ class GanyinCategorizer:
             元组 (首音部分, 干音部分)
         """
         # 统一转换为数字标调格式
-        normalized_syllable = GanyinCategorizer.convert_tone_mark_to_number(syllable)
+        normalized_syllable = SyllableCategorizer.convert_tone_mark_to_number(syllable)
 
         # 处理带数字声调的特殊音节（ê/ng/m/n + 数字）
         if (len(normalized_syllable) >= 2 and
@@ -449,13 +449,13 @@ class GanyinCategorizer:
             return "'", normalized_syllable
 
         # 原有处理逻辑
-        shouyin, ganyin = GanyinCategorizer.split_syllable(normalized_syllable)
+        shouyin, ganyin = SyllableCategorizer.split_syllable(normalized_syllable)
 
         # 处理特殊音节情况
         if ganyin.startswith('_'):
             return shouyin, ganyin
-        elif ganyin in GanyinCategorizer.SPECIAL_SYLLABLES:
-            return shouyin, GanyinCategorizer.SPECIAL_SYLLABLES[ganyin]
+        elif ganyin in SyllableCategorizer.SPECIAL_SYLLABLES:
+            return shouyin, SyllableCategorizer.SPECIAL_SYLLABLES[ganyin]
 
         return shouyin, ganyin
 
@@ -473,8 +473,8 @@ class GanyinCategorizer:
             return syllable
 
         # 特殊音节处理
-        if syllable in GanyinCategorizer.REVERSE_SPECIAL_SYLLABLES:
-            return GanyinCategorizer.REVERSE_SPECIAL_SYLLABLES[syllable]
+        if syllable in SyllableCategorizer.REVERSE_SPECIAL_SYLLABLES:
+            return SyllableCategorizer.REVERSE_SPECIAL_SYLLABLES[syllable]
 
         # 调号到数字的映射
         tone_mapping = {

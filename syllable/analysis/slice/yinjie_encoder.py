@@ -12,7 +12,7 @@ import logging
 from pathlib import Path
 from typing import Dict, Any, Optional, Tuple
 import sys
-from syllable_categorizer import GanyinCategorizer
+from syllable_categorizer import SyllableCategorizer
 from shouyin_encoder import ShouyinEncoder
 from ganyin_encoder import GanyinEncoder
 
@@ -120,7 +120,7 @@ class YinjieEncoder:
 
         # 切分音节并验证结果
         try:
-            parts = GanyinCategorizer.analyze_syllable(syllable)
+            parts = SyllableCategorizer.analyze_syllable(syllable)
             if len(parts) != 2:
                 raise ValueError("音节切分结果无效，应返回(首音,干音)元组")
             shouyin, ganyin = parts

@@ -3,8 +3,8 @@
 韵母动态添加功能总结测试
 """
 
-from syllable.analysis.slice.syllable_categorizer import GanyinCategorizer
-from syllable.analysis.slice.syllable_analyzer import GanyinAnalyzer
+from syllable_categorizer import SyllableCategorizer
+from syllable_analyzer import GanyinAnalyzer
 import json
 import os
 
@@ -13,7 +13,7 @@ def final_test():
     print("=== 韵母动态添加功能最终测试 ===")
 
     # 1. 显示初始状态
-    initial_finals = GanyinCategorizer.get_all_finals()
+    initial_finals = SyllableCategorizer.get_all_finals()
     initial_count = sum(len(finals) for finals in initial_finals.values())
     print(f"1. 初始韵母总数: {initial_count}")
 
@@ -27,7 +27,7 @@ def final_test():
         return
 
     # 3. 显示最终状态
-    final_finals = GanyinCategorizer.get_all_finals()
+    final_finals = SyllableCategorizer.get_all_finals()
     final_count = sum(len(finals) for finals in final_finals.values())
     added_count = final_count - initial_count
 
@@ -41,7 +41,7 @@ def final_test():
     test_finals = ['ian2', 'ōng', 'uái', 'iòng', 'iù', 'vè']
     print("   分类功能测试:")
     for final in test_finals:
-        category = GanyinCategorizer.categorize(final)
+        category = SyllableCategorizer.categorize(final)
         print(f"     '{final}' -> {category}")
 
     # 验证生成的文件

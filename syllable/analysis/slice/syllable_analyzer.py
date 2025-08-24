@@ -1,8 +1,8 @@
 # 干音分析器类
 # 功能：分析拼音数据并生成分类后的干音数据
 
-# from syllable.analysis.slice.syllable_categorizer import GanyinCategorizer
-from syllable_categorizer import GanyinCategorizer
+# from syllable.analysis.slice.syllable_categorizer import
+from syllable_categorizer import SyllableCategorizer
 
 from typing import Dict
 import json
@@ -52,7 +52,7 @@ class GanyinAnalyzer:
                 raise ValueError("输入JSON数据为空")
 
             # 生成首音数据
-            shouyin_data = GanyinCategorizer.generate_shouyin_data(pinyin_data)
+            shouyin_data = SyllableCategorizer.generate_shouyin_data(pinyin_data)
             if not shouyin_data:
                 raise ValueError("生成的首音数据为空")
 
@@ -112,13 +112,13 @@ class GanyinAnalyzer:
 
         # 先分类
         for num_final, tone_final in ganyin_data.items():
-            final = GanyinCategorizer._remove_tone_from_ganyin(num_final)
-            category_cn = GanyinCategorizer.categorize(final)
+            final = SyllableCategorizer._remove_tone_from_ganyin(num_final)
+            category_cn = SyllableCategorizer.categorize(final)
             category_en = category_map.get(category_cn, "single quality ganyin")
             categorized[category_en][num_final] = tone_final
 
         # 获取排序后的韵母分类
-        sorted_finals = GanyinCategorizer.sort_finals_by_category(GanyinCategorizer.get_all_finals())
+        sorted_finals = SyllableCategorizer.sort_finals_by_category(SyllableCategorizer.get_all_finals())
 
         # 按排序后的韵母顺序对干音进行排序
         for category_en, finals in zip(categorized.keys(), sorted_finals.values()):
@@ -129,8 +129,8 @@ class GanyinAnalyzer:
             sorted_ganyin = sorted(
                 categorized[category_en].items(),
                 key=lambda item: (
-                    finals.index(GanyinCategorizer._remove_tone_from_ganyin(item[0]))
-                    if GanyinCategorizer._remove_tone_from_ganyin(item[0]) in finals
+                    finals.index(SyllableCategorizer._remove_tone_from_ganyin(item[0]))
+                    if SyllableCategorizer._remove_tone_from_ganyin(item[0]) in finals
                     else len(finals)
                 )
             )
@@ -152,15 +152,15 @@ class GanyinAnalyzer:
 
         for num_pinyin, tone_pinyin in pinyin_data.items():
             # 处理特殊音节（不包括 "_i" 相关的）
-            if GanyinCategorizer._is_special_syllable(num_pinyin):
-                ganyin_data[num_pinyin] = GanyinCategorizer.SPECIAL_SYLLABLES.get(
+            if SyllableCategorizer._is_special_syllable(num_pinyin):
+                ganyin_data[num_pinyin] = SyllableCategorizer.SPECIAL_SYLLABLES.get(
                     num_pinyin, tone_pinyin)
                 continue
 
             # 从数字标调拼音中提取干音部分
-            initial, num_final = GanyinCategorizer.split_syllable(num_pinyin)
+            initial, num_final = SyllableCategorizer.split_syllable(num_pinyin)
             # 从调号标调拼音中提取干音部分
-            _, tone_final = GanyinCategorizer.split_syllable(tone_pinyin)
+            _, tone_final = SyllableCategorizer.split_syllable(tone_pinyin)
 
             # 处理舌尖音：当声母为 z, c, s, zh, ch, sh, r 且韵母为"i"时，添加占位符"_"
             if num_final and tone_final:

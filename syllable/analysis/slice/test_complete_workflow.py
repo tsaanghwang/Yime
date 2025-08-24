@@ -3,8 +3,8 @@
 完整测试韵母动态添加功能
 """
 
-from syllable.analysis.slice.syllable_categorizer import GanyinCategorizer
-from syllable.analysis.slice.syllable_analyzer import GanyinAnalyzer
+from syllable_categorizer import SyllableCategorizer
+from syllable_analyzer import GanyinAnalyzer
 import json
 import os
 
@@ -15,7 +15,7 @@ def test_complete_workflow():
 
     # 1. 显示初始状态
     print("1. 初始韵母分类状态:")
-    initial_finals = GanyinCategorizer.get_all_finals()
+    initial_finals = SyllableCategorizer.get_all_finals()
     for category, finals in initial_finals.items():
         print(f"   {category}: {len(finals)} 个")
 
@@ -38,7 +38,7 @@ def test_complete_workflow():
 
     # 3. 显示更新后状态
     print("\n3. 更新后韵母分类状态:")
-    updated_finals = GanyinCategorizer.get_all_finals()
+    updated_finals = SyllableCategorizer.get_all_finals()
     for category, finals in updated_finals.items():
         print(f"   {category}: {len(finals)} 个")
 
@@ -48,7 +48,7 @@ def test_complete_workflow():
                   'uai', 'ue', 'ui', 'un', 'v', 'van', 've']
 
     for final in new_finals:
-        category = GanyinCategorizer.categorize(final)
+        category = SyllableCategorizer.categorize(final)
         in_any_set = any(final in finals for finals in updated_finals.values())
         print(f"   '{final}' -> {category} (在集合中: {in_any_set})")
 
