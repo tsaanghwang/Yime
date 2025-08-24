@@ -60,22 +60,17 @@ class YinjieEncoder:
         # 统一编码调用方式
         shouyin_encoder = ShouyinEncoder()
         shouyin_code = shouyin_encoder.encode_shouyin(shouyin)
+
         ganyin_encoder = GanyinEncoder()
-        ganyin_code = ganyin_encoder.encode_ganyin(ganyin)
+        ganyin_code = ganyin_encoder.encode_ganyin(ganyin)  # 这里返回的是字符串
 
-        # 安全拼接编码
-        required_keys = {"首音", "呼音", "主音", "末音"}
-        if not all(k in shouyin_code for k in {"首音"}):
-            raise ValueError("首音编码缺少必要字段")
-        if not all(k in ganyin_code for k in {"呼音", "主音", "末音"}):
-            raise ValueError("干音编码缺少必要字段")
+        # 修改验证和拼接逻辑
+        if not shouyin_code:
+            raise ValueError("首音编码为空")
+        if not ganyin_code or len(ganyin_code) != 3:  # 检查是否是3个字符
+            raise ValueError(f"干音编码无效: {ganyin_code}")
 
-        return (
-            shouyin_code["首音"]
-            + ganyin_code["呼音"]
-            + ganyin_code["主音"]
-            + ganyin_code["末音"]
-        )
+        return shouyin_code + ganyin_code
 
     def encode_all_yinjie(self, output_subdir: str = "yinyuan") -> Path:
         """

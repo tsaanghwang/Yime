@@ -7,7 +7,7 @@ import unittest
 import os
 import sys
 # 添加当前目录到 Python 路径
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+# sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 # 替换原来的
 # from syllable.analysis.slice.ganyin_encoder import GanyinEncoder
 from ganyin_encoder import GanyinEncoder
