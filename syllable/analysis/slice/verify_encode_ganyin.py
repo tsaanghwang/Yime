@@ -6,11 +6,10 @@
 import unittest
 import os
 import sys
-# 添加当前目录到 Python 路径
-# sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-# 替换原来的
-# from syllable.analysis.slice.ganyin_encoder import GanyinEncoder
+# 添加syllable的父目录到 Python 路径
+# sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..")))
 from ganyin_encoder import GanyinEncoder
+# from ganyin_encoder import GanyinEncoder
 
 class TestGanyinEncoder(unittest.TestCase):
     """测试 ganyin_encoder.py 中的 encode_ganyin 功能"""
