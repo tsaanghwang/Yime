@@ -3,7 +3,7 @@
 分析韵母分类的合理性
 """
 
-from ganyin_categorizer import GanyinCategorizer
+from syllable.analysis.slice.syllable_categorizer import GanyinCategorizer
 
 def analyze_classification_logic():
     """分析韵母分类的合理性"""

@@ -3,7 +3,7 @@
 验证干音和韵母的定义和处理逻辑
 """
 
-from ganyin_categorizer import GanyinCategorizer
+from syllable.analysis.slice.syllable_categorizer import GanyinCategorizer
 
 
 def test_ganyin_final_logic():

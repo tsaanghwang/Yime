@@ -3,7 +3,7 @@
 验证新添加韵母的分类是否合理
 """
 
-from ganyin_categorizer import GanyinCategorizer
+from syllable.analysis.slice.syllable_categorizer import GanyinCategorizer
 
 
 def analyze_new_finals():

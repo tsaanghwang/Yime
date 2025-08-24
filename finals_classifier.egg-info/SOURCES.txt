@@ -45,7 +45,7 @@ syllable/analysis/slice/extract_yueyin_yinyuan.py
 syllable/analysis/slice/final_test.py
 syllable/analysis/slice/ganyin.py
 syllable/analysis/slice/ganyin_analyzer.py
-syllable/analysis/slice/ganyin_categorizer.py
+syllable/analysis/slice/syllable_categorizer.py
 syllable/analysis/slice/ganyin_encoder.py
 syllable/analysis/slice/ganyin_enhanced.py
 syllable/analysis/slice/ganyin_slicer.py

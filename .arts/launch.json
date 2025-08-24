@@ -2,6 +2,15 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "run_syllable_analyzer",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\run_syllable_analyzer.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
+      "addSourceRootsToPythonpath": true
+    },
+    {
       "name": "shouyin_encoder.bak",
       "type": "python",
       "request": "launch",
@@ -284,10 +293,10 @@
       "addSourceRootsToPythonpath": true
     },
     {
-      "name": "ganyin_categorizer",
+      "name": "syllable_categorizer",
       "type": "python",
       "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\ganyin_categorizer.py",
+      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\syllable_categorizer.py",
       "currentFileConfiguration": false,
       "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
       "addSourceRootsToPythonpath": true,
