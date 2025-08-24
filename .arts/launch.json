@@ -2,6 +2,25 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "verify_encode_shouyin",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\verify_encode_shouyin.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
+      "addSourceRootsToPythonpath": true
+    },
+    {
+      "name": "ganyin_encoder.bak",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\ganyin_encoder.bak.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
+      "addSourceRootsToPythonpath": true,
+      "noDebug": true
+    },
+    {
       "name": "temp",
       "type": "python",
       "request": "launch",
@@ -37,7 +56,8 @@
       "program": "${workspaceFolder}\\syllable\\analysis\\slice\\run_syllable_analyzer.py",
       "currentFileConfiguration": false,
       "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
-      "addSourceRootsToPythonpath": true
+      "addSourceRootsToPythonpath": true,
+      "noDebug": true
     },
     {
       "name": "shouyin_encoder.bak",
