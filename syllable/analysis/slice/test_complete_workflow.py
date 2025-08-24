@@ -4,7 +4,7 @@
 """
 
 from syllable_categorizer import SyllableCategorizer
-from syllable_analyzer import GanyinAnalyzer
+from syllable_analyzer import YinjieAnalyzer
 import json
 import os
 
@@ -21,7 +21,7 @@ def test_complete_workflow():
 
     # 2. 执行分析过程
     print("\n2. 执行分析过程...")
-    analyzer = GanyinAnalyzer(__file__)
+    analyzer = YinjieAnalyzer(__file__)
 
     # 检查输入文件是否存在
     if not os.path.exists(analyzer.input_path):

@@ -47,14 +47,14 @@
     <div class="container mx-auto px-4 py-8">
         <div class="prose max-w-none">
             <h1 class="text-4xl font-bold mb-6">音元输入法API文档</h1>
-            
+
             <div class="alert alert-info mb-8">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 <span>本API文档适用于音元输入法核心引擎和前端接口</span>
             </div>
 
             <h2 class="text-2xl font-bold mt-8 mb-4">接口分类</h2>
-            
+
             <div class="tabs mb-8">
                 <a class="tab tab-lifted tab-active">核心引擎API</a>
                 <a class="tab tab-lifted">前端接口API</a>
@@ -62,7 +62,7 @@
             </div>
 
             <h3 class="text-xl font-bold mt-8 mb-4">韵母转换API</h3>
-            
+
             <div class="card bg-base-200 shadow mb-8">
                 <div class="card-body">
                     <h4 class="card-title">YunmuConverter 类</h4>
@@ -70,7 +70,7 @@
                         <pre><code>class pinyin.yunmu_to_keys.YunmuConverter</code></pre>
                     </div>
                     <p>核心韵母转换器，负责将标准拼音韵母转换为音元键位</p>
-                    
+
                     <div class="overflow-x-auto mt-4">
                         <table class="table">
                             <thead>
@@ -107,15 +107,15 @@
             </div>
 
             <h3 class="text-xl font-bold mt-8 mb-4">干音分析API</h3>
-            
+
             <div class="card bg-base-200 shadow mb-8">
                 <div class="card-body">
-                    <h4 class="card-title">GanyinAnalyzer 类</h4>
+                    <h4 class="card-title">YinjieAnalyzer 类</h4>
                     <div class="mockup-code">
-                        <pre><code>class tools.ganyin_analyzer.GanyinAnalyzer</code></pre>
+                        <pre><code>class tools.ganyin_analyzer.YinjieAnalyzer</code></pre>
                     </div>
                     <p>干音分析器，用于分析汉字干音特征</p>
-                    
+
                     <div class="overflow-x-auto mt-4">
                         <table class="table">
                             <thead>
@@ -152,7 +152,7 @@
             </div>
 
             <h3 class="text-xl font-bold mt-8 mb-4">前端接口API</h3>
-            
+
             <div class="card bg-base-200 shadow mb-8">
                 <div class="card-body">
                     <h4 class="card-title">InputMethod 类</h4>
@@ -160,7 +160,7 @@
                         <pre><code>class src/App.tsx.InputMethod</code></pre>
                     </div>
                     <p>前端输入法核心接口，负责处理用户输入和候选词展示</p>
-                    
+
                     <div class="overflow-x-auto mt-4">
                         <table class="table">
                             <thead>
@@ -197,7 +197,7 @@
             </div>
 
             <h2 class="text-2xl font-bold mt-8 mb-4">错误码说明</h2>
-            
+
             <div class="overflow-x-auto mb-8">
                 <table class="table">
                     <thead>

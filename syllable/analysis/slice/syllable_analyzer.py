@@ -9,7 +9,7 @@ import json
 import sys
 import os
 
-class GanyinAnalyzer:
+class YinjieAnalyzer:
     def __init__(self, file):
         # 获取当前脚本的绝对路径
         current_dir = os.path.dirname(os.path.abspath(file))

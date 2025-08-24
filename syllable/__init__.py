@@ -4,4 +4,4 @@
 from syllable.analysis.slice.syllable import Syllable
 from syllable.analysis.slice.ganyin import Ganyin
 from syllable.analysis.slice.syllable_categorizer import
-from syllable.analysis.slice.syllable_analyzer import GanyinAnalyzer
+from syllable.analysis.slice.syllable_analyzer import YinjieAnalyzer
