@@ -46,14 +46,14 @@ class ShouyinEncoder:
         base_dir = Path(__file__).parent
         map_path = base_dir / "yinyuan" / "shouyin_codepoint.json"
         with open(map_path, 'r', encoding='utf-8') as f:
-            self._codepoint_map = json.load(f)  # 这里初始化了该属性
+            data = json.load(f)
+            self._codepoint_map = data["首音"]  # 直接获取"首音"下的映射
 
     def map_shouyin_to_codepoint(self, shouyin: str) -> str:
         """将首音映射到码位"""
-        # 可以访问类实例中的缓存数据
         if not hasattr(self, '_codepoint_map'):
             self._load_codepoint_mapping()
-        return self._codepoint_map.get(shouyin, '')
+        return self._codepoint_map.get(shouyin, '')  # 现在直接访问映射字典
 
     def encode_shouyin(self, shouyin: str) -> str:
         """外部调用接口：将单个首音编码为码位字符
