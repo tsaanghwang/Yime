@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from ganyin_categorizer import GanyinCategorizer
+from syllable.analysis.slice.syllable_categorizer import GanyinCategorizer
 
 
 def test_categorization():

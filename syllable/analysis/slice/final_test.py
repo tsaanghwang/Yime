@@ -3,8 +3,8 @@
 韵母动态添加功能总结测试
 """
 
-from ganyin_categorizer import GanyinCategorizer
-from ganyin_analyzer import GanyinAnalyzer
+from syllable.analysis.slice.syllable_categorizer import GanyinCategorizer
+from syllable.analysis.slice.syllable_analyzer import GanyinAnalyzer
 import json
 import os
 

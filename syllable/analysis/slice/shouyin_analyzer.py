@@ -5,7 +5,7 @@
 import os
 import json
 from zaoyin_yinyuan import ClearNoise, VoicedNoise
-from ganyin_categorizer import GanyinCategorizer
+from syllable.analysis.slice.syllable_categorizer import GanyinCategorizer
 
 
 # 根据语音事实预定浊音列表, 双隔音符表示浊零声母

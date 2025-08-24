@@ -3,7 +3,7 @@
 
 功能：
 1. 读取音节数据(pinyin/hanzi_pinyin/pinyin_normalized.json)
-2. 调用run_analyzer.py将音节切分为首音和干音
+2. 调用run_syllable_analyzer.py将音节切分为首音和干音
 3. 调用shouyin_encoder.py和ganyin_encoder.py进行编码
 4. 将编码结果保存为JSON文件
 """
@@ -12,7 +12,7 @@ import logging
 from pathlib import Path
 from typing import Dict, Any, Optional
 import sys
-from run_analyzer import analyze_syllable
+from syllable_categorizer import GanyinCategorizer
 from shouyin_encoder import ShouyinEncoder
 from ganyin_encoder import GanyinEncoder
 
@@ -50,7 +50,7 @@ class YinjieEncoder:
 
         # 切分音节并验证结果
         try:
-            parts = analyze_syllable(syllable)
+            parts = GanyinCategorizer.analyze_syllable(syllable)
             if len(parts) != 2:
                 raise ValueError("音节切分结果无效，应返回(首音,干音)元组")
             shouyin, ganyin = parts

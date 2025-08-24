@@ -3,7 +3,7 @@
 最终验证：干音和韵母的定义与处理
 """
 
-from ganyin_categorizer import GanyinCategorizer
+from syllable.analysis.slice.syllable_categorizer import GanyinCategorizer
 import json
 
 
@@ -20,12 +20,12 @@ def comprehensive_verification():
 
     # 2. 运行完整分析
     print("2. 执行完整分析...")
-    # Ensure GanyinAnalyzer is defined in ganyin_categorizer.py
+    # Ensure GanyinAnalyzer is defined in syllable_categorizer.py
     try:
-        from ganyin_analyzer import GanyinAnalyzer
+        from syllable.analysis.slice.syllable_analyzer import GanyinAnalyzer
     except ImportError:
         raise ImportError(
-            "GanyinAnalyzer is not defined in ganyin_categorizer.py. Please check the module and ensure the class exists.")
+            "GanyinAnalyzer is not defined in syllable_categorizer.py. Please check the module and ensure the class exists.")
     analyzer = GanyinAnalyzer(file='ganyin_data.json')
     success = analyzer.analyze_and_save()
 

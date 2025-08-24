@@ -414,3 +414,25 @@ class GanyinCategorizer:
             sorted_finals["三质韵母"] = triple_quality
 
         return sorted_finals
+
+    @staticmethod
+    def analyze_syllable(syllable: str) -> tuple:
+        """
+        切分单个音节为首音和干音
+
+        参数:
+            syllable: 要分析的音节字符串
+
+        返回:
+            元组 (首音部分, 干音部分)
+        """
+        # 使用 GanyinCategorizer 的 split_syllable 方法进行切分
+        shouyin, ganyin = GanyinCategorizer.split_syllable(syllable)
+        # 处理特殊音节情况
+        if ganyin.startswith('_'):
+            # 对于舌尖音后的i，保留_前缀
+            return shouyin, ganyin
+            # 处理特殊音节
+        elif ganyin in GanyinCategorizer.SPECIAL_SYLLABLES:
+            return shouyin, GanyinCategorizer.SPECIAL_SYLLABLES[ganyin]
+        return shouyin, ganyin
