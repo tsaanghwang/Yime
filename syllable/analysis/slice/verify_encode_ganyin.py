@@ -1,63 +1,53 @@
-"""
-在syllable/analysis/slice/verify_encode_ganyin.py中，创建一个模块，
-验证从外部调用 syllable/analysis/slice/ganyin_encoder.py内的函数 encode_shouyin的功能是否有效
-"""
-
 import unittest
-import os
-import sys
-# 添加syllable的父目录到 Python 路径
-# sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..")))
-from ganyin_encoder import GanyinEncoder
+import json
+from pathlib import Path
+# from syllable.analysis.slice.ganyin_encoder import GanyinEncoder
 # from ganyin_encoder import GanyinEncoder
+from ganyin_encoder import GanyinEncoder
+"""
+import sys
+from pathlib import Path
+sys.path.append(str(Path(__file__).parent.parent.parent))  # 添加项目根目录到Python路径
+from syllable.analysis.slice.ganyin_encoder import GanyinEncoder
+"""
 
 class TestGanyinEncoder(unittest.TestCase):
-    """测试 ganyin_encoder.py 中的 encode_ganyin 功能"""
+    """干音编码器完备测试"""
 
-    def setUp(self):
-        self.encoder = GanyinEncoder()
-        print("\n" + "="*50)
-        print("干音编码验证（目视判断模式）")
-        print("="*50)
+    @classmethod
+    def setUpClass(cls):
+        # 加载编码映射文件
+        mapping_path = Path(__file__).parent / "yinyuan" / "ganyin_to_yinyuan_seq_fixed_length_encoding.json"
+        with open(mapping_path, 'r', encoding='utf-8') as f:
+            cls.encoding_map = json.load(f)
 
-    def test_encode_valid_ganyin(self):
-        """测试有效干音编码（输出结果供目视判断）"""
-        test_cases = [
-            "a1", "i2", "u3", "ang4"  # 示例干音，可根据需要调整
-        ]
+        # 初始化编码器
+        cls.encoder = GanyinEncoder()
 
-        for ganyin in test_cases:
-            result = self.encoder.encode_ganyin(ganyin)
-            print(f"\n干音: '{ganyin}'")
-            print(f"编码结果: {result}")
-            print(f"Unicode转义序列: {','.join(f'U+{ord(c):04X}' for c in result)}")
-            print(f"实际显示: {result}")
+    def test_all_ganyin_encodings(self):
+        """测试所有干音编码映射"""
+        for ganyin, expected in self.encoding_map.items():
+            with self.subTest(ganyin=ganyin):
+                result = self.encoder.encode_ganyin(ganyin)
+                self.assertEqual(
+                    result, expected,
+                    f"干音 '{ganyin}' 编码错误: 预期 '{expected}' (U+{ord(expected[0]):04X}...), 实际得到 '{result}'"
+                )
 
-    def test_encode_invalid_ganyin(self):
-        """测试无效干音编码（输出结果供目视判断）"""
+    def test_invalid_ganyin(self):
+        """测试无效干音输入"""
         invalid_cases = [
-            "", "invalid", "x9", None
+            "",          # 空输入
+            "xyz",       # 不存在干音
+            "i6",        # 超出音调范围
+            "a0",        # 0调不存在
+            "invalid"    # 完全无效
         ]
 
-        for ganyin in invalid_cases:
-            result = self.encoder.encode_ganyin(ganyin)
-            print(f"\n无效干音: '{ganyin}'")
-            print(f"处理结果: {result}")
+        for invalid in invalid_cases:
+            with self.subTest(invalid=invalid):
+                with self.assertRaises(ValueError):
+                    self.encoder.encode_ganyin(invalid)
 
-    def test_encode_edge_cases(self):
-        """测试边界情况（输出结果供目视判断）"""
-        edge_cases = [
-            ("a", "缺少声调"),
-            ("1", "只有声调"),
-            ("a123", "声调格式错误"),
-            (" a1", "前导空格"),
-            ("a1 ", "尾部空格")
-        ]
-
-        for ganyin, case_type in edge_cases:
-            result = self.encoder.encode_ganyin(ganyin)
-            print(f"\n边界情况 - {case_type}: '{ganyin}'")
-            print(f"处理结果: {result}")
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     unittest.main()

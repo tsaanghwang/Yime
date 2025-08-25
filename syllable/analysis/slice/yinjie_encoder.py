@@ -7,11 +7,11 @@
 3. 对首音和干音进行编码
 4. 对音节编码并保存数据
 """
+import sys
 import json
 import logging
 from pathlib import Path
 from typing import Dict, Any, Optional, Tuple
-import sys
 from syllable_categorizer import SyllableCategorizer
 from shouyin_encoder import ShouyinEncoder
 from ganyin_encoder import GanyinEncoder

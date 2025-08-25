@@ -2,6 +2,43 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "interactive_yinjie",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\interactive_yinjie.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}",
+      "addSourceRootsToPythonpath": true
+    },
+    {
+      "name": "verify_yinjie_encoder",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\verify_yinjie_encoder.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}",
+      "addSourceRootsToPythonpath": true,
+      "noDebug": true
+    },
+    {
+      "name": "syllable_categorizer.bak",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\syllable_categorizer.bak.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
+      "addSourceRootsToPythonpath": true
+    },
+    {
+      "name": "verify_encode_ganyin.bak",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\verify_encode_ganyin.bak.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
+      "addSourceRootsToPythonpath": true
+    },
+    {
       "name": "yueyin_yinyuan",
       "type": "python",
       "request": "launch",

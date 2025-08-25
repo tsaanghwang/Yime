@@ -2,37 +2,53 @@ import json
 from pathlib import Path
 from typing import Dict, Any, Optional
 # from syllable.analysis.slice.yueyin_yinyuan import YueyinYinyuan
-from yueyin_yinyuan import YueyinYinyuan
+from syllable.analysis.slice.yueyin_yinyuan import YueyinYinyuan
 
 class GanyinEncoder:
-    """干音编码处理器，整合音元映射和音元序列生成功能"""
-
     def __init__(self):
         self.yueyin_yinyuan = YueyinYinyuan(quality="", pitch="")
         # 预加载固定长度编码字典
         self.fixed_length_encoding = self._load_fixed_length_encoding()
 
+        # 修复路径 - 直接使用 yinyuan 子目录
+        mapping_path = Path(__file__).parent / "yinyuan" / "ganyin_to_yinyuan_seq_fixed_length_encoding.json"
+        with open(mapping_path, 'r', encoding='utf-8') as f:
+            self.encoding_map = json.load(f)
+
     def _load_fixed_length_encoding(self) -> Dict[str, str]:
         """加载固定长度编码字典"""
+        # 修复路径 - 直接使用 yinyuan 子目录
         encoding_path = Path(__file__).parent / "yinyuan" / "ganyin_to_yinyuan_seq_fixed_length_encoding.json"
         with encoding_path.open('r', encoding='utf-8') as f:
             return json.load(f)
 
+    def encode_ganyin(self, ganyin: str) -> str:
+        """
+        编码干音字符串为音元序列
 
-    def encode_ganyin(self, ganyin_name: str) -> Optional[str]:
-        """对单个干音进行编码的接口方法(基于预加载编码字典)"""
-        if not ganyin_name or not isinstance(ganyin_name, str) or len(ganyin_name) < 2:
-            return None
+        参数:
+            ganyin: 干音字符串，格式为"韵母+声调"，如"i1", "a2"等
 
-        # 处理特殊干音(如ng5, hm3, hn4, hng2等)
-        for prefix in ["ng", "hm", "hn", "hng"]:
-            if ganyin_name.startswith(prefix):
-                tone = ganyin_name[-1]
-                ganyin_name = f"{prefix}{tone}"
-                break
+        返回:
+            对应的音元编码字符串
 
-        # 从映射表中查找编码
-        return self.fixed_length_encoding.get(ganyin_name)
+        异常:
+            ValueError: 当输入不是有效的干音时抛出
+        """
+        # 输入验证
+        if not self._is_valid_ganyin(ganyin):
+            raise ValueError(f"无效的干音输入: '{ganyin}'")
+
+        # 返回映射结果
+        return self.encoding_map[ganyin]
+
+    def _is_valid_ganyin(self, ganyin: str) -> bool:
+        """检查输入是否是有效的干音格式"""
+        if not isinstance(ganyin, str) or len(ganyin) < 2:
+            return False
+
+        # 检查是否在编码映射中
+        return ganyin in self.encoding_map
 
     def load_ganyin_data(self, input_path: Path) -> Dict[str, Any]:
         """加载干音数据"""
