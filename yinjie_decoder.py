@@ -52,18 +52,15 @@ if __name__ == "__main__":
         try:
             yin = decoder.decode(pinyin)
             print(f"\n解码 '{pinyin}':")
-            print(f"线性结构: {yin}")
-            print(
-                f"音节结构: "
-                f"{{首音: {yin.initial}}}, "
-                f"{{呼音: {yin.ascender}, 韵音: {{主音: {yin.peak}, 末音: {yin.descender}}}}}"
-            )
-            print(f"干音结构: {{呼音: {yin.ascender}, 韵音: {{主音: {yin.peak}, 末音: {yin.descender}}}}}")
-            print(f"韵音结构: {{主音: {yin.peak}, 末音: {yin.descender}}}")
+            print(f"音节线性结构: {yin}")
+            print(f"音节层次结构: [首音: {yin.initial}, [干音：[呼音: {yin.ascender}, [韵音: [主音: {yin.peak}, 末音: {yin.descender}]]]]]")
+            print(f"干音层次结构: {{呼音: {yin.ascender}, 韵音: {{主音: {yin.peak}, 末音: {yin.descender}}}}}")
+            print(f"韵音线性结构: {{主音: {yin.peak}, 末音: {yin.descender}}}")
             print(f"首音: {yin.initial}")
             print(f"呼音: {yin.ascender}")
             print(f"主音: {yin.peak}")
             print(f"末音: {yin.descender}")
+            print(f"音节: {yin.initial}{yin.ascender}{yin.peak}{yin.descender}")
         except ValueError as e:
             print(f"解码 '{pinyin}' 时出错: {e}")
 
