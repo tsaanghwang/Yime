@@ -1,188 +1,221 @@
 """
-    音节编码
-    功能：根据Yinjie类定义的音节结构将音节编码为字符串
-    流程：
-    1. 读取音节pinyin\hanzi_pinyin\pinyin_normalized.json
-    2. 调用syllable\analysis\slice\run_analyzer.py将音节切分为首音和干音两段
-    3. 调用syllable\analysis\slice\shouyin_encoder.py将shouyin类对象转换为code
-    4. 调用syllable\analysis\slice\ganyin_encoder.py将干音类对象转换为code序列
-    5. 将shouyin_code和ganyin_code序列拼接为音节code
-    6. 将音节code写入文件
+音节编码模块重构版(项目根目录版本)
 
+功能：
+1. 读取音节数据
+2. 切分音节为首音和干音
+3. 对首音和干音进行编码
+4. 对音节编码并保存数据
 """
-from typing import Dict, Any
-import json
-import  os
 import sys
-import datetime
+import json
+import logging
 from pathlib import Path
+from typing import Dict, Any, Optional, Tuple
 
-# 添加项目根目录到 Python 路径
-project_root = Path(__file__).parent.parent  # 注意这里改为.parent.parent
-sys.path.append(str(project_root))
-
-# 然后进行其他导入
-sys.path.append(str(Path(__file__).parent / "syllable" / "analysis" / "slice"))
-from syllable.analysis.slice.syllable_categorizer import
-from syllable.analysis.slice.ganyin_encoder import GanyinEncoder
+# 修改导入路径为绝对导入
+from syllable.analysis.slice.syllable_categorizer import SyllableCategorizer
 from syllable.analysis.slice.shouyin_encoder import ShouyinEncoder
+from syllable.analysis.slice.ganyin_encoder import GanyinEncoder
 
-sys.path.append(str(Path(__file__).parent.parent.parent))  # Adjust the path as needed
-from syllable.analysis.slice.pianyin import PitchedPianyin
-# from pinyin.hanzi_pinyin import pinyin_normalizer
-
-# 步骤2-4：导入音节切分和编码相关模块
-
-def encode_single_yinjie(syllable: str) -> str:
-    """
-    对单个音节进行编码，返回编码字符串
-    """
-    # 切分音节为首音和干音
-    shouyin, ganyin = .analyze_syllable(syllable)
-    # 编码首音
-    shouyin_code = ShouyinEncoder.encode_shouyin('', shouyin = Dict)
-    # 编码干音
-    ganyin_code = GanyinEncoder.encode_ganyin('', ganyin_data = Dict)
-    # 拼接编码
-    yinjie = shouyin_code["首音"] + ganyin_code["呼音"] + ganyin_code["主音"] + ganyin_code["末音"]
-    # 返回编码
-    return yinjie
-
-def encode_all_yinjie():
-    """
-    读取音节数据，批量编码所有音节，写入文件/数据库/redis
-    """
-    # 步骤1：读取音节数据
-    with open(Path(__file__) / "pinyin_normalized.json", "r", encoding="utf-8") as f:
-        pinyin_data = json.load(f)
-    yinjie_list = list(pinyin_data.keys())
-
-    # 生成音节编码字典
-    yinjie_code_dict = {}
-    for yinjie in yinjie_list:
-        try:
-            code = encode_single_yinjie(yinjie)
-            yinjie_code_dict[yinjie] = code
-        except Exception as e:
-            # 可以记录日志或跳过异常音节
-            continue
-        except Exception:
-            # 可以记录日志或跳过异常音节
-            continue
-    output_path = Path(__file__).parent / "yinyuan" / "yinjie_code.json"
-    with open(output_path, "w", encoding="utf-8") as f:
-        json.dump(yinjie_code_dict, f, ensure_ascii=False, indent=2)
-
-def map_yinjie_to_codepoint(yinjie_list):
-    """从音节列表创建音节到单编码点的映射
-
-    Args:
-        yinjie_list: 音节列表
-
-    Returns:
-        返回一个字典，key是音节，value是对应的单编码点字符
-    """
-    start_codepoint = 0x100800  # 从补充私用区U+100800开始
-    return {yinjie: chr(start_codepoint + i)
-           for i, yinjie in enumerate(yinjie_list)}
+# 配置日志
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
 class YinjieEncoder:
-    """音节编码处理器，整合音元映射和音元序列生成功能"""
+    """重构后的音节编码处理器(项目根目录版本)"""
 
     def __init__(self):
-        """初始化音节编码器"""
-        pass
+        """初始化编码器并设置基础路径"""
+        self.base_dir = Path(__file__).parent
 
-    def load_yinjie_data(self, input_path: Path) -> Dict[str, Any]:
-        """加载音节数据
+    def _validate_path(self, path: Path) -> Path:
+        """验证路径是否存在"""
+        if not path.exists():
+            raise FileNotFoundError(f"路径不存在: {path}")
+        return path
+
+    def _handle_special_ganyin(self, ganyin: str) -> Optional[str]:
+        """
+        处理特殊干音(hm/hn/hng)，使用固定编码映射
 
         Args:
-            input_path: 输入文件路径
+            ganyin: 干音字符串(如"hm1", "hn2", "hng3"等)
 
         Returns:
-            返回加载的音节数据字典
+            组合后的编码字符串，如果无法处理则返回None
         """
-        with input_path.open('r', encoding='utf-8') as f:
-            return json.load(f)
+        if not ganyin.startswith(('hm', 'hn', 'hng')):
+            return None
 
-    def save_yinyuan_data(self, output_path: Path, data: Dict[str, Any]) -> None:
-        """保存音元数据到文件
+        # 提取声调和剩余部分
+        tone = ganyin[-1]
+        prefix = ganyin[:-1]
 
-        Args:
-            output_path: 输出文件路径
-            data: 要保存的音元数据
-        """
-        with output_path.open('w', encoding='utf-8') as f:
-            json.dump(data, f, ensure_ascii=False, indent=2)
+        # 获取h的编码
+        shouyin_encoder = ShouyinEncoder()
+        h_code = shouyin_encoder.encode_shouyin('h')
+        if not h_code:
+            logger.warning(f"无法获取'h'的编码")
+            return None
 
-    def process_yinjie(self, yinjie_data: Dict[str, Any]) -> Dict[str, Any]:
-        """处理音节数据，生成音元序列
+        # 直接编码映射，避免依赖ganyin_encoder
+        nasal_code_map = {
+            # m音 + 不同声调
+            "m1": "􀀸􀀸􀀸",
+            "m2": "􀀺􀀹􀀸",
+            "m3": "􀀺􀀺􀀺",
+            "m4": "􀀸􀀹􀀺",
+            "m5": "􀀹􀀹􀀹",
 
-        Args:
-            yinjie_data: 输入的音节数据
+            # n音 + 不同声调
+            "n1": "􀀻􀀻􀀻",
+            "n2": "􀀽􀀼􀀻",
+            "n3": "􀀽􀀽􀀽",
+            "n4": "􀀻􀀼􀀽",
+            "n5": "􀀼􀀼􀀼",
 
-        Returns:
-            处理后的音元序列数据
-        """
-        result = {}
-
-        # 情况1：处理带有codes字段的结构
-        if "codes" in yinjie_data:
-            codes = yinjie_data.get("codes", {})
-            return {"音节": list(codes.keys())}
-
-        # 情况2：处理带有yinjie字段的结构
-        elif "yinjie" in yinjie_data:
-            yinjie = yinjie_data.get("yinjie", {})
-            return {"音节": list(yinjie.keys())}
-
-        # 其他情况返回空字典
-        return result
-
-    def generate_encoding_files(self):
-        """生成所有编码相关文件"""
-        base_dir = Path(__file__).parent  # 获取当前文件所在目录
-
-        # 1. 定义输入输出文件路径
-        input_path = base_dir / "pinyin" / "hanzi_pinyin" / "pinyin_normalized.json"
-        output_path = base_dir / "yinjie.json"
-
-        # 2. 检查输入文件是否存在
-        if not input_path.exists():
-            raise FileNotFoundError(f"输入文件不存在: {input_path}")
-
-        # 3. 加载输入数据
-        try:
-            with open(input_path, "r", encoding="utf-8") as f:
-                pinyin_data = json.load(f)
-        except json.JSONDecodeError as e:
-            raise ValueError(f"输入文件格式错误: {input_path}") from e
-
-        # 4. 处理数据并生成编码
-        yinjie_list = list(pinyin_data.keys())  # 假设pinyin_data的键就是音节列表
-        codepoint_mapping = map_yinjie_to_codepoint(yinjie_list)
-
-        # 5. 保存结果到yinjie.json
-        result_data = {
-            "yinjie": codepoint_mapping,
-            "metadata": {
-                "source": str(input_path),
-                "generated_at": datetime.datetime.now().isoformat()
-            }
+            # ng音 + 不同声调
+            "ng1": "􀀾􀀾􀀾",
+            "ng2": "􀁀􀀿􀀾",
+            "ng3": "􀁀􀁀􀁀",
+            "ng4": "􀀾􀀿􀁀",
+            "ng5": "􀀿􀀿􀀿",
         }
 
-        # 确保输出目录存在
-        output_path.parent.mkdir(parents=True, exist_ok=True)
+        # 构建查找键，如 "m1", "ng3" 等
+        lookup_key = f"{prefix[1:]}{tone}"
 
-        with open(output_path, "w", encoding="utf-8") as f:
-            json.dump(result_data, f, ensure_ascii=False, indent=2)
+        if lookup_key in nasal_code_map:
+            # 返回组合后的编码
+            return h_code + nasal_code_map[lookup_key]
+        else:
+            logger.warning(f"特殊干音'{ganyin}'无法找到对应编码")
+            return None
 
-        print(f"成功生成音节编码文件: {output_path}")
+    def encode_single_yinjie(self, syllable: str) -> str:
+        """
+        编码单个音节
+
+        Args:
+            syllable: 要编码的音节字符串
+
+        Returns:
+            编码后的字符串
+
+        Raises:
+            ValueError: 如果输入无效或编码失败
+        """
+        # 验证音节格式
+        if not syllable or not isinstance(syllable, str):
+            raise ValueError("音节参数必须是非空字符串")
+
+        # 切分音节并验证结果
+        try:
+            parts = SyllableCategorizer.analyze_syllable(syllable)
+            if len(parts) != 2:
+                raise ValueError("音节切分结果无效，应返回(首音,干音)元组")
+            shouyin, ganyin = parts
+        except Exception as e:
+            raise ValueError(f"音节切分失败: {str(e)}") from e
+
+        # 统一编码调用方式
+        shouyin_encoder = ShouyinEncoder()
+        shouyin_code = shouyin_encoder.encode_shouyin(shouyin)
+
+        ganyin_encoder = GanyinEncoder()
+        ganyin_code = ganyin_encoder.encode_ganyin(ganyin)
+
+        # 处理特殊干音(hm/hn/hng)
+        if not ganyin_code or len(ganyin_code) != 3:
+            logger.warning(f"干音'{ganyin}'编码无效，尝试处理为特殊干音")
+            special_code = self._handle_special_ganyin(ganyin)
+            if special_code:
+                logger.warning(f"使用组合编码处理特殊干音: {ganyin}")
+                ganyin_code = special_code[3:]  # 只取干音部分(去掉h的编码)
+            else:
+                raise ValueError(f"干音编码无效: {ganyin_code}")
+
+        # 修改验证和拼接逻辑
+        if not shouyin_code:
+            raise ValueError("首音编码为空")
+        if not ganyin_code or len(ganyin_code) != 3:  # 检查是否是3个字符
+            raise ValueError(f"干音编码无效: {ganyin_code}")
+
+        return shouyin_code + ganyin_code
+
+    def encode_all_yinjie(self, output_subdir: str = "yinyuan") -> Path:
+        """
+        编码所有音节并保存结果
+
+        Args:
+            output_subdir: 输出子目录名
+
+        Returns:
+            生成的输出文件路径
+        """
+        input_path = self._get_input_path()
+        output_path = self._get_output_path(output_subdir)
+
+        pinyin_data = self._load_json(input_path)
+        yinjie_list = list(pinyin_data.keys())
+
+        yinjie_code_dict = {}
+        for yinjie in yinjie_list:
+            try:
+                code = self.encode_single_yinjie(yinjie)
+                yinjie_code_dict[yinjie] = code
+            except Exception as e:
+                logger.warning(f"跳过音节 '{yinjie}': {str(e)}")
+                continue
+
+        self._save_json(output_path, yinjie_code_dict)
+        logger.info(f"成功生成编码文件: {output_path}")
+        return output_path
+
+    def _get_input_path(self) -> Path:
+        """获取输入文件路径(修改为从项目根目录查找)"""
+        return self._validate_path(
+            self.base_dir / "pinyin" / "hanzi_pinyin" / "pinyin_normalized.json"
+        )
+
+    def _get_output_path(self, subdir: str) -> Path:
+        """获取输出文件路径并确保目录存在"""
+        output_dir = self.base_dir / subdir
+        output_dir.mkdir(parents=True, exist_ok=True)
+        return output_dir / "yinjie_code.json"
+
+    def _load_json(self, path: Path) -> Dict[str, Any]:
+        """加载JSON文件"""
+        with open(path, "r", encoding="utf-8") as f:
+            return json.load(f)
+
+    def _save_json(self, path: Path, data: Dict[str, Any]) -> None:
+        """保存数据到JSON文件"""
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+
+    def generate_encoding_files(self) -> Path:
+        """
+        生成编码文件(兼容旧接口)
+
+        Returns:
+            生成的输出文件路径
+        """
+        return self.encode_all_yinjie()
 
 def main():
-    """主函数"""
-    encoder = YinjieEncoder()
-    encoder.generate_encoding_files()
+    """主入口函数"""
+    try:
+        encoder = YinjieEncoder()
+        output_path = encoder.encode_all_yinjie()
+        print(f"编码文件已生成: {output_path}")
+    except Exception as e:
+        logger.error(f"程序执行失败: {str(e)}")
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()

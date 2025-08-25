@@ -6,9 +6,9 @@
 
 from typing import Literal, Union
 from dataclasses import dataclass
-from pitched_yinyuan import MusicalYinyuan
+from syllable.analysis.slice.pitched_yinyuan import MusicalYinyuan
 from pianyin import Pianyin, PitchedPianyin, UnpitchedPianyin
-from pitched_yinyuan import PitchedYinyuan
+from syllable.analysis.slice.pitched_yinyuan import PitchedYinyuan
 import os
 import json
 

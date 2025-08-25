@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 from typing import Dict, Any
-from zaoyin_yinyuan import NoiseYinyuan
+from syllable.analysis.slice.zaoyin_yinyuan import NoiseYinyuan
 
 
 class ShouyinEncoder:
@@ -36,7 +36,7 @@ class ShouyinEncoder:
             shouyin_list: 首音列表
 
         Returns:
-            字典{音元符号: 对应单边码点字符}
+            字典{音元符号: 对应单编码点字符}
         """
         return {yinyuan: chr(cls.START_CODEPOINT + i)
                for i, yinyuan in enumerate(shouyin_list)}

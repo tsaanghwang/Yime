@@ -2,7 +2,7 @@
 # 功能：分析拼音数据并生成分类后的干音数据
 
 # from syllable.analysis.slice.syllable_categorizer import
-from syllable_categorizer import SyllableCategorizer
+from syllable.analysis.slice.syllable_categorizer import SyllableCategorizer
 
 from typing import Dict
 import json
