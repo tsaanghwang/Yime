@@ -36,10 +36,15 @@ class Yinjie:
         """干音部分，由呼音和韵音组成"""
         return {
             'ascender': self.ascender,
-            'rime': {
-                'peak': self.peak,
-                'descender': self.descender
-            }
+            'rime': self.rime  # 引用新定义的rime属性
+        }
+
+    @property
+    def rime(self):
+        """韵音部分，由主音和末音组成"""
+        return {
+            'peak': self.peak,
+            'descender': self.descender
         }
 
     def __str__(self):
