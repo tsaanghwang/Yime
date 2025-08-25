@@ -2,6 +2,15 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "yinjie_decoder",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\yinjie_decoder.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}",
+      "addSourceRootsToPythonpath": true
+    },
+    {
       "name": "interactive_yinjie",
       "type": "python",
       "request": "launch",

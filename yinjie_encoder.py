@@ -147,7 +147,7 @@ class YinjieEncoder:
 
         return shouyin_code + ganyin_code
 
-    def encode_all_yinjie(self, output_subdir: str = "yinyuan") -> Path:
+    def encode_all_yinjie(self, output_subdir: str = "") -> Path:
         """
         编码所有音节并保存结果
 
