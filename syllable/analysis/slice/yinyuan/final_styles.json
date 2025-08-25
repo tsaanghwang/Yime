@@ -1,0 +1,237 @@
+{
+  "finals": {
+    "single quality finals": {
+      "_i": {
+        "ime": "_i",
+        "pinyin": "i",
+        "ipa": "ɿ/ʅ"
+      },
+      "a": {
+        "ime": "a",
+        "pinyin": "a",
+        "ipa": "ᴀ"
+      },
+      "e": {
+        "ime": "e",
+        "pinyin": "e",
+        "ipa": "ɤ"
+      },
+      "er": {
+        "ime": "er",
+        "pinyin": "er",
+        "ipa": "ɚ5"
+      },
+      "i": {
+        "ime": "i",
+        "pinyin": "i",
+        "ipa": "i"
+      },
+      "m": {
+        "ime": "m",
+        "pinyin": "m",
+        "ipa": "m̩"
+      },
+      "n": {
+        "ime": "n",
+        "pinyin": "n",
+        "ipa": "n̩"
+      },
+      "ng": {
+        "ime": "ng",
+        "pinyin": "ng",
+        "ipa": "ŋ̩"
+      },
+      "o": {
+        "ime": "o",
+        "pinyin": "o",
+        "ipa": "o"
+      },
+      "u": {
+        "ime": "u",
+        "pinyin": "u",
+        "ipa": "u"
+      },
+      "v": {
+        "ime": "v",
+        "pinyin": "ü",
+        "ipa": "ʏ"
+      },
+      "ü": {
+        "ime": "v",
+        "pinyin": "ü",
+        "ipa": "ʏ"
+      },
+      "ê": {
+        "ime": "ê",
+        "pinyin": "ê",
+        "ipa": "ᴇ"
+      }
+    },
+    "front long finals": {
+      "ai": {
+        "ime": "ai",
+        "pinyin": "ai",
+        "ipa": "ai"
+      },
+      "an": {
+        "ime": "an",
+        "pinyin": "an",
+        "ipa": "an"
+      },
+      "ang": {
+        "ime": "ang",
+        "pinyin": "ang",
+        "ipa": "ɑŋ"
+      },
+      "ao": {
+        "ime": "ao",
+        "pinyin": "ao",
+        "ipa": "ɑᴜ"
+      },
+      "ei": {
+        "ime": "ei",
+        "pinyin": "ei",
+        "ipa": "eɪ"
+      },
+      "en": {
+        "ime": "en",
+        "pinyin": "en",
+        "ipa": "ən"
+      },
+      "eng": {
+        "ime": "eng",
+        "pinyin": "eng",
+        "ipa": "ɤŋ"
+      },
+      "ou": {
+        "ime": "ou",
+        "pinyin": "ou",
+        "ipa": "ɤᴜ"
+      }
+    },
+    "back long finals": {
+      "ia": {
+        "ime": "ia",
+        "pinyin": "ia",
+        "ipa": "iᴀ"
+      },
+      "ie": {
+        "ime": "ie",
+        "pinyin": "ie",
+        "ipa": "iᴇ"
+      },
+      "ua": {
+        "ime": "ua",
+        "pinyin": "ua",
+        "ipa": "uᴀ"
+      },
+      "ue": {
+        "ime": "ue",
+        "pinyin": "üe",
+        "ipa": "ʏᴇ"
+      },
+      "uo": {
+        "ime": "uo",
+        "pinyin": "uo",
+        "ipa": "uo"
+      },
+      "ve": {
+        "ime": "ve",
+        "pinyin": "üe",
+        "ipa": "ʏᴇ"
+      },
+      "üe": {
+        "ime": "ve",
+        "pinyin": "üe",
+        "ipa": "ʏᴇ"
+      }
+    },
+    "triple quality finals": {
+      "ian": {
+        "ime": "ian",
+        "pinyin": "ian",
+        "ipa": "iæn"
+      },
+      "iang": {
+        "ime": "iang",
+        "pinyin": "iang",
+        "ipa": "iɑŋ"
+      },
+      "iao": {
+        "ime": "iao",
+        "pinyin": "iao",
+        "ipa": "iɑᴜ"
+      },
+      "in": {
+        "ime": "in",
+        "pinyin": "in",
+        "ipa": "iᵊn"
+      },
+      "ing": {
+        "ime": "ing",
+        "pinyin": "ing",
+        "ipa": "i𐞑ŋ"
+      },
+      "iong": {
+        "ime": "iong",
+        "pinyin": "iong",
+        "ipa": "y𐞑ŋ"
+      },
+      "iu": {
+        "ime": "iu",
+        "pinyin": "iou",
+        "ipa": "iɤᴜ"
+      },
+      "ong": {
+        "ime": "ong",
+        "pinyin": "ong",
+        "ipa": "ᴜ𐞑ŋ"
+      },
+      "uai": {
+        "ime": "uai",
+        "pinyin": "uai",
+        "ipa": "uæɪ"
+      },
+      "uan": {
+        "ime": "uan",
+        "pinyin": "uan",
+        "ipa": "uan"
+      },
+      "uang": {
+        "ime": "uang",
+        "pinyin": "uang",
+        "ipa": "uɑŋ"
+      },
+      "ui": {
+        "ime": "ui",
+        "pinyin": "uei",
+        "ipa": "ueɪ"
+      },
+      "un": {
+        "ime": "un",
+        "pinyin": "uen",
+        "ipa": "uən"
+      },
+      "vn": {
+        "ime": "vn",
+        "pinyin": "ün",
+        "ipa": "ʏən"
+      },
+      "ün": {
+        "ime": "vn",
+        "pinyin": "ün",
+        "ipa": "ʏən"
+      },
+      "van": {
+        "ime": "van",
+        "pinyin": "üan",
+        "ipa": "ʏæn"
+      },
+      "üan": {
+        "ime": "van",
+        "pinyin": "üan",
+        "ipa": "ʏæn"
+      }
+    }
+  }
+}

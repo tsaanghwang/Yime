@@ -4,7 +4,7 @@ import jsonref
 json_data = {
     "definitions": {
         "address": {
-            "street": "Main Street", 
+            "street": "Main Street",
             "city": "Anytown"
         }
     },
