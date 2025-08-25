@@ -24,11 +24,11 @@
       "description": "Unaspirated bilabial plosive"
     },
     "p": {
-      "standard": ["pʰ"],
+      "standard": ["pͪ"],
       "dialect_instances": {
-        "Cantonese": ["pʰ"],
-        "Wu": ["pʰ"],
-        "Min": ["pʰ"]
+        "Cantonese": ["pͪ"],
+        "Wu": ["pͪ"],
+        "Min": ["pͪ"]
       },
       "description": "Aspirated bilabial plosive"
     },
@@ -60,11 +60,11 @@
       "description": "Unaspirated alveolar plosive"
     },
     "t": {
-      "standard": ["tʰ"],
+      "standard": ["tͪ"],
       "dialect_instances": {
-        "Cantonese": ["tʰ"],
-        "Wu": ["tʰ"],
-        "Min": ["tʰ"]
+        "Cantonese": ["tͪ"],
+        "Wu": ["tͪ"],
+        "Min": ["tͪ"]
       },
       "description": "Aspirated alveolar plosive"
     },
@@ -96,11 +96,11 @@
       "description": "Unaspirated velar plosive"
     },
     "k": {
-      "standard": ["kʰ"],
+      "standard": ["kͪ"],
       "dialect_instances": {
-        "Cantonese": ["kʰ"],
-        "Wu": ["kʰ"],
-        "Min": ["kʰ"]
+        "Cantonese": ["kͪ"],
+        "Wu": ["kͪ"],
+        "Min": ["kͪ"]
       },
       "description": "Aspirated velar plosive"
     },
@@ -124,20 +124,20 @@
       "note": "Used as syllable separator in pinyin"
     },
     "j": {
-      "standard": ["tɕ"],
+      "standard": ["ʨ"],
       "dialect_instances": {
         "Cantonese": ["ts"],
-        "Wu": ["tɕ"],
+        "Wu": ["ʨ"],
         "Min": ["ts"]
       },
       "description": "Voiceless alveolo-palatal affricate"
     },
     "q": {
-      "standard": ["tɕʰ"],
+      "standard": ["ʨͪ"],
       "dialect_instances": {
-        "Cantonese": ["tsʰ"],
-        "Wu": ["tɕʰ"],
-        "Min": ["tsʰ"]
+        "Cantonese": ["ʦͪ"],
+        "Wu": ["ʨͪ"],
+        "Min": ["ʦͪ"]
       },
       "description": "Aspirated alveolo-palatal affricate"
     },
@@ -155,16 +155,16 @@
       "dialect_instances": {
         "Cantonese": ["tʃ"],
         "Wu": ["ts"],
-        "Southern": ["tɕ"]
+        "Southern": ["ʨ"]
       },
       "description": "Voiceless retroflex affricate"
     },
     "ch": {
-      "standard": ["ʈʂʰ"],
+      "standard": ["ʈʂͪ"],
       "dialect_instances": {
         "Cantonese": ["tʃʰ"],
-        "Wu": ["tsʰ"],
-        "Southern": ["tɕʰ"]
+        "Wu": ["ʦͪ"],
+        "Southern": ["ʨͪ"]
       },
       "description": "Aspirated retroflex affricate"
     },
@@ -196,11 +196,11 @@
       "description": "Unaspirated alveolar affricate"
     },
     "c": {
-      "standard": ["tsʰ"],
+      "standard": ["ʦͪ"],
       "dialect_instances": {
-        "Cantonese": ["tsʰ"],
-        "Wu": ["tsʰ"],
-        "Min": ["tsʰ"]
+        "Cantonese": ["ʦͪ"],
+        "Wu": ["ʦͪ"],
+        "Min": ["ʦͪ"]
       },
       "description": "Aspirated alveolar affricate"
     },

@@ -11,7 +11,7 @@ data = {
       "fourth_tone_ganyin": "高调音元、中调音元、低调音元的组合"
     }
   },
-  
+
   # 音元符号定义 - 确保所有字符都在Private Use Area-A (U+E000..U+F8FF)
   "yinyuan_symbols": {
     "high_tone_i": "󰌠",  # U+F0300
@@ -64,10 +64,10 @@ def validate_private_use_chars():
     # 加载key_symbol_mapping.json文件
     with open("internal_data/key_symbol_mapping.json", "r", encoding="utf-8") as f:
         symbol_mapping = json.load(f)
-    
+
     # 获取所有允许的字符
     allowed_chars = set(symbol_mapping.values())
-    
+
     invalid_chars = []
     for key, char in data["yinyuan_symbols"].items():
         if char not in allowed_chars:
@@ -77,7 +77,7 @@ def validate_private_use_chars():
                 'code': f"U+{ord(char):05X}",
                 'status': 'Invalid (Not in key_symbol_mapping.json)'
             })
-    
+
     if invalid_chars:
         print("发现不在key_symbol_mapping.json中的字符:")
         for item in invalid_chars:
@@ -120,28 +120,28 @@ finals_tone_mapping = {
 # 生成干音编码
 def generate_ganyin_encoding(data):
     ganyin_encoding = {}
-    
+
     for series_name, series_info in finals_tone_mapping.items():
         base = series_info["base"]
         series_data = {}
-        
+
         # 第一声
         high_symbol = data["yinyuan_symbols"][f"high_tone_{base}"]
         series_data[series_info["diacritics"][0]] = high_symbol * 3
-        
+
         # 第二声
         low_symbol = data["yinyuan_symbols"][f"low_tone_{base}"]
         mid_symbol = data["yinyuan_symbols"][f"mid_tone_{base}"]
         series_data[series_info["diacritics"][1]] = low_symbol + mid_symbol + high_symbol
-        
+
         # 第三声
         series_data[series_info["diacritics"][2]] = low_symbol * 3
-        
+
         # 第四声
         series_data[series_info["diacritics"][3]] = high_symbol + mid_symbol + low_symbol
-        
+
         ganyin_encoding[f"{base}_series"] = series_data
-    
+
     return ganyin_encoding
 
 # 生成完整的JSON数据
@@ -152,3 +152,5 @@ with open("ganyin_encoding.json", "w", encoding="utf-8") as f:
     json.dump(data, f, ensure_ascii=False, indent=2)
 
 print("干音编码已生成并保存到 ganyin_encoding.json")
+class GanyinEncoder():
+    pass

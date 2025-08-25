@@ -1,4 +1,4 @@
-from syllable_mapper import OnsetRhymeToSegmentMapper, SegmentToOnsetRhymeMapper
+from syllable_mapper import InitialFinalWithToneToSliceMapper, SliceToInitialFinalWithToneMapper
 
 
 class SyllableAnalyzerStrategy:
@@ -6,16 +6,16 @@ class SyllableAnalyzerStrategy:
         raise NotImplementedError("Subclasses should implement this!")
 
 
-class OnsetRhymeAnalyzer(SyllableAnalyzerStrategy):
+class InitialFinalWithToneAnalyzer(SyllableAnalyzerStrategy):
     def analyze(self, syllable):
-        # 声韵母分析法实现
-        return {'onset': 'b', 'rhyme': ['a', 'n']}
+        # 声母韵母声调分析法实现
+        return {'initial': 'b', 'final_with_tone': ['a', 'n']}
 
 
-class SegmentAnalyzer(SyllableAnalyzerStrategy):
+class SliceAnalyzer(SyllableAnalyzerStrategy):
     def analyze(self, syllable):
-        # 音段分析法实现
-        return {'segments': ['b', 'a', 'n']}
+        # 片音分析法实现
+        return {'slices': ['b', 'a', 'n']}
 
 
 class Syllable:
@@ -27,8 +27,8 @@ class Syllable:
 
     def convert_to(self, target_format):
         current = self.analyze()
-        if isinstance(self._analyzer, OnsetRhymeAnalyzer) and target_format == "segment":
-            return OnsetRhymeToSegmentMapper.to_other_format(current)
-        elif isinstance(self._analyzer, SegmentAnalyzer) and target_format == "onset_rhyme":
-            return SegmentToOnsetRhymeMapper.to_other_format(current)
+        if isinstance(self._analyzer, InitialFinalWithToneAnalyzer) and target_format == "slice":
+            return InitialFinalWithToneToSliceMapper.to_other_format(current)
+        elif isinstance(self._analyzer, SliceAnalyzer) and target_format == "initial_final_with_tone":
+            return SliceToInitialFinalWithToneMapper.to_other_format(current)
         return current

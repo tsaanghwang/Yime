@@ -1,0 +1,70 @@
+{
+  "metadata": {
+    "description": "Definition of pitch variables and their possible values in acoustic analysis.",
+    "version": "1.0",
+    "author": "Your Name",
+    "date": "2023-11-15"
+  },
+  "pitch_variables": [
+    {
+      "variable_name": "fundamental_frequency",
+      "english_description": "The lowest frequency of a periodic waveform, perceived as pitch.",
+      "unit": "Hertz (Hz)",
+      "data_type": "float",
+      "possible_values": {
+        "min": 20.0,
+        "max": 2000.0,
+        "default": 440.0,
+        "examples": [82.41, 110.0, 261.63, 523.25]
+      }
+    },
+    {
+      "variable_name": "pitch_class",
+      "english_description": "The chromatic pitch class (0-11) in Western music theory.",
+      "unit": "None (integer)",
+      "data_type": "integer",
+      "possible_values": {
+        "min": 0,
+        "max": 11,
+        "default": 0,
+        "examples": [0, 4, 7]
+      },
+      "mapping": {
+        "0": "C",
+        "1": "C#/Db",
+        "2": "D",
+        "3": "D#/Eb",
+        "4": "E",
+        "5": "F",
+        "6": "F#/Gb",
+        "7": "G",
+        "8": "G#/Ab",
+        "9": "A",
+        "10": "A#/Bb",
+        "11": "B"
+      }
+    },
+    {
+      "variable_name": "octave_number",
+      "english_description": "The octave level in scientific pitch notation (e.g., C4 is middle C).",
+      "unit": "None (integer)",
+      "data_type": "integer",
+      "possible_values": {
+        "min": -1,
+        "max": 9,
+        "default": 4,
+        "examples": [0, 4, 8]
+      }
+    },
+    {
+      "variable_name": "pitch_contour",
+      "english_description": "The shape of pitch variation over time (e.g., rising, falling, flat).",
+      "unit": "Categorical",
+      "data_type": "string",
+      "possible_values": {
+        "categories": ["rising", "falling", "flat", "undulating", "arched"],
+        "default": "flat"
+      }
+    }
+  ]
+}

@@ -11,11 +11,11 @@
     "mid level": { "mark": "˧", "value": "3" },
     "mid-low level": { "mark": "˨", "value": "2" },
     "low level": { "mark": "˩", "value": "1" },
-    "": { "mark": "0", "value": "0" }
+    "Unpitched": { "mark": "0", "value": "0" }
   },
-  "tonemes": {
+  "pitch_variables": {
     "high tone": { "mark": "˥", "letter": "H" },
     "mid tone": { "mark": "˦", "letter": "M" },
-    "low level": { "mark": "˩", "letter": "L" }
+    "low tone": { "mark": "˩", "letter": "L" }
   }
 }

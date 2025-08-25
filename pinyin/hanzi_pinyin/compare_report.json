@@ -1,0 +1,9727 @@
+{
+  "added": {
+    "biang2": "biáng",
+    "biang4": "biàng",
+    "bin5": "bin",
+    "bong4": "bòng",
+    "cou2": "cóu",
+    "cui5": "cui",
+    "dei1": "dēi",
+    "e5": "e",
+    "ei3": "ěi",
+    "ei4": "èi",
+    "hang3": "hǎng",
+    "huai5": "huai",
+    "kun5": "kun",
+    "len4": "lèn",
+    "lü2": "lǘ",
+    "lü3": "lǚ",
+    "lü4": "lǜ",
+    "lüe3": "lüě",
+    "lüe4": "lüè",
+    "min5": "min",
+    "niao5": "niao",
+    "nin5": "nin",
+    "nü2": "nǘ",
+    "nü3": "nǚ",
+    "nü4": "nǜ",
+    "nüe4": "nüè",
+    "pu5": "pu",
+    "re2": "ré",
+    "ru5": "ru",
+    "shuo2": "shuó",
+    "te5": "te",
+    "yun5": "yun",
+    "za4": "zà",
+    "ze5": "ze",
+    "zen5": "zen",
+    "zhei4": "zhèi",
+    "zhuan2": "zhuán",
+    "zong5": "zong",
+    "zun2": "zún"
+  },
+  "removed": {
+    "bang5": "bang5",
+    "bao5": "bao5",
+    "ben5": "ben5",
+    "bian2": "bian2",
+    "biao2": "biao2",
+    "bie5": "bie5",
+    "bing5": "bing5",
+    "bu5": "bu5",
+    "cai5": "cai5",
+    "ceng5": "ceng5",
+    "cha5": "cha5",
+    "chai5": "chai5",
+    "chan5": "chan5",
+    "chao5": "chao5",
+    "che5": "che5",
+    "cheng5": "cheng5",
+    "chou5": "chou5",
+    "chuang5": "chuang5",
+    "chun5": "chun5",
+    "chuo5": "chuo5",
+    "cun5": "cun5",
+    "cuo5": "cuo5",
+    "dan5": "dan5",
+    "dao5": "dao5",
+    "deng5": "deng5",
+    "di5": "di5",
+    "dian5": "dian5",
+    "diao2": "diao2",
+    "diao5": "diao5",
+    "die5": "die5",
+    "ding5": "ding5",
+    "dong5": "dong5",
+    "dou5": "dou5",
+    "du5": "du5",
+    "dui5": "dui5",
+    "dun5": "dun5",
+    "en5": "en5",
+    "eng5": "eng5",
+    "er1": "er1",
+    "fan5": "fan5",
+    "fei5": "fei5",
+    "fen5": "fen5",
+    "feng5": "feng5",
+    "ga5": "ga5",
+    "gai5": "gai5",
+    "gan5": "gan5",
+    "gang5": "gang5",
+    "gao5": "gao5",
+    "ge5": "ge5",
+    "gei5": "gei5",
+    "gou5": "gou5",
+    "gua5": "gua5",
+    "guai5": "guai5",
+    "gui5": "gui5",
+    "gun5": "gun5",
+    "ha5": "ha5",
+    "hang5": "hang5",
+    "hao5": "hao5",
+    "he5": "he5",
+    "hei3": "hei3",
+    "hen5": "hen5",
+    "heng5": "heng5",
+    "hm1": "hm1",
+    "hm2": "hm2",
+    "hm3": "hm3",
+    "hm4": "hm4",
+    "hn1": "hn1",
+    "hn2": "hn2",
+    "hn3": "hn3",
+    "hn4": "hn4",
+    "hn5": "hn5",
+    "hng1": "hng1",
+    "hng2": "hng2",
+    "hng3": "hng3",
+    "hng4": "hng4",
+    "hong5": "hong5",
+    "hou5": "hou5",
+    "hua5": "hua5",
+    "huan5": "huan5",
+    "hun5": "hun5",
+    "ji5": "ji5",
+    "jiang5": "jiang5",
+    "jin5": "jin5",
+    "jv1": "jv1",
+    "jv2": "jv2",
+    "jv3": "jv3",
+    "jv4": "jv4",
+    "jv5": "jv5",
+    "jvan1": "jvan1",
+    "jvan3": "jvan3",
+    "jvan4": "jvan4",
+    "jve1": "jve1",
+    "jve2": "jve2",
+    "jve3": "jve3",
+    "jve4": "jve4",
+    "jvn1": "jvn1",
+    "jvn3": "jvn3",
+    "jvn4": "jvn4",
+    "ka4": "ka4",
+    "kai5": "kai5",
+    "kan5": "kan5",
+    "kao5": "kao5",
+    "ken5": "ken5",
+    "kong5": "kong5",
+    "kou5": "kou5",
+    "ku5": "ku5",
+    "kuai1": "kuai1",
+    "kuai5": "kuai5",
+    "kuang5": "kuang5",
+    "lai5": "lai5",
+    "lan5": "lan5",
+    "lao5": "lao5",
+    "leng5": "leng5",
+    "lian5": "lian5",
+    "liao5": "liao5",
+    "liu5": "liu5",
+    "long5": "long5",
+    "luan5": "luan5",
+    "lv2": "lv2",
+    "lv3": "lv3",
+    "lv4": "lv4",
+    "lvan2": "lvan2",
+    "lvan3": "lvan3",
+    "lve4": "lve4",
+    "m3": "m3",
+    "m5": "m5",
+    "mai5": "mai5",
+    "man5": "man5",
+    "mang5": "mang5",
+    "mao5": "mao5",
+    "me4": "me4",
+    "mei5": "mei5",
+    "mi5": "mi5",
+    "mian5": "mian5",
+    "mu5": "mu5",
+    "n1": "n1",
+    "nai5": "nai5",
+    "nan5": "nan5",
+    "nao5": "nao5",
+    "nen5": "nen5",
+    "ng1": "ng1",
+    "nian5": "nian5",
+    "niang5": "niang5",
+    "nie5": "nie5",
+    "niu5": "niu5",
+    "nong1": "nong1",
+    "nong5": "nong5",
+    "nv2": "nv2",
+    "nv3": "nv3",
+    "nv4": "nv4",
+    "nve4": "nve4",
+    "pa5": "pa5",
+    "pai5": "pai5",
+    "pan5": "pan5",
+    "pen5": "pen5",
+    "peng5": "peng5",
+    "pi5": "pi5",
+    "pia1": "pia1",
+    "qiang5": "qiang5",
+    "qiao5": "qiao5",
+    "qie5": "qie5",
+    "qin5": "qin5",
+    "qiu5": "qiu5",
+    "qun5": "qun5",
+    "qv1": "qv1",
+    "qv2": "qv2",
+    "qv3": "qv3",
+    "qv4": "qv4",
+    "qv5": "qv5",
+    "qvan1": "qvan1",
+    "qvan2": "qvan2",
+    "qvan3": "qvan3",
+    "qvan4": "qvan4",
+    "qvan5": "qvan5",
+    "qve1": "qve1",
+    "qve2": "qve2",
+    "qve4": "qve4",
+    "qvn1": "qvn1",
+    "qvn2": "qvn2",
+    "qvn3": "qvn3",
+    "qvn5": "qvn5",
+    "ran5": "ran5",
+    "rang5": "rang5",
+    "re5": "re5",
+    "ren5": "ren5",
+    "rou5": "rou5",
+    "ru1": "ru1",
+    "sang5": "sang5",
+    "sao5": "sao5",
+    "se5": "se5",
+    "shai5": "shai5",
+    "shan5": "shan5",
+    "shao5": "shao5",
+    "she5": "she5",
+    "shen5": "shen5",
+    "sheng5": "sheng5",
+    "shu5": "shu5",
+    "shua5": "shua5",
+    "shun5": "shun5",
+    "shuo5": "shuo5",
+    "song5": "song5",
+    "sou5": "sou5",
+    "su5": "su5",
+    "suan5": "suan5",
+    "sui5": "sui5",
+    "tan5": "tan5",
+    "tang5": "tang5",
+    "tao5": "tao5",
+    "teng5": "teng5",
+    "ti5": "ti5",
+    "tian5": "tian5",
+    "tie5": "tie5",
+    "ting5": "ting5",
+    "tong5": "tong5",
+    "tun5": "tun5",
+    "tuo5": "tuo5",
+    "wang5": "wang5",
+    "wo5": "wo5",
+    "xi5": "xi5",
+    "xia5": "xia5",
+    "xiang5": "xiang5",
+    "xie5": "xie5",
+    "xiong5": "xiong5",
+    "xuan5": "xuan5",
+    "xun5": "xun5",
+    "xv1": "xv1",
+    "xv2": "xv2",
+    "xv3": "xv3",
+    "xv4": "xv4",
+    "xv5": "xv5",
+    "xvan1": "xvan1",
+    "xvan2": "xvan2",
+    "xvan3": "xvan3",
+    "xvan4": "xvan4",
+    "xvan5": "xvan5",
+    "xve1": "xve1",
+    "xve2": "xve2",
+    "xve3": "xve3",
+    "xve4": "xve4",
+    "xvn1": "xvn1",
+    "xvn2": "xvn2",
+    "xvn4": "xvn4",
+    "xvn5": "xvn5",
+    "yai2": "yai2",
+    "yan5": "yan5",
+    "yao5": "yao5",
+    "yi5": "yi5",
+    "ying5": "ying5",
+    "yong5": "yong5",
+    "yuan5": "yuan5",
+    "yue5": "yue5",
+    "yv1": "yv1",
+    "yv2": "yv2",
+    "yv3": "yv3",
+    "yv4": "yv4",
+    "yv5": "yv5",
+    "yvan1": "yvan1",
+    "yvan2": "yvan2",
+    "yvan3": "yvan3",
+    "yvan4": "yvan4",
+    "yvan5": "yvan5",
+    "yve1": "yve1",
+    "yve2": "yve2",
+    "yve3": "yve3",
+    "yve4": "yve4",
+    "yve5": "yve5",
+    "yvn1": "yvn1",
+    "yvn2": "yvn2",
+    "yvn3": "yvn3",
+    "yvn4": "yvn4",
+    "za5": "za5",
+    "zai5": "zai5",
+    "zao5": "zao5",
+    "ze3": "ze3",
+    "zhan5": "zhan5",
+    "zheng5": "zheng5",
+    "zhong5": "zhong5",
+    "zhou5": "zhou5",
+    "zhu5": "zhu5",
+    "zhua5": "zhua5",
+    "zhuan5": "zhuan5",
+    "zhuang2": "zhuang2",
+    "zhuang5": "zhuang5",
+    "zhui5": "zhui5",
+    "zong2": "zong2",
+    "zou5": "zou5",
+    "ê5": "ê5"
+  },
+  "changed": {
+    "a1": {
+      "old": "a1",
+      "new": "ā"
+    },
+    "a2": {
+      "old": "a2",
+      "new": "á"
+    },
+    "a3": {
+      "old": "a3",
+      "new": "ǎ"
+    },
+    "a4": {
+      "old": "a4",
+      "new": "à"
+    },
+    "a5": {
+      "old": "a5",
+      "new": "a"
+    },
+    "ai1": {
+      "old": "ai1",
+      "new": "āi"
+    },
+    "ai2": {
+      "old": "ai2",
+      "new": "ái"
+    },
+    "ai3": {
+      "old": "ai3",
+      "new": "ǎi"
+    },
+    "ai4": {
+      "old": "ai4",
+      "new": "ài"
+    },
+    "an1": {
+      "old": "an1",
+      "new": "ān"
+    },
+    "an2": {
+      "old": "an2",
+      "new": "án"
+    },
+    "an3": {
+      "old": "an3",
+      "new": "ǎn"
+    },
+    "an4": {
+      "old": "an4",
+      "new": "àn"
+    },
+    "ang1": {
+      "old": "ang1",
+      "new": "āng"
+    },
+    "ang2": {
+      "old": "ang2",
+      "new": "áng"
+    },
+    "ang3": {
+      "old": "ang3",
+      "new": "ǎng"
+    },
+    "ang4": {
+      "old": "ang4",
+      "new": "àng"
+    },
+    "ao1": {
+      "old": "ao1",
+      "new": "āo"
+    },
+    "ao2": {
+      "old": "ao2",
+      "new": "áo"
+    },
+    "ao3": {
+      "old": "ao3",
+      "new": "ǎo"
+    },
+    "ao4": {
+      "old": "ao4",
+      "new": "ào"
+    },
+    "ba1": {
+      "old": "ba1",
+      "new": "bā"
+    },
+    "ba2": {
+      "old": "ba2",
+      "new": "bá"
+    },
+    "ba3": {
+      "old": "ba3",
+      "new": "bǎ"
+    },
+    "ba4": {
+      "old": "ba4",
+      "new": "bà"
+    },
+    "ba5": {
+      "old": "ba5",
+      "new": "ba"
+    },
+    "bai1": {
+      "old": "bai1",
+      "new": "bāi"
+    },
+    "bai2": {
+      "old": "bai2",
+      "new": "bái"
+    },
+    "bai3": {
+      "old": "bai3",
+      "new": "bǎi"
+    },
+    "bai4": {
+      "old": "bai4",
+      "new": "bài"
+    },
+    "bai5": {
+      "old": "bai5",
+      "new": "bai"
+    },
+    "ban1": {
+      "old": "ban1",
+      "new": "bān"
+    },
+    "ban3": {
+      "old": "ban3",
+      "new": "bǎn"
+    },
+    "ban4": {
+      "old": "ban4",
+      "new": "bàn"
+    },
+    "ban5": {
+      "old": "ban5",
+      "new": "ban"
+    },
+    "bang1": {
+      "old": "bang1",
+      "new": "bāng"
+    },
+    "bang3": {
+      "old": "bang3",
+      "new": "bǎng"
+    },
+    "bang4": {
+      "old": "bang4",
+      "new": "bàng"
+    },
+    "bao1": {
+      "old": "bao1",
+      "new": "bāo"
+    },
+    "bao2": {
+      "old": "bao2",
+      "new": "báo"
+    },
+    "bao3": {
+      "old": "bao3",
+      "new": "bǎo"
+    },
+    "bao4": {
+      "old": "bao4",
+      "new": "bào"
+    },
+    "bei1": {
+      "old": "bei1",
+      "new": "bēi"
+    },
+    "bei3": {
+      "old": "bei3",
+      "new": "běi"
+    },
+    "bei4": {
+      "old": "bei4",
+      "new": "bèi"
+    },
+    "bei5": {
+      "old": "bei5",
+      "new": "bei"
+    },
+    "ben1": {
+      "old": "ben1",
+      "new": "bēn"
+    },
+    "ben3": {
+      "old": "ben3",
+      "new": "běn"
+    },
+    "ben4": {
+      "old": "ben4",
+      "new": "bèn"
+    },
+    "beng1": {
+      "old": "beng1",
+      "new": "bēng"
+    },
+    "beng2": {
+      "old": "beng2",
+      "new": "béng"
+    },
+    "beng3": {
+      "old": "beng3",
+      "new": "běng"
+    },
+    "beng4": {
+      "old": "beng4",
+      "new": "bèng"
+    },
+    "beng5": {
+      "old": "beng5",
+      "new": "beng"
+    },
+    "bi1": {
+      "old": "bi1",
+      "new": "bī"
+    },
+    "bi2": {
+      "old": "bi2",
+      "new": "bí"
+    },
+    "bi3": {
+      "old": "bi3",
+      "new": "bǐ"
+    },
+    "bi4": {
+      "old": "bi4",
+      "new": "bì"
+    },
+    "bian1": {
+      "old": "bian1",
+      "new": "biān"
+    },
+    "bian3": {
+      "old": "bian3",
+      "new": "biǎn"
+    },
+    "bian4": {
+      "old": "bian4",
+      "new": "biàn"
+    },
+    "bian5": {
+      "old": "bian5",
+      "new": "bian"
+    },
+    "biao1": {
+      "old": "biao1",
+      "new": "biāo"
+    },
+    "biao3": {
+      "old": "biao3",
+      "new": "biǎo"
+    },
+    "biao4": {
+      "old": "biao4",
+      "new": "biào"
+    },
+    "bie1": {
+      "old": "bie1",
+      "new": "biē"
+    },
+    "bie2": {
+      "old": "bie2",
+      "new": "bié"
+    },
+    "bie3": {
+      "old": "bie3",
+      "new": "biě"
+    },
+    "bie4": {
+      "old": "bie4",
+      "new": "biè"
+    },
+    "bin1": {
+      "old": "bin1",
+      "new": "bīn"
+    },
+    "bin3": {
+      "old": "bin3",
+      "new": "bǐn"
+    },
+    "bin4": {
+      "old": "bin4",
+      "new": "bìn"
+    },
+    "bing1": {
+      "old": "bing1",
+      "new": "bīng"
+    },
+    "bing3": {
+      "old": "bing3",
+      "new": "bǐng"
+    },
+    "bing4": {
+      "old": "bing4",
+      "new": "bìng"
+    },
+    "bo1": {
+      "old": "bo1",
+      "new": "bō"
+    },
+    "bo2": {
+      "old": "bo2",
+      "new": "bó"
+    },
+    "bo3": {
+      "old": "bo3",
+      "new": "bǒ"
+    },
+    "bo4": {
+      "old": "bo4",
+      "new": "bò"
+    },
+    "bo5": {
+      "old": "bo5",
+      "new": "bo"
+    },
+    "bu1": {
+      "old": "bu1",
+      "new": "bū"
+    },
+    "bu2": {
+      "old": "bu2",
+      "new": "bú"
+    },
+    "bu3": {
+      "old": "bu3",
+      "new": "bǔ"
+    },
+    "bu4": {
+      "old": "bu4",
+      "new": "bù"
+    },
+    "ca1": {
+      "old": "ca1",
+      "new": "cā"
+    },
+    "ca3": {
+      "old": "ca3",
+      "new": "cǎ"
+    },
+    "ca4": {
+      "old": "ca4",
+      "new": "cà"
+    },
+    "cai1": {
+      "old": "cai1",
+      "new": "cāi"
+    },
+    "cai2": {
+      "old": "cai2",
+      "new": "cái"
+    },
+    "cai3": {
+      "old": "cai3",
+      "new": "cǎi"
+    },
+    "cai4": {
+      "old": "cai4",
+      "new": "cài"
+    },
+    "can1": {
+      "old": "can1",
+      "new": "cān"
+    },
+    "can2": {
+      "old": "can2",
+      "new": "cán"
+    },
+    "can3": {
+      "old": "can3",
+      "new": "cǎn"
+    },
+    "can4": {
+      "old": "can4",
+      "new": "càn"
+    },
+    "cang1": {
+      "old": "cang1",
+      "new": "cāng"
+    },
+    "cang2": {
+      "old": "cang2",
+      "new": "cáng"
+    },
+    "cang3": {
+      "old": "cang3",
+      "new": "cǎng"
+    },
+    "cang4": {
+      "old": "cang4",
+      "new": "càng"
+    },
+    "cao1": {
+      "old": "cao1",
+      "new": "cāo"
+    },
+    "cao2": {
+      "old": "cao2",
+      "new": "cáo"
+    },
+    "cao3": {
+      "old": "cao3",
+      "new": "cǎo"
+    },
+    "cao4": {
+      "old": "cao4",
+      "new": "cào"
+    },
+    "ce4": {
+      "old": "ce4",
+      "new": "cè"
+    },
+    "cei4": {
+      "old": "cei4",
+      "new": "cèi"
+    },
+    "cen1": {
+      "old": "cen1",
+      "new": "cēn"
+    },
+    "cen2": {
+      "old": "cen2",
+      "new": "cén"
+    },
+    "ceng1": {
+      "old": "ceng1",
+      "new": "cēng"
+    },
+    "ceng2": {
+      "old": "ceng2",
+      "new": "céng"
+    },
+    "ceng4": {
+      "old": "ceng4",
+      "new": "cèng"
+    },
+    "cha1": {
+      "old": "cha1",
+      "new": "chā"
+    },
+    "cha2": {
+      "old": "cha2",
+      "new": "chá"
+    },
+    "cha3": {
+      "old": "cha3",
+      "new": "chǎ"
+    },
+    "cha4": {
+      "old": "cha4",
+      "new": "chà"
+    },
+    "chai1": {
+      "old": "chai1",
+      "new": "chāi"
+    },
+    "chai2": {
+      "old": "chai2",
+      "new": "chái"
+    },
+    "chai3": {
+      "old": "chai3",
+      "new": "chǎi"
+    },
+    "chai4": {
+      "old": "chai4",
+      "new": "chài"
+    },
+    "chan1": {
+      "old": "chan1",
+      "new": "chān"
+    },
+    "chan2": {
+      "old": "chan2",
+      "new": "chán"
+    },
+    "chan3": {
+      "old": "chan3",
+      "new": "chǎn"
+    },
+    "chan4": {
+      "old": "chan4",
+      "new": "chàn"
+    },
+    "chang1": {
+      "old": "chang1",
+      "new": "chāng"
+    },
+    "chang2": {
+      "old": "chang2",
+      "new": "cháng"
+    },
+    "chang3": {
+      "old": "chang3",
+      "new": "chǎng"
+    },
+    "chang4": {
+      "old": "chang4",
+      "new": "chàng"
+    },
+    "chang5": {
+      "old": "chang5",
+      "new": "chang"
+    },
+    "chao1": {
+      "old": "chao1",
+      "new": "chāo"
+    },
+    "chao2": {
+      "old": "chao2",
+      "new": "cháo"
+    },
+    "chao3": {
+      "old": "chao3",
+      "new": "chǎo"
+    },
+    "chao4": {
+      "old": "chao4",
+      "new": "chào"
+    },
+    "che1": {
+      "old": "che1",
+      "new": "chē"
+    },
+    "che2": {
+      "old": "che2",
+      "new": "ché"
+    },
+    "che3": {
+      "old": "che3",
+      "new": "chě"
+    },
+    "che4": {
+      "old": "che4",
+      "new": "chè"
+    },
+    "chen1": {
+      "old": "chen1",
+      "new": "chēn"
+    },
+    "chen2": {
+      "old": "chen2",
+      "new": "chén"
+    },
+    "chen3": {
+      "old": "chen3",
+      "new": "chěn"
+    },
+    "chen4": {
+      "old": "chen4",
+      "new": "chèn"
+    },
+    "chen5": {
+      "old": "chen5",
+      "new": "chen"
+    },
+    "cheng1": {
+      "old": "cheng1",
+      "new": "chēng"
+    },
+    "cheng2": {
+      "old": "cheng2",
+      "new": "chéng"
+    },
+    "cheng3": {
+      "old": "cheng3",
+      "new": "chěng"
+    },
+    "cheng4": {
+      "old": "cheng4",
+      "new": "chèng"
+    },
+    "chi1": {
+      "old": "chi1",
+      "new": "chī"
+    },
+    "chi2": {
+      "old": "chi2",
+      "new": "chí"
+    },
+    "chi3": {
+      "old": "chi3",
+      "new": "chǐ"
+    },
+    "chi4": {
+      "old": "chi4",
+      "new": "chì"
+    },
+    "chi5": {
+      "old": "chi5",
+      "new": "chi"
+    },
+    "chong1": {
+      "old": "chong1",
+      "new": "chōng"
+    },
+    "chong2": {
+      "old": "chong2",
+      "new": "chóng"
+    },
+    "chong3": {
+      "old": "chong3",
+      "new": "chǒng"
+    },
+    "chong4": {
+      "old": "chong4",
+      "new": "chòng"
+    },
+    "chou1": {
+      "old": "chou1",
+      "new": "chōu"
+    },
+    "chou2": {
+      "old": "chou2",
+      "new": "chóu"
+    },
+    "chou3": {
+      "old": "chou3",
+      "new": "chǒu"
+    },
+    "chou4": {
+      "old": "chou4",
+      "new": "chòu"
+    },
+    "chu1": {
+      "old": "chu1",
+      "new": "chū"
+    },
+    "chu2": {
+      "old": "chu2",
+      "new": "chú"
+    },
+    "chu3": {
+      "old": "chu3",
+      "new": "chǔ"
+    },
+    "chu4": {
+      "old": "chu4",
+      "new": "chù"
+    },
+    "chu5": {
+      "old": "chu5",
+      "new": "chu"
+    },
+    "chua1": {
+      "old": "chua1",
+      "new": "chuā"
+    },
+    "chua3": {
+      "old": "chua3",
+      "new": "chuǎ"
+    },
+    "chua4": {
+      "old": "chua4",
+      "new": "chuà"
+    },
+    "chuai1": {
+      "old": "chuai1",
+      "new": "chuāi"
+    },
+    "chuai2": {
+      "old": "chuai2",
+      "new": "chuái"
+    },
+    "chuai3": {
+      "old": "chuai3",
+      "new": "chuǎi"
+    },
+    "chuai4": {
+      "old": "chuai4",
+      "new": "chuài"
+    },
+    "chuan1": {
+      "old": "chuan1",
+      "new": "chuān"
+    },
+    "chuan2": {
+      "old": "chuan2",
+      "new": "chuán"
+    },
+    "chuan3": {
+      "old": "chuan3",
+      "new": "chuǎn"
+    },
+    "chuan4": {
+      "old": "chuan4",
+      "new": "chuàn"
+    },
+    "chuang1": {
+      "old": "chuang1",
+      "new": "chuāng"
+    },
+    "chuang2": {
+      "old": "chuang2",
+      "new": "chuáng"
+    },
+    "chuang3": {
+      "old": "chuang3",
+      "new": "chuǎng"
+    },
+    "chuang4": {
+      "old": "chuang4",
+      "new": "chuàng"
+    },
+    "chui1": {
+      "old": "chui1",
+      "new": "chuī"
+    },
+    "chui2": {
+      "old": "chui2",
+      "new": "chuí"
+    },
+    "chui3": {
+      "old": "chui3",
+      "new": "chuǐ"
+    },
+    "chui4": {
+      "old": "chui4",
+      "new": "chuì"
+    },
+    "chun1": {
+      "old": "chun1",
+      "new": "chūn"
+    },
+    "chun2": {
+      "old": "chun2",
+      "new": "chún"
+    },
+    "chun3": {
+      "old": "chun3",
+      "new": "chǔn"
+    },
+    "chuo1": {
+      "old": "chuo1",
+      "new": "chuō"
+    },
+    "chuo4": {
+      "old": "chuo4",
+      "new": "chuò"
+    },
+    "ci1": {
+      "old": "ci1",
+      "new": "cī"
+    },
+    "ci2": {
+      "old": "ci2",
+      "new": "cí"
+    },
+    "ci3": {
+      "old": "ci3",
+      "new": "cǐ"
+    },
+    "ci4": {
+      "old": "ci4",
+      "new": "cì"
+    },
+    "cong1": {
+      "old": "cong1",
+      "new": "cōng"
+    },
+    "cong2": {
+      "old": "cong2",
+      "new": "cóng"
+    },
+    "cong3": {
+      "old": "cong3",
+      "new": "cǒng"
+    },
+    "cong4": {
+      "old": "cong4",
+      "new": "còng"
+    },
+    "cou1": {
+      "old": "cou1",
+      "new": "cōu"
+    },
+    "cou3": {
+      "old": "cou3",
+      "new": "cǒu"
+    },
+    "cou4": {
+      "old": "cou4",
+      "new": "còu"
+    },
+    "cu1": {
+      "old": "cu1",
+      "new": "cū"
+    },
+    "cu2": {
+      "old": "cu2",
+      "new": "cú"
+    },
+    "cu3": {
+      "old": "cu3",
+      "new": "cǔ"
+    },
+    "cu4": {
+      "old": "cu4",
+      "new": "cù"
+    },
+    "cuan1": {
+      "old": "cuan1",
+      "new": "cuān"
+    },
+    "cuan2": {
+      "old": "cuan2",
+      "new": "cuán"
+    },
+    "cuan4": {
+      "old": "cuan4",
+      "new": "cuàn"
+    },
+    "cui1": {
+      "old": "cui1",
+      "new": "cuī"
+    },
+    "cui3": {
+      "old": "cui3",
+      "new": "cuǐ"
+    },
+    "cui4": {
+      "old": "cui4",
+      "new": "cuì"
+    },
+    "cun1": {
+      "old": "cun1",
+      "new": "cūn"
+    },
+    "cun2": {
+      "old": "cun2",
+      "new": "cún"
+    },
+    "cun3": {
+      "old": "cun3",
+      "new": "cǔn"
+    },
+    "cun4": {
+      "old": "cun4",
+      "new": "cùn"
+    },
+    "cuo1": {
+      "old": "cuo1",
+      "new": "cuō"
+    },
+    "cuo2": {
+      "old": "cuo2",
+      "new": "cuó"
+    },
+    "cuo3": {
+      "old": "cuo3",
+      "new": "cuǒ"
+    },
+    "cuo4": {
+      "old": "cuo4",
+      "new": "cuò"
+    },
+    "da1": {
+      "old": "da1",
+      "new": "dā"
+    },
+    "da2": {
+      "old": "da2",
+      "new": "dá"
+    },
+    "da3": {
+      "old": "da3",
+      "new": "dǎ"
+    },
+    "da4": {
+      "old": "da4",
+      "new": "dà"
+    },
+    "da5": {
+      "old": "da5",
+      "new": "da"
+    },
+    "dai1": {
+      "old": "dai1",
+      "new": "dāi"
+    },
+    "dai3": {
+      "old": "dai3",
+      "new": "dǎi"
+    },
+    "dai4": {
+      "old": "dai4",
+      "new": "dài"
+    },
+    "dai5": {
+      "old": "dai5",
+      "new": "dai"
+    },
+    "dan1": {
+      "old": "dan1",
+      "new": "dān"
+    },
+    "dan3": {
+      "old": "dan3",
+      "new": "dǎn"
+    },
+    "dan4": {
+      "old": "dan4",
+      "new": "dàn"
+    },
+    "dang1": {
+      "old": "dang1",
+      "new": "dāng"
+    },
+    "dang3": {
+      "old": "dang3",
+      "new": "dǎng"
+    },
+    "dang4": {
+      "old": "dang4",
+      "new": "dàng"
+    },
+    "dang5": {
+      "old": "dang5",
+      "new": "dang"
+    },
+    "dao1": {
+      "old": "dao1",
+      "new": "dāo"
+    },
+    "dao2": {
+      "old": "dao2",
+      "new": "dáo"
+    },
+    "dao3": {
+      "old": "dao3",
+      "new": "dǎo"
+    },
+    "dao4": {
+      "old": "dao4",
+      "new": "dào"
+    },
+    "de1": {
+      "old": "de1",
+      "new": "dē"
+    },
+    "de2": {
+      "old": "de2",
+      "new": "dé"
+    },
+    "de5": {
+      "old": "de5",
+      "new": "de"
+    },
+    "dei3": {
+      "old": "dei3",
+      "new": "děi"
+    },
+    "den4": {
+      "old": "den4",
+      "new": "dèn"
+    },
+    "deng1": {
+      "old": "deng1",
+      "new": "dēng"
+    },
+    "deng3": {
+      "old": "deng3",
+      "new": "děng"
+    },
+    "deng4": {
+      "old": "deng4",
+      "new": "dèng"
+    },
+    "di1": {
+      "old": "di1",
+      "new": "dī"
+    },
+    "di2": {
+      "old": "di2",
+      "new": "dí"
+    },
+    "di3": {
+      "old": "di3",
+      "new": "dǐ"
+    },
+    "di4": {
+      "old": "di4",
+      "new": "dì"
+    },
+    "dia3": {
+      "old": "dia3",
+      "new": "diǎ"
+    },
+    "dian1": {
+      "old": "dian1",
+      "new": "diān"
+    },
+    "dian2": {
+      "old": "dian2",
+      "new": "dián"
+    },
+    "dian3": {
+      "old": "dian3",
+      "new": "diǎn"
+    },
+    "dian4": {
+      "old": "dian4",
+      "new": "diàn"
+    },
+    "diao1": {
+      "old": "diao1",
+      "new": "diāo"
+    },
+    "diao3": {
+      "old": "diao3",
+      "new": "diǎo"
+    },
+    "diao4": {
+      "old": "diao4",
+      "new": "diào"
+    },
+    "die1": {
+      "old": "die1",
+      "new": "diē"
+    },
+    "die2": {
+      "old": "die2",
+      "new": "dié"
+    },
+    "die3": {
+      "old": "die3",
+      "new": "diě"
+    },
+    "die4": {
+      "old": "die4",
+      "new": "diè"
+    },
+    "din4": {
+      "old": "din4",
+      "new": "dìn"
+    },
+    "ding1": {
+      "old": "ding1",
+      "new": "dīng"
+    },
+    "ding3": {
+      "old": "ding3",
+      "new": "dǐng"
+    },
+    "ding4": {
+      "old": "ding4",
+      "new": "dìng"
+    },
+    "diu1": {
+      "old": "diu1",
+      "new": "diū"
+    },
+    "dong1": {
+      "old": "dong1",
+      "new": "dōng"
+    },
+    "dong3": {
+      "old": "dong3",
+      "new": "dǒng"
+    },
+    "dong4": {
+      "old": "dong4",
+      "new": "dòng"
+    },
+    "dou1": {
+      "old": "dou1",
+      "new": "dōu"
+    },
+    "dou3": {
+      "old": "dou3",
+      "new": "dǒu"
+    },
+    "dou4": {
+      "old": "dou4",
+      "new": "dòu"
+    },
+    "du1": {
+      "old": "du1",
+      "new": "dū"
+    },
+    "du2": {
+      "old": "du2",
+      "new": "dú"
+    },
+    "du3": {
+      "old": "du3",
+      "new": "dǔ"
+    },
+    "du4": {
+      "old": "du4",
+      "new": "dù"
+    },
+    "duan1": {
+      "old": "duan1",
+      "new": "duān"
+    },
+    "duan3": {
+      "old": "duan3",
+      "new": "duǎn"
+    },
+    "duan4": {
+      "old": "duan4",
+      "new": "duàn"
+    },
+    "dui1": {
+      "old": "dui1",
+      "new": "duī"
+    },
+    "dui3": {
+      "old": "dui3",
+      "new": "duǐ"
+    },
+    "dui4": {
+      "old": "dui4",
+      "new": "duì"
+    },
+    "dun1": {
+      "old": "dun1",
+      "new": "dūn"
+    },
+    "dun3": {
+      "old": "dun3",
+      "new": "dǔn"
+    },
+    "dun4": {
+      "old": "dun4",
+      "new": "dùn"
+    },
+    "duo1": {
+      "old": "duo1",
+      "new": "duō"
+    },
+    "duo2": {
+      "old": "duo2",
+      "new": "duó"
+    },
+    "duo3": {
+      "old": "duo3",
+      "new": "duǒ"
+    },
+    "duo4": {
+      "old": "duo4",
+      "new": "duò"
+    },
+    "duo5": {
+      "old": "duo5",
+      "new": "duo"
+    },
+    "e1": {
+      "old": "e1",
+      "new": "ē"
+    },
+    "e2": {
+      "old": "e2",
+      "new": "é"
+    },
+    "e3": {
+      "old": "e3",
+      "new": "ě"
+    },
+    "e4": {
+      "old": "e4",
+      "new": "è"
+    },
+    "ei1": {
+      "old": "ei1",
+      "new": "ēi"
+    },
+    "ei2": {
+      "old": "ei2",
+      "new": "éi"
+    },
+    "en1": {
+      "old": "en1",
+      "new": "ēn"
+    },
+    "en3": {
+      "old": "en3",
+      "new": "ěn"
+    },
+    "en4": {
+      "old": "en4",
+      "new": "èn"
+    },
+    "eng1": {
+      "old": "eng1",
+      "new": "ēng"
+    },
+    "er2": {
+      "old": "er2",
+      "new": "ér"
+    },
+    "er3": {
+      "old": "er3",
+      "new": "ěr"
+    },
+    "er4": {
+      "old": "er4",
+      "new": "èr"
+    },
+    "er5": {
+      "old": "er5",
+      "new": "er"
+    },
+    "fa1": {
+      "old": "fa1",
+      "new": "fā"
+    },
+    "fa2": {
+      "old": "fa2",
+      "new": "fá"
+    },
+    "fa3": {
+      "old": "fa3",
+      "new": "fǎ"
+    },
+    "fa4": {
+      "old": "fa4",
+      "new": "fà"
+    },
+    "fa5": {
+      "old": "fa5",
+      "new": "fa"
+    },
+    "fan1": {
+      "old": "fan1",
+      "new": "fān"
+    },
+    "fan2": {
+      "old": "fan2",
+      "new": "fán"
+    },
+    "fan3": {
+      "old": "fan3",
+      "new": "fǎn"
+    },
+    "fan4": {
+      "old": "fan4",
+      "new": "fàn"
+    },
+    "fang1": {
+      "old": "fang1",
+      "new": "fāng"
+    },
+    "fang2": {
+      "old": "fang2",
+      "new": "fáng"
+    },
+    "fang3": {
+      "old": "fang3",
+      "new": "fǎng"
+    },
+    "fang4": {
+      "old": "fang4",
+      "new": "fàng"
+    },
+    "fang5": {
+      "old": "fang5",
+      "new": "fang"
+    },
+    "fei1": {
+      "old": "fei1",
+      "new": "fēi"
+    },
+    "fei2": {
+      "old": "fei2",
+      "new": "féi"
+    },
+    "fei3": {
+      "old": "fei3",
+      "new": "fěi"
+    },
+    "fei4": {
+      "old": "fei4",
+      "new": "fèi"
+    },
+    "fen1": {
+      "old": "fen1",
+      "new": "fēn"
+    },
+    "fen2": {
+      "old": "fen2",
+      "new": "fén"
+    },
+    "fen3": {
+      "old": "fen3",
+      "new": "fěn"
+    },
+    "fen4": {
+      "old": "fen4",
+      "new": "fèn"
+    },
+    "feng1": {
+      "old": "feng1",
+      "new": "fēng"
+    },
+    "feng2": {
+      "old": "feng2",
+      "new": "féng"
+    },
+    "feng3": {
+      "old": "feng3",
+      "new": "fěng"
+    },
+    "feng4": {
+      "old": "feng4",
+      "new": "fèng"
+    },
+    "fiao4": {
+      "old": "fiao4",
+      "new": "fiào"
+    },
+    "fo2": {
+      "old": "fo2",
+      "new": "fó"
+    },
+    "fou1": {
+      "old": "fou1",
+      "new": "fōu"
+    },
+    "fou2": {
+      "old": "fou2",
+      "new": "fóu"
+    },
+    "fou3": {
+      "old": "fou3",
+      "new": "fǒu"
+    },
+    "fu1": {
+      "old": "fu1",
+      "new": "fū"
+    },
+    "fu2": {
+      "old": "fu2",
+      "new": "fú"
+    },
+    "fu3": {
+      "old": "fu3",
+      "new": "fǔ"
+    },
+    "fu4": {
+      "old": "fu4",
+      "new": "fù"
+    },
+    "fu5": {
+      "old": "fu5",
+      "new": "fu"
+    },
+    "ga1": {
+      "old": "ga1",
+      "new": "gā"
+    },
+    "ga2": {
+      "old": "ga2",
+      "new": "gá"
+    },
+    "ga3": {
+      "old": "ga3",
+      "new": "gǎ"
+    },
+    "ga4": {
+      "old": "ga4",
+      "new": "gà"
+    },
+    "gai1": {
+      "old": "gai1",
+      "new": "gāi"
+    },
+    "gai3": {
+      "old": "gai3",
+      "new": "gǎi"
+    },
+    "gai4": {
+      "old": "gai4",
+      "new": "gài"
+    },
+    "gan1": {
+      "old": "gan1",
+      "new": "gān"
+    },
+    "gan3": {
+      "old": "gan3",
+      "new": "gǎn"
+    },
+    "gan4": {
+      "old": "gan4",
+      "new": "gàn"
+    },
+    "gang1": {
+      "old": "gang1",
+      "new": "gāng"
+    },
+    "gang3": {
+      "old": "gang3",
+      "new": "gǎng"
+    },
+    "gang4": {
+      "old": "gang4",
+      "new": "gàng"
+    },
+    "gao1": {
+      "old": "gao1",
+      "new": "gāo"
+    },
+    "gao3": {
+      "old": "gao3",
+      "new": "gǎo"
+    },
+    "gao4": {
+      "old": "gao4",
+      "new": "gào"
+    },
+    "ge1": {
+      "old": "ge1",
+      "new": "gē"
+    },
+    "ge2": {
+      "old": "ge2",
+      "new": "gé"
+    },
+    "ge3": {
+      "old": "ge3",
+      "new": "gě"
+    },
+    "ge4": {
+      "old": "ge4",
+      "new": "gè"
+    },
+    "gei3": {
+      "old": "gei3",
+      "new": "gěi"
+    },
+    "gen1": {
+      "old": "gen1",
+      "new": "gēn"
+    },
+    "gen2": {
+      "old": "gen2",
+      "new": "gén"
+    },
+    "gen3": {
+      "old": "gen3",
+      "new": "gěn"
+    },
+    "gen4": {
+      "old": "gen4",
+      "new": "gèn"
+    },
+    "geng1": {
+      "old": "geng1",
+      "new": "gēng"
+    },
+    "geng3": {
+      "old": "geng3",
+      "new": "gěng"
+    },
+    "geng4": {
+      "old": "geng4",
+      "new": "gèng"
+    },
+    "gong1": {
+      "old": "gong1",
+      "new": "gōng"
+    },
+    "gong3": {
+      "old": "gong3",
+      "new": "gǒng"
+    },
+    "gong4": {
+      "old": "gong4",
+      "new": "gòng"
+    },
+    "gong5": {
+      "old": "gong5",
+      "new": "gong"
+    },
+    "gou1": {
+      "old": "gou1",
+      "new": "gōu"
+    },
+    "gou3": {
+      "old": "gou3",
+      "new": "gǒu"
+    },
+    "gou4": {
+      "old": "gou4",
+      "new": "gòu"
+    },
+    "gu1": {
+      "old": "gu1",
+      "new": "gū"
+    },
+    "gu2": {
+      "old": "gu2",
+      "new": "gú"
+    },
+    "gu3": {
+      "old": "gu3",
+      "new": "gǔ"
+    },
+    "gu4": {
+      "old": "gu4",
+      "new": "gù"
+    },
+    "gu5": {
+      "old": "gu5",
+      "new": "gu"
+    },
+    "gua1": {
+      "old": "gua1",
+      "new": "guā"
+    },
+    "gua2": {
+      "old": "gua2",
+      "new": "guá"
+    },
+    "gua3": {
+      "old": "gua3",
+      "new": "guǎ"
+    },
+    "gua4": {
+      "old": "gua4",
+      "new": "guà"
+    },
+    "guai1": {
+      "old": "guai1",
+      "new": "guāi"
+    },
+    "guai3": {
+      "old": "guai3",
+      "new": "guǎi"
+    },
+    "guai4": {
+      "old": "guai4",
+      "new": "guài"
+    },
+    "guan1": {
+      "old": "guan1",
+      "new": "guān"
+    },
+    "guan3": {
+      "old": "guan3",
+      "new": "guǎn"
+    },
+    "guan4": {
+      "old": "guan4",
+      "new": "guàn"
+    },
+    "guang1": {
+      "old": "guang1",
+      "new": "guāng"
+    },
+    "guang3": {
+      "old": "guang3",
+      "new": "guǎng"
+    },
+    "guang4": {
+      "old": "guang4",
+      "new": "guàng"
+    },
+    "guang5": {
+      "old": "guang5",
+      "new": "guang"
+    },
+    "gui1": {
+      "old": "gui1",
+      "new": "guī"
+    },
+    "gui3": {
+      "old": "gui3",
+      "new": "guǐ"
+    },
+    "gui4": {
+      "old": "gui4",
+      "new": "guì"
+    },
+    "gun3": {
+      "old": "gun3",
+      "new": "gǔn"
+    },
+    "gun4": {
+      "old": "gun4",
+      "new": "gùn"
+    },
+    "guo1": {
+      "old": "guo1",
+      "new": "guō"
+    },
+    "guo2": {
+      "old": "guo2",
+      "new": "guó"
+    },
+    "guo3": {
+      "old": "guo3",
+      "new": "guǒ"
+    },
+    "guo4": {
+      "old": "guo4",
+      "new": "guò"
+    },
+    "guo5": {
+      "old": "guo5",
+      "new": "guo"
+    },
+    "ha1": {
+      "old": "ha1",
+      "new": "hā"
+    },
+    "ha2": {
+      "old": "ha2",
+      "new": "há"
+    },
+    "ha3": {
+      "old": "ha3",
+      "new": "hǎ"
+    },
+    "ha4": {
+      "old": "ha4",
+      "new": "hà"
+    },
+    "hai1": {
+      "old": "hai1",
+      "new": "hāi"
+    },
+    "hai2": {
+      "old": "hai2",
+      "new": "hái"
+    },
+    "hai3": {
+      "old": "hai3",
+      "new": "hǎi"
+    },
+    "hai4": {
+      "old": "hai4",
+      "new": "hài"
+    },
+    "hai5": {
+      "old": "hai5",
+      "new": "hai"
+    },
+    "han1": {
+      "old": "han1",
+      "new": "hān"
+    },
+    "han2": {
+      "old": "han2",
+      "new": "hán"
+    },
+    "han3": {
+      "old": "han3",
+      "new": "hǎn"
+    },
+    "han4": {
+      "old": "han4",
+      "new": "hàn"
+    },
+    "han5": {
+      "old": "han5",
+      "new": "han"
+    },
+    "hang1": {
+      "old": "hang1",
+      "new": "hāng"
+    },
+    "hang2": {
+      "old": "hang2",
+      "new": "háng"
+    },
+    "hang4": {
+      "old": "hang4",
+      "new": "hàng"
+    },
+    "hao1": {
+      "old": "hao1",
+      "new": "hāo"
+    },
+    "hao2": {
+      "old": "hao2",
+      "new": "háo"
+    },
+    "hao3": {
+      "old": "hao3",
+      "new": "hǎo"
+    },
+    "hao4": {
+      "old": "hao4",
+      "new": "hào"
+    },
+    "he1": {
+      "old": "he1",
+      "new": "hē"
+    },
+    "he2": {
+      "old": "he2",
+      "new": "hé"
+    },
+    "he3": {
+      "old": "he3",
+      "new": "hě"
+    },
+    "he4": {
+      "old": "he4",
+      "new": "hè"
+    },
+    "hei1": {
+      "old": "hei1",
+      "new": "hēi"
+    },
+    "hen1": {
+      "old": "hen1",
+      "new": "hēn"
+    },
+    "hen2": {
+      "old": "hen2",
+      "new": "hén"
+    },
+    "hen3": {
+      "old": "hen3",
+      "new": "hěn"
+    },
+    "hen4": {
+      "old": "hen4",
+      "new": "hèn"
+    },
+    "heng1": {
+      "old": "heng1",
+      "new": "hēng"
+    },
+    "heng2": {
+      "old": "heng2",
+      "new": "héng"
+    },
+    "heng4": {
+      "old": "heng4",
+      "new": "hèng"
+    },
+    "hm5": {
+      "old": "hm5",
+      "new": "hm"
+    },
+    "hng5": {
+      "old": "hng5",
+      "new": "hng"
+    },
+    "hong1": {
+      "old": "hong1",
+      "new": "hōng"
+    },
+    "hong2": {
+      "old": "hong2",
+      "new": "hóng"
+    },
+    "hong3": {
+      "old": "hong3",
+      "new": "hǒng"
+    },
+    "hong4": {
+      "old": "hong4",
+      "new": "hòng"
+    },
+    "hou1": {
+      "old": "hou1",
+      "new": "hōu"
+    },
+    "hou2": {
+      "old": "hou2",
+      "new": "hóu"
+    },
+    "hou3": {
+      "old": "hou3",
+      "new": "hǒu"
+    },
+    "hou4": {
+      "old": "hou4",
+      "new": "hòu"
+    },
+    "hu1": {
+      "old": "hu1",
+      "new": "hū"
+    },
+    "hu2": {
+      "old": "hu2",
+      "new": "hú"
+    },
+    "hu3": {
+      "old": "hu3",
+      "new": "hǔ"
+    },
+    "hu4": {
+      "old": "hu4",
+      "new": "hù"
+    },
+    "hu5": {
+      "old": "hu5",
+      "new": "hu"
+    },
+    "hua1": {
+      "old": "hua1",
+      "new": "huā"
+    },
+    "hua2": {
+      "old": "hua2",
+      "new": "huá"
+    },
+    "hua4": {
+      "old": "hua4",
+      "new": "huà"
+    },
+    "huai2": {
+      "old": "huai2",
+      "new": "huái"
+    },
+    "huai4": {
+      "old": "huai4",
+      "new": "huài"
+    },
+    "huan1": {
+      "old": "huan1",
+      "new": "huān"
+    },
+    "huan2": {
+      "old": "huan2",
+      "new": "huán"
+    },
+    "huan3": {
+      "old": "huan3",
+      "new": "huǎn"
+    },
+    "huan4": {
+      "old": "huan4",
+      "new": "huàn"
+    },
+    "huang1": {
+      "old": "huang1",
+      "new": "huāng"
+    },
+    "huang2": {
+      "old": "huang2",
+      "new": "huáng"
+    },
+    "huang3": {
+      "old": "huang3",
+      "new": "huǎng"
+    },
+    "huang4": {
+      "old": "huang4",
+      "new": "huàng"
+    },
+    "huang5": {
+      "old": "huang5",
+      "new": "huang"
+    },
+    "hui1": {
+      "old": "hui1",
+      "new": "huī"
+    },
+    "hui2": {
+      "old": "hui2",
+      "new": "huí"
+    },
+    "hui3": {
+      "old": "hui3",
+      "new": "huǐ"
+    },
+    "hui4": {
+      "old": "hui4",
+      "new": "huì"
+    },
+    "hui5": {
+      "old": "hui5",
+      "new": "hui"
+    },
+    "hun1": {
+      "old": "hun1",
+      "new": "hūn"
+    },
+    "hun2": {
+      "old": "hun2",
+      "new": "hún"
+    },
+    "hun3": {
+      "old": "hun3",
+      "new": "hǔn"
+    },
+    "hun4": {
+      "old": "hun4",
+      "new": "hùn"
+    },
+    "huo1": {
+      "old": "huo1",
+      "new": "huō"
+    },
+    "huo2": {
+      "old": "huo2",
+      "new": "huó"
+    },
+    "huo3": {
+      "old": "huo3",
+      "new": "huǒ"
+    },
+    "huo4": {
+      "old": "huo4",
+      "new": "huò"
+    },
+    "huo5": {
+      "old": "huo5",
+      "new": "huo"
+    },
+    "ji1": {
+      "old": "ji1",
+      "new": "jī"
+    },
+    "ji2": {
+      "old": "ji2",
+      "new": "jí"
+    },
+    "ji3": {
+      "old": "ji3",
+      "new": "jǐ"
+    },
+    "ji4": {
+      "old": "ji4",
+      "new": "jì"
+    },
+    "jia1": {
+      "old": "jia1",
+      "new": "jiā"
+    },
+    "jia2": {
+      "old": "jia2",
+      "new": "jiá"
+    },
+    "jia3": {
+      "old": "jia3",
+      "new": "jiǎ"
+    },
+    "jia4": {
+      "old": "jia4",
+      "new": "jià"
+    },
+    "jia5": {
+      "old": "jia5",
+      "new": "jia"
+    },
+    "jian1": {
+      "old": "jian1",
+      "new": "jiān"
+    },
+    "jian3": {
+      "old": "jian3",
+      "new": "jiǎn"
+    },
+    "jian4": {
+      "old": "jian4",
+      "new": "jiàn"
+    },
+    "jian5": {
+      "old": "jian5",
+      "new": "jian"
+    },
+    "jiang1": {
+      "old": "jiang1",
+      "new": "jiāng"
+    },
+    "jiang3": {
+      "old": "jiang3",
+      "new": "jiǎng"
+    },
+    "jiang4": {
+      "old": "jiang4",
+      "new": "jiàng"
+    },
+    "jiao1": {
+      "old": "jiao1",
+      "new": "jiāo"
+    },
+    "jiao2": {
+      "old": "jiao2",
+      "new": "jiáo"
+    },
+    "jiao3": {
+      "old": "jiao3",
+      "new": "jiǎo"
+    },
+    "jiao4": {
+      "old": "jiao4",
+      "new": "jiào"
+    },
+    "jiao5": {
+      "old": "jiao5",
+      "new": "jiao"
+    },
+    "jie1": {
+      "old": "jie1",
+      "new": "jiē"
+    },
+    "jie2": {
+      "old": "jie2",
+      "new": "jié"
+    },
+    "jie3": {
+      "old": "jie3",
+      "new": "jiě"
+    },
+    "jie4": {
+      "old": "jie4",
+      "new": "jiè"
+    },
+    "jie5": {
+      "old": "jie5",
+      "new": "jie"
+    },
+    "jin1": {
+      "old": "jin1",
+      "new": "jīn"
+    },
+    "jin3": {
+      "old": "jin3",
+      "new": "jǐn"
+    },
+    "jin4": {
+      "old": "jin4",
+      "new": "jìn"
+    },
+    "jing1": {
+      "old": "jing1",
+      "new": "jīng"
+    },
+    "jing3": {
+      "old": "jing3",
+      "new": "jǐng"
+    },
+    "jing4": {
+      "old": "jing4",
+      "new": "jìng"
+    },
+    "jing5": {
+      "old": "jing5",
+      "new": "jing"
+    },
+    "jiong1": {
+      "old": "jiong1",
+      "new": "jiōng"
+    },
+    "jiong3": {
+      "old": "jiong3",
+      "new": "jiǒng"
+    },
+    "jiong4": {
+      "old": "jiong4",
+      "new": "jiòng"
+    },
+    "jiu1": {
+      "old": "jiu1",
+      "new": "jiū"
+    },
+    "jiu2": {
+      "old": "jiu2",
+      "new": "jiú"
+    },
+    "jiu3": {
+      "old": "jiu3",
+      "new": "jiǔ"
+    },
+    "jiu4": {
+      "old": "jiu4",
+      "new": "jiù"
+    },
+    "jiu5": {
+      "old": "jiu5",
+      "new": "jiu"
+    },
+    "ju1": {
+      "old": "ju1",
+      "new": "jū"
+    },
+    "ju2": {
+      "old": "ju2",
+      "new": "jú"
+    },
+    "ju3": {
+      "old": "ju3",
+      "new": "jǔ"
+    },
+    "ju4": {
+      "old": "ju4",
+      "new": "jù"
+    },
+    "ju5": {
+      "old": "ju5",
+      "new": "ju"
+    },
+    "juan1": {
+      "old": "juan1",
+      "new": "juān"
+    },
+    "juan3": {
+      "old": "juan3",
+      "new": "juǎn"
+    },
+    "juan4": {
+      "old": "juan4",
+      "new": "juàn"
+    },
+    "jue1": {
+      "old": "jue1",
+      "new": "juē"
+    },
+    "jue2": {
+      "old": "jue2",
+      "new": "jué"
+    },
+    "jue3": {
+      "old": "jue3",
+      "new": "juě"
+    },
+    "jue4": {
+      "old": "jue4",
+      "new": "juè"
+    },
+    "jun1": {
+      "old": "jun1",
+      "new": "jūn"
+    },
+    "jun3": {
+      "old": "jun3",
+      "new": "jǔn"
+    },
+    "jun4": {
+      "old": "jun4",
+      "new": "jùn"
+    },
+    "ka1": {
+      "old": "ka1",
+      "new": "kā"
+    },
+    "ka3": {
+      "old": "ka3",
+      "new": "kǎ"
+    },
+    "kai1": {
+      "old": "kai1",
+      "new": "kāi"
+    },
+    "kai3": {
+      "old": "kai3",
+      "new": "kǎi"
+    },
+    "kai4": {
+      "old": "kai4",
+      "new": "kài"
+    },
+    "kan1": {
+      "old": "kan1",
+      "new": "kān"
+    },
+    "kan3": {
+      "old": "kan3",
+      "new": "kǎn"
+    },
+    "kan4": {
+      "old": "kan4",
+      "new": "kàn"
+    },
+    "kang1": {
+      "old": "kang1",
+      "new": "kāng"
+    },
+    "kang2": {
+      "old": "kang2",
+      "new": "káng"
+    },
+    "kang3": {
+      "old": "kang3",
+      "new": "kǎng"
+    },
+    "kang4": {
+      "old": "kang4",
+      "new": "kàng"
+    },
+    "kao1": {
+      "old": "kao1",
+      "new": "kāo"
+    },
+    "kao3": {
+      "old": "kao3",
+      "new": "kǎo"
+    },
+    "kao4": {
+      "old": "kao4",
+      "new": "kào"
+    },
+    "ke1": {
+      "old": "ke1",
+      "new": "kē"
+    },
+    "ke2": {
+      "old": "ke2",
+      "new": "ké"
+    },
+    "ke3": {
+      "old": "ke3",
+      "new": "kě"
+    },
+    "ke4": {
+      "old": "ke4",
+      "new": "kè"
+    },
+    "ke5": {
+      "old": "ke5",
+      "new": "ke"
+    },
+    "kei1": {
+      "old": "kei1",
+      "new": "kēi"
+    },
+    "ken1": {
+      "old": "ken1",
+      "new": "kēn"
+    },
+    "ken3": {
+      "old": "ken3",
+      "new": "kěn"
+    },
+    "ken4": {
+      "old": "ken4",
+      "new": "kèn"
+    },
+    "keng1": {
+      "old": "keng1",
+      "new": "kēng"
+    },
+    "keng3": {
+      "old": "keng3",
+      "new": "kěng"
+    },
+    "kong1": {
+      "old": "kong1",
+      "new": "kōng"
+    },
+    "kong3": {
+      "old": "kong3",
+      "new": "kǒng"
+    },
+    "kong4": {
+      "old": "kong4",
+      "new": "kòng"
+    },
+    "kou1": {
+      "old": "kou1",
+      "new": "kōu"
+    },
+    "kou3": {
+      "old": "kou3",
+      "new": "kǒu"
+    },
+    "kou4": {
+      "old": "kou4",
+      "new": "kòu"
+    },
+    "ku1": {
+      "old": "ku1",
+      "new": "kū"
+    },
+    "ku2": {
+      "old": "ku2",
+      "new": "kú"
+    },
+    "ku3": {
+      "old": "ku3",
+      "new": "kǔ"
+    },
+    "ku4": {
+      "old": "ku4",
+      "new": "kù"
+    },
+    "kua1": {
+      "old": "kua1",
+      "new": "kuā"
+    },
+    "kua3": {
+      "old": "kua3",
+      "new": "kuǎ"
+    },
+    "kua4": {
+      "old": "kua4",
+      "new": "kuà"
+    },
+    "kuai3": {
+      "old": "kuai3",
+      "new": "kuǎi"
+    },
+    "kuai4": {
+      "old": "kuai4",
+      "new": "kuài"
+    },
+    "kuan1": {
+      "old": "kuan1",
+      "new": "kuān"
+    },
+    "kuan3": {
+      "old": "kuan3",
+      "new": "kuǎn"
+    },
+    "kuang1": {
+      "old": "kuang1",
+      "new": "kuāng"
+    },
+    "kuang2": {
+      "old": "kuang2",
+      "new": "kuáng"
+    },
+    "kuang3": {
+      "old": "kuang3",
+      "new": "kuǎng"
+    },
+    "kuang4": {
+      "old": "kuang4",
+      "new": "kuàng"
+    },
+    "kui1": {
+      "old": "kui1",
+      "new": "kuī"
+    },
+    "kui2": {
+      "old": "kui2",
+      "new": "kuí"
+    },
+    "kui3": {
+      "old": "kui3",
+      "new": "kuǐ"
+    },
+    "kui4": {
+      "old": "kui4",
+      "new": "kuì"
+    },
+    "kun1": {
+      "old": "kun1",
+      "new": "kūn"
+    },
+    "kun3": {
+      "old": "kun3",
+      "new": "kǔn"
+    },
+    "kun4": {
+      "old": "kun4",
+      "new": "kùn"
+    },
+    "kuo4": {
+      "old": "kuo4",
+      "new": "kuò"
+    },
+    "la1": {
+      "old": "la1",
+      "new": "lā"
+    },
+    "la2": {
+      "old": "la2",
+      "new": "lá"
+    },
+    "la3": {
+      "old": "la3",
+      "new": "lǎ"
+    },
+    "la4": {
+      "old": "la4",
+      "new": "là"
+    },
+    "la5": {
+      "old": "la5",
+      "new": "la"
+    },
+    "lai2": {
+      "old": "lai2",
+      "new": "lái"
+    },
+    "lai3": {
+      "old": "lai3",
+      "new": "lǎi"
+    },
+    "lai4": {
+      "old": "lai4",
+      "new": "lài"
+    },
+    "lan2": {
+      "old": "lan2",
+      "new": "lán"
+    },
+    "lan3": {
+      "old": "lan3",
+      "new": "lǎn"
+    },
+    "lan4": {
+      "old": "lan4",
+      "new": "làn"
+    },
+    "lang1": {
+      "old": "lang1",
+      "new": "lāng"
+    },
+    "lang2": {
+      "old": "lang2",
+      "new": "láng"
+    },
+    "lang3": {
+      "old": "lang3",
+      "new": "lǎng"
+    },
+    "lang4": {
+      "old": "lang4",
+      "new": "làng"
+    },
+    "lang5": {
+      "old": "lang5",
+      "new": "lang"
+    },
+    "lao1": {
+      "old": "lao1",
+      "new": "lāo"
+    },
+    "lao2": {
+      "old": "lao2",
+      "new": "láo"
+    },
+    "lao3": {
+      "old": "lao3",
+      "new": "lǎo"
+    },
+    "lao4": {
+      "old": "lao4",
+      "new": "lào"
+    },
+    "le1": {
+      "old": "le1",
+      "new": "lē"
+    },
+    "le4": {
+      "old": "le4",
+      "new": "lè"
+    },
+    "le5": {
+      "old": "le5",
+      "new": "le"
+    },
+    "lei1": {
+      "old": "lei1",
+      "new": "lēi"
+    },
+    "lei2": {
+      "old": "lei2",
+      "new": "léi"
+    },
+    "lei3": {
+      "old": "lei3",
+      "new": "lěi"
+    },
+    "lei4": {
+      "old": "lei4",
+      "new": "lèi"
+    },
+    "lei5": {
+      "old": "lei5",
+      "new": "lei"
+    },
+    "leng1": {
+      "old": "leng1",
+      "new": "lēng"
+    },
+    "leng2": {
+      "old": "leng2",
+      "new": "léng"
+    },
+    "leng3": {
+      "old": "leng3",
+      "new": "lěng"
+    },
+    "leng4": {
+      "old": "leng4",
+      "new": "lèng"
+    },
+    "li1": {
+      "old": "li1",
+      "new": "lī"
+    },
+    "li2": {
+      "old": "li2",
+      "new": "lí"
+    },
+    "li3": {
+      "old": "li3",
+      "new": "lǐ"
+    },
+    "li4": {
+      "old": "li4",
+      "new": "lì"
+    },
+    "li5": {
+      "old": "li5",
+      "new": "li"
+    },
+    "lia3": {
+      "old": "lia3",
+      "new": "liǎ"
+    },
+    "lian2": {
+      "old": "lian2",
+      "new": "lián"
+    },
+    "lian3": {
+      "old": "lian3",
+      "new": "liǎn"
+    },
+    "lian4": {
+      "old": "lian4",
+      "new": "liàn"
+    },
+    "liang2": {
+      "old": "liang2",
+      "new": "liáng"
+    },
+    "liang3": {
+      "old": "liang3",
+      "new": "liǎng"
+    },
+    "liang4": {
+      "old": "liang4",
+      "new": "liàng"
+    },
+    "liang5": {
+      "old": "liang5",
+      "new": "liang"
+    },
+    "liao1": {
+      "old": "liao1",
+      "new": "liāo"
+    },
+    "liao2": {
+      "old": "liao2",
+      "new": "liáo"
+    },
+    "liao3": {
+      "old": "liao3",
+      "new": "liǎo"
+    },
+    "liao4": {
+      "old": "liao4",
+      "new": "liào"
+    },
+    "lie1": {
+      "old": "lie1",
+      "new": "liē"
+    },
+    "lie2": {
+      "old": "lie2",
+      "new": "lié"
+    },
+    "lie3": {
+      "old": "lie3",
+      "new": "liě"
+    },
+    "lie4": {
+      "old": "lie4",
+      "new": "liè"
+    },
+    "lie5": {
+      "old": "lie5",
+      "new": "lie"
+    },
+    "lin1": {
+      "old": "lin1",
+      "new": "līn"
+    },
+    "lin2": {
+      "old": "lin2",
+      "new": "lín"
+    },
+    "lin3": {
+      "old": "lin3",
+      "new": "lǐn"
+    },
+    "lin4": {
+      "old": "lin4",
+      "new": "lìn"
+    },
+    "ling1": {
+      "old": "ling1",
+      "new": "līng"
+    },
+    "ling2": {
+      "old": "ling2",
+      "new": "líng"
+    },
+    "ling3": {
+      "old": "ling3",
+      "new": "lǐng"
+    },
+    "ling4": {
+      "old": "ling4",
+      "new": "lìng"
+    },
+    "ling5": {
+      "old": "ling5",
+      "new": "ling"
+    },
+    "liu1": {
+      "old": "liu1",
+      "new": "liū"
+    },
+    "liu2": {
+      "old": "liu2",
+      "new": "liú"
+    },
+    "liu3": {
+      "old": "liu3",
+      "new": "liǔ"
+    },
+    "liu4": {
+      "old": "liu4",
+      "new": "liù"
+    },
+    "lo5": {
+      "old": "lo5",
+      "new": "lo"
+    },
+    "long1": {
+      "old": "long1",
+      "new": "lōng"
+    },
+    "long2": {
+      "old": "long2",
+      "new": "lóng"
+    },
+    "long3": {
+      "old": "long3",
+      "new": "lǒng"
+    },
+    "long4": {
+      "old": "long4",
+      "new": "lòng"
+    },
+    "lou1": {
+      "old": "lou1",
+      "new": "lōu"
+    },
+    "lou2": {
+      "old": "lou2",
+      "new": "lóu"
+    },
+    "lou3": {
+      "old": "lou3",
+      "new": "lǒu"
+    },
+    "lou4": {
+      "old": "lou4",
+      "new": "lòu"
+    },
+    "lou5": {
+      "old": "lou5",
+      "new": "lou"
+    },
+    "lu1": {
+      "old": "lu1",
+      "new": "lū"
+    },
+    "lu2": {
+      "old": "lu2",
+      "new": "lú"
+    },
+    "lu3": {
+      "old": "lu3",
+      "new": "lǔ"
+    },
+    "lu4": {
+      "old": "lu4",
+      "new": "lù"
+    },
+    "lu5": {
+      "old": "lu5",
+      "new": "lu"
+    },
+    "luan2": {
+      "old": "luan2",
+      "new": "luán"
+    },
+    "luan3": {
+      "old": "luan3",
+      "new": "luǎn"
+    },
+    "luan4": {
+      "old": "luan4",
+      "new": "luàn"
+    },
+    "lun1": {
+      "old": "lun1",
+      "new": "lūn"
+    },
+    "lun2": {
+      "old": "lun2",
+      "new": "lún"
+    },
+    "lun3": {
+      "old": "lun3",
+      "new": "lǔn"
+    },
+    "lun4": {
+      "old": "lun4",
+      "new": "lùn"
+    },
+    "luo1": {
+      "old": "luo1",
+      "new": "luō"
+    },
+    "luo2": {
+      "old": "luo2",
+      "new": "luó"
+    },
+    "luo3": {
+      "old": "luo3",
+      "new": "luǒ"
+    },
+    "luo4": {
+      "old": "luo4",
+      "new": "luò"
+    },
+    "luo5": {
+      "old": "luo5",
+      "new": "luo"
+    },
+    "m1": {
+      "old": "m1",
+      "new": "m̄"
+    },
+    "m2": {
+      "old": "m2",
+      "new": "ḿ"
+    },
+    "m4": {
+      "old": "m4",
+      "new": "m̀"
+    },
+    "ma1": {
+      "old": "ma1",
+      "new": "mā"
+    },
+    "ma2": {
+      "old": "ma2",
+      "new": "má"
+    },
+    "ma3": {
+      "old": "ma3",
+      "new": "mǎ"
+    },
+    "ma4": {
+      "old": "ma4",
+      "new": "mà"
+    },
+    "ma5": {
+      "old": "ma5",
+      "new": "ma"
+    },
+    "mai2": {
+      "old": "mai2",
+      "new": "mái"
+    },
+    "mai3": {
+      "old": "mai3",
+      "new": "mǎi"
+    },
+    "mai4": {
+      "old": "mai4",
+      "new": "mài"
+    },
+    "man1": {
+      "old": "man1",
+      "new": "mān"
+    },
+    "man2": {
+      "old": "man2",
+      "new": "mán"
+    },
+    "man3": {
+      "old": "man3",
+      "new": "mǎn"
+    },
+    "man4": {
+      "old": "man4",
+      "new": "màn"
+    },
+    "mang1": {
+      "old": "mang1",
+      "new": "māng"
+    },
+    "mang2": {
+      "old": "mang2",
+      "new": "máng"
+    },
+    "mang3": {
+      "old": "mang3",
+      "new": "mǎng"
+    },
+    "mang4": {
+      "old": "mang4",
+      "new": "màng"
+    },
+    "mao1": {
+      "old": "mao1",
+      "new": "māo"
+    },
+    "mao2": {
+      "old": "mao2",
+      "new": "máo"
+    },
+    "mao3": {
+      "old": "mao3",
+      "new": "mǎo"
+    },
+    "mao4": {
+      "old": "mao4",
+      "new": "mào"
+    },
+    "me1": {
+      "old": "me1",
+      "new": "mē"
+    },
+    "me5": {
+      "old": "me5",
+      "new": "me"
+    },
+    "mei2": {
+      "old": "mei2",
+      "new": "méi"
+    },
+    "mei3": {
+      "old": "mei3",
+      "new": "měi"
+    },
+    "mei4": {
+      "old": "mei4",
+      "new": "mèi"
+    },
+    "men1": {
+      "old": "men1",
+      "new": "mēn"
+    },
+    "men2": {
+      "old": "men2",
+      "new": "mén"
+    },
+    "men4": {
+      "old": "men4",
+      "new": "mèn"
+    },
+    "men5": {
+      "old": "men5",
+      "new": "men"
+    },
+    "meng1": {
+      "old": "meng1",
+      "new": "mēng"
+    },
+    "meng2": {
+      "old": "meng2",
+      "new": "méng"
+    },
+    "meng3": {
+      "old": "meng3",
+      "new": "měng"
+    },
+    "meng4": {
+      "old": "meng4",
+      "new": "mèng"
+    },
+    "meng5": {
+      "old": "meng5",
+      "new": "meng"
+    },
+    "mi1": {
+      "old": "mi1",
+      "new": "mī"
+    },
+    "mi2": {
+      "old": "mi2",
+      "new": "mí"
+    },
+    "mi3": {
+      "old": "mi3",
+      "new": "mǐ"
+    },
+    "mi4": {
+      "old": "mi4",
+      "new": "mì"
+    },
+    "mian2": {
+      "old": "mian2",
+      "new": "mián"
+    },
+    "mian3": {
+      "old": "mian3",
+      "new": "miǎn"
+    },
+    "mian4": {
+      "old": "mian4",
+      "new": "miàn"
+    },
+    "miao1": {
+      "old": "miao1",
+      "new": "miāo"
+    },
+    "miao2": {
+      "old": "miao2",
+      "new": "miáo"
+    },
+    "miao3": {
+      "old": "miao3",
+      "new": "miǎo"
+    },
+    "miao4": {
+      "old": "miao4",
+      "new": "miào"
+    },
+    "mie1": {
+      "old": "mie1",
+      "new": "miē"
+    },
+    "mie2": {
+      "old": "mie2",
+      "new": "mié"
+    },
+    "mie4": {
+      "old": "mie4",
+      "new": "miè"
+    },
+    "mie5": {
+      "old": "mie5",
+      "new": "mie"
+    },
+    "min2": {
+      "old": "min2",
+      "new": "mín"
+    },
+    "min3": {
+      "old": "min3",
+      "new": "mǐn"
+    },
+    "ming2": {
+      "old": "ming2",
+      "new": "míng"
+    },
+    "ming3": {
+      "old": "ming3",
+      "new": "mǐng"
+    },
+    "ming4": {
+      "old": "ming4",
+      "new": "mìng"
+    },
+    "ming5": {
+      "old": "ming5",
+      "new": "ming"
+    },
+    "miu3": {
+      "old": "miu3",
+      "new": "miǔ"
+    },
+    "miu4": {
+      "old": "miu4",
+      "new": "miù"
+    },
+    "mo1": {
+      "old": "mo1",
+      "new": "mō"
+    },
+    "mo2": {
+      "old": "mo2",
+      "new": "mó"
+    },
+    "mo3": {
+      "old": "mo3",
+      "new": "mǒ"
+    },
+    "mo4": {
+      "old": "mo4",
+      "new": "mò"
+    },
+    "mo5": {
+      "old": "mo5",
+      "new": "mo"
+    },
+    "mou1": {
+      "old": "mou1",
+      "new": "mōu"
+    },
+    "mou2": {
+      "old": "mou2",
+      "new": "móu"
+    },
+    "mou3": {
+      "old": "mou3",
+      "new": "mǒu"
+    },
+    "mou4": {
+      "old": "mou4",
+      "new": "mòu"
+    },
+    "mu2": {
+      "old": "mu2",
+      "new": "mú"
+    },
+    "mu3": {
+      "old": "mu3",
+      "new": "mǔ"
+    },
+    "mu4": {
+      "old": "mu4",
+      "new": "mù"
+    },
+    "n2": {
+      "old": "n2",
+      "new": "ń"
+    },
+    "n3": {
+      "old": "n3",
+      "new": "ň"
+    },
+    "n4": {
+      "old": "n4",
+      "new": "ǹ"
+    },
+    "n5": {
+      "old": "n5",
+      "new": "n"
+    },
+    "na1": {
+      "old": "na1",
+      "new": "nā"
+    },
+    "na2": {
+      "old": "na2",
+      "new": "ná"
+    },
+    "na3": {
+      "old": "na3",
+      "new": "nǎ"
+    },
+    "na4": {
+      "old": "na4",
+      "new": "nà"
+    },
+    "na5": {
+      "old": "na5",
+      "new": "na"
+    },
+    "nai2": {
+      "old": "nai2",
+      "new": "nái"
+    },
+    "nai3": {
+      "old": "nai3",
+      "new": "nǎi"
+    },
+    "nai4": {
+      "old": "nai4",
+      "new": "nài"
+    },
+    "nan1": {
+      "old": "nan1",
+      "new": "nān"
+    },
+    "nan2": {
+      "old": "nan2",
+      "new": "nán"
+    },
+    "nan3": {
+      "old": "nan3",
+      "new": "nǎn"
+    },
+    "nan4": {
+      "old": "nan4",
+      "new": "nàn"
+    },
+    "nang1": {
+      "old": "nang1",
+      "new": "nāng"
+    },
+    "nang2": {
+      "old": "nang2",
+      "new": "náng"
+    },
+    "nang3": {
+      "old": "nang3",
+      "new": "nǎng"
+    },
+    "nang4": {
+      "old": "nang4",
+      "new": "nàng"
+    },
+    "nang5": {
+      "old": "nang5",
+      "new": "nang"
+    },
+    "nao1": {
+      "old": "nao1",
+      "new": "nāo"
+    },
+    "nao2": {
+      "old": "nao2",
+      "new": "náo"
+    },
+    "nao3": {
+      "old": "nao3",
+      "new": "nǎo"
+    },
+    "nao4": {
+      "old": "nao4",
+      "new": "nào"
+    },
+    "ne2": {
+      "old": "ne2",
+      "new": "né"
+    },
+    "ne4": {
+      "old": "ne4",
+      "new": "nè"
+    },
+    "ne5": {
+      "old": "ne5",
+      "new": "ne"
+    },
+    "nei2": {
+      "old": "nei2",
+      "new": "néi"
+    },
+    "nei3": {
+      "old": "nei3",
+      "new": "něi"
+    },
+    "nei4": {
+      "old": "nei4",
+      "new": "nèi"
+    },
+    "nen4": {
+      "old": "nen4",
+      "new": "nèn"
+    },
+    "neng2": {
+      "old": "neng2",
+      "new": "néng"
+    },
+    "neng3": {
+      "old": "neng3",
+      "new": "něng"
+    },
+    "neng4": {
+      "old": "neng4",
+      "new": "nèng"
+    },
+    "ng2": {
+      "old": "ng2",
+      "new": "ńg"
+    },
+    "ng3": {
+      "old": "ng3",
+      "new": "ňg"
+    },
+    "ng4": {
+      "old": "ng4",
+      "new": "ǹg"
+    },
+    "ng5": {
+      "old": "ng5",
+      "new": "ng"
+    },
+    "ni1": {
+      "old": "ni1",
+      "new": "nī"
+    },
+    "ni2": {
+      "old": "ni2",
+      "new": "ní"
+    },
+    "ni3": {
+      "old": "ni3",
+      "new": "nǐ"
+    },
+    "ni4": {
+      "old": "ni4",
+      "new": "nì"
+    },
+    "nia1": {
+      "old": "nia1",
+      "new": "niā"
+    },
+    "nian1": {
+      "old": "nian1",
+      "new": "niān"
+    },
+    "nian2": {
+      "old": "nian2",
+      "new": "nián"
+    },
+    "nian3": {
+      "old": "nian3",
+      "new": "niǎn"
+    },
+    "nian4": {
+      "old": "nian4",
+      "new": "niàn"
+    },
+    "niang2": {
+      "old": "niang2",
+      "new": "niáng"
+    },
+    "niang3": {
+      "old": "niang3",
+      "new": "niǎng"
+    },
+    "niang4": {
+      "old": "niang4",
+      "new": "niàng"
+    },
+    "niao3": {
+      "old": "niao3",
+      "new": "niǎo"
+    },
+    "niao4": {
+      "old": "niao4",
+      "new": "niào"
+    },
+    "nie1": {
+      "old": "nie1",
+      "new": "niē"
+    },
+    "nie2": {
+      "old": "nie2",
+      "new": "nié"
+    },
+    "nie3": {
+      "old": "nie3",
+      "new": "niě"
+    },
+    "nie4": {
+      "old": "nie4",
+      "new": "niè"
+    },
+    "nin2": {
+      "old": "nin2",
+      "new": "nín"
+    },
+    "nin3": {
+      "old": "nin3",
+      "new": "nǐn"
+    },
+    "ning2": {
+      "old": "ning2",
+      "new": "níng"
+    },
+    "ning3": {
+      "old": "ning3",
+      "new": "nǐng"
+    },
+    "ning4": {
+      "old": "ning4",
+      "new": "nìng"
+    },
+    "niu1": {
+      "old": "niu1",
+      "new": "niū"
+    },
+    "niu2": {
+      "old": "niu2",
+      "new": "niú"
+    },
+    "niu3": {
+      "old": "niu3",
+      "new": "niǔ"
+    },
+    "niu4": {
+      "old": "niu4",
+      "new": "niù"
+    },
+    "nong2": {
+      "old": "nong2",
+      "new": "nóng"
+    },
+    "nong3": {
+      "old": "nong3",
+      "new": "nǒng"
+    },
+    "nong4": {
+      "old": "nong4",
+      "new": "nòng"
+    },
+    "nou2": {
+      "old": "nou2",
+      "new": "nóu"
+    },
+    "nou3": {
+      "old": "nou3",
+      "new": "nǒu"
+    },
+    "nou4": {
+      "old": "nou4",
+      "new": "nòu"
+    },
+    "nu2": {
+      "old": "nu2",
+      "new": "nú"
+    },
+    "nu3": {
+      "old": "nu3",
+      "new": "nǔ"
+    },
+    "nu4": {
+      "old": "nu4",
+      "new": "nù"
+    },
+    "nuan2": {
+      "old": "nuan2",
+      "new": "nuán"
+    },
+    "nuan3": {
+      "old": "nuan3",
+      "new": "nuǎn"
+    },
+    "nuan4": {
+      "old": "nuan4",
+      "new": "nuàn"
+    },
+    "nun2": {
+      "old": "nun2",
+      "new": "nún"
+    },
+    "nun4": {
+      "old": "nun4",
+      "new": "nùn"
+    },
+    "nuo2": {
+      "old": "nuo2",
+      "new": "nuó"
+    },
+    "nuo3": {
+      "old": "nuo3",
+      "new": "nuǒ"
+    },
+    "nuo4": {
+      "old": "nuo4",
+      "new": "nuò"
+    },
+    "o1": {
+      "old": "o1",
+      "new": "ō"
+    },
+    "o2": {
+      "old": "o2",
+      "new": "ó"
+    },
+    "o3": {
+      "old": "o3",
+      "new": "ǒ"
+    },
+    "o4": {
+      "old": "o4",
+      "new": "ò"
+    },
+    "o5": {
+      "old": "o5",
+      "new": "o"
+    },
+    "ou1": {
+      "old": "ou1",
+      "new": "ōu"
+    },
+    "ou2": {
+      "old": "ou2",
+      "new": "óu"
+    },
+    "ou3": {
+      "old": "ou3",
+      "new": "ǒu"
+    },
+    "ou4": {
+      "old": "ou4",
+      "new": "òu"
+    },
+    "ou5": {
+      "old": "ou5",
+      "new": "ou"
+    },
+    "pa1": {
+      "old": "pa1",
+      "new": "pā"
+    },
+    "pa2": {
+      "old": "pa2",
+      "new": "pá"
+    },
+    "pa3": {
+      "old": "pa3",
+      "new": "pǎ"
+    },
+    "pa4": {
+      "old": "pa4",
+      "new": "pà"
+    },
+    "pai1": {
+      "old": "pai1",
+      "new": "pāi"
+    },
+    "pai2": {
+      "old": "pai2",
+      "new": "pái"
+    },
+    "pai3": {
+      "old": "pai3",
+      "new": "pǎi"
+    },
+    "pai4": {
+      "old": "pai4",
+      "new": "pài"
+    },
+    "pan1": {
+      "old": "pan1",
+      "new": "pān"
+    },
+    "pan2": {
+      "old": "pan2",
+      "new": "pán"
+    },
+    "pan3": {
+      "old": "pan3",
+      "new": "pǎn"
+    },
+    "pan4": {
+      "old": "pan4",
+      "new": "pàn"
+    },
+    "pang1": {
+      "old": "pang1",
+      "new": "pāng"
+    },
+    "pang2": {
+      "old": "pang2",
+      "new": "páng"
+    },
+    "pang3": {
+      "old": "pang3",
+      "new": "pǎng"
+    },
+    "pang4": {
+      "old": "pang4",
+      "new": "pàng"
+    },
+    "pao1": {
+      "old": "pao1",
+      "new": "pāo"
+    },
+    "pao2": {
+      "old": "pao2",
+      "new": "páo"
+    },
+    "pao3": {
+      "old": "pao3",
+      "new": "pǎo"
+    },
+    "pao4": {
+      "old": "pao4",
+      "new": "pào"
+    },
+    "pei1": {
+      "old": "pei1",
+      "new": "pēi"
+    },
+    "pei2": {
+      "old": "pei2",
+      "new": "péi"
+    },
+    "pei3": {
+      "old": "pei3",
+      "new": "pěi"
+    },
+    "pei4": {
+      "old": "pei4",
+      "new": "pèi"
+    },
+    "pen1": {
+      "old": "pen1",
+      "new": "pēn"
+    },
+    "pen2": {
+      "old": "pen2",
+      "new": "pén"
+    },
+    "pen3": {
+      "old": "pen3",
+      "new": "pěn"
+    },
+    "pen4": {
+      "old": "pen4",
+      "new": "pèn"
+    },
+    "peng1": {
+      "old": "peng1",
+      "new": "pēng"
+    },
+    "peng2": {
+      "old": "peng2",
+      "new": "péng"
+    },
+    "peng3": {
+      "old": "peng3",
+      "new": "pěng"
+    },
+    "peng4": {
+      "old": "peng4",
+      "new": "pèng"
+    },
+    "pi1": {
+      "old": "pi1",
+      "new": "pī"
+    },
+    "pi2": {
+      "old": "pi2",
+      "new": "pí"
+    },
+    "pi3": {
+      "old": "pi3",
+      "new": "pǐ"
+    },
+    "pi4": {
+      "old": "pi4",
+      "new": "pì"
+    },
+    "pian1": {
+      "old": "pian1",
+      "new": "piān"
+    },
+    "pian2": {
+      "old": "pian2",
+      "new": "pián"
+    },
+    "pian3": {
+      "old": "pian3",
+      "new": "piǎn"
+    },
+    "pian4": {
+      "old": "pian4",
+      "new": "piàn"
+    },
+    "piao1": {
+      "old": "piao1",
+      "new": "piāo"
+    },
+    "piao2": {
+      "old": "piao2",
+      "new": "piáo"
+    },
+    "piao3": {
+      "old": "piao3",
+      "new": "piǎo"
+    },
+    "piao4": {
+      "old": "piao4",
+      "new": "piào"
+    },
+    "pie1": {
+      "old": "pie1",
+      "new": "piē"
+    },
+    "pie3": {
+      "old": "pie3",
+      "new": "piě"
+    },
+    "pie4": {
+      "old": "pie4",
+      "new": "piè"
+    },
+    "pin1": {
+      "old": "pin1",
+      "new": "pīn"
+    },
+    "pin2": {
+      "old": "pin2",
+      "new": "pín"
+    },
+    "pin3": {
+      "old": "pin3",
+      "new": "pǐn"
+    },
+    "pin4": {
+      "old": "pin4",
+      "new": "pìn"
+    },
+    "ping1": {
+      "old": "ping1",
+      "new": "pīng"
+    },
+    "ping2": {
+      "old": "ping2",
+      "new": "píng"
+    },
+    "ping3": {
+      "old": "ping3",
+      "new": "pǐng"
+    },
+    "ping4": {
+      "old": "ping4",
+      "new": "pìng"
+    },
+    "po1": {
+      "old": "po1",
+      "new": "pō"
+    },
+    "po2": {
+      "old": "po2",
+      "new": "pó"
+    },
+    "po3": {
+      "old": "po3",
+      "new": "pǒ"
+    },
+    "po4": {
+      "old": "po4",
+      "new": "pò"
+    },
+    "po5": {
+      "old": "po5",
+      "new": "po"
+    },
+    "pou1": {
+      "old": "pou1",
+      "new": "pōu"
+    },
+    "pou2": {
+      "old": "pou2",
+      "new": "póu"
+    },
+    "pou3": {
+      "old": "pou3",
+      "new": "pǒu"
+    },
+    "pou4": {
+      "old": "pou4",
+      "new": "pòu"
+    },
+    "pu1": {
+      "old": "pu1",
+      "new": "pū"
+    },
+    "pu2": {
+      "old": "pu2",
+      "new": "pú"
+    },
+    "pu3": {
+      "old": "pu3",
+      "new": "pǔ"
+    },
+    "pu4": {
+      "old": "pu4",
+      "new": "pù"
+    },
+    "qi1": {
+      "old": "qi1",
+      "new": "qī"
+    },
+    "qi2": {
+      "old": "qi2",
+      "new": "qí"
+    },
+    "qi3": {
+      "old": "qi3",
+      "new": "qǐ"
+    },
+    "qi4": {
+      "old": "qi4",
+      "new": "qì"
+    },
+    "qi5": {
+      "old": "qi5",
+      "new": "qi"
+    },
+    "qia1": {
+      "old": "qia1",
+      "new": "qiā"
+    },
+    "qia2": {
+      "old": "qia2",
+      "new": "qiá"
+    },
+    "qia3": {
+      "old": "qia3",
+      "new": "qiǎ"
+    },
+    "qia4": {
+      "old": "qia4",
+      "new": "qià"
+    },
+    "qian1": {
+      "old": "qian1",
+      "new": "qiān"
+    },
+    "qian2": {
+      "old": "qian2",
+      "new": "qián"
+    },
+    "qian3": {
+      "old": "qian3",
+      "new": "qiǎn"
+    },
+    "qian4": {
+      "old": "qian4",
+      "new": "qiàn"
+    },
+    "qian5": {
+      "old": "qian5",
+      "new": "qian"
+    },
+    "qiang1": {
+      "old": "qiang1",
+      "new": "qiāng"
+    },
+    "qiang2": {
+      "old": "qiang2",
+      "new": "qiáng"
+    },
+    "qiang3": {
+      "old": "qiang3",
+      "new": "qiǎng"
+    },
+    "qiang4": {
+      "old": "qiang4",
+      "new": "qiàng"
+    },
+    "qiao1": {
+      "old": "qiao1",
+      "new": "qiāo"
+    },
+    "qiao2": {
+      "old": "qiao2",
+      "new": "qiáo"
+    },
+    "qiao3": {
+      "old": "qiao3",
+      "new": "qiǎo"
+    },
+    "qiao4": {
+      "old": "qiao4",
+      "new": "qiào"
+    },
+    "qie1": {
+      "old": "qie1",
+      "new": "qiē"
+    },
+    "qie2": {
+      "old": "qie2",
+      "new": "qié"
+    },
+    "qie3": {
+      "old": "qie3",
+      "new": "qiě"
+    },
+    "qie4": {
+      "old": "qie4",
+      "new": "qiè"
+    },
+    "qin1": {
+      "old": "qin1",
+      "new": "qīn"
+    },
+    "qin2": {
+      "old": "qin2",
+      "new": "qín"
+    },
+    "qin3": {
+      "old": "qin3",
+      "new": "qǐn"
+    },
+    "qin4": {
+      "old": "qin4",
+      "new": "qìn"
+    },
+    "qing1": {
+      "old": "qing1",
+      "new": "qīng"
+    },
+    "qing2": {
+      "old": "qing2",
+      "new": "qíng"
+    },
+    "qing3": {
+      "old": "qing3",
+      "new": "qǐng"
+    },
+    "qing4": {
+      "old": "qing4",
+      "new": "qìng"
+    },
+    "qing5": {
+      "old": "qing5",
+      "new": "qing"
+    },
+    "qiong1": {
+      "old": "qiong1",
+      "new": "qiōng"
+    },
+    "qiong2": {
+      "old": "qiong2",
+      "new": "qióng"
+    },
+    "qiong4": {
+      "old": "qiong4",
+      "new": "qiòng"
+    },
+    "qiu1": {
+      "old": "qiu1",
+      "new": "qiū"
+    },
+    "qiu2": {
+      "old": "qiu2",
+      "new": "qiú"
+    },
+    "qiu3": {
+      "old": "qiu3",
+      "new": "qiǔ"
+    },
+    "qiu4": {
+      "old": "qiu4",
+      "new": "qiù"
+    },
+    "qu1": {
+      "old": "qu1",
+      "new": "qū"
+    },
+    "qu2": {
+      "old": "qu2",
+      "new": "qú"
+    },
+    "qu3": {
+      "old": "qu3",
+      "new": "qǔ"
+    },
+    "qu4": {
+      "old": "qu4",
+      "new": "qù"
+    },
+    "qu5": {
+      "old": "qu5",
+      "new": "qu"
+    },
+    "quan1": {
+      "old": "quan1",
+      "new": "quān"
+    },
+    "quan2": {
+      "old": "quan2",
+      "new": "quán"
+    },
+    "quan3": {
+      "old": "quan3",
+      "new": "quǎn"
+    },
+    "quan4": {
+      "old": "quan4",
+      "new": "quàn"
+    },
+    "quan5": {
+      "old": "quan5",
+      "new": "quan"
+    },
+    "que1": {
+      "old": "que1",
+      "new": "quē"
+    },
+    "que2": {
+      "old": "que2",
+      "new": "qué"
+    },
+    "que4": {
+      "old": "que4",
+      "new": "què"
+    },
+    "qun1": {
+      "old": "qun1",
+      "new": "qūn"
+    },
+    "qun2": {
+      "old": "qun2",
+      "new": "qún"
+    },
+    "qun3": {
+      "old": "qun3",
+      "new": "qǔn"
+    },
+    "ran2": {
+      "old": "ran2",
+      "new": "rán"
+    },
+    "ran3": {
+      "old": "ran3",
+      "new": "rǎn"
+    },
+    "ran4": {
+      "old": "ran4",
+      "new": "ràn"
+    },
+    "rang1": {
+      "old": "rang1",
+      "new": "rāng"
+    },
+    "rang2": {
+      "old": "rang2",
+      "new": "ráng"
+    },
+    "rang3": {
+      "old": "rang3",
+      "new": "rǎng"
+    },
+    "rang4": {
+      "old": "rang4",
+      "new": "ràng"
+    },
+    "rao2": {
+      "old": "rao2",
+      "new": "ráo"
+    },
+    "rao3": {
+      "old": "rao3",
+      "new": "rǎo"
+    },
+    "rao4": {
+      "old": "rao4",
+      "new": "rào"
+    },
+    "re3": {
+      "old": "re3",
+      "new": "rě"
+    },
+    "re4": {
+      "old": "re4",
+      "new": "rè"
+    },
+    "ren2": {
+      "old": "ren2",
+      "new": "rén"
+    },
+    "ren3": {
+      "old": "ren3",
+      "new": "rěn"
+    },
+    "ren4": {
+      "old": "ren4",
+      "new": "rèn"
+    },
+    "reng1": {
+      "old": "reng1",
+      "new": "rēng"
+    },
+    "reng2": {
+      "old": "reng2",
+      "new": "réng"
+    },
+    "reng4": {
+      "old": "reng4",
+      "new": "rèng"
+    },
+    "ri4": {
+      "old": "ri4",
+      "new": "rì"
+    },
+    "rong1": {
+      "old": "rong1",
+      "new": "rōng"
+    },
+    "rong2": {
+      "old": "rong2",
+      "new": "róng"
+    },
+    "rong3": {
+      "old": "rong3",
+      "new": "rǒng"
+    },
+    "rong4": {
+      "old": "rong4",
+      "new": "ròng"
+    },
+    "rong5": {
+      "old": "rong5",
+      "new": "rong"
+    },
+    "rou2": {
+      "old": "rou2",
+      "new": "róu"
+    },
+    "rou3": {
+      "old": "rou3",
+      "new": "rǒu"
+    },
+    "rou4": {
+      "old": "rou4",
+      "new": "ròu"
+    },
+    "ru2": {
+      "old": "ru2",
+      "new": "rú"
+    },
+    "ru3": {
+      "old": "ru3",
+      "new": "rǔ"
+    },
+    "ru4": {
+      "old": "ru4",
+      "new": "rù"
+    },
+    "rua2": {
+      "old": "rua2",
+      "new": "ruá"
+    },
+    "ruan2": {
+      "old": "ruan2",
+      "new": "ruán"
+    },
+    "ruan3": {
+      "old": "ruan3",
+      "new": "ruǎn"
+    },
+    "ruan4": {
+      "old": "ruan4",
+      "new": "ruàn"
+    },
+    "rui2": {
+      "old": "rui2",
+      "new": "ruí"
+    },
+    "rui3": {
+      "old": "rui3",
+      "new": "ruǐ"
+    },
+    "rui4": {
+      "old": "rui4",
+      "new": "ruì"
+    },
+    "run2": {
+      "old": "run2",
+      "new": "rún"
+    },
+    "run3": {
+      "old": "run3",
+      "new": "rǔn"
+    },
+    "run4": {
+      "old": "run4",
+      "new": "rùn"
+    },
+    "ruo2": {
+      "old": "ruo2",
+      "new": "ruó"
+    },
+    "ruo4": {
+      "old": "ruo4",
+      "new": "ruò"
+    },
+    "sa1": {
+      "old": "sa1",
+      "new": "sā"
+    },
+    "sa3": {
+      "old": "sa3",
+      "new": "sǎ"
+    },
+    "sa4": {
+      "old": "sa4",
+      "new": "sà"
+    },
+    "sa5": {
+      "old": "sa5",
+      "new": "sa"
+    },
+    "sai1": {
+      "old": "sai1",
+      "new": "sāi"
+    },
+    "sai3": {
+      "old": "sai3",
+      "new": "sǎi"
+    },
+    "sai4": {
+      "old": "sai4",
+      "new": "sài"
+    },
+    "san1": {
+      "old": "san1",
+      "new": "sān"
+    },
+    "san3": {
+      "old": "san3",
+      "new": "sǎn"
+    },
+    "san4": {
+      "old": "san4",
+      "new": "sàn"
+    },
+    "san5": {
+      "old": "san5",
+      "new": "san"
+    },
+    "sang1": {
+      "old": "sang1",
+      "new": "sāng"
+    },
+    "sang3": {
+      "old": "sang3",
+      "new": "sǎng"
+    },
+    "sang4": {
+      "old": "sang4",
+      "new": "sàng"
+    },
+    "sao1": {
+      "old": "sao1",
+      "new": "sāo"
+    },
+    "sao3": {
+      "old": "sao3",
+      "new": "sǎo"
+    },
+    "sao4": {
+      "old": "sao4",
+      "new": "sào"
+    },
+    "se1": {
+      "old": "se1",
+      "new": "sē"
+    },
+    "se4": {
+      "old": "se4",
+      "new": "sè"
+    },
+    "sen1": {
+      "old": "sen1",
+      "new": "sēn"
+    },
+    "sen3": {
+      "old": "sen3",
+      "new": "sěn"
+    },
+    "seng1": {
+      "old": "seng1",
+      "new": "sēng"
+    },
+    "seng4": {
+      "old": "seng4",
+      "new": "sèng"
+    },
+    "sha1": {
+      "old": "sha1",
+      "new": "shā"
+    },
+    "sha2": {
+      "old": "sha2",
+      "new": "shá"
+    },
+    "sha3": {
+      "old": "sha3",
+      "new": "shǎ"
+    },
+    "sha4": {
+      "old": "sha4",
+      "new": "shà"
+    },
+    "sha5": {
+      "old": "sha5",
+      "new": "sha"
+    },
+    "shai1": {
+      "old": "shai1",
+      "new": "shāi"
+    },
+    "shai3": {
+      "old": "shai3",
+      "new": "shǎi"
+    },
+    "shai4": {
+      "old": "shai4",
+      "new": "shài"
+    },
+    "shan1": {
+      "old": "shan1",
+      "new": "shān"
+    },
+    "shan2": {
+      "old": "shan2",
+      "new": "shán"
+    },
+    "shan3": {
+      "old": "shan3",
+      "new": "shǎn"
+    },
+    "shan4": {
+      "old": "shan4",
+      "new": "shàn"
+    },
+    "shang1": {
+      "old": "shang1",
+      "new": "shāng"
+    },
+    "shang3": {
+      "old": "shang3",
+      "new": "shǎng"
+    },
+    "shang4": {
+      "old": "shang4",
+      "new": "shàng"
+    },
+    "shang5": {
+      "old": "shang5",
+      "new": "shang"
+    },
+    "shao1": {
+      "old": "shao1",
+      "new": "shāo"
+    },
+    "shao2": {
+      "old": "shao2",
+      "new": "sháo"
+    },
+    "shao3": {
+      "old": "shao3",
+      "new": "shǎo"
+    },
+    "shao4": {
+      "old": "shao4",
+      "new": "shào"
+    },
+    "she1": {
+      "old": "she1",
+      "new": "shē"
+    },
+    "she2": {
+      "old": "she2",
+      "new": "shé"
+    },
+    "she3": {
+      "old": "she3",
+      "new": "shě"
+    },
+    "she4": {
+      "old": "she4",
+      "new": "shè"
+    },
+    "shei2": {
+      "old": "shei2",
+      "new": "shéi"
+    },
+    "shen1": {
+      "old": "shen1",
+      "new": "shēn"
+    },
+    "shen2": {
+      "old": "shen2",
+      "new": "shén"
+    },
+    "shen3": {
+      "old": "shen3",
+      "new": "shěn"
+    },
+    "shen4": {
+      "old": "shen4",
+      "new": "shèn"
+    },
+    "sheng1": {
+      "old": "sheng1",
+      "new": "shēng"
+    },
+    "sheng2": {
+      "old": "sheng2",
+      "new": "shéng"
+    },
+    "sheng3": {
+      "old": "sheng3",
+      "new": "shěng"
+    },
+    "sheng4": {
+      "old": "sheng4",
+      "new": "shèng"
+    },
+    "shi1": {
+      "old": "shi1",
+      "new": "shī"
+    },
+    "shi2": {
+      "old": "shi2",
+      "new": "shí"
+    },
+    "shi3": {
+      "old": "shi3",
+      "new": "shǐ"
+    },
+    "shi4": {
+      "old": "shi4",
+      "new": "shì"
+    },
+    "shi5": {
+      "old": "shi5",
+      "new": "shi"
+    },
+    "shou1": {
+      "old": "shou1",
+      "new": "shōu"
+    },
+    "shou2": {
+      "old": "shou2",
+      "new": "shóu"
+    },
+    "shou3": {
+      "old": "shou3",
+      "new": "shǒu"
+    },
+    "shou4": {
+      "old": "shou4",
+      "new": "shòu"
+    },
+    "shou5": {
+      "old": "shou5",
+      "new": "shou"
+    },
+    "shu1": {
+      "old": "shu1",
+      "new": "shū"
+    },
+    "shu2": {
+      "old": "shu2",
+      "new": "shú"
+    },
+    "shu3": {
+      "old": "shu3",
+      "new": "shǔ"
+    },
+    "shu4": {
+      "old": "shu4",
+      "new": "shù"
+    },
+    "shua1": {
+      "old": "shua1",
+      "new": "shuā"
+    },
+    "shua3": {
+      "old": "shua3",
+      "new": "shuǎ"
+    },
+    "shua4": {
+      "old": "shua4",
+      "new": "shuà"
+    },
+    "shuai1": {
+      "old": "shuai1",
+      "new": "shuāi"
+    },
+    "shuai3": {
+      "old": "shuai3",
+      "new": "shuǎi"
+    },
+    "shuai4": {
+      "old": "shuai4",
+      "new": "shuài"
+    },
+    "shuan1": {
+      "old": "shuan1",
+      "new": "shuān"
+    },
+    "shuan4": {
+      "old": "shuan4",
+      "new": "shuàn"
+    },
+    "shuang1": {
+      "old": "shuang1",
+      "new": "shuāng"
+    },
+    "shuang3": {
+      "old": "shuang3",
+      "new": "shuǎng"
+    },
+    "shuang4": {
+      "old": "shuang4",
+      "new": "shuàng"
+    },
+    "shui2": {
+      "old": "shui2",
+      "new": "shuí"
+    },
+    "shui3": {
+      "old": "shui3",
+      "new": "shuǐ"
+    },
+    "shui4": {
+      "old": "shui4",
+      "new": "shuì"
+    },
+    "shui5": {
+      "old": "shui5",
+      "new": "shui"
+    },
+    "shun3": {
+      "old": "shun3",
+      "new": "shǔn"
+    },
+    "shun4": {
+      "old": "shun4",
+      "new": "shùn"
+    },
+    "shuo1": {
+      "old": "shuo1",
+      "new": "shuō"
+    },
+    "shuo4": {
+      "old": "shuo4",
+      "new": "shuò"
+    },
+    "si1": {
+      "old": "si1",
+      "new": "sī"
+    },
+    "si2": {
+      "old": "si2",
+      "new": "sí"
+    },
+    "si3": {
+      "old": "si3",
+      "new": "sǐ"
+    },
+    "si4": {
+      "old": "si4",
+      "new": "sì"
+    },
+    "si5": {
+      "old": "si5",
+      "new": "si"
+    },
+    "song1": {
+      "old": "song1",
+      "new": "sōng"
+    },
+    "song2": {
+      "old": "song2",
+      "new": "sóng"
+    },
+    "song3": {
+      "old": "song3",
+      "new": "sǒng"
+    },
+    "song4": {
+      "old": "song4",
+      "new": "sòng"
+    },
+    "sou1": {
+      "old": "sou1",
+      "new": "sōu"
+    },
+    "sou3": {
+      "old": "sou3",
+      "new": "sǒu"
+    },
+    "sou4": {
+      "old": "sou4",
+      "new": "sòu"
+    },
+    "su1": {
+      "old": "su1",
+      "new": "sū"
+    },
+    "su2": {
+      "old": "su2",
+      "new": "sú"
+    },
+    "su3": {
+      "old": "su3",
+      "new": "sǔ"
+    },
+    "su4": {
+      "old": "su4",
+      "new": "sù"
+    },
+    "suan1": {
+      "old": "suan1",
+      "new": "suān"
+    },
+    "suan3": {
+      "old": "suan3",
+      "new": "suǎn"
+    },
+    "suan4": {
+      "old": "suan4",
+      "new": "suàn"
+    },
+    "sui1": {
+      "old": "sui1",
+      "new": "suī"
+    },
+    "sui2": {
+      "old": "sui2",
+      "new": "suí"
+    },
+    "sui3": {
+      "old": "sui3",
+      "new": "suǐ"
+    },
+    "sui4": {
+      "old": "sui4",
+      "new": "suì"
+    },
+    "sun1": {
+      "old": "sun1",
+      "new": "sūn"
+    },
+    "sun3": {
+      "old": "sun3",
+      "new": "sǔn"
+    },
+    "sun4": {
+      "old": "sun4",
+      "new": "sùn"
+    },
+    "suo1": {
+      "old": "suo1",
+      "new": "suō"
+    },
+    "suo2": {
+      "old": "suo2",
+      "new": "suó"
+    },
+    "suo3": {
+      "old": "suo3",
+      "new": "suǒ"
+    },
+    "suo4": {
+      "old": "suo4",
+      "new": "suò"
+    },
+    "suo5": {
+      "old": "suo5",
+      "new": "suo"
+    },
+    "ta1": {
+      "old": "ta1",
+      "new": "tā"
+    },
+    "ta2": {
+      "old": "ta2",
+      "new": "tá"
+    },
+    "ta3": {
+      "old": "ta3",
+      "new": "tǎ"
+    },
+    "ta4": {
+      "old": "ta4",
+      "new": "tà"
+    },
+    "ta5": {
+      "old": "ta5",
+      "new": "ta"
+    },
+    "tai1": {
+      "old": "tai1",
+      "new": "tāi"
+    },
+    "tai2": {
+      "old": "tai2",
+      "new": "tái"
+    },
+    "tai3": {
+      "old": "tai3",
+      "new": "tǎi"
+    },
+    "tai4": {
+      "old": "tai4",
+      "new": "tài"
+    },
+    "tai5": {
+      "old": "tai5",
+      "new": "tai"
+    },
+    "tan1": {
+      "old": "tan1",
+      "new": "tān"
+    },
+    "tan2": {
+      "old": "tan2",
+      "new": "tán"
+    },
+    "tan3": {
+      "old": "tan3",
+      "new": "tǎn"
+    },
+    "tan4": {
+      "old": "tan4",
+      "new": "tàn"
+    },
+    "tang1": {
+      "old": "tang1",
+      "new": "tāng"
+    },
+    "tang2": {
+      "old": "tang2",
+      "new": "táng"
+    },
+    "tang3": {
+      "old": "tang3",
+      "new": "tǎng"
+    },
+    "tang4": {
+      "old": "tang4",
+      "new": "tàng"
+    },
+    "tao1": {
+      "old": "tao1",
+      "new": "tāo"
+    },
+    "tao2": {
+      "old": "tao2",
+      "new": "táo"
+    },
+    "tao3": {
+      "old": "tao3",
+      "new": "tǎo"
+    },
+    "tao4": {
+      "old": "tao4",
+      "new": "tào"
+    },
+    "te4": {
+      "old": "te4",
+      "new": "tè"
+    },
+    "tei1": {
+      "old": "tei1",
+      "new": "tēi"
+    },
+    "teng1": {
+      "old": "teng1",
+      "new": "tēng"
+    },
+    "teng2": {
+      "old": "teng2",
+      "new": "téng"
+    },
+    "teng4": {
+      "old": "teng4",
+      "new": "tèng"
+    },
+    "ti1": {
+      "old": "ti1",
+      "new": "tī"
+    },
+    "ti2": {
+      "old": "ti2",
+      "new": "tí"
+    },
+    "ti3": {
+      "old": "ti3",
+      "new": "tǐ"
+    },
+    "ti4": {
+      "old": "ti4",
+      "new": "tì"
+    },
+    "tian1": {
+      "old": "tian1",
+      "new": "tiān"
+    },
+    "tian2": {
+      "old": "tian2",
+      "new": "tián"
+    },
+    "tian3": {
+      "old": "tian3",
+      "new": "tiǎn"
+    },
+    "tian4": {
+      "old": "tian4",
+      "new": "tiàn"
+    },
+    "tiao1": {
+      "old": "tiao1",
+      "new": "tiāo"
+    },
+    "tiao2": {
+      "old": "tiao2",
+      "new": "tiáo"
+    },
+    "tiao3": {
+      "old": "tiao3",
+      "new": "tiǎo"
+    },
+    "tiao4": {
+      "old": "tiao4",
+      "new": "tiào"
+    },
+    "tiao5": {
+      "old": "tiao5",
+      "new": "tiao"
+    },
+    "tie1": {
+      "old": "tie1",
+      "new": "tiē"
+    },
+    "tie2": {
+      "old": "tie2",
+      "new": "tié"
+    },
+    "tie3": {
+      "old": "tie3",
+      "new": "tiě"
+    },
+    "tie4": {
+      "old": "tie4",
+      "new": "tiè"
+    },
+    "ting1": {
+      "old": "ting1",
+      "new": "tīng"
+    },
+    "ting2": {
+      "old": "ting2",
+      "new": "tíng"
+    },
+    "ting3": {
+      "old": "ting3",
+      "new": "tǐng"
+    },
+    "ting4": {
+      "old": "ting4",
+      "new": "tìng"
+    },
+    "tong1": {
+      "old": "tong1",
+      "new": "tōng"
+    },
+    "tong2": {
+      "old": "tong2",
+      "new": "tóng"
+    },
+    "tong3": {
+      "old": "tong3",
+      "new": "tǒng"
+    },
+    "tong4": {
+      "old": "tong4",
+      "new": "tòng"
+    },
+    "tou1": {
+      "old": "tou1",
+      "new": "tōu"
+    },
+    "tou2": {
+      "old": "tou2",
+      "new": "tóu"
+    },
+    "tou3": {
+      "old": "tou3",
+      "new": "tǒu"
+    },
+    "tou4": {
+      "old": "tou4",
+      "new": "tòu"
+    },
+    "tou5": {
+      "old": "tou5",
+      "new": "tou"
+    },
+    "tu1": {
+      "old": "tu1",
+      "new": "tū"
+    },
+    "tu2": {
+      "old": "tu2",
+      "new": "tú"
+    },
+    "tu3": {
+      "old": "tu3",
+      "new": "tǔ"
+    },
+    "tu4": {
+      "old": "tu4",
+      "new": "tù"
+    },
+    "tu5": {
+      "old": "tu5",
+      "new": "tu"
+    },
+    "tuan1": {
+      "old": "tuan1",
+      "new": "tuān"
+    },
+    "tuan2": {
+      "old": "tuan2",
+      "new": "tuán"
+    },
+    "tuan3": {
+      "old": "tuan3",
+      "new": "tuǎn"
+    },
+    "tuan4": {
+      "old": "tuan4",
+      "new": "tuàn"
+    },
+    "tui1": {
+      "old": "tui1",
+      "new": "tuī"
+    },
+    "tui2": {
+      "old": "tui2",
+      "new": "tuí"
+    },
+    "tui3": {
+      "old": "tui3",
+      "new": "tuǐ"
+    },
+    "tui4": {
+      "old": "tui4",
+      "new": "tuì"
+    },
+    "tun1": {
+      "old": "tun1",
+      "new": "tūn"
+    },
+    "tun2": {
+      "old": "tun2",
+      "new": "tún"
+    },
+    "tun3": {
+      "old": "tun3",
+      "new": "tǔn"
+    },
+    "tun4": {
+      "old": "tun4",
+      "new": "tùn"
+    },
+    "tuo1": {
+      "old": "tuo1",
+      "new": "tuō"
+    },
+    "tuo2": {
+      "old": "tuo2",
+      "new": "tuó"
+    },
+    "tuo3": {
+      "old": "tuo3",
+      "new": "tuǒ"
+    },
+    "tuo4": {
+      "old": "tuo4",
+      "new": "tuò"
+    },
+    "wa1": {
+      "old": "wa1",
+      "new": "wā"
+    },
+    "wa2": {
+      "old": "wa2",
+      "new": "wá"
+    },
+    "wa3": {
+      "old": "wa3",
+      "new": "wǎ"
+    },
+    "wa4": {
+      "old": "wa4",
+      "new": "wà"
+    },
+    "wa5": {
+      "old": "wa5",
+      "new": "wa"
+    },
+    "wai1": {
+      "old": "wai1",
+      "new": "wāi"
+    },
+    "wai3": {
+      "old": "wai3",
+      "new": "wǎi"
+    },
+    "wai4": {
+      "old": "wai4",
+      "new": "wài"
+    },
+    "wai5": {
+      "old": "wai5",
+      "new": "wai"
+    },
+    "wan1": {
+      "old": "wan1",
+      "new": "wān"
+    },
+    "wan2": {
+      "old": "wan2",
+      "new": "wán"
+    },
+    "wan3": {
+      "old": "wan3",
+      "new": "wǎn"
+    },
+    "wan4": {
+      "old": "wan4",
+      "new": "wàn"
+    },
+    "wang1": {
+      "old": "wang1",
+      "new": "wāng"
+    },
+    "wang2": {
+      "old": "wang2",
+      "new": "wáng"
+    },
+    "wang3": {
+      "old": "wang3",
+      "new": "wǎng"
+    },
+    "wang4": {
+      "old": "wang4",
+      "new": "wàng"
+    },
+    "wei1": {
+      "old": "wei1",
+      "new": "wēi"
+    },
+    "wei2": {
+      "old": "wei2",
+      "new": "wéi"
+    },
+    "wei3": {
+      "old": "wei3",
+      "new": "wěi"
+    },
+    "wei4": {
+      "old": "wei4",
+      "new": "wèi"
+    },
+    "wei5": {
+      "old": "wei5",
+      "new": "wei"
+    },
+    "wen1": {
+      "old": "wen1",
+      "new": "wēn"
+    },
+    "wen2": {
+      "old": "wen2",
+      "new": "wén"
+    },
+    "wen3": {
+      "old": "wen3",
+      "new": "wěn"
+    },
+    "wen4": {
+      "old": "wen4",
+      "new": "wèn"
+    },
+    "wen5": {
+      "old": "wen5",
+      "new": "wen"
+    },
+    "weng1": {
+      "old": "weng1",
+      "new": "wēng"
+    },
+    "weng3": {
+      "old": "weng3",
+      "new": "wěng"
+    },
+    "weng4": {
+      "old": "weng4",
+      "new": "wèng"
+    },
+    "wo1": {
+      "old": "wo1",
+      "new": "wō"
+    },
+    "wo3": {
+      "old": "wo3",
+      "new": "wǒ"
+    },
+    "wo4": {
+      "old": "wo4",
+      "new": "wò"
+    },
+    "wong4": {
+      "old": "wong4",
+      "new": "wòng"
+    },
+    "wu1": {
+      "old": "wu1",
+      "new": "wū"
+    },
+    "wu2": {
+      "old": "wu2",
+      "new": "wú"
+    },
+    "wu3": {
+      "old": "wu3",
+      "new": "wǔ"
+    },
+    "wu4": {
+      "old": "wu4",
+      "new": "wù"
+    },
+    "wu5": {
+      "old": "wu5",
+      "new": "wu"
+    },
+    "xi1": {
+      "old": "xi1",
+      "new": "xī"
+    },
+    "xi2": {
+      "old": "xi2",
+      "new": "xí"
+    },
+    "xi3": {
+      "old": "xi3",
+      "new": "xǐ"
+    },
+    "xi4": {
+      "old": "xi4",
+      "new": "xì"
+    },
+    "xia1": {
+      "old": "xia1",
+      "new": "xiā"
+    },
+    "xia2": {
+      "old": "xia2",
+      "new": "xiá"
+    },
+    "xia3": {
+      "old": "xia3",
+      "new": "xiǎ"
+    },
+    "xia4": {
+      "old": "xia4",
+      "new": "xià"
+    },
+    "xian1": {
+      "old": "xian1",
+      "new": "xiān"
+    },
+    "xian2": {
+      "old": "xian2",
+      "new": "xián"
+    },
+    "xian3": {
+      "old": "xian3",
+      "new": "xiǎn"
+    },
+    "xian4": {
+      "old": "xian4",
+      "new": "xiàn"
+    },
+    "xian5": {
+      "old": "xian5",
+      "new": "xian"
+    },
+    "xiang1": {
+      "old": "xiang1",
+      "new": "xiāng"
+    },
+    "xiang2": {
+      "old": "xiang2",
+      "new": "xiáng"
+    },
+    "xiang3": {
+      "old": "xiang3",
+      "new": "xiǎng"
+    },
+    "xiang4": {
+      "old": "xiang4",
+      "new": "xiàng"
+    },
+    "xiao1": {
+      "old": "xiao1",
+      "new": "xiāo"
+    },
+    "xiao2": {
+      "old": "xiao2",
+      "new": "xiáo"
+    },
+    "xiao3": {
+      "old": "xiao3",
+      "new": "xiǎo"
+    },
+    "xiao4": {
+      "old": "xiao4",
+      "new": "xiào"
+    },
+    "xiao5": {
+      "old": "xiao5",
+      "new": "xiao"
+    },
+    "xie1": {
+      "old": "xie1",
+      "new": "xiē"
+    },
+    "xie2": {
+      "old": "xie2",
+      "new": "xié"
+    },
+    "xie3": {
+      "old": "xie3",
+      "new": "xiě"
+    },
+    "xie4": {
+      "old": "xie4",
+      "new": "xiè"
+    },
+    "xin1": {
+      "old": "xin1",
+      "new": "xīn"
+    },
+    "xin2": {
+      "old": "xin2",
+      "new": "xín"
+    },
+    "xin3": {
+      "old": "xin3",
+      "new": "xǐn"
+    },
+    "xin4": {
+      "old": "xin4",
+      "new": "xìn"
+    },
+    "xin5": {
+      "old": "xin5",
+      "new": "xin"
+    },
+    "xing1": {
+      "old": "xing1",
+      "new": "xīng"
+    },
+    "xing2": {
+      "old": "xing2",
+      "new": "xíng"
+    },
+    "xing3": {
+      "old": "xing3",
+      "new": "xǐng"
+    },
+    "xing4": {
+      "old": "xing4",
+      "new": "xìng"
+    },
+    "xing5": {
+      "old": "xing5",
+      "new": "xing"
+    },
+    "xiong1": {
+      "old": "xiong1",
+      "new": "xiōng"
+    },
+    "xiong2": {
+      "old": "xiong2",
+      "new": "xióng"
+    },
+    "xiong3": {
+      "old": "xiong3",
+      "new": "xiǒng"
+    },
+    "xiong4": {
+      "old": "xiong4",
+      "new": "xiòng"
+    },
+    "xiu1": {
+      "old": "xiu1",
+      "new": "xiū"
+    },
+    "xiu2": {
+      "old": "xiu2",
+      "new": "xiú"
+    },
+    "xiu3": {
+      "old": "xiu3",
+      "new": "xiǔ"
+    },
+    "xiu4": {
+      "old": "xiu4",
+      "new": "xiù"
+    },
+    "xu1": {
+      "old": "xu1",
+      "new": "xū"
+    },
+    "xu2": {
+      "old": "xu2",
+      "new": "xú"
+    },
+    "xu3": {
+      "old": "xu3",
+      "new": "xǔ"
+    },
+    "xu4": {
+      "old": "xu4",
+      "new": "xù"
+    },
+    "xu5": {
+      "old": "xu5",
+      "new": "xu"
+    },
+    "xuan1": {
+      "old": "xuan1",
+      "new": "xuān"
+    },
+    "xuan2": {
+      "old": "xuan2",
+      "new": "xuán"
+    },
+    "xuan3": {
+      "old": "xuan3",
+      "new": "xuǎn"
+    },
+    "xuan4": {
+      "old": "xuan4",
+      "new": "xuàn"
+    },
+    "xue1": {
+      "old": "xue1",
+      "new": "xuē"
+    },
+    "xue2": {
+      "old": "xue2",
+      "new": "xué"
+    },
+    "xue3": {
+      "old": "xue3",
+      "new": "xuě"
+    },
+    "xue4": {
+      "old": "xue4",
+      "new": "xuè"
+    },
+    "xun1": {
+      "old": "xun1",
+      "new": "xūn"
+    },
+    "xun2": {
+      "old": "xun2",
+      "new": "xún"
+    },
+    "xun4": {
+      "old": "xun4",
+      "new": "xùn"
+    },
+    "ya1": {
+      "old": "ya1",
+      "new": "yā"
+    },
+    "ya2": {
+      "old": "ya2",
+      "new": "yá"
+    },
+    "ya3": {
+      "old": "ya3",
+      "new": "yǎ"
+    },
+    "ya4": {
+      "old": "ya4",
+      "new": "yà"
+    },
+    "ya5": {
+      "old": "ya5",
+      "new": "ya"
+    },
+    "yan1": {
+      "old": "yan1",
+      "new": "yān"
+    },
+    "yan2": {
+      "old": "yan2",
+      "new": "yán"
+    },
+    "yan3": {
+      "old": "yan3",
+      "new": "yǎn"
+    },
+    "yan4": {
+      "old": "yan4",
+      "new": "yàn"
+    },
+    "yang1": {
+      "old": "yang1",
+      "new": "yāng"
+    },
+    "yang2": {
+      "old": "yang2",
+      "new": "yáng"
+    },
+    "yang3": {
+      "old": "yang3",
+      "new": "yǎng"
+    },
+    "yang4": {
+      "old": "yang4",
+      "new": "yàng"
+    },
+    "yang5": {
+      "old": "yang5",
+      "new": "yang"
+    },
+    "yao1": {
+      "old": "yao1",
+      "new": "yāo"
+    },
+    "yao2": {
+      "old": "yao2",
+      "new": "yáo"
+    },
+    "yao3": {
+      "old": "yao3",
+      "new": "yǎo"
+    },
+    "yao4": {
+      "old": "yao4",
+      "new": "yào"
+    },
+    "ye1": {
+      "old": "ye1",
+      "new": "yē"
+    },
+    "ye2": {
+      "old": "ye2",
+      "new": "yé"
+    },
+    "ye3": {
+      "old": "ye3",
+      "new": "yě"
+    },
+    "ye4": {
+      "old": "ye4",
+      "new": "yè"
+    },
+    "ye5": {
+      "old": "ye5",
+      "new": "ye"
+    },
+    "yi1": {
+      "old": "yi1",
+      "new": "yī"
+    },
+    "yi2": {
+      "old": "yi2",
+      "new": "yí"
+    },
+    "yi3": {
+      "old": "yi3",
+      "new": "yǐ"
+    },
+    "yi4": {
+      "old": "yi4",
+      "new": "yì"
+    },
+    "yin1": {
+      "old": "yin1",
+      "new": "yīn"
+    },
+    "yin2": {
+      "old": "yin2",
+      "new": "yín"
+    },
+    "yin3": {
+      "old": "yin3",
+      "new": "yǐn"
+    },
+    "yin4": {
+      "old": "yin4",
+      "new": "yìn"
+    },
+    "yin5": {
+      "old": "yin5",
+      "new": "yin"
+    },
+    "ying1": {
+      "old": "ying1",
+      "new": "yīng"
+    },
+    "ying2": {
+      "old": "ying2",
+      "new": "yíng"
+    },
+    "ying3": {
+      "old": "ying3",
+      "new": "yǐng"
+    },
+    "ying4": {
+      "old": "ying4",
+      "new": "yìng"
+    },
+    "yo1": {
+      "old": "yo1",
+      "new": "yō"
+    },
+    "yo5": {
+      "old": "yo5",
+      "new": "yo"
+    },
+    "yong1": {
+      "old": "yong1",
+      "new": "yōng"
+    },
+    "yong2": {
+      "old": "yong2",
+      "new": "yóng"
+    },
+    "yong3": {
+      "old": "yong3",
+      "new": "yǒng"
+    },
+    "yong4": {
+      "old": "yong4",
+      "new": "yòng"
+    },
+    "you1": {
+      "old": "you1",
+      "new": "yōu"
+    },
+    "you2": {
+      "old": "you2",
+      "new": "yóu"
+    },
+    "you3": {
+      "old": "you3",
+      "new": "yǒu"
+    },
+    "you4": {
+      "old": "you4",
+      "new": "yòu"
+    },
+    "you5": {
+      "old": "you5",
+      "new": "you"
+    },
+    "yu1": {
+      "old": "yu1",
+      "new": "yū"
+    },
+    "yu2": {
+      "old": "yu2",
+      "new": "yú"
+    },
+    "yu3": {
+      "old": "yu3",
+      "new": "yǔ"
+    },
+    "yu4": {
+      "old": "yu4",
+      "new": "yù"
+    },
+    "yu5": {
+      "old": "yu5",
+      "new": "yu"
+    },
+    "yuan1": {
+      "old": "yuan1",
+      "new": "yuān"
+    },
+    "yuan2": {
+      "old": "yuan2",
+      "new": "yuán"
+    },
+    "yuan3": {
+      "old": "yuan3",
+      "new": "yuǎn"
+    },
+    "yuan4": {
+      "old": "yuan4",
+      "new": "yuàn"
+    },
+    "yue1": {
+      "old": "yue1",
+      "new": "yuē"
+    },
+    "yue2": {
+      "old": "yue2",
+      "new": "yué"
+    },
+    "yue3": {
+      "old": "yue3",
+      "new": "yuě"
+    },
+    "yue4": {
+      "old": "yue4",
+      "new": "yuè"
+    },
+    "yun1": {
+      "old": "yun1",
+      "new": "yūn"
+    },
+    "yun2": {
+      "old": "yun2",
+      "new": "yún"
+    },
+    "yun3": {
+      "old": "yun3",
+      "new": "yǔn"
+    },
+    "yun4": {
+      "old": "yun4",
+      "new": "yùn"
+    },
+    "za1": {
+      "old": "za1",
+      "new": "zā"
+    },
+    "za2": {
+      "old": "za2",
+      "new": "zá"
+    },
+    "za3": {
+      "old": "za3",
+      "new": "zǎ"
+    },
+    "zai1": {
+      "old": "zai1",
+      "new": "zāi"
+    },
+    "zai3": {
+      "old": "zai3",
+      "new": "zǎi"
+    },
+    "zai4": {
+      "old": "zai4",
+      "new": "zài"
+    },
+    "zan1": {
+      "old": "zan1",
+      "new": "zān"
+    },
+    "zan2": {
+      "old": "zan2",
+      "new": "zán"
+    },
+    "zan3": {
+      "old": "zan3",
+      "new": "zǎn"
+    },
+    "zan4": {
+      "old": "zan4",
+      "new": "zàn"
+    },
+    "zan5": {
+      "old": "zan5",
+      "new": "zan"
+    },
+    "zang1": {
+      "old": "zang1",
+      "new": "zāng"
+    },
+    "zang3": {
+      "old": "zang3",
+      "new": "zǎng"
+    },
+    "zang4": {
+      "old": "zang4",
+      "new": "zàng"
+    },
+    "zao1": {
+      "old": "zao1",
+      "new": "zāo"
+    },
+    "zao2": {
+      "old": "zao2",
+      "new": "záo"
+    },
+    "zao3": {
+      "old": "zao3",
+      "new": "zǎo"
+    },
+    "zao4": {
+      "old": "zao4",
+      "new": "zào"
+    },
+    "ze2": {
+      "old": "ze2",
+      "new": "zé"
+    },
+    "ze4": {
+      "old": "ze4",
+      "new": "zè"
+    },
+    "zei2": {
+      "old": "zei2",
+      "new": "zéi"
+    },
+    "zen1": {
+      "old": "zen1",
+      "new": "zēn"
+    },
+    "zen3": {
+      "old": "zen3",
+      "new": "zěn"
+    },
+    "zen4": {
+      "old": "zen4",
+      "new": "zèn"
+    },
+    "zeng1": {
+      "old": "zeng1",
+      "new": "zēng"
+    },
+    "zeng3": {
+      "old": "zeng3",
+      "new": "zěng"
+    },
+    "zeng4": {
+      "old": "zeng4",
+      "new": "zèng"
+    },
+    "zha1": {
+      "old": "zha1",
+      "new": "zhā"
+    },
+    "zha2": {
+      "old": "zha2",
+      "new": "zhá"
+    },
+    "zha3": {
+      "old": "zha3",
+      "new": "zhǎ"
+    },
+    "zha4": {
+      "old": "zha4",
+      "new": "zhà"
+    },
+    "zha5": {
+      "old": "zha5",
+      "new": "zha"
+    },
+    "zhai1": {
+      "old": "zhai1",
+      "new": "zhāi"
+    },
+    "zhai2": {
+      "old": "zhai2",
+      "new": "zhái"
+    },
+    "zhai3": {
+      "old": "zhai3",
+      "new": "zhǎi"
+    },
+    "zhai4": {
+      "old": "zhai4",
+      "new": "zhài"
+    },
+    "zhan1": {
+      "old": "zhan1",
+      "new": "zhān"
+    },
+    "zhan2": {
+      "old": "zhan2",
+      "new": "zhán"
+    },
+    "zhan3": {
+      "old": "zhan3",
+      "new": "zhǎn"
+    },
+    "zhan4": {
+      "old": "zhan4",
+      "new": "zhàn"
+    },
+    "zhang1": {
+      "old": "zhang1",
+      "new": "zhāng"
+    },
+    "zhang3": {
+      "old": "zhang3",
+      "new": "zhǎng"
+    },
+    "zhang4": {
+      "old": "zhang4",
+      "new": "zhàng"
+    },
+    "zhang5": {
+      "old": "zhang5",
+      "new": "zhang"
+    },
+    "zhao1": {
+      "old": "zhao1",
+      "new": "zhāo"
+    },
+    "zhao2": {
+      "old": "zhao2",
+      "new": "zháo"
+    },
+    "zhao3": {
+      "old": "zhao3",
+      "new": "zhǎo"
+    },
+    "zhao4": {
+      "old": "zhao4",
+      "new": "zhào"
+    },
+    "zhao5": {
+      "old": "zhao5",
+      "new": "zhao"
+    },
+    "zhe1": {
+      "old": "zhe1",
+      "new": "zhē"
+    },
+    "zhe2": {
+      "old": "zhe2",
+      "new": "zhé"
+    },
+    "zhe3": {
+      "old": "zhe3",
+      "new": "zhě"
+    },
+    "zhe4": {
+      "old": "zhe4",
+      "new": "zhè"
+    },
+    "zhe5": {
+      "old": "zhe5",
+      "new": "zhe"
+    },
+    "zhen1": {
+      "old": "zhen1",
+      "new": "zhēn"
+    },
+    "zhen2": {
+      "old": "zhen2",
+      "new": "zhén"
+    },
+    "zhen3": {
+      "old": "zhen3",
+      "new": "zhěn"
+    },
+    "zhen4": {
+      "old": "zhen4",
+      "new": "zhèn"
+    },
+    "zheng1": {
+      "old": "zheng1",
+      "new": "zhēng"
+    },
+    "zheng3": {
+      "old": "zheng3",
+      "new": "zhěng"
+    },
+    "zheng4": {
+      "old": "zheng4",
+      "new": "zhèng"
+    },
+    "zhi1": {
+      "old": "zhi1",
+      "new": "zhī"
+    },
+    "zhi2": {
+      "old": "zhi2",
+      "new": "zhí"
+    },
+    "zhi3": {
+      "old": "zhi3",
+      "new": "zhǐ"
+    },
+    "zhi4": {
+      "old": "zhi4",
+      "new": "zhì"
+    },
+    "zhi5": {
+      "old": "zhi5",
+      "new": "zhi"
+    },
+    "zhong1": {
+      "old": "zhong1",
+      "new": "zhōng"
+    },
+    "zhong3": {
+      "old": "zhong3",
+      "new": "zhǒng"
+    },
+    "zhong4": {
+      "old": "zhong4",
+      "new": "zhòng"
+    },
+    "zhou1": {
+      "old": "zhou1",
+      "new": "zhōu"
+    },
+    "zhou2": {
+      "old": "zhou2",
+      "new": "zhóu"
+    },
+    "zhou3": {
+      "old": "zhou3",
+      "new": "zhǒu"
+    },
+    "zhou4": {
+      "old": "zhou4",
+      "new": "zhòu"
+    },
+    "zhu1": {
+      "old": "zhu1",
+      "new": "zhū"
+    },
+    "zhu2": {
+      "old": "zhu2",
+      "new": "zhú"
+    },
+    "zhu3": {
+      "old": "zhu3",
+      "new": "zhǔ"
+    },
+    "zhu4": {
+      "old": "zhu4",
+      "new": "zhù"
+    },
+    "zhua1": {
+      "old": "zhua1",
+      "new": "zhuā"
+    },
+    "zhua3": {
+      "old": "zhua3",
+      "new": "zhuǎ"
+    },
+    "zhuai1": {
+      "old": "zhuai1",
+      "new": "zhuāi"
+    },
+    "zhuai3": {
+      "old": "zhuai3",
+      "new": "zhuǎi"
+    },
+    "zhuai4": {
+      "old": "zhuai4",
+      "new": "zhuài"
+    },
+    "zhuan1": {
+      "old": "zhuan1",
+      "new": "zhuān"
+    },
+    "zhuan3": {
+      "old": "zhuan3",
+      "new": "zhuǎn"
+    },
+    "zhuan4": {
+      "old": "zhuan4",
+      "new": "zhuàn"
+    },
+    "zhuang1": {
+      "old": "zhuang1",
+      "new": "zhuāng"
+    },
+    "zhuang3": {
+      "old": "zhuang3",
+      "new": "zhuǎng"
+    },
+    "zhuang4": {
+      "old": "zhuang4",
+      "new": "zhuàng"
+    },
+    "zhui1": {
+      "old": "zhui1",
+      "new": "zhuī"
+    },
+    "zhui3": {
+      "old": "zhui3",
+      "new": "zhuǐ"
+    },
+    "zhui4": {
+      "old": "zhui4",
+      "new": "zhuì"
+    },
+    "zhun1": {
+      "old": "zhun1",
+      "new": "zhūn"
+    },
+    "zhun3": {
+      "old": "zhun3",
+      "new": "zhǔn"
+    },
+    "zhun4": {
+      "old": "zhun4",
+      "new": "zhùn"
+    },
+    "zhuo1": {
+      "old": "zhuo1",
+      "new": "zhuō"
+    },
+    "zhuo2": {
+      "old": "zhuo2",
+      "new": "zhuó"
+    },
+    "zhuo4": {
+      "old": "zhuo4",
+      "new": "zhuò"
+    },
+    "zhuo5": {
+      "old": "zhuo5",
+      "new": "zhuo"
+    },
+    "zi1": {
+      "old": "zi1",
+      "new": "zī"
+    },
+    "zi2": {
+      "old": "zi2",
+      "new": "zí"
+    },
+    "zi3": {
+      "old": "zi3",
+      "new": "zǐ"
+    },
+    "zi4": {
+      "old": "zi4",
+      "new": "zì"
+    },
+    "zi5": {
+      "old": "zi5",
+      "new": "zi"
+    },
+    "zong1": {
+      "old": "zong1",
+      "new": "zōng"
+    },
+    "zong3": {
+      "old": "zong3",
+      "new": "zǒng"
+    },
+    "zong4": {
+      "old": "zong4",
+      "new": "zòng"
+    },
+    "zou1": {
+      "old": "zou1",
+      "new": "zōu"
+    },
+    "zou3": {
+      "old": "zou3",
+      "new": "zǒu"
+    },
+    "zou4": {
+      "old": "zou4",
+      "new": "zòu"
+    },
+    "zu1": {
+      "old": "zu1",
+      "new": "zū"
+    },
+    "zu2": {
+      "old": "zu2",
+      "new": "zú"
+    },
+    "zu3": {
+      "old": "zu3",
+      "new": "zǔ"
+    },
+    "zu4": {
+      "old": "zu4",
+      "new": "zù"
+    },
+    "zuan1": {
+      "old": "zuan1",
+      "new": "zuān"
+    },
+    "zuan3": {
+      "old": "zuan3",
+      "new": "zuǎn"
+    },
+    "zuan4": {
+      "old": "zuan4",
+      "new": "zuàn"
+    },
+    "zui1": {
+      "old": "zui1",
+      "new": "zuī"
+    },
+    "zui2": {
+      "old": "zui2",
+      "new": "zuí"
+    },
+    "zui3": {
+      "old": "zui3",
+      "new": "zuǐ"
+    },
+    "zui4": {
+      "old": "zui4",
+      "new": "zuì"
+    },
+    "zui5": {
+      "old": "zui5",
+      "new": "zui"
+    },
+    "zun1": {
+      "old": "zun1",
+      "new": "zūn"
+    },
+    "zun3": {
+      "old": "zun3",
+      "new": "zǔn"
+    },
+    "zun4": {
+      "old": "zun4",
+      "new": "zùn"
+    },
+    "zuo1": {
+      "old": "zuo1",
+      "new": "zuō"
+    },
+    "zuo2": {
+      "old": "zuo2",
+      "new": "zuó"
+    },
+    "zuo3": {
+      "old": "zuo3",
+      "new": "zuǒ"
+    },
+    "zuo4": {
+      "old": "zuo4",
+      "new": "zuò"
+    },
+    "zuo5": {
+      "old": "zuo5",
+      "new": "zuo"
+    },
+    "ê1": {
+      "old": "ê1",
+      "new": "ê̄"
+    },
+    "ê2": {
+      "old": "ê2",
+      "new": "ế"
+    },
+    "ê3": {
+      "old": "ê3",
+      "new": "ê̌"
+    },
+    "ê4": {
+      "old": "ê4",
+      "new": "ề"
+    }
+  },
+  "normalization_changes": {},
+  "normalization_info": {
+    "file1_normalized": {
+      "a1": "a1",
+      "a2": "a2",
+      "a3": "a3",
+      "a4": "a4",
+      "a5": "a5",
+      "ai1": "ai1",
+      "ai2": "ai2",
+      "ai3": "ai3",
+      "ai4": "ai4",
+      "an1": "an1",
+      "an2": "an2",
+      "an3": "an3",
+      "an4": "an4",
+      "ang1": "ang1",
+      "ang2": "ang2",
+      "ang3": "ang3",
+      "ang4": "ang4",
+      "ao1": "ao1",
+      "ao2": "ao2",
+      "ao3": "ao3",
+      "ao4": "ao4",
+      "ba1": "ba1",
+      "ba2": "ba2",
+      "ba3": "ba3",
+      "ba4": "ba4",
+      "ba5": "ba5",
+      "bai1": "bai1",
+      "bai2": "bai2",
+      "bai3": "bai3",
+      "bai4": "bai4",
+      "bai5": "bai5",
+      "ban1": "ban1",
+      "ban3": "ban3",
+      "ban4": "ban4",
+      "ban5": "ban5",
+      "bang1": "bang1",
+      "bang3": "bang3",
+      "bang4": "bang4",
+      "bang5": "bang5",
+      "bao1": "bao1",
+      "bao2": "bao2",
+      "bao3": "bao3",
+      "bao4": "bao4",
+      "bao5": "bao5",
+      "bei1": "bei1",
+      "bei3": "bei3",
+      "bei4": "bei4",
+      "bei5": "bei5",
+      "ben1": "ben1",
+      "ben3": "ben3",
+      "ben4": "ben4",
+      "ben5": "ben5",
+      "beng1": "beng1",
+      "beng2": "beng2",
+      "beng3": "beng3",
+      "beng4": "beng4",
+      "beng5": "beng5",
+      "bi1": "bi1",
+      "bi2": "bi2",
+      "bi3": "bi3",
+      "bi4": "bi4",
+      "bian1": "bian1",
+      "bian2": "bian2",
+      "bian3": "bian3",
+      "bian4": "bian4",
+      "bian5": "bian5",
+      "biao1": "biao1",
+      "biao2": "biao2",
+      "biao3": "biao3",
+      "biao4": "biao4",
+      "bie1": "bie1",
+      "bie2": "bie2",
+      "bie3": "bie3",
+      "bie4": "bie4",
+      "bie5": "bie5",
+      "bin1": "bin1",
+      "bin3": "bin3",
+      "bin4": "bin4",
+      "bing1": "bing1",
+      "bing3": "bing3",
+      "bing4": "bing4",
+      "bing5": "bing5",
+      "bo1": "bo1",
+      "bo2": "bo2",
+      "bo3": "bo3",
+      "bo4": "bo4",
+      "bo5": "bo5",
+      "bu1": "bu1",
+      "bu2": "bu2",
+      "bu3": "bu3",
+      "bu4": "bu4",
+      "bu5": "bu5",
+      "ca1": "ca1",
+      "ca3": "ca3",
+      "ca4": "ca4",
+      "cai1": "cai1",
+      "cai2": "cai2",
+      "cai3": "cai3",
+      "cai4": "cai4",
+      "cai5": "cai5",
+      "can1": "can1",
+      "can2": "can2",
+      "can3": "can3",
+      "can4": "can4",
+      "cang1": "cang1",
+      "cang2": "cang2",
+      "cang3": "cang3",
+      "cang4": "cang4",
+      "cao1": "cao1",
+      "cao2": "cao2",
+      "cao3": "cao3",
+      "cao4": "cao4",
+      "ce4": "ce4",
+      "cei4": "cei4",
+      "cen1": "cen1",
+      "cen2": "cen2",
+      "ceng1": "ceng1",
+      "ceng2": "ceng2",
+      "ceng4": "ceng4",
+      "ceng5": "ceng5",
+      "cha1": "cha1",
+      "cha2": "cha2",
+      "cha3": "cha3",
+      "cha4": "cha4",
+      "cha5": "cha5",
+      "chai1": "chai1",
+      "chai2": "chai2",
+      "chai3": "chai3",
+      "chai4": "chai4",
+      "chai5": "chai5",
+      "chan1": "chan1",
+      "chan2": "chan2",
+      "chan3": "chan3",
+      "chan4": "chan4",
+      "chan5": "chan5",
+      "chang1": "chang1",
+      "chang2": "chang2",
+      "chang3": "chang3",
+      "chang4": "chang4",
+      "chang5": "chang5",
+      "chao1": "chao1",
+      "chao2": "chao2",
+      "chao3": "chao3",
+      "chao4": "chao4",
+      "chao5": "chao5",
+      "che1": "che1",
+      "che2": "che2",
+      "che3": "che3",
+      "che4": "che4",
+      "che5": "che5",
+      "chen1": "chen1",
+      "chen2": "chen2",
+      "chen3": "chen3",
+      "chen4": "chen4",
+      "chen5": "chen5",
+      "cheng1": "cheng1",
+      "cheng2": "cheng2",
+      "cheng3": "cheng3",
+      "cheng4": "cheng4",
+      "cheng5": "cheng5",
+      "chi1": "chi1",
+      "chi2": "chi2",
+      "chi3": "chi3",
+      "chi4": "chi4",
+      "chi5": "chi5",
+      "chong1": "chong1",
+      "chong2": "chong2",
+      "chong3": "chong3",
+      "chong4": "chong4",
+      "chou1": "chou1",
+      "chou2": "chou2",
+      "chou3": "chou3",
+      "chou4": "chou4",
+      "chou5": "chou5",
+      "chu1": "chu1",
+      "chu2": "chu2",
+      "chu3": "chu3",
+      "chu4": "chu4",
+      "chu5": "chu5",
+      "chua1": "chua1",
+      "chua3": "chua3",
+      "chua4": "chua4",
+      "chuai1": "chuai1",
+      "chuai2": "chuai2",
+      "chuai3": "chuai3",
+      "chuai4": "chuai4",
+      "chuan1": "chuan1",
+      "chuan2": "chuan2",
+      "chuan3": "chuan3",
+      "chuan4": "chuan4",
+      "chuang1": "chuang1",
+      "chuang2": "chuang2",
+      "chuang3": "chuang3",
+      "chuang4": "chuang4",
+      "chuang5": "chuang5",
+      "chui1": "chui1",
+      "chui2": "chui2",
+      "chui3": "chui3",
+      "chui4": "chui4",
+      "chun1": "chun1",
+      "chun2": "chun2",
+      "chun3": "chun3",
+      "chun5": "chun5",
+      "chuo1": "chuo1",
+      "chuo4": "chuo4",
+      "chuo5": "chuo5",
+      "ci1": "ci1",
+      "ci2": "ci2",
+      "ci3": "ci3",
+      "ci4": "ci4",
+      "cong1": "cong1",
+      "cong2": "cong2",
+      "cong3": "cong3",
+      "cong4": "cong4",
+      "cou1": "cou1",
+      "cou3": "cou3",
+      "cou4": "cou4",
+      "cu1": "cu1",
+      "cu2": "cu2",
+      "cu3": "cu3",
+      "cu4": "cu4",
+      "cuan1": "cuan1",
+      "cuan2": "cuan2",
+      "cuan4": "cuan4",
+      "cui1": "cui1",
+      "cui3": "cui3",
+      "cui4": "cui4",
+      "cun1": "cun1",
+      "cun2": "cun2",
+      "cun3": "cun3",
+      "cun4": "cun4",
+      "cun5": "cun5",
+      "cuo1": "cuo1",
+      "cuo2": "cuo2",
+      "cuo3": "cuo3",
+      "cuo4": "cuo4",
+      "cuo5": "cuo5",
+      "da1": "da1",
+      "da2": "da2",
+      "da3": "da3",
+      "da4": "da4",
+      "da5": "da5",
+      "dai1": "dai1",
+      "dai3": "dai3",
+      "dai4": "dai4",
+      "dai5": "dai5",
+      "dan1": "dan1",
+      "dan3": "dan3",
+      "dan4": "dan4",
+      "dan5": "dan5",
+      "dang1": "dang1",
+      "dang3": "dang3",
+      "dang4": "dang4",
+      "dang5": "dang5",
+      "dao1": "dao1",
+      "dao2": "dao2",
+      "dao3": "dao3",
+      "dao4": "dao4",
+      "dao5": "dao5",
+      "de1": "de1",
+      "de2": "de2",
+      "de5": "de5",
+      "dei3": "dei3",
+      "den4": "den4",
+      "deng1": "deng1",
+      "deng3": "deng3",
+      "deng4": "deng4",
+      "deng5": "deng5",
+      "di1": "di1",
+      "di2": "di2",
+      "di3": "di3",
+      "di4": "di4",
+      "di5": "di5",
+      "dia3": "dia3",
+      "dian1": "dian1",
+      "dian2": "dian2",
+      "dian3": "dian3",
+      "dian4": "dian4",
+      "dian5": "dian5",
+      "diao1": "diao1",
+      "diao2": "diao2",
+      "diao3": "diao3",
+      "diao4": "diao4",
+      "diao5": "diao5",
+      "die1": "die1",
+      "die2": "die2",
+      "die3": "die3",
+      "die4": "die4",
+      "die5": "die5",
+      "din4": "din4",
+      "ding1": "ding1",
+      "ding3": "ding3",
+      "ding4": "ding4",
+      "ding5": "ding5",
+      "diu1": "diu1",
+      "dong1": "dong1",
+      "dong3": "dong3",
+      "dong4": "dong4",
+      "dong5": "dong5",
+      "dou1": "dou1",
+      "dou3": "dou3",
+      "dou4": "dou4",
+      "dou5": "dou5",
+      "du1": "du1",
+      "du2": "du2",
+      "du3": "du3",
+      "du4": "du4",
+      "du5": "du5",
+      "duan1": "duan1",
+      "duan3": "duan3",
+      "duan4": "duan4",
+      "dui1": "dui1",
+      "dui3": "dui3",
+      "dui4": "dui4",
+      "dui5": "dui5",
+      "dun1": "dun1",
+      "dun3": "dun3",
+      "dun4": "dun4",
+      "dun5": "dun5",
+      "duo1": "duo1",
+      "duo2": "duo2",
+      "duo3": "duo3",
+      "duo4": "duo4",
+      "duo5": "duo5",
+      "e1": "e1",
+      "e2": "e2",
+      "e3": "e3",
+      "e4": "e4",
+      "ei1": "ei1",
+      "ei2": "ei2",
+      "en1": "en1",
+      "en3": "en3",
+      "en4": "en4",
+      "en5": "en5",
+      "eng1": "eng1",
+      "eng5": "eng5",
+      "er1": "er1",
+      "er2": "er2",
+      "er3": "er3",
+      "er4": "er4",
+      "er5": "er5",
+      "fa1": "fa1",
+      "fa2": "fa2",
+      "fa3": "fa3",
+      "fa4": "fa4",
+      "fa5": "fa5",
+      "fan1": "fan1",
+      "fan2": "fan2",
+      "fan3": "fan3",
+      "fan4": "fan4",
+      "fan5": "fan5",
+      "fang1": "fang1",
+      "fang2": "fang2",
+      "fang3": "fang3",
+      "fang4": "fang4",
+      "fang5": "fang5",
+      "fei1": "fei1",
+      "fei2": "fei2",
+      "fei3": "fei3",
+      "fei4": "fei4",
+      "fei5": "fei5",
+      "fen1": "fen1",
+      "fen2": "fen2",
+      "fen3": "fen3",
+      "fen4": "fen4",
+      "fen5": "fen5",
+      "feng1": "feng1",
+      "feng2": "feng2",
+      "feng3": "feng3",
+      "feng4": "feng4",
+      "feng5": "feng5",
+      "fiao4": "fiao4",
+      "fo2": "fo2",
+      "fou1": "fou1",
+      "fou2": "fou2",
+      "fou3": "fou3",
+      "fu1": "fu1",
+      "fu2": "fu2",
+      "fu3": "fu3",
+      "fu4": "fu4",
+      "fu5": "fu5",
+      "ga1": "ga1",
+      "ga2": "ga2",
+      "ga3": "ga3",
+      "ga4": "ga4",
+      "ga5": "ga5",
+      "gai1": "gai1",
+      "gai3": "gai3",
+      "gai4": "gai4",
+      "gai5": "gai5",
+      "gan1": "gan1",
+      "gan3": "gan3",
+      "gan4": "gan4",
+      "gan5": "gan5",
+      "gang1": "gang1",
+      "gang3": "gang3",
+      "gang4": "gang4",
+      "gang5": "gang5",
+      "gao1": "gao1",
+      "gao3": "gao3",
+      "gao4": "gao4",
+      "gao5": "gao5",
+      "ge1": "ge1",
+      "ge2": "ge2",
+      "ge3": "ge3",
+      "ge4": "ge4",
+      "ge5": "ge5",
+      "gei3": "gei3",
+      "gei5": "gei5",
+      "gen1": "gen1",
+      "gen2": "gen2",
+      "gen3": "gen3",
+      "gen4": "gen4",
+      "geng1": "geng1",
+      "geng3": "geng3",
+      "geng4": "geng4",
+      "gong1": "gong1",
+      "gong3": "gong3",
+      "gong4": "gong4",
+      "gong5": "gong5",
+      "gou1": "gou1",
+      "gou3": "gou3",
+      "gou4": "gou4",
+      "gou5": "gou5",
+      "gu1": "gu1",
+      "gu2": "gu2",
+      "gu3": "gu3",
+      "gu4": "gu4",
+      "gu5": "gu5",
+      "gua1": "gua1",
+      "gua2": "gua2",
+      "gua3": "gua3",
+      "gua4": "gua4",
+      "gua5": "gua5",
+      "guai1": "guai1",
+      "guai3": "guai3",
+      "guai4": "guai4",
+      "guai5": "guai5",
+      "guan1": "guan1",
+      "guan3": "guan3",
+      "guan4": "guan4",
+      "guang1": "guang1",
+      "guang3": "guang3",
+      "guang4": "guang4",
+      "guang5": "guang5",
+      "gui1": "gui1",
+      "gui3": "gui3",
+      "gui4": "gui4",
+      "gui5": "gui5",
+      "gun3": "gun3",
+      "gun4": "gun4",
+      "gun5": "gun5",
+      "guo1": "guo1",
+      "guo2": "guo2",
+      "guo3": "guo3",
+      "guo4": "guo4",
+      "guo5": "guo5",
+      "ha1": "ha1",
+      "ha2": "ha2",
+      "ha3": "ha3",
+      "ha4": "ha4",
+      "ha5": "ha5",
+      "hai1": "hai1",
+      "hai2": "hai2",
+      "hai3": "hai3",
+      "hai4": "hai4",
+      "hai5": "hai5",
+      "han1": "han1",
+      "han2": "han2",
+      "han3": "han3",
+      "han4": "han4",
+      "han5": "han5",
+      "hang1": "hang1",
+      "hang2": "hang2",
+      "hang4": "hang4",
+      "hang5": "hang5",
+      "hao1": "hao1",
+      "hao2": "hao2",
+      "hao3": "hao3",
+      "hao4": "hao4",
+      "hao5": "hao5",
+      "he1": "he1",
+      "he2": "he2",
+      "he3": "he3",
+      "he4": "he4",
+      "he5": "he5",
+      "hei1": "hei1",
+      "hei3": "hei3",
+      "hen1": "hen1",
+      "hen2": "hen2",
+      "hen3": "hen3",
+      "hen4": "hen4",
+      "hen5": "hen5",
+      "heng1": "heng1",
+      "heng2": "heng2",
+      "heng4": "heng4",
+      "heng5": "heng5",
+      "hm1": "h̄m",
+      "hm2": "h́m",
+      "hm3": "ȟm",
+      "hm4": "h̀m",
+      "hm5": "hm",
+      "hn1": "h̄n",
+      "hn2": "h́n",
+      "hn3": "ȟn",
+      "hn4": "h̀n",
+      "hn5": "hn",
+      "hng1": "h̄ng",
+      "hng2": "h́ng",
+      "hng3": "ȟng",
+      "hng4": "h̀ng",
+      "hng5": "hng",
+      "hong1": "hong1",
+      "hong2": "hong2",
+      "hong3": "hong3",
+      "hong4": "hong4",
+      "hong5": "hong5",
+      "hou1": "hou1",
+      "hou2": "hou2",
+      "hou3": "hou3",
+      "hou4": "hou4",
+      "hou5": "hou5",
+      "hu1": "hu1",
+      "hu2": "hu2",
+      "hu3": "hu3",
+      "hu4": "hu4",
+      "hu5": "hu5",
+      "hua1": "hua1",
+      "hua2": "hua2",
+      "hua4": "hua4",
+      "hua5": "hua5",
+      "huai2": "huai2",
+      "huai4": "huai4",
+      "huan1": "huan1",
+      "huan2": "huan2",
+      "huan3": "huan3",
+      "huan4": "huan4",
+      "huan5": "huan5",
+      "huang1": "huang1",
+      "huang2": "huang2",
+      "huang3": "huang3",
+      "huang4": "huang4",
+      "huang5": "huang5",
+      "hui1": "hui1",
+      "hui2": "hui2",
+      "hui3": "hui3",
+      "hui4": "hui4",
+      "hui5": "hui5",
+      "hun1": "hun1",
+      "hun2": "hun2",
+      "hun3": "hun3",
+      "hun4": "hun4",
+      "hun5": "hun5",
+      "huo1": "huo1",
+      "huo2": "huo2",
+      "huo3": "huo3",
+      "huo4": "huo4",
+      "huo5": "huo5",
+      "ji1": "ji1",
+      "ji2": "ji2",
+      "ji3": "ji3",
+      "ji4": "ji4",
+      "ji5": "ji5",
+      "jia1": "jia1",
+      "jia2": "jia2",
+      "jia3": "jia3",
+      "jia4": "jia4",
+      "jia5": "jia5",
+      "jian1": "jian1",
+      "jian3": "jian3",
+      "jian4": "jian4",
+      "jian5": "jian5",
+      "jiang1": "jiang1",
+      "jiang3": "jiang3",
+      "jiang4": "jiang4",
+      "jiang5": "jiang5",
+      "jiao1": "jiao1",
+      "jiao2": "jiao2",
+      "jiao3": "jiao3",
+      "jiao4": "jiao4",
+      "jiao5": "jiao5",
+      "jie1": "jie1",
+      "jie2": "jie2",
+      "jie3": "jie3",
+      "jie4": "jie4",
+      "jie5": "jie5",
+      "jin1": "jin1",
+      "jin3": "jin3",
+      "jin4": "jin4",
+      "jin5": "jin5",
+      "jing1": "jing1",
+      "jing3": "jing3",
+      "jing4": "jing4",
+      "jing5": "jing5",
+      "jiong1": "jiong1",
+      "jiong3": "jiong3",
+      "jiong4": "jiong4",
+      "jiu1": "jiu1",
+      "jiu2": "jiu2",
+      "jiu3": "jiu3",
+      "jiu4": "jiu4",
+      "jiu5": "jiu5",
+      "ju1": "ju1",
+      "ju2": "ju2",
+      "ju3": "ju3",
+      "ju4": "ju4",
+      "ju5": "ju5",
+      "juan1": "juan1",
+      "juan3": "juan3",
+      "juan4": "juan4",
+      "jue1": "jue1",
+      "jue2": "jue2",
+      "jue3": "jue3",
+      "jue4": "jue4",
+      "jun1": "jun1",
+      "jun3": "jun3",
+      "jun4": "jun4",
+      "jv1": "jv1",
+      "jv2": "jv2",
+      "jv3": "jv3",
+      "jv4": "jv4",
+      "jv5": "jv5",
+      "jvan1": "jvan1",
+      "jvan3": "jvan3",
+      "jvan4": "jvan4",
+      "jve1": "jve1",
+      "jve2": "jve2",
+      "jve3": "jve3",
+      "jve4": "jve4",
+      "jvn1": "jvn1",
+      "jvn3": "jvn3",
+      "jvn4": "jvn4",
+      "ka1": "ka1",
+      "ka3": "ka3",
+      "ka4": "ka4",
+      "kai1": "kai1",
+      "kai3": "kai3",
+      "kai4": "kai4",
+      "kai5": "kai5",
+      "kan1": "kan1",
+      "kan3": "kan3",
+      "kan4": "kan4",
+      "kan5": "kan5",
+      "kang1": "kang1",
+      "kang2": "kang2",
+      "kang3": "kang3",
+      "kang4": "kang4",
+      "kao1": "kao1",
+      "kao3": "kao3",
+      "kao4": "kao4",
+      "kao5": "kao5",
+      "ke1": "ke1",
+      "ke2": "ke2",
+      "ke3": "ke3",
+      "ke4": "ke4",
+      "ke5": "ke5",
+      "kei1": "kei1",
+      "ken1": "ken1",
+      "ken3": "ken3",
+      "ken4": "ken4",
+      "ken5": "ken5",
+      "keng1": "keng1",
+      "keng3": "keng3",
+      "kong1": "kong1",
+      "kong3": "kong3",
+      "kong4": "kong4",
+      "kong5": "kong5",
+      "kou1": "kou1",
+      "kou3": "kou3",
+      "kou4": "kou4",
+      "kou5": "kou5",
+      "ku1": "ku1",
+      "ku2": "ku2",
+      "ku3": "ku3",
+      "ku4": "ku4",
+      "ku5": "ku5",
+      "kua1": "kua1",
+      "kua3": "kua3",
+      "kua4": "kua4",
+      "kuai1": "kuai1",
+      "kuai3": "kuai3",
+      "kuai4": "kuai4",
+      "kuai5": "kuai5",
+      "kuan1": "kuan1",
+      "kuan3": "kuan3",
+      "kuang1": "kuang1",
+      "kuang2": "kuang2",
+      "kuang3": "kuang3",
+      "kuang4": "kuang4",
+      "kuang5": "kuang5",
+      "kui1": "kui1",
+      "kui2": "kui2",
+      "kui3": "kui3",
+      "kui4": "kui4",
+      "kun1": "kun1",
+      "kun3": "kun3",
+      "kun4": "kun4",
+      "kuo4": "kuo4",
+      "la1": "la1",
+      "la2": "la2",
+      "la3": "la3",
+      "la4": "la4",
+      "la5": "la5",
+      "lai2": "lai2",
+      "lai3": "lai3",
+      "lai4": "lai4",
+      "lai5": "lai5",
+      "lan2": "lan2",
+      "lan3": "lan3",
+      "lan4": "lan4",
+      "lan5": "lan5",
+      "lang1": "lang1",
+      "lang2": "lang2",
+      "lang3": "lang3",
+      "lang4": "lang4",
+      "lang5": "lang5",
+      "lao1": "lao1",
+      "lao2": "lao2",
+      "lao3": "lao3",
+      "lao4": "lao4",
+      "lao5": "lao5",
+      "le1": "le1",
+      "le4": "le4",
+      "le5": "le5",
+      "lei1": "lei1",
+      "lei2": "lei2",
+      "lei3": "lei3",
+      "lei4": "lei4",
+      "lei5": "lei5",
+      "leng1": "leng1",
+      "leng2": "leng2",
+      "leng3": "leng3",
+      "leng4": "leng4",
+      "leng5": "leng5",
+      "li1": "li1",
+      "li2": "li2",
+      "li3": "li3",
+      "li4": "li4",
+      "li5": "li5",
+      "lia3": "lia3",
+      "lian2": "lian2",
+      "lian3": "lian3",
+      "lian4": "lian4",
+      "lian5": "lian5",
+      "liang2": "liang2",
+      "liang3": "liang3",
+      "liang4": "liang4",
+      "liang5": "liang5",
+      "liao1": "liao1",
+      "liao2": "liao2",
+      "liao3": "liao3",
+      "liao4": "liao4",
+      "liao5": "liao5",
+      "lie1": "lie1",
+      "lie2": "lie2",
+      "lie3": "lie3",
+      "lie4": "lie4",
+      "lie5": "lie5",
+      "lin1": "lin1",
+      "lin2": "lin2",
+      "lin3": "lin3",
+      "lin4": "lin4",
+      "ling1": "ling1",
+      "ling2": "ling2",
+      "ling3": "ling3",
+      "ling4": "ling4",
+      "ling5": "ling5",
+      "liu1": "liu1",
+      "liu2": "liu2",
+      "liu3": "liu3",
+      "liu4": "liu4",
+      "liu5": "liu5",
+      "lo5": "lo5",
+      "long1": "long1",
+      "long2": "long2",
+      "long3": "long3",
+      "long4": "long4",
+      "long5": "long5",
+      "lou1": "lou1",
+      "lou2": "lou2",
+      "lou3": "lou3",
+      "lou4": "lou4",
+      "lou5": "lou5",
+      "lu1": "lu1",
+      "lu2": "lu2",
+      "lu3": "lu3",
+      "lu4": "lu4",
+      "lu5": "lu5",
+      "luan2": "luan2",
+      "luan3": "luan3",
+      "luan4": "luan4",
+      "luan5": "luan5",
+      "lun1": "lun1",
+      "lun2": "lun2",
+      "lun3": "lun3",
+      "lun4": "lun4",
+      "luo1": "luo1",
+      "luo2": "luo2",
+      "luo3": "luo3",
+      "luo4": "luo4",
+      "luo5": "luo5",
+      "lv2": "lv2",
+      "lv3": "lv3",
+      "lv4": "lv4",
+      "lvan2": "lvan2",
+      "lvan3": "lvan3",
+      "lve4": "lve4",
+      "m1": "m̄",
+      "m2": "ḿ",
+      "m3": "m̌",
+      "m4": "m̀",
+      "m5": "m",
+      "ma1": "m̄",
+      "ma2": "ḿ",
+      "ma3": "m̌",
+      "ma4": "m̀",
+      "ma5": "m",
+      "mai2": "ḿ",
+      "mai3": "m̌",
+      "mai4": "m̀",
+      "mai5": "m",
+      "man1": "m̄",
+      "man2": "ḿ",
+      "man3": "m̌",
+      "man4": "m̀",
+      "man5": "m",
+      "mang1": "m̄",
+      "mang2": "ḿ",
+      "mang3": "m̌",
+      "mang4": "m̀",
+      "mang5": "m",
+      "mao1": "m̄",
+      "mao2": "ḿ",
+      "mao3": "m̌",
+      "mao4": "m̀",
+      "mao5": "m",
+      "me1": "m̄",
+      "me4": "m̀",
+      "me5": "m",
+      "mei2": "ḿ",
+      "mei3": "m̌",
+      "mei4": "m̀",
+      "mei5": "m",
+      "men1": "m̄",
+      "men2": "ḿ",
+      "men4": "m̀",
+      "men5": "m",
+      "meng1": "m̄",
+      "meng2": "ḿ",
+      "meng3": "m̌",
+      "meng4": "m̀",
+      "meng5": "m",
+      "mi1": "m̄",
+      "mi2": "ḿ",
+      "mi3": "m̌",
+      "mi4": "m̀",
+      "mi5": "m",
+      "mian2": "ḿ",
+      "mian3": "m̌",
+      "mian4": "m̀",
+      "mian5": "m",
+      "miao1": "m̄",
+      "miao2": "ḿ",
+      "miao3": "m̌",
+      "miao4": "m̀",
+      "mie1": "m̄",
+      "mie2": "ḿ",
+      "mie4": "m̀",
+      "mie5": "m",
+      "min2": "ḿ",
+      "min3": "m̌",
+      "ming2": "ḿ",
+      "ming3": "m̌",
+      "ming4": "m̀",
+      "ming5": "m",
+      "miu3": "m̌",
+      "miu4": "m̀",
+      "mo1": "m̄",
+      "mo2": "ḿ",
+      "mo3": "m̌",
+      "mo4": "m̀",
+      "mo5": "m",
+      "mou1": "m̄",
+      "mou2": "ḿ",
+      "mou3": "m̌",
+      "mou4": "m̀",
+      "mu2": "ḿ",
+      "mu3": "m̌",
+      "mu4": "m̀",
+      "mu5": "m",
+      "n1": "n̄",
+      "n2": "ń",
+      "n3": "ň",
+      "n4": "ǹ",
+      "n5": "n",
+      "na1": "n̄",
+      "na2": "ń",
+      "na3": "ň",
+      "na4": "ǹ",
+      "na5": "n",
+      "nai2": "ń",
+      "nai3": "ň",
+      "nai4": "ǹ",
+      "nai5": "n",
+      "nan1": "n̄",
+      "nan2": "ń",
+      "nan3": "ň",
+      "nan4": "ǹ",
+      "nan5": "n",
+      "nang1": "n̄",
+      "nang2": "ń",
+      "nang3": "ň",
+      "nang4": "ǹ",
+      "nang5": "n",
+      "nao1": "n̄",
+      "nao2": "ń",
+      "nao3": "ň",
+      "nao4": "ǹ",
+      "nao5": "n",
+      "ne2": "ń",
+      "ne4": "ǹ",
+      "ne5": "n",
+      "nei2": "ń",
+      "nei3": "ň",
+      "nei4": "ǹ",
+      "nen4": "ǹ",
+      "nen5": "n",
+      "neng2": "ń",
+      "neng3": "ň",
+      "neng4": "ǹ",
+      "ng1": "n̄g",
+      "ng2": "ńg",
+      "ng3": "ňg",
+      "ng4": "ǹg",
+      "ng5": "ng",
+      "ni1": "n̄",
+      "ni2": "ń",
+      "ni3": "ň",
+      "ni4": "ǹ",
+      "nia1": "n̄",
+      "nian1": "n̄",
+      "nian2": "ń",
+      "nian3": "ň",
+      "nian4": "ǹ",
+      "nian5": "n",
+      "niang2": "ń",
+      "niang3": "ň",
+      "niang4": "ǹ",
+      "niang5": "n",
+      "niao3": "ň",
+      "niao4": "ǹ",
+      "nie1": "n̄",
+      "nie2": "ń",
+      "nie3": "ň",
+      "nie4": "ǹ",
+      "nie5": "n",
+      "nin2": "ń",
+      "nin3": "ň",
+      "ning2": "ń",
+      "ning3": "ň",
+      "ning4": "ǹ",
+      "niu1": "n̄",
+      "niu2": "ń",
+      "niu3": "ň",
+      "niu4": "ǹ",
+      "niu5": "n",
+      "nong1": "n̄",
+      "nong2": "ń",
+      "nong3": "ň",
+      "nong4": "ǹ",
+      "nong5": "n",
+      "nou2": "ń",
+      "nou3": "ň",
+      "nou4": "ǹ",
+      "nu2": "ń",
+      "nu3": "ň",
+      "nu4": "ǹ",
+      "nuan2": "ń",
+      "nuan3": "ň",
+      "nuan4": "ǹ",
+      "nun2": "ń",
+      "nun4": "ǹ",
+      "nuo2": "ń",
+      "nuo3": "ň",
+      "nuo4": "ǹ",
+      "nv2": "ń",
+      "nv3": "ň",
+      "nv4": "ǹ",
+      "nve4": "ǹ",
+      "o1": "o1",
+      "o2": "o2",
+      "o3": "o3",
+      "o4": "o4",
+      "o5": "o5",
+      "ou1": "ou1",
+      "ou2": "ou2",
+      "ou3": "ou3",
+      "ou4": "ou4",
+      "ou5": "ou5",
+      "pa1": "pa1",
+      "pa2": "pa2",
+      "pa3": "pa3",
+      "pa4": "pa4",
+      "pa5": "pa5",
+      "pai1": "pai1",
+      "pai2": "pai2",
+      "pai3": "pai3",
+      "pai4": "pai4",
+      "pai5": "pai5",
+      "pan1": "pan1",
+      "pan2": "pan2",
+      "pan3": "pan3",
+      "pan4": "pan4",
+      "pan5": "pan5",
+      "pang1": "pang1",
+      "pang2": "pang2",
+      "pang3": "pang3",
+      "pang4": "pang4",
+      "pao1": "pao1",
+      "pao2": "pao2",
+      "pao3": "pao3",
+      "pao4": "pao4",
+      "pei1": "pei1",
+      "pei2": "pei2",
+      "pei3": "pei3",
+      "pei4": "pei4",
+      "pen1": "pen1",
+      "pen2": "pen2",
+      "pen3": "pen3",
+      "pen4": "pen4",
+      "pen5": "pen5",
+      "peng1": "peng1",
+      "peng2": "peng2",
+      "peng3": "peng3",
+      "peng4": "peng4",
+      "peng5": "peng5",
+      "pi1": "pi1",
+      "pi2": "pi2",
+      "pi3": "pi3",
+      "pi4": "pi4",
+      "pi5": "pi5",
+      "pia1": "pia1",
+      "pian1": "pian1",
+      "pian2": "pian2",
+      "pian3": "pian3",
+      "pian4": "pian4",
+      "piao1": "piao1",
+      "piao2": "piao2",
+      "piao3": "piao3",
+      "piao4": "piao4",
+      "pie1": "pie1",
+      "pie3": "pie3",
+      "pie4": "pie4",
+      "pin1": "pin1",
+      "pin2": "pin2",
+      "pin3": "pin3",
+      "pin4": "pin4",
+      "ping1": "ping1",
+      "ping2": "ping2",
+      "ping3": "ping3",
+      "ping4": "ping4",
+      "po1": "po1",
+      "po2": "po2",
+      "po3": "po3",
+      "po4": "po4",
+      "po5": "po5",
+      "pou1": "pou1",
+      "pou2": "pou2",
+      "pou3": "pou3",
+      "pou4": "pou4",
+      "pu1": "pu1",
+      "pu2": "pu2",
+      "pu3": "pu3",
+      "pu4": "pu4",
+      "qi1": "qi1",
+      "qi2": "qi2",
+      "qi3": "qi3",
+      "qi4": "qi4",
+      "qi5": "qi5",
+      "qia1": "qia1",
+      "qia2": "qia2",
+      "qia3": "qia3",
+      "qia4": "qia4",
+      "qian1": "qian1",
+      "qian2": "qian2",
+      "qian3": "qian3",
+      "qian4": "qian4",
+      "qian5": "qian5",
+      "qiang1": "qiang1",
+      "qiang2": "qiang2",
+      "qiang3": "qiang3",
+      "qiang4": "qiang4",
+      "qiang5": "qiang5",
+      "qiao1": "qiao1",
+      "qiao2": "qiao2",
+      "qiao3": "qiao3",
+      "qiao4": "qiao4",
+      "qiao5": "qiao5",
+      "qie1": "qie1",
+      "qie2": "qie2",
+      "qie3": "qie3",
+      "qie4": "qie4",
+      "qie5": "qie5",
+      "qin1": "qin1",
+      "qin2": "qin2",
+      "qin3": "qin3",
+      "qin4": "qin4",
+      "qin5": "qin5",
+      "qing1": "qing1",
+      "qing2": "qing2",
+      "qing3": "qing3",
+      "qing4": "qing4",
+      "qing5": "qing5",
+      "qiong1": "qiong1",
+      "qiong2": "qiong2",
+      "qiong4": "qiong4",
+      "qiu1": "qiu1",
+      "qiu2": "qiu2",
+      "qiu3": "qiu3",
+      "qiu4": "qiu4",
+      "qiu5": "qiu5",
+      "qu1": "qu1",
+      "qu2": "qu2",
+      "qu3": "qu3",
+      "qu4": "qu4",
+      "qu5": "qu5",
+      "quan1": "quan1",
+      "quan2": "quan2",
+      "quan3": "quan3",
+      "quan4": "quan4",
+      "quan5": "quan5",
+      "que1": "que1",
+      "que2": "que2",
+      "que4": "que4",
+      "qun1": "qun1",
+      "qun2": "qun2",
+      "qun3": "qun3",
+      "qun5": "qun5",
+      "qv1": "qv1",
+      "qv2": "qv2",
+      "qv3": "qv3",
+      "qv4": "qv4",
+      "qv5": "qv5",
+      "qvan1": "qvan1",
+      "qvan2": "qvan2",
+      "qvan3": "qvan3",
+      "qvan4": "qvan4",
+      "qvan5": "qvan5",
+      "qve1": "qve1",
+      "qve2": "qve2",
+      "qve4": "qve4",
+      "qvn1": "qvn1",
+      "qvn2": "qvn2",
+      "qvn3": "qvn3",
+      "qvn5": "qvn5",
+      "ran2": "ran2",
+      "ran3": "ran3",
+      "ran4": "ran4",
+      "ran5": "ran5",
+      "rang1": "rang1",
+      "rang2": "rang2",
+      "rang3": "rang3",
+      "rang4": "rang4",
+      "rang5": "rang5",
+      "rao2": "rao2",
+      "rao3": "rao3",
+      "rao4": "rao4",
+      "re3": "re3",
+      "re4": "re4",
+      "re5": "re5",
+      "ren2": "ren2",
+      "ren3": "ren3",
+      "ren4": "ren4",
+      "ren5": "ren5",
+      "reng1": "reng1",
+      "reng2": "reng2",
+      "reng4": "reng4",
+      "ri4": "ri4",
+      "rong1": "rong1",
+      "rong2": "rong2",
+      "rong3": "rong3",
+      "rong4": "rong4",
+      "rong5": "rong5",
+      "rou2": "rou2",
+      "rou3": "rou3",
+      "rou4": "rou4",
+      "rou5": "rou5",
+      "ru1": "ru1",
+      "ru2": "ru2",
+      "ru3": "ru3",
+      "ru4": "ru4",
+      "rua2": "rua2",
+      "ruan2": "ruan2",
+      "ruan3": "ruan3",
+      "ruan4": "ruan4",
+      "rui2": "rui2",
+      "rui3": "rui3",
+      "rui4": "rui4",
+      "run2": "run2",
+      "run3": "run3",
+      "run4": "run4",
+      "ruo2": "ruo2",
+      "ruo4": "ruo4",
+      "sa1": "sa1",
+      "sa3": "sa3",
+      "sa4": "sa4",
+      "sa5": "sa5",
+      "sai1": "sai1",
+      "sai3": "sai3",
+      "sai4": "sai4",
+      "san1": "san1",
+      "san3": "san3",
+      "san4": "san4",
+      "san5": "san5",
+      "sang1": "sang1",
+      "sang3": "sang3",
+      "sang4": "sang4",
+      "sang5": "sang5",
+      "sao1": "sao1",
+      "sao3": "sao3",
+      "sao4": "sao4",
+      "sao5": "sao5",
+      "se1": "se1",
+      "se4": "se4",
+      "se5": "se5",
+      "sen1": "sen1",
+      "sen3": "sen3",
+      "seng1": "seng1",
+      "seng4": "seng4",
+      "sha1": "sha1",
+      "sha2": "sha2",
+      "sha3": "sha3",
+      "sha4": "sha4",
+      "sha5": "sha5",
+      "shai1": "shai1",
+      "shai3": "shai3",
+      "shai4": "shai4",
+      "shai5": "shai5",
+      "shan1": "shan1",
+      "shan2": "shan2",
+      "shan3": "shan3",
+      "shan4": "shan4",
+      "shan5": "shan5",
+      "shang1": "shang1",
+      "shang3": "shang3",
+      "shang4": "shang4",
+      "shang5": "shang5",
+      "shao1": "shao1",
+      "shao2": "shao2",
+      "shao3": "shao3",
+      "shao4": "shao4",
+      "shao5": "shao5",
+      "she1": "she1",
+      "she2": "she2",
+      "she3": "she3",
+      "she4": "she4",
+      "she5": "she5",
+      "shei2": "shei2",
+      "shen1": "shen1",
+      "shen2": "shen2",
+      "shen3": "shen3",
+      "shen4": "shen4",
+      "shen5": "shen5",
+      "sheng1": "sheng1",
+      "sheng2": "sheng2",
+      "sheng3": "sheng3",
+      "sheng4": "sheng4",
+      "sheng5": "sheng5",
+      "shi1": "shi1",
+      "shi2": "shi2",
+      "shi3": "shi3",
+      "shi4": "shi4",
+      "shi5": "shi5",
+      "shou1": "shou1",
+      "shou2": "shou2",
+      "shou3": "shou3",
+      "shou4": "shou4",
+      "shou5": "shou5",
+      "shu1": "shu1",
+      "shu2": "shu2",
+      "shu3": "shu3",
+      "shu4": "shu4",
+      "shu5": "shu5",
+      "shua1": "shua1",
+      "shua3": "shua3",
+      "shua4": "shua4",
+      "shua5": "shua5",
+      "shuai1": "shuai1",
+      "shuai3": "shuai3",
+      "shuai4": "shuai4",
+      "shuan1": "shuan1",
+      "shuan4": "shuan4",
+      "shuang1": "shuang1",
+      "shuang3": "shuang3",
+      "shuang4": "shuang4",
+      "shui2": "shui2",
+      "shui3": "shui3",
+      "shui4": "shui4",
+      "shui5": "shui5",
+      "shun3": "shun3",
+      "shun4": "shun4",
+      "shun5": "shun5",
+      "shuo1": "shuo1",
+      "shuo4": "shuo4",
+      "shuo5": "shuo5",
+      "si1": "si1",
+      "si2": "si2",
+      "si3": "si3",
+      "si4": "si4",
+      "si5": "si5",
+      "song1": "song1",
+      "song2": "song2",
+      "song3": "song3",
+      "song4": "song4",
+      "song5": "song5",
+      "sou1": "sou1",
+      "sou3": "sou3",
+      "sou4": "sou4",
+      "sou5": "sou5",
+      "su1": "su1",
+      "su2": "su2",
+      "su3": "su3",
+      "su4": "su4",
+      "su5": "su5",
+      "suan1": "suan1",
+      "suan3": "suan3",
+      "suan4": "suan4",
+      "suan5": "suan5",
+      "sui1": "sui1",
+      "sui2": "sui2",
+      "sui3": "sui3",
+      "sui4": "sui4",
+      "sui5": "sui5",
+      "sun1": "sun1",
+      "sun3": "sun3",
+      "sun4": "sun4",
+      "suo1": "suo1",
+      "suo2": "suo2",
+      "suo3": "suo3",
+      "suo4": "suo4",
+      "suo5": "suo5",
+      "ta1": "ta1",
+      "ta2": "ta2",
+      "ta3": "ta3",
+      "ta4": "ta4",
+      "ta5": "ta5",
+      "tai1": "tai1",
+      "tai2": "tai2",
+      "tai3": "tai3",
+      "tai4": "tai4",
+      "tai5": "tai5",
+      "tan1": "tan1",
+      "tan2": "tan2",
+      "tan3": "tan3",
+      "tan4": "tan4",
+      "tan5": "tan5",
+      "tang1": "tang1",
+      "tang2": "tang2",
+      "tang3": "tang3",
+      "tang4": "tang4",
+      "tang5": "tang5",
+      "tao1": "tao1",
+      "tao2": "tao2",
+      "tao3": "tao3",
+      "tao4": "tao4",
+      "tao5": "tao5",
+      "te4": "te4",
+      "tei1": "tei1",
+      "teng1": "teng1",
+      "teng2": "teng2",
+      "teng4": "teng4",
+      "teng5": "teng5",
+      "ti1": "ti1",
+      "ti2": "ti2",
+      "ti3": "ti3",
+      "ti4": "ti4",
+      "ti5": "ti5",
+      "tian1": "tian1",
+      "tian2": "tian2",
+      "tian3": "tian3",
+      "tian4": "tian4",
+      "tian5": "tian5",
+      "tiao1": "tiao1",
+      "tiao2": "tiao2",
+      "tiao3": "tiao3",
+      "tiao4": "tiao4",
+      "tiao5": "tiao5",
+      "tie1": "tie1",
+      "tie2": "tie2",
+      "tie3": "tie3",
+      "tie4": "tie4",
+      "tie5": "tie5",
+      "ting1": "ting1",
+      "ting2": "ting2",
+      "ting3": "ting3",
+      "ting4": "ting4",
+      "ting5": "ting5",
+      "tong1": "tong1",
+      "tong2": "tong2",
+      "tong3": "tong3",
+      "tong4": "tong4",
+      "tong5": "tong5",
+      "tou1": "tou1",
+      "tou2": "tou2",
+      "tou3": "tou3",
+      "tou4": "tou4",
+      "tou5": "tou5",
+      "tu1": "tu1",
+      "tu2": "tu2",
+      "tu3": "tu3",
+      "tu4": "tu4",
+      "tu5": "tu5",
+      "tuan1": "tuan1",
+      "tuan2": "tuan2",
+      "tuan3": "tuan3",
+      "tuan4": "tuan4",
+      "tui1": "tui1",
+      "tui2": "tui2",
+      "tui3": "tui3",
+      "tui4": "tui4",
+      "tun1": "tun1",
+      "tun2": "tun2",
+      "tun3": "tun3",
+      "tun4": "tun4",
+      "tun5": "tun5",
+      "tuo1": "tuo1",
+      "tuo2": "tuo2",
+      "tuo3": "tuo3",
+      "tuo4": "tuo4",
+      "tuo5": "tuo5",
+      "wa1": "wa1",
+      "wa2": "wa2",
+      "wa3": "wa3",
+      "wa4": "wa4",
+      "wa5": "wa5",
+      "wai1": "wai1",
+      "wai3": "wai3",
+      "wai4": "wai4",
+      "wai5": "wai5",
+      "wan1": "wan1",
+      "wan2": "wan2",
+      "wan3": "wan3",
+      "wan4": "wan4",
+      "wang1": "wang1",
+      "wang2": "wang2",
+      "wang3": "wang3",
+      "wang4": "wang4",
+      "wang5": "wang5",
+      "wei1": "wei1",
+      "wei2": "wei2",
+      "wei3": "wei3",
+      "wei4": "wei4",
+      "wei5": "wei5",
+      "wen1": "wen1",
+      "wen2": "wen2",
+      "wen3": "wen3",
+      "wen4": "wen4",
+      "wen5": "wen5",
+      "weng1": "weng1",
+      "weng3": "weng3",
+      "weng4": "weng4",
+      "wo1": "wo1",
+      "wo3": "wo3",
+      "wo4": "wo4",
+      "wo5": "wo5",
+      "wong4": "wong4",
+      "wu1": "wu1",
+      "wu2": "wu2",
+      "wu3": "wu3",
+      "wu4": "wu4",
+      "wu5": "wu5",
+      "xi1": "xi1",
+      "xi2": "xi2",
+      "xi3": "xi3",
+      "xi4": "xi4",
+      "xi5": "xi5",
+      "xia1": "xia1",
+      "xia2": "xia2",
+      "xia3": "xia3",
+      "xia4": "xia4",
+      "xia5": "xia5",
+      "xian1": "xian1",
+      "xian2": "xian2",
+      "xian3": "xian3",
+      "xian4": "xian4",
+      "xian5": "xian5",
+      "xiang1": "xiang1",
+      "xiang2": "xiang2",
+      "xiang3": "xiang3",
+      "xiang4": "xiang4",
+      "xiang5": "xiang5",
+      "xiao1": "xiao1",
+      "xiao2": "xiao2",
+      "xiao3": "xiao3",
+      "xiao4": "xiao4",
+      "xiao5": "xiao5",
+      "xie1": "xie1",
+      "xie2": "xie2",
+      "xie3": "xie3",
+      "xie4": "xie4",
+      "xie5": "xie5",
+      "xin1": "xin1",
+      "xin2": "xin2",
+      "xin3": "xin3",
+      "xin4": "xin4",
+      "xin5": "xin5",
+      "xing1": "xing1",
+      "xing2": "xing2",
+      "xing3": "xing3",
+      "xing4": "xing4",
+      "xing5": "xing5",
+      "xiong1": "xiong1",
+      "xiong2": "xiong2",
+      "xiong3": "xiong3",
+      "xiong4": "xiong4",
+      "xiong5": "xiong5",
+      "xiu1": "xiu1",
+      "xiu2": "xiu2",
+      "xiu3": "xiu3",
+      "xiu4": "xiu4",
+      "xu1": "xu1",
+      "xu2": "xu2",
+      "xu3": "xu3",
+      "xu4": "xu4",
+      "xu5": "xu5",
+      "xuan1": "xuan1",
+      "xuan2": "xuan2",
+      "xuan3": "xuan3",
+      "xuan4": "xuan4",
+      "xuan5": "xuan5",
+      "xue1": "xue1",
+      "xue2": "xue2",
+      "xue3": "xue3",
+      "xue4": "xue4",
+      "xun1": "xun1",
+      "xun2": "xun2",
+      "xun4": "xun4",
+      "xun5": "xun5",
+      "xv1": "xv1",
+      "xv2": "xv2",
+      "xv3": "xv3",
+      "xv4": "xv4",
+      "xv5": "xv5",
+      "xvan1": "xvan1",
+      "xvan2": "xvan2",
+      "xvan3": "xvan3",
+      "xvan4": "xvan4",
+      "xvan5": "xvan5",
+      "xve1": "xve1",
+      "xve2": "xve2",
+      "xve3": "xve3",
+      "xve4": "xve4",
+      "xvn1": "xvn1",
+      "xvn2": "xvn2",
+      "xvn4": "xvn4",
+      "xvn5": "xvn5",
+      "ya1": "ya1",
+      "ya2": "ya2",
+      "ya3": "ya3",
+      "ya4": "ya4",
+      "ya5": "ya5",
+      "yai2": "yai2",
+      "yan1": "yan1",
+      "yan2": "yan2",
+      "yan3": "yan3",
+      "yan4": "yan4",
+      "yan5": "yan5",
+      "yang1": "yang1",
+      "yang2": "yang2",
+      "yang3": "yang3",
+      "yang4": "yang4",
+      "yang5": "yang5",
+      "yao1": "yao1",
+      "yao2": "yao2",
+      "yao3": "yao3",
+      "yao4": "yao4",
+      "yao5": "yao5",
+      "ye1": "ye1",
+      "ye2": "ye2",
+      "ye3": "ye3",
+      "ye4": "ye4",
+      "ye5": "ye5",
+      "yi1": "yi1",
+      "yi2": "yi2",
+      "yi3": "yi3",
+      "yi4": "yi4",
+      "yi5": "yi5",
+      "yin1": "yin1",
+      "yin2": "yin2",
+      "yin3": "yin3",
+      "yin4": "yin4",
+      "yin5": "yin5",
+      "ying1": "ying1",
+      "ying2": "ying2",
+      "ying3": "ying3",
+      "ying4": "ying4",
+      "ying5": "ying5",
+      "yo1": "yo1",
+      "yo5": "yo5",
+      "yong1": "yong1",
+      "yong2": "yong2",
+      "yong3": "yong3",
+      "yong4": "yong4",
+      "yong5": "yong5",
+      "you1": "you1",
+      "you2": "you2",
+      "you3": "you3",
+      "you4": "you4",
+      "you5": "you5",
+      "yu1": "yu1",
+      "yu2": "yu2",
+      "yu3": "yu3",
+      "yu4": "yu4",
+      "yu5": "yu5",
+      "yuan1": "yuan1",
+      "yuan2": "yuan2",
+      "yuan3": "yuan3",
+      "yuan4": "yuan4",
+      "yuan5": "yuan5",
+      "yue1": "yue1",
+      "yue2": "yue2",
+      "yue3": "yue3",
+      "yue4": "yue4",
+      "yue5": "yue5",
+      "yun1": "yun1",
+      "yun2": "yun2",
+      "yun3": "yun3",
+      "yun4": "yun4",
+      "yv1": "yv1",
+      "yv2": "yv2",
+      "yv3": "yv3",
+      "yv4": "yv4",
+      "yv5": "yv5",
+      "yvan1": "yvan1",
+      "yvan2": "yvan2",
+      "yvan3": "yvan3",
+      "yvan4": "yvan4",
+      "yvan5": "yvan5",
+      "yve1": "yve1",
+      "yve2": "yve2",
+      "yve3": "yve3",
+      "yve4": "yve4",
+      "yve5": "yve5",
+      "yvn1": "yvn1",
+      "yvn2": "yvn2",
+      "yvn3": "yvn3",
+      "yvn4": "yvn4",
+      "za1": "za1",
+      "za2": "za2",
+      "za3": "za3",
+      "za5": "za5",
+      "zai1": "zai1",
+      "zai3": "zai3",
+      "zai4": "zai4",
+      "zai5": "zai5",
+      "zan1": "zan1",
+      "zan2": "zan2",
+      "zan3": "zan3",
+      "zan4": "zan4",
+      "zan5": "zan5",
+      "zang1": "zang1",
+      "zang3": "zang3",
+      "zang4": "zang4",
+      "zao1": "zao1",
+      "zao2": "zao2",
+      "zao3": "zao3",
+      "zao4": "zao4",
+      "zao5": "zao5",
+      "ze2": "ze2",
+      "ze3": "ze3",
+      "ze4": "ze4",
+      "zei2": "zei2",
+      "zen1": "zen1",
+      "zen3": "zen3",
+      "zen4": "zen4",
+      "zeng1": "zeng1",
+      "zeng3": "zeng3",
+      "zeng4": "zeng4",
+      "zha1": "zha1",
+      "zha2": "zha2",
+      "zha3": "zha3",
+      "zha4": "zha4",
+      "zha5": "zha5",
+      "zhai1": "zhai1",
+      "zhai2": "zhai2",
+      "zhai3": "zhai3",
+      "zhai4": "zhai4",
+      "zhan1": "zhan1",
+      "zhan2": "zhan2",
+      "zhan3": "zhan3",
+      "zhan4": "zhan4",
+      "zhan5": "zhan5",
+      "zhang1": "zhang1",
+      "zhang3": "zhang3",
+      "zhang4": "zhang4",
+      "zhang5": "zhang5",
+      "zhao1": "zhao1",
+      "zhao2": "zhao2",
+      "zhao3": "zhao3",
+      "zhao4": "zhao4",
+      "zhao5": "zhao5",
+      "zhe1": "zhe1",
+      "zhe2": "zhe2",
+      "zhe3": "zhe3",
+      "zhe4": "zhe4",
+      "zhe5": "zhe5",
+      "zhen1": "zhen1",
+      "zhen2": "zhen2",
+      "zhen3": "zhen3",
+      "zhen4": "zhen4",
+      "zheng1": "zheng1",
+      "zheng3": "zheng3",
+      "zheng4": "zheng4",
+      "zheng5": "zheng5",
+      "zhi1": "zhi1",
+      "zhi2": "zhi2",
+      "zhi3": "zhi3",
+      "zhi4": "zhi4",
+      "zhi5": "zhi5",
+      "zhong1": "zhong1",
+      "zhong3": "zhong3",
+      "zhong4": "zhong4",
+      "zhong5": "zhong5",
+      "zhou1": "zhou1",
+      "zhou2": "zhou2",
+      "zhou3": "zhou3",
+      "zhou4": "zhou4",
+      "zhou5": "zhou5",
+      "zhu1": "zhu1",
+      "zhu2": "zhu2",
+      "zhu3": "zhu3",
+      "zhu4": "zhu4",
+      "zhu5": "zhu5",
+      "zhua1": "zhua1",
+      "zhua3": "zhua3",
+      "zhua5": "zhua5",
+      "zhuai1": "zhuai1",
+      "zhuai3": "zhuai3",
+      "zhuai4": "zhuai4",
+      "zhuan1": "zhuan1",
+      "zhuan3": "zhuan3",
+      "zhuan4": "zhuan4",
+      "zhuan5": "zhuan5",
+      "zhuang1": "zhuang1",
+      "zhuang2": "zhuang2",
+      "zhuang3": "zhuang3",
+      "zhuang4": "zhuang4",
+      "zhuang5": "zhuang5",
+      "zhui1": "zhui1",
+      "zhui3": "zhui3",
+      "zhui4": "zhui4",
+      "zhui5": "zhui5",
+      "zhun1": "zhun1",
+      "zhun3": "zhun3",
+      "zhun4": "zhun4",
+      "zhuo1": "zhuo1",
+      "zhuo2": "zhuo2",
+      "zhuo4": "zhuo4",
+      "zhuo5": "zhuo5",
+      "zi1": "zi1",
+      "zi2": "zi2",
+      "zi3": "zi3",
+      "zi4": "zi4",
+      "zi5": "zi5",
+      "zong1": "zong1",
+      "zong2": "zong2",
+      "zong3": "zong3",
+      "zong4": "zong4",
+      "zou1": "zou1",
+      "zou3": "zou3",
+      "zou4": "zou4",
+      "zou5": "zou5",
+      "zu1": "zu1",
+      "zu2": "zu2",
+      "zu3": "zu3",
+      "zu4": "zu4",
+      "zuan1": "zuan1",
+      "zuan3": "zuan3",
+      "zuan4": "zuan4",
+      "zui1": "zui1",
+      "zui2": "zui2",
+      "zui3": "zui3",
+      "zui4": "zui4",
+      "zui5": "zui5",
+      "zun1": "zun1",
+      "zun3": "zun3",
+      "zun4": "zun4",
+      "zuo1": "zuo1",
+      "zuo2": "zuo2",
+      "zuo3": "zuo3",
+      "zuo4": "zuo4",
+      "zuo5": "zuo5",
+      "ê1": "ê̄",
+      "ê2": "ế",
+      "ê3": "ê̌",
+      "ê4": "ề",
+      "ê5": "ê"
+    },
+    "file2_normalized": {
+      "a1": "ā",
+      "a2": "á",
+      "a3": "ǎ",
+      "a4": "à",
+      "a5": "a",
+      "ai1": "āi",
+      "ai2": "ái",
+      "ai3": "ǎi",
+      "ai4": "ài",
+      "an1": "ān",
+      "an2": "án",
+      "an3": "ǎn",
+      "an4": "àn",
+      "ang1": "āng",
+      "ang2": "áng",
+      "ang3": "ǎng",
+      "ang4": "àng",
+      "ao1": "āo",
+      "ao2": "áo",
+      "ao3": "ǎo",
+      "ao4": "ào",
+      "ba1": "bā",
+      "ba2": "bá",
+      "ba3": "bǎ",
+      "ba4": "bà",
+      "ba5": "ba",
+      "bai1": "bāi",
+      "bai2": "bái",
+      "bai3": "bǎi",
+      "bai4": "bài",
+      "bai5": "bai",
+      "ban1": "bān",
+      "ban3": "bǎn",
+      "ban4": "bàn",
+      "ban5": "ban",
+      "bang1": "bāng",
+      "bang3": "bǎng",
+      "bang4": "bàng",
+      "bao1": "bāo",
+      "bao2": "báo",
+      "bao3": "bǎo",
+      "bao4": "bào",
+      "bei1": "bēi",
+      "bei3": "běi",
+      "bei4": "bèi",
+      "bei5": "bei",
+      "ben1": "bēn",
+      "ben3": "běn",
+      "ben4": "bèn",
+      "beng1": "bēng",
+      "beng2": "béng",
+      "beng3": "běng",
+      "beng4": "bèng",
+      "beng5": "beng",
+      "bi1": "bī",
+      "bi2": "bí",
+      "bi3": "bǐ",
+      "bi4": "bì",
+      "bian1": "biān",
+      "bian3": "biǎn",
+      "bian4": "biàn",
+      "bian5": "bian",
+      "biang2": "biáng",
+      "biang4": "biàng",
+      "biao1": "biāo",
+      "biao3": "biǎo",
+      "biao4": "biào",
+      "bie1": "biē",
+      "bie2": "bié",
+      "bie3": "biě",
+      "bie4": "biè",
+      "bin1": "bīn",
+      "bin3": "bǐn",
+      "bin4": "bìn",
+      "bin5": "bin",
+      "bing1": "bīng",
+      "bing3": "bǐng",
+      "bing4": "bìng",
+      "bo1": "bō",
+      "bo2": "bó",
+      "bo3": "bǒ",
+      "bo4": "bò",
+      "bo5": "bo",
+      "bong4": "bòng",
+      "bu1": "bū",
+      "bu2": "bú",
+      "bu3": "bǔ",
+      "bu4": "bù",
+      "ca1": "cā",
+      "ca3": "cǎ",
+      "ca4": "cà",
+      "cai1": "cāi",
+      "cai2": "cái",
+      "cai3": "cǎi",
+      "cai4": "cài",
+      "can1": "cān",
+      "can2": "cán",
+      "can3": "cǎn",
+      "can4": "càn",
+      "cang1": "cāng",
+      "cang2": "cáng",
+      "cang3": "cǎng",
+      "cang4": "càng",
+      "cao1": "cāo",
+      "cao2": "cáo",
+      "cao3": "cǎo",
+      "cao4": "cào",
+      "ce4": "cè",
+      "cei4": "cèi",
+      "cen1": "cēn",
+      "cen2": "cén",
+      "ceng1": "cēng",
+      "ceng2": "céng",
+      "ceng4": "cèng",
+      "cha1": "chā",
+      "cha2": "chá",
+      "cha3": "chǎ",
+      "cha4": "chà",
+      "chai1": "chāi",
+      "chai2": "chái",
+      "chai3": "chǎi",
+      "chai4": "chài",
+      "chan1": "chān",
+      "chan2": "chán",
+      "chan3": "chǎn",
+      "chan4": "chàn",
+      "chang1": "chāng",
+      "chang2": "cháng",
+      "chang3": "chǎng",
+      "chang4": "chàng",
+      "chang5": "chang",
+      "chao1": "chāo",
+      "chao2": "cháo",
+      "chao3": "chǎo",
+      "chao4": "chào",
+      "che1": "chē",
+      "che2": "ché",
+      "che3": "chě",
+      "che4": "chè",
+      "chen1": "chēn",
+      "chen2": "chén",
+      "chen3": "chěn",
+      "chen4": "chèn",
+      "chen5": "chen",
+      "cheng1": "chēng",
+      "cheng2": "chéng",
+      "cheng3": "chěng",
+      "cheng4": "chèng",
+      "chi1": "chī",
+      "chi2": "chí",
+      "chi3": "chǐ",
+      "chi4": "chì",
+      "chi5": "chi",
+      "chong1": "chōng",
+      "chong2": "chóng",
+      "chong3": "chǒng",
+      "chong4": "chòng",
+      "chou1": "chōu",
+      "chou2": "chóu",
+      "chou3": "chǒu",
+      "chou4": "chòu",
+      "chu1": "chū",
+      "chu2": "chú",
+      "chu3": "chǔ",
+      "chu4": "chù",
+      "chu5": "chu",
+      "chua1": "chuā",
+      "chua3": "chuǎ",
+      "chua4": "chuà",
+      "chuai1": "chuāi",
+      "chuai2": "chuái",
+      "chuai3": "chuǎi",
+      "chuai4": "chuài",
+      "chuan1": "chuān",
+      "chuan2": "chuán",
+      "chuan3": "chuǎn",
+      "chuan4": "chuàn",
+      "chuang1": "chuāng",
+      "chuang2": "chuáng",
+      "chuang3": "chuǎng",
+      "chuang4": "chuàng",
+      "chui1": "chuī",
+      "chui2": "chuí",
+      "chui3": "chuǐ",
+      "chui4": "chuì",
+      "chun1": "chūn",
+      "chun2": "chún",
+      "chun3": "chǔn",
+      "chuo1": "chuō",
+      "chuo4": "chuò",
+      "ci1": "cī",
+      "ci2": "cí",
+      "ci3": "cǐ",
+      "ci4": "cì",
+      "cong1": "cōng",
+      "cong2": "cóng",
+      "cong3": "cǒng",
+      "cong4": "còng",
+      "cou1": "cōu",
+      "cou2": "cóu",
+      "cou3": "cǒu",
+      "cou4": "còu",
+      "cu1": "cū",
+      "cu2": "cú",
+      "cu3": "cǔ",
+      "cu4": "cù",
+      "cuan1": "cuān",
+      "cuan2": "cuán",
+      "cuan4": "cuàn",
+      "cui1": "cuī",
+      "cui3": "cuǐ",
+      "cui4": "cuì",
+      "cui5": "cui",
+      "cun1": "cūn",
+      "cun2": "cún",
+      "cun3": "cǔn",
+      "cun4": "cùn",
+      "cuo1": "cuō",
+      "cuo2": "cuó",
+      "cuo3": "cuǒ",
+      "cuo4": "cuò",
+      "da1": "dā",
+      "da2": "dá",
+      "da3": "dǎ",
+      "da4": "dà",
+      "da5": "da",
+      "dai1": "dāi",
+      "dai3": "dǎi",
+      "dai4": "dài",
+      "dai5": "dai",
+      "dan1": "dān",
+      "dan3": "dǎn",
+      "dan4": "dàn",
+      "dang1": "dāng",
+      "dang3": "dǎng",
+      "dang4": "dàng",
+      "dang5": "dang",
+      "dao1": "dāo",
+      "dao2": "dáo",
+      "dao3": "dǎo",
+      "dao4": "dào",
+      "de1": "dē",
+      "de2": "dé",
+      "de5": "de",
+      "dei1": "dēi",
+      "dei3": "děi",
+      "den4": "dèn",
+      "deng1": "dēng",
+      "deng3": "děng",
+      "deng4": "dèng",
+      "di1": "dī",
+      "di2": "dí",
+      "di3": "dǐ",
+      "di4": "dì",
+      "dia3": "diǎ",
+      "dian1": "diān",
+      "dian2": "dián",
+      "dian3": "diǎn",
+      "dian4": "diàn",
+      "diao1": "diāo",
+      "diao3": "diǎo",
+      "diao4": "diào",
+      "die1": "diē",
+      "die2": "dié",
+      "die3": "diě",
+      "die4": "diè",
+      "din4": "dìn",
+      "ding1": "dīng",
+      "ding3": "dǐng",
+      "ding4": "dìng",
+      "diu1": "diū",
+      "dong1": "dōng",
+      "dong3": "dǒng",
+      "dong4": "dòng",
+      "dou1": "dōu",
+      "dou3": "dǒu",
+      "dou4": "dòu",
+      "du1": "dū",
+      "du2": "dú",
+      "du3": "dǔ",
+      "du4": "dù",
+      "duan1": "duān",
+      "duan3": "duǎn",
+      "duan4": "duàn",
+      "dui1": "duī",
+      "dui3": "duǐ",
+      "dui4": "duì",
+      "dun1": "dūn",
+      "dun3": "dǔn",
+      "dun4": "dùn",
+      "duo1": "duō",
+      "duo2": "duó",
+      "duo3": "duǒ",
+      "duo4": "duò",
+      "duo5": "duo",
+      "e1": "ē",
+      "e2": "é",
+      "e3": "ě",
+      "e4": "è",
+      "e5": "e",
+      "ei1": "ēi",
+      "ei2": "éi",
+      "ei3": "ěi",
+      "ei4": "èi",
+      "en1": "ēn",
+      "en3": "ěn",
+      "en4": "èn",
+      "eng1": "ēng",
+      "er2": "ér",
+      "er3": "ěr",
+      "er4": "èr",
+      "er5": "er",
+      "fa1": "fā",
+      "fa2": "fá",
+      "fa3": "fǎ",
+      "fa4": "fà",
+      "fa5": "fa",
+      "fan1": "fān",
+      "fan2": "fán",
+      "fan3": "fǎn",
+      "fan4": "fàn",
+      "fang1": "fāng",
+      "fang2": "fáng",
+      "fang3": "fǎng",
+      "fang4": "fàng",
+      "fang5": "fang",
+      "fei1": "fēi",
+      "fei2": "féi",
+      "fei3": "fěi",
+      "fei4": "fèi",
+      "fen1": "fēn",
+      "fen2": "fén",
+      "fen3": "fěn",
+      "fen4": "fèn",
+      "feng1": "fēng",
+      "feng2": "féng",
+      "feng3": "fěng",
+      "feng4": "fèng",
+      "fiao4": "fiào",
+      "fo2": "fó",
+      "fou1": "fōu",
+      "fou2": "fóu",
+      "fou3": "fǒu",
+      "fu1": "fū",
+      "fu2": "fú",
+      "fu3": "fǔ",
+      "fu4": "fù",
+      "fu5": "fu",
+      "ga1": "gā",
+      "ga2": "gá",
+      "ga3": "gǎ",
+      "ga4": "gà",
+      "gai1": "gāi",
+      "gai3": "gǎi",
+      "gai4": "gài",
+      "gan1": "gān",
+      "gan3": "gǎn",
+      "gan4": "gàn",
+      "gang1": "gāng",
+      "gang3": "gǎng",
+      "gang4": "gàng",
+      "gao1": "gāo",
+      "gao3": "gǎo",
+      "gao4": "gào",
+      "ge1": "gē",
+      "ge2": "gé",
+      "ge3": "gě",
+      "ge4": "gè",
+      "gei3": "gěi",
+      "gen1": "gēn",
+      "gen2": "gén",
+      "gen3": "gěn",
+      "gen4": "gèn",
+      "geng1": "gēng",
+      "geng3": "gěng",
+      "geng4": "gèng",
+      "gong1": "gōng",
+      "gong3": "gǒng",
+      "gong4": "gòng",
+      "gong5": "gong",
+      "gou1": "gōu",
+      "gou3": "gǒu",
+      "gou4": "gòu",
+      "gu1": "gū",
+      "gu2": "gú",
+      "gu3": "gǔ",
+      "gu4": "gù",
+      "gu5": "gu",
+      "gua1": "guā",
+      "gua2": "guá",
+      "gua3": "guǎ",
+      "gua4": "guà",
+      "guai1": "guāi",
+      "guai3": "guǎi",
+      "guai4": "guài",
+      "guan1": "guān",
+      "guan3": "guǎn",
+      "guan4": "guàn",
+      "guang1": "guāng",
+      "guang3": "guǎng",
+      "guang4": "guàng",
+      "guang5": "guang",
+      "gui1": "guī",
+      "gui3": "guǐ",
+      "gui4": "guì",
+      "gun3": "gǔn",
+      "gun4": "gùn",
+      "guo1": "guō",
+      "guo2": "guó",
+      "guo3": "guǒ",
+      "guo4": "guò",
+      "guo5": "guo",
+      "ha1": "hā",
+      "ha2": "há",
+      "ha3": "hǎ",
+      "ha4": "hà",
+      "hai1": "hāi",
+      "hai2": "hái",
+      "hai3": "hǎi",
+      "hai4": "hài",
+      "hai5": "hai",
+      "han1": "hān",
+      "han2": "hán",
+      "han3": "hǎn",
+      "han4": "hàn",
+      "han5": "han",
+      "hang1": "hāng",
+      "hang2": "háng",
+      "hang3": "hǎng",
+      "hang4": "hàng",
+      "hao1": "hāo",
+      "hao2": "háo",
+      "hao3": "hǎo",
+      "hao4": "hào",
+      "he1": "hē",
+      "he2": "hé",
+      "he3": "hě",
+      "he4": "hè",
+      "hei1": "hēi",
+      "hen1": "hēn",
+      "hen2": "hén",
+      "hen3": "hěn",
+      "hen4": "hèn",
+      "heng1": "hēng",
+      "heng2": "héng",
+      "heng4": "hèng",
+      "hm5": "hm",
+      "hng5": "hng",
+      "hong1": "hōng",
+      "hong2": "hóng",
+      "hong3": "hǒng",
+      "hong4": "hòng",
+      "hou1": "hōu",
+      "hou2": "hóu",
+      "hou3": "hǒu",
+      "hou4": "hòu",
+      "hu1": "hū",
+      "hu2": "hú",
+      "hu3": "hǔ",
+      "hu4": "hù",
+      "hu5": "hu",
+      "hua1": "huā",
+      "hua2": "huá",
+      "hua4": "huà",
+      "huai2": "huái",
+      "huai4": "huài",
+      "huai5": "huai",
+      "huan1": "huān",
+      "huan2": "huán",
+      "huan3": "huǎn",
+      "huan4": "huàn",
+      "huang1": "huāng",
+      "huang2": "huáng",
+      "huang3": "huǎng",
+      "huang4": "huàng",
+      "huang5": "huang",
+      "hui1": "huī",
+      "hui2": "huí",
+      "hui3": "huǐ",
+      "hui4": "huì",
+      "hui5": "hui",
+      "hun1": "hūn",
+      "hun2": "hún",
+      "hun3": "hǔn",
+      "hun4": "hùn",
+      "huo1": "huō",
+      "huo2": "huó",
+      "huo3": "huǒ",
+      "huo4": "huò",
+      "huo5": "huo",
+      "ji1": "jī",
+      "ji2": "jí",
+      "ji3": "jǐ",
+      "ji4": "jì",
+      "jia1": "jiā",
+      "jia2": "jiá",
+      "jia3": "jiǎ",
+      "jia4": "jià",
+      "jia5": "jia",
+      "jian1": "jiān",
+      "jian3": "jiǎn",
+      "jian4": "jiàn",
+      "jian5": "jian",
+      "jiang1": "jiāng",
+      "jiang3": "jiǎng",
+      "jiang4": "jiàng",
+      "jiao1": "jiāo",
+      "jiao2": "jiáo",
+      "jiao3": "jiǎo",
+      "jiao4": "jiào",
+      "jiao5": "jiao",
+      "jie1": "jiē",
+      "jie2": "jié",
+      "jie3": "jiě",
+      "jie4": "jiè",
+      "jie5": "jie",
+      "jin1": "jīn",
+      "jin3": "jǐn",
+      "jin4": "jìn",
+      "jing1": "jīng",
+      "jing3": "jǐng",
+      "jing4": "jìng",
+      "jing5": "jing",
+      "jiong1": "jiōng",
+      "jiong3": "jiǒng",
+      "jiong4": "jiòng",
+      "jiu1": "jiū",
+      "jiu2": "jiú",
+      "jiu3": "jiǔ",
+      "jiu4": "jiù",
+      "jiu5": "jiu",
+      "ju1": "jū",
+      "ju2": "jú",
+      "ju3": "jǔ",
+      "ju4": "jù",
+      "ju5": "ju",
+      "juan1": "juān",
+      "juan3": "juǎn",
+      "juan4": "juàn",
+      "jue1": "juē",
+      "jue2": "jué",
+      "jue3": "juě",
+      "jue4": "juè",
+      "jun1": "jūn",
+      "jun3": "jǔn",
+      "jun4": "jùn",
+      "ka1": "kā",
+      "ka3": "kǎ",
+      "kai1": "kāi",
+      "kai3": "kǎi",
+      "kai4": "kài",
+      "kan1": "kān",
+      "kan3": "kǎn",
+      "kan4": "kàn",
+      "kang1": "kāng",
+      "kang2": "káng",
+      "kang3": "kǎng",
+      "kang4": "kàng",
+      "kao1": "kāo",
+      "kao3": "kǎo",
+      "kao4": "kào",
+      "ke1": "kē",
+      "ke2": "ké",
+      "ke3": "kě",
+      "ke4": "kè",
+      "ke5": "ke",
+      "kei1": "kēi",
+      "ken1": "kēn",
+      "ken3": "kěn",
+      "ken4": "kèn",
+      "keng1": "kēng",
+      "keng3": "kěng",
+      "kong1": "kōng",
+      "kong3": "kǒng",
+      "kong4": "kòng",
+      "kou1": "kōu",
+      "kou3": "kǒu",
+      "kou4": "kòu",
+      "ku1": "kū",
+      "ku2": "kú",
+      "ku3": "kǔ",
+      "ku4": "kù",
+      "kua1": "kuā",
+      "kua3": "kuǎ",
+      "kua4": "kuà",
+      "kuai3": "kuǎi",
+      "kuai4": "kuài",
+      "kuan1": "kuān",
+      "kuan3": "kuǎn",
+      "kuang1": "kuāng",
+      "kuang2": "kuáng",
+      "kuang3": "kuǎng",
+      "kuang4": "kuàng",
+      "kui1": "kuī",
+      "kui2": "kuí",
+      "kui3": "kuǐ",
+      "kui4": "kuì",
+      "kun1": "kūn",
+      "kun3": "kǔn",
+      "kun4": "kùn",
+      "kun5": "kun",
+      "kuo4": "kuò",
+      "la1": "lā",
+      "la2": "lá",
+      "la3": "lǎ",
+      "la4": "là",
+      "la5": "la",
+      "lai2": "lái",
+      "lai3": "lǎi",
+      "lai4": "lài",
+      "lan2": "lán",
+      "lan3": "lǎn",
+      "lan4": "làn",
+      "lang1": "lāng",
+      "lang2": "láng",
+      "lang3": "lǎng",
+      "lang4": "làng",
+      "lang5": "lang",
+      "lao1": "lāo",
+      "lao2": "láo",
+      "lao3": "lǎo",
+      "lao4": "lào",
+      "le1": "lē",
+      "le4": "lè",
+      "le5": "le",
+      "lei1": "lēi",
+      "lei2": "léi",
+      "lei3": "lěi",
+      "lei4": "lèi",
+      "lei5": "lei",
+      "len4": "lèn",
+      "leng1": "lēng",
+      "leng2": "léng",
+      "leng3": "lěng",
+      "leng4": "lèng",
+      "li1": "lī",
+      "li2": "lí",
+      "li3": "lǐ",
+      "li4": "lì",
+      "li5": "li",
+      "lia3": "liǎ",
+      "lian2": "lián",
+      "lian3": "liǎn",
+      "lian4": "liàn",
+      "liang2": "liáng",
+      "liang3": "liǎng",
+      "liang4": "liàng",
+      "liang5": "liang",
+      "liao1": "liāo",
+      "liao2": "liáo",
+      "liao3": "liǎo",
+      "liao4": "liào",
+      "lie1": "liē",
+      "lie2": "lié",
+      "lie3": "liě",
+      "lie4": "liè",
+      "lie5": "lie",
+      "lin1": "līn",
+      "lin2": "lín",
+      "lin3": "lǐn",
+      "lin4": "lìn",
+      "ling1": "līng",
+      "ling2": "líng",
+      "ling3": "lǐng",
+      "ling4": "lìng",
+      "ling5": "ling",
+      "liu1": "liū",
+      "liu2": "liú",
+      "liu3": "liǔ",
+      "liu4": "liù",
+      "lo5": "lo",
+      "long1": "lōng",
+      "long2": "lóng",
+      "long3": "lǒng",
+      "long4": "lòng",
+      "lou1": "lōu",
+      "lou2": "lóu",
+      "lou3": "lǒu",
+      "lou4": "lòu",
+      "lou5": "lou",
+      "lu1": "lū",
+      "lu2": "lú",
+      "lu3": "lǔ",
+      "lu4": "lù",
+      "lu5": "lu",
+      "luan2": "luán",
+      "luan3": "luǎn",
+      "luan4": "luàn",
+      "lun1": "lūn",
+      "lun2": "lún",
+      "lun3": "lǔn",
+      "lun4": "lùn",
+      "luo1": "luō",
+      "luo2": "luó",
+      "luo3": "luǒ",
+      "luo4": "luò",
+      "luo5": "luo",
+      "lü2": "lǘ",
+      "lü3": "lǚ",
+      "lü4": "lǜ",
+      "lüe3": "lüě",
+      "lüe4": "lüè",
+      "m1": "m̄",
+      "m2": "ḿ",
+      "m4": "m̀",
+      "ma1": "m̄",
+      "ma2": "ḿ",
+      "ma3": "m̌",
+      "ma4": "m̀",
+      "ma5": "m",
+      "mai2": "ḿ",
+      "mai3": "m̌",
+      "mai4": "m̀",
+      "man1": "m̄",
+      "man2": "ḿ",
+      "man3": "m̌",
+      "man4": "m̀",
+      "mang1": "m̄",
+      "mang2": "ḿ",
+      "mang3": "m̌",
+      "mang4": "m̀",
+      "mao1": "m̄",
+      "mao2": "ḿ",
+      "mao3": "m̌",
+      "mao4": "m̀",
+      "me1": "m̄",
+      "me5": "m",
+      "mei2": "ḿ",
+      "mei3": "m̌",
+      "mei4": "m̀",
+      "men1": "m̄",
+      "men2": "ḿ",
+      "men4": "m̀",
+      "men5": "m",
+      "meng1": "m̄",
+      "meng2": "ḿ",
+      "meng3": "m̌",
+      "meng4": "m̀",
+      "meng5": "m",
+      "mi1": "m̄",
+      "mi2": "ḿ",
+      "mi3": "m̌",
+      "mi4": "m̀",
+      "mian2": "ḿ",
+      "mian3": "m̌",
+      "mian4": "m̀",
+      "miao1": "m̄",
+      "miao2": "ḿ",
+      "miao3": "m̌",
+      "miao4": "m̀",
+      "mie1": "m̄",
+      "mie2": "ḿ",
+      "mie4": "m̀",
+      "mie5": "m",
+      "min2": "ḿ",
+      "min3": "m̌",
+      "min5": "m",
+      "ming2": "ḿ",
+      "ming3": "m̌",
+      "ming4": "m̀",
+      "ming5": "m",
+      "miu3": "m̌",
+      "miu4": "m̀",
+      "mo1": "m̄",
+      "mo2": "ḿ",
+      "mo3": "m̌",
+      "mo4": "m̀",
+      "mo5": "m",
+      "mou1": "m̄",
+      "mou2": "ḿ",
+      "mou3": "m̌",
+      "mou4": "m̀",
+      "mu2": "ḿ",
+      "mu3": "m̌",
+      "mu4": "m̀",
+      "n2": "ń",
+      "n3": "ň",
+      "n4": "ǹ",
+      "n5": "n",
+      "na1": "n̄",
+      "na2": "ń",
+      "na3": "ň",
+      "na4": "ǹ",
+      "na5": "n",
+      "nai2": "ń",
+      "nai3": "ň",
+      "nai4": "ǹ",
+      "nan1": "n̄",
+      "nan2": "ń",
+      "nan3": "ň",
+      "nan4": "ǹ",
+      "nang1": "n̄",
+      "nang2": "ń",
+      "nang3": "ň",
+      "nang4": "ǹ",
+      "nang5": "n",
+      "nao1": "n̄",
+      "nao2": "ń",
+      "nao3": "ň",
+      "nao4": "ǹ",
+      "ne2": "ń",
+      "ne4": "ǹ",
+      "ne5": "n",
+      "nei2": "ń",
+      "nei3": "ň",
+      "nei4": "ǹ",
+      "nen4": "ǹ",
+      "neng2": "ń",
+      "neng3": "ň",
+      "neng4": "ǹ",
+      "ng2": "ńg",
+      "ng3": "ňg",
+      "ng4": "ǹg",
+      "ng5": "ng",
+      "ni1": "n̄",
+      "ni2": "ń",
+      "ni3": "ň",
+      "ni4": "ǹ",
+      "nia1": "n̄",
+      "nian1": "n̄",
+      "nian2": "ń",
+      "nian3": "ň",
+      "nian4": "ǹ",
+      "niang2": "ń",
+      "niang3": "ň",
+      "niang4": "ǹ",
+      "niao3": "ň",
+      "niao4": "ǹ",
+      "niao5": "n",
+      "nie1": "n̄",
+      "nie2": "ń",
+      "nie3": "ň",
+      "nie4": "ǹ",
+      "nin2": "ń",
+      "nin3": "ň",
+      "nin5": "n",
+      "ning2": "ń",
+      "ning3": "ň",
+      "ning4": "ǹ",
+      "niu1": "n̄",
+      "niu2": "ń",
+      "niu3": "ň",
+      "niu4": "ǹ",
+      "nong2": "ń",
+      "nong3": "ň",
+      "nong4": "ǹ",
+      "nou2": "ń",
+      "nou3": "ň",
+      "nou4": "ǹ",
+      "nu2": "ń",
+      "nu3": "ň",
+      "nu4": "ǹ",
+      "nuan2": "ń",
+      "nuan3": "ň",
+      "nuan4": "ǹ",
+      "nun2": "ń",
+      "nun4": "ǹ",
+      "nuo2": "ń",
+      "nuo3": "ň",
+      "nuo4": "ǹ",
+      "nü2": "ń",
+      "nü3": "ň",
+      "nü4": "ǹ",
+      "nüe4": "ǹ",
+      "o1": "ō",
+      "o2": "ó",
+      "o3": "ǒ",
+      "o4": "ò",
+      "o5": "o",
+      "ou1": "ōu",
+      "ou2": "óu",
+      "ou3": "ǒu",
+      "ou4": "òu",
+      "ou5": "ou",
+      "pa1": "pā",
+      "pa2": "pá",
+      "pa3": "pǎ",
+      "pa4": "pà",
+      "pai1": "pāi",
+      "pai2": "pái",
+      "pai3": "pǎi",
+      "pai4": "pài",
+      "pan1": "pān",
+      "pan2": "pán",
+      "pan3": "pǎn",
+      "pan4": "pàn",
+      "pang1": "pāng",
+      "pang2": "páng",
+      "pang3": "pǎng",
+      "pang4": "pàng",
+      "pao1": "pāo",
+      "pao2": "páo",
+      "pao3": "pǎo",
+      "pao4": "pào",
+      "pei1": "pēi",
+      "pei2": "péi",
+      "pei3": "pěi",
+      "pei4": "pèi",
+      "pen1": "pēn",
+      "pen2": "pén",
+      "pen3": "pěn",
+      "pen4": "pèn",
+      "peng1": "pēng",
+      "peng2": "péng",
+      "peng3": "pěng",
+      "peng4": "pèng",
+      "pi1": "pī",
+      "pi2": "pí",
+      "pi3": "pǐ",
+      "pi4": "pì",
+      "pian1": "piān",
+      "pian2": "pián",
+      "pian3": "piǎn",
+      "pian4": "piàn",
+      "piao1": "piāo",
+      "piao2": "piáo",
+      "piao3": "piǎo",
+      "piao4": "piào",
+      "pie1": "piē",
+      "pie3": "piě",
+      "pie4": "piè",
+      "pin1": "pīn",
+      "pin2": "pín",
+      "pin3": "pǐn",
+      "pin4": "pìn",
+      "ping1": "pīng",
+      "ping2": "píng",
+      "ping3": "pǐng",
+      "ping4": "pìng",
+      "po1": "pō",
+      "po2": "pó",
+      "po3": "pǒ",
+      "po4": "pò",
+      "po5": "po",
+      "pou1": "pōu",
+      "pou2": "póu",
+      "pou3": "pǒu",
+      "pou4": "pòu",
+      "pu1": "pū",
+      "pu2": "pú",
+      "pu3": "pǔ",
+      "pu4": "pù",
+      "pu5": "pu",
+      "qi1": "qī",
+      "qi2": "qí",
+      "qi3": "qǐ",
+      "qi4": "qì",
+      "qi5": "qi",
+      "qia1": "qiā",
+      "qia2": "qiá",
+      "qia3": "qiǎ",
+      "qia4": "qià",
+      "qian1": "qiān",
+      "qian2": "qián",
+      "qian3": "qiǎn",
+      "qian4": "qiàn",
+      "qian5": "qian",
+      "qiang1": "qiāng",
+      "qiang2": "qiáng",
+      "qiang3": "qiǎng",
+      "qiang4": "qiàng",
+      "qiao1": "qiāo",
+      "qiao2": "qiáo",
+      "qiao3": "qiǎo",
+      "qiao4": "qiào",
+      "qie1": "qiē",
+      "qie2": "qié",
+      "qie3": "qiě",
+      "qie4": "qiè",
+      "qin1": "qīn",
+      "qin2": "qín",
+      "qin3": "qǐn",
+      "qin4": "qìn",
+      "qing1": "qīng",
+      "qing2": "qíng",
+      "qing3": "qǐng",
+      "qing4": "qìng",
+      "qing5": "qing",
+      "qiong1": "qiōng",
+      "qiong2": "qióng",
+      "qiong4": "qiòng",
+      "qiu1": "qiū",
+      "qiu2": "qiú",
+      "qiu3": "qiǔ",
+      "qiu4": "qiù",
+      "qu1": "qū",
+      "qu2": "qú",
+      "qu3": "qǔ",
+      "qu4": "qù",
+      "qu5": "qu",
+      "quan1": "quān",
+      "quan2": "quán",
+      "quan3": "quǎn",
+      "quan4": "quàn",
+      "quan5": "quan",
+      "que1": "quē",
+      "que2": "qué",
+      "que4": "què",
+      "qun1": "qūn",
+      "qun2": "qún",
+      "qun3": "qǔn",
+      "ran2": "rán",
+      "ran3": "rǎn",
+      "ran4": "ràn",
+      "rang1": "rāng",
+      "rang2": "ráng",
+      "rang3": "rǎng",
+      "rang4": "ràng",
+      "rao2": "ráo",
+      "rao3": "rǎo",
+      "rao4": "rào",
+      "re2": "ré",
+      "re3": "rě",
+      "re4": "rè",
+      "ren2": "rén",
+      "ren3": "rěn",
+      "ren4": "rèn",
+      "reng1": "rēng",
+      "reng2": "réng",
+      "reng4": "rèng",
+      "ri4": "rì",
+      "rong1": "rōng",
+      "rong2": "róng",
+      "rong3": "rǒng",
+      "rong4": "ròng",
+      "rong5": "rong",
+      "rou2": "róu",
+      "rou3": "rǒu",
+      "rou4": "ròu",
+      "ru2": "rú",
+      "ru3": "rǔ",
+      "ru4": "rù",
+      "ru5": "ru",
+      "rua2": "ruá",
+      "ruan2": "ruán",
+      "ruan3": "ruǎn",
+      "ruan4": "ruàn",
+      "rui2": "ruí",
+      "rui3": "ruǐ",
+      "rui4": "ruì",
+      "run2": "rún",
+      "run3": "rǔn",
+      "run4": "rùn",
+      "ruo2": "ruó",
+      "ruo4": "ruò",
+      "sa1": "sā",
+      "sa3": "sǎ",
+      "sa4": "sà",
+      "sa5": "sa",
+      "sai1": "sāi",
+      "sai3": "sǎi",
+      "sai4": "sài",
+      "san1": "sān",
+      "san3": "sǎn",
+      "san4": "sàn",
+      "san5": "san",
+      "sang1": "sāng",
+      "sang3": "sǎng",
+      "sang4": "sàng",
+      "sao1": "sāo",
+      "sao3": "sǎo",
+      "sao4": "sào",
+      "se1": "sē",
+      "se4": "sè",
+      "sen1": "sēn",
+      "sen3": "sěn",
+      "seng1": "sēng",
+      "seng4": "sèng",
+      "sha1": "shā",
+      "sha2": "shá",
+      "sha3": "shǎ",
+      "sha4": "shà",
+      "sha5": "sha",
+      "shai1": "shāi",
+      "shai3": "shǎi",
+      "shai4": "shài",
+      "shan1": "shān",
+      "shan2": "shán",
+      "shan3": "shǎn",
+      "shan4": "shàn",
+      "shang1": "shāng",
+      "shang3": "shǎng",
+      "shang4": "shàng",
+      "shang5": "shang",
+      "shao1": "shāo",
+      "shao2": "sháo",
+      "shao3": "shǎo",
+      "shao4": "shào",
+      "she1": "shē",
+      "she2": "shé",
+      "she3": "shě",
+      "she4": "shè",
+      "shei2": "shéi",
+      "shen1": "shēn",
+      "shen2": "shén",
+      "shen3": "shěn",
+      "shen4": "shèn",
+      "sheng1": "shēng",
+      "sheng2": "shéng",
+      "sheng3": "shěng",
+      "sheng4": "shèng",
+      "shi1": "shī",
+      "shi2": "shí",
+      "shi3": "shǐ",
+      "shi4": "shì",
+      "shi5": "shi",
+      "shou1": "shōu",
+      "shou2": "shóu",
+      "shou3": "shǒu",
+      "shou4": "shòu",
+      "shou5": "shou",
+      "shu1": "shū",
+      "shu2": "shú",
+      "shu3": "shǔ",
+      "shu4": "shù",
+      "shua1": "shuā",
+      "shua3": "shuǎ",
+      "shua4": "shuà",
+      "shuai1": "shuāi",
+      "shuai3": "shuǎi",
+      "shuai4": "shuài",
+      "shuan1": "shuān",
+      "shuan4": "shuàn",
+      "shuang1": "shuāng",
+      "shuang3": "shuǎng",
+      "shuang4": "shuàng",
+      "shui2": "shuí",
+      "shui3": "shuǐ",
+      "shui4": "shuì",
+      "shui5": "shui",
+      "shun3": "shǔn",
+      "shun4": "shùn",
+      "shuo1": "shuō",
+      "shuo2": "shuó",
+      "shuo4": "shuò",
+      "si1": "sī",
+      "si2": "sí",
+      "si3": "sǐ",
+      "si4": "sì",
+      "si5": "si",
+      "song1": "sōng",
+      "song2": "sóng",
+      "song3": "sǒng",
+      "song4": "sòng",
+      "sou1": "sōu",
+      "sou3": "sǒu",
+      "sou4": "sòu",
+      "su1": "sū",
+      "su2": "sú",
+      "su3": "sǔ",
+      "su4": "sù",
+      "suan1": "suān",
+      "suan3": "suǎn",
+      "suan4": "suàn",
+      "sui1": "suī",
+      "sui2": "suí",
+      "sui3": "suǐ",
+      "sui4": "suì",
+      "sun1": "sūn",
+      "sun3": "sǔn",
+      "sun4": "sùn",
+      "suo1": "suō",
+      "suo2": "suó",
+      "suo3": "suǒ",
+      "suo4": "suò",
+      "suo5": "suo",
+      "ta1": "tā",
+      "ta2": "tá",
+      "ta3": "tǎ",
+      "ta4": "tà",
+      "ta5": "ta",
+      "tai1": "tāi",
+      "tai2": "tái",
+      "tai3": "tǎi",
+      "tai4": "tài",
+      "tai5": "tai",
+      "tan1": "tān",
+      "tan2": "tán",
+      "tan3": "tǎn",
+      "tan4": "tàn",
+      "tang1": "tāng",
+      "tang2": "táng",
+      "tang3": "tǎng",
+      "tang4": "tàng",
+      "tao1": "tāo",
+      "tao2": "táo",
+      "tao3": "tǎo",
+      "tao4": "tào",
+      "te4": "tè",
+      "te5": "te",
+      "tei1": "tēi",
+      "teng1": "tēng",
+      "teng2": "téng",
+      "teng4": "tèng",
+      "ti1": "tī",
+      "ti2": "tí",
+      "ti3": "tǐ",
+      "ti4": "tì",
+      "tian1": "tiān",
+      "tian2": "tián",
+      "tian3": "tiǎn",
+      "tian4": "tiàn",
+      "tiao1": "tiāo",
+      "tiao2": "tiáo",
+      "tiao3": "tiǎo",
+      "tiao4": "tiào",
+      "tiao5": "tiao",
+      "tie1": "tiē",
+      "tie2": "tié",
+      "tie3": "tiě",
+      "tie4": "tiè",
+      "ting1": "tīng",
+      "ting2": "tíng",
+      "ting3": "tǐng",
+      "ting4": "tìng",
+      "tong1": "tōng",
+      "tong2": "tóng",
+      "tong3": "tǒng",
+      "tong4": "tòng",
+      "tou1": "tōu",
+      "tou2": "tóu",
+      "tou3": "tǒu",
+      "tou4": "tòu",
+      "tou5": "tou",
+      "tu1": "tū",
+      "tu2": "tú",
+      "tu3": "tǔ",
+      "tu4": "tù",
+      "tu5": "tu",
+      "tuan1": "tuān",
+      "tuan2": "tuán",
+      "tuan3": "tuǎn",
+      "tuan4": "tuàn",
+      "tui1": "tuī",
+      "tui2": "tuí",
+      "tui3": "tuǐ",
+      "tui4": "tuì",
+      "tun1": "tūn",
+      "tun2": "tún",
+      "tun3": "tǔn",
+      "tun4": "tùn",
+      "tuo1": "tuō",
+      "tuo2": "tuó",
+      "tuo3": "tuǒ",
+      "tuo4": "tuò",
+      "wa1": "wā",
+      "wa2": "wá",
+      "wa3": "wǎ",
+      "wa4": "wà",
+      "wa5": "wa",
+      "wai1": "wāi",
+      "wai3": "wǎi",
+      "wai4": "wài",
+      "wai5": "wai",
+      "wan1": "wān",
+      "wan2": "wán",
+      "wan3": "wǎn",
+      "wan4": "wàn",
+      "wang1": "wāng",
+      "wang2": "wáng",
+      "wang3": "wǎng",
+      "wang4": "wàng",
+      "wei1": "wēi",
+      "wei2": "wéi",
+      "wei3": "wěi",
+      "wei4": "wèi",
+      "wei5": "wei",
+      "wen1": "wēn",
+      "wen2": "wén",
+      "wen3": "wěn",
+      "wen4": "wèn",
+      "wen5": "wen",
+      "weng1": "wēng",
+      "weng3": "wěng",
+      "weng4": "wèng",
+      "wo1": "wō",
+      "wo3": "wǒ",
+      "wo4": "wò",
+      "wong4": "wòng",
+      "wu1": "wū",
+      "wu2": "wú",
+      "wu3": "wǔ",
+      "wu4": "wù",
+      "wu5": "wu",
+      "xi1": "xī",
+      "xi2": "xí",
+      "xi3": "xǐ",
+      "xi4": "xì",
+      "xia1": "xiā",
+      "xia2": "xiá",
+      "xia3": "xiǎ",
+      "xia4": "xià",
+      "xian1": "xiān",
+      "xian2": "xián",
+      "xian3": "xiǎn",
+      "xian4": "xiàn",
+      "xian5": "xian",
+      "xiang1": "xiāng",
+      "xiang2": "xiáng",
+      "xiang3": "xiǎng",
+      "xiang4": "xiàng",
+      "xiao1": "xiāo",
+      "xiao2": "xiáo",
+      "xiao3": "xiǎo",
+      "xiao4": "xiào",
+      "xiao5": "xiao",
+      "xie1": "xiē",
+      "xie2": "xié",
+      "xie3": "xiě",
+      "xie4": "xiè",
+      "xin1": "xīn",
+      "xin2": "xín",
+      "xin3": "xǐn",
+      "xin4": "xìn",
+      "xin5": "xin",
+      "xing1": "xīng",
+      "xing2": "xíng",
+      "xing3": "xǐng",
+      "xing4": "xìng",
+      "xing5": "xing",
+      "xiong1": "xiōng",
+      "xiong2": "xióng",
+      "xiong3": "xiǒng",
+      "xiong4": "xiòng",
+      "xiu1": "xiū",
+      "xiu2": "xiú",
+      "xiu3": "xiǔ",
+      "xiu4": "xiù",
+      "xu1": "xū",
+      "xu2": "xú",
+      "xu3": "xǔ",
+      "xu4": "xù",
+      "xu5": "xu",
+      "xuan1": "xuān",
+      "xuan2": "xuán",
+      "xuan3": "xuǎn",
+      "xuan4": "xuàn",
+      "xue1": "xuē",
+      "xue2": "xué",
+      "xue3": "xuě",
+      "xue4": "xuè",
+      "xun1": "xūn",
+      "xun2": "xún",
+      "xun4": "xùn",
+      "ya1": "yā",
+      "ya2": "yá",
+      "ya3": "yǎ",
+      "ya4": "yà",
+      "ya5": "ya",
+      "yan1": "yān",
+      "yan2": "yán",
+      "yan3": "yǎn",
+      "yan4": "yàn",
+      "yang1": "yāng",
+      "yang2": "yáng",
+      "yang3": "yǎng",
+      "yang4": "yàng",
+      "yang5": "yang",
+      "yao1": "yāo",
+      "yao2": "yáo",
+      "yao3": "yǎo",
+      "yao4": "yào",
+      "ye1": "yē",
+      "ye2": "yé",
+      "ye3": "yě",
+      "ye4": "yè",
+      "ye5": "ye",
+      "yi1": "yī",
+      "yi2": "yí",
+      "yi3": "yǐ",
+      "yi4": "yì",
+      "yin1": "yīn",
+      "yin2": "yín",
+      "yin3": "yǐn",
+      "yin4": "yìn",
+      "yin5": "yin",
+      "ying1": "yīng",
+      "ying2": "yíng",
+      "ying3": "yǐng",
+      "ying4": "yìng",
+      "yo1": "yō",
+      "yo5": "yo",
+      "yong1": "yōng",
+      "yong2": "yóng",
+      "yong3": "yǒng",
+      "yong4": "yòng",
+      "you1": "yōu",
+      "you2": "yóu",
+      "you3": "yǒu",
+      "you4": "yòu",
+      "you5": "you",
+      "yu1": "yū",
+      "yu2": "yú",
+      "yu3": "yǔ",
+      "yu4": "yù",
+      "yu5": "yu",
+      "yuan1": "yuān",
+      "yuan2": "yuán",
+      "yuan3": "yuǎn",
+      "yuan4": "yuàn",
+      "yue1": "yuē",
+      "yue2": "yué",
+      "yue3": "yuě",
+      "yue4": "yuè",
+      "yun1": "yūn",
+      "yun2": "yún",
+      "yun3": "yǔn",
+      "yun4": "yùn",
+      "yun5": "yun",
+      "za1": "zā",
+      "za2": "zá",
+      "za3": "zǎ",
+      "za4": "zà",
+      "zai1": "zāi",
+      "zai3": "zǎi",
+      "zai4": "zài",
+      "zan1": "zān",
+      "zan2": "zán",
+      "zan3": "zǎn",
+      "zan4": "zàn",
+      "zan5": "zan",
+      "zang1": "zāng",
+      "zang3": "zǎng",
+      "zang4": "zàng",
+      "zao1": "zāo",
+      "zao2": "záo",
+      "zao3": "zǎo",
+      "zao4": "zào",
+      "ze2": "zé",
+      "ze4": "zè",
+      "ze5": "ze",
+      "zei2": "zéi",
+      "zen1": "zēn",
+      "zen3": "zěn",
+      "zen4": "zèn",
+      "zen5": "zen",
+      "zeng1": "zēng",
+      "zeng3": "zěng",
+      "zeng4": "zèng",
+      "zha1": "zhā",
+      "zha2": "zhá",
+      "zha3": "zhǎ",
+      "zha4": "zhà",
+      "zha5": "zha",
+      "zhai1": "zhāi",
+      "zhai2": "zhái",
+      "zhai3": "zhǎi",
+      "zhai4": "zhài",
+      "zhan1": "zhān",
+      "zhan2": "zhán",
+      "zhan3": "zhǎn",
+      "zhan4": "zhàn",
+      "zhang1": "zhāng",
+      "zhang3": "zhǎng",
+      "zhang4": "zhàng",
+      "zhang5": "zhang",
+      "zhao1": "zhāo",
+      "zhao2": "zháo",
+      "zhao3": "zhǎo",
+      "zhao4": "zhào",
+      "zhao5": "zhao",
+      "zhe1": "zhē",
+      "zhe2": "zhé",
+      "zhe3": "zhě",
+      "zhe4": "zhè",
+      "zhe5": "zhe",
+      "zhei4": "zhèi",
+      "zhen1": "zhēn",
+      "zhen2": "zhén",
+      "zhen3": "zhěn",
+      "zhen4": "zhèn",
+      "zheng1": "zhēng",
+      "zheng3": "zhěng",
+      "zheng4": "zhèng",
+      "zhi1": "zhī",
+      "zhi2": "zhí",
+      "zhi3": "zhǐ",
+      "zhi4": "zhì",
+      "zhi5": "zhi",
+      "zhong1": "zhōng",
+      "zhong3": "zhǒng",
+      "zhong4": "zhòng",
+      "zhou1": "zhōu",
+      "zhou2": "zhóu",
+      "zhou3": "zhǒu",
+      "zhou4": "zhòu",
+      "zhu1": "zhū",
+      "zhu2": "zhú",
+      "zhu3": "zhǔ",
+      "zhu4": "zhù",
+      "zhua1": "zhuā",
+      "zhua3": "zhuǎ",
+      "zhuai1": "zhuāi",
+      "zhuai3": "zhuǎi",
+      "zhuai4": "zhuài",
+      "zhuan1": "zhuān",
+      "zhuan2": "zhuán",
+      "zhuan3": "zhuǎn",
+      "zhuan4": "zhuàn",
+      "zhuang1": "zhuāng",
+      "zhuang3": "zhuǎng",
+      "zhuang4": "zhuàng",
+      "zhui1": "zhuī",
+      "zhui3": "zhuǐ",
+      "zhui4": "zhuì",
+      "zhun1": "zhūn",
+      "zhun3": "zhǔn",
+      "zhun4": "zhùn",
+      "zhuo1": "zhuō",
+      "zhuo2": "zhuó",
+      "zhuo4": "zhuò",
+      "zhuo5": "zhuo",
+      "zi1": "zī",
+      "zi2": "zí",
+      "zi3": "zǐ",
+      "zi4": "zì",
+      "zi5": "zi",
+      "zong1": "zōng",
+      "zong3": "zǒng",
+      "zong4": "zòng",
+      "zong5": "zong",
+      "zou1": "zōu",
+      "zou3": "zǒu",
+      "zou4": "zòu",
+      "zu1": "zū",
+      "zu2": "zú",
+      "zu3": "zǔ",
+      "zu4": "zù",
+      "zuan1": "zuān",
+      "zuan3": "zuǎn",
+      "zuan4": "zuàn",
+      "zui1": "zuī",
+      "zui2": "zuí",
+      "zui3": "zuǐ",
+      "zui4": "zuì",
+      "zui5": "zui",
+      "zun1": "zūn",
+      "zun2": "zún",
+      "zun3": "zǔn",
+      "zun4": "zùn",
+      "zuo1": "zuō",
+      "zuo2": "zuó",
+      "zuo3": "zuǒ",
+      "zuo4": "zuò",
+      "zuo5": "zuo",
+      "ê1": "ê̄",
+      "ê2": "ế",
+      "ê3": "ê̌",
+      "ê4": "ề"
+    }
+  }
+}

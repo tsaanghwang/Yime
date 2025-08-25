@@ -1,3 +1,2 @@
-# Yinyuanxitong/__init__.py
-from pkgutil import extend_path
-__path__ = extend_path(__path__, __name__)
+# 项目根目录初始化文件
+# 使 Python 能将整个项目识别为一个包
