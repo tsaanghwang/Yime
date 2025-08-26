@@ -2,6 +2,9 @@
 """
 韵母动态添加功能总结测试
 """
+import  sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 
 from syllable_categorizer import SyllableCategorizer
 from syllable_analyzer import YinjieAnalyzer

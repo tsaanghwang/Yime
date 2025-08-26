@@ -1,8 +1,9 @@
 import json
-from pathlib import Path
 from typing import Dict, Any
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 from syllable.analysis.slice.zaoyin_yinyuan import NoiseYinyuan
-
 
 class ShouyinEncoder:
     """首音编码处理器，整合音元映射和音元序列生成功能"""

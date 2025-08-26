@@ -1,7 +1,10 @@
 import json
 from typing import Dict, List
-from ganyin import Ganyin
+import  sys
 from pathlib import Path
+sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
+
+from ganyin import Ganyin
 from pitched_pianyin import YueyinPianyin
 
 

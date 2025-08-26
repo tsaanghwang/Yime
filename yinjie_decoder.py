@@ -50,17 +50,17 @@ if __name__ == "__main__":
     examples = ["ma1", "ni3", "hao3", "shang4", "xia4"]
     for pinyin in examples:
         try:
-            yin = decoder.decode(pinyin)
+            yinjie = decoder.decode(pinyin)
             print(f"\n解码 '{pinyin}':")
-            print(f"音节线性结构: {yin}")
-            print(f"音节层次结构: [首音: {yin.initial}, [干音：[呼音: {yin.ascender}, [韵音: [主音: {yin.peak}, 末音: {yin.descender}]]]]]")
-            print(f"干音层次结构: {{呼音: {yin.ascender}, 韵音: {{主音: {yin.peak}, 末音: {yin.descender}}}}}")
-            print(f"韵音线性结构: {{主音: {yin.peak}, 末音: {yin.descender}}}")
-            print(f"首音: {yin.initial}")
-            print(f"呼音: {yin.ascender}")
-            print(f"主音: {yin.peak}")
-            print(f"末音: {yin.descender}")
-            print(f"音节: {yin.initial}{yin.ascender}{yin.peak}{yin.descender}")
+            print(f"音节线性结构: {yinjie}")
+            print(f"音节层次结构: [首音: {yinjie.initial}, [干音：[呼音: {yinjie.ascender}, [韵音: [主音: {yinjie.peak}, 末音: {yinjie.descender}]]]]]")
+            print(f"干音层次结构: {{呼音: {yinjie.ascender}, 韵音: {{主音: {yinjie.peak}, 末音: {yinjie.descender}}}}}")
+            print(f"韵音线性结构: {{主音: {yinjie.peak}, 末音: {yinjie.descender}}}")
+            print(f"首音: {yinjie.initial}")
+            print(f"呼音: {yinjie.ascender}")
+            print(f"主音: {yinjie.peak}")
+            print(f"末音: {yinjie.descender}")
+            print(f"音节: {yinjie.initial}{yinjie.ascender}{yinjie.peak}{yinjie.descender}")
         except ValueError as e:
             print(f"解码 '{pinyin}' 时出错: {e}")
 
@@ -68,5 +68,5 @@ if __name__ == "__main__":
     all_yinjie = decoder.decode_all()
     print(f"\n解码了 {len(all_yinjie)} 个音节")
     print("前5个音节示例:")
-    for i, (pinyin, yin) in enumerate(list(all_yinjie.items())[:5]):
-        print(f"{i+1}. {pinyin}: {yin}")
+    for i, (pinyin, yinjie) in enumerate(list(all_yinjie.items())[:5]):
+        print(f"{i+1}. {pinyin}: {yinjie}")
