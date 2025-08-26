@@ -2,6 +2,15 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "temp",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\syllable\\analysis\\initial_final_with_tone\\temp.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\syllable\\analysis\\initial_final_with_tone",
+      "addSourceRootsToPythonpath": true
+    },
+    {
       "name": "yinjie_decoder",
       "type": "python",
       "request": "launch",
