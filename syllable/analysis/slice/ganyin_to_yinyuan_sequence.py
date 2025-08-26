@@ -3,15 +3,13 @@
 功能：生成干音的音元序列
 流程：读取干音与片音序列的映射数据，并将其转换为干音与音元序列的映射数据。
 """
-from syllable import Syllable  # When run directly as a
 import json
-from pathlib import Path
 from typing import Dict, Any
-from yueyin_yinyuan import YueyinYinyuan
-
-import sys
+import  sys
 from pathlib import Path
-sys.path.append(str(Path(__file__).parent))
+sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
+
+from yueyin_yinyuan import YueyinYinyuan
 
 
 class GanyinToYinyuanSequence:

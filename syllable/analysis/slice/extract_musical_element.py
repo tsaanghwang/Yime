@@ -3,7 +3,9 @@
 """
 
 import json
+import  sys
 from pathlib import Path
+sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 from yueyin_yinyuan import YueyinYinyuan  # 使用具体的子类
 
 

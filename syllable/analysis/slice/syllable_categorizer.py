@@ -2,6 +2,9 @@
 干音分类工具类
 功能：根据韵母类型将干音分为四类（单质、前长、后长、三质）
 """
+import  sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 from syllable.analysis.slice.ganyin import Ganyin  # 改为相对导入
 from typing import Dict, Tuple, Set
 
