@@ -7,14 +7,19 @@ from syllable.analysis.slice.zaoyin_yinyuan import NoiseYinyuan
 
 class ShouyinEncoder:
     """首音编码处理器，整合音元映射和音元序列生成功能"""
+
+    # 类常量
+    START_CODEPOINT = 0x100000
+    SUBDIR = "yinyuan"
+    ZAOYIN_FILENAME = "zaoyin_yinyuan.json"
+
     def __init__(self, data_path=None):
         self.zaoyin_yinyuan = NoiseYinyuan(quality="")
         self.shouyin_data = None
-        self.default_data_path = Path(__file__).parent / "yinyuan" / "zaoyin_yinyuan.json"
+        self.module_dir = Path(__file__).parent
+        self.default_data_path = self.module_dir / self.SUBDIR / self.ZAOYIN_FILENAME
         if data_path:
             self.load_shouyin_data(data_path)
-
-    START_CODEPOINT = 0x100000  # 类常量
 
     def load_shouyin_data(self, input_path: Path) -> Dict[str, Any]:
         """加载首音数据
@@ -44,11 +49,10 @@ class ShouyinEncoder:
 
     def _load_codepoint_mapping(self):
         """私有方法加载码位映射表"""
-        base_dir = Path(__file__).parent
-        map_path = base_dir / "yinyuan" / "shouyin_codepoint.json"
+        map_path = self.module_dir / self.SUBDIR / "shouyin_codepoint.json"
         with open(map_path, 'r', encoding='utf-8') as f:
             data = json.load(f)
-            self._codepoint_map = data["首音"]  # 直接获取"首音"下的映射
+            self._codepoint_map = data["首音"]
 
     def map_shouyin_to_codepoint(self, shouyin: str) -> str:
         """将首音映射到码位"""
@@ -95,10 +99,8 @@ class ShouyinEncoder:
 
     def generate_encoding_files(self):
         """生成所有编码相关文件"""
-        base_dir = Path(__file__).parent
+        zaoyin_yinyuan_path = self.module_dir / self.SUBDIR / self.ZAOYIN_FILENAME
 
-        # 1. 生成音元编码映射 - 修改为使用简化版文件
-        zaoyin_yinyuan_path = base_dir / "yinyuan" / "zaoyin_yinyuan.json"
         with open(zaoyin_yinyuan_path, "r", encoding="utf-8") as f:
             zaoyin_yinyuan_data = json.load(f)
 
@@ -111,7 +113,7 @@ class ShouyinEncoder:
             "zaoyin": zaoyin
         }
 
-        encoding_path = base_dir / "yinyuan" / "yinyuan.json"
+        encoding_path = self.module_dir / self.SUBDIR / "yinyuan.json"
 
         # 文件追加逻辑 - 处理空文件或不存在的情况
         existing_data = {}
@@ -131,9 +133,9 @@ class ShouyinEncoder:
 
         self.save_yinyuan_data(encoding_path, encoding_data)
 
-        # 2. 生成首音符号映射
-        input_file = base_dir / 'yinyuan' / 'zaoyin_yinyuan.json'
-        output_file = base_dir / 'yinyuan' / 'shouyin_codepoint.json'
+        # 2. 生成首音符号映射 - 音元分集文件
+        input_file = self.module_dir / self.SUBDIR / 'zaoyin_yinyuan.json'
+        output_file = self.module_dir / self.SUBDIR / 'shouyin_codepoint.json'
 
         shouyin_data = self.load_shouyin_data(input_file)
         yinyuan_data = self.process_shouyin(shouyin_data)
