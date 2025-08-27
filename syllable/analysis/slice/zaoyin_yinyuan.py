@@ -47,42 +47,30 @@ class NoiseYinyuan(IndeterminatePitchYinyuan):
                 result[key] = f"{self.quality}{'ˊ' if self.pitch else ''}"
         return result
 
-    def _change_pitch_style(self, data: Dict) -> Dict:
-        """
-        修改音调标记风格：将所有字符串中的 'ˊ' 替换为 'ˉ'，并兼容 parts 既可能为 dict 也可能为 str 的情况。
-        """
-        result = {}
-        for shouyin_type, shouyin_data in data.items():
-            result[shouyin_type] = {}
-            for shouyin_name, parts in shouyin_data.items():
-                if isinstance(parts, dict):
-                    result[shouyin_type][shouyin_name] = {
-                        part: (symbol.replace("ˊ", "ˉ") if isinstance(symbol, str) else symbol)
-                        for part, symbol in parts.items()
-                    }
-                elif isinstance(parts, str):
-                    result[shouyin_type][shouyin_name] = parts.replace("ˊ", "ˉ")
-                else:
-                    result[shouyin_type][shouyin_name] = parts
-        return result
-
-    def convert(self, pinyin_data: dict) -> dict:
-            """将拼音数据转换为音元表示
+    def convert(self, pianyin_data: dict) -> dict:
+            """将片音数据转换为音元表示
 
             Args:
-                pinyin_data: 包含拼音信息的字典
+                pianyin_data: 包含片音信息的字典
 
             Returns:
                 返回音元表示字典，包含音质、音高和类型信息
             """
-            if not isinstance(pinyin_data, dict):
+            if not isinstance(pianyin_data, dict):
                 return {}
 
             return {
-                "quality": pinyin_data.get("pinyin", ""),
+                "quality": pianyin_data.get("pinyin", ""),
                 "pitch": self.pitch,
                 "type": "unpitched" if self.pitch is None else "unstable_pitch"
             }
+
+    @staticmethod
+    def get_yinyuan_code(initial: str) -> str:
+        """获取音元代码，子类共用相同实现"""
+        return f"UPY_{initial.upper()}"
+
+
 @dataclass
 class ClearNoise(NoiseYinyuan):
     """
@@ -94,13 +82,6 @@ class ClearNoise(NoiseYinyuan):
     @property
     def subtype(self) -> str:
         return "unpitched"
-
-    def is_valid(self) -> bool:
-        return bool(self.quality.strip())
-
-    @staticmethod
-    def get_yinyuan_code(initial: str) -> str:
-        return f"UPY_{initial.upper()}"
 
 
 @dataclass
@@ -114,10 +95,3 @@ class VoicedNoise(NoiseYinyuan):
     @property
     def subtype(self) -> str:
         return "unstable_pitch"
-
-    def is_valid(self) -> bool:
-        return bool(self.quality.strip())
-
-    @staticmethod
-    def get_yinyuan_code(initial: str) -> str:
-        return f"UPY_{initial.upper()}"
