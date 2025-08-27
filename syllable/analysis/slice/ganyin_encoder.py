@@ -6,20 +6,33 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 from syllable.analysis.slice.yueyin_yinyuan import YueyinYinyuan
 
 class GanyinEncoder:
+    """干音编码处理器，整合音元映射和音元序列生成功能"""
+
+    # 类常量
+    START_CODEPOINT = 0x100020
+    SUBDIR = "yinyuan"
+    ZAOYIN_FILENAME = "zaoyin_yinyuan.json"
+    YUEYIN_FILENAME = "yueyin_yinyuan.json"
+    YINYUAN_FILENAME = "yinyuan_codepoint.json"
+    DINGCHANGMA_FILENAME = "ganyin_to_fixed_length_yinyuan_sequence.json"
+    BIANCHANGMA_FILENAME = "ganyin_to_variable_length_yinyuan_sequence.json"
+
     def __init__(self):
         self.yueyin_yinyuan = YueyinYinyuan(quality="", pitch="")
+        self.module_dir = Path(__file__).parent
+
         # 预加载固定长度编码字典
         self.fixed_length_encoding = self._load_fixed_length_encoding()
 
         # 修复路径 - 直接使用 yinyuan 子目录
-        mapping_path = Path(__file__).parent / "yinyuan" / "ganyin_to_fixed_length_yinyuan_sequence.json"
+        mapping_path = self.module_dir / self.SUBDIR / self.DINGCHANGMA_FILENAME
         with open(mapping_path, 'r', encoding='utf-8') as f:
             self.encoding_map = json.load(f)
 
     def _load_fixed_length_encoding(self) -> Dict[str, str]:
         """加载固定长度编码字典"""
         # 修复路径 - 直接使用 yinyuan 子目录
-        encoding_path = Path(__file__).parent / "yinyuan" / "ganyin_to_fixed_length_yinyuan_sequence.json"
+        encoding_path = self.module_dir / self.SUBDIR / self.DINGCHANGMA_FILENAME
         with encoding_path.open('r', encoding='utf-8') as f:
             return json.load(f)
 
@@ -71,9 +84,8 @@ class GanyinEncoder:
         Returns:
             返回一个字典，key是音元符号(如"ɪ́")，value是对应的单编码点字符
         """
-        start_codepoint = 0x100020  # 从补充私用区开始
-        return {yinyuan: chr(start_codepoint + i)
-            for i, yinyuan in enumerate(yueyin_list)}
+        return {yinyuan: chr(cls.START_CODEPOINT + i)
+                for i, yinyuan in enumerate(yueyin_list)}
 
     def convert_pianyin_to_yinyuan(self, pianyin: str) -> str:
         """将片音转换为音元"""
@@ -102,15 +114,14 @@ class GanyinEncoder:
 
     def generate_encoding_files(self):
         """生成所有编码相关文件"""
-        base_dir = Path(__file__).parent
 
         # 1. 生成音元编码映射
-        yueyin_yinyuan_path = base_dir / "yinyuan" / "yueyin_yinyuan.json"
+        yueyin_yinyuan_path = self.module_dir / self.SUBDIR / self.YUEYIN_FILENAME
         with open(yueyin_yinyuan_path, "r", encoding="utf-8") as f:
             yueyin_yinyuan_data = json.load(f)
 
         yueyin = self.map_yueyin_to_codepoint(list(yueyin_yinyuan_data.keys()))
-        encoding_path = base_dir / "yinyuan" / "yinyuan.json"
+        encoding_path = self.module_dir / self.SUBDIR / self.YINYUAN_FILENAME
 
         # 修改后的文件保存逻辑：检查文件是否为空
         encoding_data = {"yueyin": yueyin}
@@ -131,8 +142,8 @@ class GanyinEncoder:
 
 
         # 2. 生成音元序列数据
-        input_file = base_dir / 'yinyuan' / 'ganyin_to_pianyin_sequence.json'
-        output_file = base_dir / 'yinyuan' / 'ganyin_to_yinyuan_sequence.json'
+        input_file = self.module_dir / self.SUBDIR / 'ganyin_to_pianyin_sequence.json'
+        output_file = self.module_dir / self.SUBDIR / 'ganyin_to_yinyuan_sequence.json'
         ganyin_data = self.load_ganyin_data(input_file)
         yinyuan_data = self.process_ganyin(ganyin_data)
         self.save_yinyuan_data(output_file, yinyuan_data)
@@ -162,7 +173,7 @@ class GanyinEncoder:
             for ganyin_type in notes_data
             for ganyin_name, parts in notes_data[ganyin_type].items()
         }
-        fixed_length_encoding_output_path = output_file.with_name("ganyin_to_fixed_length_yinyuan_sequence.json")
+        fixed_length_encoding_output_path = output_file.with_name(self.DINGCHANGMA_FILENAME)
         self.save_yinyuan_data(fixed_length_encoding_output_path, simplified_notes_data)
 
         # 6. 生成干音简式拼式字典
@@ -180,7 +191,7 @@ class GanyinEncoder:
             ganyin_name: [value, simplify_consecutive_chars(value)]
             for ganyin_name, value in simplified_notes_data.items()
         }
-        variable_length_encoding_output_path = output_file.with_name("ganyin_to_variable_length_yinyuan_sequence.json")
+        variable_length_encoding_output_path = output_file.with_name(self.BIANCHANGMA_FILENAME)
         self.save_yinyuan_data(variable_length_encoding_output_path, simplified_dict)
 
         print(f"音元编码文件已生成:")
@@ -190,8 +201,6 @@ class GanyinEncoder:
         print(f"- 干音音元字典详版: {notes_output_path}")
         print(f"- 干音完整拼式字典: {fixed_length_encoding_output_path}")
         print(f"- 干音简式拼式字典: {variable_length_encoding_output_path}")
-
-
 
 def main():
     encoder = GanyinEncoder()

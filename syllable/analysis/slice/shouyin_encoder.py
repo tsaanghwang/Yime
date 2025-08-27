@@ -12,6 +12,8 @@ class ShouyinEncoder:
     START_CODEPOINT = 0x100000
     SUBDIR = "yinyuan"
     ZAOYIN_FILENAME = "zaoyin_yinyuan.json"
+    SHOUYIN_FILENAME = "shouyin_codepoint.json"
+    YINYUAN_FILENAME = "yinyuan_codepoint.json"
 
     def __init__(self, data_path=None):
         self.zaoyin_yinyuan = NoiseYinyuan(quality="")
@@ -49,7 +51,7 @@ class ShouyinEncoder:
 
     def _load_codepoint_mapping(self):
         """私有方法加载码位映射表"""
-        map_path = self.module_dir / self.SUBDIR / "shouyin_codepoint.json"
+        map_path = self.module_dir / self.SUBDIR / self.SHOUYIN_FILENAME
         with open(map_path, 'r', encoding='utf-8') as f:
             data = json.load(f)
             self._codepoint_map = data["首音"]
@@ -113,7 +115,7 @@ class ShouyinEncoder:
             "zaoyin": zaoyin
         }
 
-        encoding_path = self.module_dir / self.SUBDIR / "yinyuan.json"
+        encoding_path = self.module_dir / self.SUBDIR / self.YINYUAN_FILENAME
 
         # 文件追加逻辑 - 处理空文件或不存在的情况
         existing_data = {}
@@ -134,8 +136,8 @@ class ShouyinEncoder:
         self.save_yinyuan_data(encoding_path, encoding_data)
 
         # 2. 生成首音符号映射 - 音元分集文件
-        input_file = self.module_dir / self.SUBDIR / 'zaoyin_yinyuan.json'
-        output_file = self.module_dir / self.SUBDIR / 'shouyin_codepoint.json'
+        input_file = self.module_dir / self.SUBDIR / self.ZAOYIN_FILENAME
+        output_file = self.module_dir / self.SUBDIR / self.SHOUYIN_FILENAME
 
         shouyin_data = self.load_shouyin_data(input_file)
         yinyuan_data = self.process_shouyin(shouyin_data)
