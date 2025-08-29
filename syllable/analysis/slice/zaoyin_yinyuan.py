@@ -1,5 +1,5 @@
 """
-不定调音元(IndeterminatePitchYinyuan/NoiseYinyuan/ZaoyinYinyuan)表示法
+不定调音元(UncertainPitchYinyuan/NoiseYinyuan/ZaoyinYinyuan)表示法
 
 噪音类音元分为两类：
 1. 无调音元(UnpitchedYinyuan): 清辅音，没有音调
@@ -15,13 +15,13 @@ from syllable.analysis.slice.yinyuan import (
     UnstablePitchYinyuan,
     DurationType,
     LoudnessType,
-    IndeterminatePitchYinyuan,
+    UncertainPitchYinyuan,
 )
 
 @dataclass
-class NoiseYinyuan(IndeterminatePitchYinyuan):
+class NoiseYinyuan(UncertainPitchYinyuan):
     """
-    噪音类音元基类，继承自 IndeterminatePitchYinyuan
+    噪音类音元基类，继承自 UncertainPitchYinyuan
     包含清音和浊辅音的共同特性
     """
     quality: str = ""  # 音质特征
@@ -64,11 +64,6 @@ class NoiseYinyuan(IndeterminatePitchYinyuan):
                 "pitch": self.pitch,
                 "type": "unpitched" if self.pitch is None else "unstable_pitch"
             }
-
-    @staticmethod
-    def get_yinyuan_code(initial: str) -> str:
-        """获取音元代码，子类共用相同实现"""
-        return f"UPY_{initial.upper()}"
 
 
 @dataclass

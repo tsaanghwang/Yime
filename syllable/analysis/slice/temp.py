@@ -33,7 +33,7 @@ def get_base_and_tone(char):
     elif char == 'ng':
         return ('n', None, 0)  # 调号标在 'n' 上（索引 0）
     else:
-        return (char, None, 0)  # 简单字符，调号标在自身
+        return (char, None, 0)  # 单一字符，调号标在字符上
 
 def normalize_char(char, tone_mark):
     """
