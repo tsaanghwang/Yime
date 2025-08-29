@@ -1,0 +1,40 @@
+{
+    "encodingScheme": {
+        "description": {
+            "i18n": {
+                "en": "Private encoding for Pinyin-based input method",
+                "zh": "基于拼音的私有编码输入法方案"
+            }
+        },
+        "version": "1.0",
+        "privateUnicodeRange": "U+E000~U+F8FF"
+    },
+    "keystrokeToPrivateCode": {
+        "zh": "\ue000",
+        "ch": "\ue001",
+        "sh": "\ue002",
+        "ang": "\ue003"
+    },
+    "privateCodeToPinyin": {
+        "\ue000": "zh",
+        "\ue001": "ch",
+        "\ue002": "sh",
+        "\ue003": "ang"
+    },
+    "pinyinToCharacters": {
+        "zh": ["中", "种", "重", "众"],
+        "ch": ["吃", "迟", "持", "池"],
+        "sh": ["是", "时", "事", "十"],
+        "ang": ["张", "长", "常", "场"]
+    },
+    "fuzzyPinyin": {
+        "zh": ["z", "ch"],
+        "c": ["ch", "k"]
+      },
+    "multiCharWords": {
+        "zhong": {
+          "pinyin": ["zhong", "guo"],
+          "characters": ["中国"]
+        }
+      }
+}

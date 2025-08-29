@@ -11,7 +11,7 @@ import sys
 import json
 import logging
 from pathlib import Path
-from typing import Dict, Any, Optional, Tuple
+from typing import Dict, Any, Optional
 from syllable_categorizer import SyllableCategorizer
 from shouyin_encoder import ShouyinEncoder
 from ganyin_encoder import GanyinEncoder
