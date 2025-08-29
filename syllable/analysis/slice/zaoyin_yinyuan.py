@@ -11,8 +11,6 @@
 from dataclasses import dataclass
 from typing import Optional, Dict
 from syllable.analysis.slice.yinyuan import (
-    UnpitchedYinyuan,
-    UnstablePitchYinyuan,
     DurationType,
     LoudnessType,
     UncertainPitchYinyuan,
