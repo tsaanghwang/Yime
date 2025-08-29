@@ -47,7 +47,7 @@ def generate_zaoyin_yinyuan():
                 }
             merged_mapping[initial]["ipa"].extend(ipas)
             merged_mapping[initial]["type"] = yinyuan_type
-            merged_mapping[initial]["code"] = NoiseClass.get_yinyuan_code(initial)
+            merged_mapping[initial]["code"] = NoiseClass._get_yinyuan_code(initial)
 
     # 按预定义顺序排序
     initial_order = pianyin_data.get('initial_order', [
