@@ -2,6 +2,51 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "transform_dict_structure.bak",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\yime\\transform_dict_structure.bak.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\yime",
+      "addSourceRootsToPythonpath": true
+    },
+    {
+      "name": "transform_dict_structure",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\yime\\transform_dict_structure.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\yime",
+      "addSourceRootsToPythonpath": true
+    },
+    {
+      "name": "reverse_key_value_pairs",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\yime\\reverse_key_value_pairs.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\yime",
+      "addSourceRootsToPythonpath": true
+    },
+    {
+      "name": "jsonpath_example",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\yime\\jsonpath_example.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\yime",
+      "addSourceRootsToPythonpath": true
+    },
+    {
+      "name": "example",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\yime\\example.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\yime",
+      "addSourceRootsToPythonpath": true
+    },
+    {
       "name": "test_class_renaming",
       "type": "python",
       "request": "launch",

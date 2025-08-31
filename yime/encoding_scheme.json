@@ -2,24 +2,26 @@
     "encodingScheme": {
         "description": {
             "i18n": {
-                "en": "Private encoding for Pinyin-based input method",
-                "zh": "基于拼音的私有编码输入法方案"
-            }
+                "en": "Supplementary Private Use Area-B-based encoding scheme for Yinyuan input method",
+                "zh": "基于增补专用B区的音元输入法编码方案"
+            },
+            "note": "This scheme uses Unicode range U+100000~U+10FFFF (Supplementary Private Use Area-B)"
         },
         "version": "1.0",
-        "privateUnicodeRange": "U+E000~U+F8FF"
+        "privateUnicodeRange": "U+100000~U+10FFFF",
+        "lastModified": "2025-08-30"
     },
     "keystrokeToPrivateCode": {
-        "zh": "\ue000",
-        "ch": "\ue001",
-        "sh": "\ue002",
-        "ang": "\ue003"
+        "zh": "0x100000",
+        "ch": "0x100001",
+        "sh": "0x100002",
+        "ang": "0x100003"
     },
     "privateCodeToPinyin": {
-        "\ue000": "zh",
-        "\ue001": "ch",
-        "\ue002": "sh",
-        "\ue003": "ang"
+        "0x100000": "zh",
+        "0x100001": "ch",
+        "0x100002": "sh",
+        "0x100003": "ang"
     },
     "pinyinToCharacters": {
         "zh": ["中", "种", "重", "众"],
@@ -30,11 +32,12 @@
     "fuzzyPinyin": {
         "zh": ["z", "ch"],
         "c": ["ch", "k"]
-      },
+    },
     "multiCharWords": {
         "zhong": {
-          "pinyin": ["zhong", "guo"],
-          "characters": ["中国"]
+            "pinyin": ["zhong", "guo"],
+            "characters": ["中国"],
+            "code": "0x100004"
         }
-      }
+    }
 }
