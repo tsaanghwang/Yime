@@ -28,11 +28,11 @@ class Yueyin(PitchedPianyin):
     """
 
     TONE_SEGMENT_MARKS = {
-        "5": "˥",  # 高平调
+        "5": "˥",  # 高平
         "4": "˦",  # 次高平调
         "3": "˧",  # 中平调
         "2": "˨",  # 次低平调
-        "1": "˩",  # 低平调
+        "1": "˩",  # 低平
     }
 
     def __init__(self, quality, tone_segment, representation="pianyin", pitch_style="number"):
