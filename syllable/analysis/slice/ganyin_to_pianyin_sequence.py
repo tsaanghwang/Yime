@@ -11,10 +11,10 @@ from pitched_pianyin import YueyinPianyin
 class GanyinSlicer:
     def __init__(self):
         self.tone_patterns = {
-            "high_tone": ["5", "5", "5"],  # 高平调
-            "rising_tone": ["3", "4", "5"],  # 上升调
-            "low_tone": ["2", "1", "2"],  # 低平调
-            "falling_tone": ["5", "4", "1"],  # 下降调
+            "high_tone": ["5", "5", "5"],  # 降调
+            "rising_tone": ["3", "4", "5"],  # 升调
+            "low_tone": ["2", "1", "2"],  # 低调
+            "falling_tone": ["5", "4", "1"],  # 降调
             "neutral_tone": ["4", "4", "4"]  # 中性调(轻声调)
         }
         self.pitch_levels = {

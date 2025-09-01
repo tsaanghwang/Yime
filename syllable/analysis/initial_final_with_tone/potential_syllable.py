@@ -4,9 +4,9 @@ from pathlib import Path
 
 # 声调符号映射
 TONE_MARKS = {
-    "1": "̄",  # 高平调
+    "1": "̄",  # 降调
     "2": "́",  # 升调
-    "3": "̌",  # 低平调
+    "3": "̌",  # 低调
     "4": "̀",  # 降调
     "5": ""   # 轻声
 }
@@ -20,14 +20,14 @@ SPECIAL_QUALITIES = ["ê", "m", "n", "ng", "hm", "hn", "hng"]
 
 def normalize_pinyin(pinyin_with_tone: str) -> str:
     """
-    将带数字调号的拼音转换为带声调符号的标准拼音
+    将用数字标调的拼音转换为用调号标调的拼音
     参考 pinyin_normalizer.py 的实现
 
     参数:
-        pinyin_with_tone: 带数字调号的拼音 (如 "zhong1")
+        pinyin_with_tone: 用数字标调的拼音 (如 "zhong1")
 
     返回:
-        带声调符号的标准拼音 (如 "zhōng")
+        用调号标调的拼音 (如 "zhōng")
     """
     if not pinyin_with_tone or not pinyin_with_tone[-1].isdigit():
         return pinyin_with_tone  # 没有调号，直接返回
@@ -59,7 +59,7 @@ def normalize_special_pinyin(syllable: str, tone: str) -> str:
         tone: 声调数字（1-5）
 
     返回:
-        带声调符号的标准拼音
+        用调号标调的拼音
     """
     if tone not in TONE_MARKS:
         return syllable
