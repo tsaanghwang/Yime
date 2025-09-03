@@ -4,15 +4,15 @@ from pathlib import Path
 
 # 声调符号映射
 TONE_MARKS = {
-    "1": "̄",  # 高平调
+    "1": "̄",  # 降调
     "2": "́",  # 升调
-    "3": "̌",  # 低平调
+    "3": "̌",  # 低调
     "4": "̀",  # 降调
     "5": ""   # 轻声
 }
 
-# 元音优先级顺序（用于确定标调位置）
-VOWEL_PRIORITY = ['a', 'o', 'e', 'ü', 'i', 'u']
+# 标注调号位置优先级顺序
+TONE_POSITION_PRIORITY = ['a', 'o', 'e', 'i', 'u', 'ü']
 
 # 特殊音质列表
 SPECIAL_QUALITIES = ["ê", "m", "n", "ng", "hm", "hn", "hng"]
@@ -20,14 +20,14 @@ SPECIAL_QUALITIES = ["ê", "m", "n", "ng", "hm", "hn", "hng"]
 
 def normalize_pinyin(pinyin_with_tone: str) -> str:
     """
-    将带数字调号的拼音转换为带声调符号的标准拼音
+    将用数字标调的拼音转换为用调号标调的拼音
     参考 pinyin_normalizer.py 的实现
 
     参数:
-        pinyin_with_tone: 带数字调号的拼音 (如 "zhong1")
+        pinyin_with_tone: 用数字标调的拼音 (如 "zhong1")
 
     返回:
-        带声调符号的标准拼音 (如 "zhōng")
+        用调号标调的拼音 (如 "zhōng")
     """
     if not pinyin_with_tone or not pinyin_with_tone[-1].isdigit():
         return pinyin_with_tone  # 没有调号，直接返回
@@ -40,41 +40,41 @@ def normalize_pinyin(pinyin_with_tone: str) -> str:
         if pinyin == sq:
             return normalize_special_pinyin(sq, tone_num)
 
-    # 按优先级查找元音位置
-    for vowel in VOWEL_PRIORITY:
+    # 按优先级查找标调位置
+    for vowel in TONE_POSITION_PRIORITY:
         if vowel in pinyin:
             index = pinyin.index(vowel)
             return pinyin[:index] + vowel + TONE_MARKS[tone_num] + pinyin[index+1:]
 
-    # 没有找到可标调的元音，返回不带调号的拼音
+    # 没有找到合适的标调位置，返回不带调号的拼音
     return pinyin
 
 
-def normalize_special_pinyin(syllable: str, tone: str) -> str:
+def normalize_special_pinyin(syllabic_quality: str, tone: str) -> str:
     """
     标准化特殊音质拼音（ê, m, n, ng, hm, hn, hng）
 
     参数:
-        syllable: 特殊音质音节（不带声调）
+        syllabic_quality: 析出声调的特殊音节的音质
         tone: 声调数字（1-5）
 
     返回:
-        带声调符号的标准拼音
+        用调号标调的拼音
     """
     if tone not in TONE_MARKS:
-        return syllable
+        return syllabic_quality
 
-    if syllable == "ê":
+    if syllabic_quality == "ê":
         return "ê" + TONE_MARKS[tone]
-    elif syllable in ["m", "n"]:
-        return syllable + TONE_MARKS[tone]
-    elif syllable == "ng":
+    elif syllabic_quality in ["m", "n"]:
+        return syllabic_quality + TONE_MARKS[tone]
+    elif syllabic_quality == "ng":
         return "n" + TONE_MARKS[tone] + "g"  # 标调在n上
-    elif syllable in ["hm", "hn", "hng"]:
-        if syllable == "hng":
+    elif syllabic_quality in ["hm", "hn", "hng"]:
+        if syllabic_quality == "hng":
             return "h" + "n" + TONE_MARKS[tone] + "g"
-        return "h" + syllable[1] + TONE_MARKS[tone]
-    return syllable
+        return "h" + syllabic_quality[1] + TONE_MARKS[tone]
+    return syllabic_quality
 
 
 def generate_potential_syllables():

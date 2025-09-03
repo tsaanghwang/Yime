@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from syllable_categorizer import SyllableCategorizer
+import  sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
+from syllable.analysis.slice.syllable_categorizer import SyllableCategorizer
 import json
 
 
@@ -11,7 +14,7 @@ def test_shejian_processing():
 
     # 读取实际数据
     try:
-        with open('ganyin.json', 'r', encoding='utf-8') as f:
+        with open('yinyuan/ganyin.json', 'r', encoding='utf-8') as f:
             data = json.load(f)
         ganyin_data = data['ganyin']
     except FileNotFoundError:
