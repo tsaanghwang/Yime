@@ -40,13 +40,13 @@ def normalize_pinyin(pinyin_with_tone: str) -> str:
         if pinyin == sq:
             return normalize_special_pinyin(sq, tone_num)
 
-    # 按优先级查找元音位置
+    # 按优先级查找标调位置
     for vowel in TONE_POSITION_PRIORITY:
         if vowel in pinyin:
             index = pinyin.index(vowel)
             return pinyin[:index] + vowel + TONE_MARKS[tone_num] + pinyin[index+1:]
 
-    # 没有找到可标调的元音，返回不带调号的拼音
+    # 没有找到合适的标调位置，返回不带调号的拼音
     return pinyin
 
 
