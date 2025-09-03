@@ -11,8 +11,8 @@ TONE_MARKS = {
     "5": ""   # 轻声
 }
 
-# 元音优先级顺序（用于确定标调位置）
-VOWEL_PRIORITY = ['a', 'o', 'e', 'ü', 'i', 'u']
+# 标注调号位置优先级顺序
+TONE_POSITION_PRIORITY = ['a', 'o', 'e', 'i', 'u', 'ü']
 
 # 特殊音质列表
 SPECIAL_QUALITIES = ["ê", "m", "n", "ng", "hm", "hn", "hng"]
@@ -41,7 +41,7 @@ def normalize_pinyin(pinyin_with_tone: str) -> str:
             return normalize_special_pinyin(sq, tone_num)
 
     # 按优先级查找元音位置
-    for vowel in VOWEL_PRIORITY:
+    for vowel in TONE_POSITION_PRIORITY:
         if vowel in pinyin:
             index = pinyin.index(vowel)
             return pinyin[:index] + vowel + TONE_MARKS[tone_num] + pinyin[index+1:]
@@ -50,31 +50,31 @@ def normalize_pinyin(pinyin_with_tone: str) -> str:
     return pinyin
 
 
-def normalize_special_pinyin(syllable: str, tone: str) -> str:
+def normalize_special_pinyin(syllabic_quality: str, tone: str) -> str:
     """
     标准化特殊音质拼音（ê, m, n, ng, hm, hn, hng）
 
     参数:
-        syllable: 特殊音质音节（不带声调）
+        syllabic_quality: 析出声调的特殊音节的音质
         tone: 声调数字（1-5）
 
     返回:
         用调号标调的拼音
     """
     if tone not in TONE_MARKS:
-        return syllable
+        return syllabic_quality
 
-    if syllable == "ê":
+    if syllabic_quality == "ê":
         return "ê" + TONE_MARKS[tone]
-    elif syllable in ["m", "n"]:
-        return syllable + TONE_MARKS[tone]
-    elif syllable == "ng":
+    elif syllabic_quality in ["m", "n"]:
+        return syllabic_quality + TONE_MARKS[tone]
+    elif syllabic_quality == "ng":
         return "n" + TONE_MARKS[tone] + "g"  # 标调在n上
-    elif syllable in ["hm", "hn", "hng"]:
-        if syllable == "hng":
+    elif syllabic_quality in ["hm", "hn", "hng"]:
+        if syllabic_quality == "hng":
             return "h" + "n" + TONE_MARKS[tone] + "g"
-        return "h" + syllable[1] + TONE_MARKS[tone]
-    return syllable
+        return "h" + syllabic_quality[1] + TONE_MARKS[tone]
+    return syllabic_quality
 
 
 def generate_potential_syllables():

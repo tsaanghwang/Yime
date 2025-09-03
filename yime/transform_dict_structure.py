@@ -14,8 +14,8 @@ def enhance_mapping(input_file='yinjie_mapping.json', output_file='enhanced_yinj
 
             # 生成调号标调
             if tone in '12345':
-                diaohao_map = {'1': 'ˉ', '2': 'ˊ', '3': 'ˇ', '4': 'ˋ', '5': ''}
-                mappings['调号标调'] = base + diaohao_map[tone]
+                tone_mark_map = {'1': 'ˉ', '2': 'ˊ', '3': 'ˇ', '4': 'ˋ', '5': ''}
+                mappings['调号标调'] = base + tone_mark_map[tone]
 
             # 生成注音符号 (这里需要实际注音转换逻辑)
             mappings['注音符号'] = convert_to_zhuyin(pinyin)  # 需要实现此函数
