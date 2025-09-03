@@ -2,7 +2,7 @@
 音节编码模块重构版(项目根目录版本)
 
 功能：
-1. 读取音节数据
+1. 读取音节常用格式数据
 2. 切分音节为首音和干音
 3. 对首音和干音进行编码
 4. 对音节编码并保存数据
@@ -147,7 +147,7 @@ class YinjieEncoder:
 
         return shouyin_code + ganyin_code
 
-    def encode_all_yinjie(self, output_subdir: str = "yinyuan") -> Path:
+    def encode_all_yinjie(self, output_subdir: str = "") -> Path:
         """
         编码所有音节并保存结果
 

@@ -1,0 +1,63 @@
+{
+    "initialConsonants": {
+      "B": "b",
+      "P": "p",
+      "M": "m",
+      "F": "f",
+      "D": "d",
+      "T": "t",
+      "N": "n",
+      "L": "l",
+      "G": "g",
+      "K": "k",
+      "H": "h",
+      "J": "j",
+      "Q": "q",
+      "X": "x",
+      "ZH": "zh",
+      "CH": "ch",
+      "SH": "sh",
+      "R": "r",
+      "Z": "z",
+      "C": "c",
+      "S": "s",
+      "Y": "y",
+      "W": "w"
+    },
+    "metadata": {
+      "description": "汉语拼音声母输入码映射表",
+      "version": "1.0",
+      "author": "输入法设计团队"
+    },
+    "title": {
+      "i18n": {
+        "en": "Pinyin Input Settings",
+        "zh": "拼音输入设置"
+      }
+    },
+    "description": {
+      "i18n": {
+        "en": "Configure initial consonants mapping",
+        "zh": "配置声母映射关系"
+      }
+    },
+     "error": {
+      "code": "INVALID_INPUT",
+      "message": {
+        "i18n": {
+          "en": "Invalid initial consonant input",
+          "zh": "无效的声母输入"
+        }
+      }
+    },
+    "fuzzyPinyin": {
+        "zh": ["z", "ch"],
+        "c": ["ch", "k"]
+      },
+      "multiCharWords": {
+        "zhong": {
+          "pinyin": ["zhong", "guo"],
+          "characters": ["中国"]
+        }
+      }
+  }
