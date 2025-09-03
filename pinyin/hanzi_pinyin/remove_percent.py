@@ -28,11 +28,11 @@ def remove_percent_and_save(input_file, output_file):
     with open(output_file, 'w', encoding='utf-8') as f:
         f.writelines(processed_lines)
 
-    print(f"共有{removed_count}行行尾的百分数已删除")
+    print(f"共删除了{removed_count}行的行尾百分数")
     if no_tone_count > 0:
-        print(f"发现{no_tone_count}行不带数字调号的拼音")
+        print(f"发现{no_tone_count}行有不用数字标调的拼音")
     else:
-        print("未发现不带数字调号的拼音")
+        print("未发现不用数字标调的拼音")
 
 
 if __name__ == "__main__":

@@ -2,7 +2,9 @@
 """
 最终验证：干音和韵母的定义与处理
 """
-
+import  sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 from syllable_categorizer import SyllableCategorizer
 import json
 

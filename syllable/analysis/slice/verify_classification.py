@@ -2,8 +2,10 @@
 """
 验证新添加韵母的分类是否合理
 """
-
-from syllable_categorizer import SyllableCategorizer
+import  sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
+from syllable.analysis.slice.syllable_categorizer import SyllableCategorizer
 
 
 def analyze_new_finals():

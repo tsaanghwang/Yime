@@ -7,212 +7,212 @@
     "i": {
       "标准拼音/Standard Pinyin": "i",
       "ASCII输入法/ASCII Input": "i",
-      "说明/Note": "前高不圆唇元音"
+      "说明/Note": "前高不圆唇单质口音韵母"
     },
     "u": {
       "标准拼音/Standard Pinyin": "u",
       "ASCII输入法/ASCII Input": "u",
-      "说明/Note": "后高圆唇元音"
+      "说明/Note": "后高圆唇单质口音韵母"
     },
     "ü": {
       "标准拼音/Standard Pinyin": "ü",
       "ASCII输入法/ASCII Input": "v",
-      "说明/Note": "前高圆唇元音，输入法常用v代替"
+      "说明/Note": "前高圆唇单质口音韵母，在输入法中当与u混淆时用v来代替"
     },
     "a": {
       "标准拼音/Standard Pinyin": "a",
       "ASCII输入法/ASCII Input": "a",
-      "说明/Note": "央低不圆唇元音"
+      "说明/Note": "央低不圆唇单质口音韵母"
     },
     "o": {
       "标准拼音/Standard Pinyin": "o",
       "ASCII输入法/ASCII Input": "o",
-      "说明/Note": "后中圆唇元音"
+      "说明/Note": "后中圆唇单质口音韵母"
     },
     "e": {
       "标准拼音/Standard Pinyin": "e",
       "ASCII输入法/ASCII Input": "e",
-      "说明/Note": "前中不圆唇元音"
+      "说明/Note": "前中偏高不圆唇单质口音韵母"
     },
     "ê": {
       "标准拼音/Standard Pinyin": "ê",
       "ASCII输入法/ASCII Input": "ê",
-      "说明/Note": "特殊韵母，极少用"
+      "说明/Note": "前中不圆唇单质口音韵母"
     },
     "-i": {
       "标准拼音/Standard Pinyin": "-i",
       "ASCII输入法/ASCII Input": "-i",
-      "说明/Note": "仅用于zhi、chi、shi、ri、zi、ci、si等音节"
+      "说明/Note": "舌尖单质口音韵母，只出现音节zhi、chi、shi、ri、zi、ci、si中, \"-\"表示占位符"
     },
     "er": {
       "标准拼音/Standard Pinyin": "er",
       "ASCII输入法/ASCII Input": "er",
-      "说明/Note": "卷舌元音"
+      "说明/Note": "卷舌单质口音韵母"
     },
     "m": {
       "标准拼音/Standard Pinyin": "m",
       "ASCII输入法/ASCII Input": "m",
-      "说明/Note": "鼻音韵母"
+      "说明/Note": "双唇闭合单质鼻音韵母"
     },
     "n": {
       "标准拼音/Standard Pinyin": "n",
       "ASCII输入法/ASCII Input": "n",
-      "说明/Note": "鼻音韵母"
+      "说明/Note": "硬腭前缘单质鼻音韵母"
     },
     "ng": {
       "标准拼音/Standard Pinyin": "ng",
       "ASCII输入法/ASCII Input": "ng",
-      "说明/Note": "鼻音韵母"
+      "说明/Note": "软腭后部单质鼻音韵母"
     },
     "ia": {
       "标准拼音/Standard Pinyin": "ia",
       "ASCII输入法/ASCII Input": "ia",
-      "说明/Note": "i+a复合韵母"
+      "说明/Note": "i+a后长口口韵母"
     },
     "ua": {
       "标准拼音/Standard Pinyin": "ua",
       "ASCII输入法/ASCII Input": "ua",
-      "说明/Note": "u+a复合韵母"
+      "说明/Note": "u+a后长口口韵母"
     },
     "io": {
       "标准拼音/Standard Pinyin": "io",
       "ASCII输入法/ASCII Input": "io",
-      "说明/Note": "i+o复合韵母，极少用"
+      "说明/Note": "i+o后长口口韵母"
     },
     "uo": {
       "标准拼音/Standard Pinyin": "uo",
       "ASCII输入法/ASCII Input": "uo",
-      "说明/Note": "u+o复合韵母"
+      "说明/Note": "u+o后长口口韵母"
     },
     "ie": {
       "标准拼音/Standard Pinyin": "ie",
       "ASCII输入法/ASCII Input": "ie",
-      "说明/Note": "i+e复合韵母"
+      "说明/Note": "i+e后长口口韵母"
     },
     "üe": {
       "标准拼音/Standard Pinyin": "üe",
       "ASCII输入法/ASCII Input": "ve",
-      "说明/Note": "ü+e复合韵母，输入法用ve代替"
+      "说明/Note": "ü+e后长口口韵母，在输入法中当与ue混淆时用ve来代替"
     },
     "ai": {
       "标准拼音/Standard Pinyin": "ai",
       "ASCII输入法/ASCII Input": "ai",
-      "说明/Note": "a+i复合韵母"
+      "说明/Note": "a+i前长口口韵母"
     },
     "ei": {
       "标准拼音/Standard Pinyin": "ei",
       "ASCII输入法/ASCII Input": "ei",
-      "说明/Note": "e+i复合韵母"
+      "说明/Note": "e+i前长口口韵母"
     },
     "ao": {
       "标准拼音/Standard Pinyin": "ao",
       "ASCII输入法/ASCII Input": "ao",
-      "说明/Note": "a+o复合韵母"
+      "说明/Note": "a+o前长口口韵母"
     },
     "ou": {
       "标准拼音/Standard Pinyin": "ou",
       "ASCII输入法/ASCII Input": "ou",
-      "说明/Note": "o+u复合韵母"
+      "说明/Note": "o+u前长口口韵母"
     },
     "an": {
       "标准拼音/Standard Pinyin": "an",
       "ASCII输入法/ASCII Input": "an",
-      "说明/Note": "a+n复合韵母"
+      "说明/Note": "a+n前长口鼻韵母"
     },
     "en": {
       "标准拼音/Standard Pinyin": "en",
       "ASCII输入法/ASCII Input": "en",
-      "说明/Note": "e+n复合韵母"
+      "说明/Note": "e+n前长口鼻韵母"
     },
     "ang": {
       "标准拼音/Standard Pinyin": "ang",
       "ASCII输入法/ASCII Input": "ang",
-      "说明/Note": "a+ng复合韵母"
+      "说明/Note": "a+ng前长口鼻韵母"
     },
     "eng": {
       "标准拼音/Standard Pinyin": "eng",
       "ASCII输入法/ASCII Input": "eng",
-      "说明/Note": "e+ng复合韵母"
+      "说明/Note": "e+ng前长口鼻韵母"
     },
     "iao": {
       "标准拼音/Standard Pinyin": "iao",
       "ASCII输入法/ASCII Input": "iao",
-      "说明/Note": "i+ao复合韵母"
+      "说明/Note": "i+ao三质口口韵母"
     },
     "iou": {
       "标准拼音/Standard Pinyin": "iou",
       "ASCII输入法/ASCII Input": "iu",
-      "说明/Note": "i+ou复合韵母，在非零声母后简拼为iu"
+      "说明/Note": "i+ou三质口口韵母，在非零声母后简拼为iu"
     },
     "uai": {
       "标准拼音/Standard Pinyin": "uai",
       "ASCII输入法/ASCII Input": "uai",
-      "说明/Note": "u+ai复合韵母"
+      "说明/Note": "u+ai三质口口韵母"
     },
     "uei": {
       "标准拼音/Standard Pinyin": "uei",
       "ASCII输入法/ASCII Input": "ui",
-      "说明/Note": "u+ei复合韵母，在非零声母后简拼为ui"
+      "说明/Note": "u+ei三质口口韵母，在非零声母后简拼为ui"
     },
     "ian": {
       "标准拼音/Standard Pinyin": "ian",
       "ASCII输入法/ASCII Input": "ian",
-      "说明/Note": "i+an复合韵母"
+      "说明/Note": "i+an三质口鼻韵母"
     },
     "uan": {
       "标准拼音/Standard Pinyin": "uan",
       "ASCII输入法/ASCII Input": "uan",
-      "说明/Note": "u+an复合韵母"
+      "说明/Note": "u+an三质口鼻韵母"
     },
     "üan": {
       "标准拼音/Standard Pinyin": "üan",
       "ASCII输入法/ASCII Input": "van",
-      "说明/Note": "ü+an复合韵母，输入法用van代替"
+      "说明/Note": "ü+an三质口鼻韵母，在输入法中当与uan混淆时用van来代替"
     },
     "in": {
       "标准拼音/Standard Pinyin": "in",
       "ASCII输入法/ASCII Input": "in",
-      "说明/Note": "i+n复合韵母"
+      "说明/Note": "i+n三质口鼻韵母ien的简拼"
     },
     "uen": {
       "标准拼音/Standard Pinyin": "uen",
       "ASCII输入法/ASCII Input": "un",
-      "说明/Note": "u+en复合韵母，在非零声母后简拼为un"
+      "说明/Note": "u+en三质口鼻韵母，在非零声母后简拼为un"
     },
     "ün": {
       "标准拼音/Standard Pinyin": "ün",
       "ASCII输入法/ASCII Input": "vn",
-      "说明/Note": "ü+n复合韵母，输入法用vn代替"
+      "说明/Note": "ü+n三质口鼻韵母üen的简拼，在输入法中当与un混淆时用vn来代替"
     },
     "iang": {
       "标准拼音/Standard Pinyin": "iang",
       "ASCII输入法/ASCII Input": "iang",
-      "说明/Note": "i+ang复合韵母"
+      "说明/Note": "i+ang三质口鼻韵母"
     },
     "uang": {
       "标准拼音/Standard Pinyin": "uang",
       "ASCII输入法/ASCII Input": "uang",
-      "说明/Note": "u+ang复合韵母"
+      "说明/Note": "u+ang三质口鼻韵母"
     },
     "ing": {
       "标准拼音/Standard Pinyin": "ing",
       "ASCII输入法/ASCII Input": "ing",
-      "说明/Note": "i+ng复合韵母"
+      "说明/Note": "i+ng三质口鼻韵母iong[i𐞑ŋ]的简拼"
     },
     "ueng": {
       "标准拼音/Standard Pinyin": "ueng",
       "ASCII输入法/ASCII Input": "ueng",
-      "说明/Note": "u+eng复合韵母，极少用"
+      "说明/Note": "u+eng三质口鼻韵母uong[u𐞑ŋ]与零声母相拼时的形式"
     },
     "ong": {
       "标准拼音/Standard Pinyin": "ong",
       "ASCII输入法/ASCII Input": "ong",
-      "说明/Note": "o+ng复合韵母"
+      "说明/Note": "o+ng三质口鼻韵母uong[ᴜ𐞑ŋ]与非零声母相拼时的形式"
     },
     "iong": {
       "标准拼音/Standard Pinyin": "iong",
       "ASCII输入法/ASCII Input": "iong",
-      "说明/Note": "i+ong复合韵母"
+      "说明/Note": "i+ong三质口鼻韵母üong[y𐞑ŋ]的替代形式"
     }
   }
 }

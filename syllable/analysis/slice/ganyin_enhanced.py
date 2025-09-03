@@ -50,11 +50,11 @@ def get_ipa(base: str, tone_num: str) -> str:
     base_key = base if base.startswith("_") else base.lstrip("_")
     ipa_base = IPA_MAP.get(base_key, base_key)
     tone_ipa = {
-        "1": "˥˥˥",    # 高平调
-        "2": "˧˦˥",   # 中升调
-        "3": "˨˩˨",  # 低平调
-        "4": "˥˦˩",   # 高降调
-        "5": "˦˦˦",     # 轻声调
+        "1": "˥˥˥",    # 降调
+        "2": "˧˦˥",   # 升调
+        "3": "˨˩˨",  # 低调
+        "4": "˥˦˩",   # 降调
+        "5": "˦˦˦",     # 中性调(轻声调)
     }
 
     # 特殊处理 "_i" 韵母，返回两种变体

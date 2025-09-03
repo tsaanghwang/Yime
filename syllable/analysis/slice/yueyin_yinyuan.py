@@ -5,10 +5,8 @@
 """
 
 from typing import Literal, Union
-from dataclasses import dataclass
 from syllable.analysis.slice.pitched_yinyuan import MusicalYinyuan
-from pianyin import Pianyin, PitchedPianyin, UnpitchedPianyin
-from syllable.analysis.slice.pitched_yinyuan import PitchedYinyuan
+from pianyin import PitchedPianyin, UnpitchedPianyin
 import os
 import json
 

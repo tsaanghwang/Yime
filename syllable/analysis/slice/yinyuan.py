@@ -1,5 +1,5 @@
 """
-音元(Yinyuan)表示法模块
+音元(Yinyuan)表示模块
 
 定义表示汉语音节音元的类层次结构。音元具有四个属性：
 1. 音质(quality) - 必选，表示声音的基本特性
@@ -9,7 +9,7 @@
 
 音元分类体系：
 1. 有调音元(PitchedYinyuan): 有稳定音调
-2. 不定调音元(IndeterminatePitchYinyuan):
+2. 不定调音元(UncertainPitchYinyuan):
    - 无调音元(UnpitchedYinyuan): 完全无调(如清辅音)
    - 不稳定音高音元(UnstablePitchYinyuan): 有不稳定/非规律性音高(如浊阻音)
 """
@@ -58,17 +58,22 @@ class YinyuanBase(ABC):
         return f"{self.__class__.__name__}({', '.join(attrs)})"
 
 @dataclass
-class IndeterminatePitchYinyuan(YinyuanBase, ABC):
+class UncertainPitchYinyuan(YinyuanBase, ABC):
     """
-    不定调音元(NoiseYinyuan)基类
+    不定调音元(UncertainPitchYinyuan)基类
     包含无调音元和不稳定音高音元的共同特性
     """
     @property
     def type(self) -> str:
         return "noise"
 
+    @staticmethod
+    def _get_yinyuan_code(initial: str) -> str:
+        """生成音元代码"""
+        return f"UPY_{initial.upper()}"
+
 @dataclass
-class UnstablePitchYinyuan(IndeterminatePitchYinyuan):
+class UnstablePitchYinyuan(UncertainPitchYinyuan):
     """有不稳定/非规律性音高的音元"""
     quality: str
     duration: DurationType = 'neutral'
@@ -85,18 +90,8 @@ class UnstablePitchYinyuan(IndeterminatePitchYinyuan):
     def is_valid(self) -> bool:
         return bool(self.quality.strip())
 
-    @staticmethod
-    def _get_yinyuan_code(initial: str) -> str:
-        """生成音元代码"""
-        return f"UPY_{initial.upper()}"
-
-    @staticmethod
-    def _get_yinyuan_code(initial: str) -> str:
-        """生成音元代码"""
-        return f"UY_{initial.upper()}"
-
 @dataclass
-class UnpitchedYinyuan(IndeterminatePitchYinyuan):
+class UnpitchedYinyuan(UncertainPitchYinyuan):
     """完全无调的音元"""
     quality: str
     duration: DurationType = 'neutral'
@@ -112,11 +107,6 @@ class UnpitchedYinyuan(IndeterminatePitchYinyuan):
 
     def is_valid(self) -> bool:
         return bool(self.quality.strip())
-
-    @staticmethod
-    def _get_yinyuan_code(initial: str) -> str:
-        """生成音元代码"""
-        return f"UPY_{initial.upper()}"
 
 @dataclass
 class PitchedYinyuan(YinyuanBase):

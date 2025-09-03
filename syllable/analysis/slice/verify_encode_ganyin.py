@@ -1,15 +1,9 @@
 import unittest
 import json
-from pathlib import Path
-# from syllable.analysis.slice.ganyin_encoder import GanyinEncoder
-# from ganyin_encoder import GanyinEncoder
-from ganyin_encoder import GanyinEncoder
-"""
 import sys
 from pathlib import Path
-sys.path.append(str(Path(__file__).parent.parent.parent))  # 添加项目根目录到Python路径
+sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 from syllable.analysis.slice.ganyin_encoder import GanyinEncoder
-"""
 
 class TestGanyinEncoder(unittest.TestCase):
     """干音编码器完备测试"""
@@ -17,7 +11,7 @@ class TestGanyinEncoder(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         # 加载编码映射文件
-        mapping_path = Path(__file__).parent / "yinyuan" / "ganyin_to_yinyuan_seq_fixed_length_encoding.json"
+        mapping_path = Path(__file__).parent / "yinyuan" / "ganyin_to_fixed_length_yinyuan_sequence.json"
         with open(mapping_path, 'r', encoding='utf-8') as f:
             cls.encoding_map = json.load(f)
 

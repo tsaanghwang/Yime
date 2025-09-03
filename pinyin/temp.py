@@ -1,4 +1,53 @@
-# 在pinyin\hanzi_pinyin目录下，把pinyin\hanzi_pinyin\extract_pinyin_1.py和pinyin\hanzi_pinyin\extract_pinyin_2.py合并成一个模块pinyin\hanzi_pinyin\extract_pinyin.py，
-# 且把生成的文件合并成一个文件pinyin\hanzi_pinyin\pinyin.json。
-# 键与键合并（保留所有不同的键），
-# 值与值合并（保留所有不同的值）。
+"""
+# 在yime\output_hanzi.py中，
+# yinyuan_map字典是 enhanced_yinjie_mapping.json
+其结构是：
+{
+  "音元符号": {
+    "􀀕􀀩􀀩􀀩": {
+      "数字标调": "a1",
+      "调号标调": "ā",
+      "注音符号": "ㄚ̄",
+      "反向映射": {
+        "a1": {
+          "调号": "ā",
+          "注音": "ㄚ̄"
+        },
+        "ā": {
+          "数字": "a1",
+          "注音": "ㄚ̄"
+        },
+        "ㄚ̄": {
+          "数字": "a1",
+          "调号": "ā"
+        }
+      }
+    },
+    "􀀕􀀫􀀪􀀩": {
+      "数字标调": "a2",
+      "调号标调": "á",
+      "注音符号": "ㄚ́",
+      "反向映射": {
+        "a2": {
+          "调号": "á",
+          "注音": "ㄚ́"
+        },
+        "á": {
+          "数字": "a2",
+          "注音": "ㄚ́"
+        },
+        "ㄚ́": {
+          "数字": "a2",
+          "调号": "á"
+        }
+      }
+    },
+    ...
+  }
+
+pinyin_hanzi_map字典是 pinyin_hanzi.json
+结构是：
+{"拼音": ["hanzi1", "hanzi2", "hanzi3", ...]}
+
+根据这两个文件的结构完成拼音和汉字的映射关系的转换。
+"""
