@@ -1,4 +1,7 @@
-# 在pinyin\hanzi_pinyin目录下，把pinyin\hanzi_pinyin\extract_pinyin_1.py和pinyin\hanzi_pinyin\extract_pinyin_2.py合并成一个模块pinyin\hanzi_pinyin\extract_pinyin.py，
-# 且把生成的文件合并成一个文件pinyin\hanzi_pinyin\pinyin.json。
-# 键与键合并（保留所有不同的键），
-# 值与值合并（保留所有不同的值）。
+# 在pinyin\hanzi_pinyin\pinyin_normalizer.py中，直接按TONE_POSITION_PRIORITY列表
+# 定义的顺序查找标调位置并标调过于粗糙，需要修改标调规则：
+  # 对有['a', 'o', 'e']的拼音按['a', 'o', 'e']的顺序标调
+  # 对没有['a', 'o', 'e']的拼音：
+    # 在含有['iu', 'ui']的拼音中调号标在后一字符上
+    # 否则把调号标在['i', 'u', 'v', 'ü']上
+# 请按照以上规则修改标调逻辑

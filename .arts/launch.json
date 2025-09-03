@@ -2,6 +2,15 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "normalize_pinyin_file",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\pinyin\\hanzi_pinyin\\normalize_pinyin_file.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\pinyin\\hanzi_pinyin",
+      "addSourceRootsToPythonpath": true
+    },
+    {
       "name": "transform_dict_structure.bak",
       "type": "python",
       "request": "launch",
