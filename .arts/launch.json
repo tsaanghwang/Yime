@@ -2,13 +2,33 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "output_hanzi",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\yime\\output_hanzi.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\yime",
+      "addSourceRootsToPythonpath": true
+    },
+    {
+      "name": "db_migration",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\yime\\db_migration.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\yime",
+      "addSourceRootsToPythonpath": true,
+      "noDebug": true
+    },
+    {
       "name": "gui_input",
       "type": "python",
       "request": "launch",
       "program": "${workspaceFolder}\\yime\\gui_input.py",
       "currentFileConfiguration": false,
       "cwd": "${workspaceFolder}\\yime",
-      "addSourceRootsToPythonpath": true
+      "addSourceRootsToPythonpath": true,
+      "noDebug": true
     },
     {
       "name": "normalize_pinyin_file",

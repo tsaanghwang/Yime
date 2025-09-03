@@ -1,66 +1,154 @@
 # convert_pinyin_to_hanzi.py
+import sqlite3
 import json
 from pathlib import Path
+from functools import lru_cache
 
 class YinYuanInputConverter:
-    def __init__(self,
-                yinyuan_map_path=None,
-                pinyin_hanzi_path=None,
-                universal_map_path=None):
-        """初始化转换器，自动创建或加载通用映射表"""
-        # 设置默认路径(使用Path对象)
+    def __init__(self, db_path=None):
+        """初始化转换器，完全基于数据库"""
         base_dir = Path(__file__).parent
-        self.yinyuan_map_path = Path(yinyuan_map_path) if yinyuan_map_path else base_dir / "enhanced_yinjie_mapping.json"
-        self.pinyin_hanzi_path = Path(pinyin_hanzi_path) if pinyin_hanzi_path else base_dir / "pinyin_hanzi.json"
-        self.universal_map_path = Path(universal_map_path) if universal_map_path else base_dir / "universal_mapping.json"
+        self.db_path = Path(db_path) if db_path else base_dir / "pinyin_hanzi.db"
 
-        # 检查文件是否存在
-        if not self.yinyuan_map_path.exists():
-            raise FileNotFoundError(f"音元映射文件不存在: {self.yinyuan_map_path}")
-        if not self.pinyin_hanzi_path.exists():
-            raise FileNotFoundError(f"拼音汉字映射文件不存在: {self.pinyin_hanzi_path}")
+        if not self.db_path.exists():
+            raise FileNotFoundError(f"数据库文件不存在: {self.db_path}")
 
-        self.yinyuan_map = self._load_json(self.yinyuan_map_path)['音元符号']
-        self.pinyin_hanzi_map = self._load_json(self.pinyin_hanzi_path)
+        self.db_conn = None
+        self._initialize_database_tables()
 
-        # 检查并创建通用映射表
-        if not self.universal_map_path.exists():
-            self._create_universal_map(self.yinyuan_map_path, self.pinyin_hanzi_path, self.universal_map_path)
-        self.universal_map = self._load_json(self.universal_map_path)
+    def _get_db_connection(self):
+        """获取数据库连接(单例模式)"""
+        if self.db_conn is None:
+            self.db_conn = sqlite3.connect(self.db_path)
+            self.db_conn.row_factory = sqlite3.Row
+        return self.db_conn
 
-    def _load_json(self, path):
-        """加载JSON文件"""
-        try:
-            with open(path, 'r', encoding='utf-8') as f:
-                return json.load(f)
-        except json.JSONDecodeError as e:
-            raise ValueError(f"JSON文件解析错误: {path} - {str(e)}")
-        except Exception as e:
-            raise IOError(f"无法读取文件: {path} - {str(e)}")
+    def _initialize_database_tables(self):
+        """确保数据库表存在"""
+        conn = self._get_db_connection()
+        c = conn.cursor()
 
-    def _create_universal_map(self, mapping_file, pinyin_hanzi_file, output_file):
-        """整合自create_universal_mapping.py的功能"""
-        universal_map = {}
-        for yinjie, mappings in self.yinyuan_map.items():
-            pinyin_variants = [
-                mappings['数字标调'],
-                mappings['调号标调'],
-                mappings['注音符号']
-            ]
-            for pinyin in pinyin_variants:
-                if pinyin in self.pinyin_hanzi_map:
-                    universal_map[pinyin] = {
-                        '汉字': self.pinyin_hanzi_map[pinyin],
-                        '音元符号': yinjie,
-                        '其他形式': [v for v in pinyin_variants if v != pinyin]
-                    }
-        try:
-            with open(output_file, 'w', encoding='utf-8') as f:
-                json.dump(universal_map, f, ensure_ascii=False, indent=2)
-        except Exception as e:
-            raise IOError(f"无法写入通用映射文件: {output_file} - {str(e)}")
+        # 检查表是否存在，如果不存在则创建
+        c.execute("""
+        CREATE TABLE IF NOT EXISTS yinyuan_map (
+            yinjie TEXT PRIMARY KEY,
+            number_tones TEXT,
+            tone_marks TEXT,
+            zhuyin TEXT
+        )
+        """)
 
+        c.execute("""
+        CREATE TABLE IF NOT EXISTS universal_map (
+            pinyin TEXT PRIMARY KEY,
+            hanzi TEXT,
+            yinjie TEXT,
+            variants TEXT
+        )
+        """)
+
+        conn.commit()
+
+    @lru_cache(maxsize=5000)
+    def _load_pinyin_hanzi(self, pinyin):
+        """从数据库加载拼音对应的汉字"""
+        conn = self._get_db_connection()
+        c = conn.cursor()
+        c.execute("SELECT hanzi FROM pinyin_hanzi WHERE pinyin=?", (pinyin,))
+        row = c.fetchone()
+        return list(row['hanzi']) if row else []
+
+    def _load_yinyuan_mapping(self, yinjie):
+        """从数据库加载音元映射"""
+        conn = self._get_db_connection()
+        c = conn.cursor()
+        c.execute("""
+        SELECT number_tones, tone_marks, zhuyin
+        FROM yinyuan_map
+        WHERE yinjie=?""", (yinjie,))
+        row = c.fetchone()
+        if row:
+            return {
+                '数字标调': row['number_tones'],
+                '调号标调': row['tone_marks'],
+                '注音符号': row['zhuyin']
+            }
+        return None
+
+    # 修改 convert_pinyin_to_hanzi.py 中的 _load_universal_mapping 方法
+    def _load_universal_mapping(self, pinyin):
+        """优先查询pinyin_hanzi表，兼容旧版数据库"""
+        conn = self._get_db_connection()
+        c = conn.cursor()
+
+        # 先尝试查询pinyin_hanzi表
+        c.execute("SELECT hanzi FROM pinyin_hanzi WHERE pinyin=?", (pinyin,))
+        row = c.fetchone()
+        if row:
+            return {
+                '汉字': list(row['hanzi']),
+                '音元符号': None,
+                '其他形式': []
+            }
+
+        # 再尝试查询universal_map表
+        c.execute("SELECT hanzi, yinjie, variants FROM universal_map WHERE pinyin=?", (pinyin,))
+        row = c.fetchone()
+        if row:
+            return {
+                '汉字': list(row['hanzi']),
+                '音元符号': row['yinjie'],
+                '其他形式': json.loads(row['variants']) if row['variants'] else []
+            }
+
+        return None
+
+    # 字符验证
+    def _validate_input(self, text):
+        """验证输入是否包含有效字符"""
+        import re
+        # 基本验证规则 - 可根据需要扩展
+        if re.search(r'[\uE000-\uF8FF\uF0000-\uFFFFD]', text):  # 私用区范围
+            return False
+        return True
+
+    # 在convert方法开头添加验证
     def convert(self, input_text):
-        """核心转换方法，处理音元输入"""
-        # 这里实现您的转换逻辑
-        pass
+        """核心转换方法，完全基于数据库查询"""
+        if not self._validate_input(input_text):
+            return None, ["无效字符(含私用区)"]
+
+        # 预处理：去除首尾空白，转换为小写
+        input_text = input_text.strip().lower()
+
+        # 1. 在通用映射表中查找
+        universal_mapping = self._load_universal_mapping(input_text)
+        if universal_mapping:
+            return input_text, universal_mapping['汉字']
+
+
+        # 2. 检查是否是音元符号
+        conn = self._get_db_connection()
+        c = conn.cursor()
+
+        # 先检查是否是音元符号(yinjie)
+        c.execute("""
+        SELECT yinjie, number_tones
+        FROM yinyuan_map
+        WHERE yinjie=? OR number_tones=? OR tone_marks=? OR zhuyin=?""",
+        (input_text, input_text, input_text, input_text))
+
+        row = c.fetchone()
+        if row:
+            pinyin = row['number_tones']
+            candidates = self._load_pinyin_hanzi(pinyin)
+            if candidates:
+                return pinyin, candidates
+
+        # 3. 如果都没找到，返回空结果
+        return None, []
+
+    def __del__(self):
+        """析构时关闭数据库连接"""
+        if self.db_conn:
+            self.db_conn.close()
