@@ -1,17 +1,26 @@
-# 查询示例
-from universal_mapping import get_hanzi_by_any_pinyin
+# output_hanzi.py
+from convert_pinyin_to_hanzi import YinYuanInputConverter
+from functools import lru_cache
+
+@lru_cache(maxsize=1)
+def get_converter():
+    """缓存转换器实例"""
+    return YinYuanInputConverter()
 
 def get_hanzi_by_any_pinyin(pinyin_input):
-    #优化查询性能（如使用内存缓存）
+    """
+    使用YinYuanInputConverter处理输入
+    """
+    converter = get_converter()
 
-    with open('yime/universal_mapping.json', 'r', encoding='utf-8') as f:
-        mapping = json.load(f)
+    # 直接查询通用映射表
+    if pinyin_input in converter.universal_map:
+        return converter.universal_map[pinyin_input]['汉字']
 
-    if pinyin_input in mapping:
-        return mapping[pinyin_input]['汉字']
-    return "未找到对应汉字"
+    # 其他处理逻辑...
+    return []
 
-# 无论输入哪种拼音格式都能找到汉字
-print(get_hanzi_by_any_pinyin("zhong1"))  # 数字标调
-print(get_hanzi_by_any_pinyin("zhōng"))   # 调号标调
-print(get_hanzi_by_any_pinyin("ㄓㄨㄥ"))  # 注音符号
+if __name__ == '__main__':
+    print(get_hanzi_by_any_pinyin("zhong1"))
+    print(get_hanzi_by_any_pinyin("zhōng"))
+    print(get_hanzi_by_any_pinyin("ㄓㄨㄥ"))
