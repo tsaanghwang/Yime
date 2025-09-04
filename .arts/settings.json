@@ -73,5 +73,7 @@
   ],
   "editor.codeActionsOnSave": {},
   "search.useGlobalIgnoreFiles": true,
-  "search.useParentIgnoreFiles": true
+  "search.useParentIgnoreFiles": true,
+  "markdown.extension.completion.enabled": true,
+  "markdown.extension.preview.autoShowPreviewToSide": true
 }
