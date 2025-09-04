@@ -1,8 +1,8 @@
 # convert_pinyin_to_hanzi.py
 import sqlite3
-import json
-from pathlib import Path
 from functools import lru_cache
+from pathlib import Path
+from typing import Optional, Tuple, List
 
 class YinYuanInputConverter:
     def __init__(self, db_path=None):
@@ -16,7 +16,7 @@ class YinYuanInputConverter:
         self.db_conn = None
         self._initialize_database_tables()
 
-    def _get_db_connection(self):
+    def _get_db_connection(self) -> sqlite3.Connection:
         """获取数据库连接(单例模式)"""
         if self.db_conn is None:
             self.db_conn = sqlite3.connect(self.db_path)
@@ -24,11 +24,11 @@ class YinYuanInputConverter:
         return self.db_conn
 
     def _initialize_database_tables(self):
-        """确保数据库表存在"""
+        """确保所有必要的数据库表存在"""
         conn = self._get_db_connection()
         c = conn.cursor()
 
-        # 检查表是否存在，如果不存在则创建
+        # 创建音元映射表
         c.execute("""
         CREATE TABLE IF NOT EXISTS yinyuan_map (
             yinjie TEXT PRIMARY KEY,
@@ -38,6 +38,25 @@ class YinYuanInputConverter:
         )
         """)
 
+        # 创建拼音-汉字映射表
+        c.execute("""
+        CREATE TABLE IF NOT EXISTS pinyin_hanzi (
+            pinyin TEXT PRIMARY KEY,
+            hanzi TEXT
+        )
+        """)
+
+        # 创建音元符号映射表
+        c.execute("""
+        CREATE TABLE IF NOT EXISTS yinjie_mapping (
+            symbol TEXT PRIMARY KEY,
+            num_tone TEXT,
+            mark_tone TEXT,
+            zhuyin TEXT
+        )
+        """)
+
+        # 创建通用映射表
         c.execute("""
         CREATE TABLE IF NOT EXISTS universal_map (
             pinyin TEXT PRIMARY KEY,
@@ -50,7 +69,7 @@ class YinYuanInputConverter:
         conn.commit()
 
     @lru_cache(maxsize=5000)
-    def _load_pinyin_hanzi(self, pinyin):
+    def _load_pinyin_hanzi(self, pinyin: str) -> List[str]:
         """从数据库加载拼音对应的汉字"""
         conn = self._get_db_connection()
         c = conn.cursor()
@@ -58,7 +77,7 @@ class YinYuanInputConverter:
         row = c.fetchone()
         return list(row['hanzi']) if row else []
 
-    def _load_yinyuan_mapping(self, yinjie):
+    def _load_yinyuan_mapping(self, yinjie: str) -> Optional[dict]:
         """从数据库加载音元映射"""
         conn = self._get_db_connection()
         c = conn.cursor()
@@ -75,8 +94,7 @@ class YinYuanInputConverter:
             }
         return None
 
-    # 修改 convert_pinyin_to_hanzi.py 中的 _load_universal_mapping 方法
-    def _load_universal_mapping(self, pinyin):
+    def _load_universal_mapping(self, pinyin: str) -> Optional[dict]:
         """优先查询pinyin_hanzi表，兼容旧版数据库"""
         conn = self._get_db_connection()
         c = conn.cursor()
@@ -98,55 +116,101 @@ class YinYuanInputConverter:
             return {
                 '汉字': list(row['hanzi']),
                 '音元符号': row['yinjie'],
-                '其他形式': json.loads(row['variants']) if row['variants'] else []
+                '其他形式': row['variants'].split(',') if row['variants'] else []
             }
 
         return None
 
-    # 字符验证
-    def _validate_input(self, text):
+    def _validate_input(self, text: str) -> bool:
         """验证输入是否包含有效字符"""
-        import re
-        # 基本验证规则 - 可根据需要扩展
-        if re.search(r'[\uE000-\uF8FF\uF0000-\uFFFFD]', text):  # 私用区范围
+        if not text or not isinstance(text, str):
             return False
         return True
 
-    # 在convert方法开头添加验证
+    def _pua_to_pinyin(self, pua_text):
+        """改进的PUA字符转换方法"""
+        if not pua_text or not isinstance(pua_text, str):
+            return None
+
+        try:
+            conn = self._get_db_connection()
+            c = conn.cursor()
+
+            # 1. 先尝试完整匹配
+            c.execute("SELECT mark_tone FROM yinjie_mapping WHERE symbol=?", (pua_text,))
+            row = c.fetchone()
+            if row:
+                return row[0]
+
+            # 2. 处理不完整输入(非4的倍数)
+            pinyin_parts = []
+            valid_chars = []
+
+            # 收集所有有效PUA字符(过滤掉代理对)
+            for char in pua_text:
+                if 0xE000 <= ord(char) <= 0xF8FF:  # PUA范围
+                    valid_chars.append(char)
+                else:
+                    print(f"忽略非PUA字符: {char!r}")
+
+            # 按4字符一组处理
+            for i in range(0, len(valid_chars), 4):
+                quad = ''.join(valid_chars[i:i+4])
+                if len(quad) < 4:
+                    continue  # 忽略不完整组
+
+                c.execute("SELECT mark_tone FROM yinjie_mapping WHERE symbol=?", (quad,))
+                quad_row = c.fetchone()
+                if quad_row:
+                    pinyin_parts.append(quad_row[0])
+
+            return ''.join(pinyin_parts) if pinyin_parts else None
+
+        except Exception as e:
+            print(f"PUA转换错误: {str(e)}")
+            return None
+
     def convert(self, input_text):
-        """核心转换方法，完全基于数据库查询"""
-        if not self._validate_input(input_text):
-            return None, ["无效字符(含私用区)"]
+        print(f"转换输入: {input_text!r}")  # 调试日志
+        try:
+            pinyin = self._pua_to_pinyin(input_text)
+            print(f"转换后拼音: {pinyin!r}")  # 调试日志
 
-        # 预处理：去除首尾空白，转换为小写
-        input_text = input_text.strip().lower()
+            if not pinyin:
+                return None, []
 
-        # 1. 在通用映射表中查找
-        universal_mapping = self._load_universal_mapping(input_text)
-        if universal_mapping:
-            return input_text, universal_mapping['汉字']
+            # 查询对应汉字 - 先尝试带调号查询
+            conn = self._get_db_connection()
+            c = conn.cursor()
 
+            # 尝试带调号查询
+            c.execute("""
+                SELECT hanzi
+                FROM pinyin_hanzi
+                WHERE pinyin=?""", (pinyin,))
+            row = c.fetchone()
 
-        # 2. 检查是否是音元符号
-        conn = self._get_db_connection()
-        c = conn.cursor()
+            if not row:
+                # 如果带调号查询无结果，尝试去掉调号查询
+                base_pinyin = ''.join([c for c in pinyin if c.isalpha()])
+                if base_pinyin != pinyin:  # 只有确实有调号时才进行二次查询
+                    c.execute("""
+                        SELECT hanzi
+                        FROM pinyin_hanzi
+                        WHERE pinyin=?""", (base_pinyin,))
+                    row = c.fetchone()
+                    if row:
+                        # 返回带调号的拼音和候选汉字
+                        return pinyin, list(row[0])
 
-        # 先检查是否是音元符号(yinjie)
-        c.execute("""
-        SELECT yinjie, number_tones
-        FROM yinyuan_map
-        WHERE yinjie=? OR number_tones=? OR tone_marks=? OR zhuyin=?""",
-        (input_text, input_text, input_text, input_text))
+            if row:
+                return pinyin, list(row[0])  # 将汉字字符串转为字符列表
 
-        row = c.fetchone()
-        if row:
-            pinyin = row['number_tones']
-            candidates = self._load_pinyin_hanzi(pinyin)
-            if candidates:
-                return pinyin, candidates
+            return pinyin, []
 
-        # 3. 如果都没找到，返回空结果
-        return None, []
+        except Exception as e:
+            print(f"转换错误: {str(e)}")
+            return None, []        # 注意：这里移除了conn.close()，因为连接由类统一管理
 
     def __del__(self):
         """析构时关闭数据库连接"""
