@@ -34,7 +34,7 @@ class HanziInputApp:
         # ------------------------------------
 
     def _initialize_converter(self) -> YinYuanInputConverter:
-        """初始化拼音转换器(完全数据库版)"""
+        """初始化拼音转换器(数据库版)"""
         try:
             # 获取当前脚本所在目录的绝对路径
             script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -56,7 +56,7 @@ class HanziInputApp:
         input_frame.pack(fill=tk.X)
 
         ttk.Label(input_frame, text="输入音元符号:").pack(anchor=tk.W)
-        self.input_entry = ttk.Entry(input_frame, width=40, font=('Arial', 12, 'normal'))
+        self.input_entry = ttk.Entry(input_frame, width=40, font=('YinYuan Regular', 12, 'normal'))
         self.input_entry.pack(fill=tk.X, pady=5)
         # 注意：我们保留KeyRelease绑定，以获得即时响应，轮询作为补充
         self.input_entry.bind("<KeyRelease>", self.on_input_change)
@@ -67,7 +67,7 @@ class HanziInputApp:
             input_frame,
             text="",
             foreground="blue",
-            font=('Arial', 12, 'bold')
+            font=('YinYuan Regular', 12, 'bold')
         )
         self.pinyin_display.pack(anchor=tk.W, pady=2)
 
@@ -84,7 +84,7 @@ class HanziInputApp:
         self.result_display = ttk.Label(
             result_frame,
             text="",
-            font=('Arial', 14, 'normal'),
+            font=('YinYuan Regular', 14, 'normal'),
             wraplength=400
         )
         self.result_display.pack(fill=tk.BOTH, expand=True, pady=5)
@@ -286,24 +286,24 @@ class HanziInputApp:
         """从数据库加载音元序列并显示在输入框"""
         try:
             conn = self._get_db_connection()
-            c = conn.cursor()
+            cursor = conn.cursor()
 
             # 首先检查表是否存在
-            c.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='yinjie_mapping'")
-            if not c.fetchone():
+            cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='yinjie_mapping'")
+            if not cursor.fetchone():
                 self._show_error_message("yinjie_mapping表不存在")
                 return None
 
             # 检查表结构
-            c.execute("PRAGMA table_info(yinjie_mapping)")
-            columns = [col[1] for col in c.fetchall()]
+            cursor.execute("PRAGMA table_info(yinjie_mapping)")
+            columns = [col[1] for col in cursor.fetchall()]
             if 'symbol' not in columns:
                 self._show_error_message("yinjie_mapping表缺少symbol字段")
                 return None
 
             # 查询所有音元符号
-            c.execute("SELECT symbol FROM yinjie_mapping ORDER BY mark_tone")
-            rows = c.fetchall()
+            cursor.execute("SELECT symbol FROM yinjie_mapping ORDER BY mark_tone")
+            rows = cursor.fetchall()
 
             if rows:
                 sequence = "".join([row['symbol'] for row in rows])
