@@ -1,6 +1,7 @@
 ```mermaid
 graph TD
   %% 输入层
+  
   subgraph Input["输入"]
     DecomposingSyllable[音节]
   end
