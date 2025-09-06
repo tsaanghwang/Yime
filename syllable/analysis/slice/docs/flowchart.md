@@ -110,8 +110,8 @@ graph TD
     subgraph 乐音分析["乐音分析"]
       subgraph 三质干音分析["三质干音分析"]
         TQTrunkTone --> |切分|FirstSegmentOfTQTT[呼调]
-        TQTrunkTone --> |切分|MainSegmentOfTQTT[主调]
         TQTrunkTone --> |切分|LastSegmentOfTQTT[末调]
+        TQTrunkTone --> |切分|MainSegmentOfTQTT[主调]
         FirstSegmentOfTQTT --> |构成|TQFirstMusicalSound[乐音]
         TQFHead --> |构成|TQFirstMusicalSound[乐音]
         MainSegmentOfTQTT --> |构成|TQMainMusicalSound[乐音]
@@ -124,11 +124,11 @@ graph TD
         FLTrunkTone --> |切分|MainSegmentOfFLTT[主调]
         FLTrunkTone --> |切分|LastSegmentOfFLTT[末调]
         FirstSegmentOfFLTT --> |构成|FirstMusicalSound[乐音]
-        FLFHead --> |构成|FirstMusicalSound[乐音]
+        FLFHead --> |构成|FirstMusicalSound
         MainSegmentOfFLTT --> |构成|MainMusicalSound[乐音]
-        FLFNuclear --> |构成|MainMusicalSound[乐音]
+        FLFNuclear --> |构成|MainMusicalSound
         LastSegmentOfFLTT --> |构成|LastMusicalSound[乐音]
-        FLFTail --> |构成|LastMusicalSound[乐音]
+        FLFTail --> |构成|LastMusicalSound
       end
     end
   end
