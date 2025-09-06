@@ -22,17 +22,17 @@ class DatabaseMigrator:
 
     def _create_tables(self, conn: sqlite3.Connection) -> None:
         """创建所有必要的数据库表"""
-        c = conn.cursor()
+        cursor = conn.cursor()
 
         # 拼音-汉字主表
-        c.execute('''CREATE TABLE IF NOT EXISTS pinyin_hanzi (
+        cursor.execute('''CREATE TABLE IF NOT EXISTS pinyin_hanzi (
                      pinyin TEXT PRIMARY KEY,
                      hanzi TEXT NOT NULL,
                      last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                  )''')
 
         # 音元符号表
-        c.execute('''CREATE TABLE IF NOT EXISTS yinjie_mapping (
+        cursor.execute('''CREATE TABLE IF NOT EXISTS yinjie_mapping (
                      symbol TEXT PRIMARY KEY,
                      num_tone TEXT NOT NULL,
                      mark_tone TEXT NOT NULL,
@@ -41,7 +41,7 @@ class DatabaseMigrator:
                  )''')
 
         # 反向映射表
-        c.execute('''CREATE TABLE IF NOT EXISTS yinjie_reverse (
+        cursor.execute('''CREATE TABLE IF NOT EXISTS yinjie_reverse (
                      key TEXT NOT NULL,
                      key_type TEXT NOT NULL CHECK(key_type IN ('num', 'mark', 'zhuyin')),
                      symbol TEXT NOT NULL,
@@ -50,14 +50,14 @@ class DatabaseMigrator:
                  )''')
 
         # 创建索引
-        c.execute('''CREATE INDEX IF NOT EXISTS idx_yinjie_reverse_symbol
+        cursor.execute('''CREATE INDEX IF NOT EXISTS idx_yinjie_reverse_symbol
                      ON yinjie_reverse(symbol)''')
 
         logger.info("数据库表结构创建/验证完成")
 
     def _import_pinyin_data(self, conn: sqlite3.Connection) -> int:
         """导入拼音-汉字数据"""
-        c = conn.cursor()
+        cursor = conn.cursor()
         count = 0
 
         with open(self.json_path, 'r', encoding='utf-8') as f:
@@ -70,7 +70,7 @@ class DatabaseMigrator:
 
                 hanzi_str = ''.join(hanzi_list)
                 try:
-                    c.execute('''INSERT OR REPLACE INTO pinyin_hanzi
+                    cursor.execute('''INSERT OR REPLACE INTO pinyin_hanzi
                                  (pinyin, hanzi) VALUES (?, ?)''',
                              (pinyin, hanzi_str))
                     count += 1
@@ -82,7 +82,7 @@ class DatabaseMigrator:
 
     def _import_yinjie_data(self, conn: sqlite3.Connection) -> int:
         """导入音元符号数据"""
-        c = conn.cursor()
+        cursor = conn.cursor()
         count = 0
 
         with open(self.yinjie_path, 'r', encoding='utf-8') as f:
@@ -97,7 +97,7 @@ class DatabaseMigrator:
 
                     try:
                         # 主映射
-                        c.execute('''INSERT OR REPLACE INTO yinjie_mapping
+                        cursor.execute('''INSERT OR REPLACE INTO yinjie_mapping
                                     (symbol, num_tone, mark_tone, zhuyin)
                                     VALUES (?, ?, ?, ?)''',
                                 (symbol,
@@ -115,7 +115,7 @@ class DatabaseMigrator:
                         for key, mapping_types in mappings['反向映射'].items():
                             for mtype, db_type in reverse_mapping.items():
                                 if mtype in mapping_types:
-                                    c.execute('''INSERT OR REPLACE INTO yinjie_reverse
+                                    cursor.execute('''INSERT OR REPLACE INTO yinjie_reverse
                                                 (key, key_type, symbol)
                                                 VALUES (?, ?, ?)''',
                                             (key, db_type, symbol))
