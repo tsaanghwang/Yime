@@ -29,16 +29,16 @@ def generate_zaoyin_yinyuan():
         pianyin_data = json.load(f)
 
     # 检查数据结构是否包含所需字段
-    if 'indeterminate_pitch_pianyin' not in pianyin_data:
-        raise KeyError("输入文件中缺少 'indeterminate_pitch_pianyin' 字段")
+    if 'uncertain_pitch_pianyin' not in pianyin_data:
+        raise KeyError("输入文件中缺少 'uncertain_pitch_pianyin' 字段")
 
     # 合并所有声母
     merged_mapping = {}
     for yinyuan_type, NoiseClass in [('unpitched_pianyin', ClearNoise), ('unstable_pitch_pianyin', VoicedNoise)]:
-        if yinyuan_type not in pianyin_data['indeterminate_pitch_pianyin']:
+        if yinyuan_type not in pianyin_data['uncertain_pitch_pianyin']:
             continue
 
-        for initial, ipas in pianyin_data['indeterminate_pitch_pianyin'][yinyuan_type].items():
+        for initial, ipas in pianyin_data['uncertain_pitch_pianyin'][yinyuan_type].items():
             if initial not in merged_mapping:
                 merged_mapping[initial] = {
                     "ipa": [],

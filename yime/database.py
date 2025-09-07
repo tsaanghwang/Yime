@@ -25,7 +25,7 @@ def convert_direct(self, input_text):
         return None, []
 
     def on_input_change(self, event: Optional[tk.Event] = None):
-    """使用直接查询优化输入处理"""
+        """使用直接查询优化输入处理"""
     input_text = self.input_entry.get()
     self.last_input_text = input_text  # 同步轮询状态
 
@@ -44,6 +44,7 @@ def convert_direct(self, input_text):
     except Exception as e:
         self._show_error_message(f"转换错误: {str(e)}")
         self.clear_display()
+        
 """
     CREATE TABLE frequency_adjustment (
     pinyin TEXT NOT NULL,
