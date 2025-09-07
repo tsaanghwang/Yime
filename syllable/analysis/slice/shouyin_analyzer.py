@@ -73,12 +73,12 @@ def create_indeterminate_pitch_pianyin():
         ipa_list = initial_ipa_mapping.get(initial, [])
         # 判断是否为浊音
         if initial in VOICED_INITIALS:
-            indeterminate_pitch_pianyin = VoicedNoise(quality=initial)
-            if indeterminate_pitch_pianyin.is_valid():
+            uncertain_pitch_pianyin = VoicedNoise(quality=initial)
+            if uncertain_pitch_pianyin.is_valid():
                 voiced[initial] = ipa_list
         else:
-            indeterminate_pitch_pianyin = ClearNoise(quality=initial)
-            if indeterminate_pitch_pianyin.is_valid():
+            uncertain_pitch_pianyin = ClearNoise(quality=initial)
+            if uncertain_pitch_pianyin.is_valid():
                 voiceless[initial] = ipa_list
 
     return {"unpitched_pianyin": voiceless, "unstable_pitch_pianyin": voiced}
@@ -128,7 +128,7 @@ def main():
             "name": pianyin_initial["name"],
             "description": pianyin_initial["description"],
             "note": pianyin_initial["note"],
-            "indeterminate_pitch_pianyin": classified_noise
+            "uncertain_pitch_pianyin": classified_noise
         }
 
         # 5. 保存结果

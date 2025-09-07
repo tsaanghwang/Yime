@@ -2,7 +2,7 @@
   "name": "噪音，特指有非规律性的音高的片音，是与乐音相对的非乐音，不是通信或身心感受意义上的噪音。",
   "description": "噪音类片音就是声母的具体发音或声母分布在音节中时的音值。",
   "note": "为区分清浊，清零声母用单隔音符 '(U+0027) 来表示; 浊零声母用双隔音符 '' 来表示。",
-  "indeterminate_pitch_pianyin": {
+  "uncertain_pitch_pianyin": {
     "unpitched_pianyin": {
       "b": ["p"],
       "p": ["pͪ"],
