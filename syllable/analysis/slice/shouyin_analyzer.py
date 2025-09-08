@@ -3,7 +3,10 @@
 功能：确定首音音标和划分首音类别。
 """
 import os
+import sys
 import json
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 from zaoyin_yinyuan import ClearNoise, VoicedNoise
 from syllable.analysis.slice.syllable_categorizer import SyllableCategorizer
 
@@ -16,7 +19,7 @@ VOICED_INITIALS = {
 
 def map_shouyin_to_ipa(initial=None):
     """
-    将首音映射到对应的音标
+    把首音映射到音标
     参数:
         initial: (可选)首音字符串，如果为None则返回完整映射字典
     返回:
@@ -60,7 +63,7 @@ def map_shouyin_to_ipa(initial=None):
     return initial_ipa_mapping.get(initial, [])
 
 
-def create_indeterminate_pitch_pianyin():
+def create_uncertain_pitch_pianyin():
     """创建噪音对象并分类为清音和浊音"""
     voiceless = {}
     voiced = {}
@@ -113,7 +116,7 @@ def main():
         shouyin_data = merge_shouyin_data()
 
         # 2. 使用UnpitchedPianyin类验证噪音数据并分类
-        classified_noise = create_indeterminate_pitch_pianyin()
+        classified_noise = create_uncertain_pitch_pianyin()
 
         # 3. 读取现有的噪音声母文件
 
@@ -135,8 +138,7 @@ def main():
         with open(pianyin_initial_path, 'w', encoding='utf-8') as f:
             json.dump(output, f, ensure_ascii=False, indent=2)
 
-        print("首音和噪音声母映射已成功生成并更新在 pianyin_initial.json中")
-
+        print(f"首音和噪音声母映射已成功生成并更新在: {pianyin_initial_path}")
     except Exception as e:
         print(f"处理过程中发生错误: {str(e)}")
 
