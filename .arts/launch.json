@@ -2,6 +2,25 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "import_shengmu",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\yime\\import_shengmu.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\yime",
+      "addSourceRootsToPythonpath": true
+    },
+    {
+      "name": "create_table",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\yime\\create_table.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\yime",
+      "addSourceRootsToPythonpath": true,
+      "noDebug": true
+    },
+    {
       "name": "convert_pinyin_to_hanzi",
       "type": "python",
       "request": "launch",
