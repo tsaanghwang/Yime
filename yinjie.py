@@ -1,3 +1,5 @@
+import json
+
 # 音节分成首音和干音两段
 # 干音分成呼音和韵音两段
 # 韵音分成主音和末音两段
@@ -124,37 +126,3 @@ class Yinjie:
             '\U00100029': 't',
             # 可以继续添加更多映射...
         }
-
-    @staticmethod
-    def generate_key_mapping(phonemes_dict, custom_mapping=None):
-        """
-        生成完整的音元到按键的映射字典
-
-        参数:
-            phonemes_dict: 包含噪音和乐音音元的字典 {'noise': [], 'musical': []}
-            custom_mapping: 自定义映射字典，可覆盖默认映射
-
-        返回:
-            完整的音元到按键的映射字典
-        """
-        base_mapping = Yinjie.get_phoneme_key_mapping()
-        if custom_mapping:
-            base_mapping.update(custom_mapping)
-
-        key_mapping = {'noise': {}, 'musical': {}}
-
-        # 处理噪音音元
-        for i, phoneme in enumerate(phonemes_dict.get('noise', [])):
-            key_mapping['noise'][phoneme] = base_mapping.get(
-                phoneme,
-                str(i+1)  # 默认使用数字
-            )
-
-        # 处理乐音音元
-        for i, phoneme in enumerate(phonemes_dict.get('musical', [])):
-            key_mapping['musical'][phoneme] = base_mapping.get(
-                phoneme,
-                chr(97 + i)  # 默认使用字母
-            )
-
-        return key_mapping
