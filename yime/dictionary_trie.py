@@ -117,61 +117,50 @@ class DictionaryTrie:
         """返回字典中的单词总数"""
         return self.word_count
 
-def fuzzy_search(self, pattern: str) -> list:
-    """支持 '.' 通配符的模糊搜索（如 "appl." 匹配 "apple"）"""
-    results = []
+    def fuzzy_search(self, pattern: str) -> list:
+        """支持 '.' 通配符的模糊搜索（如 "appl." 匹配 "apple"）"""
+        results = []
 
-    def dfs(node, index, current_word):
-        if index == len(pattern):
-            if node.is_end:
-                results.append(current_word)
-            return
-        char = pattern[index]
-        if char == '.':
-            for next_char, child_node in node.children.items():
-                dfs(child_node, index + 1, current_word + next_char)
-        else:
-            if char in node.children:
-                dfs(node.children[char], index + 1, current_word + char)
+        def dfs(node, index, current_word):
+            if index == len(pattern):
+                if node.is_end:
+                    results.append(current_word)
+                return
+            char = pattern[index]
+            if char == '.':
+                for next_char, child_node in node.children.items():
+                    dfs(child_node, index + 1, current_word + next_char)
+            else:
+                if char in node.children:
+                    dfs(node.children[char], index + 1, current_word + char)
 
-    dfs(self.root, 0, "")
-    return results
-
-
-# 使用示例
-print(dict_trie.fuzzy_search("app.."))  # 可能匹配 ["apple", "apply"]（如果存在）
-
-# 创建字典树并插入单词
-dictionary = DictionaryTrie()
-words = ["apple", "banana", "orange", "app", "application"]
-for word in words:
-    dictionary.insert(word)
-
-# 查询测试
-print(dictionary.search("apple"))     # True
-print(dictionary.search("app"))       # True
-print(dictionary.search("appl"))      # False
-print(dictionary.starts_with("ora"))  # True
-print(f"字典单词总数: {dictionary.size()}")  # 5
-
-#  从文件中加载并查询
-dictionary.load_dictionary("dictionary.txt")
-print(dictionary.search("apple"))     # True
-print(dictionary.search("app"))       # True
-print(dictionary.search("appl"))      # False
-print(dictionary.starts_with("ora"))  # True
-print(f"字典单词总数: {dictionary.size()}")  # 5
-
-dict_trie = DictionaryTrie()
-dict_trie.load_dictionary("dictionary.txt")
-
-print(dict_trie.search("banana"))  # True
-print(dict_trie.get_all_words())   # 输出所有单词
-
+        dfs(self.root, 0, "")
+        return results
 
 if __name__ == "__main__":
     # 示例用法
     trie = DictionaryTrie()
-    trie.insert("hello")
-    trie.insert("world")
-    print(trie.search("hello"))  # True
+    words = ["apple", "banana", "orange", "app", "application"]
+    for word in words:
+        trie.insert(word)
+
+    print(trie.fuzzy_search("app.."))  # 可能匹配 ["apple"]
+    print(trie.search("apple"))     # True
+    print(trie.search("app"))       # True
+    print(trie.search("appl"))      # False
+    print(trie.starts_with("ora"))  # True
+    print(f"字典单词总数: {trie.size()}")  # 5
+
+    # 从文件中加载并查询
+    # 文件路径请根据实际情况调整
+    try:
+        trie.load_dictionary("yime/dictionary.txt")
+        print(trie.search("apple"))     # True
+        print(trie.search("app"))       # True
+        print(trie.search("appl"))      # False
+        print(trie.starts_with("ora"))  # True
+        print(f"字典单词总数: {trie.size()}")
+        print(trie.search("banana"))  # True
+        print(trie.get_all_words())   # 输出所有单词
+    except FileNotFoundError:
+        print("未找到字典文件 yime/dictionary.txt")
