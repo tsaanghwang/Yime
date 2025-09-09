@@ -62,7 +62,7 @@ class DictionaryTrie:
         """返回字典中的单词总数"""
         return self.word_count
 
-    # 创建字典树并插入单词
+# 创建字典树并插入单词
 dictionary = DictionaryTrie()
 words = ["apple", "banana", "orange", "app", "application"]
 for word in words:
