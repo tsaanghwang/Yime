@@ -2,13 +2,23 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "import_initial",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\yime\\import_initial.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\yime",
+      "addSourceRootsToPythonpath": true
+    },
+    {
       "name": "update_table",
       "type": "python",
       "request": "launch",
       "program": "${workspaceFolder}\\yime\\update_table.py",
       "currentFileConfiguration": false,
       "cwd": "${workspaceFolder}\\yime",
-      "addSourceRootsToPythonpath": true
+      "addSourceRootsToPythonpath": true,
+      "noDebug": true
     },
     {
       "name": "import_shengmu",
@@ -17,7 +27,8 @@
       "program": "${workspaceFolder}\\yime\\import_shengmu.py",
       "currentFileConfiguration": false,
       "cwd": "${workspaceFolder}\\yime",
-      "addSourceRootsToPythonpath": true
+      "addSourceRootsToPythonpath": true,
+      "noDebug": true
     },
     {
       "name": "create_table",
