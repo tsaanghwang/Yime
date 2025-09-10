@@ -1,5 +1,3 @@
-import json
-
 # 音节分成首音和干音两段
 # 干音分成呼音和韵音两段
 # 韵音分成主音和末音两段
@@ -84,45 +82,41 @@ class Yinjie:
             parts.append(f"末音: {self.descender}")
         return " | ".join(parts)
 
-    @staticmethod
-    def get_phoneme_key_mapping():
+    def merge_duplicate_phonemes(self):
         """
-        返回音元到物理按键的默认映射关系
-        噪音音元映射到数字键(1-9)
-        乐音音元映射到字母键(a-z)
+        合并连续相同的音元，返回新的Yinjie实例
+        规则：连续2个或3个相同音元合并为1个
         """
-        return {
-            # 噪音音元默认映射到数字
-            '\U00100000': '1',
-            '\U00100001': '2',
-            '\U00100002': '3',
-            '\U00100003': '4',
-            '\U00100004': '5',
-            '\U00100005': '6',
-            '\U00100006': '7',
-            '\U00100007': '8',
-            '\U00100008': '9',
+        # 获取当前所有音元
+        phonemes = [
+            self.initial,  # 首音
+            self.ascender,  # 呼音
+            self.peak,  # 主音
+            self.descender  # 末音
+        ]
 
-            # 乐音音元默认映射到字母
-            '\U00100010': 'a',
-            '\U00100011': 'b',
-            '\U00100012': 'c',
-            '\U00100013': 'd',
-            '\U00100014': 'e',
-            '\U00100015': 'f',
-            '\U00100016': 'g',
-            '\U00100017': 'h',
-            '\U00100018': 'i',
-            '\U00100019': 'j',
-            '\U00100020': 'k',
-            '\U00100021': 'l',
-            '\U00100022': 'm',
-            '\U00100023': 'n',
-            '\U00100024': 'o',
-            '\U00100025': 'p',
-            '\U00100026': 'q',
-            '\U00100027': 'r',
-            '\U00100028': 's',
-            '\U00100029': 't',
-            # 可以继续添加更多映射...
-        }
+        # 合并连续相同的音元
+        merged_phonemes = []
+        prev_phoneme = None
+        for phoneme in phonemes:
+            if phoneme is None:
+                continue
+            if phoneme == prev_phoneme:
+                continue  # 跳过连续相同的音元
+            merged_phonemes.append(phoneme)
+            prev_phoneme = phoneme
+
+        # 根据合并后的音元创建新实例
+        # 注意：这里假设合并后的音元顺序与原始结构一致
+        # 可能需要根据实际业务逻辑调整
+        new_initial = merged_phonemes[0] if len(merged_phonemes) > 0 else None
+        new_ascender = merged_phonemes[1] if len(merged_phonemes) > 1 else None
+        new_peak = merged_phonemes[2] if len(merged_phonemes) > 2 else None
+        new_descender = merged_phonemes[3] if len(merged_phonemes) > 3 else None
+
+        return Yinjie(
+            initial=new_initial,
+            ascender=new_ascender,
+            peak=new_peak,
+            descender=new_descender
+        )
