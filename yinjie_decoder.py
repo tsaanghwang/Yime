@@ -101,26 +101,26 @@ class YinjieDecoder:
         with open(output_file, 'w', encoding='utf-8') as f:
             json.dump(phoneme_dict, f, ensure_ascii=False, indent=2)
 
-    def generate_key_mapping(self, output_file='key_mapping.json'):
+    def map_key_to_code(self, output_file='key_to_code.json'):
         """生成ASCII键到PUA字符的映射字典并保存到文件"""
         phoneme_mapping = self.generate_phoneme_mapping()
         all_phonemes = phoneme_mapping["forward"]["noise"] + phoneme_mapping["forward"]["musical"]
 
-        key_mapping = {}
+        key_to_code = {}
         ascii_start = 33  # 从可打印ASCII字符开始
 
         for phoneme in all_phonemes:
             if ascii_start <= 126:
-                key_mapping[chr(ascii_start)] = phoneme
+                key_to_code[chr(ascii_start)] = phoneme
                 ascii_start += 1
             else:
                 print(f"警告：ASCII码不足，无法为字符 {phoneme} 分配键位")
 
         with open(output_file, 'w', encoding='utf-8') as f:
-            json.dump(key_mapping, f, ensure_ascii=False, indent=2)
+            json.dump(key_to_code, f, ensure_ascii=False, indent=2)
 
         print(f"已生成并保存键位映射到 {output_file}")
-        return key_mapping
+        return key_to_code
 
     # === 主程序示例 ===
     @staticmethod
@@ -143,7 +143,7 @@ class YinjieDecoder:
 
         all_yinjie = decoder.decode_all()
         print(f"\n解码了 {len(all_yinjie)} 个音节")
-        decoder.generate_key_mapping()
+        decoder.map_key_to_code()
 
 if __name__ == "__main__":
     YinjieDecoder.run_example()

@@ -1,4 +1,4 @@
-key_to_code_points = {
+key_to_code = {
     'a': [0xE001, 0xE002],  # 阴平、阳平
     'n': [0xE003],          # 声母 n
     # ...其他按键
@@ -8,6 +8,39 @@ code_to_hanzi = {
     (0xE001, 0xE002): [("张", 1000), ("章", 500), ("彰", 50)],  # 码元序列 → 汉字列表
     # ...其他码元组合
 }
+
+class CodeTrieNode:
+    def __init__(self):
+        self.children = {}      # {码元: 子节点}
+        self.hanzi = []         # [(汉字, 频率), ...]
+        self.is_end = False     # 是否为完整码元序列
+
+# 插入码元序列 "U+E001, U+E002" → "张"
+root = CodeTrieNode()
+node = root
+for code in [0xE001, 0xE002]:
+    if code not in node.children:
+        node.children[code] = CodeTrieNode()
+    node = node.children[code]
+node.hanzi = [("张", 1000), ("章", 500), ("彰", 50)]
+node.is_end = True
+
+class PinyinTrieNode:
+    def __init__(self):
+        self.children = {}      # {拼音字符: 子节点}
+        self.hanzi = []         # 候选汉字列表 [(汉字, 词频), ...]
+        self.is_end = False     # 是否为完整音节
+
+# 示例：插入拼音 "ni" 和对应汉字
+root = PinyinTrieNode()
+node = root
+for char in "ni":
+    if char not in node.children:
+        node.children[char] = PinyinTrieNode()
+    node = node.children[char]
+node.hanzi = [("你", 1000), ("尼", 100), ("呢", 50)]  # 按词频排序
+node.is_end = True
+
 
 code_to_pinyin = {
     (0xE001, 0xE002): "zhang",
@@ -26,23 +59,7 @@ user_history = {
 }
 
 def get_code_points_for_key(key):
-    return key_to_code_points.get(key, [])
-
-class PinyinTrieNode:
-    def __init__(self):
-        self.children = {}      # {拼音字符: 子节点}
-        self.hanzi = []         # 候选汉字列表 [(汉字, 词频), ...]
-        self.is_end = False     # 是否为完整音节
-
-# 示例：插入拼音 "ni" 和对应汉字
-root = PinyinTrieNode()
-node = root
-for char in "ni":
-    if char not in node.children:
-        node.children[char] = PinyinTrieNode()
-    node = node.children[char]
-node.hanzi = [("你", 1000), ("尼", 100), ("呢", 50)]  # 按词频排序
-node.is_end = True
+    return key_to_code.get(key, [])
 
 def rank_candidates(code_sequence, candidates):
     # 结合用户历史和上下文
@@ -54,21 +71,6 @@ def rank_candidates(code_sequence, candidates):
         candidates = sorted(candidates, key=lambda x: -x[1])
     return candidates
 
-class CodeTrieNode:
-    def __init__(self):
-        self.children = {}      # {码元: 子节点}
-        self.hanzi = []         # [(汉字, 频率), ...]
-        self.is_end = False     # 是否为完整码元序列
-
-# 插入码元序列 "U+E001, U+E002" → "张"
-root = CodeTrieNode()
-node = root
-for code in [0xE001, 0xE002]:
-    if code not in node.children:
-        node.children[code] = CodeTrieNode()
-    node = node.children[code]
-node.hanzi = [("张", 1000), ("章", 500), ("彰", 50)]
-node.is_end = True
 
 if __name__ == "__main__":
     # 示例输入
