@@ -70,7 +70,7 @@ class PinyinMapper:
 
         with open(json_path, 'r', encoding='utf-8') as f:
             data = json.load(f)
-            self.logger.debug(f"从 {json_path} 加载了 {len(data)} 条数据")
+            self.logger.debug(f"从 {json_path} 加载了 {len(data)} 条数据到数据库 {self.db_path}  中")
             return data
 
     def normalize_data(self, yinjie_data: Dict[str, str]) -> Tuple[Dict, Dict]:
@@ -82,7 +82,9 @@ class PinyinMapper:
             code_map[code].append(pinyin)
             pinyin_map[pinyin].append(code)
 
-        self.logger.debug(f"标准化数据完成: {len(code_map)}编码, {len(pinyin_map)}拼音")
+        # 修复这里的变量名错误
+        self.logger.debug(f"标准化数据完成: {len(code_map)}唯一编码, 共{sum(len(v) for v in code_map.values())}条编码-拼音映射")
+        self.logger.info(f"数据库更新完成: 保存了{sum(len(v) for v in code_map.values())}条映射关系: ({len(code_map)}个编码对应{sum(len(v) for v in code_map.values())}个拼音)")
         return code_map, pinyin_map
 
     def import_data(self, json_path: str) -> Tuple[Dict, Dict]:
@@ -135,13 +137,33 @@ class PinyinMapper:
             cursor.execute(query, params or ())
             return [dict(row) for row in cursor.fetchall()]
 
+    def _display_char(self, char):
+        """辅助函数：直接返回字符本身而不是Unicode转义序列"""
+        return char if char else ''
+
+    def _display_codes(self, codes):
+        """改进的编码列表显示方法"""
+        if not codes:
+            return "[]"
+        return "[" + ", ".join(f"'{self._display_char(c)}'" for c in codes) + "]"
+
     def get_pinyin_by_code(self, code: str) -> List[str]:
         """根据编码获取拼音列表"""
         return [row['pinyin'] for row in self.query('code_to_pinyin', 'code = ?', (code,))]
 
+    def get_pinyin_by_code_formatted(self, code: str) -> str:
+        """获取格式化显示的拼音列表(用于打印)"""
+        pinyins = self.get_pinyin_by_code(code)
+        return self._display_codes(pinyins)
+
     def get_code_by_pinyin(self, pinyin: str) -> List[str]:
         """根据拼音获取编码列表"""
         return [row['code'] for row in self.query('pinyin_to_code', 'pinyin = ?', (pinyin,))]
+
+    def get_code_by_pinyin_formatted(self, pinyin: str) -> str:
+        """获取格式化显示的编码列表(用于打印)"""
+        codes = self.get_code_by_pinyin(pinyin)
+        return self._display_codes(codes)
 
 if __name__ == '__main__':
     # 使用示例
@@ -149,5 +171,5 @@ if __name__ == '__main__':
     code_map, pinyin_map = mapper.import_data('yinjie_code.json')
 
     # 查询示例
-    print("编码'abc'对应的拼音:", mapper.get_pinyin_by_code('abc'))
-    print("拼音'ni'对应的编码:", mapper.get_code_by_pinyin('ni'))
+    print("编码'􀀇􀀢􀀢􀀢'对应的拼音:", mapper.get_pinyin_by_code_formatted('􀀇􀀢􀀢􀀢'))
+    print("拼音'ni3'对应的编码:", mapper.get_code_by_pinyin_formatted('ni3'))
