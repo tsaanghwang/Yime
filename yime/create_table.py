@@ -6,8 +6,8 @@
 import csv
 import os
 import sys
-from pathlib import Path
 import sqlite3
+from pathlib import Path
 
 def create_database_tables(db_path: str = 'pinyin.db'):
     """
