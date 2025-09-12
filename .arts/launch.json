@@ -2,13 +2,32 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "ime_db_manager",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\yime\\ime_db_manager.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\yime",
+      "addSourceRootsToPythonpath": true
+    },
+    {
+      "name": "yime",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\yime\\yime.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\yime",
+      "addSourceRootsToPythonpath": true
+    },
+    {
       "name": "map_code_to_hanzi",
       "type": "python",
       "request": "launch",
       "program": "${workspaceFolder}\\yime\\map_code_to_hanzi.py",
       "currentFileConfiguration": false,
       "cwd": "${workspaceFolder}\\yime",
-      "addSourceRootsToPythonpath": true
+      "addSourceRootsToPythonpath": true,
+      "noDebug": true
     },
     {
       "name": "yaml_to_json",
@@ -26,7 +45,8 @@
       "program": "${workspaceFolder}\\yime\\pinyin_db_manager.py",
       "currentFileConfiguration": false,
       "cwd": "${workspaceFolder}\\yime",
-      "addSourceRootsToPythonpath": true
+      "addSourceRootsToPythonpath": true,
+      "noDebug": true
     },
     {
       "name": "map_pinyin_to_hanzi",

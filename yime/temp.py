@@ -31,7 +31,7 @@ data2 ={
 基础实现方案（直接映射）：
 data = {
     "A": ["a", "aa", "aaa"],
-    "AA": ["a", "aa", "aaa"], 
+    "AA": ["a", "aa", "aaa"],
     "AAA": ["a", "aa", "aaa"]
 }
 
@@ -61,15 +61,15 @@ class MultiKeyMapper:
     def __init__(self):
         self._mapping = {}
         self._value_pool = {}
-    
+
     def add_mapping(self, keys, values):
         value_id = id(values)
         if value_id not in self._value_pool:
             self._value_pool[value_id] = values.copy()
-        
+
         for key in keys:
             self._mapping[key] = self._value_pool[value_id]
-    
+
     def get(self, key):
         return self._mapping.get(key, [])
 
@@ -77,3 +77,46 @@ class MultiKeyMapper:
 mapper = MultiKeyMapper()
 mapper.add_mapping(["A", "AA", "AAA"], ["a", "aa", "aaa"])
 print(mapper.get("A"))  # 输出: ['a', 'aa', 'aaa']
+
+"""
+CREATE TABLE hanzi (
+    id INTEGER PRIMARY KEY,
+    character TEXT NOT NULL UNIQUE,  -- 汉字字符
+    unicode_hex TEXT NOT NULL,       -- Unicode编码(16进制)
+    stroke_count INTEGER,            -- 笔画数
+    radical TEXT,                    -- 部首
+    is_common BOOLEAN DEFAULT 1,     -- 是否常用字
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE pinyin (
+    id INTEGER PRIMARY KEY,
+    pinyin TEXT NOT NULL UNIQUE,     -- 拼音字符串(如"zhong1")
+    initial TEXT,                    -- 声母(如"zh")
+    final TEXT,                      -- 韵母(如"ong")
+    tone INTEGER,                    -- 声调(1-5)
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE hanzi_pinyin (
+    hanzi_id INTEGER REFERENCES hanzi(id),
+    pinyin_id INTEGER REFERENCES pinyin(id),
+    frequency FLOAT DEFAULT 1.0,     -- 相对频率(可基于语料库统计)
+    is_primary BOOLEAN DEFAULT 0,    -- 是否主要读音
+    PRIMARY KEY (hanzi_id, pinyin_id)
+);
+CREATE TABLE character_frequency (
+    hanzi_id INTEGER PRIMARY KEY REFERENCES hanzi(id),
+    absolute_freq INTEGER,           -- 绝对频率
+    relative_freq FLOAT,             -- 相对频率(0-1)
+    corpus_source TEXT,              -- 语料来源
+    last_updated TIMESTAMP
+);
+CREATE TABLE vocabulary (
+    id INTEGER PRIMARY KEY,
+    phrase TEXT NOT NULL,            -- 词语/短语
+    pinyin TEXT NOT NULL,            -- 完整拼音(如"zhong1 guo2")
+    frequency FLOAT,                 -- 词频
+    length INTEGER,                  -- 词长(字数)
+    is_common BOOLEAN DEFAULT 1,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+"""

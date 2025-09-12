@@ -4,15 +4,12 @@ import time
 import logging
 import sys
 from pathlib import Path
-from dataclasses import dataclass
 
 # 确保能正确导入utils模块
 utils_path = Path("c:/Users/Freeman Golden/OneDrive/Yime/utils")
 if utils_path.exists():
     sys.path.insert(0, str(utils_path))
 
-from utils.pinyin_normalizer import PinyinNormalizer
-from utils.pinyin_zhuyin import PinyinZhuyinConverter
 
 # 配置日志
 logging.basicConfig(
@@ -169,9 +166,78 @@ class DatabaseMigrator:
 
             return [row[0] for row in cursor.fetchall()]
 
+def migrate_pinyin_danzi_to_db(db_path: str | Path = None, json_path: str = 'pinyin/hanzi_pinyin/pinyin_danzi.json') -> int:
+    """将pinyin_danzi.json的同音字数据迁移到数据库（模块级函数，可直接调用）
+
+    db_path: 数据库文件路径；如果为 None，使用本模块同目录下的 pinyin_hanzi.db
+    """
+    import json
+    from pathlib import Path
+
+    # 统一处理 db_path 默认为模块目录下的 pinyin_hanzi.db
+    if db_path is None:
+        db_path = Path(__file__).parent / "pinyin_hanzi.db"
+    db_path = Path(db_path)
+
+    # 读取JSON文件
+    json_path = Path(__file__).parent.parent / "pinyin/hanzi_pinyin/pinyin_danzi.json"
+    with open(json_path, 'r', encoding='utf-8') as f:
+        pinyin_danzi = json.load(f)
+
+    # 连接数据库（使用模块顶部已导入的sqlite3）
+    conn = sqlite3.connect(str(db_path))
+    cursor = conn.cursor()
+
+    # 确保目标表存在（防止在不同路径的 DB 上误操作）
+    cursor.execute("""
+    SELECT name FROM sqlite_master
+    WHERE type='table' AND name='code_to_homophonic_hanzi'
+    """)
+    if cursor.fetchone() is None:
+        conn.close()
+        raise RuntimeError(f"目标表 code_to_homophonic_hanzi 不存在于数据库 {db_path}")
+
+    # 准备SQL语句
+    select_sql = "SELECT 1 FROM code_to_homophonic_hanzi WHERE numeric_pinyin = ?"
+    update_sql = """
+        UPDATE code_to_homophonic_hanzi
+        SET homophonic_hanzi = ?, last_updated = CURRENT_TIMESTAMP
+        WHERE numeric_pinyin = ?
+    """
+    insert_sql = """
+        INSERT INTO code_to_homophonic_hanzi (code, numeric_pinyin, homophonic_hanzi)
+        VALUES (?, ?, ?)
+    """
+
+    # 遍历JSON数据
+    for pinyin, hanzi_list in pinyin_danzi.items():
+        # 将汉字列表转换为字符串，用逗号分隔
+        hanzi_str = ','.join(hanzi_list)
+
+        # 检查数据库中是否已存在该拼音
+        cursor.execute(select_sql, (pinyin,))
+        exists = cursor.fetchone()
+
+        if exists:
+            # 更新现有记录
+            cursor.execute(update_sql, (hanzi_str, pinyin))
+        else:
+            # 插入新记录，使用拼音作为code（因为code不是唯一且我们不知道对应的code）
+            cursor.execute(insert_sql, (pinyin, pinyin, hanzi_str))
+
+    # 提交事务并关闭连接
+    conn.commit()
+    conn.close()
+
+    logger.info(f"成功迁移 {len(pinyin_danzi)} 条拼音数据到数据库 {db_path}")
+    return len(pinyin_danzi)
+
 if __name__ == "__main__":
     migrator = DatabaseMigrator()
     migrator.migrate()
+
+    # 传递与 migrator 相同的数据库路径，确保在同一个 DB 文件上操作
+    migrate_pinyin_danzi_to_db(db_path=migrator.db_path)
 
     # 测试通过code查询
     test_code = "1234"  # 替换为实际code
