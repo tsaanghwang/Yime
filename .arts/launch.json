@@ -2,13 +2,41 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "map_code_to_hanzi",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\yime\\map_code_to_hanzi.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\yime",
+      "addSourceRootsToPythonpath": true
+    },
+    {
+      "name": "yaml_to_json",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\pinyin\\hanzi_pinyin\\yaml_to_json.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\pinyin\\hanzi_pinyin",
+      "addSourceRootsToPythonpath": true
+    },
+    {
+      "name": "pinyin_db_manager",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\yime\\pinyin_db_manager.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\yime",
+      "addSourceRootsToPythonpath": true
+    },
+    {
       "name": "map_pinyin_to_hanzi",
       "type": "python",
       "request": "launch",
       "program": "${workspaceFolder}\\yime\\map_pinyin_to_hanzi.py",
       "currentFileConfiguration": false,
       "cwd": "${workspaceFolder}\\yime",
-      "addSourceRootsToPythonpath": true
+      "addSourceRootsToPythonpath": true,
+      "noDebug": true
     },
     {
       "name": "map_code_to_pinyin",
@@ -559,7 +587,8 @@
       "program": "${workspaceFolder}\\pinyin\\hanzi_pinyin\\pinyin_danzi.py",
       "currentFileConfiguration": false,
       "cwd": "${workspaceFolder}\\pinyin\\hanzi_pinyin",
-      "addSourceRootsToPythonpath": true
+      "addSourceRootsToPythonpath": true,
+      "noDebug": true
     },
     {
       "name": "yaml_to_json_danzi_converter",
