@@ -22,129 +22,129 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 @dataclass
-class PinyinInfo:
-    numeric_pinyin: str
-    standard_pinyin: str
-    zhuyin: str
+class 拼音信息:
+    数字拼音: str
+    标准拼音: str
+    注音符号: str
 
-class DatabaseManager:
+class 数据库管理器:
     """封装数据库连接和基本操作"""
-    def __init__(self, db_path: str):
-        self.db_path = Path(db_path)
+    def __init__(self, 数据库路径: str):
+        self.数据库路径 = Path(数据库路径)
 
     def __enter__(self):
-        self.conn = sqlite3.connect(self.db_path)
-        self.conn.execute("PRAGMA journal_mode=WAL")
-        self.conn.isolation_level = None
-        return self.conn
+        self.连接 = sqlite3.connect(self.数据库路径)
+        self.连接.execute("PRAGMA journal_mode=WAL")
+        self.连接.isolation_level = None
+        return self.连接
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         if exc_type is None:
-            self.conn.commit()
-        self.conn.close()
+            self.连接.commit()
+        self.连接.close()
 
-class TableManager:
+class 表管理器:
     """管理数据库表结构和索引"""
     @staticmethod
-    def create_tables(conn: sqlite3.Connection) -> None:
+    def 创建表(连接: sqlite3.Connection) -> None:
         """创建所有必要的数据库表"""
-        cursor = conn.cursor()
+        游标 = 连接.cursor()
 
         # 创建新表结构
-        tables = {
-            'hanzi': '''
-                CREATE TABLE IF NOT EXISTS hanzi (
+        表定义 = {
+            '汉字': '''
+                CREATE TABLE IF NOT EXISTS 汉字 (
                     id INTEGER PRIMARY KEY,
-                    character TEXT NOT NULL UNIQUE,
-                    unicode_hex TEXT NOT NULL,
-                    stroke_count INTEGER,
-                    radical TEXT,
-                    is_common BOOLEAN DEFAULT 1,
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    字符 TEXT NOT NULL UNIQUE,
+                    Unicode编码 TEXT NOT NULL,
+                    笔画数 INTEGER,
+                    部首 TEXT,
+                    常用字 BOOLEAN DEFAULT 1,
+                    创建时间 TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )''',
-            'pinyin': '''
-                CREATE TABLE IF NOT EXISTS pinyin (
+            '拼音': '''
+                CREATE TABLE IF NOT EXISTS 拼音 (
                     id INTEGER PRIMARY KEY,
-                    pinyin TEXT NOT NULL UNIQUE,
-                    initial TEXT,
-                    final TEXT,
-                    tone INTEGER,
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    拼音 TEXT NOT NULL UNIQUE,
+                    声母 TEXT,
+                    韵母 TEXT,
+                    声调 INTEGER,
+                    创建时间 TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )''',
-            'hanzi_pinyin': '''
-                CREATE TABLE IF NOT EXISTS hanzi_pinyin (
-                    hanzi_id INTEGER REFERENCES hanzi(id),
-                    pinyin_id INTEGER REFERENCES pinyin(id),
-                    frequency FLOAT DEFAULT 1.0,
-                    is_primary BOOLEAN DEFAULT 0,
-                    PRIMARY KEY (hanzi_id, pinyin_id)
+            '汉字拼音映射': '''
+                CREATE TABLE IF NOT EXISTS 汉字拼音映射 (
+                    汉字id INTEGER REFERENCES 汉字(id),
+                    拼音id INTEGER REFERENCES 拼音(id),
+                    频率 FLOAT DEFAULT 1.0,
+                    主读音 BOOLEAN DEFAULT 0,
+                    PRIMARY KEY (汉字id, 拼音id)
                 )''',
-            'character_frequency': '''
-                CREATE TABLE IF NOT EXISTS character_frequency (
-                    hanzi_id INTEGER PRIMARY KEY REFERENCES hanzi(id),
-                    absolute_freq INTEGER,
-                    relative_freq FLOAT,
-                    corpus_source TEXT,
-                    last_updated TIMESTAMP
+            '汉字频率': '''
+                CREATE TABLE IF NOT EXISTS 汉字频率 (
+                    汉字id INTEGER PRIMARY KEY REFERENCES 汉字(id),
+                    绝对频率 INTEGER,
+                    相对频率 FLOAT,
+                    语料来源 TEXT,
+                    最后更新时间 TIMESTAMP
                 )''',
-            'vocabulary': '''
-                CREATE TABLE IF NOT EXISTS vocabulary (
+            '词汇': '''
+                CREATE TABLE IF NOT EXISTS 词汇 (
                     id INTEGER PRIMARY KEY,
-                    phrase TEXT NOT NULL,
-                    pinyin TEXT NOT NULL,
-                    frequency FLOAT,
-                    length INTEGER,
-                    is_common BOOLEAN DEFAULT 1,
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    词语 TEXT NOT NULL,
+                    拼音 TEXT NOT NULL,
+                    频率 FLOAT,
+                    长度 INTEGER,
+                    常用词 BOOLEAN DEFAULT 1,
+                    创建时间 TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )'''
         }
 
-        for table, ddl in tables.items():
-            cursor.execute(ddl)
+        for 表名, 定义 in 表定义.items():
+            游标.execute(定义)
 
         # 创建索引
-        indexes = [
-            ('idx_hanzi_character', 'hanzi(character)'),
-            ('idx_pinyin_pinyin', 'pinyin(pinyin)'),
-            ('idx_hanzi_pinyin_hanzi', 'hanzi_pinyin(hanzi_id)'),
-            ('idx_hanzi_pinyin_pinyin', 'hanzi_pinyin(pinyin_id)'),
-            ('idx_vocabulary_phrase', 'vocabulary(phrase)'),
-            ('idx_vocabulary_pinyin', 'vocabulary(pinyin)')
+        索引 = [
+            ('索引_汉字_字符', '汉字(字符)'),
+            ('索引_拼音_拼音', '拼音(拼音)'),
+            ('索引_汉字拼音映射_汉字', '汉字拼音映射(汉字id)'),
+            ('索引_汉字拼音映射_拼音', '汉字拼音映射(拼音id)'),
+            ('索引_词汇_词语', '词汇(词语)'),
+            ('索引_词汇_拼音', '词汇(拼音)')
         ]
 
-        for name, columns in indexes:
-            cursor.execute(f"CREATE INDEX IF NOT EXISTS {name} ON {columns}")
+        for 名称, 列 in 索引:
+            游标.execute(f"CREATE INDEX IF NOT EXISTS {名称} ON {列}")
 
-        logger.info("新数据库表结构创建/验证完成")
+        logger.info("数据库表结构创建/验证完成")
 
-class DatabaseMigrator:
+class 数据库迁移器:
     """重构后的主迁移类"""
-    def __init__(self, db_path: str = None):
-        self.db_path = Path(db_path) if db_path else Path(__file__).parent / "pinyin_hanzi.db"
+    def __init__(self, 数据库路径: str = None):
+        self.数据库路径 = Path(数据库路径) if 数据库路径 else Path(__file__).parent / "pinyin_hanzi.db"
 
-    def migrate(self) -> None:
+    def 迁移(self) -> None:
         """执行完整的数据迁移流程"""
-        start_time = time.time()
+        开始时间 = time.time()
 
         try:
-            with sqlite3.connect(str(self.db_path)) as conn:
+            with sqlite3.connect(str(self.数据库路径)) as 连接:
                 # 启用WAL模式提高并发性能
-                conn.execute("PRAGMA journal_mode=WAL")
-                conn.isolation_level = None  # 禁用自动事务
+                连接.execute("PRAGMA journal_mode=WAL")
+                连接.isolation_level = None  # 禁用自动事务
 
                 # 创建表结构
-                TableManager.create_tables(conn)
+                表管理器.创建表(连接)
 
                 # 优化数据库
-                conn.execute("VACUUM")
+                连接.execute("VACUUM")
 
-                total_time = time.time() - start_time
-                logger.info(f"数据库表结构初始化完成! 耗时: {total_time:.2f}秒")
+                总耗时 = time.time() - 开始时间
+                logger.info(f"数据库表结构初始化完成! 耗时: {总耗时:.2f}秒")
 
         except Exception as e:
             logger.error(f"数据库初始化失败: {e}")
             raise
 
 if __name__ == "__main__":
-    migrator = DatabaseMigrator()
-    migrator.migrate()
+    迁移器 = 数据库迁移器()
+    迁移器.迁移()
