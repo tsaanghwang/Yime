@@ -120,3 +120,35 @@ CREATE TABLE vocabulary (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 """
+"""
+CREATE TABLE 音元拼音 (
+    id INTEGER PRIMARY KEY,
+    全拼 TEXT NOT NULL UNIQUE,     -- 全拼字符串
+    简拼 TEXT,                    -- 简拼字符串
+    首音 TEXT,                    -- 第一个音元(含不必标注的虚首音)
+    干音 TEXT,                    -- 除首音外的音元
+    呼音 TEXT,                    -- 第二个音元
+    主音 TEXT,                    -- 第三个音元
+    末音 TEXT,                    -- 第四个音元
+    间音 TEXT,                    -- 中间两音元
+    韵音 TEXT,                    -- 后面两音元
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX 音元拼音_全拼 ON 音元拼音(全拼);
+CREATE UNINIQUE INDEX 'sqlite_autoindex_全拼_1' ON 音元拼音(全拼);
+"""
+"""
+CREATE TABLE 音元拼音_数字标调拼音 (
+    音元_id INTEGER REFERENCES 音元拼音(id),
+    pinyin_id INTEGER REFERENCES pinyin(id),
+    标准拼音 TEXT NOT NULL,     -- 标准拼音
+    注音符号 TEXT NOT NULL,     -- 注音符号
+    PRIMARY KEY (音元_id, pinyin_id)
+);
+"""
+"""
+CREATE INDEX 音元拼音_数字标调拼音_音元_id ON 音元拼音_数字标调拼音(音元_id);
+CREATE INDEX 音元拼音_数字标调拼音_拼音_id ON 音元拼音_数字标调拼音(拼音_id);
+CREATE UNINIQUE INDEX '音元拼音_数字标调拼音_音元_id_拼音_id' ON 音元拼音_数字标调拼音(音元_id,拼音_id);
+"""
