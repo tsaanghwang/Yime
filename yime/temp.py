@@ -140,15 +140,15 @@ CREATE UNINIQUE INDEX 'sqlite_autoindex_全拼_1' ON 音元拼音(全拼);
 """
 """
 CREATE TABLE 音元拼音_数字标调拼音 (
-    音元_id INTEGER REFERENCES 音元拼音(id),
+    音元拼音id INTEGER REFERENCES 音元拼音(id),
     pinyin_id INTEGER REFERENCES pinyin(id),
     标准拼音 TEXT NOT NULL,     -- 标准拼音
     注音符号 TEXT NOT NULL,     -- 注音符号
-    PRIMARY KEY (音元_id, pinyin_id)
+    PRIMARY KEY (音元拼音id, pinyin_id)
 );
 """
 """
-CREATE INDEX 音元拼音_数字标调拼音_音元_id ON 音元拼音_数字标调拼音(音元_id);
+CREATE INDEX 音元拼音_数字标调拼音_音元拼音id ON 音元拼音_数字标调拼音(音元拼音id);
 CREATE INDEX 音元拼音_数字标调拼音_拼音_id ON 音元拼音_数字标调拼音(拼音_id);
-CREATE UNINIQUE INDEX '音元拼音_数字标调拼音_音元_id_拼音_id' ON 音元拼音_数字标调拼音(音元_id,拼音_id);
+CREATE UNINIQUE INDEX '音元拼音_数字标调拼音_音元拼音id_拼音_id' ON 音元拼音_数字标调拼音(音元拼音id,拼音_id);
 """

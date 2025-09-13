@@ -1,290 +1,171 @@
-# yime/db_migration.py (重构版)
 import sqlite3
-import time
 import logging
-import sys
-from pathlib import Path
-from dataclasses import dataclass
-
-# 确保能正确导入utils模块
-utils_path = Path("c:/Users/Freeman Golden/OneDrive/Yime/utils")
-if utils_path.exists():
-    sys.path.insert(0, str(utils_path))
 
 from utils.pinyin_normalizer import PinyinNormalizer
 from utils.pinyin_zhuyin import PinyinZhuyinConverter
 
-# 配置日志
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s'
-)
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+handler = logging.StreamHandler()
+handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
+logger.addHandler(handler)
 
-@dataclass
-class PinyinInfo:
-    numeric_pinyin: str
-    standard_pinyin: str
-    zhuyin: str
-
-class DatabaseManager:
-    """封装数据库连接和基本操作"""
-    def __init__(self, db_path: str):
-        self.db_path = Path(db_path)
-
-    def __enter__(self):
-        self.conn = sqlite3.connect(self.db_path)
-        self.conn.execute("PRAGMA journal_mode=WAL")
-        self.conn.isolation_level = None
-        return self.conn
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        if exc_type is None:
-            self.conn.commit()
-        self.conn.close()
-
-class TableManager:
-    """管理数据库表结构和索引"""
+class 表管理器:
     @staticmethod
-    def create_tables(conn: sqlite3.Connection) -> None:
+    def 创建表(连接: sqlite3.Connection) -> None:
         """创建所有必要的数据库表"""
-        cursor = conn.cursor()
+        游标 = 连接.cursor()
 
-        tables = {
-            'yinjie_mapping': '''
-                CREATE TABLE IF NOT EXISTS yinjie_mapping (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    numeric_pinyin TEXT NOT NULL,
-                    standard_pinyin TEXT NOT NULL,
-                    zhuyin TEXT NOT NULL,
-                    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    UNIQUE(numeric_pinyin)
+        表结构 = {
+            '音元拼音': '''
+                CREATE TABLE IF NOT EXISTS 音元拼音 (
+                    id INTEGER PRIMARY KEY,
+                    全拼 TEXT NOT NULL UNIQUE,
+                    简拼 TEXT,
+                    首音 TEXT,
+                    干音 TEXT,
+                    呼音 TEXT,
+                    主音 TEXT,
+                    末音 TEXT,
+                    间音 TEXT,
+                    韵音 TEXT,
+                    创建时间 TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )''',
-            'yinjie_reverse': '''
-                CREATE TABLE IF NOT EXISTS yinjie_reverse (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    standard_pinyin TEXT NOT NULL,
-                    numeric_pinyin TEXT NOT NULL,
-                    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    UNIQUE(standard_pinyin, numeric_pinyin)
+            '数字标调拼音': '''
+                CREATE TABLE IF NOT EXISTS 数字标调拼音 (
+                    id INTEGER PRIMARY KEY,
+                    数字标调拼音 TEXT NOT NULL UNIQUE,
+                    声母 TEXT,
+                    韵母 TEXT,
+                    声调 INTEGER,
+                    创建时间 TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )''',
+            '音元拼音已有拼音映射': '''
+                CREATE TABLE IF NOT EXISTS 音元拼音已有拼音映射 (
+                    音元拼音id INTEGER REFERENCES 音元拼音(id),
+                    数字标调拼音id INTEGER REFERENCES 数字标调拼音(id),
+                    标准拼音 TEXT NOT NULL,
+                    注音符号 TEXT NOT NULL,
+                    最后更新时间 TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    PRIMARY KEY (音元拼音id, 数字标调拼音id)
                 )'''
         }
 
-        for table, ddl in tables.items():
-            cursor.execute(f"DROP TABLE IF EXISTS {table}")
-            cursor.execute(ddl)
+        for 表名, 创建语句 in 表结构.items():
+            游标.execute(f"DROP TABLE IF EXISTS {表名}")
+            游标.execute(创建语句)
 
         # 创建索引
-        indexes = [
-            ('idx_yinjie_mapping_numeric', 'yinjie_mapping(numeric_pinyin)'),
-            ('idx_yinjie_mapping_standard', 'yinjie_mapping(standard_pinyin)'),
-            ('idx_yinjie_reverse_standard', 'yinjie_reverse(standard_pinyin)'),
-            ('idx_yinjie_reverse_numeric', 'yinjie_reverse(numeric_pinyin)')
+        索引列表 = [
+            ('索引_数字标调拼音_数字标调拼音', '数字标调拼音(数字标调拼音)'),
+            ('索引_音元拼音数字标调拼音映射_标准拼音', '音元拼音已有拼音映射(标准拼音)'),
+            ('索引_音元拼音数字标调拼音映射_注音符号', '音元拼音已有拼音映射(注音符号)')
         ]
 
-        for name, columns in indexes:
-            cursor.execute(f"CREATE INDEX IF NOT EXISTS {name} ON {columns}")
+        for 索引名, 列名 in 索引列表:
+            游标.execute(f"CREATE INDEX IF NOT EXISTS {索引名} ON {列名}")
 
         logger.info("数据库表结构创建/验证完成")
 
-class DataImporter:
-    """处理数据导入逻辑"""
+class 数据导入器:
     @staticmethod
-    def import_yinjie_data(conn: sqlite3.Connection) -> int:
-        """从code_to_pinyin表导入并处理数据"""
-        cursor = conn.cursor()
+    def 导入音元数据(连接: sqlite3.Connection) -> int:
+        """从外部数据源导入并处理数据"""
+        游标 = 连接.cursor()
 
-        # 获取所有唯一拼音
-        cursor.execute("SELECT DISTINCT pinyin FROM code_to_pinyin")
-        pinyin_list = [row[0] for row in cursor.fetchall()]
+        # 这里需要修改为从您的实际数据源获取拼音列表
+        拼音列表 = []  # 替换为实际数据源
 
-        if not pinyin_list:
-            logger.error("从code_to_pinyin表获取的拼音列表为空")
+        if not 拼音列表:
+            logger.error("拼音列表为空")
             return 0
 
         # 处理拼音数据
-        normalized_dict, _ = PinyinNormalizer.process_pinyin_dict({p: p for p in pinyin_list})
-        zhuyin_dict, _ = PinyinZhuyinConverter.process_pinyin_dict({p: p for p in pinyin_list})
+        标准化字典, _ = PinyinNormalizer.process_pinyin_dict({数字标调拼音: 数字标调拼音 for 数字标调拼音 in 拼音列表})
+        注音字典, _ = PinyinZhuyinConverter.process_pinyin_dict({数字标调拼音: 数字标调拼音 for 数字标调拼音 in 拼音列表})
 
         # 批量插入数据
-        batch_size = 100
-        total = 0
+        批量大小 = 100
+        总数 = 0
 
-        for i in range(0, len(pinyin_list), batch_size):
-            batch = pinyin_list[i:i+batch_size]
+        for i in range(0, len(拼音列表), 批量大小):
+            批次 = 拼音列表[i:i+批量大小]
             try:
                 # 准备批量插入数据
-                mapping_data = [
-                    (p, normalized_dict.get(p, p), zhuyin_dict.get(p, ''))
-                    for p in batch
+                映射数据 = [
+                    (数字标调拼音, 标准化字典.get(数字标调拼音, 数字标调拼音), 注音字典.get(数字标调拼音, ''))
+                    for 数字标调拼音 in 批次
                 ]
 
-                reverse_data = [
-                    (normalized_dict.get(p, p), p)
-                    for p in batch
-                ]
+                游标.executemany('''
+                    INSERT OR REPLACE INTO 音元拼音已有拼音映射
+                    (数字标调拼音id, 标准拼音, 注音符号)
+                    VALUES (
+                        (SELECT id FROM 数字标调拼音 WHERE 数字标调拼音 = ?),
+                        ?, ?
+                    )
+                ''', 映射数据)
 
-                # 执行批量插入
-                cursor.executemany('''
-                    INSERT OR REPLACE INTO yinjie_mapping
-                    (numeric_pinyin, standard_pinyin, zhuyin)
-                    VALUES (?, ?, ?)
-                ''', mapping_data)
+                总数 += len(批次)
+                logger.debug(f"已处理 {总数}/{len(拼音列表)} 条记录")
 
-                cursor.executemany('''
-                    INSERT OR REPLACE INTO yinjie_reverse
-                    (standard_pinyin, numeric_pinyin)
-                    VALUES (?, ?)
-                ''', reverse_data)
-
-                total += len(batch)
-                logger.debug(f"已处理 {total}/{len(pinyin_list)} 条记录")
-
-            except sqlite3.Error as e:
-                logger.error(f"批量导入失败: {e}")
-                conn.rollback()
+            except sqlite3.Error as 错误:
+                logger.error(f"批量导入失败: {错误}")
+                连接.rollback()
                 raise
 
-        logger.info(f"成功导入 {total} 条音元映射")
-        return total
+        logger.info(f"成功导入 {总数} 条音元映射")
+        return 总数
 
-class DatabaseMigrator:
-    """重构后的主迁移类"""
-    def __init__(self, db_path: str = None):
-        self.db_path = Path(db_path) if db_path else Path(__file__).parent / "pinyin_hanzi.db"
+class 数据库迁移器:
+    def __init__(self, 数据库路径: str):
+        self.数据库路径 = 数据库路径
 
-    def migrate(self) -> None:
-        """执行完整的数据迁移流程"""
-        start_time = time.time()
+    def 通过拼音查询(self, 数字标调拼音: str) -> list:
+        """通过拼音查询相关信息"""
+        with sqlite3.connect(str(self.数据库路径)) as 连接:
+            游标 = 连接.cursor()
 
-        try:
-            # 将Path对象转换为字符串
-            with sqlite3.connect(str(self.db_path)) as conn:
-                # 启用WAL模式提高并发性能
-                conn.execute("PRAGMA journal_mode=WAL")
-                conn.isolation_level = None  # 禁用自动事务
-
-                # 创建表结构
-                TableManager.create_tables(conn)
-
-                # 导入数据
-                count = DataImporter.import_yinjie_data(conn)
-
-                # 优化数据库
-                conn.execute("VACUUM")
-
-                total_time = time.time() - start_time
-                logger.info(
-                    f"数据迁移完成! 音元记录: {count}, 耗时: {total_time:.2f}秒"
-                )
-
-        except Exception as e:
-            logger.error(f"数据迁移失败: {e}")
-            raise
-
-
-
-    def query_pinyin_info(self, pinyin: str) -> dict:
-        """查询拼音的详细信息"""
-        with sqlite3.connect(str(self.db_path)) as conn:
-            cursor = conn.cursor()
-
-            # 查询标准拼音信息
-            cursor.execute('''
-                SELECT numeric_pinyin, standard_pinyin, zhuyin
-                FROM yinjie_mapping
-                WHERE numeric_pinyin = ? OR standard_pinyin = ?
-            ''', (pinyin, pinyin))
-
-            result = cursor.fetchone()
-
-            # 始终返回字典，即使查询不到结果
-            return {
-                'numeric_pinyin': result[0] if result else '',
-                'standard_pinyin': result[1] if result else '',
-                'zhuyin': result[2] if result else ''
-            }
-
-    def query_by_code(self, code: str) -> dict:
-        """通过code查询所有拼音格式"""
-        with sqlite3.connect(str(self.db_path)) as conn:
-            cursor = conn.cursor()
-
-            # 查询code对应的数字拼音
-            cursor.execute('''
-                SELECT pinyin
-                FROM code_to_pinyin
-                WHERE code = ?
-            ''', (code,))
-            numeric_pinyin = cursor.fetchone()
-
-            if not numeric_pinyin:
-                return {}
-
-            # 查询所有拼音格式
-            cursor.execute('''
+            游标.execute('''
                 SELECT
-                    c.pinyin AS numeric_pinyin,
-                    m.standard_pinyin,
-                    m.zhuyin
-                FROM code_to_pinyin c
-                JOIN yinjie_mapping m ON c.pinyin = m.numeric_pinyin
-                WHERE c.code = ?
-            ''', (code,))
+                    d.数字标调拼音,
+                    m.标准拼音,
+                    m.注音符号,
+                    y.全拼 AS 音元拼音
+                FROM 音元拼音已有拼音映射 m
+                JOIN 数字标调拼音 d ON m.数字标调拼音id = d.id
+                LEFT JOIN 音元拼音 y ON m.音元拼音id = y.id
+                WHERE d.数字标调拼音 = ? OR m.标准拼音 = ?
+            ''', (数字标调拼音, 数字标调拼音))
 
-            result = cursor.fetchone()
-            return {
-                'code': code,
-                'numeric_pinyin': result[0],
-                'standard_pinyin': result[1],
-                'zhuyin': result[2]
-            } if result else {}
+            return [{
+                '数字标调拼音': 行[0],
+                '标准拼音': 行[1],
+                '注音符号': 行[2],
+                '音元拼音': 行[3]
+            } for 行 in 游标.fetchall()]
 
-    def query_by_pinyin(self, pinyin: str) -> list:
-        """通过拼音反向查询所有对应的code"""
-        with sqlite3.connect(str(self.db_path)) as conn:
-            cursor = conn.cursor()
+    def 验证表结构(self) -> bool:
+        """验证所有表结构是否正确创建"""
+        with sqlite3.connect(str(self.数据库路径)) as 连接:
+            游标 = 连接.cursor()
+            表列表 = ['音元拼音', '数字标调拼音', '音元拼音已有拼音映射']
 
-            # 先确定输入的是哪种拼音格式
-            cursor.execute('''
-                SELECT numeric_pinyin
-                FROM yinjie_mapping
-                WHERE numeric_pinyin = ? OR standard_pinyin = ?
-            ''', (pinyin, pinyin))
-
-            numeric_pinyin = cursor.fetchone()
-            if not numeric_pinyin:
-                return []
-
-            # 查询所有对应的code
-            cursor.execute('''
-                SELECT DISTINCT code
-                FROM code_to_pinyin
-                WHERE pinyin = ?
-            ''', (numeric_pinyin[0],))
-
-            return [row[0] for row in cursor.fetchall()]
+            for 表名 in 表列表:
+                游标.execute(f"SELECT name FROM sqlite_master WHERE type='table' AND name='{表名}'")
+                if not 游标.fetchone():
+                    return False
+            return True
 
 if __name__ == "__main__":
-    migrator = DatabaseMigrator()
-    migrator.migrate()
+    # 测试代码
+    数据库路径 = "pinyin_hanzi.db"
 
-    # 测试通过code查询
-    test_code = "1234"  # 替换为实际code
-    code_result = migrator.query_by_code(test_code)
-    print(f"\n通过code '{test_code}'查询结果:")
-    if code_result:
-        print(f"数字拼音: {code_result['numeric_pinyin']}")
-        print(f"标准拼音: {code_result['standard_pinyin']}")
-        print(f"注音符号: {code_result['zhuyin']}")
-    else:
-        print(f"未找到code '{test_code}'的信息")
+    # 初始化数据库
+    with sqlite3.connect(数据库路径) as 连接:
+        表管理器.创建表(连接)
 
-    # 测试通过拼音反向查询
-    test_pinyin = "ni3"  # 替换为实际拼音
-    pinyin_result = migrator.query_by_pinyin(test_pinyin)
-    print(f"\n通过拼音 '{test_pinyin}'反向查询结果:")
-    if pinyin_result:
-        print("对应的code列表:", pinyin_result)
-    else:
-        print(f"未找到拼音 '{test_pinyin}'对应的code")
+    # 测试查询
+    迁移器 = 数据库迁移器(数据库路径)
+    print(迁移器.通过拼音查询("ni3"))
+    print(迁移器.验证表结构())

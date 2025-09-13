@@ -1,21 +1,23 @@
 """
-拼音编码映射工具(面向对象重构版)
+拼音数据导入工具(专职数据导入版)
 
 功能：
-1. 封装SQLite数据库操作
-2. 提供数据导入和查询接口
-3. 支持编码与拼音的双向映射
+1. 专注于将字典中的两种拼音数据导入数据库的三个表
+2. 不负责表结构创建，只处理数据导入
 """
 
 import sqlite3
 import json
 from pathlib import Path
-from collections import defaultdict
-from typing import List, Dict, Optional, Tuple, Iterator
+from typing import Dict
 import logging
 
-class 拼音映射器:
-    """拼音编码映射核心类"""
+from utils.pinyin_normalizer import PinyinNormalizer
+from utils.pinyin_zhuyin import PinyinZhuyinConverter
+
+
+class 拼音数据导入器:
+    """专职处理拼音数据导入的类"""
 
     def __init__(self, 数据库路径: str = 'pinyin_hanzi.db'):
         """初始化数据库连接路径"""
@@ -36,172 +38,128 @@ class 拼音映射器:
         连接.row_factory = sqlite3.Row
         return 连接
 
-    def 初始化数据库(self) -> None:
-        """初始化数据库表结构"""
-        with self._获取连接() as 连接:
-            游标 = 连接.cursor()
-
-            # 创建音元拼音表
-            游标.execute('''
-            CREATE TABLE IF NOT EXISTS 音元拼音 (
-                id INTEGER PRIMARY KEY,
-                全拼 TEXT NOT NULL UNIQUE,
-                简拼 TEXT,
-                首音 TEXT,
-                干音 TEXT,
-                呼音 TEXT,
-                主音 TEXT,
-                末音 TEXT,
-                间音 TEXT,
-                韵音 TEXT,
-                创建时间 TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )''')
-
-            # 创建音元拼音_数字标调拼音表
-            游标.execute('''
-            CREATE TABLE IF NOT EXISTS 音元拼音_数字标调拼音 (
-                音元_id INTEGER REFERENCES 音元拼音(id),
-                拼音_id INTEGER REFERENCES 拼音(id),
-                标准拼音 TEXT NOT NULL,
-                注音符号 TEXT NOT NULL,
-                PRIMARY KEY (音元_id, 拼音_id)
-            )''')
-
-            # 创建编码到拼音映射表
-            游标.execute('''
-            CREATE TABLE IF NOT EXISTS 编码到拼音 (
-                id INTEGER PRIMARY KEY,
-                编码 TEXT NOT NULL,
-                拼音 TEXT NOT NULL
-            )''')
-
-            # 创建拼音到编码映射表
-            游标.execute('''
-            CREATE TABLE IF NOT EXISTS 拼音到编码 (
-                id INTEGER PRIMARY KEY,
-                拼音 TEXT NOT NULL,
-                编码 TEXT NOT NULL
-            )''')
-
-            # 创建索引
-            游标.execute('CREATE INDEX IF NOT EXISTS 音元拼音_全拼索引 ON 音元拼音(全拼)')
-            游标.execute('CREATE UNIQUE INDEX IF NOT EXISTS 音元拼音_全拼唯一索引 ON 音元拼音(全拼)')
-            游标.execute('CREATE INDEX IF NOT EXISTS 音元拼音_数字标调拼音_音元_id ON 音元拼音_数字标调拼音(音元_id)')
-            游标.execute('CREATE INDEX IF NOT EXISTS 音元拼音_数字标调拼音_拼音_id ON 音元拼音_数字标调拼音(拼音_id)')
-            游标.execute('CREATE UNIQUE INDEX IF NOT EXISTS 音元拼音_数字标调拼音_音元_id_拼音_id ON 音元拼音_数字标调拼音(音元_id, 拼音_id)')
-            游标.execute('CREATE INDEX IF NOT EXISTS 编码到拼音_编码 ON 编码到拼音(编码)')
-            游标.execute('CREATE INDEX IF NOT EXISTS 拼音到编码_拼音 ON 拼音到编码(拼音)')
-
-            连接.commit()
-            self.日志.debug("数据库表结构初始化完成")
-
     def 加载JSON数据(self, json路径: str) -> Dict[str, str]:
         """加载JSON源数据"""
         json路径 = Path(json路径).absolute()
         if not json路径.exists():
             raise FileNotFoundError(f"JSON文件 {json路径} 不存在")
 
-        with open(json路径, 'r', encoding='utf-8') as 文件:
+        with open(json路径, 'r', encoding='utf-8') as 文件:  # 将 json_path 改为 json路径
             数据 = json.load(文件)
-            self.日志.debug(f"从 {json路径} 加载了 {len(数据)} 条数据到数据库 {self.数据库路径} 中")
+            self.日志.debug(f"从 {json路径} 加载了 {len(数据)} 条数据")
             return 数据
 
-    def 标准化数据(self, 音节数据: Dict[str, str]) -> Tuple[Dict, Dict]:
-        """标准化数据为两种映射关系"""
-        编码映射 = defaultdict(list)
-        拼音映射 = defaultdict(list)
+    def 导入音元拼音数据(self, 音元拼音数据: Dict[str, str]) -> int:
+        """导入音元拼音数据到音元拼音表，处理重复值"""
+        with self._获取连接() as 连接:
+            游标 = 连接.cursor()
 
-        for 拼音, 编码 in 音节数据.items():
-            编码映射[编码].append(拼音)
-            拼音映射[拼音].append(编码)
+            # 清空现有数据
+            游标.execute('DELETE FROM 音元拼音')
 
-        self.日志.debug(f"标准化数据完成: {len(编码映射)}唯一编码, 共{sum(len(v) for v in 编码映射.values())}条编码-拼音映射")
-        self.日志.info(f"数据库更新完成: 保存了{sum(len(v) for v in 编码映射.values())}条映射关系: ({len(编码映射)}个编码对应{sum(len(v) for v in 编码映射.values())}个拼音)")
-        return 编码映射, 拼音映射
+            # 获取去重后的音元拼音值
+            去重音元拼音 = set(音元拼音数据.values())
 
-    def 导入数据(self, json路径: str) -> Tuple[Dict, Dict]:
-        """导入数据到数据库"""
+            # 批量插入数据
+            游标.executemany('''
+                INSERT OR IGNORE INTO 音元拼音 (全拼) VALUES (?)
+            ''', [(音元拼音,) for 音元拼音 in 去重音元拼音])
+
+            连接.commit()
+            return 游标.rowcount
+
+    def 导入数字标调拼音数据(self, 数字标调拼音数据: Dict[str, str]) -> int:
+        """导入数字标调拼音数据到数字标调拼音表"""
+        with self._获取连接() as 连接:
+            游标 = 连接.cursor()
+
+            # 清空现有数据
+            游标.execute('DELETE FROM 数字标调拼音')
+
+            # 批量插入数据
+            游标.executemany('''
+                INSERT INTO 数字标调拼音 (数字标调拼音) VALUES (?)
+            ''', [(数字标调拼音,) for 数字标调拼音 in 数字标调拼音数据.keys()])
+
+            连接.commit()
+            return 游标.rowcount
+
+    def 导入拼音映射数据(self, 映射数据: Dict[str, str]) -> int:
+        """导入拼音映射数据到音元拼音已有拼音映射表"""
+        with self._获取连接() as 连接:
+            游标 = 连接.cursor()
+
+            # 清空现有数据
+            游标.execute('DELETE FROM 音元拼音已有拼音映射')
+
+            # 获取所有数字标调拼音
+            拼音列表 = list(映射数据.keys())
+
+            # 处理标准拼音
+            标准化字典, _ = PinyinNormalizer.process_pinyin_dict(
+                {数字标调拼音: 数字标调拼音 for 数字标调拼音 in 拼音列表}
+            )
+
+            # 处理注音符号
+            注音字典, _ = PinyinZhuyinConverter.process_pinyin_dict(
+                {数字标调拼音: 数字标调拼音 for 数字标调拼音 in 拼音列表}
+            )
+
+            # 批量插入数据
+            游标.executemany('''
+                INSERT INTO 音元拼音已有拼音映射 (
+                    音元拼音id, 数字标调拼音id, 标准拼音, 注音符号
+                ) VALUES (
+                    (SELECT id FROM 音元拼音 WHERE 全拼 = ?),
+                    (SELECT id FROM 数字标调拼音 WHERE 数字标调拼音 = ?),
+                    ?, ?
+                )
+            ''', [
+                (音元拼音,
+                数字标调拼音,
+                标准化字典.get(数字标调拼音, 数字标调拼音),  # 使用标准化后的拼音
+                注音字典.get(数字标调拼音, ""))  # 使用转换后的注音符号
+                for 数字标调拼音, 音元拼音 in 映射数据.items()
+            ])
+
+            连接.commit()
+            return 游标.rowcount
+
+    def 导入所有数据(self, 映射数据: Dict[str, str]) -> Dict[str, int]:
+        """导入所有拼音数据到数据库"""
         try:
-            # 初始化数据库
-            self.初始化数据库()
+            self.日志.info("开始导入拼音数据...")
 
-            # 加载并处理数据
-            音节数据 = self.加载JSON数据(json路径)
-            编码映射, 拼音映射 = self.标准化数据(音节数据)
+            # 准备两种拼音数据
+            音元拼音数据 = {k: v for k, v in 映射数据.items()}
+            数字标调拼音数据 = {k: k for k in 映射数据.keys()}  # 修复了变量名错误
 
-            with self._获取连接() as 连接:
-                游标 = 连接.cursor()
+            结果 = {
+                '音元拼音': self.导入音元拼音数据(音元拼音数据),
+                '数字标调拼音': self.导入数字标调拼音数据(数字标调拼音数据),
+                '拼音映射': self.导入拼音映射数据(映射数据)
+            }
 
-                # 清空现有数据
-                游标.execute('DELETE FROM 编码到拼音')
-                游标.execute('DELETE FROM 拼音到编码')
+            self.日志.info(
+                f"数据导入完成: "
+                f"音元拼音={结果['音元拼音']}条, "
+                f"数字标调拼音={结果['数字标调拼音']}条, "
+                f"拼音映射={结果['拼音映射']}条"
+            )
 
-                # 批量导入数据
-                游标.executemany(
-                    'INSERT INTO 编码到拼音 (编码, 拼音) VALUES (?, ?)',
-                    ((编码, 拼音) for 编码, 拼音列表 in 编码映射.items() for 拼音 in 拼音列表)
-                )
-
-                游标.executemany(
-                    'INSERT INTO 拼音到编码 (拼音, 编码) VALUES (?, ?)',
-                    ((拼音, 编码) for 拼音, 编码列表 in 拼音映射.items() for 编码 in 编码列表)
-                )
-
-                连接.commit()
-                self.日志.info(
-                    f"数据导入完成: {len(编码映射)}编码 → {sum(len(v) for v in 拼音映射.values())}拼音映射"
-                )
-
-            return 编码映射, 拼音映射
+            return 结果
 
         except Exception as 错误:
             self.日志.error(f"数据导入失败: {str(错误)}")
             raise
 
-    def 查询(self, 表名: str, 条件: str = None, 参数: tuple = None) -> List[Dict]:
-        """通用查询接口"""
-        with self._获取连接() as 连接:
-            查询语句 = f"SELECT * FROM {表名}"
-            if 条件:
-                查询语句 += f" WHERE {条件}"
-
-            游标 = 连接.cursor()
-            游标.execute(查询语句, 参数 or ())
-            return [dict(行) for 行 in 游标.fetchall()]
-
-    def _显示字符(self, 字符):
-        """辅助函数：直接返回字符本身而不是Unicode转义序列"""
-        return 字符 if 字符 else ''
-
-    def _显示编码列表(self, 编码列表):
-        """改进的编码列表显示方法"""
-        if not 编码列表:
-            return "[]"
-        return "[" + ", ".join(f"'{self._显示字符(编码)}'" for 编码 in 编码列表) + "]"
-
-    def 根据编码获取拼音(self, 编码: str) -> List[str]:
-        """根据编码获取拼音列表"""
-        return [行['拼音'] for 行 in self.查询('编码到拼音', '编码 = ?', (编码,))]
-
-    def 根据编码获取格式化拼音(self, 编码: str) -> str:
-        """获取格式化显示的拼音列表(用于打印)"""
-        拼音列表 = self.根据编码获取拼音(编码)
-        return self._显示编码列表(拼音列表)
-
-    def 根据拼音获取编码(self, 拼音: str) -> List[str]:
-        """根据拼音获取编码列表"""
-        return [行['编码'] for 行 in self.查询('拼音到编码', '拼音 = ?', (拼音,))]
-
-    def 根据拼音获取格式化编码(self, 拼音: str) -> str:
-        """获取格式化显示的编码列表(用于打印)"""
-        编码列表 = self.根据拼音获取编码(拼音)
-        return self._显示编码列表(编码列表)
-
 if __name__ == '__main__':
     # 使用示例
-    映射器 = 拼音映射器()
-    编码映射, 拼音映射 = 映射器.导入数据('yinjie_code.json')
+    导入器 = 拼音数据导入器()
 
-    # 查询示例
-    print("编码'􀀇􀀢􀀢􀀢'对应的拼音:", 映射器.根据编码获取格式化拼音('􀀇􀀢􀀢􀀢'))  # 修改这里
-    print("拼音'ni3'对应的编码:", 映射器.根据拼音获取格式化编码('ni3'))
+    # 加载音节编码数据 - 修改路径为当前目录下的文件
+    映射数据 = 导入器.加载JSON数据('yinjie_code.json')
+
+    # 实际导入
+    结果 = 导入器.导入所有数据(映射数据)
+    print(f"导入结果: {结果}")

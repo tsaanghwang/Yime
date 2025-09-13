@@ -2,17 +2,8 @@
 import sqlite3
 import time
 import logging
-import sys
 from pathlib import Path
 from dataclasses import dataclass
-
-# 确保能正确导入utils模块
-utils_path = Path("c:/Users/Freeman Golden/OneDrive/Yime/utils")
-if utils_path.exists():
-    sys.path.insert(0, str(utils_path))
-
-from utils.pinyin_normalizer import PinyinNormalizer
-from utils.pinyin_zhuyin import PinyinZhuyinConverter
 
 # 配置日志
 logging.basicConfig(
@@ -23,7 +14,8 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class 拼音信息:
-    数字拼音: str
+    音元拼音: str
+    数字标调拼音: str
     标准拼音: str
     注音符号: str
 
@@ -62,22 +54,21 @@ class 表管理器:
                     常用字 BOOLEAN DEFAULT 1,
                     创建时间 TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )''',
-            '拼音': '''
-                CREATE TABLE IF NOT EXISTS 拼音 (
-                    id INTEGER PRIMARY KEY,
-                    拼音 TEXT NOT NULL UNIQUE,
-                    声母 TEXT,
-                    韵母 TEXT,
-                    声调 INTEGER,
-                    创建时间 TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                )''',
-            '汉字拼音映射': '''
-                CREATE TABLE IF NOT EXISTS 汉字拼音映射 (
+            '汉字音元拼音映射': '''
+                CREATE TABLE IF NOT EXISTS 汉字音元拼音映射 (
                     汉字id INTEGER REFERENCES 汉字(id),
-                    拼音id INTEGER REFERENCES 拼音(id),
+                    音元拼音id INTEGER REFERENCES 音元拼音(id),
                     频率 FLOAT DEFAULT 1.0,
-                    主读音 BOOLEAN DEFAULT 0,
-                    PRIMARY KEY (汉字id, 拼音id)
+                    常用读音 BOOLEAN DEFAULT 0,
+                    PRIMARY KEY (汉字id, 音元拼音id)
+                )''',
+            '汉字数字标调拼音映射': '''
+                CREATE TABLE IF NOT EXISTS 汉字数字标调拼音映射 (
+                    汉字id INTEGER REFERENCES 汉字(id),
+                    数字标调拼音id INTEGER REFERENCES 数字标调拼音(id),
+                    频率 FLOAT DEFAULT 1.0,
+                    常用读音 BOOLEAN DEFAULT 0,
+                    PRIMARY KEY (汉字id, 数字标调拼音id)
                 )''',
             '汉字频率': '''
                 CREATE TABLE IF NOT EXISTS 汉字频率 (
@@ -91,25 +82,27 @@ class 表管理器:
                 CREATE TABLE IF NOT EXISTS 词汇 (
                     id INTEGER PRIMARY KEY,
                     词语 TEXT NOT NULL,
-                    拼音 TEXT NOT NULL,
+                    音元拼音 TEXT NOT NULL,
                     频率 FLOAT,
                     长度 INTEGER,
-                    常用词 BOOLEAN DEFAULT 1,
+                    常用词语 BOOLEAN DEFAULT 1,
                     创建时间 TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )'''
         }
 
         for 表名, 定义 in 表定义.items():
+            游标.execute(f"DROP TABLE IF EXISTS {表名}")
             游标.execute(定义)
 
         # 创建索引
         索引 = [
             ('索引_汉字_字符', '汉字(字符)'),
-            ('索引_拼音_拼音', '拼音(拼音)'),
-            ('索引_汉字拼音映射_汉字', '汉字拼音映射(汉字id)'),
-            ('索引_汉字拼音映射_拼音', '汉字拼音映射(拼音id)'),
+            ('索引_汉字音元拼音映射_汉字', '汉字音元拼音映射(汉字id)'),
+            ('索引_汉字音元拼音映射_音元拼音', '汉字音元拼音映射(音元拼音id)'),
+            ('索引_汉字数字标调拼音映射_汉字', '汉字数字标调拼音映射(汉字id)'),
+            ('索引_汉字数字标调拼音映射_数字标调拼音', '汉字数字标调拼音映射(数字标调拼音id)'),
             ('索引_词汇_词语', '词汇(词语)'),
-            ('索引_词汇_拼音', '词汇(拼音)')
+            ('索引_词汇_音元拼音', '词汇(音元拼音)')
         ]
 
         for 名称, 列 in 索引:
