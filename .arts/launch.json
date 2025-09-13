@@ -2,13 +2,23 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "hanzi_db_manager",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\yime\\hanzi_db_manager.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\yime",
+      "addSourceRootsToPythonpath": true
+    },
+    {
       "name": "ime_db_manager",
       "type": "python",
       "request": "launch",
       "program": "${workspaceFolder}\\yime\\ime_db_manager.py",
       "currentFileConfiguration": false,
       "cwd": "${workspaceFolder}\\yime",
-      "addSourceRootsToPythonpath": true
+      "addSourceRootsToPythonpath": true,
+      "noDebug": true
     },
     {
       "name": "yime",
