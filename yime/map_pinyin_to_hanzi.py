@@ -4,7 +4,6 @@ import json
 from pathlib import Path
 from typing import Dict, List
 import logging
-import os
 
 # 配置日志
 logging.basicConfig(
@@ -24,36 +23,36 @@ class PinyinHanziMapper:
         cursor = conn.cursor()
 
         # 检查表是否存在
-        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='homophonic_hanzi'")
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='标准拼音同音字表'")
         if not cursor.fetchone():
             return  # 表不存在，无需迁移
 
         # 检查旧表结构
-        cursor.execute("PRAGMA table_info(homophonic_hanzi)")
+        cursor.execute("PRAGMA table_info(标准拼音同音字表)")
         columns = [col[1] for col in cursor.fetchall()]
 
-        if 'pinyin' in columns and 'standard_pinyin' not in columns:
+        if 'pinyin' in columns and '标准拼音' not in columns:
             # 需要迁移
             logger.info("开始迁移数据库表结构...")
             try:
                 # 创建临时表保存数据
-                cursor.execute('''CREATE TABLE IF NOT EXISTS homophonic_hanzi_temp (
-                             standard_pinyin TEXT PRIMARY KEY,
-                             homophonic_hanzi TEXT NOT NULL,
-                             last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                cursor.execute('''CREATE TABLE IF NOT EXISTS 临时字表 (
+                             标准拼音 TEXT PRIMARY KEY,
+                             同音字列 TEXT NOT NULL,
+                             最近更新 TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                          )''')
 
                 # 从旧表复制数据到临时表
-                cursor.execute('''INSERT INTO homophonic_hanzi_temp
-                              (standard_pinyin, homophonic_hanzi, last_updated)
-                              SELECT pinyin, homophonic_hanzi, last_updated
-                              FROM homophonic_hanzi''')
+                cursor.execute('''INSERT INTO 临时字表
+                              (标准拼音, 同音字列, 最近更新)
+                              SELECT pinyin, 同音字列, 最近更新
+                              FROM 标准拼音同音字表''')
 
                 # 删除旧表
-                cursor.execute("DROP TABLE homophonic_hanzi")
+                cursor.execute("DROP TABLE 标准拼音同音字表")
 
                 # 重命名临时表
-                cursor.execute("ALTER TABLE homophonic_hanzi_temp RENAME TO homophonic_hanzi")
+                cursor.execute("ALTER TABLE 临时字表 RENAME TO 标准拼音同音字表")
 
                 conn.commit()
                 logger.info("数据库表结构迁移完成")
@@ -67,10 +66,10 @@ class PinyinHanziMapper:
         cursor = conn.cursor()
         self._migrate_table(conn)  # 先尝试迁移
 
-        cursor.execute('''CREATE TABLE IF NOT EXISTS homophonic_hanzi (
-                     standard_pinyin TEXT PRIMARY KEY,
-                     homophonic_hanzi TEXT NOT NULL,
-                     last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        cursor.execute('''CREATE TABLE IF NOT EXISTS 标准拼音同音字表 (
+                     标准拼音 TEXT PRIMARY KEY,
+                     同音字列 TEXT NOT NULL,
+                     最近更新 TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                  )''')
         logger.info("拼音-汉字表创建/验证完成")
 
@@ -90,19 +89,19 @@ class PinyinHanziMapper:
                 with open(self.json_path, 'r', encoding='utf-8') as f:
                     data: Dict[str, List[str]] = json.load(f)
 
-                    for standard_pinyin, hanzi_list in data.items():
-                        if not standard_pinyin or not hanzi_list:
-                            logger.warning(f"跳过无效数据: standard_pinyin={standard_pinyin}, hanzi_list={hanzi_list}")
+                    for 标准拼音, hanzi_list in data.items():
+                        if not 标准拼音 or not hanzi_list:
+                            logger.warning(f"跳过无效数据: 标准拼音={标准拼音}, hanzi_list={hanzi_list}")
                             continue
 
                         hanzi_str = ''.join(hanzi_list)
                         try:
-                            conn.execute('''INSERT OR REPLACE INTO homophonic_hanzi
-                                        (standard_pinyin, homophonic_hanzi) VALUES (?, ?)''',
-                                   (standard_pinyin, hanzi_str))
+                            conn.execute('''INSERT OR REPLACE INTO 标准拼音同音字表
+                                        (标准拼音, 同音字列) VALUES (?, ?)''',
+                                   (标准拼音, hanzi_str))
                             count += 1
                         except sqlite3.Error as e:
-                            logger.error(f"导入拼音数据失败: {standard_pinyin} -> {hanzi_str}: {e}")
+                            logger.error(f"导入拼音数据失败: {标准拼音} -> {hanzi_str}: {e}")
 
                 # 提交所有更改
                 conn.commit()
