@@ -40,67 +40,51 @@ class TableManager:
         """创建所有必要的数据库表"""
         cursor = conn.cursor()
 
-        # 先删除旧表(如果存在)
-        cursor.execute("DROP TABLE IF EXISTS code_to_homophonic_hanzi")
+        cursor.execute("DROP TABLE IF EXISTS 音元拼音同音表")
 
-        # 创建新表结构 - 移除code的主键约束
+        # 修改后的表结构 - 使用音元拼音id作为外键
         cursor.execute('''
-            CREATE TABLE code_to_homophonic_hanzi (
-                code TEXT NOT NULL,  -- 不再作为主键
-                numeric_pinyin TEXT NOT NULL,
-                homophonic_hanzi TEXT,
-                last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            CREATE TABLE 音元拼音同音表 (
+                音元拼音id INTEGER REFERENCES 音元拼音(id),
+                数字标调拼音 TEXT NOT NULL,
+                同音字列 TEXT,
+                last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (音元拼音id) REFERENCES 音元拼音已有拼音映射(音元拼音id)
             )
         ''')
 
-        # 创建索引 - 修改为普通索引
+        # 修改索引
         cursor.execute('''
-            CREATE INDEX idx_code_to_homophonic_hanzi_code
-            ON code_to_homophonic_hanzi(code)
+            CREATE INDEX 索引_音元拼音同音字列映射_音元拼音id
+            ON 音元拼音同音表(音元拼音id)
         ''')
         cursor.execute('''
-            CREATE INDEX idx_code_to_homophonic_hanzi_pinyin
-            ON code_to_homophonic_hanzi(numeric_pinyin)
+            CREATE INDEX 索引_音元拼音同音字列映射_数字标调拼音
+            ON 音元拼音同音表(数字标调拼音)
         ''')
 
-        logger.info("数据库表结构创建/验证完成")
-
-class DataImporter:
+    # 修改后的DataImporter.import_code_to_hanzi_data方法
     @staticmethod
     def import_code_to_hanzi_data(conn: sqlite3.Connection) -> int:
-        """从code_to_pinyin表导入数据到code_to_homophonic_hanzi表"""
+        """从code_to_pinyin表导入数据到音元拼音同音字列映射表"""
         cursor = conn.cursor()
-
         try:
-            # 开始显式事务
             conn.execute("BEGIN")
-
-            # 先清空目标表并立即提交
-            cursor.execute("DELETE FROM code_to_homophonic_hanzi")
+            cursor.execute("DELETE FROM 音元拼音同音表")
             conn.commit()
 
-            # 开始新事务执行插入
             conn.execute("BEGIN")
             cursor.execute('''
-                INSERT INTO code_to_homophonic_hanzi (code, numeric_pinyin)
-                SELECT code, pinyin
-                FROM code_to_pinyin
-                ORDER BY code  -- 保持有序导入
+                INSERT INTO 音元拼音同音表 (音元拼音id, 数字标调拼音)
+                SELECT 音元拼音id, 数字标调拼音
+                FROM 音元拼音已有拼音映射
+                ORDER BY 音元拼音id
             ''')
-
             count = cursor.rowcount
             conn.commit()
-
-            if count > 0:
-                logger.info(f"成功导入 {count} 条code-拼音映射(保留一对多关系)")
-            else:
-                logger.error("数据导入失败: 没有导入任何记录")
-
             return count
-
         except Exception as e:
             conn.rollback()
-            logger.error(f"数据导入失败: {str(e)}")
             raise
 
 class DatabaseMigrator:
@@ -121,8 +105,8 @@ class DatabaseMigrator:
                 # 创建表结构
                 TableManager.create_tables(conn)
 
-                # 导入数据
-                count = DataImporter.import_code_to_hanzi_data(conn)
+                # 导入数据 - 修改为调用TableManager中的方法
+                count = TableManager.import_code_to_hanzi_data(conn)
 
                 # 优化数据库
                 conn.execute("VACUUM")
@@ -136,21 +120,20 @@ class DatabaseMigrator:
             logger.error(f"数据迁移失败: {e}")
             raise
 
-    def query_by_code(self, code: str) -> dict:
-        """通过code查询对应的homophonic_hanzi"""
+    def query_by_code(self, 音元拼音id: int) -> dict:
+        """通过音元拼音id查询对应的同音字列"""
         with sqlite3.connect(str(self.db_path)) as conn:
             cursor = conn.cursor()
-
             cursor.execute('''
-                SELECT code, homophonic_hanzi
-                FROM code_to_homophonic_hanzi
-                WHERE code = ?
-            ''', (code,))
-
+                SELECT m.同音字列, p.数字标调拼音
+                FROM 音元拼音同音表 m
+                JOIN 音元拼音已有拼音映射 p ON m.音元拼音id = p.音元拼音id
+                WHERE m.音元拼音id = ?
+            ''', (音元拼音id,))
             result = cursor.fetchone()
             return {
-                'code': result[0],
-                'homophonic_hanzi': result[1]
+                '同音字列': result[0],
+                '数字标调拼音': result[1]
             } if result else {}
 
     def query_by_hanzi(self, hanzi: str) -> list:
@@ -159,9 +142,9 @@ class DatabaseMigrator:
             cursor = conn.cursor()
 
             cursor.execute('''
-                SELECT code
-                FROM code_to_homophonic_hanzi
-                WHERE homophonic_hanzi LIKE ?
+                SELECT 音元拼音
+                FROM 音元拼音同音表
+                WHERE 同音字列 LIKE ?
             ''', (f"%{hanzi}%",))
 
             return [row[0] for row in cursor.fetchall()]
@@ -191,21 +174,21 @@ def migrate_pinyin_danzi_to_db(db_path: str | Path = None, json_path: str = 'pin
     # 确保目标表存在（防止在不同路径的 DB 上误操作）
     cursor.execute("""
     SELECT name FROM sqlite_master
-    WHERE type='table' AND name='code_to_homophonic_hanzi'
+    WHERE type='table' AND name='音元拼音同音表'
     """)
     if cursor.fetchone() is None:
         conn.close()
-        raise RuntimeError(f"目标表 code_to_homophonic_hanzi 不存在于数据库 {db_path}")
+        raise RuntimeError(f"目标表 音元拼音同音表 不存在于数据库 {db_path}")
 
     # 准备SQL语句
-    select_sql = "SELECT 1 FROM code_to_homophonic_hanzi WHERE numeric_pinyin = ?"
+    select_sql = "SELECT 1 FROM 音元拼音同音表 WHERE 数字标调拼音 = ?"
     update_sql = """
-        UPDATE code_to_homophonic_hanzi
-        SET homophonic_hanzi = ?, last_updated = CURRENT_TIMESTAMP
-        WHERE numeric_pinyin = ?
+        UPDATE 音元拼音同音表
+        SET 同音字列 = ?, last_updated = CURRENT_TIMESTAMP
+        WHERE 数字标调拼音 = ?
     """
     insert_sql = """
-        INSERT INTO code_to_homophonic_hanzi (code, numeric_pinyin, homophonic_hanzi)
+        INSERT INTO 音元拼音同音表 (音元拼音, 数字标调拼音, 同音字列)
         VALUES (?, ?, ?)
     """
 
@@ -244,7 +227,7 @@ if __name__ == "__main__":
     code_result = migrator.query_by_code(test_code)
     print(f"\n通过code '{test_code}'查询结果:")
     if code_result:
-        print(f"汉字: {code_result['homophonic_hanzi']}")
+        print(f"汉字: {code_result['同音字列']}")
     else:
         print(f"未找到code '{test_code}'的信息")
 
