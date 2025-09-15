@@ -38,14 +38,14 @@ class PinyinHanziMapper:
                 # 创建临时表保存数据
                 cursor.execute('''CREATE TABLE IF NOT EXISTS 临时字表 (
                              标准拼音 TEXT PRIMARY KEY,
-                             同音字列 TEXT NOT NULL,
+                             同音字集 TEXT NOT NULL,
                              最近更新 TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                          )''')
 
                 # 从旧表复制数据到临时表
                 cursor.execute('''INSERT INTO 临时字表
-                              (标准拼音, 同音字列, 最近更新)
-                              SELECT pinyin, 同音字列, 最近更新
+                              (标准拼音, 同音字集, 最近更新)
+                              SELECT pinyin, 同音字集, 最近更新
                               FROM 标准拼音同音字表''')
 
                 # 删除旧表
@@ -68,7 +68,7 @@ class PinyinHanziMapper:
 
         cursor.execute('''CREATE TABLE IF NOT EXISTS 标准拼音同音字表 (
                      标准拼音 TEXT PRIMARY KEY,
-                     同音字列 TEXT NOT NULL,
+                     同音字集 TEXT NOT NULL,
                      最近更新 TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                  )''')
         logger.info("拼音-汉字表创建/验证完成")
@@ -97,7 +97,7 @@ class PinyinHanziMapper:
                         hanzi_str = ''.join(hanzi_list)
                         try:
                             conn.execute('''INSERT OR REPLACE INTO 标准拼音同音字表
-                                        (标准拼音, 同音字列) VALUES (?, ?)''',
+                                        (标准拼音, 同音字集) VALUES (?, ?)''',
                                    (标准拼音, hanzi_str))
                             count += 1
                         except sqlite3.Error as e:
