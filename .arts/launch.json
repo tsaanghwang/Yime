@@ -2,6 +2,34 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "create_tables_from_manager",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\create_tables_from_manager.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}",
+      "addSourceRootsToPythonpath": true
+    },
+    {
+      "name": "create_tables_from_manager",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\yime\\create_tables_from_manager.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\yime",
+      "addSourceRootsToPythonpath": true
+    },
+    {
+      "name": "list_tables",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\yime\\list_tables.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\yime",
+      "addSourceRootsToPythonpath": true,
+      "noDebug": true
+    },
+    {
       "name": "hanzi_db_manager",
       "type": "python",
       "request": "launch",
