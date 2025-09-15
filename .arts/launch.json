@@ -2,13 +2,52 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "pinyin_importer",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\yime\\pinyin_importer.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\yime",
+      "addSourceRootsToPythonpath": true
+    },
+    {
+      "name": "import_pinyin",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\yime\\import_pinyin.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\yime",
+      "addSourceRootsToPythonpath": true
+    },
+    {
+      "name": "db_table_list",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\yime\\db_table_list.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\yime",
+      "addSourceRootsToPythonpath": true,
+      "noDebug": true
+    },
+    {
+      "name": "db_manager",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\yime\\db_manager.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\yime",
+      "addSourceRootsToPythonpath": true,
+      "noDebug": true
+    },
+    {
       "name": "create_tables_from_manager",
       "type": "python",
       "request": "launch",
       "program": "${workspaceFolder}\\create_tables_from_manager.py",
       "currentFileConfiguration": false,
       "cwd": "${workspaceFolder}",
-      "addSourceRootsToPythonpath": true
+      "addSourceRootsToPythonpath": true,
+      "noDebug": true
     },
     {
       "name": "create_tables_from_manager",
@@ -36,7 +75,8 @@
       "program": "${workspaceFolder}\\yime\\hanzi_db_manager.py",
       "currentFileConfiguration": false,
       "cwd": "${workspaceFolder}\\yime",
-      "addSourceRootsToPythonpath": true
+      "addSourceRootsToPythonpath": true,
+      "noDebug": true
     },
     {
       "name": "ime_db_manager",
