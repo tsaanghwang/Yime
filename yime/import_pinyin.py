@@ -86,15 +86,38 @@ class 拼音数据导入器:
             missing = self._检查表存在(conn)
             if "数字标调拼音" in missing:
                 raise RuntimeError(f"目标表缺失: 数字标调拼音。请先创建表或检查数据库: {self.数据库路径}")
+
             cursor = conn.cursor()
-            cursor.executemany(
-                'INSERT OR IGNORE INTO "数字标调拼音" ("全拼") VALUES (?)',
-                [(p,) for p in 数字标调拼音数据.keys()]
-            )
-            conn.commit()
-            count = cursor.rowcount
-            self.日志.info(f"导入数字标调拼音: 插入/忽略了 {count} 条记录")
-            return count
+
+            # 先检查表结构
+            cursor.execute("PRAGMA table_info('数字标调拼音')")
+            columns = [col[1] for col in cursor.fetchall()]
+            if "全拼" not in columns:
+                raise RuntimeError("数字标调拼音表缺少'全拼'字段")
+
+            # 调试日志：打印前5条待插入数据
+            sample_data = list(数字标调拼音数据.keys())[:5]
+            self.日志.debug(f"准备导入的样例数据: {sample_data}")
+
+            try:
+                cursor.executemany(
+                    'INSERT OR IGNORE INTO "数字标调拼音" ("全拼") VALUES (?)',
+                    [(p,) for p in 数字标调拼音数据.keys()]
+                )
+                conn.commit()
+                count = cursor.rowcount
+                self.日志.info(f"导入数字标调拼音: 插入/忽略了 {count} 条记录")
+
+                # 验证实际插入数量
+                cursor.execute('SELECT COUNT(*) FROM "数字标调拼音"')
+                total = cursor.fetchone()[0]
+                self.日志.info(f"当前数字标调拼音表总记录数: {total}")
+
+                return count
+            except sqlite3.Error as e:
+                self.日志.error(f"导入失败: {str(e)}")
+                conn.rollback()
+                raise
 
     def 导入拼音映射数据(self, 映射数据: Dict[str, str]) -> int:
         with self._获取连接() as conn:

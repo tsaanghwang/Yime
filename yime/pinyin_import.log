@@ -1,0 +1,33 @@
+2025-09-15 21:53:18,602 - ERROR - 导入失败: JSON文件不存在: C:\Users\Freeman Golden\OneDrive\Yime\yime\yime\yinjie_code.json
+2025-09-15 21:53:59,511 - INFO - 已从 C:\Users\Freeman Golden\OneDrive\Yime\yime\yinjie_code.json 加载 1836 条音元拼音数据
+2025-09-15 21:53:59,517 - INFO - 导入完成: 尝试导入 1836 条, 实际新增 0 条记录
+2025-09-15 22:07:24,748 - INFO - 已从 C:\Users\Freeman Golden\OneDrive\Yime\yime\yinjie_code.json 加载 1836 条音元拼音数据
+2025-09-15 22:07:24,752 - INFO - 导入完成: 尝试导入 1836 条, 实际新增 0 条记录
+2025-09-15 22:08:15,479 - INFO - 已从 C:\Users\Freeman Golden\OneDrive\Yime\yime\yinjie_code.json 加载 1836 条音元拼音数据
+2025-09-15 22:08:15,485 - INFO - 导入完成: 尝试导入 1836 条, 实际新增 0 条记录
+2025-09-15 22:13:49,081 - INFO - 已从 C:\Users\Freeman Golden\OneDrive\Yime\yime\yinjie_code.json 加载 1836 条音元拼音数据
+2025-09-15 22:13:49,088 - INFO - 导入完成: 尝试导入 1836 条, 实际新增 24 条记录
+2025-09-15 22:17:44,547 - INFO - 已从 C:\Users\Freeman Golden\OneDrive\Yime\yime\yinjie_code.json 加载 1836 条音元拼音数据
+2025-09-15 22:17:44,552 - INFO - 已清空音元拼音表，删除 24 条记录
+2025-09-15 22:17:44,560 - ERROR - 数据库错误: UNIQUE constraint failed: 音元拼音.简拼
+2025-09-15 22:17:44,560 - ERROR - 导入失败: UNIQUE constraint failed: 音元拼音.简拼
+2025-09-15 22:19:58,027 - INFO - 已从 C:\Users\Freeman Golden\OneDrive\Yime\yime\yinjie_code.json 加载 1836 条音元拼音数据
+2025-09-15 22:19:58,031 - INFO - 已清空音元拼音表，删除 0 条记录
+2025-09-15 22:19:58,040 - ERROR - 数据库错误: UNIQUE constraint failed: 音元拼音.简拼
+2025-09-15 22:19:58,040 - ERROR - 导入失败: UNIQUE constraint failed: 音元拼音.简拼
+2025-09-15 22:22:41,514 - INFO - 已从 C:\Users\Freeman Golden\OneDrive\Yime\yime\yinjie_code.json 加载 1836 条音元拼音数据
+2025-09-15 22:22:41,517 - INFO - 已清空音元拼音表，删除 0 条记录
+2025-09-15 22:22:41,526 - ERROR - 数据库错误: UNIQUE constraint failed: 音元拼音.简拼
+2025-09-15 22:22:41,527 - ERROR - 导入失败: UNIQUE constraint failed: 音元拼音.简拼
+2025-09-15 22:27:33,109 - INFO - 已从 C:\Users\Freeman Golden\OneDrive\Yime\yime\yinjie_code.json 加载 1836 条音元拼音数据
+2025-09-15 22:27:33,113 - INFO - 已清空音元拼音表，删除 0 条记录
+2025-09-15 22:27:33,124 - ERROR - 数据库错误: UNIQUE constraint failed: 音元拼音.简拼
+2025-09-15 22:27:33,124 - ERROR - 导入失败: UNIQUE constraint failed: 音元拼音.简拼
+2025-09-15 22:28:27,114 - INFO - 已从 C:\Users\Freeman Golden\OneDrive\Yime\yime\yinjie_code.json 加载 1836 条音元拼音数据
+2025-09-15 22:28:27,118 - INFO - 已清空音元拼音表，删除 0 条记录
+2025-09-15 22:28:27,128 - ERROR - 数据库错误: UNIQUE constraint failed: 音元拼音.简拼
+2025-09-15 22:28:27,129 - ERROR - 导入失败: UNIQUE constraint failed: 音元拼音.简拼
+2025-09-15 22:29:34,178 - INFO - 已从 C:\Users\Freeman Golden\OneDrive\Yime\yime\yinjie_code.json 加载 1836 条音元拼音数据
+2025-09-15 22:29:34,183 - INFO - 已清空音元拼音表，删除 0 条记录
+2025-09-15 22:29:34,195 - ERROR - 数据库错误: UNIQUE constraint failed: 音元拼音.简拼
+2025-09-15 22:29:34,195 - ERROR - 导入失败: UNIQUE constraint failed: 音元拼音.简拼

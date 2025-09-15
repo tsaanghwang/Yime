@@ -14,9 +14,9 @@ logger = logging.getLogger(__name__)
 
 class PinyinHanziMapper:
     def __init__(self, db_path: str = None, json_path: str = None):
-        self.base_dir = Path(__file__).parent
-        self.db_path = Path(db_path) if db_path else self.base_dir / "pinyin_hanzi.db"
-        self.json_path = Path(json_path) if json_path else self.base_dir / "pinyin_hanzi.json"
+        self.module_dir = Path(__file__).parent
+        self.db_path = Path(db_path) if db_path else self.module_dir / "pinyin_hanzi.db"
+        self.json_path = Path(json_path) if json_path else self.module_dir / "pinyin_hanzi.json"
 
     def _migrate_table(self, conn: sqlite3.Connection) -> None:
         """迁移表结构从旧版本到新版本"""
