@@ -97,33 +97,61 @@ class 拼音数据导入器:
             return count
 
     def 导入拼音映射数据(self, 映射数据: Dict[str, str]) -> int:
-        """
-        将映射数据写入 音元拼音已有拼音映射 表。
-        假定映射数据格式为 {数字标调拼音: 音元拼音}
-        """
         with self._获取连接() as conn:
+            # 检查表是否存在
             missing = self._检查表存在(conn)
             if "音元拼音已有拼音映射" in missing:
                 raise RuntimeError(f"目标表缺失: 音元拼音已有拼音映射。请先创建表或检查数据库: {self.数据库路径}")
 
             cursor = conn.cursor()
 
-            拼音列表 = list(映射数据.keys())
+            # 1. 先导入音元拼音
+            音元拼音列表 = list(set(映射数据.values()))
+            cursor.executemany(
+                'INSERT OR IGNORE INTO "音元拼音" ("全拼") VALUES (?)',
+                [(p,) for p in 音元拼音列表]
+            )
 
-            # 标准化与注音转换
-            标准化字典, _ = PinyinNormalizer.process_pinyin_dict(
-                {p: p for p in 拼音列表}
+            # 2. 导入数字标调拼音
+            数字标调拼音列表 = list(映射数据.keys())
+            cursor.executemany(
+                'INSERT OR IGNORE INTO "数字标调拼音" ("全拼") VALUES (?)',
+                [(p,) for p in 数字标调拼音列表]
             )
-            注音字典, _ = PinyinZhuyinConverter.process_pinyin_dict(
-                {p: p for p in 拼音列表}
-            )
+            conn.commit()
+
+            # 3. 处理映射关系
+            拼音列表 = list(映射数据.keys())
+            标准化字典, _ = PinyinNormalizer.process_pinyin_dict({p: p for p in 拼音列表})
+            注音字典, _ = PinyinZhuyinConverter.process_pinyin_dict({p: p for p in 拼音列表})
 
             params = []
             for 数字标调拼音, 音元拼音 in 映射数据.items():
+                # 获取音元拼音编号
+                cursor.execute('SELECT "编号" FROM "音元拼音" WHERE "全拼" = ?', (音元拼音,))
+                音元拼音结果 = cursor.fetchone()
+                if not 音元拼音结果:
+                    self.日志.error(f"音元拼音表中找不到拼音: {音元拼音}")
+                    continue
+                音元拼音编号 = 音元拼音结果[0]
+
+                # 获取数字标调拼音编号
+                cursor.execute('SELECT "编号" FROM "数字标调拼音" WHERE "全拼" = ?', (数字标调拼音,))
+                数字标调拼音结果 = cursor.fetchone()
+                if not 数字标调拼音结果:
+                    self.日志.error(f"数字标调拼音表中找不到拼音: {数字标调拼音}")
+                    continue
+                数字标调拼音编号 = 数字标调拼音结果[0]
+
+                # 准备插入参数
                 标准拼音 = 标准化字典.get(数字标调拼音, 数字标调拼音)
                 注音符号 = 注音字典.get(数字标调拼音, "")
-                params.append((音元拼音, 数字标调拼音, 标准拼音, 注音符号))
+                params.append((音元拼音编号, 数字标调拼音编号, 标准拼音, 注音符号))
 
+            if not params:
+                raise RuntimeError("没有有效的拼音映射可以导入")
+
+            # 批量插入映射关系
             cursor.executemany('''
                 INSERT OR REPLACE INTO "音元拼音已有拼音映射"
                 ("音元拼音", "带数拼音", "标准拼音", "注音符号")
