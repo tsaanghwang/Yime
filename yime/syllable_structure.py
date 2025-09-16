@@ -158,7 +158,7 @@ class SyllableStructure:
             '呼音': self.ascender,
             '主音': self.peak,
             '末音': self.descender,
-            '间音': None,  # 可根据需要补充
+            '间音': self.get_jianyin_code(),
             '韵音': self.get_yunyin_code()
         }
 
@@ -184,6 +184,14 @@ class SyllableStructure:
     def get_ganyin_code(self) -> str:
         """获取干音部分编码"""
         return (self.ascender or '') + (self.peak or '') + (self.descender or '')
+
+    def get_jianyin_code(self) -> str:
+        """获取间音部分编码(首音和末音之间的音元)
+
+        返回:
+            str: 由呼音和主音组成的字符串，如果不存在则返回空字符串
+        """
+        return (self.ascender or '') + (self.peak or '')
 
     def get_yunyin_code(self) -> str:
         """获取韵音部分编码"""

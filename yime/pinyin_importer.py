@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Dict
 from contextlib import contextmanager
 
+from syllable_structure import SyllableStructure
 from syllable_decoder import SyllableDecoder
 
 class PinyinImporter:
@@ -52,14 +53,41 @@ class PinyinImporter:
             return cursor.fetchone() is not None
 
     def clear_table(self) -> int:
-        """删除音元拼音表中的所有记录"""
+        """删除音元拼音表中的所有记录（增强版）"""
+        if not self.check_table_exists():
+            self.logger.warning("音元拼音表不存在")
+            return 0
+
         with self._get_connection() as conn:
             cursor = conn.cursor()
-            cursor.execute('DELETE FROM "音元拼音"')
-            deleted_count = cursor.rowcount
-            conn.commit()
-            self.logger.info(f"已清空音元拼音表，删除 {deleted_count} 条记录")
-            return deleted_count
+            try:
+                # 先禁用外键约束
+                cursor.execute("PRAGMA foreign_keys=OFF")
+
+                # 使用更彻底的表清空方式
+                cursor.execute('DELETE FROM "音元拼音"')
+
+                # 先提交DELETE操作
+                conn.commit()
+
+                # 在事务外执行VACUUM
+                cursor.execute("VACUUM")
+
+                # 开始新的事务
+                cursor.execute("BEGIN")
+
+                # 重置自增计数器（如果有）
+                cursor.execute("DELETE FROM sqlite_sequence WHERE name='音元拼音'")
+
+                conn.commit()
+                return 0  # 不再返回删除计数
+            except Exception as e:
+                conn.rollback()
+                self.logger.error(f"清空表失败: {e}")
+                raise
+            finally:
+                # 恢复外键约束
+                cursor.execute("PRAGMA foreign_keys=ON")
 
     def load_json_data(self, json_path: str | Path) -> Dict[str, str]:
         """加载JSON格式的音元拼音数据"""
@@ -79,7 +107,9 @@ class PinyinImporter:
 
         try:
             # 判断输入是否为PUA字符(编码)
-            is_pua = any(0xE000 <= ord(c) <= 0xF8FF for c in input_str)
+            is_pua = any(0xE000 <= ord(c) <= 0xF8FF or
+                        0xF0000 <= ord(c) <= 0xFFFFF or
+                        0x100000 <= ord(c) <= 0x10FFFF for c in input_str)
 
             if is_pua:
                 # 直接处理PUA编码
@@ -91,18 +121,36 @@ class PinyinImporter:
                         peak=peak,
                         descender=descender
                     )
-                    full_pinyin = f"[PUA]{input_str}"
+                    full_pinyin = f"{input_str}"
                     ganyin = decoder.get_ganyin(input_str)
                     yunyin = decoder.get_yunyin(input_str)
+                    # 新增：使用get_jianyin_code获取间音
+                    jianyin = decoder.get_jianyin_code(input_str)
                 except Exception as e:
                     self.logger.warning(f"解析PUA编码'{input_str}'失败: {e}")
                     raise ValueError(f"无效的PUA编码格式: {input_str}")
             else:
                 # 正常拼音处理流程
-                syllable = decoder.decode(input_str)
-                full_pinyin = input_str
-                ganyin = decoder.get_ganyin(syllable.code)
-                yunyin = decoder.get_yunyin(syllable.code)
+                try:
+                    code = decoder._get_code(input_str)
+                    if not code:
+                        raise ValueError(f"未找到拼音 '{input_str}' 的编码")
+
+                    initial, _, (ascender, yunyin), (peak, descender) = decoder.split_encoded_syllable(code)
+                    syllable = SyllableStructure(
+                        initial=initial,
+                        ascender=ascender,
+                        peak=peak,
+                        descender=descender
+                    )
+                    full_pinyin = input_str
+                    ganyin = decoder.get_ganyin(code)
+                    yunyin = decoder.get_yunyin(code)
+                    # 新增：使用get_jianyin_code获取间音
+                    jianyin = decoder.get_jianyin_code(code)
+                except Exception as e:
+                    self.logger.warning(f"解析输入'{input_str}'失败: {e}")
+                    raise
 
             return {
                 "全拼": full_pinyin,
@@ -112,7 +160,7 @@ class PinyinImporter:
                 "呼音": syllable.ascender,
                 "主音": syllable.peak,
                 "末音": syllable.descender,
-                "间音": None,
+                "间音": jianyin,  # 使用计算得到的间音值
                 "韵音": yunyin
             }
 
@@ -141,8 +189,16 @@ class PinyinImporter:
         if not self.check_table_exists():
             raise RuntimeError("'音元拼音'表不存在，请先创建表结构")
 
-        # 清空表中原有记录
+        # 清空表中原有记录（移除日志确认）
         self.clear_table()
+
+        # 获取当前表记录数确认（可选，如果需要可以保留）
+        with self._get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute('SELECT COUNT(*) FROM "音元拼音"')
+            count = cursor.fetchone()[0]
+            if count != 0:
+                raise RuntimeError("表清空失败，仍有记录存在")
 
         # 准备要插入的数据（生成完整字段）
         values_to_insert = []
@@ -194,6 +250,9 @@ def main():
     """命令行入口"""
     importer = PinyinImporter()
     try:
+        deleted_count = importer.clear_table()
+        print(f"已删除 {deleted_count} 条旧记录")
+
         data = importer.load_json_data("syllable_code.json")
         count = importer.import_pinyin(data)
         print(f"导入完成，共新增 {count} 条记录")
