@@ -70,22 +70,35 @@ class SyllableDecoder:
 
         return encoded_syllable[0], encoded_syllable[1:]
 
+    def _get_code(self, pinyin):
+        """从code_map中获取拼音对应的编码
+
+        参数:
+            pinyin: 拼音字符串
+
+        返回:
+            str: 对应的编码字符串，如果找不到则返回None
+        """
+        return self.code_map.get(pinyin)
+
+
     # === 核心解码功能 ===
     def decode(self, pinyin_or_code):
         """解码拼音或直接处理编码字符串"""
-        # 如果是PUA字符(编码)，直接处理
-        if any(0xE000 <= ord(c) <= 0xF8FF for c in pinyin_or_code):
+        # 扩展PUA字符检测范围(包含Supplementary PUA)
+        if any(0xE000 <= ord(c) <= 0xF8FF or  # 基本PUA
+            0xF0000 <= ord(c) <= 0xFFFFF or  # Supplementary PUA-A
+            0x100000 <= ord(c) <= 0x10FFFF for c in pinyin_or_code):  # Supplementary PUA-B
             try:
-                # 直接返回编码结构，无需拼音查找
-                return self.split_encoded_syllable(pinyin_or_code)
+                return SyllableStructure(*self.split_encoded_syllable(pinyin_or_code))
             except Exception as e:
                 raise ValueError(f"无效的PUA编码格式: {pinyin_or_code}") from e
 
-        # 原有拼音解码逻辑
+        # 原有拼音解码逻辑保持不变
         code = self._get_code(pinyin_or_code)
         if not code:
             raise ValueError(f"未找到拼音 '{pinyin_or_code}' 的编码")
-        return self.split_encoded_syllable(code)
+        return SyllableStructure(*self.split_encoded_syllable(code))
 
     def decode_all(self):
         """解码所有拼音为SyllableStructure实例字典"""
@@ -169,6 +182,18 @@ class SyllableDecoder:
         """获取韵音部分"""
         _, _, (_, yunyin), _ = self.split_encoded_syllable(encoded_syllable)
         return yunyin
+
+    def get_jianyin_code(self, encoded_syllable):
+        """获取间音部分编码(首音和末音之间的音元)
+
+        参数:
+            encoded_syllable: 编码后的音节字符串(如"abcd")
+
+        返回:
+            str: 由呼音和主音组成的字符串，如果不存在则返回空字符串
+        """
+        _, _, (ascender, _), (peak, _) = self.split_encoded_syllable(encoded_syllable)
+        return (ascender or '') + (peak or '')
 
     # === 主程序示例 ===
     @staticmethod
