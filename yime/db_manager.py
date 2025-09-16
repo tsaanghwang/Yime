@@ -36,8 +36,8 @@ class 表管理器:
             '音元拼音': '''
                 CREATE TABLE IF NOT EXISTS "音元拼音" (
                     "编号" INTEGER PRIMARY KEY AUTOINCREMENT,
-                    "全拼" TEXT NOT NULL UNIQUE,
-                    "简拼" TEXT NOT NULL UNIQUE,
+                    "全拼" TEXT NOT NULL,
+                    "简拼" TEXT NOT NULL,
                     "首音" TEXT,
                     "干音" TEXT NOT NULL,
                     "呼音" TEXT,
@@ -45,8 +45,7 @@ class 表管理器:
                     "末音" TEXT,
                     "间音" TEXT,
                     "韵音" TEXT,
-                    "最近更新" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    UNIQUE ("全拼", "首音", "干音")
+                    "最近更新" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )
             ''',
             '数字标调拼音': '''

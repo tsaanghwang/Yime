@@ -24,6 +24,32 @@ class SyllableDecoder:
             return "[]"
         return "[" + ", ".join(f"'{self._display_char(c)}'" for c in codes) + "]"
 
+    def split_encoded_syllable(self, encoded_syllable):
+        """将编码音节分割为完整的音元结构
+
+        参数:
+            encoded_syllable: 编码后的音节字符串(如"abcd")
+
+        返回:
+            tuple: (initial, ganyin, (ascender, yunyin), (peak, descender))
+        """
+        if not encoded_syllable:
+            raise ValueError("编码音节不能为空")
+
+        # 分割首音和干音
+        initial = encoded_syllable[0] if len(encoded_syllable) > 0 else None
+        ganyin = encoded_syllable[1:] if len(encoded_syllable) > 1 else ""
+
+        # 分割呼音和韵音
+        ascender = ganyin[0] if len(ganyin) > 0 else None
+        yunyin = ganyin[1:] if len(ganyin) > 1 else ""
+
+        # 分割韵音为主音和末音
+        peak = yunyin[0] if len(yunyin) > 0 else None
+        descender = yunyin[1:] if len(yunyin) > 1 else None
+
+        return (initial, ganyin, (ascender, yunyin), (peak, descender))
+
     # === 音节分割方法 ===
     def split_syllable(self, encoded_syllable):
         """将编码音节分割为首音和干音两部分
@@ -45,28 +71,21 @@ class SyllableDecoder:
         return encoded_syllable[0], encoded_syllable[1:]
 
     # === 核心解码功能 ===
-    def decode(self, pinyin):
-        """解码单个拼音为SyllableStructure实例"""
-        code = self.code_map.get(pinyin)
+    def decode(self, pinyin_or_code):
+        """解码拼音或直接处理编码字符串"""
+        # 如果是PUA字符(编码)，直接处理
+        if any(0xE000 <= ord(c) <= 0xF8FF for c in pinyin_or_code):
+            try:
+                # 直接返回编码结构，无需拼音查找
+                return self.split_encoded_syllable(pinyin_or_code)
+            except Exception as e:
+                raise ValueError(f"无效的PUA编码格式: {pinyin_or_code}") from e
+
+        # 原有拼音解码逻辑
+        code = self._get_code(pinyin_or_code)
         if not code:
-            raise ValueError(f"未找到拼音 '{pinyin}' 的编码")
-
-        # 使用新的分割方法
-        initial, _, (ascender, yunyin), (peak, descender) = self.split_encoded_syllable(code)
-
-        syllable = SyllableStructure(
-            initial=initial,  # 首音
-            ascender=ascender, # 呼音
-            peak=peak,     # 主音
-            descender=descender # 末音
-        )
-
-        # 添加音元分类信息
-        noise, musical = syllable.classify_codes()
-        syllable.noise_codes = noise
-        syllable.musical_codes = musical
-
-        return syllable
+            raise ValueError(f"未找到拼音 '{pinyin_or_code}' 的编码")
+        return self.split_encoded_syllable(code)
 
     def decode_all(self):
         """解码所有拼音为SyllableStructure实例字典"""
@@ -141,6 +160,16 @@ class SyllableDecoder:
         print(f"已生成并保存键位映射到 {output_file}")
         return key_to_code
 
+    def get_ganyin(self, encoded_syllable):
+        """获取干音部分"""
+        _, ganyin, _, _ = self.split_encoded_syllable(encoded_syllable)
+        return ganyin
+
+    def get_yunyin(self, encoded_syllable):
+        """获取韵音部分"""
+        _, _, (_, yunyin), _ = self.split_encoded_syllable(encoded_syllable)
+        return yunyin
+
     # === 主程序示例 ===
     @staticmethod
     def run_example():
@@ -163,43 +192,6 @@ class SyllableDecoder:
         all_syllable = decoder.decode_all()
         print(f"\n解码了 {len(all_syllable)} 个音节")
         decoder.map_key_to_code()
-
-    def split_encoded_syllable(self, encoded_syllable):
-    """
-    将编码音节分割为完整的音元结构
-
-    参数:
-        encoded_syllable: 编码后的音节字符串(如"abcd")
-
-    返回:
-        tuple: (首音, 干音) 或 (首音, 呼音, 韵音) 或 (首音, 呼音, 主音, 末音)
-    """
-    if not encoded_syllable:
-        raise ValueError("编码音节不能为空")
-
-    # 分割首音和干音
-    initial = encoded_syllable[0] if len(encoded_syllable) > 0 else None
-    ganyin = encoded_syllable[1:] if len(encoded_syllable) > 1 else ""
-
-    # 分割呼音和韵音
-    ascender = ganyin[0] if len(ganyin) > 0 else None
-    yunyin = ganyin[1:] if len(ganyin) > 1 else ""
-
-    # 分割韵音为主音和末音
-    peak = yunyin[0] if len(yunyin) > 0 else None
-    descender = yunyin[1:] if len(yunyin) > 1 else None
-
-    return initial, ganyin, (ascender, yunyin), (peak, descender)
-
-def get_ganyin(self, encoded_syllable):
-    """获取干音部分"""
-    _, ganyin, _, _ = self.split_encoded_syllable(encoded_syllable)
-    return ganyin
-
-def get_yunyin(self, encoded_syllable):
-    """获取韵音部分"""
-    _, _, (_, yunyin), _ = self.split_encoded_syllable(encoded_syllable)
-    return yunyin
 
 if __name__ == "__main__":
     SyllableDecoder.run_example()
