@@ -43,12 +43,9 @@ class SyllableStructure:
 
     # 属性访问器
     @property
-    def ganyin(self) -> Dict[str, Optional[str]]:
+    def ganyin(self) -> str:
         """获取干音部分(由呼音和韵音组成)"""
-        return {
-            'ascender': self.ascender,
-            'rime': self.rime
-        }
+        return (self.ascender or '') + (self.peak or '') + (self.descender or '')
 
     @property
     def rime(self) -> Dict[str, Optional[str]]:
@@ -152,9 +149,10 @@ class SyllableStructure:
         返回:
             dict: 包含音元拼音表所需字段的字典
         """
+        simplified = self.simplify_codes()
         return {
             '全拼': self.get_full_code(),
-            '简拼': self.get_abbreviation(),
+            '简拼': simplified.get_full_code(),  # 使用简化后的完整编码作为简拼
             '首音': self.initial,
             '干音': self.get_ganyin_code(),
             '呼音': self.ascender,
@@ -174,12 +172,14 @@ class SyllableStructure:
         return ''.join(parts)
 
     def get_abbreviation(self) -> str:
-        """获取简拼形式"""
-        abbrev = []
-        if self.initial: abbrev.append(self.initial)
-        if self.ascender or self.peak or self.descender:
-            abbrev.append(self.get_ganyin_code()[0] if self.get_ganyin_code() else '')
-        return ''.join(abbrev)
+        """获取简拼形式(直接使用simplify_codes的结果)"""
+        simplified = self.simplify_codes()
+        parts = []
+        if simplified.initial: parts.append(simplified.initial)
+        if simplified.ascender: parts.append(simplified.ascender)
+        if simplified.peak: parts.append(simplified.peak)
+        if simplified.descender: parts.append(simplified.descender)
+        return ''.join(parts)
 
     def get_ganyin_code(self) -> str:
         """获取干音部分编码"""

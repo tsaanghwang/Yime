@@ -10,6 +10,8 @@ from pathlib import Path
 from typing import Dict
 from contextlib import contextmanager
 
+from syllable_decoder import SyllableDecoder
+
 class PinyinImporter:
     """音元拼音导入器（完整字段导入）"""
 
@@ -71,22 +73,62 @@ class PinyinImporter:
         self.logger.info(f"已从 {json_path} 加载 {len(data)} 条音元拼音数据")
         return data
 
-    def _generate_default_values(self, full_pinyin: str) -> dict:
-        """生成默认值，简拼为去掉第一个音后的干音"""
-        # 简拼逻辑：去掉第一个音后的干音
-        simplified = full_pinyin[1:] if len(full_pinyin) > 1 else ""
+    def _generate_default_values(self, input_str: str) -> dict:
+        """生成默认值，支持直接处理PUA编码字符"""
+        decoder = SyllableDecoder()
 
-        return {
-            "全拼": full_pinyin,
-            "简拼": simplified,
-            "干音": full_pinyin,
-            "首音": full_pinyin[0] if full_pinyin else None,
-            "呼音": None,
-            "主音": None,
-            "末音": None,
-            "间音": None,
-            "韵音": None
-        }
+        try:
+            # 判断输入是否为PUA字符(编码)
+            is_pua = any(0xE000 <= ord(c) <= 0xF8FF for c in input_str)
+
+            if is_pua:
+                # 直接处理PUA编码
+                try:
+                    initial, _, (ascender, yunyin), (peak, descender) = decoder.split_encoded_syllable(input_str)
+                    syllable = SyllableStructure(
+                        initial=initial,
+                        ascender=ascender,
+                        peak=peak,
+                        descender=descender
+                    )
+                    full_pinyin = f"[PUA]{input_str}"
+                    ganyin = decoder.get_ganyin(input_str)
+                    yunyin = decoder.get_yunyin(input_str)
+                except Exception as e:
+                    self.logger.warning(f"解析PUA编码'{input_str}'失败: {e}")
+                    raise ValueError(f"无效的PUA编码格式: {input_str}")
+            else:
+                # 正常拼音处理流程
+                syllable = decoder.decode(input_str)
+                full_pinyin = input_str
+                ganyin = decoder.get_ganyin(syllable.code)
+                yunyin = decoder.get_yunyin(syllable.code)
+
+            return {
+                "全拼": full_pinyin,
+                "简拼": syllable.simplify_codes().get_abbreviation(),
+                "干音": ganyin,
+                "首音": syllable.initial,
+                "呼音": syllable.ascender,
+                "主音": syllable.peak,
+                "末音": syllable.descender,
+                "间音": None,
+                "韵音": yunyin
+            }
+
+        except Exception as e:
+            self.logger.warning(f"解析输入'{input_str}'失败: {e}")
+            return {
+                "全拼": input_str,
+                "简拼": input_str[0] + (input_str[1] if len(input_str)>1 else ''),
+                "干音": input_str[1:] if len(input_str)>1 else "",
+                "首音": input_str[0] if input_str else None,
+                "呼音": None,
+                "主音": None,
+                "末音": None,
+                "间音": None,
+                "韵音": None
+            }
 
     def import_pinyin(self, pinyin_data: Dict[str, str]) -> int:
         """
@@ -152,7 +194,7 @@ def main():
     """命令行入口"""
     importer = PinyinImporter()
     try:
-        data = importer.load_json_data("yinjie_code.json")
+        data = importer.load_json_data("syllable_code.json")
         count = importer.import_pinyin(data)
         print(f"导入完成，共新增 {count} 条记录")
     except Exception as e:
