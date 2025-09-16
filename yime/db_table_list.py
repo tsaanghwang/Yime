@@ -21,3 +21,19 @@ with sqlite3.connect(DB) as conn:
         WHERE type='index' AND tbl_name='音元拼音'
     """)
     print(cursor.fetchall())
+
+import sqlite3
+conn = sqlite3.connect("pinyin_hanzi.db")
+cursor = conn.cursor()
+
+# 检查表是否存在
+cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='数字标调拼音'")
+print("表存在:", cursor.fetchone() is not None)
+
+# 获取表结构
+cursor.execute("PRAGMA table_info('数字标调拼音')")
+print("表结构:")
+for col in cursor.fetchall():
+    print(col)
+
+conn.close()
