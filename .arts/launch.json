@@ -2,6 +2,35 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "syllable_structure",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\yime\\syllable_structure.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\yime",
+      "addSourceRootsToPythonpath": true
+    },
+    {
+      "name": "syllable_decoder",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\yime\\syllable_decoder.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\yime",
+      "addSourceRootsToPythonpath": true,
+      "noDebug": true
+    },
+    {
+      "name": "yinjie_decoder",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\yime\\yinjie_decoder.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\yime",
+      "addSourceRootsToPythonpath": true,
+      "noDebug": true
+    },
+    {
       "name": "pinyin_importer",
       "type": "python",
       "request": "launch",
@@ -321,7 +350,8 @@
       "program": "${workspaceFolder}\\yinjie_decoder.py",
       "currentFileConfiguration": false,
       "cwd": "${workspaceFolder}",
-      "addSourceRootsToPythonpath": true
+      "addSourceRootsToPythonpath": true,
+      "noDebug": true
     },
     {
       "name": "interactive_yinjie",
