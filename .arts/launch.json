@@ -2,6 +2,35 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "pinyin_mapping",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\yime\\pinyin_mapping.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\yime",
+      "addSourceRootsToPythonpath": true
+    },
+    {
+      "name": "test_import",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\yime\\test_import.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\yime",
+      "addSourceRootsToPythonpath": true,
+      "noDebug": true
+    },
+    {
+      "name": "import_numeric_pinyin",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\yime\\import_numeric_pinyin.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\yime",
+      "addSourceRootsToPythonpath": true,
+      "noDebug": true
+    },
+    {
       "name": "syllable_structure",
       "type": "python",
       "request": "launch",
@@ -37,7 +66,8 @@
       "program": "${workspaceFolder}\\yime\\pinyin_importer.py",
       "currentFileConfiguration": false,
       "cwd": "${workspaceFolder}\\yime",
-      "addSourceRootsToPythonpath": true
+      "addSourceRootsToPythonpath": true,
+      "noDebug": true
     },
     {
       "name": "import_pinyin",
