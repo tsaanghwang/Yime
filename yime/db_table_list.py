@@ -14,3 +14,10 @@ with sqlite3.connect(DB) as conn:
     cur = conn.cursor()
     cur.execute("SELECT name FROM sqlite_master WHERE type='table'")
     print(cur.fetchall())
+
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT name, tbl_name, sql FROM sqlite_master
+        WHERE type='index' AND tbl_name='音元拼音'
+    """)
+    print(cursor.fetchall())

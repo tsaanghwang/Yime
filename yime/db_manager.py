@@ -36,8 +36,8 @@ class 表管理器:
             '音元拼音': '''
                 CREATE TABLE IF NOT EXISTS "音元拼音" (
                     "编号" INTEGER PRIMARY KEY AUTOINCREMENT,
-                    "全拼" TEXT NOT NULL,
-                    "简拼" TEXT NOT NULL,
+                    "全拼" TEXT NOT NULL UNIQUE,
+                    "简拼" TEXT NOT NULL UNIQUE,
                     "首音" TEXT,
                     "干音" TEXT NOT NULL,
                     "呼音" TEXT,
@@ -45,7 +45,8 @@ class 表管理器:
                     "末音" TEXT,
                     "间音" TEXT,
                     "韵音" TEXT,
-                    "最近更新" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    "最近更新" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    UNIQUE ("全拼", "首音", "干音")
                 )
             ''',
             '数字标调拼音': '''
@@ -149,6 +150,16 @@ class 表管理器:
         连接.commit()
         logger.info("数据库表结构创建/验证完成")
 
+    @staticmethod
+    def 检查索引存在(连接: sqlite3.Connection, 索引名: str) -> bool:
+        """检查指定索引是否存在（需包含双引号）"""
+        游标 = 连接.cursor()
+        游标.execute(f"""
+            SELECT name FROM sqlite_master
+            WHERE type='index' AND name={索引名}
+        """)
+        return 游标.fetchone() is not None
+
 class 数据库初始化器:
     """初始化数据库的入口类"""
     def __init__(self, 数据库路径: str = None):
@@ -166,6 +177,13 @@ class 数据库初始化器:
             logger.error(f"数据库初始化失败: {e}")
             raise
 
+
 if __name__ == "__main__":
     初始化器 = 数据库初始化器()
     初始化器.初始化数据库()
+
+    with 数据库管理器("pinyin_hanzi.db") as 连接:
+        存在 = 表管理器.检查索引存在(连接, '"索引_数字标调拼音_全拼"')
+        print(f"索引存在: {存在}")
+        存在 = 表管理器.检查索引存在(连接, '"索引_音元拼音_全拼"')
+        print(f"索引存在: {存在}")

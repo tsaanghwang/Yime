@@ -52,6 +52,23 @@ class PinyinImporter:
             )
             return cursor.fetchone() is not None
 
+    def check_index_exists(self) -> bool:
+        """增强版索引检查，同时验证索引是否有效"""
+        with self._get_connection() as conn:
+            cursor = conn.cursor()
+            # 检查索引是否存在
+            cursor.execute(
+                "SELECT name FROM sqlite_master "
+                "WHERE type='index' AND name='sqlite_autoindex_音元拼音_1'"
+            )
+            if cursor.fetchone() is None:
+                return False
+
+            # 检查索引是否有效（验证索引列）
+            cursor.execute("PRAGMA index_info('sqlite_autoindex_音元拼音_1')")
+            index_info = cursor.fetchall()
+            return len(index_info) > 0 and index_info[0][2] == "全拼"
+
     def clear_table(self) -> int:
         """删除音元拼音表中的所有记录（增强版）"""
         if not self.check_table_exists():
@@ -114,17 +131,18 @@ class PinyinImporter:
             if is_pua:
                 # 直接处理PUA编码
                 try:
-                    initial, _, (ascender, yunyin), (peak, descender) = decoder.split_encoded_syllable(input_str)
+                    result = decoder.split_encoded_syllable(input_str)
+                    # 确保解包结构正确
+                    initial, _, (ascender, yunyin), (peak, descender) = result
                     syllable = SyllableStructure(
                         initial=initial,
                         ascender=ascender,
                         peak=peak,
                         descender=descender
                     )
-                    full_pinyin = f"{input_str}"
+                    full_pinyin = input_str  # 保持原样
                     ganyin = decoder.get_ganyin(input_str)
                     yunyin = decoder.get_yunyin(input_str)
-                    # 新增：使用get_jianyin_code获取间音
                     jianyin = decoder.get_jianyin_code(input_str)
                 except Exception as e:
                     self.logger.warning(f"解析PUA编码'{input_str}'失败: {e}")
@@ -136,17 +154,22 @@ class PinyinImporter:
                     if not code:
                         raise ValueError(f"未找到拼音 '{input_str}' 的编码")
 
-                    initial, _, (ascender, yunyin), (peak, descender) = decoder.split_encoded_syllable(code)
+                    # 确保code是字符串类型
+                    if isinstance(code, (list, tuple)):
+                        code = code[0] if code else input_str
+
+                    result = decoder.split_encoded_syllable(code)
+                    # 确保解包结构正确
+                    initial, _, (ascender, yunyin), (peak, descender) = result
                     syllable = SyllableStructure(
                         initial=initial,
                         ascender=ascender,
                         peak=peak,
                         descender=descender
                     )
-                    full_pinyin = input_str
+                    full_pinyin = code  # 这里改为使用code而不是input_str
                     ganyin = decoder.get_ganyin(code)
                     yunyin = decoder.get_yunyin(code)
-                    # 新增：使用get_jianyin_code获取间音
                     jianyin = decoder.get_jianyin_code(code)
                 except Exception as e:
                     self.logger.warning(f"解析输入'{input_str}'失败: {e}")
@@ -160,7 +183,7 @@ class PinyinImporter:
                 "呼音": syllable.ascender,
                 "主音": syllable.peak,
                 "末音": syllable.descender,
-                "间音": jianyin,  # 使用计算得到的间音值
+                "间音": jianyin,
                 "韵音": yunyin
             }
 
@@ -189,21 +212,43 @@ class PinyinImporter:
         if not self.check_table_exists():
             raise RuntimeError("'音元拼音'表不存在，请先创建表结构")
 
-        # 清空表中原有记录（移除日志确认）
+        # 清空表中原有记录
         self.clear_table()
 
-        # 获取当前表记录数确认（可选，如果需要可以保留）
+        # 修改后的索引创建部分
         with self._get_connection() as conn:
             cursor = conn.cursor()
-            cursor.execute('SELECT COUNT(*) FROM "音元拼音"')
-            count = cursor.fetchone()[0]
-            if count != 0:
-                raise RuntimeError("表清空失败，仍有记录存在")
+            if not self.check_index_exists():
+                self.logger.info("创建唯一索引...")
+                try:
+                    cursor.execute("""
+                        CREATE UNIQUE INDEX IF NOT EXISTS sqlite_autoindex_音元拼音_1
+                        ON "音元拼音"("全拼")
+                    """)
+                    conn.commit()
+
+                    # 立即验证索引
+                    if not self.check_index_exists():
+                        raise RuntimeError("索引创建失败")
+                except sqlite3.Error as e:
+                    self.logger.error(f"创建索引失败: {e}")
+                    raise
+
+        # 修改这部分代码 - 原来是使用values()，现在改为使用keys()
+        unique_data = {}
+        for num_pinyin, yime_pinyin in pinyin_data.items():
+            unique_data[yime_pinyin] = num_pinyin  # 这里改为使用音元拼音作为key
 
         # 准备要插入的数据（生成完整字段）
         values_to_insert = []
-        for pinyin in pinyin_data.values():
-            default_values = self._generate_default_values(pinyin)
+        seen_pinyins = set()  # 内存级二次去重
+
+        for yime_pinyin in unique_data.keys():  # 这里改为使用values()获取音元拼音
+            default_values = self._generate_default_values(yime_pinyin)  # 传入音元拼音编码
+            if default_values["全拼"] in seen_pinyins:
+                continue
+            seen_pinyins.add(default_values["全拼"])
+
             values_to_insert.append((
                 default_values["全拼"],
                 default_values["简拼"],
