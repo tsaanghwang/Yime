@@ -47,14 +47,14 @@ class 表管理器:
                     UNIQUE ("全拼", "声母", "韵母", "声调")
                 )
             ''',
-            '音元拼音已有拼音映射': '''
-                CREATE TABLE IF NOT EXISTS "音元拼音已有拼音映射" (
+            '拼音映射': '''
+                CREATE TABLE IF NOT EXISTS "拼音映射" (
                     "音元拼音" INTEGER REFERENCES "音元拼音"("编号"),
-                    "带数拼音" INTEGER REFERENCES "数字标调拼音"("编号"),
+                    "数字标调拼音" INTEGER REFERENCES "数字标调拼音"("编号"),
                     "标准拼音" TEXT NOT NULL,
                     "注音符号" TEXT NOT NULL,
                     "最近更新" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    PRIMARY KEY ("音元拼音", "带数拼音")
+                    PRIMARY KEY ("音元拼音", "数字标调拼音")
                 )
             '''
         }
@@ -67,8 +67,8 @@ class 表管理器:
         # 创建索引（用双引号保护索引和表列）
         索引列表 = [
             ('索引_数字标调拼音_全拼', '"数字标调拼音"("全拼")'),
-            ('索引_音元拼音已有拼音映射_标准拼音', '"音元拼音已有拼音映射"("标准拼音")'),
-            ('索引_音元拼音已有拼音映射_注音符号', '"音元拼音已有拼音映射"("注音符号")')
+            ('索引_拼音映射_标准拼音', '"拼音映射"("标准拼音")'),
+            ('索引_拼音映射_注音符号', '"拼音映射"("注音符号")')
         ]
 
         for 索引名, 列名 in 索引列表:
@@ -109,7 +109,7 @@ class 数据导入器:
                 ]
 
                 游标.executemany('''
-                    INSERT OR REPLACE INTO "音元拼音已有拼音映射"
+                    INSERT OR REPLACE INTO "拼音映射"
                     ("数字标调拼音", "标准拼音", "注音符号")
                     VALUES (
                         (SELECT "编号" FROM "数字标调拼音" WHERE "数字标调拼音" = ?),
@@ -140,15 +140,15 @@ class 数据库迁移器:
             连接.row_factory = sqlite3.Row
             游标 = 连接.cursor()
 
-            # 修正列名：数字标调拼音表中使用的是 "全拼" 列，映射表使用的是 "带数拼音" 作为外键
+            # 修正列名：数字标调拼音表中使用的是 "全拼" 列，映射表使用的是 "数字标调拼音" 作为外键
             sql = '''
                 SELECT
                     d."全拼" AS 数字标调拼音,
                     m."标准拼音" AS 标准拼音,
                     m."注音符号" AS 注音符号,
                     y."全拼" AS 音元拼音
-                FROM "音元拼音已有拼音映射" m
-                JOIN "数字标调拼音" d ON m."带数拼音" = d."编号"
+                FROM "拼音映射" m
+                JOIN "数字标调拼音" d ON m."数字标调拼音" = d."编号"
                 LEFT JOIN "音元拼音" y ON m."音元拼音" = y."编号"
                 WHERE d."全拼" = ? OR m."标准拼音" = ?
             '''
@@ -160,7 +160,7 @@ class 数据库迁移器:
         """验证所有表结构是否正确创建"""
         with sqlite3.connect(str(self.数据库路径)) as 连接:
             游标 = 连接.cursor()
-            表列表 = ['音元拼音', '数字标调拼音', '音元拼音已有拼音映射']
+            表列表 = ['音元拼音', '数字标调拼音', '拼音映射']
 
             for 表名 in 表列表:
                 游标.execute(f"SELECT name FROM sqlite_master WHERE type='table' AND name='{表名}'")

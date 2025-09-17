@@ -49,7 +49,7 @@ class TableManager:
                 数字标调拼音 TEXT NOT NULL,
                 同音字列 TEXT,
                 last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (音元拼音id) REFERENCES 音元拼音已有拼音映射(音元拼音id)
+                FOREIGN KEY (音元拼音id) REFERENCES 拼音映射(音元拼音id)
             )
         ''')
 
@@ -77,7 +77,7 @@ class TableManager:
             cursor.execute('''
                 INSERT INTO 音元拼音同音表 (音元拼音id, 数字标调拼音)
                 SELECT 音元拼音id, 数字标调拼音
-                FROM 音元拼音已有拼音映射
+                FROM 拼音映射
                 ORDER BY 音元拼音id
             ''')
             count = cursor.rowcount
@@ -127,7 +127,7 @@ class DatabaseMigrator:
             cursor.execute('''
                 SELECT m.同音字列, p.数字标调拼音
                 FROM 音元拼音同音表 m
-                JOIN 音元拼音已有拼音映射 p ON m.音元拼音id = p.音元拼音id
+                JOIN 拼音映射 p ON m.音元拼音id = p.音元拼音id
                 WHERE m.音元拼音id = ?
             ''', (音元拼音id,))
             result = cursor.fetchone()
