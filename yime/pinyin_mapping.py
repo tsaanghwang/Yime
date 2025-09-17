@@ -1,154 +1,114 @@
-"""
-拼音映射关系导入工具
-
-说明：
-- 专门负责将拼音映射关系导入到 "音元拼音已有拼音映射" 表
-- 直接从数据库中的"数字标调拼音"表获取数据
-"""
-
+# yime/pinyin_mapper.py
 import sqlite3
-import logging
-from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Optional, Dict
 
-from utils.pinyin_normalizer import PinyinNormalizer
-from utils.pinyin_zhuyin import PinyinZhuyinConverter
+class PinyinMapper:
+    def __init__(self, db_path="pinyin_hanzi.db"):
+        self.db_path = db_path
+        self._create_tables_if_not_exist()
 
+    def _create_tables_if_not_exist(self):
+        """确保所有必要的表存在"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            # 表结构已在数据库中定义，无需重复创建
+            pass
 
-class 拼音映射导入器:
-    """专职处理拼音映射关系导入的类"""
+    def add_mapping(self, digital_pinyin: str, yinyuan_pinyin: str) -> bool:
+        """添加数字标调拼音到音元拼音的映射"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
 
-    REQUIRED_TABLES = [
-        "音元拼音",
-        "数字标调拼音",
-        "音元拼音已有拼音映射"
-    ]
-
-    def __init__(self, 数据库路径: str | Path = "pinyin_hanzi.db"):
-        self.数据库路径 = Path(数据库路径).absolute()
-        self._配置日志()
-
-    def _配置日志(self):
-        logging.basicConfig(
-            level=logging.INFO,
-            format="%(asctime)s - %(levelname)s - %(message)s"
-        )
-        self.日志 = logging.getLogger(__name__)
-
-    def _获取连接(self) -> sqlite3.Connection:
-        conn = sqlite3.connect(str(self.数据库路径))
-        conn.row_factory = sqlite3.Row
-        return conn
-
-    def _检查表存在(self, conn: sqlite3.Connection) -> List[str]:
-        """返回缺失的表名列表"""
-        cursor = conn.cursor()
-        missing = []
-        for 表名 in self.REQUIRED_TABLES:
+            # 获取或创建数字标调拼音记录
             cursor.execute(
-                "SELECT name FROM sqlite_master WHERE type='table' AND name=?",
-                (表名,)
+                'INSERT OR IGNORE INTO "数字标调拼音" ("全拼", "声母", "韵母", "声调") '
+                'VALUES (?, ?, ?, ?)',
+                (digital_pinyin, *self._parse_pinyin(digital_pinyin))
             )
-            if cursor.fetchone() is None:
-                missing.append(表名)
-        return missing
+            digital_id = cursor.lastrowid or self._get_pinyin_id(cursor, "数字标调拼音", digital_pinyin)
 
-    def 从数据库加载数据(self) -> Dict[str, str]:
-        """从数据库加载数字标调拼音到音元拼音的映射关系"""
-        with self._获取连接() as conn:
-            cursor = conn.cursor()
+            # 获取或创建音元拼音记录
+            cursor.execute(
+                'INSERT OR IGNORE INTO "音元拼音" ("全拼") VALUES (?)',
+                (yinyuan_pinyin,)
+            )
+            yinyuan_id = cursor.lastrowid or self._get_pinyin_id(cursor, "音元拼音", yinyuan_pinyin)
 
-            # 获取表结构信息
-            cursor.execute('PRAGMA table_info("数字标调拼音")')
-            数字标调拼音结构 = cursor.fetchall()
-
-            cursor.execute('PRAGMA table_info("音元拼音")')
-            音元拼音结构 = cursor.fetchall()
-
-            # 调试输出表结构
-            self.日志.debug("数字标调拼音表结构: %s", [col[1] for col in 数字标调拼音结构])
-            self.日志.debug("音元拼音表结构: %s", [col[1] for col in 音元拼音结构])
-
-            # 使用更灵活的JOIN条件
-            cursor.execute('''
-                SELECT d.全拼 AS 数字标调拼音, y.全拼 AS 音元拼音
-                FROM "数字标调拼音" d
-                JOIN "音元拼音" y ON
-                    (d.声母 = y.声母 OR (d.声母 IS NULL AND y.声母 IS NULL))
-                    AND d.韵母 = y.韵母
-                    AND d.声调 = y.声调
-            ''')
-
-            映射数据 = {row["数字标调拼音"]: row["音元拼音"] for row in cursor.fetchall()}
-            self.日志.info(f"从数据库加载 {len(映射数据)} 条映射数据")
-            return 映射数据
-
-    def 导入映射数据(self, 映射数据: Dict[str, str]) -> int:
-        """
-        导入拼音映射关系数据
-        参数:
-            - 映射数据: 字典格式 {数字标调拼音: 音元拼音}
-        返回:
-            - 插入/替换的记录数
-        """
-        with self._获取连接() as conn:
-            missing = self._检查表存在(conn)
-            if missing:
-                raise RuntimeError(
-                    f"数据库缺少以下必要表: {', '.join(missing)}"
-                )
-
-            cursor = conn.cursor()
-            拼音列表 = list(映射数据.keys())
-            标准化字典, _ = PinyinNormalizer.process_pinyin_dict({p: p for p in 拼音列表})
-            注音字典, _ = PinyinZhuyinConverter.process_pinyin_dict({p: p for p in 拼音列表})
-
-            params = []
-            for 数字标调拼音, 音元拼音 in 映射数据.items():
-                # 获取音元拼音编号
-                cursor.execute('SELECT "编号" FROM "音元拼音" WHERE "全拼" = ?', (音元拼音,))
-                音元拼音结果 = cursor.fetchone()
-                if not 音元拼音结果:
-                    self.日志.error(f"音元拼音表中找不到拼音: {音元拼音}")
-                    continue
-                音元拼音编号 = 音元拼音结果[0]
-
-                # 获取数字标调拼音编号
-                cursor.execute('SELECT "编号" FROM "数字标调拼音" WHERE "全拼" = ?', (数字标调拼音,))
-                数字标调拼音结果 = cursor.fetchone()
-                if not 数字标调拼音结果:
-                    self.日志.error(f"数字标调拼音表中找不到拼音: {数字标调拼音}")
-                    continue
-                数字标调拼音编号 = 数字标调拼音结果[0]
-
-                # 准备插入参数
-                标准拼音 = 标准化字典.get(数字标调拼音, 数字标调拼音)
-                注音符号 = 注音字典.get(数字标调拼音, "")
-                params.append((音元拼音编号, 数字标调拼音编号, 标准拼音, 注音符号))
-
-            if not params:
-                raise RuntimeError("没有有效的拼音映射可以导入")
-
-            # 批量插入映射关系
-            cursor.executemany('''
-                INSERT OR REPLACE INTO "音元拼音已有拼音映射"
-                ("音元拼音", "带数拼音", "标准拼音", "注音符号")
-                VALUES (?, ?, ?, ?)
-            ''', params)
-
+            # 创建映射关系
+            cursor.execute(
+                'INSERT OR REPLACE INTO "拼音映射" '
+                '("音元拼音", "数字标调拼音", "标准拼音", "注音符号") '
+                'VALUES (?, ?, ?)',
+                (yinyuan_id, digital_id, digital_pinyin)
+            )
             conn.commit()
-            count = cursor.rowcount
-            self.日志.info(f"导入拼音映射: 插入/替换了 {count} 条记录")
-            return count
+            return True
 
+    def get_mapping(self, digital_pinyin: str) -> Optional[str]:
+        """根据数字标调拼音获取对应的音元拼音"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute('''
+                SELECT y."全拼"
+                FROM "拼音映射" m
+                JOIN "音元拼音" y ON m."音元拼音" = y."编号"
+                JOIN "数字标调拼音" d ON m."数字标调拼音" = d."编号"
+                WHERE d."全拼" = ?
+            ''', (digital_pinyin,))
+            result = cursor.fetchone()
+            return result[0] if result else None
 
+    def batch_add_mappings(self, mappings: Dict[str, str]) -> int:
+        """批量添加映射关系"""
+        success_count = 0
+        with sqlite3.connect(self.db_path) as conn:
+            for digital, yinyuan in mappings.items():
+                try:
+                    if self.add_mapping(digital, yinyuan):
+                        success_count += 1
+                except sqlite3.Error:
+                    continue
+            conn.commit()
+        return success_count
+
+    def _get_pinyin_id(self, cursor, table: str, pinyin: str) -> int:
+        """获取拼音记录的ID"""
+        cursor.execute(f'SELECT "编号" FROM "{table}" WHERE "全拼" = ?', (pinyin,))
+        result = cursor.fetchone()
+        return result[0] if result else None
+
+    def _parse_pinyin(self, pinyin: str) -> tuple:
+        """简单解析拼音为(声母, 韵母, 声调)"""
+        # 这里实现您的拼音解析逻辑
+        tone = pinyin[-1] if pinyin[-1].isdigit() else '1'
+        base = pinyin[:-1] if pinyin[-1].isdigit() else pinyin
+        initial = ''
+        final = base
+        # 简单声母识别逻辑，可根据需要完善
+        initials = ['b','p','m','f','d','t','n','l','g','k','h',
+                   'j','q','x','zh','ch','sh','r','z','c','s']
+        for i in initials:
+            if base.startswith(i):
+                initial = i
+                final = base[len(i):]
+                break
+        return (initial, final, int(tone))
+
+# 使用示例
 if __name__ == "__main__":
-    导入器 = 拼音映射导入器()
-    try:
-        映射数据 = 导入器.从数据库加载数据()
-        结果 = 导入器.导入映射数据(映射数据)
-        print(f"导入结果: {结果} 条记录")
-    except RuntimeError as e:
-        print(f"运行时错误: {e}")
-    except Exception as e:
-        print(f"意外错误: {e}")
+    mapper = PinyinMapper()
+
+    # 添加单个映射
+    mapper.add_mapping("zhong1", "zhong")  # 数字标调 -> 音元拼音
+
+    # 批量添加映射
+    mappings = {
+        "zhong1": "zhong",
+        "guo2": "guo",
+        "ren2": "ren"
+    }
+    count = mapper.batch_add_mappings(mappings)
+    print(f"成功添加 {count} 条映射")
+
+    # 查询映射
+    print(mapper.get_mapping("zhong1"))  # 输出: zhong

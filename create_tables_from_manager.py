@@ -31,7 +31,7 @@ CREATE_STMTS = [
     )
     ''',
     '''
-    CREATE TABLE IF NOT EXISTS "音元拼音已有拼音映射" (
+    CREATE TABLE IF NOT EXISTS "拼音映射" (
         "音元拼音" INTEGER REFERENCES "音元拼音"("编号"),
         "数字标调拼音" INTEGER REFERENCES "数字标调拼音"("编号"),
         "标准拼音" TEXT NOT NULL,
@@ -50,8 +50,8 @@ def main():
         for stmt in CREATE_STMTS:
             cur.execute(stmt)
         cur.execute('CREATE INDEX IF NOT EXISTS "索引_数字标调拼音_数字标调拼音" ON "数字标调拼音"("全拼")')
-        cur.execute('CREATE INDEX IF NOT EXISTS "索引_音元拼音已有拼音映射_标准拼音" ON "音元拼音已有拼音映射"("标准拼音")')
-        cur.execute('CREATE INDEX IF NOT EXISTS "索引_音元拼音已有拼音映射_注音符号" ON "音元拼音已有拼音映射"("注音符号")')
+        cur.execute('CREATE INDEX IF NOT EXISTS "索引_拼音映射_标准拼音" ON "拼音映射"("标准拼音")')
+        cur.execute('CREATE INDEX IF NOT EXISTS "索引_拼音映射_注音符号" ON "拼音映射"("注音符号")')
         conn.commit()
         print(f"已创建/验证表结构: {DB_PATH}")
     finally:

@@ -60,14 +60,14 @@ class 表管理器:
                     UNIQUE ("全拼", "声母", "韵母", "声调")
                 )
             ''',
-            '音元拼音已有拼音映射': '''
-                CREATE TABLE IF NOT EXISTS "音元拼音已有拼音映射" (
-                    "音元拼音" INTEGER REFERENCES "音元拼音"("编号"),
-                    "带数拼音" INTEGER REFERENCES "数字标调拼音"("编号"),
-                    "标准拼音" TEXT NOT NULL,
-                    "注音符号" TEXT NOT NULL,
-                    "最近更新" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    PRIMARY KEY ("音元拼音", "带数拼音")
+            '拼音映射': '''
+                CREATE TABLE IF NOT EXISTS "拼音映射" (
+                    "编号" INTEGER PRIMARY KEY AUTOINCREMENT,
+                    "数字标调拼音" TEXT NOT NULL UNIQUE,
+                    "音元拼音" TEXT,
+                    "标准拼音" TEXT,
+                    "注音符号" TEXT,
+                    "最近更新" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )
             ''',
             # 汉字相关表
@@ -130,8 +130,8 @@ class 表管理器:
         # 创建索引（用双引号保护索引和表列）
         索引列表 = [
             # 拼音相关索引
-            ('索引_音元拼音已有拼音映射_标准拼音', '"音元拼音已有拼音映射"("标准拼音")'),
-            ('索引_音元拼音已有拼音映射_注音符号', '"音元拼音已有拼音映射"("注音符号")'),
+            ('索引_拼音映射_标准拼音', '"拼音映射"("标准拼音")'),
+            ('索引_拼音映射_注音符号', '"拼音映射"("注音符号")'),
 
             # 汉字相关索引
             ('索引_汉字_字符', '"汉字"("字符")'),
@@ -182,5 +182,5 @@ if __name__ == "__main__":
     初始化器.初始化数据库()
 
     with 数据库管理器("pinyin_hanzi.db") as 连接:
-        存在 = 表管理器.检查索引存在(连接, '"索引_音元拼音_全拼"')
+        存在 = 表管理器.检查索引存在(连接, '"索引_拼音映射_标准拼音"')
         print(f"索引存在: {存在}")
