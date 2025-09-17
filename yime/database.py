@@ -44,7 +44,7 @@ def convert_direct(self, input_text):
     except Exception as e:
         self._show_error_message(f"转换错误: {str(e)}")
         self.clear_display()
-        
+
 """
     CREATE TABLE frequency_adjustment (
     pinyin TEXT NOT NULL,
@@ -99,5 +99,35 @@ CREATE TABLE hanzi_frequency (
         {"hanzi": "种", "freq": 150}
     ]
 }
+CREATE TABLE "拼音" (
+    "编号" INTEGER PRIMARY KEY,
+    "全拼" TEXT NOT NULL
+);
+
+CREATE TABLE "汉字" (
+    "编号" INTEGER PRIMARY KEY,
+    "字形" TEXT NOT NULL,
+    "拼音编号" INTEGER,
+    "拼音文本" TEXT GENERATED ALWAYS AS (
+        SELECT "全拼" FROM "拼音" WHERE "编号" = "汉字"."拼音编号"
+    ) STORED,  -- 或 VIRTUAL（根据数据库支持）
+    FOREIGN KEY ("拼音编号") REFERENCES "拼音"("编号") ON DELETE CASCADE
+);
+
+            '拼音映射': '''
+                CREATE TABLE IF NOT EXISTS "拼音映射" (
+                    "编号" INTEGER PRIMARY KEY AUTOINCREMENT,
+                    "数字标调拼音" TEXT NOT NULL UNIQUE,
+                    "音元拼音" TEXT,
+                    "标准拼音" TEXT,
+                    "注音符号" TEXT,
+                    "最近更新" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            '''
+            在"汉字"表中没有指向"数字标调拼音"表的"编号"字段也没有"全拼"列；
+            在"数字标调拼音"表中没有指向"汉字"表的"编号"字段也没有"汉字"列；
+            在"汉字数字标调拼音映射"表中有关联"拼音"表的"编号"和"数字标调拼音"表的"编号"。            我的"汉字"表中的字形字段是主键，确保每个汉字都是唯一的。            我的"拼音"表中的全拼字段是主键，确保每个拼音都是唯一的。           一个字段"拼音编号"，它是一个外键，指向"拼音"表的编号字段。这样，当"拼音"表中的记录被删除时，"汉字"表中对应的记录也会被自动删除，以保持数据的一致性。n = '''
+            （引用或外键）；由汉字能不能找到拼音或由拼音能不能找到汉字？
+            关键的是这个表怎么知道那个汉字编号对应哪个拼音编号？ 也就是说，怎么初始化？
 """
 

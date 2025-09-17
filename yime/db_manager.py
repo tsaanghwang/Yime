@@ -33,6 +33,30 @@ class 表管理器:
 
         # 拼音相关表
         表结构 = {
+            '汉字拼音初始数据': '''
+                CREATE TABLE IF NOT EXISTS "汉字拼音初始数据" (
+                    "汉字" TEXT NOT NULL,
+                    "拼音" TEXT NOT NULL,
+                    "频率" FLOAT DEFAULT 1.0,
+                    "常用读音" BOOLEAN DEFAULT 0,
+                    "来源" TEXT,
+                    PRIMARY KEY ("汉字", "拼音")
+                )
+            ''',
+            '拼音映射关系': '''
+                CREATE TABLE IF NOT EXISTS "拼音映射关系" (
+                    "映射ID" INTEGER PRIMARY KEY AUTOINCREMENT,
+                    "源拼音类型" TEXT NOT NULL,  -- 如"数字标调"、"音元拼音"
+                    "源拼音" TEXT NOT NULL,
+                    "目标拼音类型" TEXT NOT NULL,
+                    "目标拼音" TEXT NOT NULL,
+                    "数据来源" TEXT,
+                    "版本号" TEXT,
+                    "备注" TEXT,
+                    "创建时间" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    UNIQUE("源拼音类型", "源拼音", "目标拼音类型")
+                )
+            ''',
             '音元拼音': '''
                 CREATE TABLE IF NOT EXISTS "音元拼音" (
                     "编号" INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -76,6 +100,7 @@ class 表管理器:
                     "编号" INTEGER PRIMARY KEY,
                     "字符" TEXT NOT NULL UNIQUE,
                     "Unicode编码" TEXT NOT NULL,
+                    "大写Unicode" TEXT GENERATED ALWAYS AS (UPPER("Unicode编码")) STORED,
                     "笔画数" INTEGER,
                     "部首" TEXT,
                     "常用字" BOOLEAN DEFAULT 1,
@@ -119,12 +144,65 @@ class 表管理器:
                     "常用词语" BOOLEAN DEFAULT 1,
                     "最近更新" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )
+            ''',
+            '汉字标准拼音视图': '''
+                CREATE VIEW IF NOT EXISTS 汉字标准拼音视图 AS
+                SELECT
+                    汉字.编号 AS 汉字编号,
+                    汉字.字符 AS 汉字,
+                    数字标调拼音.全拼 AS 标准拼音,
+                    数字标调拼音.声调 AS 声调
+                FROM 汉字
+                JOIN 汉字数字标调拼音映射 ON 汉字.编号 = 汉字数字标调拼音映射.汉字编号
+                JOIN 数字标调拼音 ON 汉字数字标调拼音映射.数字标调拼音编号 = 数字标调拼音.编号
+                WHERE 汉字数字标调拼音映射.常用读音 = 1
+            ''',
+            '多音字视图': '''
+                CREATE VIEW IF NOT EXISTS 多音字视图 AS
+                SELECT
+                    汉字.字符 AS 汉字,
+                    GROUP_CONCAT(数字标调拼音.全拼, ', ') AS 所有读音
+                FROM 汉字
+                JOIN 汉字数字标调拼音映射 ON 汉字.编号 = 汉字数字标调拼音映射.汉字编号
+                JOIN 数字标调拼音 ON 汉字数字标调拼音映射.数字标调拼音编号 = 数字标调拼音.编号
+                GROUP BY 汉字.编号
+                HAVING COUNT(*) > 1
+            ''',
+            '汉字音元拼音视图': '''
+                CREATE VIEW IF NOT EXISTS 汉字音元拼音视图 AS
+                SELECT
+                    汉字.编号 AS 汉字编号,
+                    汉字.字符 AS 汉字,
+                    音元拼音.全拼 AS 音元拼音,
+                    音元拼音.简拼 AS 简拼
+                FROM 汉字
+                JOIN 汉字音元拼音映射 ON 汉字.编号 = 汉字音元拼音映射.汉字编号
+                JOIN 音元拼音 ON 汉字音元拼音映射.音元拼音编号 = 音元拼音.编号
+                WHERE 汉字音元拼音映射.常用读音 = 1
+            ''',
+            '汉字拼音映射视图': '''
+                CREATE VIEW IF NOT EXISTS 汉字拼音映射视图 AS
+                SELECT
+                    h.编号 AS 汉字编号,
+                    h.字符 AS 汉字,
+                    p.编号 AS 拼音编号,
+                    p.全拼 AS 拼音,
+                    p.声调,
+                    m.频率,
+                    m.常用读音
+                FROM 汉字 h
+                JOIN 汉字数字标调拼音映射 m ON h.编号 = m.汉字编号
+                JOIN 数字标调拼音 p ON m.数字标调拼音编号 = p.编号
             '''
         }
 
-        # 先删除（如果存在），再创建 — 使用双引号保护表名
+        # 修改 表管理器.创建表() 方法中的删除逻辑
         for 表名, 创建语句 in 表结构.items():
-            游标.execute(f'DROP TABLE IF EXISTS "{表名}"')
+            # 先检查是否是视图（创建语句以 CREATE VIEW 开头）
+            if 创建语句.strip().upper().startswith('CREATE VIEW'):
+                游标.execute(f'DROP VIEW IF EXISTS "{表名}"')
+            else:
+                游标.execute(f'DROP TABLE IF EXISTS "{表名}"')
             游标.execute(创建语句)
 
         # 创建索引（用双引号保护索引和表列）
@@ -132,8 +210,12 @@ class 表管理器:
             # 拼音相关索引
             ('索引_拼音映射_标准拼音', '"拼音映射"("标准拼音")'),
             ('索引_拼音映射_注音符号', '"拼音映射"("注音符号")'),
-
+            ('索引_拼音映射关系_源类型拼音', '"拼音映射关系"("源拼音类型", "源拼音")'),
+            ('索引_拼音映射关系_目标类型拼音', '"拼音映射关系"("目标拼音类型", "目标拼音")'),
+            ('索引_拼音映射关系_双向映射', '"拼音映射关系"("源拼音类型", "源拼音", "目标拼音类型", "目标拼音")'),
             # 汉字相关索引
+            ('索引_汉字拼音初始数据_汉字', '"汉字拼音初始数据"("汉字")'),
+            ('索引_汉字拼音初始数据_拼音', '"汉字拼音初始数据"("拼音")'),
             ('索引_汉字_字符', '"汉字"("字符")'),
             ('索引_汉字音元拼音映射_汉字', '"汉字音元拼音映射"("汉字编号")'),
             ('索引_汉字音元拼音映射_音元拼音', '"汉字音元拼音映射"("音元拼音编号")'),
