@@ -1,145 +1,225 @@
+"""
+初始化拼音映射：从 JSON 文件加载映射并写入 pinyin_hanzi.db 中的表 "拼音映射关系"。
+特点：
+- 自动寻找常用 JSON 文件名或接受命令行参数指定路径
+- 确保目标表存在并创建唯一索引以避免重复累加
+- 读取 JSON，生成双向映射（数字标调 -> 音元，音元 -> 数字标调）
+- 一次性写入并返回写入的实际记录数（按数据来源计数）
+"""
+from pathlib import Path
+from typing import Dict, List, Any
 import sqlite3
 import logging
 import json
 import sys
-from pathlib import Path
-from typing import Dict, List, Optional
+import os
 
-# 配置常量
-JSON_FILE = 'syllable_code.json'
-DB_FILE = 'pinyin_hanzi.db'
-BATCH_SIZE = 100  # 批量插入大小
+# 配置常量（可被命令行参数或环境变量覆盖）
+DEFAULT_JSON_FILES = [
+    "syllable_code.json",
+    "yinjie_code.json",
+    "yinjie_code_full.json",
+    "enhanced_yinjie_mapping.json"
+]
+# 默认使用脚本所在目录的上级目录（项目根）中的数据库，避免因工作目录不同写入到不同文件
+DB_FILE = Path(__file__).parent / "pinyin_hanzi.db"
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
-handler = logging.StreamHandler()
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-handler.setFormatter(formatter)
-logger.addHandler(handler)
+if not logger.handlers:
+    _handler = logging.StreamHandler()
+    _handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+    logger.addHandler(_handler)
 
-def validate_pinyin(pinyin: str) -> bool:
-    """验证拼音格式是否有效"""
-    # 这里可以添加更复杂的验证逻辑
-    return bool(pinyin.strip())
 
-def 转换音节编码到数据库格式(连接: sqlite3.Connection) -> int:
-    """从syllable_code.json加载数据并转换为数据库格式
+def find_json_path(candidate: str | None) -> Path:
+    """确定要使用的 JSON 文件路径：优先使用参数/环境变量，否则在候选列表中查找第一个存在的文件。"""
+    if candidate:
+        p = Path(candidate)
+        if p.is_file():
+            return p
+        alt = Path(__file__).parent / candidate
+        if alt.is_file():
+            return alt
+        alt2 = Path.cwd() / candidate
+        if alt2.is_file():
+            return alt2
+        raise FileNotFoundError(f"指定的 JSON 文件不存在: {candidate}")
 
-    Args:
-        连接: SQLite数据库连接
+    for name in DEFAULT_JSON_FILES:
+        for base in (Path.cwd(), Path(__file__).parent):
+            path = base / name
+            if path.is_file():
+                logger.debug(f"找到 JSON 文件: {path}")
+                return path
 
-    Returns:
-        成功导入的记录数
+    raise FileNotFoundError(
+        "未找到 JSON 文件。请提供一个 JSON 文件，优先查找: "
+        + ", ".join(DEFAULT_JSON_FILES)
+        + "；或通过命令行传入文件路径或设置环境变量 SYLLABLE_JSON。"
+    )
 
-    Raises:
-        FileNotFoundError: 当JSON文件不存在时
-        ValueError: 当JSON格式或数据无效时
-        sqlite3.Error: 数据库操作失败时
+
+def validate_pinyin(p: Any) -> bool:
+    """简单验证：非空字符串"""
+    return isinstance(p, str) and bool(p.strip())
+
+
+def ensure_mapping_table_exists(conn: sqlite3.Connection) -> None:
     """
-    # 检查文件是否存在
-    json_path = Path(JSON_FILE)
-    if not json_path.is_file():
-        raise FileNotFoundError(f"{JSON_FILE}文件不存在于{json_path.absolute()}")
+    每次运行都直接重建表，保证唯一约束字段和插入字段一致，彻底杜绝累加。
+    """
+    cur = conn.cursor()
+    # 直接删除表
+    cur.execute('DROP TABLE IF EXISTS "拼音映射关系"')
+    conn.commit()
+    # 重建表，唯一约束字段和插入字段完全一致
+    create_sql = '''
+    CREATE TABLE "拼音映射关系" (
+        "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+        "原拼音类型" TEXT NOT NULL,
+        "原拼音" TEXT NOT NULL,
+        "目标拼音类型" TEXT NOT NULL,
+        "目标拼音" TEXT NOT NULL,
+        "数据来源" TEXT,
+        "版本号" TEXT,
+        "备注" TEXT,
+        "最近更新" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE ("原拼音类型","原拼音","目标拼音类型","目标拼音","数据来源")
+    )
+    '''
+    cur.execute(create_sql)
+    conn.commit()
+    logger.info("已重建表 '拼音映射关系' 并设置唯一约束")
 
-    logger.info(f"开始加载JSON文件: {json_path}")
 
-    try:
-        with open(json_path, 'r', encoding='utf-8') as f:
-            原始数据 = json.load(f)
-    except json.JSONDecodeError as e:
-        raise ValueError(f"JSON解析失败: {e}")
-    except UnicodeDecodeError as e:
-        raise ValueError(f"文件编码错误: {e}")
+def _inspect_db(conn: sqlite3.Connection) -> None:
+    """写入后做诊断：列出表、计数并采样展示，便于验证是哪份 DB 文件被写入。"""
+    cur = conn.cursor()
+    cur.execute("SELECT name FROM sqlite_master WHERE type='table'")
+    tables = [r[0] for r in cur.fetchall()]
+    logger.info(f"数据库表: {tables}")
+    if "拼音映射关系" in tables:
+        try:
+            cur.execute('SELECT COUNT(*) FROM "拼音映射关系" WHERE "数据来源" = ?', ('音元输入法',))
+            cnt = cur.fetchone()[0] or 0
+            logger.info(f"'拼音映射关系'（来源=音元输入法）记录数: {cnt}")
+            cur.execute('SELECT "原拼音","目标拼音" FROM "拼音映射关系" WHERE "数据来源" = ? LIMIT 10', ('音元输入法',))
+            samples = cur.fetchall()
+            logger.info(f"样例记录（最多10条）: {samples}")
+        except sqlite3.Error as e:
+            logger.error(f"读取表样例失败: {e}")
 
-    if not isinstance(原始数据, dict):
-        raise ValueError("JSON文件格式不正确，应为字典类型")
 
-    数据库格式数据: List[Dict[str, str]] = []
+def 转换音节编码到数据库格式(conn: sqlite3.Connection, json_path: Path) -> int:
+    """从 JSON 加载映射并写入数据库（生成双向映射）。返回写入的记录数（按数据来源计数）。"""
+    logger.info(f"开始加载 JSON: {json_path}")
+    with open(json_path, 'r', encoding='utf-8') as f:
+        data = json.load(f)
+
+    if not isinstance(data, dict):
+        raise ValueError("JSON 顶层必须为对象(dict)，格式为 {数字标调拼音: 音元编码}")
+
+    total_items = len(data)
+    logger.info(f"JSON 包含 {total_items} 条原始映射")
+
+    records: List[Dict[str, str]] = []
     valid_count = 0
+    skipped = 0
 
-    for 数字标调, 音元编码 in 原始数据.items():
-        if not validate_pinyin(数字标调) or not validate_pinyin(音元编码):
-            logger.warning(f"跳过无效数据项: {数字标调} -> {音元编码}")
+    for k, v in data.items():
+        if not (validate_pinyin(k) and validate_pinyin(v)):
+            skipped += 1
             continue
-
-        数据库格式数据.extend([
-            {
-                'source_type': '数字标调',
-                'source_pinyin': 数字标调,
-                'target_type': '音元拼音',
-                'target_pinyin': 音元编码,
-                'source': '音元输入法',
-                'version': '0.1',
-                'note': '数字标调转音元编码'
-            },
-            {
-                'source_type': '音元拼音',
-                'source_pinyin': 音元编码,
-                'target_type': '数字标调',
-                'target_pinyin': 数字标调,
-                'source': '音元输入法',
-                'version': '0.1',
-                'note': '音元编码转数字标调'
-            }
-        ])
+        src = k.strip()
+        dst = v.strip()
+        records.append({
+            '原拼音类型': '数字标调',
+            '原拼音': src,
+            '目标拼音类型': '音元拼音',
+            '目标拼音': dst,
+            '数据来源': '音元输入法',
+            '版本号': '0.1',
+            '备注': '数字标调转音元'
+        })
+        records.append({
+            '原拼音类型': '音元拼音',
+            '原拼音': dst,
+            '目标拼音类型': '数字标调',
+            '目标拼音': src,
+            '数据来源': '音元输入法',
+            '版本号': '0.1',
+            '备注': '音元转数字标调'
+        })
         valid_count += 1
 
-    if not 数据库格式数据:
+    logger.info(f"有效原始映射: {valid_count}，生成数据库记录: {len(records)}，跳过: {skipped}")
+
+    if not records:
         raise ValueError("没有有效数据可导入")
 
-    logger.info(f"准备导入 {len(数据库格式数据)} 条映射关系 (来自 {valid_count} 个原始映射)")
+    ensure_mapping_table_exists(conn)
+    cur = conn.cursor()
 
+    # 彻底清空表，防止历史重复导致唯一约束冲突
     try:
-        游标 = 连接.cursor()
+        cur.execute('DELETE FROM "拼音映射关系"')
+        conn.commit()
+        logger.info("已清空表 '拼音映射关系'")
+    except sqlite3.OperationalError as e:
+        cur.execute("SELECT name FROM sqlite_master WHERE type='table'")
+        tables = [r[0] for r in cur.fetchall()]
+        logger.error(f"DELETE 出错: {e}；当前表: {tables}")
+        raise RuntimeError(f"删除旧数据失败: {e}")
 
-        logger.info(f"准备删除原有数据并插入 {len(数据库格式数据)} 条新记录")
-
-        # 新增：清空表内容
-        游标.execute("DELETE FROM 拼音映射关系 WHERE 数据来源 = '音元输入法'")
-        logger.info("已清空原有音元输入法映射数据")
-
-        # 批量插入数据
-        for i in range(0, len(数据库格式数据), BATCH_SIZE):
-            batch = 数据库格式数据[i:i+BATCH_SIZE]
-            游标.executemany('''
-                INSERT OR REPLACE INTO 拼音映射关系
-                (原拼音类型, 原拼音, 目标拼音类型, 目标拼音, 数据来源, 版本号, 备注)
-                VALUES(:source_type, :source_pinyin, :target_type,
-                    :target_pinyin, :source, :version, :note)
-            ''', batch)
-            连接.commit()
-            logger.debug(f"已提交批次 {i//BATCH_SIZE + 1} (共 {len(batch)} 条记录)")
-
-        # 批量插入数据
-        for i in range(0, len(数据库格式数据), BATCH_SIZE):
-            batch = 数据库格式数据[i:i+BATCH_SIZE]
-            游标.executemany('''
-                INSERT OR REPLACE INTO 拼音映射关系
-                (原拼音类型, 原拼音, 目标拼音类型, 目标拼音, 数据来源, 版本号, 备注)
-                VALUES(:source_type, :source_pinyin, :target_type,
-                      :target_pinyin, :source, :version, :note)
-            ''', batch)
-            连接.commit()
-            logger.debug(f"已提交批次 {i//BATCH_SIZE + 1} (共 {len(batch)} 条记录)")
-
-        logger.info(f"成功转换并加载 {len(数据库格式数据)} 条拼音映射关系")
-        return len(数据库格式数据)
-
+    insert_sql = '''
+        INSERT INTO "拼音映射关系"
+        ("原拼音类型","原拼音","目标拼音类型","目标拼音","数据来源","版本号","备注")
+        VALUES(:原拼音类型,:原拼音,:目标拼音类型,:目标拼音,:数据来源,:版本号,:备注)
+    '''
+    try:
+        cur.executemany(insert_sql, records)
+        conn.commit()
+        cur.execute('SELECT COUNT(*) FROM "拼音映射关系" WHERE "数据来源" = ?', ('音元输入法',))
+        exact_count = int(cur.fetchone()[0] or 0)
+        logger.info(f"写入完成，数据库中该来源记录数: {exact_count}")
+        _inspect_db(conn)
+        return exact_count
     except sqlite3.Error as e:
-        连接.rollback()
-        raise RuntimeError(f"数据库操作失败: {e}")
+        conn.rollback()
+        logger.exception("写入失败，已回滚")
+        raise RuntimeError(f"数据库写入失败: {e}")
 
-def main() -> int:
-    """主函数"""
+
+def main(argv: List[str]) -> int:
+    # argv[1] 可指定 JSON 文件，argv[2] 可指定数据库文件（可选）
+    candidate = argv[1] if len(argv) > 1 else os.getenv("SYLLABLE_JSON")
+    db_arg = argv[2] if len(argv) > 2 else os.getenv("SYLLABLE_DB")
     try:
-        logger.info("开始转换音节编码...")
-        with sqlite3.connect(DB_FILE) as conn:
-            count = 转换音节编码到数据库格式(conn)
-        logger.info(f"转换完成，共处理 {count} 条记录")
+        json_path = find_json_path(candidate)
+    except FileNotFoundError as e:
+        logger.error(str(e))
+        return 2
+
+    # 选择数据库路径：优先命令行/环境指定，否则使用脚本默认位置
+    db_path = Path(db_arg) if db_arg else DB_FILE
+    db_path = db_path.expanduser().resolve()
+    logger.info(f"将使用数据库文件: {db_path}")
+
+    db_path.parent.mkdir(parents=True, exist_ok=True)
+
+    try:
+        with sqlite3.connect(str(db_path)) as conn:
+            conn.row_factory = sqlite3.Row
+            count = 转换音节编码到数据库格式(conn, json_path)
+        logger.info(f"转换完成，共写入 {count} 条记录到数据库 {db_path}")
+        print(f"转换完成，共写入 {count} 条记录到数据库 {db_path}")
         return 0
     except Exception as e:
-        logger.error(f"程序执行出错: {str(e)}", exc_info=True)
+        logger.error(f"执行出错: {e}", exc_info=True)
+        print(f"意外错误: {e}")
         return 1
 
+
 if __name__ == "__main__":
-    sys.exit(main())
+    sys.exit(main(sys.argv))
