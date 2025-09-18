@@ -252,6 +252,20 @@ class SyllableStructure:
             )))
         return None
 
+    @staticmethod
+    def from_string(pinyin: str) -> 'SyllableStructure':
+        """
+        根据全拼字符串构造 SyllableStructure 实例。
+        你可以根据自己的分解规则完善此方法。
+        """
+        # 这里仅为示例，实际应按你的音元拼音结构分解
+        return SyllableStructure(
+            initial=pinyin[0] if len(pinyin) > 0 else None,
+            ascender=pinyin[1] if len(pinyin) > 1 else None,
+            peak=pinyin[2] if len(pinyin) > 2 else None,
+            descender=pinyin[3] if len(pinyin) > 3 else None
+        )
+
     # 魔术方法
     def __str__(self) -> str:
         """返回音节的字符串表示"""

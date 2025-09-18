@@ -65,7 +65,7 @@ class 表管理器:
                 CREATE TABLE IF NOT EXISTS "音元拼音" (
                     "编号" INTEGER PRIMARY KEY AUTOINCREMENT,
                     "全拼" TEXT NOT NULL UNIQUE,
-                    "简拼" TEXT NOT NULL UNIQUE,
+                    "简拼" TEXT,
                     "首音" TEXT,
                     "干音" TEXT NOT NULL,
                     "呼音" TEXT,
@@ -73,11 +73,10 @@ class 表管理器:
                     "末音" TEXT,
                     "间音" TEXT,
                     "韵音" TEXT,
-                    "映射编号" INTEGER REFERENCES "拼音映射关系"("映射编号"),  -- 新增外键
-                    "最近更新" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    UNIQUE ("全拼", "首音", "干音")
-                    )
-                ''',
+                    "映射编号" INTEGER REFERENCES "拼音映射关系"("映射编号") ON DELETE CASCADE,
+                    "最近更新" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            ''',
             '数字标调拼音': '''
                 CREATE TABLE IF NOT EXISTS "数字标调拼音" (
                     "编号" INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -258,7 +257,9 @@ class 表管理器:
 
     @staticmethod
     def 获取连接() -> sqlite3.Connection:
-        return sqlite3.connect(str(DB_PATH))
+        conn = sqlite3.connect(str(DB_PATH))
+        conn.execute("PRAGMA foreign_keys = ON;")
+        return conn
 
 class 数据库初始化器:
     """初始化数据库的入口类"""
