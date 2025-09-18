@@ -13,6 +13,7 @@ import logging
 import json
 import sys
 import os
+from db_manager import DB_PATH
 
 # 配置常量（可被命令行参数或环境变量覆盖）
 DEFAULT_JSON_FILES = [
@@ -209,7 +210,7 @@ def main(argv: List[str]) -> int:
     db_path.parent.mkdir(parents=True, exist_ok=True)
 
     try:
-        with sqlite3.connect(str(db_path)) as conn:
+        with sqlite3.connect(str(DB_PATH)) as conn:
             conn.row_factory = sqlite3.Row
             count = 转换音节编码到数据库格式(conn, json_path)
         logger.info(f"转换完成，共写入 {count} 条记录到数据库 {db_path}")
