@@ -1,107 +1,108 @@
 """
-数字标调拼音数据导入工具
+数字标调拼音数据导入工具(重构版)
 
 说明：
-- 该模块专门负责将数字标调拼音数据导入到SQLite数据库
-- 仅处理"数字标调拼音"表的相关操作
+- 从"拼音映射关系"表导入数据到"数字标调拼音"表
+- 确保两表间的引用关系
 """
 
 import sqlite3
-import json
 import logging
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 class 数字标调拼音导入器:
-    """专门处理数字标调拼音数据导入的类"""
+    """重构版：从拼音映射关系表导入数据"""
 
     REQUIRED_TABLE = "数字标调拼音"
+    SOURCE_TABLE = "拼音映射关系"
 
     def __init__(self, 数据库路径: str | Path = "pinyin_hanzi.db"):
         self.数据库路径 = Path(数据库路径).absolute()
-        self._配置日志()
-
-    def _配置日志(self):
-        logging.basicConfig(
-            level=logging.INFO,
-            format="%(asctime)s - %(levelname)s - %(message)s"
-        )
         self.日志 = logging.getLogger(__name__)
+        self.日志.setLevel(logging.INFO)
 
-    def _获取连接(self) -> sqlite3.Connection:
-        conn = sqlite3.connect(str(self.数据库路径))
-        conn.row_factory = sqlite3.Row
-        return conn
+        # 设置日志格式
+        格式 = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+        控制台处理器 = logging.StreamHandler()
+        控制台处理器.setFormatter(格式)
+        self.日志.addHandler(控制台处理器)
 
-    def _检查表存在(self, conn: sqlite3.Connection) -> bool:
-        """检查目标表是否存在"""
-        cursor = conn.cursor()
-        cursor.execute(
-            "SELECT name FROM sqlite_master WHERE type='table' AND name=?",
-            (self.REQUIRED_TABLE,)
-        )
-        return cursor.fetchone() is not None
+    def 检查表结构(self) -> bool:
+        """检查数据库表结构是否完整"""
+        with sqlite3.connect(self.数据库路径) as 连接:
+            游标 = 连接.cursor()
 
-    def 加载JSON数据(self, json路径: str) -> Dict[str, str]:
-        """加载包含数字标调拼音的JSON文件"""
-        json_path = Path(json路径).absolute()
-        if not json_path.exists():
-            raise FileNotFoundError(f"JSON文件不存在: {json_path}")
-        with open(json_path, "r", encoding="utf-8") as f:
-            data = json.load(f)
-        self.日志.info(f"已从 {json_path} 加载 {len(data)} 条数字标调拼音数据")
-        return data
+            # 检查目标表是否存在
+            游标.execute(f"SELECT name FROM sqlite_master WHERE type='table' AND name='{self.REQUIRED_TABLE}'")
+            if not 游标.fetchone():
+                self.日志.error(f"表 {self.REQUIRED_TABLE} 不存在")
+                return False
 
-    def 解析拼音(self, pinyin_str: str) -> dict:
-        """将数字标调拼音解析为声母、韵母、声调"""
-        # 示例解析逻辑，您需要根据实际格式调整
-        tone = int(pinyin_str[-1]) if pinyin_str[-1].isdigit() else 1
-        base = pinyin_str[:-1] if pinyin_str[-1].isdigit() else pinyin_str
+            # 检查源表是否存在
+            游标.execute(f"SELECT name FROM sqlite_master WHERE type='table' AND name='{self.SOURCE_TABLE}'")
+            if not 游标.fetchone():
+                self.日志.error(f"表 {self.SOURCE_TABLE} 不存在")
+                return False
 
-        # 简单声母识别逻辑（需根据您的拼音系统完善）
-        initials = ["b", "p", "m", "f", "d", "t", "n", "l", "g", "k", "h",
-                   "j", "q", "x", "zh", "ch", "sh", "r", "z", "c", "s", "y", "w"]
-        shengmu = next((sm for sm in initials if base.startswith(sm)), "")
-        yunmu = base[len(shengmu):]
+            # 检查源表是否有需要的列
+            游标.execute(f"PRAGMA table_info({self.SOURCE_TABLE})")
+            列信息 = [列[1] for 列 in 游标.fetchall()]
+            if "原拼音" not in 列信息 or "原拼音类型" not in 列信息:
+                self.日志.error(f"表 {self.SOURCE_TABLE} 缺少必要的列")
+                return False
 
-        return {
-            "声母": shengmu,
-            "韵母": yunmu,
-            "声调": tone
-        }
+        return True
 
-    def 导入数据(self, 数字标调拼音数据: Dict[str, str]) -> int:
-        """增强版导入方法，自动解析拼音成分"""
-        with self._获取连接() as conn:
-            cursor = conn.cursor()
+    def 导入数据(self) -> bool:
+        """从拼音映射关系表导入数据到数字标调拼音表"""
+        if not self.检查表结构():
+            return False
 
-            # 准备数据：解析每条拼音
-            data = []
-            for pinyin_str in 数字标调拼音数据.keys():
-                components = self.解析拼音(pinyin_str)
-                data.append((
-                    pinyin_str,
-                    components["声母"],
-                    components["韵母"],
-                    components["声调"]
-                ))
+        try:
+            with sqlite3.connect(self.数据库路径) as 连接:
+                游标 = 连接.cursor()
 
-            # 批量插入
-            cursor.executemany(
-                '''INSERT OR IGNORE INTO "数字标调拼音"
-                (全拼, 声母, 韵母, 声调)
-                VALUES (?, ?, ?, ?)''',
-                data
-            )
-            conn.commit()
-            return cursor.rowcount
+                # 添加外键列(如果不存在)
+                游标.execute(f"PRAGMA table_info({self.REQUIRED_TABLE})")
+                列信息 = [列[1] for 列 in 游标.fetchall()]
+                if "映射编号" not in 列信息:
+                    self.日志.info("添加映射编号外键列...")
+                    游标.execute(f"""
+                        ALTER TABLE {self.REQUIRED_TABLE}
+                        ADD COLUMN 映射编号 INTEGER REFERENCES {self.SOURCE_TABLE}(映射编号)
+                    """)
 
+                # 从拼音映射关系表导入数据(仅数字标调类型)
+                self.日志.info("开始导入数据...")
+                游标.execute(f"""
+                    INSERT OR IGNORE INTO {self.REQUIRED_TABLE} (全拼, 映射编号)
+                    SELECT 原拼音, 映射编号
+                    FROM {self.SOURCE_TABLE}
+                    WHERE 原拼音类型 = '数字标调'
+                """)
+
+                # 更新已存在的记录
+                游标.execute(f"""
+                    UPDATE {self.REQUIRED_TABLE}
+                    SET 映射编号 = (
+                        SELECT 映射编号
+                        FROM {self.SOURCE_TABLE}
+                        WHERE 原拼音 = {self.REQUIRED_TABLE}.全拼
+                        AND 原拼音类型 = '数字标调'
+                    )
+                    WHERE 映射编号 IS NULL
+                """)
+
+                连接.commit()
+                self.日志.info(f"成功导入/更新 {游标.rowcount} 条记录")
+                return True
+
+        except Exception as e:
+            self.日志.error(f"导入失败: {e}")
+            return False
 
 if __name__ == "__main__":
     导入器 = 数字标调拼音导入器()
-    try:
-        数据 = 导入器.加载JSON数据("syllable_code.json")  # 或指定其他JSON文件
-        结果 = 导入器.导入数据(数据)
-        print(f"导入结果: {结果} 条记录")
-    except Exception as e:
-        print(f"错误: {e}")
+    if not 导入器.导入数据():
+        exit(1)
