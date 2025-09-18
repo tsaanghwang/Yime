@@ -1,15 +1,20 @@
+from pathlib import Path
 import json
 from syllable_structure import SyllableStructure
 
 class SyllableDecoder:
     # === 初始化相关 ===
-    def __init__(self, code_file='syllable_code.json'):
-        """初始化解码器，加载编码文件"""
-        self.code_file = code_file
+    def __init__(self, code_file: str | Path | None = None):
+        # 如果未传入路径，默认使用模块目录下的 syllable_code.json
+        if code_file is None:
+            self.code_file = Path(__file__).parent / "syllable_code.json"
+        else:
+            self.code_file = Path(code_file)
         self.code_map = self._load_code_map()
 
     def _load_code_map(self):
-        """从JSON文件加载编码映射"""
+        if not self.code_file.exists():
+            raise FileNotFoundError(f"代码映射文件不存在: {self.code_file}")
         with open(self.code_file, 'r', encoding='utf-8') as f:
             return json.load(f)
 
@@ -106,7 +111,7 @@ class SyllableDecoder:
 
     # === 音元分类和映射生成 ===
     def generate_codes_mapping(self):
-        """生成音元分类映射字典"""
+        """生成音元分类映射字典（返回字符串列表，避免 tuple/str 混合导致排序/JSON 错误）"""
         all_syllable = self.decode_all()
 
         mapping = {
@@ -119,38 +124,47 @@ class SyllableDecoder:
             mapping["noise"].update(noise)
             mapping["musical"].update(musical)
 
+        # 规范化代码项为字符串：如果是 tuple/list 就拼接其元素为字符串，否则直接 str()
+        def _norm(item):
+            if isinstance(item, (tuple, list)):
+                return ''.join(str(x) for x in item)
+            return str(item)
+
+        noise_list = sorted({_norm(i) for i in mapping["noise"]})
+        musical_list = sorted({_norm(i) for i in mapping["musical"]})
+
         return {
             "forward": {
-                "noise": sorted(mapping["noise"]),
-                "musical": sorted(mapping["musical"])
+                "noise": noise_list,
+                "musical": musical_list
             },
             "reverse": {
-                codes: "noise" for codes in mapping["noise"]
+                k: "noise" for k in noise_list
             }
         }
 
     # === 文件操作和保存 ===
-    def save_codes_dict(self, output_file='codes_dict.json'):
-        """将分类后的音元保存到JSON文件"""
-        codes_dict = {
-            "noise_codes": set(),
-            "musical_codes": set()
+    def save_codes_dict(self, codes_dict: dict, out_path: str | Path = None) -> None:
+        """
+        将 codes_dict 保存为 JSON，确保可排序的字符串列表用于 musical_codes
+        """
+        if out_path is None:
+            out_path = Path(__file__).parent / "syllable_code.json"
+        else:
+            out_path = Path(out_path)
+
+        # 把 musical_codes 中的元素统一为字符串再排序，避免 tuple 与 str 混合导致排序失败
+        musical_codes_normalized = [str(item) for item in codes_dict.get("musical_codes", [])]
+        musical_codes_normalized = sorted(musical_codes_normalized)
+
+        to_save = {
+            "version": codes_dict.get("version"),
+            "musical_codes": musical_codes_normalized,
+            "other": codes_dict.get("other")
         }
 
-        all_syllable = self.decode_all()
-
-        for syllable in all_syllable.values():
-            noise, musical = syllable.classify_codes()
-            codes_dict["noise_codes"].update(noise)
-            codes_dict["musical_codes"].update(musical)
-
-        codes_dict = {
-            "noise_codes": sorted(codes_dict["noise_codes"]),
-            "musical_codes": sorted(codes_dict["musical_codes"])
-        }
-
-        with open(output_file, 'w', encoding='utf-8') as f:
-            json.dump(codes_dict, f, ensure_ascii=False, indent=2)
+        with open(out_path, "w", encoding="utf-8") as f:
+            json.dump(to_save, f, ensure_ascii=False, indent=2)
 
     def map_key_to_code(self, output_file='key_to_code.json'):
         """生成ASCII键到PUA字符的映射字典并保存到文件"""
@@ -200,7 +214,9 @@ class SyllableDecoder:
     def run_example():
         """运行解码器示例"""
         decoder = SyllableDecoder()
-        decoder.save_codes_dict()
+        # 先生成 codes_dict 并传入 save_codes_dict
+        codes_dict = decoder.generate_codes_mapping()
+        decoder.save_codes_dict(codes_dict)
 
         examples = ["ma1", "ni3", "hao3", "shang4", "xia4"]
         for pinyin in examples:

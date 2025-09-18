@@ -3,15 +3,20 @@
 功能：将音元拼音数据导入到"音元拼音"表，并为必填字段提供默认值
 """
 
-import sqlite3
 import json
 import logging
 from pathlib import Path
+import sqlite3
 from typing import Dict
 from contextlib import contextmanager
 
 from syllable_structure import SyllableStructure
 from syllable_decoder import SyllableDecoder
+
+# 指定固定数据库路径（相对或绝对，两个选其一即可）
+DB_PATH = Path(__file__).parent / "pinyin_hanzi.db"
+# 如果你更希望使用绝对路径，请取消下面一行注释并注释上面一行
+# DB_PATH = Path(r"C:\Users\Freeman Golden\OneDrive\Yime\yime\pinyin_hanzi.db")
 
 class PinyinImporter:
     """音元拼音导入器（完整字段导入）"""
@@ -201,14 +206,36 @@ class PinyinImporter:
                 "韵音": None
             }
 
+    def ensure_table(self) -> None:
+        """确保 '音元拼音' 表存在；如果不存在则创建（保留 全拼 唯一约束，移除其它唯一约束）"""
+        with self._get_connection() as conn:
+            cursor = conn.cursor()
+            conn.execute("PRAGMA foreign_keys = ON;")
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS "音元拼音" (
+                    "编号" INTEGER PRIMARY KEY AUTOINCREMENT,
+                    "全拼" TEXT NOT NULL UNIQUE,
+                    "简拼" TEXT,
+                    "首音" TEXT,
+                    "干音" TEXT,
+                    "呼音" TEXT,
+                    "主音" TEXT,
+                    "末音" TEXT,
+                    "间音" TEXT,
+                    "韵音" TEXT,
+                    "映射编号" INTEGER REFERENCES "拼音映射关系"("映射编号") ON DELETE CASCADE,
+                    "最近更新" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            ''')
+            conn.commit()
+
     def import_pinyin(self, pinyin_data: Dict[str, str]) -> int:
         """
         导入音元拼音数据（完整字段）
-        参数:
-            pinyin_data: {数字标调拼音: 音元拼音} 的映射字典
-        返回:
-            实际导入的记录数
         """
+        # 确保表存在（若不存在则创建）
+        self.ensure_table()
+
         if not self.check_table_exists():
             raise RuntimeError("'音元拼音'表不存在，请先创建表结构")
 
@@ -291,14 +318,32 @@ class PinyinImporter:
                 conn.rollback()
                 raise
 
+    def load_from_mapping_table(self) -> Dict[str, str]:
+        """
+        从数据库表 `拼音映射关系` 中读取原拼音（原拼音类型='音元拼音'）
+        返回字典形式：{原拼音: 原拼音}
+        """
+        with sqlite3.connect(str(DB_PATH)) as conn:
+            conn.row_factory = sqlite3.Row
+            conn.execute("PRAGMA foreign_keys = ON;")
+            cur = conn.cursor()
+            cur.execute('''
+                SELECT "原拼音"
+                FROM "拼音映射关系"
+                WHERE "原拼音类型" = '音元拼音'
+            ''')
+            rows = cur.fetchall()
+            data = {row["原拼音"]: row["原拼音"] for row in rows}
+            self.logger.info(f"已从拼音映射关系表加载 {len(data)} 条音元拼音数据")
+            return data
+
 def main():
     """命令行入口"""
     importer = PinyinImporter()
     try:
-        deleted_count = importer.clear_table()
-        print(f"已删除 {deleted_count} 条旧记录")
-
-        data = importer.load_json_data("syllable_code.json")
+        # 不自动清空表，保持现有特殊编码数据安全
+        # 现在从数据库表拼音映射关系加载原拼音数据
+        data = importer.load_from_mapping_table()
         count = importer.import_pinyin(data)
         print(f"导入完成，共新增 {count} 条记录")
     except Exception as e:
