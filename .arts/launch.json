@@ -2,6 +2,15 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Initialize_pinyin_mapping",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\yime\\Initialize_pinyin_mapping.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\yime",
+      "addSourceRootsToPythonpath": true
+    },
+    {
       "name": "pinyin_mapping",
       "type": "python",
       "request": "launch",
