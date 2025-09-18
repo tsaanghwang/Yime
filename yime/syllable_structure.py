@@ -142,25 +142,66 @@ class SyllableStructure:
             descender=simple_codes[3] if len(simple_codes) > 3 else None
         )
 
-    # 数据库操作方法
-    def to_db_dict(self) -> Dict[str, Optional[str]]:
+    @staticmethod
+    def simplify_full_to_abbreviation(full_code) -> str:
         """
-        将音节结构转换为数据库字典格式，匹配音元拼音表结构
-        返回:
-            dict: 包含音元拼音表所需字段的字典
+        将全拼字符串化简为简拼（合并干音部分中连续相同的音元）。
+
+        规则（基于你的编码约束）：
+        - 输入可为字符串或 list/tuple；先将每个元素归一为字符串单位（PUA 单字符或元素表示一个音元）；
+        - 全拼总长为 4（首音 + 干音(3)）或 3（省略首音，仅干音3）；
+        - 仅对干音（最后 3 个音元）做“相邻重复合并”：连续相同的元素合并为 1 个；
+          这覆盖了三相同、前两相同或后两相同的情况；
+        - 不在首音与干音边界跨越合并（即首音即使与第一个干音相同也保留）；
+        - 返回合并后的字符串（每个元素已转为字符串并拼接）。
+
+        方法名：simplify_full_to_abbreviation(full_code) -> str
         """
-        simplified = self.simplify_codes()
-        return {
-            '全拼': self.get_full_code(),
-            '简拼': simplified.get_full_code(),  # 使用简化后的完整编码作为简拼
-            '首音': self.initial,
-            '干音': self.get_ganyin_code(),
-            '呼音': self.ascender,
-            '主音': self.peak,
-            '末音': self.descender,
-            '间音': self.get_jianyin_code(),
-            '韵音': self.get_yunyin_code()
-        }
+        if full_code is None:
+            return ""
+
+        # 归一化为元素序列（每个元素为字符串）
+        if isinstance(full_code, (list, tuple)):
+            seq = [str(x) for x in full_code if x is not None]
+        else:
+            s = str(full_code)
+            seq = [ch for ch in s]  # 保持 PUA 单字符单位
+
+        if not seq:
+            return ""
+
+        # 分割首音（如果存在）与干音部分
+        if len(seq) == 4:
+            head = seq[0]            # 首音
+            ganyin_seq = seq[1:4]    # 干音部分（3个）
+            has_head = True
+        elif len(seq) == 3:
+            head = None
+            ganyin_seq = seq[0:3]
+            has_head = False
+        else:
+            # 兼容性处理：若长度非 3/4，则对整个序列执行相邻合并（但不跨首音边界）
+            # 视第一个元素为首音（如果长度>3），其余为干音
+            head = seq[0] if len(seq) > 1 else None
+            ganyin_seq = seq[1:] if len(seq) > 1 else []
+            has_head = head is not None
+
+        # 对干音部分做相邻重复合并
+        simple_ganyin = []
+        prev = None
+        for item in ganyin_seq:
+            if prev is not None and item == prev:
+                continue
+            simple_ganyin.append(item)
+            prev = item
+
+        # 组合结果：保留首音（若存在），然后追加已合并的干音部分
+        result_parts = []
+        if has_head and head is not None:
+            result_parts.append(str(head))
+        result_parts.extend(str(x) for x in simple_ganyin)
+
+        return ''.join(result_parts)
 
     def get_full_code(self) -> str:
         """获取完整的音节编码"""
@@ -172,14 +213,9 @@ class SyllableStructure:
         return ''.join(parts)
 
     def get_abbreviation(self) -> str:
-        """获取简拼形式(直接使用simplify_codes的结果)"""
-        simplified = self.simplify_codes()
-        parts = []
-        if simplified.initial: parts.append(simplified.initial)
-        if simplified.ascender: parts.append(simplified.ascender)
-        if simplified.peak: parts.append(simplified.peak)
-        if simplified.descender: parts.append(simplified.descender)
-        return ''.join(parts)
+        """获取简拼形式(使用 simplify_full_to_abbreviation 对全拼合并连续相同音元)"""
+        full = self.get_full_code()
+        return SyllableStructure.simplify_full_to_abbreviation(full)
 
     def get_ganyin_code(self) -> str:
         """获取干音部分编码"""
