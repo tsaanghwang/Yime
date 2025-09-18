@@ -67,29 +67,23 @@ def validate_pinyin(p: Any) -> bool:
 
 
 def ensure_mapping_table_exists(conn: sqlite3.Connection) -> None:
-    """
-    每次运行都直接重建表，保证唯一约束字段和插入字段一致，彻底杜绝累加。
-    """
     cur = conn.cursor()
-    # 直接删除表
     cur.execute('DROP TABLE IF EXISTS "拼音映射关系"')
     conn.commit()
-    # 重建表，唯一约束字段和插入字段完全一致
-    create_sql = '''
-    CREATE TABLE "拼音映射关系" (
-        "id" INTEGER PRIMARY KEY AUTOINCREMENT,
-        "原拼音类型" TEXT NOT NULL,
-        "原拼音" TEXT NOT NULL,
-        "目标拼音类型" TEXT NOT NULL,
-        "目标拼音" TEXT NOT NULL,
-        "数据来源" TEXT,
-        "版本号" TEXT,
-        "备注" TEXT,
-        "最近更新" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        UNIQUE ("原拼音类型","原拼音","目标拼音类型","目标拼音","数据来源")
-    )
-    '''
-    cur.execute(create_sql)
+    cur.execute('''
+        CREATE TABLE "拼音映射关系" (
+            "映射编号" INTEGER PRIMARY KEY AUTOINCREMENT,
+            "原拼音类型" TEXT NOT NULL,
+            "原拼音" TEXT NOT NULL,
+            "目标拼音类型" TEXT NOT NULL,
+            "目标拼音" TEXT NOT NULL,
+            "数据来源" TEXT,
+            "版本号" TEXT,
+            "备注" TEXT,
+            "创建时间" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE("原拼音类型", "原拼音", "目标拼音类型", "目标拼音", "数据来源")
+        )
+    ''')
     conn.commit()
     logger.info("已重建表 '拼音映射关系' 并设置唯一约束")
 
