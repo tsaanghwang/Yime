@@ -7,6 +7,7 @@ import sqlite3
 import logging
 from pathlib import Path
 from typing import Optional, Set, List, Tuple
+from db_manager import DB_PATH
 
 
 class PinyinImporter:
@@ -15,7 +16,7 @@ class PinyinImporter:
     REQUIRED_TABLE = "音元拼音"
     SOURCE_TABLE = "拼音映射关系"
 
-    def __init__(self, db_path: str | Path = "pinyin_hanzi.db"):
+    def __init__(self, db_path: str | Path = "C:/Users/Freeman Golden/OneDrive/Yime/yime/pinyin_hanzi.db"):
         """
         初始化导入器
         :param db_path: 数据库文件路径，默认为当前目录下的 pinyin_hanzi.db
@@ -218,3 +219,7 @@ if __name__ == "__main__":
     importer = PinyinImporter()
     if not importer.import_from_mapping():
         exit(1)
+
+    import sqlite3
+    conn = sqlite3.connect("C:/Users/Freeman Golden/OneDrive/Yime/yime/pinyin_hanzi.db")
+    print(conn.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall())

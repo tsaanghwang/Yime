@@ -6,7 +6,11 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 handler = logging.StreamHandler()
 handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
-logger.addHandler(handler)
+if not logger.hasHandlers():
+    logger.addHandler(handler)
+
+# 统一数据库路径为 yime\pinyin_hanzi.db
+DB_PATH = Path(__file__).parent / "pinyin_hanzi.db"
 
 class 数据库管理器:
     """封装数据库连接和基本操作"""
@@ -54,7 +58,7 @@ class 表管理器:
                     "版本号" TEXT,
                     "备注" TEXT,
                     "创建时间" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    UNIQUE("原拼音类型", "原拼音", "目标拼音类型")
+                    UNIQUE("原拼音类型", "原拼音", "目标拼音类型", "目标拼音", "数据来源")
                 )
             ''',
             '音元拼音': '''
@@ -252,6 +256,10 @@ class 表管理器:
         """)
         return 游标.fetchone() is not None
 
+    @staticmethod
+    def 获取连接() -> sqlite3.Connection:
+        return sqlite3.connect(str(DB_PATH))
+
 class 数据库初始化器:
     """初始化数据库的入口类"""
     def __init__(self, 数据库路径: str = None):
@@ -277,3 +285,10 @@ if __name__ == "__main__":
     with 数据库管理器("pinyin_hanzi.db") as 连接:
         存在 = 表管理器.检查索引存在(连接, '"索引_拼音映射_标准拼音"')
         print(f"索引存在: {存在}")
+
+    import sqlite3
+    conn = sqlite3.connect("pinyin_hanzi.db")
+    for row in conn.execute("PRAGMA index_list('拼音映射关系')"):
+        print(row)
+    for row in conn.execute("PRAGMA index_info('sqlite_autoindex_拼音映射关系_1')"):
+        print(row)

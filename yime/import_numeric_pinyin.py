@@ -4,6 +4,7 @@ import sqlite3
 import logging
 from pathlib import Path
 from typing import Dict, List, Optional
+from db_manager import DB_PATH
 
 class 数字标调拼音导入器:
     """最终修正版：确保数据不重复导入"""
@@ -23,7 +24,7 @@ class 数字标调拼音导入器:
         self.日志 = logging.getLogger(__name__)
 
     def _获取连接(self) -> sqlite3.Connection:
-        conn = sqlite3.connect(str(self.数据库路径))
+        conn = sqlite3.connect(str(DB_PATH))
         conn.row_factory = sqlite3.Row
         return conn
 
