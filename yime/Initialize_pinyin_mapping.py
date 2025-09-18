@@ -92,6 +92,24 @@ def 转换音节编码到数据库格式(连接: sqlite3.Connection) -> int:
     try:
         游标 = 连接.cursor()
 
+        logger.info(f"准备删除原有数据并插入 {len(数据库格式数据)} 条新记录")
+
+        # 新增：清空表内容
+        游标.execute("DELETE FROM 拼音映射关系 WHERE 数据来源 = '音元输入法'")
+        logger.info("已清空原有音元输入法映射数据")
+
+        # 批量插入数据
+        for i in range(0, len(数据库格式数据), BATCH_SIZE):
+            batch = 数据库格式数据[i:i+BATCH_SIZE]
+            游标.executemany('''
+                INSERT OR REPLACE INTO 拼音映射关系
+                (原拼音类型, 原拼音, 目标拼音类型, 目标拼音, 数据来源, 版本号, 备注)
+                VALUES(:source_type, :source_pinyin, :target_type,
+                    :target_pinyin, :source, :version, :note)
+            ''', batch)
+            连接.commit()
+            logger.debug(f"已提交批次 {i//BATCH_SIZE + 1} (共 {len(batch)} 条记录)")
+
         # 批量插入数据
         for i in range(0, len(数据库格式数据), BATCH_SIZE):
             batch = 数据库格式数据[i:i+BATCH_SIZE]
