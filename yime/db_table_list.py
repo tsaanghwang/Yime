@@ -1,39 +1,45 @@
 import sqlite3
 from pathlib import Path
 
-"""
-# 连接不存在的文件时会自动创建
-conn = sqlite3.connect('new_database.db')
-conn.close()  # 这会创建一个空数据库文件
-在这个项目中建有pinyin_db_manager.py模块，可以直接指定一个新文件名来创建空数据库：
-from yime.pinyin_db_manager import PinyinDBManager
-db = PinyinDBManager('new_database.db')  # 这会创建空数据库文件
-"""
 DB = Path(__file__).parent / "pinyin_hanzi.db"
-with sqlite3.connect(DB) as conn:
+
+def check_index_exists(conn: sqlite3.Connection, index_name: str) -> bool:
+    """检查索引是否存在（在 sqlite_master 中）"""
     cur = conn.cursor()
-    cur.execute("SELECT name FROM sqlite_master WHERE type='table'")
-    print(cur.fetchall())
+    cur.execute("SELECT name FROM sqlite_master WHERE type='index' AND name = ?", (index_name,))
+    return cur.fetchone() is not None
 
-    cursor = conn.cursor()
-    cursor.execute("""
-        SELECT name, tbl_name, sql FROM sqlite_master
-        WHERE type='index' AND tbl_name='音元拼音'
-    """)
-    print(cursor.fetchall())
+def list_table_and_indexes(db_path: Path):
+    with sqlite3.connect(str(db_path)) as conn:
+        cur = conn.cursor()
+        cur.execute("SELECT name FROM sqlite_master WHERE type='table'")
+        print("tables:", cur.fetchall())
 
-import sqlite3
-conn = sqlite3.connect("pinyin_hanzi.db")
-cursor = conn.cursor()
+        cur.execute("""
+            SELECT name, tbl_name, sql FROM sqlite_master
+            WHERE type='index' AND tbl_name='音元拼音'
+        """)
+        print("音元拼音 indexes:", cur.fetchall())
 
-# 检查表是否存在
-cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='数字标调拼音'")
-print("表存在:", cursor.fetchone() is not None)
+        # 检查表是否存在
+        cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='数字标调拼音'")
+        print("表 '数字标调拼音' 存在:", cur.fetchone() is not None)
 
-# 获取表结构
-cursor.execute("PRAGMA table_info('数字标调拼音')")
-print("表结构:")
-for col in cursor.fetchall():
-    print(col)
+        # 获取表结构
+        cur.execute("PRAGMA table_info('数字标调拼音')")
+        print("数字标调拼音 表结构:")
+        for col in cur.fetchall():
+            print(col)
 
-conn.close()
+        # 验证索引存在（可在此处列出要验证的索引名）
+        indexes_to_check = [
+            "ux_音元拼音_简拼_nonnull",
+            "ux_音元拼音_全拼",
+            "sqlite_autoindex_音元拼音_1"  # 可能存在的自动索引名
+        ]
+        for idx in indexes_to_check:
+            exists = check_index_exists(conn, idx)
+            print(f"索引 '{idx}' 存在: {exists}")
+
+if __name__ == "__main__":
+    list_table_and_indexes(DB)

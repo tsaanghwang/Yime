@@ -13,16 +13,18 @@ from contextlib import contextmanager
 from syllable_structure import SyllableStructure
 from syllable_decoder import SyllableDecoder
 
-# 指定固定数据库路径（相对或绝对，两个选其一即可）
-DB_PATH = Path(__file__).parent / "pinyin_hanzi.db"
-# 如果你更希望使用绝对路径，请取消下面一行注释并注释上面一行
-# DB_PATH = Path(r"C:\Users\Freeman Golden\OneDrive\Yime\yime\pinyin_hanzi.db")
+# 固定数据库路径为模块同目录下的 pinyin_hanzi.db
+DB_PATH = Path(__file__).parent.resolve() / "pinyin_hanzi.db"
 
 class PinyinImporter:
     """音元拼音导入器（完整字段导入）"""
 
-    def __init__(self, db_path: str | Path = "pinyin_hanzi.db"):
-        self.db_path = Path(db_path).absolute()
+    def __init__(self, db_path: str | Path | None = None):
+        # 默认使用模块目录下的 DB_PATH，外部可传入自定义路径
+        if db_path is None:
+            self.db_path = DB_PATH
+        else:
+            self.db_path = Path(db_path).expanduser().resolve()
         self._setup_logging()
 
     def _setup_logging(self):
@@ -39,10 +41,25 @@ class PinyinImporter:
 
     @contextmanager
     def _get_connection(self) -> sqlite3.Connection:
-        """获取数据库连接（上下文管理器）"""
+        """上下文管理器：返回启用并校验 foreign_keys 的 sqlite3 连接"""
         conn = sqlite3.connect(str(self.db_path))
         conn.row_factory = sqlite3.Row
         try:
+            # 尝试启用外键约束
+            conn.execute("PRAGMA foreign_keys = ON;")
+            # 验证外键约束是否已启用
+            cur = conn.execute("PRAGMA foreign_keys;")
+            fk_on = (cur.fetchone() or [0])[0]
+            if fk_on != 1:
+                # 记录警告（若需要，可在此抛异常以强制要求外键开启）
+                try:
+                    conn.execute("PRAGMA foreign_keys = ON;")
+                except Exception:
+                    self.logger.warning("无法启用 sqlite 外键约束 (PRAGMA foreign_keys)。请检查 SQLite 版本/连接模式。")
+                else:
+                    self.logger.warning("sqlite 外键约束尝试启用，但 PRAGMA 检查未返回 1，已再次尝试。")
+            else:
+                self.logger.debug("sqlite 外键约束已启用 (PRAGMA foreign_keys = 1)")
             yield conn
         finally:
             conn.close()
@@ -182,7 +199,8 @@ class PinyinImporter:
 
             return {
                 "全拼": full_pinyin,
-                "简拼": syllable.simplify_codes().get_abbreviation(),
+                # 直接由全拼生成简拼，避免对结构先简化再拼接造成不定长/错误结果
+                "简拼": SyllableStructure.simplify_full_to_abbreviation(full_pinyin),
                 "干音": ganyin,
                 "首音": syllable.initial,
                 "呼音": syllable.ascender,
@@ -196,7 +214,11 @@ class PinyinImporter:
             self.logger.warning(f"解析输入'{input_str}'失败: {e}")
             return {
                 "全拼": input_str,
-                "简拼": input_str[0] + (input_str[1] if len(input_str)>1 else ''),
+                "简拼": (
+                    SyllableStructure.simplify_full_to_abbreviation(input_str)
+                    if hasattr(SyllableStructure, "simplify_full_to_abbreviation")
+                    else (input_str[0] + (input_str[1] if len(input_str) > 1 else ""))
+                ),
                 "干音": input_str[1:] if len(input_str)>1 else "",
                 "首音": input_str[0] if input_str else None,
                 "呼音": None,
@@ -270,11 +292,15 @@ class PinyinImporter:
         values_to_insert = []
         seen_pinyins = set()  # 内存级二次去重
 
-        for yime_pinyin in unique_data.keys():  # 这里改为使用values()获取音元拼音
-            default_values = self._generate_default_values(yime_pinyin)  # 传入音元拼音编码
-            if default_values["全拼"] in seen_pinyins:
+        # pinyin_data expected: {映射编号: 原拼音}
+        for mapping_id, yime_pinyin in pinyin_data.items():
+            # yime_pinyin 是要插入的全拼编码
+            # 去重：只处理每个全拼一次
+            if yime_pinyin in seen_pinyins:
                 continue
-            seen_pinyins.add(default_values["全拼"])
+            seen_pinyins.add(yime_pinyin)
+
+            default_values = self._generate_default_values(yime_pinyin)  # 传入音元拼音编码
 
             values_to_insert.append((
                 default_values["全拼"],
@@ -285,7 +311,8 @@ class PinyinImporter:
                 default_values["主音"],
                 default_values["末音"],
                 default_values["间音"],
-                default_values["韵音"]
+                default_values["韵音"],
+                mapping_id  # 将映射编号写入最后一列
             ))
 
         if not values_to_insert:
@@ -296,12 +323,12 @@ class PinyinImporter:
             cursor = conn.cursor()
 
             try:
-                # 执行批量插入
+                # 执行批量插入（使用 INSERT OR IGNORE 保持幂等性；若需更新可改为 UPSERT）
                 cursor.executemany(
-                    '''INSERT INTO "音元拼音" (
+                    '''INSERT OR IGNORE INTO "音元拼音" (
                         "全拼", "简拼", "首音", "干音",
-                        "呼音", "主音", "末音", "间音", "韵音"
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+                        "呼音", "主音", "末音", "间音", "韵音", "映射编号"
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
                     values_to_insert
                 )
                 conn.commit()
@@ -318,22 +345,25 @@ class PinyinImporter:
                 conn.rollback()
                 raise
 
-    def load_from_mapping_table(self) -> Dict[str, str]:
+    def load_from_mapping_table(self) -> Dict[int, str]:
         """
-        从数据库表 `拼音映射关系` 中读取原拼音（原拼音类型='音元拼音'）
-        返回字典形式：{原拼音: 原拼音}
+        从数据库表 `拼音映射关系` 中读取映射编号与原拼音（原拼音类型='音元拼音'）
+        返回字典形式：{映射编号: 原拼音}
         """
-        with sqlite3.connect(str(DB_PATH)) as conn:
-            conn.row_factory = sqlite3.Row
-            conn.execute("PRAGMA foreign_keys = ON;")
+        with self._get_connection() as conn:
             cur = conn.cursor()
             cur.execute('''
-                SELECT "原拼音"
+                SELECT "映射编号", "原拼音"
                 FROM "拼音映射关系"
                 WHERE "原拼音类型" = '音元拼音'
             ''')
             rows = cur.fetchall()
-            data = {row["原拼音"]: row["原拼音"] for row in rows}
+            data: Dict[int, str] = {}
+            for row in rows:
+                # row 是 sqlite3.Row，支持 name 索引
+                mapping_id = row["映射编号"]
+                original = row["原拼音"]
+                data[mapping_id] = original
             self.logger.info(f"已从拼音映射关系表加载 {len(data)} 条音元拼音数据")
             return data
 

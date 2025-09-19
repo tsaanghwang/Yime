@@ -65,7 +65,7 @@ class 表管理器:
                 CREATE TABLE IF NOT EXISTS "音元拼音" (
                     "编号" INTEGER PRIMARY KEY AUTOINCREMENT,
                     "全拼" TEXT NOT NULL UNIQUE,
-                    "简拼" TEXT,
+                    "简拼" TEXT UNIQUE,
                     "首音" TEXT,
                     "干音" TEXT NOT NULL,
                     "呼音" TEXT,
@@ -203,12 +203,9 @@ class 表管理器:
 
         # 修改 表管理器.创建表() 方法中的删除逻辑
         for 表名, 创建语句 in 表结构.items():
-            # 先检查是否是视图（创建语句以 CREATE VIEW 开头）
-            if 创建语句.strip().upper().startswith('CREATE VIEW'):
-                游标.execute(f'DROP VIEW IF EXISTS "{表名}"')
-            else:
-                游标.execute(f'DROP TABLE IF EXISTS "{表名}"')
-            游标.execute(创建语句)
+            # 直接执行创建语句（语句中已经使用了 IF NOT EXISTS）
+            # 如果未来需要变更表结构，应使用迁移脚本而不是在运行时 drop/recreate
+            游标.executescript(创建语句)
 
         # 创建索引（用双引号保护索引和表列）
         索引列表 = [
@@ -219,13 +216,12 @@ class 表管理器:
             ('索引_拼音映射关系_目标类型拼音', '"拼音映射关系"("目标拼音类型", "目标拼音")'),
             ('索引_拼音映射关系_双向映射', '"拼音映射关系"("原拼音类型", "原拼音", "目标拼音类型", "目标拼音")'),
 
-            # 音元拼音表新增索引
-            ('索引_音元拼音_全拼', '"音元拼音"("全拼")'),  # 已存在UNIQUE约束，但单独索引可优化特定查询
-            ('索引_音元拼音_简拼', '"音元拼音"("简拼")'),  # 已存在UNIQUE约束
-            ('索引_音元拼音_干音', '"音元拼音"("干音")'),  # 高频查询字段
-            ('索引_音元拼音_映射编号', '"音元拼音"("映射编号")'),  # 新增外键索引
-            ('索引_音元拼音_复合查询', '"音元拼音"("干音", "呼音", "主音")'),  # 复合查询优化
-            ('索引_音元拼音_全拼映射', '"音元拼音"("全拼", "映射编号")'),  # 联合查询优化
+            # 音元拼音表新增索引（全拼列索引可保留）
+            ('索引_音元拼音_全拼', '"音元拼音"("全拼")'),
+             ('索引_音元拼音_干音', '"音元拼音"("干音")'),  # 高频查询字段
+             ('索引_音元拼音_映射编号', '"音元拼音"("映射编号")'),  # 新增外键索引
+             ('索引_音元拼音_复合查询', '"音元拼音"("干音", "呼音", "主音")'),  # 复合查询优化
+             ('索引_音元拼音_全拼映射', '"音元拼音"("全拼", "映射编号")'),  # 联合查询优化
 
             # 汉字相关索引
             ('索引_汉字拼音初始数据_汉字', '"汉字拼音初始数据"("汉字")'),
@@ -247,17 +243,24 @@ class 表管理器:
 
     @staticmethod
     def 检查索引存在(连接: sqlite3.Connection, 索引名: str) -> bool:
-        """检查指定索引是否存在（需包含双引号）"""
+        """检查指定索引是否存在（索引名请传不带额外引号的纯名）"""
         游标 = 连接.cursor()
-        游标.execute(f"""
+        # 使用参数化查询避免 SQL 注入/拼接错误
+        游标.execute("""
             SELECT name FROM sqlite_master
-            WHERE type='index' AND name={索引名}
-        """)
+            WHERE type='index' AND name = ?
+        """, (索引名,))
         return 游标.fetchone() is not None
 
     @staticmethod
     def 获取连接() -> sqlite3.Connection:
         conn = sqlite3.connect(str(DB_PATH))
+        conn.row_factory = sqlite3.Row
+        # 启用 WAL 与外键，作为默认安全设置
+        try:
+            conn.execute("PRAGMA journal_mode = WAL;")
+        except Exception:
+            pass
         conn.execute("PRAGMA foreign_keys = ON;")
         return conn
 
@@ -283,13 +286,7 @@ if __name__ == "__main__":
     初始化器 = 数据库初始化器()
     初始化器.初始化数据库()
 
-    with 数据库管理器("pinyin_hanzi.db") as 连接:
-        存在 = 表管理器.检查索引存在(连接, '"索引_拼音映射_标准拼音"')
+    # 示例验证：使用模块内 DB_PATH（避免相对 path 导致混淆）
+    with 数据库管理器(str(DB_PATH)) as 连接:
+        存在 = 表管理器.检查索引存在(连接, "索引_拼音映射_标准拼音")
         print(f"索引存在: {存在}")
-
-    import sqlite3
-    conn = sqlite3.connect("pinyin_hanzi.db")
-    for row in conn.execute("PRAGMA index_list('拼音映射关系')"):
-        print(row)
-    for row in conn.execute("PRAGMA index_info('sqlite_autoindex_拼音映射关系_1')"):
-        print(row)

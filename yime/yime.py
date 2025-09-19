@@ -72,33 +72,56 @@ def rank_candidates(code_sequence, candidates):
     return candidates
 
 
-if __name__ == "__main__":
+# 保护性默认，避免被 import 时抛出 NameError
+code_sequence = globals().get("code_sequence", []) or []
+try:
+    code_tuple = tuple(code_sequence)
+except Exception:
+    import logging
+    logging.getLogger(__name__).warning("code_sequence 无法转为 tuple，回退为空 tuple")
+    code_tuple = tuple()
+
+# 把顶层运行逻辑移入函数，防止 import 时执行
+def main():
     # 示例输入
     input_keys = ['A', 'B']  # 用户按键
     code_sequence = []
     for key in input_keys:
         code_sequence.extend(get_code_points_for_key(key))
 
-    code_tuple = tuple(code_sequence)
+    # 保护性默认：避免模块被 import 时因未定义的 code_sequence/code_tuple 崩溃
+    code_sequence = globals().get("code_sequence", []) or []
+    try:
+        code_tuple = tuple(code_sequence)
+    except Exception:
+        import logging
+        logging.getLogger(__name__).warning("code_sequence 无法转为 tuple，回退为空 tuple")
+        code_tuple = tuple()
+
     candidates = code_to_hanzi.get(code_tuple, [])
     pinyin = code_to_pinyin.get(code_tuple, "")
 
-ranked_candidates = rank_candidates(code_tuple, candidates)
+    ranked_candidates = rank_candidates(code_tuple, candidates)
 
-# 输出结果
-print("输入码元:", [f"U+{cp:04X}" for cp in code_tuple])
-print(f'拼音提示: "{pinyin}"')
-print("汉字候选:", end=" ")
-if ranked_candidates:
-    print("  ".join(f"{i+1}. {hanzi}" for i, (hanzi, _) in enumerate(ranked_candidates)))
-else:
-    print("(无候选)")
+    # 输出结果
+    print("输入码元:", [f"U+{cp:04X}" for cp in code_tuple])
+    print(f'拼音提示: "{pinyin}"')
+    print("汉字候选:", end=" ")
+    if ranked_candidates:
+        print("  ".join(f"{i+1}. {hanzi}" for i, (hanzi, _) in enumerate(ranked_candidates)))
+    else:
+        print("(无候选)")
 
-print()
-print("输入键击:", " → ".join(input_keys))
-print("码元序列:", [f"U+{cp:04X}" for cp in code_tuple])
-print("拼音提示:", pinyin)
-print("汉字候选:")
-for i, (hanzi, freq) in enumerate(ranked_candidates, 1):
-    note = " (用户常用)" if user_history.get(code_tuple, {}).get(hanzi, 0) > 0 else ""
-    print(f"{i}. {hanzi}{note}")
+    print()
+    print("输入键击:", " → ".join(input_keys))
+    print("码元序列:", [f"U+{cp:04X}" for cp in code_tuple])
+    print("拼音提示:", pinyin)
+    print("汉字候选:")
+    for i, (hanzi, freq) in enumerate(ranked_candidates, 1):
+        note = " (用户常用)" if user_history.get(code_tuple, {}).get(hanzi, 0) > 0 else ""
+        print(f"{i}. {hanzi}{note}")
+
+    return
+
+if __name__ == "__main__":
+    main()
