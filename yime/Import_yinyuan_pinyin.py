@@ -12,6 +12,7 @@ from contextlib import contextmanager
 
 from syllable_structure import SyllableStructure
 from syllable_decoder import SyllableDecoder
+from utils_charfilter import is_allowed_code_char
 
 class PinyinImporter:
     """音元拼音导入器（完整字段导入）"""
@@ -290,6 +291,11 @@ class PinyinImporter:
                 self.logger.error(f"数据库错误: {e}")
                 conn.rollback()
                 raise
+
+    # 在需要验证编码有效性的地方（示例）
+    def _is_valid_encoded_value(val: str) -> bool:
+        # 旧：可能用 ord()/isalpha() 写死范围
+        return bool(val) and all(is_allowed_code_char(ch) for ch in val)
 
 def main():
     """命令行入口"""

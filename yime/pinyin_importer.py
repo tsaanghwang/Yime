@@ -141,92 +141,107 @@ class PinyinImporter:
         return data
 
     def _generate_default_values(self, input_str: str) -> dict:
-        """生成默认值，支持直接处理PUA编码字符"""
-        decoder = SyllableDecoder()
+        """生成默认值：干音/间音/韵音使用未化简的全拼片段；简拼仅计算但不影响这些字段。"""
+        try:
+            from syllable_decoder import SyllableDecoder
+        except Exception:
+            from yime.syllable_decoder import SyllableDecoder
 
         try:
-            # 判断输入是否为PUA字符(编码)
-            is_pua = any(0xE000 <= ord(c) <= 0xF8FF or
-                        0xF0000 <= ord(c) <= 0xFFFFF or
-                        0x100000 <= ord(c) <= 0x10FFFF for c in input_str)
+            from syllable_structure import SyllableStructure
+        except Exception:
+            try:
+                from yime.syllable_structure import SyllableStructure
+            except Exception:
+                SyllableStructure = None
 
-            if is_pua:
-                # 直接处理PUA编码
-                try:
-                    result = decoder.split_encoded_syllable(input_str)
-                    # 确保解包结构正确
-                    initial, _, (ascender, yunyin), (peak, descender) = result
-                    syllable = SyllableStructure(
-                        initial=initial,
-                        ascender=ascender,
-                        peak=peak,
-                        descender=descender
-                    )
-                    full_pinyin = input_str  # 保持原样
-                    ganyin = decoder.get_ganyin(input_str)
-                    yunyin = decoder.get_yunyin(input_str)
-                    jianyin = decoder.get_jianyin_code(input_str)
-                except Exception as e:
-                    self.logger.warning(f"解析PUA编码'{input_str}'失败: {e}")
-                    raise ValueError(f"无效的PUA编码格式: {input_str}")
-            else:
-                # 正常拼音处理流程
-                try:
-                    code = decoder._get_code(input_str)
-                    if not code:
-                        raise ValueError(f"未找到拼音 '{input_str}' 的编码")
+        decoder = SyllableDecoder()
+        full_pinyin = input_str or ""
 
-                    # 确保code是字符串类型
-                    if isinstance(code, (list, tuple)):
-                        code = code[0] if code else input_str
+        # 尝试让 decoder 提供标准化的 full_pinyin（若有）
+        try:
+            if hasattr(decoder, "get_full_pinyin"):
+                full_pinyin = decoder.get_full_pinyin(full_pinyin)
+        except Exception:
+            # 忽略，使用原始输入
+            pass
 
-                    result = decoder.split_encoded_syllable(code)
-                    # 确保解包结构正确
-                    initial, _, (ascender, yunyin), (peak, descender) = result
-                    syllable = SyllableStructure(
-                        initial=initial,
-                        ascender=ascender,
-                        peak=peak,
-                        descender=descender
-                    )
-                    full_pinyin = code  # 这里改为使用code而不是input_str
-                    ganyin = decoder.get_ganyin(code)
-                    yunyin = decoder.get_yunyin(code)
-                    jianyin = decoder.get_jianyin_code(code)
-                except Exception as e:
-                    self.logger.warning(f"解析输入'{input_str}'失败: {e}")
-                    raise
+        # 解析基础部件（用于首音/呼音/主音/末音）
+        split_res = None
+        try:
+            split_res = decoder.split_encoded_syllable(full_pinyin)
+        except Exception:
+            split_res = None
 
-            return {
-                "全拼": full_pinyin,
-                # 直接由全拼生成简拼，避免对结构先简化再拼接造成不定长/错误结果
-                "简拼": SyllableStructure.simplify_full_to_abbreviation(full_pinyin),
-                "干音": ganyin,
-                "首音": syllable.initial,
-                "呼音": syllable.ascender,
-                "主音": syllable.peak,
-                "末音": syllable.descender,
-                "间音": jianyin,
-                "韵音": yunyin
-            }
+        if split_res is None:
+            initial = ascender = peak = descender = None
+        elif hasattr(split_res, "initial") and hasattr(split_res, "ascender"):
+            initial = getattr(split_res, "initial", None)
+            ascender = getattr(split_res, "ascender", None)
+            peak = getattr(split_res, "peak", None)
+            descender = getattr(split_res, "descender", None)
+        else:
+            try:
+                initial = split_res[0] if len(split_res) > 0 else None
+                ascender = split_res[2][0] if len(split_res) > 2 and split_res[2] else None
+                peak = split_res[3][0] if len(split_res) > 3 and split_res[3] else None
+                descender = split_res[3][1] if len(split_res) > 3 and split_res[3] and len(split_res[3]) > 1 else None
+            except Exception:
+                initial = ascender = peak = descender = None
 
-        except Exception as e:
-            self.logger.warning(f"解析输入'{input_str}'失败: {e}")
-            return {
-                "全拼": input_str,
-                "简拼": (
-                    SyllableStructure.simplify_full_to_abbreviation(input_str)
-                    if hasattr(SyllableStructure, "simplify_full_to_abbreviation")
-                    else (input_str[0] + (input_str[1] if len(input_str) > 1 else ""))
-                ),
-                "干音": input_str[1:] if len(input_str)>1 else "",
-                "首音": input_str[0] if input_str else None,
-                "呼音": None,
-                "主音": None,
-                "末音": None,
-                "间音": None,
-                "韵音": None
-            }
+        # 保证为字符串
+        def s(x):
+            return x if x is None or isinstance(x, str) else str(x)
+
+        # 干音/间音/韵音：严格使用未化简的 full_pinyin 片段（便于观察编码系统）
+        # 干音 = 全拼去首音（原始、不化简）
+        if full_pinyin and len(full_pinyin) > 1:
+            ganyin = full_pinyin[1:]
+        else:
+            ganyin = ""
+
+        # 间音 = 中间两音（若不足则尽可能取）
+        if len(full_pinyin) >= 3:
+            jianyin = full_pinyin[1:3]
+        elif len(full_pinyin) > 1:
+            jianyin = full_pinyin[1:]
+        else:
+            jianyin = ""
+
+        # 韵音 = 后两音（未化简）
+        if len(full_pinyin) >= 2:
+            yunyin_val = full_pinyin[-2:]
+        elif len(full_pinyin) > 1:
+            yunyin_val = full_pinyin[1:]
+        else:
+            yunyin_val = ""
+
+        # 简拼仍计算（但不用于上面字段）
+        jian = None
+        try:
+            if SyllableStructure is not None and hasattr(SyllableStructure, "simplify_full_to_abbreviation"):
+                jian = SyllableStructure.simplify_full_to_abbreviation(full_pinyin)
+            elif hasattr(decoder, "get_abbreviation"):
+                jian = decoder.get_abbreviation(full_pinyin)
+            elif hasattr(decoder, "get_jianpin"):
+                jian = decoder.get_jianpin(full_pinyin)
+        except Exception:
+            jian = None
+        if not jian:
+            # 保守默认：取全拼前两位（仅作记录）
+            jian = (full_pinyin[0] + (full_pinyin[1] if len(full_pinyin) > 1 else "")) if full_pinyin else ""
+
+        return {
+            "全拼": s(full_pinyin),
+            "简拼": s(jian),
+            "干音": s(ganyin),
+            "首音": s(initial),
+            "呼音": s(ascender),
+            "主音": s(peak),
+            "末音": s(descender),
+            "间音": s(jianyin),
+            "韵音": s(yunyin_val)
+        }
 
     def ensure_table(self) -> None:
         """确保 '音元拼音' 表存在；如果不存在则创建（保留 全拼 唯一约束，移除其它唯一约束）"""
