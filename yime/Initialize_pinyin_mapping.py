@@ -6,21 +6,22 @@
 - 读取 JSON，生成双向映射（数字标调 -> 音元，音元 -> 数字标调）
 - 一次性写入并返回写入的实际记录数（按数据来源计数）
 """
-from pathlib import Path
 from typing import Dict, List, Any
 import sqlite3
 import logging
 import json
-import sys
 import os
+from pathlib import Path
 from db_manager import DB_PATH
+import sys
+
+SCRIPT_DIR = Path(__file__).parent
+DEFAULT_JSON = SCRIPT_DIR / "syllable_code.json"
+DEFAULT_DB = SCRIPT_DIR / "pinyin_hanzi.db"
 
 # 配置常量（可被命令行参数或环境变量覆盖）
 DEFAULT_JSON_FILES = [
-    "syllable_code.json",
-    "yinjie_code.json",
-    "yinjie_code_full.json",
-    "enhanced_yinjie_mapping.json"
+    "syllable_code.json"
 ]
 # 默认使用脚本所在目录的上级目录（项目根）中的数据库，避免因工作目录不同写入到不同文件
 DB_FILE = Path(__file__).parent / "pinyin_hanzi.db"
@@ -186,22 +187,51 @@ def 转换音节编码到数据库格式(conn: sqlite3.Connection, json_path: Pa
         raise RuntimeError(f"数据库写入失败: {e}")
 
 
-def main(argv: List[str]) -> int:
-    # argv[1] 可指定 JSON 文件，argv[2] 可指定数据库文件（可选）
-    candidate = argv[1] if len(argv) > 1 else os.getenv("SYLLABLE_JSON")
-    db_arg = argv[2] if len(argv) > 2 else os.getenv("SYLLABLE_DB")
+def load_json_file(path: Path):
+    """可靠加载 JSON：自动去 BOM、打印错误并尝试去掉前导垃圾恢复"""
+    if not path.exists():
+        logger.warning("JSON 文件不存在: %s", path)
+        return None
     try:
-        json_path = find_json_path(candidate)
-    except FileNotFoundError as e:
-        logger.error(str(e))
-        return 2
+        # utf-8-sig 会自动去掉 UTF-8 BOM（若存在）
+        text = path.read_text(encoding="utf-8-sig")
+        return json.loads(text)
+    except Exception as e:
+        logger.error("直接解析 JSON 失败: %s -> %s", path, e)
+        # 尝试移除前导非 JSON 字符（找到第一个 { 或 [ 并重试）
+        try:
+            first_brace = min(
+                idx for idx in (text.find("{"), text.find("[")) if idx != -1
+            )
+            candidate = text[first_brace:]
+            data = json.loads(candidate)
+            repaired = path.with_name(path.stem + ".repaired.json")
+            repaired.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+            logger.info("已生成修复文件: %s", repaired)
+            return data
+        except Exception as e2:
+            logger.error("尝试去掉前导垃圾仍失败: %s", e2)
+            return None
 
-    # 选择数据库路径：优先命令行/环境指定，否则使用脚本默认位置
-    db_path = Path(db_arg) if db_arg else DB_FILE
-    db_path = db_path.expanduser().resolve()
-    logger.info(f"将使用数据库文件: {db_path}")
 
-    db_path.parent.mkdir(parents=True, exist_ok=True)
+def resolve_paths(argv=None):
+    """返回 (json_path: Path, db_path: Path) —— 支持 argv、环境变量或默认值"""
+    argv = list(argv or [])
+    json_arg = argv[0] if len(argv) > 0 else None
+    db_arg = argv[1] if len(argv) > 1 else None
+
+    json_path = Path(json_arg) if json_arg else Path(os.environ.get("SYLLABLE_JSON") or DEFAULT_JSON)
+    db_path = Path(db_arg) if db_arg else Path(os.environ.get("PINYIN_DB") or DEFAULT_DB)
+
+    return json_path.resolve(), db_path.resolve()
+
+
+def main(argv=None):
+    # argv 可为 sys.argv[1:] 或传入的参数列表
+    argv = argv if argv is not None else sys.argv[1:]
+    json_path, db_path = resolve_paths(argv)
+    logger.info("使用 JSON: %s", json_path)
+    logger.info("使用 DB:   %s", db_path)
 
     try:
         with sqlite3.connect(str(DB_PATH)) as conn:
@@ -217,4 +247,4 @@ def main(argv: List[str]) -> int:
 
 
 if __name__ == "__main__":
-    sys.exit(main(sys.argv))
+    sys.exit(main())

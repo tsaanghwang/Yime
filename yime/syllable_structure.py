@@ -113,75 +113,40 @@ class SyllableStructure:
         )
 
     def simplify_codes(self) -> 'SyllableStructure':
-        """合并连续相同的音元，返回新的Syllable实例
-
-        规则:
-            - 连续2个或3个相同音元合并为1个
         """
-        codes = [
-            self.initial,
-            self.ascender,
-            self.peak,
-            self.descender
-        ]
-
-        simple_codes = []
-        prev_code = None
-        for code in codes:
-            if code is None:
-                continue
-            if code == prev_code:
-                continue
-            simple_codes.append(code)
-            prev_code = code
-
-        return SyllableStructure(
-            initial=simple_codes[0] if len(simple_codes) > 0 else None,
-            ascender=simple_codes[1] if len(simple_codes) > 1 else None,
-            peak=simple_codes[2] if len(simple_codes) > 2 else None,
-            descender=simple_codes[3] if len(simple_codes) > 3 else None
-        )
+        使用 simplify_full_to_abbreviation 对全拼化简后，
+        将化简后的全拼再次分解为 SyllableStructure 返回。
+        保证 simplify_codes 返回结构体（可用于进一步分解/保存）。
+        """
+        full = self.get_full_code()
+        simplified_full = SyllableStructure.simplify_full_to_abbreviation(full)
+        # 使用已有的 split_encoded_syllable 保持分解逻辑一致
+        return SyllableStructure.split_encoded_syllable(simplified_full)
 
     @staticmethod
     def simplify_full_to_abbreviation(full_code) -> str:
         """
-        将全拼字符串化简为简拼（合并干音部分中连续相同的音元）。
-
-        规则（基于你的编码约束）：
-        - 输入可为字符串或 list/tuple；先将每个元素归一为字符串单位（PUA 单字符或元素表示一个音元）；
-        - 全拼总长为 4（首音 + 干音(3)）或 3（省略首音，仅干音3）；
-        - 仅对干音（最后 3 个音元）做“相邻重复合并”：连续相同的元素合并为 1 个；
-          这覆盖了三相同、前两相同或后两相同的情况；
-        - 不在首音与干音边界跨越合并（即首音即使与第一个干音相同也保留）；
-        - 返回合并后的字符串（每个元素已转为字符串并拼接）。
-
-        方法名：simplify_full_to_abbreviation(full_code) -> str
+        将全拼化简为简拼（仅合并干音部分中相邻重复的音元），
+        输入可以是字符串或序列，返回合并后的字符串（简拼）。
+        注意：该方法只产生简拼字符串，不做进一步分解。
         """
         if full_code is None:
             return ""
 
-        # 归一化为元素序列（每个元素为字符串）
         if isinstance(full_code, (list, tuple)):
             seq = [str(x) for x in full_code if x is not None]
         else:
-            s = str(full_code)
-            seq = [ch for ch in s]  # 保持 PUA 单字符单位
+            seq = list(str(full_code))
 
         if not seq:
             return ""
 
-        # 分割首音（如果存在）与干音部分
+        # 切分首音（若存在）与干音（最后3个）
         if len(seq) == 4:
-            head = seq[0]            # 首音
-            ganyin_seq = seq[1:4]    # 干音部分（3个）
-            has_head = True
+            head = seq[0]; ganyin_seq = seq[1:4]; has_head = True
         elif len(seq) == 3:
-            head = None
-            ganyin_seq = seq[0:3]
-            has_head = False
+            head = None; ganyin_seq = seq[0:3]; has_head = False
         else:
-            # 兼容性处理：若长度非 3/4，则对整个序列执行相邻合并（但不跨首音边界）
-            # 视第一个元素为首音（如果长度>3），其余为干音
             head = seq[0] if len(seq) > 1 else None
             ganyin_seq = seq[1:] if len(seq) > 1 else []
             has_head = head is not None
@@ -195,13 +160,11 @@ class SyllableStructure:
             simple_ganyin.append(item)
             prev = item
 
-        # 组合结果：保留首音（若存在），然后追加已合并的干音部分
-        result_parts = []
+        parts = []
         if has_head and head is not None:
-            result_parts.append(str(head))
-        result_parts.extend(str(x) for x in simple_ganyin)
-
-        return ''.join(result_parts)
+            parts.append(str(head))
+        parts.extend(str(x) for x in simple_ganyin)
+        return ''.join(parts)
 
     def get_full_code(self) -> str:
         """获取完整的音节编码"""
@@ -213,9 +176,8 @@ class SyllableStructure:
         return ''.join(parts)
 
     def get_abbreviation(self) -> str:
-        """获取简拼形式(使用 simplify_full_to_abbreviation 对全拼合并连续相同音元)"""
-        full = self.get_full_code()
-        return SyllableStructure.simplify_full_to_abbreviation(full)
+        """返回简拼字符串（由 simplify_full_to_abbreviation 生成），不做分解。"""
+        return SyllableStructure.simplify_full_to_abbreviation(self.get_full_code())
 
     def get_ganyin_code(self) -> str:
         """获取干音部分编码"""
