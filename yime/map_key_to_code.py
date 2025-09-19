@@ -1,3 +1,5 @@
+from utils_charfilter import is_allowed_code_char
+
 def map_shouyin_to_code(shouyin: str) -> str:
     """将输入的大写声母映射为音元代码"""
     # 基础声母映射表
@@ -39,3 +41,7 @@ def get_shouyin_code(shouyin_input: str) -> str:
 def get_short_code(full_code: str) -> str:
     """去除前缀的简写形式"""
     return full_code.replace("UPY_", "") if full_code.startswith("UPY_") else full_code
+
+def is_valid_key(s: str) -> bool:
+    # 旧： return all(ch.isalpha() for ch in s)
+    return bool(s) and all(is_allowed_code_char(ch) for ch in s)

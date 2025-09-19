@@ -1,6 +1,7 @@
 from pathlib import Path
 import sqlite3
 import csv
+from utils_charfilter import is_allowed_code_char
 
 DB = Path(__file__).parent / "pinyin_hanzi.db"
 OUT = Path(__file__).parent / "mappings_export.csv"
@@ -9,6 +10,11 @@ def to_hex_list(s):
     if s is None:
         return ""
     return " ".join(f"U+{ord(ch):06X}" for ch in s)
+
+# 替换掉直接使用 ord(...) 的拒绝逻辑，改为更宽松的判定
+def accept_mapping_key(k: str) -> bool:
+    # 旧：基于 ord(...) 的严格范围判断
+    return bool(k) and all(is_allowed_code_char(ch) for ch in k)
 
 with sqlite3.connect(str(DB)) as conn, open(OUT, "w", newline="", encoding="utf-8") as f:
     conn.row_factory = sqlite3.Row

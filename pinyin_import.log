@@ -1823,3 +1823,11 @@
 2025-09-19 09:14:33,942 - INFO - 导入完成: 尝试导入 1748 条, 实际新增 1748 条记录
 2025-09-19 11:34:59,754 - INFO - 已从拼音映射关系表加载 1836 条音元拼音数据
 2025-09-19 11:35:00,886 - INFO - 导入完成: 尝试导入 1748 条, 实际新增 1748 条记录
+2025-09-19 17:36:04,505 - WARNING - 解析输入'abcd'失败: name 'code_for_parse' is not defined
+2025-09-19 17:36:04,506 - WARNING - 解析输入'abce'失败: name 'code_for_parse' is not defined
+2025-09-19 17:36:04,507 - WARNING - 解析输入'abcf'失败: name 'code_for_parse' is not defined
+2025-09-19 18:57:19,374 - ERROR - 数据库错误: FOREIGN KEY constraint failed
+2025-09-19 19:00:51,601 - ERROR - 数据库错误: FOREIGN KEY constraint failed
+2025-09-19 19:12:50,634 - ERROR - 数据库错误: FOREIGN KEY constraint failed
+2025-09-19 19:36:01,984 - INFO - 导入完成: 尝试导入 6 条, 实际新增 5 条记录
+2025-09-19 19:39:17,180 - INFO - 导入完成: 尝试导入 1 条, 实际新增 1 条记录
