@@ -7,7 +7,7 @@ import json
 import logging
 from pathlib import Path
 import sqlite3
-from typing import Dict
+from typing import Dict, Generator
 from contextlib import contextmanager
 
 from syllable_structure import SyllableStructure
@@ -40,7 +40,7 @@ class PinyinImporter:
         self.logger = logging.getLogger(__name__)
 
     @contextmanager
-    def _get_connection(self) -> sqlite3.Connection:
+    def _get_connection(self) -> Generator[sqlite3.Connection, None, None]:
         """上下文管理器：返回启用并校验 foreign_keys 的 sqlite3 连接"""
         conn = sqlite3.connect(str(self.db_path))
         conn.row_factory = sqlite3.Row
