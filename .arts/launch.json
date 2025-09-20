@@ -2,6 +2,15 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "test_duplicate_groups",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\yime\\test_duplicate_groups.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\yime",
+      "addSourceRootsToPythonpath": true
+    },
+    {
       "name": "Initialize_pinyin_mapping",
       "type": "python",
       "request": "launch",
