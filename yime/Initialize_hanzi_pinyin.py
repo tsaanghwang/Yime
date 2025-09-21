@@ -34,7 +34,7 @@ class 数据库初始化器:
 
         # 1. 导入汉字表
         游标.execute('''
-            INSERT OR IGNORE INTO "汉字"("字符", "Unicode编码")
+            INSERT OR IGNORE INTO "汉字"("字符", "Unicode码点")
             SELECT DISTINCT
                 汉字,
                 'U+' || printf('%04X', unicode(汉字))

@@ -124,5 +124,8 @@
   },
   "editor.fontFamily": "\"YinYuan Regular\", \"音元 常规\", Consolas, 'Courier New', monospace",
   "terminal.integrated.fontFamily": "\"YinYuan Regular\", \"音元 常规\", Consolas, 'Courier New', monospace",
-  "terminal.integrated.fontLigatures.enabled": true
+  "terminal.integrated.fontLigatures.enabled": true,
+  "[query-editor]": {
+    "editor.defaultFormatter": "yy0931.vscode-sqlite3-editor"
+  }
 }
