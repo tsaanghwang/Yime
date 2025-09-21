@@ -88,8 +88,8 @@ print(mapper.get("A"))  # 输出: ['a', 'aa', 'aaa']
 CREATE TABLE hanzi (
     id INTEGER PRIMARY KEY,
     character TEXT NOT NULL UNIQUE,  -- 汉字字符
-    unicode_hex TEXT NOT NULL,       -- Unicode编码(16进制)
-    stroke_count INTEGER,            -- 笔画数
+    unicode_hex TEXT NOT NULL,       -- Unicode码点(16进制)
+    stroke_count INTEGER,            -- 画数
     radical TEXT,                    -- 部首
     is_common BOOLEAN DEFAULT 1,     -- 是否常用字
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP

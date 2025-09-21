@@ -47,8 +47,8 @@ class 表管理器:
                 CREATE TABLE IF NOT EXISTS 汉字 (
                     编号 INTEGER PRIMARY KEY,
                     字符 TEXT NOT NULL UNIQUE,
-                    Unicode编码 TEXT NOT NULL,
-                    笔画数 INTEGER,
+                    Unicode码点 TEXT NOT NULL,
+                    画数 INTEGER,
                     部首 TEXT,
                     常用字 BOOLEAN DEFAULT 1,
                     最近更新 TIMESTAMP DEFAULT CURRENT_TIMESTAMP
