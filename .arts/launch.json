@@ -2,6 +2,24 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "connect",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\yime\\migrations\\connect.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\yime\\migrations",
+      "addSourceRootsToPythonpath": true
+    },
+    {
+      "name": "connect_to_mysql",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\yime\\migrations\\connect_to_mysql.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\yime\\migrations",
+      "addSourceRootsToPythonpath": true
+    },
+    {
       "name": "test_duplicate_groups",
       "type": "python",
       "request": "launch",
