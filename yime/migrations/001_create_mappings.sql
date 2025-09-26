@@ -1,3 +1,4 @@
+-- Active: 1758559459358@@127.0.0.1@3306@yime
 -- 汉字到标准拼音（一个汉字可能有多条同音映射）
 CREATE TABLE IF NOT EXISTS hanzi_standard_pinyin (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
