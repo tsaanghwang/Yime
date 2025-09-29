@@ -77,7 +77,7 @@ graph TD
       subgraph FrontLong["前长干音分析"]
       FrontLongTrunk --> |提取| FLTrunkTone[干调]
       FrontLongTrunk --> |提取| FLFinal[前长韵母]
-      FLFinal --> |又被分析成为| FLFRime[韵基]
+      FLFinal --> |被分析为| FLFRime[韵基]
       FLFRime --> |切分| FLFNuclear[韵腹]
       FLFRime --> |切分| FLFTail[韵尾]
       end
@@ -87,14 +87,14 @@ graph TD
       BackLongTrunk --> |提取| BLFinal[后长韵母]
       BLFinal --> |切分| BLFHead[韵头]
       BLFinal --> |切分| BLFRime[韵基]
-      BLFRime --> |又被分析成为| BLFNuclear[韵腹]
+      BLFRime --> |被分析为| BLFNuclear[韵腹]
       end
 
       subgraph SingleQuality["单质干音分析"]
       SingleQualityTrunk --> |提取| SQTrunkTone[干调]
       SingleQualityTrunk --> |提取| SQFinal[单质韵母]
-      SQFinal --> |又被分析成为| SQFRime[韵基]
-      SQFRime --> |又被分析成为| SQFNuclear[韵腹]
+      SQFinal --> |被分析为| SQFRime[韵基]
+      SQFRime --> |被分析为| SQFNuclear[韵腹]
       end
     end
   end
@@ -133,3 +133,4 @@ graph TD
     end
   end
 
+```
