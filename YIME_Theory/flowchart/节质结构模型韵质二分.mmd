@@ -1,0 +1,22 @@
+graph TB
+A[S]  ---  |切分|B[O]
+A ---  |切分|C[R]
+
+B ---  |分类|D[I]
+B ---  |分类|E[IM]
+
+C ---  |分类|F[N]
+C ---  |分类|G[NE]
+
+D ---  H[I]
+E ---  |切分|I[I]
+E ---  |切分|J[M]
+
+F ---  |切分|K[N]
+F ---  |切分|L[N]
+G ---  |切分|M[N]
+G ---  |切分|N[E]
+
+%% 去掉节点框和背景，只保留文字
+classDef plain fill:none,stroke:none;
+class A,B,C,D,E,F,G,H,I,J,K,L,M,N plain;
