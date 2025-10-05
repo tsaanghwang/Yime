@@ -1,0 +1,21 @@
+graph TB
+A[Syllable]  --- |切分| B[Onset]
+A --- |切分| C[Rime]
+
+B --- |分类| D[Initial]
+B --- |分类| E[IM]
+
+C --- |分类| F[Nucleus]
+C --- |分类| G[NC]
+
+D --- |传递| H[Initial]
+E --- |切分| I[Initial]
+E --- |切分| J[Medial]
+
+F --- |传递| K[Nucleus]
+G --- |切分| L[Nucleus]
+G --- |切分| M[Coda]
+
+%% 去掉节点框和背景，只保留文字
+classDef plain fill:none,stroke:none;
+class A,B,C,D,E,F,G,H,I,J,K,L,M plain;
