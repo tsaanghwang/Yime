@@ -1,0 +1,58 @@
+graph TB
+A1[H]
+A2[H]
+A3[H]
+
+A1 --- O1[o]
+A2 --- O2[o]
+A3 --- O3[o]
+
+subgraph 单质韵母[ ]
+O1 --- O4[o]
+O2 --- O5[o]
+O3 --- O5[o]
+O4 --- O6[o]
+O5 --- O6[o]
+end
+
+A1 --- B1[u]
+A2 --- B2[o]
+A3 --- B3[o]
+
+subgraph 后长韵母[ ]
+B1 --- B4[u]
+B2 --- B5[o]
+B3 --- B5[o]
+B4 --- B6[o]
+B5 --- B6[uo]
+end
+
+A1 --- C1[ɤ]
+A2 --- C2[ɤ]
+A3 --- C3[ᴜ]
+
+subgraph 前长韵母[ ]
+C1 --- C4[ɤ]
+C2 --- C4
+C3 --- C5[ᴜ]
+C4 --- C6[ɤᴜ]
+C5 --- C6
+end
+
+A1 --- D1[i]
+A2 --- D2[ɤ]
+A3 --- D3[ᴜ]
+
+subgraph 三质韵母[ ]
+D1 --- D4[i]
+D2 --- D5
+D3 --- D5[ɤᴜ]
+D4 --- D6[iɤᴜ]
+D5 --- D6
+end
+
+
+%% 去掉节点框线和填充（把需要无框的节点列入 class）
+classDef plain fill:none,stroke:none;
+class A1,A2,A3,O1,O2,O3,O4,O5,O6,B1,B2,B3,B4,B5,B6,C1,C2,C3,C4,C5,C6,D1,D2,D3,D4,D5,D6 plain;
+
