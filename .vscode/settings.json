@@ -147,5 +147,23 @@
       "database": "yime",
       "username": "root"
     }
-  ]
+  ],
+  "latex-workshop.latex.tools": [
+    {
+      "name": "xelatex",
+      "command": "C:\\Program Files\\MiKTeX\\miktex\\bin\\x64\\xelatex.exe",
+      "args": ["-synctex=1", "-interaction=nonstopmode", "%DOC%"]
+    }
+  ],
+  "latex-workshop.latex.recipes": [
+    {
+      "name": "xelatex",
+      "tools": ["xelatex"]
+    }
+  ],
+  "latex-workshop.view.pdf.viewer": "tab",
+  "latex-workshop.latex.autoBuild.run": "onSave",
+  "[latex]": {
+    "editor.defaultFormatter": "mathematic.vscode-latex"
+  }
 }
