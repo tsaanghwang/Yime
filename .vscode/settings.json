@@ -165,5 +165,6 @@
   "latex-workshop.latex.autoBuild.run": "onSave",
   "[latex]": {
     "editor.defaultFormatter": "mathematic.vscode-latex"
-  }
+  },
+  "markdown.styles": [".vscode/markdown.css"]
 }
