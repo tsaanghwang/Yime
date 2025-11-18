@@ -1,0 +1,65 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+  <svg width="835.9999999999999" height="613.25" viewBox="-16.8, 0, 852.7999999999998, 624.5" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arrow" markerUnits="userSpaceOnUse" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="16.8" markerHeight="16.8" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10" fill="black"/>
+    </marker>
+    <marker id="arrowBackward" markerUnits="userSpaceOnUse" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="16.8" markerHeight="16.8" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="black"/>
+    </marker>
+    <marker id="arrowForward" markerUnits="userSpaceOnUse" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="16.8" markerHeight="16.8" orient="auto">
+      <path d="M 10 0 L 0 5 L 10 10 z" fill="black"/>
+    </marker>
+    <marker id="arrowBothways" markerUnits="userSpaceOnUse" viewBox="0 0 30 10" refX="15" refY="5" markerWidth="50.400000000000006" markerHeight="16.8" orient="auto">
+      <path d="M 0 5 L 10 0 L 10 5 L 20 5 L 20 0 L 30 5 L 20 10 L 20 5 L 10 5 L 10 10 z" fill="black"/>
+    </marker>
+    <pattern id="hatchBlack" x="10" y="10" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <line x1="0" y="0" x2="0" y2="10" stroke="black" stroke-width="4"></line>
+    </pattern>
+    <pattern id="hatchForNode" x="10" y="10" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <line x1="0" y="0" x2="0" y2="10" stroke="black" stroke-width="4"></line>
+    </pattern>
+    <pattern id="hatchForLeaf" x="10" y="10" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <line x1="0" y="0" x2="0" y2="10" stroke="black" stroke-width="4"></line>
+    </pattern>
+  </defs>
+<text white-space='pre' alignment-baseline='text-top' style='fill: black; storoke-width: 0; font-size: 32px;' x='279.2' y='67.5'><tspan x='279.2' y='67.5' style="" text-decoration="" font-family="'Noto Serif', 'Noto Serif JP', OpenMoji, 'OpenMoji Color', 'OpenMoji Black', serif">音节</tspan>
+</text>
+<text white-space='pre' alignment-baseline='text-top' style='fill: black; storoke-width: 0; font-size: 32px;' x='16.80000000000001' y='240.5'><tspan x='16.80000000000001' y='240.5' style="" text-decoration="" font-family="'Noto Serif', 'Noto Serif JP', OpenMoji, 'OpenMoji Color', 'OpenMoji Black', serif">首音</tspan>
+</text>
+<text white-space='pre' alignment-baseline='text-top' style='fill: black; storoke-width: 0; font-size: 32px;' x='16.80000000000001' y='413.5'><tspan x='16.80000000000001' y='413.5' style="" text-decoration="" font-family="'Noto Serif', 'Noto Serif JP', OpenMoji, 'OpenMoji Color', 'OpenMoji Black', serif">首音</tspan>
+</text>
+<text white-space='pre' alignment-baseline='text-top' style='fill: black; storoke-width: 0; font-size: 32px;' x='16.80000000000001' y='586.5'><tspan x='16.80000000000001' y='586.5' style="" text-decoration="" font-family="'Noto Serif', 'Noto Serif JP', OpenMoji, 'OpenMoji Color', 'OpenMoji Black', serif">首音</tspan>
+</text>
+<text white-space='pre' alignment-baseline='text-top' style='fill: black; storoke-width: 0; font-size: 32px;' x='541.5999999999999' y='240.5'><tspan x='541.5999999999999' y='240.5' style="" text-decoration="" font-family="'Noto Serif', 'Noto Serif JP', OpenMoji, 'OpenMoji Color', 'OpenMoji Black', serif">干音</tspan>
+</text>
+<text white-space='pre' alignment-baseline='text-top' style='fill: black; storoke-width: 0; font-size: 32px;' x='410.4' y='413.5'><tspan x='410.4' y='413.5' style="" text-decoration="" font-family="'Noto Serif', 'Noto Serif JP', OpenMoji, 'OpenMoji Color', 'OpenMoji Black', serif">呼音</tspan>
+</text>
+<text white-space='pre' alignment-baseline='text-top' style='fill: black; storoke-width: 0; font-size: 32px;' x='410.4' y='586.5'><tspan x='410.4' y='586.5' style="" text-decoration="" font-family="'Noto Serif', 'Noto Serif JP', OpenMoji, 'OpenMoji Color', 'OpenMoji Black', serif">呼音</tspan>
+</text>
+<text white-space='pre' alignment-baseline='text-top' style='fill: black; storoke-width: 0; font-size: 32px;' x='672.8' y='413.5'><tspan x='672.8' y='413.5' style="" text-decoration="" font-family="'Noto Serif', 'Noto Serif JP', OpenMoji, 'OpenMoji Color', 'OpenMoji Black', serif">韵音</tspan>
+</text>
+<text white-space='pre' alignment-baseline='text-top' style='fill: black; storoke-width: 0; font-size: 32px;' x='607.2' y='586.5'><tspan x='607.2' y='586.5' style="" text-decoration="" font-family="'Noto Serif', 'Noto Serif JP', OpenMoji, 'OpenMoji Color', 'OpenMoji Black', serif">主音</tspan>
+</text>
+<text white-space='pre' alignment-baseline='text-top' style='fill: black; storoke-width: 0; font-size: 32px;' x='738.3999999999999' y='586.5'><tspan x='738.3999999999999' y='586.5' style="" text-decoration="" font-family="'Noto Serif', 'Noto Serif JP', OpenMoji, 'OpenMoji Color', 'OpenMoji Black', serif">末音</tspan>
+</text>
+<polyline style='stroke:black; stroke-width:3; fill:none; stroke-linejoin:round; stroke-linecap:round;'
+                            points='48.80000000000001 184.25 48.80000000000001 139.9375 311.2 139.9375 311.2 95.625' />
+<polyline style='stroke:black; stroke-width:3; fill:none; stroke-linejoin:round; stroke-linecap:round;'
+                            points='573.5999999999999 184.25 573.5999999999999 139.9375 311.2 139.9375 311.2 95.625' />
+<polyline style='stroke:black; stroke-width:3; fill:none; stroke-linejoin:round; stroke-linecap:round;'
+                            points='48.80000000000001 357.25 48.80000000000001 312.9375 48.80000000000001 312.9375 48.80000000000001 268.625' />
+<polyline style='stroke:black; stroke-width:3; fill:none; stroke-linejoin:round; stroke-linecap:round;'
+                            points='48.80000000000001 530.25 48.80000000000001 485.9375 48.80000000000001 485.9375 48.80000000000001 441.625' />
+<polyline style='stroke:black; stroke-width:3; fill:none; stroke-linejoin:round; stroke-linecap:round;'
+                            points='442.4 357.25 442.4 312.9375 573.5999999999999 312.9375 573.5999999999999 268.625' />
+<polyline style='stroke:black; stroke-width:3; fill:none; stroke-linejoin:round; stroke-linecap:round;'
+                            points='704.8 357.25 704.8 312.9375 573.5999999999999 312.9375 573.5999999999999 268.625' />
+<polyline style='stroke:black; stroke-width:3; fill:none; stroke-linejoin:round; stroke-linecap:round;'
+                            points='442.4 530.25 442.4 485.9375 442.4 485.9375 442.4 441.625' />
+<polyline style='stroke:black; stroke-width:3; fill:none; stroke-linejoin:round; stroke-linecap:round;'
+                            points='639.2 530.25 639.2 485.9375 704.8 485.9375 704.8 441.625' />
+<polyline style='stroke:black; stroke-width:3; fill:none; stroke-linejoin:round; stroke-linecap:round;'
+                            points='770.3999999999999 530.25 770.3999999999999 485.9375 704.8 485.9375 704.8 441.625' />
+</svg>
