@@ -168,5 +168,6 @@
   "[latex]": {
     "editor.defaultFormatter": "mathematic.vscode-latex"
   },
-  "markdown.styles": [".vscode/markdown.css"]
+  "markdown.styles": [".vscode/markdown.css"],
+  "livePreview.defaultPreviewPath": "/临时.html"
 }
