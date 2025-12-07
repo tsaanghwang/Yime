@@ -1,4 +1,6 @@
 import os
+import sys
+import io
 import tkinter as tk
 from tkinter import ttk
 import pyperclip
@@ -26,8 +28,13 @@ class HanziInputApp:
         # 存储当前候选汉字
         self.current_candidates: List[str] = []
 
+        # --- 新增：用于轮询的变量和启动轮询 ---
+        self.last_input_text = ""
+        self._poll_input_change()
+        # ------------------------------------
+
     def _initialize_converter(self) -> YinYuanInputConverter:
-        """初始化拼音转换器(完全数据库版)"""
+        """初始化拼音转换器(数据库版)"""
         try:
             # 获取当前脚本所在目录的绝对路径
             script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -49,8 +56,9 @@ class HanziInputApp:
         input_frame.pack(fill=tk.X)
 
         ttk.Label(input_frame, text="输入音元符号:").pack(anchor=tk.W)
-        self.input_entry = ttk.Entry(input_frame, width=40, font=('Arial', 12, 'normal'))
+        self.input_entry = ttk.Entry(input_frame, width=40, font=('YinYuan Regular', 12, 'normal'))
         self.input_entry.pack(fill=tk.X, pady=5)
+        # 注意：我们保留KeyRelease绑定，以获得即时响应，轮询作为补充
         self.input_entry.bind("<KeyRelease>", self.on_input_change)
 
         # 拼音显示区域
@@ -59,7 +67,7 @@ class HanziInputApp:
             input_frame,
             text="",
             foreground="blue",
-            font=('Arial', 12, 'bold')
+            font=('YinYuan Regular', 12, 'bold')
         )
         self.pinyin_display.pack(anchor=tk.W, pady=2)
 
@@ -76,7 +84,7 @@ class HanziInputApp:
         self.result_display = ttk.Label(
             result_frame,
             text="",
-            font=('Arial', 14, 'normal'),
+            font=('YinYuan Regular', 14, 'normal'),
             wraplength=400
         )
         self.result_display.pack(fill=tk.BOTH, expand=True, pady=5)
@@ -129,9 +137,30 @@ class HanziInputApp:
             command=self.load_yinyuan_sequence
         ).pack(side=tk.LEFT, padx=5)
 
+    def _poll_input_change(self):
+        """定期检查输入框内容是否变化"""
+        try:
+            current_text = self.input_entry.get()
+            if current_text != self.last_input_text:
+                # 添加诊断信息，检查是否检测到变化
+                print(f"检测到输入变化: {current_text!r}")  # 使用repr()表示
+                self.last_input_text = current_text
+                self.on_input_change()
+
+            # 使用标准方式递归调用，并忽略类型检查器的警告
+            self.master.after(100, self._poll_input_change)  # type: ignore
+        except tk.TclError:
+            # 窗口关闭时会发生此错误，可以安全忽略
+            pass
+    # ----------------------
+
     def on_input_change(self, event: Optional[tk.Event] = None):
         """处理输入变化事件(数据库版)"""
         input_text = self.input_entry.get()
+
+        # --- 同步轮询状态 ---
+        self.last_input_text = input_text
+        # --------------------
 
         if not input_text:
             self.clear_display()
@@ -141,14 +170,19 @@ class HanziInputApp:
             # 调用转换器获取拼音和候选汉字(从数据库)
             result = self.converter.convert(input_text)
 
+            # --- 关键诊断信息 ---
+            print(f"转换器返回结果: {result}")
+            # --------------------
+
             if result and isinstance(result, tuple) and len(result) == 2:
                 pinyin, candidates = result
                 # 确保pinyin是字符串类型
                 display_text = str(pinyin) if pinyin is not None else ""
-                self.pinyin_display.config(text=display_text)
-                self._update_hanzi_buttons(candidates)
+                self.pinyin_display['text'] = display_text
+                self._update_hanzi_buttons(candidates if isinstance(candidates, list) else [])
             else:
-                self.pinyin_display.config(text="")
+                print("结果无效或为空，清空候选字。") # 确认执行了清空操作
+                self.pinyin_display['text'] = ""
                 self._update_hanzi_buttons([])
 
         except sqlite3.Error as e:
@@ -178,11 +212,14 @@ class HanziInputApp:
 
     def _select_hanzi(self, hanzi: str):
         """选择候选汉字"""
-        current_text = self.result_display.cget("text")
-        self.result_display.config(text=current_text + hanzi)
-        self.input_entry.delete(0, tk.END)
-        self.pinyin_display.config(text="")
-        self._update_hanzi_buttons([])
+        try:
+            current_text = self.result_display.cget("text")
+            self.result_display["text"] = current_text + hanzi
+            self.input_entry.delete(0, tk.END)
+            self.pinyin_display['text'] = ""
+            self._update_hanzi_buttons([])
+        except tk.TclError as e:
+            self._show_error_message(f"更新显示失败: {str(e)}")
 
 
     def copy_to_clipboard(self):
@@ -209,8 +246,12 @@ class HanziInputApp:
     def clear_display(self):
         """清空所有显示"""
         self.input_entry.delete(0, tk.END)
-        self.pinyin_display.config(text="")
-        self.result_display.config(text="")
+        self.pinyin_display['text'] = ""
+
+        try:
+            self.result_display["text"] = ""
+        except tk.TclError as e:
+            self._show_error_message(f"清空显示失败: {str(e)}")
 
         for widget in self.hanzi_frame.winfo_children():
             widget.destroy()
@@ -218,10 +259,16 @@ class HanziInputApp:
 
     def _show_temporary_message(self, message: str, delay: int = 1000):
         """显示临时消息"""
+        if hasattr(self, '_message_timer'):
+            self.master.after_cancel(self._message_timer)
         original_text = self.result_display.cget("text")
         original_fg = self.result_display.cget("foreground")
-        self.result_display.config(text=message, foreground="black")
-        self.master.after(delay, lambda: self.result_display.config(text=original_text, foreground=original_fg))
+        self.result_display["text"] = message
+        self.result_display["foreground"] = "black"
+        self._message_timer = self.master.after(delay, lambda: (
+            self.result_display.configure(text=original_text),
+            self.result_display.configure(foreground=original_fg)
+        ))
 
 
     def _show_error_message(self, message: str):
@@ -231,26 +278,37 @@ class HanziInputApp:
             self.result_display = ttk.Label(self.master)
             self.result_display.pack()
 
-        self.result_display.config(text=message)
-        self.result_display.config(foreground="red")
+        self.result_display["text"] = message
+        self.result_display["foreground"] = "red"
 
+    # 修改gui_input.py中的load_yinyuan_sequence方法
     def load_yinyuan_sequence(self):
         """从数据库加载音元序列并显示在输入框"""
         try:
-            conn: sqlite3.Connection = self._get_db_connection()  # 添加类型提示
-            conn.row_factory = sqlite3.Row
-            c = conn.cursor()
+            conn = self._get_db_connection()
+            cursor = conn.cursor()
 
-            # 查询所有音元符号(按拼音排序)
-            c.execute("SELECT yinjie FROM yinyuan_map ORDER BY number_tones")
-            rows = c.fetchall()
+            # 首先检查表是否存在
+            cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='yinjie_mapping'")
+            if not cursor.fetchone():
+                self._show_error_message("yinjie_mapping表不存在")
+                return None
+
+            # 检查表结构
+            cursor.execute("PRAGMA table_info(yinjie_mapping)")
+            columns = [col[1] for col in cursor.fetchall()]
+            if 'symbol' not in columns:
+                self._show_error_message("yinjie_mapping表缺少symbol字段")
+                return None
+
+            # 查询所有音元符号
+            cursor.execute("SELECT symbol FROM yinjie_mapping ORDER BY mark_tone")
+            rows = cursor.fetchall()
 
             if rows:
-                # 拼接所有音元符号
-                sequence = "".join([row['yinjie'] for row in rows])
+                sequence = "".join([row['symbol'] for row in rows])
                 self.input_entry.delete(0, tk.END)
                 self.input_entry.insert(0, sequence)
-                # 触发输入变化处理
                 self.on_input_change()
                 return sequence
             else:
@@ -260,9 +318,6 @@ class HanziInputApp:
         except sqlite3.Error as e:
             self._show_error_message(f"读取音元序列失败: {str(e)}")
             return None
-        finally:
-            if 'conn' in locals():
-                conn.close()
 
     def _get_db_connection(self):
         """获取数据库连接(单例模式)"""
@@ -277,6 +332,27 @@ class HanziInputApp:
 
 def main():
     """主函数"""
+    # 调试代码：查询数据库（使用正确路径）
+    try:
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        db_path = os.path.join(script_dir, "pinyin_hanzi.db")
+
+        print(f"\n尝试打开数据库: {db_path}")
+        conn = sqlite3.connect(db_path)
+        cursor = conn.cursor()
+
+        print("\n=== 数据库调试信息 ===")
+        cursor.execute("SELECT * FROM yinjie_mapping LIMIT 3")
+        print("yinjie_mapping 表样例:", cursor.fetchall())
+
+        cursor.execute("SELECT * FROM pinyin_hanzi LIMIT 3")
+        print("pinyin_hanzi 表样例:", cursor.fetchall())
+
+        conn.close()
+    except Exception as e:
+        print(f"数据库调试错误: {str(e)}")
+
+    # 正常启动GUI
     root = tk.Tk()
     app = HanziInputApp(root)
     root.mainloop()

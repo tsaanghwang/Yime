@@ -1,0 +1,8 @@
+python - <<PY
+import sqlite3, pathlib
+db=pathlib.Path("yime/pinyin_hanzi.db")
+sql=open("yime/migrations/000_create_mapping_queue.sql","r",encoding="utf-8").read()
+with sqlite3.connect(str(db)) as c:
+    c.executescript(sql)
+print("applied")
+PY

@@ -47,6 +47,28 @@ class Yinjie:
             'descender': self.descender
         }
 
+    def classify_phonemes(self):
+        """
+        分类音元为噪音和乐音
+        返回: (noise_phonemes, musical_phonemes)
+        """
+        noise_phonemes = []
+        musical_phonemes = []
+
+        if self.initial:
+            noise_phonemes.append(self.initial)
+
+        if self.ascender:
+            musical_phonemes.append(self.ascender)
+
+        if self.peak:
+            musical_phonemes.append(self.peak)
+
+        if self.descender:
+            musical_phonemes.append(self.descender)
+
+        return noise_phonemes, musical_phonemes
+
     def __str__(self):
         """返回音节的字符串表示"""
         parts = []
@@ -59,3 +81,42 @@ class Yinjie:
         if self.descender:
             parts.append(f"末音: {self.descender}")
         return " | ".join(parts)
+
+    def merge_duplicate_phonemes(self):
+        """
+        合并连续相同的音元，返回新的Yinjie实例
+        规则：连续2个或3个相同音元合并为1个
+        """
+        # 获取当前所有音元
+        phonemes = [
+            self.initial,  # 首音
+            self.ascender,  # 呼音
+            self.peak,  # 主音
+            self.descender  # 末音
+        ]
+
+        # 合并连续相同的音元
+        merged_phonemes = []
+        prev_phoneme = None
+        for phoneme in phonemes:
+            if phoneme is None:
+                continue
+            if phoneme == prev_phoneme:
+                continue  # 跳过连续相同的音元
+            merged_phonemes.append(phoneme)
+            prev_phoneme = phoneme
+
+        # 根据合并后的音元创建新实例
+        # 注意：这里假设合并后的音元顺序与原始结构一致
+        # 可能需要根据实际业务逻辑调整
+        new_initial = merged_phonemes[0] if len(merged_phonemes) > 0 else None
+        new_ascender = merged_phonemes[1] if len(merged_phonemes) > 1 else None
+        new_peak = merged_phonemes[2] if len(merged_phonemes) > 2 else None
+        new_descender = merged_phonemes[3] if len(merged_phonemes) > 3 else None
+
+        return Yinjie(
+            initial=new_initial,
+            ascender=new_ascender,
+            peak=new_peak,
+            descender=new_descender
+        )

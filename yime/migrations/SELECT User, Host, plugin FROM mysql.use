@@ -1,0 +1,2 @@
+SELECT User, Host, plugin FROM mysql.user WHERE User='root';
+SHOW GRANTS FOR 'root'@'localhost';

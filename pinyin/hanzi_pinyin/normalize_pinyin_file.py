@@ -60,7 +60,7 @@ def main():
     if len(sys.argv) == 1:  # 如果没有命令行参数
         print("请输入要处理的拼音JSON文件路径:")
         input_file = input().strip()
-        print("请输入输出文件路径(可选，直接回车使用默认路径):")
+        print("请输入输出文件路径(可选，直接回车使用默认路径):") # pinyin.json
         output_file = input().strip() or None
     else:
         # 原有命令行参数处理逻辑

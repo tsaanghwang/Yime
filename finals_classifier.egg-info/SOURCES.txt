@@ -8,7 +8,7 @@ setup.py
 ./pianyin/calculate_speech_pentatonic_value.py
 ./pianyin/calculate_speech_pentatonic_value_1.py
 ./pianyin/calculate_tone_median.py
-./pianyin/indeterminate_pitch_pianyin.py
+./pianyin/uncertain_pitch_pianyin.py
 ./pianyin/initial.py
 ./pianyin/pianyin.py
 ./pianyin/tone_statistics_analyzer.py
@@ -108,7 +108,7 @@ pianyin/calculate_pentatonic_value.py
 pianyin/calculate_speech_pentatonic_value.py
 pianyin/calculate_speech_pentatonic_value_1.py
 pianyin/calculate_tone_median.py
-pianyin/indeterminate_pitch_pianyin.py
+pianyin/uncertain_pitch_pianyin.py
 pianyin/initial.py
 pianyin/pianyin.py
 pianyin/tone_statistics_analyzer.py

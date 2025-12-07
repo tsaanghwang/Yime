@@ -1,0 +1,72 @@
+This is XeTeX, Version 3.141592653-2.6-0.999995 (MiKTeX 24.1) (preloaded format=xelatex 2025.10.7)  7 OCT 2025 14:12
+entering extended mode
+ restricted \write18 enabled.
+ %&-line parsing enabled.
+**./公式_1.tex
+(公式_1.tex
+LaTeX2e <2023-11-01> patch level 1
+L3 programming layer <2024-01-04>
+
+! LaTeX Error: Missing \begin{document}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.1 \begin{equation}
+                    
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+Overfull \hbox (20.0pt too wide) in paragraph at lines 1--1
+[] 
+ []
+
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <7> on input line 1.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <5> on input line 1.
+! Misplaced alignment tab character &.
+l.4 x^2 + 1, &
+               x\ge 0\\
+I can't figure out why you would want to use a tab mark
+here. If you just want an ampersand, the remedy is
+simple: Just type `I\&' now. But if some right brace
+up above has ended a previous alignment prematurely,
+you're probably due for more error messages, and you
+might try typing `S' now just to see what is salvageable.
+
+! Misplaced alignment tab character &.
+l.5 -\sin x, &
+               x<0
+I can't figure out why you would want to use a tab mark
+here. If you just want an ampersand, the remedy is
+simple: Just type `I\&' now. But if some right brace
+up above has ended a previous alignment prematurely,
+you're probably due for more error messages, and you
+might try typing `S' now just to see what is salvageable.
+
+
+Overfull \hbox (148.06775pt too wide) detected at line 7
+\OML/cmm/m/it/10 f\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 x\OT1/cmr/m/n/10 ) = [][] +
+ 1\OML/cmm/m/it/10 ; x \OMS/cmsy/m/n/10 ^^U \OT1/cmr/m/n/10 0[]  \OMS/cmsy/m/n/
+10 ^^@ [] \OML/cmm/m/it/10 x; x < \OT1/cmr/m/n/10 0
+ []
+
+)
+! Emergency stop.
+<*> ./公式_1.tex
+              
+*** (job aborted, no legal \end found)
+
+ 
+Here is how much of TeX's memory you used:
+ 27 strings out of 409617
+ 530 string characters out of 5772186
+ 1917191 words of memory out of 5000000
+ 22206 multiletter control sequences out of 15000+600000
+ 558077 words of font info for 37 fonts, out of 8000000 for 9000
+ 1348 hyphenation exceptions out of 8191
+ 18i,6n,19p,62b,102s stack positions out of 10000i,1000n,20000p,200000b,200000s
+No pages of output.

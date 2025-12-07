@@ -39,7 +39,10 @@ def create_pinyin_to_hanzi_mapping():
         with open(output_file, 'w', encoding='utf-8') as f:
             json.dump(sorted_pinyin_to_hanzi, f, ensure_ascii=False, indent=2)
 
+        # 5. 统计并显示键值对数量
+        item_count = len(sorted_pinyin_to_hanzi)
         print(f"转换完成，结果已保存到: {output_file}")
+        print(f"生成的字典中共有 {item_count} 个键值对")
         return True
 
     except Exception as e:
