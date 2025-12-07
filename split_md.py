@@ -21,6 +21,8 @@ def split_md(input_file, output_dir):
     # 移除空的部分
     sections = [sec.strip() for sec in sections if sec.strip()]
 
+    file_links = []  # 存储文件名和标题，用于建立链接
+
     for section in sections:
         # 提取标题（第一行，去掉# 和空白）
         lines = section.split('\n')
@@ -35,9 +37,24 @@ def split_md(input_file, output_dir):
             with open(filepath, 'w', encoding='utf-8') as f:
                 f.write(section)
             print(f"拆分文件已保存: {filepath}")
+
+            file_links.append((filename, title))  # 添加到链接列表
         else:
             # 如果没有标题，跳过或处理为其他方式（这里简单跳过）
             continue
+
+    # 在每个拆分文件中添加导航链接（可选）
+    for filename, title in file_links:
+        filepath = os.path.join(output_dir, filename)
+        with open(filepath, 'r', encoding='utf-8') as f:
+            content = f.read()
+
+        # 在文件开头添加链接到其他文件
+        links = '\n'.join([f'- [{t}]({f})' for f, t in file_links if f != filename])
+        new_content = f'# {title}\n\n## 相关链接\n{links}\n\n{content}'
+
+        with open(filepath, 'w', encoding='utf-8') as f:
+            f.write(new_content)
 
 if __name__ == "__main__":
     # 硬编码输入文件和输出目录
