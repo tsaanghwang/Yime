@@ -1,0 +1,1 @@
+DB: C:\Users\Freeman Golden\OneDrive\Yime\yime\pinyin_hanzi.db\n音元拼音 总行: 1748\n拼音映射关系 总行: 3672\n重复简拼组数: 0\n孤儿映射数: 0\n映射不匹配数: 0\n无映射但存在候选唯一匹配数: 0\n

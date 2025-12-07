@@ -1,2 +1,20 @@
+# Ignore sqlite DB and backups
+yime/pinyin_hanzi.db
+yime/pinyin_hanzi.db.*
+yime/*.bak*
+yime/*.bak.*
+
+# Ignore virtual environment
+venv/
+.venv/
+
+# Editor / OS files
+*.pyc
+__pycache__/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
 # System files
 nul

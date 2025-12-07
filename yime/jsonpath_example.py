@@ -130,11 +130,11 @@ prices = [match.value for match in jsonpath_expr.find(data)]
 print(prices)  # 输出: [10, 20, 19.95]（假设 bicycle 的 price 是 19.95）
 
 
-# 从键盘上输入键位 (keystroke) 或键位序列 (keystroke seguence)(暂定分大小写)
-# 在可编辑输入框上方一行：
+# 从键盘上输入键位 (keystroke) 或键位序列 (keystroke sequence)(暂定分大小写)
+# 在可编辑输入框下方一行：
 # 1. 显示与输入键位对应的用专用区代码点来编码的音元(yinyuan)或音元序列 (yinyuan sequence)  输入键位 (keystroke) 或键位序列 (keystroke sequence)
 # 2. 同时显示与音元 (yinyuan) 或音元序列 (yinyuan sequence) 对应的标准拼音
-# 在可编辑输入框下方一行：
+# 在可编辑输入框下方另起一行：
 # 显示音元(yinyuan)或音元序列(yinyuan sequence)对应的可翻页的候选汉字列表
 # 例如：输入键位序列 'Baaa'->显示音元序列"􀀀􀀩􀀩􀀩"->显示"bā"
 # ->显示候选汉字列表"巴、吧、八、..."

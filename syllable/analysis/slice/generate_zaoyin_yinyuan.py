@@ -29,16 +29,16 @@ def generate_zaoyin_yinyuan():
         pianyin_data = json.load(f)
 
     # 检查数据结构是否包含所需字段
-    if 'indeterminate_pitch_pianyin' not in pianyin_data:
-        raise KeyError("输入文件中缺少 'indeterminate_pitch_pianyin' 字段")
+    if 'uncertain_pitch_pianyin' not in pianyin_data:
+        raise KeyError("输入文件中缺少 'uncertain_pitch_pianyin' 字段")
 
     # 合并所有声母
     merged_mapping = {}
     for yinyuan_type, NoiseClass in [('unpitched_pianyin', ClearNoise), ('unstable_pitch_pianyin', VoicedNoise)]:
-        if yinyuan_type not in pianyin_data['indeterminate_pitch_pianyin']:
+        if yinyuan_type not in pianyin_data['uncertain_pitch_pianyin']:
             continue
 
-        for initial, ipas in pianyin_data['indeterminate_pitch_pianyin'][yinyuan_type].items():
+        for initial, ipas in pianyin_data['uncertain_pitch_pianyin'][yinyuan_type].items():
             if initial not in merged_mapping:
                 merged_mapping[initial] = {
                     "ipa": [],
@@ -65,9 +65,9 @@ def generate_zaoyin_yinyuan():
 
     # 组织输出结构
     result = {
-        "name": {"Indeterminate Pitch Yinyuan": "不定调音元或噪音类音元"},
+        "name": {"Uncertain Pitch Yinyuan": "不定调音元或噪音类音元"},
         "description": "由 ClearNoise和VoicedNoise 两类音元组成",
-        "indeterminate_pitch_yinyuan": {
+        "uncertain_pitch_yinyuan": {
             "unpitched_yinyuan": {},
             "unstable_pitch_yinyuan": {}
         },
@@ -80,9 +80,9 @@ def generate_zaoyin_yinyuan():
     for initial in sorted_initials:
         entry = merged_mapping[initial]
         if entry["type"] == "unpitched_pianyin":
-            result["indeterminate_pitch_yinyuan"]["unpitched_yinyuan"][initial] = entry["ipa"]
+            result["uncertain_pitch_yinyuan"]["unpitched_yinyuan"][initial] = entry["ipa"]
         else:
-            result["indeterminate_pitch_yinyuan"]["unstable_pitch_yinyuan"][initial] = entry["ipa"]
+            result["uncertain_pitch_yinyuan"]["unstable_pitch_yinyuan"][initial] = entry["ipa"]
         result["codes"][initial] = entry["code"]
 
         # 添加到简化版数据结构
@@ -98,8 +98,8 @@ def generate_zaoyin_yinyuan():
 
     print(f"已生成噪音类音元文件: {output_path}")
     print(f"已生成简化版噪音类音元文件: {simplified_output_path}")
-    print(f"无调音元: {len(result['indeterminate_pitch_yinyuan']['unpitched_yinyuan'])} 个，"
-        f"不稳定音高音元: {len(result['indeterminate_pitch_yinyuan']['unstable_pitch_yinyuan'])} 个")
+    print(f"无调音元: {len(result['uncertain_pitch_yinyuan']['unpitched_yinyuan'])} 个，"
+        f"不稳定音高音元: {len(result['uncertain_pitch_yinyuan']['unstable_pitch_yinyuan'])} 个")
 
 if __name__ == "__main__":
     generate_zaoyin_yinyuan()
