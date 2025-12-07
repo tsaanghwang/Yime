@@ -4,7 +4,7 @@
 
 - 输入文件格式：
 - 每行包括三项:
-- 一个unicode编码, 由冒号 ":"与其后的一个或多个拼音分隔
+- 一个Unicode码点, 由冒号 ":"与其后的一个或多个拼音分隔
 - 一个或多个拼音, 内部由逗号","分隔,  拼音后由空格与"#"号分隔
 - 一个汉字, 其前由空格与"#"号分隔
 例如：
@@ -53,7 +53,7 @@ def convert_file(input_file, output_file):
             if not line:
                 continue
 
-            # 分割unicode编码和拼音部分
+            # 分割Unicode码点和拼音部分
             unicode_part, rest = line.split(':', 1)
             unicode_code = unicode_part.strip()
 
@@ -71,9 +71,9 @@ def convert_file(input_file, output_file):
             try:
                 expected_hanzi = chr(int(unicode_code[2:], 16))  # 去掉U+前缀并转换为整数
                 if hanzi != expected_hanzi:
-                    print(f"警告: Unicode编码 {unicode_code} 对应的汉字应为 '{expected_hanzi}'，但文件中是 '{hanzi}'")
+                    print(f"警告: Unicode码点 {unicode_code} 对应的汉字应为 '{expected_hanzi}'，但文件中是 '{hanzi}'")
             except ValueError:
-                print(f"错误: 无效的Unicode编码格式 {unicode_code}")
+                print(f"错误: 无效的Unicode码点格式 {unicode_code}")
 
             # 构建结果字典
             result[unicode_code] = {hanzi: pinyin_list}

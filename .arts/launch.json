@@ -2,6 +2,320 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "split_md",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\split_md.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}",
+      "addSourceRootsToPythonpath": true
+    },
+    {
+      "name": "yinjie",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\yinjie.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}",
+      "addSourceRootsToPythonpath": true
+    },
+    {
+      "name": "connect",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\yime\\migrations\\connect.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\yime\\migrations",
+      "addSourceRootsToPythonpath": true
+    },
+    {
+      "name": "connect_to_mysql",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\yime\\migrations\\connect_to_mysql.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\yime\\migrations",
+      "addSourceRootsToPythonpath": true
+    },
+    {
+      "name": "test_duplicate_groups",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\yime\\test_duplicate_groups.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\yime",
+      "addSourceRootsToPythonpath": true
+    },
+    {
+      "name": "Initialize_pinyin_mapping",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\yime\\Initialize_pinyin_mapping.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\yime",
+      "addSourceRootsToPythonpath": true
+    },
+    {
+      "name": "pinyin_mapping",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\yime\\pinyin_mapping.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\yime",
+      "addSourceRootsToPythonpath": true
+    },
+    {
+      "name": "test_import",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\yime\\test_import.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\yime",
+      "addSourceRootsToPythonpath": true,
+      "noDebug": true
+    },
+    {
+      "name": "import_numeric_pinyin",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\yime\\import_numeric_pinyin.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\yime",
+      "addSourceRootsToPythonpath": true,
+      "noDebug": true
+    },
+    {
+      "name": "syllable_structure",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\yime\\syllable_structure.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\yime",
+      "addSourceRootsToPythonpath": true
+    },
+    {
+      "name": "syllable_decoder",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\yime\\syllable_decoder.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\yime",
+      "addSourceRootsToPythonpath": true,
+      "noDebug": true
+    },
+    {
+      "name": "yinjie_decoder",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\yime\\yinjie_decoder.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\yime",
+      "addSourceRootsToPythonpath": true,
+      "noDebug": true
+    },
+    {
+      "name": "pinyin_importer",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\yime\\pinyin_importer.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\yime",
+      "addSourceRootsToPythonpath": true,
+      "noDebug": true
+    },
+    {
+      "name": "import_pinyin",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\yime\\import_pinyin.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\yime",
+      "addSourceRootsToPythonpath": true
+    },
+    {
+      "name": "db_table_list",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\yime\\db_table_list.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\yime",
+      "addSourceRootsToPythonpath": true,
+      "noDebug": true
+    },
+    {
+      "name": "db_manager",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\yime\\db_manager.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\yime",
+      "addSourceRootsToPythonpath": true,
+      "noDebug": true
+    },
+    {
+      "name": "create_tables_from_manager",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\create_tables_from_manager.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}",
+      "addSourceRootsToPythonpath": true,
+      "noDebug": true
+    },
+    {
+      "name": "create_tables_from_manager",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\yime\\create_tables_from_manager.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\yime",
+      "addSourceRootsToPythonpath": true
+    },
+    {
+      "name": "list_tables",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\yime\\list_tables.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\yime",
+      "addSourceRootsToPythonpath": true,
+      "noDebug": true
+    },
+    {
+      "name": "hanzi_db_manager",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\yime\\hanzi_db_manager.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\yime",
+      "addSourceRootsToPythonpath": true,
+      "noDebug": true
+    },
+    {
+      "name": "ime_db_manager",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\yime\\ime_db_manager.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\yime",
+      "addSourceRootsToPythonpath": true,
+      "noDebug": true
+    },
+    {
+      "name": "yime",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\yime\\yime.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\yime",
+      "addSourceRootsToPythonpath": true
+    },
+    {
+      "name": "map_code_to_hanzi",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\yime\\map_code_to_hanzi.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\yime",
+      "addSourceRootsToPythonpath": true,
+      "noDebug": true
+    },
+    {
+      "name": "yaml_to_json",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\pinyin\\hanzi_pinyin\\yaml_to_json.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\pinyin\\hanzi_pinyin",
+      "addSourceRootsToPythonpath": true
+    },
+    {
+      "name": "pinyin_db_manager",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\yime\\pinyin_db_manager.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\yime",
+      "addSourceRootsToPythonpath": true,
+      "noDebug": true
+    },
+    {
+      "name": "map_pinyin_to_hanzi",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\yime\\map_pinyin_to_hanzi.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\yime",
+      "addSourceRootsToPythonpath": true,
+      "noDebug": true
+    },
+    {
+      "name": "map_code_to_pinyin",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\yime\\map_code_to_pinyin.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\yime",
+      "addSourceRootsToPythonpath": true
+    },
+    {
+      "name": "dictionary_trie",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\yime\\dictionary_trie.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\yime",
+      "addSourceRootsToPythonpath": true
+    },
+    {
+      "name": "import_initial",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\yime\\import_initial.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\yime",
+      "addSourceRootsToPythonpath": true
+    },
+    {
+      "name": "update_table",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\yime\\update_table.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\yime",
+      "addSourceRootsToPythonpath": true,
+      "noDebug": true
+    },
+    {
+      "name": "import_shengmu",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\yime\\import_shengmu.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\yime",
+      "addSourceRootsToPythonpath": true,
+      "noDebug": true
+    },
+    {
+      "name": "create_table",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\yime\\create_table.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\yime",
+      "addSourceRootsToPythonpath": true,
+      "noDebug": true
+    },
+    {
+      "name": "convert_pinyin_to_hanzi",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\yime\\convert_pinyin_to_hanzi.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}\\yime",
+      "addSourceRootsToPythonpath": true
+    },
+    {
       "name": "output_hanzi",
       "type": "python",
       "request": "launch",
@@ -120,7 +434,8 @@
       "program": "${workspaceFolder}\\yinjie_decoder.py",
       "currentFileConfiguration": false,
       "cwd": "${workspaceFolder}",
-      "addSourceRootsToPythonpath": true
+      "addSourceRootsToPythonpath": true,
+      "noDebug": true
     },
     {
       "name": "interactive_yinjie",
@@ -484,7 +799,8 @@
       "program": "${workspaceFolder}\\pinyin\\hanzi_pinyin\\pinyin_danzi.py",
       "currentFileConfiguration": false,
       "cwd": "${workspaceFolder}\\pinyin\\hanzi_pinyin",
-      "addSourceRootsToPythonpath": true
+      "addSourceRootsToPythonpath": true,
+      "noDebug": true
     },
     {
       "name": "yaml_to_json_danzi_converter",

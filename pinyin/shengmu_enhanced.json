@@ -24,11 +24,11 @@
       "description": "Unaspirated bilabial plosive"
     },
     "p": {
-      "standard": ["pͪ"],
+      "standard": ["pʰ"],
       "dialect_instances": {
-        "Cantonese": ["pͪ"],
-        "Wu": ["pͪ"],
-        "Min": ["pͪ"]
+        "Cantonese": ["pʰ"],
+        "Wu": ["pʰ"],
+        "Min": ["pʰ"]
       },
       "description": "Aspirated bilabial plosive"
     },
@@ -60,11 +60,11 @@
       "description": "Unaspirated alveolar plosive"
     },
     "t": {
-      "standard": ["tͪ"],
+      "standard": ["tʰ"],
       "dialect_instances": {
-        "Cantonese": ["tͪ"],
-        "Wu": ["tͪ"],
-        "Min": ["tͪ"]
+        "Cantonese": ["tʰ"],
+        "Wu": ["tʰ"],
+        "Min": ["tʰ"]
       },
       "description": "Aspirated alveolar plosive"
     },
@@ -96,11 +96,11 @@
       "description": "Unaspirated velar plosive"
     },
     "k": {
-      "standard": ["kͪ"],
+      "standard": ["kʰ"],
       "dialect_instances": {
-        "Cantonese": ["kͪ"],
-        "Wu": ["kͪ"],
-        "Min": ["kͪ"]
+        "Cantonese": ["kʰ"],
+        "Wu": ["kʰ"],
+        "Min": ["kʰ"]
       },
       "description": "Aspirated velar plosive"
     },
@@ -133,11 +133,11 @@
       "description": "Voiceless alveolo-palatal affricate"
     },
     "q": {
-      "standard": ["ʨͪ"],
+      "standard": ["ʨʰ"],
       "dialect_instances": {
-        "Cantonese": ["ʦͪ"],
-        "Wu": ["ʨͪ"],
-        "Min": ["ʦͪ"]
+        "Cantonese": ["ʦʰ"],
+        "Wu": ["ʨʰ"],
+        "Min": ["ʦʰ"]
       },
       "description": "Aspirated alveolo-palatal affricate"
     },
@@ -160,11 +160,11 @@
       "description": "Voiceless retroflex affricate"
     },
     "ch": {
-      "standard": ["ʈʂͪ"],
+      "standard": ["ʈʂʰ"],
       "dialect_instances": {
         "Cantonese": ["tʃʰ"],
-        "Wu": ["ʦͪ"],
-        "Southern": ["ʨͪ"]
+        "Wu": ["ʦʰ"],
+        "Southern": ["ʨʰ"]
       },
       "description": "Aspirated retroflex affricate"
     },
@@ -196,11 +196,11 @@
       "description": "Unaspirated alveolar affricate"
     },
     "c": {
-      "standard": ["ʦͪ"],
+      "standard": ["ʦʰ"],
       "dialect_instances": {
-        "Cantonese": ["ʦͪ"],
-        "Wu": ["ʦͪ"],
-        "Min": ["ʦͪ"]
+        "Cantonese": ["ʦʰ"],
+        "Wu": ["ʦʰ"],
+        "Min": ["ʦʰ"]
       },
       "description": "Aspirated alveolar affricate"
     },

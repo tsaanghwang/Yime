@@ -1,0 +1,30 @@
+2025-09-19 09:44:24,234 - INFO - 备份完成: c:\Users\Freeman Golden\OneDrive\Yime\yime\backup\pinyin_hanzi.20250919_094424.db.bak (大小 1880064 bytes)
+2025-09-19 09:44:24,243 - INFO - PRAGMA integrity_check -> ok
+2025-09-19 09:44:24,248 - ERROR - 执行 schema 迁移失败
+Traceback (most recent call last):
+  File "c:\Users\Freeman Golden\OneDrive\Yime\yime\run_full_import.py", line 54, in run
+    import yime.db_manager as db_manager
+  File "c:\Users\Freeman Golden\OneDrive\Yime\yime\yime.py", line 86, in <module>
+    ranked_candidates = rank_candidates(code_tuple, candidates)
+                                        ^^^^^^^^^^
+NameError: name 'code_tuple' is not defined
+2025-09-19 09:48:11,128 - INFO - 备份完成: c:\Users\Freeman Golden\OneDrive\Yime\yime\backup\pinyin_hanzi.20250919_094811.db.bak (大小 1880064 bytes)
+2025-09-19 09:48:11,137 - INFO - PRAGMA integrity_check -> ok
+2025-09-19 09:48:11,141 - ERROR - 执行 schema 迁移失败
+Traceback (most recent call last):
+  File "c:\Users\Freeman Golden\OneDrive\Yime\yime\run_full_import.py", line 54, in run
+    import yime.db_manager as db_manager
+  File "c:\Users\Freeman Golden\OneDrive\Yime\yime\yime.py", line 97, in <module>
+    ranked_candidates = rank_candidates(code_tuple, candidates)
+                                        ^^^^^^^^^^
+NameError: name 'code_tuple' is not defined
+2025-09-19 09:51:58,448 - INFO - 备份完成: c:\Users\Freeman Golden\OneDrive\Yime\yime\backup\pinyin_hanzi.20250919_095158.db.bak (大小 1880064 bytes)
+2025-09-19 09:51:58,457 - INFO - PRAGMA integrity_check -> ok
+2025-09-19 09:51:58,461 - ERROR - 执行 schema 迁移失败
+Traceback (most recent call last):
+  File "c:\Users\Freeman Golden\OneDrive\Yime\yime\run_full_import.py", line 54, in run
+    import yime.db_manager as db_manager
+  File "c:\Users\Freeman Golden\OneDrive\Yime\yime\yime.py", line 94, in <module>
+    ranked_candidates = rank_candidates(code_tuple, candidates)
+                                        ^^^^^^^^^^
+NameError: name 'code_tuple' is not defined

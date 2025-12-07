@@ -20,6 +20,7 @@
     "èng",
     "ěng",
     "ēng",
+    "executemany",
     "final_with_tone",
     "gandiao",
     "ganyin",
@@ -55,9 +56,12 @@
     "iòng",
     "iǒng",
     "iōng",
+    "jian",
     "Jiandiao",
+    "jianpin",
     "Jianyin",
     "Jianzhi",
+    "Jiaxuan",
     "jiediao",
     "jiezhi",
     "Ladefoged",
@@ -70,14 +74,19 @@
     "òng",
     "ǒng",
     "ōng",
+    "padx",
+    "pady",
     "Pianyin",
+    "pinyins",
     "Putonghua",
     "shāng",
     "shejian",
+    "Shen",
     "shengmu",
     "shoudiao",
     "shouyin",
     "Shouzhi",
+    "tearoff",
     "uái",
     "uài",
     "uǎi",
@@ -95,6 +104,7 @@
     "uāng",
     "ueng",
     "Unpitched",
+    "wraplength",
     "Yinjie",
     "yinyuan",
     "Yueyin",
@@ -114,5 +124,50 @@
   "[jsonc]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "editor.fontFamily": "\"YinYuan Regular\", \"音元 常规\", Consolas, 'Courier New', monospace"
+  "editor.fontFamily": "\"YinYuan Regular\", \"音元 常规\", Consolas, 'Courier New', monospace",
+  "terminal.integrated.fontFamily": "Consolas, 'Courier New', monospace",
+  "terminal.integrated.fontLigatures.enabled": true,
+  "[query-editor]": {
+    "editor.defaultFormatter": "yy0931.vscode-sqlite3-editor"
+  },
+  "chat.editor.fontFamily": "\"YinYuan Regular\", \"音元 常规\", Consolas, 'Courier New', monospace",
+  "editor.inlayHints.fontFamily": "\"YinYuan Regular\", \"音元 常规\", Consolas, 'Courier New', monospace",
+  "scm.inputFontFamily": "\"YinYuan Regular\", \"音元 常规\", Consolas, 'Courier New', monospace",
+  "notebook.output.fontFamily": "\"YinYuan Regular\", \"音元 常规\", Consolas, 'Courier New', monospace",
+  "sqltools.connections": [
+    {
+      "mysqlOptions": {
+        "authProtocol": "default",
+        "enableSsl": "Disabled"
+      },
+      "ssh": "Disabled",
+      "previewLimit": 50,
+      "server": "localhost",
+      "port": 3306,
+      "driver": "MySQL",
+      "name": "connected",
+      "database": "yime",
+      "username": "root"
+    }
+  ],
+  "latex-workshop.latex.tools": [
+    {
+      "name": "xelatex",
+      "command": "C:\\Program Files\\MiKTeX\\miktex\\bin\\x64\\xelatex.exe",
+      "args": ["-synctex=1", "-interaction=nonstopmode", "%DOC%"]
+    }
+  ],
+  "latex-workshop.latex.recipes": [
+    {
+      "name": "xelatex",
+      "tools": ["xelatex"]
+    }
+  ],
+  "latex-workshop.view.pdf.viewer": "tab",
+  "latex-workshop.latex.autoBuild.run": "onSave",
+  "[latex]": {
+    "editor.defaultFormatter": "mathematic.vscode-latex"
+  },
+  "markdown.styles": [".vscode/markdown.css"],
+  "livePreview.defaultPreviewPath": "/临时.html"
 }

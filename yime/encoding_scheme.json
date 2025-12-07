@@ -1,43 +1,43 @@
 {
-    "encodingScheme": {
-        "description": {
-            "i18n": {
-                "en": "Supplementary Private Use Area-B-based encoding scheme for Yinyuan input method",
-                "zh": "基于增补专用B区的音元输入法编码方案"
-            },
-            "note": "This scheme uses Unicode range U+100000~U+10FFFF (Supplementary Private Use Area-B)"
-        },
-        "version": "1.0",
-        "privateUnicodeRange": "U+100000~U+10FFFF",
-        "lastModified": "2025-08-30"
+  "encodingScheme": {
+    "description": {
+      "i18n": {
+        "en": "Supplementary Private Use Area-B-based encoding scheme for Yinyuan input method",
+        "zh": "基于增补专用B区的音元输入法编码方案"
+      },
+      "note": "This scheme uses Unicode range U+100000~U+100FFF (Supplementary Private Use Area-B)"
     },
-    "keystrokeToPrivateCode": {
-        "zh": "0x100000",
-        "ch": "0x100001",
-        "sh": "0x100002",
-        "ang": "0x100003"
-    },
-    "privateCodeToPinyin": {
-        "0x100000": "zh",
-        "0x100001": "ch",
-        "0x100002": "sh",
-        "0x100003": "ang"
-    },
-    "pinyinToCharacters": {
-        "zh": ["中", "种", "重", "众"],
-        "ch": ["吃", "迟", "持", "池"],
-        "sh": ["是", "时", "事", "十"],
-        "ang": ["张", "长", "常", "场"]
-    },
-    "fuzzyPinyin": {
-        "zh": ["z", "ch"],
-        "c": ["ch", "k"]
-    },
-    "multiCharWords": {
-        "zhong": {
-            "pinyin": ["zhong", "guo"],
-            "characters": ["中国"],
-            "code": "0x100004"
-        }
+    "version": "1.0",
+    "privateUnicodeRange": "U+100000~U+100FFF",
+    "lastModified": "2025-08-30"
+  },
+  "keystrokeToCodepoint": {
+    "ZH": "􀀎",
+    "CH": "􀀏",
+    "SH": "􀀐",
+    "R": "􀀑"
+  },
+  "CodepointToKeystroke": {
+    "􀀎": "ZH",
+    "􀀏": "CH",
+    "􀀐": "SH",
+    "􀀑": "R"
+  },
+  "keystrokesToCodepoints": {
+    "ZHAAA": ["􀀎􀀩", "􀀎􀀩􀀩", "􀀎􀀩􀀩􀀩"],
+    "CHAAA": ["􀀏􀀩", "􀀏􀀩􀀩", "􀀏􀀩􀀩􀀩"],
+    "SHAAA": ["􀀐􀀩", "􀀐􀀩􀀩", "􀀐􀀩􀀩􀀩"],
+    "RUUU": ["􀀑􀀣", "􀀑􀀣􀀣", "􀀑􀀣􀀣􀀣"]
+  },
+  "fuzzyPinyin": {
+    "z": ["Z", "ZH"],
+    "c": ["C", "CH"]
+  },
+  "multiCharWords": {
+    "zhong": {
+      "pinyin": ["zhong", "guo"],
+      "characters": ["中国"],
+      "code": "0x100004"
     }
+  }
 }
