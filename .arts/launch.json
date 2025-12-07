@@ -2,6 +2,15 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "split_md",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\split_md.py",
+      "currentFileConfiguration": false,
+      "cwd": "${workspaceFolder}",
+      "addSourceRootsToPythonpath": true
+    },
+    {
       "name": "yinjie",
       "type": "python",
       "request": "launch",
