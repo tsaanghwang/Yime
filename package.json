@@ -20,7 +20,8 @@
     "json5": "^2.2.3",
     "node-gyp": "^11.2.0",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "sqlite3": "^5.1.7"
   },
   "devDependencies": {
     "@types/react": "^19.1.6",
