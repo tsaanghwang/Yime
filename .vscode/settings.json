@@ -172,5 +172,6 @@
     "editor.defaultFormatter": "mathematic.vscode-latex"
   },
   "markdown.styles": [".vscode/markdown.css"],
-  "livePreview.defaultPreviewPath": "/临时.html"
+  "livePreview.defaultPreviewPath": "/临时.html",
+  "sqltools.useNodeRuntime": true
 }
