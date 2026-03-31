@@ -151,6 +151,16 @@
       "name": "connected",
       "database": "yime",
       "username": "root"
+    },
+    {
+      "ssh": "Disabled",
+      "previewLimit": 50,
+      "server": "localhost",
+      "port": 5432,
+      "driver": "PostgreSQL",
+      "name": "127.0.0.1@5432",
+      "database": "pinyin_db",
+      "username": "postgres"
     }
   ],
   "latex-workshop.latex.tools": [
