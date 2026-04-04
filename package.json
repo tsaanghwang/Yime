@@ -26,6 +26,6 @@
   "devDependencies": {
     "@types/react": "^19.1.6",
     "@types/react-dom": "^19.1.5",
-    "jest": "^19.0.2"
+    "jest": "^30.3.0"
   }
 }
