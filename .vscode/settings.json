@@ -137,32 +137,7 @@
   "editor.inlayHints.fontFamily": "\"YinYuan Regular\", \"音元 常规\", Consolas, 'Courier New', monospace",
   "scm.inputFontFamily": "\"YinYuan Regular\", \"音元 常规\", Consolas, 'Courier New', monospace",
   "notebook.output.fontFamily": "\"YinYuan Regular\", \"音元 常规\", Consolas, 'Courier New', monospace",
-  "sqltools.connections": [
-    {
-      "mysqlOptions": {
-        "authProtocol": "default",
-        "enableSsl": "Disabled"
-      },
-      "ssh": "Disabled",
-      "previewLimit": 50,
-      "server": "localhost",
-      "port": 3306,
-      "driver": "MySQL",
-      "name": "connected",
-      "database": "yime",
-      "username": "root"
-    },
-    {
-      "ssh": "Disabled",
-      "previewLimit": 50,
-      "server": "localhost",
-      "port": 5432,
-      "driver": "PostgreSQL",
-      "name": "127.0.0.1@5432",
-      "database": "pinyin_db",
-      "username": "postgres"
-    }
-  ],
+  "sqltools.connections": [],
   "latex-workshop.latex.tools": [
     {
       "name": "xelatex",
