@@ -137,7 +137,19 @@
   "editor.inlayHints.fontFamily": "\"YinYuan Regular\", \"音元 常规\", Consolas, 'Courier New', monospace",
   "scm.inputFontFamily": "\"YinYuan Regular\", \"音元 常规\", Consolas, 'Courier New', monospace",
   "notebook.output.fontFamily": "\"YinYuan Regular\", \"音元 常规\", Consolas, 'Courier New', monospace",
-  "sqltools.connections": [],
+  "workbench.editorAssociations": {
+    "*.db": "sqlite3-editor.editor",
+    "*.sqlite": "sqlite3-editor.editor",
+    "*.sqlite3": "sqlite3-editor.editor"
+  },
+  "sqltools.connections": [
+    {
+      "name": "Yime Pinyin Hanzi",
+      "group": "Yime",
+      "driver": "SQLite",
+      "database": "${workspaceFolder:Yime}/yime/pinyin_hanzi.db"
+    }
+  ],
   "latex-workshop.latex.tools": [
     {
       "name": "xelatex",
