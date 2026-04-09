@@ -1,0 +1,254 @@
+{
+  "metadata": {
+    "name": "Yime musical grouping template",
+    "version": "2026-04-08",
+    "status": "draft_template",
+    "source_symbol_map": "internal_data/key_to_symbol.json",
+    "source_runtime_mapping": "internal_data/yinjie_runtime_key_symbol_mapping.json",
+    "notes": "乐音分组模板。按音质临时分成 11 组，每组三个成员，顺序固定为高调（高平）、中调（半高平）和低调（低平）。音质符号目前采用临时对照写法：/a/、/o/、/e/(ê)、/i/、/u/、/ü/、/-i/、/er/、/m/、/n/、/ng/。"
+  },
+  "groups": [
+    {
+      "id": "M-G01",
+      "name": "/i/ 组",
+      "temporary_phoneme_symbol": "/i/",
+      "members": [
+        {
+          "tone_role": "high_level",
+          "tone_label": "高调（高平）",
+          "symbol_key": "M01"
+        },
+        {
+          "tone_role": "mid_level",
+          "tone_label": "中调（半高平）",
+          "symbol_key": "M02"
+        },
+        {
+          "tone_role": "low_level",
+          "tone_label": "低调（低平）",
+          "symbol_key": "M03"
+        }
+      ]
+    },
+    {
+      "id": "M-G02",
+      "name": "/u/ 组",
+      "temporary_phoneme_symbol": "/u/",
+      "members": [
+        {
+          "tone_role": "high_level",
+          "tone_label": "高调（高平）",
+          "symbol_key": "M04"
+        },
+        {
+          "tone_role": "mid_level",
+          "tone_label": "中调（半高平）",
+          "symbol_key": "M05"
+        },
+        {
+          "tone_role": "low_level",
+          "tone_label": "低调（低平）",
+          "symbol_key": "M06"
+        }
+      ]
+    },
+    {
+      "id": "M-G03",
+      "name": "/ü/ 组",
+      "temporary_phoneme_symbol": "/ü/",
+      "members": [
+        {
+          "tone_role": "high_level",
+          "tone_label": "高调（高平）",
+          "symbol_key": "M07"
+        },
+        {
+          "tone_role": "mid_level",
+          "tone_label": "中调（半高平）",
+          "symbol_key": "M08"
+        },
+        {
+          "tone_role": "low_level",
+          "tone_label": "低调（低平）",
+          "symbol_key": "M09"
+        }
+      ]
+    },
+    {
+      "id": "M-G04",
+      "name": "/a/ 组",
+      "temporary_phoneme_symbol": "/a/",
+      "members": [
+        {
+          "tone_role": "high_level",
+          "tone_label": "高调（高平）",
+          "symbol_key": "M10"
+        },
+        {
+          "tone_role": "mid_level",
+          "tone_label": "中调（半高平）",
+          "symbol_key": "M11"
+        },
+        {
+          "tone_role": "low_level",
+          "tone_label": "低调（低平）",
+          "symbol_key": "M12"
+        }
+      ]
+    },
+    {
+      "id": "M-G05",
+      "name": "/o/ 组",
+      "temporary_phoneme_symbol": "/o/",
+      "members": [
+        {
+          "tone_role": "high_level",
+          "tone_label": "高调（高平）",
+          "symbol_key": "M13"
+        },
+        {
+          "tone_role": "mid_level",
+          "tone_label": "中调（半高平）",
+          "symbol_key": "M14"
+        },
+        {
+          "tone_role": "low_level",
+          "tone_label": "低调（低平）",
+          "symbol_key": "M15"
+        }
+      ]
+    },
+    {
+      "id": "M-G06",
+      "name": "/e/（ê）组",
+      "temporary_phoneme_symbol": "/e/(ê)",
+      "members": [
+        {
+          "tone_role": "high_level",
+          "tone_label": "高调（高平）",
+          "symbol_key": "M16"
+        },
+        {
+          "tone_role": "mid_level",
+          "tone_label": "中调（半高平）",
+          "symbol_key": "M17"
+        },
+        {
+          "tone_role": "low_level",
+          "tone_label": "低调（低平）",
+          "symbol_key": "M18"
+        }
+      ]
+    },
+    {
+      "id": "M-G07",
+      "name": "/-i/ 组",
+      "temporary_phoneme_symbol": "/-i/",
+      "members": [
+        {
+          "tone_role": "high_level",
+          "tone_label": "高调（高平）",
+          "symbol_key": "M19"
+        },
+        {
+          "tone_role": "mid_level",
+          "tone_label": "中调（半高平）",
+          "symbol_key": "M20"
+        },
+        {
+          "tone_role": "low_level",
+          "tone_label": "低调（低平）",
+          "symbol_key": "M21"
+        }
+      ]
+    },
+    {
+      "id": "M-G08",
+      "name": "/er/ 组",
+      "temporary_phoneme_symbol": "/er/",
+      "members": [
+        {
+          "tone_role": "high_level",
+          "tone_label": "高调（高平）",
+          "symbol_key": "M22"
+        },
+        {
+          "tone_role": "mid_level",
+          "tone_label": "中调（半高平）",
+          "symbol_key": "M23"
+        },
+        {
+          "tone_role": "low_level",
+          "tone_label": "低调（低平）",
+          "symbol_key": "M24"
+        }
+      ]
+    },
+    {
+      "id": "M-G09",
+      "name": "/m/ 组",
+      "temporary_phoneme_symbol": "/m/",
+      "members": [
+        {
+          "tone_role": "high_level",
+          "tone_label": "高调（高平）",
+          "symbol_key": "M25"
+        },
+        {
+          "tone_role": "mid_level",
+          "tone_label": "中调（半高平）",
+          "symbol_key": "M26"
+        },
+        {
+          "tone_role": "low_level",
+          "tone_label": "低调（低平）",
+          "symbol_key": "M27"
+        }
+      ]
+    },
+    {
+      "id": "M-G10",
+      "name": "/n/ 组",
+      "temporary_phoneme_symbol": "/n/",
+      "members": [
+        {
+          "tone_role": "high_level",
+          "tone_label": "高调（高平）",
+          "symbol_key": "M28"
+        },
+        {
+          "tone_role": "mid_level",
+          "tone_label": "中调（半高平）",
+          "symbol_key": "M29"
+        },
+        {
+          "tone_role": "low_level",
+          "tone_label": "低调（低平）",
+          "symbol_key": "M30"
+        }
+      ]
+    },
+    {
+      "id": "M-G11",
+      "name": "/ng/ 组",
+      "temporary_phoneme_symbol": "/ng/",
+      "members": [
+        {
+          "tone_role": "high_level",
+          "tone_label": "高调（高平）",
+          "symbol_key": "M31"
+        },
+        {
+          "tone_role": "mid_level",
+          "tone_label": "中调（半高平）",
+          "symbol_key": "M32"
+        },
+        {
+          "tone_role": "low_level",
+          "tone_label": "低调（低平）",
+          "symbol_key": "M33"
+        }
+      ]
+    }
+  ]
+}

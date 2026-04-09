@@ -1,0 +1,164 @@
+{
+  "metadata": {
+    "name": "Yime shouyin grouping template",
+    "version": "2026-04-08",
+    "status": "draft_template",
+    "source_symbol_map": "internal_data/key_to_symbol.json",
+    "source_runtime_mapping": "internal_data/yinjie_runtime_key_symbol_mapping.json",
+    "notes": "首音分组模板。按两大组六小组组织 N01-N24，用于后续把发音部位相近、可拼关系相近的首音放在相邻键位。平舌组中的 w、硬腭前部组中的 y 当前先按模板占位，后续可再调整。N12、N16、N24 目前视为对应同部位零声母实际音值的虚首音，可优先考虑放在 shift 层。"
+  },
+  "major_groups": [
+    {
+      "id": "G1",
+      "name": "第一大组",
+      "description": "第一个音是清爆发音的三组",
+      "subgroups": [
+        {
+          "id": "G1-1",
+          "name": "唇音组",
+          "notes": "含齿唇音 [f]",
+          "members": [
+            {
+              "symbol_key": "N01",
+              "source_name": "b"
+            },
+            {
+              "symbol_key": "N02",
+              "source_name": "p"
+            },
+            {
+              "symbol_key": "N03",
+              "source_name": "f"
+            },
+            {
+              "symbol_key": "N04",
+              "source_name": "m"
+            }
+          ]
+        },
+        {
+          "id": "G1-2",
+          "name": "龈音组",
+          "notes": "舌尖龈音组",
+          "members": [
+            {
+              "symbol_key": "N05",
+              "source_name": "d"
+            },
+            {
+              "symbol_key": "N06",
+              "source_name": "t"
+            },
+            {
+              "symbol_key": "N07",
+              "source_name": "l"
+            },
+            {
+              "symbol_key": "N08",
+              "source_name": "n"
+            }
+          ]
+        },
+        {
+          "id": "G1-3",
+          "name": "软腭组",
+          "notes": "用于容纳 g/k/h 与零首音占位符",
+          "members": [
+            {
+              "symbol_key": "N09",
+              "source_name": "g"
+            },
+            {
+              "symbol_key": "N10",
+              "source_name": "k"
+            },
+            {
+              "symbol_key": "N11",
+              "source_name": "h"
+            },
+            {
+              "symbol_key": "N22",
+              "source_name": "'"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "G2",
+      "name": "第二大组",
+      "description": "第一个音是清塞擦音的三组",
+      "subgroups": [
+        {
+          "id": "G2-1",
+          "name": "齿音组（平舌音组）",
+          "notes": "模板先把 w 放在本组第 4 位，占位待后续确认",
+          "members": [
+            {
+              "symbol_key": "N12",
+              "source_name": "z"
+            },
+            {
+              "symbol_key": "N13",
+              "source_name": "c"
+            },
+            {
+              "symbol_key": "N14",
+              "source_name": "s"
+            },
+            {
+              "symbol_key": "N23",
+              "source_name": "w"
+            }
+          ]
+        },
+        {
+          "id": "G2-2",
+          "name": "龈-腭间音组（齿龈硬腭间音组、翘舌音组）",
+          "notes": "翘舌组",
+          "members": [
+            {
+              "symbol_key": "N15",
+              "source_name": "zh"
+            },
+            {
+              "symbol_key": "N16",
+              "source_name": "ch"
+            },
+            {
+              "symbol_key": "N17",
+              "source_name": "sh"
+            },
+            {
+              "symbol_key": "N18",
+              "source_name": "r"
+            }
+          ]
+        },
+        {
+          "id": "G2-3",
+          "name": "硬腭前部组",
+          "notes": "模板先把 y 放在本组第 4 位",
+          "members": [
+            {
+              "symbol_key": "N19",
+              "source_name": "j"
+            },
+            {
+              "symbol_key": "N20",
+              "source_name": "q"
+            },
+            {
+              "symbol_key": "N21",
+              "source_name": "x"
+            },
+            {
+              "symbol_key": "N24",
+              "source_name": "y"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

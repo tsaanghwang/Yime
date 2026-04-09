@@ -1,0 +1,2726 @@
+{
+  "description": "Canonical runtime key-symbol mapping derived from yinjie_encoder.py dependencies.",
+  "source_chain": {
+    "final_code_file": "yinjie_code.json",
+    "encoder_entry": "yinjie_encoder.py -> YinjieEncoder.encode_single_yinjie()",
+    "join_rule": "final code = shouyin_code + ganyin_code",
+    "shouyin_runtime_source": "syllable/analysis/slice/yinyuan/shouyin_codepoint.json",
+    "ganyin_runtime_source": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+    "key_assignment_source": "key_to_code.json"
+  },
+  "non_runtime_reference_files": [
+    {
+      "path": "internal_data/key_symbol_mapping.json",
+      "note": "Legacy/manual mapping file. Not read by yinjie_encoder.py when generating yinjie_code.json."
+    },
+    {
+      "path": "data_json_files/key_symbol_mapping.json",
+      "note": "Legacy/manual mapping file. Not read by yinjie_encoder.py when generating yinjie_code.json."
+    },
+    {
+      "path": "tools/key_symbol_mapping.py",
+      "note": "Manual generator for an older symbol set. Not part of the current yinjie_encoder runtime chain."
+    }
+  ],
+  "counts": {
+    "unique_symbols_in_yinjie_code": 57,
+    "shouyin_symbols": 24,
+    "ganyin_symbols": 33
+  },
+  "key_to_symbol": {
+    "N01": "􀀀",
+    "N02": "􀀁",
+    "N03": "􀀂",
+    "N04": "􀀃",
+    "N05": "􀀄",
+    "N06": "􀀅",
+    "N07": "􀀆",
+    "N08": "􀀇",
+    "N09": "􀀈",
+    "N10": "􀀉",
+    "N11": "􀀊",
+    "N12": "􀀋",
+    "N13": "􀀌",
+    "N14": "􀀍",
+    "N15": "􀀎",
+    "N16": "􀀏",
+    "N17": "􀀐",
+    "N18": "􀀑",
+    "N19": "􀀒",
+    "N20": "􀀓",
+    "N21": "􀀔",
+    "N22": "􀀕",
+    "N23": "􀀖",
+    "N24": "􀀗",
+    "M01": "􀀠",
+    "M02": "􀀡",
+    "M03": "􀀢",
+    "M04": "􀀣",
+    "M05": "􀀤",
+    "M06": "􀀥",
+    "M07": "􀀦",
+    "M08": "􀀧",
+    "M09": "􀀨",
+    "M10": "􀀩",
+    "M11": "􀀪",
+    "M12": "􀀫",
+    "M13": "􀀬",
+    "M14": "􀀭",
+    "M15": "􀀮",
+    "M16": "􀀯",
+    "M17": "􀀰",
+    "M18": "􀀱",
+    "M19": "􀀲",
+    "M20": "􀀳",
+    "M21": "􀀴",
+    "M22": "􀀵",
+    "M23": "􀀶",
+    "M24": "􀀷",
+    "M25": "􀀸",
+    "M26": "􀀹",
+    "M27": "􀀺",
+    "M28": "􀀻",
+    "M29": "􀀼",
+    "M30": "􀀽",
+    "M31": "􀀾",
+    "M32": "􀀿",
+    "M33": "􀁀"
+  },
+  "entries": [
+    {
+      "key": "N01",
+      "symbol": "􀀀",
+      "codepoint": "U+100000",
+      "plane": "Supplementary Private Use Area-B",
+      "source_type": "shouyin",
+      "source_name": "b",
+      "source_file": "syllable/analysis/slice/yinyuan/shouyin_codepoint.json",
+      "used_in_yinjie_position": [
+        1
+      ],
+      "example_syllables": [
+        {
+          "syllable": "ba1",
+          "position_in_code": 1,
+          "full_code": "􀀀􀀩􀀩􀀩"
+        },
+        {
+          "syllable": "ba2",
+          "position_in_code": 1,
+          "full_code": "􀀀􀀫􀀪􀀩"
+        },
+        {
+          "syllable": "ba3",
+          "position_in_code": 1,
+          "full_code": "􀀀􀀫􀀫􀀫"
+        },
+        {
+          "syllable": "ba4",
+          "position_in_code": 1,
+          "full_code": "􀀀􀀩􀀪􀀫"
+        },
+        {
+          "syllable": "ba5",
+          "position_in_code": 1,
+          "full_code": "􀀀􀀪􀀪􀀪"
+        }
+      ]
+    },
+    {
+      "key": "N02",
+      "symbol": "􀀁",
+      "codepoint": "U+100001",
+      "plane": "Supplementary Private Use Area-B",
+      "source_type": "shouyin",
+      "source_name": "p",
+      "source_file": "syllable/analysis/slice/yinyuan/shouyin_codepoint.json",
+      "used_in_yinjie_position": [
+        1
+      ],
+      "example_syllables": [
+        {
+          "syllable": "pa1",
+          "position_in_code": 1,
+          "full_code": "􀀁􀀩􀀩􀀩"
+        },
+        {
+          "syllable": "pa2",
+          "position_in_code": 1,
+          "full_code": "􀀁􀀫􀀪􀀩"
+        },
+        {
+          "syllable": "pa3",
+          "position_in_code": 1,
+          "full_code": "􀀁􀀫􀀫􀀫"
+        },
+        {
+          "syllable": "pa4",
+          "position_in_code": 1,
+          "full_code": "􀀁􀀩􀀪􀀫"
+        },
+        {
+          "syllable": "pa5",
+          "position_in_code": 1,
+          "full_code": "􀀁􀀪􀀪􀀪"
+        }
+      ]
+    },
+    {
+      "key": "N03",
+      "symbol": "􀀂",
+      "codepoint": "U+100002",
+      "plane": "Supplementary Private Use Area-B",
+      "source_type": "shouyin",
+      "source_name": "f",
+      "source_file": "syllable/analysis/slice/yinyuan/shouyin_codepoint.json",
+      "used_in_yinjie_position": [
+        1
+      ],
+      "example_syllables": [
+        {
+          "syllable": "fa1",
+          "position_in_code": 1,
+          "full_code": "􀀂􀀩􀀩􀀩"
+        },
+        {
+          "syllable": "fa2",
+          "position_in_code": 1,
+          "full_code": "􀀂􀀫􀀪􀀩"
+        },
+        {
+          "syllable": "fa3",
+          "position_in_code": 1,
+          "full_code": "􀀂􀀫􀀫􀀫"
+        },
+        {
+          "syllable": "fa4",
+          "position_in_code": 1,
+          "full_code": "􀀂􀀩􀀪􀀫"
+        },
+        {
+          "syllable": "fa5",
+          "position_in_code": 1,
+          "full_code": "􀀂􀀪􀀪􀀪"
+        }
+      ]
+    },
+    {
+      "key": "N04",
+      "symbol": "􀀃",
+      "codepoint": "U+100003",
+      "plane": "Supplementary Private Use Area-B",
+      "source_type": "shouyin",
+      "source_name": "m",
+      "source_file": "syllable/analysis/slice/yinyuan/shouyin_codepoint.json",
+      "used_in_yinjie_position": [
+        1
+      ],
+      "example_syllables": [
+        {
+          "syllable": "ma1",
+          "position_in_code": 1,
+          "full_code": "􀀃􀀩􀀩􀀩"
+        },
+        {
+          "syllable": "ma2",
+          "position_in_code": 1,
+          "full_code": "􀀃􀀫􀀪􀀩"
+        },
+        {
+          "syllable": "ma3",
+          "position_in_code": 1,
+          "full_code": "􀀃􀀫􀀫􀀫"
+        },
+        {
+          "syllable": "ma4",
+          "position_in_code": 1,
+          "full_code": "􀀃􀀩􀀪􀀫"
+        },
+        {
+          "syllable": "ma5",
+          "position_in_code": 1,
+          "full_code": "􀀃􀀪􀀪􀀪"
+        }
+      ]
+    },
+    {
+      "key": "N05",
+      "symbol": "􀀄",
+      "codepoint": "U+100004",
+      "plane": "Supplementary Private Use Area-B",
+      "source_type": "shouyin",
+      "source_name": "d",
+      "source_file": "syllable/analysis/slice/yinyuan/shouyin_codepoint.json",
+      "used_in_yinjie_position": [
+        1
+      ],
+      "example_syllables": [
+        {
+          "syllable": "da1",
+          "position_in_code": 1,
+          "full_code": "􀀄􀀩􀀩􀀩"
+        },
+        {
+          "syllable": "da2",
+          "position_in_code": 1,
+          "full_code": "􀀄􀀫􀀪􀀩"
+        },
+        {
+          "syllable": "da3",
+          "position_in_code": 1,
+          "full_code": "􀀄􀀫􀀫􀀫"
+        },
+        {
+          "syllable": "da4",
+          "position_in_code": 1,
+          "full_code": "􀀄􀀩􀀪􀀫"
+        },
+        {
+          "syllable": "da5",
+          "position_in_code": 1,
+          "full_code": "􀀄􀀪􀀪􀀪"
+        }
+      ]
+    },
+    {
+      "key": "N06",
+      "symbol": "􀀅",
+      "codepoint": "U+100005",
+      "plane": "Supplementary Private Use Area-B",
+      "source_type": "shouyin",
+      "source_name": "t",
+      "source_file": "syllable/analysis/slice/yinyuan/shouyin_codepoint.json",
+      "used_in_yinjie_position": [
+        1
+      ],
+      "example_syllables": [
+        {
+          "syllable": "ta1",
+          "position_in_code": 1,
+          "full_code": "􀀅􀀩􀀩􀀩"
+        },
+        {
+          "syllable": "ta2",
+          "position_in_code": 1,
+          "full_code": "􀀅􀀫􀀪􀀩"
+        },
+        {
+          "syllable": "ta3",
+          "position_in_code": 1,
+          "full_code": "􀀅􀀫􀀫􀀫"
+        },
+        {
+          "syllable": "ta4",
+          "position_in_code": 1,
+          "full_code": "􀀅􀀩􀀪􀀫"
+        },
+        {
+          "syllable": "ta5",
+          "position_in_code": 1,
+          "full_code": "􀀅􀀪􀀪􀀪"
+        }
+      ]
+    },
+    {
+      "key": "N07",
+      "symbol": "􀀆",
+      "codepoint": "U+100006",
+      "plane": "Supplementary Private Use Area-B",
+      "source_type": "shouyin",
+      "source_name": "l",
+      "source_file": "syllable/analysis/slice/yinyuan/shouyin_codepoint.json",
+      "used_in_yinjie_position": [
+        1
+      ],
+      "example_syllables": [
+        {
+          "syllable": "la1",
+          "position_in_code": 1,
+          "full_code": "􀀆􀀩􀀩􀀩"
+        },
+        {
+          "syllable": "la2",
+          "position_in_code": 1,
+          "full_code": "􀀆􀀫􀀪􀀩"
+        },
+        {
+          "syllable": "la3",
+          "position_in_code": 1,
+          "full_code": "􀀆􀀫􀀫􀀫"
+        },
+        {
+          "syllable": "la4",
+          "position_in_code": 1,
+          "full_code": "􀀆􀀩􀀪􀀫"
+        },
+        {
+          "syllable": "la5",
+          "position_in_code": 1,
+          "full_code": "􀀆􀀪􀀪􀀪"
+        }
+      ]
+    },
+    {
+      "key": "N08",
+      "symbol": "􀀇",
+      "codepoint": "U+100007",
+      "plane": "Supplementary Private Use Area-B",
+      "source_type": "shouyin",
+      "source_name": "n",
+      "source_file": "syllable/analysis/slice/yinyuan/shouyin_codepoint.json",
+      "used_in_yinjie_position": [
+        1
+      ],
+      "example_syllables": [
+        {
+          "syllable": "na1",
+          "position_in_code": 1,
+          "full_code": "􀀇􀀩􀀩􀀩"
+        },
+        {
+          "syllable": "na2",
+          "position_in_code": 1,
+          "full_code": "􀀇􀀫􀀪􀀩"
+        },
+        {
+          "syllable": "na3",
+          "position_in_code": 1,
+          "full_code": "􀀇􀀫􀀫􀀫"
+        },
+        {
+          "syllable": "na4",
+          "position_in_code": 1,
+          "full_code": "􀀇􀀩􀀪􀀫"
+        },
+        {
+          "syllable": "na5",
+          "position_in_code": 1,
+          "full_code": "􀀇􀀪􀀪􀀪"
+        }
+      ]
+    },
+    {
+      "key": "N09",
+      "symbol": "􀀈",
+      "codepoint": "U+100008",
+      "plane": "Supplementary Private Use Area-B",
+      "source_type": "shouyin",
+      "source_name": "g",
+      "source_file": "syllable/analysis/slice/yinyuan/shouyin_codepoint.json",
+      "used_in_yinjie_position": [
+        1
+      ],
+      "example_syllables": [
+        {
+          "syllable": "ga1",
+          "position_in_code": 1,
+          "full_code": "􀀈􀀩􀀩􀀩"
+        },
+        {
+          "syllable": "ga2",
+          "position_in_code": 1,
+          "full_code": "􀀈􀀫􀀪􀀩"
+        },
+        {
+          "syllable": "ga3",
+          "position_in_code": 1,
+          "full_code": "􀀈􀀫􀀫􀀫"
+        },
+        {
+          "syllable": "ga4",
+          "position_in_code": 1,
+          "full_code": "􀀈􀀩􀀪􀀫"
+        },
+        {
+          "syllable": "ga5",
+          "position_in_code": 1,
+          "full_code": "􀀈􀀪􀀪􀀪"
+        }
+      ]
+    },
+    {
+      "key": "N10",
+      "symbol": "􀀉",
+      "codepoint": "U+100009",
+      "plane": "Supplementary Private Use Area-B",
+      "source_type": "shouyin",
+      "source_name": "k",
+      "source_file": "syllable/analysis/slice/yinyuan/shouyin_codepoint.json",
+      "used_in_yinjie_position": [
+        1
+      ],
+      "example_syllables": [
+        {
+          "syllable": "ka1",
+          "position_in_code": 1,
+          "full_code": "􀀉􀀩􀀩􀀩"
+        },
+        {
+          "syllable": "ka3",
+          "position_in_code": 1,
+          "full_code": "􀀉􀀫􀀫􀀫"
+        },
+        {
+          "syllable": "ka4",
+          "position_in_code": 1,
+          "full_code": "􀀉􀀩􀀪􀀫"
+        },
+        {
+          "syllable": "kai1",
+          "position_in_code": 1,
+          "full_code": "􀀉􀀩􀀩􀀠"
+        },
+        {
+          "syllable": "kai3",
+          "position_in_code": 1,
+          "full_code": "􀀉􀀫􀀫􀀢"
+        }
+      ]
+    },
+    {
+      "key": "N11",
+      "symbol": "􀀊",
+      "codepoint": "U+10000A",
+      "plane": "Supplementary Private Use Area-B",
+      "source_type": "shouyin",
+      "source_name": "h",
+      "source_file": "syllable/analysis/slice/yinyuan/shouyin_codepoint.json",
+      "used_in_yinjie_position": [
+        1
+      ],
+      "example_syllables": [
+        {
+          "syllable": "ha1",
+          "position_in_code": 1,
+          "full_code": "􀀊􀀩􀀩􀀩"
+        },
+        {
+          "syllable": "ha2",
+          "position_in_code": 1,
+          "full_code": "􀀊􀀫􀀪􀀩"
+        },
+        {
+          "syllable": "ha3",
+          "position_in_code": 1,
+          "full_code": "􀀊􀀫􀀫􀀫"
+        },
+        {
+          "syllable": "ha4",
+          "position_in_code": 1,
+          "full_code": "􀀊􀀩􀀪􀀫"
+        },
+        {
+          "syllable": "ha5",
+          "position_in_code": 1,
+          "full_code": "􀀊􀀪􀀪􀀪"
+        }
+      ]
+    },
+    {
+      "key": "N12",
+      "symbol": "􀀋",
+      "codepoint": "U+10000B",
+      "plane": "Supplementary Private Use Area-B",
+      "source_type": "shouyin",
+      "source_name": "z",
+      "source_file": "syllable/analysis/slice/yinyuan/shouyin_codepoint.json",
+      "used_in_yinjie_position": [
+        1
+      ],
+      "example_syllables": [
+        {
+          "syllable": "za1",
+          "position_in_code": 1,
+          "full_code": "􀀋􀀩􀀩􀀩"
+        },
+        {
+          "syllable": "za2",
+          "position_in_code": 1,
+          "full_code": "􀀋􀀫􀀪􀀩"
+        },
+        {
+          "syllable": "za3",
+          "position_in_code": 1,
+          "full_code": "􀀋􀀫􀀫􀀫"
+        },
+        {
+          "syllable": "za4",
+          "position_in_code": 1,
+          "full_code": "􀀋􀀩􀀪􀀫"
+        },
+        {
+          "syllable": "za5",
+          "position_in_code": 1,
+          "full_code": "􀀋􀀪􀀪􀀪"
+        }
+      ]
+    },
+    {
+      "key": "N13",
+      "symbol": "􀀌",
+      "codepoint": "U+10000C",
+      "plane": "Supplementary Private Use Area-B",
+      "source_type": "shouyin",
+      "source_name": "c",
+      "source_file": "syllable/analysis/slice/yinyuan/shouyin_codepoint.json",
+      "used_in_yinjie_position": [
+        1
+      ],
+      "example_syllables": [
+        {
+          "syllable": "ca1",
+          "position_in_code": 1,
+          "full_code": "􀀌􀀩􀀩􀀩"
+        },
+        {
+          "syllable": "ca3",
+          "position_in_code": 1,
+          "full_code": "􀀌􀀫􀀫􀀫"
+        },
+        {
+          "syllable": "ca4",
+          "position_in_code": 1,
+          "full_code": "􀀌􀀩􀀪􀀫"
+        },
+        {
+          "syllable": "cai1",
+          "position_in_code": 1,
+          "full_code": "􀀌􀀩􀀩􀀠"
+        },
+        {
+          "syllable": "cai2",
+          "position_in_code": 1,
+          "full_code": "􀀌􀀫􀀪􀀠"
+        }
+      ]
+    },
+    {
+      "key": "N14",
+      "symbol": "􀀍",
+      "codepoint": "U+10000D",
+      "plane": "Supplementary Private Use Area-B",
+      "source_type": "shouyin",
+      "source_name": "s",
+      "source_file": "syllable/analysis/slice/yinyuan/shouyin_codepoint.json",
+      "used_in_yinjie_position": [
+        1
+      ],
+      "example_syllables": [
+        {
+          "syllable": "sa1",
+          "position_in_code": 1,
+          "full_code": "􀀍􀀩􀀩􀀩"
+        },
+        {
+          "syllable": "sa3",
+          "position_in_code": 1,
+          "full_code": "􀀍􀀫􀀫􀀫"
+        },
+        {
+          "syllable": "sa4",
+          "position_in_code": 1,
+          "full_code": "􀀍􀀩􀀪􀀫"
+        },
+        {
+          "syllable": "sa5",
+          "position_in_code": 1,
+          "full_code": "􀀍􀀪􀀪􀀪"
+        },
+        {
+          "syllable": "sai1",
+          "position_in_code": 1,
+          "full_code": "􀀍􀀩􀀩􀀠"
+        }
+      ]
+    },
+    {
+      "key": "N15",
+      "symbol": "􀀎",
+      "codepoint": "U+10000E",
+      "plane": "Supplementary Private Use Area-B",
+      "source_type": "shouyin",
+      "source_name": "zh",
+      "source_file": "syllable/analysis/slice/yinyuan/shouyin_codepoint.json",
+      "used_in_yinjie_position": [
+        1
+      ],
+      "example_syllables": [
+        {
+          "syllable": "zha1",
+          "position_in_code": 1,
+          "full_code": "􀀎􀀩􀀩􀀩"
+        },
+        {
+          "syllable": "zha2",
+          "position_in_code": 1,
+          "full_code": "􀀎􀀫􀀪􀀩"
+        },
+        {
+          "syllable": "zha3",
+          "position_in_code": 1,
+          "full_code": "􀀎􀀫􀀫􀀫"
+        },
+        {
+          "syllable": "zha4",
+          "position_in_code": 1,
+          "full_code": "􀀎􀀩􀀪􀀫"
+        },
+        {
+          "syllable": "zha5",
+          "position_in_code": 1,
+          "full_code": "􀀎􀀪􀀪􀀪"
+        }
+      ]
+    },
+    {
+      "key": "N16",
+      "symbol": "􀀏",
+      "codepoint": "U+10000F",
+      "plane": "Supplementary Private Use Area-B",
+      "source_type": "shouyin",
+      "source_name": "ch",
+      "source_file": "syllable/analysis/slice/yinyuan/shouyin_codepoint.json",
+      "used_in_yinjie_position": [
+        1
+      ],
+      "example_syllables": [
+        {
+          "syllable": "cha1",
+          "position_in_code": 1,
+          "full_code": "􀀏􀀩􀀩􀀩"
+        },
+        {
+          "syllable": "cha2",
+          "position_in_code": 1,
+          "full_code": "􀀏􀀫􀀪􀀩"
+        },
+        {
+          "syllable": "cha3",
+          "position_in_code": 1,
+          "full_code": "􀀏􀀫􀀫􀀫"
+        },
+        {
+          "syllable": "cha4",
+          "position_in_code": 1,
+          "full_code": "􀀏􀀩􀀪􀀫"
+        },
+        {
+          "syllable": "cha5",
+          "position_in_code": 1,
+          "full_code": "􀀏􀀪􀀪􀀪"
+        }
+      ]
+    },
+    {
+      "key": "N17",
+      "symbol": "􀀐",
+      "codepoint": "U+100010",
+      "plane": "Supplementary Private Use Area-B",
+      "source_type": "shouyin",
+      "source_name": "sh",
+      "source_file": "syllable/analysis/slice/yinyuan/shouyin_codepoint.json",
+      "used_in_yinjie_position": [
+        1
+      ],
+      "example_syllables": [
+        {
+          "syllable": "sha1",
+          "position_in_code": 1,
+          "full_code": "􀀐􀀩􀀩􀀩"
+        },
+        {
+          "syllable": "sha2",
+          "position_in_code": 1,
+          "full_code": "􀀐􀀫􀀪􀀩"
+        },
+        {
+          "syllable": "sha3",
+          "position_in_code": 1,
+          "full_code": "􀀐􀀫􀀫􀀫"
+        },
+        {
+          "syllable": "sha4",
+          "position_in_code": 1,
+          "full_code": "􀀐􀀩􀀪􀀫"
+        },
+        {
+          "syllable": "sha5",
+          "position_in_code": 1,
+          "full_code": "􀀐􀀪􀀪􀀪"
+        }
+      ]
+    },
+    {
+      "key": "N18",
+      "symbol": "􀀑",
+      "codepoint": "U+100011",
+      "plane": "Supplementary Private Use Area-B",
+      "source_type": "shouyin",
+      "source_name": "r",
+      "source_file": "syllable/analysis/slice/yinyuan/shouyin_codepoint.json",
+      "used_in_yinjie_position": [
+        1
+      ],
+      "example_syllables": [
+        {
+          "syllable": "ran2",
+          "position_in_code": 1,
+          "full_code": "􀀑􀀫􀀪􀀻"
+        },
+        {
+          "syllable": "ran3",
+          "position_in_code": 1,
+          "full_code": "􀀑􀀫􀀫􀀽"
+        },
+        {
+          "syllable": "ran4",
+          "position_in_code": 1,
+          "full_code": "􀀑􀀩􀀪􀀽"
+        },
+        {
+          "syllable": "ran5",
+          "position_in_code": 1,
+          "full_code": "􀀑􀀪􀀪􀀼"
+        },
+        {
+          "syllable": "rang1",
+          "position_in_code": 1,
+          "full_code": "􀀑􀀩􀀩􀀾"
+        }
+      ]
+    },
+    {
+      "key": "N19",
+      "symbol": "􀀒",
+      "codepoint": "U+100012",
+      "plane": "Supplementary Private Use Area-B",
+      "source_type": "shouyin",
+      "source_name": "j",
+      "source_file": "syllable/analysis/slice/yinyuan/shouyin_codepoint.json",
+      "used_in_yinjie_position": [
+        1
+      ],
+      "example_syllables": [
+        {
+          "syllable": "ji1",
+          "position_in_code": 1,
+          "full_code": "􀀒􀀠􀀠􀀠"
+        },
+        {
+          "syllable": "ji2",
+          "position_in_code": 1,
+          "full_code": "􀀒􀀢􀀡􀀠"
+        },
+        {
+          "syllable": "ji3",
+          "position_in_code": 1,
+          "full_code": "􀀒􀀢􀀢􀀢"
+        },
+        {
+          "syllable": "ji4",
+          "position_in_code": 1,
+          "full_code": "􀀒􀀠􀀡􀀢"
+        },
+        {
+          "syllable": "ji5",
+          "position_in_code": 1,
+          "full_code": "􀀒􀀡􀀡􀀡"
+        }
+      ]
+    },
+    {
+      "key": "N20",
+      "symbol": "􀀓",
+      "codepoint": "U+100013",
+      "plane": "Supplementary Private Use Area-B",
+      "source_type": "shouyin",
+      "source_name": "q",
+      "source_file": "syllable/analysis/slice/yinyuan/shouyin_codepoint.json",
+      "used_in_yinjie_position": [
+        1
+      ],
+      "example_syllables": [
+        {
+          "syllable": "qi1",
+          "position_in_code": 1,
+          "full_code": "􀀓􀀠􀀠􀀠"
+        },
+        {
+          "syllable": "qi2",
+          "position_in_code": 1,
+          "full_code": "􀀓􀀢􀀡􀀠"
+        },
+        {
+          "syllable": "qi3",
+          "position_in_code": 1,
+          "full_code": "􀀓􀀢􀀢􀀢"
+        },
+        {
+          "syllable": "qi4",
+          "position_in_code": 1,
+          "full_code": "􀀓􀀠􀀡􀀢"
+        },
+        {
+          "syllable": "qi5",
+          "position_in_code": 1,
+          "full_code": "􀀓􀀡􀀡􀀡"
+        }
+      ]
+    },
+    {
+      "key": "N21",
+      "symbol": "􀀔",
+      "codepoint": "U+100014",
+      "plane": "Supplementary Private Use Area-B",
+      "source_type": "shouyin",
+      "source_name": "x",
+      "source_file": "syllable/analysis/slice/yinyuan/shouyin_codepoint.json",
+      "used_in_yinjie_position": [
+        1
+      ],
+      "example_syllables": [
+        {
+          "syllable": "xi1",
+          "position_in_code": 1,
+          "full_code": "􀀔􀀠􀀠􀀠"
+        },
+        {
+          "syllable": "xi2",
+          "position_in_code": 1,
+          "full_code": "􀀔􀀢􀀡􀀠"
+        },
+        {
+          "syllable": "xi3",
+          "position_in_code": 1,
+          "full_code": "􀀔􀀢􀀢􀀢"
+        },
+        {
+          "syllable": "xi4",
+          "position_in_code": 1,
+          "full_code": "􀀔􀀠􀀡􀀢"
+        },
+        {
+          "syllable": "xi5",
+          "position_in_code": 1,
+          "full_code": "􀀔􀀡􀀡􀀡"
+        }
+      ]
+    },
+    {
+      "key": "N22",
+      "symbol": "􀀕",
+      "codepoint": "U+100015",
+      "plane": "Supplementary Private Use Area-B",
+      "source_type": "shouyin",
+      "source_name": "'",
+      "source_file": "syllable/analysis/slice/yinyuan/shouyin_codepoint.json",
+      "used_in_yinjie_position": [
+        1
+      ],
+      "example_syllables": [
+        {
+          "syllable": "a1",
+          "position_in_code": 1,
+          "full_code": "􀀕􀀩􀀩􀀩"
+        },
+        {
+          "syllable": "a2",
+          "position_in_code": 1,
+          "full_code": "􀀕􀀫􀀪􀀩"
+        },
+        {
+          "syllable": "a3",
+          "position_in_code": 1,
+          "full_code": "􀀕􀀫􀀫􀀫"
+        },
+        {
+          "syllable": "a4",
+          "position_in_code": 1,
+          "full_code": "􀀕􀀩􀀪􀀫"
+        },
+        {
+          "syllable": "a5",
+          "position_in_code": 1,
+          "full_code": "􀀕􀀪􀀪􀀪"
+        }
+      ]
+    },
+    {
+      "key": "N23",
+      "symbol": "􀀖",
+      "codepoint": "U+100016",
+      "plane": "Supplementary Private Use Area-B",
+      "source_type": "shouyin",
+      "source_name": "w",
+      "source_file": "syllable/analysis/slice/yinyuan/shouyin_codepoint.json",
+      "used_in_yinjie_position": [
+        1
+      ],
+      "example_syllables": [
+        {
+          "syllable": "wa1",
+          "position_in_code": 1,
+          "full_code": "􀀖􀀩􀀩􀀩"
+        },
+        {
+          "syllable": "wa2",
+          "position_in_code": 1,
+          "full_code": "􀀖􀀫􀀪􀀩"
+        },
+        {
+          "syllable": "wa3",
+          "position_in_code": 1,
+          "full_code": "􀀖􀀫􀀫􀀫"
+        },
+        {
+          "syllable": "wa4",
+          "position_in_code": 1,
+          "full_code": "􀀖􀀩􀀪􀀫"
+        },
+        {
+          "syllable": "wa5",
+          "position_in_code": 1,
+          "full_code": "􀀖􀀪􀀪􀀪"
+        }
+      ]
+    },
+    {
+      "key": "N24",
+      "symbol": "􀀗",
+      "codepoint": "U+100017",
+      "plane": "Supplementary Private Use Area-B",
+      "source_type": "shouyin",
+      "source_name": "y",
+      "source_file": "syllable/analysis/slice/yinyuan/shouyin_codepoint.json",
+      "used_in_yinjie_position": [
+        1
+      ],
+      "example_syllables": [
+        {
+          "syllable": "ya1",
+          "position_in_code": 1,
+          "full_code": "􀀗􀀩􀀩􀀩"
+        },
+        {
+          "syllable": "ya2",
+          "position_in_code": 1,
+          "full_code": "􀀗􀀫􀀪􀀩"
+        },
+        {
+          "syllable": "ya3",
+          "position_in_code": 1,
+          "full_code": "􀀗􀀫􀀫􀀫"
+        },
+        {
+          "syllable": "ya4",
+          "position_in_code": 1,
+          "full_code": "􀀗􀀩􀀪􀀫"
+        },
+        {
+          "syllable": "ya5",
+          "position_in_code": 1,
+          "full_code": "􀀗􀀪􀀪􀀪"
+        }
+      ]
+    },
+    {
+      "key": "M01",
+      "symbol": "􀀠",
+      "codepoint": "U+100020",
+      "plane": "Supplementary Private Use Area-B",
+      "source_type": "ganyin",
+      "source_file": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+      "used_in_yinjie_position": [
+        2,
+        3,
+        4
+      ],
+      "ganyin_names": [
+        "i1",
+        "i2",
+        "i4",
+        "ai1",
+        "ai2",
+        "ei1",
+        "ei2",
+        "ia1",
+        "ia4",
+        "ie1",
+        "ie4",
+        "uai1"
+      ],
+      "example_syllables": [
+        {
+          "syllable": "ai1",
+          "position_in_code": 4,
+          "full_code": "􀀕􀀩􀀩􀀠"
+        },
+        {
+          "syllable": "ai2",
+          "position_in_code": 4,
+          "full_code": "􀀕􀀫􀀪􀀠"
+        },
+        {
+          "syllable": "bai1",
+          "position_in_code": 4,
+          "full_code": "􀀀􀀩􀀩􀀠"
+        },
+        {
+          "syllable": "bai2",
+          "position_in_code": 4,
+          "full_code": "􀀀􀀫􀀪􀀠"
+        },
+        {
+          "syllable": "bei1",
+          "position_in_code": 4,
+          "full_code": "􀀀􀀯􀀯􀀠"
+        }
+      ]
+    },
+    {
+      "key": "M02",
+      "symbol": "􀀡",
+      "codepoint": "U+100021",
+      "plane": "Supplementary Private Use Area-B",
+      "source_type": "ganyin",
+      "source_file": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+      "used_in_yinjie_position": [
+        2,
+        3,
+        4
+      ],
+      "ganyin_names": [
+        "i2",
+        "i4",
+        "i5",
+        "ai5",
+        "ei5",
+        "ia5",
+        "ie5",
+        "uai5",
+        "ui5",
+        "iao5",
+        "iu5",
+        "ian5"
+      ],
+      "example_syllables": [
+        {
+          "syllable": "bai5",
+          "position_in_code": 4,
+          "full_code": "􀀀􀀪􀀪􀀡"
+        },
+        {
+          "syllable": "bei5",
+          "position_in_code": 4,
+          "full_code": "􀀀􀀰􀀰􀀡"
+        },
+        {
+          "syllable": "bi2",
+          "position_in_code": 3,
+          "full_code": "􀀀􀀢􀀡􀀠"
+        },
+        {
+          "syllable": "bi4",
+          "position_in_code": 3,
+          "full_code": "􀀀􀀠􀀡􀀢"
+        },
+        {
+          "syllable": "bian5",
+          "position_in_code": 2,
+          "full_code": "􀀀􀀡􀀪􀀼"
+        }
+      ]
+    },
+    {
+      "key": "M03",
+      "symbol": "􀀢",
+      "codepoint": "U+100022",
+      "plane": "Supplementary Private Use Area-B",
+      "source_type": "ganyin",
+      "source_file": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+      "used_in_yinjie_position": [
+        2,
+        3,
+        4
+      ],
+      "ganyin_names": [
+        "i2",
+        "i3",
+        "i4",
+        "ai3",
+        "ai4",
+        "ei3",
+        "ei4",
+        "ia3",
+        "ia2",
+        "ie2",
+        "ie3",
+        "uai3"
+      ],
+      "example_syllables": [
+        {
+          "syllable": "ai3",
+          "position_in_code": 4,
+          "full_code": "􀀕􀀫􀀫􀀢"
+        },
+        {
+          "syllable": "ai4",
+          "position_in_code": 4,
+          "full_code": "􀀕􀀩􀀪􀀢"
+        },
+        {
+          "syllable": "bai3",
+          "position_in_code": 4,
+          "full_code": "􀀀􀀫􀀫􀀢"
+        },
+        {
+          "syllable": "bai4",
+          "position_in_code": 4,
+          "full_code": "􀀀􀀩􀀪􀀢"
+        },
+        {
+          "syllable": "bei3",
+          "position_in_code": 4,
+          "full_code": "􀀀􀀱􀀱􀀢"
+        }
+      ]
+    },
+    {
+      "key": "M04",
+      "symbol": "􀀣",
+      "codepoint": "U+100023",
+      "plane": "Supplementary Private Use Area-B",
+      "source_type": "ganyin",
+      "source_file": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+      "used_in_yinjie_position": [
+        2,
+        3,
+        4
+      ],
+      "ganyin_names": [
+        "u1",
+        "u2",
+        "u4",
+        "ao1",
+        "ao2",
+        "ou1",
+        "ou2",
+        "ua1",
+        "ua4",
+        "uo1",
+        "uo4",
+        "uai1"
+      ],
+      "example_syllables": [
+        {
+          "syllable": "ao1",
+          "position_in_code": 4,
+          "full_code": "􀀕􀀩􀀩􀀣"
+        },
+        {
+          "syllable": "ao2",
+          "position_in_code": 4,
+          "full_code": "􀀕􀀫􀀪􀀣"
+        },
+        {
+          "syllable": "bao1",
+          "position_in_code": 4,
+          "full_code": "􀀀􀀩􀀩􀀣"
+        },
+        {
+          "syllable": "bao2",
+          "position_in_code": 4,
+          "full_code": "􀀀􀀫􀀪􀀣"
+        },
+        {
+          "syllable": "biao1",
+          "position_in_code": 4,
+          "full_code": "􀀀􀀠􀀩􀀣"
+        }
+      ]
+    },
+    {
+      "key": "M05",
+      "symbol": "􀀤",
+      "codepoint": "U+100024",
+      "plane": "Supplementary Private Use Area-B",
+      "source_type": "ganyin",
+      "source_file": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+      "used_in_yinjie_position": [
+        2,
+        3,
+        4
+      ],
+      "ganyin_names": [
+        "u2",
+        "u4",
+        "u5",
+        "ao5",
+        "ou5",
+        "ua5",
+        "uo5",
+        "uai5",
+        "ui5",
+        "iao5",
+        "iu5",
+        "uan5"
+      ],
+      "example_syllables": [
+        {
+          "syllable": "bao5",
+          "position_in_code": 4,
+          "full_code": "􀀀􀀪􀀪􀀤"
+        },
+        {
+          "syllable": "bu2",
+          "position_in_code": 3,
+          "full_code": "􀀀􀀥􀀤􀀣"
+        },
+        {
+          "syllable": "bu4",
+          "position_in_code": 3,
+          "full_code": "􀀀􀀣􀀤􀀥"
+        },
+        {
+          "syllable": "bu5",
+          "position_in_code": 2,
+          "full_code": "􀀀􀀤􀀤􀀤"
+        },
+        {
+          "syllable": "bu5",
+          "position_in_code": 3,
+          "full_code": "􀀀􀀤􀀤􀀤"
+        }
+      ]
+    },
+    {
+      "key": "M06",
+      "symbol": "􀀥",
+      "codepoint": "U+100025",
+      "plane": "Supplementary Private Use Area-B",
+      "source_type": "ganyin",
+      "source_file": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+      "used_in_yinjie_position": [
+        2,
+        3,
+        4
+      ],
+      "ganyin_names": [
+        "u2",
+        "u3",
+        "u4",
+        "ao3",
+        "ao4",
+        "ou3",
+        "ou4",
+        "ua3",
+        "ua2",
+        "uo2",
+        "uo3",
+        "uai2"
+      ],
+      "example_syllables": [
+        {
+          "syllable": "ao3",
+          "position_in_code": 4,
+          "full_code": "􀀕􀀫􀀫􀀥"
+        },
+        {
+          "syllable": "ao4",
+          "position_in_code": 4,
+          "full_code": "􀀕􀀩􀀪􀀥"
+        },
+        {
+          "syllable": "bao3",
+          "position_in_code": 4,
+          "full_code": "􀀀􀀫􀀫􀀥"
+        },
+        {
+          "syllable": "bao4",
+          "position_in_code": 4,
+          "full_code": "􀀀􀀩􀀪􀀥"
+        },
+        {
+          "syllable": "biao3",
+          "position_in_code": 4,
+          "full_code": "􀀀􀀢􀀫􀀥"
+        }
+      ]
+    },
+    {
+      "key": "M07",
+      "symbol": "􀀦",
+      "codepoint": "U+100026",
+      "plane": "Supplementary Private Use Area-B",
+      "source_type": "ganyin",
+      "source_file": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+      "used_in_yinjie_position": [
+        2,
+        3,
+        4
+      ],
+      "ganyin_names": [
+        "ü1",
+        "ü2",
+        "ü4",
+        "v1",
+        "v2",
+        "v4",
+        "üe1",
+        "üe4",
+        "ve1",
+        "ve4",
+        "üan1",
+        "üan4"
+      ],
+      "example_syllables": [
+        {
+          "syllable": "jiong1",
+          "position_in_code": 2,
+          "full_code": "􀀒􀀦􀀬􀀾"
+        },
+        {
+          "syllable": "jiong4",
+          "position_in_code": 2,
+          "full_code": "􀀒􀀦􀀭􀁀"
+        },
+        {
+          "syllable": "ju1",
+          "position_in_code": 2,
+          "full_code": "􀀒􀀦􀀦􀀦"
+        },
+        {
+          "syllable": "ju1",
+          "position_in_code": 3,
+          "full_code": "􀀒􀀦􀀦􀀦"
+        },
+        {
+          "syllable": "ju1",
+          "position_in_code": 4,
+          "full_code": "􀀒􀀦􀀦􀀦"
+        }
+      ]
+    },
+    {
+      "key": "M08",
+      "symbol": "􀀧",
+      "codepoint": "U+100027",
+      "plane": "Supplementary Private Use Area-B",
+      "source_type": "ganyin",
+      "source_file": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+      "used_in_yinjie_position": [
+        2,
+        3,
+        4
+      ],
+      "ganyin_names": [
+        "ü2",
+        "ü4",
+        "ü5",
+        "v2",
+        "v4",
+        "v5",
+        "üe5",
+        "ve5",
+        "üan5",
+        "van5",
+        "ün5",
+        "vn5"
+      ],
+      "example_syllables": [
+        {
+          "syllable": "ju2",
+          "position_in_code": 3,
+          "full_code": "􀀒􀀨􀀧􀀦"
+        },
+        {
+          "syllable": "ju4",
+          "position_in_code": 3,
+          "full_code": "􀀒􀀦􀀧􀀨"
+        },
+        {
+          "syllable": "ju5",
+          "position_in_code": 2,
+          "full_code": "􀀒􀀧􀀧􀀧"
+        },
+        {
+          "syllable": "ju5",
+          "position_in_code": 3,
+          "full_code": "􀀒􀀧􀀧􀀧"
+        },
+        {
+          "syllable": "ju5",
+          "position_in_code": 4,
+          "full_code": "􀀒􀀧􀀧􀀧"
+        }
+      ]
+    },
+    {
+      "key": "M09",
+      "symbol": "􀀨",
+      "codepoint": "U+100028",
+      "plane": "Supplementary Private Use Area-B",
+      "source_type": "ganyin",
+      "source_file": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+      "used_in_yinjie_position": [
+        2,
+        3,
+        4
+      ],
+      "ganyin_names": [
+        "ü2",
+        "ü3",
+        "ü4",
+        "v2",
+        "v3",
+        "v4",
+        "üe2",
+        "üe3",
+        "ve2",
+        "ve3",
+        "üan3",
+        "üan2"
+      ],
+      "example_syllables": [
+        {
+          "syllable": "jiong3",
+          "position_in_code": 2,
+          "full_code": "􀀒􀀨􀀮􀁀"
+        },
+        {
+          "syllable": "ju2",
+          "position_in_code": 2,
+          "full_code": "􀀒􀀨􀀧􀀦"
+        },
+        {
+          "syllable": "ju3",
+          "position_in_code": 2,
+          "full_code": "􀀒􀀨􀀨􀀨"
+        },
+        {
+          "syllable": "ju3",
+          "position_in_code": 3,
+          "full_code": "􀀒􀀨􀀨􀀨"
+        },
+        {
+          "syllable": "ju3",
+          "position_in_code": 4,
+          "full_code": "􀀒􀀨􀀨􀀨"
+        }
+      ]
+    },
+    {
+      "key": "M10",
+      "symbol": "􀀩",
+      "codepoint": "U+100029",
+      "plane": "Supplementary Private Use Area-B",
+      "source_type": "ganyin",
+      "source_file": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+      "used_in_yinjie_position": [
+        2,
+        3,
+        4
+      ],
+      "ganyin_names": [
+        "a1",
+        "a2",
+        "a4",
+        "ai1",
+        "ai4",
+        "ao1",
+        "ao4",
+        "an1",
+        "an4",
+        "ang1",
+        "ang4",
+        "ia1"
+      ],
+      "example_syllables": [
+        {
+          "syllable": "a1",
+          "position_in_code": 2,
+          "full_code": "􀀕􀀩􀀩􀀩"
+        },
+        {
+          "syllable": "a1",
+          "position_in_code": 3,
+          "full_code": "􀀕􀀩􀀩􀀩"
+        },
+        {
+          "syllable": "a1",
+          "position_in_code": 4,
+          "full_code": "􀀕􀀩􀀩􀀩"
+        },
+        {
+          "syllable": "a2",
+          "position_in_code": 4,
+          "full_code": "􀀕􀀫􀀪􀀩"
+        },
+        {
+          "syllable": "a4",
+          "position_in_code": 2,
+          "full_code": "􀀕􀀩􀀪􀀫"
+        }
+      ]
+    },
+    {
+      "key": "M11",
+      "symbol": "􀀪",
+      "codepoint": "U+10002A",
+      "plane": "Supplementary Private Use Area-B",
+      "source_type": "ganyin",
+      "source_file": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+      "used_in_yinjie_position": [
+        2,
+        3,
+        4
+      ],
+      "ganyin_names": [
+        "a2",
+        "a4",
+        "a5",
+        "ai2",
+        "ai4",
+        "ai5",
+        "ao2",
+        "ao4",
+        "ao5",
+        "an2",
+        "an4",
+        "an5"
+      ],
+      "example_syllables": [
+        {
+          "syllable": "a2",
+          "position_in_code": 3,
+          "full_code": "􀀕􀀫􀀪􀀩"
+        },
+        {
+          "syllable": "a4",
+          "position_in_code": 3,
+          "full_code": "􀀕􀀩􀀪􀀫"
+        },
+        {
+          "syllable": "a5",
+          "position_in_code": 2,
+          "full_code": "􀀕􀀪􀀪􀀪"
+        },
+        {
+          "syllable": "a5",
+          "position_in_code": 3,
+          "full_code": "􀀕􀀪􀀪􀀪"
+        },
+        {
+          "syllable": "a5",
+          "position_in_code": 4,
+          "full_code": "􀀕􀀪􀀪􀀪"
+        }
+      ]
+    },
+    {
+      "key": "M12",
+      "symbol": "􀀫",
+      "codepoint": "U+10002B",
+      "plane": "Supplementary Private Use Area-B",
+      "source_type": "ganyin",
+      "source_file": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+      "used_in_yinjie_position": [
+        2,
+        3,
+        4
+      ],
+      "ganyin_names": [
+        "a2",
+        "a3",
+        "a4",
+        "ai2",
+        "ai3",
+        "ao2",
+        "ao3",
+        "an2",
+        "an3",
+        "ang2",
+        "ang3",
+        "ia3"
+      ],
+      "example_syllables": [
+        {
+          "syllable": "a2",
+          "position_in_code": 2,
+          "full_code": "􀀕􀀫􀀪􀀩"
+        },
+        {
+          "syllable": "a3",
+          "position_in_code": 2,
+          "full_code": "􀀕􀀫􀀫􀀫"
+        },
+        {
+          "syllable": "a3",
+          "position_in_code": 3,
+          "full_code": "􀀕􀀫􀀫􀀫"
+        },
+        {
+          "syllable": "a3",
+          "position_in_code": 4,
+          "full_code": "􀀕􀀫􀀫􀀫"
+        },
+        {
+          "syllable": "a4",
+          "position_in_code": 4,
+          "full_code": "􀀕􀀩􀀪􀀫"
+        }
+      ]
+    },
+    {
+      "key": "M13",
+      "symbol": "􀀬",
+      "codepoint": "U+10002C",
+      "plane": "Supplementary Private Use Area-B",
+      "source_type": "ganyin",
+      "source_file": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+      "used_in_yinjie_position": [
+        2,
+        3,
+        4
+      ],
+      "ganyin_names": [
+        "o1",
+        "o2",
+        "o4",
+        "e4",
+        "e1",
+        "e2",
+        "ou1",
+        "ou4",
+        "eng1",
+        "eng4",
+        "uo1",
+        "uo2"
+      ],
+      "example_syllables": [
+        {
+          "syllable": "beng1",
+          "position_in_code": 2,
+          "full_code": "􀀀􀀬􀀬􀀾"
+        },
+        {
+          "syllable": "beng1",
+          "position_in_code": 3,
+          "full_code": "􀀀􀀬􀀬􀀾"
+        },
+        {
+          "syllable": "beng4",
+          "position_in_code": 2,
+          "full_code": "􀀀􀀬􀀭􀁀"
+        },
+        {
+          "syllable": "bing1",
+          "position_in_code": 3,
+          "full_code": "􀀀􀀠􀀬􀀾"
+        },
+        {
+          "syllable": "bo1",
+          "position_in_code": 2,
+          "full_code": "􀀀􀀬􀀬􀀬"
+        }
+      ]
+    },
+    {
+      "key": "M14",
+      "symbol": "􀀭",
+      "codepoint": "U+10002D",
+      "plane": "Supplementary Private Use Area-B",
+      "source_type": "ganyin",
+      "source_file": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+      "used_in_yinjie_position": [
+        2,
+        3,
+        4
+      ],
+      "ganyin_names": [
+        "o2",
+        "o4",
+        "o5",
+        "e4",
+        "e2",
+        "e5",
+        "ou2",
+        "ou4",
+        "ou5",
+        "eng2",
+        "eng4",
+        "eng5"
+      ],
+      "example_syllables": [
+        {
+          "syllable": "beng2",
+          "position_in_code": 3,
+          "full_code": "􀀀􀀮􀀭􀀾"
+        },
+        {
+          "syllable": "beng4",
+          "position_in_code": 3,
+          "full_code": "􀀀􀀬􀀭􀁀"
+        },
+        {
+          "syllable": "beng5",
+          "position_in_code": 2,
+          "full_code": "􀀀􀀭􀀭􀀿"
+        },
+        {
+          "syllable": "beng5",
+          "position_in_code": 3,
+          "full_code": "􀀀􀀭􀀭􀀿"
+        },
+        {
+          "syllable": "bing4",
+          "position_in_code": 3,
+          "full_code": "􀀀􀀠􀀭􀁀"
+        }
+      ]
+    },
+    {
+      "key": "M15",
+      "symbol": "􀀮",
+      "codepoint": "U+10002E",
+      "plane": "Supplementary Private Use Area-B",
+      "source_type": "ganyin",
+      "source_file": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+      "used_in_yinjie_position": [
+        2,
+        3,
+        4
+      ],
+      "ganyin_names": [
+        "o2",
+        "o3",
+        "o4",
+        "e4",
+        "e2",
+        "e3",
+        "ou2",
+        "ou3",
+        "eng2",
+        "eng3",
+        "uo4",
+        "uo3"
+      ],
+      "example_syllables": [
+        {
+          "syllable": "beng2",
+          "position_in_code": 2,
+          "full_code": "􀀀􀀮􀀭􀀾"
+        },
+        {
+          "syllable": "beng3",
+          "position_in_code": 2,
+          "full_code": "􀀀􀀮􀀮􀁀"
+        },
+        {
+          "syllable": "beng3",
+          "position_in_code": 3,
+          "full_code": "􀀀􀀮􀀮􀁀"
+        },
+        {
+          "syllable": "bing3",
+          "position_in_code": 3,
+          "full_code": "􀀀􀀢􀀮􀁀"
+        },
+        {
+          "syllable": "bo2",
+          "position_in_code": 2,
+          "full_code": "􀀀􀀮􀀭􀀬"
+        }
+      ]
+    },
+    {
+      "key": "M16",
+      "symbol": "􀀯",
+      "codepoint": "U+10002F",
+      "plane": "Supplementary Private Use Area-B",
+      "source_type": "ganyin",
+      "source_file": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+      "used_in_yinjie_position": [
+        2,
+        3,
+        4
+      ],
+      "ganyin_names": [
+        "ê1",
+        "ê2",
+        "ê4",
+        "ei1",
+        "ei4",
+        "en1",
+        "en4",
+        "ie1",
+        "ie2",
+        "üe1",
+        "üe2",
+        "ve1"
+      ],
+      "example_syllables": [
+        {
+          "syllable": "bei1",
+          "position_in_code": 2,
+          "full_code": "􀀀􀀯􀀯􀀠"
+        },
+        {
+          "syllable": "bei1",
+          "position_in_code": 3,
+          "full_code": "􀀀􀀯􀀯􀀠"
+        },
+        {
+          "syllable": "bei4",
+          "position_in_code": 2,
+          "full_code": "􀀀􀀯􀀰􀀢"
+        },
+        {
+          "syllable": "ben1",
+          "position_in_code": 2,
+          "full_code": "􀀀􀀯􀀯􀀻"
+        },
+        {
+          "syllable": "ben1",
+          "position_in_code": 3,
+          "full_code": "􀀀􀀯􀀯􀀻"
+        }
+      ]
+    },
+    {
+      "key": "M17",
+      "symbol": "􀀰",
+      "codepoint": "U+100030",
+      "plane": "Supplementary Private Use Area-B",
+      "source_type": "ganyin",
+      "source_file": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+      "used_in_yinjie_position": [
+        2,
+        3,
+        4
+      ],
+      "ganyin_names": [
+        "ê2",
+        "ê4",
+        "ê5",
+        "ei4",
+        "ei5",
+        "ei2",
+        "en4",
+        "en5",
+        "en2",
+        "ie2",
+        "ie4",
+        "ie5"
+      ],
+      "example_syllables": [
+        {
+          "syllable": "bei4",
+          "position_in_code": 3,
+          "full_code": "􀀀􀀯􀀰􀀢"
+        },
+        {
+          "syllable": "bei5",
+          "position_in_code": 2,
+          "full_code": "􀀀􀀰􀀰􀀡"
+        },
+        {
+          "syllable": "bei5",
+          "position_in_code": 3,
+          "full_code": "􀀀􀀰􀀰􀀡"
+        },
+        {
+          "syllable": "ben4",
+          "position_in_code": 3,
+          "full_code": "􀀀􀀯􀀰􀀽"
+        },
+        {
+          "syllable": "ben5",
+          "position_in_code": 2,
+          "full_code": "􀀀􀀰􀀰􀀼"
+        }
+      ]
+    },
+    {
+      "key": "M18",
+      "symbol": "􀀱",
+      "codepoint": "U+100031",
+      "plane": "Supplementary Private Use Area-B",
+      "source_type": "ganyin",
+      "source_file": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+      "used_in_yinjie_position": [
+        2,
+        3,
+        4
+      ],
+      "ganyin_names": [
+        "ê2",
+        "ê3",
+        "ê4",
+        "ei3",
+        "ei2",
+        "en3",
+        "en2",
+        "ie3",
+        "ie4",
+        "üe3",
+        "üe4",
+        "ve3"
+      ],
+      "example_syllables": [
+        {
+          "syllable": "bei3",
+          "position_in_code": 2,
+          "full_code": "􀀀􀀱􀀱􀀢"
+        },
+        {
+          "syllable": "bei3",
+          "position_in_code": 3,
+          "full_code": "􀀀􀀱􀀱􀀢"
+        },
+        {
+          "syllable": "ben3",
+          "position_in_code": 2,
+          "full_code": "􀀀􀀱􀀱􀀽"
+        },
+        {
+          "syllable": "ben3",
+          "position_in_code": 3,
+          "full_code": "􀀀􀀱􀀱􀀽"
+        },
+        {
+          "syllable": "bie3",
+          "position_in_code": 3,
+          "full_code": "􀀀􀀢􀀱􀀱"
+        }
+      ]
+    },
+    {
+      "key": "M19",
+      "symbol": "􀀲",
+      "codepoint": "U+100032",
+      "plane": "Supplementary Private Use Area-B",
+      "source_type": "ganyin",
+      "source_file": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+      "used_in_yinjie_position": [
+        2,
+        3,
+        4
+      ],
+      "ganyin_names": [
+        "_i1",
+        "_i2",
+        "_i4"
+      ],
+      "example_syllables": [
+        {
+          "syllable": "chi1",
+          "position_in_code": 2,
+          "full_code": "􀀏􀀲􀀲􀀲"
+        },
+        {
+          "syllable": "chi1",
+          "position_in_code": 3,
+          "full_code": "􀀏􀀲􀀲􀀲"
+        },
+        {
+          "syllable": "chi1",
+          "position_in_code": 4,
+          "full_code": "􀀏􀀲􀀲􀀲"
+        },
+        {
+          "syllable": "chi2",
+          "position_in_code": 4,
+          "full_code": "􀀏􀀴􀀳􀀲"
+        },
+        {
+          "syllable": "chi4",
+          "position_in_code": 2,
+          "full_code": "􀀏􀀲􀀳􀀴"
+        }
+      ]
+    },
+    {
+      "key": "M20",
+      "symbol": "􀀳",
+      "codepoint": "U+100033",
+      "plane": "Supplementary Private Use Area-B",
+      "source_type": "ganyin",
+      "source_file": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+      "used_in_yinjie_position": [
+        2,
+        3,
+        4
+      ],
+      "ganyin_names": [
+        "_i2",
+        "_i4",
+        "_i5"
+      ],
+      "example_syllables": [
+        {
+          "syllable": "chi2",
+          "position_in_code": 3,
+          "full_code": "􀀏􀀴􀀳􀀲"
+        },
+        {
+          "syllable": "chi4",
+          "position_in_code": 3,
+          "full_code": "􀀏􀀲􀀳􀀴"
+        },
+        {
+          "syllable": "chi5",
+          "position_in_code": 2,
+          "full_code": "􀀏􀀳􀀳􀀳"
+        },
+        {
+          "syllable": "chi5",
+          "position_in_code": 3,
+          "full_code": "􀀏􀀳􀀳􀀳"
+        },
+        {
+          "syllable": "chi5",
+          "position_in_code": 4,
+          "full_code": "􀀏􀀳􀀳􀀳"
+        }
+      ]
+    },
+    {
+      "key": "M21",
+      "symbol": "􀀴",
+      "codepoint": "U+100034",
+      "plane": "Supplementary Private Use Area-B",
+      "source_type": "ganyin",
+      "source_file": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+      "used_in_yinjie_position": [
+        2,
+        3,
+        4
+      ],
+      "ganyin_names": [
+        "_i2",
+        "_i3",
+        "_i4"
+      ],
+      "example_syllables": [
+        {
+          "syllable": "chi2",
+          "position_in_code": 2,
+          "full_code": "􀀏􀀴􀀳􀀲"
+        },
+        {
+          "syllable": "chi3",
+          "position_in_code": 2,
+          "full_code": "􀀏􀀴􀀴􀀴"
+        },
+        {
+          "syllable": "chi3",
+          "position_in_code": 3,
+          "full_code": "􀀏􀀴􀀴􀀴"
+        },
+        {
+          "syllable": "chi3",
+          "position_in_code": 4,
+          "full_code": "􀀏􀀴􀀴􀀴"
+        },
+        {
+          "syllable": "chi4",
+          "position_in_code": 4,
+          "full_code": "􀀏􀀲􀀳􀀴"
+        }
+      ]
+    },
+    {
+      "key": "M22",
+      "symbol": "􀀵",
+      "codepoint": "U+100035",
+      "plane": "Supplementary Private Use Area-B",
+      "source_type": "ganyin",
+      "source_file": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+      "used_in_yinjie_position": [
+        2,
+        3,
+        4
+      ],
+      "ganyin_names": [
+        "er1",
+        "er2",
+        "er4"
+      ],
+      "example_syllables": [
+        {
+          "syllable": "er1",
+          "position_in_code": 2,
+          "full_code": "􀀕􀀵􀀵􀀵"
+        },
+        {
+          "syllable": "er1",
+          "position_in_code": 3,
+          "full_code": "􀀕􀀵􀀵􀀵"
+        },
+        {
+          "syllable": "er1",
+          "position_in_code": 4,
+          "full_code": "􀀕􀀵􀀵􀀵"
+        },
+        {
+          "syllable": "er2",
+          "position_in_code": 4,
+          "full_code": "􀀕􀀷􀀶􀀵"
+        },
+        {
+          "syllable": "er4",
+          "position_in_code": 2,
+          "full_code": "􀀕􀀵􀀶􀀷"
+        }
+      ]
+    },
+    {
+      "key": "M23",
+      "symbol": "􀀶",
+      "codepoint": "U+100036",
+      "plane": "Supplementary Private Use Area-B",
+      "source_type": "ganyin",
+      "source_file": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+      "used_in_yinjie_position": [
+        2,
+        3,
+        4
+      ],
+      "ganyin_names": [
+        "er2",
+        "er4",
+        "er5"
+      ],
+      "example_syllables": [
+        {
+          "syllable": "er2",
+          "position_in_code": 3,
+          "full_code": "􀀕􀀷􀀶􀀵"
+        },
+        {
+          "syllable": "er4",
+          "position_in_code": 3,
+          "full_code": "􀀕􀀵􀀶􀀷"
+        },
+        {
+          "syllable": "er5",
+          "position_in_code": 2,
+          "full_code": "􀀕􀀶􀀶􀀶"
+        },
+        {
+          "syllable": "er5",
+          "position_in_code": 3,
+          "full_code": "􀀕􀀶􀀶􀀶"
+        },
+        {
+          "syllable": "er5",
+          "position_in_code": 4,
+          "full_code": "􀀕􀀶􀀶􀀶"
+        }
+      ]
+    },
+    {
+      "key": "M24",
+      "symbol": "􀀷",
+      "codepoint": "U+100037",
+      "plane": "Supplementary Private Use Area-B",
+      "source_type": "ganyin",
+      "source_file": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+      "used_in_yinjie_position": [
+        2,
+        3,
+        4
+      ],
+      "ganyin_names": [
+        "er2",
+        "er3",
+        "er4"
+      ],
+      "example_syllables": [
+        {
+          "syllable": "er2",
+          "position_in_code": 2,
+          "full_code": "􀀕􀀷􀀶􀀵"
+        },
+        {
+          "syllable": "er3",
+          "position_in_code": 2,
+          "full_code": "􀀕􀀷􀀷􀀷"
+        },
+        {
+          "syllable": "er3",
+          "position_in_code": 3,
+          "full_code": "􀀕􀀷􀀷􀀷"
+        },
+        {
+          "syllable": "er3",
+          "position_in_code": 4,
+          "full_code": "􀀕􀀷􀀷􀀷"
+        },
+        {
+          "syllable": "er4",
+          "position_in_code": 4,
+          "full_code": "􀀕􀀵􀀶􀀷"
+        }
+      ]
+    },
+    {
+      "key": "M25",
+      "symbol": "􀀸",
+      "codepoint": "U+100038",
+      "plane": "Supplementary Private Use Area-B",
+      "source_type": "ganyin",
+      "source_file": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+      "used_in_yinjie_position": [
+        2,
+        3,
+        4
+      ],
+      "ganyin_names": [
+        "m1",
+        "m2",
+        "m4"
+      ],
+      "example_syllables": [
+        {
+          "syllable": "hm1",
+          "position_in_code": 2,
+          "full_code": "􀀊􀀸􀀸􀀸"
+        },
+        {
+          "syllable": "hm1",
+          "position_in_code": 3,
+          "full_code": "􀀊􀀸􀀸􀀸"
+        },
+        {
+          "syllable": "hm1",
+          "position_in_code": 4,
+          "full_code": "􀀊􀀸􀀸􀀸"
+        },
+        {
+          "syllable": "hm2",
+          "position_in_code": 4,
+          "full_code": "􀀊􀀺􀀹􀀸"
+        },
+        {
+          "syllable": "hm4",
+          "position_in_code": 2,
+          "full_code": "􀀊􀀸􀀹􀀺"
+        }
+      ]
+    },
+    {
+      "key": "M26",
+      "symbol": "􀀹",
+      "codepoint": "U+100039",
+      "plane": "Supplementary Private Use Area-B",
+      "source_type": "ganyin",
+      "source_file": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+      "used_in_yinjie_position": [
+        2,
+        3,
+        4
+      ],
+      "ganyin_names": [
+        "m2",
+        "m4",
+        "m5"
+      ],
+      "example_syllables": [
+        {
+          "syllable": "hm2",
+          "position_in_code": 3,
+          "full_code": "􀀊􀀺􀀹􀀸"
+        },
+        {
+          "syllable": "hm4",
+          "position_in_code": 3,
+          "full_code": "􀀊􀀸􀀹􀀺"
+        },
+        {
+          "syllable": "hm5",
+          "position_in_code": 2,
+          "full_code": "􀀊􀀹􀀹􀀹"
+        },
+        {
+          "syllable": "hm5",
+          "position_in_code": 3,
+          "full_code": "􀀊􀀹􀀹􀀹"
+        },
+        {
+          "syllable": "hm5",
+          "position_in_code": 4,
+          "full_code": "􀀊􀀹􀀹􀀹"
+        }
+      ]
+    },
+    {
+      "key": "M27",
+      "symbol": "􀀺",
+      "codepoint": "U+10003A",
+      "plane": "Supplementary Private Use Area-B",
+      "source_type": "ganyin",
+      "source_file": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+      "used_in_yinjie_position": [
+        2,
+        3,
+        4
+      ],
+      "ganyin_names": [
+        "m2",
+        "m3",
+        "m4"
+      ],
+      "example_syllables": [
+        {
+          "syllable": "hm2",
+          "position_in_code": 2,
+          "full_code": "􀀊􀀺􀀹􀀸"
+        },
+        {
+          "syllable": "hm3",
+          "position_in_code": 2,
+          "full_code": "􀀊􀀺􀀺􀀺"
+        },
+        {
+          "syllable": "hm3",
+          "position_in_code": 3,
+          "full_code": "􀀊􀀺􀀺􀀺"
+        },
+        {
+          "syllable": "hm3",
+          "position_in_code": 4,
+          "full_code": "􀀊􀀺􀀺􀀺"
+        },
+        {
+          "syllable": "hm4",
+          "position_in_code": 4,
+          "full_code": "􀀊􀀸􀀹􀀺"
+        }
+      ]
+    },
+    {
+      "key": "M28",
+      "symbol": "􀀻",
+      "codepoint": "U+10003B",
+      "plane": "Supplementary Private Use Area-B",
+      "source_type": "ganyin",
+      "source_file": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+      "used_in_yinjie_position": [
+        2,
+        3,
+        4
+      ],
+      "ganyin_names": [
+        "n1",
+        "n2",
+        "n4",
+        "an1",
+        "an2",
+        "en1",
+        "en2",
+        "ian1",
+        "ian2",
+        "uan1",
+        "uan2",
+        "üan1"
+      ],
+      "example_syllables": [
+        {
+          "syllable": "an1",
+          "position_in_code": 4,
+          "full_code": "􀀕􀀩􀀩􀀻"
+        },
+        {
+          "syllable": "an2",
+          "position_in_code": 4,
+          "full_code": "􀀕􀀫􀀪􀀻"
+        },
+        {
+          "syllable": "ban1",
+          "position_in_code": 4,
+          "full_code": "􀀀􀀩􀀩􀀻"
+        },
+        {
+          "syllable": "ben1",
+          "position_in_code": 4,
+          "full_code": "􀀀􀀯􀀯􀀻"
+        },
+        {
+          "syllable": "bian1",
+          "position_in_code": 4,
+          "full_code": "􀀀􀀠􀀩􀀻"
+        }
+      ]
+    },
+    {
+      "key": "M29",
+      "symbol": "􀀼",
+      "codepoint": "U+10003C",
+      "plane": "Supplementary Private Use Area-B",
+      "source_type": "ganyin",
+      "source_file": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+      "used_in_yinjie_position": [
+        2,
+        3,
+        4
+      ],
+      "ganyin_names": [
+        "n2",
+        "n4",
+        "n5",
+        "an5",
+        "en5",
+        "ian5",
+        "uan5",
+        "üan5",
+        "van5",
+        "in5",
+        "un5",
+        "ün5"
+      ],
+      "example_syllables": [
+        {
+          "syllable": "ban5",
+          "position_in_code": 4,
+          "full_code": "􀀀􀀪􀀪􀀼"
+        },
+        {
+          "syllable": "ben5",
+          "position_in_code": 4,
+          "full_code": "􀀀􀀰􀀰􀀼"
+        },
+        {
+          "syllable": "bian5",
+          "position_in_code": 4,
+          "full_code": "􀀀􀀡􀀪􀀼"
+        },
+        {
+          "syllable": "bin5",
+          "position_in_code": 4,
+          "full_code": "􀀀􀀡􀀰􀀼"
+        },
+        {
+          "syllable": "chan5",
+          "position_in_code": 4,
+          "full_code": "􀀏􀀪􀀪􀀼"
+        }
+      ]
+    },
+    {
+      "key": "M30",
+      "symbol": "􀀽",
+      "codepoint": "U+10003D",
+      "plane": "Supplementary Private Use Area-B",
+      "source_type": "ganyin",
+      "source_file": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+      "used_in_yinjie_position": [
+        2,
+        3,
+        4
+      ],
+      "ganyin_names": [
+        "n2",
+        "n3",
+        "n4",
+        "an3",
+        "an4",
+        "en3",
+        "en4",
+        "ian3",
+        "ian4",
+        "uan3",
+        "uan4",
+        "üan3"
+      ],
+      "example_syllables": [
+        {
+          "syllable": "an3",
+          "position_in_code": 4,
+          "full_code": "􀀕􀀫􀀫􀀽"
+        },
+        {
+          "syllable": "an4",
+          "position_in_code": 4,
+          "full_code": "􀀕􀀩􀀪􀀽"
+        },
+        {
+          "syllable": "ban3",
+          "position_in_code": 4,
+          "full_code": "􀀀􀀫􀀫􀀽"
+        },
+        {
+          "syllable": "ban4",
+          "position_in_code": 4,
+          "full_code": "􀀀􀀩􀀪􀀽"
+        },
+        {
+          "syllable": "ben3",
+          "position_in_code": 4,
+          "full_code": "􀀀􀀱􀀱􀀽"
+        }
+      ]
+    },
+    {
+      "key": "M31",
+      "symbol": "􀀾",
+      "codepoint": "U+10003E",
+      "plane": "Supplementary Private Use Area-B",
+      "source_type": "ganyin",
+      "source_file": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+      "used_in_yinjie_position": [
+        2,
+        3,
+        4
+      ],
+      "ganyin_names": [
+        "ng1",
+        "ng2",
+        "ng4",
+        "ang1",
+        "ang2",
+        "eng1",
+        "eng2",
+        "iang2",
+        "iang1",
+        "uang1",
+        "uang2",
+        "ing1"
+      ],
+      "example_syllables": [
+        {
+          "syllable": "ang1",
+          "position_in_code": 4,
+          "full_code": "􀀕􀀩􀀩􀀾"
+        },
+        {
+          "syllable": "ang2",
+          "position_in_code": 4,
+          "full_code": "􀀕􀀫􀀪􀀾"
+        },
+        {
+          "syllable": "bang1",
+          "position_in_code": 4,
+          "full_code": "􀀀􀀩􀀩􀀾"
+        },
+        {
+          "syllable": "beng1",
+          "position_in_code": 4,
+          "full_code": "􀀀􀀬􀀬􀀾"
+        },
+        {
+          "syllable": "beng2",
+          "position_in_code": 4,
+          "full_code": "􀀀􀀮􀀭􀀾"
+        }
+      ]
+    },
+    {
+      "key": "M32",
+      "symbol": "􀀿",
+      "codepoint": "U+10003F",
+      "plane": "Supplementary Private Use Area-B",
+      "source_type": "ganyin",
+      "source_file": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+      "used_in_yinjie_position": [
+        2,
+        3,
+        4
+      ],
+      "ganyin_names": [
+        "ng2",
+        "ng4",
+        "ng5",
+        "ang5",
+        "eng5",
+        "iang5",
+        "uang5",
+        "ing5",
+        "ong5",
+        "iong5"
+      ],
+      "example_syllables": [
+        {
+          "syllable": "bang5",
+          "position_in_code": 4,
+          "full_code": "􀀀􀀪􀀪􀀿"
+        },
+        {
+          "syllable": "beng5",
+          "position_in_code": 4,
+          "full_code": "􀀀􀀭􀀭􀀿"
+        },
+        {
+          "syllable": "bing5",
+          "position_in_code": 4,
+          "full_code": "􀀀􀀡􀀭􀀿"
+        },
+        {
+          "syllable": "ceng5",
+          "position_in_code": 4,
+          "full_code": "􀀌􀀭􀀭􀀿"
+        },
+        {
+          "syllable": "chang5",
+          "position_in_code": 4,
+          "full_code": "􀀏􀀪􀀪􀀿"
+        }
+      ]
+    },
+    {
+      "key": "M33",
+      "symbol": "􀁀",
+      "codepoint": "U+100040",
+      "plane": "Supplementary Private Use Area-B",
+      "source_type": "ganyin",
+      "source_file": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+      "used_in_yinjie_position": [
+        2,
+        3,
+        4
+      ],
+      "ganyin_names": [
+        "ng2",
+        "ng3",
+        "ng4",
+        "ang3",
+        "ang4",
+        "eng3",
+        "eng4",
+        "iang4",
+        "iang3",
+        "uang3",
+        "uang4",
+        "ing3"
+      ],
+      "example_syllables": [
+        {
+          "syllable": "ang3",
+          "position_in_code": 4,
+          "full_code": "􀀕􀀫􀀫􀁀"
+        },
+        {
+          "syllable": "ang4",
+          "position_in_code": 4,
+          "full_code": "􀀕􀀩􀀪􀁀"
+        },
+        {
+          "syllable": "bang3",
+          "position_in_code": 4,
+          "full_code": "􀀀􀀫􀀫􀁀"
+        },
+        {
+          "syllable": "bang4",
+          "position_in_code": 4,
+          "full_code": "􀀀􀀩􀀪􀁀"
+        },
+        {
+          "syllable": "beng3",
+          "position_in_code": 4,
+          "full_code": "􀀀􀀮􀀮􀁀"
+        }
+      ]
+    }
+  ]
+}

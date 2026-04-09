@@ -126,8 +126,8 @@ class PinyinImporter:
         try:
             # 判断输入是否为PUA字符(编码)
             is_pua = any(0xE000 <= ord(c) <= 0xF8FF or
-                        0xF0000 <= ord(c) <= 0xFFFFF or
-                        0x100000 <= ord(c) <= 0x10FFFF for c in input_str)
+                        0xF0000 <= ord(c) <= 0xFFFFD or
+                        0x100000 <= ord(c) <= 0x10FFFD for c in input_str)
 
             if is_pua:
                 # 直接处理PUA编码
