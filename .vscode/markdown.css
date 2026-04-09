@@ -1,6 +1,8 @@
 @font-face {
-  font-family: "YinYuan";
-  src: url("../fonts/YinYuan-Regular.woff") format("woff");
+  font-family: "Noto Sans";
+  src: url("../fonts/NotoSans-Regular.woff2") format("woff2"),
+       url("../fonts/NotoSans-Regular.woff") format("woff"),
+       url("../fonts/NotoSans-Regular.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
   font-display: swap;
@@ -9,9 +11,9 @@
 /* 应用到正文与代码（按需调整选择器） */
 .markdown-body,
 .markdown-preview {
-  font-family: "YinYuan", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  font-family: "Noto Sans", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
 }
 pre,
 code {
-  font-family: "YinYuan", Consolas, "Courier New", monospace;
+  font-family: "Noto Sans", Consolas, "Courier New", monospace;
 }

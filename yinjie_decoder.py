@@ -101,20 +101,23 @@ class YinjieDecoder:
         with open(output_file, 'w', encoding='utf-8') as f:
             json.dump(phoneme_dict, f, ensure_ascii=False, indent=2)
 
+    def _build_category_keys(self, phonemes, prefix):
+        """按类别前缀生成等长编码键。"""
+        return {
+            f"{prefix}{index:02d}": phoneme
+            for index, phoneme in enumerate(phonemes, start=1)
+        }
+
     def map_key_to_code(self, output_file='key_to_code.json'):
-        """生成ASCII键到PUA字符的映射字典并保存到文件"""
+        """生成类别前缀键到 PUA 字符的映射字典并保存到文件。"""
         phoneme_mapping = self.generate_phoneme_mapping()
-        all_phonemes = phoneme_mapping["forward"]["noise"] + phoneme_mapping["forward"]["musical"]
+        noise_keys = self._build_category_keys(phoneme_mapping["forward"]["noise"], "N")
+        musical_keys = self._build_category_keys(phoneme_mapping["forward"]["musical"], "M")
 
-        key_to_code = {}
-        ascii_start = 33  # 从可打印ASCII字符开始
-
-        for phoneme in all_phonemes:
-            if ascii_start <= 126:
-                key_to_code[chr(ascii_start)] = phoneme
-                ascii_start += 1
-            else:
-                print(f"警告：ASCII码不足，无法为字符 {phoneme} 分配键位")
+        key_to_code = {
+            **noise_keys,
+            **musical_keys,
+        }
 
         with open(output_file, 'w', encoding='utf-8') as f:
             json.dump(key_to_code, f, ensure_ascii=False, indent=2)
