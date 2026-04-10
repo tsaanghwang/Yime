@@ -113,22 +113,37 @@ def main():
     os.chdir(git_root)
     print(f"已切换到git仓库根目录: {git_root}")
 
+
     # 检查远程仓库是否存在
     remotes = ["origin", "gitee"]
-    for remote in remotes.copy():
-        if not get_remote_url(remote):
+    available_remotes = []
+    for remote in remotes:
+        if get_remote_url(remote):
+            available_remotes.append(remote)
+        else:
             print(f"警告: 远程仓库 {remote} 不存在，跳过")
-            remotes.remove(remote)
 
-    if not remotes:
+    if not available_remotes:
         print("错误: 没有可用的远程仓库")
         return
 
-    # 尝试对每个远程仓库先pull再push
-    for remote in remotes:
+    # 推送当前分支到所有远程仓库并合并到 main
+    for remote in available_remotes:
         print(f"\n处理远程仓库: {remote} ({get_remote_url(remote)})")
         if git_pull(remote, args.branch):
-            git_push(remote, args.branch, args.force)
+            if git_push(remote, args.branch, args.force):
+                # 自动合并到 main 分支
+                current_branch = args.branch
+                print("切换到 main 分支并拉取最新...")
+                subprocess.run(["git", "checkout", "main"], check=True)
+                subprocess.run(["git", "pull", remote, "main"], check=True)
+                print(f"合并 {current_branch} 到 main ...")
+                subprocess.run(["git", "merge", current_branch], check=True)
+                print(f"推送 main 到 {remote} ...")
+                subprocess.run(["git", "push", remote, "main"], check=True)
+                print("切回原分支 ...")
+                subprocess.run(["git", "checkout", current_branch], check=True)
+                print("分支合并和推送全部完成！")
 
 
 if __name__ == "__main__":
