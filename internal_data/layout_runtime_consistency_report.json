@@ -1,0 +1,21 @@
+{
+  "ok": true,
+  "status": "ok",
+  "summary": {
+    "issue_count": 0,
+    "note_count": 0,
+    "runtime_symbol_count": 57,
+    "placed_symbol_count": 57,
+    "unplaced_symbol_count": 0
+  },
+  "issues": [],
+  "notes": [],
+  "paths": {
+    "layout": "C:\\Users\\Freeman Golden\\OneDrive\\Yime\\internal_data\\manual_key_layout.json",
+    "symbols": "C:\\Users\\Freeman Golden\\OneDrive\\Yime\\internal_data\\key_to_symbol.json",
+    "resolved_layout": "C:\\Users\\Freeman Golden\\OneDrive\\Yime\\internal_data\\manual_key_layout.resolved.json",
+    "runtime_report": "C:\\Users\\Freeman Golden\\OneDrive\\Yime\\internal_data\\yinjie_runtime_key_symbol_mapping.json",
+    "shouyin_runtime": "C:\\Users\\Freeman Golden\\OneDrive\\Yime\\syllable\\analysis\\slice\\yinyuan\\shouyin_codepoint.json",
+    "yinyuan_runtime": "C:\\Users\\Freeman Golden\\OneDrive\\Yime\\syllable\\analysis\\slice\\yinyuan\\yinyuan_codepoint.json"
+  }
+}
