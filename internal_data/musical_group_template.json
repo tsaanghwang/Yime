@@ -1,32 +1,47 @@
 {
   "metadata": {
     "name": "Yime musical grouping template",
-    "version": "2026-04-08",
-    "status": "draft_template",
+    "version": "2026-04-10",
+    "status": "runtime_aligned_template",
     "source_symbol_map": "internal_data/key_to_symbol.json",
     "source_runtime_mapping": "internal_data/yinjie_runtime_key_symbol_mapping.json",
-    "notes": "乐音分组模板。按音质临时分成 11 组，每组三个成员，顺序固定为高调（高平）、中调（半高平）和低调（低平）。音质符号目前采用临时对照写法：/a/、/o/、/e/(ê)、/i/、/u/、/ü/、/-i/、/er/、/m/、/n/、/ng/。"
+    "source_audit": "internal_data/yueyin_runtime_layout_audit.md",
+    "layout_source": "internal_data/manual_key_layout.resolved.json",
+    "notes": "乐音分组模板。当前术语与运行时 yueyin 链路对齐。每组保留布局讨论用的音系标签，同时补充运行时的规范化 yueyin 基名、每个成员的 yueyin 组合字符名，以及当前布局中的物理位置与物理阅读顺序。组定义顺序固定为高调（高平/H）、中调（半高平/M）和低调（低平/L），但 physical_reading_order 反映当前键盘上从左到右、从上到下的实际阅读顺序。注意：M13-M15 当前运行时实际对应 /o/ 并入 /e(ɤ)/ 的 merged 组；M16-M18 对应 /ê/ 组。"
   },
   "groups": [
     {
       "id": "M-G01",
       "name": "/i/ 组",
       "temporary_phoneme_symbol": "/i/",
+      "runtime_semantic_label": "/i/",
+      "normalized_yueyin_base": "ɪ",
+      "ipa_examples": ["i", "ɪ"],
+      "physical_reading_order_pattern": "高-中-低",
+      "physical_reading_order_symbol_keys": ["M01", "M02", "M03"],
+      "physical_reading_order_tone_roles": ["high_level", "mid_level", "low_level"],
+      "physical_reading_order_positions": ["base:u", "base:i", "base:o"],
       "members": [
         {
           "tone_role": "high_level",
           "tone_label": "高调（高平）",
-          "symbol_key": "M01"
+          "symbol_key": "M01",
+          "runtime_yueyin_name": "ɪ́",
+          "current_layout_position": "base:u"
         },
         {
           "tone_role": "mid_level",
           "tone_label": "中调（半高平）",
-          "symbol_key": "M02"
+          "symbol_key": "M02",
+          "runtime_yueyin_name": "ɪ̄",
+          "current_layout_position": "base:i"
         },
         {
           "tone_role": "low_level",
           "tone_label": "低调（低平）",
-          "symbol_key": "M03"
+          "symbol_key": "M03",
+          "runtime_yueyin_name": "ɪ̀",
+          "current_layout_position": "base:o"
         }
       ]
     },
@@ -34,21 +49,34 @@
       "id": "M-G02",
       "name": "/u/ 组",
       "temporary_phoneme_symbol": "/u/",
+      "runtime_semantic_label": "/u/",
+      "normalized_yueyin_base": "ᴜ",
+      "ipa_examples": ["u", "ᴜ"],
+      "physical_reading_order_pattern": "低-中-高",
+      "physical_reading_order_symbol_keys": ["M06", "M05", "M04"],
+      "physical_reading_order_tone_roles": ["low_level", "mid_level", "high_level"],
+      "physical_reading_order_positions": ["base:x", "base:c", "base:v"],
       "members": [
         {
           "tone_role": "high_level",
           "tone_label": "高调（高平）",
-          "symbol_key": "M04"
+          "symbol_key": "M04",
+          "runtime_yueyin_name": "ᴜ́",
+          "current_layout_position": "base:v"
         },
         {
           "tone_role": "mid_level",
           "tone_label": "中调（半高平）",
-          "symbol_key": "M05"
+          "symbol_key": "M05",
+          "runtime_yueyin_name": "ᴜ̄",
+          "current_layout_position": "base:c"
         },
         {
           "tone_role": "low_level",
           "tone_label": "低调（低平）",
-          "symbol_key": "M06"
+          "symbol_key": "M06",
+          "runtime_yueyin_name": "ᴜ̀",
+          "current_layout_position": "base:x"
         }
       ]
     },
@@ -56,21 +84,34 @@
       "id": "M-G03",
       "name": "/ü/ 组",
       "temporary_phoneme_symbol": "/ü/",
+      "runtime_semantic_label": "/ü/",
+      "normalized_yueyin_base": "ʏ",
+      "ipa_examples": ["ʏ", "y"],
+      "physical_reading_order_pattern": "高-中-低",
+      "physical_reading_order_symbol_keys": ["M07", "M08", "M09"],
+      "physical_reading_order_tone_roles": ["high_level", "mid_level", "low_level"],
+      "physical_reading_order_positions": ["base:n", "base:m", "base:,"],
       "members": [
         {
           "tone_role": "high_level",
           "tone_label": "高调（高平）",
-          "symbol_key": "M07"
+          "symbol_key": "M07",
+          "runtime_yueyin_name": "ʏ́",
+          "current_layout_position": "base:n"
         },
         {
           "tone_role": "mid_level",
           "tone_label": "中调（半高平）",
-          "symbol_key": "M08"
+          "symbol_key": "M08",
+          "runtime_yueyin_name": "ʏ̄",
+          "current_layout_position": "base:m"
         },
         {
           "tone_role": "low_level",
           "tone_label": "低调（低平）",
-          "symbol_key": "M09"
+          "symbol_key": "M09",
+          "runtime_yueyin_name": "ʏ̀",
+          "current_layout_position": "base:,"
         }
       ]
     },
@@ -78,65 +119,104 @@
       "id": "M-G04",
       "name": "/a/ 组",
       "temporary_phoneme_symbol": "/a/",
+      "runtime_semantic_label": "/a/",
+      "normalized_yueyin_base": "ᴀ",
+      "ipa_examples": ["ᴀ", "a", "æ", "ɑ"],
+      "physical_reading_order_pattern": "低-中-高",
+      "physical_reading_order_symbol_keys": ["M12", "M11", "M10"],
+      "physical_reading_order_tone_roles": ["low_level", "mid_level", "high_level"],
+      "physical_reading_order_positions": ["base:s", "base:d", "base:f"],
       "members": [
         {
           "tone_role": "high_level",
           "tone_label": "高调（高平）",
-          "symbol_key": "M10"
+          "symbol_key": "M10",
+          "runtime_yueyin_name": "ᴀ́",
+          "current_layout_position": "base:f"
         },
         {
           "tone_role": "mid_level",
           "tone_label": "中调（半高平）",
-          "symbol_key": "M11"
+          "symbol_key": "M11",
+          "runtime_yueyin_name": "ᴀ̄",
+          "current_layout_position": "base:d"
         },
         {
           "tone_role": "low_level",
           "tone_label": "低调（低平）",
-          "symbol_key": "M12"
+          "symbol_key": "M12",
+          "runtime_yueyin_name": "ᴀ̀",
+          "current_layout_position": "base:s"
         }
       ]
     },
     {
       "id": "M-G05",
-      "name": "/o/ 组",
+      "name": "/o/ 并入 /e(ɤ)/ 组",
       "temporary_phoneme_symbol": "/o/",
+      "runtime_semantic_label": "/o/ + /e(ɤ)/ merged",
+      "normalized_yueyin_base": "o",
+      "ipa_examples": ["o", "ɤ", "𐞑"],
+      "physical_reading_order_pattern": "高-中-低",
+      "physical_reading_order_symbol_keys": ["M13", "M14", "M15"],
+      "physical_reading_order_tone_roles": ["high_level", "mid_level", "low_level"],
+      "physical_reading_order_positions": ["base:j", "base:k", "base:l"],
       "members": [
         {
           "tone_role": "high_level",
           "tone_label": "高调（高平）",
-          "symbol_key": "M13"
+          "symbol_key": "M13",
+          "runtime_yueyin_name": "ó",
+          "current_layout_position": "base:j"
         },
         {
           "tone_role": "mid_level",
           "tone_label": "中调（半高平）",
-          "symbol_key": "M14"
+          "symbol_key": "M14",
+          "runtime_yueyin_name": "ō",
+          "current_layout_position": "base:k"
         },
         {
           "tone_role": "low_level",
           "tone_label": "低调（低平）",
-          "symbol_key": "M15"
+          "symbol_key": "M15",
+          "runtime_yueyin_name": "ò",
+          "current_layout_position": "base:l"
         }
       ]
     },
     {
       "id": "M-G06",
-      "name": "/e/（ê）组",
+      "name": "/ê/ 组",
       "temporary_phoneme_symbol": "/e/(ê)",
+      "runtime_semantic_label": "/ê/",
+      "normalized_yueyin_base": "ᴇ",
+      "ipa_examples": ["ᴇ", "e", "ə", "ᵊ"],
+      "physical_reading_order_pattern": "低-中-高",
+      "physical_reading_order_symbol_keys": ["M18", "M17", "M16"],
+      "physical_reading_order_tone_roles": ["low_level", "mid_level", "high_level"],
+      "physical_reading_order_positions": ["base:e", "base:r", "base:t"],
       "members": [
         {
           "tone_role": "high_level",
           "tone_label": "高调（高平）",
-          "symbol_key": "M16"
+          "symbol_key": "M16",
+          "runtime_yueyin_name": "ᴇ́",
+          "current_layout_position": "base:t"
         },
         {
           "tone_role": "mid_level",
           "tone_label": "中调（半高平）",
-          "symbol_key": "M17"
+          "symbol_key": "M17",
+          "runtime_yueyin_name": "ᴇ̄",
+          "current_layout_position": "base:r"
         },
         {
           "tone_role": "low_level",
           "tone_label": "低调（低平）",
-          "symbol_key": "M18"
+          "symbol_key": "M18",
+          "runtime_yueyin_name": "ᴇ̀",
+          "current_layout_position": "base:e"
         }
       ]
     },
@@ -144,21 +224,34 @@
       "id": "M-G07",
       "name": "/-i/ 组",
       "temporary_phoneme_symbol": "/-i/",
+      "runtime_semantic_label": "/-i/",
+      "normalized_yueyin_base": "󰉺",
+      "ipa_examples": ["ʅ", "ɿ"],
+      "physical_reading_order_pattern": "高-中-低",
+      "physical_reading_order_symbol_keys": ["M19", "M20", "M21"],
+      "physical_reading_order_tone_roles": ["high_level", "mid_level", "low_level"],
+      "physical_reading_order_positions": ["shift:j", "shift:k", "shift:l"],
       "members": [
         {
           "tone_role": "high_level",
           "tone_label": "高调（高平）",
-          "symbol_key": "M19"
+          "symbol_key": "M19",
+          "runtime_yueyin_name": "󰉺́",
+          "current_layout_position": "shift:j"
         },
         {
           "tone_role": "mid_level",
           "tone_label": "中调（半高平）",
-          "symbol_key": "M20"
+          "symbol_key": "M20",
+          "runtime_yueyin_name": "󰉺̄",
+          "current_layout_position": "shift:k"
         },
         {
           "tone_role": "low_level",
           "tone_label": "低调（低平）",
-          "symbol_key": "M21"
+          "symbol_key": "M21",
+          "runtime_yueyin_name": "󰉺̀",
+          "current_layout_position": "shift:l"
         }
       ]
     },
@@ -166,21 +259,34 @@
       "id": "M-G08",
       "name": "/er/ 组",
       "temporary_phoneme_symbol": "/er/",
+      "runtime_semantic_label": "/er/",
+      "normalized_yueyin_base": "󰊈",
+      "ipa_examples": ["ɚ"],
+      "physical_reading_order_pattern": "高-中-低",
+      "physical_reading_order_symbol_keys": ["M22", "M23", "M24"],
+      "physical_reading_order_tone_roles": ["high_level", "mid_level", "low_level"],
+      "physical_reading_order_positions": ["altgr:p", "altgr:[", "altgr:]"],
       "members": [
         {
           "tone_role": "high_level",
           "tone_label": "高调（高平）",
-          "symbol_key": "M22"
+          "symbol_key": "M22",
+          "runtime_yueyin_name": "󰊈́",
+          "current_layout_position": "altgr:p"
         },
         {
           "tone_role": "mid_level",
           "tone_label": "中调（半高平）",
-          "symbol_key": "M23"
+          "symbol_key": "M23",
+          "runtime_yueyin_name": "󰊈̄",
+          "current_layout_position": "altgr:["
         },
         {
           "tone_role": "low_level",
           "tone_label": "低调（低平）",
-          "symbol_key": "M24"
+          "symbol_key": "M24",
+          "runtime_yueyin_name": "󰊈̀",
+          "current_layout_position": "altgr:]"
         }
       ]
     },
@@ -188,21 +294,34 @@
       "id": "M-G09",
       "name": "/m/ 组",
       "temporary_phoneme_symbol": "/m/",
+      "runtime_semantic_label": "/m/",
+      "normalized_yueyin_base": "m",
+      "ipa_examples": ["m"],
+      "physical_reading_order_pattern": "高-中-低",
+      "physical_reading_order_symbol_keys": ["M25", "M26", "M27"],
+      "physical_reading_order_tone_roles": ["high_level", "mid_level", "low_level"],
+      "physical_reading_order_positions": ["altgr:j", "altgr:k", "altgr:l"],
       "members": [
         {
           "tone_role": "high_level",
           "tone_label": "高调（高平）",
-          "symbol_key": "M25"
+          "symbol_key": "M25",
+          "runtime_yueyin_name": "ḿ",
+          "current_layout_position": "altgr:j"
         },
         {
           "tone_role": "mid_level",
           "tone_label": "中调（半高平）",
-          "symbol_key": "M26"
+          "symbol_key": "M26",
+          "runtime_yueyin_name": "m̄",
+          "current_layout_position": "altgr:k"
         },
         {
           "tone_role": "low_level",
           "tone_label": "低调（低平）",
-          "symbol_key": "M27"
+          "symbol_key": "M27",
+          "runtime_yueyin_name": "m̀",
+          "current_layout_position": "altgr:l"
         }
       ]
     },
@@ -210,21 +329,34 @@
       "id": "M-G10",
       "name": "/n/ 组",
       "temporary_phoneme_symbol": "/n/",
+      "runtime_semantic_label": "/n/",
+      "normalized_yueyin_base": "n",
+      "ipa_examples": ["n"],
+      "physical_reading_order_pattern": "高-低-中",
+      "physical_reading_order_symbol_keys": ["M28", "M30", "M29"],
+      "physical_reading_order_tone_roles": ["high_level", "low_level", "mid_level"],
+      "physical_reading_order_positions": ["base:;", "base:'", "shift:n"],
       "members": [
         {
           "tone_role": "high_level",
           "tone_label": "高调（高平）",
-          "symbol_key": "M28"
+          "symbol_key": "M28",
+          "runtime_yueyin_name": "ń",
+          "current_layout_position": "base:;"
         },
         {
           "tone_role": "mid_level",
           "tone_label": "中调（半高平）",
-          "symbol_key": "M29"
+          "symbol_key": "M29",
+          "runtime_yueyin_name": "n̄",
+          "current_layout_position": "shift:n"
         },
         {
           "tone_role": "low_level",
           "tone_label": "低调（低平）",
-          "symbol_key": "M30"
+          "symbol_key": "M30",
+          "runtime_yueyin_name": "ǹ",
+          "current_layout_position": "base:'"
         }
       ]
     },
@@ -232,21 +364,34 @@
       "id": "M-G11",
       "name": "/ng/ 组",
       "temporary_phoneme_symbol": "/ng/",
+      "runtime_semantic_label": "/ng/",
+      "normalized_yueyin_base": "ŋ",
+      "ipa_examples": ["ŋ"],
+      "physical_reading_order_pattern": "高-低-中",
+      "physical_reading_order_symbol_keys": ["M31", "M33", "M32"],
+      "physical_reading_order_tone_roles": ["high_level", "low_level", "mid_level"],
+      "physical_reading_order_positions": ["base:.", "base:/", "shift:m"],
       "members": [
         {
           "tone_role": "high_level",
           "tone_label": "高调（高平）",
-          "symbol_key": "M31"
+          "symbol_key": "M31",
+          "runtime_yueyin_name": "ŋ́",
+          "current_layout_position": "base:."
         },
         {
           "tone_role": "mid_level",
           "tone_label": "中调（半高平）",
-          "symbol_key": "M32"
+          "symbol_key": "M32",
+          "runtime_yueyin_name": "ŋ̄",
+          "current_layout_position": "shift:m"
         },
         {
           "tone_role": "low_level",
           "tone_label": "低调（低平）",
-          "symbol_key": "M33"
+          "symbol_key": "M33",
+          "runtime_yueyin_name": "ŋ̀",
+          "current_layout_position": "base:/"
         }
       ]
     }
