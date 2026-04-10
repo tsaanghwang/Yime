@@ -62,16 +62,16 @@ def check_character(char):
     """检查字符属性并返回结果"""
     code = ord(char)
     is_ascii = code <= 127
-    is_pua = (0xE000 <= code <= 0xF8FF) or (0xF0000 <= code <= 0xFFFFF) or (0x100000 <= code <= 0x10FFFF)
-    
+    is_pua = (0xE000 <= code <= 0xF8FF) or (0xF0000 <= code <= 0xFFFFD) or (0x100000 <= code <= 0x10FFFD)
+
     if is_ascii:
         return "ASCII"
     elif is_pua:
         if 0xE000 <= code <= 0xF8FF:
             return "Private Use Area"
-        elif 0xF0000 <= code <= 0xFFFFF:
+        elif 0xF0000 <= code <= 0xFFFFD:
             return "Private Use Area-A"
-        elif 0x100000 <= code <= 0x10FFFF:
+        elif 0x100000 <= code <= 0x10FFFD:
             return "Private Use Area-B"
     else:
         return f"Non-ASCII (Unicode {hex(code)})"
@@ -90,10 +90,10 @@ def validate_data_mapping(data):
 validate_data_mapping(data)
 
 # 统计Private Use Area字符数量
-pua_count = sum(1 for value in data.values() 
-               if (0xE000 <= ord(value) <= 0xF8FF) or 
-                  (0xF0000 <= ord(value) <= 0xFFFFF) or 
-                  (0x100000 <= ord(value) <= 0x10FFFF))
+pua_count = sum(1 for value in data.values()
+               if (0xE000 <= ord(value) <= 0xF8FF) or
+                        (0xF0000 <= ord(value) <= 0xFFFFD) or
+                        (0x100000 <= ord(value) <= 0x10FFFD))
 print(f"\n=== 统计结果 ===\nPrivate Use Area字符总数: {pua_count} (Private Use Area)\n================\n")
 
 # 定义目录名称

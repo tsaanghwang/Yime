@@ -1,0 +1,98 @@
+# BMP PUA Trial Projection
+
+用途：Windows 字体安装与 MSKLC 试编译的临时 BMP PUA 投影。
+
+注意：这不是 canonical 编码，不替代 [internal_data/key_to_symbol.json](c:\Users\Freeman Golden\OneDrive\Yime\internal_data\key_to_symbol.json) 里的 SPUA-B 映射。
+
+## 区段
+
+- 整段：U+E4E9-U+E548，共 96 个码点
+- 首音已用：U+E4E9-U+E500，对应 N01-N24
+- 首音预留：U+E501-U+E508，对应槽位 25-32
+- 乐音已用：U+E509-U+E529，对应 M01-M33
+- 余量：U+E52A-U+E548，共 31 个码点
+
+## 首音
+
+| Key | BMP Trial Codepoint | Canonical Codepoint | Slot |
+| --- | --- | --- | --- |
+| N01 | U+E4E9 | U+100000 | 1 |
+| N02 | U+E4EA | U+100001 | 2 |
+| N03 | U+E4EB | U+100002 | 3 |
+| N04 | U+E4EC | U+100003 | 4 |
+| N05 | U+E4ED | U+100004 | 5 |
+| N06 | U+E4EE | U+100005 | 6 |
+| N07 | U+E4EF | U+100006 | 7 |
+| N08 | U+E4F0 | U+100007 | 8 |
+| N09 | U+E4F1 | U+100008 | 9 |
+| N10 | U+E4F2 | U+100009 | 10 |
+| N11 | U+E4F3 | U+10000A | 11 |
+| N12 | U+E4F4 | U+10000B | 12 |
+| N13 | U+E4F5 | U+10000C | 13 |
+| N14 | U+E4F6 | U+10000D | 14 |
+| N15 | U+E4F7 | U+10000E | 15 |
+| N16 | U+E4F8 | U+10000F | 16 |
+| N17 | U+E4F9 | U+100010 | 17 |
+| N18 | U+E4FA | U+100011 | 18 |
+| N19 | U+E4FB | U+100012 | 19 |
+| N20 | U+E4FC | U+100013 | 20 |
+| N21 | U+E4FD | U+100014 | 21 |
+| N22 | U+E4FE | U+100015 | 22 |
+| N23 | U+E4FF | U+100016 | 23 |
+| N24 | U+E500 | U+100017 | 24 |
+
+## 首音预留槽
+
+| Label | BMP Trial Codepoint | Canonical Codepoint | Slot |
+| --- | --- | --- | --- |
+| N25_reserved | U+E501 | - | 25 |
+| N26_reserved | U+E502 | - | 26 |
+| N27_reserved | U+E503 | - | 27 |
+| N28_reserved | U+E504 | - | 28 |
+| N29_reserved | U+E505 | - | 29 |
+| N30_reserved | U+E506 | - | 30 |
+| N31_reserved | U+E507 | - | 31 |
+| N32_reserved | U+E508 | - | 32 |
+
+## 乐音
+
+| Key | BMP Trial Codepoint | Canonical Codepoint | Slot |
+| --- | --- | --- | --- |
+| M01 | U+E509 | U+100020 | 33 |
+| M02 | U+E50A | U+100021 | 34 |
+| M03 | U+E50B | U+100022 | 35 |
+| M04 | U+E50C | U+100023 | 36 |
+| M05 | U+E50D | U+100024 | 37 |
+| M06 | U+E50E | U+100025 | 38 |
+| M07 | U+E50F | U+100026 | 39 |
+| M08 | U+E510 | U+100027 | 40 |
+| M09 | U+E511 | U+100028 | 41 |
+| M10 | U+E512 | U+100029 | 42 |
+| M11 | U+E513 | U+10002A | 43 |
+| M12 | U+E514 | U+10002B | 44 |
+| M13 | U+E515 | U+10002C | 45 |
+| M14 | U+E516 | U+10002D | 46 |
+| M15 | U+E517 | U+10002E | 47 |
+| M16 | U+E518 | U+10002F | 48 |
+| M17 | U+E519 | U+100030 | 49 |
+| M18 | U+E51A | U+100031 | 50 |
+| M19 | U+E51B | U+100032 | 51 |
+| M20 | U+E51C | U+100033 | 52 |
+| M21 | U+E51D | U+100034 | 53 |
+| M22 | U+E51E | U+100035 | 54 |
+| M23 | U+E51F | U+100036 | 55 |
+| M24 | U+E520 | U+100037 | 56 |
+| M25 | U+E521 | U+100038 | 57 |
+| M26 | U+E522 | U+100039 | 58 |
+| M27 | U+E523 | U+10003A | 59 |
+| M28 | U+E524 | U+10003B | 60 |
+| M29 | U+E525 | U+10003C | 61 |
+| M30 | U+E526 | U+10003D | 62 |
+| M31 | U+E527 | U+10003E | 63 |
+| M32 | U+E528 | U+10003F | 64 |
+| M33 | U+E529 | U+100040 | 65 |
+
+## 余量
+
+- U+E52A-U+E548
+- 可用于补首音、控制符、连写测试或后续扩展
