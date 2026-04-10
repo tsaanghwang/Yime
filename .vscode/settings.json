@@ -127,32 +127,40 @@
   "[jsonc]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "editor.fontFamily": "\"YinYuan Regular\", \"音元 常规\", Consolas, 'Courier New', monospace",
+  "editor.fontFamily": "\"YinYuan Regular\", \"音元 常规\", \"Noto Sans\", \"Microsoft YaHei\", Consolas, 'Courier New', monospace",
   "terminal.integrated.fontFamily": "Consolas, 'Courier New', monospace",
   "terminal.integrated.fontLigatures.enabled": true,
   "[query-editor]": {
     "editor.defaultFormatter": "yy0931.vscode-sqlite3-editor"
   },
-  "chat.editor.fontFamily": "\"YinYuan Regular\", \"音元 常规\", Consolas, 'Courier New', monospace",
-  "editor.inlayHints.fontFamily": "\"YinYuan Regular\", \"音元 常规\", Consolas, 'Courier New', monospace",
-  "scm.inputFontFamily": "\"YinYuan Regular\", \"音元 常规\", Consolas, 'Courier New', monospace",
-  "notebook.output.fontFamily": "\"YinYuan Regular\", \"音元 常规\", Consolas, 'Courier New', monospace",
+  "chat.editor.fontFamily": "\"YinYuan Regular\", \"音元 常规\", \"Noto Sans\", \"Microsoft YaHei\", Consolas, 'Courier New', monospace",
+  "editor.inlayHints.fontFamily": "\"YinYuan Regular\", \"音元 常规\", \"Noto Sans\", \"Microsoft YaHei\", Consolas, 'Courier New', monospace",
+  "scm.inputFontFamily": "\"YinYuan Regular\", \"音元 常规\", \"Noto Sans\", \"Microsoft YaHei\", Consolas, 'Courier New', monospace",
+  "notebook.output.fontFamily": "\"YinYuan Regular\", \"音元 常规\", \"Noto Sans\", \"Microsoft YaHei\", Consolas, 'Courier New', monospace",
+  "workbench.list.fontFamily": "\"YinYuan Regular\", \"音元 常规\", \"Noto Sans\", \"Microsoft YaHei\", Consolas, 'Courier New', monospace",
+  "workbench.editorAssociations": {
+    "*.db": "sqlite3-editor.editor",
+    "*.sqlite": "sqlite3-editor.editor",
+    "*.sqlite3": "sqlite3-editor.editor"
+  },
   "sqltools.connections": [
     {
-      "mysqlOptions": {
-        "authProtocol": "default",
-        "enableSsl": "Disabled"
-      },
-      "ssh": "Disabled",
+      "name": "Yime Pinyin Hanzi",
+      "group": "Yime",
+      "driver": "SQLite",
+      "database": "${workspaceFolder:Yime}/yime/pinyin_hanzi.db"
+    },
+    {
       "previewLimit": 50,
-      "server": "localhost",
-      "port": 3306,
-      "driver": "MySQL",
-      "name": "connected",
-      "database": "yime",
-      "username": "root"
+      "driver": "SQLite",
+      "database": "${workspaceFolder:Yime}/yime.db",
+      "name": "Yime"
     }
   ],
+  "sqltools.results.customization": {
+    "font-family": "\"YinYuan Regular\", \"音元 常规\", \"Noto Sans\", \"Microsoft YaHei\", Consolas, 'Courier New', monospace"
+  },
+  "pgsql.resultsFontFamily": "\"YinYuan Regular\", \"音元 常规\", \"Noto Sans\", \"Microsoft YaHei\", Consolas, 'Courier New', monospace",
   "latex-workshop.latex.tools": [
     {
       "name": "xelatex",
@@ -172,5 +180,6 @@
     "editor.defaultFormatter": "mathematic.vscode-latex"
   },
   "markdown.styles": [".vscode/markdown.css"],
-  "livePreview.defaultPreviewPath": "/临时.html"
+  "livePreview.defaultPreviewPath": "/临时.html",
+  "sqltools.useNodeRuntime": true
 }
