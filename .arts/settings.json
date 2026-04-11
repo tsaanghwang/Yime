@@ -78,5 +78,6 @@
   "markdown.extension.preview.autoShowPreviewToSide": true,
   "editor.inlayHints.fontFamily": "\"YinYuan Regular\", \"音元 常规\", Consolas, 'Courier New', monospace",
   "scm.inputFontFamily": "\"YinYuan Regular\", \"音元 常规\", Consolas, 'Courier New', monospace",
-  "terminal.integrated.fontFamily": "\"YinYuan Regular\", \"音元 常规\", Consolas, 'Courier New', monospace"
+  "terminal.integrated.fontFamily": "\"YinYuan Regular\", \"音元 常规\", Consolas, 'Courier New', monospace",
+  "diffEditor.renderSideBySide": false
 }

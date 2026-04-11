@@ -5,4 +5,5 @@ yime/reports/runtime_candidates_by_code.json filter=lfs diff=lfs merge=lfs -text
 yime/reports/runtime_candidates_by_code_true.json filter=lfs diff=lfs merge=lfs -text
 node_modules/sqlite3/build/Release/node_sqlite3.iobj filter=lfs diff=lfs merge=lfs -text
 node_modules/sqlite3/build/Release/node_sqlite3.pdb filter=lfs diff=lfs merge=lfs -text
+.vscode/.workspace_index/c_index.json filter=lfs diff=lfs merge=lfs -text
 internal_data/pinyin_source_db/source_pinyin.db filter=lfs diff=lfs merge=lfs -text
