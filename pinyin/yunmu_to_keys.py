@@ -8,7 +8,7 @@ import re
 from dataclasses import dataclass, field
 from abc import ABC, abstractmethod
 from functools import lru_cache
-from constants import YunmuConstants
+from .constants import YunmuConstants
 
 # 配置日志
 logging.basicConfig(
