@@ -12,6 +12,8 @@ from pathlib import Path
 from typing import Optional
 
 from .core.decoders import CompositeCandidateDecoder
+from .core.keyboard_listener import KeyboardListener
+from .core.input_manager import InputManager
 from .ui.candidate_box import CandidateBox
 from .utils.clipboard import ClipboardManager
 from .utils.keyboard_simulator import KeyboardSimulator
@@ -58,10 +60,20 @@ class InputMethodApp:
         self.own_hwnd = self.candidate_box.root.winfo_id()
         self.last_external_hwnd: Optional[int] = None
         self.last_replace_length = 0
-
+        
+        # 创建输入管理器
+        self.input_manager = InputManager(
+            on_candidates_update=self._on_candidates_update,
+            on_input_commit=self._on_input_commit,
+        )
+        self.input_manager.set_decoder(self.decoder)
+        
+        # 创建键盘监听器
+        self.keyboard_listener: Optional[KeyboardListener] = None
+        
         # 启动窗口焦点轮询
         self._poll_foreground_window()
-
+        
         # 设置关闭处理
         self.candidate_box.root.protocol("WM_DELETE_WINDOW", self._close)
 
@@ -195,10 +207,86 @@ class InputMethodApp:
 
     def _close(self) -> None:
         """关闭应用"""
+        # 停止键盘监听
+        if self.keyboard_listener:
+            self.keyboard_listener.stop()
+        
         self.candidate_box._close()
-
+    
+    def _on_candidates_update(
+        self,
+        candidates: list,
+        pinyin: str,
+        code: str,
+        status: str,
+    ) -> None:
+        """
+        候选词更新回调
+        
+        Args:
+            candidates: 候选词列表
+            pinyin: 拼音
+            code: 编码
+            status: 状态消息
+        """
+        # 更新候选框显示
+        self.candidate_box.update_candidates(candidates, pinyin, code, status)
+        
+        # 如果有候选词，显示候选框
+        if candidates:
+            # 获取光标位置并显示
+            try:
+                x, y = self.window_manager.get_cursor_position()
+                self.candidate_box.show(x, y + 20)
+            except:
+                self.candidate_box.show()
+        else:
+            self.candidate_box.hide()
+    
+    def _on_input_commit(self, hanzi: str) -> None:
+        """
+        输入提交回调
+        
+        Args:
+            hanzi: 要提交的汉字
+        """
+        # 复制到剪贴板
+        self.clipboard.copy(hanzi)
+        
+        # 自动粘贴到目标窗口
+        if (
+            self.auto_paste
+            and self.last_external_hwnd
+            and self.last_external_hwnd != self.own_hwnd
+        ):
+            self._paste_to_previous_window(hanzi)
+    
+    def _on_key_press(self, key_info: dict) -> bool:
+        """
+        键盘按键回调
+        
+        Args:
+            key_info: 按键信息
+        
+        Returns:
+            True继续传递，False拦截
+        """
+        return self.input_manager.process_key(key_info)
+    
     def run(self) -> None:
         """运行应用"""
+        # 启动键盘监听
+        try:
+            self.keyboard_listener = KeyboardListener(
+                on_key_press=self._on_key_press,
+            )
+            self.keyboard_listener.start()
+            print("键盘监听已启动，按ESC退出")
+        except Exception as e:
+            print(f"启动键盘监听失败: {e}")
+            print("将使用手动输入模式")
+        
+        # 运行候选框
         self.candidate_box.run()
 
 
