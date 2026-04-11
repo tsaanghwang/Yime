@@ -193,6 +193,40 @@ npm run dev
 2. 访问 `http://localhost:3000` 使用输入法
 3. 参考[使用文档](docs/USAGE.md)了解详细操作指南
 
+## 项目结构
+
+```
+YIME/
+├── yime/                 # Python 核心引擎
+├── pinyin/               # 拼音处理模块
+├── syllable/             # 音节分析模块
+├── src/                  # React 前端
+├── docs/                 # 文档
+├── scripts/              # 辅助脚本（见下方说明）
+├── tests/                # 测试文件
+└── external_data/        # 外部数据源
+```
+
+### scripts/ 目录说明
+
+`scripts/` 目录包含辅助脚本文件，主要用于：
+
+- **临时验证脚本**：开发过程中用于验证功能和结果的临时脚本
+- **辅助工具脚本**：方便开发工作的辅助工具
+
+**注意**：这些脚本大多是临时验证结果的辅助文件，项目完成后一般不再需要。一些是方便工作作的辅助工具，项目完成后一般也不再需要。
+
+**主要脚本文件**：
+
+| 文件 | 用途 | 状态 |
+|------|------|------|
+| `final_test_script.py` | 韵母动态添加功能测试 | 临时验证 |
+| `complete_workflow_script.py` | 完整工作流程测试 | 临时验证 |
+| `dynamic_finals_script.py` | 动态韵母测试 | 临时验证 |
+| `ganyin_script.py` | 干音分析脚本 | 临时验证 |
+| `mysql_conn_script.py` | MySQL连接测试 | 辅助工具 |
+| `push_all.py` | 批量推送脚本 | 辅助工具 |
+
 ## 相关文档
 
 - [安装与部署说明](docs/INSTALL.md)
