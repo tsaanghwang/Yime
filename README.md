@@ -193,6 +193,13 @@ npm run dev
 2. 访问 `http://localhost:3000` 使用输入法
 3. 参考[使用文档](docs/USAGE.md)了解详细操作指南
 
+## 相关文档
+
+- [安装与部署说明](docs/INSTALL.md)
+- [使用说明](docs/USAGE.md)
+- [开发者文档](docs/DEVELOPMENT.md)
+- [数据文件结构说明](docs/DATAFILES.md)
+
 ## 使用许可
 
 本项目采用 [MIT 许可证](LICENSE)，允许自由使用、修改和分发。商业使用需遵守以下条款：
@@ -224,9 +231,11 @@ npm run dev
 - **主要贡献者**:
   - [成为贡献者](CONTRIBUTORS.md)
 
-## 相关资源
-
-- [音元系统理论文档](docs/THEORY.md)
+- [音元系统理论文档（自动索引，内容以 Yime.wiki 为准）](docs/THEORY_INDEX.md)
 - [API 参考手册](docs/API.md)
 - [开发路线图](ROADMAP.md)
 - [常见问题解答](docs/FAQ.md)
+- [安装与部署说明](docs/INSTALL.md)
+- [使用说明](docs/USAGE.md)
+- [开发者文档](docs/DEVELOPMENT.md)
+- [数据文件结构说明](docs/DATAFILES.md)
