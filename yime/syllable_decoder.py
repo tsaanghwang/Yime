@@ -1,7 +1,7 @@
 from pathlib import Path
 import json
 from typing import Tuple, Any
-from utils_charfilter import is_allowed_code_char, is_pua_char
+from .utils_charfilter import is_allowed_code_char, is_pua_char
 
 try:
     from yime.syllable_structure import SyllableStructure

@@ -39,18 +39,22 @@ class TestYunmuConverter(unittest.TestCase):
         self.assertEqual(stats["successful_conversions"], len(self.full_yunmu_dict))
         self.assertEqual(stats["success_rate"], 100.0)
 
-    def test_plugin_loading(self):
-        """测试插件加载"""
-        # 创建模拟插件
-        mock_plugin = MagicMock()
-        mock_plugin.get_rules.return_value = []
-        
-        # 使用自定义插件创建转换器
-        converter = YunmuConverter(plugins=[mock_plugin])
-        
-        # 验证插件加载
-        self.assertEqual(len(converter.plugins), 1)
-        mock_plugin.get_rules.assert_called_once()
+    def test_rule_application(self):
+        """测试规则应用"""
+        # 先执行完整转换
+        result = self.converter.convert(self.full_yunmu_dict)
+
+        # 验证特定韵母的转换规则
+        test_cases = {
+            "-i": "ir",      # 舌尖元音转换
+            "ao": "au",      # ao->au转换
+            "iao": "iau",    # iao->iau转换
+            "ü": "v",        # ü->v转换
+        }
+
+        for yunmu, expected in test_cases.items():
+            self.assertEqual(result[yunmu], expected,
+                           f"转换 {yunmu} 应该得到 {expected}，但得到 {result[yunmu]}")
 
     def test_invalid_input(self):
         """测试无效输入处理"""

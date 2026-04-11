@@ -38,8 +38,8 @@ class PinyinMapper:
             cursor.execute(
                 'INSERT OR REPLACE INTO "拼音映射" '
                 '("音元拼音", "数字标调拼音", "标准拼音", "注音符号") '
-                'VALUES (?, ?, ?)',
-                (yinyuan_id, digital_id, digital_pinyin)
+                'VALUES (?, ?, ?, ?)',
+                (yinyuan_id, digital_id, digital_pinyin, None)
             )
             conn.commit()
             return True
