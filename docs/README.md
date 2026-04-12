@@ -6,14 +6,22 @@
 
 ## 📚 文档导航
 
+### 重要设计约束
+
+- **[码点与中间层策略](CODEPOINT_POLICY.md)** - 说明 `N01-N24`、`M01-M33` 的语义层地位，以及 canonical 与 projection 的分工
+- **[真源文件与生成产物清单](SOURCE_AND_ARTIFACTS.md)** - 区分哪些文件是设计真源，哪些文件只是可重建产物
+
 ### 快速开始
 
-- **[安装指南](INSTALL.md)** - 快速安装和配置 YIME
+- **[安装指南](../INSTALLATION_GUIDE.md)** - 当前 Windows 桌面输入法原型的主安装入口
+- **[Python 3.12 快速开始](../QUICKSTART_PY312.md)** - 最短启动路径，适合已理解当前主线后快速跑起原型
+- **[无管理员权限安装](../PORTABLE_PYTHON_GUIDE.md)** - 使用便携版 Python 3.12 的无管理员权限安装路径
 - **[使用说明](USAGE.md)** - 基本使用方法和示例
 - **[快速入门](../README.md)** - 项目概述和快速开始
 
 ### 核心文档
 
+- **[输入法实现方案](../INPUT_METHOD_SOLUTION.md)** - 当前 Windows 桌面输入法原型的实现状态、边界和后续方向
 - **[API 参考手册](API.md)** - 完整的 API 文档和示例
 - **[开发者指南](DEVELOPMENT.md)** - 开发环境配置和最佳实践
 - **[常见问题](FAQ.md)** - 常见问题解答
@@ -21,6 +29,7 @@
 ### 技术文档
 
 - **[音元理论](THEORY.md)** - 音元系统理论基础
+- **[理论索引](THEORY_INDEX.md)** - 理论文档总入口与实现约束入口
 - **[架构设计](ARCHITECTURE.md)** - 系统架构和设计说明
 - **[数据库设计](DATABASE.md)** - 数据库结构和设计
 
@@ -36,9 +45,11 @@
 
 ### 我是新用户
 
-1. 阅读 [安装指南](INSTALL.md)
-2. 阅读 [使用说明](USAGE.md)
-3. 查看 [常见问题](FAQ.md)
+1. 阅读 [安装指南](../INSTALLATION_GUIDE.md)
+2. 只想最短路径启动时，阅读 [Python 3.12 快速开始](../QUICKSTART_PY312.md)
+3. 如果没有管理员权限，改看 [无管理员权限安装](../PORTABLE_PYTHON_GUIDE.md)
+4. 阅读 [使用说明](USAGE.md)
+5. 查看 [常见问题](FAQ.md)
 
 ### 我是开发者
 
@@ -59,6 +70,7 @@
 ### API 参考手册
 
 完整的 API 文档，包含：
+
 - 核心模块 API
 - 数据库 API
 - 工具函数
@@ -70,6 +82,7 @@
 ### 开发者指南
 
 开发者必读，包含：
+
 - 环境配置
 - 项目结构
 - 开发工作流
@@ -81,6 +94,7 @@
 ### 常见问题
 
 30+ 常见问题解答，包含：
+
 - 安装与配置
 - 使用问题
 - 技术问题
@@ -132,10 +146,10 @@
 
 ## 🔗 外部资源
 
-- **GitHub 仓库**: https://github.com/tsaanghwang/YIME
-- **问题追踪**: https://github.com/tsaanghwang/YIME/issues
-- **讨论区**: https://github.com/tsaanghwang/YIME/discussions
-- **发布页面**: https://github.com/tsaanghwang/YIME/releases
+- **GitHub 仓库**: [tsaanghwang/YIME](https://github.com/tsaanghwang/YIME)
+- **问题追踪**: [tsaanghwang/YIME issues](https://github.com/tsaanghwang/YIME/issues)
+- **讨论区**: [tsaanghwang/YIME discussions](https://github.com/tsaanghwang/YIME/discussions)
+- **发布页面**: [tsaanghwang/YIME releases](https://github.com/tsaanghwang/YIME/releases)
 
 ---
 
@@ -154,7 +168,7 @@
 ## 📋 文档清单
 
 | 文档 | 状态 | 最后更新 |
-|------|------|---------|
+| --- | --- | --- |
 | [API.md](API.md) | ✅ 完成 | 2026-04-11 |
 | [DEVELOPMENT.md](DEVELOPMENT.md) | ✅ 完成 | 2026-04-11 |
 | [FAQ.md](FAQ.md) | ✅ 完成 | 2026-04-11 |

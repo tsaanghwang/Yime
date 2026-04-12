@@ -1025,16 +1025,6 @@
       "noDebug": true
     },
     {
-      "name": "push_all",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\scripts\\push_all.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\scripts",
-      "addSourceRootsToPythonpath": true,
-      "noDebug": true
-    },
-    {
       "name": "unicode_pua",
       "type": "python",
       "request": "launch",

@@ -1,50 +1,49 @@
-# 安装与部署说明（INSTALL.md）
+# 安装与部署说明
 
-本说明介绍 YIME 项目的安装、依赖、平台兼容性及常见问题排查。
+本页是文档中心里的安装入口摘要。当前仓库的实际安装主线已经切换为 Windows 桌面输入法原型，而不是早期的 Web / Node 启动流程。
 
-## 1. 环境要求
+## 当前主线
 
-- Python 3.14+（核心引擎）
-- Node.js 16+（前端）
-- npm 8+
-- 现代浏览器（Chrome/Firefox/Edge）
+请按以下组合准备环境：
 
-## 2. 安装步骤
+- Windows 10 / 11
+- Python 3.12.x
+- `pywin32`
+- `requirements_py312.txt`
 
-```bash
-# 克隆仓库
-git clone https://github.com/tsaanghwang/YIME.git
-cd YIME
+推荐入口：
 
-# 安装 Python 依赖
-pip install -r requirements.txt
+- [../INSTALLATION_GUIDE.md](../INSTALLATION_GUIDE.md)
 
-# 安装前端依赖
-npm install
-```
-
-## 3. 启动开发环境
+## 推荐步骤
 
 ```bash
-npm run dev
+conda create -n yime_env python=3.12
+conda activate yime_env
+pip install -r requirements_py312.txt
+python -m yime.input_method.app
 ```
 
-## 4. 常见问题
+如果不使用 `conda`，请改走：
 
-- 依赖安装失败：请检查 Python/Node 版本，或尝试使用国内镜像。
-- 端口冲突：如 3000 端口被占用，可在 package.json 中修改。
-- Windows 下编码问题：请确保终端为 UTF-8。
+- [../DIRECT_INSTALL_GUIDE.md](../DIRECT_INSTALL_GUIDE.md)
 
-## 5. 平台兼容性
+如果你需要先理解为什么仓库现在统一使用 Python 3.12，请看：
 
-- Windows、macOS、Linux 均支持。
-- 推荐使用最新版 Node.js 和 Python。
+- [../PYTHON312_INSTALLATION_GUIDE.md](../PYTHON312_INSTALLATION_GUIDE.md)
 
-## 6. 依赖说明
+## 当前说明边界
 
-- Python 依赖详见 requirements.txt
-- 前端依赖详见 package.json
+本页不再把以下路径作为默认安装主线：
 
----
+- `requirements.txt` + `npm install`
+- `npm run dev`
+- 浏览器端原型启动
 
-如需详细开发环境搭建，请参考 [DEVELOPMENT.md](DEVELOPMENT.md)。
+这些内容在仓库中可能仍有历史痕迹，但不应作为当前输入法原型的首选安装方式。
+
+## 相关文档
+
+- [../INSTALLATION_GUIDE.md](../INSTALLATION_GUIDE.md)
+- [../INPUT_METHOD_SOLUTION.md](../INPUT_METHOD_SOLUTION.md)
+- [DEVELOPMENT.md](DEVELOPMENT.md)
