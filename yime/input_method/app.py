@@ -8,8 +8,11 @@ from __future__ import annotations
 
 import argparse
 import ctypes
+import os
+import queue
+import tkinter as tk
 from pathlib import Path
-from typing import Optional
+from typing import Callable, Optional
 
 from .core.decoders import CompositeCandidateDecoder
 from .core.keyboard_listener import KeyboardListener
@@ -26,7 +29,7 @@ class InputMethodApp:
     def __init__(
         self,
         auto_paste: bool = True,
-        font_family: str = "YinYuan Regular",
+        font_family: str = "Noto Sans",
     ) -> None:
         """
         初始化输入法应用
@@ -37,52 +40,139 @@ class InputMethodApp:
         """
         self.auto_paste = auto_paste
         self.font_family = font_family
+        self.debug_ui = os.environ.get("YIME_DEBUG_UI", "").strip().lower() in {
+            "1",
+            "true",
+            "yes",
+            "on",
+        }
 
         # 初始化各模块
         app_dir = Path(__file__).resolve().parent.parent
         self.decoder = CompositeCandidateDecoder(app_dir)
+        self.runtime_decoder_warning = self.decoder.get_runtime_warning()
+        self.runtime_decoder_source = self.decoder.get_runtime_source()
         self.clipboard = ClipboardManager()
         self.keyboard_simulator = KeyboardSimulator()
         self.window_manager = WindowManager()
 
-        # 创建候选框
+        # 创建候选框，显式注入回调
         self.candidate_box = CandidateBox(
             on_select=self._on_candidate_select,
             font_family=font_family,
+            on_input_change=self._on_input_change,
+            on_decode_from_clipboard=self._decode_from_clipboard,
+            on_copy_candidate=self._copy_candidate,
+            on_commit_text=self._commit_candidate_box_text,
+            on_hide=self._hide_candidate_box,
+            on_close=self._close,
         )
-
-        # 重写候选框的方法
-        self.candidate_box._on_input_change = self._on_input_change
-        self.candidate_box._decode_from_clipboard = self._decode_from_clipboard
-        self.candidate_box._copy_candidate = self._copy_candidate
 
         # 状态变量
         self.own_hwnd = self.candidate_box.root.winfo_id()
         self.last_external_hwnd: Optional[int] = None
         self.last_replace_length = 0
-        
+        self._is_closing = False
+        self._after_ids: set[str] = set()
+        self._ui_queue: queue.SimpleQueue[Callable[[], None]] = queue.SimpleQueue()
+
         # 创建输入管理器
         self.input_manager = InputManager(
-            on_candidates_update=self._on_candidates_update,
-            on_input_commit=self._on_input_commit,
+            on_candidates_update=self._dispatch_candidates_update,
+            on_input_commit=self._dispatch_input_commit,
         )
         self.input_manager.set_decoder(self.decoder)
-        
+
         # 创建键盘监听器
         self.keyboard_listener: Optional[KeyboardListener] = None
-        
+
         # 启动窗口焦点轮询
         self._poll_foreground_window()
-        
+        self._pump_ui_queue()
+
         # 设置关闭处理
         self.candidate_box.root.protocol("WM_DELETE_WINDOW", self._close)
 
+        if self.runtime_decoder_source == "sqlite":
+            print("[Decoder] 运行时候选已回退到 SQLite 数据库视图 runtime_candidates")
+        elif self.runtime_decoder_source == "json":
+            print("[Decoder] 运行时候选来源: JSON 导出文件")
+
+        if self.runtime_decoder_warning:
+            print(f"[Decoder] 运行时编码表未启用: {self.runtime_decoder_warning}")
+
+    def _schedule_ui(self, delay_ms: int, callback: Callable[[], None]) -> Optional[str]:
+        """通过统一入口调度 Tk 回调，便于关闭时统一取消。"""
+        if self._is_closing:
+            return None
+
+        try:
+            if not self.candidate_box.root.winfo_exists():
+                return None
+        except tk.TclError:
+            return None
+
+        after_id: Optional[str] = None
+
+        def wrapped() -> None:
+            if after_id is not None:
+                self._after_ids.discard(after_id)
+            if self._is_closing:
+                return
+            try:
+                if self.candidate_box.root.winfo_exists():
+                    callback()
+            except tk.TclError:
+                return
+
+        after_id = self.candidate_box.root.after(delay_ms, wrapped)
+        self._after_ids.add(after_id)
+        return after_id
+
+    def _cancel_scheduled_callbacks(self) -> None:
+        """取消所有尚未执行的 Tk after 任务。"""
+        for after_id in list(self._after_ids):
+            try:
+                self.candidate_box.root.after_cancel(after_id)
+            except tk.TclError:
+                pass
+            finally:
+                self._after_ids.discard(after_id)
+
     def _poll_foreground_window(self) -> None:
         """轮询前台窗口"""
+        if self._is_closing:
+            return
         foreground = self.window_manager.get_foreground_window()
         if foreground and foreground != self.own_hwnd:
             self.last_external_hwnd = foreground
-        self.candidate_box.root.after(250, self._poll_foreground_window)
+        self._schedule_ui(250, self._poll_foreground_window)
+
+    def _pump_ui_queue(self) -> None:
+        """在 Tk 主线程中执行由后台线程提交的 UI 任务。"""
+        if self._is_closing:
+            return
+
+        while True:
+            try:
+                callback = self._ui_queue.get_nowait()
+            except queue.Empty:
+                break
+
+            try:
+                callback()
+            except tk.TclError:
+                pass
+            except Exception as exc:
+                print(f"UI任务执行出错: {exc}")
+
+        self._schedule_ui(16, self._pump_ui_queue)
+
+    def _enqueue_ui(self, callback: Callable[[], None]) -> None:
+        """允许任意线程提交 UI 更新，由主线程统一处理。"""
+        if self._is_closing:
+            return
+        self._ui_queue.put(callback)
 
     def _on_input_change(self, event: Optional[object] = None) -> None:
         """输入变化处理"""
@@ -137,18 +227,8 @@ class InputMethodApp:
         self.clipboard.copy(hanzi)
         self.candidate_box.status_var.set(f"已复制: {hanzi}")
 
-        # 自动粘贴
-        if (
-            self.auto_paste
-            and self.last_external_hwnd
-            and self.last_external_hwnd != self.own_hwnd
-        ):
-            self.candidate_box.root.after(
-                50, lambda: self._paste_to_previous_window(hanzi)
-            )
-
-        # 清空输入
-        self.candidate_box._clear_input()
+        # 手工候选框选字时先加入待上屏文本，不立刻回贴。
+        self.candidate_box._clear_input(focus_input=True)
 
     def _copy_candidate(self, index: int) -> None:
         """
@@ -181,14 +261,14 @@ class InputMethodApp:
 
         # 如果需要替换已输入的码元
         if self.last_replace_length > 0:
-            self.candidate_box.root.after(
+            self._schedule_ui(
                 80,
                 lambda: self.keyboard_simulator.send_backspace(
                     self.last_replace_length
                 ),
             )
-            self.candidate_box.root.after(170, self.keyboard_simulator.send_ctrl_v)
-            self.candidate_box.root.after(
+            self._schedule_ui(170, self.keyboard_simulator.send_ctrl_v)
+            self._schedule_ui(
                 280,
                 lambda: self.candidate_box.status_var.set(
                     f"已替换前一个窗口中的 {self.last_replace_length} 个编码字符: {hanzi}"
@@ -197,8 +277,8 @@ class InputMethodApp:
             return
 
         # 直接粘贴
-        self.candidate_box.root.after(80, self.keyboard_simulator.send_ctrl_v)
-        self.candidate_box.root.after(
+        self._schedule_ui(80, self.keyboard_simulator.send_ctrl_v)
+        self._schedule_ui(
             180,
             lambda: self.candidate_box.status_var.set(
                 f"已回贴到前一个窗口: {hanzi}"
@@ -207,12 +287,58 @@ class InputMethodApp:
 
     def _close(self) -> None:
         """关闭应用"""
+        if self._is_closing:
+            return
+
+        target_hwnd = None
+        if self.last_external_hwnd and self.last_external_hwnd != self.own_hwnd:
+            target_hwnd = self.last_external_hwnd
+
+        self._is_closing = True
+        self._cancel_scheduled_callbacks()
+
         # 停止键盘监听
         if self.keyboard_listener:
             self.keyboard_listener.stop()
-        
+
         self.candidate_box._close()
-    
+
+        if target_hwnd:
+            try:
+                self.window_manager.restore_window(target_hwnd)
+            except Exception:
+                pass
+
+    def _hide_candidate_box(self) -> None:
+        """将候选框缩到待命图标并清空当前组合，但保持全局监听继续运行。"""
+        self.last_replace_length = 0
+        self.input_manager.clear_buffer(notify=False)
+        self.candidate_box._clear_input(focus_input=False)
+        self.candidate_box.clear_commit_text()
+        self.candidate_box.show_standby()
+
+        if self.last_external_hwnd and self.last_external_hwnd != self.own_hwnd:
+            try:
+                self.window_manager.restore_window(self.last_external_hwnd)
+            except Exception:
+                pass
+
+    def _dispatch_candidates_update(
+        self,
+        candidates: list,
+        pinyin: str,
+        code: str,
+        status: str,
+    ) -> None:
+        """确保候选框更新在 Tk 主线程执行。"""
+        self._enqueue_ui(
+            lambda: self._on_candidates_update(candidates, pinyin, code, status)
+        )
+
+    def _dispatch_input_commit(self, hanzi: str) -> None:
+        """确保提交逻辑在 Tk 主线程执行。"""
+        self._enqueue_ui(lambda: self._on_input_commit(hanzi))
+
     def _on_candidates_update(
         self,
         candidates: list,
@@ -222,37 +348,55 @@ class InputMethodApp:
     ) -> None:
         """
         候选词更新回调
-        
+
         Args:
             candidates: 候选词列表
             pinyin: 拼音
             code: 编码
             status: 状态消息
         """
+        buffer_text = self.input_manager.get_buffer()
+
+        # 全局监听模式下，也要把缓冲区同步到编辑框，形成真正的“编码编辑中”体验。
+        if self.candidate_box.get_input() != buffer_text:
+            self.candidate_box.set_input(buffer_text)
+
         # 更新候选框显示
         self.candidate_box.update_candidates(candidates, pinyin, code, status)
-        
-        # 如果有候选词，显示候选框
-        if candidates:
+
+        # 只要仍在组合输入，就保持编辑框可见；候选为空也应允许继续编辑。
+        if buffer_text:
             # 获取光标位置并显示
             try:
-                x, y = self.window_manager.get_cursor_position()
-                self.candidate_box.show(x, y + 20)
-            except:
-                self.candidate_box.show()
+                x, y = self.candidate_box.get_pointer_position()
+                if self.debug_ui:
+                    print(
+                        f"[UI] update buffer='{buffer_text}' candidates={len(candidates)} pos=({x},{y + 20}) status={status}"
+                    )
+                self.candidate_box.show(x, y + 20, focus_input=False)
+            except Exception as exc:
+                if self.debug_ui:
+                    print(f"[UI] cursor position fallback: {exc}")
+                try:
+                    x, y = self.window_manager.get_cursor_position()
+                    self.candidate_box.show(x, y + 20, focus_input=False)
+                except Exception:
+                    self.candidate_box.show(focus_input=False)
         else:
+            if self.debug_ui:
+                print("[UI] hide candidate box because buffer is empty")
             self.candidate_box.hide()
-    
+
     def _on_input_commit(self, hanzi: str) -> None:
         """
         输入提交回调
-        
+
         Args:
             hanzi: 要提交的汉字
         """
         # 复制到剪贴板
         self.clipboard.copy(hanzi)
-        
+
         # 自动粘贴到目标窗口
         if (
             self.auto_paste
@@ -260,19 +404,50 @@ class InputMethodApp:
             and self.last_external_hwnd != self.own_hwnd
         ):
             self._paste_to_previous_window(hanzi)
-    
+
+    def _commit_candidate_box_text(self, text: str) -> None:
+        """将候选框里累积的汉字整段上屏到外部编辑区。"""
+        self.clipboard.copy(text)
+
+        if (
+            self.last_external_hwnd
+            and self.last_external_hwnd != self.own_hwnd
+        ):
+            self.last_replace_length = 0
+            self._schedule_ui(50, lambda: self._paste_to_previous_window(text))
+
+        self.candidate_box.clear_commit_text()
+        self.candidate_box._clear_input(focus_input=False)
+
     def _on_key_press(self, key_info: dict) -> bool:
         """
         键盘按键回调
-        
-        Args:
-            key_info: 按键信息
-        
+
         Returns:
             True继续传递，False拦截
         """
-        return self.input_manager.process_key(key_info)
-    
+        try:
+            if self.candidate_box.is_manual_input_active():
+                return True
+            # 让 InputManager 决定是否拦截
+            handled = self.input_manager.process_key(key_info)
+            return handled
+        except Exception as e:
+            print(f"处理键盘事件出错: {e}")
+        return True
+
+    def _process_key_in_main_thread(self, key_info: dict) -> None:
+        """
+        在主线程中处理键盘事件
+
+        Args:
+            key_info: 按键信息
+        """
+        try:
+            self.input_manager.process_key(key_info)
+        except Exception as e:
+            print(f"处理键盘事件出错: {e}")
+
     def run(self) -> None:
         """运行应用"""
         # 启动键盘监听
@@ -281,11 +456,14 @@ class InputMethodApp:
                 on_key_press=self._on_key_press,
             )
             self.keyboard_listener.start()
-            print("键盘监听已启动，按ESC退出")
+            if self.keyboard_listener.is_active():
+                print("键盘监听已启动，按ESC退出")
+            else:
+                print("键盘监听未启用，将使用手动输入模式")
         except Exception as e:
             print(f"启动键盘监听失败: {e}")
             print("将使用手动输入模式")
-        
+
         # 运行候选框
         self.candidate_box.run()
 
@@ -300,8 +478,8 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--font-family",
-        default="YinYuan Regular",
-        help="输入框字体名。默认: YinYuan Regular",
+        default="Noto Sans",
+        help="输入框字体名。默认: Noto Sans",
     )
     return parser.parse_args()
 
