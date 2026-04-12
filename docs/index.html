@@ -60,12 +60,23 @@
 
     <div class="hero min-h-screen bg-base-200">
         <div class="hero-content text-center">
-            <div class="max-w-md">
+            <div class="max-w-3xl">
                 <h1 class="text-5xl font-bold">音元输入法</h1>
                 <p class="py-6">基于音元分析理论的创新中文输入系统</p>
+                <div class="alert alert-warning text-left shadow-lg mb-6">
+                    <div>
+                        <h2 class="font-bold">重要设计约束</h2>
+                        <p>
+                            <code>N01-N24</code> 与 <code>M01-M33</code> 是系统的语义槽位层，不是可删的临时中间产物。
+                            码点、数据库、键盘布局和平台兼容实现都不应绕过该层直接改字符结果。
+                            请优先阅读 <a href="CODEPOINT_POLICY.md" class="link link-primary">码点与中间层策略</a>。
+                        </p>
+                    </div>
+                </div>
                 <div class="flex justify-center gap-4">
                     <a href="quickstart.html" class="btn btn-primary">快速开始</a>
                     <a href="manual.html" class="btn btn-outline">使用手册</a>
+                    <a href="CODEPOINT_POLICY.md" class="btn btn-secondary">码点策略</a>
                 </div>
             </div>
         </div>

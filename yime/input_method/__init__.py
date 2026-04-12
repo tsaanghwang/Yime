@@ -1,16 +1,18 @@
-"""
-音元输入法 Windows 桌面应用
+"""音元输入法 Windows 桌面应用。"""
 
-这个包提供完整的Windows桌面输入法功能，包括：
-- 全局键盘监听
-- 候选词显示
-- 输入处理
-- 系统集成
-"""
+from __future__ import annotations
 
-from .app import InputMethodApp, main
+from importlib import import_module
+from typing import Any
 
 __version__ = "1.0.0"
 __author__ = "Yime Team"
 
 __all__ = ["InputMethodApp", "main"]
+
+
+def __getattr__(name: str) -> Any:
+	if name in {"InputMethodApp", "main"}:
+		module = import_module(".app", __name__)
+		return getattr(module, name)
+	raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

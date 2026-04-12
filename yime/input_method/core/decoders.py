@@ -10,6 +10,7 @@
 from __future__ import annotations
 
 import json
+import sqlite3
 from pathlib import Path
 import unicodedata
 from typing import Dict, List, Tuple, Optional
@@ -166,8 +167,11 @@ class RuntimeCandidateDecoder:
 
     def _load_json(self, path: Path) -> dict:
         """加载JSON文件"""
-        with path.open("r", encoding="utf-8") as handle:
-            return json.load(handle)
+        raw_text = path.read_text(encoding="utf-8")
+        stripped = raw_text.lstrip()
+        if stripped.startswith("version https://git-lfs.github.com/spec/v1"):
+            raise ValueError(f"运行时候选文件是 Git LFS 指针，未拉取实际内容: {path}")
+        return json.loads(raw_text)
 
     def _build_bmp_to_canonical_map(
         self, projection_path: Path, key_to_code_path: Path
@@ -256,6 +260,111 @@ class RuntimeCandidateDecoder:
         return canonical, active_code, display_pinyin, [], status
 
 
+class SQLiteRuntimeCandidateDecoder:
+    """直接从 SQLite runtime_candidates 视图读取候选。"""
+
+    def __init__(self, app_dir: Path) -> None:
+        self.db_path = app_dir / "pinyin_hanzi.db"
+        if not self.db_path.exists():
+            raise FileNotFoundError(f"未找到输入法数据库: {self.db_path}")
+        self.bmp_to_canonical = self._build_bmp_to_canonical_map(
+            app_dir.parent / "internal_data" / "bmp_pua_trial_projection.json",
+            app_dir.parent / "key_to_code.json",
+        )
+        self._validate_runtime_candidates_view()
+
+    def _load_json(self, path: Path) -> dict:
+        with path.open("r", encoding="utf-8") as handle:
+            return json.load(handle)
+
+    def _build_bmp_to_canonical_map(
+        self, projection_path: Path, key_to_code_path: Path
+    ) -> Dict[str, str]:
+        projection = self._load_json(projection_path)
+        key_to_code = self._load_json(key_to_code_path)
+        bmp_to_canonical: Dict[str, str] = {}
+
+        for symbol_key, slot_info in projection["used_mapping"].items():
+            bmp_char = slot_info["char"]
+            canonical_char = key_to_code.get(symbol_key)
+            if canonical_char:
+                bmp_to_canonical[bmp_char] = canonical_char
+
+        return bmp_to_canonical
+
+    def _connect(self) -> sqlite3.Connection:
+        connection = sqlite3.connect(f"file:{self.db_path}?mode=ro", uri=True)
+        connection.row_factory = sqlite3.Row
+        return connection
+
+    def _validate_runtime_candidates_view(self) -> None:
+        with self._connect() as conn:
+            row = conn.execute(
+                "SELECT type FROM sqlite_master WHERE name = 'runtime_candidates'"
+            ).fetchone()
+            if row is None:
+                raise ValueError("数据库中缺少 runtime_candidates 视图")
+
+    def decode_text(
+        self, text: str
+    ) -> Tuple[str, str, str, List[str], str]:
+        canonical = "".join(
+            self.bmp_to_canonical.get(char, char) for char in text
+        )
+        if not canonical:
+            return "", "", "", [], "请输入一个完整音节的 4 个码元。"
+
+        if len(canonical) < 4:
+            return (
+                canonical,
+                canonical,
+                "",
+                [],
+                f"当前 {len(canonical)}/4 码，继续输入。",
+            )
+
+        active_code = canonical[-4:]
+        mode_hint = ""
+        if len(canonical) > 4:
+            mode_hint = f"已自动截取最近 4 码，总输入 {len(canonical)} 码。"
+
+        with self._connect() as conn:
+            rows = conn.execute(
+                """
+                SELECT text, pinyin_tone, entry_type, sort_weight
+                FROM runtime_candidates
+                WHERE yime_code = ?
+                ORDER BY entry_type, sort_weight DESC, text
+                """,
+                (active_code,),
+            ).fetchall()
+
+        texts: List[str] = []
+        seen_texts: set[str] = set()
+        pinyin_values: List[str] = []
+        for row in rows:
+            candidate_text = str(row["text"] or "").strip()
+            if not candidate_text or candidate_text in seen_texts:
+                continue
+            seen_texts.add(candidate_text)
+            texts.append(candidate_text)
+            pinyin_value = str(row["pinyin_tone"] or "").strip()
+            if pinyin_value and pinyin_value not in pinyin_values:
+                pinyin_values.append(pinyin_value)
+
+        display_pinyin = " / ".join(pinyin_values[:3])
+        if texts:
+            status = f"从数据库候选视图找到 {len(texts)} 个候选。"
+            if mode_hint:
+                status = f"{mode_hint} {status}"
+            return canonical, active_code, display_pinyin, texts, status
+
+        status = "数据库候选视图中未找到该 4 码候选。"
+        if mode_hint:
+            status = f"{mode_hint} {status}"
+        return canonical, active_code, display_pinyin, [], status
+
+
 class CompositeCandidateDecoder:
     """组合候选词解码器（优先运行时，回退静态）"""
 
@@ -268,11 +377,29 @@ class CompositeCandidateDecoder:
         """
         self.runtime_decoder: Optional[RuntimeCandidateDecoder] = None
         self.runtime_load_error = ""
+        self.runtime_source = ""
         try:
             self.runtime_decoder = RuntimeCandidateDecoder(app_dir)
+            self.runtime_source = "json"
         except (FileNotFoundError, ValueError, KeyError, json.JSONDecodeError) as exc:
             self.runtime_load_error = str(exc)
+            try:
+                self.runtime_decoder = SQLiteRuntimeCandidateDecoder(app_dir)
+                self.runtime_source = "sqlite"
+                self.runtime_load_error = ""
+            except (FileNotFoundError, ValueError, sqlite3.Error) as db_exc:
+                self.runtime_load_error = (
+                    f"JSON导出不可用: {exc}; SQLite回退不可用: {db_exc}"
+                )
         self.static_decoder = StaticCandidateDecoder(app_dir)
+
+    def get_runtime_warning(self) -> str:
+        """返回运行时编码表告警，供上层决定是否展示。"""
+        return self.runtime_load_error
+
+    def get_runtime_source(self) -> str:
+        """返回当前启用的运行时候选来源。"""
+        return self.runtime_source
 
     def decode_text(
         self, text: str
@@ -304,22 +431,4 @@ class CompositeCandidateDecoder:
                     )
                 return canonical, active_code, pinyin, candidates, status
 
-        fallback = self.static_decoder.decode_text(text)
-        if self.runtime_load_error:
-            fallback_status = fallback[4]
-            if fallback_status:
-                fallback_status = (
-                    f"{fallback_status} 运行时编码表未启用: {self.runtime_load_error}"
-                )
-            else:
-                fallback_status = (
-                    f"运行时编码表未启用: {self.runtime_load_error}"
-                )
-            return (
-                fallback[0],
-                fallback[1],
-                fallback[2],
-                fallback[3],
-                fallback_status,
-            )
-        return fallback
+        return self.static_decoder.decode_text(text)
