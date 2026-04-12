@@ -56,7 +56,7 @@ class HanziInputApp:
         input_frame.pack(fill=tk.X)
 
         ttk.Label(input_frame, text="输入音元符号:").pack(anchor=tk.W)
-        self.input_entry = ttk.Entry(input_frame, width=40, font=('YinYuan Regular', 12, 'normal'))
+        self.input_entry = ttk.Entry(input_frame, width=40, font=('Noto Sans', 12, 'normal'))
         self.input_entry.pack(fill=tk.X, pady=5)
         # 注意：我们保留KeyRelease绑定，以获得即时响应，轮询作为补充
         self.input_entry.bind("<KeyRelease>", self.on_input_change)
@@ -67,7 +67,7 @@ class HanziInputApp:
             input_frame,
             text="",
             foreground="blue",
-            font=('YinYuan Regular', 12, 'bold')
+            font=('Noto Sans', 12, 'bold')
         )
         self.pinyin_display.pack(anchor=tk.W, pady=2)
 
@@ -84,7 +84,7 @@ class HanziInputApp:
         self.result_display = ttk.Label(
             result_frame,
             text="",
-            font=('YinYuan Regular', 14, 'normal'),
+            font=('Noto Sans', 14, 'normal'),
             wraplength=400
         )
         self.result_display.pack(fill=tk.BOTH, expand=True, pady=5)

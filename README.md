@@ -1,8 +1,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 [![GitHub Release](https://img.shields.io/github/release/tsaanghwang/YIME)](https://github.com/tsaanghwang/YIME/releases)
-[![Python Version](https://img.shields.io/badge/python-3.14+-blue.svg)](https://www.python.org/)
-[![Node Version](https://img.shields.io/badge/node-16+-green.svg)](https://nodejs.org/)
+[![Python Version](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/)
 
 # 音元输入法编辑器 (Yinyuan Input Method Editor)
 
@@ -13,6 +12,18 @@
 - **更短的编码长度**：字词平均码长比现行任何一种全拼输入法的字词平均码长都短
 - **更高的输入效率**：拣字和拣词率比现行任何一种全拼输入法的拣字和拣词率都高
 - **更精的音系表达**：音元系统与已有各种类型的语音系统相比，主要是在和音位系统对比时，能更准确地表达汉语语音系统的特征。
+
+## 重要设计约束
+
+在阅读实现、测试、键盘布局或数据库相关代码前，建议先阅读 [码点与中间层策略](docs/CODEPOINT_POLICY.md)。
+
+该文档明确规定：
+
+- `N01-N24` 与 `M01-M33` 是系统的语义槽位层，不是可删的临时中间产物。
+- `PUA-B` 是长期规范承载层，`BMP PUA` 主要是当前平台投影层。
+- 测试、重构、数据库调整和键盘布局生成不应绕过语义层直接修改字符结果。
+
+如果后续实现与该策略冲突，应先审查实现链路，而不是先删除中间层或直接改库。
 
 ## 特性
 
@@ -31,7 +42,7 @@
 在全拼模式下，音节由一个充当首音的音元和三个构成干音的音元构成。音元输入也有与全拼相对的简拼、双拼和并击等输入模式。在全拼中，省略虚首音、把构成干音的两个或三个连续且相同的音元合并成一个音元、从由三个音质相同的音元构成的干音中省略中间的中调乐音，就是简拼。双拼是指在一键输入首音后一键输入干音的输入模式。并击，也称合击，是指在一键输入首音后通过同时输入一组表示干音的音元的组合键输入干音从而输入音节的输入模式。
 
 - **智能编码转换**：实时由语音到音元到汉字双向转换引擎
-- **多种平台支持**：提供网页端、桌面端和移动端输入功能
+- **当前实现主线**：Windows 桌面输入法原型，已具备全局监听、候选框和回贴链路
 
 ## 码元
 
@@ -161,9 +172,10 @@
 
 ### 环境要求
 
-- Python 3.14+ (核心引擎)
-- Node.js 16+ (Web 界面)
-- 现代浏览器(Chrome/Firefox/Edge)
+- Windows 10 / 11
+- Python 3.12.x
+- 可选：Miniconda / conda
+- 可选：Git LFS
 
 ### 安装步骤
 
@@ -172,35 +184,31 @@
 git clone https://github.com/tsaanghwang/YIME.git
 cd YIME
 
-# 安装Python依赖
-pip install -r requirements.txt
+# 推荐：创建并激活 Python 3.12 conda 环境
+conda create -n yime_env python=3.12
+conda activate yime_env
 
-# 安装前端依赖
-npm install
+# 安装当前 Windows 输入法原型依赖
+pip install -r requirements_py312.txt
 
-# 启动开发服务器
-npm run dev
+# 启动输入法原型
+python -m yime.input_method.app
 ```
 
 ### 使用说明
 
-1. 启动 Web 原型:
-
-   ```bash
-   npm run start
-   ```
-
-2. 访问 `http://localhost:3000` 使用输入法
-3. 参考[使用文档](docs/USAGE.md)了解详细操作指南
+1. 优先阅读 [INSTALLATION_GUIDE.md](INSTALLATION_GUIDE.md) 完成 Python 3.12 环境配置。
+2. 使用 `python -m yime.input_method.app` 或 `python run_input_method.py` 启动当前 Windows 桌面输入法原型。
+3. 参考 [INPUT_METHOD_SOLUTION.md](INPUT_METHOD_SOLUTION.md) 了解当前实现边界，再结合 [docs/USAGE.md](docs/USAGE.md) 查看使用说明。
 
 ## 项目结构
 
-```
+```text
 YIME/
 ├── yime/                 # Python 核心引擎
 ├── pinyin/               # 拼音处理模块
 ├── syllable/             # 音节分析模块
-├── src/                  # React 前端
+├── src/                  # 历史前端代码与实验性界面资源
 ├── docs/                 # 文档
 ├── scripts/              # 辅助脚本（见下方说明）
 ├── tests/                # 测试文件
@@ -219,20 +227,43 @@ YIME/
 **主要脚本文件**：
 
 | 文件 | 用途 | 状态 |
-|------|------|------|
+| --- | --- | --- |
 | `final_test_script.py` | 韵母动态添加功能测试 | 临时验证 |
 | `complete_workflow_script.py` | 完整工作流程测试 | 临时验证 |
 | `dynamic_finals_script.py` | 动态韵母测试 | 临时验证 |
 | `ganyin_script.py` | 干音分析脚本 | 临时验证 |
 | `mysql_conn_script.py` | MySQL连接测试 | 辅助工具 |
-| `push_all.py` | 批量推送脚本 | 辅助工具 |
 
 ## 相关文档
 
+- [安装指南](INSTALLATION_GUIDE.md)
+- [Python 3.12 快速开始](QUICKSTART_PY312.md)
 - [安装与部署说明](docs/INSTALL.md)
+- [便携版 Python 3.12 安装指南（无需管理员权限）](PORTABLE_PYTHON_GUIDE.md)
+- [Python 3.12 安装方案](PYTHON312_INSTALLATION_GUIDE.md)
+- [Python 3.12 直接安装指南](DIRECT_INSTALL_GUIDE.md)
 - [使用说明](docs/USAGE.md)
+- [输入法实现方案](INPUT_METHOD_SOLUTION.md)
 - [开发者文档](docs/DEVELOPMENT.md)
 - [数据文件结构说明](docs/DATAFILES.md)
+- [码点与中间层策略](docs/CODEPOINT_POLICY.md)
+- [真源文件与生成产物清单](docs/SOURCE_AND_ARTIFACTS.md)
+
+### 重要设计约束
+
+- [码点与中间层策略](docs/CODEPOINT_POLICY.md)：说明 `N01-N24`、`M01-M33` 的语义层地位，以及 `PUA-B`、`BMP PUA` 和平台投影的分工。后续测试、重构、数据库调整和键盘布局生成不应绕过该约束。
+
+### 当前原型状态
+
+- [输入法实现方案](INPUT_METHOD_SOLUTION.md)：记录当前 Windows 桌面输入法原型的实现边界、已实现能力、限制和下一步方向。该文档优先于仓库内更早的可行性说明或临时方案稿。
+
+### 无管理员权限安装
+
+- [便携版 Python 3.12 安装指南（无需管理员权限）](PORTABLE_PYTHON_GUIDE.md)：当你无法安装系统级 Python 或不方便使用 conda 时，使用便携 Python 3.12 继续沿当前主线部署。
+
+### 快速启动
+
+- [Python 3.12 快速开始](QUICKSTART_PY312.md)：只保留最短启动命令，适合已经理解当前主线、只想尽快跑起原型时使用。
 
 ## 使用许可
 
@@ -264,12 +295,3 @@ YIME/
   - Huang Chang (黄畅) - [yinyuanxitong@foxmail.com](mailto:yinyuanxitong@foxmail.com)
 - **主要贡献者**:
   - [成为贡献者](CONTRIBUTORS.md)
-
-- [音元系统理论文档（自动索引，内容以 Yime.wiki 为准）](docs/THEORY_INDEX.md)
-- [API 参考手册](docs/API.md)
-- [开发路线图](ROADMAP.md)
-- [常见问题解答](docs/FAQ.md)
-- [安装与部署说明](docs/INSTALL.md)
-- [使用说明](docs/USAGE.md)
-- [开发者文档](docs/DEVELOPMENT.md)
-- [数据文件结构说明](docs/DATAFILES.md)
