@@ -8,7 +8,7 @@ setup.py
 ./pianyin/calculate_speech_pentatonic_value.py
 ./pianyin/calculate_speech_pentatonic_value_1.py
 ./pianyin/calculate_tone_median.py
-./pianyin/uncertain_pitch_pianyin.py
+./pianyin/indeterminate_pitch_pianyin.py
 ./pianyin/initial.py
 ./pianyin/pianyin.py
 ./pianyin/tone_statistics_analyzer.py
@@ -25,10 +25,12 @@ setup.py
 ./syllable/analysis/slice/extract_musical_element.py
 ./syllable/analysis/slice/extract_yueyin_pianyin.py
 ./syllable/analysis/slice/extract_yueyin_yinyuan.py
-./syllable/analysis/slice/final_test.py
 ./syllable/analysis/slice/ganyin.py
+./syllable/analysis/slice/ganyin_analyzer.py
+./syllable/analysis/slice/ganyin_categorizer.py
 ./syllable/analysis/slice/ganyin_encoder.py
 ./syllable/analysis/slice/ganyin_enhanced.py
+./syllable/analysis/slice/ganyin_slicer.py
 ./syllable/analysis/slice/ganyin_to_pianyin_sequence.py
 ./syllable/analysis/slice/ganyin_to_yinyuan_sequence.py
 ./syllable/analysis/slice/generate_zaoyin_yinyuan.py
@@ -41,7 +43,6 @@ setup.py
 ./syllable/analysis/slice/shouyin.bak.py
 ./syllable/analysis/slice/shouyin.py
 ./syllable/analysis/slice/shouyin_analyzer.py
-./syllable/analysis/slice/shouyin_encoder.bak.py
 ./syllable/analysis/slice/shouyin_encoder.py
 ./syllable/analysis/slice/slice_analyzer.py
 ./syllable/analysis/slice/slicer.py
@@ -51,13 +52,7 @@ setup.py
 ./syllable/analysis/slice/syllable_categorizer.py
 ./syllable/analysis/slice/syllable_segmenter.py
 ./syllable/analysis/slice/temp.py
-./syllable/analysis/slice/test_complete_workflow.py
-./syllable/analysis/slice/test_dynamic_finals.py
-./syllable/analysis/slice/test_ganyin.py
-./syllable/analysis/slice/test_ganyin_final_definition.py
-./syllable/analysis/slice/test_shejian.py
 ./syllable/analysis/slice/unpitched_pianyin.py
-./syllable/analysis/slice/verify_analyze_syllable.py
 ./syllable/analysis/slice/verify_classification.py
 ./syllable/analysis/slice/verify_encode_ganyin.py
 ./syllable/analysis/slice/verify_encode_shouyin.py
@@ -95,7 +90,7 @@ setup.py
 ./syllable/analysis/slice/yinyuan/variables_of_attributes.json
 ./syllable/analysis/slice/yinyuan/variables_of_pitch_and_quality.json
 ./syllable/analysis/slice/yinyuan/yinjie_code.json
-./syllable/analysis/slice/yinyuan/yinyuan.json
+./syllable/analysis/slice/yinyuan/yinyuan_codepoint.json
 ./syllable/analysis/slice/yinyuan/yueyin_yinyuan.json
 ./syllable/analysis/slice/yinyuan/zaoyin_yinyuan.json
 ./syllable/analysis/slice/yinyuan/zaoyin_yinyuan_enhanced.json
@@ -108,7 +103,6 @@ pianyin/calculate_pentatonic_value.py
 pianyin/calculate_speech_pentatonic_value.py
 pianyin/calculate_speech_pentatonic_value_1.py
 pianyin/calculate_tone_median.py
-pianyin/uncertain_pitch_pianyin.py
 pianyin/initial.py
 pianyin/pianyin.py
 pianyin/tone_statistics_analyzer.py
@@ -139,7 +133,6 @@ syllable/analysis/slice/convert_pitch_style.py
 syllable/analysis/slice/extract_musical_element.py
 syllable/analysis/slice/extract_yueyin_pianyin.py
 syllable/analysis/slice/extract_yueyin_yinyuan.py
-syllable/analysis/slice/final_test.py
 syllable/analysis/slice/ganyin.py
 syllable/analysis/slice/ganyin_encoder.py
 syllable/analysis/slice/ganyin_enhanced.py
@@ -155,7 +148,6 @@ syllable/analysis/slice/run_syllable_analyzer.py
 syllable/analysis/slice/shouyin.bak.py
 syllable/analysis/slice/shouyin.py
 syllable/analysis/slice/shouyin_analyzer.py
-syllable/analysis/slice/shouyin_encoder.bak.py
 syllable/analysis/slice/shouyin_encoder.py
 syllable/analysis/slice/slice_analyzer.py
 syllable/analysis/slice/slicer.py
@@ -165,13 +157,7 @@ syllable/analysis/slice/syllable_categorizer.bak.py
 syllable/analysis/slice/syllable_categorizer.py
 syllable/analysis/slice/syllable_segmenter.py
 syllable/analysis/slice/temp.py
-syllable/analysis/slice/test_complete_workflow.py
-syllable/analysis/slice/test_dynamic_finals.py
-syllable/analysis/slice/test_ganyin.py
-syllable/analysis/slice/test_ganyin_final_definition.py
-syllable/analysis/slice/test_shejian.py
 syllable/analysis/slice/unpitched_pianyin.py
-syllable/analysis/slice/verify_analyze_syllable.py
 syllable/analysis/slice/verify_classification.py
 syllable/analysis/slice/verify_encode_ganyin.py
 syllable/analysis/slice/verify_encode_shouyin.py
@@ -209,7 +195,6 @@ syllable/analysis/slice/yinyuan/standard_pinyin.json
 syllable/analysis/slice/yinyuan/variables_of_attributes.json
 syllable/analysis/slice/yinyuan/variables_of_pitch_and_quality.json
 syllable/analysis/slice/yinyuan/yinjie_code.json
-syllable/analysis/slice/yinyuan/yinyuan.json
 syllable/analysis/slice/yinyuan/yueyin_yinyuan.json
 syllable/analysis/slice/yinyuan/zaoyin_yinyuan.json
 syllable/analysis/slice/yinyuan/zaoyin_yinyuan_enhanced.json
