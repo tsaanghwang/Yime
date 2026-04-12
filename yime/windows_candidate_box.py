@@ -261,7 +261,7 @@ class CompositeCandidateDecoder:
 
 
 class CandidateBoxApp:
-    def __init__(self, auto_paste: bool = True, font_family: str = "YinYuan Regular") -> None:
+    def __init__(self, auto_paste: bool = True, font_family: str = "Noto Sans") -> None:
         self.auto_paste = auto_paste
         self.font_family = font_family
         self.decoder = CompositeCandidateDecoder(Path(__file__).resolve().parent)
