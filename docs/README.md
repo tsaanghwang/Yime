@@ -10,6 +10,10 @@
 
 - **[码点与中间层策略](CODEPOINT_POLICY.md)** - 说明 `N01-N24`、`M01-M33` 的语义层地位，以及 canonical 与 projection 的分工
 - **[真源文件与生成产物清单](SOURCE_AND_ARTIFACTS.md)** - 区分哪些文件是设计真源，哪些文件只是可重建产物
+- **[音元系统术语说明](YINYUAN_TERMINOLOGY.md)** - 说明“时段”“片音”“音元”等核心术语的中英文定义与相互关系
+- **[Terminology of the Yinyuan System](YINYUAN_TERMINOLOGY_EN.md)** - The English counterpart of the terminology note for external readers
+- **[片音与语音技术单位的对应关系](PIANYIN_TECH_BRIDGE.md)** - 说明片音如何与语音识别、语音合成中的技术单位建立对应关系
+- **[Correspondence Between Pianyin and Speech-Technology Units](PIANYIN_TECH_BRIDGE_EN.md)** - English note on how pianyin relates to units used in speech recognition and synthesis
 
 ### 快速开始
 
