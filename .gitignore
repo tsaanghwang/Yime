@@ -1,6 +1,8 @@
 # Ignore sqlite DB and backups
 yime/pinyin_hanzi.db
 yime/pinyin_hanzi.db.*
+yime/*.db-wal
+yime/*.db-shm
 yime/*.bak*
 yime/*.bak.*
 
