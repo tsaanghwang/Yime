@@ -4,6 +4,18 @@
 
 以下文档不是理论正文，但和理论落地到实现时的边界条件直接相关，建议在阅读实现或修改编码链前先看：
 
+### 术语入口
+
+- [音元系统术语说明](YINYUAN_TERMINOLOGY.md)
+- [Terminology of the Yinyuan System](YINYUAN_TERMINOLOGY_EN.md)
+
+### 技术衔接入口
+
+- [片音与语音技术单位的对应关系](PIANYIN_TECH_BRIDGE.md)
+- [Correspondence Between Pianyin and Speech-Technology Units](PIANYIN_TECH_BRIDGE_EN.md)
+
+### 实现边界入口
+
 - [码点与中间层策略](CODEPOINT_POLICY.md)
 - [真源文件与生成产物清单](SOURCE_AND_ARTIFACTS.md)
 
