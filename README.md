@@ -58,7 +58,7 @@
 
 一种是重置键位的美式键盘。这种键盘布局，把键值为 65\~90 和 97\~122的52个键位（对应美式键盘的大小写字母键）47个做成下档键和5个做成上档键，按照一音一码原则，把47个音元映射到下档键上，把5个音元（在把虚首音笼统算作一个音元时）映射到上档键上。这种键盘布局草图如图：
 
-![104键键盘布局](Assets\Images\keyboard-layout104keys-internal-reset.png)
+![104键键盘布局](Assets/Images/keyboard-layout104keys-internal-reset.png)
 
 图 1 音元在键盘上的分布
 
