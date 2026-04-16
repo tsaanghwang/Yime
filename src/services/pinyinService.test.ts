@@ -2,7 +2,7 @@
 import { getMatchedWordsByPinyin, addUserWord } from './pinyinService';
 
 // Mock pinyinData
-jest.mock('../../pinyinTable.json', () => ({
+jest.mock('../../yime/pinyin_hanzi.json', () => ({
   zhong: ['中', '重', '种'],
   guo: ['国', '过'],
   ren: ['人', '认'],

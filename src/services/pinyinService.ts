@@ -1,4 +1,4 @@
-import pinyinData from '../../pinyinTable.json';
+import pinyinData from '../../yime/pinyin_hanzi.json';
 
 interface PinyinService {
   getMatchedWordsByPinyin: (pinyin: string) => string[];
