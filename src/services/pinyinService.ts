@@ -1,20 +1,28 @@
-import pinyinData from '../../pinyinTable.json';
+import pinyinCodeTable from '../../pinyinCodeTable.json';
+import hanziTable from '../../hanziTable.json';
 
 interface PinyinService {
   getMatchedWordsByPinyin: (pinyin: string) => string[];
   addUserWord: (pinyin: string, word: string) => void;
 }
 
+const userWords: Record<string, string[]> = {};
+
 const service: PinyinService = {
   getMatchedWordsByPinyin: (pinyin) => {
-    return pinyinData[pinyin as keyof typeof pinyinData] || [];
+    const customWords = userWords[pinyin] || [];
+    const code = pinyinCodeTable[pinyin as keyof typeof pinyinCodeTable];
+    const builtInWords = code ? hanziTable[code as keyof typeof hanziTable] || [] : [];
+
+    return [...customWords, ...builtInWords];
   },
 
   addUserWord: (pinyin, word) => {
-    if (!pinyinData[pinyin as keyof typeof pinyinData]) {
-      pinyinData[pinyin as keyof typeof pinyinData] = [];
+    if (!userWords[pinyin]) {
+      userWords[pinyin] = [];
     }
-    pinyinData[pinyin as keyof typeof pinyinData].unshift(word);
+
+    userWords[pinyin].unshift(word);
   }
 };
 
