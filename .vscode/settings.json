@@ -181,7 +181,17 @@
   },
   "markdown.styles": [".vscode/markdown.css"],
   "livePreview.defaultPreviewPath": "/临时.html",
+  "files.exclude": {
+    "venv_broken_python314": true
+  },
+  "search.exclude": {
+    "venv_broken_python314": true
+  },
+  "files.watcherExclude": {
+    "**/venv_broken_python314/**": true
+  },
+  "python.defaultInterpreterPath": "${workspaceFolder}/venv312/Scripts/python.exe",
+  "python-envs.defaultInterpreterPath": "${workspaceFolder}/venv312/Scripts/python.exe",
   "sqltools.useNodeRuntime": true,
-  "python-envs.defaultEnvManager": "ms-python.python:conda",
   "python-envs.defaultPackageManager": "ms-python.python:conda"
 }
