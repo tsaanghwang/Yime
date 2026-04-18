@@ -192,6 +192,6 @@
   },
   "python.defaultInterpreterPath": "${workspaceFolder}/venv312/Scripts/python.exe",
   "python-envs.defaultInterpreterPath": "${workspaceFolder}/venv312/Scripts/python.exe",
-  "sqltools.useNodeRuntime": true,
+  "sqltools.useNodeRuntime": false,
   "python-envs.defaultPackageManager": "ms-python.python:conda"
 }
