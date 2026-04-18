@@ -9,6 +9,8 @@ yime/*.bak.*
 # Ignore virtual environment
 venv/
 .venv/
+venv312/
+venv_broken_python314/
 
 # Editor / OS files
 *.pyc

@@ -1,6 +1,6 @@
 @echo off
 chcp 65001 >nul
-cd /d "c:\Users\Freeman Golden\OneDrive\Yime"
+cd /d "%~dp0"
 
 echo ============================================================
 echo Python 3.12 Environment Activation
@@ -8,8 +8,20 @@ echo ============================================================
 echo.
 
 if exist venv312\Scripts\activate.bat (
+    set "YIME_ENV_NAME=venv312"
     echo Activating Python 3.12 virtual environment...
     call venv312\Scripts\activate.bat
+    goto :env_ready
+) else if exist .venv\Scripts\activate.bat (
+    set "YIME_ENV_NAME=.venv"
+    echo Activating workspace virtual environment...
+    call .venv\Scripts\activate.bat
+    goto :env_ready
+) else (
+    goto :env_missing
+)
+
+:env_ready
     echo.
     echo Python version:
     python --version
@@ -27,14 +39,17 @@ if exist venv312\Scripts\activate.bat (
     )
     echo.
     echo ============================================================
-    echo Environment Ready!
+    echo Environment Ready! (%YIME_ENV_NAME%)
     echo ============================================================
     echo.
     echo Usage:
     echo   python -m yime.input_method.app
     echo   python run_input_method.py
     echo.
-) else (
+
+    goto :eof
+
+:env_missing
     echo Virtual environment not found!
     echo.
     echo Please create it first:
@@ -50,4 +65,3 @@ if exist venv312\Scripts\activate.bat (
     echo      pip install pywin32 pynput pytest coverage tqdm
     echo.
     pause
-)
