@@ -127,7 +127,7 @@
   "[jsonc]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "editor.fontFamily": "\"YinYuan Regular\", \"音元 常规\", \"Noto Sans\", \"Microsoft YaHei\", Consolas, 'Courier New', monospace",
+  "editor.fontFamily": "\"Noto Sans\", \"YinYuan Regular\", \"音元 常规\", \"Noto Sans\", \"Microsoft YaHei\", Consolas, 'Courier New', monospace",
   "terminal.integrated.fontFamily": "Consolas, 'Courier New', monospace",
   "terminal.integrated.fontLigatures.enabled": true,
   "[query-editor]": {
