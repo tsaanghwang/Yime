@@ -65,7 +65,7 @@ def generate_zaoyin_yinyuan():
 
     # 组织输出结构
     result = {
-        "name": {"Uncertain Pitch Yinyuan": "不定调音元或噪音类音元"},
+        "name": {"Uncertain Pitch Yinyuan": "音调不定的音元或噪音类音元"},
         "description": "由 ClearNoise和VoicedNoise 两类音元组成",
         "uncertain_pitch_yinyuan": {
             "unpitched_yinyuan": {},

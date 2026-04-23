@@ -8,7 +8,7 @@ import json
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 from zaoyin_yinyuan import ClearNoise, VoicedNoise
-from syllable.analysis.slice.syllable_categorizer import SyllableCategorizer
+from syllable.analysis.slice.syllable_splitter import SyllableSplitter
 
 
 # 根据语音事实预定浊音列表, 双隔音符表示浊零声母
@@ -98,7 +98,7 @@ def merge_shouyin_data():
 
     # 生成原始首音数据 - 创建一个模拟的拼音字典，只包含声母
     mock_pinyin_data = {initial: initial for initial in initials}
-    shouyin_data = SyllableCategorizer.generate_shouyin_data(mock_pinyin_data)
+    shouyin_data = SyllableSplitter.generate_shouyin_data(mock_pinyin_data)
 
     # 替换匹配的声母音标，保持原始列表形式
     for initial in initials:

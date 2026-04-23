@@ -248,6 +248,7 @@ YIME/
 - [数据文件结构说明](docs/DATAFILES.md)
 - [码点与中间层策略](docs/CODEPOINT_POLICY.md)
 - [真源文件与生成产物清单](docs/SOURCE_AND_ARTIFACTS.md)
+- [干音验证说明](syllable/analysis/slice/docs/%E5%B9%B2%E9%9F%B3%E9%AA%8C%E8%AF%81%E8%AF%B4%E6%98%8E.md)
 
 ### 重要设计约束
 
