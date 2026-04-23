@@ -20,21 +20,40 @@ class GanyinEncoder:
     def __init__(self):
         self.yueyin_yinyuan = YueyinYinyuan(quality="", pitch="")
         self.module_dir = Path(__file__).parent
+        self.yueyin_codepoints = self._load_yueyin_codepoints()
+        self.ganyin_part_map = self._load_ganyin_part_map()
 
-        # 预加载固定长度编码字典
-        self.fixed_length_encoding = self._load_fixed_length_encoding()
+    def _load_yueyin_codepoints(self) -> Dict[str, str]:
+        """从音元定义生成单码点映射，并展开所有别名写法。"""
+        alias_path = self.module_dir / self.SUBDIR / self.YUEYIN_FILENAME
+        codepoint_path = self.module_dir / self.SUBDIR / self.YINYUAN_FILENAME
 
-        # 修复路径 - 直接使用 yinyuan 子目录
-        mapping_path = self.module_dir / self.SUBDIR / self.DINGCHANGMA_FILENAME
-        with open(mapping_path, 'r', encoding='utf-8') as f:
-            self.encoding_map = json.load(f)
+        with alias_path.open('r', encoding='utf-8') as f:
+            yueyin_data = json.load(f)
+        with codepoint_path.open('r', encoding='utf-8') as f:
+            canonical_codepoints = json.load(f)["yueyin"]
 
-    def _load_fixed_length_encoding(self) -> Dict[str, str]:
-        """加载固定长度编码字典"""
-        # 修复路径 - 直接使用 yinyuan 子目录
-        encoding_path = self.module_dir / self.SUBDIR / self.DINGCHANGMA_FILENAME
-        with encoding_path.open('r', encoding='utf-8') as f:
-            return json.load(f)
+        expanded_codepoints: Dict[str, str] = {}
+
+        for canonical_symbol, aliases in yueyin_data.items():
+            codepoint = canonical_codepoints[canonical_symbol]
+            expanded_codepoints[canonical_symbol] = codepoint
+            for alias in aliases:
+                expanded_codepoints[alias] = codepoint
+
+        return expanded_codepoints
+
+    def _load_ganyin_part_map(self) -> Dict[str, Dict[str, str]]:
+        """加载干音到片音序列的原始映射。"""
+        parts_path = self.module_dir / self.SUBDIR / 'ganyin_to_pianyin_sequence.json'
+        with parts_path.open('r', encoding='utf-8') as f:
+            grouped_parts = json.load(f)
+
+        return {
+            ganyin_name: parts
+            for ganyin_group in grouped_parts.values()
+            for ganyin_name, parts in ganyin_group.items()
+        }
 
     def encode_ganyin(self, ganyin: str) -> str:
         """
@@ -49,20 +68,65 @@ class GanyinEncoder:
         异常:
             ValueError: 当输入不是有效的干音时抛出
         """
+        normalized_ganyin = self._normalize_ganyin_name(ganyin)
+
         # 输入验证
-        if not self._is_valid_ganyin(ganyin):
+        if not self._is_valid_ganyin(normalized_ganyin):
             raise ValueError(f"无效的干音输入: '{ganyin}'")
 
-        # 返回映射结果
-        return self.encoding_map[ganyin]
+        return self._encode_from_parts(normalized_ganyin)
+
+    def _normalize_ganyin_name(self, ganyin: str) -> str:
+        """将带 h 的特殊鼻音干音归并到基础干音键名。"""
+        if not isinstance(ganyin, str):
+            return ""
+
+        for source, target in (("hng", "ng"), ("hm", "m"), ("hn", "n")):
+            if ganyin.startswith(source) and len(ganyin) >= len(source) + 1:
+                return f"{target}{ganyin[-1]}"
+
+        return ganyin
+
+    def _encode_from_parts(self, ganyin: str) -> str:
+        """按呼音/主音/末音序列即时生成三码编码。"""
+        parts = self.ganyin_part_map[ganyin]
+        yinyuan_symbols = [
+            self.convert_pianyin_to_yinyuan(parts.get("呼音", "")),
+            self.convert_pianyin_to_yinyuan(parts.get("主音", "")),
+            self.convert_pianyin_to_yinyuan(parts.get("末音", "")),
+        ]
+
+        return "".join(self._resolve_yinyuan_codepoint(symbol) for symbol in yinyuan_symbols)
+
+    def _resolve_yinyuan_codepoint(self, symbol: str) -> str:
+        """把音元符号解析到当前仓库使用的单码点字符。"""
+        if symbol in self.yueyin_codepoints:
+            return self.yueyin_codepoints[symbol]
+
+        normalized_symbol = self._convert_pitch_number_to_mark(symbol)
+        if normalized_symbol in self.yueyin_codepoints:
+            return self.yueyin_codepoints[normalized_symbol]
+
+        raise KeyError(symbol)
+
+    def _convert_pitch_number_to_mark(self, symbol: str) -> str:
+        """将末尾的音高符号改写为仓库当前使用的调号写法。"""
+        if not symbol:
+            return symbol
+
+        pitch_marks = self.yueyin_yinyuan.config["pitch_variables"]["pitch_marks"]
+        pitch = symbol[-1]
+        if pitch not in pitch_marks:
+            return symbol
+
+        return symbol[:-1] + pitch_marks[pitch][0]
 
     def _is_valid_ganyin(self, ganyin: str) -> bool:
         """检查输入是否是有效的干音格式"""
         if not isinstance(ganyin, str) or len(ganyin) < 2:
             return False
 
-        # 检查是否在编码映射中
-        return ganyin in self.encoding_map
+        return ganyin in self.ganyin_part_map
 
     def load_ganyin_data(self, input_path: Path) -> Dict[str, Any]:
         """加载干音数据"""

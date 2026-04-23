@@ -9,7 +9,7 @@
 
 音元分类体系：
 1. 有调音元(PitchedYinyuan): 有稳定音调
-2. 不定调音元(UncertainPitchYinyuan):
+2. 音调不定的音元(UncertainPitchYinyuan):
    - 无调音元(UnpitchedYinyuan): 完全无调(如清辅音)
    - 不稳定音高音元(UnstablePitchYinyuan): 有不稳定/非规律性音高(如浊除阻辅音)
 """
@@ -60,7 +60,7 @@ class YinyuanBase(ABC):
 @dataclass
 class UncertainPitchYinyuan(YinyuanBase, ABC):
     """
-    不定调音元(UncertainPitchYinyuan)基类
+    音调不定的音元(UncertainPitchYinyuan)基类
     包含无调音元和不稳定音高音元的共同特性
     """
     @property

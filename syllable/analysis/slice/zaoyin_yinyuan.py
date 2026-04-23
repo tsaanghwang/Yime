@@ -1,5 +1,5 @@
 """
-不定调音元(UncertainPitchYinyuan/NoiseYinyuan/ZaoyinYinyuan)表示法
+音调不定的音元(UncertainPitchYinyuan/NoiseYinyuan/ZaoyinYinyuan)表示法
 
 噪音类音元分为两类：
 1. 无调音元(UnpitchedYinyuan): 清辅音，没有音调

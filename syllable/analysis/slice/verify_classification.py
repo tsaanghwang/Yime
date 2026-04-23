@@ -2,52 +2,77 @@
 """
 验证新添加韵母的分类是否合理
 """
-import  sys
-from pathlib import Path
-sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
-from syllable.analysis.slice.syllable_categorizer import SyllableCategorizer
+import importlib
+from typing import Any
+
+try:
+    from .ganyin_categorizer import GanyinCategorizer
+except ImportError:
+    GanyinCategorizer = importlib.import_module('ganyin_categorizer').GanyinCategorizer
 
 
-def analyze_new_finals():
-    """分析新添加韵母的分类合理性"""
+NEW_FINALS = ['ian', 'iong', 'iu', 'ong', 'ua', 'uai', 'ue', 'ui', 'un', 'v', 'van', 've']
+
+EXPECTED_CATEGORIES = {
+    'ian': '三质干音',
+    'iong': '三质干音',
+    'iu': '三质干音',
+    'ong': '三质干音',
+    'ua': '后长干音',
+    'uai': '三质干音',
+    'ue': '后长干音',
+    'ui': '三质干音',
+    'un': '三质干音',
+    'v': '单质干音',
+    'van': '三质干音',
+    've': '后长干音',
+}
+
+
+def collect_classification_results() -> dict[str, Any]:
+    """收集新增韵母分类验证结果，供脚本输出和测试复用。"""
+    actual_categories = {final: GanyinCategorizer.categorize(final) for final in NEW_FINALS}
+    mismatches: dict[str, dict[str, str]] = {
+        final: {
+            'expected': EXPECTED_CATEGORIES[final],
+            'actual': actual_categories[final],
+        }
+        for final in NEW_FINALS
+        if actual_categories[final] != EXPECTED_CATEGORIES[final]
+    }
+
+    all_finals = GanyinCategorizer.get_all_finals()
+    total = sum(len(finals) for finals in all_finals.values())
+    category_stats: dict[str, dict[str, float]] = {
+        category: {
+            'count': float(len(finals)),
+            'percentage': (len(finals) / total) * 100 if total else 0,
+        }
+        for category, finals in all_finals.items()
+    }
+
+    return {
+        'new_finals': NEW_FINALS,
+        'expected_categories': EXPECTED_CATEGORIES,
+        'actual_categories': actual_categories,
+        'mismatches': mismatches,
+        'all_finals': all_finals,
+        'category_stats': category_stats,
+        'total': total,
+    }
+
+
+def analyze_new_finals() -> dict[str, Any]:
+    """分析新添加韵母的分类合理性。"""
+    results = collect_classification_results()
     print("=== 验证新添加韵母分类的合理性 ===")
 
-    # 从运行结果中提取的新添加韵母
-    new_finals = ['ian', 'iong', 'iu', 'ong', 'ua',
-                  'uai', 'ue', 'ui', 'un', 'v', 'van', 've']
-
     print("新添加的韵母及其分类:")
-    for final in new_finals:
-        category = SyllableCategorizer.categorize(final)
+    for final in results['new_finals']:
+        category = results['actual_categories'][final]
         print(f"  '{final}' -> {category}")
 
-        # 分析分类合理性
-        if final == 'ian':
-            expected = "后长干音"  # i + an，以i开头的复合韵母
-        elif final == 'iong':
-            expected = "三质干音"  # i + ong，长复合韵母
-        elif final == 'iu':
-            expected = "单质干音"  # 短韵母
-        elif final == 'ong':
-            expected = "前长干音"  # 以o开头，不以i/u/ü开头
-        elif final == 'ua':
-            expected = "单质干音"  # 短韵母
-        elif final == 'uai':
-            expected = "后长干音"  # u + ai，以u开头的复合韵母
-        elif final == 'ue':
-            expected = "单质干音"  # 短韵母
-        elif final == 'ui':
-            expected = "单质干音"  # 短韵母
-        elif final == 'un':
-            expected = "单质干音"  # 短韵母
-        elif final == 'v':
-            expected = "单质干音"  # 单个字符
-        elif final == 'van':
-            expected = "前长干音"  # v + an
-        elif final == 've':
-            expected = "单质干音"  # 短韵母
-        else:
-            expected = "不确定"
+        expected = results['expected_categories'][final]
 
         if category == expected:
             print(f"    ✓ 分类正确")
@@ -55,15 +80,13 @@ def analyze_new_finals():
             print(f"    ⚠ 预期: {expected}, 实际: {category}")
 
     print("\n=== 韵母分类统计 ===")
-    all_finals = SyllableCategorizer.get_all_finals()
-    total = sum(len(finals) for finals in all_finals.values())
-
-    for category, finals in all_finals.items():
-        count = len(finals)
-        percentage = (count / total) * 100
+    for category, stats in results['category_stats'].items():
+        count = stats['count']
+        percentage = stats['percentage']
         print(f"{category}: {count} 个韵母 ({percentage:.1f}%)")
 
-    print(f"\n总韵母数量: {total}")
+    print(f"\n总韵母数量: {results['total']}")
+    return results
 
 
 if __name__ == "__main__":

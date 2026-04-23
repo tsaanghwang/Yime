@@ -2,6 +2,7 @@
 # 功能：分析拼音数据并生成分类后的干音数据
 
 # from syllable.analysis.slice.syllable_categorizer import
+from syllable.analysis.slice.ganyin_categorizer import GanyinCategorizer
 from syllable.analysis.slice.syllable_categorizer import SyllableCategorizer
 
 from typing import Dict
@@ -112,13 +113,13 @@ class YinjieAnalyzer:
 
         # 先分类
         for num_final, tone_final in ganyin_data.items():
-            final = SyllableCategorizer._remove_tone_from_ganyin(num_final)
-            category_cn = SyllableCategorizer.categorize(final)
+            final = GanyinCategorizer._remove_tone_from_ganyin(num_final)
+            category_cn = GanyinCategorizer.categorize(final)
             category_en = category_map.get(category_cn, "single quality ganyin")
             categorized[category_en][num_final] = tone_final
 
         # 获取排序后的韵母分类
-        sorted_finals = SyllableCategorizer.sort_finals_by_category(SyllableCategorizer.get_all_finals())
+        sorted_finals = GanyinCategorizer.sort_finals_by_category(GanyinCategorizer.get_all_finals())
 
         # 按排序后的韵母顺序对干音进行排序
         for category_en, finals in zip(categorized.keys(), sorted_finals.values()):
@@ -129,8 +130,8 @@ class YinjieAnalyzer:
             sorted_ganyin = sorted(
                 categorized[category_en].items(),
                 key=lambda item: (
-                    finals.index(SyllableCategorizer._remove_tone_from_ganyin(item[0]))
-                    if SyllableCategorizer._remove_tone_from_ganyin(item[0]) in finals
+                    finals.index(GanyinCategorizer._remove_tone_from_ganyin(item[0]))
+                    if GanyinCategorizer._remove_tone_from_ganyin(item[0]) in finals
                     else len(finals)
                 )
             )

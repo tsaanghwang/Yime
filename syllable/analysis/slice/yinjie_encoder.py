@@ -2,7 +2,7 @@
 音节编码模块重构版
 
 功能：
-1. 读取音节数据
+1. 读取数字标调拼音数据
 2. 切分音节为首音和干音
 3. 对首音和干音进行编码
 4. 对音节编码并保存数据
@@ -11,11 +11,16 @@ import sys
 import json
 import logging
 from pathlib import Path
-from typing import Dict, Any, Optional
-from syllable_categorizer import SyllableCategorizer
-from shouyin_encoder import ShouyinEncoder
-from ganyin_encoder import GanyinEncoder
+from typing import Dict, Any
 
+try:
+    from .syllable_categorizer import SyllableCategorizer
+    from .shouyin_encoder import ShouyinEncoder
+    from .ganyin_encoder import GanyinEncoder
+except ImportError:
+    from syllable_categorizer import SyllableCategorizer
+    from shouyin_encoder import ShouyinEncoder
+    from ganyin_encoder import GanyinEncoder
 # 配置日志
 logging.basicConfig(
     level=logging.INFO,
@@ -29,77 +34,14 @@ class YinjieEncoder:
     def __init__(self):
         """初始化编码器并设置基础路径"""
         self.base_dir = Path(__file__).parent
-        self._setup_paths()
-
-    def _setup_paths(self):
-        """设置项目路径和导入路径"""
-        project_root = self.base_dir.parent.parent.parent
-        sys.path.append(str(project_root))
-        sys.path.append(str(self.base_dir))
+        self.shouyin_encoder = ShouyinEncoder()
+        self.ganyin_encoder = GanyinEncoder()
 
     def _validate_path(self, path: Path) -> Path:
         """验证路径是否存在"""
         if not path.exists():
             raise FileNotFoundError(f"路径不存在: {path}")
         return path
-
-    def _handle_special_ganyin(self, ganyin: str) -> Optional[str]:
-        """
-        处理特殊干音(hm/hn/hng)，使用固定编码映射
-
-        Args:
-            ganyin: 干音字符串(如"hm1", "hn2", "hng3"等)
-
-        Returns:
-            组合后的编码字符串，如果无法处理则返回None
-        """
-        if not ganyin.startswith(('hm', 'hn', 'hng')):
-            return None
-
-        # 提取声调和剩余部分
-        tone = ganyin[-1]
-        prefix = ganyin[:-1]
-
-        # 获取h的编码
-        shouyin_encoder = ShouyinEncoder()
-        h_code = shouyin_encoder.encode_shouyin('h')
-        if not h_code:
-            logger.warning(f"无法获取'h'的编码")
-            return None
-
-        # 直接编码映射，避免依赖ganyin_encoder
-        nasal_code_map = {
-            # m音 + 不同声调
-            "m1": "􀀸􀀸􀀸",
-            "m2": "􀀺􀀹􀀸",
-            "m3": "􀀺􀀺􀀺",
-            "m4": "􀀸􀀹􀀺",
-            "m5": "􀀹􀀹􀀹",
-
-            # n音 + 不同声调
-            "n1": "􀀻􀀻􀀻",
-            "n2": "􀀽􀀼􀀻",
-            "n3": "􀀽􀀽􀀽",
-            "n4": "􀀻􀀼􀀽",
-            "n5": "􀀼􀀼􀀼",
-
-            # ng音 + 不同声调
-            "ng1": "􀀾􀀾􀀾",
-            "ng2": "􀁀􀀿􀀾",
-            "ng3": "􀁀􀁀􀁀",
-            "ng4": "􀀾􀀿􀁀",
-            "ng5": "􀀿􀀿􀀿",
-        }
-
-        # 构建查找键，如 "m1", "ng3" 等
-        lookup_key = f"{prefix[1:]}{tone}"
-
-        if lookup_key in nasal_code_map:
-            # 返回组合后的编码
-            return h_code + nasal_code_map[lookup_key]
-        else:
-            logger.warning(f"特殊干音'{ganyin}'无法找到对应编码")
-            return None
 
     def encode_single_yinjie(self, syllable: str) -> str:
         """
@@ -127,23 +69,8 @@ class YinjieEncoder:
         except Exception as e:
             raise ValueError(f"音节切分失败: {str(e)}") from e
 
-
-        # 统一编码调用方式
-        shouyin_encoder = ShouyinEncoder()
-        shouyin_code = shouyin_encoder.encode_shouyin(shouyin)
-
-        ganyin_encoder = GanyinEncoder()
-        ganyin_code = ganyin_encoder.encode_ganyin(ganyin)
-
-        # 处理特殊干音(hm/hn/hng)
-        if not ganyin_code or len(ganyin_code) != 3:
-            logger.warning(f"干音'{ganyin}'编码无效，尝试处理为特殊干音")
-            special_code = self._handle_special_ganyin(ganyin)
-            if special_code:
-                logger.warning(f"使用组合编码处理特殊干音: {ganyin}")
-                ganyin_code = special_code[3:]  # 只取干音部分(去掉h的编码)
-            else:
-                raise ValueError(f"干音编码无效: {ganyin_code}")
+        shouyin_code = self.shouyin_encoder.encode_shouyin(shouyin)
+        ganyin_code = self.ganyin_encoder.encode_ganyin(ganyin)
 
         # 修改验证和拼接逻辑
         if not shouyin_code:
@@ -170,13 +97,24 @@ class YinjieEncoder:
         yinjie_list = list(pinyin_data.keys())
 
         yinjie_code_dict = {}
+        failed_yinjie = []
         for yinjie in yinjie_list:
             try:
                 code = self.encode_single_yinjie(yinjie)
                 yinjie_code_dict[yinjie] = code
             except Exception as e:
-                logger.warning(f"跳过音节 '{yinjie}': {str(e)}")
-                continue
+                error_message = str(e)
+                failed_yinjie.append((yinjie, error_message))
+                logger.warning(f"音节 '{yinjie}' 编码失败: {error_message}")
+
+        if failed_yinjie:
+            failure_summary = "; ".join(
+                f"{yinjie}: {error_message}"
+                for yinjie, error_message in failed_yinjie
+            )
+            raise ValueError(
+                f"共有 {len(failed_yinjie)} 个音节编码失败，未生成 yinjie_code.json: {failure_summary}"
+            )
 
         self._save_json(output_path, yinjie_code_dict)
         logger.info(f"成功生成编码文件: {output_path}")

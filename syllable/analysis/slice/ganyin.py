@@ -6,7 +6,7 @@
 """
 try:
     # Try relative import (for package context)
-    from .syllable import Syllable
+    from .Syllable import Syllable
 except (ImportError, SystemError, ValueError):
     # Fallback to absolute import (for module context)
     from syllable import Syllable

@@ -1,6 +1,6 @@
 {
   "name": {
-    "Indeterminate Pitch Yinyuan": "不定调音元或噪音类音元"
+    "Indeterminate Pitch Yinyuan": "音调不定的音元或噪音类音元"
   },
   "description": "由 ClearNoise和VoicedNoise 两类音元组成",
   "indeterminate_pitch_yinyuan": {

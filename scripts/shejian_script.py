@@ -4,7 +4,7 @@
 import  sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
-from syllable.analysis.slice.syllable_categorizer import SyllableCategorizer
+from syllable.analysis.slice.ganyin_categorizer import GanyinCategorizer
 import json
 
 
@@ -46,11 +46,11 @@ def test_shejian_processing():
     print(f"\n普通 i 音干音总数: {normal_i_count}")
 
     print("\n3. 验证 '_i' 的分类:")
-    category = SyllableCategorizer.categorize('_i')
+    category = GanyinCategorizer.categorize('_i')
     print(f"  '_i' 分类为: {category}")
 
     print("\n4. 验证韵母数据完整性:")
-    all_finals = SyllableCategorizer.get_all_finals()
+    all_finals = GanyinCategorizer.get_all_finals()
     for cat_name, finals in all_finals.items():
         if '_i' in finals:
             print(f"  '_i' 已包含在 {cat_name} 中 ✓")
