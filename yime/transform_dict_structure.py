@@ -8,7 +8,7 @@ utils_path = Path("c:/Users/Freeman Golden/OneDrive/Yime/utils")
 if utils_path.exists():
     sys.path.insert(0, str(utils_path))
 
-from utils.pinyin_normalizer import PinyinNormalizer
+from utils.pinyin_normalizer import normalize_dict_with_supplements
 from utils.pinyin_zhuyin import PinyinZhuyinConverter  # 新增导入
 
 def convert_to_zhuyin(pinyin):
@@ -26,7 +26,7 @@ def enhance_mapping(input_file='yinjie_mapping.json', output_file='enhanced_yinj
             pinyin_dict[mappings['数字标调']] = mappings['数字标调']
 
     # 使用PinyinNormalizer进行标准化处理
-    normalized_dict, _ = PinyinNormalizer.process_pinyin_dict(pinyin_dict)
+    normalized_dict, _ = normalize_dict_with_supplements(pinyin_dict)
 
     # 使用PinyinZhuyinConverter进行注音符号处理
     zhuyin_dict, _ = PinyinZhuyinConverter.process_pinyin_dict(pinyin_dict)

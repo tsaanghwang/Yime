@@ -1,0 +1,43 @@
+@echo off
+setlocal
+
+cd /d "%~dp0"
+
+if exist "venv312\Scripts\python.exe" (
+  set "PYTHON=venv312\Scripts\python.exe"
+) else if exist ".venv\Scripts\python.exe" (
+  set "PYTHON=.venv\Scripts\python.exe"
+) else (
+  set "PYTHON=python"
+)
+
+echo Using Python: %PYTHON%
+echo Rebuilding source pinyin assets...
+
+"%PYTHON%" internal_data\pinyin_source_db\rebuild_pinyin_assets.py
+if errorlevel 1 (
+  echo.
+  echo Rebuild failed with exit code %ERRORLEVEL%.
+  exit /b %ERRORLEVEL%
+)
+
+echo Running focused validation suite...
+
+"%PYTHON%" -m unittest ^
+  verify_yinjie_encoder.py ^
+  test_yinjie_decoder.py ^
+  test_pinyin_bidirectional_validation.py ^
+  test_yinjie_roundtrip.py ^
+  verify_yinjie_encoder_stages.py ^
+  verify_yinjie_entry_manifests.py ^
+  syllable/analysis/slice/verify_encode_ganyin.py ^
+  utils/test_pinyin_normalizer.py
+
+set "EXIT_CODE=%ERRORLEVEL%"
+
+if not "%EXIT_CODE%"=="0" (
+  echo.
+  echo Validation failed with exit code %EXIT_CODE%.
+)
+
+exit /b %EXIT_CODE%
