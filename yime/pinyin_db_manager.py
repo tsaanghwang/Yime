@@ -2,7 +2,7 @@ import sqlite3
 import logging
 from pathlib import Path
 
-from utils.pinyin_normalizer import PinyinNormalizer
+from utils.pinyin_normalizer import normalize_dict_with_supplements
 from utils.pinyin_zhuyin import PinyinZhuyinConverter
 
 logger = logging.getLogger(__name__)
@@ -92,7 +92,7 @@ class 数据导入器:
             return 0
 
         # 处理拼音数据
-        标准化字典, _ = PinyinNormalizer.process_pinyin_dict({数字标调拼音: 数字标调拼音 for 数字标调拼音 in 拼音列表})
+        标准化字典, _ = normalize_dict_with_supplements({数字标调拼音: 数字标调拼音 for 数字标调拼音 in 拼音列表})
         注音字典, _ = PinyinZhuyinConverter.process_pinyin_dict({数字标调拼音: 数字标调拼音 for 数字标调拼音 in 拼音列表})
 
         # 批量插入数据

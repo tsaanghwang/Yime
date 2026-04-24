@@ -1,0 +1,20 @@
+{
+  "generated_at": "2026-04-24T06:41:24.938160+00:00",
+  "db_path": "C:\\dev\\Yime\\internal_data\\pinyin_source_db\\source_pinyin.db",
+  "normalized_output": "C:\\dev\\Yime\\pinyin\\hanzi_pinyin\\pinyin_normalized.json",
+  "yinjie_output": "C:\\dev\\Yime\\yinjie_code.json",
+  "skip_yinjie": false,
+  "db_metadata": {
+    "phrase_rows": "0",
+    "phrase_source": "",
+    "schema_version": "source_pinyin_v1",
+    "single_char_rows": "53457",
+    "single_char_source": "C:\\dev\\pinyin-data\\pinyin.txt"
+  },
+  "counts": {
+    "single_char_rows": 53457,
+    "phrase_rows": 0,
+    "normalized_rows": 1549,
+    "yinjie_rows": 1549
+  }
+}

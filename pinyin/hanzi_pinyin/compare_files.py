@@ -6,40 +6,7 @@
 import os
 import json
 
-def normalize_special_pinyin(pinyin_dict):
-    """
-    规范化包含特殊音质的拼音
-    修改后：只处理实际存在于输入字典中的拼音，不自动补充缺失的组合
-    """
-    # 定义特殊音质和声调
-    special_qualities = ["ê", "m", "n", "ng", "hm", "hn", "hng"]
-    tones = ["1", "2", "3", "4", "5"]
-
-    # 特殊音质与声调的对应关系
-    tone_marks = {
-        "1": "\u0304",  # 阴平(第一声) - ̄
-        "2": "\u0301",  # 阳平(第二声) - ́
-        "3": "\u030C",  # 上声(第三声) - ̌
-        "4": "\u0300",  # 去声(第四声) - ̀
-        "5": ""         # 轻声(第五声) - 无标记
-    }
-
-    # 只处理实际存在于输入字典中的拼音
-    for pinyin in list(pinyin_dict.keys()):
-        for sq in special_qualities:
-            if pinyin.startswith(sq) and len(pinyin) > len(sq):
-                tone = pinyin[-1]
-                if tone in tones:
-                    base = sq
-                    # 处理 ê 的特殊情况
-                    if sq == "ê":
-                        normalized = "ê" + tone_marks[tone]
-                    else:
-                        # 处理 m/n 系列
-                        normalized = base[0] + tone_marks[tone] + base[1:]
-                    pinyin_dict[pinyin] = normalized
-
-    return pinyin_dict
+from utils.pinyin_normalizer import normalize_dict_existing_only
 
 def load_json_file(filepath):
     """
@@ -94,8 +61,8 @@ def main():
         dict2 = load_json_file(input_file2)
 
         # 规范化处理（但不修改原始字典）
-        normalized_dict1 = normalize_special_pinyin(dict1.copy())
-        normalized_dict2 = normalize_special_pinyin(dict2.copy())
+        normalized_dict1, _ = normalize_dict_existing_only(dict1)
+        normalized_dict2, _ = normalize_dict_existing_only(dict2)
 
         # 比较原始字典的差异（不比较规范化后的字典）
         diff_report = compare_pinyin_dicts(dict1, dict2)
