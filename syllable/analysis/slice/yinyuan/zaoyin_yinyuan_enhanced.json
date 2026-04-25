@@ -2,61 +2,238 @@
   "name": {
     "Uncertain Pitch Yinyuan": "音调不定的音元或噪音类音元"
   },
-  "description": "由 ClearNoise和VoicedNoise 两类音元组成",
-  "uncertain_pitch_yinyuan": {
-    "unpitched_yinyuan": {
-      "b": ["p"],
-      "p": ["pʰ"],
-      "f": ["f", "ɸ"],
-      "d": ["t"],
-      "t": ["tʰ"],
-      "g": ["k"],
-      "k": ["kʰ"],
-      "h": ["x", "χ", "h"],
-      "z": ["ʦ"],
-      "c": ["ʦʰ"],
-      "s": ["s"],
-      "zh": ["ʈʂ", "ꭧ"],
-      "ch": ["ʈʂʰ", "ʦʰ"],
-      "sh": ["ʂ"],
-      "j": ["ʨ"],
-      "q": ["ʨʰ"],
-      "x": ["ɕ"]
+  "description": "由 ClearNoise 和 VoicedNoise 两类音元组成",
+  "entries": {
+    "b": {
+      "ipa": [
+        "p"
+      ],
+      "type": "unpitched_yinyuan",
+      "semantic_code": "UPY_B",
+      "runtime_char": "",
+      "layout_slot": "N01"
     },
-    "unstable_pitch_yinyuan": {
-      "m": ["m"],
-      "l": ["l", "ɾ"],
-      "n": ["n", "n̠"],
-      "r": ["ɻ", "ʐ", "ɹ", "z"],
-      "'": ["ʔ", "", "ɣ", "ŋ"],
-      "w": ["w", "ʋ"],
-      "y": ["j", "ɥ"]
+    "p": {
+      "ipa": [
+        "pʰ"
+      ],
+      "type": "unpitched_yinyuan",
+      "semantic_code": "UPY_P",
+      "runtime_char": "",
+      "layout_slot": "N02"
+    },
+    "f": {
+      "ipa": [
+        "f",
+        "ɸ"
+      ],
+      "type": "unpitched_yinyuan",
+      "semantic_code": "UPY_F",
+      "runtime_char": "",
+      "layout_slot": "N03"
+    },
+    "m": {
+      "ipa": [
+        "m"
+      ],
+      "type": "unstable_pitch_yinyuan",
+      "semantic_code": "UPY_M",
+      "runtime_char": "",
+      "layout_slot": "N04"
+    },
+    "d": {
+      "ipa": [
+        "t"
+      ],
+      "type": "unpitched_yinyuan",
+      "semantic_code": "UPY_D",
+      "runtime_char": "",
+      "layout_slot": "N05"
+    },
+    "t": {
+      "ipa": [
+        "tʰ"
+      ],
+      "type": "unpitched_yinyuan",
+      "semantic_code": "UPY_T",
+      "runtime_char": "",
+      "layout_slot": "N06"
+    },
+    "l": {
+      "ipa": [
+        "l",
+        "ɾ"
+      ],
+      "type": "unstable_pitch_yinyuan",
+      "semantic_code": "UPY_L",
+      "runtime_char": "",
+      "layout_slot": "N07"
+    },
+    "n": {
+      "ipa": [
+        "n",
+        "n̠"
+      ],
+      "type": "unstable_pitch_yinyuan",
+      "semantic_code": "UPY_N",
+      "runtime_char": "",
+      "layout_slot": "N08"
+    },
+    "g": {
+      "ipa": [
+        "k"
+      ],
+      "type": "unpitched_yinyuan",
+      "semantic_code": "UPY_G",
+      "runtime_char": "",
+      "layout_slot": "N09"
+    },
+    "k": {
+      "ipa": [
+        "kʰ"
+      ],
+      "type": "unpitched_yinyuan",
+      "semantic_code": "UPY_K",
+      "runtime_char": "",
+      "layout_slot": "N10"
+    },
+    "h": {
+      "ipa": [
+        "x",
+        "χ",
+        "h"
+      ],
+      "type": "unpitched_yinyuan",
+      "semantic_code": "UPY_H",
+      "runtime_char": "",
+      "layout_slot": "N11"
+    },
+    "z": {
+      "ipa": [
+        "ʦ"
+      ],
+      "type": "unpitched_yinyuan",
+      "semantic_code": "UPY_Z",
+      "runtime_char": "",
+      "layout_slot": "N12"
+    },
+    "c": {
+      "ipa": [
+        "ʦʰ"
+      ],
+      "type": "unpitched_yinyuan",
+      "semantic_code": "UPY_C",
+      "runtime_char": "",
+      "layout_slot": "N13"
+    },
+    "s": {
+      "ipa": [
+        "s"
+      ],
+      "type": "unpitched_yinyuan",
+      "semantic_code": "UPY_S",
+      "runtime_char": "",
+      "layout_slot": "N14"
+    },
+    "zh": {
+      "ipa": [
+        "ʈʂ",
+        "ꭧ"
+      ],
+      "type": "unpitched_yinyuan",
+      "semantic_code": "UPY_ZH",
+      "runtime_char": "",
+      "layout_slot": "N15"
+    },
+    "ch": {
+      "ipa": [
+        "ʈʂʰ",
+        "ꭧʰ"
+      ],
+      "type": "unpitched_yinyuan",
+      "semantic_code": "UPY_CH",
+      "runtime_char": "",
+      "layout_slot": "N16"
+    },
+    "sh": {
+      "ipa": [
+        "ʂ"
+      ],
+      "type": "unpitched_yinyuan",
+      "semantic_code": "UPY_SH",
+      "runtime_char": "",
+      "layout_slot": "N17"
+    },
+    "r": {
+      "ipa": [
+        "ɻ",
+        "ʐ",
+        "ɹ",
+        "z"
+      ],
+      "type": "unstable_pitch_yinyuan",
+      "semantic_code": "UPY_R",
+      "runtime_char": "",
+      "layout_slot": "N18"
+    },
+    "j": {
+      "ipa": [
+        "ʨ"
+      ],
+      "type": "unpitched_yinyuan",
+      "semantic_code": "UPY_J",
+      "runtime_char": "",
+      "layout_slot": "N19"
+    },
+    "q": {
+      "ipa": [
+        "ʨʰ"
+      ],
+      "type": "unpitched_yinyuan",
+      "semantic_code": "UPY_Q",
+      "runtime_char": "",
+      "layout_slot": "N20"
+    },
+    "x": {
+      "ipa": [
+        "ɕ"
+      ],
+      "type": "unpitched_yinyuan",
+      "semantic_code": "UPY_X",
+      "runtime_char": "",
+      "layout_slot": "N21"
+    },
+    "'": {
+      "ipa": [
+        "ʔ",
+        "",
+        "ɣ",
+        "ŋ"
+      ],
+      "type": "mixed_yinyuan",
+      "semantic_code": "UPY_'",
+      "runtime_char": "",
+      "layout_slot": "N22"
+    },
+    "w": {
+      "ipa": [
+        "w",
+        "ʋ"
+      ],
+      "type": "unstable_pitch_yinyuan",
+      "semantic_code": "UPY_W",
+      "runtime_char": "",
+      "layout_slot": "N23"
+    },
+    "y": {
+      "ipa": [
+        "j",
+        "ɥ"
+      ],
+      "type": "unstable_pitch_yinyuan",
+      "semantic_code": "UPY_Y",
+      "runtime_char": "",
+      "layout_slot": "N24"
     }
-  },
-  "codes": {
-    "b": "UPY_B",
-    "p": "UPY_P",
-    "f": "UPY_F",
-    "m": "UPY_M",
-    "d": "UPY_D",
-    "t": "UPY_T",
-    "l": "UPY_L",
-    "n": "UPY_N",
-    "g": "UPY_G",
-    "k": "UPY_K",
-    "h": "UPY_H",
-    "z": "UPY_Z",
-    "c": "UPY_C",
-    "s": "UPY_S",
-    "zh": "UPY_ZH",
-    "ch": "UPY_CH",
-    "sh": "UPY_SH",
-    "r": "UPY_R",
-    "j": "UPY_J",
-    "q": "UPY_Q",
-    "x": "UPY_X",
-    "'": "UPY_'",
-    "w": "UPY_W",
-    "y": "UPY_Y"
   }
 }

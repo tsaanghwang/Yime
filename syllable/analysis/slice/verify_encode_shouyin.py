@@ -1,5 +1,6 @@
 
 import unittest
+import json
 from pathlib import Path
 from shouyin_encoder import ShouyinEncoder
 
@@ -9,41 +10,15 @@ class TestShouyinEncoder(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """测试类初始化，创建编码器实例"""
-        # 使用默认的 zaoyin_yinyuan.json 文件路径
-        data_path = Path(__file__).parent / "yinyuan" / "zaoyin_yinyuan.json"
+        data_path = Path(__file__).parent / "yinyuan" / "zaoyin_yinyuan_enhanced.json"
         cls.encoder = ShouyinEncoder(data_path)
+        runtime_path = Path(__file__).parent / "yinyuan" / "shouyin_codepoint.json"
+        with runtime_path.open('r', encoding='utf-8') as f:
+            cls.runtime_map = json.load(f)["首音"]
 
     def test_encode_valid_shouyin(self):
         """测试有效首音编码"""
-        # 从 shouyin_codepoint.json 中获取已知首音映射
-        test_cases = [
-            ("b", "􀀀"),
-            ("p", "􀀁"),
-            ("f", "􀀂"),
-            ("m", "􀀃"),
-            ("d", "􀀄"),
-            ("t", "􀀅"),
-            ("l", "􀀆"),
-            ("n", "􀀇"),
-            ("g", "􀀈"),
-            ("k", "􀀉"),
-            ("h", "􀀊"),
-            ("z", "􀀋"),
-            ("c", "􀀌"),
-            ("s", "􀀍"),
-            ("zh", "􀀎"),
-            ("ch", "􀀏"),
-            ("sh", "􀀐"),
-            ("r", "􀀑"),
-            ("j", "􀀒"),
-            ("q", "􀀓"),
-            ("x", "􀀔"),
-            ("'", "􀀕"),
-            ("w", "􀀖"),
-            ("y", "􀀗")
-        ]
-
-        for shouyin, expected in test_cases:
+        for shouyin, expected in self.runtime_map.items():
             with self.subTest(shouyin=shouyin):
                 result = self.encoder.encode_shouyin(shouyin)
                 self.assertEqual(result, expected)
@@ -65,11 +40,7 @@ class TestShouyinEncoder(unittest.TestCase):
     def test_encode_complex_shouyin(self):
         """测试复合首音编码"""
         # 测试复合首音(如zh, ch, sh)是否保持完整
-        test_cases = [
-            ("zh", "􀀎"),
-            ("ch", "􀀏"),
-            ("sh", "􀀐")
-        ]
+        test_cases = [(shouyin, self.runtime_map[shouyin]) for shouyin in ("zh", "ch", "sh")]
         for shouyin, expected in test_cases:
             with self.subTest(shouyin=shouyin):
                 result = self.encoder.encode_shouyin(shouyin)

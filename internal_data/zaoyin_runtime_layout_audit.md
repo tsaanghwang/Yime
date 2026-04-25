@@ -12,11 +12,11 @@
 
 | 阶段 | 文件 / 代码 | 作用 | 决定了什么 |
 | --- | --- | --- | --- |
-| 1 | `syllable/analysis/slice/yinyuan/zaoyin_yinyuan.json` | 定义首音标签与 IPA 示例的对应关系 | 最早的首音类别库存、标签名和顺序来源 |
-| 2 | `syllable/analysis/slice/shouyin_encoder.py` 中 `process_shouyin()` | 读取 `zaoyin_yinyuan.json` 的 `shouyin` 键，并直接返回其键顺序 | 进入码位分配前的首音标签顺序 |
-| 3 | `syllable/analysis/slice/shouyin_encoder.py` 中 `map_yinyuan_to_codepoint()` | 从 `0x100000` 开始按顺序给首音标签分配私用区字符 | `N01-N24` 对应的运行时私用区字符 |
-| 4 | `syllable/analysis/slice/yinyuan/shouyin_codepoint.json` | 保存首音标签到私用区字符的最终运行时映射 | 例如 `b -> 􀀀`、`zh -> 􀀎`、`y -> 􀀗` |
-| 5 | `syllable/analysis/slice/yinyuan/yinyuan_codepoint.json` 中的 `zaoyin` 段 | 保存与 `shouyin_codepoint.json` 平行的一份运行时首音映射 | 运行时总映射文件中的首音部分 |
+| 1 | `syllable/analysis/slice/yinyuan/zaoyin_yinyuan_enhanced.json` | 首音唯一真源，显式保存 `semantic_code`、`ipa`、`type`、`runtime_char` | 首音标签、语义码与运行时字符的源定义 |
+| 2 | `syllable/analysis/slice/shouyin_encoder.py` 中 `process_shouyin()` | 读取增强版真源中的 `entries` | 运行时首音标签与显式字符映射 |
+| 3 | `syllable/analysis/slice/yinyuan/shouyin_codepoint.json` | 保存首音标签到私用区字符的最终运行时映射 | 例如 `b -> `、`zh -> `、`y -> ` |
+| 4 | `syllable/analysis/slice/yinyuan/yinyuan_codepoint.json` 中的 `zaoyin` 段 | 保存与 `shouyin_codepoint.json` 平行的一份运行时首音映射 | 运行时总映射文件中的首音部分 |
+| 5 | `syllable/analysis/slice/yinyuan/zaoyin_yinyuan.json` | 由真源导出的兼容文件，只保留 `shouyin -> ipa` | 旧脚本兼容与人工查看 |
 | 6 | `internal_data/key_to_symbol.json` | 当前布局/KLC 侧使用的 `N01-N24` 符号表 | 布局侧字符是否和运行时首音字符一致 |
 | 7 | `internal_data/manual_key_layout.json` / `internal_data/manual_key_layout.resolved.json` | 当前候选布局的物理键分配 | 每个 `Nxx` 被放到哪个键位和层级 |
 
@@ -26,9 +26,9 @@
 
 可以直接这样理解：
 
-1. `zaoyin_yinyuan.json` 先给出一个首音标签，例如 `b`、`zh`、`y`。
-2. 同一个标签下面挂若干 IPA 示例，用于解释这个标签代表哪类发音。
-3. `shouyin_encoder.py` 不再做乐音那种 `i˥ -> ɪ˥ -> ɪ́` 的二次规范化，而是直接拿这些标签名按顺序分配私用区字符。
+1. `zaoyin_yinyuan_enhanced.json` 先给出一个首音标签，例如 `b`、`zh`、`y`。
+2. 同一个标签下面同时挂 `semantic_code`、IPA 示例和显式 `runtime_char`。
+3. `shouyin_encoder.py` 不再按顺序分配私用区字符，而是直接读取这份显式映射并导出运行时文件。
 
 所以首音链路里：
 
@@ -40,14 +40,14 @@
 
 | 位置 | 含义 |
 | --- | --- |
-| `syllable/analysis/slice/shouyin_encoder.py:12` | 首音码位起点 `START_CODEPOINT = 0x100000` |
-| `syllable/analysis/slice/shouyin_encoder.py:14` | 首音源文件 `zaoyin_yinyuan.json` |
+| `syllable/analysis/slice/shouyin_encoder.py:13` | 首音唯一真源文件 `zaoyin_yinyuan_enhanced.json` |
+| `syllable/analysis/slice/shouyin_encoder.py:14` | 兼容首音清单文件 `zaoyin_yinyuan.json` |
 | `syllable/analysis/slice/shouyin_encoder.py:15` | 运行时首音映射输出文件 `shouyin_codepoint.json` |
-| `syllable/analysis/slice/shouyin_encoder.py:40` | 按顺序分配首音私用区字符 |
-| `syllable/analysis/slice/shouyin_encoder.py:86` | 处理首音源数据并提取键顺序 |
-| `syllable/analysis/slice/shouyin_encoder.py:97` | 直接返回 `list(shouyin.keys())`，保留源文件键顺序 |
-| `syllable/analysis/slice/shouyin_encoder.py:115` | 写入 `yinyuan_codepoint.json` 的 `zaoyin` 段 |
-| `syllable/analysis/slice/shouyin_encoder.py:151` | 写入 `shouyin_codepoint.json` 的 `首音` 段 |
+| `syllable/analysis/slice/shouyin_encoder.py:48` | 读取运行时首音映射产物 |
+| `syllable/analysis/slice/shouyin_encoder.py:76` | 处理增强版真源中的 `entries` 并提取显式字符映射 |
+| `syllable/analysis/slice/shouyin_encoder.py:105` | 从唯一真源读取显式首音到运行时字符映射 |
+| `syllable/analysis/slice/shouyin_encoder.py:124` | 写入 `yinyuan_codepoint.json` 的 `zaoyin` 段 |
+| `syllable/analysis/slice/shouyin_encoder.py:149` | 写入 `shouyin_codepoint.json` 的 `首音` 段 |
 
 ## 四、源标签、IPA 示例、运行时字符与当前布局位置对照
 

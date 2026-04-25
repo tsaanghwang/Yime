@@ -15,9 +15,9 @@
 | 2 | `syllable/analysis/slice/yinyuan/variables_of_attributes.json` | 定义音质归并和音高归并规则 | 哪些 IPA 片音会并到同一个乐音码元 |
 | 3 | `syllable/analysis/slice/yueyin_yinyuan.py` | 用归并规则把片音转成乐音码元名 | `i˥ -> ɪ˥`、`ɤ˨ -> o˩` 这类归并逻辑 |
 | 4 | `syllable/analysis/slice/convert_pitch_style.py` | 把 `˥/˦/˩` 转成 `́/̄/̀` 风格 | `ɪ˥ -> ɪ́`、`o˩ -> ò` 这类自定义组合字符替换 |
-| 5 | `syllable/analysis/slice/yinyuan/yueyin_yinyuan.json` | 标记风格后的乐音码元清单 | `ganyin` 起始码位分配所依据的键顺序 |
+| 5 | `syllable/analysis/slice/yinyuan/yueyin_yinyuan_enhanced.json` | 干音唯一真源，显式保存 `semantic_code`、`layout_slot`、`aliases`、`runtime_char` | 乐音语义码、布局槽位与运行时字符的一一对应 |
 | 6 | `syllable/analysis/slice/yinyuan/ganyin_to_pianyin_sequence.json` | 干音到三段片音序列的输入表 | 每个干音由哪些“呼音/主音/末音”组成 |
-| 7 | `syllable/analysis/slice/ganyin_encoder.py` | 读取 `yueyin_yinyuan.json`，从 `0x100020` 开始顺序分配码位，并替换三段乐音码元为私用区字符 | `M01-M33` 对应的私用区字符，以及 fixed-length 结果 |
+| 7 | `syllable/analysis/slice/ganyin_encoder.py` | 读取增强版真源中的显式 `runtime_char`，并替换三段乐音码元为运行时字符 | `M01-M33` 对应的运行时字符，以及 fixed-length 结果 |
 | 8 | `syllable/analysis/slice/yinyuan/yinyuan_codepoint.json` 中的 `yueyin` 段 | 运行时乐音码元到私用区字符的最终映射 | 例如 `ɪ́ -> 􀀠`、`ḿ -> 􀀸` |
 | 9 | `syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json` | 每个干音的三字符固定长编码 | 例如 `i1 -> 􀀠􀀠􀀠`、`er1 -> 􀀵􀀵􀀵` |
 | 10 | `internal_data/key_to_symbol.json` | 当前布局/KLC 侧使用的 `M01-M33` 符号表 | 布局侧是否和运行时字符一致 |
@@ -27,10 +27,12 @@
 
 | 位置 | 含义 |
 | --- | --- |
-| `syllable/analysis/slice/ganyin_encoder.py:12` | 干音码位起点 `START_CODEPOINT = 0x100020` |
-| `syllable/analysis/slice/ganyin_encoder.py:123` | 使用 `list(yueyin_yinyuan_data.keys())` 按顺序分配乐音码位 |
-| `syllable/analysis/slice/ganyin_encoder.py:160` | 用 `yueyin` 映射把乐音码元名替换成私用区字符 |
-| `syllable/analysis/slice/ganyin_encoder.py:171` | 把三段结果拼成 fixed-length 编码 |
+| `syllable/analysis/slice/ganyin_encoder.py:13` | 干音唯一真源文件 `yueyin_yinyuan_enhanced.json` |
+| `syllable/analysis/slice/ganyin_encoder.py:14` | 兼容乐音清单文件 `yueyin_yinyuan.json` |
+| `syllable/analysis/slice/ganyin_encoder.py:32` | 读取增强版真源中的 `entries` |
+| `syllable/analysis/slice/ganyin_encoder.py:69` | 构建 canonical yueyin 与 aliases 的显式运行时字符映射 |
+| `syllable/analysis/slice/ganyin_encoder.py:181` | 用显式 `yueyin` 映射把乐音码元名替换成运行时字符 |
+| `syllable/analysis/slice/ganyin_encoder.py:192` | 把三段结果拼成 fixed-length 编码 |
 | `syllable/analysis/slice/yueyin_yinyuan.py:97` | 片音到乐音码元的 mid-high 归并逻辑 |
 | `syllable/analysis/slice/yueyin_yinyuan.py:159` | 把 `˥/˦/˩` 风格转换成 `́/̄/̀` 风格 |
 | `syllable/analysis/slice/convert_pitch_style.py:49` | 保留输入键顺序，写出 `yueyin_yinyuan.json` |
@@ -158,7 +160,7 @@
 
 ## 六、审计结论
 
-1. `ganyin_to_fixed_length_yinyuan_sequence.json` 中的干音乐音私用区字符，真正由 `ganyin_encoder.py` 根据 `yueyin_yinyuan.json` 的键顺序、以 `0x100020` 为起点顺序分配得到。
+1. `ganyin_to_fixed_length_yinyuan_sequence.json` 中的干音乐音运行时字符，现已由 `ganyin_encoder.py` 直接读取 `yueyin_yinyuan_enhanced.json` 中显式声明的 `runtime_char` 得到，不再依赖键顺序或 `0x100020 + i`。
 
 2. 当前布局侧 `M01-M33` 使用的字符，与运行时 `yueyin` 字符集完全一致；没有字符级错位。
 
