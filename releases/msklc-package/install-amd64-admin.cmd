@@ -68,7 +68,7 @@ echo msiexec exit code: %EXITCODE%
 if "%EXITCODE%"=="0" echo Install completed successfully.
 if "%EXITCODE%"=="3010" echo Install succeeded and Windows requested a reboot.
 if not "%EXITCODE%"=="0" if not "%EXITCODE%"=="3010" echo Installation failed. Check the log above.
-if not "%EXITCODE%"=="0" if not "%EXITCODE%"=="3010" echo MSI fallback available: "%SCRIPT_DIR%install-amd64-manual.cmd"
+if not "%EXITCODE%"=="0" if not "%EXITCODE%"=="3010" echo Rebuild the package in MSKLC or inspect "%LOG_PATH%" for details.
 pause
 
 endlocal

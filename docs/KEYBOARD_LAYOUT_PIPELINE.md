@@ -1,344 +1,135 @@
-# 键盘布局生成完整流程
+# 键盘布局流程
+
+这份文档只保留当前仍有效的生成链，和 [MSKLC 发布速记](MSKLC_RELEASE_QUICKSTART.md) 保持同一口径。
 
 ## 设计约束
 
 在阅读本流程前，请先阅读 [码点与中间层策略](CODEPOINT_POLICY.md)。
 
-键盘布局流程依赖以下前提：
+当前流程依赖四个前提：
 
-1. `N01-N24` 与 `M01-M33` 是语义槽位层，不是可删的临时中间文件。
-2. `manual_key_layout.json` 负责键位到语义槽位的映射，不负责决定长期 canonical 码点。
-3. `BMP PUA` 更适合作为当前 Windows 工具链的投影层，不应自动取代长期规范字符层。
+1. `N01-N24` 与 `M01-M33` 是语义槽位层，不是可以删除的临时中间结果。
+2. `internal_data/manual_key_layout.json` 是历史文件名，当前语义应理解为布局真源，不表示 manual install 或手工编译。
+3. 布局真源只负责“物理键位 -> 语义槽位”的关系，不负责决定长期 canonical 码点。
+4. Windows 当前发布链统一走 `BMP PUA projection -> yinyuan.klc -> MSKLC GUI -> MSI`，不要再绕回旧的 DLL 直装路径。
 
-如果某次测试或重构需要绕过这些前提，应该先审查生成链和投影层，而不是直接改数据库或删除中间层。
+## 当前有效的生成链
 
-## 流程概述
-
-键盘布局的生成不是从`manual_key_layout.json`开始的，而是一个完整的流程：
-
-```
-拼音解码 → 私用区字符分配 → 布局合理性分析 → manual_key_layout.json → yinyuan.klc → DLL/安装包
+```text
+拼音/音元语义 -> 槽位与字符映射 -> 布局真源 manual_key_layout.json -> yinyuan.klc -> MSKLC 打包输出 -> MSI 安装
 ```
 
----
+## 各层职责
 
-## 完整流程步骤
+### 1. 语义与映射层
 
-### 步骤1：拼音解码
+- `N01-N24` / `M01-M33`：语义槽位层
+- `internal_data/key_to_symbol.json`：槽位到规范字符的映射
+- `internal_data/bmp_pua_trial_projection.json`：Windows 当前使用的 BMP PUA 投影
 
-**目的**：分析拼音结构和音元分布
+这几层决定字符系统，不应该通过手改安装产物来反向修复。
 
-**相关文件**：
-- `syllable/` - 拼音分析
-- `yime_theory/` - 音元理论
+### 2. 布局真源层
 
-**输出**：
-- 音元列表
-- 频率统计
-- 组合规则
+- `internal_data/manual_key_layout.json`
 
----
+它决定：
 
-### 步骤2：私用区字符分配
+- 哪个物理键承载哪个 `Nxx/Mxx`
+- Base / Shift / AltGr 各层如何分配
 
-**目的**：为每个音元分配私用区字符（PUA）
+它不决定：
 
-**相关文件**：
-- `internal_data/bmp_pua_trial_projection.json` - PUA映射
+- 具体 DLL 内容
+- MSI 内容
+- 机器上最终注册状态
 
-**输出**：
-- N01-N24 → 噪音符号 → E4F1-E508
-- M01-M33 → 音乐符号 → E509-E529
+### 3. 生成产物层
 
-**说明**：
-- 私用区范围：U+E000-U+F8FF
-- 需要考虑字体支持
-- 需要避免冲突
+- `internal_data/manual_key_layout.resolved.json`
+- `internal_data/klc_layout_visual_table.md`
+- `yinyuan.klc`
+- `releases/msklc-package/` 下的 MSI、setup、DLL
+- `releases/msklc-amd64/`、`releases/msklc-wow64/` 下的同步 DLL
 
----
+这些都应重建，不应手工长期维护。
 
-### 步骤3：布局合理性分析
+## 标准流程
 
-**目的**：分析键盘布局的合理性
-
-**考虑因素**：
-- 高频音元放在容易按的位置
-- 左右手平衡
-- 手指移动距离
-- 组合便利性
-
-**相关文件**：
-- `tools/check_layout_runtime_consistency.py` - 一致性检查
-- `tools/resolve_manual_key_layout.py` - 布局解析
-
-**输出**：
-- 布局评估报告
-- 优化建议
-
----
-
-### 步骤4：生成manual_key_layout.json
-
-**目的**：生成最终的键盘布局定义
-
-**相关文件**：
-- `internal_data/manual_key_layout.json` - 布局定义
-- `internal_data/key_to_symbol.json` - 符号映射
-
-**内容**：
-- 每个键的映射
-- Base/Shift/AltGr层
-- 符号或字面字符
-
----
-
-### 步骤5：生成yinyuan.klc
-
-**目的**：生成MSKLC源文件
-
-**工具**：
-```bash
-python tools/generate_klc_from_manual_layout.py
-```
-
-**输入**：
-- `manual_key_layout.json`
-- `key_to_symbol.json`
-- `bmp_pua_trial_projection.json`
-
-**输出**：
-- `yinyuan.klc` - MSKLC源文件
-
----
-
-### 步骤6：编译DLL和安装包
-
-**目的**：生成可安装的键盘布局
-
-**工具**：
-- MSKLC (Microsoft Keyboard Layout Creator)
-- 或 `tools/run_msklc_packaging_pipeline.py`
-
-**输出**：
-- `Yinyuan.dll` - 键盘DLL
-- `setup.exe` - 安装程序
-- `Yinyuan_amd64.msi` - 64位安装包
-- `Yinyuan_i386.msi` - 32位安装包
-
----
-
-## 流程图
-
-```
-┌─────────────────┐
-│  拼音解码分析   │
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│ 私用区字符分配  │
-│  N01-N24 (噪音) │
-│  M01-M33 (音乐) │
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│ 布局合理性分析  │
-│  - 高频优先     │
-│  - 左右平衡     │
-│  - 移动距离     │
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│manual_key_layout│
-│     .json       │
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│  yinyuan.klc    │
-│  (MSKLC源文件)  │
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│  MSKLC编译      │
-│  - DLL          │
-│  - 安装包       │
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│  安装到系统     │
-└─────────────────┘
-```
-
----
-
-## 当前状态
-
-### 已完成的部分
-
-根据您的说明，以下部分可能不需要修改：
-
-1. ✅ **拼音解码分析** - 已完成
-2. ✅ **私用区字符分配** - 已完成
-3. ✅ **布局合理性分析** - 已完成
-4. ✅ **manual_key_layout.json** - 已定义
-
-### 需要重新执行的部分
-
-1. ⏳ **生成yinyuan.klc** - 已重新生成
-2. ⏳ **编译DLL和安装包** - 需要执行
-3. ⏳ **安装到系统** - 需要执行
-
----
-
-## 为什么布局会被改变
-
-### 可能的原因
-
-1. **测试过程中修改了manual_key_layout.json**
-   - 手动编辑
-   - 或程序修改
-
-2. **使用了错误的生成流程**
-   - 跳过了某些步骤
-   - 或使用了旧版本
-
-3. **安装包使用了旧布局**
-   - 没有重新编译
-   - 或使用了缓存的版本
-
----
-
-## 解决方案
-
-### 方案1：重新执行完整流程
-
-**如果前面的步骤需要修改**：
+### 步骤1：从布局真源生成 `yinyuan.klc`
 
 ```bash
-# 1. 拼音解码（如果需要）
-# ...
-
-# 2. 私用区字符分配（如果需要）
-# ...
-
-# 3. 布局合理性分析（如果需要）
-python tools/check_layout_runtime_consistency.py
-python tools/resolve_manual_key_layout.py
-
-# 4. 生成manual_key_layout.json（如果需要）
-# ...
-
-# 5. 生成yinyuan.klc
-python tools/generate_klc_from_manual_layout.py
-
-# 6. 编译安装包
-python tools/run_msklc_packaging_pipeline.py --open-msklc always
+python tools/run_layout_pipeline.py --on-warning continue --open-msklc never --export-visual-table
 ```
 
----
+期望结果：
 
-### 方案2：只重新编译（推荐）
+- 更新 `internal_data/manual_key_layout.resolved.json`
+- 更新 `internal_data/klc_layout_visual_table.md`
+- 更新 `yinyuan.klc`
 
-**如果前面的步骤不需要修改**：
+### 步骤2：用 MSKLC GUI 打包
 
 ```bash
-# 1. 重新生成yinyuan.klc（已完成）
-python tools/generate_klc_from_manual_layout.py
-
-# 2. 编译安装包
-python tools/run_msklc_packaging_pipeline.py --open-msklc always
-
-# 3. 卸载旧键盘
-# 4. 注销并重新登录
-# 5. 安装新键盘
-# 6. 注销并重新登录
-# 7. 测试
+python tools/run_msklc_packaging_pipeline.py
 ```
 
----
+然后在 MSKLC 中执行：
 
-## 验证布局正确性
+1. `File -> Load Source File -> yinyuan.klc`
+2. `Project -> Build DLL and Setup Package`
 
-### 检查manual_key_layout.json
+期望结果同步回仓库：
 
-**确认以下内容**：
+- `releases/msklc-package/`
+- `releases/msklc-amd64/`
+- `releases/msklc-wow64/`
 
-1. **版本信息**
-   ```json
-   "version": "2026-04-10",
-   "layout_status": "final_candidate_v1"
-   ```
+### 步骤3：安装 MSI
 
-2. **符号映射**
-   - N01-N24：噪音符号
-   - M01-M33：音乐符号
-
-3. **键位分配**
-   - 高频音元在容易按的位置
-   - 左右手平衡
-   - 符合人体工程学
-
----
-
-### 检查yinyuan.klc
-
-**确认以下内容**：
-
-1. **头部信息**
-   ```
-   KBD	Yinyuan	"Chinese (Simplified) - Yinyuan"
-   LOCALEID	"00000804"
-   ```
-
-2. **布局映射**
-   - 每个键的Base/Shift/AltGr
-   - 私用区字符正确
-   - 与manual_key_layout.json一致
-
----
-
-### 测试键盘
-
-**测试步骤**：
-
-1. 安装新键盘
-2. Win + Space切换
-3. 在记事本中测试每个键
-4. 对比manual_key_layout.json
-5. 确认输出正确
-
----
-
-## 总结
-
-### 完整流程
-
-```
-拼音解码 → PUA分配 → 布局分析 → manual_key_layout.json → yinyuan.klc → DLL/安装包
-```
-
-### 当前状态
-
-- ✅ 前面的步骤已完成（不需要修改）
-- ✅ yinyuan.klc已重新生成
-- ⏳ 需要重新编译安装包
-- ⏳ 需要重新安装
-
-### 下一步
-
-**重新编译安装包**：
 ```bash
-python tools/run_msklc_packaging_pipeline.py --open-msklc always
+python tools/run_msklc_install_pipeline.py --install-mode msi
 ```
 
-**然后**：
-1. 卸载旧键盘
-2. 注销并重新登录
-3. 安装新键盘
-4. 注销并重新登录
-5. 测试验证
+如需把布局加入当前用户键盘列表，再运行：
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File releases\msklc-package\enable-yinyuan-for-current-user.ps1
+```
+
+## 什么时候需要回滚或清理
+
+只保留两种官方清理方式：
+
+1. 回滚当前用户键盘项
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File releases\msklc-package\restore-default-chinese-keyboards.ps1
+```
+
+1. 清理机器级注册和系统 DLL
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File releases\msklc-package\unregister-yinyuan-machine.ps1
+```
+
+## 不应该再做的事
+
+1. 不要把旧候选 `.klc` 直接复制成正式 `yinyuan.klc`。
+2. 不要直接复制 DLL 到系统目录来替代当前 MSI 流程。
+3. 不要通过手改 `releases/` 下历史目录来猜测当前发布状态。
+4. 不要把 `manual_key_layout.json` 误解成“手工安装流程”的一部分。
+
+## 出问题时优先检查什么
+
+1. 当前 `yinyuan.klc` 是否确实从最新布局真源重新生成。
+2. 是否在 MSKLC GUI 里重新执行了 `Build DLL and Setup Package`。
+3. `releases/msklc-package/` 是否已被这次 GUI 产物完整覆盖。
+4. 是否残留旧机器级注册；如有冲突，先运行 `unregister-yinyuan-machine.ps1`。
+
+## 一句话顺序
+
+1. `run_layout_pipeline.py`
+2. `run_msklc_packaging_pipeline.py`
+3. `run_msklc_install_pipeline.py --install-mode msi`
+4. 需要回滚时运行 `restore-default-chinese-keyboards.ps1` 或 `unregister-yinyuan-machine.ps1`

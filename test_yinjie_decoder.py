@@ -1,4 +1,6 @@
 import unittest
+import json
+import tempfile
 from pathlib import Path
 
 from yinjie import Yinjie
@@ -81,6 +83,57 @@ class TestYinjieDecoderRunContract(unittest.TestCase):
         self.assertEqual(decoder.decode_all_calls, 1)
         self.assertEqual(decoder.show_calls, 0)
         self.assertEqual(result.decoded_count, 1)
+
+
+class TestYinjieDecoderKeyToCodeGeneration(unittest.TestCase):
+    def test_map_key_to_code_uses_layout_slots_from_sources(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_root = Path(temp_dir)
+            code_file = temp_root / "yinjie_code.json"
+            code_file.write_text("{}", encoding="utf-8")
+
+            shouyin_source = temp_root / "zaoyin_yinyuan_enhanced.json"
+            shouyin_source.write_text(
+                json.dumps(
+                    {
+                        "entries": {
+                            "y": {"layout_slot": "N23", "runtime_char": "Y"},
+                            "w": {"layout_slot": "N24", "runtime_char": "W"},
+                        }
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+
+            yueyin_source = temp_root / "yueyin_yinyuan_enhanced.json"
+            yueyin_source.write_text(
+                json.dumps(
+                    {
+                        "entries": {
+                            "tone_a": {"layout_slot": "M01", "runtime_char": "A"},
+                            "tone_b": {"layout_slot": "M02", "runtime_char": "B"},
+                        }
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+
+            class ControlledYinjieDecoder(YinjieDecoder):
+                def _get_shouyin_source_path(self) -> Path:
+                    return shouyin_source
+
+                def _get_yueyin_source_path(self) -> Path:
+                    return yueyin_source
+
+            decoder = ControlledYinjieDecoder(code_file=code_file)
+            result = decoder.map_key_to_code(output_file=temp_root / "key_to_code.json")
+
+            self.assertEqual(result["N23"], "Y")
+            self.assertEqual(result["N24"], "W")
+            self.assertEqual(result["M01"], "A")
+            self.assertEqual(result["M02"], "B")
 
 
 if __name__ == "__main__":

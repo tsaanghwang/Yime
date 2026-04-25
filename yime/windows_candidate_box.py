@@ -64,14 +64,14 @@ class StaticCandidateDecoder:
     def __init__(self, app_dir: Path) -> None:
         repo_root = app_dir.parent
         projection_path = repo_root / "internal_data" / "bmp_pua_trial_projection.json"
-        key_to_code_path = repo_root / "key_to_code.json"
+        key_to_symbol_path = repo_root / "internal_data" / "key_to_symbol.json"
         mapping_path = app_dir / "enhanced_yinjie_mapping.json"
         pinyin_hanzi_paths = [
             app_dir / "pinyin_hanzi.json",
             repo_root / "pinyin" / "hanzi_pinyin" / "pinyin_hanzi.json",
         ]
 
-        self.bmp_to_canonical = self._build_bmp_to_canonical_map(projection_path, key_to_code_path)
+        self.bmp_to_canonical = self._build_bmp_to_canonical_map(projection_path, key_to_symbol_path)
         self.code_mapping = self._load_json(mapping_path)["音元符号"]
         self.pinyin_hanzi = self._load_first_available_json(pinyin_hanzi_paths)
 
@@ -86,14 +86,14 @@ class StaticCandidateDecoder:
         joined = ", ".join(str(path) for path in paths)
         raise FileNotFoundError(f"未找到候选数据文件: {joined}")
 
-    def _build_bmp_to_canonical_map(self, projection_path: Path, key_to_code_path: Path) -> dict[str, str]:
+    def _build_bmp_to_canonical_map(self, projection_path: Path, key_to_symbol_path: Path) -> dict[str, str]:
         projection = self._load_json(projection_path)
-        key_to_code = self._load_json(key_to_code_path)
+        key_to_symbol = self._load_json(key_to_symbol_path)
         bmp_to_canonical: dict[str, str] = {}
 
         for symbol_key, slot_info in projection["used_mapping"].items():
             bmp_char = slot_info["char"]
-            canonical_char = key_to_code.get(symbol_key)
+            canonical_char = key_to_symbol.get(symbol_key)
             if canonical_char:
                 bmp_to_canonical[bmp_char] = canonical_char
 
@@ -158,7 +158,7 @@ class RuntimeCandidateDecoder:
         self.runtime_path = app_dir / "reports" / "runtime_candidates_by_code_true.json"
         self.bmp_to_canonical = self._build_bmp_to_canonical_map(
             app_dir.parent / "internal_data" / "bmp_pua_trial_projection.json",
-            app_dir.parent / "key_to_code.json",
+            app_dir.parent / "internal_data" / "key_to_symbol.json",
         )
         self.by_code = self._load_runtime_candidates(self.runtime_path)
 
@@ -166,14 +166,14 @@ class RuntimeCandidateDecoder:
         with path.open("r", encoding="utf-8") as handle:
             return json.load(handle)
 
-    def _build_bmp_to_canonical_map(self, projection_path: Path, key_to_code_path: Path) -> dict[str, str]:
+    def _build_bmp_to_canonical_map(self, projection_path: Path, key_to_symbol_path: Path) -> dict[str, str]:
         projection = self._load_json(projection_path)
-        key_to_code = self._load_json(key_to_code_path)
+        key_to_symbol = self._load_json(key_to_symbol_path)
         bmp_to_canonical: dict[str, str] = {}
 
         for symbol_key, slot_info in projection["used_mapping"].items():
             bmp_char = slot_info["char"]
-            canonical_char = key_to_code.get(symbol_key)
+            canonical_char = key_to_symbol.get(symbol_key)
             if canonical_char:
                 bmp_to_canonical[bmp_char] = canonical_char
 

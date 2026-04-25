@@ -28,7 +28,7 @@ class StaticCandidateDecoder:
         """
         repo_root = app_dir.parent
         projection_path = repo_root / "internal_data" / "bmp_pua_trial_projection.json"
-        key_to_code_path = repo_root / "key_to_code.json"
+        key_to_symbol_path = repo_root / "internal_data" / "key_to_symbol.json"
         mapping_path = app_dir / "enhanced_yinjie_mapping.json"
         pinyin_hanzi_paths = [
             app_dir / "pinyin_hanzi.json",
@@ -36,7 +36,7 @@ class StaticCandidateDecoder:
         ]
 
         self.bmp_to_canonical = self._build_bmp_to_canonical_map(
-            projection_path, key_to_code_path
+            projection_path, key_to_symbol_path
         )
         self.code_mapping = self._load_json(mapping_path)["音元符号"]
         self.pinyin_hanzi = self._load_first_available_json(pinyin_hanzi_paths)
@@ -55,16 +55,16 @@ class StaticCandidateDecoder:
         raise FileNotFoundError(f"未找到候选数据文件: {joined}")
 
     def _build_bmp_to_canonical_map(
-        self, projection_path: Path, key_to_code_path: Path
+        self, projection_path: Path, key_to_symbol_path: Path
     ) -> Dict[str, str]:
         """构建BMP字符到规范字符的映射"""
         projection = self._load_json(projection_path)
-        key_to_code = self._load_json(key_to_code_path)
+        key_to_symbol = self._load_json(key_to_symbol_path)
         bmp_to_canonical: Dict[str, str] = {}
 
         for symbol_key, slot_info in projection["used_mapping"].items():
             bmp_char = slot_info["char"]
-            canonical_char = key_to_code.get(symbol_key)
+            canonical_char = key_to_symbol.get(symbol_key)
             if canonical_char:
                 bmp_to_canonical[bmp_char] = canonical_char
 
@@ -161,7 +161,7 @@ class RuntimeCandidateDecoder:
         )
         self.bmp_to_canonical = self._build_bmp_to_canonical_map(
             app_dir.parent / "internal_data" / "bmp_pua_trial_projection.json",
-            app_dir.parent / "key_to_code.json",
+            app_dir.parent / "internal_data" / "key_to_symbol.json",
         )
         self.by_code = self._load_runtime_candidates(self.runtime_path)
 
@@ -174,16 +174,16 @@ class RuntimeCandidateDecoder:
         return json.loads(raw_text)
 
     def _build_bmp_to_canonical_map(
-        self, projection_path: Path, key_to_code_path: Path
+        self, projection_path: Path, key_to_symbol_path: Path
     ) -> Dict[str, str]:
         """构建BMP字符到规范字符的映射"""
         projection = self._load_json(projection_path)
-        key_to_code = self._load_json(key_to_code_path)
+        key_to_symbol = self._load_json(key_to_symbol_path)
         bmp_to_canonical: Dict[str, str] = {}
 
         for symbol_key, slot_info in projection["used_mapping"].items():
             bmp_char = slot_info["char"]
-            canonical_char = key_to_code.get(symbol_key)
+            canonical_char = key_to_symbol.get(symbol_key)
             if canonical_char:
                 bmp_to_canonical[bmp_char] = canonical_char
 
@@ -269,7 +269,7 @@ class SQLiteRuntimeCandidateDecoder:
             raise FileNotFoundError(f"未找到输入法数据库: {self.db_path}")
         self.bmp_to_canonical = self._build_bmp_to_canonical_map(
             app_dir.parent / "internal_data" / "bmp_pua_trial_projection.json",
-            app_dir.parent / "key_to_code.json",
+            app_dir.parent / "internal_data" / "key_to_symbol.json",
         )
         self._validate_runtime_candidates_view()
 
@@ -278,15 +278,15 @@ class SQLiteRuntimeCandidateDecoder:
             return json.load(handle)
 
     def _build_bmp_to_canonical_map(
-        self, projection_path: Path, key_to_code_path: Path
+        self, projection_path: Path, key_to_symbol_path: Path
     ) -> Dict[str, str]:
         projection = self._load_json(projection_path)
-        key_to_code = self._load_json(key_to_code_path)
+        key_to_symbol = self._load_json(key_to_symbol_path)
         bmp_to_canonical: Dict[str, str] = {}
 
         for symbol_key, slot_info in projection["used_mapping"].items():
             bmp_char = slot_info["char"]
-            canonical_char = key_to_code.get(symbol_key)
+            canonical_char = key_to_symbol.get(symbol_key)
             if canonical_char:
                 bmp_to_canonical[bmp_char] = canonical_char
 

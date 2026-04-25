@@ -1,309 +1,94 @@
-# 键盘布局重新编译指南
+# 键盘布局重建指南
 
-## 问题说明
+这页保留当前有效的重建路径：布局真源生成 `.klc`、MSKLC GUI 打包、MSI 安装、必要时回滚。
 
-键盘布局在测试过程中被改变了，需要重新生成并编译。
+更短的版本见 [MSKLC 发布速记](MSKLC_RELEASE_QUICKSTART.md)。
 
----
+## 先理解一个历史命名
 
-## 步骤1：重新生成布局文件
+- `internal_data/manual_key_layout.json` 仍是当前布局真源。
+- 文件名里的 `manual` 只是历史命名，不表示 manual install，也不表示需要走手工编译链路。
 
-**已完成**：
+## 标准重建流程
+
+### 1. 从布局真源生成 `yinyuan.klc`
+
 ```bash
-python tools/generate_klc_from_manual_layout.py
+python tools/run_layout_pipeline.py --on-warning continue --open-msklc never --export-visual-table
 ```
 
-**结果**：
-```
-Updated yinyuan.klc from internal_data\manual_key_layout.json
-```
+期望结果：
 
----
+- 更新 `internal_data/manual_key_layout.resolved.json`
+- 更新 `internal_data/klc_layout_visual_table.md`
+- 更新 `yinyuan.klc`
 
-## 步骤2：重新编译DLL和安装包
+### 2. 用 MSKLC GUI 打包 DLL 和安装包
 
-### 方法1：使用MSKLC GUI（推荐）
-
-**步骤**：
-
-1. **打开MSKLC**
-   ```
-   "C:\Program Files (x86)\Microsoft Keyboard Layout Creator 1.4\MSKLC.exe"
-   ```
-
-2. **加载布局文件**
-   - File → Load Source File
-   - 选择 `yinyuan.klc`
-   - 确认布局正确
-
-3. **验证布局**
-   - 检查每个键的映射
-   - 确认私用区字符正确
-   - 确认与manual_key_layout.json一致
-
-4. **生成安装包**
-   - Project → Build DLL and Setup Package
-   - 选择输出目录
-   - 等待编译完成
-
-5. **检查输出**
-   - setup.exe
-   - Yinyuan_amd64.msi
-   - Yinyuan.dll
-   - 其他文件
-
----
-
-### 方法2：使用命令行脚本
-
-**运行编译脚本**：
 ```bash
-python tools/run_msklc_packaging_pipeline.py --open-msklc always
+python tools/run_msklc_packaging_pipeline.py
 ```
 
-**说明**：
-- 会自动打开MSKLC
-- 需要手动完成GUI步骤
-- 自动复制输出文件
+然后在 MSKLC 中执行：
 
----
+1. `File -> Load Source File -> yinyuan.klc`
+2. `Project -> Build DLL and Setup Package`
 
-## 步骤3：卸载旧键盘
+期望结果同步回仓库：
 
-**重要**：必须先卸载旧键盘
+- `releases/msklc-package/`
+- `releases/msklc-amd64/`
+- `releases/msklc-wow64/`
 
-### 方法1：使用卸载程序
+### 3. 安装 MSI
 
-**位置**：
+```bash
+python tools/run_msklc_install_pipeline.py --install-mode msi
 ```
-releases\msklc-package\setup.exe
-```
 
-**步骤**：
-1. 运行 `setup.exe`
-2. 选择 "Remove"
-3. 完成
-4. 注销并重新登录
+如果只想把布局加入当前用户键盘列表，再运行：
 
----
-
-### 方法2：手动卸载
-
-**步骤**：
-1. 设置 → 时间和语言 → 语言
-2. 找到 "中文（简体）"
-3. 点击 "选项"
-4. 找到 "Yinyuan"
-5. 点击 "删除"
-6. 注销并重新登录
-
----
-
-### 方法3：使用注册表
-
-**删除注册表项**：
 ```powershell
-# 删除预加载
-Remove-ItemProperty -Path "HKCU:\Keyboard Layout\Preload" -Name "*" -ErrorAction SilentlyContinue
-
-# 删除替换
-Remove-ItemProperty -Path "HKCU:\Keyboard Layout\Substitutes" -Name "A0000804" -ErrorAction SilentlyContinue
-
-# 注销并重新登录
+powershell -NoProfile -ExecutionPolicy Bypass -File releases\msklc-package\enable-yinyuan-for-current-user.ps1
 ```
 
----
+### 4. 必要时回滚或清理
 
-## 步骤4：安装新键盘
+回滚当前用户键盘项：
 
-### 方法1：使用安装程序
-
-**步骤**：
-1. 运行 `releases\msklc-package\setup.exe`
-2. 选择 "Install"
-3. 完成
-4. 注销并重新登录
-
----
-
-### 方法2：手动安装
-
-**步骤**：
-1. 复制DLL到系统目录
-2. 注册键盘布局
-3. 添加到用户配置
-4. 注销并重新登录
-
----
-
-## 步骤5：验证安装
-
-### 检查键盘布局
-
-**方法1：设置界面**
-1. 设置 → 时间和语言 → 语言
-2. 找到 "中文（简体）"
-3. 点击 "选项"
-4. 确认 "Yinyuan" 存在
-
----
-
-**方法2：注册表**
 ```powershell
-# 检查系统安装
-Get-ChildItem "HKLM:\SYSTEM\CurrentControlSet\Control\Keyboard Layouts" |
-    Where-Object { $_.PSChildName -eq "A0000804" }
-
-# 检查用户激活
-Get-ItemProperty "HKCU:\Keyboard Layout\Preload"
+powershell -NoProfile -ExecutionPolicy Bypass -File releases\msklc-package\restore-default-chinese-keyboards.ps1
 ```
 
----
+彻底清理机器级注册：
 
-**方法3：输入法切换**
-1. Win + Space
-2. 查看是否有 "Chinese (Simplified) - Yinyuan"
-3. 选择并测试
-
----
-
-## 步骤6：测试键盘
-
-### 测试步骤
-
-1. **打开记事本**
-2. **切换到音元键盘**（Win + Space）
-3. **敲击键盘**
-4. **观察输出**
-
-### 预期结果
-
-**根据manual_key_layout.json**：
-
-| 键 | Base | Shift |
-|----|------|-------|
-| ` | N22 | ~ |
-| 1 | N09 | ! |
-| 2 | N01 | N05 |
-| 3 | N02 | N06 |
-| 4 | N03 | N07 |
-| 5 | N04 | N08 |
-| q | N10 | N15 |
-| w | w | N16 |
-| e | M18 | N17 |
-| r | M17 | N18 |
-| ... | ... | ... |
-
-**N01-N24**：噪音符号
-**M01-M33**：音乐符号
-
----
-
-## 完整流程
-
-### 一键执行（推荐）
-
-```bash
-# 1. 重新生成布局
-python tools/generate_klc_from_manual_layout.py
-
-# 2. 打开MSKLC编译
-python tools/run_msklc_packaging_pipeline.py --open-msklc always
-
-# 3. 在MSKLC中：
-#    - File → Load Source File → yinyuan.klc
-#    - Project → Build DLL and Setup Package
-#    - 选择输出目录
-#    - 等待完成
-
-# 4. 卸载旧键盘
-#    - 运行旧setup.exe → Remove
-#    - 或手动删除
-
-# 5. 注销并重新登录
-
-# 6. 安装新键盘
-#    - 运行新setup.exe → Install
-
-# 7. 注销并重新登录
-
-# 8. 测试
-#    - Win + Space → 选择Yinyuan
-#    - 在记事本中测试
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File releases\msklc-package\unregister-yinyuan-machine.ps1
 ```
 
----
+## 重建前的最小检查
 
-## 注意事项
+1. 确认布局真源 `internal_data/manual_key_layout.json` 已是你要发布的版本。
+2. 先跑 [MSKLC_PRECOMPILE_CHECKLIST.md](MSKLC_PRECOMPILE_CHECKLIST.md) 里的检查。
+3. 不要手改最终 `yinyuan.klc` 的空行、编码或记录顺序。
+4. 不要把旧候选 `.klc` 或旧目录里的 DLL 直接复制成最终发布产物。
 
-### 重要提醒
+## 安装成功后的验证
 
-1. **必须卸载旧键盘**
-   - 否则可能冲突
-   - 可能使用旧布局
+1. `Win + Space` 能看到 `Chinese (Simplified) - Yinyuan`。
+2. “设置 -> 时间和语言 -> 语言和区域 -> 中文（简体） -> 选项”里能看到 Yinyuan。
+3. 需要时注销并重新登录一次，让 Text Services Framework 刷新。
 
-2. **必须注销并重新登录**
-   - 键盘布局是会话级别
-   - 注册表更改需要重新加载
+## 失败时优先检查什么
 
-3. **验证布局正确**
-   - 检查manual_key_layout.json
-   - 检查生成的yinyuan.klc
-   - 测试每个键
+1. 是否真的从当前布局真源重新生成了 `yinyuan.klc`。
+2. 是否在 MSKLC 里重新执行了 `Build DLL and Setup Package`。
+3. `releases/msklc-package/` 是否已经被这次新的 GUI 打包输出覆盖。
+4. 是否仍残留旧的机器级注册；有冲突时先运行 `unregister-yinyuan-machine.ps1`。
 
-4. **备份旧版本**
-   - 备份旧的安装包
-   - 以防需要回滚
+## 一句话顺序
 
----
-
-## 故障排除
-
-### 问题1：MSKLC无法打开
-
-**解决**：
-- 确认MSKLC已安装
-- 路径：`C:\Program Files (x86)\Microsoft Keyboard Layout Creator 1.4\MSKLC.exe`
-
----
-
-### 问题2：编译失败
-
-**解决**：
-- 检查yinyuan.klc格式
-- 检查私用区字符
-- 查看MSKLC错误信息
-
----
-
-### 问题3：安装失败
-
-**解决**：
-- 先卸载旧版本
-- 注销并重新登录
-- 以管理员权限运行
-
----
-
-### 问题4：布局不正确
-
-**解决**：
-- 检查manual_key_layout.json
-- 重新生成yinyuan.klc
-- 重新编译安装
-
----
-
-## 总结
-
-**关键步骤**：
-1. ✅ 重新生成布局文件
-2. ⏳ 重新编译DLL和安装包
-3. ⏳ 卸载旧键盘
-4. ⏳ 注销并重新登录
-5. ⏳ 安装新键盘
-6. ⏳ 注销并重新登录
-7. ⏳ 测试验证
-
-**下一步**：
-运行MSKLC编译安装包
+1. `run_layout_pipeline.py`
+2. `run_msklc_packaging_pipeline.py`
+3. `run_msklc_install_pipeline.py --install-mode msi`
+4. 需要回滚时运行 `restore-default-chinese-keyboards.ps1` 或 `unregister-yinyuan-machine.ps1`

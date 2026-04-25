@@ -167,7 +167,8 @@
 ### 应视为真源或准真源的文件
 
 - `internal_data/manual_key_layout.json`
-  - 键位与语义槽位的关系
+  - 历史文件名，当前语义应理解为布局真源。
+  - 键位与语义槽位的关系。
 - `internal_data/key_to_symbol.json`
   - 语义槽位到规范字符的映射
 - 后续建议新增：`shouyin_to_symbol_key.json`

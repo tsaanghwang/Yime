@@ -16,16 +16,16 @@ DEFAULT_STAGE_DIR = Path(os.environ.get("ProgramData", r"C:\ProgramData")) / "Yi
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
-            "Run the MSKLC install-stage controller: try MSI install, optionally fall back to manual install, "
+            "Run the MSKLC install-stage controller: install from the packaged MSI output "
             "and optionally enable Yinyuan for the current user."
         )
     )
     parser.add_argument("--package-dir", type=Path, default=DEFAULT_PACKAGE_DIR)
     parser.add_argument(
         "--install-mode",
-        choices=("auto", "msi", "manual"),
+        choices=("auto", "msi"),
         default="auto",
-        help="Install strategy. auto = try MSI first, then fall back to manual install. Default: auto",
+        help="Install strategy. Both supported modes use the packaged MSI. Default: auto",
     )
     parser.add_argument(
         "--enable-current-user",
@@ -69,7 +69,6 @@ def ensure_windows() -> None:
 def ensure_package_inputs(package_dir: Path) -> dict[str, Path]:
     required = {
         "msi": package_dir / "Yinyuan_amd64.msi",
-        "manual_ps1": package_dir / "install-amd64-manual.ps1",
         "enable_ps1": package_dir / "enable-yinyuan-for-current-user.ps1",
         "restore_ps1": package_dir / "restore-default-chinese-keyboards.ps1",
         "unregister_ps1": package_dir / "unregister-yinyuan-machine.ps1",
@@ -237,22 +236,12 @@ def main() -> None:
         exit_code = run_msi_install(package_dir, stage_dir, args.dry_run)
         if exit_code not in {0, 3010}:
             raise SystemExit(f"MSI install failed. Exit code: {exit_code}. Check {package_dir / 'install-amd64-admin.log'}")
-    elif args.install_mode == "manual":
-        exit_code = run_powershell_script(inputs["manual_ps1"], args.dry_run)
-        if exit_code != 0:
-            raise SystemExit(f"Manual install failed. Exit code: {exit_code}")
     else:
         exit_code = run_msi_install(package_dir, stage_dir, args.dry_run)
         if exit_code in {0, 3010}:
             print("MSI install completed successfully.")
         else:
-            print(f"MSI install failed with exit code {exit_code}. Falling back to manual install.")
-            manual_exit = run_powershell_script(inputs["manual_ps1"], args.dry_run)
-            if manual_exit != 0:
-                raise SystemExit(
-                    "Both MSI install and manual install failed. "
-                    f"MSI exit code: {exit_code}; manual exit code: {manual_exit}"
-                )
+            raise SystemExit(f"MSI install failed. Exit code: {exit_code}. Check {package_dir / 'install-amd64-admin.log'}")
 
     maybe_enable_current_user(args.enable_current_user, inputs["enable_ps1"], args.dry_run)
     print_next_steps(package_dir)

@@ -26,7 +26,7 @@ function Get-YinyuanKlid {
     } | Select-Object -First 1
 
     if ([string]::IsNullOrWhiteSpace($slot)) {
-        throw 'Yinyuan is not registered in HKLM. Run install-amd64-manual.cmd as administrator first.'
+        throw 'Yinyuan is not registered in HKLM. Install the MSKLC-generated MSI first, then run this script again.'
     }
 
     return [string]$slot

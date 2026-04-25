@@ -85,6 +85,7 @@ class InputManager:
 
         # 获取按键信息
         key = key_info.get('key', '')
+        text = key_info.get('text', '')
         ascii_char = key_info.get('ascii')
         modifiers = key_info.get('modifiers', {}) or {}
 
@@ -99,6 +100,11 @@ class InputManager:
         # 处理数字键选择候选词
         if self._handle_digit_selection(key):
             return False  # 拦截数字键
+
+        # 优先消费按当前键盘布局实际产出的字符，包括 BMP PUA / SPUA-B 等非 ASCII 编码字符。
+        if isinstance(text, str) and len(text) == 1 and text >= ' ':
+            self.add_char(text)
+            return False
 
         # 处理普通字符输入
         if ascii_char is not None:
