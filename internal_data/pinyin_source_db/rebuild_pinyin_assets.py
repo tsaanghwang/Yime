@@ -132,6 +132,12 @@ def main() -> int:
         ]
         run_step("encode", yinjie_command)
 
+    validate_yinyuan_command = [
+        sys.executable,
+        str(WORKSPACE_ROOT / "tools" / "validate_yinyuan_source_consistency.py"),
+    ]
+    run_step("validate-yinyuan", validate_yinyuan_command)
+
     summary_output.parent.mkdir(parents=True, exist_ok=True)
     summary = build_summary(
         db_path=db_path,
