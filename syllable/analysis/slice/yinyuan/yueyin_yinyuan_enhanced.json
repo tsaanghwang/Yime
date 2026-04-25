@@ -1,0 +1,41 @@
+{
+  "name": {
+    "Pitched Yinyuan": "乐音类音元"
+  },
+  "description": "干音链唯一真源，显式保存语义码、布局槽位、运行时字符与兼容别名。",
+  "entries": {
+    "ɪ́": {"aliases": ["i˥", "ɪ˥"], "semantic_code": "YPY_I_HIGH", "layout_slot": "M01", "runtime_char": ""},
+    "ɪ̄": {"aliases": ["i˦", "ɪ˦"], "semantic_code": "YPY_I_MID", "layout_slot": "M02", "runtime_char": ""},
+    "ɪ̀": {"aliases": ["i˧", "i˨", "i˩", "ɪ˨", "ɪ˩"], "semantic_code": "YPY_I_LOW", "layout_slot": "M03", "runtime_char": ""},
+    "ᴜ́": {"aliases": ["u˥", "ᴜ˥"], "semantic_code": "YPY_U_HIGH", "layout_slot": "M04", "runtime_char": ""},
+    "ᴜ̄": {"aliases": ["u˦", "ᴜ˦"], "semantic_code": "YPY_U_MID", "layout_slot": "M05", "runtime_char": ""},
+    "ᴜ̀": {"aliases": ["u˧", "u˨", "u˩", "ᴜ˧", "ᴜ˨", "ᴜ˩"], "semantic_code": "YPY_U_LOW", "layout_slot": "M06", "runtime_char": ""},
+    "ʏ́": {"aliases": ["ʏ˥", "y˥"], "semantic_code": "YPY_UE_HIGH", "layout_slot": "M07", "runtime_char": ""},
+    "ʏ̄": {"aliases": ["ʏ˦", "y˦"], "semantic_code": "YPY_UE_MID", "layout_slot": "M08", "runtime_char": ""},
+    "ʏ̀": {"aliases": ["ʏ˧", "ʏ˨", "ʏ˩", "y˧", "y˨"], "semantic_code": "YPY_UE_LOW", "layout_slot": "M09", "runtime_char": ""},
+    "ᴀ́": {"aliases": ["ᴀ˥", "a˥", "æ˥", "ɑ˥"], "semantic_code": "YPY_A_HIGH", "layout_slot": "M10", "runtime_char": ""},
+    "ᴀ̄": {"aliases": ["ᴀ˦", "a˦", "æ˦", "ɑ˦"], "semantic_code": "YPY_A_MID", "layout_slot": "M11", "runtime_char": ""},
+    "ᴀ̀": {"aliases": ["ᴀ˧", "ᴀ˨", "ᴀ˩", "a˧", "a˨", "a˩", "æ˩", "ɑ˧", "ɑ˨", "ɑ˩"], "semantic_code": "YPY_A_LOW", "layout_slot": "M12", "runtime_char": ""},
+    "ó": {"aliases": ["o˥", "ɤ˥", "𐞑˥"], "semantic_code": "YPY_O_HIGH", "layout_slot": "M13", "runtime_char": ""},
+    "ō": {"aliases": ["o˦", "ɤ˦", "𐞑˦"], "semantic_code": "YPY_O_MID", "layout_slot": "M14", "runtime_char": ""},
+    "ò": {"aliases": ["o˧", "o˨", "o˩", "ɤ˧", "ɤ˨", "ɤ˩", "𐞑˩"], "semantic_code": "YPY_O_LOW", "layout_slot": "M15", "runtime_char": ""},
+    "ᴇ́": {"aliases": ["ᴇ˥", "e˥", "ə˥", "ᵊ˥"], "semantic_code": "YPY_E_CARET_HIGH", "layout_slot": "M16", "runtime_char": ""},
+    "ᴇ̄": {"aliases": ["ᴇ˦", "e˦", "ə˦", "ᵊ˦"], "semantic_code": "YPY_E_CARET_MID", "layout_slot": "M17", "runtime_char": ""},
+    "ᴇ̀": {"aliases": ["ᴇ˧", "ᴇ˨", "ᴇ˩", "e˧", "e˨", "e˩", "ə˧", "ə˨", "ə˩", "ᵊ˩"], "semantic_code": "YPY_E_CARET_LOW", "layout_slot": "M18", "runtime_char": ""},
+    "󰉺́": {"aliases": ["ʅ˥", "ɿ˥"], "semantic_code": "YPY_APICAL_I_HIGH", "layout_slot": "M19", "runtime_char": ""},
+    "󰉺̄": {"aliases": ["ʅ˦", "ɿ˦"], "semantic_code": "YPY_APICAL_I_MID", "layout_slot": "M20", "runtime_char": ""},
+    "󰉺̀": {"aliases": ["ʅ˧", "ʅ˨", "ʅ˩", "ɿ˧", "ɿ˨", "ɿ˩"], "semantic_code": "YPY_APICAL_I_LOW", "layout_slot": "M21", "runtime_char": ""},
+    "󰊈́": {"aliases": ["ɚ˥"], "semantic_code": "YPY_ER_HIGH", "layout_slot": "M22", "runtime_char": ""},
+    "󰊈̄": {"aliases": ["ɚ˦"], "semantic_code": "YPY_ER_MID", "layout_slot": "M23", "runtime_char": ""},
+    "󰊈̀": {"aliases": ["ɚ˧", "ɚ˨", "ɚ˩"], "semantic_code": "YPY_ER_LOW", "layout_slot": "M24", "runtime_char": ""},
+    "ḿ": {"aliases": ["m˥"], "semantic_code": "YPY_M_HIGH", "layout_slot": "M25", "runtime_char": ""},
+    "m̄": {"aliases": ["m˦"], "semantic_code": "YPY_M_MID", "layout_slot": "M26", "runtime_char": ""},
+    "m̀": {"aliases": ["m˧", "m˨", "m˩"], "semantic_code": "YPY_M_LOW", "layout_slot": "M27", "runtime_char": ""},
+    "ń": {"aliases": ["n˥"], "semantic_code": "YPY_N_HIGH", "layout_slot": "M28", "runtime_char": ""},
+    "n̄": {"aliases": ["n˦"], "semantic_code": "YPY_N_MID", "layout_slot": "M29", "runtime_char": ""},
+    "ǹ": {"aliases": ["n˧", "n˨", "n˩"], "semantic_code": "YPY_N_LOW", "layout_slot": "M30", "runtime_char": ""},
+    "ŋ́": {"aliases": ["ŋ˥"], "semantic_code": "YPY_NG_HIGH", "layout_slot": "M31", "runtime_char": ""},
+    "ŋ̄": {"aliases": ["ŋ˦"], "semantic_code": "YPY_NG_MID", "layout_slot": "M32", "runtime_char": ""},
+    "ŋ̀": {"aliases": ["ŋ˧", "ŋ˨", "ŋ˩"], "semantic_code": "YPY_NG_LOW", "layout_slot": "M33", "runtime_char": ""}
+  }
+}

@@ -92,6 +92,24 @@
 
 这些文件都可以重建，不应被长期手工承担真源职责。
 
+当前首音链已经切换为：
+
+- `syllable/analysis/slice/yinyuan/zaoyin_yinyuan_enhanced.json`
+  - 首音唯一真源。
+  - 每条记录显式保存 `semantic_code`、`ipa`、`type`、`runtime_char`。
+
+- `syllable/analysis/slice/yinyuan/zaoyin_yinyuan.json`
+  - 兼容产物，只保留 `shouyin -> ipa` 的旧结构，供旧脚本和人工查看。
+
+当前干音链已经切换为：
+
+- `syllable/analysis/slice/yinyuan/yueyin_yinyuan_enhanced.json`
+  - 干音唯一真源。
+  - 每条记录显式保存 `semantic_code`、`layout_slot`、`aliases`、`runtime_char`。
+
+- `syllable/analysis/slice/yinyuan/yueyin_yinyuan.json`
+  - 兼容产物，只保留 `canonical yueyin -> aliases` 的旧结构。
+
 #### 1. 运行时字符映射产物
 
 - `syllable/analysis/slice/yinyuan/shouyin_codepoint.json`

@@ -38,6 +38,7 @@ jobs:
 
     - name: Run Python tests with coverage
       run: |
+        python tools/validate_yinyuan_source_consistency.py
         pytest --cov=yime --cov=pinyin --cov=syllable --cov-report=xml --cov-report=html -v
 
     - name: Upload coverage to Codecov

@@ -23,6 +23,13 @@ if errorlevel 1 (
 
 echo Running focused validation suite...
 
+"%PYTHON%" tools\validate_yinyuan_source_consistency.py
+if errorlevel 1 (
+  echo.
+  echo Yinyuan source consistency validation failed with exit code %ERRORLEVEL%.
+  exit /b %ERRORLEVEL%
+)
+
 "%PYTHON%" -m unittest ^
   verify_yinjie_encoder.py ^
   test_yinjie_decoder.py ^

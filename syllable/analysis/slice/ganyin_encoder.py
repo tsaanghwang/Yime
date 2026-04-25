@@ -1,5 +1,5 @@
 import json
-from typing import Dict, Any, Optional
+from typing import Dict, Any
 import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
@@ -9,10 +9,9 @@ class GanyinEncoder:
     """干音编码处理器，整合音元映射和音元序列生成功能"""
 
     # 类常量
-    START_CODEPOINT = 0x100020
     SUBDIR = "yinyuan"
-    ZAOYIN_FILENAME = "zaoyin_yinyuan.json"
-    YUEYIN_FILENAME = "yueyin_yinyuan.json"
+    YUEYIN_SOURCE_FILENAME = "yueyin_yinyuan_enhanced.json"
+    YUEYIN_COMPAT_FILENAME = "yueyin_yinyuan.json"
     YINYUAN_FILENAME = "yinyuan_codepoint.json"
     DINGCHANGMA_FILENAME = "ganyin_to_fixed_length_yinyuan_sequence.json"
     BIANCHANGMA_FILENAME = "ganyin_to_variable_length_yinyuan_sequence.json"
@@ -20,18 +19,57 @@ class GanyinEncoder:
     def __init__(self):
         self.yueyin_yinyuan = YueyinYinyuan(quality="", pitch="")
         self.module_dir = Path(__file__).parent
+        self.yueyin_source = self._load_yueyin_source()
         self.yueyin_codepoints = self._load_yueyin_codepoints()
         self.ganyin_part_map = self._load_ganyin_part_map()
 
+    def _load_yueyin_source(self) -> Dict[str, Any]:
+        source_path = self.module_dir / self.SUBDIR / self.YUEYIN_SOURCE_FILENAME
+        with source_path.open('r', encoding='utf-8') as f:
+            return json.load(f)
+
+    def process_yueyin_source(self, source_data: Dict[str, Any]) -> Dict[str, Any]:
+        entries = source_data.get("entries", {})
+        if not entries:
+            raise ValueError("干音真源缺少 entries")
+
+        runtime_map: Dict[str, str] = {}
+        aliases_map: Dict[str, list[str]] = {}
+        semantic_codes: Dict[str, str] = {}
+        layout_slots: Dict[str, str] = {}
+
+        for canonical_symbol, entry in entries.items():
+            runtime_char = entry.get("runtime_char", "")
+            semantic_code = entry.get("semantic_code", "")
+            layout_slot = entry.get("layout_slot", "")
+            aliases = entry.get("aliases", [])
+
+            if not runtime_char:
+                raise ValueError(f"乐音 `{canonical_symbol}` 缺少 runtime_char")
+            if not semantic_code:
+                raise ValueError(f"乐音 `{canonical_symbol}` 缺少 semantic_code")
+            if not layout_slot:
+                raise ValueError(f"乐音 `{canonical_symbol}` 缺少 layout_slot")
+            if not isinstance(aliases, list):
+                raise ValueError(f"乐音 `{canonical_symbol}` 的 aliases 必须是数组")
+
+            runtime_map[canonical_symbol] = runtime_char
+            aliases_map[canonical_symbol] = aliases
+            semantic_codes[canonical_symbol] = semantic_code
+            layout_slots[canonical_symbol] = layout_slot
+
+        return {
+            "yueyin": runtime_map,
+            "aliases": aliases_map,
+            "semantic_codes": semantic_codes,
+            "layout_slots": layout_slots,
+        }
+
     def _load_yueyin_codepoints(self) -> Dict[str, str]:
         """从音元定义生成单码点映射，并展开所有别名写法。"""
-        alias_path = self.module_dir / self.SUBDIR / self.YUEYIN_FILENAME
-        codepoint_path = self.module_dir / self.SUBDIR / self.YINYUAN_FILENAME
-
-        with alias_path.open('r', encoding='utf-8') as f:
-            yueyin_data = json.load(f)
-        with codepoint_path.open('r', encoding='utf-8') as f:
-            canonical_codepoints = json.load(f)["yueyin"]
+        processed_source = self.process_yueyin_source(self.yueyin_source)
+        yueyin_data = processed_source["aliases"]
+        canonical_codepoints = processed_source["yueyin"]
 
         expanded_codepoints: Dict[str, str] = {}
 
@@ -138,19 +176,6 @@ class GanyinEncoder:
         with output_path.open('w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
 
-    @classmethod
-    def map_yueyin_to_codepoint(cls, yueyin_list):
-        """根据音元列表创建由音元到单编码点的映射(类方法)
-
-        Args:
-            yueyin_list: 音元符号列表(如从yueyin_yinyuan.json的keys获取)
-
-        Returns:
-            返回一个字典，key是音元符号(如"ɪ́")，value是对应的单编码点字符
-        """
-        return {yinyuan: chr(cls.START_CODEPOINT + i)
-                for i, yinyuan in enumerate(yueyin_list)}
-
     def convert_pianyin_to_yinyuan(self, pianyin: str) -> str:
         """将片音转换为音元"""
         if not pianyin:
@@ -180,11 +205,8 @@ class GanyinEncoder:
         """生成所有编码相关文件"""
 
         # 1. 生成音元编码映射
-        yueyin_yinyuan_path = self.module_dir / self.SUBDIR / self.YUEYIN_FILENAME
-        with open(yueyin_yinyuan_path, "r", encoding="utf-8") as f:
-            yueyin_yinyuan_data = json.load(f)
-
-        yueyin = self.map_yueyin_to_codepoint(list(yueyin_yinyuan_data.keys()))
+        processed_source = self.process_yueyin_source(self.yueyin_source)
+        yueyin = processed_source["yueyin"]
         encoding_path = self.module_dir / self.SUBDIR / self.YINYUAN_FILENAME
 
         # 修改后的文件保存逻辑：检查文件是否为空
@@ -203,6 +225,10 @@ class GanyinEncoder:
 
         with open(encoding_path, "w", encoding="utf-8") as f:
             json.dump(encoding_data, f, ensure_ascii=False, indent=2)
+
+        compat_path = self.module_dir / self.SUBDIR / self.YUEYIN_COMPAT_FILENAME
+        with open(compat_path, "w", encoding="utf-8") as f:
+            json.dump(processed_source["aliases"], f, ensure_ascii=False, indent=2)
 
 
         # 2. 生成音元序列数据
@@ -260,6 +286,7 @@ class GanyinEncoder:
 
         print(f"音元编码文件已生成:")
         print(f"- 音元符号映射: {encoding_path}")
+        print(f"- 兼容乐音清单: {compat_path}")
         print(f"- 音元序列数据: {output_file}")
         print(f"- 干音组合字符字典: {marks_output_path}")
         print(f"- 干音音元字典详版: {notes_output_path}")
