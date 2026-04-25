@@ -5,73 +5,73 @@
 说明：默认按标准 48 键观察，不包含 `DECIMAL`。单元格显示 `symbol_key + codepoint`。
 
 ## Summary
-- Assigned slots: 100
-- Unassigned slots: 1
+- Assigned slots: 101
+- Unassigned slots: 3
 
 ## Base Layer
 
 ### Number Row Base
 | Key | Value |
 | --- | --- |
-| ` | N22 U+100015 |
-| 1 | N09 U+100008 |
-| 2 | N01 U+100000 |
-| 3 | N02 U+100001 |
-| 4 | N03 U+100002 |
-| 5 | N04 U+100003 |
-| 6 | 6 U+0036 |
-| 7 | 7 U+0037 |
-| 8 | 8 U+0038 |
-| 9 | 9 U+0039 |
-| 0 | 0 U+0030 |
-| - | ， U+FF0C |
-| = | 。 U+3002 |
+| ` | ` U+0060 |
+| 1 | N22 U+100015 |
+| 2 | N21 U+100014 |
+| 3 | N20 U+100013 |
+| 4 | N15 U+10000E |
+| 5 | N14 U+10000D |
+| 6 | N13 U+10000C |
+| 7 | N16 U+10000F |
+| 8 | N17 U+100010 |
+| 9 | N18 U+100011 |
+| 0 | N19 U+100012 |
+| - | - U+002D |
+| = | = U+003D |
 
 ### Top Row Base
 | Key | Value |
 | --- | --- |
-| q | N10 U+100009 |
-| w | w U+0077 |
+| q | N01 U+100000 |
+| w | N05 U+100004 |
 | e | M18 U+100031 |
 | r | M17 U+100030 |
 | t | M16 U+10002F |
-| y | y U+0079 |
+| y | N08 U+100007 |
 | u | M01 U+100020 |
-| i | M02 U+100021 |
+| i | M31 U+10003E |
 | o | M03 U+100022 |
-| p | p U+0070 |
-| [ | [ U+005B |
-| ] | ] U+005D |
-| \ | ； U+FF1B |
+| p | N02 U+100001 |
+| [ | N03 U+100002 |
+| ] | N09 U+100008 |
+| \ | \ U+005C |
 
 ### Home Row Base
 | Key | Value |
 | --- | --- |
-| a | N11 U+10000A |
+| a | M28 U+10003B |
 | s | M12 U+10002B |
 | d | M11 U+10002A |
 | f | M10 U+100029 |
-| g | g U+0067 |
-| h | h U+0068 |
+| g | M05 U+100024 |
+| h | N04 U+100003 |
 | j | M13 U+10002C |
 | k | M14 U+10002D |
 | l | M15 U+10002E |
-| ; | M28 U+10003B |
-| ' | M30 U+10003D |
+| ; | M02 U+100021 |
+| ' | N10 U+100009 |
 
 ### Bottom Row Base
 | Key | Value |
 | --- | --- |
-| z | z U+007A |
+| z | M08 U+100027 |
 | x | M06 U+100025 |
-| c | M05 U+100024 |
+| c | M33 U+100040 |
 | v | M04 U+100023 |
-| b | b U+0062 |
-| n | M07 U+100026 |
-| m | M08 U+100027 |
+| b | N07 U+100006 |
+| n | N11 U+10000A |
+| m | M30 U+10003D |
 | , | M09 U+100028 |
-| . | M31 U+10003E |
-| / | M33 U+100040 |
+| . | N06 U+100005 |
+| / | M07 U+100026 |
 
 ## Shift Layer
 
@@ -80,10 +80,10 @@
 | --- | --- |
 | ` | ~ U+007E |
 | 1 | ! U+0021 |
-| 2 | N05 U+100004 |
-| 3 | N06 U+100005 |
-| 4 | N07 U+100006 |
-| 5 | N08 U+100007 |
+| 2 | @ U+0040 |
+| 3 | # U+0023 |
+| 4 | $ U+0024 |
+| 5 | % U+0025 |
 | 6 | ^ U+005E |
 | 7 | & U+0026 |
 | 8 | * U+002A |
@@ -95,10 +95,10 @@
 ### Top Row Shift
 | Key | Value |
 | --- | --- |
-| q | N15 U+10000E |
-| w | N16 U+10000F |
-| e | N17 U+100010 |
-| r | N18 U+100011 |
+| q | 1 U+0031 |
+| w | 2 U+0032 |
+| e | 3 U+0033 |
+| r | 4 U+0034 |
 | t | 5 U+0035 |
 | y | 6 U+0036 |
 | u | 7 U+0037 |
@@ -112,12 +112,12 @@
 ### Home Row Shift
 | Key | Value |
 | --- | --- |
-| a | N19 U+100012 |
-| s | N20 U+100013 |
-| d | N21 U+100014 |
-| f | N24 U+100017 |
+| a | M22 U+100035 |
+| s | M23 U+100036 |
+| d | M24 U+100037 |
+| f | [ U+005B |
 | g | ] U+005D |
-| h | \ U+005C |
+| h | N12 U+10000B |
 | j | M19 U+100032 |
 | k | M20 U+100033 |
 | l | M21 U+100034 |
@@ -127,10 +127,10 @@
 ### Bottom Row Shift
 | Key | Value |
 | --- | --- |
-| z | N12 U+10000B |
-| x | N13 U+10000C |
-| c | N14 U+10000D |
-| v | N23 U+100016 |
+| z | ; U+003B |
+| x | ' U+0027 |
+| c | , U+002C |
+| v | . U+002E |
 | b | / U+002F |
 | n | M29 U+10003C |
 | m | M32 U+10003F |
@@ -165,13 +165,13 @@
 | e |  |
 | r |  |
 | t |  |
-| y |  |
-| u |  |
+| y | N23 U+100016 |
+| u | N24 U+100017 |
 | i |  |
 | o |  |
-| p | M22 U+100035 |
-| [ | M23 U+100036 |
-| ] | M24 U+100037 |
+| p |  |
+| [ |  |
+| ] |  |
 | \ |  |
 
 ### Home Row Altgr
@@ -206,77 +206,78 @@
 ## Literal Only
 | Key | Layer | Value | Codepoint |
 | --- | --- | --- | --- |
+| ` | base | ` | U+0060 |
 | ` | shift | ~ | U+007E |
 | 1 | shift | ! | U+0021 |
-| 6 | base | 6 | U+0036 |
+| 2 | shift | @ | U+0040 |
+| 3 | shift | # | U+0023 |
+| 4 | shift | $ | U+0024 |
+| 5 | shift | % | U+0025 |
 | 6 | shift | ^ | U+005E |
-| 7 | base | 7 | U+0037 |
 | 7 | shift | & | U+0026 |
-| 8 | base | 8 | U+0038 |
 | 8 | shift | * | U+002A |
-| 9 | base | 9 | U+0039 |
 | 9 | shift | ( | U+0028 |
-| 0 | base | 0 | U+0030 |
 | 0 | shift | ) | U+0029 |
-| - | base | ， | U+FF0C |
+| - | base | - | U+002D |
 | - | shift | _ | U+005F |
-| = | base | 。 | U+3002 |
+| = | base | = | U+003D |
 | = | shift | + | U+002B |
-| w | base | w | U+0077 |
+| q | shift | 1 | U+0031 |
+| w | shift | 2 | U+0032 |
+| e | shift | 3 | U+0033 |
+| r | shift | 4 | U+0034 |
 | t | shift | 5 | U+0035 |
-| y | base | y | U+0079 |
 | y | shift | 6 | U+0036 |
 | u | shift | 7 | U+0037 |
 | i | shift | 8 | U+0038 |
 | o | shift | 9 | U+0039 |
-| p | base | p | U+0070 |
 | p | shift | 0 | U+0030 |
-| [ | base | [ | U+005B |
 | [ | shift | { | U+007B |
-| ] | base | ] | U+005D |
 | ] | shift | } | U+007D |
-| \ | base | ； | U+FF1B |
+| \ | base | \ | U+005C |
 | \ | shift | | | U+007C |
-| g | base | g | U+0067 |
+| f | shift | [ | U+005B |
 | g | shift | ] | U+005D |
-| h | base | h | U+0068 |
-| h | shift | \ | U+005C |
 | ; | shift | : | U+003A |
 | ' | shift | " | U+0022 |
-| z | base | z | U+007A |
-| b | base | b | U+0062 |
+| z | shift | ; | U+003B |
+| x | shift | ' | U+0027 |
+| c | shift | , | U+002C |
+| v | shift | . | U+002E |
 | b | shift | / | U+002F |
 | , | shift | < | U+003C |
 | . | shift | > | U+003E |
 | / | shift | ? | U+003F |
+| space | base |   | U+0020 |
+| space | shift |   | U+0020 |
 
 ## Noise Only
 | Key | Layer | Symbol | Codepoint |
 | --- | --- | --- | --- |
-| ` | base | N22 | U+100015 |
-| 1 | base | N09 | U+100008 |
-| 2 | base | N01 | U+100000 |
-| 2 | shift | N05 | U+100004 |
-| 3 | base | N02 | U+100001 |
-| 3 | shift | N06 | U+100005 |
-| 4 | base | N03 | U+100002 |
-| 4 | shift | N07 | U+100006 |
-| 5 | base | N04 | U+100003 |
-| 5 | shift | N08 | U+100007 |
-| q | base | N10 | U+100009 |
-| q | shift | N15 | U+10000E |
-| w | shift | N16 | U+10000F |
-| e | shift | N17 | U+100010 |
-| r | shift | N18 | U+100011 |
-| a | base | N11 | U+10000A |
-| a | shift | N19 | U+100012 |
-| s | shift | N20 | U+100013 |
-| d | shift | N21 | U+100014 |
-| f | shift | N24 | U+100017 |
-| z | shift | N12 | U+10000B |
-| x | shift | N13 | U+10000C |
-| c | shift | N14 | U+10000D |
-| v | shift | N23 | U+100016 |
+| 1 | base | N22 | U+100015 |
+| 2 | base | N21 | U+100014 |
+| 3 | base | N20 | U+100013 |
+| 4 | base | N15 | U+10000E |
+| 5 | base | N14 | U+10000D |
+| 6 | base | N13 | U+10000C |
+| 7 | base | N16 | U+10000F |
+| 8 | base | N17 | U+100010 |
+| 9 | base | N18 | U+100011 |
+| 0 | base | N19 | U+100012 |
+| q | base | N01 | U+100000 |
+| w | base | N05 | U+100004 |
+| y | base | N08 | U+100007 |
+| p | base | N02 | U+100001 |
+| [ | base | N03 | U+100002 |
+| ] | base | N09 | U+100008 |
+| h | base | N04 | U+100003 |
+| h | shift | N12 | U+10000B |
+| ' | base | N10 | U+100009 |
+| b | base | N07 | U+100006 |
+| n | base | N11 | U+10000A |
+| . | base | N06 | U+100005 |
+| y | altgr | N23 | U+100016 |
+| u | altgr | N24 | U+100017 |
 
 ## Musical Only
 | Key | Layer | Symbol | Codepoint |
@@ -285,11 +286,16 @@
 | r | base | M17 | U+100030 |
 | t | base | M16 | U+10002F |
 | u | base | M01 | U+100020 |
-| i | base | M02 | U+100021 |
+| i | base | M31 | U+10003E |
 | o | base | M03 | U+100022 |
+| a | base | M28 | U+10003B |
+| a | shift | M22 | U+100035 |
 | s | base | M12 | U+10002B |
+| s | shift | M23 | U+100036 |
 | d | base | M11 | U+10002A |
+| d | shift | M24 | U+100037 |
 | f | base | M10 | U+100029 |
+| g | base | M05 | U+100024 |
 | j | base | M13 | U+10002C |
 | j | shift | M19 | U+100032 |
 | j | altgr | M25 | U+100038 |
@@ -299,18 +305,13 @@
 | l | base | M15 | U+10002E |
 | l | shift | M21 | U+100034 |
 | l | altgr | M27 | U+10003A |
-| ; | base | M28 | U+10003B |
-| ' | base | M30 | U+10003D |
+| ; | base | M02 | U+100021 |
+| z | base | M08 | U+100027 |
 | x | base | M06 | U+100025 |
-| c | base | M05 | U+100024 |
+| c | base | M33 | U+100040 |
 | v | base | M04 | U+100023 |
-| n | base | M07 | U+100026 |
 | n | shift | M29 | U+10003C |
-| m | base | M08 | U+100027 |
+| m | base | M30 | U+10003D |
 | m | shift | M32 | U+10003F |
 | , | base | M09 | U+100028 |
-| . | base | M31 | U+10003E |
-| / | base | M33 | U+100040 |
-| p | altgr | M22 | U+100035 |
-| [ | altgr | M23 | U+100036 |
-| ] | altgr | M24 | U+100037 |
+| / | base | M07 | U+100026 |

@@ -18,6 +18,7 @@
 ### 快速开始
 
 - **[安装指南](../INSTALLATION_GUIDE.md)** - 当前 Windows 桌面输入法原型的主安装入口
+- **[MSKLC 发布速记](MSKLC_RELEASE_QUICKSTART.md)** - 最短的 Windows 键盘生成、打包、安装、回滚路径
 - **[Python 3.12 快速开始](../QUICKSTART_PY312.md)** - 最短启动路径，适合已理解当前主线后快速跑起原型
 - **[无管理员权限安装](../PORTABLE_PYTHON_GUIDE.md)** - 使用便携版 Python 3.12 的无管理员权限安装路径
 - **[使用说明](USAGE.md)** - 基本使用方法和示例

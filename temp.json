@@ -154,8 +154,8 @@
       ],
       "type": "unpitched_yinyuan",
       "semantic_code": "UPY_ZH",
-      "runtime_char": "",
-      "layout_slot": "N16"
+      "runtime_char": "",
+      "layout_slot": "N17"
     },
     "ch": {
       "ipa": [
@@ -164,8 +164,8 @@
       ],
       "type": "unpitched_yinyuan",
       "semantic_code": "UPY_CH",
-      "runtime_char": "",
-      "layout_slot": "N17"
+      "runtime_char": "",
+      "layout_slot": "N18"
     },
     "sh": {
       "ipa": [
@@ -173,8 +173,8 @@
       ],
       "type": "unpitched_yinyuan",
       "semantic_code": "UPY_SH",
-      "runtime_char": "",
-      "layout_slot": "N18"
+      "runtime_char": "",
+      "layout_slot": "N19"
     },
     "r": {
       "ipa": [
@@ -185,8 +185,8 @@
       ],
       "type": "unstable_pitch_yinyuan",
       "semantic_code": "UPY_R",
-      "runtime_char": "",
-      "layout_slot": "N19"
+      "runtime_char": "",
+      "layout_slot": "N20"
     },
     "j": {
       "ipa": [
@@ -194,8 +194,8 @@
       ],
       "type": "unpitched_yinyuan",
       "semantic_code": "UPY_J",
-      "runtime_char": "",
-      "layout_slot": "N20"
+      "runtime_char": "",
+      "layout_slot": "N21"
     },
     "q": {
       "ipa": [
@@ -203,8 +203,8 @@
       ],
       "type": "unpitched_yinyuan",
       "semantic_code": "UPY_Q",
-      "runtime_char": "",
-      "layout_slot": "N21"
+      "runtime_char": "",
+      "layout_slot": "N22"
     },
     "x": {
       "ipa": [
@@ -212,8 +212,8 @@
       ],
       "type": "unpitched_yinyuan",
       "semantic_code": "UPY_X",
-      "runtime_char": "",
-      "layout_slot": "N22"
+      "runtime_char": "",
+      "layout_slot": "N23"
     },
     "y": {
       "ipa": [
@@ -223,7 +223,7 @@
       "type": "unstable_pitch_yinyuan",
       "semantic_code": "UPY_Y",
       "runtime_char": "",
-      "layout_slot": "N23"
+      "layout_slot": "N24"
     },
     "w": {
       "ipa": [
@@ -232,8 +232,8 @@
       ],
       "type": "unstable_pitch_yinyuan",
       "semantic_code": "UPY_W",
-      "runtime_char": "",
-      "layout_slot": "N24"
+      "runtime_char": "",
+      "layout_slot": "N25"
     }
   }
 }

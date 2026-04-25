@@ -11,8 +11,6 @@
 - `Yinyuan_i386.msi`
 - `Yinyuan_ia64.msi`
 - `install-amd64-admin.cmd`
-- `install-amd64-manual.cmd`
-- `install-amd64-manual.ps1`
 - `enable-yinyuan-for-current-user.cmd`
 - `enable-yinyuan-for-current-user.ps1`
 - `restore-default-chinese-keyboards.cmd`
@@ -29,12 +27,11 @@
 - 这套产物来自 BMP PUA 投影版 `yinyuan.klc`。
 - GUI verify 所需兼容修正已固化到 `tools/generate_klc_from_manual_layout.py`。
 - `releases/msklc-amd64/Yinyuan.dll` 与 `releases/msklc-wow64/Yinyuan.dll` 已同步刷新为这次 GUI 打包输出对应版本。
-- `install-amd64-admin.cmd` 仍用于优先尝试原生 MSI 安装。
-- 如果本机持续出现 `MSI 2755 / unexpected error 110`，可改用 `install-amd64-manual.cmd` 直接复制 DLL 并注册键盘布局，绕过 Windows Installer。
-- `install-amd64-manual.ps1` 现在只负责复制 DLL、注册 `HKLM\SYSTEM\CurrentControlSet\Control\Keyboard Layouts\Axxx0804`，并尝试 `LoadKeyboardLayoutW` 刷新当前会话。它不会再修改 `HKCU\Keyboard Layout\Preload` 或 `HKCU\Keyboard Layout\Substitutes`，避免把微软拼音、搜狗等中文输入法的底层键盘替换掉。
+- `install-amd64-admin.cmd` 用于安装这次 MSKLC 生成的原生 MSI。
 - `enable-yinyuan-for-current-user.cmd` 会把音元布局作为当前用户的单独键盘项加入 `HKCU\Keyboard Layout\Preload`，同时保留默认的 `00000804`，适合安全测试键位布局。
 - `restore-default-chinese-keyboards.cmd` 会把当前用户恢复到只保留默认中文键盘 `00000804`，用于测试结束后一键回滚。
 - `unregister-yinyuan-machine.cmd` 会移除 HKLM 下的 Yinyuan 键盘注册项和系统 DLL，用于 MSKLC 因名字或描述冲突而无法重新编译时的彻底清理。
+- 当前安装路径只保留 MSI / MSKLC 版本；仓库里已经不再维护 manual install 回退链路。
 
 如果提示安装成功，但任务栏里仍然没有输入法工具栏：
 
@@ -45,7 +42,7 @@
 
 推荐测试流程：
 
-- 先运行 `install-amd64-manual.cmd` 完成 DLL 和 HKLM 注册。
+- 先运行 `install-amd64-admin.cmd` 或 `python tools/run_msklc_install_pipeline.py --install-mode msi` 完成机器级安装。
 - 再运行 `enable-yinyuan-for-current-user.cmd`，把音元布局作为单独键盘项加入当前用户。
 - 测试结束后运行 `restore-default-chinese-keyboards.cmd`，恢复到只保留系统默认中文键盘。
 

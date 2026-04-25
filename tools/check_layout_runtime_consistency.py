@@ -12,6 +12,7 @@ except ImportError:
 ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_LAYOUT = ROOT / "internal_data" / "manual_key_layout.json"
 DEFAULT_LAYOUT_SYMBOLS = ROOT / "internal_data" / "key_to_symbol.json"
+DEFAULT_BMP_PROJECTION = ROOT / "internal_data" / "bmp_pua_trial_projection.json"
 DEFAULT_RESOLVED_LAYOUT = ROOT / "internal_data" / "manual_key_layout.resolved.json"
 DEFAULT_RUNTIME_REPORT = ROOT / "internal_data" / "yinjie_runtime_key_symbol_mapping.json"
 DEFAULT_SHOUYIN_RUNTIME = ROOT / "syllable" / "analysis" / "slice" / "yinyuan" / "shouyin_codepoint.json"
@@ -37,6 +38,19 @@ def derive_runtime_key_to_symbol(shouyin_runtime: dict[str, str], yueyin_runtime
     for index, symbol in enumerate(yueyin_runtime.values(), start=1):
         runtime_key_to_symbol[f"M{index:02d}"] = symbol
     return runtime_key_to_symbol
+
+
+def load_bmp_projection_symbols(path: Path) -> dict[str, str]:
+    payload = load_json(path)
+    used_mapping = payload.get("used_mapping", {})
+    if not isinstance(used_mapping, dict):
+        raise ValueError("bmp_pua_trial_projection.json missing used_mapping object")
+
+    return {
+        symbol_key: entry["char"]
+        for symbol_key, entry in used_mapping.items()
+        if isinstance(entry, dict) and entry.get("char")
+    }
 
 
 def compare_key_maps(left_name: str, left_map: dict[str, str], right_name: str, right_map: dict[str, str]) -> list[str]:
@@ -105,7 +119,11 @@ def collect_layout_assignments(resolved_layout: dict[str, object]) -> tuple[dict
     return assignments, issues
 
 
-def compare_layout_assignments(assignments: dict[str, dict[str, object]], runtime_key_to_symbol: dict[str, str]) -> tuple[list[str], list[str]]:
+def compare_layout_assignments(
+    assignments: dict[str, dict[str, object]],
+    runtime_key_to_symbol: dict[str, str],
+    bmp_projection_symbols: dict[str, str],
+) -> tuple[list[str], list[str]]:
     issues = []
     notes = []
 
@@ -117,12 +135,18 @@ def compare_layout_assignments(assignments: dict[str, dict[str, object]], runtim
             )
             continue
 
+        if symbol_key not in bmp_projection_symbols:
+            issues.append(
+                f"布局中使用了 {symbol_key}，但 BMP projection 中没有这个键位。建议先更新 bmp_pua_trial_projection.json。"
+            )
+            continue
+
         runtime_symbol = runtime_key_to_symbol[symbol_key]
-        layout_symbol = item.get("symbol_char")
-        if layout_symbol != runtime_symbol:
+        projected_layout_symbol = bmp_projection_symbols[symbol_key]
+        if projected_layout_symbol != runtime_symbol:
             issues.append(
                 f"布局槽位 {symbol_key} 当前落在 {item['output_layer']}:{item['physical_key']}，"
-                f"但布局字符 {repr(layout_symbol)} 与运行时字符 {repr(runtime_symbol)} 不一致。"
+                f"但该槽位的 BMP 投影字符 {repr(projected_layout_symbol)} 与运行时字符 {repr(runtime_symbol)} 不一致。"
             )
 
     unplaced = sort_symbol_keys(set(runtime_key_to_symbol) - set(assignments))
@@ -195,6 +219,7 @@ def build_json_payload(
         "paths": {
             "layout": str(args.layout),
             "symbols": str(args.symbols),
+            "bmp_projection": str(args.bmp_projection),
             "resolved_layout": str(args.resolved_layout),
             "runtime_report": str(args.runtime_report),
             "shouyin_runtime": str(args.shouyin_runtime),
@@ -221,6 +246,7 @@ def main() -> None:
     )
     parser.add_argument("--layout", type=Path, default=DEFAULT_LAYOUT)
     parser.add_argument("--symbols", type=Path, default=DEFAULT_LAYOUT_SYMBOLS)
+    parser.add_argument("--bmp-projection", type=Path, default=DEFAULT_BMP_PROJECTION)
     parser.add_argument("--resolved-layout", type=Path, default=DEFAULT_RESOLVED_LAYOUT)
     parser.add_argument("--runtime-report", type=Path, default=DEFAULT_RUNTIME_REPORT)
     parser.add_argument("--shouyin-runtime", type=Path, default=DEFAULT_SHOUYIN_RUNTIME)
@@ -245,6 +271,7 @@ def main() -> None:
 
     layout_data = load_json(args.layout)
     layout_key_to_symbol = load_json(args.symbols)
+    bmp_projection_symbols = load_bmp_projection_symbols(args.bmp_projection)
     resolved_layout = build_resolved_layout(layout_data, layout_key_to_symbol)
 
     shouyin_data = load_json(args.shouyin_runtime)
@@ -261,8 +288,8 @@ def main() -> None:
     notes = []
 
     issues.extend(compare_runtime_internal_consistency(shouyin_runtime, zaoyin_runtime))
-    issues.extend(compare_key_maps("运行时生成侧", runtime_key_to_symbol, "布局符号表", layout_key_to_symbol))
-    layout_issues, layout_notes = compare_layout_assignments(assignments, runtime_key_to_symbol)
+    issues.extend(compare_key_maps("运行时生成侧", runtime_key_to_symbol, "BMP 投影表", bmp_projection_symbols))
+    layout_issues, layout_notes = compare_layout_assignments(assignments, runtime_key_to_symbol, bmp_projection_symbols)
     issues.extend(assignment_issues)
     issues.extend(layout_issues)
     notes.extend(layout_notes)

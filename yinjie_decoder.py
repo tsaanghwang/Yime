@@ -9,6 +9,7 @@ from yinjie import Yinjie
 DecodedMap = dict[str, Yinjie]
 PhonemeSets = dict[str, set[str]]
 PhonemeLists = tuple[list[str], list[str]]
+ROOT = Path(__file__).resolve().parent
 
 
 @dataclass(frozen=True)
@@ -37,6 +38,53 @@ class YinjieDecoder:
         with output_path.open('w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
         return output_path
+
+    def _get_shouyin_source_path(self) -> Path:
+        return ROOT / 'syllable' / 'analysis' / 'slice' / 'yinyuan' / 'zaoyin_yinyuan_enhanced.json'
+
+    def _get_yueyin_source_path(self) -> Path:
+        return ROOT / 'syllable' / 'analysis' / 'slice' / 'yinyuan' / 'yueyin_yinyuan_enhanced.json'
+
+    def _load_layout_mapping_from_source(self, source_path: Path, expected_prefix: str) -> dict[str, str]:
+        with source_path.open('r', encoding='utf-8') as f:
+            source_data = json.load(f)
+
+        entries = source_data.get('entries')
+        if not isinstance(entries, dict) or not entries:
+            raise ValueError(f"真源文件缺少 entries: {source_path}")
+
+        keyed_entries: list[tuple[int, str, str]] = []
+        for entry_name, entry in entries.items():
+            if not isinstance(entry, dict):
+                raise ValueError(f"真源条目格式不正确: {source_path} -> {entry_name}")
+
+            layout_slot = entry.get('layout_slot')
+            runtime_char = entry.get('runtime_char')
+            if not isinstance(layout_slot, str) or not layout_slot:
+                raise ValueError(f"真源条目缺少 layout_slot: {source_path} -> {entry_name}")
+            if not isinstance(runtime_char, str) or not runtime_char:
+                raise ValueError(f"真源条目缺少 runtime_char: {source_path} -> {entry_name}")
+            if not layout_slot.startswith(expected_prefix):
+                raise ValueError(
+                    f"真源条目槽位前缀不正确: {source_path} -> {entry_name} uses {layout_slot}, expected {expected_prefix}xx"
+                )
+
+            try:
+                slot_index = int(layout_slot[1:])
+            except ValueError as exc:
+                raise ValueError(f"真源条目槽位编号不正确: {source_path} -> {entry_name} uses {layout_slot}") from exc
+
+            keyed_entries.append((slot_index, layout_slot, runtime_char))
+
+        keyed_entries.sort(key=lambda item: item[0])
+
+        slot_to_char: dict[str, str] = {}
+        for _, layout_slot, runtime_char in keyed_entries:
+            if layout_slot in slot_to_char:
+                raise ValueError(f"真源条目出现重复槽位: {source_path} -> {layout_slot}")
+            slot_to_char[layout_slot] = runtime_char
+
+        return slot_to_char
 
     # === 显示辅助方法 ===
     def _display_char(self, char: str) -> str:
@@ -125,10 +173,9 @@ class YinjieDecoder:
         }
 
     def map_key_to_code(self, output_file: str | Path = 'key_to_code.json', decoded_map: DecodedMap | None = None) -> dict[str, str]:
-        """生成类别前缀键到 PUA 字符的映射字典并保存到文件。"""
-        phoneme_mapping = self.generate_phoneme_mapping(decoded_map=decoded_map)
-        noise_keys = self._build_category_keys(phoneme_mapping["forward"]["noise"], "N")
-        musical_keys = self._build_category_keys(phoneme_mapping["forward"]["musical"], "M")
+        """从当前真源条目生成类别前缀键到 PUA 字符的映射字典并保存到文件。"""
+        noise_keys = self._load_layout_mapping_from_source(self._get_shouyin_source_path(), 'N')
+        musical_keys = self._load_layout_mapping_from_source(self._get_yueyin_source_path(), 'M')
 
         key_to_code = {
             **noise_keys,

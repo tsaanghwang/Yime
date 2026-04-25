@@ -47,7 +47,7 @@ class ShouyinEncoder:
         """将首音映射到码位"""
         if not hasattr(self, '_codepoint_map'):
             self._load_codepoint_mapping()
-        return self._codepoint_map.get(shouyin, '')  # 现在直接访问映射字典
+        return self._codepoint_map.get(shouyin, '')
 
     def encode_shouyin(self, shouyin: str) -> str:
         """外部调用接口：将单个首音编码为码位字符

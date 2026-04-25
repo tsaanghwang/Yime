@@ -14,6 +14,8 @@
 
 建议与 [码点与中间层策略](CODEPOINT_POLICY.md) 配合阅读。
 
+与首音细分层相关的规则说明草案，见 [首音细分规则与真源 Schema 提案](SHOUYIN_SPLITTER_RULES.md)。当前代码链未启用该草案中的细分切分方案。
+
 ## 判定原则
 
 ### 真源文件
@@ -41,6 +43,7 @@
 #### 1. 键位语义真源
 
 - `internal_data/manual_key_layout.json`
+  - 文件名里的 `manual` 是历史命名，当前语义应理解为“布局真源”，不是“manual install”或“手工编译流程”。
   - 定义物理键位与 `Nxx/Mxx` 槽位的关系。
   - 这是布局层真源，不应通过改 `yinyuan.klc` 反向修复。
 

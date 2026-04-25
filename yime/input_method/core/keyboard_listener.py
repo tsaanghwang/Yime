@@ -187,9 +187,11 @@ class KeyboardListener:
         flags: int,
         modifiers: Dict[str, bool],
         resolve_key_name: Callable[[int, int, int], str],
+        resolve_text: Callable[[int, int, Dict[str, bool]], str],
     ) -> Dict[str, Any]:
         key_name = self._SPECIAL_VK_NAMES.get(vk_code)
         ascii_code: Optional[int] = None
+        text_value = resolve_text(vk_code, scan_code, modifiers)
 
         if key_name is None and 0x30 <= vk_code <= 0x39:
             key_name = chr(vk_code)
@@ -206,8 +208,12 @@ class KeyboardListener:
         if key_name is None:
             key_name = resolve_key_name(vk_code, scan_code, flags)
 
+        if text_value and len(text_value) == 1:
+            ascii_code = ord(text_value)
+
         return {
             "key": key_name,
+            "text": text_value,
             "ascii": ascii_code,
             "scan_code": scan_code,
             "vk_code": vk_code,
@@ -277,6 +283,26 @@ class KeyboardListener:
         user32.GetAsyncKeyState.argtypes = [ctypes.c_int]
         user32.GetAsyncKeyState.restype = ctypes.c_short
 
+        user32.GetForegroundWindow.argtypes = []
+        user32.GetForegroundWindow.restype = wintypes.HWND
+
+        user32.GetWindowThreadProcessId.argtypes = [wintypes.HWND, ctypes.POINTER(wintypes.DWORD)]
+        user32.GetWindowThreadProcessId.restype = wintypes.DWORD
+
+        user32.GetKeyboardLayout.argtypes = [wintypes.DWORD]
+        user32.GetKeyboardLayout.restype = wintypes.HKL
+
+        user32.ToUnicodeEx.argtypes = [
+            wintypes.UINT,
+            wintypes.UINT,
+            ctypes.POINTER(ctypes.c_ubyte),
+            wintypes.LPWSTR,
+            ctypes.c_int,
+            wintypes.UINT,
+            wintypes.HKL,
+        ]
+        user32.ToUnicodeEx.restype = ctypes.c_int
+
         kernel32.GetCurrentThreadId.argtypes = []
         kernel32.GetCurrentThreadId.restype = wintypes.DWORD
 
@@ -325,6 +351,38 @@ class KeyboardListener:
 
             return states
 
+        def resolve_text(vk_code: int, scan_code: int, modifiers: Dict[str, bool]) -> str:
+            if modifiers.get("ctrl") or modifiers.get("alt") or modifiers.get("win"):
+                return ""
+
+            keyboard_state = (ctypes.c_ubyte * 256)()
+            for code in range(256):
+                if user32.GetAsyncKeyState(code) & 0x8000:
+                    keyboard_state[code] |= 0x80
+
+            foreground_hwnd = user32.GetForegroundWindow()
+            thread_id = wintypes.DWORD(0)
+            layout_thread_id = 0
+            if foreground_hwnd:
+                layout_thread_id = int(user32.GetWindowThreadProcessId(foreground_hwnd, ctypes.byref(thread_id)))
+
+            keyboard_layout = user32.GetKeyboardLayout(layout_thread_id)
+            text_buffer = ctypes.create_unicode_buffer(8)
+            translated_length = user32.ToUnicodeEx(
+                vk_code,
+                scan_code,
+                keyboard_state,
+                text_buffer,
+                len(text_buffer),
+                0,
+                keyboard_layout,
+            )
+
+            if translated_length > 0:
+                return text_buffer.value[:translated_length]
+
+            return ""
+
         def low_level_keyboard_proc(nCode, wParam, lParam):
             try:
                 if nCode == win32con.HC_ACTION:
@@ -346,6 +404,7 @@ class KeyboardListener:
                             flags,
                             modifiers,
                             resolve_key_name,
+                            resolve_text,
                         )
                         # 调用回调，返回False则拦截
                         if self.on_key_press and self.on_key_press(key_info) is False:
@@ -409,6 +468,7 @@ class KeyboardListener:
             # 转换为统一格式
             key_info = {
                 'key': event.Key,
+                'text': chr(event.Ascii) if event.Ascii > 0 else '',
                 'ascii': event.Ascii if event.Ascii > 0 else None,
                 'scan_code': event.ScanCode,
                 'is_extended': event.IsExtended,
@@ -440,6 +500,7 @@ class KeyboardListener:
             if self.on_key_release:
                 key_info = {
                     'key': event.Key,
+                    'text': chr(event.Ascii) if event.Ascii > 0 else '',
                     'ascii': event.Ascii if event.Ascii > 0 else None,
                     'time': time.time(),
                 }
@@ -460,6 +521,7 @@ class KeyboardListener:
             # 转换为统一格式
             key_info = {
                 'key': self._pynput_key_to_string(key),
+                'text': getattr(key, 'char', '') or '',
                 'ascii': getattr(key, 'char', None),
                 'time': time.time(),
             }

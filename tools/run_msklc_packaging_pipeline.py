@@ -191,7 +191,7 @@ def main() -> None:
 
     print("MSKLC packaging pipeline completed.")
     print(f"Package output: {args.package_dir.resolve()}")
-    print(f"Recommended next step: run {args.package_dir.resolve() / 'install-amd64-manual.cmd'} if MSI install remains unreliable.")
+    print(f"Recommended next step: run {ROOT / 'tools' / 'run_msklc_install_pipeline.py'} to install from the packaged MSI output.")
 
 
 if __name__ == "__main__":
