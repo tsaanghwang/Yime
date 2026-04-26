@@ -22,27 +22,31 @@ from yime.input_method.core.decoders import (
     StaticCandidateDecoder,
     RuntimeCandidateDecoder,
     CompositeCandidateDecoder,
+    build_input_outline,
+    build_input_visual_map,
+    build_physical_input_map,
+    project_physical_input,
 )
 from yime.input_method.core.input_manager import InputManager, InputState
 
 
 class TestResult:
     """测试结果收集器"""
-    
+
     def __init__(self):
         self.passed = 0
         self.failed = 0
         self.errors = []
-    
+
     def add_pass(self, test_name: str):
         self.passed += 1
         print(f"[PASS] {test_name}")
-    
+
     def add_fail(self, test_name: str, error: str):
         self.failed += 1
         self.errors.append((test_name, error))
         print(f"[FAIL] {test_name}: {error}")
-    
+
     def summary(self):
         total = self.passed + self.failed
         print(f"\n{'='*60}")
@@ -60,9 +64,9 @@ def test_decoders(result: TestResult):
     print("\n" + "="*60)
     print("测试解码器模块 (decoders.py)")
     print("="*60)
-    
+
     app_dir = Path(__file__).resolve().parent.parent
-    
+
     # 测试 StaticCandidateDecoder
     test_name = "StaticCandidateDecoder 初始化"
     try:
@@ -71,7 +75,7 @@ def test_decoders(result: TestResult):
     except Exception as e:
         result.add_fail(test_name, str(e))
         return
-    
+
     # 测试解码空字符串
     test_name = "StaticCandidateDecoder 解码空字符串"
     try:
@@ -82,7 +86,7 @@ def test_decoders(result: TestResult):
         result.add_pass(test_name)
     except Exception as e:
         result.add_fail(test_name, str(e))
-    
+
     # 测试解码不足4码
     test_name = "StaticCandidateDecoder 解码不足4码"
     try:
@@ -92,7 +96,7 @@ def test_decoders(result: TestResult):
         result.add_pass(test_name)
     except Exception as e:
         result.add_fail(test_name, str(e))
-    
+
     # 测试解码4码
     test_name = "StaticCandidateDecoder 解码4码"
     try:
@@ -102,7 +106,7 @@ def test_decoders(result: TestResult):
         result.add_pass(test_name)
     except Exception as e:
         result.add_fail(test_name, str(e))
-    
+
     # 测试 RuntimeCandidateDecoder
     test_name = "RuntimeCandidateDecoder 初始化"
     try:
@@ -118,7 +122,7 @@ def test_decoders(result: TestResult):
         result.add_pass(f"{test_name} (跳过)")
     except Exception as e:
         result.add_fail(test_name, str(e))
-    
+
     # 测试 CompositeCandidateDecoder
     test_name = "CompositeCandidateDecoder 初始化"
     try:
@@ -127,7 +131,7 @@ def test_decoders(result: TestResult):
     except Exception as e:
         result.add_fail(test_name, str(e))
         return
-    
+
     # 测试组合解码器解码
     test_name = "CompositeCandidateDecoder 解码"
     try:
@@ -135,7 +139,7 @@ def test_decoders(result: TestResult):
         result.add_pass(test_name)
     except Exception as e:
         result.add_fail(test_name, str(e))
-    
+
     # 测试组合解码器回退机制
     test_name = "CompositeCandidateDecoder 回退机制"
     try:
@@ -152,7 +156,7 @@ def test_input_manager(result: TestResult):
     print("\n" + "="*60)
     print("测试输入管理器模块 (input_manager.py)")
     print("="*60)
-    
+
     # 测试 InputState
     test_name = "InputState 初始化"
     try:
@@ -162,19 +166,19 @@ def test_input_manager(result: TestResult):
         result.add_pass(test_name)
     except Exception as e:
         result.add_fail(test_name, str(e))
-    
+
     # 测试 InputManager 初始化
     test_name = "InputManager 初始化"
     try:
         candidates_updates = []
         commits = []
-        
+
         def on_candidates_update(candidates, pinyin, code, status):
             candidates_updates.append((candidates, pinyin, code, status))
-        
+
         def on_input_commit(hanzi):
             commits.append(hanzi)
-        
+
         manager = InputManager(
             on_candidates_update=on_candidates_update,
             on_input_commit=on_input_commit,
@@ -183,7 +187,7 @@ def test_input_manager(result: TestResult):
     except Exception as e:
         result.add_fail(test_name, str(e))
         return
-    
+
     # 测试添加字符
     test_name = "InputManager 添加字符"
     try:
@@ -194,7 +198,7 @@ def test_input_manager(result: TestResult):
         result.add_pass(test_name)
     except Exception as e:
         result.add_fail(test_name, str(e))
-    
+
     # 测试退格
     test_name = "InputManager 退格"
     try:
@@ -203,7 +207,7 @@ def test_input_manager(result: TestResult):
         result.add_pass(test_name)
     except Exception as e:
         result.add_fail(test_name, str(e))
-    
+
     # 测试清空
     test_name = "InputManager 清空"
     try:
@@ -213,24 +217,24 @@ def test_input_manager(result: TestResult):
         result.add_pass(test_name)
     except Exception as e:
         result.add_fail(test_name, str(e))
-    
+
     # 测试按键处理
     test_name = "InputManager 按键处理"
     try:
         # 测试普通字符
         handled = manager.process_key({'key': 'a', 'ascii': ord('a')})
         assert handled == False, "普通字符应该被拦截"
-        
+
         # 测试特殊键
         manager.clear_buffer()
         manager.add_char('x')
         handled = manager.process_key({'key': 'Escape', 'ascii': None})
         assert manager.get_buffer() == "", "ESC应该清空缓冲区"
-        
+
         result.add_pass(test_name)
     except Exception as e:
         result.add_fail(test_name, str(e))
-    
+
     # 测试缓冲区限制
     test_name = "InputManager 缓冲区限制"
     try:
@@ -253,7 +257,7 @@ def test_utilities(result: TestResult):
     print("\n" + "="*60)
     print("测试工具模块 (utils/)")
     print("="*60)
-    
+
     # 测试 ClipboardManager
     test_name = "ClipboardManager 导入"
     try:
@@ -262,14 +266,14 @@ def test_utilities(result: TestResult):
     except Exception as e:
         result.add_fail(test_name, str(e))
         return
-    
+
     test_name = "ClipboardManager 初始化"
     try:
         clipboard = ClipboardManager()
         result.add_pass(test_name)
     except Exception as e:
         result.add_fail(test_name, str(e))
-    
+
     # 测试 KeyboardSimulator
     test_name = "KeyboardSimulator 导入"
     try:
@@ -278,14 +282,14 @@ def test_utilities(result: TestResult):
     except Exception as e:
         result.add_fail(test_name, str(e))
         return
-    
+
     test_name = "KeyboardSimulator 初始化"
     try:
         keyboard = KeyboardSimulator()
         result.add_pass(test_name)
     except Exception as e:
         result.add_fail(test_name, str(e))
-    
+
     # 测试 WindowManager
     test_name = "WindowManager 导入"
     try:
@@ -294,7 +298,7 @@ def test_utilities(result: TestResult):
     except Exception as e:
         result.add_fail(test_name, str(e))
         return
-    
+
     test_name = "WindowManager 初始化"
     try:
         window_mgr = WindowManager()
@@ -308,7 +312,7 @@ def test_ui_components(result: TestResult):
     print("\n" + "="*60)
     print("测试UI组件 (ui/)")
     print("="*60)
-    
+
     # 测试 CandidateBox 导入
     test_name = "CandidateBox 导入"
     try:
@@ -317,22 +321,45 @@ def test_ui_components(result: TestResult):
     except Exception as e:
         result.add_fail(test_name, str(e))
         return
-    
+
     # 注意：CandidateBox 需要 tkinter 环境，在无GUI环境下可能失败
     test_name = "CandidateBox 初始化 (需要GUI)"
     try:
         import tkinter
         root = tkinter.Tk()
         root.withdraw()  # 隐藏主窗口
-        
+
+        input_visual_map = build_input_visual_map(project_root)
+        physical_input_map = build_physical_input_map(project_root)
+        box = None
+
+        def format_input_outline(text):
+            return build_input_outline(text, input_visual_map)
+
+        def on_input_change(event=None):
+            if box is None:
+                return
+            display_input = box.get_input()
+            projected_input = box.get_projected_input()
+            if projected_input == display_input:
+                box.set_projected_input(
+                    project_physical_input(display_input, physical_input_map)
+                )
+
         box = CandidateBox(
             on_select=lambda x: None,
-            font_family="Arial",
-            on_input_change=lambda x: None,
+            font_family="YinYuan Regular",
+            input_display_formatter=format_input_outline,
+            on_input_change=on_input_change,
             on_decode_from_clipboard=lambda: None,
             on_copy_candidate=lambda x: None,
         )
-        
+
+        box.set_input("a")
+        on_input_change()
+        assert box.get_projected_input() == physical_input_map["a"]
+
+        box.root.destroy()
         root.destroy()
         result.add_pass(test_name)
     except Exception as e:
@@ -346,7 +373,7 @@ def test_integration(result: TestResult):
     print("\n" + "="*60)
     print("测试集成 (InputMethodApp)")
     print("="*60)
-    
+
     # 测试 InputMethodApp 导入
     test_name = "InputMethodApp 导入"
     try:
@@ -355,16 +382,16 @@ def test_integration(result: TestResult):
     except Exception as e:
         result.add_fail(test_name, str(e))
         return
-    
+
     # 测试 InputMethodApp 初始化
     test_name = "InputMethodApp 初始化 (需要GUI)"
     try:
         import tkinter
         root = tkinter.Tk()
         root.withdraw()
-        
+
         app = InputMethodApp(auto_paste=False, font_family="Arial")
-        
+
         # 验证组件初始化
         assert app.decoder is not None
         assert app.clipboard is not None
@@ -372,7 +399,7 @@ def test_integration(result: TestResult):
         assert app.window_manager is not None
         assert app.candidate_box is not None
         assert app.input_manager is not None
-        
+
         # 清理
         app.candidate_box.root.destroy()
         result.add_pass(test_name)
@@ -386,19 +413,19 @@ def main():
     print("="*60)
     print("开始测试 yime.input_method 包")
     print("="*60)
-    
+
     result = TestResult()
-    
+
     # 运行测试
     test_decoders(result)
     test_input_manager(result)
     test_utilities(result)
     test_ui_components(result)
     test_integration(result)
-    
+
     # 输出总结
     success = result.summary()
-    
+
     return 0 if success else 1
 
 
