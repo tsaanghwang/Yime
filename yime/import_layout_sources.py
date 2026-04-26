@@ -10,11 +10,11 @@ ROOT = Path(__file__).resolve().parent.parent
 DB_PATH = ROOT / "yime" / "pinyin_hanzi.db"
 SCHEMA_PATH = ROOT / "yime" / "create_yime_db_schema.sql"
 KLC_PATH = ROOT / "yinyuan.klc"
-JSON_CANDIDATES = [
-    ROOT / "internal_data" / "key_to_symbol.json",
-    ROOT / "internal_data" / "key_symbol_mapping.json",
-    ROOT / "data_json_files" / "key_symbol_mapping.json",
-]
+RUNTIME_SYMBOL_PATH = ROOT / "key_to_code.json"
+CANONICAL_SYMBOL_PATH = ROOT / "internal_data" / "key_to_symbol.json"
+PROJECTION_PATH = ROOT / "internal_data" / "bmp_pua_trial_projection.json"
+SHOUYIN_PATH = ROOT / "syllable" / "analysis" / "slice" / "yinyuan" / "shouyin_codepoint.json"
+YINYUAN_PATH = ROOT / "syllable" / "analysis" / "slice" / "yinyuan" / "yinyuan_codepoint.json"
 
 KLC_ROW_RE = re.compile(
     r"^\s*(?P<scan>[0-9A-Fa-f]+)\s+"
@@ -52,12 +52,74 @@ VK_TO_KEY_CODE = {
     "SPACE": "space",
 }
 
+def load_json(path: Path) -> object:
+    return json.loads(path.read_text(encoding="utf-8"))
 
-def load_symbol_mapping() -> tuple[Path, dict[str, str]]:
-    for candidate in JSON_CANDIDATES:
-        if candidate.exists():
-            return candidate, json.loads(candidate.read_text(encoding="utf-8"))
-    raise FileNotFoundError("No symbol mapping JSON file was found.")
+
+def format_codepoint(value: str | None) -> str | None:
+    if not value:
+        return None
+    width = 6 if ord(value) > 0xFFFF else 4
+    return f"U+{ord(value):0{width}X}"
+
+
+def build_label_index() -> dict[str, str]:
+    labels: dict[str, str] = {}
+
+    shouyin_payload = load_json(SHOUYIN_PATH)
+    shouyin_map = shouyin_payload.get("首音", {})
+    for label, char in shouyin_map.items():
+        labels[str(char)] = str(label)
+
+    yinyuan_payload = load_json(YINYUAN_PATH)
+    for namespace in ("zaoyin", "yueyin"):
+        namespace_map = yinyuan_payload.get(namespace, {})
+        for label, char in namespace_map.items():
+            labels[str(char)] = str(label)
+
+    return labels
+
+
+def slot_sort_key(slot_key: str) -> tuple[int, int]:
+    prefix = 0 if slot_key.startswith("N") else 1
+    return (prefix, int(slot_key[1:]))
+
+
+def load_symbol_catalog() -> list[dict[str, object]]:
+    runtime_map = load_json(RUNTIME_SYMBOL_PATH)
+    canonical_map = load_json(CANONICAL_SYMBOL_PATH)
+    projection_payload = load_json(PROJECTION_PATH)
+    projection_map = projection_payload.get("used_mapping", {})
+    label_index = build_label_index()
+
+    rows: list[dict[str, object]] = []
+    slot_keys = sorted(projection_map.keys(), key=slot_sort_key)
+    for ordinal, slot_key in enumerate(slot_keys, start=1):
+        projection_entry = projection_map.get(slot_key, {})
+        bmp_char = runtime_map.get(slot_key) or projection_entry.get("char")
+        canonical_char = canonical_map.get(slot_key)
+        category = "initial" if slot_key.startswith("N") else "musical"
+        label = label_index.get(str(bmp_char or ""), "")
+
+        rows.append(
+            {
+                "symbol_id": f"sym_{ordinal:03d}",
+                "source_symbol_key": slot_key,
+                "slot_key": slot_key,
+                "slot_number": projection_entry.get("slot"),
+                "symbol_category": category,
+                "yinyuan_label": label,
+                "pua_char": bmp_char,
+                "codepoint_hex": projection_entry.get("codepoint") or format_codepoint(bmp_char),
+                "canonical_char": canonical_char,
+                "canonical_codepoint_hex": format_codepoint(canonical_char),
+                "sort_order": projection_entry.get("slot") or ordinal,
+                "symbol_name_zh": label or slot_key,
+                "notes_zh": f"Imported from slot crosswalk sources; slot={slot_key}",
+            }
+        )
+
+    return rows
 
 
 def decode_klc_token(token: str | None) -> str | None:
@@ -123,38 +185,36 @@ def apply_schema(conn: sqlite3.Connection) -> None:
     conn.executescript(SCHEMA_PATH.read_text(encoding="utf-8"))
 
 
-def import_symbols(conn: sqlite3.Connection, source_path: Path, mapping: dict[str, str]) -> None:
+def import_symbols(conn: sqlite3.Connection, symbols: list[dict[str, object]]) -> None:
     conn.execute("DELETE FROM key_symbol_map")
     conn.execute("DELETE FROM symbol")
-
-    rows = []
-    for ordinal, (source_symbol_key, char) in enumerate(mapping.items(), start=1):
-        rows.append(
-            (
-                f"sym_{ordinal:03d}",
-                source_symbol_key,
-                char,
-                f"U+{ord(char):04X}",
-                ordinal,
-                f"音元{ordinal:03d}",
-                f"Imported from {source_path.name}; legacy key={source_symbol_key}",
-            )
-        )
 
     conn.executemany(
         """
         INSERT INTO symbol (
-            symbol_id, source_symbol_key, pua_char, codepoint_hex, sort_order, symbol_name_zh, notes_zh
-        ) VALUES (?, ?, ?, ?, ?, ?, ?)
+            symbol_id, source_symbol_key, slot_key, slot_number, symbol_category,
+            yinyuan_label, pua_char, codepoint_hex, canonical_char,
+            canonical_codepoint_hex, sort_order, symbol_name_zh, notes_zh
+        ) VALUES (
+            :symbol_id, :source_symbol_key, :slot_key, :slot_number, :symbol_category,
+            :yinyuan_label, :pua_char, :codepoint_hex, :canonical_char,
+            :canonical_codepoint_hex, :sort_order, :symbol_name_zh, :notes_zh
+        )
         ON CONFLICT(symbol_id) DO UPDATE SET
             source_symbol_key = excluded.source_symbol_key,
+            slot_key = excluded.slot_key,
+            slot_number = excluded.slot_number,
+            symbol_category = excluded.symbol_category,
+            yinyuan_label = excluded.yinyuan_label,
             pua_char = excluded.pua_char,
             codepoint_hex = excluded.codepoint_hex,
+            canonical_char = excluded.canonical_char,
+            canonical_codepoint_hex = excluded.canonical_codepoint_hex,
             sort_order = excluded.sort_order,
             symbol_name_zh = excluded.symbol_name_zh,
             notes_zh = excluded.notes_zh
         """,
-        rows,
+        symbols,
     )
     conn.execute(
         """
@@ -162,7 +222,7 @@ def import_symbols(conn: sqlite3.Connection, source_path: Path, mapping: dict[st
         VALUES ('symbol_source_json', ?)
         ON CONFLICT(meta_key) DO UPDATE SET meta_value = excluded.meta_value, updated_at = CURRENT_TIMESTAMP
         """,
-        (str(source_path.relative_to(ROOT)),),
+        ("slot_crosswalk:key_to_code.json+key_to_symbol.json+bmp_pua_trial_projection.json",),
     )
 
 
@@ -272,18 +332,18 @@ def import_derived_key_mappings(conn: sqlite3.Connection, rows: list[dict[str, s
 
 
 def main() -> None:
-    json_path, symbol_mapping = load_symbol_mapping()
+    symbols = load_symbol_catalog()
     klc_rows = parse_klc_layout(KLC_PATH)
 
     with sqlite3.connect(DB_PATH) as conn:
         apply_schema(conn)
-        import_symbols(conn, json_path, symbol_mapping)
+        import_symbols(conn, symbols)
         rebuild_default_key_mappings(conn)
         import_klc_rows(conn, KLC_PATH, klc_rows)
         mapping_count = import_derived_key_mappings(conn, klc_rows)
         conn.commit()
 
-        print(f"Imported {len(symbol_mapping)} symbols from {json_path.name}")
+        print(f"Imported {len(symbols)} symbols from slot crosswalk sources")
         print(f"Imported {len(klc_rows)} layout rows from {KLC_PATH.name}")
         print(f"Imported {mapping_count} derived key-symbol mappings from KLC states")
 

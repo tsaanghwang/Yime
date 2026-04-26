@@ -6,6 +6,7 @@ PRAGMA foreign_keys = ON;
 
 DROP VIEW IF EXISTS vw_klc_layout_observation;
 DROP VIEW IF EXISTS vw_klc_layout_observation_all;
+DROP VIEW IF EXISTS vw_symbol_crosswalk;
 DROP VIEW IF EXISTS vw_symbol_inventory;
 DROP VIEW IF EXISTS vw_key_symbol_layout;
 DROP VIEW IF EXISTS vw_entry_encoding_detail;
@@ -40,8 +41,14 @@ CREATE TABLE IF NOT EXISTS physical_key (
 CREATE TABLE IF NOT EXISTS symbol (
     symbol_id TEXT PRIMARY KEY,
     source_symbol_key TEXT UNIQUE,
+    slot_key TEXT UNIQUE,
+    slot_number INTEGER UNIQUE,
+    symbol_category TEXT CHECK (symbol_category IN ('initial', 'musical')),
+    yinyuan_label TEXT,
     pua_char TEXT NOT NULL UNIQUE,
     codepoint_hex TEXT NOT NULL UNIQUE,
+    canonical_char TEXT UNIQUE,
+    canonical_codepoint_hex TEXT UNIQUE,
     sort_order INTEGER NOT NULL UNIQUE,
     symbol_name_zh TEXT,
     notes_zh TEXT
@@ -162,8 +169,14 @@ SELECT
     ksm.map_layer,
     s.symbol_id,
     s.source_symbol_key,
+    s.slot_key,
+    s.slot_number,
+    s.symbol_category,
+    s.yinyuan_label,
     s.pua_char,
     s.codepoint_hex,
+    s.canonical_char,
+    s.canonical_codepoint_hex,
     s.sort_order,
     s.symbol_name_zh
 FROM physical_key AS pk
@@ -179,13 +192,19 @@ CREATE VIEW vw_symbol_inventory AS
 SELECT
     s.symbol_id,
     s.source_symbol_key,
+    s.slot_key,
+    s.slot_number,
+    s.symbol_category,
+    s.yinyuan_label,
     s.pua_char,
     s.codepoint_hex,
+    s.canonical_char,
+    s.canonical_codepoint_hex,
     s.sort_order,
     s.symbol_name_zh,
     s.notes_zh,
     COUNT(ksm.mapping_id) AS mapped_key_count,
-    GROUP_CONCAT(pk.display_label, ', ') AS mapped_keys
+    GROUP_CONCAT(pk.display_label || ':' || ksm.map_layer, ', ') AS mapped_keys
 FROM symbol AS s
 LEFT JOIN key_symbol_map AS ksm
     ON ksm.symbol_id = s.symbol_id
@@ -194,9 +213,49 @@ LEFT JOIN physical_key AS pk
 GROUP BY
     s.symbol_id,
     s.source_symbol_key,
+    s.slot_key,
+    s.slot_number,
+    s.symbol_category,
+    s.yinyuan_label,
     s.pua_char,
     s.codepoint_hex,
+    s.canonical_char,
+    s.canonical_codepoint_hex,
     s.sort_order,
+    s.symbol_name_zh,
+    s.notes_zh
+ORDER BY s.sort_order, s.symbol_id;
+
+CREATE VIEW vw_symbol_crosswalk AS
+SELECT
+    s.symbol_id,
+    s.slot_key,
+    s.slot_number,
+    s.symbol_category,
+    s.yinyuan_label,
+    s.pua_char AS bmp_pua_char,
+    s.codepoint_hex AS bmp_pua_codepoint_hex,
+    s.canonical_char AS spua_b_char,
+    s.canonical_codepoint_hex AS spua_b_codepoint_hex,
+    s.symbol_name_zh,
+    s.notes_zh,
+    COUNT(ksm.mapping_id) AS mapped_key_count,
+    GROUP_CONCAT(pk.display_label || ':' || ksm.map_layer, ', ') AS mapped_keys
+FROM symbol AS s
+LEFT JOIN key_symbol_map AS ksm
+    ON ksm.symbol_id = s.symbol_id
+LEFT JOIN physical_key AS pk
+    ON pk.key_id = ksm.key_id
+GROUP BY
+    s.symbol_id,
+    s.slot_key,
+    s.slot_number,
+    s.symbol_category,
+    s.yinyuan_label,
+    s.pua_char,
+    s.codepoint_hex,
+    s.canonical_char,
+    s.canonical_codepoint_hex,
     s.symbol_name_zh,
     s.notes_zh
 ORDER BY s.sort_order, s.symbol_id;
@@ -277,7 +336,7 @@ WHERE vk_name <> 'DECIMAL'
 INSERT INTO db_meta (meta_key, meta_value)
 VALUES
     ('schema_name', 'yime_observation_schema'),
-    ('schema_version', '1.4'),
+    ('schema_version', '1.5'),
     ('database_purpose', 'Observe Yime input data structure without importing data')
 ON CONFLICT(meta_key) DO UPDATE SET
     meta_value = excluded.meta_value,
@@ -320,12 +379,32 @@ WITH RECURSIVE symbols(source_symbol_key, ordinal) AS (
     FROM symbols
     WHERE source_symbol_key IS NOT NULL AND source_symbol_key <> 'Z'
 )
-INSERT OR REPLACE INTO symbol (symbol_id, source_symbol_key, pua_char, codepoint_hex, sort_order, symbol_name_zh, notes_zh)
+INSERT OR REPLACE INTO symbol (
+    symbol_id,
+    source_symbol_key,
+    slot_key,
+    slot_number,
+    symbol_category,
+    yinyuan_label,
+    pua_char,
+    codepoint_hex,
+    canonical_char,
+    canonical_codepoint_hex,
+    sort_order,
+    symbol_name_zh,
+    notes_zh
+)
 SELECT
     printf('sym_%03d', ordinal + 1),
     source_symbol_key,
+    NULL,
+    ordinal + 1,
+    NULL,
+    source_symbol_key,
     CHAR(57344 + ordinal),
     printf('U+%04X', 57344 + ordinal),
+    NULL,
+    NULL,
     ordinal + 1,
     '音元' || source_symbol_key,
     '观察库占位音元字符，可后续替换为正式私用区字符'
@@ -369,8 +448,14 @@ VALUES
     ('table', 'symbol', NULL, '音元符号表，直接定义 PUA 符号实体及其稳定 ID'),
     ('column', 'symbol', 'symbol_id', '稳定符号 ID，例如 sym_001'),
     ('column', 'symbol', 'source_symbol_key', '历史来源键名；如旧方案中的字母键，可为空'),
+    ('column', 'symbol', 'slot_key', '正式槽位键，例如 N01 或 M33'),
+    ('column', 'symbol', 'slot_number', '槽位序号，用于和投射表对照'),
+    ('column', 'symbol', 'symbol_category', '槽位类别，initial 或 musical'),
+    ('column', 'symbol', 'yinyuan_label', '音元标签，例如 b、zh、ɪ́'),
     ('column', 'symbol', 'pua_char', '对应的私用区字符本体'),
     ('column', 'symbol', 'codepoint_hex', '私用区码位十六进制表示'),
+    ('column', 'symbol', 'canonical_char', '对应 canonical SPUA-B 字符'),
+    ('column', 'symbol', 'canonical_codepoint_hex', 'canonical SPUA-B 码位十六进制表示'),
     ('column', 'symbol', 'sort_order', '符号排序值，便于中间插入和调序'),
     ('column', 'symbol', 'symbol_name_zh', '音元中文名称'),
     ('column', 'symbol', 'notes_zh', '补充说明'),
@@ -428,6 +513,7 @@ VALUES
     ('view', 'vw_entry_encoding_detail', NULL, '观察用视图，展开词条、拼音和编码的主要字段'),
     ('view', 'vw_key_symbol_layout', NULL, '观察用视图，展示 52 键位到 52 码元及私用区字符的映射关系'),
     ('view', 'vw_symbol_inventory', NULL, '观察用视图，汇总每个音元符号被哪些键位映射'),
+    ('view', 'vw_symbol_crosswalk', NULL, '对照视图，展示槽位、BMP PUA、SPUA-B 与物理键位聚合结果'),
     ('view', 'vw_klc_layout_observation_all', NULL, '观察用全量视图，保留 KLC 原始布局中的所有行，包括 DECIMAL 等非标准键位'),
     ('view', 'vw_klc_layout_observation', NULL, '默认观察视图，只显示标准 48 键并自动排除 DECIMAL')
 ON CONFLICT(object_type, object_name, column_name) DO UPDATE SET

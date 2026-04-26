@@ -38,8 +38,9 @@ class CandidateBox:
     def __init__(
         self,
         on_select: Callable[[str], None],
-        font_family: str = "Noto Sans",
+        font_family: str = "YinYuan Regular",
         max_candidates: int = 9,
+        input_display_formatter: Optional[Callable[[str], str]] = None,
         on_input_change: Optional[Callable] = None,
         on_decode_from_clipboard: Optional[Callable] = None,
         on_copy_candidate: Optional[Callable[[int], None]] = None,
@@ -65,9 +66,11 @@ class CandidateBox:
         self.current_candidates: List[str] = []
         self._is_standby = False
         self._current_page = 0
+        self._input_display_formatter = input_display_formatter
+        self.projected_input_text = ""
 
         # 回调注入
-        self._on_input_change = on_input_change
+        self._on_input_change_callback = on_input_change
         self._decode_from_clipboard = on_decode_from_clipboard
         self._copy_candidate = on_copy_candidate
         self._on_commit_text = on_commit_text
@@ -77,7 +80,8 @@ class CandidateBox:
         # 创建主窗口
         self.root = tk.Tk()
         self.root.title("音元候选框")
-        self.root.geometry("640x280")
+
+        # 不要硬性指定宽高，让它自然展开，防止越加越多被裁剪
         self.root.attributes("-topmost", True)
         self.root.withdraw()  # 初始隐藏
 
@@ -194,10 +198,12 @@ class CandidateBox:
         user32.IsWindowVisible.restype = ctypes.c_int
         return user32
 
-    def _resolve_geometry(self, x: Optional[int], y: Optional[int]) -> tuple[int, int, int, int]:
+    def _resolve_geometry(self, x: Optional[int], y: Optional[int]) -> tuple[int, int]:
         self.root.update_idletasks()
-        width = max(self.root.winfo_width(), self.root.winfo_reqwidth(), 640)
-        height = max(self.root.winfo_height(), self.root.winfo_reqheight(), 280)
+
+        # 让Tkinter自己去根据内容撑开，不写死高度
+        width = self.root.winfo_reqwidth()
+        height = self.root.winfo_reqheight()
 
         virtual_root_x = self.root.winfo_vrootx()
         virtual_root_y = self.root.winfo_vrooty()
@@ -213,12 +219,28 @@ class CandidateBox:
         max_y = max(min_y, virtual_root_y + screen_height - height - 8)
         target_x = min(max(target_x, min_x), max_x)
         target_y = min(max(target_y, min_y), max_y)
-        return target_x, target_y, width, height
+        return target_x, target_y
 
     def get_pointer_position(self) -> tuple[int, int]:
         """使用 Tk 提供的指针坐标，避免 Win32/Tk 在 DPI 缩放下坐标系不一致。"""
         self.root.update_idletasks()
         return self.root.winfo_pointerx(), self.root.winfo_pointery()
+
+    def _resize_to_content_if_visible(self) -> None:
+        """窗口已显示时，按当前内容请求尺寸自动放大，避免新增说明区被裁掉。"""
+        if self._is_standby:
+            return
+        try:
+            if self.root.state() == "withdrawn":
+                return
+        except tk.TclError:
+            return
+
+        self.root.update_idletasks()
+        current_x = self.root.winfo_x()
+        current_y = self.root.winfo_y()
+        self.root.geometry(f"+{current_x}+{current_y}")
+        self.root.update_idletasks()
 
     def _build_ui(self) -> None:
         """构建UI界面"""
@@ -244,7 +266,7 @@ class CandidateBox:
         ttk.Label(self.main_frame, text="输入音元码元").pack(anchor=tk.W)
 
         # 输入框
-        self.input_var = tk.StringVar()
+        self.input_var = tk.StringVar(self.root)
         self.input_entry = ttk.Entry(
             self.main_frame, textvariable=self.input_var, font=(self.font_family, 14)
         )
@@ -252,6 +274,27 @@ class CandidateBox:
         self.input_entry.focus_set()
         self.input_entry.bind("<KeyRelease>", self._on_input_change)
         self.input_entry.bind("<Button-1>", self._activate_for_manual_input)
+
+        ttk.Label(self.main_frame, text="投影编码 / 码元轮廓").pack(anchor=tk.W)
+
+        self.projected_code_var = tk.StringVar(self.root, value="")
+        ttk.Label(
+            self.main_frame,
+            textvariable=self.projected_code_var,
+            justify=tk.LEFT,
+            font=(self.font_family, 14),  # 使用程序的自制字体来显示字符
+            foreground="#666666",
+        ).pack(anchor=tk.W, fill=tk.X)
+
+        self.input_outline_var = tk.StringVar(self.root, value="")
+        ttk.Label(
+            self.main_frame,
+            textvariable=self.input_outline_var,
+            justify=tk.LEFT,
+            wraplength=600,
+            font=(self.font_family, 14),
+            foreground="#666666",
+        ).pack(anchor=tk.W, fill=tk.X, pady=(0, 8))
 
         paging_row = ttk.Frame(self.main_frame)
         paging_row.pack(fill=tk.X, pady=(0, 8))
@@ -275,10 +318,10 @@ class CandidateBox:
             paging_row, text="下一页", command=self.show_next_page
         )
         self.next_button.pack(side=tk.LEFT, padx=8)
-        self.page_info_var = tk.StringVar(value="第 1/1 页")
+        self.page_info_var = tk.StringVar(self.root, value="第 1/1 页")
         ttk.Label(paging_row, textvariable=self.page_info_var).pack(side=tk.LEFT)
         self.shortcut_hint_var = tk.StringVar(
-            value="数字键选当前页；PgUp/PgDn 翻页；编码区支持 Left/Right/Home/End/Delete/Backspace 编辑；待上屏区可撤销一字。"
+            value="数字键选当前页；PgUp/PgDn 翻页；Ctrl+Shift+C 复制原始编码字符；编码区支持 Left/Right/Home/End/Delete/Backspace 编辑；待上屏区可撤销一字。"
         )
         ttk.Label(
             self.main_frame,
@@ -287,7 +330,7 @@ class CandidateBox:
         ).pack(anchor=tk.W, pady=(0, 8))
 
         ttk.Label(self.main_frame, text="待上屏文本").pack(anchor=tk.W, pady=(8, 0))
-        self.commit_var = tk.StringVar(value="")
+        self.commit_var = tk.StringVar(self.root, value="")
         self.commit_entry = ttk.Entry(
             self.main_frame,
             textvariable=self.commit_var,
@@ -306,13 +349,13 @@ class CandidateBox:
         ).pack(side=tk.LEFT, padx=8)
 
         # 拼音显示
-        self.pinyin_var = tk.StringVar(value="")
+        self.pinyin_var = tk.StringVar(self.root, value="")
         ttk.Label(
             self.main_frame, textvariable=self.pinyin_var, foreground="#0b57d0"
         ).pack(anchor=tk.W)
 
         # 编码显示
-        self.code_var = tk.StringVar(value="")
+        self.code_var = tk.StringVar(self.root, value="")
         ttk.Label(
             self.main_frame, textvariable=self.code_var, foreground="#666666"
         ).pack(anchor=tk.W, pady=(4, 0))
@@ -340,8 +383,11 @@ class CandidateBox:
             button_row, text="粘贴编码", command=self._paste_code_from_clipboard
         ).pack(side=tk.LEFT, padx=8)
         ttk.Button(
-            button_row, text="上屏", command=self._commit_output_text
+            button_row, text="复制原始编码", command=self.copy_input_text
         ).pack(side=tk.LEFT)
+        ttk.Button(
+            button_row, text="上屏", command=self._commit_output_text
+        ).pack(side=tk.LEFT, padx=8)
         ttk.Button(
             button_row, text="复制首选", command=self._copy_first_candidate
         ).pack(side=tk.LEFT)
@@ -383,17 +429,54 @@ class CandidateBox:
         self.root.bind("<Control-v>", self._on_ctrl_v)
         self.input_entry.bind("<Control-v>", self._on_ctrl_v)
         self.commit_entry.bind("<Control-v>", self._on_ctrl_v)
+        self.root.bind("<Control-Shift-C>", self._on_copy_input_shortcut)
+        self.input_entry.bind("<Control-Shift-C>", self._on_copy_input_shortcut)
+        self.commit_entry.bind("<Control-Shift-C>", self._on_copy_input_shortcut)
         self.root.bind("<Prior>", self._on_previous_page_key)
         self.root.bind("<Next>", self._on_next_page_key)
+        self.root.bind("<FocusIn>", self._on_window_focus_in)
         self.input_entry.bind("<Prior>", self._on_previous_page_key)
         self.input_entry.bind("<Next>", self._on_next_page_key)
         self.commit_entry.bind("<Prior>", self._on_previous_page_key)
         self.commit_entry.bind("<Next>", self._on_next_page_key)
 
+    def _on_window_focus_in(self, event: __import__('tkinter').Event) -> None:
+        """当输入候选框获得焦点时，把光标输入插入点（cursor焦点）跳转到输入框输入点。"""
+        if getattr(event, "widget", None) == self.root and not self._is_standby:
+            self.input_entry.focus_set()
+            self.input_entry.icursor("end")
+
     def _on_input_change(self, event: Optional[tk.Event] = None) -> None:
         """输入变化事件处理"""
-        if self._on_input_change:
-            self._on_input_change(event)
+        self.projected_input_text = self.input_var.get()
+        self._refresh_input_outline(self.projected_input_text)
+        if self._on_input_change_callback:
+            self._on_input_change_callback(event)
+
+    def _format_codepoints(self, text: str) -> str:
+        if not text:
+            return ""
+        return " ".join(
+            f"U+{ord(char):06X}" if ord(char) > 0xFFFF else f"U+{ord(char):04X}"
+            for char in text
+        )
+
+    def _refresh_input_outline(self, text: str) -> None:
+        if not text:
+            self.projected_code_var.set("")
+            self.input_outline_var.set("")
+            self._resize_to_content_if_visible()
+            return
+
+        self.projected_code_var.set(text)
+
+        if not self._input_display_formatter:
+            self.input_outline_var.set("")
+            self._resize_to_content_if_visible()
+            return
+        display_text = self._input_display_formatter(text)
+        self.input_outline_var.set(f"{display_text}" if display_text else "")
+        self._resize_to_content_if_visible()
 
     def _activate_for_manual_input(self, event: Optional[tk.Event] = None) -> None:
         """鼠标点入输入框时允许窗口激活，便于手动粘贴测试编码。"""
@@ -409,6 +492,8 @@ class CandidateBox:
             self.main_frame.pack(fill=tk.BOTH, expand=True)
             self.root.attributes("-alpha", 0.97)
             self.root.title("音元候选框")
+            self.root.geometry("")  # 清除可能遗留的 54x54 写死尺寸，让布局重新被内部组件撑开
+            self.root.update_idletasks()
             self._is_standby = False
 
     def _resolve_standby_geometry(self) -> tuple[int, int, int, int]:
@@ -426,6 +511,11 @@ class CandidateBox:
     def _on_ctrl_v(self, event: Optional[tk.Event] = None) -> str:
         """支持在候选框内直接粘贴编码。"""
         self._paste_code_from_clipboard()
+        return "break"
+
+    def _on_copy_input_shortcut(self, event: Optional[tk.Event] = None) -> str:
+        """复制当前原始输入字符，便于外部程序核对渲染。"""
+        self.copy_input_text()
         return "break"
 
     def _on_confirm_key(self, event: Optional[tk.Event] = None) -> str:
@@ -563,6 +653,9 @@ class CandidateBox:
         self.status_var.set(
             '连续输入时自动取最近 4 码。请先复制编码，再点"读取剪贴板"。'
         )
+        self.projected_input_text = ""
+        self.projected_code_var.set("")
+        self.input_outline_var.set("")
         self._render_candidates()
         if focus_input:
             self.input_entry.focus_set()
@@ -611,6 +704,17 @@ class CandidateBox:
         """将剪贴板内容贴入输入框并立即触发解码。"""
         self.show(focus_input=True)
         self._decode_from_clipboard()
+
+    def copy_input_text(self) -> None:
+        """复制当前输入框中的原始编码字符。"""
+        text = self.projected_input_text or self.input_var.get()
+        if not text:
+            self.status_var.set("当前没有可复制的编码字符。")
+            return
+        self.root.clipboard_clear()
+        self.root.clipboard_append(text)
+        self.root.update_idletasks()
+        self.status_var.set("已复制原始编码字符，可粘贴到 Word 或记事本查看渲染。")
 
     def _commit_output_text(self) -> None:
         """将待上屏文本提交到外部编辑区。"""
@@ -692,8 +796,10 @@ class CandidateBox:
             focus_input: 是否将焦点切回候选框输入框
         """
         self._show_main_frame()
-        target_x, target_y, width, height = self._resolve_geometry(x, y)
-        self.root.geometry(f"{width}x{height}+{target_x}+{target_y}")
+        target_x, target_y = self._resolve_geometry(x, y)
+
+        # 移除显式指定尺寸的设定，使用Tkinter自适应
+        self.root.geometry(f"+{target_x}+{target_y}")
         self.root.state("normal")
         self.root.deiconify()
         self.root.attributes("-topmost", True)
@@ -709,9 +815,10 @@ class CandidateBox:
                 self._HWND_TOPMOST,
                 target_x,
                 target_y,
-                width,
-                height,
-                self._SWP_NOACTIVATE
+                0,
+                0,
+                self._SWP_NOSIZE
+                | self._SWP_NOACTIVATE
                 | self._SWP_SHOWWINDOW
                 | self._SWP_NOOWNERZORDER,
             )
@@ -723,16 +830,18 @@ class CandidateBox:
                 self._HWND_TOPMOST,
                 target_x,
                 target_y,
-                width,
-                height,
-                self._SWP_SHOWWINDOW | self._SWP_NOOWNERZORDER,
+                0,
+                0,
+                self._SWP_NOSIZE
+                | self._SWP_SHOWWINDOW
+                | self._SWP_NOOWNERZORDER,
             )
             self.root.lift()
         self.root.update()
         if self._DEBUG_UI:
             is_visible = bool(user32.IsWindowVisible(hwnd))
             print(
-                f"[CandidateBox.show] hwnd={hwnd} visible={is_visible} focus_input={focus_input} geometry={width}x{height}+{target_x}+{target_y} state={self.root.state()}"
+                f"[CandidateBox.show] hwnd={hwnd} visible={is_visible} focus_input={focus_input} geometry=auto+{target_x}+{target_y} state={self.root.state()}"
             )
         if focus_input:
             self.input_entry.focus_force()
@@ -794,9 +903,14 @@ class CandidateBox:
         if previous_count != len(self.all_candidates):
             self._current_page = 0
         self.pinyin_var.set(f"拼音: {pinyin}" if pinyin else "")
-        self.code_var.set(f"当前解码 4 码: {code}" if code else "")
+        if code:
+            self.code_var.set(f"当前解码 4 码: {code}")
+        else:
+            self.code_var.set("当前解码 4 码: [等待输入...]")
+
         self.status_var.set(status)
         self._render_candidates()
+        self._resize_to_content_if_visible()
 
     def get_input(self) -> str:
         """
@@ -807,7 +921,16 @@ class CandidateBox:
         """
         return self.input_var.get()
 
-    def set_input(self, text: str) -> None:
+    def get_projected_input(self) -> str:
+        """获取当前投影后的编码字符。"""
+        return self.projected_input_text
+
+    def set_projected_input(self, text: str) -> None:
+        """设置当前投影后的编码字符，并刷新说明区。"""
+        self.projected_input_text = text
+        self._refresh_input_outline(text)
+
+    def set_input(self, text: str, projected_text: Optional[str] = None) -> None:
         """
         设置输入框内容
 
@@ -815,6 +938,8 @@ class CandidateBox:
             text: 要设置的文本
         """
         self.input_var.set(text)
+        self.projected_input_text = text if projected_text is None else projected_text
+        self._refresh_input_outline(self.projected_input_text)
 
     def run(self) -> None:
         """运行主循环"""

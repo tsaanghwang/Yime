@@ -1,0 +1,1098 @@
+{
+  "metadata": {
+    "description": "Slot/BMP/SPUA-B/physical-key crosswalk generated from current source JSON files.",
+    "runtime_source": "key_to_code.json",
+    "canonical_source": "internal_data\\key_to_symbol.json",
+    "projection_source": "internal_data\\bmp_pua_trial_projection.json",
+    "layout_source": "internal_data\\manual_key_layout.json",
+    "rows": 57,
+    "runtime_projection_mismatches": 0,
+    "bmp_canonical_differences": 57,
+    "rows_with_issues": 0
+  },
+  "rows": [
+    {
+      "slot_key": "N01",
+      "slot_number": 1,
+      "category": "initial",
+      "label": "b",
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E4E9",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E4E9",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀀",
+      "canonical_spua_b_codepoint": "U+100000",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "q:base:q"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "slot_key": "N02",
+      "slot_number": 2,
+      "category": "initial",
+      "label": "p",
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E4EA",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E4EA",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀁",
+      "canonical_spua_b_codepoint": "U+100001",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "p:base:p"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "slot_key": "N03",
+      "slot_number": 3,
+      "category": "initial",
+      "label": "f",
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E4EB",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E4EB",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀂",
+      "canonical_spua_b_codepoint": "U+100002",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "[:base:["
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "slot_key": "N04",
+      "slot_number": 4,
+      "category": "initial",
+      "label": "m",
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E4EC",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E4EC",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀃",
+      "canonical_spua_b_codepoint": "U+100003",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "h:base:h"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "slot_key": "N05",
+      "slot_number": 5,
+      "category": "initial",
+      "label": "d",
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E4ED",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E4ED",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀄",
+      "canonical_spua_b_codepoint": "U+100004",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "w:base:w"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "slot_key": "N06",
+      "slot_number": 6,
+      "category": "initial",
+      "label": "t",
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E4EE",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E4EE",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀅",
+      "canonical_spua_b_codepoint": "U+100005",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        ".:base:."
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "slot_key": "N07",
+      "slot_number": 7,
+      "category": "initial",
+      "label": "l",
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E4EF",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E4EF",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀆",
+      "canonical_spua_b_codepoint": "U+100006",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "b:base:b"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "slot_key": "N08",
+      "slot_number": 8,
+      "category": "initial",
+      "label": "n",
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E4F0",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E4F0",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀇",
+      "canonical_spua_b_codepoint": "U+100007",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "y:base:y"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "slot_key": "N09",
+      "slot_number": 9,
+      "category": "initial",
+      "label": "g",
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E4F1",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E4F1",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀈",
+      "canonical_spua_b_codepoint": "U+100008",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "]:base:]"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "slot_key": "N10",
+      "slot_number": 10,
+      "category": "initial",
+      "label": "k",
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E4F2",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E4F2",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀉",
+      "canonical_spua_b_codepoint": "U+100009",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "':base:'"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "slot_key": "N11",
+      "slot_number": 11,
+      "category": "initial",
+      "label": "h",
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E4F3",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E4F3",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀊",
+      "canonical_spua_b_codepoint": "U+10000A",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "n:base:n"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "slot_key": "N12",
+      "slot_number": 12,
+      "category": "initial",
+      "label": "'",
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E4F4",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E4F4",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀋",
+      "canonical_spua_b_codepoint": "U+10000B",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "h:shift:H"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "slot_key": "N13",
+      "slot_number": 13,
+      "category": "initial",
+      "label": "z",
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E4F5",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E4F5",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀌",
+      "canonical_spua_b_codepoint": "U+10000C",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "6:base:6"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "slot_key": "N14",
+      "slot_number": 14,
+      "category": "initial",
+      "label": "c",
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E4F6",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E4F6",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀍",
+      "canonical_spua_b_codepoint": "U+10000D",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "5:base:5"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "slot_key": "N15",
+      "slot_number": 15,
+      "category": "initial",
+      "label": "s",
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E4F7",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E4F7",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀎",
+      "canonical_spua_b_codepoint": "U+10000E",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "4:base:4"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "slot_key": "N16",
+      "slot_number": 16,
+      "category": "initial",
+      "label": "zh",
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E4F8",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E4F8",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀏",
+      "canonical_spua_b_codepoint": "U+10000F",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "7:base:7"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "slot_key": "N17",
+      "slot_number": 17,
+      "category": "initial",
+      "label": "ch",
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E4F9",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E4F9",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀐",
+      "canonical_spua_b_codepoint": "U+100010",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "8:base:8"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "slot_key": "N18",
+      "slot_number": 18,
+      "category": "initial",
+      "label": "sh",
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E4FA",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E4FA",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀑",
+      "canonical_spua_b_codepoint": "U+100011",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "9:base:9"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "slot_key": "N19",
+      "slot_number": 19,
+      "category": "initial",
+      "label": "r",
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E4FB",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E4FB",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀒",
+      "canonical_spua_b_codepoint": "U+100012",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "0:base:0"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "slot_key": "N20",
+      "slot_number": 20,
+      "category": "initial",
+      "label": "j",
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E4FC",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E4FC",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀓",
+      "canonical_spua_b_codepoint": "U+100013",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "3:base:3"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "slot_key": "N21",
+      "slot_number": 21,
+      "category": "initial",
+      "label": "q",
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E4FD",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E4FD",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀔",
+      "canonical_spua_b_codepoint": "U+100014",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "2:base:2"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "slot_key": "N22",
+      "slot_number": 22,
+      "category": "initial",
+      "label": "x",
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E4FE",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E4FE",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀕",
+      "canonical_spua_b_codepoint": "U+100015",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "1:base:1"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "slot_key": "N23",
+      "slot_number": 23,
+      "category": "initial",
+      "label": "y",
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E500",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E500",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀖",
+      "canonical_spua_b_codepoint": "U+100016",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "y:altgr:AltGr+Y"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "slot_key": "N24",
+      "slot_number": 24,
+      "category": "initial",
+      "label": "w",
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E4FF",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E4FF",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀗",
+      "canonical_spua_b_codepoint": "U+100017",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "u:altgr:AltGr+U"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "slot_key": "M01",
+      "slot_number": 33,
+      "category": "musical",
+      "label": "ɪ́",
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E509",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E509",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀠",
+      "canonical_spua_b_codepoint": "U+100020",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "u:base:u"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "slot_key": "M02",
+      "slot_number": 34,
+      "category": "musical",
+      "label": "ɪ̄",
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E50A",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E50A",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀡",
+      "canonical_spua_b_codepoint": "U+100021",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        ";:base:;"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "slot_key": "M03",
+      "slot_number": 35,
+      "category": "musical",
+      "label": "ɪ̀",
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E50B",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E50B",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀢",
+      "canonical_spua_b_codepoint": "U+100022",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "o:base:o"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "slot_key": "M04",
+      "slot_number": 36,
+      "category": "musical",
+      "label": "ᴜ́",
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E50C",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E50C",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀣",
+      "canonical_spua_b_codepoint": "U+100023",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "v:base:v"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "slot_key": "M05",
+      "slot_number": 37,
+      "category": "musical",
+      "label": "ᴜ̄",
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E50D",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E50D",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀤",
+      "canonical_spua_b_codepoint": "U+100024",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "g:base:g"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "slot_key": "M06",
+      "slot_number": 38,
+      "category": "musical",
+      "label": "ᴜ̀",
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E50E",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E50E",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀥",
+      "canonical_spua_b_codepoint": "U+100025",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "x:base:x"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "slot_key": "M07",
+      "slot_number": 39,
+      "category": "musical",
+      "label": "ʏ́",
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E50F",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E50F",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀦",
+      "canonical_spua_b_codepoint": "U+100026",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "/:base:/"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "slot_key": "M08",
+      "slot_number": 40,
+      "category": "musical",
+      "label": "ʏ̄",
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E510",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E510",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀧",
+      "canonical_spua_b_codepoint": "U+100027",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "z:base:z"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "slot_key": "M09",
+      "slot_number": 41,
+      "category": "musical",
+      "label": "ʏ̀",
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E511",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E511",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀨",
+      "canonical_spua_b_codepoint": "U+100028",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        ",:base:,"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "slot_key": "M10",
+      "slot_number": 42,
+      "category": "musical",
+      "label": "ᴀ́",
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E512",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E512",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀩",
+      "canonical_spua_b_codepoint": "U+100029",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "f:base:f"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "slot_key": "M11",
+      "slot_number": 43,
+      "category": "musical",
+      "label": "ᴀ̄",
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E513",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E513",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀪",
+      "canonical_spua_b_codepoint": "U+10002A",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "d:base:d"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "slot_key": "M12",
+      "slot_number": 44,
+      "category": "musical",
+      "label": "ᴀ̀",
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E514",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E514",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀫",
+      "canonical_spua_b_codepoint": "U+10002B",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "s:base:s"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "slot_key": "M13",
+      "slot_number": 45,
+      "category": "musical",
+      "label": "ó",
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E515",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E515",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀬",
+      "canonical_spua_b_codepoint": "U+10002C",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "j:base:j"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "slot_key": "M14",
+      "slot_number": 46,
+      "category": "musical",
+      "label": "ō",
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E516",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E516",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀭",
+      "canonical_spua_b_codepoint": "U+10002D",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "k:base:k"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "slot_key": "M15",
+      "slot_number": 47,
+      "category": "musical",
+      "label": "ò",
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E517",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E517",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀮",
+      "canonical_spua_b_codepoint": "U+10002E",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "l:base:l"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "slot_key": "M16",
+      "slot_number": 48,
+      "category": "musical",
+      "label": "ᴇ́",
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E518",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E518",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀯",
+      "canonical_spua_b_codepoint": "U+10002F",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "t:base:t"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "slot_key": "M17",
+      "slot_number": 49,
+      "category": "musical",
+      "label": "ᴇ̄",
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E519",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E519",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀰",
+      "canonical_spua_b_codepoint": "U+100030",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "r:base:r"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "slot_key": "M18",
+      "slot_number": 50,
+      "category": "musical",
+      "label": "ᴇ̀",
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E51A",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E51A",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀱",
+      "canonical_spua_b_codepoint": "U+100031",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "e:base:e"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "slot_key": "M19",
+      "slot_number": 51,
+      "category": "musical",
+      "label": "󰉺́",
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E51B",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E51B",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀲",
+      "canonical_spua_b_codepoint": "U+100032",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "j:shift:J"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "slot_key": "M20",
+      "slot_number": 52,
+      "category": "musical",
+      "label": "󰉺̄",
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E51C",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E51C",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀳",
+      "canonical_spua_b_codepoint": "U+100033",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "k:shift:K"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "slot_key": "M21",
+      "slot_number": 53,
+      "category": "musical",
+      "label": "󰉺̀",
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E51D",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E51D",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀴",
+      "canonical_spua_b_codepoint": "U+100034",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "l:shift:L"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "slot_key": "M22",
+      "slot_number": 54,
+      "category": "musical",
+      "label": "󰊈́",
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E51E",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E51E",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀵",
+      "canonical_spua_b_codepoint": "U+100035",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "a:shift:A"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "slot_key": "M23",
+      "slot_number": 55,
+      "category": "musical",
+      "label": "󰊈̄",
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E51F",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E51F",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀶",
+      "canonical_spua_b_codepoint": "U+100036",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "s:shift:S"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "slot_key": "M24",
+      "slot_number": 56,
+      "category": "musical",
+      "label": "󰊈̀",
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E520",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E520",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀷",
+      "canonical_spua_b_codepoint": "U+100037",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "d:shift:D"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "slot_key": "M25",
+      "slot_number": 57,
+      "category": "musical",
+      "label": "ḿ",
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E521",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E521",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀸",
+      "canonical_spua_b_codepoint": "U+100038",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "j:altgr:AltGr+J"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "slot_key": "M26",
+      "slot_number": 58,
+      "category": "musical",
+      "label": "m̄",
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E522",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E522",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀹",
+      "canonical_spua_b_codepoint": "U+100039",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "k:altgr:AltGr+K"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "slot_key": "M27",
+      "slot_number": 59,
+      "category": "musical",
+      "label": "m̀",
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E523",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E523",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀺",
+      "canonical_spua_b_codepoint": "U+10003A",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "l:altgr:AltGr+L"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "slot_key": "M28",
+      "slot_number": 60,
+      "category": "musical",
+      "label": "ń",
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E524",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E524",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀻",
+      "canonical_spua_b_codepoint": "U+10003B",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "a:base:a"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "slot_key": "M29",
+      "slot_number": 61,
+      "category": "musical",
+      "label": "n̄",
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E525",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E525",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀼",
+      "canonical_spua_b_codepoint": "U+10003C",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "n:shift:N"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "slot_key": "M30",
+      "slot_number": 62,
+      "category": "musical",
+      "label": "ǹ",
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E526",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E526",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀽",
+      "canonical_spua_b_codepoint": "U+10003D",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "m:base:m"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "slot_key": "M31",
+      "slot_number": 63,
+      "category": "musical",
+      "label": "ŋ́",
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E527",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E527",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀾",
+      "canonical_spua_b_codepoint": "U+10003E",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "i:base:i"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "slot_key": "M32",
+      "slot_number": 64,
+      "category": "musical",
+      "label": "ŋ̄",
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E528",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E528",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀿",
+      "canonical_spua_b_codepoint": "U+10003F",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "m:shift:M"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "slot_key": "M33",
+      "slot_number": 65,
+      "category": "musical",
+      "label": "ŋ̀",
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E529",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E529",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀁀",
+      "canonical_spua_b_codepoint": "U+100040",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "c:base:c"
+      ],
+      "issue_count": 0,
+      "issues": []
+    }
+  ]
+}

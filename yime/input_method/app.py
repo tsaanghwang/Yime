@@ -14,7 +14,14 @@ import tkinter as tk
 from pathlib import Path
 from typing import Callable, Optional
 
-from .core.decoders import CompositeCandidateDecoder
+from .core.decoders import (
+    CompositeCandidateDecoder,
+    build_code_display,
+    build_input_outline,
+    build_input_visual_map,
+    build_physical_input_map,
+    project_physical_input,
+)
 from .core.keyboard_listener import KeyboardListener
 from .core.input_manager import InputManager
 from .ui.candidate_box import CandidateBox
@@ -29,7 +36,7 @@ class InputMethodApp:
     def __init__(
         self,
         auto_paste: bool = True,
-        font_family: str = "Noto Sans",
+        font_family: str = "YinYuan Regular",
     ) -> None:
         """
         初始化输入法应用
@@ -50,6 +57,8 @@ class InputMethodApp:
         # 初始化各模块
         app_dir = Path(__file__).resolve().parent.parent
         self.decoder = CompositeCandidateDecoder(app_dir)
+        self.input_visual_map = build_input_visual_map(app_dir.parent)
+        self.physical_input_map = build_physical_input_map(app_dir.parent)
         self.runtime_decoder_warning = self.decoder.get_runtime_warning()
         self.runtime_decoder_source = self.decoder.get_runtime_source()
         self.clipboard = ClipboardManager()
@@ -60,6 +69,7 @@ class InputMethodApp:
         self.candidate_box = CandidateBox(
             on_select=self._on_candidate_select,
             font_family=font_family,
+            input_display_formatter=self._format_input_outline,
             on_input_change=self._on_input_change,
             on_decode_from_clipboard=self._decode_from_clipboard,
             on_copy_candidate=self._copy_candidate,
@@ -85,6 +95,11 @@ class InputMethodApp:
 
         # 创建键盘监听器
         self.keyboard_listener: Optional[KeyboardListener] = None
+        self.is_paused = False  # 是否处于系统输入法切换时的暂停测试模式
+        self.is_paused = False  # 是否处于系统输入法切换时的暂停测试模式
+
+        # 启动后默认显示待命图标
+        self.candidate_box.show_standby()
 
         # 启动窗口焦点轮询
         self._poll_foreground_window()
@@ -100,6 +115,16 @@ class InputMethodApp:
 
         if self.runtime_decoder_warning:
             print(f"[Decoder] 运行时编码表未启用: {self.runtime_decoder_warning}")
+
+    def _format_input_outline(self, text: str) -> str:
+        return build_input_outline(text, self.input_visual_map)
+
+    def _format_visible_input(self, text: str) -> str:
+        if not text:
+            return ""
+        if all(ord(char) < 128 for char in text):
+            return text
+        return build_input_outline(text, self.input_visual_map)
 
     def _schedule_ui(self, delay_ms: int, callback: Callable[[], None]) -> Optional[str]:
         """通过统一入口调度 Tk 回调，便于关闭时统一取消。"""
@@ -176,7 +201,17 @@ class InputMethodApp:
 
     def _on_input_change(self, event: Optional[object] = None) -> None:
         """输入变化处理"""
-        input_text = self.candidate_box.get_input()
+        display_input = self.candidate_box.get_input()
+        projected_input = self.candidate_box.get_projected_input()
+
+        # When user typed directly in the Entry, display_input changes but projected_input might lag.
+        # We need to compute projection if they differ in length or aren't synchronized.
+        # Simple fix: if display_input is not empty and projected_input doesn't match its length or we just changed the UI.
+
+        projected_input = project_physical_input(display_input, self.physical_input_map)
+        self.candidate_box.set_projected_input(projected_input)
+
+        input_text = projected_input
         if not input_text:
             self.candidate_box.update_candidates(
                 [],
@@ -195,11 +230,7 @@ class InputMethodApp:
         self.last_replace_length = min(4, len(input_text))
 
         # 更新显示
-        code_display = ""
-        if active_code and canonical_code and active_code != canonical_code:
-            code_display = f"{active_code} | 累计输入: {len(canonical_code)} 码"
-        elif active_code:
-            code_display = active_code
+        code_display = build_code_display(input_text, canonical_code, active_code)
 
         self.candidate_box.update_candidates(
             candidates, pinyin, code_display, status
@@ -212,7 +243,10 @@ class InputMethodApp:
             self.candidate_box.status_var.set("剪贴板没有可读取文本。")
             return
 
-        self.candidate_box.set_input(captured)
+        self.candidate_box.set_input(
+            self._format_visible_input(captured),
+            projected_text=captured,
+        )
         self.candidate_box.input_entry.focus_set()
         self._on_input_change()
 
@@ -274,6 +308,7 @@ class InputMethodApp:
                     f"已替换前一个窗口中的 {self.last_replace_length} 个编码字符: {hanzi}"
                 ),
             )
+            self._schedule_ui(360, self._refocus_candidate_input)
             return
 
         # 直接粘贴
@@ -284,6 +319,13 @@ class InputMethodApp:
                 f"已回贴到前一个窗口: {hanzi}"
             ),
         )
+        self._schedule_ui(240, self._refocus_candidate_input)
+
+    def _refocus_candidate_input(self) -> None:
+        """外部编辑动作完成后，将焦点拉回编码输入框。"""
+        self.candidate_box.show(focus_input=True)
+        self.candidate_box.input_entry.icursor(tk.END)
+        self.candidate_box.input_entry.selection_clear()
 
     def _close(self) -> None:
         """关闭应用"""
@@ -315,6 +357,7 @@ class InputMethodApp:
         self.input_manager.clear_buffer(notify=False)
         self.candidate_box._clear_input(focus_input=False)
         self.candidate_box.clear_commit_text()
+
         self.candidate_box.show_standby()
 
         if self.last_external_hwnd and self.last_external_hwnd != self.own_hwnd:
@@ -358,8 +401,12 @@ class InputMethodApp:
         buffer_text = self.input_manager.get_buffer()
 
         # 全局监听模式下，也要把缓冲区同步到编辑框，形成真正的“编码编辑中”体验。
-        if self.candidate_box.get_input() != buffer_text:
-            self.candidate_box.set_input(buffer_text)
+        display_text = self._format_visible_input(buffer_text)
+        if (
+            self.candidate_box.get_input() != display_text
+            or self.candidate_box.get_projected_input() != buffer_text
+        ):
+            self.candidate_box.set_input(display_text, projected_text=buffer_text)
 
         # 更新候选框显示
         self.candidate_box.update_candidates(candidates, pinyin, code, status)
@@ -384,8 +431,10 @@ class InputMethodApp:
                     self.candidate_box.show(focus_input=False)
         else:
             if self.debug_ui:
-                print("[UI] hide candidate box because buffer is empty")
-            self.candidate_box.hide()
+                print("[UI] keep tracking candidate box even if buffer is empty for debugging")
+
+            # 暂时关闭“清空输入就隐藏为旋风框”的逻辑，强制始终显示大框以便于看清 UI
+            self.candidate_box.show(focus_input=True)
 
     def _on_input_commit(self, hanzi: str) -> None:
         """
@@ -427,10 +476,38 @@ class InputMethodApp:
             True继续传递，False拦截
         """
         try:
+            # === 测试模式切换逻辑 ===
+            if key_info.get("char") == "t" and key_info.get("modifiers", {}).get("ctrl", False) and key_info.get("modifiers", {}).get("alt", False):
+                self.is_paused = not self.is_paused
+                self.input_manager.clear_buffer(notify=True)
+
+                # 同步更新UI界面状态
+                if self.is_paused:
+                    self.candidate_box.show_standby()
+                else:
+                    # 如果要唤醒时直接展示主面板，可以调用 show()，或者先展示空内容的面板
+                    self.candidate_box.show()
+
+                print(f"[TEST MODE] Paused={self.is_paused}")
+                return False  # 拦截切换快捷键
+
+            if self.is_paused:
+                return True
+            # ========================
+
             if self.candidate_box.is_manual_input_active():
                 return True
+
+            buffer_was_empty = not bool(self.input_manager.get_buffer())
+
             # 让 InputManager 决定是否拦截
             handled = self.input_manager.process_key(key_info)
+
+            # 如果是从空缓存变为有缓存（开始输入），还原悬浮框大小
+            if buffer_was_empty and self.input_manager.get_buffer() and not self.candidate_box.root.state() == "withdrawn":
+                x, y = self.candidate_box.get_pointer_position()
+                self._enqueue_ui(lambda: self.candidate_box.show(x, y + 20, focus_input=False))
+
             return handled
         except Exception as e:
             print(f"处理键盘事件出错: {e}")
@@ -478,8 +555,8 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--font-family",
-        default="Noto Sans",
-        help="输入框字体名。默认: Noto Sans",
+        default="YinYuan Regular",
+        help="输入框字体名。默认: YinYuan Regular",
     )
     return parser.parse_args()
 

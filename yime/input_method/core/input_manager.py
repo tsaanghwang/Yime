@@ -8,6 +8,8 @@ import time
 from typing import Callable, Optional, List, Dict, Any
 from dataclasses import dataclass, field
 
+from .decoders import build_code_display
+
 
 @dataclass
 class InputState:
@@ -293,11 +295,11 @@ class InputManager:
             self.current_candidates = candidates
 
             # 更新显示
-            code_display = ""
-            if active_code and canonical_code and active_code != canonical_code:
-                code_display = f"{active_code} | 累计: {len(canonical_code)} 码"
-            elif active_code:
-                code_display = active_code
+            code_display = build_code_display(
+                self.state.buffer,
+                canonical_code,
+                active_code,
+            )
 
             self.on_candidates_update(
                 self.current_candidates,

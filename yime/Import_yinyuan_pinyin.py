@@ -10,9 +10,40 @@ from pathlib import Path
 from typing import Dict
 from contextlib import contextmanager
 
-from syllable_structure import SyllableStructure
-from syllable_decoder import SyllableDecoder
-from utils_charfilter import is_allowed_code_char
+try:
+    from syllable_structure import SyllableStructure
+    from syllable_decoder import SyllableDecoder
+    from utils_charfilter import is_allowed_code_char
+except ModuleNotFoundError:
+    from yime.syllable_structure import SyllableStructure
+    from yime.syllable_decoder import SyllableDecoder
+    from yime.utils_charfilter import is_allowed_code_char
+
+REPO_ROOT = Path(__file__).resolve().parent.parent
+PROJECTION_PATH = REPO_ROOT / "internal_data" / "bmp_pua_trial_projection.json"
+CANONICAL_SYMBOL_PATH = REPO_ROOT / "internal_data" / "key_to_symbol.json"
+
+
+def _load_json(path: Path) -> dict:
+    with path.open("r", encoding="utf-8") as handle:
+        return json.load(handle)
+
+
+def _build_bmp_to_canonical_map() -> dict[str, str]:
+    projection = _load_json(PROJECTION_PATH)
+    canonical_symbols = _load_json(CANONICAL_SYMBOL_PATH)
+    bmp_to_canonical: dict[str, str] = {}
+
+    for slot_key, slot_info in projection.get("used_mapping", {}).items():
+        bmp_char = slot_info.get("char")
+        canonical_char = canonical_symbols.get(slot_key)
+        if bmp_char and canonical_char:
+            bmp_to_canonical[str(bmp_char)] = str(canonical_char)
+
+    return bmp_to_canonical
+
+
+BMP_TO_CANONICAL = _build_bmp_to_canonical_map()
 
 class PinyinImporter:
     """音元拼音导入器（完整字段导入）"""
@@ -202,6 +233,11 @@ class PinyinImporter:
                 "韵音": None
             }
 
+    def _normalize_to_canonical(self, encoded: str | None) -> str:
+        if not encoded:
+            return ""
+        return "".join(BMP_TO_CANONICAL.get(char, char) for char in encoded)
+
     def import_pinyin(self, pinyin_data: Dict[str, str]) -> int:
         """
         导入音元拼音数据（完整字段）
@@ -245,7 +281,8 @@ class PinyinImporter:
         seen_pinyins = set()  # 内存级二次去重
 
         for yime_pinyin in unique_data.keys():  # 这里改为使用values()获取音元拼音
-            default_values = self._generate_default_values(yime_pinyin)  # 传入音元拼音编码
+            canonical_pinyin = self._normalize_to_canonical(yime_pinyin)
+            default_values = self._generate_default_values(canonical_pinyin)  # 统一落 canonical SPUA-B
             if default_values["全拼"] in seen_pinyins:
                 continue
             seen_pinyins.add(default_values["全拼"])

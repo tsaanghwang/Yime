@@ -155,6 +155,13 @@
       "driver": "SQLite",
       "database": "${workspaceFolder:Yime}/yime.db",
       "name": "Yime"
+    },
+    {
+      "name": "Source Pinyin",
+      "group": "Yime",
+      "driver": "SQLite",
+      "database": "${workspaceFolder:Yime}/internal_data/pinyin_source_db/source_pinyin.db",
+      "previewLimit": 100
     }
   ],
   "sqltools.results.customization": {
@@ -180,6 +187,7 @@
     "editor.defaultFormatter": "mathematic.vscode-latex"
   },
   "markdown.styles": [".vscode/markdown.css"],
+  "markdown.preview.fontFamily": "\"Noto Sans\", \"YinYuan Regular\", \"Microsoft YaHei\", sans-serif",
   "livePreview.defaultPreviewPath": "/临时.html",
   "files.exclude": {
     "venv_broken_python314": true
@@ -192,6 +200,6 @@
   },
   "python.defaultInterpreterPath": "${workspaceFolder}/venv312/Scripts/python.exe",
   "python-envs.defaultInterpreterPath": "${workspaceFolder}/venv312/Scripts/python.exe",
-  "sqltools.useNodeRuntime": false,
+  "sqltools.useNodeRuntime": true,
   "python-envs.defaultPackageManager": "ms-python.python:conda"
 }
