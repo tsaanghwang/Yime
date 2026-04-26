@@ -17,7 +17,14 @@ project_root = Path(__file__).resolve().parent.parent.parent
 if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
 
-from yime.input_method.core.decoders import CompositeCandidateDecoder
+from yime.input_method.core.decoders import (
+    CompositeCandidateDecoder,
+    build_code_display,
+    build_input_outline,
+    build_input_visual_map,
+    build_physical_input_map,
+    project_physical_input,
+)
 from yime.input_method.ui.candidate_box import CandidateBox
 from yime.input_method.utils.clipboard import ClipboardManager
 from yime.input_method.utils.keyboard_simulator import KeyboardSimulator
@@ -30,7 +37,7 @@ class InputMethodAppV2:
     def __init__(
         self,
         auto_paste: bool = True,
-        font_family: str = "Noto Sans",
+        font_family: str = "YinYuan Regular",
         hotkey: str = "<ctrl>+<shift>+y",
     ) -> None:
         """
@@ -48,6 +55,8 @@ class InputMethodAppV2:
         # 初始化模块
         app_dir = Path(__file__).resolve().parent.parent
         self.decoder = CompositeCandidateDecoder(app_dir)
+        self.input_visual_map = build_input_visual_map(app_dir.parent)
+        self.physical_input_map = build_physical_input_map(app_dir.parent)
         self.clipboard = ClipboardManager()
         self.keyboard_simulator = KeyboardSimulator()
         self.window_manager = WindowManager()
@@ -56,6 +65,7 @@ class InputMethodAppV2:
         self.candidate_box = CandidateBox(
             on_select=self._on_candidate_select,
             font_family=font_family,
+            input_display_formatter=self._format_input_outline,
             on_input_change=self._on_input_change,
             on_decode_from_clipboard=self._decode_from_clipboard,
             on_copy_candidate=self._copy_candidate,
@@ -67,6 +77,9 @@ class InputMethodAppV2:
         self.last_external_hwnd: Optional[int] = None
         self.last_replace_length = 0
 
+        # 默认为显示状态以便于直接输入测试
+        self.candidate_box.show(focus_input=True)
+
         # 窗口焦点轮询
         self._poll_foreground_window()
 
@@ -76,6 +89,16 @@ class InputMethodAppV2:
         # 快捷键监听器
         self.hotkey_listener = None
         self._setup_hotkey()
+
+    def _format_input_outline(self, text: str) -> str:
+        return build_input_outline(text, self.input_visual_map)
+
+    def _format_visible_input(self, text: str) -> str:
+        if not text:
+            return ""
+        if all(ord(char) < 128 for char in text):
+            return text
+        return build_input_outline(text, self.input_visual_map)
 
     def _setup_hotkey(self) -> None:
         """设置全局快捷键"""
@@ -118,7 +141,12 @@ class InputMethodAppV2:
 
     def _on_input_change(self, event: Optional[object] = None) -> None:
         """输入变化处理"""
-        input_text = self.candidate_box.get_input()
+        display_input = self.candidate_box.get_input()
+        projected_input = self.candidate_box.get_projected_input()
+        if projected_input == display_input:
+            projected_input = project_physical_input(display_input, self.physical_input_map)
+            self.candidate_box.set_projected_input(projected_input)
+        input_text = projected_input
         if not input_text:
             self.candidate_box.update_candidates(
                 [],
@@ -137,11 +165,7 @@ class InputMethodAppV2:
         self.last_replace_length = min(4, len(input_text))
 
         # 更新显示
-        code_display = ""
-        if active_code and canonical_code and active_code != canonical_code:
-            code_display = f"{active_code} | 累计输入: {len(canonical_code)} 码"
-        elif active_code:
-            code_display = active_code
+        code_display = build_code_display(input_text, canonical_code, active_code)
 
         self.candidate_box.update_candidates(
             candidates, pinyin, code_display, status
@@ -154,7 +178,10 @@ class InputMethodAppV2:
             self.candidate_box.status_var.set("剪贴板没有可读取文本。")
             return
 
-        self.candidate_box.set_input(captured)
+        self.candidate_box.set_input(
+            self._format_visible_input(captured),
+            projected_text=captured,
+        )
         self.candidate_box.input_entry.focus_set()
         self._on_input_change()
 
@@ -174,9 +201,9 @@ class InputMethodAppV2:
                 50, lambda: self._paste_to_previous_window(hanzi)
             )
 
-        # 清空输入并隐藏
+        # 调试期间禁用自动隐藏变成图标，便于直接查看完整 UI
         self.candidate_box._clear_input()
-        self.candidate_box.root.after(100, self.candidate_box.hide)
+        self.candidate_box.root.after(100, lambda: self.candidate_box.show(focus_input=True))
 
     def _copy_candidate(self, index: int) -> None:
         """复制候选词"""
@@ -212,6 +239,7 @@ class InputMethodAppV2:
                     f"已替换前一个窗口中的 {self.last_replace_length} 个编码字符: {hanzi}"
                 ),
             )
+            self.candidate_box.root.after(360, self._refocus_candidate_input)
             return
 
         # 直接粘贴
@@ -222,6 +250,13 @@ class InputMethodAppV2:
                 f"已回贴到前一个窗口: {hanzi}"
             ),
         )
+        self.candidate_box.root.after(240, self._refocus_candidate_input)
+
+    def _refocus_candidate_input(self) -> None:
+        """外部编辑动作完成后，将焦点拉回编码输入框。"""
+        self.candidate_box.show(focus_input=True)
+        self.candidate_box.input_entry.icursor("end")
+        self.candidate_box.input_entry.selection_clear()
 
     def _close(self) -> None:
         """关闭应用"""

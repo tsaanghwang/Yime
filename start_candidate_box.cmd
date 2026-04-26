@@ -1,15 +1,18 @@
 @echo off
 setlocal
 set ROOT=%~dp0
-set PYTHON_EXE=%ROOT%.venv\Scripts\python.exe
+set PYTHON_EXE=%ROOT%venv312\Scripts\python.exe
 
+if not exist "%PYTHON_EXE%" (
+  set PYTHON_EXE=%ROOT%.venv\Scripts\python.exe
+)
 if not exist "%PYTHON_EXE%" (
   echo Python virtual environment not found: "%PYTHON_EXE%"
   pause
   exit /b 1
 )
 
-start "Yime Candidate Box" "%PYTHON_EXE%" "%ROOT%yime\windows_candidate_box.py"
+start "Yime Input Method" "%PYTHON_EXE%" "%ROOT%run_input_method.py"
 
-echo Yime Candidate Box started.
-echo Exit from the window's 退出 button, Ctrl+Alt+Q, or stop_candidate_box.cmd.
+echo Yime Input Method started.
+echo Exit by pressing ESC or closing the terminal.

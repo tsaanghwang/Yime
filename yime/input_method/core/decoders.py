@@ -16,6 +16,126 @@ import unicodedata
 from typing import Dict, List, Tuple, Optional
 
 
+def format_codepoints(text: str) -> str:
+    if not text:
+        return ""
+    return " ".join(
+        f"U+{ord(char):06X}" if ord(char) > 0xFFFF else f"U+{ord(char):04X}"
+        for char in text
+    )
+
+
+def build_code_display(raw_text: str, canonical_code: str, active_code: str) -> str:
+    if not active_code:
+        return ""
+
+    active_display = format_codepoints(active_code)
+    if not canonical_code:
+        return active_display
+
+    if raw_text and raw_text != canonical_code:
+        return (
+            f"当前4码 {active_display} | 输入 {format_codepoints(raw_text)}"
+            f" | 规范化后共 {len(canonical_code)} 码"
+        )
+
+    if active_code != canonical_code:
+        return f"当前4码 {active_display} | 累计输入 {len(canonical_code)} 码"
+
+    return active_display
+
+
+def _load_visual_json(path: Path) -> dict:
+    with path.open("r", encoding="utf-8") as handle:
+        return json.load(handle)
+
+
+def build_input_visual_map(repo_root: Path) -> Dict[str, str]:
+    projection = _load_visual_json(
+        repo_root / "internal_data" / "bmp_pua_trial_projection.json"
+    )
+    key_to_symbol = _load_visual_json(repo_root / "internal_data" / "key_to_symbol.json")
+    shouyin_payload = _load_visual_json(
+        repo_root / "syllable" / "analysis" / "slice" / "yinyuan" / "shouyin_codepoint.json"
+    )
+    yinyuan_payload = _load_visual_json(
+        repo_root / "syllable" / "analysis" / "slice" / "yinyuan" / "yinyuan_codepoint.json"
+    )
+
+    label_by_bmp: Dict[str, str] = {}
+    for label, char in shouyin_payload.get("首音", {}).items():
+        label_by_bmp[str(char)] = str(label)
+    for namespace in ("zaoyin", "yueyin"):
+        for label, char in yinyuan_payload.get(namespace, {}).items():
+            label_by_bmp[str(char)] = str(label)
+
+    visual_map: Dict[str, str] = {}
+    for slot_key, slot_info in projection.get("used_mapping", {}).items():
+        bmp_char = str(slot_info.get("char", ""))
+        canonical_char = str(key_to_symbol.get(slot_key, ""))
+        label = label_by_bmp.get(bmp_char) or slot_key
+        token = f"[{slot_key} {label}]"
+        if bmp_char:
+            visual_map[bmp_char] = token
+        if canonical_char:
+            visual_map[canonical_char] = token
+
+    for reserved in projection.get("reserved_slots", []):
+        bmp_char = str(reserved.get("char", ""))
+        slot_key = str(reserved.get("label") or "reserved").split("_", 1)[0]
+        if bmp_char:
+            visual_map[bmp_char] = f"[{slot_key}]"
+
+    return visual_map
+
+
+def build_input_outline(text: str, visual_map: Dict[str, str]) -> str:
+    if not text:
+        return ""
+
+    tokens: List[str] = []
+    for char in text:
+        token = visual_map.get(char)
+        if token:
+            tokens.append(token)
+            continue
+
+        codepoint = ord(char)
+        fallback = f"U+{codepoint:06X}" if codepoint > 0xFFFF else f"U+{codepoint:04X}"
+        tokens.append(f"[{fallback}]")
+
+    return " ".join(tokens)
+
+
+def build_physical_input_map(repo_root: Path) -> Dict[str, str]:
+    manual_layout = _load_visual_json(repo_root / "internal_data" / "manual_key_layout.json")
+    slot_to_bmp = _load_visual_json(repo_root / "key_to_code.json")
+
+    physical_map: Dict[str, str] = {}
+    for row in manual_layout.get("layers", []):
+        if row.get("output_layer") != "base":
+            continue
+        physical_key = str(row.get("physical_key", ""))
+        symbol_key = row.get("symbol_key")
+        if not physical_key or not symbol_key:
+            continue
+        bmp_char = slot_to_bmp.get(str(symbol_key))
+        if bmp_char:
+            physical_map[physical_key] = str(bmp_char)
+
+    return physical_map
+
+
+def project_physical_input(text: str, physical_map: Dict[str, str]) -> str:
+    if not text:
+        return ""
+
+    projected_chars: List[str] = []
+    for char in text:
+        projected_chars.append(physical_map.get(char, char))
+    return "".join(projected_chars)
+
+
 class StaticCandidateDecoder:
     """静态候选词解码器（基于拼音候选表）"""
 

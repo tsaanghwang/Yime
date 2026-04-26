@@ -10,11 +10,40 @@ import sqlite3
 from typing import Dict, Generator
 from contextlib import contextmanager
 
-from syllable_structure import SyllableStructure
-from syllable_decoder import SyllableDecoder
+try:
+    from syllable_structure import SyllableStructure
+    from syllable_decoder import SyllableDecoder
+except ModuleNotFoundError:
+    from yime.syllable_structure import SyllableStructure
+    from yime.syllable_decoder import SyllableDecoder
 
 # 固定数据库路径为模块同目录下的 pinyin_hanzi.db
 DB_PATH = Path(__file__).parent.resolve() / "pinyin_hanzi.db"
+REPO_ROOT = Path(__file__).resolve().parent.parent
+PROJECTION_PATH = REPO_ROOT / "internal_data" / "bmp_pua_trial_projection.json"
+CANONICAL_SYMBOL_PATH = REPO_ROOT / "internal_data" / "key_to_symbol.json"
+
+
+def _load_json(path: Path) -> dict:
+    with path.open("r", encoding="utf-8") as handle:
+        return json.load(handle)
+
+
+def _build_bmp_to_canonical_map() -> dict[str, str]:
+    projection = _load_json(PROJECTION_PATH)
+    canonical_symbols = _load_json(CANONICAL_SYMBOL_PATH)
+    bmp_to_canonical: dict[str, str] = {}
+
+    for slot_key, slot_info in projection.get("used_mapping", {}).items():
+        bmp_char = slot_info.get("char")
+        canonical_char = canonical_symbols.get(slot_key)
+        if bmp_char and canonical_char:
+            bmp_to_canonical[str(bmp_char)] = str(canonical_char)
+
+    return bmp_to_canonical
+
+
+BMP_TO_CANONICAL = _build_bmp_to_canonical_map()
 
 class PinyinImporter:
     """音元拼音导入器（完整字段导入）"""
@@ -243,6 +272,11 @@ class PinyinImporter:
             "韵音": s(yunyin_val)
         }
 
+    def _normalize_to_canonical(self, encoded: str | None) -> str:
+        if not encoded:
+            return ""
+        return "".join(BMP_TO_CANONICAL.get(char, char) for char in encoded)
+
     def ensure_table(self) -> None:
         """确保 '音元拼音' 表存在；如果不存在则创建（保留 全拼 唯一约束，移除其它唯一约束）"""
         with self._get_connection() as conn:
@@ -309,13 +343,14 @@ class PinyinImporter:
 
         # pinyin_data expected: {映射编号: 原拼音}
         for mapping_id, yime_pinyin in pinyin_data.items():
+            canonical_pinyin = self._normalize_to_canonical(yime_pinyin)
             # yime_pinyin 是要插入的全拼编码
             # 去重：只处理每个全拼一次
-            if yime_pinyin in seen_pinyins:
+            if canonical_pinyin in seen_pinyins:
                 continue
-            seen_pinyins.add(yime_pinyin)
+            seen_pinyins.add(canonical_pinyin)
 
-            default_values = self._generate_default_values(yime_pinyin)  # 传入音元拼音编码
+            default_values = self._generate_default_values(canonical_pinyin)  # 统一落 canonical SPUA-B
 
             values_to_insert.append((
                 default_values["全拼"],

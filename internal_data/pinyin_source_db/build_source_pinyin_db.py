@@ -9,7 +9,7 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 DEFAULT_DB_PATH = SCRIPT_DIR / "source_pinyin.db"
 DEFAULT_SCHEMA_PATH = SCRIPT_DIR / "schema.sql"
 DEFAULT_CHAR_SOURCE = Path("C:/dev/pinyin-data/pinyin.txt")
-DEFAULT_PHRASE_SOURCE = Path("C:/dev/phrase-pinyin-data/pinyin.txt")
+DEFAULT_PHRASE_SOURCE = Path("C:/dev/pinyin-data/tools/phrase-pinyin-data/pinyin.txt")
 
 TONE_CHAR_MAP = {
     "ā": "a1",
@@ -43,6 +43,10 @@ TONE_CHAR_MAP = {
     "ǹ": "n4",
     "ḿ": "m2",
 }
+
+
+def make_source_name(source_kind: str, source_path: Path) -> str:
+    return f"{source_kind}:{source_path.name}"
 
 
 def parse_args() -> argparse.Namespace:
@@ -115,7 +119,7 @@ def split_comment(raw_line: str) -> tuple[str, str | None]:
 
 
 def import_single_char_source(conn: sqlite3.Connection, source_path: Path) -> int:
-    source_name = source_path.name
+    source_name = make_source_name("single_char", source_path)
     conn.execute(
         "INSERT OR REPLACE INTO source_files (source_name, source_kind, source_path) VALUES (?, 'single_char', ?)",
         (source_name, str(source_path)),
@@ -170,7 +174,7 @@ def import_single_char_source(conn: sqlite3.Connection, source_path: Path) -> in
 
 
 def import_phrase_source(conn: sqlite3.Connection, source_path: Path) -> int:
-    source_name = source_path.name
+    source_name = make_source_name("phrase", source_path)
     conn.execute(
         "INSERT OR REPLACE INTO source_files (source_name, source_kind, source_path) VALUES (?, 'phrase', ?)",
         (source_name, str(source_path)),

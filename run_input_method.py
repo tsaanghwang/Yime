@@ -7,7 +7,7 @@
 
 选项:
     --copy-only       只复制候选字到剪贴板，不自动回贴
-    --font-family     指定字体名称（默认: Noto Sans）
+    --font-family     指定字体名称（默认: YinYuan Regular）
 """
 
 import sys
@@ -21,13 +21,12 @@ if str(project_root) not in sys.path:
 # 使用模块方式运行
 if __name__ == "__main__":
     import subprocess
-    import os
-    
+
     # 获取Python解释器路径
     python_exe = sys.executable
-    
+
     # 构建命令
     cmd = [python_exe, "-m", "yime.input_method.app"] + sys.argv[1:]
-    
+
     # 运行
     subprocess.run(cmd)
