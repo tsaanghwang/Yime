@@ -37,7 +37,7 @@ class InputMethodAppV2:
     def __init__(
         self,
         auto_paste: bool = True,
-        font_family: str = "YinYuan Regular",
+        font_family: str = "音元",
         hotkey: str = "<ctrl>+<shift>+y",
     ) -> None:
         """
@@ -300,8 +300,8 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--font-family",
-        default="Noto Sans",
-        help="输入框字体名。默认: Noto Sans",
+        default="音元",
+        help="输入框字体名。默认: 音元",
     )
     parser.add_argument(
         "--hotkey",
@@ -315,6 +315,12 @@ def main() -> None:
     """主函数"""
     if ctypes.sizeof(ctypes.c_void_p) == 0:
         raise SystemExit("Windows API 初始化失败")
+
+    try:
+        # 启用高 DPI 支持，解决 Tkinter 在高分屏下渲染模糊的问题
+        ctypes.windll.shcore.SetProcessDpiAwareness(1)
+    except Exception:
+        pass
 
     args = parse_args()
     app = InputMethodAppV2(

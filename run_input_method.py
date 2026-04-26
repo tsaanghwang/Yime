@@ -7,7 +7,7 @@
 
 选项:
     --copy-only       只复制候选字到剪贴板，不自动回贴
-    --font-family     指定字体名称（默认: YinYuan Regular）
+    --font-family     指定字体名称（默认: 音元）
 """
 
 import sys

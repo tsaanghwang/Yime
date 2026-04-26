@@ -7,6 +7,7 @@
 import ctypes
 import os
 import tkinter as tk
+from tkinter import font as tkfont
 from tkinter import ttk
 from typing import Callable, List, Optional
 
@@ -38,7 +39,7 @@ class CandidateBox:
     def __init__(
         self,
         on_select: Callable[[str], None],
-        font_family: str = "YinYuan Regular",
+        font_family: str = "音元",
         max_candidates: int = 9,
         input_display_formatter: Optional[Callable[[str], str]] = None,
         on_input_change: Optional[Callable] = None,
@@ -65,6 +66,7 @@ class CandidateBox:
         self.all_candidates: List[str] = []
         self.current_candidates: List[str] = []
         self._is_standby = False
+        self._manual_input_enabled = False
         self._current_page = 0
         self._input_display_formatter = input_display_formatter
         self.projected_input_text = ""
@@ -80,6 +82,8 @@ class CandidateBox:
         # 创建主窗口
         self.root = tk.Tk()
         self.root.title("音元候选框")
+        self.font_family = self._resolve_font_family(font_family)
+        self._configure_fonts()
 
         # 不要硬性指定宽高，让它自然展开，防止越加越多被裁剪
         self.root.attributes("-topmost", True)
@@ -90,6 +94,42 @@ class CandidateBox:
         self._bind_keys()
         self._configure_window_for_global_input()
         self.root.protocol("WM_DELETE_WINDOW", self._request_close)
+
+    def _resolve_font_family(self, requested_family: str) -> str:
+        available_families = set(tkfont.families(self.root))
+        for candidate in (requested_family, "音元", "Noto Sans", "Noto Sans SC"):
+            if candidate in available_families:
+                return candidate
+        return requested_family
+
+    def _configure_fonts(self) -> None:
+        self.ui_font = tkfont.Font(self.root, family=self.font_family, size=10)
+        self.text_font = tkfont.Font(self.root, family=self.font_family, size=14)
+        self.icon_font = tkfont.Font(
+            self.root, family=self.font_family, size=16, weight="bold"
+        )
+
+        self.root.option_add("*Font", self.ui_font)
+        for named_font in (
+            "TkDefaultFont",
+            "TkTextFont",
+            "TkMenuFont",
+            "TkHeadingFont",
+            "TkCaptionFont",
+            "TkSmallCaptionFont",
+            "TkIconFont",
+            "TkTooltipFont",
+        ):
+            try:
+                tkfont.nametofont(named_font).configure(family=self.font_family)
+            except tk.TclError:
+                pass
+
+        self.style = ttk.Style(self.root)
+        self.style.configure("Yime.TLabel", font=self.ui_font)
+        self.style.configure("Yime.Text.TLabel", font=self.text_font)
+        self.style.configure("Yime.TButton", font=self.ui_font)
+        self.style.configure("Yime.Candidate.TButton", font=self.text_font)
 
     def _configure_window_for_global_input(self) -> None:
         """将候选框配置为不抢焦点的 Windows 浮窗。"""
@@ -253,7 +293,7 @@ class CandidateBox:
             text="音",
             bg="#1f2937",
             fg="#f8fafc",
-            font=(self.font_family, 16, "bold"),
+            font=self.icon_font,
             width=3,
             height=1,
             cursor="hand2",
@@ -263,26 +303,30 @@ class CandidateBox:
         self.standby_frame.bind("<Button-1>", self._restore_from_standby)
 
         # 输入框标签
-        ttk.Label(self.main_frame, text="输入音元码元").pack(anchor=tk.W)
+        ttk.Label(self.main_frame, text="输入音元码元", style="Yime.TLabel").pack(
+            anchor=tk.W
+        )
 
         # 输入框
         self.input_var = tk.StringVar(self.root)
         self.input_entry = ttk.Entry(
-            self.main_frame, textvariable=self.input_var, font=(self.font_family, 14)
+            self.main_frame, textvariable=self.input_var, font=self.text_font
         )
         self.input_entry.pack(fill=tk.X, pady=(4, 8))
         self.input_entry.focus_set()
         self.input_entry.bind("<KeyRelease>", self._on_input_change)
         self.input_entry.bind("<Button-1>", self._activate_for_manual_input)
 
-        ttk.Label(self.main_frame, text="投影编码 / 码元轮廓").pack(anchor=tk.W)
+        ttk.Label(
+            self.main_frame, text="投影编码 / 码元轮廓", style="Yime.TLabel"
+        ).pack(anchor=tk.W)
 
         self.projected_code_var = tk.StringVar(self.root, value="")
         ttk.Label(
             self.main_frame,
             textvariable=self.projected_code_var,
             justify=tk.LEFT,
-            font=(self.font_family, 14),  # 使用程序的自制字体来显示字符
+            font=self.text_font,
             foreground="#666666",
         ).pack(anchor=tk.W, fill=tk.X)
 
@@ -292,13 +336,13 @@ class CandidateBox:
             textvariable=self.input_outline_var,
             justify=tk.LEFT,
             wraplength=600,
-            font=(self.font_family, 14),
+            font=self.text_font,
             foreground="#666666",
         ).pack(anchor=tk.W, fill=tk.X, pady=(0, 8))
 
         paging_row = ttk.Frame(self.main_frame)
         paging_row.pack(fill=tk.X, pady=(0, 8))
-        ttk.Label(paging_row, text="每页候选").pack(side=tk.LEFT)
+        ttk.Label(paging_row, text="每页候选", style="Yime.TLabel").pack(side=tk.LEFT)
         self.page_size_var = tk.IntVar(value=self.max_candidates)
         self.page_size_spinbox = tk.Spinbox(
             paging_row,
@@ -307,19 +351,28 @@ class CandidateBox:
             width=4,
             textvariable=self.page_size_var,
             command=self._on_page_size_change,
+            font=self.ui_font,
         )
         self.page_size_spinbox.pack(side=tk.LEFT, padx=(6, 12))
         self.page_size_spinbox.bind("<KeyRelease>", self._on_page_size_change)
         self.prev_button = ttk.Button(
-            paging_row, text="上一页", command=self.show_previous_page
+            paging_row,
+            text="上一页",
+            command=self.show_previous_page,
+            style="Yime.TButton",
         )
         self.prev_button.pack(side=tk.LEFT)
         self.next_button = ttk.Button(
-            paging_row, text="下一页", command=self.show_next_page
+            paging_row,
+            text="下一页",
+            command=self.show_next_page,
+            style="Yime.TButton",
         )
         self.next_button.pack(side=tk.LEFT, padx=8)
         self.page_info_var = tk.StringVar(self.root, value="第 1/1 页")
-        ttk.Label(paging_row, textvariable=self.page_info_var).pack(side=tk.LEFT)
+        ttk.Label(
+            paging_row, textvariable=self.page_info_var, style="Yime.TLabel"
+        ).pack(side=tk.LEFT)
         self.shortcut_hint_var = tk.StringVar(
             value="数字键选当前页；PgUp/PgDn 翻页；Ctrl+Shift+C 复制原始编码字符；编码区支持 Left/Right/Home/End/Delete/Backspace 编辑；待上屏区可撤销一字。"
         )
@@ -327,14 +380,17 @@ class CandidateBox:
             self.main_frame,
             textvariable=self.shortcut_hint_var,
             foreground="#666666",
+            style="Yime.TLabel",
         ).pack(anchor=tk.W, pady=(0, 8))
 
-        ttk.Label(self.main_frame, text="待上屏文本").pack(anchor=tk.W, pady=(8, 0))
+        ttk.Label(self.main_frame, text="待上屏文本", style="Yime.TLabel").pack(
+            anchor=tk.W, pady=(8, 0)
+        )
         self.commit_var = tk.StringVar(self.root, value="")
         self.commit_entry = ttk.Entry(
             self.main_frame,
             textvariable=self.commit_var,
-            font=(self.font_family, 14),
+            font=self.text_font,
         )
         self.commit_entry.pack(fill=tk.X, pady=(4, 8))
         self.commit_entry.bind("<BackSpace>", self._on_commit_backspace)
@@ -342,26 +398,40 @@ class CandidateBox:
         commit_edit_row = ttk.Frame(self.main_frame)
         commit_edit_row.pack(fill=tk.X, pady=(0, 8))
         ttk.Button(
-            commit_edit_row, text="撤销一字", command=self.remove_last_commit_char
+            commit_edit_row,
+            text="撤销一字",
+            command=self.remove_last_commit_char,
+            style="Yime.TButton",
         ).pack(side=tk.LEFT)
         ttk.Button(
-            commit_edit_row, text="清空待上屏", command=self.clear_commit_text
+            commit_edit_row,
+            text="清空待上屏",
+            command=self.clear_commit_text,
+            style="Yime.TButton",
         ).pack(side=tk.LEFT, padx=8)
 
         # 拼音显示
         self.pinyin_var = tk.StringVar(self.root, value="")
         ttk.Label(
-            self.main_frame, textvariable=self.pinyin_var, foreground="#0b57d0"
+            self.main_frame,
+            textvariable=self.pinyin_var,
+            foreground="#0b57d0",
+            style="Yime.Text.TLabel",
         ).pack(anchor=tk.W)
 
         # 编码显示
         self.code_var = tk.StringVar(self.root, value="")
         ttk.Label(
-            self.main_frame, textvariable=self.code_var, foreground="#666666"
+            self.main_frame,
+            textvariable=self.code_var,
+            foreground="#666666",
+            style="Yime.Text.TLabel",
         ).pack(anchor=tk.W, pady=(4, 0))
 
         # 候选词标签
-        ttk.Label(self.main_frame, text="候选汉字").pack(anchor=tk.W, pady=(10, 4))
+        ttk.Label(self.main_frame, text="候选汉字", style="Yime.TLabel").pack(
+            anchor=tk.W, pady=(10, 4)
+        )
 
         # 候选词容器
         self.candidate_frame = ttk.Frame(self.main_frame)
@@ -372,7 +442,10 @@ class CandidateBox:
             value='连续输入时自动取最近 4 码。请先复制编码，再点"读取剪贴板"。'
         )
         ttk.Label(
-            self.main_frame, textvariable=self.status_var, foreground="#666666"
+            self.main_frame,
+            textvariable=self.status_var,
+            foreground="#666666",
+            style="Yime.TLabel",
         ).pack(anchor=tk.W, pady=(12, 0))
 
         # 按钮行
@@ -380,29 +453,47 @@ class CandidateBox:
         button_row.pack(fill=tk.X, pady=(12, 0))
 
         ttk.Button(
-            button_row, text="粘贴编码", command=self._paste_code_from_clipboard
+            button_row,
+            text="粘贴编码",
+            command=self._paste_code_from_clipboard,
+            style="Yime.TButton",
         ).pack(side=tk.LEFT, padx=8)
         ttk.Button(
-            button_row, text="复制原始编码", command=self.copy_input_text
+            button_row,
+            text="复制原始编码",
+            command=self.copy_input_text,
+            style="Yime.TButton",
         ).pack(side=tk.LEFT)
         ttk.Button(
-            button_row, text="上屏", command=self._commit_output_text
+            button_row,
+            text="上屏",
+            command=self._commit_output_text,
+            style="Yime.TButton",
         ).pack(side=tk.LEFT, padx=8)
         ttk.Button(
-            button_row, text="复制首选", command=self._copy_first_candidate
+            button_row,
+            text="复制首选",
+            command=self._copy_first_candidate,
+            style="Yime.TButton",
         ).pack(side=tk.LEFT)
         ttk.Button(
-            button_row, text="粘贴首选", command=self._paste_first_candidate
+            button_row,
+            text="粘贴首选",
+            command=self._paste_first_candidate,
+            style="Yime.TButton",
         ).pack(side=tk.LEFT, padx=8)
-        ttk.Button(button_row, text="清空", command=self._clear_input).pack(
-            side=tk.LEFT
-        )
-        ttk.Button(button_row, text="隐藏", command=self._request_hide).pack(
-            side=tk.LEFT, padx=8
-        )
-        ttk.Button(button_row, text="退出程序", command=self._request_close).pack(
-            side=tk.LEFT, padx=8
-        )
+        ttk.Button(
+            button_row, text="清空", command=self._clear_input, style="Yime.TButton"
+        ).pack(side=tk.LEFT)
+        ttk.Button(
+            button_row, text="隐藏", command=self._request_hide, style="Yime.TButton"
+        ).pack(side=tk.LEFT, padx=8)
+        ttk.Button(
+            button_row,
+            text="退出程序",
+            command=self._request_close,
+            style="Yime.TButton",
+        ).pack(side=tk.LEFT, padx=8)
 
     def _bind_keys(self) -> None:
         """绑定快捷键"""
@@ -480,10 +571,12 @@ class CandidateBox:
 
     def _activate_for_manual_input(self, event: Optional[tk.Event] = None) -> None:
         """鼠标点入输入框时允许窗口激活，便于手动粘贴测试编码。"""
+        self._manual_input_enabled = True
         self.show(focus_input=True)
 
     def _restore_from_standby(self, event: Optional[tk.Event] = None) -> None:
         """从待命小图标恢复主候选框。"""
+        self._manual_input_enabled = True
         self.show(focus_input=True)
 
     def _show_main_frame(self) -> None:
@@ -598,6 +691,8 @@ class CandidateBox:
         """候选框获得焦点时，允许输入框自行处理逐码编辑。"""
         if self._is_standby:
             return False
+        if not self._manual_input_enabled:
+            return False
         try:
             focused = self.root.focus_get()
         except tk.TclError:
@@ -628,7 +723,9 @@ class CandidateBox:
 
         # 如果没有候选词
         if not self.current_candidates:
-            ttk.Label(self.candidate_frame, text="无候选").pack(anchor=tk.W)
+            ttk.Label(
+                self.candidate_frame, text="无候选", style="Yime.Text.TLabel"
+            ).pack(anchor=tk.W)
             return
 
         # 显示候选词按钮
@@ -638,6 +735,7 @@ class CandidateBox:
                 text=f"{index}.{hanzi}",
                 command=lambda value=index
                 - 1: self._select_candidate_by_index(value),
+                style="Yime.Candidate.TButton",
                 width=6,
             )
             button.pack(side=tk.LEFT, padx=(0, 6))
@@ -796,6 +894,7 @@ class CandidateBox:
             focus_input: 是否将焦点切回候选框输入框
         """
         self._show_main_frame()
+        self._manual_input_enabled = focus_input
         target_x, target_y = self._resolve_geometry(x, y)
 
         # 移除显式指定尺寸的设定，使用Tkinter自适应

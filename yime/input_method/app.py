@@ -36,7 +36,7 @@ class InputMethodApp:
     def __init__(
         self,
         auto_paste: bool = True,
-        font_family: str = "YinYuan Regular",
+        font_family: str = "音元",
     ) -> None:
         """
         初始化输入法应用
@@ -82,6 +82,7 @@ class InputMethodApp:
         self.own_hwnd = self.candidate_box.root.winfo_id()
         self.last_external_hwnd: Optional[int] = None
         self.last_replace_length = 0
+        self._display_input_buffer = ""
         self._is_closing = False
         self._after_ids: set[str] = set()
         self._ui_queue: queue.SimpleQueue[Callable[[], None]] = queue.SimpleQueue()
@@ -203,13 +204,9 @@ class InputMethodApp:
         """输入变化处理"""
         display_input = self.candidate_box.get_input()
         projected_input = self.candidate_box.get_projected_input()
-
-        # When user typed directly in the Entry, display_input changes but projected_input might lag.
-        # We need to compute projection if they differ in length or aren't synchronized.
-        # Simple fix: if display_input is not empty and projected_input doesn't match its length or we just changed the UI.
-
-        projected_input = project_physical_input(display_input, self.physical_input_map)
-        self.candidate_box.set_projected_input(projected_input)
+        if projected_input == display_input:
+            projected_input = project_physical_input(display_input, self.physical_input_map)
+            self.candidate_box.set_projected_input(projected_input)
 
         input_text = projected_input
         if not input_text:
@@ -354,6 +351,7 @@ class InputMethodApp:
     def _hide_candidate_box(self) -> None:
         """将候选框缩到待命图标并清空当前组合，但保持全局监听继续运行。"""
         self.last_replace_length = 0
+        self._display_input_buffer = ""
         self.input_manager.clear_buffer(notify=False)
         self.candidate_box._clear_input(focus_input=False)
         self.candidate_box.clear_commit_text()
@@ -400,8 +398,8 @@ class InputMethodApp:
         """
         buffer_text = self.input_manager.get_buffer()
 
-        # 全局监听模式下，也要把缓冲区同步到编辑框，形成真正的“编码编辑中”体验。
-        display_text = self._format_visible_input(buffer_text)
+        # 全局监听模式下，输入框显示物理键；投影行显示 PUA 编码字符。
+        display_text = self._display_input_buffer if buffer_text else ""
         if (
             self.candidate_box.get_input() != display_text
             or self.candidate_box.get_projected_input() != buffer_text
@@ -433,8 +431,9 @@ class InputMethodApp:
             if self.debug_ui:
                 print("[UI] keep tracking candidate box even if buffer is empty for debugging")
 
-            # 暂时关闭“清空输入就隐藏为旋风框”的逻辑，强制始终显示大框以便于看清 UI
-            self.candidate_box.show(focus_input=True)
+            # 全局监听模式下清空缓冲区后也不能抢回 Entry 焦点，
+            # 否则下一次按键会被误判为候选框手动输入。
+            self.candidate_box.show(focus_input=False)
 
     def _on_input_commit(self, hanzi: str) -> None:
         """
@@ -466,6 +465,7 @@ class InputMethodApp:
             self._schedule_ui(50, lambda: self._paste_to_previous_window(text))
 
         self.candidate_box.clear_commit_text()
+        self._display_input_buffer = ""
         self.candidate_box._clear_input(focus_input=False)
 
     def _on_key_press(self, key_info: dict) -> bool:
@@ -501,7 +501,18 @@ class InputMethodApp:
             buffer_was_empty = not bool(self.input_manager.get_buffer())
 
             # 让 InputManager 决定是否拦截
-            handled = self.input_manager.process_key(key_info)
+            projected_key_info = dict(key_info)
+            raw_text = ""
+            text = projected_key_info.get("text", "")
+            if isinstance(text, str) and len(text) == 1 and text >= " ":
+                raw_text = text
+                projected_text = project_physical_input(text, self.physical_input_map)
+                if projected_text != text:
+                    projected_key_info["text"] = projected_text
+                    projected_key_info["ascii"] = None
+
+            handled = self.input_manager.process_key(projected_key_info)
+            self._sync_display_input_buffer(projected_key_info, raw_text, handled)
 
             # 如果是从空缓存变为有缓存（开始输入），还原悬浮框大小
             if buffer_was_empty and self.input_manager.get_buffer() and not self.candidate_box.root.state() == "withdrawn":
@@ -512,6 +523,29 @@ class InputMethodApp:
         except Exception as e:
             print(f"处理键盘事件出错: {e}")
         return True
+
+    def _sync_display_input_buffer(
+        self,
+        key_info: dict,
+        raw_text: str,
+        handled: bool,
+    ) -> None:
+        """同步全局输入模式下输入框要显示的原始键盘字符。"""
+        buffer_length = len(self.input_manager.get_buffer())
+        if buffer_length == 0:
+            self._display_input_buffer = ""
+            return
+
+        key = str(key_info.get("key", ""))
+        if key in ("Backspace", "backspace") and handled is False:
+            self._display_input_buffer = self._display_input_buffer[:-1]
+        elif raw_text:
+            self._display_input_buffer += raw_text
+
+        if len(self._display_input_buffer) > buffer_length:
+            self._display_input_buffer = self._display_input_buffer[-buffer_length:]
+        elif len(self._display_input_buffer) < buffer_length:
+            self._display_input_buffer = self.input_manager.get_buffer()
 
     def _process_key_in_main_thread(self, key_info: dict) -> None:
         """
@@ -555,8 +589,8 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--font-family",
-        default="YinYuan Regular",
-        help="输入框字体名。默认: YinYuan Regular",
+        default="音元",
+        help="输入框字体名。默认: 音元",
     )
     return parser.parse_args()
 
@@ -565,6 +599,12 @@ def main() -> None:
     """主函数"""
     if ctypes.sizeof(ctypes.c_void_p) == 0:
         raise SystemExit("Windows API 初始化失败")
+
+    try:
+        # 启用高 DPI 支持，解决 Tkinter 在高分屏下渲染模糊的问题
+        ctypes.windll.shcore.SetProcessDpiAwareness(1)
+    except Exception:
+        pass
 
     args = parse_args()
     app = InputMethodApp(auto_paste=not args.copy_only, font_family=args.font_family)
