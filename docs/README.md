@@ -123,7 +123,6 @@
 
 - [拼音转换](API.md#1-韵母转换器-yunmuconverter)
 - [音节解码](API.md#4-音节解码器-syllabledecoder)
-- [字典树](API.md#6-字典树-dictionarytrie)
 - [数据库操作](API.md#数据库-api)
 
 ### 开发指南

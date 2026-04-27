@@ -15,6 +15,8 @@ from pathlib import Path
 import unicodedata
 from typing import Dict, List, Tuple, Optional
 
+from .char_code_index import CharCodeCandidate, CharCodeIndex
+
 
 def format_codepoints(text: str) -> str:
     if not text:
@@ -22,6 +24,50 @@ def format_codepoints(text: str) -> str:
     return " ".join(
         f"U+{ord(char):06X}" if ord(char) > 0xFFFF else f"U+{ord(char):04X}"
         for char in text
+    )
+
+
+def _as_float_value(value: object) -> float:
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return 0.0
+
+
+def _as_bool_value(value: object) -> bool:
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, (int, float)):
+        return bool(value)
+    if isinstance(value, str):
+        return value.strip().lower() in {"1", "true", "yes", "on"}
+    return False
+
+
+def _format_char_prefix_status(
+    matches: List[Tuple[str, List[CharCodeCandidate]]],
+) -> str:
+    if not matches:
+        return "单字前缀暂无命中。"
+
+    candidate_count = sum(len(candidates) for _, candidates in matches)
+    samples: List[str] = []
+    seen: set[str] = set()
+    for _, candidates in matches:
+        for candidate in candidates:
+            if candidate.text in seen:
+                continue
+            seen.add(candidate.text)
+            samples.append(candidate.text)
+            if len(samples) >= 5:
+                break
+        if len(samples) >= 5:
+            break
+
+    sample_status = f"，示例: {' '.join(samples)}" if samples else ""
+    return (
+        f"单字前缀可继续：前 {len(matches)} 个编码含 "
+        f"{candidate_count} 个候选{sample_status}。"
     )
 
 
@@ -284,6 +330,7 @@ class RuntimeCandidateDecoder:
             app_dir.parent / "internal_data" / "key_to_symbol.json",
         )
         self.by_code = self._load_runtime_candidates(self.runtime_path)
+        self.char_code_index = CharCodeIndex.from_runtime_candidates(self.by_code)
 
     def _load_json(self, path: Path) -> dict:
         """加载JSON文件"""
@@ -340,12 +387,15 @@ class RuntimeCandidateDecoder:
             return "", "", "", [], "请输入一个完整音节的 4 个码元。"
 
         if len(canonical) < 4:
+            prefix_status = _format_char_prefix_status(
+                self.get_char_candidates_by_prefix(canonical, limit=5)
+            )
             return (
                 canonical,
                 canonical,
                 "",
                 [],
-                f"当前 {len(canonical)}/4 码，继续输入。",
+                f"当前 {len(canonical)}/4 码，继续输入。{prefix_status}",
             )
 
         active_code = canonical[-4:]
@@ -378,6 +428,18 @@ class RuntimeCandidateDecoder:
         if mode_hint:
             status = f"{mode_hint} {status}"
         return canonical, active_code, display_pinyin, [], status
+
+    def get_char_candidates(self, code: str) -> List[CharCodeCandidate]:
+        """按完整音元编码读取单字候选。"""
+        return self.char_code_index.get_exact(code)
+
+    def get_char_candidates_by_prefix(
+        self,
+        prefix: str,
+        limit: int = 0,
+    ) -> List[Tuple[str, List[CharCodeCandidate]]]:
+        """按编码前缀读取可能的单字候选。"""
+        return self.char_code_index.get_with_prefix(prefix, limit=limit)
 
 
 class SQLiteRuntimeCandidateDecoder:
@@ -435,12 +497,15 @@ class SQLiteRuntimeCandidateDecoder:
             return "", "", "", [], "请输入一个完整音节的 4 个码元。"
 
         if len(canonical) < 4:
+            prefix_status = _format_char_prefix_status(
+                self.get_char_candidates_by_prefix(canonical, limit=5)
+            )
             return (
                 canonical,
                 canonical,
                 "",
                 [],
-                f"当前 {len(canonical)}/4 码，继续输入。",
+                f"当前 {len(canonical)}/4 码，继续输入。{prefix_status}",
             )
 
         active_code = canonical[-4:]
@@ -484,6 +549,86 @@ class SQLiteRuntimeCandidateDecoder:
             status = f"{mode_hint} {status}"
         return canonical, active_code, display_pinyin, [], status
 
+    def get_char_candidates(self, code: str) -> List[CharCodeCandidate]:
+        """按完整音元编码读取单字候选。"""
+        with self._connect() as conn:
+            rows = conn.execute(
+                """
+                SELECT entry_id, text, pinyin_tone, yime_code, sort_weight, is_common
+                FROM runtime_candidates
+                WHERE entry_type = 'char'
+                  AND yime_code = ?
+                ORDER BY sort_weight DESC, text
+                """,
+                (code,),
+            ).fetchall()
+
+        return [self._row_to_char_candidate(row) for row in rows]
+
+    def get_char_candidates_by_prefix(
+        self,
+        prefix: str,
+        limit: int = 0,
+    ) -> List[Tuple[str, List[CharCodeCandidate]]]:
+        """按编码前缀读取可能的单字候选。"""
+        with self._connect() as conn:
+            if limit > 0:
+                code_rows = conn.execute(
+                    """
+                    SELECT DISTINCT yime_code
+                    FROM runtime_candidates
+                    WHERE entry_type = 'char'
+                      AND yime_code LIKE ?
+                    ORDER BY yime_code
+                    LIMIT ?
+                    """,
+                    (f"{prefix}%", limit),
+                ).fetchall()
+                codes = [str(row["yime_code"] or "").strip() for row in code_rows]
+                codes = [code for code in codes if code]
+                if not codes:
+                    return []
+                placeholders = ", ".join("?" for _ in codes)
+                rows = conn.execute(
+                    f"""
+                    SELECT entry_id, text, pinyin_tone, yime_code, sort_weight, is_common
+                    FROM runtime_candidates
+                    WHERE entry_type = 'char'
+                      AND yime_code IN ({placeholders})
+                    ORDER BY yime_code, sort_weight DESC, text
+                    """,
+                    tuple(codes),
+                ).fetchall()
+            else:
+                rows = conn.execute(
+                    """
+                    SELECT entry_id, text, pinyin_tone, yime_code, sort_weight, is_common
+                    FROM runtime_candidates
+                    WHERE entry_type = 'char'
+                      AND yime_code LIKE ?
+                    ORDER BY yime_code, sort_weight DESC, text
+                    """,
+                    (f"{prefix}%",),
+                ).fetchall()
+
+        grouped: dict[str, List[CharCodeCandidate]] = {}
+        for row in rows:
+            candidate = self._row_to_char_candidate(row)
+            if candidate.code not in grouped and limit > 0 and len(grouped) >= limit:
+                break
+            grouped.setdefault(candidate.code, []).append(candidate)
+        return [(code, candidates) for code, candidates in grouped.items()]
+
+    def _row_to_char_candidate(self, row: sqlite3.Row) -> CharCodeCandidate:
+        return CharCodeCandidate(
+            text=str(row["text"] or "").strip(),
+            code=str(row["yime_code"] or "").strip(),
+            entry_id=str(row["entry_id"] or "").strip(),
+            pinyin_tone=str(row["pinyin_tone"] or "").strip(),
+            sort_weight=_as_float_value(row["sort_weight"]),
+            is_common=_as_bool_value(row["is_common"]),
+        )
+
 
 class CompositeCandidateDecoder:
     """组合候选词解码器（优先运行时，回退静态）"""
@@ -495,7 +640,9 @@ class CompositeCandidateDecoder:
         Args:
             app_dir: 应用目录路径
         """
-        self.runtime_decoder: Optional[RuntimeCandidateDecoder] = None
+        self.runtime_decoder: Optional[
+            RuntimeCandidateDecoder | SQLiteRuntimeCandidateDecoder
+        ] = None
         self.runtime_load_error = ""
         self.runtime_source = ""
         try:
@@ -520,6 +667,22 @@ class CompositeCandidateDecoder:
     def get_runtime_source(self) -> str:
         """返回当前启用的运行时候选来源。"""
         return self.runtime_source
+
+    def get_char_candidates(self, code: str) -> List[CharCodeCandidate]:
+        """按完整音元编码读取单字候选。"""
+        if self.runtime_decoder is None:
+            return []
+        return self.runtime_decoder.get_char_candidates(code)
+
+    def get_char_candidates_by_prefix(
+        self,
+        prefix: str,
+        limit: int = 0,
+    ) -> List[Tuple[str, List[CharCodeCandidate]]]:
+        """按编码前缀读取可能的单字候选。"""
+        if self.runtime_decoder is None:
+            return []
+        return self.runtime_decoder.get_char_candidates_by_prefix(prefix, limit=limit)
 
     def decode_text(
         self, text: str

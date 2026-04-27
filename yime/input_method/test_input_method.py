@@ -21,13 +21,16 @@ sys.path.insert(0, str(project_root))
 from yime.input_method.core.decoders import (
     StaticCandidateDecoder,
     RuntimeCandidateDecoder,
+    SQLiteRuntimeCandidateDecoder,
     CompositeCandidateDecoder,
     build_input_outline,
     build_input_visual_map,
     build_physical_input_map,
     project_physical_input,
 )
+from yime.input_method.core.char_code_index import CharCodeIndex
 from yime.input_method.core.input_manager import InputManager, InputState
+from yime.input_method.core.prefix_tree import PrefixTree
 
 
 class TestResult:
@@ -150,6 +153,54 @@ def test_decoders(result: TestResult):
     except Exception as e:
         result.add_fail(test_name, str(e))
 
+    test_name = "CompositeCandidateDecoder 不足4码单字前缀状态"
+    try:
+        canonical, active, pinyin, candidates, status = composite_decoder.decode_text("a")
+        assert canonical == "a"
+        assert active == "a"
+        assert candidates == []
+        assert "当前 1/4 码" in status
+        if composite_decoder.get_runtime_source():
+            assert "单字前缀" in status
+        result.add_pass(test_name)
+    except Exception as e:
+        result.add_fail(test_name, str(e))
+
+    test_name = "CompositeCandidateDecoder 单字编码查询"
+    try:
+        matches = composite_decoder.get_char_candidates_by_prefix("", limit=1)
+        assert isinstance(matches, list)
+        if matches:
+            code, char_candidates = matches[0]
+            assert code
+            assert char_candidates
+            exact_candidates = composite_decoder.get_char_candidates(code)
+            assert exact_candidates
+            assert exact_candidates[0].code == code
+        result.add_pass(test_name)
+    except Exception as e:
+        result.add_fail(test_name, str(e))
+
+    test_name = "SQLiteRuntimeCandidateDecoder 单字编码查询"
+    try:
+        if not (app_dir / "pinyin_hanzi.db").exists():
+            print("  跳过: SQLite 数据库不存在")
+            result.add_pass(f"{test_name} (跳过)")
+        else:
+            sqlite_decoder = SQLiteRuntimeCandidateDecoder(app_dir)
+            matches = sqlite_decoder.get_char_candidates_by_prefix("", limit=1)
+            assert isinstance(matches, list)
+            if matches:
+                code, char_candidates = matches[0]
+                assert code
+                assert char_candidates
+                exact_candidates = sqlite_decoder.get_char_candidates(code)
+                assert exact_candidates
+                assert exact_candidates[0].code == code
+            result.add_pass(test_name)
+    except Exception as e:
+        result.add_fail(test_name, str(e))
+
 
 def test_input_manager(result: TestResult):
     """测试输入管理器模块"""
@@ -247,6 +298,134 @@ def test_input_manager(result: TestResult):
             manager2.add_char(chr(ord('a') + i))
         # 缓冲区应该被清空或限制长度
         assert len(manager2.get_buffer()) <= 5
+        result.add_pass(test_name)
+    except Exception as e:
+        result.add_fail(test_name, str(e))
+
+
+def test_prefix_tree(result: TestResult):
+    """测试干净的前缀树模块"""
+    print("\n" + "="*60)
+    print("测试前缀树模块 (prefix_tree.py)")
+    print("="*60)
+
+    test_name = "PrefixTree 精确查找"
+    try:
+        tree: PrefixTree[str] = PrefixTree()
+        tree.insert("abcd", "安")
+        tree.insert("abcd", "按")
+        tree.insert("abce", "昂")
+
+        assert tree.contains("abcd")
+        assert not tree.contains("abc")
+        assert tree.get_exact("abcd") == ["安", "按"]
+        assert tree.key_count == 2
+        assert tree.value_count == 3
+        result.add_pass(test_name)
+    except Exception as e:
+        result.add_fail(test_name, str(e))
+
+    test_name = "PrefixTree 前缀查找"
+    try:
+        matches = tree.get_with_prefix("abc")
+        assert matches == [("abcd", ["安", "按"]), ("abce", ["昂"])]
+        assert tree.has_prefix("ab")
+        assert not tree.has_prefix("zz")
+        result.add_pass(test_name)
+    except Exception as e:
+        result.add_fail(test_name, str(e))
+
+    test_name = "PrefixTree 限制结果数量"
+    try:
+        matches = tree.get_with_prefix("abc", limit=1)
+        assert matches == [("abcd", ["安", "按"])]
+        result.add_pass(test_name)
+    except Exception as e:
+        result.add_fail(test_name, str(e))
+
+    test_name = "PrefixTree 拒绝空键"
+    try:
+        try:
+            tree.insert("", "空")
+        except ValueError:
+            result.add_pass(test_name)
+        else:
+            result.add_fail(test_name, "空键应抛出 ValueError")
+    except Exception as e:
+        result.add_fail(test_name, str(e))
+
+
+def test_char_code_index(result: TestResult):
+    """测试单字编码索引"""
+    print("\n" + "="*60)
+    print("测试单字编码索引 (char_code_index.py)")
+    print("="*60)
+
+    payload = {
+        "abcd": [
+            {
+                "entry_type": "char",
+                "entry_id": "1",
+                "text": "安",
+                "pinyin_tone": "an1",
+                "sort_weight": "10",
+                "is_common": 1,
+            },
+            {
+                "entry_type": "phrase",
+                "entry_id": "p1",
+                "text": "安全",
+                "pinyin_tone": "an1 quan2",
+                "sort_weight": "99",
+                "is_common": 1,
+            },
+        ],
+        "abce": [
+            {
+                "entry_type": "char",
+                "entry_id": "2",
+                "text": "昂",
+                "pinyin_tone": "ang2",
+                "sort_weight": 8,
+                "is_common": False,
+            }
+        ],
+    }
+
+    test_name = "CharCodeIndex 只索引单字候选"
+    try:
+        index = CharCodeIndex.from_runtime_candidates(payload)
+        candidates = index.get_exact("abcd")
+        assert [candidate.text for candidate in candidates] == ["安"]
+        assert candidates[0].code == "abcd"
+        assert candidates[0].entry_id == "1"
+        assert candidates[0].sort_weight == 10.0
+        assert candidates[0].is_common is True
+        assert index.code_count == 2
+        assert index.candidate_count == 2
+        result.add_pass(test_name)
+    except Exception as e:
+        result.add_fail(test_name, str(e))
+
+    test_name = "CharCodeIndex 前缀查找"
+    try:
+        matches = index.get_with_prefix("abc")
+        assert [(code, [item.text for item in items]) for code, items in matches] == [
+            ("abcd", ["安"]),
+            ("abce", ["昂"]),
+        ]
+        assert index.has_prefix("ab")
+        assert not index.has_prefix("zz")
+        result.add_pass(test_name)
+    except Exception as e:
+        result.add_fail(test_name, str(e))
+
+    test_name = "CharCodeIndex 前缀限制数量"
+    try:
+        matches = index.get_with_prefix("abc", limit=1)
+        assert [(code, [item.text for item in items]) for code, items in matches] == [
+            ("abcd", ["安"]),
+        ]
         result.add_pass(test_name)
     except Exception as e:
         result.add_fail(test_name, str(e))
@@ -419,6 +598,8 @@ def main():
     # 运行测试
     test_decoders(result)
     test_input_manager(result)
+    test_prefix_tree(result)
+    test_char_code_index(result)
     test_utilities(result)
     test_ui_components(result)
     test_integration(result)

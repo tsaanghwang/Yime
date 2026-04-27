@@ -285,7 +285,7 @@ class CandidateBoxApp:
         frame = ttk.Frame(self.root, padding=12)
         frame.pack(fill=tk.BOTH, expand=True)
 
-        ttk.Label(frame, text="输入音元码元").pack(anchor=tk.W)
+        ttk.Label(frame, text="输入音元").pack(anchor=tk.W)
 
         self.input_var = tk.StringVar()
         self.input_entry = ttk.Entry(frame, textvariable=self.input_var, font=(self.font_family, 14))

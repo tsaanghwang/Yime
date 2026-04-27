@@ -22,7 +22,7 @@ def test_keyboard_connection():
     print()
     print("使用说明：")
     print("1. 启动后，敲击键盘会触发输入")
-    print("2. 输入音元码元后，会显示候选词")
+    print("2. 输入音元后，会显示候选词")
     print("3. 按数字键选择候选词")
     print("4. 按ESC清空输入")
     print("5. 按Enter提交首选候选词")
@@ -33,14 +33,14 @@ def test_keyboard_connection():
     print()
     print("=" * 60)
     print()
-    
+
     try:
         # 创建应用
         app = InputMethodApp(auto_paste=True)
-        
+
         # 运行应用
         app.run()
-        
+
     except KeyboardInterrupt:
         print("\n用户中断")
     except Exception as e:

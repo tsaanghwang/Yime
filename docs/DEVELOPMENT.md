@@ -65,8 +65,7 @@ YIME/
 │   ├── syllable_structure.py  # 音节结构
 │   ├── db_manager.py          # 数据库管理
 │   ├── pinyin_db_manager.py   # 拼音数据库管理
-│   ├── hanzi_db_manager.py    # 汉字数据库管理
-│   └── dictionary_trie.py     # 字典树
+│   └── hanzi_db_manager.py    # 汉字数据库管理
 │
 ├── pinyin/               # 拼音处理模块
 │   ├── yunmu_to_keys.py       # 韵母转换
