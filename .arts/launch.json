@@ -259,15 +259,6 @@
       "addSourceRootsToPythonpath": true
     },
     {
-      "name": "dictionary_trie",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\yime\\dictionary_trie.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\yime",
-      "addSourceRootsToPythonpath": true
-    },
-    {
       "name": "import_initial",
       "type": "python",
       "request": "launch",

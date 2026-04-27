@@ -12,7 +12,7 @@ import os
 import queue
 import tkinter as tk
 from pathlib import Path
-from typing import Callable, Optional
+from typing import Any, Callable, Optional, cast
 
 from .core.decoders import (
     CompositeCandidateDecoder,
@@ -37,6 +37,7 @@ class InputMethodApp:
         self,
         auto_paste: bool = True,
         font_family: str = "音元",
+        enable_pause_toggle: bool = False,
     ) -> None:
         """
         初始化输入法应用
@@ -44,9 +45,11 @@ class InputMethodApp:
         Args:
             auto_paste: 是否自动粘贴到目标窗口
             font_family: 字体名称
+            enable_pause_toggle: 是否启用 Ctrl+Alt+T 暂停/恢复全局监听
         """
         self.auto_paste = auto_paste
         self.font_family = font_family
+        self.enable_pause_toggle = enable_pause_toggle
         self.debug_ui = os.environ.get("YIME_DEBUG_UI", "").strip().lower() in {
             "1",
             "true",
@@ -96,8 +99,7 @@ class InputMethodApp:
 
         # 创建键盘监听器
         self.keyboard_listener: Optional[KeyboardListener] = None
-        self.is_paused = False  # 是否处于系统输入法切换时的暂停测试模式
-        self.is_paused = False  # 是否处于系统输入法切换时的暂停测试模式
+        self.is_passthrough_enabled = False
 
         # 启动后默认显示待命图标
         self.candidate_box.show_standby()
@@ -366,7 +368,7 @@ class InputMethodApp:
 
     def _dispatch_candidates_update(
         self,
-        candidates: list,
+        candidates: list[str],
         pinyin: str,
         code: str,
         status: str,
@@ -382,7 +384,7 @@ class InputMethodApp:
 
     def _on_candidates_update(
         self,
-        candidates: list,
+        candidates: list[str],
         pinyin: str,
         code: str,
         status: str,
@@ -429,7 +431,7 @@ class InputMethodApp:
                     self.candidate_box.show(focus_input=False)
         else:
             if self.debug_ui:
-                print("[UI] keep tracking candidate box even if buffer is empty for debugging")
+                print("[UI] buffer empty; keep candidate box visible without focus")
 
             # 全局监听模式下清空缓冲区后也不能抢回 Entry 焦点，
             # 否则下一次按键会被误判为候选框手动输入。
@@ -468,7 +470,7 @@ class InputMethodApp:
         self._display_input_buffer = ""
         self.candidate_box._clear_input(focus_input=False)
 
-    def _on_key_press(self, key_info: dict) -> bool:
+    def _on_key_press(self, key_info: dict[str, Any]) -> bool:
         """
         键盘按键回调
 
@@ -476,24 +478,11 @@ class InputMethodApp:
             True继续传递，False拦截
         """
         try:
-            # === 测试模式切换逻辑 ===
-            if key_info.get("char") == "t" and key_info.get("modifiers", {}).get("ctrl", False) and key_info.get("modifiers", {}).get("alt", False):
-                self.is_paused = not self.is_paused
-                self.input_manager.clear_buffer(notify=True)
+            if self._handle_pause_toggle(key_info):
+                return False
 
-                # 同步更新UI界面状态
-                if self.is_paused:
-                    self.candidate_box.show_standby()
-                else:
-                    # 如果要唤醒时直接展示主面板，可以调用 show()，或者先展示空内容的面板
-                    self.candidate_box.show()
-
-                print(f"[TEST MODE] Paused={self.is_paused}")
-                return False  # 拦截切换快捷键
-
-            if self.is_paused:
+            if self.is_passthrough_enabled:
                 return True
-            # ========================
 
             if self.candidate_box.is_manual_input_active():
                 return True
@@ -524,9 +513,41 @@ class InputMethodApp:
             print(f"处理键盘事件出错: {e}")
         return True
 
+    def _handle_pause_toggle(self, key_info: dict[str, Any]) -> bool:
+        """处理可选的全局监听暂停/恢复快捷键。"""
+        if not self.enable_pause_toggle:
+            return False
+
+        modifiers_value = key_info.get("modifiers")
+        modifiers = (
+            cast(dict[str, Any], modifiers_value)
+            if isinstance(modifiers_value, dict)
+            else {}
+        )
+        if not (
+            key_info.get("char") == "t"
+            and modifiers.get("ctrl", False)
+            and modifiers.get("alt", False)
+        ):
+            return False
+
+        self.is_passthrough_enabled = not self.is_passthrough_enabled
+        self.input_manager.clear_buffer(notify=True)
+
+        if self.is_passthrough_enabled:
+            self.candidate_box.show_standby()
+        else:
+            self.candidate_box.show()
+
+        if self.debug_ui:
+            state = "enabled" if self.is_passthrough_enabled else "disabled"
+            print(f"[Input] passthrough {state}")
+
+        return True
+
     def _sync_display_input_buffer(
         self,
-        key_info: dict,
+        key_info: dict[str, Any],
         raw_text: str,
         handled: bool,
     ) -> None:
@@ -547,7 +568,7 @@ class InputMethodApp:
         elif len(self._display_input_buffer) < buffer_length:
             self._display_input_buffer = self.input_manager.get_buffer()
 
-    def _process_key_in_main_thread(self, key_info: dict) -> None:
+    def _process_key_in_main_thread(self, key_info: dict[str, Any]) -> None:
         """
         在主线程中处理键盘事件
 
@@ -592,6 +613,11 @@ def parse_args() -> argparse.Namespace:
         default="音元",
         help="输入框字体名。默认: 音元",
     )
+    parser.add_argument(
+        "--enable-pause-toggle",
+        action="store_true",
+        help="启用 Ctrl+Alt+T 暂停/恢复全局键盘监听，便于调试外部输入行为。",
+    )
     return parser.parse_args()
 
 
@@ -607,7 +633,11 @@ def main() -> None:
         pass
 
     args = parse_args()
-    app = InputMethodApp(auto_paste=not args.copy_only, font_family=args.font_family)
+    app = InputMethodApp(
+        auto_paste=not args.copy_only,
+        font_family=args.font_family,
+        enable_pause_toggle=args.enable_pause_toggle,
+    )
     app.run()
 
 
