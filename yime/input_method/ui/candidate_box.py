@@ -303,7 +303,7 @@ class CandidateBox:
         self.standby_frame.bind("<Button-1>", self._restore_from_standby)
 
         # 输入框标签
-        ttk.Label(self.main_frame, text="输入音元码元", style="Yime.TLabel").pack(
+        ttk.Label(self.main_frame, text="输入音元", style="Yime.TLabel").pack(
             anchor=tk.W
         )
 
@@ -318,7 +318,7 @@ class CandidateBox:
         self.input_entry.bind("<Button-1>", self._activate_for_manual_input)
 
         ttk.Label(
-            self.main_frame, text="投影编码 / 码元轮廓", style="Yime.TLabel"
+            self.main_frame, text="投影编码 ", style="Yime.TLabel"
         ).pack(anchor=tk.W)
 
         self.projected_code_var = tk.StringVar(self.root, value="")
@@ -329,6 +329,10 @@ class CandidateBox:
             font=self.text_font,
             foreground="#666666",
         ).pack(anchor=tk.W, fill=tk.X)
+
+        ttk.Label(
+            self.main_frame, text="码元轮廓", style="Yime.TLabel"
+        ).pack(anchor=tk.W)
 
         self.input_outline_var = tk.StringVar(self.root, value="")
         ttk.Label(
