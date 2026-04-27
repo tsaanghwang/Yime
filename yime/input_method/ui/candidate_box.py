@@ -11,6 +11,15 @@ from tkinter import font as tkfont
 from tkinter import ttk
 from typing import Callable, List, Optional
 
+InputChangeCallback = Callable[[Optional[object]], None]
+DecodeFromClipboardCallback = Callable[[], None]
+CopyCandidateCallback = Callable[[int], None]
+CommitTextCallback = Callable[[str], None]
+VoidCallback = Callable[[], None]
+
+from .prefix_hint_panel import PrefixHintPanel
+from .candidate_box_actions import CandidateBoxActions
+
 
 class CandidateBox:
     """候选词显示框"""
@@ -42,12 +51,14 @@ class CandidateBox:
         font_family: str = "音元",
         max_candidates: int = 9,
         input_display_formatter: Optional[Callable[[str], str]] = None,
-        on_input_change: Optional[Callable] = None,
-        on_decode_from_clipboard: Optional[Callable] = None,
-        on_copy_candidate: Optional[Callable[[int], None]] = None,
-        on_commit_text: Optional[Callable[[str], None]] = None,
-        on_hide: Optional[Callable[[], None]] = None,
-        on_close: Optional[Callable[[], None]] = None,
+        projected_code_formatter: Optional[Callable[[str], str]] = None,
+        on_input_change: Optional[InputChangeCallback] = None,
+        on_decode_from_clipboard: Optional[DecodeFromClipboardCallback] = None,
+        on_copy_candidate: Optional[CopyCandidateCallback] = None,
+        on_commit_text: Optional[CommitTextCallback] = None,
+        on_hide: Optional[VoidCallback] = None,
+        on_restore_from_standby: Optional[VoidCallback] = None,
+        on_close: Optional[VoidCallback] = None,
     ) -> None:
         """
         初始化候选框
@@ -69,14 +80,16 @@ class CandidateBox:
         self._manual_input_enabled = False
         self._current_page = 0
         self._input_display_formatter = input_display_formatter
+        self._projected_code_formatter = projected_code_formatter
         self.projected_input_text = ""
 
         # 回调注入
         self._on_input_change_callback = on_input_change
-        self._decode_from_clipboard = on_decode_from_clipboard
-        self._copy_candidate = on_copy_candidate
-        self._on_commit_text = on_commit_text
+        self._on_decode_from_clipboard_callback = on_decode_from_clipboard
+        self._on_copy_candidate_callback = on_copy_candidate
+        self._on_commit_text_callback = on_commit_text
         self._on_hide = on_hide
+        self._on_restore_from_standby = on_restore_from_standby
         self._on_close = on_close
 
         # 创建主窗口
@@ -91,6 +104,7 @@ class CandidateBox:
 
         # 构建UI
         self._build_ui()
+        self.actions = CandidateBoxActions(self)
         self._bind_keys()
         self._configure_window_for_global_input()
         self.root.protocol("WM_DELETE_WINDOW", self._request_close)
@@ -331,7 +345,7 @@ class CandidateBox:
         ).pack(anchor=tk.W, fill=tk.X)
 
         ttk.Label(
-            self.main_frame, text="码元轮廓", style="Yime.TLabel"
+            self.main_frame, text="码元音符", style="Yime.TLabel"
         ).pack(anchor=tk.W)
 
         self.input_outline_var = tk.StringVar(self.root, value="")
@@ -343,6 +357,8 @@ class CandidateBox:
             font=self.text_font,
             foreground="#666666",
         ).pack(anchor=tk.W, fill=tk.X, pady=(0, 8))
+
+        self.prefix_hint_panel = PrefixHintPanel(self.main_frame, self.ui_font)
 
         paging_row = ttk.Frame(self.main_frame)
         paging_row.pack(fill=tk.X, pady=(0, 8))
@@ -501,52 +517,15 @@ class CandidateBox:
 
     def _bind_keys(self) -> None:
         """绑定快捷键"""
-        # 数字键选择候选词
-        for index in range(1, 10):
-            self.root.bind(
-                str(index),
-                lambda event, value=index: self._on_digit_shortcut(event, value),
-            )
+        self.actions.bind_keys()
 
-        # 回车键选择首选
-        self.root.bind("<Return>", self._on_confirm_key)
-        self.input_entry.bind("<Return>", self._on_confirm_key)
-        self.commit_entry.bind("<Return>", self._on_confirm_key)
-        self.root.bind("<space>", self._on_confirm_key)
-        self.input_entry.bind("<space>", self._on_confirm_key)
-        self.commit_entry.bind("<space>", self._on_confirm_key)
-
-        # ESC键清空
-        self.root.bind("<Escape>", lambda event: self._clear_input())
-
-        # Ctrl+Q退出
-        self.root.bind("<Control-q>", lambda event: self._request_close())
-        self.root.bind("<Control-v>", self._on_ctrl_v)
-        self.input_entry.bind("<Control-v>", self._on_ctrl_v)
-        self.commit_entry.bind("<Control-v>", self._on_ctrl_v)
-        self.root.bind("<Control-Shift-C>", self._on_copy_input_shortcut)
-        self.input_entry.bind("<Control-Shift-C>", self._on_copy_input_shortcut)
-        self.commit_entry.bind("<Control-Shift-C>", self._on_copy_input_shortcut)
-        self.root.bind("<Prior>", self._on_previous_page_key)
-        self.root.bind("<Next>", self._on_next_page_key)
-        self.root.bind("<FocusIn>", self._on_window_focus_in)
-        self.input_entry.bind("<Prior>", self._on_previous_page_key)
-        self.input_entry.bind("<Next>", self._on_next_page_key)
-        self.commit_entry.bind("<Prior>", self._on_previous_page_key)
-        self.commit_entry.bind("<Next>", self._on_next_page_key)
-
-    def _on_window_focus_in(self, event: __import__('tkinter').Event) -> None:
+    def _on_window_focus_in(self, event: object) -> None:
         """当输入候选框获得焦点时，把光标输入插入点（cursor焦点）跳转到输入框输入点。"""
-        if getattr(event, "widget", None) == self.root and not self._is_standby:
-            self.input_entry.focus_set()
-            self.input_entry.icursor("end")
+        self.actions.on_window_focus_in(event)
 
     def _on_input_change(self, event: Optional[tk.Event] = None) -> None:
         """输入变化事件处理"""
-        self.projected_input_text = self.input_var.get()
-        self._refresh_input_outline(self.projected_input_text)
-        if self._on_input_change_callback:
-            self._on_input_change_callback(event)
+        self.actions.on_input_change(event)
 
     def _format_codepoints(self, text: str) -> str:
         if not text:
@@ -563,7 +542,10 @@ class CandidateBox:
             self._resize_to_content_if_visible()
             return
 
-        self.projected_code_var.set(text)
+        if self._projected_code_formatter:
+            self.projected_code_var.set(self._projected_code_formatter(text))
+        else:
+            self.projected_code_var.set(text)
 
         if not self._input_display_formatter:
             self.input_outline_var.set("")
@@ -575,13 +557,41 @@ class CandidateBox:
 
     def _activate_for_manual_input(self, event: Optional[tk.Event] = None) -> None:
         """鼠标点入输入框时允许窗口激活，便于手动粘贴测试编码。"""
-        self._manual_input_enabled = True
-        self.show(focus_input=True)
+        self.actions.activate_for_manual_input(event)
 
     def _restore_from_standby(self, event: Optional[tk.Event] = None) -> None:
         """从待命小图标恢复主候选框。"""
-        self._manual_input_enabled = True
-        self.show(focus_input=True)
+        self.actions.restore_from_standby(event)
+
+    def set_manual_input_enabled(self, enabled: bool) -> None:
+        """切换候选框是否允许手动输入模式。"""
+        self._manual_input_enabled = enabled
+        if enabled:
+            self.input_entry.state(["!readonly"])
+        else:
+            self.input_entry.state(["readonly"])
+
+    def is_manual_input_enabled(self) -> bool:
+        """返回候选框是否处于手动输入模式。"""
+        return self._manual_input_enabled
+
+    def is_standby(self) -> bool:
+        """返回候选框是否处于待命模式。"""
+        return self._is_standby
+
+    def focus_input_cursor(self) -> None:
+        """将焦点和光标移动到输入框末尾。"""
+        self.input_entry.focus_set()
+        self.input_entry.icursor("end")
+
+    def normalize_input_entry_state(self) -> None:
+        """清除输入框残留选区，并将插入点固定到末尾。"""
+        self.input_entry.selection_clear()
+        self.input_entry.icursor(tk.END)
+
+    def set_status(self, text: str) -> None:
+        """更新状态栏文案。"""
+        self.status_var.set(text)
 
     def _show_main_frame(self) -> None:
         if self._is_standby:
@@ -607,49 +617,28 @@ class CandidateBox:
 
     def _on_ctrl_v(self, event: Optional[tk.Event] = None) -> str:
         """支持在候选框内直接粘贴编码。"""
-        self._paste_code_from_clipboard()
-        return "break"
+        return self.actions.on_ctrl_v(event)
 
     def _on_copy_input_shortcut(self, event: Optional[tk.Event] = None) -> str:
         """复制当前原始输入字符，便于外部程序核对渲染。"""
-        self.copy_input_text()
-        return "break"
+        return self.actions.on_copy_input_shortcut(event)
 
     def _on_confirm_key(self, event: Optional[tk.Event] = None) -> str:
         """有候选时先选首选，否则将待上屏文本送回编辑区。"""
-        if self._should_allow_native_edit_key(event):
-            return ""
-        if self.current_candidates:
-            self._select_candidate_by_index(0)
-        else:
-            self._commit_output_text()
-        return "break"
+        return self.actions.on_confirm_key(event)
 
     def _on_digit_shortcut(self, event: Optional[tk.Event], value: int) -> str:
         """数字键在非编辑态下用于选择当前页候选。"""
-        if self._should_allow_native_edit_key(event):
-            return ""
-        self._select_candidate_by_index(value - 1)
-        return "break"
+        return self.actions.on_digit_shortcut(event, value)
 
     def _on_previous_page_key(self, event: Optional[tk.Event] = None) -> str:
-        self.show_previous_page()
-        return "break"
+        return self.actions.on_previous_page_key(event)
 
     def _on_next_page_key(self, event: Optional[tk.Event] = None) -> str:
-        self.show_next_page()
-        return "break"
+        return self.actions.on_next_page_key(event)
 
     def _on_page_size_change(self, event: Optional[tk.Event] = None) -> None:
-        try:
-            page_size = int(self.page_size_var.get())
-        except (tk.TclError, ValueError):
-            return
-        page_size = min(max(page_size, 4), 9)
-        self.page_size_var.set(page_size)
-        self.max_candidates = page_size
-        self._current_page = 0
-        self._render_candidates()
+        self.actions.on_page_size_change(event)
 
     def _page_size(self) -> int:
         try:
@@ -691,6 +680,14 @@ class CandidateBox:
         self._current_page += 1
         self._render_candidates()
 
+    def set_page_size(self, page_size: int) -> None:
+        """设置每页候选数量，并回到第一页重新渲染。"""
+        normalized = min(max(page_size, 4), 9)
+        self.page_size_var.set(normalized)
+        self.max_candidates = normalized
+        self._current_page = 0
+        self._render_candidates()
+
     def is_manual_input_active(self) -> bool:
         """候选框获得焦点时，允许输入框自行处理逐码编辑。"""
         if self._is_standby:
@@ -705,10 +702,7 @@ class CandidateBox:
 
     def _should_allow_native_edit_key(self, event: Optional[tk.Event]) -> bool:
         """编辑区聚焦时，保留本地输入控件的原生按键行为。"""
-        if not event:
-            return False
-        widget = getattr(event, "widget", None)
-        return widget in {self.input_entry, self.commit_entry, self.page_size_spinbox}
+        return self.actions.should_allow_native_edit_key(event)
 
     def _render_candidates(self) -> None:
         """渲染候选词"""
@@ -758,9 +752,14 @@ class CandidateBox:
         self.projected_input_text = ""
         self.projected_code_var.set("")
         self.input_outline_var.set("")
+        self.set_prefix_hint("")
         self._render_candidates()
         if focus_input:
             self.input_entry.focus_set()
+
+    def clear_input(self, focus_input: bool = True) -> None:
+        """公开的清空输入入口。"""
+        self._clear_input(focus_input=focus_input)
 
     def clear_commit_text(self) -> None:
         """清空待上屏文本。"""
@@ -785,27 +784,27 @@ class CandidateBox:
             return
         self.commit_var.set(f"{self.commit_var.get()}{text}")
 
+    def get_candidate(self, index: int) -> Optional[str]:
+        """按当前页索引读取候选。"""
+        if 0 <= index < len(self.current_candidates):
+            return self.current_candidates[index]
+        return None
+
     def get_commit_text(self) -> str:
         """获取待上屏文本。"""
         return self.commit_var.get()
 
     def _on_commit_backspace(self, event: Optional[tk.Event] = None) -> str:
         """待上屏区为空时，退格回退最近一次已选字。"""
-        selection = self.commit_entry.selection_present()
-        if self.commit_var.get() or selection:
-            return ""
-        self.remove_last_commit_char()
-        return "break"
+        return self.actions.on_commit_backspace(event)
 
     def _decode_from_clipboard(self) -> None:
         """从剪贴板读取"""
-        if self._decode_from_clipboard:
-            self._decode_from_clipboard()
+        self.actions.decode_from_clipboard()
 
     def _paste_code_from_clipboard(self) -> None:
         """将剪贴板内容贴入输入框并立即触发解码。"""
-        self.show(focus_input=True)
-        self._decode_from_clipboard()
+        self.actions.paste_code_from_clipboard()
 
     def copy_input_text(self) -> None:
         """复制当前输入框中的原始编码字符。"""
@@ -820,21 +819,15 @@ class CandidateBox:
 
     def _commit_output_text(self) -> None:
         """将待上屏文本提交到外部编辑区。"""
-        text = self.get_commit_text().strip()
-        if not text:
-            self.status_var.set("待上屏文本为空。")
-            return
-        if self._on_commit_text:
-            self._on_commit_text(text)
-            self.status_var.set(f"已准备上屏: {text}")
+        self.actions.commit_output_text()
 
     def _copy_first_candidate(self) -> None:
         """复制首选候选词"""
-        self._copy_candidate(0)
+        self.actions.copy_first_candidate()
 
     def _paste_first_candidate(self) -> None:
         """粘贴首选候选词"""
-        self._select_candidate_by_index(0)
+        self.actions.paste_first_candidate()
 
     def _select_candidate_by_index(self, index: int) -> None:
         """
@@ -843,12 +836,7 @@ class CandidateBox:
         Args:
             index: 候选词索引
         """
-        if 0 <= index < len(self.current_candidates):
-            hanzi = self.current_candidates[index]
-            self.append_commit_text(hanzi)
-            self.on_select(hanzi)
-            self.status_var.set(f"已加入待上屏文本: {self.get_commit_text()}")
-            self._clear_input(focus_input=True)
+        self.actions.select_candidate_by_index(index)
 
     def _copy_candidate(self, index: int) -> None:
         """
@@ -857,22 +845,15 @@ class CandidateBox:
         Args:
             index: 候选词索引
         """
-        if self._copy_candidate:
-            self._copy_candidate(index)
+        self.actions.copy_candidate(index)
 
     def _request_close(self) -> None:
         """请求退出整个输入辅助器。"""
-        if self._on_close:
-            self._on_close()
-            return
-        self._close()
+        self.actions.request_close()
 
     def _request_hide(self) -> None:
         """隐藏窗口但不退出进程，便于后续再次弹出。"""
-        if self._on_hide:
-            self._on_hide()
-            return
-        self.show_standby()
+        self.actions.request_hide()
 
     def _close(self) -> None:
         """关闭窗口"""
@@ -882,6 +863,10 @@ class CandidateBox:
                 self.root.destroy()
         except tk.TclError:
             pass
+
+    def close(self) -> None:
+        """公开的关闭窗口入口。"""
+        self._close()
 
     def show(
         self,
@@ -898,20 +883,18 @@ class CandidateBox:
             focus_input: 是否将焦点切回候选框输入框
         """
         self._show_main_frame()
-        self._manual_input_enabled = focus_input
+        self.set_manual_input_enabled(focus_input)
         target_x, target_y = self._resolve_geometry(x, y)
 
         # 移除显式指定尺寸的设定，使用Tkinter自适应
         self.root.geometry(f"+{target_x}+{target_y}")
-        self.root.state("normal")
-        self.root.deiconify()
-        self.root.attributes("-topmost", True)
-        self.root.lift()
-        self.root.update_idletasks()
         hwnd = self.root.winfo_id()
         user32 = self._get_user32()
         if not focus_input:
             self._set_noactivate(True)
+            self.root.attributes("-topmost", True)
+            self.root.deiconify()
+            self.root.update_idletasks()
             user32.ShowWindow(hwnd, self._SW_SHOWNOACTIVATE)
             user32.SetWindowPos(
                 hwnd,
@@ -927,6 +910,9 @@ class CandidateBox:
             )
         else:
             self._set_noactivate(False)
+            self.root.state("normal")
+            self.root.deiconify()
+            self.root.attributes("-topmost", True)
             user32.ShowWindow(hwnd, self._SW_SHOW)
             user32.SetWindowPos(
                 hwnd,
@@ -947,7 +933,10 @@ class CandidateBox:
                 f"[CandidateBox.show] hwnd={hwnd} visible={is_visible} focus_input={focus_input} geometry=auto+{target_x}+{target_y} state={self.root.state()}"
             )
         if focus_input:
-            self.input_entry.focus_force()
+            # Avoid forcing foreground activation on Windows; a normal focus request
+            # is enough when the user intentionally entered manual-input mode.
+            self.input_entry.focus_set()
+        self.normalize_input_entry_state()
 
     def show_standby(self) -> None:
         """显示右下角半透明待命图标，保持输入法处于可再次触发状态。"""
@@ -1006,13 +995,21 @@ class CandidateBox:
         if previous_count != len(self.all_candidates):
             self._current_page = 0
         self.pinyin_var.set(f"拼音: {pinyin}" if pinyin else "")
-        if code:
-            self.code_var.set(f"当前解码 4 码: {code}")
-        else:
-            self.code_var.set("当前解码 4 码: [等待输入...]")
+        self.code_var.set("")
+
+        # 验证编码显示用：只有排查代码修改后显示异常时再临时打开。
+        # if code:
+        #     self.code_var.set(f"当前解码 4 码: {code}")
+        # else:
+        #     self.code_var.set("当前解码 4 码: [等待输入...]")
 
         self.status_var.set(status)
         self._render_candidates()
+        self._resize_to_content_if_visible()
+
+    def set_prefix_hint(self, text: str) -> None:
+        """更新单字编码前缀提示。"""
+        self.prefix_hint_panel.set_text(text)
         self._resize_to_content_if_visible()
 
     def get_input(self) -> str:
@@ -1043,6 +1040,7 @@ class CandidateBox:
         self.input_var.set(text)
         self.projected_input_text = text if projected_text is None else projected_text
         self._refresh_input_outline(self.projected_input_text)
+        self.normalize_input_entry_state()
 
     def run(self) -> None:
         """运行主循环"""

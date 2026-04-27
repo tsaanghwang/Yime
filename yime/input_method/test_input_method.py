@@ -23,10 +23,13 @@ from yime.input_method.core.decoders import (
     RuntimeCandidateDecoder,
     SQLiteRuntimeCandidateDecoder,
     CompositeCandidateDecoder,
-    build_input_outline,
+    RuntimeCandidateRecord,
+    build_input_sound_notes,
     build_input_visual_map,
     build_physical_input_map,
+    build_projected_to_physical_map,
     project_physical_input,
+    unproject_physical_input,
 )
 from yime.input_method.core.char_code_index import CharCodeIndex
 from yime.input_method.core.input_manager import InputManager, InputState
@@ -153,15 +156,14 @@ def test_decoders(result: TestResult):
     except Exception as e:
         result.add_fail(test_name, str(e))
 
-    test_name = "CompositeCandidateDecoder 不足4码单字前缀状态"
+    test_name = "CompositeCandidateDecoder 不足4码状态不混入单字前缀"
     try:
         canonical, active, pinyin, candidates, status = composite_decoder.decode_text("a")
         assert canonical == "a"
         assert active == "a"
         assert candidates == []
         assert "当前 1/4 码" in status
-        if composite_decoder.get_runtime_source():
-            assert "单字前缀" in status
+        assert "单字前缀" not in status
         result.add_pass(test_name)
     except Exception as e:
         result.add_fail(test_name, str(e))
@@ -198,6 +200,112 @@ def test_decoders(result: TestResult):
                 assert exact_candidates
                 assert exact_candidates[0].code == code
             result.add_pass(test_name)
+    except Exception as e:
+        result.add_fail(test_name, str(e))
+
+    test_name = "RuntimeCandidateDecoder 多音节词语编码查询"
+    try:
+        runtime_decoder = RuntimeCandidateDecoder.__new__(RuntimeCandidateDecoder)
+        runtime_decoder.bmp_to_canonical = {}
+        runtime_decoder.by_code = {
+            "abcd efgh": [
+                {
+                    "text": "安全",
+                    "entry_type": "phrase",
+                    "pinyin_tone": "an1 quan2",
+                    "sort_weight": 120.0,
+                    "text_length": 2,
+                    "is_common": 1,
+                },
+                {
+                    "text": "按全",
+                    "entry_type": "phrase",
+                    "pinyin_tone": "an4 quan2",
+                    "sort_weight": 110.0,
+                    "text_length": 2,
+                    "is_common": 0,
+                },
+            ]
+        }
+        runtime_decoder.char_code_index = CharCodeIndex.from_runtime_candidates(runtime_decoder.by_code)
+        runtime_decoder._user_freq_by_candidate = {}
+
+        canonical, active, pinyin, candidates, status = runtime_decoder.decode_text("abcdefgh")
+        assert canonical == "abcdefgh"
+        assert active == "abcdefgh"
+        assert candidates[:2] == ["安全", "按全"]
+        assert "音节" in status
+        result.add_pass(test_name)
+    except Exception as e:
+        result.add_fail(test_name, str(e))
+
+    test_name = "RuntimeCandidateDecoder 词语优先于单字"
+    try:
+        runtime_decoder = RuntimeCandidateDecoder.__new__(RuntimeCandidateDecoder)
+        runtime_decoder.bmp_to_canonical = {}
+        runtime_decoder.by_code = {
+            "abcd": [
+                {
+                    "text": "安全",
+                    "entry_type": "phrase",
+                    "pinyin_tone": "an1 quan2",
+                    "sort_weight": 1.0,
+                    "text_length": 2,
+                    "is_common": 1,
+                },
+                {
+                    "text": "安",
+                    "entry_type": "char",
+                    "pinyin_tone": "an1",
+                    "sort_weight": 999.0,
+                    "text_length": 1,
+                    "is_common": 1,
+                },
+            ]
+        }
+        runtime_decoder.char_code_index = CharCodeIndex.from_runtime_candidates(runtime_decoder.by_code)
+        runtime_decoder._user_freq_by_candidate = {}
+
+        _canonical, _active, _pinyin, candidates, _status = runtime_decoder.decode_text("abcd")
+        assert candidates[:2] == ["安全", "安"]
+        result.add_pass(test_name)
+    except Exception as e:
+        result.add_fail(test_name, str(e))
+
+    test_name = "RuntimeCandidateDecoder 同频词语支持动态调频"
+    try:
+        runtime_decoder = RuntimeCandidateDecoder.__new__(RuntimeCandidateDecoder)
+        runtime_decoder.bmp_to_canonical = {}
+        runtime_decoder.by_code = {
+            "abcd efgh": [
+                {
+                    "text": "安全",
+                    "entry_type": "phrase",
+                    "pinyin_tone": "an1 quan2",
+                    "sort_weight": 120.0,
+                    "text_length": 2,
+                    "is_common": 1,
+                },
+                {
+                    "text": "安权",
+                    "entry_type": "phrase",
+                    "pinyin_tone": "an1 quan2",
+                    "sort_weight": 120.0,
+                    "text_length": 2,
+                    "is_common": 1,
+                },
+            ]
+        }
+        runtime_decoder.char_code_index = CharCodeIndex.from_runtime_candidates(runtime_decoder.by_code)
+        runtime_decoder._user_freq_by_candidate = {}
+
+        _canonical, _active, _pinyin, candidates, _status = runtime_decoder.decode_text("abcdefgh")
+        assert candidates[:2] == ["安全", "安权"]
+
+        runtime_decoder.record_selection("abcdefgh", "安权")
+        _canonical, _active, _pinyin, promoted, _status = runtime_decoder.decode_text("abcdefgh")
+        assert promoted[:2] == ["安权", "安全"]
+        result.add_pass(test_name)
     except Exception as e:
         result.add_fail(test_name, str(e))
 
@@ -485,6 +593,33 @@ def test_utilities(result: TestResult):
     except Exception as e:
         result.add_fail(test_name, str(e))
 
+    test_name = "投影编码反查物理 ASCII"
+    try:
+        physical_input_map = build_physical_input_map(project_root)
+        projected_to_physical_map = build_projected_to_physical_map(physical_input_map)
+        projected_text = project_physical_input("qsss", physical_input_map)
+        assert projected_text != "qsss"
+        assert unproject_physical_input(projected_text, projected_to_physical_map) == "qsss"
+        result.add_pass(test_name)
+    except Exception as e:
+        result.add_fail(test_name, str(e))
+
+    test_name = "码元音符连续显示"
+    try:
+        input_visual_map = build_input_visual_map(project_root)
+        physical_input_map = build_physical_input_map(project_root)
+        projected_text = project_physical_input("qsss", physical_input_map)
+        sound_notes = build_input_sound_notes(projected_text, input_visual_map)
+        assert sound_notes
+        assert "[" not in sound_notes
+        assert "]" not in sound_notes
+        assert " " not in sound_notes
+        assert "N01" not in sound_notes
+        assert "M01" not in sound_notes
+        result.add_pass(test_name)
+    except Exception as e:
+        result.add_fail(test_name, str(e))
+
 
 def test_ui_components(result: TestResult):
     """测试UI组件"""
@@ -513,22 +648,26 @@ def test_ui_components(result: TestResult):
         box = None
 
         def format_input_outline(text):
-            return build_input_outline(text, input_visual_map)
+            return build_input_sound_notes(text, input_visual_map)
+
+        projected_to_physical_map = build_projected_to_physical_map(physical_input_map)
+
+        def format_projected_code(text):
+            return unproject_physical_input(text, projected_to_physical_map)
 
         def on_input_change(event=None):
             if box is None:
                 return
             display_input = box.get_input()
-            projected_input = box.get_projected_input()
-            if projected_input == display_input:
-                box.set_projected_input(
-                    project_physical_input(display_input, physical_input_map)
-                )
+            projected_input = project_physical_input(display_input, physical_input_map)
+            if display_input != projected_input or box.get_projected_input() != projected_input:
+                box.set_input(projected_input, projected_text=projected_input)
 
         box = CandidateBox(
             on_select=lambda x: None,
             font_family="YinYuan Regular",
             input_display_formatter=format_input_outline,
+            projected_code_formatter=format_projected_code,
             on_input_change=on_input_change,
             on_decode_from_clipboard=lambda: None,
             on_copy_candidate=lambda x: None,
@@ -536,7 +675,11 @@ def test_ui_components(result: TestResult):
 
         box.set_input("a")
         on_input_change()
+        assert box.get_input() == physical_input_map["a"]
         assert box.get_projected_input() == physical_input_map["a"]
+        assert box.projected_code_var.get() == "a"
+        assert "[" not in box.input_outline_var.get()
+        assert "]" not in box.input_outline_var.get()
 
         box.root.destroy()
         root.destroy()
