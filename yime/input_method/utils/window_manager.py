@@ -23,6 +23,8 @@ user32 = ctypes.WinDLL("user32", use_last_error=True)
 class WindowManager:
     """窗口管理器"""
 
+    _user32 = user32
+
     @staticmethod
     def get_foreground_window() -> Optional[int]:
         """
@@ -44,6 +46,34 @@ class WindowManager:
         """
         user32.ShowWindow(wintypes.HWND(hwnd), SW_RESTORE)
         user32.SetForegroundWindow(wintypes.HWND(hwnd))
+
+    @classmethod
+    def get_window_keyboard_layout(cls, hwnd: int) -> Optional[int]:
+        """获取指定窗口线程当前使用的键盘布局 HKL。"""
+        if not hwnd:
+            return None
+
+        process_id = wintypes.DWORD(0)
+        thread_id = cls._user32.GetWindowThreadProcessId(
+            wintypes.HWND(hwnd), ctypes.byref(process_id)
+        )
+        if not thread_id:
+            return None
+
+        layout = cls._user32.GetKeyboardLayout(thread_id)
+        return int(layout) if layout else None
+
+    @staticmethod
+    def get_layout_language_id(layout: Optional[int]) -> Optional[int]:
+        """从 HKL 里取低 16 位语言 ID。"""
+        if layout is None:
+            return None
+        return int(layout) & 0xFFFF
+
+    @classmethod
+    def is_english_layout(cls, layout: Optional[int]) -> bool:
+        """判断前台窗口是否处于英文键盘布局。"""
+        return cls.get_layout_language_id(layout) == 0x0409
 
     @staticmethod
     def get_window_rect(hwnd: int) -> Tuple[int, int, int, int]:
