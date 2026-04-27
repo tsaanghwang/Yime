@@ -9,6 +9,7 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 import json
 import sqlite3
 from pathlib import Path
@@ -44,30 +45,115 @@ def _as_bool_value(value: object) -> bool:
     return False
 
 
-def _format_char_prefix_status(
-    matches: List[Tuple[str, List[CharCodeCandidate]]],
-) -> str:
-    if not matches:
-        return "单字前缀暂无命中。"
+@dataclass(frozen=True)
+class RuntimeCandidateRecord:
+    """Normalized runtime candidate used for phrase-aware ranking."""
 
-    candidate_count = sum(len(candidates) for _, candidates in matches)
-    samples: List[str] = []
-    seen: set[str] = set()
-    for _, candidates in matches:
-        for candidate in candidates:
-            if candidate.text in seen:
-                continue
-            seen.add(candidate.text)
-            samples.append(candidate.text)
-            if len(samples) >= 5:
-                break
-        if len(samples) >= 5:
-            break
+    lookup_code: str
+    text: str
+    entry_type: str
+    pinyin_tone: str = ""
+    sort_weight: float = 0.0
+    text_length: int = 0
+    is_common: bool = False
 
-    sample_status = f"，示例: {' '.join(samples)}" if samples else ""
+
+@dataclass(frozen=True)
+class RuntimeLookupPlan:
+    """Resolved runtime lookup target for the current input buffer."""
+
+    lookup_code: str
+    active_code: str
+    syllable_count: int
+    trailing_code_count: int
+    truncated_to_recent: bool
+    phrase_mode: bool
+
+
+def _canonicalize_runtime_input(text: str, bmp_to_canonical: Dict[str, str]) -> str:
+    return "".join(bmp_to_canonical.get(char, char) for char in text)
+
+
+def _split_complete_syllables(canonical: str) -> List[str]:
+    complete_length = (len(canonical) // 4) * 4
+    return [canonical[index:index + 4] for index in range(0, complete_length, 4)]
+
+
+def _build_runtime_lookup_plan(canonical: str) -> RuntimeLookupPlan:
+    syllables = _split_complete_syllables(canonical)
+    trailing_code_count = len(canonical) % 4
+    if not syllables:
+        return RuntimeLookupPlan(
+            lookup_code="",
+            active_code=canonical,
+            syllable_count=0,
+            trailing_code_count=trailing_code_count,
+            truncated_to_recent=False,
+            phrase_mode=False,
+        )
+
+    recent_syllables = syllables[-4:]
+    truncated_to_recent = len(syllables) > len(recent_syllables)
+    phrase_mode = trailing_code_count == 0 and len(recent_syllables) >= 2
+    if phrase_mode:
+        return RuntimeLookupPlan(
+            lookup_code=" ".join(recent_syllables),
+            active_code="".join(recent_syllables),
+            syllable_count=len(recent_syllables),
+            trailing_code_count=0,
+            truncated_to_recent=truncated_to_recent,
+            phrase_mode=True,
+        )
+
+    return RuntimeLookupPlan(
+        lookup_code=recent_syllables[-1],
+        active_code=recent_syllables[-1],
+        syllable_count=1,
+        trailing_code_count=trailing_code_count,
+        truncated_to_recent=truncated_to_recent,
+        phrase_mode=False,
+    )
+
+
+def _build_runtime_mode_hint(canonical: str, plan: RuntimeLookupPlan) -> str:
+    if plan.trailing_code_count and canonical:
+        completed = len(_split_complete_syllables(canonical))
+        if completed:
+            return (
+                f"已完成 {completed} 个音节，当前第 {completed + 1} 个音节"
+                f"输入到 {plan.trailing_code_count}/4 码。"
+            )
+        return f"当前 {plan.trailing_code_count}/4 码，继续输入。"
+
+    if plan.phrase_mode:
+        if plan.truncated_to_recent:
+            return f"已自动截取最近 {plan.syllable_count} 个完整音节进行词语查找。"
+        return f"按 {plan.syllable_count} 个完整音节进行词语查找。"
+
+    if len(canonical) > 4:
+        return f"已自动截取最近 4 码，总输入 {len(canonical)} 码。"
+
+    return ""
+
+
+def _runtime_candidate_priority(candidate: RuntimeCandidateRecord) -> int:
+    if candidate.entry_type == "phrase" and 2 <= candidate.text_length <= 4:
+        return 0
+    if candidate.entry_type == "char":
+        return 1
+    return 2
+
+
+def _runtime_candidate_sort_key(
+    candidate: RuntimeCandidateRecord,
+    user_freq: int,
+) -> tuple[int, float, int, str, str]:
     return (
-        f"单字前缀可继续：前 {len(matches)} 个编码含 "
-        f"{candidate_count} 个候选{sample_status}。"
+        _runtime_candidate_priority(candidate),
+        -candidate.sort_weight,
+        -user_freq,
+        candidate.text,
+        candidate.pinyin_tone,
     )
 
 
@@ -76,17 +162,22 @@ def build_code_display(raw_text: str, canonical_code: str, active_code: str) -> 
         return ""
 
     active_display = format_codepoints(active_code)
+    if len(active_code) > 4 and len(active_code) % 4 == 0:
+        active_label = f"当前{len(active_code) // 4}音节码"
+    else:
+        active_label = "当前4码"
+
     if not canonical_code:
         return active_display
 
     if raw_text and raw_text != canonical_code:
         return (
-            f"当前4码 {active_display} | 输入 {format_codepoints(raw_text)}"
+            f"{active_label} {active_display} | 输入 {format_codepoints(raw_text)}"
             f" | 规范化后共 {len(canonical_code)} 码"
         )
 
     if active_code != canonical_code:
-        return f"当前4码 {active_display} | 累计输入 {len(canonical_code)} 码"
+        return f"{active_label} {active_display} | 累计输入 {len(canonical_code)} 码"
 
     return active_display
 
@@ -153,6 +244,41 @@ def build_input_outline(text: str, visual_map: Dict[str, str]) -> str:
     return " ".join(tokens)
 
 
+def _strip_slot_from_visual_token(token: str) -> str:
+    body = token.strip()
+    if body.startswith("[") and body.endswith("]"):
+        body = body[1:-1].strip()
+
+    slot, separator, label = body.partition(" ")
+    if (
+        separator
+        and len(slot) == 3
+        and slot[0] in {"N", "M"}
+        and slot[1:].isdigit()
+    ):
+        return label.strip()
+    if len(body) == 3 and body[0] in {"N", "M"} and body[1:].isdigit():
+        return ""
+    return body
+
+
+def build_input_sound_notes(text: str, visual_map: Dict[str, str]) -> str:
+    if not text:
+        return ""
+
+    notes: List[str] = []
+    for char in text:
+        token = visual_map.get(char)
+        if token:
+            notes.append(_strip_slot_from_visual_token(token))
+            continue
+
+        codepoint = ord(char)
+        notes.append(f"U+{codepoint:06X}" if codepoint > 0xFFFF else f"U+{codepoint:04X}")
+
+    return "".join(note for note in notes if note)
+
+
 def build_physical_input_map(repo_root: Path) -> Dict[str, str]:
     manual_layout = _load_visual_json(repo_root / "internal_data" / "manual_key_layout.json")
     slot_to_bmp = _load_visual_json(repo_root / "key_to_code.json")
@@ -180,6 +306,24 @@ def project_physical_input(text: str, physical_map: Dict[str, str]) -> str:
     for char in text:
         projected_chars.append(physical_map.get(char, char))
     return "".join(projected_chars)
+
+
+def build_projected_to_physical_map(
+    physical_map: Dict[str, str]
+) -> Dict[str, str]:
+    return {projected: physical for physical, projected in physical_map.items()}
+
+
+def unproject_physical_input(
+    text: str, projected_to_physical_map: Dict[str, str]
+) -> str:
+    if not text:
+        return ""
+
+    physical_chars: List[str] = []
+    for char in text:
+        physical_chars.append(projected_to_physical_map.get(char, char))
+    return "".join(physical_chars)
 
 
 class StaticCandidateDecoder:
@@ -331,6 +475,7 @@ class RuntimeCandidateDecoder:
         )
         self.by_code = self._load_runtime_candidates(self.runtime_path)
         self.char_code_index = CharCodeIndex.from_runtime_candidates(self.by_code)
+        self._user_freq_by_candidate: dict[tuple[str, str], int] = {}
 
     def _load_json(self, path: Path) -> dict:
         """加载JSON文件"""
@@ -380,54 +525,55 @@ class RuntimeCandidateDecoder:
         Returns:
             (规范编码, 当前4码, 拼音显示, 候选词列表, 状态消息)
         """
-        canonical = "".join(
-            self.bmp_to_canonical.get(char, char) for char in text
-        )
+        canonical = _canonicalize_runtime_input(text, self.bmp_to_canonical)
         if not canonical:
             return "", "", "", [], "请输入一个完整音节的 4 个码元。"
 
         if len(canonical) < 4:
-            prefix_status = _format_char_prefix_status(
-                self.get_char_candidates_by_prefix(canonical, limit=5)
-            )
             return (
                 canonical,
                 canonical,
                 "",
                 [],
-                f"当前 {len(canonical)}/4 码，继续输入。{prefix_status}",
+                f"当前 {len(canonical)}/4 码，继续输入。",
             )
 
-        active_code = canonical[-4:]
-        mode_hint = ""
-        if len(canonical) > 4:
-            mode_hint = f"已自动截取最近 4 码，总输入 {len(canonical)} 码。"
-
-        raw_candidates = self.by_code.get(active_code, [])
-        texts: List[str] = []
-        seen: set = set()
+        plan = _build_runtime_lookup_plan(canonical)
+        mode_hint = _build_runtime_mode_hint(canonical, plan)
+        records = self._rank_runtime_candidates(
+            self._payload_to_runtime_candidates(
+                plan.lookup_code,
+                self.by_code.get(plan.lookup_code, []),
+            )
+        )
+        texts = [record.text for record in records]
         pinyin_values: List[str] = []
-        for candidate in raw_candidates:
-            candidate_text = str(candidate.get("text", "")).strip()
-            if not candidate_text or candidate_text in seen:
-                continue
-            seen.add(candidate_text)
-            texts.append(candidate_text)
-            pinyin_value = str(candidate.get("pinyin_tone", "")).strip()
-            if pinyin_value and pinyin_value not in pinyin_values:
-                pinyin_values.append(pinyin_value)
+        for record in records:
+            if record.pinyin_tone and record.pinyin_tone not in pinyin_values:
+                pinyin_values.append(record.pinyin_tone)
 
         display_pinyin = " / ".join(pinyin_values[:3])
         if texts:
             status = f"从运行时编码表找到 {len(texts)} 个候选。"
             if mode_hint:
                 status = f"{mode_hint} {status}"
-            return canonical, active_code, display_pinyin, texts, status
+            return canonical, plan.active_code, display_pinyin, texts, status
 
-        status = "运行时编码表中未找到该 4 码候选。"
+        if plan.phrase_mode:
+            status = f"运行时编码表中未找到该 {plan.syllable_count} 音节词语候选。"
+        else:
+            status = "运行时编码表中未找到该 4 码候选。"
         if mode_hint:
             status = f"{mode_hint} {status}"
-        return canonical, active_code, display_pinyin, [], status
+        return canonical, plan.active_code, display_pinyin, [], status
+
+    def record_selection(self, text: str, candidate_text: str) -> None:
+        canonical = _canonicalize_runtime_input(text, self.bmp_to_canonical)
+        plan = _build_runtime_lookup_plan(canonical)
+        if not plan.lookup_code or not candidate_text.strip():
+            return
+        key = (plan.lookup_code, candidate_text.strip())
+        self._user_freq_by_candidate[key] = self._user_freq_by_candidate.get(key, 0) + 1
 
     def get_char_candidates(self, code: str) -> List[CharCodeCandidate]:
         """按完整音元编码读取单字候选。"""
@@ -440,6 +586,65 @@ class RuntimeCandidateDecoder:
     ) -> List[Tuple[str, List[CharCodeCandidate]]]:
         """按编码前缀读取可能的单字候选。"""
         return self.char_code_index.get_with_prefix(prefix, limit=limit)
+
+    def _payload_to_runtime_candidates(
+        self,
+        lookup_code: str,
+        raw_candidates: List[Dict[str, object]],
+    ) -> List[RuntimeCandidateRecord]:
+        records: List[RuntimeCandidateRecord] = []
+        for candidate in raw_candidates:
+            text = str(candidate.get("text", "")).strip()
+            if not text:
+                continue
+            text_length = int(candidate.get("text_length") or len(text))
+            records.append(
+                RuntimeCandidateRecord(
+                    lookup_code=lookup_code,
+                    text=text,
+                    entry_type=str(candidate.get("entry_type", "")).strip(),
+                    pinyin_tone=str(candidate.get("pinyin_tone", "")).strip(),
+                    sort_weight=_as_float_value(candidate.get("sort_weight", 0.0)),
+                    text_length=text_length,
+                    is_common=_as_bool_value(candidate.get("is_common", False)),
+                )
+            )
+        return records
+
+    def _rank_runtime_candidates(
+        self,
+        candidates: List[RuntimeCandidateRecord],
+    ) -> List[RuntimeCandidateRecord]:
+        best_by_text: dict[str, RuntimeCandidateRecord] = {}
+        for candidate in candidates:
+            if candidate.entry_type == "phrase" and not (2 <= candidate.text_length <= 4):
+                continue
+            existing = best_by_text.get(candidate.text)
+            candidate_freq = self._user_freq_by_candidate.get(
+                (candidate.lookup_code, candidate.text),
+                0,
+            )
+            if existing is None:
+                best_by_text[candidate.text] = candidate
+                continue
+            existing_freq = self._user_freq_by_candidate.get(
+                (existing.lookup_code, existing.text),
+                0,
+            )
+            if _runtime_candidate_sort_key(candidate, candidate_freq) < _runtime_candidate_sort_key(existing, existing_freq):
+                best_by_text[candidate.text] = candidate
+
+        ranked = list(best_by_text.values())
+        ranked.sort(
+            key=lambda candidate: _runtime_candidate_sort_key(
+                candidate,
+                self._user_freq_by_candidate.get(
+                    (candidate.lookup_code, candidate.text),
+                    0,
+                ),
+            )
+        )
+        return ranked
 
 
 class SQLiteRuntimeCandidateDecoder:
@@ -454,6 +659,7 @@ class SQLiteRuntimeCandidateDecoder:
             app_dir.parent / "internal_data" / "key_to_symbol.json",
         )
         self._validate_runtime_candidates_view()
+        self._user_freq_by_candidate: dict[tuple[str, str], int] = {}
 
     def _load_json(self, path: Path) -> dict:
         with path.open("r", encoding="utf-8") as handle:
@@ -490,64 +696,63 @@ class SQLiteRuntimeCandidateDecoder:
     def decode_text(
         self, text: str
     ) -> Tuple[str, str, str, List[str], str]:
-        canonical = "".join(
-            self.bmp_to_canonical.get(char, char) for char in text
-        )
+        canonical = _canonicalize_runtime_input(text, self.bmp_to_canonical)
         if not canonical:
             return "", "", "", [], "请输入一个完整音节的 4 个码元。"
 
         if len(canonical) < 4:
-            prefix_status = _format_char_prefix_status(
-                self.get_char_candidates_by_prefix(canonical, limit=5)
-            )
             return (
                 canonical,
                 canonical,
                 "",
                 [],
-                f"当前 {len(canonical)}/4 码，继续输入。{prefix_status}",
+                f"当前 {len(canonical)}/4 码，继续输入。",
             )
 
-        active_code = canonical[-4:]
-        mode_hint = ""
-        if len(canonical) > 4:
-            mode_hint = f"已自动截取最近 4 码，总输入 {len(canonical)} 码。"
+        plan = _build_runtime_lookup_plan(canonical)
+        mode_hint = _build_runtime_mode_hint(canonical, plan)
 
         with self._connect() as conn:
             rows = conn.execute(
                 """
-                SELECT text, pinyin_tone, entry_type, sort_weight
+                SELECT text, pinyin_tone, entry_type, sort_weight, text_length, is_common
                 FROM runtime_candidates
                 WHERE yime_code = ?
-                ORDER BY entry_type, sort_weight DESC, text
                 """,
-                (active_code,),
+                (plan.lookup_code,),
             ).fetchall()
 
-        texts: List[str] = []
-        seen_texts: set[str] = set()
+        records = self._rank_runtime_candidates(
+            [self._row_to_runtime_candidate(plan.lookup_code, row) for row in rows]
+        )
+        texts = [record.text for record in records]
         pinyin_values: List[str] = []
-        for row in rows:
-            candidate_text = str(row["text"] or "").strip()
-            if not candidate_text or candidate_text in seen_texts:
-                continue
-            seen_texts.add(candidate_text)
-            texts.append(candidate_text)
-            pinyin_value = str(row["pinyin_tone"] or "").strip()
-            if pinyin_value and pinyin_value not in pinyin_values:
-                pinyin_values.append(pinyin_value)
+        for record in records:
+            if record.pinyin_tone and record.pinyin_tone not in pinyin_values:
+                pinyin_values.append(record.pinyin_tone)
 
         display_pinyin = " / ".join(pinyin_values[:3])
         if texts:
             status = f"从数据库候选视图找到 {len(texts)} 个候选。"
             if mode_hint:
                 status = f"{mode_hint} {status}"
-            return canonical, active_code, display_pinyin, texts, status
+            return canonical, plan.active_code, display_pinyin, texts, status
 
-        status = "数据库候选视图中未找到该 4 码候选。"
+        if plan.phrase_mode:
+            status = f"数据库候选视图中未找到该 {plan.syllable_count} 音节词语候选。"
+        else:
+            status = "数据库候选视图中未找到该 4 码候选。"
         if mode_hint:
             status = f"{mode_hint} {status}"
-        return canonical, active_code, display_pinyin, [], status
+        return canonical, plan.active_code, display_pinyin, [], status
+
+    def record_selection(self, text: str, candidate_text: str) -> None:
+        canonical = _canonicalize_runtime_input(text, self.bmp_to_canonical)
+        plan = _build_runtime_lookup_plan(canonical)
+        if not plan.lookup_code or not candidate_text.strip():
+            return
+        key = (plan.lookup_code, candidate_text.strip())
+        self._user_freq_by_candidate[key] = self._user_freq_by_candidate.get(key, 0) + 1
 
     def get_char_candidates(self, code: str) -> List[CharCodeCandidate]:
         """按完整音元编码读取单字候选。"""
@@ -629,6 +834,60 @@ class SQLiteRuntimeCandidateDecoder:
             is_common=_as_bool_value(row["is_common"]),
         )
 
+    def _row_to_runtime_candidate(
+        self,
+        lookup_code: str,
+        row: sqlite3.Row,
+    ) -> RuntimeCandidateRecord:
+        text = str(row["text"] or "").strip()
+        text_length = int(row["text_length"] or len(text))
+        return RuntimeCandidateRecord(
+            lookup_code=lookup_code,
+            text=text,
+            entry_type=str(row["entry_type"] or "").strip(),
+            pinyin_tone=str(row["pinyin_tone"] or "").strip(),
+            sort_weight=_as_float_value(row["sort_weight"]),
+            text_length=text_length,
+            is_common=_as_bool_value(row["is_common"]),
+        )
+
+    def _rank_runtime_candidates(
+        self,
+        candidates: List[RuntimeCandidateRecord],
+    ) -> List[RuntimeCandidateRecord]:
+        best_by_text: dict[str, RuntimeCandidateRecord] = {}
+        for candidate in candidates:
+            if not candidate.text:
+                continue
+            if candidate.entry_type == "phrase" and not (2 <= candidate.text_length <= 4):
+                continue
+            existing = best_by_text.get(candidate.text)
+            candidate_freq = self._user_freq_by_candidate.get(
+                (candidate.lookup_code, candidate.text),
+                0,
+            )
+            if existing is None:
+                best_by_text[candidate.text] = candidate
+                continue
+            existing_freq = self._user_freq_by_candidate.get(
+                (existing.lookup_code, existing.text),
+                0,
+            )
+            if _runtime_candidate_sort_key(candidate, candidate_freq) < _runtime_candidate_sort_key(existing, existing_freq):
+                best_by_text[candidate.text] = candidate
+
+        ranked = list(best_by_text.values())
+        ranked.sort(
+            key=lambda candidate: _runtime_candidate_sort_key(
+                candidate,
+                self._user_freq_by_candidate.get(
+                    (candidate.lookup_code, candidate.text),
+                    0,
+                ),
+            )
+        )
+        return ranked
+
 
 class CompositeCandidateDecoder:
     """组合候选词解码器（优先运行时，回退静态）"""
@@ -683,6 +942,13 @@ class CompositeCandidateDecoder:
         if self.runtime_decoder is None:
             return []
         return self.runtime_decoder.get_char_candidates_by_prefix(prefix, limit=limit)
+
+    def record_selection(self, text: str, candidate_text: str) -> None:
+        """Record a user selection so runtime ranking can adapt in-process."""
+        if self.runtime_decoder is None:
+            return
+        if hasattr(self.runtime_decoder, "record_selection"):
+            self.runtime_decoder.record_selection(text, candidate_text)
 
     def decode_text(
         self, text: str

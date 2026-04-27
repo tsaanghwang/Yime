@@ -21,7 +21,7 @@ old_ui = """        # 用一个带有固定外观的 Frame 强行占据空间，
             font=("Consolas", 10),
         ).pack(fill=tk.X)
 
-        self.input_outline_var = tk.StringVar(self.root, value="码元轮廓: ")
+        self.input_outline_var = tk.StringVar(self.root, value="码元音符: ")
         tk.Label(
             outline_frame,
             textvariable=self.input_outline_var,
@@ -61,7 +61,7 @@ else:
 # 2. 替换 _refresh_input_outline 里面的设置
 old_refresh1 = """        if not text:
             self.projected_code_var.set("投影码点: ")
-            self.input_outline_var.set("码元轮廓: ")"""
+            self.input_outline_var.set("码元音符: ")"""
 new_refresh1 = """        if not text:
             self.projected_code_var.set("")
             self.input_outline_var.set("")"""
@@ -75,14 +75,14 @@ new_refresh2 = """        self.projected_code_var.set(
         )"""
 text = text.replace(old_refresh2, new_refresh2)
 
-old_refresh3 = """        self.input_outline_var.set(f"码元轮廓: {display_text}" if display_text else "")"""
+old_refresh3 = """        self.input_outline_var.set(f"码元音符: {display_text}" if display_text else "")"""
 new_refresh3 = """        self.input_outline_var.set(f"{display_text}" if display_text else "")"""
 text = text.replace(old_refresh3, new_refresh3)
 
 # 3. 替换 _clear_input 里面的设置
 old_clear = """        self.projected_input_text = ""
         self.projected_code_var.set("投影码点: ")
-        self.input_outline_var.set("码元轮廓: ")"""
+        self.input_outline_var.set("码元音符: ")"""
 new_clear = """        self.projected_input_text = ""
         self.projected_code_var.set("")
         self.input_outline_var.set("")"""

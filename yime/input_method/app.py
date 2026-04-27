@@ -11,26 +11,16 @@ import ctypes
 import os
 import queue
 import tkinter as tk
-from pathlib import Path
 from typing import Any, Callable, Optional, cast
 
-from .core.decoders import (
-    CompositeCandidateDecoder,
-    build_code_display,
-    build_input_outline,
-    build_input_visual_map,
-    build_physical_input_map,
-    project_physical_input,
-)
+from .app_base import BaseInputMethodApp
+from .core.decoders import project_physical_input
 from .core.keyboard_listener import KeyboardListener
 from .core.input_manager import InputManager
 from .ui.candidate_box import CandidateBox
-from .utils.clipboard import ClipboardManager
-from .utils.keyboard_simulator import KeyboardSimulator
-from .utils.window_manager import WindowManager
 
 
-class InputMethodApp:
+class InputMethodApp(BaseInputMethodApp):
     """音元输入法主应用"""
 
     def __init__(
@@ -57,59 +47,30 @@ class InputMethodApp:
             "on",
         }
 
-        # 初始化各模块
-        app_dir = Path(__file__).resolve().parent.parent
-        self.decoder = CompositeCandidateDecoder(app_dir)
-        self.input_visual_map = build_input_visual_map(app_dir.parent)
-        self.physical_input_map = build_physical_input_map(app_dir.parent)
-        self.runtime_decoder_warning = self.decoder.get_runtime_warning()
-        self.runtime_decoder_source = self.decoder.get_runtime_source()
-        self.clipboard = ClipboardManager()
-        self.keyboard_simulator = KeyboardSimulator()
-        self.window_manager = WindowManager()
-
-        # 创建候选框，显式注入回调
-        self.candidate_box = CandidateBox(
-            on_select=self._on_candidate_select,
+        super().__init__(
+            auto_paste=auto_paste,
             font_family=font_family,
-            input_display_formatter=self._format_input_outline,
-            on_input_change=self._on_input_change,
-            on_decode_from_clipboard=self._decode_from_clipboard,
-            on_copy_candidate=self._copy_candidate,
-            on_commit_text=self._commit_candidate_box_text,
-            on_hide=self._hide_candidate_box,
-            on_close=self._close,
         )
 
-        # 状态变量
-        self.own_hwnd = self.candidate_box.root.winfo_id()
-        self.last_external_hwnd: Optional[int] = None
-        self.last_replace_length = 0
+        self.last_external_layout: Optional[int] = None
         self._display_input_buffer = ""
+        self._passive_standby_reason: Optional[str] = None
         self._is_closing = False
         self._after_ids: set[str] = set()
         self._ui_queue: queue.SimpleQueue[Callable[[], None]] = queue.SimpleQueue()
 
-        # 创建输入管理器
         self.input_manager = InputManager(
             on_candidates_update=self._dispatch_candidates_update,
             on_input_commit=self._dispatch_input_commit,
         )
         self.input_manager.set_decoder(self.decoder)
 
-        # 创建键盘监听器
         self.keyboard_listener: Optional[KeyboardListener] = None
-        self.is_passthrough_enabled = False
+        self.is_passthrough_enabled = True
 
-        # 启动后默认显示待命图标
-        self.candidate_box.show_standby()
-
-        # 启动窗口焦点轮询
+        self._enter_passive_standby(reason="idle")
         self._poll_foreground_window()
         self._pump_ui_queue()
-
-        # 设置关闭处理
-        self.candidate_box.root.protocol("WM_DELETE_WINDOW", self._close)
 
         if self.runtime_decoder_source == "sqlite":
             print("[Decoder] 运行时候选已回退到 SQLite 数据库视图 runtime_candidates")
@@ -119,15 +80,20 @@ class InputMethodApp:
         if self.runtime_decoder_warning:
             print(f"[Decoder] 运行时编码表未启用: {self.runtime_decoder_warning}")
 
-    def _format_input_outline(self, text: str) -> str:
-        return build_input_outline(text, self.input_visual_map)
-
-    def _format_visible_input(self, text: str) -> str:
-        if not text:
-            return ""
-        if all(ord(char) < 128 for char in text):
-            return text
-        return build_input_outline(text, self.input_visual_map)
+    def _create_candidate_box(self) -> CandidateBox:
+        return CandidateBox(
+            on_select=self._on_candidate_select,
+            font_family=self.font_family,
+            input_display_formatter=self._format_input_outline,
+            projected_code_formatter=self._format_projected_code,
+            on_input_change=self._on_input_change,
+            on_decode_from_clipboard=self._decode_from_clipboard,
+            on_copy_candidate=self._copy_candidate,
+            on_commit_text=self._commit_candidate_box_text,
+            on_hide=self._hide_candidate_box,
+            on_restore_from_standby=self._resume_from_standby,
+            on_close=self._close,
+        )
 
     def _schedule_ui(self, delay_ms: int, callback: Callable[[], None]) -> Optional[str]:
         """通过统一入口调度 Tk 回调，便于关闭时统一取消。"""
@@ -174,7 +140,31 @@ class InputMethodApp:
         foreground = self.window_manager.get_foreground_window()
         if foreground and foreground != self.own_hwnd:
             self.last_external_hwnd = foreground
+            layout = self.window_manager.get_window_keyboard_layout(foreground)
+            if (
+                layout is not None
+                and layout != self.last_external_layout
+            ):
+                self._handle_external_layout_change(layout)
+            self.last_external_layout = layout
         self._schedule_ui(250, self._poll_foreground_window)
+
+    def _handle_external_layout_change(self, layout: int) -> None:
+        """外部窗口切到其他系统输入法时，主动转入角落待命。"""
+        if self.window_manager.is_english_layout(layout):
+            if self._passive_standby_reason == "layout":
+                self._resume_global_capture()
+            return
+
+        # 显式待命（复制/隐藏/提交后）应保持原状态，不能被布局轮询
+        # 覆盖成 layout，否则一旦切回英文布局就会被意外自动恢复接管。
+        if self._passive_standby_reason and self._passive_standby_reason != "layout":
+            return
+
+        self.input_manager.clear_buffer(notify=False)
+        self._display_input_buffer = ""
+        self.candidate_box.clear_input(focus_input=False)
+        self._enter_passive_standby(reason="layout")
 
     def _pump_ui_queue(self) -> None:
         """在 Tk 主线程中执行由后台线程提交的 UI 任务。"""
@@ -202,53 +192,6 @@ class InputMethodApp:
             return
         self._ui_queue.put(callback)
 
-    def _on_input_change(self, event: Optional[object] = None) -> None:
-        """输入变化处理"""
-        display_input = self.candidate_box.get_input()
-        projected_input = self.candidate_box.get_projected_input()
-        if projected_input == display_input:
-            projected_input = project_physical_input(display_input, self.physical_input_map)
-            self.candidate_box.set_projected_input(projected_input)
-
-        input_text = projected_input
-        if not input_text:
-            self.candidate_box.update_candidates(
-                [],
-                "",
-                "",
-                '连续输入时自动取最近 4 码。请先复制编码，再点"读取剪贴板"。',
-            )
-            return
-
-        # 解码
-        canonical_code, active_code, pinyin, candidates, status = (
-            self.decoder.decode_text(input_text)
-        )
-
-        # 记录替换长度
-        self.last_replace_length = min(4, len(input_text))
-
-        # 更新显示
-        code_display = build_code_display(input_text, canonical_code, active_code)
-
-        self.candidate_box.update_candidates(
-            candidates, pinyin, code_display, status
-        )
-
-    def _decode_from_clipboard(self) -> None:
-        """从剪贴板读取并解码"""
-        captured = self.clipboard.paste()
-        if not captured:
-            self.candidate_box.status_var.set("剪贴板没有可读取文本。")
-            return
-
-        self.candidate_box.set_input(
-            self._format_visible_input(captured),
-            projected_text=captured,
-        )
-        self.candidate_box.input_entry.focus_set()
-        self._on_input_change()
-
     def _on_candidate_select(self, hanzi: str) -> None:
         """
         候选词选择处理
@@ -256,12 +199,14 @@ class InputMethodApp:
         Args:
             hanzi: 选中的汉字
         """
-        # 复制到剪贴板
-        self.clipboard.copy(hanzi)
-        self.candidate_box.status_var.set(f"已复制: {hanzi}")
+        self._record_candidate_selection(hanzi)
 
-        # 手工候选框选字时先加入待上屏文本，不立刻回贴。
-        self.candidate_box._clear_input(focus_input=True)
+        # 复制到剪贴板
+        self._copy_text_with_status(hanzi)
+
+        # 主入口偏向全局浮窗模式，选字后不要立刻把焦点抢回候选框。
+        self._clear_candidate_box_state(focus_input=False)
+        self._enter_passive_standby(reason="copy")
 
     def _copy_candidate(self, index: int) -> None:
         """
@@ -273,56 +218,24 @@ class InputMethodApp:
         candidates = self.candidate_box.current_candidates
         if 0 <= index < len(candidates):
             hanzi = candidates[index]
-            self.clipboard.copy(hanzi)
-            self.candidate_box.status_var.set(f"已复制: {hanzi}")
-
-    def _paste_to_previous_window(self, hanzi: str) -> None:
-        """
-        粘贴到上一个窗口
-
-        Args:
-            hanzi: 要粘贴的汉字
-        """
-        if not self.last_external_hwnd:
-            self.candidate_box.status_var.set(
-                f"已复制: {hanzi}，未找到上一个窗口"
-            )
-            return
-
-        # 恢复目标窗口
-        self.window_manager.restore_window(self.last_external_hwnd)
-
-        # 如果需要替换已输入的码元
-        if self.last_replace_length > 0:
-            self._schedule_ui(
-                80,
-                lambda: self.keyboard_simulator.send_backspace(
-                    self.last_replace_length
-                ),
-            )
-            self._schedule_ui(170, self.keyboard_simulator.send_ctrl_v)
-            self._schedule_ui(
-                280,
-                lambda: self.candidate_box.status_var.set(
-                    f"已替换前一个窗口中的 {self.last_replace_length} 个编码字符: {hanzi}"
-                ),
-            )
-            self._schedule_ui(360, self._refocus_candidate_input)
-            return
-
-        # 直接粘贴
-        self._schedule_ui(80, self.keyboard_simulator.send_ctrl_v)
-        self._schedule_ui(
-            180,
-            lambda: self.candidate_box.status_var.set(
-                f"已回贴到前一个窗口: {hanzi}"
-            ),
-        )
-        self._schedule_ui(240, self._refocus_candidate_input)
+            self._record_candidate_selection(hanzi)
+            self._copy_text_with_status(hanzi)
+            self.last_replace_length = 0
+            self._display_input_buffer = ""
+            self.input_manager.clear_buffer(notify=False)
+            self._clear_candidate_box_state(focus_input=False)
+            self._enter_passive_standby(reason="copy")
+            self._restore_external_window()
 
     def _refocus_candidate_input(self) -> None:
         """外部编辑动作完成后，将焦点拉回编码输入框。"""
-        self.candidate_box.show(focus_input=True)
+        keep_external_focus = bool(
+            self.last_external_hwnd and self.last_external_hwnd != self.own_hwnd
+        )
+        self.candidate_box.show(focus_input=not keep_external_focus)
+        if keep_external_focus:
+            return
+        self.candidate_box.input_entry.focus_set()
         self.candidate_box.input_entry.icursor(tk.END)
         self.candidate_box.input_entry.selection_clear()
 
@@ -342,7 +255,7 @@ class InputMethodApp:
         if self.keyboard_listener:
             self.keyboard_listener.stop()
 
-        self.candidate_box._close()
+        self.candidate_box.close()
 
         if target_hwnd:
             try:
@@ -351,20 +264,36 @@ class InputMethodApp:
                 pass
 
     def _hide_candidate_box(self) -> None:
-        """将候选框缩到待命图标并清空当前组合，但保持全局监听继续运行。"""
+        """将候选框缩到待命图标并清空当前组合，等待用户再次点图标进入输入。"""
         self.last_replace_length = 0
         self._display_input_buffer = ""
         self.input_manager.clear_buffer(notify=False)
-        self.candidate_box._clear_input(focus_input=False)
-        self.candidate_box.clear_commit_text()
+        self._clear_candidate_box_state(focus_input=False, clear_commit_text=True)
 
+        self._enter_passive_standby(reason="hide")
+
+        self._restore_external_window()
+
+    def _enter_passive_standby(self, reason: str) -> None:
+        """进入待命图标并暂停全局接管，直到用户显式恢复。"""
+        self.is_passthrough_enabled = True
+        self._passive_standby_reason = reason
+        self.candidate_box.set_manual_input_enabled(False)
         self.candidate_box.show_standby()
 
-        if self.last_external_hwnd and self.last_external_hwnd != self.own_hwnd:
-            try:
-                self.window_manager.restore_window(self.last_external_hwnd)
-            except Exception:
-                pass
+    def _resume_global_capture(self) -> None:
+        """恢复全局接管，但保持当前窗口显示状态不变。"""
+        self.is_passthrough_enabled = False
+        self._passive_standby_reason = None
+
+    def _resume_from_standby(self) -> None:
+        """用户主动点回候选框时，进入手动输入模式，不恢复全局接管。"""
+        self.is_passthrough_enabled = True
+        self._passive_standby_reason = "manual"
+        self.last_replace_length = 0
+        self._display_input_buffer = ""
+        self.input_manager.clear_buffer(notify=False)
+        self.candidate_box.clear_input(focus_input=False)
 
     def _dispatch_candidates_update(
         self,
@@ -400,7 +329,7 @@ class InputMethodApp:
         """
         buffer_text = self.input_manager.get_buffer()
 
-        # 全局监听模式下，输入框显示物理键；投影行显示 PUA 编码字符。
+        # 全局监听模式下，输入框显示 PUA 编码字符；投影行反查显示物理 ASCII 键。
         display_text = self._display_input_buffer if buffer_text else ""
         if (
             self.candidate_box.get_input() != display_text
@@ -409,6 +338,7 @@ class InputMethodApp:
             self.candidate_box.set_input(display_text, projected_text=buffer_text)
 
         # 更新候选框显示
+        self.candidate_box.set_prefix_hint(self._format_prefix_hint(buffer_text))
         self.candidate_box.update_candidates(candidates, pinyin, code, status)
 
         # 只要仍在组合输入，就保持编辑框可见；候选为空也应允许继续编辑。
@@ -454,21 +384,11 @@ class InputMethodApp:
             and self.last_external_hwnd != self.own_hwnd
         ):
             self._paste_to_previous_window(hanzi)
+            self._enter_passive_standby(reason="commit")
 
-    def _commit_candidate_box_text(self, text: str) -> None:
-        """将候选框里累积的汉字整段上屏到外部编辑区。"""
-        self.clipboard.copy(text)
-
-        if (
-            self.last_external_hwnd
-            and self.last_external_hwnd != self.own_hwnd
-        ):
-            self.last_replace_length = 0
-            self._schedule_ui(50, lambda: self._paste_to_previous_window(text))
-
-        self.candidate_box.clear_commit_text()
+    def _after_commit_candidate_box_text(self) -> None:
         self._display_input_buffer = ""
-        self.candidate_box._clear_input(focus_input=False)
+        self._enter_passive_standby(reason="commit-box")
 
     def _on_key_press(self, key_info: dict[str, Any]) -> bool:
         """
@@ -551,7 +471,7 @@ class InputMethodApp:
         raw_text: str,
         handled: bool,
     ) -> None:
-        """同步全局输入模式下输入框要显示的原始键盘字符。"""
+        """同步全局输入模式下输入框要显示的 PUA 编码字符。"""
         buffer_length = len(self.input_manager.get_buffer())
         if buffer_length == 0:
             self._display_input_buffer = ""
@@ -561,7 +481,10 @@ class InputMethodApp:
         if key in ("Backspace", "backspace") and handled is False:
             self._display_input_buffer = self._display_input_buffer[:-1]
         elif raw_text:
-            self._display_input_buffer += raw_text
+            projected_text = key_info.get("text", "")
+            self._display_input_buffer += (
+                projected_text if isinstance(projected_text, str) else raw_text
+            )
 
         if len(self._display_input_buffer) > buffer_length:
             self._display_input_buffer = self._display_input_buffer[-buffer_length:]
@@ -595,6 +518,12 @@ class InputMethodApp:
         except Exception as e:
             print(f"启动键盘监听失败: {e}")
             print("将使用手动输入模式")
+
+        print("\n当前主入口处于测试模式:")
+        print("1. 平时保持右下角待命图标，不接管记事本里的英文输入")
+        print("2. 想输入汉字时，点击右下角的'音'图标")
+        print("3. 候选框弹出并获得焦点后，在编码框中输入")
+        print("4. 选字后会回到待命图标，可继续在外部窗口编辑")
 
         # 运行候选框
         self.candidate_box.run()
