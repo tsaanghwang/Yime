@@ -34,6 +34,8 @@ from yime.input_method.core.decoders import (
 from yime.input_method.core.char_code_index import CharCodeIndex
 from yime.input_method.core.input_manager import InputManager, InputState
 from yime.input_method.core.prefix_tree import PrefixTree
+from yime.input_method.app_base import BaseInputMethodApp
+from yime.input_method.ui.candidate_box_actions import CandidateBoxActions
 
 
 class TestResult:
@@ -114,6 +116,7 @@ def test_decoders(result: TestResult):
         result.add_fail(test_name, str(e))
 
     # 测试 RuntimeCandidateDecoder
+    runtime_decoder = None
     test_name = "RuntimeCandidateDecoder 初始化"
     try:
         runtime_decoder = RuntimeCandidateDecoder(app_dir)
@@ -126,6 +129,39 @@ def test_decoders(result: TestResult):
         # Git LFS文件未拉取，这也是预期情况
         print(f"  跳过: Git LFS文件未拉取 - {e}")
         result.add_pass(f"{test_name} (跳过)")
+    except Exception as e:
+        result.add_fail(test_name, str(e))
+
+    test_name = "RuntimeCandidateDecoder 真实词语键可直接命中"
+    try:
+        if runtime_decoder is None:
+            print("  跳过: 运行时词语数据不可用")
+            result.add_pass(f"{test_name} (跳过)")
+        else:
+            phrase_code = ""
+            phrase_text = ""
+            for code, raw_candidates in runtime_decoder.by_code.items():
+                if len(code) < 8:
+                    continue
+                for candidate in raw_candidates:
+                    if str(candidate.get("entry_type", "")).strip() != "phrase":
+                        continue
+                    text = str(candidate.get("text", "")).strip()
+                    if 2 <= len(text) <= 4:
+                        phrase_code = code
+                        phrase_text = text
+                        break
+                if phrase_code:
+                    break
+
+            assert phrase_code, "运行时数据中应至少存在一条 2-4 字词语候选"
+            canonical, active, _pinyin, candidates, status = runtime_decoder.decode_text(phrase_code)
+            assert canonical == phrase_code
+            assert active == phrase_code
+            assert phrase_text in candidates, (
+                f"真实词语键 {phrase_code!r} 应命中 {phrase_text!r}，实际候选: {candidates[:5]} | {status}"
+            )
+            result.add_pass(test_name)
     except Exception as e:
         result.add_fail(test_name, str(e))
 
@@ -183,6 +219,40 @@ def test_decoders(result: TestResult):
     except Exception as e:
         result.add_fail(test_name, str(e))
 
+    test_name = "BaseInputMethodApp 不足4码时并入前缀单字候选"
+    try:
+        app = BaseInputMethodApp.__new__(BaseInputMethodApp)
+        app.decoder = composite_decoder
+
+        prefix_matches = composite_decoder.get_char_candidates_by_prefix("", limit=1)
+        assert prefix_matches, "运行时索引中应至少存在一组单字编码"
+        prefix_code, exact_candidates = prefix_matches[0]
+        assert exact_candidates, "前缀编码应携带单字候选"
+
+        merged = app._resolve_display_candidates(prefix_code[:1], [])
+        assert merged, "不足4码时应显示前缀单字候选"
+        assert exact_candidates[0].text in merged
+
+        canonical, _active, _pinyin, candidates, _status = composite_decoder.decode_text("abcd")
+        preserved = app._resolve_display_candidates(canonical, candidates)
+        assert preserved == candidates
+        result.add_pass(test_name)
+    except Exception as e:
+        result.add_fail(test_name, str(e))
+
+    test_name = "CompositeCandidateDecoder 大写 H 走零声母编码"
+    try:
+        physical_input_map = build_physical_input_map(project_root)
+        projected = project_physical_input("Hsss", physical_input_map)
+        canonical, active, pinyin, candidates, status = composite_decoder.decode_text(projected)
+        assert canonical == composite_decoder.runtime_decoder.bmp_to_canonical.get(projected[0], projected[0]) + composite_decoder.runtime_decoder.bmp_to_canonical.get(projected[1], projected[1]) + composite_decoder.runtime_decoder.bmp_to_canonical.get(projected[2], projected[2]) + composite_decoder.runtime_decoder.bmp_to_canonical.get(projected[3], projected[3]) if composite_decoder.runtime_decoder is not None else canonical
+        assert pinyin == "a3", f"期望 a3，得到: {pinyin}"
+        assert candidates, "期望零声母 a3 能命中候选"
+        assert candidates[0] in {"啊", "阿", "呵"}, f"零声母候选异常: {candidates[:3]}"
+        result.add_pass(test_name)
+    except Exception as e:
+        result.add_fail(test_name, str(e))
+
     test_name = "SQLiteRuntimeCandidateDecoder 单字编码查询"
     try:
         if not (app_dir / "pinyin_hanzi.db").exists():
@@ -208,7 +278,7 @@ def test_decoders(result: TestResult):
         runtime_decoder = RuntimeCandidateDecoder.__new__(RuntimeCandidateDecoder)
         runtime_decoder.bmp_to_canonical = {}
         runtime_decoder.by_code = {
-            "abcd efgh": [
+            "abcdefgh": [
                 {
                     "text": "安全",
                     "entry_type": "phrase",
@@ -277,7 +347,7 @@ def test_decoders(result: TestResult):
         runtime_decoder = RuntimeCandidateDecoder.__new__(RuntimeCandidateDecoder)
         runtime_decoder.bmp_to_canonical = {}
         runtime_decoder.by_code = {
-            "abcd efgh": [
+            "abcdefgh": [
                 {
                     "text": "安全",
                     "entry_type": "phrase",
@@ -390,6 +460,18 @@ def test_input_manager(result: TestResult):
         handled = manager.process_key({'key': 'Escape', 'ascii': None})
         assert manager.get_buffer() == "", "ESC应该清空缓冲区"
 
+        result.add_pass(test_name)
+    except Exception as e:
+        result.add_fail(test_name, str(e))
+
+    test_name = "InputManager Space 提交首选候选"
+    try:
+        manager.clear_buffer()
+        manager.current_candidates = ["安", "按"]
+        handled = manager.process_key({'key': 'Space', 'ascii': None})
+        assert handled is False, "Space 选首选时应该被拦截"
+        assert commits[-1] == "安", "Space 应提交首选候选"
+        assert manager.get_buffer() == "", "Space 选首选后应清空编码缓冲区"
         result.add_pass(test_name)
     except Exception as e:
         result.add_fail(test_name, str(e))
@@ -593,6 +675,138 @@ def test_utilities(result: TestResult):
     except Exception as e:
         result.add_fail(test_name, str(e))
 
+    test_name = "WindowManager restore_window 返回前台切换结果"
+    try:
+        from yime.input_method.utils.window_manager import WindowManager
+
+        class FakeUser32:
+            def __init__(self):
+                self.foreground = 100
+                self.attached = []
+                self.shown_handles = []
+
+            @staticmethod
+            def _hwnd_value(hwnd):
+                return int(getattr(hwnd, "value", hwnd))
+
+            def GetForegroundWindow(self):
+                return self.foreground
+
+            def GetAncestor(self, hwnd, _flag):
+                value = self._hwnd_value(hwnd)
+                return 200 if value == 201 else value
+
+            def GetWindowThreadProcessId(self, hwnd, _pid):
+                value = self._hwnd_value(hwnd)
+                return 11 if value == 100 else 22
+
+            def AttachThreadInput(self, current_thread_id, thread_id, attach):
+                self.attached.append((current_thread_id, thread_id, bool(attach)))
+                return 1
+
+            def ShowWindow(self, hwnd, _cmd):
+                self.shown_handles.append(self._hwnd_value(hwnd))
+                return 1
+
+            def BringWindowToTop(self, hwnd):
+                self.foreground = self._hwnd_value(hwnd)
+                return 1
+
+            def SetForegroundWindow(self, hwnd):
+                self.foreground = self._hwnd_value(hwnd)
+                return 1
+
+            def SetActiveWindow(self, hwnd):
+                return self._hwnd_value(hwnd)
+
+            def SetFocus(self, hwnd):
+                return self._hwnd_value(hwnd)
+
+        class FakeKernel32:
+            def GetCurrentThreadId(self):
+                return 7
+
+        original_user32 = WindowManager._user32
+        original_kernel32 = WindowManager._kernel32
+        fake_user32 = FakeUser32()
+        try:
+            WindowManager._user32 = fake_user32
+            WindowManager._kernel32 = FakeKernel32()
+            globals_ref = WindowManager.restore_window.__globals__
+            original_global_user32 = globals_ref["user32"]
+            original_global_kernel32 = globals_ref["kernel32"]
+            globals_ref["user32"] = fake_user32
+            globals_ref["kernel32"] = WindowManager._kernel32
+
+            restored = WindowManager.restore_window(200)
+
+            assert restored is True
+            assert fake_user32.foreground == 200
+            assert fake_user32.shown_handles == [200]
+            assert fake_user32.attached == [
+                (7, 11, True),
+                (7, 22, True),
+                (7, 22, False),
+                (7, 11, False),
+            ]
+
+            fake_user32.foreground = 100
+            fake_user32.shown_handles.clear()
+            restored = WindowManager.restore_window(201)
+
+            assert restored is True
+            assert fake_user32.foreground == 200
+            assert fake_user32.shown_handles == [200]
+        finally:
+            WindowManager._user32 = original_user32
+            WindowManager._kernel32 = original_kernel32
+            globals_ref = WindowManager.restore_window.__globals__
+            globals_ref["user32"] = original_global_user32
+            globals_ref["kernel32"] = original_global_kernel32
+
+        result.add_pass(test_name)
+    except Exception as e:
+        result.add_fail(test_name, str(e))
+
+    test_name = "WindowManager 将子控件句柄归一化到顶层窗口"
+    try:
+        from yime.input_method.utils.window_manager import WindowManager
+
+        class FakeUser32:
+            @staticmethod
+            def GetAncestor(hwnd, _flag):
+                value = int(getattr(hwnd, "value", hwnd))
+                return 200 if value == 201 else value
+
+            @staticmethod
+            def GetWindowTextW(_hwnd, buffer, _size):
+                buffer.value = "记事本"
+                return len(buffer.value)
+
+            @staticmethod
+            def GetClassNameW(_hwnd, buffer, _size):
+                buffer.value = "Notepad"
+                return len(buffer.value)
+
+        original_user32 = WindowManager._user32
+        globals_ref = WindowManager.normalize_window_handle.__globals__
+        original_global_user32 = globals_ref["user32"]
+        try:
+            WindowManager._user32 = FakeUser32()
+            globals_ref["user32"] = WindowManager._user32
+
+            assert WindowManager.normalize_window_handle(201) == 200
+            assert WindowManager.normalize_window_handle(200) == 200
+            assert WindowManager.normalize_window_handle(None) is None
+            assert WindowManager.describe_window(201) == "hwnd=200 标题=记事本 类=Notepad"
+        finally:
+            WindowManager._user32 = original_user32
+            globals_ref["user32"] = original_global_user32
+
+        result.add_pass(test_name)
+    except Exception as e:
+        result.add_fail(test_name, str(e))
+
     test_name = "投影编码反查物理 ASCII"
     try:
         physical_input_map = build_physical_input_map(project_root)
@@ -600,6 +814,8 @@ def test_utilities(result: TestResult):
         projected_text = project_physical_input("qsss", physical_input_map)
         assert projected_text != "qsss"
         assert unproject_physical_input(projected_text, projected_to_physical_map) == "qsss"
+        assert project_physical_input("H", physical_input_map) == physical_input_map["H"]
+        assert unproject_physical_input(physical_input_map["H"], projected_to_physical_map) == "H"
         result.add_pass(test_name)
     except Exception as e:
         result.add_fail(test_name, str(e))
@@ -669,7 +885,6 @@ def test_ui_components(result: TestResult):
             input_display_formatter=format_input_outline,
             projected_code_formatter=format_projected_code,
             on_input_change=on_input_change,
-            on_decode_from_clipboard=lambda: None,
             on_copy_candidate=lambda x: None,
         )
 
@@ -677,9 +892,38 @@ def test_ui_components(result: TestResult):
         on_input_change()
         assert box.get_input() == physical_input_map["a"]
         assert box.get_projected_input() == physical_input_map["a"]
-        assert box.projected_code_var.get() == "a"
-        assert "[" not in box.input_outline_var.get()
-        assert "]" not in box.input_outline_var.get()
+        assert box.projected_code_var.get() == ""
+        assert box.input_outline_var.get() == ""
+        assert not hasattr(box, "prefix_hint_panel")
+        assert box.page_size_spinbox is None
+        assert box.page_size_var.get() == 5
+        box.update_candidates(["一", "乙", "二", "十", "丁"], "yi1", "", "")
+        candidate_text = box.candidate_text.get("1.0", "end-1c")
+        assert "1. 一  2. 乙" in candidate_text
+        assert "第 1/1 页" not in candidate_text
+        assert str(box.candidate_text.cget("height")) == "1"
+        assert str(box.first_page_button.cget("text")) == "⏮"
+        assert str(box.prev_page_button.cget("text")) == "◀"
+        assert str(box.next_page_button.cget("text")) == "▶"
+        assert str(box.last_page_button.cget("text")) == "⏭"
+        assert box.first_page_button.pack_info()["side"] == "left"
+        assert box.prev_page_button.pack_info()["side"] == "left"
+
+        box.set_page_size(4)
+        box.update_candidates(["一", "乙", "二", "十", "丁"], "yi1", "", "")
+        box.show_last_page()
+        assert box.page_info_var.get().startswith("第 2/2 页")
+        assert str(box.last_page_button.cget("state")) == "disabled"
+        box.show_first_page()
+        assert box.page_info_var.get().startswith("第 1/2 页")
+        assert str(box.first_page_button.cget("state")) == "disabled"
+
+        box.set_candidate_layout("vertical")
+        vertical_text = box.candidate_text.get("1.0", "end-1c")
+        assert "1. 一\n2. 乙" in vertical_text
+        assert "第 1/2 页" in vertical_text
+        assert int(box.candidate_text.cget("height")) >= 4
+        assert box.first_page_button.pack_info().get("side", "top") == "top"
 
         box.root.destroy()
         root.destroy()
@@ -688,6 +932,508 @@ def test_ui_components(result: TestResult):
         # GUI测试失败是可接受的
         print(f"  跳过: GUI环境不可用 - {e}")
         result.add_pass(f"{test_name} (跳过)")
+
+    test_name = "CandidateBox 激活时默认定位到外部窗口右下方"
+    try:
+        from yime.input_method.ui.candidate_box import CandidateBox
+
+        class FakeRoot:
+            def update_idletasks(self):
+                return None
+
+            def winfo_reqwidth(self):
+                return 240
+
+            def winfo_reqheight(self):
+                return 120
+
+            def winfo_vrootx(self):
+                return 0
+
+            def winfo_vrooty(self):
+                return 0
+
+            def winfo_vrootwidth(self):
+                return 1920
+
+            def winfo_vrootheight(self):
+                return 1080
+
+            def winfo_screenwidth(self):
+                return 1920
+
+            def winfo_screenheight(self):
+                return 1080
+
+            def winfo_id(self):
+                return 111
+
+        box = CandidateBox.__new__(CandidateBox)
+        box.root = FakeRoot()
+
+        original_get_foreground_window = CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_foreground_window
+        original_get_window_rect = CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_window_rect
+        try:
+            CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_foreground_window = staticmethod(lambda: 222)
+            CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_window_rect = staticmethod(lambda _hwnd: (100, 100, 900, 500))
+
+            target_x, target_y = CandidateBox._resolve_geometry(box, None, None, focus_input=True)
+
+            assert target_x == 840
+            assert target_y == 540
+        finally:
+            CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_foreground_window = original_get_foreground_window
+            CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_window_rect = original_get_window_rect
+
+        result.add_pass(test_name)
+    except Exception as e:
+        result.add_fail(test_name, str(e))
+
+    test_name = "CandidateBox 最小化时切到右下角待命图标"
+    try:
+        from yime.input_method.ui.candidate_box import CandidateBox
+
+        calls = []
+
+        class FakeRoot:
+            def state(self):
+                return "iconic"
+
+            def after(self, delay, callback):
+                calls.append((delay, callback))
+
+        box = CandidateBox.__new__(CandidateBox)
+        box.root = FakeRoot()
+        box._handling_iconify = False
+        box.show_standby = lambda: calls.append("standby")
+
+        box._on_window_unmap(type("Evt", (), {"widget": box.root})())
+
+        assert calls and calls[0][0] == 0
+        calls[0][1]()
+        assert "standby" in calls
+        assert box._handling_iconify is False
+        result.add_pass(test_name)
+    except Exception as e:
+        result.add_fail(test_name, str(e))
+
+    test_name = "CandidateBox 半透明静置态点击时恢复激活回调"
+    try:
+        from yime.input_method.ui.candidate_box import CandidateBox
+
+        calls = []
+
+        class FakeActions:
+            def restore_from_standby(self, event=None):
+                calls.append("restore")
+
+            def activate_for_manual_input(self, event=None):
+                calls.append("activate")
+
+        box = CandidateBox.__new__(CandidateBox)
+        box._is_standby = False
+        box._manual_input_enabled = False
+        box._on_restore_from_standby = object()
+        box.actions = FakeActions()
+
+        box._reactivate_from_passive()
+
+        assert calls == ["restore"]
+        result.add_pass(test_name)
+    except Exception as e:
+        result.add_fail(test_name, str(e))
+
+    test_name = "CandidateBox 半透明静置态点击时可回退到本地聚焦"
+    try:
+        from yime.input_method.ui.candidate_box import CandidateBox
+
+        calls = []
+
+        class FakeActions:
+            def restore_from_standby(self, event=None):
+                calls.append("restore")
+
+            def activate_for_manual_input(self, event=None):
+                calls.append("activate")
+
+        box = CandidateBox.__new__(CandidateBox)
+        box._is_standby = False
+        box._manual_input_enabled = False
+        box._on_restore_from_standby = None
+        box.actions = FakeActions()
+
+        box._reactivate_from_passive()
+
+        assert calls == ["activate"]
+        result.add_pass(test_name)
+    except Exception as e:
+        result.add_fail(test_name, str(e))
+
+
+def test_candidate_box_actions(result: TestResult):
+    """测试候选框动作模块"""
+    print("\n" + "="*60)
+    print("测试候选框动作模块 (candidate_box_actions.py)")
+    print("="*60)
+
+    test_name = "CandidateBoxActions Space 在输入框中选首选入缓冲区"
+    try:
+        class FakeBox:
+            def __init__(self) -> None:
+                self.current_candidates = ["安", "按"]
+                self.input_entry = object()
+                self.commit_entry = object()
+                self.candidate_text = object()
+                self.root = object()
+                self._on_commit_text_callback = None
+                self._on_copy_candidate_callback = None
+                self._on_close = None
+                self._on_hide = None
+                self._on_restore_from_standby = None
+                self._manual = True
+                self.commit_text = ""
+                self.status = ""
+                self.selected = None
+                self.focus_value = None
+
+            def is_manual_input_enabled(self):
+                return self._manual
+
+            def get_candidate(self, index):
+                return self.current_candidates[index]
+
+            def append_commit_text(self, text):
+                self.commit_text += text
+
+            def on_select(self, hanzi):
+                self.selected = hanzi
+
+            def clear_input(self, focus_input=True):
+                self.focus_value = focus_input
+
+            def set_status(self, text):
+                self.status = text
+
+            def get_commit_text(self):
+                return self.commit_text
+
+        class FakeEvent:
+            def __init__(self, widget) -> None:
+                self.widget = widget
+
+        box = FakeBox()
+        actions = CandidateBoxActions(box)
+        outcome = actions.on_confirm_key(FakeEvent(box.input_entry))
+
+        assert outcome == "break"
+        assert box.selected == "安"
+        assert box.commit_text == "安"
+        assert box.status == "已加入缓冲区: 安"
+        assert box.focus_value is True
+        result.add_pass(test_name)
+    except Exception as e:
+        result.add_fail(test_name, str(e))
+
+
+def test_hotkey_app(result: TestResult):
+    """测试热键入口对外部窗口句柄的捕获"""
+    print("\n" + "="*60)
+    print("测试热键入口 (app_hotkey.py)")
+    print("="*60)
+
+    test_name = "InputMethodAppV2 唤出前记录外部窗口"
+    try:
+        from yime.input_method.app_hotkey import InputMethodAppV2
+
+        scheduled = []
+
+        class FakeRoot:
+            def after(self, delay, callback):
+                scheduled.append((delay, callback))
+
+        class FakeWindowManager:
+            def get_foreground_window(self):
+                return 43210
+
+            @staticmethod
+            def normalize_window_handle(hwnd):
+                return hwnd
+
+            @staticmethod
+            def describe_window(hwnd):
+                return f"hwnd={hwnd} 标题=Fake 类=Fake"
+
+        app = InputMethodAppV2.__new__(InputMethodAppV2)
+        app.own_hwnd = 12345
+        app.last_external_hwnd = None
+        app._locked_external_hwnd = None
+        app._is_closing = False
+        app.window_manager = FakeWindowManager()
+        app.candidate_box = type(
+            "FakeBox",
+            (),
+            {
+                "root": FakeRoot(),
+                "set_status": lambda self, _text: None,
+            },
+        )()
+        app._do_show_and_focus = lambda _target_description: None
+        app._enqueue_ui = lambda callback: scheduled.append(("queued", callback))
+        app._lock_external_target = BaseInputMethodApp._lock_external_target.__get__(app, BaseInputMethodApp)
+        app._normalize_external_hwnd = BaseInputMethodApp._normalize_external_hwnd.__get__(app, BaseInputMethodApp)
+        app._describe_external_target = BaseInputMethodApp._describe_external_target.__get__(app, BaseInputMethodApp)
+
+        app._show_and_focus()
+
+        assert app.last_external_hwnd == 43210
+        assert app._locked_external_hwnd == 43210
+        assert scheduled and scheduled[0][0] == "queued"
+        result.add_pass(test_name)
+    except Exception as e:
+        result.add_fail(test_name, str(e))
+
+    test_name = "InputMethodApp V1 热键可从待命唤起输入框"
+    try:
+        from yime.input_method.app import InputMethodApp
+
+        shown = []
+        status_updates = []
+
+        class FakeWindowManager:
+            def get_foreground_window(self):
+                return 24680
+
+            @staticmethod
+            def normalize_window_handle(hwnd):
+                return hwnd
+
+            @staticmethod
+            def describe_window(hwnd):
+                return f"hwnd={hwnd} 标题=Fake 类=Fake"
+
+        class FakeCandidateBox:
+            def clear_input(self, focus_input=False):
+                shown.append(("clear", focus_input))
+
+            def show(self, focus_input=True):
+                shown.append(("show", focus_input))
+
+            def set_status(self, text):
+                status_updates.append(text)
+
+        class FakeInputManager:
+            def clear_buffer(self, notify=False):
+                shown.append(("clear_buffer", notify))
+
+        app = InputMethodApp.__new__(InputMethodApp)
+        app.own_hwnd = 12345
+        app.last_external_hwnd = None
+        app._locked_external_hwnd = None
+        app.is_passthrough_enabled = False
+        app._passive_standby_reason = "idle"
+        app.last_replace_length = 9
+        app._display_input_buffer = "abcd"
+        app.window_manager = FakeWindowManager()
+        app.candidate_box = FakeCandidateBox()
+        app.input_manager = FakeInputManager()
+        app._lock_external_target = BaseInputMethodApp._lock_external_target.__get__(app, BaseInputMethodApp)
+        app._normalize_external_hwnd = BaseInputMethodApp._normalize_external_hwnd.__get__(app, BaseInputMethodApp)
+        app._describe_external_target = BaseInputMethodApp._describe_external_target.__get__(app, BaseInputMethodApp)
+
+        InputMethodApp._activate_from_hotkey(app, 24680, "hwnd=24680 标题=Fake 类=Fake")
+
+        assert app._locked_external_hwnd == 24680
+        assert app.last_external_hwnd == 24680
+        assert app.is_passthrough_enabled is True
+        assert app._passive_standby_reason == "manual"
+        assert app._post_commit_behavior == "standby"
+        assert app.last_replace_length == 0
+        assert app._display_input_buffer == ""
+        assert ("clear", False) in shown
+        assert ("show", True) in shown
+        assert status_updates[-1] == "V1 热键已唤起: hwnd=24680 标题=Fake 类=Fake"
+        result.add_pass(test_name)
+    except Exception as e:
+        result.add_fail(test_name, str(e))
+
+    test_name = "BaseInputMethodApp keep-input 模式发送后会回到输入框"
+    try:
+        app = BaseInputMethodApp.__new__(BaseInputMethodApp)
+        app._post_commit_behavior = "keep-input"
+        app.last_replace_length = 0
+        app._describe_external_target = lambda hwnd=None: "hwnd=30003 标题=Fake 类=Fake"
+        app._current_external_target_hwnd = lambda: 30003
+        app._restore_external_window = lambda: True
+        scheduled = []
+        app._schedule_ui = lambda delay, callback: scheduled.append((delay, callback))
+        app._unlock_external_target = lambda: scheduled.append(("unlock", None))
+        app._refocus_candidate_input = lambda: scheduled.append(("refocus", None))
+        app.keyboard_simulator = type(
+            "FakeKeyboardSimulator",
+            (),
+            {"send_ctrl_v": lambda self: None},
+        )()
+        app.candidate_box = type(
+            "FakeBox",
+            (),
+            {"status_var": type("FakeStatus", (), {"set": lambda self, text: None})()},
+        )()
+
+        BaseInputMethodApp._paste_to_previous_window(app, "你好")
+
+        assert scheduled[0][0] == 80
+        assert scheduled[1][0] == 180
+        assert scheduled[2][0] == 220
+        assert scheduled[2][1] == app._refocus_candidate_input
+        assert ("unlock", None) not in scheduled
+        result.add_pass(test_name)
+    except Exception as e:
+        result.add_fail(test_name, str(e))
+
+    test_name = "InputMethodApp V1 连续输入回焦时保持已锁定目标窗口"
+    try:
+        from yime.input_method.app import InputMethodApp
+
+        events = []
+
+        class FakeInputEntry:
+            def focus_set(self):
+                events.append("focus")
+
+            def icursor(self, value):
+                events.append(("cursor", value))
+
+            def selection_clear(self):
+                events.append("selection_clear")
+
+        class FakeCandidateBox:
+            def __init__(self):
+                self.input_entry = FakeInputEntry()
+
+            def show(self, focus_input=True):
+                events.append(("show", focus_input))
+
+        app = InputMethodApp.__new__(InputMethodApp)
+        app.candidate_box = FakeCandidateBox()
+        app._locked_external_hwnd = 24680
+
+        InputMethodApp._refocus_candidate_input(app)
+
+        assert app._locked_external_hwnd == 24680
+        assert events[0] == ("show", True)
+        assert "focus" in events
+        result.add_pass(test_name)
+    except Exception as e:
+        result.add_fail(test_name, str(e))
+
+    test_name = "InputMethodAppV2 发送后交还外部焦点"
+    try:
+        from yime.input_method.app_hotkey import InputMethodAppV2
+
+        scheduled = []
+
+        class FakeRoot:
+            def after(self, delay, callback):
+                scheduled.append((delay, callback))
+
+        class FakeCandidateBox:
+            def __init__(self):
+                self.root = FakeRoot()
+                self.standby_calls = 0
+                self.passive_calls = 0
+
+            def show(self, focus_input=True):
+                scheduled.append(("show", focus_input))
+
+            def show_standby(self):
+                self.standby_calls += 1
+
+            def show_passive(self):
+                self.passive_calls += 1
+
+        app = InputMethodAppV2.__new__(InputMethodAppV2)
+        app.candidate_box = FakeCandidateBox()
+        app._current_external_target_hwnd = lambda: 43210
+        app._restore_external_window = lambda: True
+
+        app._after_commit_candidate_box_text()
+
+        assert app.candidate_box.standby_calls == 0
+        assert app.candidate_box.passive_calls == 1
+        assert scheduled == []
+        result.add_pass(test_name)
+    except Exception as e:
+        result.add_fail(test_name, str(e))
+
+    test_name = "InputMethodApp V1 提交后进入半透明静置态而非图标待命"
+    try:
+        from yime.input_method.app import InputMethodApp
+
+        events = []
+
+        class FakeCandidateBox:
+            def set_manual_input_enabled(self, enabled):
+                events.append(("manual", enabled))
+
+            def show_standby(self):
+                events.append("standby")
+
+            def show_passive(self):
+                events.append("passive")
+
+        app = InputMethodApp.__new__(InputMethodApp)
+        app.candidate_box = FakeCandidateBox()
+        app.is_passthrough_enabled = False
+        app._passive_standby_reason = None
+        app._display_input_buffer = "abcd"
+        app._post_commit_behavior = "standby"
+
+        app._after_commit_candidate_box_text()
+
+        assert app.is_passthrough_enabled is True
+        assert app._passive_standby_reason == "commit-box"
+        assert app._display_input_buffer == ""
+        assert events == [("manual", False), "passive"]
+        result.add_pass(test_name)
+    except Exception as e:
+        result.add_fail(test_name, str(e))
+
+
+def test_base_app_target_lock(result: TestResult):
+    """测试公共目标窗口锁定逻辑"""
+    print("\n" + "="*60)
+    print("测试目标窗口锁定 (app_base.py)")
+    print("="*60)
+
+    test_name = "BaseInputMethodApp 锁定后轮询不覆盖目标窗口"
+    try:
+        app = BaseInputMethodApp.__new__(BaseInputMethodApp)
+        app.own_hwnd = 12345
+        app.last_external_hwnd = 20001
+        app._locked_external_hwnd = None
+        app.window_manager = type(
+            "FakeWindowManager",
+            (),
+            {
+                "get_foreground_window": lambda self: 30003,
+                "normalize_window_handle": staticmethod(lambda hwnd: hwnd),
+                "describe_window": staticmethod(
+                    lambda hwnd: f"hwnd={hwnd} 标题=Fake 类=Fake"
+                ),
+            },
+        )()
+        scheduled = []
+        app._schedule_ui = lambda delay, callback: scheduled.append((delay, callback))
+
+        BaseInputMethodApp._lock_external_target(app)
+        BaseInputMethodApp._poll_foreground_window(app)
+
+        assert app._locked_external_hwnd == 20001
+        assert app.last_external_hwnd == 20001
+        assert scheduled and scheduled[0][0] == 250
+        result.add_pass(test_name)
+    except Exception as e:
+        result.add_fail(test_name, str(e))
 
 
 def test_integration(result: TestResult):
@@ -745,6 +1491,9 @@ def main():
     test_char_code_index(result)
     test_utilities(result)
     test_ui_components(result)
+    test_candidate_box_actions(result)
+    test_hotkey_app(result)
+    test_base_app_target_lock(result)
     test_integration(result)
 
     # 输出总结

@@ -36,30 +36,10 @@ def load_source_phrase_rows(path: Path) -> tuple[list[tuple[str, str, str]], lis
     return source_files, rows
 
 
-def ensure_numeric_pinyin_rows_from_source(
-    conn: sqlite3.Connection,
-    source_rows: list[tuple[int, str, str, str, str, int, str | None, str]],
-) -> None:
-    existing = {row[0] for row in conn.execute('SELECT "全拼" FROM "数字标调拼音"')}
-    missing_rows: list[tuple[str, str | None, str, int]] = []
-
-    for _, _, _, _, phrase_pinyin, _, _, _ in source_rows:
-        for syllable in phrase_pinyin.split():
-            if syllable in existing:
-                continue
-            tone_number = int(syllable[-1]) if syllable and syllable[-1].isdigit() else 5
-            base_pinyin = syllable[:-1] if syllable and syllable[-1].isdigit() else syllable
-            missing_rows.append((syllable, None, base_pinyin, tone_number))
-            existing.add(syllable)
-
-    if missing_rows:
-        conn.executemany(
-            '''
-            INSERT OR IGNORE INTO "数字标调拼音" ("全拼", "声母", "韵母", "声调")
-            VALUES (?, ?, ?, ?)
-            ''',
-            missing_rows,
-        )
+def parse_numeric_pinyin_parts(pinyin_tone: str) -> tuple[str | None, str | None, int]:
+    tone_number = int(pinyin_tone[-1]) if pinyin_tone and pinyin_tone[-1].isdigit() else 5
+    final = pinyin_tone[:-1] if pinyin_tone and pinyin_tone[-1].isdigit() else pinyin_tone
+    return None, final or None, tone_number
 
 
 def build_phrase_yime_code(phrase_pinyin: str, numeric_pinyin_by_text: dict[str, tuple[int, int | None]], yime_by_mapping_id: dict[int, str]) -> str | None:
@@ -113,37 +93,104 @@ def import_phrases_and_mappings(
     source_rows: list[tuple[int, str, str, str, str, int, str | None, str]],
 ) -> tuple[int, int]:
     numeric_pinyin_rows = conn.execute(
-        'SELECT "编号", "全拼", "映射编号" FROM "数字标调拼音"'
+        'SELECT id, pinyin_tone, mapping_id FROM numeric_pinyin_inventory'
     ).fetchall()
     numeric_pinyin_by_text = {row[1]: (row[0], row[2]) for row in numeric_pinyin_rows}
+
+    if not numeric_pinyin_by_text:
+        legacy_numeric_rows = conn.execute(
+            'SELECT "编号", "全拼", "声母", "韵母", "声调", "映射编号" FROM "数字标调拼音"'
+        ).fetchall()
+        conn.executemany(
+            '''
+            INSERT INTO numeric_pinyin_inventory (
+                pinyin_tone,
+                initial,
+                final,
+                tone_number,
+                mapping_id,
+                legacy_numeric_pinyin_id,
+                updated_at
+            ) VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+            ''',
+            [
+                (row[1], row[2], row[3], int(row[4] or 5), row[5], row[0])
+                for row in legacy_numeric_rows
+            ],
+        )
+        numeric_pinyin_rows = conn.execute(
+            'SELECT id, pinyin_tone, mapping_id FROM numeric_pinyin_inventory'
+        ).fetchall()
+        numeric_pinyin_by_text = {row[1]: (row[0], row[2]) for row in numeric_pinyin_rows}
 
     yime_by_mapping_id = {
         row[0]: row[1]
         for row in conn.execute('SELECT "映射编号", "全拼" FROM "音元拼音" WHERE "映射编号" IS NOT NULL')
     }
 
-    phrase_rows_by_text: dict[str, tuple[str, str | None, float, int, int]] = {}
+    legacy_phrase_by_text = {
+        row[1]: row[0]
+        for row in conn.execute('SELECT "编号", "词语" FROM "词汇"')
+    }
+
+    missing_numeric_rows: list[tuple[str, str | None, str | None, int, int | None, int | None]] = []
+    seen_missing_numeric: set[str] = set()
+    phrase_rows_by_text: dict[str, tuple[str, str | None, float, int, int, int | None]] = {}
     phrase_map_rows: list[tuple[int, str, int, str, str]] = []
 
     for _, source_name, phrase, _, numeric_pinyin, reading_rank, comment, _ in source_rows:
+        for syllable in numeric_pinyin.split():
+            if syllable in numeric_pinyin_by_text or syllable in seen_missing_numeric:
+                continue
+            initial, final, tone_number = parse_numeric_pinyin_parts(syllable)
+            missing_numeric_rows.append((syllable, initial, final, tone_number, None, None))
+            seen_missing_numeric.add(syllable)
         if phrase not in phrase_rows_by_text:
             primary_yime_code = build_phrase_yime_code(numeric_pinyin, numeric_pinyin_by_text, yime_by_mapping_id)
             stored_phrase_code = primary_yime_code or numeric_pinyin
-            phrase_rows_by_text[phrase] = (phrase, stored_phrase_code, 1.0, len(phrase), 1)
+            phrase_rows_by_text[phrase] = (phrase, stored_phrase_code, 1.0, len(phrase), 1, legacy_phrase_by_text.get(phrase))
+
+    if missing_numeric_rows:
+        conn.executemany(
+            '''
+            INSERT OR IGNORE INTO numeric_pinyin_inventory (
+                pinyin_tone,
+                initial,
+                final,
+                tone_number,
+                mapping_id,
+                legacy_numeric_pinyin_id,
+                updated_at
+            ) VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+            ''',
+            missing_numeric_rows,
+        )
+        numeric_pinyin_rows = conn.execute(
+            'SELECT id, pinyin_tone, mapping_id FROM numeric_pinyin_inventory'
+        ).fetchall()
+        numeric_pinyin_by_text = {row[1]: (row[0], row[2]) for row in numeric_pinyin_rows}
 
     phrase_rows = list(phrase_rows_by_text.values())
 
+    conn.execute('DELETE FROM phrase_inventory')
     conn.executemany(
         '''
-        INSERT OR IGNORE INTO "词汇" ("词语", "音元拼音", "频率", "长度", "常用词语")
-        VALUES (?, ?, ?, ?, ?)
+        INSERT INTO phrase_inventory (
+            phrase,
+            yime_code,
+            phrase_frequency,
+            phrase_length,
+            is_common_phrase,
+            legacy_phrase_id,
+            updated_at
+        ) VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
         ''',
         phrase_rows,
     )
 
     phrase_id_by_text = {
         row[1]: row[0]
-        for row in conn.execute('SELECT "编号", "词语" FROM "词汇"')
+        for row in conn.execute('SELECT id, phrase FROM phrase_inventory')
     }
 
     conn.execute('DELETE FROM phrase_pinyin_map')
@@ -173,7 +220,7 @@ def write_import_metadata(conn: sqlite3.Connection, phrase_count: int, phrase_ma
     rows = [
         ("prototype_duozi_import_source", str(SOURCE_DB_PATH), "词语拼音来源数据库（phrase_readings）"),
         ("prototype_duozi_phrase_rows", str(phrase_count), "本次导入覆盖的词语读音行数"),
-        ("prototype_duozi_phrase_map_rows", str(phrase_map_count), "本次导入的词语到数字标调拼音映射行数"),
+        ("prototype_duozi_phrase_map_rows", str(phrase_map_count), "本次导入的 phrase_pinyin_map 行数"),
     ]
     conn.executemany(
         '''
@@ -189,8 +236,9 @@ def main() -> None:
     conn = sqlite3.connect(DB_PATH)
     try:
         conn.execute('PRAGMA foreign_keys = ON')
+        conn.execute('DROP TABLE IF EXISTS phrase_pinyin_map')
+        conn.execute('DROP TABLE IF EXISTS phrase_inventory')
         apply_schema(conn)
-        ensure_numeric_pinyin_rows_from_source(conn, source_rows)
         copied_rows = sync_source_phrase_table(conn, source_files, source_rows)
         phrase_count, phrase_map_count = import_phrases_and_mappings(conn, source_rows)
         write_import_metadata(conn, phrase_count, phrase_map_count)

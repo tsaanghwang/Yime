@@ -9,7 +9,7 @@ old_show = """    def _show_main_frame(self) -> None:
             self.standby_frame.pack_forget()
             self.main_frame.pack(fill=tk.BOTH, expand=True)
             self.root.attributes("-alpha", 0.97)
-            self.root.title("音元候选框")
+            self.root.title("音元拼音")
             self._is_standby = False"""
 
 new_show = """    def _show_main_frame(self) -> None:
@@ -17,7 +17,7 @@ new_show = """    def _show_main_frame(self) -> None:
             self.standby_frame.pack_forget()
             self.main_frame.pack(fill=tk.BOTH, expand=True)
             self.root.attributes("-alpha", 0.97)
-            self.root.title("音元候选框")
+            self.root.title("音元拼音")
             self.root.geometry("")  # 清除可能遗留的 54x54 写死尺寸，让布局重新被内部组件撑开
             self.root.update_idletasks()
             self._is_standby = False"""

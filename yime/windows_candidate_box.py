@@ -266,7 +266,7 @@ class CandidateBoxApp:
         self.font_family = font_family
         self.decoder = CompositeCandidateDecoder(Path(__file__).resolve().parent)
         self.root = tk.Tk()
-        self.root.title("音元候选框")
+        self.root.title("音元拼音")
         self.root.geometry("640x280")
         self.root.attributes("-topmost", True)
 

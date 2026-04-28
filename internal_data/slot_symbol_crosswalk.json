@@ -16,6 +16,9 @@
       "slot_number": 1,
       "category": "initial",
       "label": "b",
+      "display_labels": [
+        "q"
+      ],
       "runtime_bmp_char": "",
       "runtime_bmp_codepoint": "U+E4E9",
       "projection_bmp_char": "",
@@ -35,6 +38,9 @@
       "slot_number": 2,
       "category": "initial",
       "label": "p",
+      "display_labels": [
+        "p"
+      ],
       "runtime_bmp_char": "",
       "runtime_bmp_codepoint": "U+E4EA",
       "projection_bmp_char": "",
@@ -54,6 +60,9 @@
       "slot_number": 3,
       "category": "initial",
       "label": "f",
+      "display_labels": [
+        "["
+      ],
       "runtime_bmp_char": "",
       "runtime_bmp_codepoint": "U+E4EB",
       "projection_bmp_char": "",
@@ -73,6 +82,9 @@
       "slot_number": 4,
       "category": "initial",
       "label": "m",
+      "display_labels": [
+        "h"
+      ],
       "runtime_bmp_char": "",
       "runtime_bmp_codepoint": "U+E4EC",
       "projection_bmp_char": "",
@@ -92,6 +104,9 @@
       "slot_number": 5,
       "category": "initial",
       "label": "d",
+      "display_labels": [
+        "w"
+      ],
       "runtime_bmp_char": "",
       "runtime_bmp_codepoint": "U+E4ED",
       "projection_bmp_char": "",
@@ -111,6 +126,9 @@
       "slot_number": 6,
       "category": "initial",
       "label": "t",
+      "display_labels": [
+        "."
+      ],
       "runtime_bmp_char": "",
       "runtime_bmp_codepoint": "U+E4EE",
       "projection_bmp_char": "",
@@ -130,6 +148,9 @@
       "slot_number": 7,
       "category": "initial",
       "label": "l",
+      "display_labels": [
+        "b"
+      ],
       "runtime_bmp_char": "",
       "runtime_bmp_codepoint": "U+E4EF",
       "projection_bmp_char": "",
@@ -149,6 +170,9 @@
       "slot_number": 8,
       "category": "initial",
       "label": "n",
+      "display_labels": [
+        "y"
+      ],
       "runtime_bmp_char": "",
       "runtime_bmp_codepoint": "U+E4F0",
       "projection_bmp_char": "",
@@ -168,6 +192,9 @@
       "slot_number": 9,
       "category": "initial",
       "label": "g",
+      "display_labels": [
+        "]"
+      ],
       "runtime_bmp_char": "",
       "runtime_bmp_codepoint": "U+E4F1",
       "projection_bmp_char": "",
@@ -187,6 +214,9 @@
       "slot_number": 10,
       "category": "initial",
       "label": "k",
+      "display_labels": [
+        "'"
+      ],
       "runtime_bmp_char": "",
       "runtime_bmp_codepoint": "U+E4F2",
       "projection_bmp_char": "",
@@ -206,6 +236,9 @@
       "slot_number": 11,
       "category": "initial",
       "label": "h",
+      "display_labels": [
+        "n"
+      ],
       "runtime_bmp_char": "",
       "runtime_bmp_codepoint": "U+E4F3",
       "projection_bmp_char": "",
@@ -225,6 +258,9 @@
       "slot_number": 12,
       "category": "initial",
       "label": "'",
+      "display_labels": [
+        "H"
+      ],
       "runtime_bmp_char": "",
       "runtime_bmp_codepoint": "U+E4F4",
       "projection_bmp_char": "",
@@ -244,6 +280,9 @@
       "slot_number": 13,
       "category": "initial",
       "label": "z",
+      "display_labels": [
+        "6"
+      ],
       "runtime_bmp_char": "",
       "runtime_bmp_codepoint": "U+E4F5",
       "projection_bmp_char": "",
@@ -263,6 +302,9 @@
       "slot_number": 14,
       "category": "initial",
       "label": "c",
+      "display_labels": [
+        "5"
+      ],
       "runtime_bmp_char": "",
       "runtime_bmp_codepoint": "U+E4F6",
       "projection_bmp_char": "",
@@ -282,6 +324,9 @@
       "slot_number": 15,
       "category": "initial",
       "label": "s",
+      "display_labels": [
+        "4"
+      ],
       "runtime_bmp_char": "",
       "runtime_bmp_codepoint": "U+E4F7",
       "projection_bmp_char": "",
@@ -301,6 +346,9 @@
       "slot_number": 16,
       "category": "initial",
       "label": "zh",
+      "display_labels": [
+        "7"
+      ],
       "runtime_bmp_char": "",
       "runtime_bmp_codepoint": "U+E4F8",
       "projection_bmp_char": "",
@@ -320,6 +368,9 @@
       "slot_number": 17,
       "category": "initial",
       "label": "ch",
+      "display_labels": [
+        "8"
+      ],
       "runtime_bmp_char": "",
       "runtime_bmp_codepoint": "U+E4F9",
       "projection_bmp_char": "",
@@ -339,6 +390,9 @@
       "slot_number": 18,
       "category": "initial",
       "label": "sh",
+      "display_labels": [
+        "9"
+      ],
       "runtime_bmp_char": "",
       "runtime_bmp_codepoint": "U+E4FA",
       "projection_bmp_char": "",
@@ -358,6 +412,9 @@
       "slot_number": 19,
       "category": "initial",
       "label": "r",
+      "display_labels": [
+        "0"
+      ],
       "runtime_bmp_char": "",
       "runtime_bmp_codepoint": "U+E4FB",
       "projection_bmp_char": "",
@@ -377,6 +434,9 @@
       "slot_number": 20,
       "category": "initial",
       "label": "j",
+      "display_labels": [
+        "3"
+      ],
       "runtime_bmp_char": "",
       "runtime_bmp_codepoint": "U+E4FC",
       "projection_bmp_char": "",
@@ -396,6 +456,9 @@
       "slot_number": 21,
       "category": "initial",
       "label": "q",
+      "display_labels": [
+        "2"
+      ],
       "runtime_bmp_char": "",
       "runtime_bmp_codepoint": "U+E4FD",
       "projection_bmp_char": "",
@@ -415,6 +478,9 @@
       "slot_number": 22,
       "category": "initial",
       "label": "x",
+      "display_labels": [
+        "1"
+      ],
       "runtime_bmp_char": "",
       "runtime_bmp_codepoint": "U+E4FE",
       "projection_bmp_char": "",
@@ -434,6 +500,9 @@
       "slot_number": 23,
       "category": "initial",
       "label": "y",
+      "display_labels": [
+        "AltGr+Y"
+      ],
       "runtime_bmp_char": "",
       "runtime_bmp_codepoint": "U+E500",
       "projection_bmp_char": "",
@@ -453,6 +522,9 @@
       "slot_number": 24,
       "category": "initial",
       "label": "w",
+      "display_labels": [
+        "AltGr+U"
+      ],
       "runtime_bmp_char": "",
       "runtime_bmp_codepoint": "U+E4FF",
       "projection_bmp_char": "",
@@ -472,6 +544,9 @@
       "slot_number": 33,
       "category": "musical",
       "label": "ɪ́",
+      "display_labels": [
+        "u"
+      ],
       "runtime_bmp_char": "",
       "runtime_bmp_codepoint": "U+E509",
       "projection_bmp_char": "",
@@ -491,6 +566,9 @@
       "slot_number": 34,
       "category": "musical",
       "label": "ɪ̄",
+      "display_labels": [
+        ";"
+      ],
       "runtime_bmp_char": "",
       "runtime_bmp_codepoint": "U+E50A",
       "projection_bmp_char": "",
@@ -510,6 +588,9 @@
       "slot_number": 35,
       "category": "musical",
       "label": "ɪ̀",
+      "display_labels": [
+        "o"
+      ],
       "runtime_bmp_char": "",
       "runtime_bmp_codepoint": "U+E50B",
       "projection_bmp_char": "",
@@ -529,6 +610,9 @@
       "slot_number": 36,
       "category": "musical",
       "label": "ᴜ́",
+      "display_labels": [
+        "v"
+      ],
       "runtime_bmp_char": "",
       "runtime_bmp_codepoint": "U+E50C",
       "projection_bmp_char": "",
@@ -548,6 +632,9 @@
       "slot_number": 37,
       "category": "musical",
       "label": "ᴜ̄",
+      "display_labels": [
+        "g"
+      ],
       "runtime_bmp_char": "",
       "runtime_bmp_codepoint": "U+E50D",
       "projection_bmp_char": "",
@@ -567,6 +654,9 @@
       "slot_number": 38,
       "category": "musical",
       "label": "ᴜ̀",
+      "display_labels": [
+        "x"
+      ],
       "runtime_bmp_char": "",
       "runtime_bmp_codepoint": "U+E50E",
       "projection_bmp_char": "",
@@ -586,6 +676,9 @@
       "slot_number": 39,
       "category": "musical",
       "label": "ʏ́",
+      "display_labels": [
+        "/"
+      ],
       "runtime_bmp_char": "",
       "runtime_bmp_codepoint": "U+E50F",
       "projection_bmp_char": "",
@@ -605,6 +698,9 @@
       "slot_number": 40,
       "category": "musical",
       "label": "ʏ̄",
+      "display_labels": [
+        "z"
+      ],
       "runtime_bmp_char": "",
       "runtime_bmp_codepoint": "U+E510",
       "projection_bmp_char": "",
@@ -624,6 +720,9 @@
       "slot_number": 41,
       "category": "musical",
       "label": "ʏ̀",
+      "display_labels": [
+        ","
+      ],
       "runtime_bmp_char": "",
       "runtime_bmp_codepoint": "U+E511",
       "projection_bmp_char": "",
@@ -643,6 +742,9 @@
       "slot_number": 42,
       "category": "musical",
       "label": "ᴀ́",
+      "display_labels": [
+        "f"
+      ],
       "runtime_bmp_char": "",
       "runtime_bmp_codepoint": "U+E512",
       "projection_bmp_char": "",
@@ -662,6 +764,9 @@
       "slot_number": 43,
       "category": "musical",
       "label": "ᴀ̄",
+      "display_labels": [
+        "d"
+      ],
       "runtime_bmp_char": "",
       "runtime_bmp_codepoint": "U+E513",
       "projection_bmp_char": "",
@@ -681,6 +786,9 @@
       "slot_number": 44,
       "category": "musical",
       "label": "ᴀ̀",
+      "display_labels": [
+        "s"
+      ],
       "runtime_bmp_char": "",
       "runtime_bmp_codepoint": "U+E514",
       "projection_bmp_char": "",
@@ -700,6 +808,9 @@
       "slot_number": 45,
       "category": "musical",
       "label": "ó",
+      "display_labels": [
+        "j"
+      ],
       "runtime_bmp_char": "",
       "runtime_bmp_codepoint": "U+E515",
       "projection_bmp_char": "",
@@ -719,6 +830,9 @@
       "slot_number": 46,
       "category": "musical",
       "label": "ō",
+      "display_labels": [
+        "k"
+      ],
       "runtime_bmp_char": "",
       "runtime_bmp_codepoint": "U+E516",
       "projection_bmp_char": "",
@@ -738,6 +852,9 @@
       "slot_number": 47,
       "category": "musical",
       "label": "ò",
+      "display_labels": [
+        "l"
+      ],
       "runtime_bmp_char": "",
       "runtime_bmp_codepoint": "U+E517",
       "projection_bmp_char": "",
@@ -757,6 +874,9 @@
       "slot_number": 48,
       "category": "musical",
       "label": "ᴇ́",
+      "display_labels": [
+        "t"
+      ],
       "runtime_bmp_char": "",
       "runtime_bmp_codepoint": "U+E518",
       "projection_bmp_char": "",
@@ -776,6 +896,9 @@
       "slot_number": 49,
       "category": "musical",
       "label": "ᴇ̄",
+      "display_labels": [
+        "r"
+      ],
       "runtime_bmp_char": "",
       "runtime_bmp_codepoint": "U+E519",
       "projection_bmp_char": "",
@@ -795,6 +918,9 @@
       "slot_number": 50,
       "category": "musical",
       "label": "ᴇ̀",
+      "display_labels": [
+        "e"
+      ],
       "runtime_bmp_char": "",
       "runtime_bmp_codepoint": "U+E51A",
       "projection_bmp_char": "",
@@ -814,6 +940,9 @@
       "slot_number": 51,
       "category": "musical",
       "label": "󰉺́",
+      "display_labels": [
+        "J"
+      ],
       "runtime_bmp_char": "",
       "runtime_bmp_codepoint": "U+E51B",
       "projection_bmp_char": "",
@@ -833,6 +962,9 @@
       "slot_number": 52,
       "category": "musical",
       "label": "󰉺̄",
+      "display_labels": [
+        "K"
+      ],
       "runtime_bmp_char": "",
       "runtime_bmp_codepoint": "U+E51C",
       "projection_bmp_char": "",
@@ -852,6 +984,9 @@
       "slot_number": 53,
       "category": "musical",
       "label": "󰉺̀",
+      "display_labels": [
+        "L"
+      ],
       "runtime_bmp_char": "",
       "runtime_bmp_codepoint": "U+E51D",
       "projection_bmp_char": "",
@@ -871,6 +1006,9 @@
       "slot_number": 54,
       "category": "musical",
       "label": "󰊈́",
+      "display_labels": [
+        "A"
+      ],
       "runtime_bmp_char": "",
       "runtime_bmp_codepoint": "U+E51E",
       "projection_bmp_char": "",
@@ -890,6 +1028,9 @@
       "slot_number": 55,
       "category": "musical",
       "label": "󰊈̄",
+      "display_labels": [
+        "S"
+      ],
       "runtime_bmp_char": "",
       "runtime_bmp_codepoint": "U+E51F",
       "projection_bmp_char": "",
@@ -909,6 +1050,9 @@
       "slot_number": 56,
       "category": "musical",
       "label": "󰊈̀",
+      "display_labels": [
+        "D"
+      ],
       "runtime_bmp_char": "",
       "runtime_bmp_codepoint": "U+E520",
       "projection_bmp_char": "",
@@ -928,6 +1072,9 @@
       "slot_number": 57,
       "category": "musical",
       "label": "ḿ",
+      "display_labels": [
+        "AltGr+J"
+      ],
       "runtime_bmp_char": "",
       "runtime_bmp_codepoint": "U+E521",
       "projection_bmp_char": "",
@@ -947,6 +1094,9 @@
       "slot_number": 58,
       "category": "musical",
       "label": "m̄",
+      "display_labels": [
+        "AltGr+K"
+      ],
       "runtime_bmp_char": "",
       "runtime_bmp_codepoint": "U+E522",
       "projection_bmp_char": "",
@@ -966,6 +1116,9 @@
       "slot_number": 59,
       "category": "musical",
       "label": "m̀",
+      "display_labels": [
+        "AltGr+L"
+      ],
       "runtime_bmp_char": "",
       "runtime_bmp_codepoint": "U+E523",
       "projection_bmp_char": "",
@@ -985,6 +1138,9 @@
       "slot_number": 60,
       "category": "musical",
       "label": "ń",
+      "display_labels": [
+        "a"
+      ],
       "runtime_bmp_char": "",
       "runtime_bmp_codepoint": "U+E524",
       "projection_bmp_char": "",
@@ -1004,6 +1160,9 @@
       "slot_number": 61,
       "category": "musical",
       "label": "n̄",
+      "display_labels": [
+        "N"
+      ],
       "runtime_bmp_char": "",
       "runtime_bmp_codepoint": "U+E525",
       "projection_bmp_char": "",
@@ -1023,6 +1182,9 @@
       "slot_number": 62,
       "category": "musical",
       "label": "ǹ",
+      "display_labels": [
+        "m"
+      ],
       "runtime_bmp_char": "",
       "runtime_bmp_codepoint": "U+E526",
       "projection_bmp_char": "",
@@ -1042,6 +1204,9 @@
       "slot_number": 63,
       "category": "musical",
       "label": "ŋ́",
+      "display_labels": [
+        "i"
+      ],
       "runtime_bmp_char": "",
       "runtime_bmp_codepoint": "U+E527",
       "projection_bmp_char": "",
@@ -1061,6 +1226,9 @@
       "slot_number": 64,
       "category": "musical",
       "label": "ŋ̄",
+      "display_labels": [
+        "M"
+      ],
       "runtime_bmp_char": "",
       "runtime_bmp_codepoint": "U+E528",
       "projection_bmp_char": "",
@@ -1080,6 +1248,9 @@
       "slot_number": 65,
       "category": "musical",
       "label": "ŋ̀",
+      "display_labels": [
+        "c"
+      ],
       "runtime_bmp_char": "",
       "runtime_bmp_codepoint": "U+E529",
       "projection_bmp_char": "",
