@@ -53,7 +53,9 @@ class BaseInputMethodApp:
 
         self.own_hwnd = self.candidate_box.root.winfo_id()
         self.last_external_hwnd: Optional[int] = None
+        self._locked_external_hwnd: Optional[int] = None
         self.last_replace_length = 0
+        self._post_commit_behavior = "standby"
 
         self.candidate_box.root.protocol("WM_DELETE_WINDOW", self._close)
 
@@ -64,7 +66,6 @@ class BaseInputMethodApp:
             input_display_formatter=self._format_input_outline,
             projected_code_formatter=self._format_projected_code,
             on_input_change=self._on_input_change,
-            on_decode_from_clipboard=self._decode_from_clipboard,
             on_copy_candidate=self._copy_candidate,
             on_commit_text=self._commit_candidate_box_text,
             on_close=self._close,
@@ -81,38 +82,29 @@ class BaseInputMethodApp:
             return ""
         return project_physical_input(text, self.physical_input_map)
 
-    def _format_prefix_hint(self, text: str) -> str:
-        if not text:
-            return ""
-
-        canonical_code, active_code, _pinyin, candidates, _status = (
-            self.decoder.decode_text(text)
-        )
-        if candidates or not active_code or len(canonical_code) >= 4:
-            return ""
+    def _resolve_display_candidates(
+        self,
+        canonical_code: str,
+        decoded_candidates: list[str],
+    ) -> list[str]:
+        """Use prefix hits as the candidate list until a full syllable resolves."""
+        if decoded_candidates:
+            return list(decoded_candidates)
+        if not canonical_code or len(canonical_code) >= 4:
+            return []
 
         matches = self.decoder.get_char_candidates_by_prefix(canonical_code, limit=5)
-        if not matches:
-            return "暂无单字前缀命中"
-
-        candidate_count = sum(len(items) for _code, items in matches)
-        samples: list[str] = []
+        merged: list[str] = []
         seen: set[str] = set()
         for _code, items in matches:
             for item in items:
                 if item.text in seen:
                     continue
                 seen.add(item.text)
-                samples.append(item.text)
-                if len(samples) >= 8:
-                    break
-            if len(samples) >= 8:
-                break
-
-        sample_text = " ".join(samples)
-        if sample_text:
-            return f"可继续编码 {len(matches)} 组 / 单字候选 {candidate_count} 个 / 示例 {sample_text}"
-        return f"可继续编码 {len(matches)} 组 / 单字候选 {candidate_count} 个"
+                merged.append(item.text)
+                if len(merged) >= 8:
+                    return merged
+        return merged
 
     def _schedule_ui(self, delay_ms: int, callback: Callable[[], None]) -> object:
         return self.candidate_box.root.after(delay_ms, callback)
@@ -121,14 +113,49 @@ class BaseInputMethodApp:
         self.clipboard.copy(text)
         self.candidate_box.status_var.set(f"已复制: {text}")
 
+    def _normalize_external_hwnd(self, hwnd: Optional[int]) -> Optional[int]:
+        normalized = self.window_manager.normalize_window_handle(hwnd)
+        if not normalized or normalized == self.own_hwnd:
+            return None
+        return int(normalized)
+
+    def _describe_external_target(self, hwnd: Optional[int] = None) -> str:
+        return self.window_manager.describe_window(
+            self._normalize_external_hwnd(hwnd or self._current_external_target_hwnd())
+        )
+
+    def _set_post_commit_behavior(self, behavior: str) -> None:
+        self._post_commit_behavior = (
+            "keep-input" if behavior == "keep-input" else "standby"
+        )
+
+    def _should_keep_input_after_commit(self) -> bool:
+        return getattr(self, "_post_commit_behavior", "standby") == "keep-input"
+
+    def _current_external_target_hwnd(self) -> Optional[int]:
+        return self._normalize_external_hwnd(
+            self._locked_external_hwnd or self.last_external_hwnd
+        )
+
+    def _lock_external_target(self, hwnd: Optional[int] = None) -> Optional[int]:
+        target = self._normalize_external_hwnd(hwnd or self.last_external_hwnd)
+        if target is None:
+            return None
+        self.last_external_hwnd = target
+        self._locked_external_hwnd = target
+        return target
+
+    def _unlock_external_target(self) -> None:
+        self._locked_external_hwnd = None
+
     def _restore_external_window(self) -> bool:
-        if not self.last_external_hwnd or self.last_external_hwnd == self.own_hwnd:
+        target_hwnd = self._current_external_target_hwnd()
+        if not target_hwnd:
             return False
         try:
-            self.window_manager.restore_window(self.last_external_hwnd)
+            return bool(self.window_manager.restore_window(target_hwnd))
         except Exception:
             return False
-        return True
 
     def _clear_candidate_box_state(
         self,
@@ -142,7 +169,7 @@ class BaseInputMethodApp:
 
     def _poll_foreground_window(self) -> None:
         foreground = self.window_manager.get_foreground_window()
-        if foreground and foreground != self.own_hwnd:
+        if not self._locked_external_hwnd and foreground and foreground != self.own_hwnd:
             self.last_external_hwnd = foreground
         self._schedule_ui(250, self._poll_foreground_window)
 
@@ -156,7 +183,6 @@ class BaseInputMethodApp:
             self.candidate_box.set_input(input_text, projected_text=input_text)
 
         if not input_text:
-            self.candidate_box.set_prefix_hint("")
             self.candidate_box.update_candidates(
                 [],
                 "",
@@ -171,8 +197,10 @@ class BaseInputMethodApp:
 
         self.last_replace_length = len(active_code) if active_code else min(4, len(input_text))
         code_display = build_code_display(input_text, canonical_code, active_code)
-        self.candidate_box.set_prefix_hint(self._format_prefix_hint(input_text))
-        self.candidate_box.update_candidates(candidates, pinyin, code_display, status)
+        display_candidates = self._resolve_display_candidates(canonical_code, candidates)
+        if display_candidates and not candidates and len(canonical_code) < 4:
+            status = f"当前 {len(canonical_code)}/4 码，先显示前缀单字候选，继续输入可收窄结果。"
+        self.candidate_box.update_candidates(display_candidates, pinyin, code_display, status)
 
     def _record_candidate_selection(self, hanzi: str) -> None:
         input_text = self.candidate_box.get_projected_input()
@@ -184,26 +212,21 @@ class BaseInputMethodApp:
         if input_text:
             self.decoder.record_selection(input_text, hanzi)
 
-    def _decode_from_clipboard(self) -> None:
-        captured = self.clipboard.paste()
-        if not captured:
-            self.candidate_box.status_var.set("剪贴板没有可读取文本。")
-            return
-
-        self.candidate_box.set_input(
-            self._format_visible_input(captured),
-            projected_text=captured,
-        )
-        self.candidate_box.input_entry.focus_set()
-        self._on_input_change()
-
     def _paste_to_previous_window(self, hanzi: str) -> None:
-        if not self.last_external_hwnd:
+        target_hwnd = self._current_external_target_hwnd()
+        target_description = self._describe_external_target(target_hwnd)
+        should_keep_input = self._should_keep_input_after_commit()
+        if not target_hwnd:
             self.candidate_box.status_var.set(f"已复制: {hanzi}，未找到上一个窗口")
+            self._unlock_external_target()
             return
 
         if not self._restore_external_window():
-            self.candidate_box.status_var.set(f"已复制: {hanzi}，恢复前一个窗口失败")
+            self.candidate_box.status_var.set(
+                f"已复制: {hanzi}，恢复目标失败：{target_description}"
+            )
+            print(f"[YIME] 恢复目标失败: {target_description}")
+            self._unlock_external_target()
             return
 
         if self.last_replace_length > 0:
@@ -217,23 +240,35 @@ class BaseInputMethodApp:
             self._schedule_ui(
                 280,
                 lambda: self.candidate_box.status_var.set(
-                    f"已替换前一个窗口中的 {self.last_replace_length} 个编码字符: {hanzi}"
+                    f"已替换 {self.last_replace_length} 个编码字符: {hanzi} -> {target_description}"
                 ),
             )
+            if should_keep_input:
+                self._schedule_ui(320, self._refocus_candidate_input)
+            else:
+                self._schedule_ui(320, self._unlock_external_target)
             return
 
         self._schedule_ui(80, self.keyboard_simulator.send_ctrl_v)
         self._schedule_ui(
             180,
-            lambda: self.candidate_box.status_var.set(f"已回贴到前一个窗口: {hanzi}"),
+            lambda: self.candidate_box.status_var.set(
+                f"已回贴: {hanzi} -> {target_description}"
+            ),
         )
+        if should_keep_input:
+            self._schedule_ui(220, self._refocus_candidate_input)
+        else:
+            self._schedule_ui(220, self._unlock_external_target)
 
     def _commit_candidate_box_text(self, text: str) -> None:
         self.clipboard.copy(text)
 
-        if self.last_external_hwnd and self.last_external_hwnd != self.own_hwnd:
+        if self._current_external_target_hwnd():
             self.last_replace_length = 0
             self._schedule_ui(50, lambda: self._paste_to_previous_window(text))
+        else:
+            self._unlock_external_target()
 
         self.candidate_box.clear_commit_text()
         self._clear_candidate_box_state(focus_input=False)

@@ -9,7 +9,10 @@ from __future__ import annotations
 import sys
 import argparse
 import ctypes
+import queue
+import tkinter as tk
 from pathlib import Path
+from typing import Callable
 
 # 添加项目根目录到路径
 project_root = Path(__file__).resolve().parent.parent.parent
@@ -39,17 +42,14 @@ class InputMethodAppV2(BaseInputMethodApp):
         self.auto_paste = auto_paste
         self.font_family = font_family
         self.hotkey = hotkey
+        self._startup_mode = "unknown"
+        self._is_closing = False
+        self._ui_queue: queue.SimpleQueue[Callable[[], None]] = queue.SimpleQueue()
 
         super().__init__(
             auto_paste=auto_paste,
             font_family=font_family,
         )
-
-        # 默认为显示状态以便于直接输入测试
-        self.candidate_box.show(focus_input=True)
-
-        # 窗口焦点轮询
-        self._poll_foreground_window()
 
         # 设置关闭处理
         self.candidate_box.root.protocol("WM_DELETE_WINDOW", self._close)
@@ -57,6 +57,26 @@ class InputMethodAppV2(BaseInputMethodApp):
         # 快捷键监听器
         self.hotkey_listener = None
         self._setup_hotkey()
+
+        if self.hotkey_listener:
+            self._startup_mode = "hotkey"
+            self._set_post_commit_behavior("standby")
+            self.candidate_box.show_standby()
+            self.candidate_box.set_status(
+                f"V2 热键模式已就绪：按 {self.hotkey.replace('<', '').replace('>', ' ')} 唤出输入框。"
+            )
+        else:
+            # 热键不可用时退回手动模式，保留原先直接输入行为。
+            self._startup_mode = "manual-fallback"
+            self._set_post_commit_behavior("keep-input")
+            self.candidate_box.show(focus_input=True)
+            self.candidate_box.set_status(
+                "V2 热键初始化失败，当前已退回手动编码区模式。"
+            )
+
+        # 窗口焦点轮询
+        self._poll_foreground_window()
+        self._pump_ui_queue()
 
     def _setup_hotkey(self) -> None:
         """设置全局快捷键"""
@@ -81,35 +101,64 @@ class InputMethodAppV2(BaseInputMethodApp):
 
     def _show_and_focus(self) -> None:
         """显示候选框并聚焦"""
-        # 在主线程中执行
-        self.candidate_box.root.after(0, self._do_show_and_focus)
+        foreground = self.window_manager.get_foreground_window()
+        target = self._lock_external_target(foreground)
+        target_description = self._describe_external_target(target)
+        print(f"[YIME V2] 本次锁定目标: {target_description}")
+        self._enqueue_ui(lambda: self._do_show_and_focus(target_description))
 
-    def _do_show_and_focus(self) -> None:
+    def _do_show_and_focus(self, target_description: str) -> None:
         """实际显示和聚焦操作"""
+        self._set_post_commit_behavior("standby")
+        self.candidate_box.set_status(f"V2 锁定目标: {target_description}")
         self.candidate_box.show()
         self.candidate_box.input_entry.focus_set()
         self.candidate_box.input_entry.select_range(0, 'end')
 
+    def _pump_ui_queue(self) -> None:
+        """在 Tk 主线程中执行由热键线程提交的 UI 任务。"""
+        if self._is_closing:
+            return
+
+        while True:
+            try:
+                callback = self._ui_queue.get_nowait()
+            except queue.Empty:
+                break
+
+            try:
+                callback()
+            except tk.TclError:
+                pass
+            except Exception as exc:
+                print(f"V2 UI任务执行出错: {exc}")
+
+        self._schedule_ui(16, self._pump_ui_queue)
+
+    def _enqueue_ui(self, callback: Callable[[], None]) -> None:
+        """允许热键线程把 UI 更新投递回 Tk 主线程。"""
+        if self._is_closing:
+            return
+        self._ui_queue.put(callback)
+
     def _on_candidate_select(self, hanzi: str) -> None:
         """候选词选择处理"""
         self._record_candidate_selection(hanzi)
+        self.last_replace_length = 0
+        self.candidate_box.root.after(0, lambda: self.candidate_box.show(focus_input=True))
 
-        # 复制到剪贴板
-        self._copy_text_with_status(hanzi)
+    def _after_commit_candidate_box_text(self) -> None:
+        """发送后立即退回待命，由共享回贴链路把焦点交还外部编辑器。"""
+        if not self._current_external_target_hwnd():
+            self._set_post_commit_behavior("keep-input")
+            self.candidate_box.show(focus_input=True)
+            return
 
-        # 自动粘贴
-        if (
-            self.auto_paste
-            and self.last_external_hwnd
-            and self.last_external_hwnd != self.own_hwnd
-        ):
-            self.candidate_box.root.after(
-                50, lambda: self._paste_to_previous_window(hanzi)
-            )
+        if self._should_keep_input_after_commit():
+            self.candidate_box.show(focus_input=False)
+            return
 
-        # 调试期间禁用自动隐藏变成图标，便于直接查看完整 UI
-        self._clear_candidate_box_state(focus_input=True)
-        self.candidate_box.root.after(100, lambda: self.candidate_box.show(focus_input=True))
+        self.candidate_box.show_passive()
 
     def _copy_candidate(self, index: int) -> None:
         """复制候选词"""
@@ -122,18 +171,15 @@ class InputMethodAppV2(BaseInputMethodApp):
 
     def _refocus_candidate_input(self) -> None:
         """外部编辑动作完成后，将焦点拉回编码输入框。"""
-        keep_external_focus = bool(
-            self.last_external_hwnd and self.last_external_hwnd != self.own_hwnd
-        )
-        self.candidate_box.show(focus_input=not keep_external_focus)
-        if keep_external_focus:
-            return
+        self.candidate_box.show(focus_input=True)
         self.candidate_box.input_entry.focus_set()
         self.candidate_box.input_entry.icursor("end")
         self.candidate_box.input_entry.selection_clear()
 
     def _close(self) -> None:
         """关闭应用"""
+        self._is_closing = True
+
         # 停止快捷键监听
         if self.hotkey_listener:
             self.hotkey_listener.stop()
@@ -150,14 +196,23 @@ class InputMethodAppV2(BaseInputMethodApp):
                 print("按快捷键唤出候选框")
             except Exception as e:
                 print(f"启动快捷键监听失败: {e}")
+                self._startup_mode = "manual-fallback"
+                self.candidate_box.show(focus_input=True)
+                self.candidate_box.set_status(
+                    f"V2 快捷键监听启动失败，已退回手动模式: {e}"
+                )
 
         # 显示使用说明
         print("\n使用方法:")
+        if self._startup_mode == "hotkey":
+            print("当前模式: V2 热键模式")
+        elif self._startup_mode == "manual-fallback":
+            print("当前模式: V2 手动回退模式（热键未生效）")
         print(f"1. 按 {self.hotkey.replace('<', '').replace('>', ' ')}唤出候选框")
         print("2. 在输入框中输入音元编码")
-        print("3. 选择候选词（数字键或鼠标点击）")
-        print("4. 自动复制到剪贴板并粘贴到目标窗口")
-        print("5. 或在其他应用输入编码后，复制并点击'读取剪贴板'")
+        print("3. 用 Space / Enter / 数字键 / 鼠标把候选加入缓冲区")
+        print("4. 用 Enter 或“发送”把缓冲区内容传到目标窗口")
+        print("5. 需要时可继续在缓冲区里撤销一字")
         print("\n按 ESC 清空输入，关闭窗口退出")
 
         # 运行候选框

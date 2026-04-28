@@ -74,6 +74,43 @@ def _canonicalize_runtime_input(text: str, bmp_to_canonical: Dict[str, str]) -> 
     return "".join(bmp_to_canonical.get(char, char) for char in text)
 
 
+def _load_numeric_yime_code_map(repo_root: Path) -> Dict[str, str]:
+    payload = _load_visual_json(repo_root / "yinjie_code.json")
+    return {
+        str(pinyin_tone).strip(): str(yime_code)
+        for pinyin_tone, yime_code in payload.items()
+        if str(pinyin_tone).strip() and str(yime_code)
+    }
+
+
+def _build_pinyin_to_canonical_code_map(
+    repo_root: Path,
+    bmp_to_canonical: Dict[str, str],
+) -> Dict[str, str]:
+    numeric_to_runtime = _load_numeric_yime_code_map(repo_root)
+    return {
+        pinyin_tone: _canonicalize_runtime_input(runtime_code, bmp_to_canonical)
+        for pinyin_tone, runtime_code in numeric_to_runtime.items()
+    }
+
+
+def _resolve_canonical_code_from_pinyin_tone(
+    pinyin_tone: str,
+    pinyin_to_canonical: Dict[str, str],
+) -> str:
+    syllables = [syllable for syllable in pinyin_tone.split() if syllable]
+    if not syllables:
+        return ""
+
+    canonical_parts: List[str] = []
+    for syllable in syllables:
+        canonical_code = pinyin_to_canonical.get(syllable)
+        if not canonical_code:
+            return ""
+        canonical_parts.append(canonical_code)
+    return "".join(canonical_parts)
+
+
 def _split_complete_syllables(canonical: str) -> List[str]:
     complete_length = (len(canonical) // 4) * 4
     return [canonical[index:index + 4] for index in range(0, complete_length, 4)]
@@ -97,7 +134,7 @@ def _build_runtime_lookup_plan(canonical: str) -> RuntimeLookupPlan:
     phrase_mode = trailing_code_count == 0 and len(recent_syllables) >= 2
     if phrase_mode:
         return RuntimeLookupPlan(
-            lookup_code=" ".join(recent_syllables),
+            lookup_code="".join(recent_syllables),
             active_code="".join(recent_syllables),
             syllable_count=len(recent_syllables),
             trailing_code_count=0,
@@ -285,15 +322,17 @@ def build_physical_input_map(repo_root: Path) -> Dict[str, str]:
 
     physical_map: Dict[str, str] = {}
     for row in manual_layout.get("layers", []):
-        if row.get("output_layer") != "base":
-            continue
-        physical_key = str(row.get("physical_key", ""))
         symbol_key = row.get("symbol_key")
-        if not physical_key or not symbol_key:
+        if not symbol_key:
             continue
+
+        input_token = str(row.get("display_label") or row.get("physical_key") or "")
+        if not input_token or len(input_token) != 1:
+            continue
+
         bmp_char = slot_to_bmp.get(str(symbol_key))
         if bmp_char:
-            physical_map[physical_key] = str(bmp_char)
+            physical_map[input_token] = str(bmp_char)
 
     return physical_map
 
@@ -348,7 +387,11 @@ class StaticCandidateDecoder:
         self.bmp_to_canonical = self._build_bmp_to_canonical_map(
             projection_path, key_to_symbol_path
         )
-        self.code_mapping = self._load_json(mapping_path)["音元符号"]
+        self.pinyin_to_canonical = _build_pinyin_to_canonical_code_map(
+            repo_root,
+            self.bmp_to_canonical,
+        )
+        self.code_mapping = self._build_code_mapping(repo_root, mapping_path)
         self.pinyin_hanzi = self._load_first_available_json(pinyin_hanzi_paths)
 
     def _load_json(self, path: Path) -> dict:
@@ -379,6 +422,21 @@ class StaticCandidateDecoder:
                 bmp_to_canonical[bmp_char] = canonical_char
 
         return bmp_to_canonical
+
+    def _build_code_mapping(self, repo_root: Path, mapping_path: Path) -> Dict[str, dict]:
+        supplemental_mapping = self._load_json(mapping_path)["音元符号"]
+        supplemental_by_numeric: Dict[str, dict] = {}
+        for metadata in supplemental_mapping.values():
+            numeric_pinyin = str(metadata.get("数字标调", "")).strip()
+            if numeric_pinyin and numeric_pinyin not in supplemental_by_numeric:
+                supplemental_by_numeric[numeric_pinyin] = dict(metadata)
+
+        code_mapping: Dict[str, dict] = {}
+        for numeric_pinyin, canonical_code in self.pinyin_to_canonical.items():
+            metadata = dict(supplemental_by_numeric.get(numeric_pinyin, {}))
+            metadata["数字标调"] = numeric_pinyin
+            code_mapping[canonical_code] = metadata
+        return code_mapping
 
     def decode_text(
         self, text: str
@@ -473,6 +531,10 @@ class RuntimeCandidateDecoder:
             app_dir.parent / "internal_data" / "bmp_pua_trial_projection.json",
             app_dir.parent / "internal_data" / "key_to_symbol.json",
         )
+        self.pinyin_to_canonical = _build_pinyin_to_canonical_code_map(
+            app_dir.parent,
+            self.bmp_to_canonical,
+        )
         self.by_code = self._load_runtime_candidates(self.runtime_path)
         self.char_code_index = CharCodeIndex.from_runtime_candidates(self.by_code)
         self._user_freq_by_candidate: dict[tuple[str, str], int] = {}
@@ -511,7 +573,21 @@ class RuntimeCandidateDecoder:
         by_code = payload.get("by_code")
         if not isinstance(by_code, dict):
             raise ValueError(f"运行时候选文件格式无效: {path}")
-        return by_code
+
+        regrouped: Dict[str, List[Dict[str, object]]] = {}
+        for raw_candidates in by_code.values():
+            if not isinstance(raw_candidates, list):
+                continue
+            for candidate in raw_candidates:
+                pinyin_tone = str(candidate.get("pinyin_tone", "")).strip()
+                canonical_code = _resolve_canonical_code_from_pinyin_tone(
+                    pinyin_tone,
+                    self.pinyin_to_canonical,
+                )
+                if not canonical_code:
+                    continue
+                regrouped.setdefault(canonical_code, []).append(candidate)
+        return regrouped
 
     def decode_text(
         self, text: str
@@ -658,7 +734,13 @@ class SQLiteRuntimeCandidateDecoder:
             app_dir.parent / "internal_data" / "bmp_pua_trial_projection.json",
             app_dir.parent / "internal_data" / "key_to_symbol.json",
         )
+        self.pinyin_to_canonical = _build_pinyin_to_canonical_code_map(
+            app_dir.parent,
+            self.bmp_to_canonical,
+        )
         self._validate_runtime_candidates_view()
+        self.by_code = self._load_runtime_candidates()
+        self.char_code_index = CharCodeIndex.from_runtime_candidates(self.by_code)
         self._user_freq_by_candidate: dict[tuple[str, str], int] = {}
 
     def _load_json(self, path: Path) -> dict:
@@ -711,19 +793,11 @@ class SQLiteRuntimeCandidateDecoder:
 
         plan = _build_runtime_lookup_plan(canonical)
         mode_hint = _build_runtime_mode_hint(canonical, plan)
-
-        with self._connect() as conn:
-            rows = conn.execute(
-                """
-                SELECT text, pinyin_tone, entry_type, sort_weight, text_length, is_common
-                FROM runtime_candidates
-                WHERE yime_code = ?
-                """,
-                (plan.lookup_code,),
-            ).fetchall()
-
         records = self._rank_runtime_candidates(
-            [self._row_to_runtime_candidate(plan.lookup_code, row) for row in rows]
+            self._payload_to_runtime_candidates(
+                plan.lookup_code,
+                self.by_code.get(plan.lookup_code, []),
+            )
         )
         texts = [record.text for record in records]
         pinyin_values: List[str] = []
@@ -756,19 +830,7 @@ class SQLiteRuntimeCandidateDecoder:
 
     def get_char_candidates(self, code: str) -> List[CharCodeCandidate]:
         """按完整音元编码读取单字候选。"""
-        with self._connect() as conn:
-            rows = conn.execute(
-                """
-                SELECT entry_id, text, pinyin_tone, yime_code, sort_weight, is_common
-                FROM runtime_candidates
-                WHERE entry_type = 'char'
-                  AND yime_code = ?
-                ORDER BY sort_weight DESC, text
-                """,
-                (code,),
-            ).fetchall()
-
-        return [self._row_to_char_candidate(row) for row in rows]
+        return self.char_code_index.get_exact(code)
 
     def get_char_candidates_by_prefix(
         self,
@@ -776,53 +838,64 @@ class SQLiteRuntimeCandidateDecoder:
         limit: int = 0,
     ) -> List[Tuple[str, List[CharCodeCandidate]]]:
         """按编码前缀读取可能的单字候选。"""
-        with self._connect() as conn:
-            if limit > 0:
-                code_rows = conn.execute(
-                    """
-                    SELECT DISTINCT yime_code
-                    FROM runtime_candidates
-                    WHERE entry_type = 'char'
-                      AND yime_code LIKE ?
-                    ORDER BY yime_code
-                    LIMIT ?
-                    """,
-                    (f"{prefix}%", limit),
-                ).fetchall()
-                codes = [str(row["yime_code"] or "").strip() for row in code_rows]
-                codes = [code for code in codes if code]
-                if not codes:
-                    return []
-                placeholders = ", ".join("?" for _ in codes)
-                rows = conn.execute(
-                    f"""
-                    SELECT entry_id, text, pinyin_tone, yime_code, sort_weight, is_common
-                    FROM runtime_candidates
-                    WHERE entry_type = 'char'
-                      AND yime_code IN ({placeholders})
-                    ORDER BY yime_code, sort_weight DESC, text
-                    """,
-                    tuple(codes),
-                ).fetchall()
-            else:
-                rows = conn.execute(
-                    """
-                    SELECT entry_id, text, pinyin_tone, yime_code, sort_weight, is_common
-                    FROM runtime_candidates
-                    WHERE entry_type = 'char'
-                      AND yime_code LIKE ?
-                    ORDER BY yime_code, sort_weight DESC, text
-                    """,
-                    (f"{prefix}%",),
-                ).fetchall()
+        return self.char_code_index.get_with_prefix(prefix, limit=limit)
 
-        grouped: dict[str, List[CharCodeCandidate]] = {}
+    def _load_runtime_candidates(self) -> Dict[str, List[Dict[str, object]]]:
+        with self._connect() as conn:
+            rows = conn.execute(
+                """
+                SELECT entry_type, entry_id, text, pinyin_tone, sort_weight, is_common, text_length, updated_at
+                FROM runtime_candidates
+                ORDER BY entry_type, sort_weight DESC, text
+                """
+            ).fetchall()
+
+        grouped: Dict[str, List[Dict[str, object]]] = {}
         for row in rows:
-            candidate = self._row_to_char_candidate(row)
-            if candidate.code not in grouped and limit > 0 and len(grouped) >= limit:
-                break
-            grouped.setdefault(candidate.code, []).append(candidate)
-        return [(code, candidates) for code, candidates in grouped.items()]
+            pinyin_tone = str(row["pinyin_tone"] or "").strip()
+            canonical_code = _resolve_canonical_code_from_pinyin_tone(
+                pinyin_tone,
+                self.pinyin_to_canonical,
+            )
+            if not canonical_code:
+                continue
+            grouped.setdefault(canonical_code, []).append(
+                {
+                    "text": row["text"],
+                    "entry_type": row["entry_type"],
+                    "entry_id": row["entry_id"],
+                    "pinyin_tone": row["pinyin_tone"],
+                    "sort_weight": row["sort_weight"],
+                    "is_common": row["is_common"],
+                    "text_length": row["text_length"],
+                    "updated_at": row["updated_at"],
+                }
+            )
+        return grouped
+
+    def _payload_to_runtime_candidates(
+        self,
+        lookup_code: str,
+        raw_candidates: List[Dict[str, object]],
+    ) -> List[RuntimeCandidateRecord]:
+        records: List[RuntimeCandidateRecord] = []
+        for candidate in raw_candidates:
+            text = str(candidate.get("text", "")).strip()
+            if not text:
+                continue
+            text_length = int(candidate.get("text_length") or len(text))
+            records.append(
+                RuntimeCandidateRecord(
+                    lookup_code=lookup_code,
+                    text=text,
+                    entry_type=str(candidate.get("entry_type", "")).strip(),
+                    pinyin_tone=str(candidate.get("pinyin_tone", "")).strip(),
+                    sort_weight=_as_float_value(candidate.get("sort_weight", 0.0)),
+                    text_length=text_length,
+                    is_common=_as_bool_value(candidate.get("is_common", False)),
+                )
+            )
+        return records
 
     def _row_to_char_candidate(self, row: sqlite3.Row) -> CharCodeCandidate:
         return CharCodeCandidate(
