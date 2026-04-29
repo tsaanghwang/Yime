@@ -229,6 +229,11 @@ class BaseInputMethodApp:
             self._unlock_external_target()
             return
 
+        # The first foreground hop can be transient for external editors.
+        # Re-assert the target shortly before injecting keys so the first send
+        # does not depend on a single focus transfer attempt.
+        self._schedule_ui(40, self._restore_external_window)
+
         if self.last_replace_length > 0:
             self._schedule_ui(
                 80,

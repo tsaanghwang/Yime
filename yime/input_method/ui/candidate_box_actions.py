@@ -10,6 +10,20 @@ if TYPE_CHECKING:
 class CandidateBoxActions:
     """Event and command handlers for CandidateBox."""
 
+    _SYMBOL_SHORTCUT_BINDINGS = {
+        "<grave>": 1,
+        "<minus>": 2,
+        "<equal>": 3,
+        "<backslash>": 4,
+    }
+
+    _SYMBOL_SHORTCUT_TO_INDEX = {
+        "`": 1,
+        "-": 2,
+        "=": 3,
+        "\\": 4,
+    }
+
     def __init__(self, box: CandidateBox) -> None:
         self.box = box
 
@@ -29,13 +43,26 @@ class CandidateBoxActions:
 
         self.box.root.bind("<Escape>", lambda event: self.box.clear_input())
         self.box.root.bind("<Control-q>", lambda event: self.request_close())
+        self.box.root.bind("<Home>", self.on_first_page_key)
         self.box.root.bind("<Prior>", self.on_previous_page_key)
         self.box.root.bind("<Next>", self.on_next_page_key)
+        self.box.root.bind("<End>", self.on_last_page_key)
         self.box.root.bind("<FocusIn>", self.on_window_focus_in)
+        self.box.input_entry.bind("<Home>", self.on_first_page_key)
         self.box.input_entry.bind("<Prior>", self.on_previous_page_key)
         self.box.input_entry.bind("<Next>", self.on_next_page_key)
+        self.box.input_entry.bind("<End>", self.on_last_page_key)
+        self.box.commit_entry.bind("<Home>", self.on_first_page_key)
         self.box.commit_entry.bind("<Prior>", self.on_previous_page_key)
         self.box.commit_entry.bind("<Next>", self.on_next_page_key)
+        self.box.commit_entry.bind("<End>", self.on_last_page_key)
+
+        for widget in (self.box.root, self.box.input_entry, self.box.commit_entry):
+            for sequence, index in self._SYMBOL_SHORTCUT_BINDINGS.items():
+                widget.bind(
+                    sequence,
+                    lambda event, value=index: self.on_candidate_shortcut(event, value),
+                )
 
     def on_window_focus_in(self, event: object) -> None:
         widget = getattr(event, "widget", None)
@@ -58,12 +85,14 @@ class CandidateBoxActions:
     def restore_from_standby(self, event: Optional[tk.Event] = None) -> None:
         if self.box._on_restore_from_standby:
             self.box._on_restore_from_standby()
+            return
         self.box.set_manual_input_enabled(True)
         self.box.show(focus_input=True)
 
     def on_confirm_key(self, event: Optional[tk.Event] = None) -> str:
         if self.box.current_candidates:
             self.select_candidate_by_index(0)
+            self.commit_output_text()
         else:
             self.commit_output_text()
         return "break"
@@ -74,12 +103,34 @@ class CandidateBoxActions:
         self.select_candidate_by_index(value - 1)
         return "break"
 
+    def on_candidate_shortcut(self, event: Optional[tk.Event], index: int) -> str:
+        self.select_candidate_by_index(index)
+        self.commit_output_text()
+        return "break"
+
+    def on_symbol_shortcut_key(self, event: Optional[tk.Event] = None) -> Optional[str]:
+        if not event:
+            return None
+        shortcut = getattr(event, "char", "")
+        index = self._SYMBOL_SHORTCUT_TO_INDEX.get(shortcut)
+        if index is None:
+            return None
+        return self.on_candidate_shortcut(event, index)
+
     def on_previous_page_key(self, event: Optional[tk.Event] = None) -> str:
         self.box.show_previous_page()
         return "break"
 
     def on_next_page_key(self, event: Optional[tk.Event] = None) -> str:
         self.box.show_next_page()
+        return "break"
+
+    def on_first_page_key(self, event: Optional[tk.Event] = None) -> str:
+        self.box.show_first_page()
+        return "break"
+
+    def on_last_page_key(self, event: Optional[tk.Event] = None) -> str:
+        self.box.show_last_page()
         return "break"
 
     def on_page_size_change(self, event: Optional[tk.Event] = None) -> None:
