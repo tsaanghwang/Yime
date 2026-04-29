@@ -20,6 +20,7 @@ if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
 
 from yime.input_method.app_base import BaseInputMethodApp
+from yime.input_method.ui.candidate_box import CandidateBox
 
 
 class InputMethodAppV2(BaseInputMethodApp):
@@ -78,6 +79,19 @@ class InputMethodAppV2(BaseInputMethodApp):
         self._poll_foreground_window()
         self._pump_ui_queue()
 
+    def _create_candidate_box(self) -> CandidateBox:
+        return CandidateBox(
+            on_select=self._on_candidate_select,
+            font_family=self.font_family,
+            input_display_formatter=self._format_input_outline,
+            projected_code_formatter=self._format_projected_code,
+            on_input_change=self._on_input_change,
+            on_copy_candidate=self._copy_candidate,
+            on_commit_text=self._commit_candidate_box_text,
+            on_restore_from_standby=self._resume_from_standby,
+            on_close=self._close,
+        )
+
     def _setup_hotkey(self) -> None:
         """设置全局快捷键"""
         try:
@@ -105,15 +119,44 @@ class InputMethodAppV2(BaseInputMethodApp):
         target = self._lock_external_target(foreground)
         target_description = self._describe_external_target(target)
         print(f"[YIME V2] 本次锁定目标: {target_description}")
-        self._enqueue_ui(lambda: self._do_show_and_focus(target_description))
+        self._enqueue_ui(
+            lambda: self._activate_from_hotkey(
+                foreground,
+                target_description,
+                post_commit_behavior="standby",
+            )
+        )
 
-    def _do_show_and_focus(self, target_description: str) -> None:
-        """实际显示和聚焦操作"""
-        self._set_post_commit_behavior("standby")
+    def _activate_from_hotkey(
+        self,
+        foreground: int | None,
+        target_description: str,
+        *,
+        post_commit_behavior: str,
+    ) -> None:
+        """进入一轮新的手动输入会话，并锁定当前外部目标。"""
+        self._lock_external_target(foreground)
+        self._set_post_commit_behavior(post_commit_behavior)
+        self.last_replace_length = 0
+        self.candidate_box.clear_input(focus_input=False)
         self.candidate_box.set_status(f"V2 锁定目标: {target_description}")
-        self.candidate_box.show()
+        self.candidate_box.show(focus_input=True, anchor_hwnd=foreground)
         self.candidate_box.input_entry.focus_set()
         self.candidate_box.input_entry.select_range(0, 'end')
+
+    def _resume_from_standby(self) -> None:
+        """用户点回待命图标或半透明主框时，重新锁定目标并恢复输入。"""
+        target_description = self._describe_external_target(self.last_external_hwnd)
+        if not self.last_external_hwnd:
+            self._set_post_commit_behavior("keep-input")
+            self.candidate_box.show(focus_input=True, anchor_hwnd=self.last_external_hwnd)
+            self.candidate_box.set_status("V2 未找到外部目标，已回到本地输入模式。")
+            return
+        self._activate_from_hotkey(
+            self.last_external_hwnd,
+            target_description,
+            post_commit_behavior="keep-input",
+        )
 
     def _pump_ui_queue(self) -> None:
         """在 Tk 主线程中执行由热键线程提交的 UI 任务。"""

@@ -250,7 +250,7 @@ class InputMethodApp(BaseInputMethodApp):
         self._display_input_buffer = ""
         self.input_manager.clear_buffer(notify=False)
         self.candidate_box.clear_input(focus_input=False)
-        self.candidate_box.show(focus_input=True)
+        self.candidate_box.show(focus_input=True, anchor_hwnd=foreground)
         self.candidate_box.set_status(f"{status_prefix}: {target_description}")
 
     def _on_candidate_select(self, hanzi: str) -> None:
@@ -288,7 +288,7 @@ class InputMethodApp(BaseInputMethodApp):
 
     def _refocus_candidate_input(self) -> None:
         """外部编辑动作完成后，将焦点拉回编码输入框。"""
-        self.candidate_box.show(focus_input=True)
+        self.candidate_box.show(focus_input=True, anchor_hwnd=self.last_external_hwnd)
         self.candidate_box.input_entry.focus_set()
         self.candidate_box.input_entry.icursor(tk.END)
         self.candidate_box.input_entry.selection_clear()

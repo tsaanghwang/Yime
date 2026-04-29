@@ -53,6 +53,7 @@ class CandidateBox:
     _SWP_FRAMECHANGED = 0x0020
     _SWP_NOOWNERZORDER = 0x0200
     _HWND_TOPMOST = -1
+    _HWND_NOTOPMOST = -2
     _SW_SHOWNOACTIVATE = 4
     _SW_SHOW = 5
 
@@ -270,8 +271,9 @@ class CandidateBox:
         self,
         width: int,
         height: int,
+        anchor_hwnd: Optional[int] = None,
     ) -> tuple[int, int]:
-        foreground = WindowManager.get_foreground_window()
+        foreground = anchor_hwnd or WindowManager.get_foreground_window()
         own_hwnd = self.root.winfo_id()
         if foreground and foreground != own_hwnd:
             left, top, right, bottom = WindowManager.get_window_rect(foreground)
@@ -285,6 +287,7 @@ class CandidateBox:
         y: Optional[int],
         *,
         focus_input: bool,
+        anchor_hwnd: Optional[int] = None,
     ) -> tuple[int, int]:
         self.root.update_idletasks()
 
@@ -298,7 +301,11 @@ class CandidateBox:
         screen_height = self.root.winfo_vrootheight() or self.root.winfo_screenheight()
 
         if x is None or y is None:
-            anchor_x, anchor_y = self._resolve_activation_anchor(width, height)
+            anchor_x, anchor_y = self._resolve_activation_anchor(
+                width,
+                height,
+                anchor_hwnd=anchor_hwnd,
+            )
             target_x = anchor_x if x is None and focus_input else (virtual_root_x + 32 if x is None else x)
             target_y = anchor_y if y is None and focus_input else (virtual_root_y + 32 if y is None else y)
         else:
@@ -432,7 +439,7 @@ class CandidateBox:
         self.page_size_spinbox = None
         self.page_info_var = tk.StringVar(self.root, value="第 1/1 页")
         self.shortcut_hint_var = tk.StringVar(
-            value="数字键选当前页；PgUp/PgDn 翻页；Space 选首选入缓冲区；Enter 发送缓冲区；缓冲区可撤销一字。"
+            value="Space 选首选；` - = \\ 选第2到第5候选；Home/PgUp/PgDn/End 翻页；Enter 发送已选内容。"
         )
 
         self.commit_var = tk.StringVar(self.root, value="")
@@ -441,7 +448,6 @@ class CandidateBox:
             textvariable=self.commit_var,
             font=self.text_font,
         )
-        self.commit_entry.pack(fill=tk.X, pady=(8, 8))
         self.commit_entry.bind("<BackSpace>", self._on_commit_backspace)
 
         # 编码显示
@@ -953,6 +959,7 @@ class CandidateBox:
         x: Optional[int] = None,
         y: Optional[int] = None,
         focus_input: bool = True,
+        anchor_hwnd: Optional[int] = None,
     ) -> None:
         """
         显示候选框
@@ -964,7 +971,12 @@ class CandidateBox:
         """
         self._show_main_frame()
         self.set_manual_input_enabled(focus_input)
-        target_x, target_y = self._resolve_geometry(x, y, focus_input=focus_input)
+        target_x, target_y = self._resolve_geometry(
+            x,
+            y,
+            focus_input=focus_input,
+            anchor_hwnd=anchor_hwnd,
+        )
 
         # 移除显式指定尺寸的设定，使用Tkinter自适应
         self.root.geometry(f"+{target_x}+{target_y}")
@@ -1067,6 +1079,7 @@ class CandidateBox:
 
         self.root.geometry(f"{width}x{height}+{target_x}+{target_y}")
         self.root.attributes("-alpha", self._PASSIVE_ALPHA)
+        self.root.attributes("-topmost", False)
         self.root.deiconify()
         self.root.update_idletasks()
 
@@ -1076,7 +1089,7 @@ class CandidateBox:
         user32.ShowWindow(hwnd, self._SW_SHOWNOACTIVATE)
         user32.SetWindowPos(
             hwnd,
-            self._HWND_TOPMOST,
+            self._HWND_NOTOPMOST,
             target_x,
             target_y,
             width,
