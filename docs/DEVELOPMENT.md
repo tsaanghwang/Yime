@@ -75,12 +75,6 @@ YIME/
 ├── syllable/             # 音节分析模块
 │   └── analysis/              # 音节分析工具
 │
-├── src/                  # React 前端
-│   ├── App.tsx                # 主应用
-│   ├── components/            # React 组件
-│   ├── core/                  # 核心功能
-│   └── services/              # 服务层
-│
 ├── docs/                 # 文档
 │   ├── API.md                 # API 文档
 │   ├── DEVELOPMENT.md         # 开发者指南（本文件）
@@ -89,9 +83,11 @@ YIME/
 ├── tests/                # 测试文件
 ├── .github/workflows/    # CI/CD 配置
 ├── requirements.txt     # Python 依赖
-├── package.json         # Node.js 依赖
 └── README.md            # 项目说明
 ```
+
+补充说明：旧的 JS / React 输入法原型链已经迁出主仓库，当前正式外置位置为 `C:/dev/Yime-js-prototype`。
+本仓库当前开发主线以 `yime/` 下的 Windows IME Python 实现为准。
 
 ---
 

@@ -237,6 +237,28 @@
 1. 数据库相关脚本若仍以仓库根目录 `pinyin_hanzi.db` 为默认目标，应优先视为旧原型链候选，而不是当前主线入口。
 2. 当前输入法运行、导入、诊断与测试的数据库主线统一以 `yime/pinyin_hanzi.db` 为准。
 
+#### 7. 旧 JS 原型链（2026-05）
+
+以下对象已经整体迁出主仓库，当前正式外置位置为 `C:/dev/Yime-js-prototype`：
+
+- `package.json`
+- `package-lock.json`
+- `babel.config.cjs`
+- `jest.config.js`
+- `main.js`
+- `input-method.js`
+- `input-method-prototype.html`
+- `hanziModule.js`
+- `hanziTable.json`
+- `pinyinModule.js`
+- `pinyinCodeModule.js`
+- `pinyinCodeTable.json`
+- `src/`
+
+分类：已迁出的旧 JS / React 原型链。
+
+原因：这条链仍有内部自洽的 Node CLI 与 React 原型结构，但已经不属于当前 Windows IME 主线；继续保留在主仓库根目录只会混淆“旧前端演示链”和 `yime/` 下的现行 Python 输入法实现。
+
 ### E. 审计与过渡辅助文件
 
 这些文件很有价值，但它们的职责是“帮助审计现状”，不是“定义未来结构”。
