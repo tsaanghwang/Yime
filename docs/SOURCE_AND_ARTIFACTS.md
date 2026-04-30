@@ -297,6 +297,23 @@
 
 原因：这批页面同样没有主线引用，其中多数只是一次性展示或说明页面；而根目录 `index.html` 体积异常、文件头也并非正常 HTML，更接近误提交的导出/二进制产物，不适合继续保留在主仓库。
 
+#### 9. docs/ 旧静态 HTML 文档站（2026-05）
+
+以下 `docs/` 下的旧静态 HTML 文档站页面已整体迁出主仓库，当前外置位置为 `C:/dev/Yime-docs-html-site`：
+
+- `docs/index.html`
+- `docs/overview.html`
+- `docs/quickstart.html`
+- `docs/architecture.html`
+- `docs/api.html`
+- `docs/configuration.html`
+- `docs/development.html`
+- `docs/manual.html`
+
+分类：已外置留档的旧静态 HTML 文档站。
+
+原因：这组页面只在 HTML 站内部互相链接，不参与当前输入法运行，也不是当前文档维护主线；主仓库现行文档入口已经以 `docs/README.md` 及各 Markdown 文档为准，继续同时保留两套文档面只会制造维护歧义。
+
 ### E. 审计与过渡辅助文件
 
 这些文件很有价值，但它们的职责是“帮助审计现状”，不是“定义未来结构”。
