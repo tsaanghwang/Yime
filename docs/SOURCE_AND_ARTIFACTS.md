@@ -259,6 +259,44 @@
 
 原因：这条链仍有内部自洽的 Node CLI 与 React 原型结构，但已经不属于当前 Windows IME 主线；继续保留在主仓库根目录只会混淆“旧前端演示链”和 `yime/` 下的现行 Python 输入法实现。
 
+#### 8. 根目录 HTML 工具页与一次性报告页（2026-05）
+
+以下交互式 HTML 工具页已从主仓库根目录迁出，当前外置位置为 `C:/dev/Yime-html-tool-prototypes`：
+
+- `blank-editor.html`
+- `undo_editor.html`
+- `version_control_editor.html`
+- `character_palette.html`
+- `character_validator.html`
+- `find_and_replace.html`
+- `pinyin_editor.html`
+- `pinyin_editor.js`
+- `continuous-input.html`
+- `continuous-input-test.html`
+
+分类：已外置留档的旧 HTML 工具原型。
+
+原因：这些页面虽然不再属于当前输入法主线，也没有仓库内调用关系，但仍保留了相对完整的前端交互逻辑，适合脱离主仓库后作为历史工具原型单独留档。
+
+以下根目录 HTML 文件已直接删除：
+
+- `index.html`
+- `comments_preview.html`
+- `conversion_dashboard.html`
+- `filename_change_demo.html`
+- `finals_classifier_validation.html`
+- `finals_comparison.html`
+- `git_push_guide.html`
+- `phoneme_comparison.html`
+- `pianyin_analyzer_report.html`
+- `pinyin_counter_validation.html`
+- `stats_display.html`
+- `ü_character_comparison.html`
+
+分类：已删除的一次性报告页、说明页与异常产物。
+
+原因：这批页面同样没有主线引用，其中多数只是一次性展示或说明页面；而根目录 `index.html` 体积异常、文件头也并非正常 HTML，更接近误提交的导出/二进制产物，不适合继续保留在主仓库。
+
 ### E. 审计与过渡辅助文件
 
 这些文件很有价值，但它们的职责是“帮助审计现状”，不是“定义未来结构”。
