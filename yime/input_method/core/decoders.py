@@ -319,6 +319,7 @@ def build_input_sound_notes(text: str, visual_map: Dict[str, str]) -> str:
 def build_physical_input_map(repo_root: Path) -> Dict[str, str]:
     manual_layout = _load_visual_json(repo_root / "internal_data" / "manual_key_layout.json")
     slot_to_bmp = _load_visual_json(repo_root / "key_to_code.json")
+    slot_to_symbol = _load_visual_json(repo_root / "internal_data" / "key_to_symbol.json")
 
     physical_map: Dict[str, str] = {}
     for row in manual_layout.get("layers", []):
@@ -327,14 +328,31 @@ def build_physical_input_map(repo_root: Path) -> Dict[str, str]:
             continue
 
         input_token = str(row.get("display_label") or row.get("physical_key") or "")
-        if not input_token or len(input_token) != 1:
-            continue
-
         bmp_char = slot_to_bmp.get(str(symbol_key))
-        if bmp_char:
+        symbol_char = slot_to_symbol.get(str(symbol_key))
+        if bmp_char and input_token and len(input_token) == 1:
             physical_map[input_token] = str(bmp_char)
+        if bmp_char and symbol_char:
+            physical_map[str(symbol_char)] = str(bmp_char)
 
     return physical_map
+
+
+def build_manual_key_output_map(repo_root: Path) -> Dict[tuple[str, str], str]:
+    manual_layout = _load_visual_json(
+        repo_root / "internal_data" / "manual_key_layout.resolved.json"
+    )
+
+    output_map: Dict[tuple[str, str], str] = {}
+    for row in manual_layout.get("layers", []):
+        physical_key = str(row.get("physical_key") or "").strip().lower()
+        output_layer = str(row.get("output_layer") or "").strip().lower()
+        resolved_char = str(row.get("resolved_char") or "")
+        if not physical_key or not output_layer or not resolved_char:
+            continue
+        output_map[(physical_key, output_layer)] = resolved_char
+
+    return output_map
 
 
 def project_physical_input(text: str, physical_map: Dict[str, str]) -> str:

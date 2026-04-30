@@ -92,7 +92,13 @@ class InputManager:
         modifiers = key_info.get('modifiers', {}) or {}
 
         # 系统快捷键和窗口管理组合键必须直接放行，避免破坏复制、切窗等行为。
-        if modifiers.get('ctrl') or modifiers.get('alt') or modifiers.get('win'):
+        if modifiers.get('win'):
+            return True
+
+        if modifiers.get('ctrl') and not modifiers.get('alt_gr'):
+            return True
+
+        if modifiers.get('alt') and not modifiers.get('alt_gr'):
             return True
 
         # 处理特殊键
