@@ -1,0 +1,734 @@
+{
+  "generated_at": "2026-04-29T05:45:36.385817Z",
+  "source": {
+    "runtime_report": "yime/reports/runtime_candidates_by_code_true.json",
+    "db_path": "C:\\dev\\Yime\\yime\\pinyin_hanzi.db"
+  },
+  "headline": {
+    "runtime_code_bucket_count": 45869,
+    "candidate_row_count": 99190,
+    "page_thresholds": {
+      "current_page_size": 5,
+      "selection_window_size": 9
+    },
+    "max_phrase_collision": 5,
+    "max_char_collision": 513
+  },
+  "char_metrics": {
+    "code_bucket_count": 1530,
+    "candidate_row_count": 53061,
+    "avg_per_code": 34.680392156862744,
+    "median_per_code": 21.0,
+    "p95_per_code": 110.0,
+    "max_per_code": 513,
+    "share_le_5": 0.24509803921568626,
+    "share_le_9": 0.3150326797385621
+  },
+  "phrase_metrics": {
+    "code_bucket_count": 44339,
+    "candidate_row_count": 46129,
+    "avg_per_code": 1.0403707796747783,
+    "median_per_code": 1.0,
+    "p95_per_code": 1.0,
+    "max_per_code": 5,
+    "share_le_5": 1.0,
+    "share_le_9": 1.0
+  },
+  "weighted_visibility": {
+    "chars": {
+      "weighted_candidate_sum": 9062065.0,
+      "bucket_count": 1530,
+      "weighted_top1_share": 0.158440212026729,
+      "weighted_first_page_share": 0.4550571530881758,
+      "weighted_selection_window_share": 0.6128430992273836,
+      "bucket_top1_best_share": 1.0
+    },
+    "phrases": {
+      "weighted_candidate_sum": 10647930.0,
+      "bucket_count": 44339,
+      "weighted_top1_share": 0.9658973152528237,
+      "weighted_first_page_share": 1.0,
+      "weighted_selection_window_share": 1.0,
+      "bucket_top1_best_share": 1.0
+    }
+  },
+  "char_tiers": {
+    "all": {
+      "code_bucket_count": 1530,
+      "candidate_row_count": 53061,
+      "avg_per_code": 34.680392156862744,
+      "median_per_code": 21.0,
+      "p95_per_code": 110.0,
+      "max_per_code": 513,
+      "share_le_5": 0.24509803921568626,
+      "share_le_9": 0.3150326797385621,
+      "char_count": 41666,
+      "weighted_visibility": {
+        "weighted_candidate_sum": 9062065.0,
+        "bucket_count": 1530,
+        "weighted_top1_share": 0.158440212026729,
+        "weighted_first_page_share": 0.4550571530881758,
+        "weighted_selection_window_share": 0.6128430992273836,
+        "bucket_top1_best_share": 1.0
+      }
+    },
+    "level_1": {
+      "code_bucket_count": 1257,
+      "candidate_row_count": 5769,
+      "avg_per_code": 4.5894988066825775,
+      "median_per_code": 3.0,
+      "p95_per_code": 12.0,
+      "max_per_code": 43,
+      "share_le_5": 0.7040572792362768,
+      "share_le_9": 0.8997613365155132,
+      "char_count": 3500,
+      "weighted_visibility": {
+        "weighted_candidate_sum": 4578362.0,
+        "bucket_count": 1257,
+        "weighted_top1_share": 0.3033997748539762,
+        "weighted_first_page_share": 0.7661906157704437,
+        "weighted_selection_window_share": 0.9101514908607052,
+        "bucket_top1_best_share": 1.0
+      }
+    },
+    "level_2": {
+      "code_bucket_count": 1325,
+      "candidate_row_count": 10083,
+      "avg_per_code": 7.609811320754717,
+      "median_per_code": 5.0,
+      "p95_per_code": 21.799999999999955,
+      "max_per_code": 86,
+      "share_le_5": 0.5267924528301887,
+      "share_le_9": 0.7222641509433962,
+      "char_count": 6500,
+      "weighted_visibility": {
+        "weighted_candidate_sum": 6415743.0,
+        "bucket_count": 1325,
+        "weighted_top1_share": 0.2212347034474417,
+        "weighted_first_page_share": 0.6089391361218802,
+        "weighted_selection_window_share": 0.783794332160749,
+        "bucket_top1_best_share": 1.0
+      }
+    },
+    "level_3": {
+      "code_bucket_count": 1343,
+      "candidate_row_count": 12335,
+      "avg_per_code": 9.184661206254654,
+      "median_per_code": 6.0,
+      "p95_per_code": 26.0,
+      "max_per_code": 101,
+      "share_le_5": 0.45867460908414,
+      "share_le_9": 0.6507818317200298,
+      "char_count": 8105,
+      "weighted_visibility": {
+        "weighted_candidate_sum": 7106261.0,
+        "bucket_count": 1343,
+        "weighted_top1_share": 0.20049784267704213,
+        "weighted_first_page_share": 0.5630723386039438,
+        "weighted_selection_window_share": 0.7377675826992564,
+        "bucket_top1_best_share": 1.0
+      }
+    }
+  },
+  "code_length_baseline": {
+    "chars_level_1": {
+      "row_count": 5769,
+      "weighted_sum": 4578362.0,
+      "missing_yinjie_syllable_count": 0,
+      "avg_syllables": 1.0,
+      "avg_yime_full": 4.0,
+      "avg_yime_jianpin": 3.324332370397972,
+      "avg_full_pinyin": 3.067194337188715,
+      "avg_full_pinyin_with_tone_number": 4.067194337188715,
+      "avg_double_pinyin": 2.0,
+      "jianpin_saved_vs_full": 0.6756676296020281,
+      "jianpin_vs_full_pinyin": 0.257138033209257,
+      "jianpin_vs_full_pinyin_with_tone_number": -0.742861966790743,
+      "jianpin_vs_double_pinyin": 1.324332370397972
+    },
+    "chars_level_2": {
+      "row_count": 10083,
+      "weighted_sum": 6415743.0,
+      "missing_yinjie_syllable_count": 0,
+      "avg_syllables": 1.0,
+      "avg_yime_full": 4.0,
+      "avg_yime_jianpin": 3.3454401150420146,
+      "avg_full_pinyin": 3.0847019589157485,
+      "avg_full_pinyin_with_tone_number": 4.0847019589157485,
+      "avg_double_pinyin": 2.0,
+      "jianpin_saved_vs_full": 0.6545598849579854,
+      "jianpin_vs_full_pinyin": 0.26073815612626605,
+      "jianpin_vs_full_pinyin_with_tone_number": -0.739261843873734,
+      "jianpin_vs_double_pinyin": 1.3454401150420146
+    },
+    "chars_level_3": {
+      "row_count": 12335,
+      "weighted_sum": 7106261.0,
+      "missing_yinjie_syllable_count": 0,
+      "avg_syllables": 1.0,
+      "avg_yime_full": 4.0,
+      "avg_yime_jianpin": 3.348256699268434,
+      "avg_full_pinyin": 3.0855589176924405,
+      "avg_full_pinyin_with_tone_number": 4.085558917692441,
+      "avg_double_pinyin": 2.0,
+      "jianpin_saved_vs_full": 0.651743300731566,
+      "jianpin_vs_full_pinyin": 0.26269778157599344,
+      "jianpin_vs_full_pinyin_with_tone_number": -0.737302218424007,
+      "jianpin_vs_double_pinyin": 1.348256699268434
+    },
+    "chars_all": {
+      "row_count": 53061,
+      "weighted_sum": 9062065.0,
+      "missing_yinjie_syllable_count": 0,
+      "avg_syllables": 1.0,
+      "avg_yime_full": 4.0,
+      "avg_yime_jianpin": 3.3593354274108607,
+      "avg_full_pinyin": 3.088442645246972,
+      "avg_full_pinyin_with_tone_number": 4.088442645246972,
+      "avg_double_pinyin": 2.0,
+      "jianpin_saved_vs_full": 0.6406645725891393,
+      "jianpin_vs_full_pinyin": 0.2708927821638887,
+      "jianpin_vs_full_pinyin_with_tone_number": -0.7291072178361113,
+      "jianpin_vs_double_pinyin": 1.3593354274108607
+    },
+    "phrases_all": {
+      "row_count": 46129,
+      "weighted_sum": 10647930.0,
+      "missing_yinjie_syllable_count": 0,
+      "avg_syllables": 2.240512287364774,
+      "avg_yime_full": 8.962049149459096,
+      "avg_yime_jianpin": 7.518597605356159,
+      "avg_full_pinyin": 7.06869128553625,
+      "avg_full_pinyin_with_tone_number": 9.309203572901025,
+      "avg_double_pinyin": 4.481024574729548,
+      "jianpin_saved_vs_full": 1.4434515441029374,
+      "jianpin_vs_full_pinyin": 0.4499063198199087,
+      "jianpin_vs_full_pinyin_with_tone_number": -1.7906059675448658,
+      "jianpin_vs_double_pinyin": 3.0375730306266107
+    },
+    "overall": {
+      "row_count": 99190,
+      "weighted_sum": 19709995.0,
+      "missing_yinjie_syllable_count": 0,
+      "avg_syllables": 1.6701619153125102,
+      "avg_yime_full": 6.680647661250041,
+      "avg_yime_jianpin": 5.606293507431128,
+      "avg_full_pinyin": 5.2386922472583075,
+      "avg_full_pinyin_with_tone_number": 6.908854162570817,
+      "avg_double_pinyin": 3.3403238306250205,
+      "jianpin_saved_vs_full": 1.0743541538189127,
+      "jianpin_vs_full_pinyin": 0.3676012601728207,
+      "jianpin_vs_full_pinyin_with_tone_number": -1.3025606551396889,
+      "jianpin_vs_double_pinyin": 2.2659696768061077
+    }
+  },
+  "syllable_jianpin_examples": {
+    "most_compressible": [
+      {
+        "syllable": "a1",
+        "full_length": 4,
+        "jianpin_length": 1,
+        "saved_keys": 3,
+        "reason": "省略虚首音；合并连续相同音元 2 次"
+      },
+      {
+        "syllable": "a3",
+        "full_length": 4,
+        "jianpin_length": 1,
+        "saved_keys": 3,
+        "reason": "省略虚首音；合并连续相同音元 2 次"
+      },
+      {
+        "syllable": "a5",
+        "full_length": 4,
+        "jianpin_length": 1,
+        "saved_keys": 3,
+        "reason": "省略虚首音；合并连续相同音元 2 次"
+      },
+      {
+        "syllable": "e1",
+        "full_length": 4,
+        "jianpin_length": 1,
+        "saved_keys": 3,
+        "reason": "省略虚首音；合并连续相同音元 2 次"
+      },
+      {
+        "syllable": "e3",
+        "full_length": 4,
+        "jianpin_length": 1,
+        "saved_keys": 3,
+        "reason": "省略虚首音；合并连续相同音元 2 次"
+      },
+      {
+        "syllable": "e5",
+        "full_length": 4,
+        "jianpin_length": 1,
+        "saved_keys": 3,
+        "reason": "省略虚首音；合并连续相同音元 2 次"
+      },
+      {
+        "syllable": "er3",
+        "full_length": 4,
+        "jianpin_length": 1,
+        "saved_keys": 3,
+        "reason": "省略虚首音；合并连续相同音元 2 次"
+      },
+      {
+        "syllable": "er5",
+        "full_length": 4,
+        "jianpin_length": 1,
+        "saved_keys": 3,
+        "reason": "省略虚首音；合并连续相同音元 2 次"
+      },
+      {
+        "syllable": "m1",
+        "full_length": 4,
+        "jianpin_length": 1,
+        "saved_keys": 3,
+        "reason": "省略虚首音；合并连续相同音元 2 次"
+      },
+      {
+        "syllable": "n3",
+        "full_length": 4,
+        "jianpin_length": 1,
+        "saved_keys": 3,
+        "reason": "省略虚首音；合并连续相同音元 2 次"
+      }
+    ],
+    "least_compressible": [
+      {
+        "syllable": "bai2",
+        "full_length": 4,
+        "jianpin_length": 4,
+        "saved_keys": 0,
+        "reason": "无可压缩步骤"
+      },
+      {
+        "syllable": "bai4",
+        "full_length": 4,
+        "jianpin_length": 4,
+        "saved_keys": 0,
+        "reason": "无可压缩步骤"
+      },
+      {
+        "syllable": "ban4",
+        "full_length": 4,
+        "jianpin_length": 4,
+        "saved_keys": 0,
+        "reason": "无可压缩步骤"
+      },
+      {
+        "syllable": "bang4",
+        "full_length": 4,
+        "jianpin_length": 4,
+        "saved_keys": 0,
+        "reason": "无可压缩步骤"
+      },
+      {
+        "syllable": "bao2",
+        "full_length": 4,
+        "jianpin_length": 4,
+        "saved_keys": 0,
+        "reason": "无可压缩步骤"
+      },
+      {
+        "syllable": "bao4",
+        "full_length": 4,
+        "jianpin_length": 4,
+        "saved_keys": 0,
+        "reason": "无可压缩步骤"
+      },
+      {
+        "syllable": "bei4",
+        "full_length": 4,
+        "jianpin_length": 4,
+        "saved_keys": 0,
+        "reason": "无可压缩步骤"
+      },
+      {
+        "syllable": "ben4",
+        "full_length": 4,
+        "jianpin_length": 4,
+        "saved_keys": 0,
+        "reason": "无可压缩步骤"
+      },
+      {
+        "syllable": "beng2",
+        "full_length": 4,
+        "jianpin_length": 4,
+        "saved_keys": 0,
+        "reason": "无可压缩步骤"
+      },
+      {
+        "syllable": "beng4",
+        "full_length": 4,
+        "jianpin_length": 4,
+        "saved_keys": 0,
+        "reason": "无可压缩步骤"
+      }
+    ]
+  },
+  "syllable_jianpin_rule_stats": {
+    "total_syllable_count": 1549,
+    "compressed_syllable_count": 772,
+    "no_compression_count": 777,
+    "avg_saved_keys_per_syllable": 0.6668818592640413,
+    "rule_rows": [
+      {
+        "label": "靠省略虚首音获益",
+        "count": 63,
+        "share": 0.040671400903808906
+      },
+      {
+        "label": "靠合并重复获益",
+        "count": 591,
+        "share": 0.381536475145255
+      },
+      {
+        "label": "靠省略中调获益",
+        "count": 168,
+        "share": 0.10845706907682376
+      },
+      {
+        "label": "至少触发一条简拼规则",
+        "count": 772,
+        "share": 0.4983860555196901
+      },
+      {
+        "label": "没有任何压缩收益",
+        "count": 777,
+        "share": 0.5016139444803098
+      }
+    ],
+    "combo_rows": [
+      {
+        "label": "无可压缩步骤",
+        "count": 777,
+        "share": 0.5016139444803098
+      },
+      {
+        "label": "合并重复",
+        "count": 557,
+        "share": 0.35958683021304066
+      },
+      {
+        "label": "省略中调",
+        "count": 152,
+        "share": 0.09812782440284054
+      },
+      {
+        "label": "省略虚首音 + 合并重复",
+        "count": 34,
+        "share": 0.02194964493221433
+      },
+      {
+        "label": "省略虚首音 + 省略中调",
+        "count": 16,
+        "share": 0.010329244673983214
+      },
+      {
+        "label": "省略虚首音",
+        "count": 13,
+        "share": 0.008392511297611363
+      }
+    ]
+  },
+  "top_examples": {
+    "chars": [
+      {
+        "code": "􀀗􀀠􀀡􀀢",
+        "dominant_pinyin": "yi4",
+        "dominant_count": 513,
+        "candidate_count": 513,
+        "samples": [
+          "一",
+          "食",
+          "射",
+          "艾",
+          "泄",
+          "乙",
+          "意",
+          "亦"
+        ]
+      },
+      {
+        "code": "􀀆􀀠􀀡􀀢",
+        "dominant_pinyin": "li4",
+        "dominant_count": 364,
+        "candidate_count": 364,
+        "samples": [
+          "丽",
+          "哩",
+          "力",
+          "位",
+          "利",
+          "立",
+          "历",
+          "例"
+        ]
+      },
+      {
+        "code": "􀀔􀀠􀀠􀀠",
+        "dominant_pinyin": "xi1",
+        "dominant_count": 335,
+        "candidate_count": 335,
+        "samples": [
+          "茜",
+          "蹊",
+          "栖",
+          "喜",
+          "西",
+          "息",
+          "析",
+          "希"
+        ]
+      },
+      {
+        "code": "􀀗􀀦􀀧􀀨",
+        "dominant_pinyin": "yu4",
+        "dominant_count": 330,
+        "candidate_count": 330,
+        "samples": [
+          "与",
+          "拗",
+          "雨",
+          "王",
+          "吁",
+          "尉",
+          "宛",
+          "语"
+        ]
+      },
+      {
+        "code": "􀀎􀀲􀀳􀀴",
+        "dominant_pinyin": "zhi4",
+        "dominant_count": 326,
+        "candidate_count": 326,
+        "samples": [
+          "知",
+          "识",
+          "支",
+          "之",
+          "质",
+          "制",
+          "至",
+          "示"
+        ]
+      },
+      {
+        "code": "􀀀􀀠􀀡􀀢",
+        "dominant_pinyin": "bi4",
+        "dominant_count": 310,
+        "candidate_count": 310,
+        "samples": [
+          "佛",
+          "服",
+          "秘",
+          "被",
+          "辟",
+          "陂",
+          "泌",
+          "拂"
+        ]
+      },
+      {
+        "code": "􀀒􀀠􀀡􀀢",
+        "dominant_pinyin": "ji4",
+        "dominant_count": 260,
+        "candidate_count": 260,
+        "samples": [
+          "济",
+          "系",
+          "其",
+          "齐",
+          "纪",
+          "既",
+          "计",
+          "暨"
+        ]
+      },
+      {
+        "code": "􀀒􀀨􀀰􀀯",
+        "dominant_pinyin": "jue2",
+        "dominant_count": 251,
+        "candidate_count": 251,
+        "samples": [
+          "觉",
+          "角",
+          "嚼",
+          "噱",
+          "乙",
+          "决",
+          "倔",
+          "绝"
+        ]
+      },
+      {
+        "code": "􀀗􀀨􀀧􀀦",
+        "dominant_pinyin": "yu2",
+        "dominant_count": 234,
+        "candidate_count": 234,
+        "samples": [
+          "与",
+          "予",
+          "俞",
+          "于",
+          "吾",
+          "於",
+          "鱼",
+          "余"
+        ]
+      },
+      {
+        "code": "􀀂􀀥􀀤􀀣",
+        "dominant_pinyin": "fu2",
+        "dominant_count": 231,
+        "candidate_count": 231,
+        "samples": [
+          "还",
+          "佛",
+          "服",
+          "夫",
+          "市",
+          "拂",
+          "包",
+          "福"
+        ]
+      }
+    ],
+    "phrases": [
+      {
+        "code": "􀀌􀀴􀀳􀀲 􀀗􀀫􀀪􀀻 􀀗􀀠􀀡􀀢 􀀎􀀬􀀭􀁀",
+        "dominant_pinyin": "ci2 yan2 yi4 zheng4",
+        "dominant_count": 5,
+        "candidate_count": 5,
+        "samples": [
+          "词严义正",
+          "辞严义正",
+          "词言义正",
+          "辞严意正",
+          "辞严谊正"
+        ]
+      },
+      {
+        "code": "􀀆􀀠􀀡􀀢 􀀐􀀲􀀳􀀴 􀀃􀀮􀀭􀀬 􀀄􀀣􀀰􀀽",
+        "dominant_pinyin": "li4 shi4 mo2 dun4",
+        "dominant_count": 5,
+        "candidate_count": 5,
+        "samples": [
+          "历世摩钝",
+          "历世磨钝",
+          "厉世摩钝",
+          "砺世摩钝",
+          "砺世磨钝"
+        ]
+      },
+      {
+        "code": "􀀃􀀩􀀪􀀽 􀀅􀀢􀀪􀀣 􀀍􀀲􀀲􀀲 􀀆􀀢􀀢􀀢",
+        "dominant_pinyin": "man4 tiao2 si1 li3",
+        "dominant_count": 5,
+        "candidate_count": 5,
+        "samples": [
+          "慢条斯理",
+          "慢条丝礼",
+          "慢条厮礼",
+          "慢条斯礼",
+          "漫条斯理"
+        ]
+      },
+      {
+        "code": "􀀃􀀮􀀭􀀬 􀀆􀀠􀀡􀀢 􀀗􀀢􀀢􀀢 􀀔􀀦􀀦􀀦",
+        "dominant_pinyin": "mo2 li4 yi3 xu1",
+        "dominant_count": 5,
+        "candidate_count": 5,
+        "samples": [
+          "磨砺以须",
+          "磨厉以须",
+          "摩厉以需",
+          "摩厉以须",
+          "摩砺以须"
+        ]
+      },
+      {
+        "code": "􀀎􀀬􀀭􀁀 􀀐􀀲􀀳􀀴",
+        "dominant_pinyin": "zheng4 shi4",
+        "dominant_count": 5,
+        "candidate_count": 5,
+        "samples": [
+          "正是",
+          "正式",
+          "正视",
+          "正事",
+          "正室"
+        ]
+      },
+      {
+        "code": "􀀀􀀩􀀪􀀥 􀀆􀀠􀀡􀀢",
+        "dominant_pinyin": "bao4 li4",
+        "dominant_count": 4,
+        "candidate_count": 4,
+        "samples": [
+          "暴力",
+          "暴利",
+          "暴戾",
+          "暴吏"
+        ]
+      },
+      {
+        "code": "􀀏􀀥􀀭􀀾 􀀆􀀣􀀰􀀽 􀀊􀀥􀀭􀀾 􀀗􀀠􀀡􀀢",
+        "dominant_pinyin": "chong2 lun4 hong2 yi4",
+        "dominant_count": 4,
+        "candidate_count": 4,
+        "samples": [
+          "崇论宏议",
+          "崇论闳议",
+          "崇论吰议",
+          "崇论谹议"
+        ]
+      },
+      {
+        "code": "􀀄􀀩􀀪􀀫 􀀆􀀠􀀡􀀢",
+        "dominant_pinyin": "da4 li4",
+        "dominant_count": 4,
+        "candidate_count": 4,
+        "samples": [
+          "大力",
+          "大历",
+          "大荔",
+          "大吏"
+        ]
+      },
+      {
+        "code": "􀀄􀀩􀀪􀀫 􀀎􀀲􀀳􀀴",
+        "dominant_pinyin": "da4 zhi4",
+        "dominant_count": 4,
+        "candidate_count": 4,
+        "samples": [
+          "大致",
+          "大志",
+          "大智",
+          "大治"
+        ]
+      },
+      {
+        "code": "􀀂􀀥􀀤􀀣 􀀐􀀲􀀳􀀴",
+        "dominant_pinyin": "fu2 shi4",
+        "dominant_count": 4,
+        "candidate_count": 4,
+        "samples": [
+          "服饰",
+          "服侍",
+          "拂拭",
+          "服式"
+        ]
+      }
+    ]
+  },
+  "notes": [
+    "This baseline measures current runtime collision structure from exported candidate data only.",
+    "It does not yet compare YIME against third-party pinyin IMEs or model user adaptation over time.",
+    "sort_weight is the current runtime frequency proxy and is closer to actual ranking behavior than the coarse is_common flag.",
+    "Phrase candidates currently all fit within the default first page size of 5.",
+    "Code-length comparison below is a structural baseline: YIME full mode is fixed 4 keys per syllable, standard full pinyin uses toneless letter count, and the double-pinyin baseline assumes 2 keys per syllable."
+  ]
+}

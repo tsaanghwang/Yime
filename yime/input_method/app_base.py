@@ -9,6 +9,7 @@ from .core.decoders import (
     CompositeCandidateDecoder,
     build_code_display,
     build_input_sound_notes,
+    build_manual_key_output_map,
     build_input_visual_map,
     build_physical_input_map,
     build_projected_to_physical_map,
@@ -37,6 +38,7 @@ class BaseInputMethodApp:
         app_dir = Path(__file__).resolve().parent.parent
         self.decoder = CompositeCandidateDecoder(app_dir)
         self.input_visual_map = build_input_visual_map(app_dir.parent)
+        self.manual_key_output_map = build_manual_key_output_map(app_dir.parent)
         self.physical_input_map = build_physical_input_map(app_dir.parent)
         self.projected_to_physical_map = build_projected_to_physical_map(
             self.physical_input_map
@@ -65,6 +67,8 @@ class BaseInputMethodApp:
             font_family=self.font_family,
             input_display_formatter=self._format_input_outline,
             projected_code_formatter=self._format_projected_code,
+            manual_key_output_resolver=self._resolve_manual_key_output,
+            manual_input_transformer=self._format_visible_input,
             on_input_change=self._on_input_change,
             on_copy_candidate=self._copy_candidate,
             on_commit_text=self._commit_candidate_box_text,
@@ -81,6 +85,24 @@ class BaseInputMethodApp:
         if not text:
             return ""
         return project_physical_input(text, self.physical_input_map)
+
+    def _resolve_manual_key_output(
+        self,
+        physical_key: str,
+        modifiers: dict[str, bool],
+    ) -> str:
+        normalized_key = physical_key.strip().lower()
+        if not normalized_key:
+            return ""
+
+        if modifiers.get("alt_gr"):
+            layer = "altgr"
+        elif modifiers.get("shift"):
+            layer = "shift"
+        else:
+            layer = "base"
+
+        return self.manual_key_output_map.get((normalized_key, layer), "")
 
     def _resolve_display_candidates(
         self,

@@ -684,6 +684,7 @@ def test_utilities(result: TestResult):
                 self.foreground = 100
                 self.attached = []
                 self.shown_handles = []
+                self.iconic_handles = set()
 
             @staticmethod
             def _hwnd_value(hwnd):
@@ -691,6 +692,9 @@ def test_utilities(result: TestResult):
 
             def GetForegroundWindow(self):
                 return self.foreground
+
+            def IsIconic(self, hwnd):
+                return 1 if self._hwnd_value(hwnd) in self.iconic_handles else 0
 
             def GetAncestor(self, hwnd, _flag):
                 value = self._hwnd_value(hwnd)
@@ -742,7 +746,7 @@ def test_utilities(result: TestResult):
 
             assert restored is True
             assert fake_user32.foreground == 200
-            assert fake_user32.shown_handles == [200]
+            assert fake_user32.shown_handles == []
             assert fake_user32.attached == [
                 (7, 11, True),
                 (7, 22, True),
@@ -752,11 +756,20 @@ def test_utilities(result: TestResult):
 
             fake_user32.foreground = 100
             fake_user32.shown_handles.clear()
+            fake_user32.iconic_handles.add(200)
             restored = WindowManager.restore_window(201)
 
             assert restored is True
             assert fake_user32.foreground == 200
             assert fake_user32.shown_handles == [200]
+
+            fake_user32.iconic_handles.clear()
+            fake_user32.foreground = 200
+            fake_user32.shown_handles.clear()
+            restored = WindowManager.restore_window(200)
+
+            assert restored is True
+            assert fake_user32.shown_handles == []
         finally:
             WindowManager._user32 = original_user32
             WindowManager._kernel32 = original_kernel32
