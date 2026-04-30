@@ -216,6 +216,27 @@
 4. 键盘布局辅助工程已经独立到 `C:/dev/Yime-keyboard-layout`，主仓库中的 `releases/v1.0/` 现已降级为占位入口。
 5. `releases/msklc-package/`、`releases/msklc-amd64/` 与 `releases/msklc-wow64/` 已从主仓库移除，正式样本改由 `C:/dev/Yime-keyboard-layout` 承载。
 
+#### 6. 根目录旧原型数据库链（2026-04）
+
+以下对象已经确认为旧原型/练习链，且已从主仓库移除：
+
+- `pinyin_hanzi.db`
+  - 分类：已删除的根级练习库。
+  - 原因：当前运行时与数据库维护主线都已统一到 `yime/pinyin_hanzi.db`，这个根目录 SQLite 文件体量很小、表结构也明显更旧，更接近早期练习或原型残留，而不是现行输入法资产。
+
+- `create_tables_from_manager.py`
+  - 分类：已删除的根级旧建表脚本。
+  - 原因：它只操作根目录 `pinyin_hanzi.db`，不参与当前 `yime/` 模块内的数据库运行/导入链，已被模块内数据库脚本体系替代。
+
+- `run_db_setup.py`
+  - 分类：已删除的根级旧初始化脚本。
+  - 原因：它默认操作根目录 `pinyin_hanzi.db`，与 `yime/run_db_setup.py` 这条模块内链重复，保留它只会继续制造“根目录库 vs 模块目录库”的混淆。
+
+当前处理原则补充：
+
+1. 数据库相关脚本若仍以仓库根目录 `pinyin_hanzi.db` 为默认目标，应优先视为旧原型链候选，而不是当前主线入口。
+2. 当前输入法运行、导入、诊断与测试的数据库主线统一以 `yime/pinyin_hanzi.db` 为准。
+
 ### E. 审计与过渡辅助文件
 
 这些文件很有价值，但它们的职责是“帮助审计现状”，不是“定义未来结构”。
