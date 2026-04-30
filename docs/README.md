@@ -27,6 +27,7 @@
 ### 核心文档
 
 - **[输入法实现方案](../INPUT_METHOD_SOLUTION.md)** - 当前 Windows 桌面输入法原型的实现状态、边界和后续方向
+- **[效率基线报告](EFFICIENCY_BASELINE.md)** - 基于现有运行时候选导出生成的第一版效率指标表
 - **[API 参考手册](API.md)** - 完整的 API 文档和示例
 - **[开发者指南](DEVELOPMENT.md)** - 开发环境配置和最佳实践
 - **[常见问题](FAQ.md)** - 常见问题解答

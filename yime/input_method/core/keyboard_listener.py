@@ -93,6 +93,7 @@ class KeyboardListener:
         "shift": (0x10,),
         "ctrl": (0x11,),
         "alt": (0x12,),
+        "alt_r": (0xA5,),
         "win": (0x5B, 0x5C),
     }
 
@@ -340,6 +341,11 @@ class KeyboardListener:
             for name, codes in self._MODIFIER_VK_CODES.items():
                 states[name] = any(bool(user32.GetAsyncKeyState(code) & 0x8000) for code in codes)
 
+            # On Windows, AltGr is commonly surfaced as Right Alt plus Ctrl.
+            # Some keyboards expose the same layer only through a Ctrl+Alt chord,
+            # so treat either form as AltGr for printable layout characters.
+            states["alt_gr"] = bool(states.get("ctrl") and (states.get("alt_r") or states.get("alt")))
+
             if vk_code == 0x10:
                 states["shift"] = True
             elif vk_code == 0x11:
@@ -352,13 +358,39 @@ class KeyboardListener:
             return states
 
         def resolve_text(vk_code: int, scan_code: int, modifiers: Dict[str, bool]) -> str:
-            if modifiers.get("ctrl") or modifiers.get("alt") or modifiers.get("win"):
+            if modifiers.get("win"):
+                return ""
+
+            if modifiers.get("ctrl") and not modifiers.get("alt_gr"):
+                return ""
+
+            if modifiers.get("alt") and not modifiers.get("alt_gr"):
                 return ""
 
             keyboard_state = (ctypes.c_ubyte * 256)()
             for code in range(256):
                 if user32.GetAsyncKeyState(code) & 0x8000:
                     keyboard_state[code] |= 0x80
+
+            def mark_pressed(*virtual_keys: int) -> None:
+                for virtual_key in virtual_keys:
+                    keyboard_state[virtual_key] |= 0x80
+
+            # 低层钩子回调触发得很早，GetAsyncKeyState 对当前组合键有时还没完全稳定。
+            # 这里根据解析出的修饰键显式补齐状态，确保 ToUnicodeEx 能命中 AltGr/Ctrl+Alt 层。
+            if modifiers.get("shift"):
+                mark_pressed(0x10, 0xA0, 0xA1)
+
+            if modifiers.get("ctrl") or modifiers.get("alt_gr"):
+                mark_pressed(0x11, 0xA2, 0xA3)
+
+            if modifiers.get("alt") or modifiers.get("alt_gr"):
+                mark_pressed(0x12, 0xA4, 0xA5)
+
+            if modifiers.get("alt_r") or modifiers.get("alt_gr"):
+                mark_pressed(0xA5)
+
+            mark_pressed(vk_code)
 
             foreground_hwnd = user32.GetForegroundWindow()
             thread_id = wintypes.DWORD(0)

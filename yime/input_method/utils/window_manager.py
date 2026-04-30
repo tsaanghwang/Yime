@@ -58,7 +58,7 @@ class WindowManager:
     @classmethod
     def restore_window(cls, hwnd: int) -> bool:
         """
-        恢复并激活窗口
+        激活窗口；仅在最小化时恢复，避免把最大化或贴靠窗口改回普通大小。
 
         Args:
             hwnd: 窗口句柄
@@ -72,9 +72,11 @@ class WindowManager:
 
         target_hwnd = int(normalized_target)
         hwnd_value = wintypes.HWND(target_hwnd)
+        should_restore = bool(cls._user32.IsIconic(hwnd_value))
         foreground = cls._user32.GetForegroundWindow()
         if cls._hwnd_to_int(foreground) == target_hwnd:
-            cls._user32.ShowWindow(hwnd_value, SW_RESTORE)
+            if should_restore:
+                cls._user32.ShowWindow(hwnd_value, SW_RESTORE)
             return True
 
         current_thread_id = cls._kernel32.GetCurrentThreadId()
@@ -99,7 +101,8 @@ class WindowManager:
                     if cls._user32.AttachThreadInput(current_thread_id, thread_id, True):
                         attached_threads.append(thread_id)
 
-            cls._user32.ShowWindow(hwnd_value, SW_RESTORE)
+            if should_restore:
+                cls._user32.ShowWindow(hwnd_value, SW_RESTORE)
             cls._user32.BringWindowToTop(hwnd_value)
             cls._user32.SetForegroundWindow(hwnd_value)
             cls._user32.SetActiveWindow(hwnd_value)

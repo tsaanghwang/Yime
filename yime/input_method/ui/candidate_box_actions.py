@@ -47,15 +47,27 @@ class CandidateBoxActions:
         self.box.root.bind("<Prior>", self.on_previous_page_key)
         self.box.root.bind("<Next>", self.on_next_page_key)
         self.box.root.bind("<End>", self.on_last_page_key)
+        self.box.root.bind("<Left>", self.on_move_selection_previous)
+        self.box.root.bind("<Right>", self.on_move_selection_next)
+        self.box.root.bind("<Up>", self.on_move_selection_previous)
+        self.box.root.bind("<Down>", self.on_move_selection_next)
         self.box.root.bind("<FocusIn>", self.on_window_focus_in)
         self.box.input_entry.bind("<Home>", self.on_first_page_key)
         self.box.input_entry.bind("<Prior>", self.on_previous_page_key)
         self.box.input_entry.bind("<Next>", self.on_next_page_key)
         self.box.input_entry.bind("<End>", self.on_last_page_key)
+        self.box.input_entry.bind("<Left>", self.on_move_selection_previous)
+        self.box.input_entry.bind("<Right>", self.on_move_selection_next)
+        self.box.input_entry.bind("<Up>", self.on_move_selection_previous)
+        self.box.input_entry.bind("<Down>", self.on_move_selection_next)
         self.box.commit_entry.bind("<Home>", self.on_first_page_key)
         self.box.commit_entry.bind("<Prior>", self.on_previous_page_key)
         self.box.commit_entry.bind("<Next>", self.on_next_page_key)
         self.box.commit_entry.bind("<End>", self.on_last_page_key)
+        self.box.commit_entry.bind("<Left>", self.on_move_selection_previous)
+        self.box.commit_entry.bind("<Right>", self.on_move_selection_next)
+        self.box.commit_entry.bind("<Up>", self.on_move_selection_previous)
+        self.box.commit_entry.bind("<Down>", self.on_move_selection_next)
 
         for widget in (self.box.root, self.box.input_entry, self.box.commit_entry):
             for sequence, index in self._SYMBOL_SHORTCUT_BINDINGS.items():
@@ -91,7 +103,7 @@ class CandidateBoxActions:
 
     def on_confirm_key(self, event: Optional[tk.Event] = None) -> str:
         if self.box.current_candidates:
-            self.select_candidate_by_index(0)
+            self.select_candidate_by_index(self.box.get_selected_candidate_index())
             self.commit_output_text()
         else:
             self.commit_output_text()
@@ -106,6 +118,22 @@ class CandidateBoxActions:
     def on_candidate_shortcut(self, event: Optional[tk.Event], index: int) -> str:
         self.select_candidate_by_index(index)
         self.commit_output_text()
+        return "break"
+
+    def on_candidate_click(self, index: int) -> None:
+        self.select_candidate_by_index(index)
+        self.commit_output_text()
+
+    def on_move_selection_previous(self, event: Optional[tk.Event] = None) -> str:
+        if not self.box.current_candidates:
+            return ""
+        self.box.move_selection(-1)
+        return "break"
+
+    def on_move_selection_next(self, event: Optional[tk.Event] = None) -> str:
+        if not self.box.current_candidates:
+            return ""
+        self.box.move_selection(1)
         return "break"
 
     def on_symbol_shortcut_key(self, event: Optional[tk.Event] = None) -> Optional[str]:

@@ -85,6 +85,8 @@ class InputMethodAppV2(BaseInputMethodApp):
             font_family=self.font_family,
             input_display_formatter=self._format_input_outline,
             projected_code_formatter=self._format_projected_code,
+            manual_key_output_resolver=self._resolve_manual_key_output,
+            manual_input_transformer=self._format_visible_input,
             on_input_change=self._on_input_change,
             on_copy_candidate=self._copy_candidate,
             on_commit_text=self._commit_candidate_box_text,
