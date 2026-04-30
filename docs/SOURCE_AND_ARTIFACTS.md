@@ -46,12 +46,14 @@
   - 文件名里的 `manual` 是历史命名，当前语义应理解为“布局真源”，不是“manual install”或“手工编译流程”。
   - 定义物理键位与 `Nxx/Mxx` 槽位的关系。
   - 这是布局层真源，不应通过改 `yinyuan.klc` 反向修复。
+  - `C:/dev/Yime-keyboard-layout` 可以消费它的快照副本来生成 KLC 和打包产物，但那边的 `source_snapshots/manual_key_layout.json` 不是 canonical。
 
 #### 2. 槽位到规范字符映射真源
 
 - `internal_data/key_to_symbol.json`
   - 当前表达 `N01-N24` 与 `M01-M33` 到规范字符的映射。
   - 按策略文档，应将其理解为“语义槽位到 canonical 字符”的稳定层。
+  - `C:/dev/Yime-keyboard-layout` 中如果存在对应快照，也只能视为同步副本，不得反向覆盖这里。
 
 #### 3. 理论与流程约束真源
 
@@ -87,6 +89,7 @@
 - `internal_data/bmp_pua_trial_projection.json`
   - 当前用于把 canonical 槽位投影到 BMP PUA。
   - 应继续保留，但应明确其职责是 projection，不是 canonical。
+  - 独立出来的键盘布局辅助仓库可以复制它做 Windows 打包试验，但复制件仍只是快照。
 
 - `internal_data/bmp_pua_trial_projection.md`
   - 对应投影的说明文件。
@@ -141,6 +144,7 @@
 - `yinyuan.klc`
   - 是键盘布局安装链的构建产物。
   - 不应反向充当键位真源。
+  - 当前正式保留位置应理解为 `C:/dev/Yime-keyboard-layout/yinyuan.klc`；主仓库根目录不再要求长期保留副本。
 
 #### 4. 数据库导入与运行时消费产物
 
@@ -149,6 +153,68 @@
 - `yime/pinyin_hanzi.db-wal`
 - `yime/pinyin_hanzi.db-shm`
   - 都是数据库运行时副产物，绝不是设计真源。
+
+#### 5. 第二批轻清理对象分类（2026-04）
+
+以下对象已经做过一轮“只分类、不删除”的轻审查，当前建议如下。
+
+- `yime/create_prototype_schema_additions.sql`
+  - 分类：当前间接依赖。
+  - 原因：该文件定义 `runtime_candidates` 视图，而当前输入法的 SQLite 回退链会直接读取这个视图，因此它不能按普通旧脚本附件处理。
+
+- `yime/import_danzi_into_prototype_tables.py`
+  - 分类：待确认旧链。
+  - 原因：它属于“把单字数据导入原型数据库”的维护脚本，会配合 `create_prototype_schema_additions.sql` 和 `source_pinyin.db` 工作，但当前不是输入法前台运行主线的直接入口。
+
+- `yime/import_duozi_into_prototype_tables.py`
+  - 分类：待确认旧链。
+  - 原因：它属于“把词语数据导入原型数据库”的维护脚本，角色与单字导入脚本相同，目前更像原型库维护链的一部分，而不是当前交互主线的一部分。
+
+- `releases/`
+  - 分类：可归档但暂不删除。
+  - 原因：该目录更接近历史发布/打包沉积区，包含安装包、MSI 和按架构拆分的打包结果；当前没有发现运行时代码对它的直接依赖，但它仍可能承载可用安装样本与发布记录，因此现阶段先归档理解，不做删除处理。
+
+当前处理原则：
+
+1. 对 `当前间接依赖` 对象，现阶段不得因为“看起来像旧文件”而直接删除、搬移或改名。
+2. 对 `待确认旧链` 对象，现阶段只允许继续审计、补说明或补替代链，不直接清理，直到能明确当前数据库构建链已有稳定替代入口。
+3. 对 `可归档但暂不删除` 对象，现阶段只做目录级分类和用途标注，不碰包内容；等发布样本与历史沉积物拆分标准明确后再动。
+
+`releases/` 顶层子目录当前可先按下面方式理解：
+
+补充说明：当前 Windows 键盘布局打包链已经独立到 `C:/dev/Yime-keyboard-layout`。主仓库里的 `releases/` 更应理解为过渡镜像和历史残留，而不是 IME 主线自带发布系统。
+
+- `releases/msklc-package/`
+  - 分类：已迁出主仓库。
+  - 原因：当前可解释的安装样本已经保留在 `C:/dev/Yime-keyboard-layout` 中，主仓库不再需要继续携带这份镜像目录。
+
+- `releases/msklc-amd64/`
+  - 分类：已迁出主仓库。
+  - 原因：分架构 DLL 快照已经保留在 `C:/dev/Yime-keyboard-layout` 中，主仓库不再继续保存重复副本。
+
+- `releases/msklc-wow64/`
+  - 分类：已迁出主仓库。
+  - 原因：分架构 DLL 快照已经保留在 `C:/dev/Yime-keyboard-layout` 中，主仓库不再继续保存重复副本。
+
+- `releases/msklc-docs/`
+  - 分类：空目录占位。
+  - 原因：当前为空，暂时没有形成有效内容；该目录已在轻清理中删除。
+
+- `releases/msklc-test/`
+  - 分类：空目录占位。
+  - 原因：当前为空，暂时没有形成有效内容；该目录已在轻清理中删除。
+
+- `releases/v1.0/`
+  - 分类：过渡占位目录。
+  - 原因：正式键盘布局 `v1.0` 说明已经迁到 `C:/dev/Yime-keyboard-layout`，主仓库这里只保留一个入口占位，避免旧路径失联。
+
+当前已完成的 `releases/` 轻清理结论是：
+
+1. `releases/msklc-docs/` 与 `releases/msklc-test/` 两个空目录占位已删除。
+2. `releases/yinyuan/` 已删除，因为它与 `releases/msklc-package/` 的代表性包文件重复，且当前运行/打包说明链没有引用它。
+3. 旧的 `releases/v2.2/` 与 `releases/v2.3/` 版本说明已删除，因为它们为空或与当前主线失配。
+4. 键盘布局辅助工程已经独立到 `C:/dev/Yime-keyboard-layout`，主仓库中的 `releases/v1.0/` 现已降级为占位入口。
+5. `releases/msklc-package/`、`releases/msklc-amd64/` 与 `releases/msklc-wow64/` 已从主仓库移除，正式样本改由 `C:/dev/Yime-keyboard-layout` 承载。
 
 ### E. 审计与过渡辅助文件
 
