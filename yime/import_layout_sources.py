@@ -9,7 +9,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 DB_PATH = ROOT / "yime" / "pinyin_hanzi.db"
 SCHEMA_PATH = ROOT / "yime" / "create_yime_db_schema.sql"
-KLC_PATH = ROOT / "yinyuan.klc"
+LOCAL_KLC_PATH = ROOT / "yinyuan.klc"
+EXTERNAL_KLC_PATH = ROOT.parent / "Yime-keyboard-layout" / "yinyuan.klc"
 RUNTIME_SYMBOL_PATH = ROOT / "key_to_code.json"
 CANONICAL_SYMBOL_PATH = ROOT / "internal_data" / "key_to_symbol.json"
 PROJECTION_PATH = ROOT / "internal_data" / "bmp_pua_trial_projection.json"
@@ -138,6 +139,16 @@ def resolve_key_code(vk_name: str) -> str | None:
     if len(vk_name) == 1 and vk_name.isalpha():
         return vk_name.lower()
     return None
+
+
+def resolve_klc_path() -> Path:
+    if LOCAL_KLC_PATH.exists():
+        return LOCAL_KLC_PATH
+    if EXTERNAL_KLC_PATH.exists():
+        return EXTERNAL_KLC_PATH
+    raise FileNotFoundError(
+        "Could not find yinyuan.klc in either the main repo root or C:/dev/Yime-keyboard-layout/."
+    )
 
 
 def parse_klc_layout(klc_path: Path) -> list[dict[str, str | None]]:
@@ -333,18 +344,19 @@ def import_derived_key_mappings(conn: sqlite3.Connection, rows: list[dict[str, s
 
 def main() -> None:
     symbols = load_symbol_catalog()
-    klc_rows = parse_klc_layout(KLC_PATH)
+    klc_path = resolve_klc_path()
+    klc_rows = parse_klc_layout(klc_path)
 
     with sqlite3.connect(DB_PATH) as conn:
         apply_schema(conn)
         import_symbols(conn, symbols)
         rebuild_default_key_mappings(conn)
-        import_klc_rows(conn, KLC_PATH, klc_rows)
+        import_klc_rows(conn, klc_path, klc_rows)
         mapping_count = import_derived_key_mappings(conn, klc_rows)
         conn.commit()
 
         print(f"Imported {len(symbols)} symbols from slot crosswalk sources")
-        print(f"Imported {len(klc_rows)} layout rows from {KLC_PATH.name}")
+        print(f"Imported {len(klc_rows)} layout rows from {klc_path}")
         print(f"Imported {mapping_count} derived key-symbol mappings from KLC states")
 
 
