@@ -23,3 +23,7 @@ Thumbs.db
 # System files
 nul
 node_modules
+
+# Generated reports
+coverage/
+htmlcov/
