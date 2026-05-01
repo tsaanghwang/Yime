@@ -423,7 +423,7 @@
       "name": "verify_yinjie_encoder",
       "type": "python",
       "request": "launch",
-      "program": "${workspaceFolder}\\verify_yinjie_encoder.py",
+      "program": "${workspaceFolder}\\tests\\yinjie\\verify_yinjie_encoder.py",
       "currentFileConfiguration": false,
       "cwd": "${workspaceFolder}",
       "addSourceRootsToPythonpath": true,

@@ -138,7 +138,7 @@
 ### 步骤1：测试字体支持
 
 ```bash
-python test_font_support.py
+python tests/manual/test_font_support.py
 ```
 
 ### 步骤2：在记事本中测试
@@ -215,7 +215,7 @@ python test_font_support.py
 
 ```bash
 # 测试字体支持
-python test_font_support.py
+python tests/manual/test_font_support.py
 
 # 在记事本中测试
 # 1. 打开记事本

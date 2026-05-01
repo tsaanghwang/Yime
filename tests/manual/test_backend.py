@@ -12,7 +12,7 @@ from pathlib import Path
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
 # 添加项目路径
-sys.path.insert(0, str(Path(__file__).parent))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 def test_imports():
     """测试模块导入"""
@@ -248,7 +248,7 @@ def main():
 
     if failed == 0:
         print("\n✓ 所有测试通过！可以运行完整测试")
-        print("\n运行命令: python test_keyboard_connection.py")
+        print("\n运行命令: python tests/manual/test_keyboard_connection.py")
     else:
         print("\n✗ 有测试失败，需要先解决问题")
         print("\n建议:")

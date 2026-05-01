@@ -184,9 +184,10 @@ class TestYinjieSetupStages(unittest.TestCase):
 
     def test_project_root_stage_finds_workspace_root(self):
         stage = ProjectRootStage()
-        base_dir = Path(__file__).resolve().parent / "syllable" / "analysis" / "slice"
+        project_root = Path(__file__).resolve().parents[2]
+        base_dir = project_root / "syllable" / "analysis" / "slice"
 
-        self.assertEqual(stage.run(base_dir), Path(__file__).resolve().parent)
+        self.assertEqual(stage.run(base_dir), project_root)
 
     def test_path_stage_resolves_input_and_output_paths(self):
         calls = []
@@ -195,7 +196,7 @@ class TestYinjieSetupStages(unittest.TestCase):
             calls.append(path)
             return path
 
-        project_root = Path(__file__).resolve().parent
+        project_root = Path(__file__).resolve().parents[2]
         stage = YinjiePathStage(validator, "yinjie_code.json")
 
         result = stage.run(project_root, "ignored-subdir")

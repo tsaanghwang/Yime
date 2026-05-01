@@ -31,12 +31,12 @@ if errorlevel 1 (
 )
 
 "%PYTHON%" -m unittest ^
-  verify_yinjie_encoder.py ^
-  test_yinjie_decoder.py ^
-  test_pinyin_bidirectional_validation.py ^
-  test_yinjie_roundtrip.py ^
-  verify_yinjie_encoder_stages.py ^
-  verify_yinjie_entry_manifests.py ^
+  tests\yinjie\verify_yinjie_encoder.py ^
+  tests\yinjie\test_yinjie_decoder.py ^
+  tests\yinjie\test_pinyin_bidirectional_validation.py ^
+  tests\yinjie\test_yinjie_roundtrip.py ^
+  tests\yinjie\verify_yinjie_encoder_stages.py ^
+  tests\yinjie\verify_yinjie_entry_manifests.py ^
   syllable/analysis/slice/verify_encode_ganyin.py ^
   utils/test_pinyin_normalizer.py
 
