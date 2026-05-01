@@ -68,15 +68,13 @@ YIME/
 
 ## 文档入口
 
-根目录 README 只保留入口信息；细分文档统一从 [docs/README.md](docs/README.md) 进入。
+根目录 README 只保留入口导航；细分文档统一从 [docs/README.md](docs/README.md) 进入。
 
-- 实现边界： [INPUT_METHOD_SOLUTION.md](INPUT_METHOD_SOLUTION.md)
+- 当前实现边界： [INPUT_METHOD_SOLUTION.md](INPUT_METHOD_SOLUTION.md)
 - 安装与启动： [INSTALLATION_GUIDE.md](INSTALLATION_GUIDE.md)、 [QUICKSTART_PY312.md](QUICKSTART_PY312.md)
-- 设计约束与产物边界： [docs/CODEPOINT_POLICY.md](docs/CODEPOINT_POLICY.md)、 [docs/SOURCE_AND_ARTIFACTS.md](docs/SOURCE_AND_ARTIFACTS.md)
-- 其余文档： [docs/README.md](docs/README.md)
+- 设计约束与清理边界： [docs/CODEPOINT_POLICY.md](docs/CODEPOINT_POLICY.md)、 [docs/SOURCE_AND_ARTIFACTS.md](docs/SOURCE_AND_ARTIFACTS.md)
 
 ## 进一步信息
 
-- 仓库协议与版权： [LICENSE](LICENSE)、 [NOTICE.md](NOTICE.md)、 [COMMERCIAL_LICENSE.md](COMMERCIAL_LICENSE.md)
-- 参与协作： [CONTRIBUTING.md](CONTRIBUTING.md)、 [CONTRIBUTORS.md](CONTRIBUTORS.md)
+- 协议与协作： [LICENSE](LICENSE)、 [NOTICE.md](NOTICE.md)、 [COMMERCIAL_LICENSE.md](COMMERCIAL_LICENSE.md)、 [CONTRIBUTING.md](CONTRIBUTING.md)
 - 仓库与反馈： [tsaanghwang/YIME](https://github.com/tsaanghwang/YIME)、 [Issues](https://github.com/tsaanghwang/YIME/issues)
