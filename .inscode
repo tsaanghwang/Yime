@@ -1,4 +1,0 @@
-run = "python pinyin/pinyin_to_hanzi_enhanced.py"
-is_gui = false
-is_resident = false
-is_html = false
