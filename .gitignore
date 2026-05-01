@@ -32,6 +32,11 @@ node_modules
 ci-summary.json
 pinyin_import.log
 temp.json
+character_positions.db
+character_table.json
+yime.db
+clear
+Anaconda3Scriptsconda.exe
 
 # Generated reports
 coverage/
