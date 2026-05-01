@@ -8,7 +8,7 @@
 
 本文适用于以下情况：
 
-- 你已经按 `INSTALLATION_GUIDE.md` 完成环境准备
+- 你已经按 `docs/install/INSTALLATION_GUIDE.md` 完成环境准备
 - 你要启动当前 Python 3.12 + `pywin32` 的桌面输入法原型
 - 你想了解候选框、选字、待上屏文本和回贴的实际交互方式
 
@@ -20,9 +20,9 @@
 
 这些内容请分别看：
 
-- `INSTALLATION_GUIDE.md`
-- `PORTABLE_PYTHON_GUIDE.md`
-- `INPUT_METHOD_SOLUTION.md`
+- `docs/install/INSTALLATION_GUIDE.md`
+- `docs/install/PORTABLE_PYTHON_GUIDE.md`
+- `docs/project/INPUT_METHOD_SOLUTION.md`
 
 ## 当前默认入口
 
@@ -205,7 +205,7 @@ python -c "import win32api; print('pywin32 OK')"
 
 改看：
 
-- `PORTABLE_PYTHON_GUIDE.md`
+- `docs/install/PORTABLE_PYTHON_GUIDE.md`
 
 不要再回退到旧的 `Python 3.14 + pynput` 路线。
 
@@ -213,22 +213,22 @@ python -c "import win32api; print('pywin32 OK')"
 
 建议按这个顺序理解当前原型：
 
-1. `INSTALLATION_GUIDE.md`
-2. `QUICKSTART_PY312.md`
-3. `INPUT_METHOD_SOLUTION.md`
+1. `docs/install/INSTALLATION_GUIDE.md`
+2. `docs/install/QUICKSTART_PY312.md`
+3. `docs/project/INPUT_METHOD_SOLUTION.md`
 4. `FAQ.md`
 
 其中：
 
 - 本文负责“怎么用”
-- `INPUT_METHOD_SOLUTION.md` 负责“现在做到哪里了”
+- `docs/project/INPUT_METHOD_SOLUTION.md` 负责“现在做到哪里了”
 - `FAQ.md` 负责常见安装与使用问题
 
 ## 相关文档
 
-- [安装指南](../INSTALLATION_GUIDE.md)
-- [Python 3.12 快速开始](../QUICKSTART_PY312.md)
-- [便携版 Python 3.12 安装指南（无需管理员权限）](../PORTABLE_PYTHON_GUIDE.md)
-- [输入法实现方案](../INPUT_METHOD_SOLUTION.md)
+- [安装指南](install/INSTALLATION_GUIDE.md)
+- [Python 3.12 快速开始](install/QUICKSTART_PY312.md)
+- [便携版 Python 3.12 安装指南（无需管理员权限）](install/PORTABLE_PYTHON_GUIDE.md)
+- [输入法实现方案](project/INPUT_METHOD_SOLUTION.md)
 - [常见问题](FAQ.md)
 - [开发者指南](DEVELOPMENT.md)

@@ -191,6 +191,6 @@ python -c "import win32api; print('pywin32 OK')"
 
 - `INSTALLATION_GUIDE.md`：主安装入口
 - `DIRECT_INSTALL_GUIDE.md`：系统级 Python 3.12 直装细节
-- `INPUT_METHOD_SOLUTION.md`：当前原型实现边界
+- `../project/INPUT_METHOD_SOLUTION.md`：当前原型实现边界
 
 如果你只是第一次装环境，优先读 `INSTALLATION_GUIDE.md`，不要从本文件单独开始。
