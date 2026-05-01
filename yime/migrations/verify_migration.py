@@ -1,4 +1,7 @@
 import os, sqlite3, pymysql, random, sys, argparse, getpass
+from pathlib import Path
+
+DEFAULT_SQLITE_DB = (Path(__file__).resolve().parents[1] / "pinyin_hanzi.db").resolve()
 
 def _get_password():
     p = argparse.ArgumentParser(add_help=False)
@@ -20,7 +23,7 @@ def _get_password():
     print("No MySQL password provided. Use MYSQL_PASSWORD / MYSQL_PASSWORD_FILE or --password.", file=sys.stderr)
     sys.exit(2)
 
-SQLITE_DB = r"C:\Users\Freeman Golden\OneDrive\Yime\yime\pinyin_hanzi.db"
+SQLITE_DB = os.environ.get("SQLITE_DB", str(DEFAULT_SQLITE_DB))
 MYSQL_CFG = {
     "host": os.environ.get("MYSQL_HOST", "127.0.0.1"),
     "port": int(os.environ.get("MYSQL_PORT", 3306)),

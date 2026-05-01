@@ -2,6 +2,7 @@ import os
 import sys
 import argparse
 import getpass
+from pathlib import Path
 
 # existing imports kept
 import sqlite3
@@ -46,7 +47,8 @@ def get_password_from_sources(default_user):
     # none found
     return None
 
-SQLITE_DB = r"C:\Users\Freeman Golden\OneDrive\Yime\yime\pinyin_hanzi.db"  # adjust or pass as arg
+DEFAULT_SQLITE_DB = (Path(__file__).resolve().parents[1] / "pinyin_hanzi.db").resolve()
+SQLITE_DB = os.environ.get("SQLITE_DB", str(DEFAULT_SQLITE_DB))
 BATCH = 1000
 
 # MySQL connection from env
