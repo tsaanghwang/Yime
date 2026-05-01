@@ -123,23 +123,14 @@ YIME/
 
 ## 使用许可
 
-本项目采用 [MIT 许可证](LICENSE)，允许自由使用、修改和分发。商业使用需遵守以下条款：
-
-1. **开源使用**：遵循 MIT 许可证条款
-2. **商业授权**：需联系作者获取商业许可证
-3. **学术引用**：科研使用请引用相关论文
+本项目代码默认采用 [MIT 许可证](LICENSE)。如涉及商业授权或其他额外说明，请同时查看仓库中的相关许可证与说明文件。
 
 ## 技术支持
 
-- GitHub 仓库: [tsaanghwang/YIME](https://github.com/tsaanghwang/YIME)
-- 问题追踪: [GitHub Issues](https://github.com/tsaanghwang/YIME/issues)
-- 讨论区: [GitHub Discussions](https://github.com/tsaanghwang/YIME/discussions)
-
-如需参与贡献，请先阅读 [CONTRIBUTING.md](CONTRIBUTING.md)，了解：
-
-- 代码提交规范
-- 测试要求
-- Pull Request 流程
+- GitHub 仓库： [tsaanghwang/YIME](https://github.com/tsaanghwang/YIME)
+- Issues： [tsaanghwang/YIME/issues](https://github.com/tsaanghwang/YIME/issues)
+- Discussions： [tsaanghwang/YIME/discussions](https://github.com/tsaanghwang/YIME/discussions)
+- 贡献入口： [CONTRIBUTING.md](CONTRIBUTING.md)
 
 ## 核心团队
 
