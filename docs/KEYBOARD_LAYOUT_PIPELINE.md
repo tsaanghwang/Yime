@@ -1,6 +1,7 @@
 # 键盘布局流程
 
 这份文档只保留当前仍有效的生成链，和 [MSKLC 发布速记](MSKLC_RELEASE_QUICKSTART.md) 保持同一口径。
+它的职责是解释生成链各层分工，不是当前键盘布局打包/安装的首选操作入口。
 
 补充说明：外部键盘布局仓库默认按主仓库同级目录理解，即 `..\Yime-keyboard-layout`；如果实际位置不同，可先设置 `YIME_KEYBOARD_LAYOUT_REPO`。
 

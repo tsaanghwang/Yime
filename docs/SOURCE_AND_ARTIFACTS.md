@@ -303,6 +303,20 @@
 1. 数据库相关脚本若仍以仓库根目录 `pinyin_hanzi.db` 为默认目标，应优先视为旧原型链候选，而不是当前主线入口。
 2. 当前输入法运行、导入、诊断与测试的数据库主线统一以 `yime/pinyin_hanzi.db` 为准。
 
+#### 6D. 根目录临时导出与脚本输出（2026-05）
+
+- `ci-summary.json`
+  - 分类：已删除的 CI 汇总输出样本。
+  - 原因：该文件由 `scripts/generate_ci_report.py` 直接生成，只是一次运行产物，不承担仓库真源职责。
+
+- `pinyin_import.log`
+  - 分类：已删除的导入日志文件。
+  - 原因：它是导入脚本运行时写出的本地日志，不应长期版本化。
+
+- `temp.json`
+  - 分类：已删除的根目录重复 JSON 副本。
+  - 原因：其内容已由 `syllable/analysis/slice/yinyuan/zaoyin_yinyuan_enhanced.json` 等现行文件承载，保留根目录副本只会制造“哪个才是当前文件”的歧义。
+
 #### 7. 旧 JS 原型链（2026-05）
 
 以下对象已经整体迁出主仓库，当前正式外置位置为外部 `Yime-js-prototype` 仓库：

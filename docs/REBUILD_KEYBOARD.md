@@ -3,6 +3,7 @@
 这页保留当前有效的重建路径：布局真源生成 `.klc`、MSKLC GUI 打包、MSI 安装、必要时回滚。
 
 更短的版本见 [MSKLC 发布速记](MSKLC_RELEASE_QUICKSTART.md)。
+如果你只是要按当前主线最快做完一次打包/安装，优先看前者；这页更适合作为展开版操作说明。
 
 补充说明：外部键盘布局仓库默认按主仓库同级目录理解，即 `..\Yime-keyboard-layout`；如果实际位置不同，可先设置 `YIME_KEYBOARD_LAYOUT_REPO`。
 
