@@ -30,3 +30,8 @@ node_modules
 # Generated reports
 coverage/
 htmlcov/
+yime/reports/efficiency_baseline.json
+yime/reports/phrase_code_backfill.json
+yime/reports/runtime_candidates_by_code.json
+yime/reports/runtime_candidates_placeholder_phrases.json
+yime/reports/summary.txt

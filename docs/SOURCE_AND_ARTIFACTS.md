@@ -248,6 +248,25 @@
 1. 数据库维护脚本若需要自动备份，应统一写入 `yime/backup/` 或其他明确的本地临时位置。
 2. 任何 `pinyin_hanzi` 相关 `.bak`/`pre_*` 文件都应视为本地回退副产物，不应再被提交。
 
+#### 6C. `yime/reports/` 运行桥接文件与分析产物（2026-05）
+
+- `yime/reports/runtime_candidates_by_code_true.json`
+  - 分类：保留的运行时桥接导出。
+  - 原因：当前输入法候选框与相关分析文档仍直接消费这份“仅真实音元编码键”的 JSON，它虽然可以从数据库重导出，但在当前仓库里承担实际运行输入面。
+
+- `yime/reports/runtime_candidates_by_code.json`
+- `yime/reports/runtime_candidates_placeholder_phrases.json`
+- `yime/reports/phrase_code_backfill.json`
+- `yime/reports/efficiency_baseline.json`
+- `yime/reports/summary.txt`
+  - 分类：已删除的可再生报告/分析产物。
+  - 原因：这些文件只有导出脚本或分析脚本负责生成，没有运行时消费入口；它们属于数据库或报告流程的可再生输出，不应长期版本化。
+
+当前处理原则补充：
+
+1. `yime/reports/` 中若文件被输入法运行面直接读取，可以作为桥接导出保留。
+2. 纯分析、回填、汇总类 JSON/TXT 报告应默认视为生成物，删除后按需重建，并通过 ignore 规则防止再次入库。
+
 #### 6. 根目录旧原型数据库链（2026-04）
 
 以下对象已经确认为旧原型/练习链，且已从主仓库移除：
