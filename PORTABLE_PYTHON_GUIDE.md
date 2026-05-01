@@ -50,9 +50,11 @@
 ### 2. 解压到项目目录
 
 ```bash
-cd "c:\Users\Freeman Golden\OneDrive\Yime"
+cd /d <你的 Yime 仓库目录>
 mkdir python312
 ```
+
+例如仓库放在 `C:\dev\Yime` 时，可写成：`cd /d C:\dev\Yime`
 
 然后把压缩包解压到 `python312\`，解压后应能看到：
 
@@ -92,7 +94,7 @@ python312\python.exe python312\get-pip.py
 ### 4. 创建虚拟环境
 
 ```bash
-cd "c:\Users\Freeman Golden\OneDrive\Yime"
+cd /d <你的 Yime 仓库目录>
 python312\python.exe -m venv venv312
 ```
 

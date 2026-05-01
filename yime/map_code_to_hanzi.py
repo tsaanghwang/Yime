@@ -5,8 +5,10 @@ import logging
 import sys
 from pathlib import Path
 
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+
 # 确保能正确导入utils模块
-utils_path = Path("c:/Users/Freeman Golden/OneDrive/Yime/utils")
+utils_path = PROJECT_ROOT / "utils"
 if utils_path.exists():
     sys.path.insert(0, str(utils_path))
 

@@ -5,7 +5,7 @@ import hashlib
 import sys
 from datetime import datetime
 
-SRC = Path(r"C:\Users\Freeman Golden\OneDrive\Yime\yime\pinyin_hanzi.db").resolve()
+SRC = (Path(__file__).resolve().parent / "pinyin_hanzi.db").resolve()
 BACKUP_DIR = SRC.parent / "backup"
 
 

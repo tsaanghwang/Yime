@@ -50,9 +50,11 @@ py -3.12 --version
 ## 步骤 3：在仓库目录创建虚拟环境
 
 ```bash
-cd "c:\Users\Freeman Golden\OneDrive\Yime"
+cd /d <你的 Yime 仓库目录>
 py -3.12 -m venv venv312
 ```
+
+例如仓库放在 `C:\dev\Yime` 时，可写成：`cd /d C:\dev\Yime`
 
 ## 步骤 4：激活虚拟环境
 
