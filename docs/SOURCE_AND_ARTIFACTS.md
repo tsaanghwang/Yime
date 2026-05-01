@@ -46,14 +46,14 @@
   - 文件名里的 `manual` 是历史命名，当前语义应理解为“布局真源”，不是“manual install”或“手工编译流程”。
   - 定义物理键位与 `Nxx/Mxx` 槽位的关系。
   - 这是布局层真源，不应通过改 `yinyuan.klc` 反向修复。
-  - `C:/dev/Yime-keyboard-layout` 可以消费它的快照副本来生成 KLC 和打包产物，但那边的 `source_snapshots/manual_key_layout.json` 不是 canonical。
+  - 外部 `Yime-keyboard-layout` 仓库可以消费它的快照副本来生成 KLC 和打包产物，但那边的 `source_snapshots/manual_key_layout.json` 不是 canonical。
 
 #### 2. 槽位到规范字符映射真源
 
 - `internal_data/key_to_symbol.json`
   - 当前表达 `N01-N24` 与 `M01-M33` 到规范字符的映射。
   - 按策略文档，应将其理解为“语义槽位到 canonical 字符”的稳定层。
-  - `C:/dev/Yime-keyboard-layout` 中如果存在对应快照，也只能视为同步副本，不得反向覆盖这里。
+  - 外部 `Yime-keyboard-layout` 仓库中如果存在对应快照，也只能视为同步副本，不得反向覆盖这里。
 
 #### 3. 理论与流程约束真源
 
@@ -144,7 +144,7 @@
 - `yinyuan.klc`
   - 是键盘布局安装链的构建产物。
   - 不应反向充当键位真源。
-  - 当前正式保留位置应理解为 `C:/dev/Yime-keyboard-layout/yinyuan.klc`；主仓库根目录不再要求长期保留副本。
+  - 当前正式保留位置应理解为外部 `Yime-keyboard-layout/yinyuan.klc`；主仓库根目录不再要求长期保留副本。
 
 #### 4. 数据库导入与运行时消费产物
 
@@ -182,19 +182,19 @@
 
 `releases/` 顶层子目录当前可先按下面方式理解：
 
-补充说明：当前 Windows 键盘布局打包链已经独立到 `C:/dev/Yime-keyboard-layout`。主仓库里的 `releases/` 更应理解为过渡镜像和历史残留，而不是 IME 主线自带发布系统。
+补充说明：当前 Windows 键盘布局打包链已经独立到外部 `Yime-keyboard-layout` 仓库。主仓库里的 `releases/` 更应理解为过渡镜像和历史残留，而不是 IME 主线自带发布系统。
 
 - `releases/msklc-package/`
   - 分类：已迁出主仓库。
-  - 原因：当前可解释的安装样本已经保留在 `C:/dev/Yime-keyboard-layout` 中，主仓库不再需要继续携带这份镜像目录。
+  - 原因：当前可解释的安装样本已经保留在外部 `Yime-keyboard-layout` 仓库中，主仓库不再需要继续携带这份镜像目录。
 
 - `releases/msklc-amd64/`
   - 分类：已迁出主仓库。
-  - 原因：分架构 DLL 快照已经保留在 `C:/dev/Yime-keyboard-layout` 中，主仓库不再继续保存重复副本。
+  - 原因：分架构 DLL 快照已经保留在外部 `Yime-keyboard-layout` 仓库中，主仓库不再继续保存重复副本。
 
 - `releases/msklc-wow64/`
   - 分类：已迁出主仓库。
-  - 原因：分架构 DLL 快照已经保留在 `C:/dev/Yime-keyboard-layout` 中，主仓库不再继续保存重复副本。
+  - 原因：分架构 DLL 快照已经保留在外部 `Yime-keyboard-layout` 仓库中，主仓库不再继续保存重复副本。
 
 - `releases/msklc-docs/`
   - 分类：空目录占位。
@@ -206,15 +206,15 @@
 
 - `releases/v1.0/`
   - 分类：已移除的过渡占位目录。
-  - 原因：正式键盘布局 `v1.0` 说明已经迁到 `C:/dev/Yime-keyboard-layout`，而主仓库内已不再存在对此目录的消费入口，因此这层占位本身也可以移除。
+  - 原因：正式键盘布局 `v1.0` 说明已经迁到外部 `Yime-keyboard-layout` 仓库，而主仓库内已不再存在对此目录的消费入口，因此这层占位本身也可以移除。
 
 当前已完成的 `releases/` 轻清理结论是：
 
 1. `releases/msklc-docs/` 与 `releases/msklc-test/` 两个空目录占位已删除。
 2. `releases/yinyuan/` 已删除，因为它与 `releases/msklc-package/` 的代表性包文件重复，且当前运行/打包说明链没有引用它。
 3. 旧的 `releases/v2.2/` 与 `releases/v2.3/` 版本说明已删除，因为它们为空或与当前主线失配。
-4. 键盘布局辅助工程已经独立到 `C:/dev/Yime-keyboard-layout`，主仓库中的 `releases/v1.0/` 占位目录也已移除，正式入口统一改由外部仓库承载。
-5. `releases/msklc-package/`、`releases/msklc-amd64/` 与 `releases/msklc-wow64/` 已从主仓库移除，正式样本改由 `C:/dev/Yime-keyboard-layout` 承载。
+4. 键盘布局辅助工程已经独立到外部 `Yime-keyboard-layout` 仓库，主仓库中的 `releases/v1.0/` 占位目录也已移除，正式入口统一改由外部仓库承载。
+5. `releases/msklc-package/`、`releases/msklc-amd64/` 与 `releases/msklc-wow64/` 已从主仓库移除，正式样本改由外部 `Yime-keyboard-layout` 仓库承载。
 
 #### 6A. 覆盖率报告目录（2026-05）
 
@@ -290,7 +290,7 @@
 
 #### 7. 旧 JS 原型链（2026-05）
 
-以下对象已经整体迁出主仓库，当前正式外置位置为 `C:/dev/Yime-js-prototype`：
+以下对象已经整体迁出主仓库，当前正式外置位置为外部 `Yime-js-prototype` 仓库：
 
 - `package.json`
 - `package-lock.json`
@@ -312,7 +312,7 @@
 
 #### 8. 根目录 HTML 工具页与一次性报告页（2026-05）
 
-以下交互式 HTML 工具页已从主仓库根目录迁出，当前外置位置为 `C:/dev/Yime-html-tool-prototypes`：
+以下交互式 HTML 工具页已从主仓库根目录迁出，当前外置位置为外部 `Yime-html-tool-prototypes` 仓库：
 
 - `blank-editor.html`
 - `undo_editor.html`
@@ -350,7 +350,7 @@
 
 #### 9. docs/ 旧静态 HTML 文档站（2026-05）
 
-以下 `docs/` 下的旧静态 HTML 文档站页面已整体迁出主仓库，当前外置位置为 `C:/dev/Yime-docs-html-site`：
+以下 `docs/` 下的旧静态 HTML 文档站页面已整体迁出主仓库，当前外置位置为外部 `Yime-docs-html-site` 仓库：
 
 - `docs/index.html`
 - `docs/overview.html`

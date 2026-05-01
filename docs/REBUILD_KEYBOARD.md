@@ -4,6 +4,8 @@
 
 更短的版本见 [MSKLC 发布速记](MSKLC_RELEASE_QUICKSTART.md)。
 
+补充说明：外部键盘布局仓库默认按主仓库同级目录理解，即 `..\Yime-keyboard-layout`；如果实际位置不同，可先设置 `YIME_KEYBOARD_LAYOUT_REPO`。
+
 ## 先理解一个历史命名
 
 - `internal_data/manual_key_layout.json` 仍是当前布局真源。
@@ -36,9 +38,9 @@ python tools/run_msklc_packaging_pipeline.py
 
 期望结果同步到外部键盘布局仓库：
 
-- `C:/dev/Yime-keyboard-layout/releases/msklc-package/`
-- `C:/dev/Yime-keyboard-layout/releases/msklc-amd64/`
-- `C:/dev/Yime-keyboard-layout/releases/msklc-wow64/`
+- `..\Yime-keyboard-layout\releases\msklc-package\`
+- `..\Yime-keyboard-layout\releases\msklc-amd64\`
+- `..\Yime-keyboard-layout\releases\msklc-wow64\`
 
 ### 3. 安装 MSI
 
@@ -49,7 +51,8 @@ python tools/run_msklc_install_pipeline.py --install-mode msi
 如果只想把布局加入当前用户键盘列表，再运行：
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File C:\dev\Yime-keyboard-layout\releases\msklc-package\enable-yinyuan-for-current-user.ps1
+$klcRepo = if ($env:YIME_KEYBOARD_LAYOUT_REPO) { $env:YIME_KEYBOARD_LAYOUT_REPO } else { (Resolve-Path ..\Yime-keyboard-layout).Path }
+& (Join-Path $klcRepo 'releases\msklc-package\enable-yinyuan-for-current-user.ps1')
 ```
 
 ### 4. 必要时回滚或清理
@@ -57,13 +60,15 @@ powershell -NoProfile -ExecutionPolicy Bypass -File C:\dev\Yime-keyboard-layout\
 回滚当前用户键盘项：
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File C:\dev\Yime-keyboard-layout\releases\msklc-package\restore-default-chinese-keyboards.ps1
+$klcRepo = if ($env:YIME_KEYBOARD_LAYOUT_REPO) { $env:YIME_KEYBOARD_LAYOUT_REPO } else { (Resolve-Path ..\Yime-keyboard-layout).Path }
+& (Join-Path $klcRepo 'releases\msklc-package\restore-default-chinese-keyboards.ps1')
 ```
 
 彻底清理机器级注册：
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File C:\dev\Yime-keyboard-layout\releases\msklc-package\unregister-yinyuan-machine.ps1
+$klcRepo = if ($env:YIME_KEYBOARD_LAYOUT_REPO) { $env:YIME_KEYBOARD_LAYOUT_REPO } else { (Resolve-Path ..\Yime-keyboard-layout).Path }
+& (Join-Path $klcRepo 'releases\msklc-package\unregister-yinyuan-machine.ps1')
 ```
 
 ## 重建前的最小检查
@@ -83,7 +88,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File C:\dev\Yime-keyboard-layout\
 
 1. 是否真的从当前布局真源重新生成了 `yinyuan.klc`。
 2. 是否在 MSKLC 里重新执行了 `Build DLL and Setup Package`。
-3. `C:/dev/Yime-keyboard-layout/releases/msklc-package/` 是否已经被这次新的 GUI 打包输出覆盖。
+3. `..\Yime-keyboard-layout\releases\msklc-package\` 是否已经被这次新的 GUI 打包输出覆盖。
 4. 是否仍残留旧的机器级注册；有冲突时先运行 `unregister-yinyuan-machine.ps1`。
 
 ## 一句话顺序

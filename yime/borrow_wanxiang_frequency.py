@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import os
 import shutil
 import sqlite3
 import subprocess
@@ -13,7 +14,10 @@ from typing import Iterable
 
 
 DEFAULT_DB_PATH = Path(__file__).resolve().parent / "pinyin_hanzi.db"
-DEFAULT_WANXIANG_ROOT = Path(r"C:\dev\RIME-LMDG")
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+DEFAULT_WANXIANG_ROOT = Path(
+    os.environ.get("WANXIANG_ROOT", str(PROJECT_ROOT.parent / "RIME-LMDG"))
+).expanduser().resolve()
 DEFAULT_CHAR_DICT = Path("dicts/zi.dict.yaml")
 DEFAULT_RUNTIME_EXPORT = Path(__file__).resolve().parent / "export_runtime_candidates_json.py"
 DEFAULT_BACKUP_DIR = Path(__file__).resolve().parent / "backup"
