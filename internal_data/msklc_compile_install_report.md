@@ -9,7 +9,7 @@
 - `docs/MSKLC_RELEASE_QUICKSTART.md`
 - `docs/REBUILD_KEYBOARD.md`
 - `docs/windows-klc-workflow.md`
-- `C:/dev/Yime-keyboard-layout`
+- 外部 `Yime-keyboard-layout` 仓库
 
 为准。
 

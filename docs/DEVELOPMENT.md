@@ -57,7 +57,7 @@ npm test
 
 ## 项目结构
 
-```
+```text
 YIME/
 ├── yime/                 # Python 核心引擎
 │   ├── pinyin_converter.py    # 拼音转换器
@@ -102,6 +102,7 @@ git checkout -b feature/your-feature-name
 ### 2. 编写代码
 
 遵循以下原则：
+
 - 保持代码简洁清晰
 - 添加必要的注释
 - 遵循 PEP 8（Python）或 ESLint（JavaScript）规范
@@ -144,6 +145,7 @@ git push origin feature/your-feature-name
 ### 6. 创建 Pull Request
 
 在 GitHub 上创建 Pull Request，填写：
+
 - 功能描述
 - 测试结果
 - 相关 Issue
@@ -155,12 +157,13 @@ git push origin feature/your-feature-name
 ### 1. 音元系统
 
 音元系统是 YIME 的理论基础，包含 52 个音元：
+
 - **噪音**（22个）：充当首音
 - **乐音**（30个）：构成干音
 
 ### 2. 音节结构
 
-```
+```text
 音节 = 首音 + 干音
 干音 = 呼音 + 韵音
 韵音 = 主音 + 末音
@@ -168,7 +171,7 @@ git push origin feature/your-feature-name
 
 ### 3. 转换流程
 
-```
+```text
 标准拼音 → 数字标调拼音 → 音元拼音 → 音元编码
 ```
 
@@ -469,6 +472,7 @@ def test_performance(self):
 ### 1. 版本号管理
 
 遵循语义化版本：
+
 - MAJOR.MINOR.PATCH
 - 例如：1.0.0 → 1.0.1（修复）→ 1.1.0（新功能）→ 2.0.0（重大变更）
 
