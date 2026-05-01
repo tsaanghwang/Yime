@@ -229,16 +229,6 @@ python -c "import win32api; print('pywin32 OK')"
 python -m yime.input_method.app
 ```
 
-### 4. 开发环境残留检查
-
-仓库已提供：
-
-```bat
-dev_check.cmd
-```
-
-它会检查是否还有旧的输入法进程或锁文件残留。
-
 ## 常见问题
 
 ### 1. `启动键盘监听失败`
