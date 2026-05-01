@@ -3,8 +3,11 @@ yime/pinyin_hanzi.db
 yime/pinyin_hanzi.db.*
 yime/*.db-wal
 yime/*.db-shm
+yime/backup/
 yime/*.bak*
 yime/*.bak.*
+yime/*.wanxiang_borrow_*.bak
+yime/*.pre_*
 
 # Ignore virtual environment
 venv/

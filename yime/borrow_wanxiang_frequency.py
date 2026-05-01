@@ -16,6 +16,7 @@ DEFAULT_DB_PATH = Path(__file__).resolve().parent / "pinyin_hanzi.db"
 DEFAULT_WANXIANG_ROOT = Path(r"C:\dev\RIME-LMDG")
 DEFAULT_CHAR_DICT = Path("dicts/zi.dict.yaml")
 DEFAULT_RUNTIME_EXPORT = Path(__file__).resolve().parent / "export_runtime_candidates_json.py"
+DEFAULT_BACKUP_DIR = Path(__file__).resolve().parent / "backup"
 
 ACCENTED_VOWEL_MAP: dict[str, tuple[str, int]] = {
     "ā": ("a", 1),
@@ -207,7 +208,8 @@ def load_phrase_frequency_map(paths: Iterable[Path]) -> tuple[dict[tuple[str, st
 
 def backup_database(db_path: Path) -> Path:
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    backup_path = db_path.with_suffix(f".wanxiang_borrow_{timestamp}.bak")
+    DEFAULT_BACKUP_DIR.mkdir(parents=True, exist_ok=True)
+    backup_path = DEFAULT_BACKUP_DIR / f"{db_path.stem}.wanxiang_borrow_{timestamp}.bak"
     shutil.copy2(db_path, backup_path)
     return backup_path
 
