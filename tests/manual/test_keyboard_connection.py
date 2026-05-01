@@ -29,7 +29,7 @@ def test_keyboard_connection():
     print()
     print("注意：")
     print("- 如果没有安装pyHook或pynput，将使用手动输入模式")
-    print("- 遇到问题可以运行 dev_unlock.cmd 解锁")
+    print("- 遇到问题可以运行 scripts/dev_unlock.cmd 解锁")
     print()
     print("=" * 60)
     print()
