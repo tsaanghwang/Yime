@@ -362,6 +362,16 @@
   - 分类：已删除的孤立试验样式。
   - 原因：该文件唯一用途是声明 `../fonts/custom_tone.otf`，但仓库中并不存在这份字体文件，且没有任何页面、样式或脚本再引用 `tone_font.css`；它应理解为未接入主线的旧试验残留，而不是待补齐的运行资产。
 
+#### 12. 孤立 `.bak.py` 旧脚本（2026-05）
+
+- `syllable/analysis/slice/shouyin.bak.py`
+  - 分类：已删除的旧脚本备份件。
+  - 原因：当前仓库已保留 `syllable/analysis/slice/shouyin.py` 作为现行实现；`.bak.py` 版本不再被主线代码引用，仅残留在旧打包清单中。
+
+- `yime/transform_dict_structure.bak.py`
+  - 分类：已删除的旧脚本备份件。
+  - 原因：当前仓库已保留 `yime/transform_dict_structure.py` 作为现行实现；`.bak.py` 版本只剩一条调试启动配置引用，不再承担维护职责。
+
 ### E. 审计与过渡辅助文件
 
 这些文件很有价值，但它们的职责是“帮助审计现状”，不是“定义未来结构”。
