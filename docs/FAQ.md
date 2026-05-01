@@ -9,7 +9,7 @@
 - `pywin32`
 - `python -m yime.input_method.app`
 
-如果某个旧答案仍在别处描述 `npm run start`、`run_input_method_v2.py`、`Python 3.14 + pynput` 或 Web 原型优先，请视为过时。
+如果某个旧答案仍在别处描述 `npm run start`、`Python 3.14 + pynput` 或 Web 原型优先，请视为过时。
 
 ## 安装与环境
 
@@ -98,10 +98,6 @@ python -m yime.input_method.app
 ```bash
 python run_input_method.py
 ```
-
-不再推荐：
-
-- `python run_input_method_v2.py`
 
 ### Q7：当前到底是“输入框工具”还是“输入法原型”？
 

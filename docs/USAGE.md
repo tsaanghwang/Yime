@@ -207,7 +207,7 @@ python -c "import win32api; print('pywin32 OK')"
 
 - `PORTABLE_PYTHON_GUIDE.md`
 
-不要再回退到旧的 `Python 3.14 + run_input_method_v2.py` 路线。
+不要再回退到旧的 `Python 3.14 + pynput` 路线。
 
 ## 推荐阅读顺序
 
