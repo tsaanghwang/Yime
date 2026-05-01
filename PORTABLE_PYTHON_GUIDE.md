@@ -31,7 +31,7 @@
 
 不再推荐：
 
-- `Python 3.14 + pynput + run_input_method_v2.py` 作为主方案
+- `Python 3.14 + pynput` 作为主方案
 
 那个方向只能算历史上的临时退化路径，不应继续作为当前文档结论。
 
@@ -227,14 +227,14 @@ python --version
 pip install --force-reinstall pywin32
 ```
 
-### 3. 为什么不再推荐 `run_input_method_v2.py`
+### 3. 为什么不再推荐旧的 `Python 3.14 + pynput` 路线
 
 因为当前仓库已经有明确的 Windows 桌面输入法原型主入口：
 
 - `python -m yime.input_method.app`
 - `python run_input_method.py`
 
-旧的 `run_input_method_v2.py` 代表的是另一阶段的临时方案，不应再作为无管理员权限路径的默认启动方式。
+旧的 `Python 3.14 + pynput` 方案代表的是另一阶段的临时退化路径，不应再作为无管理员权限场景下的默认启动方式。
 
 ## 对应文档关系
 

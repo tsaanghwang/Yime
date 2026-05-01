@@ -65,7 +65,6 @@ python run_input_method.py
 
 不再推荐：
 
-- `run_input_method_v2.py`
 - `pyenv-win` 作为默认安装路径
 
 ## 这份文档不回答什么
