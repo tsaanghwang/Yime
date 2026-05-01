@@ -1,5 +1,13 @@
 # 首音布局一致性检查
 
+归档说明：这是一份针对当时 `manual_key_layout.json` 草案状态的阶段性检查记录，用来保存那一轮首音布局收敛时的判断依据。
+
+它更适合当作历史快照阅读，而不是当前总入口。涉及现行运行时链路与布局链路时，应优先参考：
+
+- `internal_data/zaoyin_runtime_layout_audit.md`
+- `internal_data/yueyin_runtime_layout_audit.md`
+- `docs/MSKLC_PRECOMPILE_CHECKLIST.md`
+
 来源：
 
 - `internal_data/manual_key_layout.json`
@@ -25,7 +33,7 @@
 
 - `G1-1`：`N01 2/base` `N02 3/base` `N03 4/base` `N04 5/base`
 - `G1-2`：`N05 2/shift` `N06 3/shift` `N07 4/shift` `N08 5/shift`
-- `G1-3`：`N22 `/base` `N09 1/base` `N10 q/base` `N11 a/base`
+- `G1-3`：`N22 backtick/base` `N09 1/base` `N10 q/base` `N11 a/base`
 
 ### 第二大组
 

@@ -2,7 +2,7 @@
 
 用途：Windows 字体安装与 MSKLC 试编译的临时 BMP PUA 投影。
 
-注意：这不是 canonical 编码，不替代 [internal_data/key_to_symbol.json](c:\Users\Freeman Golden\OneDrive\Yime\internal_data\key_to_symbol.json) 里的 SPUA-B 映射。
+注意：这不是 canonical 编码，不替代 `internal_data/key_to_symbol.json` 里的 SPUA-B 映射。
 
 ## 区段
 
