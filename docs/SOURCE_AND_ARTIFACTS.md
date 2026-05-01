@@ -359,6 +359,10 @@
   - 分类：已删除的根目录孤立干音编码快照。
   - 原因：当前仓库内真正纳入分析链的是 `syllable/analysis/slice/yinyuan/ganyin_encoding.json`；根目录这份文件没有任何消费入口，也不在现行验证链中，保留只会混淆真源位置。
 
+- `keyboard_to_yinyuan.py`
+  - 分类：已删除的根目录孤立脚本残片。
+  - 原因：仓库内没有任何调用入口；文件内部还依赖未定义的 `keystroke_to_yinyuan_mapping`，更像未完成试验残片而不是当前可运行工具。
+
 #### 7. 旧 JS 原型链（2026-05）
 
 以下对象已经整体迁出主仓库，当前正式外置位置为外部 `Yime-js-prototype` 仓库：
