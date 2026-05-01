@@ -32,6 +32,14 @@
 
 补充说明：上面这一组链接应理解为当前推荐入口；如果某份文档只是保存试验经过、旧机器现象或历史调查，请不要把它直接当成当前操作手册。
 
+KLC 文档分工：
+
+- `MSKLC_RELEASE_QUICKSTART.md` 是当前键盘布局链的主入口。
+- `MSKLC_PRECOMPILE_CHECKLIST.md` 只负责打包前检查。
+- `KEYBOARD_LAYOUT_PIPELINE.md` 解释生成链分层与职责。
+- `REBUILD_KEYBOARD.md` 保留较完整的操作版重建说明。
+- `windows-klc-workflow.md` 保留同口径的流程备忘，不再作为优先入口。
+
 ### 核心文档
 
 - **[输入法实现方案](../INPUT_METHOD_SOLUTION.md)** - 当前 Windows 桌面输入法原型的实现状态、边界和后续方向

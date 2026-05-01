@@ -3,6 +3,7 @@
 日期：2026-04-10
 
 这份短文档只保留当前有效的最小流程：布局真源生成 `.klc`、MSKLC GUI 打包、MSI 安装、必要时清理机器状态。
+当前主入口仍应以 [MSKLC 发布速记](MSKLC_RELEASE_QUICKSTART.md) 为准；这页更适合作为同口径的流程备忘与对照说明。
 
 补充说明：外部键盘布局仓库默认按主仓库同级目录理解，即 `..\Yime-keyboard-layout`；如果实际位置不同，可先设置 `YIME_KEYBOARD_LAYOUT_REPO`。
 

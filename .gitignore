@@ -29,6 +29,9 @@ Thumbs.db
 # System files
 nul
 node_modules
+ci-summary.json
+pinyin_import.log
+temp.json
 
 # Generated reports
 coverage/
