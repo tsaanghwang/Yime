@@ -110,24 +110,7 @@ YIME/
 └── external_data/        # 外部数据源
 ```
 
-### scripts/ 目录说明
-
-`scripts/` 目录包含辅助脚本文件，主要用于：
-
-- **临时验证脚本**：开发过程中用于验证功能和结果的临时脚本
-- **辅助工具脚本**：方便开发工作的辅助工具
-
-**注意**：这些脚本大多是临时验证结果的辅助文件，项目完成后一般不再需要。一些是方便工作作的辅助工具，项目完成后一般也不再需要。
-
-**主要脚本文件**：
-
-| 文件 | 用途 | 状态 |
-| --- | --- | --- |
-| `final_test_script.py` | 韵母动态添加功能测试 | 临时验证 |
-| `complete_workflow_script.py` | 完整工作流程测试 | 临时验证 |
-| `dynamic_finals_script.py` | 动态韵母测试 | 临时验证 |
-| `ganyin_script.py` | 干音分析脚本 | 临时验证 |
-| `mysql_conn_script.py` | MySQL连接测试 | 辅助工具 |
+补充说明：根目录与子目录中的脚本较多，既包含现行入口，也包含验证器、导出器和排查工具。具体分工不再在本页逐项展开；需要细分入口时，统一从 [docs/README.md](docs/README.md) 和 [docs/SOURCE_AND_ARTIFACTS.md](docs/SOURCE_AND_ARTIFACTS.md) 进入。
 
 ## 文档入口
 
@@ -150,15 +133,11 @@ YIME/
 
 ## 技术支持
 
-### 官方渠道
-
 - GitHub 仓库: [tsaanghwang/YIME](https://github.com/tsaanghwang/YIME)
 - 问题追踪: [GitHub Issues](https://github.com/tsaanghwang/YIME/issues)
 - 讨论区: [GitHub Discussions](https://github.com/tsaanghwang/YIME/discussions)
 
-### 贡献指南
-
-我们欢迎各种形式的贡献!请阅读[CONTRIBUTING.md](CONTRIBUTING.md)了解:
+如需参与贡献，请先阅读 [CONTRIBUTING.md](CONTRIBUTING.md)，了解：
 
 - 代码提交规范
 - 测试要求
@@ -166,7 +145,5 @@ YIME/
 
 ## 核心团队
 
-- **创始人**:
-  - Huang Chang (黄畅) - [yinyuanxitong@foxmail.com](mailto:yinyuanxitong@foxmail.com)
-- **主要贡献者**:
-  - [成为贡献者](CONTRIBUTORS.md)
+- Huang Chang (黄畅) - [yinyuanxitong@foxmail.com](mailto:yinyuanxitong@foxmail.com)
+- 其他贡献者见 [CONTRIBUTORS.md](CONTRIBUTORS.md)
