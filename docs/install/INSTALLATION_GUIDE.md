@@ -9,7 +9,7 @@
 - `pywin32` 全局键盘钩子
 - `python -m yime.input_method.app` 或 `python run_input_method.py`
 
-如果你要了解当前原型的能力边界和运行方式，先看 `INPUT_METHOD_SOLUTION.md`。
+如果你要了解当前原型的能力边界和运行方式，先看 `../project/INPUT_METHOD_SOLUTION.md`。
 
 ## 适用范围
 
@@ -300,15 +300,15 @@ pip install --force-reinstall pywin32
 如果你是第一次接手这个仓库，建议按这个顺序阅读：
 
 1. `INSTALLATION_GUIDE.md`
-2. `INPUT_METHOD_SOLUTION.md`
-3. `docs/CODEPOINT_POLICY.md`
-4. `docs/SOURCE_AND_ARTIFACTS.md`
+2. `../project/INPUT_METHOD_SOLUTION.md`
+3. `../CODEPOINT_POLICY.md`
+4. `../SOURCE_AND_ARTIFACTS.md`
 
 其中：
 
 - 本文档负责“怎么装、怎么起”
-- `INPUT_METHOD_SOLUTION.md` 负责“现在做到哪一步了”
-- `docs/CODEPOINT_POLICY.md` 负责“哪些设计约束不能绕过”
+- `../project/INPUT_METHOD_SOLUTION.md` 负责“现在做到哪一步了”
+- `../CODEPOINT_POLICY.md` 负责“哪些设计约束不能绕过”
 
 ## 最短可执行流程
 

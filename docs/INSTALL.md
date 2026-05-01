@@ -13,7 +13,7 @@
 
 推荐入口：
 
-- [../INSTALLATION_GUIDE.md](../INSTALLATION_GUIDE.md)
+- [install/INSTALLATION_GUIDE.md](install/INSTALLATION_GUIDE.md)
 
 ## 推荐步骤
 
@@ -26,11 +26,11 @@ python -m yime.input_method.app
 
 如果不使用 `conda`，请改走：
 
-- [../DIRECT_INSTALL_GUIDE.md](../DIRECT_INSTALL_GUIDE.md)
+- [install/DIRECT_INSTALL_GUIDE.md](install/DIRECT_INSTALL_GUIDE.md)
 
 如果你需要先理解为什么仓库现在统一使用 Python 3.12，请看：
 
-- [../PYTHON312_INSTALLATION_GUIDE.md](../PYTHON312_INSTALLATION_GUIDE.md)
+- [install/PYTHON312_INSTALLATION_GUIDE.md](install/PYTHON312_INSTALLATION_GUIDE.md)
 
 ## 当前说明边界
 
@@ -44,6 +44,6 @@ python -m yime.input_method.app
 
 ## 相关文档
 
-- [../INSTALLATION_GUIDE.md](../INSTALLATION_GUIDE.md)
-- [../INPUT_METHOD_SOLUTION.md](../INPUT_METHOD_SOLUTION.md)
+- [install/INSTALLATION_GUIDE.md](install/INSTALLATION_GUIDE.md)
+- [project/INPUT_METHOD_SOLUTION.md](project/INPUT_METHOD_SOLUTION.md)
 - [DEVELOPMENT.md](DEVELOPMENT.md)

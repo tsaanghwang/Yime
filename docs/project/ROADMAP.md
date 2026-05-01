@@ -11,8 +11,8 @@
 如需理解当前已经做到哪里，请先看：
 
 - `INPUT_METHOD_SOLUTION.md`
-- `docs/CODEPOINT_POLICY.md`
-- `docs/SOURCE_AND_ARTIFACTS.md`
+- `../CODEPOINT_POLICY.md`
+- `../SOURCE_AND_ARTIFACTS.md`
 
 ## 当前基线
 

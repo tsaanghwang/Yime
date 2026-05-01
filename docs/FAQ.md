@@ -43,8 +43,8 @@ python -m yime.input_method.app
 
 更完整的安装路径请看：
 
-- [../INSTALLATION_GUIDE.md](../INSTALLATION_GUIDE.md)
-- [../QUICKSTART_PY312.md](../QUICKSTART_PY312.md)
+- [install/INSTALLATION_GUIDE.md](install/INSTALLATION_GUIDE.md)
+- [install/QUICKSTART_PY312.md](install/QUICKSTART_PY312.md)
 
 ### Q3：我没有管理员权限怎么办？
 
@@ -52,7 +52,7 @@ python -m yime.input_method.app
 
 直接看：
 
-- [../PORTABLE_PYTHON_GUIDE.md](../PORTABLE_PYTHON_GUIDE.md)
+- [install/PORTABLE_PYTHON_GUIDE.md](install/PORTABLE_PYTHON_GUIDE.md)
 
 该文档说明如何使用便携版 Python 3.12 继续沿当前主线部署。
 
@@ -129,7 +129,7 @@ python run_input_method.py
 更完整说明请看：
 
 - [USAGE.md](USAGE.md)
-- [../INPUT_METHOD_SOLUTION.md](../INPUT_METHOD_SOLUTION.md)
+- [project/INPUT_METHOD_SOLUTION.md](project/INPUT_METHOD_SOLUTION.md)
 
 ### Q9：有哪些常用参数？
 
@@ -271,7 +271,7 @@ python run_input_method.py
 
 详见：
 
-- [../ROADMAP.md](../ROADMAP.md)
+- [project/ROADMAP.md](project/ROADMAP.md)
 
 ### Q20：去哪里获取帮助或反馈问题？
 

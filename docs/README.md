@@ -10,7 +10,7 @@
 
 ## 📚 文档导航
 
-建议阅读顺序：先看 [../README.md](../README.md) 了解项目边界，再看 [../INPUT_METHOD_SOLUTION.md](../INPUT_METHOD_SOLUTION.md) 确认当前输入法主线，最后再按需要进入理论、术语和生成链文档。
+建议阅读顺序：先看 [../README.md](../README.md) 了解项目边界，再看 [project/INPUT_METHOD_SOLUTION.md](project/INPUT_METHOD_SOLUTION.md) 确认当前输入法主线，最后再按需要进入理论、术语和生成链文档。
 
 ### 重要设计约束
 
@@ -23,10 +23,10 @@
 
 ### 快速开始
 
-- **[安装指南](../INSTALLATION_GUIDE.md)** - 当前 Windows 桌面输入法原型的主安装入口
+- **[安装指南](install/INSTALLATION_GUIDE.md)** - 当前 Windows 桌面输入法原型的主安装入口
 - **[MSKLC 发布速记](MSKLC_RELEASE_QUICKSTART.md)** - 最短的 Windows 键盘生成、打包、安装、回滚路径
-- **[Python 3.12 快速开始](../QUICKSTART_PY312.md)** - 最短启动路径，适合已理解当前主线后快速跑起原型
-- **[无管理员权限安装](../PORTABLE_PYTHON_GUIDE.md)** - 使用便携版 Python 3.12 的无管理员权限安装路径
+- **[Python 3.12 快速开始](install/QUICKSTART_PY312.md)** - 最短启动路径，适合已理解当前主线后快速跑起原型
+- **[无管理员权限安装](install/PORTABLE_PYTHON_GUIDE.md)** - 使用便携版 Python 3.12 的无管理员权限安装路径
 - **[使用说明](USAGE.md)** - 基本使用方法和示例
 - **[快速入门](../README.md)** - 项目概述和快速开始
 
@@ -42,7 +42,7 @@ KLC 文档分工：
 
 ### 核心文档
 
-- **[输入法实现方案](../INPUT_METHOD_SOLUTION.md)** - 当前 Windows 桌面输入法原型的实现状态、边界和后续方向
+- **[输入法实现方案](project/INPUT_METHOD_SOLUTION.md)** - 当前 Windows 桌面输入法原型的实现状态、边界和后续方向
 - **[效率基线报告](EFFICIENCY_BASELINE.md)** - 基于现有运行时候选导出生成的第一版效率指标表
 - **[API 参考手册](API.md)** - 完整的 API 文档和示例
 - **[开发者指南](DEVELOPMENT.md)** - 开发环境配置和最佳实践
@@ -57,7 +57,7 @@ KLC 文档分工：
 
 ### 项目管理
 
-- **[路线图](../ROADMAP.md)** - 项目发展路线图
+- **[路线图](project/ROADMAP.md)** - 项目发展路线图
 - **[更新日志](../CHANGELOG.md)** - 版本更新历史
 - **[贡献指南](../CONTRIBUTING.md)** - 如何贡献代码
 
@@ -71,7 +71,7 @@ KLC 文档分工：
 
 ### 1. 我只想按当前主线操作
 
-1. 看 [安装指南](../INSTALLATION_GUIDE.md) 或 [Python 3.12 快速开始](../QUICKSTART_PY312.md)
+1. 看 [安装指南](install/INSTALLATION_GUIDE.md) 或 [Python 3.12 快速开始](install/QUICKSTART_PY312.md)
 2. 涉及 Windows 键盘布局时，从 [MSKLC 发布速记](MSKLC_RELEASE_QUICKSTART.md) 进入
 3. 遇到问题时，再回看 [FAQ.md](FAQ.md) 与 [DEVELOPMENT.md](DEVELOPMENT.md)
 

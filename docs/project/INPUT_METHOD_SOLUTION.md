@@ -8,8 +8,8 @@
 
 相关设计约束请先阅读：
 
-- [码点与中间层策略](docs/CODEPOINT_POLICY.md)
-- [真源文件与生成产物清单](docs/SOURCE_AND_ARTIFACTS.md)
+- [码点与中间层策略](../CODEPOINT_POLICY.md)
+- [真源文件与生成产物清单](../SOURCE_AND_ARTIFACTS.md)
 
 ## 当前结论
 
@@ -34,7 +34,7 @@
 
 当前原型追求的交互流程如下：
 
-```
+```text
 用户在任意外部窗口按键
 → 全局键盘钩子接收按键
 → 组合态下拦截码元按键
