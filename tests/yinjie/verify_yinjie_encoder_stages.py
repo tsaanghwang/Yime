@@ -1,7 +1,7 @@
 import unittest
 import tempfile
 from pathlib import Path
-from interactive_yinjie import interactive_encoder
+from syllable_codec.interactive_yinjie import interactive_encoder
 from syllable_codec.yinjie_encoder import (
     YinjieApplicationRunner,
     BatchInputResult,

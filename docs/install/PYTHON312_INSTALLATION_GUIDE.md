@@ -101,7 +101,7 @@ pip install -r requirements.txt
 ### 4. 使用仓库辅助脚本检查
 
 ```bat
-activate_py312.bat
+scripts\activate_py312.bat
 ```
 
 该脚本会检查：

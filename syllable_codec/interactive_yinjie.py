@@ -1,4 +1,4 @@
-"""项目根目录交互入口，统一复用包内实现。"""
+"""包内交互入口，统一复用实现层会话逻辑。"""
 
 from syllable.analysis.slice.interactive_yinjie_session import interactive_encoder
 from syllable.analysis.slice.yinjie_api_manifest import YINJIE_INTERACTIVE_ENTRY_EXPORTS
@@ -10,6 +10,7 @@ def main(input_reader=input) -> None:
 
 
 __all__ = YINJIE_INTERACTIVE_ENTRY_EXPORTS  # pyright: ignore[reportUnsupportedDunderAll]
+
 
 if __name__ == "__main__":
     main()

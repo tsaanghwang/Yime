@@ -1,6 +1,6 @@
 @echo off
 chcp 65001 >nul
-cd /d "%~dp0"
+cd /d "%~dp0\.."
 
 echo ============================================================
 echo Portable Python 3.12 Setup (No Admin Required)

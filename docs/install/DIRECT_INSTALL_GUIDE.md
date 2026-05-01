@@ -120,7 +120,7 @@ python run_input_method.py
 
 仓库里已提供：
 
-- `activate_py312.bat`
+- `scripts/activate_py312.bat`
 
 它适合在 `venv312` 已经存在时做快速检查。
 

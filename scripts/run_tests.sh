@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-cd "$(dirname "$0")"
+cd "$(dirname "$0")/.."
 
 if [[ -x "venv312/Scripts/python.exe" ]]; then
 	PYTHON="venv312/Scripts/python.exe"

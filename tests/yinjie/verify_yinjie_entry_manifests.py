@@ -1,7 +1,7 @@
 import unittest
-import interactive_yinjie as interactive_entry_module
-from interactive_yinjie import interactive_encoder
+from syllable_codec import interactive_yinjie as interactive_entry_module
 from syllable_codec import yinjie_encoder as facade_yinjie_encoder
+from syllable_codec.interactive_yinjie import interactive_encoder
 from syllable.analysis.slice import yinjie_encoder as package_yinjie_encoder
 from syllable.analysis.slice.interactive_yinjie_session import interactive_encoder as package_interactive_encoder
 from syllable.analysis.slice.yinjie_api_manifest import (

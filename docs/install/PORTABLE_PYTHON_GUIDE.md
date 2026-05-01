@@ -180,13 +180,13 @@ python -m yime.input_method.app
 
 仓库已提供：
 
-- `setup_portable_python.bat`
-- `activate_py312.bat`
+- `scripts/setup_portable_python.bat`
+- `scripts/activate_py312.bat`
 
 用途分别是：
 
-- `setup_portable_python.bat`：检查便携 Python 是否齐备，并创建 `venv312`
-- `activate_py312.bat`：激活 `venv312` 后检查 `pywin32` 和 `pynput`
+- `scripts/setup_portable_python.bat`：检查便携 Python 是否齐备，并创建 `venv312`
+- `scripts/activate_py312.bat`：激活 `venv312` 后检查 `pywin32` 和 `pynput`
 
 ## 快速步骤
 

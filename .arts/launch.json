@@ -414,7 +414,7 @@
       "name": "interactive_yinjie",
       "type": "python",
       "request": "launch",
-      "program": "${workspaceFolder}\\interactive_yinjie.py",
+      "program": "${workspaceFolder}\\syllable_codec\\interactive_yinjie.py",
       "currentFileConfiguration": false,
       "cwd": "${workspaceFolder}",
       "addSourceRootsToPythonpath": true

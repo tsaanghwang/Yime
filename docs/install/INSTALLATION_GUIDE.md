@@ -152,7 +152,7 @@ pip install -r requirements.txt
 
 仓库已提供：
 
-- `activate_py312.bat`
+- `scripts/activate_py312.bat`
 
 它会检查：
 

@@ -1,7 +1,7 @@
 @echo off
 setlocal
 
-cd /d "%~dp0"
+cd /d "%~dp0\.."
 
 if exist "venv312\Scripts\python.exe" (
   set "PYTHON=venv312\Scripts\python.exe"
