@@ -205,15 +205,15 @@
   - 原因：当前为空，暂时没有形成有效内容；该目录已在轻清理中删除。
 
 - `releases/v1.0/`
-  - 分类：过渡占位目录。
-  - 原因：正式键盘布局 `v1.0` 说明已经迁到 `C:/dev/Yime-keyboard-layout`，主仓库这里只保留一个入口占位，避免旧路径失联。
+  - 分类：已移除的过渡占位目录。
+  - 原因：正式键盘布局 `v1.0` 说明已经迁到 `C:/dev/Yime-keyboard-layout`，而主仓库内已不再存在对此目录的消费入口，因此这层占位本身也可以移除。
 
 当前已完成的 `releases/` 轻清理结论是：
 
 1. `releases/msklc-docs/` 与 `releases/msklc-test/` 两个空目录占位已删除。
 2. `releases/yinyuan/` 已删除，因为它与 `releases/msklc-package/` 的代表性包文件重复，且当前运行/打包说明链没有引用它。
 3. 旧的 `releases/v2.2/` 与 `releases/v2.3/` 版本说明已删除，因为它们为空或与当前主线失配。
-4. 键盘布局辅助工程已经独立到 `C:/dev/Yime-keyboard-layout`，主仓库中的 `releases/v1.0/` 现已降级为占位入口。
+4. 键盘布局辅助工程已经独立到 `C:/dev/Yime-keyboard-layout`，主仓库中的 `releases/v1.0/` 占位目录也已移除，正式入口统一改由外部仓库承载。
 5. `releases/msklc-package/`、`releases/msklc-amd64/` 与 `releases/msklc-wow64/` 已从主仓库移除，正式样本改由 `C:/dev/Yime-keyboard-layout` 承载。
 
 #### 6A. 覆盖率报告目录（2026-05）
