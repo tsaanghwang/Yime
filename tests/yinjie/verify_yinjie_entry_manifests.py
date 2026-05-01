@@ -1,6 +1,7 @@
 import unittest
 import interactive_yinjie as interactive_entry_module
 from interactive_yinjie import interactive_encoder
+from syllable_codec import yinjie_encoder as facade_yinjie_encoder
 from syllable.analysis.slice import yinjie_encoder as package_yinjie_encoder
 from syllable.analysis.slice.interactive_yinjie_session import interactive_encoder as package_interactive_encoder
 from syllable.analysis.slice.yinjie_api_manifest import (
@@ -16,10 +17,8 @@ class TestYinjieEntryManifests(unittest.TestCase):
     def test_package_implementation_exports_match_manifest(self):
         self.assertEqual(package_yinjie_encoder.__all__, YINJIE_IMPLEMENTATION_EXPORTS)
 
-    def test_root_facade_exports_match_api_manifest(self):
-        import yinjie_encoder as root_yinjie_encoder
-
-        self.assertEqual(root_yinjie_encoder.__all__, YINJIE_ROOT_ENTRY_EXPORTS)
+    def test_facade_exports_match_api_manifest(self):
+        self.assertEqual(facade_yinjie_encoder.__all__, YINJIE_ROOT_ENTRY_EXPORTS)
 
     def test_interactive_entry_exports_match_manifest(self):
         self.assertEqual(interactive_entry_module.__all__, YINJIE_INTERACTIVE_ENTRY_EXPORTS)

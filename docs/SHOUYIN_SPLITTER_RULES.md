@@ -124,5 +124,5 @@
 ## 后续演进建议
 
 1. 若决定为 `y_j / y_rounded / zero_plain / zero_ng` 再继续分配独立槽位，应先把 alias 升格为独立真源条目。
-2. 升格后再更新 `layout_slot`、`runtime_char`、`key_to_code.json` 和统一校验器。
+2. 升格后再更新 `layout_slot`、`runtime_char`、`syllable_codec/key_to_code.json` 和统一校验器。
 3. 在此之前，保持“splitter 细分、runtime 回落”的兼容模式最稳。

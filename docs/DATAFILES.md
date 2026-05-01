@@ -5,7 +5,7 @@
 ## 1. 主要数据文件
 
 - data_json_files/key_symbol_mapping.json：键位与音元符号映射
-- key_to_code.json：运行时键位槽位到字符映射
+- syllable_codec/key_to_code.json：运行时键位槽位到字符映射
 - yime/reports/phoneme_dict.json：音元分类导出报告
 
 补充说明：旧 JS 原型链使用过的 `pinyinCodeTable.json` 与 `hanziTable.json` 已随原型链一起迁出到单独的 `Yime-js-prototype` 仓库，不再属于主仓库当前主线数据资产。
@@ -24,7 +24,7 @@
 - 键：键位
 - 值：音元符号
 
-### key_to_code.json
+### syllable_codec/key_to_code.json
 
 ```json
 {
@@ -35,6 +35,7 @@
 
 - 键：运行时槽位编码
 - 值：对应字符
+- 位置：随 `syllable_codec` 子包一起维护的运行时映射文件
 
 ### yime/reports/phoneme_dict.json
 

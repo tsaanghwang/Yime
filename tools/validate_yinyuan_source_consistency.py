@@ -7,7 +7,7 @@ from typing import Any
 
 
 ROOT = Path(__file__).resolve().parent.parent
-DEFAULT_LAYOUT_MAP = ROOT / "key_to_code.json"
+DEFAULT_LAYOUT_MAP = ROOT / "syllable_codec" / "key_to_code.json"
 DEFAULT_SHOUYIN_SOURCE = ROOT / "syllable" / "analysis" / "slice" / "yinyuan" / "zaoyin_yinyuan_enhanced.json"
 DEFAULT_YUEYIN_SOURCE = ROOT / "syllable" / "analysis" / "slice" / "yinyuan" / "yueyin_yinyuan_enhanced.json"
 DEFAULT_SHOUYIN_RUNTIME = ROOT / "syllable" / "analysis" / "slice" / "yinyuan" / "shouyin_codepoint.json"

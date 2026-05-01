@@ -2,6 +2,7 @@ from pathlib import Path
 from typing import Any
 
 from .utils_charfilter import is_allowed_code_char, is_pua_char
+from syllable_codec.yinjie_decoder import YinjieDecoder
 
 try:
     from yime.syllable_structure import SyllableStructure
@@ -10,8 +11,6 @@ except Exception:
         from syllable_structure import SyllableStructure
     except Exception:
         SyllableStructure = None
-
-from yinjie_decoder import YinjieDecoder
 
 
 def _normalize_split(res):
@@ -44,7 +43,7 @@ class SyllableDecoder(YinjieDecoder):
 
     def __init__(self, code_file: str | Path | None = None):
         if code_file is None:
-            code_file = Path(__file__).resolve().parents[1] / "yinjie_code.json"
+            code_file = Path(__file__).resolve().parents[1] / "syllable_codec" / "yinjie_code.json"
         super().__init__(code_file=code_file)
 
     def _load_code_map(self) -> dict[str, str]:

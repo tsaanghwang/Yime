@@ -4,7 +4,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parent.parent
-DEFAULT_YINJIE = ROOT / "yinjie_code.json"
+DEFAULT_YINJIE = ROOT / "syllable_codec" / "yinjie_code.json"
 DEFAULT_SYMBOLS = ROOT / "internal_data" / "key_to_symbol.json"
 DEFAULT_OUTPUT = ROOT / "internal_data" / "shouyin_ganyin_combinability.json"
 
@@ -92,7 +92,7 @@ def build_output(yinjie_code, key_to_symbol):
 
     output = {
         "metadata": {
-            "source_yinjie_code": "yinjie_code.json",
+            "source_yinjie_code": "syllable_codec/yinjie_code.json",
             "source_symbol_map": "internal_data/key_to_symbol.json",
             "description": "Derived combinability table from runtime syllable codes. Direct-following musical means the first Mxx immediately after Nxx in each encoded syllable.",
         },

@@ -83,7 +83,7 @@ class YinjieErrorPolicy:
             for syllable, detail in failures
         )
         return YinjieEncodingError(
-            f"共有 {len(failures)} 个音节编码失败，未生成 yinjie_code.json: {failure_summary}",
+            f"共有 {len(failures)} 个音节编码失败，未生成 syllable_codec/yinjie_code.json: {failure_summary}",
             stage="batch",
             detail=failure_summary,
             failures=failures,
@@ -486,7 +486,7 @@ class YinjieBatchOutputStage:
 class YinjieEncoder:
     """音节编码处理器。"""
 
-    OUTPUT_FILENAME = "yinjie_code.json"
+    OUTPUT_FILENAME = "syllable_codec/yinjie_code.json"
 
     def __init__(self):
         """初始化编码器并绑定项目根目录。"""

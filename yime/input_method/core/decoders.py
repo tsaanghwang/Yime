@@ -75,7 +75,7 @@ def _canonicalize_runtime_input(text: str, bmp_to_canonical: Dict[str, str]) -> 
 
 
 def _load_numeric_yime_code_map(repo_root: Path) -> Dict[str, str]:
-    payload = _load_visual_json(repo_root / "yinjie_code.json")
+    payload = _load_visual_json(repo_root / "syllable_codec" / "yinjie_code.json")
     return {
         str(pinyin_tone).strip(): str(yime_code)
         for pinyin_tone, yime_code in payload.items()
@@ -318,7 +318,7 @@ def build_input_sound_notes(text: str, visual_map: Dict[str, str]) -> str:
 
 def build_physical_input_map(repo_root: Path) -> Dict[str, str]:
     manual_layout = _load_visual_json(repo_root / "internal_data" / "manual_key_layout.json")
-    slot_to_bmp = _load_visual_json(repo_root / "key_to_code.json")
+    slot_to_bmp = _load_visual_json(repo_root / "syllable_codec" / "key_to_code.json")
     slot_to_symbol = _load_visual_json(repo_root / "internal_data" / "key_to_symbol.json")
 
     physical_map: Dict[str, str] = {}

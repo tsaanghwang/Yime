@@ -178,7 +178,7 @@
 
 ### 应视为生成产物的文件
 
-- `yinjie_code.json`
+- `syllable_codec/yinjie_code.json`
 - `yinyuan.klc`
 - `syllable/analysis/slice/yinyuan/yinyuan_codepoint.json`
 - `syllable/analysis/slice/yinyuan/shouyin_codepoint.json`

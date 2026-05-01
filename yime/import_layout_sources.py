@@ -16,7 +16,7 @@ EXTERNAL_REPO = Path(
     os.environ.get("YIME_KEYBOARD_LAYOUT_REPO", str(DEFAULT_EXTERNAL_REPO))
 ).expanduser().resolve()
 EXTERNAL_KLC_PATH = EXTERNAL_REPO / "yinyuan.klc"
-RUNTIME_SYMBOL_PATH = ROOT / "key_to_code.json"
+RUNTIME_SYMBOL_PATH = ROOT / "syllable_codec" / "key_to_code.json"
 CANONICAL_SYMBOL_PATH = ROOT / "internal_data" / "key_to_symbol.json"
 PROJECTION_PATH = ROOT / "internal_data" / "bmp_pua_trial_projection.json"
 SHOUYIN_PATH = ROOT / "syllable" / "analysis" / "slice" / "yinyuan" / "shouyin_codepoint.json"

@@ -2,7 +2,8 @@ import unittest
 import json
 import tempfile
 from pathlib import Path
-from yinjie_encoder import (
+
+from syllable_codec.yinjie_encoder import (
     YinjieEncoder,
     YinjieEncodingError,
 )
@@ -83,11 +84,11 @@ class TestYinjieEncoder(unittest.TestCase):
         cls.shouyin_encoder = ShouyinEncoder()
         cls.ganyin_encoder = GanyinEncoder()
 
-    def test_default_output_path_is_repo_root_file(self):
-        """默认输出路径应统一落到仓库根目录的 yinjie_code.json。"""
+    def test_default_output_path_is_package_file(self):
+        """默认输出路径应统一落到 syllable_codec/yinjie_code.json。"""
         self.assertEqual(
             self.encoder._get_output_path("yinyuan"),
-            Path("c:/dev/Yime/yinjie_code.json"),
+            Path("c:/dev/Yime/syllable_codec/yinjie_code.json"),
         )
 
     def test_all_pinyin_length(self):

@@ -3,15 +3,16 @@ import unittest
 from collections import defaultdict
 from pathlib import Path
 
+from syllable_codec.paths import YINJIE_CODE_PATH
+from syllable_codec.yinjie_decoder import YinjieDecoder
 from syllable.analysis.slice.yinjie_encoder import YinjieEncoder
-from yinjie_decoder import YinjieDecoder
 
 
 class TestYinjieRoundTrip(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.normalized_path = Path("pinyin/hanzi_pinyin/pinyin_normalized.json")
-        cls.codebook_path = Path("yinjie_code.json")
+        cls.codebook_path = YINJIE_CODE_PATH
 
         with cls.normalized_path.open("r", encoding="utf-8") as file:
             cls.normalized_pinyin = list(json.load(file).keys())

@@ -3,8 +3,9 @@ import json
 import tempfile
 from pathlib import Path
 
-from yinjie import Yinjie
-from yinjie_decoder import DEFAULT_PHONEME_REPORT, YinjieDecoder, YinjieDecoderRunResult
+from syllable_codec.paths import YINJIE_CODE_PATH
+from syllable_codec.yinjie import Yinjie
+from syllable_codec.yinjie_decoder import DEFAULT_PHONEME_REPORT, YinjieDecoder, YinjieDecoderRunResult
 
 
 class TestYinjieDecoderRunContract(unittest.TestCase):
