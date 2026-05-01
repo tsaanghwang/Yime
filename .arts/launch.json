@@ -1007,15 +1007,6 @@
       "noDebug": true
     },
     {
-      "name": "unicode_pua",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\unicode_pua.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}",
-      "addSourceRootsToPythonpath": true
-    },
-    {
       "name": "Python: Current File",
       "type": "python",
       "request": "launch",
@@ -1026,15 +1017,6 @@
       "env": {
         "PYTHONPATH": "${workspaceFolder};${env:PYTHONPATH}"
       }
-    },
-    {
-      "name": "unicode_pua",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\tools\\unicode_pua.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\tools",
-      "addSourceRootsToPythonpath": true
     },
     {
       "name": "test_shejian",
