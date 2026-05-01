@@ -16,8 +16,11 @@ venv312/
 venv_broken_python314/
 
 # Editor / OS files
+.coverage
 *.pyc
 __pycache__/
+.pytest_cache/
+.tmp/
 *.swp
 *.swo
 .DS_Store
