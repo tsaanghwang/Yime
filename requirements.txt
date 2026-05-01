@@ -1,3 +1,14 @@
-pytest>=7.0.0
+# Unified Python dependencies for the current Windows IME prototype and test workflow.
+
+# Windows API and input hooks
+pywin32>=305; platform_system == "Windows"
+pynput>=1.7.6
+
+# Test and coverage
+pytest>=8.0.0
 pytest-cov>=3.0.0
-codecov>=2.1.0
+coverage>=7.0.0
+
+# Utilities
+tqdm>=4.65.0
+colorama>=0.4.6

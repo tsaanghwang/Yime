@@ -15,7 +15,7 @@
 conda create -n yime_env python=3.12
 conda activate yime_env
 python -m pip install --upgrade pip
-pip install -r requirements_py312.txt
+pip install -r requirements.txt
 python -m yime.input_method.app
 ```
 
@@ -25,7 +25,7 @@ python -m yime.input_method.app
 py -3.12 -m venv venv312
 venv312\Scripts\activate.bat
 python -m pip install --upgrade pip
-pip install -r requirements_py312.txt
+pip install -r requirements.txt
 python -m yime.input_method.app
 ```
 

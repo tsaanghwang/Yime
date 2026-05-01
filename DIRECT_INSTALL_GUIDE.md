@@ -84,7 +84,7 @@ python --version
 
 ```bash
 python -m pip install --upgrade pip
-pip install -r requirements_py312.txt
+pip install -r requirements.txt
 ```
 
 这会安装当前 Windows 输入法原型所需的关键依赖，包括：

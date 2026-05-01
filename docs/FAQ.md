@@ -20,7 +20,7 @@
 - Windows 10 / 11
 - Python 3.12.x
 - `pywin32`
-- `requirements_py312.txt`
+- `requirements.txt`
 
 可选但不是硬前提：
 
@@ -37,7 +37,7 @@
 conda create -n yime_env python=3.12
 conda activate yime_env
 python -m pip install --upgrade pip
-pip install -r requirements_py312.txt
+pip install -r requirements.txt
 python -m yime.input_method.app
 ```
 
