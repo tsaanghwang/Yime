@@ -1,12 +1,16 @@
 from __future__ import annotations
 
+import os
 import subprocess
 import sys
 from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parent.parent
-EXTERNAL_REPO = ROOT.parent / "Yime-keyboard-layout"
+DEFAULT_EXTERNAL_REPO = ROOT.parent / "Yime-keyboard-layout"
+EXTERNAL_REPO = Path(
+    os.environ.get("YIME_KEYBOARD_LAYOUT_REPO", str(DEFAULT_EXTERNAL_REPO))
+).expanduser().resolve()
 TARGET_SCRIPT = EXTERNAL_REPO / "tools" / "run_msklc_packaging_pipeline.py"
 
 
@@ -14,6 +18,7 @@ def main() -> None:
     if not TARGET_SCRIPT.exists():
         raise SystemExit(
             "The MSKLC packaging chain has been moved out of the main repo. "
+            "Set YIME_KEYBOARD_LAYOUT_REPO or place the external repo next to the main repo. "
             f"Expected helper script at: {TARGET_SCRIPT}"
         )
 

@@ -2,6 +2,8 @@
 
 这页只保留当前可用的最短路径：生成 `.klc`、用 MSKLC 打包、用 MSI 安装、必要时回滚。
 
+补充说明：外部键盘布局仓库默认按主仓库同级目录理解，即 `..\Yime-keyboard-layout`；如果实际位置不同，可先设置 `YIME_KEYBOARD_LAYOUT_REPO`，再运行下面这些包装脚本。
+
 ## 0. 先理解一个历史命名
 
 - `internal_data/manual_key_layout.json` 仍是当前布局真源。
@@ -25,7 +27,7 @@ python tools/run_layout_pipeline.py --on-warning continue --open-msklc never --e
 python tools/run_msklc_packaging_pipeline.py
 ```
 
-说明：主仓库里的这个命令现在只是转发到 `C:/dev/Yime-keyboard-layout/tools/run_msklc_packaging_pipeline.py`。
+说明：主仓库里的这个命令现在只是转发到外部 `Yime-keyboard-layout` 仓库中的同名脚本。
 
 然后在 MSKLC 里执行：
 
@@ -34,9 +36,9 @@ python tools/run_msklc_packaging_pipeline.py
 
 期望结果同步到外部键盘布局仓库：
 
-- `C:/dev/Yime-keyboard-layout/releases/msklc-package/`
-- `C:/dev/Yime-keyboard-layout/releases/msklc-amd64/`
-- `C:/dev/Yime-keyboard-layout/releases/msklc-wow64/`
+- `..\Yime-keyboard-layout\releases\msklc-package\`
+- `..\Yime-keyboard-layout\releases\msklc-amd64\`
+- `..\Yime-keyboard-layout\releases\msklc-wow64\`
 
 ## 3. 用 MSI 安装
 
@@ -47,19 +49,22 @@ python tools/run_msklc_install_pipeline.py --install-mode msi
 如需把布局加入当前用户键盘列表，再运行：
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File C:\dev\Yime-keyboard-layout\releases\msklc-package\enable-yinyuan-for-current-user.ps1
+$klcRepo = if ($env:YIME_KEYBOARD_LAYOUT_REPO) { $env:YIME_KEYBOARD_LAYOUT_REPO } else { (Resolve-Path ..\Yime-keyboard-layout).Path }
+& (Join-Path $klcRepo 'releases\msklc-package\enable-yinyuan-for-current-user.ps1')
 ```
 
 ## 4. 回滚当前用户键盘项
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File C:\dev\Yime-keyboard-layout\releases\msklc-package\restore-default-chinese-keyboards.ps1
+$klcRepo = if ($env:YIME_KEYBOARD_LAYOUT_REPO) { $env:YIME_KEYBOARD_LAYOUT_REPO } else { (Resolve-Path ..\Yime-keyboard-layout).Path }
+& (Join-Path $klcRepo 'releases\msklc-package\restore-default-chinese-keyboards.ps1')
 ```
 
 ## 5. 彻底清理机器级注册
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File C:\dev\Yime-keyboard-layout\releases\msklc-package\unregister-yinyuan-machine.ps1
+$klcRepo = if ($env:YIME_KEYBOARD_LAYOUT_REPO) { $env:YIME_KEYBOARD_LAYOUT_REPO } else { (Resolve-Path ..\Yime-keyboard-layout).Path }
+& (Join-Path $klcRepo 'releases\msklc-package\unregister-yinyuan-machine.ps1')
 ```
 
 用途：

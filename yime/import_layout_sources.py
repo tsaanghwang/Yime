@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import re
 import sqlite3
 from pathlib import Path
@@ -10,7 +11,11 @@ ROOT = Path(__file__).resolve().parent.parent
 DB_PATH = ROOT / "yime" / "pinyin_hanzi.db"
 SCHEMA_PATH = ROOT / "yime" / "create_yime_db_schema.sql"
 LOCAL_KLC_PATH = ROOT / "yinyuan.klc"
-EXTERNAL_KLC_PATH = ROOT.parent / "Yime-keyboard-layout" / "yinyuan.klc"
+DEFAULT_EXTERNAL_REPO = ROOT.parent / "Yime-keyboard-layout"
+EXTERNAL_REPO = Path(
+    os.environ.get("YIME_KEYBOARD_LAYOUT_REPO", str(DEFAULT_EXTERNAL_REPO))
+).expanduser().resolve()
+EXTERNAL_KLC_PATH = EXTERNAL_REPO / "yinyuan.klc"
 RUNTIME_SYMBOL_PATH = ROOT / "key_to_code.json"
 CANONICAL_SYMBOL_PATH = ROOT / "internal_data" / "key_to_symbol.json"
 PROJECTION_PATH = ROOT / "internal_data" / "bmp_pua_trial_projection.json"
@@ -147,7 +152,8 @@ def resolve_klc_path() -> Path:
     if EXTERNAL_KLC_PATH.exists():
         return EXTERNAL_KLC_PATH
     raise FileNotFoundError(
-        "Could not find yinyuan.klc in either the main repo root or C:/dev/Yime-keyboard-layout/."
+        "Could not find yinyuan.klc in either the main repo root or the external Yime-keyboard-layout repo. "
+        f"Set YIME_KEYBOARD_LAYOUT_REPO if needed. Checked: {LOCAL_KLC_PATH} and {EXTERNAL_KLC_PATH}"
     )
 
 
