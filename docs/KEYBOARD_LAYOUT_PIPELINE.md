@@ -49,8 +49,8 @@
 - `internal_data/manual_key_layout.resolved.json`
 - `internal_data/klc_layout_visual_table.md`
 - `yinyuan.klc`
-- `releases/msklc-package/` 下的 MSI、setup、DLL
-- `releases/msklc-amd64/`、`releases/msklc-wow64/` 下的同步 DLL
+- `C:/dev/Yime-keyboard-layout/releases/msklc-package/` 下的 MSI、setup、DLL
+- `C:/dev/Yime-keyboard-layout/releases/msklc-amd64/`、`C:/dev/Yime-keyboard-layout/releases/msklc-wow64/` 下的同步 DLL
 
 这些都应重建，不应手工长期维护。
 
@@ -79,11 +79,11 @@ python tools/run_msklc_packaging_pipeline.py
 1. `File -> Load Source File -> yinyuan.klc`
 2. `Project -> Build DLL and Setup Package`
 
-期望结果同步回仓库：
+期望结果同步到外部键盘布局仓库：
 
-- `releases/msklc-package/`
-- `releases/msklc-amd64/`
-- `releases/msklc-wow64/`
+- `C:/dev/Yime-keyboard-layout/releases/msklc-package/`
+- `C:/dev/Yime-keyboard-layout/releases/msklc-amd64/`
+- `C:/dev/Yime-keyboard-layout/releases/msklc-wow64/`
 
 ### 步骤3：安装 MSI
 
@@ -94,7 +94,7 @@ python tools/run_msklc_install_pipeline.py --install-mode msi
 如需把布局加入当前用户键盘列表，再运行：
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File releases\msklc-package\enable-yinyuan-for-current-user.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File C:\dev\Yime-keyboard-layout\releases\msklc-package\enable-yinyuan-for-current-user.ps1
 ```
 
 ## 什么时候需要回滚或清理
@@ -104,13 +104,13 @@ powershell -NoProfile -ExecutionPolicy Bypass -File releases\msklc-package\enabl
 1. 回滚当前用户键盘项
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File releases\msklc-package\restore-default-chinese-keyboards.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File C:\dev\Yime-keyboard-layout\releases\msklc-package\restore-default-chinese-keyboards.ps1
 ```
 
 1. 清理机器级注册和系统 DLL
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File releases\msklc-package\unregister-yinyuan-machine.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File C:\dev\Yime-keyboard-layout\releases\msklc-package\unregister-yinyuan-machine.ps1
 ```
 
 ## 不应该再做的事
@@ -124,7 +124,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File releases\msklc-package\unreg
 
 1. 当前 `yinyuan.klc` 是否确实从最新布局真源重新生成。
 2. 是否在 MSKLC GUI 里重新执行了 `Build DLL and Setup Package`。
-3. `releases/msklc-package/` 是否已被这次 GUI 产物完整覆盖。
+3. `C:/dev/Yime-keyboard-layout/releases/msklc-package/` 是否已被这次 GUI 产物完整覆盖。
 4. 是否残留旧机器级注册；如有冲突，先运行 `unregister-yinyuan-machine.ps1`。
 
 ## 一句话顺序

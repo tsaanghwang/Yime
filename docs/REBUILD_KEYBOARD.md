@@ -34,11 +34,11 @@ python tools/run_msklc_packaging_pipeline.py
 1. `File -> Load Source File -> yinyuan.klc`
 2. `Project -> Build DLL and Setup Package`
 
-期望结果同步回仓库：
+期望结果同步到外部键盘布局仓库：
 
-- `releases/msklc-package/`
-- `releases/msklc-amd64/`
-- `releases/msklc-wow64/`
+- `C:/dev/Yime-keyboard-layout/releases/msklc-package/`
+- `C:/dev/Yime-keyboard-layout/releases/msklc-amd64/`
+- `C:/dev/Yime-keyboard-layout/releases/msklc-wow64/`
 
 ### 3. 安装 MSI
 
@@ -49,7 +49,7 @@ python tools/run_msklc_install_pipeline.py --install-mode msi
 如果只想把布局加入当前用户键盘列表，再运行：
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File releases\msklc-package\enable-yinyuan-for-current-user.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File C:\dev\Yime-keyboard-layout\releases\msklc-package\enable-yinyuan-for-current-user.ps1
 ```
 
 ### 4. 必要时回滚或清理
@@ -57,13 +57,13 @@ powershell -NoProfile -ExecutionPolicy Bypass -File releases\msklc-package\enabl
 回滚当前用户键盘项：
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File releases\msklc-package\restore-default-chinese-keyboards.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File C:\dev\Yime-keyboard-layout\releases\msklc-package\restore-default-chinese-keyboards.ps1
 ```
 
 彻底清理机器级注册：
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File releases\msklc-package\unregister-yinyuan-machine.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File C:\dev\Yime-keyboard-layout\releases\msklc-package\unregister-yinyuan-machine.ps1
 ```
 
 ## 重建前的最小检查
@@ -83,7 +83,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File releases\msklc-package\unreg
 
 1. 是否真的从当前布局真源重新生成了 `yinyuan.klc`。
 2. 是否在 MSKLC 里重新执行了 `Build DLL and Setup Package`。
-3. `releases/msklc-package/` 是否已经被这次新的 GUI 打包输出覆盖。
+3. `C:/dev/Yime-keyboard-layout/releases/msklc-package/` 是否已经被这次新的 GUI 打包输出覆盖。
 4. 是否仍残留旧的机器级注册；有冲突时先运行 `unregister-yinyuan-machine.ps1`。
 
 ## 一句话顺序
