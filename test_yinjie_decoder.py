@@ -4,7 +4,7 @@ import tempfile
 from pathlib import Path
 
 from yinjie import Yinjie
-from yinjie_decoder import YinjieDecoder, YinjieDecoderRunResult
+from yinjie_decoder import DEFAULT_PHONEME_REPORT, YinjieDecoder, YinjieDecoderRunResult
 
 
 class TestYinjieDecoderRunContract(unittest.TestCase):
@@ -25,7 +25,7 @@ class TestYinjieDecoderRunContract(unittest.TestCase):
                 self.decode_all_calls += 1
                 return decoded_map
 
-            def save_phoneme_dict(self, output_file="phoneme_dict.json", decoded_map=None):
+            def save_phoneme_dict(self, output_file=DEFAULT_PHONEME_REPORT, decoded_map=None):
                 self.save_calls.append((output_file, decoded_map))
                 return Path(output_file)
 
@@ -67,7 +67,7 @@ class TestYinjieDecoderRunContract(unittest.TestCase):
                 self.decode_all_calls += 1
                 return decoded_map
 
-            def save_phoneme_dict(self, output_file="phoneme_dict.json", decoded_map=None):
+            def save_phoneme_dict(self, output_file=DEFAULT_PHONEME_REPORT, decoded_map=None):
                 return Path(output_file)
 
             def show_examples(self, examples, decoded_map=None):

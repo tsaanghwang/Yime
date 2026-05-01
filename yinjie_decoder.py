@@ -10,6 +10,7 @@ DecodedMap = dict[str, Yinjie]
 PhonemeSets = dict[str, set[str]]
 PhonemeLists = tuple[list[str], list[str]]
 ROOT = Path(__file__).resolve().parent
+DEFAULT_PHONEME_REPORT = ROOT / 'yime' / 'reports' / 'phoneme_dict.json'
 
 
 @dataclass(frozen=True)
@@ -35,6 +36,7 @@ class YinjieDecoder:
     def _save_json(self, output_file: str | Path, data: Any) -> Path:
         """统一的 JSON 写入入口。"""
         output_path = Path(output_file)
+        output_path.parent.mkdir(parents=True, exist_ok=True)
         with output_path.open('w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
         return output_path
@@ -160,7 +162,7 @@ class YinjieDecoder:
         }
 
     # === 文件操作和保存 ===
-    def save_phoneme_dict(self, output_file: str | Path = 'phoneme_dict.json', decoded_map: DecodedMap | None = None) -> Path:
+    def save_phoneme_dict(self, output_file: str | Path = DEFAULT_PHONEME_REPORT, decoded_map: DecodedMap | None = None) -> Path:
         """将分类后的音元保存到JSON文件"""
         phoneme_dict = self.build_phoneme_dict(decoded_map=decoded_map)
         return self._save_json(output_file, phoneme_dict)
@@ -205,7 +207,7 @@ class YinjieDecoder:
 
     def run(
         self,
-        phoneme_output: str | Path = 'phoneme_dict.json',
+        phoneme_output: str | Path = DEFAULT_PHONEME_REPORT,
         key_output: str | Path = 'key_to_code.json',
         examples: list[str] | None = None,
     ) -> YinjieDecoderRunResult:

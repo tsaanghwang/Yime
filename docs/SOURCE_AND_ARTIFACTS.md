@@ -343,6 +343,10 @@
   - 分类：已删除的根目录孤立音元字典副本。
   - 原因：仓库内没有现行消费入口；其结构又与当前 `phoneme_dict.json` / `zaoyin_yinyuan_enhanced.json` 这类现行数据文件重叠，更像历史试验副本而不是真源。
 
+- `phoneme_dict.json`
+  - 分类：已删除的根目录再生导出物。
+  - 原因：仓库内没有任何运行时读取方；它只由 `yinjie_decoder.py` 导出，适合下沉到 `yime/reports/phoneme_dict.json` 这类报告路径，而不应继续占据根目录主资产位置。
+
 #### 7. 旧 JS 原型链（2026-05）
 
 以下对象已经整体迁出主仓库，当前正式外置位置为外部 `Yime-js-prototype` 仓库：

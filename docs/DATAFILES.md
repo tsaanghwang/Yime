@@ -5,7 +5,8 @@
 ## 1. 主要数据文件
 
 - data_json_files/key_symbol_mapping.json：键位与音元符号映射
-- phoneme_dict.json：音元分类字典
+- key_to_code.json：运行时键位槽位到字符映射
+- yime/reports/phoneme_dict.json：音元分类导出报告
 
 补充说明：旧 JS 原型链使用过的 `pinyinCodeTable.json` 与 `hanziTable.json` 已随原型链一起迁出到单独的 `Yime-js-prototype` 仓库，不再属于主仓库当前主线数据资产。
 
@@ -23,17 +24,30 @@
 - 键：键位
 - 值：音元符号
 
-### phoneme_dict.json
+### key_to_code.json
 
 ```json
 {
-  "A": "噪音",
-  "B": "乐音"
+  "N01": "ㄅ",
+  "M01": "ˉ"
 }
 ```
 
-- 键：音元编码
-- 值：音元类型
+- 键：运行时槽位编码
+- 值：对应字符
+
+### yime/reports/phoneme_dict.json
+
+```json
+{
+  "noise_phonemes": ["ㄅ", "ㄆ"],
+  "musical_phonemes": ["ˉ", "ˊ"]
+}
+```
+
+- 键：分类名称
+- 值：当前真源全量解码后得到的音元列表
+- 性质：可再生导出报告，不是运行时输入真源
 
 ## 3. 扩展方式
 
