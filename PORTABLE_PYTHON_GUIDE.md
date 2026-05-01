@@ -8,7 +8,7 @@
 
 - Python 3.12.x
 - `pywin32`
-- `requirements_py312.txt`
+- `requirements.txt`
 - `python -m yime.input_method.app`
 
 ## 什么时候看这份文档
@@ -116,7 +116,7 @@ venv312\Scripts\Activate.ps1
 
 ```bash
 python -m pip install --upgrade pip
-pip install -r requirements_py312.txt
+pip install -r requirements.txt
 ```
 
 ### 7. 验证安装
@@ -163,7 +163,7 @@ WinPython\python-3.12.x\python.exe -m venv venv312
 
 ```bat
 venv312\Scripts\activate.bat
-pip install -r requirements_py312.txt
+pip install -r requirements.txt
 ```
 
 ### 4. 启动
@@ -197,7 +197,7 @@ curl -o python312\get-pip.py https://bootstrap.pypa.io/get-pip.py
 python312\python.exe python312\get-pip.py
 python312\python.exe -m venv venv312
 venv312\Scripts\activate.bat
-pip install -r requirements_py312.txt
+pip install -r requirements.txt
 python -m yime.input_method.app
 ```
 
