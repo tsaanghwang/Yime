@@ -105,12 +105,10 @@ YIME/
 ├── syllable/             # 音节分析模块
 ├── src/                  # 历史前端代码与实验性界面资源
 ├── docs/                 # 文档
-├── scripts/              # 辅助脚本（见下方说明）
+├── scripts/              # 辅助脚本目录
 ├── tests/                # 测试文件
 └── external_data/        # 外部数据源
 ```
-
-补充说明：根目录与子目录中的脚本较多，既包含现行入口，也包含验证器、导出器和排查工具。具体分工不再在本页逐项展开；需要细分入口时，统一从 [docs/README.md](docs/README.md) 和 [docs/SOURCE_AND_ARTIFACTS.md](docs/SOURCE_AND_ARTIFACTS.md) 进入。
 
 ## 文档入口
 
