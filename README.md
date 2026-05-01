@@ -119,18 +119,9 @@ YIME/
 - 设计约束与产物边界： [docs/CODEPOINT_POLICY.md](docs/CODEPOINT_POLICY.md)、 [docs/SOURCE_AND_ARTIFACTS.md](docs/SOURCE_AND_ARTIFACTS.md)
 - 其余文档： [docs/README.md](docs/README.md)
 
-## 使用许可
+## 进一步信息
 
-本项目代码默认采用 [MIT 许可证](LICENSE)。如涉及商业授权或其他额外说明，请同时查看仓库中的相关许可证与说明文件。
-
-## 技术支持
-
-- GitHub 仓库： [tsaanghwang/YIME](https://github.com/tsaanghwang/YIME)
-- Issues： [tsaanghwang/YIME/issues](https://github.com/tsaanghwang/YIME/issues)
-- Discussions： [tsaanghwang/YIME/discussions](https://github.com/tsaanghwang/YIME/discussions)
-- 贡献入口： [CONTRIBUTING.md](CONTRIBUTING.md)
-
-## 核心团队
-
-- Huang Chang (黄畅) - [yinyuanxitong@foxmail.com](mailto:yinyuanxitong@foxmail.com)
-- 其他贡献者见 [CONTRIBUTORS.md](CONTRIBUTORS.md)
+- 许可证： [LICENSE](LICENSE)
+- 贡献方式： [CONTRIBUTING.md](CONTRIBUTING.md)
+- 贡献者列表： [CONTRIBUTORS.md](CONTRIBUTORS.md)
+- 仓库与反馈： [tsaanghwang/YIME](https://github.com/tsaanghwang/YIME)、 [Issues](https://github.com/tsaanghwang/YIME/issues)、 [Discussions](https://github.com/tsaanghwang/YIME/discussions)
