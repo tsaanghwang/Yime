@@ -1,0 +1,12 @@
+include LICENSE
+include NOTICE.md
+graft pianyin
+graft syllable
+prune tests
+prune tools
+prune pinyin
+prune build
+prune dist
+prune finals_classifier.egg-info
+global-exclude __pycache__
+global-exclude *.py[cod]
