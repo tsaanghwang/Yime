@@ -346,15 +346,6 @@
       "noDebug": true
     },
     {
-      "name": "transform_dict_structure.bak",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\yime\\transform_dict_structure.bak.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\yime",
-      "addSourceRootsToPythonpath": true
-    },
-    {
       "name": "transform_dict_structure",
       "type": "python",
       "request": "launch",

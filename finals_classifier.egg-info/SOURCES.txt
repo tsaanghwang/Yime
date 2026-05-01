@@ -40,7 +40,6 @@ setup.py
 ./syllable/analysis/slice/reverse_key_value_pairs.py
 ./syllable/analysis/slice/run_analyzer.py
 ./syllable/analysis/slice/run_syllable_analyzer.py
-./syllable/analysis/slice/shouyin.bak.py
 ./syllable/analysis/slice/shouyin.py
 ./syllable/analysis/slice/shouyin_analyzer.py
 ./syllable/analysis/slice/shouyin_encoder.py
@@ -145,7 +144,6 @@ syllable/analysis/slice/pitched_yinyuan.py
 syllable/analysis/slice/reverse_key_value_pairs.py
 syllable/analysis/slice/run_analyzer.py
 syllable/analysis/slice/run_syllable_analyzer.py
-syllable/analysis/slice/shouyin.bak.py
 syllable/analysis/slice/shouyin.py
 syllable/analysis/slice/shouyin_analyzer.py
 syllable/analysis/slice/shouyin_encoder.py
