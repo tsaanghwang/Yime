@@ -151,12 +151,6 @@
       "database": "${workspaceFolder:Yime}/yime/pinyin_hanzi.db"
     },
     {
-      "previewLimit": 50,
-      "driver": "SQLite",
-      "database": "${workspaceFolder:Yime}/yime.db",
-      "name": "Yime"
-    },
-    {
       "name": "Source Pinyin",
       "group": "Yime",
       "driver": "SQLite",
