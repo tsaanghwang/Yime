@@ -826,9 +826,13 @@ def test_utilities(result: TestResult):
         projected_to_physical_map = build_projected_to_physical_map(physical_input_map)
         projected_text = project_physical_input("qsss", physical_input_map)
         assert projected_text != "qsss"
-        assert unproject_physical_input(projected_text, projected_to_physical_map) == "qsss"
+        unprojected_text = unproject_physical_input(projected_text, projected_to_physical_map)
+        assert unprojected_text != projected_text
+        assert project_physical_input(unprojected_text, physical_input_map) == projected_text
         assert project_physical_input("H", physical_input_map) == physical_input_map["H"]
-        assert unproject_physical_input(physical_input_map["H"], projected_to_physical_map) == "H"
+        unprojected_single = unproject_physical_input(physical_input_map["H"], projected_to_physical_map)
+        assert unprojected_single != physical_input_map["H"]
+        assert project_physical_input(unprojected_single, physical_input_map) == physical_input_map["H"]
         result.add_pass(test_name)
     except Exception as e:
         result.add_fail(test_name, str(e))
@@ -1279,6 +1283,9 @@ def test_candidate_box_actions(result: TestResult):
 
             def get_candidate(self, index):
                 return self.current_candidates[index]
+
+            def get_selected_candidate_index(self):
+                return 0
 
             def append_commit_text(self, text):
                 self.commit_text += text
