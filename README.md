@@ -216,7 +216,7 @@ python -m yime.input_method.app
 
 1. 优先阅读 [INSTALLATION_GUIDE.md](INSTALLATION_GUIDE.md) 完成 Python 3.12 环境配置。
 2. 使用 `python -m yime.input_method.app` 或 `python run_input_method.py` 启动当前 Windows 桌面输入法原型。
-3. 参考 [INPUT_METHOD_SOLUTION.md](INPUT_METHOD_SOLUTION.md) 了解当前实现边界，再结合 [docs/USAGE.md](docs/USAGE.md) 查看使用说明。
+3. 先看 [INPUT_METHOD_SOLUTION.md](INPUT_METHOD_SOLUTION.md) 了解当前实现边界，再从 [docs/README.md](docs/README.md) 进入细分文档。
 
 ## 项目结构
 
@@ -251,37 +251,16 @@ YIME/
 | `ganyin_script.py` | 干音分析脚本 | 临时验证 |
 | `mysql_conn_script.py` | MySQL连接测试 | 辅助工具 |
 
-## 相关文档
+## 文档入口
 
-- [安装指南](INSTALLATION_GUIDE.md)
-- [Python 3.12 快速开始](QUICKSTART_PY312.md)
-- [安装与部署说明](docs/INSTALL.md)
-- [便携版 Python 3.12 安装指南（无需管理员权限）](PORTABLE_PYTHON_GUIDE.md)
-- [Python 3.12 安装方案](PYTHON312_INSTALLATION_GUIDE.md)
-- [Python 3.12 直接安装指南](DIRECT_INSTALL_GUIDE.md)
-- [使用说明](docs/USAGE.md)
-- [输入法实现方案](INPUT_METHOD_SOLUTION.md)
-- [开发者文档](docs/DEVELOPMENT.md)
-- [数据文件结构说明](docs/DATAFILES.md)
-- [码点与中间层策略](docs/CODEPOINT_POLICY.md)
-- [真源文件与生成产物清单](docs/SOURCE_AND_ARTIFACTS.md)
-- [干音验证说明](syllable/analysis/slice/docs/%E5%B9%B2%E9%9F%B3%E9%AA%8C%E8%AF%81%E8%AF%B4%E6%98%8E.md)
+根目录 README 只负责项目边界、当前主线和最短启动路径；更细的文档导航统一从 [docs/README.md](docs/README.md) 进入。
 
-### 重要设计约束
-
-- [码点与中间层策略](docs/CODEPOINT_POLICY.md)：说明 `N01-N24`、`M01-M33` 的语义层地位，以及 `PUA-B`、`BMP PUA` 和平台投影的分工。后续测试、重构、数据库调整和键盘布局生成不应绕过该约束。
-
-### 当前原型状态
-
-- [输入法实现方案](INPUT_METHOD_SOLUTION.md)：记录当前 Windows 桌面输入法原型的实现边界、已实现能力、限制和下一步方向。该文档优先于仓库内更早的可行性说明或临时方案稿。
-
-### 无管理员权限安装
-
-- [便携版 Python 3.12 安装指南（无需管理员权限）](PORTABLE_PYTHON_GUIDE.md)：当你无法安装系统级 Python 或不方便使用 conda 时，使用便携 Python 3.12 继续沿当前主线部署。
-
-### 快速启动
-
-- [Python 3.12 快速开始](QUICKSTART_PY312.md)：只保留最短启动命令，适合已经理解当前主线、只想尽快跑起原型时使用。
+- 当前实现边界： [INPUT_METHOD_SOLUTION.md](INPUT_METHOD_SOLUTION.md)
+- 当前安装入口： [INSTALLATION_GUIDE.md](INSTALLATION_GUIDE.md)
+- 最短启动路径： [QUICKSTART_PY312.md](QUICKSTART_PY312.md)
+- 无管理员权限安装： [PORTABLE_PYTHON_GUIDE.md](PORTABLE_PYTHON_GUIDE.md)
+- 设计约束与产物边界： [docs/CODEPOINT_POLICY.md](docs/CODEPOINT_POLICY.md)、 [docs/SOURCE_AND_ARTIFACTS.md](docs/SOURCE_AND_ARTIFACTS.md)
+- 其余背景、术语、开发和 KLC 文档：统一看 [docs/README.md](docs/README.md)
 
 ## 使用许可
 
