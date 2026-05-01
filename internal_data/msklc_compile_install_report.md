@@ -2,6 +2,17 @@
 
 日期：2026-04-08
 
+归档说明：这是一份历史调查记录，用来保存当时那台机器上的 MSKLC 编译、GUI 打包与安装试验现象。
+
+它不应再作为当前键盘布局发布链的操作手册。当前有效入口应以：
+
+- `docs/MSKLC_RELEASE_QUICKSTART.md`
+- `docs/REBUILD_KEYBOARD.md`
+- `docs/windows-klc-workflow.md`
+- `C:/dev/Yime-keyboard-layout`
+
+为准。
+
 ## 数据库与查表
 
 - 默认视图：`vw_klc_layout_observation`
