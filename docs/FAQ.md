@@ -240,7 +240,7 @@ python run_input_method.py
 
 - `manual_key_layout.json`、`key_to_symbol.json` 更接近真源层
   - 其中 `manual_key_layout.json` 的 `manual` 是历史命名，表示布局真源，不表示 manual install / 手工编译。
-- `yinjie_code.json`、各类 `*_codepoint.json`、`yinyuan.klc` 更接近生成产物层
+- `syllable_codec/yinjie_code.json`、各类 `*_codepoint.json`、`yinyuan.klc` 更接近生成产物层
 - 数据库是消费端产物，不应承担字符系统真源职责
 
 详见：

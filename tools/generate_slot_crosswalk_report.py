@@ -6,7 +6,7 @@ import sqlite3
 
 
 ROOT = Path(__file__).resolve().parent.parent
-RUNTIME_PATH = ROOT / "key_to_code.json"
+RUNTIME_PATH = ROOT / "syllable_codec" / "key_to_code.json"
 CANONICAL_PATH = ROOT / "internal_data" / "key_to_symbol.json"
 PROJECTION_PATH = ROOT / "internal_data" / "bmp_pua_trial_projection.json"
 LAYOUT_PATH = ROOT / "internal_data" / "manual_key_layout.json"

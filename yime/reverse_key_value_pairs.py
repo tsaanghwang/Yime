@@ -47,7 +47,7 @@ def reverse_key_value_pairs(input_path, output_path):
 
 if __name__ == "__main__":
     script_dir = Path(__file__).parent.resolve()
-    input_file = script_dir / "yinjie_code.json"
+    input_file = script_dir.parent / "syllable_codec" / "yinjie_code.json"
     output_file = script_dir / "code_pinyin.json"
 
     success, original, new, merged = reverse_key_value_pairs(input_file, output_file)

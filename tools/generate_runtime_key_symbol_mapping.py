@@ -102,8 +102,8 @@ def build_ganyin_entries(
 def build_report() -> dict[str, object]:
     shouyin_path = ROOT / "syllable" / "analysis" / "slice" / "yinyuan" / "shouyin_codepoint.json"
     ganyin_path = ROOT / "syllable" / "analysis" / "slice" / "yinyuan" / "ganyin_to_fixed_length_yinyuan_sequence.json"
-    key_to_code_path = ROOT / "key_to_code.json"
-    yinjie_code_path = ROOT / "yinjie_code.json"
+    key_to_code_path = ROOT / "syllable_codec" / "key_to_code.json"
+    yinjie_code_path = ROOT / "syllable_codec" / "yinjie_code.json"
 
     shouyin_map = load_json(shouyin_path)["首音"]
     ganyin_map = load_json(ganyin_path)
@@ -118,23 +118,23 @@ def build_report() -> dict[str, object]:
     entries = sorted(shouyin_entries + ganyin_entries, key=lambda item: ord(item["symbol"]))
 
     return {
-        "description": "Canonical runtime key-symbol mapping derived from yinjie_encoder.py dependencies.",
+        "description": "Canonical runtime key-symbol mapping derived from syllable_codec/yinjie_encoder.py dependencies.",
         "source_chain": {
-            "final_code_file": "yinjie_code.json",
-            "encoder_entry": "yinjie_encoder.py -> YinjieEncoder.encode_single_yinjie()",
+            "final_code_file": "syllable_codec/yinjie_code.json",
+            "encoder_entry": "syllable_codec/yinjie_encoder.py -> YinjieEncoder.encode_single_yinjie()",
             "join_rule": "final code = shouyin_code + ganyin_code",
             "shouyin_runtime_source": "syllable/analysis/slice/yinyuan/shouyin_codepoint.json",
             "ganyin_runtime_source": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
-            "key_assignment_source": "key_to_code.json",
+            "key_assignment_source": "syllable_codec/key_to_code.json",
         },
         "non_runtime_reference_files": [
             {
                 "path": "internal_data/key_symbol_mapping.json",
-                "note": "Legacy/manual mapping file. Not read by yinjie_encoder.py when generating yinjie_code.json.",
+                "note": "Legacy/manual mapping file. Not read by syllable_codec/yinjie_encoder.py when generating syllable_codec/yinjie_code.json.",
             },
             {
                 "path": "data_json_files/key_symbol_mapping.json",
-                "note": "Legacy/manual mapping file. Not read by yinjie_encoder.py when generating yinjie_code.json.",
+                "note": "Legacy/manual mapping file. Not read by syllable_codec/yinjie_encoder.py when generating syllable_codec/yinjie_code.json.",
             },
             {
                 "path": "tools/key_symbol_mapping.py",
@@ -159,7 +159,7 @@ def build_canonical_key_symbol_mapping(report: dict[str, object]) -> dict[str, s
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Generate the runtime key-symbol mapping used by yinjie_encoder.py.")
+    parser = argparse.ArgumentParser(description="Generate the runtime key-symbol mapping used by syllable_codec/yinjie_encoder.py.")
     parser.add_argument(
         "--output",
         type=Path,

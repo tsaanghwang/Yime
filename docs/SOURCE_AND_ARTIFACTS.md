@@ -132,7 +132,7 @@
 
 #### 2. 音节编码产物
 
-- `yinjie_code.json`
+- `syllable_codec/yinjie_code.json`
   - 当前是最终音节到四字符编码的产物。
   - 应从首音语义层、干音语义层和码点映射层生成。
 
@@ -345,7 +345,7 @@
 
 - `phoneme_dict.json`
   - 分类：已删除的根目录再生导出物。
-  - 原因：仓库内没有任何运行时读取方；它只由 `yinjie_decoder.py` 导出，适合下沉到 `yime/reports/phoneme_dict.json` 这类报告路径，而不应继续占据根目录主资产位置。
+  - 原因：仓库内没有任何运行时读取方；它只由 `syllable_codec/yinjie_decoder.py` 导出，适合下沉到 `yime/reports/phoneme_dict.json` 这类报告路径，而不应继续占据根目录主资产位置。
 
 - `phoneme.csv`
   - 分类：已删除的根目录孤立音系对照表。
@@ -469,7 +469,7 @@
 
 - `start_yinjie_encoder.bat`
   - 分类：已删除的根目录手动启动包装脚本。
-  - 原因：仓库内没有任何代码、文档、测试或其它脚本再引用它；功能只是包一层 `yinjie_encoder.py`，与直接运行 Python 入口重复。
+  - 原因：仓库内没有任何代码、文档、测试或其它脚本再引用它；功能只是包一层 `syllable_codec/yinjie_encoder.py`，与直接运行 Python 入口重复。
 
 - `start_rebuild_pinyin_assets.cmd`
   - 分类：已删除的根目录手动启动包装脚本。
@@ -628,7 +628,7 @@
 
 ### 2. 运行时字符文件被过度当作真源
 
-当前 `yinjie_encoder.py` 仍然直接消费：
+当前 `syllable_codec/yinjie_encoder.py` 仍然直接消费：
 
 - `syllable/analysis/slice/yinyuan/shouyin_codepoint.json`
 - `syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json`
@@ -659,7 +659,7 @@
 1. `syllable/analysis/slice/yinyuan/shouyin_codepoint.json`
 2. `syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json`
 3. `syllable/analysis/slice/yinyuan/yinyuan_codepoint.json`
-4. `yinjie_code.json`
+4. `syllable_codec/yinjie_code.json`
 
 ### 第三步：明确 canonical 与 projection 的分工
 
@@ -695,7 +695,7 @@
    - `shouyin_codepoint.json`
    - `ganyin_to_fixed_length_yinyuan_sequence.json`
    - `yinyuan_codepoint.json`
-   - `yinjie_code.json`
+  - `syllable_codec/yinjie_code.json`
    - `yinyuan.klc`
    - 数据库与导出文件
 

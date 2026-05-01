@@ -13,7 +13,8 @@ package-dir = {"" = "."}
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["syllable*", "pianyin*"]
+include = ["syllable*", "pianyin*", "syllable_codec*"]
 
 [tool.setuptools.package-data]
 "syllable.analysis.slice" = ["yinyuan/*.json"]
+"syllable_codec" = ["*.json"]

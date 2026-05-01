@@ -3,15 +3,16 @@ import unittest
 from pathlib import Path
 
 from internal_data.pinyin_source_db.build_source_pinyin_db import marked_syllable_to_numeric
+from syllable_codec.paths import YINJIE_CODE_PATH
+from syllable_codec.yinjie_decoder import YinjieDecoder
 from syllable.analysis.slice.yinjie_encoder import YinjieEncoder
-from yinjie_decoder import YinjieDecoder
 
 
 class TestPinyinBidirectionalValidation(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.normalized_path = Path("pinyin/hanzi_pinyin/pinyin_normalized.json")
-        cls.codebook_path = Path("yinjie_code.json")
+        cls.codebook_path = YINJIE_CODE_PATH
 
         with cls.normalized_path.open("r", encoding="utf-8") as file:
             cls.normalized_map = json.load(file)

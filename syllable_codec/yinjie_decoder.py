@@ -3,14 +3,19 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, cast
 
-from yinjie import Yinjie
+try:
+    from .paths import KEY_TO_CODE_PATH, PACKAGE_ROOT, REPO_ROOT, YINJIE_CODE_PATH
+    from .yinjie import Yinjie
+except ImportError:
+    from paths import KEY_TO_CODE_PATH, PACKAGE_ROOT, REPO_ROOT, YINJIE_CODE_PATH
+    from yinjie import Yinjie
 
 
 DecodedMap = dict[str, Yinjie]
 PhonemeSets = dict[str, set[str]]
 PhonemeLists = tuple[list[str], list[str]]
-ROOT = Path(__file__).resolve().parent
-DEFAULT_PHONEME_REPORT = ROOT / 'yime' / 'reports' / 'phoneme_dict.json'
+ROOT = PACKAGE_ROOT
+DEFAULT_PHONEME_REPORT = REPO_ROOT / 'yime' / 'reports' / 'phoneme_dict.json'
 
 
 @dataclass(frozen=True)
@@ -23,7 +28,7 @@ class YinjieDecoderRunResult:
 
 class YinjieDecoder:
     # === 初始化相关 ===
-    def __init__(self, code_file: str | Path = 'yinjie_code.json'):
+    def __init__(self, code_file: str | Path = YINJIE_CODE_PATH):
         """初始化解码器，加载编码文件"""
         self.code_file = Path(code_file)
         self.code_map: dict[str, str] = self._load_code_map()
@@ -174,7 +179,7 @@ class YinjieDecoder:
             for index, phoneme in enumerate(phonemes, start=1)
         }
 
-    def map_key_to_code(self, output_file: str | Path = 'key_to_code.json', decoded_map: DecodedMap | None = None) -> dict[str, str]:
+    def map_key_to_code(self, output_file: str | Path = KEY_TO_CODE_PATH, decoded_map: DecodedMap | None = None) -> dict[str, str]:
         """从当前真源条目生成类别前缀键到 PUA 字符的映射字典并保存到文件。"""
         noise_keys = self._load_layout_mapping_from_source(self._get_shouyin_source_path(), 'N')
         musical_keys = self._load_layout_mapping_from_source(self._get_yueyin_source_path(), 'M')
@@ -208,7 +213,7 @@ class YinjieDecoder:
     def run(
         self,
         phoneme_output: str | Path = DEFAULT_PHONEME_REPORT,
-        key_output: str | Path = 'key_to_code.json',
+        key_output: str | Path = KEY_TO_CODE_PATH,
         examples: list[str] | None = None,
     ) -> YinjieDecoderRunResult:
         """统一调用入口：一次全量解码后完成导出与示例输出。"""

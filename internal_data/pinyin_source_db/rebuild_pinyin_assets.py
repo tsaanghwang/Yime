@@ -15,7 +15,7 @@ DEFAULT_DB_PATH = SCRIPT_DIR / "source_pinyin.db"
 DEFAULT_CHAR_SOURCE = Path("C:/dev/pinyin-data/pinyin.txt")
 DEFAULT_PHRASE_SOURCE = Path("C:/dev/pinyin-data/tools/phrase-pinyin-data/pinyin.txt")
 DEFAULT_NORMALIZED_OUTPUT = WORKSPACE_ROOT / "pinyin" / "hanzi_pinyin" / "pinyin_normalized.json"
-DEFAULT_YINJIE_OUTPUT = WORKSPACE_ROOT / "yinjie_code.json"
+DEFAULT_YINJIE_OUTPUT = WORKSPACE_ROOT / "syllable_codec" / "yinjie_code.json"
 DEFAULT_SUMMARY_OUTPUT = SCRIPT_DIR / "rebuild_summary.json"
 
 
@@ -128,7 +128,7 @@ def main() -> int:
     if not args.skip_yinjie:
         yinjie_command = [
             sys.executable,
-            str(WORKSPACE_ROOT / "yinjie_encoder.py"),
+            str(WORKSPACE_ROOT / "syllable_codec" / "yinjie_encoder.py"),
         ]
         run_step("encode", yinjie_command)
 

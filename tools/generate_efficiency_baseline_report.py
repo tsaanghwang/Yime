@@ -11,7 +11,7 @@ ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_INPUT = ROOT / "yime" / "reports" / "runtime_candidates_by_code_true.json"
 DEFAULT_MARKDOWN_OUTPUT = ROOT / "docs" / "EFFICIENCY_BASELINE.md"
 DEFAULT_JSON_OUTPUT = ROOT / "yime" / "reports" / "efficiency_baseline.json"
-DEFAULT_YINJIE_CODEBOOK = ROOT / "yinjie_code.json"
+DEFAULT_YINJIE_CODEBOOK = ROOT / "syllable_codec" / "yinjie_code.json"
 DEFAULT_RUNTIME_SYMBOL_MAPPING = ROOT / "internal_data" / "yinjie_runtime_key_symbol_mapping.json"
 CHAR_TIER_DEFS = (
     ("level_1", 3500, "一级字（前 3500）"),
