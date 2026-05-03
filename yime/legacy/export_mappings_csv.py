@@ -22,20 +22,26 @@ def accept_mapping_key(k: str) -> bool:
     # 旧：基于 ord(...) 的严格范围判断
     return bool(k) and all(is_allowed_code_char(ch) for ch in k)
 
-with sqlite3.connect(str(DB)) as conn, open(OUT, "w", newline="", encoding="utf-8") as f:
-    conn.row_factory = sqlite3.Row
-    cur = conn.cursor()
-    writer = csv.writer(f)
-    writer.writerow(["编号","全拼_raw","全拼_hex","简拼_raw","简拼_hex","干音_raw","干音_hex","映射编号"])
-    for row in cur.execute('SELECT 编号, 全拼, 简拼, 干音, 映射编号 FROM "音元拼音" ORDER BY 编号'):
-        writer.writerow([
-            row["编号"],
-            row["全拼"],
-            to_hex_list(row["全拼"]),
-            row["简拼"],
-            to_hex_list(row["简拼"]),
-            row["干音"],
-            to_hex_list(row["干音"]),
-            row["映射编号"],
-        ])
-print("已导出:", OUT.resolve())
+def main() -> int:
+    with sqlite3.connect(str(DB)) as conn, open(OUT, "w", newline="", encoding="utf-8") as f:
+        conn.row_factory = sqlite3.Row
+        cur = conn.cursor()
+        writer = csv.writer(f)
+        writer.writerow(["编号","全拼_raw","全拼_hex","简拼_raw","简拼_hex","干音_raw","干音_hex","映射编号"])
+        for row in cur.execute('SELECT 编号, 全拼, 简拼, 干音, 映射编号 FROM "音元拼音" ORDER BY 编号'):
+            writer.writerow([
+                row["编号"],
+                row["全拼"],
+                to_hex_list(row["全拼"]),
+                row["简拼"],
+                to_hex_list(row["简拼"]),
+                row["干音"],
+                to_hex_list(row["干音"]),
+                row["映射编号"],
+            ])
+    print("已导出:", OUT.resolve())
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
