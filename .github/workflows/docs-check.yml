@@ -13,14 +13,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
 
     - name: Collect changed docs
       id: changed-docs
       run: |
         set -e
         if [ "${{ github.event_name }}" = "pull_request" ]; then
-          git fetch --no-tags --depth=1 origin "${{ github.base_ref }}"
-          changed_files=$(git diff --name-only "origin/${{ github.base_ref }}...HEAD" -- '*.md' '理论文件/*.mdx')
+          changed_files=$(git diff --name-only "${{ github.event.pull_request.base.sha }}" "${{ github.event.pull_request.head.sha }}" -- '*.md' '理论文件/*.mdx')
         else
           changed_files=$(git diff --name-only "${{ github.event.before }}" "${{ github.sha }}" -- '*.md' '理论文件/*.mdx')
         fi
