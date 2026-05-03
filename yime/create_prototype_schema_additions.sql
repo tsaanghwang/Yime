@@ -84,6 +84,16 @@ CREATE TABLE IF NOT EXISTS numeric_pinyin_inventory (
 CREATE INDEX IF NOT EXISTS idx_numeric_pinyin_inventory_tone
 ON numeric_pinyin_inventory(pinyin_tone);
 
+CREATE TABLE IF NOT EXISTS pinyin_yime_code (
+    pinyin_tone TEXT PRIMARY KEY,
+    yime_code TEXT NOT NULL,
+    code_source TEXT NOT NULL,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_pinyin_yime_code_yime_code
+ON pinyin_yime_code(yime_code);
+
 CREATE TABLE IF NOT EXISTS char_pinyin_map (
     char_id INTEGER NOT NULL REFERENCES char_inventory(id) ON DELETE CASCADE,
     numeric_pinyin_id INTEGER NOT NULL REFERENCES numeric_pinyin_inventory(id) ON DELETE CASCADE,
@@ -101,6 +111,17 @@ ON char_pinyin_map(char_id);
 CREATE INDEX IF NOT EXISTS idx_char_pinyin_map_numeric_id
 ON char_pinyin_map(numeric_pinyin_id);
 
+-- 兼容映射面：保留 mapping_id -> yime_code，仅供旧结构兼容脚本使用。
+CREATE TABLE IF NOT EXISTS mapping_yime_code (
+    mapping_id INTEGER PRIMARY KEY,
+    yime_code TEXT NOT NULL,
+    source_pinyin_tone TEXT,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_mapping_yime_code_yime_code
+ON mapping_yime_code(yime_code);
+
 CREATE TABLE IF NOT EXISTS phrase_inventory (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     phrase TEXT NOT NULL UNIQUE,
@@ -114,6 +135,17 @@ CREATE TABLE IF NOT EXISTS phrase_inventory (
 
 CREATE INDEX IF NOT EXISTS idx_phrase_inventory_phrase
 ON phrase_inventory(phrase);
+
+CREATE TABLE IF NOT EXISTS phrase_reading_preference (
+    phrase TEXT PRIMARY KEY,
+    preferred_pinyin_tone TEXT NOT NULL,
+    selection_reason TEXT,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (phrase) REFERENCES phrase_inventory(phrase) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_phrase_reading_preference_pinyin
+ON phrase_reading_preference(preferred_pinyin_tone);
 
 -- 词语读音映射也走英文隔离表，不再引用旧“词汇”编号体系。
 CREATE TABLE IF NOT EXISTS phrase_pinyin_map (
@@ -134,7 +166,7 @@ CREATE INDEX IF NOT EXISTS idx_phrase_pinyin_map_pinyin
 ON phrase_pinyin_map(pinyin_tone);
 
 -- 单字词库视图：完全走英文隔离表，不再依赖旧 汉字 / 数字标调拼音 / 汉字频率。
--- yime_code 通过 numeric_pinyin_inventory.mapping_id -> 音元拼音 推导得到。
+-- yime_code 通过 numeric_pinyin_inventory.pinyin_tone -> pinyin_yime_code 推导得到。
 CREATE VIEW char_lexicon AS
 SELECT
     scr.id AS char_id,
@@ -150,8 +182,8 @@ SELECT
     npi.tone_number AS tone_number,
     COALESCE(cpm.reading_weight, CASE WHEN scr.is_primary = 1 THEN 1.0 ELSE 0.5 END) AS reading_weight,
     COALESCE(cpm.is_common_reading, scr.is_primary) AS is_common_reading,
-    yp."编号" AS yime_pinyin_id,
-    yp."全拼" AS yime_code,
+    pyc.pinyin_tone AS yime_pinyin_id,
+    pyc.yime_code AS yime_code,
     ci.char_frequency_abs AS char_frequency_abs,
     ci.char_frequency_rel AS char_frequency_rel,
     ci.frequency_source AS frequency_source,
@@ -169,8 +201,8 @@ LEFT JOIN numeric_pinyin_inventory npi
 LEFT JOIN char_pinyin_map cpm
     ON ci.id = cpm.char_id
    AND cpm.numeric_pinyin_id = npi.id
-LEFT JOIN "音元拼音" yp
-    ON yp."映射编号" = npi.mapping_id;
+LEFT JOIN pinyin_yime_code pyc
+    ON pyc.pinyin_tone = npi.pinyin_tone;
 
 -- 词语词库视图：完全走英文隔离表，不再依赖旧“词汇”。
 CREATE VIEW phrase_lexicon_view AS
@@ -188,7 +220,10 @@ SELECT
     COALESCE(pi.updated_at, CURRENT_TIMESTAMP) AS updated_at
 FROM phrase_readings pr
 LEFT JOIN phrase_inventory pi
-    ON pi.phrase = pr.phrase;
+    ON pi.phrase = pr.phrase
+LEFT JOIN phrase_reading_preference pref
+    ON pref.phrase = pr.phrase
+WHERE pref.phrase IS NULL OR pref.preferred_pinyin_tone = pr.numeric_pinyin;
 
 -- 统一候选视图：把单字和词语候选整理成统一结构，便于输入系统后续直接查询或导出 JSON。
 CREATE VIEW IF NOT EXISTS runtime_candidates AS
@@ -222,7 +257,9 @@ VALUES
     ('prototype_schema', 'v4', '测试原型附加表结构版本', CURRENT_TIMESTAMP),
     ('char_inventory_table', 'char_inventory', '当前原型单字主表（英文隔离表）', CURRENT_TIMESTAMP),
     ('numeric_pinyin_inventory_table', 'numeric_pinyin_inventory', '当前原型数字标调拼音主表（英文隔离表）', CURRENT_TIMESTAMP),
+    ('pinyin_yime_code_table', 'pinyin_yime_code', '当前原型 canonical 拼音到 yime_code 映射表；主线不再依赖 mapping_id', CURRENT_TIMESTAMP),
     ('char_numeric_map_table', 'char_pinyin_map', '当前原型单字到数字标调拼音映射表（英文隔离表）', CURRENT_TIMESTAMP),
     ('phrase_inventory_table', 'phrase_inventory', '当前原型词语主表（英文隔离表）', CURRENT_TIMESTAMP),
+    ('phrase_reading_preference_table', 'phrase_reading_preference', '歧义词显式默认读音表；runtime 仅暴露默认读音', CURRENT_TIMESTAMP),
     ('char_source_strategy', 'clone_source_single_char_readings', '单字相关先复制 source_pinyin.db.single_char_readings，再派生 char_lexicon', CURRENT_TIMESTAMP),
     ('phrase_source_strategy', 'clone_source_phrase_readings', '词语相关先复制 source_pinyin.db.phrase_readings，再派生 phrase_lexicon_view', CURRENT_TIMESTAMP);

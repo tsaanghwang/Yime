@@ -47,4 +47,4 @@ def 迁移数字标调拼音表(db_path: str):
         print("数字标调拼音表迁移完成")
 
 if __name__ == "__main__":
-    迁移数字标调拼音表("yime/pinyin_hanzi.db")
+    迁移数字标调拼音表(str(Path(__file__).resolve().parent.parent / "pinyin_hanzi.db"))

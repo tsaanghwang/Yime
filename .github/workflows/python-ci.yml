@@ -11,13 +11,13 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11"]
+        python-version: ["3.10", "3.11", "3.12"]
 
     steps:
     - uses: actions/checkout@v4
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
 
@@ -36,14 +36,16 @@ jobs:
         pytest --cov=./ --cov-report=xml tests/
 
     - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v3
+      if: github.event_name != 'pull_request'
+      uses: codecov/codecov-action@v5
       with:
-        file: ./coverage.xml
+        files: ./coverage.xml
         flags: unittests
         name: codecov-umbrella
+        fail_ci_if_error: false
 
     - name: Verify classified finals
       run: |
-        python finals_classifier.py
+        python tools/final_classifier.py
         [ -f "internal_data/classified_finals.json" ] || exit 1
         echo "韵母分类结果验证通过"

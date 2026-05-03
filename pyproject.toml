@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "finals_classifier"
 version = "0.1.0"
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 dependencies = []
 
 [tool.setuptools]
@@ -18,3 +18,7 @@ include = ["syllable*", "pianyin*", "syllable_codec*"]
 [tool.setuptools.package-data]
 "syllable.analysis.slice" = ["yinyuan/*.json"]
 "syllable_codec" = ["*.json"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+norecursedirs = ["tests/manual"]
