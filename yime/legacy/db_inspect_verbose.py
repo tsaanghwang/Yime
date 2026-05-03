@@ -2,7 +2,7 @@ from pathlib import Path
 import sqlite3
 from typing import List
 
-DB = Path(__file__).parent / "pinyin_hanzi.db"
+DB = Path(__file__).resolve().parent.parent / "pinyin_hanzi.db"
 
 def codepoints(s: str) -> List[str]:
     if s is None:

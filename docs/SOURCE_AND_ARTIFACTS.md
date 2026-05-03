@@ -258,6 +258,22 @@
   - 分类：本地数据库备份文件模式。
   - 原因：它们是导入、借频或人工维护阶段生成的回退文件，只服务于本地回滚，不是仓库真源。
 
+#### 6C. 拼音数据库迁移链（2026-05）
+
+- `docs/project/PINYIN_DATA_MIGRATION.md`
+  - 分类：当前迁移说明。
+  - 原因：该文档明确区分当前主线 `source_pinyin.db -> prototype tables -> runtime` rebuild 链，与独立 `.yaml -> .json` 导出链。
+
+- `yime/legacy/`
+  - 分类：旧结构归档脚本目录。
+  - 原因：该目录下的脚本只服务旧 `音元拼音 / 数字标调拼音 / 词汇` 结构审计或迁移，不再属于当前主线 rebuild 面。
+
+当前处理原则补充：
+
+1. 主线重建优先走 `internal_data/pinyin_source_db/` 与 prototype 导入链，不再把旧中文表维护脚本当成默认入口。
+2. `.yaml` 词库导出已经独立到 `internal_data/pinyin_source_db/export_yaml_lexicon_json.py`，可单独执行，不必穿过 SQLite 链。
+3. `yime/legacy/` 中的脚本默认不继续扩展新功能，只保留历史兼容与审计用途。
+
 当前处理原则补充：
 
 1. 数据库维护脚本若需要自动备份，应统一写入 `yime/backup/` 或其他明确的本地临时位置。

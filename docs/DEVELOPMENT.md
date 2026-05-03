@@ -63,9 +63,12 @@ YIME/
 │   ├── pinyin_converter.py    # 拼音转换器
 │   ├── syllable_decoder.py    # 音节解码器
 │   ├── syllable_structure.py  # 音节结构
-│   ├── db_manager.py          # 数据库管理
-│   ├── pinyin_db_manager.py   # 拼音数据库管理
-│   └── hanzi_db_manager.py    # 汉字数据库管理
+│   ├── import_danzi_into_prototype_tables.py  # 单字 prototype 导入主线
+│   ├── import_duozi_into_prototype_tables.py  # 词语 prototype 导入主线
+│   ├── refresh_runtime_yime_codes.py          # canonical/runtime 同步主线
+│   ├── db_manager.py                          # legacy-compatible 旧数据库管理入口
+│   ├── pinyin_db_manager.py                   # 旧拼音数据库辅助模块
+│   └── hanzi_db_manager.py                    # legacy-compatible 旧汉字数据库入口
 │
 ├── pinyin/               # 拼音处理模块
 │   ├── yunmu_to_keys.py       # 韵母转换
@@ -88,6 +91,7 @@ YIME/
 
 补充说明：旧的 JS / React 输入法原型链已经迁出主仓库，当前正式外置位置为单独的 `Yime-js-prototype` 仓库。
 本仓库当前开发主线以 `yime/` 下的 Windows IME Python 实现为准。
+拼音数据当前主线 rebuild 链请改看 `docs/project/PINYIN_DATA_MIGRATION.md`，不要再把 `db_manager.py / hanzi_db_manager.py` 视为默认入口。
 
 ---
 
@@ -236,7 +240,15 @@ sqlite3 yime/pinyin_hanzi.db
 
 ### 2. 添加新表
 
-在 `yime/db_manager.py` 中：
+如果你是在维护 legacy-compatible 中文表结构，才在 `yime/db_manager.py` 中修改；
+如果你是在维护当前主线 rebuild/runtime 链，应优先修改：
+
+- `yime/create_prototype_schema_additions.sql`
+- `yime/import_danzi_into_prototype_tables.py`
+- `yime/import_duozi_into_prototype_tables.py`
+- `yime/refresh_runtime_yime_codes.py`
+
+legacy-compatible 表结构示例：
 
 ```python
 表结构 = {

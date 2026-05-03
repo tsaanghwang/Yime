@@ -1,9 +1,15 @@
 from pathlib import Path
 import sqlite3
 import csv
-from utils_charfilter import is_allowed_code_char
+import sys
 
-DB = Path(__file__).parent / "pinyin_hanzi.db"
+WORKSPACE_ROOT = Path(__file__).resolve().parents[2]
+if str(WORKSPACE_ROOT) not in sys.path:
+    sys.path.insert(0, str(WORKSPACE_ROOT))
+
+from yime.utils_charfilter import is_allowed_code_char
+
+DB = Path(__file__).resolve().parent.parent / "pinyin_hanzi.db"
 OUT = Path(__file__).parent / "mappings_export.csv"
 
 def to_hex_list(s):
