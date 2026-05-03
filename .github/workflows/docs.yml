@@ -6,9 +6,10 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 concurrency:
   group: documentation-pages
@@ -37,15 +38,20 @@ jobs:
         python scripts/generate_api_docs.py
         echo "API文档已生成"
 
-    - name: Upload Pages artifact
-      uses: actions/upload-pages-artifact@v3
-      with:
-        path: ./docs
-
-  deploy-docs:
-    needs: build-docs
-    runs-on: ubuntu-latest
-    steps:
-    - name: Deploy to GitHub Pages
-      id: deployment
-      uses: actions/deploy-pages@v4
+    - name: Publish docs to gh-pages branch
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        set -euo pipefail
+        publish_dir="$(mktemp -d)"
+        cp -R docs/. "$publish_dir/"
+        cd "$publish_dir"
+        touch .nojekyll
+        git init
+        git checkout -b gh-pages
+        git config user.name "github-actions[bot]"
+        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git add --all
+        git commit -m "Deploy docs for ${GITHUB_SHA}"
+        git remote add origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+        git push --force origin gh-pages
