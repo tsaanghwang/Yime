@@ -1070,6 +1070,86 @@ def test_ui_components(result: TestResult):
     except Exception as e:
         result.add_fail(test_name, str(e))
 
+    test_name = "CandidateBox 主界面已可见时 show 保持当前位置"
+    try:
+        from yime.input_method.ui.candidate_box import CandidateBox
+
+        calls = []
+
+        class FakeRoot:
+            def state(self, value=None):
+                if value is None:
+                    return "normal"
+                calls.append(("state", value))
+
+            def winfo_x(self):
+                return 640
+
+            def winfo_y(self):
+                return 360
+
+            def geometry(self, value):
+                calls.append(("geometry", value))
+
+            def winfo_id(self):
+                return 777
+
+            def attributes(self, key, value=None):
+                calls.append(("attributes", key, value))
+
+            def deiconify(self):
+                calls.append("deiconify")
+
+            def update_idletasks(self):
+                calls.append("update_idletasks")
+
+            def update(self):
+                calls.append("update")
+
+            def lift(self):
+                calls.append("lift")
+
+        class FakeUser32:
+            def ShowWindow(self, hwnd, cmd):
+                calls.append(("showwindow", hwnd, cmd))
+
+            def SetWindowPos(self, hwnd, insert_after, x, y, width, height, flags):
+                calls.append(("setwindowpos", hwnd, insert_after, x, y, width, height, flags))
+
+        class FakeInputEntry:
+            def focus_set(self):
+                calls.append("focus")
+
+        box = CandidateBox.__new__(CandidateBox)
+        box.root = FakeRoot()
+        box.input_entry = FakeInputEntry()
+        box._is_standby = False
+        box._SW_SHOW = 5
+        box._HWND_TOPMOST = -1
+        box._SWP_NOSIZE = 0x0001
+        box._SWP_SHOWWINDOW = 0x0040
+        box._SWP_NOOWNERZORDER = 0x0200
+        box._show_main_frame = lambda: calls.append("show_main")
+        box.set_manual_input_enabled = lambda enabled: calls.append(("manual", enabled))
+        box._resolve_geometry = lambda *args, **kwargs: (_ for _ in ()).throw(AssertionError("should not resolve geometry"))
+        box._get_user32 = lambda: FakeUser32()
+        box._set_noactivate = lambda enabled: calls.append(("noactivate", enabled))
+        box._remember_main_geometry = lambda x, y, width=None, height=None: calls.append(("remember", x, y, width, height))
+        box.normalize_input_entry_state = lambda: calls.append("normalize")
+
+        original_restore_window = CandidateBox.show.__globals__["WindowManager"].restore_window
+        try:
+            CandidateBox.show.__globals__["WindowManager"].restore_window = staticmethod(lambda hwnd: calls.append(("restore", hwnd)))
+            CandidateBox.show(box, focus_input=True)
+        finally:
+            CandidateBox.show.__globals__["WindowManager"].restore_window = original_restore_window
+
+        assert ("geometry", "+640+360") in calls
+        assert any(call[:7] == ("setwindowpos", 777, -1, 640, 360, 0, 0) for call in calls if isinstance(call, tuple) and call[0] == "setwindowpos")
+        result.add_pass(test_name)
+    except Exception as e:
+        result.add_fail(test_name, str(e))
+
     test_name = "CandidateBox 最小化时切到右下角待命图标"
     try:
         from yime.input_method.ui.candidate_box import CandidateBox
@@ -1094,6 +1174,49 @@ def test_ui_components(result: TestResult):
         calls[0][1]()
         assert "standby" in calls
         assert box._handling_iconify is False
+        result.add_pass(test_name)
+    except Exception as e:
+        result.add_fail(test_name, str(e))
+
+    test_name = "CandidateBox 从待命恢复主界面时清除待命固定尺寸"
+    try:
+        from yime.input_method.ui.candidate_box import CandidateBox
+
+        calls = []
+
+        class FakeFrame:
+            def pack_forget(self):
+                calls.append("standby_forget")
+
+            def pack(self, **kwargs):
+                calls.append(("main_pack", kwargs))
+
+        class FakeRoot:
+            def geometry(self, value):
+                calls.append(("geometry", value))
+
+            def update_idletasks(self):
+                calls.append("update_idletasks")
+
+            def attributes(self, key, value=None):
+                calls.append(("attributes", key, value))
+
+            def title(self, value):
+                calls.append(("title", value))
+
+        box = CandidateBox.__new__(CandidateBox)
+        box.root = FakeRoot()
+        box.standby_frame = FakeFrame()
+        box.main_frame = FakeFrame()
+        box._is_standby = True
+        box._ACTIVE_ALPHA = 0.97
+        box._last_main_geometry = (640, 360, 520, 200)
+
+        CandidateBox._show_main_frame(box)
+
+        assert ("geometry", "") in calls
+        assert ("title", "音元拼音") in calls
+        assert box._is_standby is False
         result.add_pass(test_name)
     except Exception as e:
         result.add_fail(test_name, str(e))
@@ -1169,6 +1292,50 @@ def test_ui_components(result: TestResult):
         CandidateBoxActions(FakeBox()).restore_from_standby()
 
         assert calls == ["callback"]
+        result.add_pass(test_name)
+    except Exception as e:
+        result.add_fail(test_name, str(e))
+
+    test_name = "CandidateBoxActions 有待命回调时走回待命入口"
+    try:
+        from yime.input_method.ui.candidate_box_actions import CandidateBoxActions
+
+        calls = []
+
+        class FakeBox:
+            def __init__(self):
+                self._on_toggle_standby = lambda: calls.append("callback")
+
+            def show_standby(self):
+                calls.append("show_standby")
+
+        result_value = CandidateBoxActions(FakeBox()).request_standby()
+
+        assert result_value == "break"
+        assert calls == ["callback"]
+        result.add_pass(test_name)
+    except Exception as e:
+        result.add_fail(test_name, str(e))
+
+    test_name = "CandidateBox 主界面右键时可触发回待命回调"
+    try:
+        from yime.input_method.ui.candidate_box import CandidateBox
+
+        calls = []
+
+        class FakeActions:
+            def request_standby(self, event=None):
+                calls.append("request_standby")
+                return "break"
+
+        box = CandidateBox.__new__(CandidateBox)
+        box._is_standby = False
+        box.actions = FakeActions()
+
+        result_value = box._request_standby_from_mouse()
+
+        assert result_value == "break"
+        assert calls == ["request_standby"]
         result.add_pass(test_name)
     except Exception as e:
         result.add_fail(test_name, str(e))
@@ -1319,6 +1486,96 @@ def test_ui_components(result: TestResult):
 
         assert ("geometry", "520x200+640+360") in calls
         assert any(call[:7] == ("setwindowpos", 777, -2, 640, 360, 520, 200) for call in calls if isinstance(call, tuple) and call and call[0] == "setwindowpos")
+        result.add_pass(test_name)
+    except Exception as e:
+        result.add_fail(test_name, str(e))
+
+    test_name = "CandidateBox 自动撑开内容时在原位一次性更新尺寸"
+    try:
+        from yime.input_method.ui.candidate_box import CandidateBox
+
+        calls = []
+
+        class FakeRoot:
+            def state(self):
+                return "normal"
+
+            def update_idletasks(self):
+                calls.append("update_idletasks")
+
+            def winfo_x(self):
+                return 640
+
+            def winfo_y(self):
+                return 360
+
+            def winfo_reqwidth(self):
+                return 520
+
+            def winfo_reqheight(self):
+                return 200
+
+            def geometry(self, value):
+                calls.append(("geometry", value))
+
+        box = CandidateBox.__new__(CandidateBox)
+        box.root = FakeRoot()
+        box._is_standby = False
+
+        CandidateBox._resize_to_content_if_visible(box)
+
+        geometry_calls = [call for call in calls if isinstance(call, tuple) and call[0] == "geometry"]
+        assert geometry_calls == [("geometry", "520x200+640+360")]
+        result.add_pass(test_name)
+    except Exception as e:
+        result.add_fail(test_name, str(e))
+
+    test_name = "CandidateBox 清空输入后恢复默认主界面尺寸"
+    try:
+        from yime.input_method.ui.candidate_box import CandidateBox
+
+        calls = []
+
+        class FakeVar:
+            def __init__(self, value=""):
+                self.value = value
+
+            def set(self, value):
+                self.value = value
+
+        class FakeInputEntry:
+            def focus_set(self):
+                calls.append("focus")
+
+        box = CandidateBox.__new__(CandidateBox)
+        box.input_var = FakeVar("abcd")
+        box.pinyin_var = FakeVar("an")
+        box.code_var = FakeVar("abcd")
+        box.projected_code_var = FakeVar("abcd")
+        box.input_outline_var = FakeVar("outline")
+        box.input_entry = FakeInputEntry()
+        box.all_candidates = ["安", "按"]
+        box.current_candidates = ["安", "按"]
+        box._selected_candidate_index = 1
+        box._current_page = 1
+        box.projected_input_text = "abcd"
+        box._reset_status_message = lambda: calls.append("reset_status")
+        box._render_candidates = lambda: calls.append("render")
+        box._resize_to_content_if_visible = lambda: calls.append("resize")
+
+        CandidateBox._clear_input(box, focus_input=False)
+
+        assert box.input_var.value == ""
+        assert box.pinyin_var.value == ""
+        assert box.code_var.value == ""
+        assert box.projected_code_var.value == ""
+        assert box.input_outline_var.value == ""
+        assert box.all_candidates == []
+        assert box.current_candidates == []
+        assert box._selected_candidate_index == 0
+        assert box._current_page == 0
+        assert box.projected_input_text == ""
+        assert calls == ["reset_status", "render", "resize"]
         result.add_pass(test_name)
     except Exception as e:
         result.add_fail(test_name, str(e))
@@ -1571,12 +1828,92 @@ def test_hotkey_app(result: TestResult):
         assert app.last_external_hwnd == 24680
         assert app.is_passthrough_enabled is True
         assert app._passive_standby_reason == "manual"
-        assert app._post_commit_behavior == "standby"
+        assert app._post_commit_behavior == "keep-input"
         assert app.last_replace_length == 0
         assert app._display_input_buffer == ""
         assert ("clear", False) in shown
         assert ("show", True, 24680) in shown
         assert status_updates[-1] == "V1 热键已唤起: hwnd=24680 标题=Fake 类=Fake"
+        result.add_pass(test_name)
+    except Exception as e:
+        result.add_fail(test_name, str(e))
+
+    test_name = "InputMethodApp V1 再按热键可结束连续输入并回到待命"
+    try:
+        from yime.input_method.app import InputMethodApp
+
+        events = []
+        status_updates = []
+
+        class FakeCandidateBox:
+            def clear_input(self, focus_input=False):
+                events.append(("clear", focus_input))
+
+            def clear_commit_text(self):
+                events.append("clear_commit")
+
+            def set_manual_input_enabled(self, enabled):
+                events.append(("manual", enabled))
+
+            def show_passive(self):
+                events.append("passive")
+
+            def show_standby(self):
+                events.append("standby")
+
+            def set_status(self, text):
+                status_updates.append(text)
+
+        class FakeInputManager:
+            def clear_buffer(self, notify=False):
+                events.append(("clear_buffer", notify))
+
+        app = InputMethodApp.__new__(InputMethodApp)
+        app.hotkey = "<ctrl>+<shift>+y"
+        app.last_replace_length = 4
+        app._display_input_buffer = "abcd"
+        app._passive_standby_reason = "manual"
+        app.candidate_box = FakeCandidateBox()
+        app.input_manager = FakeInputManager()
+        app._locked_external_hwnd = 24680
+        app.last_external_hwnd = 24680
+        app._restore_external_window = lambda: events.append("restore_external") or True
+        app._unlock_external_target = BaseInputMethodApp._unlock_external_target.__get__(app, BaseInputMethodApp)
+
+        InputMethodApp._toggle_hotkey_session(app, 24680, "hwnd=24680 标题=Fake 类=Fake")
+
+        assert app.last_replace_length == 0
+        assert app._display_input_buffer == ""
+        assert app._locked_external_hwnd is None
+        assert app._passive_standby_reason == "idle"
+        assert ("clear_buffer", False) in events
+        assert ("clear", False) in events
+        assert "clear_commit" in events
+        assert ("manual", False) in events
+        assert "standby" in events
+        assert "restore_external" in events
+        assert status_updates[-1] == "V1 已回待命：按 ctrl+shift+y 可再次唤起输入框。"
+        result.add_pass(test_name)
+    except Exception as e:
+        result.add_fail(test_name, str(e))
+
+    test_name = "InputMethodApp V1 热键再次唤起时可回退到上次外部目标窗口"
+    try:
+        from yime.input_method.app import InputMethodApp
+
+        app = InputMethodApp.__new__(InputMethodApp)
+        app.own_hwnd = 12345
+        app.last_external_hwnd = 24680
+        app.window_manager = type(
+            "FakeWindowManager",
+            (),
+            {"normalize_window_handle": staticmethod(lambda hwnd: hwnd)},
+        )()
+        app._normalize_external_hwnd = BaseInputMethodApp._normalize_external_hwnd.__get__(app, BaseInputMethodApp)
+
+        resolved = InputMethodApp._resolve_hotkey_target(app, 12345)
+
+        assert resolved == 24680
         result.add_pass(test_name)
     except Exception as e:
         result.add_fail(test_name, str(e))
@@ -1683,6 +2020,63 @@ def test_hotkey_app(result: TestResult):
         assert app._passive_standby_reason == "commit-box"
         assert app._display_input_buffer == ""
         assert events == [("manual", False), "passive"]
+        result.add_pass(test_name)
+    except Exception as e:
+        result.add_fail(test_name, str(e))
+
+    test_name = "InputMethodApp 默认热键模式不会配置全局监听入口"
+    try:
+        from yime.input_method.app import InputMethodApp
+
+        events = []
+        status_updates = []
+
+        app = InputMethodApp.__new__(InputMethodApp)
+        app.input_mode = "hotkey"
+        app.hotkey_listener = object()
+        app._hotkey_mode = "unknown"
+        app._set_post_commit_behavior = lambda behavior: events.append(("post_commit", behavior))
+        app._setup_hotkey = lambda: events.append("setup_hotkey")
+        app._resume_global_capture = lambda: events.append("resume_global")
+        app.candidate_box = type("FakeBox", (), {"set_status": lambda self, text: status_updates.append(text)})()
+        app._format_hotkey_label = lambda: "ctrl+shift+y"
+        app._is_global_listener_mode = InputMethodApp._is_global_listener_mode.__get__(app, InputMethodApp)
+
+        InputMethodApp._configure_input_mode(app)
+
+        assert "setup_hotkey" in events
+        assert ("post_commit", "keep-input") in events
+        assert "resume_global" not in events
+        assert app._hotkey_mode == "hotkey"
+        assert status_updates[-1] == "V1 热键模式已就绪：按 ctrl+shift+y 唤起输入框；再次按下可回待命。"
+        result.add_pass(test_name)
+    except Exception as e:
+        result.add_fail(test_name, str(e))
+
+    test_name = "InputMethodApp 显式全局监听模式不配置热键并恢复全局接管"
+    try:
+        from yime.input_method.app import InputMethodApp
+
+        events = []
+        status_updates = []
+
+        app = InputMethodApp.__new__(InputMethodApp)
+        app.input_mode = "global-listener"
+        app.hotkey_listener = None
+        app._hotkey_mode = "unknown"
+        app._set_post_commit_behavior = lambda behavior: events.append(("post_commit", behavior))
+        app._setup_hotkey = lambda: events.append("setup_hotkey")
+        app._resume_global_capture = lambda: events.append("resume_global")
+        app.candidate_box = type("FakeBox", (), {"set_status": lambda self, text: status_updates.append(text)})()
+        app._is_global_listener_mode = InputMethodApp._is_global_listener_mode.__get__(app, InputMethodApp)
+
+        InputMethodApp._configure_input_mode(app)
+
+        assert "setup_hotkey" not in events
+        assert ("post_commit", "standby") in events
+        assert "resume_global" in events
+        assert app._hotkey_mode == "disabled"
+        assert status_updates[-1] == "实验性全局监听模式已就绪：直接监听外部键盘输入；不启用热键会话。"
         result.add_pass(test_name)
     except Exception as e:
         result.add_fail(test_name, str(e))

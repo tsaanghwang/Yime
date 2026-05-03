@@ -80,6 +80,7 @@ class CandidateBox:
         on_copy_candidate: Optional[CopyCandidateCallback] = None,
         on_commit_text: Optional[CommitTextCallback] = None,
         on_restore_from_standby: Optional[VoidCallback] = None,
+        on_toggle_standby: Optional[VoidCallback] = None,
         on_close: Optional[VoidCallback] = None,
     ) -> None:
         """
@@ -114,6 +115,7 @@ class CandidateBox:
         self._on_copy_candidate_callback = on_copy_candidate
         self._on_commit_text_callback = on_commit_text
         self._on_restore_from_standby = on_restore_from_standby
+        self._on_toggle_standby = on_toggle_standby
         self._on_close = on_close
         self._handling_iconify = False
 
@@ -131,6 +133,7 @@ class CandidateBox:
         # 构建UI
         self._build_ui()
         self._bind_passive_reactivation_targets()
+        self._bind_standby_toggle_targets()
         self.actions = CandidateBoxActions(self)
         self._bind_keys()
         self._configure_window_for_global_input()
@@ -353,7 +356,9 @@ class CandidateBox:
         self.root.update_idletasks()
         current_x = self.root.winfo_x()
         current_y = self.root.winfo_y()
-        self.root.geometry(f"+{current_x}+{current_y}")
+        target_width = self.root.winfo_reqwidth()
+        target_height = self.root.winfo_reqheight()
+        self.root.geometry(f"{target_width}x{target_height}+{current_x}+{current_y}")
         self.root.update_idletasks()
 
     def _remember_main_geometry(
@@ -652,6 +657,15 @@ class CandidateBox:
         for child in widget.winfo_children():
             self._bind_passive_reactivation_widget(child)
 
+    def _bind_standby_toggle_targets(self) -> None:
+        """主界面右键时可直接回到右下角待命图标。"""
+        self._bind_standby_toggle_widget(self.main_frame)
+
+    def _bind_standby_toggle_widget(self, widget: tk.Misc) -> None:
+        widget.bind("<Button-3>", self._request_standby_from_mouse, add="+")
+        for child in widget.winfo_children():
+            self._bind_standby_toggle_widget(child)
+
     def _on_window_focus_in(self, event: object) -> None:
         """当输入候选框获得焦点时，把光标输入插入点（cursor焦点）跳转到输入框输入点。"""
         self.actions.on_window_focus_in(event)
@@ -711,6 +725,12 @@ class CandidateBox:
         """从待命小图标恢复主候选框。"""
         self.actions.restore_from_standby(event)
 
+    def _request_standby_from_mouse(self, event: Optional[tk.Event] = None) -> str:
+        """主候选框右键时返回待命图标。"""
+        if self._is_standby:
+            return "break"
+        return self.actions.request_standby(event)
+
     def set_manual_input_enabled(self, enabled: bool) -> None:
         """切换候选框是否允许手动输入模式。"""
         self._manual_input_enabled = enabled
@@ -745,7 +765,7 @@ class CandidateBox:
         if self._is_standby:
             self.standby_frame.pack_forget()
             self.main_frame.pack(fill=tk.BOTH, expand=True)
-            self.root.geometry("")  # 清除可能遗留的 54x54 写死尺寸，让布局重新被内部组件撑开
+            self.root.geometry("")  # 清除待命态 54x54 显式尺寸，让主界面按内容重新撑开
             self.root.update_idletasks()
             self._is_standby = False
         self.root.attributes("-alpha", self._ACTIVE_ALPHA)
@@ -1087,6 +1107,7 @@ class CandidateBox:
         self.projected_code_var.set("")
         self.input_outline_var.set("")
         self._render_candidates()
+        self._resize_to_content_if_visible()
         if focus_input:
             self.input_entry.focus_set()
 
@@ -1196,14 +1217,30 @@ class CandidateBox:
             y: Y坐标（可选）
             focus_input: 是否将焦点切回候选框输入框
         """
+        was_standby = self._is_standby
+        try:
+            previous_state = self.root.state()
+        except tk.TclError:
+            previous_state = "withdrawn"
+
         self._show_main_frame()
         self.set_manual_input_enabled(focus_input)
-        target_x, target_y = self._resolve_geometry(
-            x,
-            y,
-            focus_input=focus_input,
-            anchor_hwnd=anchor_hwnd,
+        preserve_current_position = (
+            x is None
+            and y is None
+            and not was_standby
+            and previous_state != "withdrawn"
         )
+        if preserve_current_position:
+            target_x = self.root.winfo_x()
+            target_y = self.root.winfo_y()
+        else:
+            target_x, target_y = self._resolve_geometry(
+                x,
+                y,
+                focus_input=focus_input,
+                anchor_hwnd=anchor_hwnd,
+            )
 
         # 移除显式指定尺寸的设定，使用Tkinter自适应
         self.root.geometry(f"+{target_x}+{target_y}")

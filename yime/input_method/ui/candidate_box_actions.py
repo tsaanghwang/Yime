@@ -101,6 +101,13 @@ class CandidateBoxActions:
         self.box.set_manual_input_enabled(True)
         self.box.show(focus_input=True)
 
+    def request_standby(self, event: Optional[tk.Event] = None) -> str:
+        if self.box._on_toggle_standby:
+            self.box._on_toggle_standby()
+            return "break"
+        self.box.show_standby()
+        return "break"
+
     def on_confirm_key(self, event: Optional[tk.Event] = None) -> str:
         if self.box.current_candidates:
             self.select_candidate_by_index(self.box.get_selected_candidate_index())

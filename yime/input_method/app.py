@@ -23,12 +23,25 @@ from .ui.candidate_box import CandidateBox
 class InputMethodApp(BaseInputMethodApp):
     """音元输入法主应用"""
 
+    _DEFAULT_INPUT_MODE = "hotkey"
+    _GLOBAL_LISTENER_INPUT_MODE = "global-listener"
+
+    def _format_hotkey_label(self) -> str:
+        """将 pynput 风格的热键定义转换为更适合状态提示的文本。"""
+        segments = []
+        for segment in self.hotkey.split("+"):
+            cleaned = segment.strip().strip("<>")
+            if cleaned:
+                segments.append(cleaned)
+        return "+".join(segments) or self.hotkey
+
     def __init__(
         self,
         auto_paste: bool = True,
         font_family: str = "音元",
         enable_pause_toggle: bool = False,
         hotkey: str = "<ctrl>+<shift>+y",
+        input_mode: str = _DEFAULT_INPUT_MODE,
     ) -> None:
         """
         初始化输入法应用
@@ -38,11 +51,13 @@ class InputMethodApp(BaseInputMethodApp):
             font_family: 字体名称
             enable_pause_toggle: 是否启用 Ctrl+Alt+T 暂停/恢复全局监听
             hotkey: 从待命状态唤起编码框的全局快捷键
+            input_mode: 输入模式。hotkey 为默认主线；global-listener 为实验性独立入口。
         """
         self.auto_paste = auto_paste
         self.font_family = font_family
         self.enable_pause_toggle = enable_pause_toggle
         self.hotkey = hotkey
+        self.input_mode = self._normalize_input_mode(input_mode)
         self.debug_ui = os.environ.get("YIME_DEBUG_UI", "").strip().lower() in {
             "1",
             "true",
@@ -73,22 +88,11 @@ class InputMethodApp(BaseInputMethodApp):
         self.is_passthrough_enabled = True
         self._hotkey_mode = "unknown"
 
-        self._setup_hotkey()
-
         self._enter_passive_standby(reason="idle")
         self._poll_foreground_window()
         self._pump_ui_queue()
 
-        if self.hotkey_listener:
-            self._hotkey_mode = "hotkey"
-            self._set_post_commit_behavior("standby")
-            self.candidate_box.set_status(
-                f"V1 热键模式已就绪：按 {self.hotkey.replace('<', '').replace('>', ' ')} 唤起输入框。"
-            )
-        else:
-            self._hotkey_mode = "click-only"
-            self._set_post_commit_behavior("keep-input")
-            self.candidate_box.set_status("V1 点击待命图标可进入输入；热键不可用。")
+        self._configure_input_mode()
 
         if self.runtime_decoder_source == "sqlite":
             print("[Decoder] 运行时候选已回退到 SQLite 数据库视图 runtime_candidates")
@@ -97,6 +101,36 @@ class InputMethodApp(BaseInputMethodApp):
 
         if self.runtime_decoder_warning:
             print(f"[Decoder] 运行时编码表未启用: {self.runtime_decoder_warning}")
+
+    def _normalize_input_mode(self, input_mode: str) -> str:
+        normalized = input_mode.strip().lower()
+        if normalized == self._GLOBAL_LISTENER_INPUT_MODE:
+            return self._GLOBAL_LISTENER_INPUT_MODE
+        return self._DEFAULT_INPUT_MODE
+
+    def _is_global_listener_mode(self) -> bool:
+        return self.input_mode == self._GLOBAL_LISTENER_INPUT_MODE
+
+    def _configure_input_mode(self) -> None:
+        if self._is_global_listener_mode():
+            self._hotkey_mode = "disabled"
+            self._set_post_commit_behavior("standby")
+            self._resume_global_capture()
+            self.candidate_box.set_status(
+                "实验性全局监听模式已就绪：直接监听外部键盘输入；不启用热键会话。"
+            )
+            return
+
+        self._setup_hotkey()
+        self._set_post_commit_behavior("keep-input")
+        if self.hotkey_listener:
+            self._hotkey_mode = "hotkey"
+            self.candidate_box.set_status(
+                f"V1 热键模式已就绪：按 {self._format_hotkey_label()} 唤起输入框；再次按下可回待命。"
+            )
+        else:
+            self._hotkey_mode = "click-only"
+            self.candidate_box.set_status("V1 点击待命图标可进入输入；热键不可用。")
 
     def _create_candidate_box(self) -> CandidateBox:
         return CandidateBox(
@@ -110,6 +144,7 @@ class InputMethodApp(BaseInputMethodApp):
             on_copy_candidate=self._copy_candidate,
             on_commit_text=self._commit_candidate_box_text,
             on_restore_from_standby=self._resume_from_standby,
+            on_toggle_standby=self._return_hotkey_session_to_standby,
             on_close=self._close,
         )
 
@@ -217,11 +252,13 @@ class InputMethodApp(BaseInputMethodApp):
 
             def on_activate() -> None:
                 print("V1 快捷键激活：唤起候选框")
-                foreground = self.window_manager.get_foreground_window()
+                foreground = self._resolve_hotkey_target(
+                    self.window_manager.get_foreground_window()
+                )
                 target_description = self._describe_external_target(foreground)
                 print(f"[YIME V1] 本次锁定目标: {target_description}")
                 self._enqueue_ui(
-                    lambda: self._activate_from_hotkey(
+                    lambda: self._toggle_hotkey_session(
                         foreground,
                         target_description,
                     )
@@ -235,12 +272,19 @@ class InputMethodApp(BaseInputMethodApp):
             self.hotkey_listener = None
             print(f"V1 设置快捷键失败: {exc}")
 
+    def _resolve_hotkey_target(self, foreground: Optional[int]) -> Optional[int]:
+        """热键唤起时优先取当前外部前台，取不到时回退到上次外部目标。"""
+        normalized_foreground = self._normalize_external_hwnd(foreground)
+        if normalized_foreground is not None:
+            return normalized_foreground
+        return self._normalize_external_hwnd(self.last_external_hwnd)
+
     def _activate_from_hotkey(
         self,
         foreground: Optional[int],
         target_description: str,
         *,
-        post_commit_behavior: str = "standby",
+        post_commit_behavior: str = "keep-input",
         status_prefix: str = "V1 热键已唤起",
     ) -> None:
         """在主线程中从热键进入手动输入状态。"""
@@ -254,6 +298,31 @@ class InputMethodApp(BaseInputMethodApp):
         self.candidate_box.clear_input(focus_input=False)
         self.candidate_box.show(focus_input=True, anchor_hwnd=foreground)
         self.candidate_box.set_status(f"{status_prefix}: {target_description}")
+
+    def _toggle_hotkey_session(
+        self,
+        foreground: Optional[int],
+        target_description: str,
+    ) -> None:
+        """热键模式下再次按热键可在连续输入与待命之间切换。"""
+        if self._passive_standby_reason == "manual":
+            self._return_hotkey_session_to_standby()
+            return
+        self._activate_from_hotkey(foreground, target_description)
+
+    def _return_hotkey_session_to_standby(self) -> None:
+        """显式结束当前热键输入会话并回到待命。"""
+        self.last_replace_length = 0
+        self._display_input_buffer = ""
+        self.input_manager.clear_buffer(notify=False)
+        self.candidate_box.clear_input(focus_input=False)
+        self.candidate_box.clear_commit_text()
+        self._enter_passive_standby(reason="idle")
+        self._restore_external_window()
+        self._unlock_external_target()
+        self.candidate_box.set_status(
+            f"V1 已回待命：按 {self._format_hotkey_label()} 可再次唤起输入框。"
+        )
 
     def _on_candidate_select(self, hanzi: str) -> None:
         """
@@ -567,28 +636,33 @@ class InputMethodApp(BaseInputMethodApp):
                 print(f"V1 快捷键监听启动失败: {e}")
                 self.hotkey_listener = None
 
-        # 启动键盘监听
-        try:
-            self.keyboard_listener = KeyboardListener(
-                on_key_press=self._on_key_press,
-            )
-            self.keyboard_listener.start()
-            if self.keyboard_listener.is_active():
-                print("键盘监听已启动，按ESC退出")
-            else:
-                print("键盘监听未启用，将使用手动输入模式")
-        except Exception as e:
-            print(f"启动键盘监听失败: {e}")
-            print("将使用手动输入模式")
+        if self._is_global_listener_mode():
+            try:
+                self.keyboard_listener = KeyboardListener(
+                    on_key_press=self._on_key_press,
+                )
+                self.keyboard_listener.start()
+                if self.keyboard_listener.is_active():
+                    print("实验性全局监听已启动")
+                else:
+                    print("实验性全局监听未启用")
+            except Exception as e:
+                print(f"启动实验性全局监听失败: {e}")
+                print("当前会话将保持待命窗口，不接管外部键盘")
 
         print("\n当前主入口处于测试模式:")
-        print("1. 平时保持右下角待命图标，不接管记事本里的英文输入")
-        if self.hotkey_listener:
-            print(f"2. 想输入汉字时，可按 {self.hotkey.replace('<', '').replace('>', ' ')} 或点击右下角的'音'图标")
+        if self._is_global_listener_mode():
+            print("1. 当前为实验性全局监听模式，默认接管外部键盘输入")
+            print("2. 不启用热键会话；请直接在外部窗口输入编码")
+            print("3. 当前模式与热键模式分离，便于独立排查全局监听问题")
         else:
-            print("2. 想输入汉字时，点击右下角的'音'图标")
-        print("3. 候选框弹出并获得焦点后，在编码框中输入")
-        print("4. 选字后会回到待命图标，可继续在外部窗口编辑")
+            print("1. 平时保持右下角待命图标，不接管记事本里的英文输入")
+            if self.hotkey_listener:
+                print(f"2. 想输入汉字时，可按 {self._format_hotkey_label()} 或点击右下角的'音'图标")
+            else:
+                print("2. 想输入汉字时，点击右下角的'音'图标")
+            print("3. 候选框弹出并获得焦点后，在编码框中输入")
+            print("4. 选字后会回到待命图标，可继续在外部窗口编辑")
 
         # 运行候选框
         self.candidate_box.run()
@@ -597,6 +671,12 @@ class InputMethodApp(BaseInputMethodApp):
 def parse_args() -> argparse.Namespace:
     """解析命令行参数"""
     parser = argparse.ArgumentParser(description="音元输入法 Windows 候选框")
+    parser.add_argument(
+        "--input-mode",
+        choices=["hotkey", "global-listener"],
+        default="hotkey",
+        help="输入模式。默认 hotkey；global-listener 为实验性独立入口。",
+    )
     parser.add_argument(
         "--copy-only",
         action="store_true",
@@ -637,6 +717,7 @@ def main() -> None:
         font_family=args.font_family,
         enable_pause_toggle=args.enable_pause_toggle,
         hotkey=args.hotkey,
+        input_mode=args.input_mode,
     )
     app.run()
 
