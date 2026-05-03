@@ -1,7 +1,7 @@
 from pathlib import Path
 import sqlite3
 
-DB = Path(__file__).parent / "pinyin_hanzi.db"
+DB = Path(__file__).resolve().parent.parent / "pinyin_hanzi.db"
 
 def run():
     with sqlite3.connect(str(DB)) as conn:

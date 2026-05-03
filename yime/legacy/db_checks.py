@@ -2,7 +2,7 @@ from pathlib import Path
 import sqlite3
 import sys
 
-DB = Path(__file__).parent / "pinyin_hanzi.db"
+DB = Path(__file__).resolve().parent.parent / "pinyin_hanzi.db"
 if not DB.exists():
     print("数据库不存在:", DB)
     sys.exit(1)

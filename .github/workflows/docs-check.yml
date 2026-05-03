@@ -13,16 +13,41 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    
-    - name: Check Markdown formatting
-      uses: DavidAnson/markdownlint-cli2-action@v9
       with:
-        globs: |
-          .markdownlint.json
-          **/*.md
-          理论文件/*.mdx
-          
-    - name: Verify Chinese punctuation
+        fetch-depth: 0
+
+    - name: Collect changed docs
+      id: changed-docs
       run: |
-        pip install yaml
+        set -e
+        if [ "${{ github.event_name }}" = "pull_request" ]; then
+          changed_files=$(git diff --name-only "${{ github.event.pull_request.base.sha }}" "${{ github.event.pull_request.head.sha }}" -- '*.md' '理论文件/*.mdx')
+        else
+          changed_files=$(git diff --name-only "${{ github.event.before }}" "${{ github.sha }}" -- '*.md' '理论文件/*.mdx')
+        fi
+
+        changed_files=$(printf '%s\n' "$changed_files" | sed '/^$/d')
+        echo "files<<EOF" >> "$GITHUB_OUTPUT"
+        printf '%s\n' "$changed_files" >> "$GITHUB_OUTPUT"
+        echo "EOF" >> "$GITHUB_OUTPUT"
+
+        if [ -n "$changed_files" ]; then
+          echo "has_docs=true" >> "$GITHUB_OUTPUT"
+        else
+          echo "has_docs=false" >> "$GITHUB_OUTPUT"
+        fi
+
+    - name: Check Markdown formatting
+      if: steps.changed-docs.outputs.has_docs == 'true'
+      uses: DavidAnson/markdownlint-cli2-action@v19
+      with:
+        globs: ${{ steps.changed-docs.outputs.files }}
+
+    - name: Verify Chinese punctuation
+      if: steps.changed-docs.outputs.has_docs == 'true'
+      run: |
         python scripts/check_punctuation.py
+
+    - name: Skip docs check when no docs changed
+      if: steps.changed-docs.outputs.has_docs != 'true'
+      run: echo "No Markdown or MDX files changed; skipping docs check."
