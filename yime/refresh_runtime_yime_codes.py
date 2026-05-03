@@ -11,7 +11,11 @@ from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 
-from yime.canonical_yime_mapping import load_canonical_code_map, sync_canonical_mapping_table
+from yime.canonical_yime_mapping import (
+    load_canonical_code_map,
+    load_canonical_patch_map,
+    sync_canonical_mapping_table,
+)
 
 
 SCRIPT_DIR = Path(__file__).resolve().parent
@@ -107,6 +111,7 @@ def build_char_updates(
     canonical_code_map: dict[str, str],
     examples_limit: int,
 ) -> tuple[list[tuple[str, str, str]], Counter, dict[str, list[tuple[object, ...]]]]:
+    patch_pinyin_tones = set(load_canonical_patch_map(SCRIPT_DIR.parent))
     rows = conn.execute(
         '''
         SELECT npi.pinyin_tone, pyc.yime_code, pyc.code_source
@@ -148,7 +153,8 @@ def build_char_updates(
             stats["already_current"] += 1
             continue
 
-        updates.append((pinyin_tone, expected_code, "canonical_patch" if pinyin_tone not in current_source and pinyin_tone not in canonical_code_map else "yinjie_code"))
+        code_source = "canonical_patch" if pinyin_tone in patch_pinyin_tones else "yinjie_code"
+        updates.append((pinyin_tone, expected_code, code_source))
         stats["to_update"] += 1
 
     return updates, stats, examples
