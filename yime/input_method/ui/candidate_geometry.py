@@ -6,7 +6,7 @@ import ctypes
 import tkinter as tk
 from typing import Optional, Tuple
 
-from yime.input_method.win32.window_manager import WindowManager
+from yime.input_method.utils.window_manager import WindowManager
 
 class CandidateWindowGeometry:
     def __init__(self, root: tk.Tk):
