@@ -14,10 +14,10 @@ jobs:
         python-version: ['3.10', '3.11', '3.12']
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
 
@@ -41,15 +41,15 @@ jobs:
         pytest --cov=yime --cov=pinyin --cov=syllable --cov-report=xml --cov-report=html -v
 
     - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v3
+      uses: codecov/codecov-action@v5
       with:
-        file: ./coverage.xml
+        files: ./coverage.xml
         flags: unittests
         name: codecov-umbrella
         fail_ci_if_error: false
 
     - name: Archive coverage reports
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: coverage-reports
         path: |
@@ -60,31 +60,46 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Set up Node.js
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
         node-version: '18'
-        cache: 'npm'
+
+    - name: Detect frontend project
+      id: frontend
+      run: |
+        if [ -f package.json ]; then
+          echo "has_frontend=true" >> "$GITHUB_OUTPUT"
+        else
+          echo "has_frontend=false" >> "$GITHUB_OUTPUT"
+        fi
 
     - name: Install frontend dependencies
+      if: steps.frontend.outputs.has_frontend == 'true'
       run: npm ci
 
     - name: Run frontend tests
+      if: steps.frontend.outputs.has_frontend == 'true'
       run: npm test -- --passWithNoTests || true
 
     - name: Build frontend
+      if: steps.frontend.outputs.has_frontend == 'true'
       run: npm run build || true
+
+    - name: Skip frontend checks when project is absent
+      if: steps.frontend.outputs.has_frontend != 'true'
+      run: echo "No package.json found; skipping frontend job."
 
   lint:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.12'
 
@@ -100,7 +115,7 @@ jobs:
       run: flake8 yime/ pinyin/ syllable/ --max-line-length=100 --exclude=*/migrations/* || true
 
     - name: Set up Node.js for ESLint
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
         node-version: '18'
 
@@ -115,10 +130,10 @@ jobs:
     needs: [test, frontend]
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.12'
 
@@ -133,7 +148,7 @@ jobs:
         python -m build
 
     - name: Archive build artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: dist-packages
         path: dist/
@@ -142,10 +157,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.12'
 
