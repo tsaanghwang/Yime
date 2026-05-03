@@ -1250,6 +1250,79 @@ def test_ui_components(result: TestResult):
     except Exception as e:
         result.add_fail(test_name, str(e))
 
+    test_name = "CandidateBox withdrawn 后进入半透明静置态应复用上次主界面位置"
+    try:
+        from yime.input_method.ui.candidate_box import CandidateBox
+
+        calls = []
+
+        class FakeRoot:
+            def __init__(self):
+                self.attrs = []
+
+            def update_idletasks(self):
+                return None
+
+            def state(self):
+                return "withdrawn"
+
+            def winfo_reqwidth(self):
+                return 480
+
+            def winfo_reqheight(self):
+                return 180
+
+            def geometry(self, value):
+                calls.append(("geometry", value))
+
+            def attributes(self, key, value=None):
+                self.attrs.append((key, value))
+
+            def deiconify(self):
+                calls.append("deiconify")
+
+            def winfo_id(self):
+                return 777
+
+            def update(self):
+                calls.append("update")
+
+            def winfo_width(self):
+                return 0
+
+            def winfo_height(self):
+                return 0
+
+        class FakeUser32:
+            def ShowWindow(self, hwnd, cmd):
+                calls.append(("showwindow", hwnd, cmd))
+
+            def SetWindowPos(self, hwnd, insert_after, x, y, width, height, flags):
+                calls.append(("setwindowpos", hwnd, insert_after, x, y, width, height, flags))
+
+        box = CandidateBox.__new__(CandidateBox)
+        box.root = FakeRoot()
+        box._PASSIVE_ALPHA = 0.42
+        box._HWND_NOTOPMOST = -2
+        box._SW_SHOWNOACTIVATE = 4
+        box._SWP_NOACTIVATE = 0x0010
+        box._SWP_SHOWWINDOW = 0x0040
+        box._SWP_NOOWNERZORDER = 0x0200
+        box._show_main_frame = lambda: calls.append("show_main")
+        box.set_manual_input_enabled = lambda enabled: calls.append(("manual", enabled))
+        box._get_user32 = lambda: FakeUser32()
+        box._set_noactivate = lambda enabled: calls.append(("noactivate", enabled))
+        box._remember_main_geometry = lambda x, y, width=None, height=None: calls.append(("remember", x, y, width, height))
+        box._last_main_geometry = (640, 360, 520, 200)
+
+        CandidateBox.show_passive(box)
+
+        assert ("geometry", "520x200+640+360") in calls
+        assert any(call[:7] == ("setwindowpos", 777, -2, 640, 360, 520, 200) for call in calls if isinstance(call, tuple) and call and call[0] == "setwindowpos")
+        result.add_pass(test_name)
+    except Exception as e:
+        result.add_fail(test_name, str(e))
+
 
 def test_candidate_box_actions(result: TestResult):
     """测试候选框动作模块"""
