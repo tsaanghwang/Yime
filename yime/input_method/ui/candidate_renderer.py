@@ -3,6 +3,7 @@
 提取候选项的排版、渲染及翻页逻辑。
 """
 import tkinter as tk
+from tkinter import ttk
 from typing import Callable, Optional
 
 class CandidateRendererMixin:

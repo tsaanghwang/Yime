@@ -47,13 +47,6 @@ class CandidateBox(CandidateRendererMixin):
         "on",
     }
 
-        "shift": (0x10, 0xA0, 0xA1),
-        "ctrl": (0x11, 0xA2, 0xA3),
-        "alt": (0x12, 0xA4, 0xA5),
-        "alt_r": (0xA5,),
-        "win": (0x5B, 0x5C),
-    }
-
     def __init__(
         self,
         on_select: Callable[[str], None],
