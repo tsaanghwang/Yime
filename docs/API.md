@@ -179,6 +179,9 @@ text = "ün".translate(table)
 
 #### 类：`yime.pinyin_converter.PinyinConverter`
 
+这是一个 legacy-compatible 转换器，主要服务旧 `数字标调拼音 -> 音元拼音` 数据库流。
+当前主线 rebuild/runtime 不再依赖它；主线入口请改看 `docs/project/PINYIN_DATA_MIGRATION.md`。
+
 处理数字标调拼音到音元拼音的转换。
 
 ##### 初始化
@@ -186,12 +189,13 @@ text = "ün".translate(table)
 ```python
 from yime.pinyin_converter import PinyinConverter
 
+# 这里的 pinyin_hanzi.db 指现有运行时/兼容数据库文件，不表示当前主线 rebuild 入口
 converter = PinyinConverter(db_path="pinyin_hanzi.db")
 ```
 
 **参数**：
 
-- `db_path`: 数据库文件路径（默认: "pinyin_hanzi.db"）
+- `db_path`: 数据库文件路径（默认: "pinyin_hanzi.db"，即现有运行时/兼容数据库文件）
 
 ##### 主要方法
 
@@ -319,7 +323,27 @@ print(f"乐音: {musical}")  # ['a']
 
 ## 数据库 API
 
-### 1. 数据库管理器
+### 1. 当前主线数据入口
+
+当前主线没有把 `db_manager.py / hanzi_db_manager.py` 作为默认数据库 API 入口。
+如果你的目标是重建当前拼音数据链，请优先使用：
+
+- `internal_data/pinyin_source_db/build_source_pinyin_db.py`
+- `internal_data/pinyin_source_db/validate_source_pinyin_db.py`
+- `yime/import_danzi_into_prototype_tables.py`
+- `yime/import_duozi_into_prototype_tables.py`
+- `yime/refresh_runtime_yime_codes.py`
+
+如果你的目标只是从仓库内 YAML 词库导出 JSON，请使用：
+
+- `internal_data/pinyin_source_db/export_yaml_lexicon_json.py`
+
+---
+
+### 2. Legacy-compatible 数据库管理器
+
+以下 API 属于 legacy-compatible 中文表结构接口，不是当前主线 rebuild 入口。
+当前主线请改看 `docs/project/PINYIN_DATA_MIGRATION.md` 中的 `source_pinyin.db -> prototype tables -> runtime` 链。
 
 #### 类：`yime.db_manager.数据库管理器`
 
@@ -330,11 +354,26 @@ print(f"乐音: {musical}")  # ['a']
 ```python
 from yime.db_manager import 数据库管理器, 表管理器
 
-# 创建表结构
+# legacy-compatible 通用数据库操作示例
+# 这里的 pinyin_hanzi.db 是现有数据库文件路径，不表示当前主线 rebuild 入口
 with 数据库管理器("pinyin_hanzi.db") as conn:
     表管理器.创建表
 
     # 执行数据库操作
+    cursor = conn.cursor()
+    cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
+    results = cursor.fetchall()
+```
+
+##### 旧中文表示例
+
+如果你确实在维护 legacy-compatible 中文表结构，才继续使用类似下面的查询：
+
+```python
+from yime.db_manager import 数据库管理器
+
+# legacy-compatible 中文表查询示例
+with 数据库管理器("pinyin_hanzi.db") as conn:
     cursor = conn.cursor()
     cursor.execute('SELECT * FROM "音元拼音"')
     results = cursor.fetchall()
@@ -349,6 +388,7 @@ with 数据库管理器("pinyin_hanzi.db") as conn:
 ```python
 from yime.pinyin_mapping import PinyinMapper
 
+# 这里连接的是现有运行时数据库；若要重建数据，请改走 PINYIN_DATA_MIGRATION.md 中的主线链
 mapper = PinyinMapper(db_path="pinyin_hanzi.db")
 
 # 添加映射

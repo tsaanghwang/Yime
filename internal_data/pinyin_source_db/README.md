@@ -11,6 +11,8 @@ Current contents:
 - `schema.sql`: SQLite schema for raw single-character and phrase pinyin source data.
 - `build_source_pinyin_db.py`: Initializes the database and imports upstream source text files.
 - `source_pinyin.db`: Generated SQLite database file.
+- `PATCH_POLICY.md`: When to patch numeric pinyin facts versus canonical yime codes.
+- `export_yaml_lexicon_json.py`: Standalone `.yaml -> .json` export entrypoint, independent from the SQLite rebuild chain.
 
 Default upstream source:
 
@@ -19,3 +21,8 @@ Default upstream source:
 Optional future phrase source:
 
 - phrase pinyin source repo, if present alongside this workspace
+
+Independent YAML export:
+
+- To rebuild `danzi_pinyin.json` / `duozi_pinyin.json` without touching the SQLite path, run:
+	`c:/dev/Yime/.venv/Scripts/python.exe internal_data/pinyin_source_db/export_yaml_lexicon_json.py`

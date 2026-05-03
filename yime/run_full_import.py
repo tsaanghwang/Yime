@@ -1,3 +1,21 @@
+"""Legacy-compatible one-click import runner.
+
+This script is kept only for older maintenance flows that still rely on
+legacy Chinese tables and migration helpers.
+
+It is NOT the current mainline rebuild entrypoint.
+
+Current mainline rebuild chain:
+1. internal_data/pinyin_source_db/build_source_pinyin_db.py
+2. internal_data/pinyin_source_db/validate_source_pinyin_db.py
+3. yime/import_danzi_into_prototype_tables.py
+4. yime/import_duozi_into_prototype_tables.py
+5. yime/refresh_runtime_yime_codes.py --apply
+
+If you only need YAML to JSON export, use:
+internal_data/pinyin_source_db/export_yaml_lexicon_json.py
+"""
+
 from pathlib import Path
 import shutil
 import sqlite3
@@ -14,6 +32,11 @@ LOG_FILE = PROJECT_DIR / "run_full_import.log"
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s",
                     handlers=[logging.StreamHandler(), logging.FileHandler(str(LOG_FILE), encoding="utf-8")])
 logger = logging.getLogger(__name__)
+
+LEGACY_WARNING = (
+    "run_full_import.py 已降级为 legacy-compatible 入口；"
+    "当前主线请改走 source_pinyin.db -> prototype tables -> refresh_runtime_yime_codes 链。"
+)
 
 def backup_db(db_path: Path) -> Path:
     BACKUP_DIR.mkdir(parents=True, exist_ok=True)
@@ -32,6 +55,8 @@ def backup_db(db_path: Path) -> Path:
     return dst
 
 def run():
+    logger.warning(LEGACY_WARNING)
+
     # CLI args: [json_path] [db_path] [--apply-mapping]
     json_path = Path(sys.argv[1]) if len(sys.argv) > 1 and not sys.argv[1].startswith("--") else None
     db_path = Path(sys.argv[2]) if len(sys.argv) > 2 and not sys.argv[2].startswith("--") else DB_DEFAULT
@@ -128,7 +153,7 @@ def run():
     except Exception:
         logger.exception("运行一致性检测失败")
 
-    logger.info("一键导入流程完成。请检查日志与 reports/ 以确认结果。")
+    logger.warning("legacy-compatible 导入流程完成。请优先迁移到当前主线 rebuild 入口。")
 
 if __name__ == "__main__":
     try:

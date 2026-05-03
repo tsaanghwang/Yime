@@ -1,7 +1,7 @@
 import sqlite3
 from pathlib import Path
 
-DB = Path(__file__).parent / "pinyin_hanzi.db"
+DB = Path(__file__).resolve().parent.parent / "pinyin_hanzi.db"
 
 def check_index_exists(conn: sqlite3.Connection, index_name: str) -> bool:
     """检查索引是否存在（在 sqlite_master 中）"""
