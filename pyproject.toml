@@ -18,3 +18,7 @@ include = ["syllable*", "pianyin*", "syllable_codec*"]
 [tool.setuptools.package-data]
 "syllable.analysis.slice" = ["yinyuan/*.json"]
 "syllable_codec" = ["*.json"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+norecursedirs = ["tests/manual"]
