@@ -10,22 +10,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    
+
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: '3.10'
-    
+
     - name: Install dependencies
       run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
         pip install pdoc3
         pip install -e .
-    
+
     - name: Generate API docs
       run: |
-        pdoc --html --output-dir ./docs finals_classifier
+        pdoc --html --output-dir ./docs yime
         echo "API文档已生成"
-    
+
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3
       with:
