@@ -77,10 +77,12 @@ class TestSyllableEncodingPipeline(unittest.TestCase):
 class TestYinjieEncoder(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        encoder = YinjieEncoder()
+        cls.project_root = encoder.project_root
         # 加载所有拼音音节
-        with open('pinyin/hanzi_pinyin/pinyin_normalized.json', 'r', encoding='utf-8') as f:
+        with open(cls.project_root / 'pinyin' / 'hanzi_pinyin' / 'pinyin_normalized.json', 'r', encoding='utf-8') as f:
             cls.all_pinyin = list(json.load(f).keys())
-        cls.encoder = YinjieEncoder()
+        cls.encoder = encoder
         cls.shouyin_encoder = ShouyinEncoder()
         cls.ganyin_encoder = GanyinEncoder()
 
@@ -88,7 +90,7 @@ class TestYinjieEncoder(unittest.TestCase):
         """默认输出路径应统一落到 syllable_codec/yinjie_code.json。"""
         self.assertEqual(
             self.encoder._get_output_path("yinyuan"),
-            Path("c:/dev/Yime/syllable_codec/yinjie_code.json"),
+            self.encoder.project_root / "syllable_codec" / "yinjie_code.json",
         )
 
     def test_all_pinyin_length(self):
