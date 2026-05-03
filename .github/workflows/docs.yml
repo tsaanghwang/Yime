@@ -25,7 +25,7 @@ jobs:
 
     - name: Generate API docs
       run: |
-        pdoc --html --output-dir ./docs yime
+        pdoc --html --skip-errors --output-dir ./docs yime
         echo "API文档已生成"
 
     - name: Deploy to GitHub Pages
