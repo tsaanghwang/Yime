@@ -719,12 +719,13 @@
 3. 平台投影层
    - `bmp_pua_trial_projection.json`
 
-4. 生成产物层
-   - `shouyin_codepoint.json`
-   - `ganyin_to_fixed_length_yinyuan_sequence.json`
-   - `yinyuan_codepoint.json`
-  - `syllable_codec/yinjie_code.json`
-   - `yinyuan.klc`
-   - 数据库与导出文件
+4. 生成产物层包括：
+
+- `shouyin_codepoint.json`
+- `ganyin_to_fixed_length_yinyuan_sequence.json`
+- `yinyuan_codepoint.json`
+- `syllable_codec/yinjie_code.json`
+- `yinyuan.klc`
+- 数据库与导出文件
 
 只要这个分层稳定下来，后续无论换码点区、重做布局、修复工具链还是重建数据库，都可以各改各层，不会再互相污染。

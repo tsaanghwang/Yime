@@ -25,24 +25,24 @@ jobs:
         fi
 
     - name: Set up Node
-      if: steps.frontend.outputs.has_frontend == 'true'
+      if: steps.frontend.outputs.has_frontend == 'true' && github.event_name != 'pull_request'
       uses: actions/setup-node@v4
       with:
         node-version: '20'
         cache: 'npm'
 
     - name: Install dependencies
-      if: steps.frontend.outputs.has_frontend == 'true'
+      if: steps.frontend.outputs.has_frontend == 'true' && github.event_name != 'pull_request'
       run: npm install
 
     - name: Run Jest tests
-      if: steps.frontend.outputs.has_frontend == 'true'
+      if: steps.frontend.outputs.has_frontend == 'true' && github.event_name != 'pull_request'
       run: |
         npm test
         [ -f "coverage/lcov.info" ] || exit 1
 
     - name: Upload coverage
-      if: steps.frontend.outputs.has_frontend == 'true'
+      if: steps.frontend.outputs.has_frontend == 'true' && github.event_name != 'pull_request'
       uses: codecov/codecov-action@v5
       with:
         files: coverage/lcov.info
