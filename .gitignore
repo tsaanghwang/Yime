@@ -47,3 +47,5 @@ yime/reports/phoneme_dict.json
 yime/reports/runtime_candidates_by_code.json
 yime/reports/runtime_candidates_placeholder_phrases.json
 yime/reports/summary.txt
+coverage.xml
+*.egg-info/
