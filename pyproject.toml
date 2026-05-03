@@ -3,21 +3,37 @@ requires = ["setuptools>=64.0.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "finals_classifier"
+name = "yime"
 version = "0.1.0"
+description = "Windows IME prototype and supporting pinyin rebuild pipeline for Yime."
+readme = "README.md"
 requires-python = ">=3.10"
-dependencies = []
+dependencies = [
+	"colorama>=0.4.6",
+	"pynput>=1.7.6",
+	"pywin32>=305; platform_system == 'Windows'",
+	"tqdm>=4.65.0",
+]
+
+[project.optional-dependencies]
+dev = [
+	"coverage>=7.0.0",
+	"pytest>=8.0.0",
+	"pytest-cov>=3.0.0",
+]
 
 [tool.setuptools]
 package-dir = {"" = "."}
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["syllable*", "pianyin*", "syllable_codec*"]
+include = ["yime*", "pinyin*", "pianyin*", "syllable*", "syllable_codec*", "utils*"]
+exclude = ["tests*", "tools*"]
 
 [tool.setuptools.package-data]
 "syllable.analysis.slice" = ["yinyuan/*.json"]
 "syllable_codec" = ["*.json"]
+"yime" = ["*.json", "*.sql", "*.txt", "*.csv"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
