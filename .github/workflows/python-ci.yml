@@ -46,6 +46,6 @@ jobs:
 
     - name: Verify classified finals
       run: |
-        python finals_classifier.py
+        python tools/final_classifier.py
         [ -f "internal_data/classified_finals.json" ] || exit 1
         echo "韵母分类结果验证通过"

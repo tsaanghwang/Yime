@@ -46,7 +46,6 @@ jobs:
     - name: Verify Chinese punctuation
       if: steps.changed-docs.outputs.has_docs == 'true'
       run: |
-        pip install yaml
         python scripts/check_punctuation.py
 
     - name: Skip docs check when no docs changed
