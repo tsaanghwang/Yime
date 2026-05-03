@@ -107,6 +107,7 @@ class CandidateBox:
         self._manual_key_output_resolver = manual_key_output_resolver
         self._manual_input_transformer = manual_input_transformer
         self.projected_input_text = ""
+        self._last_main_geometry: Optional[tuple[int, int, int, int]] = None
 
         # 回调注入
         self._on_input_change_callback = on_input_change
@@ -354,6 +355,18 @@ class CandidateBox:
         current_y = self.root.winfo_y()
         self.root.geometry(f"+{current_x}+{current_y}")
         self.root.update_idletasks()
+
+    def _remember_main_geometry(
+        self,
+        x: int,
+        y: int,
+        width: Optional[int] = None,
+        height: Optional[int] = None,
+    ) -> None:
+        """缓存主候选框最近一次正常显示的位置，避免 withdrawn 后回退到左上角兜底。"""
+        resolved_width = width if width is not None else self.root.winfo_width() or self.root.winfo_reqwidth()
+        resolved_height = height if height is not None else self.root.winfo_height() or self.root.winfo_reqheight()
+        self._last_main_geometry = (x, y, resolved_width, resolved_height)
 
     def _build_ui(self) -> None:
         """构建UI界面"""
@@ -1234,6 +1247,7 @@ class CandidateBox:
             self.root.lift()
             WindowManager.restore_window(hwnd)
         self.root.update()
+        self._remember_main_geometry(target_x, target_y)
         if self._DEBUG_UI:
             is_visible = bool(user32.IsWindowVisible(hwnd))
             print(
@@ -1282,9 +1296,12 @@ class CandidateBox:
         self.root.update_idletasks()
 
         if self.root.state() == "withdrawn":
-            target_x, target_y = self._resolve_geometry(None, None, focus_input=False)
-            width = self.root.winfo_reqwidth()
-            height = self.root.winfo_reqheight()
+            if self._last_main_geometry is not None:
+                target_x, target_y, width, height = self._last_main_geometry
+            else:
+                target_x, target_y = self._resolve_geometry(None, None, focus_input=False)
+                width = self.root.winfo_reqwidth()
+                height = self.root.winfo_reqheight()
         else:
             target_x = self.root.winfo_x()
             target_y = self.root.winfo_y()
@@ -1313,6 +1330,7 @@ class CandidateBox:
             | self._SWP_NOOWNERZORDER,
         )
         self.root.update()
+        self._remember_main_geometry(target_x, target_y, width, height)
 
     def hide(self) -> None:
         """隐藏候选框"""
