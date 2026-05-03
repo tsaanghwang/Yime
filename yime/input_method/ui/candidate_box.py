@@ -294,9 +294,34 @@ class CandidateBox:
         foreground = anchor_hwnd or WindowManager.get_foreground_window()
         own_hwnd = self.root.winfo_id()
         if foreground and foreground != own_hwnd:
-            left, top, right, bottom = WindowManager.get_window_rect(foreground)
-            return right - min(96, max(24, width // 4)), bottom + min(48, max(24, height // 3))
+            input_rect = WindowManager.get_input_anchor_rect(foreground)
+            if input_rect is not None:
+                input_width = max(0, input_rect[2] - input_rect[0])
+                input_height = max(0, input_rect[3] - input_rect[1])
 
+                # 如果无法拿到真实的文字光标坐标（由于外部窗口未提供），则使用鼠标光标代替，真正跟随不同的输入点
+                if (input_width <= 2 and input_height <= 2) or input_width > 100 or input_height > 100:
+                    if self._DEBUG_UI:
+                        print(f"[CandidateBox.anchor] non-caret rect {input_rect} -> pointer heuristic")
+                    pt_x, pt_y = WindowManager.get_cursor_position()
+                    return pt_x + 12, pt_y + 24
+
+                left, top, right, bottom = input_rect
+                return (
+                    right + min(24, max(12, width // 8)),
+                    bottom + min(24, max(12, height // 6)),
+                )
+
+            # 没有提取到任何光标边界，也默认回归鼠标位置
+            if self._DEBUG_UI:
+               print("[CandidateBox.anchor] no input rect -> pointer heuristic")
+            pt_x, pt_y = WindowManager.get_cursor_position()
+            return pt_x + 12, pt_y + 24
+        if self._DEBUG_UI:
+            print(
+                "[CandidateBox.anchor] fallback root corner "
+                f"foreground={foreground} own={own_hwnd} size=({width},{height})"
+            )
         return self.root.winfo_vrootx() + 32, self.root.winfo_vrooty() + 32
 
     def _resolve_geometry(
@@ -324,6 +349,7 @@ class CandidateBox:
                 height,
                 anchor_hwnd=anchor_hwnd,
             )
+            anchor_x, anchor_y = self._screen_to_tk_coords(anchor_x, anchor_y)
             target_x = anchor_x if x is None and focus_input else (virtual_root_x + 32 if x is None else x)
             target_y = anchor_y if y is None and focus_input else (virtual_root_y + 32 if y is None else y)
         else:
@@ -337,6 +363,43 @@ class CandidateBox:
         target_x = min(max(target_x, min_x), max_x)
         target_y = min(max(target_y, min_y), max_y)
         return target_x, target_y
+
+    def _screen_to_tk_coords(self, x: int, y: int) -> tuple[int, int]:
+        """将 Win32 屏幕坐标转换到 Tk 当前使用的坐标系。"""
+        try:
+            user32 = self._get_user32()
+            sm_xvirtualscreen = 76
+            sm_yvirtualscreen = 77
+            sm_cxvirtualscreen = 78
+            sm_cyvirtualscreen = 79
+
+            physical_root_x = int(user32.GetSystemMetrics(sm_xvirtualscreen))
+            physical_root_y = int(user32.GetSystemMetrics(sm_yvirtualscreen))
+            physical_width = int(user32.GetSystemMetrics(sm_cxvirtualscreen))
+            physical_height = int(user32.GetSystemMetrics(sm_cyvirtualscreen))
+
+            tk_root_x = self.root.winfo_vrootx()
+            tk_root_y = self.root.winfo_vrooty()
+            tk_width = self.root.winfo_vrootwidth() or self.root.winfo_screenwidth()
+            tk_height = self.root.winfo_vrootheight() or self.root.winfo_screenheight()
+
+            if physical_width <= 0 or physical_height <= 0 or tk_width <= 0 or tk_height <= 0:
+                return x, y
+
+            scale_x = tk_width / physical_width
+            scale_y = tk_height / physical_height
+            converted_x = tk_root_x + round((x - physical_root_x) * scale_x)
+            converted_y = tk_root_y + round((y - physical_root_y) * scale_y)
+            if self._DEBUG_UI:
+                print(
+                    "[CandidateBox.coords] screen->tk "
+                    f"screen=({x},{y}) physical_root=({physical_root_x},{physical_root_y}) "
+                    f"physical_size=({physical_width},{physical_height}) tk_root=({tk_root_x},{tk_root_y}) "
+                    f"tk_size=({tk_width},{tk_height}) result=({converted_x},{converted_y})"
+                )
+            return converted_x, converted_y
+        except Exception:
+            return x, y
 
     def get_pointer_position(self) -> tuple[int, int]:
         """使用 Tk 提供的指针坐标，避免 Win32/Tk 在 DPI 缩放下坐标系不一致。"""
@@ -721,9 +784,9 @@ class CandidateBox:
         """鼠标点入输入框时允许窗口激活，便于手动粘贴测试编码。"""
         self.actions.activate_for_manual_input(event)
 
-    def _restore_from_standby(self, event: Optional[tk.Event] = None) -> None:
+    def _restore_from_standby(self, event: Optional[tk.Event] = None) -> str:
         """从待命小图标恢复主候选框。"""
-        self.actions.restore_from_standby(event)
+        return self.actions.restore_from_standby(event)
 
     def _request_standby_from_mouse(self, event: Optional[tk.Event] = None) -> str:
         """主候选框右键时返回待命图标。"""
@@ -756,6 +819,39 @@ class CandidateBox:
         """清除输入框残留选区，并将插入点固定到末尾。"""
         self.input_entry.selection_clear()
         self.input_entry.icursor(tk.END)
+
+    def _focus_input_with_retry(self, hwnd: int) -> None:
+        """对 Electron/VS Code 一类窗口做一次延迟补焦，避免首次焦点请求被吃掉。"""
+
+        def apply_focus(use_force: bool = False) -> None:
+            if use_force:
+                self.input_entry.focus_force()
+            else:
+                self.input_entry.focus_set()
+            self.normalize_input_entry_state()
+
+        apply_focus()
+
+        def retry_focus() -> None:
+            try:
+                current_focus = self.root.focus_get()
+            except tk.TclError:
+                return
+            if self._DEBUG_UI:
+                print(
+                    "[CandidateBox.focus] retry "
+                    f"current_focus={current_focus} input_entry={self.input_entry}"
+                )
+            if current_focus == self.input_entry:
+                return
+            try:
+                self.root.lift()
+            except tk.TclError:
+                return
+            WindowManager.restore_window(hwnd)
+            apply_focus(use_force=True)
+
+        self.root.after(60, retry_focus)
 
     def set_status(self, text: str) -> None:
         """更新状态栏文案。"""
@@ -1208,6 +1304,7 @@ class CandidateBox:
         y: Optional[int] = None,
         focus_input: bool = True,
         anchor_hwnd: Optional[int] = None,
+        force_recompute: bool = False,
     ) -> None:
         """
         显示候选框
@@ -1216,6 +1313,8 @@ class CandidateBox:
             x: X坐标（可选）
             y: Y坐标（可选）
             focus_input: 是否将焦点切回候选框输入框
+            anchor_hwnd: 用来定位锚点的窗口
+            force_recompute: 是否强制重新计算位置
         """
         was_standby = self._is_standby
         try:
@@ -1228,12 +1327,17 @@ class CandidateBox:
         preserve_current_position = (
             x is None
             and y is None
+            and anchor_hwnd is None
             and not was_standby
+            and not force_recompute
             and previous_state != "withdrawn"
         )
         if preserve_current_position:
             target_x = self.root.winfo_x()
             target_y = self.root.winfo_y()
+        elif not force_recompute and was_standby and x is None and y is None and self._last_main_geometry is not None:
+            # When waking up via mouse, restore to its last active screen location
+            target_x, target_y, _, _ = self._last_main_geometry
         else:
             target_x, target_y = self._resolve_geometry(
                 x,
@@ -1291,10 +1395,9 @@ class CandidateBox:
                 f"[CandidateBox.show] hwnd={hwnd} visible={is_visible} focus_input={focus_input} geometry=auto+{target_x}+{target_y} state={self.root.state()}"
             )
         if focus_input:
-            # Avoid forcing foreground activation on Windows; a normal focus request
-            # is enough when the user intentionally entered manual-input mode.
-            self.input_entry.focus_set()
-        self.normalize_input_entry_state()
+            self._focus_input_with_retry(hwnd)
+        else:
+            self.normalize_input_entry_state()
 
     def show_standby(self) -> None:
         """显示右下角半透明待命图标，保持输入法处于可再次触发状态。"""

@@ -15,7 +15,7 @@
     --input-mode      输入模式。默认 hotkey；global-listener 为实验性独立入口
     --copy-only       只复制候选字到剪贴板，不自动回贴
     --font-family     指定字体名称（默认: 音元）
-    --hotkey          从待命状态唤起输入框的快捷键（默认: Ctrl+Shift+Y）
+    --hotkey          从待命状态唤起输入框的快捷键（默认: Ctrl+Alt+Insert，避开 VS Code 与码元输入冲突）
 """
 
 import sys

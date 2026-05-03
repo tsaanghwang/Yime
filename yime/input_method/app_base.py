@@ -54,6 +54,9 @@ class BaseInputMethodApp:
         self.candidate_box = candidate_box_factory()
 
         self.own_hwnd = self.candidate_box.root.winfo_id()
+        self._normalized_own_hwnd = self.window_manager.normalize_window_handle(
+            self.own_hwnd
+        )
         self.last_external_hwnd: Optional[int] = None
         self._locked_external_hwnd: Optional[int] = None
         self.last_replace_length = 0
@@ -137,7 +140,12 @@ class BaseInputMethodApp:
 
     def _normalize_external_hwnd(self, hwnd: Optional[int]) -> Optional[int]:
         normalized = self.window_manager.normalize_window_handle(hwnd)
-        if not normalized or normalized == self.own_hwnd:
+        own_normalized = getattr(self, "_normalized_own_hwnd", None)
+        if own_normalized is None:
+            own_normalized = self.window_manager.normalize_window_handle(
+                getattr(self, "own_hwnd", None)
+            )
+        if not normalized or normalized == own_normalized:
             return None
         return int(normalized)
 

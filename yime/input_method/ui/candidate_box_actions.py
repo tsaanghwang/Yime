@@ -94,12 +94,21 @@ class CandidateBoxActions:
         self.box.set_manual_input_enabled(True)
         self.box.show(focus_input=True)
 
-    def restore_from_standby(self, event: Optional[tk.Event] = None) -> None:
-        if self.box._on_restore_from_standby:
-            self.box._on_restore_from_standby()
-            return
-        self.box.set_manual_input_enabled(True)
-        self.box.show(focus_input=True)
+    def restore_from_standby(self, event: Optional[tk.Event] = None) -> str:
+        def restore() -> None:
+            if self.box._on_restore_from_standby:
+                self.box._on_restore_from_standby()
+                return
+            self.box.set_manual_input_enabled(True)
+            self.box.show(focus_input=True)
+
+        scheduler = getattr(getattr(self.box, "root", None), "after", None)
+        if callable(scheduler):
+            scheduler(0, restore)
+        else:
+            restore()
+
+        return "break"
 
     def request_standby(self, event: Optional[tk.Event] = None) -> str:
         if self.box._on_toggle_standby:

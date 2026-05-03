@@ -11,6 +11,7 @@
 
 import sys
 import json
+import time
 from pathlib import Path
 from typing import Tuple, List
 
@@ -820,6 +821,173 @@ def test_utilities(result: TestResult):
     except Exception as e:
         result.add_fail(test_name, str(e))
 
+    test_name = "WindowManager 优先返回输入控件或插入点矩形"
+    try:
+        from yime.input_method.utils.window_manager import WindowManager
+
+        class FakeUser32:
+            @staticmethod
+            def GetAncestor(hwnd, _flag):
+                return int(getattr(hwnd, "value", hwnd))
+
+            @staticmethod
+            def GetWindowThreadProcessId(hwnd, _pid):
+                return 42 if int(getattr(hwnd, "value", hwnd)) == 200 else 0
+
+            @staticmethod
+            def GetGUIThreadInfo(thread_id, gui_info_ptr):
+                gui_info = gui_info_ptr._obj
+                gui_info.hwndFocus = 301
+                gui_info.hwndCaret = 302
+                gui_info.rcCaret.left = 10
+                gui_info.rcCaret.top = 20
+                gui_info.rcCaret.right = 14
+                gui_info.rcCaret.bottom = 38
+                return 1
+
+            @staticmethod
+            def ClientToScreen(hwnd, point_ptr):
+                point = point_ptr._obj
+                point.x += 100
+                point.y += 200
+                return 1
+
+            @staticmethod
+            def GetWindowRect(hwnd, rect_ptr):
+                rect = rect_ptr._obj
+                rect.left = 300
+                rect.top = 400
+                rect.right = 500
+                rect.bottom = 600
+                return 1
+
+        original_user32 = WindowManager._user32
+        globals_ref = WindowManager.get_input_anchor_rect.__globals__
+        original_global_user32 = globals_ref["user32"]
+        try:
+            WindowManager._user32 = FakeUser32()
+            globals_ref["user32"] = WindowManager._user32
+
+            assert WindowManager.get_input_anchor_rect(200) == (110, 220, 114, 238)
+        finally:
+            WindowManager._user32 = original_user32
+            globals_ref["user32"] = original_global_user32
+
+        result.add_pass(test_name)
+    except Exception as e:
+        result.add_fail(test_name, str(e))
+
+    test_name = "WindowManager 无 hwndCaret 时可回退到 hwndFocus 上的 rcCaret"
+    try:
+        from yime.input_method.utils.window_manager import WindowManager
+
+        class FakeUser32:
+            @staticmethod
+            def GetAncestor(hwnd, _flag):
+                return int(getattr(hwnd, "value", hwnd))
+
+            @staticmethod
+            def GetWindowThreadProcessId(hwnd, _pid):
+                return 42 if int(getattr(hwnd, "value", hwnd)) == 200 else 0
+
+            @staticmethod
+            def GetGUIThreadInfo(thread_id, gui_info_ptr):
+                gui_info = gui_info_ptr._obj
+                gui_info.hwndFocus = 301
+                gui_info.hwndCaret = 0
+                gui_info.rcCaret.left = 40
+                gui_info.rcCaret.top = 50
+                gui_info.rcCaret.right = 42
+                gui_info.rcCaret.bottom = 68
+                return 1
+
+            @staticmethod
+            def ClientToScreen(hwnd, point_ptr):
+                point = point_ptr._obj
+                point.x += 300
+                point.y += 400
+                return 1
+
+            @staticmethod
+            def GetWindowRect(hwnd, rect_ptr):
+                raise AssertionError("window rect should not be used")
+
+        original_user32 = WindowManager._user32
+        globals_ref = WindowManager.get_input_anchor_rect.__globals__
+        original_global_user32 = globals_ref["user32"]
+        try:
+            WindowManager._user32 = FakeUser32()
+            globals_ref["user32"] = WindowManager._user32
+
+            assert WindowManager.get_input_anchor_rect(200) == (340, 450, 342, 468)
+        finally:
+            WindowManager._user32 = original_user32
+            globals_ref["user32"] = original_global_user32
+
+        result.add_pass(test_name)
+    except Exception as e:
+        result.add_fail(test_name, str(e))
+
+    test_name = "CandidateBox 激活时优先贴近当前输入控件矩形"
+    try:
+        from yime.input_method.ui.candidate_box import CandidateBox
+
+        class FakeRoot:
+            def update_idletasks(self):
+                pass
+
+            def winfo_reqwidth(self):
+                return 240
+
+            def winfo_reqheight(self):
+                return 120
+
+            def winfo_vrootx(self):
+                return 0
+
+            def winfo_vrooty(self):
+                return 0
+
+            def winfo_vrootwidth(self):
+                return 1920
+
+            def winfo_vrootheight(self):
+                return 1080
+
+            def winfo_screenwidth(self):
+                return 1920
+
+            def winfo_screenheight(self):
+                return 1080
+
+            def winfo_id(self):
+                return 111
+
+        box = CandidateBox.__new__(CandidateBox)
+        box.root = FakeRoot()
+        box._screen_to_tk_coords = lambda x, y: (x, y)
+
+        original_get_foreground_window = CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_foreground_window
+        original_get_input_anchor_rect = CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_input_anchor_rect
+        original_get_window_rect = CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_window_rect
+        try:
+            CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_foreground_window = staticmethod(lambda: 222)
+            CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_input_anchor_rect = staticmethod(lambda _hwnd: (500, 400, 540, 424))
+            CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_window_rect = staticmethod(lambda _hwnd: (_ for _ in ()).throw(AssertionError("window rect should not be used")))
+
+            target_x, target_y = CandidateBox._resolve_geometry(box, None, None, focus_input=True)
+
+            assert target_x == 564
+            assert target_y == 444
+        finally:
+            CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_foreground_window = original_get_foreground_window
+            CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_input_anchor_rect = original_get_input_anchor_rect
+            CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_window_rect = original_get_window_rect
+
+        result.add_pass(test_name)
+    except Exception as e:
+        result.add_fail(test_name, str(e))
+
     test_name = "投影编码反查物理 ASCII"
     try:
         physical_input_map = build_physical_input_map(project_root)
@@ -989,12 +1157,21 @@ def test_ui_components(result: TestResult):
 
         box = CandidateBox.__new__(CandidateBox)
         box.root = FakeRoot()
+        box._screen_to_tk_coords = lambda x, y: (x, y)
 
         original_get_foreground_window = CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_foreground_window
+        original_get_input_anchor_rect = CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_input_anchor_rect
         original_get_window_rect = CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_window_rect
+        original_get_window_class_name = CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_window_class_name
+        original_get_window_text = CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_window_text
+        original_get_cursor_position = CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_cursor_position
         try:
             CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_foreground_window = staticmethod(lambda: 222)
+            CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_input_anchor_rect = staticmethod(lambda _hwnd: None)
             CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_window_rect = staticmethod(lambda _hwnd: (100, 100, 900, 500))
+            CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_window_class_name = staticmethod(lambda _hwnd: "")
+            CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_window_text = staticmethod(lambda _hwnd: "")
+            CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_cursor_position = staticmethod(lambda: (828, 516))
 
             target_x, target_y = CandidateBox._resolve_geometry(box, None, None, focus_input=True)
 
@@ -1002,7 +1179,11 @@ def test_ui_components(result: TestResult):
             assert target_y == 540
         finally:
             CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_foreground_window = original_get_foreground_window
+            CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_input_anchor_rect = original_get_input_anchor_rect
             CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_window_rect = original_get_window_rect
+            CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_window_class_name = original_get_window_class_name
+            CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_window_text = original_get_window_text
+            CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_cursor_position = original_get_cursor_position
 
         result.add_pass(test_name)
     except Exception as e:
@@ -1045,12 +1226,21 @@ def test_ui_components(result: TestResult):
 
         box = CandidateBox.__new__(CandidateBox)
         box.root = FakeRoot()
+        box._screen_to_tk_coords = lambda x, y: (x, y)
 
         original_get_foreground_window = CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_foreground_window
+        original_get_input_anchor_rect = CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_input_anchor_rect
         original_get_window_rect = CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_window_rect
+        original_get_window_class_name = CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_window_class_name
+        original_get_window_text = CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_window_text
+        original_get_cursor_position = CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_cursor_position
         try:
             CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_foreground_window = staticmethod(lambda: 111)
+            CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_input_anchor_rect = staticmethod(lambda _hwnd: None)
             CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_window_rect = staticmethod(lambda hwnd: (200, 150, 1200, 650) if hwnd == 333 else (0, 0, 320, 240))
+            CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_window_class_name = staticmethod(lambda _hwnd: "")
+            CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_window_text = staticmethod(lambda _hwnd: "")
+            CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_cursor_position = staticmethod(lambda: (828, 516))
 
             target_x, target_y = CandidateBox._resolve_geometry(
                 box,
@@ -1060,12 +1250,199 @@ def test_ui_components(result: TestResult):
                 anchor_hwnd=333,
             )
 
-            assert target_x == 1140
-            assert target_y == 690
+            assert target_x == 840
+            assert target_y == 540
         finally:
             CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_foreground_window = original_get_foreground_window
+            CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_input_anchor_rect = original_get_input_anchor_rect
             CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_window_rect = original_get_window_rect
+            CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_window_class_name = original_get_window_class_name
+            CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_window_text = original_get_window_text
+            CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_cursor_position = original_get_cursor_position
 
+        result.add_pass(test_name)
+    except Exception as e:
+        result.add_fail(test_name, str(e))
+
+    test_name = "CandidateBox 激活时优先贴近输入控件矩形"
+    try:
+        from yime.input_method.ui.candidate_box import CandidateBox
+
+        class FakeRoot:
+            def update_idletasks(self):
+                pass
+
+            def winfo_reqwidth(self):
+                return 240
+
+            def winfo_reqheight(self):
+                return 120
+
+            def winfo_vrootx(self):
+                return 0
+
+            def winfo_vrooty(self):
+                return 0
+
+            def winfo_vrootwidth(self):
+                return 1920
+
+            def winfo_vrootheight(self):
+                return 1080
+
+            def winfo_screenwidth(self):
+                return 1920
+
+            def winfo_screenheight(self):
+                return 1080
+
+            def winfo_id(self):
+                return 111
+
+        box = CandidateBox.__new__(CandidateBox)
+        box.root = FakeRoot()
+        box._screen_to_tk_coords = lambda x, y: (x, y)
+
+        original_get_foreground_window = CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_foreground_window
+        original_get_input_anchor_rect = CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_input_anchor_rect
+        original_get_window_rect = CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_window_rect
+        original_get_window_class_name = CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_window_class_name
+        original_get_window_text = CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_window_text
+        original_get_cursor_position = CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_cursor_position
+        try:
+            CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_foreground_window = staticmethod(lambda: 222)
+            CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_input_anchor_rect = staticmethod(lambda _hwnd: (490, 400, 500, 430))
+            CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_window_rect = staticmethod(lambda _hwnd: (_ for _ in ()).throw(AssertionError("should not use full window rect")))
+            CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_window_class_name = staticmethod(lambda _hwnd: "")
+            CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_window_text = staticmethod(lambda _hwnd: "")
+            CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_cursor_position = staticmethod(lambda: (828, 516))
+
+            target_x, target_y = CandidateBox._resolve_geometry(box, None, None, focus_input=True)
+
+            assert target_x == 524
+            assert target_y == 450
+        finally:
+            CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_foreground_window = original_get_foreground_window
+            CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_input_anchor_rect = original_get_input_anchor_rect
+            CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_window_rect = original_get_window_rect
+            CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_window_class_name = original_get_window_class_name
+            CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_window_text = original_get_window_text
+            CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_cursor_position = original_get_cursor_position
+
+        result.add_pass(test_name)
+    except Exception as e:
+        result.add_fail(test_name, str(e))
+
+    test_name = "CandidateBox VS Code 微小插入点时优先落到工作区默认区域"
+    try:
+        from yime.input_method.ui.candidate_box import CandidateBox
+
+        class FakeRoot:
+            def update_idletasks(self):
+                pass
+
+            def winfo_reqwidth(self):
+                return 240
+
+            def winfo_reqheight(self):
+                return 120
+
+            def winfo_vrootx(self):
+                return 0
+
+            def winfo_vrooty(self):
+                return 0
+
+            def winfo_vrootwidth(self):
+                return 1920
+
+            def winfo_vrootheight(self):
+                return 1080
+
+            def winfo_screenwidth(self):
+                return 1920
+
+            def winfo_screenheight(self):
+                return 1080
+
+            def winfo_id(self):
+                return 111
+
+        box = CandidateBox.__new__(CandidateBox)
+        box.root = FakeRoot()
+        box._screen_to_tk_coords = lambda x, y: (x, y)
+
+        original_get_foreground_window = CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_foreground_window
+        original_get_input_anchor_rect = CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_input_anchor_rect
+        original_get_window_rect = CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_window_rect
+        original_get_window_class_name = CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_window_class_name
+        original_get_window_text = CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_window_text
+        original_get_cursor_position = CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_cursor_position
+        try:
+            CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_foreground_window = staticmethod(lambda: 222)
+            CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_input_anchor_rect = staticmethod(lambda _hwnd: (500, 320, 501, 321))
+            CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_window_rect = staticmethod(lambda _hwnd: (100, 100, 1300, 900))
+            CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_window_class_name = staticmethod(lambda _hwnd: "Chrome_WidgetWin_1")
+            CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_window_text = staticmethod(lambda _hwnd: "Temp.md - Yime - Visual Studio Code")
+            CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_cursor_position = staticmethod(lambda: (828, 516))
+
+            target_x, target_y = CandidateBox._resolve_geometry(box, None, None, focus_input=True)
+
+            assert target_x == 840
+            assert target_y == 540
+        finally:
+            CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_foreground_window = original_get_foreground_window
+            CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_input_anchor_rect = original_get_input_anchor_rect
+            CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_window_rect = original_get_window_rect
+            CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_window_class_name = original_get_window_class_name
+            CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_window_text = original_get_window_text
+            CandidateBox._resolve_activation_anchor.__globals__["WindowManager"].get_cursor_position = original_get_cursor_position
+
+        result.add_pass(test_name)
+    except Exception as e:
+        result.add_fail(test_name, str(e))
+
+    test_name = "CandidateBox 可将屏幕坐标换算到 Tk 坐标系"
+    try:
+        from yime.input_method.ui.candidate_box import CandidateBox
+
+        class FakeRoot:
+            def winfo_vrootx(self):
+                return 0
+
+            def winfo_vrooty(self):
+                return 0
+
+            def winfo_vrootwidth(self):
+                return 1920
+
+            def winfo_vrootheight(self):
+                return 1080
+
+            def winfo_screenwidth(self):
+                return 1920
+
+            def winfo_screenheight(self):
+                return 1080
+
+        class FakeUser32:
+            def GetSystemMetrics(self, index):
+                metrics = {
+                    76: 0,
+                    77: 0,
+                    78: 3840,
+                    79: 2160,
+                }
+                return metrics[index]
+
+        box = CandidateBox.__new__(CandidateBox)
+        box.root = FakeRoot()
+        box._DEBUG_UI = False
+        box._get_user32 = lambda: FakeUser32()
+
+        converted = CandidateBox._screen_to_tk_coords(box, 3000, 1500)
+
+        assert converted == (1500, 750)
         result.add_pass(test_name)
     except Exception as e:
         result.add_fail(test_name, str(e))
@@ -1077,6 +1454,9 @@ def test_ui_components(result: TestResult):
         calls = []
 
         class FakeRoot:
+            def __init__(self):
+                self.focus_widget = None
+
             def state(self, value=None):
                 if value is None:
                     return "normal"
@@ -1109,6 +1489,14 @@ def test_ui_components(result: TestResult):
             def lift(self):
                 calls.append("lift")
 
+            def focus_get(self):
+                return self.focus_widget
+
+            def after(self, delay, callback):
+                calls.append(("after", delay))
+                callback()
+                return "after-id"
+
         class FakeUser32:
             def ShowWindow(self, hwnd, cmd):
                 calls.append(("showwindow", hwnd, cmd))
@@ -1118,7 +1506,18 @@ def test_ui_components(result: TestResult):
 
         class FakeInputEntry:
             def focus_set(self):
+                box.root.focus_widget = box.input_entry
                 calls.append("focus")
+
+            def focus_force(self):
+                box.root.focus_widget = box.input_entry
+                calls.append("focus_force")
+
+            def selection_clear(self):
+                calls.append("selection_clear")
+
+            def icursor(self, value):
+                calls.append(("cursor", value))
 
         box = CandidateBox.__new__(CandidateBox)
         box.root = FakeRoot()
@@ -1135,7 +1534,8 @@ def test_ui_components(result: TestResult):
         box._get_user32 = lambda: FakeUser32()
         box._set_noactivate = lambda enabled: calls.append(("noactivate", enabled))
         box._remember_main_geometry = lambda x, y, width=None, height=None: calls.append(("remember", x, y, width, height))
-        box.normalize_input_entry_state = lambda: calls.append("normalize")
+        original_normalize_state = CandidateBox.normalize_input_entry_state.__get__(box, CandidateBox)
+        box.normalize_input_entry_state = original_normalize_state
 
         original_restore_window = CandidateBox.show.__globals__["WindowManager"].restore_window
         try:
@@ -1146,6 +1546,214 @@ def test_ui_components(result: TestResult):
 
         assert ("geometry", "+640+360") in calls
         assert any(call[:7] == ("setwindowpos", 777, -1, 640, 360, 0, 0) for call in calls if isinstance(call, tuple) and call[0] == "setwindowpos")
+        result.add_pass(test_name)
+    except Exception as e:
+        result.add_fail(test_name, str(e))
+
+    test_name = "CandidateBox 激活时会安排一次延迟补焦"
+    try:
+        from yime.input_method.ui.candidate_box import CandidateBox
+
+        calls = []
+
+        class FakeRoot:
+            def __init__(self):
+                self.focus_widget = None
+
+            def state(self, value=None):
+                if value is None:
+                    return "normal"
+                calls.append(("state", value))
+
+            def winfo_x(self):
+                return 640
+
+            def winfo_y(self):
+                return 360
+
+            def geometry(self, value):
+                calls.append(("geometry", value))
+
+            def winfo_id(self):
+                return 777
+
+            def attributes(self, key, value=None):
+                calls.append(("attributes", key, value))
+
+            def deiconify(self):
+                calls.append("deiconify")
+
+            def update_idletasks(self):
+                calls.append("update_idletasks")
+
+            def update(self):
+                calls.append("update")
+
+            def lift(self):
+                calls.append("lift")
+
+            def focus_get(self):
+                return self.focus_widget
+
+            def after(self, delay, callback):
+                calls.append(("after", delay))
+                callback()
+                return "after-id"
+
+        class FakeUser32:
+            def ShowWindow(self, hwnd, cmd):
+                calls.append(("showwindow", hwnd, cmd))
+
+            def SetWindowPos(self, hwnd, insert_after, x, y, width, height, flags):
+                calls.append(("setwindowpos", hwnd, insert_after, x, y, width, height, flags))
+
+        class FakeInputEntry:
+            def focus_set(self):
+                calls.append("focus")
+
+            def focus_force(self):
+                calls.append("focus_force")
+                box.root.focus_widget = box.input_entry
+
+            def selection_clear(self):
+                calls.append("selection_clear")
+
+            def icursor(self, value):
+                calls.append(("cursor", value))
+
+        box = CandidateBox.__new__(CandidateBox)
+        box.root = FakeRoot()
+        box.input_entry = FakeInputEntry()
+        box._is_standby = False
+        box._SW_SHOW = 5
+        box._HWND_TOPMOST = -1
+        box._SWP_NOSIZE = 0x0001
+        box._SWP_SHOWWINDOW = 0x0040
+        box._SWP_NOOWNERZORDER = 0x0200
+        box._show_main_frame = lambda: calls.append("show_main")
+        box.set_manual_input_enabled = lambda enabled: calls.append(("manual", enabled))
+        box._resolve_geometry = lambda *args, **kwargs: (_ for _ in ()).throw(AssertionError("should not resolve geometry"))
+        box._get_user32 = lambda: FakeUser32()
+        box._set_noactivate = lambda enabled: calls.append(("noactivate", enabled))
+        box._remember_main_geometry = lambda x, y, width=None, height=None: calls.append(("remember", x, y, width, height))
+        box.normalize_input_entry_state = CandidateBox.normalize_input_entry_state.__get__(box, CandidateBox)
+
+        original_restore_window = CandidateBox.show.__globals__["WindowManager"].restore_window
+        try:
+            CandidateBox.show.__globals__["WindowManager"].restore_window = staticmethod(lambda hwnd: calls.append(("restore", hwnd)))
+            CandidateBox.show(box, focus_input=True)
+        finally:
+            CandidateBox.show.__globals__["WindowManager"].restore_window = original_restore_window
+
+        assert ("after", 60) in calls
+        assert "focus" in calls
+        assert "focus_force" in calls
+        result.add_pass(test_name)
+    except Exception as e:
+        result.add_fail(test_name, str(e))
+
+    test_name = "CandidateBox 显式锚定外部窗口时会重新计算位置"
+    try:
+        from yime.input_method.ui.candidate_box import CandidateBox
+
+        calls = []
+
+        class FakeRoot:
+            def __init__(self):
+                self.focus_widget = None
+
+            def state(self, value=None):
+                if value is None:
+                    return "normal"
+                calls.append(("state", value))
+
+            def winfo_x(self):
+                return 640
+
+            def winfo_y(self):
+                return 360
+
+            def geometry(self, value):
+                calls.append(("geometry", value))
+
+            def winfo_id(self):
+                return 777
+
+            def attributes(self, key, value=None):
+                calls.append(("attributes", key, value))
+
+            def deiconify(self):
+                calls.append("deiconify")
+
+            def update_idletasks(self):
+                calls.append("update_idletasks")
+
+            def update(self):
+                calls.append("update")
+
+            def lift(self):
+                calls.append("lift")
+
+            def focus_get(self):
+                return self.focus_widget
+
+            def after(self, delay, callback):
+                calls.append(("after", delay))
+                callback()
+                return "after-id"
+
+        class FakeUser32:
+            def ShowWindow(self, hwnd, cmd):
+                calls.append(("showwindow", hwnd, cmd))
+
+            def SetWindowPos(self, hwnd, insert_after, x, y, width, height, flags):
+                calls.append(("setwindowpos", hwnd, insert_after, x, y, width, height, flags))
+
+            def IsWindowVisible(self, hwnd):
+                return 1
+
+        class FakeInputEntry:
+            def focus_set(self):
+                box.root.focus_widget = box.input_entry
+                calls.append("focus")
+
+            def focus_force(self):
+                box.root.focus_widget = box.input_entry
+                calls.append("focus_force")
+
+            def selection_clear(self):
+                calls.append("selection_clear")
+
+            def icursor(self, value):
+                calls.append(("cursor", value))
+
+        box = CandidateBox.__new__(CandidateBox)
+        box.root = FakeRoot()
+        box.input_entry = FakeInputEntry()
+        box._is_standby = False
+        box._SW_SHOW = 5
+        box._HWND_TOPMOST = -1
+        box._SWP_NOSIZE = 0x0001
+        box._SWP_SHOWWINDOW = 0x0040
+        box._SWP_NOOWNERZORDER = 0x0200
+        box._DEBUG_UI = False
+        box._show_main_frame = lambda: calls.append("show_main")
+        box.set_manual_input_enabled = lambda enabled: calls.append(("manual", enabled))
+        box._resolve_geometry = lambda *args, **kwargs: (900, 500)
+        box._get_user32 = lambda: FakeUser32()
+        box._set_noactivate = lambda enabled: calls.append(("noactivate", enabled))
+        box._remember_main_geometry = lambda x, y, width=None, height=None: calls.append(("remember", x, y, width, height))
+        box.normalize_input_entry_state = CandidateBox.normalize_input_entry_state.__get__(box, CandidateBox)
+
+        original_restore_window = CandidateBox.show.__globals__["WindowManager"].restore_window
+        try:
+            CandidateBox.show.__globals__["WindowManager"].restore_window = staticmethod(lambda hwnd: calls.append(("restore", hwnd)))
+            CandidateBox.show(box, focus_input=True, anchor_hwnd=12345)
+        finally:
+            CandidateBox.show.__globals__["WindowManager"].restore_window = original_restore_window
+
+        assert ("geometry", "+900+500") in calls
+        assert any(call[:7] == ("setwindowpos", 777, -1, 900, 500, 0, 0) for call in calls if isinstance(call, tuple) and call[0] == "setwindowpos")
         result.add_pass(test_name)
     except Exception as e:
         result.add_fail(test_name, str(e))
@@ -1279,8 +1887,14 @@ def test_ui_components(result: TestResult):
 
         calls = []
 
+        class FakeRoot:
+            def after(self, _delay, callback):
+                calls.append("after")
+                callback()
+
         class FakeBox:
             def __init__(self):
+                self.root = FakeRoot()
                 self._on_restore_from_standby = lambda: calls.append("callback")
 
             def set_manual_input_enabled(self, enabled):
@@ -1289,9 +1903,40 @@ def test_ui_components(result: TestResult):
             def show(self, focus_input=True):
                 calls.append(("show", focus_input))
 
-        CandidateBoxActions(FakeBox()).restore_from_standby()
+        outcome = CandidateBoxActions(FakeBox()).restore_from_standby()
 
-        assert calls == ["callback"]
+        assert outcome == "break"
+        assert calls == ["after", "callback"]
+        result.add_pass(test_name)
+    except Exception as e:
+        result.add_fail(test_name, str(e))
+
+    test_name = "CandidateBoxActions 待命恢复优先延后到点击事件后执行"
+    try:
+        from yime.input_method.ui.candidate_box_actions import CandidateBoxActions
+
+        calls = []
+
+        class FakeRoot:
+            def after(self, delay, callback):
+                calls.append(("after", delay))
+                callback()
+
+        class FakeBox:
+            def __init__(self):
+                self.root = FakeRoot()
+                self._on_restore_from_standby = None
+
+            def set_manual_input_enabled(self, enabled):
+                calls.append(("manual", enabled))
+
+            def show(self, focus_input=True):
+                calls.append(("show", focus_input))
+
+        outcome = CandidateBoxActions(FakeBox()).restore_from_standby()
+
+        assert outcome == "break"
+        assert calls == [("after", 0), ("manual", True), ("show", True)]
         result.add_pass(test_name)
     except Exception as e:
         result.add_fail(test_name, str(e))
@@ -1797,8 +2442,8 @@ def test_hotkey_app(result: TestResult):
             def clear_input(self, focus_input=False):
                 shown.append(("clear", focus_input))
 
-            def show(self, focus_input=True, anchor_hwnd=None):
-                shown.append(("show", focus_input, anchor_hwnd))
+            def show(self, x=None, y=None, focus_input=True, anchor_hwnd=None, force_recompute=False):
+                shown.append(("show", x, y, focus_input, anchor_hwnd))
 
             def set_status(self, text):
                 status_updates.append(text)
@@ -1832,8 +2477,63 @@ def test_hotkey_app(result: TestResult):
         assert app.last_replace_length == 0
         assert app._display_input_buffer == ""
         assert ("clear", False) in shown
-        assert ("show", True, 24680) in shown
+        assert ("show", None, None, True, 24680) in shown
         assert status_updates[-1] == "V1 热键已唤起: hwnd=24680 标题=Fake 类=Fake"
+        result.add_pass(test_name)
+    except Exception as e:
+        result.add_fail(test_name, str(e))
+
+    test_name = "InputMethodApp V1 热键唤起启用指针模式时取不到指针位置会回退到窗口锚点"
+    try:
+        from yime.input_method.app import InputMethodApp
+
+        shown = []
+
+        class FakeWindowManager:
+            @staticmethod
+            def normalize_window_handle(hwnd):
+                return hwnd
+
+        class FakeCandidateBox:
+            def clear_input(self, focus_input=False):
+                shown.append(("clear", focus_input))
+
+            def get_pointer_position(self):
+                raise RuntimeError("no pointer")
+
+            def show(self, x=None, y=None, focus_input=True, anchor_hwnd=None, force_recompute=False):
+                shown.append(("show", x, y, focus_input, anchor_hwnd))
+
+            def set_status(self, text):
+                shown.append(("status", text))
+
+        class FakeInputManager:
+            def clear_buffer(self, notify=False):
+                shown.append(("clear_buffer", notify))
+
+        app = InputMethodApp.__new__(InputMethodApp)
+        app.own_hwnd = 12345
+        app.last_external_hwnd = None
+        app._locked_external_hwnd = None
+        app.is_passthrough_enabled = False
+        app._passive_standby_reason = "idle"
+        app.last_replace_length = 9
+        app._display_input_buffer = "abcd"
+        app.window_manager = FakeWindowManager()
+        app.candidate_box = FakeCandidateBox()
+        app.input_manager = FakeInputManager()
+        app._lock_external_target = BaseInputMethodApp._lock_external_target.__get__(app, BaseInputMethodApp)
+        app._normalize_external_hwnd = BaseInputMethodApp._normalize_external_hwnd.__get__(app, BaseInputMethodApp)
+        app.debug_ui = False
+
+        InputMethodApp._activate_from_hotkey(
+            app,
+            24680,
+            "hwnd=24680 标题=Fake 类=Fake",
+            prefer_pointer_position=True,
+        )
+
+        assert ("show", None, None, True, 24680) in shown
         result.add_pass(test_name)
     except Exception as e:
         result.add_fail(test_name, str(e))
@@ -1918,6 +2618,220 @@ def test_hotkey_app(result: TestResult):
     except Exception as e:
         result.add_fail(test_name, str(e))
 
+    test_name = "InputMethodApp V1 热键唤起时在主线程重新解析当前外部目标"
+    try:
+        from yime.input_method.app import InputMethodApp
+
+        toggles = []
+
+        class FakeWindowManager:
+            def __init__(self):
+                self.calls = 0
+
+            def get_foreground_window(self):
+                self.calls += 1
+                if self.calls == 1:
+                    return 13579
+                return 24680
+
+            @staticmethod
+            def normalize_window_handle(hwnd):
+                return None if hwnd == 13579 else hwnd
+
+            @staticmethod
+            def describe_window(hwnd):
+                return f"hwnd={hwnd} 标题=Fake 类=Fake"
+
+        app = InputMethodApp.__new__(InputMethodApp)
+        app.own_hwnd = 12345
+        app.last_external_hwnd = 24680
+        app._locked_external_hwnd = None
+        app._passive_standby_reason = "manual"
+        app.window_manager = FakeWindowManager()
+        app.debug_ui = False
+        app._normalize_external_hwnd = BaseInputMethodApp._normalize_external_hwnd.__get__(app, BaseInputMethodApp)
+        app._describe_external_target = BaseInputMethodApp._describe_external_target.__get__(app, BaseInputMethodApp)
+        app._toggle_hotkey_session = lambda foreground, target_description: toggles.append((foreground, target_description))
+
+        snapshot_foreground = app.window_manager.get_foreground_window()
+        InputMethodApp._request_hotkey_activation(app, snapshot_foreground)
+
+        assert toggles == [(24680, "hwnd=24680 标题=Fake 类=Fake")]
+        result.add_pass(test_name)
+    except Exception as e:
+        result.add_fail(test_name, str(e))
+
+    test_name = "InputMethodApp V1 热键唤起会延后到组合键释放后再切换"
+    try:
+        from yime.input_method.app import InputMethodApp
+
+        scheduled = []
+        finalized = []
+
+        app = InputMethodApp.__new__(InputMethodApp)
+        app._passive_standby_reason = "idle"
+        app._last_hotkey_activation_at = 0.0
+        app.debug_ui = False
+        app._schedule_ui = lambda delay_ms, callback: scheduled.append(delay_ms) or callback()
+        app._finalize_hotkey_activation = lambda snapshot_foreground: finalized.append(snapshot_foreground)
+
+        original_monotonic = time.monotonic
+        try:
+            time.monotonic = lambda: 10.0
+            InputMethodApp._request_hotkey_activation(app, 24680)
+        finally:
+            time.monotonic = original_monotonic
+
+        assert scheduled == [InputMethodApp._HOTKEY_WAKE_DELAY_MS]
+        assert finalized == [24680]
+        result.add_pass(test_name)
+    except Exception as e:
+        result.add_fail(test_name, str(e))
+
+    test_name = "InputMethodApp V1 热键自动连发时只处理一次"
+    try:
+        from yime.input_method.app import InputMethodApp
+
+        toggles = []
+
+        class FakeWindowManager:
+            def get_foreground_window(self):
+                return 24680
+
+            @staticmethod
+            def normalize_window_handle(hwnd):
+                return hwnd
+
+            @staticmethod
+            def describe_window(hwnd):
+                return f"hwnd={hwnd} 标题=Fake 类=Fake"
+
+        app = InputMethodApp.__new__(InputMethodApp)
+        app.own_hwnd = 12345
+        app.last_external_hwnd = 24680
+        app._locked_external_hwnd = None
+        app._passive_standby_reason = "idle"
+        app._is_closing = False
+        app.window_manager = FakeWindowManager()
+        app.debug_ui = False
+        app._last_hotkey_activation_at = 0.0
+        app._schedule_ui = lambda delay_ms, callback: callback()
+        app._normalize_external_hwnd = BaseInputMethodApp._normalize_external_hwnd.__get__(app, BaseInputMethodApp)
+        app._describe_external_target = BaseInputMethodApp._describe_external_target.__get__(app, BaseInputMethodApp)
+        app._toggle_hotkey_session = lambda foreground, target_description: toggles.append((foreground, target_description))
+
+        original_monotonic = time.monotonic
+        moments = iter((10.0, 10.1, 10.8))
+        try:
+            time.monotonic = lambda: next(moments)
+            InputMethodApp._request_hotkey_activation(app, 24680)
+            InputMethodApp._request_hotkey_activation(app, 24680)
+            InputMethodApp._request_hotkey_activation(app, 24680)
+        finally:
+            time.monotonic = original_monotonic
+
+        assert toggles == [
+            (24680, "hwnd=24680 标题=Fake 类=Fake"),
+            (24680, "hwnd=24680 标题=Fake 类=Fake"),
+        ]
+        result.add_pass(test_name)
+    except Exception as e:
+        result.add_fail(test_name, str(e))
+
+    test_name = "InputMethodApp 默认热键避开 VS Code 调试控制台冲突"
+    try:
+        from yime.input_method.app import InputMethodApp, parse_args
+
+        assert InputMethodApp._DEFAULT_HOTKEY == "<ctrl>+<alt>+<insert>"
+
+        original_argv = sys.argv
+        try:
+            sys.argv = ["yime.input_method.app"]
+            args = parse_args()
+        finally:
+            sys.argv = original_argv
+
+        assert args.hotkey == "<ctrl>+<alt>+<insert>"
+        assert InputMethodApp._has_known_hotkey_conflict("<ctrl>+<shift>+y") is True
+        assert InputMethodApp._has_known_hotkey_conflict("<ctrl>+<alt>+y") is True
+        assert InputMethodApp._has_known_hotkey_conflict("<ctrl>+<alt>+<f10>") is True
+        assert InputMethodApp._has_known_hotkey_conflict("<ctrl>+<alt>+<insert>") is False
+        result.add_pass(test_name)
+    except Exception as e:
+        result.add_fail(test_name, str(e))
+
+    test_name = "InputMethodApp 从待命点击恢复时优先使用当前外部前台窗口"
+    try:
+        from yime.input_method.app import InputMethodApp
+
+        calls = []
+
+        class FakeWindowManager:
+            def get_foreground_window(self):
+                return 30003
+
+            @staticmethod
+            def normalize_window_handle(hwnd):
+                return hwnd
+
+            @staticmethod
+            def describe_window(hwnd):
+                return f"hwnd={hwnd} 标题=Fake 类=Fake"
+
+        app = InputMethodApp.__new__(InputMethodApp)
+        app.own_hwnd = 12345
+        app.last_external_hwnd = 24680
+        app.window_manager = FakeWindowManager()
+        app._normalize_external_hwnd = BaseInputMethodApp._normalize_external_hwnd.__get__(app, BaseInputMethodApp)
+        app._describe_external_target = BaseInputMethodApp._describe_external_target.__get__(app, BaseInputMethodApp)
+        app._resolve_hotkey_target = InputMethodApp._resolve_hotkey_target.__get__(app, InputMethodApp)
+        app._activate_from_hotkey = lambda hwnd, desc, post_commit_behavior="keep-input", status_prefix="V1 热键已唤起", prefer_pointer_position=False, force_recompute=True: calls.append((hwnd, desc, post_commit_behavior, status_prefix, prefer_pointer_position, force_recompute))
+
+        InputMethodApp._resume_from_standby(app)
+
+        assert calls == [(30003, "hwnd=30003 标题=Fake 类=Fake", "keep-input", "V1 热键已唤起", False, False)]
+        result.add_pass(test_name)
+    except Exception as e:
+        result.add_fail(test_name, str(e))
+
+    test_name = "InputMethodApp 前台轮询会排除归一化后的自身窗口"
+    try:
+        from yime.input_method.app import InputMethodApp
+
+        scheduled = []
+        layout_events = []
+
+        app = InputMethodApp.__new__(InputMethodApp)
+        app.own_hwnd = 2099644
+        app._normalized_own_hwnd = 3015738
+        app.last_external_hwnd = 24680
+        app.last_external_layout = None
+        app._locked_external_hwnd = None
+        app._is_closing = False
+        app.window_manager = type(
+            "FakeWindowManager",
+            (),
+            {
+                "get_foreground_window": lambda self: 3015738,
+                "normalize_window_handle": staticmethod(
+                    lambda hwnd: 3015738 if hwnd in (2099644, 3015738) else hwnd
+                ),
+                "get_window_keyboard_layout": staticmethod(lambda hwnd: 1033),
+            },
+        )()
+        app._normalize_external_hwnd = BaseInputMethodApp._normalize_external_hwnd.__get__(app, BaseInputMethodApp)
+        app._schedule_ui = lambda delay, callback: scheduled.append((delay, callback))
+        app._handle_external_layout_change = lambda layout: layout_events.append(layout)
+
+        InputMethodApp._poll_foreground_window(app)
+
+        assert app.last_external_hwnd == 24680
+        assert layout_events == []
+        assert scheduled and scheduled[0][0] == 250
+        result.add_pass(test_name)
+    except Exception as e:
+        result.add_fail(test_name, str(e))
+
     test_name = "BaseInputMethodApp keep-input 模式发送后会回到输入框"
     try:
         app = BaseInputMethodApp.__new__(BaseInputMethodApp)
@@ -1985,7 +2899,7 @@ def test_hotkey_app(result: TestResult):
         InputMethodApp._refocus_candidate_input(app)
 
         assert app._locked_external_hwnd == 24680
-        assert events[0] == ("show", True, 24680)
+        assert events[0] == ("show", True, None)
         assert "focus" in events
         result.add_pass(test_name)
     except Exception as e:
@@ -2033,6 +2947,7 @@ def test_hotkey_app(result: TestResult):
 
         app = InputMethodApp.__new__(InputMethodApp)
         app.input_mode = "hotkey"
+        app.hotkey = InputMethodApp._DEFAULT_HOTKEY
         app.hotkey_listener = object()
         app._hotkey_mode = "unknown"
         app._set_post_commit_behavior = lambda behavior: events.append(("post_commit", behavior))
@@ -2092,6 +3007,7 @@ def test_base_app_target_lock(result: TestResult):
     try:
         app = BaseInputMethodApp.__new__(BaseInputMethodApp)
         app.own_hwnd = 12345
+        app._normalized_own_hwnd = 12345
         app.last_external_hwnd = 20001
         app._locked_external_hwnd = None
         app.window_manager = type(
@@ -2114,6 +3030,28 @@ def test_base_app_target_lock(result: TestResult):
         assert app._locked_external_hwnd == 20001
         assert app.last_external_hwnd == 20001
         assert scheduled and scheduled[0][0] == 250
+        result.add_pass(test_name)
+    except Exception as e:
+        result.add_fail(test_name, str(e))
+
+    test_name = "BaseInputMethodApp 归一化后会排除自身顶层窗口"
+    try:
+        app = BaseInputMethodApp.__new__(BaseInputMethodApp)
+        app.own_hwnd = 2099644
+        app._normalized_own_hwnd = 3015738
+        app.window_manager = type(
+            "FakeWindowManager",
+            (),
+            {
+                "normalize_window_handle": staticmethod(
+                    lambda hwnd: 3015738 if hwnd in (2099644, 3015738) else hwnd
+                )
+            },
+        )()
+
+        assert BaseInputMethodApp._normalize_external_hwnd(app, 3015738) is None
+        assert BaseInputMethodApp._normalize_external_hwnd(app, 2099644) is None
+        assert BaseInputMethodApp._normalize_external_hwnd(app, 24680) == 24680
         result.add_pass(test_name)
     except Exception as e:
         result.add_fail(test_name, str(e))

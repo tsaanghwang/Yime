@@ -186,6 +186,72 @@ class WindowManager:
         user32.GetWindowRect(wintypes.HWND(hwnd), ctypes.byref(rect))
         return (rect.left, rect.top, rect.right, rect.bottom)
 
+    @classmethod
+    def get_input_anchor_rect(cls, hwnd: Optional[int]) -> Optional[Tuple[int, int, int, int]]:
+        """尽量返回当前输入控件或插入点附近的屏幕坐标矩形。"""
+        normalized = cls.normalize_window_handle(hwnd)
+        if not normalized:
+            return None
+
+        target_hwnd = wintypes.HWND(normalized)
+        thread_id = cls._user32.GetWindowThreadProcessId(target_hwnd, None)
+        if not thread_id:
+            return None
+
+        class GUITHREADINFO(ctypes.Structure):
+            _fields_ = [
+                ("cbSize", wintypes.DWORD),
+                ("flags", wintypes.DWORD),
+                ("hwndActive", wintypes.HWND),
+                ("hwndFocus", wintypes.HWND),
+                ("hwndCapture", wintypes.HWND),
+                ("hwndMenuOwner", wintypes.HWND),
+                ("hwndMoveSize", wintypes.HWND),
+                ("hwndCaret", wintypes.HWND),
+                ("rcCaret", wintypes.RECT),
+            ]
+
+        gui_info = GUITHREADINFO(cbSize=ctypes.sizeof(GUITHREADINFO))
+        if not cls._user32.GetGUIThreadInfo(thread_id, ctypes.byref(gui_info)):
+            return None
+
+        def caret_rect_to_screen(reference_hwnd: int) -> Optional[Tuple[int, int, int, int]]:
+            class POINT(ctypes.Structure):
+                _fields_ = [("x", ctypes.c_long), ("y", ctypes.c_long)]
+
+            if not reference_hwnd:
+                return None
+
+            rect = gui_info.rcCaret
+            if rect.right <= rect.left and rect.bottom <= rect.top:
+                return None
+
+            left_top = POINT(rect.left, rect.top)
+            right_bottom = POINT(rect.right, rect.bottom)
+            hwnd_value = wintypes.HWND(reference_hwnd)
+            if not cls._user32.ClientToScreen(hwnd_value, ctypes.byref(left_top)):
+                return None
+            if not cls._user32.ClientToScreen(hwnd_value, ctypes.byref(right_bottom)):
+                return None
+            return (left_top.x, left_top.y, right_bottom.x, right_bottom.y)
+
+        caret_hwnd = cls._hwnd_to_int(gui_info.hwndCaret)
+        if caret_hwnd:
+            caret_rect = caret_rect_to_screen(caret_hwnd)
+            if caret_rect is not None:
+                return caret_rect
+
+        focus_hwnd = cls._hwnd_to_int(gui_info.hwndFocus)
+        if focus_hwnd:
+            caret_rect = caret_rect_to_screen(focus_hwnd)
+            if caret_rect is not None:
+                return caret_rect
+
+        if focus_hwnd:
+            return cls.get_window_rect(focus_hwnd)
+
+        return None
+
     @staticmethod
     def get_cursor_position() -> Tuple[int, int]:
         """

@@ -10,6 +10,7 @@ import argparse
 import ctypes
 import os
 import queue
+import time
 import tkinter as tk
 from typing import Any, Callable, Optional, cast
 
@@ -25,22 +26,34 @@ class InputMethodApp(BaseInputMethodApp):
 
     _DEFAULT_INPUT_MODE = "hotkey"
     _GLOBAL_LISTENER_INPUT_MODE = "global-listener"
+    _DEFAULT_HOTKEY = "<ctrl>+<alt>+<insert>"
+    _KNOWN_CONFLICT_HOTKEYS = {
+        "<ctrl>+<shift>+y",
+        "<ctrl>+<alt>+y",
+        "<ctrl>+<alt>+<f10>",
+    }
+    _HOTKEY_WAKE_DELAY_MS = 90
+    _HOTKEY_REACTIVATION_DEBOUNCE_SECONDS = 0.8
 
     def _format_hotkey_label(self) -> str:
         """将 pynput 风格的热键定义转换为更适合状态提示的文本。"""
-        segments = []
+        segments: list[str] = []
         for segment in self.hotkey.split("+"):
             cleaned = segment.strip().strip("<>")
             if cleaned:
                 segments.append(cleaned)
         return "+".join(segments) or self.hotkey
 
+    @classmethod
+    def _has_known_hotkey_conflict(cls, hotkey: str) -> bool:
+        return hotkey.strip().lower() in cls._KNOWN_CONFLICT_HOTKEYS
+
     def __init__(
         self,
         auto_paste: bool = True,
         font_family: str = "音元",
         enable_pause_toggle: bool = False,
-        hotkey: str = "<ctrl>+<shift>+y",
+        hotkey: str = _DEFAULT_HOTKEY,
         input_mode: str = _DEFAULT_INPUT_MODE,
     ) -> None:
         """
@@ -76,6 +89,16 @@ class InputMethodApp(BaseInputMethodApp):
         self._is_closing = False
         self._after_ids: set[str] = set()
         self._ui_queue: queue.SimpleQueue[Callable[[], None]] = queue.SimpleQueue()
+        self._last_hotkey_activation_at = 0.0
+
+        initial_external_hwnd = self._normalize_external_hwnd(
+            self.window_manager.get_foreground_window()
+        )
+        if initial_external_hwnd is not None:
+            self.last_external_hwnd = initial_external_hwnd
+            self.last_external_layout = self.window_manager.get_window_keyboard_layout(
+                initial_external_hwnd
+            )
 
         self.input_manager = InputManager(
             on_candidates_update=self._dispatch_candidates_update,
@@ -125,6 +148,11 @@ class InputMethodApp(BaseInputMethodApp):
         self._set_post_commit_behavior("keep-input")
         if self.hotkey_listener:
             self._hotkey_mode = "hotkey"
+            if self._has_known_hotkey_conflict(self.hotkey):
+                print(
+                    "[YIME V1] 当前热键与已知快捷键冲突，"
+                    "可能导致焦点误跳转或与码元输入冲突。建议改用 --hotkey <ctrl>+<alt>+<insert>。"
+                )
             self.candidate_box.set_status(
                 f"V1 热键模式已就绪：按 {self._format_hotkey_label()} 唤起输入框；再次按下可回待命。"
             )
@@ -191,9 +219,12 @@ class InputMethodApp(BaseInputMethodApp):
         if self._is_closing:
             return
         foreground = self.window_manager.get_foreground_window()
-        if not self._locked_external_hwnd and foreground and foreground != self.own_hwnd:
-            self.last_external_hwnd = foreground
-            layout = self.window_manager.get_window_keyboard_layout(foreground)
+        normalized_foreground = None
+        if not self._locked_external_hwnd:
+            normalized_foreground = self._normalize_external_hwnd(foreground)
+        if normalized_foreground is not None:
+            self.last_external_hwnd = normalized_foreground
+            layout = self.window_manager.get_window_keyboard_layout(normalized_foreground)
             if (
                 layout is not None
                 and layout != self.last_external_layout
@@ -252,16 +283,9 @@ class InputMethodApp(BaseInputMethodApp):
 
             def on_activate() -> None:
                 print("V1 快捷键激活：唤起候选框")
-                foreground = self._resolve_hotkey_target(
-                    self.window_manager.get_foreground_window()
-                )
-                target_description = self._describe_external_target(foreground)
-                print(f"[YIME V1] 本次锁定目标: {target_description}")
+                snapshot_foreground = self.window_manager.get_foreground_window()
                 self._enqueue_ui(
-                    lambda: self._toggle_hotkey_session(
-                        foreground,
-                        target_description,
-                    )
+                    lambda: self._request_hotkey_activation(snapshot_foreground)
                 )
 
             self.hotkey_listener = keyboard.GlobalHotKeys({
@@ -272,12 +296,73 @@ class InputMethodApp(BaseInputMethodApp):
             self.hotkey_listener = None
             print(f"V1 设置快捷键失败: {exc}")
 
+    def _request_hotkey_activation(
+        self,
+        snapshot_foreground: Optional[int],
+    ) -> None:
+        """在 Tk 主线程中解析热键目标，避免监听线程读到瞬时错误前台。"""
+        now = time.monotonic()
+        last_activation_at = getattr(self, "_last_hotkey_activation_at", 0.0)
+        if now - last_activation_at < self._HOTKEY_REACTIVATION_DEBOUNCE_SECONDS:
+            if getattr(self, "debug_ui", False):
+                print(
+                    "[YIME DEBUG] hotkey activate ignored "
+                    f"delta={now - last_activation_at:.3f}s "
+                    f"threshold={self._HOTKEY_REACTIVATION_DEBOUNCE_SECONDS:.3f}s"
+                )
+            return
+        self._last_hotkey_activation_at = now
+
+        if self._passive_standby_reason == "manual":
+            self._finalize_hotkey_activation(snapshot_foreground)
+            return
+
+        if getattr(self, "debug_ui", False):
+            print(
+                "[YIME DEBUG] hotkey wake scheduled "
+                f"delay_ms={self._HOTKEY_WAKE_DELAY_MS} snapshot={snapshot_foreground}"
+            )
+        self._schedule_ui(
+            self._HOTKEY_WAKE_DELAY_MS,
+            lambda: self._finalize_hotkey_activation(snapshot_foreground),
+        )
+
+    def _finalize_hotkey_activation(
+        self,
+        snapshot_foreground: Optional[int],
+    ) -> None:
+        """在组合键释放后执行真正的热键会话切换。"""
+        current_foreground = self.window_manager.get_foreground_window()
+        foreground = self._resolve_hotkey_target(current_foreground)
+        if foreground is None and snapshot_foreground != current_foreground:
+            foreground = self._resolve_hotkey_target(snapshot_foreground)
+        target_description = self._describe_external_target(foreground)
+        print(f"[YIME V1] 本次锁定目标: {target_description}")
+        if getattr(self, "debug_ui", False):
+            print(
+                "[YIME DEBUG] hotkey activate "
+                f"snapshot={snapshot_foreground} foreground={current_foreground} "
+                f"resolved={foreground} last_external={self.last_external_hwnd} "
+                f"locked={self._locked_external_hwnd}"
+            )
+        self._toggle_hotkey_session(
+            foreground,
+            target_description,
+        )
+
     def _resolve_hotkey_target(self, foreground: Optional[int]) -> Optional[int]:
         """热键唤起时优先取当前外部前台，取不到时回退到上次外部目标。"""
         normalized_foreground = self._normalize_external_hwnd(foreground)
-        if normalized_foreground is not None:
-            return normalized_foreground
-        return self._normalize_external_hwnd(self.last_external_hwnd)
+        resolved = normalized_foreground
+        if resolved is None:
+            resolved = self._normalize_external_hwnd(self.last_external_hwnd)
+        if getattr(self, "debug_ui", False):
+            print(
+                "[YIME DEBUG] resolve hotkey target "
+                f"foreground={foreground} normalized={normalized_foreground} "
+                f"last_external={self.last_external_hwnd} resolved={resolved}"
+            )
+        return resolved
 
     def _activate_from_hotkey(
         self,
@@ -286,9 +371,17 @@ class InputMethodApp(BaseInputMethodApp):
         *,
         post_commit_behavior: str = "keep-input",
         status_prefix: str = "V1 热键已唤起",
+        prefer_pointer_position: bool = False,
+        force_recompute: bool = True,
     ) -> None:
         """在主线程中从热键进入手动输入状态。"""
-        self._lock_external_target(foreground)
+        locked_target = self._lock_external_target(foreground)
+        if getattr(self, "debug_ui", False):
+            print(
+                "[YIME DEBUG] activate manual input "
+                f"requested={foreground} locked={locked_target} "
+                f"status='{target_description}' post_commit={post_commit_behavior}"
+            )
         self._set_post_commit_behavior(post_commit_behavior)
         self.is_passthrough_enabled = True
         self._passive_standby_reason = "manual"
@@ -296,7 +389,31 @@ class InputMethodApp(BaseInputMethodApp):
         self._display_input_buffer = ""
         self.input_manager.clear_buffer(notify=False)
         self.candidate_box.clear_input(focus_input=False)
-        self.candidate_box.show(focus_input=True, anchor_hwnd=foreground)
+        pointer_x: Optional[int] = None
+        pointer_y: Optional[int] = None
+        if prefer_pointer_position:
+            try:
+                pointer_x, pointer_y = self.candidate_box.get_pointer_position()
+            except Exception:
+                pointer_x = None
+                pointer_y = None
+
+        if getattr(self, "debug_ui", False):
+            print(
+                "[YIME DEBUG] activate position "
+                f"pointer=({pointer_x},{pointer_y}) anchor={foreground} prefer_pointer={prefer_pointer_position}"
+            )
+
+        if prefer_pointer_position and pointer_x is not None and pointer_y is not None:
+            self.candidate_box.show(
+                pointer_x,
+                pointer_y + 20,
+                focus_input=True,
+                anchor_hwnd=foreground,
+                force_recompute=force_recompute,
+            )
+        else:
+            self.candidate_box.show(focus_input=True, anchor_hwnd=foreground, force_recompute=force_recompute)
         self.candidate_box.set_status(f"{status_prefix}: {target_description}")
 
     def _toggle_hotkey_session(
@@ -359,7 +476,7 @@ class InputMethodApp(BaseInputMethodApp):
 
     def _refocus_candidate_input(self) -> None:
         """外部编辑动作完成后，将焦点拉回编码输入框。"""
-        self.candidate_box.show(focus_input=True, anchor_hwnd=self.last_external_hwnd)
+        self.candidate_box.show(focus_input=True)
         self.candidate_box.input_entry.focus_set()
         self.candidate_box.input_entry.icursor(tk.END)
         self.candidate_box.input_entry.selection_clear()
@@ -407,11 +524,20 @@ class InputMethodApp(BaseInputMethodApp):
 
     def _resume_from_standby(self) -> None:
         """用户主动点回候选框时，进入手动输入模式，不恢复全局接管。"""
-        target_description = self._describe_external_target(self.last_external_hwnd)
+        current_foreground = self.window_manager.get_foreground_window()
+        target_hwnd = self._resolve_hotkey_target(current_foreground)
+        target_description = self._describe_external_target(target_hwnd)
+        if getattr(self, "debug_ui", False):
+            print(
+                "[YIME DEBUG] resume from standby "
+                f"foreground={current_foreground} resolved={target_hwnd} "
+                f"last_external={self.last_external_hwnd} locked={self._locked_external_hwnd}"
+            )
         self._activate_from_hotkey(
-            self.last_external_hwnd,
+            target_hwnd,
             target_description,
             post_commit_behavior="keep-input",
+            force_recompute=False,
         )
 
     def _dispatch_candidates_update(
@@ -670,6 +796,7 @@ class InputMethodApp(BaseInputMethodApp):
 
 def parse_args() -> argparse.Namespace:
     """解析命令行参数"""
+    default_hotkey = InputMethodApp._DEFAULT_HOTKEY
     parser = argparse.ArgumentParser(description="音元输入法 Windows 候选框")
     parser.add_argument(
         "--input-mode",
@@ -694,8 +821,8 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--hotkey",
-        default="<ctrl>+<shift>+y",
-        help="从待命状态唤起输入框的快捷键。默认: Ctrl+Shift+Y",
+        default=default_hotkey,
+        help="从待命状态唤起输入框的快捷键。默认: Ctrl+Alt+Insert；避开 VS Code 与码元输入冲突。",
     )
     return parser.parse_args()
 
