@@ -32,7 +32,6 @@ try:
     import win32security
     import win32ts
     import win32wnet
-    import winxpgui
     import pythoncom
     HAS_WIN32 = True
 except ImportError:
