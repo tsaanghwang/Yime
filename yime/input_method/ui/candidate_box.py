@@ -533,7 +533,7 @@ class CandidateBox(CandidateRendererMixin):
         if preserve_current_position:
             target_x = self.root.winfo_x()
             target_y = self.root.winfo_y()
-        elif not force_recompute and was_standby and x is None and y is None and self._last_main_geometry is not None:
+        elif was_standby and x is None and y is None and self._last_main_geometry is not None:
             # 当我们从待命图标点击唤醒时，如果外部窗口指定了 anchor_hwnd，我们应当优先锚定新的输入点，
             # 而不是死板地回到 _last_main_geometry （因为用户的焦点可能已经切换到别处了）
             if anchor_hwnd is not None:
@@ -547,11 +547,13 @@ class CandidateBox(CandidateRendererMixin):
             else:
                 target_x, target_y, _, _ = self._last_main_geometry
         else:
+            can_use_pointer = self._last_main_geometry is None
             target_x, target_y = self.window_geometry.resolve_geometry(
                 x,
                 y,
                 focus_input=focus_input,
                 anchor_hwnd=anchor_hwnd,
+                allow_pointer_heuristic=can_use_pointer,
             )
 
         # 移除显式指定尺寸的设定，使用Tkinter自适应
