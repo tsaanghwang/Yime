@@ -542,6 +542,7 @@ class CandidateBox(CandidateRendererMixin):
                     y,
                     focus_input=focus_input,
                     anchor_hwnd=anchor_hwnd,
+                    allow_pointer_heuristic=False,
                 )
             else:
                 target_x, target_y, _, _ = self._last_main_geometry

@@ -25,6 +25,7 @@ class CandidateWindowGeometry:
         width: int,
         height: int,
         anchor_hwnd: Optional[int] = None,
+        allow_pointer_heuristic: bool = True,
     ) -> Tuple[int, int]:
         foreground = anchor_hwnd or WindowManager.get_foreground_window()
         own_hwnd = self.root.winfo_id()
@@ -36,10 +37,13 @@ class CandidateWindowGeometry:
 
                 # 如果无法拿到真实的文字光标坐标（由于外部窗口未提供），则使用鼠标光标代替，真正跟随不同的输入点
                 if (input_width <= 2 and input_height <= 2) or input_width > 100 or input_height > 100:
-                    if self.debug_ui:
-                        print(f"[Geometry.anchor] non-caret rect {input_rect} -> pointer heuristic")
-                    pt_x, pt_y = WindowManager.get_cursor_position()
-                    return pt_x + 12, pt_y + 24
+                    if allow_pointer_heuristic:
+                        if self.debug_ui:
+                            print(f"[Geometry.anchor] non-caret rect {input_rect} -> pointer heuristic")
+                        pt_x, pt_y = WindowManager.get_cursor_position()
+                        return pt_x + 12, pt_y + 24
+                    elif self._last_main_geometry:
+                        return self._last_main_geometry[0], self._last_main_geometry[1]
 
                 left, top, right, bottom = input_rect
                 return (
@@ -48,10 +52,14 @@ class CandidateWindowGeometry:
                 )
 
             # 没有提取到任何光标边界，也默认回归鼠标位置
-            if self.debug_ui:
-                print("[Geometry.anchor] no input rect -> pointer heuristic")
-            pt_x, pt_y = WindowManager.get_cursor_position()
-            return pt_x + 12, pt_y + 24
+            if allow_pointer_heuristic:
+                if self.debug_ui:
+                    print("[Geometry.anchor] no input rect -> pointer heuristic")
+                pt_x, pt_y = WindowManager.get_cursor_position()
+                return pt_x + 12, pt_y + 24
+            elif self._last_main_geometry:
+                return self._last_main_geometry[0], self._last_main_geometry[1]
+
         if self.debug_ui:
             print(
                 "[Geometry.anchor] fallback root corner "
@@ -66,6 +74,7 @@ class CandidateWindowGeometry:
         *,
         focus_input: bool,
         anchor_hwnd: Optional[int] = None,
+        allow_pointer_heuristic: bool = True,
     ) -> Tuple[int, int]:
         self.root.update_idletasks()
 
@@ -82,6 +91,7 @@ class CandidateWindowGeometry:
                 width,
                 height,
                 anchor_hwnd=anchor_hwnd,
+                allow_pointer_heuristic=allow_pointer_heuristic,
             )
             anchor_x, anchor_y = self.screen_to_tk_coords(anchor_x, anchor_y)
             target_x = anchor_x if x is None and focus_input else (virtual_root_x + 32 if x is None else x)
