@@ -134,7 +134,7 @@ class BaseInputMethodApp:
 
     def _copy_text_with_status(self, text: str) -> None:
         self.clipboard.copy(text)
-        self.candidate_box.status_var.set(f"已复制: {text}")
+        self.candidate_box.set_status(f"已复制: {text}")
 
     def _normalize_external_hwnd(self, hwnd: Optional[int]) -> Optional[int]:
         normalized = self.window_manager.normalize_window_handle(hwnd)
@@ -245,12 +245,12 @@ class BaseInputMethodApp:
         target_description = self._describe_external_target(target_hwnd)
         should_keep_input = self._should_keep_input_after_commit()
         if not target_hwnd:
-            self.candidate_box.status_var.set(f"已复制: {hanzi}，未找到上一个窗口")
+            self.candidate_box.set_status(f"已复制: {hanzi}，未找到上一个窗口")
             self._unlock_external_target()
             return
 
         if not self._restore_external_window():
-            self.candidate_box.status_var.set(
+            self.candidate_box.set_status(
                 f"已复制: {hanzi}，恢复目标失败：{target_description}"
             )
             print(f"[YIME] 恢复目标失败: {target_description}")
@@ -272,7 +272,7 @@ class BaseInputMethodApp:
             self._schedule_ui(170, self.keyboard_simulator.send_ctrl_v)
             self._schedule_ui(
                 280,
-                lambda: self.candidate_box.status_var.set(
+                lambda: self.candidate_box.set_status(
                     f"已替换 {self.last_replace_length} 个编码字符: {hanzi} -> {target_description}"
                 ),
             )
@@ -285,7 +285,7 @@ class BaseInputMethodApp:
         self._schedule_ui(80, self.keyboard_simulator.send_ctrl_v)
         self._schedule_ui(
             180,
-            lambda: self.candidate_box.status_var.set(
+            lambda: self.candidate_box.set_status(
                 f"已回贴: {hanzi} -> {target_description}"
             ),
         )

@@ -35,6 +35,7 @@ class CandidateBoxActions:
             )
 
         self.box.root.bind("<Return>", self.on_confirm_key)
+        self.box.input_entry.bind("<KeyRelease>", self.on_input_change)
         self.box.input_entry.bind("<Return>", self.on_confirm_key)
         self.box.commit_entry.bind("<Return>", self.on_confirm_key)
         self.box.root.bind("<space>", self.on_confirm_key)

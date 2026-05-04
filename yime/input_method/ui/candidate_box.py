@@ -134,6 +134,7 @@ class CandidateBox(CandidateRendererMixin):
 
         # 创建缺失的变量
         self.page_size_var = tk.IntVar(value=max_candidates)
+        self.page_size_spinbox = None
         self.page_info_var = tk.StringVar(self.root, value="第 1/1 页")
         self.shortcut_hint_var = tk.StringVar(value="Space 选首选")
         self.projected_code_var = tk.StringVar(self.root, value="")
@@ -155,6 +156,7 @@ class CandidateBox(CandidateRendererMixin):
         # 构建附加子系统
         self.window_system = CandidateWindowSystem(self.root)
         self.window_geometry = CandidateWindowGeometry(self.root)
+        self.window_geometry.debug_ui = self._DEBUG_UI
 
         # 不要硬性指定宽高，让它自然展开，防止越加越多被裁剪
         self.root.attributes("-topmost", True)
@@ -189,6 +191,151 @@ class CandidateBox(CandidateRendererMixin):
     def _bind_keys(self) -> None:
         """绑定快捷键"""
         self.actions.bind_keys()
+
+    def _get_user32(self):
+        if hasattr(self, "window_system") and self.window_system:
+            return self.window_system._get_user32()
+        return ctypes.windll.user32
+
+    def _set_noactivate(self, enabled: bool) -> None:
+        if hasattr(self, "window_system") and self.window_system:
+            self.window_system.set_noactivate(enabled)
+
+    def _remember_main_geometry(
+        self,
+        x: int,
+        y: int,
+        width: Optional[int] = None,
+        height: Optional[int] = None,
+    ) -> None:
+        resolved_width = width if width is not None else self.root.winfo_width() or self.root.winfo_reqwidth()
+        resolved_height = height if height is not None else self.root.winfo_height() or self.root.winfo_reqheight()
+        self._last_main_geometry = (x, y, resolved_width, resolved_height)
+        if hasattr(self, "window_geometry") and self.window_geometry:
+            self.window_geometry.remember_main_geometry(x, y, resolved_width, resolved_height)
+
+    def _get_last_main_geometry(self) -> Optional[tuple[int, int, int, int]]:
+        if hasattr(self, "window_geometry") and self.window_geometry:
+            geometry = self.window_geometry.get_last_main_geometry()
+            if geometry is not None:
+                self._last_main_geometry = geometry
+                return geometry
+        return getattr(self, "_last_main_geometry", None)
+
+    def _screen_to_tk_coords(self, x: int, y: int) -> tuple[int, int]:
+        try:
+            user32 = self._get_user32()
+            sm_xvirtualscreen = 76
+            sm_yvirtualscreen = 77
+            sm_cxvirtualscreen = 78
+            sm_cyvirtualscreen = 79
+
+            physical_root_x = int(user32.GetSystemMetrics(sm_xvirtualscreen))
+            physical_root_y = int(user32.GetSystemMetrics(sm_yvirtualscreen))
+            physical_width = int(user32.GetSystemMetrics(sm_cxvirtualscreen))
+            physical_height = int(user32.GetSystemMetrics(sm_cyvirtualscreen))
+
+            tk_root_x = self.root.winfo_vrootx()
+            tk_root_y = self.root.winfo_vrooty()
+            tk_width = self.root.winfo_vrootwidth() or self.root.winfo_screenwidth()
+            tk_height = self.root.winfo_vrootheight() or self.root.winfo_screenheight()
+
+            if physical_width <= 0 or physical_height <= 0 or tk_width <= 0 or tk_height <= 0:
+                return x, y
+
+            scale_x = tk_width / physical_width
+            scale_y = tk_height / physical_height
+            converted_x = tk_root_x + round((x - physical_root_x) * scale_x)
+            converted_y = tk_root_y + round((y - physical_root_y) * scale_y)
+            return converted_x, converted_y
+        except Exception:
+            return x, y
+
+    def _resolve_activation_anchor(
+        self,
+        width: int,
+        height: int,
+        anchor_hwnd: Optional[int] = None,
+        allow_pointer_heuristic: bool = True,
+    ) -> tuple[int, int]:
+        foreground = anchor_hwnd or WindowManager.get_foreground_window()
+        own_hwnd = self.root.winfo_id()
+        if foreground and foreground != own_hwnd:
+            input_rect = WindowManager.get_input_anchor_rect(foreground)
+            if input_rect is not None:
+                input_width = max(0, input_rect[2] - input_rect[0])
+                input_height = max(0, input_rect[3] - input_rect[1])
+                if (input_width <= 2 and input_height <= 2) or input_width > 100 or input_height > 100:
+                    if allow_pointer_heuristic:
+                        pt_x, pt_y = WindowManager.get_cursor_position()
+                        return pt_x + 12, pt_y + 24
+                    last_main_geometry = self._get_last_main_geometry()
+                    if last_main_geometry is not None:
+                        return last_main_geometry[0], last_main_geometry[1]
+
+                left, top, right, bottom = input_rect
+                return (
+                    right + min(24, max(12, width // 8)),
+                    bottom + min(24, max(12, height // 6)),
+                )
+
+            if allow_pointer_heuristic:
+                pt_x, pt_y = WindowManager.get_cursor_position()
+                return pt_x + 12, pt_y + 24
+            last_main_geometry = self._get_last_main_geometry()
+            if last_main_geometry is not None:
+                return last_main_geometry[0], last_main_geometry[1]
+
+        return self.root.winfo_vrootx() + 32, self.root.winfo_vrooty() + 32
+
+    def _resolve_geometry(
+        self,
+        x: Optional[int],
+        y: Optional[int],
+        *,
+        focus_input: bool,
+        anchor_hwnd: Optional[int] = None,
+        allow_pointer_heuristic: bool = True,
+    ) -> tuple[int, int]:
+        self.root.update_idletasks()
+
+        width = self.root.winfo_reqwidth()
+        height = self.root.winfo_reqheight()
+        virtual_root_x = self.root.winfo_vrootx()
+        virtual_root_y = self.root.winfo_vrooty()
+        screen_width = self.root.winfo_vrootwidth() or self.root.winfo_screenwidth()
+        screen_height = self.root.winfo_vrootheight() or self.root.winfo_screenheight()
+
+        if x is None or y is None:
+            anchor_x, anchor_y = self._resolve_activation_anchor(
+                width,
+                height,
+                anchor_hwnd=anchor_hwnd,
+                allow_pointer_heuristic=allow_pointer_heuristic,
+            )
+            anchor_x, anchor_y = self._screen_to_tk_coords(anchor_x, anchor_y)
+            target_x = anchor_x if x is None and focus_input else (virtual_root_x + 32 if x is None else x)
+            target_y = anchor_y if y is None and focus_input else (virtual_root_y + 32 if y is None else y)
+        else:
+            target_x = x
+            target_y = y
+
+        min_x = virtual_root_x
+        min_y = virtual_root_y
+        max_x = max(min_x, virtual_root_x + screen_width - width - 8)
+        max_y = max(min_y, virtual_root_y + screen_height - height - 8)
+        target_x = min(max(target_x, min_x), max_x)
+        target_y = min(max(target_y, min_y), max_y)
+        return target_x, target_y
+
+    def get_pointer_position(self) -> tuple[int, int]:
+        if hasattr(self, "window_geometry") and self.window_geometry:
+            return self.window_geometry.get_pointer_position()
+        self.root.update_idletasks()
+        return self.root.winfo_pointerx(), self.root.winfo_pointery()
+
+    def _reset_status_message(self) -> None:
+        self.set_status(self._DEFAULT_STATUS_TEXT)
 
     def _on_manual_input_key_press(self, event: Optional[tk.Event] = None) -> Optional[str]:
         if not event or event.widget != self.input_entry or not self._manual_input_enabled:
@@ -397,6 +544,7 @@ class CandidateBox(CandidateRendererMixin):
         self.projected_input_text = ""
         self.projected_code_var.set("")
         self.input_outline_var.set("")
+        self._reset_status_message()
         self._render_candidates()
         self._resize_to_content_if_visible()
         if focus_input:
@@ -414,13 +562,13 @@ class CandidateBox(CandidateRendererMixin):
         """撤销缓冲区中的最后一个字符。"""
         current = self.commit_var.get()
         if not current:
-            self.status_var.set("缓冲区为空，无可撤销内容。")
+            self.set_status("缓冲区为空，无可撤销内容。")
             return
         self.commit_var.set(current[:-1])
         if self.commit_var.get():
-            self.status_var.set(f"已撤销最后一字，缓冲区: {self.commit_var.get()}")
+            self.set_status(f"已撤销最后一字，缓冲区: {self.commit_var.get()}")
         else:
-            self.status_var.set("已撤销最后一字，缓冲区已清空。")
+            self.set_status("已撤销最后一字，缓冲区已清空。")
 
     def append_commit_text(self, text: str) -> None:
         """向缓冲区追加已选候选。"""
@@ -518,6 +666,7 @@ class CandidateBox(CandidateRendererMixin):
 
         self._show_main_frame()
         self.set_manual_input_enabled(focus_input)
+        last_main_geometry = self._get_last_main_geometry()
         preserve_current_position = (
             x is None
             and y is None
@@ -529,11 +678,11 @@ class CandidateBox(CandidateRendererMixin):
         if preserve_current_position:
             target_x = self.root.winfo_x()
             target_y = self.root.winfo_y()
-        elif was_standby and x is None and y is None and self._last_main_geometry is not None:
+        elif was_standby and x is None and y is None and last_main_geometry is not None:
             # 当我们从待命图标点击唤醒时，如果外部窗口指定了 anchor_hwnd，我们应当优先锚定新的输入点，
             # 而不是死板地回到 _last_main_geometry （因为用户的焦点可能已经切换到别处了）
             if anchor_hwnd is not None:
-                target_x, target_y = self.window_geometry.resolve_geometry(
+                target_x, target_y = self._resolve_geometry(
                     x,
                     y,
                     focus_input=focus_input,
@@ -541,10 +690,10 @@ class CandidateBox(CandidateRendererMixin):
                     allow_pointer_heuristic=False,
                 )
             else:
-                target_x, target_y, _, _ = self._last_main_geometry
+                target_x, target_y, _, _ = last_main_geometry
         else:
-            can_use_pointer = self._last_main_geometry is None
-            target_x, target_y = self.window_geometry.resolve_geometry(
+            can_use_pointer = last_main_geometry is None
+            target_x, target_y = self._resolve_geometry(
                 x,
                 y,
                 focus_input=focus_input,
@@ -555,9 +704,9 @@ class CandidateBox(CandidateRendererMixin):
         # 移除显式指定尺寸的设定，使用Tkinter自适应
         self.root.geometry(f"+{target_x}+{target_y}")
         hwnd = self.root.winfo_id()
-        user32 = self.window_system._get_user32()
+        user32 = self._get_user32()
         if not focus_input:
-            if hasattr(self, "window_system") and self.window_system: self.window_system.set_noactivate(True)
+            self._set_noactivate(True)
             self.root.attributes("-topmost", True)
             self.root.deiconify()
             self.root.update_idletasks()
@@ -575,7 +724,7 @@ class CandidateBox(CandidateRendererMixin):
                 | self._SWP_NOOWNERZORDER,
             )
         else:
-            if hasattr(self, "window_system") and self.window_system: self.window_system.set_noactivate(False)
+            self._set_noactivate(False)
             self.root.state("normal")
             self.root.deiconify()
             self.root.attributes("-topmost", True)
@@ -594,7 +743,7 @@ class CandidateBox(CandidateRendererMixin):
             self.root.lift()
             WindowManager.restore_window(hwnd)
         self.root.update()
-        self.window_geometry.remember_main_geometry(target_x, target_y)
+        self._remember_main_geometry(target_x, target_y)
         if self._DEBUG_UI:
             is_visible = bool(user32.IsWindowVisible(hwnd))
             print(
@@ -612,15 +761,27 @@ class CandidateBox(CandidateRendererMixin):
             self.standby_frame.pack(fill=tk.BOTH, expand=True)
             self._is_standby = True
 
-        target_x, target_y, width, height = self.window_geometry.resolve_standby_geometry()
+        if hasattr(self, "window_geometry") and self.window_geometry:
+            target_x, target_y, width, height = self.window_geometry.resolve_standby_geometry()
+        else:
+            last_main_geometry = self._get_last_main_geometry()
+            width = self.root.winfo_reqwidth()
+            height = self.root.winfo_reqheight()
+            if last_main_geometry is not None:
+                main_x, main_y, main_w, main_h = last_main_geometry
+                target_x = main_x + (main_w - width) // 2
+                target_y = main_y + main_h + 12
+            else:
+                pt_x, pt_y = WindowManager.get_cursor_position()
+                target_x, target_y = self._screen_to_tk_coords(pt_x + 12, pt_y + 24)
         self.root.geometry(f"{width}x{height}+{target_x}+{target_y}")
         self.root.title("音")
         self.root.attributes("-alpha", 0.58)
         self.root.deiconify()
         self.root.update_idletasks()
         hwnd = self.root.winfo_id()
-        user32 = self.window_system._get_user32()
-        if hasattr(self, "window_system") and self.window_system: self.window_system.set_noactivate(True)
+        user32 = self._get_user32()
+        self._set_noactivate(True)
         user32.ShowWindow(hwnd, self._SW_SHOWNOACTIVATE)
         user32.SetWindowPos(
             hwnd,
@@ -640,12 +801,13 @@ class CandidateBox(CandidateRendererMixin):
         self._show_main_frame()
         self.set_manual_input_enabled(False)
         self.root.update_idletasks()
+        last_main_geometry = self._get_last_main_geometry()
 
         if self.root.state() == "withdrawn":
-            if self._last_main_geometry is not None:
-                target_x, target_y, width, height = self._last_main_geometry
+            if last_main_geometry is not None:
+                target_x, target_y, width, height = last_main_geometry
             else:
-                target_x, target_y = self.window_geometry.resolve_geometry(None, None, focus_input=False)
+                target_x, target_y = self._resolve_geometry(None, None, focus_input=False)
                 width = self.root.winfo_reqwidth()
                 height = self.root.winfo_reqheight()
         else:
@@ -661,8 +823,8 @@ class CandidateBox(CandidateRendererMixin):
         self.root.update_idletasks()
 
         hwnd = self.root.winfo_id()
-        user32 = self.window_system._get_user32()
-        if hasattr(self, "window_system") and self.window_system: self.window_system.set_noactivate(True)
+        user32 = self._get_user32()
+        self._set_noactivate(True)
         user32.ShowWindow(hwnd, self._SW_SHOWNOACTIVATE)
         user32.SetWindowPos(
             hwnd,
@@ -676,7 +838,7 @@ class CandidateBox(CandidateRendererMixin):
             | self._SWP_NOOWNERZORDER,
         )
         self.root.update()
-        self.window_geometry.remember_main_geometry(target_x, target_y, width, height)
+        self._remember_main_geometry(target_x, target_y, width, height)
 
     def hide(self) -> None:
         """隐藏候选框"""

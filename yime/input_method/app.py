@@ -58,6 +58,7 @@ class InputMethodApp(BaseInputMethodApp):
         self.font_family = font_family
         self.enable_pause_toggle = enable_pause_toggle
         self.hotkey = hotkey
+        self.input_mode = self._DEFAULT_INPUT_MODE
         self.debug_ui = os.environ.get("YIME_DEBUG_UI", "").strip().lower() in {
             "1",
             "true",
@@ -104,7 +105,19 @@ class InputMethodApp(BaseInputMethodApp):
         if self.runtime_decoder_warning:
             print(f"[Decoder] 运行时编码表未启用: {self.runtime_decoder_warning}")
 
+    def _is_global_listener_mode(self) -> bool:
+        return getattr(self, "input_mode", self._DEFAULT_INPUT_MODE) == "global-listener"
+
     def _configure_input_mode(self) -> None:
+        if self._is_global_listener_mode():
+            self._set_post_commit_behavior("standby")
+            self._resume_global_capture()
+            self._hotkey_mode = "disabled"
+            self.candidate_box.set_status(
+                "实验性全局监听模式已就绪：直接监听外部键盘输入；不启用热键会话。"
+            )
+            return
+
         self._setup_hotkey()
         self._set_post_commit_behavior("keep-input")
         if self.hotkey_listener:
@@ -342,8 +355,12 @@ class InputMethodApp(BaseInputMethodApp):
                 f"status='{target_description}' post_commit={post_commit_behavior}"
             )
         self._set_post_commit_behavior(post_commit_behavior)
+        self.is_passthrough_enabled = True
         self._passive_standby_reason = "manual"
         self.last_replace_length = 0
+        self._display_input_buffer = ""
+        if getattr(self, "input_manager", None):
+            self.input_manager.clear_buffer(notify=False)
         self.candidate_box.clear_input(focus_input=False)
         pointer_x: Optional[int] = None
         pointer_y: Optional[int] = None
@@ -386,6 +403,9 @@ class InputMethodApp(BaseInputMethodApp):
     def _return_hotkey_session_to_standby(self) -> None:
         """显式结束当前热键输入会话并回到待命。"""
         self.last_replace_length = 0
+        self._display_input_buffer = ""
+        if getattr(self, "input_manager", None):
+            self.input_manager.clear_buffer(notify=False)
         self.candidate_box.clear_input(focus_input=False)
         self.candidate_box.clear_commit_text()
         self._enter_passive_standby(reason="idle")
@@ -434,7 +454,7 @@ class InputMethodApp(BaseInputMethodApp):
         self.candidate_box.input_entry.selection_clear()
 
     def _close(self) -> None:
-        
+
         """关闭应用"""
         if self._is_closing:
             return
@@ -462,6 +482,7 @@ class InputMethodApp(BaseInputMethodApp):
 
     def _enter_passive_standby(self, reason: str) -> None:
         """进入待命图标并暂停全局接管，直到用户显式恢复。"""
+        self.is_passthrough_enabled = True
         self._passive_standby_reason = reason
         self.candidate_box.set_manual_input_enabled(False)
         if reason == "commit-box":
@@ -474,6 +495,10 @@ class InputMethodApp(BaseInputMethodApp):
         self.is_passthrough_enabled = False
 
         self._passive_standby_reason = None
+
+    def _after_commit_candidate_box_text(self) -> None:
+        self._display_input_buffer = ""
+        self._enter_passive_standby(reason="commit-box")
 
     def _resume_from_standby(self) -> None:
         """用户主动点回候选框时，进入手动输入模式，不恢复全局接管。"""
