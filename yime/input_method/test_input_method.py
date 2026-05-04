@@ -2972,11 +2972,12 @@ def test_hotkey_app(result: TestResult):
         BaseInputMethodApp._paste_to_previous_window(app, "你好")
 
         assert scheduled[0][0] == 40
-        assert scheduled[0][1] == app._restore_external_window
+        scheduled[0][1]()
         assert scheduled[1][0] == 80
         assert scheduled[2][0] == 180
         assert scheduled[3][0] == 220
-        assert scheduled[3][1] == app._refocus_candidate_input
+        scheduled[3][1]()
+        assert ("refocus", None) in scheduled
         assert ("unlock", None) not in scheduled
         result.add_pass(test_name)
     except Exception as e:

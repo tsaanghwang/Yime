@@ -283,7 +283,7 @@ class BaseInputMethodApp:
         # The first foreground hop can be transient for external editors.
         # Re-assert the target shortly before injecting keys so the first send
         # does not depend on a single focus transfer attempt.
-        self._schedule_ui(40, self._restore_external_window)
+        self._schedule_ui(40, lambda: (self._restore_external_window(), None)[1])
 
         if self.last_replace_length > 0:
             self._schedule_ui(
@@ -300,7 +300,7 @@ class BaseInputMethodApp:
                 ),
             )
             if should_keep_input:
-                self._schedule_ui(320, self._refocus_candidate_input)
+                self._schedule_ui(320, self._schedule_refocus_candidate_input)
             else:
                 self._schedule_ui(320, self._unlock_external_target)
             return
@@ -313,9 +313,14 @@ class BaseInputMethodApp:
             ),
         )
         if should_keep_input:
-            self._schedule_ui(220, self._refocus_candidate_input)
+            self._schedule_ui(220, self._schedule_refocus_candidate_input)
         else:
             self._schedule_ui(220, self._unlock_external_target)
+
+    def _schedule_refocus_candidate_input(self) -> None:
+        refocus = getattr(self, "_refocus_candidate_input", None)
+        if callable(refocus):
+            refocus()
 
     def _commit_candidate_box_text(self, text: str) -> None:
         self.clipboard.copy(text)

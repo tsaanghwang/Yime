@@ -5,7 +5,6 @@
 """
 
 import ctypes
-import ctypes.wintypes as wintypes
 import os
 import tkinter as tk
 from .candidate_system import CandidateWindowSystem
@@ -13,9 +12,7 @@ from .candidate_geometry import CandidateWindowGeometry
 from .candidate_layout import CandidateLayoutBuilder
 from .candidate_renderer import CandidateRendererMixin
 from .manual_input_resolver import ManualInputResolver
-from tkinter import font as tkfont
-from tkinter import ttk
-from typing import Callable, List, Optional
+from typing import Any, Callable, List, Optional, cast
 
 from ..utils.window_manager import WindowManager
 
@@ -124,9 +121,9 @@ class CandidateBox(CandidateRendererMixin):
 
         # 将Builder中的组件映射到 self，保持与旧代码的兼容性
         self.font_family = self.layout_builder.font_family
-        self.ui_font = self.layout_builder.ui_font
-        self.text_font = self.layout_builder.text_font
-        self.icon_font = self.layout_builder.icon_font
+        self.ui_font = cast(Any, self.layout_builder.ui_font)
+        self.text_font = cast(Any, self.layout_builder.text_font)
+        self.icon_font = cast(Any, self.layout_builder.icon_font)
         self.style = self.layout_builder.style
         self.input_var = self.layout_builder.input_var
         self.input_entry = self.layout_builder.input_entry
@@ -167,7 +164,7 @@ class CandidateBox(CandidateRendererMixin):
         self.window_geometry.debug_ui = self._DEBUG_UI
 
         # 不要硬性指定宽高，让它自然展开，防止越加越多被裁剪
-        self.root.attributes("-topmost", True)
+        self._set_root_topmost(True)
         self.root.resizable(False, False)
         self.root.withdraw()  # 初始隐藏
         self._bind_passive_reactivation_targets()
@@ -203,8 +200,54 @@ class CandidateBox(CandidateRendererMixin):
 
     def _get_user32(self):
         if hasattr(self, "window_system") and self.window_system:
-            return self.window_system._get_user32()
+            return self.window_system.get_user32()
         return ctypes.windll.user32
+
+    def _set_root_alpha(self, value: float) -> None:
+        attributes = cast(Callable[[str, object], str], getattr(self.root, "attributes"))
+        attributes("-alpha", value)
+
+    def _set_root_topmost(self, enabled: bool) -> None:
+        attributes = cast(Callable[[str, object], str], getattr(self.root, "attributes"))
+        attributes("-topmost", enabled)
+
+    def _lift_root(self) -> None:
+        lift = cast(Callable[[], None], getattr(self.root, "lift"))
+        lift()
+
+    def notify_input_change(self, event: Optional[object] = None) -> None:
+        if self._on_input_change_callback:
+            self._on_input_change_callback(event)
+
+    def restore_from_standby_callback(self) -> bool:
+        if self._on_restore_from_standby:
+            self._on_restore_from_standby()
+            return True
+        return False
+
+    def toggle_standby_callback(self) -> bool:
+        if self._on_toggle_standby:
+            self._on_toggle_standby()
+            return True
+        return False
+
+    def commit_text_callback(self, text: str) -> bool:
+        if self._on_commit_text_callback:
+            self._on_commit_text_callback(text)
+            return True
+        return False
+
+    def copy_candidate_callback(self, index: int) -> bool:
+        if self._on_copy_candidate_callback:
+            self._on_copy_candidate_callback(index)
+            return True
+        return False
+
+    def close_callback(self) -> bool:
+        if self._on_close:
+            self._on_close()
+            return True
+        return False
 
     def _set_noactivate(self, enabled: bool) -> None:
         if hasattr(self, "window_system") and self.window_system:
@@ -283,7 +326,7 @@ class CandidateBox(CandidateRendererMixin):
                     if last_main_geometry is not None:
                         return last_main_geometry[0], last_main_geometry[1]
 
-                left, top, right, bottom = input_rect
+                _, _, right, bottom = input_rect
                 return (
                     right + min(24, max(12, width // 8)),
                     bottom + min(24, max(12, height // 6)),
@@ -524,7 +567,7 @@ class CandidateBox(CandidateRendererMixin):
             if current_focus == self.input_entry:
                 return
             try:
-                self.root.lift()
+                self._lift_root()
             except tk.TclError:
                 return
             WindowManager.restore_window(hwnd)
@@ -543,7 +586,7 @@ class CandidateBox(CandidateRendererMixin):
             self.root.geometry("")  # 清除待命态 54x54 显式尺寸，让主界面按内容重新撑开
             self.root.update_idletasks()
             self._is_standby = False
-        self.root.attributes("-alpha", self._ACTIVE_ALPHA)
+        self._set_root_alpha(self._ACTIVE_ALPHA)
         self.root.title("音元拼音")
 
     def _on_confirm_key(self, event: Optional[tk.Event] = None) -> str:
@@ -733,7 +776,7 @@ class CandidateBox(CandidateRendererMixin):
         user32 = self._get_user32()
         if not focus_input:
             self._set_noactivate(True)
-            self.root.attributes("-topmost", True)
+            self._set_root_topmost(True)
             self.root.deiconify()
             self.root.update_idletasks()
             user32.ShowWindow(hwnd, self._SW_SHOWNOACTIVATE)
@@ -753,7 +796,7 @@ class CandidateBox(CandidateRendererMixin):
             self._set_noactivate(False)
             self.root.state("normal")
             self.root.deiconify()
-            self.root.attributes("-topmost", True)
+            self._set_root_topmost(True)
             user32.ShowWindow(hwnd, self._SW_SHOW)
             user32.SetWindowPos(
                 hwnd,
@@ -766,7 +809,7 @@ class CandidateBox(CandidateRendererMixin):
                 | self._SWP_SHOWWINDOW
                 | self._SWP_NOOWNERZORDER,
             )
-            self.root.lift()
+            self._lift_root()
             WindowManager.restore_window(hwnd)
         self.root.update()
         self._remember_main_geometry(target_x, target_y)
@@ -802,7 +845,7 @@ class CandidateBox(CandidateRendererMixin):
                 target_x, target_y = self._screen_to_tk_coords(pt_x + 12, pt_y + 24)
         self.root.geometry(f"{width}x{height}+{target_x}+{target_y}")
         self.root.title("音")
-        self.root.attributes("-alpha", 0.58)
+        self._set_root_alpha(0.58)
         self.root.deiconify()
         self.root.update_idletasks()
         hwnd = self.root.winfo_id()
@@ -843,8 +886,8 @@ class CandidateBox(CandidateRendererMixin):
             height = self.root.winfo_height() or self.root.winfo_reqheight()
 
         self.root.geometry(f"{width}x{height}+{target_x}+{target_y}")
-        self.root.attributes("-alpha", self._PASSIVE_ALPHA)
-        self.root.attributes("-topmost", False)
+        self._set_root_alpha(self._PASSIVE_ALPHA)
+        self._set_root_topmost(False)
         self.root.deiconify()
         self.root.update_idletasks()
 

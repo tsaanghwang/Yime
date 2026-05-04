@@ -27,6 +27,9 @@ class CandidateWindowSystem:
             self._user32 = ctypes.windll.user32
         return self._user32
 
+    def get_user32(self):
+        return self._get_user32()
+
     def _get_window_style_api(self):
         user32 = self._get_user32()
         if ctypes.sizeof(ctypes.c_void_p) == 8:
