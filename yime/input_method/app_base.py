@@ -143,8 +143,31 @@ class BaseInputMethodApp:
             own_normalized = self.window_manager.normalize_window_handle(
                 getattr(self, "own_hwnd", None)
             )
+            self._normalized_own_hwnd = own_normalized
+
         if not normalized or normalized == own_normalized:
             return None
+
+        # 忽略进程自身的所有窗口（包括 Tkinter 界面、控制台等），防止互相抢夺焦点
+        try:
+            import ctypes
+            import os
+            pid = ctypes.c_ulong()
+            ctypes.windll.user32.GetWindowThreadProcessId(normalized, ctypes.byref(pid))
+            if pid.value == os.getpid():
+                return None
+        except Exception:
+            pass
+
+        # 进一步拦截由于 python.exe 启动时被隐式暴露的前台控制台窗口
+        try:
+            import ctypes
+            console_hwnd = ctypes.windll.kernel32.GetConsoleWindow()
+            if console_hwnd and normalized == self.window_manager.normalize_window_handle(console_hwnd):
+                return None
+        except Exception:
+            pass
+
         return int(normalized)
 
     def _describe_external_target(self, hwnd: Optional[int] = None) -> str:

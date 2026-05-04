@@ -1881,6 +1881,33 @@ def test_ui_components(result: TestResult):
     except Exception as e:
         result.add_fail(test_name, str(e))
 
+    test_name = "CandidateBox 可禁用鼠标点击唤醒"
+    try:
+        from yime.input_method.ui.candidate_box import CandidateBox
+
+        calls = []
+
+        class FakeActions:
+            def restore_from_standby(self, event=None):
+                calls.append("restore")
+
+            def activate_for_manual_input(self, event=None):
+                calls.append("activate")
+
+        box = CandidateBox.__new__(CandidateBox)
+        box._is_standby = False
+        box._manual_input_enabled = False
+        box._mouse_wake_enabled = False
+        box._on_restore_from_standby = object()
+        box.actions = FakeActions()
+
+        box._reactivate_from_passive()
+
+        assert calls == []
+        result.add_pass(test_name)
+    except Exception as e:
+        result.add_fail(test_name, str(e))
+
     test_name = "CandidateBoxActions 有恢复回调时不重复本地激活"
     try:
         from yime.input_method.ui.candidate_box_actions import CandidateBoxActions
@@ -1981,6 +2008,30 @@ def test_ui_components(result: TestResult):
 
         assert result_value == "break"
         assert calls == ["request_standby"]
+        result.add_pass(test_name)
+    except Exception as e:
+        result.add_fail(test_name, str(e))
+
+    test_name = "CandidateBox 可禁用鼠标右键休眠"
+    try:
+        from yime.input_method.ui.candidate_box import CandidateBox
+
+        calls = []
+
+        class FakeActions:
+            def request_standby(self, event=None):
+                calls.append("request_standby")
+                return "break"
+
+        box = CandidateBox.__new__(CandidateBox)
+        box._is_standby = False
+        box._mouse_standby_enabled = False
+        box.actions = FakeActions()
+
+        result_value = box._request_standby_from_mouse()
+
+        assert result_value == "break"
+        assert calls == []
         result.add_pass(test_name)
     except Exception as e:
         result.add_fail(test_name, str(e))
@@ -2597,6 +2648,68 @@ def test_hotkey_app(result: TestResult):
     except Exception as e:
         result.add_fail(test_name, str(e))
 
+    test_name = "InputMethodApp 可禁用热键唤醒"
+    try:
+        from yime.input_method.app import InputMethodApp
+
+        events = []
+
+        app = InputMethodApp.__new__(InputMethodApp)
+        app._passive_standby_reason = "idle"
+        app.wake_triggers = frozenset({"mouse"})
+        app.standby_triggers = frozenset({"hotkey", "mouse"})
+        app._activate_from_hotkey = lambda foreground, target_description: events.append((foreground, target_description))
+
+        InputMethodApp._toggle_hotkey_session(app, 24680, "hwnd=24680 标题=Fake 类=Fake")
+
+        assert events == []
+        result.add_pass(test_name)
+    except Exception as e:
+        result.add_fail(test_name, str(e))
+
+    test_name = "InputMethodApp 待命态禁用热键唤醒时不会进入热键解析流程"
+    try:
+        from yime.input_method.app import InputMethodApp
+
+        scheduled = []
+        finalized = []
+
+        app = InputMethodApp.__new__(InputMethodApp)
+        app._passive_standby_reason = "idle"
+        app._last_hotkey_activation_at = 0.0
+        app.debug_ui = False
+        app.wake_triggers = frozenset({"mouse"})
+        app.standby_triggers = frozenset({"hotkey"})
+        app._schedule_ui = lambda delay_ms, callback: scheduled.append(delay_ms) or callback()
+        app._finalize_hotkey_activation = lambda snapshot_foreground: finalized.append(snapshot_foreground)
+
+        InputMethodApp._request_hotkey_activation(app, 24680)
+
+        assert scheduled == []
+        assert finalized == []
+        result.add_pass(test_name)
+    except Exception as e:
+        result.add_fail(test_name, str(e))
+
+    test_name = "InputMethodApp 可禁用热键休眠"
+    try:
+        from yime.input_method.app import InputMethodApp
+
+        events = []
+
+        app = InputMethodApp.__new__(InputMethodApp)
+        app._passive_standby_reason = "manual"
+        app.wake_triggers = frozenset({"hotkey", "mouse"})
+        app.standby_triggers = frozenset({"mouse"})
+        app._return_hotkey_session_to_standby = lambda: events.append("standby")
+
+        InputMethodApp._toggle_hotkey_session(app, 24680, "hwnd=24680 标题=Fake 类=Fake")
+
+        assert events == []
+        result.add_pass(test_name)
+    except Exception as e:
+        result.add_fail(test_name, str(e))
+
     test_name = "InputMethodApp V1 热键再次唤起时可回退到上次外部目标窗口"
     try:
         from yime.input_method.app import InputMethodApp
@@ -2785,11 +2898,12 @@ def test_hotkey_app(result: TestResult):
         app._normalize_external_hwnd = BaseInputMethodApp._normalize_external_hwnd.__get__(app, BaseInputMethodApp)
         app._describe_external_target = BaseInputMethodApp._describe_external_target.__get__(app, BaseInputMethodApp)
         app._resolve_hotkey_target = InputMethodApp._resolve_hotkey_target.__get__(app, InputMethodApp)
-        app._activate_from_hotkey = lambda hwnd, desc, post_commit_behavior="keep-input", status_prefix="V1 热键已唤起", prefer_pointer_position=False, force_recompute=True: calls.append((hwnd, desc, post_commit_behavior, status_prefix, prefer_pointer_position, force_recompute))
+        app._activate_from_hotkey = lambda hwnd, desc, post_commit_behavior="keep-input", status_prefix="V1 热键已唤起", prefer_pointer_position=False, force_recompute=True, trigger_source="hotkey": calls.append((hwnd, desc, post_commit_behavior, status_prefix, prefer_pointer_position, force_recompute, trigger_source))
 
+        app._last_external_caret_rect = None
         InputMethodApp._resume_from_standby(app)
 
-        assert calls == [(30003, "hwnd=30003 标题=Fake 类=Fake", "keep-input", "V1 热键已唤起", False, False)]
+        assert calls == [(30003, "hwnd=30003 标题=Fake 类=Fake", "keep-input", "V1 鼠标已唤起", False, True, "mouse")]
         result.add_pass(test_name)
     except Exception as e:
         result.add_fail(test_name, str(e))
@@ -2899,7 +3013,7 @@ def test_hotkey_app(result: TestResult):
         InputMethodApp._refocus_candidate_input(app)
 
         assert app._locked_external_hwnd == 24680
-        assert events[0] == ("show", True, None)
+        assert events[0] == ("show", True, 24680)
         assert "focus" in events
         result.add_pass(test_name)
     except Exception as e:

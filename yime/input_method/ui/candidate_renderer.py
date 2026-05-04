@@ -185,6 +185,8 @@ class CandidateRendererMixin:
         return self.actions.should_allow_native_edit_key(event)
 
     def _configure_candidate_text_tags(self) -> None:
+        selected_foreground = "#f8fafc"
+        selected_background = "#2563eb"
         self.candidate_text.tag_configure(
             "candidate_index",
             foreground="#0b57d0",
@@ -197,13 +199,14 @@ class CandidateRendererMixin:
         )
         self.candidate_text.tag_configure(
             "candidate_selected_index",
-            foreground="#0b57d0",
+            foreground=selected_foreground,
+            background=selected_background,
             font=self.ui_font,
         )
         self.candidate_text.tag_configure(
             "candidate_selected_text",
-            foreground="#0b57d0",
-            background="#fef3c7",
+            foreground=selected_foreground,
+            background=selected_background,
             font=self.text_font,
         )
         self.candidate_text.tag_configure(
