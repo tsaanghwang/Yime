@@ -12,7 +12,7 @@ class CandidateLayoutBuilder:
     def __init__(self, root: tk.Tk, font_family: str):
         self.root = root
         self.font_family = self._resolve_font_family(font_family)
-        
+
         self.ui_font = None
         self.text_font = None
         self.icon_font = None
@@ -24,19 +24,22 @@ class CandidateLayoutBuilder:
 
         self.input_var = tk.StringVar(self.root)
         self.input_entry = None
-        
+
+        self.commit_var = tk.StringVar(self.root, value="")
+        self.commit_entry = None
+
         self.decode_info_frame = None
         self.pinyin_var = tk.StringVar(self.root, value="")
-        
+
         self.candidate_panel = None
         self.candidate_text = None
-        
+
         self.pager_frame = None
         self.prev_button = None
         self.next_button = None
 
         self.manual_key_layout_label = None
-        
+
         self.status_var = tk.StringVar(self.root, value="输入拼音")
         self.status_bar = None
         self.app_version_label = None
@@ -105,6 +108,11 @@ class CandidateLayoutBuilder:
         self.input_entry.pack(fill=tk.X, pady=(0, 8))
         self.input_entry.focus_set()
 
+        # 隐藏的提交框，用于特定状态的焦点控制
+        self.commit_entry = ttk.Entry(
+            self.main_frame, textvariable=self.commit_var, font=self.text_font
+        )
+
         self.decode_info_frame = ttk.Frame(self.main_frame)
         self.decode_info_frame.pack(fill=tk.X, pady=(0, 8))
 
@@ -138,12 +146,12 @@ class CandidateLayoutBuilder:
 
         self.pager_frame = ttk.Frame(self.candidate_panel)
         self.pager_frame.pack(side=tk.RIGHT, fill=tk.Y, padx=(8, 0))
-        
+
         self.prev_button = ttk.Label(
             self.pager_frame, text="▲", cursor="hand2", foreground="#5f6368"
         )
         self.prev_button.pack(side=tk.LEFT, padx=4)
-        
+
         self.next_button = ttk.Label(
             self.pager_frame, text="▼", cursor="hand2", foreground="#5f6368"
         )

@@ -40,6 +40,17 @@ class CandidateBox(CandidateRendererMixin):
     _ACTIVE_ALPHA = 0.97
     _DEFAULT_CANDIDATE_LAYOUT = "horizontal"
 
+    _HWND_TOPMOST = -1
+    _HWND_NOTOPMOST = -2
+    _SWP_NOSIZE = 0x0001
+    _SWP_NOMOVE = 0x0002
+    _SWP_NOACTIVATE = 0x0010
+    _SWP_SHOWWINDOW = 0x0040
+    _SWP_FRAMECHANGED = 0x0020
+    _SWP_NOOWNERZORDER = 0x0200
+    _SW_SHOWNOACTIVATE = 4
+    _SW_SHOW = 5
+
     _DEBUG_UI = os.environ.get("YIME_DEBUG_UI", "").strip().lower() in {
         "1",
         "true",
@@ -103,21 +114,59 @@ class CandidateBox(CandidateRendererMixin):
         # 创建主窗口
         self.root = tk.Tk()
         self.root.title("音元拼音")
-        self.font_family = self._resolve_font_family(font_family)
-        self._configure_fonts()
+
+        self.layout_builder = CandidateLayoutBuilder(self.root, font_family)
+        self.layout_builder.build_ui()
+
+        # 将Builder中的组件映射到 self，保持与旧代码的兼容性
+        self.font_family = self.layout_builder.font_family
+        self.input_var = self.layout_builder.input_var
+        self.input_entry = self.layout_builder.input_entry
+        self.commit_var = self.layout_builder.commit_var
+        self.commit_entry = self.layout_builder.commit_entry
+        self.pinyin_var = self.layout_builder.pinyin_var
+        self.candidate_text = self.layout_builder.candidate_text
+        self.pager_frame = self.layout_builder.pager_frame
+
+        # 兼容旧的按钮名称
+        self.prev_page_button = self.layout_builder.prev_button
+        self.next_page_button = self.layout_builder.next_button
+
+        # 创建缺失的变量
+        self.page_size_var = tk.IntVar(value=max_candidates)
+        self.page_info_var = tk.StringVar(self.root, value="第 1/1 页")
+        self.shortcut_hint_var = tk.StringVar(value="Space 选首选")
+        self.projected_code_var = tk.StringVar(self.root, value="")
+        self.input_outline_var = tk.StringVar(self.root, value="")
+        self.code_var = tk.StringVar(self.root, value="")
+
+        # 创建缺失的按钮
+        self.first_page_button = ttk.Label(self.pager_frame, text="⏮")
+        self.last_page_button = ttk.Label(self.pager_frame, text="⏭")
+        self.prev_button = self.layout_builder.prev_button
+        self.next_button = self.layout_builder.next_button
+        self.standby_frame = self.layout_builder.standby_frame
+        self.standby_icon = self.layout_builder.standby_icon
+        self.main_frame = self.layout_builder.main_frame
+        self.decode_info_frame = self.layout_builder.decode_info_frame
+        self.status_var = self.layout_builder.status_var
+        self.app_version_label = self.layout_builder.app_version_label
+        self.dict_version_label = self.layout_builder.dict_version_label
+        self.manual_key_layout_label = self.layout_builder.manual_key_layout_label
+
+        # 构建附加子系统
+        self.window_system = CandidateWindowSystem(self.root)
+        self.window_geometry = CandidateWindowGeometry(self.root)
 
         # 不要硬性指定宽高，让它自然展开，防止越加越多被裁剪
         self.root.attributes("-topmost", True)
         self.root.resizable(False, False)
         self.root.withdraw()  # 初始隐藏
-
-        # 构建UI
-        self._build_ui()
         self._bind_passive_reactivation_targets()
         self._bind_standby_toggle_targets()
         self.actions = CandidateBoxActions(self)
         self._bind_keys()
-        
+
         self.root.bind("<Unmap>", self._on_window_unmap)
         self.root.protocol("WM_DELETE_WINDOW", self.actions.request_close)
 
@@ -496,7 +545,7 @@ class CandidateBox(CandidateRendererMixin):
         # 移除显式指定尺寸的设定，使用Tkinter自适应
         self.root.geometry(f"+{target_x}+{target_y}")
         hwnd = self.root.winfo_id()
-        user32 = self._get_user32()
+        user32 = self.window_system._get_user32()
         if not focus_input:
             if hasattr(self, "window_system") and self.window_system: self.window_system.set_noactivate(True)
             self.root.attributes("-topmost", True)
@@ -560,7 +609,7 @@ class CandidateBox(CandidateRendererMixin):
         self.root.deiconify()
         self.root.update_idletasks()
         hwnd = self.root.winfo_id()
-        user32 = self._get_user32()
+        user32 = self.window_system._get_user32()
         if hasattr(self, "window_system") and self.window_system: self.window_system.set_noactivate(True)
         user32.ShowWindow(hwnd, self._SW_SHOWNOACTIVATE)
         user32.SetWindowPos(
@@ -602,7 +651,7 @@ class CandidateBox(CandidateRendererMixin):
         self.root.update_idletasks()
 
         hwnd = self.root.winfo_id()
-        user32 = self._get_user32()
+        user32 = self.window_system._get_user32()
         if hasattr(self, "window_system") and self.window_system: self.window_system.set_noactivate(True)
         user32.ShowWindow(hwnd, self._SW_SHOWNOACTIVATE)
         user32.SetWindowPos(
