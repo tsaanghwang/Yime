@@ -76,6 +76,16 @@ class CandidateBoxActions:
                     lambda event, value=index: self.on_candidate_shortcut(event, value),
                 )
 
+        # Bind mouse clicks to the UI pager controls
+        if hasattr(self.box, "first_page_button") and self.box.first_page_button:
+            self.box.first_page_button.bind("<Button-1>", lambda e: self.on_first_page_key())
+        if hasattr(self.box, "prev_button") and self.box.prev_button:
+            self.box.prev_button.bind("<Button-1>", lambda e: self.on_previous_page_key())
+        if hasattr(self.box, "next_button") and self.box.next_button:
+            self.box.next_button.bind("<Button-1>", lambda e: self.on_next_page_key())
+        if hasattr(self.box, "last_page_button") and self.box.last_page_button:
+            self.box.last_page_button.bind("<Button-1>", lambda e: self.on_last_page_key())
+
     def on_window_focus_in(self, event: object) -> None:
         widget = getattr(event, "widget", None)
         if (
@@ -128,17 +138,23 @@ class CandidateBoxActions:
     def on_digit_shortcut(self, event: Optional[tk.Event], value: int) -> str:
         if self.should_allow_native_edit_key(event):
             return ""
-        self.select_candidate_by_index(value - 1)
+        if self.select_candidate_by_index(value - 1):
+            self.commit_output_text()
         return "break"
 
     def on_candidate_shortcut(self, event: Optional[tk.Event], index: int) -> str:
-        self.select_candidate_by_index(index)
-        self.commit_output_text()
+        if self.should_allow_native_edit_key(event):
+            # Check if Focus is in Input entry, allowing typing if needed?
+            # Oh wait, if these are NOT used as pinyin keys, maybe it should NOT type.
+            pass
+
+        if self.select_candidate_by_index(index):
+            self.commit_output_text()
         return "break"
 
     def on_candidate_click(self, index: int) -> None:
-        self.select_candidate_by_index(index)
-        self.commit_output_text()
+        if self.select_candidate_by_index(index):
+            self.commit_output_text()
 
     def on_move_selection_previous(self, event: Optional[tk.Event] = None) -> str:
         if not self.box.current_candidates:
@@ -210,15 +226,16 @@ class CandidateBoxActions:
             self.box._on_commit_text_callback(text)
             self.box.set_status(f"已发送缓冲区内容: {text}")
 
-    def select_candidate_by_index(self, index: int) -> None:
+    def select_candidate_by_index(self, index: int) -> bool:
         hanzi = self.box.get_candidate(index)
         if hanzi is None:
-            return
+            return False
         keep_focus = self.box.is_manual_input_enabled()
         self.box.append_commit_text(hanzi)
         self.box.on_select(hanzi)
         self.box.clear_input(focus_input=keep_focus)
         self.box.set_status(f"已加入缓冲区: {self.box.get_commit_text()}")
+        return True
 
     def copy_candidate(self, index: int) -> None:
         if self.box._on_copy_candidate_callback:

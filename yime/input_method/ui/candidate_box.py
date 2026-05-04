@@ -140,18 +140,16 @@ class CandidateBox(CandidateRendererMixin):
         self.input_outline_var = tk.StringVar(self.root, value="")
         self.code_var = tk.StringVar(self.root, value="")
 
-        # 创建缺失的按钮
-        self.first_page_button = ttk.Label(self.pager_frame, text="⏮")
-        self.last_page_button = ttk.Label(self.pager_frame, text="⏭")
+        # 从 LayoutBuilder 获取对应的 UI 控件和变量
+        self.pager_frame = self.layout_builder.pager_frame
+        self.first_page_button = self.layout_builder.first_page_button
         self.prev_button = self.layout_builder.prev_button
         self.next_button = self.layout_builder.next_button
+        self.last_page_button = self.layout_builder.last_page_button
         self.standby_frame = self.layout_builder.standby_frame
         self.standby_icon = self.layout_builder.standby_icon
         self.main_frame = self.layout_builder.main_frame
         self.decode_info_frame = self.layout_builder.decode_info_frame
-        self.status_var = self.layout_builder.status_var
-        self.app_version_label = self.layout_builder.app_version_label
-        self.dict_version_label = self.layout_builder.dict_version_label
         self.manual_key_layout_label = self.layout_builder.manual_key_layout_label
 
         # 构建附加子系统
@@ -366,8 +364,8 @@ class CandidateBox(CandidateRendererMixin):
         self.root.after(60, retry_focus)
 
     def set_status(self, text: str) -> None:
-        """更新状态栏文案。"""
-        self.status_var.set(text)
+        """更新状态栏文案（已废弃）。"""
+        pass
 
     def _show_main_frame(self) -> None:
         if self._is_standby:
@@ -396,7 +394,6 @@ class CandidateBox(CandidateRendererMixin):
         self.current_candidates = []
         self._selected_candidate_index = 0
         self._current_page = 0
-        self.status_var.set(self._DEFAULT_STATUS_TEXT)
         self.projected_input_text = ""
         self.projected_code_var.set("")
         self.input_outline_var.set("")
@@ -412,7 +409,6 @@ class CandidateBox(CandidateRendererMixin):
     def clear_commit_text(self) -> None:
         """清空缓冲区文本。"""
         self.commit_var.set("")
-        self.status_var.set("已清空缓冲区。")
 
     def remove_last_commit_char(self) -> None:
         """撤销缓冲区中的最后一个字符。"""
@@ -718,7 +714,6 @@ class CandidateBox(CandidateRendererMixin):
             else:
                 self.code_var.set("当前解码 4 码: [等待输入...]")
 
-        self.status_var.set(status)
         self._render_candidates()
         self._resize_to_content_if_visible()
 
