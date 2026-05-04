@@ -28,6 +28,11 @@ class CandidateBoxActions:
         self.box = box
 
     def bind_keys(self) -> None:
+        def bind_if_possible(widget: object, sequence: str, handler: object) -> None:
+            binder = getattr(widget, "bind", None)
+            if callable(binder):
+                binder(sequence, handler)
+
         for index in range(1, 10):
             self.box.root.bind(
                 str(index),
@@ -35,12 +40,14 @@ class CandidateBoxActions:
             )
 
         self.box.root.bind("<Return>", self.on_confirm_key)
-        self.box.input_entry.bind("<KeyRelease>", self.on_input_change)
-        self.box.input_entry.bind("<Return>", self.on_confirm_key)
-        self.box.commit_entry.bind("<Return>", self.on_confirm_key)
+        bind_if_possible(self.box.input_entry, "<KeyRelease>", self.on_input_change)
+        bind_if_possible(self.box.input_entry, "<Return>", self.on_confirm_key)
+        bind_if_possible(self.box.commit_entry, "<Return>", self.on_confirm_key)
+        bind_if_possible(self.box.candidate_text, "<Return>", self.on_confirm_key)
         self.box.root.bind("<space>", self.on_confirm_key)
-        self.box.input_entry.bind("<space>", self.on_confirm_key)
-        self.box.commit_entry.bind("<space>", self.on_confirm_key)
+        bind_if_possible(self.box.input_entry, "<space>", self.on_confirm_key)
+        bind_if_possible(self.box.commit_entry, "<space>", self.on_confirm_key)
+        bind_if_possible(self.box.candidate_text, "<space>", self.on_confirm_key)
 
         self.box.root.bind("<Escape>", lambda event: self.box.clear_input())
         self.box.root.bind("<Control-q>", lambda event: self.request_close())
@@ -53,22 +60,30 @@ class CandidateBoxActions:
         self.box.root.bind("<Up>", self.on_move_selection_previous)
         self.box.root.bind("<Down>", self.on_move_selection_next)
         self.box.root.bind("<FocusIn>", self.on_window_focus_in)
-        self.box.input_entry.bind("<Home>", self.on_first_page_key)
-        self.box.input_entry.bind("<Prior>", self.on_previous_page_key)
-        self.box.input_entry.bind("<Next>", self.on_next_page_key)
-        self.box.input_entry.bind("<End>", self.on_last_page_key)
-        self.box.input_entry.bind("<Left>", self.on_move_selection_previous)
-        self.box.input_entry.bind("<Right>", self.on_move_selection_next)
-        self.box.input_entry.bind("<Up>", self.on_move_selection_previous)
-        self.box.input_entry.bind("<Down>", self.on_move_selection_next)
-        self.box.commit_entry.bind("<Home>", self.on_first_page_key)
-        self.box.commit_entry.bind("<Prior>", self.on_previous_page_key)
-        self.box.commit_entry.bind("<Next>", self.on_next_page_key)
-        self.box.commit_entry.bind("<End>", self.on_last_page_key)
-        self.box.commit_entry.bind("<Left>", self.on_move_selection_previous)
-        self.box.commit_entry.bind("<Right>", self.on_move_selection_next)
-        self.box.commit_entry.bind("<Up>", self.on_move_selection_previous)
-        self.box.commit_entry.bind("<Down>", self.on_move_selection_next)
+        bind_if_possible(self.box.input_entry, "<Home>", self.on_first_page_key)
+        bind_if_possible(self.box.input_entry, "<Prior>", self.on_previous_page_key)
+        bind_if_possible(self.box.input_entry, "<Next>", self.on_next_page_key)
+        bind_if_possible(self.box.input_entry, "<End>", self.on_last_page_key)
+        bind_if_possible(self.box.input_entry, "<Left>", self.on_move_selection_previous)
+        bind_if_possible(self.box.input_entry, "<Right>", self.on_move_selection_next)
+        bind_if_possible(self.box.input_entry, "<Up>", self.on_move_selection_previous)
+        bind_if_possible(self.box.input_entry, "<Down>", self.on_move_selection_next)
+        bind_if_possible(self.box.commit_entry, "<Home>", self.on_first_page_key)
+        bind_if_possible(self.box.commit_entry, "<Prior>", self.on_previous_page_key)
+        bind_if_possible(self.box.commit_entry, "<Next>", self.on_next_page_key)
+        bind_if_possible(self.box.commit_entry, "<End>", self.on_last_page_key)
+        bind_if_possible(self.box.commit_entry, "<Left>", self.on_move_selection_previous)
+        bind_if_possible(self.box.commit_entry, "<Right>", self.on_move_selection_next)
+        bind_if_possible(self.box.commit_entry, "<Up>", self.on_move_selection_previous)
+        bind_if_possible(self.box.commit_entry, "<Down>", self.on_move_selection_next)
+        bind_if_possible(self.box.candidate_text, "<Home>", self.on_first_page_key)
+        bind_if_possible(self.box.candidate_text, "<Prior>", self.on_previous_page_key)
+        bind_if_possible(self.box.candidate_text, "<Next>", self.on_next_page_key)
+        bind_if_possible(self.box.candidate_text, "<End>", self.on_last_page_key)
+        bind_if_possible(self.box.candidate_text, "<Left>", self.on_move_selection_previous)
+        bind_if_possible(self.box.candidate_text, "<Right>", self.on_move_selection_next)
+        bind_if_possible(self.box.candidate_text, "<Up>", self.on_move_selection_previous)
+        bind_if_possible(self.box.candidate_text, "<Down>", self.on_move_selection_next)
 
         for widget in (self.box.root, self.box.input_entry, self.box.commit_entry):
             for sequence, index in self._SYMBOL_SHORTCUT_BINDINGS.items():

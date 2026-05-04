@@ -74,6 +74,8 @@ class CandidateBox(CandidateRendererMixin):
         on_restore_from_standby: Optional[VoidCallback] = None,
         on_toggle_standby: Optional[VoidCallback] = None,
         on_close: Optional[VoidCallback] = None,
+        enable_mouse_wake: bool = True,
+        enable_mouse_standby: bool = True,
     ) -> None:
         """
         初始化候选框
@@ -101,6 +103,8 @@ class CandidateBox(CandidateRendererMixin):
         self._manual_input_transformer = manual_input_transformer
         self.projected_input_text = ""
         self._last_main_geometry: Optional[tuple[int, int, int, int]] = None
+        self._mouse_wake_enabled = enable_mouse_wake
+        self._mouse_standby_enabled = enable_mouse_standby
 
         # 回调注入
         self._on_input_change_callback = on_input_change
@@ -120,6 +124,10 @@ class CandidateBox(CandidateRendererMixin):
 
         # 将Builder中的组件映射到 self，保持与旧代码的兼容性
         self.font_family = self.layout_builder.font_family
+        self.ui_font = self.layout_builder.ui_font
+        self.text_font = self.layout_builder.text_font
+        self.icon_font = self.layout_builder.icon_font
+        self.style = self.layout_builder.style
         self.input_var = self.layout_builder.input_var
         self.input_entry = self.layout_builder.input_entry
         self.commit_var = self.layout_builder.commit_var
@@ -165,6 +173,7 @@ class CandidateBox(CandidateRendererMixin):
         self._bind_passive_reactivation_targets()
         self._bind_standby_toggle_targets()
         self.actions = CandidateBoxActions(self)
+        self._configure_candidate_text_tags()
         self._bind_keys()
 
         self.root.bind("<Unmap>", self._on_window_unmap)
@@ -257,11 +266,12 @@ class CandidateBox(CandidateRendererMixin):
         height: int,
         anchor_hwnd: Optional[int] = None,
         allow_pointer_heuristic: bool = True,
+        anchor_rect: Optional[tuple[int, int, int, int]] = None,
     ) -> tuple[int, int]:
         foreground = anchor_hwnd or WindowManager.get_foreground_window()
         own_hwnd = self.root.winfo_id()
         if foreground and foreground != own_hwnd:
-            input_rect = WindowManager.get_input_anchor_rect(foreground)
+            input_rect = anchor_rect if anchor_rect is not None else WindowManager.get_input_anchor_rect(foreground)
             if input_rect is not None:
                 input_width = max(0, input_rect[2] - input_rect[0])
                 input_height = max(0, input_rect[3] - input_rect[1])
@@ -296,6 +306,7 @@ class CandidateBox(CandidateRendererMixin):
         focus_input: bool,
         anchor_hwnd: Optional[int] = None,
         allow_pointer_heuristic: bool = True,
+        anchor_rect: Optional[tuple[int, int, int, int]] = None,
     ) -> tuple[int, int]:
         self.root.update_idletasks()
 
@@ -312,6 +323,7 @@ class CandidateBox(CandidateRendererMixin):
                 height,
                 anchor_hwnd=anchor_hwnd,
                 allow_pointer_heuristic=allow_pointer_heuristic,
+                anchor_rect=anchor_rect,
             )
             anchor_x, anchor_y = self._screen_to_tk_coords(anchor_x, anchor_y)
             target_x = anchor_x if x is None and focus_input else (virtual_root_x + 32 if x is None else x)
@@ -392,6 +404,8 @@ class CandidateBox(CandidateRendererMixin):
 
     def _reactivate_from_passive(self, event: Optional[tk.Event] = None) -> None:
         """半透明静置态点击后恢复可输入状态。"""
+        if not getattr(self, "_mouse_wake_enabled", True):
+            return
         if self._is_standby or self._manual_input_enabled:
             return
         if self._on_restore_from_standby:
@@ -447,9 +461,17 @@ class CandidateBox(CandidateRendererMixin):
 
     def _request_standby_from_mouse(self, event: Optional[tk.Event] = None) -> str:
         """主候选框右键时返回待命图标。"""
+        if not getattr(self, "_mouse_standby_enabled", True):
+            return "break"
         if self._is_standby:
             return "break"
         return self.actions.request_standby(event)
+
+    def set_mouse_wake_enabled(self, enabled: bool) -> None:
+        self._mouse_wake_enabled = enabled
+
+    def set_mouse_standby_enabled(self, enabled: bool) -> None:
+        self._mouse_standby_enabled = enabled
 
     def set_manual_input_enabled(self, enabled: bool) -> None:
         """切换候选框是否允许手动输入模式。"""
@@ -647,6 +669,7 @@ class CandidateBox(CandidateRendererMixin):
         focus_input: bool = True,
         anchor_hwnd: Optional[int] = None,
         force_recompute: bool = False,
+        anchor_rect: Optional[tuple[int, int, int, int]] = None,
     ) -> None:
         """
         显示候选框
@@ -657,6 +680,7 @@ class CandidateBox(CandidateRendererMixin):
             focus_input: 是否将焦点切回候选框输入框
             anchor_hwnd: 用来定位锚点的窗口
             force_recompute: 是否强制重新计算位置
+            anchor_rect: 如果系统 caret 已经丢失，使用缓存的光标矩形作为参考
         """
         was_standby = self._is_standby
         try:
@@ -678,7 +702,7 @@ class CandidateBox(CandidateRendererMixin):
         if preserve_current_position:
             target_x = self.root.winfo_x()
             target_y = self.root.winfo_y()
-        elif was_standby and x is None and y is None and last_main_geometry is not None:
+        elif was_standby and x is None and y is None and last_main_geometry is not None and not force_recompute:
             # 当我们从待命图标点击唤醒时，如果外部窗口指定了 anchor_hwnd，我们应当优先锚定新的输入点，
             # 而不是死板地回到 _last_main_geometry （因为用户的焦点可能已经切换到别处了）
             if anchor_hwnd is not None:
@@ -688,6 +712,7 @@ class CandidateBox(CandidateRendererMixin):
                     focus_input=focus_input,
                     anchor_hwnd=anchor_hwnd,
                     allow_pointer_heuristic=False,
+                    anchor_rect=anchor_rect,
                 )
             else:
                 target_x, target_y, _, _ = last_main_geometry
@@ -699,6 +724,7 @@ class CandidateBox(CandidateRendererMixin):
                 focus_input=focus_input,
                 anchor_hwnd=anchor_hwnd,
                 allow_pointer_heuristic=can_use_pointer,
+                anchor_rect=anchor_rect,
             )
 
         # 移除显式指定尺寸的设定，使用Tkinter自适应
