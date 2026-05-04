@@ -254,6 +254,18 @@ python tools/manage_user_lexicon.py export yime/user_lexicon_seed.json --no-freq
 
 仓库中也提供了一个最小示例文件：`yime/user_lexicon_seed.json`，可直接作为打包参考。
 
+如果你想在发安装包前做一次“首次启动自动落 seed”的自验，可直接运行：
+
+```bash
+python tools/verify_seed_install_flow.py
+```
+
+这条脚本会在临时目录里模拟三种安装侧场景：
+
+- 安装目录里还没有 `user_lexicon.db`，首次启动自动导入 seed
+- 安装目录里已经有一个空的 `user_lexicon.db`，首次启动仍然自动导入 seed
+- 第二次启动时不重复导入 seed
+
 这样可以把“初始化推荐词条”和“用户后续私有数据”分开管理。
 
 补充说明：

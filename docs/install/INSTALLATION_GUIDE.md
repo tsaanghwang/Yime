@@ -209,6 +209,14 @@ python -m yime.input_method.app --font-family "Microsoft YaHei"
 
 安装完成后，建议依次检查：
 
+如果你的安装包会自带 `yime/user_lexicon_seed.json`，在发包前再额外跑一次：
+
+```bash
+python tools/verify_seed_install_flow.py
+```
+
+它会在临时目录里模拟安装目录，验收“首次启动自动落 seed”和“第二次启动不重复导入”。
+
 ### 1. Python 版本
 
 ```bash
