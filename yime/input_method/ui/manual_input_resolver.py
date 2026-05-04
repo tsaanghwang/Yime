@@ -7,6 +7,8 @@ import ctypes
 from ctypes import wintypes
 import tkinter as tk
 
+from ..utils.modifier_state import is_alt_gr_active
+
 class ManualInputResolver:
     _PRINTABLE_MODIFIER_VK_CODES = {
         "shift": [0x10, 0xA0, 0xA1],
@@ -14,6 +16,22 @@ class ManualInputResolver:
         "alt": [0x12, 0xA4, 0xA5],
         "alt_r": [0xA5],
         "win": [0x5b, 0x5c],
+    }
+    _PRINTABLE_VK_TO_PHYSICAL_KEY = {
+        **{code: chr(code + 32) for code in range(0x41, 0x5B)},
+        **{code: chr(code) for code in range(0x30, 0x3A)},
+        0xBA: ";",
+        0xBB: "=",
+        0xBC: ",",
+        0xBD: "-",
+        0xBE: ".",
+        0xBF: "/",
+        0xC0: "`",
+        0xDB: "[",
+        0xDC: "\\",
+        0xDD: "]",
+        0xDE: "'",
+        0x20: "space",
     }
 
     @classmethod
@@ -36,11 +54,15 @@ class ManualInputResolver:
         for name, codes in cls._PRINTABLE_MODIFIER_VK_CODES.items():
             states[name] = any(bool(user32.GetAsyncKeyState(code) & 0x8000) for code in codes)
 
-        states["alt_gr"] = bool(states.get("ctrl") and (states.get("alt_r") or states.get("alt")))
+        states["alt_gr"] = is_alt_gr_active(states)
         return states
 
     @classmethod
     def normalize_event_physical_key(cls, event: tk.Event) -> str:
+        vk_code = int(getattr(event, "keycode", 0) or 0)
+        if vk_code in cls._PRINTABLE_VK_TO_PHYSICAL_KEY:
+            return cls._PRINTABLE_VK_TO_PHYSICAL_KEY[vk_code]
+
         keysym = str(getattr(event, "keysym", "") or "").strip()
         if len(keysym) == 1:
             return keysym.lower()

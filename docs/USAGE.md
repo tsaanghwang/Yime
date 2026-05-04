@@ -138,6 +138,11 @@ python -m yime.input_method.app
 
 ## 常用操作
 
+如果你要做“反查当前字词的拼音和编码”或“把缺词加入持久用户词库”，请同时参考：
+
+- `docs/REVERSE_LOOKUP_AND_USER_LEXICON.md`
+- `docs/REVERSE_LOOKUP_AND_USER_LEXICON_QUICK_REF.md`
+
 ### 清空或退出
 
 - `ESC`：在多数场景下用于退出当前组合或结束运行
@@ -156,6 +161,18 @@ python -m yime.input_method.app
 - 你可以直接编辑输入框内容
 - 也可以从剪贴板读取编码
 - 这时按键优先交给输入框自身处理，不继续强拦截
+
+### 汉字反查与用户词库
+
+当前输入框还支持一条额外路径：
+
+- 如果输入或粘贴的是汉字词语，系统会尝试反查首选拼音和编码
+- 你可以右键输入框，把当前汉字词语加入持久用户词库
+
+更完整的实际操作步骤、脚本用法和频率说明，请看：
+
+- `docs/REVERSE_LOOKUP_AND_USER_LEXICON.md`
+- `docs/REVERSE_LOOKUP_AND_USER_LEXICON_QUICK_REF.md`
 
 ## 当前限制
 

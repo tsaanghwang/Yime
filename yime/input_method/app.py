@@ -286,6 +286,8 @@ class InputMethodApp(BaseInputMethodApp):
             on_input_change=self._on_input_change,
             on_copy_candidate=self._copy_candidate,
             on_commit_text=self._commit_candidate_box_text,
+            on_add_input_to_user_lexicon=self._add_current_input_to_user_lexicon,
+            on_delete_input_from_user_lexicon=self._delete_current_input_from_user_lexicon,
             on_restore_from_standby=self._resume_from_standby,
             on_toggle_standby=self._return_mouse_session_to_standby,
             on_close=self._close,
