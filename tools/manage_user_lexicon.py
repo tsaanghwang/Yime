@@ -1,0 +1,196 @@
+from __future__ import annotations
+
+import argparse
+from pathlib import Path
+
+from yime.input_method.utils.user_lexicon import UserLexiconStore
+
+
+ROOT = Path(__file__).resolve().parent.parent
+USER_DB_PATH = ROOT / "yime" / "user_lexicon.db"
+
+
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(description="维护持久用户词库和调序频率。")
+    subparsers = parser.add_subparsers(dest="command", required=True)
+
+    init_db = subparsers.add_parser("init-db", help="显式创建空用户词库文件。")
+    init_db.add_argument(
+        "--db-path",
+        default="",
+        help="可选，指定要初始化的用户词库路径；默认使用 yime/user_lexicon.db。",
+    )
+
+    list_phrases = subparsers.add_parser("list-phrases", help="列出用户词条。")
+    list_phrases.add_argument("term", nargs="?", default="", help="可选，按词语过滤。")
+    list_phrases.add_argument("--like", action="store_true", help="使用模糊匹配。")
+    list_phrases.add_argument("--limit", type=int, default=50, help="最多列出多少条。")
+
+    list_recent = subparsers.add_parser("list-recent", help="列出最近更新的用户词条。")
+    list_recent.add_argument("--limit", type=int, default=20, help="最多列出多少条。")
+
+    list_freq = subparsers.add_parser("list-freq", help="列出持久调序频率。")
+    list_freq.add_argument("term", nargs="?", default="", help="可选，按候选文本过滤。")
+    list_freq.add_argument("--like", action="store_true", help="使用模糊匹配。")
+    list_freq.add_argument("--limit", type=int, default=50, help="最多列出多少条。")
+
+    export_data = subparsers.add_parser("export", help="导出用户词库备份。")
+    export_data.add_argument("output", help="导出文件路径，例如 backups/user_lexicon.json")
+    export_data.add_argument(
+        "--no-frequency",
+        action="store_true",
+        help="只导出词条，不导出调序频率。",
+    )
+
+    import_data = subparsers.add_parser("import", help="导入用户词库备份。")
+    import_data.add_argument("input", help="导入文件路径。")
+    import_data.add_argument(
+        "--replace-existing",
+        action="store_true",
+        help="导入前先清空当前用户词库和频率。",
+    )
+    import_data.add_argument(
+        "--no-frequency",
+        action="store_true",
+        help="导入时忽略备份中的调序频率。",
+    )
+
+    delete_phrase = subparsers.add_parser("delete", help="删除用户词条。")
+    delete_phrase.add_argument("phrase", help="要删除的词语。")
+
+    reset_freq = subparsers.add_parser("reset-freq", help="重置持久调序频率。")
+    reset_freq.add_argument("text", nargs="?", default="", help="可选，按候选文本重置。")
+    reset_freq.add_argument("--lookup-code", default="", help="可选，按 lookup_code 进一步限定。")
+
+    stats = subparsers.add_parser("stats", help="输出用户词库统计信息。")
+    stats.add_argument("--top", type=int, default=10, help="最多显示多少条高频记录。")
+
+    return parser
+
+
+def print_phrase_rows(store: UserLexiconStore, term: str, use_like: bool, limit: int) -> None:
+    rows = store.list_phrase_entries(term, use_like=use_like, limit=limit)
+    print(f"user_db={USER_DB_PATH}")
+    print(f"phrases={len(rows)}")
+    if not rows:
+        print("无结果")
+        return
+    for row in rows:
+        print(
+            f"phrase={row.phrase} numeric={row.numeric_pinyin} marked={row.marked_pinyin} "
+            f"yime={row.yime_code} note={row.source_note} updated={row.updated_at}"
+        )
+
+
+def print_frequency_rows(store: UserLexiconStore, term: str, use_like: bool, limit: int) -> None:
+    rows = store.list_candidate_frequency_entries(term, use_like=use_like, limit=limit)
+    print(f"user_db={USER_DB_PATH}")
+    print(f"frequency_rows={len(rows)}")
+    if not rows:
+        print("无结果")
+        return
+    for row in rows:
+        print(
+            f"text={row.text} lookup_code={row.lookup_code} freq={row.freq} "
+            f"last_used={row.last_used_at} numeric={row.numeric_pinyin} marked={row.marked_pinyin}"
+        )
+
+
+def print_recent_rows(store: UserLexiconStore, limit: int) -> None:
+    rows = store.list_recent_phrase_entries(limit=limit)
+    print(f"user_db={USER_DB_PATH}")
+    print(f"recent_phrases={len(rows)}")
+    if not rows:
+        print("无结果")
+        return
+    for row in rows:
+        print(
+            f"phrase={row.phrase} numeric={row.numeric_pinyin} marked={row.marked_pinyin} "
+            f"updated={row.updated_at}"
+        )
+
+
+def print_stats(store: UserLexiconStore, top: int) -> None:
+    phrase_rows = store.list_phrase_entries(limit=1_000_000)
+    frequency_rows = store.list_candidate_frequency_entries(limit=max(top, 1_000_000))
+    print(f"user_db={USER_DB_PATH}")
+    print(f"phrase_count={len(phrase_rows)}")
+    print(f"frequency_count={len(frequency_rows)}")
+    if frequency_rows:
+        print("top_frequency=")
+        for row in frequency_rows[:top]:
+            print(
+                f"  text={row.text} lookup_code={row.lookup_code} freq={row.freq} "
+                f"last_used={row.last_used_at}"
+            )
+
+
+def main() -> None:
+    args = build_parser().parse_args()
+    if args.command == "init-db":
+        db_path = Path(args.db_path).resolve() if args.db_path else USER_DB_PATH
+        existed = db_path.exists()
+        store = UserLexiconStore(db_path)
+        print(f"user_db={db_path}")
+        print(f"initialized={True}")
+        print(f"already_existed={existed}")
+        print(f"phrase_count={len(store.list_phrase_entries(limit=1_000_000))}")
+        return
+
+    store = UserLexiconStore(USER_DB_PATH)
+
+    if args.command == "list-phrases":
+        print_phrase_rows(store, args.term, args.like, args.limit)
+        return
+    if args.command == "list-recent":
+        print_recent_rows(store, args.limit)
+        return
+    if args.command == "list-freq":
+        print_frequency_rows(store, args.term, args.like, args.limit)
+        return
+    if args.command == "export":
+        output_path = Path(args.output).resolve()
+        store.write_export_file(output_path, include_frequency=not args.no_frequency)
+        print(f"user_db={USER_DB_PATH}")
+        print(f"output={output_path}")
+        print(f"include_frequency={not args.no_frequency}")
+        return
+    if args.command == "import":
+        input_path = Path(args.input).resolve()
+        result = store.import_file(
+            input_path,
+            replace_existing=args.replace_existing,
+            include_frequency=not args.no_frequency,
+        )
+        print(f"user_db={USER_DB_PATH}")
+        print(f"input={input_path}")
+        print(f"replace_existing={args.replace_existing}")
+        print(f"include_frequency={not args.no_frequency}")
+        print(f"imported_phrase_entries={result['phrase_entries']}")
+        print(f"imported_candidate_frequency={result['candidate_frequency']}")
+        return
+    if args.command == "delete":
+        deleted = store.delete_phrase(args.phrase)
+        print(f"user_db={USER_DB_PATH}")
+        print(f"phrase={args.phrase}")
+        print(f"deleted={deleted}")
+        return
+    if args.command == "reset-freq":
+        deleted_rows = store.reset_candidate_frequency(
+            text=args.text or None,
+            lookup_code=args.lookup_code or None,
+        )
+        print(f"user_db={USER_DB_PATH}")
+        print(f"text={args.text}")
+        print(f"lookup_code={args.lookup_code}")
+        print(f"deleted_frequency_rows={deleted_rows}")
+        return
+    if args.command == "stats":
+        print_stats(store, args.top)
+        return
+
+    raise SystemExit(f"未知命令: {args.command}")
+
+
+if __name__ == "__main__":
+    main()

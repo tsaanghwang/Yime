@@ -1,6 +1,7 @@
 # Ignore sqlite DB and backups
 yime/pinyin_hanzi.db
 yime/pinyin_hanzi.db.*
+yime/user_lexicon.db
 yime/*.db-wal
 yime/*.db-shm
 yime/backup/

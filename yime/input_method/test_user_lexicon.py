@@ -1,4 +1,5 @@
 from pathlib import Path
+import json
 
 from yime.input_method.core.decoders import SQLiteRuntimeCandidateDecoder
 from yime.input_method.utils.runtime_reverse_lookup import RuntimeReverseLookup
@@ -40,6 +41,75 @@ def test_user_lexicon_store_reports_updated_for_existing_phrase(tmp_path) -> Non
 
     assert action == "updated"
     assert store.lookup_first_phrase("日本").yime_code == "CODE2"
+
+
+def test_user_lexicon_store_lists_phrase_entries(tmp_path) -> None:
+    store = UserLexiconStore(tmp_path / "user_lexicon.db")
+    store.upsert_phrase("日本", "ri4 ben3", marked_pinyin="rì běn", yime_code="CODE1")
+    store.upsert_phrase("今日", "jin1 ri4", marked_pinyin="jīn rì", yime_code="CODE2")
+
+    rows = store.list_phrase_entries("日", use_like=True, limit=10)
+
+    assert [row.phrase for row in rows] == ["今日", "日本"]
+    assert rows[0].numeric_pinyin == "jin1 ri4"
+
+
+def test_user_lexicon_store_lists_and_resets_frequency_entries(tmp_path) -> None:
+    store = UserLexiconStore(tmp_path / "user_lexicon.db")
+    store.upsert_phrase("日本", "ri4 ben3", marked_pinyin="rì běn", yime_code="YIME")
+    store.record_candidate_selection("ABCD1234", "日本")
+    store.record_candidate_selection("ABCD1234", "日本")
+
+    rows = store.list_candidate_frequency_entries("日", use_like=True, limit=10)
+
+    assert len(rows) == 1
+    assert rows[0].text == "日本"
+    assert rows[0].freq == 2
+    assert rows[0].numeric_pinyin == "ri4 ben3"
+
+    deleted_rows = store.reset_candidate_frequency(text="日本", lookup_code="ABCD1234")
+
+    assert deleted_rows == 1
+    assert store.list_candidate_frequency_entries(limit=10) == []
+
+
+def test_user_lexicon_store_exports_and_imports_backup(tmp_path) -> None:
+    source_store = UserLexiconStore(tmp_path / "source_user_lexicon.db")
+    source_store.upsert_phrase(
+        "日本",
+        "ri4 ben3",
+        marked_pinyin="rì běn",
+        yime_code="CODE1",
+        source_note="seed",
+    )
+    source_store.record_candidate_selection("ABCD1234", "日本")
+    backup_path = tmp_path / "backup.json"
+
+    source_store.write_export_file(backup_path)
+    backup_payload = json.loads(backup_path.read_text(encoding="utf-8"))
+
+    assert backup_payload["phrase_entries"][0]["phrase"] == "日本"
+    assert backup_payload["candidate_frequency"][0]["text"] == "日本"
+
+    target_store = UserLexiconStore(tmp_path / "target_user_lexicon.db")
+    result = target_store.import_file(backup_path)
+
+    assert result == {"phrase_entries": 1, "candidate_frequency": 1}
+    assert target_store.lookup_first_phrase("日本") is not None
+    frequency_rows = target_store.list_candidate_frequency_entries(limit=10)
+    assert len(frequency_rows) == 1
+    assert frequency_rows[0].freq == 1
+
+
+def test_user_lexicon_store_lists_recent_entries(tmp_path) -> None:
+    store = UserLexiconStore(tmp_path / "user_lexicon.db")
+    store.upsert_phrase("日本", "ri4 ben3", marked_pinyin="rì běn", yime_code="CODE1")
+    store.upsert_phrase("今日", "jin1 ri4", marked_pinyin="jīn rì", yime_code="CODE2")
+
+    rows = store.list_recent_phrase_entries(limit=1)
+
+    assert len(rows) == 1
+    assert rows[0].phrase in {"日本", "今日"}
 
 
 def test_runtime_reverse_lookup_prefers_user_phrase_entry(tmp_path) -> None:
