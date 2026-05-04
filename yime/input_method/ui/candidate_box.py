@@ -222,8 +222,10 @@ class CandidateBox(CandidateRendererMixin):
         return "break"
 
     def _bind_passive_reactivation_targets(self) -> None:
-        """半透明静置态下，点击主界面任意区域都可恢复激活。"""
+        """半透明静置态下，点击主界面任意区域都可恢复激活。待命小图标点击则完全复存为输入框。"""
         self._bind_passive_reactivation_widget(self.main_frame)
+        self.standby_icon.bind("<Button-1>", self._restore_from_standby)
+        self.standby_frame.bind("<Button-1>", self._restore_from_standby)
 
     def _bind_passive_reactivation_widget(self, widget: tk.Misc) -> None:
         widget.bind("<Button-1>", self._reactivate_from_passive, add="+")
