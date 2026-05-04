@@ -62,8 +62,6 @@ class BaseInputMethodApp:
         self.last_replace_length = 0
         self._post_commit_behavior = "standby"
 
-        self.candidate_box.root.protocol("WM_DELETE_WINDOW", self._close)
-
     def _create_candidate_box(self) -> CandidateBox:
         return CandidateBox(
             on_select=self._on_candidate_select,

@@ -434,6 +434,7 @@ class InputMethodApp(BaseInputMethodApp):
         self.candidate_box.input_entry.selection_clear()
 
     def _close(self) -> None:
+        
         """关闭应用"""
         if self._is_closing:
             return
