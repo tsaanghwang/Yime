@@ -446,9 +446,9 @@ class InputMethodApp(BaseInputMethodApp):
         self._cancel_scheduled_callbacks()
 
         # 停止键盘监听
-        if self.keyboard_listener:
+        if getattr(self, "keyboard_listener", None):
             self.keyboard_listener.stop()
-        if self.hotkey_listener:
+        if getattr(self, "hotkey_listener", None):
             self.hotkey_listener.stop()
 
         self.candidate_box.close()
