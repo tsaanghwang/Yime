@@ -45,7 +45,7 @@ class CandidateWindowGeometry:
                     elif self._last_main_geometry:
                         return self._last_main_geometry[0], self._last_main_geometry[1]
 
-                left, top, right, bottom = input_rect
+                _, _, right, bottom = input_rect
                 return (
                     right + min(24, max(12, width // 8)),
                     bottom + min(24, max(12, height // 6)),

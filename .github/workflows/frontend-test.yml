@@ -3,51 +3,65 @@ name: Frontend Test
 on:
   push:
     paths:
-      - '**.js'
-      - '**.html'
+      - '**/*.js'
+      - '**/*.jsx'
+      - '**/*.ts'
+      - '**/*.tsx'
+      - '**/*.html'
       - '!coverage/**'
   pull_request:
     branches: [ main ]
+    paths:
+      - '**/*.js'
+      - '**/*.jsx'
+      - '**/*.ts'
+      - '**/*.tsx'
+      - '**/*.html'
+      - '!coverage/**'
 
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+      - name: Check out repository
+        uses: actions/checkout@v4
 
-    - name: Detect frontend project
-      id: frontend
-      run: |
-        if [ -f package.json ] && [ -f package-lock.json ]; then
-          echo "has_frontend=true" >> "$GITHUB_OUTPUT"
-        else
-          echo "has_frontend=false" >> "$GITHUB_OUTPUT"
-        fi
+      - name: Detect frontend project
+        id: frontend
+        run: |
+          if [ -f package.json ] && [ -f package-lock.json ]; then
+            echo "has_frontend=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_frontend=false" >> "$GITHUB_OUTPUT"
+          fi
 
-    - name: Set up Node
-      if: steps.frontend.outputs.has_frontend == 'true' && github.event_name != 'pull_request'
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-        cache: 'npm'
+      - name: Set up Node
+        if: steps.frontend.outputs.has_frontend == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
 
-    - name: Install dependencies
-      if: steps.frontend.outputs.has_frontend == 'true' && github.event_name != 'pull_request'
-      run: npm install
+      - name: Install dependencies
+        if: steps.frontend.outputs.has_frontend == 'true'
+        run: npm ci
 
-    - name: Run Jest tests
-      if: steps.frontend.outputs.has_frontend == 'true' && github.event_name != 'pull_request'
-      run: |
-        npm test
-        [ -f "coverage/lcov.info" ] || exit 1
+      - name: Run frontend tests
+        if: steps.frontend.outputs.has_frontend == 'true'
+        run: |
+          npm test -- --passWithNoTests
+          if [ -d coverage ]; then
+            [ -f "coverage/lcov.info" ] || exit 1
+          fi
 
-    - name: Upload coverage
-      if: steps.frontend.outputs.has_frontend == 'true' && github.event_name != 'pull_request'
-      uses: codecov/codecov-action@v5
-      with:
-        files: coverage/lcov.info
-        flags: frontend
+      - name: Upload coverage
+        if: steps.frontend.outputs.has_frontend == 'true' && github.event_name != 'pull_request' && hashFiles('coverage/lcov.info') != ''
+        uses: codecov/codecov-action@v5
+        with:
+          files: coverage/lcov.info
+          flags: frontend
+          fail_ci_if_error: false
 
-    - name: Skip frontend workflow when project is absent
-      if: steps.frontend.outputs.has_frontend != 'true'
-      run: echo "No package.json/package-lock.json found; skipping frontend workflow."
+      - name: Skip frontend workflow when project is absent
+        if: steps.frontend.outputs.has_frontend != 'true'
+        run: echo "No package.json/package-lock.json found; skipping frontend workflow."

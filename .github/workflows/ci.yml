@@ -14,166 +14,178 @@ jobs:
         python-version: ['3.10', '3.11', '3.12']
 
     steps:
-    - uses: actions/checkout@v4
+      - name: Check out repository
+        uses: actions/checkout@v4
 
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5
-      with:
-        python-version: ${{ matrix.python-version }}
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'pip'
+          cache-dependency-path: |
+            requirements.txt
+            pyproject.toml
 
-    - name: Cache pip dependencies
-      uses: actions/cache@v3
-      with:
-        path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('requirements.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-pip-${{ matrix.python-version }}-
-          ${{ runner.os }}-pip-
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install -e .
 
-    - name: Install Python dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-        pip install -e .
+      - name: Run Python tests with coverage
+        run: |
+          python tools/validate_yinyuan_source_consistency.py
+          pytest --cov=yime --cov=pinyin --cov=syllable --cov-report=xml --cov-report=html -v
 
-    - name: Run Python tests with coverage
-      run: |
-        python tools/validate_yinyuan_source_consistency.py
-        pytest --cov=yime --cov=pinyin --cov=syllable --cov-report=xml --cov-report=html -v
+      - name: Upload coverage to Codecov
+        if: github.event_name != 'pull_request'
+        uses: codecov/codecov-action@v5
+        with:
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: false
 
-    - name: Upload coverage to Codecov
-      if: github.event_name != 'pull_request'
-      uses: codecov/codecov-action@v5
-      with:
-        files: ./coverage.xml
-        flags: unittests
-        name: codecov-umbrella
-        fail_ci_if_error: false
-
-    - name: Archive coverage reports
-      uses: actions/upload-artifact@v4
-      with:
-        name: coverage-reports
-        path: |
-          coverage.xml
-          htmlcov/
+      - name: Archive coverage reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-reports
+          path: |
+            coverage.xml
+            htmlcov/
 
   frontend:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+      - name: Check out repository
+        uses: actions/checkout@v4
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '18'
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
 
-    - name: Detect frontend project
-      id: frontend
-      run: |
-        if [ -f package.json ]; then
-          echo "has_frontend=true" >> "$GITHUB_OUTPUT"
-        else
-          echo "has_frontend=false" >> "$GITHUB_OUTPUT"
-        fi
+      - name: Detect frontend project
+        id: frontend
+        run: |
+          if [ -f package.json ] && [ -f package-lock.json ]; then
+            echo "has_frontend=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_frontend=false" >> "$GITHUB_OUTPUT"
+          fi
 
-    - name: Install frontend dependencies
-      if: steps.frontend.outputs.has_frontend == 'true'
-      run: npm ci
+      - name: Install frontend dependencies
+        if: steps.frontend.outputs.has_frontend == 'true'
+        run: npm ci
 
-    - name: Run frontend tests
-      if: steps.frontend.outputs.has_frontend == 'true'
-      run: npm test -- --passWithNoTests || true
+      - name: Run frontend tests
+        if: steps.frontend.outputs.has_frontend == 'true'
+        run: npm test -- --passWithNoTests || true
 
-    - name: Build frontend
-      if: steps.frontend.outputs.has_frontend == 'true'
-      run: npm run build || true
+      - name: Build frontend
+        if: steps.frontend.outputs.has_frontend == 'true'
+        run: npm run build || true
 
-    - name: Skip frontend checks when project is absent
-      if: steps.frontend.outputs.has_frontend != 'true'
-      run: echo "No package.json found; skipping frontend job."
+      - name: Skip frontend checks when project is absent
+        if: steps.frontend.outputs.has_frontend != 'true'
+        run: echo "No package.json/package-lock.json found; skipping frontend job."
 
   lint:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+      - name: Check out repository
+        uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.12'
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+          cache-dependency-path: |
+            requirements.txt
+            pyproject.toml
 
-    - name: Install linting tools
-      run: |
-        python -m pip install --upgrade pip
-        pip install black flake8 mypy
+      - name: Install linting tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install black flake8 mypy
 
-    - name: Run Black (Python formatter)
-      run: black --check --diff yime/ pinyin/ syllable/ || true
+      - name: Run Black (Python formatter)
+        run: black --check --diff yime/ pinyin/ syllable/ || true
 
-    - name: Run Flake8 (Python linter)
-      run: flake8 yime/ pinyin/ syllable/ --max-line-length=100 --exclude=*/migrations/* || true
+      - name: Run Flake8 (Python linter)
+        run: flake8 yime/ pinyin/ syllable/ --max-line-length=100 --exclude=*/migrations/* || true
 
-    - name: Set up Node.js for ESLint
-      uses: actions/setup-node@v4
-      with:
-        node-version: '18'
+      - name: Set up Node.js for ESLint
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
 
-    - name: Install ESLint
-      run: npm install -g eslint || true
+      - name: Install ESLint
+        run: npm install -g eslint || true
 
-    - name: Run ESLint
-      run: eslint src/ --ext .js,.jsx,.ts,.tsx || true
+      - name: Run ESLint
+        run: eslint src/ --ext .js,.jsx,.ts,.tsx || true
 
   build:
     runs-on: ubuntu-latest
     needs: [test, frontend]
 
     steps:
-    - uses: actions/checkout@v4
+      - name: Check out repository
+        uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.12'
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+          cache-dependency-path: |
+            requirements.txt
+            pyproject.toml
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-        pip install -e .
-        pip install build wheel
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install -e .
+          pip install build wheel
 
-    - name: Build Python package
-      run: |
-        python -m build
+      - name: Build Python package
+        run: python -m build
 
-    - name: Archive build artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: dist-packages
-        path: dist/
+      - name: Archive build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-packages
+          path: dist/
 
   security:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+      - name: Check out repository
+        uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.12'
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+          cache-dependency-path: |
+            requirements.txt
+            pyproject.toml
 
-    - name: Install security tools
-      run: |
-        python -m pip install --upgrade pip
-        pip install safety bandit
+      - name: Install security tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install safety bandit
 
-    - name: Run Safety (dependency security check)
-      run: safety check --full-report || true
+      - name: Run Safety (dependency security check)
+        run: safety check --full-report || true
 
-    - name: Run Bandit (Python security linter)
-      run: bandit -r yime/ pinyin/ syllable/ -ll || true
+      - name: Run Bandit (Python security linter)
+        run: bandit -r yime/ pinyin/ syllable/ -ll || true

@@ -33,6 +33,11 @@ class CandidateBoxActions:
             if callable(binder):
                 binder(sequence, handler)
 
+        def candidate_shortcut_handler(index: int):
+            def handler(event: Optional[tk.Event] = None) -> str:
+                return self.on_candidate_shortcut(event, index)
+            return handler
+
         for index in range(1, 10):
             self.box.root.bind(
                 str(index),
@@ -87,9 +92,10 @@ class CandidateBoxActions:
 
         for widget in (self.box.root, self.box.input_entry, self.box.commit_entry):
             for sequence, index in self._SYMBOL_SHORTCUT_BINDINGS.items():
-                widget.bind(
+                bind_if_possible(
+                    widget,
                     sequence,
-                    lambda event, value=index: self.on_candidate_shortcut(event, value),
+                    candidate_shortcut_handler(index),
                 )
 
         # Bind mouse clicks to the UI pager controls
@@ -113,8 +119,13 @@ class CandidateBoxActions:
 
     def on_input_change(self, event: Optional[tk.Event] = None) -> None:
         self.box.set_projected_input(self.box.get_input())
-        if self.box._on_input_change_callback:
-            self.box._on_input_change_callback(event)
+        notify_input_change = getattr(self.box, "notify_input_change", None)
+        if callable(notify_input_change):
+            notify_input_change(event)
+            return
+        callback = getattr(self.box, "_on_input_change_callback", None)
+        if callable(callback):
+            callback(event)
 
     def activate_for_manual_input(self, event: Optional[tk.Event] = None) -> None:
         self.box.set_manual_input_enabled(True)
@@ -122,8 +133,12 @@ class CandidateBoxActions:
 
     def restore_from_standby(self, event: Optional[tk.Event] = None) -> str:
         def restore() -> None:
-            if self.box._on_restore_from_standby:
-                self.box._on_restore_from_standby()
+            restore_callback = getattr(self.box, "restore_from_standby_callback", None)
+            if callable(restore_callback) and restore_callback():
+                return
+            legacy_callback = getattr(self.box, "_on_restore_from_standby", None)
+            if callable(legacy_callback):
+                legacy_callback()
                 return
             self.box.set_manual_input_enabled(True)
             self.box.show(focus_input=True)
@@ -137,8 +152,12 @@ class CandidateBoxActions:
         return "break"
 
     def request_standby(self, event: Optional[tk.Event] = None) -> str:
-        if self.box._on_toggle_standby:
-            self.box._on_toggle_standby()
+        toggle_callback = getattr(self.box, "toggle_standby_callback", None)
+        if callable(toggle_callback) and toggle_callback():
+            return "break"
+        legacy_callback = getattr(self.box, "_on_toggle_standby", None)
+        if callable(legacy_callback):
+            legacy_callback()
             return "break"
         self.box.show_standby()
         return "break"
@@ -238,8 +257,13 @@ class CandidateBoxActions:
         if not text:
             self.box.set_status("缓冲区为空。")
             return
-        if self.box._on_commit_text_callback:
-            self.box._on_commit_text_callback(text)
+        commit_callback = getattr(self.box, "commit_text_callback", None)
+        if callable(commit_callback) and commit_callback(text):
+            self.box.set_status(f"已发送缓冲区内容: {text}")
+            return
+        legacy_callback = getattr(self.box, "_on_commit_text_callback", None)
+        if callable(legacy_callback):
+            legacy_callback(text)
             self.box.set_status(f"已发送缓冲区内容: {text}")
 
     def select_candidate_by_index(self, index: int) -> bool:
@@ -254,11 +278,20 @@ class CandidateBoxActions:
         return True
 
     def copy_candidate(self, index: int) -> None:
-        if self.box._on_copy_candidate_callback:
-            self.box._on_copy_candidate_callback(index)
+        copy_callback = getattr(self.box, "copy_candidate_callback", None)
+        if callable(copy_callback):
+            copy_callback(index)
+            return
+        legacy_callback = getattr(self.box, "_on_copy_candidate_callback", None)
+        if callable(legacy_callback):
+            legacy_callback(index)
 
     def request_close(self) -> None:
-        if self.box._on_close:
-            self.box._on_close()
+        close_callback = getattr(self.box, "close_callback", None)
+        if callable(close_callback) and close_callback():
+            return
+        legacy_callback = getattr(self.box, "_on_close", None)
+        if callable(legacy_callback):
+            legacy_callback()
             return
         self.box.close()

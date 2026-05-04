@@ -2,9 +2,12 @@
 候选框 UI 布局与控件管理模块
 负责创建界面元素、配置字体/样式结构。
 """
+from __future__ import annotations
+
 import tkinter as tk
 from tkinter import ttk
 from tkinter import font as tkfont
+from typing import Callable, cast
 
 
 class CandidateLayoutBuilder:
@@ -13,34 +16,34 @@ class CandidateLayoutBuilder:
         self.root = root
         self.font_family = self._resolve_font_family(font_family)
 
-        self.ui_font = None
-        self.text_font = None
-        self.icon_font = None
-        self.style = None
+        self.ui_font: tkfont.Font
+        self.text_font: tkfont.Font
+        self.icon_font: tkfont.Font
+        self.style: ttk.Style
 
-        self.main_frame = None
-        self.standby_frame = None
-        self.standby_icon = None
+        self.main_frame: ttk.Frame
+        self.standby_frame: tk.Frame
+        self.standby_icon: tk.Label
 
         self.input_var = tk.StringVar(self.root)
-        self.input_entry = None
+        self.input_entry: ttk.Entry
 
         self.commit_var = tk.StringVar(self.root, value="")
-        self.commit_entry = None
+        self.commit_entry: ttk.Entry
 
-        self.decode_info_frame = None
+        self.decode_info_frame: ttk.Frame
         self.pinyin_var = tk.StringVar(self.root, value="")
 
-        self.candidate_panel = None
-        self.candidate_text = None
+        self.candidate_panel: ttk.Frame
+        self.candidate_text: tk.Text
 
-        self.pager_frame = None
-        self.first_page_button = None
-        self.prev_button = None
-        self.next_button = None
-        self.last_page_button = None
+        self.pager_frame: ttk.Frame
+        self.first_page_button: ttk.Label
+        self.prev_button: ttk.Label
+        self.next_button: ttk.Label
+        self.last_page_button: ttk.Label
 
-        self.manual_key_layout_label = None
+        self.manual_key_layout_label: ttk.Label
 
         self._configure_fonts()
 
@@ -58,7 +61,8 @@ class CandidateLayoutBuilder:
             self.root, family=self.font_family, size=16, weight="bold"
         )
 
-        self.root.option_add("*Font", self.ui_font)
+        option_add = cast(Callable[[str, object], None], getattr(self.root, "option_add"))
+        option_add("*Font", self.ui_font)
         for named_font in (
             "TkDefaultFont",
             "TkTextFont",
