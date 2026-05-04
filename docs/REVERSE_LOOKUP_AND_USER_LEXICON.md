@@ -14,7 +14,10 @@
 - 启动入口：`python run_input_method.py`
 - 反查查询脚本：[../tools/query_phrase_code.py](../tools/query_phrase_code.py)
 - 用户词库写入脚本：[../tools/add_user_phrase.py](../tools/add_user_phrase.py)
+- 用户词库管理脚本：[../tools/manage_user_lexicon.py](../tools/manage_user_lexicon.py)
+- 候选调序诊断脚本：[../tools/diagnose_candidate_order.py](../tools/diagnose_candidate_order.py)
 - 用户词库数据库：`yime/user_lexicon.db`
+- 用户词库种子文件：`yime/user_lexicon_seed.json`
 
 ## 1. 汉字反查首选拼音和编码
 
@@ -151,7 +154,114 @@ python tools/add_user_phrase.py 日本 "ri4 ben3" --marked-pinyin "rì běn" --y
 - 音元编码
 - 本次状态
 
-## 3. 用户词频为什么会长期调序
+## 3. 维护、备份与迁移用户词库
+
+当前仓库已经提供一个专门的维护脚本：`python tools/manage_user_lexicon.py ...`
+
+### 查看最近加入或更新的词条
+
+```bash
+python tools/manage_user_lexicon.py list-recent --limit 20
+```
+
+适合快速确认最近补了哪些词，或检查某次导入后有没有写进去。
+
+### 导出当前用户词库备份
+
+```bash
+python tools/manage_user_lexicon.py export backups/user_lexicon_backup.json
+```
+
+如果你只想导出词条，不想带上个人调序频率，可用：
+
+```bash
+python tools/manage_user_lexicon.py export backups/user_lexicon_seed.json --no-frequency
+```
+
+这条形式也正好适合生成可分发的 `seed 用户词库`。
+
+### 导入用户词库备份
+
+```bash
+python tools/manage_user_lexicon.py import backups/user_lexicon_backup.json
+```
+
+如果要先清空当前用户词库，再用备份完整覆盖：
+
+```bash
+python tools/manage_user_lexicon.py import backups/user_lexicon_backup.json --replace-existing
+```
+
+如果只想导入词条，不恢复旧机器上的调序频率：
+
+```bash
+python tools/manage_user_lexicon.py import backups/user_lexicon_backup.json --no-frequency
+```
+
+### 显式创建空用户词库文件
+
+```bash
+python tools/manage_user_lexicon.py init-db
+```
+
+如果你要给安装包或目标机器预先放一个空库，也可以指定路径：
+
+```bash
+python tools/manage_user_lexicon.py init-db --db-path path/to/user_lexicon.db
+```
+
+这条命令会确保 SQLite 文件已经创建好，即使里面还没有任何用户词条。
+
+## 4. 调序诊断工具
+
+如果你想知道“为什么这个词排到前面”，而不是只看 `freq`，可以直接用：
+
+```bash
+python tools/diagnose_candidate_order.py --numeric-pinyin "ri4 ben3" --limit 10
+```
+
+它会输出：
+
+- 当前 `lookup_code`
+- 原始候选数和去重排序后的候选数
+- 每个候选的 `entry_type`
+- `sort_weight`
+- `user_freq`
+- 最终参与排序的 `sort_key`
+
+如果你已经知道规范码，也可以直接按码诊断：
+
+```bash
+python tools/diagnose_candidate_order.py --canonical-code "<规范码>" --limit 10
+```
+
+这比单看 `query_phrase_code.py` 更适合排查“候选顺序为什么这样排”。
+
+## 5. seed 用户词库流程
+
+如果你要做安装包，想让目标机器第一次启动时就带一份初始化用户词库，可以按下面的约定：
+
+1. 在打包机上先准备好一份可分发词库：
+
+```bash
+python tools/manage_user_lexicon.py export yime/user_lexicon_seed.json --no-frequency
+```
+
+1. 打包时把这个 `yime/user_lexicon_seed.json` 一起带上。
+2. 不要同时把开发机正在使用的 `yime/user_lexicon.db` 原样塞进安装包。
+3. 目标机器首次启动 `python run_input_method.py` 时，如果当前用户词库为空且还没有导入过 seed，程序会自动创建用户词库并导入这份 seed 文件。
+4. 导入完成后，目标机器后续新增的词和调序频率都继续写进它自己的 `yime/user_lexicon.db`，不再回写 seed 文件。
+
+仓库中也提供了一个最小示例文件：`yime/user_lexicon_seed.json`，可直接作为打包参考。
+
+这样可以把“初始化推荐词条”和“用户后续私有数据”分开管理。
+
+补充说明：
+
+- 即使安装包里已经预先放了一个空的 `yime/user_lexicon.db`，只要这个库里还没有用户数据，也仍然会自动导入 seed。
+- 如果目标机器已经有自己的用户词条或调序频率，自动 seed 导入会跳过，不会覆盖现有内容。
+
+## 6. 用户词频为什么会长期调序
 
 当前实现不只是“把词存进去”，还会把用户的选词频率持久写入用户库。
 
@@ -176,7 +286,7 @@ freq=3
 
 通常就说明这个词最近被你持续选中过，因此它排前并不是偶然。
 
-## 4. 当前边界
+## 7. 当前边界
 
 当前这套最小实现的边界是：
 

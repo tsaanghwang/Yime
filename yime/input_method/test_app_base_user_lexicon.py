@@ -36,6 +36,9 @@ class _FakeUserLexiconStore:
         self.action = action
         self.deleted_phrases: list[str] = []
         self.delete_result = True
+        self.import_calls: list[dict[str, object]] = []
+        self.meta: dict[str, str] = {}
+        self.has_data = False
 
     def upsert_phrase(self, phrase: str, numeric_pinyin: str, **kwargs) -> None:
         self.entries.append(
@@ -52,6 +55,31 @@ class _FakeUserLexiconStore:
     def delete_phrase(self, phrase: str) -> bool:
         self.deleted_phrases.append(phrase)
         return self.delete_result
+
+    def import_file(
+        self,
+        path: Path,
+        *,
+        replace_existing: bool = False,
+        include_frequency: bool = True,
+    ) -> dict[str, int]:
+        self.import_calls.append(
+            {
+                "path": path,
+                "replace_existing": replace_existing,
+                "include_frequency": include_frequency,
+            }
+        )
+        return {"phrase_entries": 2, "candidate_frequency": 1}
+
+    def get_meta(self, key: str) -> str:
+        return self.meta.get(key, "")
+
+    def set_meta(self, key: str, value: str) -> None:
+        self.meta[key] = value
+
+    def has_user_data(self) -> bool:
+        return self.has_data
 
 
 class _ReloadableDecoder:
@@ -318,3 +346,36 @@ def test_delete_current_input_from_user_lexicon_reports_missing(monkeypatch) -> 
     assert refreshed == []
     assert app.candidate_box.statuses[0] == "用户词库中未找到：多日"
     assert warning_calls == [("从用户词库中删除", "用户词库中未找到：多日")]
+
+
+def test_maybe_import_seed_user_lexicon_imports_for_empty_store(tmp_path) -> None:
+    app = BaseInputMethodApp.__new__(BaseInputMethodApp)
+    app.user_lexicon_store = _FakeUserLexiconStore()
+    app.user_lexicon_seed_path = tmp_path / "user_lexicon_seed.json"
+    app.user_lexicon_seed_path.write_text("{}\n", encoding="utf-8")
+
+    result = BaseInputMethodApp._maybe_import_seed_user_lexicon(app)
+
+    assert result == {"phrase_entries": 2, "candidate_frequency": 1}
+    assert app.user_lexicon_store.import_calls == [
+        {
+            "path": app.user_lexicon_seed_path,
+            "replace_existing": False,
+            "include_frequency": True,
+        }
+    ]
+    assert app.user_lexicon_store.get_meta("seed_import_completed").startswith("imported:")
+
+
+def test_maybe_import_seed_user_lexicon_skips_when_existing_user_data_present(tmp_path) -> None:
+    app = BaseInputMethodApp.__new__(BaseInputMethodApp)
+    app.user_lexicon_store = _FakeUserLexiconStore()
+    app.user_lexicon_store.has_data = True
+    app.user_lexicon_seed_path = tmp_path / "user_lexicon_seed.json"
+    app.user_lexicon_seed_path.write_text("{}\n", encoding="utf-8")
+
+    result = BaseInputMethodApp._maybe_import_seed_user_lexicon(app)
+
+    assert result == {"phrase_entries": 0, "candidate_frequency": 0}
+    assert app.user_lexicon_store.import_calls == []
+    assert app.user_lexicon_store.get_meta("seed_import_completed") == "skipped_existing_user_data"

@@ -174,6 +174,13 @@ python -m yime.input_method.app
 - `docs/REVERSE_LOOKUP_AND_USER_LEXICON.md`
 - `docs/REVERSE_LOOKUP_AND_USER_LEXICON_QUICK_REF.md`
 
+如果你需要迁移、备份或诊断用户词库，还可以直接用：
+
+- `python tools/manage_user_lexicon.py list-recent --limit 10`
+- `python tools/manage_user_lexicon.py export backups/user_lexicon_backup.json`
+- `python tools/manage_user_lexicon.py import backups/user_lexicon_backup.json`
+- `python tools/diagnose_candidate_order.py --numeric-pinyin "ri4 ben3" --limit 10`
+
 ## 当前限制
 
 以下限制仍然存在，使用时要有预期：

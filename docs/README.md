@@ -28,8 +28,8 @@
 - **[Python 3.12 快速开始](install/QUICKSTART_PY312.md)** - 最短启动路径，适合已理解当前主线后快速跑起原型
 - **[无管理员权限安装](install/PORTABLE_PYTHON_GUIDE.md)** - 使用便携版 Python 3.12 的无管理员权限安装路径
 - **[使用说明](USAGE.md)** - 基本使用方法和示例
-- **[反查编码与用户词库操作说明](REVERSE_LOOKUP_AND_USER_LEXICON.md)** - 说明如何反查字词编码、查询用户频率以及写入持久用户词库
-- **[反查编码与用户词库速查](REVERSE_LOOKUP_AND_USER_LEXICON_QUICK_REF.md)** - 一页看完最常用的反查、加词和查频率操作
+- **[反查编码与用户词库操作说明](REVERSE_LOOKUP_AND_USER_LEXICON.md)** - 说明如何反查字词编码、查询用户频率、备份/迁移用户词库以及使用 seed 初始化词库
+- **[反查编码与用户词库速查](REVERSE_LOOKUP_AND_USER_LEXICON_QUICK_REF.md)** - 一页看完最常用的反查、加词、备份和调序诊断操作
 - **[快速入门](../README.md)** - 项目概述和快速开始
 
 补充说明：上面这一组链接应理解为当前推荐入口；如果某份文档只是保存试验经过、旧机器现象或历史调查，请不要把它直接当成当前操作手册。

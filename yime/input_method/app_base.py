@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from datetime import datetime, timezone
 from pathlib import Path
 from tkinter import messagebox, simpledialog
 from typing import Callable, Optional
@@ -44,7 +45,9 @@ class BaseInputMethodApp:
         self.repo_root = app_dir.parent
         user_db_path = app_dir / "user_lexicon.db"
         self.user_db_path = user_db_path
+        self.user_lexicon_seed_path = app_dir / "user_lexicon_seed.json"
         self.user_lexicon_store = UserLexiconStore(user_db_path)
+        self.seed_import_result = self._maybe_import_seed_user_lexicon()
         self.decoder = CompositeCandidateDecoder(app_dir, user_db_path=user_db_path)
         self.input_visual_map = build_input_visual_map(app_dir.parent)
         self.manual_key_output_map = build_manual_key_output_map(app_dir.parent)
@@ -74,6 +77,30 @@ class BaseInputMethodApp:
         self._locked_external_hwnd: Optional[int] = None
         self.last_replace_length = 0
         self._post_commit_behavior = "standby"
+
+    def _maybe_import_seed_user_lexicon(self) -> dict[str, int]:
+        meta_key = "seed_import_completed"
+        if self.user_lexicon_store.get_meta(meta_key):
+            return {"phrase_entries": 0, "candidate_frequency": 0}
+
+        seed_path = getattr(self, "user_lexicon_seed_path", None)
+        if seed_path is None or not Path(seed_path).exists():
+            return {"phrase_entries": 0, "candidate_frequency": 0}
+
+        if self.user_lexicon_store.has_user_data():
+            self.user_lexicon_store.set_meta(meta_key, "skipped_existing_user_data")
+            return {"phrase_entries": 0, "candidate_frequency": 0}
+
+        result = self.user_lexicon_store.import_file(
+            Path(seed_path),
+            replace_existing=False,
+            include_frequency=True,
+        )
+        imported = bool(result.get("phrase_entries") or result.get("candidate_frequency"))
+        timestamp = datetime.now(timezone.utc).isoformat()
+        state = f"imported:{timestamp}" if imported else f"empty_seed:{timestamp}"
+        self.user_lexicon_store.set_meta(meta_key, state)
+        return result
 
     def _create_candidate_box(self) -> CandidateBox:
         return CandidateBox(

@@ -6,6 +6,11 @@
 
 - [REVERSE_LOOKUP_AND_USER_LEXICON.md](REVERSE_LOOKUP_AND_USER_LEXICON.md)
 
+相关脚本：
+
+- `python tools/manage_user_lexicon.py ...`
+- `python tools/diagnose_candidate_order.py ...`
+
 ## 1. 反查拼音和编码
 
 ### 在输入法 UI 中
@@ -68,6 +73,23 @@ python tools/add_user_phrase.py 今日 "jin1 ri4" --marked-pinyin "jīn rì"
 yime/user_lexicon.db
 ```
 
+### 常用维护命令
+
+```bash
+python tools/manage_user_lexicon.py list-recent --limit 10
+python tools/manage_user_lexicon.py export backups/user_lexicon_backup.json
+python tools/manage_user_lexicon.py import backups/user_lexicon_backup.json
+python tools/manage_user_lexicon.py init-db
+```
+
+如果要生成可随安装包分发的 seed 用户词库：
+
+```bash
+python tools/manage_user_lexicon.py export yime/user_lexicon_seed.json --no-frequency
+```
+
+首次启动时，如果目标机器的用户词库为空且尚未导入过 seed，程序会自动导入这个 `yime/user_lexicon_seed.json`。
+
 ## 3. 为什么它会排前面
 
 查：
@@ -89,8 +111,15 @@ freq=3
 
 通常说明这个词不只是“存在于用户词库”，而且最近被你持续选中过，所以会长期排前。
 
+如果要直接看某个编码下的实际候选排序：
+
+```bash
+python tools/diagnose_candidate_order.py --numeric-pinyin "ri4 ben3" --limit 10
+```
+
 ## 4. 一句话判断
 
 - 查不到：先用 `query_phrase_code.py`
 - 想补词：右键 `加入用户词库` 或用 `add_user_phrase.py`
-- 想知道为什么排前：看 `User` 段里的 `freq` 和 `last_used`
+- 想备份/迁移：用 `manage_user_lexicon.py export / import / init-db / list-recent`
+- 想知道为什么排前：先看 `User` 段里的 `freq` 和 `last_used`，再用 `diagnose_candidate_order.py`
