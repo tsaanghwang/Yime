@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 from pathlib import Path
+from tkinter import messagebox, simpledialog
 from typing import Callable, Optional
 
+from ..borrow_wanxiang_frequency import marked_pinyin_to_numeric
 from .core.decoders import (
     CompositeCandidateDecoder,
     build_code_display,
@@ -19,6 +21,8 @@ from .core.decoders import (
 from .ui.candidate_box import CandidateBox
 from .utils.clipboard import ClipboardManager
 from .utils.keyboard_simulator import KeyboardSimulator
+from .utils.runtime_reverse_lookup import RuntimeReverseLookup, looks_like_hanzi_text
+from .utils.user_lexicon import UserLexiconStore, resolve_yime_code_from_numeric_pinyin
 from .utils.window_manager import WindowManager
 
 
@@ -36,7 +40,12 @@ class BaseInputMethodApp:
         self.font_family = font_family
 
         app_dir = Path(__file__).resolve().parent.parent
-        self.decoder = CompositeCandidateDecoder(app_dir)
+        self.app_dir = app_dir
+        self.repo_root = app_dir.parent
+        user_db_path = app_dir / "user_lexicon.db"
+        self.user_db_path = user_db_path
+        self.user_lexicon_store = UserLexiconStore(user_db_path)
+        self.decoder = CompositeCandidateDecoder(app_dir, user_db_path=user_db_path)
         self.input_visual_map = build_input_visual_map(app_dir.parent)
         self.manual_key_output_map = build_manual_key_output_map(app_dir.parent)
         self.physical_input_map = build_physical_input_map(app_dir.parent)
@@ -45,6 +54,10 @@ class BaseInputMethodApp:
         )
         self.runtime_decoder_warning = self.decoder.get_runtime_warning()
         self.runtime_decoder_source = self.decoder.get_runtime_source()
+        self.runtime_reverse_lookup = RuntimeReverseLookup(
+            app_dir / "pinyin_hanzi.db",
+            user_db_path=user_db_path,
+        )
         self.clipboard = ClipboardManager()
         self.keyboard_simulator = KeyboardSimulator()
         self.window_manager = WindowManager()
@@ -73,6 +86,8 @@ class BaseInputMethodApp:
             on_input_change=self._on_input_change,
             on_copy_candidate=self._copy_candidate,
             on_commit_text=self._commit_candidate_box_text,
+            on_add_input_to_user_lexicon=self._add_current_input_to_user_lexicon,
+            on_delete_input_from_user_lexicon=self._delete_current_input_from_user_lexicon,
             on_close=self._close,
         )
 
@@ -224,6 +239,142 @@ class BaseInputMethodApp:
             self.last_external_hwnd = foreground
         self._schedule_ui(250, self._poll_foreground_window)
 
+    def _reload_user_lexicon_runtime(self) -> None:
+        if hasattr(self.decoder, "reload_user_lexicon"):
+            self.decoder.reload_user_lexicon()
+
+    def _show_user_lexicon_info(self, title: str, message: str) -> None:
+        messagebox.showinfo(title, message, parent=self.candidate_box.root)
+
+    def _show_user_lexicon_warning(self, title: str, message: str) -> None:
+        messagebox.showwarning(title, message, parent=self.candidate_box.root)
+
+    def _show_user_lexicon_error(self, title: str, message: str) -> None:
+        messagebox.showerror(title, message, parent=self.candidate_box.root)
+
+    def _normalize_numeric_pinyin_for_user_lexicon(self, raw_pinyin: str) -> tuple[str, str]:
+        normalized = " ".join(raw_pinyin.split())
+        if not normalized:
+            return "", ""
+
+        direct_code = resolve_yime_code_from_numeric_pinyin(self.repo_root, normalized)
+        if direct_code:
+            return normalized, direct_code
+
+        converted = " ".join(marked_pinyin_to_numeric(normalized).split())
+        if converted and converted != normalized:
+            converted_code = resolve_yime_code_from_numeric_pinyin(self.repo_root, converted)
+            if converted_code:
+                return converted, converted_code
+
+        return normalized, ""
+
+    def _add_current_input_to_user_lexicon(self) -> None:
+        display_input = self.candidate_box.get_input().strip()
+        input_text = project_physical_input(display_input, self.physical_input_map).strip()
+        if not looks_like_hanzi_text(input_text) or len(input_text) < 2:
+            message = "仅支持将当前汉字词语加入用户词库。"
+            self.candidate_box.set_status(message)
+            self._show_user_lexicon_warning("加入用户词库", message)
+            return
+
+        existing = self.runtime_reverse_lookup.lookup_first(input_text)
+        default_numeric = existing.numeric_pinyin if existing is not None else ""
+        default_marked = existing.marked_pinyin if existing is not None else ""
+
+        numeric_pinyin = simpledialog.askstring(
+            "加入用户词库",
+            f"请输入“{input_text}”的数字标调拼音：",
+            initialvalue=default_numeric,
+            parent=self.candidate_box.root,
+        )
+        if numeric_pinyin is None:
+            self.candidate_box.set_status("已取消加入用户词库。")
+            return
+
+        normalized_numeric, yime_code = self._normalize_numeric_pinyin_for_user_lexicon(
+            numeric_pinyin
+        )
+        if not normalized_numeric:
+            message = "数字标调拼音不能为空。"
+            self.candidate_box.set_status(message)
+            self._show_user_lexicon_error("加入用户词库", message)
+            return
+
+        if not yime_code:
+            message = (
+                "无法根据第一栏拼音推导音元编码。请在第一栏填写数字标调拼音，"
+                "例如“duo1 ri4”；如果你输入的是“duō rì”，系统只会在能自动转换时接受。"
+            )
+            self.candidate_box.set_status(message)
+            self._show_user_lexicon_error("加入用户词库", message)
+            return
+
+        marked_pinyin = simpledialog.askstring(
+            "加入用户词库",
+            f"请输入“{input_text}”的标准拼音（可留空）：",
+            initialvalue=default_marked,
+            parent=self.candidate_box.root,
+        )
+        if marked_pinyin is None:
+            self.candidate_box.set_status("已取消加入用户词库。")
+            return
+
+        normalized_marked = " ".join(marked_pinyin.split())
+        if not normalized_marked and normalized_numeric != " ".join(numeric_pinyin.split()):
+            normalized_marked = " ".join(numeric_pinyin.split())
+
+        action = self.user_lexicon_store.upsert_phrase(
+            input_text,
+            normalized_numeric,
+            marked_pinyin=normalized_marked,
+            yime_code=yime_code,
+            source_note="ui_context_menu",
+        )
+        self._reload_user_lexicon_runtime()
+        marked_display = normalized_marked
+        pinyin_parts = [part for part in (marked_display, normalized_numeric) if part]
+        pinyin_display = " / ".join(pinyin_parts)
+        status_prefix = "已更新用户词库" if action == "updated" else "已加入用户词库"
+        if pinyin_display:
+            status_message = f"{status_prefix}: {input_text} | {pinyin_display} | {yime_code}"
+        else:
+            status_message = f"{status_prefix}: {input_text} | {yime_code}"
+        self.candidate_box.set_status(status_message)
+        self._show_user_lexicon_info("加入用户词库", status_message)
+        self._on_input_change()
+
+    def _delete_current_input_from_user_lexicon(self) -> None:
+        display_input = self.candidate_box.get_input().strip()
+        input_text = project_physical_input(display_input, self.physical_input_map).strip()
+        if not looks_like_hanzi_text(input_text) or len(input_text) < 2:
+            message = "仅支持将当前汉字词语从用户词库中删除。"
+            self.candidate_box.set_status(message)
+            self._show_user_lexicon_warning("从用户词库中删除", message)
+            return
+
+        confirm = messagebox.askyesno(
+            "从用户词库中删除",
+            f"确定要从用户词库中删除“{input_text}”吗？",
+            parent=self.candidate_box.root,
+        )
+        if not confirm:
+            self.candidate_box.set_status("已取消从用户词库中删除。")
+            return
+
+        deleted = self.user_lexicon_store.delete_phrase(input_text)
+        if not deleted:
+            message = f"用户词库中未找到：{input_text}"
+            self.candidate_box.set_status(message)
+            self._show_user_lexicon_warning("从用户词库中删除", message)
+            return
+
+        self._reload_user_lexicon_runtime()
+        status_message = f"已从用户词库中删除: {input_text}"
+        self.candidate_box.set_status(status_message)
+        self._show_user_lexicon_info("从用户词库中删除", status_message)
+        self._on_input_change()
+
     def _on_input_change(self, event: Optional[object] = None) -> None:
         display_input = self.candidate_box.get_input()
         input_text = project_physical_input(display_input, self.physical_input_map)
@@ -239,6 +390,28 @@ class BaseInputMethodApp:
                 "",
                 "",
                 '连续输入时自动取最近 4 码。请先复制编码，再点"读取剪贴板"。',
+            )
+            return
+
+        if looks_like_hanzi_text(input_text):
+            record = self.runtime_reverse_lookup.lookup_first(input_text)
+            if record is not None:
+                self.last_replace_length = len(input_text)
+                status = "已按运行时词库首选读音反查。"
+                self.candidate_box.update_candidates(
+                    [],
+                    record.to_display_text(),
+                    "",
+                    status,
+                )
+                return
+
+            self.last_replace_length = len(input_text)
+            self.candidate_box.update_candidates(
+                [],
+                "",
+                "",
+                "运行时词库中未找到该字词。",
             )
             return
 

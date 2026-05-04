@@ -19,6 +19,8 @@ from ..utils.window_manager import WindowManager
 InputChangeCallback = Callable[[Optional[object]], None]
 CopyCandidateCallback = Callable[[int], None]
 CommitTextCallback = Callable[[str], None]
+AddInputToUserLexiconCallback = Callable[[], None]
+DeleteInputFromUserLexiconCallback = Callable[[], None]
 ManualKeyOutputResolver = Callable[[str, dict[str, bool]], str]
 VoidCallback = Callable[[], None]
 
@@ -68,6 +70,8 @@ class CandidateBox(CandidateRendererMixin):
         on_input_change: Optional[InputChangeCallback] = None,
         on_copy_candidate: Optional[CopyCandidateCallback] = None,
         on_commit_text: Optional[CommitTextCallback] = None,
+        on_add_input_to_user_lexicon: Optional[AddInputToUserLexiconCallback] = None,
+        on_delete_input_from_user_lexicon: Optional[DeleteInputFromUserLexiconCallback] = None,
         on_restore_from_standby: Optional[VoidCallback] = None,
         on_toggle_standby: Optional[VoidCallback] = None,
         on_close: Optional[VoidCallback] = None,
@@ -107,6 +111,8 @@ class CandidateBox(CandidateRendererMixin):
         self._on_input_change_callback = on_input_change
         self._on_copy_candidate_callback = on_copy_candidate
         self._on_commit_text_callback = on_commit_text
+        self._on_add_input_to_user_lexicon = on_add_input_to_user_lexicon
+        self._on_delete_input_from_user_lexicon = on_delete_input_from_user_lexicon
         self._on_restore_from_standby = on_restore_from_standby
         self._on_toggle_standby = on_toggle_standby
         self._on_close = on_close
@@ -240,6 +246,18 @@ class CandidateBox(CandidateRendererMixin):
     def copy_candidate_callback(self, index: int) -> bool:
         if self._on_copy_candidate_callback:
             self._on_copy_candidate_callback(index)
+            return True
+        return False
+
+    def add_input_to_user_lexicon_callback(self) -> bool:
+        if self._on_add_input_to_user_lexicon:
+            self._on_add_input_to_user_lexicon()
+            return True
+        return False
+
+    def delete_input_from_user_lexicon_callback(self) -> bool:
+        if self._on_delete_input_from_user_lexicon:
+            self._on_delete_input_from_user_lexicon()
             return True
         return False
 
@@ -397,8 +415,14 @@ class CandidateBox(CandidateRendererMixin):
             return None
 
         modifiers = ManualInputResolver.get_manual_key_modifiers()
-        translated_text = ""
         physical_key = ManualInputResolver.normalize_event_physical_key(event)
+        keysym = str(getattr(event, "keysym", "") or "").lower()
+        if modifiers.get("ctrl") and not modifiers.get("alt_gr") and physical_key in {"c", "v"}:
+            return None
+        if modifiers.get("shift") and keysym == "insert":
+            return None
+
+        translated_text = ""
         if self._manual_key_output_resolver and physical_key:
             translated_text = self._manual_key_output_resolver(physical_key, modifiers)
 

@@ -5,6 +5,8 @@ import threading
 import time
 from typing import Any, Callable, Dict, Optional
 
+from ..utils.modifier_state import is_alt_gr_active
+
 
 # 尝试导入pywin32
 try:
@@ -340,10 +342,9 @@ class KeyboardListener:
             for name, codes in self._MODIFIER_VK_CODES.items():
                 states[name] = any(bool(user32.GetAsyncKeyState(code) & 0x8000) for code in codes)
 
-            # On Windows, AltGr is commonly surfaced as Right Alt plus Ctrl.
-            # Some keyboards expose the same layer only through a Ctrl+Alt chord,
-            # so treat either form as AltGr for printable layout characters.
-            states["alt_gr"] = bool(states.get("ctrl") and (states.get("alt_r") or states.get("alt")))
+            # Some layouts surface AltGr as Right Alt, while others only expose
+            # the same printable layer through a Ctrl+Alt chord.
+            states["alt_gr"] = is_alt_gr_active(states)
 
             if vk_code == 0x10:
                 states["shift"] = True

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import tkinter as tk
+from tkinter import messagebox
 from typing import TYPE_CHECKING, Optional
 
 if TYPE_CHECKING:
@@ -26,6 +27,7 @@ class CandidateBoxActions:
 
     def __init__(self, box: CandidateBox) -> None:
         self.box = box
+        self._input_context_menu: Optional[tk.Menu] = None
 
     def bind_keys(self) -> None:
         def bind_if_possible(widget: object, sequence: str, handler: object) -> None:
@@ -45,7 +47,11 @@ class CandidateBoxActions:
             )
 
         self.box.root.bind("<Return>", self.on_confirm_key)
+        bind_if_possible(self.box.input_entry, "<KeyPress>", self.box._on_manual_input_key_press)
         bind_if_possible(self.box.input_entry, "<KeyRelease>", self.on_input_change)
+        bind_if_possible(self.box.input_entry, "<<Paste>>", self.on_paste)
+        bind_if_possible(self.box.input_entry, "<Shift-Insert>", self.on_paste)
+        bind_if_possible(self.box.input_entry, "<Button-3>", self.show_input_context_menu)
         bind_if_possible(self.box.input_entry, "<Return>", self.on_confirm_key)
         bind_if_possible(self.box.commit_entry, "<Return>", self.on_confirm_key)
         bind_if_possible(self.box.candidate_text, "<Return>", self.on_confirm_key)
@@ -126,6 +132,83 @@ class CandidateBoxActions:
         callback = getattr(self.box, "_on_input_change_callback", None)
         if callable(callback):
             callback(event)
+
+    def on_paste(self, event: Optional[tk.Event] = None) -> None:
+        scheduler = getattr(getattr(self.box, "root", None), "after_idle", None)
+        if callable(scheduler):
+            scheduler(lambda: self.on_input_change(event))
+            return
+        self.on_input_change(event)
+
+    def show_input_context_menu(self, event: Optional[tk.Event] = None) -> str:
+        if not event:
+            return "break"
+
+        focus_set = getattr(self.box.input_entry, "focus_set", None)
+        if callable(focus_set):
+            focus_set()
+
+        menu = self._get_input_context_menu()
+        menu.tk_popup(event.x_root, event.y_root)
+        menu.grab_release()
+        return "break"
+
+    def _get_input_context_menu(self) -> tk.Menu:
+        if self._input_context_menu is None:
+            menu = tk.Menu(self.box.root, tearoff=False)
+            menu.add_command(
+                label="粘贴",
+                command=lambda: self.box.input_entry.event_generate("<<Paste>>"),
+            )
+            menu.add_command(
+                label="复制",
+                command=lambda: self.box.input_entry.event_generate("<<Copy>>"),
+            )
+            menu.add_command(
+                label="全选",
+                command=self.select_all_input_text,
+            )
+            menu.add_command(
+                label="加入用户词库",
+                command=self.add_current_input_to_user_lexicon,
+            )
+            menu.add_command(
+                label="从用户词库中删除",
+                command=self.delete_current_input_from_user_lexicon,
+            )
+            self._input_context_menu = menu
+        return self._input_context_menu
+
+    def select_all_input_text(self) -> None:
+        selection_range = getattr(self.box.input_entry, "selection_range", None)
+        if callable(selection_range):
+            selection_range(0, tk.END)
+        icursor = getattr(self.box.input_entry, "icursor", None)
+        if callable(icursor):
+            icursor(tk.END)
+        focus_set = getattr(self.box.input_entry, "focus_set", None)
+        if callable(focus_set):
+            focus_set()
+
+    def add_current_input_to_user_lexicon(self) -> None:
+        callback = getattr(self.box, "add_input_to_user_lexicon_callback", None)
+        if callable(callback) and callback():
+            return
+        legacy_callback = getattr(self.box, "_on_add_input_to_user_lexicon", None)
+        if callable(legacy_callback):
+            legacy_callback()
+            return
+        messagebox.showinfo("音元拼音", "当前未配置用户词库写入入口。", parent=self.box.root)
+
+    def delete_current_input_from_user_lexicon(self) -> None:
+        callback = getattr(self.box, "delete_input_from_user_lexicon_callback", None)
+        if callable(callback) and callback():
+            return
+        legacy_callback = getattr(self.box, "_on_delete_input_from_user_lexicon", None)
+        if callable(legacy_callback):
+            legacy_callback()
+            return
+        messagebox.showinfo("音元拼音", "当前未配置用户词库删除入口。", parent=self.box.root)
 
     def activate_for_manual_input(self, event: Optional[tk.Event] = None) -> None:
         self.box.set_manual_input_enabled(True)

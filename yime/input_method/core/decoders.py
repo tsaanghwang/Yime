@@ -17,6 +17,7 @@ import unicodedata
 from typing import Dict, List, Tuple, Optional
 
 from .char_code_index import CharCodeCandidate, CharCodeIndex
+from ..utils.user_lexicon import UserLexiconStore
 
 
 def format_codepoints(text: str) -> str:
@@ -192,6 +193,16 @@ def _runtime_candidate_sort_key(
         candidate.text,
         candidate.pinyin_tone,
     )
+
+
+def _merge_runtime_candidate_maps(
+    base_by_code: Dict[str, List[Dict[str, object]]],
+    overlay_by_code: Dict[str, List[Dict[str, object]]],
+) -> Dict[str, List[Dict[str, object]]]:
+    merged = {code: list(candidates) for code, candidates in base_by_code.items()}
+    for code, candidates in overlay_by_code.items():
+        merged.setdefault(code, []).extend(candidates)
+    return merged
 
 
 def build_code_display(raw_text: str, canonical_code: str, active_code: str) -> str:
@@ -535,7 +546,7 @@ class StaticCandidateDecoder:
 class RuntimeCandidateDecoder:
     """运行时候选词解码器（基于运行时编码表）"""
 
-    def __init__(self, app_dir: Path) -> None:
+    def __init__(self, app_dir: Path, user_db_path: Path | None = None) -> None:
         """
         初始化运行时解码器
 
@@ -553,9 +564,14 @@ class RuntimeCandidateDecoder:
             app_dir.parent,
             self.bmp_to_canonical,
         )
+        self.user_lexicon = UserLexiconStore(user_db_path or app_dir / "user_lexicon.db")
         self.by_code = self._load_runtime_candidates(self.runtime_path)
+        self.by_code = _merge_runtime_candidate_maps(
+            self.by_code,
+            self.user_lexicon.load_phrase_candidates(self.pinyin_to_canonical),
+        )
         self.char_code_index = CharCodeIndex.from_runtime_candidates(self.by_code)
-        self._user_freq_by_candidate: dict[tuple[str, str], int] = {}
+        self._user_freq_by_candidate = self.user_lexicon.load_candidate_frequency()
 
     def _load_json(self, path: Path) -> dict:
         """加载JSON文件"""
@@ -606,6 +622,15 @@ class RuntimeCandidateDecoder:
                     continue
                 regrouped.setdefault(canonical_code, []).append(candidate)
         return regrouped
+
+    def reload_user_lexicon(self) -> None:
+        base_by_code = self._load_runtime_candidates(self.runtime_path)
+        self.by_code = _merge_runtime_candidate_maps(
+            base_by_code,
+            self.user_lexicon.load_phrase_candidates(self.pinyin_to_canonical),
+        )
+        self.char_code_index = CharCodeIndex.from_runtime_candidates(self.by_code)
+        self._user_freq_by_candidate = self.user_lexicon.load_candidate_frequency()
 
     def decode_text(
         self, text: str
@@ -667,7 +692,8 @@ class RuntimeCandidateDecoder:
         if not plan.lookup_code or not candidate_text.strip():
             return
         key = (plan.lookup_code, candidate_text.strip())
-        self._user_freq_by_candidate[key] = self._user_freq_by_candidate.get(key, 0) + 1
+        persisted_freq = self.user_lexicon.record_candidate_selection(*key)
+        self._user_freq_by_candidate[key] = persisted_freq
 
     def get_char_candidates(self, code: str) -> List[CharCodeCandidate]:
         """按完整音元编码读取单字候选。"""
@@ -744,7 +770,7 @@ class RuntimeCandidateDecoder:
 class SQLiteRuntimeCandidateDecoder:
     """直接从 SQLite runtime_candidates 视图读取候选。"""
 
-    def __init__(self, app_dir: Path) -> None:
+    def __init__(self, app_dir: Path, user_db_path: Path | None = None) -> None:
         self.db_path = app_dir / "pinyin_hanzi.db"
         if not self.db_path.exists():
             raise FileNotFoundError(f"未找到输入法数据库: {self.db_path}")
@@ -756,10 +782,15 @@ class SQLiteRuntimeCandidateDecoder:
             app_dir.parent,
             self.bmp_to_canonical,
         )
+        self.user_lexicon = UserLexiconStore(user_db_path or app_dir / "user_lexicon.db")
         self._validate_runtime_candidates_view()
         self.by_code = self._load_runtime_candidates()
+        self.by_code = _merge_runtime_candidate_maps(
+            self.by_code,
+            self.user_lexicon.load_phrase_candidates(self.pinyin_to_canonical),
+        )
         self.char_code_index = CharCodeIndex.from_runtime_candidates(self.by_code)
-        self._user_freq_by_candidate: dict[tuple[str, str], int] = {}
+        self._user_freq_by_candidate = self.user_lexicon.load_candidate_frequency()
 
     def _load_json(self, path: Path) -> dict:
         with path.open("r", encoding="utf-8") as handle:
@@ -844,7 +875,8 @@ class SQLiteRuntimeCandidateDecoder:
         if not plan.lookup_code or not candidate_text.strip():
             return
         key = (plan.lookup_code, candidate_text.strip())
-        self._user_freq_by_candidate[key] = self._user_freq_by_candidate.get(key, 0) + 1
+        persisted_freq = self.user_lexicon.record_candidate_selection(*key)
+        self._user_freq_by_candidate[key] = persisted_freq
 
     def get_char_candidates(self, code: str) -> List[CharCodeCandidate]:
         """按完整音元编码读取单字候选。"""
@@ -890,6 +922,15 @@ class SQLiteRuntimeCandidateDecoder:
                 }
             )
         return grouped
+
+    def reload_user_lexicon(self) -> None:
+        base_by_code = self._load_runtime_candidates()
+        self.by_code = _merge_runtime_candidate_maps(
+            base_by_code,
+            self.user_lexicon.load_phrase_candidates(self.pinyin_to_canonical),
+        )
+        self.char_code_index = CharCodeIndex.from_runtime_candidates(self.by_code)
+        self._user_freq_by_candidate = self.user_lexicon.load_candidate_frequency()
 
     def _payload_to_runtime_candidates(
         self,
@@ -983,7 +1024,7 @@ class SQLiteRuntimeCandidateDecoder:
 class CompositeCandidateDecoder:
     """组合候选词解码器（优先运行时，回退静态）"""
 
-    def __init__(self, app_dir: Path) -> None:
+    def __init__(self, app_dir: Path, user_db_path: Path | None = None) -> None:
         """
         初始化组合解码器
 
@@ -996,12 +1037,12 @@ class CompositeCandidateDecoder:
         self.runtime_load_error = ""
         self.runtime_source = ""
         try:
-            self.runtime_decoder = RuntimeCandidateDecoder(app_dir)
+            self.runtime_decoder = RuntimeCandidateDecoder(app_dir, user_db_path=user_db_path)
             self.runtime_source = "json"
         except (FileNotFoundError, ValueError, KeyError, json.JSONDecodeError) as exc:
             self.runtime_load_error = str(exc)
             try:
-                self.runtime_decoder = SQLiteRuntimeCandidateDecoder(app_dir)
+                self.runtime_decoder = SQLiteRuntimeCandidateDecoder(app_dir, user_db_path=user_db_path)
                 self.runtime_source = "sqlite"
                 self.runtime_load_error = ""
             except (FileNotFoundError, ValueError, sqlite3.Error) as db_exc:
@@ -1040,6 +1081,12 @@ class CompositeCandidateDecoder:
             return
         if hasattr(self.runtime_decoder, "record_selection"):
             self.runtime_decoder.record_selection(text, candidate_text)
+
+    def reload_user_lexicon(self) -> None:
+        if self.runtime_decoder is None:
+            return
+        if hasattr(self.runtime_decoder, "reload_user_lexicon"):
+            self.runtime_decoder.reload_user_lexicon()
 
     def decode_text(
         self, text: str
