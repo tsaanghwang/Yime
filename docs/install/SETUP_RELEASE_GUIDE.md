@@ -72,8 +72,9 @@ scripts\build_setup_release.bat
 
 - `friend-trial-checklist.md`
 - `friend-trial-message-template.md`
+- `friend-trial-one-page.md`
 
-前者只保留试装前最值钱的一轮检查；后者是一段可以直接发给朋友的说明模板。
+前者只保留试装前最值钱的一轮检查；第二份是一段可以直接发给朋友的说明模板；第三份是一页给试用者看的最小操作说明与键位对照。
 
 ## 当前边界
 
