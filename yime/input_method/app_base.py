@@ -548,7 +548,7 @@ class BaseInputMethodApp:
             ),
         )
 
-    def _record_candidate_selection(self, hanzi: str) -> None:
+    def _record_candidate_selection(self, hanzi: str) -> int:
         input_text = self.candidate_box.get_projected_input()
         if not input_text:
             input_text = project_physical_input(
@@ -556,7 +556,8 @@ class BaseInputMethodApp:
                 self.physical_input_map,
             )
         if input_text:
-            self.decoder.record_selection(input_text, hanzi)
+            return int(self.decoder.record_selection(input_text, hanzi) or 0)
+        return 0
 
     def _paste_to_previous_window(self, hanzi: str) -> None:
         target_hwnd = self._current_external_target_hwnd()

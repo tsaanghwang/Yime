@@ -686,14 +686,15 @@ class RuntimeCandidateDecoder:
             status = f"{mode_hint} {status}"
         return canonical, plan.active_code, display_pinyin, [], status
 
-    def record_selection(self, text: str, candidate_text: str) -> None:
+    def record_selection(self, text: str, candidate_text: str) -> int:
         canonical = _canonicalize_runtime_input(text, self.bmp_to_canonical)
         plan = _build_runtime_lookup_plan(canonical)
         if not plan.lookup_code or not candidate_text.strip():
-            return
+            return 0
         key = (plan.lookup_code, candidate_text.strip())
         persisted_freq = self.user_lexicon.record_candidate_selection(*key)
         self._user_freq_by_candidate[key] = persisted_freq
+        return persisted_freq
 
     def get_char_candidates(self, code: str) -> List[CharCodeCandidate]:
         """按完整音元编码读取单字候选。"""
@@ -869,14 +870,15 @@ class SQLiteRuntimeCandidateDecoder:
             status = f"{mode_hint} {status}"
         return canonical, plan.active_code, display_pinyin, [], status
 
-    def record_selection(self, text: str, candidate_text: str) -> None:
+    def record_selection(self, text: str, candidate_text: str) -> int:
         canonical = _canonicalize_runtime_input(text, self.bmp_to_canonical)
         plan = _build_runtime_lookup_plan(canonical)
         if not plan.lookup_code or not candidate_text.strip():
-            return
+            return 0
         key = (plan.lookup_code, candidate_text.strip())
         persisted_freq = self.user_lexicon.record_candidate_selection(*key)
         self._user_freq_by_candidate[key] = persisted_freq
+        return persisted_freq
 
     def get_char_candidates(self, code: str) -> List[CharCodeCandidate]:
         """按完整音元编码读取单字候选。"""
@@ -1075,12 +1077,13 @@ class CompositeCandidateDecoder:
             return []
         return self.runtime_decoder.get_char_candidates_by_prefix(prefix, limit=limit)
 
-    def record_selection(self, text: str, candidate_text: str) -> None:
+    def record_selection(self, text: str, candidate_text: str) -> int:
         """Record a user selection so runtime ranking can adapt in-process."""
         if self.runtime_decoder is None:
-            return
+            return 0
         if hasattr(self.runtime_decoder, "record_selection"):
-            self.runtime_decoder.record_selection(text, candidate_text)
+            return int(self.runtime_decoder.record_selection(text, candidate_text) or 0)
+        return 0
 
     def reload_user_lexicon(self) -> None:
         if self.runtime_decoder is None:

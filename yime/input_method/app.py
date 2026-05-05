@@ -623,7 +623,12 @@ class InputMethodApp(BaseInputMethodApp):
         Args:
             hanzi: 选中的汉字
         """
-        self._record_candidate_selection(hanzi)
+        persisted_freq = self._record_candidate_selection(hanzi)
+        if persisted_freq > 0:
+            self._emit_feedback(
+                "调序",
+                f"调序已记录：{hanzi}（累计 {persisted_freq} 次）。如需追查请用 diagnose_candidate_order.py。",
+            )
 
         # 主入口现在支持在待上屏区连续累积多个候选，再统一上屏到外部窗口。
         # 因此这里不再选一字就复制并退回待命，而是保留候选框继续输入。
