@@ -562,6 +562,323 @@ class UserLexiconStore:
             include_frequency=include_frequency,
         )
 
+    def check_repairable_issues(self, repo_root: Path) -> dict[str, int]:
+        issues = {
+            "sqlite_integrity_errors": 0,
+            "user_phrase_entries": 0,
+            "persisted_reorder_entries": 0,
+            "meta_entries": 0,
+            "invalid_phrase_rows": 0,
+            "normalizable_phrase_rows": 0,
+            "duplicate_phrase_rows": 0,
+            "invalid_frequency_rows": 0,
+            "normalizable_frequency_rows": 0,
+            "duplicate_frequency_rows": 0,
+            "invalid_meta_rows": 0,
+            "normalizable_meta_rows": 0,
+        }
+
+        with self._connect(readonly=True) as connection:
+            integrity_rows = connection.execute("PRAGMA integrity_check").fetchall()
+            integrity_messages = [str(row[0] or "") for row in integrity_rows]
+            issues["sqlite_integrity_errors"] = sum(
+                1 for message in integrity_messages if message.strip().lower() != "ok"
+            )
+
+            phrase_rows = connection.execute(
+                """
+                SELECT id, phrase, numeric_pinyin, marked_pinyin, yime_code, source_note
+                FROM user_phrase_entries
+                ORDER BY updated_at DESC, id DESC
+                """
+            ).fetchall()
+            issues["user_phrase_entries"] = len(phrase_rows)
+
+            normalized_phrases: dict[str, int] = {}
+            for row in phrase_rows:
+                normalized_phrase = str(row["phrase"] or "").strip()
+                normalized_numeric = " ".join(str(row["numeric_pinyin"] or "").split())
+                normalized_marked = " ".join(str(row["marked_pinyin"] or "").split())
+                normalized_yime = str(row["yime_code"] or "").strip()
+                normalized_note = str(row["source_note"] or "").strip()
+
+                if not normalized_phrase or not normalized_numeric:
+                    issues["invalid_phrase_rows"] += 1
+                    continue
+
+                resolved_yime = resolve_yime_code_from_numeric_pinyin(repo_root, normalized_numeric)
+                if not resolved_yime:
+                    issues["invalid_phrase_rows"] += 1
+                    continue
+
+                if (
+                    normalized_phrase != str(row["phrase"] or "")
+                    or normalized_numeric != str(row["numeric_pinyin"] or "")
+                    or normalized_marked != str(row["marked_pinyin"] or "")
+                    or normalized_note != str(row["source_note"] or "")
+                    or resolved_yime != normalized_yime
+                ):
+                    issues["normalizable_phrase_rows"] += 1
+
+                normalized_phrases[normalized_phrase] = normalized_phrases.get(normalized_phrase, 0) + 1
+
+            issues["duplicate_phrase_rows"] = sum(
+                count - 1 for count in normalized_phrases.values() if count > 1
+            )
+
+            frequency_rows = connection.execute(
+                """
+                SELECT rowid, lookup_code, text, freq, last_used_at
+                FROM user_candidate_frequency
+                ORDER BY last_used_at DESC, rowid DESC
+                """
+            ).fetchall()
+            issues["persisted_reorder_entries"] = len(frequency_rows)
+
+            normalized_frequency_keys: dict[tuple[str, str], int] = {}
+            for row in frequency_rows:
+                normalized_lookup = str(row["lookup_code"] or "").strip()
+                normalized_text = str(row["text"] or "").strip()
+                freq = int(row["freq"] or 0)
+                if not normalized_lookup or not normalized_text or freq <= 0:
+                    issues["invalid_frequency_rows"] += 1
+                    continue
+
+                if (
+                    normalized_lookup != str(row["lookup_code"] or "")
+                    or normalized_text != str(row["text"] or "")
+                ):
+                    issues["normalizable_frequency_rows"] += 1
+
+                key = (normalized_lookup, normalized_text)
+                normalized_frequency_keys[key] = normalized_frequency_keys.get(key, 0) + 1
+
+            issues["duplicate_frequency_rows"] = sum(
+                count - 1 for count in normalized_frequency_keys.values() if count > 1
+            )
+
+            meta_rows = connection.execute(
+                "SELECT meta_key, meta_value FROM user_lexicon_meta ORDER BY meta_key"
+            ).fetchall()
+            issues["meta_entries"] = len(meta_rows)
+
+        has_user_data = self.has_user_data()
+        for row in meta_rows:
+            meta_key = str(row["meta_key"] or "").strip()
+            meta_value = str(row["meta_value"] or "")
+            normalized_value = meta_value.strip()
+            if meta_key != "seed_import_completed":
+                if normalized_value != meta_value:
+                    issues["normalizable_meta_rows"] += 1
+                continue
+            if not normalized_value:
+                issues["invalid_meta_rows"] += 1
+                continue
+            if normalized_value == "skipped_existing_user_data" and not has_user_data:
+                issues["invalid_meta_rows"] += 1
+                continue
+            if normalized_value.startswith(("imported:", "empty_seed:")) or normalized_value == "skipped_existing_user_data":
+                if normalized_value != meta_value:
+                    issues["normalizable_meta_rows"] += 1
+                continue
+            issues["invalid_meta_rows"] += 1
+
+        return issues
+
+    def repair_phrase_entries(self, repo_root: Path) -> dict[str, int]:
+        rows: list[sqlite3.Row]
+        with self._connect() as connection:
+            rows = connection.execute(
+                """
+                SELECT id, phrase, numeric_pinyin, marked_pinyin, yime_code, source_note, sort_weight, created_at, updated_at
+                FROM user_phrase_entries
+                ORDER BY updated_at DESC, id DESC
+                """
+            ).fetchall()
+
+            deleted_invalid_rows = 0
+            updated_rows = 0
+            deleted_duplicate_rows = 0
+            kept_phrase_ids: set[int] = set()
+
+            grouped_rows: dict[str, list[sqlite3.Row]] = {}
+            for row in rows:
+                normalized_phrase = str(row["phrase"] or "").strip()
+                normalized_numeric = " ".join(str(row["numeric_pinyin"] or "").split())
+                if not normalized_phrase or not normalized_numeric:
+                    connection.execute("DELETE FROM user_phrase_entries WHERE id = ?", (int(row["id"]),))
+                    deleted_invalid_rows += 1
+                    continue
+                resolved_yime = resolve_yime_code_from_numeric_pinyin(repo_root, normalized_numeric)
+                if not resolved_yime:
+                    connection.execute("DELETE FROM user_phrase_entries WHERE id = ?", (int(row["id"]),))
+                    deleted_invalid_rows += 1
+                    continue
+                grouped_rows.setdefault(normalized_phrase, []).append(row)
+
+            for normalized_phrase, phrase_rows in grouped_rows.items():
+                keeper = phrase_rows[0]
+                keeper_id = int(keeper["id"])
+                kept_phrase_ids.add(keeper_id)
+                normalized_numeric = " ".join(str(keeper["numeric_pinyin"] or "").split())
+                normalized_marked = " ".join(str(keeper["marked_pinyin"] or "").split())
+                normalized_note = str(keeper["source_note"] or "").strip()
+                resolved_yime = resolve_yime_code_from_numeric_pinyin(repo_root, normalized_numeric)
+
+                if (
+                    normalized_phrase != str(keeper["phrase"] or "")
+                    or normalized_numeric != str(keeper["numeric_pinyin"] or "")
+                    or normalized_marked != str(keeper["marked_pinyin"] or "")
+                    or normalized_note != str(keeper["source_note"] or "")
+                    or resolved_yime != str(keeper["yime_code"] or "").strip()
+                ):
+                    connection.execute(
+                        """
+                        UPDATE user_phrase_entries
+                        SET phrase = ?, numeric_pinyin = ?, marked_pinyin = ?, yime_code = ?, source_note = ?, updated_at = CURRENT_TIMESTAMP
+                        WHERE id = ?
+                        """,
+                        (
+                            normalized_phrase,
+                            normalized_numeric,
+                            normalized_marked,
+                            resolved_yime,
+                            normalized_note,
+                            keeper_id,
+                        ),
+                    )
+                    updated_rows += 1
+
+                for duplicate in phrase_rows[1:]:
+                    connection.execute("DELETE FROM user_phrase_entries WHERE id = ?", (int(duplicate["id"]),))
+                    deleted_duplicate_rows += 1
+
+        return {
+            "deleted_invalid_phrase_rows": deleted_invalid_rows,
+            "updated_phrase_rows": updated_rows,
+            "deleted_duplicate_phrase_rows": deleted_duplicate_rows,
+        }
+
+    def repair_candidate_frequency_entries(self) -> dict[str, int]:
+        with self._connect() as connection:
+            rows = connection.execute(
+                """
+                SELECT rowid, lookup_code, text, freq, last_used_at
+                FROM user_candidate_frequency
+                ORDER BY last_used_at DESC, rowid DESC
+                """
+            ).fetchall()
+
+            deleted_invalid_rows = 0
+            updated_rows = 0
+            deleted_duplicate_rows = 0
+            grouped_rows: dict[tuple[str, str], list[sqlite3.Row]] = {}
+
+            for row in rows:
+                normalized_lookup = str(row["lookup_code"] or "").strip()
+                normalized_text = str(row["text"] or "").strip()
+                freq = int(row["freq"] or 0)
+                if not normalized_lookup or not normalized_text or freq <= 0:
+                    connection.execute(
+                        "DELETE FROM user_candidate_frequency WHERE rowid = ?",
+                        (int(row["rowid"]),),
+                    )
+                    deleted_invalid_rows += 1
+                    continue
+                grouped_rows.setdefault((normalized_lookup, normalized_text), []).append(row)
+
+            for (normalized_lookup, normalized_text), frequency_rows in grouped_rows.items():
+                keeper = frequency_rows[0]
+                merged_freq = sum(int(row["freq"] or 0) for row in frequency_rows)
+                latest_last_used_at = max(str(row["last_used_at"] or "") for row in frequency_rows)
+                if (
+                    normalized_lookup != str(keeper["lookup_code"] or "")
+                    or normalized_text != str(keeper["text"] or "")
+                    or merged_freq != int(keeper["freq"] or 0)
+                    or latest_last_used_at != str(keeper["last_used_at"] or "")
+                ):
+                    connection.execute(
+                        """
+                        UPDATE user_candidate_frequency
+                        SET lookup_code = ?, text = ?, freq = ?, last_used_at = ?
+                        WHERE rowid = ?
+                        """,
+                        (
+                            normalized_lookup,
+                            normalized_text,
+                            merged_freq,
+                            latest_last_used_at,
+                            int(keeper["rowid"]),
+                        ),
+                    )
+                    updated_rows += 1
+
+                for duplicate in frequency_rows[1:]:
+                    connection.execute(
+                        "DELETE FROM user_candidate_frequency WHERE rowid = ?",
+                        (int(duplicate["rowid"]),),
+                    )
+                    deleted_duplicate_rows += 1
+
+        return {
+            "deleted_invalid_frequency_rows": deleted_invalid_rows,
+            "updated_frequency_rows": updated_rows,
+            "deleted_duplicate_frequency_rows": deleted_duplicate_rows,
+        }
+
+    def repair_meta_entries(self) -> dict[str, int]:
+        with self._connect() as connection:
+            rows = connection.execute(
+                "SELECT meta_key, meta_value FROM user_lexicon_meta ORDER BY meta_key"
+            ).fetchall()
+
+            updated_rows = 0
+            deleted_invalid_rows = 0
+            has_user_data = self.has_user_data()
+
+            for row in rows:
+                meta_key = str(row["meta_key"] or "").strip()
+                meta_value = str(row["meta_value"] or "")
+                normalized_value = meta_value.strip()
+
+                if meta_key != "seed_import_completed":
+                    if normalized_value != meta_value:
+                        connection.execute(
+                            "UPDATE user_lexicon_meta SET meta_value = ? WHERE meta_key = ?",
+                            (normalized_value, meta_key),
+                        )
+                        updated_rows += 1
+                    continue
+
+                is_valid_seed_value = (
+                    normalized_value.startswith(("imported:", "empty_seed:"))
+                    or normalized_value == "skipped_existing_user_data"
+                )
+                should_delete = (
+                    not normalized_value
+                    or not is_valid_seed_value
+                    or (normalized_value == "skipped_existing_user_data" and not has_user_data)
+                )
+                if should_delete:
+                    connection.execute(
+                        "DELETE FROM user_lexicon_meta WHERE meta_key = ?",
+                        (meta_key,),
+                    )
+                    deleted_invalid_rows += 1
+                    continue
+
+                if normalized_value != meta_value:
+                    connection.execute(
+                        "UPDATE user_lexicon_meta SET meta_value = ? WHERE meta_key = ?",
+                        (normalized_value, meta_key),
+                    )
+                    updated_rows += 1
+
+        return {
+            "deleted_invalid_meta_rows": deleted_invalid_rows,
+            "updated_meta_rows": updated_rows,
+        }
+
     def record_candidate_selection(self, lookup_code: str, text: str) -> int:
         normalized_lookup_code = lookup_code.strip()
         normalized_text = text.strip()
