@@ -28,15 +28,8 @@ project_root = Path(__file__).resolve().parent
 if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
 
-# 使用模块方式运行
+
 if __name__ == "__main__":
-    import subprocess
+    from yime.input_method.app import main
 
-    # 获取Python解释器路径
-    python_exe = sys.executable
-
-    # 构建命令
-    cmd = [python_exe, "-m", "yime.input_method.app"] + sys.argv[1:]
-
-    # 运行
-    subprocess.run(cmd)
+    main()

@@ -42,6 +42,8 @@ Anaconda3Scriptsconda.exe
 # Generated reports
 coverage/
 htmlcov/
+build/
+dist/
 yime/reports/efficiency_baseline.json
 yime/reports/phrase_code_backfill.json
 yime/reports/phoneme_dict.json

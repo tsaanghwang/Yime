@@ -3,9 +3,11 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
+import os
 from pathlib import Path
+import sys
 from tkinter import messagebox, simpledialog
-from typing import Callable, Optional
+from typing import Callable, Mapping, Optional
 
 from ..borrow_wanxiang_frequency import marked_pinyin_to_numeric
 from .core.decoders import (
@@ -31,6 +33,30 @@ from .utils.user_lexicon import (
 from .utils.window_manager import WindowManager
 
 
+def resolve_user_data_dir(
+    app_dir: Path,
+    *,
+    env: Optional[Mapping[str, str]] = None,
+    is_frozen: Optional[bool] = None,
+) -> Path:
+    environment = os.environ if env is None else env
+    override = str(environment.get("YIME_USER_DATA_DIR") or "").strip()
+    if override:
+        return Path(override).expanduser()
+
+    if is_frozen is None:
+        is_frozen = bool(getattr(sys, "frozen", False))
+
+    if is_frozen:
+        per_user_root = str(
+            environment.get("LOCALAPPDATA") or environment.get("APPDATA") or ""
+        ).strip()
+        if per_user_root:
+            return Path(per_user_root) / "Yime"
+
+    return app_dir
+
+
 class BaseInputMethodApp:
     """Common logic shared by the global-listener and hotkey entry points."""
 
@@ -48,7 +74,8 @@ class BaseInputMethodApp:
         self.app_dir = app_dir
         self.repo_root = app_dir.parent
         self._pending_feedbacks: list[tuple[str, str, str, bool]] = []
-        user_db_path = app_dir / "user_lexicon.db"
+        self.user_data_dir = resolve_user_data_dir(app_dir)
+        user_db_path = self.user_data_dir / "user_lexicon.db"
         self.user_db_path = user_db_path
         self.user_lexicon_seed_path = app_dir / "user_lexicon_seed.json"
         self.user_lexicon_store = UserLexiconStore(user_db_path)
