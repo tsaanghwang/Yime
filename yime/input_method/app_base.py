@@ -43,6 +43,7 @@ class BaseInputMethodApp:
         app_dir = Path(__file__).resolve().parent.parent
         self.app_dir = app_dir
         self.repo_root = app_dir.parent
+        self._pending_feedbacks: list[tuple[str, str, str, bool]] = []
         user_db_path = app_dir / "user_lexicon.db"
         self.user_db_path = user_db_path
         self.user_lexicon_seed_path = app_dir / "user_lexicon_seed.json"
@@ -68,6 +69,7 @@ class BaseInputMethodApp:
         if candidate_box_factory is None:
             candidate_box_factory = self._create_candidate_box
         self.candidate_box = candidate_box_factory()
+        self._flush_pending_feedbacks()
 
         self.own_hwnd = self.candidate_box.root.winfo_id()
         self._normalized_own_hwnd = self.window_manager.normalize_window_handle(
@@ -89,6 +91,10 @@ class BaseInputMethodApp:
 
         if self.user_lexicon_store.has_user_data():
             self.user_lexicon_store.set_meta(meta_key, "skipped_existing_user_data")
+            self._emit_feedback(
+                "seed 用户词库",
+                "已跳过 seed 用户词库导入：检测到本机已有用户数据。",
+            )
             return {"phrase_entries": 0, "candidate_frequency": 0}
 
         result = self.user_lexicon_store.import_file(
@@ -100,6 +106,17 @@ class BaseInputMethodApp:
         timestamp = datetime.now(timezone.utc).isoformat()
         state = f"imported:{timestamp}" if imported else f"empty_seed:{timestamp}"
         self.user_lexicon_store.set_meta(meta_key, state)
+        if imported:
+            self._emit_feedback(
+                "seed 用户词库",
+                "已导入 seed 用户词库: "
+                f"{result['phrase_entries']} 条词条，{result['candidate_frequency']} 条调序频率。",
+            )
+        else:
+            self._emit_feedback(
+                "seed 用户词库",
+                "已检查 seed 用户词库：文件存在，但没有可导入的词条或调序频率。",
+            )
         return result
 
     def _create_candidate_box(self) -> CandidateBox:
@@ -176,7 +193,7 @@ class BaseInputMethodApp:
 
     def _copy_text_with_status(self, text: str) -> None:
         self.clipboard.copy(text)
-        self.candidate_box.set_status(f"已复制: {text}")
+        self._emit_feedback("复制", f"已复制: {text}")
 
     def _normalize_external_hwnd(self, hwnd: Optional[int]) -> Optional[int]:
         normalized = self.window_manager.normalize_window_handle(hwnd)
@@ -270,14 +287,58 @@ class BaseInputMethodApp:
         if hasattr(self.decoder, "reload_user_lexicon"):
             self.decoder.reload_user_lexicon()
 
-    def _show_user_lexicon_info(self, title: str, message: str) -> None:
+    def _dispatch_feedback(
+        self,
+        title: str,
+        message: str,
+        *,
+        level: str,
+        dialog: bool,
+    ) -> None:
+        self.candidate_box.set_status(message)
+        if not dialog:
+            return
+        if level == "warning":
+            messagebox.showwarning(title, message, parent=self.candidate_box.root)
+            return
+        if level == "error":
+            messagebox.showerror(title, message, parent=self.candidate_box.root)
+            return
         messagebox.showinfo(title, message, parent=self.candidate_box.root)
 
+    def _emit_feedback(
+        self,
+        title: str,
+        message: str,
+        *,
+        level: str = "info",
+        dialog: bool = False,
+    ) -> None:
+        if hasattr(self, "candidate_box"):
+            self._dispatch_feedback(title, message, level=level, dialog=dialog)
+            return
+        pending_feedbacks = getattr(self, "_pending_feedbacks", None)
+        if pending_feedbacks is None:
+            pending_feedbacks = []
+            self._pending_feedbacks = pending_feedbacks
+        pending_feedbacks.append((title, message, level, dialog))
+
+    def _flush_pending_feedbacks(self) -> None:
+        if not hasattr(self, "candidate_box"):
+            return
+        pending = list(getattr(self, "_pending_feedbacks", []))
+        self._pending_feedbacks.clear()
+        for title, message, level, dialog in pending:
+            self._dispatch_feedback(title, message, level=level, dialog=dialog)
+
+    def _show_user_lexicon_info(self, title: str, message: str) -> None:
+        self._emit_feedback(title, message, level="info", dialog=True)
+
     def _show_user_lexicon_warning(self, title: str, message: str) -> None:
-        messagebox.showwarning(title, message, parent=self.candidate_box.root)
+        self._emit_feedback(title, message, level="warning", dialog=True)
 
     def _show_user_lexicon_error(self, title: str, message: str) -> None:
-        messagebox.showerror(title, message, parent=self.candidate_box.root)
+        self._emit_feedback(title, message, level="error", dialog=True)
 
     def _normalize_numeric_pinyin_for_user_lexicon(self, raw_pinyin: str) -> tuple[str, str]:
         normalized = " ".join(raw_pinyin.split())
@@ -301,7 +362,6 @@ class BaseInputMethodApp:
         input_text = project_physical_input(display_input, self.physical_input_map).strip()
         if not looks_like_hanzi_text(input_text) or len(input_text) < 2:
             message = "仅支持将当前汉字词语加入用户词库。"
-            self.candidate_box.set_status(message)
             self._show_user_lexicon_warning("加入用户词库", message)
             return
 
@@ -316,7 +376,7 @@ class BaseInputMethodApp:
             parent=self.candidate_box.root,
         )
         if numeric_pinyin is None:
-            self.candidate_box.set_status("已取消加入用户词库。")
+            self._emit_feedback("加入用户词库", "已取消加入用户词库。")
             return
 
         normalized_numeric, yime_code = self._normalize_numeric_pinyin_for_user_lexicon(
@@ -324,7 +384,6 @@ class BaseInputMethodApp:
         )
         if not normalized_numeric:
             message = "数字标调拼音不能为空。"
-            self.candidate_box.set_status(message)
             self._show_user_lexicon_error("加入用户词库", message)
             return
 
@@ -333,7 +392,6 @@ class BaseInputMethodApp:
                 "无法根据第一栏拼音推导音元编码。请在第一栏填写数字标调拼音，"
                 "例如“duo1 ri4”；如果你输入的是“duō rì”，系统只会在能自动转换时接受。"
             )
-            self.candidate_box.set_status(message)
             self._show_user_lexicon_error("加入用户词库", message)
             return
 
@@ -344,7 +402,7 @@ class BaseInputMethodApp:
             parent=self.candidate_box.root,
         )
         if marked_pinyin is None:
-            self.candidate_box.set_status("已取消加入用户词库。")
+            self._emit_feedback("加入用户词库", "已取消加入用户词库。")
             return
 
         normalized_marked = " ".join(marked_pinyin.split())
@@ -367,7 +425,6 @@ class BaseInputMethodApp:
             status_message = f"{status_prefix}: {input_text} | {pinyin_display} | {yime_code}"
         else:
             status_message = f"{status_prefix}: {input_text} | {yime_code}"
-        self.candidate_box.set_status(status_message)
         self._show_user_lexicon_info("加入用户词库", status_message)
         self._on_input_change()
 
@@ -376,7 +433,6 @@ class BaseInputMethodApp:
         input_text = project_physical_input(display_input, self.physical_input_map).strip()
         if not looks_like_hanzi_text(input_text) or len(input_text) < 2:
             message = "仅支持将当前汉字词语从用户词库中删除。"
-            self.candidate_box.set_status(message)
             self._show_user_lexicon_warning("从用户词库中删除", message)
             return
 
@@ -386,19 +442,17 @@ class BaseInputMethodApp:
             parent=self.candidate_box.root,
         )
         if not confirm:
-            self.candidate_box.set_status("已取消从用户词库中删除。")
+            self._emit_feedback("从用户词库中删除", "已取消从用户词库中删除。")
             return
 
         deleted = self.user_lexicon_store.delete_phrase(input_text)
         if not deleted:
             message = f"用户词库中未找到：{input_text}"
-            self.candidate_box.set_status(message)
             self._show_user_lexicon_warning("从用户词库中删除", message)
             return
 
         self._reload_user_lexicon_runtime()
         status_message = f"已从用户词库中删除: {input_text}"
-        self.candidate_box.set_status(status_message)
         self._show_user_lexicon_info("从用户词库中删除", status_message)
         self._on_input_change()
 
@@ -468,12 +522,13 @@ class BaseInputMethodApp:
         target_description = self._describe_external_target(target_hwnd)
         should_keep_input = self._should_keep_input_after_commit()
         if not target_hwnd:
-            self.candidate_box.set_status(f"已复制: {hanzi}，未找到上一个窗口")
+            self._emit_feedback("回贴", f"已复制: {hanzi}，未找到上一个窗口")
             self._unlock_external_target()
             return
 
         if not self._restore_external_window():
-            self.candidate_box.set_status(
+            self._emit_feedback(
+                "回贴",
                 f"已复制: {hanzi}，恢复目标失败：{target_description}"
             )
             print(f"[YIME] 恢复目标失败: {target_description}")
@@ -495,7 +550,8 @@ class BaseInputMethodApp:
             self._schedule_ui(170, self.keyboard_simulator.send_ctrl_v)
             self._schedule_ui(
                 280,
-                lambda: self.candidate_box.set_status(
+                lambda: self._emit_feedback(
+                    "回贴",
                     f"已替换 {self.last_replace_length} 个编码字符: {hanzi} -> {target_description}"
                 ),
             )
@@ -508,7 +564,8 @@ class BaseInputMethodApp:
         self._schedule_ui(80, self.keyboard_simulator.send_ctrl_v)
         self._schedule_ui(
             180,
-            lambda: self.candidate_box.set_status(
+            lambda: self._emit_feedback(
+                "回贴",
                 f"已回贴: {hanzi} -> {target_description}"
             ),
         )

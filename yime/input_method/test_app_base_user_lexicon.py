@@ -366,6 +366,10 @@ def test_maybe_import_seed_user_lexicon_imports_for_empty_store(tmp_path) -> Non
     ]
     assert app.user_lexicon_store.get_meta("seed_import_completed").startswith("imported:")
 
+    app.candidate_box = _FakeCandidateBox("")
+    BaseInputMethodApp._flush_pending_feedbacks(app)
+    assert app.candidate_box.statuses == ["已导入 seed 用户词库: 2 条词条，1 条调序频率。"]
+
 
 def test_maybe_import_seed_user_lexicon_skips_when_existing_user_data_present(tmp_path) -> None:
     app = BaseInputMethodApp.__new__(BaseInputMethodApp)
@@ -379,3 +383,7 @@ def test_maybe_import_seed_user_lexicon_skips_when_existing_user_data_present(tm
     assert result == {"phrase_entries": 0, "candidate_frequency": 0}
     assert app.user_lexicon_store.import_calls == []
     assert app.user_lexicon_store.get_meta("seed_import_completed") == "skipped_existing_user_data"
+
+    app.candidate_box = _FakeCandidateBox("")
+    BaseInputMethodApp._flush_pending_feedbacks(app)
+    assert app.candidate_box.statuses == ["已跳过 seed 用户词库导入：检测到本机已有用户数据。"]
