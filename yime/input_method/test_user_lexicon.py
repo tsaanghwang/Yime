@@ -5,8 +5,15 @@ from yime.input_method.core.decoders import SQLiteRuntimeCandidateDecoder
 from yime.input_method.utils.runtime_reverse_lookup import RuntimeReverseLookup
 from yime.input_method.utils.user_lexicon import (
     UserLexiconStore,
+    normalize_numeric_pinyin_syllable_spacing,
     resolve_yime_code_from_numeric_pinyin,
 )
+
+
+def test_normalize_numeric_pinyin_syllable_spacing_splits_compact_tone_numbers() -> None:
+    assert normalize_numeric_pinyin_syllable_spacing("ri4ben3") == "ri4 ben3"
+    assert normalize_numeric_pinyin_syllable_spacing("jin1ri4") == "jin1 ri4"
+    assert normalize_numeric_pinyin_syllable_spacing("duori4") == "duori4"
 
 
 def test_user_lexicon_store_persists_phrase_entry(tmp_path) -> None:
@@ -26,6 +33,22 @@ def test_user_lexicon_store_persists_phrase_entry(tmp_path) -> None:
     assert entry is not None
     assert entry.marked_pinyin == "rì běn"
     assert grouped["ABCD1234"][0]["text"] == "日本"
+
+
+def test_user_lexicon_store_normalizes_compact_numeric_pinyin_spacing(tmp_path) -> None:
+    store = UserLexiconStore(tmp_path / "user_lexicon.db")
+
+    store.upsert_phrase(
+        "日本",
+        "ri4ben3",
+        marked_pinyin="rì běn",
+        yime_code="TESTCODE",
+    )
+
+    entry = store.lookup_first_phrase("日本")
+
+    assert entry is not None
+    assert entry.numeric_pinyin == "ri4 ben3"
 
 
 def test_user_lexicon_store_reports_updated_for_existing_phrase(tmp_path) -> None:
@@ -132,6 +155,15 @@ def test_runtime_reverse_lookup_prefers_user_phrase_entry(tmp_path) -> None:
     assert record is not None
     assert record.marked_pinyin == "jīn rì"
     assert record.numeric_pinyin == "jin1 ri4"
+
+
+def test_resolve_yime_code_from_compact_numeric_pinyin_matches_spaced_input() -> None:
+    repo_root = Path(__file__).resolve().parents[2]
+
+    spaced = resolve_yime_code_from_numeric_pinyin(repo_root, "ri4 ben3")
+    compact = resolve_yime_code_from_numeric_pinyin(repo_root, "ri4ben3")
+
+    assert compact == spaced
 
 
 def test_sqlite_runtime_decoder_merges_user_phrase_candidates(tmp_path) -> None:

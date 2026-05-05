@@ -23,7 +23,11 @@ from .ui.candidate_box import CandidateBox
 from .utils.clipboard import ClipboardManager
 from .utils.keyboard_simulator import KeyboardSimulator
 from .utils.runtime_reverse_lookup import RuntimeReverseLookup, looks_like_hanzi_text
-from .utils.user_lexicon import UserLexiconStore, resolve_yime_code_from_numeric_pinyin
+from .utils.user_lexicon import (
+    UserLexiconStore,
+    normalize_numeric_pinyin_syllable_spacing,
+    resolve_yime_code_from_numeric_pinyin,
+)
 from .utils.window_manager import WindowManager
 
 
@@ -342,7 +346,7 @@ class BaseInputMethodApp:
         self._emit_feedback(title, message, level="error", dialog=True)
 
     def _normalize_numeric_pinyin_for_user_lexicon(self, raw_pinyin: str) -> tuple[str, str]:
-        normalized = " ".join(raw_pinyin.split())
+        normalized = normalize_numeric_pinyin_syllable_spacing(raw_pinyin)
         if not normalized:
             return "", ""
 
@@ -405,6 +409,7 @@ class BaseInputMethodApp:
             self._emit_feedback("加入用户词库", "已取消加入用户词库。")
             return
 
+        raw_numeric_input = " ".join(numeric_pinyin.split())
         normalized_numeric, yime_code = self._normalize_numeric_pinyin_for_user_lexicon(
             numeric_pinyin
         )
@@ -432,8 +437,9 @@ class BaseInputMethodApp:
             return
 
         normalized_marked = " ".join(marked_pinyin.split())
-        if not normalized_marked and normalized_numeric != " ".join(numeric_pinyin.split()):
-            normalized_marked = " ".join(numeric_pinyin.split())
+        if not normalized_marked and normalized_numeric != raw_numeric_input:
+            if not any(char.isdigit() for char in raw_numeric_input):
+                normalized_marked = raw_numeric_input
 
         action = self.user_lexicon_store.upsert_phrase(
             input_text,

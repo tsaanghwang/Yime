@@ -84,6 +84,8 @@ python tools/manage_user_lexicon.py check
 python tools/manage_user_lexicon.py repair-all
 ```
 
+带数字声调的连写拼音现在也会自动整理，例如 `ri4ben3 -> ri4 ben3`。
+
 如果要生成可随安装包分发的 seed 用户词库：
 
 ```bash

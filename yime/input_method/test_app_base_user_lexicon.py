@@ -250,6 +250,50 @@ def test_add_current_input_to_user_lexicon_accepts_marked_pinyin_in_first_prompt
     assert info_calls == [("加入用户词库", "已加入用户词库: 多日 | duō rì / duo1 ri4 | ")]
 
 
+def test_add_current_input_to_user_lexicon_accepts_compact_numeric_pinyin(monkeypatch) -> None:
+    app = BaseInputMethodApp.__new__(BaseInputMethodApp)
+    app.candidate_box = _FakeCandidateBox("日本")
+    app.physical_input_map = {}
+    app.runtime_reverse_lookup = _FakeReverseLookup(None)
+    app.repo_root = Path(__file__).resolve().parents[2]
+    app.user_lexicon_store = _FakeUserLexiconStore(action="inserted")
+    app.decoder = _ReloadableDecoder()
+
+    prompts = iter(["ri4ben3", ""])
+    monkeypatch.setattr(
+        "yime.input_method.app_base.simpledialog.askstring",
+        lambda *args, **kwargs: next(prompts),
+    )
+    monkeypatch.setattr(
+        "yime.input_method.app_base.resolve_yime_code_from_numeric_pinyin",
+        lambda repo_root, numeric_pinyin: "USERCODE",
+    )
+
+    refreshed: list[str] = []
+    app._on_input_change = lambda event=None: refreshed.append("refreshed")
+    info_calls: list[tuple[str, str]] = []
+    monkeypatch.setattr(
+        "yime.input_method.app_base.messagebox.showinfo",
+        lambda title, message, parent=None: info_calls.append((title, message)),
+    )
+
+    BaseInputMethodApp._add_current_input_to_user_lexicon(app)
+
+    assert app.user_lexicon_store.entries == [
+        {
+            "phrase": "日本",
+            "numeric_pinyin": "ri4 ben3",
+            "marked_pinyin": "",
+            "yime_code": "USERCODE",
+            "source_note": "ui_context_menu",
+        }
+    ]
+    assert app.decoder.reload_calls == 1
+    assert refreshed == ["refreshed"]
+    assert app.candidate_box.statuses[0] == "已加入用户词库: 日本 | ri4 ben3 | USERCODE"
+    assert info_calls == [("加入用户词库", "已加入用户词库: 日本 | ri4 ben3 | USERCODE")]
+
+
 def test_add_current_input_to_user_lexicon_reports_invalid_first_prompt(monkeypatch) -> None:
     app = BaseInputMethodApp.__new__(BaseInputMethodApp)
     app.candidate_box = _FakeCandidateBox("多日")

@@ -52,8 +52,37 @@ def _load_numeric_yime_code_map(mapping_path: str) -> dict[str, str]:
     }
 
 
+def _split_compact_numeric_pinyin_token(token: str) -> list[str]:
+    normalized_token = token.strip()
+    if not normalized_token:
+        return []
+
+    parts: list[str] = []
+    start = 0
+    saw_tone_digit = False
+    for index, char in enumerate(normalized_token):
+        if char not in "12345":
+            continue
+        saw_tone_digit = True
+        if index == start:
+            return [normalized_token]
+        parts.append(normalized_token[start:index + 1])
+        start = index + 1
+
+    if not saw_tone_digit or start != len(normalized_token):
+        return [normalized_token]
+    return parts
+
+
+def normalize_numeric_pinyin_syllable_spacing(raw_pinyin: str) -> str:
+    normalized_tokens: list[str] = []
+    for token in raw_pinyin.split():
+        normalized_tokens.extend(_split_compact_numeric_pinyin_token(token))
+    return " ".join(normalized_tokens)
+
+
 def resolve_yime_code_from_numeric_pinyin(repo_root: Path, numeric_pinyin: str) -> str:
-    normalized = " ".join(numeric_pinyin.split())
+    normalized = normalize_numeric_pinyin_syllable_spacing(numeric_pinyin)
     if not normalized:
         return ""
 
@@ -73,7 +102,7 @@ def resolve_canonical_code_from_numeric_pinyin(
     pinyin_to_canonical: Mapping[str, str],
     numeric_pinyin: str,
 ) -> str:
-    normalized = " ".join(numeric_pinyin.split())
+    normalized = normalize_numeric_pinyin_syllable_spacing(numeric_pinyin)
     if not normalized:
         return ""
 
@@ -193,7 +222,7 @@ class UserLexiconStore:
         sort_weight: float | None = None,
     ) -> Literal["inserted", "updated"]:
         normalized_phrase = phrase.strip()
-        normalized_numeric = " ".join(numeric_pinyin.split())
+        normalized_numeric = normalize_numeric_pinyin_syllable_spacing(numeric_pinyin)
         normalized_marked = " ".join(marked_pinyin.split())
         normalized_code = yime_code.strip()
         if not normalized_phrase:
@@ -477,7 +506,9 @@ class UserLexiconStore:
 
             for raw_entry in phrase_entries:
                 phrase = str(raw_entry.get("phrase") or "").strip()
-                numeric_pinyin = str(raw_entry.get("numeric_pinyin") or "").strip()
+                numeric_pinyin = normalize_numeric_pinyin_syllable_spacing(
+                    str(raw_entry.get("numeric_pinyin") or "")
+                )
                 yime_code = str(raw_entry.get("yime_code") or "").strip()
                 if not phrase or not numeric_pinyin or not yime_code:
                     continue
@@ -597,7 +628,9 @@ class UserLexiconStore:
             normalized_phrases: dict[str, int] = {}
             for row in phrase_rows:
                 normalized_phrase = str(row["phrase"] or "").strip()
-                normalized_numeric = " ".join(str(row["numeric_pinyin"] or "").split())
+                normalized_numeric = normalize_numeric_pinyin_syllable_spacing(
+                    str(row["numeric_pinyin"] or "")
+                )
                 normalized_marked = " ".join(str(row["marked_pinyin"] or "").split())
                 normalized_yime = str(row["yime_code"] or "").strip()
                 normalized_note = str(row["source_note"] or "").strip()
@@ -704,7 +737,9 @@ class UserLexiconStore:
             grouped_rows: dict[str, list[sqlite3.Row]] = {}
             for row in rows:
                 normalized_phrase = str(row["phrase"] or "").strip()
-                normalized_numeric = " ".join(str(row["numeric_pinyin"] or "").split())
+                normalized_numeric = normalize_numeric_pinyin_syllable_spacing(
+                    str(row["numeric_pinyin"] or "")
+                )
                 if not normalized_phrase or not normalized_numeric:
                     connection.execute("DELETE FROM user_phrase_entries WHERE id = ?", (int(row["id"]),))
                     deleted_invalid_rows += 1
@@ -720,7 +755,9 @@ class UserLexiconStore:
                 keeper = phrase_rows[0]
                 keeper_id = int(keeper["id"])
                 kept_phrase_ids.add(keeper_id)
-                normalized_numeric = " ".join(str(keeper["numeric_pinyin"] or "").split())
+                normalized_numeric = normalize_numeric_pinyin_syllable_spacing(
+                    str(keeper["numeric_pinyin"] or "")
+                )
                 normalized_marked = " ".join(str(keeper["marked_pinyin"] or "").split())
                 normalized_note = str(keeper["source_note"] or "").strip()
                 resolved_yime = resolve_yime_code_from_numeric_pinyin(repo_root, normalized_numeric)

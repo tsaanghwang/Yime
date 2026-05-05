@@ -5,6 +5,7 @@ from pathlib import Path
 
 from yime.input_method.utils.user_lexicon import (
     UserLexiconStore,
+    normalize_numeric_pinyin_syllable_spacing,
     resolve_yime_code_from_numeric_pinyin,
 )
 
@@ -16,7 +17,7 @@ USER_DB_PATH = ROOT / "yime" / "user_lexicon.db"
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="向持久用户词库写入或更新词条。")
     parser.add_argument("phrase", help="要写入的词语，例如：日本、今日")
-    parser.add_argument("numeric_pinyin", help="数字标调拼音，例如：ri4 ben3")
+    parser.add_argument("numeric_pinyin", help="数字标调拼音，例如：ri4 ben3；也接受 ri4ben3 这种连写。")
     parser.add_argument(
         "--marked-pinyin",
         default="",
@@ -37,9 +38,10 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = parse_args()
+    normalized_numeric = normalize_numeric_pinyin_syllable_spacing(args.numeric_pinyin)
     yime_code = args.yime_code.strip() or resolve_yime_code_from_numeric_pinyin(
         ROOT,
-        args.numeric_pinyin,
+        normalized_numeric,
     )
     if not yime_code:
         raise SystemExit("无法根据 numeric_pinyin 自动推导音元编码，请显式传入 --yime-code。")
@@ -47,7 +49,7 @@ def main() -> None:
     store = UserLexiconStore(USER_DB_PATH)
     store.upsert_phrase(
         args.phrase,
-        args.numeric_pinyin,
+        normalized_numeric,
         marked_pinyin=args.marked_pinyin,
         yime_code=yime_code,
         source_note=args.note,
@@ -55,7 +57,7 @@ def main() -> None:
 
     print(f"user_lexicon_db={USER_DB_PATH}")
     print(f"phrase={args.phrase}")
-    print(f"numeric_pinyin={args.numeric_pinyin}")
+    print(f"numeric_pinyin={normalized_numeric}")
     print(f"marked_pinyin={args.marked_pinyin}")
     print(f"yime_code={yime_code}")
     print("write_result=upserted")
