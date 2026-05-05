@@ -29,6 +29,7 @@
 - **[无管理员权限安装](install/PORTABLE_PYTHON_GUIDE.md)** - 使用便携版 Python 3.12 的无管理员权限安装路径
 - **[使用说明](USAGE.md)** - 基本使用方法和示例
 - **[状态反馈速记](STATUS_FEEDBACK.md)** - 说明状态栏、弹窗、诊断脚本各自负责显示什么
+- **[跨窗口稳定性手工回归清单](CROSS_WINDOW_REGRESSION_CHECKLIST.md)** - 只保留当前最值钱的真实 Windows 跨窗口回贴回归场景
 - **[反查编码与用户词库操作说明](REVERSE_LOOKUP_AND_USER_LEXICON.md)** - 说明如何反查字词编码、查询用户频率、备份/迁移用户词库以及使用 seed 初始化词库
 - **[反查编码与用户词库速查](REVERSE_LOOKUP_AND_USER_LEXICON_QUICK_REF.md)** - 一页看完最常用的反查、加词、备份和调序诊断操作
 - **[快速入门](../README.md)** - 项目概述和快速开始
