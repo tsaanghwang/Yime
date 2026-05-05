@@ -68,6 +68,13 @@ scripts\build_setup_release.bat
 5. 加一条用户词库，确认 `%LOCALAPPDATA%/Yime/user_lexicon.db` 已生成。
 6. 卸载后确认应用目录被移除，用户数据是否保留符合你的预期。
 
+如果你现在的目标不是“正式发布”，而只是先发给朋友试装，优先直接照着：
+
+- `friend-trial-checklist.md`
+- `friend-trial-message-template.md`
+
+前者只保留试装前最值钱的一轮检查；后者是一段可以直接发给朋友的说明模板。
+
 ## 当前边界
 
 这套 setup 发布当前解决的是：
