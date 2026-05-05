@@ -15,7 +15,13 @@ def print_user_lexicon_db(path: Path) -> None:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="维护持久用户词库和调序频率。")
+    parser = argparse.ArgumentParser(
+        description=(
+            "维护持久用户词库和调序频率。"
+            "词条里的 numeric_pinyin 会自动规范空格；带数字声调的连写拼音"
+            "例如 ri4ben3 也会被整理成 ri4 ben3。"
+        )
+    )
     parser.add_argument(
         "--db-path",
         default="",
@@ -46,7 +52,10 @@ def build_parser() -> argparse.ArgumentParser:
         help="只导出词条，不导出调序频率。",
     )
 
-    import_data = subparsers.add_parser("import", help="导入用户词库备份。")
+    import_data = subparsers.add_parser(
+        "import",
+        help="导入用户词库备份，并规范词条里的 numeric_pinyin 空格。",
+    )
     import_data.add_argument("input", help="导入文件路径。")
     import_data.add_argument(
         "--replace-existing",
@@ -69,8 +78,14 @@ def build_parser() -> argparse.ArgumentParser:
     stats = subparsers.add_parser("stats", help="输出用户词库统计信息。")
     stats.add_argument("--top", type=int, default=10, help="最多显示多少条高频记录。")
 
-    subparsers.add_parser("check", help="检查用户词库中可自动修复的问题。")
-    subparsers.add_parser("repair-phrases", help="修复用户词条中的空字段、错误编码和重复词条。")
+    subparsers.add_parser(
+        "check",
+        help="检查用户词库中可自动修复的问题，包括 numeric_pinyin 的连写规范化。",
+    )
+    subparsers.add_parser(
+        "repair-phrases",
+        help="修复用户词条中的空字段、错误编码、连写 numeric_pinyin 和重复词条。",
+    )
     subparsers.add_parser("repair-frequency", help="修复持久调序频率中的空键、非正频率和重复记录。")
     subparsers.add_parser("repair-meta", help="修复 seed 导入元数据中的无效或过期状态。")
     subparsers.add_parser("repair-all", help="一次执行用户词条、频率和元数据修复。")

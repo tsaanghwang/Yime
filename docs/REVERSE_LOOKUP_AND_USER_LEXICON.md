@@ -224,10 +224,12 @@ python tools/manage_user_lexicon.py repair-meta
 python tools/manage_user_lexicon.py repair-all
 ```
 
+这批命令现在也会把带数字声调的连写拼音整理成标准空格形式，例如：`ri4ben3 -> ri4 ben3`。
+
 它们分别处理：
 
 - `check`：只检查，不改动，列出当前库里可自动修复的问题数量
-- `repair-phrases`：修复用户词条里的空字段、不可解析拼音、错误 `yime_code` 和规范化后重复的词条
+- `repair-phrases`：修复用户词条里的空字段、不可解析拼音、带数字声调的连写 `numeric_pinyin`、错误 `yime_code` 和规范化后重复的词条
 - `repair-frequency`：修复持久调序频率里的空键、非正频率和规范化后重复的频率记录
 - `repair-meta`：修复 `seed_import_completed` 的无效值或“跳过导入但当前其实没有用户数据”的过期状态
 - `repair-all`：顺序执行以上三类修复
