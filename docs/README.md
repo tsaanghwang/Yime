@@ -25,6 +25,7 @@
 
 - **[安装指南](install/INSTALLATION_GUIDE.md)** - 当前 Windows 桌面输入法原型的主安装入口
 - **[便携版发布指南](install/PORTABLE_RELEASE_GUIDE.md)** - 用 PyInstaller 打成无需 Python 的 Windows 独立目录
+- **[安装包发布指南](install/SETUP_RELEASE_GUIDE.md)** - 用 Inno Setup 打成可分发的 `Setup.exe`
 - **[MSKLC 发布速记](MSKLC_RELEASE_QUICKSTART.md)** - 最短的 Windows 键盘生成、打包、安装、回滚路径
 - **[Python 3.12 快速开始](install/QUICKSTART_PY312.md)** - 最短启动路径，适合已理解当前主线后快速跑起原型
 - **[无管理员权限安装](install/PORTABLE_PYTHON_GUIDE.md)** - 使用便携版 Python 3.12 的无管理员权限安装路径
