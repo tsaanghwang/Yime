@@ -23,6 +23,7 @@ AddInputToUserLexiconCallback = Callable[[], None]
 DeleteInputFromUserLexiconCallback = Callable[[], None]
 ManualKeyOutputResolver = Callable[[str, dict[str, bool]], str]
 VoidCallback = Callable[[], None]
+FeedbackCallback = Callable[[str, str], None]
 
 from .candidate_box_actions import CandidateBoxActions
 
@@ -72,6 +73,7 @@ class CandidateBox(CandidateRendererMixin):
         on_commit_text: Optional[CommitTextCallback] = None,
         on_add_input_to_user_lexicon: Optional[AddInputToUserLexiconCallback] = None,
         on_delete_input_from_user_lexicon: Optional[DeleteInputFromUserLexiconCallback] = None,
+        on_feedback: Optional[FeedbackCallback] = None,
         on_restore_from_standby: Optional[VoidCallback] = None,
         on_toggle_standby: Optional[VoidCallback] = None,
         on_close: Optional[VoidCallback] = None,
@@ -113,6 +115,7 @@ class CandidateBox(CandidateRendererMixin):
         self._on_commit_text_callback = on_commit_text
         self._on_add_input_to_user_lexicon = on_add_input_to_user_lexicon
         self._on_delete_input_from_user_lexicon = on_delete_input_from_user_lexicon
+        self.feedback_callback = on_feedback
         self._on_restore_from_standby = on_restore_from_standby
         self._on_toggle_standby = on_toggle_standby
         self._on_close = on_close

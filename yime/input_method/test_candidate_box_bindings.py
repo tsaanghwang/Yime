@@ -94,3 +94,77 @@ def test_input_context_menu_uses_chinese_labels_and_selects_input_text(monkeypat
     assert box.input_entry.focused is True
     assert box.added_to_user_lexicon is True
     assert box.deleted_from_user_lexicon is True
+
+
+def test_add_current_input_to_user_lexicon_uses_feedback_callback_when_unconfigured(monkeypatch) -> None:
+    feedback_calls: list[tuple[str, str]] = []
+    dialog_calls: list[tuple[str, str]] = []
+
+    class _BoxWithoutLexiconHooks(_FakeBox):
+        def __init__(self) -> None:
+            super().__init__()
+            self.feedback_callback = lambda title, message: feedback_calls.append((title, message))
+
+        def add_input_to_user_lexicon_callback(self) -> bool:
+            return False
+
+    box = _BoxWithoutLexiconHooks()
+    monkeypatch.setattr(
+        "yime.input_method.ui.candidate_box_actions.messagebox.showinfo",
+        lambda title, message, parent=None: dialog_calls.append((title, message)),
+    )
+
+    CandidateBoxActions(box).add_current_input_to_user_lexicon()
+
+    assert feedback_calls == [("用户词库", "当前未配置用户词库写入入口。")]
+    assert dialog_calls == []
+
+
+def test_delete_current_input_from_user_lexicon_uses_feedback_callback_when_unconfigured(monkeypatch) -> None:
+    feedback_calls: list[tuple[str, str]] = []
+    dialog_calls: list[tuple[str, str]] = []
+
+    class _BoxWithoutLexiconHooks(_FakeBox):
+        def __init__(self) -> None:
+            super().__init__()
+            self.feedback_callback = lambda title, message: feedback_calls.append((title, message))
+
+        def delete_input_from_user_lexicon_callback(self) -> bool:
+            return False
+
+    box = _BoxWithoutLexiconHooks()
+    monkeypatch.setattr(
+        "yime.input_method.ui.candidate_box_actions.messagebox.showinfo",
+        lambda title, message, parent=None: dialog_calls.append((title, message)),
+    )
+
+    CandidateBoxActions(box).delete_current_input_from_user_lexicon()
+
+    assert feedback_calls == [("用户词库", "当前未配置用户词库删除入口。")]
+    assert dialog_calls == []
+
+
+def test_commit_output_text_keeps_buffer_status_local() -> None:
+    class _BoxWithCommit(_FakeBox):
+        def __init__(self) -> None:
+            super().__init__()
+            self.status = ""
+            self.commit_text = "安"
+            self.commit_calls: list[str] = []
+            self.feedback_calls: list[tuple[str, str]] = []
+            self.feedback_callback = lambda title, message: self.feedback_calls.append((title, message))
+            self.commit_text_callback = lambda text: self.commit_calls.append(text) or True
+
+        def get_commit_text(self) -> str:
+            return self.commit_text
+
+        def set_status(self, text: str) -> None:
+            self.status = text
+
+    box = _BoxWithCommit()
+
+    CandidateBoxActions(box).commit_output_text()
+
+    assert box.commit_calls == ["安"]
+    assert box.status == "已发送缓冲区内容: 安"
+    assert box.feedback_calls == []

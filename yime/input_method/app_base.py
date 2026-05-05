@@ -132,6 +132,7 @@ class BaseInputMethodApp:
             on_commit_text=self._commit_candidate_box_text,
             on_add_input_to_user_lexicon=self._add_current_input_to_user_lexicon,
             on_delete_input_from_user_lexicon=self._delete_current_input_from_user_lexicon,
+            on_feedback=self._emit_feedback,
             on_close=self._close,
         )
 
