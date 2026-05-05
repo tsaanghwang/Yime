@@ -14,7 +14,7 @@ from .ui.candidate_box import CandidateBox
 class GlobalListenerApp(BaseInputMethodApp):
     """
     独立全局监听模式应用
-    
+
     直接监听全局键盘（无需快捷键唤醒），
     当输入合法音元编码时，自动拦截键盘事件并显示候选框。
     """
@@ -29,7 +29,7 @@ class GlobalListenerApp(BaseInputMethodApp):
         self.font_family = font_family
         self.enable_pause_toggle = enable_pause_toggle
         self.is_passthrough_enabled = False
-        
+
         self.debug_ui = os.environ.get("YIME_DEBUG_UI", "").strip().lower() in {
             "1", "true", "yes", "on",
         }
@@ -40,7 +40,7 @@ class GlobalListenerApp(BaseInputMethodApp):
         )
 
         self._display_input_buffer = ""
-        
+
         # 专属部件：输入管理器和全局键盘钩子
         self.input_manager = InputManager(
             on_candidates_update=self._on_candidates_update_from_manager,
@@ -53,7 +53,7 @@ class GlobalListenerApp(BaseInputMethodApp):
 
     def _on_candidates_update_from_manager(self, candidates: list[str], _kanji: str, code: str, comment: str) -> None:
         self.candidate_box.update_candidates(
-            candidates, code, comment, 
+            candidates, code, comment,
             status=f"输入中 ({self._display_input_buffer})"
         )
 
@@ -82,7 +82,7 @@ class GlobalListenerApp(BaseInputMethodApp):
         print("2. 不启用热键会话；请直接在外部窗口输入编码")
         print("3. 当前模式与热键模式分离，便于独立排查全局监听问题")
 
-        self.candidate_box.set_status("实验性全局监听模式已就绪：直接监听外部键盘输入")
+        self._emit_feedback("输入模式", "实验性全局监听模式已就绪：直接监听外部键盘输入")
         self.candidate_box.run()
 
     def _on_key_press(self, key_info: dict[str, Any]) -> bool:

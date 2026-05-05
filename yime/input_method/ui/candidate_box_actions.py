@@ -29,6 +29,16 @@ class CandidateBoxActions:
         self.box = box
         self._input_context_menu: Optional[tk.Menu] = None
 
+    def _emit_feedback(self, title: str, message: str) -> None:
+        feedback_callback = getattr(self.box, "feedback_callback", None)
+        if callable(feedback_callback):
+            feedback_callback(title, message)
+            return
+        messagebox.showinfo("音元拼音", message, parent=self.box.root)
+
+    def _set_local_status(self, message: str) -> None:
+        self.box.set_status(message)
+
     def bind_keys(self) -> None:
         def bind_if_possible(widget: object, sequence: str, handler: object) -> None:
             binder = getattr(widget, "bind", None)
@@ -198,7 +208,7 @@ class CandidateBoxActions:
         if callable(legacy_callback):
             legacy_callback()
             return
-        messagebox.showinfo("音元拼音", "当前未配置用户词库写入入口。", parent=self.box.root)
+        self._emit_feedback("用户词库", "当前未配置用户词库写入入口。")
 
     def delete_current_input_from_user_lexicon(self) -> None:
         callback = getattr(self.box, "delete_input_from_user_lexicon_callback", None)
@@ -208,7 +218,7 @@ class CandidateBoxActions:
         if callable(legacy_callback):
             legacy_callback()
             return
-        messagebox.showinfo("音元拼音", "当前未配置用户词库删除入口。", parent=self.box.root)
+        self._emit_feedback("用户词库", "当前未配置用户词库删除入口。")
 
     def activate_for_manual_input(self, event: Optional[tk.Event] = None) -> None:
         self.box.set_manual_input_enabled(True)
@@ -338,16 +348,16 @@ class CandidateBoxActions:
     def commit_output_text(self) -> None:
         text = self.box.get_commit_text().strip()
         if not text:
-            self.box.set_status("缓冲区为空。")
+            self._set_local_status("缓冲区为空。")
             return
         commit_callback = getattr(self.box, "commit_text_callback", None)
         if callable(commit_callback) and commit_callback(text):
-            self.box.set_status(f"已发送缓冲区内容: {text}")
+            self._set_local_status(f"已发送缓冲区内容: {text}")
             return
         legacy_callback = getattr(self.box, "_on_commit_text_callback", None)
         if callable(legacy_callback):
             legacy_callback(text)
-            self.box.set_status(f"已发送缓冲区内容: {text}")
+            self._set_local_status(f"已发送缓冲区内容: {text}")
 
     def select_candidate_by_index(self, index: int) -> bool:
         hanzi = self.box.get_candidate(index)
@@ -357,7 +367,7 @@ class CandidateBoxActions:
         self.box.append_commit_text(hanzi)
         self.box.on_select(hanzi)
         self.box.clear_input(focus_input=keep_focus)
-        self.box.set_status(f"已加入缓冲区: {self.box.get_commit_text()}")
+        self._set_local_status(f"已加入缓冲区: {self.box.get_commit_text()}")
         return True
 
     def copy_candidate(self, index: int) -> None:

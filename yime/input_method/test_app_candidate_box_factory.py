@@ -32,3 +32,5 @@ def test_input_method_app_factory_wires_user_lexicon_callbacks(monkeypatch) -> N
 
     assert captured["on_add_input_to_user_lexicon"] is app._add_current_input_to_user_lexicon
     assert captured["on_delete_input_from_user_lexicon"] is app._delete_current_input_from_user_lexicon
+    assert captured["on_feedback"].__self__ is app
+    assert captured["on_feedback"].__func__ is app._emit_feedback.__func__

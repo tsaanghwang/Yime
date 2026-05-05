@@ -237,7 +237,8 @@ class InputMethodApp(BaseInputMethodApp):
             self._set_post_commit_behavior("standby")
             self._resume_global_capture()
             self._hotkey_mode = "disabled"
-            self.candidate_box.set_status(
+            self._emit_feedback(
+                "输入模式",
                 "实验性全局监听模式已就绪：直接监听外部键盘输入；不启用热键会话。"
             )
             return
@@ -255,11 +256,13 @@ class InputMethodApp(BaseInputMethodApp):
                     "可能导致焦点误跳转或与码元输入冲突。建议改用 --hotkey <ctrl>+<alt>+<insert>。"
                 )
             if wake_triggers == default_triggers and standby_triggers == default_triggers:
-                self.candidate_box.set_status(
+                self._emit_feedback(
+                    "输入模式",
                     f"V1 热键模式已就绪：按 {self._format_hotkey_label()} 唤起输入框；再次按下可回待命。"
                 )
             else:
-                self.candidate_box.set_status(
+                self._emit_feedback(
+                    "输入模式",
                     "V1 已就绪："
                     f"唤起可通过{self._wake_trigger_hint()}；"
                     f"休眠可通过{self._standby_trigger_hint()}。"
@@ -267,9 +270,10 @@ class InputMethodApp(BaseInputMethodApp):
         else:
             self._hotkey_mode = "click-only"
             if wake_triggers == frozenset({"mouse"}) and standby_triggers == frozenset({"mouse"}):
-                self.candidate_box.set_status("V1 点击待命图标可进入输入；热键不可用。")
+                self._emit_feedback("输入模式", "V1 点击待命图标可进入输入；热键不可用。")
             else:
-                self.candidate_box.set_status(
+                self._emit_feedback(
+                    "输入模式",
                     "V1 已就绪："
                     f"唤起可通过{self._wake_trigger_hint()}；"
                     f"休眠可通过{self._standby_trigger_hint()}。"
@@ -288,6 +292,7 @@ class InputMethodApp(BaseInputMethodApp):
             on_commit_text=self._commit_candidate_box_text,
             on_add_input_to_user_lexicon=self._add_current_input_to_user_lexicon,
             on_delete_input_from_user_lexicon=self._delete_current_input_from_user_lexicon,
+            on_feedback=self._emit_feedback,
             on_restore_from_standby=self._resume_from_standby,
             on_toggle_standby=self._return_mouse_session_to_standby,
             on_close=self._close,
@@ -565,7 +570,7 @@ class InputMethodApp(BaseInputMethodApp):
                     anchor_hwnd=effective_target,
                     force_recompute=force_recompute,
                 )
-        self.candidate_box.set_status(f"{status_prefix}: {target_description}")
+        self._emit_feedback("会话", f"{status_prefix}: {target_description}")
 
     def _toggle_hotkey_session(
         self,
@@ -602,13 +607,14 @@ class InputMethodApp(BaseInputMethodApp):
         self._restore_external_window()
         self._unlock_external_target()
         if self._is_hotkey_wake_enabled() and getattr(self, "hotkey_listener", True):
-            self.candidate_box.set_status(
+            self._emit_feedback(
+                "会话",
                 f"V1 已回待命：按 {self._format_hotkey_label()} 可再次唤起输入框。"
             )
         elif self._is_mouse_wake_enabled():
-            self.candidate_box.set_status("V1 已回待命：点击右下角的'音'图标可再次唤起输入框。")
+            self._emit_feedback("会话", "V1 已回待命：点击右下角的'音'图标可再次唤起输入框。")
         else:
-            self.candidate_box.set_status("V1 已回待命。")
+            self._emit_feedback("会话", "V1 已回待命。")
 
     def _return_mouse_session_to_standby(self) -> None:
         try:
