@@ -28,6 +28,7 @@
 - **[安装包发布指南](install/SETUP_RELEASE_GUIDE.md)** - 用 Inno Setup 打成可分发的 `Setup.exe`
 - **[朋友试装前最小验收清单](install/friend-trial-checklist.md)** - 发给外部试装前，先用 10 分钟做一轮最小风险检查
 - **[发给朋友的说明模板](install/friend-trial-message-template.md)** - 发安装包时可直接复制改写的一段短说明
+- **[试用者一页说明与最小键位对照](install/friend-trial-one-page.md)** - 给外部试用者看的单页版：怎么唤起、怎么上屏、键位大致怎么看
 - **[MSKLC 发布速记](MSKLC_RELEASE_QUICKSTART.md)** - 最短的 Windows 键盘生成、打包、安装、回滚路径
 - **[Python 3.12 快速开始](install/QUICKSTART_PY312.md)** - 最短启动路径，适合已理解当前主线后快速跑起原型
 - **[无管理员权限安装](install/PORTABLE_PYTHON_GUIDE.md)** - 使用便携版 Python 3.12 的无管理员权限安装路径
