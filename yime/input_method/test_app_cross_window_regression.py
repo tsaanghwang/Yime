@@ -1,3 +1,4 @@
+from yime.input_method.app import InputMethodApp
 from yime.input_method.app_base import BaseInputMethodApp
 
 
@@ -34,6 +35,16 @@ class _FakeCandidateBox:
 def _run_scheduled_callbacks(scheduled: list[tuple[int, object]]) -> None:
     for _delay, callback in scheduled:
         callback()
+
+
+def test_post_commit_behavior_normalizes_to_keep_input_or_standby() -> None:
+    app = BaseInputMethodApp.__new__(BaseInputMethodApp)
+
+    BaseInputMethodApp._set_post_commit_behavior(app, "keep-input")
+    assert BaseInputMethodApp._should_keep_input_after_commit(app) is True
+
+    BaseInputMethodApp._set_post_commit_behavior(app, "unexpected")
+    assert BaseInputMethodApp._should_keep_input_after_commit(app) is False
 
 
 def test_paste_to_previous_window_reports_missing_target_and_unlocks() -> None:
@@ -192,3 +203,57 @@ def test_commit_candidate_box_text_unlocks_without_scheduling_paste_when_no_targ
         ("clear_input", False),
     ]
     assert scheduled == []
+
+
+def test_commit_candidate_box_text_can_schedule_three_consecutive_cross_window_pastes() -> None:
+    app = BaseInputMethodApp.__new__(BaseInputMethodApp)
+    events: list[object] = []
+    scheduled: list[tuple[int, object]] = []
+    app.clipboard = _FakeClipboard(events)
+    app.candidate_box = _FakeCandidateBox(events)
+    app.last_replace_length = 7
+    app._current_external_target_hwnd = lambda: 30003
+    app._unlock_external_target = lambda: events.append("unlock")
+    app._paste_to_previous_window = lambda text: events.append(("paste", text))
+    app._schedule_ui = lambda delay, callback: scheduled.append((delay, callback))
+
+    BaseInputMethodApp._commit_candidate_box_text(app, "一")
+    _run_scheduled_callbacks(scheduled)
+    scheduled.clear()
+
+    app.last_replace_length = 5
+    BaseInputMethodApp._commit_candidate_box_text(app, "二")
+    _run_scheduled_callbacks(scheduled)
+    scheduled.clear()
+
+    app.last_replace_length = 3
+    BaseInputMethodApp._commit_candidate_box_text(app, "三")
+    _run_scheduled_callbacks(scheduled)
+
+    assert app.last_replace_length == 0
+    assert events == [
+        ("copy", "一"),
+        "clear_commit_text",
+        ("clear_input", False),
+        ("paste", "一"),
+        ("copy", "二"),
+        "clear_commit_text",
+        ("clear_input", False),
+        ("paste", "二"),
+        ("copy", "三"),
+        "clear_commit_text",
+        ("clear_input", False),
+        ("paste", "三"),
+    ]
+
+
+def test_input_method_after_commit_candidate_box_text_enters_commit_box_standby() -> None:
+    app = InputMethodApp.__new__(InputMethodApp)
+    app._display_input_buffer = "queued"
+    events: list[object] = []
+    app._enter_passive_standby = lambda reason: events.append(("enter_passive_standby", reason))
+
+    InputMethodApp._after_commit_candidate_box_text(app)
+
+    assert app._display_input_buffer == ""
+    assert events == [("enter_passive_standby", "commit-box")]
