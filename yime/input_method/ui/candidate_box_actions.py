@@ -57,7 +57,8 @@ class CandidateBoxActions:
             )
 
         self.box.root.bind("<Return>", self.on_confirm_key)
-        bind_if_possible(self.box.input_entry, "<KeyPress>", self.box._on_manual_input_key_press)
+        manual_input_keypress_handler = getattr(self.box, "_on_manual_input_key_press", None)
+        bind_if_possible(self.box.input_entry, "<KeyPress>", manual_input_keypress_handler)
         bind_if_possible(self.box.input_entry, "<KeyRelease>", self.on_input_change)
         bind_if_possible(self.box.input_entry, "<<Paste>>", self.on_paste)
         bind_if_possible(self.box.input_entry, "<Shift-Insert>", self.on_paste)

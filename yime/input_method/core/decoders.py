@@ -692,7 +692,11 @@ class RuntimeCandidateDecoder:
         if not plan.lookup_code or not candidate_text.strip():
             return 0
         key = (plan.lookup_code, candidate_text.strip())
-        persisted_freq = self.user_lexicon.record_candidate_selection(*key)
+        user_lexicon = getattr(self, "user_lexicon", None)
+        if user_lexicon is None:
+            persisted_freq = int(self._user_freq_by_candidate.get(key, 0)) + 1
+        else:
+            persisted_freq = user_lexicon.record_candidate_selection(*key)
         self._user_freq_by_candidate[key] = persisted_freq
         return persisted_freq
 
