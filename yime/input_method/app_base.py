@@ -357,6 +357,31 @@ class BaseInputMethodApp:
 
         return normalized, ""
 
+    def _format_live_status(self, status: str, *, source: str) -> str:
+        normalized = status.strip()
+        if not normalized:
+            return ""
+        if source == "reverse_lookup":
+            return f"反查: {normalized}"
+        if source == "decode":
+            return f"解码: {normalized}"
+        return normalized
+
+    def _summarize_decode_status(
+        self,
+        *,
+        canonical_code: str,
+        candidates: list[str],
+        display_candidates: list[str],
+    ) -> str:
+        if candidates:
+            return "已找到候选。"
+        if len(canonical_code) < 4:
+            if display_candidates:
+                return "前缀等待，可先选单字，继续输入可收窄结果。"
+            return "前缀等待，继续输入。"
+        return "当前编码未找到候选。"
+
     def _add_current_input_to_user_lexicon(self) -> None:
         display_input = self.candidate_box.get_input().strip()
         input_text = project_physical_input(display_input, self.physical_input_map).strip()
@@ -478,7 +503,10 @@ class BaseInputMethodApp:
             record = self.runtime_reverse_lookup.lookup_first(input_text)
             if record is not None:
                 self.last_replace_length = len(input_text)
-                status = "已按运行时词库首选读音反查。"
+                status = self._format_live_status(
+                    "已按运行时词库首选读音反查。",
+                    source="reverse_lookup",
+                )
                 self.candidate_box.update_candidates(
                     [],
                     record.to_display_text(),
@@ -492,7 +520,10 @@ class BaseInputMethodApp:
                 [],
                 "",
                 "",
-                "运行时词库中未找到该字词。",
+                self._format_live_status(
+                    "运行时词库中未找到该字词。",
+                    source="reverse_lookup",
+                ),
             )
             return
 
@@ -503,9 +534,19 @@ class BaseInputMethodApp:
         self.last_replace_length = len(active_code) if active_code else min(4, len(input_text))
         code_display = build_code_display(input_text, canonical_code, active_code)
         display_candidates = self._resolve_display_candidates(canonical_code, candidates)
-        if display_candidates and not candidates and len(canonical_code) < 4:
-            status = f"当前 {len(canonical_code)}/4 码，先显示前缀单字候选，继续输入可收窄结果。"
-        self.candidate_box.update_candidates(display_candidates, pinyin, code_display, status)
+        self.candidate_box.update_candidates(
+            display_candidates,
+            pinyin,
+            code_display,
+            self._format_live_status(
+                self._summarize_decode_status(
+                    canonical_code=canonical_code,
+                    candidates=candidates,
+                    display_candidates=display_candidates,
+                ),
+                source="decode",
+            ),
+        )
 
     def _record_candidate_selection(self, hanzi: str) -> None:
         input_text = self.candidate_box.get_projected_input()

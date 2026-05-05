@@ -42,6 +42,17 @@ class _FailDecoder:
         raise AssertionError(f"decode_text should not run for hanzi reverse lookup: {text}")
 
 
+class _FakeDecoder:
+    def __init__(self, response) -> None:
+        self.response = response
+
+    def decode_text(self, text: str):
+        return self.response
+
+    def get_char_candidates_by_prefix(self, prefix: str, limit: int = 5):
+        return []
+
+
 def test_on_input_change_prefers_runtime_reverse_lookup_for_hanzi() -> None:
     app = BaseInputMethodApp.__new__(BaseInputMethodApp)
     app.candidate_box = _FakeCandidateBox("日")
@@ -57,5 +68,57 @@ def test_on_input_change_prefers_runtime_reverse_lookup_for_hanzi() -> None:
         [],
         "rì / ri4 | CODE",
         "",
-        "已按运行时词库首选读音反查。",
+        "反查: 已按运行时词库首选读音反查。",
     )
+
+
+def test_on_input_change_prefixes_decode_status() -> None:
+    app = BaseInputMethodApp.__new__(BaseInputMethodApp)
+    app.candidate_box = _FakeCandidateBox("abcd")
+    app.physical_input_map = {}
+    app.runtime_reverse_lookup = _FakeReverseLookup(None)
+    app.decoder = _FakeDecoder(("ABCD", "ABCD", "ri4", ["日"], "从运行时编码表找到 1 个候选。"))
+    app.last_replace_length = 0
+    app._resolve_display_candidates = lambda canonical_code, decoded_candidates: list(decoded_candidates)
+
+    BaseInputMethodApp._on_input_change(app)
+
+    assert app.last_replace_length == 4
+    assert app.candidate_box.updated is not None
+    candidates, pinyin, code, status = app.candidate_box.updated
+    assert candidates == ["日"]
+    assert pinyin == "ri4"
+    assert code.startswith("当前4码 U+0041 U+0042 U+0043 U+0044")
+    assert status == "解码: 已找到候选。"
+
+
+def test_on_input_change_summarizes_prefix_waiting_status() -> None:
+    app = BaseInputMethodApp.__new__(BaseInputMethodApp)
+    app.candidate_box = _FakeCandidateBox("a")
+    app.physical_input_map = {}
+    app.runtime_reverse_lookup = _FakeReverseLookup(None)
+    app.decoder = _FakeDecoder(("A", "A", "", [], "当前 1/4 码，继续输入。"))
+    app.last_replace_length = 0
+    app._resolve_display_candidates = lambda canonical_code, decoded_candidates: []
+
+    BaseInputMethodApp._on_input_change(app)
+
+    assert app.candidate_box.updated is not None
+    _candidates, _pinyin, _code, status = app.candidate_box.updated
+    assert status == "解码: 前缀等待，继续输入。"
+
+
+def test_on_input_change_summarizes_not_found_status() -> None:
+    app = BaseInputMethodApp.__new__(BaseInputMethodApp)
+    app.candidate_box = _FakeCandidateBox("abcd")
+    app.physical_input_map = {}
+    app.runtime_reverse_lookup = _FakeReverseLookup(None)
+    app.decoder = _FakeDecoder(("ABCD", "ABCD", "", [], "运行时编码表中未找到该 4 码候选。"))
+    app.last_replace_length = 0
+    app._resolve_display_candidates = lambda canonical_code, decoded_candidates: []
+
+    BaseInputMethodApp._on_input_change(app)
+
+    assert app.candidate_box.updated is not None
+    _candidates, _pinyin, _code, status = app.candidate_box.updated
+    assert status == "解码: 当前编码未找到候选。"
