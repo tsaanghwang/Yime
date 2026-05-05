@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import gc
 import json
 import shutil
 import tempfile
@@ -80,7 +81,10 @@ def scenario_missing_db(seed_path: Path, install_root: Path, expected_phrase_cou
     require(store.db_path.exists(), "首次启动后未创建 user_lexicon.db")
     require(result["phrase_entries"] == expected_phrase_count, "无库首次启动没有完整导入 seed 词条")
     meta_value = verify_imported_store(store, expected_phrase_count)
-    print(f"[OK] scenario_missing_db imported={result['phrase_entries']} meta={meta_value}")
+    del store
+    print(
+        f"acceptance_result=ok scenario=missing_user_lexicon_db imported_user_phrase_entries={result['phrase_entries']} seed_import_state={meta_value}"
+    )
 
 
 def scenario_precreated_empty_db(
@@ -94,8 +98,9 @@ def scenario_precreated_empty_db(
     result, store = run_seed_import(app_dir)
     require(result["phrase_entries"] == expected_phrase_count, "空库首次启动没有完整导入 seed 词条")
     meta_value = verify_imported_store(store, expected_phrase_count)
+    del store
     print(
-        f"[OK] scenario_precreated_empty_db imported={result['phrase_entries']} meta={meta_value}"
+        f"acceptance_result=ok scenario=empty_user_lexicon_db imported_user_phrase_entries={result['phrase_entries']} seed_import_state={meta_value}"
     )
 
 
@@ -121,7 +126,11 @@ def scenario_second_launch_no_reimport(
     )
     require(len(second_phrase_rows) == expected_phrase_count, "第二次启动后词条数发生意外变化")
     require(second_meta == first_meta, "第二次启动不应改写已完成的 seed 标记")
-    print(f"[OK] scenario_second_launch_no_reimport imported_once meta={second_meta}")
+    del first_store
+    del second_store
+    print(
+        f"acceptance_result=ok scenario=second_launch_no_reimport imported_user_phrase_entries={first_result['phrase_entries']} second_launch_imported_user_phrase_entries={second_result['phrase_entries']} seed_import_state={second_meta}"
+    )
 
 
 def main() -> None:
@@ -134,8 +143,8 @@ def main() -> None:
 
     with tempfile.TemporaryDirectory(prefix="yime-seed-acceptance-") as temp_dir:
         install_root = Path(temp_dir)
-        print(f"seed_path={seed_path}")
-        print(f"temp_install_root={install_root}")
+        print(f"seed_lexicon_path={seed_path}")
+        print(f"acceptance_install_root={install_root}")
 
         scenario_missing_db(seed_path, install_root, expected_phrase_count)
         scenario_precreated_empty_db(seed_path, install_root, expected_phrase_count)
@@ -146,9 +155,10 @@ def main() -> None:
             if preserved_dir.exists():
                 shutil.rmtree(preserved_dir)
             shutil.copytree(install_root, preserved_dir)
-            print(f"kept_temp_install_root={preserved_dir}")
+            print(f"kept_acceptance_install_root={preserved_dir}")
 
-        print("[OK] seed install flow acceptance passed")
+        print("acceptance_result=ok overall=seed_install_flow_passed")
+        gc.collect()
 
 
 if __name__ == "__main__":
