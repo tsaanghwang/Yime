@@ -1,9 +1,13 @@
 from __future__ import annotations
 
 import argparse
+import json
 from pathlib import Path
 
-from yime.input_method.utils.user_lexicon import UserLexiconStore
+from yime.input_method.utils.user_lexicon import (
+    UserLexiconStore,
+    normalize_numeric_pinyin_syllable_spacing,
+)
 
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -113,6 +117,33 @@ def print_repair_result(result_name: str, store: UserLexiconStore, result: dict[
         print(f"{key}={value}")
 
 
+def collect_import_normalization_examples(
+    payload: dict[str, object],
+    *,
+    limit: int = 5,
+) -> list[str]:
+    examples: list[str] = []
+    phrase_entries = payload.get("phrase_entries") or []
+    if not isinstance(phrase_entries, list):
+        return examples
+
+    for raw_entry in phrase_entries:
+        if not isinstance(raw_entry, dict):
+            continue
+        raw_numeric = str(raw_entry.get("numeric_pinyin") or "")
+        normalized_numeric = normalize_numeric_pinyin_syllable_spacing(raw_numeric)
+        raw_trimmed = " ".join(raw_numeric.split())
+        if not normalized_numeric or normalized_numeric == raw_trimmed:
+            continue
+        phrase = str(raw_entry.get("phrase") or "").strip()
+        examples.append(
+            f"phrase={phrase} raw_numeric_pinyin={raw_trimmed} normalized_numeric_pinyin={normalized_numeric}"
+        )
+        if len(examples) >= limit:
+            break
+    return examples
+
+
 def print_phrase_rows(store: UserLexiconStore, term: str, use_like: bool, limit: int) -> None:
     rows = store.list_phrase_entries(term, use_like=use_like, limit=limit)
     print_user_lexicon_db(store.db_path)
@@ -203,8 +234,12 @@ def main() -> None:
         return
     if args.command == "import":
         input_path = Path(args.input).resolve()
-        result = store.import_file(
-            input_path,
+        payload = json.loads(input_path.read_text(encoding="utf-8"))
+        if not isinstance(payload, dict):
+            raise ValueError("导入文件格式无效：顶层必须是 JSON object")
+        normalized_examples = collect_import_normalization_examples(payload)
+        result = store.import_payload(
+            payload,
             replace_existing=args.replace_existing,
             include_frequency=not args.no_frequency,
         )
@@ -214,6 +249,9 @@ def main() -> None:
         print(f"include_frequency={not args.no_frequency}")
         print(f"imported_user_phrase_entries={result['phrase_entries']}")
         print(f"imported_persisted_reorder_entries={result['candidate_frequency']}")
+        print(f"normalized_numeric_pinyin_entries={len(normalized_examples)}")
+        for index, example in enumerate(normalized_examples, start=1):
+            print(f"normalized_numeric_pinyin_example_{index}={example}")
         return
     if args.command == "delete":
         deleted = store.delete_phrase(args.phrase)
