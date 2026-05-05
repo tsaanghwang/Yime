@@ -1,0 +1,678 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>yime.db_manager API documentation</title>
+<meta name="description" content="">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>yime.db_manager</code></h1>
+</header>
+<section id="section-intro">
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="yime.db_manager.数据库初始化器"><code class="flex name class">
+<span>class <span class="ident">数据库初始化器</span></span>
+<span>(</span><span>数据库路径: str = None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class 数据库初始化器:
+    &#34;&#34;&#34;初始化数据库的入口类&#34;&#34;&#34;
+    def __init__(self, 数据库路径: str = None):
+        self.数据库路径 = Path(数据库路径) if 数据库路径 else Path(__file__).parent / &#34;pinyin_hanzi.db&#34;
+
+    def 初始化数据库(self) -&gt; None:
+        &#34;&#34;&#34;执行完整的数据库初始化流程&#34;&#34;&#34;
+        try:
+            print(f&#34;已创建/验证表结构: {str(self.数据库路径)}&#34;)
+
+            with 数据库管理器(str(self.数据库路径)) as 连接:
+                表管理器.创建表(连接)
+                logger.info(&#34;数据库初始化完成&#34;)
+        except Exception as e:
+            logger.error(f&#34;数据库初始化失败: {e}&#34;)
+            raise</code></pre>
+</details>
+<div class="desc"><p>初始化数据库的入口类</p></div>
+<h3>Methods</h3>
+<dl>
+<dt id="yime.db_manager.数据库初始化器.初始化数据库"><code class="name flex">
+<span>def <span class="ident">初始化数据库</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def 初始化数据库(self) -&gt; None:
+    &#34;&#34;&#34;执行完整的数据库初始化流程&#34;&#34;&#34;
+    try:
+        print(f&#34;已创建/验证表结构: {str(self.数据库路径)}&#34;)
+
+        with 数据库管理器(str(self.数据库路径)) as 连接:
+            表管理器.创建表(连接)
+            logger.info(&#34;数据库初始化完成&#34;)
+    except Exception as e:
+        logger.error(f&#34;数据库初始化失败: {e}&#34;)
+        raise</code></pre>
+</details>
+<div class="desc"><p>执行完整的数据库初始化流程</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="yime.db_manager.数据库管理器"><code class="flex name class">
+<span>class <span class="ident">数据库管理器</span></span>
+<span>(</span><span>数据库路径: str)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class 数据库管理器:
+    &#34;&#34;&#34;封装数据库连接和基本操作&#34;&#34;&#34;
+    def __init__(self, 数据库路径: str):
+        self.数据库路径 = Path(数据库路径)
+
+    def __enter__(self):
+        self.连接 = sqlite3.connect(str(self.数据库路径))
+        self.连接.execute(&#34;PRAGMA journal_mode=WAL&#34;)
+        self.连接.isolation_level = None
+        return self.连接
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if exc_type is None:
+            self.连接.commit()
+        self.连接.close()</code></pre>
+</details>
+<div class="desc"><p>封装数据库连接和基本操作</p></div>
+</dd>
+<dt id="yime.db_manager.表管理器"><code class="flex name class">
+<span>class <span class="ident">表管理器</span></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class 表管理器:
+    &#34;&#34;&#34;管理所有数据库表结构和索引&#34;&#34;&#34;
+    @staticmethod
+    def 创建表(连接: sqlite3.Connection) -&gt; None:
+        &#34;&#34;&#34;创建所有必要的数据库表（使用双引号保护标识符以避免解析问题）&#34;&#34;&#34;
+        游标 = 连接.cursor()
+
+        # 拼音相关表
+        表结构 = {
+            &#39;汉字拼音初始数据&#39;: &#39;&#39;&#39;
+                CREATE TABLE IF NOT EXISTS &#34;汉字拼音初始数据&#34; (
+                    &#34;汉字&#34; TEXT NOT NULL,
+                    &#34;拼音&#34; TEXT NOT NULL,
+                    &#34;频率&#34; FLOAT DEFAULT 1.0,
+                    &#34;常用读音&#34; BOOLEAN DEFAULT 0,
+                    &#34;来源&#34; TEXT,
+                    PRIMARY KEY (&#34;汉字&#34;, &#34;拼音&#34;)
+                )
+            &#39;&#39;&#39;,
+            &#39;拼音映射关系&#39;: &#39;&#39;&#39;
+                CREATE TABLE IF NOT EXISTS &#34;拼音映射关系&#34; (
+                    &#34;映射编号&#34; INTEGER PRIMARY KEY AUTOINCREMENT,
+                    &#34;原拼音类型&#34; TEXT NOT NULL,
+                    &#34;原拼音&#34; TEXT NOT NULL,
+                    &#34;目标拼音类型&#34; TEXT NOT NULL,
+                    &#34;目标拼音&#34; TEXT NOT NULL,
+                    &#34;数据来源&#34; TEXT,
+                    &#34;版本号&#34; TEXT,
+                    &#34;备注&#34; TEXT,
+                    &#34;创建时间&#34; TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    UNIQUE(&#34;原拼音类型&#34;, &#34;原拼音&#34;, &#34;目标拼音类型&#34;, &#34;目标拼音&#34;, &#34;数据来源&#34;)
+                )
+            &#39;&#39;&#39;,
+            &#39;音元拼音&#39;: &#39;&#39;&#39;
+                CREATE TABLE IF NOT EXISTS &#34;音元拼音&#34; (
+                    &#34;编号&#34; INTEGER PRIMARY KEY AUTOINCREMENT,
+                    &#34;全拼&#34; TEXT NOT NULL UNIQUE,
+                    &#34;简拼&#34; TEXT UNIQUE,
+                    &#34;首音&#34; TEXT,
+                    &#34;干音&#34; TEXT NOT NULL,
+                    &#34;呼音&#34; TEXT,
+                    &#34;主音&#34; TEXT,
+                    &#34;末音&#34; TEXT,
+                    &#34;间音&#34; TEXT,
+                    &#34;韵音&#34; TEXT,
+                    &#34;映射编号&#34; INTEGER REFERENCES &#34;拼音映射关系&#34;(&#34;映射编号&#34;) ON DELETE CASCADE,
+                    &#34;最近更新&#34; TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            &#39;&#39;&#39;,
+            &#39;数字标调拼音&#39;: &#39;&#39;&#39;
+                CREATE TABLE IF NOT EXISTS &#34;数字标调拼音&#34; (
+                    &#34;编号&#34; INTEGER PRIMARY KEY AUTOINCREMENT,
+                    &#34;全拼&#34; TEXT NOT NULL UNIQUE,
+                    &#34;声母&#34; TEXT,
+                    &#34;韵母&#34; TEXT NOT NULL,
+                    &#34;声调&#34; INTEGER DEFAULT 1,
+                    &#34;映射编号&#34; INTEGER REFERENCES &#34;拼音映射关系&#34;(&#34;映射编号&#34;),
+                    &#34;最近更新&#34; TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    UNIQUE (&#34;全拼&#34;, &#34;声母&#34;, &#34;韵母&#34;, &#34;声调&#34;)
+                )
+            &#39;&#39;&#39;,
+            &#39;拼音映射&#39;: &#39;&#39;&#39;
+                CREATE TABLE IF NOT EXISTS &#34;拼音映射&#34; (
+                    &#34;编号&#34; INTEGER PRIMARY KEY AUTOINCREMENT,
+                    &#34;数字标调拼音&#34; TEXT NOT NULL UNIQUE,
+                    &#34;音元拼音&#34; TEXT,
+                    &#34;标准拼音&#34; TEXT,
+                    &#34;注音符号&#34; TEXT,
+                    &#34;最近更新&#34; TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            &#39;&#39;&#39;,
+            # 汉字相关表
+            &#39;汉字&#39;: &#39;&#39;&#39;
+                CREATE TABLE IF NOT EXISTS &#34;汉字&#34; (
+                    &#34;编号&#34; INTEGER PRIMARY KEY,
+                    &#34;字符&#34; TEXT NOT NULL UNIQUE,
+                    &#34;Unicode码点&#34; TEXT NOT NULL,
+                    &#34;大写Unicode&#34; TEXT GENERATED ALWAYS AS (UPPER(&#34;Unicode码点&#34;)) STORED,
+                    &#34;画数&#34; INTEGER,
+                    &#34;部首&#34; TEXT,
+                    &#34;常用字&#34; BOOLEAN DEFAULT 1,
+                    &#34;最近更新&#34; TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            &#39;&#39;&#39;,
+            &#39;汉字音元拼音映射&#39;: &#39;&#39;&#39;
+                CREATE TABLE IF NOT EXISTS &#34;汉字音元拼音映射&#34; (
+                    &#34;汉字编号&#34; INTEGER REFERENCES &#34;汉字&#34;(&#34;编号&#34;),
+                    &#34;音元拼音编号&#34; INTEGER REFERENCES &#34;音元拼音&#34;(&#34;编号&#34;),
+                    &#34;频率&#34; FLOAT DEFAULT 1.0,
+                    &#34;常用读音&#34; BOOLEAN DEFAULT 0,
+                    PRIMARY KEY (&#34;汉字编号&#34;, &#34;音元拼音编号&#34;)
+                )
+            &#39;&#39;&#39;,
+            &#39;汉字数字标调拼音映射&#39;: &#39;&#39;&#39;
+                CREATE TABLE IF NOT EXISTS &#34;汉字数字标调拼音映射&#34; (
+                    &#34;汉字编号&#34; INTEGER REFERENCES &#34;汉字&#34;(&#34;编号&#34;),
+                    &#34;数字标调拼音编号&#34; INTEGER REFERENCES &#34;数字标调拼音&#34;(&#34;编号&#34;),
+                    &#34;频率&#34; FLOAT DEFAULT 1.0,
+                    &#34;常用读音&#34; BOOLEAN DEFAULT 0,
+                    PRIMARY KEY (&#34;汉字编号&#34;, &#34;数字标调拼音编号&#34;)
+                )
+            &#39;&#39;&#39;,
+            &#39;汉字频率&#39;: &#39;&#39;&#39;
+                CREATE TABLE IF NOT EXISTS &#34;汉字频率&#34; (
+                    &#34;汉字编号&#34; INTEGER PRIMARY KEY REFERENCES &#34;汉字&#34;(&#34;编号&#34;),
+                    &#34;绝对频率&#34; INTEGER,
+                    &#34;相对频率&#34; FLOAT,
+                    &#34;语料来源&#34; TEXT,
+                    &#34;最近更新&#34; TIMESTAMP
+                )
+            &#39;&#39;&#39;,
+            &#39;词汇&#39;: &#39;&#39;&#39;
+                CREATE TABLE IF NOT EXISTS &#34;词汇&#34; (
+                    &#34;编号&#34; INTEGER PRIMARY KEY,
+                    &#34;词语&#34; TEXT NOT NULL,
+                    &#34;音元拼音&#34; TEXT NOT NULL,
+                    &#34;频率&#34; FLOAT,
+                    &#34;长度&#34; INTEGER,
+                    &#34;常用词语&#34; BOOLEAN DEFAULT 1,
+                    &#34;最近更新&#34; TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            &#39;&#39;&#39;,
+            &#39;汉字标准拼音视图&#39;: &#39;&#39;&#39;
+                CREATE VIEW IF NOT EXISTS 汉字标准拼音视图 AS
+                SELECT
+                    汉字.编号 AS 汉字编号,
+                    汉字.字符 AS 汉字,
+                    数字标调拼音.全拼 AS 标准拼音,
+                    数字标调拼音.声调 AS 声调
+                FROM 汉字
+                JOIN 汉字数字标调拼音映射 ON 汉字.编号 = 汉字数字标调拼音映射.汉字编号
+                JOIN 数字标调拼音 ON 汉字数字标调拼音映射.数字标调拼音编号 = 数字标调拼音.编号
+                WHERE 汉字数字标调拼音映射.常用读音 = 1
+            &#39;&#39;&#39;,
+            &#39;多音字视图&#39;: &#39;&#39;&#39;
+                CREATE VIEW IF NOT EXISTS 多音字视图 AS
+                SELECT
+                    汉字.字符 AS 汉字,
+                    GROUP_CONCAT(数字标调拼音.全拼, &#39;, &#39;) AS 所有读音
+                FROM 汉字
+                JOIN 汉字数字标调拼音映射 ON 汉字.编号 = 汉字数字标调拼音映射.汉字编号
+                JOIN 数字标调拼音 ON 汉字数字标调拼音映射.数字标调拼音编号 = 数字标调拼音.编号
+                GROUP BY 汉字.编号
+                HAVING COUNT(*) &gt; 1
+            &#39;&#39;&#39;,
+            &#39;汉字音元拼音视图&#39;: &#39;&#39;&#39;
+                CREATE VIEW IF NOT EXISTS 汉字音元拼音视图 AS
+                SELECT
+                    汉字.编号 AS 汉字编号,
+                    汉字.字符 AS 汉字,
+                    音元拼音.全拼 AS 音元拼音,
+                    音元拼音.简拼 AS 简拼
+                FROM 汉字
+                JOIN 汉字音元拼音映射 ON 汉字.编号 = 汉字音元拼音映射.汉字编号
+                JOIN 音元拼音 ON 汉字音元拼音映射.音元拼音编号 = 音元拼音.编号
+                WHERE 汉字音元拼音映射.常用读音 = 1
+            &#39;&#39;&#39;,
+            &#39;汉字拼音映射视图&#39;: &#39;&#39;&#39;
+                CREATE VIEW IF NOT EXISTS 汉字拼音映射视图 AS
+                SELECT
+                    h.编号 AS 汉字编号,
+                    h.字符 AS 汉字,
+                    p.编号 AS 拼音编号,
+                    p.全拼 AS 拼音,
+                    p.声调,
+                    m.频率,
+                    m.常用读音
+                FROM 汉字 h
+                JOIN 汉字数字标调拼音映射 m ON h.编号 = m.汉字编号
+                JOIN 数字标调拼音 p ON m.数字标调拼音编号 = p.编号
+            &#39;&#39;&#39;
+        }
+
+        # 修改 表管理器.创建表() 方法中的删除逻辑
+        for 表名, 创建语句 in 表结构.items():
+            # 直接执行创建语句（语句中已经使用了 IF NOT EXISTS）
+            # 如果未来需要变更表结构，应使用迁移脚本而不是在运行时 drop/recreate
+            游标.executescript(创建语句)
+
+        # 创建索引（用双引号保护索引和表列）
+        索引列表 = [
+            # 拼音相关索引
+            (&#39;索引_拼音映射_标准拼音&#39;, &#39;&#34;拼音映射&#34;(&#34;标准拼音&#34;)&#39;),
+            (&#39;索引_拼音映射_注音符号&#39;, &#39;&#34;拼音映射&#34;(&#34;注音符号&#34;)&#39;),
+            (&#39;索引_拼音映射关系_源类型拼音&#39;, &#39;&#34;拼音映射关系&#34;(&#34;原拼音类型&#34;, &#34;原拼音&#34;)&#39;),
+            (&#39;索引_拼音映射关系_目标类型拼音&#39;, &#39;&#34;拼音映射关系&#34;(&#34;目标拼音类型&#34;, &#34;目标拼音&#34;)&#39;),
+            (&#39;索引_拼音映射关系_双向映射&#39;, &#39;&#34;拼音映射关系&#34;(&#34;原拼音类型&#34;, &#34;原拼音&#34;, &#34;目标拼音类型&#34;, &#34;目标拼音&#34;)&#39;),
+
+            # 音元拼音表新增索引（全拼列索引可保留）
+            (&#39;索引_音元拼音_全拼&#39;, &#39;&#34;音元拼音&#34;(&#34;全拼&#34;)&#39;),
+             (&#39;索引_音元拼音_干音&#39;, &#39;&#34;音元拼音&#34;(&#34;干音&#34;)&#39;),  # 高频查询字段
+             (&#39;索引_音元拼音_映射编号&#39;, &#39;&#34;音元拼音&#34;(&#34;映射编号&#34;)&#39;),  # 新增外键索引
+             (&#39;索引_音元拼音_复合查询&#39;, &#39;&#34;音元拼音&#34;(&#34;干音&#34;, &#34;呼音&#34;, &#34;主音&#34;)&#39;),  # 复合查询优化
+             (&#39;索引_音元拼音_全拼映射&#39;, &#39;&#34;音元拼音&#34;(&#34;全拼&#34;, &#34;映射编号&#34;)&#39;),  # 联合查询优化
+
+            # 汉字相关索引
+            (&#39;索引_汉字拼音初始数据_汉字&#39;, &#39;&#34;汉字拼音初始数据&#34;(&#34;汉字&#34;)&#39;),
+            (&#39;索引_汉字拼音初始数据_拼音&#39;, &#39;&#34;汉字拼音初始数据&#34;(&#34;拼音&#34;)&#39;),
+            (&#39;索引_汉字_字符&#39;, &#39;&#34;汉字&#34;(&#34;字符&#34;)&#39;),
+            (&#39;索引_汉字音元拼音映射_汉字&#39;, &#39;&#34;汉字音元拼音映射&#34;(&#34;汉字编号&#34;)&#39;),
+            (&#39;索引_汉字音元拼音映射_音元拼音&#39;, &#39;&#34;汉字音元拼音映射&#34;(&#34;音元拼音编号&#34;)&#39;),
+            (&#39;索引_汉字数字标调拼音映射_汉字&#39;, &#39;&#34;汉字数字标调拼音映射&#34;(&#34;汉字编号&#34;)&#39;),
+            (&#39;索引_汉字数字标调拼音映射_数字标调拼音&#39;, &#39;&#34;汉字数字标调拼音映射&#34;(&#34;数字标调拼音编号&#34;)&#39;),
+            (&#39;索引_词汇_词语&#39;, &#39;&#34;词汇&#34;(&#34;词语&#34;)&#39;),
+            (&#39;索引_词汇_音元拼音&#39;, &#39;&#34;词汇&#34;(&#34;音元拼音&#34;)&#39;)
+        ]
+
+        for 索引名, 列名 in 索引列表:
+            游标.execute(f&#39;CREATE INDEX IF NOT EXISTS &#34;{索引名}&#34; ON {列名}&#39;)
+
+        连接.commit()
+        logger.info(&#34;数据库表结构创建/验证完成&#34;)
+
+    @staticmethod
+    def 检查索引存在(连接: sqlite3.Connection, 索引名: str) -&gt; bool:
+        &#34;&#34;&#34;检查指定索引是否存在（索引名请传不带额外引号的纯名）&#34;&#34;&#34;
+        游标 = 连接.cursor()
+        # 使用参数化查询避免 SQL 注入/拼接错误
+        游标.execute(&#34;&#34;&#34;
+            SELECT name FROM sqlite_master
+            WHERE type=&#39;index&#39; AND name = ?
+        &#34;&#34;&#34;, (索引名,))
+        return 游标.fetchone() is not None
+
+    @staticmethod
+    def 获取连接() -&gt; sqlite3.Connection:
+        conn = sqlite3.connect(str(DB_PATH))
+        conn.row_factory = sqlite3.Row
+        # 启用 WAL 与外键，作为默认安全设置
+        try:
+            conn.execute(&#34;PRAGMA journal_mode = WAL;&#34;)
+        except Exception:
+            pass
+        conn.execute(&#34;PRAGMA foreign_keys = ON;&#34;)
+        return conn</code></pre>
+</details>
+<div class="desc"><p>管理所有数据库表结构和索引</p></div>
+<h3>Static methods</h3>
+<dl>
+<dt id="yime.db_manager.表管理器.创建表"><code class="name flex">
+<span>def <span class="ident">创建表</span></span>(<span>连接: sqlite3.Connection) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@staticmethod
+def 创建表(连接: sqlite3.Connection) -&gt; None:
+    &#34;&#34;&#34;创建所有必要的数据库表（使用双引号保护标识符以避免解析问题）&#34;&#34;&#34;
+    游标 = 连接.cursor()
+
+    # 拼音相关表
+    表结构 = {
+        &#39;汉字拼音初始数据&#39;: &#39;&#39;&#39;
+            CREATE TABLE IF NOT EXISTS &#34;汉字拼音初始数据&#34; (
+                &#34;汉字&#34; TEXT NOT NULL,
+                &#34;拼音&#34; TEXT NOT NULL,
+                &#34;频率&#34; FLOAT DEFAULT 1.0,
+                &#34;常用读音&#34; BOOLEAN DEFAULT 0,
+                &#34;来源&#34; TEXT,
+                PRIMARY KEY (&#34;汉字&#34;, &#34;拼音&#34;)
+            )
+        &#39;&#39;&#39;,
+        &#39;拼音映射关系&#39;: &#39;&#39;&#39;
+            CREATE TABLE IF NOT EXISTS &#34;拼音映射关系&#34; (
+                &#34;映射编号&#34; INTEGER PRIMARY KEY AUTOINCREMENT,
+                &#34;原拼音类型&#34; TEXT NOT NULL,
+                &#34;原拼音&#34; TEXT NOT NULL,
+                &#34;目标拼音类型&#34; TEXT NOT NULL,
+                &#34;目标拼音&#34; TEXT NOT NULL,
+                &#34;数据来源&#34; TEXT,
+                &#34;版本号&#34; TEXT,
+                &#34;备注&#34; TEXT,
+                &#34;创建时间&#34; TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE(&#34;原拼音类型&#34;, &#34;原拼音&#34;, &#34;目标拼音类型&#34;, &#34;目标拼音&#34;, &#34;数据来源&#34;)
+            )
+        &#39;&#39;&#39;,
+        &#39;音元拼音&#39;: &#39;&#39;&#39;
+            CREATE TABLE IF NOT EXISTS &#34;音元拼音&#34; (
+                &#34;编号&#34; INTEGER PRIMARY KEY AUTOINCREMENT,
+                &#34;全拼&#34; TEXT NOT NULL UNIQUE,
+                &#34;简拼&#34; TEXT UNIQUE,
+                &#34;首音&#34; TEXT,
+                &#34;干音&#34; TEXT NOT NULL,
+                &#34;呼音&#34; TEXT,
+                &#34;主音&#34; TEXT,
+                &#34;末音&#34; TEXT,
+                &#34;间音&#34; TEXT,
+                &#34;韵音&#34; TEXT,
+                &#34;映射编号&#34; INTEGER REFERENCES &#34;拼音映射关系&#34;(&#34;映射编号&#34;) ON DELETE CASCADE,
+                &#34;最近更新&#34; TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        &#39;&#39;&#39;,
+        &#39;数字标调拼音&#39;: &#39;&#39;&#39;
+            CREATE TABLE IF NOT EXISTS &#34;数字标调拼音&#34; (
+                &#34;编号&#34; INTEGER PRIMARY KEY AUTOINCREMENT,
+                &#34;全拼&#34; TEXT NOT NULL UNIQUE,
+                &#34;声母&#34; TEXT,
+                &#34;韵母&#34; TEXT NOT NULL,
+                &#34;声调&#34; INTEGER DEFAULT 1,
+                &#34;映射编号&#34; INTEGER REFERENCES &#34;拼音映射关系&#34;(&#34;映射编号&#34;),
+                &#34;最近更新&#34; TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE (&#34;全拼&#34;, &#34;声母&#34;, &#34;韵母&#34;, &#34;声调&#34;)
+            )
+        &#39;&#39;&#39;,
+        &#39;拼音映射&#39;: &#39;&#39;&#39;
+            CREATE TABLE IF NOT EXISTS &#34;拼音映射&#34; (
+                &#34;编号&#34; INTEGER PRIMARY KEY AUTOINCREMENT,
+                &#34;数字标调拼音&#34; TEXT NOT NULL UNIQUE,
+                &#34;音元拼音&#34; TEXT,
+                &#34;标准拼音&#34; TEXT,
+                &#34;注音符号&#34; TEXT,
+                &#34;最近更新&#34; TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        &#39;&#39;&#39;,
+        # 汉字相关表
+        &#39;汉字&#39;: &#39;&#39;&#39;
+            CREATE TABLE IF NOT EXISTS &#34;汉字&#34; (
+                &#34;编号&#34; INTEGER PRIMARY KEY,
+                &#34;字符&#34; TEXT NOT NULL UNIQUE,
+                &#34;Unicode码点&#34; TEXT NOT NULL,
+                &#34;大写Unicode&#34; TEXT GENERATED ALWAYS AS (UPPER(&#34;Unicode码点&#34;)) STORED,
+                &#34;画数&#34; INTEGER,
+                &#34;部首&#34; TEXT,
+                &#34;常用字&#34; BOOLEAN DEFAULT 1,
+                &#34;最近更新&#34; TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        &#39;&#39;&#39;,
+        &#39;汉字音元拼音映射&#39;: &#39;&#39;&#39;
+            CREATE TABLE IF NOT EXISTS &#34;汉字音元拼音映射&#34; (
+                &#34;汉字编号&#34; INTEGER REFERENCES &#34;汉字&#34;(&#34;编号&#34;),
+                &#34;音元拼音编号&#34; INTEGER REFERENCES &#34;音元拼音&#34;(&#34;编号&#34;),
+                &#34;频率&#34; FLOAT DEFAULT 1.0,
+                &#34;常用读音&#34; BOOLEAN DEFAULT 0,
+                PRIMARY KEY (&#34;汉字编号&#34;, &#34;音元拼音编号&#34;)
+            )
+        &#39;&#39;&#39;,
+        &#39;汉字数字标调拼音映射&#39;: &#39;&#39;&#39;
+            CREATE TABLE IF NOT EXISTS &#34;汉字数字标调拼音映射&#34; (
+                &#34;汉字编号&#34; INTEGER REFERENCES &#34;汉字&#34;(&#34;编号&#34;),
+                &#34;数字标调拼音编号&#34; INTEGER REFERENCES &#34;数字标调拼音&#34;(&#34;编号&#34;),
+                &#34;频率&#34; FLOAT DEFAULT 1.0,
+                &#34;常用读音&#34; BOOLEAN DEFAULT 0,
+                PRIMARY KEY (&#34;汉字编号&#34;, &#34;数字标调拼音编号&#34;)
+            )
+        &#39;&#39;&#39;,
+        &#39;汉字频率&#39;: &#39;&#39;&#39;
+            CREATE TABLE IF NOT EXISTS &#34;汉字频率&#34; (
+                &#34;汉字编号&#34; INTEGER PRIMARY KEY REFERENCES &#34;汉字&#34;(&#34;编号&#34;),
+                &#34;绝对频率&#34; INTEGER,
+                &#34;相对频率&#34; FLOAT,
+                &#34;语料来源&#34; TEXT,
+                &#34;最近更新&#34; TIMESTAMP
+            )
+        &#39;&#39;&#39;,
+        &#39;词汇&#39;: &#39;&#39;&#39;
+            CREATE TABLE IF NOT EXISTS &#34;词汇&#34; (
+                &#34;编号&#34; INTEGER PRIMARY KEY,
+                &#34;词语&#34; TEXT NOT NULL,
+                &#34;音元拼音&#34; TEXT NOT NULL,
+                &#34;频率&#34; FLOAT,
+                &#34;长度&#34; INTEGER,
+                &#34;常用词语&#34; BOOLEAN DEFAULT 1,
+                &#34;最近更新&#34; TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        &#39;&#39;&#39;,
+        &#39;汉字标准拼音视图&#39;: &#39;&#39;&#39;
+            CREATE VIEW IF NOT EXISTS 汉字标准拼音视图 AS
+            SELECT
+                汉字.编号 AS 汉字编号,
+                汉字.字符 AS 汉字,
+                数字标调拼音.全拼 AS 标准拼音,
+                数字标调拼音.声调 AS 声调
+            FROM 汉字
+            JOIN 汉字数字标调拼音映射 ON 汉字.编号 = 汉字数字标调拼音映射.汉字编号
+            JOIN 数字标调拼音 ON 汉字数字标调拼音映射.数字标调拼音编号 = 数字标调拼音.编号
+            WHERE 汉字数字标调拼音映射.常用读音 = 1
+        &#39;&#39;&#39;,
+        &#39;多音字视图&#39;: &#39;&#39;&#39;
+            CREATE VIEW IF NOT EXISTS 多音字视图 AS
+            SELECT
+                汉字.字符 AS 汉字,
+                GROUP_CONCAT(数字标调拼音.全拼, &#39;, &#39;) AS 所有读音
+            FROM 汉字
+            JOIN 汉字数字标调拼音映射 ON 汉字.编号 = 汉字数字标调拼音映射.汉字编号
+            JOIN 数字标调拼音 ON 汉字数字标调拼音映射.数字标调拼音编号 = 数字标调拼音.编号
+            GROUP BY 汉字.编号
+            HAVING COUNT(*) &gt; 1
+        &#39;&#39;&#39;,
+        &#39;汉字音元拼音视图&#39;: &#39;&#39;&#39;
+            CREATE VIEW IF NOT EXISTS 汉字音元拼音视图 AS
+            SELECT
+                汉字.编号 AS 汉字编号,
+                汉字.字符 AS 汉字,
+                音元拼音.全拼 AS 音元拼音,
+                音元拼音.简拼 AS 简拼
+            FROM 汉字
+            JOIN 汉字音元拼音映射 ON 汉字.编号 = 汉字音元拼音映射.汉字编号
+            JOIN 音元拼音 ON 汉字音元拼音映射.音元拼音编号 = 音元拼音.编号
+            WHERE 汉字音元拼音映射.常用读音 = 1
+        &#39;&#39;&#39;,
+        &#39;汉字拼音映射视图&#39;: &#39;&#39;&#39;
+            CREATE VIEW IF NOT EXISTS 汉字拼音映射视图 AS
+            SELECT
+                h.编号 AS 汉字编号,
+                h.字符 AS 汉字,
+                p.编号 AS 拼音编号,
+                p.全拼 AS 拼音,
+                p.声调,
+                m.频率,
+                m.常用读音
+            FROM 汉字 h
+            JOIN 汉字数字标调拼音映射 m ON h.编号 = m.汉字编号
+            JOIN 数字标调拼音 p ON m.数字标调拼音编号 = p.编号
+        &#39;&#39;&#39;
+    }
+
+    # 修改 表管理器.创建表() 方法中的删除逻辑
+    for 表名, 创建语句 in 表结构.items():
+        # 直接执行创建语句（语句中已经使用了 IF NOT EXISTS）
+        # 如果未来需要变更表结构，应使用迁移脚本而不是在运行时 drop/recreate
+        游标.executescript(创建语句)
+
+    # 创建索引（用双引号保护索引和表列）
+    索引列表 = [
+        # 拼音相关索引
+        (&#39;索引_拼音映射_标准拼音&#39;, &#39;&#34;拼音映射&#34;(&#34;标准拼音&#34;)&#39;),
+        (&#39;索引_拼音映射_注音符号&#39;, &#39;&#34;拼音映射&#34;(&#34;注音符号&#34;)&#39;),
+        (&#39;索引_拼音映射关系_源类型拼音&#39;, &#39;&#34;拼音映射关系&#34;(&#34;原拼音类型&#34;, &#34;原拼音&#34;)&#39;),
+        (&#39;索引_拼音映射关系_目标类型拼音&#39;, &#39;&#34;拼音映射关系&#34;(&#34;目标拼音类型&#34;, &#34;目标拼音&#34;)&#39;),
+        (&#39;索引_拼音映射关系_双向映射&#39;, &#39;&#34;拼音映射关系&#34;(&#34;原拼音类型&#34;, &#34;原拼音&#34;, &#34;目标拼音类型&#34;, &#34;目标拼音&#34;)&#39;),
+
+        # 音元拼音表新增索引（全拼列索引可保留）
+        (&#39;索引_音元拼音_全拼&#39;, &#39;&#34;音元拼音&#34;(&#34;全拼&#34;)&#39;),
+         (&#39;索引_音元拼音_干音&#39;, &#39;&#34;音元拼音&#34;(&#34;干音&#34;)&#39;),  # 高频查询字段
+         (&#39;索引_音元拼音_映射编号&#39;, &#39;&#34;音元拼音&#34;(&#34;映射编号&#34;)&#39;),  # 新增外键索引
+         (&#39;索引_音元拼音_复合查询&#39;, &#39;&#34;音元拼音&#34;(&#34;干音&#34;, &#34;呼音&#34;, &#34;主音&#34;)&#39;),  # 复合查询优化
+         (&#39;索引_音元拼音_全拼映射&#39;, &#39;&#34;音元拼音&#34;(&#34;全拼&#34;, &#34;映射编号&#34;)&#39;),  # 联合查询优化
+
+        # 汉字相关索引
+        (&#39;索引_汉字拼音初始数据_汉字&#39;, &#39;&#34;汉字拼音初始数据&#34;(&#34;汉字&#34;)&#39;),
+        (&#39;索引_汉字拼音初始数据_拼音&#39;, &#39;&#34;汉字拼音初始数据&#34;(&#34;拼音&#34;)&#39;),
+        (&#39;索引_汉字_字符&#39;, &#39;&#34;汉字&#34;(&#34;字符&#34;)&#39;),
+        (&#39;索引_汉字音元拼音映射_汉字&#39;, &#39;&#34;汉字音元拼音映射&#34;(&#34;汉字编号&#34;)&#39;),
+        (&#39;索引_汉字音元拼音映射_音元拼音&#39;, &#39;&#34;汉字音元拼音映射&#34;(&#34;音元拼音编号&#34;)&#39;),
+        (&#39;索引_汉字数字标调拼音映射_汉字&#39;, &#39;&#34;汉字数字标调拼音映射&#34;(&#34;汉字编号&#34;)&#39;),
+        (&#39;索引_汉字数字标调拼音映射_数字标调拼音&#39;, &#39;&#34;汉字数字标调拼音映射&#34;(&#34;数字标调拼音编号&#34;)&#39;),
+        (&#39;索引_词汇_词语&#39;, &#39;&#34;词汇&#34;(&#34;词语&#34;)&#39;),
+        (&#39;索引_词汇_音元拼音&#39;, &#39;&#34;词汇&#34;(&#34;音元拼音&#34;)&#39;)
+    ]
+
+    for 索引名, 列名 in 索引列表:
+        游标.execute(f&#39;CREATE INDEX IF NOT EXISTS &#34;{索引名}&#34; ON {列名}&#39;)
+
+    连接.commit()
+    logger.info(&#34;数据库表结构创建/验证完成&#34;)</code></pre>
+</details>
+<div class="desc"><p>创建所有必要的数据库表（使用双引号保护标识符以避免解析问题）</p></div>
+</dd>
+<dt id="yime.db_manager.表管理器.检查索引存在"><code class="name flex">
+<span>def <span class="ident">检查索引存在</span></span>(<span>连接: sqlite3.Connection, 索引名: str) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@staticmethod
+def 检查索引存在(连接: sqlite3.Connection, 索引名: str) -&gt; bool:
+    &#34;&#34;&#34;检查指定索引是否存在（索引名请传不带额外引号的纯名）&#34;&#34;&#34;
+    游标 = 连接.cursor()
+    # 使用参数化查询避免 SQL 注入/拼接错误
+    游标.execute(&#34;&#34;&#34;
+        SELECT name FROM sqlite_master
+        WHERE type=&#39;index&#39; AND name = ?
+    &#34;&#34;&#34;, (索引名,))
+    return 游标.fetchone() is not None</code></pre>
+</details>
+<div class="desc"><p>检查指定索引是否存在（索引名请传不带额外引号的纯名）</p></div>
+</dd>
+<dt id="yime.db_manager.表管理器.获取连接"><code class="name flex">
+<span>def <span class="ident">获取连接</span></span>(<span>) ‑> sqlite3.Connection</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@staticmethod
+def 获取连接() -&gt; sqlite3.Connection:
+    conn = sqlite3.connect(str(DB_PATH))
+    conn.row_factory = sqlite3.Row
+    # 启用 WAL 与外键，作为默认安全设置
+    try:
+        conn.execute(&#34;PRAGMA journal_mode = WAL;&#34;)
+    except Exception:
+        pass
+    conn.execute(&#34;PRAGMA foreign_keys = ON;&#34;)
+    return conn</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="yime.db_manager.数据库初始化器" href="#yime.db_manager.数据库初始化器">数据库初始化器</a></code></h4>
+<ul class="">
+<li><code><a title="yime.db_manager.数据库初始化器.初始化数据库" href="#yime.db_manager.数据库初始化器.初始化数据库">初始化数据库</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="yime.db_manager.数据库管理器" href="#yime.db_manager.数据库管理器">数据库管理器</a></code></h4>
+</li>
+<li>
+<h4><code><a title="yime.db_manager.表管理器" href="#yime.db_manager.表管理器">表管理器</a></code></h4>
+<ul class="">
+<li><code><a title="yime.db_manager.表管理器.创建表" href="#yime.db_manager.表管理器.创建表">创建表</a></code></li>
+<li><code><a title="yime.db_manager.表管理器.检查索引存在" href="#yime.db_manager.表管理器.检查索引存在">检查索引存在</a></code></li>
+<li><code><a title="yime.db_manager.表管理器.获取连接" href="#yime.db_manager.表管理器.获取连接">获取连接</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

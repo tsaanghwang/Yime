@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>yime.import_duozi_into_prototype_tables API documentation</title>
+<meta name="description" content="">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>yime.import_duozi_into_prototype_tables</code></h1>
+</header>
+<section id="section-intro">
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="yime.import_duozi_into_prototype_tables.apply_schema"><code class="name flex">
+<span>def <span class="ident">apply_schema</span></span>(<span>conn: sqlite3.Connection) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def apply_schema(conn: sqlite3.Connection) -&gt; None:
+    conn.executescript(SCHEMA_PATH.read_text(encoding=&#34;utf-8&#34;))</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.import_duozi_into_prototype_tables.build_phrase_yime_code"><code class="name flex">
+<span>def <span class="ident">build_phrase_yime_code</span></span>(<span>phrase_pinyin: str, yime_by_pinyin: dict[str, str]) ‑> str | None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def build_phrase_yime_code(phrase_pinyin: str, yime_by_pinyin: dict[str, str]) -&gt; str | None:
+    syllable_codes: list[str] = []
+    for syllable in phrase_pinyin.split():
+        yime_code = yime_by_pinyin.get(syllable)
+        if yime_code is None:
+            return None
+
+        syllable_codes.append(yime_code)
+
+    return &#34;&#34;.join(syllable_codes)</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.import_duozi_into_prototype_tables.import_phrases_and_mappings"><code class="name flex">
+<span>def <span class="ident">import_phrases_and_mappings</span></span>(<span>conn: sqlite3.Connection,<br>source_rows: list[tuple[int, str, str, str, str, int, str | None, str]]) ‑> tuple[int, int]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def import_phrases_and_mappings(
+    conn: sqlite3.Connection,
+    source_rows: list[tuple[int, str, str, str, str, int, str | None, str]],
+) -&gt; tuple[int, int]:
+    numeric_pinyin_rows = conn.execute(&#39;SELECT id, pinyin_tone FROM numeric_pinyin_inventory&#39;).fetchall()
+    numeric_pinyin_by_text = {row[1]: row[0] for row in numeric_pinyin_rows}
+
+    sync_canonical_mapping_table(conn, WORKSPACE_ROOT)
+    yime_by_pinyin = load_canonical_code_map(WORKSPACE_ROOT)
+
+    missing_numeric_rows: list[tuple[str, str | None, str | None, int, int | None, int | None]] = []
+    seen_missing_numeric: set[str] = set()
+    phrase_rows_by_text: dict[str, tuple[str, str | None, float, int, int, int | None]] = {}
+    phrase_map_rows: list[tuple[int, str, int, str, str]] = []
+
+    for _, source_name, phrase, _, numeric_pinyin, reading_rank, comment, _ in source_rows:
+        for syllable in numeric_pinyin.split():
+            if syllable in numeric_pinyin_by_text or syllable in seen_missing_numeric:
+                continue
+            initial, final, tone_number = parse_numeric_pinyin_parts(syllable)
+            missing_numeric_rows.append((syllable, initial, final, tone_number, None, None))
+            seen_missing_numeric.add(syllable)
+        if phrase not in phrase_rows_by_text:
+            primary_yime_code = build_phrase_yime_code(numeric_pinyin, yime_by_pinyin)
+            stored_phrase_code = primary_yime_code or numeric_pinyin
+            phrase_rows_by_text[phrase] = (phrase, stored_phrase_code, 1.0, len(phrase), 1, None)
+
+    if missing_numeric_rows:
+        conn.executemany(
+            &#39;&#39;&#39;
+            INSERT OR IGNORE INTO numeric_pinyin_inventory (
+                pinyin_tone,
+                initial,
+                final,
+                tone_number,
+                mapping_id,
+                legacy_numeric_pinyin_id,
+                updated_at
+            ) VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+            &#39;&#39;&#39;,
+            missing_numeric_rows,
+        )
+        numeric_pinyin_rows = conn.execute(
+            &#39;SELECT id, pinyin_tone FROM numeric_pinyin_inventory&#39;
+        ).fetchall()
+        numeric_pinyin_by_text = {row[1]: row[0] for row in numeric_pinyin_rows}
+
+    phrase_rows = list(phrase_rows_by_text.values())
+
+    conn.execute(&#39;DELETE FROM phrase_inventory&#39;)
+    conn.executemany(
+        &#39;&#39;&#39;
+        INSERT INTO phrase_inventory (
+            phrase,
+            yime_code,
+            phrase_frequency,
+            phrase_length,
+            is_common_phrase,
+            legacy_phrase_id,
+            updated_at
+        ) VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+        &#39;&#39;&#39;,
+        phrase_rows,
+    )
+
+    phrase_id_by_text = {
+        row[1]: row[0]
+        for row in conn.execute(&#39;SELECT id, phrase FROM phrase_inventory&#39;)
+    }
+
+    conn.execute(&#39;DELETE FROM phrase_reading_preference&#39;)
+    preferred_rows = [
+        (phrase, preferred_pinyin_tone, reason)
+        for phrase, (preferred_pinyin_tone, reason) in PREFERRED_PHRASE_READINGS.items()
+        if phrase in phrase_id_by_text
+    ]
+    if preferred_rows:
+        conn.executemany(
+            &#39;&#39;&#39;
+            INSERT INTO phrase_reading_preference (
+                phrase,
+                preferred_pinyin_tone,
+                selection_reason,
+                updated_at
+            ) VALUES (?, ?, ?, CURRENT_TIMESTAMP)
+            &#39;&#39;&#39;,
+            preferred_rows,
+        )
+
+    conn.execute(&#39;DELETE FROM phrase_pinyin_map&#39;)
+
+    for _, source_name, phrase, _, numeric_pinyin, reading_rank, comment, _ in source_rows:
+        phrase_id = phrase_id_by_text[phrase]
+        phrase_map_rows.append((
+            phrase_id,
+            numeric_pinyin,
+            reading_rank,
+            source_name,
+            comment or &#39;source_pinyin.db.phrase_readings&#39;,
+        ))
+
+    conn.executemany(
+        &#39;&#39;&#39;
+        INSERT OR REPLACE INTO phrase_pinyin_map (phrase_id, pinyin_tone, reading_rank, source_file, source_note)
+        VALUES (?, ?, ?, ?, ?)
+        &#39;&#39;&#39;,
+        phrase_map_rows,
+    )
+
+    return len(phrase_rows), len(phrase_map_rows)</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.import_duozi_into_prototype_tables.load_source_phrase_rows"><code class="name flex">
+<span>def <span class="ident">load_source_phrase_rows</span></span>(<span>path: Path) ‑> tuple[list[tuple[str, str, str]], list[tuple[int, str, str, str, str, int, str | None, str]]]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def load_source_phrase_rows(path: Path) -&gt; tuple[list[tuple[str, str, str]], list[tuple[int, str, str, str, str, int, str | None, str]]]:
+    with sqlite3.connect(path) as source_conn:
+        source_cur = source_conn.cursor()
+        source_files = source_cur.execute(
+            &#39;&#39;&#39;
+            SELECT source_name, source_kind, source_path
+            FROM source_files
+            WHERE source_kind = &#39;phrase&#39;
+            ORDER BY source_name
+            &#39;&#39;&#39;
+        ).fetchall()
+        rows = source_cur.execute(
+            &#39;&#39;&#39;
+            SELECT id, source_name, phrase, marked_pinyin, numeric_pinyin,
+                   reading_rank, comment, raw_line
+            FROM phrase_readings
+            ORDER BY id
+            &#39;&#39;&#39;
+        ).fetchall()
+    return source_files, rows</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.import_duozi_into_prototype_tables.main"><code class="name flex">
+<span>def <span class="ident">main</span></span>(<span>) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def main() -&gt; None:
+    source_files, source_rows = load_source_phrase_rows(SOURCE_DB_PATH)
+    conn = sqlite3.connect(DB_PATH)
+    try:
+        conn.execute(&#39;PRAGMA foreign_keys = ON&#39;)
+        conn.execute(&#39;DROP TABLE IF EXISTS phrase_pinyin_map&#39;)
+        conn.execute(&#39;DROP TABLE IF EXISTS phrase_inventory&#39;)
+        conn.execute(&#39;DROP TABLE IF EXISTS pinyin_yime_code&#39;)
+        conn.execute(&#39;DROP TABLE IF EXISTS mapping_yime_code&#39;)
+        apply_schema(conn)
+        copied_rows = sync_source_phrase_table(conn, source_files, source_rows)
+        phrase_count, phrase_map_count = import_phrases_and_mappings(conn, source_rows)
+        write_import_metadata(conn, phrase_count, phrase_map_count)
+        conn.commit()
+    finally:
+        conn.close()
+
+    print(f&#34;copied phrase_readings rows: {copied_rows}&#34;)
+    print(f&#34;imported phrases: {phrase_count}&#34;)
+    print(f&#34;phrase pinyin mappings: {phrase_map_count}&#34;)</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.import_duozi_into_prototype_tables.parse_numeric_pinyin_parts"><code class="name flex">
+<span>def <span class="ident">parse_numeric_pinyin_parts</span></span>(<span>pinyin_tone: str) ‑> tuple[str | None, str | None, int]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def parse_numeric_pinyin_parts(pinyin_tone: str) -&gt; tuple[str | None, str | None, int]:
+    tone_number = int(pinyin_tone[-1]) if pinyin_tone and pinyin_tone[-1].isdigit() else 5
+    final = pinyin_tone[:-1] if pinyin_tone and pinyin_tone[-1].isdigit() else pinyin_tone
+    return None, final or None, tone_number</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.import_duozi_into_prototype_tables.sync_source_phrase_table"><code class="name flex">
+<span>def <span class="ident">sync_source_phrase_table</span></span>(<span>conn: sqlite3.Connection,<br>source_files: list[tuple[str, str, str]],<br>source_rows: list[tuple[int, str, str, str, str, int, str | None, str]]) ‑> int</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def sync_source_phrase_table(
+    conn: sqlite3.Connection,
+    source_files: list[tuple[str, str, str]],
+    source_rows: list[tuple[int, str, str, str, str, int, str | None, str]],
+) -&gt; int:
+    conn.execute(&#34;DELETE FROM phrase_readings&#34;)
+    conn.execute(&#34;DELETE FROM source_files WHERE source_kind = &#39;phrase&#39;&#34;)
+    conn.executemany(
+        &#39;&#39;&#39;
+        INSERT INTO source_files (source_name, source_kind, source_path)
+        VALUES (?, ?, ?)
+        &#39;&#39;&#39;,
+        source_files,
+    )
+    conn.executemany(
+        &#39;&#39;&#39;
+        INSERT INTO phrase_readings (
+            id, source_name, phrase, marked_pinyin, numeric_pinyin,
+            reading_rank, comment, raw_line
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        &#39;&#39;&#39;,
+        source_rows,
+    )
+    return len(source_rows)</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.import_duozi_into_prototype_tables.write_import_metadata"><code class="name flex">
+<span>def <span class="ident">write_import_metadata</span></span>(<span>conn: sqlite3.Connection, phrase_count: int, phrase_map_count: int) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def write_import_metadata(conn: sqlite3.Connection, phrase_count: int, phrase_map_count: int) -&gt; None:
+    rows = [
+        (&#34;prototype_duozi_import_source&#34;, str(SOURCE_DB_PATH), &#34;词语拼音来源数据库（phrase_readings）&#34;),
+        (&#34;prototype_duozi_phrase_rows&#34;, str(phrase_count), &#34;本次导入覆盖的词语读音行数&#34;),
+        (&#34;prototype_duozi_phrase_map_rows&#34;, str(phrase_map_count), &#34;本次导入的 phrase_pinyin_map 行数&#34;),
+        (&#34;prototype_duozi_yime_source&#34;, &#34;pinyin_yime_code&#34;, &#34;词语导入时使用 canonical 拼音映射面拼装 yime_code，不再依赖 mapping_id&#34;),
+        (&#34;prototype_duozi_phrase_preference_strategy&#34;, &#34;explicit_phrase_reading_preference&#34;, &#34;歧义词按显式默认读音表决定 runtime 默认读音&#34;),
+    ]
+    conn.executemany(
+        &#39;&#39;&#39;
+        INSERT OR REPLACE INTO prototype_metadata (key, value, note, updated_at)
+        VALUES (?, ?, ?, CURRENT_TIMESTAMP)
+        &#39;&#39;&#39;,
+        rows,
+    )</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="yime.import_duozi_into_prototype_tables.apply_schema" href="#yime.import_duozi_into_prototype_tables.apply_schema">apply_schema</a></code></li>
+<li><code><a title="yime.import_duozi_into_prototype_tables.build_phrase_yime_code" href="#yime.import_duozi_into_prototype_tables.build_phrase_yime_code">build_phrase_yime_code</a></code></li>
+<li><code><a title="yime.import_duozi_into_prototype_tables.import_phrases_and_mappings" href="#yime.import_duozi_into_prototype_tables.import_phrases_and_mappings">import_phrases_and_mappings</a></code></li>
+<li><code><a title="yime.import_duozi_into_prototype_tables.load_source_phrase_rows" href="#yime.import_duozi_into_prototype_tables.load_source_phrase_rows">load_source_phrase_rows</a></code></li>
+<li><code><a title="yime.import_duozi_into_prototype_tables.main" href="#yime.import_duozi_into_prototype_tables.main">main</a></code></li>
+<li><code><a title="yime.import_duozi_into_prototype_tables.parse_numeric_pinyin_parts" href="#yime.import_duozi_into_prototype_tables.parse_numeric_pinyin_parts">parse_numeric_pinyin_parts</a></code></li>
+<li><code><a title="yime.import_duozi_into_prototype_tables.sync_source_phrase_table" href="#yime.import_duozi_into_prototype_tables.sync_source_phrase_table">sync_source_phrase_table</a></code></li>
+<li><code><a title="yime.import_duozi_into_prototype_tables.write_import_metadata" href="#yime.import_duozi_into_prototype_tables.write_import_metadata">write_import_metadata</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

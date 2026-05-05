@@ -1,0 +1,472 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>yime.import_danzi_into_prototype_tables API documentation</title>
+<meta name="description" content="">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>yime.import_danzi_into_prototype_tables</code></h1>
+</header>
+<section id="section-intro">
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="yime.import_danzi_into_prototype_tables.apply_schema"><code class="name flex">
+<span>def <span class="ident">apply_schema</span></span>(<span>conn: sqlite3.Connection) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def apply_schema(conn: sqlite3.Connection) -&gt; None:
+    conn.executescript(SCHEMA_PATH.read_text(encoding=&#34;utf-8&#34;))</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.import_danzi_into_prototype_tables.codepoint_to_int"><code class="name flex">
+<span>def <span class="ident">codepoint_to_int</span></span>(<span>codepoint: str) ‑> int</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def codepoint_to_int(codepoint: str) -&gt; int:
+    return int(codepoint[2:], 16)</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.import_danzi_into_prototype_tables.import_hanzi_and_mappings"><code class="name flex">
+<span>def <span class="ident">import_hanzi_and_mappings</span></span>(<span>conn: sqlite3.Connection,<br>source_rows: list[tuple[int, str, str, str, str, str, int, int, str | None, str]]) ‑> tuple[int, int, int, int]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def import_hanzi_and_mappings(conn: sqlite3.Connection, source_rows: list[tuple[int, str, str, str, str, str, int, int, str | None, str]]) -&gt; tuple[int, int, int, int]:
+    char_rows: list[tuple[str, int | None, str | None, int, int | None]] = []
+    numeric_rows: list[tuple[str, str | None, str | None, int, int | None, int | None]] = []
+    char_map_rows: list[tuple[str, str, float, int, str, str | None]] = []
+    patched_numeric_rows = 0
+    seen_chars: set[int] = set()
+    seen_numeric_pinyin: set[str] = set()
+
+    conn.execute(&#39;DELETE FROM char_pinyin_map&#39;)
+    conn.execute(&#39;DELETE FROM char_inventory&#39;)
+    conn.execute(&#39;DELETE FROM numeric_pinyin_inventory&#39;)
+
+    for _, source_name, codepoint, hanzi, _, numeric_pinyin, reading_rank, is_primary, comment, _ in source_rows:
+        char_id = ord(hanzi)
+        if char_id not in seen_chars:
+            char_rows.append((
+                hanzi,
+                None,
+                None,
+                1,
+                None,
+            ))
+            seen_chars.add(char_id)
+
+        if numeric_pinyin not in seen_numeric_pinyin:
+            initial, final, tone_number = parse_numeric_pinyin_parts(numeric_pinyin)
+            numeric_rows.append((numeric_pinyin, initial, final, tone_number, None, None))
+            seen_numeric_pinyin.add(numeric_pinyin)
+
+        common_flag = int(is_primary or reading_rank == 1)
+        char_map_rows.append((hanzi, numeric_pinyin, 1.0, common_flag, source_name, comment))
+
+    for patch_row in load_numeric_pinyin_patch_rows(NUMERIC_PATCH_PATH):
+        pinyin_tone = patch_row[0]
+        if pinyin_tone in seen_numeric_pinyin:
+            continue
+        numeric_rows.append(patch_row)
+        seen_numeric_pinyin.add(pinyin_tone)
+        patched_numeric_rows += 1
+
+    conn.executemany(
+        &#39;&#39;&#39;
+        INSERT INTO char_inventory (
+            hanzi,
+            stroke_count,
+            radical,
+            is_common_char,
+            legacy_char_id,
+            updated_at
+        ) VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+        &#39;&#39;&#39;,
+        char_rows,
+    )
+
+    conn.executemany(
+        &#39;&#39;&#39;
+        INSERT INTO numeric_pinyin_inventory (
+            pinyin_tone,
+            initial,
+            final,
+            tone_number,
+            mapping_id,
+            legacy_numeric_pinyin_id,
+            updated_at
+        ) VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+        &#39;&#39;&#39;,
+        numeric_rows,
+    )
+
+    sync_canonical_mapping_table(conn, WORKSPACE_ROOT)
+
+    yime_by_pinyin = {
+        row[0]: row[1]
+        for row in conn.execute(&#39;SELECT pinyin_tone, yime_code FROM pinyin_yime_code&#39;)
+    }
+
+    char_inventory_id_by_hanzi = {
+        row[1]: row[0]
+        for row in conn.execute(&#39;SELECT id, hanzi FROM char_inventory&#39;)
+    }
+    numeric_inventory_by_text = {
+        row[1]: row[0]
+        for row in conn.execute(&#39;SELECT id, pinyin_tone FROM numeric_pinyin_inventory&#39;)
+    }
+
+    resolved_yime_rows = 0
+    resolved_char_map_rows: list[tuple[int, int, float, int, str, str | None]] = []
+    for hanzi, numeric_pinyin, reading_weight, common_flag, source_name, comment in char_map_rows:
+        char_inventory_id = char_inventory_id_by_hanzi.get(hanzi)
+        numeric_inventory = numeric_inventory_by_text.get(numeric_pinyin)
+        if char_inventory_id is None or numeric_inventory is None:
+            continue
+        resolved_char_map_rows.append((
+            char_inventory_id,
+            numeric_inventory,
+            reading_weight,
+            common_flag,
+            source_name,
+            comment,
+        ))
+        if yime_by_pinyin.get(numeric_pinyin) is not None:
+            resolved_yime_rows += 1
+
+    conn.executemany(
+        &#39;&#39;&#39;
+        INSERT OR REPLACE INTO char_pinyin_map (
+            char_id,
+            numeric_pinyin_id,
+            reading_weight,
+            is_common_reading,
+            source_file,
+            source_note,
+            updated_at
+        ) VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+        &#39;&#39;&#39;,
+        resolved_char_map_rows,
+    )
+
+    return len(char_rows), len(resolved_char_map_rows), resolved_yime_rows, patched_numeric_rows</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.import_danzi_into_prototype_tables.load_numeric_pinyin_patch_rows"><code class="name flex">
+<span>def <span class="ident">load_numeric_pinyin_patch_rows</span></span>(<span>path: Path) ‑> list[tuple[str, str | None, str | None, int, int | None, int | None]]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def load_numeric_pinyin_patch_rows(path: Path) -&gt; list[tuple[str, str | None, str | None, int, int | None, int | None]]:
+    if not path.exists():
+        return []
+
+    patch_rows: list[tuple[str, str | None, str | None, int, int | None, int | None]] = []
+    with path.open(&#34;r&#34;, encoding=&#34;utf-8-sig&#34;, newline=&#34;&#34;) as handle:
+        reader = csv.DictReader(handle)
+        for row in reader:
+            pinyin_tone = str(row.get(&#34;pinyin_tone&#34;) or &#34;&#34;).strip()
+            if not pinyin_tone:
+                continue
+
+            initial = str(row.get(&#34;initial&#34;) or &#34;&#34;).strip() or None
+            final = str(row.get(&#34;final&#34;) or &#34;&#34;).strip() or None
+            tone_number_raw = str(row.get(&#34;tone_number&#34;) or &#34;&#34;).strip()
+            mapping_id_raw = str(row.get(&#34;mapping_id&#34;) or &#34;&#34;).strip()
+            legacy_numeric_raw = str(row.get(&#34;legacy_numeric_pinyin_id&#34;) or &#34;&#34;).strip()
+
+            tone_number = int(tone_number_raw) if tone_number_raw else 5
+            mapping_id = int(mapping_id_raw) if mapping_id_raw else None
+            legacy_numeric_pinyin_id = int(legacy_numeric_raw) if legacy_numeric_raw else None
+            patch_rows.append((
+                pinyin_tone,
+                initial,
+                final,
+                tone_number,
+                mapping_id,
+                legacy_numeric_pinyin_id,
+            ))
+
+    return patch_rows</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.import_danzi_into_prototype_tables.load_source_single_char_rows"><code class="name flex">
+<span>def <span class="ident">load_source_single_char_rows</span></span>(<span>path: Path) ‑> tuple[list[tuple[str, str, str]], list[tuple[int, str, str, str, str, str, int, int, str | None, str]]]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def load_source_single_char_rows(path: Path) -&gt; tuple[list[tuple[str, str, str]], list[tuple[int, str, str, str, str, str, int, int, str | None, str]]]:
+    with sqlite3.connect(path) as source_conn:
+        source_cur = source_conn.cursor()
+        source_files = source_cur.execute(
+            &#39;&#39;&#39;
+            SELECT source_name, source_kind, source_path
+            FROM source_files
+            WHERE source_kind = &#39;single_char&#39;
+            ORDER BY source_name
+            &#39;&#39;&#39;
+        ).fetchall()
+        rows = source_cur.execute(
+            &#39;&#39;&#39;
+            SELECT id, source_name, codepoint, hanzi, marked_pinyin, numeric_pinyin,
+                   reading_rank, is_primary, comment, raw_line
+            FROM single_char_readings
+            ORDER BY id
+            &#39;&#39;&#39;
+        ).fetchall()
+    return source_files, rows</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.import_danzi_into_prototype_tables.main"><code class="name flex">
+<span>def <span class="ident">main</span></span>(<span>) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def main() -&gt; None:
+    source_files, source_rows = load_source_single_char_rows(SOURCE_DB_PATH)
+    conn = sqlite3.connect(DB_PATH)
+    try:
+        conn.execute(&#39;PRAGMA foreign_keys = ON&#39;)
+        conn.execute(&#39;DROP TABLE IF EXISTS char_pinyin_map&#39;)
+        conn.execute(&#39;DROP TABLE IF EXISTS char_inventory&#39;)
+        conn.execute(&#39;DROP TABLE IF EXISTS numeric_pinyin_inventory&#39;)
+        conn.execute(&#39;DROP TABLE IF EXISTS pinyin_yime_code&#39;)
+        conn.execute(&#39;DROP TABLE IF EXISTS mapping_yime_code&#39;)
+        apply_schema(conn)
+        copied_rows = sync_source_single_char_table(conn, source_files, source_rows)
+        char_count, numeric_map_count, yime_map_count, patched_numeric_count = import_hanzi_and_mappings(conn, source_rows)
+        source_distinct_count, _, _ = validate_char_inventory_coverage(conn)
+        write_import_metadata(conn, char_count, numeric_map_count, yime_map_count, source_distinct_count, patched_numeric_count)
+        conn.commit()
+    finally:
+        conn.close()
+
+    print(f&#34;copied single_char_readings rows: {copied_rows}&#34;)
+    print(f&#34;imported chars: {char_count}&#34;)
+    print(f&#34;numeric mappings: {numeric_map_count}&#34;)
+    print(f&#34;yime mappings: {yime_map_count}&#34;)
+    print(f&#34;patched numeric rows: {patched_numeric_count}&#34;)</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.import_danzi_into_prototype_tables.parse_numeric_pinyin_parts"><code class="name flex">
+<span>def <span class="ident">parse_numeric_pinyin_parts</span></span>(<span>pinyin_tone: str) ‑> tuple[str | None, str | None, int]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def parse_numeric_pinyin_parts(pinyin_tone: str) -&gt; tuple[str | None, str | None, int]:
+    tone_number = int(pinyin_tone[-1]) if pinyin_tone and pinyin_tone[-1].isdigit() else 5
+    final = pinyin_tone[:-1] if pinyin_tone and pinyin_tone[-1].isdigit() else pinyin_tone
+    return None, final or None, tone_number</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.import_danzi_into_prototype_tables.sync_source_single_char_table"><code class="name flex">
+<span>def <span class="ident">sync_source_single_char_table</span></span>(<span>conn: sqlite3.Connection,<br>source_files: list[tuple[str, str, str]],<br>source_rows: list[tuple[int, str, str, str, str, str, int, int, str | None, str]]) ‑> int</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def sync_source_single_char_table(
+    conn: sqlite3.Connection,
+    source_files: list[tuple[str, str, str]],
+    source_rows: list[tuple[int, str, str, str, str, str, int, int, str | None, str]],
+) -&gt; int:
+    conn.execute(&#34;DELETE FROM single_char_readings&#34;)
+    conn.execute(&#34;DELETE FROM source_files WHERE source_kind = &#39;single_char&#39;&#34;)
+    conn.executemany(
+        &#39;&#39;&#39;
+        INSERT INTO source_files (source_name, source_kind, source_path)
+        VALUES (?, ?, ?)
+        &#39;&#39;&#39;,
+        source_files,
+    )
+    conn.executemany(
+        &#39;&#39;&#39;
+        INSERT INTO single_char_readings (
+            id, source_name, codepoint, hanzi, marked_pinyin, numeric_pinyin,
+            reading_rank, is_primary, comment, raw_line
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        &#39;&#39;&#39;,
+        source_rows,
+    )
+    return len(source_rows)</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.import_danzi_into_prototype_tables.validate_char_inventory_coverage"><code class="name flex">
+<span>def <span class="ident">validate_char_inventory_coverage</span></span>(<span>conn: sqlite3.Connection) ‑> tuple[int, int, int]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def validate_char_inventory_coverage(conn: sqlite3.Connection) -&gt; tuple[int, int, int]:
+    missing_count = conn.execute(
+        &#39;&#39;&#39;
+        SELECT COUNT(DISTINCT scr.hanzi)
+        FROM single_char_readings scr
+        LEFT JOIN char_inventory ci
+          ON ci.hanzi = scr.hanzi
+        WHERE ci.id IS NULL
+        &#39;&#39;&#39;
+    ).fetchone()[0]
+    extra_count = conn.execute(
+        &#39;&#39;&#39;
+        SELECT COUNT(*)
+        FROM char_inventory ci
+        LEFT JOIN (
+            SELECT DISTINCT hanzi
+            FROM single_char_readings
+        ) scr
+          ON scr.hanzi = ci.hanzi
+        WHERE scr.hanzi IS NULL
+        &#39;&#39;&#39;
+    ).fetchone()[0]
+    source_distinct_count = conn.execute(
+        &#39;SELECT COUNT(DISTINCT hanzi) FROM single_char_readings&#39;
+    ).fetchone()[0]
+
+    if missing_count or extra_count:
+        raise RuntimeError(
+            f&#34;char_inventory coverage mismatch: missing={missing_count}, extra={extra_count}&#34;
+        )
+
+    return source_distinct_count, missing_count, extra_count</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.import_danzi_into_prototype_tables.write_import_metadata"><code class="name flex">
+<span>def <span class="ident">write_import_metadata</span></span>(<span>conn: sqlite3.Connection,<br>char_count: int,<br>numeric_map_count: int,<br>yime_map_count: int,<br>source_distinct_count: int,<br>patched_numeric_count: int) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def write_import_metadata(
+    conn: sqlite3.Connection,
+    char_count: int,
+    numeric_map_count: int,
+    yime_map_count: int,
+    source_distinct_count: int,
+    patched_numeric_count: int,
+) -&gt; None:
+    rows = [
+        (&#34;prototype_danzi_import_source&#34;, str(SOURCE_DB_PATH), &#34;单字拼音来源数据库（single_char_readings）&#34;),
+        (&#34;prototype_danzi_char_rows&#34;, str(char_count), &#34;本次导入覆盖的单字行数&#34;),
+        (&#34;prototype_danzi_numeric_map_rows&#34;, str(numeric_map_count), &#34;本次导入的 char_pinyin_map 行数&#34;),
+        (&#34;prototype_danzi_yime_map_rows&#34;, str(yime_map_count), &#34;本次可解析到音元拼音编码的单字读音行数&#34;),
+        (&#34;prototype_danzi_yime_source&#34;, &#34;pinyin_yime_code&#34;, &#34;单字运行时 yime_code 来源改为 canonical 拼音映射面，不再依赖 mapping_id&#34;),
+        (&#34;prototype_danzi_source_distinct_hanzi&#34;, str(source_distinct_count), &#34;single_char_readings 中去重后的汉字数&#34;),
+        (&#34;prototype_danzi_inventory_coverage&#34;, &#34;ok&#34;, &#34;char_inventory 与 single_char_readings 汉字集合一致&#34;),
+        (&#34;prototype_danzi_numeric_patch_source&#34;, str(NUMERIC_PATCH_PATH), &#34;单字数字调拼音补丁源；用于补齐上游 pinyin.txt 缺失的 numeric_pinyin_inventory 行&#34;),
+        (&#34;prototype_danzi_numeric_patch_rows&#34;, str(patched_numeric_count), &#34;本次从 numeric_pinyin_patch.csv 补入的数字调拼音行数&#34;),
+    ]
+    conn.executemany(
+        &#39;&#39;&#39;
+        INSERT OR REPLACE INTO prototype_metadata (key, value, note, updated_at)
+        VALUES (?, ?, ?, CURRENT_TIMESTAMP)
+        &#39;&#39;&#39;,
+        rows,
+    )</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="yime.import_danzi_into_prototype_tables.apply_schema" href="#yime.import_danzi_into_prototype_tables.apply_schema">apply_schema</a></code></li>
+<li><code><a title="yime.import_danzi_into_prototype_tables.codepoint_to_int" href="#yime.import_danzi_into_prototype_tables.codepoint_to_int">codepoint_to_int</a></code></li>
+<li><code><a title="yime.import_danzi_into_prototype_tables.import_hanzi_and_mappings" href="#yime.import_danzi_into_prototype_tables.import_hanzi_and_mappings">import_hanzi_and_mappings</a></code></li>
+<li><code><a title="yime.import_danzi_into_prototype_tables.load_numeric_pinyin_patch_rows" href="#yime.import_danzi_into_prototype_tables.load_numeric_pinyin_patch_rows">load_numeric_pinyin_patch_rows</a></code></li>
+<li><code><a title="yime.import_danzi_into_prototype_tables.load_source_single_char_rows" href="#yime.import_danzi_into_prototype_tables.load_source_single_char_rows">load_source_single_char_rows</a></code></li>
+<li><code><a title="yime.import_danzi_into_prototype_tables.main" href="#yime.import_danzi_into_prototype_tables.main">main</a></code></li>
+<li><code><a title="yime.import_danzi_into_prototype_tables.parse_numeric_pinyin_parts" href="#yime.import_danzi_into_prototype_tables.parse_numeric_pinyin_parts">parse_numeric_pinyin_parts</a></code></li>
+<li><code><a title="yime.import_danzi_into_prototype_tables.sync_source_single_char_table" href="#yime.import_danzi_into_prototype_tables.sync_source_single_char_table">sync_source_single_char_table</a></code></li>
+<li><code><a title="yime.import_danzi_into_prototype_tables.validate_char_inventory_coverage" href="#yime.import_danzi_into_prototype_tables.validate_char_inventory_coverage">validate_char_inventory_coverage</a></code></li>
+<li><code><a title="yime.import_danzi_into_prototype_tables.write_import_metadata" href="#yime.import_danzi_into_prototype_tables.write_import_metadata">write_import_metadata</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

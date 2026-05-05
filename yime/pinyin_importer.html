@@ -1,0 +1,787 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>yime.pinyin_importer API documentation</title>
+<meta name="description" content="音元拼音导入工具 - 完整版
+功能：将音元拼音数据导入到&#34;音元拼音&#34;表，并为必填字段提供默认值">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>yime.pinyin_importer</code></h1>
+</header>
+<section id="section-intro">
+<p>音元拼音导入工具 - 完整版
+功能：将音元拼音数据导入到"音元拼音"表，并为必填字段提供默认值</p>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="yime.pinyin_importer.main"><code class="name flex">
+<span>def <span class="ident">main</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def main():
+    &#34;&#34;&#34;命令行入口&#34;&#34;&#34;
+    importer = PinyinImporter()
+    try:
+        # 不自动清空表，保持现有特殊编码数据安全
+        # 现在从数据库表拼音映射关系加载原拼音数据
+        data = importer.load_from_mapping_table()
+        count = importer.import_pinyin(data)
+        print(f&#34;导入完成，共新增 {count} 条记录&#34;)
+    except Exception as e:
+        logging.error(f&#34;导入失败: {e}&#34;)
+        raise</code></pre>
+</details>
+<div class="desc"><p>命令行入口</p></div>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="yime.pinyin_importer.PinyinImporter"><code class="flex name class">
+<span>class <span class="ident">PinyinImporter</span></span>
+<span>(</span><span>db_path: str | pathlib.Path | None = None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class PinyinImporter:
+    &#34;&#34;&#34;音元拼音导入器（完整字段导入）&#34;&#34;&#34;
+
+    def __init__(self, db_path: str | Path | None = None):
+        # 默认使用模块目录下的 DB_PATH，外部可传入自定义路径
+        if db_path is None:
+            self.db_path = DB_PATH
+        else:
+            self.db_path = Path(db_path).expanduser().resolve()
+        self._setup_logging()
+
+    def _setup_logging(self):
+        &#34;&#34;&#34;配置日志记录&#34;&#34;&#34;
+        logging.basicConfig(
+            level=logging.INFO,
+            format=&#34;%(asctime)s - %(levelname)s - %(message)s&#34;,
+            handlers=[
+                logging.StreamHandler(),
+                logging.FileHandler(&#34;pinyin_import.log&#34;, encoding=&#34;utf-8&#34;)
+            ]
+        )
+        self.logger = logging.getLogger(__name__)
+
+    @contextmanager
+    def _get_connection(self) -&gt; Generator[sqlite3.Connection, None, None]:
+        &#34;&#34;&#34;上下文管理器：返回启用并校验 foreign_keys 的 sqlite3 连接&#34;&#34;&#34;
+        conn = sqlite3.connect(str(self.db_path))
+        conn.row_factory = sqlite3.Row
+        try:
+            # 尝试启用外键约束
+            conn.execute(&#34;PRAGMA foreign_keys = ON;&#34;)
+            # 验证外键约束是否已启用
+            cur = conn.execute(&#34;PRAGMA foreign_keys;&#34;)
+            fk_on = (cur.fetchone() or [0])[0]
+            if fk_on != 1:
+                # 记录警告（若需要，可在此抛异常以强制要求外键开启）
+                try:
+                    conn.execute(&#34;PRAGMA foreign_keys = ON;&#34;)
+                except Exception:
+                    self.logger.warning(&#34;无法启用 sqlite 外键约束 (PRAGMA foreign_keys)。请检查 SQLite 版本/连接模式。&#34;)
+                else:
+                    self.logger.warning(&#34;sqlite 外键约束尝试启用，但 PRAGMA 检查未返回 1，已再次尝试。&#34;)
+            else:
+                self.logger.debug(&#34;sqlite 外键约束已启用 (PRAGMA foreign_keys = 1)&#34;)
+            yield conn
+        finally:
+            conn.close()
+
+    def check_table_exists(self) -&gt; bool:
+        &#34;&#34;&#34;检查音元拼音表是否存在&#34;&#34;&#34;
+        with self._get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                &#34;SELECT name FROM sqlite_master &#34;
+                &#34;WHERE type=&#39;table&#39; AND name=&#39;音元拼音&#39;&#34;
+            )
+            return cursor.fetchone() is not None
+
+    def check_index_exists(self) -&gt; bool:
+        &#34;&#34;&#34;增强版索引检查，同时验证索引是否有效&#34;&#34;&#34;
+        with self._get_connection() as conn:
+            cursor = conn.cursor()
+            # 检查索引是否存在
+            cursor.execute(
+                &#34;SELECT name FROM sqlite_master &#34;
+                &#34;WHERE type=&#39;index&#39; AND name=&#39;sqlite_autoindex_音元拼音_1&#39;&#34;
+            )
+            if cursor.fetchone() is None:
+                return False
+
+            # 检查索引是否有效（验证索引列）
+            cursor.execute(&#34;PRAGMA index_info(&#39;sqlite_autoindex_音元拼音_1&#39;)&#34;)
+            index_info = cursor.fetchall()
+            return len(index_info) &gt; 0 and index_info[0][2] == &#34;全拼&#34;
+
+    def clear_table(self) -&gt; int:
+        &#34;&#34;&#34;删除音元拼音表中的所有记录（增强版）&#34;&#34;&#34;
+        if not self.check_table_exists():
+            self.logger.warning(&#34;音元拼音表不存在&#34;)
+            return 0
+
+        with self._get_connection() as conn:
+            cursor = conn.cursor()
+            try:
+                # 先禁用外键约束
+                cursor.execute(&#34;PRAGMA foreign_keys=OFF&#34;)
+
+                # 使用更彻底的表清空方式
+                cursor.execute(&#39;DELETE FROM &#34;音元拼音&#34;&#39;)
+
+                # 先提交DELETE操作
+                conn.commit()
+
+                # 在事务外执行VACUUM
+                cursor.execute(&#34;VACUUM&#34;)
+
+                # 开始新的事务
+                cursor.execute(&#34;BEGIN&#34;)
+
+                # 重置自增计数器（如果有）
+                cursor.execute(&#34;DELETE FROM sqlite_sequence WHERE name=&#39;音元拼音&#39;&#34;)
+
+                conn.commit()
+                return 0  # 不再返回删除计数
+            except Exception as e:
+                conn.rollback()
+                self.logger.error(f&#34;清空表失败: {e}&#34;)
+                raise
+            finally:
+                # 恢复外键约束
+                cursor.execute(&#34;PRAGMA foreign_keys=ON&#34;)
+
+    def load_json_data(self, json_path: str | Path) -&gt; Dict[str, str]:
+        &#34;&#34;&#34;加载JSON格式的音元拼音数据&#34;&#34;&#34;
+        json_path = Path(json_path).absolute()
+        if not json_path.exists():
+            raise FileNotFoundError(f&#34;JSON文件不存在: {json_path}&#34;)
+
+        with open(json_path, &#34;r&#34;, encoding=&#34;utf-8&#34;) as f:
+            data = json.load(f)
+
+        self.logger.info(f&#34;已从 {json_path} 加载 {len(data)} 条音元拼音数据&#34;)
+        return data
+
+    def _generate_default_values(self, input_str: str) -&gt; dict:
+        &#34;&#34;&#34;生成默认值：干音/间音/韵音使用未化简的全拼片段；简拼仅计算但不影响这些字段。&#34;&#34;&#34;
+        try:
+            from syllable_decoder import SyllableDecoder
+        except Exception:
+            from yime.syllable_decoder import SyllableDecoder
+
+        try:
+            from syllable_structure import SyllableStructure
+        except Exception:
+            try:
+                from yime.syllable_structure import SyllableStructure
+            except Exception:
+                SyllableStructure = None
+
+        decoder = SyllableDecoder()
+        full_pinyin = input_str or &#34;&#34;
+
+        # 尝试让 decoder 提供标准化的 full_pinyin（若有）
+        try:
+            if hasattr(decoder, &#34;get_full_pinyin&#34;):
+                full_pinyin = decoder.get_full_pinyin(full_pinyin)
+        except Exception:
+            # 忽略，使用原始输入
+            pass
+
+        # 解析基础部件（用于首音/呼音/主音/末音）
+        split_res = None
+        try:
+            split_res = decoder.split_encoded_syllable(full_pinyin)
+        except Exception:
+            split_res = None
+
+        if split_res is None:
+            initial = ascender = peak = descender = None
+        elif hasattr(split_res, &#34;initial&#34;) and hasattr(split_res, &#34;ascender&#34;):
+            initial = getattr(split_res, &#34;initial&#34;, None)
+            ascender = getattr(split_res, &#34;ascender&#34;, None)
+            peak = getattr(split_res, &#34;peak&#34;, None)
+            descender = getattr(split_res, &#34;descender&#34;, None)
+        else:
+            try:
+                initial = split_res[0] if len(split_res) &gt; 0 else None
+                ascender = split_res[2][0] if len(split_res) &gt; 2 and split_res[2] else None
+                peak = split_res[3][0] if len(split_res) &gt; 3 and split_res[3] else None
+                descender = split_res[3][1] if len(split_res) &gt; 3 and split_res[3] and len(split_res[3]) &gt; 1 else None
+            except Exception:
+                initial = ascender = peak = descender = None
+
+        # 保证为字符串
+        def s(x):
+            return x if x is None or isinstance(x, str) else str(x)
+
+        # 干音/间音/韵音：严格使用未化简的 full_pinyin 片段（便于观察编码系统）
+        # 干音 = 全拼去首音（原始、不化简）
+        if full_pinyin and len(full_pinyin) &gt; 1:
+            ganyin = full_pinyin[1:]
+        else:
+            ganyin = &#34;&#34;
+
+        # 间音 = 中间两音（若不足则尽可能取）
+        if len(full_pinyin) &gt;= 3:
+            jianyin = full_pinyin[1:3]
+        elif len(full_pinyin) &gt; 1:
+            jianyin = full_pinyin[1:]
+        else:
+            jianyin = &#34;&#34;
+
+        # 韵音 = 后两音（未化简）
+        if len(full_pinyin) &gt;= 2:
+            yunyin_val = full_pinyin[-2:]
+        elif len(full_pinyin) &gt; 1:
+            yunyin_val = full_pinyin[1:]
+        else:
+            yunyin_val = &#34;&#34;
+
+        # 简拼仍计算（但不用于上面字段）
+        jian = None
+        try:
+            if SyllableStructure is not None and hasattr(SyllableStructure, &#34;simplify_full_to_abbreviation&#34;):
+                jian = SyllableStructure.simplify_full_to_abbreviation(full_pinyin)
+            elif hasattr(decoder, &#34;get_abbreviation&#34;):
+                jian = decoder.get_abbreviation(full_pinyin)
+            elif hasattr(decoder, &#34;get_jianpin&#34;):
+                jian = decoder.get_jianpin(full_pinyin)
+        except Exception:
+            jian = None
+        if not jian:
+            # 保守默认：取全拼前两位（仅作记录）
+            jian = (full_pinyin[0] + (full_pinyin[1] if len(full_pinyin) &gt; 1 else &#34;&#34;)) if full_pinyin else &#34;&#34;
+
+        return {
+            &#34;全拼&#34;: s(full_pinyin),
+            &#34;简拼&#34;: s(jian),
+            &#34;干音&#34;: s(ganyin),
+            &#34;首音&#34;: s(initial),
+            &#34;呼音&#34;: s(ascender),
+            &#34;主音&#34;: s(peak),
+            &#34;末音&#34;: s(descender),
+            &#34;间音&#34;: s(jianyin),
+            &#34;韵音&#34;: s(yunyin_val)
+        }
+
+    def _normalize_to_canonical(self, encoded: str | None) -&gt; str:
+        if not encoded:
+            return &#34;&#34;
+        return &#34;&#34;.join(BMP_TO_CANONICAL.get(char, char) for char in encoded)
+
+    def ensure_table(self) -&gt; None:
+        &#34;&#34;&#34;确保 &#39;音元拼音&#39; 表存在；如果不存在则创建（保留 全拼 唯一约束，移除其它唯一约束）&#34;&#34;&#34;
+        with self._get_connection() as conn:
+            cursor = conn.cursor()
+            conn.execute(&#34;PRAGMA foreign_keys = ON;&#34;)
+            cursor.execute(&#39;&#39;&#39;
+                CREATE TABLE IF NOT EXISTS &#34;音元拼音&#34; (
+                    &#34;编号&#34; INTEGER PRIMARY KEY AUTOINCREMENT,
+                    &#34;全拼&#34; TEXT NOT NULL UNIQUE,
+                    &#34;简拼&#34; TEXT,
+                    &#34;首音&#34; TEXT,
+                    &#34;干音&#34; TEXT,
+                    &#34;呼音&#34; TEXT,
+                    &#34;主音&#34; TEXT,
+                    &#34;末音&#34; TEXT,
+                    &#34;间音&#34; TEXT,
+                    &#34;韵音&#34; TEXT,
+                    &#34;映射编号&#34; INTEGER REFERENCES &#34;拼音映射关系&#34;(&#34;映射编号&#34;) ON DELETE CASCADE,
+                    &#34;最近更新&#34; TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            &#39;&#39;&#39;)
+            conn.commit()
+
+    def import_pinyin(self, pinyin_data: Dict[str, str]) -&gt; int:
+        &#34;&#34;&#34;
+        导入音元拼音数据（完整字段）
+        &#34;&#34;&#34;
+        # 确保表存在（若不存在则创建）
+        self.ensure_table()
+
+        if not self.check_table_exists():
+            raise RuntimeError(&#34;&#39;音元拼音&#39;表不存在，请先创建表结构&#34;)
+
+        # 清空表中原有记录
+        self.clear_table()
+
+        # 修改后的索引创建部分
+        with self._get_connection() as conn:
+            cursor = conn.cursor()
+            if not self.check_index_exists():
+                self.logger.info(&#34;创建唯一索引...&#34;)
+                try:
+                    cursor.execute(&#34;&#34;&#34;
+                        CREATE UNIQUE INDEX IF NOT EXISTS sqlite_autoindex_音元拼音_1
+                        ON &#34;音元拼音&#34;(&#34;全拼&#34;)
+                    &#34;&#34;&#34;)
+                    conn.commit()
+
+                    # 立即验证索引
+                    if not self.check_index_exists():
+                        raise RuntimeError(&#34;索引创建失败&#34;)
+                except sqlite3.Error as e:
+                    self.logger.error(f&#34;创建索引失败: {e}&#34;)
+                    raise
+
+        # 修改这部分代码 - 原来是使用values()，现在改为使用keys()
+        unique_data = {}
+        for num_pinyin, yime_pinyin in pinyin_data.items():
+            unique_data[yime_pinyin] = num_pinyin  # 这里改为使用音元拼音作为key
+
+        # 准备要插入的数据（生成完整字段）
+        values_to_insert = []
+        seen_pinyins = set()  # 内存级二次去重
+
+        # pinyin_data expected: {映射编号: 原拼音}
+        for mapping_id, yime_pinyin in pinyin_data.items():
+            canonical_pinyin = self._normalize_to_canonical(yime_pinyin)
+            # yime_pinyin 是要插入的全拼编码
+            # 去重：只处理每个全拼一次
+            if canonical_pinyin in seen_pinyins:
+                continue
+            seen_pinyins.add(canonical_pinyin)
+
+            default_values = self._generate_default_values(canonical_pinyin)  # 统一落 canonical SPUA-B
+
+            values_to_insert.append((
+                default_values[&#34;全拼&#34;],
+                default_values[&#34;简拼&#34;],
+                default_values[&#34;首音&#34;],
+                default_values[&#34;干音&#34;],
+                default_values[&#34;呼音&#34;],
+                default_values[&#34;主音&#34;],
+                default_values[&#34;末音&#34;],
+                default_values[&#34;间音&#34;],
+                default_values[&#34;韵音&#34;],
+                mapping_id  # 将映射编号写入最后一列
+            ))
+
+        if not values_to_insert:
+            self.logger.warning(&#34;没有有效数据可导入&#34;)
+            return 0
+
+        with self._get_connection() as conn:
+            cursor = conn.cursor()
+
+            try:
+                # 执行批量插入（使用 INSERT OR IGNORE 保持幂等性；若需更新可改为 UPSERT）
+                cursor.executemany(
+                    &#39;&#39;&#39;INSERT OR IGNORE INTO &#34;音元拼音&#34; (
+                        &#34;全拼&#34;, &#34;简拼&#34;, &#34;首音&#34;, &#34;干音&#34;,
+                        &#34;呼音&#34;, &#34;主音&#34;, &#34;末音&#34;, &#34;间音&#34;, &#34;韵音&#34;, &#34;映射编号&#34;
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)&#39;&#39;&#39;,
+                    values_to_insert
+                )
+                conn.commit()
+
+                inserted_count = cursor.rowcount
+                self.logger.info(
+                    f&#34;导入完成: 尝试导入 {len(values_to_insert)} 条, &#34;
+                    f&#34;实际新增 {inserted_count} 条记录&#34;
+                )
+                return inserted_count
+
+            except sqlite3.Error as e:
+                self.logger.error(f&#34;数据库错误: {e}&#34;)
+                conn.rollback()
+                raise
+
+    def load_from_mapping_table(self) -&gt; Dict[int, str]:
+        &#34;&#34;&#34;
+        从数据库表 `拼音映射关系` 中读取映射编号与原拼音（原拼音类型=&#39;音元拼音&#39;）
+        返回字典形式：{映射编号: 原拼音}
+        &#34;&#34;&#34;
+        with self._get_connection() as conn:
+            cur = conn.cursor()
+            cur.execute(&#39;&#39;&#39;
+                SELECT &#34;映射编号&#34;, &#34;原拼音&#34;
+                FROM &#34;拼音映射关系&#34;
+                WHERE &#34;原拼音类型&#34; = &#39;音元拼音&#39;
+            &#39;&#39;&#39;)
+            rows = cur.fetchall()
+            data: Dict[int, str] = {}
+            for row in rows:
+                # row 是 sqlite3.Row，支持 name 索引
+                mapping_id = row[&#34;映射编号&#34;]
+                original = row[&#34;原拼音&#34;]
+                data[mapping_id] = original
+            self.logger.info(f&#34;已从拼音映射关系表加载 {len(data)} 条音元拼音数据&#34;)
+            return data</code></pre>
+</details>
+<div class="desc"><p>音元拼音导入器（完整字段导入）</p></div>
+<h3>Methods</h3>
+<dl>
+<dt id="yime.pinyin_importer.PinyinImporter.check_index_exists"><code class="name flex">
+<span>def <span class="ident">check_index_exists</span></span>(<span>self) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def check_index_exists(self) -&gt; bool:
+    &#34;&#34;&#34;增强版索引检查，同时验证索引是否有效&#34;&#34;&#34;
+    with self._get_connection() as conn:
+        cursor = conn.cursor()
+        # 检查索引是否存在
+        cursor.execute(
+            &#34;SELECT name FROM sqlite_master &#34;
+            &#34;WHERE type=&#39;index&#39; AND name=&#39;sqlite_autoindex_音元拼音_1&#39;&#34;
+        )
+        if cursor.fetchone() is None:
+            return False
+
+        # 检查索引是否有效（验证索引列）
+        cursor.execute(&#34;PRAGMA index_info(&#39;sqlite_autoindex_音元拼音_1&#39;)&#34;)
+        index_info = cursor.fetchall()
+        return len(index_info) &gt; 0 and index_info[0][2] == &#34;全拼&#34;</code></pre>
+</details>
+<div class="desc"><p>增强版索引检查，同时验证索引是否有效</p></div>
+</dd>
+<dt id="yime.pinyin_importer.PinyinImporter.check_table_exists"><code class="name flex">
+<span>def <span class="ident">check_table_exists</span></span>(<span>self) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def check_table_exists(self) -&gt; bool:
+    &#34;&#34;&#34;检查音元拼音表是否存在&#34;&#34;&#34;
+    with self._get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute(
+            &#34;SELECT name FROM sqlite_master &#34;
+            &#34;WHERE type=&#39;table&#39; AND name=&#39;音元拼音&#39;&#34;
+        )
+        return cursor.fetchone() is not None</code></pre>
+</details>
+<div class="desc"><p>检查音元拼音表是否存在</p></div>
+</dd>
+<dt id="yime.pinyin_importer.PinyinImporter.clear_table"><code class="name flex">
+<span>def <span class="ident">clear_table</span></span>(<span>self) ‑> int</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def clear_table(self) -&gt; int:
+    &#34;&#34;&#34;删除音元拼音表中的所有记录（增强版）&#34;&#34;&#34;
+    if not self.check_table_exists():
+        self.logger.warning(&#34;音元拼音表不存在&#34;)
+        return 0
+
+    with self._get_connection() as conn:
+        cursor = conn.cursor()
+        try:
+            # 先禁用外键约束
+            cursor.execute(&#34;PRAGMA foreign_keys=OFF&#34;)
+
+            # 使用更彻底的表清空方式
+            cursor.execute(&#39;DELETE FROM &#34;音元拼音&#34;&#39;)
+
+            # 先提交DELETE操作
+            conn.commit()
+
+            # 在事务外执行VACUUM
+            cursor.execute(&#34;VACUUM&#34;)
+
+            # 开始新的事务
+            cursor.execute(&#34;BEGIN&#34;)
+
+            # 重置自增计数器（如果有）
+            cursor.execute(&#34;DELETE FROM sqlite_sequence WHERE name=&#39;音元拼音&#39;&#34;)
+
+            conn.commit()
+            return 0  # 不再返回删除计数
+        except Exception as e:
+            conn.rollback()
+            self.logger.error(f&#34;清空表失败: {e}&#34;)
+            raise
+        finally:
+            # 恢复外键约束
+            cursor.execute(&#34;PRAGMA foreign_keys=ON&#34;)</code></pre>
+</details>
+<div class="desc"><p>删除音元拼音表中的所有记录（增强版）</p></div>
+</dd>
+<dt id="yime.pinyin_importer.PinyinImporter.ensure_table"><code class="name flex">
+<span>def <span class="ident">ensure_table</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def ensure_table(self) -&gt; None:
+    &#34;&#34;&#34;确保 &#39;音元拼音&#39; 表存在；如果不存在则创建（保留 全拼 唯一约束，移除其它唯一约束）&#34;&#34;&#34;
+    with self._get_connection() as conn:
+        cursor = conn.cursor()
+        conn.execute(&#34;PRAGMA foreign_keys = ON;&#34;)
+        cursor.execute(&#39;&#39;&#39;
+            CREATE TABLE IF NOT EXISTS &#34;音元拼音&#34; (
+                &#34;编号&#34; INTEGER PRIMARY KEY AUTOINCREMENT,
+                &#34;全拼&#34; TEXT NOT NULL UNIQUE,
+                &#34;简拼&#34; TEXT,
+                &#34;首音&#34; TEXT,
+                &#34;干音&#34; TEXT,
+                &#34;呼音&#34; TEXT,
+                &#34;主音&#34; TEXT,
+                &#34;末音&#34; TEXT,
+                &#34;间音&#34; TEXT,
+                &#34;韵音&#34; TEXT,
+                &#34;映射编号&#34; INTEGER REFERENCES &#34;拼音映射关系&#34;(&#34;映射编号&#34;) ON DELETE CASCADE,
+                &#34;最近更新&#34; TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        &#39;&#39;&#39;)
+        conn.commit()</code></pre>
+</details>
+<div class="desc"><p>确保 '音元拼音' 表存在；如果不存在则创建（保留 全拼 唯一约束，移除其它唯一约束）</p></div>
+</dd>
+<dt id="yime.pinyin_importer.PinyinImporter.import_pinyin"><code class="name flex">
+<span>def <span class="ident">import_pinyin</span></span>(<span>self, pinyin_data: Dict[str, str]) ‑> int</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def import_pinyin(self, pinyin_data: Dict[str, str]) -&gt; int:
+    &#34;&#34;&#34;
+    导入音元拼音数据（完整字段）
+    &#34;&#34;&#34;
+    # 确保表存在（若不存在则创建）
+    self.ensure_table()
+
+    if not self.check_table_exists():
+        raise RuntimeError(&#34;&#39;音元拼音&#39;表不存在，请先创建表结构&#34;)
+
+    # 清空表中原有记录
+    self.clear_table()
+
+    # 修改后的索引创建部分
+    with self._get_connection() as conn:
+        cursor = conn.cursor()
+        if not self.check_index_exists():
+            self.logger.info(&#34;创建唯一索引...&#34;)
+            try:
+                cursor.execute(&#34;&#34;&#34;
+                    CREATE UNIQUE INDEX IF NOT EXISTS sqlite_autoindex_音元拼音_1
+                    ON &#34;音元拼音&#34;(&#34;全拼&#34;)
+                &#34;&#34;&#34;)
+                conn.commit()
+
+                # 立即验证索引
+                if not self.check_index_exists():
+                    raise RuntimeError(&#34;索引创建失败&#34;)
+            except sqlite3.Error as e:
+                self.logger.error(f&#34;创建索引失败: {e}&#34;)
+                raise
+
+    # 修改这部分代码 - 原来是使用values()，现在改为使用keys()
+    unique_data = {}
+    for num_pinyin, yime_pinyin in pinyin_data.items():
+        unique_data[yime_pinyin] = num_pinyin  # 这里改为使用音元拼音作为key
+
+    # 准备要插入的数据（生成完整字段）
+    values_to_insert = []
+    seen_pinyins = set()  # 内存级二次去重
+
+    # pinyin_data expected: {映射编号: 原拼音}
+    for mapping_id, yime_pinyin in pinyin_data.items():
+        canonical_pinyin = self._normalize_to_canonical(yime_pinyin)
+        # yime_pinyin 是要插入的全拼编码
+        # 去重：只处理每个全拼一次
+        if canonical_pinyin in seen_pinyins:
+            continue
+        seen_pinyins.add(canonical_pinyin)
+
+        default_values = self._generate_default_values(canonical_pinyin)  # 统一落 canonical SPUA-B
+
+        values_to_insert.append((
+            default_values[&#34;全拼&#34;],
+            default_values[&#34;简拼&#34;],
+            default_values[&#34;首音&#34;],
+            default_values[&#34;干音&#34;],
+            default_values[&#34;呼音&#34;],
+            default_values[&#34;主音&#34;],
+            default_values[&#34;末音&#34;],
+            default_values[&#34;间音&#34;],
+            default_values[&#34;韵音&#34;],
+            mapping_id  # 将映射编号写入最后一列
+        ))
+
+    if not values_to_insert:
+        self.logger.warning(&#34;没有有效数据可导入&#34;)
+        return 0
+
+    with self._get_connection() as conn:
+        cursor = conn.cursor()
+
+        try:
+            # 执行批量插入（使用 INSERT OR IGNORE 保持幂等性；若需更新可改为 UPSERT）
+            cursor.executemany(
+                &#39;&#39;&#39;INSERT OR IGNORE INTO &#34;音元拼音&#34; (
+                    &#34;全拼&#34;, &#34;简拼&#34;, &#34;首音&#34;, &#34;干音&#34;,
+                    &#34;呼音&#34;, &#34;主音&#34;, &#34;末音&#34;, &#34;间音&#34;, &#34;韵音&#34;, &#34;映射编号&#34;
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)&#39;&#39;&#39;,
+                values_to_insert
+            )
+            conn.commit()
+
+            inserted_count = cursor.rowcount
+            self.logger.info(
+                f&#34;导入完成: 尝试导入 {len(values_to_insert)} 条, &#34;
+                f&#34;实际新增 {inserted_count} 条记录&#34;
+            )
+            return inserted_count
+
+        except sqlite3.Error as e:
+            self.logger.error(f&#34;数据库错误: {e}&#34;)
+            conn.rollback()
+            raise</code></pre>
+</details>
+<div class="desc"><p>导入音元拼音数据（完整字段）</p></div>
+</dd>
+<dt id="yime.pinyin_importer.PinyinImporter.load_from_mapping_table"><code class="name flex">
+<span>def <span class="ident">load_from_mapping_table</span></span>(<span>self) ‑> Dict[int, str]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def load_from_mapping_table(self) -&gt; Dict[int, str]:
+    &#34;&#34;&#34;
+    从数据库表 `拼音映射关系` 中读取映射编号与原拼音（原拼音类型=&#39;音元拼音&#39;）
+    返回字典形式：{映射编号: 原拼音}
+    &#34;&#34;&#34;
+    with self._get_connection() as conn:
+        cur = conn.cursor()
+        cur.execute(&#39;&#39;&#39;
+            SELECT &#34;映射编号&#34;, &#34;原拼音&#34;
+            FROM &#34;拼音映射关系&#34;
+            WHERE &#34;原拼音类型&#34; = &#39;音元拼音&#39;
+        &#39;&#39;&#39;)
+        rows = cur.fetchall()
+        data: Dict[int, str] = {}
+        for row in rows:
+            # row 是 sqlite3.Row，支持 name 索引
+            mapping_id = row[&#34;映射编号&#34;]
+            original = row[&#34;原拼音&#34;]
+            data[mapping_id] = original
+        self.logger.info(f&#34;已从拼音映射关系表加载 {len(data)} 条音元拼音数据&#34;)
+        return data</code></pre>
+</details>
+<div class="desc"><p>从数据库表 <code>拼音映射关系</code> 中读取映射编号与原拼音（原拼音类型='音元拼音'）
+返回字典形式：{映射编号: 原拼音}</p></div>
+</dd>
+<dt id="yime.pinyin_importer.PinyinImporter.load_json_data"><code class="name flex">
+<span>def <span class="ident">load_json_data</span></span>(<span>self, json_path: str | pathlib.Path) ‑> Dict[str, str]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def load_json_data(self, json_path: str | Path) -&gt; Dict[str, str]:
+    &#34;&#34;&#34;加载JSON格式的音元拼音数据&#34;&#34;&#34;
+    json_path = Path(json_path).absolute()
+    if not json_path.exists():
+        raise FileNotFoundError(f&#34;JSON文件不存在: {json_path}&#34;)
+
+    with open(json_path, &#34;r&#34;, encoding=&#34;utf-8&#34;) as f:
+        data = json.load(f)
+
+    self.logger.info(f&#34;已从 {json_path} 加载 {len(data)} 条音元拼音数据&#34;)
+    return data</code></pre>
+</details>
+<div class="desc"><p>加载JSON格式的音元拼音数据</p></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="yime.pinyin_importer.main" href="#yime.pinyin_importer.main">main</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="yime.pinyin_importer.PinyinImporter" href="#yime.pinyin_importer.PinyinImporter">PinyinImporter</a></code></h4>
+<ul class="">
+<li><code><a title="yime.pinyin_importer.PinyinImporter.check_index_exists" href="#yime.pinyin_importer.PinyinImporter.check_index_exists">check_index_exists</a></code></li>
+<li><code><a title="yime.pinyin_importer.PinyinImporter.check_table_exists" href="#yime.pinyin_importer.PinyinImporter.check_table_exists">check_table_exists</a></code></li>
+<li><code><a title="yime.pinyin_importer.PinyinImporter.clear_table" href="#yime.pinyin_importer.PinyinImporter.clear_table">clear_table</a></code></li>
+<li><code><a title="yime.pinyin_importer.PinyinImporter.ensure_table" href="#yime.pinyin_importer.PinyinImporter.ensure_table">ensure_table</a></code></li>
+<li><code><a title="yime.pinyin_importer.PinyinImporter.import_pinyin" href="#yime.pinyin_importer.PinyinImporter.import_pinyin">import_pinyin</a></code></li>
+<li><code><a title="yime.pinyin_importer.PinyinImporter.load_from_mapping_table" href="#yime.pinyin_importer.PinyinImporter.load_from_mapping_table">load_from_mapping_table</a></code></li>
+<li><code><a title="yime.pinyin_importer.PinyinImporter.load_json_data" href="#yime.pinyin_importer.PinyinImporter.load_json_data">load_json_data</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>yime.canonical_yime_mapping API documentation</title>
+<meta name="description" content="">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>yime.canonical_yime_mapping</code></h1>
+</header>
+<section id="section-intro">
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="yime.canonical_yime_mapping.build_bmp_to_canonical_map"><code class="name flex">
+<span>def <span class="ident">build_bmp_to_canonical_map</span></span>(<span>repo_root: Path | None = None) ‑> dict[str, str]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def build_bmp_to_canonical_map(repo_root: Path | None = None) -&gt; dict[str, str]:
+    resolved_root = repo_root or WORKSPACE_ROOT
+    projection = load_json(resolved_root / &#34;internal_data&#34; / &#34;bmp_pua_trial_projection.json&#34;)
+    key_to_symbol = load_json(resolved_root / &#34;internal_data&#34; / &#34;key_to_symbol.json&#34;)
+
+    bmp_to_canonical: dict[str, str] = {}
+    for slot_key, slot_info in projection.get(&#34;used_mapping&#34;, {}).items():
+        bmp_char = str(slot_info.get(&#34;char&#34;, &#34;&#34;))
+        canonical_char = str(key_to_symbol.get(slot_key, &#34;&#34;))
+        if bmp_char and canonical_char:
+            bmp_to_canonical[bmp_char] = canonical_char
+    return bmp_to_canonical</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.canonical_yime_mapping.build_canonical_mapping_rows"><code class="name flex">
+<span>def <span class="ident">build_canonical_mapping_rows</span></span>(<span>conn: sqlite3.Connection, repo_root: Path | None = None) ‑> list[tuple[int, str, str]]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def build_canonical_mapping_rows(
+    conn: sqlite3.Connection,
+    repo_root: Path | None = None,
+) -&gt; list[tuple[int, str, str]]:
+    from collections import defaultdict
+
+    canonical_code_map = load_canonical_code_map(repo_root)
+    canonical_patch_map = load_canonical_patch_map(repo_root)
+    rows = conn.execute(
+        &#39;&#39;&#39;
+        SELECT mapping_id, pinyin_tone
+        FROM numeric_pinyin_inventory
+        WHERE mapping_id IS NOT NULL
+        ORDER BY mapping_id, pinyin_tone
+        &#39;&#39;&#39;
+    ).fetchall()
+
+    grouped: dict[int, dict[str, object]] = defaultdict(lambda: {&#34;codes&#34;: set(), &#34;tones&#34;: []})
+    for mapping_id_raw, pinyin_tone_raw in rows:
+        mapping_id = int(mapping_id_raw)
+        pinyin_tone = str(pinyin_tone_raw or &#34;&#34;).strip()
+        if not pinyin_tone:
+            continue
+        canonical_code = canonical_code_map.get(pinyin_tone, &#34;&#34;)
+        if not canonical_code:
+            patch_payload = canonical_patch_map.get(pinyin_tone)
+            if patch_payload is not None:
+                patched_code, patched_mapping_id = patch_payload
+                if patched_mapping_id is None or patched_mapping_id == mapping_id:
+                    canonical_code = patched_code
+        if not canonical_code:
+            continue
+        grouped[mapping_id][&#34;codes&#34;].add(canonical_code)
+        grouped[mapping_id][&#34;tones&#34;].append(pinyin_tone)
+
+    mapping_rows: list[tuple[int, str, str]] = []
+    conflicts: list[tuple[int, list[str], list[str]]] = []
+    for mapping_id, payload in grouped.items():
+        codes = sorted(payload[&#34;codes&#34;])
+        tones = sorted(set(payload[&#34;tones&#34;]))
+        if len(codes) &gt; 1:
+            conflicts.append((mapping_id, tones, codes))
+            continue
+        if not codes:
+            continue
+        mapping_rows.append((mapping_id, codes[0], tones[0]))
+
+    if conflicts:
+        preview = &#34;; &#34;.join(
+            f&#34;mapping_id={mapping_id}, tones={tones[:3]}, codes={codes[:3]}&#34;
+            for mapping_id, tones, codes in conflicts[:5]
+        )
+        raise RuntimeError(f&#34;canonical mapping conflicts detected: {preview}&#34;)
+
+    return mapping_rows</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.canonical_yime_mapping.build_canonical_pinyin_rows"><code class="name flex">
+<span>def <span class="ident">build_canonical_pinyin_rows</span></span>(<span>conn: sqlite3.Connection, repo_root: Path | None = None) ‑> list[tuple[str, str, str]]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def build_canonical_pinyin_rows(
+    conn: sqlite3.Connection,
+    repo_root: Path | None = None,
+) -&gt; list[tuple[str, str, str]]:
+    canonical_code_map = load_canonical_code_map(repo_root)
+    rows = conn.execute(
+        &#39;&#39;&#39;
+        SELECT DISTINCT pinyin_tone
+        FROM numeric_pinyin_inventory
+        WHERE pinyin_tone IS NOT NULL AND TRIM(pinyin_tone) &lt;&gt; &#39;&#39;
+        ORDER BY pinyin_tone
+        &#39;&#39;&#39;
+    ).fetchall()
+
+    pinyin_rows: list[tuple[str, str, str]] = []
+    for (pinyin_tone_raw,) in rows:
+        pinyin_tone = str(pinyin_tone_raw or &#39;&#39;).strip()
+        if not pinyin_tone:
+            continue
+        canonical_code = canonical_code_map.get(pinyin_tone, &#39;&#39;)
+        if not canonical_code:
+            continue
+        source_name = &#39;canonical_patch&#39; if pinyin_tone in load_canonical_patch_map(repo_root) else &#39;yinjie_code&#39;
+        pinyin_rows.append((pinyin_tone, canonical_code, source_name))
+
+    return pinyin_rows</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.canonical_yime_mapping.canonicalize_code"><code class="name flex">
+<span>def <span class="ident">canonicalize_code</span></span>(<span>code: str, bmp_to_canonical: dict[str, str]) ‑> str</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def canonicalize_code(code: str, bmp_to_canonical: dict[str, str]) -&gt; str:
+    return &#34;&#34;.join(bmp_to_canonical.get(char, char) for char in code)</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.canonical_yime_mapping.load_canonical_code_map"><code class="name flex">
+<span>def <span class="ident">load_canonical_code_map</span></span>(<span>repo_root: Path | None = None) ‑> dict[str, str]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def load_canonical_code_map(repo_root: Path | None = None) -&gt; dict[str, str]:
+    resolved_root = repo_root or WORKSPACE_ROOT
+    code_map = load_json(resolved_root / &#34;syllable_codec&#34; / &#34;yinjie_code.json&#34;)
+    bmp_to_canonical = build_bmp_to_canonical_map(resolved_root)
+
+    canonical_code_map = {
+        pinyin: canonicalize_code(code, bmp_to_canonical)
+        for pinyin, code in code_map.items()
+    }
+
+    for pinyin_tone, (patched_code, _) in load_canonical_patch_map(resolved_root).items():
+        canonical_code_map.setdefault(pinyin_tone, patched_code)
+
+    return canonical_code_map</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.canonical_yime_mapping.load_canonical_patch_map"><code class="name flex">
+<span>def <span class="ident">load_canonical_patch_map</span></span>(<span>repo_root: Path | None = None) ‑> dict[str, tuple[str, int | None]]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def load_canonical_patch_map(repo_root: Path | None = None) -&gt; dict[str, tuple[str, int | None]]:
+    resolved_root = repo_root or WORKSPACE_ROOT
+    if not CANONICAL_PATCH_PATH.exists():
+        return {}
+
+    bmp_to_canonical = build_bmp_to_canonical_map(resolved_root)
+    patch_map: dict[str, tuple[str, int | None]] = {}
+    with CANONICAL_PATCH_PATH.open(&#34;r&#34;, encoding=&#34;utf-8-sig&#34;, newline=&#34;&#34;) as handle:
+        reader = csv.DictReader(handle)
+        for row in reader:
+            pinyin_tone = str(row.get(&#34;pinyin_tone&#34;) or &#34;&#34;).strip()
+            raw_code = str(row.get(&#34;yime_code&#34;) or &#34;&#34;)
+            mapping_id_raw = str(row.get(&#34;mapping_id&#34;) or &#34;&#34;).strip()
+            if not pinyin_tone or not raw_code:
+                continue
+            patch_map[pinyin_tone] = (
+                canonicalize_code(raw_code, bmp_to_canonical),
+                int(mapping_id_raw) if mapping_id_raw else None,
+            )
+    return patch_map</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.canonical_yime_mapping.load_json"><code class="name flex">
+<span>def <span class="ident">load_json</span></span>(<span>path: Path) ‑> dict</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def load_json(path: Path) -&gt; dict:
+    return json.loads(path.read_text(encoding=&#34;utf-8&#34;))</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.canonical_yime_mapping.sync_canonical_mapping_table"><code class="name flex">
+<span>def <span class="ident">sync_canonical_mapping_table</span></span>(<span>conn: sqlite3.Connection, repo_root: Path | None = None) ‑> int</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def sync_canonical_mapping_table(
+    conn: sqlite3.Connection,
+    repo_root: Path | None = None,
+) -&gt; int:
+    pinyin_rows = build_canonical_pinyin_rows(conn, repo_root)
+    conn.execute(&#34;DELETE FROM pinyin_yime_code&#34;)
+    conn.executemany(
+        &#39;&#39;&#39;
+        INSERT INTO pinyin_yime_code (pinyin_tone, yime_code, code_source, updated_at)
+        VALUES (?, ?, ?, CURRENT_TIMESTAMP)
+        &#39;&#39;&#39;,
+        pinyin_rows,
+    )
+
+    mapping_rows = build_canonical_mapping_rows(conn, repo_root)
+    conn.execute(&#34;DELETE FROM mapping_yime_code&#34;)
+    conn.executemany(
+        &#39;&#39;&#39;
+        INSERT INTO mapping_yime_code (mapping_id, yime_code, source_pinyin_tone, updated_at)
+        VALUES (?, ?, ?, CURRENT_TIMESTAMP)
+        &#39;&#39;&#39;,
+        mapping_rows,
+    )
+    return len(pinyin_rows)</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="yime.canonical_yime_mapping.build_bmp_to_canonical_map" href="#yime.canonical_yime_mapping.build_bmp_to_canonical_map">build_bmp_to_canonical_map</a></code></li>
+<li><code><a title="yime.canonical_yime_mapping.build_canonical_mapping_rows" href="#yime.canonical_yime_mapping.build_canonical_mapping_rows">build_canonical_mapping_rows</a></code></li>
+<li><code><a title="yime.canonical_yime_mapping.build_canonical_pinyin_rows" href="#yime.canonical_yime_mapping.build_canonical_pinyin_rows">build_canonical_pinyin_rows</a></code></li>
+<li><code><a title="yime.canonical_yime_mapping.canonicalize_code" href="#yime.canonical_yime_mapping.canonicalize_code">canonicalize_code</a></code></li>
+<li><code><a title="yime.canonical_yime_mapping.load_canonical_code_map" href="#yime.canonical_yime_mapping.load_canonical_code_map">load_canonical_code_map</a></code></li>
+<li><code><a title="yime.canonical_yime_mapping.load_canonical_patch_map" href="#yime.canonical_yime_mapping.load_canonical_patch_map">load_canonical_patch_map</a></code></li>
+<li><code><a title="yime.canonical_yime_mapping.load_json" href="#yime.canonical_yime_mapping.load_json">load_json</a></code></li>
+<li><code><a title="yime.canonical_yime_mapping.sync_canonical_mapping_table" href="#yime.canonical_yime_mapping.sync_canonical_mapping_table">sync_canonical_mapping_table</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

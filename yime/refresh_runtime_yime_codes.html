@@ -1,0 +1,670 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>yime.refresh_runtime_yime_codes API documentation</title>
+<meta name="description" content="">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>yime.refresh_runtime_yime_codes</code></h1>
+</header>
+<section id="section-intro">
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="yime.refresh_runtime_yime_codes.backup_database"><code class="name flex">
+<span>def <span class="ident">backup_database</span></span>(<span>db_path: Path) ‑> pathlib.Path</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def backup_database(db_path: Path) -&gt; Path:
+    timestamp = datetime.now().strftime(&#34;%Y%m%d_%H%M%S&#34;)
+    DEFAULT_BACKUP_DIR.mkdir(parents=True, exist_ok=True)
+    backup_path = DEFAULT_BACKUP_DIR / f&#34;{db_path.stem}.yime_code_refresh_{timestamp}.bak&#34;
+    shutil.copy2(db_path, backup_path)
+    return backup_path</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.refresh_runtime_yime_codes.build_char_updates"><code class="name flex">
+<span>def <span class="ident">build_char_updates</span></span>(<span>conn: sqlite3.Connection,<br>canonical_code_map: dict[str, str],<br>examples_limit: int) ‑> tuple[list[tuple[str, str, str]], collections.Counter, dict[str, list[tuple[object, ...]]]]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def build_char_updates(
+    conn: sqlite3.Connection,
+    canonical_code_map: dict[str, str],
+    examples_limit: int,
+) -&gt; tuple[list[tuple[str, str, str]], Counter, dict[str, list[tuple[object, ...]]]]:
+    patch_pinyin_tones = set(load_canonical_patch_map(SCRIPT_DIR.parent))
+    rows = conn.execute(
+        &#39;&#39;&#39;
+        SELECT npi.pinyin_tone, pyc.yime_code, pyc.code_source
+        FROM numeric_pinyin_inventory AS npi
+        LEFT JOIN pinyin_yime_code AS pyc
+            ON pyc.pinyin_tone = npi.pinyin_tone
+        ORDER BY npi.pinyin_tone
+        &#39;&#39;&#39;
+    ).fetchall()
+
+    updates: list[tuple[str, str, str]] = []
+    stats = Counter()
+    examples: dict[str, list[tuple[object, ...]]] = defaultdict(list)
+
+    for row in rows:
+        pinyin_tone = str(row[0] or &#34;&#34;).strip()
+        current_code = str(row[1] or &#34;&#34;)
+        current_source = str(row[2] or &#34;&#34;)
+        stats[&#34;total&#34;] += 1
+        if not pinyin_tone:
+            stats[&#34;missing_expected&#34;] += 1
+            if len(examples[&#34;missing_expected&#34;]) &lt; examples_limit:
+                examples[&#34;missing_expected&#34;].append(
+                    (pinyin_tone, current_code, &#34;&lt;missing pinyin_tone&gt;&#34;)
+                )
+            continue
+
+        expected_code = canonical_code_map.get(pinyin_tone, &#34;&#34;)
+        if not expected_code:
+            stats[&#34;missing_expected&#34;] += 1
+            if len(examples[&#34;missing_expected&#34;]) &lt; examples_limit:
+                examples[&#34;missing_expected&#34;].append(
+                    (pinyin_tone, current_code, &#34;&lt;missing in code map&gt;&#34;)
+                )
+            continue
+
+        stats[&#34;with_expected&#34;] += 1
+        if current_code == expected_code:
+            stats[&#34;already_current&#34;] += 1
+            continue
+
+        code_source = &#34;canonical_patch&#34; if pinyin_tone in patch_pinyin_tones else &#34;yinjie_code&#34;
+        updates.append((pinyin_tone, expected_code, code_source))
+        stats[&#34;to_update&#34;] += 1
+
+    return updates, stats, examples</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.refresh_runtime_yime_codes.build_phrase_updates"><code class="name flex">
+<span>def <span class="ident">build_phrase_updates</span></span>(<span>conn: sqlite3.Connection,<br>canonical_code_map: dict[str, str],<br>examples_limit: int) ‑> tuple[list[tuple[str, int]], collections.Counter, dict[str, list[tuple[object, ...]]]]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def build_phrase_updates(
+    conn: sqlite3.Connection,
+    canonical_code_map: dict[str, str],
+    examples_limit: int,
+) -&gt; tuple[list[tuple[str, int]], Counter, dict[str, list[tuple[object, ...]]]]:
+    rows = conn.execute(
+        &#39;&#39;&#39;
+        SELECT pi.id, pi.phrase, pi.yime_code, ppm.pinyin_tone, pref.preferred_pinyin_tone
+        FROM phrase_inventory AS pi
+        LEFT JOIN phrase_pinyin_map AS ppm
+            ON ppm.phrase_id = pi.id
+        LEFT JOIN phrase_reading_preference AS pref
+            ON pref.phrase = pi.phrase
+        ORDER BY pi.id, ppm.reading_rank, ppm.pinyin_tone
+        &#39;&#39;&#39;
+    ).fetchall()
+
+    grouped: dict[int, dict[str, object]] = {}
+    for row in rows:
+        phrase_id = int(row[0])
+        record = grouped.setdefault(
+            phrase_id,
+            {
+                &#34;phrase&#34;: str(row[1] or &#34;&#34;),
+                &#34;stored&#34;: str(row[2] or &#34;&#34;),
+                &#34;tones&#34;: [],
+                &#34;preferred_tone&#34;: str(row[4] or &#34;&#34;).strip(),
+            },
+        )
+        pinyin_tone = str(row[3] or &#34;&#34;).strip()
+        if pinyin_tone:
+            record[&#34;tones&#34;].append(pinyin_tone)
+
+    updates: list[tuple[str, int]] = []
+    stats = Counter()
+    examples: dict[str, list[tuple[object, ...]]] = defaultdict(list)
+
+    for phrase_id, record in grouped.items():
+        stats[&#34;total&#34;] += 1
+        phrase = str(record[&#34;phrase&#34;])
+        stored_code = str(record[&#34;stored&#34;])
+        tones = list(dict.fromkeys(record[&#34;tones&#34;]))
+        preferred_tone = str(record.get(&#34;preferred_tone&#34;) or &#34;&#34;).strip()
+        if not tones:
+            stats[&#34;missing_pinyin&#34;] += 1
+            if len(examples[&#34;missing_pinyin&#34;]) &lt; examples_limit:
+                examples[&#34;missing_pinyin&#34;].append((phrase_id, phrase, stored_code))
+            continue
+
+        expected_codes = {
+            &#34;&#34;.join(canonical_code_map.get(syllable, &#34;&#34;) for syllable in tone.split() if syllable)
+            for tone in tones
+        }
+        expected_codes.discard(&#34;&#34;)
+        if not expected_codes:
+            stats[&#34;missing_pinyin&#34;] += 1
+            if len(examples[&#34;missing_expected&#34;]) &lt; examples_limit:
+                examples[&#34;missing_expected&#34;].append((phrase_id, phrase, stored_code, tones[:5]))
+            continue
+
+        if len(expected_codes) &gt; 1:
+            if preferred_tone:
+                preferred_code = &#34;&#34;.join(
+                    canonical_code_map.get(syllable, &#34;&#34;)
+                    for syllable in preferred_tone.split()
+                    if syllable
+                )
+                if preferred_code:
+                    stats[&#34;single_effective_code&#34;] += 1
+                    if stored_code == preferred_code:
+                        stats[&#34;already_current&#34;] += 1
+                        continue
+
+                    updates.append((preferred_code, phrase_id))
+                    stats[&#34;to_update&#34;] += 1
+                    continue
+
+            stats[&#34;ambiguous&#34;] += 1
+            if len(examples[&#34;ambiguous&#34;]) &lt; examples_limit:
+                examples[&#34;ambiguous&#34;].append((
+                    phrase_id,
+                    phrase,
+                    stored_code,
+                    tones[:5],
+                    sorted(expected_codes)[:5],
+                    preferred_tone,
+                ))
+            continue
+
+        stats[&#34;single_effective_code&#34;] += 1
+        expected_code = next(iter(expected_codes))
+        if stored_code == expected_code:
+            stats[&#34;already_current&#34;] += 1
+            continue
+
+        updates.append((expected_code, phrase_id))
+        stats[&#34;to_update&#34;] += 1
+
+    return updates, stats, examples</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.refresh_runtime_yime_codes.compute_runtime_alignment"><code class="name flex">
+<span>def <span class="ident">compute_runtime_alignment</span></span>(<span>conn: sqlite3.Connection, canonical_code_map: dict[str, str]) ‑> tuple[int, int]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def compute_runtime_alignment(
+    conn: sqlite3.Connection,
+    canonical_code_map: dict[str, str],
+) -&gt; tuple[int, int]:
+    rows = conn.execute(
+        &#34;SELECT pinyin_tone, yime_code FROM runtime_candidates&#34;
+    ).fetchall()
+    matches = 0
+    mismatches = 0
+    for row in rows:
+        pinyin_tone = str(row[0] or &#34;&#34;).strip()
+        stored_code = str(row[1] or &#34;&#34;).strip()
+        if not pinyin_tone:
+            continue
+        expected_code = &#34;&#34;.join(
+            canonical_code_map.get(syllable, &#34;&#34;)
+            for syllable in pinyin_tone.split()
+            if syllable
+        )
+        if not expected_code:
+            continue
+        if stored_code == expected_code:
+            matches += 1
+        else:
+            mismatches += 1
+    return matches, mismatches</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.refresh_runtime_yime_codes.main"><code class="name flex">
+<span>def <span class="ident">main</span></span>(<span>) ‑> int</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def main() -&gt; int:
+    args = parse_args()
+    db_path = Path(args.db).resolve()
+    repo_root = SCRIPT_DIR.parent
+
+    if not db_path.exists():
+        print(f&#34;未找到数据库: {db_path}&#34;, file=sys.stderr)
+        return 1
+
+    canonical_code_map = load_canonical_code_map(repo_root)
+    conn = sqlite3.connect(db_path)
+    conn.row_factory = sqlite3.Row
+    try:
+        conn.executescript(SCHEMA_PATH.read_text(encoding=&#34;utf-8&#34;))
+        if args.apply:
+            preferred_phrase_count = sync_phrase_reading_preferences(conn)
+            conn.commit()
+        else:
+            preferred_phrase_count = 0
+        conn.commit()
+
+        runtime_matches_before, runtime_mismatches_before = compute_runtime_alignment(
+            conn,
+            canonical_code_map,
+        )
+        char_updates, char_stats, char_examples = build_char_updates(
+            conn,
+            canonical_code_map,
+            args.show_examples,
+        )
+        phrase_updates, phrase_stats, phrase_examples = build_phrase_updates(
+            conn,
+            canonical_code_map,
+            args.show_examples,
+        )
+
+        print(f&#34;运行时候选当前匹配: {runtime_matches_before}&#34;)
+        print(f&#34;运行时候选当前不匹配: {runtime_mismatches_before}&#34;)
+        print(f&#34;单字拼音行总数: {char_stats[&#39;total&#39;]}&#34;)
+        print(f&#34;单字可推导 canonical 行: {char_stats[&#39;with_expected&#39;]}&#34;)
+        print(f&#34;单字待更新行: {char_stats[&#39;to_update&#39;]}&#34;)
+        print(f&#34;单字已是当前 canonical 行: {char_stats[&#39;already_current&#39;]}&#34;)
+        print(f&#34;单字缺少推导依据行: {char_stats[&#39;missing_expected&#39;]}&#34;)
+        print(f&#34;词语行总数: {phrase_stats[&#39;total&#39;]}&#34;)
+        print(f&#34;词语单一有效编码行: {phrase_stats[&#39;single_effective_code&#39;]}&#34;)
+        print(f&#34;词语待更新行: {phrase_stats[&#39;to_update&#39;]}&#34;)
+        print(f&#34;词语已是当前编码行: {phrase_stats[&#39;already_current&#39;]}&#34;)
+        print(f&#34;词语多读音多编码歧义行: {phrase_stats[&#39;ambiguous&#39;]}&#34;)
+        print(f&#34;词语缺少拼音行: {phrase_stats[&#39;missing_pinyin&#39;]}&#34;)
+
+        print_examples(&#34;单字缺少推导依据样例:&#34;, char_examples.get(&#34;missing_expected&#34;, []))
+        print_examples(&#34;词语多编码歧义样例:&#34;, phrase_examples.get(&#34;ambiguous&#34;, []))
+        print_examples(&#34;词语缺少拼音样例:&#34;, phrase_examples.get(&#34;missing_pinyin&#34;, []))
+
+        if not args.apply:
+            print(&#34;dry-run 模式：未写入数据库&#34;)
+            return 0
+
+        if not args.no_backup:
+            backup_path = backup_database(db_path)
+            print(f&#34;已创建数据库备份: {backup_path}&#34;)
+
+        canonical_mapping_count = sync_canonical_mapping_table(conn, repo_root)
+        print(f&#34;已同步 canonical pinyin_yime_code 行: {canonical_mapping_count}&#34;)
+        print(f&#34;已同步 phrase_reading_preference 行: {preferred_phrase_count}&#34;)
+        conn.commit()
+
+        applied_char_rows = 0
+        applied_phrase_rows = 0
+        apply_pass = 0
+        while char_updates or phrase_updates:
+            apply_pass += 1
+            conn.execute(&#34;BEGIN&#34;)
+            if char_updates:
+                conn.executemany(
+                    &#39;&#39;&#39;
+                    INSERT INTO pinyin_yime_code (pinyin_tone, yime_code, code_source, updated_at)
+                    VALUES (?, ?, ?, CURRENT_TIMESTAMP)
+                    ON CONFLICT(pinyin_tone) DO UPDATE SET
+                        yime_code = excluded.yime_code,
+                        code_source = excluded.code_source,
+                        updated_at = CURRENT_TIMESTAMP
+                    &#39;&#39;&#39;,
+                    char_updates,
+                )
+            if phrase_updates:
+                conn.executemany(
+                    &#39;UPDATE phrase_inventory SET yime_code = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?&#39;,
+                    phrase_updates,
+                )
+            conn.commit()
+
+            applied_char_rows += len(char_updates)
+            applied_phrase_rows += len(phrase_updates)
+            print(
+                f&#34;第 {apply_pass} 轮写入: 单字 {len(char_updates)} 行, 词语 {len(phrase_updates)} 行&#34;
+            )
+
+            char_updates, char_stats, char_examples = build_char_updates(
+                conn,
+                canonical_code_map,
+                args.show_examples,
+            )
+            phrase_updates, phrase_stats, phrase_examples = build_phrase_updates(
+                conn,
+                canonical_code_map,
+                args.show_examples,
+            )
+
+        print(f&#34;累计写入单字行: {applied_char_rows}&#34;)
+        print(f&#34;累计写入词语行: {applied_phrase_rows}&#34;)
+
+        runtime_matches_after, runtime_mismatches_after = compute_runtime_alignment(
+            conn,
+            canonical_code_map,
+        )
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
+
+    print(f&#34;写库后运行时候选匹配: {runtime_matches_after}&#34;)
+    print(f&#34;写库后运行时候选不匹配: {runtime_mismatches_after}&#34;)
+
+    if not args.skip_runtime_export:
+        refresh_runtime_export(db_path)
+        print(&#34;已刷新 runtime_candidates 导出 JSON&#34;)
+
+    return 0</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.refresh_runtime_yime_codes.parse_args"><code class="name flex">
+<span>def <span class="ident">parse_args</span></span>(<span>) ‑> argparse.Namespace</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def parse_args() -&gt; argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description=&#34;按当前 yinjie_code 真源刷新数据库中的音元编码列。默认 dry-run。&#34;
+    )
+    parser.add_argument(&#34;--db&#34;, default=str(DB_PATH), help=&#34;SQLite 数据库路径&#34;)
+    parser.add_argument(&#34;--apply&#34;, action=&#34;store_true&#34;, help=&#34;真正写入数据库；默认仅 dry-run&#34;)
+    parser.add_argument(&#34;--no-backup&#34;, action=&#34;store_true&#34;, help=&#34;写库前不创建数据库备份&#34;)
+    parser.add_argument(
+        &#34;--skip-runtime-export&#34;,
+        action=&#34;store_true&#34;,
+        help=&#34;写库后不刷新 runtime_candidates JSON 导出&#34;,
+    )
+    parser.add_argument(
+        &#34;--show-examples&#34;,
+        type=int,
+        default=10,
+        help=&#34;每类问题最多展示多少条样例&#34;,
+    )
+    return parser.parse_args()</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.refresh_runtime_yime_codes.print_examples"><code class="name flex">
+<span>def <span class="ident">print_examples</span></span>(<span>title: str, examples: list[tuple[object, ...]]) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def print_examples(title: str, examples: list[tuple[object, ...]]) -&gt; None:
+    if not examples:
+        return
+    print(title)
+    for item in examples:
+        print(f&#34;  {item}&#34;)</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.refresh_runtime_yime_codes.refresh_runtime_export"><code class="name flex">
+<span>def <span class="ident">refresh_runtime_export</span></span>(<span>db_path: Path) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def refresh_runtime_export(db_path: Path) -&gt; None:
+    subprocess.run(
+        [
+            sys.executable,
+            str(EXPORT_SCRIPT),
+            &#34;--db&#34;,
+            str(db_path),
+        ],
+        check=True,
+    )</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.refresh_runtime_yime_codes.sync_phrase_reading_preferences"><code class="name flex">
+<span>def <span class="ident">sync_phrase_reading_preferences</span></span>(<span>conn: sqlite3.Connection) ‑> int</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def sync_phrase_reading_preferences(conn: sqlite3.Connection) -&gt; int:
+    phrase_rows = conn.execute(&#34;SELECT phrase FROM phrase_inventory&#34;).fetchall()
+    known_phrases = {str(row[0] or &#34;&#34;) for row in phrase_rows}
+    preferred_rows = [
+        (phrase, preferred_pinyin_tone, reason)
+        for phrase, (preferred_pinyin_tone, reason) in PREFERRED_PHRASE_READINGS.items()
+        if phrase in known_phrases
+    ]
+    if not preferred_rows:
+        return 0
+
+    conn.executemany(
+        &#39;&#39;&#39;
+        INSERT INTO phrase_reading_preference (
+            phrase,
+            preferred_pinyin_tone,
+            selection_reason,
+            updated_at
+        ) VALUES (?, ?, ?, CURRENT_TIMESTAMP)
+        ON CONFLICT(phrase) DO UPDATE SET
+            preferred_pinyin_tone = excluded.preferred_pinyin_tone,
+            selection_reason = excluded.selection_reason,
+            updated_at = CURRENT_TIMESTAMP
+        &#39;&#39;&#39;,
+        preferred_rows,
+    )
+    return len(preferred_rows)</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="yime.refresh_runtime_yime_codes.RefreshStats"><code class="flex name class">
+<span>class <span class="ident">RefreshStats</span></span>
+<span>(</span><span>total_char_rows: int = 0,<br>char_rows_with_expected: int = 0,<br>char_rows_to_update: int = 0,<br>char_rows_already_current: int = 0,<br>char_rows_missing_expected: int = 0,<br>total_phrase_rows: int = 0,<br>phrase_rows_single_effective_code: int = 0,<br>phrase_rows_to_update: int = 0,<br>phrase_rows_already_current: int = 0,<br>phrase_rows_ambiguous: int = 0,<br>phrase_rows_missing_pinyin: int = 0,<br>runtime_matches_before: int = 0,<br>runtime_mismatches_before: int = 0,<br>runtime_matches_after: int = 0,<br>runtime_mismatches_after: int = 0)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@dataclass
+class RefreshStats:
+    total_char_rows: int = 0
+    char_rows_with_expected: int = 0
+    char_rows_to_update: int = 0
+    char_rows_already_current: int = 0
+    char_rows_missing_expected: int = 0
+    total_phrase_rows: int = 0
+    phrase_rows_single_effective_code: int = 0
+    phrase_rows_to_update: int = 0
+    phrase_rows_already_current: int = 0
+    phrase_rows_ambiguous: int = 0
+    phrase_rows_missing_pinyin: int = 0
+    runtime_matches_before: int = 0
+    runtime_mismatches_before: int = 0
+    runtime_matches_after: int = 0
+    runtime_mismatches_after: int = 0</code></pre>
+</details>
+<div class="desc"><p>RefreshStats(total_char_rows: 'int' = 0, char_rows_with_expected: 'int' = 0, char_rows_to_update: 'int' = 0, char_rows_already_current: 'int' = 0, char_rows_missing_expected: 'int' = 0, total_phrase_rows: 'int' = 0, phrase_rows_single_effective_code: 'int' = 0, phrase_rows_to_update: 'int' = 0, phrase_rows_already_current: 'int' = 0, phrase_rows_ambiguous: 'int' = 0, phrase_rows_missing_pinyin: 'int' = 0, runtime_matches_before: 'int' = 0, runtime_mismatches_before: 'int' = 0, runtime_matches_after: 'int' = 0, runtime_mismatches_after: 'int' = 0)</p></div>
+<h3>Instance variables</h3>
+<dl>
+<dt id="yime.refresh_runtime_yime_codes.RefreshStats.char_rows_already_current"><code class="name">var <span class="ident">char_rows_already_current</span> : int</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="yime.refresh_runtime_yime_codes.RefreshStats.char_rows_missing_expected"><code class="name">var <span class="ident">char_rows_missing_expected</span> : int</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="yime.refresh_runtime_yime_codes.RefreshStats.char_rows_to_update"><code class="name">var <span class="ident">char_rows_to_update</span> : int</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="yime.refresh_runtime_yime_codes.RefreshStats.char_rows_with_expected"><code class="name">var <span class="ident">char_rows_with_expected</span> : int</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="yime.refresh_runtime_yime_codes.RefreshStats.phrase_rows_already_current"><code class="name">var <span class="ident">phrase_rows_already_current</span> : int</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="yime.refresh_runtime_yime_codes.RefreshStats.phrase_rows_ambiguous"><code class="name">var <span class="ident">phrase_rows_ambiguous</span> : int</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="yime.refresh_runtime_yime_codes.RefreshStats.phrase_rows_missing_pinyin"><code class="name">var <span class="ident">phrase_rows_missing_pinyin</span> : int</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="yime.refresh_runtime_yime_codes.RefreshStats.phrase_rows_single_effective_code"><code class="name">var <span class="ident">phrase_rows_single_effective_code</span> : int</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="yime.refresh_runtime_yime_codes.RefreshStats.phrase_rows_to_update"><code class="name">var <span class="ident">phrase_rows_to_update</span> : int</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="yime.refresh_runtime_yime_codes.RefreshStats.runtime_matches_after"><code class="name">var <span class="ident">runtime_matches_after</span> : int</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="yime.refresh_runtime_yime_codes.RefreshStats.runtime_matches_before"><code class="name">var <span class="ident">runtime_matches_before</span> : int</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="yime.refresh_runtime_yime_codes.RefreshStats.runtime_mismatches_after"><code class="name">var <span class="ident">runtime_mismatches_after</span> : int</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="yime.refresh_runtime_yime_codes.RefreshStats.runtime_mismatches_before"><code class="name">var <span class="ident">runtime_mismatches_before</span> : int</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="yime.refresh_runtime_yime_codes.RefreshStats.total_char_rows"><code class="name">var <span class="ident">total_char_rows</span> : int</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="yime.refresh_runtime_yime_codes.RefreshStats.total_phrase_rows"><code class="name">var <span class="ident">total_phrase_rows</span> : int</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="yime.refresh_runtime_yime_codes.backup_database" href="#yime.refresh_runtime_yime_codes.backup_database">backup_database</a></code></li>
+<li><code><a title="yime.refresh_runtime_yime_codes.build_char_updates" href="#yime.refresh_runtime_yime_codes.build_char_updates">build_char_updates</a></code></li>
+<li><code><a title="yime.refresh_runtime_yime_codes.build_phrase_updates" href="#yime.refresh_runtime_yime_codes.build_phrase_updates">build_phrase_updates</a></code></li>
+<li><code><a title="yime.refresh_runtime_yime_codes.compute_runtime_alignment" href="#yime.refresh_runtime_yime_codes.compute_runtime_alignment">compute_runtime_alignment</a></code></li>
+<li><code><a title="yime.refresh_runtime_yime_codes.main" href="#yime.refresh_runtime_yime_codes.main">main</a></code></li>
+<li><code><a title="yime.refresh_runtime_yime_codes.parse_args" href="#yime.refresh_runtime_yime_codes.parse_args">parse_args</a></code></li>
+<li><code><a title="yime.refresh_runtime_yime_codes.print_examples" href="#yime.refresh_runtime_yime_codes.print_examples">print_examples</a></code></li>
+<li><code><a title="yime.refresh_runtime_yime_codes.refresh_runtime_export" href="#yime.refresh_runtime_yime_codes.refresh_runtime_export">refresh_runtime_export</a></code></li>
+<li><code><a title="yime.refresh_runtime_yime_codes.sync_phrase_reading_preferences" href="#yime.refresh_runtime_yime_codes.sync_phrase_reading_preferences">sync_phrase_reading_preferences</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="yime.refresh_runtime_yime_codes.RefreshStats" href="#yime.refresh_runtime_yime_codes.RefreshStats">RefreshStats</a></code></h4>
+<ul class="">
+<li><code><a title="yime.refresh_runtime_yime_codes.RefreshStats.char_rows_already_current" href="#yime.refresh_runtime_yime_codes.RefreshStats.char_rows_already_current">char_rows_already_current</a></code></li>
+<li><code><a title="yime.refresh_runtime_yime_codes.RefreshStats.char_rows_missing_expected" href="#yime.refresh_runtime_yime_codes.RefreshStats.char_rows_missing_expected">char_rows_missing_expected</a></code></li>
+<li><code><a title="yime.refresh_runtime_yime_codes.RefreshStats.char_rows_to_update" href="#yime.refresh_runtime_yime_codes.RefreshStats.char_rows_to_update">char_rows_to_update</a></code></li>
+<li><code><a title="yime.refresh_runtime_yime_codes.RefreshStats.char_rows_with_expected" href="#yime.refresh_runtime_yime_codes.RefreshStats.char_rows_with_expected">char_rows_with_expected</a></code></li>
+<li><code><a title="yime.refresh_runtime_yime_codes.RefreshStats.phrase_rows_already_current" href="#yime.refresh_runtime_yime_codes.RefreshStats.phrase_rows_already_current">phrase_rows_already_current</a></code></li>
+<li><code><a title="yime.refresh_runtime_yime_codes.RefreshStats.phrase_rows_ambiguous" href="#yime.refresh_runtime_yime_codes.RefreshStats.phrase_rows_ambiguous">phrase_rows_ambiguous</a></code></li>
+<li><code><a title="yime.refresh_runtime_yime_codes.RefreshStats.phrase_rows_missing_pinyin" href="#yime.refresh_runtime_yime_codes.RefreshStats.phrase_rows_missing_pinyin">phrase_rows_missing_pinyin</a></code></li>
+<li><code><a title="yime.refresh_runtime_yime_codes.RefreshStats.phrase_rows_single_effective_code" href="#yime.refresh_runtime_yime_codes.RefreshStats.phrase_rows_single_effective_code">phrase_rows_single_effective_code</a></code></li>
+<li><code><a title="yime.refresh_runtime_yime_codes.RefreshStats.phrase_rows_to_update" href="#yime.refresh_runtime_yime_codes.RefreshStats.phrase_rows_to_update">phrase_rows_to_update</a></code></li>
+<li><code><a title="yime.refresh_runtime_yime_codes.RefreshStats.runtime_matches_after" href="#yime.refresh_runtime_yime_codes.RefreshStats.runtime_matches_after">runtime_matches_after</a></code></li>
+<li><code><a title="yime.refresh_runtime_yime_codes.RefreshStats.runtime_matches_before" href="#yime.refresh_runtime_yime_codes.RefreshStats.runtime_matches_before">runtime_matches_before</a></code></li>
+<li><code><a title="yime.refresh_runtime_yime_codes.RefreshStats.runtime_mismatches_after" href="#yime.refresh_runtime_yime_codes.RefreshStats.runtime_mismatches_after">runtime_mismatches_after</a></code></li>
+<li><code><a title="yime.refresh_runtime_yime_codes.RefreshStats.runtime_mismatches_before" href="#yime.refresh_runtime_yime_codes.RefreshStats.runtime_mismatches_before">runtime_mismatches_before</a></code></li>
+<li><code><a title="yime.refresh_runtime_yime_codes.RefreshStats.total_char_rows" href="#yime.refresh_runtime_yime_codes.RefreshStats.total_char_rows">total_char_rows</a></code></li>
+<li><code><a title="yime.refresh_runtime_yime_codes.RefreshStats.total_phrase_rows" href="#yime.refresh_runtime_yime_codes.RefreshStats.total_phrase_rows">total_phrase_rows</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>
