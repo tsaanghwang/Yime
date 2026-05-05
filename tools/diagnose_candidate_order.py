@@ -44,10 +44,10 @@ def main() -> None:
     records = decoder._payload_to_runtime_candidates(lookup_code, raw_candidates)
     ranked = decoder._rank_runtime_candidates(records)
 
-    print(f"user_db={USER_DB_PATH}")
+    print(f"user_lexicon_db={USER_DB_PATH}")
     print(f"lookup_code={lookup_code}")
-    print(f"raw_candidates={len(records)}")
-    print(f"ranked_candidates={len(ranked)}")
+    print(f"candidate_pool={len(records)}")
+    print(f"ranked_candidate_entries={len(ranked)}")
 
     if not ranked:
         print("无结果")
@@ -60,9 +60,9 @@ def main() -> None:
         )
         sort_key = _runtime_candidate_sort_key(candidate, user_freq)
         print(
-            f"#{index} text={candidate.text} entry_type={candidate.entry_type} "
+            f"#{index} candidate_text={candidate.text} entry_type={candidate.entry_type} "
             f"pinyin={candidate.pinyin_tone} sort_weight={candidate.sort_weight} "
-            f"user_freq={user_freq} sort_key={sort_key}"
+            f"persisted_reorder_frequency={user_freq} sort_key={sort_key}"
         )
 
 

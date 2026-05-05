@@ -58,13 +58,13 @@
 常用入口：
 
 - `python tools/query_phrase_code.py 日本`
-  用来看词条是否存在、编码是什么、`freq` 是多少
+  用来看词条是否存在、编码是什么、`persisted_reorder_frequency` 是多少
 - `python tools/manage_user_lexicon.py list-recent --limit 20`
-  用来看最近补进或更新了哪些用户词条
+  用来看最近补进或更新了哪些 `user_phrase_entries`
 - `python tools/manage_user_lexicon.py list-freq --limit 20`
-  用来看哪些候选已经积累了持久调序频率
+  用来看哪些候选已经积累了 `persisted_reorder_frequency`
 - `python tools/diagnose_candidate_order.py --numeric-pinyin "ri4 ben3" --limit 10`
-  用来看某组候选为什么这样排序
+  用来看某组候选为什么这样排序；关键字段会直接显示 `candidate_text` 和 `persisted_reorder_frequency`
 
 ## 4. 安装包相关看验收脚本
 
@@ -79,6 +79,14 @@ python tools/verify_seed_install_flow.py
 - 没有 `user_lexicon.db` 时能否导入
 - 只有空库时能否导入
 - 第二次启动时是否会重复导入
+
+CLI 结果字段现在也尽量复用同一套词：
+
+- 用户词库路径统一叫 `user_lexicon_db`
+- 用户词条数量统一叫 `user_phrase_entries`
+- 持久调序频率统一叫 `persisted_reorder_frequency`
+- 候选文本统一叫 `candidate_text`
+- seed 安装验收统一看 `acceptance_result`、`scenario`、`seed_import_state`
 
 ## 5. 以后继续做什么
 

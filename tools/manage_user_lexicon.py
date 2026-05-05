@@ -10,6 +10,10 @@ ROOT = Path(__file__).resolve().parent.parent
 USER_DB_PATH = ROOT / "yime" / "user_lexicon.db"
 
 
+def print_user_lexicon_db(path: Path) -> None:
+    print(f"user_lexicon_db={path}")
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="维护持久用户词库和调序频率。")
     subparsers = parser.add_subparsers(dest="command", required=True)
@@ -70,58 +74,58 @@ def build_parser() -> argparse.ArgumentParser:
 
 def print_phrase_rows(store: UserLexiconStore, term: str, use_like: bool, limit: int) -> None:
     rows = store.list_phrase_entries(term, use_like=use_like, limit=limit)
-    print(f"user_db={USER_DB_PATH}")
-    print(f"phrases={len(rows)}")
+    print_user_lexicon_db(USER_DB_PATH)
+    print(f"user_phrase_entries={len(rows)}")
     if not rows:
         print("无结果")
         return
     for row in rows:
         print(
-            f"phrase={row.phrase} numeric={row.numeric_pinyin} marked={row.marked_pinyin} "
-            f"yime={row.yime_code} note={row.source_note} updated={row.updated_at}"
+            f"phrase={row.phrase} numeric_pinyin={row.numeric_pinyin} marked_pinyin={row.marked_pinyin} "
+            f"yime_code={row.yime_code} source_note={row.source_note} updated_at={row.updated_at}"
         )
 
 
 def print_frequency_rows(store: UserLexiconStore, term: str, use_like: bool, limit: int) -> None:
     rows = store.list_candidate_frequency_entries(term, use_like=use_like, limit=limit)
-    print(f"user_db={USER_DB_PATH}")
-    print(f"frequency_rows={len(rows)}")
+    print_user_lexicon_db(USER_DB_PATH)
+    print(f"persisted_reorder_entries={len(rows)}")
     if not rows:
         print("无结果")
         return
     for row in rows:
         print(
-            f"text={row.text} lookup_code={row.lookup_code} freq={row.freq} "
-            f"last_used={row.last_used_at} numeric={row.numeric_pinyin} marked={row.marked_pinyin}"
+            f"candidate_text={row.text} lookup_code={row.lookup_code} persisted_reorder_frequency={row.freq} "
+            f"last_recorded_at={row.last_used_at} numeric_pinyin={row.numeric_pinyin} marked_pinyin={row.marked_pinyin}"
         )
 
 
 def print_recent_rows(store: UserLexiconStore, limit: int) -> None:
     rows = store.list_recent_phrase_entries(limit=limit)
-    print(f"user_db={USER_DB_PATH}")
-    print(f"recent_phrases={len(rows)}")
+    print_user_lexicon_db(USER_DB_PATH)
+    print(f"recent_user_phrase_entries={len(rows)}")
     if not rows:
         print("无结果")
         return
     for row in rows:
         print(
-            f"phrase={row.phrase} numeric={row.numeric_pinyin} marked={row.marked_pinyin} "
-            f"updated={row.updated_at}"
+            f"phrase={row.phrase} numeric_pinyin={row.numeric_pinyin} marked_pinyin={row.marked_pinyin} "
+            f"updated_at={row.updated_at}"
         )
 
 
 def print_stats(store: UserLexiconStore, top: int) -> None:
     phrase_rows = store.list_phrase_entries(limit=1_000_000)
     frequency_rows = store.list_candidate_frequency_entries(limit=max(top, 1_000_000))
-    print(f"user_db={USER_DB_PATH}")
-    print(f"phrase_count={len(phrase_rows)}")
-    print(f"frequency_count={len(frequency_rows)}")
+    print_user_lexicon_db(USER_DB_PATH)
+    print(f"user_phrase_entries={len(phrase_rows)}")
+    print(f"persisted_reorder_entries={len(frequency_rows)}")
     if frequency_rows:
-        print("top_frequency=")
+        print("top_persisted_reorder_entries=")
         for row in frequency_rows[:top]:
             print(
-                f"  text={row.text} lookup_code={row.lookup_code} freq={row.freq} "
-                f"last_used={row.last_used_at}"
+                f"  candidate_text={row.text} lookup_code={row.lookup_code} persisted_reorder_frequency={row.freq} "
+                f"last_recorded_at={row.last_used_at}"
             )
 
 
@@ -131,10 +135,10 @@ def main() -> None:
         db_path = Path(args.db_path).resolve() if args.db_path else USER_DB_PATH
         existed = db_path.exists()
         store = UserLexiconStore(db_path)
-        print(f"user_db={db_path}")
-        print(f"initialized={True}")
+        print_user_lexicon_db(db_path)
+        print(f"init_result=created_or_opened")
         print(f"already_existed={existed}")
-        print(f"phrase_count={len(store.list_phrase_entries(limit=1_000_000))}")
+        print(f"user_phrase_entries={len(store.list_phrase_entries(limit=1_000_000))}")
         return
 
     store = UserLexiconStore(USER_DB_PATH)
@@ -151,9 +155,10 @@ def main() -> None:
     if args.command == "export":
         output_path = Path(args.output).resolve()
         store.write_export_file(output_path, include_frequency=not args.no_frequency)
-        print(f"user_db={USER_DB_PATH}")
-        print(f"output={output_path}")
+        print_user_lexicon_db(USER_DB_PATH)
+        print(f"export_path={output_path}")
         print(f"include_frequency={not args.no_frequency}")
+        print("export_result=completed")
         return
     if args.command == "import":
         input_path = Path(args.input).resolve()
@@ -162,28 +167,28 @@ def main() -> None:
             replace_existing=args.replace_existing,
             include_frequency=not args.no_frequency,
         )
-        print(f"user_db={USER_DB_PATH}")
-        print(f"input={input_path}")
+        print_user_lexicon_db(USER_DB_PATH)
+        print(f"import_path={input_path}")
         print(f"replace_existing={args.replace_existing}")
         print(f"include_frequency={not args.no_frequency}")
-        print(f"imported_phrase_entries={result['phrase_entries']}")
-        print(f"imported_candidate_frequency={result['candidate_frequency']}")
+        print(f"imported_user_phrase_entries={result['phrase_entries']}")
+        print(f"imported_persisted_reorder_entries={result['candidate_frequency']}")
         return
     if args.command == "delete":
         deleted = store.delete_phrase(args.phrase)
-        print(f"user_db={USER_DB_PATH}")
+        print_user_lexicon_db(USER_DB_PATH)
         print(f"phrase={args.phrase}")
-        print(f"deleted={deleted}")
+        print(f"delete_result={'deleted' if deleted else 'not_found'}")
         return
     if args.command == "reset-freq":
         deleted_rows = store.reset_candidate_frequency(
             text=args.text or None,
             lookup_code=args.lookup_code or None,
         )
-        print(f"user_db={USER_DB_PATH}")
-        print(f"text={args.text}")
+        print_user_lexicon_db(USER_DB_PATH)
+        print(f"candidate_text={args.text}")
         print(f"lookup_code={args.lookup_code}")
-        print(f"deleted_frequency_rows={deleted_rows}")
+        print(f"reset_persisted_reorder_entries={deleted_rows}")
         return
     if args.command == "stats":
         print_stats(store, args.top)

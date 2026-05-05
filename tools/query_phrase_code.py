@@ -69,8 +69,8 @@ def print_source_phrase_rows(rows: Sequence[sqlite3.Row]) -> None:
         return
     for row in rows:
         print(
-            "phrase={phrase} marked={marked_pinyin} numeric={numeric_pinyin} "
-            "rank={reading_rank} source={source_name}".format(**dict(row))
+            "phrase={phrase} marked_pinyin={marked_pinyin} numeric_pinyin={numeric_pinyin} "
+            "reading_rank={reading_rank} source_name={source_name}".format(**dict(row))
         )
 
 
@@ -80,8 +80,8 @@ def print_source_char_rows(rows: Sequence[sqlite3.Row]) -> None:
         return
     for row in rows:
         print(
-            "hanzi={hanzi} marked={marked_pinyin} numeric={numeric_pinyin} "
-            "rank={reading_rank} source={source_name}".format(**dict(row))
+            "hanzi={hanzi} marked_pinyin={marked_pinyin} numeric_pinyin={numeric_pinyin} "
+            "reading_rank={reading_rank} source_name={source_name}".format(**dict(row))
         )
 
 
@@ -93,8 +93,8 @@ def print_runtime_phrase_rows(rows: Sequence[sqlite3.Row]) -> None:
         payload = dict(row)
         yime_code = str(payload.get("yime_code") or "")
         print(
-            "phrase={phrase} pinyin={pinyin_tone} yime={yime_code} codepoints={codepoints} "
-            "rank={reading_rank} freq={phrase_frequency}".format(
+            "phrase={phrase} pinyin={pinyin_tone} yime_code={yime_code} codepoints={codepoints} "
+            "reading_rank={reading_rank} phrase_frequency={phrase_frequency}".format(
                 codepoints=format_codepoints(yime_code),
                 **payload,
             )
@@ -109,8 +109,8 @@ def print_runtime_char_rows(rows: Sequence[sqlite3.Row]) -> None:
         payload = dict(row)
         yime_code = str(payload.get("yime_code") or "")
         print(
-            "hanzi={hanzi} marked={marked_pinyin} numeric={pinyin_tone} yime={yime_code} "
-            "codepoints={codepoints} rank={reading_rank}".format(
+            "hanzi={hanzi} marked_pinyin={marked_pinyin} numeric_pinyin={pinyin_tone} yime_code={yime_code} "
+            "codepoints={codepoints} reading_rank={reading_rank}".format(
                 codepoints=format_codepoints(yime_code),
                 **payload,
             )
@@ -125,8 +125,8 @@ def print_user_phrase_rows(rows: Sequence[sqlite3.Row]) -> None:
         payload = dict(row)
         yime_code = str(payload.get("yime_code") or "")
         print(
-            "phrase={phrase} marked={marked_pinyin} numeric={numeric_pinyin} yime={yime_code} "
-            "codepoints={codepoints} note={source_note} freq={freq} last_used={last_used_at} updated={updated_at}".format(
+            "phrase={phrase} marked_pinyin={marked_pinyin} numeric_pinyin={numeric_pinyin} yime_code={yime_code} "
+            "codepoints={codepoints} source_note={source_note} persisted_reorder_frequency={freq} last_recorded_at={last_used_at} updated_at={updated_at}".format(
                 codepoints=format_codepoints(yime_code),
                 **payload,
             )
@@ -260,10 +260,10 @@ def query_user_db(term: str, use_like: bool, limit: int) -> None:
 
 def print_metadata(term: str, use_like: bool, limit: int) -> None:
     print(f"query={term}")
-    print(f"mode={'like' if use_like else 'exact'}")
+    print(f"match_mode={'like' if use_like else 'exact'}")
     print(f"source_db={SOURCE_DB_PATH}")
     print(f"runtime_db={RUNTIME_DB_PATH}")
-    print(f"user_db={USER_DB_PATH}")
+    print(f"user_lexicon_db={USER_DB_PATH}")
     print(f"limit={limit}")
 
 

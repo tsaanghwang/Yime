@@ -53,12 +53,12 @@ def main() -> None:
         source_note=args.note,
     )
 
-    print(f"user_db={USER_DB_PATH}")
+    print(f"user_lexicon_db={USER_DB_PATH}")
     print(f"phrase={args.phrase}")
     print(f"numeric_pinyin={args.numeric_pinyin}")
     print(f"marked_pinyin={args.marked_pinyin}")
     print(f"yime_code={yime_code}")
-    print("status=upserted")
+    print("write_result=upserted")
 
 
 if __name__ == "__main__":
