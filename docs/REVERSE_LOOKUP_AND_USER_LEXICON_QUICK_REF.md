@@ -80,6 +80,8 @@ python tools/manage_user_lexicon.py list-recent --limit 10
 python tools/manage_user_lexicon.py export backups/user_lexicon_backup.json
 python tools/manage_user_lexicon.py import backups/user_lexicon_backup.json
 python tools/manage_user_lexicon.py init-db
+python tools/manage_user_lexicon.py check
+python tools/manage_user_lexicon.py repair-all
 ```
 
 如果要生成可随安装包分发的 seed 用户词库：
@@ -100,13 +102,13 @@ python tools/query_phrase_code.py 日本
 
 看 `User 词语编码` 这一段里的：
 
-- `freq`：持久选词频率
-- `last_used`：最近使用时间
+- `persisted_reorder_frequency`：持久选词频率
+- `last_recorded_at`：最近使用时间
 
 如果看到：
 
 ```text
-freq=3
+persisted_reorder_frequency=3
 ```
 
 通常说明这个词不只是“存在于用户词库”，而且最近被你持续选中过，所以会长期排前。

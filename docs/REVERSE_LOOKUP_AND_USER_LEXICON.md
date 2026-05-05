@@ -212,6 +212,26 @@ python tools/manage_user_lexicon.py init-db --db-path path/to/user_lexicon.db
 
 这条命令会确保 SQLite 文件已经创建好，即使里面还没有任何用户词条。
 
+### repair 命令
+
+如果你怀疑用户词库里已经混入了坏记录，不想手工导出后再清理，可以直接用 repair 子命令：
+
+```bash
+python tools/manage_user_lexicon.py check
+python tools/manage_user_lexicon.py repair-phrases
+python tools/manage_user_lexicon.py repair-frequency
+python tools/manage_user_lexicon.py repair-meta
+python tools/manage_user_lexicon.py repair-all
+```
+
+它们分别处理：
+
+- `check`：只检查，不改动，列出当前库里可自动修复的问题数量
+- `repair-phrases`：修复用户词条里的空字段、不可解析拼音、错误 `yime_code` 和规范化后重复的词条
+- `repair-frequency`：修复持久调序频率里的空键、非正频率和规范化后重复的频率记录
+- `repair-meta`：修复 `seed_import_completed` 的无效值或“跳过导入但当前其实没有用户数据”的过期状态
+- `repair-all`：顺序执行以上三类修复
+
 ## 4. 调序诊断工具
 
 如果你想知道“为什么这个词排到前面”，而不是只看 `freq`，可以直接用：
