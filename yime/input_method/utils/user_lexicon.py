@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import csv
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from functools import lru_cache
@@ -117,6 +118,7 @@ def resolve_canonical_code_from_numeric_pinyin(
 
 class UserLexiconStore:
     DEFAULT_PHRASE_SORT_WEIGHT = 1_000_000.0
+    TEXT_EXCHANGE_HEADER = ("词语", "数字标调拼音", "初始频率")
 
     def __init__(self, db_path: Path) -> None:
         self.db_path = db_path
@@ -485,6 +487,140 @@ class UserLexiconStore:
             encoding="utf-8",
         )
         return path
+
+    def write_text_export_file(self, path: Path) -> dict[str, int]:
+        frequency_by_key = {
+            (row.lookup_code, row.text): row.freq
+            for row in self.list_candidate_frequency_entries(limit=1_000_000)
+        }
+        phrase_rows = self.list_phrase_entries(limit=1_000_000)
+
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with path.open("w", encoding="utf-8", newline="") as handle:
+            writer = csv.writer(handle, delimiter="\t", lineterminator="\n")
+            writer.writerow(self.TEXT_EXCHANGE_HEADER)
+            for row in phrase_rows:
+                writer.writerow(
+                    [
+                        row.phrase,
+                        row.numeric_pinyin,
+                        frequency_by_key.get((row.yime_code, row.phrase), 0),
+                    ]
+                )
+
+        return {
+            "phrase_entries": len(phrase_rows),
+            "candidate_frequency": sum(
+                1
+                for row in phrase_rows
+                if frequency_by_key.get((row.yime_code, row.phrase), 0) > 0
+            ),
+        }
+
+    def import_text_file(
+        self,
+        path: Path,
+        *,
+        repo_root: Path,
+        replace_existing: bool = False,
+    ) -> dict[str, int]:
+        parsed_rows: list[tuple[str, str, str, int]] = []
+
+        with path.open("r", encoding="utf-8-sig", newline="") as handle:
+            reader = csv.reader(handle, delimiter="\t")
+            for line_number, row in enumerate(reader, start=1):
+                if not row or not any(str(cell).strip() for cell in row):
+                    continue
+
+                normalized_cells = [str(cell).strip() for cell in row]
+                if tuple(normalized_cells[:3]) == self.TEXT_EXCHANGE_HEADER:
+                    continue
+                if len(normalized_cells) != 3:
+                    raise ValueError(f"导入文件格式无效：第 {line_number} 行应包含 3 列。")
+
+                phrase = normalized_cells[0]
+                numeric_pinyin = normalize_numeric_pinyin_syllable_spacing(normalized_cells[1])
+                if not phrase:
+                    raise ValueError(f"导入文件格式无效：第 {line_number} 行“词语”不能为空。")
+                if not numeric_pinyin:
+                    raise ValueError(f"导入文件格式无效：第 {line_number} 行“数字标调拼音”不能为空。")
+
+                try:
+                    initial_frequency = int(normalized_cells[2])
+                except ValueError as exc:
+                    raise ValueError(
+                        f"导入文件格式无效：第 {line_number} 行“初始频率”必须是整数。"
+                    ) from exc
+                if initial_frequency < 0:
+                    raise ValueError(
+                        f"导入文件格式无效：第 {line_number} 行“初始频率”不能为负数。"
+                    )
+
+                yime_code = resolve_yime_code_from_numeric_pinyin(repo_root, numeric_pinyin)
+                if not yime_code:
+                    raise ValueError(
+                        f"导入文件格式无效：第 {line_number} 行无法根据数字标调拼音推导音元编码。"
+                    )
+
+                parsed_rows.append((phrase, numeric_pinyin, yime_code, initial_frequency))
+
+        imported_phrases = 0
+        imported_frequency_rows = 0
+        with self._connect() as connection:
+            if replace_existing:
+                connection.execute("DELETE FROM user_candidate_frequency")
+                connection.execute("DELETE FROM user_phrase_entries")
+
+            for phrase, numeric_pinyin, yime_code, initial_frequency in parsed_rows:
+                connection.execute(
+                    """
+                    INSERT INTO user_phrase_entries (
+                        phrase,
+                        numeric_pinyin,
+                        marked_pinyin,
+                        yime_code,
+                        source_note,
+                        sort_weight
+                    ) VALUES (?, ?, '', ?, 'ui_import_txt', ?)
+                    ON CONFLICT(phrase) DO UPDATE SET
+                        numeric_pinyin = excluded.numeric_pinyin,
+                        yime_code = excluded.yime_code,
+                        source_note = excluded.source_note,
+                        sort_weight = excluded.sort_weight,
+                        updated_at = CURRENT_TIMESTAMP
+                    """,
+                    (
+                        phrase,
+                        numeric_pinyin,
+                        yime_code,
+                        self.DEFAULT_PHRASE_SORT_WEIGHT,
+                    ),
+                )
+                imported_phrases += 1
+
+                if initial_frequency <= 0:
+                    continue
+
+                connection.execute(
+                    """
+                    INSERT INTO user_candidate_frequency (
+                        lookup_code,
+                        text,
+                        freq,
+                        last_used_at
+                    ) VALUES (?, ?, ?, CURRENT_TIMESTAMP)
+                    ON CONFLICT(lookup_code, text) DO UPDATE SET
+                        freq = excluded.freq,
+                        last_used_at = excluded.last_used_at
+                    """,
+                    (yime_code, phrase, initial_frequency),
+                )
+                imported_frequency_rows += 1
+
+        return {
+            "phrase_entries": imported_phrases,
+            "candidate_frequency": imported_frequency_rows,
+        }
 
     def import_payload(
         self,

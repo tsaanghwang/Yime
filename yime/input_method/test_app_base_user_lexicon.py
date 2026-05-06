@@ -37,6 +37,8 @@ class _FakeUserLexiconStore:
         self.deleted_phrases: list[str] = []
         self.delete_result = True
         self.import_calls: list[dict[str, object]] = []
+        self.import_text_calls: list[dict[str, object]] = []
+        self.export_text_calls: list[Path] = []
         self.meta: dict[str, str] = {}
         self.has_data = False
 
@@ -71,6 +73,28 @@ class _FakeUserLexiconStore:
             }
         )
         return {"phrase_entries": 2, "candidate_frequency": 1}
+
+    def import_text_file(
+        self,
+        path: Path,
+        *,
+        repo_root: Path,
+        replace_existing: bool = False,
+    ) -> dict[str, int]:
+        self.import_text_calls.append(
+            {
+                "path": path,
+                "repo_root": repo_root,
+                "replace_existing": replace_existing,
+            }
+        )
+        return {"phrase_entries": 2, "candidate_frequency": 1}
+
+    def write_text_export_file(self, path: Path) -> dict[str, int]:
+        self.export_text_calls.append(path)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("词语\t数字标调拼音\t初始频率\n", encoding="utf-8")
+        return {"phrase_entries": 3, "candidate_frequency": 2}
 
     def get_meta(self, key: str) -> str:
         return self.meta.get(key, "")
@@ -428,6 +452,133 @@ def test_maybe_import_seed_user_lexicon_skips_when_existing_user_data_present(tm
     assert app.user_lexicon_store.import_calls == []
     assert app.user_lexicon_store.get_meta("seed_import_completed") == "skipped_existing_user_data"
 
+
+def test_export_user_lexicon_from_menu_writes_standard_text_file(monkeypatch, tmp_path) -> None:
+    app = BaseInputMethodApp.__new__(BaseInputMethodApp)
     app.candidate_box = _FakeCandidateBox("")
-    BaseInputMethodApp._flush_pending_feedbacks(app)
-    assert app.candidate_box.statuses == ["已跳过 seed 用户词库导入：检测到本机已有用户数据。"]
+    app.user_lexicon_store = _FakeUserLexiconStore()
+    app.user_lexicon_export_path = tmp_path / "UserLexicon" / "user_lexicon_export.txt"
+
+    info_calls: list[tuple[str, str]] = []
+    monkeypatch.setattr(
+        "yime.input_method.app_base.messagebox.showinfo",
+        lambda title, message, parent=None: info_calls.append((title, message)),
+    )
+
+    BaseInputMethodApp._export_user_lexicon_from_menu(app)
+
+    assert app.user_lexicon_store.export_text_calls == [app.user_lexicon_export_path]
+    assert info_calls == [
+        (
+            "导出用户词库",
+            "已导出用户词库：3 条词条，2 条初始频率。\n\n"
+            f"写入文件：{app.user_lexicon_export_path}",
+        )
+    ]
+
+
+def test_edit_user_lexicon_from_menu_prepares_import_text_file(monkeypatch, tmp_path) -> None:
+    app = BaseInputMethodApp.__new__(BaseInputMethodApp)
+    app.candidate_box = _FakeCandidateBox("")
+    app.user_lexicon_store = _FakeUserLexiconStore()
+    app.user_lexicon_import_path = tmp_path / "UserLexicon" / "user_lexicon_import.txt"
+
+    opened_paths: list[str] = []
+    app._open_path_in_shell = lambda path_text: opened_paths.append(path_text)
+
+    info_calls: list[tuple[str, str]] = []
+    monkeypatch.setattr(
+        "yime.input_method.app_base.messagebox.showinfo",
+        lambda title, message, parent=None: info_calls.append((title, message)),
+    )
+
+    BaseInputMethodApp._edit_user_lexicon_from_menu(app)
+
+    assert app.user_lexicon_store.export_text_calls == [app.user_lexicon_import_path]
+    assert opened_paths == [str(app.user_lexicon_import_path)]
+    assert info_calls == [
+        (
+            "用户词库",
+            "已生成可编辑的用户词库导入文件：3 条词条，2 条初始频率。\n\n"
+            f"请编辑并保存：{app.user_lexicon_import_path}\n"
+            "保存后可通过“导入用户词库”将修改写回。",
+        )
+    ]
+
+
+def test_import_user_lexicon_from_menu_reads_standard_text_file(monkeypatch, tmp_path) -> None:
+    app = BaseInputMethodApp.__new__(BaseInputMethodApp)
+    app.candidate_box = _FakeCandidateBox("")
+    app.user_lexicon_store = _FakeUserLexiconStore()
+    app.repo_root = Path(__file__).resolve().parents[2]
+    app.user_lexicon_import_path = tmp_path / "UserLexicon" / "user_lexicon_import.txt"
+    app.user_lexicon_import_path.parent.mkdir(parents=True, exist_ok=True)
+    app.user_lexicon_import_path.write_text("词语\t数字标调拼音\t初始频率\n日本\tri4 ben3\t1\n", encoding="utf-8")
+    app.decoder = _ReloadableDecoder()
+
+    refreshed: list[str] = []
+    app._on_input_change = lambda event=None: refreshed.append("refreshed")
+
+    info_calls: list[tuple[str, str]] = []
+    monkeypatch.setattr(
+        "yime.input_method.app_base.messagebox.showinfo",
+        lambda title, message, parent=None: info_calls.append((title, message)),
+    )
+
+    BaseInputMethodApp._import_user_lexicon_from_menu(app)
+
+    assert app.user_lexicon_store.import_text_calls == [
+        {
+            "path": app.user_lexicon_import_path,
+            "repo_root": app.repo_root,
+            "replace_existing": False,
+        }
+    ]
+    assert app.decoder.reload_calls == 1
+    assert refreshed == ["refreshed"]
+    assert info_calls == [
+        (
+            "导入用户词库",
+            "已导入用户词库：2 条词条，1 条初始频率。\n\n"
+            f"读取文件：{app.user_lexicon_import_path}",
+        )
+    ]
+
+
+def test_reload_user_lexicon_from_menu_reads_standard_text_file(monkeypatch, tmp_path) -> None:
+    app = BaseInputMethodApp.__new__(BaseInputMethodApp)
+    app.candidate_box = _FakeCandidateBox("")
+    app.user_lexicon_store = _FakeUserLexiconStore()
+    app.repo_root = Path(__file__).resolve().parents[2]
+    app.user_lexicon_import_path = tmp_path / "UserLexicon" / "user_lexicon_import.txt"
+    app.user_lexicon_import_path.parent.mkdir(parents=True, exist_ok=True)
+    app.user_lexicon_import_path.write_text("词语\t数字标调拼音\t初始频率\n日本\tri4 ben3\t1\n", encoding="utf-8")
+    app.decoder = _ReloadableDecoder()
+
+    refreshed: list[str] = []
+    app._on_input_change = lambda event=None: refreshed.append("refreshed")
+
+    info_calls: list[tuple[str, str]] = []
+    monkeypatch.setattr(
+        "yime.input_method.app_base.messagebox.showinfo",
+        lambda title, message, parent=None: info_calls.append((title, message)),
+    )
+
+    BaseInputMethodApp._reload_user_lexicon_from_menu(app)
+
+    assert app.user_lexicon_store.import_text_calls == [
+        {
+            "path": app.user_lexicon_import_path,
+            "repo_root": app.repo_root,
+            "replace_existing": False,
+        }
+    ]
+    assert app.decoder.reload_calls == 1
+    assert refreshed == ["refreshed"]
+    assert info_calls == [
+        (
+            "重载用户词库",
+            "已按导入文件重载用户词库：2 条词条，1 条初始频率。\n\n"
+            f"读取文件：{app.user_lexicon_import_path}",
+        )
+    ]

@@ -33,6 +33,8 @@ def test_input_method_app_factory_wires_user_lexicon_callbacks(monkeypatch) -> N
     app._on_active_topmost_change = lambda enabled: None
     app._reload_user_lexicon_from_menu = lambda: None
     app._edit_user_lexicon_from_menu = lambda: None
+    app._import_user_lexicon_from_menu = lambda: None
+    app._export_user_lexicon_from_menu = lambda: None
     app._open_user_data_dir = lambda: None
     app._build_hotkey_summary = lambda: "当前热键：ctrl+alt+insert"
     app._format_hotkey_label = lambda: "Ctrl+Alt+Insert"
@@ -64,6 +66,8 @@ def test_input_method_app_factory_wires_user_lexicon_callbacks(monkeypatch) -> N
     assert captured["on_active_topmost_change"] is app._on_active_topmost_change
     assert captured["on_reload_user_lexicon"] is app._reload_user_lexicon_from_menu
     assert captured["on_edit_user_lexicon"] is app._edit_user_lexicon_from_menu
+    assert captured["on_import_user_lexicon"] is app._import_user_lexicon_from_menu
+    assert captured["on_export_user_lexicon"] is app._export_user_lexicon_from_menu
     assert captured["on_open_user_data_dir"] is app._open_user_data_dir
     assert captured["on_hotkey_summary_request"] is app._build_hotkey_summary
     assert captured["on_hotkey_label_request"] is app._format_hotkey_label

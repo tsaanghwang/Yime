@@ -1,6 +1,10 @@
 from pathlib import Path
 
-from yime.input_method.app_base import resolve_user_data_dir
+from yime.input_method.app_base import (
+    resolve_user_data_dir,
+    resolve_user_documents_dir,
+    resolve_user_lexicon_exchange_dir,
+)
 
 
 def test_resolve_user_data_dir_defaults_to_app_dir_in_source_mode() -> None:
@@ -27,4 +31,16 @@ def test_resolve_user_data_dir_prefers_explicit_override() -> None:
 
     assert resolve_user_data_dir(app_dir, env=env, is_frozen=True) == Path(
         r"D:\Portable\YimeUserData"
+    )
+
+
+def test_resolve_user_documents_dir_uses_userprofile_documents() -> None:
+    assert resolve_user_documents_dir(env={"USERPROFILE": r"C:\Users\demo"}) == (
+        Path(r"C:\Users\demo") / "Documents"
+    )
+
+
+def test_resolve_user_lexicon_exchange_dir_places_files_under_documents() -> None:
+    assert resolve_user_lexicon_exchange_dir(env={"USERPROFILE": r"C:\Users\demo"}) == (
+        Path(r"C:\Users\demo") / "Documents" / "Yime" / "UserLexicon"
     )

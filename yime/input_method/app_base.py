@@ -59,6 +59,28 @@ def resolve_user_data_dir(
     return app_dir
 
 
+def resolve_user_documents_dir(
+    *,
+    env: Optional[Mapping[str, str]] = None,
+    home: Optional[Path] = None,
+) -> Path:
+    environment = os.environ if env is None else env
+    if home is not None:
+        home_dir = Path(home).expanduser()
+    else:
+        user_profile = str(environment.get("USERPROFILE") or "").strip()
+        home_dir = Path(user_profile).expanduser() if user_profile else Path.home()
+    return home_dir / "Documents"
+
+
+def resolve_user_lexicon_exchange_dir(
+    *,
+    env: Optional[Mapping[str, str]] = None,
+    home: Optional[Path] = None,
+) -> Path:
+    return resolve_user_documents_dir(env=env, home=home) / "Yime" / "UserLexicon"
+
+
 class BaseInputMethodApp:
     """Common logic shared by the global-listener and hotkey entry points."""
 
@@ -84,6 +106,9 @@ class BaseInputMethodApp:
         self.repo_root = app_dir.parent
         self._pending_feedbacks: list[tuple[str, str, str, bool]] = []
         self.user_data_dir = resolve_user_data_dir(app_dir)
+        self.user_lexicon_exchange_dir = resolve_user_lexicon_exchange_dir()
+        self.user_lexicon_import_path = self.user_lexicon_exchange_dir / "user_lexicon_import.txt"
+        self.user_lexicon_export_path = self.user_lexicon_exchange_dir / "user_lexicon_export.txt"
         self.ui_settings_path = self.user_data_dir / "ui_settings.json"
         self.ui_settings = self._load_ui_settings()
         self.candidate_page_size = self._normalize_candidate_page_size(
@@ -215,6 +240,8 @@ class BaseInputMethodApp:
             on_background_color_change=self._on_background_color_change,
             on_active_topmost_change=self._on_active_topmost_change,
             on_reload_user_lexicon=self._reload_user_lexicon_from_menu,
+            on_import_user_lexicon=self._import_user_lexicon_from_menu,
+            on_export_user_lexicon=self._export_user_lexicon_from_menu,
             on_open_user_data_dir=self._open_user_data_dir,
             on_hotkey_summary_request=self._build_hotkey_summary,
             on_add_input_to_user_lexicon=self._add_current_input_to_user_lexicon,
@@ -452,8 +479,31 @@ class BaseInputMethodApp:
         self._save_ui_settings()
 
     def _reload_user_lexicon_from_menu(self) -> None:
-        self._reload_user_lexicon_runtime()
-        self._emit_feedback("用户词库", "已重载用户词库。")
+        self._apply_user_lexicon_import_file(
+            title="重载用户词库",
+            success_prefix="已按导入文件重载用户词库",
+        )
+
+    def _get_user_lexicon_exchange_dir(self) -> Path:
+        exchange_dir = getattr(self, "user_lexicon_exchange_dir", None)
+        if exchange_dir is None:
+            exchange_dir = resolve_user_lexicon_exchange_dir()
+            self.user_lexicon_exchange_dir = exchange_dir
+        return Path(exchange_dir)
+
+    def _get_user_lexicon_import_path(self) -> Path:
+        import_path = getattr(self, "user_lexicon_import_path", None)
+        if import_path is None:
+            import_path = self._get_user_lexicon_exchange_dir() / "user_lexicon_import.txt"
+            self.user_lexicon_import_path = import_path
+        return Path(import_path)
+
+    def _get_user_lexicon_export_path(self) -> Path:
+        export_path = getattr(self, "user_lexicon_export_path", None)
+        if export_path is None:
+            export_path = self._get_user_lexicon_exchange_dir() / "user_lexicon_export.txt"
+            self.user_lexicon_export_path = export_path
+        return Path(export_path)
 
     def _open_path_in_shell(self, path_text: str) -> None:
         if hasattr(os, "startfile"):
@@ -464,26 +514,68 @@ class BaseInputMethodApp:
             subprocess.Popen(["xdg-open", path_text])
 
     def _edit_user_lexicon_from_menu(self) -> None:
-        self.user_data_dir.mkdir(parents=True, exist_ok=True)
-        db_path = self.user_db_path
-        if db_path.exists():
-            try:
-                self._open_path_in_shell(str(db_path))
-                self._emit_feedback("用户词库", f"已打开用户词库文件：{db_path}")
-                return
-            except Exception:
-                pass
+        import_path = self._get_user_lexicon_import_path()
+        import_path.parent.mkdir(parents=True, exist_ok=True)
+        result = self.user_lexicon_store.write_text_export_file(import_path)
+        self._open_path_in_shell(str(import_path))
+        self._show_user_lexicon_info(
+            "用户词库",
+            "已生成可编辑的用户词库导入文件："
+            f"{result['phrase_entries']} 条词条，{result['candidate_frequency']} 条初始频率。\n\n"
+            f"请编辑并保存：{import_path}\n"
+            "保存后可通过“导入用户词库”将修改写回。",
+        )
 
-        self._open_path_in_shell(str(self.user_data_dir))
-        if db_path.exists():
-            self._emit_feedback(
-                "用户词库",
-                f"当前未能直接打开用户词库文件，已打开用户数据目录：{self.user_data_dir}",
+    def _apply_user_lexicon_import_file(
+        self,
+        *,
+        title: str,
+        success_prefix: str,
+    ) -> None:
+        import_path = self._get_user_lexicon_import_path()
+        import_path.parent.mkdir(parents=True, exist_ok=True)
+        if not import_path.exists():
+            self._show_user_lexicon_warning(
+                title,
+                "未找到导入文件。\n\n"
+                f"请将 UTF-8 文本文件放到：{import_path}\n"
+                "文件名固定为 user_lexicon_import.txt，表头为：词语\t数字标调拼音\t初始频率",
             )
             return
-        self._emit_feedback(
-            "用户词库",
-            f"用户词库文件尚未创建，已打开用户数据目录：{self.user_data_dir}",
+
+        try:
+            result = self.user_lexicon_store.import_text_file(
+                import_path,
+                repo_root=self.repo_root,
+            )
+        except ValueError as exc:
+            self._show_user_lexicon_error(title, str(exc))
+            return
+
+        self._reload_user_lexicon_runtime()
+        self._on_input_change()
+        self._show_user_lexicon_info(
+            title,
+            f"{success_prefix}："
+            f"{result['phrase_entries']} 条词条，{result['candidate_frequency']} 条初始频率。\n\n"
+            f"读取文件：{import_path}",
+        )
+
+    def _import_user_lexicon_from_menu(self) -> None:
+        self._apply_user_lexicon_import_file(
+            title="导入用户词库",
+            success_prefix="已导入用户词库",
+        )
+
+    def _export_user_lexicon_from_menu(self) -> None:
+        export_path = self._get_user_lexicon_export_path()
+        export_path.parent.mkdir(parents=True, exist_ok=True)
+        result = self.user_lexicon_store.write_text_export_file(export_path)
+        self._show_user_lexicon_info(
+            "导出用户词库",
+            "已导出用户词库："
+            f"{result['phrase_entries']} 条词条，{result['candidate_frequency']} 条初始频率。\n\n"
+            f"写入文件：{export_path}",
         )
 
     def _open_user_data_dir(self) -> None:

@@ -59,6 +59,7 @@ class CandidateBoxActions:
         self._tools_menu: Optional[tk.Menu] = None
         self._user_lexicon_menu: Optional[tk.Menu] = None
         self._user_lexicon_edit_reload_menu: Optional[tk.Menu] = None
+        self._user_lexicon_import_export_menu: Optional[tk.Menu] = None
 
     def _emit_feedback(
         self,
@@ -471,6 +472,7 @@ class CandidateBoxActions:
             menu.add_command(label="删除当前词条", command=self.delete_current_input_from_user_lexicon)
             menu.add_separator()
             menu.add_cascade(label="编辑与重载", menu=self._get_user_lexicon_edit_reload_menu())
+            menu.add_cascade(label="导入与导出", menu=self._get_user_lexicon_import_export_menu())
             self._user_lexicon_menu = menu
         return self._user_lexicon_menu
 
@@ -481,6 +483,14 @@ class CandidateBoxActions:
             menu.add_command(label="重载用户词库", command=self.reload_user_lexicon)
             self._user_lexicon_edit_reload_menu = menu
         return self._user_lexicon_edit_reload_menu
+
+    def _get_user_lexicon_import_export_menu(self) -> tk.Menu:
+        if self._user_lexicon_import_export_menu is None:
+            menu = tk.Menu(self.box.root, tearoff=False)
+            menu.add_command(label="导入用户词库", command=self.import_user_lexicon)
+            menu.add_command(label="导出用户词库", command=self.export_user_lexicon)
+            self._user_lexicon_import_export_menu = menu
+        return self._user_lexicon_import_export_menu
 
     def set_candidate_page_size(self, page_size: int) -> None:
         callback = getattr(self.box, "candidate_page_size_change_callback", None)
@@ -602,6 +612,18 @@ class CandidateBoxActions:
         if callable(callback) and callback():
             return
         self._emit_feedback("设置文件", "当前未配置设置文件入口。")
+
+    def import_user_lexicon(self) -> None:
+        callback = getattr(self.box, "import_user_lexicon_callback", None)
+        if callable(callback) and callback():
+            return
+        self._emit_feedback("用户词库", "当前未配置用户词库导入入口。")
+
+    def export_user_lexicon(self) -> None:
+        callback = getattr(self.box, "export_user_lexicon_callback", None)
+        if callable(callback) and callback():
+            return
+        self._emit_feedback("用户词库", "当前未配置用户词库导出入口。")
 
     def show_hotkey_info(self) -> None:
         callback = getattr(self.box, "hotkey_summary_callback", None)

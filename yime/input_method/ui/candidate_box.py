@@ -95,6 +95,8 @@ class CandidateBox(CandidateRendererMixin):
         on_active_topmost_change: Optional[BoolSettingChangeCallback] = None,
         on_reload_user_lexicon: Optional[VoidCallback] = None,
         on_edit_user_lexicon: Optional[VoidCallback] = None,
+        on_import_user_lexicon: Optional[VoidCallback] = None,
+        on_export_user_lexicon: Optional[VoidCallback] = None,
         on_open_user_data_dir: Optional[VoidCallback] = None,
         on_hotkey_summary_request: Optional[HotkeySummaryRequestCallback] = None,
         on_hotkey_label_request: Optional[HotkeyLabelRequestCallback] = None,
@@ -158,6 +160,8 @@ class CandidateBox(CandidateRendererMixin):
         self._on_active_topmost_change = on_active_topmost_change
         self._on_reload_user_lexicon = on_reload_user_lexicon
         self._on_edit_user_lexicon = on_edit_user_lexicon
+        self._on_import_user_lexicon = on_import_user_lexicon
+        self._on_export_user_lexicon = on_export_user_lexicon
         self._on_open_user_data_dir = on_open_user_data_dir
         self._on_hotkey_summary_request = on_hotkey_summary_request
         self._on_hotkey_label_request = on_hotkey_label_request
@@ -381,6 +385,18 @@ class CandidateBox(CandidateRendererMixin):
     def edit_user_lexicon_callback(self) -> bool:
         if self._on_edit_user_lexicon:
             self._on_edit_user_lexicon()
+            return True
+        return False
+
+    def import_user_lexicon_callback(self) -> bool:
+        if self._on_import_user_lexicon:
+            self._on_import_user_lexicon()
+            return True
+        return False
+
+    def export_user_lexicon_callback(self) -> bool:
+        if self._on_export_user_lexicon:
+            self._on_export_user_lexicon()
             return True
         return False
 

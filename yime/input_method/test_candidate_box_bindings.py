@@ -75,6 +75,8 @@ class _FakeBox:
         self.active_topmost_changes: list[bool] = []
         self.reload_requested = False
         self.edit_requested = False
+        self.import_requested = False
+        self.export_requested = False
         self.open_dir_requested = False
         self.status = ""
         self.current_hotkey = "Ctrl+Alt+Insert"
@@ -156,6 +158,14 @@ class _FakeBox:
 
     def edit_user_lexicon_callback(self) -> bool:
         self.edit_requested = True
+        return True
+
+    def import_user_lexicon_callback(self) -> bool:
+        self.import_requested = True
+        return True
+
+    def export_user_lexicon_callback(self) -> bool:
+        self.export_requested = True
         return True
 
     def open_user_data_dir_callback(self) -> bool:
@@ -288,8 +298,8 @@ def test_toolbar_menu_uses_expected_labels_and_popup_position(monkeypatch) -> No
     actions._get_toolbar_menu()
 
     command_labels = [label for label, _ in commands]
-    assert command_labels == ["当前唤起热键：Ctrl+Alt+Insert", "修改热键", "打开设置文件并保存当前设置", "加入当前词条", "删除当前词条", "编辑用户词库", "重载用户词库", "帮助", "关于"]
-    assert [label for label, _ in cascades] == ["候选列表", "唤起方式", "休眠方式", "交互", "前景颜色", "背景颜色", "字体大小", "主界面透明度", "外观", "设置", "编辑与重载", "用户词库", "工具"]
+    assert command_labels == ["当前唤起热键：Ctrl+Alt+Insert", "修改热键", "打开设置文件并保存当前设置", "加入当前词条", "删除当前词条", "编辑用户词库", "重载用户词库", "导入用户词库", "导出用户词库", "帮助", "关于"]
+    assert [label for label, _ in cascades] == ["候选列表", "唤起方式", "休眠方式", "交互", "前景颜色", "背景颜色", "字体大小", "主界面透明度", "外观", "设置", "编辑与重载", "导入与导出", "用户词库", "工具"]
     assert [label for label, _, _, _ in radio_buttons] == [
         "每页 5 个",
         "每页 6 个",
@@ -351,6 +361,8 @@ def test_toolbar_menu_uses_expected_labels_and_popup_position(monkeypatch) -> No
     commands[6][1]()
     commands[7][1]()
     commands[8][1]()
+    commands[9][1]()
+    commands[10][1]()
 
     assert feedback_calls == [
         (
@@ -381,6 +393,8 @@ def test_toolbar_menu_uses_expected_labels_and_popup_position(monkeypatch) -> No
     assert box.deleted_from_user_lexicon is True
     assert box.edit_requested is True
     assert box.reload_requested is True
+    assert box.import_requested is True
+    assert box.export_requested is True
     assert box.open_dir_requested is True
     assert box.status == "活动窗置顶已关闭。"
 

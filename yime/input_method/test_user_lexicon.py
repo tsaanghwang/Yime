@@ -124,6 +124,53 @@ def test_user_lexicon_store_exports_and_imports_backup(tmp_path) -> None:
     assert frequency_rows[0].freq == 1
 
 
+def test_user_lexicon_store_exports_and_imports_text_exchange_file(tmp_path) -> None:
+    repo_root = Path(__file__).resolve().parents[2]
+    source_store = UserLexiconStore(tmp_path / "source_user_lexicon.db")
+    code_ri_ben = resolve_yime_code_from_numeric_pinyin(repo_root, "ri4 ben3")
+    code_ri = resolve_yime_code_from_numeric_pinyin(repo_root, "ri4")
+    source_store.upsert_phrase(
+        "日本",
+        "ri4 ben3",
+        marked_pinyin="rì běn",
+        yime_code=code_ri_ben,
+        source_note="seed",
+    )
+    source_store.upsert_phrase(
+        "日",
+        "ri4",
+        marked_pinyin="rì",
+        yime_code=code_ri,
+        source_note="seed",
+    )
+    source_store.record_candidate_selection(code_ri_ben, "日本")
+    source_store.record_candidate_selection(code_ri_ben, "日本")
+    source_store.record_candidate_selection(code_ri, "日")
+    export_path = tmp_path / "user_lexicon_export.txt"
+
+    result = source_store.write_text_export_file(export_path)
+
+    assert result == {"phrase_entries": 2, "candidate_frequency": 2}
+    assert export_path.read_text(encoding="utf-8") == (
+        "词语\t数字标调拼音\t初始频率\n"
+        "日\tri4\t1\n"
+        "日本\tri4 ben3\t2\n"
+    )
+
+    target_store = UserLexiconStore(tmp_path / "target_user_lexicon.db")
+    import_result = target_store.import_text_file(export_path, repo_root=repo_root)
+
+    assert import_result == {"phrase_entries": 2, "candidate_frequency": 2}
+    ri_entry = target_store.lookup_first_phrase("日")
+    ri_ben_entry = target_store.lookup_first_phrase("日本")
+    assert ri_entry is not None
+    assert ri_ben_entry is not None
+    assert ri_entry.numeric_pinyin == "ri4"
+    assert ri_ben_entry.numeric_pinyin == "ri4 ben3"
+    frequency_rows = target_store.list_candidate_frequency_entries(limit=10)
+    assert [(row.text, row.freq) for row in frequency_rows] == [("日本", 2), ("日", 1)]
+
+
 def test_user_lexicon_store_lists_recent_entries(tmp_path) -> None:
     store = UserLexiconStore(tmp_path / "user_lexicon.db")
     store.upsert_phrase("日本", "ri4 ben3", marked_pinyin="rì běn", yime_code="CODE1")
