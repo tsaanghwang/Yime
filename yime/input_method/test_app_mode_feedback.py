@@ -56,6 +56,7 @@ def test_configure_input_mode_uses_unified_feedback_for_hotkey_mode(tmp_path) ->
     message = feedback_calls[0][1]
     assert "当前模式：热键模式" in message
     assert "诊断结论：当前未发现警告或提示，共 11 项正常。" in message
+    assert "给普通用户的结论：当前状态正常，可以直接继续输入。" in message
     assert "已确认正常：" in message
     assert "- 唤起方式：正常。按 ctrl+alt+insert 或 点击右下角的'音'图标" in message
     assert "- 休眠方式：正常。再次按 ctrl+alt+insert 或 右键候选框" in message
@@ -101,6 +102,7 @@ def test_build_runtime_readiness_summary_includes_structured_diagnostics_and_adv
 
     assert "当前模式：受限模式（热键当前未启用）" in summary
     assert "诊断结论：发现 6 项警告、0 项提示；另有 5 项正常。" in summary
+    assert "给普通用户的结论：当前还能继续用，但有配置或数据问题需要优先处理。" in summary
     assert "需优先处理：" in summary
     assert "已确认正常：" in summary
     assert "- 唤起方式：正常。点击右下角的'音'图标" in summary

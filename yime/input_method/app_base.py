@@ -1136,7 +1136,12 @@ class BaseInputMethodApp:
         else:
             overview = f"诊断结论：当前未发现警告或提示，共 {normal_count} 项正常。"
 
-        lines = [mode_summary, overview]
+        plain_language_summary = self._build_runtime_plain_language_summary(
+            warning_count=warning_count,
+            notice_count=notice_count,
+        )
+
+        lines = [mode_summary, overview, f"给普通用户的结论：{plain_language_summary}"]
         if warning_count:
             lines.append("需优先处理：")
             lines.extend(grouped_items["警告"])
@@ -1147,6 +1152,18 @@ class BaseInputMethodApp:
             lines.append("已确认正常：")
             lines.extend(grouped_items["正常"])
         return "\n".join(lines)
+
+    def _build_runtime_plain_language_summary(
+        self,
+        *,
+        warning_count: int,
+        notice_count: int,
+    ) -> str:
+        if warning_count:
+            return "当前还能继续用，但有配置或数据问题需要优先处理。"
+        if notice_count:
+            return "当前基本可用，但有少量提示项，建议有空时顺手检查。"
+        return "当前状态正常，可以直接继续输入。"
 
     def _build_runtime_readiness_summary(
         self,
