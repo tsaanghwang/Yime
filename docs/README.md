@@ -27,6 +27,7 @@
 - **[普通用户帮助](help/README.md)** - 面向试用者的帮助总入口，包含快速开始、菜单与词库、故障排查几个子页
 - **[便携版发布指南](install/PORTABLE_RELEASE_GUIDE.md)** - 用 PyInstaller 打成无需 Python 的 Windows 独立目录
 - **[安装包发布指南](install/SETUP_RELEASE_GUIDE.md)** - 用 Inno Setup 打成可分发的 `Setup.exe`
+- **[最小试用交付方案](install/MINIMAL_TRIAL_DELIVERY.md)** - 把 `Setup.exe`、试用说明、验收清单和反馈模板收成一个默认交付目录
 - **[朋友试装前最小验收清单](install/friend-trial-checklist.md)** - 发给外部试装前，先用 10 分钟做一轮最小风险检查
 - **[发给朋友的说明模板](install/friend-trial-message-template.md)** - 发安装包时可直接复制改写的一段短说明
 - **[试用者一页说明与最小键位对照](install/friend-trial-one-page.md)** - 给外部试用者看的单页版：怎么唤起、怎么上屏、键位大致怎么看
