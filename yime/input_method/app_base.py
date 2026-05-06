@@ -247,6 +247,8 @@ class BaseInputMethodApp:
             on_import_user_lexicon=self._import_user_lexicon_from_menu,
             on_export_user_lexicon=self._export_user_lexicon_from_menu,
             on_open_settings_file=self._open_settings_file,
+            on_open_runtime_data_dir=self._open_runtime_data_dir,
+            on_open_troubleshooting_doc=self._open_troubleshooting_doc,
             on_open_user_data_dir=self._open_settings_file,
             on_hotkey_summary_request=self._build_hotkey_summary,
             on_runtime_readiness_summary_request=self._build_runtime_readiness_display_summary,
@@ -596,6 +598,14 @@ class BaseInputMethodApp:
     def _open_user_data_dir(self) -> None:
         # Backward-compatible alias for older call sites.
         self._open_settings_file()
+
+    def _open_runtime_data_dir(self) -> None:
+        runtime_json_path = Path(getattr(self, "runtime_candidates_json_path", "") or "")
+        runtime_dir = runtime_json_path.parent if str(runtime_json_path) else (Path(self.app_dir) / "reports")
+        runtime_dir.mkdir(parents=True, exist_ok=True)
+        path_text = str(runtime_dir)
+        self._open_path_in_shell(path_text)
+        self._emit_feedback("运行时数据", f"已打开运行时数据目录：{path_text}")
 
     def _open_troubleshooting_doc(self) -> None:
         troubleshooting_path = Path(self.repo_root) / "docs" / "help" / "troubleshooting.md"

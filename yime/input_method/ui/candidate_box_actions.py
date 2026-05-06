@@ -276,9 +276,11 @@ class CandidateBoxActions:
         if self._diagnostics_menu is None:
             menu = tk.Menu(self.box.root, tearoff=False)
             menu.add_command(label="查看诊断", command=self.show_diagnostics)
+            menu.add_command(label="重新检查诊断", command=self.recheck_diagnostics)
             menu.add_command(label="复制诊断信息", command=self.copy_diagnostics)
             menu.add_separator()
             menu.add_command(label="打开故障排查", command=self.open_troubleshooting_doc)
+            menu.add_command(label="打开运行时数据目录", command=self.open_runtime_data_dir)
             menu.add_command(label="打开设置文件", command=self.open_settings_file)
             menu.add_separator()
             menu.add_command(label="打开帮助", command=self.show_help)
@@ -638,6 +640,12 @@ class CandidateBoxActions:
         # Backward-compatible alias for older call sites.
         self.open_settings_file()
 
+    def open_runtime_data_dir(self) -> None:
+        callback = getattr(self.box, "open_runtime_data_dir_callback", None)
+        if callable(callback) and callback():
+            return
+        self._emit_feedback("运行时数据", "当前未配置运行时数据目录入口。")
+
     def open_troubleshooting_doc(self) -> None:
         callback = getattr(self.box, "open_troubleshooting_doc_callback", None)
         if callable(callback) and callback():
@@ -767,6 +775,10 @@ class CandidateBoxActions:
             self._build_diagnostics_message(),
             dialog=True,
         )
+
+    def recheck_diagnostics(self) -> None:
+        self.show_diagnostics()
+        self._set_local_status("已重新检查诊断。")
 
     def copy_diagnostics(self) -> None:
         message = self._build_diagnostics_share_message()

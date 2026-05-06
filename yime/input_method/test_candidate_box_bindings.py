@@ -91,6 +91,7 @@ class _FakeBox:
         self.import_requested = False
         self.export_requested = False
         self.open_settings_requested = False
+        self.open_runtime_data_requested = False
         self.open_troubleshooting_requested = False
         self.status = ""
         self.current_hotkey = "Ctrl+Alt+Insert"
@@ -188,6 +189,10 @@ class _FakeBox:
 
     def open_user_data_dir_callback(self) -> bool:
         return self.open_settings_file_callback()
+
+    def open_runtime_data_dir_callback(self) -> bool:
+        self.open_runtime_data_requested = True
+        return True
 
     def open_troubleshooting_doc_callback(self) -> bool:
         self.open_troubleshooting_requested = True
@@ -337,7 +342,7 @@ def test_toolbar_menu_uses_expected_labels_and_popup_position(monkeypatch) -> No
     actions._get_toolbar_menu()
 
     command_labels = [label for label, _ in commands]
-    assert command_labels == ["当前唤起热键：Ctrl+Alt+Insert", "修改热键", "加入当前词条", "删除当前词条", "编辑用户词库", "应用用户词库", "导入用户词库", "导出用户词库", "帮助", "查看诊断", "复制诊断信息", "打开故障排查", "打开设置文件", "打开帮助", "关于"]
+    assert command_labels == ["当前唤起热键：Ctrl+Alt+Insert", "修改热键", "加入当前词条", "删除当前词条", "编辑用户词库", "应用用户词库", "导入用户词库", "导出用户词库", "帮助", "查看诊断", "重新检查诊断", "复制诊断信息", "打开故障排查", "打开运行时数据目录", "打开设置文件", "打开帮助", "关于"]
     assert [label for label, _ in cascades] == ["候选列表", "唤起方式", "休眠方式", "交互", "前景颜色", "背景颜色", "字体大小", "主界面透明度", "外观", "设置", "编辑与重载", "导入与导出", "用户词库", "工具", "诊断"]
     assert [label for label, _, _, _ in radio_buttons] == [
         "每页 5 个",
@@ -406,6 +411,8 @@ def test_toolbar_menu_uses_expected_labels_and_popup_position(monkeypatch) -> No
     commands[12][1]()
     commands[13][1]()
     commands[14][1]()
+    commands[15][1]()
+    commands[16][1]()
 
     assert feedback_calls[0] == (
         "快捷键",
@@ -424,7 +431,10 @@ def test_toolbar_menu_uses_expected_labels_and_popup_position(monkeypatch) -> No
     assert "运行时数据指引：" in feedback_calls[2][1]
     assert "python -m yime.export_runtime_candidates_json" in feedback_calls[2][1]
     assert feedback_calls[2][1].endswith("当前热键：Ctrl+Shift+Y")
-    assert feedback_calls[3] == ("诊断", "已复制诊断信息；可直接粘贴给 GitHub Copilot。")
+    assert feedback_calls[3][0] == "诊断"
+    assert feedback_calls[3][1] == feedback_calls[2][1]
+    assert box.status == "已重新检查诊断。"
+    assert feedback_calls[4] == ("诊断", "已复制诊断信息；可直接粘贴给 GitHub Copilot。")
     assert box.root.clipboard_cleared == 1
     assert len(box.root.clipboard_contents) == 1
     assert box.root.clipboard_contents[0].startswith("【Yime 诊断信息】")
@@ -433,11 +443,12 @@ def test_toolbar_menu_uses_expected_labels_and_popup_position(monkeypatch) -> No
     assert box.root.clipboard_contents[0].endswith("当前热键：Ctrl+Shift+Y")
     assert box.root.updated is True
     assert box.open_troubleshooting_requested is True
+    assert box.open_runtime_data_requested is True
     assert box.open_settings_requested is True
-    assert feedback_calls[4][0] == "帮助"
-    assert "普通用户帮助" in feedback_calls[4][1]
-    assert feedback_calls[4][1].endswith("当前热键：Ctrl+Shift+Y")
-    assert feedback_calls[5] == (
+    assert feedback_calls[5][0] == "帮助"
+    assert "普通用户帮助" in feedback_calls[5][1]
+    assert feedback_calls[5][1].endswith("当前热键：Ctrl+Shift+Y")
+    assert feedback_calls[6] == (
         "关于",
         "音元拼音输入法当前使用轻量候选窗界面。这个菜单入口用于集中承载设置、帮助和后续扩展功能。",
     )
@@ -458,7 +469,7 @@ def test_toolbar_menu_uses_expected_labels_and_popup_position(monkeypatch) -> No
     assert box.reload_requested is True
     assert box.import_requested is True
     assert box.export_requested is True
-    assert box.status == "活动窗置顶已关闭。"
+    assert box.status == "已重新检查诊断。"
 
 
 def test_add_current_input_to_user_lexicon_uses_feedback_callback_when_unconfigured(monkeypatch) -> None:
