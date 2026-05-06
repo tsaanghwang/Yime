@@ -3,11 +3,13 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
+import json
 import os
 from pathlib import Path
+import subprocess
 import sys
 from tkinter import messagebox, simpledialog
-from typing import Callable, Mapping, Optional
+from typing import Callable, Mapping, Optional, cast
 
 from ..borrow_wanxiang_frequency import marked_pinyin_to_numeric
 from .core.decoders import (
@@ -60,6 +62,13 @@ def resolve_user_data_dir(
 class BaseInputMethodApp:
     """Common logic shared by the global-listener and hotkey entry points."""
 
+    _DEFAULT_CANDIDATE_PAGE_SIZE = 5
+    _DEFAULT_CANDIDATE_LAYOUT = "horizontal"
+    _DEFAULT_UI_SCALE_PERCENT = 100
+    _DEFAULT_ACTIVE_ALPHA_PERCENT = 97
+    _DEFAULT_FOREGROUND_COLOR = "#111827"
+    _DEFAULT_BACKGROUND_COLOR = "#f0f0f0"
+
     def __init__(
         self,
         *,
@@ -75,6 +84,38 @@ class BaseInputMethodApp:
         self.repo_root = app_dir.parent
         self._pending_feedbacks: list[tuple[str, str, str, bool]] = []
         self.user_data_dir = resolve_user_data_dir(app_dir)
+        self.ui_settings_path = self.user_data_dir / "ui_settings.json"
+        self.ui_settings = self._load_ui_settings()
+        self.candidate_page_size = self._normalize_candidate_page_size(
+            self.ui_settings.get("candidate_page_size")
+        )
+        self.candidate_layout = self._normalize_candidate_layout_setting(
+            self.ui_settings.get("candidate_layout")
+        )
+        self._mouse_wake_enabled_setting = self._normalize_bool_setting(
+            self.ui_settings.get("mouse_wake_enabled"),
+            True,
+        )
+        self._mouse_standby_enabled_setting = self._normalize_bool_setting(
+            self.ui_settings.get("mouse_standby_enabled"),
+            True,
+        )
+        self.ui_scale_percent = self._normalize_ui_scale_percent(
+            self.ui_settings.get("ui_scale_percent")
+        )
+        self.active_alpha_percent = self._normalize_active_alpha_percent(
+            self.ui_settings.get("active_alpha_percent")
+        )
+        self.foreground_color = self._normalize_foreground_color(
+            self.ui_settings.get("foreground_color")
+        )
+        self.background_color = self._normalize_background_color(
+            self.ui_settings.get("background_color")
+        )
+        self.active_topmost_enabled = self._normalize_bool_setting(
+            self.ui_settings.get("active_topmost_enabled"),
+            True,
+        )
         user_db_path = self.user_data_dir / "user_lexicon.db"
         self.user_db_path = user_db_path
         self.user_lexicon_seed_path = app_dir / "user_lexicon_seed.json"
@@ -100,6 +141,7 @@ class BaseInputMethodApp:
         if candidate_box_factory is None:
             candidate_box_factory = self._create_candidate_box
         self.candidate_box = candidate_box_factory()
+        self._apply_ui_settings_to_candidate_box()
         self._flush_pending_feedbacks()
 
         self.own_hwnd = self.candidate_box.root.winfo_id()
@@ -154,6 +196,8 @@ class BaseInputMethodApp:
         return CandidateBox(
             on_select=self._on_candidate_select,
             font_family=self.font_family,
+            max_candidates=self.candidate_page_size,
+            candidate_layout=self.candidate_layout,
             input_display_formatter=self._format_input_outline,
             projected_code_formatter=self._format_projected_code,
             manual_key_output_resolver=self._resolve_manual_key_output,
@@ -161,10 +205,279 @@ class BaseInputMethodApp:
             on_input_change=self._on_input_change,
             on_copy_candidate=self._copy_candidate,
             on_commit_text=self._commit_candidate_box_text,
+            on_candidate_page_size_change=self._on_candidate_page_size_change,
+            on_candidate_layout_change=self._on_candidate_layout_change,
+            on_mouse_wake_enabled_change=self._on_mouse_wake_enabled_change,
+            on_mouse_standby_enabled_change=self._on_mouse_standby_enabled_change,
+            on_ui_scale_change=self._on_ui_scale_change,
+            on_active_alpha_change=self._on_active_alpha_change,
+            on_foreground_color_change=self._on_foreground_color_change,
+            on_background_color_change=self._on_background_color_change,
+            on_active_topmost_change=self._on_active_topmost_change,
+            on_reload_user_lexicon=self._reload_user_lexicon_from_menu,
+            on_open_user_data_dir=self._open_user_data_dir,
+            on_hotkey_summary_request=self._build_hotkey_summary,
             on_add_input_to_user_lexicon=self._add_current_input_to_user_lexicon,
             on_delete_input_from_user_lexicon=self._delete_current_input_from_user_lexicon,
             on_feedback=self._emit_feedback,
             on_close=self._close,
+        )
+
+    def _normalize_candidate_page_size(self, page_size: object) -> int:
+        try:
+            normalized = page_size if isinstance(page_size, (int, str)) else None
+            if normalized is None:
+                raise TypeError("candidate page size is missing")
+            return min(max(int(normalized), 5), 9)
+        except (TypeError, ValueError):
+            return self._DEFAULT_CANDIDATE_PAGE_SIZE
+
+    def _normalize_candidate_layout_setting(self, layout: object) -> str:
+        normalized = str(layout or "").strip().lower()
+        return "vertical" if normalized == "vertical" else self._DEFAULT_CANDIDATE_LAYOUT
+
+    def _normalize_bool_setting(self, value: object, default: bool) -> bool:
+        if isinstance(value, bool):
+            return value
+        if isinstance(value, (int, float)):
+            return bool(value)
+        if isinstance(value, str):
+            normalized = value.strip().lower()
+            if normalized in {"1", "true", "yes", "on"}:
+                return True
+            if normalized in {"0", "false", "no", "off"}:
+                return False
+        return default
+
+    def _normalize_ui_scale_percent(self, value: object) -> int:
+        try:
+            normalized = value if isinstance(value, (int, str)) else None
+            if normalized is None:
+                raise TypeError("ui scale is missing")
+            return min(max(int(normalized), 90), 120)
+        except (TypeError, ValueError):
+            return self._DEFAULT_UI_SCALE_PERCENT
+
+    def _normalize_active_alpha_percent(self, value: object) -> int:
+        try:
+            normalized = value if isinstance(value, (int, str)) else None
+            if normalized is None:
+                raise TypeError("active alpha is missing")
+            return min(max(int(normalized), 80), 100)
+        except (TypeError, ValueError):
+            return self._DEFAULT_ACTIVE_ALPHA_PERCENT
+
+    def _normalize_foreground_color(self, value: object) -> str:
+        if isinstance(value, str):
+            normalized = value.strip().lower()
+            if len(normalized) == 7 and normalized.startswith("#"):
+                try:
+                    int(normalized[1:], 16)
+                    return normalized
+                except ValueError:
+                    pass
+        return self._DEFAULT_FOREGROUND_COLOR
+
+    def _normalize_background_color(self, value: object) -> str:
+        if isinstance(value, str):
+            normalized = value.strip().lower()
+            if len(normalized) == 7 and normalized.startswith("#"):
+                try:
+                    int(normalized[1:], 16)
+                    return normalized
+                except ValueError:
+                    pass
+        return self._DEFAULT_BACKGROUND_COLOR
+
+    def _load_ui_settings(self) -> dict[str, object]:
+        try:
+            raw_payload = self.ui_settings_path.read_text(encoding="utf-8")
+        except FileNotFoundError:
+            return {}
+        except OSError:
+            return {}
+
+        try:
+            payload = json.loads(raw_payload)
+        except json.JSONDecodeError:
+            return {}
+        return cast(dict[str, object], payload) if isinstance(payload, dict) else {}
+
+    def _save_ui_settings(self) -> None:
+        self.user_data_dir.mkdir(parents=True, exist_ok=True)
+        payload = dict(self.ui_settings)
+        payload["candidate_page_size"] = self.candidate_page_size
+        payload["candidate_layout"] = self.candidate_layout
+        payload["mouse_wake_enabled"] = self._mouse_wake_enabled_setting
+        payload["mouse_standby_enabled"] = self._mouse_standby_enabled_setting
+        payload["ui_scale_percent"] = self.ui_scale_percent
+        payload["active_alpha_percent"] = self.active_alpha_percent
+        payload["foreground_color"] = self.foreground_color
+        payload["background_color"] = self.background_color
+        payload["active_topmost_enabled"] = self.active_topmost_enabled
+        self.ui_settings_path.write_text(
+            json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
+
+    def _apply_ui_settings_to_candidate_box(self) -> None:
+        apply_layout = getattr(self.candidate_box, "set_candidate_layout", None)
+        if callable(apply_layout):
+            apply_layout(self.candidate_layout)
+
+        apply_mouse_wake = getattr(self.candidate_box, "set_mouse_wake_enabled", None)
+        if callable(apply_mouse_wake):
+            apply_mouse_wake(self._resolve_effective_mouse_wake_enabled())
+
+        apply_mouse_standby = getattr(self.candidate_box, "set_mouse_standby_enabled", None)
+        if callable(apply_mouse_standby):
+            apply_mouse_standby(self._resolve_effective_mouse_standby_enabled())
+
+        apply_ui_scale = getattr(self.candidate_box, "set_ui_scale", None)
+        if callable(apply_ui_scale):
+            apply_ui_scale(self.ui_scale_percent)
+
+        apply_active_alpha = getattr(self.candidate_box, "set_active_alpha_percent", None)
+        if callable(apply_active_alpha):
+            apply_active_alpha(self.active_alpha_percent)
+
+        apply_foreground_color = getattr(self.candidate_box, "set_foreground_color", None)
+        if callable(apply_foreground_color):
+            apply_foreground_color(self.foreground_color)
+
+        apply_background_color = getattr(self.candidate_box, "set_background_color", None)
+        if callable(apply_background_color):
+            apply_background_color(self.background_color)
+
+        apply_topmost = getattr(self.candidate_box, "set_active_topmost_enabled", None)
+        if callable(apply_topmost):
+            apply_topmost(self.active_topmost_enabled)
+
+    def _on_candidate_page_size_change(self, page_size: int) -> None:
+        normalized = self._normalize_candidate_page_size(page_size)
+        self.candidate_box.set_page_size(normalized)
+        self.candidate_page_size = normalized
+        self.ui_settings["candidate_page_size"] = normalized
+        self._save_ui_settings()
+
+    def _on_candidate_layout_change(self, layout: str) -> None:
+        normalized = self._normalize_candidate_layout_setting(layout)
+        self.candidate_box.set_candidate_layout(normalized)
+        self.candidate_layout = normalized
+        self.ui_settings["candidate_layout"] = normalized
+        self._save_ui_settings()
+
+    def _resolve_effective_mouse_wake_enabled(self) -> bool:
+        resolver = getattr(self, "_is_mouse_wake_enabled", None)
+        if callable(resolver):
+            return bool(resolver())
+        return bool(self._mouse_wake_enabled_setting)
+
+    def _resolve_effective_mouse_standby_enabled(self) -> bool:
+        resolver = getattr(self, "_is_mouse_standby_enabled", None)
+        if callable(resolver):
+            return bool(resolver())
+        return bool(self._mouse_standby_enabled_setting)
+
+    def _update_mouse_trigger_setting(self, attribute_name: str, enabled: bool) -> None:
+        current = getattr(self, attribute_name, None)
+        if not isinstance(current, frozenset):
+            return
+        updated = set(cast(frozenset[str], current))
+        if enabled:
+            updated.add("mouse")
+        else:
+            updated.discard("mouse")
+        setattr(self, attribute_name, frozenset(updated))
+
+    def _on_mouse_wake_enabled_change(self, enabled: bool) -> None:
+        normalized = self._normalize_bool_setting(enabled, True)
+        self._mouse_wake_enabled_setting = normalized
+        self._update_mouse_trigger_setting("wake_triggers", normalized)
+        self.candidate_box.set_mouse_wake_enabled(self._resolve_effective_mouse_wake_enabled())
+        self.ui_settings["mouse_wake_enabled"] = normalized
+        self._save_ui_settings()
+
+    def _on_mouse_standby_enabled_change(self, enabled: bool) -> None:
+        normalized = self._normalize_bool_setting(enabled, True)
+        self._mouse_standby_enabled_setting = normalized
+        self._update_mouse_trigger_setting("standby_triggers", normalized)
+        self.candidate_box.set_mouse_standby_enabled(self._resolve_effective_mouse_standby_enabled())
+        self.ui_settings["mouse_standby_enabled"] = normalized
+        self._save_ui_settings()
+
+    def _on_ui_scale_change(self, scale_percent: int) -> None:
+        normalized = self._normalize_ui_scale_percent(scale_percent)
+        apply = getattr(self.candidate_box, "set_ui_scale", None)
+        if callable(apply):
+            apply(normalized)
+        self.ui_scale_percent = normalized
+        self.ui_settings["ui_scale_percent"] = normalized
+        self._save_ui_settings()
+
+    def _on_active_alpha_change(self, alpha_percent: int) -> None:
+        normalized = self._normalize_active_alpha_percent(alpha_percent)
+        apply = getattr(self.candidate_box, "set_active_alpha_percent", None)
+        if callable(apply):
+            apply(normalized)
+        self.active_alpha_percent = normalized
+        self.ui_settings["active_alpha_percent"] = normalized
+        self._save_ui_settings()
+
+    def _on_foreground_color_change(self, color: str) -> None:
+        normalized = self._normalize_foreground_color(color)
+        apply = getattr(self.candidate_box, "set_foreground_color", None)
+        if callable(apply):
+            apply(normalized)
+        self.foreground_color = normalized
+        self.ui_settings["foreground_color"] = normalized
+        self._save_ui_settings()
+
+    def _on_background_color_change(self, color: str) -> None:
+        normalized = self._normalize_background_color(color)
+        apply = getattr(self.candidate_box, "set_background_color", None)
+        if callable(apply):
+            apply(normalized)
+        self.background_color = normalized
+        self.ui_settings["background_color"] = normalized
+        self._save_ui_settings()
+
+    def _on_active_topmost_change(self, enabled: bool) -> None:
+        normalized = self._normalize_bool_setting(enabled, True)
+        apply = getattr(self.candidate_box, "set_active_topmost_enabled", None)
+        if callable(apply):
+            apply(normalized)
+        self.active_topmost_enabled = normalized
+        self.ui_settings["active_topmost_enabled"] = normalized
+        self._save_ui_settings()
+
+    def _reload_user_lexicon_from_menu(self) -> None:
+        self._reload_user_lexicon_runtime()
+        self._emit_feedback("词库工具", "已重载运行时词库。")
+
+    def _open_user_data_dir(self) -> None:
+        self.user_data_dir.mkdir(parents=True, exist_ok=True)
+        path_text = str(self.user_data_dir)
+        if hasattr(os, "startfile"):
+            os.startfile(path_text)  # type: ignore[attr-defined]
+        elif sys.platform == "darwin":
+            subprocess.Popen(["open", path_text])
+        else:
+            subprocess.Popen(["xdg-open", path_text])
+        self._emit_feedback("词库工具", f"已打开用户数据目录：{path_text}")
+
+    def _build_hotkey_summary(self) -> str:
+        hotkey = str(getattr(self, "hotkey", "未配置热键") or "未配置热键")
+        wake_hint = getattr(self, "_wake_trigger_hint", None)
+        standby_hint = getattr(self, "_standby_trigger_hint", None)
+        wake_text = wake_hint() if callable(wake_hint) else "当前未提供"
+        standby_text = standby_hint() if callable(standby_hint) else "当前未提供"
+        format_hotkey_label = getattr(self, "_format_hotkey_label", None)
+        display_hotkey = format_hotkey_label() if callable(format_hotkey_label) else hotkey
+        return (
+            f"当前热键：{display_hotkey}\n"
+            f"唤起方式：{wake_text}\n"
+            f"休眠方式：{standby_text}"
         )
 
     def _format_input_outline(self, text: str) -> str:
@@ -353,7 +666,9 @@ class BaseInputMethodApp:
         if pending_feedbacks is None:
             pending_feedbacks = []
             self._pending_feedbacks = pending_feedbacks
-        pending_feedbacks.append((title, message, level, dialog))
+        cast(list[tuple[str, str, str, bool]], pending_feedbacks).append(
+            (title, message, level, dialog)
+        )
 
     def _flush_pending_feedbacks(self) -> None:
         if not hasattr(self, "candidate_box"):

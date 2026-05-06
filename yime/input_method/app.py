@@ -28,6 +28,55 @@ class InputMethodApp(BaseInputMethodApp):
         "<ctrl>+<alt>+y",
         "<ctrl>+<alt>+<f10>",
     }
+    _HOTKEY_TOKEN_ALIASES = {
+        "control": "ctrl",
+        "ctl": "ctrl",
+        "ctrl": "ctrl",
+        "alt": "alt",
+        "shift": "shift",
+        "ins": "insert",
+        "insert": "insert",
+        "return": "enter",
+        "enter": "enter",
+        "esc": "esc",
+        "escape": "esc",
+        "tab": "tab",
+        "space": "space",
+        "spacebar": "space",
+        "del": "delete",
+        "delete": "delete",
+        "bksp": "backspace",
+        "backspace": "backspace",
+        "pgup": "page_up",
+        "pageup": "page_up",
+        "prior": "page_up",
+        "pgdn": "page_down",
+        "pagedown": "page_down",
+        "next": "page_down",
+        "home": "home",
+        "end": "end",
+        "win": "cmd",
+        "windows": "cmd",
+        "super": "cmd",
+        "cmd": "cmd",
+    }
+    _DISPLAY_HOTKEY_TOKENS = {
+        "ctrl": "Ctrl",
+        "alt": "Alt",
+        "shift": "Shift",
+        "insert": "Insert",
+        "enter": "Enter",
+        "esc": "Esc",
+        "tab": "Tab",
+        "space": "Space",
+        "delete": "Delete",
+        "backspace": "Backspace",
+        "page_up": "PgUp",
+        "page_down": "PgDn",
+        "home": "Home",
+        "end": "End",
+        "cmd": "Win",
+    }
     _HOTKEY_WAKE_DELAY_MS = 90
     _HOTKEY_REACTIVATION_DEBOUNCE_SECONDS = 0.8
 
@@ -36,9 +85,67 @@ class InputMethodApp(BaseInputMethodApp):
         segments: list[str] = []
         for segment in self.hotkey.split("+"):
             cleaned = segment.strip().strip("<>")
-            if cleaned:
-                segments.append(cleaned)
+            if not cleaned:
+                continue
+            try:
+                normalized = self._normalize_hotkey_token(cleaned)
+            except ValueError:
+                normalized = cleaned.lower()
+            segments.append(self._display_hotkey_token(normalized))
         return "+".join(segments) or self.hotkey
+
+    @classmethod
+    def _normalize_hotkey_token(cls, token: str) -> str:
+        normalized = token.strip().strip("<>").replace("-", "_").replace(" ", "").lower()
+        if not normalized:
+            raise ValueError("热键片段不能为空")
+        aliased = cls._HOTKEY_TOKEN_ALIASES.get(normalized, normalized)
+        if len(aliased) == 1 and aliased.isalnum():
+            return aliased
+        if aliased.startswith("f") and aliased[1:].isdigit():
+            return aliased
+        if aliased in cls._DISPLAY_HOTKEY_TOKENS:
+            return aliased
+        raise ValueError(f"不支持的热键片段：{token}")
+
+    @classmethod
+    def _display_hotkey_token(cls, token: str) -> str:
+        if token in cls._DISPLAY_HOTKEY_TOKENS:
+            return cls._DISPLAY_HOTKEY_TOKENS[token]
+        if len(token) == 1 and token.isalpha():
+            return token.upper()
+        if len(token) == 1 and token.isdigit():
+            return token
+        if token.startswith("f") and token[1:].isdigit():
+            return token.upper()
+        return token.replace("_", " ").title().replace(" ", "")
+
+    @classmethod
+    def _normalize_hotkey_setting(
+        cls,
+        hotkey: object,
+        *,
+        fallback: Optional[str] = None,
+    ) -> str:
+        if not isinstance(hotkey, str) or not hotkey.strip():
+            if fallback is not None:
+                return fallback
+            raise ValueError("热键不能为空")
+
+        normalized_segments: list[str] = []
+        has_primary_key = False
+        for raw_segment in hotkey.split("+"):
+            token = cls._normalize_hotkey_token(raw_segment)
+            if token not in {"ctrl", "alt", "shift", "cmd"}:
+                has_primary_key = True
+            if len(token) == 1 and token.isalnum():
+                normalized_segments.append(token)
+            else:
+                normalized_segments.append(f"<{token}>")
+
+        if not has_primary_key:
+            raise ValueError("热键至少需要包含一个非修饰键")
+        return "+".join(normalized_segments)
 
     @classmethod
     def _has_known_hotkey_conflict(cls, hotkey: str) -> bool:
@@ -63,7 +170,7 @@ class InputMethodApp(BaseInputMethodApp):
         )
 
     def _is_mouse_wake_enabled(self) -> bool:
-        return "mouse" in getattr(
+        return bool(getattr(self, "_mouse_wake_enabled_setting", True)) and "mouse" in getattr(
             self,
             "wake_triggers",
             frozenset({"hotkey", "mouse"}),
@@ -77,7 +184,7 @@ class InputMethodApp(BaseInputMethodApp):
         )
 
     def _is_mouse_standby_enabled(self) -> bool:
-        return "mouse" in getattr(
+        return bool(getattr(self, "_mouse_standby_enabled_setting", True)) and "mouse" in getattr(
             self,
             "standby_triggers",
             frozenset({"hotkey", "mouse"}),
@@ -188,6 +295,26 @@ class InputMethodApp(BaseInputMethodApp):
             font_family=font_family,
         )
 
+        self.hotkey = self._normalize_hotkey_setting(
+            self.ui_settings.get("hotkey"),
+            fallback=self.hotkey,
+        )
+
+        saved_wake_trigger = self._load_saved_trigger_mode(
+            self.ui_settings.get("wake_trigger_mode"),
+            fallback=self.wake_triggers,
+        )
+        saved_standby_trigger = self._load_saved_trigger_mode(
+            self.ui_settings.get("standby_trigger_mode"),
+            fallback=self.standby_triggers,
+        )
+        self.wake_triggers = saved_wake_trigger
+        self.standby_triggers = saved_standby_trigger
+        self.candidate_box.wake_trigger_mode_var.set(self._trigger_mode_to_label(saved_wake_trigger))
+        self.candidate_box.standby_trigger_mode_var.set(self._trigger_mode_to_label(saved_standby_trigger))
+        self.candidate_box.set_mouse_wake_enabled(self._is_mouse_wake_enabled())
+        self.candidate_box.set_mouse_standby_enabled(self._is_mouse_standby_enabled())
+
         self.last_external_layout: Optional[int] = None
 
         self._passive_standby_reason: Optional[str] = None
@@ -279,10 +406,102 @@ class InputMethodApp(BaseInputMethodApp):
                     f"休眠可通过{self._standby_trigger_hint()}。"
                 )
 
+    def _trigger_mode_to_label(self, triggers: frozenset[str]) -> str:
+        normalized = frozenset(triggers)
+        if normalized == frozenset({"hotkey"}):
+            return "hotkey"
+        if normalized == frozenset({"mouse"}):
+            return "mouse"
+        return "both"
+
+    def _load_saved_trigger_mode(
+        self,
+        value: object,
+        *,
+        fallback: frozenset[str],
+    ) -> frozenset[str]:
+        if not isinstance(value, str):
+            return fallback
+        try:
+            return self._normalize_trigger_mode(value, option_name="ui_trigger_mode")
+        except ValueError:
+            return fallback
+
+    def _sync_hotkey_listener_for_trigger_modes(self) -> None:
+        should_listen = self._should_listen_for_hotkey()
+        listener = getattr(self, "hotkey_listener", None)
+        if should_listen:
+            if listener is None:
+                self._setup_hotkey()
+                listener = getattr(self, "hotkey_listener", None)
+                if listener is not None:
+                    try:
+                        listener.start()
+                        print(f"V1 快捷键监听已启动: {self.hotkey}")
+                    except Exception as exc:
+                        print(f"V1 快捷键监听启动失败: {exc}")
+                        self.hotkey_listener = None
+            self._hotkey_mode = "hotkey" if getattr(self, "hotkey_listener", None) else "click-only"
+            return
+
+        if listener is not None:
+            try:
+                listener.stop()
+            except Exception:
+                pass
+            self.hotkey_listener = None
+        self._hotkey_mode = "click-only"
+
+    def _on_wake_trigger_mode_change(self, mode: str) -> None:
+        normalized = self._normalize_trigger_mode(mode, option_name="wake_trigger")
+        self.wake_triggers = normalized
+        self._mouse_wake_enabled_setting = "mouse" in normalized
+        self.candidate_box.wake_trigger_mode_var.set(self._trigger_mode_to_label(normalized))
+        self.candidate_box.set_mouse_wake_enabled(self._is_mouse_wake_enabled())
+        self.ui_settings["wake_trigger_mode"] = self._trigger_mode_to_label(normalized)
+        self.ui_settings["mouse_wake_enabled"] = self._mouse_wake_enabled_setting
+        self._save_ui_settings()
+        self._sync_hotkey_listener_for_trigger_modes()
+
+    def _on_standby_trigger_mode_change(self, mode: str) -> None:
+        normalized = self._normalize_trigger_mode(mode, option_name="standby_trigger")
+        self.standby_triggers = normalized
+        self._mouse_standby_enabled_setting = "mouse" in normalized
+        self.candidate_box.standby_trigger_mode_var.set(self._trigger_mode_to_label(normalized))
+        self.candidate_box.set_mouse_standby_enabled(self._is_mouse_standby_enabled())
+        self.ui_settings["standby_trigger_mode"] = self._trigger_mode_to_label(normalized)
+        self.ui_settings["mouse_standby_enabled"] = self._mouse_standby_enabled_setting
+        self._save_ui_settings()
+        self._sync_hotkey_listener_for_trigger_modes()
+
+    def _on_hotkey_change(self, hotkey: str) -> bool:
+        try:
+            normalized = self._normalize_hotkey_setting(hotkey)
+        except ValueError as exc:
+            self._emit_feedback("快捷键", f"热键格式无效：{exc}")
+            return False
+
+        existing_listener = getattr(self, "hotkey_listener", None)
+        if existing_listener is not None:
+            try:
+                existing_listener.stop()
+            except Exception:
+                pass
+            self.hotkey_listener = None
+
+        self.hotkey = normalized
+        self.ui_settings["hotkey"] = normalized
+        self._save_ui_settings()
+        self._sync_hotkey_listener_for_trigger_modes()
+        self._emit_feedback("快捷键", f"唤起热键已更新为 {self._format_hotkey_label()}。")
+        return True
+
     def _create_candidate_box(self) -> CandidateBox:
         return CandidateBox(
             on_select=self._on_candidate_select,
             font_family=self.font_family,
+            max_candidates=self.candidate_page_size,
+            candidate_layout=self.candidate_layout,
             input_display_formatter=self._format_input_outline,
             projected_code_formatter=self._format_projected_code,
             manual_key_output_resolver=self._resolve_manual_key_output,
@@ -290,6 +509,22 @@ class InputMethodApp(BaseInputMethodApp):
             on_input_change=self._on_input_change,
             on_copy_candidate=self._copy_candidate,
             on_commit_text=self._commit_candidate_box_text,
+            on_candidate_page_size_change=self._on_candidate_page_size_change,
+            on_candidate_layout_change=self._on_candidate_layout_change,
+            on_wake_trigger_mode_change=self._on_wake_trigger_mode_change,
+            on_standby_trigger_mode_change=self._on_standby_trigger_mode_change,
+            on_mouse_wake_enabled_change=self._on_mouse_wake_enabled_change,
+            on_mouse_standby_enabled_change=self._on_mouse_standby_enabled_change,
+            on_ui_scale_change=self._on_ui_scale_change,
+            on_active_alpha_change=self._on_active_alpha_change,
+            on_foreground_color_change=self._on_foreground_color_change,
+            on_background_color_change=self._on_background_color_change,
+            on_active_topmost_change=self._on_active_topmost_change,
+            on_reload_user_lexicon=self._reload_user_lexicon_from_menu,
+            on_open_user_data_dir=self._open_user_data_dir,
+            on_hotkey_summary_request=self._build_hotkey_summary,
+            on_hotkey_label_request=self._format_hotkey_label,
+            on_hotkey_change=self._on_hotkey_change,
             on_add_input_to_user_lexicon=self._add_current_input_to_user_lexicon,
             on_delete_input_from_user_lexicon=self._delete_current_input_from_user_lexicon,
             on_feedback=self._emit_feedback,

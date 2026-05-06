@@ -12,9 +12,15 @@ from typing import Callable, cast
 
 class CandidateLayoutBuilder:
     """封装候选框所需的内部控件、变量和字体初始化"""
+
+    _DEFAULT_FOREGROUND_COLOR = "#111827"
+    _DEFAULT_BACKGROUND_COLOR = "#f0f0f0"
+
     def __init__(self, root: tk.Tk, font_family: str):
         self.root = root
         self.font_family = self._resolve_font_family(font_family)
+        self.foreground_color = self._DEFAULT_FOREGROUND_COLOR
+        self.background_color = self._DEFAULT_BACKGROUND_COLOR
 
         self.ui_font: tkfont.Font
         self.text_font: tkfont.Font
@@ -33,6 +39,7 @@ class CandidateLayoutBuilder:
 
         self.decode_info_frame: ttk.Frame
         self.pinyin_var = tk.StringVar(self.root, value="")
+        self.pinyin_label: ttk.Label
 
         self.candidate_panel: ttk.Frame
         self.candidate_text: tk.Text
@@ -42,6 +49,7 @@ class CandidateLayoutBuilder:
         self.prev_button: ttk.Label
         self.next_button: ttk.Label
         self.last_page_button: ttk.Label
+        self.toolbar_menu_button: ttk.Label
 
         self.manual_key_layout_label: ttk.Label
 
@@ -79,24 +87,61 @@ class CandidateLayoutBuilder:
                 pass
 
         self.style = ttk.Style(self.root)
-        self.style.configure("Yime.TLabel", font=self.ui_font)
-        self.style.configure("Yime.Text.TLabel", font=self.text_font)
-        self.style.configure("Yime.TButton", font=self.ui_font)
-        self.style.configure("Yime.Candidate.TButton", font=self.text_font)
+        self.style.configure(
+            "Yime.TFrame",
+            background=self.background_color,
+        )
+        self.style.configure(
+            "Yime.TLabel",
+            font=self.ui_font,
+            foreground=self.foreground_color,
+            background=self.background_color,
+        )
+        self.style.configure(
+            "Yime.Text.TLabel",
+            font=self.text_font,
+            foreground=self.foreground_color,
+            background=self.background_color,
+        )
+        self.style.configure(
+            "Yime.TButton",
+            font=self.ui_font,
+            foreground=self.foreground_color,
+            background=self.background_color,
+        )
+        self.style.configure(
+            "Yime.Candidate.TButton",
+            font=self.text_font,
+            foreground=self.foreground_color,
+            background=self.background_color,
+        )
+        self.style.configure(
+            "Yime.TEntry",
+            font=self.text_font,
+            foreground=self.foreground_color,
+            fieldforeground=self.foreground_color,
+            fieldbackground=self.background_color,
+            background=self.background_color,
+        )
 
     def build_ui(self) -> None:
         """构建UI界面并赋值给对应的属性"""
         # 主界面容器（正常输入模式下可见）
-        self.main_frame = ttk.Frame(self.root, padding=12)
+        self.root.configure(bg=self.background_color)
+
+        self.main_frame = ttk.Frame(self.root, padding=(6, 12, 12, 12), style="Yime.TFrame")
         self.main_frame.pack(fill=tk.BOTH, expand=True)
 
+        self.content_frame = ttk.Frame(self.main_frame, style="Yime.TFrame")
+        self.content_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
         # 待命状态容器（通常在不输入时，缩成右下角一个“音”字图标）
-        self.standby_frame = tk.Frame(self.root, bg="#1f2937")
+        self.standby_frame = tk.Frame(self.root, bg=self.background_color)
         self.standby_icon = tk.Label(
             self.standby_frame,
             text="音",
-            bg="#1f2937",
-            fg="#f8fafc",
+            bg=self.background_color,
+            fg=self.foreground_color,
             font=self.icon_font,
             width=3,
             height=1,
@@ -106,7 +151,10 @@ class CandidateLayoutBuilder:
 
         # 显式的用户编码主输入框
         self.input_entry = ttk.Entry(
-            self.main_frame, textvariable=self.input_var, font=self.text_font
+            self.content_frame,
+            textvariable=self.input_var,
+            font=self.text_font,
+            style="Yime.TEntry",
         )
         self.input_entry.pack(fill=tk.X, pady=(0, 8))
         self.input_entry.focus_set()
@@ -114,22 +162,25 @@ class CandidateLayoutBuilder:
         # 隐藏的提交框：用于当焦点偏离主输入框，或者处理特定的快捷键回贴 / 焦点暂存时承接键入。
         # 注意它并没有调用 .pack()，所以在 UI 树中实际不可见
         self.commit_entry = ttk.Entry(
-            self.main_frame, textvariable=self.commit_var, font=self.text_font
+            self.content_frame,
+            textvariable=self.commit_var,
+            font=self.text_font,
+            style="Yime.TEntry",
         )
 
         # 包含拼音反馈与候选词列表的信息框架
-        self.decode_info_frame = ttk.Frame(self.main_frame)
+        self.decode_info_frame = ttk.Frame(self.content_frame, style="Yime.TFrame")
         self.decode_info_frame.pack(fill=tk.X, pady=(0, 8))
 
         # 隐藏/动态显示的规范拼音标签：只在有对应编码被成功解析成拼音时会借助 pinyin_var 出现文字
-        ttk.Label(
+        self.pinyin_label = ttk.Label(
             self.decode_info_frame,
             textvariable=self.pinyin_var,
-            foreground="#0b57d0",
             style="Yime.Text.TLabel",
-        ).pack(anchor=tk.W)
+        )
+        self.pinyin_label.pack(anchor=tk.W)
 
-        self.candidate_panel = ttk.Frame(self.decode_info_frame)
+        self.candidate_panel = ttk.Frame(self.decode_info_frame, style="Yime.TFrame")
         self.candidate_panel.pack(fill=tk.X, pady=(4, 0))
 
         # 候选词列表文本框
@@ -138,7 +189,9 @@ class CandidateLayoutBuilder:
             height=1,
             wrap=tk.NONE,
             font=self.text_font,
-            bg=self.style.lookup("TFrame", "background"),
+            bg=self.background_color,
+            fg=self.foreground_color,
+            insertbackground=self.foreground_color,
             bd=0,
             highlightthickness=0,
             cursor="arrow",
@@ -151,7 +204,7 @@ class CandidateLayoutBuilder:
         self.candidate_text.bind("<B1-Leave>", lambda e: "break")
 
         # 翻页按钮容器与四个翻页按钮
-        self.pager_frame = ttk.Frame(self.candidate_panel)
+        self.pager_frame = ttk.Frame(self.candidate_panel, style="Yime.TFrame")
         self.pager_frame.pack(side=tk.RIGHT, fill=tk.Y, padx=(8, 0))
 
         self.first_page_button = ttk.Label(
@@ -174,7 +227,38 @@ class CandidateLayoutBuilder:
         )
         self.last_page_button.pack(side=tk.LEFT, padx=2)
 
+        self.toolbar_menu_button = ttk.Label(
+            self.pager_frame, text="≡", cursor="hand2", foreground="#5f6368"
+        )
+        self.toolbar_menu_button.pack(side=tk.LEFT, padx=(6, 2))
+
+        self.drag_grip = ttk.Label(
+            self.pager_frame, text="⋮⋮", font=self.ui_font, cursor="fleur", foreground="#9aa0a6"
+        )
+        self.drag_grip.pack(side=tk.LEFT, fill=tk.Y, padx=(6, 2))
+
         # 动态隐藏的手工按键布局说明：在使用键盘图等特定模式下通过修改 text 属性令其被看到，平时保持为空
         self.manual_key_layout_label = ttk.Label(
-            self.main_frame, text="", foreground="#e37400", style="Yime.TLabel"
+            self.content_frame,
+            text="",
+            foreground=self.foreground_color,
+            style="Yime.TLabel",
         )
+
+    def set_foreground_color(self, color: str) -> None:
+        self.foreground_color = color
+        self.style.configure("Yime.TLabel", foreground=color)
+        self.style.configure("Yime.Text.TLabel", foreground=color)
+        self.style.configure("Yime.TButton", foreground=color)
+        self.style.configure("Yime.Candidate.TButton", foreground=color)
+        self.style.configure("Yime.TEntry", foreground=color, fieldforeground=color)
+
+    def set_background_color(self, color: str) -> None:
+        self.background_color = color
+        self.root.configure(bg=color)
+        self.style.configure("Yime.TFrame", background=color)
+        self.style.configure("Yime.TLabel", background=color)
+        self.style.configure("Yime.Text.TLabel", background=color)
+        self.style.configure("Yime.TButton", background=color)
+        self.style.configure("Yime.Candidate.TButton", background=color)
+        self.style.configure("Yime.TEntry", background=color, fieldbackground=color)

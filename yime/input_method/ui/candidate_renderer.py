@@ -158,6 +158,8 @@ class CandidateRendererMixin:
     def set_candidate_layout(self, layout: str) -> None:
         """切换候选显示方向；默认横排，可切换回竖排。"""
         normalized = self._normalize_candidate_layout(layout)
+        if hasattr(self, "candidate_layout_var"):
+            self.candidate_layout_var.set(normalized)
         if self._candidate_layout == normalized:
             return
         self._candidate_layout = normalized
@@ -185,16 +187,17 @@ class CandidateRendererMixin:
         return self.actions.should_allow_native_edit_key(event)
 
     def _configure_candidate_text_tags(self) -> None:
+        foreground = getattr(self, "_foreground_color", "#111827")
         selected_foreground = "#f8fafc"
         selected_background = "#2563eb"
         self.candidate_text.tag_configure(
             "candidate_index",
-            foreground="#0b57d0",
+            foreground=foreground,
             font=self.ui_font,
         )
         self.candidate_text.tag_configure(
             "candidate_text",
-            foreground="#111827",
+            foreground=foreground,
             font=self.text_font,
         )
         self.candidate_text.tag_configure(
@@ -211,7 +214,7 @@ class CandidateRendererMixin:
         )
         self.candidate_text.tag_configure(
             "pager",
-            foreground="#0b57d0",
+            foreground=foreground,
             font=self.ui_font,
         )
         self.candidate_text.tag_configure(
@@ -221,12 +224,12 @@ class CandidateRendererMixin:
         )
         self.candidate_text.tag_configure(
             "page_info",
-            foreground="#6b7280",
+            foreground=foreground,
             font=self.ui_font,
         )
         self.candidate_text.tag_configure(
             "empty_state",
-            foreground="#6b7280",
+            foreground=foreground,
             font=self.text_font,
         )
 

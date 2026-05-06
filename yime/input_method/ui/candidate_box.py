@@ -19,11 +19,20 @@ from ..utils.window_manager import WindowManager
 InputChangeCallback = Callable[[Optional[object]], None]
 CopyCandidateCallback = Callable[[int], None]
 CommitTextCallback = Callable[[str], None]
+CandidatePageSizeChangeCallback = Callable[[int], None]
+CandidateLayoutChangeCallback = Callable[[str], None]
+TriggerModeChangeCallback = Callable[[str], None]
+BoolSettingChangeCallback = Callable[[bool], None]
+IntSettingChangeCallback = Callable[[int], None]
+ColorSettingChangeCallback = Callable[[str], None]
 AddInputToUserLexiconCallback = Callable[[], None]
 DeleteInputFromUserLexiconCallback = Callable[[], None]
 ManualKeyOutputResolver = Callable[[str, dict[str, bool]], str]
 VoidCallback = Callable[[], None]
 FeedbackCallback = Callable[[str, str], None]
+HotkeySummaryRequestCallback = Callable[[], str]
+HotkeyLabelRequestCallback = Callable[[], str]
+HotkeyChangeCallback = Callable[[str], bool]
 
 from .candidate_box_actions import CandidateBoxActions
 
@@ -39,6 +48,8 @@ class CandidateBox(CandidateRendererMixin):
     _PASSIVE_ALPHA = 0.42
     _ACTIVE_ALPHA = 0.97
     _DEFAULT_CANDIDATE_LAYOUT = "horizontal"
+    _DEFAULT_FOREGROUND_COLOR = "#111827"
+    _DEFAULT_BACKGROUND_COLOR = "#f0f0f0"
 
     _HWND_TOPMOST = -1
     _HWND_NOTOPMOST = -2
@@ -71,6 +82,22 @@ class CandidateBox(CandidateRendererMixin):
         on_input_change: Optional[InputChangeCallback] = None,
         on_copy_candidate: Optional[CopyCandidateCallback] = None,
         on_commit_text: Optional[CommitTextCallback] = None,
+        on_candidate_page_size_change: Optional[CandidatePageSizeChangeCallback] = None,
+        on_candidate_layout_change: Optional[CandidateLayoutChangeCallback] = None,
+        on_wake_trigger_mode_change: Optional[TriggerModeChangeCallback] = None,
+        on_standby_trigger_mode_change: Optional[TriggerModeChangeCallback] = None,
+        on_mouse_wake_enabled_change: Optional[BoolSettingChangeCallback] = None,
+        on_mouse_standby_enabled_change: Optional[BoolSettingChangeCallback] = None,
+        on_ui_scale_change: Optional[IntSettingChangeCallback] = None,
+        on_active_alpha_change: Optional[IntSettingChangeCallback] = None,
+        on_foreground_color_change: Optional[ColorSettingChangeCallback] = None,
+        on_background_color_change: Optional[ColorSettingChangeCallback] = None,
+        on_active_topmost_change: Optional[BoolSettingChangeCallback] = None,
+        on_reload_user_lexicon: Optional[VoidCallback] = None,
+        on_open_user_data_dir: Optional[VoidCallback] = None,
+        on_hotkey_summary_request: Optional[HotkeySummaryRequestCallback] = None,
+        on_hotkey_label_request: Optional[HotkeyLabelRequestCallback] = None,
+        on_hotkey_change: Optional[HotkeyChangeCallback] = None,
         on_add_input_to_user_lexicon: Optional[AddInputToUserLexiconCallback] = None,
         on_delete_input_from_user_lexicon: Optional[DeleteInputFromUserLexiconCallback] = None,
         on_feedback: Optional[FeedbackCallback] = None,
@@ -108,11 +135,31 @@ class CandidateBox(CandidateRendererMixin):
         self._last_main_geometry: Optional[tuple[int, int, int, int]] = None
         self._mouse_wake_enabled = enable_mouse_wake
         self._mouse_standby_enabled = enable_mouse_standby
+        self._active_alpha_value = self._ACTIVE_ALPHA
+        self._active_topmost_enabled = True
+        self._foreground_color = self._DEFAULT_FOREGROUND_COLOR
+        self._background_color = self._DEFAULT_BACKGROUND_COLOR
 
         # 回调注入
         self._on_input_change_callback = on_input_change
         self._on_copy_candidate_callback = on_copy_candidate
         self._on_commit_text_callback = on_commit_text
+        self._on_candidate_page_size_change = on_candidate_page_size_change
+        self._on_candidate_layout_change = on_candidate_layout_change
+        self._on_wake_trigger_mode_change = on_wake_trigger_mode_change
+        self._on_standby_trigger_mode_change = on_standby_trigger_mode_change
+        self._on_mouse_wake_enabled_change = on_mouse_wake_enabled_change
+        self._on_mouse_standby_enabled_change = on_mouse_standby_enabled_change
+        self._on_ui_scale_change = on_ui_scale_change
+        self._on_active_alpha_change = on_active_alpha_change
+        self._on_foreground_color_change = on_foreground_color_change
+        self._on_background_color_change = on_background_color_change
+        self._on_active_topmost_change = on_active_topmost_change
+        self._on_reload_user_lexicon = on_reload_user_lexicon
+        self._on_open_user_data_dir = on_open_user_data_dir
+        self._on_hotkey_summary_request = on_hotkey_summary_request
+        self._on_hotkey_label_request = on_hotkey_label_request
+        self._on_hotkey_change = on_hotkey_change
         self._on_add_input_to_user_lexicon = on_add_input_to_user_lexicon
         self._on_delete_input_from_user_lexicon = on_delete_input_from_user_lexicon
         self.feedback_callback = on_feedback
@@ -148,6 +195,16 @@ class CandidateBox(CandidateRendererMixin):
 
         # 创建缺失的变量
         self.page_size_var = tk.IntVar(value=max_candidates)
+        self.candidate_layout_var = tk.StringVar(self.root, value=self._candidate_layout)
+        self.wake_trigger_mode_var = tk.StringVar(self.root, value="both")
+        self.standby_trigger_mode_var = tk.StringVar(self.root, value="both")
+        self.mouse_wake_var = tk.BooleanVar(self.root, value=enable_mouse_wake)
+        self.mouse_standby_var = tk.BooleanVar(self.root, value=enable_mouse_standby)
+        self.ui_scale_var = tk.IntVar(self.root, value=100)
+        self.active_alpha_var = tk.IntVar(self.root, value=97)
+        self.foreground_color_var = tk.StringVar(self.root, value=self._DEFAULT_FOREGROUND_COLOR)
+        self.background_color_var = tk.StringVar(self.root, value=self._DEFAULT_BACKGROUND_COLOR)
+        self.active_topmost_var = tk.BooleanVar(self.root, value=True)
         self.page_size_spinbox = None
         self.page_info_var = tk.StringVar(self.root, value="第 1/1 页")
         self.shortcut_hint_var = tk.StringVar(value="Space 选首选")
@@ -161,6 +218,7 @@ class CandidateBox(CandidateRendererMixin):
         self.prev_button = self.layout_builder.prev_button
         self.next_button = self.layout_builder.next_button
         self.last_page_button = self.layout_builder.last_page_button
+        self.toolbar_menu_button = self.layout_builder.toolbar_menu_button
         self.standby_frame = self.layout_builder.standby_frame
         self.standby_icon = self.layout_builder.standby_icon
         self.main_frame = self.layout_builder.main_frame
@@ -244,6 +302,99 @@ class CandidateBox(CandidateRendererMixin):
         if self._on_commit_text_callback:
             self._on_commit_text_callback(text)
             return True
+        return False
+
+    def candidate_page_size_change_callback(self, page_size: int) -> bool:
+        if self._on_candidate_page_size_change:
+            self._on_candidate_page_size_change(page_size)
+            return True
+        return False
+
+    def candidate_layout_change_callback(self, layout: str) -> bool:
+        if self._on_candidate_layout_change:
+            self._on_candidate_layout_change(layout)
+            return True
+        return False
+
+    def wake_trigger_mode_change_callback(self, mode: str) -> bool:
+        if self._on_wake_trigger_mode_change:
+            self._on_wake_trigger_mode_change(mode)
+            return True
+        return False
+
+    def standby_trigger_mode_change_callback(self, mode: str) -> bool:
+        if self._on_standby_trigger_mode_change:
+            self._on_standby_trigger_mode_change(mode)
+            return True
+        return False
+
+    def mouse_wake_enabled_change_callback(self, enabled: bool) -> bool:
+        if self._on_mouse_wake_enabled_change:
+            self._on_mouse_wake_enabled_change(enabled)
+            return True
+        return False
+
+    def mouse_standby_enabled_change_callback(self, enabled: bool) -> bool:
+        if self._on_mouse_standby_enabled_change:
+            self._on_mouse_standby_enabled_change(enabled)
+            return True
+        return False
+
+    def ui_scale_change_callback(self, value: int) -> bool:
+        if self._on_ui_scale_change:
+            self._on_ui_scale_change(value)
+            return True
+        return False
+
+    def active_alpha_change_callback(self, value: int) -> bool:
+        if self._on_active_alpha_change:
+            self._on_active_alpha_change(value)
+            return True
+        return False
+
+    def foreground_color_change_callback(self, value: str) -> bool:
+        if self._on_foreground_color_change:
+            self._on_foreground_color_change(value)
+            return True
+        return False
+
+    def background_color_change_callback(self, value: str) -> bool:
+        if self._on_background_color_change:
+            self._on_background_color_change(value)
+            return True
+        return False
+
+    def active_topmost_change_callback(self, enabled: bool) -> bool:
+        if self._on_active_topmost_change:
+            self._on_active_topmost_change(enabled)
+            return True
+        return False
+
+    def reload_user_lexicon_callback(self) -> bool:
+        if self._on_reload_user_lexicon:
+            self._on_reload_user_lexicon()
+            return True
+        return False
+
+    def open_user_data_dir_callback(self) -> bool:
+        if self._on_open_user_data_dir:
+            self._on_open_user_data_dir()
+            return True
+        return False
+
+    def hotkey_summary_callback(self) -> Optional[str]:
+        if self._on_hotkey_summary_request:
+            return self._on_hotkey_summary_request()
+        return None
+
+    def hotkey_label_callback(self) -> Optional[str]:
+        if self._on_hotkey_label_request:
+            return self._on_hotkey_label_request()
+        return None
+
+    def hotkey_change_callback(self, hotkey: str) -> bool:
+        if self._on_hotkey_change:
+            return self._on_hotkey_change(hotkey)
         return False
 
     def copy_candidate_callback(self, index: int) -> bool:
@@ -451,8 +602,66 @@ class CandidateBox(CandidateRendererMixin):
     def _bind_passive_reactivation_targets(self) -> None:
         """半透明静置态下，点击主界面任意区域都可恢复激活。待命小图标点击则完全复存为输入框。"""
         self._bind_passive_reactivation_widget(self.main_frame)
-        self.standby_icon.bind("<Button-1>", self._restore_from_standby)
-        self.standby_frame.bind("<Button-1>", self._restore_from_standby)
+
+        # 待命状态拖曳/点击支持（按住左键直接可以拖动）
+        for w in (self.standby_icon, self.standby_frame):
+            w.bind("<ButtonPress-1>", self._on_standby_press)
+            w.bind("<B1-Motion>", self._on_drag_motion)
+            w.bind("<ButtonRelease-1>", self._on_standby_release)
+
+        # 主界面小把手拖拽
+        self.layout_builder.drag_grip.bind("<ButtonPress-1>", self._on_drag_press)
+        self.layout_builder.drag_grip.bind("<B1-Motion>", self._on_drag_motion)
+        self.layout_builder.drag_grip.bind("<ButtonRelease-1>", self._on_drag_release)
+
+    def _on_standby_press(self, event: tk.Event) -> str:
+        self._drag_start_x = event.x_root
+        self._drag_start_y = event.y_root
+        self._drag_win_x = self.root.winfo_rootx()
+        self._drag_win_y = self.root.winfo_rooty()
+        self._drag_distance = 0
+        return "break"
+
+    def _on_drag_press(self, event: tk.Event) -> str:
+        self._drag_start_x = event.x_root
+        self._drag_start_y = event.y_root
+        self._drag_win_x = self.root.winfo_rootx()
+        self._drag_win_y = self.root.winfo_rooty()
+        self._drag_distance = 0
+        return "break"
+
+    def _on_drag_motion(self, event: tk.Event) -> str:
+        if not hasattr(self, "_drag_start_x"):
+            return "break"
+
+        dx = event.x_root - self._drag_start_x
+        dy = event.y_root - self._drag_start_y
+        self._drag_distance = max(getattr(self, "_drag_distance", 0), abs(dx), abs(dy))
+
+        new_x = self._drag_win_x + dx
+        new_y = self._drag_win_y + dy
+
+        geom_x = f"+{new_x}" if new_x >= 0 else str(new_x)
+        geom_y = f"+{new_y}" if new_y >= 0 else str(new_y)
+        self.root.geometry(f"{geom_x}{geom_y}")
+        return "break"
+
+    def _on_drag_release(self, event: tk.Event) -> str:
+        if hasattr(self, "_drag_start_x"):
+            del self._drag_start_x
+        # 计算当前的坐标来记忆
+        x = self.root.winfo_rootx()
+        y = self.root.winfo_rooty()
+        self._remember_main_geometry(x, y)
+        return "break"
+
+    def _on_standby_release(self, event: tk.Event) -> str:
+        dist = getattr(self, "_drag_distance", 0)
+        self._on_drag_release(event)
+        if dist < 5:
+            # 单击没发生明显位移 -> 恢复展开
+            self._restore_from_standby(event)
+        return "break"
 
     def _bind_passive_reactivation_widget(self, widget: tk.Misc) -> None:
         widget.bind("<Button-1>", self._reactivate_from_passive, add="+")
@@ -539,9 +748,85 @@ class CandidateBox(CandidateRendererMixin):
 
     def set_mouse_wake_enabled(self, enabled: bool) -> None:
         self._mouse_wake_enabled = enabled
+        self.mouse_wake_var.set(enabled)
 
     def set_mouse_standby_enabled(self, enabled: bool) -> None:
         self._mouse_standby_enabled = enabled
+        self.mouse_standby_var.set(enabled)
+
+    def set_ui_scale(self, scale_percent: int) -> None:
+        normalized = min(max(int(scale_percent), 90), 120)
+        self.ui_scale_var.set(normalized)
+        self.ui_font.configure(size=max(8, round(10 * normalized / 100)))
+        self.text_font.configure(size=max(11, round(14 * normalized / 100)))
+        self.icon_font.configure(size=max(13, round(16 * normalized / 100)))
+        self._render_candidates()
+        self._resize_to_content_if_visible()
+
+    def set_active_alpha_percent(self, alpha_percent: int) -> None:
+        normalized = min(max(int(alpha_percent), 80), 100)
+        self.active_alpha_var.set(normalized)
+        self._active_alpha_value = normalized / 100.0
+        if not self._is_standby:
+            try:
+                if self.root.state() != "withdrawn":
+                    self._set_root_alpha(self._active_alpha_value)
+            except tk.TclError:
+                return
+
+    def set_active_topmost_enabled(self, enabled: bool) -> None:
+        self._active_topmost_enabled = enabled
+        self.active_topmost_var.set(enabled)
+        if not self._is_standby:
+            try:
+                if self.root.state() != "withdrawn":
+                    self._set_root_topmost(enabled)
+            except tk.TclError:
+                return
+
+    def set_foreground_color(self, color: str) -> None:
+        normalized = str(color or self._DEFAULT_FOREGROUND_COLOR).strip() or self._DEFAULT_FOREGROUND_COLOR
+        self._foreground_color = normalized
+        self.foreground_color_var.set(normalized)
+        self.layout_builder.set_foreground_color(normalized)
+
+        for widget in (
+            self.first_page_button,
+            self.prev_button,
+            self.next_button,
+            self.last_page_button,
+            self.toolbar_menu_button,
+            self.layout_builder.drag_grip,
+            self.manual_key_layout_label,
+        ):
+            widget.configure(foreground=normalized)
+
+        self.candidate_text.configure(fg=normalized, insertbackground=normalized)
+        self._configure_candidate_text_tags()
+        self._render_candidates()
+        self._resize_to_content_if_visible()
+
+    def set_background_color(self, color: str) -> None:
+        normalized = str(color or self._DEFAULT_BACKGROUND_COLOR).strip() or self._DEFAULT_BACKGROUND_COLOR
+        self._background_color = normalized
+        self.background_color_var.set(normalized)
+        self.layout_builder.set_background_color(normalized)
+
+        for widget in (
+            self.first_page_button,
+            self.prev_button,
+            self.next_button,
+            self.last_page_button,
+            self.toolbar_menu_button,
+            self.layout_builder.drag_grip,
+        ):
+            widget.configure(background=normalized)
+
+        self.standby_frame.configure(bg=normalized)
+        self.standby_icon.configure(bg=normalized)
+        self.candidate_text.configure(bg=normalized)
+        self._render_candidates()
+        self._resize_to_content_if_visible()
 
     def set_manual_input_enabled(self, enabled: bool) -> None:
         """切换候选框是否允许手动输入模式。"""
@@ -613,7 +898,7 @@ class CandidateBox(CandidateRendererMixin):
             self.root.geometry("")  # 清除待命态 54x54 显式尺寸，让主界面按内容重新撑开
             self.root.update_idletasks()
             self._is_standby = False
-        self._set_root_alpha(self._ACTIVE_ALPHA)
+        self._set_root_alpha(self._active_alpha_value)
         self.root.title("音元拼音")
 
     def _on_confirm_key(self, event: Optional[tk.Event] = None) -> str:
@@ -803,13 +1088,13 @@ class CandidateBox(CandidateRendererMixin):
         user32 = self._get_user32()
         if not focus_input:
             self._set_noactivate(True)
-            self._set_root_topmost(True)
+            self._set_root_topmost(self._active_topmost_enabled)
             self.root.deiconify()
             self.root.update_idletasks()
             user32.ShowWindow(hwnd, self._SW_SHOWNOACTIVATE)
             user32.SetWindowPos(
                 hwnd,
-                self._HWND_TOPMOST,
+                self._HWND_TOPMOST if self._active_topmost_enabled else self._HWND_NOTOPMOST,
                 target_x,
                 target_y,
                 0,
@@ -823,11 +1108,11 @@ class CandidateBox(CandidateRendererMixin):
             self._set_noactivate(False)
             self.root.state("normal")
             self.root.deiconify()
-            self._set_root_topmost(True)
+            self._set_root_topmost(self._active_topmost_enabled)
             user32.ShowWindow(hwnd, self._SW_SHOW)
             user32.SetWindowPos(
                 hwnd,
-                self._HWND_TOPMOST,
+                self._HWND_TOPMOST if self._active_topmost_enabled else self._HWND_NOTOPMOST,
                 target_x,
                 target_y,
                 0,
