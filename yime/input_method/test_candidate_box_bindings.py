@@ -342,8 +342,8 @@ def test_toolbar_menu_uses_expected_labels_and_popup_position(monkeypatch) -> No
     actions._get_toolbar_menu()
 
     command_labels = [label for label, _ in commands]
-    assert command_labels == ["当前唤起热键：Ctrl+Alt+Insert", "修改热键", "加入当前词条", "删除当前词条", "编辑用户词库", "应用用户词库", "导入用户词库", "导出用户词库", "帮助", "查看诊断", "重新检查诊断", "复制诊断信息", "查看试用反馈说明", "复制试用反馈模板", "打开故障排查", "打开运行时数据目录", "打开设置文件", "打开帮助", "关于"]
-    assert [label for label, _ in cascades] == ["候选列表", "唤起方式", "休眠方式", "交互", "前景颜色", "背景颜色", "字体大小", "主界面透明度", "外观", "设置", "编辑与重载", "导入与导出", "用户词库", "工具", "诊断"]
+    assert command_labels == ["当前唤起热键：Ctrl+Alt+Insert", "修改热键", "加入当前词条", "删除当前词条", "编辑用户词库", "应用用户词库", "导入用户词库", "导出用户词库", "查看帮助", "查看试用反馈说明", "复制试用反馈模板", "查看诊断", "重新检查诊断", "复制诊断信息", "查看试用反馈说明", "复制试用反馈模板", "打开故障排查", "打开运行时数据目录", "打开设置文件", "打开帮助", "关于"]
+    assert [label for label, _ in cascades] == ["候选列表", "唤起方式", "休眠方式", "交互", "前景颜色", "背景颜色", "字体大小", "主界面透明度", "外观", "设置", "编辑与重载", "导入与导出", "用户词库", "工具", "帮助", "诊断"]
     assert [label for label, _, _, _ in radio_buttons] == [
         "每页 5 个",
         "每页 6 个",
@@ -415,6 +415,8 @@ def test_toolbar_menu_uses_expected_labels_and_popup_position(monkeypatch) -> No
     commands[16][1]()
     commands[17][1]()
     commands[18][1]()
+    commands[19][1]()
+    commands[20][1]()
 
     assert feedback_calls[0] == (
         "快捷键",
@@ -425,24 +427,27 @@ def test_toolbar_menu_uses_expected_labels_and_popup_position(monkeypatch) -> No
     assert "推荐阅读顺序" in feedback_calls[1][1]
     assert "菜单与用户词库" in feedback_calls[1][1]
     assert feedback_calls[1][1].endswith("当前热键：Ctrl+Shift+Y")
-    assert feedback_calls[2][0] == "诊断"
-    assert "当前模式：热键模式" in feedback_calls[2][1]
-    assert "诊断结论：当前未发现警告或提示，共 4 项正常。" in feedback_calls[2][1]
-    assert "已确认正常：" in feedback_calls[2][1]
-    assert "- 候选来源：正常。运行时 JSON 导出文件" in feedback_calls[2][1]
-    assert "运行时数据指引：" in feedback_calls[2][1]
-    assert "python -m yime.export_runtime_candidates_json" in feedback_calls[2][1]
-    assert feedback_calls[2][1].endswith("当前热键：Ctrl+Shift+Y")
-    assert feedback_calls[3][0] == "诊断"
-    assert feedback_calls[3][1] == feedback_calls[2][1]
+    assert feedback_calls[2][0] == "试用反馈说明"
+    assert "如果你只想给我最短反馈，直接告诉我下面哪一种最接近：" in feedback_calls[2][1]
+    assert feedback_calls[3] == ("试用反馈", "已复制试用反馈模板；可直接发给试用者或让对方回填。")
+    assert feedback_calls[4][0] == "诊断"
+    assert "当前模式：热键模式" in feedback_calls[4][1]
+    assert "诊断结论：当前未发现警告或提示，共 4 项正常。" in feedback_calls[4][1]
+    assert "已确认正常：" in feedback_calls[4][1]
+    assert "- 候选来源：正常。运行时 JSON 导出文件" in feedback_calls[4][1]
+    assert "运行时数据指引：" in feedback_calls[4][1]
+    assert "python -m yime.export_runtime_candidates_json" in feedback_calls[4][1]
+    assert feedback_calls[4][1].endswith("当前热键：Ctrl+Shift+Y")
+    assert feedback_calls[5][0] == "诊断"
+    assert feedback_calls[5][1] == feedback_calls[4][1]
     assert box.status == "已重新检查诊断。"
-    assert feedback_calls[4] == ("诊断", "已复制诊断信息；可直接粘贴给 GitHub Copilot。")
-    assert feedback_calls[5][0] == "试用反馈说明"
-    assert "如果你只想给我最短反馈，直接告诉我下面哪一种最接近：" in feedback_calls[5][1]
-    assert "- 能打开但唤不起候选框" in feedback_calls[5][1]
-    assert "如果愿意再多写一句，补这 3 件事就够了：" in feedback_calls[5][1]
-    assert feedback_calls[6] == ("试用反馈", "已复制试用反馈模板；可直接发给试用者或让对方回填。")
-    assert box.root.clipboard_cleared == 2
+    assert feedback_calls[6] == ("诊断", "已复制诊断信息；可直接粘贴给 GitHub Copilot。")
+    assert feedback_calls[7][0] == "试用反馈说明"
+    assert "如果你只想给我最短反馈，直接告诉我下面哪一种最接近：" in feedback_calls[7][1]
+    assert "- 能打开但唤不起候选框" in feedback_calls[7][1]
+    assert "如果愿意再多写一句，补这 3 件事就够了：" in feedback_calls[7][1]
+    assert feedback_calls[8] == ("试用反馈", "已复制试用反馈模板；可直接发给试用者或让对方回填。")
+    assert box.root.clipboard_cleared == 3
     assert len(box.root.clipboard_contents) == 1
     assert box.root.clipboard_contents[0].startswith("【Yime 试用反馈模板】")
     assert "请先告诉我下面哪一种最接近：" in box.root.clipboard_contents[0]
@@ -455,10 +460,10 @@ def test_toolbar_menu_uses_expected_labels_and_popup_position(monkeypatch) -> No
     assert box.open_troubleshooting_requested is True
     assert box.open_runtime_data_requested is True
     assert box.open_settings_requested is True
-    assert feedback_calls[7][0] == "帮助"
-    assert "普通用户帮助" in feedback_calls[7][1]
-    assert feedback_calls[7][1].endswith("当前热键：Ctrl+Shift+Y")
-    assert feedback_calls[8] == (
+    assert feedback_calls[9][0] == "帮助"
+    assert "普通用户帮助" in feedback_calls[9][1]
+    assert feedback_calls[9][1].endswith("当前热键：Ctrl+Shift+Y")
+    assert feedback_calls[10] == (
         "关于",
         "音元拼音输入法当前使用轻量候选窗界面。这个菜单入口用于集中承载设置、帮助和后续扩展功能。",
     )

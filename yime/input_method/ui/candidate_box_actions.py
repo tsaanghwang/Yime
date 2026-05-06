@@ -50,6 +50,7 @@ class CandidateBoxActions:
         self.box = box
         self._input_context_menu: Optional[tk.Menu] = None
         self._toolbar_menu: Optional[tk.Menu] = None
+        self._help_menu: Optional[tk.Menu] = None
         self._settings_menu: Optional[tk.Menu] = None
         self._candidate_list_menu: Optional[tk.Menu] = None
         self._interaction_menu: Optional[tk.Menu] = None
@@ -266,11 +267,20 @@ class CandidateBoxActions:
             menu = tk.Menu(self.box.root, tearoff=False)
             menu.add_cascade(label="设置", menu=self._get_settings_menu())
             menu.add_cascade(label="工具", menu=self._get_tools_menu())
-            menu.add_command(label="帮助", command=self.show_help)
+            menu.add_cascade(label="帮助", menu=self._get_help_menu())
             menu.add_cascade(label="诊断", menu=self._get_diagnostics_menu())
             menu.add_command(label="关于", command=self.show_about)
             self._toolbar_menu = menu
         return self._toolbar_menu
+
+    def _get_help_menu(self) -> tk.Menu:
+        if self._help_menu is None:
+            menu = tk.Menu(self.box.root, tearoff=False)
+            menu.add_command(label="查看帮助", command=self.show_help)
+            menu.add_command(label="查看试用反馈说明", command=self.show_trial_feedback_help)
+            menu.add_command(label="复制试用反馈模板", command=self.copy_trial_feedback_template)
+            self._help_menu = menu
+        return self._help_menu
 
     def _get_diagnostics_menu(self) -> tk.Menu:
         if self._diagnostics_menu is None:
