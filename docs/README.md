@@ -24,6 +24,7 @@
 ### 快速开始
 
 - **[安装指南](install/INSTALLATION_GUIDE.md)** - 当前 Windows 桌面输入法原型的主安装入口
+- **[普通用户完整帮助](USER_HELP.md)** - 面向试用者的一页主说明：启动、基本操作、词库、常见问题和当前边界
 - **[便携版发布指南](install/PORTABLE_RELEASE_GUIDE.md)** - 用 PyInstaller 打成无需 Python 的 Windows 独立目录
 - **[安装包发布指南](install/SETUP_RELEASE_GUIDE.md)** - 用 Inno Setup 打成可分发的 `Setup.exe`
 - **[朋友试装前最小验收清单](install/friend-trial-checklist.md)** - 发给外部试装前，先用 10 分钟做一轮最小风险检查

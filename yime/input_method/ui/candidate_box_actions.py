@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import re
 import tkinter as tk
+from pathlib import Path
 from tkinter import messagebox, simpledialog
 from typing import TYPE_CHECKING, Optional
 
@@ -10,6 +12,8 @@ if TYPE_CHECKING:
 
 class CandidateBoxActions:
     """Event and command handlers for CandidateBox."""
+
+    _HELP_DOC_PATH = Path(__file__).resolve().parents[3] / "docs" / "USER_HELP.md"
 
     _FOREGROUND_COLOR_OPTIONS = (
         ("默认前景", "#111827"),
@@ -652,16 +656,49 @@ class CandidateBoxActions:
         self._invalidate_toolbar_menus()
         self._set_local_status(f"唤起热键已改为{self._current_hotkey_label()}。")
 
+    @classmethod
+    def _load_help_document_text(cls) -> str:
+        try:
+            raw_text = cls._HELP_DOC_PATH.read_text(encoding="utf-8")
+        except OSError:
+            return (
+                "当前推荐入口：python -m yime.input_method.app 或 python run_input_method.py。\n\n"
+                "基本操作：数字键选词，Space/Enter 上屏，Home/PgUp/PgDn/End 翻页，Ctrl+Q 关闭窗口。\n\n"
+                "用户词库：可通过编辑、应用、导入、导出几个入口维护。\n\n"
+                "更多说明请查看 docs/USER_HELP.md。"
+            )
+
+        lines: list[str] = []
+        in_code_block = False
+        for raw_line in raw_text.splitlines():
+            stripped = raw_line.strip()
+            if stripped.startswith("```"):
+                in_code_block = not in_code_block
+                continue
+            if in_code_block:
+                lines.append(stripped)
+                continue
+
+            line = re.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", stripped)
+            if line.startswith("#"):
+                line = line.lstrip("#").strip()
+            lines.append(line)
+
+        normalized_lines: list[str] = []
+        previous_blank = False
+        for line in lines:
+            is_blank = line == ""
+            if is_blank and previous_blank:
+                continue
+            normalized_lines.append(line)
+            previous_blank = is_blank
+
+        return "\n".join(normalized_lines).strip()
+
     def show_help(self) -> None:
         callback = getattr(self.box, "hotkey_summary_callback", None)
         summary = callback() if callable(callback) else None
-        message = (
-            "当前推荐入口：python -m yime.input_method.app 或 python run_input_method.py。\n\n"
-            "基本操作：数字键选词，Space/Enter 上屏，Home/PgUp/PgDn/End 翻页，Ctrl+Q 关闭窗口；待命时可点“音”图标或按热键唤醒。\n\n"
-            "常用参数：--copy-only 只复制不回贴，--font-family 可指定候选框字体。\n\n"
-            "用户词库：可右键输入框把当前汉字词语加入用户词库，也可删除当前词条；需要维护时，可用 tools/manage_user_lexicon.py 执行 list-recent、export、import、init-db、check、repair-all。\n\n"
-            "常见问题：推荐环境是 Windows 10/11 + Python 3.12 + pywin32；若启动后提示“将使用手动输入模式”，先检查 Python 版本和 pywin32；若候选词为空或结果不完整，先看启动日志确认当前走的是运行时 JSON、SQLite runtime_candidates 视图，还是静态候选表。"
-        )
+        message = self._load_help_document_text()
         if summary:
             message = f"{message}\n\n{summary}"
         self._emit_feedback(

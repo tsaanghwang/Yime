@@ -363,20 +363,19 @@ def test_toolbar_menu_uses_expected_labels_and_popup_position(monkeypatch) -> No
     commands[8][1]()
     commands[9][1]()
 
-    assert feedback_calls == [
-        (
-            "快捷键",
-            "当前热键：Ctrl+Alt+Insert",
-        ),
-        (
-            "帮助",
-            "当前推荐入口：python -m yime.input_method.app 或 python run_input_method.py。\n\n基本操作：数字键选词，Space/Enter 上屏，Home/PgUp/PgDn/End 翻页，Ctrl+Q 关闭窗口；待命时可点“音”图标或按热键唤醒。\n\n常用参数：--copy-only 只复制不回贴，--font-family 可指定候选框字体。\n\n用户词库：可右键输入框把当前汉字词语加入用户词库，也可删除当前词条；需要维护时，可用 tools/manage_user_lexicon.py 执行 list-recent、export、import、init-db、check、repair-all。\n\n常见问题：推荐环境是 Windows 10/11 + Python 3.12 + pywin32；若启动后提示“将使用手动输入模式”，先检查 Python 版本和 pywin32；若候选词为空或结果不完整，先看启动日志确认当前走的是运行时 JSON、SQLite runtime_candidates 视图，还是静态候选表。\n\n当前热键：Ctrl+Shift+Y",
-        ),
-        (
-            "关于",
-            "音元拼音输入法当前使用轻量候选窗界面。这个菜单入口用于集中承载设置、帮助和后续扩展功能。",
-        ),
-    ]
+    assert feedback_calls[0] == (
+        "快捷键",
+        "当前热键：Ctrl+Alt+Insert",
+    )
+    assert feedback_calls[1][0] == "帮助"
+    assert "普通用户完整帮助" in feedback_calls[1][1]
+    assert "启动方式" in feedback_calls[1][1]
+    assert "用户词库推荐流程" in feedback_calls[1][1]
+    assert feedback_calls[1][1].endswith("当前热键：Ctrl+Shift+Y")
+    assert feedback_calls[2] == (
+        "关于",
+        "音元拼音输入法当前使用轻量候选窗界面。这个菜单入口用于集中承载设置、帮助和后续扩展功能。",
+    )
     assert box.page_size_changes == [7]
     assert box.page_size_var.get() == 7
     assert box.layout_changes == ["vertical"]
