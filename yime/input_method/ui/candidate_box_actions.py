@@ -272,7 +272,6 @@ class CandidateBoxActions:
             menu.add_cascade(label="候选列表", menu=self._get_candidate_list_menu())
             menu.add_cascade(label="交互", menu=self._get_interaction_menu())
             menu.add_cascade(label="外观", menu=self._get_appearance_menu())
-            menu.add_command(label="打开设置文件并保存当前设置", command=self.open_user_data_dir)
             self._settings_menu = menu
         return self._settings_menu
 
