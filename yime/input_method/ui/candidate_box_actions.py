@@ -61,6 +61,7 @@ class CandidateBoxActions:
         self._foreground_color_menu: Optional[tk.Menu] = None
         self._background_color_menu: Optional[tk.Menu] = None
         self._tools_menu: Optional[tk.Menu] = None
+        self._diagnostics_menu: Optional[tk.Menu] = None
         self._user_lexicon_menu: Optional[tk.Menu] = None
         self._user_lexicon_edit_reload_menu: Optional[tk.Menu] = None
         self._user_lexicon_import_export_menu: Optional[tk.Menu] = None
@@ -266,10 +267,20 @@ class CandidateBoxActions:
             menu.add_cascade(label="设置", menu=self._get_settings_menu())
             menu.add_cascade(label="工具", menu=self._get_tools_menu())
             menu.add_command(label="帮助", command=self.show_help)
-            menu.add_command(label="诊断", command=self.show_diagnostics)
+            menu.add_cascade(label="诊断", menu=self._get_diagnostics_menu())
             menu.add_command(label="关于", command=self.show_about)
             self._toolbar_menu = menu
         return self._toolbar_menu
+
+    def _get_diagnostics_menu(self) -> tk.Menu:
+        if self._diagnostics_menu is None:
+            menu = tk.Menu(self.box.root, tearoff=False)
+            menu.add_command(label="查看诊断", command=self.show_diagnostics)
+            menu.add_command(label="复制诊断信息", command=self.copy_diagnostics)
+            menu.add_command(label="打开设置文件", command=self.open_settings_file)
+            menu.add_command(label="打开帮助", command=self.show_help)
+            self._diagnostics_menu = menu
+        return self._diagnostics_menu
 
     def _get_settings_menu(self) -> tk.Menu:
         if self._settings_menu is None:
@@ -611,11 +622,18 @@ class CandidateBoxActions:
             return
         self._emit_feedback("用户词库", "当前未配置用户词库编辑入口。")
 
-    def open_user_data_dir(self) -> None:
-        callback = getattr(self.box, "open_user_data_dir_callback", None)
+    def open_settings_file(self) -> None:
+        callback = getattr(self.box, "open_settings_file_callback", None)
         if callable(callback) and callback():
             return
+        legacy_callback = getattr(self.box, "open_user_data_dir_callback", None)
+        if callable(legacy_callback) and legacy_callback():
+            return
         self._emit_feedback("设置文件", "当前未配置设置文件入口。")
+
+    def open_user_data_dir(self) -> None:
+        # Backward-compatible alias for older call sites.
+        self.open_settings_file()
 
     def import_user_lexicon(self) -> None:
         callback = getattr(self.box, "import_user_lexicon_callback", None)
@@ -708,7 +726,7 @@ class CandidateBoxActions:
             dialog=True,
         )
 
-    def show_diagnostics(self) -> None:
+    def _build_diagnostics_message(self) -> str:
         readiness_callback = getattr(self.box, "runtime_readiness_summary_callback", None)
         readiness_summary = readiness_callback() if callable(readiness_callback) else None
         hotkey_callback = getattr(self.box, "hotkey_summary_callback", None)
@@ -720,13 +738,36 @@ class CandidateBoxActions:
         if hotkey_summary:
             sections.append(hotkey_summary)
         message = "\n\n".join(section for section in sections if section).strip()
-        if not message:
-            message = "当前未提供运行诊断信息。"
+        return message or "当前未提供运行诊断信息。"
+
+    def _build_diagnostics_share_message(self) -> str:
+        diagnostic_message = self._build_diagnostics_message()
+        return (
+            "【Yime 诊断信息】\n"
+            "请将以下内容完整粘贴给 GitHub Copilot，并补充你的复现步骤：\n\n"
+            f"{diagnostic_message}"
+        )
+
+    def show_diagnostics(self) -> None:
         self._emit_feedback(
             "诊断",
-            message,
+            self._build_diagnostics_message(),
             dialog=True,
         )
+
+    def copy_diagnostics(self) -> None:
+        message = self._build_diagnostics_share_message()
+        clipboard_clear = getattr(self.box.root, "clipboard_clear", None)
+        clipboard_append = getattr(self.box.root, "clipboard_append", None)
+        if not callable(clipboard_clear) or not callable(clipboard_append):
+            self._emit_feedback("诊断", "当前环境不支持复制诊断信息。")
+            return
+        clipboard_clear()
+        clipboard_append(message)
+        update = getattr(self.box.root, "update_idletasks", None)
+        if callable(update):
+            update()
+        self._emit_feedback("诊断", "已复制诊断信息；可直接粘贴给 GitHub Copilot。")
 
     def show_about(self) -> None:
         self._emit_feedback(

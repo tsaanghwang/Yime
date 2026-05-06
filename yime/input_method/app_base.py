@@ -242,7 +242,8 @@ class BaseInputMethodApp:
             on_reload_user_lexicon=self._reload_user_lexicon_from_menu,
             on_import_user_lexicon=self._import_user_lexicon_from_menu,
             on_export_user_lexicon=self._export_user_lexicon_from_menu,
-            on_open_user_data_dir=self._open_user_data_dir,
+            on_open_settings_file=self._open_settings_file,
+            on_open_user_data_dir=self._open_settings_file,
             on_hotkey_summary_request=self._build_hotkey_summary,
             on_runtime_readiness_summary_request=self._build_runtime_readiness_display_summary,
             on_add_input_to_user_lexicon=self._add_current_input_to_user_lexicon,
@@ -579,13 +580,17 @@ class BaseInputMethodApp:
             f"写入文件：{export_path}",
         )
 
-    def _open_user_data_dir(self) -> None:
+    def _open_settings_file(self) -> None:
         self.user_data_dir.mkdir(parents=True, exist_ok=True)
         self._save_ui_settings()
         settings_path = self.ui_settings_path
         path_text = str(settings_path)
         self._open_path_in_shell(path_text)
         self._emit_feedback("设置文件", f"已保存当前设置并打开设置文件：{path_text}")
+
+    def _open_user_data_dir(self) -> None:
+        # Backward-compatible alias for older call sites.
+        self._open_settings_file()
 
     def _build_hotkey_summary(self) -> str:
         hotkey = str(getattr(self, "hotkey", "未配置热键") or "未配置热键")
