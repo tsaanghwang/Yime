@@ -29,6 +29,8 @@ def test_configure_input_mode_uses_unified_feedback_for_hotkey_mode(tmp_path) ->
     app._resume_global_capture = lambda: resume_calls.append("resume")
     app._format_hotkey_label = lambda: "ctrl+alt+insert"
     app.user_lexicon_exchange_dir = tmp_path / "UserLexicon"
+    app.runtime_candidates_json_path = tmp_path / "runtime_candidates_by_code_true.json"
+    app.runtime_candidates_json_path.write_text('{"by_code": {}}', encoding="utf-8")
     app.runtime_decoder_source = "json"
     app.runtime_decoder_warning = ""
     app._is_global_listener_mode = InputMethodApp._is_global_listener_mode.__get__(app, InputMethodApp)
@@ -53,6 +55,7 @@ def test_configure_input_mode_uses_unified_feedback_for_hotkey_mode(tmp_path) ->
     assert "- 休眠方式：正常。再次按 ctrl+alt+insert 或 右键候选框" in message
     assert "- 热键状态：正常。已启用 ctrl+alt+insert" in message
     assert "- 候选来源：正常。运行时 JSON 导出文件" in message
+    assert f"- 运行时 JSON 文件：正常。已加载：{app.runtime_candidates_json_path}" in message
     assert "- 运行时编码表：正常。已启用运行时编码表" in message
     assert f"- 用户词库目录：正常。可用于导入导出：{app.user_lexicon_exchange_dir}" in message
     assert app.candidate_box.statuses == [message]
@@ -62,9 +65,11 @@ def test_build_runtime_readiness_summary_includes_structured_diagnostics_and_adv
     app = BaseInputMethodApp.__new__(BaseInputMethodApp)
     occupied_path = tmp_path / "UserLexicon"
     occupied_path.write_text("occupied", encoding="utf-8")
+    missing_runtime_json = tmp_path / "runtime_candidates_by_code_true.json"
     app.hotkey = "<ctrl>+<shift>+y"
     app.hotkey_listener = object()
     app.user_lexicon_exchange_dir = occupied_path
+    app.runtime_candidates_json_path = missing_runtime_json
     app.runtime_decoder_source = "sqlite"
     app.runtime_decoder_warning = "运行时编码表未启用"
     app._hotkey_mode = "hotkey"
@@ -84,6 +89,7 @@ def test_build_runtime_readiness_summary_includes_structured_diagnostics_and_adv
     assert "- 休眠方式：正常。右键候选框" in summary
     assert "- 热键状态：警告。已启用 Ctrl+Shift+Y，但与已知系统快捷键冲突 建议：建议改用 Ctrl+Alt+Insert。" in summary
     assert "- 候选来源：警告。SQLite runtime_candidates 回退 建议：请检查运行时 JSON 导出文件是否生成。" in summary
+    assert f"- 运行时 JSON 文件：警告。未找到文件：{missing_runtime_json} 建议：请重新生成运行时 JSON 导出文件。" in summary
     assert "- 运行时编码表：警告。运行时编码表未启用 建议：请检查运行时 JSON 导出文件或重新生成候选数据。" in summary
     assert f"- 用户词库目录：警告。路径已被文件占用：{occupied_path} 建议：请删除同名文件或改用可写目录。" in summary
 

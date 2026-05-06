@@ -104,6 +104,9 @@ class BaseInputMethodApp:
         app_dir = Path(__file__).resolve().parent.parent
         self.app_dir = app_dir
         self.repo_root = app_dir.parent
+        self.runtime_candidates_json_path = (
+            app_dir / "reports" / "runtime_candidates_by_code_true.json"
+        )
         self._pending_feedbacks: list[tuple[str, str, str, bool]] = []
         self.user_data_dir = resolve_user_data_dir(app_dir)
         self.user_lexicon_exchange_dir = resolve_user_lexicon_exchange_dir()
@@ -644,6 +647,55 @@ class BaseInputMethodApp:
             None,
         )
 
+    def _check_runtime_candidate_json_file(self) -> tuple[str, str, Optional[str]]:
+        runtime_json_path = Path(getattr(self, "runtime_candidates_json_path", "") or "")
+        if not str(runtime_json_path):
+            return (
+                "警告",
+                "当前未配置运行时 JSON 导出文件路径",
+                "请检查运行时编码表路径配置。",
+            )
+        if not runtime_json_path.exists():
+            return (
+                "警告",
+                f"未找到文件：{runtime_json_path}",
+                "请重新生成运行时 JSON 导出文件。",
+            )
+        if not runtime_json_path.is_file():
+            return (
+                "警告",
+                f"路径不是文件：{runtime_json_path}",
+                "请检查运行时 JSON 导出路径是否被目录占用。",
+            )
+        try:
+            size_bytes = runtime_json_path.stat().st_size
+            preview = runtime_json_path.read_text(encoding="utf-8")
+        except OSError as exc:
+            return (
+                "警告",
+                f"文件不可读：{runtime_json_path}（{exc}）",
+                "请检查文件权限或同步状态。",
+            )
+        if size_bytes <= 0 or not preview.strip():
+            return (
+                "警告",
+                f"文件为空：{runtime_json_path}",
+                "请重新生成运行时 JSON 导出文件。",
+            )
+
+        runtime_source = str(getattr(self, "runtime_decoder_source", "unknown") or "unknown").lower()
+        if runtime_source == "json":
+            return (
+                "正常",
+                f"已加载：{runtime_json_path}（{size_bytes} 字节）",
+                None,
+            )
+        return (
+            "警告",
+            f"文件存在：{runtime_json_path}（{size_bytes} 字节），但当前未启用",
+            "请检查文件内容是否有效，或是否仍是 Git LFS 指针。",
+        )
+
     def _build_runtime_diagnostic_items(
         self,
         *,
@@ -721,6 +773,8 @@ class BaseInputMethodApp:
                 candidate_source,
                 "请检查运行时 JSON 导出文件是否生成。",
             ))
+
+        items.append(("运行时 JSON 文件", *self._check_runtime_candidate_json_file()))
 
         warning = str(getattr(self, "runtime_decoder_warning", "") or "").strip()
         if warning:
