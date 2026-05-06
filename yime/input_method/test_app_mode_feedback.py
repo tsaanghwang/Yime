@@ -28,7 +28,12 @@ def test_configure_input_mode_uses_unified_feedback_for_hotkey_mode(tmp_path) ->
     app._setup_hotkey = lambda: setup_calls.append("setup")
     app._resume_global_capture = lambda: resume_calls.append("resume")
     app._format_hotkey_label = lambda: "ctrl+alt+insert"
+    app.runtime_entry_label = "python run_input_method.py"
     app.user_lexicon_exchange_dir = tmp_path / "UserLexicon"
+    app.user_db_path = tmp_path / "user_lexicon.db"
+    app.user_db_path.write_text("db", encoding="utf-8")
+    app.ui_settings_path = tmp_path / "ui_settings.json"
+    app.ui_settings_path.write_text("{}", encoding="utf-8")
     app.runtime_candidates_json_path = tmp_path / "runtime_candidates_by_code_true.json"
     app.runtime_candidates_json_path.write_text('{"by_code": {}}', encoding="utf-8")
     app.runtime_decoder_source = "json"
@@ -50,15 +55,19 @@ def test_configure_input_mode_uses_unified_feedback_for_hotkey_mode(tmp_path) ->
     assert feedback_calls[0][2:] == ("info", False)
     message = feedback_calls[0][1]
     assert "当前模式：热键模式" in message
-    assert "诊断结论：当前未发现警告或提示，共 7 项正常。" in message
+    assert "诊断结论：当前未发现警告或提示，共 11 项正常。" in message
     assert "已确认正常：" in message
     assert "- 唤起方式：正常。按 ctrl+alt+insert 或 点击右下角的'音'图标" in message
     assert "- 休眠方式：正常。再次按 ctrl+alt+insert 或 右键候选框" in message
     assert "- 热键状态：正常。已启用 ctrl+alt+insert" in message
     assert "- 候选来源：正常。运行时 JSON 导出文件" in message
     assert f"- 运行时 JSON 文件：正常。已加载：{app.runtime_candidates_json_path}" in message
+    assert "- 运行时数据新鲜度：正常。运行时 JSON 最近更新于" in message
     assert "- 运行时编码表：正常。已启用运行时编码表" in message
+    assert f"- 设置文件：正常。已定位：{app.ui_settings_path}" in message
+    assert f"- 用户词库状态：正常。已就绪：{app.user_db_path}" in message
     assert f"- 用户词库目录：正常。可用于导入导出：{app.user_lexicon_exchange_dir}" in message
+    assert "- 当前运行入口：正常。python run_input_method.py" in message
     assert app.candidate_box.statuses == [message]
 
 
@@ -75,6 +84,11 @@ def test_build_runtime_readiness_summary_includes_structured_diagnostics_and_adv
     app.runtime_decoder_warning = "运行时编码表未启用"
     app._hotkey_mode = "hotkey"
     app._format_hotkey_label = lambda: "Ctrl+Shift+Y"
+    app.runtime_entry_label = "python -m yime.input_method.app"
+    app.ui_settings_path = tmp_path / "ui_settings.json"
+    app.ui_settings_path.write_text("{}", encoding="utf-8")
+    app.user_db_path = tmp_path / "user_lexicon.db"
+    app.user_db_path.write_text("db", encoding="utf-8")
     app._should_listen_for_hotkey = lambda: True
     app._has_known_hotkey_conflict = lambda hotkey: hotkey == "<ctrl>+<shift>+y"
 
@@ -86,7 +100,7 @@ def test_build_runtime_readiness_summary_includes_structured_diagnostics_and_adv
     )
 
     assert "当前模式：受限模式（热键当前未启用）" in summary
-    assert "诊断结论：发现 5 项警告、0 项提示；另有 2 项正常。" in summary
+    assert "诊断结论：发现 6 项警告、0 项提示；另有 5 项正常。" in summary
     assert "需优先处理：" in summary
     assert "已确认正常：" in summary
     assert "- 唤起方式：正常。点击右下角的'音'图标" in summary
@@ -94,8 +108,12 @@ def test_build_runtime_readiness_summary_includes_structured_diagnostics_and_adv
     assert "- 热键状态：警告。已启用 Ctrl+Shift+Y，但与已知系统快捷键冲突 建议：建议改用 Ctrl+Alt+Insert。" in summary
     assert "- 候选来源：警告。SQLite runtime_candidates 回退 建议：请检查运行时 JSON 导出文件是否生成。" in summary
     assert f"- 运行时 JSON 文件：警告。未找到文件：{missing_runtime_json} 建议：请重新生成运行时 JSON 导出文件。" in summary
+    assert "- 运行时数据新鲜度：警告。当前无法判断运行时 JSON 新鲜度 建议：请先确认运行时 JSON 导出文件已生成。" in summary
     assert "- 运行时编码表：警告。运行时编码表未启用 建议：请检查运行时 JSON 导出文件或重新生成候选数据。" in summary
+    assert f"- 设置文件：正常。已定位：{app.ui_settings_path}" in summary
+    assert f"- 用户词库状态：正常。已就绪：{app.user_db_path}" in summary
     assert f"- 用户词库目录：警告。路径已被文件占用：{occupied_path} 建议：请删除同名文件或改用可写目录。" in summary
+    assert "- 当前运行入口：正常。python -m yime.input_method.app" in summary
 
 
 def test_return_hotkey_session_to_standby_uses_unified_feedback() -> None:

@@ -107,6 +107,7 @@ class BaseInputMethodApp:
         self.runtime_candidates_json_path = (
             app_dir / "reports" / "runtime_candidates_by_code_true.json"
         )
+        self.runtime_entry_label = self._detect_runtime_entry_label()
         self._pending_feedbacks: list[tuple[str, str, str, bool]] = []
         self.user_data_dir = resolve_user_data_dir(app_dir)
         self.user_lexicon_exchange_dir = resolve_user_lexicon_exchange_dir()
@@ -616,6 +617,24 @@ class BaseInputMethodApp:
             f"休眠方式：{standby_text}"
         )
 
+    def _detect_runtime_entry_label(self) -> str:
+        if bool(getattr(sys, "frozen", False)):
+            return f"打包程序：{Path(sys.executable).name}"
+
+        argv = list(getattr(sys, "argv", []) or [])
+        if not argv:
+            return "当前未识别运行入口"
+
+        argv0 = str(argv[0] or "").replace("\\", "/")
+        argv0_name = Path(argv0).name.lower()
+        if argv0_name == "run_input_method.py":
+            return "python run_input_method.py"
+        if argv0_name in {"app.py", "__main__.py"} and "yime/input_method" in argv0.lower():
+            return "python -m yime.input_method.app"
+        if argv0_name:
+            return f"当前命令：{Path(argv0).name}"
+        return "当前未识别运行入口"
+
     def _describe_runtime_candidate_source(self) -> str:
         source = str(getattr(self, "runtime_decoder_source", "unknown") or "unknown").lower()
         if source == "json":
@@ -701,6 +720,82 @@ class BaseInputMethodApp:
             "警告",
             f"文件存在：{runtime_json_path}（{size_bytes} 字节），但当前未启用",
             "请检查文件内容是否有效，或是否仍是 Git LFS 指针。",
+        )
+
+    def _check_runtime_candidate_json_freshness(self) -> tuple[str, str, Optional[str]]:
+        runtime_json_path = Path(getattr(self, "runtime_candidates_json_path", "") or "")
+        if not str(runtime_json_path) or not runtime_json_path.exists() or not runtime_json_path.is_file():
+            return (
+                "警告",
+                "当前无法判断运行时 JSON 新鲜度",
+                "请先确认运行时 JSON 导出文件已生成。",
+            )
+
+        try:
+            modified_at = datetime.fromtimestamp(runtime_json_path.stat().st_mtime, tz=timezone.utc)
+        except OSError as exc:
+            return (
+                "警告",
+                f"无法读取文件修改时间：{runtime_json_path}（{exc}）",
+                "请检查文件权限或同步状态。",
+            )
+
+        age_seconds = max((datetime.now(timezone.utc) - modified_at).total_seconds(), 0.0)
+        timestamp_text = modified_at.strftime("%Y-%m-%d %H:%M:%S UTC")
+        if age_seconds <= 24 * 60 * 60:
+            return ("正常", f"运行时 JSON 最近更新于 {timestamp_text}", None)
+        if age_seconds <= 7 * 24 * 60 * 60:
+            return (
+                "提示",
+                f"运行时 JSON 最近更新于 {timestamp_text}（已超过 24 小时）",
+                "若候选结果与预期不一致，可重新生成运行时 JSON。",
+            )
+        return (
+            "警告",
+            f"运行时 JSON 最近更新于 {timestamp_text}（已超过 7 天）",
+            "建议重新生成运行时 JSON，避免使用过旧数据。",
+        )
+
+    def _check_ui_settings_file(self) -> tuple[str, str, Optional[str]]:
+        settings_path = Path(getattr(self, "ui_settings_path", "") or "")
+        if not str(settings_path):
+            return (
+                "警告",
+                "当前未配置设置文件路径",
+                "请检查用户数据目录解析是否正常。",
+            )
+        if settings_path.exists() and settings_path.is_file():
+            return ("正常", f"已定位：{settings_path}", None)
+        return (
+            "提示",
+            f"路径已配置：{settings_path}（尚未落盘）",
+            "可通过“打开设置文件”先生成默认配置。",
+        )
+
+    def _check_user_lexicon_store(self) -> tuple[str, str, Optional[str]]:
+        user_db_path = Path(getattr(self, "user_db_path", "") or "")
+        if not str(user_db_path):
+            return (
+                "警告",
+                "当前未配置用户词库数据库路径",
+                "请检查用户数据目录解析是否正常。",
+            )
+        if user_db_path.exists() and user_db_path.is_file():
+            return ("正常", f"已就绪：{user_db_path}", None)
+        return (
+            "提示",
+            f"数据库尚未生成：{user_db_path}",
+            "首次加入或导入用户词条后会自动创建。",
+        )
+
+    def _check_runtime_entry(self) -> tuple[str, str, Optional[str]]:
+        entry_label = str(getattr(self, "runtime_entry_label", "") or "").strip()
+        if entry_label:
+            return ("正常", entry_label, None)
+        return (
+            "提示",
+            "当前未识别运行入口",
+            "建议优先使用 python run_input_method.py 或 python -m yime.input_method.app。",
         )
 
     def _build_runtime_data_guidance(self) -> str:
@@ -799,6 +894,7 @@ class BaseInputMethodApp:
             ))
 
         items.append(("运行时 JSON 文件", *self._check_runtime_candidate_json_file()))
+        items.append(("运行时数据新鲜度", *self._check_runtime_candidate_json_freshness()))
 
         warning = str(getattr(self, "runtime_decoder_warning", "") or "").strip()
         if warning:
@@ -811,7 +907,10 @@ class BaseInputMethodApp:
         else:
             items.append(("运行时编码表", "正常", "已启用运行时编码表", None))
 
+        items.append(("设置文件", *self._check_ui_settings_file()))
+        items.append(("用户词库状态", *self._check_user_lexicon_store()))
         items.append(("用户词库目录", *self._check_user_lexicon_exchange_dir()))
+        items.append(("当前运行入口", *self._check_runtime_entry()))
         return items
 
     def _render_runtime_diagnostic_summary(
