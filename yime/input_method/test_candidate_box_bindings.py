@@ -91,6 +91,7 @@ class _FakeBox:
         self.import_requested = False
         self.export_requested = False
         self.open_settings_requested = False
+        self.open_troubleshooting_requested = False
         self.status = ""
         self.current_hotkey = "Ctrl+Alt+Insert"
         self.hotkey_change_requests: list[str] = []
@@ -188,15 +189,22 @@ class _FakeBox:
     def open_user_data_dir_callback(self) -> bool:
         return self.open_settings_file_callback()
 
+    def open_troubleshooting_doc_callback(self) -> bool:
+        self.open_troubleshooting_requested = True
+        return True
+
     def hotkey_summary_callback(self) -> str:
         return f"当前热键：{self.current_hotkey}"
 
     def runtime_readiness_summary_callback(self) -> str:
         return (
             "当前模式：热键模式\n"
-            "唤起方式：按 Ctrl+Shift+Y 或 点击右下角的'音'图标\n"
-            "休眠方式：再次按 Ctrl+Shift+Y 或 右键候选框\n"
-            "候选来源：运行时 JSON 导出文件"
+            "诊断结论：当前未发现警告或提示，共 4 项正常。\n"
+            "已确认正常：\n"
+            "- 唤起方式：正常。按 Ctrl+Shift+Y 或 点击右下角的'音'图标\n"
+            "- 休眠方式：正常。再次按 Ctrl+Shift+Y 或 右键候选框\n"
+            "- 热键状态：正常。已启用 Ctrl+Shift+Y\n"
+            "- 候选来源：正常。运行时 JSON 导出文件"
         )
 
     def runtime_data_guidance_callback(self) -> str:
@@ -329,7 +337,7 @@ def test_toolbar_menu_uses_expected_labels_and_popup_position(monkeypatch) -> No
     actions._get_toolbar_menu()
 
     command_labels = [label for label, _ in commands]
-    assert command_labels == ["当前唤起热键：Ctrl+Alt+Insert", "修改热键", "加入当前词条", "删除当前词条", "编辑用户词库", "应用用户词库", "导入用户词库", "导出用户词库", "帮助", "查看诊断", "复制诊断信息", "打开设置文件", "打开帮助", "关于"]
+    assert command_labels == ["当前唤起热键：Ctrl+Alt+Insert", "修改热键", "加入当前词条", "删除当前词条", "编辑用户词库", "应用用户词库", "导入用户词库", "导出用户词库", "帮助", "查看诊断", "复制诊断信息", "打开故障排查", "打开设置文件", "打开帮助", "关于"]
     assert [label for label, _ in cascades] == ["候选列表", "唤起方式", "休眠方式", "交互", "前景颜色", "背景颜色", "字体大小", "主界面透明度", "外观", "设置", "编辑与重载", "导入与导出", "用户词库", "工具", "诊断"]
     assert [label for label, _, _, _ in radio_buttons] == [
         "每页 5 个",
@@ -366,7 +374,7 @@ def test_toolbar_menu_uses_expected_labels_and_popup_position(monkeypatch) -> No
         "97%",
     ]
     assert [label for label, _, _ in check_buttons] == ["活动窗始终置顶"]
-    assert separators == [True, True, True]
+    assert separators == [True, True, True, True, True]
 
     actions.show_toolbar_menu()
 
@@ -397,6 +405,7 @@ def test_toolbar_menu_uses_expected_labels_and_popup_position(monkeypatch) -> No
     commands[11][1]()
     commands[12][1]()
     commands[13][1]()
+    commands[14][1]()
 
     assert feedback_calls[0] == (
         "快捷键",
@@ -409,7 +418,9 @@ def test_toolbar_menu_uses_expected_labels_and_popup_position(monkeypatch) -> No
     assert feedback_calls[1][1].endswith("当前热键：Ctrl+Shift+Y")
     assert feedback_calls[2][0] == "诊断"
     assert "当前模式：热键模式" in feedback_calls[2][1]
-    assert "候选来源：运行时 JSON 导出文件" in feedback_calls[2][1]
+    assert "诊断结论：当前未发现警告或提示，共 4 项正常。" in feedback_calls[2][1]
+    assert "已确认正常：" in feedback_calls[2][1]
+    assert "- 候选来源：正常。运行时 JSON 导出文件" in feedback_calls[2][1]
     assert "运行时数据指引：" in feedback_calls[2][1]
     assert "python -m yime.export_runtime_candidates_json" in feedback_calls[2][1]
     assert feedback_calls[2][1].endswith("当前热键：Ctrl+Shift+Y")
@@ -421,6 +432,7 @@ def test_toolbar_menu_uses_expected_labels_and_popup_position(monkeypatch) -> No
     assert "当前模式：热键模式" in box.root.clipboard_contents[0]
     assert box.root.clipboard_contents[0].endswith("当前热键：Ctrl+Shift+Y")
     assert box.root.updated is True
+    assert box.open_troubleshooting_requested is True
     assert box.open_settings_requested is True
     assert feedback_calls[4][0] == "帮助"
     assert "普通用户帮助" in feedback_calls[4][1]

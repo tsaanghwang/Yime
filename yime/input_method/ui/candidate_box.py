@@ -100,6 +100,7 @@ class CandidateBox(CandidateRendererMixin):
         on_import_user_lexicon: Optional[VoidCallback] = None,
         on_export_user_lexicon: Optional[VoidCallback] = None,
         on_open_settings_file: Optional[VoidCallback] = None,
+        on_open_troubleshooting_doc: Optional[VoidCallback] = None,
         on_open_user_data_dir: Optional[VoidCallback] = None,
         on_hotkey_summary_request: Optional[HotkeySummaryRequestCallback] = None,
         on_runtime_readiness_summary_request: Optional[RuntimeReadinessSummaryRequestCallback] = None,
@@ -168,6 +169,7 @@ class CandidateBox(CandidateRendererMixin):
         self._on_import_user_lexicon = on_import_user_lexicon
         self._on_export_user_lexicon = on_export_user_lexicon
         self._on_open_settings_file = on_open_settings_file
+        self._on_open_troubleshooting_doc = on_open_troubleshooting_doc
         self._on_open_user_data_dir = on_open_user_data_dir
         self._on_hotkey_summary_request = on_hotkey_summary_request
         self._on_runtime_readiness_summary_request = on_runtime_readiness_summary_request
@@ -419,6 +421,12 @@ class CandidateBox(CandidateRendererMixin):
 
     def open_user_data_dir_callback(self) -> bool:
         return self.open_settings_file_callback()
+
+    def open_troubleshooting_doc_callback(self) -> bool:
+        if self._on_open_troubleshooting_doc:
+            self._on_open_troubleshooting_doc()
+            return True
+        return False
 
     def hotkey_summary_callback(self) -> Optional[str]:
         if self._on_hotkey_summary_request:

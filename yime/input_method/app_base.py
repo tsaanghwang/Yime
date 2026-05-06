@@ -596,6 +596,12 @@ class BaseInputMethodApp:
         # Backward-compatible alias for older call sites.
         self._open_settings_file()
 
+    def _open_troubleshooting_doc(self) -> None:
+        troubleshooting_path = Path(self.repo_root) / "docs" / "help" / "troubleshooting.md"
+        path_text = str(troubleshooting_path)
+        self._open_path_in_shell(path_text)
+        self._emit_feedback("故障排查", f"已打开故障排查文档：{path_text}")
+
     def _build_hotkey_summary(self) -> str:
         hotkey = str(getattr(self, "hotkey", "未配置热键") or "未配置热键")
         wake_hint = getattr(self, "_wake_trigger_hint", None)
@@ -814,12 +820,38 @@ class BaseInputMethodApp:
         mode_summary: str,
         items: list[tuple[str, str, str, Optional[str]]],
     ) -> str:
-        lines = [mode_summary, "自检："]
+        grouped_items: dict[str, list[str]] = {
+            "警告": [],
+            "提示": [],
+            "正常": [],
+        }
         for label, status, detail, advice in items:
             line = f"- {label}：{status}。{detail}"
             if advice:
                 line = f"{line} 建议：{advice}"
-            lines.append(line)
+            grouped_items.setdefault(status, []).append(line)
+
+        warning_count = len(grouped_items.get("警告", []))
+        notice_count = len(grouped_items.get("提示", []))
+        normal_count = len(grouped_items.get("正常", []))
+
+        if warning_count:
+            overview = f"诊断结论：发现 {warning_count} 项警告、{notice_count} 项提示；另有 {normal_count} 项正常。"
+        elif notice_count:
+            overview = f"诊断结论：当前无警告，有 {notice_count} 项提示；另有 {normal_count} 项正常。"
+        else:
+            overview = f"诊断结论：当前未发现警告或提示，共 {normal_count} 项正常。"
+
+        lines = [mode_summary, overview]
+        if warning_count:
+            lines.append("需优先处理：")
+            lines.extend(grouped_items["警告"])
+        if notice_count:
+            lines.append("可留意：")
+            lines.extend(grouped_items["提示"])
+        if normal_count:
+            lines.append("已确认正常：")
+            lines.extend(grouped_items["正常"])
         return "\n".join(lines)
 
     def _build_runtime_readiness_summary(

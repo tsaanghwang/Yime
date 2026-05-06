@@ -522,6 +522,7 @@ class InputMethodApp(BaseInputMethodApp):
             on_import_user_lexicon=self._import_user_lexicon_from_menu,
             on_export_user_lexicon=self._export_user_lexicon_from_menu,
             on_open_settings_file=self._open_settings_file,
+            on_open_troubleshooting_doc=self._open_troubleshooting_doc,
             on_open_user_data_dir=self._open_settings_file,
             on_hotkey_summary_request=self._build_hotkey_summary,
             on_runtime_readiness_summary_request=self._build_runtime_readiness_display_summary,

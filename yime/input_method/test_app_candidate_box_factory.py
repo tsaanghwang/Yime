@@ -36,6 +36,7 @@ def test_input_method_app_factory_wires_user_lexicon_callbacks(monkeypatch) -> N
     app._import_user_lexicon_from_menu = lambda: None
     app._export_user_lexicon_from_menu = lambda: None
     app._open_settings_file = lambda: None
+    app._open_troubleshooting_doc = lambda: None
     app._build_hotkey_summary = lambda: "当前热键：ctrl+alt+insert"
     app._build_runtime_readiness_display_summary = lambda: "当前模式：热键模式"
     app._build_runtime_data_guidance = lambda: "运行时数据指引"
@@ -71,6 +72,7 @@ def test_input_method_app_factory_wires_user_lexicon_callbacks(monkeypatch) -> N
     assert captured["on_import_user_lexicon"] is app._import_user_lexicon_from_menu
     assert captured["on_export_user_lexicon"] is app._export_user_lexicon_from_menu
     assert captured["on_open_settings_file"] is app._open_settings_file
+    assert captured["on_open_troubleshooting_doc"] is app._open_troubleshooting_doc
     assert captured["on_open_user_data_dir"] is app._open_settings_file
     assert captured["on_hotkey_summary_request"] is app._build_hotkey_summary
     assert captured["on_runtime_readiness_summary_request"] is app._build_runtime_readiness_display_summary

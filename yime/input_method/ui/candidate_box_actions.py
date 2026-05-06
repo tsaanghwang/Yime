@@ -277,7 +277,10 @@ class CandidateBoxActions:
             menu = tk.Menu(self.box.root, tearoff=False)
             menu.add_command(label="查看诊断", command=self.show_diagnostics)
             menu.add_command(label="复制诊断信息", command=self.copy_diagnostics)
+            menu.add_separator()
+            menu.add_command(label="打开故障排查", command=self.open_troubleshooting_doc)
             menu.add_command(label="打开设置文件", command=self.open_settings_file)
+            menu.add_separator()
             menu.add_command(label="打开帮助", command=self.show_help)
             self._diagnostics_menu = menu
         return self._diagnostics_menu
@@ -634,6 +637,12 @@ class CandidateBoxActions:
     def open_user_data_dir(self) -> None:
         # Backward-compatible alias for older call sites.
         self.open_settings_file()
+
+    def open_troubleshooting_doc(self) -> None:
+        callback = getattr(self.box, "open_troubleshooting_doc_callback", None)
+        if callable(callback) and callback():
+            return
+        self._emit_feedback("故障排查", "当前未配置故障排查文档入口。")
 
     def import_user_lexicon(self) -> None:
         callback = getattr(self.box, "import_user_lexicon_callback", None)
