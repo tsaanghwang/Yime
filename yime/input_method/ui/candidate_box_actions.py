@@ -60,12 +60,28 @@ class CandidateBoxActions:
         self._user_lexicon_menu: Optional[tk.Menu] = None
         self._user_lexicon_edit_reload_menu: Optional[tk.Menu] = None
 
-    def _emit_feedback(self, title: str, message: str) -> None:
+    def _emit_feedback(
+        self,
+        title: str,
+        message: str,
+        *,
+        level: str = "info",
+        dialog: bool = False,
+    ) -> None:
         feedback_callback = getattr(self.box, "feedback_callback", None)
         if callable(feedback_callback):
-            feedback_callback(title, message)
+            try:
+                feedback_callback(title, message, level=level, dialog=dialog)
+            except TypeError:
+                feedback_callback(title, message)
             return
-        messagebox.showinfo("音元拼音", message, parent=self.box.root)
+        if level == "warning":
+            messagebox.showwarning(title, message, parent=self.box.root)
+            return
+        if level == "error":
+            messagebox.showerror(title, message, parent=self.box.root)
+            return
+        messagebox.showinfo(title, message, parent=self.box.root)
 
     def _set_local_status(self, message: str) -> None:
         self.box.set_status(message)
@@ -619,19 +635,25 @@ class CandidateBoxActions:
         callback = getattr(self.box, "hotkey_summary_callback", None)
         summary = callback() if callable(callback) else None
         message = (
-            "快捷键：数字键选词，Space/Enter 上屏，Home/PgUp/PgDn/End 翻页，Ctrl+Q 关闭窗口；待命时可点“音”图标或按热键唤醒。"
+            "当前推荐入口：python -m yime.input_method.app 或 python run_input_method.py。\n\n"
+            "基本操作：数字键选词，Space/Enter 上屏，Home/PgUp/PgDn/End 翻页，Ctrl+Q 关闭窗口；待命时可点“音”图标或按热键唤醒。\n\n"
+            "常用参数：--copy-only 只复制不回贴，--font-family 可指定候选框字体。\n\n"
+            "用户词库：可右键输入框把当前汉字词语加入用户词库，也可删除当前词条；需要维护时，可用 tools/manage_user_lexicon.py 执行 list-recent、export、import、init-db、check、repair-all。\n\n"
+            "常见问题：推荐环境是 Windows 10/11 + Python 3.12 + pywin32；若启动后提示“将使用手动输入模式”，先检查 Python 版本和 pywin32；若候选词为空或结果不完整，先看启动日志确认当前走的是运行时 JSON、SQLite runtime_candidates 视图，还是静态候选表。"
         )
         if summary:
             message = f"{message}\n\n{summary}"
         self._emit_feedback(
             "帮助",
             message,
+            dialog=True,
         )
 
     def show_about(self) -> None:
         self._emit_feedback(
             "关于",
             "音元拼音输入法当前使用轻量候选窗界面。这个菜单入口用于集中承载设置、帮助和后续扩展功能。",
+            dialog=True,
         )
 
     def select_all_input_text(self) -> None:
