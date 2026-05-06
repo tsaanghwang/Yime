@@ -11,7 +11,7 @@ class _FakeCandidateBox:
         self.statuses.append(status)
 
 
-def test_configure_input_mode_uses_unified_feedback_for_hotkey_mode() -> None:
+def test_configure_input_mode_uses_unified_feedback_for_hotkey_mode(tmp_path) -> None:
     app = InputMethodApp.__new__(InputMethodApp)
     app.input_mode = "hotkey"
     app.hotkey = InputMethodApp._DEFAULT_HOTKEY
@@ -28,6 +28,7 @@ def test_configure_input_mode_uses_unified_feedback_for_hotkey_mode() -> None:
     app._setup_hotkey = lambda: setup_calls.append("setup")
     app._resume_global_capture = lambda: resume_calls.append("resume")
     app._format_hotkey_label = lambda: "ctrl+alt+insert"
+    app.user_lexicon_exchange_dir = tmp_path / "UserLexicon"
     app.runtime_decoder_source = "json"
     app.runtime_decoder_warning = ""
     app._is_global_listener_mode = InputMethodApp._is_global_listener_mode.__get__(app, InputMethodApp)
@@ -42,27 +43,34 @@ def test_configure_input_mode_uses_unified_feedback_for_hotkey_mode() -> None:
     assert post_commit_behaviors == ["keep-input"]
     assert resume_calls == []
     assert app._hotkey_mode == "hotkey"
-    assert feedback_calls == [(
-        "输入模式",
-        "当前模式：热键模式\n"
-        "唤起方式：按 ctrl+alt+insert 或 点击右下角的'音'图标\n"
-        "休眠方式：再次按 ctrl+alt+insert 或 右键候选框\n"
-        "候选来源：运行时 JSON 导出文件",
-        "info",
-        False,
-    )]
-    assert app.candidate_box.statuses == [
-        "当前模式：热键模式\n"
-        "唤起方式：按 ctrl+alt+insert 或 点击右下角的'音'图标\n"
-        "休眠方式：再次按 ctrl+alt+insert 或 右键候选框\n"
-        "候选来源：运行时 JSON 导出文件"
-    ]
+    assert len(feedback_calls) == 1
+    assert feedback_calls[0][0] == "输入模式"
+    assert feedback_calls[0][2:] == ("info", False)
+    message = feedback_calls[0][1]
+    assert "当前模式：热键模式" in message
+    assert "自检：" in message
+    assert "- 唤起方式：正常。按 ctrl+alt+insert 或 点击右下角的'音'图标" in message
+    assert "- 休眠方式：正常。再次按 ctrl+alt+insert 或 右键候选框" in message
+    assert "- 热键状态：正常。已启用 ctrl+alt+insert" in message
+    assert "- 候选来源：正常。运行时 JSON 导出文件" in message
+    assert "- 运行时编码表：正常。已启用运行时编码表" in message
+    assert f"- 用户词库目录：正常。可用于导入导出：{app.user_lexicon_exchange_dir}" in message
+    assert app.candidate_box.statuses == [message]
 
 
-def test_build_runtime_readiness_summary_includes_candidate_source_and_warning() -> None:
+def test_build_runtime_readiness_summary_includes_structured_diagnostics_and_advice(tmp_path) -> None:
     app = BaseInputMethodApp.__new__(BaseInputMethodApp)
+    occupied_path = tmp_path / "UserLexicon"
+    occupied_path.write_text("occupied", encoding="utf-8")
+    app.hotkey = "<ctrl>+<shift>+y"
+    app.hotkey_listener = object()
+    app.user_lexicon_exchange_dir = occupied_path
     app.runtime_decoder_source = "sqlite"
     app.runtime_decoder_warning = "运行时编码表未启用"
+    app._hotkey_mode = "hotkey"
+    app._format_hotkey_label = lambda: "Ctrl+Shift+Y"
+    app._should_listen_for_hotkey = lambda: True
+    app._has_known_hotkey_conflict = lambda hotkey: hotkey == "<ctrl>+<shift>+y"
 
     summary = BaseInputMethodApp._build_runtime_readiness_summary(
         app,
@@ -71,13 +79,13 @@ def test_build_runtime_readiness_summary_includes_candidate_source_and_warning()
         standby_text="右键候选框",
     )
 
-    assert summary == (
-        "当前模式：受限模式（热键当前未启用）\n"
-        "唤起方式：点击右下角的'音'图标\n"
-        "休眠方式：右键候选框\n"
-        "候选来源：SQLite runtime_candidates 回退\n"
-        "运行时提示：运行时编码表未启用"
-    )
+    assert "当前模式：受限模式（热键当前未启用）" in summary
+    assert "- 唤起方式：正常。点击右下角的'音'图标" in summary
+    assert "- 休眠方式：正常。右键候选框" in summary
+    assert "- 热键状态：警告。已启用 Ctrl+Shift+Y，但与已知系统快捷键冲突 建议：建议改用 Ctrl+Alt+Insert。" in summary
+    assert "- 候选来源：警告。SQLite runtime_candidates 回退 建议：请检查运行时 JSON 导出文件是否生成。" in summary
+    assert "- 运行时编码表：警告。运行时编码表未启用 建议：请检查运行时 JSON 导出文件或重新生成候选数据。" in summary
+    assert f"- 用户词库目录：警告。路径已被文件占用：{occupied_path} 建议：请删除同名文件或改用可写目录。" in summary
 
 
 def test_return_hotkey_session_to_standby_uses_unified_feedback() -> None:

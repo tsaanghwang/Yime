@@ -611,6 +611,140 @@ class BaseInputMethodApp:
             return "静态候选表兜底"
         return "当前未识别候选来源"
 
+    def _check_user_lexicon_exchange_dir(self) -> tuple[str, str, Optional[str]]:
+        exchange_dir = Path(getattr(self, "user_lexicon_exchange_dir", "") or "")
+        if not str(exchange_dir):
+            return (
+                "警告",
+                "当前未配置用户词库交换目录",
+                "请检查用户目录解析是否正常。",
+            )
+        if exchange_dir.exists() and not exchange_dir.is_dir():
+            return (
+                "警告",
+                f"路径已被文件占用：{exchange_dir}",
+                "请删除同名文件或改用可写目录。",
+            )
+        try:
+            exchange_dir.mkdir(parents=True, exist_ok=True)
+        except OSError as exc:
+            return (
+                "警告",
+                f"无法创建目录：{exchange_dir}（{exc}）",
+                "请检查 Documents/Yime 目录权限。",
+            )
+        return (
+            "正常",
+            f"可用于导入导出：{exchange_dir}",
+            None,
+        )
+
+    def _build_runtime_diagnostic_items(
+        self,
+        *,
+        wake_text: Optional[str] = None,
+        standby_text: Optional[str] = None,
+    ) -> list[tuple[str, str, str, Optional[str]]]:
+        items: list[tuple[str, str, str, Optional[str]]] = []
+
+        normalized_wake = str(wake_text or "").strip()
+        if normalized_wake and normalized_wake != "当前未配置唤醒方式":
+            items.append(("唤起方式", "正常", normalized_wake, None))
+        else:
+            items.append((
+                "唤起方式",
+                "警告",
+                normalized_wake or "当前未配置唤醒方式",
+                "请在设置中启用热键或鼠标唤起方式。",
+            ))
+
+        normalized_standby = str(standby_text or "").strip()
+        if normalized_standby and normalized_standby != "当前未配置休眠方式":
+            items.append(("休眠方式", "正常", normalized_standby, None))
+        else:
+            items.append((
+                "休眠方式",
+                "警告",
+                normalized_standby or "当前未配置休眠方式",
+                "请在设置中启用热键或鼠标休眠方式。",
+            ))
+
+        hotkey_mode = str(getattr(self, "_hotkey_mode", "unknown") or "unknown")
+        should_listen = getattr(self, "_should_listen_for_hotkey", None)
+        expects_hotkey = bool(should_listen()) if callable(should_listen) else False
+        display_hotkey_getter = getattr(self, "_format_hotkey_label", None)
+        display_hotkey = (
+            display_hotkey_getter() if callable(display_hotkey_getter)
+            else str(getattr(self, "hotkey", "未配置热键") or "未配置热键")
+        )
+        has_known_conflict = getattr(self, "_has_known_hotkey_conflict", None)
+        hotkey_conflict = (
+            bool(has_known_conflict(str(getattr(self, "hotkey", "") or "")))
+            if callable(has_known_conflict)
+            else False
+        )
+        hotkey_listener = bool(getattr(self, "hotkey_listener", None))
+        if hotkey_mode == "disabled":
+            items.append(("热键状态", "提示", "当前模式不使用热键会话", None))
+        elif expects_hotkey and hotkey_listener and hotkey_conflict:
+            items.append((
+                "热键状态",
+                "警告",
+                f"已启用 {display_hotkey}，但与已知系统快捷键冲突",
+                "建议改用 Ctrl+Alt+Insert。",
+            ))
+        elif expects_hotkey and hotkey_listener:
+            items.append(("热键状态", "正常", f"已启用 {display_hotkey}", None))
+        elif expects_hotkey:
+            items.append((
+                "热键状态",
+                "警告",
+                "已配置热键相关唤起/休眠，但当前监听未启用",
+                "请检查热键设置，或改用点击唤起模式。",
+            ))
+        else:
+            items.append(("热键状态", "提示", "当前模式不依赖热键", None))
+
+        runtime_source = str(getattr(self, "runtime_decoder_source", "unknown") or "unknown").lower()
+        candidate_source = self._describe_runtime_candidate_source()
+        if runtime_source == "json":
+            items.append(("候选来源", "正常", candidate_source, None))
+        else:
+            items.append((
+                "候选来源",
+                "警告",
+                candidate_source,
+                "请检查运行时 JSON 导出文件是否生成。",
+            ))
+
+        warning = str(getattr(self, "runtime_decoder_warning", "") or "").strip()
+        if warning:
+            items.append((
+                "运行时编码表",
+                "警告",
+                warning,
+                "请检查运行时 JSON 导出文件或重新生成候选数据。",
+            ))
+        else:
+            items.append(("运行时编码表", "正常", "已启用运行时编码表", None))
+
+        items.append(("用户词库目录", *self._check_user_lexicon_exchange_dir()))
+        return items
+
+    def _render_runtime_diagnostic_summary(
+        self,
+        *,
+        mode_summary: str,
+        items: list[tuple[str, str, str, Optional[str]]],
+    ) -> str:
+        lines = [mode_summary, "自检："]
+        for label, status, detail, advice in items:
+            line = f"- {label}：{status}。{detail}"
+            if advice:
+                line = f"{line} 建议：{advice}"
+            lines.append(line)
+        return "\n".join(lines)
+
     def _build_runtime_readiness_summary(
         self,
         *,
@@ -618,16 +752,14 @@ class BaseInputMethodApp:
         wake_text: Optional[str] = None,
         standby_text: Optional[str] = None,
     ) -> str:
-        lines = [mode_summary]
-        if wake_text:
-            lines.append(f"唤起方式：{wake_text}")
-        if standby_text:
-            lines.append(f"休眠方式：{standby_text}")
-        lines.append(f"候选来源：{self._describe_runtime_candidate_source()}")
-        warning = str(getattr(self, "runtime_decoder_warning", "") or "").strip()
-        if warning:
-            lines.append(f"运行时提示：{warning}")
-        return "\n".join(lines)
+        items = self._build_runtime_diagnostic_items(
+            wake_text=wake_text,
+            standby_text=standby_text,
+        )
+        return self._render_runtime_diagnostic_summary(
+            mode_summary=mode_summary,
+            items=items,
+        )
 
     def _build_runtime_readiness_display_summary(self) -> str:
         wake_hint = getattr(self, "_wake_trigger_hint", None)
@@ -639,7 +771,12 @@ class BaseInputMethodApp:
         if hotkey_mode == "hotkey":
             mode_summary = "当前模式：热键模式"
         elif hotkey_mode == "click-only":
-            mode_summary = "当前模式：受限模式（热键当前未启用）"
+            wake_triggers = getattr(self, "wake_triggers", frozenset({"hotkey", "mouse"}))
+            standby_triggers = getattr(self, "standby_triggers", frozenset({"hotkey", "mouse"}))
+            if wake_triggers == frozenset({"mouse"}) and standby_triggers == frozenset({"mouse"}):
+                mode_summary = "当前模式：点击唤起模式（热键不可用）"
+            else:
+                mode_summary = "当前模式：受限模式（热键当前未启用）"
         elif hotkey_mode == "disabled":
             mode_summary = "当前模式：实验性全局监听模式"
         else:
