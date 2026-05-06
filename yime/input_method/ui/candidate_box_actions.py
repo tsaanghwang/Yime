@@ -698,7 +698,11 @@ class CandidateBoxActions:
     def show_help(self) -> None:
         callback = getattr(self.box, "hotkey_summary_callback", None)
         summary = callback() if callable(callback) else None
+        readiness_callback = getattr(self.box, "runtime_readiness_summary_callback", None)
+        readiness_summary = readiness_callback() if callable(readiness_callback) else None
         message = self._load_help_document_text()
+        if readiness_summary:
+            message = f"{message}\n\n{readiness_summary}"
         if summary:
             message = f"{message}\n\n{summary}"
         self._emit_feedback(

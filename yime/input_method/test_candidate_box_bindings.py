@@ -175,6 +175,14 @@ class _FakeBox:
     def hotkey_summary_callback(self) -> str:
         return f"当前热键：{self.current_hotkey}"
 
+    def runtime_readiness_summary_callback(self) -> str:
+        return (
+            "当前模式：热键模式\n"
+            "唤起方式：按 Ctrl+Shift+Y 或 点击右下角的'音'图标\n"
+            "休眠方式：再次按 Ctrl+Shift+Y 或 右键候选框\n"
+            "候选来源：运行时 JSON 导出文件"
+        )
+
     def hotkey_label_callback(self) -> str:
         return self.current_hotkey
 
@@ -371,6 +379,8 @@ def test_toolbar_menu_uses_expected_labels_and_popup_position(monkeypatch) -> No
     assert "普通用户帮助" in feedback_calls[1][1]
     assert "推荐阅读顺序" in feedback_calls[1][1]
     assert "菜单与用户词库" in feedback_calls[1][1]
+    assert "当前模式：热键模式" in feedback_calls[1][1]
+    assert "候选来源：运行时 JSON 导出文件" in feedback_calls[1][1]
     assert feedback_calls[1][1].endswith("当前热键：Ctrl+Shift+Y")
     assert feedback_calls[2] == (
         "关于",

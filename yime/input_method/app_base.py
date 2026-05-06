@@ -244,6 +244,7 @@ class BaseInputMethodApp:
             on_export_user_lexicon=self._export_user_lexicon_from_menu,
             on_open_user_data_dir=self._open_user_data_dir,
             on_hotkey_summary_request=self._build_hotkey_summary,
+            on_runtime_readiness_summary_request=self._build_runtime_readiness_display_summary,
             on_add_input_to_user_lexicon=self._add_current_input_to_user_lexicon,
             on_delete_input_from_user_lexicon=self._delete_current_input_from_user_lexicon,
             on_feedback=self._emit_feedback,
@@ -627,6 +628,28 @@ class BaseInputMethodApp:
         if warning:
             lines.append(f"运行时提示：{warning}")
         return "\n".join(lines)
+
+    def _build_runtime_readiness_display_summary(self) -> str:
+        wake_hint = getattr(self, "_wake_trigger_hint", None)
+        standby_hint = getattr(self, "_standby_trigger_hint", None)
+        wake_text = wake_hint() if callable(wake_hint) else None
+        standby_text = standby_hint() if callable(standby_hint) else None
+
+        hotkey_mode = str(getattr(self, "_hotkey_mode", "unknown") or "unknown")
+        if hotkey_mode == "hotkey":
+            mode_summary = "当前模式：热键模式"
+        elif hotkey_mode == "click-only":
+            mode_summary = "当前模式：受限模式（热键当前未启用）"
+        elif hotkey_mode == "disabled":
+            mode_summary = "当前模式：实验性全局监听模式"
+        else:
+            mode_summary = "当前模式：待确认"
+
+        return self._build_runtime_readiness_summary(
+            mode_summary=mode_summary,
+            wake_text=wake_text,
+            standby_text=standby_text,
+        )
 
     def _format_input_outline(self, text: str) -> str:
         return build_input_sound_notes(text, self.input_visual_map)

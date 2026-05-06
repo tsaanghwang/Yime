@@ -37,6 +37,7 @@ def test_input_method_app_factory_wires_user_lexicon_callbacks(monkeypatch) -> N
     app._export_user_lexicon_from_menu = lambda: None
     app._open_user_data_dir = lambda: None
     app._build_hotkey_summary = lambda: "当前热键：ctrl+alt+insert"
+    app._build_runtime_readiness_display_summary = lambda: "当前模式：热键模式"
     app._format_hotkey_label = lambda: "Ctrl+Alt+Insert"
     app._on_hotkey_change = lambda hotkey: True
     app._add_current_input_to_user_lexicon = lambda: None
@@ -70,6 +71,7 @@ def test_input_method_app_factory_wires_user_lexicon_callbacks(monkeypatch) -> N
     assert captured["on_export_user_lexicon"] is app._export_user_lexicon_from_menu
     assert captured["on_open_user_data_dir"] is app._open_user_data_dir
     assert captured["on_hotkey_summary_request"] is app._build_hotkey_summary
+    assert captured["on_runtime_readiness_summary_request"] is app._build_runtime_readiness_display_summary
     assert captured["on_hotkey_label_request"] is app._format_hotkey_label
     assert captured["on_hotkey_change"] is app._on_hotkey_change
     assert captured["on_add_input_to_user_lexicon"] is app._add_current_input_to_user_lexicon
