@@ -4,10 +4,15 @@
 """
 import ctypes
 import tkinter as tk
+from ctypes import wintypes
+
+class _POINT(ctypes.Structure):
+    _fields_ = [("x", ctypes.c_long), ("y", ctypes.c_long)]
 
 class CandidateWindowSystem:
     _GWL_EXSTYLE = -20
     _GWL_STYLE = -16
+    _GWL_WNDPROC = -4
     _WS_EX_TOOLWINDOW = 0x00000080
     _WS_EX_APPWINDOW = 0x00040000
     _WS_EX_NOACTIVATE = 0x08000000
@@ -17,10 +22,33 @@ class CandidateWindowSystem:
     _SWP_NOSIZE = 0x0001
     _SWP_NOACTIVATE = 0x0010
     _SWP_FRAMECHANGED = 0x0020
+    _WM_NCRBUTTONDOWN = 0x00A4
+    _WM_SYSCOMMAND = 0x0112
+    _SC_MOVE = 0xF010
+    _HTCAPTION = 2
+    _HTSYSMENU = 3
+    _HTMAXBUTTON = 9
+
+    _VK_RBUTTON = 0x02
+
+    _WM_MOUSEMOVE = 0x0200
+    _WM_RBUTTONUP = 0x0205
+    _WM_NCRBUTTONUP = 0x00A5
+    _SWP_NOZORDER = 0x0004
+    _SWP_SHOWWINDOW = 0x0040
 
     def __init__(self, root: tk.Tk):
         self.root = root
         self._user32 = None
+        self._wndproc_ref = None
+        self._default_wndproc = None
+        self._subclassed_hwnd = None
+        self._custom_drag_active = False
+        self._custom_drag_start_x = 0
+        self._custom_drag_start_y = 0
+        self._custom_drag_win_x = 0
+        self._custom_drag_win_y = 0
+        self._drag_on_complete = None
 
     def _get_user32(self):
         if self._user32 is None:
@@ -29,6 +57,79 @@ class CandidateWindowSystem:
 
     def get_user32(self):
         return self._get_user32()
+
+    @classmethod
+    def _should_start_nonclient_right_drag(cls, hit_test: int) -> bool:
+        return hit_test in {cls._HTCAPTION, cls._HTSYSMENU, cls._HTMAXBUTTON}
+
+    def _handle_wndproc_message(
+        self,
+        hwnd: int,
+        message: int,
+        wparam: int,
+        lparam: int,
+    ) -> bool:
+        if message == self._WM_NCRBUTTONDOWN and self._should_start_nonclient_right_drag(wparam):
+            return True
+
+        return False
+    def enable_nonclient_right_drag(self) -> None:
+        self.root.update_idletasks()
+        hwnd = int(self.root.winfo_id())
+        if not hwnd or self._subclassed_hwnd == hwnd:
+            return
+
+        user32 = self._get_user32()
+        _user32, get_window_long_ptr, set_window_long_ptr, _set_window_pos = self._get_window_style_api()
+        call_window_proc = user32.CallWindowProcW
+
+        lresult_type = ctypes.c_longlong if ctypes.sizeof(ctypes.c_void_p) == 8 else ctypes.c_long
+        wndproc_type = ctypes.WINFUNCTYPE(
+            lresult_type,
+            wintypes.HWND,
+            wintypes.UINT,
+            wintypes.WPARAM,
+            wintypes.LPARAM,
+        )
+        call_window_proc.restype = lresult_type
+        call_window_proc.argtypes = [
+            ctypes.c_void_p,
+            wintypes.HWND,
+            wintypes.UINT,
+            wintypes.WPARAM,
+            wintypes.LPARAM,
+        ]
+
+        default_wndproc = get_window_long_ptr(hwnd, self._GWL_WNDPROC)
+        if not default_wndproc:
+            return
+
+        self._default_wndproc = default_wndproc
+
+        @wndproc_type
+        def window_proc(window_handle, message, wparam, lparam):
+            if self._handle_wndproc_message(
+                int(window_handle),
+                int(message),
+                int(wparam),
+                int(lparam),
+            ):
+                return 0
+            return call_window_proc(
+                ctypes.c_void_p(self._default_wndproc),
+                window_handle,
+                message,
+                wparam,
+                lparam,
+            )
+
+        self._wndproc_ref = window_proc
+        set_window_long_ptr(
+            hwnd,
+            self._GWL_WNDPROC,
+            ctypes.cast(window_proc, ctypes.c_void_p),
+        )
+        self._subclassed_hwnd = hwnd
 
     def _get_window_style_api(self):
         user32 = self._get_user32()
@@ -62,6 +163,7 @@ class CandidateWindowSystem:
         if ctypes.sizeof(ctypes.c_void_p) == 0:
             return
 
+        self.enable_nonclient_right_drag()
         self.root.update_idletasks()
         hwnd = self.root.winfo_id()
         user32, get_window_long_ptr, set_window_long_ptr, set_window_pos = self._get_window_style_api()
@@ -81,6 +183,7 @@ class CandidateWindowSystem:
         )
 
     def set_noactivate(self, enabled: bool) -> None:
+        self.enable_nonclient_right_drag()
         self.root.update_idletasks()
         hwnd = self.root.winfo_id()
         _user32, get_window_long_ptr, set_window_long_ptr, set_window_pos = self._get_window_style_api()
