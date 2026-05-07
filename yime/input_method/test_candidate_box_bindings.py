@@ -98,6 +98,9 @@ class _FakeBox:
         self.status = ""
         self.current_hotkey = "Ctrl+Alt+Insert"
         self.hotkey_change_requests: list[str] = []
+        self.manual_input_enabled = False
+        self.show_calls: list[bool] = []
+        self.show_standby_calls = 0
 
     def clear_input(self) -> None:
         return None
@@ -173,6 +176,15 @@ class _FakeBox:
 
     def set_status(self, text: str) -> None:
         self.status = text
+
+    def set_manual_input_enabled(self, enabled: bool) -> None:
+        self.manual_input_enabled = enabled
+
+    def show(self, focus_input: bool = False) -> None:
+        self.show_calls.append(focus_input)
+
+    def show_standby(self) -> None:
+        self.show_standby_calls += 1
 
     def reload_user_lexicon_callback(self) -> bool:
         self.reload_requested = True
@@ -304,7 +316,7 @@ def test_input_context_menu_uses_chinese_labels_and_selects_input_text(monkeypat
 
 def test_toolbar_menu_uses_expected_labels_and_popup_position(monkeypatch) -> None:
     commands: list[tuple[str, object, str]] = []
-    cascades: list[tuple[str, object]] = []
+    cascades: list[tuple[str, object, str]] = []
     popup_calls: list[tuple[int, int]] = []
     grab_release_calls: list[bool] = []
     radio_buttons: list[tuple[str, int, object, object]] = []
@@ -319,8 +331,8 @@ def test_toolbar_menu_uses_expected_labels_and_popup_position(monkeypatch) -> No
         def add_command(self, label: str, command: object, state: str = "normal") -> None:
             commands.append((label, command, state))
 
-        def add_cascade(self, label: str, menu: object) -> None:
-            cascades.append((label, menu))
+        def add_cascade(self, label: str, menu: object, state: str = "normal") -> None:
+            cascades.append((label, menu, state))
 
         def add_radiobutton(self, label: str, value: object, variable: object, command: object) -> None:
             radio_buttons.append((label, value, variable, command))
@@ -353,7 +365,8 @@ def test_toolbar_menu_uses_expected_labels_and_popup_position(monkeypatch) -> No
     command_labels = [label for label, _, _ in commands]
     assert command_labels == ["设置反查时显示哪些内容", "当前唤起热键：Ctrl+Alt+Insert", "修改热键", "添加当前词条", "删除当前词条", "编辑用户词库", "应用用户词库", "导入用户词库", "导出用户词库", "查看帮助", "查看试用反馈说明", "复制试用反馈模板", "查看诊断", "重新检查诊断", "复制诊断信息", "查看试用反馈说明", "复制试用反馈模板", "打开故障排查", "打开运行时数据目录", "打开设置文件", "打开帮助", "关于"]
     assert commands[2][2] == "disabled"
-    assert [label for label, _ in cascades] == ["候选列表", "反查信息", "唤起方式", "休眠方式", "交互", "前景颜色", "背景颜色", "字体大小", "主界面透明度", "外观", "设置", "编辑与重载", "导入与导出", "用户词库", "工具", "帮助", "诊断"]
+    assert [label for label, _, _ in cascades] == ["候选列表", "反查信息", "唤起方式", "休眠方式", "交互", "前景颜色", "背景颜色", "字体大小", "主界面透明度", "外观", "设置", "编辑与重载", "导入与导出", "用户词库", "工具", "帮助", "诊断"]
+    assert all(state == "normal" for _, _, state in cascades)
     assert [label for label, _, _, _ in radio_buttons] == [
         "每页 5 个",
         "每页 6 个",
@@ -558,6 +571,7 @@ def test_set_reverse_lookup_display_mode_reports_clearer_status() -> None:
 
 def test_user_lexicon_menu_items_are_disabled_when_hooks_are_missing(monkeypatch) -> None:
     commands: list[tuple[str, object, str]] = []
+    cascades: list[tuple[str, object, str]] = []
 
     class _FakeMenu:
         def __init__(self, root: object, tearoff: bool) -> None:
@@ -567,7 +581,13 @@ def test_user_lexicon_menu_items_are_disabled_when_hooks_are_missing(monkeypatch
         def add_command(self, label: str, command: object, state: str = "normal") -> None:
             commands.append((label, command, state))
 
-        def add_cascade(self, label: str, menu: object) -> None:
+        def add_cascade(self, label: str, menu: object, state: str = "normal") -> None:
+            cascades.append((label, menu, state))
+
+        def add_radiobutton(self, label: str, value: object, variable: object, command: object) -> None:
+            return None
+
+        def add_checkbutton(self, label: str, variable: object, command: object) -> None:
             return None
 
         def add_separator(self) -> None:
@@ -588,6 +608,8 @@ def test_user_lexicon_menu_items_are_disabled_when_hooks_are_missing(monkeypatch
     actions = CandidateBoxActions(_BoxWithoutLexiconHooks())
     actions._get_input_context_menu()
     actions._get_user_lexicon_menu()
+    actions._get_tools_menu()
+    actions._get_toolbar_menu()
 
     lexicon_states = {
         label: state
@@ -610,10 +632,22 @@ def test_user_lexicon_menu_items_are_disabled_when_hooks_are_missing(monkeypatch
         "导入用户词库": "disabled",
         "导出用户词库": "disabled",
     }
+    cascade_states = {
+        label: state
+        for label, _, state in cascades
+        if label in {"编辑与重载", "导入与导出", "用户词库", "工具"}
+    }
+    assert cascade_states == {
+        "编辑与重载": "disabled",
+        "导入与导出": "disabled",
+        "用户词库": "disabled",
+        "工具": "disabled",
+    }
 
 
 def test_diagnostics_open_items_are_disabled_when_hooks_are_missing(monkeypatch) -> None:
     commands: list[tuple[str, object, str]] = []
+    cascades: list[tuple[str, object, str]] = []
 
     class _FakeMenu:
         def __init__(self, root: object, tearoff: bool) -> None:
@@ -622,6 +656,15 @@ def test_diagnostics_open_items_are_disabled_when_hooks_are_missing(monkeypatch)
 
         def add_command(self, label: str, command: object, state: str = "normal") -> None:
             commands.append((label, command, state))
+
+        def add_cascade(self, label: str, menu: object, state: str = "normal") -> None:
+            cascades.append((label, menu, state))
+
+        def add_radiobutton(self, label: str, value: object, variable: object, command: object) -> None:
+            return None
+
+        def add_checkbutton(self, label: str, variable: object, command: object) -> None:
+            return None
 
         def add_separator(self) -> None:
             return None
@@ -638,6 +681,7 @@ def test_diagnostics_open_items_are_disabled_when_hooks_are_missing(monkeypatch)
 
     actions = CandidateBoxActions(_BoxWithoutDiagnosticOpenHooks())
     actions._get_diagnostics_menu()
+    actions._get_toolbar_menu()
 
     diagnostic_states = {
         label: state
@@ -649,11 +693,19 @@ def test_diagnostics_open_items_are_disabled_when_hooks_are_missing(monkeypatch)
         "打开运行时数据目录": "disabled",
         "打开设置文件": "disabled",
     }
+    top_level_states = {
+        label: state for label, _, state in cascades if label in {"设置", "帮助", "诊断"}
+    }
+    assert top_level_states == {
+        "设置": "normal",
+        "帮助": "normal",
+        "诊断": "normal",
+    }
 
 
 def test_edit_hotkey_menu_item_is_always_disabled(monkeypatch) -> None:
     commands: list[tuple[str, object, str]] = []
-    cascades: list[tuple[str, object]] = []
+    cascades: list[tuple[str, object, str]] = []
 
     class _FakeMenu:
         def __init__(self, root: object, tearoff: bool) -> None:
@@ -666,8 +718,8 @@ def test_edit_hotkey_menu_item_is_always_disabled(monkeypatch) -> None:
         def add_separator(self) -> None:
             return None
 
-        def add_cascade(self, label: str, menu: object) -> None:
-            cascades.append((label, menu))
+        def add_cascade(self, label: str, menu: object, state: str = "normal") -> None:
+            cascades.append((label, menu, state))
 
         def add_radiobutton(self, label: str, value: object, variable: object, command: object) -> None:
             return None
@@ -758,3 +810,22 @@ def test_commit_output_text_keeps_buffer_status_local() -> None:
     assert box.commit_calls == ["安"]
     assert box.status == "已发送缓冲区内容: 安"
     assert box.feedback_calls == []
+
+
+def test_standby_controls_fall_back_to_local_behavior_without_callbacks() -> None:
+    class _BoxWithoutStandbyHooks(_FakeBox):
+        def restore_from_standby_callback(self) -> bool:
+            return False
+
+        def toggle_standby_callback(self) -> bool:
+            return False
+
+    box = _BoxWithoutStandbyHooks()
+    actions = CandidateBoxActions(box)
+
+    assert actions.restore_from_standby() == "break"
+    assert box.manual_input_enabled is True
+    assert box.show_calls == [True]
+
+    assert actions.request_standby() == "break"
+    assert box.show_standby_calls == 1

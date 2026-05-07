@@ -110,11 +110,38 @@ class CandidateBoxActions:
     def _set_local_status(self, message: str) -> None:
         self.box.set_status(message)
 
-    def _menu_item_state(self, callback_name: str, *hook_attrs: str) -> str:
+    def _has_menu_item_handler(self, callback_name: str, *hook_attrs: str) -> bool:
         for hook_attr in hook_attrs:
             if hasattr(self.box, hook_attr):
-                return tk.NORMAL if callable(getattr(self.box, hook_attr, None)) else tk.DISABLED
-        return tk.NORMAL if callable(getattr(self.box, callback_name, None)) else tk.DISABLED
+                return callable(getattr(self.box, hook_attr, None))
+        return callable(getattr(self.box, callback_name, None))
+
+    def _menu_item_state(self, callback_name: str, *hook_attrs: str) -> str:
+        return tk.NORMAL if self._has_menu_item_handler(callback_name, *hook_attrs) else tk.DISABLED
+
+    @staticmethod
+    def _cascade_state(*states: str) -> str:
+        return tk.NORMAL if any(state == tk.NORMAL for state in states) else tk.DISABLED
+
+    def _user_lexicon_edit_reload_menu_state(self) -> str:
+        return self._cascade_state(
+            self._menu_item_state("edit_user_lexicon_callback", "_on_edit_user_lexicon"),
+            self._menu_item_state("reload_user_lexicon_callback", "_on_reload_user_lexicon"),
+        )
+
+    def _user_lexicon_import_export_menu_state(self) -> str:
+        return self._cascade_state(
+            self._menu_item_state("import_user_lexicon_callback", "_on_import_user_lexicon"),
+            self._menu_item_state("export_user_lexicon_callback", "_on_export_user_lexicon"),
+        )
+
+    def _user_lexicon_menu_state(self) -> str:
+        return self._cascade_state(
+            self._menu_item_state("add_input_to_user_lexicon_callback", "_on_add_input_to_user_lexicon"),
+            self._menu_item_state("delete_input_from_user_lexicon_callback", "_on_delete_input_from_user_lexicon"),
+            self._user_lexicon_edit_reload_menu_state(),
+            self._user_lexicon_import_export_menu_state(),
+        )
 
     def bind_keys(self) -> None:
         def bind_if_possible(widget: object, sequence: str, handler: object) -> None:
@@ -297,7 +324,11 @@ class CandidateBoxActions:
         if self._toolbar_menu is None:
             menu = tk.Menu(self.box.root, tearoff=False)
             menu.add_cascade(label="设置", menu=self._get_settings_menu())
-            menu.add_cascade(label="工具", menu=self._get_tools_menu())
+            menu.add_cascade(
+                label="工具",
+                menu=self._get_tools_menu(),
+                state=self._user_lexicon_menu_state(),
+            )
             menu.add_cascade(label="帮助", menu=self._get_help_menu())
             menu.add_cascade(label="诊断", menu=self._get_diagnostics_menu())
             menu.add_command(label="关于", command=self.show_about)
@@ -571,7 +602,11 @@ class CandidateBoxActions:
     def _get_tools_menu(self) -> tk.Menu:
         if self._tools_menu is None:
             menu = tk.Menu(self.box.root, tearoff=False)
-            menu.add_cascade(label="用户词库", menu=self._get_user_lexicon_menu())
+            menu.add_cascade(
+                label="用户词库",
+                menu=self._get_user_lexicon_menu(),
+                state=self._user_lexicon_menu_state(),
+            )
             self._tools_menu = menu
         return self._tools_menu
 
@@ -595,8 +630,16 @@ class CandidateBoxActions:
                 ),
             )
             menu.add_separator()
-            menu.add_cascade(label="编辑与重载", menu=self._get_user_lexicon_edit_reload_menu())
-            menu.add_cascade(label="导入与导出", menu=self._get_user_lexicon_import_export_menu())
+            menu.add_cascade(
+                label="编辑与重载",
+                menu=self._get_user_lexicon_edit_reload_menu(),
+                state=self._user_lexicon_edit_reload_menu_state(),
+            )
+            menu.add_cascade(
+                label="导入与导出",
+                menu=self._get_user_lexicon_import_export_menu(),
+                state=self._user_lexicon_import_export_menu_state(),
+            )
             self._user_lexicon_menu = menu
         return self._user_lexicon_menu
 
