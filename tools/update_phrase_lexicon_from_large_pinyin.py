@@ -12,15 +12,16 @@ SOURCE_DB_DIR = ROOT / "internal_data" / "pinyin_source_db"
 YIME_DIR = ROOT / "yime"
 
 DEFAULT_CHAR_SOURCE = Path("C:/dev/pinyin-data/pinyin.txt")
-DEFAULT_LARGE_PHRASE_SOURCE = Path(
-    "C:/dev/pinyin-data/tools/phrase-pinyin-data/large_pinyin.txt"
+DEFAULT_PHRASE_SOURCE = Path(
+    "C:/dev/RIME-LMDG/万象双拼得由来/语料统计词频表.txt"
 )
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
-            "用 large_pinyin.txt 作为词语拼音来源，重建 Yime 当前主线词库："
+            "用外部词语拼音源重建 Yime 当前主线词库；如果来源带词频，"
+            "会在导入 prototype 时写入 phrase_frequency："
             "source_pinyin.db -> prototype tables -> runtime。"
             "默认真正执行；可先用 --dry-run 看将要跑哪些命令。"
         )
@@ -32,10 +33,10 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--phrase-source",
-        default=str(DEFAULT_LARGE_PHRASE_SOURCE),
+        default=str(DEFAULT_PHRASE_SOURCE),
         help=(
             "词语拼音来源，默认使用 "
-            "C:/dev/pinyin-data/tools/phrase-pinyin-data/large_pinyin.txt"
+            "C:/dev/RIME-LMDG/万象双拼得由来/语料统计词频表.txt"
         ),
     )
     parser.add_argument(

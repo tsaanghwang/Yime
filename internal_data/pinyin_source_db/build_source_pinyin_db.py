@@ -118,6 +118,26 @@ def split_comment(raw_line: str) -> tuple[str, str | None]:
     return content.rstrip(), comment.strip() or None
 
 
+def parse_phrase_source_content(content: str) -> tuple[str, str] | None:
+    if ":" in content:
+        phrase_part, pinyin_part = content.split(":", 1)
+        phrase = phrase_part.strip()
+        marked_pinyin = pinyin_part.strip()
+        if phrase and marked_pinyin:
+            return phrase, marked_pinyin
+        return None
+
+    parts = [part.strip() for part in content.split("\t")]
+    if len(parts) < 2:
+        return None
+
+    phrase = parts[0]
+    marked_pinyin = parts[1]
+    if not phrase or not marked_pinyin:
+        return None
+    return phrase, marked_pinyin
+
+
 def import_single_char_source(conn: sqlite3.Connection, source_path: Path) -> int:
     source_name = make_source_name("single_char", source_path)
     conn.execute(
@@ -189,11 +209,10 @@ def import_phrase_source(conn: sqlite3.Connection, source_path: Path) -> int:
                 continue
 
             content, comment = split_comment(raw_line)
-            phrase_part, pinyin_part = content.split(":", 1)
-            phrase = phrase_part.strip()
-            marked_pinyin = pinyin_part.strip()
-            if not phrase or not marked_pinyin:
+            parsed = parse_phrase_source_content(content)
+            if parsed is None:
                 continue
+            phrase, marked_pinyin = parsed
 
             conn.execute(
                 """
