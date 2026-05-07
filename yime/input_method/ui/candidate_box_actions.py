@@ -809,13 +809,13 @@ class CandidateBoxActions:
         callback = getattr(self.box, "reload_user_lexicon_callback", None)
         if callable(callback) and callback():
             return
-        self._emit_feedback("用户词库", "当前未配置用户词库应用入口。")
+        self._emit_feedback("用户词库", "当前不能直接应用用户词库；请先确认已启用用户词库维护功能。")
 
     def edit_user_lexicon(self) -> None:
         callback = getattr(self.box, "edit_user_lexicon_callback", None)
         if callable(callback) and callback():
             return
-        self._emit_feedback("用户词库", "当前未配置用户词库编辑入口。")
+        self._emit_feedback("用户词库", "当前不能直接编辑用户词库；请先改用导入、导出或手动维护文件。")
 
     def open_settings_file(self) -> None:
         callback = getattr(self.box, "open_settings_file_callback", None)
@@ -824,7 +824,7 @@ class CandidateBoxActions:
         legacy_callback = getattr(self.box, "open_user_data_dir_callback", None)
         if callable(legacy_callback) and legacy_callback():
             return
-        self._emit_feedback("设置文件", "当前未配置设置文件入口。")
+        self._emit_feedback("设置文件", "当前不能直接打开设置文件；请先从帮助或诊断里确认配置位置。")
 
     def open_user_data_dir(self) -> None:
         # Backward-compatible alias for older call sites.
@@ -834,25 +834,25 @@ class CandidateBoxActions:
         callback = getattr(self.box, "open_runtime_data_dir_callback", None)
         if callable(callback) and callback():
             return
-        self._emit_feedback("运行时数据", "当前未配置运行时数据目录入口。")
+        self._emit_feedback("运行时数据", "当前不能直接打开运行时数据目录；请先在诊断里查看运行时数据指引。")
 
     def open_troubleshooting_doc(self) -> None:
         callback = getattr(self.box, "open_troubleshooting_doc_callback", None)
         if callable(callback) and callback():
             return
-        self._emit_feedback("故障排查", "当前未配置故障排查文档入口。")
+        self._emit_feedback("故障排查", "当前不能直接打开故障排查文档；请先从帮助菜单查看相关说明。")
 
     def import_user_lexicon(self) -> None:
         callback = getattr(self.box, "import_user_lexicon_callback", None)
         if callable(callback) and callback():
             return
-        self._emit_feedback("用户词库", "当前未配置用户词库导入入口。")
+        self._emit_feedback("用户词库", "当前不能直接导入用户词库；请先确认已启用用户词库维护功能。")
 
     def export_user_lexicon(self) -> None:
         callback = getattr(self.box, "export_user_lexicon_callback", None)
         if callable(callback) and callback():
             return
-        self._emit_feedback("用户词库", "当前未配置用户词库导出入口。")
+        self._emit_feedback("用户词库", "当前不能直接导出用户词库；请先确认已启用用户词库维护功能。")
 
     def show_hotkey_info(self) -> None:
         callback = getattr(self.box, "hotkey_summary_callback", None)
@@ -874,13 +874,13 @@ class CandidateBoxActions:
 
         callback = getattr(self.box, "hotkey_change_callback", None)
         if not callable(callback):
-            self._emit_feedback("快捷键", "当前未配置热键修改入口。")
+            self._emit_feedback("快捷键", "当前不能直接修改热键；请先记下当前热键，并到设置文件中调整。")
             return
         if not callback(updated_hotkey):
             return
 
         self._invalidate_toolbar_menus()
-        self._set_local_status(f"唤起热键已改为{self._current_hotkey_label()}。")
+        self._set_local_status(f"之后可按{self._current_hotkey_label()}唤起候选窗。")
 
     @classmethod
     def _load_help_document_text(cls) -> str:
@@ -1003,35 +1003,35 @@ class CandidateBoxActions:
 
     def recheck_diagnostics(self) -> None:
         self.show_diagnostics()
-        self._set_local_status("已重新检查诊断。")
+        self._set_local_status("已重新检查诊断；可直接查看上面的结果。")
 
     def copy_diagnostics(self) -> None:
         message = self._build_diagnostics_share_message()
         clipboard_clear = getattr(self.box.root, "clipboard_clear", None)
         clipboard_append = getattr(self.box.root, "clipboard_append", None)
         if not callable(clipboard_clear) or not callable(clipboard_append):
-            self._emit_feedback("诊断", "当前环境不支持复制诊断信息。")
+            self._emit_feedback("诊断", "当前环境暂时不能复制诊断信息；请先打开诊断窗口，再手动复制内容。")
             return
         clipboard_clear()
         clipboard_append(message)
         update = getattr(self.box.root, "update_idletasks", None)
         if callable(update):
             update()
-        self._emit_feedback("诊断", "已复制诊断信息；可直接粘贴给 GitHub Copilot。")
+        self._emit_feedback("诊断", "诊断信息已复制。现在可直接粘贴给 GitHub Copilot。")
 
     def copy_trial_feedback_template(self) -> None:
         message = self._build_trial_feedback_template()
         clipboard_clear = getattr(self.box.root, "clipboard_clear", None)
         clipboard_append = getattr(self.box.root, "clipboard_append", None)
         if not callable(clipboard_clear) or not callable(clipboard_append):
-            self._emit_feedback("试用反馈", "当前环境不支持复制试用反馈模板。")
+            self._emit_feedback("试用反馈", "当前环境暂时不能复制试用反馈模板；请先打开“试用反馈说明”，再手动整理给试用者。")
             return
         clipboard_clear()
         clipboard_append(message)
         update = getattr(self.box.root, "update_idletasks", None)
         if callable(update):
             update()
-        self._emit_feedback("试用反馈", "已复制试用反馈模板；可直接发给试用者或让对方回填。")
+        self._emit_feedback("试用反馈", "试用反馈模板已复制。现在可直接发给试用者填写。")
 
     def show_trial_feedback_help(self) -> None:
         self._emit_feedback(
@@ -1066,7 +1066,7 @@ class CandidateBoxActions:
         if callable(legacy_callback):
             legacy_callback()
             return
-        self._emit_feedback("用户词库", "当前未配置用户词库写入入口。")
+        self._emit_feedback("用户词库", "当前不能直接添加当前词条；请先确认已启用用户词库功能。")
 
     def delete_current_input_from_user_lexicon(self) -> None:
         callback = getattr(self.box, "delete_input_from_user_lexicon_callback", None)
@@ -1076,7 +1076,7 @@ class CandidateBoxActions:
         if callable(legacy_callback):
             legacy_callback()
             return
-        self._emit_feedback("用户词库", "当前未配置用户词库删除入口。")
+        self._emit_feedback("用户词库", "当前不能直接删除当前词条；请先确认已启用用户词库功能。")
 
     def activate_for_manual_input(self, event: Optional[tk.Event] = None) -> None:
         self.box.set_manual_input_enabled(True)

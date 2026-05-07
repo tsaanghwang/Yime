@@ -1,4 +1,5 @@
 from yime.input_method.ui.candidate_box_actions import CandidateBoxActions
+from yime.input_method.ui.candidate_box import CandidateBox
 
 
 class _FakeWidget:
@@ -458,7 +459,7 @@ def test_toolbar_menu_uses_expected_labels_and_popup_position(monkeypatch) -> No
     assert feedback_calls[1][1].endswith("当前热键：Ctrl+Alt+Insert")
     assert feedback_calls[2][0] == "试用反馈说明"
     assert "如果你只想给我最短反馈，直接告诉我下面哪一种最接近：" in feedback_calls[2][1]
-    assert feedback_calls[3] == ("试用反馈", "已复制试用反馈模板；可直接发给试用者或让对方回填。")
+    assert feedback_calls[3] == ("试用反馈", "试用反馈模板已复制。现在可直接发给试用者填写。")
     assert feedback_calls[4][0] == "诊断"
     assert "当前模式：热键模式" in feedback_calls[4][1]
     assert "诊断结论：当前未发现警告或提示，共 5 项正常。" in feedback_calls[4][1]
@@ -470,13 +471,13 @@ def test_toolbar_menu_uses_expected_labels_and_popup_position(monkeypatch) -> No
     assert feedback_calls[4][1].endswith("当前热键：Ctrl+Alt+Insert")
     assert feedback_calls[5][0] == "诊断"
     assert feedback_calls[5][1] == feedback_calls[4][1]
-    assert box.status == "已重新检查诊断。"
-    assert feedback_calls[6] == ("诊断", "已复制诊断信息；可直接粘贴给 GitHub Copilot。")
+    assert box.status == "已重新检查诊断；可直接查看上面的结果。"
+    assert feedback_calls[6] == ("诊断", "诊断信息已复制。现在可直接粘贴给 GitHub Copilot。")
     assert feedback_calls[7][0] == "试用反馈说明"
     assert "如果你只想给我最短反馈，直接告诉我下面哪一种最接近：" in feedback_calls[7][1]
     assert "- 能打开但唤不起候选框" in feedback_calls[7][1]
     assert "如果愿意再多写一句，补这 3 件事就够了：" in feedback_calls[7][1]
-    assert feedback_calls[8] == ("试用反馈", "已复制试用反馈模板；可直接发给试用者或让对方回填。")
+    assert feedback_calls[8] == ("试用反馈", "试用反馈模板已复制。现在可直接发给试用者填写。")
     assert box.root.clipboard_cleared == 3
     assert len(box.root.clipboard_contents) == 1
     assert box.root.clipboard_contents[0].startswith("【Yime 试用反馈模板】")
@@ -516,7 +517,7 @@ def test_toolbar_menu_uses_expected_labels_and_popup_position(monkeypatch) -> No
     assert box.reload_requested is True
     assert box.import_requested is True
     assert box.export_requested is True
-    assert box.status == "已重新检查诊断。"
+    assert box.status == "已重新检查诊断；可直接查看上面的结果。"
 
 
 def test_reverse_lookup_menu_includes_intro_item(monkeypatch) -> None:
@@ -802,7 +803,7 @@ def test_add_current_input_to_user_lexicon_uses_feedback_callback_when_unconfigu
 
     CandidateBoxActions(box).add_current_input_to_user_lexicon()
 
-    assert feedback_calls == [("用户词库", "当前未配置用户词库写入入口。")]
+    assert feedback_calls == [("用户词库", "当前不能直接添加当前词条；请先确认已启用用户词库功能。")]
     assert dialog_calls == []
 
 
@@ -826,8 +827,102 @@ def test_delete_current_input_from_user_lexicon_uses_feedback_callback_when_unco
 
     CandidateBoxActions(box).delete_current_input_from_user_lexicon()
 
-    assert feedback_calls == [("用户词库", "当前未配置用户词库删除入口。")]
-    assert dialog_calls == []
+    assert feedback_calls == [("用户词库", "当前不能直接删除当前词条；请先确认已启用用户词库功能。")]
+
+
+def test_unconfigured_action_entries_offer_next_step_guidance(monkeypatch) -> None:
+    feedback_calls: list[tuple[str, str]] = []
+
+    class _BoxWithoutOptionalActions(_FakeBox):
+        def __init__(self) -> None:
+            super().__init__()
+            self.feedback_callback = lambda title, message: feedback_calls.append((title, message))
+
+        def reload_user_lexicon_callback(self) -> bool:
+            return False
+
+        def edit_user_lexicon_callback(self) -> bool:
+            return False
+
+        def import_user_lexicon_callback(self) -> bool:
+            return False
+
+        def export_user_lexicon_callback(self) -> bool:
+            return False
+
+        def open_settings_file_callback(self) -> bool:
+            return False
+
+        def open_user_data_dir_callback(self) -> bool:
+            return False
+
+        def open_runtime_data_dir_callback(self) -> bool:
+            return False
+
+        def open_troubleshooting_doc_callback(self) -> bool:
+            return False
+
+        def hotkey_change_callback(self, hotkey: str) -> bool:
+            return False
+
+    box = _BoxWithoutOptionalActions()
+    actions = CandidateBoxActions(box)
+
+    monkeypatch.setattr(
+        "yime.input_method.ui.candidate_box_actions.simpledialog.askstring",
+        lambda *args, **kwargs: "Ctrl+Shift+Y",
+    )
+
+    actions.reload_user_lexicon()
+    actions.edit_user_lexicon()
+    actions.import_user_lexicon()
+    actions.export_user_lexicon()
+    actions.open_settings_file()
+    actions.open_runtime_data_dir()
+    actions.open_troubleshooting_doc()
+
+    original_hotkey_callback = box.hotkey_change_callback
+    box.hotkey_change_callback = None  # type: ignore[assignment]
+    try:
+        actions.edit_hotkey()
+    finally:
+        box.hotkey_change_callback = original_hotkey_callback
+
+    assert feedback_calls == [
+        ("用户词库", "当前不能直接应用用户词库；请先确认已启用用户词库维护功能。"),
+        ("用户词库", "当前不能直接编辑用户词库；请先改用导入、导出或手动维护文件。"),
+        ("用户词库", "当前不能直接导入用户词库；请先确认已启用用户词库维护功能。"),
+        ("用户词库", "当前不能直接导出用户词库；请先确认已启用用户词库维护功能。"),
+        ("设置文件", "当前不能直接打开设置文件；请先从帮助或诊断里确认配置位置。"),
+        ("运行时数据", "当前不能直接打开运行时数据目录；请先在诊断里查看运行时数据指引。"),
+        ("故障排查", "当前不能直接打开故障排查文档；请先从帮助菜单查看相关说明。"),
+        ("快捷键", "当前不能直接修改热键；请先记下当前热键，并到设置文件中调整。"),
+    ]
+
+
+def test_copy_actions_report_manual_fallback_when_clipboard_is_unavailable() -> None:
+    feedback_calls: list[tuple[str, str]] = []
+
+    class _RootWithoutClipboard:
+        def update_idletasks(self) -> None:
+            return None
+
+    class _BoxWithoutClipboard(_FakeBox):
+        def __init__(self) -> None:
+            super().__init__()
+            self.root = _RootWithoutClipboard()
+            self.feedback_callback = lambda title, message: feedback_calls.append((title, message))
+
+    box = _BoxWithoutClipboard()
+    actions = CandidateBoxActions(box)
+
+    actions.copy_diagnostics()
+    actions.copy_trial_feedback_template()
+
+    assert feedback_calls == [
+        ("诊断", "当前环境暂时不能复制诊断信息；请先打开诊断窗口，再手动复制内容。"),
+        ("试用反馈", "当前环境暂时不能复制试用反馈模板；请先打开“试用反馈说明”，再手动整理给试用者。"),
+    ]
 
 
 def test_commit_output_text_keeps_buffer_status_local() -> None:
@@ -913,3 +1008,52 @@ def test_standby_controls_fall_back_to_local_behavior_without_callbacks() -> Non
 
     assert actions.request_standby() == "break"
     assert box.show_standby_calls == 1
+
+
+def test_remove_last_commit_char_uses_user_facing_status() -> None:
+    class _CommitVar:
+        def __init__(self, value: str) -> None:
+            self.value = value
+
+        def get(self) -> str:
+            return self.value
+
+        def set(self, value: str) -> None:
+            self.value = value
+
+    class _FakeCandidateBox:
+        def __init__(self, value: str) -> None:
+            self.commit_var = _CommitVar(value)
+            self.status = ""
+
+        def set_status(self, text: str) -> None:
+            self.status = text
+
+    empty_box = _FakeCandidateBox("")
+    CandidateBox.remove_last_commit_char(empty_box)
+    assert empty_box.status == "当前没有可撤销的待上屏内容。"
+
+    filled_box = _FakeCandidateBox("安心")
+    CandidateBox.remove_last_commit_char(filled_box)
+    assert filled_box.commit_var.get() == "安"
+    assert filled_box.status == "已撤销最后一字。当前待上屏内容: 安"
+
+    single_box = _FakeCandidateBox("安")
+    CandidateBox.remove_last_commit_char(single_box)
+    assert single_box.commit_var.get() == ""
+    assert single_box.status == "已撤销最后一字；待上屏内容已清空。"
+
+
+def test_edit_hotkey_updates_status_with_next_step_guidance(monkeypatch) -> None:
+    box = _FakeBox()
+    actions = CandidateBoxActions(box)
+
+    monkeypatch.setattr(
+        "yime.input_method.ui.candidate_box_actions.simpledialog.askstring",
+        lambda *args, **kwargs: "Ctrl+Shift+Y",
+    )
+
+    actions.edit_hotkey()
+
+    assert box.hotkey_change_requests == ["Ctrl+Shift+Y"]
+    assert box.status == "之后可按Ctrl+Shift+Y唤起候选窗。"

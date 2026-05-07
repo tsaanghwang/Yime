@@ -1025,13 +1025,13 @@ class CandidateBox(CandidateRendererMixin):
         """撤销缓冲区中的最后一个字符。"""
         current = self.commit_var.get()
         if not current:
-            self.set_status("缓冲区为空，无可撤销内容。")
+            self.set_status("当前没有可撤销的待上屏内容。")
             return
         self.commit_var.set(current[:-1])
         if self.commit_var.get():
-            self.set_status(f"已撤销最后一字，缓冲区: {self.commit_var.get()}")
+            self.set_status(f"已撤销最后一字。当前待上屏内容: {self.commit_var.get()}")
         else:
-            self.set_status("已撤销最后一字，缓冲区已清空。")
+            self.set_status("已撤销最后一字；待上屏内容已清空。")
 
     def append_commit_text(self, text: str) -> None:
         """向缓冲区追加已选候选。"""
