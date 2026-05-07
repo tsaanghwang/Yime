@@ -965,8 +965,8 @@ class CandidateBox(CandidateRendererMixin):
         self.root.after(60, retry_focus)
 
     def set_status(self, text: str) -> None:
-        """更新状态栏文案（已废弃）。"""
-        pass
+        """将本地状态提示写入当前候选框可见的辅助说明位。"""
+        self._set_auxiliary_info_text(text)
 
     def _show_main_frame(self) -> None:
         if self._is_standby:

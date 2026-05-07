@@ -1044,6 +1044,40 @@ def test_remove_last_commit_char_uses_user_facing_status() -> None:
     assert single_box.status == "已撤销最后一字；待上屏内容已清空。"
 
 
+def test_candidate_box_set_status_updates_auxiliary_label() -> None:
+    class _FakeAuxLabel:
+        def __init__(self) -> None:
+            self.text = None
+            self.pack_calls: list[tuple[str, tuple[int, int]]] = []
+            self.pack_forget_calls = 0
+
+        def configure(self, *, text: str) -> None:
+            self.text = text
+
+        def pack(self, *, anchor: str, pady: tuple[int, int]) -> None:
+            self.pack_calls.append((anchor, pady))
+
+        def pack_forget(self) -> None:
+            self.pack_forget_calls += 1
+
+    class _FakeCandidateBox:
+        def __init__(self) -> None:
+            self.manual_key_layout_label = _FakeAuxLabel()
+
+        def _set_auxiliary_info_text(self, text: str) -> None:
+            CandidateBox._set_auxiliary_info_text(self, text)
+
+    box = _FakeCandidateBox()
+
+    CandidateBox.set_status(box, "可直接按空格上屏。")
+    assert box.manual_key_layout_label.text == "可直接按空格上屏。"
+    assert box.manual_key_layout_label.pack_calls == [("w", (4, 0))]
+
+    CandidateBox.set_status(box, "")
+    assert box.manual_key_layout_label.text == ""
+    assert box.manual_key_layout_label.pack_forget_calls == 1
+
+
 def test_edit_hotkey_updates_status_with_next_step_guidance(monkeypatch) -> None:
     box = _FakeBox()
     actions = CandidateBoxActions(box)
