@@ -367,6 +367,7 @@ def test_toolbar_menu_uses_expected_labels_and_popup_position(monkeypatch) -> No
         "隐藏反查信息（音元拼音熟练者可选）",
         "仅标准拼音",
         "仅音元拼音",
+        "仅键位序列",
         "仅热键",
         "仅鼠标",
         "热键 + 鼠标",
@@ -404,12 +405,12 @@ def test_toolbar_menu_uses_expected_labels_and_popup_position(monkeypatch) -> No
     radio_buttons[2][3]()
     radio_buttons[6][3]()
     radio_buttons[10][3]()
-    radio_buttons[13][3]()
-    radio_buttons[17][3]()
-    radio_buttons[21][3]()
-    radio_buttons[24][3]()
-    radio_buttons[33][3]()
+    radio_buttons[14][3]()
+    radio_buttons[18][3]()
+    radio_buttons[22][3]()
+    radio_buttons[25][3]()
     radio_buttons[34][3]()
+    radio_buttons[35][3]()
     commands[1][1]()
     box.active_topmost_var.set(False)
     check_buttons[0][2]()
@@ -537,13 +538,22 @@ def test_set_reverse_lookup_display_mode_reports_clearer_status() -> None:
 
     actions = CandidateBoxActions(box)
     actions.set_reverse_lookup_display_mode("default")
-    assert box.status == "反查显示已设为默认：显示标准拼音和音元拼音，适合日常查看。"
+    assert box.status == "反查显示已设为默认：显示标准拼音和音元拼音，适合日常查看，例如“rì | 甲甲”。"
 
     actions.set_reverse_lookup_display_mode("all")
-    assert box.status == "反查显示已设为完整：同时显示标准拼音、数字标调、音元拼音和键位序列。"
+    assert box.status == "反查显示已设为完整：同时显示标准拼音、数字标调、音元拼音和键位序列，例如“rì | ri4 | 甲甲 | qj”。"
 
     actions.set_reverse_lookup_display_mode("none")
-    assert box.status == "反查显示已设为隐藏：不显示反查信息，仅保留候选和状态。"
+    assert box.status == "反查显示已设为隐藏：不显示反查信息，仅保留候选和状态，例如只看候选列表。"
+
+    actions.set_reverse_lookup_display_mode("marked")
+    assert box.status == "反查显示已设为仅标准拼音：只显示带声调的标准拼音，例如“rì”。"
+
+    actions.set_reverse_lookup_display_mode("yime")
+    assert box.status == "反查显示已设为仅音元拼音：只显示音元拼音编码，例如“甲甲”。"
+
+    actions.set_reverse_lookup_display_mode("keys")
+    assert box.status == "反查显示已设为仅键位序列：只显示需要敲的键位序列，例如“qj”。"
 
 
 def test_user_lexicon_menu_items_are_disabled_when_hooks_are_missing(monkeypatch) -> None:

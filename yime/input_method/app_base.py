@@ -350,7 +350,7 @@ class BaseInputMethodApp:
 
     def _normalize_reverse_lookup_display_mode(self, value: object) -> str:
         normalized = str(value or "").strip().lower()
-        if normalized in {"default", "all", "none", "marked", "yime"}:
+        if normalized in {"default", "all", "none", "marked", "yime", "keys"}:
             return normalized
         return self._DEFAULT_REVERSE_LOOKUP_DISPLAY_MODE
 
@@ -449,7 +449,7 @@ class BaseInputMethodApp:
         if key == "reverse_lookup_display_mode":
             if self._normalize_reverse_lookup_display_mode(value) == value:
                 return None
-            return "反查显示模式必须是 default、all、none、marked 或 yime"
+            return "反查显示模式必须是 default、all、none、marked、yime 或 keys"
 
         hotkey_normalizer = getattr(self, "_normalize_hotkey_setting", None)
         if key == "hotkey":
@@ -1583,6 +1583,8 @@ class BaseInputMethodApp:
             return join_parts([("标准拼音", marked)]), ""
         if mode == "yime":
             return join_parts([("音元拼音", yime)]), ""
+        if mode == "keys":
+            return join_parts([("键位序列", keys)]), ""
         if mode == "all":
             return join_parts([
                 ("标准拼音", marked),
