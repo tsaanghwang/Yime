@@ -22,11 +22,10 @@ class _FakeCandidateBox:
 
 
 class _FakeReverseLookupRecord:
-    def __init__(self, display_text: str) -> None:
-        self.display_text = display_text
-
-    def to_display_text(self) -> str:
-        return self.display_text
+    def __init__(self, marked_pinyin: str, numeric_pinyin: str, yime_code: str) -> None:
+        self.marked_pinyin = marked_pinyin
+        self.numeric_pinyin = numeric_pinyin
+        self.yime_code = yime_code
 
 
 class _FakeReverseLookup:
@@ -57,7 +56,9 @@ def test_on_input_change_prefers_runtime_reverse_lookup_for_hanzi() -> None:
     app = BaseInputMethodApp.__new__(BaseInputMethodApp)
     app.candidate_box = _FakeCandidateBox("日")
     app.physical_input_map = {}
-    app.runtime_reverse_lookup = _FakeReverseLookup(_FakeReverseLookupRecord("rì / ri4 | CODE"))
+    app.projected_to_keycap_map = {"甲": "q"}
+    app.reverse_lookup_display_mode = "all"
+    app.runtime_reverse_lookup = _FakeReverseLookup(_FakeReverseLookupRecord("rì", "ri4", "甲甲"))
     app.decoder = _FailDecoder()
     app.last_replace_length = 0
 
@@ -66,10 +67,19 @@ def test_on_input_change_prefers_runtime_reverse_lookup_for_hanzi() -> None:
     assert app.last_replace_length == 1
     assert app.candidate_box.updated == (
         [],
-        "rì / ri4 | CODE",
+        "标准拼音: rì | 数字标调拼音: ri4 | 音元拼音: 甲甲 | 键位序列: qq",
         "",
         "反查: 已按运行时词库首选读音反查。",
     )
+
+
+def test_derive_reverse_lookup_key_sequence_supports_bmp_trial_projection_chars() -> None:
+    app = BaseInputMethodApp.__new__(BaseInputMethodApp)
+    app.projected_to_keycap_map = {"甲": "q", "乙": "j", "丙": "k", "丁": "l"}
+
+    result = BaseInputMethodApp._derive_reverse_lookup_key_sequence(app, "甲乙丙丁")
+
+    assert result == "qjkl"
 
 
 def test_on_input_change_prefixes_decode_status() -> None:
@@ -77,7 +87,7 @@ def test_on_input_change_prefixes_decode_status() -> None:
     app.candidate_box = _FakeCandidateBox("abcd")
     app.physical_input_map = {}
     app.runtime_reverse_lookup = _FakeReverseLookup(None)
-    app.decoder = _FakeDecoder(("ABCD", "ABCD", "ri4", ["日"], "从运行时编码表找到 1 个候选。"))
+    app.decoder = _FakeDecoder(("ABCD", "ABCD", "rì", ["日"], "从运行时编码表找到 1 个候选。"))
     app.last_replace_length = 0
     app._resolve_display_candidates = lambda canonical_code, decoded_candidates: list(decoded_candidates)
 
@@ -87,7 +97,7 @@ def test_on_input_change_prefixes_decode_status() -> None:
     assert app.candidate_box.updated is not None
     candidates, pinyin, code, status = app.candidate_box.updated
     assert candidates == ["日"]
-    assert pinyin == "ri4"
+    assert pinyin == "rì"
     assert code.startswith("当前4码 U+0041 U+0042 U+0043 U+0044")
     assert status == "解码: 已找到候选。"
 

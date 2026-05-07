@@ -10,6 +10,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from functools import lru_cache
 import json
 import sqlite3
 from pathlib import Path
@@ -82,6 +83,30 @@ def _load_numeric_yime_code_map(repo_root: Path) -> Dict[str, str]:
         for pinyin_tone, yime_code in payload.items()
         if str(pinyin_tone).strip() and str(yime_code)
     }
+
+
+@lru_cache(maxsize=None)
+def _load_numeric_to_marked_pinyin_map(mapping_path: str) -> Dict[str, str]:
+    payload = json.loads(Path(mapping_path).read_text(encoding="utf-8"))
+    return {
+        str(numeric).strip(): unicodedata.normalize("NFC", str(marked))
+        for numeric, marked in payload.items()
+        if str(numeric).strip() and str(marked).strip()
+    }
+
+
+def _format_marked_pinyin_display(
+    numeric_pinyin: str,
+    numeric_to_marked: Dict[str, str],
+) -> str:
+    normalized = " ".join(str(numeric_pinyin or "").split())
+    if not normalized:
+        return ""
+
+    return " ".join(
+        numeric_to_marked.get(syllable, syllable)
+        for syllable in normalized.split(" ")
+    )
 
 
 def _build_pinyin_to_canonical_code_map(
@@ -382,6 +407,29 @@ def build_projected_to_physical_map(
     return {projected: physical for physical, projected in physical_map.items()}
 
 
+def build_projected_to_keycap_map(repo_root: Path) -> Dict[str, str]:
+    manual_layout = _load_visual_json(repo_root / "internal_data" / "manual_key_layout.json")
+    slot_to_bmp = _load_visual_json(repo_root / "syllable_codec" / "key_to_code.json")
+    slot_to_symbol = _load_visual_json(repo_root / "internal_data" / "key_to_symbol.json")
+
+    projected_to_keycap: Dict[str, str] = {}
+    for row in manual_layout.get("layers", []):
+        symbol_key = row.get("symbol_key")
+        physical_key = str(row.get("physical_key") or "")
+        bmp_char = slot_to_bmp.get(str(symbol_key)) if symbol_key else None
+        symbol_char = slot_to_symbol.get(str(symbol_key)) if symbol_key else None
+        if len(physical_key) != 1:
+            continue
+
+        keycap = physical_key.lower()
+        if bmp_char:
+            projected_to_keycap.setdefault(str(bmp_char), keycap)
+        if symbol_char:
+            projected_to_keycap.setdefault(str(symbol_char), keycap)
+
+    return projected_to_keycap
+
+
 def unproject_physical_input(
     text: str, projected_to_physical_map: Dict[str, str]
 ) -> str:
@@ -564,6 +612,9 @@ class RuntimeCandidateDecoder:
             app_dir.parent,
             self.bmp_to_canonical,
         )
+        self.numeric_to_marked_pinyin = _load_numeric_to_marked_pinyin_map(
+            str(app_dir / "pinyin_normalized.json")
+        )
         self.user_lexicon = UserLexiconStore(user_db_path or app_dir / "user_lexicon.db")
         self.by_code = self._load_runtime_candidates(self.runtime_path)
         self.by_code = _merge_runtime_candidate_maps(
@@ -668,8 +719,12 @@ class RuntimeCandidateDecoder:
         texts = [record.text for record in records]
         pinyin_values: List[str] = []
         for record in records:
-            if record.pinyin_tone and record.pinyin_tone not in pinyin_values:
-                pinyin_values.append(record.pinyin_tone)
+            display_pinyin = _format_marked_pinyin_display(
+                record.pinyin_tone,
+                self.numeric_to_marked_pinyin,
+            )
+            if display_pinyin and display_pinyin not in pinyin_values:
+                pinyin_values.append(display_pinyin)
 
         display_pinyin = " / ".join(pinyin_values[:3])
         if texts:
@@ -787,6 +842,9 @@ class SQLiteRuntimeCandidateDecoder:
             app_dir.parent,
             self.bmp_to_canonical,
         )
+        self.numeric_to_marked_pinyin = _load_numeric_to_marked_pinyin_map(
+            str(app_dir / "pinyin_normalized.json")
+        )
         self.user_lexicon = UserLexiconStore(user_db_path or app_dir / "user_lexicon.db")
         self._validate_runtime_candidates_view()
         self.by_code = self._load_runtime_candidates()
@@ -856,8 +914,12 @@ class SQLiteRuntimeCandidateDecoder:
         texts = [record.text for record in records]
         pinyin_values: List[str] = []
         for record in records:
-            if record.pinyin_tone and record.pinyin_tone not in pinyin_values:
-                pinyin_values.append(record.pinyin_tone)
+            display_pinyin = _format_marked_pinyin_display(
+                record.pinyin_tone,
+                self.numeric_to_marked_pinyin,
+            )
+            if display_pinyin and display_pinyin not in pinyin_values:
+                pinyin_values.append(display_pinyin)
 
         display_pinyin = " / ".join(pinyin_values[:3])
         if texts:

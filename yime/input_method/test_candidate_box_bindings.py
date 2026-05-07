@@ -75,8 +75,10 @@ class _FakeBox:
         self.foreground_color_var = _FakeVar("#111827")
         self.background_color_var = _FakeVar("#f0f0f0")
         self.active_topmost_var = _FakeVar(True)
+        self.reverse_lookup_display_mode_var = _FakeVar("default")
         self.page_size_changes: list[int] = []
         self.layout_changes: list[str] = []
+        self.reverse_lookup_display_mode_changes: list[str] = []
         self.wake_trigger_mode_changes: list[str] = []
         self.standby_trigger_mode_changes: list[str] = []
         self.mouse_wake_changes: list[bool] = []
@@ -115,6 +117,11 @@ class _FakeBox:
     def set_candidate_layout(self, layout: str) -> None:
         self.candidate_layout_var.set(layout)
         self.layout_changes.append(layout)
+
+    def reverse_lookup_display_mode_change_callback(self, mode: str) -> bool:
+        self.reverse_lookup_display_mode_var.set(mode)
+        self.reverse_lookup_display_mode_changes.append(mode)
+        return True
 
     def wake_trigger_mode_change_callback(self, mode: str) -> bool:
         self.wake_trigger_mode_var.set(mode)
@@ -278,7 +285,7 @@ def test_input_context_menu_uses_chinese_labels_and_selects_input_text(monkeypat
 
     actions._get_input_context_menu()
 
-    assert [label for label, _ in commands] == ["粘贴", "复制", "全选", "加入用户词库", "从用户词库中删除"]
+    assert [label for label, _ in commands] == ["粘贴", "复制", "全选", "添加当前词条", "删除当前词条"]
 
     commands[0][1]()
     commands[1][1]()
@@ -343,8 +350,8 @@ def test_toolbar_menu_uses_expected_labels_and_popup_position(monkeypatch) -> No
     actions._get_toolbar_menu()
 
     command_labels = [label for label, _ in commands]
-    assert command_labels == ["当前唤起热键：Ctrl+Alt+Insert", "修改热键", "加入当前词条", "删除当前词条", "编辑用户词库", "应用用户词库", "导入用户词库", "导出用户词库", "查看帮助", "查看试用反馈说明", "复制试用反馈模板", "查看诊断", "重新检查诊断", "复制诊断信息", "查看试用反馈说明", "复制试用反馈模板", "打开故障排查", "打开运行时数据目录", "打开设置文件", "打开帮助", "关于"]
-    assert [label for label, _ in cascades] == ["候选列表", "唤起方式", "休眠方式", "交互", "前景颜色", "背景颜色", "字体大小", "主界面透明度", "外观", "设置", "编辑与重载", "导入与导出", "用户词库", "工具", "帮助", "诊断"]
+    assert command_labels == ["当前唤起热键：Ctrl+Alt+Insert", "修改热键", "添加当前词条", "删除当前词条", "编辑用户词库", "应用用户词库", "导入用户词库", "导出用户词库", "查看帮助", "查看试用反馈说明", "复制试用反馈模板", "查看诊断", "重新检查诊断", "复制诊断信息", "查看试用反馈说明", "复制试用反馈模板", "打开故障排查", "打开运行时数据目录", "打开设置文件", "打开帮助", "关于"]
+    assert [label for label, _ in cascades] == ["候选列表", "反查显示", "唤起方式", "休眠方式", "交互", "前景颜色", "背景颜色", "字体大小", "主界面透明度", "外观", "设置", "编辑与重载", "导入与导出", "用户词库", "工具", "帮助", "诊断"]
     assert [label for label, _, _, _ in radio_buttons] == [
         "每页 5 个",
         "每页 6 个",
@@ -353,6 +360,11 @@ def test_toolbar_menu_uses_expected_labels_and_popup_position(monkeypatch) -> No
         "每页 9 个",
         "横排显示",
         "竖排显示",
+        "默认（标准拼音 | 音元拼音）",
+        "全选（标准拼音 | 数字标调拼音 | 音元拼音 | 键位序列）",
+        "全不显示",
+        "标准拼音",
+        "音元拼音",
         "仅热键",
         "仅鼠标",
         "热键 + 鼠标",
@@ -389,12 +401,13 @@ def test_toolbar_menu_uses_expected_labels_and_popup_position(monkeypatch) -> No
 
     radio_buttons[2][3]()
     radio_buttons[6][3]()
-    radio_buttons[8][3]()
-    radio_buttons[12][3]()
-    radio_buttons[16][3]()
-    radio_buttons[19][3]()
-    radio_buttons[28][3]()
-    radio_buttons[29][3]()
+    radio_buttons[10][3]()
+    radio_buttons[13][3]()
+    radio_buttons[17][3]()
+    radio_buttons[21][3]()
+    radio_buttons[24][3]()
+    radio_buttons[33][3]()
+    radio_buttons[34][3]()
     commands[0][1]()
     commands[1][1]()
     box.active_topmost_var.set(False)
@@ -473,6 +486,7 @@ def test_toolbar_menu_uses_expected_labels_and_popup_position(monkeypatch) -> No
     assert box.page_size_changes == [7]
     assert box.page_size_var.get() == 7
     assert box.layout_changes == ["vertical"]
+    assert box.reverse_lookup_display_mode_changes == ["marked"]
     assert box.wake_trigger_mode_changes == ["mouse"]
     assert box.standby_trigger_mode_changes == ["both"]
     assert box.foreground_color_changes == ["#166534"]

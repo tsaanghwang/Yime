@@ -15,6 +15,7 @@ class CandidateLayoutBuilder:
 
     _DEFAULT_FOREGROUND_COLOR = "#111827"
     _DEFAULT_BACKGROUND_COLOR = "#f0f0f0"
+    _DEFAULT_SECONDARY_FOREGROUND_COLOR = "#60a5fa"
 
     def __init__(self, root: tk.Tk, font_family: str):
         self.root = root
@@ -104,6 +105,18 @@ class CandidateLayoutBuilder:
             background=self.background_color,
         )
         self.style.configure(
+            "Yime.AccentText.TLabel",
+            font=self.text_font,
+            foreground=self._DEFAULT_SECONDARY_FOREGROUND_COLOR,
+            background=self.background_color,
+        )
+        self.style.configure(
+            "Yime.Secondary.TLabel",
+            font=self.ui_font,
+            foreground=self._DEFAULT_SECONDARY_FOREGROUND_COLOR,
+            background=self.background_color,
+        )
+        self.style.configure(
             "Yime.TButton",
             font=self.ui_font,
             foreground=self.foreground_color,
@@ -176,7 +189,7 @@ class CandidateLayoutBuilder:
         self.pinyin_label = ttk.Label(
             self.decode_info_frame,
             textvariable=self.pinyin_var,
-            style="Yime.Text.TLabel",
+            style="Yime.AccentText.TLabel",
         )
         self.pinyin_label.pack(anchor=tk.W)
 
@@ -241,8 +254,7 @@ class CandidateLayoutBuilder:
         self.manual_key_layout_label = ttk.Label(
             self.content_frame,
             text="",
-            foreground=self.foreground_color,
-            style="Yime.TLabel",
+            style="Yime.Secondary.TLabel",
         )
 
     def set_foreground_color(self, color: str) -> None:
@@ -259,6 +271,8 @@ class CandidateLayoutBuilder:
         self.style.configure("Yime.TFrame", background=color)
         self.style.configure("Yime.TLabel", background=color)
         self.style.configure("Yime.Text.TLabel", background=color)
+        self.style.configure("Yime.AccentText.TLabel", background=color)
+        self.style.configure("Yime.Secondary.TLabel", background=color)
         self.style.configure("Yime.TButton", background=color)
         self.style.configure("Yime.Candidate.TButton", background=color)
         self.style.configure("Yime.TEntry", background=color, fieldbackground=color)

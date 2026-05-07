@@ -18,6 +18,7 @@ def test_check_ui_settings_file_flags_invalid_content(tmp_path: Path) -> None:
             {
                 "candidate_page_size": 12,
                 "foreground_color": "blue",
+                "reverse_lookup_display_mode": "everything",
                 "wake_trigger_mode": "keyboard",
                 "unexpected_key": "value",
             },
@@ -32,9 +33,10 @@ def test_check_ui_settings_file_flags_invalid_content(tmp_path: Path) -> None:
     status, detail, advice = app._check_ui_settings_file()
 
     assert status == "警告"
-    assert f"已定位：{settings_path}；发现 4 处内容问题：" in detail
+    assert f"已定位：{settings_path}；发现 5 处内容问题：" in detail
     assert "candidate_page_size：候选数量必须是 5 到 9 之间的整数" in detail
     assert "foreground_color：前景颜色必须是 #RRGGBB 格式" in detail
+    assert "reverse_lookup_display_mode：反查显示模式必须是 default、all、none、marked 或 yime" in detail
     assert "wake_trigger_mode：wake_trigger_mode 必须是 hotkey、mouse 或 both，收到: 'keyboard'" in detail
     assert "未知键：unexpected_key" in detail
     assert advice == "请修正这些字段，或删除该文件后重新生成默认配置。"
@@ -50,6 +52,7 @@ def test_on_candidate_page_size_change_persists_setting(tmp_path: Path) -> None:
     foreground_calls: list[str] = []
     background_calls: list[str] = []
     topmost_calls: list[bool] = []
+    reverse_lookup_display_mode_calls: list[str] = []
 
     class _FakeCandidateBox:
         def set_page_size(self, page_size: int) -> None:
@@ -79,6 +82,9 @@ def test_on_candidate_page_size_change_persists_setting(tmp_path: Path) -> None:
         def set_active_topmost_enabled(self, enabled: bool) -> None:
             topmost_calls.append(enabled)
 
+        def set_reverse_lookup_display_mode(self, mode: str) -> None:
+            reverse_lookup_display_mode_calls.append(mode)
+
     app = BaseInputMethodApp.__new__(BaseInputMethodApp)
     app.user_data_dir = tmp_path
     app.ui_settings_path = tmp_path / "ui_settings.json"
@@ -93,6 +99,8 @@ def test_on_candidate_page_size_change_persists_setting(tmp_path: Path) -> None:
     app.foreground_color = "#111827"
     app.background_color = "#f0f0f0"
     app.active_topmost_enabled = True
+    app.reverse_lookup_display_mode = "default"
+    app._on_input_change = lambda event=None: None
 
     app._on_candidate_page_size_change(8)
     app._on_candidate_layout_change("vertical")
@@ -103,6 +111,7 @@ def test_on_candidate_page_size_change_persists_setting(tmp_path: Path) -> None:
     app._on_foreground_color_change("#166534")
     app._on_background_color_change("#f7f3e8")
     app._on_active_topmost_change(False)
+    app._on_reverse_lookup_display_mode_change("all")
 
     assert page_size_calls == [8]
     assert layout_calls == ["vertical"]
@@ -113,6 +122,7 @@ def test_on_candidate_page_size_change_persists_setting(tmp_path: Path) -> None:
     assert foreground_calls == ["#166534"]
     assert background_calls == ["#f7f3e8"]
     assert topmost_calls == [False]
+    assert reverse_lookup_display_mode_calls == ["all"]
     assert app.candidate_page_size == 8
     assert app.ui_settings["candidate_page_size"] == 8
     assert app.ui_settings["candidate_layout"] == "vertical"
@@ -123,6 +133,7 @@ def test_on_candidate_page_size_change_persists_setting(tmp_path: Path) -> None:
     assert app.ui_settings["foreground_color"] == "#166534"
     assert app.ui_settings["background_color"] == "#f7f3e8"
     assert app.ui_settings["active_topmost_enabled"] is False
+    assert app.ui_settings["reverse_lookup_display_mode"] == "all"
     assert json.loads(app.ui_settings_path.read_text(encoding="utf-8")) == {
         "candidate_page_size": 8,
         "candidate_layout": "vertical",
@@ -133,6 +144,7 @@ def test_on_candidate_page_size_change_persists_setting(tmp_path: Path) -> None:
         "foreground_color": "#166534",
         "background_color": "#f7f3e8",
         "active_topmost_enabled": False,
+        "reverse_lookup_display_mode": "all",
     }
 
 

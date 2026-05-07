@@ -3,11 +3,13 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
+from functools import lru_cache
 import json
 import os
 from pathlib import Path
 import subprocess
 import sys
+import unicodedata
 from tkinter import messagebox, simpledialog
 from typing import Callable, Mapping, Optional, cast
 
@@ -19,6 +21,7 @@ from .core.decoders import (
     build_manual_key_output_map,
     build_input_visual_map,
     build_physical_input_map,
+    build_projected_to_keycap_map,
     build_projected_to_physical_map,
     project_physical_input,
     unproject_physical_input,
@@ -26,13 +29,27 @@ from .core.decoders import (
 from .ui.candidate_box import CandidateBox
 from .utils.clipboard import ClipboardManager
 from .utils.keyboard_simulator import KeyboardSimulator
-from .utils.runtime_reverse_lookup import RuntimeReverseLookup, looks_like_hanzi_text
+from .utils.runtime_reverse_lookup import (
+    RuntimeReverseLookup,
+    RuntimeReverseLookupRecord,
+    looks_like_hanzi_text,
+)
 from .utils.user_lexicon import (
     UserLexiconStore,
     normalize_numeric_pinyin_syllable_spacing,
     resolve_yime_code_from_numeric_pinyin,
 )
 from .utils.window_manager import WindowManager
+
+
+@lru_cache(maxsize=None)
+def _load_numeric_to_marked_pinyin_map(mapping_path: str) -> dict[str, str]:
+    payload = json.loads(Path(mapping_path).read_text(encoding="utf-8"))
+    return {
+        str(numeric).strip(): unicodedata.normalize("NFC", str(marked).strip())
+        for numeric, marked in payload.items()
+        if str(numeric).strip() and str(marked).strip()
+    }
 
 
 def resolve_user_data_dir(
@@ -90,6 +107,7 @@ class BaseInputMethodApp:
     _DEFAULT_ACTIVE_ALPHA_PERCENT = 97
     _DEFAULT_FOREGROUND_COLOR = "#111827"
     _DEFAULT_BACKGROUND_COLOR = "#f0f0f0"
+    _DEFAULT_REVERSE_LOOKUP_DISPLAY_MODE = "default"
 
     def __init__(
         self,
@@ -142,6 +160,9 @@ class BaseInputMethodApp:
         self.background_color = self._normalize_background_color(
             self.ui_settings.get("background_color")
         )
+        self.reverse_lookup_display_mode = self._normalize_reverse_lookup_display_mode(
+            self.ui_settings.get("reverse_lookup_display_mode")
+        )
         self.active_topmost_enabled = self._normalize_bool_setting(
             self.ui_settings.get("active_topmost_enabled"),
             True,
@@ -155,6 +176,7 @@ class BaseInputMethodApp:
         self.input_visual_map = build_input_visual_map(app_dir.parent)
         self.manual_key_output_map = build_manual_key_output_map(app_dir.parent)
         self.physical_input_map = build_physical_input_map(app_dir.parent)
+        self.projected_to_keycap_map = build_projected_to_keycap_map(app_dir.parent)
         self.projected_to_physical_map = build_projected_to_physical_map(
             self.physical_input_map
         )
@@ -326,6 +348,12 @@ class BaseInputMethodApp:
                     pass
         return self._DEFAULT_BACKGROUND_COLOR
 
+    def _normalize_reverse_lookup_display_mode(self, value: object) -> str:
+        normalized = str(value or "").strip().lower()
+        if normalized in {"default", "all", "none", "marked", "yime"}:
+            return normalized
+        return self._DEFAULT_REVERSE_LOOKUP_DISPLAY_MODE
+
     def _is_valid_bool_setting_value(self, value: object) -> bool:
         if isinstance(value, bool):
             return True
@@ -418,6 +446,11 @@ class BaseInputMethodApp:
                 return None
             return "背景颜色必须是 #RRGGBB 格式"
 
+        if key == "reverse_lookup_display_mode":
+            if self._normalize_reverse_lookup_display_mode(value) == value:
+                return None
+            return "反查显示模式必须是 default、all、none、marked 或 yime"
+
         hotkey_normalizer = getattr(self, "_normalize_hotkey_setting", None)
         if key == "hotkey":
             if callable(hotkey_normalizer):
@@ -500,6 +533,7 @@ class BaseInputMethodApp:
             "foreground_color",
             "background_color",
             "active_topmost_enabled",
+            "reverse_lookup_display_mode",
             "hotkey",
             "wake_trigger_mode",
             "standby_trigger_mode",
@@ -550,6 +584,11 @@ class BaseInputMethodApp:
         payload["foreground_color"] = self.foreground_color
         payload["background_color"] = self.background_color
         payload["active_topmost_enabled"] = self.active_topmost_enabled
+        payload["reverse_lookup_display_mode"] = getattr(
+            self,
+            "reverse_lookup_display_mode",
+            self._DEFAULT_REVERSE_LOOKUP_DISPLAY_MODE,
+        )
         self.ui_settings_path.write_text(
             json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
             encoding="utf-8",
@@ -587,6 +626,20 @@ class BaseInputMethodApp:
         apply_topmost = getattr(self.candidate_box, "set_active_topmost_enabled", None)
         if callable(apply_topmost):
             apply_topmost(self.active_topmost_enabled)
+
+        apply_reverse_lookup_display_mode = getattr(
+            self.candidate_box,
+            "set_reverse_lookup_display_mode",
+            None,
+        )
+        if callable(apply_reverse_lookup_display_mode):
+            apply_reverse_lookup_display_mode(
+                getattr(
+                    self,
+                    "reverse_lookup_display_mode",
+                    self._DEFAULT_REVERSE_LOOKUP_DISPLAY_MODE,
+                )
+            )
 
     def _on_candidate_page_size_change(self, page_size: int) -> None:
         normalized = self._normalize_candidate_page_size(page_size)
@@ -685,6 +738,16 @@ class BaseInputMethodApp:
         self.active_topmost_enabled = normalized
         self.ui_settings["active_topmost_enabled"] = normalized
         self._save_ui_settings()
+
+    def _on_reverse_lookup_display_mode_change(self, mode: str) -> None:
+        normalized = self._normalize_reverse_lookup_display_mode(mode)
+        apply = getattr(self.candidate_box, "set_reverse_lookup_display_mode", None)
+        if callable(apply):
+            apply(normalized)
+        self.reverse_lookup_display_mode = normalized
+        self.ui_settings["reverse_lookup_display_mode"] = normalized
+        self._save_ui_settings()
+        self._on_input_change()
 
     def _reload_user_lexicon_from_menu(self) -> None:
         self._apply_user_lexicon_import_file(
@@ -1460,6 +1523,23 @@ class BaseInputMethodApp:
 
         return normalized, ""
 
+    def _derive_marked_pinyin_for_user_lexicon(self, numeric_pinyin: str) -> str:
+        normalized = " ".join(str(numeric_pinyin or "").split())
+        if not normalized:
+            return ""
+
+        repo_root = Path(getattr(self, "repo_root", Path(__file__).resolve().parents[2]))
+        mapping = _load_numeric_to_marked_pinyin_map(
+            str(repo_root / "yime" / "pinyin_normalized.json")
+        )
+        marked_syllables: list[str] = []
+        for syllable in normalized.split(" "):
+            marked = mapping.get(syllable)
+            if not marked:
+                return ""
+            marked_syllables.append(marked)
+        return " ".join(marked_syllables)
+
     def _format_live_status(self, status: str, *, source: str) -> str:
         normalized = status.strip()
         if not normalized:
@@ -1469,6 +1549,54 @@ class BaseInputMethodApp:
         if source == "decode":
             return f"解码: {normalized}"
         return normalized
+
+    def _derive_reverse_lookup_key_sequence(self, yime_code: str) -> str:
+        normalized = str(yime_code or "").strip()
+        if not normalized:
+            return ""
+        try:
+            return unproject_physical_input(
+                normalized,
+                getattr(self, "projected_to_keycap_map", {}),
+            )
+        except Exception:
+            return normalized
+
+    def _build_reverse_lookup_display(
+        self,
+        record: RuntimeReverseLookupRecord,
+    ) -> tuple[str, str]:
+        marked = str(getattr(record, "marked_pinyin", "") or "").strip()
+        numeric = str(getattr(record, "numeric_pinyin", "") or "").strip()
+        yime = str(getattr(record, "yime_code", "") or "").strip()
+        keys = self._derive_reverse_lookup_key_sequence(yime)
+
+        def join_parts(parts: list[tuple[str, str]]) -> str:
+            return " | ".join(f"{label}: {value}" for label, value in parts if value)
+
+        mode = self._normalize_reverse_lookup_display_mode(
+            getattr(self, "reverse_lookup_display_mode", self._DEFAULT_REVERSE_LOOKUP_DISPLAY_MODE)
+        )
+        if mode == "none":
+            return "", ""
+        if mode == "marked":
+            return join_parts([("标准拼音", marked)]), ""
+        if mode == "yime":
+            return join_parts([("音元拼音", yime)]), ""
+        if mode == "all":
+            return join_parts([
+                ("标准拼音", marked),
+                ("数字标调拼音", numeric),
+                ("音元拼音", yime),
+                ("键位序列", keys),
+            ]), ""
+        return (
+            join_parts([
+                ("标准拼音", marked),
+                ("音元拼音", yime),
+            ]),
+            "",
+        )
 
     def _summarize_decode_status(
         self,
@@ -1488,9 +1616,10 @@ class BaseInputMethodApp:
     def _add_current_input_to_user_lexicon(self) -> None:
         display_input = self.candidate_box.get_input().strip()
         input_text = project_physical_input(display_input, self.physical_input_map).strip()
+        action_title = "添加当前词条"
         if not looks_like_hanzi_text(input_text) or len(input_text) < 2:
-            message = "仅支持将当前汉字词语加入用户词库。"
-            self._show_user_lexicon_warning("加入用户词库", message)
+            message = "仅支持添加当前汉字词语。"
+            self._show_user_lexicon_warning(action_title, message)
             return
 
         existing = self.runtime_reverse_lookup.lookup_first(input_text)
@@ -1498,13 +1627,13 @@ class BaseInputMethodApp:
         default_marked = existing.marked_pinyin if existing is not None else ""
 
         numeric_pinyin = simpledialog.askstring(
-            "加入用户词库",
+            action_title,
             f"请输入“{input_text}”的数字标调拼音：",
             initialvalue=default_numeric,
             parent=self.candidate_box.root,
         )
         if numeric_pinyin is None:
-            self._emit_feedback("加入用户词库", "已取消加入用户词库。")
+            self._emit_feedback(action_title, "已取消添加当前词条。")
             return
 
         raw_numeric_input = " ".join(numeric_pinyin.split())
@@ -1512,29 +1641,31 @@ class BaseInputMethodApp:
             numeric_pinyin
         )
         if not normalized_numeric:
-            message = "数字标调拼音不能为空。"
-            self._show_user_lexicon_error("加入用户词库", message)
+            message = "当前词条的数字标调拼音不能为空。"
+            self._show_user_lexicon_error(action_title, message)
             return
 
         if not yime_code:
             message = (
-                "无法根据第一栏拼音推导音元编码。请在第一栏填写数字标调拼音，"
+                "无法根据当前词条的第一栏拼音推导音元编码。请在第一栏填写数字标调拼音，"
                 "例如“duo1 ri4”；如果你输入的是“duō rì”，系统只会在能自动转换时接受。"
             )
-            self._show_user_lexicon_error("加入用户词库", message)
+            self._show_user_lexicon_error(action_title, message)
             return
 
         marked_pinyin = simpledialog.askstring(
-            "加入用户词库",
+            action_title,
             f"请输入“{input_text}”的标准拼音（可留空）：",
             initialvalue=default_marked,
             parent=self.candidate_box.root,
         )
         if marked_pinyin is None:
-            self._emit_feedback("加入用户词库", "已取消加入用户词库。")
+            self._emit_feedback(action_title, "已取消添加当前词条。")
             return
 
         normalized_marked = " ".join(marked_pinyin.split())
+        if not normalized_marked:
+            normalized_marked = self._derive_marked_pinyin_for_user_lexicon(normalized_numeric)
         if not normalized_marked and normalized_numeric != raw_numeric_input:
             if not any(char.isdigit() for char in raw_numeric_input):
                 normalized_marked = raw_numeric_input
@@ -1550,40 +1681,41 @@ class BaseInputMethodApp:
         marked_display = normalized_marked
         pinyin_parts = [part for part in (marked_display, normalized_numeric) if part]
         pinyin_display = " / ".join(pinyin_parts)
-        status_prefix = "已更新用户词库" if action == "updated" else "已加入用户词库"
+        status_prefix = "已更新当前词条" if action == "updated" else "已添加当前词条"
         if pinyin_display:
             status_message = f"{status_prefix}: {input_text} | {pinyin_display} | {yime_code}"
         else:
             status_message = f"{status_prefix}: {input_text} | {yime_code}"
-        self._show_user_lexicon_info("加入用户词库", status_message)
+        self._show_user_lexicon_info(action_title, status_message)
         self._on_input_change()
 
     def _delete_current_input_from_user_lexicon(self) -> None:
         display_input = self.candidate_box.get_input().strip()
         input_text = project_physical_input(display_input, self.physical_input_map).strip()
+        action_title = "删除当前词条"
         if not looks_like_hanzi_text(input_text) or len(input_text) < 2:
-            message = "仅支持将当前汉字词语从用户词库中删除。"
-            self._show_user_lexicon_warning("从用户词库中删除", message)
+            message = "仅支持删除当前汉字词语。"
+            self._show_user_lexicon_warning(action_title, message)
             return
 
         confirm = messagebox.askyesno(
-            "从用户词库中删除",
-            f"确定要从用户词库中删除“{input_text}”吗？",
+            action_title,
+            f"确定要删除当前词条“{input_text}”吗？",
             parent=self.candidate_box.root,
         )
         if not confirm:
-            self._emit_feedback("从用户词库中删除", "已取消从用户词库中删除。")
+            self._emit_feedback(action_title, "已取消删除当前词条。")
             return
 
         deleted = self.user_lexicon_store.delete_phrase(input_text)
         if not deleted:
-            message = f"用户词库中未找到：{input_text}"
-            self._show_user_lexicon_warning("从用户词库中删除", message)
+            message = f"未在用户词库中找到当前词条：{input_text}"
+            self._show_user_lexicon_warning(action_title, message)
             return
 
         self._reload_user_lexicon_runtime()
-        status_message = f"已从用户词库中删除: {input_text}"
-        self._show_user_lexicon_info("从用户词库中删除", status_message)
+        status_message = f"已删除当前词条: {input_text}"
+        self._show_user_lexicon_info(action_title, status_message)
         self._on_input_change()
 
     def _on_input_change(self, event: Optional[object] = None) -> None:
@@ -1612,10 +1744,11 @@ class BaseInputMethodApp:
                     "已按运行时词库首选读音反查。",
                     source="reverse_lookup",
                 )
+                primary_display, secondary_display = self._build_reverse_lookup_display(record)
                 self.candidate_box.update_candidates(
                     [],
-                    record.to_display_text(),
-                    "",
+                    primary_display,
+                    secondary_display,
                     status,
                 )
                 return

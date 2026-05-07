@@ -31,6 +31,7 @@ def test_input_method_app_factory_wires_user_lexicon_callbacks(monkeypatch) -> N
     app._on_foreground_color_change = lambda value: None
     app._on_background_color_change = lambda value: None
     app._on_active_topmost_change = lambda enabled: None
+    app._on_reverse_lookup_display_mode_change = lambda mode: None
     app._reload_user_lexicon_from_menu = lambda: None
     app._edit_user_lexicon_from_menu = lambda: None
     app._import_user_lexicon_from_menu = lambda: None
@@ -68,6 +69,7 @@ def test_input_method_app_factory_wires_user_lexicon_callbacks(monkeypatch) -> N
     assert captured["on_foreground_color_change"] is app._on_foreground_color_change
     assert captured["on_background_color_change"] is app._on_background_color_change
     assert captured["on_active_topmost_change"] is app._on_active_topmost_change
+    assert captured["on_reverse_lookup_display_mode_change"] is app._on_reverse_lookup_display_mode_change
     assert captured["on_reload_user_lexicon"] is app._reload_user_lexicon_from_menu
     assert captured["on_edit_user_lexicon"] is app._edit_user_lexicon_from_menu
     assert captured["on_import_user_lexicon"] is app._import_user_lexicon_from_menu

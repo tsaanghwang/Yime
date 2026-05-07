@@ -53,6 +53,7 @@ class CandidateBoxActions:
         self._help_menu: Optional[tk.Menu] = None
         self._settings_menu: Optional[tk.Menu] = None
         self._candidate_list_menu: Optional[tk.Menu] = None
+        self._reverse_lookup_display_menu: Optional[tk.Menu] = None
         self._interaction_menu: Optional[tk.Menu] = None
         self._wake_mode_menu: Optional[tk.Menu] = None
         self._standby_mode_menu: Optional[tk.Menu] = None
@@ -236,11 +237,11 @@ class CandidateBoxActions:
                 command=self.select_all_input_text,
             )
             menu.add_command(
-                label="加入用户词库",
+                label="添加当前词条",
                 command=self.add_current_input_to_user_lexicon,
             )
             menu.add_command(
-                label="从用户词库中删除",
+                label="删除当前词条",
                 command=self.delete_current_input_from_user_lexicon,
             )
             self._input_context_menu = menu
@@ -303,10 +304,30 @@ class CandidateBoxActions:
         if self._settings_menu is None:
             menu = tk.Menu(self.box.root, tearoff=False)
             menu.add_cascade(label="候选列表", menu=self._get_candidate_list_menu())
+            menu.add_cascade(label="反查显示", menu=self._get_reverse_lookup_display_menu())
             menu.add_cascade(label="交互", menu=self._get_interaction_menu())
             menu.add_cascade(label="外观", menu=self._get_appearance_menu())
             self._settings_menu = menu
         return self._settings_menu
+
+    def _get_reverse_lookup_display_menu(self) -> tk.Menu:
+        if self._reverse_lookup_display_menu is None:
+            menu = tk.Menu(self.box.root, tearoff=False)
+            for label, mode in (
+                ("默认（标准拼音 | 音元拼音）", "default"),
+                ("全选（标准拼音 | 数字标调拼音 | 音元拼音 | 键位序列）", "all"),
+                ("全不显示", "none"),
+                ("标准拼音", "marked"),
+                ("音元拼音", "yime"),
+            ):
+                menu.add_radiobutton(
+                    label=label,
+                    value=mode,
+                    variable=self.box.reverse_lookup_display_mode_var,
+                    command=lambda value=mode: self.set_reverse_lookup_display_mode(value),
+                )
+            self._reverse_lookup_display_menu = menu
+        return self._reverse_lookup_display_menu
 
     def _get_candidate_list_menu(self) -> tk.Menu:
         if self._candidate_list_menu is None:
@@ -368,6 +389,7 @@ class CandidateBoxActions:
     def _invalidate_toolbar_menus(self) -> None:
         self._interaction_menu = None
         self._settings_menu = None
+        self._reverse_lookup_display_menu = None
         self._toolbar_menu = None
 
     def _get_wake_mode_menu(self) -> tk.Menu:
@@ -500,7 +522,7 @@ class CandidateBoxActions:
     def _get_user_lexicon_menu(self) -> tk.Menu:
         if self._user_lexicon_menu is None:
             menu = tk.Menu(self.box.root, tearoff=False)
-            menu.add_command(label="加入当前词条", command=self.add_current_input_to_user_lexicon)
+            menu.add_command(label="添加当前词条", command=self.add_current_input_to_user_lexicon)
             menu.add_command(label="删除当前词条", command=self.delete_current_input_from_user_lexicon)
             menu.add_separator()
             menu.add_cascade(label="编辑与重载", menu=self._get_user_lexicon_edit_reload_menu())
@@ -542,6 +564,22 @@ class CandidateBoxActions:
             normalized = self.box.candidate_layout_var.get()
         label = "竖排" if normalized == "vertical" else "横排"
         self._set_local_status(f"候选列表已切换为{label}。")
+
+    def set_reverse_lookup_display_mode(self, mode: str) -> None:
+        callback = getattr(self.box, "reverse_lookup_display_mode_change_callback", None)
+        if callable(callback) and callback(mode):
+            normalized = str(self.box.reverse_lookup_display_mode_var.get())
+        else:
+            normalized = str(mode or "default")
+            self.box.reverse_lookup_display_mode_var.set(normalized)
+        labels = {
+            "default": "默认（标准拼音 | 音元拼音）",
+            "all": "全选（标准拼音 | 数字标调拼音 | 音元拼音 | 键位序列）",
+            "none": "全不显示",
+            "marked": "标准拼音",
+            "yime": "音元拼音",
+        }
+        self._set_local_status(f"反查显示已设为{labels.get(normalized, normalized)}。")
 
     def set_wake_trigger_mode(self, mode: str) -> None:
         callback = getattr(self.box, "wake_trigger_mode_change_callback", None)

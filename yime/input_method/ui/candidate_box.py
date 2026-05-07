@@ -25,6 +25,7 @@ TriggerModeChangeCallback = Callable[[str], None]
 BoolSettingChangeCallback = Callable[[bool], None]
 IntSettingChangeCallback = Callable[[int], None]
 ColorSettingChangeCallback = Callable[[str], None]
+StringSettingChangeCallback = Callable[[str], None]
 AddInputToUserLexiconCallback = Callable[[], None]
 DeleteInputFromUserLexiconCallback = Callable[[], None]
 ManualKeyOutputResolver = Callable[[str, dict[str, bool]], str]
@@ -95,6 +96,7 @@ class CandidateBox(CandidateRendererMixin):
         on_foreground_color_change: Optional[ColorSettingChangeCallback] = None,
         on_background_color_change: Optional[ColorSettingChangeCallback] = None,
         on_active_topmost_change: Optional[BoolSettingChangeCallback] = None,
+        on_reverse_lookup_display_mode_change: Optional[StringSettingChangeCallback] = None,
         on_reload_user_lexicon: Optional[VoidCallback] = None,
         on_edit_user_lexicon: Optional[VoidCallback] = None,
         on_import_user_lexicon: Optional[VoidCallback] = None,
@@ -165,6 +167,7 @@ class CandidateBox(CandidateRendererMixin):
         self._on_foreground_color_change = on_foreground_color_change
         self._on_background_color_change = on_background_color_change
         self._on_active_topmost_change = on_active_topmost_change
+        self._on_reverse_lookup_display_mode_change = on_reverse_lookup_display_mode_change
         self._on_reload_user_lexicon = on_reload_user_lexicon
         self._on_edit_user_lexicon = on_edit_user_lexicon
         self._on_import_user_lexicon = on_import_user_lexicon
@@ -223,6 +226,7 @@ class CandidateBox(CandidateRendererMixin):
         self.foreground_color_var = tk.StringVar(self.root, value=self._DEFAULT_FOREGROUND_COLOR)
         self.background_color_var = tk.StringVar(self.root, value=self._DEFAULT_BACKGROUND_COLOR)
         self.active_topmost_var = tk.BooleanVar(self.root, value=True)
+        self.reverse_lookup_display_mode_var = tk.StringVar(self.root, value="default")
         self.page_size_spinbox = None
         self.page_info_var = tk.StringVar(self.root, value="第 1/1 页")
         self.shortcut_hint_var = tk.StringVar(value="Space 选首选")
@@ -335,6 +339,12 @@ class CandidateBox(CandidateRendererMixin):
     def candidate_layout_change_callback(self, layout: str) -> bool:
         if self._on_candidate_layout_change:
             self._on_candidate_layout_change(layout)
+            return True
+        return False
+
+    def reverse_lookup_display_mode_change_callback(self, mode: str) -> bool:
+        if self._on_reverse_lookup_display_mode_change:
+            self._on_reverse_lookup_display_mode_change(mode)
             return True
         return False
 
@@ -865,7 +875,6 @@ class CandidateBox(CandidateRendererMixin):
             self.last_page_button,
             self.toolbar_menu_button,
             self.layout_builder.drag_grip,
-            self.manual_key_layout_label,
         ):
             widget.configure(foreground=normalized)
 
@@ -992,8 +1001,17 @@ class CandidateBox(CandidateRendererMixin):
         self._reset_status_message()
         self._render_candidates()
         self._resize_to_content_if_visible()
-        if focus_input:
-            self.input_entry.focus_set()
+
+    def set_reverse_lookup_display_mode(self, mode: str) -> None:
+        self.reverse_lookup_display_mode_var.set(str(mode or "default"))
+
+    def _set_auxiliary_info_text(self, text: str) -> None:
+        normalized = str(text or "").strip()
+        self.manual_key_layout_label.configure(text=normalized)
+        if normalized:
+            self.manual_key_layout_label.pack(anchor=tk.W, pady=(4, 0))
+            return
+        self.manual_key_layout_label.pack_forget()
 
     def clear_input(self, focus_input: bool = True) -> None:
         """公开的清空输入入口。"""
@@ -1315,7 +1333,12 @@ class CandidateBox(CandidateRendererMixin):
         self.all_candidates = list(candidates)
         if previous_count != len(self.all_candidates):
             self._current_page = 0
-        self.pinyin_var.set(f"拼音: {pinyin}" if pinyin else "")
+        normalized_pinyin = str(pinyin or "").strip()
+        if normalized_pinyin.startswith(("标准拼音:", "数字标调拼音:", "音元拼音:", "键位序列:")):
+            self.pinyin_var.set(normalized_pinyin)
+        else:
+            self.pinyin_var.set(f"拼音: {normalized_pinyin}" if normalized_pinyin else "")
+        self._set_auxiliary_info_text("")
         self.code_var.set("")
 
         # 解码 4 码暂时不进入常态信息层级，需要排查时再打开调试 UI。

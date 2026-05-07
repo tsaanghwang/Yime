@@ -517,6 +517,7 @@ class InputMethodApp(BaseInputMethodApp):
             on_foreground_color_change=self._on_foreground_color_change,
             on_background_color_change=self._on_background_color_change,
             on_active_topmost_change=self._on_active_topmost_change,
+            on_reverse_lookup_display_mode_change=self._on_reverse_lookup_display_mode_change,
             on_reload_user_lexicon=self._reload_user_lexicon_from_menu,
             on_edit_user_lexicon=self._edit_user_lexicon_from_menu,
             on_import_user_lexicon=self._import_user_lexicon_from_menu,

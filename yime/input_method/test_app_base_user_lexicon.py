@@ -154,8 +154,8 @@ def test_add_current_input_to_user_lexicon_prompts_and_refreshes(monkeypatch) ->
     ]
     assert app.decoder.reload_calls == 1
     assert refreshed == ["refreshed"]
-    assert app.candidate_box.statuses[0] == "已加入用户词库: 日本 | rì běn / ri4 ben3 | USERCODE"
-    assert info_calls == [("加入用户词库", "已加入用户词库: 日本 | rì běn / ri4 ben3 | USERCODE")]
+    assert app.candidate_box.statuses[0] == "已添加当前词条: 日本 | rì běn / ri4 ben3 | USERCODE"
+    assert info_calls == [("添加当前词条", "已添加当前词条: 日本 | rì běn / ri4 ben3 | USERCODE")]
 
 
 def test_add_current_input_to_user_lexicon_reports_update(monkeypatch) -> None:
@@ -186,8 +186,8 @@ def test_add_current_input_to_user_lexicon_reports_update(monkeypatch) -> None:
 
     BaseInputMethodApp._add_current_input_to_user_lexicon(app)
 
-    assert app.candidate_box.statuses[0] == "已更新用户词库: 日本 | rì běn / ri4 ben3 | USERCODE"
-    assert info_calls == [("加入用户词库", "已更新用户词库: 日本 | rì běn / ri4 ben3 | USERCODE")]
+    assert app.candidate_box.statuses[0] == "已更新当前词条: 日本 | rì běn / ri4 ben3 | USERCODE"
+    assert info_calls == [("添加当前词条", "已更新当前词条: 日本 | rì běn / ri4 ben3 | USERCODE")]
 
 
 def test_add_current_input_to_user_lexicon_allows_empty_marked_pinyin(monkeypatch) -> None:
@@ -223,15 +223,15 @@ def test_add_current_input_to_user_lexicon_allows_empty_marked_pinyin(monkeypatc
         {
             "phrase": "他日",
             "numeric_pinyin": "ta1 ri4",
-            "marked_pinyin": "",
+            "marked_pinyin": "tā rì",
             "yime_code": "USERCODE",
             "source_note": "ui_context_menu",
         }
     ]
     assert app.decoder.reload_calls == 1
     assert refreshed == ["refreshed"]
-    assert app.candidate_box.statuses[0] == "已加入用户词库: 他日 | ta1 ri4 | USERCODE"
-    assert info_calls == [("加入用户词库", "已加入用户词库: 他日 | ta1 ri4 | USERCODE")]
+    assert app.candidate_box.statuses[0] == "已添加当前词条: 他日 | tā rì / ta1 ri4 | USERCODE"
+    assert info_calls == [("添加当前词条", "已添加当前词条: 他日 | tā rì / ta1 ri4 | USERCODE")]
 
 
 def test_add_current_input_to_user_lexicon_accepts_marked_pinyin_in_first_prompt(monkeypatch) -> None:
@@ -270,8 +270,8 @@ def test_add_current_input_to_user_lexicon_accepts_marked_pinyin_in_first_prompt
     ]
     assert app.decoder.reload_calls == 1
     assert refreshed == ["refreshed"]
-    assert app.candidate_box.statuses[0] == "已加入用户词库: 多日 | duō rì / duo1 ri4 | "
-    assert info_calls == [("加入用户词库", "已加入用户词库: 多日 | duō rì / duo1 ri4 | ")]
+    assert app.candidate_box.statuses[0] == "已添加当前词条: 多日 | duō rì / duo1 ri4 | "
+    assert info_calls == [("添加当前词条", "已添加当前词条: 多日 | duō rì / duo1 ri4 | ")]
 
 
 def test_add_current_input_to_user_lexicon_accepts_compact_numeric_pinyin(monkeypatch) -> None:
@@ -307,15 +307,15 @@ def test_add_current_input_to_user_lexicon_accepts_compact_numeric_pinyin(monkey
         {
             "phrase": "日本",
             "numeric_pinyin": "ri4 ben3",
-            "marked_pinyin": "",
+            "marked_pinyin": "rì běn",
             "yime_code": "USERCODE",
             "source_note": "ui_context_menu",
         }
     ]
     assert app.decoder.reload_calls == 1
     assert refreshed == ["refreshed"]
-    assert app.candidate_box.statuses[0] == "已加入用户词库: 日本 | ri4 ben3 | USERCODE"
-    assert info_calls == [("加入用户词库", "已加入用户词库: 日本 | ri4 ben3 | USERCODE")]
+    assert app.candidate_box.statuses[0] == "已添加当前词条: 日本 | rì běn / ri4 ben3 | USERCODE"
+    assert info_calls == [("添加当前词条", "已添加当前词条: 日本 | rì běn / ri4 ben3 | USERCODE")]
 
 
 def test_add_current_input_to_user_lexicon_reports_invalid_first_prompt(monkeypatch) -> None:
@@ -347,12 +347,12 @@ def test_add_current_input_to_user_lexicon_reports_invalid_first_prompt(monkeypa
     assert app.decoder.reload_calls == 0
     assert refreshed == []
     assert app.candidate_box.statuses[0] == (
-        "无法根据第一栏拼音推导音元编码。请在第一栏填写数字标调拼音，例如“duo1 ri4”；如果你输入的是“duō rì”，系统只会在能自动转换时接受。"
+        "无法根据当前词条的第一栏拼音推导音元编码。请在第一栏填写数字标调拼音，例如“duo1 ri4”；如果你输入的是“duō rì”，系统只会在能自动转换时接受。"
     )
     assert error_calls == [
         (
-            "加入用户词库",
-            "无法根据第一栏拼音推导音元编码。请在第一栏填写数字标调拼音，例如“duo1 ri4”；如果你输入的是“duō rì”，系统只会在能自动转换时接受。",
+            "添加当前词条",
+            "无法根据当前词条的第一栏拼音推导音元编码。请在第一栏填写数字标调拼音，例如“duo1 ri4”；如果你输入的是“duō rì”，系统只会在能自动转换时接受。",
         )
     ]
 
@@ -382,8 +382,8 @@ def test_delete_current_input_from_user_lexicon_refreshes_and_reports(monkeypatc
     assert app.user_lexicon_store.deleted_phrases == ["多日"]
     assert app.decoder.reload_calls == 1
     assert refreshed == ["refreshed"]
-    assert app.candidate_box.statuses[0] == "已从用户词库中删除: 多日"
-    assert info_calls == [("从用户词库中删除", "已从用户词库中删除: 多日")]
+    assert app.candidate_box.statuses[0] == "已删除当前词条: 多日"
+    assert info_calls == [("删除当前词条", "已删除当前词条: 多日")]
 
 
 def test_delete_current_input_from_user_lexicon_reports_missing(monkeypatch) -> None:
@@ -412,8 +412,8 @@ def test_delete_current_input_from_user_lexicon_reports_missing(monkeypatch) -> 
     assert app.user_lexicon_store.deleted_phrases == ["多日"]
     assert app.decoder.reload_calls == 0
     assert refreshed == []
-    assert app.candidate_box.statuses[0] == "用户词库中未找到：多日"
-    assert warning_calls == [("从用户词库中删除", "用户词库中未找到：多日")]
+    assert app.candidate_box.statuses[0] == "未在用户词库中找到当前词条：多日"
+    assert warning_calls == [("删除当前词条", "未在用户词库中找到当前词条：多日")]
 
 
 def test_maybe_import_seed_user_lexicon_imports_for_empty_store(tmp_path) -> None:
