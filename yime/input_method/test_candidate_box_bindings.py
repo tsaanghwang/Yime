@@ -352,6 +352,7 @@ def test_toolbar_menu_uses_expected_labels_and_popup_position(monkeypatch) -> No
 
     command_labels = [label for label, _, _ in commands]
     assert command_labels == ["设置反查时显示哪些内容", "当前唤起热键：Ctrl+Alt+Insert", "修改热键", "添加当前词条", "删除当前词条", "编辑用户词库", "应用用户词库", "导入用户词库", "导出用户词库", "查看帮助", "查看试用反馈说明", "复制试用反馈模板", "查看诊断", "重新检查诊断", "复制诊断信息", "查看试用反馈说明", "复制试用反馈模板", "打开故障排查", "打开运行时数据目录", "打开设置文件", "打开帮助", "关于"]
+    assert commands[2][2] == "disabled"
     assert [label for label, _ in cascades] == ["候选列表", "反查信息", "唤起方式", "休眠方式", "交互", "前景颜色", "背景颜色", "字体大小", "主界面透明度", "外观", "设置", "编辑与重载", "导入与导出", "用户词库", "工具", "帮助", "诊断"]
     assert [label for label, _, _, _ in radio_buttons] == [
         "每页 5 个",
@@ -410,7 +411,6 @@ def test_toolbar_menu_uses_expected_labels_and_popup_position(monkeypatch) -> No
     radio_buttons[33][3]()
     radio_buttons[34][3]()
     commands[1][1]()
-    commands[2][1]()
     box.active_topmost_var.set(False)
     check_buttons[0][2]()
     commands[3][1]()
@@ -441,7 +441,7 @@ def test_toolbar_menu_uses_expected_labels_and_popup_position(monkeypatch) -> No
     assert "普通用户帮助" in feedback_calls[1][1]
     assert "推荐阅读顺序" in feedback_calls[1][1]
     assert "菜单与用户词库" in feedback_calls[1][1]
-    assert feedback_calls[1][1].endswith("当前热键：Ctrl+Shift+Y")
+    assert feedback_calls[1][1].endswith("当前热键：Ctrl+Alt+Insert")
     assert feedback_calls[2][0] == "试用反馈说明"
     assert "如果你只想给我最短反馈，直接告诉我下面哪一种最接近：" in feedback_calls[2][1]
     assert feedback_calls[3] == ("试用反馈", "已复制试用反馈模板；可直接发给试用者或让对方回填。")
@@ -453,7 +453,7 @@ def test_toolbar_menu_uses_expected_labels_and_popup_position(monkeypatch) -> No
     assert "- 当前版本：正常。git:abc1234" in feedback_calls[4][1]
     assert "运行时数据指引：" in feedback_calls[4][1]
     assert "python -m yime.export_runtime_candidates_json" in feedback_calls[4][1]
-    assert feedback_calls[4][1].endswith("当前热键：Ctrl+Shift+Y")
+    assert feedback_calls[4][1].endswith("当前热键：Ctrl+Alt+Insert")
     assert feedback_calls[5][0] == "诊断"
     assert feedback_calls[5][1] == feedback_calls[4][1]
     assert box.status == "已重新检查诊断。"
@@ -472,14 +472,14 @@ def test_toolbar_menu_uses_expected_labels_and_popup_position(monkeypatch) -> No
     assert "如果方便，也请把下面这份诊断信息一起发来：" in box.root.clipboard_contents[0]
     assert "当前模式：热键模式" in box.root.clipboard_contents[0]
     assert "- 当前版本：正常。git:abc1234" in box.root.clipboard_contents[0]
-    assert box.root.clipboard_contents[0].endswith("当前热键：Ctrl+Shift+Y")
+    assert box.root.clipboard_contents[0].endswith("当前热键：Ctrl+Alt+Insert")
     assert box.root.updated is True
     assert box.open_troubleshooting_requested is True
     assert box.open_runtime_data_requested is True
     assert box.open_settings_requested is True
     assert feedback_calls[9][0] == "帮助"
     assert "普通用户帮助" in feedback_calls[9][1]
-    assert feedback_calls[9][1].endswith("当前热键：Ctrl+Shift+Y")
+    assert feedback_calls[9][1].endswith("当前热键：Ctrl+Alt+Insert")
     assert feedback_calls[10] == (
         "关于",
         "音元拼音输入法当前使用轻量候选窗界面。这个菜单入口用于集中承载设置、帮助和后续扩展功能。",
@@ -495,7 +495,7 @@ def test_toolbar_menu_uses_expected_labels_and_popup_position(monkeypatch) -> No
     assert box.ui_scale_changes == [120]
     assert box.active_alpha_changes == [85]
     assert box.active_topmost_changes == [False]
-    assert box.hotkey_change_requests == ["Ctrl+Shift+Y"]
+    assert box.hotkey_change_requests == []
     assert box.added_to_user_lexicon is True
     assert box.deleted_from_user_lexicon is True
     assert box.edit_requested is True
@@ -641,7 +641,7 @@ def test_diagnostics_open_items_are_disabled_when_hooks_are_missing(monkeypatch)
     }
 
 
-def test_edit_hotkey_menu_item_is_disabled_when_hook_is_missing(monkeypatch) -> None:
+def test_edit_hotkey_menu_item_is_always_disabled(monkeypatch) -> None:
     commands: list[tuple[str, object, str]] = []
     cascades: list[tuple[str, object]] = []
 
@@ -662,14 +662,9 @@ def test_edit_hotkey_menu_item_is_disabled_when_hook_is_missing(monkeypatch) -> 
         def add_radiobutton(self, label: str, value: object, variable: object, command: object) -> None:
             return None
 
-    class _BoxWithoutHotkeyChangeHook(_FakeBox):
-        def __init__(self) -> None:
-            super().__init__()
-            self._on_hotkey_change = None
-
     monkeypatch.setattr("yime.input_method.ui.candidate_box_actions.tk.Menu", _FakeMenu)
 
-    actions = CandidateBoxActions(_BoxWithoutHotkeyChangeHook())
+    actions = CandidateBoxActions(_FakeBox())
     actions._get_interaction_menu()
 
     interaction_states = {

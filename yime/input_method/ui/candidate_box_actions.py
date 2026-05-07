@@ -412,10 +412,7 @@ class CandidateBoxActions:
             menu.add_command(
                 label="修改热键",
                 command=self.edit_hotkey,
-                state=self._menu_item_state(
-                    "hotkey_change_callback",
-                    "_on_hotkey_change",
-                ),
+                state=tk.DISABLED,
             )
             menu.add_separator()
             menu.add_cascade(label="唤起方式", menu=self._get_wake_mode_menu())
