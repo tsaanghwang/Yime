@@ -269,15 +269,15 @@ def test_bind_keys_wires_toolbar_menu_button() -> None:
 
 
 def test_input_context_menu_uses_chinese_labels_and_selects_input_text(monkeypatch) -> None:
-    commands: list[tuple[str, object]] = []
+    commands: list[tuple[str, object, str]] = []
 
     class _FakeMenu:
         def __init__(self, root: object, tearoff: bool) -> None:
             self.root = root
             self.tearoff = tearoff
 
-        def add_command(self, label: str, command: object) -> None:
-            commands.append((label, command))
+        def add_command(self, label: str, command: object, state: str = "normal") -> None:
+            commands.append((label, command, state))
 
     box = _FakeBox()
     actions = CandidateBoxActions(box)
@@ -285,7 +285,8 @@ def test_input_context_menu_uses_chinese_labels_and_selects_input_text(monkeypat
 
     actions._get_input_context_menu()
 
-    assert [label for label, _ in commands] == ["粘贴", "复制", "全选", "添加当前词条", "删除当前词条"]
+    assert [label for label, _, _ in commands] == ["粘贴", "复制", "全选", "添加当前词条", "删除当前词条"]
+    assert [state for _, _, state in commands] == ["normal", "normal", "normal", "normal", "normal"]
 
     commands[0][1]()
     commands[1][1]()
@@ -302,7 +303,7 @@ def test_input_context_menu_uses_chinese_labels_and_selects_input_text(monkeypat
 
 
 def test_toolbar_menu_uses_expected_labels_and_popup_position(monkeypatch) -> None:
-    commands: list[tuple[str, object]] = []
+    commands: list[tuple[str, object, str]] = []
     cascades: list[tuple[str, object]] = []
     popup_calls: list[tuple[int, int]] = []
     grab_release_calls: list[bool] = []
@@ -315,8 +316,8 @@ def test_toolbar_menu_uses_expected_labels_and_popup_position(monkeypatch) -> No
             self.root = root
             self.tearoff = tearoff
 
-        def add_command(self, label: str, command: object) -> None:
-            commands.append((label, command))
+        def add_command(self, label: str, command: object, state: str = "normal") -> None:
+            commands.append((label, command, state))
 
         def add_cascade(self, label: str, menu: object) -> None:
             cascades.append((label, menu))
@@ -349,9 +350,9 @@ def test_toolbar_menu_uses_expected_labels_and_popup_position(monkeypatch) -> No
 
     actions._get_toolbar_menu()
 
-    command_labels = [label for label, _ in commands]
+    command_labels = [label for label, _, _ in commands]
     assert command_labels == ["当前唤起热键：Ctrl+Alt+Insert", "修改热键", "添加当前词条", "删除当前词条", "编辑用户词库", "应用用户词库", "导入用户词库", "导出用户词库", "查看帮助", "查看试用反馈说明", "复制试用反馈模板", "查看诊断", "重新检查诊断", "复制诊断信息", "查看试用反馈说明", "复制试用反馈模板", "打开故障排查", "打开运行时数据目录", "打开设置文件", "打开帮助", "关于"]
-    assert [label for label, _ in cascades] == ["候选列表", "反查显示", "唤起方式", "休眠方式", "交互", "前景颜色", "背景颜色", "字体大小", "主界面透明度", "外观", "设置", "编辑与重载", "导入与导出", "用户词库", "工具", "帮助", "诊断"]
+    assert [label for label, _ in cascades] == ["候选列表", "反查信息", "唤起方式", "休眠方式", "交互", "前景颜色", "背景颜色", "字体大小", "主界面透明度", "外观", "设置", "编辑与重载", "导入与导出", "用户词库", "工具", "帮助", "诊断"]
     assert [label for label, _, _, _ in radio_buttons] == [
         "每页 5 个",
         "每页 6 个",
@@ -360,11 +361,11 @@ def test_toolbar_menu_uses_expected_labels_and_popup_position(monkeypatch) -> No
         "每页 9 个",
         "横排显示",
         "竖排显示",
-        "默认（标准拼音 | 音元拼音）",
-        "全选（标准拼音 | 数字标调拼音 | 音元拼音 | 键位序列）",
-        "全不显示",
-        "标准拼音",
-        "音元拼音",
+        "默认（推荐：标准拼音 + 音元拼音）",
+        "完整（标准拼音 + 数字标调 + 音元拼音 + 键位序列）",
+        "隐藏反查信息（音元拼音熟练者可选）",
+        "仅标准拼音",
+        "仅音元拼音",
         "仅热键",
         "仅鼠标",
         "热键 + 鼠标",
@@ -502,6 +503,155 @@ def test_toolbar_menu_uses_expected_labels_and_popup_position(monkeypatch) -> No
     assert box.import_requested is True
     assert box.export_requested is True
     assert box.status == "已重新检查诊断。"
+
+
+def test_set_reverse_lookup_display_mode_reports_clearer_status() -> None:
+    box = _FakeBox()
+
+    actions = CandidateBoxActions(box)
+    actions.set_reverse_lookup_display_mode("default")
+    assert box.status == "反查显示已设为默认：显示标准拼音和音元拼音，适合日常查看。"
+
+    actions.set_reverse_lookup_display_mode("all")
+    assert box.status == "反查显示已设为完整：同时显示标准拼音、数字标调、音元拼音和键位序列。"
+
+    actions.set_reverse_lookup_display_mode("none")
+    assert box.status == "反查显示已设为隐藏：不显示反查信息，仅保留候选和状态。"
+
+
+def test_user_lexicon_menu_items_are_disabled_when_hooks_are_missing(monkeypatch) -> None:
+    commands: list[tuple[str, object, str]] = []
+
+    class _FakeMenu:
+        def __init__(self, root: object, tearoff: bool) -> None:
+            self.root = root
+            self.tearoff = tearoff
+
+        def add_command(self, label: str, command: object, state: str = "normal") -> None:
+            commands.append((label, command, state))
+
+        def add_cascade(self, label: str, menu: object) -> None:
+            return None
+
+        def add_separator(self) -> None:
+            return None
+
+    class _BoxWithoutLexiconHooks(_FakeBox):
+        def __init__(self) -> None:
+            super().__init__()
+            self._on_add_input_to_user_lexicon = None
+            self._on_delete_input_from_user_lexicon = None
+            self._on_edit_user_lexicon = None
+            self._on_reload_user_lexicon = None
+            self._on_import_user_lexicon = None
+            self._on_export_user_lexicon = None
+
+    monkeypatch.setattr("yime.input_method.ui.candidate_box_actions.tk.Menu", _FakeMenu)
+
+    actions = CandidateBoxActions(_BoxWithoutLexiconHooks())
+    actions._get_input_context_menu()
+    actions._get_user_lexicon_menu()
+
+    lexicon_states = {
+        label: state
+        for label, _, state in commands
+        if label
+        in {
+            "添加当前词条",
+            "删除当前词条",
+            "编辑用户词库",
+            "应用用户词库",
+            "导入用户词库",
+            "导出用户词库",
+        }
+    }
+    assert lexicon_states == {
+        "添加当前词条": "disabled",
+        "删除当前词条": "disabled",
+        "编辑用户词库": "disabled",
+        "应用用户词库": "disabled",
+        "导入用户词库": "disabled",
+        "导出用户词库": "disabled",
+    }
+
+
+def test_diagnostics_open_items_are_disabled_when_hooks_are_missing(monkeypatch) -> None:
+    commands: list[tuple[str, object, str]] = []
+
+    class _FakeMenu:
+        def __init__(self, root: object, tearoff: bool) -> None:
+            self.root = root
+            self.tearoff = tearoff
+
+        def add_command(self, label: str, command: object, state: str = "normal") -> None:
+            commands.append((label, command, state))
+
+        def add_separator(self) -> None:
+            return None
+
+    class _BoxWithoutDiagnosticOpenHooks(_FakeBox):
+        def __init__(self) -> None:
+            super().__init__()
+            self._on_open_troubleshooting_doc = None
+            self._on_open_runtime_data_dir = None
+            self._on_open_settings_file = None
+            self._on_open_user_data_dir = None
+
+    monkeypatch.setattr("yime.input_method.ui.candidate_box_actions.tk.Menu", _FakeMenu)
+
+    actions = CandidateBoxActions(_BoxWithoutDiagnosticOpenHooks())
+    actions._get_diagnostics_menu()
+
+    diagnostic_states = {
+        label: state
+        for label, _, state in commands
+        if label in {"打开故障排查", "打开运行时数据目录", "打开设置文件"}
+    }
+    assert diagnostic_states == {
+        "打开故障排查": "disabled",
+        "打开运行时数据目录": "disabled",
+        "打开设置文件": "disabled",
+    }
+
+
+def test_edit_hotkey_menu_item_is_disabled_when_hook_is_missing(monkeypatch) -> None:
+    commands: list[tuple[str, object, str]] = []
+    cascades: list[tuple[str, object]] = []
+
+    class _FakeMenu:
+        def __init__(self, root: object, tearoff: bool) -> None:
+            self.root = root
+            self.tearoff = tearoff
+
+        def add_command(self, label: str, command: object, state: str = "normal") -> None:
+            commands.append((label, command, state))
+
+        def add_separator(self) -> None:
+            return None
+
+        def add_cascade(self, label: str, menu: object) -> None:
+            cascades.append((label, menu))
+
+        def add_radiobutton(self, label: str, value: object, variable: object, command: object) -> None:
+            return None
+
+    class _BoxWithoutHotkeyChangeHook(_FakeBox):
+        def __init__(self) -> None:
+            super().__init__()
+            self._on_hotkey_change = None
+
+    monkeypatch.setattr("yime.input_method.ui.candidate_box_actions.tk.Menu", _FakeMenu)
+
+    actions = CandidateBoxActions(_BoxWithoutHotkeyChangeHook())
+    actions._get_interaction_menu()
+
+    interaction_states = {
+        label: state for label, _, state in commands if label in {"当前唤起热键：Ctrl+Alt+Insert", "修改热键"}
+    }
+    assert interaction_states == {
+        "当前唤起热键：Ctrl+Alt+Insert": "normal",
+        "修改热键": "disabled",
+    }
 
 
 def test_add_current_input_to_user_lexicon_uses_feedback_callback_when_unconfigured(monkeypatch) -> None:

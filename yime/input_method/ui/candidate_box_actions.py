@@ -31,6 +31,20 @@ class CandidateBoxActions:
         ("淡蓝灰", "#eaf0f8"),
         ("浅杏色", "#f8eee6"),
     )
+    _REVERSE_LOOKUP_DISPLAY_OPTIONS = (
+        ("默认（推荐：标准拼音 + 音元拼音）", "default"),
+        ("完整（标准拼音 + 数字标调 + 音元拼音 + 键位序列）", "all"),
+        ("隐藏反查信息（音元拼音熟练者可选）", "none"),
+        ("仅标准拼音", "marked"),
+        ("仅音元拼音", "yime"),
+    )
+    _REVERSE_LOOKUP_DISPLAY_STATUS = {
+        "default": "默认：显示标准拼音和音元拼音，适合日常查看。",
+        "all": "完整：同时显示标准拼音、数字标调、音元拼音和键位序列。",
+        "none": "隐藏：不显示反查信息，仅保留候选和状态。",
+        "marked": "仅标准拼音：只显示带声调的标准拼音。",
+        "yime": "仅音元拼音：只显示音元拼音编码。",
+    }
 
     _SYMBOL_SHORTCUT_BINDINGS = {
         "<grave>": 1,
@@ -93,6 +107,12 @@ class CandidateBoxActions:
 
     def _set_local_status(self, message: str) -> None:
         self.box.set_status(message)
+
+    def _menu_item_state(self, callback_name: str, *hook_attrs: str) -> str:
+        for hook_attr in hook_attrs:
+            if hasattr(self.box, hook_attr):
+                return tk.NORMAL if callable(getattr(self.box, hook_attr, None)) else tk.DISABLED
+        return tk.NORMAL if callable(getattr(self.box, callback_name, None)) else tk.DISABLED
 
     def bind_keys(self) -> None:
         def bind_if_possible(widget: object, sequence: str, handler: object) -> None:
@@ -239,10 +259,18 @@ class CandidateBoxActions:
             menu.add_command(
                 label="添加当前词条",
                 command=self.add_current_input_to_user_lexicon,
+                state=self._menu_item_state(
+                    "add_input_to_user_lexicon_callback",
+                    "_on_add_input_to_user_lexicon",
+                ),
             )
             menu.add_command(
                 label="删除当前词条",
                 command=self.delete_current_input_from_user_lexicon,
+                state=self._menu_item_state(
+                    "delete_input_from_user_lexicon_callback",
+                    "_on_delete_input_from_user_lexicon",
+                ),
             )
             self._input_context_menu = menu
         return self._input_context_menu
@@ -292,9 +320,31 @@ class CandidateBoxActions:
             menu.add_command(label="查看试用反馈说明", command=self.show_trial_feedback_help)
             menu.add_command(label="复制试用反馈模板", command=self.copy_trial_feedback_template)
             menu.add_separator()
-            menu.add_command(label="打开故障排查", command=self.open_troubleshooting_doc)
-            menu.add_command(label="打开运行时数据目录", command=self.open_runtime_data_dir)
-            menu.add_command(label="打开设置文件", command=self.open_settings_file)
+            menu.add_command(
+                label="打开故障排查",
+                command=self.open_troubleshooting_doc,
+                state=self._menu_item_state(
+                    "open_troubleshooting_doc_callback",
+                    "_on_open_troubleshooting_doc",
+                ),
+            )
+            menu.add_command(
+                label="打开运行时数据目录",
+                command=self.open_runtime_data_dir,
+                state=self._menu_item_state(
+                    "open_runtime_data_dir_callback",
+                    "_on_open_runtime_data_dir",
+                ),
+            )
+            menu.add_command(
+                label="打开设置文件",
+                command=self.open_settings_file,
+                state=self._menu_item_state(
+                    "open_settings_file_callback",
+                    "_on_open_settings_file",
+                    "_on_open_user_data_dir",
+                ),
+            )
             menu.add_separator()
             menu.add_command(label="打开帮助", command=self.show_help)
             self._diagnostics_menu = menu
@@ -304,7 +354,7 @@ class CandidateBoxActions:
         if self._settings_menu is None:
             menu = tk.Menu(self.box.root, tearoff=False)
             menu.add_cascade(label="候选列表", menu=self._get_candidate_list_menu())
-            menu.add_cascade(label="反查显示", menu=self._get_reverse_lookup_display_menu())
+            menu.add_cascade(label="反查信息", menu=self._get_reverse_lookup_display_menu())
             menu.add_cascade(label="交互", menu=self._get_interaction_menu())
             menu.add_cascade(label="外观", menu=self._get_appearance_menu())
             self._settings_menu = menu
@@ -313,13 +363,7 @@ class CandidateBoxActions:
     def _get_reverse_lookup_display_menu(self) -> tk.Menu:
         if self._reverse_lookup_display_menu is None:
             menu = tk.Menu(self.box.root, tearoff=False)
-            for label, mode in (
-                ("默认（标准拼音 | 音元拼音）", "default"),
-                ("全选（标准拼音 | 数字标调拼音 | 音元拼音 | 键位序列）", "all"),
-                ("全不显示", "none"),
-                ("标准拼音", "marked"),
-                ("音元拼音", "yime"),
-            ):
+            for label, mode in self._REVERSE_LOOKUP_DISPLAY_OPTIONS:
                 menu.add_radiobutton(
                     label=label,
                     value=mode,
@@ -359,7 +403,14 @@ class CandidateBoxActions:
         if self._interaction_menu is None:
             menu = tk.Menu(self.box.root, tearoff=False)
             menu.add_command(label=self._current_hotkey_menu_label(), command=self.show_hotkey_info)
-            menu.add_command(label="修改热键", command=self.edit_hotkey)
+            menu.add_command(
+                label="修改热键",
+                command=self.edit_hotkey,
+                state=self._menu_item_state(
+                    "hotkey_change_callback",
+                    "_on_hotkey_change",
+                ),
+            )
             menu.add_separator()
             menu.add_cascade(label="唤起方式", menu=self._get_wake_mode_menu())
             menu.add_cascade(label="休眠方式", menu=self._get_standby_mode_menu())
@@ -522,8 +573,22 @@ class CandidateBoxActions:
     def _get_user_lexicon_menu(self) -> tk.Menu:
         if self._user_lexicon_menu is None:
             menu = tk.Menu(self.box.root, tearoff=False)
-            menu.add_command(label="添加当前词条", command=self.add_current_input_to_user_lexicon)
-            menu.add_command(label="删除当前词条", command=self.delete_current_input_from_user_lexicon)
+            menu.add_command(
+                label="添加当前词条",
+                command=self.add_current_input_to_user_lexicon,
+                state=self._menu_item_state(
+                    "add_input_to_user_lexicon_callback",
+                    "_on_add_input_to_user_lexicon",
+                ),
+            )
+            menu.add_command(
+                label="删除当前词条",
+                command=self.delete_current_input_from_user_lexicon,
+                state=self._menu_item_state(
+                    "delete_input_from_user_lexicon_callback",
+                    "_on_delete_input_from_user_lexicon",
+                ),
+            )
             menu.add_separator()
             menu.add_cascade(label="编辑与重载", menu=self._get_user_lexicon_edit_reload_menu())
             menu.add_cascade(label="导入与导出", menu=self._get_user_lexicon_import_export_menu())
@@ -533,16 +598,44 @@ class CandidateBoxActions:
     def _get_user_lexicon_edit_reload_menu(self) -> tk.Menu:
         if self._user_lexicon_edit_reload_menu is None:
             menu = tk.Menu(self.box.root, tearoff=False)
-            menu.add_command(label="编辑用户词库", command=self.edit_user_lexicon)
-            menu.add_command(label="应用用户词库", command=self.reload_user_lexicon)
+            menu.add_command(
+                label="编辑用户词库",
+                command=self.edit_user_lexicon,
+                state=self._menu_item_state(
+                    "edit_user_lexicon_callback",
+                    "_on_edit_user_lexicon",
+                ),
+            )
+            menu.add_command(
+                label="应用用户词库",
+                command=self.reload_user_lexicon,
+                state=self._menu_item_state(
+                    "reload_user_lexicon_callback",
+                    "_on_reload_user_lexicon",
+                ),
+            )
             self._user_lexicon_edit_reload_menu = menu
         return self._user_lexicon_edit_reload_menu
 
     def _get_user_lexicon_import_export_menu(self) -> tk.Menu:
         if self._user_lexicon_import_export_menu is None:
             menu = tk.Menu(self.box.root, tearoff=False)
-            menu.add_command(label="导入用户词库", command=self.import_user_lexicon)
-            menu.add_command(label="导出用户词库", command=self.export_user_lexicon)
+            menu.add_command(
+                label="导入用户词库",
+                command=self.import_user_lexicon,
+                state=self._menu_item_state(
+                    "import_user_lexicon_callback",
+                    "_on_import_user_lexicon",
+                ),
+            )
+            menu.add_command(
+                label="导出用户词库",
+                command=self.export_user_lexicon,
+                state=self._menu_item_state(
+                    "export_user_lexicon_callback",
+                    "_on_export_user_lexicon",
+                ),
+            )
             self._user_lexicon_import_export_menu = menu
         return self._user_lexicon_import_export_menu
 
@@ -572,14 +665,11 @@ class CandidateBoxActions:
         else:
             normalized = str(mode or "default")
             self.box.reverse_lookup_display_mode_var.set(normalized)
-        labels = {
-            "default": "默认（标准拼音 | 音元拼音）",
-            "all": "全选（标准拼音 | 数字标调拼音 | 音元拼音 | 键位序列）",
-            "none": "全不显示",
-            "marked": "标准拼音",
-            "yime": "音元拼音",
-        }
-        self._set_local_status(f"反查显示已设为{labels.get(normalized, normalized)}。")
+        status_text = self._REVERSE_LOOKUP_DISPLAY_STATUS.get(
+            normalized,
+            f"当前模式：{normalized}",
+        )
+        self._set_local_status(f"反查显示已设为{status_text}")
 
     def set_wake_trigger_mode(self, mode: str) -> None:
         callback = getattr(self.box, "wake_trigger_mode_change_callback", None)
