@@ -1,0 +1,12 @@
+name: CI Compatibility Stub
+
+on:
+  workflow_dispatch:
+
+jobs:
+  compatibility:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Explain split workflows
+        run: |
+          echo "CI has been split into python-ci.yml, docs-check.yml, frontend-test.yml, and release.yml."
