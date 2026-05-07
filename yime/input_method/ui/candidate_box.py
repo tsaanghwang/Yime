@@ -259,6 +259,8 @@ class CandidateBox(CandidateRendererMixin):
         self.actions = CandidateBoxActions(self)
         self._configure_candidate_text_tags()
         self._bind_keys()
+        self._sync_pager_button_layout()
+        self._sync_candidate_text_layout()
 
         self.root.bind("<Unmap>", self._on_window_unmap)
         self.root.protocol("WM_DELETE_WINDOW", self.actions.request_close)

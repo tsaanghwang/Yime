@@ -100,6 +100,14 @@ class CandidateRendererMixin:
             wrap=tk.NONE,
         )
 
+    def _vertical_candidate_text_width_chars(self) -> int:
+        lines: list[str] = []
+        for index, hanzi in enumerate(self.current_candidates, start=1):
+            lines.append(f"{index}. {hanzi}")
+        if self.current_candidates:
+            lines.append(self.page_info_var.get())
+        return max((len(line) for line in lines), default=1)
+
     def _horizontal_candidate_text_width_chars(self) -> int:
         if not self.current_candidates:
             return 1
@@ -177,6 +185,9 @@ class CandidateRendererMixin:
         self._candidate_layout = normalized
         self._sync_pager_button_layout()
         self._render_candidates()
+        resize_to_content = getattr(self, "_resize_to_content_if_visible", None)
+        if callable(resize_to_content):
+            resize_to_content()
 
     def is_manual_input_active(self) -> bool:
         """候选框获得焦点时，允许输入框自行处理逐码编辑。"""
