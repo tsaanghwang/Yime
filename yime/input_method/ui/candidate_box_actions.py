@@ -375,7 +375,6 @@ class CandidateBoxActions:
                 state=self._menu_item_state(
                     "open_settings_file_callback",
                     "_on_open_settings_file",
-                    "_on_open_user_data_dir",
                 ),
             )
             menu.add_separator()
@@ -821,14 +820,13 @@ class CandidateBoxActions:
         callback = getattr(self.box, "open_settings_file_callback", None)
         if callable(callback) and callback():
             return
-        legacy_callback = getattr(self.box, "open_user_data_dir_callback", None)
-        if callable(legacy_callback) and legacy_callback():
-            return
         self._emit_feedback("设置文件", "当前不能直接打开设置文件；请先从帮助或诊断里确认配置位置。")
 
     def open_user_data_dir(self) -> None:
-        # Backward-compatible alias for older call sites.
-        self.open_settings_file()
+        callback = getattr(self.box, "open_user_data_dir_callback", None)
+        if callable(callback) and callback():
+            return
+        self._emit_feedback("用户数据目录", "当前不能直接打开用户数据目录；请先从帮助或诊断里确认数据目录位置。")
 
     def open_runtime_data_dir(self) -> None:
         callback = getattr(self.box, "open_runtime_data_dir_callback", None)
@@ -891,7 +889,7 @@ class CandidateBoxActions:
                 "当前推荐入口：python -m yime.input_method.app 或 python run_input_method.py。\n\n"
                 "基本操作：数字键选词，Space/Enter 上屏，Home/PgUp/PgDn/End 翻页，Ctrl+Q 关闭窗口。\n\n"
                 "用户词库：可通过编辑、应用、导入、导出几个入口维护。\n\n"
-                "更多说明请查看 docs/USER_HELP.md。"
+                "更多说明请查看 docs/help/README.md。"
             )
 
         lines: list[str] = []

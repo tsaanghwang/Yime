@@ -71,6 +71,10 @@ python -m yime.input_method.app
 - `键盘监听已启动，按ESC退出`
 - `键盘监听未启用，将使用手动输入模式`
 
+如果运行时候选从数据库回退，还可能看到：
+
+- `[Decoder] 运行时候选已回退到 SQLite 数据库视图 runtime_candidates`
+
 ### Q5：为什么文档里仍然会提到 Git LFS？
 
 因为仓库里某些运行时 JSON 文件历史上由 Git LFS 管理。

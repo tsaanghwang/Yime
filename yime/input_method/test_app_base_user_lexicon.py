@@ -477,6 +477,24 @@ def test_export_user_lexicon_from_menu_writes_standard_text_file(monkeypatch, tm
     ]
 
 
+def test_open_user_data_dir_opens_directory_and_emits_feedback(tmp_path) -> None:
+    app = BaseInputMethodApp.__new__(BaseInputMethodApp)
+    app.user_data_dir = tmp_path / "UserData"
+
+    opened_paths: list[str] = []
+    feedback_calls: list[tuple[str, str]] = []
+    app._open_path_in_shell = lambda path_text: opened_paths.append(path_text)
+    app._emit_feedback = lambda title, message, **kwargs: feedback_calls.append((title, message))
+
+    BaseInputMethodApp._open_user_data_dir(app)
+
+    assert app.user_data_dir.is_dir()
+    assert opened_paths == [str(app.user_data_dir)]
+    assert feedback_calls == [
+        ("用户数据目录", f"已打开用户数据目录：{app.user_data_dir}")
+    ]
+
+
 def test_edit_user_lexicon_from_menu_prepares_import_text_file(monkeypatch, tmp_path) -> None:
     app = BaseInputMethodApp.__new__(BaseInputMethodApp)
     app.candidate_box = _FakeCandidateBox("")
@@ -501,7 +519,7 @@ def test_edit_user_lexicon_from_menu_prepares_import_text_file(monkeypatch, tmp_
             "用户词库",
             "已生成可编辑的用户词库导入文件：3 条词条，2 条初始频率。\n\n"
             f"请编辑并保存：{app.user_lexicon_import_path}\n"
-            "保存后可通过“导入用户词库”将修改写回。",
+            "保存后可通过“应用用户词库”写回当前环境；如果这份文件来自外部整理或别的机器，也可用“导入用户词库”导入。",
         )
     ]
 

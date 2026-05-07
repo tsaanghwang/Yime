@@ -94,6 +94,7 @@ class _FakeBox:
         self.import_requested = False
         self.export_requested = False
         self.open_settings_requested = False
+        self.open_user_data_requested = False
         self.open_runtime_data_requested = False
         self.open_troubleshooting_requested = False
         self.status = ""
@@ -208,7 +209,8 @@ class _FakeBox:
         return True
 
     def open_user_data_dir_callback(self) -> bool:
-        return self.open_settings_file_callback()
+        self.open_user_data_requested = True
+        return True
 
     def open_runtime_data_dir_callback(self) -> bool:
         self.open_runtime_data_requested = True
@@ -748,6 +750,91 @@ def test_diagnostics_open_items_are_disabled_when_hooks_are_missing(monkeypatch)
     }
 
 
+def test_diagnostics_open_settings_file_does_not_use_user_data_hook(monkeypatch) -> None:
+    commands: list[tuple[str, object, str]] = []
+
+    class _FakeMenu:
+        def __init__(self, root: object, tearoff: bool) -> None:
+            self.root = root
+            self.tearoff = tearoff
+
+        def add_command(self, label: str, command: object, state: str = "normal") -> None:
+            commands.append((label, command, state))
+
+        def add_cascade(self, label: str, menu: object, state: str = "normal") -> None:
+            return None
+
+        def add_radiobutton(self, label: str, value: object, variable: object, command: object) -> None:
+            return None
+
+        def add_checkbutton(self, label: str, variable: object, command: object) -> None:
+            return None
+
+        def add_separator(self) -> None:
+            return None
+
+    class _BoxWithOnlyUserDataHook(_FakeBox):
+        def __init__(self) -> None:
+            super().__init__()
+            self._on_open_settings_file = None
+            self._on_open_user_data_dir = object()
+
+        def open_settings_file_callback(self) -> bool:
+            return False
+
+        def open_user_data_dir_callback(self) -> bool:
+            self.open_user_data_requested = True
+            return True
+
+    monkeypatch.setattr("yime.input_method.ui.candidate_box_actions.tk.Menu", _FakeMenu)
+
+    actions = CandidateBoxActions(_BoxWithOnlyUserDataHook())
+    actions._get_diagnostics_menu()
+
+    diagnostic_states = {
+        label: state
+        for label, _, state in commands
+        if label in {"打开设置文件", "打开运行时数据目录", "打开故障排查"}
+    }
+    assert diagnostic_states["打开设置文件"] == "disabled"
+
+
+def test_open_settings_file_does_not_fall_back_to_user_data_dir() -> None:
+    feedback_calls: list[tuple[str, str]] = []
+
+    class _BoxWithOnlyUserDataHook(_FakeBox):
+        def __init__(self) -> None:
+            super().__init__()
+            self.feedback_callback = lambda title, message: feedback_calls.append((title, message))
+
+        def open_settings_file_callback(self) -> bool:
+            return False
+
+        def open_user_data_dir_callback(self) -> bool:
+            self.open_user_data_requested = True
+            return True
+
+    box = _BoxWithOnlyUserDataHook()
+    actions = CandidateBoxActions(box)
+
+    actions.open_settings_file()
+
+    assert box.open_user_data_requested is False
+    assert feedback_calls == [
+        ("设置文件", "当前不能直接打开设置文件；请先从帮助或诊断里确认配置位置。")
+    ]
+
+
+def test_load_help_document_text_fallback_points_to_current_help_index(monkeypatch) -> None:
+    missing_path = CandidateBoxActions._HELP_DOC_PATH.with_name("missing-help-index.md")
+    monkeypatch.setattr(CandidateBoxActions, "_HELP_DOC_PATH", missing_path)
+
+    message = CandidateBoxActions._load_help_document_text()
+
+    assert "docs/help/README.md" in message
+    assert "docs/USER_HELP.md" not in message
+
+
 def test_edit_hotkey_menu_item_is_always_disabled(monkeypatch) -> None:
     commands: list[tuple[str, object, str]] = []
     cascades: list[tuple[str, object, str]] = []
@@ -878,6 +965,7 @@ def test_unconfigured_action_entries_offer_next_step_guidance(monkeypatch) -> No
     actions.import_user_lexicon()
     actions.export_user_lexicon()
     actions.open_settings_file()
+    actions.open_user_data_dir()
     actions.open_runtime_data_dir()
     actions.open_troubleshooting_doc()
 
@@ -894,10 +982,21 @@ def test_unconfigured_action_entries_offer_next_step_guidance(monkeypatch) -> No
         ("用户词库", "当前不能直接导入用户词库；请先确认已启用用户词库维护功能。"),
         ("用户词库", "当前不能直接导出用户词库；请先确认已启用用户词库维护功能。"),
         ("设置文件", "当前不能直接打开设置文件；请先从帮助或诊断里确认配置位置。"),
+        ("用户数据目录", "当前不能直接打开用户数据目录；请先从帮助或诊断里确认数据目录位置。"),
         ("运行时数据", "当前不能直接打开运行时数据目录；请先在诊断里查看运行时数据指引。"),
         ("故障排查", "当前不能直接打开故障排查文档；请先从帮助菜单查看相关说明。"),
         ("快捷键", "当前不能直接修改热键；请先记下当前热键，并到设置文件中调整。"),
     ]
+
+
+def test_open_user_data_dir_prefers_dedicated_callback() -> None:
+    box = _FakeBox()
+    actions = CandidateBoxActions(box)
+
+    actions.open_user_data_dir()
+
+    assert box.open_user_data_requested is True
+    assert box.open_settings_requested is False
 
 
 def test_copy_actions_report_manual_fallback_when_clipboard_is_unavailable() -> None:
