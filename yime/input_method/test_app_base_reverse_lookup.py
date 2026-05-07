@@ -73,6 +73,21 @@ def test_on_input_change_prefers_runtime_reverse_lookup_for_hanzi() -> None:
     )
 
 
+def test_on_input_change_uses_current_default_status_for_empty_input() -> None:
+    app = BaseInputMethodApp.__new__(BaseInputMethodApp)
+    app.candidate_box = _FakeCandidateBox("")
+    app.physical_input_map = {}
+
+    BaseInputMethodApp._on_input_change(app)
+
+    assert app.candidate_box.updated == (
+        [],
+        "",
+        "",
+        "连续输入时会自动取最近 4 码。可直接输入编码，或粘贴后继续输入。",
+    )
+
+
 def test_derive_reverse_lookup_key_sequence_supports_bmp_trial_projection_chars() -> None:
     app = BaseInputMethodApp.__new__(BaseInputMethodApp)
     app.projected_to_keycap_map = {"甲": "q", "乙": "j", "丙": "k", "丁": "l"}

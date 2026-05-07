@@ -1078,6 +1078,56 @@ def test_candidate_box_set_status_updates_auxiliary_label() -> None:
     assert box.manual_key_layout_label.pack_forget_calls == 1
 
 
+def test_candidate_box_update_candidates_uses_status_text() -> None:
+    class _FakeVar:
+        def __init__(self) -> None:
+            self.value = None
+
+        def set(self, value: object) -> None:
+            self.value = value
+
+    class _FakeCandidateBox:
+        def __init__(self) -> None:
+            self.all_candidates = []
+            self.current_candidates = []
+            self._current_page = 0
+            self._DEBUG_UI = False
+            self.pinyin_var = _FakeVar()
+            self.code_var = _FakeVar()
+            self.status_calls: list[str] = []
+            self.render_calls = 0
+            self.resize_calls = 0
+
+        def set_status(self, text: str) -> None:
+            self.status_calls.append(text)
+
+        def _render_candidates(self) -> None:
+            self.render_calls += 1
+
+        def _resize_to_content_if_visible(self) -> None:
+            self.resize_calls += 1
+
+    box = _FakeCandidateBox()
+
+    CandidateBox.update_candidates(
+        box,
+        ["安", "按"],
+        "标准拼音: an",
+        "",
+        "已找到候选；可继续选词或直接上屏。",
+    )
+
+    assert box.all_candidates == ["安", "按"]
+    assert box.pinyin_var.value == "标准拼音: an"
+    assert box.status_calls == ["已找到候选；可继续选词或直接上屏。"]
+    assert box.render_calls == 1
+    assert box.resize_calls == 1
+
+
+def test_candidate_box_default_status_text_matches_current_ui_guidance() -> None:
+    assert CandidateBox._DEFAULT_STATUS_TEXT == "连续输入时会自动取最近 4 码。可直接输入编码，或粘贴后继续输入。"
+
+
 def test_edit_hotkey_updates_status_with_next_step_guidance(monkeypatch) -> None:
     box = _FakeBox()
     actions = CandidateBoxActions(box)

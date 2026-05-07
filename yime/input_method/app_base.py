@@ -1734,7 +1734,7 @@ class BaseInputMethodApp:
                 [],
                 "",
                 "",
-                '连续输入时自动取最近 4 码。请先复制编码，再点"读取剪贴板"。',
+                CandidateBox._DEFAULT_STATUS_TEXT,
             )
             return
 

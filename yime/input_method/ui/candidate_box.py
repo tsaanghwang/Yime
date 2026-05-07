@@ -46,7 +46,7 @@ class CandidateBox(CandidateRendererMixin):
     _CANDIDATE_TAG_PREFIX = "candidate_"
     _PAGER_PREV_TAG = "pager_prev"
     _PAGER_NEXT_TAG = "pager_next"
-    _DEFAULT_STATUS_TEXT = '连续输入时自动取最近 4 码。请先复制编码，再点"读取剪贴板"。'
+    _DEFAULT_STATUS_TEXT = "连续输入时会自动取最近 4 码。可直接输入编码，或粘贴后继续输入。"
     _STANDBY_WINDOW_SIZE = 54
     _PASSIVE_ALPHA = 0.42
     _ACTIVE_ALPHA = 0.97
@@ -1338,7 +1338,7 @@ class CandidateBox(CandidateRendererMixin):
             self.pinyin_var.set(normalized_pinyin)
         else:
             self.pinyin_var.set(f"拼音: {normalized_pinyin}" if normalized_pinyin else "")
-        self._set_auxiliary_info_text("")
+        self.set_status(str(status or "").strip())
         self.code_var.set("")
 
         # 解码 4 码暂时不进入常态信息层级，需要排查时再打开调试 UI。
