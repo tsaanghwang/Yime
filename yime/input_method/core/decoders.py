@@ -846,13 +846,13 @@ class SQLiteRuntimeCandidateDecoder:
             str(app_dir / "pinyin_normalized.json")
         )
         self.user_lexicon = UserLexiconStore(user_db_path or app_dir / "user_lexicon.db")
-        self._validate_runtime_candidates_view()
-        self.by_code = self._load_runtime_candidates()
-        self.by_code = _merge_runtime_candidate_maps(
-            self.by_code,
-            self.user_lexicon.load_phrase_candidates(self.pinyin_to_canonical),
+        self.runtime_table_name = self._detect_runtime_candidate_table()
+        self._phrase_candidate_overlays = self.user_lexicon.load_phrase_candidates(
+            self.pinyin_to_canonical,
         )
-        self.char_code_index = CharCodeIndex.from_runtime_candidates(self.by_code)
+        self._runtime_candidate_cache: Dict[str, List[Dict[str, object]]] = {}
+        self._char_candidate_cache: Dict[str, List[CharCodeCandidate]] = {}
+        self._char_prefix_cache: Dict[tuple[str, int], List[Tuple[str, List[CharCodeCandidate]]]] = {}
         self._user_freq_by_candidate = self.user_lexicon.load_candidate_frequency()
 
     def _load_json(self, path: Path) -> dict:
@@ -887,6 +887,22 @@ class SQLiteRuntimeCandidateDecoder:
             if row is None:
                 raise ValueError("数据库中缺少 runtime_candidates 视图")
 
+    def _detect_runtime_candidate_table(self) -> str:
+        self._validate_runtime_candidates_view()
+        with self._connect() as conn:
+            row = conn.execute(
+                "SELECT type FROM sqlite_master WHERE name = 'runtime_candidates_materialized'"
+            ).fetchone()
+            if row is None:
+                return "runtime_candidates"
+
+            materialized_sample = conn.execute(
+                "SELECT 1 FROM runtime_candidates_materialized LIMIT 1"
+            ).fetchone()
+            if materialized_sample is not None:
+                return "runtime_candidates_materialized"
+        return "runtime_candidates"
+
     def decode_text(
         self, text: str
     ) -> Tuple[str, str, str, List[str], str]:
@@ -908,7 +924,7 @@ class SQLiteRuntimeCandidateDecoder:
         records = self._rank_runtime_candidates(
             self._payload_to_runtime_candidates(
                 plan.lookup_code,
-                self.by_code.get(plan.lookup_code, []),
+                self._load_runtime_candidates_for_code(plan.lookup_code),
             )
         )
         texts = [record.text for record in records]
@@ -948,7 +964,27 @@ class SQLiteRuntimeCandidateDecoder:
 
     def get_char_candidates(self, code: str) -> List[CharCodeCandidate]:
         """按完整音元编码读取单字候选。"""
-        return self.char_code_index.get_exact(code)
+        normalized_code = str(code or "").strip()
+        if not normalized_code:
+            return []
+        cached = self._char_candidate_cache.get(normalized_code)
+        if cached is not None:
+            return list(cached)
+
+        with self._connect() as conn:
+            rows = conn.execute(
+                """
+                SELECT entry_type, entry_id, text, yime_code, pinyin_tone, sort_weight, is_common
+                FROM runtime_candidates_materialized
+                WHERE entry_type = 'char' AND yime_code = ?
+                ORDER BY sort_weight DESC, text
+                """,
+                (normalized_code,),
+            ).fetchall()
+
+        candidates = [self._row_to_char_candidate(row) for row in rows]
+        self._char_candidate_cache[normalized_code] = list(candidates)
+        return candidates
 
     def get_char_candidates_by_prefix(
         self,
@@ -956,7 +992,114 @@ class SQLiteRuntimeCandidateDecoder:
         limit: int = 0,
     ) -> List[Tuple[str, List[CharCodeCandidate]]]:
         """按编码前缀读取可能的单字候选。"""
-        return self.char_code_index.get_with_prefix(prefix, limit=limit)
+        normalized_prefix = str(prefix or "").strip()
+        normalized_limit = max(int(limit or 0), 0)
+        cache_key = (normalized_prefix, normalized_limit)
+        cached = self._char_prefix_cache.get(cache_key)
+        if cached is not None:
+            return [(code, list(candidates)) for code, candidates in cached]
+
+        with self._connect() as conn:
+            if self.runtime_table_name == "runtime_candidates_materialized":
+                if normalized_prefix:
+                    query = (
+                        """
+                        SELECT DISTINCT yime_code
+                        FROM runtime_candidates_materialized
+                        WHERE entry_type = 'char' AND yime_code >= ? AND yime_code < ?
+                        ORDER BY yime_code
+                        """
+                    )
+                    params: tuple[object, ...] = (
+                        normalized_prefix,
+                        normalized_prefix + "\U0010ffff",
+                    )
+                else:
+                    query = (
+                        """
+                        SELECT DISTINCT yime_code
+                        FROM runtime_candidates_materialized
+                        WHERE entry_type = 'char' AND yime_code IS NOT NULL AND yime_code <> ''
+                        ORDER BY yime_code
+                        """
+                    )
+                    params = ()
+            else:
+                if normalized_prefix:
+                    query = (
+                        """
+                        SELECT DISTINCT yime_code
+                        FROM runtime_candidates
+                        WHERE entry_type = 'char' AND yime_code LIKE ?
+                        ORDER BY yime_code
+                        """
+                    )
+                    params = (f"{normalized_prefix}%",)
+                else:
+                    query = (
+                        """
+                        SELECT DISTINCT yime_code
+                        FROM runtime_candidates
+                        WHERE entry_type = 'char' AND yime_code IS NOT NULL AND yime_code <> ''
+                        ORDER BY yime_code
+                        """
+                    )
+                    params = ()
+            if normalized_limit:
+                query += " LIMIT ?"
+                params = (*params, normalized_limit)
+            rows = conn.execute(query, params).fetchall()
+
+        matches: List[Tuple[str, List[CharCodeCandidate]]] = []
+        for row in rows:
+            code = str(row[0] or "").strip()
+            if not code:
+                continue
+            candidates = self.get_char_candidates(code)
+            if not candidates:
+                continue
+            matches.append((code, candidates))
+
+        self._char_prefix_cache[cache_key] = [
+            (code, list(candidates)) for code, candidates in matches
+        ]
+        return matches
+
+    def _load_runtime_candidates_for_code(self, lookup_code: str) -> List[Dict[str, object]]:
+        normalized_code = str(lookup_code or "").strip()
+        if not normalized_code:
+            return []
+        cached = self._runtime_candidate_cache.get(normalized_code)
+        if cached is None:
+            with self._connect() as conn:
+                rows = conn.execute(
+                    f"""
+                    SELECT entry_type, entry_id, text, pinyin_tone, sort_weight, is_common, text_length, updated_at
+                    FROM {self.runtime_table_name}
+                    WHERE yime_code = ?
+                    ORDER BY entry_type, sort_weight DESC, text
+                    """,
+                    (normalized_code,),
+                ).fetchall()
+
+            cached = [
+                {
+                    "text": row["text"],
+                    "entry_type": row["entry_type"],
+                    "entry_id": row["entry_id"],
+                    "pinyin_tone": row["pinyin_tone"],
+                    "sort_weight": row["sort_weight"],
+                    "is_common": row["is_common"],
+                    "text_length": row["text_length"],
+                    "updated_at": row["updated_at"],
+                }
+                for row in rows
+            ]
+            self._runtime_candidate_cache[normalized_code] = list(cached)
+
+        merged = list(cached)
+        merged.extend(self._phrase_candidate_overlays.get(normalized_code, []))
+        return merged
 
     def _load_runtime_candidates(self) -> Dict[str, List[Dict[str, object]]]:
         with self._connect() as conn:
@@ -992,12 +1135,12 @@ class SQLiteRuntimeCandidateDecoder:
         return grouped
 
     def reload_user_lexicon(self) -> None:
-        base_by_code = self._load_runtime_candidates()
-        self.by_code = _merge_runtime_candidate_maps(
-            base_by_code,
-            self.user_lexicon.load_phrase_candidates(self.pinyin_to_canonical),
+        self._phrase_candidate_overlays = self.user_lexicon.load_phrase_candidates(
+            self.pinyin_to_canonical,
         )
-        self.char_code_index = CharCodeIndex.from_runtime_candidates(self.by_code)
+        self._runtime_candidate_cache.clear()
+        self._char_candidate_cache.clear()
+        self._char_prefix_cache.clear()
         self._user_freq_by_candidate = self.user_lexicon.load_candidate_frequency()
 
     def _payload_to_runtime_candidates(
@@ -1105,17 +1248,17 @@ class CompositeCandidateDecoder:
         self.runtime_load_error = ""
         self.runtime_source = ""
         try:
-            self.runtime_decoder = RuntimeCandidateDecoder(app_dir, user_db_path=user_db_path)
-            self.runtime_source = "json"
-        except (FileNotFoundError, ValueError, KeyError, json.JSONDecodeError) as exc:
+            self.runtime_decoder = SQLiteRuntimeCandidateDecoder(app_dir, user_db_path=user_db_path)
+            self.runtime_source = "sqlite"
+        except (FileNotFoundError, ValueError, sqlite3.Error) as exc:
             self.runtime_load_error = str(exc)
             try:
-                self.runtime_decoder = SQLiteRuntimeCandidateDecoder(app_dir, user_db_path=user_db_path)
-                self.runtime_source = "sqlite"
+                self.runtime_decoder = RuntimeCandidateDecoder(app_dir, user_db_path=user_db_path)
+                self.runtime_source = "json"
                 self.runtime_load_error = ""
-            except (FileNotFoundError, ValueError, sqlite3.Error) as db_exc:
+            except (FileNotFoundError, ValueError, KeyError, json.JSONDecodeError) as json_exc:
                 self.runtime_load_error = (
-                    f"JSON导出不可用: {exc}; SQLite回退不可用: {db_exc}"
+                    f"SQLite 直查不可用: {exc}; JSON 导出不可用: {json_exc}"
                 )
         self.static_decoder = StaticCandidateDecoder(app_dir)
 

@@ -273,6 +273,42 @@ def refresh_runtime_export(db_path: Path) -> None:
     )
 
 
+def rebuild_materialized_runtime_candidates(conn: sqlite3.Connection) -> int:
+    conn.execute("DELETE FROM runtime_candidates_materialized")
+    conn.execute(
+        '''
+        INSERT INTO runtime_candidates_materialized (
+            entry_type,
+            entry_id,
+            text,
+            pinyin_tone,
+            yime_code,
+            sort_weight,
+            is_common,
+            text_length,
+            updated_at
+        )
+        SELECT
+            entry_type,
+            entry_id,
+            text,
+            pinyin_tone,
+            yime_code,
+            sort_weight,
+            is_common,
+            text_length,
+            updated_at
+        FROM runtime_candidates
+        WHERE yime_code IS NOT NULL
+          AND TRIM(yime_code) <> ''
+        '''
+    )
+    row = conn.execute(
+        "SELECT COUNT(*) FROM runtime_candidates_materialized"
+    ).fetchone()
+    return int(row[0]) if row is not None else 0
+
+
 def sync_phrase_reading_preferences(conn: sqlite3.Connection) -> int:
     phrase_rows = conn.execute("SELECT phrase FROM phrase_inventory").fetchall()
     known_phrases = {str(row[0] or "") for row in phrase_rows}
@@ -421,6 +457,10 @@ def main() -> int:
 
         print(f"累计写入单字行: {applied_char_rows}")
         print(f"累计写入词语行: {applied_phrase_rows}")
+
+        materialized_rows = rebuild_materialized_runtime_candidates(conn)
+        conn.commit()
+        print(f"已重建物化运行时候选行: {materialized_rows}")
 
         runtime_matches_after, runtime_mismatches_after = compute_runtime_alignment(
             conn,

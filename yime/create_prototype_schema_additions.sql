@@ -136,6 +136,9 @@ CREATE TABLE IF NOT EXISTS phrase_inventory (
 CREATE INDEX IF NOT EXISTS idx_phrase_inventory_phrase
 ON phrase_inventory(phrase);
 
+CREATE INDEX IF NOT EXISTS idx_phrase_inventory_yime_code
+ON phrase_inventory(yime_code);
+
 CREATE TABLE IF NOT EXISTS phrase_reading_preference (
     phrase TEXT PRIMARY KEY,
     preferred_pinyin_tone TEXT NOT NULL,
@@ -251,6 +254,25 @@ SELECT
     updated_at
 FROM phrase_lexicon_view;
 
+CREATE TABLE IF NOT EXISTS runtime_candidates_materialized (
+    entry_type TEXT NOT NULL,
+    entry_id TEXT NOT NULL,
+    text TEXT NOT NULL,
+    pinyin_tone TEXT NOT NULL,
+    yime_code TEXT NOT NULL,
+    sort_weight REAL NOT NULL,
+    is_common INTEGER NOT NULL,
+    text_length INTEGER NOT NULL,
+    updated_at TEXT NOT NULL,
+    PRIMARY KEY (entry_type, entry_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_runtime_candidates_materialized_code
+ON runtime_candidates_materialized(yime_code, entry_type, sort_weight DESC, text);
+
+CREATE INDEX IF NOT EXISTS idx_runtime_candidates_materialized_char_prefix
+ON runtime_candidates_materialized(entry_type, yime_code, sort_weight DESC, text);
+
 -- 写入原型元数据标记。
 INSERT OR REPLACE INTO prototype_metadata (key, value, note, updated_at)
 VALUES
@@ -260,6 +282,7 @@ VALUES
     ('pinyin_yime_code_table', 'pinyin_yime_code', '当前原型 canonical 拼音到 yime_code 映射表；主线不再依赖 mapping_id', CURRENT_TIMESTAMP),
     ('char_numeric_map_table', 'char_pinyin_map', '当前原型单字到数字标调拼音映射表（英文隔离表）', CURRENT_TIMESTAMP),
     ('phrase_inventory_table', 'phrase_inventory', '当前原型词语主表（英文隔离表）', CURRENT_TIMESTAMP),
+    ('runtime_candidates_materialized_table', 'runtime_candidates_materialized', '当前运行时按码查询使用的物化候选表', CURRENT_TIMESTAMP),
     ('phrase_reading_preference_table', 'phrase_reading_preference', '歧义词显式默认读音表；runtime 仅暴露默认读音', CURRENT_TIMESTAMP),
     ('char_source_strategy', 'clone_source_single_char_readings', '单字相关先复制 source_pinyin.db.single_char_readings，再派生 char_lexicon', CURRENT_TIMESTAMP),
     ('phrase_source_strategy', 'clone_source_phrase_readings', '词语相关先复制 source_pinyin.db.phrase_readings，再派生 phrase_lexicon_view', CURRENT_TIMESTAMP);

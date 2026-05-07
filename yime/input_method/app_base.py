@@ -1001,7 +1001,7 @@ class BaseInputMethodApp:
             )
 
         runtime_source = str(getattr(self, "runtime_decoder_source", "unknown") or "unknown").lower()
-        if runtime_source == "json":
+        if runtime_source in {"json", "sqlite"}:
             return (
                 "正常",
                 f"已加载：{runtime_json_path}（{size_bytes} 字节）",
@@ -1090,7 +1090,7 @@ class BaseInputMethodApp:
         runtime_source = str(getattr(self, "runtime_decoder_source", "unknown") or "unknown").lower()
         runtime_warning = str(getattr(self, "runtime_decoder_warning", "") or "").strip()
         runtime_json_path = Path(getattr(self, "runtime_candidates_json_path", "") or "")
-        if runtime_source == "json" and not runtime_warning:
+        if runtime_source in {"json", "sqlite"} and not runtime_warning:
             return ""
 
         lines = ["运行时数据指引："]
@@ -1171,7 +1171,7 @@ class BaseInputMethodApp:
 
         runtime_source = str(getattr(self, "runtime_decoder_source", "unknown") or "unknown").lower()
         candidate_source = self._describe_runtime_candidate_source()
-        if runtime_source == "json":
+        if runtime_source in {"json", "sqlite"}:
             items.append(("候选来源", "正常", candidate_source, None))
         else:
             items.append((
