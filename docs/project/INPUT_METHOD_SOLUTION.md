@@ -11,6 +11,10 @@
 - [码点与中间层策略](../CODEPOINT_POLICY.md)
 - [真源文件与生成产物清单](../SOURCE_AND_ARTIFACTS.md)
 
+连续输入阶段的候选组织草案见：
+
+- [连续输入候选组织草案](CONTINUOUS_INPUT_CANDIDATE_ORGANIZATION_DRAFT.md)
+
 ## 当前结论
 
 当前项目已经不再停留在“只能做一个输入框演示”的阶段。

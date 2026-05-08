@@ -19,6 +19,36 @@ DEFAULT_SAMPLE_COUNT = 10
 DEFAULT_BASE_BOOST = 500_000.0
 DEFAULT_BOOST_STEP = 100_000.0
 
+STRONG_FRAGMENT_SUFFIXES = (
+    "的",
+    "了",
+    "着",
+    "过",
+    "吗",
+    "吧",
+    "呢",
+    "啊",
+    "呀",
+    "嘛",
+    "啦",
+    "呗",
+    "一个",
+    "一种",
+    "一样",
+    "一些",
+    "一位",
+    "一点",
+    "一次",
+    "一段",
+    "一个人",
+    "一定的",
+    "的时候",
+    "之后",
+    "以后",
+    "的话",
+)
+WEAK_FRAGMENT_SUFFIX_CHARS = frozenset("能会要在将给让")
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
@@ -95,6 +125,35 @@ def _query_prefix_phrases(
     ]
 
 
+def _fragment_penalty(phrase: str) -> int:
+    normalized = str(phrase or "").strip()
+    if not normalized:
+        return 99
+
+    penalty = 0
+    if any(normalized.endswith(suffix) for suffix in STRONG_FRAGMENT_SUFFIXES):
+        penalty += 2
+    if len(normalized) >= 3 and normalized[-1] in WEAK_FRAGMENT_SUFFIX_CHARS:
+        penalty += 1
+    if normalized.startswith("是") and len(normalized) >= 3:
+        penalty += 1
+    return penalty
+
+
+def _prefix_phrase_priority_sort_key(entry: dict[str, Any]) -> tuple[int, float, int, str]:
+    phrase = str(entry.get("phrase") or "").strip()
+    return (
+        _fragment_penalty(phrase),
+        -float(entry.get("phrase_frequency", 0.0) or 0.0),
+        int(entry.get("reading_rank", 0) or 0),
+        phrase,
+    )
+
+
+def _rank_prefix_phrases(entries: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    return sorted(entries, key=_prefix_phrase_priority_sort_key)
+
+
 def _build_target_boosts(target_count: int, *, base_boost: float, step: float) -> list[float]:
     return [max(base_boost - step * index, step) for index in range(target_count)]
 
@@ -120,7 +179,8 @@ def build_payloads(
         for bucket in buckets:
             lookup_code = str(bucket["yime_code"] or "").strip()
             lookup_pinyin_tone = str(bucket["pinyin_tone"] or "").strip()
-            prefix_phrases = _query_prefix_phrases(conn, lookup_code, sample_count)
+            raw_prefix_phrases = _query_prefix_phrases(conn, lookup_code, sample_count * 3)
+            prefix_phrases = _rank_prefix_phrases(raw_prefix_phrases)[:sample_count]
             if len(prefix_phrases) < target_count:
                 raise ValueError(
                     f"高碰撞桶 {lookup_pinyin_tone} 仅找到 {len(prefix_phrases)} 条词语样本，少于 target_count={target_count}"

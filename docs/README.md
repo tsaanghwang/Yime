@@ -39,6 +39,7 @@
 - **[跨窗口稳定性手工回归清单](CROSS_WINDOW_REGRESSION_CHECKLIST.md)** - 只保留当前最值钱的真实 Windows 跨窗口回贴回归场景
 - **[反查编码与用户词库操作说明](REVERSE_LOOKUP_AND_USER_LEXICON.md)** - 说明如何反查字词编码、查询用户频率、备份/迁移用户词库以及使用 seed 初始化词库
 - **[反查编码与用户词库速查](REVERSE_LOOKUP_AND_USER_LEXICON_QUICK_REF.md)** - 一页看完最常用的反查、加词、备份和调序诊断操作
+- **[词语调序规则说明](LOCAL_PHRASE_PRIORITY_RULES.md)** - 说明当前局部词语优先规则何时触发、规则文件从哪里来以及当前边界
 - **[快速入门](../README.md)** - 项目概述和快速开始
 
 补充说明：上面这一组链接应理解为当前推荐入口；如果某份文档只是保存试验经过、旧机器现象或历史调查，请不要把它直接当成当前操作手册。
@@ -54,6 +55,7 @@ KLC 文档分工：
 ### 核心文档
 
 - **[输入法实现方案](project/INPUT_METHOD_SOLUTION.md)** - 当前 Windows 桌面输入法原型的实现状态、边界和后续方向
+- **[连续输入候选组织草案](project/CONTINUOUS_INPUT_CANDIDATE_ORGANIZATION_DRAFT.md)** - 说明连续输入阶段如何划分状态、组织候选以及叠加现有单字兜底与词语优先
 - **[效率基线报告](EFFICIENCY_BASELINE.md)** - 基于现有运行时候选导出生成的第一版效率指标表
 - **[API 参考手册](API.md)** - 完整的 API 文档和示例
 - **[开发者指南](DEVELOPMENT.md)** - 开发环境配置和最佳实践

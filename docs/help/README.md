@@ -37,3 +37,4 @@
 - [常见问题](../FAQ.md)
 - [实现边界](../project/INPUT_METHOD_SOLUTION.md)
 - [反查与用户词库详细说明](../REVERSE_LOOKUP_AND_USER_LEXICON.md)
+- [词语调序规则说明](../LOCAL_PHRASE_PRIORITY_RULES.md)

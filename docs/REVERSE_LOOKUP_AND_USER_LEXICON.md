@@ -16,6 +16,7 @@
 - 用户词库写入脚本：[../tools/add_user_phrase.py](../tools/add_user_phrase.py)
 - 用户词库管理脚本：[../tools/manage_user_lexicon.py](../tools/manage_user_lexicon.py)
 - 候选调序诊断脚本：[../tools/diagnose_candidate_order.py](../tools/diagnose_candidate_order.py)
+- 词语调序规则说明：[LOCAL_PHRASE_PRIORITY_RULES.md](LOCAL_PHRASE_PRIORITY_RULES.md)
 - 用户词库数据库：`yime/user_lexicon.db`
 - 用户词库种子文件：`yime/user_lexicon_seed.json`
 
