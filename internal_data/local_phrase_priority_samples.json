@@ -1,0 +1,507 @@
+{
+  "version": 1,
+  "source": "yime/reports/runtime_tuning_scan.json baseline.high_collision_focus.buckets + runtime phrase_lexicon_view prefix query",
+  "scope": "single_syllable_prefix",
+  "buckets": [
+    {
+      "lookup_pinyin_tone": "yi4",
+      "top_current_runtime_texts": [
+        "一",
+        "食",
+        "意",
+        "亦",
+        "易",
+        "义",
+        "议",
+        "亿"
+      ],
+      "sample_phrases": [
+        "一些",
+        "一般",
+        "一种",
+        "亿元",
+        "一直",
+        "一起",
+        "一点",
+        "艺术",
+        "一家",
+        "一本"
+      ]
+    },
+    {
+      "lookup_pinyin_tone": "yu4",
+      "top_current_runtime_texts": [
+        "与",
+        "玉",
+        "遇",
+        "雨",
+        "欲",
+        "育",
+        "愈",
+        "王"
+      ],
+      "sample_phrases": [
+        "预测",
+        "预处理",
+        "预防",
+        "遇到",
+        "预算",
+        "预计",
+        "预期",
+        "预警",
+        "预约",
+        "预订"
+      ]
+    },
+    {
+      "lookup_pinyin_tone": "xi1",
+      "top_current_runtime_texts": [
+        "西",
+        "吸",
+        "息",
+        "溪",
+        "悉",
+        "稀",
+        "茜",
+        "栖"
+      ],
+      "sample_phrases": [
+        "希望",
+        "吸引",
+        "嘻嘻",
+        "西班牙",
+        "希望能",
+        "吸引了",
+        "吸收",
+        "西方",
+        "西安",
+        "希腊"
+      ]
+    },
+    {
+      "lookup_pinyin_tone": "li4",
+      "top_current_runtime_texts": [
+        "力",
+        "立",
+        "利",
+        "例",
+        "丽",
+        "粒",
+        "哩",
+        "历"
+      ],
+      "sample_phrases": [
+        "例如",
+        "历史",
+        "利用",
+        "力量",
+        "例子",
+        "利润",
+        "历史上",
+        "利益",
+        "利率",
+        "历史的"
+      ]
+    },
+    {
+      "lookup_pinyin_tone": "bi4",
+      "top_current_runtime_texts": [
+        "佛",
+        "必",
+        "服",
+        "秘",
+        "臂",
+        "被",
+        "闭",
+        "毕"
+      ],
+      "sample_phrases": [
+        "避免",
+        "必须",
+        "毕竟",
+        "毕业",
+        "必要的",
+        "毕业生",
+        "毕业后",
+        "必备",
+        "必须要",
+        "毕业于"
+      ]
+    },
+    {
+      "lookup_pinyin_tone": "zhi4",
+      "top_current_runtime_texts": [
+        "至",
+        "制",
+        "知",
+        "治",
+        "质",
+        "致",
+        "志",
+        "置"
+      ],
+      "sample_phrases": [
+        "质量",
+        "智能",
+        "治疗",
+        "制定",
+        "制作",
+        "至少",
+        "智能家居",
+        "制度",
+        "至于",
+        "智能化"
+      ]
+    },
+    {
+      "lookup_pinyin_tone": "ji4",
+      "top_current_runtime_texts": [
+        "济",
+        "既",
+        "计",
+        "记",
+        "系",
+        "其",
+        "齐",
+        "季"
+      ],
+      "sample_phrases": [
+        "技术",
+        "计划",
+        "技术的",
+        "计算",
+        "技能",
+        "计算机",
+        "记者",
+        "技巧",
+        "记录",
+        "继续"
+      ]
+    },
+    {
+      "lookup_pinyin_tone": "ji1",
+      "top_current_runtime_texts": [
+        "几",
+        "机",
+        "期",
+        "积",
+        "鸡",
+        "奇",
+        "其",
+        "击"
+      ],
+      "sample_phrases": [
+        "机器",
+        "基金",
+        "基于",
+        "基本",
+        "机器人",
+        "机构",
+        "机会",
+        "基础",
+        "机制",
+        "几乎"
+      ]
+    },
+    {
+      "lookup_pinyin_tone": "shi4",
+      "top_current_runtime_texts": [
+        "似",
+        "是",
+        "事",
+        "市",
+        "式",
+        "氏",
+        "视",
+        "世"
+      ],
+      "sample_phrases": [
+        "是什么",
+        "市场",
+        "是一个",
+        "适合",
+        "是一种",
+        "是否",
+        "是个",
+        "世界",
+        "是在",
+        "视频"
+      ]
+    },
+    {
+      "lookup_pinyin_tone": "yu2",
+      "top_current_runtime_texts": [
+        "与",
+        "余",
+        "鱼",
+        "予",
+        "逾",
+        "俞",
+        "渝",
+        "于"
+      ],
+      "sample_phrases": [
+        "娱乐",
+        "于是",
+        "瑜伽",
+        "余额",
+        "与人",
+        "鱼类",
+        "愉悦",
+        "愉快",
+        "舆论",
+        "鱼肉"
+      ]
+    },
+    {
+      "lookup_pinyin_tone": "jue2",
+      "top_current_runtime_texts": [
+        "觉",
+        "嚼",
+        "角",
+        "绝",
+        "决",
+        "乙",
+        "掘",
+        "倔"
+      ],
+      "sample_phrases": [
+        "觉得",
+        "决策",
+        "角色",
+        "决定",
+        "绝对",
+        "决赛",
+        "决策树",
+        "绝对是",
+        "决定了",
+        "崛起"
+      ]
+    },
+    {
+      "lookup_pinyin_tone": "qi2",
+      "top_current_runtime_texts": [
+        "其",
+        "齐",
+        "奇",
+        "骑",
+        "旗",
+        "棋",
+        "七",
+        "祁"
+      ],
+      "sample_phrases": [
+        "其他",
+        "其实",
+        "其中",
+        "其他的",
+        "其它",
+        "其中的",
+        "其次",
+        "其实是",
+        "其实我",
+        "其余"
+      ]
+    },
+    {
+      "lookup_pinyin_tone": "fu2",
+      "top_current_runtime_texts": [
+        "服",
+        "佛",
+        "还",
+        "幅",
+        "福",
+        "夫",
+        "扶",
+        "浮"
+      ],
+      "sample_phrases": [
+        "服务",
+        "服务员",
+        "符合",
+        "福利",
+        "服装",
+        "服务器",
+        "福建",
+        "服用",
+        "扶贫",
+        "幅度"
+      ]
+    },
+    {
+      "lookup_pinyin_tone": "yi2",
+      "top_current_runtime_texts": [
+        "一",
+        "疑",
+        "遗",
+        "台",
+        "宜",
+        "移",
+        "姨",
+        "蛇"
+      ],
+      "sample_phrases": [
+        "一个",
+        "一下",
+        "一定要",
+        "一个人",
+        "一样",
+        "一次",
+        "一份",
+        "一段",
+        "一定的",
+        "移动"
+      ]
+    },
+    {
+      "lookup_pinyin_tone": "bo2",
+      "top_current_runtime_texts": [
+        "薄",
+        "柏",
+        "佛",
+        "伯",
+        "服",
+        "暴",
+        "泊",
+        "跑"
+      ],
+      "sample_phrases": [
+        "博物馆",
+        "博士",
+        "博客",
+        "博彩",
+        "博主",
+        "柏林",
+        "博览会",
+        "博弈",
+        "脖子",
+        "伯爵"
+      ]
+    },
+    {
+      "lookup_pinyin_tone": "ji2",
+      "top_current_runtime_texts": [
+        "即",
+        "及",
+        "急",
+        "集",
+        "级",
+        "极",
+        "吉",
+        "疾"
+      ],
+      "sample_phrases": [
+        "即可",
+        "疾病",
+        "及时",
+        "集团",
+        "即使",
+        "集中",
+        "疾病的",
+        "即将",
+        "级别",
+        "及其"
+      ]
+    },
+    {
+      "lookup_pinyin_tone": "e4",
+      "top_current_runtime_texts": [
+        "恶",
+        "啊",
+        "哦",
+        "饿",
+        "喔",
+        "呃",
+        "歹",
+        "厄"
+      ],
+      "sample_phrases": [
+        "恶意",
+        "恶劣",
+        "饿了",
+        "恶化",
+        "恶魔",
+        "遏制",
+        "噩梦",
+        "恶搞",
+        "恶性",
+        "饿的"
+      ]
+    },
+    {
+      "lookup_pinyin_tone": "yan4",
+      "top_current_runtime_texts": [
+        "咽",
+        "燕",
+        "验",
+        "但",
+        "厌",
+        "宴",
+        "艳",
+        "言"
+      ],
+      "sample_phrases": [
+        "验证",
+        "验证集",
+        "验收",
+        "厌恶",
+        "验证码",
+        "宴请",
+        "宴会",
+        "燕窝",
+        "验货",
+        "厌烦"
+      ]
+    },
+    {
+      "lookup_pinyin_tone": "ling2",
+      "top_current_runtime_texts": [
+        "令",
+        "零",
+        "灵",
+        "陵",
+        "棱",
+        "铃",
+        "冷",
+        "龄"
+      ],
+      "sample_phrases": [
+        "凌晨",
+        "零售",
+        "灵魂",
+        "灵感",
+        "灵活",
+        "零食",
+        "灵活性",
+        "灵活的",
+        "零部件",
+        "聆听"
+      ]
+    },
+    {
+      "lookup_pinyin_tone": "jie2",
+      "top_current_runtime_texts": [
+        "结",
+        "节",
+        "截",
+        "契",
+        "劫",
+        "洁",
+        "概",
+        "杰"
+      ],
+      "sample_phrases": [
+        "结果",
+        "结构",
+        "节目",
+        "结合",
+        "结婚",
+        "截至",
+        "结束",
+        "结论",
+        "结束后",
+        "节奏"
+      ]
+    }
+  ]
+}

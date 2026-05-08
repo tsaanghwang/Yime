@@ -1,0 +1,507 @@
+{
+  "version": 1,
+  "scope": "single_syllable_prefix",
+  "description": "Local phrase-priority boosts for the highest-collision single-syllable buckets. Rules only apply to partial phrase expansion after one full syllable.",
+  "rules": [
+    {
+      "lookup_pinyin_tone": "yi4",
+      "targets": [
+        {
+          "text": "一些",
+          "boost": 500000.0
+        },
+        {
+          "text": "一般",
+          "boost": 400000.0
+        },
+        {
+          "text": "一种",
+          "boost": 300000.0
+        },
+        {
+          "text": "亿元",
+          "boost": 200000.0
+        },
+        {
+          "text": "一直",
+          "boost": 100000.0
+        }
+      ]
+    },
+    {
+      "lookup_pinyin_tone": "yu4",
+      "targets": [
+        {
+          "text": "预测",
+          "boost": 500000.0
+        },
+        {
+          "text": "预处理",
+          "boost": 400000.0
+        },
+        {
+          "text": "预防",
+          "boost": 300000.0
+        },
+        {
+          "text": "遇到",
+          "boost": 200000.0
+        },
+        {
+          "text": "预算",
+          "boost": 100000.0
+        }
+      ]
+    },
+    {
+      "lookup_pinyin_tone": "xi1",
+      "targets": [
+        {
+          "text": "希望",
+          "boost": 500000.0
+        },
+        {
+          "text": "吸引",
+          "boost": 400000.0
+        },
+        {
+          "text": "嘻嘻",
+          "boost": 300000.0
+        },
+        {
+          "text": "西班牙",
+          "boost": 200000.0
+        },
+        {
+          "text": "希望能",
+          "boost": 100000.0
+        }
+      ]
+    },
+    {
+      "lookup_pinyin_tone": "li4",
+      "targets": [
+        {
+          "text": "例如",
+          "boost": 500000.0
+        },
+        {
+          "text": "历史",
+          "boost": 400000.0
+        },
+        {
+          "text": "利用",
+          "boost": 300000.0
+        },
+        {
+          "text": "力量",
+          "boost": 200000.0
+        },
+        {
+          "text": "例子",
+          "boost": 100000.0
+        }
+      ]
+    },
+    {
+      "lookup_pinyin_tone": "bi4",
+      "targets": [
+        {
+          "text": "避免",
+          "boost": 500000.0
+        },
+        {
+          "text": "必须",
+          "boost": 400000.0
+        },
+        {
+          "text": "毕竟",
+          "boost": 300000.0
+        },
+        {
+          "text": "毕业",
+          "boost": 200000.0
+        },
+        {
+          "text": "必要的",
+          "boost": 100000.0
+        }
+      ]
+    },
+    {
+      "lookup_pinyin_tone": "zhi4",
+      "targets": [
+        {
+          "text": "质量",
+          "boost": 500000.0
+        },
+        {
+          "text": "智能",
+          "boost": 400000.0
+        },
+        {
+          "text": "治疗",
+          "boost": 300000.0
+        },
+        {
+          "text": "制定",
+          "boost": 200000.0
+        },
+        {
+          "text": "制作",
+          "boost": 100000.0
+        }
+      ]
+    },
+    {
+      "lookup_pinyin_tone": "ji4",
+      "targets": [
+        {
+          "text": "技术",
+          "boost": 500000.0
+        },
+        {
+          "text": "计划",
+          "boost": 400000.0
+        },
+        {
+          "text": "技术的",
+          "boost": 300000.0
+        },
+        {
+          "text": "计算",
+          "boost": 200000.0
+        },
+        {
+          "text": "技能",
+          "boost": 100000.0
+        }
+      ]
+    },
+    {
+      "lookup_pinyin_tone": "ji1",
+      "targets": [
+        {
+          "text": "机器",
+          "boost": 500000.0
+        },
+        {
+          "text": "基金",
+          "boost": 400000.0
+        },
+        {
+          "text": "基于",
+          "boost": 300000.0
+        },
+        {
+          "text": "基本",
+          "boost": 200000.0
+        },
+        {
+          "text": "机器人",
+          "boost": 100000.0
+        }
+      ]
+    },
+    {
+      "lookup_pinyin_tone": "shi4",
+      "targets": [
+        {
+          "text": "是什么",
+          "boost": 500000.0
+        },
+        {
+          "text": "市场",
+          "boost": 400000.0
+        },
+        {
+          "text": "是一个",
+          "boost": 300000.0
+        },
+        {
+          "text": "适合",
+          "boost": 200000.0
+        },
+        {
+          "text": "是一种",
+          "boost": 100000.0
+        }
+      ]
+    },
+    {
+      "lookup_pinyin_tone": "yu2",
+      "targets": [
+        {
+          "text": "娱乐",
+          "boost": 500000.0
+        },
+        {
+          "text": "于是",
+          "boost": 400000.0
+        },
+        {
+          "text": "瑜伽",
+          "boost": 300000.0
+        },
+        {
+          "text": "余额",
+          "boost": 200000.0
+        },
+        {
+          "text": "与人",
+          "boost": 100000.0
+        }
+      ]
+    },
+    {
+      "lookup_pinyin_tone": "jue2",
+      "targets": [
+        {
+          "text": "觉得",
+          "boost": 500000.0
+        },
+        {
+          "text": "决策",
+          "boost": 400000.0
+        },
+        {
+          "text": "角色",
+          "boost": 300000.0
+        },
+        {
+          "text": "决定",
+          "boost": 200000.0
+        },
+        {
+          "text": "绝对",
+          "boost": 100000.0
+        }
+      ]
+    },
+    {
+      "lookup_pinyin_tone": "qi2",
+      "targets": [
+        {
+          "text": "其他",
+          "boost": 500000.0
+        },
+        {
+          "text": "其实",
+          "boost": 400000.0
+        },
+        {
+          "text": "其中",
+          "boost": 300000.0
+        },
+        {
+          "text": "其他的",
+          "boost": 200000.0
+        },
+        {
+          "text": "其它",
+          "boost": 100000.0
+        }
+      ]
+    },
+    {
+      "lookup_pinyin_tone": "fu2",
+      "targets": [
+        {
+          "text": "服务",
+          "boost": 500000.0
+        },
+        {
+          "text": "服务员",
+          "boost": 400000.0
+        },
+        {
+          "text": "符合",
+          "boost": 300000.0
+        },
+        {
+          "text": "福利",
+          "boost": 200000.0
+        },
+        {
+          "text": "服装",
+          "boost": 100000.0
+        }
+      ]
+    },
+    {
+      "lookup_pinyin_tone": "yi2",
+      "targets": [
+        {
+          "text": "一个",
+          "boost": 500000.0
+        },
+        {
+          "text": "一下",
+          "boost": 400000.0
+        },
+        {
+          "text": "一定要",
+          "boost": 300000.0
+        },
+        {
+          "text": "一个人",
+          "boost": 200000.0
+        },
+        {
+          "text": "一样",
+          "boost": 100000.0
+        }
+      ]
+    },
+    {
+      "lookup_pinyin_tone": "bo2",
+      "targets": [
+        {
+          "text": "博物馆",
+          "boost": 500000.0
+        },
+        {
+          "text": "博士",
+          "boost": 400000.0
+        },
+        {
+          "text": "博客",
+          "boost": 300000.0
+        },
+        {
+          "text": "博彩",
+          "boost": 200000.0
+        },
+        {
+          "text": "博主",
+          "boost": 100000.0
+        }
+      ]
+    },
+    {
+      "lookup_pinyin_tone": "ji2",
+      "targets": [
+        {
+          "text": "即可",
+          "boost": 500000.0
+        },
+        {
+          "text": "疾病",
+          "boost": 400000.0
+        },
+        {
+          "text": "及时",
+          "boost": 300000.0
+        },
+        {
+          "text": "集团",
+          "boost": 200000.0
+        },
+        {
+          "text": "即使",
+          "boost": 100000.0
+        }
+      ]
+    },
+    {
+      "lookup_pinyin_tone": "e4",
+      "targets": [
+        {
+          "text": "恶意",
+          "boost": 500000.0
+        },
+        {
+          "text": "恶劣",
+          "boost": 400000.0
+        },
+        {
+          "text": "饿了",
+          "boost": 300000.0
+        },
+        {
+          "text": "恶化",
+          "boost": 200000.0
+        },
+        {
+          "text": "恶魔",
+          "boost": 100000.0
+        }
+      ]
+    },
+    {
+      "lookup_pinyin_tone": "yan4",
+      "targets": [
+        {
+          "text": "验证",
+          "boost": 500000.0
+        },
+        {
+          "text": "验证集",
+          "boost": 400000.0
+        },
+        {
+          "text": "验收",
+          "boost": 300000.0
+        },
+        {
+          "text": "厌恶",
+          "boost": 200000.0
+        },
+        {
+          "text": "验证码",
+          "boost": 100000.0
+        }
+      ]
+    },
+    {
+      "lookup_pinyin_tone": "ling2",
+      "targets": [
+        {
+          "text": "凌晨",
+          "boost": 500000.0
+        },
+        {
+          "text": "零售",
+          "boost": 400000.0
+        },
+        {
+          "text": "灵魂",
+          "boost": 300000.0
+        },
+        {
+          "text": "灵感",
+          "boost": 200000.0
+        },
+        {
+          "text": "灵活",
+          "boost": 100000.0
+        }
+      ]
+    },
+    {
+      "lookup_pinyin_tone": "jie2",
+      "targets": [
+        {
+          "text": "结果",
+          "boost": 500000.0
+        },
+        {
+          "text": "结构",
+          "boost": 400000.0
+        },
+        {
+          "text": "节目",
+          "boost": 300000.0
+        },
+        {
+          "text": "结合",
+          "boost": 200000.0
+        },
+        {
+          "text": "结婚",
+          "boost": 100000.0
+        }
+      ]
+    }
+  ]
+}

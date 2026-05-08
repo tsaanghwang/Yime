@@ -429,6 +429,7 @@ def test_decoders(result: TestResult):
         runtime_decoder.bmp_to_canonical = {}
         runtime_decoder.numeric_to_marked_pinyin = {}
         runtime_decoder._user_freq_by_candidate = {}
+        runtime_decoder._local_phrase_priority_rules = {}
         runtime_decoder.by_code = {}
         runtime_decoder._char_sort_weight_by_text = {"你": 100.0, "那": 80.0, "年": 70.0}
         runtime_decoder._phrase_prefix_index = {
@@ -476,6 +477,59 @@ def test_decoders(result: TestResult):
         assert canonical == "a"
         assert active == "a"
         assert candidates[:4] == ["年月", "你的", "那就", "你们"]
+        result.add_pass(test_name)
+    except Exception as e:
+        result.add_fail(test_name, str(e))
+
+    test_name = "RuntimeCandidateDecoder 局部词语优先规则提升指定短前缀词语"
+    try:
+        runtime_decoder = RuntimeCandidateDecoder.__new__(RuntimeCandidateDecoder)
+        runtime_decoder.bmp_to_canonical = {}
+        runtime_decoder.numeric_to_marked_pinyin = {}
+        runtime_decoder._user_freq_by_candidate = {}
+        runtime_decoder._local_phrase_priority_rules = {
+            "abcd": {
+                "你的": 500.0,
+            }
+        }
+        runtime_decoder.by_code = {}
+        runtime_decoder._char_sort_weight_by_text = {"你": 100.0, "那": 80.0, "年": 70.0}
+        runtime_decoder._phrase_prefix_index = {
+            "abcd": [
+                {
+                    "text": "年月",
+                    "entry_type": "phrase",
+                    "pinyin_tone": "nian2 yue4",
+                    "yime_code": "abcdefgh",
+                    "sort_weight": 500.0,
+                    "text_length": 2,
+                    "is_common": 1,
+                },
+                {
+                    "text": "你的",
+                    "entry_type": "phrase",
+                    "pinyin_tone": "ni3 de5",
+                    "yime_code": "abcdwxyz",
+                    "sort_weight": 300.0,
+                    "text_length": 2,
+                    "is_common": 1,
+                },
+                {
+                    "text": "那就",
+                    "entry_type": "phrase",
+                    "pinyin_tone": "na4 jiu4",
+                    "yime_code": "abcdlmno",
+                    "sort_weight": 280.0,
+                    "text_length": 2,
+                    "is_common": 1,
+                },
+            ]
+        }
+
+        canonical, active, _pinyin, candidates, _status = runtime_decoder.decode_text("abcd")
+        assert canonical == "abcd"
+        assert active == "abcd"
+        assert candidates[:3] == ["你的", "年月", "那就"]
         result.add_pass(test_name)
     except Exception as e:
         result.add_fail(test_name, str(e))

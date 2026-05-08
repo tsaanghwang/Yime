@@ -75,6 +75,7 @@ class RuntimeCandidateRecord:
     first_char_sort_weight: float = 0.0
     short_prefix_template_bonus: int = 0
     head_char_cluster_weight: float = 0.0
+    local_phrase_priority_boost: float = 0.0
 
 
 @dataclass(frozen=True)
@@ -100,6 +101,73 @@ def _load_numeric_yime_code_map(repo_root: Path) -> Dict[str, str]:
         for pinyin_tone, yime_code in payload.items()
         if str(pinyin_tone).strip() and str(yime_code)
     }
+
+
+def _load_local_phrase_priority_rules(
+    path: Path,
+    pinyin_to_canonical: Dict[str, str],
+) -> Dict[str, Dict[str, float]]:
+    if not path.exists():
+        return {}
+
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    raw_rules = payload.get("rules") if isinstance(payload, dict) else None
+    if not isinstance(raw_rules, list):
+        return {}
+
+    rules_by_lookup_code: Dict[str, Dict[str, float]] = {}
+    for raw_rule in raw_rules:
+        if not isinstance(raw_rule, dict):
+            continue
+        lookup_code = str(raw_rule.get("lookup_code", "") or "").strip()
+        if not lookup_code:
+            lookup_code = _resolve_canonical_code_from_pinyin_tone(
+                str(raw_rule.get("lookup_pinyin_tone", "") or "").strip(),
+                pinyin_to_canonical,
+            )
+        if len(lookup_code) != 4:
+            continue
+        raw_targets = raw_rule.get("targets")
+        if not isinstance(raw_targets, list):
+            continue
+        target_boosts: Dict[str, float] = rules_by_lookup_code.setdefault(lookup_code, {})
+        for raw_target in raw_targets:
+            if not isinstance(raw_target, dict):
+                continue
+            text = str(raw_target.get("text", "") or "").strip()
+            boost = _as_float_value(raw_target.get("boost", 0.0))
+            if not text or boost <= 0.0:
+                continue
+            target_boosts[text] = max(target_boosts.get(text, 0.0), boost)
+    return {
+        lookup_code: target_boosts
+        for lookup_code, target_boosts in rules_by_lookup_code.items()
+        if target_boosts
+    }
+
+
+def _resolve_local_phrase_priority_boost(
+    lookup_code: str,
+    candidate: Dict[str, object],
+    rules_by_lookup_code: Dict[str, Dict[str, float]],
+) -> float:
+    entry_type = str(candidate.get("entry_type", "") or "").strip()
+    if entry_type != "phrase":
+        return 0.0
+
+    text = str(candidate.get("text", "") or "").strip()
+    if not text:
+        return 0.0
+
+    matched_code_length = int(candidate.get("_matched_code_length") or 0)
+    full_code_length = int(
+        candidate.get("_full_code_length")
+        or len(str(candidate.get("yime_code", "") or lookup_code).strip())
+    )
+    if matched_code_length != 4 or full_code_length <= matched_code_length:
+        return 0.0
+
+    return _as_float_value(rules_by_lookup_code.get(lookup_code, {}).get(text, 0.0))
 
 
 @lru_cache(maxsize=None)
@@ -236,6 +304,7 @@ def _runtime_candidate_sort_key(
     return (
         _runtime_candidate_priority(candidate),
         0 if is_partial_phrase else 1,
+        -candidate.local_phrase_priority_boost,
         -candidate.sort_weight,
         -user_freq,
         candidate.text,
@@ -761,6 +830,10 @@ class RuntimeCandidateDecoder:
         self.numeric_to_marked_pinyin = _load_numeric_to_marked_pinyin_map(
             str(app_dir / "pinyin_normalized.json")
         )
+        self._local_phrase_priority_rules = _load_local_phrase_priority_rules(
+            app_dir.parent / "internal_data" / "local_phrase_priority_rules.json",
+            self.pinyin_to_canonical,
+        )
         self.user_lexicon = UserLexiconStore(user_db_path or app_dir / "user_lexicon.db")
         self.by_code = self._load_runtime_candidates(self.runtime_path)
         self.by_code = _merge_runtime_candidate_maps(
@@ -938,6 +1011,11 @@ class RuntimeCandidateDecoder:
             if not text:
                 continue
             text_length = int(candidate.get("text_length") or len(text))
+            local_phrase_priority_boost = _resolve_local_phrase_priority_boost(
+                lookup_code,
+                candidate,
+                getattr(self, "_local_phrase_priority_rules", {}),
+            )
             records.append(
                 RuntimeCandidateRecord(
                     lookup_code=lookup_code,
@@ -957,6 +1035,7 @@ class RuntimeCandidateDecoder:
                     ),
                     short_prefix_template_bonus=_compute_short_prefix_template_bonus(text),
                     head_char_cluster_weight=float(head_char_cluster_weight_by_text.get(text[:1], 0.0)),
+                    local_phrase_priority_boost=local_phrase_priority_boost,
                 )
             )
         return records
@@ -1014,6 +1093,10 @@ class SQLiteRuntimeCandidateDecoder:
         )
         self.numeric_to_marked_pinyin = _load_numeric_to_marked_pinyin_map(
             str(app_dir / "pinyin_normalized.json")
+        )
+        self._local_phrase_priority_rules = _load_local_phrase_priority_rules(
+            app_dir.parent / "internal_data" / "local_phrase_priority_rules.json",
+            self.pinyin_to_canonical,
         )
         self.user_lexicon = UserLexiconStore(user_db_path or app_dir / "user_lexicon.db")
         self.runtime_table_name = self._detect_runtime_candidate_table()
@@ -1388,6 +1471,11 @@ class SQLiteRuntimeCandidateDecoder:
             if not text:
                 continue
             text_length = int(candidate.get("text_length") or len(text))
+            local_phrase_priority_boost = _resolve_local_phrase_priority_boost(
+                lookup_code,
+                candidate,
+                getattr(self, "_local_phrase_priority_rules", {}),
+            )
             records.append(
                 RuntimeCandidateRecord(
                     lookup_code=lookup_code,
@@ -1407,6 +1495,7 @@ class SQLiteRuntimeCandidateDecoder:
                     ),
                     short_prefix_template_bonus=_compute_short_prefix_template_bonus(text),
                     head_char_cluster_weight=float(head_char_cluster_weight_by_text.get(text[:1], 0.0)),
+                    local_phrase_priority_boost=local_phrase_priority_boost,
                 )
             )
         return records
