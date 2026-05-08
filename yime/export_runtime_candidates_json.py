@@ -13,6 +13,18 @@ DEFAULT_TRUE_OUTPUT_PATH = Path(__file__).resolve().parent / "reports" / "runtim
 DEFAULT_PLACEHOLDER_OUTPUT_PATH = Path(__file__).resolve().parent / "reports" / "runtime_candidates_placeholder_phrases.json"
 
 
+RUNTIME_SQL_PRIORITY_ORDER = """
+CASE
+    WHEN entry_type = 'phrase' AND text_length BETWEEN 2 AND 4 THEN 0
+    WHEN entry_type = 'char' THEN 1
+    ELSE 2
+END,
+sort_weight DESC,
+text,
+pinyin_tone
+"""
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="从 runtime_candidates 视图导出输入系统可调用的 JSON")
     parser.add_argument("--db", default=str(DB_PATH), help="SQLite 数据库路径")
@@ -29,6 +41,7 @@ def build_candidate_record(row: sqlite3.Row) -> dict[str, object]:
         "entry_type": row["entry_type"],
         "entry_id": row["entry_id"],
         "pinyin_tone": row["pinyin_tone"],
+        "yime_code": row["yime_code"],
         "sort_weight": row["sort_weight"],
         "is_common": row["is_common"],
         "text_length": row["text_length"],
@@ -84,7 +97,7 @@ def main() -> None:
     conn.row_factory = sqlite3.Row
     try:
         rows = conn.execute(
-            '''
+            f'''
             SELECT
                 entry_type,
                 entry_id,
@@ -102,7 +115,7 @@ def main() -> None:
             FROM runtime_candidates
             WHERE yime_code IS NOT NULL
               AND TRIM(yime_code) <> ''
-            ORDER BY yime_code, entry_type, sort_weight DESC, text
+                        ORDER BY yime_code, {RUNTIME_SQL_PRIORITY_ORDER}
             '''
         ).fetchall()
     finally:

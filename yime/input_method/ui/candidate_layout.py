@@ -255,6 +255,8 @@ class CandidateLayoutBuilder:
             self.content_frame,
             text="",
             style="Yime.Secondary.TLabel",
+            anchor=tk.W,
+            justify=tk.LEFT,
         )
 
     def set_foreground_color(self, color: str) -> None:

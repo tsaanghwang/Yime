@@ -47,6 +47,18 @@ def _as_bool_value(value: object) -> bool:
     return False
 
 
+_RUNTIME_SQL_PRIORITY_ORDER = """
+CASE
+    WHEN entry_type = 'phrase' AND text_length BETWEEN 2 AND 4 THEN 0
+    WHEN entry_type = 'char' THEN 1
+    ELSE 2
+END,
+sort_weight DESC,
+text,
+pinyin_tone
+"""
+
+
 @dataclass(frozen=True)
 class RuntimeCandidateRecord:
     """Normalized runtime candidate used for phrase-aware ranking."""
@@ -58,6 +70,11 @@ class RuntimeCandidateRecord:
     sort_weight: float = 0.0
     text_length: int = 0
     is_common: bool = False
+    matched_code_length: int = 0
+    full_code_length: int = 0
+    first_char_sort_weight: float = 0.0
+    short_prefix_template_bonus: int = 0
+    head_char_cluster_weight: float = 0.0
 
 
 @dataclass(frozen=True)
@@ -210,14 +227,143 @@ def _runtime_candidate_priority(candidate: RuntimeCandidateRecord) -> int:
 def _runtime_candidate_sort_key(
     candidate: RuntimeCandidateRecord,
     user_freq: int,
-) -> tuple[int, float, int, str, str]:
+) -> tuple[int, int, float, int, str, str]:
+    is_partial_phrase = (
+        candidate.entry_type == "phrase"
+        and candidate.matched_code_length > 0
+        and candidate.full_code_length > candidate.matched_code_length
+    )
     return (
         _runtime_candidate_priority(candidate),
+        0 if is_partial_phrase else 1,
         -candidate.sort_weight,
         -user_freq,
         candidate.text,
         candidate.pinyin_tone,
     )
+
+
+_PHRASE_PREFIX_CANDIDATE_LIMIT = 64
+_SHORT_PREFIX_TEMPLATE_CHARS = frozenset("的们是在有了和要会就也都不来去没吗吧呢啊")
+
+
+def _should_expand_phrase_prefix(plan: RuntimeLookupPlan) -> bool:
+    return (
+        plan.trailing_code_count == 0
+        and not plan.phrase_mode
+        and plan.syllable_count == 1
+        and len(plan.lookup_code) == 4
+    )
+
+
+def _build_phrase_tree_lookup(canonical: str, plan: RuntimeLookupPlan) -> str:
+    normalized_canonical = str(canonical or "").strip()
+    if not normalized_canonical:
+        return ""
+    if len(normalized_canonical) < 4:
+        return normalized_canonical
+    if _should_expand_phrase_prefix(plan):
+        return plan.lookup_code
+    if plan.trailing_code_count <= 0:
+        return ""
+
+    completed_syllables = _split_complete_syllables(normalized_canonical)
+    trailing_prefix = normalized_canonical[len(completed_syllables) * 4 :]
+    if not trailing_prefix:
+        return ""
+    return "".join(completed_syllables[-3:]) + trailing_prefix
+
+
+def _phrase_candidate_payload_sort_key(candidate: Dict[str, object]) -> tuple[float, str, str]:
+    return (
+        -_as_float_value(candidate.get("sort_weight", 0.0)),
+        str(candidate.get("text", "") or "").strip(),
+        str(candidate.get("pinyin_tone", "") or "").strip(),
+    )
+
+
+def _build_char_sort_weight_index(
+    by_code: Dict[str, List[Dict[str, object]]],
+) -> Dict[str, float]:
+    weight_by_char: Dict[str, float] = {}
+    for candidates in by_code.values():
+        for candidate in candidates:
+            if str(candidate.get("entry_type", "") or "").strip() != "char":
+                continue
+            text = str(candidate.get("text", "") or "").strip()
+            if len(text) != 1:
+                continue
+            sort_weight = _as_float_value(candidate.get("sort_weight", 0.0))
+            if sort_weight > weight_by_char.get(text, float("-inf")):
+                weight_by_char[text] = sort_weight
+    return weight_by_char
+
+
+def _compute_short_prefix_template_bonus(text: str) -> int:
+    normalized_text = str(text or "").strip()
+    if len(normalized_text) < 2:
+        return 0
+    bonus = 0
+    if len(normalized_text) == 2:
+        bonus += 2
+    if normalized_text[1] in _SHORT_PREFIX_TEMPLATE_CHARS:
+        bonus += 2
+    return bonus
+
+
+def _build_head_char_cluster_weight_map(
+    raw_candidates: List[Dict[str, object]],
+) -> Dict[str, float]:
+    cluster_weight_by_char: Dict[str, float] = {}
+    for candidate in raw_candidates:
+        if str(candidate.get("entry_type", "") or "").strip() != "phrase":
+            continue
+        matched_code_length = int(candidate.get("_matched_code_length") or 0)
+        if matched_code_length != 1:
+            continue
+        text = str(candidate.get("text", "") or "").strip()
+        if not text:
+            continue
+        cluster_weight_by_char[text[:1]] = cluster_weight_by_char.get(text[:1], 0.0) + _as_float_value(candidate.get("sort_weight", 0.0))
+    return cluster_weight_by_char
+
+
+def _annotate_phrase_prefix_candidate(
+    candidate: Dict[str, object],
+    matched_code_length: int,
+) -> Dict[str, object]:
+    annotated = dict(candidate)
+    full_code = str(candidate.get("yime_code", "") or "").strip()
+    annotated["_matched_code_length"] = matched_code_length
+    annotated["_full_code_length"] = len(full_code) if full_code else matched_code_length
+    return annotated
+
+
+def _build_phrase_prefix_index(
+    by_code: Dict[str, List[Dict[str, object]]],
+) -> Dict[str, List[Dict[str, object]]]:
+    prefix_index: Dict[str, List[Dict[str, object]]] = {}
+    for canonical_code, candidates in by_code.items():
+        normalized_code = str(canonical_code or "").strip()
+        if len(normalized_code) <= 1:
+            continue
+        for candidate in candidates:
+            if str(candidate.get("entry_type", "") or "").strip() != "phrase":
+                continue
+            text = str(candidate.get("text", "") or "").strip()
+            if not text:
+                continue
+            text_length = int(candidate.get("text_length") or len(text))
+            if not (2 <= text_length <= 4):
+                continue
+            max_prefix_length = min(len(normalized_code) - 1, 15)
+            for prefix_length in range(1, max_prefix_length + 1):
+                prefix_index.setdefault(normalized_code[:prefix_length], []).append(candidate)
+
+    for prefix, items in prefix_index.items():
+        items.sort(key=_phrase_candidate_payload_sort_key)
+        prefix_index[prefix] = items[:_PHRASE_PREFIX_CANDIDATE_LIMIT]
+    return prefix_index
 
 
 def _merge_runtime_candidate_maps(
@@ -621,6 +767,8 @@ class RuntimeCandidateDecoder:
             self.by_code,
             self.user_lexicon.load_phrase_candidates(self.pinyin_to_canonical),
         )
+        self._char_sort_weight_by_text = _build_char_sort_weight_index(self.by_code)
+        self._phrase_prefix_index = _build_phrase_prefix_index(self.by_code)
         self.char_code_index = CharCodeIndex.from_runtime_candidates(self.by_code)
         self._user_freq_by_candidate = self.user_lexicon.load_candidate_frequency()
 
@@ -664,11 +812,13 @@ class RuntimeCandidateDecoder:
             if not isinstance(raw_candidates, list):
                 continue
             for candidate in raw_candidates:
-                pinyin_tone = str(candidate.get("pinyin_tone", "")).strip()
-                canonical_code = _resolve_canonical_code_from_pinyin_tone(
-                    pinyin_tone,
-                    self.pinyin_to_canonical,
-                )
+                canonical_code = str(candidate.get("yime_code", "") or "").strip()
+                if not canonical_code:
+                    pinyin_tone = str(candidate.get("pinyin_tone", "")).strip()
+                    canonical_code = _resolve_canonical_code_from_pinyin_tone(
+                        pinyin_tone,
+                        self.pinyin_to_canonical,
+                    )
                 if not canonical_code:
                     continue
                 regrouped.setdefault(canonical_code, []).append(candidate)
@@ -680,8 +830,20 @@ class RuntimeCandidateDecoder:
             base_by_code,
             self.user_lexicon.load_phrase_candidates(self.pinyin_to_canonical),
         )
+        self._char_sort_weight_by_text = _build_char_sort_weight_index(self.by_code)
+        self._phrase_prefix_index = _build_phrase_prefix_index(self.by_code)
         self.char_code_index = CharCodeIndex.from_runtime_candidates(self.by_code)
         self._user_freq_by_candidate = self.user_lexicon.load_candidate_frequency()
+
+    def _load_phrase_prefix_candidates(self, lookup_code: str) -> List[Dict[str, object]]:
+        normalized_code = str(lookup_code or "").strip()
+        if not normalized_code:
+            return []
+        phrase_prefix_index = getattr(self, "_phrase_prefix_index", {})
+        return [
+            _annotate_phrase_prefix_candidate(candidate, len(normalized_code))
+            for candidate in phrase_prefix_index.get(normalized_code, [])
+        ]
 
     def decode_text(
         self, text: str
@@ -699,29 +861,22 @@ class RuntimeCandidateDecoder:
         if not canonical:
             return "", "", "", [], "请输入一个完整音节的 4 个码元。"
 
-        if len(canonical) < 4:
-            return (
-                canonical,
-                canonical,
-                "",
-                [],
-                f"当前 {len(canonical)}/4 码，继续输入。",
-            )
-
         plan = _build_runtime_lookup_plan(canonical)
         mode_hint = _build_runtime_mode_hint(canonical, plan)
-        records = self._rank_runtime_candidates(
-            self._payload_to_runtime_candidates(
-                plan.lookup_code,
-                self.by_code.get(plan.lookup_code, []),
-            )
-        )
+        raw_candidates: List[Dict[str, object]] = []
+        if plan.lookup_code:
+            raw_candidates.extend(self.by_code.get(plan.lookup_code, []))
+        phrase_tree_lookup = _build_phrase_tree_lookup(canonical, plan)
+        if phrase_tree_lookup:
+            raw_candidates.extend(self._load_phrase_prefix_candidates(phrase_tree_lookup))
+        records = self._rank_runtime_candidates(self._payload_to_runtime_candidates(plan.lookup_code, raw_candidates))
         texts = [record.text for record in records]
         pinyin_values: List[str] = []
+        numeric_to_marked_pinyin = getattr(self, "numeric_to_marked_pinyin", {})
         for record in records:
             display_pinyin = _format_marked_pinyin_display(
                 record.pinyin_tone,
-                self.numeric_to_marked_pinyin,
+                numeric_to_marked_pinyin,
             )
             if display_pinyin and display_pinyin not in pinyin_values:
                 pinyin_values.append(display_pinyin)
@@ -732,6 +887,10 @@ class RuntimeCandidateDecoder:
             if mode_hint:
                 status = f"{mode_hint} {status}"
             return canonical, plan.active_code, display_pinyin, texts, status
+
+        if len(canonical) < 4:
+            status = f"当前 {len(canonical)}/4 码，继续输入。"
+            return canonical, canonical, display_pinyin, [], status
 
         if plan.phrase_mode:
             status = f"运行时编码表中未找到该 {plan.syllable_count} 音节词语候选。"
@@ -773,6 +932,7 @@ class RuntimeCandidateDecoder:
         raw_candidates: List[Dict[str, object]],
     ) -> List[RuntimeCandidateRecord]:
         records: List[RuntimeCandidateRecord] = []
+        head_char_cluster_weight_by_text = _build_head_char_cluster_weight_map(raw_candidates)
         for candidate in raw_candidates:
             text = str(candidate.get("text", "")).strip()
             if not text:
@@ -787,6 +947,16 @@ class RuntimeCandidateDecoder:
                     sort_weight=_as_float_value(candidate.get("sort_weight", 0.0)),
                     text_length=text_length,
                     is_common=_as_bool_value(candidate.get("is_common", False)),
+                    matched_code_length=int(candidate.get("_matched_code_length") or 0),
+                    full_code_length=int(
+                        candidate.get("_full_code_length")
+                        or len(str(candidate.get("yime_code", "") or lookup_code).strip())
+                    ),
+                    first_char_sort_weight=float(
+                        getattr(self, "_char_sort_weight_by_text", {}).get(text[:1], 0.0)
+                    ),
+                    short_prefix_template_bonus=_compute_short_prefix_template_bonus(text),
+                    head_char_cluster_weight=float(head_char_cluster_weight_by_text.get(text[:1], 0.0)),
                 )
             )
         return records
@@ -850,9 +1020,11 @@ class SQLiteRuntimeCandidateDecoder:
         self._phrase_candidate_overlays = self.user_lexicon.load_phrase_candidates(
             self.pinyin_to_canonical,
         )
+        self._char_sort_weight_by_text = self._load_char_sort_weight_index()
         self._runtime_candidate_cache: Dict[str, List[Dict[str, object]]] = {}
         self._char_candidate_cache: Dict[str, List[CharCodeCandidate]] = {}
         self._char_prefix_cache: Dict[tuple[str, int], List[Tuple[str, List[CharCodeCandidate]]]] = {}
+        self._phrase_prefix_cache: Dict[str, List[Dict[str, object]]] = {}
         self._user_freq_by_candidate = self.user_lexicon.load_candidate_frequency()
 
     def _load_json(self, path: Path) -> dict:
@@ -903,6 +1075,22 @@ class SQLiteRuntimeCandidateDecoder:
                 return "runtime_candidates_materialized"
         return "runtime_candidates"
 
+    def _load_char_sort_weight_index(self) -> Dict[str, float]:
+        with self._connect() as conn:
+            rows = conn.execute(
+                """
+                SELECT text, MAX(sort_weight) AS weight
+                FROM runtime_candidates
+                WHERE entry_type = 'char'
+                GROUP BY text
+                """
+            ).fetchall()
+        return {
+            str(row["text"] or "").strip(): _as_float_value(row["weight"])
+            for row in rows
+            if len(str(row["text"] or "").strip()) == 1
+        }
+
     def decode_text(
         self, text: str
     ) -> Tuple[str, str, str, List[str], str]:
@@ -910,21 +1098,18 @@ class SQLiteRuntimeCandidateDecoder:
         if not canonical:
             return "", "", "", [], "请输入一个完整音节的 4 个码元。"
 
-        if len(canonical) < 4:
-            return (
-                canonical,
-                canonical,
-                "",
-                [],
-                f"当前 {len(canonical)}/4 码，继续输入。",
-            )
-
         plan = _build_runtime_lookup_plan(canonical)
         mode_hint = _build_runtime_mode_hint(canonical, plan)
+        raw_candidates: List[Dict[str, object]] = []
+        if plan.lookup_code:
+            raw_candidates.extend(self._load_runtime_candidates_for_code(plan.lookup_code))
+        phrase_tree_lookup = _build_phrase_tree_lookup(canonical, plan)
+        if phrase_tree_lookup:
+            raw_candidates.extend(self._load_phrase_prefix_candidates(phrase_tree_lookup))
         records = self._rank_runtime_candidates(
             self._payload_to_runtime_candidates(
                 plan.lookup_code,
-                self._load_runtime_candidates_for_code(plan.lookup_code),
+                raw_candidates,
             )
         )
         texts = [record.text for record in records]
@@ -943,6 +1128,10 @@ class SQLiteRuntimeCandidateDecoder:
             if mode_hint:
                 status = f"{mode_hint} {status}"
             return canonical, plan.active_code, display_pinyin, texts, status
+
+        if len(canonical) < 4:
+            status = f"当前 {len(canonical)}/4 码，继续输入。"
+            return canonical, canonical, display_pinyin, [], status
 
         if plan.phrase_mode:
             status = f"数据库候选视图中未找到该 {plan.syllable_count} 音节词语候选。"
@@ -1077,37 +1266,78 @@ class SQLiteRuntimeCandidateDecoder:
                     SELECT entry_type, entry_id, text, pinyin_tone, sort_weight, is_common, text_length, updated_at
                     FROM {self.runtime_table_name}
                     WHERE yime_code = ?
-                    ORDER BY entry_type, sort_weight DESC, text
+                    ORDER BY {_RUNTIME_SQL_PRIORITY_ORDER}
                     """,
                     (normalized_code,),
                 ).fetchall()
 
-            cached = [
-                {
-                    "text": row["text"],
-                    "entry_type": row["entry_type"],
-                    "entry_id": row["entry_id"],
-                    "pinyin_tone": row["pinyin_tone"],
-                    "sort_weight": row["sort_weight"],
-                    "is_common": row["is_common"],
-                    "text_length": row["text_length"],
-                    "updated_at": row["updated_at"],
-                }
-                for row in rows
-            ]
+            cached = [dict(row) for row in rows]
             self._runtime_candidate_cache[normalized_code] = list(cached)
 
         merged = list(cached)
         merged.extend(self._phrase_candidate_overlays.get(normalized_code, []))
         return merged
 
+    def _load_phrase_prefix_candidates(self, lookup_code: str) -> List[Dict[str, object]]:
+        normalized_code = str(lookup_code or "").strip()
+        if not normalized_code:
+            return []
+        cached = self._phrase_prefix_cache.get(normalized_code)
+        if cached is not None:
+            return list(cached)
+
+        with self._connect() as conn:
+            rows = conn.execute(
+                f"""
+                                SELECT entry_type, entry_id, text, pinyin_tone, yime_code, sort_weight, is_common, text_length, updated_at
+                FROM {self.runtime_table_name}
+                WHERE entry_type = 'phrase'
+                  AND yime_code >= ?
+                  AND yime_code < ?
+                                    AND LENGTH(yime_code) > ?
+                ORDER BY sort_weight DESC, text, pinyin_tone
+                LIMIT ?
+                """,
+                (
+                    normalized_code,
+                    normalized_code + "\U0010ffff",
+                                        len(normalized_code),
+                    _PHRASE_PREFIX_CANDIDATE_LIMIT,
+                ),
+            ).fetchall()
+
+        merged = [
+            _annotate_phrase_prefix_candidate(dict(row), len(normalized_code))
+            for row in rows
+        ]
+        for overlay_code, overlay_candidates in self._phrase_candidate_overlays.items():
+            normalized_overlay_code = str(overlay_code or "").strip()
+            if normalized_overlay_code.startswith(normalized_code) and normalized_overlay_code != normalized_code:
+                merged.extend(
+                    _annotate_phrase_prefix_candidate(candidate, len(normalized_code))
+                    for candidate in overlay_candidates
+                )
+
+        merged.sort(key=_phrase_candidate_payload_sort_key)
+        cached = merged[:_PHRASE_PREFIX_CANDIDATE_LIMIT]
+        self._phrase_prefix_cache[normalized_code] = list(cached)
+        return list(cached)
+
     def _load_runtime_candidates(self) -> Dict[str, List[Dict[str, object]]]:
         with self._connect() as conn:
             rows = conn.execute(
                 """
-                SELECT entry_type, entry_id, text, pinyin_tone, sort_weight, is_common, text_length, updated_at
+                SELECT entry_type, entry_id, text, pinyin_tone, yime_code, sort_weight, is_common, text_length, updated_at
                 FROM runtime_candidates
-                ORDER BY entry_type, sort_weight DESC, text
+                ORDER BY
+                    CASE
+                        WHEN entry_type = 'phrase' AND text_length BETWEEN 2 AND 4 THEN 0
+                        WHEN entry_type = 'char' THEN 1
+                        ELSE 2
+                    END,
+                    sort_weight DESC,
+                    text,
+                    pinyin_tone
                 """
             ).fetchall()
 
@@ -1126,6 +1356,7 @@ class SQLiteRuntimeCandidateDecoder:
                     "entry_type": row["entry_type"],
                     "entry_id": row["entry_id"],
                     "pinyin_tone": row["pinyin_tone"],
+                    "yime_code": row["yime_code"],
                     "sort_weight": row["sort_weight"],
                     "is_common": row["is_common"],
                     "text_length": row["text_length"],
@@ -1138,9 +1369,11 @@ class SQLiteRuntimeCandidateDecoder:
         self._phrase_candidate_overlays = self.user_lexicon.load_phrase_candidates(
             self.pinyin_to_canonical,
         )
+        self._char_sort_weight_by_text = self._load_char_sort_weight_index()
         self._runtime_candidate_cache.clear()
         self._char_candidate_cache.clear()
         self._char_prefix_cache.clear()
+        self._phrase_prefix_cache.clear()
         self._user_freq_by_candidate = self.user_lexicon.load_candidate_frequency()
 
     def _payload_to_runtime_candidates(
@@ -1149,6 +1382,7 @@ class SQLiteRuntimeCandidateDecoder:
         raw_candidates: List[Dict[str, object]],
     ) -> List[RuntimeCandidateRecord]:
         records: List[RuntimeCandidateRecord] = []
+        head_char_cluster_weight_by_text = _build_head_char_cluster_weight_map(raw_candidates)
         for candidate in raw_candidates:
             text = str(candidate.get("text", "")).strip()
             if not text:
@@ -1163,6 +1397,16 @@ class SQLiteRuntimeCandidateDecoder:
                     sort_weight=_as_float_value(candidate.get("sort_weight", 0.0)),
                     text_length=text_length,
                     is_common=_as_bool_value(candidate.get("is_common", False)),
+                    matched_code_length=int(candidate.get("_matched_code_length") or 0),
+                    full_code_length=int(
+                        candidate.get("_full_code_length")
+                        or len(str(candidate.get("yime_code", "") or lookup_code).strip())
+                    ),
+                    first_char_sort_weight=float(
+                        getattr(self, "_char_sort_weight_by_text", {}).get(text[:1], 0.0)
+                    ),
+                    short_prefix_template_bonus=_compute_short_prefix_template_bonus(text),
+                    head_char_cluster_weight=float(head_char_cluster_weight_by_text.get(text[:1], 0.0)),
                 )
             )
         return records
@@ -1192,6 +1436,11 @@ class SQLiteRuntimeCandidateDecoder:
             sort_weight=_as_float_value(row["sort_weight"]),
             text_length=text_length,
             is_common=_as_bool_value(row["is_common"]),
+            full_code_length=len(str(row["yime_code"] or lookup_code).strip()),
+            first_char_sort_weight=float(
+                getattr(self, "_char_sort_weight_by_text", {}).get(text[:1], 0.0)
+            ),
+            short_prefix_template_bonus=_compute_short_prefix_template_bonus(text),
         )
 
     def _rank_runtime_candidates(

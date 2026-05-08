@@ -12,6 +12,13 @@ CREATE TABLE IF NOT EXISTS prototype_metadata (
     updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS runtime_tuning_parameters (
+    key TEXT PRIMARY KEY,
+    value REAL NOT NULL,
+    note TEXT,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE IF NOT EXISTS source_files (
     source_name TEXT PRIMARY KEY,
     source_kind TEXT NOT NULL CHECK (source_kind IN ('single_char', 'phrase')),
@@ -69,6 +76,47 @@ CREATE TABLE IF NOT EXISTS char_inventory (
 
 CREATE INDEX IF NOT EXISTS idx_char_inventory_hanzi
 ON char_inventory(hanzi);
+
+CREATE TABLE IF NOT EXISTS char_usage_profile (
+    hanzi TEXT PRIMARY KEY,
+    usage_tier TEXT NOT NULL,
+    tier_rank INTEGER NOT NULL,
+    tier_sort_weight REAL NOT NULL DEFAULT 0,
+    source_note TEXT,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (hanzi) REFERENCES char_inventory(hanzi) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_char_usage_profile_tier_rank
+ON char_usage_profile(usage_tier, tier_rank);
+
+CREATE TABLE IF NOT EXISTS char_modern_common_profile (
+    hanzi TEXT PRIMARY KEY,
+    modern_common_rank INTEGER NOT NULL,
+    modern_common_boost REAL NOT NULL DEFAULT 0,
+    source_note TEXT,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (hanzi) REFERENCES char_inventory(hanzi) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_char_modern_common_profile_rank
+ON char_modern_common_profile(modern_common_rank);
+
+CREATE TABLE IF NOT EXISTS char_reading_prior (
+    hanzi TEXT NOT NULL,
+    pinyin_tone TEXT NOT NULL,
+    phrase_count INTEGER NOT NULL DEFAULT 0,
+    evidence_weight REAL NOT NULL DEFAULT 0,
+    reading_share REAL NOT NULL DEFAULT 0,
+    prior_boost REAL NOT NULL DEFAULT 0,
+    source_note TEXT,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (hanzi, pinyin_tone),
+    FOREIGN KEY (hanzi) REFERENCES char_inventory(hanzi) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_char_reading_prior_pinyin
+ON char_reading_prior(pinyin_tone);
 
 CREATE TABLE IF NOT EXISTS numeric_pinyin_inventory (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -187,6 +235,15 @@ SELECT
     COALESCE(cpm.is_common_reading, scr.is_primary) AS is_common_reading,
     pyc.pinyin_tone AS yime_pinyin_id,
     pyc.yime_code AS yime_code,
+    cup.usage_tier AS usage_tier,
+    cup.tier_rank AS usage_tier_rank,
+    cup.tier_sort_weight AS tier_sort_weight,
+    cmcp.modern_common_rank AS modern_common_rank,
+    cmcp.modern_common_boost AS modern_common_boost,
+    crp.phrase_count AS reading_phrase_count,
+    crp.evidence_weight AS reading_phrase_weight,
+    crp.reading_share AS reading_phrase_share,
+    crp.prior_boost AS reading_phrase_prior_boost,
     ci.char_frequency_abs AS char_frequency_abs,
     ci.char_frequency_rel AS char_frequency_rel,
     ci.frequency_source AS frequency_source,
@@ -205,7 +262,14 @@ LEFT JOIN char_pinyin_map cpm
     ON ci.id = cpm.char_id
    AND cpm.numeric_pinyin_id = npi.id
 LEFT JOIN pinyin_yime_code pyc
-    ON pyc.pinyin_tone = npi.pinyin_tone;
+    ON pyc.pinyin_tone = npi.pinyin_tone
+LEFT JOIN char_usage_profile cup
+    ON cup.hanzi = scr.hanzi
+LEFT JOIN char_modern_common_profile cmcp
+    ON cmcp.hanzi = scr.hanzi
+LEFT JOIN char_reading_prior crp
+    ON crp.hanzi = scr.hanzi
+   AND crp.pinyin_tone = scr.numeric_pinyin;
 
 -- 词语词库视图：完全走英文隔离表，不再依赖旧“词汇”。
 CREATE VIEW phrase_lexicon_view AS
@@ -236,7 +300,11 @@ SELECT
     hanzi AS text,
     pinyin_tone,
     yime_code,
-    COALESCE(char_frequency_rel, char_frequency_abs, reading_weight, 1.0) AS sort_weight,
+    COALESCE(tier_sort_weight, 0.0)
+        + CASE WHEN is_common_reading = 1 THEN COALESCE(modern_common_boost, 0.0) ELSE 0.0 END
+        + COALESCE(reading_phrase_prior_boost, 0.0)
+        + COALESCE(char_frequency_rel, char_frequency_abs, 1.0)
+        + COALESCE(reading_weight, CASE WHEN is_common_reading = 1 THEN 1.0 ELSE 0.5 END) AS sort_weight,
     is_common_reading AS is_common,
     1 AS text_length,
     updated_at
@@ -278,6 +346,10 @@ INSERT OR REPLACE INTO prototype_metadata (key, value, note, updated_at)
 VALUES
     ('prototype_schema', 'v4', '测试原型附加表结构版本', CURRENT_TIMESTAMP),
     ('char_inventory_table', 'char_inventory', '当前原型单字主表（英文隔离表）', CURRENT_TIMESTAMP),
+    ('char_usage_profile_table', 'char_usage_profile', '当前单字分层表：通用/专用/罕用分层用于常用单字兜底排序', CURRENT_TIMESTAMP),
+    ('char_modern_common_profile_table', 'char_modern_common_profile', '现代常用单字序位表：仅对常用读音提供轻量排序加成', CURRENT_TIMESTAMP),
+    ('char_reading_prior_table', 'char_reading_prior', '单字读音先验表：基于词语频率累积的字-读音先验', CURRENT_TIMESTAMP),
+    ('runtime_tuning_parameters_table', 'runtime_tuning_parameters', '运行时调参表：读音权重与先验系数的可调入口', CURRENT_TIMESTAMP),
     ('numeric_pinyin_inventory_table', 'numeric_pinyin_inventory', '当前原型数字标调拼音主表（英文隔离表）', CURRENT_TIMESTAMP),
     ('pinyin_yime_code_table', 'pinyin_yime_code', '当前原型 canonical 拼音到 yime_code 映射表；主线不再依赖 mapping_id', CURRENT_TIMESTAMP),
     ('char_numeric_map_table', 'char_pinyin_map', '当前原型单字到数字标调拼音映射表（英文隔离表）', CURRENT_TIMESTAMP),

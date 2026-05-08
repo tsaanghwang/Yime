@@ -46,7 +46,7 @@ class CandidateBox(CandidateRendererMixin):
     _CANDIDATE_TAG_PREFIX = "candidate_"
     _PAGER_PREV_TAG = "pager_prev"
     _PAGER_NEXT_TAG = "pager_next"
-    _DEFAULT_STATUS_TEXT = "连续输入时会自动取最近 4 码。可直接输入编码，或粘贴后继续输入。"
+    _DEFAULT_STATUS_TEXT = "连续输入时会自动取最近 4 码。可直接输入或粘贴编码后继续输入；Space 选首选，Enter 上屏。"
     _STANDBY_WINDOW_SIZE = 54
     _PASSIVE_ALPHA = 0.42
     _ACTIVE_ALPHA = 0.97
@@ -280,6 +280,8 @@ class CandidateBox(CandidateRendererMixin):
             return
 
         self.root.update_idletasks()
+        if hasattr(self, "main_frame") and hasattr(self, "candidate_text") and hasattr(self, "manual_key_layout_label"):
+            self._update_auxiliary_info_wraplength()
         current_x = self.root.winfo_x()
         current_y = self.root.winfo_y()
         target_width = self.root.winfo_reqwidth()
@@ -642,6 +644,22 @@ class CandidateBox(CandidateRendererMixin):
     def _reset_status_message(self) -> None:
         self.set_status(self._DEFAULT_STATUS_TEXT)
 
+    def _update_auxiliary_info_wraplength(self) -> None:
+        if not all(
+            hasattr(self, name)
+            for name in ("main_frame", "candidate_text", "manual_key_layout_label")
+        ):
+            return
+        try:
+            self.root.update_idletasks()
+            content_width = self.main_frame.winfo_width() or self.main_frame.winfo_reqwidth()
+            candidate_width = self.candidate_text.winfo_width() or self.candidate_text.winfo_reqwidth()
+        except tk.TclError:
+            return
+
+        wraplength = max(220, max(content_width, candidate_width) - 24)
+        self.manual_key_layout_label.configure(wraplength=wraplength)
+
     def _on_manual_input_key_press(self, event: Optional[tk.Event] = None) -> Optional[str]:
         if not event or event.widget != self.input_entry or not self._manual_input_enabled:
             return None
@@ -975,7 +993,7 @@ class CandidateBox(CandidateRendererMixin):
             self.root.geometry("")  # 清除待命态 54x54 显式尺寸，让主界面按内容重新撑开
             self.root.update_idletasks()
             self._is_standby = False
-        self._set_root_alpha(self._active_alpha_value)
+        self._set_root_alpha(getattr(self, "_active_alpha_value", self._ACTIVE_ALPHA))
         self.root.title("音元拼音")
 
     def _on_confirm_key(self, event: Optional[tk.Event] = None) -> str:
@@ -1009,7 +1027,8 @@ class CandidateBox(CandidateRendererMixin):
         normalized = str(text or "").strip()
         self.manual_key_layout_label.configure(text=normalized)
         if normalized:
-            self.manual_key_layout_label.pack(anchor=tk.W, pady=(4, 0))
+            self._update_auxiliary_info_wraplength()
+            self.manual_key_layout_label.pack(anchor=tk.W, fill=tk.X, pady=(4, 0))
             return
         self.manual_key_layout_label.pack_forget()
 
@@ -1172,15 +1191,16 @@ class CandidateBox(CandidateRendererMixin):
         self.root.geometry(f"+{target_x}+{target_y}")
         hwnd = self.root.winfo_id()
         user32 = self._get_user32()
+        active_topmost_enabled = getattr(self, "_active_topmost_enabled", True)
         if not focus_input:
             self._set_noactivate(True)
-            self._set_root_topmost(self._active_topmost_enabled)
+            self._set_root_topmost(active_topmost_enabled)
             self.root.deiconify()
             self.root.update_idletasks()
             user32.ShowWindow(hwnd, self._SW_SHOWNOACTIVATE)
             user32.SetWindowPos(
                 hwnd,
-                self._HWND_TOPMOST if self._active_topmost_enabled else self._HWND_NOTOPMOST,
+                self._HWND_TOPMOST if active_topmost_enabled else self._HWND_NOTOPMOST,
                 target_x,
                 target_y,
                 0,
@@ -1194,11 +1214,11 @@ class CandidateBox(CandidateRendererMixin):
             self._set_noactivate(False)
             self.root.state("normal")
             self.root.deiconify()
-            self._set_root_topmost(self._active_topmost_enabled)
+            self._set_root_topmost(active_topmost_enabled)
             user32.ShowWindow(hwnd, self._SW_SHOW)
             user32.SetWindowPos(
                 hwnd,
-                self._HWND_TOPMOST if self._active_topmost_enabled else self._HWND_NOTOPMOST,
+                self._HWND_TOPMOST if active_topmost_enabled else self._HWND_NOTOPMOST,
                 target_x,
                 target_y,
                 0,

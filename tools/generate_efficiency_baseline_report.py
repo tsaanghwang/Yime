@@ -1,6 +1,7 @@
 import argparse
 import json
 import math
+import sqlite3
 from collections import Counter
 from datetime import UTC, datetime
 from pathlib import Path
@@ -13,6 +14,7 @@ DEFAULT_MARKDOWN_OUTPUT = ROOT / "docs" / "EFFICIENCY_BASELINE.md"
 DEFAULT_JSON_OUTPUT = ROOT / "yime" / "reports" / "efficiency_baseline.json"
 DEFAULT_YINJIE_CODEBOOK = ROOT / "syllable_codec" / "yinjie_code.json"
 DEFAULT_RUNTIME_SYMBOL_MAPPING = ROOT / "internal_data" / "yinjie_runtime_key_symbol_mapping.json"
+DEFAULT_DB_PATH = ROOT / "yime" / "pinyin_hanzi.db"
 CHAR_TIER_DEFS = (
     ("level_1", 3500, "一级字（前 3500）"),
     ("level_2", 6500, "二级前字（前 6500）"),
@@ -23,6 +25,146 @@ CHAR_TIER_DEFS = (
 def load_json(path: Path) -> dict:
     with path.open("r", encoding="utf-8") as handle:
         return json.load(handle)
+
+
+def load_runtime_db_char_rows(path: Path) -> list[dict[str, object]]:
+    conn = sqlite3.connect(path)
+    conn.row_factory = sqlite3.Row
+    try:
+        rows = conn.execute(
+            """
+            SELECT
+                yime_code,
+                hanzi AS text,
+                pinyin_tone,
+                COALESCE(tier_sort_weight, 0.0)
+                    + CASE WHEN is_common_reading = 1 THEN COALESCE(modern_common_boost, 0.0) ELSE 0.0 END
+                    + COALESCE(reading_phrase_prior_boost, 0.0)
+                    + COALESCE(char_frequency_rel, char_frequency_abs, 1.0)
+                    + COALESCE(reading_weight, CASE WHEN is_common_reading = 1 THEN 1.0 ELSE 0.5 END) AS sort_weight,
+                is_common_reading AS is_common,
+                1 AS text_length,
+                COALESCE(tier_sort_weight, 0.0) AS usage_tier_sort_boost,
+                COALESCE(modern_common_boost, 0.0) AS modern_common_boost,
+                COALESCE(reading_phrase_prior_boost, 0.0) AS reading_phrase_prior_boost,
+                char_frequency_abs,
+                char_frequency_rel,
+                COALESCE(reading_weight, 1.0) AS reading_weight,
+                frequency_source
+            FROM char_lexicon
+            WHERE yime_code IS NOT NULL AND TRIM(yime_code) <> ''
+            """
+        ).fetchall()
+    finally:
+        conn.close()
+
+    return [dict(row) for row in rows]
+
+
+def build_char_ordering_comparison(db_path: Path, *, page_size: int) -> dict[str, object]:
+    rows = load_runtime_db_char_rows(db_path)
+    by_code: dict[str, list[dict[str, object]]] = {}
+    for row in rows:
+        code = str(row.get("yime_code", "") or "").strip()
+        if not code:
+            continue
+        by_code.setdefault(code, []).append(row)
+
+    scenario_summaries: dict[str, dict[str, float | int]] = {}
+    for scenario_name, scorer in {
+        "tier_only": lambda entry: float(entry.get("usage_tier_sort_boost", 0.0) or 0.0),
+        "tier_plus_frequency": lambda entry: float(entry.get("usage_tier_sort_boost", 0.0) or 0.0)
+        + float(entry.get("char_frequency_rel", entry.get("char_frequency_abs", 0.0)) or 0.0),
+        "tier_plus_frequency_plus_modern_common": lambda entry: float(entry.get("usage_tier_sort_boost", 0.0) or 0.0)
+        + float(entry.get("char_frequency_rel", entry.get("char_frequency_abs", 0.0)) or 0.0)
+        + (float(entry.get("modern_common_boost", 0.0) or 0.0) if bool(entry.get("is_common")) else 0.0),
+        "current_runtime": lambda entry: float(entry.get("usage_tier_sort_boost", 0.0) or 0.0)
+        + float(entry.get("char_frequency_rel", entry.get("char_frequency_abs", 0.0)) or 0.0)
+        + (float(entry.get("modern_common_boost", 0.0) or 0.0) if bool(entry.get("is_common")) else 0.0)
+        + float(entry.get("reading_phrase_prior_boost", 0.0) or 0.0)
+        + float(entry.get("reading_weight", 1.0) or 1.0),
+    }.items():
+        weighted_candidate_sum = 0.0
+        weighted_top1_sum = 0.0
+        weighted_first_page_sum = 0.0
+        bucket_count = 0
+        for entries in by_code.values():
+            ranked = sorted(entries, key=lambda entry: (-scorer(entry), str(entry.get("text", ""))))
+            demand_weights = [float(entry.get("char_frequency_abs", 0.0) or 0.0) for entry in ranked]
+            total_weight = sum(demand_weights)
+            if total_weight <= 0:
+                continue
+            bucket_count += 1
+            weighted_candidate_sum += total_weight
+            weighted_top1_sum += demand_weights[0]
+            weighted_first_page_sum += sum(demand_weights[:page_size])
+        scenario_summaries[scenario_name] = {
+            "bucket_count": bucket_count,
+            "weighted_candidate_sum": weighted_candidate_sum,
+            "weighted_top1_share": (weighted_top1_sum / weighted_candidate_sum) if weighted_candidate_sum else 0.0,
+            "weighted_first_page_share": (weighted_first_page_sum / weighted_candidate_sum) if weighted_candidate_sum else 0.0,
+        }
+
+    tier_only = scenario_summaries["tier_only"]
+    tier_plus_frequency = scenario_summaries["tier_plus_frequency"]
+    tier_plus_frequency_plus_modern_common = scenario_summaries["tier_plus_frequency_plus_modern_common"]
+    current_runtime = scenario_summaries["current_runtime"]
+    return {
+        "bucket_count": current_runtime["bucket_count"],
+        "weighted_candidate_sum": current_runtime["weighted_candidate_sum"],
+        "tier_only": tier_only,
+        "tier_plus_frequency": tier_plus_frequency,
+        "tier_plus_frequency_plus_modern_common": tier_plus_frequency_plus_modern_common,
+        "current_runtime": current_runtime,
+        "delta_tier_plus_frequency_vs_tier_only": {
+            "weighted_top1_share": float(tier_plus_frequency["weighted_top1_share"]) - float(tier_only["weighted_top1_share"]),
+            "weighted_first_page_share": float(tier_plus_frequency["weighted_first_page_share"]) - float(tier_only["weighted_first_page_share"]),
+        },
+        "delta_modern_common_vs_tier_plus_frequency": {
+            "weighted_top1_share": float(tier_plus_frequency_plus_modern_common["weighted_top1_share"]) - float(tier_plus_frequency["weighted_top1_share"]),
+            "weighted_first_page_share": float(tier_plus_frequency_plus_modern_common["weighted_first_page_share"]) - float(tier_plus_frequency["weighted_first_page_share"]),
+        },
+        "delta_current_runtime_vs_modern_common": {
+            "weighted_top1_share": float(current_runtime["weighted_top1_share"]) - float(tier_plus_frequency_plus_modern_common["weighted_top1_share"]),
+            "weighted_first_page_share": float(current_runtime["weighted_first_page_share"]) - float(tier_plus_frequency_plus_modern_common["weighted_first_page_share"]),
+        },
+        "delta_modern_common_vs_tier_only": {
+            "weighted_top1_share": float(tier_plus_frequency_plus_modern_common["weighted_top1_share"]) - float(tier_only["weighted_top1_share"]),
+            "weighted_first_page_share": float(tier_plus_frequency_plus_modern_common["weighted_first_page_share"]) - float(tier_only["weighted_first_page_share"]),
+        },
+        "delta_current_runtime_vs_tier_only": {
+            "weighted_top1_share": float(current_runtime["weighted_top1_share"]) - float(tier_only["weighted_top1_share"]),
+            "weighted_first_page_share": float(current_runtime["weighted_first_page_share"]) - float(tier_only["weighted_first_page_share"]),
+        },
+    }
+
+
+def load_runtime_tuning_summary(db_path: Path) -> dict[str, float] | None:
+    conn = sqlite3.connect(db_path)
+    try:
+        rows = conn.execute(
+            """
+            SELECT key, value
+            FROM runtime_tuning_parameters
+            WHERE key IN (
+                'common_reading_weight',
+                'uncommon_reading_weight',
+                'phrase_reading_prior_scale',
+                'phrase_reading_prior_min_share',
+                'phrase_reading_prior_min_phrase_count',
+                'phrase_reading_prior_min_evidence_weight'
+            )
+            """
+        ).fetchall()
+    except sqlite3.OperationalError:
+        conn.close()
+        return None
+    finally:
+        conn.close()
+
+    if not rows:
+        return None
+    return {str(key): float(value) for key, value in rows if key is not None and value is not None}
 
 
 def percentile(values: list[int], pct: float) -> float:
@@ -617,7 +759,7 @@ def build_top_examples(
     )[:limit]
 
 
-def build_payload(report: dict, page_size: int) -> dict[str, object]:
+def build_payload(report: dict, page_size: int, db_path: Path) -> dict[str, object]:
     metadata = report.get("metadata", {})
     by_code = report.get("by_code", {})
     yinjie_codebook = load_json(DEFAULT_YINJIE_CODEBOOK)
@@ -717,6 +859,8 @@ def build_payload(report: dict, page_size: int) -> dict[str, object]:
         yinjie_codebook,
         runtime_symbol_metadata,
     )
+    char_ordering_comparison = build_char_ordering_comparison(db_path, page_size=page_size)
+    runtime_tuning_summary = load_runtime_tuning_summary(db_path)
 
     return {
         "generated_at": datetime.now(UTC).isoformat().replace("+00:00", "Z"),
@@ -738,6 +882,8 @@ def build_payload(report: dict, page_size: int) -> dict[str, object]:
             "phrases": phrase_weighted_visibility,
         },
         "char_tiers": char_tiers,
+        "char_ordering_comparison": char_ordering_comparison,
+        "runtime_tuning_summary": runtime_tuning_summary,
         "code_length_baseline": code_length_baseline,
         "syllable_jianpin_examples": syllable_jianpin_examples,
         "syllable_jianpin_rule_stats": syllable_jianpin_rule_stats,
@@ -749,6 +895,7 @@ def build_payload(report: dict, page_size: int) -> dict[str, object]:
             "This baseline measures current runtime collision structure from exported candidate data only.",
             "It does not yet compare YIME against third-party pinyin IMEs or model user adaptation over time.",
             "sort_weight is the current runtime frequency proxy and is closer to actual ranking behavior than the coarse is_common flag.",
+            "char_ordering_comparison keeps the same true single-character frequency demand weights and swaps the ranking strategy between tier-only, tier-plus-frequency, tier-plus-frequency-plus-modern-common, and the current runtime strategy with reading correction and phrase priors.",
             "Phrase candidates currently all fit within the default first page size of 5.",
             "Code-length comparison below is a structural baseline: YIME full mode is fixed 4 keys per syllable, standard full pinyin uses toneless letter count, and the double-pinyin baseline assumes 2 keys per syllable.",
         ],
@@ -794,6 +941,8 @@ def build_markdown(payload: dict[str, object]) -> str:
     phrase_metrics = payload["phrase_metrics"]
     weighted_visibility = payload["weighted_visibility"]
     char_tiers = payload["char_tiers"]
+    char_ordering_comparison = payload["char_ordering_comparison"]
+    runtime_tuning_summary = payload["runtime_tuning_summary"]
     code_length_baseline = payload["code_length_baseline"]
     syllable_jianpin_examples = payload["syllable_jianpin_examples"]
     syllable_jianpin_rule_stats = payload["syllable_jianpin_rule_stats"]
@@ -820,6 +969,12 @@ def build_markdown(payload: dict[str, object]) -> str:
         f"- 以当前 `sort_weight` 作为频率代理时，词语加权首选命中率为 `{format_pct(float(weighted_visibility['phrases']['weighted_top1_share']))}`，单字加权首选命中率为 `{format_pct(float(weighted_visibility['chars']['weighted_top1_share']))}`。",
         f"- 以当前 `sort_weight` 作为频率代理时，词语加权首屏可见率为 `{format_pct(float(weighted_visibility['phrases']['weighted_first_page_share']))}`，单字加权首屏可见率为 `{format_pct(float(weighted_visibility['chars']['weighted_first_page_share']))}`。",
         f"- 单字按《通用规范汉字表》同等数量对齐后，一级字（前 3500）加权首屏可见率为 `{format_pct(float(char_tiers['level_1']['weighted_visibility']['weighted_first_page_share']))}`，二级前字（前 6500）为 `{format_pct(float(char_tiers['level_2']['weighted_visibility']['weighted_first_page_share']))}`，三级前字（前 8105）为 `{format_pct(float(char_tiers['level_3']['weighted_visibility']['weighted_first_page_share']))}`。",
+        f"- 若只保留 5 档分层骨架、但不接入真单字频率，则按同一份真单字频率做需求加权时，单字首屏可见率为 `{format_pct(float(char_ordering_comparison['tier_only']['weighted_first_page_share']))}`；接入真单字频率后为 `{format_pct(float(char_ordering_comparison['tier_plus_frequency']['weighted_first_page_share']))}`；再叠加现代常用轻量约束后为 `{format_pct(float(char_ordering_comparison['tier_plus_frequency_plus_modern_common']['weighted_first_page_share']))}`；继续接入读音纠偏与词语先验后的当前 runtime 为 `{format_pct(float(char_ordering_comparison['current_runtime']['weighted_first_page_share']))}`。",
+        (
+            f"- 当前默认弱先验配置取更保守档：`cw={format_float(float(runtime_tuning_summary['common_reading_weight']))}`、`uw={format_float(float(runtime_tuning_summary['uncommon_reading_weight']))}`、`scale={format_float(float(runtime_tuning_summary['phrase_reading_prior_scale']))}`、`share>={runtime_tuning_summary['phrase_reading_prior_min_share']:.3f}`、`count>={int(round(float(runtime_tuning_summary['phrase_reading_prior_min_phrase_count'])))}`、`evidence>={format_float(float(runtime_tuning_summary['phrase_reading_prior_min_evidence_weight']))}`；最近窄扫描显示 `scale=0.25/0.50` 都能守住全局与高碰撞桶基线，因此当前默认采用更保守的 `0.25`。"
+            if runtime_tuning_summary
+            else "- 当前默认弱先验配置摘要不可用：数据库中未找到 runtime_tuning_parameters。"
+        ),
         f"- 同语料总体上，音元简拼平均码长为 `{format_float(float(code_length_baseline['overall']['avg_yime_jianpin']))}` 键，较音元全拼平均减少 `{format_float(float(code_length_baseline['overall']['jianpin_saved_vs_full']))}` 键。",
         "",
         "## 指标表",
@@ -848,6 +1003,22 @@ def build_markdown(payload: dict[str, object]) -> str:
         make_tier_row("二级前字（前 6500）", char_tiers["level_2"], selection_window_size),
         make_tier_row("三级前字（前 8105）", char_tiers["level_3"], selection_window_size),
         make_tier_row("单字全量", char_tiers["all"], selection_window_size),
+        "",
+        "## 单字排序策略对比",
+        "",
+        f"这组对比固定使用同一份单字真实频率作为需求权重，只替换单字桶内的排序策略：`tier_only` 表示只按 5 档分层骨架排序，`tier_plus_frequency` 表示在同样 5 档骨架上继续叠加单字真频率，`tier_plus_frequency_plus_modern_common` 表示在此基础上再叠加“现代常用单字优先”的轻量约束，`current_runtime` 表示继续叠加读音纠偏与词语读音先验后的当前排序。",
+        "",
+        "| 策略 | 有效编码桶数 | 真实频率加权首选命中率 | 真实频率加权首屏可见率 |",
+        "| --- | ---: | ---: | ---: |",
+        f"| 仅 5 档分层 | {char_ordering_comparison['tier_only']['bucket_count']} | {format_pct(float(char_ordering_comparison['tier_only']['weighted_top1_share']))} | {format_pct(float(char_ordering_comparison['tier_only']['weighted_first_page_share']))} |",
+        f"| 5 档 + 真单字频率 | {char_ordering_comparison['tier_plus_frequency']['bucket_count']} | {format_pct(float(char_ordering_comparison['tier_plus_frequency']['weighted_top1_share']))} | {format_pct(float(char_ordering_comparison['tier_plus_frequency']['weighted_first_page_share']))} |",
+        f"| 5 档 + 真单字频率 + 现代常用轻量约束 | {char_ordering_comparison['tier_plus_frequency_plus_modern_common']['bucket_count']} | {format_pct(float(char_ordering_comparison['tier_plus_frequency_plus_modern_common']['weighted_top1_share']))} | {format_pct(float(char_ordering_comparison['tier_plus_frequency_plus_modern_common']['weighted_first_page_share']))} |",
+        f"| 当前 runtime（再加读音纠偏 + 词语读音先验） | {char_ordering_comparison['current_runtime']['bucket_count']} | {format_pct(float(char_ordering_comparison['current_runtime']['weighted_top1_share']))} | {format_pct(float(char_ordering_comparison['current_runtime']['weighted_first_page_share']))} |",
+        f"| 真频率相对仅 5 档改善 | - | {format_pct(float(char_ordering_comparison['delta_tier_plus_frequency_vs_tier_only']['weighted_top1_share']))} | {format_pct(float(char_ordering_comparison['delta_tier_plus_frequency_vs_tier_only']['weighted_first_page_share']))} |",
+        f"| 现代常用轻量约束相对真频率改善 | - | {format_pct(float(char_ordering_comparison['delta_modern_common_vs_tier_plus_frequency']['weighted_top1_share']))} | {format_pct(float(char_ordering_comparison['delta_modern_common_vs_tier_plus_frequency']['weighted_first_page_share']))} |",
+        f"| 读音纠偏 + 词语先验相对现代常用改善 | - | {format_pct(float(char_ordering_comparison['delta_current_runtime_vs_modern_common']['weighted_top1_share']))} | {format_pct(float(char_ordering_comparison['delta_current_runtime_vs_modern_common']['weighted_first_page_share']))} |",
+        f"| 现代常用轻量约束相对仅 5 档总改善 | - | {format_pct(float(char_ordering_comparison['delta_modern_common_vs_tier_only']['weighted_top1_share']))} | {format_pct(float(char_ordering_comparison['delta_modern_common_vs_tier_only']['weighted_first_page_share']))} |",
+        f"| 当前 runtime 相对仅 5 档总改善 | - | {format_pct(float(char_ordering_comparison['delta_current_runtime_vs_tier_only']['weighted_top1_share']))} | {format_pct(float(char_ordering_comparison['delta_current_runtime_vs_tier_only']['weighted_first_page_share']))} |",
         "",
         "## 同语料码长对照基准",
         "",
@@ -992,11 +1163,12 @@ def main() -> None:
     parser.add_argument("--input", type=Path, default=DEFAULT_INPUT, help=f"Input runtime candidate JSON. Default: {DEFAULT_INPUT}")
     parser.add_argument("--markdown-output", type=Path, default=DEFAULT_MARKDOWN_OUTPUT, help=f"Markdown report output. Default: {DEFAULT_MARKDOWN_OUTPUT}")
     parser.add_argument("--json-output", type=Path, default=DEFAULT_JSON_OUTPUT, help=f"JSON summary output. Default: {DEFAULT_JSON_OUTPUT}")
+    parser.add_argument("--db", type=Path, default=DEFAULT_DB_PATH, help=f"Runtime SQLite database used for char ordering comparison. Default: {DEFAULT_DB_PATH}")
     parser.add_argument("--page-size", type=int, default=5, help="Current default first-page candidate count.")
     args = parser.parse_args()
 
     report = load_json(args.input)
-    payload = build_payload(report, args.page_size)
+    payload = build_payload(report, args.page_size, args.db)
     markdown = build_markdown(payload)
 
     args.markdown_output.parent.mkdir(parents=True, exist_ok=True)
