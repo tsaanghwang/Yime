@@ -18,6 +18,7 @@ MODULE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(MODULE)
 
 _fragment_penalty = MODULE._fragment_penalty
+_build_sample_bucket_entry = MODULE._build_sample_bucket_entry
 _rank_prefix_phrases = MODULE._rank_prefix_phrases
 
 
@@ -50,3 +51,35 @@ def test_rank_prefix_phrases_prefers_strict_words_over_fragment_tails() -> None:
         "吸收",
         "西方",
     ]
+
+
+def test_build_sample_bucket_entry_keeps_collision_metadata_and_targets() -> None:
+    entry = _build_sample_bucket_entry(
+        {
+            "candidate_count": 513,
+            "demand_weight_sum": 72416.0,
+            "collision_demand_score": 37149408.0,
+            "top_current_runtime_texts": ["一", "食", "意"],
+        },
+        lookup_code="abcd",
+        lookup_pinyin_tone="yi4",
+        prefix_phrases=[
+            {"phrase": "一般"},
+            {"phrase": "一直"},
+        ],
+        targets=[
+            {"text": "一般", "boost": 500000.0},
+            {"text": "一直", "boost": 400000.0},
+        ],
+    )
+
+    assert entry == {
+        "lookup_code": "abcd",
+        "lookup_pinyin_tone": "yi4",
+        "candidate_count": 513,
+        "demand_weight_sum": 72416.0,
+        "collision_demand_score": 37149408.0,
+        "top_current_runtime_texts": ["一", "食", "意"],
+        "target_phrases": ["一般", "一直"],
+        "sample_phrases": ["一般", "一直"],
+    }

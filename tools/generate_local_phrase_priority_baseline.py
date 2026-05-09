@@ -158,6 +158,26 @@ def _build_target_boosts(target_count: int, *, base_boost: float, step: float) -
     return [max(base_boost - step * index, step) for index in range(target_count)]
 
 
+def _build_sample_bucket_entry(
+    bucket: dict[str, Any],
+    *,
+    lookup_code: str,
+    lookup_pinyin_tone: str,
+    prefix_phrases: list[dict[str, Any]],
+    targets: list[dict[str, Any]],
+) -> dict[str, Any]:
+    return {
+        "lookup_code": lookup_code,
+        "lookup_pinyin_tone": lookup_pinyin_tone,
+        "candidate_count": int(bucket.get("candidate_count", 0) or 0),
+        "demand_weight_sum": float(bucket.get("demand_weight_sum", 0.0) or 0.0),
+        "collision_demand_score": float(bucket.get("collision_demand_score", 0.0) or 0.0),
+        "top_current_runtime_texts": [str(text) for text in bucket.get("top_current_runtime_texts", [])],
+        "target_phrases": [str(target.get("text") or "") for target in targets],
+        "sample_phrases": [str(entry.get("phrase") or "") for entry in prefix_phrases],
+    }
+
+
 def build_payloads(
     *,
     bucket_limit: int,
@@ -199,11 +219,13 @@ def build_payloads(
                 }
             )
             sample_buckets.append(
-                {
-                    "lookup_pinyin_tone": lookup_pinyin_tone,
-                    "top_current_runtime_texts": [str(text) for text in bucket["top_current_runtime_texts"]],
-                    "sample_phrases": sample_phrases,
-                }
+                _build_sample_bucket_entry(
+                    bucket,
+                    lookup_code=lookup_code,
+                    lookup_pinyin_tone=lookup_pinyin_tone,
+                    prefix_phrases=prefix_phrases,
+                    targets=targets,
+                )
             )
 
     rules_payload = {

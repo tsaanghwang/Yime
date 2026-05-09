@@ -39,6 +39,8 @@
 
 当前默认覆盖前 20 个高碰撞单音节桶，每个桶给出 5 条定点词语目标和 10 条样本词语。
 
+`local_phrase_priority_samples.json` 现在除了样本词语外，也会保留每个桶的 `lookup_code`、`candidate_count`、`demand_weight_sum`、`collision_demand_score` 和本轮 `target_phrases`，便于后续连续输入规则继续复用同一批样本入口。
+
 ## 当前筛选原则
 
 生成脚本现在不是简单按 `phrase_frequency` 取前 5，而是先做一层“严格词优先、明显组合片段降权”的筛选。
