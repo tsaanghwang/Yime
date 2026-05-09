@@ -1,6 +1,6 @@
 #define MyAppName "Yime"
 #ifndef MyAppVersion
-  #define MyAppVersion "0.1.0"
+  #define MyAppVersion "0.1.1"
 #endif
 #ifndef MyPortableDistDir
   #define MyPortableDistDir AddBackslash(SourcePath) + "dist\\Yime"
