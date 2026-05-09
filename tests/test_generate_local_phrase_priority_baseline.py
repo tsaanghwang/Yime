@@ -19,6 +19,8 @@ SPEC.loader.exec_module(MODULE)
 
 _fragment_penalty = MODULE._fragment_penalty
 _build_sample_bucket_entry = MODULE._build_sample_bucket_entry
+_build_continuous_rules_payload = MODULE._build_continuous_rules_payload
+_iter_continuous_lookup_codes = MODULE._iter_continuous_lookup_codes
 _rank_prefix_phrases = MODULE._rank_prefix_phrases
 
 
@@ -83,3 +85,70 @@ def test_build_sample_bucket_entry_keeps_collision_metadata_and_targets() -> Non
         "target_phrases": ["一般", "一直"],
         "sample_phrases": ["一般", "一直"],
     }
+
+
+def test_iter_continuous_lookup_codes_expands_to_all_prefixes_after_first_syllable() -> None:
+    assert _iter_continuous_lookup_codes("abcdxywv") == [
+        "abcdx",
+        "abcdxy",
+        "abcdxyw",
+        "abcdxywv",
+    ]
+    assert _iter_continuous_lookup_codes("abcd") == []
+
+
+def test_build_continuous_rules_payload_expands_target_phrase_codes() -> None:
+    payload = _build_continuous_rules_payload(
+        [
+            {
+                "targets": [
+                    {"text": "你好啊", "yime_code": "abcdxywv", "boost": 500000.0},
+                    {"text": "你好吗", "yime_code": "abcdxyzz", "boost": 400000.0},
+                ]
+            }
+        ],
+        source="test-source",
+    )
+
+    assert payload["scope"] == "continuous_input_prefix"
+    assert payload["source"] == "test-source"
+    assert payload["rules"] == [
+        {
+            "lookup_code": "abcdx",
+            "targets": [
+                {"text": "你好啊", "boost": 500000.0},
+                {"text": "你好吗", "boost": 400000.0},
+            ],
+        },
+        {
+            "lookup_code": "abcdxy",
+            "targets": [
+                {"text": "你好啊", "boost": 500000.0},
+                {"text": "你好吗", "boost": 400000.0},
+            ],
+        },
+        {
+            "lookup_code": "abcdxyw",
+            "targets": [
+                {"text": "你好啊", "boost": 500000.0},
+            ],
+        },
+        {
+            "lookup_code": "abcdxywv",
+            "targets": [
+                {"text": "你好啊", "boost": 500000.0},
+            ],
+        },
+        {
+            "lookup_code": "abcdxyz",
+            "targets": [
+                {"text": "你好吗", "boost": 400000.0},
+            ],
+        },
+        {
+            "lookup_code": "abcdxyzz",
+            "targets": [
+                {"text": "你好吗", "boost": 400000.0},
+            ],
+        },
+    ]

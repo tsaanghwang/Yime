@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 from yime.input_method.core.char_code_index import CharCodeIndex
 from yime.input_method.core.decoders import RuntimeCandidateDecoder
+from yime.input_method.core.runtime_ranking import load_local_phrase_priority_rules
 
 
 def _build_runtime_decoder(*, debug_runtime_ranking: bool = True) -> RuntimeCandidateDecoder:
@@ -17,6 +20,16 @@ def _build_runtime_decoder(*, debug_runtime_ranking: bool = True) -> RuntimeCand
     runtime_decoder._phrase_prefix_index = {}
     runtime_decoder.char_code_index = CharCodeIndex.from_runtime_candidates(runtime_decoder.by_code)
     return runtime_decoder
+
+
+def _load_generated_continuous_rules() -> dict[str, dict[str, float]]:
+    return load_local_phrase_priority_rules(
+        Path(__file__).resolve().parents[1] / "internal_data" / "continuous_input_priority_rules.json",
+        {},
+        lambda _pinyin_tone, _pinyin_to_canonical: "",
+        expected_lookup_code_length=None,
+        min_lookup_code_length=5,
+    )
 
 
 def test_continuous_input_context_rule_promotes_partial_phrase() -> None:
@@ -324,3 +337,38 @@ def test_stage_d_prefers_continuous_context_priority_over_local_phrase_priority(
     assert candidates[:2] == ["你好", "你号"]
     assert "你好[exact/D-continuous]" in status
     assert "你号[exact/D-local]" in status
+
+
+def test_generated_continuous_rule_file_promotes_matching_prefix_candidate() -> None:
+    runtime_decoder = _build_runtime_decoder()
+    runtime_decoder._continuous_input_priority_rules = _load_generated_continuous_rules()
+
+    lookup_code, targets = next(iter(runtime_decoder._continuous_input_priority_rules.items()))
+    target_text, _boost = next(iter(targets.items()))
+    runtime_decoder._phrase_prefix_index = {
+        lookup_code: [
+            {
+                "text": "占位词",
+                "entry_type": "phrase",
+                "pinyin_tone": "zhan4 wei4 ci2",
+                "yime_code": lookup_code + "x",
+                "sort_weight": 999.0,
+                "text_length": 3,
+                "is_common": 1,
+            },
+            {
+                "text": target_text,
+                "entry_type": "phrase",
+                "pinyin_tone": "generated target",
+                "yime_code": lookup_code + "y",
+                "sort_weight": 100.0,
+                "text_length": max(len(target_text), 2),
+                "is_common": 1,
+            },
+        ]
+    }
+
+    _canonical, _active, _pinyin, candidates, status = runtime_decoder.decode_text(lookup_code)
+
+    assert candidates[:2] == [target_text, "占位词"]
+    assert f"{target_text}[prefix/C-continuous]" in status

@@ -12,6 +12,7 @@ SCAN_PATH = ROOT / "yime" / "reports" / "runtime_tuning_scan.json"
 RUNTIME_DB_PATH = ROOT / "yime" / "pinyin_hanzi.db"
 RULES_PATH = ROOT / "internal_data" / "local_phrase_priority_rules.json"
 SAMPLES_PATH = ROOT / "internal_data" / "local_phrase_priority_samples.json"
+CONTINUOUS_RULES_PATH = ROOT / "internal_data" / "continuous_input_priority_rules.json"
 
 DEFAULT_BUCKET_LIMIT = 20
 DEFAULT_TARGET_COUNT = 5
@@ -102,7 +103,7 @@ def _query_prefix_phrases(
 ) -> list[dict[str, Any]]:
     rows = conn.execute(
         """
-        SELECT phrase, pinyin_tone, COALESCE(phrase_frequency, 0) AS phrase_frequency, reading_rank
+        SELECT phrase, yime_code, pinyin_tone, COALESCE(phrase_frequency, 0) AS phrase_frequency, reading_rank
         FROM phrase_lexicon_view
         WHERE yime_code >= ?
           AND yime_code < ?
@@ -116,6 +117,7 @@ def _query_prefix_phrases(
     return [
         {
             "phrase": str(row["phrase"] or "").strip(),
+            "yime_code": str(row["yime_code"] or "").strip(),
             "pinyin_tone": str(row["pinyin_tone"] or "").strip(),
             "phrase_frequency": float(row["phrase_frequency"] or 0.0),
             "reading_rank": int(row["reading_rank"] or 0),
@@ -158,6 +160,58 @@ def _build_target_boosts(target_count: int, *, base_boost: float, step: float) -
     return [max(base_boost - step * index, step) for index in range(target_count)]
 
 
+def _iter_continuous_lookup_codes(full_code: str) -> list[str]:
+    normalized_code = str(full_code or "").strip()
+    if len(normalized_code) < 5:
+        return []
+    return [normalized_code[:index] for index in range(5, len(normalized_code) + 1)]
+
+
+def _build_continuous_rules_payload(
+    bucket_rules: list[dict[str, Any]],
+    *,
+    source: str,
+) -> dict[str, Any]:
+    rule_map: dict[str, dict[str, float]] = {}
+    for bucket_rule in bucket_rules:
+        targets = bucket_rule.get("targets")
+        if not isinstance(targets, list):
+            continue
+        for target in targets:
+            if not isinstance(target, dict):
+                continue
+            text = str(target.get("text") or "").strip()
+            full_code = str(target.get("yime_code") or "").strip()
+            boost = float(target.get("boost") or 0.0)
+            if not text or not full_code or boost <= 0.0:
+                continue
+            for lookup_code in _iter_continuous_lookup_codes(full_code):
+                target_boosts = rule_map.setdefault(lookup_code, {})
+                target_boosts[text] = max(target_boosts.get(text, 0.0), boost)
+
+    serialized_rules = [
+        {
+            "lookup_code": lookup_code,
+            "targets": [
+                {"text": text, "boost": boost}
+                for text, boost in sorted(
+                    target_boosts.items(),
+                    key=lambda item: (-float(item[1]), item[0]),
+                )
+            ],
+        }
+        for lookup_code, target_boosts in sorted(rule_map.items())
+        if target_boosts
+    ]
+    return {
+        "version": 1,
+        "scope": "continuous_input_prefix",
+        "description": "Pilot continuous-input boosts seeded from the high-collision single-syllable target phrases. Rules apply to lookup prefixes longer than one full syllable.",
+        "source": source,
+        "rules": serialized_rules,
+    }
+
+
 def _build_sample_bucket_entry(
     bucket: dict[str, Any],
     *,
@@ -183,7 +237,7 @@ def build_payloads(
     bucket_limit: int,
     target_count: int,
     sample_count: int,
-) -> tuple[dict[str, Any], dict[str, Any]]:
+) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
     buckets = _load_high_collision_buckets(SCAN_PATH, bucket_limit)
     boosts = _build_target_boosts(
         target_count,
@@ -192,6 +246,7 @@ def build_payloads(
     )
 
     rules: list[dict[str, Any]] = []
+    continuous_seed_rules: list[dict[str, Any]] = []
     sample_buckets: list[dict[str, Any]] = []
 
     with sqlite3.connect(RUNTIME_DB_PATH) as conn:
@@ -207,7 +262,11 @@ def build_payloads(
                 )
 
             targets = [
-                {"text": prefix_phrases[index]["phrase"], "boost": boosts[index]}
+                {
+                    "text": prefix_phrases[index]["phrase"],
+                    "yime_code": prefix_phrases[index]["yime_code"],
+                    "boost": boosts[index],
+                }
                 for index in range(target_count)
             ]
             sample_phrases = [entry["phrase"] for entry in prefix_phrases]
@@ -215,7 +274,17 @@ def build_payloads(
             rules.append(
                 {
                     "lookup_pinyin_tone": lookup_pinyin_tone,
-                    "targets": targets,
+                    "targets": [
+                        {"text": str(target["text"]), "boost": float(target["boost"])}
+                        for target in targets
+                    ],
+                }
+            )
+            continuous_seed_rules.append(
+                {
+                    "lookup_code": lookup_code,
+                    "lookup_pinyin_tone": lookup_pinyin_tone,
+                    "targets": [dict(target) for target in targets],
                 }
             )
             sample_buckets.append(
@@ -240,28 +309,44 @@ def build_payloads(
         "scope": "single_syllable_prefix",
         "buckets": sample_buckets,
     }
-    return rules_payload, samples_payload
+    continuous_rules_payload = _build_continuous_rules_payload(
+        continuous_seed_rules,
+        source="internal_data/local_phrase_priority_samples.json target phrases expanded to 5+ code continuous-input prefixes",
+    )
+    return rules_payload, samples_payload, continuous_rules_payload
 
 
 def _dump_payload(payload: dict[str, Any]) -> str:
     return json.dumps(payload, ensure_ascii=False, indent=2) + "\n"
 
 
-def validate_payloads(expected_rules: dict[str, Any], expected_samples: dict[str, Any]) -> list[str]:
+def validate_payloads(
+    expected_rules: dict[str, Any],
+    expected_samples: dict[str, Any],
+    expected_continuous_rules: dict[str, Any],
+) -> list[str]:
     mismatches: list[str] = []
     current_rules = _load_json(RULES_PATH)
     current_samples = _load_json(SAMPLES_PATH)
+    current_continuous_rules = _load_json(CONTINUOUS_RULES_PATH)
 
     if current_rules != expected_rules:
         mismatches.append("local_phrase_priority_rules.json 与生成结果不一致")
     if current_samples != expected_samples:
         mismatches.append("local_phrase_priority_samples.json 与生成结果不一致")
+    if current_continuous_rules != expected_continuous_rules:
+        mismatches.append("continuous_input_priority_rules.json 与生成结果不一致")
     return mismatches
 
 
-def write_payloads(rules_payload: dict[str, Any], samples_payload: dict[str, Any]) -> None:
+def write_payloads(
+    rules_payload: dict[str, Any],
+    samples_payload: dict[str, Any],
+    continuous_rules_payload: dict[str, Any],
+) -> None:
     RULES_PATH.write_text(_dump_payload(rules_payload), encoding="utf-8")
     SAMPLES_PATH.write_text(_dump_payload(samples_payload), encoding="utf-8")
+    CONTINUOUS_RULES_PATH.write_text(_dump_payload(continuous_rules_payload), encoding="utf-8")
 
 
 def print_summary(rules_payload: dict[str, Any], samples_payload: dict[str, Any]) -> None:
@@ -277,7 +362,7 @@ def main() -> None:
     if not args.write and not args.validate:
         raise SystemExit("请至少指定 --write 或 --validate。")
 
-    rules_payload, samples_payload = build_payloads(
+    rules_payload, samples_payload, continuous_rules_payload = build_payloads(
         bucket_limit=max(int(args.bucket_limit), 1),
         target_count=max(int(args.target_count), 1),
         sample_count=max(int(args.sample_count), max(int(args.target_count), 1)),
@@ -285,12 +370,17 @@ def main() -> None:
     print_summary(rules_payload, samples_payload)
 
     if args.write:
-        write_payloads(rules_payload, samples_payload)
+        write_payloads(rules_payload, samples_payload, continuous_rules_payload)
         print(f"wrote: {RULES_PATH}")
         print(f"wrote: {SAMPLES_PATH}")
+        print(f"wrote: {CONTINUOUS_RULES_PATH}")
 
     if args.validate:
-        mismatches = validate_payloads(rules_payload, samples_payload)
+        mismatches = validate_payloads(
+            rules_payload,
+            samples_payload,
+            continuous_rules_payload,
+        )
         if mismatches:
             raise SystemExit("\n".join(mismatches))
         print("validate: ok")
