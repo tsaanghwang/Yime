@@ -5,15 +5,6 @@
   "source": "internal_data/local_phrase_priority_samples.json target phrases expanded to 5+ code continuous-input prefixes",
   "rules": [
     {
-      "lookup_code": "􀀀􀀠􀀡􀀢􀀃",
-      "targets": [
-        {
-          "text": "避免",
-          "boost": 500000.0
-        }
-      ]
-    },
-    {
       "lookup_code": "􀀀􀀠􀀡􀀢􀀃􀀢",
       "targets": [
         {
@@ -28,24 +19,6 @@
         {
           "text": "避免",
           "boost": 500000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀀􀀠􀀡􀀢􀀃􀀢􀀫􀀽",
-      "targets": [
-        {
-          "text": "避免",
-          "boost": 500000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀀􀀠􀀡􀀢􀀓",
-      "targets": [
-        {
-          "text": "毕竟",
-          "boost": 300000.0
         }
       ]
     },
@@ -68,24 +41,6 @@
       ]
     },
     {
-      "lookup_code": "􀀀􀀠􀀡􀀢􀀓􀀠􀀭􀁀",
-      "targets": [
-        {
-          "text": "毕竟",
-          "boost": 300000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀀􀀠􀀡􀀢􀀕",
-      "targets": [
-        {
-          "text": "必须",
-          "boost": 400000.0
-        }
-      ]
-    },
-    {
       "lookup_code": "􀀀􀀠􀀡􀀢􀀕􀀦",
       "targets": [
         {
@@ -104,37 +59,11 @@
       ]
     },
     {
-      "lookup_code": "􀀀􀀠􀀡􀀢􀀕􀀦􀀦􀀦",
-      "targets": [
-        {
-          "text": "必须",
-          "boost": 400000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀀􀀠􀀡􀀢􀀖",
-      "targets": [
-        {
-          "text": "毕业",
-          "boost": 200000.0
-        },
-        {
-          "text": "毕业生",
-          "boost": 100000.0
-        }
-      ]
-    },
-    {
       "lookup_code": "􀀀􀀠􀀡􀀢􀀖􀀬",
       "targets": [
         {
           "text": "毕业",
           "boost": 200000.0
-        },
-        {
-          "text": "毕业生",
-          "boost": 100000.0
         }
       ]
     },
@@ -144,23 +73,6 @@
         {
           "text": "毕业",
           "boost": 200000.0
-        },
-        {
-          "text": "毕业生",
-          "boost": 100000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀀􀀠􀀡􀀢􀀖􀀬􀀭􀀮",
-      "targets": [
-        {
-          "text": "毕业",
-          "boost": 200000.0
-        },
-        {
-          "text": "毕业生",
-          "boost": 100000.0
         }
       ]
     },
@@ -192,24 +104,6 @@
       ]
     },
     {
-      "lookup_code": "􀀀􀀠􀀡􀀢􀀖􀀬􀀭􀀮􀀑􀀬􀀬􀀾",
-      "targets": [
-        {
-          "text": "毕业生",
-          "boost": 100000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀀􀀮􀀭􀀬􀀉",
-      "targets": [
-        {
-          "text": "博客",
-          "boost": 300000.0
-        }
-      ]
-    },
-    {
       "lookup_code": "􀀀􀀮􀀭􀀬􀀉􀀬",
       "targets": [
         {
@@ -224,24 +118,6 @@
         {
           "text": "博客",
           "boost": 300000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀀􀀮􀀭􀀬􀀉􀀬􀀭􀀮",
-      "targets": [
-        {
-          "text": "博客",
-          "boost": 300000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀀􀀮􀀭􀀬􀀍",
-      "targets": [
-        {
-          "text": "博彩",
-          "boost": 200000.0
         }
       ]
     },
@@ -264,24 +140,6 @@
       ]
     },
     {
-      "lookup_code": "􀀀􀀮􀀭􀀬􀀍􀀫􀀫􀀢",
-      "targets": [
-        {
-          "text": "博彩",
-          "boost": 200000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀀􀀮􀀭􀀬􀀏",
-      "targets": [
-        {
-          "text": "博主",
-          "boost": 100000.0
-        }
-      ]
-    },
-    {
       "lookup_code": "􀀀􀀮􀀭􀀬􀀏􀀥",
       "targets": [
         {
@@ -300,24 +158,6 @@
       ]
     },
     {
-      "lookup_code": "􀀀􀀮􀀭􀀬􀀏􀀥􀀥􀀥",
-      "targets": [
-        {
-          "text": "博主",
-          "boost": 100000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀀􀀮􀀭􀀬􀀑",
-      "targets": [
-        {
-          "text": "博士",
-          "boost": 400000.0
-        }
-      ]
-    },
-    {
       "lookup_code": "􀀀􀀮􀀭􀀬􀀑􀀲",
       "targets": [
         {
@@ -332,51 +172,6 @@
         {
           "text": "博士",
           "boost": 400000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀀􀀮􀀭􀀬􀀑􀀲􀀳􀀴",
-      "targets": [
-        {
-          "text": "博士",
-          "boost": 400000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀀􀀮􀀭􀀬􀀗",
-      "targets": [
-        {
-          "text": "博物馆",
-          "boost": 500000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀀􀀮􀀭􀀬􀀗􀀣",
-      "targets": [
-        {
-          "text": "博物馆",
-          "boost": 500000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀀􀀮􀀭􀀬􀀗􀀣􀀤",
-      "targets": [
-        {
-          "text": "博物馆",
-          "boost": 500000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀀􀀮􀀭􀀬􀀗􀀣􀀤􀀥",
-      "targets": [
-        {
-          "text": "博物馆",
-          "boost": 500000.0
         }
       ]
     },
@@ -408,24 +203,6 @@
       ]
     },
     {
-      "lookup_code": "􀀀􀀮􀀭􀀬􀀗􀀣􀀤􀀥􀀈􀀥􀀫􀀽",
-      "targets": [
-        {
-          "text": "博物馆",
-          "boost": 500000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀂􀀥􀀤􀀣􀀆",
-      "targets": [
-        {
-          "text": "福利",
-          "boost": 200000.0
-        }
-      ]
-    },
-    {
       "lookup_code": "􀀂􀀥􀀤􀀣􀀆􀀠",
       "targets": [
         {
@@ -440,24 +217,6 @@
         {
           "text": "福利",
           "boost": 200000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀂􀀥􀀤􀀣􀀆􀀠􀀡􀀢",
-      "targets": [
-        {
-          "text": "福利",
-          "boost": 200000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀂􀀥􀀤􀀣􀀊",
-      "targets": [
-        {
-          "text": "符合",
-          "boost": 300000.0
         }
       ]
     },
@@ -480,24 +239,6 @@
       ]
     },
     {
-      "lookup_code": "􀀂􀀥􀀤􀀣􀀊􀀮􀀭􀀬",
-      "targets": [
-        {
-          "text": "符合",
-          "boost": 300000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀂􀀥􀀤􀀣􀀏",
-      "targets": [
-        {
-          "text": "服装",
-          "boost": 100000.0
-        }
-      ]
-    },
-    {
       "lookup_code": "􀀂􀀥􀀤􀀣􀀏􀀣",
       "targets": [
         {
@@ -516,37 +257,11 @@
       ]
     },
     {
-      "lookup_code": "􀀂􀀥􀀤􀀣􀀏􀀣􀀩􀀾",
-      "targets": [
-        {
-          "text": "服装",
-          "boost": 100000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀂􀀥􀀤􀀣􀀗",
-      "targets": [
-        {
-          "text": "服务",
-          "boost": 500000.0
-        },
-        {
-          "text": "服务员",
-          "boost": 400000.0
-        }
-      ]
-    },
-    {
       "lookup_code": "􀀂􀀥􀀤􀀣􀀗􀀣",
       "targets": [
         {
           "text": "服务",
           "boost": 500000.0
-        },
-        {
-          "text": "服务员",
-          "boost": 400000.0
         }
       ]
     },
@@ -556,23 +271,6 @@
         {
           "text": "服务",
           "boost": 500000.0
-        },
-        {
-          "text": "服务员",
-          "boost": 400000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀂􀀥􀀤􀀣􀀗􀀣􀀤􀀥",
-      "targets": [
-        {
-          "text": "服务",
-          "boost": 500000.0
-        },
-        {
-          "text": "服务员",
-          "boost": 400000.0
         }
       ]
     },
@@ -604,24 +302,6 @@
       ]
     },
     {
-      "lookup_code": "􀀂􀀥􀀤􀀣􀀗􀀣􀀤􀀥􀀖􀀨􀀪􀀻",
-      "targets": [
-        {
-          "text": "服务员",
-          "boost": 400000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀆􀀠􀀡􀀢􀀆",
-      "targets": [
-        {
-          "text": "力量",
-          "boost": 200000.0
-        }
-      ]
-    },
-    {
       "lookup_code": "􀀆􀀠􀀡􀀢􀀆􀀠",
       "targets": [
         {
@@ -636,24 +316,6 @@
         {
           "text": "力量",
           "boost": 200000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀆􀀠􀀡􀀢􀀆􀀠􀀪􀁀",
-      "targets": [
-        {
-          "text": "力量",
-          "boost": 200000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀆􀀠􀀡􀀢􀀌",
-      "targets": [
-        {
-          "text": "例子",
-          "boost": 100000.0
         }
       ]
     },
@@ -676,24 +338,6 @@
       ]
     },
     {
-      "lookup_code": "􀀆􀀠􀀡􀀢􀀌􀀳􀀳􀀳",
-      "targets": [
-        {
-          "text": "例子",
-          "boost": 100000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀆􀀠􀀡􀀢􀀑",
-      "targets": [
-        {
-          "text": "历史",
-          "boost": 400000.0
-        }
-      ]
-    },
-    {
       "lookup_code": "􀀆􀀠􀀡􀀢􀀑􀀴",
       "targets": [
         {
@@ -708,24 +352,6 @@
         {
           "text": "历史",
           "boost": 400000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀆􀀠􀀡􀀢􀀑􀀴􀀴􀀴",
-      "targets": [
-        {
-          "text": "历史",
-          "boost": 400000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀆􀀠􀀡􀀢􀀒",
-      "targets": [
-        {
-          "text": "例如",
-          "boost": 500000.0
         }
       ]
     },
@@ -748,24 +374,6 @@
       ]
     },
     {
-      "lookup_code": "􀀆􀀠􀀡􀀢􀀒􀀥􀀤􀀣",
-      "targets": [
-        {
-          "text": "例如",
-          "boost": 500000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀆􀀠􀀡􀀢􀀖",
-      "targets": [
-        {
-          "text": "利用",
-          "boost": 300000.0
-        }
-      ]
-    },
-    {
       "lookup_code": "􀀆􀀠􀀡􀀢􀀖􀀣",
       "targets": [
         {
@@ -784,24 +392,6 @@
       ]
     },
     {
-      "lookup_code": "􀀆􀀠􀀡􀀢􀀖􀀣􀀭􀁀",
-      "targets": [
-        {
-          "text": "利用",
-          "boost": 300000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀆􀀢􀀭􀀾􀀈",
-      "targets": [
-        {
-          "text": "灵感",
-          "boost": 200000.0
-        }
-      ]
-    },
-    {
       "lookup_code": "􀀆􀀢􀀭􀀾􀀈􀀫",
       "targets": [
         {
@@ -816,28 +406,6 @@
         {
           "text": "灵感",
           "boost": 200000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀆􀀢􀀭􀀾􀀈􀀫􀀫􀀽",
-      "targets": [
-        {
-          "text": "灵感",
-          "boost": 200000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀆􀀢􀀭􀀾􀀊",
-      "targets": [
-        {
-          "text": "灵魂",
-          "boost": 300000.0
-        },
-        {
-          "text": "灵活",
-          "boost": 100000.0
         }
       ]
     },
@@ -864,38 +432,11 @@
       ]
     },
     {
-      "lookup_code": "􀀆􀀢􀀭􀀾􀀊􀀥􀀭􀀬",
-      "targets": [
-        {
-          "text": "灵活",
-          "boost": 100000.0
-        }
-      ]
-    },
-    {
       "lookup_code": "􀀆􀀢􀀭􀀾􀀊􀀥􀀰",
       "targets": [
         {
           "text": "灵魂",
           "boost": 300000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀆􀀢􀀭􀀾􀀊􀀥􀀰􀀻",
-      "targets": [
-        {
-          "text": "灵魂",
-          "boost": 300000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀆􀀢􀀭􀀾􀀐",
-      "targets": [
-        {
-          "text": "凌晨",
-          "boost": 500000.0
         }
       ]
     },
@@ -918,24 +459,6 @@
       ]
     },
     {
-      "lookup_code": "􀀆􀀢􀀭􀀾􀀐􀀱􀀰􀀻",
-      "targets": [
-        {
-          "text": "凌晨",
-          "boost": 500000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀆􀀢􀀭􀀾􀀑",
-      "targets": [
-        {
-          "text": "零售",
-          "boost": 400000.0
-        }
-      ]
-    },
-    {
       "lookup_code": "􀀆􀀢􀀭􀀾􀀑􀀬",
       "targets": [
         {
@@ -950,24 +473,6 @@
         {
           "text": "零售",
           "boost": 400000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀆􀀢􀀭􀀾􀀑􀀬􀀭􀀥",
-      "targets": [
-        {
-          "text": "零售",
-          "boost": 400000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀋􀀬􀀭􀀮􀀃",
-      "targets": [
-        {
-          "text": "恶魔",
-          "boost": 200000.0
         }
       ]
     },
@@ -990,24 +495,6 @@
       ]
     },
     {
-      "lookup_code": "􀀋􀀬􀀭􀀮􀀃􀀮􀀭􀀬",
-      "targets": [
-        {
-          "text": "恶魔",
-          "boost": 200000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀋􀀬􀀭􀀮􀀆",
-      "targets": [
-        {
-          "text": "恶劣",
-          "boost": 400000.0
-        }
-      ]
-    },
-    {
       "lookup_code": "􀀋􀀬􀀭􀀮􀀆􀀠",
       "targets": [
         {
@@ -1022,24 +509,6 @@
         {
           "text": "恶劣",
           "boost": 400000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀋􀀬􀀭􀀮􀀆􀀠􀀰􀀱",
-      "targets": [
-        {
-          "text": "恶劣",
-          "boost": 400000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀋􀀬􀀭􀀮􀀊",
-      "targets": [
-        {
-          "text": "恶化",
-          "boost": 300000.0
         }
       ]
     },
@@ -1062,24 +531,6 @@
       ]
     },
     {
-      "lookup_code": "􀀋􀀬􀀭􀀮􀀊􀀣􀀪􀀫",
-      "targets": [
-        {
-          "text": "恶化",
-          "boost": 300000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀋􀀬􀀭􀀮􀀏",
-      "targets": [
-        {
-          "text": "遏制",
-          "boost": 100000.0
-        }
-      ]
-    },
-    {
       "lookup_code": "􀀋􀀬􀀭􀀮􀀏􀀲",
       "targets": [
         {
@@ -1094,24 +545,6 @@
         {
           "text": "遏制",
           "boost": 100000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀋􀀬􀀭􀀮􀀏􀀲􀀳􀀴",
-      "targets": [
-        {
-          "text": "遏制",
-          "boost": 100000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀋􀀬􀀭􀀮􀀖",
-      "targets": [
-        {
-          "text": "恶意",
-          "boost": 500000.0
         }
       ]
     },
@@ -1134,24 +567,6 @@
       ]
     },
     {
-      "lookup_code": "􀀋􀀬􀀭􀀮􀀖􀀠􀀡􀀢",
-      "targets": [
-        {
-          "text": "恶意",
-          "boost": 500000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀏􀀲􀀳􀀴􀀄",
-      "targets": [
-        {
-          "text": "制定",
-          "boost": 200000.0
-        }
-      ]
-    },
-    {
       "lookup_code": "􀀏􀀲􀀳􀀴􀀄􀀠",
       "targets": [
         {
@@ -1170,28 +585,6 @@
       ]
     },
     {
-      "lookup_code": "􀀏􀀲􀀳􀀴􀀄􀀠􀀭􀁀",
-      "targets": [
-        {
-          "text": "制定",
-          "boost": 200000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀏􀀲􀀳􀀴􀀆",
-      "targets": [
-        {
-          "text": "质量",
-          "boost": 500000.0
-        },
-        {
-          "text": "治疗",
-          "boost": 300000.0
-        }
-      ]
-    },
-    {
       "lookup_code": "􀀏􀀲􀀳􀀴􀀆􀀠",
       "targets": [
         {
@@ -1202,15 +595,6 @@
     },
     {
       "lookup_code": "􀀏􀀲􀀳􀀴􀀆􀀠􀀪",
-      "targets": [
-        {
-          "text": "质量",
-          "boost": 500000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀏􀀲􀀳􀀴􀀆􀀠􀀪􀁀",
       "targets": [
         {
           "text": "质量",
@@ -1237,24 +621,6 @@
       ]
     },
     {
-      "lookup_code": "􀀏􀀲􀀳􀀴􀀆􀀢􀀪􀀣",
-      "targets": [
-        {
-          "text": "治疗",
-          "boost": 300000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀏􀀲􀀳􀀴􀀇",
-      "targets": [
-        {
-          "text": "智能",
-          "boost": 400000.0
-        }
-      ]
-    },
-    {
       "lookup_code": "􀀏􀀲􀀳􀀴􀀇􀀮",
       "targets": [
         {
@@ -1269,24 +635,6 @@
         {
           "text": "智能",
           "boost": 400000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀏􀀲􀀳􀀴􀀇􀀮􀀭􀀾",
-      "targets": [
-        {
-          "text": "智能",
-          "boost": 400000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀏􀀲􀀳􀀴􀀌",
-      "targets": [
-        {
-          "text": "制作",
-          "boost": 100000.0
         }
       ]
     },
@@ -1309,24 +657,6 @@
       ]
     },
     {
-      "lookup_code": "􀀏􀀲􀀳􀀴􀀌􀀣􀀭􀀮",
-      "targets": [
-        {
-          "text": "制作",
-          "boost": 100000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀑􀀲􀀳􀀴􀀂",
-      "targets": [
-        {
-          "text": "是否",
-          "boost": 300000.0
-        }
-      ]
-    },
-    {
       "lookup_code": "􀀑􀀲􀀳􀀴􀀂􀀮",
       "targets": [
         {
@@ -1341,24 +671,6 @@
         {
           "text": "是否",
           "boost": 300000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀑􀀲􀀳􀀴􀀂􀀮􀀮􀀥",
-      "targets": [
-        {
-          "text": "是否",
-          "boost": 300000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀑􀀲􀀳􀀴􀀈",
-      "targets": [
-        {
-          "text": "是个",
-          "boost": 200000.0
         }
       ]
     },
@@ -1381,24 +693,6 @@
       ]
     },
     {
-      "lookup_code": "􀀑􀀲􀀳􀀴􀀈􀀬􀀭􀀮",
-      "targets": [
-        {
-          "text": "是个",
-          "boost": 200000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀑􀀲􀀳􀀴􀀊",
-      "targets": [
-        {
-          "text": "适合",
-          "boost": 400000.0
-        }
-      ]
-    },
-    {
       "lookup_code": "􀀑􀀲􀀳􀀴􀀊􀀮",
       "targets": [
         {
@@ -1413,24 +707,6 @@
         {
           "text": "适合",
           "boost": 400000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀑􀀲􀀳􀀴􀀊􀀮􀀭􀀬",
-      "targets": [
-        {
-          "text": "适合",
-          "boost": 400000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀑􀀲􀀳􀀴􀀐",
-      "targets": [
-        {
-          "text": "市场",
-          "boost": 500000.0
         }
       ]
     },
@@ -1453,24 +729,6 @@
       ]
     },
     {
-      "lookup_code": "􀀑􀀲􀀳􀀴􀀐􀀫􀀫􀁀",
-      "targets": [
-        {
-          "text": "市场",
-          "boost": 500000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀑􀀲􀀳􀀴􀀓",
-      "targets": [
-        {
-          "text": "世界",
-          "boost": 100000.0
-        }
-      ]
-    },
-    {
       "lookup_code": "􀀑􀀲􀀳􀀴􀀓􀀠",
       "targets": [
         {
@@ -1485,24 +743,6 @@
         {
           "text": "世界",
           "boost": 100000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀑􀀲􀀳􀀴􀀓􀀠􀀰􀀱",
-      "targets": [
-        {
-          "text": "世界",
-          "boost": 100000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀓􀀠􀀠􀀠􀀀",
-      "targets": [
-        {
-          "text": "基本",
-          "boost": 200000.0
         }
       ]
     },
@@ -1525,24 +765,6 @@
       ]
     },
     {
-      "lookup_code": "􀀓􀀠􀀠􀀠􀀀􀀱􀀱􀀽",
-      "targets": [
-        {
-          "text": "基本",
-          "boost": 200000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀓􀀠􀀠􀀠􀀓",
-      "targets": [
-        {
-          "text": "基金",
-          "boost": 400000.0
-        }
-      ]
-    },
-    {
       "lookup_code": "􀀓􀀠􀀠􀀠􀀓􀀠",
       "targets": [
         {
@@ -1561,37 +783,11 @@
       ]
     },
     {
-      "lookup_code": "􀀓􀀠􀀠􀀠􀀓􀀠􀀯􀀻",
-      "targets": [
-        {
-          "text": "基金",
-          "boost": 400000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀓􀀠􀀠􀀠􀀔",
-      "targets": [
-        {
-          "text": "机器",
-          "boost": 500000.0
-        },
-        {
-          "text": "机器人",
-          "boost": 100000.0
-        }
-      ]
-    },
-    {
       "lookup_code": "􀀓􀀠􀀠􀀠􀀔􀀠",
       "targets": [
         {
           "text": "机器",
           "boost": 500000.0
-        },
-        {
-          "text": "机器人",
-          "boost": 100000.0
         }
       ]
     },
@@ -1601,23 +797,6 @@
         {
           "text": "机器",
           "boost": 500000.0
-        },
-        {
-          "text": "机器人",
-          "boost": 100000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀓􀀠􀀠􀀠􀀔􀀠􀀡􀀢",
-      "targets": [
-        {
-          "text": "机器",
-          "boost": 500000.0
-        },
-        {
-          "text": "机器人",
-          "boost": 100000.0
         }
       ]
     },
@@ -1649,24 +828,6 @@
       ]
     },
     {
-      "lookup_code": "􀀓􀀠􀀠􀀠􀀔􀀠􀀡􀀢􀀒􀀱􀀰􀀻",
-      "targets": [
-        {
-          "text": "机器人",
-          "boost": 100000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀓􀀠􀀠􀀠􀀖",
-      "targets": [
-        {
-          "text": "基于",
-          "boost": 300000.0
-        }
-      ]
-    },
-    {
       "lookup_code": "􀀓􀀠􀀠􀀠􀀖􀀨",
       "targets": [
         {
@@ -1681,24 +842,6 @@
         {
           "text": "基于",
           "boost": 300000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀓􀀠􀀠􀀠􀀖􀀨􀀧􀀦",
-      "targets": [
-        {
-          "text": "基于",
-          "boost": 300000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀓􀀠􀀡􀀢􀀇",
-      "targets": [
-        {
-          "text": "技能",
-          "boost": 200000.0
         }
       ]
     },
@@ -1721,24 +864,6 @@
       ]
     },
     {
-      "lookup_code": "􀀓􀀠􀀡􀀢􀀇􀀮􀀭􀀾",
-      "targets": [
-        {
-          "text": "技能",
-          "boost": 200000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀓􀀠􀀡􀀢􀀊",
-      "targets": [
-        {
-          "text": "计划",
-          "boost": 400000.0
-        }
-      ]
-    },
-    {
       "lookup_code": "􀀓􀀠􀀡􀀢􀀊􀀣",
       "targets": [
         {
@@ -1757,37 +882,11 @@
       ]
     },
     {
-      "lookup_code": "􀀓􀀠􀀡􀀢􀀊􀀣􀀪􀀫",
-      "targets": [
-        {
-          "text": "计划",
-          "boost": 400000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀓􀀠􀀡􀀢􀀎",
-      "targets": [
-        {
-          "text": "计算",
-          "boost": 300000.0
-        },
-        {
-          "text": "计算机",
-          "boost": 100000.0
-        }
-      ]
-    },
-    {
       "lookup_code": "􀀓􀀠􀀡􀀢􀀎􀀣",
       "targets": [
         {
           "text": "计算",
           "boost": 300000.0
-        },
-        {
-          "text": "计算机",
-          "boost": 100000.0
         }
       ]
     },
@@ -1797,23 +896,6 @@
         {
           "text": "计算",
           "boost": 300000.0
-        },
-        {
-          "text": "计算机",
-          "boost": 100000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀓􀀠􀀡􀀢􀀎􀀣􀀪􀀽",
-      "targets": [
-        {
-          "text": "计算",
-          "boost": 300000.0
-        },
-        {
-          "text": "计算机",
-          "boost": 100000.0
         }
       ]
     },
@@ -1845,24 +927,6 @@
       ]
     },
     {
-      "lookup_code": "􀀓􀀠􀀡􀀢􀀎􀀣􀀪􀀽􀀓􀀠􀀠􀀠",
-      "targets": [
-        {
-          "text": "计算机",
-          "boost": 100000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀓􀀠􀀡􀀢􀀑",
-      "targets": [
-        {
-          "text": "技术",
-          "boost": 500000.0
-        }
-      ]
-    },
-    {
       "lookup_code": "􀀓􀀠􀀡􀀢􀀑􀀣",
       "targets": [
         {
@@ -1877,24 +941,6 @@
         {
           "text": "技术",
           "boost": 500000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀓􀀠􀀡􀀢􀀑􀀣􀀤􀀥",
-      "targets": [
-        {
-          "text": "技术",
-          "boost": 500000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀓􀀢􀀡􀀠􀀀",
-      "targets": [
-        {
-          "text": "疾病",
-          "boost": 400000.0
         }
       ]
     },
@@ -1917,24 +963,6 @@
       ]
     },
     {
-      "lookup_code": "􀀓􀀢􀀡􀀠􀀀􀀠􀀭􀁀",
-      "targets": [
-        {
-          "text": "疾病",
-          "boost": 400000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀓􀀢􀀡􀀠􀀅",
-      "targets": [
-        {
-          "text": "集团",
-          "boost": 200000.0
-        }
-      ]
-    },
-    {
       "lookup_code": "􀀓􀀢􀀡􀀠􀀅􀀥",
       "targets": [
         {
@@ -1953,24 +981,6 @@
       ]
     },
     {
-      "lookup_code": "􀀓􀀢􀀡􀀠􀀅􀀥􀀪􀀻",
-      "targets": [
-        {
-          "text": "集团",
-          "boost": 200000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀓􀀢􀀡􀀠􀀉",
-      "targets": [
-        {
-          "text": "即可",
-          "boost": 500000.0
-        }
-      ]
-    },
-    {
       "lookup_code": "􀀓􀀢􀀡􀀠􀀉􀀮",
       "targets": [
         {
@@ -1985,28 +995,6 @@
         {
           "text": "即可",
           "boost": 500000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀓􀀢􀀡􀀠􀀉􀀮􀀮􀀮",
-      "targets": [
-        {
-          "text": "即可",
-          "boost": 500000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀓􀀢􀀡􀀠􀀑",
-      "targets": [
-        {
-          "text": "及时",
-          "boost": 300000.0
-        },
-        {
-          "text": "即使",
-          "boost": 100000.0
         }
       ]
     },
@@ -2033,38 +1021,11 @@
       ]
     },
     {
-      "lookup_code": "􀀓􀀢􀀡􀀠􀀑􀀴􀀳􀀲",
-      "targets": [
-        {
-          "text": "及时",
-          "boost": 300000.0
-        }
-      ]
-    },
-    {
       "lookup_code": "􀀓􀀢􀀡􀀠􀀑􀀴􀀴",
       "targets": [
         {
           "text": "即使",
           "boost": 100000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀓􀀢􀀡􀀠􀀑􀀴􀀴􀀴",
-      "targets": [
-        {
-          "text": "即使",
-          "boost": 100000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀓􀀢􀀰􀀯􀀃",
-      "targets": [
-        {
-          "text": "节目",
-          "boost": 300000.0
         }
       ]
     },
@@ -2087,28 +1048,6 @@
       ]
     },
     {
-      "lookup_code": "􀀓􀀢􀀰􀀯􀀃􀀣􀀤􀀥",
-      "targets": [
-        {
-          "text": "节目",
-          "boost": 300000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀓􀀢􀀰􀀯􀀈",
-      "targets": [
-        {
-          "text": "结果",
-          "boost": 500000.0
-        },
-        {
-          "text": "结构",
-          "boost": 400000.0
-        }
-      ]
-    },
-    {
       "lookup_code": "􀀓􀀢􀀰􀀯􀀈􀀥",
       "targets": [
         {
@@ -2119,15 +1058,6 @@
     },
     {
       "lookup_code": "􀀓􀀢􀀰􀀯􀀈􀀥􀀮",
-      "targets": [
-        {
-          "text": "结果",
-          "boost": 500000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀓􀀢􀀰􀀯􀀈􀀥􀀮􀀮",
       "targets": [
         {
           "text": "结果",
@@ -2154,28 +1084,6 @@
       ]
     },
     {
-      "lookup_code": "􀀓􀀢􀀰􀀯􀀈􀀬􀀭􀀥",
-      "targets": [
-        {
-          "text": "结构",
-          "boost": 400000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀓􀀢􀀰􀀯􀀊",
-      "targets": [
-        {
-          "text": "结合",
-          "boost": 200000.0
-        },
-        {
-          "text": "结婚",
-          "boost": 100000.0
-        }
-      ]
-    },
-    {
       "lookup_code": "􀀓􀀢􀀰􀀯􀀊􀀣",
       "targets": [
         {
@@ -2186,15 +1094,6 @@
     },
     {
       "lookup_code": "􀀓􀀢􀀰􀀯􀀊􀀣􀀯",
-      "targets": [
-        {
-          "text": "结婚",
-          "boost": 100000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀓􀀢􀀰􀀯􀀊􀀣􀀯􀀻",
       "targets": [
         {
           "text": "结婚",
@@ -2221,32 +1120,6 @@
       ]
     },
     {
-      "lookup_code": "􀀓􀀢􀀰􀀯􀀊􀀮􀀭􀀬",
-      "targets": [
-        {
-          "text": "结合",
-          "boost": 200000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀓􀀨􀀰􀀯􀀄",
-      "targets": [
-        {
-          "text": "觉得",
-          "boost": 500000.0
-        },
-        {
-          "text": "决定",
-          "boost": 200000.0
-        },
-        {
-          "text": "绝对",
-          "boost": 100000.0
-        }
-      ]
-    },
-    {
       "lookup_code": "􀀓􀀨􀀰􀀯􀀄􀀠",
       "targets": [
         {
@@ -2257,15 +1130,6 @@
     },
     {
       "lookup_code": "􀀓􀀨􀀰􀀯􀀄􀀠􀀭",
-      "targets": [
-        {
-          "text": "决定",
-          "boost": 200000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀓􀀨􀀰􀀯􀀄􀀠􀀭􀁀",
       "targets": [
         {
           "text": "决定",
@@ -2292,15 +1156,6 @@
       ]
     },
     {
-      "lookup_code": "􀀓􀀨􀀰􀀯􀀄􀀣􀀰􀀢",
-      "targets": [
-        {
-          "text": "绝对",
-          "boost": 100000.0
-        }
-      ]
-    },
-    {
       "lookup_code": "􀀓􀀨􀀰􀀯􀀄􀀭",
       "targets": [
         {
@@ -2315,24 +1170,6 @@
         {
           "text": "觉得",
           "boost": 500000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀓􀀨􀀰􀀯􀀄􀀭􀀭􀀭",
-      "targets": [
-        {
-          "text": "觉得",
-          "boost": 500000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀓􀀨􀀰􀀯􀀍",
-      "targets": [
-        {
-          "text": "决策",
-          "boost": 400000.0
         }
       ]
     },
@@ -2355,24 +1192,6 @@
       ]
     },
     {
-      "lookup_code": "􀀓􀀨􀀰􀀯􀀍􀀬􀀭􀀮",
-      "targets": [
-        {
-          "text": "决策",
-          "boost": 400000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀓􀀨􀀰􀀯􀀎",
-      "targets": [
-        {
-          "text": "角色",
-          "boost": 300000.0
-        }
-      ]
-    },
-    {
       "lookup_code": "􀀓􀀨􀀰􀀯􀀎􀀬",
       "targets": [
         {
@@ -2387,28 +1206,6 @@
         {
           "text": "角色",
           "boost": 300000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀓􀀨􀀰􀀯􀀎􀀬􀀭􀀮",
-      "targets": [
-        {
-          "text": "角色",
-          "boost": 300000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀔􀀢􀀡􀀠􀀅",
-      "targets": [
-        {
-          "text": "其他",
-          "boost": 500000.0
-        },
-        {
-          "text": "其它",
-          "boost": 200000.0
         }
       ]
     },
@@ -2439,28 +1236,6 @@
       ]
     },
     {
-      "lookup_code": "􀀔􀀢􀀡􀀠􀀅􀀩􀀩􀀩",
-      "targets": [
-        {
-          "text": "其他",
-          "boost": 500000.0
-        },
-        {
-          "text": "其它",
-          "boost": 200000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀔􀀢􀀡􀀠􀀍",
-      "targets": [
-        {
-          "text": "其次",
-          "boost": 100000.0
-        }
-      ]
-    },
-    {
       "lookup_code": "􀀔􀀢􀀡􀀠􀀍􀀲",
       "targets": [
         {
@@ -2475,24 +1250,6 @@
         {
           "text": "其次",
           "boost": 100000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀔􀀢􀀡􀀠􀀍􀀲􀀳􀀴",
-      "targets": [
-        {
-          "text": "其次",
-          "boost": 100000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀔􀀢􀀡􀀠􀀏",
-      "targets": [
-        {
-          "text": "其中",
-          "boost": 300000.0
         }
       ]
     },
@@ -2515,24 +1272,6 @@
       ]
     },
     {
-      "lookup_code": "􀀔􀀢􀀡􀀠􀀏􀀣􀀬􀀾",
-      "targets": [
-        {
-          "text": "其中",
-          "boost": 300000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀔􀀢􀀡􀀠􀀑",
-      "targets": [
-        {
-          "text": "其实",
-          "boost": 400000.0
-        }
-      ]
-    },
-    {
       "lookup_code": "􀀔􀀢􀀡􀀠􀀑􀀴",
       "targets": [
         {
@@ -2547,51 +1286,6 @@
         {
           "text": "其实",
           "boost": 400000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀔􀀢􀀡􀀠􀀑􀀴􀀳􀀲",
-      "targets": [
-        {
-          "text": "其实",
-          "boost": 400000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀕􀀠􀀠􀀠􀀀",
-      "targets": [
-        {
-          "text": "西班牙",
-          "boost": 200000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀕􀀠􀀠􀀠􀀀􀀩",
-      "targets": [
-        {
-          "text": "西班牙",
-          "boost": 200000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀕􀀠􀀠􀀠􀀀􀀩􀀩",
-      "targets": [
-        {
-          "text": "西班牙",
-          "boost": 200000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀕􀀠􀀠􀀠􀀀􀀩􀀩􀀻",
-      "targets": [
-        {
-          "text": "西班牙",
-          "boost": 200000.0
         }
       ]
     },
@@ -2623,24 +1317,6 @@
       ]
     },
     {
-      "lookup_code": "􀀕􀀠􀀠􀀠􀀀􀀩􀀩􀀻􀀖􀀫􀀪􀀩",
-      "targets": [
-        {
-          "text": "西班牙",
-          "boost": 200000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀕􀀠􀀠􀀠􀀑",
-      "targets": [
-        {
-          "text": "吸收",
-          "boost": 100000.0
-        }
-      ]
-    },
-    {
       "lookup_code": "􀀕􀀠􀀠􀀠􀀑􀀬",
       "targets": [
         {
@@ -2655,24 +1331,6 @@
         {
           "text": "吸收",
           "boost": 100000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀕􀀠􀀠􀀠􀀑􀀬􀀬􀀣",
-      "targets": [
-        {
-          "text": "吸收",
-          "boost": 100000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀕􀀠􀀠􀀠􀀕",
-      "targets": [
-        {
-          "text": "嘻嘻",
-          "boost": 300000.0
         }
       ]
     },
@@ -2695,24 +1353,6 @@
       ]
     },
     {
-      "lookup_code": "􀀕􀀠􀀠􀀠􀀕􀀠􀀠􀀠",
-      "targets": [
-        {
-          "text": "嘻嘻",
-          "boost": 300000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀕􀀠􀀠􀀠􀀖",
-      "targets": [
-        {
-          "text": "吸引",
-          "boost": 400000.0
-        }
-      ]
-    },
-    {
       "lookup_code": "􀀕􀀠􀀠􀀠􀀖􀀢",
       "targets": [
         {
@@ -2731,24 +1371,6 @@
       ]
     },
     {
-      "lookup_code": "􀀕􀀠􀀠􀀠􀀖􀀢􀀱􀀽",
-      "targets": [
-        {
-          "text": "吸引",
-          "boost": 400000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀕􀀠􀀠􀀠􀀗",
-      "targets": [
-        {
-          "text": "希望",
-          "boost": 500000.0
-        }
-      ]
-    },
-    {
       "lookup_code": "􀀕􀀠􀀠􀀠􀀗􀀩",
       "targets": [
         {
@@ -2762,24 +1384,6 @@
       "targets": [
         {
           "text": "希望",
-          "boost": 500000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀕􀀠􀀠􀀠􀀗􀀩􀀪􀁀",
-      "targets": [
-        {
-          "text": "希望",
-          "boost": 500000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀖􀀠􀀡􀀢􀀀",
-      "targets": [
-        {
-          "text": "一般",
           "boost": 500000.0
         }
       ]
@@ -2803,24 +1407,6 @@
       ]
     },
     {
-      "lookup_code": "􀀖􀀠􀀡􀀢􀀀􀀩􀀩􀀻",
-      "targets": [
-        {
-          "text": "一般",
-          "boost": 500000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀖􀀠􀀡􀀢􀀏",
-      "targets": [
-        {
-          "text": "一直",
-          "boost": 300000.0
-        }
-      ]
-    },
-    {
       "lookup_code": "􀀖􀀠􀀡􀀢􀀏􀀴",
       "targets": [
         {
@@ -2835,24 +1421,6 @@
         {
           "text": "一直",
           "boost": 300000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀖􀀠􀀡􀀢􀀏􀀴􀀳􀀲",
-      "targets": [
-        {
-          "text": "一直",
-          "boost": 300000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀖􀀠􀀡􀀢􀀑",
-      "targets": [
-        {
-          "text": "艺术",
-          "boost": 100000.0
         }
       ]
     },
@@ -2875,24 +1443,6 @@
       ]
     },
     {
-      "lookup_code": "􀀖􀀠􀀡􀀢􀀑􀀣􀀤􀀥",
-      "targets": [
-        {
-          "text": "艺术",
-          "boost": 100000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀖􀀠􀀡􀀢􀀔",
-      "targets": [
-        {
-          "text": "一起",
-          "boost": 200000.0
-        }
-      ]
-    },
-    {
       "lookup_code": "􀀖􀀠􀀡􀀢􀀔􀀢",
       "targets": [
         {
@@ -2907,24 +1457,6 @@
         {
           "text": "一起",
           "boost": 200000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀖􀀠􀀡􀀢􀀔􀀢􀀢􀀢",
-      "targets": [
-        {
-          "text": "一起",
-          "boost": 200000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀖􀀠􀀡􀀢􀀖",
-      "targets": [
-        {
-          "text": "亿元",
-          "boost": 400000.0
         }
       ]
     },
@@ -2947,24 +1479,6 @@
       ]
     },
     {
-      "lookup_code": "􀀖􀀠􀀡􀀢􀀖􀀨􀀪􀀻",
-      "targets": [
-        {
-          "text": "亿元",
-          "boost": 400000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀖􀀢􀀡􀀠􀀀",
-      "targets": [
-        {
-          "text": "一部",
-          "boost": 200000.0
-        }
-      ]
-    },
-    {
       "lookup_code": "􀀖􀀢􀀡􀀠􀀀􀀣",
       "targets": [
         {
@@ -2979,24 +1493,6 @@
         {
           "text": "一部",
           "boost": 200000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀖􀀢􀀡􀀠􀀀􀀣􀀤􀀥",
-      "targets": [
-        {
-          "text": "一部",
-          "boost": 200000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀖􀀢􀀡􀀠􀀂",
-      "targets": [
-        {
-          "text": "一份",
-          "boost": 400000.0
         }
       ]
     },
@@ -3019,28 +1515,6 @@
       ]
     },
     {
-      "lookup_code": "􀀖􀀢􀀡􀀠􀀂􀀯􀀰􀀽",
-      "targets": [
-        {
-          "text": "一份",
-          "boost": 400000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀖􀀢􀀡􀀠􀀄",
-      "targets": [
-        {
-          "text": "移动",
-          "boost": 300000.0
-        },
-        {
-          "text": "一定",
-          "boost": 100000.0
-        }
-      ]
-    },
-    {
       "lookup_code": "􀀖􀀢􀀡􀀠􀀄􀀠",
       "targets": [
         {
@@ -3051,15 +1525,6 @@
     },
     {
       "lookup_code": "􀀖􀀢􀀡􀀠􀀄􀀠􀀭",
-      "targets": [
-        {
-          "text": "一定",
-          "boost": 100000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀖􀀢􀀡􀀠􀀄􀀠􀀭􀁀",
       "targets": [
         {
           "text": "一定",
@@ -3086,24 +1551,6 @@
       ]
     },
     {
-      "lookup_code": "􀀖􀀢􀀡􀀠􀀄􀀣􀀭􀁀",
-      "targets": [
-        {
-          "text": "移动",
-          "boost": 300000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀖􀀢􀀡􀀠􀀕",
-      "targets": [
-        {
-          "text": "一下",
-          "boost": 500000.0
-        }
-      ]
-    },
-    {
       "lookup_code": "􀀖􀀢􀀡􀀠􀀕􀀠",
       "targets": [
         {
@@ -3118,24 +1565,6 @@
         {
           "text": "一下",
           "boost": 500000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀖􀀢􀀡􀀠􀀕􀀠􀀪􀀫",
-      "targets": [
-        {
-          "text": "一下",
-          "boost": 500000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀖􀀦􀀧􀀨􀀂",
-      "targets": [
-        {
-          "text": "预防",
-          "boost": 300000.0
         }
       ]
     },
@@ -3158,24 +1587,6 @@
       ]
     },
     {
-      "lookup_code": "􀀖􀀦􀀧􀀨􀀂􀀫􀀪􀀾",
-      "targets": [
-        {
-          "text": "预防",
-          "boost": 300000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀖􀀦􀀧􀀨􀀄",
-      "targets": [
-        {
-          "text": "遇到",
-          "boost": 200000.0
-        }
-      ]
-    },
-    {
       "lookup_code": "􀀖􀀦􀀧􀀨􀀄􀀩",
       "targets": [
         {
@@ -3190,24 +1601,6 @@
         {
           "text": "遇到",
           "boost": 200000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀖􀀦􀀧􀀨􀀄􀀩􀀪􀀥",
-      "targets": [
-        {
-          "text": "遇到",
-          "boost": 200000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀖􀀦􀀧􀀨􀀍",
-      "targets": [
-        {
-          "text": "预测",
-          "boost": 500000.0
         }
       ]
     },
@@ -3230,24 +1623,6 @@
       ]
     },
     {
-      "lookup_code": "􀀖􀀦􀀧􀀨􀀍􀀬􀀭􀀮",
-      "targets": [
-        {
-          "text": "预测",
-          "boost": 500000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀖􀀦􀀧􀀨􀀎",
-      "targets": [
-        {
-          "text": "预算",
-          "boost": 100000.0
-        }
-      ]
-    },
-    {
       "lookup_code": "􀀖􀀦􀀧􀀨􀀎􀀣",
       "targets": [
         {
@@ -3262,51 +1637,6 @@
         {
           "text": "预算",
           "boost": 100000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀖􀀦􀀧􀀨􀀎􀀣􀀪􀀽",
-      "targets": [
-        {
-          "text": "预算",
-          "boost": 100000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀖􀀦􀀧􀀨􀀐",
-      "targets": [
-        {
-          "text": "预处理",
-          "boost": 400000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀖􀀦􀀧􀀨􀀐􀀥",
-      "targets": [
-        {
-          "text": "预处理",
-          "boost": 400000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀖􀀦􀀧􀀨􀀐􀀥􀀥",
-      "targets": [
-        {
-          "text": "预处理",
-          "boost": 400000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀖􀀦􀀧􀀨􀀐􀀥􀀥􀀥",
-      "targets": [
-        {
-          "text": "预处理",
-          "boost": 400000.0
         }
       ]
     },
@@ -3338,24 +1668,6 @@
       ]
     },
     {
-      "lookup_code": "􀀖􀀦􀀧􀀨􀀐􀀥􀀥􀀥􀀆􀀢􀀢􀀢",
-      "targets": [
-        {
-          "text": "预处理",
-          "boost": 400000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀖􀀨􀀧􀀦􀀆",
-      "targets": [
-        {
-          "text": "娱乐",
-          "boost": 500000.0
-        }
-      ]
-    },
-    {
       "lookup_code": "􀀖􀀨􀀧􀀦􀀆􀀬",
       "targets": [
         {
@@ -3370,24 +1682,6 @@
         {
           "text": "娱乐",
           "boost": 500000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀖􀀨􀀧􀀦􀀆􀀬􀀭􀀮",
-      "targets": [
-        {
-          "text": "娱乐",
-          "boost": 500000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀖􀀨􀀧􀀦􀀋",
-      "targets": [
-        {
-          "text": "余额",
-          "boost": 200000.0
         }
       ]
     },
@@ -3410,24 +1704,6 @@
       ]
     },
     {
-      "lookup_code": "􀀖􀀨􀀧􀀦􀀋􀀮􀀭􀀬",
-      "targets": [
-        {
-          "text": "余额",
-          "boost": 200000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀖􀀨􀀧􀀦􀀑",
-      "targets": [
-        {
-          "text": "于是",
-          "boost": 400000.0
-        }
-      ]
-    },
-    {
       "lookup_code": "􀀖􀀨􀀧􀀦􀀑􀀲",
       "targets": [
         {
@@ -3442,24 +1718,6 @@
         {
           "text": "于是",
           "boost": 400000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀖􀀨􀀧􀀦􀀑􀀲􀀳􀀴",
-      "targets": [
-        {
-          "text": "于是",
-          "boost": 400000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀖􀀨􀀧􀀦􀀒",
-      "targets": [
-        {
-          "text": "与人",
-          "boost": 100000.0
         }
       ]
     },
@@ -3482,24 +1740,6 @@
       ]
     },
     {
-      "lookup_code": "􀀖􀀨􀀧􀀦􀀒􀀱􀀰􀀻",
-      "targets": [
-        {
-          "text": "与人",
-          "boost": 100000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀖􀀨􀀧􀀦􀀓",
-      "targets": [
-        {
-          "text": "瑜伽",
-          "boost": 300000.0
-        }
-      ]
-    },
-    {
       "lookup_code": "􀀖􀀨􀀧􀀦􀀓􀀠",
       "targets": [
         {
@@ -3518,45 +1758,11 @@
       ]
     },
     {
-      "lookup_code": "􀀖􀀨􀀧􀀦􀀓􀀠􀀩􀀩",
-      "targets": [
-        {
-          "text": "瑜伽",
-          "boost": 300000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀖􀀩􀀪􀀽􀀏",
-      "targets": [
-        {
-          "text": "验证",
-          "boost": 500000.0
-        },
-        {
-          "text": "验证集",
-          "boost": 400000.0
-        },
-        {
-          "text": "验证码",
-          "boost": 100000.0
-        }
-      ]
-    },
-    {
       "lookup_code": "􀀖􀀩􀀪􀀽􀀏􀀬",
       "targets": [
         {
           "text": "验证",
           "boost": 500000.0
-        },
-        {
-          "text": "验证集",
-          "boost": 400000.0
-        },
-        {
-          "text": "验证码",
-          "boost": 100000.0
         }
       ]
     },
@@ -3566,31 +1772,6 @@
         {
           "text": "验证",
           "boost": 500000.0
-        },
-        {
-          "text": "验证集",
-          "boost": 400000.0
-        },
-        {
-          "text": "验证码",
-          "boost": 100000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀖􀀩􀀪􀀽􀀏􀀬􀀭􀁀",
-      "targets": [
-        {
-          "text": "验证",
-          "boost": 500000.0
-        },
-        {
-          "text": "验证集",
-          "boost": 400000.0
-        },
-        {
-          "text": "验证码",
-          "boost": 100000.0
         }
       ]
     },
@@ -3614,15 +1795,6 @@
     },
     {
       "lookup_code": "􀀖􀀩􀀪􀀽􀀏􀀬􀀭􀁀􀀃􀀫􀀫",
-      "targets": [
-        {
-          "text": "验证码",
-          "boost": 100000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀖􀀩􀀪􀀽􀀏􀀬􀀭􀁀􀀃􀀫􀀫􀀫",
       "targets": [
         {
           "text": "验证码",
@@ -3658,24 +1830,6 @@
       ]
     },
     {
-      "lookup_code": "􀀖􀀩􀀪􀀽􀀏􀀬􀀭􀁀􀀓􀀢􀀡􀀠",
-      "targets": [
-        {
-          "text": "验证集",
-          "boost": 400000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀖􀀩􀀪􀀽􀀑",
-      "targets": [
-        {
-          "text": "验收",
-          "boost": 300000.0
-        }
-      ]
-    },
-    {
       "lookup_code": "􀀖􀀩􀀪􀀽􀀑􀀬",
       "targets": [
         {
@@ -3694,24 +1848,6 @@
       ]
     },
     {
-      "lookup_code": "􀀖􀀩􀀪􀀽􀀑􀀬􀀬􀀣",
-      "targets": [
-        {
-          "text": "验收",
-          "boost": 300000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀖􀀩􀀪􀀽􀀗",
-      "targets": [
-        {
-          "text": "厌恶",
-          "boost": 200000.0
-        }
-      ]
-    },
-    {
       "lookup_code": "􀀖􀀩􀀪􀀽􀀗􀀣",
       "targets": [
         {
@@ -3722,15 +1858,6 @@
     },
     {
       "lookup_code": "􀀖􀀩􀀪􀀽􀀗􀀣􀀤",
-      "targets": [
-        {
-          "text": "厌恶",
-          "boost": 200000.0
-        }
-      ]
-    },
-    {
-      "lookup_code": "􀀖􀀩􀀪􀀽􀀗􀀣􀀤􀀥",
       "targets": [
         {
           "text": "厌恶",

@@ -162,9 +162,20 @@ def _build_target_boosts(target_count: int, *, base_boost: float, step: float) -
 
 def _iter_continuous_lookup_codes(full_code: str) -> list[str]:
     normalized_code = str(full_code or "").strip()
-    if len(normalized_code) < 5:
+    if len(normalized_code) < 8:
         return []
-    return [normalized_code[:index] for index in range(5, len(normalized_code) + 1)]
+    syllable_count = len(normalized_code) // 4
+    if syllable_count < 2:
+        return []
+
+    deepest_complete_syllables = min(syllable_count - 1, 3)
+    start = deepest_complete_syllables * 4 + 1
+    if deepest_complete_syllables == 1:
+        start = 6
+    end = min(start + 2, len(normalized_code) - 1)
+    if end < start:
+        return []
+    return [normalized_code[:index] for index in range(start, end + 1)]
 
 
 def _build_continuous_rules_payload(
