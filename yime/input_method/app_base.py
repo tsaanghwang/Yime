@@ -14,6 +14,7 @@ from tkinter import messagebox, simpledialog
 from typing import Callable, Mapping, Optional, cast
 
 from ..borrow_wanxiang_frequency import marked_pinyin_to_numeric
+from ..asset_paths import resolve_runtime_candidates_json_path
 from .core.decoders import CompositeCandidateDecoder
 from .core.input_visualization import (
     build_code_display,
@@ -123,9 +124,7 @@ class BaseInputMethodApp:
         app_dir = Path(__file__).resolve().parent.parent
         self.app_dir = app_dir
         self.repo_root = app_dir.parent
-        self.runtime_candidates_json_path = (
-            app_dir / "reports" / "runtime_candidates_by_code_true.json"
-        )
+        self.runtime_candidates_json_path = resolve_runtime_candidates_json_path(app_dir)
         self.runtime_entry_label = self._detect_runtime_entry_label()
         self.runtime_commit_short_hash = self._detect_runtime_commit_short_hash()
         self._pending_feedbacks: list[tuple[str, str, str, bool]] = []
@@ -1198,8 +1197,15 @@ class BaseInputMethodApp:
 
         runtime_source = str(getattr(self, "runtime_decoder_source", "unknown") or "unknown").lower()
         candidate_source = self._describe_runtime_candidate_source()
-        if runtime_source in {"json", "sqlite"}:
+        if runtime_source == "json":
             items.append(("候选来源", "正常", candidate_source, None))
+        elif runtime_source == "sqlite":
+            items.append((
+                "候选来源",
+                "警告",
+                candidate_source,
+                "请检查运行时 JSON 导出文件是否生成。",
+            ))
         else:
             items.append((
                 "候选来源",

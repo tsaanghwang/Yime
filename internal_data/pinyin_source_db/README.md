@@ -14,6 +14,15 @@ Current contents:
 - `PATCH_POLICY.md`: When to patch numeric pinyin facts versus canonical yime codes.
 - `export_yaml_lexicon_json.py`: Standalone `.yaml -> .json` export entrypoint, independent from the SQLite rebuild chain.
 
+Default generated location:
+
+- `c:/dev/Yime/.generated/source_pinyin.db`
+
+Override options:
+
+- set `YIME_SOURCE_PINYIN_DB` to point tools at an external SQLite file
+- if `.generated/source_pinyin.db` exists, rebuild/import helpers prefer it over the legacy tracked path
+
 Default upstream source:
 
 - sibling `pinyin-data` repo, typically `../pinyin-data/pinyin.txt`

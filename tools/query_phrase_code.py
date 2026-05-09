@@ -5,9 +5,11 @@ import sqlite3
 from pathlib import Path
 from typing import Iterable, Sequence
 
+from yime.asset_paths import resolve_source_pinyin_db_path
+
 
 ROOT = Path(__file__).resolve().parent.parent
-SOURCE_DB_PATH = ROOT / "internal_data" / "pinyin_source_db" / "source_pinyin.db"
+SOURCE_DB_PATH = resolve_source_pinyin_db_path(ROOT)
 RUNTIME_DB_PATH = ROOT / "yime" / "pinyin_hanzi.db"
 USER_DB_PATH = ROOT / "yime" / "user_lexicon.db"
 

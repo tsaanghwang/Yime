@@ -6,10 +6,12 @@ import sqlite3
 from collections import defaultdict
 from pathlib import Path
 
+from yime.asset_paths import generated_runtime_candidates_json_path
+
 
 DB_PATH = Path(__file__).resolve().parent / "pinyin_hanzi.db"
 DEFAULT_OUTPUT_PATH = Path(__file__).resolve().parent / "reports" / "runtime_candidates_by_code.json"
-DEFAULT_TRUE_OUTPUT_PATH = Path(__file__).resolve().parent / "reports" / "runtime_candidates_by_code_true.json"
+DEFAULT_TRUE_OUTPUT_PATH = generated_runtime_candidates_json_path(Path(__file__).resolve().parent.parent)
 DEFAULT_PLACEHOLDER_OUTPUT_PATH = Path(__file__).resolve().parent / "reports" / "runtime_candidates_placeholder_phrases.json"
 
 

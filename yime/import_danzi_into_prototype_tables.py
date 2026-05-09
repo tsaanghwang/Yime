@@ -4,12 +4,13 @@ import csv
 import sqlite3
 from pathlib import Path
 
+from yime.asset_paths import resolve_source_pinyin_db_path
 from yime.canonical_yime_mapping import sync_canonical_mapping_table
 
 
 WORKSPACE_ROOT = Path(__file__).resolve().parent.parent
 DB_PATH = Path(__file__).resolve().parent / "pinyin_hanzi.db"
-SOURCE_DB_PATH = WORKSPACE_ROOT / "internal_data" / "pinyin_source_db" / "source_pinyin.db"
+SOURCE_DB_PATH = resolve_source_pinyin_db_path(WORKSPACE_ROOT)
 SCHEMA_PATH = Path(__file__).resolve().parent / "create_prototype_schema_additions.sql"
 NUMERIC_PATCH_PATH = WORKSPACE_ROOT / "internal_data" / "pinyin_source_db" / "numeric_pinyin_patch.csv"
 

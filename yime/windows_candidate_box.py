@@ -9,6 +9,8 @@ import tkinter as tk
 from tkinter import ttk
 import unicodedata
 
+from .asset_paths import resolve_runtime_candidates_json_path
+
 
 user32 = ctypes.WinDLL("user32", use_last_error=True)
 
@@ -155,7 +157,7 @@ class StaticCandidateDecoder:
 
 class RuntimeCandidateDecoder:
     def __init__(self, app_dir: Path) -> None:
-        self.runtime_path = app_dir / "reports" / "runtime_candidates_by_code_true.json"
+        self.runtime_path = resolve_runtime_candidates_json_path(app_dir)
         self.bmp_to_canonical = self._build_bmp_to_canonical_map(
             app_dir.parent / "internal_data" / "bmp_pua_trial_projection.json",
             app_dir.parent / "internal_data" / "key_to_symbol.json",

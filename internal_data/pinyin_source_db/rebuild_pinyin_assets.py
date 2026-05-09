@@ -11,7 +11,7 @@ from pathlib import Path
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 WORKSPACE_ROOT = SCRIPT_DIR.parent.parent
-DEFAULT_DB_PATH = SCRIPT_DIR / "source_pinyin.db"
+DEFAULT_DB_PATH = WORKSPACE_ROOT / ".generated" / "source_pinyin.db"
 DEFAULT_CHAR_SOURCE = Path("C:/dev/pinyin-data/pinyin.txt")
 DEFAULT_PHRASE_SOURCE = Path("C:/dev/pinyin-data/tools/phrase-pinyin-data/pinyin.txt")
 DEFAULT_NORMALIZED_OUTPUT = WORKSPACE_ROOT / "pinyin" / "hanzi_pinyin" / "pinyin_normalized.json"

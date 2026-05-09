@@ -10,6 +10,16 @@
 2. 从 `source_pinyin.db` 重建 prototype tables
 3. 用 canonical 码面刷新 runtime 资产
 
+默认建议把生成产物放在仓库外置的工作区路径，而不是继续改动已跟踪的大文件：
+
+- `c:/dev/Yime/.generated/source_pinyin.db`
+- `c:/dev/Yime/.generated/runtime_candidates_by_code_true.json`
+
+兼容策略：
+
+- 运行时读取优先级：`YIME_RUNTIME_CANDIDATES_JSON` -> `.generated/runtime_candidates_by_code_true.json` -> 旧仓库路径
+- source DB 读取优先级：`YIME_SOURCE_PINYIN_DB` -> `.generated/source_pinyin.db` -> 旧仓库路径
+
 对应入口：
 
 - [build_source_pinyin_db.py](/c:/dev/Yime/internal_data/pinyin_source_db/build_source_pinyin_db.py)
@@ -32,7 +42,13 @@ c:/dev/Yime/.venv/Scripts/python.exe internal_data/pinyin_source_db/validate_sou
 c:/dev/Yime/.venv/Scripts/python.exe yime/import_danzi_into_prototype_tables.py
 c:/dev/Yime/.venv/Scripts/python.exe yime/import_duozi_into_prototype_tables.py
 c:/dev/Yime/.venv/Scripts/python.exe yime/refresh_runtime_yime_codes.py --apply
+c:/dev/Yime/.venv/Scripts/python.exe yime/export_runtime_candidates_json.py
 ```
+
+其中：
+
+- `build_source_pinyin_db.py` 默认会把 SQLite 产物写到 `.generated/source_pinyin.db`
+- `export_runtime_candidates_json.py` 默认会把 runtime true JSON 写到 `.generated/runtime_candidates_by_code_true.json`
 
 ## 2. 独立 `.yaml` 导出链
 

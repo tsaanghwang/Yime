@@ -14,6 +14,7 @@ from pathlib import Path
 import unicodedata
 from typing import Dict, List, Tuple, Optional, cast
 
+from ...asset_paths import resolve_runtime_candidates_json_path
 from .char_code_index import CharCodeCandidate
 from .runtime_decoder_base import (
     RuntimeDecoderBase as _RuntimeDecoderBase,
@@ -199,7 +200,7 @@ class RuntimeCandidateDecoder(_RuntimeDecoderBase):
     """运行时候选词解码器，JSON 导出为数据源。"""
 
     def __init__(self, app_dir: Path, user_db_path: Path | None = None) -> None:
-        self.runtime_path = app_dir / "reports" / "runtime_candidates_by_code_true.json"
+        self.runtime_path = resolve_runtime_candidates_json_path(app_dir)
         self._init_runtime_decoder_common(app_dir, user_db_path)
         self._json_store = JSONRuntimeCandidateStore(
             self.runtime_path,
