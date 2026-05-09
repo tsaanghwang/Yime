@@ -459,6 +459,18 @@ def test_generated_continuous_rule_file_excludes_filtered_noise_groups() -> None
     assert frozenset({"灵魂", "灵活"}) not in target_sets
 
 
+def test_generated_continuous_rule_file_keeps_multi_target_groups_only_at_lengths_6_and_7() -> None:
+    generated_rules = _load_generated_continuous_rules()
+
+    multi_target_lookup_lengths = {
+        len(lookup_code)
+        for lookup_code, targets in generated_rules.items()
+        if len(targets) > 1
+    }
+
+    assert multi_target_lookup_lengths == {6, 7}
+
+
 def test_generated_variant_and_stem_rules_stay_on_first_page() -> None:
     retained_groups = [
         {"其他", "其它"},
