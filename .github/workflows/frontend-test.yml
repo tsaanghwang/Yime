@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Detect frontend project
         id: frontend
@@ -40,7 +40,7 @@ jobs:
 
       - name: Set up Node
         if: steps.frontend.outputs.has_frontend == 'true'
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: '20'
           cache: 'npm'
@@ -59,7 +59,7 @@ jobs:
 
       - name: Upload coverage
         if: steps.frontend.outputs.has_frontend == 'true' && github.event_name != 'pull_request' && hashFiles('coverage/lcov.info') != ''
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v6
         with:
           files: coverage/lcov.info
           flags: frontend
