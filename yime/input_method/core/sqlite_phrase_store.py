@@ -3,11 +3,14 @@ from __future__ import annotations
 import sqlite3
 from typing import Dict, List, Mapping
 
-from .runtime_ranking import annotate_phrase_prefix_candidate, phrase_candidate_payload_sort_key
+from .runtime_ranking import (
+    annotate_candidate_source,
+    annotate_phrase_prefix_candidate,
+    phrase_candidate_payload_sort_key,
+)
 from .sqlite_runtime_source import SQLiteRuntimeSource
 
 
-_PHRASE_PREFIX_CANDIDATE_LIMIT = 64
 _RUNTIME_SQL_PRIORITY_ORDER = """
 CASE
     WHEN entry_type = 'phrase' AND text_length BETWEEN 2 AND 4 THEN 0
@@ -57,23 +60,32 @@ class SQLitePhraseCandidateStore:
                     (normalized_code,),
                 ).fetchall()
 
-            cached = [dict(row) for row in rows]
+            cached = [annotate_candidate_source(dict(row), "exact") for row in rows]
             self._runtime_candidate_cache[normalized_code] = list(cached)
 
         merged = list(cached)
-        merged.extend(phrase_candidate_overlays.get(normalized_code, []))
+        merged.extend(
+            annotate_candidate_source(candidate, "overlay")
+            for candidate in phrase_candidate_overlays.get(normalized_code, [])
+            if isinstance(candidate, dict)
+        )
         return merged
 
     def load_phrase_prefix_candidates(
         self,
         lookup_code: str,
         phrase_candidate_overlays: Mapping[str, List[Dict[str, object]]],
+        *,
+        limit: int = 0,
     ) -> List[Dict[str, object]]:
         normalized_code = str(lookup_code or "").strip()
         if not normalized_code:
             return []
+        normalized_limit = max(int(limit or 0), 0)
         cached = self._phrase_prefix_cache.get(normalized_code)
         if cached is not None:
+            if normalized_limit > 0:
+                return list(cached[:normalized_limit])
             return list(cached)
 
         with self.runtime_source.connect() as conn:
@@ -92,23 +104,30 @@ class SQLitePhraseCandidateStore:
                     normalized_code,
                     normalized_code + "\U0010ffff",
                     len(normalized_code),
-                    _PHRASE_PREFIX_CANDIDATE_LIMIT,
+                    normalized_limit or 64,
                 ),
             ).fetchall()
 
         merged = [
-            annotate_phrase_prefix_candidate(dict(row), len(normalized_code))
+            annotate_phrase_prefix_candidate(
+                annotate_candidate_source(dict(row), "exact"),
+                len(normalized_code),
+            )
             for row in rows
         ]
         for overlay_code, overlay_candidates in phrase_candidate_overlays.items():
             normalized_overlay_code = str(overlay_code or "").strip()
             if normalized_overlay_code.startswith(normalized_code) and normalized_overlay_code != normalized_code:
                 merged.extend(
-                    annotate_phrase_prefix_candidate(candidate, len(normalized_code))
+                    annotate_phrase_prefix_candidate(
+                        annotate_candidate_source(candidate, "overlay"),
+                        len(normalized_code),
+                    )
                     for candidate in overlay_candidates
+                    if isinstance(candidate, dict)
                 )
 
         merged.sort(key=phrase_candidate_payload_sort_key)
-        cached = merged[:_PHRASE_PREFIX_CANDIDATE_LIMIT]
+        cached = merged[: normalized_limit or 64]
         self._phrase_prefix_cache[normalized_code] = list(cached)
         return list(cached)

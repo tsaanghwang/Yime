@@ -25,7 +25,11 @@ from .runtime_lookup import (
     RuntimeLookupPlan,
     build_phrase_tree_lookup as _build_phrase_tree_lookup,
 )
-from .runtime_ranking import annotate_phrase_prefix_candidate as _annotate_phrase_prefix_candidate
+from .runtime_ranking import (
+    RuntimeCandidateRecord,
+    annotate_candidate_source as _annotate_candidate_source,
+    annotate_phrase_prefix_candidate as _annotate_phrase_prefix_candidate,
+)
 from .sqlite_char_store import SQLiteCharCandidateStore
 from .sqlite_phrase_store import SQLitePhraseCandidateStore
 from .sqlite_runtime_source import SQLiteRuntimeSource
@@ -147,11 +151,11 @@ class StaticCandidateDecoder:
                 status = f"{mode_hint} 当前 4 码未找到拼音映射。"
             return canonical, active_code, "", [], status
 
-            numeric_pinyin = str(mapping.get("数字标调", "") or "")
-            marked_pinyin = unicodedata.normalize(
-                "NFC",
-                str(mapping.get("调号标调", "") or ""),
-            )
+        numeric_pinyin = str(mapping.get("数字标调", "") or "")
+        marked_pinyin = unicodedata.normalize(
+            "NFC",
+            str(mapping.get("调号标调", "") or ""),
+        )
         display_pinyin = marked_pinyin or numeric_pinyin
         candidates = self._lookup_candidates(numeric_pinyin, marked_pinyin)
         if candidates:
@@ -214,7 +218,41 @@ class RuntimeCandidateDecoder(_RuntimeDecoderBase):
     def _load_runtime_candidates(
         self, path: Path
     ) -> RuntimeCandidatePayload:
-        return self._json_store.load_runtime_candidates(path)
+        json_store = getattr(self, "_json_store", None)
+        if json_store is not None:
+            return json_store.load_runtime_candidates(path)
+
+        if not path.exists():
+            raise FileNotFoundError(f"未找到运行时候选文件: {path}")
+        raw_text = path.read_text(encoding="utf-8")
+        if raw_text.lstrip().startswith("version https://git-lfs.github.com/spec/v1"):
+            raise ValueError(f"运行时候选文件是 Git LFS 指针，未拉取实际内容: {path}")
+
+        payload = json.loads(raw_text)
+        by_code = payload.get("by_code") if isinstance(payload, dict) else None
+        if not isinstance(by_code, dict):
+            raise ValueError(f"运行时候选文件格式无效: {path}")
+
+        regrouped: RuntimeCandidatePayload = {}
+        for raw_candidates in by_code.values():
+            if not isinstance(raw_candidates, list):
+                continue
+            for candidate in raw_candidates:
+                if not isinstance(candidate, dict):
+                    continue
+                canonical_code = str(candidate.get("yime_code", "") or "").strip()
+                if not canonical_code:
+                    pinyin_tone = str(candidate.get("pinyin_tone", "") or "").strip()
+                    canonical_code = _resolve_canonical_code_from_pinyin_tone(
+                        pinyin_tone,
+                        self.pinyin_to_canonical,
+                    )
+                if not canonical_code:
+                    continue
+                regrouped.setdefault(canonical_code, []).append(
+                    _annotate_candidate_source(candidate, "exact")
+                )
+        return regrouped
 
     def reload_user_lexicon(self) -> None:
         self._json_store.refresh(
@@ -226,19 +264,29 @@ class RuntimeCandidateDecoder(_RuntimeDecoderBase):
         self.char_code_index = self._json_store.char_code_index
         self._user_freq_by_candidate = self.user_lexicon.load_candidate_frequency()
 
-    def _load_phrase_prefix_candidates(self, lookup_code: str) -> List[JSONDict]:
+    def _load_phrase_prefix_candidates(
+        self,
+        lookup_code: str,
+        *,
+        limit: int = 0,
+    ) -> List[JSONDict]:
         json_store = getattr(self, "_json_store", None)
         if json_store is not None:
-            return json_store.load_phrase_prefix_candidates(lookup_code)
+            return json_store.load_phrase_prefix_candidates(lookup_code, limit=limit)
 
         normalized_code = str(lookup_code or "").strip()
         if not normalized_code:
             return []
         phrase_prefix_index = getattr(self, "_phrase_prefix_index", {})
-        return [
+        candidates = [
             _annotate_phrase_prefix_candidate(candidate, len(normalized_code))
             for candidate in phrase_prefix_index.get(normalized_code, [])
+            if isinstance(candidate, dict)
         ]
+        normalized_limit = max(int(limit or 0), 0)
+        if normalized_limit > 0:
+            return candidates[:normalized_limit]
+        return candidates
 
     def _lookup_runtime_candidates_for_decode(
         self,
@@ -246,11 +294,20 @@ class RuntimeCandidateDecoder(_RuntimeDecoderBase):
         plan: RuntimeLookupPlan,
     ) -> tuple[List[JSONDict], str]:
         raw_candidates: List[JSONDict] = []
-        if plan.lookup_code:
-            raw_candidates.extend(self.by_code.get(plan.lookup_code, []))
         phrase_tree_lookup = _build_phrase_tree_lookup(canonical, plan)
         if phrase_tree_lookup:
-            raw_candidates.extend(self._load_phrase_prefix_candidates(phrase_tree_lookup))
+            raw_candidates.extend(
+                self._load_phrase_prefix_candidates(
+                    phrase_tree_lookup,
+                    limit=plan.phrase_prefix_limit,
+                )
+            )
+        if plan.lookup_code and (plan.stage != "C" or not raw_candidates):
+            raw_candidates.extend(
+                _annotate_candidate_source(candidate, "exact")
+                for candidate in self.by_code.get(plan.lookup_code, [])
+                if isinstance(candidate, dict)
+            )
         return raw_candidates, phrase_tree_lookup or plan.lookup_code
 
     def get_char_candidates(self, code: str) -> List[CharCodeCandidate]:
@@ -295,13 +352,22 @@ class SQLiteRuntimeCandidateDecoder(_RuntimeDecoderBase):
     ) -> tuple[List[JSONDict], str]:
         raw_candidates: List[JSONDict] = []
         in_memory_by_code = getattr(self, "by_code", None)
-        if plan.lookup_code:
+        phrase_tree_lookup = _build_phrase_tree_lookup(canonical, plan)
+        if phrase_tree_lookup:
+            raw_candidates.extend(
+                self._phrase_store.load_phrase_prefix_candidates(
+                    phrase_tree_lookup,
+                    self._phrase_candidate_overlays,
+                    limit=plan.phrase_prefix_limit,
+                )
+            )
+        if plan.lookup_code and (plan.stage != "C" or not raw_candidates):
             if isinstance(in_memory_by_code, dict) and plan.lookup_code in in_memory_by_code:
                 in_memory_candidates = in_memory_by_code.get(plan.lookup_code, [])
                 if isinstance(in_memory_candidates, list):
                     raw_candidates.extend(
                         [
-                            candidate
+                            _annotate_candidate_source(candidate, "exact")
                             for candidate in in_memory_candidates
                             if isinstance(candidate, dict)
                         ]
@@ -313,14 +379,6 @@ class SQLiteRuntimeCandidateDecoder(_RuntimeDecoderBase):
                         self._phrase_candidate_overlays,
                     )
                 )
-        phrase_tree_lookup = _build_phrase_tree_lookup(canonical, plan)
-        if phrase_tree_lookup:
-            raw_candidates.extend(
-                self._phrase_store.load_phrase_prefix_candidates(
-                    phrase_tree_lookup,
-                    self._phrase_candidate_overlays,
-                )
-            )
         return raw_candidates, phrase_tree_lookup or plan.lookup_code
 
     def get_char_candidates(self, code: str) -> List[CharCodeCandidate]:

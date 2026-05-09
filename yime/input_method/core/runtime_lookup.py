@@ -4,11 +4,21 @@ from dataclasses import dataclass
 from typing import List
 
 
+RECENT_SYLLABLE_PREFIX_CANDIDATE_LIMIT = 64
+LONG_CONTEXT_PREFIX_1_CANDIDATE_LIMIT = 32
+LONG_CONTEXT_PREFIX_2_CANDIDATE_LIMIT = 24
+LONG_CONTEXT_PREFIX_3_CANDIDATE_LIMIT = 16
+
+
 @dataclass(frozen=True)
 class RuntimeLookupPlan:
     """Resolved runtime lookup target for the current input buffer."""
 
+    stage: str
+    phrase_prefix_pool: str
+    phrase_prefix_limit: int
     lookup_code: str
+    context_code: str
     active_code: str
     syllable_count: int
     trailing_code_count: int
@@ -21,12 +31,44 @@ def split_complete_syllables(canonical: str) -> List[str]:
     return [canonical[index:index + 4] for index in range(0, complete_length, 4)]
 
 
+def resolve_long_context_prefix_pool(
+    recent_syllables: List[str],
+    trailing_prefix: str,
+) -> tuple[str, str, int]:
+    normalized_trailing_prefix = str(trailing_prefix or "").strip()
+    if not normalized_trailing_prefix:
+        return "", "", 0
+
+    window_syllable_count = min(max(len(recent_syllables), 1), 3)
+    if window_syllable_count == 1:
+        return (
+            "long-context-prefix-1",
+            recent_syllables[-1] + normalized_trailing_prefix,
+            LONG_CONTEXT_PREFIX_1_CANDIDATE_LIMIT,
+        )
+    if window_syllable_count == 2:
+        return (
+            "long-context-prefix-2",
+            "".join(recent_syllables[-2:]) + normalized_trailing_prefix,
+            LONG_CONTEXT_PREFIX_2_CANDIDATE_LIMIT,
+        )
+    return (
+        "long-context-prefix-3",
+        "".join(recent_syllables[-3:]) + normalized_trailing_prefix,
+        LONG_CONTEXT_PREFIX_3_CANDIDATE_LIMIT,
+    )
+
+
 def build_runtime_lookup_plan(canonical: str) -> RuntimeLookupPlan:
     syllables = split_complete_syllables(canonical)
     trailing_code_count = len(canonical) % 4
     if not syllables:
         return RuntimeLookupPlan(
+            stage="A",
+            phrase_prefix_pool="",
+            phrase_prefix_limit=0,
             lookup_code="",
+            context_code=canonical,
             active_code=canonical,
             syllable_count=0,
             trailing_code_count=trailing_code_count,
@@ -39,7 +81,11 @@ def build_runtime_lookup_plan(canonical: str) -> RuntimeLookupPlan:
     phrase_mode = trailing_code_count == 0 and len(recent_syllables) >= 2
     if phrase_mode:
         return RuntimeLookupPlan(
+            stage="D",
+            phrase_prefix_pool="",
+            phrase_prefix_limit=0,
             lookup_code="".join(recent_syllables),
+            context_code="".join(recent_syllables),
             active_code="".join(recent_syllables),
             syllable_count=len(recent_syllables),
             trailing_code_count=0,
@@ -47,10 +93,36 @@ def build_runtime_lookup_plan(canonical: str) -> RuntimeLookupPlan:
             phrase_mode=True,
         )
 
+    if trailing_code_count == 0:
+        lookup_code = recent_syllables[-1]
+        return RuntimeLookupPlan(
+            stage="B",
+            phrase_prefix_pool="recent-syllable-prefix",
+            phrase_prefix_limit=RECENT_SYLLABLE_PREFIX_CANDIDATE_LIMIT,
+            lookup_code=lookup_code,
+            context_code=lookup_code,
+            active_code=lookup_code,
+            syllable_count=1,
+            trailing_code_count=0,
+            truncated_to_recent=truncated_to_recent,
+            phrase_mode=False,
+        )
+
+    lookup_code = recent_syllables[-1]
+    trailing_prefix = canonical[len(syllables) * 4 :]
+    phrase_prefix_pool, context_code, phrase_prefix_limit = resolve_long_context_prefix_pool(
+        recent_syllables,
+        trailing_prefix,
+    )
+
     return RuntimeLookupPlan(
-        lookup_code=recent_syllables[-1],
-        active_code=recent_syllables[-1],
-        syllable_count=1,
+        stage="C",
+        phrase_prefix_pool=phrase_prefix_pool,
+        phrase_prefix_limit=phrase_prefix_limit,
+        lookup_code=lookup_code,
+        context_code=context_code,
+        active_code=lookup_code,
+        syllable_count=len(recent_syllables),
         trailing_code_count=trailing_code_count,
         truncated_to_recent=truncated_to_recent,
         phrase_mode=False,
@@ -79,12 +151,7 @@ def build_runtime_mode_hint(canonical: str, plan: RuntimeLookupPlan) -> str:
 
 
 def should_expand_phrase_prefix(plan: RuntimeLookupPlan) -> bool:
-    return (
-        plan.trailing_code_count == 0
-        and not plan.phrase_mode
-        and plan.syllable_count == 1
-        and len(plan.lookup_code) == 4
-    )
+    return plan.stage == "B" and len(plan.lookup_code) == 4
 
 
 def build_phrase_tree_lookup(canonical: str, plan: RuntimeLookupPlan) -> str:
@@ -93,6 +160,8 @@ def build_phrase_tree_lookup(canonical: str, plan: RuntimeLookupPlan) -> str:
         return ""
     if len(normalized_canonical) < 4:
         return normalized_canonical
+    if plan.stage == "C":
+        return plan.context_code
     if should_expand_phrase_prefix(plan):
         return plan.lookup_code
     if plan.trailing_code_count <= 0:

@@ -6,6 +6,7 @@ from typing import Dict, List, Optional, Tuple
 
 from .char_code_index import CharCodeCandidate, CharCodeIndex
 from .runtime_ranking import (
+    annotate_candidate_source,
     annotate_phrase_prefix_candidate,
     build_char_sort_weight_index,
     build_phrase_prefix_index,
@@ -53,6 +54,8 @@ class JSONRuntimeCandidateStore:
             if not isinstance(raw_candidates, list):
                 continue
             for candidate in raw_candidates:
+                if not isinstance(candidate, dict):
+                    continue
                 canonical_code = str(candidate.get("yime_code", "") or "").strip()
                 if not canonical_code:
                     pinyin_tone = str(candidate.get("pinyin_tone", "") or "").strip()
@@ -62,13 +65,19 @@ class JSONRuntimeCandidateStore:
                     )
                 if not canonical_code:
                     continue
-                regrouped.setdefault(canonical_code, []).append(candidate)
+                regrouped.setdefault(canonical_code, []).append(
+                    annotate_candidate_source(candidate, "exact")
+                )
         return regrouped
 
     def refresh(self, overlay_by_code: Dict[str, List[Dict[str, object]]]) -> None:
         by_code = self.load_runtime_candidates()
         for code, candidates in overlay_by_code.items():
-            by_code.setdefault(code, []).extend(candidates)
+            by_code.setdefault(code, []).extend(
+                annotate_candidate_source(candidate, "overlay")
+                for candidate in candidates
+                if isinstance(candidate, dict)
+            )
         self.set_runtime_candidates(by_code)
 
     def set_runtime_candidates(self, by_code: Dict[str, List[Dict[str, object]]]) -> None:
@@ -77,14 +86,23 @@ class JSONRuntimeCandidateStore:
         self.phrase_prefix_index = build_phrase_prefix_index(by_code)
         self.char_code_index = CharCodeIndex.from_runtime_candidates(by_code)
 
-    def load_phrase_prefix_candidates(self, lookup_code: str) -> List[Dict[str, object]]:
+    def load_phrase_prefix_candidates(
+        self,
+        lookup_code: str,
+        *,
+        limit: int = 0,
+    ) -> List[Dict[str, object]]:
         normalized_code = str(lookup_code or "").strip()
         if not normalized_code:
             return []
-        return [
+        candidates = [
             annotate_phrase_prefix_candidate(candidate, len(normalized_code))
             for candidate in self.phrase_prefix_index.get(normalized_code, [])
         ]
+        normalized_limit = max(int(limit or 0), 0)
+        if normalized_limit > 0:
+            return candidates[:normalized_limit]
+        return candidates
 
     def get_char_candidates(self, code: str) -> List[CharCodeCandidate]:
         return self.char_code_index.get_exact(code)

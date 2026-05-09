@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from functools import lru_cache
 import json
+import os
 from pathlib import Path
 import unicodedata
 from typing import Dict, List, Tuple
@@ -14,6 +15,7 @@ from .runtime_lookup import (
 from .runtime_ranking import (
     RuntimeCandidateRecord,
     build_runtime_candidate_records,
+    format_runtime_debug_summary,
     load_local_phrase_priority_rules,
     rank_runtime_candidates,
 )
@@ -151,6 +153,10 @@ class RuntimeDecoderBase:
         )
         self.user_lexicon = UserLexiconStore(user_db_path or app_dir / "user_lexicon.db")
         self._user_freq_by_candidate = self.user_lexicon.load_candidate_frequency()
+        self.debug_runtime_ranking = os.environ.get(
+            "YIME_DEBUG_RUNTIME_RANKING",
+            "",
+        ).strip().lower() in {"1", "true", "yes", "on"}
 
     def _lookup_runtime_candidates_for_decode(
         self,
@@ -176,7 +182,8 @@ class RuntimeDecoderBase:
             self._payload_to_runtime_candidates(
                 plan.lookup_code,
                 raw_candidates,
-                priority_lookup_code,
+                stage=plan.stage,
+                priority_lookup_code=priority_lookup_code,
             )
         )
         texts = [record.text for record in records]
@@ -193,6 +200,12 @@ class RuntimeDecoderBase:
         display_pinyin = " / ".join(pinyin_values[:3])
         if texts:
             status = f"从{self.runtime_source_label}找到 {len(texts)} 个候选。"
+            debug_summary = format_runtime_debug_summary(records)
+            if getattr(self, "debug_runtime_ranking", False) and debug_summary:
+                pool_hint = ""
+                if plan.phrase_prefix_pool:
+                    pool_hint = f"[{plan.phrase_prefix_pool}] "
+                status = f"{status} 调试: {pool_hint}{debug_summary}。"
             if mode_hint:
                 status = f"{mode_hint} {status}"
             return canonical, plan.active_code, display_pinyin, texts, status
@@ -227,11 +240,13 @@ class RuntimeDecoderBase:
         self,
         lookup_code: str,
         raw_candidates: List[Dict[str, object]],
+        stage: str = "",
         priority_lookup_code: str = "",
     ) -> List[RuntimeCandidateRecord]:
         return build_runtime_candidate_records(
             lookup_code,
             raw_candidates,
+            stage=stage,
             priority_lookup_code=priority_lookup_code,
             char_sort_weight_by_text=getattr(self, "_char_sort_weight_by_text", {}),
             local_phrase_priority_rules=getattr(self, "_local_phrase_priority_rules", {}),

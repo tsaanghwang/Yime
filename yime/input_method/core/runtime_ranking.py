@@ -39,7 +39,10 @@ class RuntimeCandidateRecord:
     first_char_sort_weight: float = 0.0
     short_prefix_template_bonus: int = 0
     head_char_cluster_weight: float = 0.0
+    candidate_source_tag: str = "exact"
+    phrase_priority_tier: int = 2
     local_phrase_priority_boost: float = 0.0
+    debug_tag: str = "normal"
 
 
 _PHRASE_PREFIX_CANDIDATE_LIMIT = 64
@@ -108,6 +111,77 @@ def merge_phrase_priority_rule_maps(
     return merged
 
 
+def resolve_stage_phrase_priority_metadata(
+    stage: str,
+    lookup_code: str,
+    candidate: Dict[str, object],
+    local_phrase_priority_rules: Mapping[str, Mapping[str, float]],
+    continuous_input_priority_rules: Mapping[str, Mapping[str, float]],
+) -> tuple[int, float, str]:
+    local_boost = resolve_local_phrase_priority_boost(
+        lookup_code,
+        candidate,
+        local_phrase_priority_rules,
+    )
+    continuous_boost = resolve_local_phrase_priority_boost(
+        lookup_code,
+        candidate,
+        continuous_input_priority_rules,
+    )
+
+    if stage == "B":
+        if local_boost > 0.0:
+            return 0, local_boost, "B-local"
+        if continuous_boost > 0.0:
+            return 1, continuous_boost, "B-continuous"
+        return 2, 0.0, "normal"
+    if stage in {"C", "D"}:
+        if continuous_boost > 0.0:
+            return 0, continuous_boost, f"{stage}-continuous"
+        if local_boost > 0.0:
+            return 1, local_boost, f"{stage}-local"
+        return 2, 0.0, "normal"
+    if local_boost > 0.0:
+        return 0, local_boost, "local"
+    if continuous_boost > 0.0:
+        return 1, continuous_boost, "continuous"
+    return 2, 0.0, "normal"
+
+
+def format_runtime_debug_summary(
+    candidates: List[RuntimeCandidateRecord],
+    *,
+    limit: int = 3,
+) -> str:
+    if limit <= 0:
+        return ""
+
+    visible = candidates[:limit]
+    if not visible:
+        return ""
+    return ", ".join(
+        f"{candidate.text}[{candidate.candidate_source_tag}/{candidate.debug_tag}]"
+        for candidate in visible
+    )
+
+
+def annotate_candidate_source(
+    candidate: Dict[str, object],
+    source_tag: str,
+) -> Dict[str, object]:
+    annotated = dict(candidate)
+    annotated["_candidate_source"] = source_tag
+    return annotated
+
+
+def resolve_candidate_source_tag(candidate: Dict[str, object]) -> str:
+    source_tag = str(candidate.get("_candidate_source", "") or "").strip()
+    if source_tag:
+        return source_tag
+    matched_code_length = int(candidate.get("_matched_code_length") or 0)
+    return "prefix" if matched_code_length > 0 else "exact"
+
+
 def resolve_local_phrase_priority_boost(
     lookup_code: str,
     candidate: Dict[str, object],
@@ -152,7 +226,7 @@ def runtime_candidate_priority(candidate: RuntimeCandidateRecord) -> int:
 def runtime_candidate_sort_key(
     candidate: RuntimeCandidateRecord,
     user_freq: int,
-) -> tuple[int, int, float, float, int, str, str]:
+) -> tuple[int, int, int, float, float, int, str, str]:
     is_partial_phrase = (
         candidate.entry_type == "phrase"
         and candidate.matched_code_length > 0
@@ -161,6 +235,7 @@ def runtime_candidate_sort_key(
     return (
         runtime_candidate_priority(candidate),
         0 if is_partial_phrase else 1,
+        candidate.phrase_priority_tier,
         -candidate.local_phrase_priority_boost,
         -candidate.sort_weight,
         -user_freq,
@@ -231,6 +306,11 @@ def annotate_phrase_prefix_candidate(
     full_code = str(candidate.get("yime_code", "") or "").strip()
     annotated["_matched_code_length"] = matched_code_length
     annotated["_full_code_length"] = len(full_code) if full_code else matched_code_length
+    current_source = str(candidate.get("_candidate_source", "") or "").strip()
+    if current_source == "overlay":
+        annotated["_candidate_source"] = "prefix-overlay"
+    elif current_source != "prefix-overlay":
+        annotated["_candidate_source"] = "prefix"
     return annotated
 
 
@@ -265,6 +345,7 @@ def build_runtime_candidate_records(
     lookup_code: str,
     raw_candidates: List[Dict[str, object]],
     *,
+    stage: str = "",
     priority_lookup_code: str = "",
     char_sort_weight_by_text: Optional[Mapping[str, float]] = None,
     local_phrase_priority_rules: Optional[Mapping[str, Mapping[str, float]]] = None,
@@ -273,20 +354,24 @@ def build_runtime_candidate_records(
     records: List[RuntimeCandidateRecord] = []
     head_char_cluster_weight_by_text = build_head_char_cluster_weight_map(raw_candidates)
     boost_lookup_code = str(priority_lookup_code or lookup_code).strip()
-    phrase_priority_rules = merge_phrase_priority_rule_maps(
-        local_phrase_priority_rules or {},
-        continuous_input_priority_rules or {},
-    )
+    local_rules = local_phrase_priority_rules or {}
+    continuous_rules = continuous_input_priority_rules or {}
     first_char_weight_map = dict(char_sort_weight_by_text or {})
     for candidate in raw_candidates:
         text = str(candidate.get("text", "")).strip()
         if not text:
             continue
         text_length = int(candidate.get("text_length") or len(text))
-        local_phrase_priority_boost = resolve_local_phrase_priority_boost(
+        (
+            phrase_priority_tier,
+            local_phrase_priority_boost,
+            debug_tag,
+        ) = resolve_stage_phrase_priority_metadata(
+            stage,
             boost_lookup_code,
             candidate,
-            phrase_priority_rules,
+            local_rules,
+            continuous_rules,
         )
         records.append(
             RuntimeCandidateRecord(
@@ -305,7 +390,10 @@ def build_runtime_candidate_records(
                 first_char_sort_weight=float(first_char_weight_map.get(text[:1], 0.0)),
                 short_prefix_template_bonus=compute_short_prefix_template_bonus(text),
                 head_char_cluster_weight=float(head_char_cluster_weight_by_text.get(text[:1], 0.0)),
+                candidate_source_tag=resolve_candidate_source_tag(candidate),
+                phrase_priority_tier=phrase_priority_tier,
                 local_phrase_priority_boost=local_phrase_priority_boost,
+                debug_tag=debug_tag,
             )
         )
     return records
