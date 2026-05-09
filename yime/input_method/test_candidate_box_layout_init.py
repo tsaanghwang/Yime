@@ -50,6 +50,47 @@ def test_candidate_box_initial_vertical_layout_starts_compact_without_candidates
         box.root.destroy()
 
 
+@pytest.mark.parametrize("page_size", [5, 6, 7, 8, 9])
+def test_horizontal_layout_keeps_long_candidates_clear_of_pager(page_size: int) -> None:
+    try:
+        box = CandidateBox(
+            on_select=lambda text: None,
+            font_family="TkDefaultFont",
+            candidate_layout="horizontal",
+        )
+    except tk.TclError as exc:
+        pytest.skip(f"tkinter unavailable: {exc}")
+
+    try:
+        box.set_page_size(page_size)
+        candidates = [
+            "毕业生",
+            "机器人",
+            "计算机",
+            "验证码",
+            "博物馆",
+            "预处理",
+            "西班牙",
+            "服务员",
+            "验证集",
+        ][:page_size]
+        box.update_candidates(candidates, "bi4", "", "")
+        box.root.update_idletasks()
+        expected_text_width = sum(
+            box.ui_font.measure(f"{index}. ")
+            + box.text_font.measure(candidate)
+            + box.text_font.measure("  ")
+            for index, candidate in enumerate(candidates, start=1)
+        )
+
+        assert box.candidate_text.winfo_reqwidth() >= expected_text_width
+        assert box.root.winfo_reqwidth() >= (
+            box.candidate_text.winfo_reqwidth() + box.pager_frame.winfo_reqwidth()
+        )
+    finally:
+        box.root.destroy()
+
+
 def test_set_candidate_layout_requests_resize_when_layout_changes() -> None:
     class _FakeVar:
         def __init__(self) -> None:

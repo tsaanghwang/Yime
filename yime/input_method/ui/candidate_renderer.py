@@ -2,6 +2,7 @@
 候选词渲染与分页混入(Mixin)模块
 提取候选项的排版、渲染及翻页逻辑。
 """
+import math
 import tkinter as tk
 from tkinter import ttk
 from typing import Callable, Optional
@@ -111,10 +112,22 @@ class CandidateRendererMixin:
     def _horizontal_candidate_text_width_chars(self) -> int:
         if not self.current_candidates:
             return 1
+        zero_width = max(self.text_font.measure("0"), 1)
+        display_width = self._horizontal_candidate_text_width_pixels()
+        # Add a small cushion because Tk Text width is character-based while
+        # the candidate bar mixes UI and text fonts with variable glyph widths.
+        return max(math.ceil(display_width / zero_width) + 1, 1)
+
+    def _horizontal_candidate_text_width_pixels(self) -> int:
+        if not self.current_candidates:
+            return 0
         display_width = 0
+        suffix = self._horizontal_candidate_suffix()
         for index, hanzi in enumerate(self.current_candidates, start=1):
-            display_width += len(f"{index}. {hanzi}{self._horizontal_candidate_suffix()}")
-        return max(display_width, 1)
+            display_width += self.ui_font.measure(f"{index}. ")
+            display_width += self.text_font.measure(hanzi)
+            display_width += self.text_font.measure(suffix)
+        return display_width
 
     def _horizontal_candidate_suffix(self) -> str:
         return "  "
