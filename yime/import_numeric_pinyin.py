@@ -59,13 +59,15 @@ class 数字标调拼音导入器:
 
             for col in required_columns:
                 if col not in existing_columns:
+                    if col == "映射编号":
+                        column_type = 'INTEGER REFERENCES "拼音映射关系"(映射编号)'
+                    elif col == "声调":
+                        column_type = "INTEGER"
+                    else:
+                        column_type = "TEXT"
                     cursor.execute(f'''
                     ALTER TABLE "{self.REQUIRED_TABLE}"
-                    ADD COLUMN {col} {
-                        "INTEGER REFERENCES \"拼音映射关系\"(映射编号)" if col == "映射编号"
-                        else "INTEGER" if col == "声调"
-                        else "TEXT"
-                    }
+                    ADD COLUMN {col} {column_type}
                     ''')
 
             # 清空表

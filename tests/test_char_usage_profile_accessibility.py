@@ -3,13 +3,24 @@ from __future__ import annotations
 import sqlite3
 from pathlib import Path
 
+import pytest
+
 
 DB_PATH = Path(__file__).resolve().parents[1] / "yime" / "pinyin_hanzi.db"
 REAL_COLLISION_CODE = "\U00100005\U00100025\U00100030\U00100020"
 FIRST_PAGE_LIMIT = 5
 
 
+def _require_runtime_db() -> None:
+    header = DB_PATH.read_bytes()[:32]
+    if header.startswith(b"version https://git-lfs.github.com/spec/v1"):
+        pytest.skip("runtime SQLite database is only available as a Git LFS pointer")
+    if not header.startswith(b"SQLite format 3\x00"):
+        pytest.skip("runtime SQLite database is unavailable in this environment")
+
+
 def _load_ranked_char_bucket(yime_code: str) -> list[sqlite3.Row]:
+    _require_runtime_db()
     with sqlite3.connect(DB_PATH) as connection:
         connection.row_factory = sqlite3.Row
         return connection.execute(
