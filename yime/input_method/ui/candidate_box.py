@@ -89,6 +89,7 @@ class CandidateBox(CandidateRendererMixin):
         on_candidate_layout_change: Optional[CandidateLayoutChangeCallback] = None,
         on_wake_trigger_mode_change: Optional[TriggerModeChangeCallback] = None,
         on_standby_trigger_mode_change: Optional[TriggerModeChangeCallback] = None,
+        on_hover_tip_enabled_change: Optional[BoolSettingChangeCallback] = None,
         on_mouse_wake_enabled_change: Optional[BoolSettingChangeCallback] = None,
         on_mouse_standby_enabled_change: Optional[BoolSettingChangeCallback] = None,
         on_ui_scale_change: Optional[IntSettingChangeCallback] = None,
@@ -116,6 +117,7 @@ class CandidateBox(CandidateRendererMixin):
         on_restore_from_standby: Optional[VoidCallback] = None,
         on_toggle_standby: Optional[VoidCallback] = None,
         on_close: Optional[VoidCallback] = None,
+        enable_hover_tip: bool = True,
         enable_mouse_wake: bool = True,
         enable_mouse_standby: bool = True,
     ) -> None:
@@ -145,12 +147,16 @@ class CandidateBox(CandidateRendererMixin):
         self._manual_input_transformer = manual_input_transformer
         self.projected_input_text = ""
         self._last_main_geometry: Optional[tuple[int, int, int, int]] = None
+        self._hover_tip_enabled = bool(enable_hover_tip)
         self._mouse_wake_enabled = enable_mouse_wake
         self._mouse_standby_enabled = enable_mouse_standby
         self._active_alpha_value = self._ACTIVE_ALPHA
         self._active_topmost_enabled = True
         self._foreground_color = self._DEFAULT_FOREGROUND_COLOR
         self._background_color = self._DEFAULT_BACKGROUND_COLOR
+        self._status_text = self._DEFAULT_STATUS_TEXT
+        self._tooltip_window: Optional[tk.Toplevel] = None
+        self._tooltip_label: Optional[tk.Label] = None
 
         # 回调注入
         self._on_input_change_callback = on_input_change
@@ -160,6 +166,7 @@ class CandidateBox(CandidateRendererMixin):
         self._on_candidate_layout_change = on_candidate_layout_change
         self._on_wake_trigger_mode_change = on_wake_trigger_mode_change
         self._on_standby_trigger_mode_change = on_standby_trigger_mode_change
+        self._on_hover_tip_enabled_change = on_hover_tip_enabled_change
         self._on_mouse_wake_enabled_change = on_mouse_wake_enabled_change
         self._on_mouse_standby_enabled_change = on_mouse_standby_enabled_change
         self._on_ui_scale_change = on_ui_scale_change
@@ -219,6 +226,7 @@ class CandidateBox(CandidateRendererMixin):
         self.candidate_layout_var = tk.StringVar(self.root, value=self._candidate_layout)
         self.wake_trigger_mode_var = tk.StringVar(self.root, value="both")
         self.standby_trigger_mode_var = tk.StringVar(self.root, value="both")
+        self.hover_tip_var = tk.BooleanVar(self.root, value=enable_hover_tip)
         self.mouse_wake_var = tk.BooleanVar(self.root, value=enable_mouse_wake)
         self.mouse_standby_var = tk.BooleanVar(self.root, value=enable_mouse_standby)
         self.ui_scale_var = tk.IntVar(self.root, value=100)
@@ -248,6 +256,7 @@ class CandidateBox(CandidateRendererMixin):
         self.main_frame = self.layout_builder.main_frame
         self.decode_info_frame = self.layout_builder.decode_info_frame
         self.manual_key_layout_label = self.layout_builder.manual_key_layout_label
+        self.manual_key_layout_label.pack_forget()
 
         # 构建附加子系统
         self.window_system = CandidateWindowSystem(self.root)
@@ -258,6 +267,7 @@ class CandidateBox(CandidateRendererMixin):
         self._set_root_topmost(True)
         self.root.resizable(False, False)
         self.root.withdraw()  # 初始隐藏
+        self._bind_hover_tip_targets()
         self._bind_passive_reactivation_targets()
         self._bind_standby_toggle_targets()
         self.actions = CandidateBoxActions(self)
@@ -359,6 +369,12 @@ class CandidateBox(CandidateRendererMixin):
     def standby_trigger_mode_change_callback(self, mode: str) -> bool:
         if self._on_standby_trigger_mode_change:
             self._on_standby_trigger_mode_change(mode)
+            return True
+        return False
+
+    def hover_tip_enabled_change_callback(self, enabled: bool) -> bool:
+        if self._on_hover_tip_enabled_change:
+            self._on_hover_tip_enabled_change(enabled)
             return True
         return False
 
@@ -846,6 +862,12 @@ class CandidateBox(CandidateRendererMixin):
         self._mouse_wake_enabled = enabled
         self.mouse_wake_var.set(enabled)
 
+    def set_hover_tip_enabled(self, enabled: bool) -> None:
+        self._hover_tip_enabled = bool(enabled)
+        self.hover_tip_var.set(self._hover_tip_enabled)
+        if not self._hover_tip_enabled:
+            self._hide_hover_tip()
+
     def set_mouse_standby_enabled(self, enabled: bool) -> None:
         self._mouse_standby_enabled = enabled
         self.mouse_standby_var.set(enabled)
@@ -984,7 +1006,8 @@ class CandidateBox(CandidateRendererMixin):
 
     def set_status(self, text: str) -> None:
         """将本地状态提示写入当前候选框可见的辅助说明位。"""
-        self._set_auxiliary_info_text(text)
+        self._status_text = str(text or "").strip()
+        self._set_auxiliary_info_text(self._status_text)
 
     def _show_main_frame(self) -> None:
         if self._is_standby:
@@ -1026,11 +1049,79 @@ class CandidateBox(CandidateRendererMixin):
     def _set_auxiliary_info_text(self, text: str) -> None:
         normalized = str(text or "").strip()
         self.manual_key_layout_label.configure(text=normalized)
-        if normalized:
-            self._update_auxiliary_info_wraplength()
-            self.manual_key_layout_label.pack(anchor=tk.W, fill=tk.X, pady=(4, 0))
-            return
         self.manual_key_layout_label.pack_forget()
+
+    def _bind_hover_tip_targets(self) -> None:
+        self._bind_hover_tip(self.candidate_text, lambda: self._status_text)
+        self._bind_hover_tip(self.first_page_button, lambda: "回到第一页")
+        self._bind_hover_tip(self.prev_page_button, lambda: "查看上一页候选")
+        self._bind_hover_tip(self.next_page_button, lambda: "查看下一页候选")
+        self._bind_hover_tip(self.last_page_button, lambda: "跳到最后一页")
+        self._bind_hover_tip(self.toolbar_menu_button, lambda: "打开设置、工具和帮助菜单")
+        self._bind_hover_tip(self.drag_grip, lambda: "拖动候选窗位置")
+
+    def _bind_hover_tip(self, widget: tk.Misc, text_resolver: Callable[[], str]) -> None:
+        widget.bind(
+            "<Enter>",
+            lambda event, resolver=text_resolver: self._on_hover_tip_enter(event, resolver),
+            add="+",
+        )
+        widget.bind("<Leave>", self._hide_hover_tip, add="+")
+        widget.bind("<ButtonPress-1>", self._hide_hover_tip, add="+")
+
+    def _on_hover_tip_enter(
+        self,
+        event: Optional[tk.Event],
+        text_resolver: Callable[[], str],
+    ) -> None:
+        if not self._hover_tip_enabled:
+            return
+        text = str(text_resolver() or "").strip()
+        if not text:
+            self._hide_hover_tip()
+            return
+        self._show_hover_tip(event, text)
+
+    def _show_hover_tip(self, event: Optional[tk.Event], text: str) -> None:
+        self._hide_hover_tip()
+        if not text:
+            return
+        tooltip = tk.Toplevel(self.root)
+        tooltip.withdraw()
+        tooltip.overrideredirect(True)
+        try:
+            tooltip.attributes("-topmost", True)
+        except tk.TclError:
+            pass
+        label = tk.Label(
+            tooltip,
+            text=text,
+            font=self.ui_font,
+            bg="#fff8dc",
+            fg=self._foreground_color,
+            bd=1,
+            relief=tk.SOLID,
+            padx=8,
+            pady=4,
+            justify=tk.LEFT,
+        )
+        label.pack()
+        x_root = getattr(event, "x_root", self.root.winfo_pointerx()) + 12
+        y_root = getattr(event, "y_root", self.root.winfo_pointery()) + 16
+        tooltip.geometry(f"+{x_root}+{y_root}")
+        tooltip.deiconify()
+        self._tooltip_window = tooltip
+        self._tooltip_label = label
+
+    def _hide_hover_tip(self, event: Optional[tk.Event] = None) -> None:
+        tooltip = getattr(self, "_tooltip_window", None)
+        if tooltip is not None:
+            try:
+                tooltip.destroy()
+            except tk.TclError:
+                pass
+        self._tooltip_window = None
+        self._tooltip_label = None
 
     def clear_input(self, focus_input: bool = True) -> None:
         """公开的清空输入入口。"""

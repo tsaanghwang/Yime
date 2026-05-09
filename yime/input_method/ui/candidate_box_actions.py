@@ -449,6 +449,12 @@ class CandidateBoxActions:
             menu.add_separator()
             menu.add_cascade(label="唤起方式", menu=self._get_wake_mode_menu())
             menu.add_cascade(label="休眠方式", menu=self._get_standby_mode_menu())
+            menu.add_separator()
+            menu.add_checkbutton(
+                label="启用悬浮提示（tip）",
+                variable=self.box.hover_tip_var,
+                command=self.toggle_hover_tip_enabled,
+            )
             self._interaction_menu = menu
         return self._interaction_menu
 
@@ -737,6 +743,17 @@ class CandidateBoxActions:
             self.box.standby_trigger_mode_var.set(mode)
         label = self._trigger_mode_label(normalized)
         self._set_local_status(f"之后可通过{label}让候选窗回到待命。")
+
+    def toggle_hover_tip_enabled(self) -> None:
+        enabled = bool(self.box.hover_tip_var.get())
+        callback = getattr(self.box, "hover_tip_enabled_change_callback", None)
+        if callable(callback) and callback(enabled):
+            enabled = bool(self.box.hover_tip_var.get())
+        else:
+            setter = getattr(self.box, "set_hover_tip_enabled", None)
+            if callable(setter):
+                setter(enabled)
+        self._set_local_status("悬浮提示已启用。" if enabled else "悬浮提示已隐藏。")
 
     def _trigger_mode_label(self, mode: str) -> str:
         if mode == "hotkey":

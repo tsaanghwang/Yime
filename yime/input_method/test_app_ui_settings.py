@@ -17,6 +17,7 @@ def test_check_ui_settings_file_flags_invalid_content(tmp_path: Path) -> None:
         json.dumps(
             {
                 "candidate_page_size": 12,
+                "hover_tip_enabled": "maybe",
                 "foreground_color": "blue",
                 "reverse_lookup_display_mode": "everything",
                 "wake_trigger_mode": "keyboard",
@@ -33,8 +34,9 @@ def test_check_ui_settings_file_flags_invalid_content(tmp_path: Path) -> None:
     status, detail, advice = app._check_ui_settings_file()
 
     assert status == "警告"
-    assert f"已定位：{settings_path}；发现 5 处内容问题：" in detail
+    assert f"已定位：{settings_path}；发现 6 处内容问题：" in detail
     assert "candidate_page_size：候选数量必须是 5 到 9 之间的整数" in detail
+    assert "hover_tip_enabled：布尔开关必须是 true/false、on/off、yes/no 或 0/1" in detail
     assert "foreground_color：前景颜色必须是 #RRGGBB 格式" in detail
     assert "reverse_lookup_display_mode：反查显示模式必须是 default、all、none、marked、yime 或 keys" in detail
     assert "wake_trigger_mode：wake_trigger_mode 必须是 hotkey、mouse 或 both，收到: 'keyboard'" in detail
@@ -45,6 +47,7 @@ def test_check_ui_settings_file_flags_invalid_content(tmp_path: Path) -> None:
 def test_on_candidate_page_size_change_persists_setting(tmp_path: Path) -> None:
     page_size_calls: list[int] = []
     layout_calls: list[str] = []
+    hover_tip_calls: list[bool] = []
     mouse_wake_calls: list[bool] = []
     mouse_standby_calls: list[bool] = []
     ui_scale_calls: list[int] = []
@@ -60,6 +63,9 @@ def test_on_candidate_page_size_change_persists_setting(tmp_path: Path) -> None:
 
         def set_candidate_layout(self, layout: str) -> None:
             layout_calls.append(layout)
+
+        def set_hover_tip_enabled(self, enabled: bool) -> None:
+            hover_tip_calls.append(enabled)
 
         def set_mouse_wake_enabled(self, enabled: bool) -> None:
             mouse_wake_calls.append(enabled)
@@ -92,6 +98,7 @@ def test_on_candidate_page_size_change_persists_setting(tmp_path: Path) -> None:
     app.candidate_box = _FakeCandidateBox()
     app.candidate_page_size = 5
     app.candidate_layout = "horizontal"
+    app.hover_tip_enabled = True
     app._mouse_wake_enabled_setting = True
     app._mouse_standby_enabled_setting = True
     app.ui_scale_percent = 100
@@ -104,6 +111,7 @@ def test_on_candidate_page_size_change_persists_setting(tmp_path: Path) -> None:
 
     app._on_candidate_page_size_change(8)
     app._on_candidate_layout_change("vertical")
+    app._on_hover_tip_enabled_change(False)
     app._on_mouse_wake_enabled_change(False)
     app._on_mouse_standby_enabled_change(False)
     app._on_ui_scale_change(110)
@@ -115,6 +123,7 @@ def test_on_candidate_page_size_change_persists_setting(tmp_path: Path) -> None:
 
     assert page_size_calls == [8]
     assert layout_calls == ["vertical"]
+    assert hover_tip_calls == [False]
     assert mouse_wake_calls == [False]
     assert mouse_standby_calls == [False]
     assert ui_scale_calls == [110]
@@ -126,6 +135,7 @@ def test_on_candidate_page_size_change_persists_setting(tmp_path: Path) -> None:
     assert app.candidate_page_size == 8
     assert app.ui_settings["candidate_page_size"] == 8
     assert app.ui_settings["candidate_layout"] == "vertical"
+    assert app.ui_settings["hover_tip_enabled"] is False
     assert app.ui_settings["mouse_wake_enabled"] is False
     assert app.ui_settings["mouse_standby_enabled"] is False
     assert app.ui_settings["ui_scale_percent"] == 110
@@ -137,6 +147,7 @@ def test_on_candidate_page_size_change_persists_setting(tmp_path: Path) -> None:
     assert json.loads(app.ui_settings_path.read_text(encoding="utf-8")) == {
         "candidate_page_size": 8,
         "candidate_layout": "vertical",
+        "hover_tip_enabled": False,
         "mouse_wake_enabled": False,
         "mouse_standby_enabled": False,
         "ui_scale_percent": 110,
@@ -208,6 +219,7 @@ def test_trigger_mode_change_persists_and_updates_runtime_state(tmp_path: Path) 
     app.candidate_box = _FakeCandidateBox()
     app.candidate_page_size = 5
     app.candidate_layout = "horizontal"
+    app.hover_tip_enabled = True
     app._mouse_wake_enabled_setting = True
     app._mouse_standby_enabled_setting = True
     app.ui_scale_percent = 100
@@ -264,6 +276,7 @@ def test_hotkey_change_persists_and_rebinds_listener(tmp_path: Path) -> None:
     app.ui_settings = {}
     app.candidate_page_size = 5
     app.candidate_layout = "horizontal"
+    app.hover_tip_enabled = True
     app._mouse_wake_enabled_setting = True
     app._mouse_standby_enabled_setting = True
     app.ui_scale_percent = 100

@@ -103,6 +103,7 @@ class BaseInputMethodApp:
 
     _DEFAULT_CANDIDATE_PAGE_SIZE = 5
     _DEFAULT_CANDIDATE_LAYOUT = "horizontal"
+    _DEFAULT_HOVER_TIP_ENABLED = True
     _DEFAULT_UI_SCALE_PERCENT = 100
     _DEFAULT_ACTIVE_ALPHA_PERCENT = 97
     _DEFAULT_FOREGROUND_COLOR = "#111827"
@@ -139,6 +140,10 @@ class BaseInputMethodApp:
         )
         self.candidate_layout = self._normalize_candidate_layout_setting(
             self.ui_settings.get("candidate_layout")
+        )
+        self.hover_tip_enabled = self._normalize_bool_setting(
+            self.ui_settings.get("hover_tip_enabled"),
+            self._DEFAULT_HOVER_TIP_ENABLED,
         )
         self._mouse_wake_enabled_setting = self._normalize_bool_setting(
             self.ui_settings.get("mouse_wake_enabled"),
@@ -259,6 +264,7 @@ class BaseInputMethodApp:
             on_commit_text=self._commit_candidate_box_text,
             on_candidate_page_size_change=self._on_candidate_page_size_change,
             on_candidate_layout_change=self._on_candidate_layout_change,
+            on_hover_tip_enabled_change=self._on_hover_tip_enabled_change,
             on_mouse_wake_enabled_change=self._on_mouse_wake_enabled_change,
             on_mouse_standby_enabled_change=self._on_mouse_standby_enabled_change,
             on_ui_scale_change=self._on_ui_scale_change,
@@ -280,6 +286,7 @@ class BaseInputMethodApp:
             on_delete_input_from_user_lexicon=self._delete_current_input_from_user_lexicon,
             on_feedback=self._emit_feedback,
             on_close=self._close,
+            enable_hover_tip=self.hover_tip_enabled,
         )
 
     def _normalize_candidate_page_size(self, page_size: object) -> int:
@@ -407,7 +414,12 @@ class BaseInputMethodApp:
                 return None
             return "候选布局必须是 horizontal 或 vertical"
 
-        if key in {"mouse_wake_enabled", "mouse_standby_enabled", "active_topmost_enabled"}:
+        if key in {
+            "hover_tip_enabled",
+            "mouse_wake_enabled",
+            "mouse_standby_enabled",
+            "active_topmost_enabled",
+        }:
             if self._is_valid_bool_setting_value(value):
                 return None
             return "布尔开关必须是 true/false、on/off、yes/no 或 0/1"
@@ -526,6 +538,7 @@ class BaseInputMethodApp:
         allowed_keys = {
             "candidate_page_size",
             "candidate_layout",
+            "hover_tip_enabled",
             "mouse_wake_enabled",
             "mouse_standby_enabled",
             "ui_scale_percent",
@@ -577,6 +590,7 @@ class BaseInputMethodApp:
         payload = dict(self.ui_settings)
         payload["candidate_page_size"] = self.candidate_page_size
         payload["candidate_layout"] = self.candidate_layout
+        payload["hover_tip_enabled"] = self.hover_tip_enabled
         payload["mouse_wake_enabled"] = self._mouse_wake_enabled_setting
         payload["mouse_standby_enabled"] = self._mouse_standby_enabled_setting
         payload["ui_scale_percent"] = self.ui_scale_percent
@@ -598,6 +612,10 @@ class BaseInputMethodApp:
         apply_layout = getattr(self.candidate_box, "set_candidate_layout", None)
         if callable(apply_layout):
             apply_layout(self.candidate_layout)
+
+        apply_hover_tip = getattr(self.candidate_box, "set_hover_tip_enabled", None)
+        if callable(apply_hover_tip):
+            apply_hover_tip(self.hover_tip_enabled)
 
         apply_mouse_wake = getattr(self.candidate_box, "set_mouse_wake_enabled", None)
         if callable(apply_mouse_wake):
@@ -653,6 +671,15 @@ class BaseInputMethodApp:
         self.candidate_box.set_candidate_layout(normalized)
         self.candidate_layout = normalized
         self.ui_settings["candidate_layout"] = normalized
+        self._save_ui_settings()
+
+    def _on_hover_tip_enabled_change(self, enabled: bool) -> None:
+        normalized = self._normalize_bool_setting(enabled, self._DEFAULT_HOVER_TIP_ENABLED)
+        apply = getattr(self.candidate_box, "set_hover_tip_enabled", None)
+        if callable(apply):
+            apply(normalized)
+        self.hover_tip_enabled = normalized
+        self.ui_settings["hover_tip_enabled"] = normalized
         self._save_ui_settings()
 
     def _resolve_effective_mouse_wake_enabled(self) -> bool:

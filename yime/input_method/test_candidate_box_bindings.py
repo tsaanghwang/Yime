@@ -69,6 +69,7 @@ class _FakeBox:
         self.candidate_layout_var = _FakeVar("horizontal")
         self.wake_trigger_mode_var = _FakeVar("both")
         self.standby_trigger_mode_var = _FakeVar("both")
+        self.hover_tip_var = _FakeVar(True)
         self.mouse_wake_var = _FakeVar(True)
         self.mouse_standby_var = _FakeVar(True)
         self.ui_scale_var = _FakeVar(100)
@@ -82,6 +83,7 @@ class _FakeBox:
         self.reverse_lookup_display_mode_changes: list[str] = []
         self.wake_trigger_mode_changes: list[str] = []
         self.standby_trigger_mode_changes: list[str] = []
+        self.hover_tip_changes: list[bool] = []
         self.mouse_wake_changes: list[bool] = []
         self.mouse_standby_changes: list[bool] = []
         self.ui_scale_changes: list[int] = []
@@ -136,6 +138,11 @@ class _FakeBox:
     def standby_trigger_mode_change_callback(self, mode: str) -> bool:
         self.standby_trigger_mode_var.set(mode)
         self.standby_trigger_mode_changes.append(mode)
+        return True
+
+    def hover_tip_enabled_change_callback(self, enabled: bool) -> bool:
+        self.hover_tip_var.set(enabled)
+        self.hover_tip_changes.append(enabled)
         return True
 
     def set_mouse_wake_enabled(self, enabled: bool) -> None:
@@ -410,8 +417,8 @@ def test_toolbar_menu_uses_expected_labels_and_popup_position(monkeypatch) -> No
         "92%",
         "97%",
     ]
-    assert [label for label, _, _ in check_buttons] == ["活动窗始终置顶"]
-    assert separators == [True, True, True, True, True, True]
+    assert [label for label, _, _ in check_buttons] == ["启用悬浮提示（tip）", "活动窗始终置顶"]
+    assert separators == [True, True, True, True, True, True, True]
 
     actions.show_toolbar_menu()
 
@@ -428,8 +435,10 @@ def test_toolbar_menu_uses_expected_labels_and_popup_position(monkeypatch) -> No
     radio_buttons[34][3]()
     radio_buttons[35][3]()
     commands[1][1]()
+    box.hover_tip_var.set(False)
     box.active_topmost_var.set(False)
     check_buttons[0][2]()
+    check_buttons[1][2]()
     commands[3][1]()
     commands[4][1]()
     commands[5][1]()
@@ -540,6 +549,9 @@ def test_reverse_lookup_menu_includes_intro_item(monkeypatch) -> None:
         def add_radiobutton(self, label: str, value: object, variable: object, command: object) -> None:
             return None
 
+        def add_checkbutton(self, label: str, variable: object, command: object) -> None:
+            return None
+
     monkeypatch.setattr("yime.input_method.ui.candidate_box_actions.tk.Menu", _FakeMenu)
 
     actions = CandidateBoxActions(_FakeBox())
@@ -614,6 +626,10 @@ def test_list_and_trigger_setting_statuses_use_direct_action_guidance() -> None:
 
     actions.set_standby_trigger_mode("both")
     assert box.status == "之后可通过热键 + 鼠标让候选窗回到待命。"
+
+    box.hover_tip_var.set(False)
+    actions.toggle_hover_tip_enabled()
+    assert box.status == "悬浮提示已隐藏。"
 
 
 def test_user_lexicon_menu_items_are_disabled_when_hooks_are_missing(monkeypatch) -> None:
@@ -854,6 +870,9 @@ def test_edit_hotkey_menu_item_is_always_disabled(monkeypatch) -> None:
             cascades.append((label, menu, state))
 
         def add_radiobutton(self, label: str, value: object, variable: object, command: object) -> None:
+            return None
+
+        def add_checkbutton(self, label: str, variable: object, command: object) -> None:
             return None
 
     monkeypatch.setattr("yime.input_method.ui.candidate_box_actions.tk.Menu", _FakeMenu)
@@ -1143,18 +1162,14 @@ def test_remove_last_commit_char_uses_user_facing_status() -> None:
     assert single_box.status == "已撤销最后一字；待上屏内容已清空。"
 
 
-def test_candidate_box_set_status_updates_auxiliary_label() -> None:
+def test_candidate_box_set_status_keeps_auxiliary_label_hidden() -> None:
     class _FakeAuxLabel:
         def __init__(self) -> None:
             self.text = None
-            self.pack_calls: list[tuple[str, tuple[int, int]]] = []
             self.pack_forget_calls = 0
 
         def configure(self, *, text: str) -> None:
             self.text = text
-
-        def pack(self, *, anchor: str, pady: tuple[int, int]) -> None:
-            self.pack_calls.append((anchor, pady))
 
         def pack_forget(self) -> None:
             self.pack_forget_calls += 1
@@ -1170,11 +1185,13 @@ def test_candidate_box_set_status_updates_auxiliary_label() -> None:
 
     CandidateBox.set_status(box, "可直接按空格上屏。")
     assert box.manual_key_layout_label.text == "可直接按空格上屏。"
-    assert box.manual_key_layout_label.pack_calls == [("w", (4, 0))]
+    assert box._status_text == "可直接按空格上屏。"
+    assert box.manual_key_layout_label.pack_forget_calls == 1
 
     CandidateBox.set_status(box, "")
     assert box.manual_key_layout_label.text == ""
-    assert box.manual_key_layout_label.pack_forget_calls == 1
+    assert box._status_text == ""
+    assert box.manual_key_layout_label.pack_forget_calls == 2
 
 
 def test_candidate_box_update_candidates_uses_status_text() -> None:
@@ -1224,7 +1241,7 @@ def test_candidate_box_update_candidates_uses_status_text() -> None:
 
 
 def test_candidate_box_default_status_text_matches_current_ui_guidance() -> None:
-    assert CandidateBox._DEFAULT_STATUS_TEXT == "连续输入时会自动取最近 4 码。可直接输入编码，或粘贴后继续输入。"
+    assert CandidateBox._DEFAULT_STATUS_TEXT == "连续输入时会自动取最近 4 码。可直接输入或粘贴编码后继续输入；Space 选首选，Enter 上屏。"
 
 
 def test_edit_hotkey_updates_status_with_next_step_guidance(monkeypatch) -> None:

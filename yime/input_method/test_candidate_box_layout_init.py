@@ -1,4 +1,5 @@
 import tkinter as tk
+from types import SimpleNamespace
 
 import pytest
 
@@ -125,3 +126,40 @@ def test_set_candidate_layout_requests_resize_when_layout_changes() -> None:
     assert box.sync_calls == 1
     assert box.render_calls == 1
     assert box.resize_calls == 1
+
+
+def test_hover_tip_lifecycle_uses_real_tk_tooltip_window() -> None:
+    try:
+        box = CandidateBox(
+            on_select=lambda text: None,
+            font_family="TkDefaultFont",
+            candidate_layout="horizontal",
+        )
+    except tk.TclError as exc:
+        pytest.skip(f"tkinter unavailable: {exc}")
+
+    try:
+        box.set_status("候选区提示")
+        box.root.update_idletasks()
+
+        box._on_hover_tip_enter(SimpleNamespace(x_root=240, y_root=160), lambda: box._status_text)
+        box.root.update_idletasks()
+
+        assert box._tooltip_window is not None
+        assert box._tooltip_label is not None
+        assert box._tooltip_window.winfo_exists() == 1
+        assert str(box._tooltip_label.cget("text")) == "候选区提示"
+
+        box.set_hover_tip_enabled(False)
+        box.root.update_idletasks()
+
+        assert box._tooltip_window is None
+        assert box._tooltip_label is None
+
+        box._on_hover_tip_enter(SimpleNamespace(x_root=260, y_root=180), lambda: box._status_text)
+        box.root.update_idletasks()
+
+        assert box._tooltip_window is None
+        assert box._tooltip_label is None
+    finally:
+        box.root.destroy()

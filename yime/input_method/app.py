@@ -510,6 +510,7 @@ class InputMethodApp(BaseInputMethodApp):
             on_candidate_layout_change=self._on_candidate_layout_change,
             on_wake_trigger_mode_change=self._on_wake_trigger_mode_change,
             on_standby_trigger_mode_change=self._on_standby_trigger_mode_change,
+            on_hover_tip_enabled_change=self._on_hover_tip_enabled_change,
             on_mouse_wake_enabled_change=self._on_mouse_wake_enabled_change,
             on_mouse_standby_enabled_change=self._on_mouse_standby_enabled_change,
             on_ui_scale_change=self._on_ui_scale_change,
@@ -537,6 +538,7 @@ class InputMethodApp(BaseInputMethodApp):
             on_restore_from_standby=self._resume_from_standby,
             on_toggle_standby=self._return_mouse_session_to_standby,
             on_close=self._close,
+            enable_hover_tip=self.hover_tip_enabled,
             enable_mouse_wake=self._is_mouse_wake_enabled(),
             enable_mouse_standby=self._is_mouse_standby_enabled(),
         )
