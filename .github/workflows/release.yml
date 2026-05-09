@@ -6,6 +6,9 @@ on:
       - published
   workflow_dispatch:
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   build:
     name: Build distribution
@@ -38,6 +41,7 @@ jobs:
     name: Publish to PyPI
     needs: build
     runs-on: ubuntu-latest
+    environment: pypi
     permissions:
       id-token: write
 
