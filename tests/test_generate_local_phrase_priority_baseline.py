@@ -175,3 +175,76 @@ def test_build_continuous_rules_payload_expands_target_phrase_codes() -> None:
             ],
         },
     ]
+
+
+def test_build_continuous_rules_payload_drops_unrelated_6_prefix_noise() -> None:
+    payload = _build_continuous_rules_payload(
+        [
+            {
+                "targets": [
+                    {"text": "及时", "yime_code": "abcdefxy", "text_length": 2, "boost": 500000.0},
+                    {"text": "即使", "yime_code": "abcdefzy", "text_length": 2, "boost": 400000.0},
+                    {"text": "其他", "yime_code": "mnopqrsx", "text_length": 2, "boost": 300000.0},
+                    {"text": "其它", "yime_code": "mnopqrsy", "text_length": 2, "boost": 200000.0},
+                    {"text": "服务", "yime_code": "uvwxyzaa", "text_length": 2, "boost": 100000.0},
+                    {"text": "服务员", "yime_code": "uvwxyzaabbcc", "text_length": 3, "boost": 90000.0},
+                ]
+            }
+        ],
+        source="test-source",
+    )
+
+    assert payload["rules"] == [
+        {
+            "lookup_code": "abcdefx",
+            "targets": [
+                {"text": "及时", "boost": 500000.0},
+            ],
+        },
+        {
+            "lookup_code": "abcdefz",
+            "targets": [
+                {"text": "即使", "boost": 400000.0},
+            ],
+        },
+        {
+            "lookup_code": "mnopqr",
+            "targets": [
+                {"text": "其他", "boost": 300000.0},
+                {"text": "其它", "boost": 200000.0},
+            ],
+        },
+        {
+            "lookup_code": "mnopqrs",
+            "targets": [
+                {"text": "其他", "boost": 300000.0},
+                {"text": "其它", "boost": 200000.0},
+            ],
+        },
+        {
+            "lookup_code": "uvwxyz",
+            "targets": [
+                {"text": "服务", "boost": 100000.0},
+                {"text": "服务员", "boost": 90000.0},
+            ],
+        },
+        {
+            "lookup_code": "uvwxyza",
+            "targets": [
+                {"text": "服务", "boost": 100000.0},
+                {"text": "服务员", "boost": 90000.0},
+            ],
+        },
+        {
+            "lookup_code": "uvwxyzaab",
+            "targets": [
+                {"text": "服务员", "boost": 90000.0},
+            ],
+        },
+        {
+            "lookup_code": "uvwxyzaabb",
+            "targets": [
+                {"text": "服务员", "boost": 90000.0},
+            ],
+        },
+    ]

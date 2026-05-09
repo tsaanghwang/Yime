@@ -19,6 +19,11 @@ DEFAULT_TARGET_COUNT = 5
 DEFAULT_SAMPLE_COUNT = 10
 DEFAULT_BASE_BOOST = 500_000.0
 DEFAULT_BOOST_STEP = 100_000.0
+ALLOWED_VARIANT_TARGET_GROUPS = frozenset(
+    {
+        frozenset({"其他", "其它"}),
+    }
+)
 
 STRONG_FRAGMENT_SUFFIXES = (
     "的",
@@ -160,6 +165,31 @@ def _build_target_boosts(target_count: int, *, base_boost: float, step: float) -
     return [max(base_boost - step * index, step) for index in range(target_count)]
 
 
+def _common_text_prefix(texts: list[str]) -> str:
+    if not texts:
+        return ""
+
+    prefix = texts[0]
+    for text in texts[1:]:
+        while prefix and not text.startswith(prefix):
+            prefix = prefix[:-1]
+    return prefix
+
+
+def _should_keep_continuous_multi_target_rule(lookup_code: str, targets: dict[str, float]) -> bool:
+    if len(targets) <= 1:
+        return True
+    if len(lookup_code) not in {6, 7}:
+        return True
+
+    target_texts = sorted(str(text).strip() for text in targets if str(text).strip())
+    if len(target_texts) <= 1:
+        return True
+    if frozenset(target_texts) in ALLOWED_VARIANT_TARGET_GROUPS:
+        return True
+    return len(_common_text_prefix(target_texts)) >= 2
+
+
 def _iter_continuous_lookup_codes(full_code: str, *, text_length: int = 0) -> list[str]:
     normalized_code = str(full_code or "").strip()
     if len(normalized_code) < 8:
@@ -227,7 +257,7 @@ def _build_continuous_rules_payload(
             ],
         }
         for lookup_code, target_boosts in sorted(rule_map.items())
-        if target_boosts
+        if target_boosts and _should_keep_continuous_multi_target_rule(lookup_code, target_boosts)
     ]
     return {
         "version": 1,
