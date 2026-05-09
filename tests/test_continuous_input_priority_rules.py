@@ -42,6 +42,65 @@ def _find_generated_rule_by_targets(
     raise AssertionError(f"missing generated rule for targets={sorted(expected_targets)}")
 
 
+def _build_ranked_prefix_candidates(lookup_code: str, target_texts: list[str]) -> list[dict[str, object]]:
+    candidates: list[dict[str, object]] = []
+    for index in range(3):
+        candidates.append(
+            {
+                "text": f"占位词{index + 1}",
+                "entry_type": "phrase",
+                "pinyin_tone": f"zhan4 wei4 ci2 {index + 1}",
+                "yime_code": lookup_code + chr(ord("a") + index),
+                "sort_weight": 999.0 - index,
+                "text_length": 4,
+                "is_common": 1,
+            }
+        )
+    for index, text in enumerate(target_texts):
+        candidates.append(
+            {
+                "text": text,
+                "entry_type": "phrase",
+                "pinyin_tone": "generated target",
+                "yime_code": lookup_code + chr(ord("d") + index),
+                "sort_weight": 100.0 - index,
+                "text_length": max(len(text), 2),
+                "is_common": 1,
+            }
+        )
+    candidates.append(
+        {
+            "text": "占位词尾",
+            "entry_type": "phrase",
+            "pinyin_tone": "zhan4 wei4 ci2 wei3",
+            "yime_code": lookup_code + "z",
+            "sort_weight": 50.0,
+            "text_length": 4,
+            "is_common": 1,
+        }
+    )
+    return candidates
+
+
+def _assert_generated_rule_targets_stay_on_first_page(expected_targets: set[str]) -> None:
+    runtime_decoder = _build_runtime_decoder()
+    generated_rules = _load_generated_continuous_rules()
+    runtime_decoder._continuous_input_priority_rules = generated_rules
+
+    lookup_code, targets = _find_generated_rule_by_targets(generated_rules, expected_targets)
+    target_texts = list(targets)
+    runtime_decoder._phrase_prefix_index = {
+        lookup_code: _build_ranked_prefix_candidates(lookup_code, target_texts)
+    }
+
+    _canonical, _active, _pinyin, candidates, status = runtime_decoder.decode_text(lookup_code)
+
+    assert candidates[: len(target_texts)] == target_texts
+    assert set(candidates[:5]) >= set(target_texts)
+    for text in target_texts:
+        assert f"{text}[prefix/C-continuous]" in status
+
+
 def test_continuous_input_context_rule_promotes_partial_phrase() -> None:
     runtime_decoder = _build_runtime_decoder()
     runtime_decoder._continuous_input_priority_rules = {
@@ -394,75 +453,13 @@ def test_generated_continuous_rule_file_excludes_filtered_noise_groups() -> None
 
 
 def test_generated_variant_and_stem_rules_stay_on_first_page() -> None:
-    runtime_decoder = _build_runtime_decoder()
-    generated_rules = _load_generated_continuous_rules()
-    runtime_decoder._continuous_input_priority_rules = generated_rules
-
-    lookup_code, _targets = _find_generated_rule_by_targets(
-        generated_rules,
+    retained_groups = [
         {"其他", "其它"},
-    )
-    runtime_decoder._phrase_prefix_index = {
-        lookup_code: [
-            {
-                "text": "占位词一",
-                "entry_type": "phrase",
-                "pinyin_tone": "zhan4 wei4 ci2 yi1",
-                "yime_code": lookup_code + "a",
-                "sort_weight": 999.0,
-                "text_length": 4,
-                "is_common": 1,
-            },
-            {
-                "text": "占位词二",
-                "entry_type": "phrase",
-                "pinyin_tone": "zhan4 wei4 ci2 er4",
-                "yime_code": lookup_code + "b",
-                "sort_weight": 998.0,
-                "text_length": 4,
-                "is_common": 1,
-            },
-            {
-                "text": "占位词三",
-                "entry_type": "phrase",
-                "pinyin_tone": "zhan4 wei4 ci2 san1",
-                "yime_code": lookup_code + "c",
-                "sort_weight": 997.0,
-                "text_length": 4,
-                "is_common": 1,
-            },
-            {
-                "text": "其他",
-                "entry_type": "phrase",
-                "pinyin_tone": "qi2 ta1",
-                "yime_code": lookup_code + "d",
-                "sort_weight": 100.0,
-                "text_length": 2,
-                "is_common": 1,
-            },
-            {
-                "text": "其它",
-                "entry_type": "phrase",
-                "pinyin_tone": "qi2 ta1",
-                "yime_code": lookup_code + "e",
-                "sort_weight": 90.0,
-                "text_length": 2,
-                "is_common": 1,
-            },
-            {
-                "text": "占位词四",
-                "entry_type": "phrase",
-                "pinyin_tone": "zhan4 wei4 ci2 si4",
-                "yime_code": lookup_code + "f",
-                "sort_weight": 89.0,
-                "text_length": 4,
-                "is_common": 1,
-            },
-        ]
-    }
+        {"毕业", "毕业生"},
+        {"机器", "机器人"},
+        {"计算", "计算机"},
+        {"验证", "验证集", "验证码"},
+    ]
 
-    _canonical, _active, _pinyin, candidates, status = runtime_decoder.decode_text(lookup_code)
-
-    assert candidates[:5] == ["其他", "其它", "占位词一", "占位词二", "占位词三"]
-    assert "其他[prefix/C-continuous]" in status
-    assert "其它[prefix/C-continuous]" in status
+    for expected_targets in retained_groups:
+        _assert_generated_rule_targets_stay_on_first_page(expected_targets)
