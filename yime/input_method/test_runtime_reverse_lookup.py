@@ -11,6 +11,11 @@ def test_looks_like_hanzi_text_detects_plain_hanzi() -> None:
     assert looks_like_hanzi_text("ri4") is False
 
 
+def test_looks_like_hanzi_text_accepts_extension_plane_hanzi() -> None:
+    assert looks_like_hanzi_text("\U00030000") is True
+    assert looks_like_hanzi_text("\U00031350") is True
+
+
 def test_runtime_reverse_lookup_returns_first_char_record() -> None:
     lookup = RuntimeReverseLookup(Path(__file__).resolve().parent.parent / "pinyin_hanzi.db")
 
@@ -26,4 +31,4 @@ def test_runtime_reverse_lookup_returns_first_char_record() -> None:
 def test_runtime_reverse_lookup_returns_none_for_missing_phrase() -> None:
     lookup = RuntimeReverseLookup(Path(__file__).resolve().parent.parent / "pinyin_hanzi.db")
 
-    assert lookup.lookup_first("今日") is None
+    assert lookup.lookup_first("今日不存在") is None
