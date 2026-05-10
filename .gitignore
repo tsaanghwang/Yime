@@ -44,8 +44,16 @@ Anaconda3Scriptsconda.exe
 # Generated reports
 coverage/
 htmlcov/
+
+# Packaging / build artifacts
 build/
 dist/
+site/
+pip-wheel-metadata/
+.eggs/
+*.egg
+*.whl
+
 internal_data/pinyin_source_db/source_pinyin.db
 yime/reports/efficiency_baseline.json
 yime/reports/phrase_code_backfill.json

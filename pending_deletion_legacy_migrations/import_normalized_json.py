@@ -134,5 +134,5 @@ with sqlite3.connect(str(DB)) as conn:
         print(r)
 
 # Run:
-# ./venv/Scripts/python.exe ./yime/migrations/import_normalized_json.py
-# or: ./venv/Scripts/python.exe ./yime/migrations/import_normalized_json.py ./yime/pinyin_normalized.json ./yime/pinyin_hanzi.db
+# ./venv/Scripts/python.exe ./pending_deletion_legacy_migrations/import_normalized_json.py
+# or: ./venv/Scripts/python.exe ./pending_deletion_legacy_migrations/import_normalized_json.py ./yime/pinyin_normalized.json ./yime/pinyin_hanzi.db

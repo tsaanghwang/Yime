@@ -14,18 +14,18 @@
       "name": "connect",
       "type": "python",
       "request": "launch",
-      "program": "${workspaceFolder}\\yime\\migrations\\connect.py",
+      "program": "${workspaceFolder}\\pending_deletion_legacy_migrations\\connect.py",
       "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\yime\\migrations",
+      "cwd": "${workspaceFolder}\\pending_deletion_legacy_migrations",
       "addSourceRootsToPythonpath": true
     },
     {
       "name": "connect_to_mysql",
       "type": "python",
       "request": "launch",
-      "program": "${workspaceFolder}\\yime\\migrations\\connect_to_mysql.py",
+      "program": "${workspaceFolder}\\pending_deletion_legacy_migrations\\connect_to_mysql.py",
       "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\yime\\migrations",
+      "cwd": "${workspaceFolder}\\pending_deletion_legacy_migrations",
       "addSourceRootsToPythonpath": true
     },
     {

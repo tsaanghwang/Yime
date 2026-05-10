@@ -267,8 +267,10 @@ legacy-compatible 表结构示例：
 
 创建迁移脚本：
 
+注意：这里的 `pending_deletion_legacy_migrations/` 仅表示历史/legacy-compatible 示例路径，方便人工排障或审计；这批脚本已从 `yime/` 包目录迁到仓库根目录下，明确标记为待删除归档，不属于当前主线 rebuild 流程，也不参与当前包构建与分发。
+
 ```python
-# yime/migrations/migration_001.py
+# pending_deletion_legacy_migrations/migration_001.py
 import sqlite3
 
 def upgrade(conn):

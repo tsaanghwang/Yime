@@ -2,6 +2,7 @@ include LICENSE
 include NOTICE.md
 graft pianyin
 graft syllable
+prune yime/legacy
 prune tests
 prune tools
 prune pinyin

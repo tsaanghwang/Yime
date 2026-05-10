@@ -31,7 +31,7 @@ package-dir = {"" = "."}
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["yime*", "pinyin*", "pianyin*", "syllable*", "syllable_codec*", "utils*"]
-exclude = ["tests*", "tools*"]
+exclude = ["tests*", "tools*", "yime.legacy*"]
 
 [tool.setuptools.package-data]
 "syllable.analysis.slice" = ["yinyuan/*.json"]

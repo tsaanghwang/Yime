@@ -12,11 +12,18 @@
 - `export_mappings_csv.py`
 - `migrate_pinyin_table.py`
 
+当前已整体迁出包目录、并暂存于仓库根目录的旧迁移目录：
+
+- `pending_deletion_legacy_migrations/`
+
 这些脚本的共同特点是：
 
 - 直接检查或修改旧 `音元拼音 / 数字标调拼音 / 词汇` 结构。
 - 不再属于当前主线 `source_pinyin.db -> prototype tables -> runtime_candidates` 的必要环节。
+- 当前也已从项目的构建/分发路径中排除：`MANIFEST.in` 会 `prune yime/legacy`，`pyproject.toml` 也不再将 `yime.legacy*` 纳入包发现；其中原 `migrations/` 已进一步迁到仓库根目录，避免继续挂在包命名空间下。
 - 继续保留仅为了历史审计、旧库排查或人工迁移参考。
+
+换句话说，本目录默认视为“仓库内归档资料”，而不是当前可安装包、发布产物或主线 rebuild 流程的一部分。
 
 当前没有归档、但仍应视为 legacy-compatible 的文件：
 
