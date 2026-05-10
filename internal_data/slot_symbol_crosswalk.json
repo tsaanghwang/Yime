@@ -1,7 +1,7 @@
 {
   "metadata": {
     "description": "Slot/BMP/SPUA-B/physical-key crosswalk generated from current source JSON files.",
-    "runtime_source": "key_to_code.json",
+    "runtime_source": "syllable_codec\\key_to_code.json",
     "canonical_source": "internal_data\\key_to_symbol.json",
     "projection_source": "internal_data\\bmp_pua_trial_projection.json",
     "layout_source": "internal_data\\manual_key_layout.json",

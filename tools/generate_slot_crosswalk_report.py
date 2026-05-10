@@ -190,8 +190,8 @@ def build_markdown(rows: list[dict[str, object]], payload: dict[str, object]) ->
         f"- Runtime BMP vs canonical SPUA-B differences: {metadata['bmp_canonical_differences']}",
         f"- Rows with issues: {metadata['rows_with_issues']}",
         "",
-        "| Slot | Label | Physical Key | Runtime BMP | Projection BMP | Canonical SPUA-B | Layer Relation | Issues |",
-        "| --- | --- | --- | --- | --- | --- | --- | --- |",
+        "|Slot|Label|Physical Key|Runtime BMP|Projection BMP|Canonical SPUA-B|Layer Relation|Issues|",
+        "|---|---|---|---|---|---|---|---|",
     ]
 
     for row in rows:
@@ -211,7 +211,7 @@ def build_markdown(rows: list[dict[str, object]], payload: dict[str, object]) ->
         relation = str(row["layer_relation"] or "")
         issues = ", ".join(row["issues"]) if row["issues"] else ""
         lines.append(
-            f"| {row['slot_key']} | {row['label']} | {physical} | {runtime_text} | {projection_text} | {canonical_text} | {relation} | {issues} |"
+            f"|{row['slot_key']}|{row['label']}|{physical}|{runtime_text}|{projection_text}|{canonical_text}|{relation}|{issues}|"
         )
 
     return "\n".join(lines) + "\n"
