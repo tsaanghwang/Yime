@@ -36,3 +36,6 @@ Independent YAML export:
 - To rebuild `danzi_pinyin.json` / `duozi_pinyin.json` without touching the SQLite path, run:
 
   `c:/dev/Yime/.venv/Scripts/python.exe internal_data/pinyin_source_db/export_yaml_lexicon_json.py`
+
+- Default YAML sources now live under `internal_data/pinyin_source_db/lexicon_sources/`
+- Default exported JSON files now live under `internal_data/pinyin_source_db/lexicon_exports/`

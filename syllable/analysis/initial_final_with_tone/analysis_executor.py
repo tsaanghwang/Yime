@@ -35,7 +35,7 @@ class InitialFinalWithToneAnalysisExecutor:
     def __init__(self):
         self.input_path = os.path.normpath(os.path.join(
             os.path.dirname(__file__),
-            '..', '..', '..', 'pinyin', 'hanzi_pinyin', 'pinyin_normalized.json'
+            '..', '..', '..', 'internal_data', 'pinyin_source_db', 'lexicon_exports', 'pinyin_normalized.json'
         ))
         self.output_path = os.path.join(
             os.path.dirname(__file__),

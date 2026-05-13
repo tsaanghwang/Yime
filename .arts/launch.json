@@ -305,9 +305,9 @@
       "name": "normalize_pinyin_file",
       "type": "python",
       "request": "launch",
-      "program": "${workspaceFolder}\\pinyin\\hanzi_pinyin\\normalize_pinyin_file.py",
+      "program": "${workspaceFolder}\\utils\\pinyin_normalizer.py",
       "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\pinyin\\hanzi_pinyin",
+      "cwd": "${workspaceFolder}",
       "addSourceRootsToPythonpath": true,
       "noDebug": true
     },
@@ -684,22 +684,6 @@
       "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
       "addSourceRootsToPythonpath": true
     },
-      "name": "duozi_converter",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\pinyin\\hanzi_pinyin\\duozi_converter.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\pinyin\\hanzi_pinyin",
-      "addSourceRootsToPythonpath": true
-    },
-      "name": "merge_json",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\pinyin\\hanzi_pinyin\\merge_json.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\pinyin\\hanzi_pinyin",
-      "addSourceRootsToPythonpath": true
-    },
     {
       "name": "ganyin",
       "type": "python",
@@ -716,16 +700,6 @@
       "program": "${workspaceFolder}\\syllable\\analysis\\slice\\syllable_categorizer.py",
       "currentFileConfiguration": false,
       "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
-      "addSourceRootsToPythonpath": true,
-      "noDebug": true
-    },
-    {
-      "name": "pinyin_normalizer",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\pinyin\\hanzi_pinyin\\pinyin_normalizer.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\pinyin\\hanzi_pinyin",
       "addSourceRootsToPythonpath": true,
       "noDebug": true
     },

@@ -8,10 +8,10 @@ from pathlib import Path
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 WORKSPACE_ROOT = SCRIPT_DIR.parent.parent
-DEFAULT_SINGLE_YAML = WORKSPACE_ROOT / "pinyin" / "hanzi_pinyin" / "hanzi_pinyin_danzi.yaml"
-DEFAULT_PHRASE_YAML = WORKSPACE_ROOT / "pinyin" / "hanzi_pinyin" / "hanzi_pinyin_duozi.yaml"
-DEFAULT_SINGLE_JSON = WORKSPACE_ROOT / "pinyin" / "hanzi_pinyin" / "danzi_pinyin.json"
-DEFAULT_PHRASE_JSON = WORKSPACE_ROOT / "pinyin" / "hanzi_pinyin" / "duozi_pinyin.json"
+DEFAULT_SINGLE_YAML = SCRIPT_DIR / "lexicon_sources" / "hanzi_pinyin_danzi.yaml"
+DEFAULT_PHRASE_YAML = SCRIPT_DIR / "lexicon_sources" / "hanzi_pinyin_duozi.yaml"
+DEFAULT_SINGLE_JSON = SCRIPT_DIR / "lexicon_exports" / "danzi_pinyin.json"
+DEFAULT_PHRASE_JSON = SCRIPT_DIR / "lexicon_exports" / "duozi_pinyin.json"
 
 
 def parse_args() -> argparse.Namespace:

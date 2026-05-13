@@ -71,8 +71,8 @@ c:/dev/Yime/.venv/Scripts/python.exe internal_data/pinyin_source_db/export_yaml_
 
 这条链只做：
 
-- `hanzi_pinyin_danzi.yaml -> danzi_pinyin.json`
-- `hanzi_pinyin_duozi.yaml -> duozi_pinyin.json`
+- `internal_data/pinyin_source_db/lexicon_sources/hanzi_pinyin_danzi.yaml -> internal_data/pinyin_source_db/lexicon_exports/danzi_pinyin.json`
+- `internal_data/pinyin_source_db/lexicon_sources/hanzi_pinyin_duozi.yaml -> internal_data/pinyin_source_db/lexicon_exports/duozi_pinyin.json`
 
 它和 `source_pinyin.db`、prototype tables、runtime refresh 是分离的。
 

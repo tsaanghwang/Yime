@@ -204,13 +204,13 @@ class TestYinjieSetupStages(unittest.TestCase):
             result,
             YinjiePathContext(
                 project_root=project_root,
-                input_path=project_root / "pinyin" / "hanzi_pinyin" / "pinyin_normalized.json",
+                input_path=project_root / "internal_data" / "pinyin_source_db" / "lexicon_exports" / "pinyin_normalized.json",
                 output_path=project_root / "syllable_codec" / "yinjie_code.json",
             ),
         )
         self.assertEqual(
             calls,
-            [project_root / "pinyin" / "hanzi_pinyin" / "pinyin_normalized.json"],
+            [project_root / "internal_data" / "pinyin_source_db" / "lexicon_exports" / "pinyin_normalized.json"],
         )
 
     def test_path_stage_uses_reporting_policy_for_ignored_subdir(self):

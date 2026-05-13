@@ -55,6 +55,10 @@
 - `unicode_hanzi_pinyin.json`
 - `unicode_pinyin_hanzi.txt`
 - `mspinyin.txt`
-- `pinyin_hanzi.json`
 
 这批对象迁档后，不应再被视为当前主线的源或必经中间产物。
+
+另外，下列反向同音字索引 JSON 也已归档到本目录，只供旧数据库迁移脚本或历史排障使用：
+
+- `pinyin_danzi.json`
+- `pinyin_duozi.json`

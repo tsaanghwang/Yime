@@ -11,7 +11,7 @@ from syllable.analysis.slice.yinjie_encoder import YinjieEncoder
 class TestPinyinBidirectionalValidation(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.normalized_path = Path("pinyin/hanzi_pinyin/pinyin_normalized.json")
+        cls.normalized_path = Path("internal_data/pinyin_source_db/lexicon_exports/pinyin_normalized.json")
         cls.codebook_path = YINJIE_CODE_PATH
 
         with cls.normalized_path.open("r", encoding="utf-8") as file:

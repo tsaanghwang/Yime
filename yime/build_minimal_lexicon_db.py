@@ -9,8 +9,8 @@ from pathlib import Path
 WORKSPACE_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_DB_PATH = Path(__file__).resolve().parent / "minimal_lexicon.db"
 DEFAULT_SCHEMA_PATH = Path(__file__).resolve().parent / "create_minimal_lexicon_schema.sql"
-DEFAULT_DANZI_PATH = WORKSPACE_ROOT / "pinyin" / "hanzi_pinyin" / "danzi_pinyin.json"
-DEFAULT_DUOZI_PATH = WORKSPACE_ROOT / "pinyin" / "hanzi_pinyin" / "duozi_pinyin.json"
+DEFAULT_DANZI_PATH = WORKSPACE_ROOT / "internal_data" / "pinyin_source_db" / "lexicon_exports" / "danzi_pinyin.json"
+DEFAULT_DUOZI_PATH = WORKSPACE_ROOT / "internal_data" / "pinyin_source_db" / "lexicon_exports" / "duozi_pinyin.json"
 
 
 def parse_args() -> argparse.Namespace:

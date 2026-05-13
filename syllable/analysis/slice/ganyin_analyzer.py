@@ -19,8 +19,9 @@ class GanyinAnalyzer:
         project_root = os.path.dirname(os.path.dirname(os.path.dirname(current_dir)))
         self.input_path = os.path.normpath(os.path.join(
             project_root,
-            'pinyin',
-            'hanzi_pinyin',
+            'internal_data',
+            'pinyin_source_db',
+            'lexicon_exports',
             'pinyin_normalized.json'
         ))
 

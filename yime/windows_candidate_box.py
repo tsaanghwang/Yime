@@ -68,10 +68,7 @@ class StaticCandidateDecoder:
         projection_path = repo_root / "internal_data" / "bmp_pua_trial_projection.json"
         key_to_symbol_path = repo_root / "internal_data" / "key_to_symbol.json"
         mapping_path = app_dir / "enhanced_yinjie_mapping.json"
-        pinyin_hanzi_paths = [
-            app_dir / "pinyin_hanzi.json",
-            repo_root / "pinyin" / "hanzi_pinyin" / "pinyin_hanzi.json",
-        ]
+        pinyin_hanzi_paths = [app_dir / "pinyin_hanzi.json"]
 
         self.bmp_to_canonical = self._build_bmp_to_canonical_map(projection_path, key_to_symbol_path)
         self.code_mapping = self._load_json(mapping_path)["音元符号"]

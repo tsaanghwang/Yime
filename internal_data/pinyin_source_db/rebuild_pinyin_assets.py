@@ -14,7 +14,7 @@ WORKSPACE_ROOT = SCRIPT_DIR.parent.parent
 DEFAULT_DB_PATH = WORKSPACE_ROOT / ".generated" / "source_pinyin.db"
 DEFAULT_CHAR_SOURCE = Path("C:/dev/pinyin-data/pinyin.txt")
 DEFAULT_PHRASE_SOURCE = Path("C:/dev/pinyin-data/tools/phrase-pinyin-data/pinyin.txt")
-DEFAULT_NORMALIZED_OUTPUT = WORKSPACE_ROOT / "pinyin" / "hanzi_pinyin" / "pinyin_normalized.json"
+DEFAULT_NORMALIZED_OUTPUT = SCRIPT_DIR / "lexicon_exports" / "pinyin_normalized.json"
 DEFAULT_YINJIE_OUTPUT = WORKSPACE_ROOT / "syllable_codec" / "yinjie_code.json"
 DEFAULT_SUMMARY_OUTPUT = SCRIPT_DIR / "rebuild_summary.json"
 

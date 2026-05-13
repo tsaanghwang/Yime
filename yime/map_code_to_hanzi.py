@@ -20,6 +20,8 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+LEGACY_PINYIN_DANZI_PATH = PROJECT_ROOT / "legacy" / "pinyin_danzi.json"
+
 class DatabaseManager:
     """封装数据库连接和基本操作"""
     def __init__(self, db_path: str):
@@ -151,8 +153,8 @@ class DatabaseMigrator:
 
             return [row[0] for row in cursor.fetchall()]
 
-def migrate_pinyin_danzi_to_db(db_path: str | Path = None, json_path: str = 'pinyin/hanzi_pinyin/pinyin_danzi.json') -> int:
-    """将pinyin_danzi.json的同音字数据迁移到数据库（模块级函数，可直接调用）
+def migrate_pinyin_danzi_to_db(db_path: str | Path = None, json_path: str | Path = LEGACY_PINYIN_DANZI_PATH) -> int:
+    """将 legacy/pinyin_danzi.json 的同音字数据迁移到数据库（模块级函数，可直接调用）
 
     db_path: 数据库文件路径；如果为 None，使用本模块同目录下的 pinyin_hanzi.db
     """
@@ -164,8 +166,10 @@ def migrate_pinyin_danzi_to_db(db_path: str | Path = None, json_path: str = 'pin
         db_path = Path(__file__).parent / "pinyin_hanzi.db"
     db_path = Path(db_path)
 
-    # 读取JSON文件
-    json_path = Path(__file__).parent.parent / "pinyin/hanzi_pinyin/pinyin_danzi.json"
+    # 读取 legacy 归档中的反向同音字索引
+    json_path = Path(json_path)
+    if not json_path.is_absolute():
+        json_path = PROJECT_ROOT / json_path
     with open(json_path, 'r', encoding='utf-8') as f:
         pinyin_danzi = json.load(f)
 

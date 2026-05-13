@@ -210,7 +210,7 @@ class TestYinjieEncoder(unittest.TestCase):
         encoder = YinjieEncoder()
         cls.project_root = encoder.project_root
         # 加载所有拼音音节
-        with open(cls.project_root / 'pinyin' / 'hanzi_pinyin' / 'pinyin_normalized.json', 'r', encoding='utf-8') as f:
+        with open(cls.project_root / 'internal_data' / 'pinyin_source_db' / 'lexicon_exports' / 'pinyin_normalized.json', 'r', encoding='utf-8') as f:
             cls.all_pinyin = list(json.load(f).keys())
         cls.encoder = encoder
         cls.shouyin_encoder = ShouyinEncoder()

@@ -17,7 +17,7 @@ from validate_source_pinyin_db import (
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 WORKSPACE_ROOT = SCRIPT_DIR.parent.parent
-DEFAULT_OUTPUT_PATH = WORKSPACE_ROOT / "pinyin" / "hanzi_pinyin" / "pinyin_normalized.json"
+DEFAULT_OUTPUT_PATH = SCRIPT_DIR / "lexicon_exports" / "pinyin_normalized.json"
 
 
 def parse_args() -> argparse.Namespace:

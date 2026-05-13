@@ -275,7 +275,7 @@ class YinjiePathStage:
 
     def resolve_input_path(self, project_root: Path) -> Path:
         return self.path_validator(
-            project_root / "pinyin" / "hanzi_pinyin" / "pinyin_normalized.json"
+            project_root / "internal_data" / "pinyin_source_db" / "lexicon_exports" / "pinyin_normalized.json"
         )
 
     def resolve_output_path(self, project_root: Path, output_subdir: str = "") -> Path:
