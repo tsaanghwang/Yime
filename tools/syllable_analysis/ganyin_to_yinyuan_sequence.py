@@ -4,12 +4,18 @@
 流程：读取干音与片音序列的映射数据，并将其转换为干音与音元序列的映射数据。
 """
 import json
-from typing import Dict, Any
-import  sys
+import sys
+from typing import Any, Dict, cast
 from pathlib import Path
-sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 
-from yueyin_yinyuan import YueyinYinyuan
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+from syllable.analysis.slice.yueyin_yinyuan import YueyinYinyuan
+
+
+SLICE_DIR = PROJECT_ROOT / "syllable" / "analysis" / "slice"
 
 
 class GanyinToYinyuanSequence:
@@ -36,13 +42,13 @@ class GanyinToYinyuanSequence:
         pianyin = pianyin.split("/")[0]  # 处理多值情况
         quality = pianyin[:-1] if len(pianyin) > 1 else pianyin
         pitch = pianyin[-1] if len(pianyin) > 1 else ""
-        processed = self.yueyin_yinyuan._process_mid_high_model(
+        processed = cast(Any, self.yueyin_yinyuan)._process_mid_high_model(
             {"temp": (quality, pitch)})
         return next(iter(processed.keys())) if processed else ""
 
     def process_ganyin(self, ganyin_data: Dict[str, Any]) -> Dict[str, Any]:
         """处理干音数据"""
-        result = {}
+        result: Dict[str, Any] = {}
         for ganyin_type, ganyin_list in ganyin_data.items():
             result[ganyin_type] = {
                 ganyin_name: {
@@ -64,13 +70,12 @@ class GanyinToYinyuanSequence:
 
 def main():
     converter = GanyinToYinyuanSequence()
-    base_dir = Path(__file__).parent
-    input_file = base_dir / 'yinyuan' / 'ganyin_to_pianyin_sequence.json'
-    output_file = base_dir / 'yinyuan' / 'ganyin_to_yinyuan_sequence.json'
+    input_file = SLICE_DIR / 'yinyuan' / 'ganyin_to_pianyin_sequence.json'
+    output_file = SLICE_DIR / 'yinyuan' / 'ganyin_to_yinyuan_sequence.json'
     result = converter.run(input_file, output_file)
 
     # 转换音调标记方式并保存新格式结果
-    marks_data = converter.yueyin_yinyuan._change_pitch_style(result)
+    marks_data = cast(Any, converter.yueyin_yinyuan)._change_pitch_style(result)
     marks_output_path = output_file.with_name(
         "ganyin_to_yinyuan_seq_marks.json")
     converter.save_yinyuan_data(marks_output_path, marks_data)

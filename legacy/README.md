@@ -144,6 +144,17 @@
 
 这条链只消费当前数字调拼音表并在目录内自生成 `initial/final/possible syllables` 派生产物，没有任何活动代码、测试或运行时入口再依赖它；保留仅为历史分析方法对照。
 
+另外，原 `syllable/analysis/slice/` 中几份只负责生成现行 `slice/yinyuan` JSON 资产、但并不属于运行时实现面的脚本已迁到 `tools/syllable_analysis/`：
+
+- `ganyin_enhanced.py`
+- `ganyin_slicer.py`
+- `ganyin_to_pianyin_sequence.py`
+- `ganyin_to_yinyuan_sequence.py`
+
+它们现在仍可用于重建 `ganyin_enhanced.json`、`ganyin_to_pianyin_sequence.json`、`ganyin_to_yinyuan_sequence.json` 等产物，但不再占据 `syllable.analysis.slice` 这个实现目录。
+
+同时，原 `syllable/analysis/slice/reverse_key_value_pairs.py` 也已迁入 `legacy/syllable_analysis_slice/`。当前活动重建链已经使用 `yime/reverse_key_value_pairs.py`，因此 `slice` 内这份旧 helper 不再需要留在活动实现面。
+
 另外，原 `syllable/` 根目录下几份没有活动代码读取的旧 JSON 快照也已迁入 `legacy/syllable_root_snapshots/`：
 
 - `syllable_root_snapshots/ganyin.json`

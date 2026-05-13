@@ -3,10 +3,12 @@ from pathlib import Path
 
 """将数字标调的干音数据转换为带声调标记和IPA的格式"""
 
+SLICE_DIR = Path(__file__).resolve().parents[2] / "syllable" / "analysis" / "slice"
+
 # 韵母与国际音标（IPA）的映射
 def load_final_styles():
     """加载韵母与IPA的映射关系"""
-    final_styles_path = Path(__file__).parent / "yinyuan" / "final_styles.json"
+    final_styles_path = SLICE_DIR / "yinyuan" / "final_styles.json"
     with open(final_styles_path, "r", encoding="utf-8") as f:
         data = json.load(f)
 
@@ -90,9 +92,8 @@ def enhance_ganyin(input_path, output_path):
 
 
 if __name__ == "__main__":
-    base_dir = Path(__file__).parent
-    input_path = base_dir / "yinyuan" / "ganyin.json"
-    output_path = base_dir / 'yinyuan' / 'ganyin_enhanced.json'
+    input_path = SLICE_DIR / "yinyuan" / "ganyin.json"
+    output_path = SLICE_DIR / 'yinyuan' / 'ganyin_enhanced.json'
     enhance_ganyin(input_path, output_path)
 
     print(f"转换完成，结果已保存到 {output_path}")
