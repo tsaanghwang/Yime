@@ -3,17 +3,17 @@ import unittest
 from pathlib import Path
 from typing import Any, Final, cast
 
-try:
-    from .ganyin_encoder import GanyinEncoder
-except ImportError:
-    from ganyin_encoder import GanyinEncoder
+from syllable.analysis.slice.ganyin_encoder import GanyinEncoder
+
+
+SLICE_DIR = Path(__file__).resolve().parents[2] / "syllable" / "analysis" / "slice"
 
 class TestGanyinEncoder(unittest.TestCase):
     """干音编码器完备测试"""
 
     @classmethod
     def setUpClass(cls):
-        mapping_path = Path(__file__).parent / "yinyuan" / "ganyin_to_fixed_length_yinyuan_sequence.json"
+        mapping_path = SLICE_DIR / "yinyuan" / "ganyin_to_fixed_length_yinyuan_sequence.json"
         with mapping_path.open('r', encoding='utf-8') as file:
             cls.encoding_map = json.load(file)
 

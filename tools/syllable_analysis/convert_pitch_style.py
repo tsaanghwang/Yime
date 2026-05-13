@@ -1,8 +1,11 @@
 import json
 import sys
 from pathlib import Path
-sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
-from yueyin_yinyuan import YueyinYinyuan
+
+from syllable.analysis.slice.yueyin_yinyuan import YueyinYinyuan
+
+
+SLICE_DIR = Path(__file__).resolve().parents[2] / "syllable" / "analysis" / "slice"
 
 def load_and_validate_input(input_path: Path) -> dict:
     """加载并验证输入数据
@@ -53,7 +56,7 @@ def convert_pitch_style(input_data: dict, yueyin: YueyinYinyuan) -> dict:
 
 def main():
     # 获取当前脚本所在目录
-    script_dir = Path(__file__).parent
+    script_dir = SLICE_DIR
 
     # 输入输出文件路径（使用绝对路径）
     input_path = script_dir / 'yinyuan' / 'pitched_yinyuan_of_mid_high_median_model.json'

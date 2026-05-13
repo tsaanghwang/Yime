@@ -1,28 +1,19 @@
 #!/usr/bin/env python3
-"""
-最终验证：干音和韵母的定义与处理
-"""
-import  sys
-import importlib
+"""最终验证：干音和韵母的定义与处理。"""
+
+import sys
 from pathlib import Path
 import tempfile
 from typing import Any, Callable, Mapping, cast
+import json
+
+from syllable.analysis.slice.ganyin_categorizer import GanyinCategorizer
+from tools.syllable_analysis.ganyin_analyzer import GanyinAnalyzer
+from tools.syllable_analysis.ganyin_theoretical_generator import generate_theoretical_flat_ganyin
 
 stdout_reconfigure = cast(Callable[..., None] | None, getattr(sys.stdout, 'reconfigure', None))
 if stdout_reconfigure is not None:
     stdout_reconfigure(encoding='utf-8')
-
-try:
-    from .ganyin_categorizer import GanyinCategorizer
-    from .ganyin_theoretical_generator import generate_theoretical_flat_ganyin
-    from . import ganyin_analyzer as _ganyin_analyzer
-except ImportError:
-    from ganyin_categorizer import GanyinCategorizer
-    from ganyin_theoretical_generator import generate_theoretical_flat_ganyin
-    _ganyin_analyzer = importlib.import_module('ganyin_analyzer')
-import json
-
-GanyinAnalyzer = _ganyin_analyzer.GanyinAnalyzer
 
 
 def _flatten_grouped_ganyin(grouped_ganyin: Mapping[str, Mapping[str, str]]) -> dict[str, str]:

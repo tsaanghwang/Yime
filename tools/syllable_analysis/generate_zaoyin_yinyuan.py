@@ -6,13 +6,13 @@
 """
 
 import json
-import sys
 from pathlib import Path
 from typing import TypedDict
 
-sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
+from syllable.analysis.slice.zaoyin_yinyuan import ClearNoise, VoicedNoise
 
-from zaoyin_yinyuan import ClearNoise, VoicedNoise
+
+SLICE_DIR = Path(__file__).resolve().parents[2] / "syllable" / "analysis" / "slice"
 
 
 class MergedEntry(TypedDict):
@@ -92,7 +92,7 @@ def generate_zaoyin_yinyuan():
     """
     读取 yinyuan/pianyin_initial.json，生成噪音类音元 JSON 文件。
     """
-    base_dir = Path(__file__).parent
+    base_dir = SLICE_DIR
     input_path = base_dir / 'yinyuan' / 'pianyin_initial.json'
     output_path = base_dir / 'yinyuan' / 'zaoyin_yinyuan_enhanced.json'
     simplified_output_path = base_dir / 'yinyuan' / 'zaoyin_yinyuan.json'

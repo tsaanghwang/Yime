@@ -3,10 +3,7 @@
 from pathlib import Path
 import json
 
-try:
-    from .final_categorizer import FinalCategorizer
-except ImportError:
-    from final_categorizer import FinalCategorizer
+from syllable.analysis.slice.final_categorizer import FinalCategorizer
 
 
 CATEGORY_TO_GROUP_NAME = {

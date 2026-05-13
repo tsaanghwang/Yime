@@ -1,14 +1,9 @@
 #!/usr/bin/env python3
-"""
-验证新添加韵母的分类是否合理
-"""
-import importlib
+"""验证新添加韵母的分类是否合理。"""
+
 from typing import Any
 
-try:
-    from .ganyin_categorizer import GanyinCategorizer
-except ImportError:
-    GanyinCategorizer = importlib.import_module('ganyin_categorizer').GanyinCategorizer
+from syllable.analysis.slice.ganyin_categorizer import GanyinCategorizer
 
 
 NEW_FINALS = ['ian', 'iong', 'iu', 'ong', 'ua', 'uai', 'ue', 'ui', 'un', 'v', 'van', 've']

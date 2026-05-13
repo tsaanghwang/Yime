@@ -6,13 +6,16 @@
 import os
 import sys
 from pathlib import Path
-sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
-from syllable_analyzer import YinjieAnalyzer
+
+from syllable.analysis.slice.syllable_analyzer import YinjieAnalyzer
+
+
+SLICE_ANALYZER_PATH = Path(__file__).resolve().parents[2] / "syllable" / "analysis" / "slice" / "syllable_analyzer.py"
 
 def main():
     try:
         # 获取当前文件路径
-        current_file = os.path.abspath(__file__)
+        current_file = str(SLICE_ANALYZER_PATH)
 
         # 初始化分析器
         analyzer = YinjieAnalyzer(current_file)

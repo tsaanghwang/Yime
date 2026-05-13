@@ -5,9 +5,10 @@
 
 import os
 import sys
-from ganyin_analyzer import GanyinAnalyzer
-from ganyin_categorizer import GanyinCategorizer
-from syllable_splitter import SyllableSplitter
+
+from tools.syllable_analysis.ganyin_analyzer import GanyinAnalyzer
+from syllable.analysis.slice.ganyin_categorizer import GanyinCategorizer
+from syllable.analysis.slice.syllable_splitter import SyllableSplitter
 
 
 def analyze_syllable(syllable: str) -> tuple:

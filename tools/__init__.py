@@ -1,9 +1,27 @@
 # tools包初始化文件
-from .yinyuan import Yinyuan
-from .pianyin import Pianyin
+
+__all__: list[str] = []
+
+try:
+    from .yinyuan import Yinyuan
+    __all__.append('Yinyuan')
+except Exception:
+    pass
+
+try:
+    from syllable.pianyin.pianyin import Pianyin
+    __all__.append('Pianyin')
+except Exception:
+    pass
+
 try:
     from .ganyin_analyzer import YinjieAnalyzer
+    __all__.append('YinjieAnalyzer')
+except Exception:
+    pass
+
+try:
     from .pianyin_analyzer import PianyinAnalyzer
-    __all__ = ['Yinyuan', 'Pianyin', 'YinjieAnalyzer', 'PianyinAnalyzer']
-except ImportError:
-    __all__ = ['Yinyuan', 'Pianyin']
+    __all__.append('PianyinAnalyzer')
+except Exception:
+    pass

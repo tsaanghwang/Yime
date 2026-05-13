@@ -1,34 +1,34 @@
 # 干音分析器类
 # 功能：分析拼音数据并生成分类后的干音数据
 
-# from syllable.analysis.slice.ganyin_categorizer import GanyinCategorizer
-from ganyin_categorizer import GanyinCategorizer
-from syllable_splitter import SyllableSplitter
-
+from pathlib import Path
 from typing import Dict
 import json
 import sys
 import os
 
+from syllable.analysis.slice.ganyin_categorizer import GanyinCategorizer
+from syllable.analysis.slice.syllable_splitter import SyllableSplitter
+
+
+def _find_repo_root(start: Path) -> Path:
+    for candidate in [start, *start.parents]:
+        if (candidate / "pyproject.toml").exists():
+            return candidate
+    raise FileNotFoundError(f"无法从 {start} 推断仓库根目录")
+
 class GanyinAnalyzer:
     def __init__(self, file):
-        # 获取当前脚本的绝对路径
-        current_dir = os.path.dirname(os.path.abspath(file))
+        root = _find_repo_root(Path(file).resolve())
+        runtime_dir = root / 'syllable' / 'analysis' / 'slice' / 'yinyuan'
 
-        # 构建输入文件路径 - 使用 os.path 确保跨平台兼容性
-        project_root = os.path.dirname(os.path.dirname(os.path.dirname(current_dir)))
-        self.input_path = os.path.normpath(os.path.join(
-            project_root,
-            'internal_data',
-            'pinyin_source_db',
-            'lexicon_exports',
-            'pinyin_normalized.json'
+        self.input_path = os.path.normpath(str(
+            root / 'internal_data' / 'pinyin_source_db' / 'lexicon_exports' / 'pinyin_normalized.json'
         ))
 
-        # 输出目录
-        self.output_dir = os.path.normpath(os.path.join(current_dir, 'yinyuan'))
-        self.shouyin_path = os.path.normpath(os.path.join(self.output_dir, 'shouyin.json'))
-        self.ganyin_path = os.path.normpath(os.path.join(self.output_dir, 'ganyin.json'))
+        self.output_dir = os.path.normpath(str(runtime_dir))
+        self.shouyin_path = os.path.normpath(str(runtime_dir / 'shouyin.json'))
+        self.ganyin_path = os.path.normpath(str(runtime_dir / 'ganyin.json'))
 
         # 打印路径用于调试
         print(f"输入文件路径: {self.input_path}")

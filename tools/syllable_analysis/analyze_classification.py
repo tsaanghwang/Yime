@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
-"""
-分析韵母分类的合理性
-"""
+"""分析韵母分类的合理性。"""
 
-from ganyin_categorizer import GanyinCategorizer
+from syllable.analysis.slice.ganyin_categorizer import GanyinCategorizer
 
 def analyze_classification_logic():
     """分析韵母分类的合理性"""

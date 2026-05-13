@@ -3,6 +3,7 @@
 import json
 from pathlib import Path
 from typing import Dict, Tuple
+import unicodedata
 
 
 class SyllableSplitter:
@@ -27,12 +28,25 @@ class SyllableSplitter:
     }
     REVERSE_SPECIAL_SYLLABLES = {value: key for key, value in SPECIAL_SYLLABLES.items()}
     _MARKED_GANYIN_CACHE: dict[str, str] | None = None
+    _TONE_NUMBER_TO_MARK = {
+        '1': '\u0304',
+        '2': '\u0301',
+        '3': '\u030c',
+        '4': '\u0300',
+    }
 
     @classmethod
     def _load_marked_ganyin_map(cls) -> dict[str, str]:
         if cls._MARKED_GANYIN_CACHE is None:
-            ganyin_path = Path(__file__).resolve().parents[2] / 'ganyin.json'
-            cls._MARKED_GANYIN_CACHE = json.loads(ganyin_path.read_text(encoding='utf-8')).get('ganyin', {})
+            ganyin_path = Path(__file__).resolve().parent / 'yinyuan' / 'ganyin.json'
+            payload = json.loads(ganyin_path.read_text(encoding='utf-8')).get('ganyin', {})
+            if payload and all(isinstance(value, dict) for value in payload.values()):
+                flattened: dict[str, str] = {}
+                for entries in payload.values():
+                    flattened.update(entries)
+                cls._MARKED_GANYIN_CACHE = flattened
+            else:
+                cls._MARKED_GANYIN_CACHE = payload
         return cls._MARKED_GANYIN_CACHE
 
     @classmethod
@@ -56,7 +70,44 @@ class SyllableSplitter:
     def _marked_final_from_numeric(cls, numeric_final: str) -> str:
         if numeric_final.endswith('5'):
             return numeric_final[:-1]
-        return cls._load_marked_ganyin_map().get(numeric_final, numeric_final)
+        return cls._load_marked_ganyin_map().get(numeric_final, cls._compose_marked_final(numeric_final))
+
+    @classmethod
+    def _compose_marked_final(cls, numeric_final: str) -> str:
+        if numeric_final in cls.SPECIAL_SYLLABLES:
+            return cls.SPECIAL_SYLLABLES[numeric_final]
+
+        if not numeric_final or not numeric_final[-1].isdigit():
+            return numeric_final
+
+        tone_number = numeric_final[-1]
+        base_final = numeric_final[:-1]
+        tone_mark = cls._TONE_NUMBER_TO_MARK.get(tone_number)
+        if not tone_mark:
+            return base_final
+
+        tone_index = cls._find_tone_mark_position(base_final)
+        if tone_index < 0:
+            return numeric_final
+
+        marked = base_final[:tone_index + 1] + tone_mark + base_final[tone_index + 1:]
+        return unicodedata.normalize('NFC', marked)
+
+    @staticmethod
+    def _find_tone_mark_position(base_final: str) -> int:
+        for vowel in ('a', 'o', 'e'):
+            position = base_final.find(vowel)
+            if position >= 0:
+                return position
+
+        for index in range(len(base_final) - 1, -1, -1):
+            if base_final[index] in {'i', 'u', 'ü', 'm', 'n'}:
+                return index
+
+        if base_final.endswith('ng'):
+            return len(base_final) - 2
+
+        return -1
 
     @classmethod
     def _split_y_standard_family(cls, syllable: str) -> Tuple[str, str] | None:

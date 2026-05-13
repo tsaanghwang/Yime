@@ -1,6 +1,6 @@
 import unittest
 
-from verify_classification import collect_classification_results
+from tools.syllable_analysis.verify_classification import collect_classification_results
 
 
 class TestVerifyClassification(unittest.TestCase):

@@ -1,6 +1,6 @@
 import unittest
 
-from comprehensive_verification import collect_verification_results
+from tools.syllable_analysis.comprehensive_verification import collect_verification_results
 
 
 class TestComprehensiveVerification(unittest.TestCase):

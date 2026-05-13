@@ -3,16 +3,18 @@
 """
 
 import json
-import  sys
 from pathlib import Path
-sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
-from yueyin_yinyuan import YueyinYinyuan
+
+from syllable.analysis.slice.yueyin_yinyuan import YueyinYinyuan
+
+
+SLICE_DIR = Path(__file__).resolve().parents[2] / "syllable" / "analysis" / "slice"
 
 
 def extract_yueyin_yinyuan():
     """生成乐音类音元数据文件"""
 
-    base_dir = Path(__file__).parent
+    base_dir = SLICE_DIR
 
     # 输入输出文件路径
     input_path = base_dir / 'yinyuan' / 'pitched_pianyin.json'

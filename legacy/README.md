@@ -117,3 +117,28 @@
 - `pinyin_package/test/`
 
 它们不再被当前运行时、数据 rebuild 链或打包面使用；保留仅为历史对照和局部算法考古。
+
+另外，原 `syllable/` 根目录下几份未接入当前主线的原型模块和目录快照也已迁入 legacy：
+
+- `syllable_prototypes/syllable_mapper.py`
+- `syllable_prototypes/syllable_factory.py`
+- `syllable_prototypes/three_models.py`
+- `syllable_prototypes/syllable_analyzer_strategy.py`
+- `syllable_prototypes/analysis/initial_final_with_tone/initial_final_with_tone_analyzer.py`
+- `syllable_prototypes/analysis/slice/slice_analyzer.py`
+
+这些文件主要服务于早期“声母韵母声调 <-> slice”原型抽象，当前运行时、`yinjie` 编码链、测试和打包面都不再消费；继续留在活动包根目录只会制造它们仍属现行 API 的误解。
+
+另外，原 `syllable/` 根目录下几份没有活动代码读取的旧 JSON 快照也已迁入 `legacy/syllable_root_snapshots/`：
+
+- `syllable_root_snapshots/ganyin.json`
+- `syllable_root_snapshots/ganzhi.json`
+- `syllable_root_snapshots/ganzhi_yunmu.json`
+- `syllable_root_snapshots/initial_map.json`
+- `syllable_root_snapshots/jiediao.json`
+- `syllable_root_snapshots/shouyin.json`
+- `syllable_root_snapshots/shouyin_map.json`
+- `syllable_root_snapshots/shouyin_shengmu.json`
+- `syllable_root_snapshots/syllabic_quality.json`
+
+这批文件更接近旧分析链或理论快照，而不是当前 `syllable.analysis.slice.yinyuan/` 运行资产；其中 `ganyin.json` 的唯一活动读取方也已切回 `slice/yinyuan/ganyin.json`，因此不再需要继续占据 `syllable/` 包根目录。
