@@ -25,7 +25,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--skip-code-pinyin",
         action="store_true",
-        help="Skip regenerating yime/code_pinyin.json from syllable_codec/yinjie_code.json.",
+        help="Skip regenerating yime/code_pinyin.json from syllable/codec/yinjie_code.json.",
     )
     return parser.parse_args()
 

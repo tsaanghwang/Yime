@@ -12,7 +12,7 @@
 # The initial consonant is a required attribute
 # The tone of the initial sound (the tone segment connected to the initial consonant), named initial tone, is an optional attribute
 
-from pianyin.pianyin import UnpitchedPianyin  # Ensure pianyin/pianyin.py exists and contains UnpitchedPianyin
+from .pianyin import UnpitchedPianyin
 
 
 class Initial(UnpitchedPianyin):

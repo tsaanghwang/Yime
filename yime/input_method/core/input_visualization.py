@@ -138,7 +138,7 @@ def build_input_sound_notes(text: str, visual_map: Dict[str, str]) -> str:
 
 def build_physical_input_map(repo_root: Path) -> Dict[str, str]:
     manual_layout = _load_visual_json(repo_root / "internal_data" / "manual_key_layout.json")
-    slot_to_bmp = _load_visual_json(repo_root / "syllable_codec" / "key_to_code.json")
+    slot_to_bmp = _load_visual_json(repo_root / "syllable" / "codec" / "key_to_code.json")
     slot_to_symbol = _load_visual_json(repo_root / "internal_data" / "key_to_symbol.json")
 
     physical_map: Dict[str, str] = {}
@@ -210,7 +210,7 @@ def build_projected_to_physical_map(
 
 def build_projected_to_keycap_map(repo_root: Path) -> Dict[str, str]:
     manual_layout = _load_visual_json(repo_root / "internal_data" / "manual_key_layout.json")
-    slot_to_bmp = _load_visual_json(repo_root / "syllable_codec" / "key_to_code.json")
+    slot_to_bmp = _load_visual_json(repo_root / "syllable" / "codec" / "key_to_code.json")
     slot_to_symbol = _load_visual_json(repo_root / "internal_data" / "key_to_symbol.json")
 
     projected_to_keycap: Dict[str, str] = {}

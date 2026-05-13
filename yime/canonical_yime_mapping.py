@@ -34,7 +34,7 @@ def canonicalize_code(code: str, bmp_to_canonical: dict[str, str]) -> str:
 
 def load_canonical_code_map(repo_root: Path | None = None) -> dict[str, str]:
     resolved_root = repo_root or WORKSPACE_ROOT
-    code_map = load_json(resolved_root / "syllable_codec" / "yinjie_code.json")
+    code_map = load_json(resolved_root / "syllable" / "codec" / "yinjie_code.json")
     bmp_to_canonical = build_bmp_to_canonical_map(resolved_root)
 
     canonical_code_map = {

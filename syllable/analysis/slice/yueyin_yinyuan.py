@@ -6,7 +6,7 @@
 
 from typing import Literal, Union
 from syllable.analysis.slice.pitched_yinyuan import MusicalYinyuan
-from pianyin import PitchedPianyin, UnpitchedPianyin
+from syllable.pianyin import PitchedPianyin, UnpitchedPianyin
 import os
 import json
 

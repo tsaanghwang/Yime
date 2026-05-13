@@ -1,7 +1,11 @@
 # 噪音类音元表示法
 # 噪音类音元是噪音类片音的另一种符号化表示形式
 
-from pianyin.unpitched_pianyin import UnpitchedPianyin, ClearPianyin, VoicedUnpitchedPianyin
+from syllable.pianyin.indeterminate_pitch_pianyin import (
+    ClearPianyin,
+    UnpitchedPianyin,
+    VoicedUnpitchedPianyin,
+)
 from typing import Optional
 
 

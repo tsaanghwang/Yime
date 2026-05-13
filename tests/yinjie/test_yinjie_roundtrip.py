@@ -3,8 +3,8 @@ import unittest
 from collections import defaultdict
 from pathlib import Path
 
-from syllable_codec.paths import YINJIE_CODE_PATH
-from syllable_codec.yinjie_decoder import YinjieDecoder
+from syllable.codec.paths import YINJIE_CODE_PATH
+from syllable.codec.yinjie_decoder import YinjieDecoder
 from syllable.analysis.slice.yinjie_encoder import YinjieEncoder
 
 

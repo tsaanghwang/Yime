@@ -88,7 +88,7 @@ def resolve_yime_code_from_numeric_pinyin(repo_root: Path, numeric_pinyin: str) 
         return ""
 
     mapping = _load_numeric_yime_code_map(
-        str(repo_root / "syllable_codec" / "yinjie_code.json")
+        str(repo_root / "syllable" / "codec" / "yinjie_code.json")
     )
     parts: list[str] = []
     for syllable in normalized.split(" "):

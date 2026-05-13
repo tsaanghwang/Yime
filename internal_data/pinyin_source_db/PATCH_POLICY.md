@@ -18,7 +18,7 @@ c:/dev/Yime/.venv/Scripts/python.exe yime/refresh_runtime_yime_codes.py
 按输出判定：
 
 - 如果样例是 `<missing pinyin_tone>`，说明缺的是 `single_char_readings -> numeric_pinyin_inventory` 这一层，应补 `numeric_pinyin_patch.csv`。
-- 如果样例是 `<missing in code map>`，说明数字调拼音已经进库，但 `syllable_codec/yinjie_code.json` 没有对应 canonical 码，应补 `canonical_yime_patch.csv`。
+- 如果样例是 `<missing in code map>`，说明数字调拼音已经进库，但 `syllable/codec/yinjie_code.json` 没有对应 canonical 码，应补 `canonical_yime_patch.csv`。
 - 如果两者都不是，而是 `单字受旧表唯一约束阻塞行`，这不是补丁文件要解决的问题，而是旧 `音元拼音.全拼 UNIQUE` 结构残留问题。
 
 ## 2. 什么时候补 `numeric_pinyin_patch.csv`
@@ -50,7 +50,7 @@ c:/dev/Yime/.venv/Scripts/python.exe yime/refresh_runtime_yime_codes.py
 补这个文件的条件是：
 
 - 该 `pinyin_tone` 已经存在于 `numeric_pinyin_inventory`。
-- 但 `load_canonical_code_map()` 从 `syllable_codec/yinjie_code.json` 里拿不到对应码。
+- 但 `load_canonical_code_map()` 从 `syllable/codec/yinjie_code.json` 里拿不到对应码。
 - `refresh_runtime_yime_codes.py` 报的是 `<missing in code map>`。
 
 这个文件表达的是“canonical 音节码缺失”，字段是：

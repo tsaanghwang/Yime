@@ -12,7 +12,7 @@
 # Quality: required attribute
 # Pitch: required attribute
 
-from pianyin.pianyin import PitchedPianyin
+from syllable.pianyin.pianyin import PitchedPianyin
 
 
 class Yueyin(PitchedPianyin):

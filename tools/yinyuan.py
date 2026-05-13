@@ -1,7 +1,7 @@
 # 音元(Yinyuan)表示法
 # 音元表示片音，是片音(Pianyin)的另一种符号化表示形式
 
-from pianyin.pianyin import Pianyin
+from syllable.pianyin.pianyin import Pianyin
 
 
 class Yinyuan:

@@ -1,8 +1,8 @@
 import unittest
 import tempfile
 from pathlib import Path
-from syllable_codec.interactive_yinjie import interactive_encoder
-from syllable_codec.yinjie_encoder import (
+from syllable.codec.interactive_yinjie import interactive_encoder
+from syllable.codec.yinjie_encoder import (
     YinjieApplicationRunner,
     BatchInputResult,
     EncodedComponentResult,
@@ -196,7 +196,7 @@ class TestYinjieSetupStages(unittest.TestCase):
             return path
 
         project_root = Path(__file__).resolve().parents[2]
-        stage = YinjiePathStage(validator, "syllable_codec/yinjie_code.json")
+        stage = YinjiePathStage(validator, "syllable/codec/yinjie_code.json")
 
         result = stage.run(project_root, "ignored-subdir")
 
@@ -205,7 +205,7 @@ class TestYinjieSetupStages(unittest.TestCase):
             YinjiePathContext(
                 project_root=project_root,
                 input_path=project_root / "internal_data" / "pinyin_source_db" / "lexicon_exports" / "pinyin_normalized.json",
-                output_path=project_root / "syllable_codec" / "yinjie_code.json",
+                output_path=project_root / "syllable" / "codec" / "yinjie_code.json",
             ),
         )
         self.assertEqual(
@@ -222,11 +222,11 @@ class TestYinjieSetupStages(unittest.TestCase):
                 self.calls.append((stage_logger, output_subdir))
 
         policy = StubReportingPolicy()
-        stage = YinjiePathStage(lambda path: path, "syllable_codec/yinjie_code.json", reporting_policy=policy)
+        stage = YinjiePathStage(lambda path: path, "syllable/codec/yinjie_code.json", reporting_policy=policy)
 
         output_path = stage.resolve_output_path(Path("root"), "ignored-subdir")
 
-        self.assertEqual(output_path, Path("root") / "syllable_codec" / "yinjie_code.json")
+        self.assertEqual(output_path, Path("root") / "syllable" / "codec" / "yinjie_code.json")
         self.assertEqual(len(policy.calls), 1)
         self.assertEqual(policy.calls[0][1], "ignored-subdir")
 

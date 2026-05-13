@@ -29,7 +29,7 @@ def canonicalize_runtime_input(text: str, bmp_to_canonical: Dict[str, str]) -> s
 
 def _load_numeric_yime_code_map(repo_root: Path) -> Dict[str, str]:
     payload = json.loads(
-        (repo_root / "syllable_codec" / "yinjie_code.json").read_text(encoding="utf-8")
+        (repo_root / "syllable" / "codec" / "yinjie_code.json").read_text(encoding="utf-8")
     )
     return {
         str(pinyin_tone).strip(): str(yime_code)

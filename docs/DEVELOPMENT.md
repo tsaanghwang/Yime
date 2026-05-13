@@ -175,7 +175,7 @@ python tools/rebuild_encoding_assets.py
 - `syllable/analysis/slice/yinyuan/yinyuan_codepoint.json`
 - `syllable/analysis/slice/yinyuan/ganyin_to_yinyuan_sequence.json`
 - `syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json`
-- `syllable_codec/yinjie_code.json`
+- `syllable/codec/yinjie_code.json`
 - `yime/code_pinyin.json`
 
 如果这次只想刷新输入法主用编码表，不想反向重建 `yime/code_pinyin.json`，可以执行：
@@ -184,7 +184,7 @@ python tools/rebuild_encoding_assets.py
 python tools/rebuild_encoding_assets.py --skip-code-pinyin
 ```
 
-注意：`python run_input_method.py` 本身不会自动重建这些产物；它只会读取现成的 `syllable_codec/yinjie_code.json` 和相关运行时 JSON。所以规则改完但没先执行重建时，启动输入法不会自动带出新编码。
+注意：`python run_input_method.py` 本身不会自动重建这些产物；它只会读取现成的 `syllable/codec/yinjie_code.json` 和相关运行时 JSON。所以规则改完但没先执行重建时，启动输入法不会自动带出新编码。
 
 建议配套做一次最小验证：
 
