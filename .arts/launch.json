@@ -11,24 +11,6 @@
       "addSourceRootsToPythonpath": true
     },
     {
-      "name": "connect",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\pending_deletion_legacy_migrations\\connect.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\pending_deletion_legacy_migrations",
-      "addSourceRootsToPythonpath": true
-    },
-    {
-      "name": "connect_to_mysql",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\pending_deletion_legacy_migrations\\connect_to_mysql.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\pending_deletion_legacy_migrations",
-      "addSourceRootsToPythonpath": true
-    },
-    {
       "name": "test_duplicate_groups",
       "type": "python",
       "request": "launch",
