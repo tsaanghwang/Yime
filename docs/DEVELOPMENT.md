@@ -23,7 +23,7 @@ cd YIME
 ```bash
 # 创建虚拟环境（推荐）
 python -m venv venv
-source venv/bin/activate  # Linux/Mac
+当你修改了音节切分、首音/干音编码规则，或者希望让 `run_input_method.py` 使用最新编码表时，先重建运行时编码产物，再启动输入法。
 # 或
 venv\Scripts\activate  # Windows
 
@@ -153,6 +153,46 @@ git push origin feature/your-feature-name
 - 功能描述
 - 测试结果
 - 相关 Issue
+
+### 7. 重建当前编码产物
+
+当你修改了音节切分、首音/干音编码规则，或者希望让 `run_input_method.py` 使用最新编码表时，先重建运行时编码产物，再启动输入法。
+
+推荐直接使用仓库内的一键入口：
+
+```bash
+python tools/rebuild_encoding_assets.py
+```
+
+如果你在 Windows 虚拟环境里工作，常用命令是：
+
+```bash
+.venv\Scripts\python.exe tools\rebuild_encoding_assets.py
+```
+
+这个入口当前会顺序重建：
+
+- `syllable/analysis/slice/yinyuan/shouyin_codepoint.json`
+- `syllable/analysis/slice/yinyuan/yinyuan_codepoint.json`
+- `syllable/analysis/slice/yinyuan/ganyin_to_yinyuan_sequence.json`
+- `syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json`
+- `syllable_codec/yinjie_code.json`
+- `yime/code_pinyin.json`
+
+如果这次只想刷新输入法主用编码表，不想反向重建 `yime/code_pinyin.json`，可以执行：
+如果这次只想刷新输入法主用编码表，不想反向重建 `yime/code_pinyin.json`，可以执行：
+
+```bash
+python tools/rebuild_encoding_assets.py --skip-code-pinyin
+```
+
+注意：`python run_input_method.py` 本身不会自动重建这些产物；它只会读取现成的 `syllable_codec/yinjie_code.json` 和相关运行时 JSON。所以规则改完但没先执行重建时，启动输入法不会自动带出新编码。
+
+建议配套做一次最小验证：
+
+```bash
+python -m pytest syllable/analysis/slice/verify_encode_ganyin.py tests/yinjie/verify_yinjie_encoder.py
+```
 
 ---
 
