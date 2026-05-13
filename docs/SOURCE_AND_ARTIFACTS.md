@@ -369,7 +369,7 @@
 
 - `keys_to_yunmu.json`
   - 分类：已删除的根目录重复映射副本。
-  - 原因：当前实际生成位置已经固定在 `pinyin/keys_to_yunmu.json`；根目录这份文件与之内容相同，仓库内也没有任何读取方引用根目录版本，只会制造“哪个才是现行文件”的歧义。
+  - 原因：这份根目录文件早就没有读取方；而仓库内原先位于 `pinyin/keys_to_yunmu.json` 的生成链也已一并迁入 `legacy/pinyin_generated/`，不再属于当前活动包面。
 
 - `ganyin_encoding.json`
   - 分类：已删除的根目录孤立干音编码快照。

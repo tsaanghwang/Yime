@@ -54,7 +54,7 @@ class YunmuConstants:
         ]
 
     @classmethod
-    def get_replacement_table(cls) -> dict:
+    def get_replacement_table(cls) -> dict[int, str]:
         """获取批量替换转换表"""
         return str.maketrans({
             cls.Y_NEAR_ROUNDED: cls.Y_REPLACEMENT,
@@ -63,61 +63,3 @@ class YunmuConstants:
             cls.N_RIME: cls.EN_RIME,
             "v": "v"  # 保持v不变，只替换后面的n
         })
-
-
-class YunmuConverter:
-    def __init__(self):
-        self.stats = {
-            "total_conversions": 0,
-            "successful_conversions": 0,
-            "failed_conversions": 0,
-            "success_rate": 0.0,
-            "plugin_stats": {},
-            "rule_stats": {}
-        }
-
-    def convert(self, input_dict):
-        if not isinstance(input_dict, dict):
-            raise ValueError("Input must be a dictionary")
-        
-        result = {}
-        for key, value in input_dict.items():
-            if not isinstance(value, str):
-                raise ValueError("Dictionary values must be strings")
-                
-            # Implement your conversion rules here
-            if key == "-i":
-                result[key] = "ir"
-            elif key == "ao":
-                result[key] = "au"
-            elif key == "iong":
-                result[key] = "vong"
-            elif key == "ing":
-                result[key] = "iong"
-            elif key == "e":
-                result[key] = "o"
-            elif key == "eng":
-                result[key] = "ong"
-            elif key == "in":
-                result[key] = "ien"
-            elif key == "ün":
-                result[key] = "üen"
-            elif key == "ueng":
-                result[key] = "uong"
-            elif key == "ong":
-                result[key] = "uong"
-            elif key == "ü":
-                result[key] = "v"
-            elif key == "ê":
-                result["e"] = key
-            else:
-                result[key] = key
-
-            self.stats["total_conversions"] += 1
-            self.stats["successful_conversions"] += 1
-            
-        self.stats["success_rate"] = (self.stats["successful_conversions"] / self.stats["total_conversions"]) * 100
-        return result
-
-    def get_stats(self):
-        return self.stats

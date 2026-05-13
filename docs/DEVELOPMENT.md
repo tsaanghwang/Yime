@@ -249,7 +249,7 @@ def _get_default_rules(self) -> List[ConversionRule]:
 
 #### 3. 编写测试
 
-在 `pinyin/test/test_yunmu_to_keys.py` 中添加：
+如果你只是维护已归档的旧 `pinyin` helper，可在 `legacy/pinyin_package/test/test_yunmu_to_keys.py` 中添加：
 
 ```python
 def test_new_rule(self):
@@ -261,7 +261,7 @@ def test_new_rule(self):
 #### 4. 运行测试
 
 ```bash
-pytest pinyin/test/test_yunmu_to_keys.py::test_new_rule
+pytest legacy/pinyin_package/test/test_yunmu_to_keys.py::test_new_rule
 ```
 
 ---

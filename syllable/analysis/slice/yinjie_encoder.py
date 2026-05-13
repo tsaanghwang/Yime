@@ -58,7 +58,7 @@ class YinjieErrorPolicy:
 
     def missing_project_root(self) -> YinjieEncodingError:
         return YinjieEncodingError(
-            "无法找到项目根目录(包含pinyin目录)",
+            "无法找到项目根目录(包含internal_data/pinyin_source_db目录)",
             stage="setup",
         )
 
@@ -249,10 +249,10 @@ class ProjectRootStage:
 
     def run(self, base_dir: Path) -> Path:
         current = base_dir.resolve()
-        while not (current / "pinyin").exists() and current.parent != current:
+        while not (current / "internal_data" / "pinyin_source_db").exists() and current.parent != current:
             current = current.parent
 
-        if not (current / "pinyin").exists():
+        if not (current / "internal_data" / "pinyin_source_db").exists():
             raise yinjie_error_policy.missing_project_root()
 
         return current

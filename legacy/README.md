@@ -84,3 +84,36 @@
 - `pinyin_generated/yinjie.json`
 
 这条链只有脚本自写自读式输出，没有当前运行、测试、导入或发布主线消费者，更接近历史试验产物而不是现行真源。
+
+另外，原 `pinyin/` 主目录下几份没有代码层消费者的数据快照也应视为归档对象，已迁入 `legacy/pinyin_data_snapshots/`：
+
+- `pinyin_data_snapshots/initial.json`
+- `pinyin_data_snapshots/neutral_tone_syllable.json`
+- `pinyin_data_snapshots/shengdiao.json`
+- `pinyin_data_snapshots/shengmu.csv`
+- `pinyin_data_snapshots/shengmu_enhanced.json`
+- `pinyin_data_snapshots/unconverted_lines.json`
+- `pinyin_data_snapshots/yunmu.json`
+- `pinyin_data_snapshots/yunmu_enhanced.json`
+
+它们与当前 `pinyin` 包的活跃 API 没有直接代码消费关系，继续留在包根目录只会放大“这里仍是拼音主数据仓”的误解。
+
+另外，原 `pinyin/` 主目录下两个边缘工具也已迁入 legacy：
+
+- `pinyin_generated/keys_to_yunmu.py`
+- `pinyin_generated/keys_to_yunmu.json`
+- `pinyin_analysis/compare_pinyin_lists.py`
+
+其中 `keys_to_yunmu` 只是从 `yunmu_to_keys.json` 派生反向映射的孤立导出链，没有主线消费者；`compare_pinyin_lists.py` 则直接依赖已不存在的 `pinyin/pinyin_to_hanzi.json`，属于失效的历史分析脚本。
+
+另外，原 `pinyin/` 包剩余的 `yunmu` helper 实现也已整体迁入 `legacy/pinyin_package/`：
+
+- `pinyin_package/__init__.py`
+- `pinyin_package/constants.py`
+- `pinyin_package/conversion_stats.json`
+- `pinyin_package/rule_plugin.py`
+- `pinyin_package/yunmu_to_keys.py`
+- `pinyin_package/yunmu_to_keys.json`
+- `pinyin_package/test/`
+
+它们不再被当前运行时、数据 rebuild 链或打包面使用；保留仅为历史对照和局部算法考古。
