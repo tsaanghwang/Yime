@@ -23,7 +23,6 @@ cd YIME
 ```bash
 # 创建虚拟环境（推荐）
 python -m venv venv
-当你修改了音节切分、首音/干音编码规则，或者希望让 `run_input_method.py` 使用最新编码表时，先重建运行时编码产物，再启动输入法。
 # 或
 venv\Scripts\activate  # Windows
 
@@ -179,7 +178,6 @@ python tools/rebuild_encoding_assets.py
 - `syllable_codec/yinjie_code.json`
 - `yime/code_pinyin.json`
 
-如果这次只想刷新输入法主用编码表，不想反向重建 `yime/code_pinyin.json`，可以执行：
 如果这次只想刷新输入法主用编码表，不想反向重建 `yime/code_pinyin.json`，可以执行：
 
 ```bash
