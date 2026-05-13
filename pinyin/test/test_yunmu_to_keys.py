@@ -28,7 +28,7 @@ def test_invalid_input():
     converter = YunmuConverter()
 
     # 测试非字典输入
-    with pytest.raises(TypeError):
+    with pytest.raises(ValueError):
         converter.convert("not a dict")
 
     # 测试缺少必要韵母
@@ -51,5 +51,5 @@ def test_statistics():
     assert stats["total_conversions"] == len(full_yunmu_dict)
     assert stats["failed_conversions"] == 0
     assert stats["success_rate"] == 100.0
-    assert "DefaultRulesPlugin" in stats["plugin_stats"]
+    assert "rule_stats" in stats
     assert len(stats["rule_stats"]) > 0

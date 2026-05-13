@@ -62,3 +62,25 @@
 
 - `pinyin_danzi.json`
 - `pinyin_duozi.json`
+
+另外，原 `pinyin/plugins/` 下的实验性插件包也已迁入 `legacy/pinyin_plugins/`：
+
+- `pinyin_plugins/__init__.py`
+- `pinyin_plugins/default_rules.py`
+- `pinyin_plugins/example_plugin.py`
+
+这套插件接口没有接入当前 `pinyin/yunmu_to_keys.py` 主链，且内部 API 已与现状分叉，因此仅保留作历史对照，不再视为活动扩展点。
+
+另外，原 `pinyin/` 主目录下的两份 `yunmu_to_keys` 手工副本也已迁入 `legacy/pinyin_snapshots/`：
+
+- `pinyin_snapshots/yunmu_to_keys copy.py`
+- `pinyin_snapshots/yunmu_to_keys copy 2.py`
+
+它们都是对 `pinyin/yunmu_to_keys.py` 的历史分叉快照，没有活跃入口，也不应继续留在当前活动实现旁边制造误导。
+
+另外，原 `pinyin/` 主目录下孤立的 `yinjie` 生成链也已迁入 `legacy/pinyin_generated/`：
+
+- `pinyin_generated/generate_yinjie.py`
+- `pinyin_generated/yinjie.json`
+
+这条链只有脚本自写自读式输出，没有当前运行、测试、导入或发布主线消费者，更接近历史试验产物而不是现行真源。
