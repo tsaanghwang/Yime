@@ -34,7 +34,7 @@ include = ["yime*", "syllable*", "utils*"]
 exclude = ["tests*", "tools*", "yime.legacy*"]
 
 [tool.setuptools.package-data]
-"syllable.analysis.slice" = ["yinyuan/*.json"]
+"syllable.analysis" = ["yinyuan/*.json"]
 "syllable.codec" = ["*.json"]
 "syllable.pianyin" = ["*.json"]
 "yime" = ["*.json", "*.sql", "*.txt", "*.csv"]

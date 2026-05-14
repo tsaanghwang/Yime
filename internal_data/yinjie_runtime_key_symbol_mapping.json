@@ -1,21 +1,21 @@
 {
-  "description": "Canonical runtime key-symbol mapping derived from yinjie_encoder.py dependencies.",
+  "description": "Canonical runtime key-symbol mapping derived from syllable/codec/yinjie_encoder.py dependencies.",
   "source_chain": {
-    "final_code_file": "yinjie_code.json",
-    "encoder_entry": "yinjie_encoder.py -> YinjieEncoder.encode_single_yinjie()",
+    "final_code_file": "syllable/codec/yinjie_code.json",
+    "encoder_entry": "syllable/codec/yinjie_encoder.py -> YinjieEncoder.encode_single_yinjie()",
     "join_rule": "final code = shouyin_code + ganyin_code",
-    "shouyin_runtime_source": "syllable/analysis/slice/yinyuan/shouyin_codepoint.json",
-    "ganyin_runtime_source": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
-    "key_assignment_source": "key_to_code.json"
+    "shouyin_runtime_source": "syllable/analysis/yinyuan/shouyin_codepoint.json",
+    "ganyin_runtime_source": "syllable/analysis/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+    "key_assignment_source": "syllable/codec/key_to_code.json"
   },
   "non_runtime_reference_files": [
     {
       "path": "internal_data/key_symbol_mapping.json",
-      "note": "Legacy/manual mapping file. Not read by yinjie_encoder.py when generating yinjie_code.json."
+      "note": "Legacy/manual mapping file. Not read by syllable/codec/yinjie_encoder.py when generating syllable/codec/yinjie_code.json."
     },
     {
       "path": "data_json_files/key_symbol_mapping.json",
-      "note": "Legacy/manual mapping file. Not read by yinjie_encoder.py when generating yinjie_code.json."
+      "note": "Legacy/manual mapping file. Not read by syllable/codec/yinjie_encoder.py when generating syllable/codec/yinjie_code.json."
     },
     {
       "path": "tools/key_symbol_mapping.py",
@@ -94,7 +94,7 @@
       "plane": "BMP Private Use Area",
       "source_type": "shouyin",
       "source_name": "b",
-      "source_file": "syllable/analysis/slice/yinyuan/shouyin_codepoint.json",
+      "source_file": "syllable/analysis/yinyuan/shouyin_codepoint.json",
       "used_in_yinjie_position": [
         1
       ],
@@ -133,7 +133,7 @@
       "plane": "BMP Private Use Area",
       "source_type": "shouyin",
       "source_name": "p",
-      "source_file": "syllable/analysis/slice/yinyuan/shouyin_codepoint.json",
+      "source_file": "syllable/analysis/yinyuan/shouyin_codepoint.json",
       "used_in_yinjie_position": [
         1
       ],
@@ -172,7 +172,7 @@
       "plane": "BMP Private Use Area",
       "source_type": "shouyin",
       "source_name": "f",
-      "source_file": "syllable/analysis/slice/yinyuan/shouyin_codepoint.json",
+      "source_file": "syllable/analysis/yinyuan/shouyin_codepoint.json",
       "used_in_yinjie_position": [
         1
       ],
@@ -211,7 +211,7 @@
       "plane": "BMP Private Use Area",
       "source_type": "shouyin",
       "source_name": "m",
-      "source_file": "syllable/analysis/slice/yinyuan/shouyin_codepoint.json",
+      "source_file": "syllable/analysis/yinyuan/shouyin_codepoint.json",
       "used_in_yinjie_position": [
         1
       ],
@@ -250,7 +250,7 @@
       "plane": "BMP Private Use Area",
       "source_type": "shouyin",
       "source_name": "d",
-      "source_file": "syllable/analysis/slice/yinyuan/shouyin_codepoint.json",
+      "source_file": "syllable/analysis/yinyuan/shouyin_codepoint.json",
       "used_in_yinjie_position": [
         1
       ],
@@ -289,7 +289,7 @@
       "plane": "BMP Private Use Area",
       "source_type": "shouyin",
       "source_name": "t",
-      "source_file": "syllable/analysis/slice/yinyuan/shouyin_codepoint.json",
+      "source_file": "syllable/analysis/yinyuan/shouyin_codepoint.json",
       "used_in_yinjie_position": [
         1
       ],
@@ -328,7 +328,7 @@
       "plane": "BMP Private Use Area",
       "source_type": "shouyin",
       "source_name": "l",
-      "source_file": "syllable/analysis/slice/yinyuan/shouyin_codepoint.json",
+      "source_file": "syllable/analysis/yinyuan/shouyin_codepoint.json",
       "used_in_yinjie_position": [
         1
       ],
@@ -367,7 +367,7 @@
       "plane": "BMP Private Use Area",
       "source_type": "shouyin",
       "source_name": "n",
-      "source_file": "syllable/analysis/slice/yinyuan/shouyin_codepoint.json",
+      "source_file": "syllable/analysis/yinyuan/shouyin_codepoint.json",
       "used_in_yinjie_position": [
         1
       ],
@@ -406,7 +406,7 @@
       "plane": "BMP Private Use Area",
       "source_type": "shouyin",
       "source_name": "g",
-      "source_file": "syllable/analysis/slice/yinyuan/shouyin_codepoint.json",
+      "source_file": "syllable/analysis/yinyuan/shouyin_codepoint.json",
       "used_in_yinjie_position": [
         1
       ],
@@ -445,7 +445,7 @@
       "plane": "BMP Private Use Area",
       "source_type": "shouyin",
       "source_name": "k",
-      "source_file": "syllable/analysis/slice/yinyuan/shouyin_codepoint.json",
+      "source_file": "syllable/analysis/yinyuan/shouyin_codepoint.json",
       "used_in_yinjie_position": [
         1
       ],
@@ -484,7 +484,7 @@
       "plane": "BMP Private Use Area",
       "source_type": "shouyin",
       "source_name": "h",
-      "source_file": "syllable/analysis/slice/yinyuan/shouyin_codepoint.json",
+      "source_file": "syllable/analysis/yinyuan/shouyin_codepoint.json",
       "used_in_yinjie_position": [
         1
       ],
@@ -523,7 +523,7 @@
       "plane": "BMP Private Use Area",
       "source_type": "shouyin",
       "source_name": "'",
-      "source_file": "syllable/analysis/slice/yinyuan/shouyin_codepoint.json",
+      "source_file": "syllable/analysis/yinyuan/shouyin_codepoint.json",
       "used_in_yinjie_position": [
         1
       ],
@@ -562,7 +562,7 @@
       "plane": "BMP Private Use Area",
       "source_type": "shouyin",
       "source_name": "z",
-      "source_file": "syllable/analysis/slice/yinyuan/shouyin_codepoint.json",
+      "source_file": "syllable/analysis/yinyuan/shouyin_codepoint.json",
       "used_in_yinjie_position": [
         1
       ],
@@ -601,7 +601,7 @@
       "plane": "BMP Private Use Area",
       "source_type": "shouyin",
       "source_name": "c",
-      "source_file": "syllable/analysis/slice/yinyuan/shouyin_codepoint.json",
+      "source_file": "syllable/analysis/yinyuan/shouyin_codepoint.json",
       "used_in_yinjie_position": [
         1
       ],
@@ -640,7 +640,7 @@
       "plane": "BMP Private Use Area",
       "source_type": "shouyin",
       "source_name": "s",
-      "source_file": "syllable/analysis/slice/yinyuan/shouyin_codepoint.json",
+      "source_file": "syllable/analysis/yinyuan/shouyin_codepoint.json",
       "used_in_yinjie_position": [
         1
       ],
@@ -679,7 +679,7 @@
       "plane": "BMP Private Use Area",
       "source_type": "shouyin",
       "source_name": "zh",
-      "source_file": "syllable/analysis/slice/yinyuan/shouyin_codepoint.json",
+      "source_file": "syllable/analysis/yinyuan/shouyin_codepoint.json",
       "used_in_yinjie_position": [
         1
       ],
@@ -718,7 +718,7 @@
       "plane": "BMP Private Use Area",
       "source_type": "shouyin",
       "source_name": "ch",
-      "source_file": "syllable/analysis/slice/yinyuan/shouyin_codepoint.json",
+      "source_file": "syllable/analysis/yinyuan/shouyin_codepoint.json",
       "used_in_yinjie_position": [
         1
       ],
@@ -757,7 +757,7 @@
       "plane": "BMP Private Use Area",
       "source_type": "shouyin",
       "source_name": "sh",
-      "source_file": "syllable/analysis/slice/yinyuan/shouyin_codepoint.json",
+      "source_file": "syllable/analysis/yinyuan/shouyin_codepoint.json",
       "used_in_yinjie_position": [
         1
       ],
@@ -796,7 +796,7 @@
       "plane": "BMP Private Use Area",
       "source_type": "shouyin",
       "source_name": "r",
-      "source_file": "syllable/analysis/slice/yinyuan/shouyin_codepoint.json",
+      "source_file": "syllable/analysis/yinyuan/shouyin_codepoint.json",
       "used_in_yinjie_position": [
         1
       ],
@@ -835,7 +835,7 @@
       "plane": "BMP Private Use Area",
       "source_type": "shouyin",
       "source_name": "j",
-      "source_file": "syllable/analysis/slice/yinyuan/shouyin_codepoint.json",
+      "source_file": "syllable/analysis/yinyuan/shouyin_codepoint.json",
       "used_in_yinjie_position": [
         1
       ],
@@ -874,7 +874,7 @@
       "plane": "BMP Private Use Area",
       "source_type": "shouyin",
       "source_name": "q",
-      "source_file": "syllable/analysis/slice/yinyuan/shouyin_codepoint.json",
+      "source_file": "syllable/analysis/yinyuan/shouyin_codepoint.json",
       "used_in_yinjie_position": [
         1
       ],
@@ -913,7 +913,7 @@
       "plane": "BMP Private Use Area",
       "source_type": "shouyin",
       "source_name": "x",
-      "source_file": "syllable/analysis/slice/yinyuan/shouyin_codepoint.json",
+      "source_file": "syllable/analysis/yinyuan/shouyin_codepoint.json",
       "used_in_yinjie_position": [
         1
       ],
@@ -952,7 +952,7 @@
       "plane": "BMP Private Use Area",
       "source_type": "shouyin",
       "source_name": "w",
-      "source_file": "syllable/analysis/slice/yinyuan/shouyin_codepoint.json",
+      "source_file": "syllable/analysis/yinyuan/shouyin_codepoint.json",
       "used_in_yinjie_position": [
         1
       ],
@@ -960,27 +960,27 @@
         {
           "syllable": "wa1",
           "position_in_code": 1,
-          "full_code": ""
+          "full_code": ""
         },
         {
           "syllable": "wa2",
           "position_in_code": 1,
-          "full_code": ""
+          "full_code": ""
         },
         {
           "syllable": "wa3",
           "position_in_code": 1,
-          "full_code": ""
+          "full_code": ""
         },
         {
           "syllable": "wa4",
           "position_in_code": 1,
-          "full_code": ""
+          "full_code": ""
         },
         {
           "syllable": "wa5",
           "position_in_code": 1,
-          "full_code": ""
+          "full_code": ""
         }
       ]
     },
@@ -991,7 +991,7 @@
       "plane": "BMP Private Use Area",
       "source_type": "shouyin",
       "source_name": "y",
-      "source_file": "syllable/analysis/slice/yinyuan/shouyin_codepoint.json",
+      "source_file": "syllable/analysis/yinyuan/shouyin_codepoint.json",
       "used_in_yinjie_position": [
         1
       ],
@@ -999,27 +999,27 @@
         {
           "syllable": "ya1",
           "position_in_code": 1,
-          "full_code": ""
+          "full_code": ""
         },
         {
           "syllable": "ya2",
           "position_in_code": 1,
-          "full_code": ""
+          "full_code": ""
         },
         {
           "syllable": "ya3",
           "position_in_code": 1,
-          "full_code": ""
+          "full_code": ""
         },
         {
           "syllable": "ya4",
           "position_in_code": 1,
-          "full_code": ""
+          "full_code": ""
         },
         {
           "syllable": "ya5",
           "position_in_code": 1,
-          "full_code": ""
+          "full_code": ""
         }
       ]
     },
@@ -1029,7 +1029,7 @@
       "codepoint": "U+00E509",
       "plane": "BMP Private Use Area",
       "source_type": "ganyin",
-      "source_file": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+      "source_file": "syllable/analysis/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
       "used_in_yinjie_position": [
         2,
         3,
@@ -1037,6 +1037,8 @@
       ],
       "ganyin_names": [
         "i1",
+        "io1",
+        "io4",
         "i2",
         "i4",
         "ai1",
@@ -1045,9 +1047,7 @@
         "ei2",
         "ia1",
         "ia4",
-        "ie1",
-        "ie4",
-        "uai1"
+        "ie1"
       ],
       "example_syllables": [
         {
@@ -1083,13 +1083,14 @@
       "codepoint": "U+00E50A",
       "plane": "BMP Private Use Area",
       "source_type": "ganyin",
-      "source_file": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+      "source_file": "syllable/analysis/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
       "used_in_yinjie_position": [
         2,
         3,
         4
       ],
       "ganyin_names": [
+        "io5",
         "i2",
         "i4",
         "i5",
@@ -1098,10 +1099,9 @@
         "ia5",
         "ie5",
         "uai5",
+        "uei5",
         "ui5",
-        "iao5",
-        "iu5",
-        "ian5"
+        "iao5"
       ],
       "example_syllables": [
         {
@@ -1137,13 +1137,15 @@
       "codepoint": "U+00E50B",
       "plane": "BMP Private Use Area",
       "source_type": "ganyin",
-      "source_file": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+      "source_file": "syllable/analysis/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
       "used_in_yinjie_position": [
         2,
         3,
         4
       ],
       "ganyin_names": [
+        "io2",
+        "io3",
         "i2",
         "i3",
         "i4",
@@ -1153,9 +1155,7 @@
         "ei4",
         "ia3",
         "ia2",
-        "ie2",
-        "ie3",
-        "uai3"
+        "ie2"
       ],
       "example_syllables": [
         {
@@ -1191,7 +1191,7 @@
       "codepoint": "U+00E50C",
       "plane": "BMP Private Use Area",
       "source_type": "ganyin",
-      "source_file": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+      "source_file": "syllable/analysis/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
       "used_in_yinjie_position": [
         2,
         3,
@@ -1245,7 +1245,7 @@
       "codepoint": "U+00E50D",
       "plane": "BMP Private Use Area",
       "source_type": "ganyin",
-      "source_file": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+      "source_file": "syllable/analysis/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
       "used_in_yinjie_position": [
         2,
         3,
@@ -1260,10 +1260,10 @@
         "ua5",
         "uo5",
         "uai5",
+        "uei5",
         "ui5",
         "iao5",
-        "iu5",
-        "uan5"
+        "iu5"
       ],
       "example_syllables": [
         {
@@ -1299,7 +1299,7 @@
       "codepoint": "U+00E50E",
       "plane": "BMP Private Use Area",
       "source_type": "ganyin",
-      "source_file": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+      "source_file": "syllable/analysis/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
       "used_in_yinjie_position": [
         2,
         3,
@@ -1353,7 +1353,7 @@
       "codepoint": "U+00E50F",
       "plane": "BMP Private Use Area",
       "source_type": "ganyin",
-      "source_file": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+      "source_file": "syllable/analysis/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
       "used_in_yinjie_position": [
         2,
         3,
@@ -1407,7 +1407,7 @@
       "codepoint": "U+00E510",
       "plane": "BMP Private Use Area",
       "source_type": "ganyin",
-      "source_file": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+      "source_file": "syllable/analysis/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
       "used_in_yinjie_position": [
         2,
         3,
@@ -1461,7 +1461,7 @@
       "codepoint": "U+00E511",
       "plane": "BMP Private Use Area",
       "source_type": "ganyin",
-      "source_file": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+      "source_file": "syllable/analysis/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
       "used_in_yinjie_position": [
         2,
         3,
@@ -1515,7 +1515,7 @@
       "codepoint": "U+00E512",
       "plane": "BMP Private Use Area",
       "source_type": "ganyin",
-      "source_file": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+      "source_file": "syllable/analysis/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
       "used_in_yinjie_position": [
         2,
         3,
@@ -1569,7 +1569,7 @@
       "codepoint": "U+00E513",
       "plane": "BMP Private Use Area",
       "source_type": "ganyin",
-      "source_file": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+      "source_file": "syllable/analysis/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
       "used_in_yinjie_position": [
         2,
         3,
@@ -1623,7 +1623,7 @@
       "codepoint": "U+00E514",
       "plane": "BMP Private Use Area",
       "source_type": "ganyin",
-      "source_file": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+      "source_file": "syllable/analysis/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
       "used_in_yinjie_position": [
         2,
         3,
@@ -1677,13 +1677,15 @@
       "codepoint": "U+00E515",
       "plane": "BMP Private Use Area",
       "source_type": "ganyin",
-      "source_file": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+      "source_file": "syllable/analysis/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
       "used_in_yinjie_position": [
         2,
         3,
         4
       ],
       "ganyin_names": [
+        "io1",
+        "io2",
         "o1",
         "o2",
         "o4",
@@ -1693,9 +1695,7 @@
         "ou1",
         "ou4",
         "eng1",
-        "eng4",
-        "uo1",
-        "uo2"
+        "eng4"
       ],
       "example_syllables": [
         {
@@ -1731,13 +1731,16 @@
       "codepoint": "U+00E516",
       "plane": "BMP Private Use Area",
       "source_type": "ganyin",
-      "source_file": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+      "source_file": "syllable/analysis/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
       "used_in_yinjie_position": [
         2,
         3,
         4
       ],
       "ganyin_names": [
+        "io2",
+        "io4",
+        "io5",
         "o2",
         "o4",
         "o5",
@@ -1746,10 +1749,7 @@
         "e5",
         "ou2",
         "ou4",
-        "ou5",
-        "eng2",
-        "eng4",
-        "eng5"
+        "ou5"
       ],
       "example_syllables": [
         {
@@ -1785,13 +1785,15 @@
       "codepoint": "U+00E517",
       "plane": "BMP Private Use Area",
       "source_type": "ganyin",
-      "source_file": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+      "source_file": "syllable/analysis/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
       "used_in_yinjie_position": [
         2,
         3,
         4
       ],
       "ganyin_names": [
+        "io3",
+        "io4",
         "o2",
         "o3",
         "o4",
@@ -1801,9 +1803,7 @@
         "ou2",
         "ou3",
         "eng2",
-        "eng3",
-        "uo4",
-        "uo3"
+        "eng3"
       ],
       "example_syllables": [
         {
@@ -1839,7 +1839,7 @@
       "codepoint": "U+00E518",
       "plane": "BMP Private Use Area",
       "source_type": "ganyin",
-      "source_file": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+      "source_file": "syllable/analysis/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
       "used_in_yinjie_position": [
         2,
         3,
@@ -1893,7 +1893,7 @@
       "codepoint": "U+00E519",
       "plane": "BMP Private Use Area",
       "source_type": "ganyin",
-      "source_file": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+      "source_file": "syllable/analysis/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
       "used_in_yinjie_position": [
         2,
         3,
@@ -1947,7 +1947,7 @@
       "codepoint": "U+00E51A",
       "plane": "BMP Private Use Area",
       "source_type": "ganyin",
-      "source_file": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+      "source_file": "syllable/analysis/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
       "used_in_yinjie_position": [
         2,
         3,
@@ -2001,7 +2001,7 @@
       "codepoint": "U+00E51B",
       "plane": "BMP Private Use Area",
       "source_type": "ganyin",
-      "source_file": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+      "source_file": "syllable/analysis/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
       "used_in_yinjie_position": [
         2,
         3,
@@ -2046,7 +2046,7 @@
       "codepoint": "U+00E51C",
       "plane": "BMP Private Use Area",
       "source_type": "ganyin",
-      "source_file": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+      "source_file": "syllable/analysis/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
       "used_in_yinjie_position": [
         2,
         3,
@@ -2091,7 +2091,7 @@
       "codepoint": "U+00E51D",
       "plane": "BMP Private Use Area",
       "source_type": "ganyin",
-      "source_file": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+      "source_file": "syllable/analysis/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
       "used_in_yinjie_position": [
         2,
         3,
@@ -2136,7 +2136,7 @@
       "codepoint": "U+00E51E",
       "plane": "BMP Private Use Area",
       "source_type": "ganyin",
-      "source_file": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+      "source_file": "syllable/analysis/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
       "used_in_yinjie_position": [
         2,
         3,
@@ -2166,7 +2166,7 @@
       "codepoint": "U+00E51F",
       "plane": "BMP Private Use Area",
       "source_type": "ganyin",
-      "source_file": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+      "source_file": "syllable/analysis/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
       "used_in_yinjie_position": [
         2,
         3,
@@ -2211,7 +2211,7 @@
       "codepoint": "U+00E520",
       "plane": "BMP Private Use Area",
       "source_type": "ganyin",
-      "source_file": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+      "source_file": "syllable/analysis/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
       "used_in_yinjie_position": [
         2,
         3,
@@ -2256,7 +2256,7 @@
       "codepoint": "U+00E521",
       "plane": "BMP Private Use Area",
       "source_type": "ganyin",
-      "source_file": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+      "source_file": "syllable/analysis/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
       "used_in_yinjie_position": [
         2,
         3,
@@ -2301,7 +2301,7 @@
       "codepoint": "U+00E522",
       "plane": "BMP Private Use Area",
       "source_type": "ganyin",
-      "source_file": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+      "source_file": "syllable/analysis/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
       "used_in_yinjie_position": [
         2,
         3,
@@ -2346,7 +2346,7 @@
       "codepoint": "U+00E523",
       "plane": "BMP Private Use Area",
       "source_type": "ganyin",
-      "source_file": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+      "source_file": "syllable/analysis/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
       "used_in_yinjie_position": [
         2,
         3,
@@ -2376,7 +2376,7 @@
       "codepoint": "U+00E524",
       "plane": "BMP Private Use Area",
       "source_type": "ganyin",
-      "source_file": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+      "source_file": "syllable/analysis/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
       "used_in_yinjie_position": [
         2,
         3,
@@ -2394,7 +2394,7 @@
         "ian2",
         "uan1",
         "uan2",
-        "üan1"
+        "uen1"
       ],
       "example_syllables": [
         {
@@ -2430,7 +2430,7 @@
       "codepoint": "U+00E525",
       "plane": "BMP Private Use Area",
       "source_type": "ganyin",
-      "source_file": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+      "source_file": "syllable/analysis/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
       "used_in_yinjie_position": [
         2,
         3,
@@ -2444,11 +2444,11 @@
         "en5",
         "ian5",
         "uan5",
+        "uen5",
         "üan5",
         "van5",
         "in5",
-        "un5",
-        "ün5"
+        "un5"
       ],
       "example_syllables": [
         {
@@ -2484,7 +2484,7 @@
       "codepoint": "U+00E526",
       "plane": "BMP Private Use Area",
       "source_type": "ganyin",
-      "source_file": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+      "source_file": "syllable/analysis/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
       "used_in_yinjie_position": [
         2,
         3,
@@ -2502,7 +2502,7 @@
         "ian4",
         "uan3",
         "uan4",
-        "üan3"
+        "uen3"
       ],
       "example_syllables": [
         {
@@ -2538,7 +2538,7 @@
       "codepoint": "U+00E527",
       "plane": "BMP Private Use Area",
       "source_type": "ganyin",
-      "source_file": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+      "source_file": "syllable/analysis/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
       "used_in_yinjie_position": [
         2,
         3,
@@ -2552,11 +2552,11 @@
         "ang2",
         "eng1",
         "eng2",
+        "ueng1",
+        "ueng2",
         "iang2",
         "iang1",
-        "uang1",
-        "uang2",
-        "ing1"
+        "uang1"
       ],
       "example_syllables": [
         {
@@ -2592,7 +2592,7 @@
       "codepoint": "U+00E528",
       "plane": "BMP Private Use Area",
       "source_type": "ganyin",
-      "source_file": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+      "source_file": "syllable/analysis/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
       "used_in_yinjie_position": [
         2,
         3,
@@ -2604,10 +2604,12 @@
         "ng5",
         "ang5",
         "eng5",
+        "ueng5",
         "iang5",
         "uang5",
         "ing5",
         "ong5",
+        "uong5",
         "iong5"
       ],
       "example_syllables": [
@@ -2644,7 +2646,7 @@
       "codepoint": "U+00E529",
       "plane": "BMP Private Use Area",
       "source_type": "ganyin",
-      "source_file": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+      "source_file": "syllable/analysis/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
       "used_in_yinjie_position": [
         2,
         3,
@@ -2658,11 +2660,11 @@
         "ang4",
         "eng3",
         "eng4",
+        "ueng3",
+        "ueng4",
         "iang4",
         "iang3",
-        "uang3",
-        "uang4",
-        "ing3"
+        "uang3"
       ],
       "example_syllables": [
         {

@@ -7,7 +7,7 @@ import os
 import sys
 from pathlib import Path
 
-from syllable.analysis.slice.syllable_analyzer import YinjieAnalyzer
+from syllable.analysis.syllable_analyzer import YinjieAnalyzer
 
 
 SLICE_ANALYZER_PATH = Path(__file__).resolve().parents[2] / "syllable" / "analysis" / "slice" / "syllable_analyzer.py"

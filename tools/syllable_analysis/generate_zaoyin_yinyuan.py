@@ -12,7 +12,7 @@ from typing import TypedDict
 from syllable.analysis.zaoyin_yinyuan import ClearNoise, VoicedNoise
 
 
-SLICE_DIR = Path(__file__).resolve().parents[2] / "syllable" / "analysis" / "slice"
+ANALYSIS_DIR = Path(__file__).resolve().parents[2] / "syllable" / "analysis"
 DERIVED_OUTPUT_DIR = Path(__file__).resolve().parents[2] / "internal_data" / "yinyuan_derived"
 
 

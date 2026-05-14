@@ -4,22 +4,22 @@
 
 目的：
 
-- 追踪 `syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json` 中干音乐音码元的来源链。
+- 追踪 `syllable/analysis/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json` 中干音乐音码元的来源链。
 - 对比运行时 `yueyin` 码元与当前布局侧 `M01-M33` 乐音槽位的对应关系。
 
 ## 一、来源链总表
 
 | 阶段 | 文件 / 代码 | 作用 | 决定了什么 |
 | --- | --- | --- | --- |
-| 1 | `syllable/analysis/slice/yinyuan/pitched_yinyuan_of_mid_high_median_model.json` | 定义乐音类音元清单，使用 `˥/˦/˩` 风格 | 最早的乐音类别库存与顺序来源 |
-| 2 | `syllable/analysis/slice/yinyuan/variables_of_attributes.json` | 定义音质归并和音高归并规则 | 哪些 IPA 片音会并到同一个乐音码元 |
+| 1 | `syllable/analysis/yinyuan/pitched_yinyuan_of_mid_high_median_model.json` | 定义乐音类音元清单，使用 `˥/˦/˩` 风格 | 最早的乐音类别库存与顺序来源 |
+| 2 | `syllable/analysis/yinyuan/variables_of_attributes.json` | 定义音质归并和音高归并规则 | 哪些 IPA 片音会并到同一个乐音码元 |
 | 3 | `syllable/analysis/yueyin_yinyuan.py` | 用归并规则把片音转成乐音码元名 | `i˥ -> ɪ˥`、`ɤ˨ -> o˩` 这类归并逻辑 |
 | 4 | `tools/syllable_analysis/convert_pitch_style.py` | 把 `˥/˦/˩` 转成 `́/̄/̀` 风格 | `ɪ˥ -> ɪ́`、`o˩ -> ò` 这类自定义组合字符替换 |
-| 5 | `syllable/analysis/slice/yinyuan/yueyin_yinyuan_enhanced.json` | 干音唯一真源，显式保存 `semantic_code`、`layout_slot`、`aliases`、`runtime_char` | 乐音语义码、布局槽位与运行时字符的一一对应 |
+| 5 | `syllable/analysis/yinyuan/yueyin_yinyuan_enhanced.json` | 干音唯一真源，显式保存 `semantic_code`、`layout_slot`、`aliases`、`runtime_char` | 乐音语义码、布局槽位与运行时字符的一一对应 |
 | 6 | `internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json` | 干音到三段片音序列的输入表 | 每个干音由哪些“呼音/主音/末音”组成 |
 | 7 | `syllable/analysis/ganyin_encoder.py` | 读取增强版真源中的显式 `runtime_char`，并替换三段乐音码元为运行时字符 | `M01-M33` 对应的运行时字符，以及 fixed-length 结果 |
-| 8 | `syllable/analysis/slice/yinyuan/yinyuan_codepoint.json` 中的 `yueyin` 段 | 运行时乐音码元到私用区字符的最终映射 | 例如 `ɪ́ -> 􀀠`、`ḿ -> 􀀸` |
-| 9 | `syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json` | 每个干音的三字符固定长编码 | 例如 `i1 -> 􀀠􀀠􀀠`、`er1 -> 􀀵􀀵􀀵` |
+| 8 | `syllable/analysis/yinyuan/yinyuan_codepoint.json` 中的 `yueyin` 段 | 运行时乐音码元到私用区字符的最终映射 | 例如 `ɪ́ -> 􀀠`、`ḿ -> 􀀸` |
+| 9 | `syllable/analysis/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json` | 每个干音的三字符固定长编码 | 例如 `i1 -> 􀀠􀀠􀀠`、`er1 -> 􀀵􀀵􀀵` |
 | 10 | `internal_data/key_to_symbol.json` | 当前布局/KLC 侧使用的 `M01-M33` 符号表 | 布局侧是否和运行时字符一致 |
 | 11 | `internal_data/manual_key_layout.json` | 当前候选布局的物理键分配 | 每个 `Mxx` 被放到哪个键位和层级 |
 

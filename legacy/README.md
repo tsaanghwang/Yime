@@ -187,7 +187,7 @@
 
 这份脚本只会读取本地 `python-coverage.json` 并写出一次性的 `ci-summary.json` 汇总样本；当前 GitHub Actions 与发布链均未再调用它，因此不再需要继续占据顶层 `scripts/` 目录。
 
-另外，原 `syllable/analysis/slice/yinyuan/` 下又分离出一批已经脱离当前运行/生成链的旧快照与副本，统一迁入 `legacy/syllable_yinyuan_snapshots/`：
+另外，原 `syllable/analysis/yinyuan/` 下又分离出一批已经脱离当前运行/生成链的旧快照与副本，统一迁入 `legacy/syllable_yinyuan_snapshots/`：
 
 - `initial_pianyin.json`
 - `merged_musical_yinyuan.json`
@@ -205,9 +205,9 @@
 - `ganyin_theoretical.json`
 - `ganyin_encoding.json`
 
-这批文件在仓库内已经没有任何精确到 `syllable/analysis/slice/yinyuan/` 的活动消费者；它们更像历史分析快照、兼容副本或早期派生产物，而不是当前 `yinyuan` 目录的现行真源。保留在活动目录里只会继续抬高“哪些文件真的参与当前链路”的辨识成本。
+这批文件在仓库内已经没有任何精确到 `syllable/analysis/yinyuan/` 的活动消费者；它们更像历史分析快照、兼容副本或早期派生产物，而不是当前 `yinyuan` 目录的现行真源。保留在活动目录里只会继续抬高“哪些文件真的参与当前链路”的辨识成本。
 
-同时，以下仍会从现行真源生成、但不应继续占据 `syllable/analysis/slice/yinyuan/` 活动目录的兼容/辅助输出，已统一迁到 `internal_data/yinyuan_derived/`：
+同时，以下仍会从现行真源生成、但不应继续占据 `syllable/analysis/yinyuan/` 活动目录的兼容/辅助输出，已统一迁到 `internal_data/yinyuan_derived/`：
 
 - `zaoyin_yinyuan.json`
 - `yueyin_yinyuan.json`

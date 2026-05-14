@@ -54,7 +54,7 @@ def build_shouyin_entries(
                 "plane": classify_plane(codepoint),
                 "source_type": "shouyin",
                 "source_name": shouyin,
-                "source_file": "syllable/analysis/slice/yinyuan/shouyin_codepoint.json",
+                "source_file": "syllable/analysis/yinyuan/shouyin_codepoint.json",
                 "used_in_yinjie_position": [1],
                 "example_syllables": examples,
             }
@@ -78,7 +78,7 @@ def build_ganyin_entries(
                     "codepoint": f"U+{ord(symbol):06X}",
                     "plane": classify_plane(ord(symbol)),
                     "source_type": "ganyin",
-                    "source_file": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+                    "source_file": "syllable/analysis/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
                     "used_in_yinjie_position": set(),
                     "ganyin_names": [],
                 },
@@ -100,8 +100,8 @@ def build_ganyin_entries(
 
 
 def build_report() -> dict[str, object]:
-    shouyin_path = ROOT / "syllable" / "analysis" / "slice" / "yinyuan" / "shouyin_codepoint.json"
-    ganyin_path = ROOT / "syllable" / "analysis" / "slice" / "yinyuan" / "ganyin_to_fixed_length_yinyuan_sequence.json"
+    shouyin_path = ROOT / "syllable" / "analysis" / "yinyuan" / "shouyin_codepoint.json"
+    ganyin_path = ROOT / "syllable" / "analysis" / "yinyuan" / "ganyin_to_fixed_length_yinyuan_sequence.json"
     key_to_code_path = ROOT / "syllable" / "codec" / "key_to_code.json"
     yinjie_code_path = ROOT / "syllable" / "codec" / "yinjie_code.json"
 
@@ -123,8 +123,8 @@ def build_report() -> dict[str, object]:
             "final_code_file": "syllable/codec/yinjie_code.json",
             "encoder_entry": "syllable/codec/yinjie_encoder.py -> YinjieEncoder.encode_single_yinjie()",
             "join_rule": "final code = shouyin_code + ganyin_code",
-            "shouyin_runtime_source": "syllable/analysis/slice/yinyuan/shouyin_codepoint.json",
-            "ganyin_runtime_source": "syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
+            "shouyin_runtime_source": "syllable/analysis/yinyuan/shouyin_codepoint.json",
+            "ganyin_runtime_source": "syllable/analysis/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json",
             "key_assignment_source": "syllable/codec/key_to_code.json",
         },
         "non_runtime_reference_files": [

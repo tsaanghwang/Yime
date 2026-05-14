@@ -8,13 +8,13 @@ from pathlib import Path
 from syllable.analysis.yueyin_yinyuan import YueyinYinyuan
 
 
-SLICE_DIR = Path(__file__).resolve().parents[2] / "syllable" / "analysis" / "slice"
+ANALYSIS_DIR = Path(__file__).resolve().parents[2] / "syllable" / "analysis"
 
 
 def extract_yueyin_yinyuan():
     """生成乐音类音元数据文件"""
 
-    base_dir = SLICE_DIR
+    base_dir = ANALYSIS_DIR
 
     # 输入输出文件路径
     input_path = base_dir / 'yinyuan' / 'pitched_pianyin.json'

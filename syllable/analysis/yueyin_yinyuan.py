@@ -35,7 +35,7 @@ class YueyinYinyuan(MusicalYinyuan):
         if config_path is None:
             config_dir = os.path.dirname(os.path.abspath(__file__))
             config_path = os.path.join(
-                config_dir, 'slice', 'yinyuan', 'variables_of_attributes.json')
+                config_dir, 'yinyuan', 'variables_of_attributes.json')
 
         with open(config_path, 'r', encoding='utf-8') as f:
             self.config = json.load(f)

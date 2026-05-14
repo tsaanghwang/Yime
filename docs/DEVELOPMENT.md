@@ -171,10 +171,10 @@ python tools/rebuild_encoding_assets.py
 
 这个入口当前会顺序重建：
 
-- `syllable/analysis/slice/yinyuan/shouyin_codepoint.json`
-- `syllable/analysis/slice/yinyuan/yinyuan_codepoint.json`
+- `syllable/analysis/yinyuan/shouyin_codepoint.json`
+- `syllable/analysis/yinyuan/yinyuan_codepoint.json`
 - `internal_data/yinyuan_derived/ganyin_to_yinyuan_sequence.json`
-- `syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json`
+- `syllable/analysis/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json`
 - `syllable/codec/yinjie_code.json`
 - `yime/code_pinyin.json`
 

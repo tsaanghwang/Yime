@@ -13,7 +13,7 @@ import json
 import os
 
 from syllable import YinjieAnalyzer
-from syllable.analysis.slice.ganyin_categorizer import GanyinCategorizer
+from syllable.analysis.ganyin_categorizer import GanyinCategorizer
 
 
 def _flatten_grouped_ganyin(document: dict) -> dict[str, str]:

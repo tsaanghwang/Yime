@@ -6,14 +6,14 @@ from typing import Any, Final, cast
 from syllable.analysis.ganyin_encoder import GanyinEncoder
 
 
-SLICE_DIR = Path(__file__).resolve().parents[2] / "syllable" / "analysis" / "slice"
+ANALYSIS_DIR = Path(__file__).resolve().parents[2] / "syllable" / "analysis"
 
 class TestGanyinEncoder(unittest.TestCase):
     """干音编码器完备测试"""
 
     @classmethod
     def setUpClass(cls):
-        mapping_path = SLICE_DIR / "yinyuan" / "ganyin_to_fixed_length_yinyuan_sequence.json"
+        mapping_path = ANALYSIS_DIR / "yinyuan" / "ganyin_to_fixed_length_yinyuan_sequence.json"
         with mapping_path.open('r', encoding='utf-8') as file:
             cls.encoding_map = json.load(file)
 

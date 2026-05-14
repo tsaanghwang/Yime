@@ -100,47 +100,47 @@
 
 当前首音链已经切换为：
 
-- `syllable/analysis/slice/yinyuan/zaoyin_yinyuan_enhanced.json`
+- `syllable/analysis/yinyuan/zaoyin_yinyuan_enhanced.json`
   - 首音唯一真源。
   - 每条记录显式保存 `semantic_code`、`ipa`、`type`、`runtime_char`。
 
 - `internal_data/yinyuan_derived/zaoyin_yinyuan.json`
   - 兼容产物，只保留 `shouyin -> ipa` 的旧结构，供旧脚本和人工查看。
-  - 已从 `syllable/analysis/slice/yinyuan/` 活动目录迁出，避免与首音真源混放。
+  - 已从 `syllable/analysis/yinyuan/` 活动目录迁出，避免与首音真源混放。
 
 当前干音链已经切换为：
 
-- `syllable/analysis/slice/yinyuan/yueyin_yinyuan_enhanced.json`
+- `syllable/analysis/yinyuan/yueyin_yinyuan_enhanced.json`
   - 干音唯一真源。
   - 每条记录显式保存 `semantic_code`、`layout_slot`、`aliases`、`runtime_char`。
 
 - `internal_data/yinyuan_derived/yueyin_yinyuan.json`
   - 兼容产物，只保留 `canonical yueyin -> aliases` 的旧结构。
-  - 已从 `syllable/analysis/slice/yinyuan/` 活动目录迁出，避免与干音真源混放。
+  - 已从 `syllable/analysis/yinyuan/` 活动目录迁出，避免与干音真源混放。
 
 #### 1. 运行时字符映射产物
 
 - `internal_data/yinyuan_derived/ganyin_enhanced.json`
   - 干音增强视图产物，供后续切分链读取。
-  - 已从 `syllable/analysis/slice/yinyuan/` 活动目录迁出，避免与真源和运行时产物混放。
+  - 已从 `syllable/analysis/yinyuan/` 活动目录迁出，避免与真源和运行时产物混放。
 
 - `internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json`
   - 干音到三段片音序列的中间输入表，供后续编码链和派生脚本读取。
-  - 已从 `syllable/analysis/slice/yinyuan/` 活动目录迁出，避免与运行时产物混放。
+  - 已从 `syllable/analysis/yinyuan/` 活动目录迁出，避免与运行时产物混放。
 
 - `internal_data/yinyuan_derived/ganyin_to_yinyuan_sequence.json`
   - 干音到三段音元序列的中间产物。
-  - 已从 `syllable/analysis/slice/yinyuan/` 活动目录迁出，避免与 fixed-length 运行时编码混放。
+  - 已从 `syllable/analysis/yinyuan/` 活动目录迁出，避免与 fixed-length 运行时编码混放。
 
-- `syllable/analysis/slice/yinyuan/shouyin_codepoint.json`
+- `syllable/analysis/yinyuan/shouyin_codepoint.json`
   - 当前是首音到字符的运行时映射结果。
   - 按策略，它应从“首音语义映射真源 + 码点映射层”生成。
 
-- `syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json`
+- `syllable/analysis/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json`
   - 当前是干音到固定长度三字符序列的运行时产物。
   - 按策略，它应从“干音语义序列真源 + 码点映射层”生成。
 
-- `syllable/analysis/slice/yinyuan/yinyuan_codepoint.json`
+- `syllable/analysis/yinyuan/yinyuan_codepoint.json`
   - 当前是运行时总字符映射汇总文件。
   - 应视为聚合产物，而不是单独真源。
 
@@ -345,7 +345,7 @@
 
 - `temp.json`
   - 分类：已删除的根目录重复 JSON 副本。
-  - 原因：其内容已由 `syllable/analysis/slice/yinyuan/zaoyin_yinyuan_enhanced.json` 等现行文件承载，保留根目录副本只会制造“哪个才是当前文件”的歧义。
+  - 原因：其内容已由 `syllable/analysis/yinyuan/zaoyin_yinyuan_enhanced.json` 等现行文件承载，保留根目录副本只会制造“哪个才是当前文件”的歧义。
 
 #### 6E. 根目录演示数据库与本机残留（2026-05）
 
@@ -387,7 +387,7 @@
 
 - `ganyin_encoding.json`
   - 分类：已删除的根目录孤立干音编码快照。
-  - 原因：这份根目录文件没有任何消费入口，也不在现行验证链中；而后续保留在 `syllable/analysis/slice/yinyuan/` 的同名切片副本也已确认只是历史快照，不再属于当前活动链路。
+  - 原因：这份根目录文件没有任何消费入口，也不在现行验证链中；而后续保留在 `syllable/analysis/yinyuan/` 的同名切片副本也已确认只是历史快照，不再属于当前活动链路。
 
 - `keyboard_to_yinyuan.py`
   - 分类：已删除的根目录孤立脚本残片。
@@ -672,8 +672,8 @@
 
 当前 `syllable/codec/yinjie_encoder.py` 仍然直接消费：
 
-- `syllable/analysis/slice/yinyuan/shouyin_codepoint.json`
-- `syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json`
+- `syllable/analysis/yinyuan/shouyin_codepoint.json`
+- `syllable/analysis/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json`
 
 这意味着字符层文件事实上仍在扮演真源角色，与策略文档要求不一致。
 
@@ -698,9 +698,9 @@
 
 调整生成链，使以下文件由语义层自动生成：
 
-1. `syllable/analysis/slice/yinyuan/shouyin_codepoint.json`
-2. `syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json`
-3. `syllable/analysis/slice/yinyuan/yinyuan_codepoint.json`
+1. `syllable/analysis/yinyuan/shouyin_codepoint.json`
+2. `syllable/analysis/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json`
+3. `syllable/analysis/yinyuan/yinyuan_codepoint.json`
 4. `syllable/codec/yinjie_code.json`
 
 ### 第三步：明确 canonical 与 projection 的分工

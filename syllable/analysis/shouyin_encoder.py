@@ -2,7 +2,7 @@ import json
 from typing import Dict, Any
 import sys
 from pathlib import Path
-sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 from .zaoyin_yinyuan import NoiseYinyuan
 
 class ShouyinEncoder:
@@ -19,7 +19,7 @@ class ShouyinEncoder:
     def __init__(self, data_path: Path | None = None):
         self.zaoyin_yinyuan = NoiseYinyuan(quality="")
         self.shouyin_data = None
-        self.module_dir = Path(__file__).parent / "slice"
+        self.module_dir = Path(__file__).parent
         self.default_data_path = self.module_dir / self.SUBDIR / self.ZAOYIN_SOURCE_FILENAME
         if data_path:
             self.load_shouyin_data(data_path)
@@ -85,7 +85,7 @@ class ShouyinEncoder:
             json.dump(data, f, ensure_ascii=False, indent=2)
 
     def derived_output_path(self, filename: str) -> Path:
-        project_root = self.module_dir.parent.parent.parent
+        project_root = self.module_dir.parent.parent
         return project_root / "internal_data" / self.DERIVED_OUTPUT_DIRNAME / filename
 
     def process_shouyin(self, shouyin_data: Dict[str, Any]) -> Dict[str, Any]:

@@ -180,9 +180,9 @@
 
 - `syllable/codec/yinjie_code.json`
 - `yinyuan.klc`
-- `syllable/analysis/slice/yinyuan/yinyuan_codepoint.json`
-- `syllable/analysis/slice/yinyuan/shouyin_codepoint.json`
-- `syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json`
+- `syllable/analysis/yinyuan/yinyuan_codepoint.json`
+- `syllable/analysis/yinyuan/shouyin_codepoint.json`
+- `syllable/analysis/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json`
 - 各类运行时映射、导出 JSON、数据库导入结果
 
 这些文件可以重建，不应手工承担最终真源职责。

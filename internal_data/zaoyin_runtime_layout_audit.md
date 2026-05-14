@@ -4,7 +4,7 @@
 
 目的：
 
-- 追踪 `syllable/analysis/slice/yinyuan/shouyin_codepoint.json` 中首音码元的来源链。
+- 追踪 `syllable/analysis/yinyuan/shouyin_codepoint.json` 中首音码元的来源链。
 - 对比运行时 `zaoyin` / `首音` 码元与当前布局侧 `N01-N24` 首音槽位的对应关系。
 - 说明首音链路与乐音链路的关键差异，避免把两套流程混为一谈。
 
@@ -12,10 +12,10 @@
 
 | 阶段 | 文件 / 代码 | 作用 | 决定了什么 |
 | --- | --- | --- | --- |
-| 1 | `syllable/analysis/slice/yinyuan/zaoyin_yinyuan_enhanced.json` | 首音唯一真源，显式保存 `semantic_code`、`ipa`、`type`、`runtime_char` | 首音标签、语义码与运行时字符的源定义 |
+| 1 | `syllable/analysis/yinyuan/zaoyin_yinyuan_enhanced.json` | 首音唯一真源，显式保存 `semantic_code`、`ipa`、`type`、`runtime_char` | 首音标签、语义码与运行时字符的源定义 |
 | 2 | `syllable/analysis/shouyin_encoder.py` 中 `process_shouyin()` | 读取增强版真源中的 `entries` | 运行时首音标签与显式字符映射 |
-| 3 | `syllable/analysis/slice/yinyuan/shouyin_codepoint.json` | 保存首音标签到私用区字符的最终运行时映射 | 例如 `b -> `、`zh -> `、`y -> ` |
-| 4 | `syllable/analysis/slice/yinyuan/yinyuan_codepoint.json` 中的 `zaoyin` 段 | 保存与 `shouyin_codepoint.json` 平行的一份运行时首音映射 | 运行时总映射文件中的首音部分 |
+| 3 | `syllable/analysis/yinyuan/shouyin_codepoint.json` | 保存首音标签到私用区字符的最终运行时映射 | 例如 `b -> `、`zh -> `、`y -> ` |
+| 4 | `syllable/analysis/yinyuan/yinyuan_codepoint.json` 中的 `zaoyin` 段 | 保存与 `shouyin_codepoint.json` 平行的一份运行时首音映射 | 运行时总映射文件中的首音部分 |
 | 5 | `internal_data/yinyuan_derived/zaoyin_yinyuan.json` | 由真源导出的兼容文件，只保留 `shouyin -> ipa` | 旧脚本兼容与人工查看 |
 | 6 | `internal_data/key_to_symbol.json` | 当前布局/KLC 侧使用的 `N01-N24` 符号表 | 布局侧字符是否和运行时首音字符一致 |
 | 7 | `internal_data/manual_key_layout.json` / `internal_data/manual_key_layout.resolved.json` | 当前候选布局的物理键分配 | 每个 `Nxx` 被放到哪个键位和层级 |

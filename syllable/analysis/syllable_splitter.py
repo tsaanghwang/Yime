@@ -38,7 +38,7 @@ class SyllableSplitter:
     @classmethod
     def _load_marked_ganyin_map(cls) -> dict[str, str]:
         if cls._MARKED_GANYIN_CACHE is None:
-            ganyin_path = Path(__file__).resolve().parent / 'slice' / 'yinyuan' / 'ganyin.json'
+            ganyin_path = Path(__file__).resolve().parent / 'yinyuan' / 'ganyin.json'
             payload = json.loads(ganyin_path.read_text(encoding='utf-8')).get('ganyin', {})
             if payload and all(isinstance(value, dict) for value in payload.values()):
                 flattened: dict[str, str] = {}

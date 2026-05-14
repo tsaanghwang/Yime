@@ -2,7 +2,7 @@ import json
 from typing import Dict, Any
 import sys
 from pathlib import Path
-sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 from .yueyin_yinyuan import YueyinYinyuan
 
 class GanyinEncoder:
@@ -19,7 +19,7 @@ class GanyinEncoder:
 
     def __init__(self):
         self.yueyin_yinyuan = YueyinYinyuan(quality="", pitch="")
-        self.module_dir = Path(__file__).parent / "slice"
+        self.module_dir = Path(__file__).parent
         self.yueyin_source = self._load_yueyin_source()
         self.yueyin_codepoints = self._load_yueyin_codepoints()
         self.ganyin_part_map = self._load_ganyin_part_map()
@@ -188,7 +188,7 @@ class GanyinEncoder:
             json.dump(data, f, ensure_ascii=False, indent=2)
 
     def derived_output_path(self, filename: str) -> Path:
-        project_root = self.module_dir.parent.parent.parent
+        project_root = self.module_dir.parent.parent
         return project_root / "internal_data" / self.DERIVED_OUTPUT_DIRNAME / filename
 
     def convert_pianyin_to_yinyuan(self, pianyin: str) -> str:

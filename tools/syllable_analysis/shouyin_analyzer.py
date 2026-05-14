@@ -9,7 +9,7 @@ from syllable.analysis.zaoyin_yinyuan import ClearNoise, VoicedNoise
 from syllable.analysis.syllable_splitter import SyllableSplitter
 
 
-SLICE_DIR = Path(__file__).resolve().parents[2] / "syllable" / "analysis" / "slice"
+ANALYSIS_DIR = Path(__file__).resolve().parents[2] / "syllable" / "analysis"
 
 
 # 根据语音事实预定浊音列表, 双隔音符表示浊零声母
@@ -28,7 +28,7 @@ def map_shouyin_to_ipa(initial=None):
     """
     try:
         # 尝试从配置文件中读取映射关系
-        with (SLICE_DIR / 'yinyuan' / 'initial_ipa.json').open('r', encoding='utf-8') as f:
+        with (ANALYSIS_DIR / 'yinyuan' / 'initial_ipa.json').open('r', encoding='utf-8') as f:
             initial_ipa_mapping = json.load(f).get('initial', {})
     except (FileNotFoundError, json.JSONDecodeError, KeyError):
         # 如果文件不存在或格式不正确，使用内置的默认映射
