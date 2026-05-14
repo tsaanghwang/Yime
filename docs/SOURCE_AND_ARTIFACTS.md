@@ -674,6 +674,30 @@
   - 分类：当前 canonical 槽位到字符映射。
   - 原因：它与 `internal_data/key_symbol_mapping.json`、`internal_data/yinjie_runtime_key_symbol_mapping.json` 职责不同，不应再按“同名映射”继续合并；前者面向布局 canonical 字符表，后两者分别面向旧手工参考和 runtime 审计。
 
+- `internal_data/slot_symbol_crosswalk.json`
+  - 分类：跨层对照审计产物。
+  - 原因：它不是新的真源映射，而是把 `internal_data/key_to_symbol.json`、`internal_data/bmp_pua_trial_projection.json`、`internal_data/manual_key_layout.json` 和 runtime BMP 结果拉平到同一张对照表里，方便检查 canonical / projection / physical key / runtime 之间是否一致。
+
+- `internal_data/yinjie_runtime_key_symbol_mapping.json`
+  - 分类：runtime 审计产物。
+  - 原因：它也不是 canonical 真源；它回答的是“当前 `yinjie_encoder` 实际产出的 runtime 字符槽位关系是什么”，而不是“布局侧应以什么字符为准”。因此它和 `slot_symbol_crosswalk.json` 一样属于审计面，但关注点更偏 runtime 结果而非多层交叉对照。
+
+- `external_data/finals_IPA_mapping.json`
+  - 分类：外部语音学输入映射。
+  - 原因：它承担 finals 侧 IPA 到项目拼写约定的外部输入面，当前仍被 `tools/final_components.py`、`tools/final_classifier.py`、`tools/orchestrator.py` 等链路当作上游输入；因此不应与 `internal_data/ipa_of_finals.json`、`internal_data/yinyuan_pianyin_mapping.json` 这类内部派生产物混并。
+
+- `external_data/initials_IPA_mapping.json`
+  - 分类：外部声母 IPA 输入映射。
+  - 原因：它和 `external_data/finals_IPA_mapping.json` 一样属于外部原始映射面，服务于拼音/IPA 分析工具的输入边界，而不是项目内部 runtime 或布局真源。
+
+- `internal_data/ipa_of_finals.json`
+  - 分类：内部汇总/投影结果。
+  - 原因：它不是 `external_data/finals_IPA_mapping.json` 的替代真源，而是当前内部整理后的 finals IPA 汇总面；如果上游外部 IPA 对照发生变化，这类内部文件应理解为可再生结果而不是首选手改入口。
+
+- `internal_data/yinyuan_pianyin_mapping.json`
+  - 分类：内部派生语义映射。
+  - 原因：它基于内部音元质量/音高分组生成，职责是把项目内部 `yinyuan` 语义空间映射到 `pianyin` 计数与分布，不是外部 IPA 原始表的平移副本；因此它应和 `external_data/*_IPA_mapping.json` 保持“上游输入 vs 内部派生”边界。
+
 - `data_json_files/key_symbol_mapping.json`
   - 分类：已删除的误命名重复副本。
   - 原因：文件内容与原 `data_json_files/ganyin_pinyin_mapping.json` 实际一致，只是历史上以错误文件名重复保存；在并入 `internal_data` 时已一并清理。
