@@ -6,7 +6,7 @@ from pathlib import Path
 import pytest
 
 
-DB_PATH = Path(__file__).resolve().parents[1] / "yime" / "pinyin_hanzi.db"
+DB_PATH = Path(__file__).resolve().parents[2] / "yime" / "pinyin_hanzi.db"
 REAL_COLLISION_CODE = "\U00100005\U00100025\U00100030\U00100020"
 FIRST_PAGE_LIMIT = 5
 

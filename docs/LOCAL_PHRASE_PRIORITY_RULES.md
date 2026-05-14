@@ -82,7 +82,7 @@ python tools/generate_local_phrase_priority_baseline.py --validate
 对应回归测试：
 
 ```bash
-python -m pytest tests/test_generate_local_phrase_priority_baseline.py -q
+python -m pytest tests/input_method/test_generate_local_phrase_priority_baseline.py -q
 python -m pytest yime/input_method/test_local_phrase_priority_baseline.py -q
 ```
 

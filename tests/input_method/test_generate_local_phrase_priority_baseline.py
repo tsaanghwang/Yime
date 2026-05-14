@@ -5,7 +5,7 @@ from pathlib import Path
 
 
 MODULE_PATH = (
-    Path(__file__).resolve().parents[1]
+    Path(__file__).resolve().parents[2]
     / "tools"
     / "generate_local_phrase_priority_baseline.py"
 )

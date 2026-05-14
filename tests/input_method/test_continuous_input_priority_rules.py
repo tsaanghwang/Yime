@@ -27,7 +27,7 @@ def _build_runtime_decoder(*, debug_runtime_ranking: bool = True) -> RuntimeCand
 
 def _load_generated_continuous_rules() -> dict[str, dict[str, float]]:
     return load_local_phrase_priority_rules(
-        Path(__file__).resolve().parents[1] / "internal_data" / "continuous_input_priority_rules.json",
+        Path(__file__).resolve().parents[2] / "internal_data" / "continuous_input_priority_rules.json",
         {},
         lambda _pinyin_tone, _pinyin_to_canonical: "",
         expected_lookup_code_length=None,
