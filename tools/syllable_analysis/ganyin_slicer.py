@@ -12,6 +12,7 @@ from syllable.analysis.slice.pitched_pianyin import YueyinPianyin
 
 
 SLICE_DIR = PROJECT_ROOT / "syllable" / "analysis" / "slice"
+DERIVED_OUTPUT_DIR = PROJECT_ROOT / "internal_data" / "yinyuan_derived"
 GANYIN_CLASS = cast(Any, Ganyin)
 YUEYIN_PIANYIN_CLASS = cast(Any, YueyinPianyin)
 
@@ -250,7 +251,7 @@ class GanyinSlicer:
 
 def load_ganyin_data() -> Dict[str, Dict[str, Dict[str, Any]]]:
     """加载干音数据"""
-    file_path = SLICE_DIR / "yinyuan" / "ganyin_enhanced.json"
+    file_path = DERIVED_OUTPUT_DIR / "ganyin_enhanced.json"
     with open(file_path, "r", encoding="utf-8") as f:
         data = json.load(f)
         return data["ganyin"] if "ganyin" in data else data
@@ -280,7 +281,7 @@ def main():
             if ganyin_type == "single quality ganyin":
                 sliced = enhance_i_variants(sliced)
             results[ganyin_type] = sliced
-    output_path = SLICE_DIR / "yinyuan" / "ganyin_to_pianyin_sequence.json"
+    output_path = DERIVED_OUTPUT_DIR / "ganyin_to_pianyin_sequence.json"
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(results, f, ensure_ascii=False, indent=2)
     print(f"干音分析完成，结果已保存到 {output_path}")

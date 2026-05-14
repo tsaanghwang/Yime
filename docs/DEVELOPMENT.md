@@ -173,7 +173,7 @@ python tools/rebuild_encoding_assets.py
 
 - `syllable/analysis/slice/yinyuan/shouyin_codepoint.json`
 - `syllable/analysis/slice/yinyuan/yinyuan_codepoint.json`
-- `syllable/analysis/slice/yinyuan/ganyin_to_yinyuan_sequence.json`
+- `internal_data/yinyuan_derived/ganyin_to_yinyuan_sequence.json`
 - `syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json`
 - `syllable/codec/yinjie_code.json`
 - `yime/code_pinyin.json`

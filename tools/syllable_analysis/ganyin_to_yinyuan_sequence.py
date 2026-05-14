@@ -16,6 +16,7 @@ from syllable.analysis.slice.yueyin_yinyuan import YueyinYinyuan
 
 
 SLICE_DIR = PROJECT_ROOT / "syllable" / "analysis" / "slice"
+DERIVED_OUTPUT_DIR = PROJECT_ROOT / "internal_data" / "yinyuan_derived"
 
 
 class GanyinToYinyuanSequence:
@@ -70,14 +71,13 @@ class GanyinToYinyuanSequence:
 
 def main():
     converter = GanyinToYinyuanSequence()
-    input_file = SLICE_DIR / 'yinyuan' / 'ganyin_to_pianyin_sequence.json'
-    output_file = SLICE_DIR / 'yinyuan' / 'ganyin_to_yinyuan_sequence.json'
+    input_file = DERIVED_OUTPUT_DIR / 'ganyin_to_pianyin_sequence.json'
+    output_file = DERIVED_OUTPUT_DIR / 'ganyin_to_yinyuan_sequence.json'
     result = converter.run(input_file, output_file)
 
     # 转换音调标记方式并保存新格式结果
     marks_data = cast(Any, converter.yueyin_yinyuan)._change_pitch_style(result)
-    marks_output_path = output_file.with_name(
-        "ganyin_to_yinyuan_seq_marks.json")
+    marks_output_path = DERIVED_OUTPUT_DIR / "ganyin_to_yinyuan_seq_marks.json"
     converter.save_yinyuan_data(marks_output_path, marks_data)
 
     print(f"转换完成，结果已保存到 {output_file}")

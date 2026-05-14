@@ -15,6 +15,7 @@ class GanyinEncoder:
     YINYUAN_FILENAME = "yinyuan_codepoint.json"
     DINGCHANGMA_FILENAME = "ganyin_to_fixed_length_yinyuan_sequence.json"
     BIANCHANGMA_FILENAME = "ganyin_to_variable_length_yinyuan_sequence.json"
+    DERIVED_OUTPUT_DIRNAME = "yinyuan_derived"
 
     def __init__(self):
         self.yueyin_yinyuan = YueyinYinyuan(quality="", pitch="")
@@ -83,7 +84,7 @@ class GanyinEncoder:
 
     def _load_ganyin_part_map(self) -> Dict[str, Dict[str, str]]:
         """加载干音到片音序列的原始映射。"""
-        parts_path = self.module_dir / self.SUBDIR / 'ganyin_to_pianyin_sequence.json'
+        parts_path = self.derived_output_path('ganyin_to_pianyin_sequence.json')
         with parts_path.open('r', encoding='utf-8') as f:
             grouped_parts = json.load(f)
 
@@ -182,8 +183,13 @@ class GanyinEncoder:
 
     def save_yinyuan_data(self, output_path: Path, data: Dict[str, Any]) -> None:
         """保存音元数据"""
+        output_path.parent.mkdir(parents=True, exist_ok=True)
         with output_path.open('w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
+
+    def derived_output_path(self, filename: str) -> Path:
+        project_root = self.module_dir.parent.parent.parent
+        return project_root / "internal_data" / self.DERIVED_OUTPUT_DIRNAME / filename
 
     def convert_pianyin_to_yinyuan(self, pianyin: str) -> str:
         """将片音转换为音元"""
@@ -235,21 +241,21 @@ class GanyinEncoder:
         with open(encoding_path, "w", encoding="utf-8") as f:
             json.dump(encoding_data, f, ensure_ascii=False, indent=2)
 
-        compat_path = self.module_dir / self.SUBDIR / self.YUEYIN_COMPAT_FILENAME
+        compat_path = self.derived_output_path(self.YUEYIN_COMPAT_FILENAME)
         with open(compat_path, "w", encoding="utf-8") as f:
             json.dump(processed_source["aliases"], f, ensure_ascii=False, indent=2)
 
 
         # 2. 生成音元序列数据
-        input_file = self.module_dir / self.SUBDIR / 'ganyin_to_pianyin_sequence.json'
-        output_file = self.module_dir / self.SUBDIR / 'ganyin_to_yinyuan_sequence.json'
+        input_file = self.derived_output_path('ganyin_to_pianyin_sequence.json')
+        output_file = self.derived_output_path('ganyin_to_yinyuan_sequence.json')
         ganyin_data = self.load_ganyin_data(input_file)
         yinyuan_data = self.process_ganyin(ganyin_data)
         self.save_yinyuan_data(output_file, yinyuan_data)
 
         # 3. 生成音调标记格式数据
         marks_data = self.yueyin_yinyuan._change_pitch_style(yinyuan_data)
-        marks_output_path = output_file.with_name("ganyin_to_yinyuan_seq_marks.json")
+        marks_output_path = self.derived_output_path("ganyin_to_yinyuan_seq_marks.json")
         self.save_yinyuan_data(marks_output_path, marks_data)
 
         # 4. 生成干音音符格式数据
@@ -263,7 +269,7 @@ class GanyinEncoder:
             }
             for ganyin_type in marks_data
         }
-        notes_output_path = output_file.with_name("ganyin_to_yinyuan_seq_notes.json")
+        notes_output_path = self.derived_output_path("ganyin_to_yinyuan_seq_notes.json")
         self.save_yinyuan_data(notes_output_path, notes_data)
 
         # 5. 生成简化版干音音符数据
@@ -290,7 +296,7 @@ class GanyinEncoder:
             ganyin_name: [value, simplify_consecutive_chars(value)]
             for ganyin_name, value in simplified_notes_data.items()
         }
-        variable_length_encoding_output_path = output_file.with_name(self.BIANCHANGMA_FILENAME)
+        variable_length_encoding_output_path = self.derived_output_path(self.BIANCHANGMA_FILENAME)
         self.save_yinyuan_data(variable_length_encoding_output_path, simplified_dict)
 
         print(f"音元编码文件已生成:")

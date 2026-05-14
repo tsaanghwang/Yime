@@ -13,6 +13,7 @@ from syllable.analysis.slice.zaoyin_yinyuan import ClearNoise, VoicedNoise
 
 
 SLICE_DIR = Path(__file__).resolve().parents[2] / "syllable" / "analysis" / "slice"
+DERIVED_OUTPUT_DIR = Path(__file__).resolve().parents[2] / "internal_data" / "yinyuan_derived"
 
 
 class MergedEntry(TypedDict):
@@ -95,7 +96,7 @@ def generate_zaoyin_yinyuan():
     base_dir = SLICE_DIR
     input_path = base_dir / 'yinyuan' / 'pianyin_initial.json'
     output_path = base_dir / 'yinyuan' / 'zaoyin_yinyuan_enhanced.json'
-    simplified_output_path = base_dir / 'yinyuan' / 'zaoyin_yinyuan.json'
+    simplified_output_path = DERIVED_OUTPUT_DIR / 'zaoyin_yinyuan.json'
     runtime_path = base_dir / 'yinyuan' / 'shouyin_codepoint.json'
     existing_runtime_chars = load_existing_runtime_chars(output_path)
     existing_layout_slots = load_existing_layout_slots(output_path)

@@ -12,6 +12,7 @@ from collections import OrderedDict
 
 
 SLICE_DIR = Path(__file__).resolve().parents[2] / "syllable" / "analysis" / "slice"
+DERIVED_OUTPUT_DIR = Path(__file__).resolve().parents[2] / "internal_data" / "yinyuan_derived"
 
 def extract_yueyin(input_path, output_path):
     with open(input_path, "r", encoding="utf-8") as f:
@@ -84,7 +85,7 @@ def extract_yueyin(input_path, output_path):
 
 if __name__ == "__main__":
     base_dir = SLICE_DIR
-    input_path = base_dir / "yinyuan" / "ganyin_to_pianyin_sequence.json"
+    input_path = DERIVED_OUTPUT_DIR / "ganyin_to_pianyin_sequence.json"
     output_path = base_dir / "yinyuan" / "pitched_pianyin.json"
     extract_yueyin(input_path, output_path)
 

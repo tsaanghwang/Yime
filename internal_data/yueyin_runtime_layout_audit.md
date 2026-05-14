@@ -16,7 +16,7 @@
 | 3 | `syllable/analysis/slice/yueyin_yinyuan.py` | 用归并规则把片音转成乐音码元名 | `i˥ -> ɪ˥`、`ɤ˨ -> o˩` 这类归并逻辑 |
 | 4 | `syllable/analysis/slice/convert_pitch_style.py` | 把 `˥/˦/˩` 转成 `́/̄/̀` 风格 | `ɪ˥ -> ɪ́`、`o˩ -> ò` 这类自定义组合字符替换 |
 | 5 | `syllable/analysis/slice/yinyuan/yueyin_yinyuan_enhanced.json` | 干音唯一真源，显式保存 `semantic_code`、`layout_slot`、`aliases`、`runtime_char` | 乐音语义码、布局槽位与运行时字符的一一对应 |
-| 6 | `syllable/analysis/slice/yinyuan/ganyin_to_pianyin_sequence.json` | 干音到三段片音序列的输入表 | 每个干音由哪些“呼音/主音/末音”组成 |
+| 6 | `internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json` | 干音到三段片音序列的输入表 | 每个干音由哪些“呼音/主音/末音”组成 |
 | 7 | `syllable/analysis/slice/ganyin_encoder.py` | 读取增强版真源中的显式 `runtime_char`，并替换三段乐音码元为运行时字符 | `M01-M33` 对应的运行时字符，以及 fixed-length 结果 |
 | 8 | `syllable/analysis/slice/yinyuan/yinyuan_codepoint.json` 中的 `yueyin` 段 | 运行时乐音码元到私用区字符的最终映射 | 例如 `ɪ́ -> 􀀠`、`ḿ -> 􀀸` |
 | 9 | `syllable/analysis/slice/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json` | 每个干音的三字符固定长编码 | 例如 `i1 -> 􀀠􀀠􀀠`、`er1 -> 􀀵􀀵􀀵` |
@@ -28,14 +28,14 @@
 | 位置 | 含义 |
 | --- | --- |
 | `syllable/analysis/slice/ganyin_encoder.py:13` | 干音唯一真源文件 `yueyin_yinyuan_enhanced.json` |
-| `syllable/analysis/slice/ganyin_encoder.py:14` | 兼容乐音清单文件 `yueyin_yinyuan.json` |
+| `syllable/analysis/slice/ganyin_encoder.py` | 兼容乐音清单输出到 `internal_data/yinyuan_derived/yueyin_yinyuan.json` |
 | `syllable/analysis/slice/ganyin_encoder.py:32` | 读取增强版真源中的 `entries` |
 | `syllable/analysis/slice/ganyin_encoder.py:69` | 构建 canonical yueyin 与 aliases 的显式运行时字符映射 |
 | `syllable/analysis/slice/ganyin_encoder.py:181` | 用显式 `yueyin` 映射把乐音码元名替换成运行时字符 |
 | `syllable/analysis/slice/ganyin_encoder.py:192` | 把三段结果拼成 fixed-length 编码 |
 | `syllable/analysis/slice/yueyin_yinyuan.py:97` | 片音到乐音码元的 mid-high 归并逻辑 |
 | `syllable/analysis/slice/yueyin_yinyuan.py:159` | 把 `˥/˦/˩` 风格转换成 `́/̄/̀` 风格 |
-| `syllable/analysis/slice/convert_pitch_style.py:49` | 保留输入键顺序，写出 `yueyin_yinyuan.json` |
+| `tools/syllable_analysis/convert_pitch_style.py` | 保留输入键顺序，写出 `internal_data/yinyuan_derived/yueyin_yinyuan.json` |
 
 ## 三、IPA 片音到自定义组合字符的关键替换层
 

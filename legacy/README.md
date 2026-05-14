@@ -187,6 +187,39 @@
 
 这份脚本只会读取本地 `python-coverage.json` 并写出一次性的 `ci-summary.json` 汇总样本；当前 GitHub Actions 与发布链均未再调用它，因此不再需要继续占据顶层 `scripts/` 目录。
 
+另外，原 `syllable/analysis/slice/yinyuan/` 下又分离出一批已经脱离当前运行/生成链的旧快照与副本，统一迁入 `legacy/syllable_yinyuan_snapshots/`：
+
+- `initial_pianyin.json`
+- `merged_musical_yinyuan.json`
+- `merged_yueyin_by_tone.json`
+- `musical_pianyin_attributes.json`
+- `noise_yinyuan.json`
+- `noise_yinyuan_encoding.json`
+- `noise_yinyuan_simplified.json`
+- `pitch_quality_synchronous_yinyuan.json`
+- `shouyin.json`
+- `shouyin_yinyuan.json`
+- `standard_pinyin.json`
+- `variables_of_pitch_and_quality.json`
+- `yinjie_code.json`
+- `ganyin_theoretical.json`
+- `ganyin_encoding.json`
+
+这批文件在仓库内已经没有任何精确到 `syllable/analysis/slice/yinyuan/` 的活动消费者；它们更像历史分析快照、兼容副本或早期派生产物，而不是当前 `yinyuan` 目录的现行真源。保留在活动目录里只会继续抬高“哪些文件真的参与当前链路”的辨识成本。
+
+同时，以下仍会从现行真源生成、但不应继续占据 `syllable/analysis/slice/yinyuan/` 活动目录的兼容/辅助输出，已统一迁到 `internal_data/yinyuan_derived/`：
+
+- `zaoyin_yinyuan.json`
+- `yueyin_yinyuan.json`
+- `ganyin_enhanced.json`
+- `ganyin_to_pianyin_sequence.json`
+- `ganyin_to_yinyuan_sequence.json`
+- `ganyin_to_variable_length_yinyuan_sequence.json`
+- `ganyin_to_yinyuan_seq_marks.json`
+- `ganyin_to_yinyuan_seq_notes.json`
+
+它们并非运行时真源，也不参与当前输入法主链读取；保留它们的目的主要是旧脚本兼容、人工查看和辅助分析，因此更适合放在派生输出目录，而不是继续与 `yinyuan` 真源和运行时产物混放。
+
 另外，原 `syllable/` 根目录下几份没有活动代码读取的旧 JSON 快照也已迁入 `legacy/syllable_root_snapshots/`：
 
 - `syllable_root_snapshots/ganyin.json`

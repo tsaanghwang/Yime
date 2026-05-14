@@ -6,6 +6,7 @@ from syllable.analysis.slice.yueyin_yinyuan import YueyinYinyuan
 
 
 SLICE_DIR = Path(__file__).resolve().parents[2] / "syllable" / "analysis" / "slice"
+DERIVED_OUTPUT_DIR = Path(__file__).resolve().parents[2] / "internal_data" / "yinyuan_derived"
 
 def load_and_validate_input(input_path: Path) -> dict:
     """加载并验证输入数据
@@ -60,7 +61,7 @@ def main():
 
     # 输入输出文件路径（使用绝对路径）
     input_path = script_dir / 'yinyuan' / 'pitched_yinyuan_of_mid_high_median_model.json'
-    output_path = script_dir / 'yinyuan' / 'yueyin_yinyuan.json'
+    output_path = DERIVED_OUTPUT_DIR / 'yueyin_yinyuan.json'
 
     # 确保输出目录存在
     output_path.parent.mkdir(parents=True, exist_ok=True)

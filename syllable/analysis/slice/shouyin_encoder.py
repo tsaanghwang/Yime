@@ -14,6 +14,7 @@ class ShouyinEncoder:
     ZAOYIN_COMPAT_FILENAME = "zaoyin_yinyuan.json"
     SHOUYIN_FILENAME = "shouyin_codepoint.json"
     YINYUAN_FILENAME = "yinyuan_codepoint.json"
+    DERIVED_OUTPUT_DIRNAME = "yinyuan_derived"
 
     def __init__(self, data_path: Path | None = None):
         self.zaoyin_yinyuan = NoiseYinyuan(quality="")
@@ -79,8 +80,13 @@ class ShouyinEncoder:
 
     def save_yinyuan_data(self, output_path: Path, data: Dict[str, Any]) -> None:
         """保存音元数据"""
+        output_path.parent.mkdir(parents=True, exist_ok=True)
         with output_path.open('w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
+
+    def derived_output_path(self, filename: str) -> Path:
+        project_root = self.module_dir.parent.parent.parent
+        return project_root / "internal_data" / self.DERIVED_OUTPUT_DIRNAME / filename
 
     def process_shouyin(self, shouyin_data: Dict[str, Any]) -> Dict[str, Any]:
         """处理首音真源，提取运行时映射和兼容数据。"""
@@ -164,7 +170,7 @@ class ShouyinEncoder:
         }
         self.save_yinyuan_data(output_file, result_data)
 
-        compat_output_path = self.module_dir / self.SUBDIR / self.ZAOYIN_COMPAT_FILENAME
+        compat_output_path = self.derived_output_path(self.ZAOYIN_COMPAT_FILENAME)
         self.save_yinyuan_data(compat_output_path, {"shouyin": processed_data["shouyin"]})
 
         print(f"  首音编码字典:")
