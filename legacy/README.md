@@ -181,6 +181,12 @@
 
 其中 `check_punctuation.py` 依赖的 `理论文件/` 目录已不复存在；`class_renaming_script.py` 与 `renaming_script.py` 只是类名调整时的一次性断言片段；`mysql_conn_script.py` 则是依赖本地环境变量和数据库实例的临时连通性诊断脚本。它们都没有活动消费者，也不构成当前仓库的可复用工具链。
 
+此外，原 `scripts/generate_ci_report.py` 也已迁入 `legacy/ci_scripts/`。
+
+- `generate_ci_report.py`
+
+这份脚本只会读取本地 `python-coverage.json` 并写出一次性的 `ci-summary.json` 汇总样本；当前 GitHub Actions 与发布链均未再调用它，因此不再需要继续占据顶层 `scripts/` 目录。
+
 另外，原 `syllable/` 根目录下几份没有活动代码读取的旧 JSON 快照也已迁入 `legacy/syllable_root_snapshots/`：
 
 - `syllable_root_snapshots/ganyin.json`

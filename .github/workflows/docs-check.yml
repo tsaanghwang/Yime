@@ -52,16 +52,6 @@ jobs:
         with:
           globs: ${{ steps.changed-docs.outputs.files }}
 
-      - name: Set up Python
-        if: steps.changed-docs.outputs.has_docs == 'true'
-        uses: actions/setup-python@v6
-        with:
-          python-version: '3.12'
-
-      - name: Verify Chinese punctuation
-        if: steps.changed-docs.outputs.has_docs == 'true'
-        run: python scripts/check_punctuation.py
-
       - name: Skip docs check when no docs changed
         if: steps.changed-docs.outputs.has_docs != 'true'
         run: echo "No Markdown or MDX files changed; skipping docs check."

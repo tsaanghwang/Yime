@@ -323,7 +323,7 @@
 
 - `ci-summary.json`
   - 分类：已删除的 CI 汇总输出样本。
-  - 原因：该文件由 `scripts/generate_ci_report.py` 直接生成，只是一次运行产物，不承担仓库真源职责。
+  - 原因：该文件曾由旧入口 `legacy/ci_scripts/generate_ci_report.py` 生成，只是一次运行产物，不承担仓库真源职责。
 
 - `pinyin_import.log`
   - 分类：已删除的导入日志文件。
