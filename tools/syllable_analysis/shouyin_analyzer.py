@@ -2,13 +2,14 @@
 首音分析
 功能：确定首音音标和划分首音类别。
 """
-import os
-import sys
 import json
 from pathlib import Path
-sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
-from zaoyin_yinyuan import ClearNoise, VoicedNoise
+
+from syllable.analysis.slice.zaoyin_yinyuan import ClearNoise, VoicedNoise
 from syllable.analysis.slice.syllable_splitter import SyllableSplitter
+
+
+SLICE_DIR = Path(__file__).resolve().parents[2] / "syllable" / "analysis" / "slice"
 
 
 # 根据语音事实预定浊音列表, 双隔音符表示浊零声母
@@ -27,7 +28,7 @@ def map_shouyin_to_ipa(initial=None):
     """
     try:
         # 尝试从配置文件中读取映射关系
-        with open('yinyuan/initial_ipa.json', 'r', encoding='utf-8') as f:
+        with (SLICE_DIR / 'yinyuan' / 'initial_ipa.json').open('r', encoding='utf-8') as f:
             initial_ipa_mapping = json.load(f).get('initial', {})
     except (FileNotFoundError, json.JSONDecodeError, KeyError):
         # 如果文件不存在或格式不正确，使用内置的默认映射
@@ -120,10 +121,9 @@ def main():
 
         # 3. 读取现有的噪音声母文件
 
-        base_dir = os.path.dirname(__file__)
-        pianyin_initial_path = os.path.join(base_dir, 'yinyuan', 'pianyin_initial.json')
+        pianyin_initial_path = SLICE_DIR / 'yinyuan' / 'pianyin_initial.json'
 
-        with open(pianyin_initial_path, 'r', encoding='utf-8') as f:
+        with pianyin_initial_path.open('r', encoding='utf-8') as f:
             pianyin_initial = json.load(f)
 
         # 4. 更新噪音部分并保留元数据
@@ -135,7 +135,7 @@ def main():
         }
 
         # 5. 保存结果
-        with open(pianyin_initial_path, 'w', encoding='utf-8') as f:
+        with pianyin_initial_path.open('w', encoding='utf-8') as f:
             json.dump(output, f, ensure_ascii=False, indent=2)
 
         print(f"首音和噪音声母映射已成功生成并更新在: {pianyin_initial_path}")

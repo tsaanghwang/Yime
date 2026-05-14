@@ -155,6 +155,12 @@
 
 同时，原 `syllable/analysis/slice/reverse_key_value_pairs.py` 也已迁入 `legacy/syllable_analysis_slice/`。当前活动重建链已经使用 `yime/reverse_key_value_pairs.py`，因此 `slice` 内这份旧 helper 不再需要留在活动实现面。
 
+这轮又补做了最后一批边界清理：
+
+- 原 `syllable/analysis/slice/shouyin_analyzer.py` 已迁到 `tools/syllable_analysis/shouyin_analyzer.py`，因为它负责生成和更新 `slice/yinyuan/pianyin_initial.json`，属于资产生成脚本而不是运行时实现。
+- 原 `tools/syllable_analysis/run_syllable_analyzer.py` 已迁入 `legacy/syllable_analysis_tools/`，因为它只是绕回旧的 `slice/syllable_analyzer.py` 包装入口，且没有活动消费者。
+- 原 `tools/syllable_analysis/extract_musical_element.py` 已迁入 `legacy/syllable_analysis_tools/`，因为它与 `tools/syllable_analysis/extract_yueyin_yinyuan.py` 为重复实现，只是旧命名残留。
+
 另外，原 `syllable/` 根目录下几份没有活动代码读取的旧 JSON 快照也已迁入 `legacy/syllable_root_snapshots/`：
 
 - `syllable_root_snapshots/ganyin.json`
