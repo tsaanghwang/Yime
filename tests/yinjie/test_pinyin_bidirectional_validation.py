@@ -5,7 +5,7 @@ from pathlib import Path
 from internal_data.pinyin_source_db.build_source_pinyin_db import marked_syllable_to_numeric
 from syllable.codec.paths import YINJIE_CODE_PATH
 from syllable.codec.yinjie_decoder import YinjieDecoder
-from syllable.analysis.slice.yinjie_encoder import YinjieEncoder
+from syllable.analysis.yinjie_encoder import YinjieEncoder
 
 
 class TestPinyinBidirectionalValidation(unittest.TestCase):

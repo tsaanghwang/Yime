@@ -27,5 +27,5 @@ echo "Running focused validation suite..."
 	tests/yinjie/test_yinjie_roundtrip.py \
 	tests/yinjie/verify_yinjie_encoder_stages.py \
 	tests/yinjie/verify_yinjie_entry_manifests.py \
-	syllable/analysis/slice/verify_encode_ganyin.py \
+	tests/syllable_analysis/test_encode_ganyin.py \
 	utils/test_pinyin_normalizer.py

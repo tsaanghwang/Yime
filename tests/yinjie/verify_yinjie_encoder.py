@@ -7,12 +7,12 @@ from syllable.codec.yinjie_encoder import (
     YinjieEncoder,
     YinjieEncodingError,
 )
-from syllable.analysis.slice.syllable_categorizer import SyllableCategorizer
-from syllable.analysis.slice.syllable_encoding_pipeline import SyllableEncodingPipeline
-from syllable.analysis.slice.ganyin_categorizer import GanyinCategorizer
-from syllable.analysis.slice.shouyin_encoder import ShouyinEncoder
-from syllable.analysis.slice.ganyin_encoder import GanyinEncoder
-from syllable.analysis.slice.syllable_splitter import SyllableSplitter
+from syllable.analysis.syllable_categorizer import SyllableCategorizer
+from syllable.analysis.syllable_encoding_pipeline import SyllableEncodingPipeline
+from syllable.analysis.ganyin_categorizer import GanyinCategorizer
+from syllable.analysis.shouyin_encoder import ShouyinEncoder
+from syllable.analysis.ganyin_encoder import GanyinEncoder
+from syllable.analysis.syllable_splitter import SyllableSplitter
 
 
 class TestSyllableEncodingPipeline(unittest.TestCase):

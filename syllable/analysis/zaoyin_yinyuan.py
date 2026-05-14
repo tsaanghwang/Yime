@@ -10,7 +10,7 @@
 
 from dataclasses import dataclass
 from typing import Optional, Dict
-from syllable.analysis.slice.yinyuan import (
+from .yinyuan import (
     DurationType,
     LoudnessType,
     UncertainPitchYinyuan,

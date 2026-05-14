@@ -3,7 +3,7 @@ import unittest
 import json
 from pathlib import Path
 
-from syllable.analysis.slice.shouyin_encoder import ShouyinEncoder
+from syllable.analysis.shouyin_encoder import ShouyinEncoder
 
 
 SLICE_DIR = Path(__file__).resolve().parents[2] / "syllable" / "analysis" / "slice"

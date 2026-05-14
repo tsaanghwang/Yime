@@ -9,9 +9,9 @@ ROOT = Path(__file__).resolve().parent.parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from syllable.analysis.slice.ganyin_encoder import GanyinEncoder
-from syllable.analysis.slice.shouyin_encoder import ShouyinEncoder
-from syllable.analysis.slice.yinjie_encoder import YinjieEncoder
+from syllable.analysis.ganyin_encoder import GanyinEncoder
+from syllable.analysis.shouyin_encoder import ShouyinEncoder
+from syllable.analysis.yinjie_encoder import YinjieEncoder
 from yime.reverse_key_value_pairs import reverse_key_value_pairs
 
 

@@ -3,7 +3,7 @@
 
 from typing import Any
 
-from syllable.analysis.slice.ganyin_categorizer import GanyinCategorizer
+from syllable.analysis.ganyin_categorizer import GanyinCategorizer
 
 
 NEW_FINALS = ['ian', 'iong', 'iu', 'ong', 'ua', 'uai', 'ue', 'ui', 'un', 'v', 'van', 've']

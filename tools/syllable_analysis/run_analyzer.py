@@ -7,8 +7,8 @@ import os
 import sys
 
 from tools.syllable_analysis.ganyin_analyzer import GanyinAnalyzer
-from syllable.analysis.slice.ganyin_categorizer import GanyinCategorizer
-from syllable.analysis.slice.syllable_splitter import SyllableSplitter
+from syllable.analysis.ganyin_categorizer import GanyinCategorizer
+from syllable.analysis.syllable_splitter import SyllableSplitter
 
 
 def analyze_syllable(syllable: str) -> tuple:

@@ -2,7 +2,7 @@ import json
 import sys
 from pathlib import Path
 
-from syllable.analysis.slice.yueyin_yinyuan import YueyinYinyuan
+from syllable.analysis.yueyin_yinyuan import YueyinYinyuan
 
 
 SLICE_DIR = Path(__file__).resolve().parents[2] / "syllable" / "analysis" / "slice"

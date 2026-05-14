@@ -5,7 +5,7 @@
       "name": "yinjie",
       "type": "python",
       "request": "launch",
-      "program": "${workspaceFolder}\\syllable_codec\\yinjie.py",
+      "program": "${workspaceFolder}\\syllable\\codec\\yinjie.py",
       "currentFileConfiguration": false,
       "cwd": "${workspaceFolder}",
       "addSourceRootsToPythonpath": true
@@ -36,16 +36,6 @@
       "currentFileConfiguration": false,
       "cwd": "${workspaceFolder}\\yime",
       "addSourceRootsToPythonpath": true
-    },
-    {
-      "name": "test_import",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\yime\\test_import.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\yime",
-      "addSourceRootsToPythonpath": true,
-      "noDebug": true
     },
     {
       "name": "import_numeric_pinyin",
@@ -80,9 +70,9 @@
       "name": "yinjie_decoder",
       "type": "python",
       "request": "launch",
-      "program": "${workspaceFolder}\\syllable_codec\\yinjie_decoder.py",
+      "program": "${workspaceFolder}\\syllable\\codec\\yinjie_decoder.py",
       "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\yime",
+      "cwd": "${workspaceFolder}",
       "addSourceRootsToPythonpath": true,
       "noDebug": true
     },
@@ -91,25 +81,6 @@
       "type": "python",
       "request": "launch",
       "program": "${workspaceFolder}\\yime\\pinyin_importer.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\yime",
-      "addSourceRootsToPythonpath": true,
-      "noDebug": true
-    },
-    {
-      "name": "import_pinyin",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\yime\\import_pinyin.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\yime",
-      "addSourceRootsToPythonpath": true
-    },
-    {
-      "name": "db_table_list",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\yime\\db_table_list.py",
       "currentFileConfiguration": false,
       "cwd": "${workspaceFolder}\\yime",
       "addSourceRootsToPythonpath": true,
@@ -126,35 +97,6 @@
       "noDebug": true
     },
     {
-      "name": "create_tables_from_manager",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\create_tables_from_manager.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}",
-      "addSourceRootsToPythonpath": true,
-      "noDebug": true
-    },
-    {
-      "name": "create_tables_from_manager",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\yime\\create_tables_from_manager.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\yime",
-      "addSourceRootsToPythonpath": true
-    },
-    {
-      "name": "list_tables",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\yime\\list_tables.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\yime",
-      "addSourceRootsToPythonpath": true,
-      "noDebug": true
-    },
-    {
       "name": "hanzi_db_manager",
       "type": "python",
       "request": "launch",
@@ -163,25 +105,6 @@
       "cwd": "${workspaceFolder}\\yime",
       "addSourceRootsToPythonpath": true,
       "noDebug": true
-    },
-    {
-      "name": "ime_db_manager",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\yime\\ime_db_manager.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\yime",
-      "addSourceRootsToPythonpath": true,
-      "noDebug": true
-    },
-    {
-      "name": "yime",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\yime\\yime.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\yime",
-      "addSourceRootsToPythonpath": true
     },
     {
       "name": "map_code_to_hanzi",
@@ -216,15 +139,6 @@
       "noDebug": true
     },
     {
-      "name": "map_code_to_pinyin",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\yime\\map_code_to_pinyin.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\yime",
-      "addSourceRootsToPythonpath": true
-    },
-    {
       "name": "import_initial",
       "type": "python",
       "request": "launch",
@@ -238,16 +152,6 @@
       "type": "python",
       "request": "launch",
       "program": "${workspaceFolder}\\yime\\update_table.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\yime",
-      "addSourceRootsToPythonpath": true,
-      "noDebug": true
-    },
-    {
-      "name": "import_shengmu",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\yime\\import_shengmu.py",
       "currentFileConfiguration": false,
       "cwd": "${workspaceFolder}\\yime",
       "addSourceRootsToPythonpath": true,
@@ -280,26 +184,6 @@
       "currentFileConfiguration": false,
       "cwd": "${workspaceFolder}\\yime",
       "addSourceRootsToPythonpath": true
-    },
-    {
-      "name": "db_migration",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\yime\\db_migration.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\yime",
-      "addSourceRootsToPythonpath": true,
-      "noDebug": true
-    },
-    {
-      "name": "gui_input",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\yime\\gui_input.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\yime",
-      "addSourceRootsToPythonpath": true,
-      "noDebug": true
     },
     {
       "name": "normalize_pinyin_file",
@@ -343,43 +227,16 @@
       "name": "example",
       "type": "python",
       "request": "launch",
-      "program": "${workspaceFolder}\\yime\\example.py",
+      "program": "${workspaceFolder}\\utils\\example.py",
       "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\yime",
-      "addSourceRootsToPythonpath": true
-    },
-    {
-      "name": "test_class_renaming",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\test_class_renaming.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
-      "addSourceRootsToPythonpath": true
-    },
-    {
-      "name": "test_renaming",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\test_renaming.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
-      "addSourceRootsToPythonpath": true
-    },
-    {
-      "name": "temp",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\initial_final_with_tone\\temp.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\syllable\\analysis\\initial_final_with_tone",
+      "cwd": "${workspaceFolder}\\utils",
       "addSourceRootsToPythonpath": true
     },
     {
       "name": "yinjie_decoder",
       "type": "python",
       "request": "launch",
-      "program": "${workspaceFolder}\\syllable_codec\\yinjie_decoder.py",
+      "program": "${workspaceFolder}\\syllable\\codec\\yinjie_decoder.py",
       "currentFileConfiguration": false,
       "cwd": "${workspaceFolder}",
       "addSourceRootsToPythonpath": true,
@@ -389,7 +246,7 @@
       "name": "interactive_yinjie",
       "type": "python",
       "request": "launch",
-      "program": "${workspaceFolder}\\syllable_codec\\interactive_yinjie.py",
+      "program": "${workspaceFolder}\\syllable\\codec\\interactive_yinjie.py",
       "currentFileConfiguration": false,
       "cwd": "${workspaceFolder}",
       "addSourceRootsToPythonpath": true
@@ -405,58 +262,30 @@
       "noDebug": true
     },
     {
-      "name": "syllable_categorizer.bak",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\syllable_categorizer.bak.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
-      "addSourceRootsToPythonpath": true
-    },
-    {
-      "name": "verify_encode_ganyin.bak",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\verify_encode_ganyin.bak.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
-      "addSourceRootsToPythonpath": true
-    },
-    {
       "name": "yueyin_yinyuan",
       "type": "python",
       "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\yueyin_yinyuan.py",
+      "program": "${workspaceFolder}\\syllable\\analysis\\yueyin_yinyuan.py",
       "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
+      "cwd": "${workspaceFolder}\\syllable\\analysis",
       "addSourceRootsToPythonpath": true
     },
     {
       "name": "zaoyin_yinyuan",
       "type": "python",
       "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\zaoyin_yinyuan.py",
+      "program": "${workspaceFolder}\\syllable\\analysis\\zaoyin_yinyuan.py",
       "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
+      "cwd": "${workspaceFolder}\\syllable\\analysis",
       "addSourceRootsToPythonpath": true
-    },
-    {
-      "name": "extract_musical_element",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\extract_musical_element.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
-      "addSourceRootsToPythonpath": true,
-      "noDebug": true
     },
     {
       "name": "extract_yueyin_pianyin",
       "type": "python",
       "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\extract_yueyin_pianyin.py",
+      "program": "${workspaceFolder}\\tools\\syllable_analysis\\extract_yueyin_pianyin.py",
       "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
+      "cwd": "${workspaceFolder}",
       "addSourceRootsToPythonpath": true,
       "noDebug": true
     },
@@ -464,9 +293,9 @@
       "name": "verify_classification",
       "type": "python",
       "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\verify_classification.py",
+      "program": "${workspaceFolder}\\tests\\syllable_analysis\\test_verify_classification.py",
       "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
+      "cwd": "${workspaceFolder}",
       "addSourceRootsToPythonpath": true,
       "noDebug": true
     },
@@ -474,68 +303,19 @@
       "name": "verify_encode_shouyin",
       "type": "python",
       "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\verify_encode_shouyin.py",
+      "program": "${workspaceFolder}\\tests\\syllable_analysis\\test_encode_shouyin.py",
       "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
+      "cwd": "${workspaceFolder}",
       "addSourceRootsToPythonpath": true,
       "noDebug": true
-    },
-    {
-      "name": "ganyin_encoder.bak",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\ganyin_encoder.bak.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
-      "addSourceRootsToPythonpath": true,
-      "noDebug": true
-    },
-    {
-      "name": "temp",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\temp.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
-      "addSourceRootsToPythonpath": true
     },
     {
       "name": "verify_encode_ganyin",
       "type": "python",
       "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\verify_encode_ganyin.py",
+      "program": "${workspaceFolder}\\tests\\syllable_analysis\\test_encode_ganyin.py",
       "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
-      "addSourceRootsToPythonpath": true,
-      "noDebug": true
-    },
-    {
-      "name": "verify_function",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\verify_function.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
-      "addSourceRootsToPythonpath": true,
-      "noDebug": true
-    },
-    {
-      "name": "run_syllable_analyzer",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\run_syllable_analyzer.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
-      "addSourceRootsToPythonpath": true,
-      "noDebug": true
-    },
-    {
-      "name": "shouyin_encoder.bak",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\shouyin_encoder.bak.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
+      "cwd": "${workspaceFolder}",
       "addSourceRootsToPythonpath": true,
       "noDebug": true
     },
@@ -543,26 +323,17 @@
       "name": "yinjie_encoder",
       "type": "python",
       "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\yinjie_encoder.py",
+      "program": "${workspaceFolder}\\syllable\\analysis\\yinjie_encoder.py",
       "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
+      "cwd": "${workspaceFolder}\\syllable\\analysis",
       "addSourceRootsToPythonpath": true,
       "noDebug": true
-    },
-    {
-      "name": "ganyin_encoded",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\ganyin_encoded.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
-      "addSourceRootsToPythonpath": true
     },
     {
       "name": "yinjie_encoder",
       "type": "python",
       "request": "launch",
-      "program": "${workspaceFolder}\\syllable_codec\\yinjie_encoder.py",
+      "program": "${workspaceFolder}\\syllable\\codec\\yinjie_encoder.py",
       "currentFileConfiguration": false,
       "cwd": "${workspaceFolder}",
       "addSourceRootsToPythonpath": true,
@@ -572,9 +343,9 @@
       "name": "shouyin_encoder",
       "type": "python",
       "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\shouyin_encoder.py",
+      "program": "${workspaceFolder}\\syllable\\analysis\\shouyin_encoder.py",
       "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
+      "cwd": "${workspaceFolder}\\syllable\\analysis",
       "addSourceRootsToPythonpath": true,
       "noDebug": true
     },
@@ -582,35 +353,7 @@
       "name": "shouyin_analyzer",
       "type": "python",
       "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\shouyin_analyzer.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
-      "addSourceRootsToPythonpath": true,
-      "noDebug": true
-    },
-    {
-      "name": "generate_yinyuan",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\generate_yinyuan.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}",
-      "addSourceRootsToPythonpath": true
-    },
-    {
-      "name": "shouyin_ipa",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\shouyin_ipa.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
-      "addSourceRootsToPythonpath": true
-    },
-    {
-      "name": "generate_noise",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\generate_noise.py",
+      "program": "${workspaceFolder}\\tools\\syllable_analysis\\shouyin_analyzer.py",
       "currentFileConfiguration": false,
       "cwd": "${workspaceFolder}",
       "addSourceRootsToPythonpath": true,
@@ -620,9 +363,9 @@
       "name": "ganyin_encoder",
       "type": "python",
       "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\ganyin_encoder.py",
+      "program": "${workspaceFolder}\\syllable\\analysis\\ganyin_encoder.py",
       "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
+      "cwd": "${workspaceFolder}\\syllable\\analysis",
       "addSourceRootsToPythonpath": true,
       "noDebug": true
     },
@@ -630,28 +373,19 @@
       "name": "convert_pitch_style",
       "type": "python",
       "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\convert_pitch_style.py",
+      "program": "${workspaceFolder}\\tools\\syllable_analysis\\convert_pitch_style.py",
       "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
+      "cwd": "${workspaceFolder}",
       "addSourceRootsToPythonpath": true,
       "noDebug": true
-    },
-    {
-      "name": "test_yinyuan",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\tests\\test_yinyuan.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\tests",
-      "addSourceRootsToPythonpath": true
     },
     {
       "name": "comprehensive_verification",
       "type": "python",
       "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\comprehensive_verification.py",
+      "program": "${workspaceFolder}\\tools\\syllable_analysis\\comprehensive_verification.py",
       "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
+      "cwd": "${workspaceFolder}",
       "addSourceRootsToPythonpath": true,
       "noDebug": true
     },
@@ -659,19 +393,9 @@
       "name": "analyze_classification",
       "type": "python",
       "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\analyze_classification.py",
+      "program": "${workspaceFolder}\\tools\\syllable_analysis\\analyze_classification.py",
       "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
-      "addSourceRootsToPythonpath": true,
-      "noDebug": true
-    },
-    {
-      "name": "generate_yueyin_pianyin",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\generate_yueyin_pianyin.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
+      "cwd": "${workspaceFolder}",
       "addSourceRootsToPythonpath": true,
       "noDebug": true
     },
@@ -679,27 +403,27 @@
       "name": "reverse_key_value_pairs",
       "type": "python",
       "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\reverse_key_value_pairs.py",
+      "program": "${workspaceFolder}\\yime\\reverse_key_value_pairs.py",
       "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
+      "cwd": "${workspaceFolder}",
       "addSourceRootsToPythonpath": true
     },
     {
       "name": "ganyin",
       "type": "python",
       "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\ganyin.py",
+      "program": "${workspaceFolder}\\syllable\\analysis\\ganyin.py",
       "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
+      "cwd": "${workspaceFolder}\\syllable\\analysis",
       "addSourceRootsToPythonpath": true
     },
     {
       "name": "syllable_categorizer",
       "type": "python",
       "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\syllable_categorizer.py",
+      "program": "${workspaceFolder}\\syllable\\analysis\\syllable_categorizer.py",
       "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
+      "cwd": "${workspaceFolder}\\syllable\\analysis",
       "addSourceRootsToPythonpath": true,
       "noDebug": true
     },
@@ -707,57 +431,19 @@
       "name": "ganyin_enhanced",
       "type": "python",
       "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\ganyin_enhanced.py",
+      "program": "${workspaceFolder}\\tools\\syllable_analysis\\ganyin_enhanced.py",
       "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
+      "cwd": "${workspaceFolder}",
       "addSourceRootsToPythonpath": true,
       "noDebug": true
-    },
-    {
-      "name": "generate_noise_element",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\generate_noise_element.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
-      "addSourceRootsToPythonpath": true,
-      "noDebug": true
-    },
-    {
-      "name": "generate_musical_element",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\generate_musical_element.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
-      "addSourceRootsToPythonpath": true
     },
     {
       "name": "generate_zaoyin_yinyuan",
       "type": "python",
       "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\generate_zaoyin_yinyuan.py",
+      "program": "${workspaceFolder}\\tools\\syllable_analysis\\generate_zaoyin_yinyuan.py",
       "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
-      "addSourceRootsToPythonpath": true,
-      "noDebug": true
-    },
-    {
-      "name": "generate_noise_yinyuan",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\generate_noise_yinyuan.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
-      "addSourceRootsToPythonpath": true
-    },
-    {
-      "name": "extract_yueyin",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\extract_yueyin.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
+      "cwd": "${workspaceFolder}",
       "addSourceRootsToPythonpath": true,
       "noDebug": true
     },
@@ -765,30 +451,10 @@
       "name": "pitched_pianyin",
       "type": "python",
       "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\pitched_pianyin.py",
+      "program": "${workspaceFolder}\\syllable\\analysis\\pitched_pianyin.py",
       "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
+      "cwd": "${workspaceFolder}\\syllable\\analysis",
       "addSourceRootsToPythonpath": true
-    },
-    {
-      "name": "test_complete_workflow",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\test_complete_workflow.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
-      "addSourceRootsToPythonpath": true,
-      "noDebug": true
-    },
-    {
-      "name": "final_test",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\final_test.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
-      "addSourceRootsToPythonpath": true,
-      "noDebug": true
     },
     {
       "name": "Python: Current File",
@@ -803,52 +469,12 @@
       }
     },
     {
-      "name": "test_shejian",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\test_shejian.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
-      "addSourceRootsToPythonpath": true,
-      "noDebug": true
-    },
-    {
-      "name": "test_ganyin",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\test_ganyin.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
-      "addSourceRootsToPythonpath": true,
-      "noDebug": true
-    },
-    {
-      "name": "test_ganyin_final_definition",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\test_ganyin_final_definition.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
-      "addSourceRootsToPythonpath": true,
-      "noDebug": true
-    },
-    {
-      "name": "test_dynamic_finals",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\test_dynamic_finals.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
-      "addSourceRootsToPythonpath": true,
-      "noDebug": true
-    },
-    {
       "name": "pitched_yinyuan",
       "type": "python",
       "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\pitched_yinyuan.py",
+      "program": "${workspaceFolder}\\syllable\\analysis\\pitched_yinyuan.py",
       "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
+      "cwd": "${workspaceFolder}\\syllable\\analysis",
       "addSourceRootsToPythonpath": true,
       "noDebug": true
     },
@@ -856,18 +482,18 @@
       "name": "pianyin",
       "type": "python",
       "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\pianyin.py",
+      "program": "${workspaceFolder}\\syllable\\analysis\\pianyin.py",
       "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
+      "cwd": "${workspaceFolder}\\syllable\\analysis",
       "addSourceRootsToPythonpath": true
     },
     {
       "name": "run_analyzer",
       "type": "python",
       "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\run_analyzer.py",
+      "program": "${workspaceFolder}\\tools\\syllable_analysis\\run_analyzer.py",
       "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
+      "cwd": "${workspaceFolder}",
       "addSourceRootsToPythonpath": true,
       "noDebug": true
     },
@@ -875,9 +501,9 @@
       "name": "ganyin_slicer",
       "type": "python",
       "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\ganyin_slicer.py",
+      "program": "${workspaceFolder}\\tools\\syllable_analysis\\ganyin_slicer.py",
       "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
+      "cwd": "${workspaceFolder}",
       "addSourceRootsToPythonpath": true,
       "noDebug": true
     },
@@ -885,9 +511,9 @@
       "name": "extract_yueyin_yinyuan",
       "type": "python",
       "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\extract_yueyin_yinyuan.py",
+      "program": "${workspaceFolder}\\tools\\syllable_analysis\\extract_yueyin_yinyuan.py",
       "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
+      "cwd": "${workspaceFolder}",
       "addSourceRootsToPythonpath": true,
       "noDebug": true
     },
@@ -895,9 +521,9 @@
       "name": "ganyin_to_pianyin_sequence",
       "type": "python",
       "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\ganyin_to_pianyin_sequence.py",
+      "program": "${workspaceFolder}\\tools\\syllable_analysis\\ganyin_to_pianyin_sequence.py",
       "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
+      "cwd": "${workspaceFolder}",
       "addSourceRootsToPythonpath": true,
       "noDebug": true
     },
@@ -935,9 +561,9 @@
       "name": "ganyin_to_yinyuan_sequence",
       "type": "python",
       "request": "launch",
-      "program": "${workspaceFolder}\\syllable\\analysis\\slice\\ganyin_to_yinyuan_sequence.py",
+      "program": "${workspaceFolder}\\tools\\syllable_analysis\\ganyin_to_yinyuan_sequence.py",
       "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\syllable\\analysis\\slice",
+      "cwd": "${workspaceFolder}",
       "addSourceRootsToPythonpath": true,
       "noDebug": true
     },

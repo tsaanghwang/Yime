@@ -189,7 +189,7 @@ python tools/rebuild_encoding_assets.py --skip-code-pinyin
 建议配套做一次最小验证：
 
 ```bash
-python -m pytest syllable/analysis/slice/verify_encode_ganyin.py tests/yinjie/verify_yinjie_encoder.py
+python -m pytest tests/syllable_analysis/test_encode_ganyin.py tests/yinjie/verify_yinjie_encoder.py
 ```
 
 ---

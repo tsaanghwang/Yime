@@ -628,9 +628,9 @@
 
 #### 12. 孤立 `.bak.py` 旧脚本（2026-05）
 
-- `syllable/analysis/slice/shouyin.bak.py`
+- `syllable/analysis/shouyin.bak.py`
   - 分类：已删除的旧脚本备份件。
-  - 原因：当前仓库已保留 `syllable/analysis/slice/shouyin.py` 作为现行实现；`.bak.py` 版本不再被主线代码引用，仅残留在旧打包清单中。
+  - 原因：当前仓库已保留 `syllable/analysis/shouyin.py` 作为现行实现；`.bak.py` 版本不再被主线代码引用，仅残留在旧打包清单中。
 
 - `yime/transform_dict_structure.bak.py`
   - 分类：已删除的旧脚本备份件。

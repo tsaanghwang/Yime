@@ -14,7 +14,7 @@ Quality: required attribute
 Pitch: required attribute
 """
 
-from pitched_yinyuan import MusicalYinyuan
+from .pitched_yinyuan import MusicalYinyuan
 
 
 class PitchedPianyin:

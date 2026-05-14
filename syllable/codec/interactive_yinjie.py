@@ -1,8 +1,8 @@
 """包内交互入口，统一复用实现层会话逻辑。"""
 
-from syllable.analysis.slice.interactive_yinjie_session import interactive_encoder
-from syllable.analysis.slice.yinjie_api_manifest import YINJIE_INTERACTIVE_ENTRY_EXPORTS
-from syllable.analysis.slice.yinjie_composition import run_default_interactive_session
+from syllable.analysis.interactive_yinjie_session import interactive_encoder
+from syllable.analysis.yinjie_api_manifest import YINJIE_INTERACTIVE_ENTRY_EXPORTS
+from syllable.analysis.yinjie_composition import run_default_interactive_session
 
 
 def main(input_reader=input) -> None:

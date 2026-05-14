@@ -7,8 +7,8 @@ import json
 import sys
 import os
 
-from syllable.analysis.slice.ganyin_categorizer import GanyinCategorizer
-from syllable.analysis.slice.syllable_splitter import SyllableSplitter
+from syllable.analysis.ganyin_categorizer import GanyinCategorizer
+from syllable.analysis.syllable_splitter import SyllableSplitter
 
 
 def _find_repo_root(start: Path) -> Path:

@@ -1,11 +1,7 @@
-"""
-syllable/analysis/slice/syllable_segmenter.py
+"""音节切分模块，负责从 Syllable 对象中提取首音和干音。"""
 
-音节切分模块 - 负责从Syllable对象中提取首音和干音
-"""
-
-from syllable import Syllable
-from shouyin import Initial
+from .Syllable import Syllable
+from .shouyin import Initial
 
 
 class SyllableSegmenter:

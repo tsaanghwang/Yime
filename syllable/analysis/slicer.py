@@ -1,4 +1,4 @@
-# syllable/analysis/slice/slicer.py
+# syllable/analysis/slicer.py
 class Slicer:
     """片音分析处理器，封装复杂分析逻辑"""
 

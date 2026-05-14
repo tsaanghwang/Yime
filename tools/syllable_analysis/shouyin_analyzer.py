@@ -5,8 +5,8 @@
 import json
 from pathlib import Path
 
-from syllable.analysis.slice.zaoyin_yinyuan import ClearNoise, VoicedNoise
-from syllable.analysis.slice.syllable_splitter import SyllableSplitter
+from syllable.analysis.zaoyin_yinyuan import ClearNoise, VoicedNoise
+from syllable.analysis.syllable_splitter import SyllableSplitter
 
 
 SLICE_DIR = Path(__file__).resolve().parents[2] / "syllable" / "analysis" / "slice"

@@ -5,7 +5,7 @@ from pathlib import Path
 
 from syllable.codec.paths import YINJIE_CODE_PATH
 from syllable.codec.yinjie_decoder import YinjieDecoder
-from syllable.analysis.slice.yinjie_encoder import YinjieEncoder
+from syllable.analysis.yinjie_encoder import YinjieEncoder
 
 
 class TestYinjieRoundTrip(unittest.TestCase):

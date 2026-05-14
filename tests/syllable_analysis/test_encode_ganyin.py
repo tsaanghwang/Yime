@@ -3,7 +3,7 @@ import unittest
 from pathlib import Path
 from typing import Any, Final, cast
 
-from syllable.analysis.slice.ganyin_encoder import GanyinEncoder
+from syllable.analysis.ganyin_encoder import GanyinEncoder
 
 
 SLICE_DIR = Path(__file__).resolve().parents[2] / "syllable" / "analysis" / "slice"

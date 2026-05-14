@@ -9,7 +9,7 @@ import json
 from pathlib import Path
 from typing import TypedDict
 
-from syllable.analysis.slice.zaoyin_yinyuan import ClearNoise, VoicedNoise
+from syllable.analysis.zaoyin_yinyuan import ClearNoise, VoicedNoise
 
 
 SLICE_DIR = Path(__file__).resolve().parents[2] / "syllable" / "analysis" / "slice"

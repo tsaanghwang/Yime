@@ -13,7 +13,7 @@
 | 阶段 | 文件 / 代码 | 作用 | 决定了什么 |
 | --- | --- | --- | --- |
 | 1 | `syllable/analysis/slice/yinyuan/zaoyin_yinyuan_enhanced.json` | 首音唯一真源，显式保存 `semantic_code`、`ipa`、`type`、`runtime_char` | 首音标签、语义码与运行时字符的源定义 |
-| 2 | `syllable/analysis/slice/shouyin_encoder.py` 中 `process_shouyin()` | 读取增强版真源中的 `entries` | 运行时首音标签与显式字符映射 |
+| 2 | `syllable/analysis/shouyin_encoder.py` 中 `process_shouyin()` | 读取增强版真源中的 `entries` | 运行时首音标签与显式字符映射 |
 | 3 | `syllable/analysis/slice/yinyuan/shouyin_codepoint.json` | 保存首音标签到私用区字符的最终运行时映射 | 例如 `b -> `、`zh -> `、`y -> ` |
 | 4 | `syllable/analysis/slice/yinyuan/yinyuan_codepoint.json` 中的 `zaoyin` 段 | 保存与 `shouyin_codepoint.json` 平行的一份运行时首音映射 | 运行时总映射文件中的首音部分 |
 | 5 | `internal_data/yinyuan_derived/zaoyin_yinyuan.json` | 由真源导出的兼容文件，只保留 `shouyin -> ipa` | 旧脚本兼容与人工查看 |
@@ -40,14 +40,14 @@
 
 | 位置 | 含义 |
 | --- | --- |
-| `syllable/analysis/slice/shouyin_encoder.py:13` | 首音唯一真源文件 `zaoyin_yinyuan_enhanced.json` |
-| `syllable/analysis/slice/shouyin_encoder.py` | 兼容首音清单输出到 `internal_data/yinyuan_derived/zaoyin_yinyuan.json` |
-| `syllable/analysis/slice/shouyin_encoder.py:15` | 运行时首音映射输出文件 `shouyin_codepoint.json` |
-| `syllable/analysis/slice/shouyin_encoder.py:48` | 读取运行时首音映射产物 |
-| `syllable/analysis/slice/shouyin_encoder.py:76` | 处理增强版真源中的 `entries` 并提取显式字符映射 |
-| `syllable/analysis/slice/shouyin_encoder.py:105` | 从唯一真源读取显式首音到运行时字符映射 |
-| `syllable/analysis/slice/shouyin_encoder.py:124` | 写入 `yinyuan_codepoint.json` 的 `zaoyin` 段 |
-| `syllable/analysis/slice/shouyin_encoder.py:149` | 写入 `shouyin_codepoint.json` 的 `首音` 段 |
+| `syllable/analysis/shouyin_encoder.py:13` | 首音唯一真源文件 `zaoyin_yinyuan_enhanced.json` |
+| `syllable/analysis/shouyin_encoder.py` | 兼容首音清单输出到 `internal_data/yinyuan_derived/zaoyin_yinyuan.json` |
+| `syllable/analysis/shouyin_encoder.py:15` | 运行时首音映射输出文件 `shouyin_codepoint.json` |
+| `syllable/analysis/shouyin_encoder.py:48` | 读取运行时首音映射产物 |
+| `syllable/analysis/shouyin_encoder.py:76` | 处理增强版真源中的 `entries` 并提取显式字符映射 |
+| `syllable/analysis/shouyin_encoder.py:105` | 从唯一真源读取显式首音到运行时字符映射 |
+| `syllable/analysis/shouyin_encoder.py:124` | 写入 `yinyuan_codepoint.json` 的 `zaoyin` 段 |
+| `syllable/analysis/shouyin_encoder.py:149` | 写入 `shouyin_codepoint.json` 的 `首音` 段 |
 
 ## 四、源标签、IPA 示例、运行时字符与当前布局位置对照
 

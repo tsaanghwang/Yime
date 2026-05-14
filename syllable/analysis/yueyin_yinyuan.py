@@ -5,7 +5,7 @@
 """
 
 from typing import Literal, Union
-from syllable.analysis.slice.pitched_yinyuan import MusicalYinyuan
+from .pitched_yinyuan import MusicalYinyuan
 from syllable.pianyin import PitchedPianyin, UnpitchedPianyin
 import os
 import json
@@ -35,7 +35,7 @@ class YueyinYinyuan(MusicalYinyuan):
         if config_path is None:
             config_dir = os.path.dirname(os.path.abspath(__file__))
             config_path = os.path.join(
-                config_dir, 'yinyuan', 'variables_of_attributes.json')
+                config_dir, 'slice', 'yinyuan', 'variables_of_attributes.json')
 
         with open(config_path, 'r', encoding='utf-8') as f:
             self.config = json.load(f)
@@ -199,7 +199,7 @@ class YueyinYinyuan(MusicalYinyuan):
     def _define_variables_for_qualities(cls, quality: str) -> str:
         """根据音质返回对应的质元"""
         config_path = os.path.join(os.path.dirname(
-            __file__), 'yinyuan', 'variables_of_attributes.json')
+            __file__), 'slice', 'yinyuan', 'variables_of_attributes.json')
         with open(config_path, 'r', encoding='utf-8') as f:
             config = json.load(f)
             quality_variables = config['quality_variables']
@@ -219,7 +219,7 @@ class YueyinYinyuan(MusicalYinyuan):
             use_mid_level_model: 是否使用 mid_level_median_model（默认为 False，使用 mid_high_median_model）
         """
         config_path = os.path.join(os.path.dirname(
-            __file__), 'yinyuan', 'variables_of_attributes.json')
+            __file__), 'slice', 'yinyuan', 'variables_of_attributes.json')
         with open(config_path, 'r', encoding='utf-8') as f:
             config = json.load(f)
             # 从配置文件中定义的两种模式中选择一种

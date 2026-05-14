@@ -7,7 +7,7 @@ import tempfile
 from typing import Any, Callable, Mapping, cast
 import json
 
-from syllable.analysis.slice.ganyin_categorizer import GanyinCategorizer
+from syllable.analysis.ganyin_categorizer import GanyinCategorizer
 from tools.syllable_analysis.ganyin_analyzer import GanyinAnalyzer
 from tools.syllable_analysis.ganyin_theoretical_generator import generate_theoretical_flat_ganyin
 
