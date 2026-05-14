@@ -6,7 +6,7 @@
 import os
 import json
 
-from utils.pinyin_normalizer import normalize_dict_existing_only
+from yime.utils.pinyin_normalizer import normalize_dict_existing_only
 
 def load_json_file(filepath):
     """

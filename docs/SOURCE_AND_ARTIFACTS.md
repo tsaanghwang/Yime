@@ -351,11 +351,11 @@
 
 - `character_positions.db`
   - 分类：已删除的示例字符位置数据库。
-  - 原因：它只对应 `utils/position.py` 一类演示/实验用途，不参与当前输入法运行、导入或发布主线。
+  - 原因：它只对应 `legacy/utils_prototypes/position.py` 一类演示/实验用途，不参与当前输入法运行、导入或发布主线。
 
 - `character_table.json`
   - 分类：已删除的示例字符统计输出。
-  - 原因：它由 `utils/example.py` 直接生成，内容仅服务于演示示例，不应占据根目录并进入版本控制。
+  - 原因：它由 `legacy/utils_prototypes/example.py` 直接生成，内容仅服务于演示示例，不应占据根目录并进入版本控制。
 
 - `yime.db`
   - 分类：已删除的根目录辅助观测库。

@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-from utils.pinyin_normalizer import normalize_one, PinyinNormalizer
+from yime.utils.pinyin_normalizer import normalize_one, PinyinNormalizer
 
 
 def generate_potential_syllables():

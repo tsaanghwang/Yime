@@ -134,6 +134,17 @@
 
 这一组对象目前仍保留为完整旧包，而不是继续拆成更多子目录，因为它内部还自带 `test/`，并且 [docs/DEVELOPMENT.md](c:/dev/Yime/docs/DEVELOPMENT.md) 仍把它当作“维护已归档旧 helper”时的局部参考面。就当前职责来看，它更像一个自洽的历史包快照，而不是一堆应继续下沉拆散的杂项文件。
 
+另外，原 `utils/` 目录下几份没有活动消费者的演示/原型文件也已迁入 `legacy/utils_prototypes/`：
+
+- `utils_prototypes/example.py`
+- `utils_prototypes/position.py`
+- `utils_prototypes/code_bintree.py`
+- `utils_prototypes/ooder_set.py`
+- `utils_prototypes/trie_tree.py`
+- `utils_prototypes/character_positions.db`
+
+其中 `example.py` 与 `position.py` 对应的是示例字符统计和字符位置数据库演示；`code_bintree.py`、`ooder_set.py` 与 `trie_tree.py` 则属于独立的算法/数据结构试验脚本；`character_positions.db` 只是配合这些演示脚本保留的样本 SQLite 文件。原先仍在主线代码里被导入使用的 `utils/pinyin_normalizer.py` 与 `utils/pinyin_zhuyin.py` 已进一步内聚到 `yime/utils/`，因此顶层 `utils/` 目录不再保留活动模块。
+
 ## Legacy Syllable-Side Artifacts
 
 另外，原 `syllable/` 根目录下几份未接入当前主线的原型模块和目录快照也已迁入 legacy：

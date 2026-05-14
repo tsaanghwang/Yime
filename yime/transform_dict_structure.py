@@ -10,8 +10,8 @@ utils_path = PROJECT_ROOT / "utils"
 if utils_path.exists():
     sys.path.insert(0, str(utils_path))
 
-from utils.pinyin_normalizer import normalize_dict_with_supplements
-from utils.pinyin_zhuyin import PinyinZhuyinConverter  # 新增导入
+from yime.utils.pinyin_normalizer import normalize_dict_with_supplements
+from yime.utils.pinyin_zhuyin import PinyinZhuyinConverter  # 新增导入
 
 def convert_to_zhuyin(pinyin):
     """使用PinyinZhuyinConverter处理注音符号转换"""

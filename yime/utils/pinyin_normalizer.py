@@ -9,36 +9,34 @@ from collections import OrderedDict
 from pathlib import Path
 from typing import Dict, Tuple
 
+
 class PinyinNormalizer:
     """拼音标准化处理类"""
 
-    # 特殊音质列表
     SPECIAL_QUALITIES = ["ê", "m", "n", "ng", "hm", "hn", "hng"]
-    # 所有可能的声调
     TONES = ["1", "2", "3", "4", "5"]
 
-    # 声调符号映射
     TONE_MARKS = {
-        "1": "̄",  # 高调
-        "2": "́",  # 升调
-        "3": "̌",  # 低调
-        "4": "̀",  # 降调
-        "5": ""   # 轻声
+        "1": "̄",
+        "2": "́",
+        "3": "̌",
+        "4": "̀",
+        "5": "",
     }
 
     @classmethod
     def normalize_special_pinyin(cls, syllabic_quality: str, tone: str) -> str:
         """标准化特殊音质拼音（ê, m, n, ng, hm, hn, hng）"""
-        if not tone in cls.TONE_MARKS:
+        if tone not in cls.TONE_MARKS:
             return syllabic_quality
 
         if syllabic_quality == "ê":
             return "ê" + cls.TONE_MARKS[tone]
-        elif syllabic_quality in ["m", "n"]:
+        if syllabic_quality in ["m", "n"]:
             return syllabic_quality + cls.TONE_MARKS[tone]
-        elif syllabic_quality == "ng":
-            return "n" + cls.TONE_MARKS[tone] + "g"  # 标调在n上
-        elif syllabic_quality in ["hm", "hn", "hng"]:
+        if syllabic_quality == "ng":
+            return "n" + cls.TONE_MARKS[tone] + "g"
+        if syllabic_quality in ["hm", "hn", "hng"]:
             if syllabic_quality == "hng":
                 return "h" + "n" + cls.TONE_MARKS[tone] + "g"
             return "h" + syllabic_quality[1] + cls.TONE_MARKS[tone]
@@ -66,37 +64,37 @@ class PinyinNormalizer:
         tone_num = pinyin_with_tone[-1]
         pinyin = pinyin_with_tone[:-1]
 
-        if 'v' in pinyin:
-            v_index = pinyin.index('v')
+        if "v" in pinyin:
+            v_index = pinyin.index("v")
             if v_index > 0:
-                prev_char = pinyin[v_index-1]
-                if prev_char in ['j', 'q', 'x', 'y']:
-                    pinyin = pinyin.replace('v', 'u')
-                elif prev_char in ['l', 'n']:
-                    pinyin = pinyin.replace('v', 'ü')
+                prev_char = pinyin[v_index - 1]
+                if prev_char in ["j", "q", "x", "y"]:
+                    pinyin = pinyin.replace("v", "u")
+                elif prev_char in ["l", "n"]:
+                    pinyin = pinyin.replace("v", "ü")
             else:
-                pinyin = pinyin.replace('v', 'ü')
+                pinyin = pinyin.replace("v", "ü")
 
-        for sq in cls.SPECIAL_QUALITIES:
-            if pinyin == sq:
-                return cls.normalize_special_pinyin(sq, tone_num)
+        for syllabic_quality in cls.SPECIAL_QUALITIES:
+            if pinyin == syllabic_quality:
+                return cls.normalize_special_pinyin(syllabic_quality, tone_num)
 
-        for vowel in ['a', 'o', 'e']:
+        for vowel in ["a", "o", "e"]:
             if vowel in pinyin:
                 index = pinyin.index(vowel)
-                return pinyin[:index] + vowel + cls.TONE_MARKS[tone_num] + pinyin[index+1:]
+                return pinyin[:index] + vowel + cls.TONE_MARKS[tone_num] + pinyin[index + 1:]
 
-        if 'iu' in pinyin:
-            index = pinyin.index('iu') + 1
-            return pinyin[:index] + 'u' + cls.TONE_MARKS[tone_num] + pinyin[index+1:]
-        if 'ui' in pinyin:
-            index = pinyin.index('ui') + 1
-            return pinyin[:index] + 'i' + cls.TONE_MARKS[tone_num] + pinyin[index+1:]
+        if "iu" in pinyin:
+            index = pinyin.index("iu") + 1
+            return pinyin[:index] + "u" + cls.TONE_MARKS[tone_num] + pinyin[index + 1:]
+        if "ui" in pinyin:
+            index = pinyin.index("ui") + 1
+            return pinyin[:index] + "i" + cls.TONE_MARKS[tone_num] + pinyin[index + 1:]
 
-        for vowel in ['i', 'u', 'ü']:
+        for vowel in ["i", "u", "ü"]:
             if vowel in pinyin:
                 index = pinyin.index(vowel)
-                return pinyin[:index] + vowel + cls.TONE_MARKS[tone_num] + pinyin[index+1:]
+                return pinyin[:index] + vowel + cls.TONE_MARKS[tone_num] + pinyin[index + 1:]
 
         return pinyin
 

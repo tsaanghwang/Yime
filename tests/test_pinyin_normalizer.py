@@ -1,6 +1,6 @@
 import unittest
 
-from utils.pinyin_normalizer import (
+from yime.utils.pinyin_normalizer import (
     PinyinNormalizer,
     normalize_dict_existing_only,
     normalize_dict_with_supplements,

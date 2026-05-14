@@ -2,8 +2,8 @@ import sqlite3
 import logging
 from pathlib import Path
 
-from utils.pinyin_normalizer import normalize_dict_with_supplements
-from utils.pinyin_zhuyin import PinyinZhuyinConverter
+from yime.utils.pinyin_normalizer import normalize_dict_with_supplements
+from yime.utils.pinyin_zhuyin import PinyinZhuyinConverter
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)

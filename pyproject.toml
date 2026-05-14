@@ -30,7 +30,7 @@ package-dir = {"" = "."}
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["yime*", "syllable*", "utils*"]
+include = ["yime*", "syllable*"]
 exclude = ["tests*", "tools*", "yime.legacy*"]
 
 [tool.setuptools.package-data]
