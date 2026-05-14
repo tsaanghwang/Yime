@@ -177,15 +177,6 @@
       "addSourceRootsToPythonpath": true
     },
     {
-      "name": "output_hanzi",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\yime\\output_hanzi.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\yime",
-      "addSourceRootsToPythonpath": true
-    },
-    {
       "name": "normalize_pinyin_file",
       "type": "python",
       "request": "launch",

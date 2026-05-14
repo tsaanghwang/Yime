@@ -1,6 +1,5 @@
 # convert_pinyin_to_hanzi.py
 import sqlite3
-from functools import lru_cache
 from pathlib import Path
 from typing import Optional, Tuple, List
 
@@ -13,7 +12,7 @@ class YinYuanInputConverter:
         if not self.db_path.exists():
             raise FileNotFoundError(f"数据库文件不存在: {self.db_path}")
 
-        self.db_conn = None
+        self.db_conn: Optional[sqlite3.Connection] = None
         self._initialize_database_tables()
 
     def _get_db_connection(self) -> sqlite3.Connection:
@@ -68,66 +67,7 @@ class YinYuanInputConverter:
 
         conn.commit()
 
-    @lru_cache(maxsize=5000)
-    def _load_pinyin_hanzi(self, pinyin: str) -> List[str]:
-        """从数据库加载拼音对应的汉字"""
-        conn = self._get_db_connection()
-        cursor = conn.cursor()
-        cursor.execute("SELECT hanzi FROM pinyin_hanzi WHERE pinyin=?", (pinyin,))
-        row = cursor.fetchone()
-        return list(row['hanzi']) if row else []
-
-    def _load_yinyuan_mapping(self, yinjie: str) -> Optional[dict]:
-        """从数据库加载音元映射"""
-        conn = self._get_db_connection()
-        cursor = conn.cursor()
-        cursor.execute("""
-        SELECT num_tone, mark_tone, zhuyin
-        FROM yinjie_mapping
-        WHERE symbol=?""", (yinjie,))
-        row = cursor.fetchone()
-        if row:
-            return {
-                '数字标调': row['num_tone'],
-                '调号标调': row['mark_tone'],
-                '注音符号': row['zhuyin']
-            }
-        return None
-
-    def _load_universal_mapping(self, pinyin: str) -> Optional[dict]:
-        """优先查询pinyin_hanzi表，兼容旧版数据库"""
-        conn = self._get_db_connection()
-        cursor = conn.cursor()
-
-        # 先尝试查询pinyin_hanzi表
-        cursor.execute("SELECT hanzi FROM pinyin_hanzi WHERE pinyin=?", (pinyin,))
-        row = cursor.fetchone()
-        if row:
-            return {
-                '汉字': list(row['hanzi']),
-                '音元符号': None,
-                '其他形式': []
-            }
-
-        # 再尝试查询universal_map表
-        cursor.execute("SELECT hanzi, yinjie, variants FROM universal_map WHERE pinyin=?", (pinyin,))
-        row = cursor.fetchone()
-        if row:
-            return {
-                '汉字': list(row['hanzi']),
-                '音元符号': row['yinjie'],
-                '其他形式': row['variants'].split(',') if row['variants'] else []
-            }
-
-        return None
-
-    def _validate_input(self, text: str) -> bool:
-        """验证输入是否包含有效字符"""
-        if not text or not isinstance(text, str):
-            return False
-        return True
-
-    def _pua_to_pinyin(self, pua_text):
+    def _pua_to_pinyin(self, pua_text: str) -> Optional[str]:
         """改进的PUA字符转换方法"""
         if not pua_text or not isinstance(pua_text, str):
             return None
@@ -150,8 +90,6 @@ class YinYuanInputConverter:
             for char in pua_text:
                 if 0xE000 <= ord(char) <= 0xF8FF:  # PUA范围
                     valid_chars.append(char)
-                else:
-                    print(f"忽略非PUA字符: {char!r}")
 
             # 按4字符一组处理
             for i in range(0, len(valid_chars), 4):
@@ -166,15 +104,12 @@ class YinYuanInputConverter:
 
             return ''.join(pinyin_parts) if pinyin_parts else None
 
-        except Exception as e:
-            print(f"PUA转换错误: {str(e)}")
+        except Exception:
             return None
 
-    def convert(self, input_text):
-        print(f"转换输入: {input_text!r}")  # 调试日志
+    def convert(self, input_text: str) -> Tuple[Optional[str], List[str]]:
         try:
             pinyin = self._pua_to_pinyin(input_text)
-            print(f"转换后拼音: {pinyin!r}")  # 调试日志
 
             if not pinyin:
                 return None, []
@@ -208,11 +143,18 @@ class YinYuanInputConverter:
 
             return pinyin, []
 
-        except Exception as e:
-            print(f"转换错误: {str(e)}")
+        except Exception:
             return None, []        # 注意：这里移除了conn.close()，因为连接由类统一管理
+
+    def close(self) -> None:
+        """关闭内部数据库连接。"""
+        if self.db_conn is not None:
+            self.db_conn.close()
+            self.db_conn = None
 
     def __del__(self):
         """析构时关闭数据库连接"""
-        if self.db_conn:
-            self.db_conn.close()
+        try:
+            self.close()
+        except Exception:
+            pass

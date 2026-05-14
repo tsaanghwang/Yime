@@ -8,9 +8,13 @@ import subprocess
 import sys
 from collections import Counter, defaultdict
 from dataclasses import dataclass
-from datetime import datetime
 from itertools import product
 from pathlib import Path
+
+try:
+    from yime.backup_utils import create_timestamped_backup
+except ImportError:
+    from backup_utils import create_timestamped_backup
 
 from yime.canonical_yime_mapping import (
     load_canonical_code_map,
@@ -22,6 +26,7 @@ from yime.canonical_yime_mapping import (
 SCRIPT_DIR = Path(__file__).resolve().parent
 DB_PATH = SCRIPT_DIR / "pinyin_hanzi.db"
 DEFAULT_BACKUP_DIR = SCRIPT_DIR / "backup"
+DEFAULT_BACKUP_RETAIN_COUNT = 20
 EXPORT_SCRIPT = SCRIPT_DIR / "export_runtime_candidates_json.py"
 SCHEMA_PATH = SCRIPT_DIR / "create_prototype_schema_additions.sql"
 DEFAULT_TUNING_SCAN_JSON_OUTPUT = SCRIPT_DIR / "reports" / "runtime_tuning_scan.json"
@@ -113,6 +118,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--db", default=str(DB_PATH), help="SQLite 数据库路径")
     parser.add_argument("--apply", action="store_true", help="真正写入数据库；默认仅 dry-run")
     parser.add_argument("--no-backup", action="store_true", help="写库前不创建数据库备份")
+    parser.add_argument(
+        "--backup-retain",
+        type=int,
+        default=DEFAULT_BACKUP_RETAIN_COUNT,
+        help="自动保留最近多少份 yime_code_refresh 备份；设为 0 表示不清理旧备份",
+    )
     parser.add_argument(
         "--skip-runtime-export",
         action="store_true",
@@ -248,12 +259,13 @@ def report_missing_optional_external_frequency_sources() -> None:
         print(f"  {note}")
 
 
-def backup_database(db_path: Path) -> Path:
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    DEFAULT_BACKUP_DIR.mkdir(parents=True, exist_ok=True)
-    backup_path = DEFAULT_BACKUP_DIR / f"{db_path.stem}.yime_code_refresh_{timestamp}.bak"
-    shutil.copy2(db_path, backup_path)
-    return backup_path
+def backup_database(db_path: Path, *, retain_count: int) -> tuple[Path, list[Path]]:
+    return create_timestamped_backup(
+        db_path,
+        backup_dir=DEFAULT_BACKUP_DIR,
+        backup_tag="yime_code_refresh",
+        retain_count=retain_count,
+    )
 
 
 def compute_runtime_alignment(
@@ -1831,8 +1843,15 @@ def main() -> int:
             return 0
 
         if not args.no_backup:
-            backup_path = backup_database(db_path)
+            backup_path, removed_backups = backup_database(
+                db_path,
+                retain_count=args.backup_retain,
+            )
             print(f"已创建数据库备份: {backup_path}")
+            if removed_backups:
+                print(
+                    f"已清理旧备份 {len(removed_backups)} 份，当前保留最近 {args.backup_retain} 份。"
+                )
 
         canonical_mapping_count = sync_canonical_mapping_table(conn, repo_root)
         print(f"已同步 canonical pinyin_yime_code 行: {canonical_mapping_count}")

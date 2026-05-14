@@ -2,15 +2,18 @@ from __future__ import annotations
 
 import argparse
 import os
-import shutil
 import sqlite3
 import subprocess
 import sys
 from collections import defaultdict
 from dataclasses import dataclass
-from datetime import datetime
 from pathlib import Path
 from typing import Iterable
+
+try:
+    from yime.backup_utils import create_timestamped_backup
+except ImportError:
+    from backup_utils import create_timestamped_backup
 
 
 DEFAULT_DB_PATH = Path(__file__).resolve().parent / "pinyin_hanzi.db"
@@ -21,6 +24,7 @@ DEFAULT_WANXIANG_ROOT = Path(
 DEFAULT_CHAR_DICT = Path("dicts/zi.dict.yaml")
 DEFAULT_RUNTIME_EXPORT = Path(__file__).resolve().parent / "export_runtime_candidates_json.py"
 DEFAULT_BACKUP_DIR = Path(__file__).resolve().parent / "backup"
+DEFAULT_BACKUP_RETAIN_COUNT = 20
 
 ACCENTED_VOWEL_MAP: dict[str, tuple[str, int]] = {
     "ā": ("a", 1),
@@ -108,6 +112,12 @@ def parse_args() -> argparse.Namespace:
         "--no-backup",
         action="store_true",
         help="写库前不创建数据库备份",
+    )
+    parser.add_argument(
+        "--backup-retain",
+        type=int,
+        default=DEFAULT_BACKUP_RETAIN_COUNT,
+        help="自动保留最近多少份 wanxiang_borrow 备份；设为 0 表示不清理旧备份",
     )
     return parser.parse_args()
 
@@ -210,12 +220,13 @@ def load_phrase_frequency_map(paths: Iterable[Path]) -> tuple[dict[tuple[str, st
     return by_phrase, parsed_rows
 
 
-def backup_database(db_path: Path) -> Path:
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    DEFAULT_BACKUP_DIR.mkdir(parents=True, exist_ok=True)
-    backup_path = DEFAULT_BACKUP_DIR / f"{db_path.stem}.wanxiang_borrow_{timestamp}.bak"
-    shutil.copy2(db_path, backup_path)
-    return backup_path
+def backup_database(db_path: Path, *, retain_count: int) -> tuple[Path, list[Path]]:
+    return create_timestamped_backup(
+        db_path,
+        backup_dir=DEFAULT_BACKUP_DIR,
+        backup_tag="wanxiang_borrow",
+        retain_count=retain_count,
+    )
 
 
 def apply_frequency_updates(
@@ -393,8 +404,15 @@ def main() -> int:
     )
 
     if not args.dry_run and not args.no_backup:
-        backup_path = backup_database(db_path)
+        backup_path, removed_backups = backup_database(
+            db_path,
+            retain_count=args.backup_retain,
+        )
         print(f"已创建数据库备份: {backup_path}")
+        if removed_backups:
+            print(
+                f"已清理旧备份 {len(removed_backups)} 份，当前保留最近 {args.backup_retain} 份。"
+            )
 
     stats = apply_frequency_updates(
         db_path,
