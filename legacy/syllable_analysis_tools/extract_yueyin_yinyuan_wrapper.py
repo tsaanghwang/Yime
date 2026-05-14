@@ -1,4 +1,4 @@
-"""Legacy wrapper for the current yueyin yinyuan extraction script."""
+"""Legacy wrapper for the current yueyin-yinyuan extraction entrypoint."""
 
 from tools.syllable_analysis.extract_yueyin_yinyuan import extract_yueyin_yinyuan
 

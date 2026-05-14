@@ -1,4 +1,4 @@
-"""Legacy CLI wrapper for the current syllable analyzer entrypoint."""
+"""Legacy CLI wrapper for the current analyzer entrypoint."""
 
 import sys
 

@@ -176,8 +176,8 @@
 这轮又补做了最后一批边界清理：
 
 - 原 `syllable/analysis/slice/shouyin_analyzer.py` 已迁到 `tools/syllable_analysis/shouyin_analyzer.py`，因为它负责生成和更新 `syllable/yinyuan/pianyin_initial.json`，属于资产生成脚本而不是运行时实现。
-- 原 `tools/syllable_analysis/run_syllable_analyzer.py` 已迁入 `legacy/syllable_analysis_tools/`，因为它只是绕回旧的 `slice/syllable_analyzer.py` 包装入口，且没有活动消费者。
-- 原 `tools/syllable_analysis/extract_musical_element.py` 已迁入 `legacy/syllable_analysis_tools/`，因为它与 `tools/syllable_analysis/extract_yueyin_yinyuan.py` 为重复实现，只是旧命名残留。
+- 原 `tools/syllable_analysis/run_syllable_analyzer.py` 已迁入 `legacy/syllable_analysis_tools/analyzer_cli_wrapper.py`，因为它只是绕回当前 analyzer CLI 的旧包装入口，且没有活动消费者。
+- 原 `tools/syllable_analysis/extract_musical_element.py` 已迁入 `legacy/syllable_analysis_tools/extract_yueyin_yinyuan_wrapper.py`，因为它与 `tools/syllable_analysis/extract_yueyin_yinyuan.py` 为重复实现，只保留旧入口兼容语义。
 
 此外，`scripts/` 下几份早期 syllable 手工验证脚本也已迁入 `legacy/syllable_analysis_scripts/`：
 
