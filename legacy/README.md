@@ -79,6 +79,8 @@
 
 这套插件接口没有接入当前 `pinyin/yunmu_to_keys.py` 主链，且内部 API 已与现状分叉，因此仅保留作历史对照，不再视为活动扩展点。
 
+## Legacy Pinyin-Side Artifacts
+
 另外，原 `pinyin/` 主目录下的两份 `yunmu_to_keys` 手工副本也已迁入 `legacy/pinyin_snapshots/`：
 
 - `pinyin_snapshots/yunmu_to_keys copy.py`
@@ -125,6 +127,10 @@
 - `pinyin_package/test/`
 
 它们不再被当前运行时、数据 rebuild 链或打包面使用；保留仅为历史对照和局部算法考古。
+
+这一组对象目前仍保留为完整旧包，而不是继续拆成更多子目录，因为它内部还自带 `test/`，并且 [docs/DEVELOPMENT.md](c:/dev/Yime/docs/DEVELOPMENT.md) 仍把它当作“维护已归档旧 helper”时的局部参考面。就当前职责来看，它更像一个自洽的历史包快照，而不是一堆应继续下沉拆散的杂项文件。
+
+## Legacy Syllable-Side Artifacts
 
 另外，原 `syllable/` 根目录下几份未接入当前主线的原型模块和目录快照也已迁入 legacy：
 
