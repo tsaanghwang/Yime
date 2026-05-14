@@ -7,6 +7,9 @@
 - internal_data/key_symbol_mapping.json：键位与音元符号映射
 - internal_data/ganyin_pinyin_mapping.json：PUA 音元序列到带调干音字符串映射
 - internal_data/ipa_pinyin_mapping.json：带调 IPA / 音标串到数字调拼音映射
+- external_data/finals_IPA_mapping.json：finals 侧外部 IPA 输入映射
+- external_data/initials_IPA_mapping.json：initials 侧外部 IPA 输入映射
+- external_data/8105.dict.yaml：外部字频/字表输入
 - syllable/codec/key_to_code.json：运行时键位槽位到字符映射
 - yime/reports/phoneme_dict.json：音元分类导出报告
 
@@ -37,6 +40,18 @@
 - 键：带调 IPA / 音标串
 - 值：对应的数字调拼音
 - 性质：项目内生对照映射，不属于外部原始语料
+
+### external_data/finals_IPA_mapping.json / external_data/initials_IPA_mapping.json
+
+- 角色：外部 IPA 输入映射
+- 用途：作为 `tools/final_components.py`、`tools/final_classifier.py`、`tools/orchestrator.py` 等链路的上游输入
+- 边界：它们不是内部派生产物，不应与 `internal_data/ipa_of_finals.json`、`internal_data/yinyuan_pianyin_mapping.json` 这类内部整理结果混并
+
+### external_data/8105.dict.yaml
+
+- 角色：外部字频/字表资料
+- 用途：供字频导入与 runtime code refresh 类脚本读取
+- 边界：属于项目读取的外部资料，不属于 `internal_data` 内生真源或派生产物
 
 ### syllable/codec/key_to_code.json
 

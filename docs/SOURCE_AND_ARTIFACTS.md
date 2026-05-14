@@ -648,6 +648,10 @@
   - 一致性检查输出。
   - 非真源。
 
+- `internal_data/bmp_pua_trial_projection.json`
+  - Windows BMP 投影文件。
+  - 非真源，但属于当前布局/编译链会实际消费的 projection 层，不应与 `internal_data/key_to_symbol.json` 的 canonical 层混并。
+
 - `internal_data/zaoyin_runtime_layout_audit.md`
   - 首音运行时链路审计文档。
   - 非真源。
@@ -697,6 +701,22 @@
 - `internal_data/yinyuan_pianyin_mapping.json`
   - 分类：内部派生语义映射。
   - 原因：它基于内部音元质量/音高分组生成，职责是把项目内部 `yinyuan` 语义空间映射到 `pianyin` 计数与分布，不是外部 IPA 原始表的平移副本；因此它应和 `external_data/*_IPA_mapping.json` 保持“上游输入 vs 内部派生”边界。
+
+- `internal_data/bmp_pua_trial_projection.json`
+  - 分类：当前 Windows/BMP projection 层。
+  - 原因：它虽然不是 canonical 真源，但也不是普通审计快照；当前 `tools/generate_klc_from_manual_layout.py`、`tools/check_layout_runtime_consistency.py`、以及若干运行时可视化入口都直接读取它，因此应理解为“布局投影层输入”，而不是可随意删除的中间文件。
+
+- `internal_data/layout_runtime_consistency_report.json`
+  - 分类：projection/runtime 一致性审计结果。
+  - 原因：它消费 `manual_key_layout.json`、`key_to_symbol.json`、`bmp_pua_trial_projection.json` 与 `yinjie_runtime_key_symbol_mapping.json`，职责是报告当前布局层与 runtime 层是否一致；它应作为检查输出保留，而不是被误当成新的配置面。
+
+- `external_data/8105.dict.yaml`
+  - 分类：外部词频/字表输入文件。
+  - 原因：当前 `yime/import_8105_char_frequency.py` 与 `yime/refresh_runtime_yime_codes.py` 仍把它当作上游外部输入；它与 `external_data/*_IPA_mapping.json` 一样属于“项目读取的外部资料”，不应下沉到 `internal_data`。
+
+- `external_data/xiandaihaiyuchangyongcibiao.txt`
+  - 分类：外部词表资料。
+  - 原因：它与 `8105.dict.yaml` 一样更接近外部参考输入，而不是项目内部派生资产；即便当前直接消费者较少，也应保留在 `external_data` 的外部资料边界内。
 
 - `data_json_files/key_symbol_mapping.json`
   - 分类：已删除的误命名重复副本。
