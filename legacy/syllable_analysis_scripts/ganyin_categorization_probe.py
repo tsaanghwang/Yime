@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""Legacy probe for ganyin categorization behavior."""
+
 import sys
 
 from _shared import REPO_ROOT
@@ -7,7 +9,7 @@ from _shared import REPO_ROOT
 from syllable.analysis.ganyin_categorizer import GanyinCategorizer
 
 
-def test_categorization():
+def test_ganyin_categorization_probe() -> None:
     print("=== 测试韵母分类功能 ===")
 
     # 测试示例
@@ -159,4 +161,4 @@ def test_categorization():
 
 
 if __name__ == "__main__":
-    test_categorization()
+    test_ganyin_categorization_probe()

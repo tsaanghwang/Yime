@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
-"""
-验证干音和韵母的定义和处理逻辑
-"""
+"""Legacy probe for ganyin/final definition logic."""
 import sys
 
 from _shared import REPO_ROOT
@@ -9,7 +7,7 @@ from _shared import REPO_ROOT
 from syllable.analysis.ganyin_categorizer import GanyinCategorizer
 
 
-def test_ganyin_final_logic():
+def test_ganyin_final_logic_probe() -> None:
     """测试干音和韵母的处理逻辑"""
     print("=== 验证干音和韵母的定义 ===")
 
@@ -51,4 +49,4 @@ def test_ganyin_final_logic():
 
 
 if __name__ == "__main__":
-    test_ganyin_final_logic()
+    test_ganyin_final_logic_probe()
