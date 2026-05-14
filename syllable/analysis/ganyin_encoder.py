@@ -223,7 +223,7 @@ class GanyinEncoder:
         # 1. 生成音元编码映射
         processed_source = self.process_yueyin_source(self.yueyin_source)
         yueyin = processed_source["yueyin"]
-        encoding_path = self.module_dir / self.SUBDIR / self.YINYUAN_FILENAME
+        encoding_path = self.syllable_dir / self.DATA_SUBDIR / self.YINYUAN_FILENAME
 
         # 修改后的文件保存逻辑：检查文件是否为空
         encoding_data = {"yueyin": yueyin}

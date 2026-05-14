@@ -127,7 +127,7 @@ class ShouyinEncoder:
 
     def generate_encoding_files(self):
         """生成所有编码相关文件"""
-        zaoyin_yinyuan_path = self.module_dir / self.SUBDIR / self.ZAOYIN_SOURCE_FILENAME
+        zaoyin_yinyuan_path = self.syllable_dir / self.DATA_SUBDIR / self.ZAOYIN_SOURCE_FILENAME
 
         with open(zaoyin_yinyuan_path, "r", encoding="utf-8") as f:
             zaoyin_yinyuan_data = json.load(f)
@@ -139,7 +139,7 @@ class ShouyinEncoder:
             "zaoyin": zaoyin
         }
 
-        encoding_path = self.module_dir / self.SUBDIR / self.YINYUAN_FILENAME
+        encoding_path = self.syllable_dir / self.DATA_SUBDIR / self.YINYUAN_FILENAME
 
         # 文件追加逻辑 - 处理空文件或不存在的情况
         existing_data: dict[str, Any] = {}
@@ -160,7 +160,7 @@ class ShouyinEncoder:
         self.save_yinyuan_data(encoding_path, encoding_data)
 
         # 2. 生成首音符号映射 - 音元分集文件
-        output_file = self.module_dir / self.SUBDIR / self.SHOUYIN_FILENAME
+        output_file = self.syllable_dir / self.DATA_SUBDIR / self.SHOUYIN_FILENAME
 
         shouyin_data = self.load_shouyin_data(zaoyin_yinyuan_path)
         processed_data = self.process_shouyin(shouyin_data)
