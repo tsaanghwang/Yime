@@ -10,7 +10,9 @@ import json
 
 
 YINYUAN_DIR = REPO_ROOT / "syllable" / "yinyuan"
-def test_shejian_processing():
+
+
+def test_shejian_processing_probe() -> None:
     """测试舌尖音处理功能"""
     print("=== 舌尖音处理功能测试 ===")
 
@@ -61,4 +63,4 @@ def test_shejian_processing():
 
 
 if __name__ == "__main__":
-    test_shejian_processing()
+    test_shejian_processing_probe()

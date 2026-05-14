@@ -1,15 +1,13 @@
 #!/usr/bin/env python3
-"""
-测试韵母动态添加功能
-"""
+"""Legacy probe for dynamic-finals category updates."""
 import sys
 
 from _shared import REPO_ROOT
 
 from syllable.analysis.ganyin_categorizer import GanyinCategorizer
 
-def test_dynamic_finals():
-    """测试韵母动态添加功能"""
+def test_dynamic_finals_category_updates() -> None:
+    """测试韵母动态添加与分类更新功能"""
     print("=== 测试韵母动态添加功能 ===")
 
     # 显示初始韵母分类状态
@@ -52,4 +50,4 @@ def test_dynamic_finals():
         print(f"韵母 '{final}' -> 标准化: '{normalized}' -> 分类: {category}")
 
 if __name__ == "__main__":
-    test_dynamic_finals()
+    test_dynamic_finals_category_updates()

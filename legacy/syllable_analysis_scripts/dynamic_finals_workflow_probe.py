@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
-"""
-完整测试韵母动态添加功能
-"""
+"""Legacy probe for the dynamic-finals end-to-end workflow."""
 import sys
 import tempfile
 
@@ -14,8 +12,8 @@ from syllable import YinjieAnalyzer
 from syllable.analysis.ganyin_categorizer import GanyinCategorizer
 
 
-def test_complete_workflow():
-    """测试完整的工作流程"""
+def test_dynamic_finals_workflow() -> None:
+    """测试动态韵母分析的完整工作流程"""
     print("=== 完整工作流程测试 ===")
 
     # 1. 显示初始状态
@@ -78,4 +76,4 @@ def test_complete_workflow():
 
 
 if __name__ == "__main__":
-    test_complete_workflow()
+    test_dynamic_finals_workflow()

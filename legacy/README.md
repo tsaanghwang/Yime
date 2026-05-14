@@ -181,14 +181,14 @@
 
 此外，`scripts/` 下几份早期 syllable 手工验证脚本也已迁入 `legacy/syllable_analysis_scripts/`：
 
-- `complete_workflow_script.py`
-- `final_test_script.py`
-- `dynamic_finals_script.py`
+- `dynamic_finals_workflow_probe.py`
+- `dynamic_finals_summary_probe.py`
+- `dynamic_finals_category_probe.py`
 - `ganyin_final_definition_script.py`
 - `ganyin_script.py`
-- `shejian_script.py`
+- `shejian_processing_probe.py`
 
-这几份脚本没有活动消费者，主要承担一次性检查、打印式验证或早期行为演示；它们对应的分类/编码/一致性检查现在已由 `tests/syllable_analysis/` 和 `tools/syllable_analysis/` 中的现行工具覆盖，因此不再需要继续保留在顶层 `scripts/` 目录。
+这几份脚本没有活动消费者，主要承担一次性检查、打印式验证或早期行为演示；其中 `dynamic_finals_*_probe.py` 这一组集中对应动态韵母分类/流程验证，`shejian_processing_probe.py` 则对应舌尖音处理检查。它们对应的分类/编码/一致性检查现在已由 `tests/syllable_analysis/` 和 `tools/syllable_analysis/` 中的现行工具覆盖，因此不再需要继续保留在顶层 `scripts/` 目录。
 
 另外，几份更早的独立诊断/重命名试验脚本也已迁入 `legacy/diagnostic_scripts/`：
 

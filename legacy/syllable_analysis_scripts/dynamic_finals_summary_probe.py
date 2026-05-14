@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
-"""
-韵母动态添加功能总结测试
-"""
+"""Legacy summary probe for dynamic-finals analysis."""
 import sys
 import tempfile
 
@@ -13,8 +11,8 @@ import os
 from syllable import YinjieAnalyzer
 from syllable.analysis.ganyin_categorizer import GanyinCategorizer
 
-def final_test():
-    """最终测试韵母动态添加功能"""
+def test_dynamic_finals_summary() -> None:
+    """最终测试动态韵母添加功能"""
     print("=== 韵母动态添加功能最终测试 ===")
 
     # 1. 显示初始状态
@@ -78,4 +76,4 @@ def final_test():
         print(f"   - 生成的首音和干音数据文件完整")
 
 if __name__ == "__main__":
-    final_test()
+    test_dynamic_finals_summary()
