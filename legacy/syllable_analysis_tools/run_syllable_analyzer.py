@@ -1,36 +1,8 @@
-"""
-干音分析主程序
-功能：连接各个模块并生成最终的ganyin.json文件
-"""
+"""Legacy CLI wrapper for the current syllable analyzer entrypoint."""
 
-import os
 import sys
-from pathlib import Path
 
-from syllable.analysis.syllable_analyzer import YinjieAnalyzer
-
-
-SLICE_ANALYZER_PATH = Path(__file__).resolve().parents[2] / "syllable" / "analysis" / "slice" / "syllable_analyzer.py"
-
-def main():
-    try:
-        # 获取当前文件路径
-        current_file = str(SLICE_ANALYZER_PATH)
-
-        # 初始化分析器
-        analyzer = YinjieAnalyzer(current_file)
-
-        # 执行分析并保存结果
-        if analyzer.analyze_and_save():
-            # print("音节分析完成，结果已保存到 shouyin.json和ganyin.json")
-            return 0
-        else:
-            # print("音节分析失败", file=sys.stderr)
-            return 1
-
-    except Exception as e:
-        print(f"发生错误: {str(e)}", file=sys.stderr)
-        return 1
+from tools.syllable_analysis.run_analyzer import main
 
 
 if __name__ == "__main__":

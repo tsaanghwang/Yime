@@ -2,28 +2,14 @@
 # -*- coding: utf-8 -*-
 
 import sys
-from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
-if str(REPO_ROOT) not in sys.path:
-    sys.path.insert(0, str(REPO_ROOT))
+from _shared import REPO_ROOT, flatten_grouped_ganyin
 
 from syllable.analysis.ganyin_categorizer import GanyinCategorizer
 import json
 
 
 YINYUAN_DIR = REPO_ROOT / "syllable" / "yinyuan"
-
-
-def _flatten_grouped_ganyin(document: dict) -> dict[str, str]:
-    grouped = document.get("ganyin", {})
-    return {
-        key: value
-        for group in grouped.values()
-        for key, value in group.items()
-    }
-
-
 def test_shejian_processing():
     """测试舌尖音处理功能"""
     print("=== 舌尖音处理功能测试 ===")
@@ -32,7 +18,7 @@ def test_shejian_processing():
     try:
         with (YINYUAN_DIR / 'ganyin.json').open('r', encoding='utf-8') as f:
             data = json.load(f)
-        ganyin_data = _flatten_grouped_ganyin(data)
+        ganyin_data = flatten_grouped_ganyin(data)
     except FileNotFoundError:
         print("错误: ganyin.json 文件不存在，请先运行 ganyin.py")
         return

@@ -3,11 +3,8 @@
 验证干音和韵母的定义和处理逻辑
 """
 import sys
-from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
-if str(REPO_ROOT) not in sys.path:
-    sys.path.insert(0, str(REPO_ROOT))
+from _shared import REPO_ROOT
 
 from syllable.analysis.ganyin_categorizer import GanyinCategorizer
 

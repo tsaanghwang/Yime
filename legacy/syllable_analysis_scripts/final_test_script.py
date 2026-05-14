@@ -3,26 +3,15 @@
 韵母动态添加功能总结测试
 """
 import sys
-from pathlib import Path
+import tempfile
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
-if str(REPO_ROOT) not in sys.path:
-    sys.path.insert(0, str(REPO_ROOT))
+from _shared import configure_temp_analyzer_output, flatten_grouped_ganyin
 
 import json
 import os
 
 from syllable import YinjieAnalyzer
 from syllable.analysis.ganyin_categorizer import GanyinCategorizer
-
-
-def _flatten_grouped_ganyin(document: dict) -> dict[str, str]:
-    grouped = document.get("ganyin", {})
-    return {
-        key: value
-        for group in grouped.values()
-        for key, value in group.items()
-    }
 
 def final_test():
     """最终测试韵母动态添加功能"""
@@ -36,55 +25,57 @@ def final_test():
     # 2. 执行完整分析
     print("\n2. 执行完整分析...")
     analyzer = YinjieAnalyzer(__file__)
-    success = analyzer.analyze_and_save()
+    with tempfile.TemporaryDirectory() as temp_dir:
+        configure_temp_analyzer_output(analyzer, temp_dir)
+        success = analyzer.analyze_and_save()
 
-    if not success:
-        print("   分析失败!")
-        return
+        if not success:
+            print("   分析失败!")
+            return
 
-    # 3. 显示最终状态
-    final_finals = GanyinCategorizer.get_all_finals()
-    final_count = sum(len(finals) for finals in final_finals.values())
-    added_count = final_count - initial_count
+        # 3. 显示最终状态
+        final_finals = GanyinCategorizer.get_all_finals()
+        final_count = sum(len(finals) for finals in final_finals.values())
+        added_count = final_count - initial_count
 
-    print(f"\n3. 最终韵母总数: {final_count}")
-    print(f"   新添加韵母数: {added_count}")
+        print(f"\n3. 最终韵母总数: {final_count}")
+        print(f"   新添加韵母数: {added_count}")
 
-    # 4. 功能验证
-    print("\n4. 功能验证:")
+        # 4. 功能验证
+        print("\n4. 功能验证:")
 
-    # 验证分类功能
-    test_finals = ['ian2', 'ōng', 'uái', 'iòng', 'iù', 'vè']
-    print("   分类功能测试:")
-    for final in test_finals:
-        category = GanyinCategorizer.categorize(final)
-        print(f"     '{final}' -> {category}")
+        # 验证分类功能
+        test_finals = ['ian2', 'ōng', 'uái', 'iòng', 'iù', 'vè']
+        print("   分类功能测试:")
+        for final in test_finals:
+            category = GanyinCategorizer.categorize(final)
+            print(f"     '{final}' -> {category}")
 
-    # 验证生成的文件
-    print("   文件生成验证:")
-    if os.path.exists(analyzer.ganyin_path):
-        with open(analyzer.ganyin_path, 'r', encoding='utf-8') as f:
-            ganyin_data = json.load(f)
-        entries = len(_flatten_grouped_ganyin(ganyin_data))
-        print(f"     干音数据文件: {entries} 条记录")
+        # 验证生成的文件
+        print("   文件生成验证:")
+        if os.path.exists(analyzer.ganyin_path):
+            with open(analyzer.ganyin_path, 'r', encoding='utf-8') as f:
+                ganyin_data = json.load(f)
+            entries = len(flatten_grouped_ganyin(ganyin_data))
+            print(f"     干音数据文件: {entries} 条记录")
 
-    if os.path.exists(analyzer.shouyin_path):
-        with open(analyzer.shouyin_path, 'r', encoding='utf-8') as f:
-            shouyin_data = json.load(f)
-        entries = len(shouyin_data.get('shouyin', {}))
-        print(f"     首音数据文件: {entries} 条记录")
+        if os.path.exists(analyzer.shouyin_path):
+            with open(analyzer.shouyin_path, 'r', encoding='utf-8') as f:
+                shouyin_data = json.load(f)
+            entries = len(shouyin_data.get('shouyin', {}))
+            print(f"     首音数据文件: {entries} 条记录")
 
-    # 5. 展示分类分布
-    print("\n5. 最终韵母分类分布:")
-    for category, finals in final_finals.items():
-        count = len(finals)
-        percentage = (count / final_count) * 100
-        print(f"   {category}: {count} 个 ({percentage:.1f}%)")
+        # 5. 展示分类分布
+        print("\n5. 最终韵母分类分布:")
+        for category, finals in final_finals.items():
+            count = len(finals)
+            percentage = (count / final_count) * 100
+            print(f"   {category}: {count} 个 ({percentage:.1f}%)")
 
-    print(f"\n✅ 韵母动态添加功能测试完成!")
-    print(f"   - 成功添加 {added_count} 个新韵母到预定义分类中")
-    print(f"   - 所有韵母都能正确分类")
-    print(f"   - 生成的首音和干音数据文件完整")
+        print(f"\n✅ 韵母动态添加功能测试完成!")
+        print(f"   - 成功添加 {added_count} 个新韵母到预定义分类中")
+        print(f"   - 所有韵母都能正确分类")
+        print(f"   - 生成的首音和干音数据文件完整")
 
 if __name__ == "__main__":
     final_test()
