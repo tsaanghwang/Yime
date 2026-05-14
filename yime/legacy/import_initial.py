@@ -1,5 +1,5 @@
 """
-将yime/shengmu.csv导入数据库中的initial表
+将 legacy 目录中的 `shengmu.csv` 导入旧 `pinyin.db` 的 `initial` 表
 表结构：
 - id: 自增主键
 - initial: 声母
@@ -13,8 +13,10 @@ import csv
 import sqlite3
 from pathlib import Path
 
-def import_shengmu_to_db(csv_path: str = 'shengmu.csv',
-                        db_path: str = 'pinyin.db',
+LEGACY_DIR = Path(__file__).resolve().parent
+
+def import_shengmu_to_db(csv_path: str | Path = LEGACY_DIR / 'shengmu.csv',
+                        db_path: str | Path = LEGACY_DIR / 'pinyin.db',
                         table_name: str = 'initial'):
     """
     将声母CSV文件导入SQLite数据库

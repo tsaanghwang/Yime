@@ -118,7 +118,7 @@ git checkout -b feature/your-feature-name
 pytest
 
 # 运行特定测试
-pytest yime/test_pinyin_converter.py
+pytest tests/test_pinyin_converter.py
 
 # 运行带覆盖率的测试
 pytest --cov=yime --cov-report=html

@@ -1,5 +1,5 @@
 """
-yime/update_table.py
+legacy/update_table.py
 功能：
 1. 当initial_ipa.json文件中的键与pinyin.db中的表initial中的initial相同时，
    用initial_ipa.json中的音标来更新pinyin.db中的表initial中的ipa
@@ -11,8 +11,11 @@ import json
 import sqlite3
 from pathlib import Path
 
-def update_initial_table(json_path: str = 'initial_ipa.json',
-                        db_path: str = 'pinyin.db',
+LEGACY_DIR = Path(__file__).resolve().parent
+PROJECT_DIR = LEGACY_DIR.parent
+
+def update_initial_table(json_path: str | Path = PROJECT_DIR / 'initial_ipa.json',
+                        db_path: str | Path = LEGACY_DIR / 'pinyin.db',
                         table_name: str = 'initial'):
     # 文件路径
     json_path = Path(json_path).absolute()
@@ -73,6 +76,6 @@ def update_initial_table(json_path: str = 'initial_ipa.json',
 
 if __name__ == '__main__':
     # 主调用使用默认参数，但可以传入自定义路径和表名
-    update_initial_table(json_path='initial_ipa.json',
-                        db_path='pinyin.db',
+    update_initial_table(json_path=PROJECT_DIR / 'initial_ipa.json',
+                        db_path=LEGACY_DIR / 'pinyin.db',
                         table_name='initial')

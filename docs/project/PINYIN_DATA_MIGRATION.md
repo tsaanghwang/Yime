@@ -84,8 +84,8 @@ c:/dev/Yime/.venv/Scripts/python.exe internal_data/pinyin_source_db/export_yaml_
 - `yime/hanzi_db_manager.py`
 - `yime/import_numeric_pinyin.py`
 - `yime/Import_yinyuan_pinyin.py`
-- `yime/consolidate_mappings.py`
-- `yime/run_full_import.py`
+- `yime/consolidate_mappings.py`（兼容包装入口；主体已归档到 `yime/legacy/`）
+- `yime/run_full_import.py`（兼容包装入口；主体已归档到 `yime/legacy/`）
 
 保留原因：
 

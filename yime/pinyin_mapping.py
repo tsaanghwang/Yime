@@ -34,6 +34,13 @@ class PinyinMapper:
             )
             yinyuan_id = cursor.lastrowid or self._get_pinyin_id(cursor, "音元拼音", yinyuan_pinyin)
 
+            # 同一个数字标调拼音在当前实现中应只保留一条有效映射；
+            # 先清掉旧关系，再写入新的音元拼音，避免“更新”退化成追加。
+            cursor.execute(
+                'DELETE FROM "拼音映射" WHERE "数字标调拼音" = ?',
+                (digital_id,)
+            )
+
             # 创建映射关系
             cursor.execute(
                 'INSERT OR REPLACE INTO "拼音映射" '

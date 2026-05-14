@@ -1,5 +1,5 @@
 """
-把数据表yime/shengmu.csv转换成数据库中的表:
+把 legacy 目录中的 `shengmu.csv` 等原型输入整理到旧 `pinyin.db` 链中:
 表名：initial
 字段：id,initial,ipa,place_of_articulation,manner_of_articulation,remarks
 """
@@ -9,7 +9,9 @@ import sys
 import sqlite3
 from pathlib import Path
 
-def create_database_tables(db_path: str = 'pinyin.db'):
+LEGACY_DIR = Path(__file__).resolve().parent
+
+def create_database_tables(db_path: str | Path = LEGACY_DIR / 'pinyin.db'):
     """
     创建拼音输入法所需的数据库表结构
     参数:
