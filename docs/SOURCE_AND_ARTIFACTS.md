@@ -711,12 +711,12 @@
   - 原因：它消费 `manual_key_layout.json`、`key_to_symbol.json`、`bmp_pua_trial_projection.json` 与 `yinjie_runtime_key_symbol_mapping.json`，职责是报告当前布局层与 runtime 层是否一致；它应作为检查输出保留，而不是被误当成新的配置面。
 
 - `external_data/8105.dict.yaml`
-  - 分类：外部词频/字表输入文件。
-  - 原因：当前 `yime/import_8105_char_frequency.py` 与 `yime/refresh_runtime_yime_codes.py` 仍把它当作上游外部输入；它与 `external_data/*_IPA_mapping.json` 一样属于“项目读取的外部资料”，不应下沉到 `internal_data`。
+  - 分类：已删除的可下载外部频率增强资源。
+  - 原因：当前主链已改为“缺失时跳过增强并提示下载”；仓库不再需要继续跟踪这份开源字频文件，本地如需恢复 8105 单字频率增强，可重新下载后放回 `external_data/`。
 
 - `external_data/xiandaihaiyuchangyongcibiao.txt`
-  - 分类：外部词表资料。
-  - 原因：它与 `8105.dict.yaml` 一样更接近外部参考输入，而不是项目内部派生资产；即便当前直接消费者较少，也应保留在 `external_data` 的外部资料边界内。
+  - 分类：已删除的可下载外部频率增强资源。
+  - 原因：当前主链已改为“缺失时跳过增强并提示下载”；仓库不再需要继续跟踪这份公开词表资料，本地如需恢复现代汉语常用词表频率增强，可重新下载后放回 `external_data/`。
 
 - `data_json_files/key_symbol_mapping.json`
   - 分类：已删除的误命名重复副本。

@@ -97,6 +97,11 @@ def write_import_metadata(conn: sqlite3.Connection, imported_count: int, skipped
 
 
 def main() -> None:
+    if not SOURCE_PATH.exists():
+        print(f"可选资源缺失，跳过导入: {SOURCE_PATH}")
+        print("如需恢复 8105 字频导入，可重新下载该开源资源后放回 external_data/。")
+        return
+
     frequency_by_char = parse_frequency_rows(SOURCE_PATH)
     conn = sqlite3.connect(DB_PATH)
     try:

@@ -9,7 +9,6 @@
 - internal_data/ipa_pinyin_mapping.json：带调 IPA / 音标串到数字调拼音映射
 - external_data/finals_IPA_mapping.json：finals 侧外部 IPA 输入映射
 - external_data/initials_IPA_mapping.json：initials 侧外部 IPA 输入映射
-- external_data/8105.dict.yaml：外部字频/字表输入
 - syllable/codec/key_to_code.json：运行时键位槽位到字符映射
 - yime/reports/phoneme_dict.json：音元分类导出报告
 
@@ -47,11 +46,11 @@
 - 用途：作为 `tools/final_components.py`、`tools/final_classifier.py`、`tools/orchestrator.py` 等链路的上游输入
 - 边界：它们不是内部派生产物，不应与 `internal_data/ipa_of_finals.json`、`internal_data/yinyuan_pianyin_mapping.json` 这类内部整理结果混并
 
-### external_data/8105.dict.yaml
+### 可下载外部频率资源
 
-- 角色：外部字频/字表资料
-- 用途：供字频导入与 runtime code refresh 类脚本读取
-- 边界：属于项目读取的外部资料，不属于 `internal_data` 内生真源或派生产物
+- `external_data/8105.dict.yaml`：可选单字频率增强输入；缺失时，`yime/refresh_runtime_yime_codes.py` 与 `yime/import_8105_char_frequency.py` 会跳过对应增强步骤。
+- `external_data/xiandaihaiyuchangyongcibiao.txt`：可选单字/词频增强输入；缺失时，`yime/refresh_runtime_yime_codes.py` 与 `yime/import_xiandaihaiyu_phrase_frequency.py` 会跳过对应增强步骤。
+- 边界：它们属于可重新下载的外部公开资源，不属于仓库当前必须跟踪的 `internal_data` 真源或派生产物。
 
 ### syllable/codec/key_to_code.json
 

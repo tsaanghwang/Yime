@@ -61,6 +61,11 @@ def write_import_metadata(conn: sqlite3.Connection, updated: int, skipped: int) 
     )
 
 def main() -> None:
+    if not SOURCE_PATH.exists():
+        print(f"可选资源缺失，跳过导入: {SOURCE_PATH}")
+        print("如需恢复现代汉语常用词表词频导入，可重新下载该开源资源后放回 external_data/。")
+        return
+
     freq_by_phrase = parse_phrase_frequency(SOURCE_PATH)
     conn = sqlite3.connect(DB_PATH)
     try:

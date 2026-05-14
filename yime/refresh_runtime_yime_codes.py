@@ -30,6 +30,19 @@ DEFAULT_8105_SOURCE = SCRIPT_DIR.parent / "external_data" / "8105.dict.yaml"
 DEFAULT_XHC1983_SOURCE = Path("C:/dev/pinyin-data/kXHC1983.txt")
 DEFAULT_SINGLE_CHAR_FREQ_SOURCE = SCRIPT_DIR.parent / "external_data" / "xiandaihaiyuchangyongcibiao.txt"
 
+OPTIONAL_EXTERNAL_FREQUENCY_SOURCES = (
+    (
+        DEFAULT_8105_SOURCE,
+        "单字频率分层(8105)",
+        "缺失时将跳过 8105 频率分层增强；需要时可重新下载后放回 external_data/。",
+    ),
+    (
+        DEFAULT_SINGLE_CHAR_FREQ_SOURCE,
+        "现代常用单字序位增强",
+        "缺失时将跳过现代常用单字序位增强；需要时可重新下载后放回 external_data/。",
+    ),
+)
+
 COMMON_HIGH_COUNT = 3500
 COMMON_LOW_COUNT = 3000
 SPECIAL_HIGH_COUNT = 1605
@@ -218,6 +231,21 @@ def parse_int_list(raw_value: str) -> list[int]:
     if not values:
         raise ValueError("至少需要一个整数")
     return values
+
+
+def report_missing_optional_external_frequency_sources() -> None:
+    missing_entries = [
+        (path, label, note)
+        for path, label, note in OPTIONAL_EXTERNAL_FREQUENCY_SOURCES
+        if not path.exists()
+    ]
+    if not missing_entries:
+        return
+
+    print("提示：以下外部频率资源缺失，将跳过对应增强步骤：")
+    for path, label, note in missing_entries:
+        print(f"- {label}: {path}")
+        print(f"  {note}")
 
 
 def backup_database(db_path: Path) -> Path:
@@ -1717,6 +1745,7 @@ def print_examples(title: str, examples: list[tuple[object, ...]]) -> None:
 
 def main() -> int:
     args = parse_args()
+    report_missing_optional_external_frequency_sources()
     db_path = Path(args.db).resolve()
     repo_root = SCRIPT_DIR.parent
 
