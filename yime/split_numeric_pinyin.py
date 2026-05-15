@@ -33,6 +33,13 @@ class 数字标调拼音导入器:
         conn.row_factory = sqlite3.Row
         return conn
 
+    def _落盘主数据库文件(self, conn: sqlite3.Connection) -> None:
+        """在 WAL 模式下主动 checkpoint，减少外部查看器看到旧主库文件的概率。"""
+        try:
+            conn.execute("PRAGMA wal_checkpoint(TRUNCATE)")
+        except sqlite3.Error as exc:
+            self.日志.warning("执行 WAL checkpoint 失败: %s", exc)
+
     def _检查表存在(self, conn: sqlite3.Connection, 表名: str) -> bool:
         cursor = conn.cursor()
         cursor.execute(
@@ -149,6 +156,7 @@ class 数字标调拼音导入器:
             ])
 
             conn.commit()
+            self._落盘主数据库文件(conn)
             return len(rows)
 
     def _检查表结构(self, conn: sqlite3.Connection) -> bool:
@@ -204,6 +212,6 @@ def rebuild_numeric_pinyin(database_path: str | Path = DEFAULT_DB) -> int:
 if __name__ == "__main__":
     try:
         结果 = rebuild_numeric_pinyin()
-        print(f"导入结果: {结果} 条记录")
+        print(f"导入结果: {结果} 条记录 | 数据库: {DEFAULT_DB.resolve()}")
     except Exception as e:
         print(f"错误: {e}")
