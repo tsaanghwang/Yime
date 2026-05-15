@@ -59,14 +59,12 @@ npm test
 ```text
 YIME/
 ├── yime/                 # Python 核心引擎
-│   ├── pinyin_converter.py    # 拼音转换器
 │   ├── syllable_decoder.py    # 音节解码器
 │   ├── syllable_structure.py  # 音节结构
 │   ├── import_danzi_into_prototype_tables.py  # 单字 prototype 导入主线
 │   ├── import_duozi_into_prototype_tables.py  # 词语 prototype 导入主线
 │   ├── refresh_runtime_yime_codes.py          # canonical/runtime 同步主线
 │   ├── db_manager.py                          # legacy-compatible 旧数据库管理入口
-│   ├── pinyin_db_manager.py                   # 旧拼音数据库辅助模块
 │   └── hanzi_db_manager.py                    # legacy-compatible 旧汉字数据库入口
 │
 ├── pinyin/               # 拼音处理模块
@@ -118,7 +116,7 @@ git checkout -b feature/your-feature-name
 pytest
 
 # 运行特定测试
-pytest tests/test_pinyin_converter.py
+python -m unittest tests.test_pinyin_zhuyin
 
 # 运行带覆盖率的测试
 pytest --cov=yime --cov-report=html
@@ -582,13 +580,14 @@ python -m build
 
 ### Q: 如何添加新的拼音映射？
 
-A: 使用 `PinyinMapper` 类：
+A: 当前主线不要再直接维护旧短表名映射接口。
+如果你是在维护资料层拼音对照，请修改 `pinyin_yime_code` 来源并重跑：
 
 ```python
-from yime.pinyin_mapping import PinyinMapper
+from yime.Initialize_pinyin_mapping import rebuild_mappings_from_db
 
-mapper = PinyinMapper()
-mapper.add_mapping("pinyin1", "yinyuan1")
+count = rebuild_mappings_from_db()
+print(count)
 ```
 
 ### Q: 如何优化转换性能？

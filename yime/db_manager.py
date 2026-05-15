@@ -13,6 +13,8 @@ if not logger.hasHandlers():
 DB_PATH = Path(__file__).parent / "pinyin_hanzi.db"
 CANONICAL_MAPPING_TABLE = "多式拼音映射关系"
 MAPPING_VIEW_NAME = "拼音映射视图"
+UNUSED_SHORT_MAPPING_TABLE = "拼音映射"
+UNUSED_HOMOPHONE_TABLE = "音元拼音同音表"
 
 class 数据库管理器:
     """封装数据库连接和基本操作"""
@@ -111,16 +113,6 @@ class 表管理器:
                     "映射编号" INTEGER REFERENCES "多式拼音映射关系"("映射编号"),
                     "最近更新" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     UNIQUE ("全拼", "声母", "韵母", "声调")
-                )
-            ''',
-            '拼音映射': '''
-                CREATE TABLE IF NOT EXISTS "拼音映射" (
-                    "编号" INTEGER PRIMARY KEY AUTOINCREMENT,
-                    "数字标调拼音" TEXT NOT NULL UNIQUE,
-                    "音元拼音" TEXT,
-                    "标准拼音" TEXT,
-                    "注音符号" TEXT,
-                    "最近更新" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )
             ''',
             # 汉字相关表
@@ -234,8 +226,6 @@ class 表管理器:
         # 创建索引（用双引号保护索引和表列）
         索引列表 = [
             # 拼音相关索引
-            ('索引_拼音映射_标准拼音', '"拼音映射"("标准拼音")'),
-            ('索引_拼音映射_注音符号', '"拼音映射"("注音符号")'),
             ('索引_多式拼音映射关系_源类型拼音', '"多式拼音映射关系"("原拼音类型", "原拼音")'),
             ('索引_多式拼音映射关系_目标类型拼音', '"多式拼音映射关系"("目标拼音类型", "目标拼音")'),
             ('索引_多式拼音映射关系_双向映射', '"多式拼音映射关系"("原拼音类型", "原拼音", "目标拼音类型", "目标拼音")'),
@@ -378,6 +368,19 @@ def _确保多式拼音映射关系(连接: sqlite3.Connection) -> None:
         _重建拼音映射视图(连接)
 
 
+def _删除未使用短表名残留(连接: sqlite3.Connection) -> None:
+    游标 = 连接.cursor()
+    for 表名 in (UNUSED_HOMOPHONE_TABLE, UNUSED_SHORT_MAPPING_TABLE):
+        对象类型 = 游标.execute(
+            "SELECT type FROM sqlite_master WHERE name=?",
+            (表名,),
+        ).fetchone()
+        if 对象类型 and 对象类型[0] == 'view':
+            游标.execute(f'DROP VIEW IF EXISTS "{表名}"')
+        else:
+            游标.execute(f'DROP TABLE IF EXISTS "{表名}"')
+
+
 def run_schema_migrations(db_path: str | Path | None = None) -> None:
     目标路径 = Path(db_path) if db_path else DB_PATH
     with sqlite3.connect(str(目标路径)) as 连接:
@@ -385,6 +388,7 @@ def run_schema_migrations(db_path: str | Path | None = None) -> None:
         连接.execute('PRAGMA foreign_keys = OFF;')
         try:
             _确保多式拼音映射关系(连接)
+            _删除未使用短表名残留(连接)
             连接.commit()
         finally:
             连接.execute('PRAGMA foreign_keys = ON;')
@@ -396,5 +400,5 @@ if __name__ == "__main__":
 
     # 示例验证：使用模块内 DB_PATH（避免相对 path 导致混淆）
     with 数据库管理器(str(DB_PATH)) as 连接:
-        存在 = 表管理器.检查索引存在(连接, "索引_拼音映射_标准拼音")
+        存在 = 表管理器.检查索引存在(连接, "索引_多式拼音映射关系_源类型拼音")
         print(f"索引存在: {存在}")

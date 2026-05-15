@@ -33,7 +33,6 @@ class Test数据库基础功能(unittest.TestCase):
         # 验证关键表存在
         self.assertIn('音元拼音', tables)
         self.assertIn('数字标调拼音', tables)
-        self.assertIn('拼音映射', tables)
         self.assertIn('汉字', tables)
         self.assertIn('词汇', tables)
 

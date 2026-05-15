@@ -29,15 +29,6 @@
       "addSourceRootsToPythonpath": true
     },
     {
-      "name": "pinyin_mapping",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\yime\\pinyin_mapping.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\yime",
-      "addSourceRootsToPythonpath": true
-    },
-    {
       "name": "import_numeric_pinyin",
       "type": "python",
       "request": "launch",
@@ -101,28 +92,6 @@
       "type": "python",
       "request": "launch",
       "program": "${workspaceFolder}\\yime\\hanzi_db_manager.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\yime",
-      "addSourceRootsToPythonpath": true,
-      "noDebug": true
-    },
-    {
-      "name": "map_code_to_hanzi",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\yime\\map_code_to_hanzi.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\yime",
-      "addSourceRootsToPythonpath": true,
-      "noDebug": true
-    },
-    {
-      "name": "yaml_to_json",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\yime\\pinyin_db_manager.py",
-      "type": "python",
-      "request": "launch",
       "currentFileConfiguration": false,
       "cwd": "${workspaceFolder}\\yime",
       "addSourceRootsToPythonpath": true,

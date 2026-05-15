@@ -32,8 +32,6 @@
 - `test_hanzi_db_manager.py`
 - `test_hanzi_pinyin_data.py`
 - `test_index_constraint.py`
-- `test_pinyin_db_manager.py`
-
 这些脚本的共同特点是：
 
 - 直接检查或修改旧 `音元拼音 / 数字标调拼音 / 词汇` 结构。

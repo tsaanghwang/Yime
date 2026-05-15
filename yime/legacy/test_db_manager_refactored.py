@@ -73,7 +73,6 @@ class Test表管理器(unittest.TestCase):
         # 验证关键表存在
         self.assertIn('音元拼音', tables)
         self.assertIn('数字标调拼音', tables)
-        self.assertIn('拼音映射', tables)
         self.assertIn('汉字', tables)
         self.assertIn('词汇', tables)
 
@@ -150,22 +149,6 @@ class Test数据库操作集成(unittest.TestCase):
 
         # 验证数据已插入
         cursor.execute('SELECT COUNT(*) FROM "数字标调拼音"')
-        count = cursor.fetchone()[0]
-        self.assertEqual(count, 1)
-
-    def test_插入拼音映射数据(self):
-        """测试插入拼音映射数据"""
-        cursor = self.conn.cursor()
-
-        # 插入映射
-        cursor.execute(
-            'INSERT INTO "拼音映射" ("数字标调拼音", "音元拼音", "标准拼音", "注音符号") VALUES (?, ?, ?, ?)',
-            ("zhong1", "zhong", "zhōng", "ㄓㄨㄥ")
-        )
-        self.conn.commit()
-
-        # 验证映射已创建
-        cursor.execute('SELECT COUNT(*) FROM "拼音映射"')
         count = cursor.fetchone()[0]
         self.assertEqual(count, 1)
 

@@ -8,7 +8,6 @@ from pathlib import Path
 PUBLIC_MODULES = [
     "yime.database",
     "yime.db_manager",
-    "yime.pinyin_converter",
     "yime.pinyin_importer",
     "yime.syllable_decoder",
     "yime.utils_charfilter",

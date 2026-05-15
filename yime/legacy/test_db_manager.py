@@ -103,7 +103,6 @@ class Test表管理器(unittest.TestCase):
         self.assertIn('多式拼音映射关系', tables)
         self.assertIn('音元拼音', tables)
         self.assertIn('数字标调拼音', tables)
-        self.assertIn('拼音映射', tables)
 
     def test_创建表_重复调用(self):
         """测试重复创建表（应该不会出错）"""
