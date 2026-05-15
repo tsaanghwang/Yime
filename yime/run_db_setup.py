@@ -61,7 +61,10 @@ def main():
         logger.exception("完整性检查失败: %s", e)
         sys.exit(3)
 
-    logger.info("数据库建立/检查完成。下一步：用你的 JSON 生成器输出文件并用 Initialize_pinyin_mapping/import 脚本导入。")
+    logger.info(
+        "数据库建立/检查完成。当前主线下一步：导入 prototype tables 后执行 refresh_runtime_yime_codes.py --apply；"
+        "Initialize_pinyin_mapping / Import_yinyuan_pinyin 仅保留 legacy-compatible 用途。"
+    )
 
 if __name__ == "__main__":
     main()

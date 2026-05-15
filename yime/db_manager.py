@@ -11,6 +11,8 @@ if not logger.hasHandlers():
 
 # 统一数据库路径为 yime\pinyin_hanzi.db
 DB_PATH = Path(__file__).parent / "pinyin_hanzi.db"
+CANONICAL_MAPPING_TABLE = "多式拼音映射关系"
+MAPPING_VIEW_NAME = "拼音映射视图"
 
 class 数据库管理器:
     """封装数据库连接和基本操作"""
@@ -36,6 +38,18 @@ class 表管理器:
         游标 = 连接.cursor()
 
         # 拼音相关表
+        # 说明：`多式拼音映射关系` 是资料层/对照层表，用于保存多种拼音表示法之间的关系。
+        # `音元拼音` 是保留的音节结构表，用于保存 `全拼 -> 简拼` 与
+        # `全拼 -> 首音/干音/呼音/主音/末音/间音/韵音` 的结构拆分结果。
+        # 当前口径要求 `全拼` 为四音等长编码，并满足：
+        # `首音 = 全拼[0]`，`干音 = 全拼[1:]`，`呼音 = 全拼[1]`，`主音 = 全拼[2]`，
+        # `末音 = 全拼[3]`，`间音 = 全拼[1:3] = 呼音 + 主音`，
+        # `韵音 = 全拼[2:4] = 主音 + 末音`。
+        # `简拼` 则要求等于把音节中连续相同的两音或三音合并成一个音后的结果。
+        # 它不是当前 runtime 主线候选表；当前主线仍是
+        # `source_pinyin.db -> prototype tables -> refresh_runtime_yime_codes -> runtime_candidates`。
+        # 其中 `mapping_yime_code` 作为库内兼容映射面，按唯一 yime_code 重新编号，
+        # 供 `音元拼音.映射编号` 对齐引用，避免再次回到仓库外部文件直接建表。
         表结构 = {
             '汉字拼音初始数据': '''
                 CREATE TABLE IF NOT EXISTS "汉字拼音初始数据" (
@@ -47,18 +61,28 @@ class 表管理器:
                     PRIMARY KEY ("汉字", "拼音")
                 )
             ''',
-            '拼音映射关系': '''
-                CREATE TABLE IF NOT EXISTS "拼音映射关系" (
+            CANONICAL_MAPPING_TABLE: f'''
+                CREATE TABLE IF NOT EXISTS "{CANONICAL_MAPPING_TABLE}" (
                     "映射编号" INTEGER PRIMARY KEY AUTOINCREMENT,
                     "原拼音类型" TEXT NOT NULL,
                     "原拼音" TEXT NOT NULL,
                     "目标拼音类型" TEXT NOT NULL,
                     "目标拼音" TEXT NOT NULL,
+                    "关系类型" TEXT NOT NULL DEFAULT '对应',
+                    "时期标签" TEXT,
                     "数据来源" TEXT,
                     "版本号" TEXT,
                     "备注" TEXT,
                     "创建时间" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    UNIQUE("原拼音类型", "原拼音", "目标拼音类型", "目标拼音", "数据来源")
+                    UNIQUE("原拼音类型", "原拼音", "目标拼音类型", "目标拼音", "关系类型", "数据来源")
+                )
+            ''',
+            'mapping_yime_code': '''
+                CREATE TABLE IF NOT EXISTS "mapping_yime_code" (
+                    "mapping_id" INTEGER PRIMARY KEY,
+                    "yime_code" TEXT NOT NULL,
+                    "source_pinyin_tone" TEXT,
+                    "updated_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )
             ''',
             '音元拼音': '''
@@ -66,14 +90,14 @@ class 表管理器:
                     "编号" INTEGER PRIMARY KEY AUTOINCREMENT,
                     "全拼" TEXT NOT NULL UNIQUE,
                     "简拼" TEXT UNIQUE,
-                    "首音" TEXT,
+                    "首音" TEXT NOT NULL,
                     "干音" TEXT NOT NULL,
                     "呼音" TEXT,
                     "主音" TEXT,
                     "末音" TEXT,
                     "间音" TEXT,
                     "韵音" TEXT,
-                    "映射编号" INTEGER REFERENCES "拼音映射关系"("映射编号") ON DELETE CASCADE,
+                    "映射编号" INTEGER REFERENCES "mapping_yime_code"("mapping_id") ON DELETE SET NULL,
                     "最近更新" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )
             ''',
@@ -84,7 +108,7 @@ class 表管理器:
                     "声母" TEXT,
                     "韵母" TEXT NOT NULL,
                     "声调" INTEGER DEFAULT 1,
-                    "映射编号" INTEGER REFERENCES "拼音映射关系"("映射编号"),
+                    "映射编号" INTEGER REFERENCES "多式拼音映射关系"("映射编号"),
                     "最近更新" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     UNIQUE ("全拼", "声母", "韵母", "声调")
                 )
@@ -212,9 +236,10 @@ class 表管理器:
             # 拼音相关索引
             ('索引_拼音映射_标准拼音', '"拼音映射"("标准拼音")'),
             ('索引_拼音映射_注音符号', '"拼音映射"("注音符号")'),
-            ('索引_拼音映射关系_源类型拼音', '"拼音映射关系"("原拼音类型", "原拼音")'),
-            ('索引_拼音映射关系_目标类型拼音', '"拼音映射关系"("目标拼音类型", "目标拼音")'),
-            ('索引_拼音映射关系_双向映射', '"拼音映射关系"("原拼音类型", "原拼音", "目标拼音类型", "目标拼音")'),
+            ('索引_多式拼音映射关系_源类型拼音', '"多式拼音映射关系"("原拼音类型", "原拼音")'),
+            ('索引_多式拼音映射关系_目标类型拼音', '"多式拼音映射关系"("目标拼音类型", "目标拼音")'),
+            ('索引_多式拼音映射关系_双向映射', '"多式拼音映射关系"("原拼音类型", "原拼音", "目标拼音类型", "目标拼音")'),
+            ('idx_mapping_yime_code_yime_code', '"mapping_yime_code"("yime_code")'),
 
             # 音元拼音表新增索引（全拼列索引可保留）
             ('索引_音元拼音_全拼', '"音元拼音"("全拼")'),
@@ -273,13 +298,96 @@ class 数据库初始化器:
         """执行完整的数据库初始化流程"""
         try:
             print(f"已创建/验证表结构: {str(self.数据库路径)}")
-
-            with 数据库管理器(str(self.数据库路径)) as 连接:
-                表管理器.创建表(连接)
-                logger.info("数据库初始化完成")
+            run_schema_migrations(self.数据库路径)
+            logger.info("数据库初始化完成")
         except Exception as e:
             logger.error(f"数据库初始化失败: {e}")
             raise
+
+
+def _重建拼音映射视图(连接: sqlite3.Connection) -> None:
+    游标 = 连接.cursor()
+    游标.execute(f'DROP VIEW IF EXISTS "{MAPPING_VIEW_NAME}"')
+    游标.execute(
+        f'''
+        CREATE VIEW IF NOT EXISTS "{MAPPING_VIEW_NAME}" AS
+        SELECT
+          pm.映射编号,
+          pm.原拼音类型,
+          pm.原拼音,
+          pm.目标拼音类型,
+          pm.目标拼音,
+          pm.关系类型,
+          pm.时期标签,
+          pm.数据来源,
+          pm.备注
+        FROM "{CANONICAL_MAPPING_TABLE}" pm
+        '''
+    )
+
+
+def _重建数字标调拼音表(连接: sqlite3.Connection) -> None:
+    游标 = 连接.cursor()
+    游标.execute('DROP TABLE IF EXISTS "数字标调拼音__migration_backup"')
+    游标.execute(
+        '''
+        CREATE TABLE "数字标调拼音__migration_backup" AS
+        SELECT * FROM "数字标调拼音"
+        '''
+    )
+    游标.execute('DROP TABLE "数字标调拼音"')
+    游标.execute(
+        f'''
+        CREATE TABLE "数字标调拼音" (
+            "编号" INTEGER PRIMARY KEY AUTOINCREMENT,
+            "全拼" TEXT NOT NULL UNIQUE,
+            "声母" TEXT,
+            "韵母" TEXT NOT NULL,
+            "声调" INTEGER DEFAULT 1,
+            "映射编号" INTEGER REFERENCES "{CANONICAL_MAPPING_TABLE}"("映射编号"),
+            "最近更新" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE ("全拼", "声母", "韵母", "声调")
+        )
+        '''
+    )
+    游标.execute(
+        '''
+        INSERT INTO "数字标调拼音" ("编号", "全拼", "声母", "韵母", "声调", "映射编号", "最近更新")
+        SELECT "编号", "全拼", "声母", "韵母", "声调", "映射编号", "最近更新"
+        FROM "数字标调拼音__migration_backup"
+        '''
+    )
+    游标.execute('DROP TABLE "数字标调拼音__migration_backup"')
+
+
+def _确保多式拼音映射关系(连接: sqlite3.Connection) -> None:
+    游标 = 连接.cursor()
+    表管理器.创建表(连接)
+
+    数字标调定义 = 游标.execute(
+        "SELECT sql FROM sqlite_master WHERE type='table' AND name='数字标调拼音'"
+    ).fetchone()
+    if 数字标调定义 and CANONICAL_MAPPING_TABLE not in (数字标调定义[0] or ''):
+        _重建数字标调拼音表(连接)
+
+    视图定义 = 游标.execute(
+        "SELECT sql FROM sqlite_master WHERE type='view' AND name=?",
+        (MAPPING_VIEW_NAME,),
+    ).fetchone()
+    if not 视图定义 or CANONICAL_MAPPING_TABLE not in (视图定义[0] or ''):
+        _重建拼音映射视图(连接)
+
+
+def run_schema_migrations(db_path: str | Path | None = None) -> None:
+    目标路径 = Path(db_path) if db_path else DB_PATH
+    with sqlite3.connect(str(目标路径)) as 连接:
+        连接.row_factory = sqlite3.Row
+        连接.execute('PRAGMA foreign_keys = OFF;')
+        try:
+            _确保多式拼音映射关系(连接)
+            连接.commit()
+        finally:
+            连接.execute('PRAGMA foreign_keys = ON;')
 
 
 if __name__ == "__main__":

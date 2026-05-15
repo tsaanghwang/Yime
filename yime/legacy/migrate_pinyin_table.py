@@ -1,6 +1,8 @@
 import sqlite3
 from pathlib import Path
 
+CANONICAL_MAPPING_TABLE = "多式拼音映射关系"
+
 def 迁移数字标调拼音表(db_path: str):
     """安全迁移数字标调拼音表结构"""
     db_file = Path(db_path)
@@ -27,7 +29,7 @@ def 迁移数字标调拼音表(db_path: str):
                 "声母" TEXT,
                 "韵母" TEXT NOT NULL,
                 "声调" INTEGER DEFAULT 1,
-                "映射编号" INTEGER REFERENCES "拼音映射关系"("映射编号"),
+                "映射编号" INTEGER REFERENCES "多式拼音映射关系"("映射编号"),
                 "最近更新" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 UNIQUE ("全拼", "声母", "韵母", "声调")
             )
@@ -44,7 +46,7 @@ def 迁移数字标调拼音表(db_path: str):
         cursor.execute('DROP TABLE temp_数字标调拼音')
 
         conn.commit()
-        print("数字标调拼音表迁移完成")
+        print(f"数字标调拼音表迁移完成，外键已指向 {CANONICAL_MAPPING_TABLE}")
 
 if __name__ == "__main__":
     迁移数字标调拼音表(str(Path(__file__).resolve().parent.parent / "pinyin_hanzi.db"))

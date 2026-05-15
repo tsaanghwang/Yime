@@ -66,7 +66,7 @@ class Test数据库管理器(unittest.TestCase):
         # 对于文件数据库，WAL 模式应该被设置
         if self.db_path == ":memory:":
             self.skipTest("内存数据库不支持 WAL 模式")
-        
+
         with 数据库管理器(self.db_path) as conn:
             cursor = conn.cursor()
             cursor.execute('PRAGMA journal_mode')
@@ -100,7 +100,7 @@ class Test表管理器(unittest.TestCase):
 
         # 检查关键表是否存在
         self.assertIn('汉字拼音初始数据', tables)
-        self.assertIn('拼音映射关系', tables)
+        self.assertIn('多式拼音映射关系', tables)
         self.assertIn('音元拼音', tables)
         self.assertIn('数字标调拼音', tables)
         self.assertIn('拼音映射', tables)

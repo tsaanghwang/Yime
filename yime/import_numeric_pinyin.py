@@ -6,11 +6,14 @@ from pathlib import Path
 from typing import Dict, List, Optional
 from db_manager import DB_PATH
 
+CANONICAL_MAPPING_TABLE = "多式拼音映射关系"
+NUMERIC_SOURCE_TYPE = "音元拼音"
+
 class 数字标调拼音导入器:
     """最终修正版：确保数据不重复导入"""
 
     REQUIRED_TABLE = "数字标调拼音"
-    SOURCE_TABLE = "拼音映射关系"
+    SOURCE_TABLE = CANONICAL_MAPPING_TABLE
 
     def __init__(self, 数据库路径: str | Path = "pinyin_hanzi.db"):
         self.数据库路径 = Path(数据库路径).absolute()
@@ -38,12 +41,13 @@ class 数字标调拼音导入器:
 
     def _确保表结构正确(self, conn: sqlite3.Connection):
         """确保目标表存在且结构正确(修改版)"""
+        source_table = self.SOURCE_TABLE
         if not self._检查表结构(conn):
             # 如果表结构检查失败，创建或修复表
             cursor = conn.cursor()
             cursor.execute(f'''
             CREATE TABLE IF NOT EXISTS "{self.REQUIRED_TABLE}" (
-                映射编号 INTEGER REFERENCES "{self.SOURCE_TABLE}"(映射编号),
+                映射编号 INTEGER REFERENCES "{source_table}"(映射编号),
                 全拼 TEXT NOT NULL,
                 声母 TEXT,
                 韵母 TEXT NOT NULL,
@@ -60,7 +64,7 @@ class 数字标调拼音导入器:
             for col in required_columns:
                 if col not in existing_columns:
                     if col == "映射编号":
-                        column_type = 'INTEGER REFERENCES "拼音映射关系"(映射编号)'
+                        column_type = f'INTEGER REFERENCES "{source_table}"(映射编号)'
                     elif col == "声调":
                         column_type = "INTEGER"
                     else:
@@ -70,26 +74,29 @@ class 数字标调拼音导入器:
                     ADD COLUMN {col} {column_type}
                     ''')
 
-            # 清空表
-            cursor.execute(f'DELETE FROM "{self.REQUIRED_TABLE}"')
-            conn.commit()
+    def _清空目标表(self, conn: sqlite3.Connection) -> None:
+        cursor = conn.cursor()
+        cursor.execute(f'DELETE FROM "{self.REQUIRED_TABLE}"')
+        cursor.execute("DELETE FROM sqlite_sequence WHERE name=?", (self.REQUIRED_TABLE,))
+        conn.commit()
 
     def 从映射表加载数据(self, conn: sqlite3.Connection) -> Dict[str, Dict[str, str]]:
-        """从拼音映射关系表加载数字标调拼音数据"""
-        if not self._检查表存在(conn, self.SOURCE_TABLE):
-            raise ValueError(f"源表 {self.SOURCE_TABLE} 不存在")
+        """从多式拼音映射关系表加载数字标调拼音数据。"""
+        source_table = self.SOURCE_TABLE
 
         cursor = conn.cursor()
         cursor.execute(
             f'''SELECT 映射编号, 原拼音, 目标拼音
-            FROM "{self.SOURCE_TABLE}"
-            WHERE 目标拼音类型 = '数字标调' AND 目标拼音 IS NOT NULL'''
+            FROM "{source_table}"
+                        WHERE 原拼音类型 = '{NUMERIC_SOURCE_TYPE}'
+                            AND 目标拼音类型 = '数字标调'
+                            AND 目标拼音 IS NOT NULL'''
         )
 
         数据 = {row["原拼音"]: {"数字标调": row["目标拼音"]}
               for row in cursor.fetchall()}
 
-        self.日志.info(f"已从 {self.SOURCE_TABLE} 加载 {len(数据)} 条数字标调拼音数据")
+        self.日志.info(f"已从 {source_table} 加载 {len(数据)} 条数字标调拼音数据")
         return 数据
 
     def 解析拼音(self, pinyin_str: str) -> dict:
@@ -109,20 +116,25 @@ class 数字标调拼音导入器:
         }
 
     def 导入数据(self) -> int:
-        """从映射表导入数据到目标表"""
+        """从映射表全量重建数字标调拼音数据。"""
         with self._获取连接() as conn:
             self._确保表结构正确(conn)
+            self._清空目标表(conn)
             cursor = conn.cursor()
+            source_table = self.SOURCE_TABLE
 
             # 获取源数据
             cursor.execute(f'''
-            SELECT 映射编号, 原拼音, 目标拼音 FROM "{self.SOURCE_TABLE}"
-            WHERE 目标拼音类型 = '数字标调' AND 目标拼音 IS NOT NULL
+            SELECT 映射编号, 原拼音, 目标拼音 FROM "{source_table}"
+                        WHERE 原拼音类型 = '{NUMERIC_SOURCE_TYPE}'
+                            AND 目标拼音类型 = '数字标调'
+                            AND 目标拼音 IS NOT NULL
+            ORDER BY 映射编号
             ''')
 
-            # 使用INSERT OR IGNORE避免唯一约束冲突
+            rows = cursor.fetchall()
             cursor.executemany(f'''
-            INSERT OR IGNORE INTO "{self.REQUIRED_TABLE}"
+            INSERT INTO "{self.REQUIRED_TABLE}"
             (映射编号, 全拼, 声母, 韵母, 声调)
             VALUES (?, ?, ?, ?, ?)
             ''', [
@@ -131,11 +143,11 @@ class 数字标调拼音导入器:
                     row["目标拼音"],
                     *self.解析拼音(row["目标拼音"]).values()
                 )
-                for row in cursor.fetchall()
+                for row in rows
             ])
 
             conn.commit()
-            return cursor.rowcount
+            return len(rows)
 
     def _检查表结构(self, conn: sqlite3.Connection) -> bool:
         """检查数据库表结构是否完整(新增方法)"""
@@ -147,15 +159,16 @@ class 数字标调拼音导入器:
             return False
 
         # 检查源表是否存在
-        if not self._检查表存在(conn, self.SOURCE_TABLE):
-            self.日志.error(f"表 {self.SOURCE_TABLE} 不存在")
+        source_table = self.SOURCE_TABLE
+        if not self._检查表存在(conn, source_table):
+            self.日志.error(f"表 {source_table} 不存在")
             return False
 
         # 检查源表是否有需要的列
-        cursor.execute(f'PRAGMA table_info("{self.SOURCE_TABLE}")')
+        cursor.execute(f'PRAGMA table_info("{source_table}")')
         源表列 = [col[1] for col in cursor.fetchall()]
         if "原拼音" not in 源表列 or "目标拼音" not in 源表列 or "目标拼音类型" not in 源表列:
-            self.日志.error(f"表 {self.SOURCE_TABLE} 缺少必要的列")
+            self.日志.error(f"表 {source_table} 缺少必要的列")
             return False
 
         # 检查目标表是否有需要的列

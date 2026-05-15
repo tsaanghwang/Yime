@@ -59,7 +59,7 @@ class PinyinConverter:
             return cursor.lastrowid
 
     def _create_mapping(self, cursor, yinyuan_id: int, digital_id: int, standard_pinyin: str):
-        """创建拼音映射关系"""
+        """创建拼音映射记录"""
         # 获取注音符号（示例，需补充实际逻辑）
         zhuyin = self._get_zhuyin(standard_pinyin)
 

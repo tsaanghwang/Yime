@@ -84,12 +84,12 @@ print(f"成功转换 {count} 条拼音记录")
 ```python
 from yime.syllable_decoder import SyllableDecoder
 
-decoder = SyllableDecoder(code_file="syllable_code.json")
+decoder = SyllableDecoder()
 ```
 
 **参数**：
 
-- `code_file`: 编码映射文件路径（可选）
+- `code_file`: 编码映射文件路径（可选，默认读取 `syllable/codec/yinjie_code.json`）
 
 ##### 主要方法
 
@@ -234,6 +234,14 @@ with 数据库管理器("pinyin_hanzi.db") as conn:
     cursor.execute('SELECT * FROM "音元拼音"')
     results = cursor.fetchall()
 ```
+
+`音元拼音` 表的语义边界：
+
+- 这张表保存的是按音元分析法拆开的单音节结构结果。
+- 它的核心用途不是当前 runtime 候选生成，而是保留 `全拼 -> 简拼` 和 `全拼 -> 音节组成部分` 的结构信息。
+- 常见列可以这样理解：`全拼` 是完整音元编码，`简拼` 是对完整结构做规则化压缩后的缩写；`首音/干音/呼音/主音/末音/间音/韵音` 则分别保留音节在不同观察角度下的组成部分。
+- 如果你是在维护当前主线输入链，请优先修改 `prototype tables`、`mapping_yime_code`、`runtime_candidates` 相关对象，而不是把 `音元拼音` 当成 runtime 主线表。
+- 如果后续需要面向外部工具提供 ASCII 名称，建议新增视图或别名层，而不是直接把这张中文表当场改名。
 
 ---
 

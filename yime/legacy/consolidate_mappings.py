@@ -1,5 +1,5 @@
 """
-检查并（可选）修正 音元拼音 表与 拼音映射关系 表 的映射编号一致性。
+检查并（可选）修正 音元拼音 表与 mapping_yime_code 表 的映射编号一致性。
 用法:
   python consolidate_mappings.py        -> 生成报告（dry-run）
   python consolidate_mappings.py --apply -> 在确认安全的情况下执行修正
@@ -22,7 +22,7 @@ def q(conn, sql, params=()):
 def generate_reports(conn):
     # 基本信息
     total_audio = q(conn, 'SELECT COUNT(*) FROM "音元拼音"')[0][0]
-    total_map = q(conn, 'SELECT COUNT(*) FROM "拼音映射关系"')[0][0]
+    total_map = q(conn, 'SELECT COUNT(*) FROM "mapping_yime_code"')[0][0]
 
     # 重复简拼检查（仅供参考）
     dup = q(conn, '''
@@ -36,26 +36,26 @@ def generate_reports(conn):
     orphan = q(conn, '''
         SELECT p."编号", p."全拼", p."映射编号"
         FROM "音元拼音" p
-        LEFT JOIN "拼音映射关系" m ON p."映射编号" = m."映射编号"
-        WHERE p."映射编号" IS NOT NULL AND m."映射编号" IS NULL
+                LEFT JOIN "mapping_yime_code" m ON p."映射编号" = m."mapping_id"
+                WHERE p."映射编号" IS NOT NULL AND m."mapping_id" IS NULL
     ''')
 
     # 映射与全拼不匹配（映射行类型为 音元拼音）
     mismatch = q(conn, '''
-        SELECT p."编号", p."全拼", p."映射编号", m."目标拼音"
+                SELECT p."编号", p."全拼", p."映射编号", m."yime_code"
         FROM "音元拼音" p
-        JOIN "拼音映射关系" m ON p."映射编号" = m."映射编号"
-        WHERE m."目标拼音类型" = '音元拼音' AND m."目标拼音" <> p."全拼"
+                JOIN "mapping_yime_code" m ON p."映射编号" = m."mapping_id"
+                WHERE m."yime_code" <> p."全拼"
     ''')
 
     # 找出没有映射编号但存在唯一匹配 mapping 的行（可安全填充）
     candidate = q(conn, '''
         SELECT p."编号", p."全拼",
-               (SELECT m."映射编号" FROM "拼音映射关系" m
-                 WHERE m."目标拼音类型"='音元拼音' AND m."目标拼音"=p."全拼"
+                             (SELECT m."mapping_id" FROM "mapping_yime_code" m
+                                 WHERE m."yime_code"=p."全拼"
                  LIMIT 2) AS maybe_map,
-               (SELECT COUNT(*) FROM "拼音映射关系" m2
-                 WHERE m2."目标拼音类型"='音元拼音' AND m2."目标拼音"=p."全拼") AS map_count
+                             (SELECT COUNT(*) FROM "mapping_yime_code" m2
+                                 WHERE m2."yime_code"=p."全拼") AS map_count
         FROM "音元拼音" p
         WHERE p."映射编号" IS NULL
     ''')
@@ -64,7 +64,7 @@ def generate_reports(conn):
     with open(REPORT_DIR / "summary.txt", "w", encoding="utf-8") as f:
         f.write(f"DB: {DB}\\n")
         f.write(f"音元拼音 总行: {total_audio}\\n")
-        f.write(f"拼音映射关系 总行: {total_map}\\n")
+        f.write(f"mapping_yime_code 总行: {total_map}\\n")
         f.write(f"重复简拼组数: {len(dup)}\\n")
         f.write(f"孤儿映射数: {len(orphan)}\\n")
         f.write(f"映射不匹配数: {len(mismatch)}\\n")
@@ -80,7 +80,7 @@ def generate_reports(conn):
 
     write_csv("duplicate_shorthand.csv", dup, ["简拼", "count"])
     write_csv("orphan_mapping.csv", orphan, ["编号", "全拼", "映射编号"])
-    write_csv("mapping_mismatch.csv", mismatch, ["编号", "全拼", "映射编号", "目标拼音"])
+    write_csv("mapping_mismatch.csv", mismatch, ["编号", "全拼", "映射编号", "yime_code"])
     write_csv("candidate_fill_map.csv", candidate, ["编号", "全拼", "maybe_map", "map_count"])
 
     print("报告已生成到 reports/ 目录。summary.txt 中有摘要。")
@@ -90,13 +90,13 @@ def apply_fixes(conn):
     cur = conn.cursor()
     cur.execute('''
         SELECT p."编号", p."全拼",
-               m."映射编号"
+                             m."mapping_id"
         FROM "音元拼音" p
-        JOIN "拼音映射关系" m
-          ON m."目标拼音类型"='音元拼音' AND m."目标拼音"=p."全拼"
+                JOIN "mapping_yime_code" m
+                    ON m."yime_code"=p."全拼"
         WHERE p."映射编号" IS NULL
         GROUP BY p."编号"
-        HAVING COUNT(m."映射编号") = 1
+                HAVING COUNT(m."mapping_id") = 1
     ''')
     to_fix = cur.fetchall()
     print(f"找到 {len(to_fix)} 条可安全填充的记录（将设置 映射编号）")

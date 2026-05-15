@@ -51,7 +51,7 @@
 - `db_manager.py`
 - `hanzi_db_manager.py`
 - `import_numeric_pinyin.py`
-- `Import_yinyuan_pinyin.py`
+- `rebuild_yinyuan_structure_table.py`
 
 它们之所以暂时保留在主目录，是因为仍有旧文档、旧测试或旧入口引用，不适合在这一轮直接移动。
 

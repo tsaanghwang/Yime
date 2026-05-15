@@ -1,7 +1,10 @@
 from pathlib import Path
 from typing import Any
 
-from .utils_charfilter import is_allowed_code_char, is_pua_char
+try:
+    from .utils_charfilter import is_allowed_code_char, is_pua_char
+except Exception:
+    from utils_charfilter import is_allowed_code_char, is_pua_char
 from syllable.codec.yinjie_decoder import YinjieDecoder
 
 try:

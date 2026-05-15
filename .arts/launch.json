@@ -20,7 +20,7 @@
       "addSourceRootsToPythonpath": true
     },
     {
-      "name": "Initialize_pinyin_mapping",
+      "name": "Initialize_pinyin_mapping (legacy)",
       "type": "python",
       "request": "launch",
       "program": "${workspaceFolder}\\yime\\Initialize_pinyin_mapping.py",

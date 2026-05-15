@@ -29,7 +29,7 @@ with sqlite3.connect(str(DB)) as conn:
         print(dict(row))
 
     # 孤儿映射
-    orphan = q(cur, "SELECT p.编号,p.全拼,p.映射编号 FROM \"音元拼音\" p LEFT JOIN \"拼音映射关系\" m ON p.映射编号 = m.映射编号 WHERE p.映射编号 IS NOT NULL AND m.映射编号 IS NULL;")
+    orphan = q(cur, "SELECT p.编号,p.全拼,p.映射编号 FROM \"音元拼音\" p LEFT JOIN \"mapping_yime_code\" m ON p.映射编号 = m.mapping_id WHERE p.映射编号 IS NOT NULL AND m.mapping_id IS NULL;")
     print("孤儿映射数:", len(orphan))
     for row in orphan[:20]:
         print(dict(row))
