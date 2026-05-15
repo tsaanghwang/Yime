@@ -6,6 +6,7 @@ from pathlib import Path
 
 from yime.asset_paths import resolve_source_pinyin_db_path
 from yime.canonical_yime_mapping import sync_canonical_mapping_table
+from yime.utils.numeric_pinyin_standardizer import standardize_numeric_pinyin
 
 
 WORKSPACE_ROOT = Path(__file__).resolve().parent.parent
@@ -86,12 +87,12 @@ def load_numeric_pinyin_patch_rows(path: Path) -> list[tuple[str, str | None, st
     with path.open("r", encoding="utf-8-sig", newline="") as handle:
         reader = csv.DictReader(handle)
         for row in reader:
-            pinyin_tone = str(row.get("pinyin_tone") or "").strip()
+            pinyin_tone = standardize_numeric_pinyin(str(row.get("pinyin_tone") or "").strip())
             if not pinyin_tone:
                 continue
 
             initial = str(row.get("initial") or "").strip() or None
-            final = str(row.get("final") or "").strip() or None
+            final = standardize_numeric_pinyin(str(row.get("final") or "").strip()) or None
             tone_number_raw = str(row.get("tone_number") or "").strip()
             mapping_id_raw = str(row.get("mapping_id") or "").strip()
             legacy_numeric_raw = str(row.get("legacy_numeric_pinyin_id") or "").strip()
@@ -124,6 +125,7 @@ def import_hanzi_and_mappings(conn: sqlite3.Connection, source_rows: list[tuple[
     conn.execute('DELETE FROM numeric_pinyin_inventory')
 
     for _, source_name, codepoint, hanzi, _, numeric_pinyin, reading_rank, is_primary, comment, _ in source_rows:
+        numeric_pinyin = standardize_numeric_pinyin(numeric_pinyin)
         char_id = ord(hanzi)
         if char_id not in seen_chars:
             char_rows.append((

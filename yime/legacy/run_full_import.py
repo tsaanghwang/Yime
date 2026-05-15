@@ -119,12 +119,12 @@ def run():
 
     # import numeric pinyin (数字标调)
     try:
-        import yime.import_numeric_pinyin as imp_num
-        logger.info("导入数字标调拼音 (import_numeric_pinyin)...")
+        import yime.split_numeric_pinyin as imp_num
+        logger.info("导入数字标调拼音 (split_numeric_pinyin)...")
         if hasattr(imp_num, "main"):
             imp_num.main()
         else:
-            logger.warning("import_numeric_pinyin.main 未找到，跳过")
+            logger.warning("split_numeric_pinyin.main 未找到，跳过")
     except Exception as e:
         logger.exception("导入数字标调拼音失败")
         sys.exit(6)

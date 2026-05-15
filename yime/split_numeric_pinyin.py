@@ -1,22 +1,24 @@
-"""数字标调拼音数据导入工具(最终修正版)"""
+"""将数字标调拼音拆分为声母、韵母、声调并重建目标表。"""
 
 import sqlite3
 import logging
 from pathlib import Path
-from typing import Dict, List, Optional
-from db_manager import DB_PATH
+from typing import Dict
+from syllable.analysis.syllable_splitter import SyllableSplitter
 
 CANONICAL_MAPPING_TABLE = "多式拼音映射关系"
 NUMERIC_SOURCE_TYPE = "音元拼音"
+DEFAULT_DB = Path(__file__).resolve().parent / "pinyin_hanzi.db"
+
 
 class 数字标调拼音导入器:
-    """最终修正版：确保数据不重复导入"""
+    """从规范映射面重建数字标调拼音，并拆分出声母、韵母、声调。"""
 
     REQUIRED_TABLE = "数字标调拼音"
     SOURCE_TABLE = CANONICAL_MAPPING_TABLE
 
-    def __init__(self, 数据库路径: str | Path = "pinyin_hanzi.db"):
-        self.数据库路径 = Path(数据库路径).absolute()
+    def __init__(self, 数据库路径: str | Path = DEFAULT_DB):
+        self.数据库路径 = Path(数据库路径).resolve()
         self._配置日志()
 
     def _配置日志(self):
@@ -27,7 +29,7 @@ class 数字标调拼音导入器:
         self.日志 = logging.getLogger(__name__)
 
     def _获取连接(self) -> sqlite3.Connection:
-        conn = sqlite3.connect(str(DB_PATH))
+        conn = sqlite3.connect(str(self.数据库路径))
         conn.row_factory = sqlite3.Row
         return conn
 
@@ -40,10 +42,9 @@ class 数字标调拼音导入器:
         return cursor.fetchone() is not None
 
     def _确保表结构正确(self, conn: sqlite3.Connection):
-        """确保目标表存在且结构正确(修改版)"""
+        """确保目标表存在且结构正确。"""
         source_table = self.SOURCE_TABLE
         if not self._检查表结构(conn):
-            # 如果表结构检查失败，创建或修复表
             cursor = conn.cursor()
             cursor.execute(f'''
             CREATE TABLE IF NOT EXISTS "{self.REQUIRED_TABLE}" (
@@ -56,7 +57,6 @@ class 数字标调拼音导入器:
                 PRIMARY KEY (映射编号),
                 UNIQUE (全拼, 声母, 韵母, 声调)
             )''')
-            # 检查并添加缺失的列
             cursor.execute(f'PRAGMA table_info("{self.REQUIRED_TABLE}")')
             existing_columns = [col[1] for col in cursor.fetchall()]
             required_columns = ["映射编号", "全拼", "声母", "韵母", "声调"]
@@ -77,7 +77,11 @@ class 数字标调拼音导入器:
     def _清空目标表(self, conn: sqlite3.Connection) -> None:
         cursor = conn.cursor()
         cursor.execute(f'DELETE FROM "{self.REQUIRED_TABLE}"')
-        cursor.execute("DELETE FROM sqlite_sequence WHERE name=?", (self.REQUIRED_TABLE,))
+        has_sequence = cursor.execute(
+            "SELECT 1 FROM sqlite_master WHERE type='table' AND name='sqlite_sequence'"
+        ).fetchone()
+        if has_sequence is not None:
+            cursor.execute("DELETE FROM sqlite_sequence WHERE name=?", (self.REQUIRED_TABLE,))
         conn.commit()
 
     def 从映射表加载数据(self, conn: sqlite3.Connection) -> Dict[str, Dict[str, str]]:
@@ -100,17 +104,16 @@ class 数字标调拼音导入器:
         return 数据
 
     def 解析拼音(self, pinyin_str: str) -> dict:
-        """将数字标调拼音解析为声母、韵母、声调"""
-        tone = int(pinyin_str[-1]) if pinyin_str[-1].isdigit() else 1
-        base = pinyin_str[:-1] if pinyin_str[-1].isdigit() else pinyin_str
+        """使用 SyllableSplitter 统一规则，将数字标调拼音解析为声母、韵母、声调。"""
+        shouyin, ganyin = SyllableSplitter.split_syllable(pinyin_str)
+        normalized_initial = "" if shouyin == "'" else shouyin
 
-        initials = ["b", "p", "m", "f", "d", "t", "n", "l", "g", "k", "h",
-                   "j", "q", "x", "zh", "ch", "sh", "r", "z", "c", "s", "y", "w"]
-        shengmu = next((sm for sm in initials if base.startswith(sm)), "")
-        yunmu = base[len(shengmu):]
+        numeric_final = SyllableSplitter.REVERSE_SPECIAL_SYLLABLES.get(ganyin, ganyin)
+        tone = int(numeric_final[-1]) if numeric_final and numeric_final[-1].isdigit() else 1
+        yunmu = numeric_final[:-1] if numeric_final and numeric_final[-1].isdigit() else numeric_final
 
         return {
-            "声母": shengmu,
+            "声母": normalized_initial,
             "韵母": yunmu,
             "声调": tone
         }
@@ -123,7 +126,6 @@ class 数字标调拼音导入器:
             cursor = conn.cursor()
             source_table = self.SOURCE_TABLE
 
-            # 获取源数据
             cursor.execute(f'''
             SELECT 映射编号, 原拼音, 目标拼音 FROM "{source_table}"
                         WHERE 原拼音类型 = '{NUMERIC_SOURCE_TYPE}'
@@ -150,28 +152,24 @@ class 数字标调拼音导入器:
             return len(rows)
 
     def _检查表结构(self, conn: sqlite3.Connection) -> bool:
-        """检查数据库表结构是否完整(新增方法)"""
+        """检查数据库表结构是否完整。"""
         cursor = conn.cursor()
 
-        # 检查目标表是否存在
         if not self._检查表存在(conn, self.REQUIRED_TABLE):
             self.日志.error(f"表 {self.REQUIRED_TABLE} 不存在")
             return False
 
-        # 检查源表是否存在
         source_table = self.SOURCE_TABLE
         if not self._检查表存在(conn, source_table):
             self.日志.error(f"表 {source_table} 不存在")
             return False
 
-        # 检查源表是否有需要的列
         cursor.execute(f'PRAGMA table_info("{source_table}")')
         源表列 = [col[1] for col in cursor.fetchall()]
         if "原拼音" not in 源表列 or "目标拼音" not in 源表列 or "目标拼音类型" not in 源表列:
             self.日志.error(f"表 {source_table} 缺少必要的列")
             return False
 
-        # 检查目标表是否有需要的列
         cursor.execute(f'PRAGMA table_info("{self.REQUIRED_TABLE}")')
         目标表列 = [col[1] for col in cursor.fetchall()]
         required_columns = ["映射编号", "全拼", "声母", "韵母", "声调"]
@@ -182,7 +180,7 @@ class 数字标调拼音导入器:
         return True
 
     def 清理重复数据(self) -> int:
-        """清理表中的重复拼音数据"""
+        """清理表中的重复拼音数据。"""
         with self._获取连接() as conn:
             cursor = conn.cursor()
             cursor.execute(f'''
@@ -196,10 +194,16 @@ class 数字标调拼音导入器:
             conn.commit()
             return cursor.rowcount
 
+
+def rebuild_numeric_pinyin(database_path: str | Path = DEFAULT_DB) -> int:
+    """对外暴露的重建入口：从库内规范映射面全量刷新数字标调拼音。"""
+    导入器 = 数字标调拼音导入器(database_path)
+    return 导入器.导入数据()
+
+
 if __name__ == "__main__":
-    导入器 = 数字标调拼音导入器()
     try:
-        结果 = 导入器.导入数据()
+        结果 = rebuild_numeric_pinyin()
         print(f"导入结果: {结果} 条记录")
     except Exception as e:
         print(f"错误: {e}")

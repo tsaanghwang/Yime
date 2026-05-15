@@ -16,6 +16,13 @@ def test_normalize_numeric_pinyin_syllable_spacing_splits_compact_tone_numbers()
     assert normalize_numeric_pinyin_syllable_spacing("duori4") == "duori4"
 
 
+def test_normalize_numeric_pinyin_syllable_spacing_standardizes_v_series() -> None:
+    assert normalize_numeric_pinyin_syllable_spacing("lve4") == "lüe4"
+    assert normalize_numeric_pinyin_syllable_spacing("nve4") == "nüe4"
+    assert normalize_numeric_pinyin_syllable_spacing("lv2") == "lü2"
+    assert normalize_numeric_pinyin_syllable_spacing("lvan2 nve4") == "lüan2 nüe4"
+
+
 def test_user_lexicon_store_persists_phrase_entry(tmp_path) -> None:
     store = UserLexiconStore(tmp_path / "user_lexicon.db")
     action = store.upsert_phrase(
@@ -211,6 +218,15 @@ def test_resolve_yime_code_from_compact_numeric_pinyin_matches_spaced_input() ->
     compact = resolve_yime_code_from_numeric_pinyin(repo_root, "ri4ben3")
 
     assert compact == spaced
+
+
+def test_resolve_yime_code_from_v_series_matches_standard_u_umlaut_input() -> None:
+    repo_root = Path(__file__).resolve().parents[2]
+
+    assert resolve_yime_code_from_numeric_pinyin(repo_root, "lve4") == resolve_yime_code_from_numeric_pinyin(repo_root, "lüe4")
+    assert resolve_yime_code_from_numeric_pinyin(repo_root, "nve4") == resolve_yime_code_from_numeric_pinyin(repo_root, "nüe4")
+    assert resolve_yime_code_from_numeric_pinyin(repo_root, "lv2") == resolve_yime_code_from_numeric_pinyin(repo_root, "lü2")
+    assert resolve_yime_code_from_numeric_pinyin(repo_root, "lvan2 nve4") == resolve_yime_code_from_numeric_pinyin(repo_root, "lüan2 nüe4")
 
 
 def test_sqlite_runtime_decoder_merges_user_phrase_candidates(tmp_path) -> None:

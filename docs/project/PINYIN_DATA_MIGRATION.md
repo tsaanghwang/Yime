@@ -82,7 +82,7 @@ c:/dev/Yime/.venv/Scripts/python.exe internal_data/pinyin_source_db/export_yaml_
 
 - `yime/db_manager.py`
 - `yime/hanzi_db_manager.py`
-- `yime/import_numeric_pinyin.py`
+- `yime/split_numeric_pinyin.py`
 - `yime/rebuild_yinyuan_structure_table.py`
 - `yime/consolidate_mappings.py`（兼容包装入口；主体已归档到 `yime/legacy/`）
 - `yime/run_full_import.py`（兼容包装入口；主体已归档到 `yime/legacy/`）

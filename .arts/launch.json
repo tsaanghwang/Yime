@@ -29,10 +29,10 @@
       "addSourceRootsToPythonpath": true
     },
     {
-      "name": "import_numeric_pinyin",
+      "name": "split_numeric_pinyin",
       "type": "python",
       "request": "launch",
-      "program": "${workspaceFolder}\\yime\\import_numeric_pinyin.py",
+      "program": "${workspaceFolder}\\yime\\split_numeric_pinyin.py",
       "currentFileConfiguration": false,
       "cwd": "${workspaceFolder}\\yime",
       "addSourceRootsToPythonpath": true,

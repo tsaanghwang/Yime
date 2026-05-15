@@ -177,7 +177,7 @@ CREATE TABLE IF NOT EXISTS "多式拼音映射关系" (
   - 当前正式 schema 定义入口
 - `yime/Initialize_pinyin_mapping.py`
   - 当前 legacy 初始化脚本，现已只建并写入 `多式拼音映射关系`
-- `yime/import_numeric_pinyin.py`
+- `yime/split_numeric_pinyin.py`
   - 当前数字调拼音导入逻辑，现已只把 `多式拼音映射关系` 作为资料层来源
 
 下一步重点是评估是否把当前最小版进一步提升为推荐版三表结构。

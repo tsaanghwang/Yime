@@ -9,6 +9,9 @@ import sqlite3
 from pathlib import Path
 from typing import Any, Dict, List, Literal, Mapping
 
+from yime.canonical_yime_mapping import load_canonical_code_map
+from yime.utils.numeric_pinyin_standardizer import standardize_numeric_pinyin
+
 
 @dataclass(frozen=True)
 class UserPhraseEntry:
@@ -44,13 +47,8 @@ class UserCandidateFrequencyEntry:
 
 
 @lru_cache(maxsize=None)
-def _load_numeric_yime_code_map(mapping_path: str) -> dict[str, str]:
-    payload = json.loads(Path(mapping_path).read_text(encoding="utf-8"))
-    return {
-        str(pinyin_tone).strip(): str(yime_code)
-        for pinyin_tone, yime_code in payload.items()
-        if str(pinyin_tone).strip() and str(yime_code)
-    }
+def _load_numeric_yime_code_map(repo_root_path: str) -> dict[str, str]:
+    return load_canonical_code_map(Path(repo_root_path))
 
 
 def _split_compact_numeric_pinyin_token(token: str) -> list[str]:
@@ -79,7 +77,7 @@ def normalize_numeric_pinyin_syllable_spacing(raw_pinyin: str) -> str:
     normalized_tokens: list[str] = []
     for token in raw_pinyin.split():
         normalized_tokens.extend(_split_compact_numeric_pinyin_token(token))
-    return " ".join(normalized_tokens)
+    return " ".join(standardize_numeric_pinyin(token) for token in normalized_tokens if token)
 
 
 def resolve_yime_code_from_numeric_pinyin(repo_root: Path, numeric_pinyin: str) -> str:
@@ -87,9 +85,7 @@ def resolve_yime_code_from_numeric_pinyin(repo_root: Path, numeric_pinyin: str) 
     if not normalized:
         return ""
 
-    mapping = _load_numeric_yime_code_map(
-        str(repo_root / "syllable" / "codec" / "yinjie_code.json")
-    )
+    mapping = _load_numeric_yime_code_map(str(repo_root))
     parts: list[str] = []
     for syllable in normalized.split(" "):
         yime_code = mapping.get(syllable)

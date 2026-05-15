@@ -5,6 +5,8 @@ import json
 import sqlite3
 from pathlib import Path
 
+from yime.utils.numeric_pinyin_standardizer import standardize_numeric_pinyin
+
 
 WORKSPACE_ROOT = Path(__file__).resolve().parent.parent
 CANONICAL_PATCH_PATH = WORKSPACE_ROOT / "internal_data" / "pinyin_source_db" / "canonical_yime_patch.csv"
@@ -38,7 +40,7 @@ def load_canonical_code_map(repo_root: Path | None = None) -> dict[str, str]:
     bmp_to_canonical = build_bmp_to_canonical_map(resolved_root)
 
     canonical_code_map = {
-        pinyin: canonicalize_code(code, bmp_to_canonical)
+        standardize_numeric_pinyin(pinyin): canonicalize_code(code, bmp_to_canonical)
         for pinyin, code in code_map.items()
     }
 
@@ -58,7 +60,7 @@ def load_canonical_patch_map(repo_root: Path | None = None) -> dict[str, tuple[s
     with CANONICAL_PATCH_PATH.open("r", encoding="utf-8-sig", newline="") as handle:
         reader = csv.DictReader(handle)
         for row in reader:
-            pinyin_tone = str(row.get("pinyin_tone") or "").strip()
+            pinyin_tone = standardize_numeric_pinyin(str(row.get("pinyin_tone") or "").strip())
             raw_code = str(row.get("yime_code") or "")
             mapping_id_raw = str(row.get("mapping_id") or "").strip()
             if not pinyin_tone or not raw_code:
@@ -75,6 +77,7 @@ def build_canonical_pinyin_rows(
     repo_root: Path | None = None,
 ) -> list[tuple[str, str, str]]:
     canonical_code_map = load_canonical_code_map(repo_root)
+    canonical_patch_map = load_canonical_patch_map(repo_root)
     rows = conn.execute(
         '''
         SELECT DISTINCT pinyin_tone
@@ -85,15 +88,19 @@ def build_canonical_pinyin_rows(
     ).fetchall()
 
     pinyin_rows: list[tuple[str, str, str]] = []
+    seen_pinyin: set[str] = set()
     for (pinyin_tone_raw,) in rows:
-        pinyin_tone = str(pinyin_tone_raw or '').strip()
+        pinyin_tone = standardize_numeric_pinyin(str(pinyin_tone_raw or '').strip())
         if not pinyin_tone:
+            continue
+        if pinyin_tone in seen_pinyin:
             continue
         canonical_code = canonical_code_map.get(pinyin_tone, '')
         if not canonical_code:
             continue
-        source_name = 'canonical_patch' if pinyin_tone in load_canonical_patch_map(repo_root) else 'yinjie_code'
+        source_name = 'canonical_patch' if pinyin_tone in canonical_patch_map else 'yinjie_code'
         pinyin_rows.append((pinyin_tone, canonical_code, source_name))
+        seen_pinyin.add(pinyin_tone)
 
     return pinyin_rows
 
@@ -118,7 +125,7 @@ def build_canonical_mapping_rows(
     grouped: dict[int, dict[str, object]] = defaultdict(lambda: {"codes": set(), "tones": []})
     for mapping_id_raw, pinyin_tone_raw in rows:
         mapping_id = int(mapping_id_raw)
-        pinyin_tone = str(pinyin_tone_raw or "").strip()
+        pinyin_tone = standardize_numeric_pinyin(str(pinyin_tone_raw or "").strip())
         if not pinyin_tone:
             continue
         canonical_code = canonical_code_map.get(pinyin_tone, "")
