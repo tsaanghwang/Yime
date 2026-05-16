@@ -64,8 +64,9 @@ YIME/
 │   ├── import_danzi_into_prototype_tables.py  # 单字 prototype 导入主线
 │   ├── import_duozi_into_prototype_tables.py  # 词语 prototype 导入主线
 │   ├── refresh_runtime_yime_codes.py          # canonical/runtime 同步主线
-│   ├── db_manager.py                          # legacy-compatible 旧数据库管理入口
-│   └── hanzi_db_manager.py                    # legacy-compatible 旧汉字数据库入口
+│   └── legacy/pending_removal/                # legacy-compatible 旧数据库接口归档
+│       ├── db_manager.py                      # 旧数据库管理入口
+│       └── hanzi_db_manager.py                # 旧汉字数据库入口
 │
 ├── pinyin/               # 拼音处理模块
 │   ├── yunmu_to_keys.py       # 韵母转换
@@ -584,7 +585,7 @@ A: 当前主线不要再直接维护旧短表名映射接口。
 如果你是在维护资料层拼音对照，请修改 `pinyin_yime_code` 来源并重跑：
 
 ```python
-from yime.Initialize_pinyin_mapping import rebuild_mappings_from_db
+from yime.utils.legacy_pinyin_tables.Initialize_pinyin_mapping import rebuild_mappings_from_db
 
 count = rebuild_mappings_from_db()
 print(count)

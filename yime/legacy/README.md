@@ -32,7 +32,6 @@
 - `test_db_manager_final_v2.py`
 - `test_duplicate_groups.py`
 - `test_hanzi_db_manager.py`
-- `test_hanzi_pinyin_data.py`
 - `test_index_constraint.py`
 这些脚本的共同特点是：
 
@@ -72,7 +71,7 @@
 - `db_manager.py`
 - `hanzi_db_manager.py`
 
-现在 `yime/` 主目录和 `yime/legacy/` 顶层的同名文件都只保留极薄的兼容包装入口，避免旧命令路径立即失效，同时不再把真实旧实现继续留在当前主链可见面上。
+现在这些 legacy 入口的真实实现已经分别落在 `yime/legacy/pending_removal/` 与 `yime/utils/legacy_pinyin_tables/`，不再继续保留 `yime/` 主目录下的同名兼容包装文件。
 
 如果需要当前主线的数据重建，请不要从本目录中的脚本开始，而应改走：
 
