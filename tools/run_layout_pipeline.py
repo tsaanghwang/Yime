@@ -23,6 +23,23 @@ DEFAULT_KLC_PATH = ROOT / "yinyuan.klc"
 DEFAULT_MSKLC_PATH = Path(r"C:\Program Files (x86)\Microsoft Keyboard Layout Creator 1.4\MSKLC.exe")
 
 
+def validate_required_paths(args: argparse.Namespace) -> None:
+    required_paths = [
+        CONSISTENCY_SCRIPT,
+        RESOLVE_SCRIPT,
+        GENERATE_KLC_SCRIPT,
+        args.layout,
+        args.symbols,
+    ]
+    if args.export_visual_table:
+        required_paths.append(EXPORT_VISUAL_SCRIPT)
+
+    missing_paths = [path for path in required_paths if not path.exists()]
+    if missing_paths:
+        missing_display = ", ".join(str(path) for path in missing_paths)
+        raise FileNotFoundError(f"required layout-pipeline path not found: {missing_display}")
+
+
 def run_step(title: str, command: list[str]) -> None:
     print(f"[{title}] {' '.join(str(part) for part in command)}")
     subprocess.run(command, check=True, cwd=ROOT)
@@ -216,8 +233,9 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def main() -> None:
+def main() -> int:
     args = parse_args()
+    validate_required_paths(args)
     python_executable = Path(sys.executable)
     warning_policy = resolve_warning_policy(args)
     open_policy = resolve_open_policy(args)
@@ -275,7 +293,8 @@ def main() -> None:
     maybe_open_msklc(DEFAULT_KLC_PATH, args.msklc_path, open_policy)
 
     print("Layout pipeline completed.")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())
