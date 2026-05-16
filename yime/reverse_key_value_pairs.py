@@ -1,10 +1,13 @@
+"""Public shim for the reverse-key/value JSON helper."""
+
 from pathlib import Path
 
 from yime.utils.reverse_key_value_pairs import reverse_key_value_pairs
 
-"""Public shim for the reverse-key/value JSON helper."""
+__all__ = ["main", "reverse_key_value_pairs"]
 
-if __name__ == "__main__":
+
+def main() -> int:
     script_dir = Path(__file__).parent.resolve()
     input_file = script_dir.parent / "syllable" / "codec" / "yinjie_code.json"
     output_file = script_dir / "code_pinyin.json"
@@ -17,5 +20,11 @@ if __name__ == "__main__":
         print(f"新键值对数量: {new}")
         print(f"合并项数量: {merged}")
         print(f"结果已保存到: {output_file}")
-    else:
-        print("操作失败，请检查输入文件是否存在且格式正确。")
+        return 0
+
+    print("操作失败，请检查输入文件是否存在且格式正确。")
+    return 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
