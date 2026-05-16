@@ -338,6 +338,8 @@
 
 #### 6C. `yime/reports/` 运行桥接文件与分析产物（2026-05）
 
+补充：生成这些运行桥接 JSON 的兼容入口仍保留在 `yime/export_runtime_candidates_json.py`，但真实实现现已下沉到 `yime/utils/runtime_candidates_export.py`。
+
 - `yime/reports/runtime_candidates_by_code_true.json`
   - 分类：保留的运行时桥接导出。
   - 原因：当前输入法候选框与相关分析文档仍直接消费这份“仅真实音元编码键”的 JSON，它虽然可以从数据库重导出，但在当前仓库里承担实际运行输入面。
