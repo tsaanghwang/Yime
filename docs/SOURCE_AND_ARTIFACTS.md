@@ -290,19 +290,23 @@
   - 分类：已归档的旧数据库实验脚本。
   - 原因：仓库主线已经切到 `yinjie_code.json + pinyin_normalized.json + input_method decoder` 组合链；该脚本只剩手动调试价值，因此迁入 `yime/legacy/`。
 
-- 待清除实现层：`yime/legacy/pending_removal/Initialize_pinyin_mapping.py`、`yime/legacy/pending_removal/Initialize_hanzi_pinyin.py`、`yime/legacy/pending_removal/hanzi_db_manager.py`
-  - 分类：已从主目录剥离的 legacy-compatible 初始化/数据库接口实现。
-  - 原因：当前主线已不再通过主目录入口暴露这些旧接口；真实旧实现统一收拢到 `yime/legacy/pending_removal/`。
+- `yime/legacy/map_pinyin_to_hanzi.py`
+  - 分类：已归档的旧数据库导入脚本。
+  - 原因：当前静态候选链虽然仍读取 `yime/pinyin_hanzi.json`，但这个脚本本身只是把该 JSON 写回 `yime/pinyin_hanzi.db` 的 `标准拼音同音字表`；仓库主线 rebuild/runtime 已不再通过它建链，因此迁入 `yime/legacy/`。
 
-- 待清除实现层：`yime/legacy/pending_removal/split_numeric_pinyin.py`、`yime/legacy/pending_removal/rebuild_yinyuan_structure_table.py`
+- 待清除实现层：`yime/utils/legacy_pinyin_tables/Initialize_pinyin_mapping.py`、`yime/legacy/pending_removal/Initialize_hanzi_pinyin.py`、`yime/legacy/pending_removal/hanzi_db_manager.py`
+  - 分类：已从主目录剥离的 legacy-compatible 初始化/数据库接口实现。
+  - 原因：当前主线已不再通过主目录入口暴露这些旧接口；三表生成链已移到 `yime/utils/legacy_pinyin_tables/`，其余旧 DB 入口仍留在 `yime/legacy/pending_removal/`。
+
+- 待清除实现层：`yime/utils/legacy_pinyin_tables/split_numeric_pinyin.py`、`yime/utils/legacy_pinyin_tables/rebuild_yinyuan_structure_table.py`
   - 分类：已从主目录剥离的 legacy-compatible 实现模块。
-  - 原因：聚焦测试和旧维护脚本已改为直接引用 `pending_removal` 下的实现；它们不再作为 root-level compatibility implementation 保留。
+  - 原因：它们只服务 `多式拼音映射关系 / 音元拼音 / 数字标调拼音` 三表的生成链，已从 `legacy` 归档目录移到 `utils` 下的专用子包。
 
 当前处理原则补充：
 
 1. 主线重建优先走 `internal_data/pinyin_source_db/` 与 prototype 导入链，不再把旧中文表维护脚本当成默认入口。
 2. `.yaml` 词库导出已经独立到 `internal_data/pinyin_source_db/export_yaml_lexicon_json.py`，可单独执行，不必穿过 SQLite 链。
-3. `yime/legacy/` 中的脚本默认不继续扩展新功能，只保留历史兼容与审计用途；其中旧 DB / JSON 实现现已进一步集中到 `yime/legacy/pending_removal/`。数据库维护脚本产生的 `.bak`/`pre_*` 等回退文件应统一视为本地副产物，不再提交。
+3. `yime/legacy/` 中的脚本默认不继续扩展新功能，只保留历史兼容与审计用途；其中旧 schema / 汉字接口继续留在 `yime/legacy/pending_removal/`，而三表生成链已移到 `yime/utils/legacy_pinyin_tables/`。数据库维护脚本产生的 `.bak`/`pre_*` 等回退文件应统一视为本地副产物，不再提交。
 
 #### 6C. `yime/reports/` 运行桥接文件与分析产物（2026-05）
 

@@ -7,8 +7,8 @@ import sqlite3
 import sys
 from pathlib import Path
 
-from yime.legacy.pending_removal.split_numeric_pinyin import rebuild_numeric_pinyin
-from yime.legacy.pending_removal.rebuild_yinyuan_structure_table import rebuild_yinyuan_structure_table
+from yime.utils.legacy_pinyin_tables.split_numeric_pinyin import rebuild_numeric_pinyin
+from yime.utils.legacy_pinyin_tables.rebuild_yinyuan_structure_table import rebuild_yinyuan_structure_table
 from yime.utils.pinyin_zhuyin import PinyinZhuyinConverter
 
 

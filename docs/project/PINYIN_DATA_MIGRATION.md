@@ -93,7 +93,7 @@ c:/dev/Yime/.venv/Scripts/python.exe internal_data/pinyin_source_db/export_yaml_
 兼容层分工可以这样理解：
 
 - `yime/run_db_setup.py` 只是指向 `yime/legacy/pending_removal/db_manager.py` 的兼容脚本入口，不负责当前主线 rebuild。
-- 旧 DB / JSON 真实实现不再保留主目录或 `yime/legacy/` 顶层同名壳，统一直接放在 `yime/legacy/pending_removal/`。
+- 旧 DB / JSON 真实实现不再保留主目录或 `yime/legacy/` 顶层同名壳；旧 schema / 汉字接口保留在 `yime/legacy/pending_removal/`，三表生成链移到 `yime/utils/legacy_pinyin_tables/`。
 - 当前主线如果需要真正刷新可消费数据，仍应回到本文第 1 节的 `source_pinyin.db -> prototype tables -> runtime` 链。
 
 ## 4. 已归档的旧脚本

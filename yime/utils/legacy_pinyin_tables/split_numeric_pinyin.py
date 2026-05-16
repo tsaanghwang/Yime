@@ -1,9 +1,10 @@
 """Legacy-compatible numeric-pinyin rebuild implementation.
 
-This module still lives at the package root because compatibility callers and
-focused tests import it directly. It rebuilds the retained `数字标调拼音` table,
-but it is not part of the current `source_pinyin.db -> prototype -> runtime`
-mainline rebuild path.
+This module lives in the dedicated `yime.utils.legacy_pinyin_tables` package
+because it belongs to the retained three-table reference rebuild chain rather
+than the broader `yime.legacy` archive. It rebuilds the retained `数字标调拼音`
+table, but it is not part of the current
+`source_pinyin.db -> prototype -> runtime` mainline rebuild path.
 """
 
 import sqlite3

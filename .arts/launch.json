@@ -101,7 +101,7 @@
       "name": "map_pinyin_to_hanzi",
       "type": "python",
       "request": "launch",
-      "program": "${workspaceFolder}\\yime\\map_pinyin_to_hanzi.py",
+      "program": "${workspaceFolder}\\yime\\legacy\\map_pinyin_to_hanzi.py",
       "currentFileConfiguration": false,
       "cwd": "${workspaceFolder}\\yime",
       "addSourceRootsToPythonpath": true,

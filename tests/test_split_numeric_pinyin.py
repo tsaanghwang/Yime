@@ -1,6 +1,6 @@
 import unittest
 
-from yime.legacy.pending_removal.split_numeric_pinyin import 数字标调拼音导入器
+from yime.utils.legacy_pinyin_tables.split_numeric_pinyin import 数字标调拼音导入器
 
 
 class TestSplitNumericPinyin(unittest.TestCase):

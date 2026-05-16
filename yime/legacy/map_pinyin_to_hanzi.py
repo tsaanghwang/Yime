@@ -1,4 +1,5 @@
-# yime/map_pinyin_to_hanzi.py
+"""旧版数据库驱动的标准拼音同音字表导入脚本。"""
+
 import sqlite3
 import json
 from pathlib import Path
@@ -14,9 +15,10 @@ logger = logging.getLogger(__name__)
 
 class PinyinHanziMapper:
     def __init__(self, db_path: str = None, json_path: str = None):
-        self.module_dir = Path(__file__).parent
-        self.db_path = Path(db_path) if db_path else self.module_dir / "pinyin_hanzi.db"
-        self.json_path = Path(json_path) if json_path else self.module_dir / "pinyin_hanzi.json"
+        self.module_dir = Path(__file__).resolve().parent
+        self.base_dir = self.module_dir.parent
+        self.db_path = Path(db_path) if db_path else self.base_dir / "pinyin_hanzi.db"
+        self.json_path = Path(json_path) if json_path else self.base_dir / "pinyin_hanzi.json"
 
     def _migrate_table(self, conn: sqlite3.Connection) -> None:
         """迁移表结构从旧版本到新版本"""

@@ -11,6 +11,7 @@
 - `db_inspect_verbose.py`
 - `db_table_list.py`
 - `export_mappings_csv.py`
+- `map_pinyin_to_hanzi.py`
 - `migrate_pinyin_table.py`
 - `create_table.py`
 - `import_initial.py`
@@ -38,6 +39,7 @@
 这些脚本的共同特点是：
 
 - 直接检查或修改旧 `音元拼音 / 数字标调拼音 / 词汇` 结构。
+- 也包括少量直接把旧 JSON 产物写回 `yime/pinyin_hanzi.db` 辅助表的数据库导入脚本，例如 `map_pinyin_to_hanzi.py`。
 - 一部分文件还是带阶段命名的试验性测试变体，用于当时逐步试错 `db_manager.py` 的旧表结构与连接方式。
 - 另一部分则是直接连到 `yime/pinyin_hanzi.db` 的只读探针、一次性约束检查脚本或第三方库用法样例，并不属于当前应维护的自动化测试面。
 - 还包括一条更早的 `pinyin.db` 原型链：用 `create_table.py` 建库、`import_initial.py` 导入 `shengmu.csv`、再由 `update_table.py` 把上层 `initial_ipa.json` 写回旧 `initial` 表；对应的旧实验数据库也一并归档为 `pinyin.db`。
@@ -47,21 +49,30 @@
 
 换句话说，本目录默认视为“仓库内归档资料”，而不是当前可安装包、发布产物或主线 rebuild 流程的一部分。
 
-当前这类 legacy-compatible 数据库 / JSON 实现已经进一步隔离到：
+当前这类 legacy-compatible 数据库 / JSON 实现已按职责拆开：
 
 - `yime/legacy/pending_removal/`
+- `yime/utils/legacy_pinyin_tables/`
 
-其中包括：
+其中：
 
-- `db_manager.py`
+- `yime/legacy/pending_removal/` 保留旧 schema / 汉字初始化 / 旧数据库接口
+- `yime/utils/legacy_pinyin_tables/` 保留三张拼音参考表的生成与校验链
+
+后者当前包括：
+
 - `split_numeric_pinyin.py`
 - `rebuild_yinyuan_structure_table.py`
 - `consolidate_mappings.py`
 - `run_full_import.py`
 - `Initialize_pinyin_mapping.py`
+- `compat_internal_data/*.json`
+
+前者当前包括：
+
+- `db_manager.py`
 - `Initialize_hanzi_pinyin.py`
 - `hanzi_db_manager.py`
-- `compat_internal_data/*.json`
 
 现在 `yime/` 主目录和 `yime/legacy/` 顶层的同名文件都只保留极薄的兼容包装入口，避免旧命令路径立即失效，同时不再把真实旧实现继续留在当前主链可见面上。
 

@@ -10,7 +10,7 @@ Legacy-compatible 音元拼音结构表导入工具。
 定位：
 - 这张表是简拼实验和音节结构分析的基础层，不是当前 runtime 主线候选表。
 - 当前 runtime 主线仍然是 `source_pinyin.db -> prototype tables -> refresh_runtime_yime_codes`。
-- 该模块的真实实现现已移到 `yime/legacy/pending_removal/`，主目录只保留兼容包装层。
+- 该模块的真实实现现已移到 `yime/utils/legacy_pinyin_tables/`，与三表生成链放在同一子包。
 """
 
 import sqlite3
