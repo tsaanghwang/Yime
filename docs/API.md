@@ -139,7 +139,7 @@ print(f"乐音: {musical}")  # ['a']
 
 ### 1. 当前主线数据入口
 
-当前主线没有把 `db_manager.py / hanzi_db_manager.py` 作为默认数据库 API 入口。
+当前主线没有把 `db_manager.py` 作为默认数据库 API 入口；旧 `hanzi_db_manager.py` 已退场。
 如果你的目标是重建当前拼音数据链，请优先使用：
 
 - `internal_data/pinyin_source_db/build_source_pinyin_db.py`

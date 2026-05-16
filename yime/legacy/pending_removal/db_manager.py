@@ -25,6 +25,8 @@ UNUSED_LEGACY_TABLES = (
     "汉字拼音初始数据",
     "拼音映射初始数据",
     "数字标调全拼",
+    "汉字音元拼音映射",
+    "汉字数字标调拼音映射",
 )
 UNUSED_LEGACY_VIEWS = (
     "多音字视图",
@@ -136,24 +138,6 @@ class 表管理器:
                     "最近更新" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )
             ''',
-            '汉字音元拼音映射': '''
-                CREATE TABLE IF NOT EXISTS "汉字音元拼音映射" (
-                    "汉字编号" INTEGER REFERENCES "汉字"("编号"),
-                    "音元拼音编号" INTEGER REFERENCES "音元拼音"("编号"),
-                    "频率" FLOAT DEFAULT 1.0,
-                    "常用读音" BOOLEAN DEFAULT 0,
-                    PRIMARY KEY ("汉字编号", "音元拼音编号")
-                )
-            ''',
-            '汉字数字标调拼音映射': '''
-                CREATE TABLE IF NOT EXISTS "汉字数字标调拼音映射" (
-                    "汉字编号" INTEGER REFERENCES "汉字"("编号"),
-                    "数字标调拼音编号" INTEGER REFERENCES "数字标调拼音"("编号"),
-                    "频率" FLOAT DEFAULT 1.0,
-                    "常用读音" BOOLEAN DEFAULT 0,
-                    PRIMARY KEY ("汉字编号", "数字标调拼音编号")
-                )
-            ''',
             '汉字频率': '''
                 CREATE TABLE IF NOT EXISTS "汉字频率" (
                     "汉字编号" INTEGER PRIMARY KEY REFERENCES "汉字"("编号"),
@@ -199,10 +183,6 @@ class 表管理器:
 
             # 汉字相关索引
             ('索引_汉字_字符', '"汉字"("字符")'),
-            ('索引_汉字音元拼音映射_汉字', '"汉字音元拼音映射"("汉字编号")'),
-            ('索引_汉字音元拼音映射_音元拼音', '"汉字音元拼音映射"("音元拼音编号")'),
-            ('索引_汉字数字标调拼音映射_汉字', '"汉字数字标调拼音映射"("汉字编号")'),
-            ('索引_汉字数字标调拼音映射_数字标调拼音', '"汉字数字标调拼音映射"("数字标调拼音编号")'),
             ('索引_词汇_词语', '"词汇"("词语")'),
             ('索引_词汇_音元拼音', '"词汇"("音元拼音")')
         ]

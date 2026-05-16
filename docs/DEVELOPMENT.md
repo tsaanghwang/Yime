@@ -65,8 +65,7 @@ YIME/
 │   ├── import_duozi_into_prototype_tables.py  # 词语 prototype 导入主线
 │   ├── refresh_runtime_yime_codes.py          # canonical/runtime 同步主线
 │   └── legacy/pending_removal/                # legacy-compatible 旧数据库接口归档
-│       ├── db_manager.py                      # 旧数据库管理入口
-│       └── hanzi_db_manager.py                # 旧汉字数据库入口
+│       └── db_manager.py                      # 旧数据库管理入口
 │
 ├── pinyin/               # 拼音处理模块
 │   ├── yunmu_to_keys.py       # 韵母转换
@@ -89,7 +88,7 @@ YIME/
 
 补充说明：旧的 JS / React 输入法原型链已经迁出主仓库，当前正式外置位置为单独的 `Yime-js-prototype` 仓库。
 本仓库当前开发主线以 `yime/` 下的 Windows IME Python 实现为准。
-拼音数据当前主线 rebuild 链请改看 `docs/project/PINYIN_DATA_MIGRATION.md`，不要再把 `db_manager.py / hanzi_db_manager.py` 视为默认入口。
+拼音数据当前主线 rebuild 链请改看 `docs/project/PINYIN_DATA_MIGRATION.md`，不要再把 `db_manager.py` 视为默认入口；`hanzi_db_manager.py` 已退场。
 
 ---
 

@@ -20,7 +20,6 @@
 - `run_full_import.py`
 - `jsonpath_example.py`
 - `Initialize_pinyin_mapping.py`
-- `hanzi_db_manager.py`
 - `safe_test_unique.py`
 - `safe_test_unique_ignore.py`
 - `test_db_manager.py`
@@ -31,7 +30,6 @@
 - `test_db_manager_final.py`
 - `test_db_manager_final_v2.py`
 - `test_duplicate_groups.py`
-- `test_hanzi_db_manager.py`
 - `test_index_constraint.py`
 这些脚本的共同特点是：
 
@@ -52,10 +50,12 @@
 
 其中：
 
-- `yime/legacy/pending_removal/` 保留旧 schema / 汉字初始化 / 旧数据库接口
+- `yime/legacy/pending_removal/` 保留旧 schema / 旧数据库接口
 - `yime/utils/legacy_pinyin_tables/` 保留三张拼音参考表的生成与校验链
 
 其中一组旧中文辅助视图（`多音字视图`、`拼音映射视图`、`汉字拼音映射视图`、`汉字标准拼音视图`、`汉字音元拼音视图`）已不再保留为兼容面，因为当前主线和保留的 legacy 入口都不再读取它们。
+
+旧 `汉字音元拼音映射` / `汉字数字标调拼音映射` 两张关联表也已退场；当前仍保留的旧中文表兼容面只剩 `汉字`、`汉字频率`、`词汇` 等仍被非归档脚本读取的结构。
 
 后者当前包括：
 
@@ -69,7 +69,6 @@
 前者当前包括：
 
 - `db_manager.py`
-- `hanzi_db_manager.py`
 
 现在这些 legacy 入口的真实实现已经分别落在 `yime/legacy/pending_removal/` 与 `yime/utils/legacy_pinyin_tables/`，不再继续保留 `yime/` 主目录下的同名兼容包装文件。
 
