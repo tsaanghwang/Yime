@@ -11,5 +11,16 @@ from yime.utils.xiandaihaiyu_phrase_frequency_import import (
     write_import_metadata,
 )
 
+__all__ = [
+    "DB_PATH",
+    "FREQUENCY_SOURCE",
+    "SOURCE_PATH",
+    "WORKSPACE_ROOT",
+    "main",
+    "parse_phrase_frequency",
+    "update_phrase_frequencies",
+    "write_import_metadata",
+]
+
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

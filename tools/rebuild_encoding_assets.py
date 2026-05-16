@@ -18,6 +18,19 @@ from yime.utils.reverse_key_value_pairs import reverse_key_value_pairs
 DEFAULT_CODE_PINYIN_OUTPUT = ROOT / "yime" / "code_pinyin.json"
 
 
+def validate_required_paths() -> None:
+    required_paths = [
+        ROOT / "syllable",
+        ROOT / "syllable" / "codec",
+        ROOT / "yime",
+        DEFAULT_CODE_PINYIN_OUTPUT.parent,
+    ]
+    missing_paths = [path for path in required_paths if not path.exists()]
+    if missing_paths:
+        missing_display = ", ".join(str(path) for path in missing_paths)
+        raise FileNotFoundError(f"required encoding-asset path not found: {missing_display}")
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Rebuild the current encoding artifacts used by the input method."
@@ -64,6 +77,7 @@ def rebuild_code_pinyin(input_path: Path, output_path: Path) -> None:
 
 def main() -> int:
     args = parse_args()
+    validate_required_paths()
 
     rebuild_shouyin_assets()
     rebuild_ganyin_assets()
