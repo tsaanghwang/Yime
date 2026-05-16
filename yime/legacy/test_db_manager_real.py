@@ -14,7 +14,7 @@ class Test实际数据库(unittest.TestCase):
 
     def setUp(self):
         """设置测试环境"""
-        self.db_path = Path(__file__).parent / "pinyin_hanzi.db"
+        self.db_path = Path(__file__).resolve().parent.parent / "pinyin_hanzi.db"
         self.conn = sqlite3.connect(str(self.db_path))
 
     def tearDown(self):
@@ -37,7 +37,7 @@ class Test实际数据库(unittest.TestCase):
         # 验证关键表存在
         self.assertIn('音元拼音', tables)
         self.assertIn('数字标调拼音', tables)
-        self.assertIn('汉字拼音初始数据', tables)
+        self.assertNotIn('汉字拼音初始数据', tables)
         self.assertIn('汉字频率', tables)
         self.assertIn('词汇', tables)
 
@@ -48,14 +48,6 @@ class Test实际数据库(unittest.TestCase):
         count = cursor.fetchone()[0]
         self.assertGreater(count, 0)
         print(f"音元拼音数据: {count} 条")
-
-    def test_汉字数据(self):
-        """测试汉字数据"""
-        cursor = self.conn.cursor()
-        cursor.execute('SELECT COUNT(*) FROM "汉字拼音初始数据"')
-        count = cursor.fetchone()[0]
-        self.assertGreater(count, 0)
-        print(f"汉字数据: {count} 条")
 
     def test_词汇数据(self):
         """测试词汇数据"""
@@ -69,13 +61,6 @@ class Test实际数据库(unittest.TestCase):
         """测试查询音元拼音"""
         cursor = self.conn.cursor()
         cursor.execute('SELECT * FROM "音元拼音" LIMIT 5')
-        rows = cursor.fetchall()
-        self.assertGreater(len(rows), 0)
-
-    def test_查询汉字(self):
-        """测试查询汉字"""
-        cursor = self.conn.cursor()
-        cursor.execute('SELECT * FROM "汉字拼音初始数据" LIMIT 5')
         rows = cursor.fetchall()
         self.assertGreater(len(rows), 0)
 
@@ -100,7 +85,7 @@ class Test数据库CRUD操作(unittest.TestCase):
 
     def setUp(self):
         """设置测试环境"""
-        self.db_path = Path(__file__).parent / "pinyin_hanzi.db"
+        self.db_path = Path(__file__).resolve().parent.parent / "pinyin_hanzi.db"
         self.conn = sqlite3.connect(str(self.db_path))
 
     def tearDown(self):
@@ -112,14 +97,9 @@ class Test数据库CRUD操作(unittest.TestCase):
     def test_查询特定拼音(self):
         """测试查询特定拼音"""
         cursor = self.conn.cursor()
-        cursor.execute('SELECT * FROM "音元拼音" WHERE "全拼" = ?', ('zhong',))
-        rows = cursor.fetchall()
-        self.assertGreater(len(rows), 0)
-
-    def test_查询特定汉字(self):
-        """测试查询特定汉字"""
-        cursor = self.conn.cursor()
-        cursor.execute('SELECT * FROM "汉字拼音初始数据" WHERE "汉字" = ?', ('中',))
+        cursor.execute('SELECT "全拼" FROM "音元拼音" LIMIT 1')
+        pinyin = cursor.fetchone()[0]
+        cursor.execute('SELECT * FROM "音元拼音" WHERE "全拼" = ?', (pinyin,))
         rows = cursor.fetchall()
         self.assertGreater(len(rows), 0)
 
@@ -137,14 +117,6 @@ class Test数据库CRUD操作(unittest.TestCase):
         count = cursor.fetchone()[0]
         self.assertGreater(count, 0)
         print(f"不同拼音数量: {count}")
-
-    def test_统计汉字数量(self):
-        """测试统计汉字数量"""
-        cursor = self.conn.cursor()
-        cursor.execute('SELECT COUNT(DISTINCT "汉字") FROM "汉字拼音初始数据"')
-        count = cursor.fetchone()[0]
-        self.assertGreater(count, 0)
-        print(f"不同汉字数量: {count}")
 
     def test_统计词汇数量(self):
         """测试统计词汇数量"""

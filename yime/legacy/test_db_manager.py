@@ -3,6 +3,7 @@ import unittest
 import sqlite3
 import tempfile
 import os
+import shutil
 import gc
 from pathlib import Path
 from yime.legacy.pending_removal.db_manager import 数据库管理器, 表管理器
@@ -12,13 +13,13 @@ class Test数据库管理器(unittest.TestCase):
 
     def setUp(self):
         """设置测试数据库"""
-        # 使用内存数据库避免文件锁定问题
-        self.db_path = ":memory:"
+        self.temp_dir = tempfile.mkdtemp(prefix="yime-db-manager-")
+        self.db_path = os.path.join(self.temp_dir, "test.db")
 
     def tearDown(self):
         """清理测试数据库"""
-        # 内存数据库无需清理
         gc.collect()
+        shutil.rmtree(self.temp_dir, ignore_errors=True)
 
     def test_context_manager_enter(self):
         """测试上下文管理器进入"""
@@ -62,11 +63,6 @@ class Test数据库管理器(unittest.TestCase):
 
     def test_pragma_settings(self):
         """测试 PRAGMA 设置"""
-        # 内存数据库不支持 WAL 模式，跳过此测试
-        # 对于文件数据库，WAL 模式应该被设置
-        if self.db_path == ":memory:":
-            self.skipTest("内存数据库不支持 WAL 模式")
-
         with 数据库管理器(self.db_path) as conn:
             cursor = conn.cursor()
             cursor.execute('PRAGMA journal_mode')
@@ -98,8 +94,8 @@ class Test表管理器(unittest.TestCase):
         cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
         tables = [row[0] for row in cursor.fetchall()]
 
-        # 检查关键表是否存在
-        self.assertIn('汉字拼音初始数据', tables)
+        # 检查保留表存在，已退场旧表不应再创建
+        self.assertNotIn('汉字拼音初始数据', tables)
         self.assertIn('多式拼音映射关系', tables)
         self.assertIn('音元拼音', tables)
         self.assertIn('数字标调拼音', tables)
@@ -135,8 +131,8 @@ class Test数据库操作集成(unittest.TestCase):
 
     def setUp(self):
         """设置完整测试环境"""
-        # 使用内存数据库
-        self.db_path = ":memory:"
+        self.temp_dir = tempfile.mkdtemp(prefix="yime-db-manager-")
+        self.db_path = os.path.join(self.temp_dir, "test.db")
 
         # 初始化数据库结构
         with 数据库管理器(self.db_path) as conn:
@@ -145,32 +141,15 @@ class Test数据库操作集成(unittest.TestCase):
     def tearDown(self):
         """清理测试环境"""
         gc.collect()
-
-    def test_插入汉字拼音数据(self):
-        """测试插入汉字拼音数据"""
-        with 数据库管理器(self.db_path) as conn:
-            cursor = conn.cursor()
-            cursor.execute(
-                'INSERT INTO "汉字拼音初始数据" ("汉字", "拼音", "频率") VALUES (?, ?, ?)',
-                ('中', 'zhong1', 1000.0)
-            )
-
-        # 验证数据已插入
-        with sqlite3.connect(self.db_path) as conn:
-            cursor = conn.cursor()
-            cursor.execute('SELECT "汉字", "拼音", "频率" FROM "汉字拼音初始数据"')
-            row = cursor.fetchone()
-            self.assertEqual(row[0], '中')
-            self.assertEqual(row[1], 'zhong1')
-            self.assertEqual(row[2], 1000.0)
+        shutil.rmtree(self.temp_dir, ignore_errors=True)
 
     def test_插入音元拼音数据(self):
         """测试插入音元拼音数据"""
         with 数据库管理器(self.db_path) as conn:
             cursor = conn.cursor()
             cursor.execute(
-                'INSERT INTO "音元拼音" ("全拼", "简拼", "干音") VALUES (?, ?, ?)',
-                ('zhong', 'zh', 'ong')
+                'INSERT INTO "音元拼音" ("全拼", "简拼", "首音", "干音") VALUES (?, ?, ?, ?)',
+                ('zhong', 'zh', 'zh', 'ong')
             )
 
         # 验证数据已插入
@@ -182,80 +161,13 @@ class Test数据库操作集成(unittest.TestCase):
             self.assertEqual(row[1], 'zh')
             self.assertEqual(row[2], 'ong')
 
-    def test_查询操作(self):
-        """测试查询操作"""
-        # 插入测试数据
-        with 数据库管理器(self.db_path) as conn:
-            cursor = conn.cursor()
-            test_data = [
-                ('中', 'zhong1', 1000.0),
-                ('国', 'guo2', 800.0),
-                ('人', 'ren2', 600.0),
-            ]
-            cursor.executemany(
-                'INSERT INTO "汉字拼音初始数据" ("汉字", "拼音", "频率") VALUES (?, ?, ?)',
-                test_data
-            )
-
-        # 执行查询
-        with sqlite3.connect(self.db_path) as conn:
-            conn.row_factory = sqlite3.Row
-            cursor = conn.cursor()
-            cursor.execute(
-                'SELECT * FROM "汉字拼音初始数据" WHERE "频率" > ? ORDER BY "频率" DESC',
-                (500.0,)
-            )
-            rows = cursor.fetchall()
-
-            self.assertEqual(len(rows), 3)
-            self.assertEqual(rows[0]['汉字'], '中')
-            self.assertEqual(rows[1]['汉字'], '国')
-            self.assertEqual(rows[2]['汉字'], '人')
-
-    def test_更新操作(self):
-        """测试更新操作"""
-        # 插入初始数据
+    def test_退场旧表不会创建(self):
+        """测试已退场旧表不会再被创建"""
         with 数据库管理器(self.db_path) as conn:
             cursor = conn.cursor()
             cursor.execute(
-                'INSERT INTO "汉字拼音初始数据" ("汉字", "拼音", "频率") VALUES (?, ?, ?)',
-                ('中', 'zhong1', 1000.0)
+                "SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='汉字拼音初始数据'"
             )
-
-        # 更新数据
-        with 数据库管理器(self.db_path) as conn:
-            cursor = conn.cursor()
-            cursor.execute(
-                'UPDATE "汉字拼音初始数据" SET "频率" = ? WHERE "汉字" = ?',
-                (2000.0, '中')
-            )
-
-        # 验证更新
-        with sqlite3.connect(self.db_path) as conn:
-            cursor = conn.cursor()
-            cursor.execute('SELECT "频率" FROM "汉字拼音初始数据" WHERE "汉字" = ?', ('中',))
-            frequency = cursor.fetchone()[0]
-            self.assertEqual(frequency, 2000.0)
-
-    def test_删除操作(self):
-        """测试删除操作"""
-        # 插入测试数据
-        with 数据库管理器(self.db_path) as conn:
-            cursor = conn.cursor()
-            cursor.execute(
-                'INSERT INTO "汉字拼音初始数据" ("汉字", "拼音", "频率") VALUES (?, ?, ?)',
-                ('中', 'zhong1', 1000.0)
-            )
-
-        # 删除数据
-        with 数据库管理器(self.db_path) as conn:
-            cursor = conn.cursor()
-            cursor.execute('DELETE FROM "汉字拼音初始数据" WHERE "汉字" = ?', ('中',))
-
-        # 验证删除
-        with sqlite3.connect(self.db_path) as conn:
-            cursor = conn.cursor()
-            cursor.execute('SELECT COUNT(*) FROM "汉字拼音初始数据"')
             count = cursor.fetchone()[0]
             self.assertEqual(count, 0)
 

@@ -14,7 +14,7 @@ class Test实际数据库(unittest.TestCase):
 
     def setUp(self):
         """设置测试环境"""
-        self.db_path = Path(__file__).parent / "pinyin_hanzi.db"
+        self.db_path = Path(__file__).resolve().parent.parent / "pinyin_hanzi.db"
         self.conn = sqlite3.connect(str(self.db_path))
 
     def tearDown(self):
@@ -37,7 +37,7 @@ class Test实际数据库(unittest.TestCase):
         # 验证关键表存在
         self.assertIn('音元拼音', tables)
         self.assertIn('数字标调拼音', tables)
-        self.assertIn('汉字拼音初始数据', tables)
+        self.assertNotIn('汉字拼音初始数据', tables)
         self.assertIn('词汇', tables)
 
     def test_音元拼音数据(self):
@@ -84,7 +84,7 @@ class Test数据库CRUD操作(unittest.TestCase):
 
     def setUp(self):
         """设置测试环境"""
-        self.db_path = Path(__file__).parent / "pinyin_hanzi.db"
+        self.db_path = Path(__file__).resolve().parent.parent / "pinyin_hanzi.db"
         self.conn = sqlite3.connect(str(self.db_path))
 
     def tearDown(self):
@@ -155,7 +155,7 @@ class Test数据库性能(unittest.TestCase):
 
     def setUp(self):
         """设置测试环境"""
-        self.db_path = Path(__file__).parent / "pinyin_hanzi.db"
+        self.db_path = Path(__file__).resolve().parent.parent / "pinyin_hanzi.db"
         self.conn = sqlite3.connect(str(self.db_path))
 
     def tearDown(self):
