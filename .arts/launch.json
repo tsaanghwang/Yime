@@ -98,16 +98,6 @@
       "noDebug": true
     },
     {
-      "name": "map_pinyin_to_hanzi",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\yime\\legacy\\map_pinyin_to_hanzi.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\yime",
-      "addSourceRootsToPythonpath": true,
-      "noDebug": true
-    },
-    {
       "name": "import_initial",
       "type": "python",
       "request": "launch",

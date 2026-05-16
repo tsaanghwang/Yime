@@ -290,10 +290,6 @@
   - 分类：已归档的旧数据库实验脚本。
   - 原因：仓库主线已经切到 `yinjie_code.json + pinyin_normalized.json + input_method decoder` 组合链；该脚本只剩手动调试价值，因此迁入 `yime/legacy/`。
 
-- `yime/legacy/map_pinyin_to_hanzi.py`
-  - 分类：已归档的旧数据库导入脚本。
-  - 原因：当前静态候选链虽然仍读取 `yime/pinyin_hanzi.json`，但这个脚本本身只是把该 JSON 写回 `yime/pinyin_hanzi.db` 的 `标准拼音同音字表`；仓库主线 rebuild/runtime 已不再通过它建链，因此迁入 `yime/legacy/`。
-
 - 待清除实现层：`yime/utils/legacy_pinyin_tables/Initialize_pinyin_mapping.py`、`yime/legacy/pending_removal/Initialize_hanzi_pinyin.py`、`yime/legacy/pending_removal/hanzi_db_manager.py`
   - 分类：已从主目录剥离的 legacy-compatible 初始化/数据库接口实现。
   - 原因：当前主线已不再通过主目录入口暴露这些旧接口；三表生成链已移到 `yime/utils/legacy_pinyin_tables/`，其余旧 DB 入口仍留在 `yime/legacy/pending_removal/`。
