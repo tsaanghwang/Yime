@@ -2,28 +2,18 @@
 
 这个目录只存放已经脱离当前主线 rebuild/runtime 路径的旧结构脚本。
 
-当前已归档到这里的文件：
+当前顶层只保留几组按职责拆开的 legacy 子目录：
 
-- `manual_db_experiments/convert_pinyin_to_hanzi.py`
-- `maintenance_tests/test_db_manager.py`
-- `maintenance_tests/test_db_manager_real.py`
-- `maintenance_tests/test_db_manager_final_v2.py`
-- `maintenance_tests/test_duplicate_groups.py`
-- `pinyin_db_prototype/create_table.py`
-- `pinyin_db_prototype/import_initial.py`
-- `pinyin_db_prototype/pinyin.db`
-- `pinyin_db_prototype/update_table.py`
-- `pinyin_db_prototype/shengmu.csv`
-这些脚本的共同特点是：
+- `maintenance_tests/`：仍会被人工执行的旧结构维护/观测测试。
+- `manual_db_experiments/`：仍会直连主 `pinyin_hanzi.db` 做手动排查的旧实验入口。
+- `pinyin_db_prototype/`：更早的 `pinyin.db` 原型链；保留建库、导入 `shengmu.csv`、回写 `initial_ipa.json` 以及对应实验数据库。
+- `pending_removal/`：旧 schema / 旧数据库接口的 legacy-compatible 保留面。
+
+这些内容的共同特点是：
 
 - 直接检查或修改旧 `音元拼音 / 数字标调拼音` 结构。
-- 一部分文件还是带阶段命名的试验性测试变体，用于当时逐步试错 `db_manager.py` 的旧表结构与连接方式。
-- 另一部分则是旧数据库驱动的实验入口或一次性原型脚本，并不属于当前应维护的自动化测试面。
-- 其中 `maintenance_tests/` 保留仍会被人工执行的旧结构维护/观测测试。
-- 其中 `manual_db_experiments/` 只保留仍会直连主 `pinyin_hanzi.db` 做手动排查的旧实验入口。
-- `pinyin_db_prototype/` 则保留一条更早的 `pinyin.db` 原型链：用 `create_table.py` 建库、`import_initial.py` 导入 `shengmu.csv`、再由 `update_table.py` 把上层 `initial_ipa.json` 写回旧 `initial` 表；对应的旧实验数据库也一并归档在同目录。
 - 不再属于当前主线 `source_pinyin.db -> prototype tables -> runtime_candidates` 的必要环节。
-- 当前默认不作为主线入口维护；但其中被主目录兼容包装层直接依赖的模块会继续随包分发，避免安装环境中的兼容入口失效；其余内容仍应视为归档资料，而不是当前主线 rebuild 路径。
+- 默认不作为主线入口维护；除兼容包装仍会引用的实现外，其余都应视为归档资料。
 - 继续保留仅为了历史审计、旧库排查或人工迁移参考。
 
 换句话说，本目录默认视为“仓库内归档资料”，而不是当前可安装包、发布产物或主线 rebuild 流程的一部分。
@@ -38,9 +28,7 @@
 - `yime/legacy/pending_removal/` 保留旧 schema / 旧数据库接口
 - `yime/utils/legacy_pinyin_tables/` 保留三张拼音参考表的生成与校验链
 
-其中一组旧中文辅助视图（`多音字视图`、`拼音映射视图`、`汉字拼音映射视图`、`汉字标准拼音视图`、`汉字音元拼音视图`）已不再保留为兼容面，因为当前主线和保留的 legacy 入口都不再读取它们。
-
-旧 `汉字音元拼音映射` / `汉字数字标调拼音映射` 两张关联表、旧 `词汇` 表，以及旧 `汉字` / `汉字频率` 表也已退场；当前保留的兼容面仅剩旧拼音参考表与其迁移辅助脚本。
+其中一组旧中文辅助视图，以及旧 `汉字音元拼音映射` / `汉字数字标调拼音映射` / `词汇` / `汉字` / `汉字频率` 等表都已退场；当前保留的兼容面仅剩旧拼音参考表与其迁移辅助脚本。
 
 后者当前包括：
 
