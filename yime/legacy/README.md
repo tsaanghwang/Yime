@@ -20,7 +20,6 @@
 - `run_full_import.py`
 - `jsonpath_example.py`
 - `Initialize_pinyin_mapping.py`
-- `Initialize_hanzi_pinyin.py`
 - `hanzi_db_manager.py`
 - `safe_test_unique.py`
 - `safe_test_unique_ignore.py`
@@ -57,6 +56,8 @@
 - `yime/legacy/pending_removal/` 保留旧 schema / 汉字初始化 / 旧数据库接口
 - `yime/utils/legacy_pinyin_tables/` 保留三张拼音参考表的生成与校验链
 
+其中一组旧中文辅助视图（`多音字视图`、`拼音映射视图`、`汉字拼音映射视图`、`汉字标准拼音视图`、`汉字音元拼音视图`）已不再保留为兼容面，因为当前主线和保留的 legacy 入口都不再读取它们。
+
 后者当前包括：
 
 - `split_numeric_pinyin.py`
@@ -69,7 +70,6 @@
 前者当前包括：
 
 - `db_manager.py`
-- `Initialize_hanzi_pinyin.py`
 - `hanzi_db_manager.py`
 
 现在 `yime/` 主目录和 `yime/legacy/` 顶层的同名文件都只保留极薄的兼容包装入口，避免旧命令路径立即失效，同时不再把真实旧实现继续留在当前主链可见面上。

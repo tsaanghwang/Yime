@@ -290,13 +290,17 @@
   - 分类：已归档的旧数据库实验脚本。
   - 原因：仓库主线已经切到 `yinjie_code.json + pinyin_normalized.json + input_method decoder` 组合链；该脚本只剩手动调试价值，因此迁入 `yime/legacy/`。
 
-- 待清除实现层：`yime/utils/legacy_pinyin_tables/Initialize_pinyin_mapping.py`、`yime/legacy/pending_removal/Initialize_hanzi_pinyin.py`、`yime/legacy/pending_removal/hanzi_db_manager.py`
+- 待清除实现层：`yime/utils/legacy_pinyin_tables/Initialize_pinyin_mapping.py`、`yime/legacy/pending_removal/hanzi_db_manager.py`
   - 分类：已从主目录剥离的 legacy-compatible 初始化/数据库接口实现。
-  - 原因：当前主线已不再通过主目录入口暴露这些旧接口；三表生成链已移到 `yime/utils/legacy_pinyin_tables/`，其余旧 DB 入口仍留在 `yime/legacy/pending_removal/`。
+  - 原因：当前主线已不再通过主目录入口暴露这些旧接口；三表生成链已移到 `yime/utils/legacy_pinyin_tables/`，剩余旧 DB 入口仅保留在 `yime/legacy/pending_removal/`。
 
 - 待清除实现层：`yime/utils/legacy_pinyin_tables/split_numeric_pinyin.py`、`yime/utils/legacy_pinyin_tables/rebuild_yinyuan_structure_table.py`
   - 分类：已从主目录剥离的 legacy-compatible 实现模块。
   - 原因：它们只服务 `多式拼音映射关系 / 音元拼音 / 数字标调拼音` 三表的生成链，已从 `legacy` 归档目录移到 `utils` 下的专用子包。
+
+- 已清退旧中文辅助视图：`多音字视图`、`拼音映射视图`、`汉字拼音映射视图`、`汉字标准拼音视图`、`汉字音元拼音视图`
+  - 分类：已移除的旧数据库辅助视图。
+  - 原因：它们只服务旧中文表观察/审计，不再被当前主线 rebuild/runtime 或保留的 legacy-compatible 三表生成链读取；继续保留只会扩大历史 schema 面。
 
 当前处理原则补充：
 
@@ -494,7 +498,7 @@
 
 - `import_hanzi_pinyin_data.py`
   - 分类：已删除的根目录旧数据库导入脚本。
-  - 原因：仓库内没有任何代码、文档或脚本再引用它；它直接写入 `yime/pinyin_hanzi.db` 的 `汉字拼音初始数据` 表，功能已被模块内的 `yime/Initialize_hanzi_pinyin.py` 初始化链取代。
+  - 原因：仓库内没有任何代码、文档或脚本再引用它；它直接写入 `yime/pinyin_hanzi.db` 的 `汉字拼音初始数据` 表，而该旧初始化链现已整体退场，不再作为仓库内兼容入口保留。
 
 - `import_frequency_data.py`
   - 分类：已删除的根目录旧字频导入脚本。

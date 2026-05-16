@@ -19,12 +19,19 @@ if not logger.hasHandlers():
 # 统一数据库路径为 yime\pinyin_hanzi.db
 DB_PATH = Path(__file__).resolve().parents[2] / "pinyin_hanzi.db"
 CANONICAL_MAPPING_TABLE = "多式拼音映射关系"
-MAPPING_VIEW_NAME = "拼音映射视图"
 UNUSED_SHORT_MAPPING_TABLE = "拼音映射"
 UNUSED_HOMOPHONE_TABLE = "音元拼音同音表"
 UNUSED_LEGACY_TABLES = (
+    "汉字拼音初始数据",
     "拼音映射初始数据",
     "数字标调全拼",
+)
+UNUSED_LEGACY_VIEWS = (
+    "多音字视图",
+    "拼音映射视图",
+    "汉字拼音映射视图",
+    "汉字标准拼音视图",
+    "汉字音元拼音视图",
 )
 
 class 数据库管理器:
@@ -64,16 +71,6 @@ class 表管理器:
         # 其中 `mapping_yime_code` 作为库内兼容映射面，按唯一 yime_code 重新编号，
         # 供 `音元拼音.映射编号` 对齐引用，避免再次回到仓库外部文件直接建表。
         表结构 = {
-            '汉字拼音初始数据': '''
-                CREATE TABLE IF NOT EXISTS "汉字拼音初始数据" (
-                    "汉字" TEXT NOT NULL,
-                    "拼音" TEXT NOT NULL,
-                    "频率" FLOAT DEFAULT 1.0,
-                    "常用读音" BOOLEAN DEFAULT 0,
-                    "来源" TEXT,
-                    PRIMARY KEY ("汉字", "拼音")
-                )
-            ''',
             CANONICAL_MAPPING_TABLE: f'''
                 CREATE TABLE IF NOT EXISTS "{CANONICAL_MAPPING_TABLE}" (
                     "映射编号" INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -176,55 +173,6 @@ class 表管理器:
                     "常用词语" BOOLEAN DEFAULT 1,
                     "最近更新" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )
-            ''',
-            '汉字标准拼音视图': '''
-                CREATE VIEW IF NOT EXISTS 汉字标准拼音视图 AS
-                SELECT
-                    汉字.编号 AS 汉字编号,
-                    汉字.字符 AS 汉字,
-                    数字标调拼音.全拼 AS 标准拼音,
-                    数字标调拼音.声调 AS 声调
-                FROM 汉字
-                JOIN 汉字数字标调拼音映射 ON 汉字.编号 = 汉字数字标调拼音映射.汉字编号
-                JOIN 数字标调拼音 ON 汉字数字标调拼音映射.数字标调拼音编号 = 数字标调拼音.编号
-                WHERE 汉字数字标调拼音映射.常用读音 = 1
-            ''',
-            '多音字视图': '''
-                CREATE VIEW IF NOT EXISTS 多音字视图 AS
-                SELECT
-                    汉字.字符 AS 汉字,
-                    GROUP_CONCAT(数字标调拼音.全拼, ', ') AS 所有读音
-                FROM 汉字
-                JOIN 汉字数字标调拼音映射 ON 汉字.编号 = 汉字数字标调拼音映射.汉字编号
-                JOIN 数字标调拼音 ON 汉字数字标调拼音映射.数字标调拼音编号 = 数字标调拼音.编号
-                GROUP BY 汉字.编号
-                HAVING COUNT(*) > 1
-            ''',
-            '汉字音元拼音视图': '''
-                CREATE VIEW IF NOT EXISTS 汉字音元拼音视图 AS
-                SELECT
-                    汉字.编号 AS 汉字编号,
-                    汉字.字符 AS 汉字,
-                    音元拼音.全拼 AS 音元拼音,
-                    音元拼音.简拼 AS 简拼
-                FROM 汉字
-                JOIN 汉字音元拼音映射 ON 汉字.编号 = 汉字音元拼音映射.汉字编号
-                JOIN 音元拼音 ON 汉字音元拼音映射.音元拼音编号 = 音元拼音.编号
-                WHERE 汉字音元拼音映射.常用读音 = 1
-            ''',
-            '汉字拼音映射视图': '''
-                CREATE VIEW IF NOT EXISTS 汉字拼音映射视图 AS
-                SELECT
-                    h.编号 AS 汉字编号,
-                    h.字符 AS 汉字,
-                    p.编号 AS 拼音编号,
-                    p.全拼 AS 拼音,
-                    p.声调,
-                    m.频率,
-                    m.常用读音
-                FROM 汉字 h
-                JOIN 汉字数字标调拼音映射 m ON h.编号 = m.汉字编号
-                JOIN 数字标调拼音 p ON m.数字标调拼音编号 = p.编号
             '''
         }
 
@@ -250,8 +198,6 @@ class 表管理器:
              ('索引_音元拼音_全拼映射', '"音元拼音"("全拼", "映射编号")'),  # 联合查询优化
 
             # 汉字相关索引
-            ('索引_汉字拼音初始数据_汉字', '"汉字拼音初始数据"("汉字")'),
-            ('索引_汉字拼音初始数据_拼音', '"汉字拼音初始数据"("拼音")'),
             ('索引_汉字_字符', '"汉字"("字符")'),
             ('索引_汉字音元拼音映射_汉字', '"汉字音元拼音映射"("汉字编号")'),
             ('索引_汉字音元拼音映射_音元拼音', '"汉字音元拼音映射"("音元拼音编号")'),
@@ -306,27 +252,6 @@ class 数据库初始化器:
             raise
 
 
-def _重建拼音映射视图(连接: sqlite3.Connection) -> None:
-    游标 = 连接.cursor()
-    游标.execute(f'DROP VIEW IF EXISTS "{MAPPING_VIEW_NAME}"')
-    游标.execute(
-        f'''
-        CREATE VIEW IF NOT EXISTS "{MAPPING_VIEW_NAME}" AS
-        SELECT
-          pm.映射编号,
-          pm.原拼音类型,
-          pm.原拼音,
-          pm.目标拼音类型,
-          pm.目标拼音,
-          pm.关系类型,
-          pm.时期标签,
-          pm.数据来源,
-          pm.备注
-        FROM "{CANONICAL_MAPPING_TABLE}" pm
-        '''
-    )
-
-
 def _重建数字标调拼音表(连接: sqlite3.Connection) -> None:
     游标 = 连接.cursor()
     游标.execute('DROP TABLE IF EXISTS "数字标调拼音__migration_backup"')
@@ -371,13 +296,6 @@ def _确保多式拼音映射关系(连接: sqlite3.Connection) -> None:
     if 数字标调定义 and CANONICAL_MAPPING_TABLE not in (数字标调定义[0] or ''):
         _重建数字标调拼音表(连接)
 
-    视图定义 = 游标.execute(
-        "SELECT sql FROM sqlite_master WHERE type='view' AND name=?",
-        (MAPPING_VIEW_NAME,),
-    ).fetchone()
-    if not 视图定义 or CANONICAL_MAPPING_TABLE not in (视图定义[0] or ''):
-        _重建拼音映射视图(连接)
-
 
 def _删除未使用短表名残留(连接: sqlite3.Connection) -> None:
     游标 = 连接.cursor()
@@ -398,6 +316,12 @@ def _删除未使用遗留空表(连接: sqlite3.Connection) -> None:
         游标.execute(f'DROP TABLE IF EXISTS "{表名}"')
 
 
+def _删除未使用遗留视图(连接: sqlite3.Connection) -> None:
+    游标 = 连接.cursor()
+    for 视图名 in UNUSED_LEGACY_VIEWS:
+        游标.execute(f'DROP VIEW IF EXISTS "{视图名}"')
+
+
 def run_schema_migrations(db_path: str | Path | None = None) -> None:
     目标路径 = Path(db_path) if db_path else DB_PATH
     with sqlite3.connect(str(目标路径)) as 连接:
@@ -407,6 +331,7 @@ def run_schema_migrations(db_path: str | Path | None = None) -> None:
             _确保多式拼音映射关系(连接)
             _删除未使用短表名残留(连接)
             _删除未使用遗留空表(连接)
+            _删除未使用遗留视图(连接)
             连接.commit()
         finally:
             连接.execute('PRAGMA foreign_keys = ON;')
