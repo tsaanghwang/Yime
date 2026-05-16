@@ -152,7 +152,8 @@
 
 - `yime/pinyin_normalized.json`
   - 当前承担 `数字标调拼音 -> 调号标调拼音` 的显示层资料。
-  - 静态候选解码链直接将它与 `syllable/codec/yinjie_code.json`、`yime/pinyin_hanzi.json` 组合使用，不再经过 `yinjie_mapping.json` / `enhanced_yinjie_mapping.json` 中间产物。
+  - 当前输入法主链优先走运行时 `runtime_candidates` JSON，并在缺失时回退 SQLite `runtime_candidates` 视图；`pinyin_normalized.json` 与 `yime/pinyin_hanzi.json` 现在只服务静态候选兜底层，不再是主候选源。
+  - 静态候选解码链仍直接将它与 `syllable/codec/yinjie_code.json`、`yime/pinyin_hanzi.json` 组合使用，不再经过 `yinjie_mapping.json` / `enhanced_yinjie_mapping.json` 中间产物。
 
 #### 3. 布局解析与布局安装产物
 
