@@ -9,7 +9,11 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parent.parent
-DEFAULT_PACKAGE_DIR = ROOT / "releases" / "msklc-package"
+DEFAULT_EXTERNAL_REPO = ROOT.parent / "Yime-keyboard-layout"
+EXTERNAL_REPO = Path(
+    os.environ.get("YIME_KEYBOARD_LAYOUT_REPO", str(DEFAULT_EXTERNAL_REPO))
+).expanduser().resolve()
+DEFAULT_PACKAGE_DIR = EXTERNAL_REPO / "releases" / "msklc-package"
 DEFAULT_STAGE_DIR = Path(os.environ.get("ProgramData", r"C:\ProgramData")) / "Yinyuan-msklc-install"
 
 
@@ -56,6 +60,16 @@ def parse_args() -> argparse.Namespace:
 def ensure_windows() -> None:
     if sys.platform != "win32":
         raise SystemExit("This reset pipeline currently supports Windows only.")
+
+
+def validate_required_paths(package_dir: Path, stage_dir: Path) -> None:
+    required_paths = [package_dir]
+    if stage_dir.exists():
+        required_paths.append(stage_dir)
+
+    missing = [str(path) for path in required_paths if not path.exists()]
+    if missing:
+        raise FileNotFoundError("Missing required reset paths:\n- " + "\n- ".join(missing))
 
 
 def prompt_yes_no(prompt: str, default_no: bool = True) -> bool:
@@ -121,11 +135,12 @@ def remove_stage_dir(stage_dir: Path, dry_run: bool) -> None:
     shutil.rmtree(stage_dir)
 
 
-def main() -> None:
+def main() -> int:
     args = parse_args()
     ensure_windows()
     package_dir = args.package_dir.resolve()
     stage_dir = args.stage_dir.resolve()
+    validate_required_paths(package_dir, stage_dir)
     inputs = ensure_package_inputs(package_dir)
 
     print(f"Reset package directory: {package_dir}")
@@ -151,7 +166,8 @@ def main() -> None:
 
     print("Reset pipeline completed.")
     print("Recommended next step: rerun the layout pipeline, then the packaging pipeline, then the install pipeline.")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

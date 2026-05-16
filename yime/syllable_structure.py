@@ -4,6 +4,6 @@ The real compatibility implementation now lives next to the retained
 legacy pinyin reference-table rebuild chain.
 """
 
-from yime.utils.legacy_pinyin_tables.syllable_structure import (  # noqa: F401
-    SyllableStructure,
-)
+from yime.utils.legacy_pinyin_tables.syllable_structure import SyllableStructure
+
+__all__ = ["SyllableStructure"]
