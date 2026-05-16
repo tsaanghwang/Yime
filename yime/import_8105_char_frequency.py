@@ -45,21 +45,20 @@ def parse_frequency_rows(path: Path) -> dict[str, int]:
 
 def import_frequency_rows(conn: sqlite3.Connection, frequency_by_char: dict[str, int]) -> tuple[int, int, int]:
     existing_chars = {
-        row[0]: row[1]
-        for row in conn.execute('SELECT "字符", "编号" FROM "汉字"')
+        row[0]
+        for row in conn.execute('SELECT hanzi FROM char_inventory')
     }
 
     if not frequency_by_char:
         return 0, 0, 0
 
     max_frequency = max(frequency_by_char.values())
-    rows_to_insert: list[tuple[int, int, int, str]] = []
+    rows_to_update: list[tuple[int, int, str, str]] = []
     skipped_missing_chars = 0
 
     # 最高频字为 10000，最低为 1，按比例分配
     for hanzi, absolute_frequency in frequency_by_char.items():
-        char_id = existing_chars.get(hanzi)
-        if char_id is None:
+        if hanzi not in existing_chars:
             skipped_missing_chars += 1
             continue
 
@@ -67,24 +66,28 @@ def import_frequency_rows(conn: sqlite3.Connection, frequency_by_char: dict[str,
             rel_freq = int(round(absolute_frequency / max_frequency * 9999)) + 1
         else:
             rel_freq = 1
-        rows_to_insert.append((char_id, absolute_frequency, rel_freq, FREQUENCY_SOURCE))
+        rows_to_update.append((absolute_frequency, rel_freq, FREQUENCY_SOURCE, hanzi))
 
     conn.executemany(
         '''
-        INSERT OR REPLACE INTO "汉字频率" ("汉字编号", "绝对频率", "相对频率", "语料来源")
-        VALUES (?, ?, ?, ?)
+        UPDATE char_inventory
+        SET char_frequency_abs = ?,
+            char_frequency_rel = ?,
+            frequency_source = ?,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE hanzi = ?
         ''',
-        rows_to_insert,
+        rows_to_update,
     )
 
-    return len(rows_to_insert), skipped_missing_chars, max_frequency
+    return len(rows_to_update), skipped_missing_chars, max_frequency
 
 
 def write_import_metadata(conn: sqlite3.Connection, imported_count: int, skipped_count: int, max_frequency: int) -> None:
     rows = [
         ("prototype_8105_frequency_source", str(SOURCE_PATH), "8105 字频 YAML 导入来源"),
-        ("prototype_8105_frequency_imported_rows", str(imported_count), "本次导入写入到汉字频率表的行数"),
-        ("prototype_8105_frequency_skipped_rows", str(skipped_count), "源文件中因缺少对应汉字主表记录而跳过的行数"),
+        ("prototype_8105_frequency_imported_rows", str(imported_count), "本次导入写入到 char_inventory 的行数"),
+        ("prototype_8105_frequency_skipped_rows", str(skipped_count), "源文件中因缺少对应 char_inventory 记录而跳过的行数"),
         ("prototype_8105_frequency_max_abs", str(max_frequency), "本次导入使用的最大绝对频率，用于相对频率归一化"),
     ]
     conn.executemany(

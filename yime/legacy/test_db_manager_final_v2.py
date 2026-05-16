@@ -38,7 +38,10 @@ class Test实际数据库(unittest.TestCase):
         self.assertIn('音元拼音', tables)
         self.assertIn('数字标调拼音', tables)
         self.assertNotIn('汉字拼音初始数据', tables)
+        self.assertNotIn('汉字', tables)
+        self.assertNotIn('汉字频率', tables)
         self.assertNotIn('词汇', tables)
+        self.assertIn('char_inventory', tables)
         self.assertIn('phrase_inventory', tables)
 
     def test_音元拼音数据(self):
@@ -48,6 +51,14 @@ class Test实际数据库(unittest.TestCase):
         count = cursor.fetchone()[0]
         self.assertGreater(count, 0)
         print(f"\n音元拼音数据: {count} 条")
+
+    def test_char_inventory数据(self):
+        """测试 prototype 单字数据"""
+        cursor = self.conn.cursor()
+        cursor.execute('SELECT COUNT(*) FROM char_inventory')
+        count = cursor.fetchone()[0]
+        self.assertGreater(count, 0)
+        print(f"char_inventory 数据: {count} 条")
 
     def test_phrase_inventory数据(self):
         """测试 prototype 词语数据"""
@@ -106,6 +117,16 @@ class Test数据库CRUD操作(unittest.TestCase):
         rows = cursor.fetchall()
         self.assertGreater(len(rows), 0)
 
+    def test_查询特定汉字(self):
+        """测试查询特定汉字"""
+        cursor = self.conn.cursor()
+        cursor.execute('SELECT hanzi FROM char_inventory LIMIT 1')
+        hanzi = cursor.fetchone()[0]
+
+        cursor.execute('SELECT * FROM char_inventory WHERE hanzi = ?', (hanzi,))
+        rows = cursor.fetchall()
+        self.assertGreater(len(rows), 0)
+
     def test_查询特定短语(self):
         """测试查询特定短语"""
         cursor = self.conn.cursor()
@@ -126,6 +147,14 @@ class Test数据库CRUD操作(unittest.TestCase):
         self.assertGreater(count, 0)
         print(f"\n不同拼音数量: {count}")
 
+    def test_统计汉字数量(self):
+        """测试统计 prototype 单字数量"""
+        cursor = self.conn.cursor()
+        cursor.execute('SELECT COUNT(DISTINCT hanzi) FROM char_inventory')
+        count = cursor.fetchone()[0]
+        self.assertGreater(count, 0)
+        print(f"不同汉字数量: {count}")
+
     def test_统计短语数量(self):
         """测试统计 prototype 词语数量"""
         cursor = self.conn.cursor()
@@ -139,6 +168,13 @@ class Test数据库CRUD操作(unittest.TestCase):
         cursor = self.conn.cursor()
         # 检查是否有空值
         cursor.execute('SELECT COUNT(*) FROM "音元拼音" WHERE "全拼" IS NULL OR "全拼" = ""')
+        null_count = cursor.fetchone()[0]
+        self.assertEqual(null_count, 0)
+
+    def test_char_inventory数据完整性(self):
+        """测试 prototype 单字数据完整性"""
+        cursor = self.conn.cursor()
+        cursor.execute('SELECT COUNT(*) FROM char_inventory WHERE hanzi IS NULL OR hanzi = ""')
         null_count = cursor.fetchone()[0]
         self.assertEqual(null_count, 0)
 

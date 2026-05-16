@@ -61,11 +61,6 @@ TIER_BASE_WEIGHTS = {
     "rare": 0.0,
 }
 
-LEGACY_CHAR_FREQUENCY_SOURCES = (
-    "borrowed:RIME-LMDG",
-    "external_data/8105.dict.yaml",
-)
-
 MODERN_COMMON_MAX_RANK = 12_000
 MODERN_COMMON_RANK_DIVISOR = 20.0
 COMMON_READING_WEIGHT = 0.0
@@ -104,11 +99,6 @@ class RefreshStats:
     phrase_rows_to_update: int = 0
     phrase_rows_already_current: int = 0
     phrase_rows_ambiguous: int = 0
-    phrase_rows_missing_pinyin: int = 0
-    runtime_matches_before: int = 0
-    runtime_mismatches_before: int = 0
-    runtime_matches_after: int = 0
-    runtime_mismatches_after: int = 0
 
 
 def parse_args() -> argparse.Namespace:
@@ -118,76 +108,6 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--db", default=str(DB_PATH), help="SQLite 数据库路径")
     parser.add_argument("--apply", action="store_true", help="真正写入数据库；默认仅 dry-run")
     parser.add_argument("--no-backup", action="store_true", help="写库前不创建数据库备份")
-    parser.add_argument(
-        "--backup-retain",
-        type=int,
-        default=DEFAULT_BACKUP_RETAIN_COUNT,
-        help="自动保留最近多少份 yime_code_refresh 备份；设为 0 表示不清理旧备份",
-    )
-    parser.add_argument(
-        "--skip-runtime-export",
-        action="store_true",
-        help="写库后不刷新 runtime_candidates JSON 导出",
-    )
-    parser.add_argument(
-        "--show-examples",
-        type=int,
-        default=10,
-        help="每类问题最多展示多少条样例",
-    )
-    parser.add_argument(
-        "--scan-runtime-tuning",
-        action="store_true",
-        help="在事务内批量扫描弱先验参数组合，并输出首屏指标对比；不会持久写库。",
-    )
-    parser.add_argument(
-        "--scan-limit",
-        type=int,
-        default=20,
-        help="扫描模式下输出前多少组结果。",
-    )
-    parser.add_argument(
-        "--scan-page-size",
-        type=int,
-        default=5,
-        help="扫描模式下按多少候选计算首屏可见率。",
-    )
-    parser.add_argument(
-        "--scan-reading-weight-magnitudes",
-        default="2,5,10",
-        help="扫描模式下常用/非常用读音权重幅度列表；会自动展开成 +v / -v。",
-    )
-    parser.add_argument(
-        "--scan-prior-scale-values",
-        default="2,5",
-        help="扫描模式下词语读音先验 scale 列表。",
-    )
-    parser.add_argument(
-        "--scan-prior-share-values",
-        default="0.98,0.995,0.999",
-        help="扫描模式下 reading_share 门槛列表。",
-    )
-    parser.add_argument(
-        "--scan-prior-min-phrase-count-values",
-        default="1,2,3",
-        help="扫描模式下最小 phrase_count 门槛列表。",
-    )
-    parser.add_argument(
-        "--scan-prior-min-evidence-weight-values",
-        default="0,2,5",
-        help="扫描模式下最小 evidence_weight 门槛列表。",
-    )
-    parser.add_argument(
-        "--scan-high-collision-bucket-limit",
-        type=int,
-        default=20,
-        help="扫描模式下局部评分关注的高碰撞单字桶数量。",
-    )
-    parser.add_argument(
-        "--scan-json-output",
-        default=str(DEFAULT_TUNING_SCAN_JSON_OUTPUT),
-        help="扫描结果 JSON 输出路径。",
-    )
     parser.add_argument(
         "--scan-markdown-output",
         default=str(DEFAULT_TUNING_SCAN_MARKDOWN_OUTPUT),
@@ -491,7 +411,7 @@ def load_8105_char_frequencies(path: Path) -> dict[str, int]:
     return frequency_by_char
 
 
-def bridge_legacy_char_frequencies(conn: sqlite3.Connection) -> dict[str, int | str]:
+def summarize_char_frequency_state(conn: sqlite3.Connection) -> dict[str, int | str]:
     existing_row = conn.execute(
         """
         SELECT COUNT(*), SUM(CASE WHEN char_frequency_abs IS NOT NULL OR char_frequency_rel IS NOT NULL THEN 1 ELSE 0 END)
@@ -499,74 +419,19 @@ def bridge_legacy_char_frequencies(conn: sqlite3.Connection) -> dict[str, int | 
         """
     ).fetchone()
     total_chars = int(existing_row[0] or 0) if existing_row is not None else 0
-    populated_before = int(existing_row[1] or 0) if existing_row is not None else 0
+    populated_now = int(existing_row[1] or 0) if existing_row is not None else 0
 
-    legacy_rows = conn.execute(
-        """
-        SELECT ci.hanzi, hf.绝对频率, hf.相对频率, COALESCE(hf.语料来源, '')
-        FROM 汉字频率 AS hf
-        JOIN 汉字 AS hz
-            ON hz.编号 = hf.汉字编号
-        JOIN char_inventory AS ci
-            ON ci.hanzi = hz.字符
-        WHERE hf.绝对频率 IS NOT NULL OR hf.相对频率 IS NOT NULL
-        """
-    ).fetchall()
-
-    best_by_char: dict[str, tuple[int | None, float | None, str]] = {}
-    for row in legacy_rows:
-        hanzi = str(row[0] or "")
-        if not hanzi:
-            continue
-        abs_freq = int(row[1]) if row[1] is not None else None
-        rel_freq = float(row[2]) if row[2] is not None else None
-        source = str(row[3] or "").strip()
-        previous = best_by_char.get(hanzi)
-        candidate_key = (
-            0 if source in LEGACY_CHAR_FREQUENCY_SOURCES else 1,
-            -(abs_freq or 0),
-            -(rel_freq or 0.0),
-            source,
-        )
-        if previous is None:
-            best_by_char[hanzi] = (abs_freq, rel_freq, source)
-            continue
-        previous_key = (
-            0 if previous[2] in LEGACY_CHAR_FREQUENCY_SOURCES else 1,
-            -(previous[0] or 0),
-            -(previous[1] or 0.0),
-            previous[2],
-        )
-        if candidate_key < previous_key:
-            best_by_char[hanzi] = (abs_freq, rel_freq, source)
-
-    if best_by_char:
-        max_abs = max((abs_freq or 0) for abs_freq, _rel_freq, _source in best_by_char.values())
-        if max_abs <= 0:
-            max_abs = 1
-        rows_to_update = []
-        source_counter: Counter[str] = Counter()
-        for hanzi, (abs_freq, rel_freq, source) in best_by_char.items():
-            normalized_rel = rel_freq
-            if normalized_rel is None:
-                normalized_rel = float(abs_freq or 0) / float(max_abs)
-            source_label = source or "legacy:汉字频率"
-            source_counter[source_label] += 1
-            rows_to_update.append((abs_freq, float(normalized_rel), source_label, hanzi))
-
-        conn.executemany(
+    source_counter = Counter(
+        str(row[0] or "").strip()
+        for row in conn.execute(
             """
-            UPDATE char_inventory
-            SET char_frequency_abs = ?,
-                char_frequency_rel = ?,
-                frequency_source = ?,
-                updated_at = CURRENT_TIMESTAMP
-            WHERE hanzi = ?
-            """,
-            rows_to_update,
+            SELECT frequency_source
+            FROM char_inventory
+            WHERE char_frequency_abs IS NOT NULL OR char_frequency_rel IS NOT NULL
+            """
         )
-    else:
-        source_counter = Counter()
+        if str(row[0] or "").strip()
+    )
 
     populated_after = conn.execute(
         """
@@ -590,27 +455,27 @@ def bridge_legacy_char_frequencies(conn: sqlite3.Connection) -> dict[str, int | 
             ),
             (
                 "prototype_char_frequency_bridge_populated_before",
-                str(populated_before),
-                "桥接前 char_inventory 中已有频率的字数",
+                str(populated_now),
+                "统计时 char_inventory 中已有频率的字数",
             ),
             (
                 "prototype_char_frequency_bridge_populated_after",
                 str(populated_after_count),
-                "桥接后 char_inventory 中已有频率的字数",
+                "统计后 char_inventory 中已有频率的字数",
             ),
             (
                 "prototype_char_frequency_bridge_dominant_source",
                 dominant_source,
-                "桥接后采用最多的旧频率来源标签",
+                "当前 char_inventory 中采用最多的频率来源标签",
             ),
         ],
     )
 
     return {
         "total_chars": total_chars,
-        "populated_before": populated_before,
+        "populated_before": populated_now,
         "populated_after": populated_after_count,
-        "bridged_rows": len(best_by_char),
+        "bridged_rows": 0,
         "dominant_source": dominant_source,
     }
 
@@ -1857,10 +1722,10 @@ def main() -> int:
         print(f"已同步 canonical pinyin_yime_code 行: {canonical_mapping_count}")
         print(f"已同步 phrase_reading_preference 行: {preferred_phrase_count}")
         tuning_parameters = load_runtime_tuning_parameters(conn)
-        bridge_stats = bridge_legacy_char_frequencies(conn)
+        bridge_stats = summarize_char_frequency_state(conn)
         reading_weight_stats = rebuild_char_pinyin_reading_weights(conn, tuning_parameters)
         print(
-            "已桥接旧单字频率: "
+            "已检查单字频率状态: "
             f"命中 {bridge_stats['bridged_rows']} 字，"
             f"桥接前已填充 {bridge_stats['populated_before']}，"
             f"桥接后已填充 {bridge_stats['populated_after']}"

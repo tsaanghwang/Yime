@@ -296,11 +296,15 @@
 
 - 已清退旧汉字拼音映射表：`汉字音元拼音映射`、`汉字数字标调拼音映射`
   - 分类：已移除的旧数据库关联表。
-  - 原因：当前主线 rebuild/runtime 与保留的非归档脚本都不再通过这两张“汉字编号 ↔ 旧拼音编号”关联表取数；继续保留只会扩大历史 schema 面。`汉字频率` 仍由现行脚本读取，因此不在本次清退范围内。
+  - 原因：当前主线 rebuild/runtime 与保留的非归档脚本都不再通过这两张“汉字编号 ↔ 旧拼音编号”关联表取数；继续保留只会扩大历史 schema 面。
 
 - 已清退旧词语表：`词汇`
   - 分类：已移除的旧数据库词语主表。
   - 原因：非归档桥接脚本和查询模板已切到 `phrase_inventory / phrase_pinyin_map`；继续保留旧 `词汇` 表只会维持历史双轨结构。
+
+- 已清退旧单字主表与频率表：`汉字`、`汉字频率`
+  - 分类：已移除的旧数据库单字主表与频率表。
+  - 原因：8105 字频导入和 runtime 频率状态读取都已切到 `char_inventory`；继续保留旧 `汉字 / 汉字频率` 只会维持历史双轨结构。
 
 - 待清除实现层：`yime/utils/legacy_pinyin_tables/split_numeric_pinyin.py`、`yime/utils/legacy_pinyin_tables/rebuild_yinyuan_structure_table.py`
   - 分类：已从主目录剥离的 legacy-compatible 实现模块。

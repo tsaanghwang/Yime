@@ -28,6 +28,8 @@ UNUSED_LEGACY_TABLES = (
     "汉字音元拼音映射",
     "汉字数字标调拼音映射",
     "词汇",
+    "汉字",
+    "汉字频率",
 )
 UNUSED_LEGACY_VIEWS = (
     "多音字视图",
@@ -126,28 +128,6 @@ class 表管理器:
                     UNIQUE ("全拼", "声母", "韵母", "声调")
                 )
             ''',
-            # 汉字相关表
-            '汉字': '''
-                CREATE TABLE IF NOT EXISTS "汉字" (
-                    "编号" INTEGER PRIMARY KEY,
-                    "字符" TEXT NOT NULL UNIQUE,
-                    "Unicode码点" TEXT NOT NULL,
-                    "大写Unicode" TEXT GENERATED ALWAYS AS (UPPER("Unicode码点")) STORED,
-                    "画数" INTEGER,
-                    "部首" TEXT,
-                    "常用字" BOOLEAN DEFAULT 1,
-                    "最近更新" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                )
-            ''',
-            '汉字频率': '''
-                CREATE TABLE IF NOT EXISTS "汉字频率" (
-                    "汉字编号" INTEGER PRIMARY KEY REFERENCES "汉字"("编号"),
-                    "绝对频率" INTEGER,
-                    "相对频率" FLOAT,
-                    "语料来源" TEXT,
-                    "最近更新" TIMESTAMP
-                )
-            ''',
         }
 
         # 修改 表管理器.创建表() 方法中的删除逻辑
@@ -171,8 +151,6 @@ class 表管理器:
              ('索引_音元拼音_复合查询', '"音元拼音"("干音", "呼音", "主音")'),  # 复合查询优化
              ('索引_音元拼音_全拼映射', '"音元拼音"("全拼", "映射编号")'),  # 联合查询优化
 
-            # 汉字相关索引
-            ('索引_汉字_字符', '"汉字"("字符")'),
         ]
 
         for 索引名, 列名 in 索引列表:
