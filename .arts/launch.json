@@ -14,9 +14,9 @@
       "name": "test_duplicate_groups",
       "type": "python",
       "request": "launch",
-      "program": "${workspaceFolder}\\yime\\test_duplicate_groups.py",
+      "program": "${workspaceFolder}\\yime\\legacy\\test_duplicate_groups.py",
       "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\yime",
+      "cwd": "${workspaceFolder}",
       "addSourceRootsToPythonpath": true
     },
     {
@@ -101,18 +101,18 @@
       "name": "import_initial",
       "type": "python",
       "request": "launch",
-      "program": "${workspaceFolder}\\yime\\import_initial.py",
+      "program": "${workspaceFolder}\\yime\\legacy\\import_initial.py",
       "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\yime",
+      "cwd": "${workspaceFolder}",
       "addSourceRootsToPythonpath": true
     },
     {
       "name": "update_table",
       "type": "python",
       "request": "launch",
-      "program": "${workspaceFolder}\\yime\\update_table.py",
+      "program": "${workspaceFolder}\\yime\\legacy\\update_table.py",
       "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\yime",
+      "cwd": "${workspaceFolder}",
       "addSourceRootsToPythonpath": true,
       "noDebug": true
     },
@@ -120,9 +120,9 @@
       "name": "create_table",
       "type": "python",
       "request": "launch",
-      "program": "${workspaceFolder}\\yime\\create_table.py",
+      "program": "${workspaceFolder}\\yime\\legacy\\create_table.py",
       "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\yime",
+      "cwd": "${workspaceFolder}",
       "addSourceRootsToPythonpath": true,
       "noDebug": true
     },
@@ -158,9 +158,9 @@
       "name": "jsonpath_example",
       "type": "python",
       "request": "launch",
-      "program": "${workspaceFolder}\\yime\\jsonpath_example.py",
+      "program": "${workspaceFolder}\\yime\\legacy\\jsonpath_example.py",
       "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}\\yime",
+      "cwd": "${workspaceFolder}",
       "addSourceRootsToPythonpath": true
     },
     {
