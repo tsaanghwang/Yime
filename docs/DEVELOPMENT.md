@@ -63,8 +63,8 @@ YIME/
 ├── yime/                 # Python 核心引擎
 │   ├── syllable_decoder.py    # legacy shim，公开兼容导入路径
 │   ├── syllable_structure.py  # legacy shim，公开兼容导入路径
-│   ├── import_danzi_into_prototype_tables.py  # 单字 prototype 导入主线
-│   ├── import_duozi_into_prototype_tables.py  # 词语 prototype 导入主线
+│   ├── import_danzi_into_prototype_tables.py  # 兼容入口；真实实现位于 yime/utils/prototype_single_char_import.py
+│   ├── import_duozi_into_prototype_tables.py  # 兼容入口；真实实现位于 yime/utils/prototype_phrase_import.py
 │   ├── refresh_runtime_yime_codes.py          # 兼容 shim；真实实现位于 yime/utils/runtime_codes_refresh.py
 │   ├── utils/legacy_pinyin_tables/            # 保留的旧拼音参考表链与兼容实现
 │   └── legacy/pending_removal/                # legacy-compatible 旧数据库接口归档
@@ -317,8 +317,8 @@ sqlite3 yime/pinyin_hanzi.db
 如果你是在维护当前主线 rebuild/runtime 链，应优先修改：
 
 - `yime/create_prototype_schema_additions.sql`
-- `yime/import_danzi_into_prototype_tables.py`
-- `yime/import_duozi_into_prototype_tables.py`
+- `yime/import_danzi_into_prototype_tables.py`（兼容入口；真实实现位于 `yime/utils/prototype_single_char_import.py`）
+- `yime/import_duozi_into_prototype_tables.py`（兼容入口；真实实现位于 `yime/utils/prototype_phrase_import.py`）
 - `yime/refresh_runtime_yime_codes.py`（兼容入口；真实实现位于 `yime/utils/runtime_codes_refresh.py`）
 
 legacy-compatible 表结构示例：

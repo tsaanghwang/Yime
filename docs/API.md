@@ -144,8 +144,8 @@ print(f"乐音: {musical}")  # ['a']
 
 - `internal_data/pinyin_source_db/build_source_pinyin_db.py`
 - `internal_data/pinyin_source_db/validate_source_pinyin_db.py`
-- `yime/import_danzi_into_prototype_tables.py`
-- `yime/import_duozi_into_prototype_tables.py`
+- `yime/import_danzi_into_prototype_tables.py`（兼容入口；真实实现位于 `yime/utils/prototype_single_char_import.py`）
+- `yime/import_duozi_into_prototype_tables.py`（兼容入口；真实实现位于 `yime/utils/prototype_phrase_import.py`）
 - `yime/refresh_runtime_yime_codes.py`（兼容入口；真实实现位于 `yime/utils/runtime_codes_refresh.py`）
 
 如果你的目标只是从仓库内 YAML 词库导出 JSON，请使用：

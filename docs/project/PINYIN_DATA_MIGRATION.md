@@ -24,8 +24,8 @@
 
 - [build_source_pinyin_db.py](/c:/dev/Yime/internal_data/pinyin_source_db/build_source_pinyin_db.py)
 - [validate_source_pinyin_db.py](/c:/dev/Yime/internal_data/pinyin_source_db/validate_source_pinyin_db.py)
-- [import_danzi_into_prototype_tables.py](/c:/dev/Yime/yime/import_danzi_into_prototype_tables.py)
-- [import_duozi_into_prototype_tables.py](/c:/dev/Yime/yime/import_duozi_into_prototype_tables.py)
+- [import_danzi_into_prototype_tables.py](/c:/dev/Yime/yime/import_danzi_into_prototype_tables.py)（兼容入口；真实实现位于 `yime/utils/prototype_single_char_import.py`）
+- [import_duozi_into_prototype_tables.py](/c:/dev/Yime/yime/import_duozi_into_prototype_tables.py)（兼容入口；真实实现位于 `yime/utils/prototype_phrase_import.py`）
 - [refresh_runtime_yime_codes.py](/c:/dev/Yime/yime/refresh_runtime_yime_codes.py)（兼容入口；真实实现位于 `yime/utils/runtime_codes_refresh.py`）
 
 这条链的关键点是：
