@@ -306,6 +306,10 @@
   - 分类：已移除的旧数据库单字主表与频率表。
   - 原因：8105 字频导入和 runtime 频率状态读取都已切到 `char_inventory`；继续保留旧 `汉字 / 汉字频率` 只会维持历史双轨结构。
 
+- 已清退旧中文词条/字符观察表：`专用单字`、`字符`、`字符扩展`、`字词`、`字词关联`、`生僻单字`、`词语`、`通用单字`
+  - 分类：已移除的旧数据库观察/占位表。
+  - 原因：这些表没有活动代码读取面，主库中也只剩空表或空字符串占位行；继续保留只会扩大历史 schema 面，并与当前 `char_inventory / phrase_inventory` 原型链并存制造误导。
+
 - 待清除实现层：`yime/utils/legacy_pinyin_tables/split_numeric_pinyin.py`、`yime/utils/legacy_pinyin_tables/rebuild_yinyuan_structure_table.py`
   - 分类：已从主目录剥离的 legacy-compatible 实现模块。
   - 原因：它们只服务 `多式拼音映射关系 / 音元拼音 / 数字标调拼音` 三表的生成链，已从 `legacy` 归档目录移到 `utils` 下的专用子包。
