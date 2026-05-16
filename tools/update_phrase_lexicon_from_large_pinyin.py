@@ -10,6 +10,11 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 SOURCE_DB_DIR = ROOT / "internal_data" / "pinyin_source_db"
 YIME_DIR = ROOT / "yime"
+BUILD_SOURCE_DB_SCRIPT = SOURCE_DB_DIR / "build_source_pinyin_db.py"
+VALIDATE_SOURCE_DB_SCRIPT = SOURCE_DB_DIR / "validate_source_pinyin_db.py"
+IMPORT_SINGLE_CHAR_SCRIPT = YIME_DIR / "import_danzi_into_prototype_tables.py"
+IMPORT_PHRASE_SCRIPT = YIME_DIR / "import_duozi_into_prototype_tables.py"
+REFRESH_RUNTIME_SCRIPT = YIME_DIR / "refresh_runtime_yime_codes.py"
 
 DEFAULT_CHAR_SOURCE = Path("C:/dev/pinyin-data/pinyin.txt")
 DEFAULT_PHRASE_SOURCE = Path(
@@ -68,7 +73,7 @@ def build_commands(args: argparse.Namespace) -> list[tuple[str, list[str]]]:
             "build-source-db",
             [
                 args.python,
-                str(SOURCE_DB_DIR / "build_source_pinyin_db.py"),
+                str(BUILD_SOURCE_DB_SCRIPT),
                 "--char-source",
                 args.char_source,
                 "--phrase-source",
@@ -80,18 +85,18 @@ def build_commands(args: argparse.Namespace) -> list[tuple[str, list[str]]]:
         commands.append(
             (
                 "validate-source-db",
-                [args.python, str(SOURCE_DB_DIR / "validate_source_pinyin_db.py")],
+                [args.python, str(VALIDATE_SOURCE_DB_SCRIPT)],
             )
         )
     commands.extend(
         [
             (
                 "import-single-char",
-                [args.python, str(YIME_DIR / "import_danzi_into_prototype_tables.py")],
+                [args.python, str(IMPORT_SINGLE_CHAR_SCRIPT)],
             ),
             (
                 "import-phrase",
-                [args.python, str(YIME_DIR / "import_duozi_into_prototype_tables.py")],
+                [args.python, str(IMPORT_PHRASE_SCRIPT)],
             ),
         ]
     )
@@ -99,10 +104,26 @@ def build_commands(args: argparse.Namespace) -> list[tuple[str, list[str]]]:
         commands.append(
             (
                 "refresh-runtime",
-                [args.python, str(YIME_DIR / "refresh_runtime_yime_codes.py"), "--apply"],
+                [args.python, str(REFRESH_RUNTIME_SCRIPT), "--apply"],
             )
         )
     return commands
+
+
+def validate_script_paths() -> None:
+    required_paths = [
+        BUILD_SOURCE_DB_SCRIPT,
+        IMPORT_SINGLE_CHAR_SCRIPT,
+        IMPORT_PHRASE_SCRIPT,
+        REFRESH_RUNTIME_SCRIPT,
+    ]
+    if VALIDATE_SOURCE_DB_SCRIPT.exists():
+        required_paths.append(VALIDATE_SOURCE_DB_SCRIPT)
+
+    missing_paths = [path for path in required_paths if not path.exists()]
+    if missing_paths:
+        missing_display = ", ".join(str(path) for path in missing_paths)
+        raise FileNotFoundError(f"required script path not found: {missing_display}")
 
 
 def print_plan(commands: list[tuple[str, list[str]]]) -> None:
@@ -116,6 +137,7 @@ def main() -> int:
     args = parse_args()
     char_source = Path(args.char_source)
     phrase_source = Path(args.phrase_source)
+    validate_script_paths()
 
     if not char_source.exists():
         raise FileNotFoundError(f"single-character source not found: {char_source}")
