@@ -74,6 +74,20 @@ YIME/
 │   ├── yunmu_to_keys.py       # 韵母转换
 │   ├── constants.py           # 常量定义
 │   └── test/                  # 测试文件
+
+### 兼容入口约定
+
+当前仓库对主包根目录的兼容入口采用下面约定：
+
+- 如果 `yime/` 根目录文件只为保留公开导入路径或历史脚本路径，则真实实现应下沉到 `yime/utils/`、`yime/utils/legacy_pinyin_tables/` 或 `yime/legacy/pending_removal/`。
+- 这类根目录兼容入口应尽量显式导出 `__all__`；若需要动态透传整模块，才使用 `__getattr__` / `__dir__`。
+- 仍保留脚本入口的 shim，应统一用 `raise SystemExit(main())`；若真实实现本身是 `None` 返回的应用入口，则 shim 只负责调用，不强行包成整数返回值。
+
+对 `tools/` 下的 orchestration 脚本，当前也采用统一约定：
+
+- 凡是会调用外部脚本、外部仓库或系统程序的入口，优先显式拆出 `validate_*` 预检函数。
+- 如果外部键盘布局资产已迁到 `..\Yime-keyboard-layout`，默认路径应与 `YIME_KEYBOARD_LAYOUT_REPO` 环境变量保持一致，不再回退到主仓库旧 `releases/` 目录。
+- `main()` 优先返回整型退出码，再由 `raise SystemExit(main())` 统一退出。
 │
 ├── syllable/             # 音节分析模块
 │   └── analysis/              # 音节分析工具

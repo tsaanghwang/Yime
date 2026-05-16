@@ -338,7 +338,9 @@
 
 1. 主线重建优先走 `internal_data/pinyin_source_db/` 与 prototype 导入链，不再把旧中文表维护脚本当成默认入口。
 2. `.yaml` 词库导出已经独立到 `internal_data/pinyin_source_db/export_yaml_lexicon_json.py`，可单独执行，不必穿过 SQLite 链。
-3. `yime/legacy/` 中的脚本默认不继续扩展新功能，只保留历史兼容与审计用途；其中旧 schema / 汉字接口继续留在 `yime/legacy/pending_removal/`，而三表生成链已移到 `yime/utils/legacy_pinyin_tables/`。数据库维护脚本产生的 `.bak`/`pre_*` 等回退文件应统一视为本地副产物，不再提交。
+3. 主包根目录里仍保留的同名入口，默认应理解为兼容 shim；除应用级顶层入口外，这些 shim 现在都尽量显式声明 `__all__`，并把真实实现放在 `yime/utils/`、`yime/utils/legacy_pinyin_tables/` 或 `yime/legacy/pending_removal/`。
+4. `tools/` 下凡是代理外部键盘布局仓库或系统脚本的 orchestration 入口，默认应先做路径预检，并统一使用 `YIME_KEYBOARD_LAYOUT_REPO` 解析外部 `Yime-keyboard-layout` 仓库位置。
+5. `yime/legacy/` 中的脚本默认不继续扩展新功能，只保留历史兼容与审计用途；其中旧 schema / 汉字接口继续留在 `yime/legacy/pending_removal/`，而三表生成链已移到 `yime/utils/legacy_pinyin_tables/`。数据库维护脚本产生的 `.bak`/`pre_*` 等回退文件应统一视为本地副产物，不再提交。
 
 #### 6C. `yime/reports/` 运行桥接文件与分析产物（2026-05）
 
