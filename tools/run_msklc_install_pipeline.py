@@ -14,17 +14,21 @@ EXTERNAL_REPO = Path(
 TARGET_SCRIPT = EXTERNAL_REPO / "tools" / "run_msklc_install_pipeline.py"
 
 
-def main() -> None:
+def validate_target_script() -> None:
     if not TARGET_SCRIPT.exists():
-        raise SystemExit(
+        raise FileNotFoundError(
             "The MSKLC install chain has been moved out of the main repo. "
             "Set YIME_KEYBOARD_LAYOUT_REPO or place the external repo next to the main repo. "
             f"Expected helper script at: {TARGET_SCRIPT}"
         )
 
+
+def main() -> int:
+    validate_target_script()
+
     command = [sys.executable, str(TARGET_SCRIPT), *sys.argv[1:]]
-    raise SystemExit(subprocess.call(command, cwd=EXTERNAL_REPO))
+    return subprocess.call(command, cwd=EXTERNAL_REPO)
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

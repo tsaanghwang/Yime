@@ -6,6 +6,8 @@ pending-removal database helpers in ``yime.legacy.pending_removal``.
 
 from yime.legacy.pending_removal.run_db_setup import main
 
+__all__ = ["main"]
+
 
 if __name__ == "__main__":
     raise SystemExit(main())
