@@ -4,12 +4,7 @@
 
 当前已归档到这里的文件：
 
-- `cleanup_test_rows.py`
-- `consolidate_mappings.py`
-- `db_checks.py`
-- `db_inspect.py`
-- `db_inspect_verbose.py`
-- `db_table_list.py`
+- `convert_pinyin_to_hanzi.py`
 - `export_mappings_csv.py`
 - `migrate_pinyin_table.py`
 - `create_table.py`
@@ -17,21 +12,16 @@
 - `pinyin.db`
 - `update_table.py`
 - `shengmu.csv`
-- `run_full_import.py`
 - `jsonpath_example.py`
-- `Initialize_pinyin_mapping.py`
-- `safe_test_unique.py`
-- `safe_test_unique_ignore.py`
 - `test_db_manager.py`
 - `test_db_manager_real.py`
 - `test_db_manager_final_v2.py`
 - `test_duplicate_groups.py`
-- `test_index_constraint.py`
 这些脚本的共同特点是：
 
 - 直接检查或修改旧 `音元拼音 / 数字标调拼音` 结构。
 - 一部分文件还是带阶段命名的试验性测试变体，用于当时逐步试错 `db_manager.py` 的旧表结构与连接方式。
-- 另一部分则是直接连到 `yime/pinyin_hanzi.db` 的只读探针、一次性约束检查脚本或第三方库用法样例，并不属于当前应维护的自动化测试面。
+- 另一部分则是旧数据库驱动的实验入口、迁移/导出辅助脚本或第三方库用法样例，并不属于当前应维护的自动化测试面。
 - 还包括一条更早的 `pinyin.db` 原型链：用 `create_table.py` 建库、`import_initial.py` 导入 `shengmu.csv`、再由 `update_table.py` 把上层 `initial_ipa.json` 写回旧 `initial` 表；对应的旧实验数据库也一并归档为 `pinyin.db`。
 - 不再属于当前主线 `source_pinyin.db -> prototype tables -> runtime_candidates` 的必要环节。
 - 当前默认不作为主线入口维护；但其中被主目录兼容包装层直接依赖的模块会继续随包分发，避免安装环境中的兼容入口失效；其余内容仍应视为归档资料，而不是当前主线 rebuild 路径。
