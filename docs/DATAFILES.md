@@ -48,8 +48,8 @@
 
 ### 可下载外部频率资源
 
-- `external_data/8105.dict.yaml`：可选单字频率增强输入；缺失时，`yime/refresh_runtime_yime_codes.py` 与 `yime/import_8105_char_frequency.py` 会跳过对应增强步骤。
-- `external_data/xiandaihaiyuchangyongcibiao.txt`：可选单字/词频增强输入；缺失时，`yime/refresh_runtime_yime_codes.py` 与 `yime/import_xiandaihaiyu_phrase_frequency.py` 会跳过对应增强步骤。
+- `external_data/8105.dict.yaml`：可选单字频率增强输入；缺失时，`yime/refresh_runtime_yime_codes.py` 与 `yime/import_8105_char_frequency.py`（兼容入口；真实实现位于 `yime/utils/char_frequency_8105_import.py`）会跳过对应增强步骤。
+- `external_data/xiandaihaiyuchangyongcibiao.txt`：可选单字/词频增强输入；缺失时，`yime/refresh_runtime_yime_codes.py` 与 `yime/import_xiandaihaiyu_phrase_frequency.py`（兼容入口；真实实现位于 `yime/utils/xiandaihaiyu_phrase_frequency_import.py`）会跳过对应增强步骤。
 - 边界：它们属于可重新下载的外部公开资源，不属于仓库当前必须跟踪的 `internal_data` 真源或派生产物。
 
 ### syllable/codec/key_to_code.json

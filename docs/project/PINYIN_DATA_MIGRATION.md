@@ -48,7 +48,7 @@ c:/dev/Yime/.venv/Scripts/python.exe yime/export_runtime_candidates_json.py
 其中：
 
 - `build_source_pinyin_db.py` 默认会把 SQLite 产物写到 `.generated/source_pinyin.db`
-- `export_runtime_candidates_json.py` 默认会把 runtime true JSON 写到 `.generated/runtime_candidates_by_code_true.json`
+- `export_runtime_candidates_json.py`（兼容入口；真实实现位于 `yime/utils/runtime_candidates_export.py`）默认会把 runtime true JSON 写到 `.generated/runtime_candidates_by_code_true.json`
 
 ## 2. 独立 `.yaml` 导出链
 
