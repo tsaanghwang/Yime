@@ -36,7 +36,6 @@ ci-summary.json
 pinyin_import.log
 yime/pinyin_import.log
 yime/run_full_import.log
-yime/mappings_export.csv
 yime/phoneme_dict.json
 temp.json
 character_positions.db

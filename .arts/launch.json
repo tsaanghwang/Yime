@@ -145,15 +145,6 @@
       "addSourceRootsToPythonpath": true
     },
     {
-      "name": "jsonpath_example",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}\\yime\\legacy\\jsonpath_example.py",
-      "currentFileConfiguration": false,
-      "cwd": "${workspaceFolder}",
-      "addSourceRootsToPythonpath": true
-    },
-    {
       "name": "example",
       "type": "python",
       "request": "launch",
