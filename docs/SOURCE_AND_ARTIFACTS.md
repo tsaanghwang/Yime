@@ -182,11 +182,11 @@
 
 - `yime/import_danzi_into_prototype_tables.py`
   - 分类：待确认旧链。
-  - 原因：它属于“把单字数据导入原型数据库”的维护脚本，会配合 `create_prototype_schema_additions.sql` 和 `source_pinyin.db` 工作，但当前不是输入法前台运行主线的直接入口。
+  - 原因：它属于“把单字数据导入原型数据库”的维护脚本，会配合 `create_prototype_schema_additions.sql` 和 `source_pinyin.db` 工作，但当前不是输入法前台运行主线的直接入口；真实实现现已下沉到 `yime/utils/prototype_single_char_import.py`，根路径保留兼容脚本入口。
 
 - `yime/import_duozi_into_prototype_tables.py`
   - 分类：待确认旧链。
-  - 原因：它属于“把词语数据导入原型数据库”的维护脚本，角色与单字导入脚本相同，目前更像原型库维护链的一部分，而不是当前交互主线的一部分。
+  - 原因：它属于“把词语数据导入原型数据库”的维护脚本，角色与单字导入脚本相同，目前更像原型库维护链的一部分，而不是当前交互主线的一部分；真实实现现已下沉到 `yime/utils/prototype_phrase_import.py`，根路径保留兼容脚本入口。
 
 - `releases/`
   - 分类：可归档但暂不删除。
