@@ -676,4 +676,7 @@ print(cursor.fetchall())
 
 ## 许可证
 
-本项目采用 MIT 许可证。详见 [LICENSE](../LICENSE) 文件。
+本项目采用“非商用默认许可，商用需另行授权”的策略。
+
+- 非商用使用请遵守 [LICENSE](../LICENSE) 中的约束。
+- 商业使用请先阅读 [COMMERCIAL_LICENSE.md](../COMMERCIAL_LICENSE.md) 并联系作者获取单独授权。

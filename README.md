@@ -1,5 +1,5 @@
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
+[![Use: Non-Commercial](https://img.shields.io/badge/Use-Non--Commercial-success.svg)](LICENSE)
+[![Commercial: Separate License](https://img.shields.io/badge/Commercial-Separate%20Authorization-orange.svg)](COMMERCIAL_LICENSE.md)
 [![GitHub Release](https://img.shields.io/github/release/tsaanghwang/YIME)](https://github.com/tsaanghwang/YIME/releases)
 [![Python Version](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/)
 
@@ -72,7 +72,16 @@ YIME/
 - 当前实现边界： [docs/project/INPUT_METHOD_SOLUTION.md](docs/project/INPUT_METHOD_SOLUTION.md)
 - 细分文档与约束： [docs/README.md](docs/README.md)、 [docs/CODEPOINT_POLICY.md](docs/CODEPOINT_POLICY.md)、 [docs/SOURCE_AND_ARTIFACTS.md](docs/SOURCE_AND_ARTIFACTS.md)
 
-## 进一步信息
+## 授权说明
+
+本项目采用“默认放开非商用使用，商用必须另行取得商业许可证”的策略：
+
+- 个人学习、研究、非营利性质的试用与改写，默认可在 [LICENSE](LICENSE) 约束下进行。
+- 任何与销售、收费服务、商业交付或营利性业务流程相关的使用，都必须先取得单独商业许可证。
+- 英文许可原文见 [LICENSE](LICENSE)，中文参考译文见 [LICENSE.zh-CN.md](LICENSE.zh-CN.md)。
+- 商业许可证说明见 [COMMERCIAL_LICENSE.md](COMMERCIAL_LICENSE.md)，合同模板见 [COMMERCIAL_LICENSE_TEMPLATE.md](COMMERCIAL_LICENSE_TEMPLATE.md)。
+- 授权文档总览见 [docs/LICENSING_INDEX.md](docs/LICENSING_INDEX.md)，法务审阅问卷见 [docs/LEGAL_REVIEW_CHECKLIST.md](docs/LEGAL_REVIEW_CHECKLIST.md)。
+- 文本策略说明见 [docs/LICENSING_STRATEGY_CN_PRIORITY.md](docs/LICENSING_STRATEGY_CN_PRIORITY.md) 与 [docs/LICENSING_STRATEGY_INTL_PRIORITY.md](docs/LICENSING_STRATEGY_INTL_PRIORITY.md)。
 
 - 协议与协作： [LICENSE](LICENSE)、 [NOTICE.md](NOTICE.md)、 [COMMERCIAL_LICENSE.md](COMMERCIAL_LICENSE.md)、 [CONTRIBUTING.md](CONTRIBUTING.md)
 - 仓库与反馈： [tsaanghwang/YIME](https://github.com/tsaanghwang/YIME)、 [Issues](https://github.com/tsaanghwang/YIME/issues)

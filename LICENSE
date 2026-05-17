@@ -1,21 +1,91 @@
-MIT License
+YIME Non-Commercial License 1.0
 
-Copyright (c) 2023 Huang Chang
+Copyright (c) 2023-present Huang Chang
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+This repository and its accompanying documentation are provided under the
+following terms.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+## 1. Non-commercial use is permitted by default
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+You may use, run, study, copy, modify, and distribute this project and its
+derivative works for non-commercial purposes without paying a fee, provided
+that all of the following conditions are met:
+
+- You keep this copyright notice and this license text with any copy or
+  substantial portion of the project.
+- You clearly indicate if you have modified the project.
+- You do not state or imply that the author endorses you, your organization,
+  or your use of the project.
+
+For this license, "non-commercial" means use that is not primarily intended for
+or directed toward commercial advantage or monetary compensation. Typical
+examples include personal learning, academic research, non-commercial open
+source collaboration, and internal evaluation that is not part of a paid
+product or service.
+
+## 2. Commercial use requires separate authorization
+
+Any commercial use of this project is prohibited unless you first obtain a
+separate written commercial license from the copyright holder.
+
+For this license, commercial use includes, but is not limited to:
+
+- selling this project or derivative works;
+- providing paid services based on this project;
+- embedding this project into a product or service offered for a fee;
+- using this project in a business workflow that directly supports revenue,
+  paid operations, or commercial delivery to customers.
+
+Commercial licensing information is described in COMMERCIAL_LICENSE.md.
+
+## 3. Third-party components
+
+This license applies only to the original content of this repository unless a
+file or directory states otherwise. Third-party components included in or used
+by this repository may be subject to their own separate license terms, which
+must also be followed.
+
+## 4. No warranty
+
+THE PROJECT IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHOR OR COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM,
+OUT OF, OR IN CONNECTION WITH THE PROJECT OR THE USE OF OR OTHER DEALINGS IN
+THE PROJECT.
+
+## 5. Termination
+
+Any rights granted under this license terminate automatically if you fail to
+comply with its terms.
+
+Upon termination, you must stop the unlicensed use at once and, unless you are
+required by law to retain a copy, cease distribution and use of the affected
+copies and derivative works to the extent they depend on the terminated rights.
+
+The copyright holder may, but is not required to, restore rights in writing
+after the violation has fully ceased and any requested cure has been completed.
+
+## 6. Reservation of rights
+
+All rights not expressly granted under this license are reserved by the
+copyright holder.
+
+This license does not grant any trademark rights, publicity rights, or any
+right to use the name, logo, or branding of the author except as necessary for
+accurate attribution.
+
+Any separate written commercial license, if granted, governs commercial use to
+the extent of any conflict with this license.
+
+## 7. Interpretation and severability
+
+If any provision of this license is held unenforceable, that provision shall be
+interpreted to the minimum extent necessary to make it enforceable or, if that
+is not possible, severed, and the remainder of the license shall remain in
+effect.
+
+This license shall be interpreted to the maximum extent permitted by applicable
+law. A separate commercial license may specify governing law, dispute
+resolution, venue, and related enforcement terms.
