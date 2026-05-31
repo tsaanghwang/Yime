@@ -15,11 +15,6 @@
 		"terminal.integrated.fontLigatures.enabled": true,
 		"chat.editor.fontFamily": "\"YinYuan Regular\", \"音元 常规\", \"Noto Sans\", \"Microsoft YaHei\", Consolas, 'Courier New', monospace",
 		"notebook.output.fontFamily": "\"YinYuan Regular\", \"音元 常规\", \"Noto Sans\", \"Microsoft YaHei\", Consolas, 'Courier New', monospace",
-		"workbench.editorAssociations": {
-			"*.db": "sqlite3-editor.editor",
-			"*.sqlite": "sqlite3-editor.editor",
-			"*.sqlite3": "sqlite3-editor.editor"
-		},
 		"sqltools.connections": [
 			{
 				"name": "Yime Pinyin Hanzi",
@@ -31,14 +26,14 @@
 				"name": "Source Pinyin",
 				"group": "Yime",
 				"driver": "SQLite",
-				"database": "${workspaceFolder:Yime}/internal_data/pinyin_source_db/source_pinyin.db",
+				"database": "${workspaceFolder:Yime}/.generated/source_pinyin.db",
 				"previewLimit": 100
 			}
 		],
 		"sqltools.results.customization": {
 			"font-family": "\"YinYuan Regular\", \"音元 常规\", \"Noto Sans\", \"Microsoft YaHei\", Consolas, 'Courier New', monospace"
 		},
-		"sqltools.useNodeRuntime": true,
+		"sqltools.useNodeRuntime": false,
 		"python-envs.defaultPackageManager": "ms-python.python:conda",
 		"powershell.cwd": "Yime"
 	}
