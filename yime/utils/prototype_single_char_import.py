@@ -27,7 +27,7 @@ def load_source_single_char_rows(path: Path) -> tuple[list[tuple[str, str, str]]
             '''
             SELECT source_name, source_kind, source_path
             FROM source_files
-            WHERE source_kind = 'single_char'
+            WHERE source_kind = 'char'
             ORDER BY source_name
             '''
         ).fetchall()
@@ -35,7 +35,7 @@ def load_source_single_char_rows(path: Path) -> tuple[list[tuple[str, str, str]]
             '''
             SELECT id, source_name, codepoint, hanzi, marked_pinyin, numeric_pinyin,
                    reading_rank, is_primary, comment, raw_line
-            FROM single_char_readings
+            FROM char_readings
             ORDER BY id
             '''
         ).fetchall()
@@ -48,13 +48,14 @@ def sync_source_single_char_table(
     source_rows: list[tuple[int, str, str, str, str, str, int, int, str | None, str]],
 ) -> int:
     conn.execute("DELETE FROM single_char_readings")
-    conn.execute("DELETE FROM source_files WHERE source_kind = 'single_char'")
+    conn.execute("DELETE FROM source_files WHERE source_kind IN ('single_char', 'char')")
+    prototype_source_files = [(source_name, 'single_char', source_path) for source_name, _, source_path in source_files]
     conn.executemany(
         '''
         INSERT INTO source_files (source_name, source_kind, source_path)
         VALUES (?, ?, ?)
         ''',
-        source_files,
+        prototype_source_files,
     )
     conn.executemany(
         '''

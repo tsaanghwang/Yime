@@ -7,12 +7,12 @@ CREATE TABLE IF NOT EXISTS metadata (
 
 CREATE TABLE IF NOT EXISTS source_files (
     source_name TEXT PRIMARY KEY,
-    source_kind TEXT NOT NULL CHECK (source_kind IN ('single_char', 'phrase')),
+    source_kind TEXT NOT NULL CHECK (source_kind IN ('char', 'phrase')),
     source_path TEXT NOT NULL,
     imported_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS single_char_readings (
+CREATE TABLE IF NOT EXISTS char_readings (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     source_name TEXT NOT NULL REFERENCES source_files(source_name) ON DELETE CASCADE,
     codepoint TEXT NOT NULL,
@@ -26,9 +26,9 @@ CREATE TABLE IF NOT EXISTS single_char_readings (
     UNIQUE (source_name, codepoint, marked_pinyin)
 );
 
-CREATE INDEX IF NOT EXISTS idx_single_char_hanzi ON single_char_readings(hanzi);
-CREATE INDEX IF NOT EXISTS idx_single_char_numeric ON single_char_readings(numeric_pinyin);
-CREATE INDEX IF NOT EXISTS idx_single_char_codepoint ON single_char_readings(codepoint);
+CREATE INDEX IF NOT EXISTS idx_char_hanzi ON char_readings(hanzi);
+CREATE INDEX IF NOT EXISTS idx_char_numeric ON char_readings(numeric_pinyin);
+CREATE INDEX IF NOT EXISTS idx_char_codepoint ON char_readings(codepoint);
 
 CREATE TABLE IF NOT EXISTS phrase_readings (
     id INTEGER PRIMARY KEY AUTOINCREMENT,

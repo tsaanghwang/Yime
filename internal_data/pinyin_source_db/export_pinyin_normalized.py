@@ -10,7 +10,7 @@ from build_source_pinyin_db import DEFAULT_DB_PATH
 from validate_source_pinyin_db import (
     finalize_report,
     make_report,
-    validate_single_char_rows,
+    validate_char_rows,
     validate_source_file_metadata,
 )
 
@@ -22,7 +22,7 @@ DEFAULT_OUTPUT_PATH = SCRIPT_DIR / "lexicon_exports" / "pinyin_normalized.json"
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Export validated single-character source data to pinyin_normalized.json format."
+        description="Export validated char source data to pinyin_normalized.json format."
     )
     parser.add_argument("--db", default=str(DEFAULT_DB_PATH), help="SQLite database path")
     parser.add_argument("--output", default=str(DEFAULT_OUTPUT_PATH), help="Output JSON path")
@@ -37,7 +37,7 @@ def parse_args() -> argparse.Namespace:
 def validate_db_for_export(conn: sqlite3.Connection) -> dict:
     report = make_report(sample_limit=20)
     validate_source_file_metadata(conn, report)
-    validate_single_char_rows(conn, report)
+    validate_char_rows(conn, report)
     return finalize_report(report)
 
 
@@ -45,7 +45,7 @@ def collect_numeric_to_marked_pairs(conn: sqlite3.Connection) -> dict[str, set[s
     mapping: dict[str, set[str]] = defaultdict(set)
     query = """
         SELECT DISTINCT numeric_pinyin, marked_pinyin
-        FROM single_char_readings
+        FROM char_readings
         ORDER BY numeric_pinyin, marked_pinyin
     """
     for numeric_pinyin, marked_pinyin in conn.execute(query):

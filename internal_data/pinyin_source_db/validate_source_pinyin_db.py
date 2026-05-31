@@ -36,7 +36,7 @@ def parse_args() -> argparse.Namespace:
 def make_report(sample_limit: int) -> dict[str, Any]:
     return {
         "summary": {
-            "single_char_rows": 0,
+            "char_rows": 0,
             "phrase_rows": 0,
             "error_count": 0,
             "warning_count": 0,
@@ -60,17 +60,17 @@ def codepoint_to_char(codepoint: str) -> str | None:
     return chr(int(codepoint[2:], 16))
 
 
-def validate_single_char_rows(conn: sqlite3.Connection, report: dict[str, Any]) -> None:
+def validate_char_rows(conn: sqlite3.Connection, report: dict[str, Any]) -> None:
     query = """
         SELECT id, source_name, codepoint, hanzi, marked_pinyin, numeric_pinyin, reading_rank, is_primary
-        FROM single_char_readings
+        FROM char_readings
         ORDER BY id
     """
     primary_counts: dict[tuple[str, str], int] = defaultdict(int)
 
     for row in conn.execute(query):
         row_id, source_name, codepoint, hanzi, marked_pinyin, numeric_pinyin, reading_rank, is_primary = row
-        report["summary"]["single_char_rows"] += 1
+        report["summary"]["char_rows"] += 1
         key = (source_name, codepoint)
         primary_counts[key] += int(bool(is_primary))
 
@@ -240,7 +240,7 @@ def main() -> int:
     conn = sqlite3.connect(db_path)
     try:
         validate_source_file_metadata(conn, report)
-        validate_single_char_rows(conn, report)
+        validate_char_rows(conn, report)
         validate_phrase_rows(conn, report)
     finally:
         conn.close()
@@ -250,7 +250,7 @@ def main() -> int:
 
     print(f"database: {db_path}")
     print(f"report: {output_path}")
-    print(f"single_char_rows: {finalized['summary']['single_char_rows']}")
+    print(f"char_rows: {finalized['summary']['char_rows']}")
     print(f"phrase_rows: {finalized['summary']['phrase_rows']}")
     print(f"errors: {finalized['summary']['error_count']}")
     print(f"warnings: {finalized['summary']['warning_count']}")
