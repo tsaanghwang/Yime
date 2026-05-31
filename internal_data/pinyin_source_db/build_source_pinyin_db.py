@@ -1,16 +1,23 @@
 from __future__ import annotations
 
 import argparse
+import csv
+import json
+import re
+import shutil
 import sqlite3
 from pathlib import Path
+from typing import Any, cast
 
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 WORKSPACE_ROOT = SCRIPT_DIR.parent.parent
 DEFAULT_DB_PATH = WORKSPACE_ROOT / ".generated" / "source_pinyin.db"
+LEGACY_DB_PATH = WORKSPACE_ROOT / "internal_data" / "pinyin_source_db" / "source_pinyin.db"
 DEFAULT_SCHEMA_PATH = SCRIPT_DIR / "schema.sql"
-DEFAULT_CHAR_SOURCE = Path("C:/dev/pinyin-data/pinyin.txt")
+DEFAULT_CHAR_SOURCE = Path("C:/dev/Word-frequency/unicode_hanzi.txt")
 DEFAULT_PHRASE_SOURCE = Path("C:/dev/pinyin-data/tools/phrase-pinyin-data/pinyin.txt")
+NUMERIC_SYLLABLE_RE = re.compile(r"^[a-zêü]+[1-5]$")
 
 TONE_CHAR_MAP = {
     "ā": "a1",
@@ -54,22 +61,26 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Build the source pinyin SQLite database from upstream text files.")
     parser.add_argument("--db", default=str(DEFAULT_DB_PATH), help="Output SQLite database path")
     parser.add_argument("--schema", default=str(DEFAULT_SCHEMA_PATH), help="Schema SQL file path")
-    parser.add_argument("--char-source", default=str(DEFAULT_CHAR_SOURCE), help="Upstream single-character pinyin.txt path")
+    parser.add_argument("--char-source", default=str(DEFAULT_CHAR_SOURCE), help="Unicode Hanzi TSV source path")
     parser.add_argument("--phrase-source", default=str(DEFAULT_PHRASE_SOURCE), help="Optional upstream phrase pinyin.txt path")
     parser.add_argument("--keep-existing", action="store_true", help="Keep existing imported rows instead of replacing them")
     return parser.parse_args()
 
 
 def apply_schema(conn: sqlite3.Connection, schema_path: Path) -> None:
+    conn.execute("DROP INDEX IF EXISTS idx_single_char_hanzi")
+    conn.execute("DROP INDEX IF EXISTS idx_single_char_numeric")
+    conn.execute("DROP INDEX IF EXISTS idx_single_char_codepoint")
+    conn.execute("DROP TABLE IF EXISTS single_char_readings")
     conn.executescript(schema_path.read_text(encoding="utf-8"))
 
 
 def reset_import_tables(conn: sqlite3.Connection) -> None:
-    conn.execute("DELETE FROM single_char_readings")
+    conn.execute("DELETE FROM char_readings")
     conn.execute("DELETE FROM phrase_readings")
     conn.execute("DELETE FROM source_files")
     conn.execute("DELETE FROM metadata")
-    conn.execute("DELETE FROM sqlite_sequence WHERE name IN ('single_char_readings', 'phrase_readings')")
+    conn.execute("DELETE FROM sqlite_sequence WHERE name IN ('char_readings', 'phrase_readings')")
 
 
 def marked_syllable_to_numeric(marked: str) -> str:
@@ -139,33 +150,68 @@ def parse_phrase_source_content(content: str) -> tuple[str, str] | None:
     return phrase, marked_pinyin
 
 
-def import_single_char_source(conn: sqlite3.Connection, source_path: Path) -> int:
-    source_name = make_source_name("single_char", source_path)
+def load_char_candidates(primary: str, candidates_json: str) -> list[str]:
+    try:
+        parsed_candidates: Any = json.loads(candidates_json) if candidates_json else []
+    except json.JSONDecodeError:
+        parsed_candidates = []
+
+    raw_candidates = cast(list[Any], parsed_candidates) if isinstance(parsed_candidates, list) else []
+    candidates: list[str] = []
+    seen: set[str] = set()
+
+    if primary:
+        seen.add(primary)
+        candidates.append(primary)
+
+    for item in raw_candidates:
+        if not isinstance(item, str):
+            continue
+        candidate = item.strip()
+        if not candidate or candidate in seen:
+            continue
+        seen.add(candidate)
+        candidates.append(candidate)
+
+    return candidates
+
+
+def is_supported_char_reading(marked_pinyin: str) -> bool:
+    return bool(NUMERIC_SYLLABLE_RE.match(marked_syllable_to_numeric(marked_pinyin)))
+
+
+def import_char_source(conn: sqlite3.Connection, source_path: Path) -> int:
+    source_name = make_source_name("char", source_path)
     conn.execute(
-        "INSERT OR REPLACE INTO source_files (source_name, source_kind, source_path) VALUES (?, 'single_char', ?)",
+        "INSERT OR REPLACE INTO source_files (source_name, source_kind, source_path) VALUES (?, 'char', ?)",
         (source_name, str(source_path)),
     )
 
     inserted = 0
     with source_path.open("r", encoding="utf-8") as handle:
-        for line in handle:
-            raw_line = line.rstrip("\n")
+        reader = csv.reader(handle, delimiter="\t")
+        for row in reader:
+            raw_line = "\t".join(row)
             stripped = raw_line.strip()
             if not stripped or stripped.startswith("#"):
                 continue
-
-            content, comment = split_comment(raw_line)
-            codepoint_part, pinyin_part = content.split(":", 1)
-            codepoint = codepoint_part.strip()
-            pinyins = [value.strip() for value in pinyin_part.split(",") if value.strip()]
-            if not pinyins:
+            if row[0] == "codepoint" or len(row) < 4:
                 continue
 
-            hanzi = comment.split()[0] if comment else ""
-            for index, marked_pinyin in enumerate(pinyins, start=1):
+            codepoint = row[0].strip().upper()
+            hanzi = row[1].strip()
+            primary = row[2].strip()
+            candidates_json = row[3].strip()
+            pinyins = load_char_candidates(primary, candidates_json)
+            if not codepoint or not hanzi or not pinyins:
+                continue
+
+            valid_pinyins = [marked_pinyin for marked_pinyin in pinyins if is_supported_char_reading(marked_pinyin)]
+
+            for index, marked_pinyin in enumerate(valid_pinyins, start=1):
                 conn.execute(
                     """
-                    INSERT OR REPLACE INTO single_char_readings (
+                    INSERT OR REPLACE INTO char_readings (
                         source_name,
                         codepoint,
                         hanzi,
@@ -185,7 +231,7 @@ def import_single_char_source(conn: sqlite3.Connection, source_path: Path) -> in
                         marked_syllable_to_numeric(marked_pinyin),
                         index,
                         1 if index == 1 else 0,
-                        comment,
+                        None,
                         raw_line,
                     ),
                 )
@@ -246,6 +292,17 @@ def write_metadata(conn: sqlite3.Connection, key: str, value: str) -> None:
     conn.execute("INSERT OR REPLACE INTO metadata (key, value) VALUES (?, ?)", (key, value))
 
 
+def sync_legacy_fallback_db(db_path: Path, legacy_db_path: Path = LEGACY_DB_PATH) -> bool:
+    db_path = db_path.resolve()
+    legacy_db_path = legacy_db_path.resolve()
+    if db_path == legacy_db_path:
+        return False
+
+    legacy_db_path.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(db_path, legacy_db_path)
+    return True
+
+
 def main() -> None:
     args = parse_args()
     db_path = Path(args.db)
@@ -254,7 +311,10 @@ def main() -> None:
     phrase_source = Path(args.phrase_source)
 
     if not char_source.exists():
-        raise FileNotFoundError(f"single-character source not found: {char_source}")
+        raise FileNotFoundError(
+            f"char source not found: {char_source}\n"
+            "需先提供 unicode_hanzi.txt，再运行 source_pinyin 建库脚本。"
+        )
     if not schema_path.exists():
         raise FileNotFoundError(f"schema file not found: {schema_path}")
 
@@ -265,23 +325,29 @@ def main() -> None:
         if not args.keep_existing:
             reset_import_tables(conn)
 
-        single_rows = import_single_char_source(conn, char_source)
+        char_rows = import_char_source(conn, char_source)
         phrase_rows = 0
         if phrase_source.exists():
             phrase_rows = import_phrase_source(conn, phrase_source)
 
         write_metadata(conn, "schema_version", "source_pinyin_v1")
-        write_metadata(conn, "single_char_source", str(char_source))
-        write_metadata(conn, "single_char_rows", str(single_rows))
+        write_metadata(conn, "char_source", str(char_source))
+        write_metadata(conn, "char_rows", str(char_rows))
         write_metadata(conn, "phrase_source", str(phrase_source) if phrase_source.exists() else "")
         write_metadata(conn, "phrase_rows", str(phrase_rows))
         conn.commit()
     finally:
         conn.close()
 
+    synced_legacy = False
+    if db_path.resolve() == DEFAULT_DB_PATH.resolve():
+        synced_legacy = sync_legacy_fallback_db(db_path)
+
     print(f"built database: {db_path}")
-    print(f"single_char_readings rows: {single_rows}")
+    print(f"char_readings rows: {char_rows}")
     print(f"phrase_readings rows: {phrase_rows}")
+    if synced_legacy:
+        print(f"synced legacy fallback database: {LEGACY_DB_PATH}")
 
 
 if __name__ == "__main__":

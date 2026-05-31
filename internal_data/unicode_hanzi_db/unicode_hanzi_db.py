@@ -1,17 +1,20 @@
 # unicode_hanzi_db.py
+import argparse
 import csv
 import json
+import shutil
 from pathlib import Path
 import sqlite3
+import sys
 from typing import Any, TypeAlias, cast
 
 DB_FILE = Path(__file__).resolve().with_name("unicode_hanzi.db")
-UNICODE_HANZI_FILE = Path(__file__).resolve().with_name("unicode_hanzi.txt")
+ARCHIVE_DIR = Path("C:/dev/Word-frequency")
 
 PinyinMap: TypeAlias = dict[str, list[str]]
-HanziRow: TypeAlias = tuple[str, str, str, str, float, str]
+HanziRow: TypeAlias = tuple[str, str, str, str, int, str]
 
-DEFAULT_FREQ = 0.00001
+DEFAULT_FREQ = 0
 
 BLOCKS = [
     (0x3007, 0x3007,       "零的小写"),
@@ -33,14 +36,45 @@ BLOCKS = [
 ]
 
 
-def load_pinyin_data() -> PinyinMap:
-    """从当前目录下的 unicode_hanzi.txt 读取单字拼音数据。"""
-    if not UNICODE_HANZI_FILE.exists():
-        raise FileNotFoundError(f"未找到拼音数据文件: {UNICODE_HANZI_FILE}")
+def console_print(message: str) -> None:
+    try:
+        print(message)
+    except UnicodeEncodeError:
+        sys.stdout.buffer.write((message + "\n").encode(sys.stdout.encoding or "utf-8", errors="backslashreplace"))
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Build unicode_hanzi.db from a provided unicode_hanzi.txt file.")
+    parser.add_argument("--db", default=str(DB_FILE), help="Target unicode_hanzi.db path")
+    parser.add_argument(
+        "--source-file",
+        required=True,
+        help="Path to the unicode_hanzi.txt source file to import",
+    )
+    parser.add_argument(
+        "--archive-dir",
+        default=str(ARCHIVE_DIR),
+        help="Directory to move the provided unicode_hanzi.txt source file into after a successful build",
+    )
+    parser.add_argument(
+        "--keep-source-file",
+        action="store_true",
+        help="Keep the provided source file after a successful build",
+    )
+    return parser.parse_args()
+
+
+def load_pinyin_data(source_file: Path) -> PinyinMap:
+    """从提供的 unicode_hanzi.txt 读取单字拼音数据。"""
+    if not source_file.exists():
+        raise FileNotFoundError(
+            f"未找到拼音数据文件: {source_file}\n"
+            "需先提供 unicode_hanzi.txt，再运行建库脚本。"
+        )
 
     pinyin_map: PinyinMap = {}
 
-    with UNICODE_HANZI_FILE.open("r", encoding="utf-8", newline="") as file_obj:
+    with source_file.open("r", encoding="utf-8", newline="") as file_obj:
         reader = csv.reader(file_obj, delimiter="\t")
         for row in reader:
             if not row:
@@ -87,10 +121,10 @@ def get_pinyin_values(codepoint: str, pinyin_map: PinyinMap) -> tuple[str, str]:
     return primary, json.dumps(candidates, ensure_ascii=False)
 
 
-def build_db():
-    pinyin_map = load_pinyin_data()
+def build_db(db_path: Path, source_file: Path) -> None:
+    pinyin_map = load_pinyin_data(source_file)
 
-    conn = sqlite3.connect(DB_FILE)
+    conn = sqlite3.connect(db_path)
     cur = conn.cursor()
 
     cur.execute("DROP VIEW IF EXISTS view_hanzi_long")
@@ -109,7 +143,7 @@ def build_db():
             hanzi       TEXT NOT NULL,
             pinyin      TEXT,
             pinyin_candidates TEXT,
-            frequency   REAL,
+            frequency   INTEGER,
             block       TEXT
         )
     """)
@@ -159,18 +193,18 @@ def build_db():
             batch = []
             conn.commit()
 
-        print(f"{block_name}: {count:,} 个")
+        console_print(f"{block_name}: {count:,} 个")
 
     conn.close()
-    print(f"\n合计: {total:,} 个汉字")
-    print(f"数据库: {DB_FILE}")
+    console_print(f"\n合计: {total:,} 个汉字")
+    console_print(f"数据库: {db_path}")
 
 
-def create_views():
-    conn = sqlite3.connect(DB_FILE)
+def create_views(db_path: Path) -> None:
+    conn = sqlite3.connect(db_path)
     cur = conn.cursor()
 
-    print("\n── 创建视图 ──")
+    console_print("\n── 创建视图 ──")
 
     cur.execute("CREATE INDEX IF NOT EXISTS idx_hanzi_hanzi ON hanzi(hanzi)")
 
@@ -252,35 +286,58 @@ def create_views():
     conn.commit()
 
     cur.execute("SELECT * FROM view_hanzi_long")
-    print(f"view_hanzi_long: {cur.fetchone()}")
+    console_print(f"view_hanzi_long: {cur.fetchone()}")
 
     cur.execute("SELECT hanzi, pinyin, pinyin_candidates, frequency FROM view_basic_hanzi LIMIT 5")
-    print(f"view_basic_hanzi 前5个: {cur.fetchall()}")
+    console_print(f"view_basic_hanzi 前5个: {cur.fetchall()}")
 
     cur.execute(
         "SELECT hanzi, pinyin, pinyin_candidates, frequency "
         "FROM view_hanzi_by_frequency WHERE block = '基本汉字' LIMIT 10"
     )
-    print(f"view_hanzi_by_frequency 前10个: {cur.fetchall()}")
+    console_print(f"view_hanzi_by_frequency 前10个: {cur.fetchall()}")
 
     cur.execute("SELECT hanzi, pinyin_candidates, frequency FROM view_hanzi_zhong LIMIT 5")
-    print(f"view_hanzi_zhong 前5个: {cur.fetchall()}")
+    console_print(f"view_hanzi_zhong 前5个: {cur.fetchall()}")
 
     cur.execute("SELECT hanzi, pinyin_candidates FROM view_hanzi_polyphonic LIMIT 5")
-    print(f"view_hanzi_polyphonic 前5个: {cur.fetchall()}")
+    console_print(f"view_hanzi_polyphonic 前5个: {cur.fetchall()}")
 
     cur.execute("SELECT hanzi, pinyin FROM view_hanzi_with_pinyin LIMIT 5")
-    print(f"view_hanzi_with_pinyin 前5个: {cur.fetchall()}")
+    console_print(f"view_hanzi_with_pinyin 前5个: {cur.fetchall()}")
 
     cur.execute("SELECT codepoint, hanzi FROM view_hanzi_without_pinyin LIMIT 5")
-    print(f"view_hanzi_without_pinyin 前5个: {cur.fetchall()}")
+    console_print(f"view_hanzi_without_pinyin 前5个: {cur.fetchall()}")
 
     cur.execute("SELECT codepoint, hanzi, pinyin, block FROM view_hanzi_single_candidate_not_toned LIMIT 5")
-    print(f"view_hanzi_single_candidate_not_toned 前5个: {cur.fetchall()}")
+    console_print(f"view_hanzi_single_candidate_not_toned 前5个: {cur.fetchall()}")
 
     conn.close()
 
 
+def move_source_file(source_file: Path, archive_dir: Path) -> Path:
+    archive_dir.mkdir(parents=True, exist_ok=True)
+    target_path = archive_dir / source_file.name
+    if target_path.exists():
+        target_path.unlink()
+    shutil.move(str(source_file), str(target_path))
+    return target_path
+
+
 if __name__ == "__main__":
-    build_db()
-    create_views()
+    args = parse_args()
+    db_path = Path(args.db)
+    source_file = Path(args.source_file)
+    archive_dir = Path(args.archive_dir)
+
+    console_print(f"source_file: {source_file}")
+    console_print(f"target_db: {db_path}")
+
+    build_db(db_path, source_file)
+    create_views(db_path)
+
+    if args.keep_source_file:
+        console_print("source_file_cleanup: skipped (--keep-source-file)")
+    else:
+        archived_path = move_source_file(source_file, archive_dir)
+        console_print(f"source_file_moved_to: {archived_path}")

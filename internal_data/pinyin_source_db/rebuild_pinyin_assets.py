@@ -12,7 +12,7 @@ from pathlib import Path
 SCRIPT_DIR = Path(__file__).resolve().parent
 WORKSPACE_ROOT = SCRIPT_DIR.parent.parent
 DEFAULT_DB_PATH = WORKSPACE_ROOT / ".generated" / "source_pinyin.db"
-DEFAULT_CHAR_SOURCE = Path("C:/dev/pinyin-data/pinyin.txt")
+DEFAULT_CHAR_SOURCE = Path("C:/dev/Word-frequency/unicode_hanzi.txt")
 DEFAULT_PHRASE_SOURCE = Path("C:/dev/pinyin-data/tools/phrase-pinyin-data/pinyin.txt")
 DEFAULT_NORMALIZED_OUTPUT = SCRIPT_DIR / "lexicon_exports" / "pinyin_normalized.json"
 DEFAULT_YINJIE_OUTPUT = WORKSPACE_ROOT / "syllable" / "codec" / "yinjie_code.json"
@@ -24,7 +24,7 @@ def parse_args() -> argparse.Namespace:
         description="Rebuild source pinyin assets: import -> validate -> export -> regenerate yinjie_code.json"
     )
     parser.add_argument("--db", default=str(DEFAULT_DB_PATH), help="SQLite database path")
-    parser.add_argument("--char-source", default=str(DEFAULT_CHAR_SOURCE), help="Single-character source pinyin.txt")
+    parser.add_argument("--char-source", default=str(DEFAULT_CHAR_SOURCE), help="Unicode Hanzi TSV source")
     parser.add_argument("--phrase-source", default=str(DEFAULT_PHRASE_SOURCE), help="Optional phrase pinyin.txt")
     parser.add_argument(
         "--normalized-output",
@@ -77,7 +77,7 @@ def build_summary(
         "skip_yinjie": skip_yinjie,
         "db_metadata": metadata,
         "counts": {
-            "single_char_rows": int(metadata.get("single_char_rows", "0")),
+            "char_rows": int(metadata.get("char_rows", metadata.get("single_char_rows", "0"))),
             "phrase_rows": int(metadata.get("phrase_rows", "0")),
             "normalized_rows": load_json_count(normalized_output),
         },
