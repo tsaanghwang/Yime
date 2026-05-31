@@ -58,6 +58,7 @@ pip-wheel-metadata/
 *.whl
 
 internal_data/pinyin_source_db/source_pinyin.db
+internal_data/unicode_hanzi_db/unicode_hanzi.db
 yime/reports/efficiency_baseline.json
 yime/reports/phrase_code_backfill.json
 yime/reports/phoneme_dict.json
