@@ -19,6 +19,7 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 WORKSPACE_ROOT = SCRIPT_DIR.parent.parent
 DEFAULT_OUTPUT_PATH = SCRIPT_DIR / "lexicon_exports" / "pinyin_normalized.json"
 DEFAULT_CODEBOOK_PATH = WORKSPACE_ROOT / "syllable" / "codec" / "yinjie_code.json"
+DEFAULT_SUPPLEMENTAL_PATCH_PATH = SCRIPT_DIR / "pinyin_normalized_patch.json"
 
 PRECOMPOSED_TONE_MARKS = {
     "a": {"1": "ā", "2": "á", "3": "ǎ", "4": "à"},
@@ -40,6 +41,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--db", default=str(DEFAULT_DB_PATH), help="SQLite database path")
     parser.add_argument("--output", default=str(DEFAULT_OUTPUT_PATH), help="Output JSON path")
     parser.add_argument("--codebook", default=str(DEFAULT_CODEBOOK_PATH), help="Reference yinjie codebook path")
+    parser.add_argument(
+        "--supplemental-patch",
+        default=str(DEFAULT_SUPPLEMENTAL_PATCH_PATH),
+        help="Optional JSON object of extra numeric_pinyin -> marked_pinyin pairs to include in the export domain",
+    )
     parser.add_argument(
         "--allow-validation-warnings",
         action="store_true",
@@ -69,6 +75,18 @@ def collect_numeric_to_marked_pairs(conn: sqlite3.Connection) -> dict[str, set[s
 
 def load_codebook_keys(path: Path) -> list[str]:
     return sorted(json.loads(path.read_text(encoding="utf-8")).keys())
+
+
+def load_supplemental_patch(path: Path) -> dict[str, str]:
+    if not path.exists():
+        return {}
+
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    return {
+        str(numeric).strip(): str(marked).strip()
+        for numeric, marked in payload.items()
+        if str(numeric).strip() and str(marked).strip()
+    }
 
 
 def numeric_to_marked_syllable(numeric_pinyin: str) -> str:
@@ -125,11 +143,15 @@ def numeric_to_marked_syllable(numeric_pinyin: str) -> str:
     return syllable[:tone_index] + marked_vowel + syllable[tone_index + 1:]
 
 
-def build_export_mapping(numeric_to_marked: dict[str, set[str]], codebook_keys: list[str]) -> tuple[OrderedDict[str, str], list[str]]:
+def build_export_mapping(
+    numeric_to_marked: dict[str, set[str]],
+    allowed_keys: list[str],
+    supplemental_patch: dict[str, str],
+) -> tuple[OrderedDict[str, str], list[str]]:
     conflicts = {
         numeric: sorted(marked_values)
         for numeric, marked_values in numeric_to_marked.items()
-        if numeric in codebook_keys and len(marked_values) != 1
+        if numeric in allowed_keys and len(marked_values) != 1
     }
     if conflicts:
         conflict_preview = "; ".join(
@@ -143,10 +165,15 @@ def build_export_mapping(numeric_to_marked: dict[str, set[str]], codebook_keys: 
 
     export_mapping: OrderedDict[str, str] = OrderedDict()
     missing_keys: list[str] = []
-    for numeric in codebook_keys:
+    for numeric in allowed_keys:
         marked_values = numeric_to_marked.get(numeric)
         if marked_values:
             export_mapping[numeric] = next(iter(marked_values))
+            continue
+        supplemental_marked = supplemental_patch.get(numeric)
+        if supplemental_marked:
+            export_mapping[numeric] = supplemental_marked
+            missing_keys.append(numeric)
             continue
         export_mapping[numeric] = numeric_to_marked_syllable(numeric)
         missing_keys.append(numeric)
@@ -159,6 +186,7 @@ def main() -> int:
     db_path = Path(args.db)
     output_path = Path(args.output)
     codebook_path = Path(args.codebook)
+    supplemental_patch_path = Path(args.supplemental_patch)
 
     if not db_path.exists():
         raise FileNotFoundError(f"database file not found: {db_path}")
@@ -184,7 +212,13 @@ def main() -> int:
         conn.close()
 
     codebook_keys = load_codebook_keys(codebook_path)
-    export_mapping, missing_keys = build_export_mapping(numeric_to_marked, codebook_keys)
+    supplemental_patch = load_supplemental_patch(supplemental_patch_path)
+    allowed_keys = sorted(set(codebook_keys) | set(supplemental_patch))
+    export_mapping, missing_keys = build_export_mapping(
+        numeric_to_marked,
+        allowed_keys,
+        supplemental_patch,
+    )
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(
         json.dumps(export_mapping, ensure_ascii=False, indent=2),
@@ -195,7 +229,8 @@ def main() -> int:
     print(f"output: {output_path}")
     print(f"rows_exported: {len(export_mapping)}")
     print(f"codebook_keys: {len(codebook_keys)}")
-    print(f"source_only_keys_ignored: {len(set(numeric_to_marked) - set(codebook_keys))}")
+    print(f"supplemental_patch_keys: {len(supplemental_patch)}")
+    print(f"source_only_keys_ignored: {len(set(numeric_to_marked) - set(allowed_keys))}")
     print(f"missing_keys_backfilled: {len(missing_keys)}")
     print(f"validation_errors: {validation_report['summary']['error_count']}")
     print(f"validation_warnings: {validation_report['summary']['warning_count']}")
