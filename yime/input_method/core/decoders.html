@@ -1,0 +1,988 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>yime.input_method.core.decoders API documentation</title>
+<meta name="description" content="候选词解码器模块 …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>yime.input_method.core.decoders</code></h1>
+</header>
+<section id="section-intro">
+<p>候选词解码器模块</p>
+<p>提供三种解码器：
+1. StaticCandidateDecoder - 静态拼音候选表解码
+2. RuntimeCandidateDecoder - 运行时编码表解码
+3. CompositeCandidateDecoder - 组合解码器（优先运行时，回退静态）</p>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="yime.input_method.core.decoders.CompositeCandidateDecoder"><code class="flex name class">
+<span>class <span class="ident">CompositeCandidateDecoder</span></span>
+<span>(</span><span>app_dir: Path, user_db_path: Path | None = None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class CompositeCandidateDecoder:
+    &#34;&#34;&#34;组合候选词解码器（优先运行时，回退静态）&#34;&#34;&#34;
+
+    def __init__(self, app_dir: Path, user_db_path: Path | None = None) -&gt; None:
+        &#34;&#34;&#34;
+        初始化组合解码器
+
+        Args:
+            app_dir: 应用目录路径
+        &#34;&#34;&#34;
+        self.runtime_decoder: Optional[
+            RuntimeCandidateDecoder | SQLiteRuntimeCandidateDecoder
+        ] = None
+        self.runtime_load_error = &#34;&#34;
+        self.runtime_source = &#34;&#34;
+        try:
+            self.runtime_decoder = SQLiteRuntimeCandidateDecoder(app_dir, user_db_path=user_db_path)
+            self.runtime_source = &#34;sqlite&#34;
+        except (FileNotFoundError, ValueError) as exc:
+            self.runtime_load_error = str(exc)
+            try:
+                self.runtime_decoder = RuntimeCandidateDecoder(app_dir, user_db_path=user_db_path)
+                self.runtime_source = &#34;json&#34;
+                self.runtime_load_error = &#34;&#34;
+            except (FileNotFoundError, ValueError, KeyError, json.JSONDecodeError) as json_exc:
+                self.runtime_load_error = (
+                    f&#34;SQLite 直查不可用: {exc}; JSON 导出不可用: {json_exc}&#34;
+                )
+        self.static_decoder = StaticCandidateDecoder(app_dir)
+
+    def get_runtime_warning(self) -&gt; str:
+        &#34;&#34;&#34;返回运行时编码表告警，供上层决定是否展示。&#34;&#34;&#34;
+        return self.runtime_load_error
+
+    def get_runtime_source(self) -&gt; str:
+        &#34;&#34;&#34;返回当前启用的运行时候选来源。&#34;&#34;&#34;
+        return self.runtime_source
+
+    def get_char_candidates(self, code: str) -&gt; List[CharCodeCandidate]:
+        &#34;&#34;&#34;按完整音元编码读取单字候选。&#34;&#34;&#34;
+        if self.runtime_decoder is None:
+            return []
+        return self.runtime_decoder.get_char_candidates(code)
+
+    def get_char_candidates_by_prefix(
+        self,
+        prefix: str,
+        limit: int = 0,
+    ) -&gt; List[Tuple[str, List[CharCodeCandidate]]]:
+        &#34;&#34;&#34;按编码前缀读取可能的单字候选。&#34;&#34;&#34;
+        if self.runtime_decoder is None:
+            return []
+        return self.runtime_decoder.get_char_candidates_by_prefix(prefix, limit=limit)
+
+    def record_selection(self, text: str, candidate_text: str) -&gt; int:
+        &#34;&#34;&#34;Record a user selection so runtime ranking can adapt in-process.&#34;&#34;&#34;
+        if self.runtime_decoder is None:
+            return 0
+        if hasattr(self.runtime_decoder, &#34;record_selection&#34;):
+            return int(self.runtime_decoder.record_selection(text, candidate_text) or 0)
+        return 0
+
+    def reload_user_lexicon(self) -&gt; None:
+        if self.runtime_decoder is None:
+            return
+        if hasattr(self.runtime_decoder, &#34;reload_user_lexicon&#34;):
+            self.runtime_decoder.reload_user_lexicon()
+
+    def decode_text(
+        self, text: str
+    ) -&gt; Tuple[str, str, str, List[str], str]:
+        &#34;&#34;&#34;
+        解码文本（优先运行时，回退静态）
+
+        Args:
+            text: 输入的音元码元文本
+
+        Returns:
+            (规范编码, 当前4码, 拼音显示, 候选词列表, 状态消息)
+        &#34;&#34;&#34;
+        if self.runtime_decoder is not None:
+            canonical, active_code, pinyin, candidates, status = (
+                self.runtime_decoder.decode_text(text)
+            )
+            if candidates:
+                return canonical, active_code, pinyin, candidates, status
+            if active_code:
+                fallback = self.static_decoder.decode_text(text)
+                if fallback[3]:
+                    return (
+                        fallback[0],
+                        fallback[1],
+                        fallback[2],
+                        fallback[3],
+                        f&#34;{status} 已回退到静态拼音候选表。&#34;,
+                    )
+                return canonical, active_code, pinyin, candidates, status
+
+        return self.static_decoder.decode_text(text)</code></pre>
+</details>
+<div class="desc"><p>组合候选词解码器（优先运行时，回退静态）</p>
+<p>初始化组合解码器</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>app_dir</code></strong></dt>
+<dd>应用目录路径</dd>
+</dl></div>
+<h3>Methods</h3>
+<dl>
+<dt id="yime.input_method.core.decoders.CompositeCandidateDecoder.decode_text"><code class="name flex">
+<span>def <span class="ident">decode_text</span></span>(<span>self, text: str) ‑> Tuple[str, str, str, List[str], str]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def decode_text(
+    self, text: str
+) -&gt; Tuple[str, str, str, List[str], str]:
+    &#34;&#34;&#34;
+    解码文本（优先运行时，回退静态）
+
+    Args:
+        text: 输入的音元码元文本
+
+    Returns:
+        (规范编码, 当前4码, 拼音显示, 候选词列表, 状态消息)
+    &#34;&#34;&#34;
+    if self.runtime_decoder is not None:
+        canonical, active_code, pinyin, candidates, status = (
+            self.runtime_decoder.decode_text(text)
+        )
+        if candidates:
+            return canonical, active_code, pinyin, candidates, status
+        if active_code:
+            fallback = self.static_decoder.decode_text(text)
+            if fallback[3]:
+                return (
+                    fallback[0],
+                    fallback[1],
+                    fallback[2],
+                    fallback[3],
+                    f&#34;{status} 已回退到静态拼音候选表。&#34;,
+                )
+            return canonical, active_code, pinyin, candidates, status
+
+    return self.static_decoder.decode_text(text)</code></pre>
+</details>
+<div class="desc"><p>解码文本（优先运行时，回退静态）</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>text</code></strong></dt>
+<dd>输入的音元码元文本</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>(规范编码, 当前4码, 拼音显示, 候选词列表, 状态消息)</p></div>
+</dd>
+<dt id="yime.input_method.core.decoders.CompositeCandidateDecoder.get_char_candidates"><code class="name flex">
+<span>def <span class="ident">get_char_candidates</span></span>(<span>self, code: str) ‑> List[<a title="yime.input_method.core.char_code_index.CharCodeCandidate" href="char_code_index.html#yime.input_method.core.char_code_index.CharCodeCandidate">CharCodeCandidate</a>]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_char_candidates(self, code: str) -&gt; List[CharCodeCandidate]:
+    &#34;&#34;&#34;按完整音元编码读取单字候选。&#34;&#34;&#34;
+    if self.runtime_decoder is None:
+        return []
+    return self.runtime_decoder.get_char_candidates(code)</code></pre>
+</details>
+<div class="desc"><p>按完整音元编码读取单字候选。</p></div>
+</dd>
+<dt id="yime.input_method.core.decoders.CompositeCandidateDecoder.get_char_candidates_by_prefix"><code class="name flex">
+<span>def <span class="ident">get_char_candidates_by_prefix</span></span>(<span>self, prefix: str, limit: int = 0) ‑> List[Tuple[str, List[<a title="yime.input_method.core.char_code_index.CharCodeCandidate" href="char_code_index.html#yime.input_method.core.char_code_index.CharCodeCandidate">CharCodeCandidate</a>]]]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_char_candidates_by_prefix(
+    self,
+    prefix: str,
+    limit: int = 0,
+) -&gt; List[Tuple[str, List[CharCodeCandidate]]]:
+    &#34;&#34;&#34;按编码前缀读取可能的单字候选。&#34;&#34;&#34;
+    if self.runtime_decoder is None:
+        return []
+    return self.runtime_decoder.get_char_candidates_by_prefix(prefix, limit=limit)</code></pre>
+</details>
+<div class="desc"><p>按编码前缀读取可能的单字候选。</p></div>
+</dd>
+<dt id="yime.input_method.core.decoders.CompositeCandidateDecoder.get_runtime_source"><code class="name flex">
+<span>def <span class="ident">get_runtime_source</span></span>(<span>self) ‑> str</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_runtime_source(self) -&gt; str:
+    &#34;&#34;&#34;返回当前启用的运行时候选来源。&#34;&#34;&#34;
+    return self.runtime_source</code></pre>
+</details>
+<div class="desc"><p>返回当前启用的运行时候选来源。</p></div>
+</dd>
+<dt id="yime.input_method.core.decoders.CompositeCandidateDecoder.get_runtime_warning"><code class="name flex">
+<span>def <span class="ident">get_runtime_warning</span></span>(<span>self) ‑> str</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_runtime_warning(self) -&gt; str:
+    &#34;&#34;&#34;返回运行时编码表告警，供上层决定是否展示。&#34;&#34;&#34;
+    return self.runtime_load_error</code></pre>
+</details>
+<div class="desc"><p>返回运行时编码表告警，供上层决定是否展示。</p></div>
+</dd>
+<dt id="yime.input_method.core.decoders.CompositeCandidateDecoder.record_selection"><code class="name flex">
+<span>def <span class="ident">record_selection</span></span>(<span>self, text: str, candidate_text: str) ‑> int</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def record_selection(self, text: str, candidate_text: str) -&gt; int:
+    &#34;&#34;&#34;Record a user selection so runtime ranking can adapt in-process.&#34;&#34;&#34;
+    if self.runtime_decoder is None:
+        return 0
+    if hasattr(self.runtime_decoder, &#34;record_selection&#34;):
+        return int(self.runtime_decoder.record_selection(text, candidate_text) or 0)
+    return 0</code></pre>
+</details>
+<div class="desc"><p>Record a user selection so runtime ranking can adapt in-process.</p></div>
+</dd>
+<dt id="yime.input_method.core.decoders.CompositeCandidateDecoder.reload_user_lexicon"><code class="name flex">
+<span>def <span class="ident">reload_user_lexicon</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def reload_user_lexicon(self) -&gt; None:
+    if self.runtime_decoder is None:
+        return
+    if hasattr(self.runtime_decoder, &#34;reload_user_lexicon&#34;):
+        self.runtime_decoder.reload_user_lexicon()</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="yime.input_method.core.decoders.RuntimeCandidateDecoder"><code class="flex name class">
+<span>class <span class="ident">RuntimeCandidateDecoder</span></span>
+<span>(</span><span>app_dir: Path, user_db_path: Path | None = None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class RuntimeCandidateDecoder(_RuntimeDecoderBase):
+    &#34;&#34;&#34;运行时候选词解码器，JSON 导出为数据源。&#34;&#34;&#34;
+
+    def __init__(self, app_dir: Path, user_db_path: Path | None = None) -&gt; None:
+        self.runtime_path = resolve_runtime_candidates_json_path(app_dir)
+        self._init_runtime_decoder_common(app_dir, user_db_path)
+        self._json_store = JSONRuntimeCandidateStore(
+            self.runtime_path,
+            self.pinyin_to_canonical,
+            _resolve_canonical_code_from_pinyin_tone,
+        )
+        self._json_store.refresh(
+            self.user_lexicon.load_phrase_candidates(self.pinyin_to_canonical),
+        )
+        self.by_code = self._json_store.by_code
+        self._char_sort_weight_by_text = self._json_store.char_sort_weight_by_text
+        self._phrase_prefix_index = self._json_store.phrase_prefix_index
+        self.char_code_index = self._json_store.char_code_index
+        self._user_freq_by_candidate = self.user_lexicon.load_candidate_frequency()
+
+    def _load_runtime_candidates(
+        self, path: Path
+    ) -&gt; RuntimeCandidatePayload:
+        json_store = getattr(self, &#34;_json_store&#34;, None)
+        if json_store is not None:
+            return json_store.load_runtime_candidates(path)
+
+        if not path.exists():
+            raise FileNotFoundError(f&#34;未找到运行时候选文件: {path}&#34;)
+        raw_text = path.read_text(encoding=&#34;utf-8&#34;)
+        if raw_text.lstrip().startswith(&#34;version https://git-lfs.github.com/spec/v1&#34;):
+            raise ValueError(f&#34;运行时候选文件是 Git LFS 指针，未拉取实际内容: {path}&#34;)
+
+        payload = json.loads(raw_text)
+        by_code = payload.get(&#34;by_code&#34;) if isinstance(payload, dict) else None
+        if not isinstance(by_code, dict):
+            raise ValueError(f&#34;运行时候选文件格式无效: {path}&#34;)
+
+        regrouped: RuntimeCandidatePayload = {}
+        for raw_candidates in by_code.values():
+            if not isinstance(raw_candidates, list):
+                continue
+            for candidate in raw_candidates:
+                if not isinstance(candidate, dict):
+                    continue
+                canonical_code = str(candidate.get(&#34;yime_code&#34;, &#34;&#34;) or &#34;&#34;).strip()
+                if not canonical_code:
+                    pinyin_tone = str(candidate.get(&#34;pinyin_tone&#34;, &#34;&#34;) or &#34;&#34;).strip()
+                    canonical_code = _resolve_canonical_code_from_pinyin_tone(
+                        pinyin_tone,
+                        self.pinyin_to_canonical,
+                    )
+                if not canonical_code:
+                    continue
+                regrouped.setdefault(canonical_code, []).append(
+                    _annotate_candidate_source(candidate, &#34;exact&#34;)
+                )
+        return regrouped
+
+    def reload_user_lexicon(self) -&gt; None:
+        self._json_store.refresh(
+            self.user_lexicon.load_phrase_candidates(self.pinyin_to_canonical),
+        )
+        self.by_code = self._json_store.by_code
+        self._char_sort_weight_by_text = self._json_store.char_sort_weight_by_text
+        self._phrase_prefix_index = self._json_store.phrase_prefix_index
+        self.char_code_index = self._json_store.char_code_index
+        self._user_freq_by_candidate = self.user_lexicon.load_candidate_frequency()
+
+    def _load_phrase_prefix_candidates(
+        self,
+        lookup_code: str,
+        *,
+        limit: int = 0,
+    ) -&gt; List[JSONDict]:
+        json_store = getattr(self, &#34;_json_store&#34;, None)
+        if json_store is not None:
+            return json_store.load_phrase_prefix_candidates(lookup_code, limit=limit)
+
+        normalized_code = str(lookup_code or &#34;&#34;).strip()
+        if not normalized_code:
+            return []
+        phrase_prefix_index = getattr(self, &#34;_phrase_prefix_index&#34;, {})
+        candidates = [
+            _annotate_phrase_prefix_candidate(candidate, len(normalized_code))
+            for candidate in phrase_prefix_index.get(normalized_code, [])
+            if isinstance(candidate, dict)
+        ]
+        normalized_limit = max(int(limit or 0), 0)
+        if normalized_limit &gt; 0:
+            return candidates[:normalized_limit]
+        return candidates
+
+    def _lookup_runtime_candidates_for_decode(
+        self,
+        canonical: str,
+        plan: RuntimeLookupPlan,
+    ) -&gt; tuple[List[JSONDict], str]:
+        raw_candidates: List[JSONDict] = []
+        phrase_tree_lookup = _build_phrase_tree_lookup(canonical, plan)
+        if phrase_tree_lookup:
+            raw_candidates.extend(
+                self._load_phrase_prefix_candidates(
+                    phrase_tree_lookup,
+                    limit=plan.phrase_prefix_limit,
+                )
+            )
+        if plan.lookup_code and (plan.stage != &#34;C&#34; or not raw_candidates):
+            raw_candidates.extend(
+                _annotate_candidate_source(candidate, &#34;exact&#34;)
+                for candidate in self.by_code.get(plan.lookup_code, [])
+                if isinstance(candidate, dict)
+            )
+        return raw_candidates, phrase_tree_lookup or plan.lookup_code
+
+    def get_char_candidates(self, code: str) -&gt; List[CharCodeCandidate]:
+        &#34;&#34;&#34;按完整音元编码读取单字候选。&#34;&#34;&#34;
+        json_store = getattr(self, &#34;_json_store&#34;, None)
+        if json_store is not None:
+            return json_store.get_char_candidates(code)
+        return self.char_code_index.get_exact(code)
+
+    def get_char_candidates_by_prefix(
+        self,
+        prefix: str,
+        limit: int = 0,
+    ) -&gt; List[Tuple[str, List[CharCodeCandidate]]]:
+        &#34;&#34;&#34;按编码前缀读取可能的单字候选。&#34;&#34;&#34;
+        json_store = getattr(self, &#34;_json_store&#34;, None)
+        if json_store is not None:
+            return json_store.get_char_candidates_by_prefix(prefix, limit=limit)
+        return self.char_code_index.get_with_prefix(prefix, limit=limit)</code></pre>
+</details>
+<div class="desc"><p>运行时候选词解码器，JSON 导出为数据源。</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="yime.input_method.core.runtime_decoder_base.RuntimeDecoderBase" href="runtime_decoder_base.html#yime.input_method.core.runtime_decoder_base.RuntimeDecoderBase">RuntimeDecoderBase</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="yime.input_method.core.decoders.RuntimeCandidateDecoder.get_char_candidates"><code class="name flex">
+<span>def <span class="ident">get_char_candidates</span></span>(<span>self, code: str) ‑> List[<a title="yime.input_method.core.char_code_index.CharCodeCandidate" href="char_code_index.html#yime.input_method.core.char_code_index.CharCodeCandidate">CharCodeCandidate</a>]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_char_candidates(self, code: str) -&gt; List[CharCodeCandidate]:
+    &#34;&#34;&#34;按完整音元编码读取单字候选。&#34;&#34;&#34;
+    json_store = getattr(self, &#34;_json_store&#34;, None)
+    if json_store is not None:
+        return json_store.get_char_candidates(code)
+    return self.char_code_index.get_exact(code)</code></pre>
+</details>
+<div class="desc"><p>按完整音元编码读取单字候选。</p></div>
+</dd>
+<dt id="yime.input_method.core.decoders.RuntimeCandidateDecoder.get_char_candidates_by_prefix"><code class="name flex">
+<span>def <span class="ident">get_char_candidates_by_prefix</span></span>(<span>self, prefix: str, limit: int = 0) ‑> List[Tuple[str, List[<a title="yime.input_method.core.char_code_index.CharCodeCandidate" href="char_code_index.html#yime.input_method.core.char_code_index.CharCodeCandidate">CharCodeCandidate</a>]]]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_char_candidates_by_prefix(
+    self,
+    prefix: str,
+    limit: int = 0,
+) -&gt; List[Tuple[str, List[CharCodeCandidate]]]:
+    &#34;&#34;&#34;按编码前缀读取可能的单字候选。&#34;&#34;&#34;
+    json_store = getattr(self, &#34;_json_store&#34;, None)
+    if json_store is not None:
+        return json_store.get_char_candidates_by_prefix(prefix, limit=limit)
+    return self.char_code_index.get_with_prefix(prefix, limit=limit)</code></pre>
+</details>
+<div class="desc"><p>按编码前缀读取可能的单字候选。</p></div>
+</dd>
+<dt id="yime.input_method.core.decoders.RuntimeCandidateDecoder.reload_user_lexicon"><code class="name flex">
+<span>def <span class="ident">reload_user_lexicon</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def reload_user_lexicon(self) -&gt; None:
+    self._json_store.refresh(
+        self.user_lexicon.load_phrase_candidates(self.pinyin_to_canonical),
+    )
+    self.by_code = self._json_store.by_code
+    self._char_sort_weight_by_text = self._json_store.char_sort_weight_by_text
+    self._phrase_prefix_index = self._json_store.phrase_prefix_index
+    self.char_code_index = self._json_store.char_code_index
+    self._user_freq_by_candidate = self.user_lexicon.load_candidate_frequency()</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="yime.input_method.core.decoders.SQLiteRuntimeCandidateDecoder"><code class="flex name class">
+<span>class <span class="ident">SQLiteRuntimeCandidateDecoder</span></span>
+<span>(</span><span>app_dir: Path, user_db_path: Path | None = None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class SQLiteRuntimeCandidateDecoder(_RuntimeDecoderBase):
+    &#34;&#34;&#34;直接从 SQLite runtime_candidates 视图读取候选。&#34;&#34;&#34;
+
+    def __init__(self, app_dir: Path, user_db_path: Path | None = None) -&gt; None:
+        self.db_path = app_dir / &#34;pinyin_hanzi.db&#34;
+        self.runtime_source_label = &#34;数据库候选视图&#34;
+        self._init_runtime_decoder_common(app_dir, user_db_path)
+        self._sqlite_runtime_source = SQLiteRuntimeSource(self.db_path)
+        self.runtime_table_name = self._sqlite_runtime_source.detect_runtime_candidate_table()
+        self._char_store = SQLiteCharCandidateStore(self._sqlite_runtime_source, self.runtime_table_name)
+        self._phrase_store = SQLitePhraseCandidateStore(self._sqlite_runtime_source, self.runtime_table_name)
+        self._phrase_candidate_overlays = self.user_lexicon.load_phrase_candidates(
+            self.pinyin_to_canonical,
+        )
+        self._char_sort_weight_by_text = self._char_store.load_char_sort_weight_index()
+        self._user_freq_by_candidate = self.user_lexicon.load_candidate_frequency()
+
+    def _lookup_runtime_candidates_for_decode(
+        self,
+        canonical: str,
+        plan: RuntimeLookupPlan,
+    ) -&gt; tuple[List[JSONDict], str]:
+        raw_candidates: List[JSONDict] = []
+        in_memory_by_code = getattr(self, &#34;by_code&#34;, None)
+        phrase_tree_lookup = _build_phrase_tree_lookup(canonical, plan)
+        if phrase_tree_lookup:
+            raw_candidates.extend(
+                self._phrase_store.load_phrase_prefix_candidates(
+                    phrase_tree_lookup,
+                    self._phrase_candidate_overlays,
+                    limit=plan.phrase_prefix_limit,
+                )
+            )
+        if plan.lookup_code and (plan.stage != &#34;C&#34; or not raw_candidates):
+            if isinstance(in_memory_by_code, dict) and plan.lookup_code in in_memory_by_code:
+                in_memory_candidates = in_memory_by_code.get(plan.lookup_code, [])
+                if isinstance(in_memory_candidates, list):
+                    raw_candidates.extend(
+                        [
+                            _annotate_candidate_source(candidate, &#34;exact&#34;)
+                            for candidate in in_memory_candidates
+                            if isinstance(candidate, dict)
+                        ]
+                    )
+            else:
+                raw_candidates.extend(
+                    self._phrase_store.load_runtime_candidates_for_code(
+                        plan.lookup_code,
+                        self._phrase_candidate_overlays,
+                    )
+                )
+        return raw_candidates, phrase_tree_lookup or plan.lookup_code
+
+    def get_char_candidates(self, code: str) -&gt; List[CharCodeCandidate]:
+        &#34;&#34;&#34;按完整音元编码读取单字候选。&#34;&#34;&#34;
+        return self._char_store.get_char_candidates(code)
+
+    def get_char_candidates_by_prefix(
+        self,
+        prefix: str,
+        limit: int = 0,
+    ) -&gt; List[Tuple[str, List[CharCodeCandidate]]]:
+        &#34;&#34;&#34;按编码前缀读取可能的单字候选。&#34;&#34;&#34;
+        return self._char_store.get_char_candidates_by_prefix(prefix, limit=limit)
+
+    def _load_runtime_candidates(self) -&gt; RuntimeCandidatePayload:
+        with self._sqlite_runtime_source.connect() as conn:
+            rows = conn.execute(
+                &#34;&#34;&#34;
+                SELECT entry_type, entry_id, text, pinyin_tone, yime_code, sort_weight, is_common, text_length, updated_at
+                FROM runtime_candidates
+                ORDER BY
+                    CASE
+                        WHEN entry_type = &#39;phrase&#39; AND text_length BETWEEN 2 AND 4 THEN 0
+                        WHEN entry_type = &#39;char&#39; THEN 1
+                        ELSE 2
+                    END,
+                    sort_weight DESC,
+                    text,
+                    pinyin_tone
+                &#34;&#34;&#34;
+            ).fetchall()
+
+        grouped: RuntimeCandidatePayload = {}
+        for row in rows:
+            pinyin_tone = str(row[&#34;pinyin_tone&#34;] or &#34;&#34;).strip()
+            canonical_code = _resolve_canonical_code_from_pinyin_tone(
+                pinyin_tone,
+                self.pinyin_to_canonical,
+            )
+            if not canonical_code:
+                continue
+            grouped.setdefault(canonical_code, []).append(
+                {
+                    &#34;text&#34;: row[&#34;text&#34;],
+                    &#34;entry_type&#34;: row[&#34;entry_type&#34;],
+                    &#34;entry_id&#34;: row[&#34;entry_id&#34;],
+                    &#34;pinyin_tone&#34;: row[&#34;pinyin_tone&#34;],
+                    &#34;yime_code&#34;: row[&#34;yime_code&#34;],
+                    &#34;sort_weight&#34;: row[&#34;sort_weight&#34;],
+                    &#34;is_common&#34;: row[&#34;is_common&#34;],
+                    &#34;text_length&#34;: row[&#34;text_length&#34;],
+                    &#34;updated_at&#34;: row[&#34;updated_at&#34;],
+                }
+            )
+        return grouped
+
+    def reload_user_lexicon(self) -&gt; None:
+        self._phrase_candidate_overlays = self.user_lexicon.load_phrase_candidates(
+            self.pinyin_to_canonical,
+        )
+        self._char_sort_weight_by_text = self._char_store.load_char_sort_weight_index()
+        self._char_store.clear_caches()
+        self._phrase_store.clear_caches()
+        self._user_freq_by_candidate = self.user_lexicon.load_candidate_frequency()</code></pre>
+</details>
+<div class="desc"><p>直接从 SQLite runtime_candidates 视图读取候选。</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="yime.input_method.core.runtime_decoder_base.RuntimeDecoderBase" href="runtime_decoder_base.html#yime.input_method.core.runtime_decoder_base.RuntimeDecoderBase">RuntimeDecoderBase</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="yime.input_method.core.decoders.SQLiteRuntimeCandidateDecoder.get_char_candidates"><code class="name flex">
+<span>def <span class="ident">get_char_candidates</span></span>(<span>self, code: str) ‑> List[<a title="yime.input_method.core.char_code_index.CharCodeCandidate" href="char_code_index.html#yime.input_method.core.char_code_index.CharCodeCandidate">CharCodeCandidate</a>]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_char_candidates(self, code: str) -&gt; List[CharCodeCandidate]:
+    &#34;&#34;&#34;按完整音元编码读取单字候选。&#34;&#34;&#34;
+    return self._char_store.get_char_candidates(code)</code></pre>
+</details>
+<div class="desc"><p>按完整音元编码读取单字候选。</p></div>
+</dd>
+<dt id="yime.input_method.core.decoders.SQLiteRuntimeCandidateDecoder.get_char_candidates_by_prefix"><code class="name flex">
+<span>def <span class="ident">get_char_candidates_by_prefix</span></span>(<span>self, prefix: str, limit: int = 0) ‑> List[Tuple[str, List[<a title="yime.input_method.core.char_code_index.CharCodeCandidate" href="char_code_index.html#yime.input_method.core.char_code_index.CharCodeCandidate">CharCodeCandidate</a>]]]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_char_candidates_by_prefix(
+    self,
+    prefix: str,
+    limit: int = 0,
+) -&gt; List[Tuple[str, List[CharCodeCandidate]]]:
+    &#34;&#34;&#34;按编码前缀读取可能的单字候选。&#34;&#34;&#34;
+    return self._char_store.get_char_candidates_by_prefix(prefix, limit=limit)</code></pre>
+</details>
+<div class="desc"><p>按编码前缀读取可能的单字候选。</p></div>
+</dd>
+<dt id="yime.input_method.core.decoders.SQLiteRuntimeCandidateDecoder.reload_user_lexicon"><code class="name flex">
+<span>def <span class="ident">reload_user_lexicon</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def reload_user_lexicon(self) -&gt; None:
+    self._phrase_candidate_overlays = self.user_lexicon.load_phrase_candidates(
+        self.pinyin_to_canonical,
+    )
+    self._char_sort_weight_by_text = self._char_store.load_char_sort_weight_index()
+    self._char_store.clear_caches()
+    self._phrase_store.clear_caches()
+    self._user_freq_by_candidate = self.user_lexicon.load_candidate_frequency()</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="yime.input_method.core.decoders.StaticCandidateDecoder"><code class="flex name class">
+<span>class <span class="ident">StaticCandidateDecoder</span></span>
+<span>(</span><span>app_dir: Path)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class StaticCandidateDecoder:
+    &#34;&#34;&#34;静态候选词解码器（基于拼音候选表）&#34;&#34;&#34;
+
+    def __init__(self, app_dir: Path) -&gt; None:
+        repo_root = app_dir.parent
+        projection_path = repo_root / &#34;internal_data&#34; / &#34;bmp_pua_trial_projection.json&#34;
+        key_to_symbol_path = repo_root / &#34;internal_data&#34; / &#34;key_to_symbol.json&#34;
+        marked_pinyin_path = app_dir / &#34;pinyin_normalized.json&#34;
+        pinyin_hanzi_paths = [app_dir / &#34;pinyin_hanzi.json&#34;]
+
+        self.bmp_to_canonical = self._build_bmp_to_canonical_map(
+            projection_path,
+            key_to_symbol_path,
+        )
+        self.pinyin_to_canonical = _build_pinyin_to_canonical_code_map(
+            repo_root,
+            self.bmp_to_canonical,
+        )
+        self.code_mapping = self._build_code_mapping(marked_pinyin_path)
+        self.pinyin_hanzi = self._load_first_available_json(pinyin_hanzi_paths)
+
+    def _load_json(self, path: Path) -&gt; JSONDict:
+        with path.open(&#34;r&#34;, encoding=&#34;utf-8&#34;) as handle:
+            payload = json.load(handle)
+        return cast(JSONDict, payload)
+
+    def _load_first_available_json(self, paths: List[Path]) -&gt; JSONDict:
+        for path in paths:
+            if path.exists():
+                return self._load_json(path)
+        joined = &#34;, &#34;.join(str(path) for path in paths)
+        raise FileNotFoundError(f&#34;未找到候选数据文件: {joined}&#34;)
+
+    def _build_bmp_to_canonical_map(
+        self, projection_path: Path, key_to_symbol_path: Path
+    ) -&gt; Dict[str, str]:
+        projection = self._load_json(projection_path)
+        key_to_symbol = self._load_json(key_to_symbol_path)
+        bmp_to_canonical: Dict[str, str] = {}
+        used_mapping = projection.get(&#34;used_mapping&#34;)
+        if not isinstance(used_mapping, dict):
+            return bmp_to_canonical
+
+        for symbol_key, slot_info in used_mapping.items():
+            if not isinstance(slot_info, dict):
+                continue
+            bmp_char = str(slot_info.get(&#34;char&#34;, &#34;&#34;) or &#34;&#34;)
+            canonical_char = str(key_to_symbol.get(str(symbol_key), &#34;&#34;) or &#34;&#34;)
+            if canonical_char:
+                bmp_to_canonical[bmp_char] = canonical_char
+
+        return bmp_to_canonical
+
+    def _build_code_mapping(
+        self,
+        marked_pinyin_path: Path,
+    ) -&gt; Dict[str, JSONDict]:
+        numeric_to_marked = _load_numeric_to_marked_pinyin_map(str(marked_pinyin_path))
+
+        code_mapping: Dict[str, JSONDict] = {}
+        for numeric_pinyin, canonical_code in self.pinyin_to_canonical.items():
+            metadata: JSONDict = {
+                &#34;数字标调&#34;: numeric_pinyin,
+                &#34;调号标调&#34;: numeric_to_marked.get(numeric_pinyin, numeric_pinyin),
+            }
+            code_mapping[canonical_code] = metadata
+        return code_mapping
+
+    def decode_text(
+        self, text: str
+    ) -&gt; Tuple[str, str, str, List[str], str]:
+        &#34;&#34;&#34;解码文本。&#34;&#34;&#34;
+        canonical = &#34;&#34;.join(
+            self.bmp_to_canonical.get(char, char) for char in text
+        )
+        if not canonical:
+            return &#34;&#34;, &#34;&#34;, &#34;&#34;, [], &#34;请输入一个完整音节的 4 个码元。&#34;
+
+        if len(canonical) &lt; 4:
+            return (
+                canonical,
+                canonical,
+                &#34;&#34;,
+                [],
+                f&#34;当前 {len(canonical)}/4 码，继续输入。&#34;,
+            )
+
+        active_code = canonical[-4:]
+        mode_hint = &#34;&#34;
+        if len(canonical) &gt; 4:
+            mode_hint = f&#34;已自动截取最近 4 码，总输入 {len(canonical)} 码。&#34;
+
+        mapping = self.code_mapping.get(active_code)
+        if not mapping:
+            status = mode_hint or &#34;未找到该 4 码对应的拼音映射。&#34;
+            if mode_hint:
+                status = f&#34;{mode_hint} 当前 4 码未找到拼音映射。&#34;
+            return canonical, active_code, &#34;&#34;, [], status
+
+        numeric_pinyin = str(mapping.get(&#34;数字标调&#34;, &#34;&#34;) or &#34;&#34;)
+        marked_pinyin = unicodedata.normalize(
+            &#34;NFC&#34;,
+            str(mapping.get(&#34;调号标调&#34;, &#34;&#34;) or &#34;&#34;),
+        )
+        display_pinyin = marked_pinyin or numeric_pinyin
+        candidates = self._lookup_candidates(numeric_pinyin, marked_pinyin)
+        if candidates:
+            status = f&#34;找到 {len(candidates)} 个候选。&#34;
+            if mode_hint:
+                status = f&#34;{mode_hint} {status}&#34;
+            return canonical, active_code, display_pinyin, candidates, status
+
+        status = &#34;已解码出拼音，但当前候选表里没有对应汉字。&#34;
+        if mode_hint:
+            status = f&#34;{mode_hint} {status}&#34;
+        return canonical, active_code, display_pinyin, [], status
+
+    def _lookup_candidates(
+        self, numeric_pinyin: str, marked_pinyin: str
+    ) -&gt; List[str]:
+        candidate_keys: List[str] = []
+        if marked_pinyin:
+            candidate_keys.append(marked_pinyin)
+        if numeric_pinyin:
+            candidate_keys.append(numeric_pinyin)
+            candidate_keys.append(numeric_pinyin[:-1])
+
+        merged: List[str] = []
+        seen: set[str] = set()
+        for key in candidate_keys:
+            hanzi_values = self.pinyin_hanzi.get(key, [])
+            if not isinstance(hanzi_values, list):
+                continue
+            for hanzi in hanzi_values:
+                if not isinstance(hanzi, str):
+                    continue
+                if hanzi not in seen:
+                    seen.add(hanzi)
+                    merged.append(hanzi)
+
+        return merged</code></pre>
+</details>
+<div class="desc"><p>静态候选词解码器（基于拼音候选表）</p></div>
+<h3>Methods</h3>
+<dl>
+<dt id="yime.input_method.core.decoders.StaticCandidateDecoder.decode_text"><code class="name flex">
+<span>def <span class="ident">decode_text</span></span>(<span>self, text: str) ‑> Tuple[str, str, str, List[str], str]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def decode_text(
+    self, text: str
+) -&gt; Tuple[str, str, str, List[str], str]:
+    &#34;&#34;&#34;解码文本。&#34;&#34;&#34;
+    canonical = &#34;&#34;.join(
+        self.bmp_to_canonical.get(char, char) for char in text
+    )
+    if not canonical:
+        return &#34;&#34;, &#34;&#34;, &#34;&#34;, [], &#34;请输入一个完整音节的 4 个码元。&#34;
+
+    if len(canonical) &lt; 4:
+        return (
+            canonical,
+            canonical,
+            &#34;&#34;,
+            [],
+            f&#34;当前 {len(canonical)}/4 码，继续输入。&#34;,
+        )
+
+    active_code = canonical[-4:]
+    mode_hint = &#34;&#34;
+    if len(canonical) &gt; 4:
+        mode_hint = f&#34;已自动截取最近 4 码，总输入 {len(canonical)} 码。&#34;
+
+    mapping = self.code_mapping.get(active_code)
+    if not mapping:
+        status = mode_hint or &#34;未找到该 4 码对应的拼音映射。&#34;
+        if mode_hint:
+            status = f&#34;{mode_hint} 当前 4 码未找到拼音映射。&#34;
+        return canonical, active_code, &#34;&#34;, [], status
+
+    numeric_pinyin = str(mapping.get(&#34;数字标调&#34;, &#34;&#34;) or &#34;&#34;)
+    marked_pinyin = unicodedata.normalize(
+        &#34;NFC&#34;,
+        str(mapping.get(&#34;调号标调&#34;, &#34;&#34;) or &#34;&#34;),
+    )
+    display_pinyin = marked_pinyin or numeric_pinyin
+    candidates = self._lookup_candidates(numeric_pinyin, marked_pinyin)
+    if candidates:
+        status = f&#34;找到 {len(candidates)} 个候选。&#34;
+        if mode_hint:
+            status = f&#34;{mode_hint} {status}&#34;
+        return canonical, active_code, display_pinyin, candidates, status
+
+    status = &#34;已解码出拼音，但当前候选表里没有对应汉字。&#34;
+    if mode_hint:
+        status = f&#34;{mode_hint} {status}&#34;
+    return canonical, active_code, display_pinyin, [], status</code></pre>
+</details>
+<div class="desc"><p>解码文本。</p></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="yime.input_method.core" href="index.html">yime.input_method.core</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="yime.input_method.core.decoders.CompositeCandidateDecoder" href="#yime.input_method.core.decoders.CompositeCandidateDecoder">CompositeCandidateDecoder</a></code></h4>
+<ul class="">
+<li><code><a title="yime.input_method.core.decoders.CompositeCandidateDecoder.decode_text" href="#yime.input_method.core.decoders.CompositeCandidateDecoder.decode_text">decode_text</a></code></li>
+<li><code><a title="yime.input_method.core.decoders.CompositeCandidateDecoder.get_char_candidates" href="#yime.input_method.core.decoders.CompositeCandidateDecoder.get_char_candidates">get_char_candidates</a></code></li>
+<li><code><a title="yime.input_method.core.decoders.CompositeCandidateDecoder.get_char_candidates_by_prefix" href="#yime.input_method.core.decoders.CompositeCandidateDecoder.get_char_candidates_by_prefix">get_char_candidates_by_prefix</a></code></li>
+<li><code><a title="yime.input_method.core.decoders.CompositeCandidateDecoder.get_runtime_source" href="#yime.input_method.core.decoders.CompositeCandidateDecoder.get_runtime_source">get_runtime_source</a></code></li>
+<li><code><a title="yime.input_method.core.decoders.CompositeCandidateDecoder.get_runtime_warning" href="#yime.input_method.core.decoders.CompositeCandidateDecoder.get_runtime_warning">get_runtime_warning</a></code></li>
+<li><code><a title="yime.input_method.core.decoders.CompositeCandidateDecoder.record_selection" href="#yime.input_method.core.decoders.CompositeCandidateDecoder.record_selection">record_selection</a></code></li>
+<li><code><a title="yime.input_method.core.decoders.CompositeCandidateDecoder.reload_user_lexicon" href="#yime.input_method.core.decoders.CompositeCandidateDecoder.reload_user_lexicon">reload_user_lexicon</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="yime.input_method.core.decoders.RuntimeCandidateDecoder" href="#yime.input_method.core.decoders.RuntimeCandidateDecoder">RuntimeCandidateDecoder</a></code></h4>
+<ul class="">
+<li><code><a title="yime.input_method.core.decoders.RuntimeCandidateDecoder.get_char_candidates" href="#yime.input_method.core.decoders.RuntimeCandidateDecoder.get_char_candidates">get_char_candidates</a></code></li>
+<li><code><a title="yime.input_method.core.decoders.RuntimeCandidateDecoder.get_char_candidates_by_prefix" href="#yime.input_method.core.decoders.RuntimeCandidateDecoder.get_char_candidates_by_prefix">get_char_candidates_by_prefix</a></code></li>
+<li><code><a title="yime.input_method.core.decoders.RuntimeCandidateDecoder.reload_user_lexicon" href="#yime.input_method.core.decoders.RuntimeCandidateDecoder.reload_user_lexicon">reload_user_lexicon</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="yime.input_method.core.decoders.SQLiteRuntimeCandidateDecoder" href="#yime.input_method.core.decoders.SQLiteRuntimeCandidateDecoder">SQLiteRuntimeCandidateDecoder</a></code></h4>
+<ul class="">
+<li><code><a title="yime.input_method.core.decoders.SQLiteRuntimeCandidateDecoder.get_char_candidates" href="#yime.input_method.core.decoders.SQLiteRuntimeCandidateDecoder.get_char_candidates">get_char_candidates</a></code></li>
+<li><code><a title="yime.input_method.core.decoders.SQLiteRuntimeCandidateDecoder.get_char_candidates_by_prefix" href="#yime.input_method.core.decoders.SQLiteRuntimeCandidateDecoder.get_char_candidates_by_prefix">get_char_candidates_by_prefix</a></code></li>
+<li><code><a title="yime.input_method.core.decoders.SQLiteRuntimeCandidateDecoder.reload_user_lexicon" href="#yime.input_method.core.decoders.SQLiteRuntimeCandidateDecoder.reload_user_lexicon">reload_user_lexicon</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="yime.input_method.core.decoders.StaticCandidateDecoder" href="#yime.input_method.core.decoders.StaticCandidateDecoder">StaticCandidateDecoder</a></code></h4>
+<ul class="">
+<li><code><a title="yime.input_method.core.decoders.StaticCandidateDecoder.decode_text" href="#yime.input_method.core.decoders.StaticCandidateDecoder.decode_text">decode_text</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

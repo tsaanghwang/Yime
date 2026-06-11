@@ -1,0 +1,2781 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>yime.input_method.core API documentation</title>
+<meta name="description" content="核心模块：解码器、键盘监听、输入管理">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>yime.input_method.core</code></h1>
+</header>
+<section id="section-intro">
+<p>核心模块：解码器、键盘监听、输入管理</p>
+</section>
+<section>
+<h2 class="section-title" id="header-submodules">Sub-modules</h2>
+<dl>
+<dt><code class="name"><a title="yime.input_method.core.char_code_index" href="char_code_index.html">yime.input_method.core.char_code_index</a></code></dt>
+<dd>
+<div class="desc"><p>Single-character candidate index keyed by Yime code.</p></div>
+</dd>
+<dt><code class="name"><a title="yime.input_method.core.decoders" href="decoders.html">yime.input_method.core.decoders</a></code></dt>
+<dd>
+<div class="desc"><p>候选词解码器模块 …</p></div>
+</dd>
+<dt><code class="name"><a title="yime.input_method.core.input_manager" href="input_manager.html">yime.input_method.core.input_manager</a></code></dt>
+<dd>
+<div class="desc"><p>输入管理模块 …</p></div>
+</dd>
+<dt><code class="name"><a title="yime.input_method.core.input_visualization" href="input_visualization.html">yime.input_method.core.input_visualization</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt><code class="name"><a title="yime.input_method.core.keyboard_listener" href="keyboard_listener.html">yime.input_method.core.keyboard_listener</a></code></dt>
+<dd>
+<div class="desc"><p>键盘监听模块。</p></div>
+</dd>
+<dt><code class="name"><a title="yime.input_method.core.prefix_tree" href="prefix_tree.html">yime.input_method.core.prefix_tree</a></code></dt>
+<dd>
+<div class="desc"><p>Reusable prefix tree for ordered string-key lookups.</p></div>
+</dd>
+<dt><code class="name"><a title="yime.input_method.core.runtime_decoder_base" href="runtime_decoder_base.html">yime.input_method.core.runtime_decoder_base</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt><code class="name"><a title="yime.input_method.core.runtime_json_store" href="runtime_json_store.html">yime.input_method.core.runtime_json_store</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt><code class="name"><a title="yime.input_method.core.runtime_lookup" href="runtime_lookup.html">yime.input_method.core.runtime_lookup</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt><code class="name"><a title="yime.input_method.core.runtime_ranking" href="runtime_ranking.html">yime.input_method.core.runtime_ranking</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt><code class="name"><a title="yime.input_method.core.sqlite_char_store" href="sqlite_char_store.html">yime.input_method.core.sqlite_char_store</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt><code class="name"><a title="yime.input_method.core.sqlite_phrase_store" href="sqlite_phrase_store.html">yime.input_method.core.sqlite_phrase_store</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt><code class="name"><a title="yime.input_method.core.sqlite_runtime_source" href="sqlite_runtime_source.html">yime.input_method.core.sqlite_runtime_source</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="yime.input_method.core.CharCodeCandidate"><code class="flex name class">
+<span>class <span class="ident">CharCodeCandidate</span></span>
+<span>(</span><span>text: str,<br>code: str,<br>entry_id: str = '',<br>pinyin_tone: str = '',<br>sort_weight: float = 0.0,<br>is_common: bool = False)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@dataclass(frozen=True)
+class CharCodeCandidate:
+    &#34;&#34;&#34;A single-character candidate tied to one Yime code.&#34;&#34;&#34;
+
+    text: str
+    code: str
+    entry_id: str = &#34;&#34;
+    pinyin_tone: str = &#34;&#34;
+    sort_weight: float = 0.0
+    is_common: bool = False</code></pre>
+</details>
+<div class="desc"><p>A single-character candidate tied to one Yime code.</p></div>
+<h3>Instance variables</h3>
+<dl>
+<dt id="yime.input_method.core.CharCodeCandidate.code"><code class="name">var <span class="ident">code</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.CharCodeCandidate.entry_id"><code class="name">var <span class="ident">entry_id</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.CharCodeCandidate.is_common"><code class="name">var <span class="ident">is_common</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.CharCodeCandidate.pinyin_tone"><code class="name">var <span class="ident">pinyin_tone</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.CharCodeCandidate.sort_weight"><code class="name">var <span class="ident">sort_weight</span> : float</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.CharCodeCandidate.text"><code class="name">var <span class="ident">text</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="yime.input_method.core.CharCodeIndex"><code class="flex name class">
+<span>class <span class="ident">CharCodeIndex</span></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class CharCodeIndex:
+    &#34;&#34;&#34;Index single-character runtime candidates by exact code and code prefix.&#34;&#34;&#34;
+
+    def __init__(self) -&gt; None:
+        self._tree: PrefixTree[CharCodeCandidate] = PrefixTree()
+
+    @classmethod
+    def from_runtime_candidates(
+        cls,
+        by_code: Mapping[str, Iterable[Mapping[str, object]]],
+    ) -&gt; &#34;CharCodeIndex&#34;:
+        index = cls()
+        for code, candidates in by_code.items():
+            code_text = str(code).strip()
+            if not code_text:
+                continue
+            for candidate in candidates:
+                if str(candidate.get(&#34;entry_type&#34;, &#34;&#34;)).strip() != &#34;char&#34;:
+                    continue
+                text = str(candidate.get(&#34;text&#34;, &#34;&#34;)).strip()
+                if not text:
+                    continue
+                index.insert(
+                    code_text,
+                    CharCodeCandidate(
+                        text=text,
+                        code=code_text,
+                        entry_id=str(candidate.get(&#34;entry_id&#34;, &#34;&#34;)).strip(),
+                        pinyin_tone=str(candidate.get(&#34;pinyin_tone&#34;, &#34;&#34;)).strip(),
+                        sort_weight=_as_float(candidate.get(&#34;sort_weight&#34;, 0.0)),
+                        is_common=_as_bool(candidate.get(&#34;is_common&#34;, False)),
+                    ),
+                )
+        return index
+
+    @property
+    def code_count(self) -&gt; int:
+        return self._tree.key_count
+
+    @property
+    def candidate_count(self) -&gt; int:
+        return self._tree.value_count
+
+    def insert(self, code: str, candidate: CharCodeCandidate) -&gt; None:
+        self._tree.insert(code, candidate)
+
+    def get_exact(self, code: str) -&gt; list[CharCodeCandidate]:
+        return self._tree.get_exact(code)
+
+    def get_with_prefix(
+        self,
+        prefix: str,
+        limit: int = 0,
+    ) -&gt; list[tuple[str, list[CharCodeCandidate]]]:
+        return self._tree.get_with_prefix(prefix, limit=limit)
+
+    def has_prefix(self, prefix: str) -&gt; bool:
+        return self._tree.has_prefix(prefix)</code></pre>
+</details>
+<div class="desc"><p>Index single-character runtime candidates by exact code and code prefix.</p></div>
+<h3>Static methods</h3>
+<dl>
+<dt id="yime.input_method.core.CharCodeIndex.from_runtime_candidates"><code class="name flex">
+<span>def <span class="ident">from_runtime_candidates</span></span>(<span>by_code: Mapping[str, Iterable[Mapping[str, object]]]) ‑> <a title="yime.input_method.core.char_code_index.CharCodeIndex" href="char_code_index.html#yime.input_method.core.char_code_index.CharCodeIndex">CharCodeIndex</a></span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="yime.input_method.core.CharCodeIndex.candidate_count"><code class="name">prop <span class="ident">candidate_count</span> : int</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def candidate_count(self) -&gt; int:
+    return self._tree.value_count</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.CharCodeIndex.code_count"><code class="name">prop <span class="ident">code_count</span> : int</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def code_count(self) -&gt; int:
+    return self._tree.key_count</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="yime.input_method.core.CharCodeIndex.get_exact"><code class="name flex">
+<span>def <span class="ident">get_exact</span></span>(<span>self, code: str) ‑> list[<a title="yime.input_method.core.char_code_index.CharCodeCandidate" href="char_code_index.html#yime.input_method.core.char_code_index.CharCodeCandidate">CharCodeCandidate</a>]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_exact(self, code: str) -&gt; list[CharCodeCandidate]:
+    return self._tree.get_exact(code)</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.CharCodeIndex.get_with_prefix"><code class="name flex">
+<span>def <span class="ident">get_with_prefix</span></span>(<span>self, prefix: str, limit: int = 0) ‑> list[tuple[str, list[<a title="yime.input_method.core.char_code_index.CharCodeCandidate" href="char_code_index.html#yime.input_method.core.char_code_index.CharCodeCandidate">CharCodeCandidate</a>]]]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_with_prefix(
+    self,
+    prefix: str,
+    limit: int = 0,
+) -&gt; list[tuple[str, list[CharCodeCandidate]]]:
+    return self._tree.get_with_prefix(prefix, limit=limit)</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.CharCodeIndex.has_prefix"><code class="name flex">
+<span>def <span class="ident">has_prefix</span></span>(<span>self, prefix: str) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def has_prefix(self, prefix: str) -&gt; bool:
+    return self._tree.has_prefix(prefix)</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.CharCodeIndex.insert"><code class="name flex">
+<span>def <span class="ident">insert</span></span>(<span>self,<br>code: str,<br>candidate: <a title="yime.input_method.core.CharCodeCandidate" href="#yime.input_method.core.CharCodeCandidate">CharCodeCandidate</a>) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def insert(self, code: str, candidate: CharCodeCandidate) -&gt; None:
+    self._tree.insert(code, candidate)</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="yime.input_method.core.CompositeCandidateDecoder"><code class="flex name class">
+<span>class <span class="ident">CompositeCandidateDecoder</span></span>
+<span>(</span><span>app_dir: Path, user_db_path: Path | None = None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class CompositeCandidateDecoder:
+    &#34;&#34;&#34;组合候选词解码器（优先运行时，回退静态）&#34;&#34;&#34;
+
+    def __init__(self, app_dir: Path, user_db_path: Path | None = None) -&gt; None:
+        &#34;&#34;&#34;
+        初始化组合解码器
+
+        Args:
+            app_dir: 应用目录路径
+        &#34;&#34;&#34;
+        self.runtime_decoder: Optional[
+            RuntimeCandidateDecoder | SQLiteRuntimeCandidateDecoder
+        ] = None
+        self.runtime_load_error = &#34;&#34;
+        self.runtime_source = &#34;&#34;
+        try:
+            self.runtime_decoder = SQLiteRuntimeCandidateDecoder(app_dir, user_db_path=user_db_path)
+            self.runtime_source = &#34;sqlite&#34;
+        except (FileNotFoundError, ValueError) as exc:
+            self.runtime_load_error = str(exc)
+            try:
+                self.runtime_decoder = RuntimeCandidateDecoder(app_dir, user_db_path=user_db_path)
+                self.runtime_source = &#34;json&#34;
+                self.runtime_load_error = &#34;&#34;
+            except (FileNotFoundError, ValueError, KeyError, json.JSONDecodeError) as json_exc:
+                self.runtime_load_error = (
+                    f&#34;SQLite 直查不可用: {exc}; JSON 导出不可用: {json_exc}&#34;
+                )
+        self.static_decoder = StaticCandidateDecoder(app_dir)
+
+    def get_runtime_warning(self) -&gt; str:
+        &#34;&#34;&#34;返回运行时编码表告警，供上层决定是否展示。&#34;&#34;&#34;
+        return self.runtime_load_error
+
+    def get_runtime_source(self) -&gt; str:
+        &#34;&#34;&#34;返回当前启用的运行时候选来源。&#34;&#34;&#34;
+        return self.runtime_source
+
+    def get_char_candidates(self, code: str) -&gt; List[CharCodeCandidate]:
+        &#34;&#34;&#34;按完整音元编码读取单字候选。&#34;&#34;&#34;
+        if self.runtime_decoder is None:
+            return []
+        return self.runtime_decoder.get_char_candidates(code)
+
+    def get_char_candidates_by_prefix(
+        self,
+        prefix: str,
+        limit: int = 0,
+    ) -&gt; List[Tuple[str, List[CharCodeCandidate]]]:
+        &#34;&#34;&#34;按编码前缀读取可能的单字候选。&#34;&#34;&#34;
+        if self.runtime_decoder is None:
+            return []
+        return self.runtime_decoder.get_char_candidates_by_prefix(prefix, limit=limit)
+
+    def record_selection(self, text: str, candidate_text: str) -&gt; int:
+        &#34;&#34;&#34;Record a user selection so runtime ranking can adapt in-process.&#34;&#34;&#34;
+        if self.runtime_decoder is None:
+            return 0
+        if hasattr(self.runtime_decoder, &#34;record_selection&#34;):
+            return int(self.runtime_decoder.record_selection(text, candidate_text) or 0)
+        return 0
+
+    def reload_user_lexicon(self) -&gt; None:
+        if self.runtime_decoder is None:
+            return
+        if hasattr(self.runtime_decoder, &#34;reload_user_lexicon&#34;):
+            self.runtime_decoder.reload_user_lexicon()
+
+    def decode_text(
+        self, text: str
+    ) -&gt; Tuple[str, str, str, List[str], str]:
+        &#34;&#34;&#34;
+        解码文本（优先运行时，回退静态）
+
+        Args:
+            text: 输入的音元码元文本
+
+        Returns:
+            (规范编码, 当前4码, 拼音显示, 候选词列表, 状态消息)
+        &#34;&#34;&#34;
+        if self.runtime_decoder is not None:
+            canonical, active_code, pinyin, candidates, status = (
+                self.runtime_decoder.decode_text(text)
+            )
+            if candidates:
+                return canonical, active_code, pinyin, candidates, status
+            if active_code:
+                fallback = self.static_decoder.decode_text(text)
+                if fallback[3]:
+                    return (
+                        fallback[0],
+                        fallback[1],
+                        fallback[2],
+                        fallback[3],
+                        f&#34;{status} 已回退到静态拼音候选表。&#34;,
+                    )
+                return canonical, active_code, pinyin, candidates, status
+
+        return self.static_decoder.decode_text(text)</code></pre>
+</details>
+<div class="desc"><p>组合候选词解码器（优先运行时，回退静态）</p>
+<p>初始化组合解码器</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>app_dir</code></strong></dt>
+<dd>应用目录路径</dd>
+</dl></div>
+<h3>Methods</h3>
+<dl>
+<dt id="yime.input_method.core.CompositeCandidateDecoder.decode_text"><code class="name flex">
+<span>def <span class="ident">decode_text</span></span>(<span>self, text: str) ‑> Tuple[str, str, str, List[str], str]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def decode_text(
+    self, text: str
+) -&gt; Tuple[str, str, str, List[str], str]:
+    &#34;&#34;&#34;
+    解码文本（优先运行时，回退静态）
+
+    Args:
+        text: 输入的音元码元文本
+
+    Returns:
+        (规范编码, 当前4码, 拼音显示, 候选词列表, 状态消息)
+    &#34;&#34;&#34;
+    if self.runtime_decoder is not None:
+        canonical, active_code, pinyin, candidates, status = (
+            self.runtime_decoder.decode_text(text)
+        )
+        if candidates:
+            return canonical, active_code, pinyin, candidates, status
+        if active_code:
+            fallback = self.static_decoder.decode_text(text)
+            if fallback[3]:
+                return (
+                    fallback[0],
+                    fallback[1],
+                    fallback[2],
+                    fallback[3],
+                    f&#34;{status} 已回退到静态拼音候选表。&#34;,
+                )
+            return canonical, active_code, pinyin, candidates, status
+
+    return self.static_decoder.decode_text(text)</code></pre>
+</details>
+<div class="desc"><p>解码文本（优先运行时，回退静态）</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>text</code></strong></dt>
+<dd>输入的音元码元文本</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>(规范编码, 当前4码, 拼音显示, 候选词列表, 状态消息)</p></div>
+</dd>
+<dt id="yime.input_method.core.CompositeCandidateDecoder.get_char_candidates"><code class="name flex">
+<span>def <span class="ident">get_char_candidates</span></span>(<span>self, code: str) ‑> List[<a title="yime.input_method.core.char_code_index.CharCodeCandidate" href="char_code_index.html#yime.input_method.core.char_code_index.CharCodeCandidate">CharCodeCandidate</a>]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_char_candidates(self, code: str) -&gt; List[CharCodeCandidate]:
+    &#34;&#34;&#34;按完整音元编码读取单字候选。&#34;&#34;&#34;
+    if self.runtime_decoder is None:
+        return []
+    return self.runtime_decoder.get_char_candidates(code)</code></pre>
+</details>
+<div class="desc"><p>按完整音元编码读取单字候选。</p></div>
+</dd>
+<dt id="yime.input_method.core.CompositeCandidateDecoder.get_char_candidates_by_prefix"><code class="name flex">
+<span>def <span class="ident">get_char_candidates_by_prefix</span></span>(<span>self, prefix: str, limit: int = 0) ‑> List[Tuple[str, List[<a title="yime.input_method.core.char_code_index.CharCodeCandidate" href="char_code_index.html#yime.input_method.core.char_code_index.CharCodeCandidate">CharCodeCandidate</a>]]]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_char_candidates_by_prefix(
+    self,
+    prefix: str,
+    limit: int = 0,
+) -&gt; List[Tuple[str, List[CharCodeCandidate]]]:
+    &#34;&#34;&#34;按编码前缀读取可能的单字候选。&#34;&#34;&#34;
+    if self.runtime_decoder is None:
+        return []
+    return self.runtime_decoder.get_char_candidates_by_prefix(prefix, limit=limit)</code></pre>
+</details>
+<div class="desc"><p>按编码前缀读取可能的单字候选。</p></div>
+</dd>
+<dt id="yime.input_method.core.CompositeCandidateDecoder.get_runtime_source"><code class="name flex">
+<span>def <span class="ident">get_runtime_source</span></span>(<span>self) ‑> str</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_runtime_source(self) -&gt; str:
+    &#34;&#34;&#34;返回当前启用的运行时候选来源。&#34;&#34;&#34;
+    return self.runtime_source</code></pre>
+</details>
+<div class="desc"><p>返回当前启用的运行时候选来源。</p></div>
+</dd>
+<dt id="yime.input_method.core.CompositeCandidateDecoder.get_runtime_warning"><code class="name flex">
+<span>def <span class="ident">get_runtime_warning</span></span>(<span>self) ‑> str</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_runtime_warning(self) -&gt; str:
+    &#34;&#34;&#34;返回运行时编码表告警，供上层决定是否展示。&#34;&#34;&#34;
+    return self.runtime_load_error</code></pre>
+</details>
+<div class="desc"><p>返回运行时编码表告警，供上层决定是否展示。</p></div>
+</dd>
+<dt id="yime.input_method.core.CompositeCandidateDecoder.record_selection"><code class="name flex">
+<span>def <span class="ident">record_selection</span></span>(<span>self, text: str, candidate_text: str) ‑> int</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def record_selection(self, text: str, candidate_text: str) -&gt; int:
+    &#34;&#34;&#34;Record a user selection so runtime ranking can adapt in-process.&#34;&#34;&#34;
+    if self.runtime_decoder is None:
+        return 0
+    if hasattr(self.runtime_decoder, &#34;record_selection&#34;):
+        return int(self.runtime_decoder.record_selection(text, candidate_text) or 0)
+    return 0</code></pre>
+</details>
+<div class="desc"><p>Record a user selection so runtime ranking can adapt in-process.</p></div>
+</dd>
+<dt id="yime.input_method.core.CompositeCandidateDecoder.reload_user_lexicon"><code class="name flex">
+<span>def <span class="ident">reload_user_lexicon</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def reload_user_lexicon(self) -&gt; None:
+    if self.runtime_decoder is None:
+        return
+    if hasattr(self.runtime_decoder, &#34;reload_user_lexicon&#34;):
+        self.runtime_decoder.reload_user_lexicon()</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="yime.input_method.core.InputManager"><code class="flex name class">
+<span>class <span class="ident">InputManager</span></span>
+<span>(</span><span>on_candidates_update: Callable[[List[str], str, str, str], None],<br>on_input_commit: Callable[[str], None],<br>timeout: float = 3.0,<br>max_buffer_length: int = 20)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class InputManager:
+    &#34;&#34;&#34;
+    输入管理器
+
+    负责管理输入状态、累积输入、触发解码等
+    &#34;&#34;&#34;
+
+    def __init__(
+        self,
+        on_candidates_update: Callable[[List[str], str, str, str], None],
+        on_input_commit: Callable[[str], None],
+        timeout: float = 3.0,
+        max_buffer_length: int = 20,
+    ) -&gt; None:
+        &#34;&#34;&#34;
+        初始化输入管理器
+
+        Args:
+            on_candidates_update: 候选词更新回调
+                参数：(candidates, pinyin, code, status)
+            on_input_commit: 输入提交回调
+                参数：(hanzi)
+            timeout: 输入超时时间（秒）
+            max_buffer_length: 最大缓冲区长度
+        &#34;&#34;&#34;
+        self.on_candidates_update = on_candidates_update
+        self.on_input_commit = on_input_commit
+        self.timeout = timeout
+        self.max_buffer_length = max_buffer_length
+        self.state = InputState()
+
+        # 候选词列表
+        self.current_candidates: List[str] = []
+
+        # 解码器（由主应用设置）
+        self.decoder = None
+
+    def set_decoder(self, decoder: Any) -&gt; None:
+        &#34;&#34;&#34;
+        设置解码器
+
+        Args:
+            decoder: 解码器对象
+        &#34;&#34;&#34;
+        self.decoder = decoder
+
+    def process_key(self, key_info: Dict[str, Any]) -&gt; bool:
+        &#34;&#34;&#34;
+        处理按键
+
+        Args:
+            key_info: 按键信息字典
+
+        Returns:
+            True继续传递按键，False拦截按键
+        &#34;&#34;&#34;
+        # 检查是否超时
+        current_time = time.time()
+        if (current_time - self.state.last_key_time) &gt; self.timeout:
+            # 超时，清空缓冲区
+            self.clear_buffer(notify=False)
+
+        self.state.last_key_time = current_time
+        self.state.total_keys += 1
+
+        # 获取按键信息
+        key = key_info.get(&#39;key&#39;, &#39;&#39;)
+        text = key_info.get(&#39;text&#39;, &#39;&#39;)
+        ascii_char = key_info.get(&#39;ascii&#39;)
+        modifiers = key_info.get(&#39;modifiers&#39;, {}) or {}
+
+        # 系统快捷键和窗口管理组合键必须直接放行，避免破坏复制、切窗等行为。
+        if modifiers.get(&#39;win&#39;):
+            return True
+
+        if modifiers.get(&#39;ctrl&#39;) and not modifiers.get(&#39;alt_gr&#39;):
+            return True
+
+        if modifiers.get(&#39;alt&#39;) and not modifiers.get(&#39;alt_gr&#39;):
+            return True
+
+        # 处理特殊键
+        if self._handle_special_key(key):
+            return False  # 拦截特殊键
+
+        # 优先消费按当前键盘布局实际产出的字符，包括 BMP PUA / SPUA-B 等非 ASCII 编码字符。
+        if isinstance(text, str) and len(text) == 1 and text &gt;= &#39; &#39;:
+            self.add_char(text)
+            return False
+
+        # 处理普通字符输入
+        if ascii_char is not None:
+            # 确保ascii_char是整数
+            if isinstance(ascii_char, str):
+                if len(ascii_char) == 1:
+                    ascii_char = ord(ascii_char)
+                else:
+                    ascii_char = None
+
+            if ascii_char and 32 &lt;= ascii_char &lt;= 126:
+                # 可打印ASCII字符
+                self.add_char(chr(ascii_char))
+                return False  # 拦截输入字符
+
+        # 其他键继续传递
+        return True
+
+    def _handle_special_key(self, key: str) -&gt; bool:
+        &#34;&#34;&#34;
+        处理特殊键
+
+        Args:
+            key: 按键字符串
+
+        Returns:
+            True如果处理了，False否则
+        &#34;&#34;&#34;
+        is_composing = bool(self.state.buffer or self.current_candidates)
+
+        # Escape - 清空输入
+        if key in (&#39;Escape&#39;, &#39;esc&#39;):
+            if is_composing:
+                self.clear_buffer()
+                return True
+            return False
+
+        # Backspace - 删除最后一个字符
+        if key in (&#39;Backspace&#39;, &#39;backspace&#39;):
+            if self.state.buffer:
+                self.backspace()
+                return True
+            return False
+
+        # Enter/Return - 提交首选候选词
+        if key in (&#39;Return&#39;, &#39;Enter&#39;, &#39;enter&#39;):
+            if self.current_candidates:
+                self.commit_first_candidate()
+                return True
+            if self.state.buffer:
+                self.clear_buffer()
+                return True
+            return False
+
+        # Space - 提交首选或添加空格
+        if key in (&#39;space&#39;, &#39;Space&#39;):
+            if self.current_candidates:
+                self.commit_first_candidate()
+                return True
+            # 如果没有候选词，继续传递空格
+            return False
+
+        return False
+
+    def add_char(self, char: str) -&gt; None:
+        &#34;&#34;&#34;
+        添加字符到缓冲区
+
+        Args:
+            char: 字符
+        &#34;&#34;&#34;
+        # 检查缓冲区长度
+        if len(self.state.buffer) &gt;= self.max_buffer_length:
+            self.clear_buffer(notify=False)
+
+        self.state.buffer += char
+        self.state.is_composing = True
+
+        # 触发候选词更新
+        self._update_candidates()
+
+    def backspace(self) -&gt; None:
+        &#34;&#34;&#34;删除最后一个字符&#34;&#34;&#34;
+        if self.state.buffer:
+            self.state.buffer = self.state.buffer[:-1]
+
+            if self.state.buffer:
+                self._update_candidates()
+            else:
+                self.clear_buffer()
+
+    def clear_buffer(self, notify: bool = True) -&gt; None:
+        &#34;&#34;&#34;清空缓冲区&#34;&#34;&#34;
+        self.state.buffer = &#34;&#34;
+        self.state.is_composing = False
+        self.current_candidates = []
+
+        # 通知清空候选词
+        if notify:
+            self.on_candidates_update([], &#34;&#34;, &#34;&#34;, &#34;输入已清空&#34;)
+
+    def select_candidate(self, index: int) -&gt; None:
+        &#34;&#34;&#34;
+        选择候选词
+
+        Args:
+            index: 候选词索引
+        &#34;&#34;&#34;
+        if 0 &lt;= index &lt; len(self.current_candidates):
+            hanzi = self.current_candidates[index]
+
+            # 提交输入
+            self.on_input_commit(hanzi)
+
+            # 清空缓冲区
+            self.clear_buffer()
+
+    def commit_first_candidate(self) -&gt; None:
+        &#34;&#34;&#34;提交首选候选词&#34;&#34;&#34;
+        if self.current_candidates:
+            self.select_candidate(0)
+
+    def get_buffer(self) -&gt; str:
+        &#34;&#34;&#34;
+        获取当前缓冲区
+
+        Returns:
+            当前输入缓冲区
+        &#34;&#34;&#34;
+        return self.state.buffer
+
+    def is_composing(self) -&gt; bool:
+        &#34;&#34;&#34;
+        是否正在组合输入
+
+        Returns:
+            True如果正在组合，False否则
+        &#34;&#34;&#34;
+        return self.state.is_composing
+
+    def get_candidates(self) -&gt; List[str]:
+        &#34;&#34;&#34;
+        获取当前候选词列表
+
+        Returns:
+            候选词列表
+        &#34;&#34;&#34;
+        return self.current_candidates
+
+    def _update_candidates(self) -&gt; None:
+        &#34;&#34;&#34;更新候选词&#34;&#34;&#34;
+        if not self.decoder:
+            self.on_candidates_update([], &#34;&#34;, &#34;&#34;, &#34;解码器未设置&#34;)
+            return
+
+        if not self.state.buffer:
+            self.on_candidates_update([], &#34;&#34;, &#34;&#34;, &#34;&#34;)
+            return
+
+        try:
+            # 调用解码器
+            canonical_code, active_code, pinyin, candidates, status = (
+                self.decoder.decode_text(self.state.buffer)
+            )
+
+            # 保存候选词，分页由 UI 层处理
+            self.current_candidates = candidates
+
+            # 更新显示
+            code_display = build_code_display(
+                self.state.buffer,
+                canonical_code,
+                active_code,
+            )
+
+            self.on_candidates_update(
+                self.current_candidates,
+                pinyin,
+                code_display,
+                status,
+            )
+
+        except Exception as e:
+            self.on_candidates_update([], &#34;&#34;, &#34;&#34;, f&#34;解码出错: {e}&#34;)</code></pre>
+</details>
+<div class="desc"><p>输入管理器</p>
+<p>负责管理输入状态、累积输入、触发解码等</p>
+<p>初始化输入管理器</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>on_candidates_update</code></strong></dt>
+<dd>候选词更新回调
+参数：(candidates, pinyin, code, status)</dd>
+<dt><strong><code>on_input_commit</code></strong></dt>
+<dd>输入提交回调
+参数：(hanzi)</dd>
+<dt><strong><code>timeout</code></strong></dt>
+<dd>输入超时时间（秒）</dd>
+<dt><strong><code>max_buffer_length</code></strong></dt>
+<dd>最大缓冲区长度</dd>
+</dl></div>
+<h3>Methods</h3>
+<dl>
+<dt id="yime.input_method.core.InputManager.add_char"><code class="name flex">
+<span>def <span class="ident">add_char</span></span>(<span>self, char: str) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_char(self, char: str) -&gt; None:
+    &#34;&#34;&#34;
+    添加字符到缓冲区
+
+    Args:
+        char: 字符
+    &#34;&#34;&#34;
+    # 检查缓冲区长度
+    if len(self.state.buffer) &gt;= self.max_buffer_length:
+        self.clear_buffer(notify=False)
+
+    self.state.buffer += char
+    self.state.is_composing = True
+
+    # 触发候选词更新
+    self._update_candidates()</code></pre>
+</details>
+<div class="desc"><p>添加字符到缓冲区</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>char</code></strong></dt>
+<dd>字符</dd>
+</dl></div>
+</dd>
+<dt id="yime.input_method.core.InputManager.backspace"><code class="name flex">
+<span>def <span class="ident">backspace</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def backspace(self) -&gt; None:
+    &#34;&#34;&#34;删除最后一个字符&#34;&#34;&#34;
+    if self.state.buffer:
+        self.state.buffer = self.state.buffer[:-1]
+
+        if self.state.buffer:
+            self._update_candidates()
+        else:
+            self.clear_buffer()</code></pre>
+</details>
+<div class="desc"><p>删除最后一个字符</p></div>
+</dd>
+<dt id="yime.input_method.core.InputManager.clear_buffer"><code class="name flex">
+<span>def <span class="ident">clear_buffer</span></span>(<span>self, notify: bool = True) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def clear_buffer(self, notify: bool = True) -&gt; None:
+    &#34;&#34;&#34;清空缓冲区&#34;&#34;&#34;
+    self.state.buffer = &#34;&#34;
+    self.state.is_composing = False
+    self.current_candidates = []
+
+    # 通知清空候选词
+    if notify:
+        self.on_candidates_update([], &#34;&#34;, &#34;&#34;, &#34;输入已清空&#34;)</code></pre>
+</details>
+<div class="desc"><p>清空缓冲区</p></div>
+</dd>
+<dt id="yime.input_method.core.InputManager.commit_first_candidate"><code class="name flex">
+<span>def <span class="ident">commit_first_candidate</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def commit_first_candidate(self) -&gt; None:
+    &#34;&#34;&#34;提交首选候选词&#34;&#34;&#34;
+    if self.current_candidates:
+        self.select_candidate(0)</code></pre>
+</details>
+<div class="desc"><p>提交首选候选词</p></div>
+</dd>
+<dt id="yime.input_method.core.InputManager.get_buffer"><code class="name flex">
+<span>def <span class="ident">get_buffer</span></span>(<span>self) ‑> str</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_buffer(self) -&gt; str:
+    &#34;&#34;&#34;
+    获取当前缓冲区
+
+    Returns:
+        当前输入缓冲区
+    &#34;&#34;&#34;
+    return self.state.buffer</code></pre>
+</details>
+<div class="desc"><p>获取当前缓冲区</p>
+<h2 id="returns">Returns</h2>
+<p>当前输入缓冲区</p></div>
+</dd>
+<dt id="yime.input_method.core.InputManager.get_candidates"><code class="name flex">
+<span>def <span class="ident">get_candidates</span></span>(<span>self) ‑> List[str]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_candidates(self) -&gt; List[str]:
+    &#34;&#34;&#34;
+    获取当前候选词列表
+
+    Returns:
+        候选词列表
+    &#34;&#34;&#34;
+    return self.current_candidates</code></pre>
+</details>
+<div class="desc"><p>获取当前候选词列表</p>
+<h2 id="returns">Returns</h2>
+<p>候选词列表</p></div>
+</dd>
+<dt id="yime.input_method.core.InputManager.is_composing"><code class="name flex">
+<span>def <span class="ident">is_composing</span></span>(<span>self) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def is_composing(self) -&gt; bool:
+    &#34;&#34;&#34;
+    是否正在组合输入
+
+    Returns:
+        True如果正在组合，False否则
+    &#34;&#34;&#34;
+    return self.state.is_composing</code></pre>
+</details>
+<div class="desc"><p>是否正在组合输入</p>
+<h2 id="returns">Returns</h2>
+<p>True如果正在组合，False否则</p></div>
+</dd>
+<dt id="yime.input_method.core.InputManager.process_key"><code class="name flex">
+<span>def <span class="ident">process_key</span></span>(<span>self, key_info: Dict[str, Any]) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def process_key(self, key_info: Dict[str, Any]) -&gt; bool:
+    &#34;&#34;&#34;
+    处理按键
+
+    Args:
+        key_info: 按键信息字典
+
+    Returns:
+        True继续传递按键，False拦截按键
+    &#34;&#34;&#34;
+    # 检查是否超时
+    current_time = time.time()
+    if (current_time - self.state.last_key_time) &gt; self.timeout:
+        # 超时，清空缓冲区
+        self.clear_buffer(notify=False)
+
+    self.state.last_key_time = current_time
+    self.state.total_keys += 1
+
+    # 获取按键信息
+    key = key_info.get(&#39;key&#39;, &#39;&#39;)
+    text = key_info.get(&#39;text&#39;, &#39;&#39;)
+    ascii_char = key_info.get(&#39;ascii&#39;)
+    modifiers = key_info.get(&#39;modifiers&#39;, {}) or {}
+
+    # 系统快捷键和窗口管理组合键必须直接放行，避免破坏复制、切窗等行为。
+    if modifiers.get(&#39;win&#39;):
+        return True
+
+    if modifiers.get(&#39;ctrl&#39;) and not modifiers.get(&#39;alt_gr&#39;):
+        return True
+
+    if modifiers.get(&#39;alt&#39;) and not modifiers.get(&#39;alt_gr&#39;):
+        return True
+
+    # 处理特殊键
+    if self._handle_special_key(key):
+        return False  # 拦截特殊键
+
+    # 优先消费按当前键盘布局实际产出的字符，包括 BMP PUA / SPUA-B 等非 ASCII 编码字符。
+    if isinstance(text, str) and len(text) == 1 and text &gt;= &#39; &#39;:
+        self.add_char(text)
+        return False
+
+    # 处理普通字符输入
+    if ascii_char is not None:
+        # 确保ascii_char是整数
+        if isinstance(ascii_char, str):
+            if len(ascii_char) == 1:
+                ascii_char = ord(ascii_char)
+            else:
+                ascii_char = None
+
+        if ascii_char and 32 &lt;= ascii_char &lt;= 126:
+            # 可打印ASCII字符
+            self.add_char(chr(ascii_char))
+            return False  # 拦截输入字符
+
+    # 其他键继续传递
+    return True</code></pre>
+</details>
+<div class="desc"><p>处理按键</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>key_info</code></strong></dt>
+<dd>按键信息字典</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>True继续传递按键，False拦截按键</p></div>
+</dd>
+<dt id="yime.input_method.core.InputManager.select_candidate"><code class="name flex">
+<span>def <span class="ident">select_candidate</span></span>(<span>self, index: int) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def select_candidate(self, index: int) -&gt; None:
+    &#34;&#34;&#34;
+    选择候选词
+
+    Args:
+        index: 候选词索引
+    &#34;&#34;&#34;
+    if 0 &lt;= index &lt; len(self.current_candidates):
+        hanzi = self.current_candidates[index]
+
+        # 提交输入
+        self.on_input_commit(hanzi)
+
+        # 清空缓冲区
+        self.clear_buffer()</code></pre>
+</details>
+<div class="desc"><p>选择候选词</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>index</code></strong></dt>
+<dd>候选词索引</dd>
+</dl></div>
+</dd>
+<dt id="yime.input_method.core.InputManager.set_decoder"><code class="name flex">
+<span>def <span class="ident">set_decoder</span></span>(<span>self, decoder: Any) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_decoder(self, decoder: Any) -&gt; None:
+    &#34;&#34;&#34;
+    设置解码器
+
+    Args:
+        decoder: 解码器对象
+    &#34;&#34;&#34;
+    self.decoder = decoder</code></pre>
+</details>
+<div class="desc"><p>设置解码器</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>decoder</code></strong></dt>
+<dd>解码器对象</dd>
+</dl></div>
+</dd>
+</dl>
+</dd>
+<dt id="yime.input_method.core.InputState"><code class="flex name class">
+<span>class <span class="ident">InputState</span></span>
+<span>(</span><span>buffer: str = '',<br>last_key_time: float = 0,<br>is_composing: bool = False,<br>total_keys: int = 0)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@dataclass
+class InputState:
+    &#34;&#34;&#34;输入状态&#34;&#34;&#34;
+    buffer: str = &#34;&#34;  # 输入缓冲区
+    last_key_time: float = 0  # 最后按键时间
+    is_composing: bool = False  # 是否正在组合
+    total_keys: int = 0  # 总按键数</code></pre>
+</details>
+<div class="desc"><p>输入状态</p></div>
+<h3>Instance variables</h3>
+<dl>
+<dt id="yime.input_method.core.InputState.buffer"><code class="name">var <span class="ident">buffer</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.InputState.is_composing"><code class="name">var <span class="ident">is_composing</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.InputState.last_key_time"><code class="name">var <span class="ident">last_key_time</span> : float</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.InputState.total_keys"><code class="name">var <span class="ident">total_keys</span> : int</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="yime.input_method.core.KeyboardListener"><code class="flex name class">
+<span>class <span class="ident">KeyboardListener</span></span>
+<span>(</span><span>on_key_press: Callable[[Dict[str, Any]], bool],<br>on_key_release: Callable[[Dict[str, Any]], bool] | None = None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class KeyboardListener:
+    &#34;&#34;&#34;
+    键盘监听器
+
+    支持两种监听方式：
+    1. pyHook - Windows全局钩子（推荐）
+    2. pynput - 跨平台监听（备选）
+    &#34;&#34;&#34;
+
+    _SPECIAL_VK_NAMES = {
+        0x08: &#34;Backspace&#34;,
+        0x09: &#34;Tab&#34;,
+        0x0D: &#34;Return&#34;,
+        0x1B: &#34;Escape&#34;,
+        0x20: &#34;Space&#34;,
+        0x25: &#34;Left&#34;,
+        0x26: &#34;Up&#34;,
+        0x27: &#34;Right&#34;,
+        0x28: &#34;Down&#34;,
+        0x2E: &#34;Delete&#34;,
+    }
+
+    _OEM_CHAR_BY_VK = {
+        0xBA: &#34;;&#34;,
+        0xBB: &#34;=&#34;,
+        0xBC: &#34;,&#34;,
+        0xBD: &#34;-&#34;,
+        0xBE: &#34;.&#34;,
+        0xBF: &#34;/&#34;,
+        0xC0: &#34;`&#34;,
+        0xDB: &#34;[&#34;,
+        0xDC: &#34;\\&#34;,
+        0xDD: &#34;]&#34;,
+        0xDE: &#34;&#39;&#34;,
+    }
+
+    _MODIFIER_VK_CODES = {
+        &#34;shift&#34;: (0x10,),
+        &#34;ctrl&#34;: (0x11,),
+        &#34;alt&#34;: (0x12,),
+        &#34;alt_r&#34;: (0xA5,),
+        &#34;win&#34;: (0x5B, 0x5C),
+    }
+
+    def __init__(
+        self,
+        on_key_press: Callable[[Dict[str, Any]], bool],
+        on_key_release: Optional[Callable[[Dict[str, Any]], bool]] = None,
+    ) -&gt; None:
+        &#34;&#34;&#34;
+        初始化键盘监听器
+
+        Args:
+            on_key_press: 按键回调函数，返回True继续传递，False拦截
+            on_key_release: 释放键回调函数（可选）
+        &#34;&#34;&#34;
+        self.on_key_press = on_key_press
+        self.on_key_release = on_key_release
+        self.is_running = False
+        self._listener = None
+        self._backend = None
+        self._win32_hook = None
+        self._win32_callback = None
+        self._win32_ready = threading.Event()
+        self._win32_error: Optional[str] = None
+        self._win32_hook_installed = False
+        self._win32_thread_id: Optional[int] = None
+
+        # 检查可用的监听方式
+        if not HAS_WIN32 and not HAS_PYHOOK and not HAS_PYPUT:
+            raise RuntimeError(
+                &#34;需要安装 pywin32、pyHook 或 pynput。\n&#34;
+                &#34;安装方法：\n&#34;
+                &#34;  pip install pywin32\n&#34;
+                &#34;  或\n&#34;
+                &#34;  pip install pyHook-1.5.1-cp310-cp310-win_amd64.whl\n&#34;
+                &#34;  或\n&#34;
+                &#34;  pip install pynput&#34;
+            )
+
+        self._select_backend()
+
+    def _select_backend(self) -&gt; None:
+        &#34;&#34;&#34;按优先级选择可用监听后端。&#34;&#34;&#34;
+        if HAS_WIN32:
+            print(&#34;使用 pywin32 进行全局键盘钩子监听&#34;)
+            try:
+                self._init_win32hook()
+                self._backend = &#34;win32&#34;
+                return
+            except Exception as exc:
+                print(f&#34;[Win32Hook] 安装失败: {exc}&#34;)
+
+        if HAS_PYHOOK:
+            print(&#34;使用 pyHook 进行键盘监听&#34;)
+            self._init_pyhook()
+            self._backend = &#34;pyhook&#34;
+            return
+
+        if HAS_PYPUT:
+            print(&#34;Win32键盘钩子安装失败，将回退到 pynput 监听&#34;)
+            self._init_pynput()
+            self._backend = &#34;pynput&#34;
+            return
+
+        raise RuntimeError(&#34;没有可用的键盘监听后端&#34;)
+
+    def _init_win32hook(self) -&gt; None:
+        &#34;&#34;&#34;使用 pywin32 初始化全局键盘钩子&#34;&#34;&#34;
+        self._win32_ready.clear()
+        self._win32_error = None
+        self._win32_hook_installed = False
+        self._win32_thread = threading.Thread(
+            target=self._run_win32_message_loop,
+            daemon=True,
+        )
+        self._win32_thread.start()
+        self._win32_ready.wait(timeout=1.0)
+        if not self._win32_hook_installed:
+            raise RuntimeError(self._win32_error or &#34;未知错误&#34;)
+
+    def _run_win32_message_loop(self) -&gt; None:
+        try:
+            self._win32_message_loop()
+        except Exception as exc:
+            self._win32_error = str(exc)
+            self._win32_ready.set()
+
+    def _normalize_win32_key_info(
+        self,
+        vk_code: int,
+        scan_code: int,
+        flags: int,
+        modifiers: Dict[str, bool],
+        resolve_key_name: Callable[[int, int, int], str],
+        resolve_text: Callable[[int, int, Dict[str, bool]], str],
+    ) -&gt; Dict[str, Any]:
+        key_name = self._SPECIAL_VK_NAMES.get(vk_code)
+        ascii_code: Optional[int] = None
+        text_value = resolve_text(vk_code, scan_code, modifiers)
+
+        if key_name is None and 0x30 &lt;= vk_code &lt;= 0x39:
+            key_name = chr(vk_code)
+            ascii_code = vk_code
+        elif key_name is None and 0x41 &lt;= vk_code &lt;= 0x5A:
+            key_name = chr(vk_code + 32)
+            ascii_code = ord(key_name)
+        elif key_name is None and vk_code in self._OEM_CHAR_BY_VK:
+            key_name = self._OEM_CHAR_BY_VK[vk_code]
+            ascii_code = ord(key_name)
+        elif key_name == &#34;Space&#34;:
+            ascii_code = ord(&#34; &#34;)
+
+        if key_name is None:
+            key_name = resolve_key_name(vk_code, scan_code, flags)
+
+        if text_value and len(text_value) == 1:
+            ascii_code = ord(text_value)
+
+        return {
+            &#34;key&#34;: key_name,
+            &#34;text&#34;: text_value,
+            &#34;ascii&#34;: ascii_code,
+            &#34;scan_code&#34;: scan_code,
+            &#34;vk_code&#34;: vk_code,
+            &#34;flags&#34;: flags,
+            &#34;modifiers&#34;: modifiers,
+            &#34;is_injected&#34;: bool(flags &amp; 0x10),
+            &#34;time&#34;: time.time(),
+        }
+
+    def _win32_message_loop(self):
+        import ctypes.wintypes as wintypes
+        import win32con
+
+        user32 = ctypes.WinDLL(&#34;user32&#34;, use_last_error=True)
+        kernel32 = ctypes.WinDLL(&#34;kernel32&#34;, use_last_error=True)
+
+        lresult_type = getattr(wintypes, &#34;LRESULT&#34;, ctypes.c_ssize_t)
+        ulong_ptr_type = getattr(wintypes, &#34;ULONG_PTR&#34;, ctypes.c_size_t)
+
+        hook_proc_type = ctypes.WINFUNCTYPE(
+            lresult_type,
+            ctypes.c_int,
+            wintypes.WPARAM,
+            wintypes.LPARAM,
+        )
+
+        kernel32.GetModuleHandleW.argtypes = [wintypes.LPCWSTR]
+        kernel32.GetModuleHandleW.restype = wintypes.HMODULE
+
+        user32.SetWindowsHookExW.argtypes = [
+            ctypes.c_int,
+            hook_proc_type,
+            wintypes.HINSTANCE,
+            wintypes.DWORD,
+        ]
+        user32.SetWindowsHookExW.restype = wintypes.HHOOK
+
+        user32.CallNextHookEx.argtypes = [
+            wintypes.HHOOK,
+            ctypes.c_int,
+            wintypes.WPARAM,
+            wintypes.LPARAM,
+        ]
+        user32.CallNextHookEx.restype = lresult_type
+
+        user32.GetMessageW.argtypes = [
+            ctypes.POINTER(wintypes.MSG),
+            wintypes.HWND,
+            wintypes.UINT,
+            wintypes.UINT,
+        ]
+        user32.GetMessageW.restype = wintypes.BOOL
+
+        user32.TranslateMessage.argtypes = [ctypes.POINTER(wintypes.MSG)]
+        user32.TranslateMessage.restype = wintypes.BOOL
+
+        user32.DispatchMessageW.argtypes = [ctypes.POINTER(wintypes.MSG)]
+        user32.DispatchMessageW.restype = lresult_type
+
+        user32.GetKeyNameTextW.argtypes = [
+            wintypes.LONG,
+            wintypes.LPWSTR,
+            ctypes.c_int,
+        ]
+        user32.GetKeyNameTextW.restype = ctypes.c_int
+
+        user32.GetAsyncKeyState.argtypes = [ctypes.c_int]
+        user32.GetAsyncKeyState.restype = ctypes.c_short
+
+        user32.GetForegroundWindow.argtypes = []
+        user32.GetForegroundWindow.restype = wintypes.HWND
+
+        user32.GetWindowThreadProcessId.argtypes = [wintypes.HWND, ctypes.POINTER(wintypes.DWORD)]
+        user32.GetWindowThreadProcessId.restype = wintypes.DWORD
+
+        user32.GetKeyboardLayout.argtypes = [wintypes.DWORD]
+        user32.GetKeyboardLayout.restype = wintypes.HKL
+
+        user32.ToUnicodeEx.argtypes = [
+            wintypes.UINT,
+            wintypes.UINT,
+            ctypes.POINTER(ctypes.c_ubyte),
+            wintypes.LPWSTR,
+            ctypes.c_int,
+            wintypes.UINT,
+            wintypes.HKL,
+        ]
+        user32.ToUnicodeEx.restype = ctypes.c_int
+
+        kernel32.GetCurrentThreadId.argtypes = []
+        kernel32.GetCurrentThreadId.restype = wintypes.DWORD
+
+        user32.PostThreadMessageW.argtypes = [
+            wintypes.DWORD,
+            wintypes.UINT,
+            wintypes.WPARAM,
+            wintypes.LPARAM,
+        ]
+        user32.PostThreadMessageW.restype = wintypes.BOOL
+
+        # 按键消息处理
+        class KBDLLHOOKSTRUCT(ctypes.Structure):
+            _fields_ = [
+                (&#34;vkCode&#34;, wintypes.DWORD),
+                (&#34;scanCode&#34;, wintypes.DWORD),
+                (&#34;flags&#34;, wintypes.DWORD),
+                (&#34;time&#34;, wintypes.DWORD),
+                (&#34;dwExtraInfo&#34;, ulong_ptr_type),
+            ]
+
+        def resolve_key_name(vk_code: int, scan_code: int, flags: int) -&gt; str:
+            lparam_value = scan_code &lt;&lt; 16
+            if flags &amp; win32con.LLKHF_EXTENDED:
+                lparam_value |= 1 &lt;&lt; 24
+
+            buffer = ctypes.create_unicode_buffer(64)
+            length = user32.GetKeyNameTextW(lparam_value, buffer, len(buffer))
+            if length &gt; 0:
+                return buffer.value
+            return str(vk_code)
+
+        def get_modifier_state(vk_code: int) -&gt; Dict[str, bool]:
+            states: Dict[str, bool] = {}
+            for name, codes in self._MODIFIER_VK_CODES.items():
+                states[name] = any(bool(user32.GetAsyncKeyState(code) &amp; 0x8000) for code in codes)
+
+            # Some layouts surface AltGr as Right Alt, while others only expose
+            # the same printable layer through a Ctrl+Alt chord.
+            states[&#34;alt_gr&#34;] = is_alt_gr_active(states)
+
+            if vk_code == 0x10:
+                states[&#34;shift&#34;] = True
+            elif vk_code == 0x11:
+                states[&#34;ctrl&#34;] = True
+            elif vk_code == 0x12:
+                states[&#34;alt&#34;] = True
+            elif vk_code in (0x5B, 0x5C):
+                states[&#34;win&#34;] = True
+
+            return states
+
+        def resolve_text(vk_code: int, scan_code: int, modifiers: Dict[str, bool]) -&gt; str:
+            if modifiers.get(&#34;win&#34;):
+                return &#34;&#34;
+
+            if modifiers.get(&#34;ctrl&#34;) and not modifiers.get(&#34;alt_gr&#34;):
+                return &#34;&#34;
+
+            if modifiers.get(&#34;alt&#34;) and not modifiers.get(&#34;alt_gr&#34;):
+                return &#34;&#34;
+
+            keyboard_state = (ctypes.c_ubyte * 256)()
+            for code in range(256):
+                if user32.GetAsyncKeyState(code) &amp; 0x8000:
+                    keyboard_state[code] |= 0x80
+
+            def mark_pressed(*virtual_keys: int) -&gt; None:
+                for virtual_key in virtual_keys:
+                    keyboard_state[virtual_key] |= 0x80
+
+            # 低层钩子回调触发得很早，GetAsyncKeyState 对当前组合键有时还没完全稳定。
+            # 这里根据解析出的修饰键显式补齐状态，确保 ToUnicodeEx 能命中 AltGr/Ctrl+Alt 层。
+            if modifiers.get(&#34;shift&#34;):
+                mark_pressed(0x10, 0xA0, 0xA1)
+
+            if modifiers.get(&#34;ctrl&#34;) or modifiers.get(&#34;alt_gr&#34;):
+                mark_pressed(0x11, 0xA2, 0xA3)
+
+            if modifiers.get(&#34;alt&#34;) or modifiers.get(&#34;alt_gr&#34;):
+                mark_pressed(0x12, 0xA4, 0xA5)
+
+            if modifiers.get(&#34;alt_r&#34;) or modifiers.get(&#34;alt_gr&#34;):
+                mark_pressed(0xA5)
+
+            mark_pressed(vk_code)
+
+            foreground_hwnd = user32.GetForegroundWindow()
+            thread_id = wintypes.DWORD(0)
+            layout_thread_id = 0
+            if foreground_hwnd:
+                layout_thread_id = int(user32.GetWindowThreadProcessId(foreground_hwnd, ctypes.byref(thread_id)))
+
+            keyboard_layout = user32.GetKeyboardLayout(layout_thread_id)
+            text_buffer = ctypes.create_unicode_buffer(8)
+            translated_length = user32.ToUnicodeEx(
+                vk_code,
+                scan_code,
+                keyboard_state,
+                text_buffer,
+                len(text_buffer),
+                0,
+                keyboard_layout,
+            )
+
+            if translated_length &gt; 0:
+                return text_buffer.value[:translated_length]
+
+            return &#34;&#34;
+
+        def low_level_keyboard_proc(nCode, wParam, lParam):
+            try:
+                if nCode == win32con.HC_ACTION:
+                    kb_struct = ctypes.cast(
+                        lParam,
+                        ctypes.POINTER(KBDLLHOOKSTRUCT),
+                    ).contents
+                    vk_code = kb_struct.vkCode
+                    scan_code = kb_struct.scanCode
+                    flags = kb_struct.flags
+                    if flags &amp; win32con.LLKHF_INJECTED:
+                        return user32.CallNextHookEx(None, nCode, wParam, lParam)
+                    # 0x100: WM_KEYDOWN, 0x101: WM_KEYUP
+                    if wParam == win32con.WM_KEYDOWN or wParam == win32con.WM_SYSKEYDOWN:
+                        modifiers = get_modifier_state(vk_code)
+                        key_info = self._normalize_win32_key_info(
+                            vk_code,
+                            scan_code,
+                            flags,
+                            modifiers,
+                            resolve_key_name,
+                            resolve_text,
+                        )
+                        # 调用回调，返回False则拦截
+                        if self.on_key_press and self.on_key_press(key_info) is False:
+                            return 1  # 拦截
+            except Exception as exc:
+                print(f&#34;Win32键盘回调出错: {exc}&#34;)
+            return user32.CallNextHookEx(None, nCode, wParam, lParam)
+
+        # 设置钩子，持久化回调实例，防止被回收
+        self._win32_callback = hook_proc_type(low_level_keyboard_proc)
+        self._win32_thread_id = int(kernel32.GetCurrentThreadId())
+        module_handle = kernel32.GetModuleHandleW(None)
+        self._win32_hook = user32.SetWindowsHookExW(
+            win32con.WH_KEYBOARD_LL,
+            self._win32_callback,
+            module_handle,
+            0
+        )
+        if not self._win32_hook:
+            error_code = ctypes.get_last_error()
+            self._win32_error = (
+                f&#34;错误码 {error_code}，module_handle={hex(module_handle) if module_handle else &#39;0x0&#39;}&#34;
+            )
+            self._win32_ready.set()
+            return
+        self._win32_hook_installed = True
+        self._win32_ready.set()
+        print(&#34;[Win32Hook] 全局键盘钩子已安装&#34;)
+        # 消息循环
+        msg = wintypes.MSG()
+        while True:
+            if user32.GetMessageW(ctypes.byref(msg), 0, 0, 0) == 0:
+                break
+            user32.TranslateMessage(ctypes.byref(msg))
+            user32.DispatchMessageW(ctypes.byref(msg))
+
+    def _init_pyhook(self) -&gt; None:
+        &#34;&#34;&#34;使用pyHook初始化&#34;&#34;&#34;
+        self._hook_manager = pyHook.HookManager()
+        self._hook_manager.KeyDown = self._pyhook_key_down
+        self._hook_manager.KeyUp = self._pyhook_key_up
+
+    def _init_pynput(self) -&gt; None:
+        &#34;&#34;&#34;使用pynput初始化&#34;&#34;&#34;
+        self._listener = keyboard.Listener(
+            on_press=self._pynput_key_press,
+            on_release=self._pynput_key_release,
+        )
+
+    def _pyhook_key_down(self, event) -&gt; bool:
+        &#34;&#34;&#34;
+        pyHook按键事件处理
+
+        Args:
+            event: pyHook事件对象
+
+        Returns:
+            True继续传递按键，False拦截
+        &#34;&#34;&#34;
+        try:
+            # 转换为统一格式
+            key_info = {
+                &#39;key&#39;: event.Key,
+                &#39;text&#39;: chr(event.Ascii) if event.Ascii &gt; 0 else &#39;&#39;,
+                &#39;ascii&#39;: event.Ascii if event.Ascii &gt; 0 else None,
+                &#39;scan_code&#39;: event.ScanCode,
+                &#39;is_extended&#39;: event.IsExtended,
+                &#39;is_injected&#39;: event.Injected,
+                &#39;time&#39;: time.time(),
+                &#39;window&#39;: event.Window,
+                &#39;window_name&#39;: event.WindowName,
+            }
+
+            # 调用回调
+            if self.on_key_press:
+                return self.on_key_press(key_info)
+            return True
+        except Exception as e:
+            print(f&#34;处理按键事件出错: {e}&#34;)
+            return True  # 出错时继续传递
+
+    def _pyhook_key_up(self, event) -&gt; bool:
+        &#34;&#34;&#34;
+        pyHook释放键事件处理
+
+        Args:
+            event: pyHook事件对象
+
+        Returns:
+            True继续传递按键，False拦截
+        &#34;&#34;&#34;
+        try:
+            if self.on_key_release:
+                key_info = {
+                    &#39;key&#39;: event.Key,
+                    &#39;text&#39;: chr(event.Ascii) if event.Ascii &gt; 0 else &#39;&#39;,
+                    &#39;ascii&#39;: event.Ascii if event.Ascii &gt; 0 else None,
+                    &#39;time&#39;: time.time(),
+                }
+                return self.on_key_release(key_info)
+            return True
+        except Exception as e:
+            print(f&#34;处理释放键事件出错: {e}&#34;)
+            return True
+
+    def _pynput_key_press(self, key) -&gt; None:
+        &#34;&#34;&#34;
+        pynput按键事件处理
+
+        Args:
+            key: pynput按键对象
+        &#34;&#34;&#34;
+        try:
+            # 转换为统一格式
+            key_info = {
+                &#39;key&#39;: self._pynput_key_to_string(key),
+                &#39;text&#39;: getattr(key, &#39;char&#39;, &#39;&#39;) or &#39;&#39;,
+                &#39;ascii&#39;: getattr(key, &#39;char&#39;, None),
+                &#39;time&#39;: time.time(),
+            }
+
+            # 调用回调
+            if self.on_key_press:
+                # pynput不支持拦截，所以总是返回True
+                self.on_key_press(key_info)
+        except Exception as e:
+            print(f&#34;处理按键事件出错: {e}&#34;)
+
+    def _pynput_key_release(self, key) -&gt; None:
+        &#34;&#34;&#34;
+        pynput释放键事件处理
+
+        Args:
+            key: pynput按键对象
+        &#34;&#34;&#34;
+        try:
+            if self.on_key_release:
+                key_info = {
+                    &#39;key&#39;: self._pynput_key_to_string(key),
+                    &#39;time&#39;: time.time(),
+                }
+                self.on_key_release(key_info)
+        except Exception as e:
+            print(f&#34;处理释放键事件出错: {e}&#34;)
+
+    def _pynput_key_to_string(self, key) -&gt; str:
+        &#34;&#34;&#34;
+        将pynput按键对象转换为字符串
+
+        Args:
+            key: pynput按键对象
+
+        Returns:
+            按键字符串
+        &#34;&#34;&#34;
+        try:
+            if isinstance(key, keyboard.KeyCode):
+                return key.char if key.char else str(key)
+            elif isinstance(key, keyboard.Key):
+                return key.name
+            else:
+                return str(key)
+        except:
+            return str(key)
+
+    def start(self) -&gt; None:
+        &#34;&#34;&#34;开始监听键盘&#34;&#34;&#34;
+        if self.is_running:
+            print(&#34;键盘监听已在运行&#34;)
+            return
+
+        print(&#34;启动键盘监听...&#34;)
+
+        if self._backend == &#34;win32&#34;:
+            self.is_running = self._win32_hook_installed
+            if self.is_running:
+                print(&#34;Win32键盘钩子已运行&#34;)
+            else:
+                raise RuntimeError(self._win32_error or &#34;Win32 键盘钩子未启动&#34;)
+        elif self._backend == &#34;pyhook&#34;:
+            # pyHook需要消息循环
+            self._hook_manager.HookKeyboard()
+            self.is_running = True
+            print(&#34;pyHook键盘钩子已安装&#34;)
+            # 注意：pythoncom.PumpMessages()会阻塞
+            # 在实际应用中，应该在单独的线程中运行
+        elif self._backend == &#34;pynput&#34;:
+            # pynput在后台线程运行
+            if self._listener:
+                self._listener.start()
+                self.is_running = True
+                print(&#34;pynput监听器已启动&#34;)
+            else:
+                raise RuntimeError(&#34;pynput 监听器初始化失败&#34;)
+        else:
+            raise RuntimeError(&#34;没有可启动的键盘监听后端&#34;)
+
+    def stop(self) -&gt; None:
+        &#34;&#34;&#34;停止监听键盘&#34;&#34;&#34;
+        if not self.is_running:
+            return
+
+        print(&#34;停止键盘监听...&#34;)
+        self.is_running = False
+
+        if self._backend == &#34;win32&#34;:
+            try:
+                if hasattr(self, &#39;_win32_hook&#39;) and self._win32_hook:
+                    import ctypes
+                    ctypes.windll.user32.UnhookWindowsHookEx(self._win32_hook)
+                    self._win32_hook = None
+                    print(&#34;Win32键盘钩子已卸载&#34;)
+                if self._win32_thread_id:
+                    ctypes.windll.user32.PostThreadMessageW(
+                        self._win32_thread_id,
+                        0x0012,
+                        0,
+                        0,
+                    )
+                    self._win32_thread_id = None
+                if hasattr(self, &#39;_win32_thread&#39;) and self._win32_thread.is_alive():
+                    self._win32_thread.join(timeout=0.5)
+            except Exception as e:
+                print(f&#34;卸载Win32钩子出错: {e}&#34;)
+        elif self._backend == &#34;pyhook&#34;:
+            try:
+                self._hook_manager.UnhookKeyboard()
+                print(&#34;pyHook键盘钩子已卸载&#34;)
+            except Exception as e:
+                print(f&#34;卸载pyHook钩子出错: {e}&#34;)
+        elif self._backend == &#34;pynput&#34;:
+            try:
+                if self._listener:
+                    self._listener.stop()
+                    print(&#34;pynput监听器已停止&#34;)
+            except Exception as e:
+                print(f&#34;停止pynput监听器出错: {e}&#34;)
+
+    def is_active(self) -&gt; bool:
+        &#34;&#34;&#34;
+        检查是否正在监听
+
+        Returns:
+            True如果正在监听，False否则
+        &#34;&#34;&#34;
+        return self.is_running
+
+    def pump_messages(self) -&gt; None:
+        &#34;&#34;&#34;
+        处理消息循环（仅pyHook需要）
+
+        注意：这个方法会阻塞，应该在单独的线程中调用
+        &#34;&#34;&#34;
+        if HAS_PYHOOK and self.is_running:
+            print(&#34;开始处理消息循环...&#34;)
+            pythoncom.PumpMessages()</code></pre>
+</details>
+<div class="desc"><p>键盘监听器</p>
+<p>支持两种监听方式：
+1. pyHook - Windows全局钩子（推荐）
+2. pynput - 跨平台监听（备选）</p>
+<p>初始化键盘监听器</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>on_key_press</code></strong></dt>
+<dd>按键回调函数，返回True继续传递，False拦截</dd>
+<dt><strong><code>on_key_release</code></strong></dt>
+<dd>释放键回调函数（可选）</dd>
+</dl></div>
+<h3>Methods</h3>
+<dl>
+<dt id="yime.input_method.core.KeyboardListener.is_active"><code class="name flex">
+<span>def <span class="ident">is_active</span></span>(<span>self) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def is_active(self) -&gt; bool:
+    &#34;&#34;&#34;
+    检查是否正在监听
+
+    Returns:
+        True如果正在监听，False否则
+    &#34;&#34;&#34;
+    return self.is_running</code></pre>
+</details>
+<div class="desc"><p>检查是否正在监听</p>
+<h2 id="returns">Returns</h2>
+<p>True如果正在监听，False否则</p></div>
+</dd>
+<dt id="yime.input_method.core.KeyboardListener.pump_messages"><code class="name flex">
+<span>def <span class="ident">pump_messages</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def pump_messages(self) -&gt; None:
+    &#34;&#34;&#34;
+    处理消息循环（仅pyHook需要）
+
+    注意：这个方法会阻塞，应该在单独的线程中调用
+    &#34;&#34;&#34;
+    if HAS_PYHOOK and self.is_running:
+        print(&#34;开始处理消息循环...&#34;)
+        pythoncom.PumpMessages()</code></pre>
+</details>
+<div class="desc"><p>处理消息循环（仅pyHook需要）</p>
+<p>注意：这个方法会阻塞，应该在单独的线程中调用</p></div>
+</dd>
+<dt id="yime.input_method.core.KeyboardListener.start"><code class="name flex">
+<span>def <span class="ident">start</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def start(self) -&gt; None:
+    &#34;&#34;&#34;开始监听键盘&#34;&#34;&#34;
+    if self.is_running:
+        print(&#34;键盘监听已在运行&#34;)
+        return
+
+    print(&#34;启动键盘监听...&#34;)
+
+    if self._backend == &#34;win32&#34;:
+        self.is_running = self._win32_hook_installed
+        if self.is_running:
+            print(&#34;Win32键盘钩子已运行&#34;)
+        else:
+            raise RuntimeError(self._win32_error or &#34;Win32 键盘钩子未启动&#34;)
+    elif self._backend == &#34;pyhook&#34;:
+        # pyHook需要消息循环
+        self._hook_manager.HookKeyboard()
+        self.is_running = True
+        print(&#34;pyHook键盘钩子已安装&#34;)
+        # 注意：pythoncom.PumpMessages()会阻塞
+        # 在实际应用中，应该在单独的线程中运行
+    elif self._backend == &#34;pynput&#34;:
+        # pynput在后台线程运行
+        if self._listener:
+            self._listener.start()
+            self.is_running = True
+            print(&#34;pynput监听器已启动&#34;)
+        else:
+            raise RuntimeError(&#34;pynput 监听器初始化失败&#34;)
+    else:
+        raise RuntimeError(&#34;没有可启动的键盘监听后端&#34;)</code></pre>
+</details>
+<div class="desc"><p>开始监听键盘</p></div>
+</dd>
+<dt id="yime.input_method.core.KeyboardListener.stop"><code class="name flex">
+<span>def <span class="ident">stop</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def stop(self) -&gt; None:
+    &#34;&#34;&#34;停止监听键盘&#34;&#34;&#34;
+    if not self.is_running:
+        return
+
+    print(&#34;停止键盘监听...&#34;)
+    self.is_running = False
+
+    if self._backend == &#34;win32&#34;:
+        try:
+            if hasattr(self, &#39;_win32_hook&#39;) and self._win32_hook:
+                import ctypes
+                ctypes.windll.user32.UnhookWindowsHookEx(self._win32_hook)
+                self._win32_hook = None
+                print(&#34;Win32键盘钩子已卸载&#34;)
+            if self._win32_thread_id:
+                ctypes.windll.user32.PostThreadMessageW(
+                    self._win32_thread_id,
+                    0x0012,
+                    0,
+                    0,
+                )
+                self._win32_thread_id = None
+            if hasattr(self, &#39;_win32_thread&#39;) and self._win32_thread.is_alive():
+                self._win32_thread.join(timeout=0.5)
+        except Exception as e:
+            print(f&#34;卸载Win32钩子出错: {e}&#34;)
+    elif self._backend == &#34;pyhook&#34;:
+        try:
+            self._hook_manager.UnhookKeyboard()
+            print(&#34;pyHook键盘钩子已卸载&#34;)
+        except Exception as e:
+            print(f&#34;卸载pyHook钩子出错: {e}&#34;)
+    elif self._backend == &#34;pynput&#34;:
+        try:
+            if self._listener:
+                self._listener.stop()
+                print(&#34;pynput监听器已停止&#34;)
+        except Exception as e:
+            print(f&#34;停止pynput监听器出错: {e}&#34;)</code></pre>
+</details>
+<div class="desc"><p>停止监听键盘</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="yime.input_method.core.PrefixTree"><code class="flex name class">
+<span>class <span class="ident">PrefixTree</span></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class PrefixTree(Generic[T]):
+    &#34;&#34;&#34;Store values under string keys and retrieve them by exact key or prefix.&#34;&#34;&#34;
+
+    def __init__(self) -&gt; None:
+        self._root: _PrefixTreeNode[T] = _PrefixTreeNode()
+        self._key_count = 0
+        self._value_count = 0
+
+    @property
+    def key_count(self) -&gt; int:
+        return self._key_count
+
+    @property
+    def value_count(self) -&gt; int:
+        return self._value_count
+
+    def insert(self, key: str, value: T) -&gt; None:
+        if not key:
+            raise ValueError(&#34;PrefixTree key must not be empty&#34;)
+
+        node = self._root
+        for char in key:
+            node = node.children.setdefault(char, _PrefixTreeNode())
+
+        if not node.values:
+            self._key_count += 1
+        node.values.append(value)
+        self._value_count += 1
+
+    def contains(self, key: str) -&gt; bool:
+        node = self._find_node(key)
+        return bool(node and node.values)
+
+    def has_prefix(self, prefix: str) -&gt; bool:
+        return self._find_node(prefix) is not None
+
+    def get_exact(self, key: str) -&gt; list[T]:
+        node = self._find_node(key)
+        if node is None:
+            return []
+        return list(node.values)
+
+    def get_with_prefix(
+        self,
+        prefix: str,
+        limit: int = 0,
+    ) -&gt; list[tuple[str, list[T]]]:
+        node = self._find_node(prefix)
+        if node is None:
+            return []
+
+        results: list[tuple[str, list[T]]] = []
+        self._collect(node, prefix, results, limit)
+        return results
+
+    def _find_node(self, key: str) -&gt; _PrefixTreeNode[T] | None:
+        node = self._root
+        for char in key:
+            child = node.children.get(char)
+            if child is None:
+                return None
+            node = child
+        return node
+
+    def _collect(
+        self,
+        node: _PrefixTreeNode[T],
+        key: str,
+        results: list[tuple[str, list[T]]],
+        limit: int,
+    ) -&gt; None:
+        if limit &gt; 0 and len(results) &gt;= limit:
+            return
+
+        if node.values:
+            results.append((key, list(node.values)))
+
+        for char, child in node.children.items():
+            self._collect(child, f&#34;{key}{char}&#34;, results, limit)</code></pre>
+</details>
+<div class="desc"><p>Store values under string keys and retrieve them by exact key or prefix.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>typing.Generic</li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="yime.input_method.core.PrefixTree.key_count"><code class="name">prop <span class="ident">key_count</span> : int</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def key_count(self) -&gt; int:
+    return self._key_count</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.PrefixTree.value_count"><code class="name">prop <span class="ident">value_count</span> : int</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def value_count(self) -&gt; int:
+    return self._value_count</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="yime.input_method.core.PrefixTree.contains"><code class="name flex">
+<span>def <span class="ident">contains</span></span>(<span>self, key: str) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def contains(self, key: str) -&gt; bool:
+    node = self._find_node(key)
+    return bool(node and node.values)</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.PrefixTree.get_exact"><code class="name flex">
+<span>def <span class="ident">get_exact</span></span>(<span>self, key: str) ‑> list[~T]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_exact(self, key: str) -&gt; list[T]:
+    node = self._find_node(key)
+    if node is None:
+        return []
+    return list(node.values)</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.PrefixTree.get_with_prefix"><code class="name flex">
+<span>def <span class="ident">get_with_prefix</span></span>(<span>self, prefix: str, limit: int = 0) ‑> list[tuple[str, list[~T]]]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_with_prefix(
+    self,
+    prefix: str,
+    limit: int = 0,
+) -&gt; list[tuple[str, list[T]]]:
+    node = self._find_node(prefix)
+    if node is None:
+        return []
+
+    results: list[tuple[str, list[T]]] = []
+    self._collect(node, prefix, results, limit)
+    return results</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.PrefixTree.has_prefix"><code class="name flex">
+<span>def <span class="ident">has_prefix</span></span>(<span>self, prefix: str) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def has_prefix(self, prefix: str) -&gt; bool:
+    return self._find_node(prefix) is not None</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.PrefixTree.insert"><code class="name flex">
+<span>def <span class="ident">insert</span></span>(<span>self, key: str, value: T) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def insert(self, key: str, value: T) -&gt; None:
+    if not key:
+        raise ValueError(&#34;PrefixTree key must not be empty&#34;)
+
+    node = self._root
+    for char in key:
+        node = node.children.setdefault(char, _PrefixTreeNode())
+
+    if not node.values:
+        self._key_count += 1
+    node.values.append(value)
+    self._value_count += 1</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="yime.input_method.core.RuntimeCandidateDecoder"><code class="flex name class">
+<span>class <span class="ident">RuntimeCandidateDecoder</span></span>
+<span>(</span><span>app_dir: Path, user_db_path: Path | None = None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class RuntimeCandidateDecoder(_RuntimeDecoderBase):
+    &#34;&#34;&#34;运行时候选词解码器，JSON 导出为数据源。&#34;&#34;&#34;
+
+    def __init__(self, app_dir: Path, user_db_path: Path | None = None) -&gt; None:
+        self.runtime_path = resolve_runtime_candidates_json_path(app_dir)
+        self._init_runtime_decoder_common(app_dir, user_db_path)
+        self._json_store = JSONRuntimeCandidateStore(
+            self.runtime_path,
+            self.pinyin_to_canonical,
+            _resolve_canonical_code_from_pinyin_tone,
+        )
+        self._json_store.refresh(
+            self.user_lexicon.load_phrase_candidates(self.pinyin_to_canonical),
+        )
+        self.by_code = self._json_store.by_code
+        self._char_sort_weight_by_text = self._json_store.char_sort_weight_by_text
+        self._phrase_prefix_index = self._json_store.phrase_prefix_index
+        self.char_code_index = self._json_store.char_code_index
+        self._user_freq_by_candidate = self.user_lexicon.load_candidate_frequency()
+
+    def _load_runtime_candidates(
+        self, path: Path
+    ) -&gt; RuntimeCandidatePayload:
+        json_store = getattr(self, &#34;_json_store&#34;, None)
+        if json_store is not None:
+            return json_store.load_runtime_candidates(path)
+
+        if not path.exists():
+            raise FileNotFoundError(f&#34;未找到运行时候选文件: {path}&#34;)
+        raw_text = path.read_text(encoding=&#34;utf-8&#34;)
+        if raw_text.lstrip().startswith(&#34;version https://git-lfs.github.com/spec/v1&#34;):
+            raise ValueError(f&#34;运行时候选文件是 Git LFS 指针，未拉取实际内容: {path}&#34;)
+
+        payload = json.loads(raw_text)
+        by_code = payload.get(&#34;by_code&#34;) if isinstance(payload, dict) else None
+        if not isinstance(by_code, dict):
+            raise ValueError(f&#34;运行时候选文件格式无效: {path}&#34;)
+
+        regrouped: RuntimeCandidatePayload = {}
+        for raw_candidates in by_code.values():
+            if not isinstance(raw_candidates, list):
+                continue
+            for candidate in raw_candidates:
+                if not isinstance(candidate, dict):
+                    continue
+                canonical_code = str(candidate.get(&#34;yime_code&#34;, &#34;&#34;) or &#34;&#34;).strip()
+                if not canonical_code:
+                    pinyin_tone = str(candidate.get(&#34;pinyin_tone&#34;, &#34;&#34;) or &#34;&#34;).strip()
+                    canonical_code = _resolve_canonical_code_from_pinyin_tone(
+                        pinyin_tone,
+                        self.pinyin_to_canonical,
+                    )
+                if not canonical_code:
+                    continue
+                regrouped.setdefault(canonical_code, []).append(
+                    _annotate_candidate_source(candidate, &#34;exact&#34;)
+                )
+        return regrouped
+
+    def reload_user_lexicon(self) -&gt; None:
+        self._json_store.refresh(
+            self.user_lexicon.load_phrase_candidates(self.pinyin_to_canonical),
+        )
+        self.by_code = self._json_store.by_code
+        self._char_sort_weight_by_text = self._json_store.char_sort_weight_by_text
+        self._phrase_prefix_index = self._json_store.phrase_prefix_index
+        self.char_code_index = self._json_store.char_code_index
+        self._user_freq_by_candidate = self.user_lexicon.load_candidate_frequency()
+
+    def _load_phrase_prefix_candidates(
+        self,
+        lookup_code: str,
+        *,
+        limit: int = 0,
+    ) -&gt; List[JSONDict]:
+        json_store = getattr(self, &#34;_json_store&#34;, None)
+        if json_store is not None:
+            return json_store.load_phrase_prefix_candidates(lookup_code, limit=limit)
+
+        normalized_code = str(lookup_code or &#34;&#34;).strip()
+        if not normalized_code:
+            return []
+        phrase_prefix_index = getattr(self, &#34;_phrase_prefix_index&#34;, {})
+        candidates = [
+            _annotate_phrase_prefix_candidate(candidate, len(normalized_code))
+            for candidate in phrase_prefix_index.get(normalized_code, [])
+            if isinstance(candidate, dict)
+        ]
+        normalized_limit = max(int(limit or 0), 0)
+        if normalized_limit &gt; 0:
+            return candidates[:normalized_limit]
+        return candidates
+
+    def _lookup_runtime_candidates_for_decode(
+        self,
+        canonical: str,
+        plan: RuntimeLookupPlan,
+    ) -&gt; tuple[List[JSONDict], str]:
+        raw_candidates: List[JSONDict] = []
+        phrase_tree_lookup = _build_phrase_tree_lookup(canonical, plan)
+        if phrase_tree_lookup:
+            raw_candidates.extend(
+                self._load_phrase_prefix_candidates(
+                    phrase_tree_lookup,
+                    limit=plan.phrase_prefix_limit,
+                )
+            )
+        if plan.lookup_code and (plan.stage != &#34;C&#34; or not raw_candidates):
+            raw_candidates.extend(
+                _annotate_candidate_source(candidate, &#34;exact&#34;)
+                for candidate in self.by_code.get(plan.lookup_code, [])
+                if isinstance(candidate, dict)
+            )
+        return raw_candidates, phrase_tree_lookup or plan.lookup_code
+
+    def get_char_candidates(self, code: str) -&gt; List[CharCodeCandidate]:
+        &#34;&#34;&#34;按完整音元编码读取单字候选。&#34;&#34;&#34;
+        json_store = getattr(self, &#34;_json_store&#34;, None)
+        if json_store is not None:
+            return json_store.get_char_candidates(code)
+        return self.char_code_index.get_exact(code)
+
+    def get_char_candidates_by_prefix(
+        self,
+        prefix: str,
+        limit: int = 0,
+    ) -&gt; List[Tuple[str, List[CharCodeCandidate]]]:
+        &#34;&#34;&#34;按编码前缀读取可能的单字候选。&#34;&#34;&#34;
+        json_store = getattr(self, &#34;_json_store&#34;, None)
+        if json_store is not None:
+            return json_store.get_char_candidates_by_prefix(prefix, limit=limit)
+        return self.char_code_index.get_with_prefix(prefix, limit=limit)</code></pre>
+</details>
+<div class="desc"><p>运行时候选词解码器，JSON 导出为数据源。</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="yime.input_method.core.runtime_decoder_base.RuntimeDecoderBase" href="runtime_decoder_base.html#yime.input_method.core.runtime_decoder_base.RuntimeDecoderBase">RuntimeDecoderBase</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="yime.input_method.core.RuntimeCandidateDecoder.get_char_candidates"><code class="name flex">
+<span>def <span class="ident">get_char_candidates</span></span>(<span>self, code: str) ‑> List[<a title="yime.input_method.core.char_code_index.CharCodeCandidate" href="char_code_index.html#yime.input_method.core.char_code_index.CharCodeCandidate">CharCodeCandidate</a>]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_char_candidates(self, code: str) -&gt; List[CharCodeCandidate]:
+    &#34;&#34;&#34;按完整音元编码读取单字候选。&#34;&#34;&#34;
+    json_store = getattr(self, &#34;_json_store&#34;, None)
+    if json_store is not None:
+        return json_store.get_char_candidates(code)
+    return self.char_code_index.get_exact(code)</code></pre>
+</details>
+<div class="desc"><p>按完整音元编码读取单字候选。</p></div>
+</dd>
+<dt id="yime.input_method.core.RuntimeCandidateDecoder.get_char_candidates_by_prefix"><code class="name flex">
+<span>def <span class="ident">get_char_candidates_by_prefix</span></span>(<span>self, prefix: str, limit: int = 0) ‑> List[Tuple[str, List[<a title="yime.input_method.core.char_code_index.CharCodeCandidate" href="char_code_index.html#yime.input_method.core.char_code_index.CharCodeCandidate">CharCodeCandidate</a>]]]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_char_candidates_by_prefix(
+    self,
+    prefix: str,
+    limit: int = 0,
+) -&gt; List[Tuple[str, List[CharCodeCandidate]]]:
+    &#34;&#34;&#34;按编码前缀读取可能的单字候选。&#34;&#34;&#34;
+    json_store = getattr(self, &#34;_json_store&#34;, None)
+    if json_store is not None:
+        return json_store.get_char_candidates_by_prefix(prefix, limit=limit)
+    return self.char_code_index.get_with_prefix(prefix, limit=limit)</code></pre>
+</details>
+<div class="desc"><p>按编码前缀读取可能的单字候选。</p></div>
+</dd>
+<dt id="yime.input_method.core.RuntimeCandidateDecoder.reload_user_lexicon"><code class="name flex">
+<span>def <span class="ident">reload_user_lexicon</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def reload_user_lexicon(self) -&gt; None:
+    self._json_store.refresh(
+        self.user_lexicon.load_phrase_candidates(self.pinyin_to_canonical),
+    )
+    self.by_code = self._json_store.by_code
+    self._char_sort_weight_by_text = self._json_store.char_sort_weight_by_text
+    self._phrase_prefix_index = self._json_store.phrase_prefix_index
+    self.char_code_index = self._json_store.char_code_index
+    self._user_freq_by_candidate = self.user_lexicon.load_candidate_frequency()</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="yime.input_method.core.StaticCandidateDecoder"><code class="flex name class">
+<span>class <span class="ident">StaticCandidateDecoder</span></span>
+<span>(</span><span>app_dir: Path)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class StaticCandidateDecoder:
+    &#34;&#34;&#34;静态候选词解码器（基于拼音候选表）&#34;&#34;&#34;
+
+    def __init__(self, app_dir: Path) -&gt; None:
+        repo_root = app_dir.parent
+        projection_path = repo_root / &#34;internal_data&#34; / &#34;bmp_pua_trial_projection.json&#34;
+        key_to_symbol_path = repo_root / &#34;internal_data&#34; / &#34;key_to_symbol.json&#34;
+        marked_pinyin_path = app_dir / &#34;pinyin_normalized.json&#34;
+        pinyin_hanzi_paths = [app_dir / &#34;pinyin_hanzi.json&#34;]
+
+        self.bmp_to_canonical = self._build_bmp_to_canonical_map(
+            projection_path,
+            key_to_symbol_path,
+        )
+        self.pinyin_to_canonical = _build_pinyin_to_canonical_code_map(
+            repo_root,
+            self.bmp_to_canonical,
+        )
+        self.code_mapping = self._build_code_mapping(marked_pinyin_path)
+        self.pinyin_hanzi = self._load_first_available_json(pinyin_hanzi_paths)
+
+    def _load_json(self, path: Path) -&gt; JSONDict:
+        with path.open(&#34;r&#34;, encoding=&#34;utf-8&#34;) as handle:
+            payload = json.load(handle)
+        return cast(JSONDict, payload)
+
+    def _load_first_available_json(self, paths: List[Path]) -&gt; JSONDict:
+        for path in paths:
+            if path.exists():
+                return self._load_json(path)
+        joined = &#34;, &#34;.join(str(path) for path in paths)
+        raise FileNotFoundError(f&#34;未找到候选数据文件: {joined}&#34;)
+
+    def _build_bmp_to_canonical_map(
+        self, projection_path: Path, key_to_symbol_path: Path
+    ) -&gt; Dict[str, str]:
+        projection = self._load_json(projection_path)
+        key_to_symbol = self._load_json(key_to_symbol_path)
+        bmp_to_canonical: Dict[str, str] = {}
+        used_mapping = projection.get(&#34;used_mapping&#34;)
+        if not isinstance(used_mapping, dict):
+            return bmp_to_canonical
+
+        for symbol_key, slot_info in used_mapping.items():
+            if not isinstance(slot_info, dict):
+                continue
+            bmp_char = str(slot_info.get(&#34;char&#34;, &#34;&#34;) or &#34;&#34;)
+            canonical_char = str(key_to_symbol.get(str(symbol_key), &#34;&#34;) or &#34;&#34;)
+            if canonical_char:
+                bmp_to_canonical[bmp_char] = canonical_char
+
+        return bmp_to_canonical
+
+    def _build_code_mapping(
+        self,
+        marked_pinyin_path: Path,
+    ) -&gt; Dict[str, JSONDict]:
+        numeric_to_marked = _load_numeric_to_marked_pinyin_map(str(marked_pinyin_path))
+
+        code_mapping: Dict[str, JSONDict] = {}
+        for numeric_pinyin, canonical_code in self.pinyin_to_canonical.items():
+            metadata: JSONDict = {
+                &#34;数字标调&#34;: numeric_pinyin,
+                &#34;调号标调&#34;: numeric_to_marked.get(numeric_pinyin, numeric_pinyin),
+            }
+            code_mapping[canonical_code] = metadata
+        return code_mapping
+
+    def decode_text(
+        self, text: str
+    ) -&gt; Tuple[str, str, str, List[str], str]:
+        &#34;&#34;&#34;解码文本。&#34;&#34;&#34;
+        canonical = &#34;&#34;.join(
+            self.bmp_to_canonical.get(char, char) for char in text
+        )
+        if not canonical:
+            return &#34;&#34;, &#34;&#34;, &#34;&#34;, [], &#34;请输入一个完整音节的 4 个码元。&#34;
+
+        if len(canonical) &lt; 4:
+            return (
+                canonical,
+                canonical,
+                &#34;&#34;,
+                [],
+                f&#34;当前 {len(canonical)}/4 码，继续输入。&#34;,
+            )
+
+        active_code = canonical[-4:]
+        mode_hint = &#34;&#34;
+        if len(canonical) &gt; 4:
+            mode_hint = f&#34;已自动截取最近 4 码，总输入 {len(canonical)} 码。&#34;
+
+        mapping = self.code_mapping.get(active_code)
+        if not mapping:
+            status = mode_hint or &#34;未找到该 4 码对应的拼音映射。&#34;
+            if mode_hint:
+                status = f&#34;{mode_hint} 当前 4 码未找到拼音映射。&#34;
+            return canonical, active_code, &#34;&#34;, [], status
+
+        numeric_pinyin = str(mapping.get(&#34;数字标调&#34;, &#34;&#34;) or &#34;&#34;)
+        marked_pinyin = unicodedata.normalize(
+            &#34;NFC&#34;,
+            str(mapping.get(&#34;调号标调&#34;, &#34;&#34;) or &#34;&#34;),
+        )
+        display_pinyin = marked_pinyin or numeric_pinyin
+        candidates = self._lookup_candidates(numeric_pinyin, marked_pinyin)
+        if candidates:
+            status = f&#34;找到 {len(candidates)} 个候选。&#34;
+            if mode_hint:
+                status = f&#34;{mode_hint} {status}&#34;
+            return canonical, active_code, display_pinyin, candidates, status
+
+        status = &#34;已解码出拼音，但当前候选表里没有对应汉字。&#34;
+        if mode_hint:
+            status = f&#34;{mode_hint} {status}&#34;
+        return canonical, active_code, display_pinyin, [], status
+
+    def _lookup_candidates(
+        self, numeric_pinyin: str, marked_pinyin: str
+    ) -&gt; List[str]:
+        candidate_keys: List[str] = []
+        if marked_pinyin:
+            candidate_keys.append(marked_pinyin)
+        if numeric_pinyin:
+            candidate_keys.append(numeric_pinyin)
+            candidate_keys.append(numeric_pinyin[:-1])
+
+        merged: List[str] = []
+        seen: set[str] = set()
+        for key in candidate_keys:
+            hanzi_values = self.pinyin_hanzi.get(key, [])
+            if not isinstance(hanzi_values, list):
+                continue
+            for hanzi in hanzi_values:
+                if not isinstance(hanzi, str):
+                    continue
+                if hanzi not in seen:
+                    seen.add(hanzi)
+                    merged.append(hanzi)
+
+        return merged</code></pre>
+</details>
+<div class="desc"><p>静态候选词解码器（基于拼音候选表）</p></div>
+<h3>Methods</h3>
+<dl>
+<dt id="yime.input_method.core.StaticCandidateDecoder.decode_text"><code class="name flex">
+<span>def <span class="ident">decode_text</span></span>(<span>self, text: str) ‑> Tuple[str, str, str, List[str], str]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def decode_text(
+    self, text: str
+) -&gt; Tuple[str, str, str, List[str], str]:
+    &#34;&#34;&#34;解码文本。&#34;&#34;&#34;
+    canonical = &#34;&#34;.join(
+        self.bmp_to_canonical.get(char, char) for char in text
+    )
+    if not canonical:
+        return &#34;&#34;, &#34;&#34;, &#34;&#34;, [], &#34;请输入一个完整音节的 4 个码元。&#34;
+
+    if len(canonical) &lt; 4:
+        return (
+            canonical,
+            canonical,
+            &#34;&#34;,
+            [],
+            f&#34;当前 {len(canonical)}/4 码，继续输入。&#34;,
+        )
+
+    active_code = canonical[-4:]
+    mode_hint = &#34;&#34;
+    if len(canonical) &gt; 4:
+        mode_hint = f&#34;已自动截取最近 4 码，总输入 {len(canonical)} 码。&#34;
+
+    mapping = self.code_mapping.get(active_code)
+    if not mapping:
+        status = mode_hint or &#34;未找到该 4 码对应的拼音映射。&#34;
+        if mode_hint:
+            status = f&#34;{mode_hint} 当前 4 码未找到拼音映射。&#34;
+        return canonical, active_code, &#34;&#34;, [], status
+
+    numeric_pinyin = str(mapping.get(&#34;数字标调&#34;, &#34;&#34;) or &#34;&#34;)
+    marked_pinyin = unicodedata.normalize(
+        &#34;NFC&#34;,
+        str(mapping.get(&#34;调号标调&#34;, &#34;&#34;) or &#34;&#34;),
+    )
+    display_pinyin = marked_pinyin or numeric_pinyin
+    candidates = self._lookup_candidates(numeric_pinyin, marked_pinyin)
+    if candidates:
+        status = f&#34;找到 {len(candidates)} 个候选。&#34;
+        if mode_hint:
+            status = f&#34;{mode_hint} {status}&#34;
+        return canonical, active_code, display_pinyin, candidates, status
+
+    status = &#34;已解码出拼音，但当前候选表里没有对应汉字。&#34;
+    if mode_hint:
+        status = f&#34;{mode_hint} {status}&#34;
+    return canonical, active_code, display_pinyin, [], status</code></pre>
+</details>
+<div class="desc"><p>解码文本。</p></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="yime.input_method" href="../index.html">yime.input_method</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-submodules">Sub-modules</a></h3>
+<ul>
+<li><code><a title="yime.input_method.core.char_code_index" href="char_code_index.html">yime.input_method.core.char_code_index</a></code></li>
+<li><code><a title="yime.input_method.core.decoders" href="decoders.html">yime.input_method.core.decoders</a></code></li>
+<li><code><a title="yime.input_method.core.input_manager" href="input_manager.html">yime.input_method.core.input_manager</a></code></li>
+<li><code><a title="yime.input_method.core.input_visualization" href="input_visualization.html">yime.input_method.core.input_visualization</a></code></li>
+<li><code><a title="yime.input_method.core.keyboard_listener" href="keyboard_listener.html">yime.input_method.core.keyboard_listener</a></code></li>
+<li><code><a title="yime.input_method.core.prefix_tree" href="prefix_tree.html">yime.input_method.core.prefix_tree</a></code></li>
+<li><code><a title="yime.input_method.core.runtime_decoder_base" href="runtime_decoder_base.html">yime.input_method.core.runtime_decoder_base</a></code></li>
+<li><code><a title="yime.input_method.core.runtime_json_store" href="runtime_json_store.html">yime.input_method.core.runtime_json_store</a></code></li>
+<li><code><a title="yime.input_method.core.runtime_lookup" href="runtime_lookup.html">yime.input_method.core.runtime_lookup</a></code></li>
+<li><code><a title="yime.input_method.core.runtime_ranking" href="runtime_ranking.html">yime.input_method.core.runtime_ranking</a></code></li>
+<li><code><a title="yime.input_method.core.sqlite_char_store" href="sqlite_char_store.html">yime.input_method.core.sqlite_char_store</a></code></li>
+<li><code><a title="yime.input_method.core.sqlite_phrase_store" href="sqlite_phrase_store.html">yime.input_method.core.sqlite_phrase_store</a></code></li>
+<li><code><a title="yime.input_method.core.sqlite_runtime_source" href="sqlite_runtime_source.html">yime.input_method.core.sqlite_runtime_source</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="yime.input_method.core.CharCodeCandidate" href="#yime.input_method.core.CharCodeCandidate">CharCodeCandidate</a></code></h4>
+<ul class="two-column">
+<li><code><a title="yime.input_method.core.CharCodeCandidate.code" href="#yime.input_method.core.CharCodeCandidate.code">code</a></code></li>
+<li><code><a title="yime.input_method.core.CharCodeCandidate.entry_id" href="#yime.input_method.core.CharCodeCandidate.entry_id">entry_id</a></code></li>
+<li><code><a title="yime.input_method.core.CharCodeCandidate.is_common" href="#yime.input_method.core.CharCodeCandidate.is_common">is_common</a></code></li>
+<li><code><a title="yime.input_method.core.CharCodeCandidate.pinyin_tone" href="#yime.input_method.core.CharCodeCandidate.pinyin_tone">pinyin_tone</a></code></li>
+<li><code><a title="yime.input_method.core.CharCodeCandidate.sort_weight" href="#yime.input_method.core.CharCodeCandidate.sort_weight">sort_weight</a></code></li>
+<li><code><a title="yime.input_method.core.CharCodeCandidate.text" href="#yime.input_method.core.CharCodeCandidate.text">text</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="yime.input_method.core.CharCodeIndex" href="#yime.input_method.core.CharCodeIndex">CharCodeIndex</a></code></h4>
+<ul class="">
+<li><code><a title="yime.input_method.core.CharCodeIndex.candidate_count" href="#yime.input_method.core.CharCodeIndex.candidate_count">candidate_count</a></code></li>
+<li><code><a title="yime.input_method.core.CharCodeIndex.code_count" href="#yime.input_method.core.CharCodeIndex.code_count">code_count</a></code></li>
+<li><code><a title="yime.input_method.core.CharCodeIndex.from_runtime_candidates" href="#yime.input_method.core.CharCodeIndex.from_runtime_candidates">from_runtime_candidates</a></code></li>
+<li><code><a title="yime.input_method.core.CharCodeIndex.get_exact" href="#yime.input_method.core.CharCodeIndex.get_exact">get_exact</a></code></li>
+<li><code><a title="yime.input_method.core.CharCodeIndex.get_with_prefix" href="#yime.input_method.core.CharCodeIndex.get_with_prefix">get_with_prefix</a></code></li>
+<li><code><a title="yime.input_method.core.CharCodeIndex.has_prefix" href="#yime.input_method.core.CharCodeIndex.has_prefix">has_prefix</a></code></li>
+<li><code><a title="yime.input_method.core.CharCodeIndex.insert" href="#yime.input_method.core.CharCodeIndex.insert">insert</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="yime.input_method.core.CompositeCandidateDecoder" href="#yime.input_method.core.CompositeCandidateDecoder">CompositeCandidateDecoder</a></code></h4>
+<ul class="">
+<li><code><a title="yime.input_method.core.CompositeCandidateDecoder.decode_text" href="#yime.input_method.core.CompositeCandidateDecoder.decode_text">decode_text</a></code></li>
+<li><code><a title="yime.input_method.core.CompositeCandidateDecoder.get_char_candidates" href="#yime.input_method.core.CompositeCandidateDecoder.get_char_candidates">get_char_candidates</a></code></li>
+<li><code><a title="yime.input_method.core.CompositeCandidateDecoder.get_char_candidates_by_prefix" href="#yime.input_method.core.CompositeCandidateDecoder.get_char_candidates_by_prefix">get_char_candidates_by_prefix</a></code></li>
+<li><code><a title="yime.input_method.core.CompositeCandidateDecoder.get_runtime_source" href="#yime.input_method.core.CompositeCandidateDecoder.get_runtime_source">get_runtime_source</a></code></li>
+<li><code><a title="yime.input_method.core.CompositeCandidateDecoder.get_runtime_warning" href="#yime.input_method.core.CompositeCandidateDecoder.get_runtime_warning">get_runtime_warning</a></code></li>
+<li><code><a title="yime.input_method.core.CompositeCandidateDecoder.record_selection" href="#yime.input_method.core.CompositeCandidateDecoder.record_selection">record_selection</a></code></li>
+<li><code><a title="yime.input_method.core.CompositeCandidateDecoder.reload_user_lexicon" href="#yime.input_method.core.CompositeCandidateDecoder.reload_user_lexicon">reload_user_lexicon</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="yime.input_method.core.InputManager" href="#yime.input_method.core.InputManager">InputManager</a></code></h4>
+<ul class="">
+<li><code><a title="yime.input_method.core.InputManager.add_char" href="#yime.input_method.core.InputManager.add_char">add_char</a></code></li>
+<li><code><a title="yime.input_method.core.InputManager.backspace" href="#yime.input_method.core.InputManager.backspace">backspace</a></code></li>
+<li><code><a title="yime.input_method.core.InputManager.clear_buffer" href="#yime.input_method.core.InputManager.clear_buffer">clear_buffer</a></code></li>
+<li><code><a title="yime.input_method.core.InputManager.commit_first_candidate" href="#yime.input_method.core.InputManager.commit_first_candidate">commit_first_candidate</a></code></li>
+<li><code><a title="yime.input_method.core.InputManager.get_buffer" href="#yime.input_method.core.InputManager.get_buffer">get_buffer</a></code></li>
+<li><code><a title="yime.input_method.core.InputManager.get_candidates" href="#yime.input_method.core.InputManager.get_candidates">get_candidates</a></code></li>
+<li><code><a title="yime.input_method.core.InputManager.is_composing" href="#yime.input_method.core.InputManager.is_composing">is_composing</a></code></li>
+<li><code><a title="yime.input_method.core.InputManager.process_key" href="#yime.input_method.core.InputManager.process_key">process_key</a></code></li>
+<li><code><a title="yime.input_method.core.InputManager.select_candidate" href="#yime.input_method.core.InputManager.select_candidate">select_candidate</a></code></li>
+<li><code><a title="yime.input_method.core.InputManager.set_decoder" href="#yime.input_method.core.InputManager.set_decoder">set_decoder</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="yime.input_method.core.InputState" href="#yime.input_method.core.InputState">InputState</a></code></h4>
+<ul class="">
+<li><code><a title="yime.input_method.core.InputState.buffer" href="#yime.input_method.core.InputState.buffer">buffer</a></code></li>
+<li><code><a title="yime.input_method.core.InputState.is_composing" href="#yime.input_method.core.InputState.is_composing">is_composing</a></code></li>
+<li><code><a title="yime.input_method.core.InputState.last_key_time" href="#yime.input_method.core.InputState.last_key_time">last_key_time</a></code></li>
+<li><code><a title="yime.input_method.core.InputState.total_keys" href="#yime.input_method.core.InputState.total_keys">total_keys</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="yime.input_method.core.KeyboardListener" href="#yime.input_method.core.KeyboardListener">KeyboardListener</a></code></h4>
+<ul class="">
+<li><code><a title="yime.input_method.core.KeyboardListener.is_active" href="#yime.input_method.core.KeyboardListener.is_active">is_active</a></code></li>
+<li><code><a title="yime.input_method.core.KeyboardListener.pump_messages" href="#yime.input_method.core.KeyboardListener.pump_messages">pump_messages</a></code></li>
+<li><code><a title="yime.input_method.core.KeyboardListener.start" href="#yime.input_method.core.KeyboardListener.start">start</a></code></li>
+<li><code><a title="yime.input_method.core.KeyboardListener.stop" href="#yime.input_method.core.KeyboardListener.stop">stop</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="yime.input_method.core.PrefixTree" href="#yime.input_method.core.PrefixTree">PrefixTree</a></code></h4>
+<ul class="two-column">
+<li><code><a title="yime.input_method.core.PrefixTree.contains" href="#yime.input_method.core.PrefixTree.contains">contains</a></code></li>
+<li><code><a title="yime.input_method.core.PrefixTree.get_exact" href="#yime.input_method.core.PrefixTree.get_exact">get_exact</a></code></li>
+<li><code><a title="yime.input_method.core.PrefixTree.get_with_prefix" href="#yime.input_method.core.PrefixTree.get_with_prefix">get_with_prefix</a></code></li>
+<li><code><a title="yime.input_method.core.PrefixTree.has_prefix" href="#yime.input_method.core.PrefixTree.has_prefix">has_prefix</a></code></li>
+<li><code><a title="yime.input_method.core.PrefixTree.insert" href="#yime.input_method.core.PrefixTree.insert">insert</a></code></li>
+<li><code><a title="yime.input_method.core.PrefixTree.key_count" href="#yime.input_method.core.PrefixTree.key_count">key_count</a></code></li>
+<li><code><a title="yime.input_method.core.PrefixTree.value_count" href="#yime.input_method.core.PrefixTree.value_count">value_count</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="yime.input_method.core.RuntimeCandidateDecoder" href="#yime.input_method.core.RuntimeCandidateDecoder">RuntimeCandidateDecoder</a></code></h4>
+<ul class="">
+<li><code><a title="yime.input_method.core.RuntimeCandidateDecoder.get_char_candidates" href="#yime.input_method.core.RuntimeCandidateDecoder.get_char_candidates">get_char_candidates</a></code></li>
+<li><code><a title="yime.input_method.core.RuntimeCandidateDecoder.get_char_candidates_by_prefix" href="#yime.input_method.core.RuntimeCandidateDecoder.get_char_candidates_by_prefix">get_char_candidates_by_prefix</a></code></li>
+<li><code><a title="yime.input_method.core.RuntimeCandidateDecoder.reload_user_lexicon" href="#yime.input_method.core.RuntimeCandidateDecoder.reload_user_lexicon">reload_user_lexicon</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="yime.input_method.core.StaticCandidateDecoder" href="#yime.input_method.core.StaticCandidateDecoder">StaticCandidateDecoder</a></code></h4>
+<ul class="">
+<li><code><a title="yime.input_method.core.StaticCandidateDecoder.decode_text" href="#yime.input_method.core.StaticCandidateDecoder.decode_text">decode_text</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

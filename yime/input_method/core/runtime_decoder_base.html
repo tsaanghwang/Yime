@@ -1,0 +1,494 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>yime.input_method.core.runtime_decoder_base API documentation</title>
+<meta name="description" content="">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>yime.input_method.core.runtime_decoder_base</code></h1>
+</header>
+<section id="section-intro">
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="yime.input_method.core.runtime_decoder_base.build_pinyin_to_canonical_code_map"><code class="name flex">
+<span>def <span class="ident">build_pinyin_to_canonical_code_map</span></span>(<span>repo_root: Path, bmp_to_canonical: Dict[str, str]) ‑> Dict[str, str]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def build_pinyin_to_canonical_code_map(
+    repo_root: Path,
+    bmp_to_canonical: Dict[str, str],
+) -&gt; Dict[str, str]:
+    numeric_to_runtime = _load_numeric_yime_code_map(repo_root)
+    return {
+        pinyin_tone: canonicalize_runtime_input(runtime_code, bmp_to_canonical)
+        for pinyin_tone, runtime_code in numeric_to_runtime.items()
+    }</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.runtime_decoder_base.canonicalize_runtime_input"><code class="name flex">
+<span>def <span class="ident">canonicalize_runtime_input</span></span>(<span>text: str, bmp_to_canonical: Dict[str, str]) ‑> str</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def canonicalize_runtime_input(text: str, bmp_to_canonical: Dict[str, str]) -&gt; str:
+    return &#34;&#34;.join(bmp_to_canonical.get(char, char) for char in text)</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.runtime_decoder_base.format_marked_pinyin_display"><code class="name flex">
+<span>def <span class="ident">format_marked_pinyin_display</span></span>(<span>numeric_pinyin: str, numeric_to_marked: Dict[str, str]) ‑> str</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def format_marked_pinyin_display(
+    numeric_pinyin: str,
+    numeric_to_marked: Dict[str, str],
+) -&gt; str:
+    normalized = &#34; &#34;.join(str(numeric_pinyin or &#34;&#34;).split())
+    if not normalized:
+        return &#34;&#34;
+
+    return &#34; &#34;.join(
+        numeric_to_marked.get(syllable, syllable)
+        for syllable in normalized.split(&#34; &#34;)
+    )</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.runtime_decoder_base.load_numeric_to_marked_pinyin_map"><code class="name flex">
+<span>def <span class="ident">load_numeric_to_marked_pinyin_map</span></span>(<span>mapping_path: str) ‑> Dict[str, str]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@lru_cache(maxsize=None)
+def load_numeric_to_marked_pinyin_map(mapping_path: str) -&gt; Dict[str, str]:
+    payload = json.loads(Path(mapping_path).read_text(encoding=&#34;utf-8&#34;))
+    return {
+        str(numeric).strip(): unicodedata.normalize(&#34;NFC&#34;, str(marked))
+        for numeric, marked in payload.items()
+        if str(numeric).strip() and str(marked).strip()
+    }</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.runtime_decoder_base.merge_runtime_candidate_maps"><code class="name flex">
+<span>def <span class="ident">merge_runtime_candidate_maps</span></span>(<span>base_by_code: Dict[str, List[Dict[str, object]]],<br>overlay_by_code: Dict[str, List[Dict[str, object]]]) ‑> Dict[str, List[Dict[str, object]]]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def merge_runtime_candidate_maps(
+    base_by_code: Dict[str, List[Dict[str, object]]],
+    overlay_by_code: Dict[str, List[Dict[str, object]]],
+) -&gt; Dict[str, List[Dict[str, object]]]:
+    merged = {code: list(candidates) for code, candidates in base_by_code.items()}
+    for code, candidates in overlay_by_code.items():
+        merged.setdefault(code, []).extend(candidates)
+    return merged</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.runtime_decoder_base.resolve_canonical_code_from_pinyin_tone"><code class="name flex">
+<span>def <span class="ident">resolve_canonical_code_from_pinyin_tone</span></span>(<span>pinyin_tone: str, pinyin_to_canonical: Dict[str, str]) ‑> str</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def resolve_canonical_code_from_pinyin_tone(
+    pinyin_tone: str,
+    pinyin_to_canonical: Dict[str, str],
+) -&gt; str:
+    syllables = [syllable for syllable in pinyin_tone.split() if syllable]
+    if not syllables:
+        return &#34;&#34;
+
+    canonical_parts: List[str] = []
+    for syllable in syllables:
+        canonical_code = pinyin_to_canonical.get(syllable)
+        if not canonical_code:
+            return &#34;&#34;
+        canonical_parts.append(canonical_code)
+    return &#34;&#34;.join(canonical_parts)</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="yime.input_method.core.runtime_decoder_base.RuntimeDecoderBase"><code class="flex name class">
+<span>class <span class="ident">RuntimeDecoderBase</span></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class RuntimeDecoderBase:
+    &#34;&#34;&#34;Shared runtime-decoder pipeline independent from the backing store.&#34;&#34;&#34;
+
+    runtime_source_label = &#34;运行时编码表&#34;
+
+    def _load_json(self, path: Path) -&gt; dict:
+        with path.open(&#34;r&#34;, encoding=&#34;utf-8&#34;) as handle:
+            return json.load(handle)
+
+    def _build_bmp_to_canonical_map(
+        self, projection_path: Path, key_to_symbol_path: Path
+    ) -&gt; Dict[str, str]:
+        projection = self._load_json(projection_path)
+        key_to_symbol = self._load_json(key_to_symbol_path)
+        bmp_to_canonical: Dict[str, str] = {}
+
+        for symbol_key, slot_info in projection[&#34;used_mapping&#34;].items():
+            bmp_char = slot_info[&#34;char&#34;]
+            canonical_char = key_to_symbol.get(symbol_key)
+            if canonical_char:
+                bmp_to_canonical[bmp_char] = canonical_char
+
+        return bmp_to_canonical
+
+    def _init_runtime_decoder_common(
+        self,
+        app_dir: Path,
+        user_db_path: Path | None = None,
+    ) -&gt; None:
+        self.bmp_to_canonical = self._build_bmp_to_canonical_map(
+            app_dir.parent / &#34;internal_data&#34; / &#34;bmp_pua_trial_projection.json&#34;,
+            app_dir.parent / &#34;internal_data&#34; / &#34;key_to_symbol.json&#34;,
+        )
+        self.pinyin_to_canonical = build_pinyin_to_canonical_code_map(
+            app_dir.parent,
+            self.bmp_to_canonical,
+        )
+        self.numeric_to_marked_pinyin = load_numeric_to_marked_pinyin_map(
+            str(app_dir / &#34;pinyin_normalized.json&#34;)
+        )
+        self._local_phrase_priority_rules = load_local_phrase_priority_rules(
+            app_dir.parent / &#34;internal_data&#34; / &#34;local_phrase_priority_rules.json&#34;,
+            self.pinyin_to_canonical,
+            resolve_canonical_code_from_pinyin_tone,
+        )
+        self._continuous_input_priority_rules = load_local_phrase_priority_rules(
+            app_dir.parent / &#34;internal_data&#34; / &#34;continuous_input_priority_rules.json&#34;,
+            self.pinyin_to_canonical,
+            resolve_canonical_code_from_pinyin_tone,
+            expected_lookup_code_length=None,
+            min_lookup_code_length=5,
+        )
+        self.user_lexicon = UserLexiconStore(user_db_path or app_dir / &#34;user_lexicon.db&#34;)
+        self._user_freq_by_candidate = self.user_lexicon.load_candidate_frequency()
+        self.debug_runtime_ranking = os.environ.get(
+            &#34;YIME_DEBUG_RUNTIME_RANKING&#34;,
+            &#34;&#34;,
+        ).strip().lower() in {&#34;1&#34;, &#34;true&#34;, &#34;yes&#34;, &#34;on&#34;}
+
+    def _lookup_runtime_candidates_for_decode(
+        self,
+        canonical: str,
+        plan: RuntimeLookupPlan,
+    ) -&gt; tuple[List[Dict[str, object]], str]:
+        raise NotImplementedError
+
+    def decode_text(
+        self, text: str
+    ) -&gt; Tuple[str, str, str, List[str], str]:
+        canonical = canonicalize_runtime_input(text, self.bmp_to_canonical)
+        if not canonical:
+            return &#34;&#34;, &#34;&#34;, &#34;&#34;, [], &#34;请输入一个完整音节的 4 个码元。&#34;
+
+        plan = build_runtime_lookup_plan(canonical)
+        mode_hint = build_runtime_mode_hint(canonical, plan)
+        raw_candidates, priority_lookup_code = self._lookup_runtime_candidates_for_decode(
+            canonical,
+            plan,
+        )
+        records = self._rank_runtime_candidates(
+            self._payload_to_runtime_candidates(
+                plan.lookup_code,
+                raw_candidates,
+                stage=plan.stage,
+                priority_lookup_code=priority_lookup_code,
+            )
+        )
+        if plan.stage == &#34;B&#34;:
+            records = apply_stage_b_rare_representative_guardrail(records)
+        texts = [record.text for record in records]
+        pinyin_values: List[str] = []
+        numeric_to_marked_pinyin = getattr(self, &#34;numeric_to_marked_pinyin&#34;, {})
+        for record in records:
+            display_pinyin = format_marked_pinyin_display(
+                record.pinyin_tone,
+                numeric_to_marked_pinyin,
+            )
+            if display_pinyin and display_pinyin not in pinyin_values:
+                pinyin_values.append(display_pinyin)
+
+        display_pinyin = &#34; / &#34;.join(pinyin_values[:3])
+        if texts:
+            status = f&#34;从{self.runtime_source_label}找到 {len(texts)} 个候选。&#34;
+            debug_summary = format_runtime_debug_summary(records)
+            if getattr(self, &#34;debug_runtime_ranking&#34;, False) and debug_summary:
+                pool_hint = &#34;&#34;
+                if plan.phrase_prefix_pool:
+                    pool_hint = f&#34;[{plan.phrase_prefix_pool}] &#34;
+                status = f&#34;{status} 调试: {pool_hint}{debug_summary}。&#34;
+            if mode_hint:
+                status = f&#34;{mode_hint} {status}&#34;
+            return canonical, plan.active_code, display_pinyin, texts, status
+
+        if len(canonical) &lt; 4:
+            status = f&#34;当前 {len(canonical)}/4 码，继续输入。&#34;
+            return canonical, canonical, display_pinyin, [], status
+
+        if plan.phrase_mode:
+            status = f&#34;{self.runtime_source_label}中未找到该 {plan.syllable_count} 音节词语候选。&#34;
+        else:
+            status = f&#34;{self.runtime_source_label}中未找到该 4 码候选。&#34;
+        if mode_hint:
+            status = f&#34;{mode_hint} {status}&#34;
+        return canonical, plan.active_code, display_pinyin, [], status
+
+    def record_selection(self, text: str, candidate_text: str) -&gt; int:
+        canonical = canonicalize_runtime_input(text, self.bmp_to_canonical)
+        plan = build_runtime_lookup_plan(canonical)
+        if not plan.lookup_code or not candidate_text.strip():
+            return 0
+        key = (plan.lookup_code, candidate_text.strip())
+        user_lexicon = getattr(self, &#34;user_lexicon&#34;, None)
+        if user_lexicon is None:
+            persisted_freq = int(self._user_freq_by_candidate.get(key, 0)) + 1
+        else:
+            persisted_freq = user_lexicon.record_candidate_selection(*key)
+        self._user_freq_by_candidate[key] = persisted_freq
+        return persisted_freq
+
+    def _payload_to_runtime_candidates(
+        self,
+        lookup_code: str,
+        raw_candidates: List[Dict[str, object]],
+        stage: str = &#34;&#34;,
+        priority_lookup_code: str = &#34;&#34;,
+    ) -&gt; List[RuntimeCandidateRecord]:
+        return build_runtime_candidate_records(
+            lookup_code,
+            raw_candidates,
+            stage=stage,
+            priority_lookup_code=priority_lookup_code,
+            char_sort_weight_by_text=getattr(self, &#34;_char_sort_weight_by_text&#34;, {}),
+            local_phrase_priority_rules=getattr(self, &#34;_local_phrase_priority_rules&#34;, {}),
+            continuous_input_priority_rules=getattr(self, &#34;_continuous_input_priority_rules&#34;, {}),
+        )
+
+    def _rank_runtime_candidates(
+        self,
+        candidates: List[RuntimeCandidateRecord],
+    ) -&gt; List[RuntimeCandidateRecord]:
+        return rank_runtime_candidates(candidates, self._user_freq_by_candidate)</code></pre>
+</details>
+<div class="desc"><p>Shared runtime-decoder pipeline independent from the backing store.</p></div>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="yime.input_method.core.decoders.RuntimeCandidateDecoder" href="decoders.html#yime.input_method.core.decoders.RuntimeCandidateDecoder">RuntimeCandidateDecoder</a></li>
+<li><a title="yime.input_method.core.decoders.SQLiteRuntimeCandidateDecoder" href="decoders.html#yime.input_method.core.decoders.SQLiteRuntimeCandidateDecoder">SQLiteRuntimeCandidateDecoder</a></li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="yime.input_method.core.runtime_decoder_base.RuntimeDecoderBase.runtime_source_label"><code class="name">var <span class="ident">runtime_source_label</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="yime.input_method.core.runtime_decoder_base.RuntimeDecoderBase.decode_text"><code class="name flex">
+<span>def <span class="ident">decode_text</span></span>(<span>self, text: str) ‑> Tuple[str, str, str, List[str], str]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def decode_text(
+    self, text: str
+) -&gt; Tuple[str, str, str, List[str], str]:
+    canonical = canonicalize_runtime_input(text, self.bmp_to_canonical)
+    if not canonical:
+        return &#34;&#34;, &#34;&#34;, &#34;&#34;, [], &#34;请输入一个完整音节的 4 个码元。&#34;
+
+    plan = build_runtime_lookup_plan(canonical)
+    mode_hint = build_runtime_mode_hint(canonical, plan)
+    raw_candidates, priority_lookup_code = self._lookup_runtime_candidates_for_decode(
+        canonical,
+        plan,
+    )
+    records = self._rank_runtime_candidates(
+        self._payload_to_runtime_candidates(
+            plan.lookup_code,
+            raw_candidates,
+            stage=plan.stage,
+            priority_lookup_code=priority_lookup_code,
+        )
+    )
+    if plan.stage == &#34;B&#34;:
+        records = apply_stage_b_rare_representative_guardrail(records)
+    texts = [record.text for record in records]
+    pinyin_values: List[str] = []
+    numeric_to_marked_pinyin = getattr(self, &#34;numeric_to_marked_pinyin&#34;, {})
+    for record in records:
+        display_pinyin = format_marked_pinyin_display(
+            record.pinyin_tone,
+            numeric_to_marked_pinyin,
+        )
+        if display_pinyin and display_pinyin not in pinyin_values:
+            pinyin_values.append(display_pinyin)
+
+    display_pinyin = &#34; / &#34;.join(pinyin_values[:3])
+    if texts:
+        status = f&#34;从{self.runtime_source_label}找到 {len(texts)} 个候选。&#34;
+        debug_summary = format_runtime_debug_summary(records)
+        if getattr(self, &#34;debug_runtime_ranking&#34;, False) and debug_summary:
+            pool_hint = &#34;&#34;
+            if plan.phrase_prefix_pool:
+                pool_hint = f&#34;[{plan.phrase_prefix_pool}] &#34;
+            status = f&#34;{status} 调试: {pool_hint}{debug_summary}。&#34;
+        if mode_hint:
+            status = f&#34;{mode_hint} {status}&#34;
+        return canonical, plan.active_code, display_pinyin, texts, status
+
+    if len(canonical) &lt; 4:
+        status = f&#34;当前 {len(canonical)}/4 码，继续输入。&#34;
+        return canonical, canonical, display_pinyin, [], status
+
+    if plan.phrase_mode:
+        status = f&#34;{self.runtime_source_label}中未找到该 {plan.syllable_count} 音节词语候选。&#34;
+    else:
+        status = f&#34;{self.runtime_source_label}中未找到该 4 码候选。&#34;
+    if mode_hint:
+        status = f&#34;{mode_hint} {status}&#34;
+    return canonical, plan.active_code, display_pinyin, [], status</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.runtime_decoder_base.RuntimeDecoderBase.record_selection"><code class="name flex">
+<span>def <span class="ident">record_selection</span></span>(<span>self, text: str, candidate_text: str) ‑> int</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def record_selection(self, text: str, candidate_text: str) -&gt; int:
+    canonical = canonicalize_runtime_input(text, self.bmp_to_canonical)
+    plan = build_runtime_lookup_plan(canonical)
+    if not plan.lookup_code or not candidate_text.strip():
+        return 0
+    key = (plan.lookup_code, candidate_text.strip())
+    user_lexicon = getattr(self, &#34;user_lexicon&#34;, None)
+    if user_lexicon is None:
+        persisted_freq = int(self._user_freq_by_candidate.get(key, 0)) + 1
+    else:
+        persisted_freq = user_lexicon.record_candidate_selection(*key)
+    self._user_freq_by_candidate[key] = persisted_freq
+    return persisted_freq</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="yime.input_method.core" href="index.html">yime.input_method.core</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="yime.input_method.core.runtime_decoder_base.build_pinyin_to_canonical_code_map" href="#yime.input_method.core.runtime_decoder_base.build_pinyin_to_canonical_code_map">build_pinyin_to_canonical_code_map</a></code></li>
+<li><code><a title="yime.input_method.core.runtime_decoder_base.canonicalize_runtime_input" href="#yime.input_method.core.runtime_decoder_base.canonicalize_runtime_input">canonicalize_runtime_input</a></code></li>
+<li><code><a title="yime.input_method.core.runtime_decoder_base.format_marked_pinyin_display" href="#yime.input_method.core.runtime_decoder_base.format_marked_pinyin_display">format_marked_pinyin_display</a></code></li>
+<li><code><a title="yime.input_method.core.runtime_decoder_base.load_numeric_to_marked_pinyin_map" href="#yime.input_method.core.runtime_decoder_base.load_numeric_to_marked_pinyin_map">load_numeric_to_marked_pinyin_map</a></code></li>
+<li><code><a title="yime.input_method.core.runtime_decoder_base.merge_runtime_candidate_maps" href="#yime.input_method.core.runtime_decoder_base.merge_runtime_candidate_maps">merge_runtime_candidate_maps</a></code></li>
+<li><code><a title="yime.input_method.core.runtime_decoder_base.resolve_canonical_code_from_pinyin_tone" href="#yime.input_method.core.runtime_decoder_base.resolve_canonical_code_from_pinyin_tone">resolve_canonical_code_from_pinyin_tone</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="yime.input_method.core.runtime_decoder_base.RuntimeDecoderBase" href="#yime.input_method.core.runtime_decoder_base.RuntimeDecoderBase">RuntimeDecoderBase</a></code></h4>
+<ul class="">
+<li><code><a title="yime.input_method.core.runtime_decoder_base.RuntimeDecoderBase.decode_text" href="#yime.input_method.core.runtime_decoder_base.RuntimeDecoderBase.decode_text">decode_text</a></code></li>
+<li><code><a title="yime.input_method.core.runtime_decoder_base.RuntimeDecoderBase.record_selection" href="#yime.input_method.core.runtime_decoder_base.RuntimeDecoderBase.record_selection">record_selection</a></code></li>
+<li><code><a title="yime.input_method.core.runtime_decoder_base.RuntimeDecoderBase.runtime_source_label" href="#yime.input_method.core.runtime_decoder_base.RuntimeDecoderBase.runtime_source_label">runtime_source_label</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

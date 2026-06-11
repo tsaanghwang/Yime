@@ -1,0 +1,883 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>yime.input_method.core.keyboard_listener API documentation</title>
+<meta name="description" content="键盘监听模块。">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>yime.input_method.core.keyboard_listener</code></h1>
+</header>
+<section id="section-intro">
+<p>键盘监听模块。</p>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="yime.input_method.core.keyboard_listener.KeyboardListener"><code class="flex name class">
+<span>class <span class="ident">KeyboardListener</span></span>
+<span>(</span><span>on_key_press: Callable[[Dict[str, Any]], bool],<br>on_key_release: Callable[[Dict[str, Any]], bool] | None = None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class KeyboardListener:
+    &#34;&#34;&#34;
+    键盘监听器
+
+    支持两种监听方式：
+    1. pyHook - Windows全局钩子（推荐）
+    2. pynput - 跨平台监听（备选）
+    &#34;&#34;&#34;
+
+    _SPECIAL_VK_NAMES = {
+        0x08: &#34;Backspace&#34;,
+        0x09: &#34;Tab&#34;,
+        0x0D: &#34;Return&#34;,
+        0x1B: &#34;Escape&#34;,
+        0x20: &#34;Space&#34;,
+        0x25: &#34;Left&#34;,
+        0x26: &#34;Up&#34;,
+        0x27: &#34;Right&#34;,
+        0x28: &#34;Down&#34;,
+        0x2E: &#34;Delete&#34;,
+    }
+
+    _OEM_CHAR_BY_VK = {
+        0xBA: &#34;;&#34;,
+        0xBB: &#34;=&#34;,
+        0xBC: &#34;,&#34;,
+        0xBD: &#34;-&#34;,
+        0xBE: &#34;.&#34;,
+        0xBF: &#34;/&#34;,
+        0xC0: &#34;`&#34;,
+        0xDB: &#34;[&#34;,
+        0xDC: &#34;\\&#34;,
+        0xDD: &#34;]&#34;,
+        0xDE: &#34;&#39;&#34;,
+    }
+
+    _MODIFIER_VK_CODES = {
+        &#34;shift&#34;: (0x10,),
+        &#34;ctrl&#34;: (0x11,),
+        &#34;alt&#34;: (0x12,),
+        &#34;alt_r&#34;: (0xA5,),
+        &#34;win&#34;: (0x5B, 0x5C),
+    }
+
+    def __init__(
+        self,
+        on_key_press: Callable[[Dict[str, Any]], bool],
+        on_key_release: Optional[Callable[[Dict[str, Any]], bool]] = None,
+    ) -&gt; None:
+        &#34;&#34;&#34;
+        初始化键盘监听器
+
+        Args:
+            on_key_press: 按键回调函数，返回True继续传递，False拦截
+            on_key_release: 释放键回调函数（可选）
+        &#34;&#34;&#34;
+        self.on_key_press = on_key_press
+        self.on_key_release = on_key_release
+        self.is_running = False
+        self._listener = None
+        self._backend = None
+        self._win32_hook = None
+        self._win32_callback = None
+        self._win32_ready = threading.Event()
+        self._win32_error: Optional[str] = None
+        self._win32_hook_installed = False
+        self._win32_thread_id: Optional[int] = None
+
+        # 检查可用的监听方式
+        if not HAS_WIN32 and not HAS_PYHOOK and not HAS_PYPUT:
+            raise RuntimeError(
+                &#34;需要安装 pywin32、pyHook 或 pynput。\n&#34;
+                &#34;安装方法：\n&#34;
+                &#34;  pip install pywin32\n&#34;
+                &#34;  或\n&#34;
+                &#34;  pip install pyHook-1.5.1-cp310-cp310-win_amd64.whl\n&#34;
+                &#34;  或\n&#34;
+                &#34;  pip install pynput&#34;
+            )
+
+        self._select_backend()
+
+    def _select_backend(self) -&gt; None:
+        &#34;&#34;&#34;按优先级选择可用监听后端。&#34;&#34;&#34;
+        if HAS_WIN32:
+            print(&#34;使用 pywin32 进行全局键盘钩子监听&#34;)
+            try:
+                self._init_win32hook()
+                self._backend = &#34;win32&#34;
+                return
+            except Exception as exc:
+                print(f&#34;[Win32Hook] 安装失败: {exc}&#34;)
+
+        if HAS_PYHOOK:
+            print(&#34;使用 pyHook 进行键盘监听&#34;)
+            self._init_pyhook()
+            self._backend = &#34;pyhook&#34;
+            return
+
+        if HAS_PYPUT:
+            print(&#34;Win32键盘钩子安装失败，将回退到 pynput 监听&#34;)
+            self._init_pynput()
+            self._backend = &#34;pynput&#34;
+            return
+
+        raise RuntimeError(&#34;没有可用的键盘监听后端&#34;)
+
+    def _init_win32hook(self) -&gt; None:
+        &#34;&#34;&#34;使用 pywin32 初始化全局键盘钩子&#34;&#34;&#34;
+        self._win32_ready.clear()
+        self._win32_error = None
+        self._win32_hook_installed = False
+        self._win32_thread = threading.Thread(
+            target=self._run_win32_message_loop,
+            daemon=True,
+        )
+        self._win32_thread.start()
+        self._win32_ready.wait(timeout=1.0)
+        if not self._win32_hook_installed:
+            raise RuntimeError(self._win32_error or &#34;未知错误&#34;)
+
+    def _run_win32_message_loop(self) -&gt; None:
+        try:
+            self._win32_message_loop()
+        except Exception as exc:
+            self._win32_error = str(exc)
+            self._win32_ready.set()
+
+    def _normalize_win32_key_info(
+        self,
+        vk_code: int,
+        scan_code: int,
+        flags: int,
+        modifiers: Dict[str, bool],
+        resolve_key_name: Callable[[int, int, int], str],
+        resolve_text: Callable[[int, int, Dict[str, bool]], str],
+    ) -&gt; Dict[str, Any]:
+        key_name = self._SPECIAL_VK_NAMES.get(vk_code)
+        ascii_code: Optional[int] = None
+        text_value = resolve_text(vk_code, scan_code, modifiers)
+
+        if key_name is None and 0x30 &lt;= vk_code &lt;= 0x39:
+            key_name = chr(vk_code)
+            ascii_code = vk_code
+        elif key_name is None and 0x41 &lt;= vk_code &lt;= 0x5A:
+            key_name = chr(vk_code + 32)
+            ascii_code = ord(key_name)
+        elif key_name is None and vk_code in self._OEM_CHAR_BY_VK:
+            key_name = self._OEM_CHAR_BY_VK[vk_code]
+            ascii_code = ord(key_name)
+        elif key_name == &#34;Space&#34;:
+            ascii_code = ord(&#34; &#34;)
+
+        if key_name is None:
+            key_name = resolve_key_name(vk_code, scan_code, flags)
+
+        if text_value and len(text_value) == 1:
+            ascii_code = ord(text_value)
+
+        return {
+            &#34;key&#34;: key_name,
+            &#34;text&#34;: text_value,
+            &#34;ascii&#34;: ascii_code,
+            &#34;scan_code&#34;: scan_code,
+            &#34;vk_code&#34;: vk_code,
+            &#34;flags&#34;: flags,
+            &#34;modifiers&#34;: modifiers,
+            &#34;is_injected&#34;: bool(flags &amp; 0x10),
+            &#34;time&#34;: time.time(),
+        }
+
+    def _win32_message_loop(self):
+        import ctypes.wintypes as wintypes
+        import win32con
+
+        user32 = ctypes.WinDLL(&#34;user32&#34;, use_last_error=True)
+        kernel32 = ctypes.WinDLL(&#34;kernel32&#34;, use_last_error=True)
+
+        lresult_type = getattr(wintypes, &#34;LRESULT&#34;, ctypes.c_ssize_t)
+        ulong_ptr_type = getattr(wintypes, &#34;ULONG_PTR&#34;, ctypes.c_size_t)
+
+        hook_proc_type = ctypes.WINFUNCTYPE(
+            lresult_type,
+            ctypes.c_int,
+            wintypes.WPARAM,
+            wintypes.LPARAM,
+        )
+
+        kernel32.GetModuleHandleW.argtypes = [wintypes.LPCWSTR]
+        kernel32.GetModuleHandleW.restype = wintypes.HMODULE
+
+        user32.SetWindowsHookExW.argtypes = [
+            ctypes.c_int,
+            hook_proc_type,
+            wintypes.HINSTANCE,
+            wintypes.DWORD,
+        ]
+        user32.SetWindowsHookExW.restype = wintypes.HHOOK
+
+        user32.CallNextHookEx.argtypes = [
+            wintypes.HHOOK,
+            ctypes.c_int,
+            wintypes.WPARAM,
+            wintypes.LPARAM,
+        ]
+        user32.CallNextHookEx.restype = lresult_type
+
+        user32.GetMessageW.argtypes = [
+            ctypes.POINTER(wintypes.MSG),
+            wintypes.HWND,
+            wintypes.UINT,
+            wintypes.UINT,
+        ]
+        user32.GetMessageW.restype = wintypes.BOOL
+
+        user32.TranslateMessage.argtypes = [ctypes.POINTER(wintypes.MSG)]
+        user32.TranslateMessage.restype = wintypes.BOOL
+
+        user32.DispatchMessageW.argtypes = [ctypes.POINTER(wintypes.MSG)]
+        user32.DispatchMessageW.restype = lresult_type
+
+        user32.GetKeyNameTextW.argtypes = [
+            wintypes.LONG,
+            wintypes.LPWSTR,
+            ctypes.c_int,
+        ]
+        user32.GetKeyNameTextW.restype = ctypes.c_int
+
+        user32.GetAsyncKeyState.argtypes = [ctypes.c_int]
+        user32.GetAsyncKeyState.restype = ctypes.c_short
+
+        user32.GetForegroundWindow.argtypes = []
+        user32.GetForegroundWindow.restype = wintypes.HWND
+
+        user32.GetWindowThreadProcessId.argtypes = [wintypes.HWND, ctypes.POINTER(wintypes.DWORD)]
+        user32.GetWindowThreadProcessId.restype = wintypes.DWORD
+
+        user32.GetKeyboardLayout.argtypes = [wintypes.DWORD]
+        user32.GetKeyboardLayout.restype = wintypes.HKL
+
+        user32.ToUnicodeEx.argtypes = [
+            wintypes.UINT,
+            wintypes.UINT,
+            ctypes.POINTER(ctypes.c_ubyte),
+            wintypes.LPWSTR,
+            ctypes.c_int,
+            wintypes.UINT,
+            wintypes.HKL,
+        ]
+        user32.ToUnicodeEx.restype = ctypes.c_int
+
+        kernel32.GetCurrentThreadId.argtypes = []
+        kernel32.GetCurrentThreadId.restype = wintypes.DWORD
+
+        user32.PostThreadMessageW.argtypes = [
+            wintypes.DWORD,
+            wintypes.UINT,
+            wintypes.WPARAM,
+            wintypes.LPARAM,
+        ]
+        user32.PostThreadMessageW.restype = wintypes.BOOL
+
+        # 按键消息处理
+        class KBDLLHOOKSTRUCT(ctypes.Structure):
+            _fields_ = [
+                (&#34;vkCode&#34;, wintypes.DWORD),
+                (&#34;scanCode&#34;, wintypes.DWORD),
+                (&#34;flags&#34;, wintypes.DWORD),
+                (&#34;time&#34;, wintypes.DWORD),
+                (&#34;dwExtraInfo&#34;, ulong_ptr_type),
+            ]
+
+        def resolve_key_name(vk_code: int, scan_code: int, flags: int) -&gt; str:
+            lparam_value = scan_code &lt;&lt; 16
+            if flags &amp; win32con.LLKHF_EXTENDED:
+                lparam_value |= 1 &lt;&lt; 24
+
+            buffer = ctypes.create_unicode_buffer(64)
+            length = user32.GetKeyNameTextW(lparam_value, buffer, len(buffer))
+            if length &gt; 0:
+                return buffer.value
+            return str(vk_code)
+
+        def get_modifier_state(vk_code: int) -&gt; Dict[str, bool]:
+            states: Dict[str, bool] = {}
+            for name, codes in self._MODIFIER_VK_CODES.items():
+                states[name] = any(bool(user32.GetAsyncKeyState(code) &amp; 0x8000) for code in codes)
+
+            # Some layouts surface AltGr as Right Alt, while others only expose
+            # the same printable layer through a Ctrl+Alt chord.
+            states[&#34;alt_gr&#34;] = is_alt_gr_active(states)
+
+            if vk_code == 0x10:
+                states[&#34;shift&#34;] = True
+            elif vk_code == 0x11:
+                states[&#34;ctrl&#34;] = True
+            elif vk_code == 0x12:
+                states[&#34;alt&#34;] = True
+            elif vk_code in (0x5B, 0x5C):
+                states[&#34;win&#34;] = True
+
+            return states
+
+        def resolve_text(vk_code: int, scan_code: int, modifiers: Dict[str, bool]) -&gt; str:
+            if modifiers.get(&#34;win&#34;):
+                return &#34;&#34;
+
+            if modifiers.get(&#34;ctrl&#34;) and not modifiers.get(&#34;alt_gr&#34;):
+                return &#34;&#34;
+
+            if modifiers.get(&#34;alt&#34;) and not modifiers.get(&#34;alt_gr&#34;):
+                return &#34;&#34;
+
+            keyboard_state = (ctypes.c_ubyte * 256)()
+            for code in range(256):
+                if user32.GetAsyncKeyState(code) &amp; 0x8000:
+                    keyboard_state[code] |= 0x80
+
+            def mark_pressed(*virtual_keys: int) -&gt; None:
+                for virtual_key in virtual_keys:
+                    keyboard_state[virtual_key] |= 0x80
+
+            # 低层钩子回调触发得很早，GetAsyncKeyState 对当前组合键有时还没完全稳定。
+            # 这里根据解析出的修饰键显式补齐状态，确保 ToUnicodeEx 能命中 AltGr/Ctrl+Alt 层。
+            if modifiers.get(&#34;shift&#34;):
+                mark_pressed(0x10, 0xA0, 0xA1)
+
+            if modifiers.get(&#34;ctrl&#34;) or modifiers.get(&#34;alt_gr&#34;):
+                mark_pressed(0x11, 0xA2, 0xA3)
+
+            if modifiers.get(&#34;alt&#34;) or modifiers.get(&#34;alt_gr&#34;):
+                mark_pressed(0x12, 0xA4, 0xA5)
+
+            if modifiers.get(&#34;alt_r&#34;) or modifiers.get(&#34;alt_gr&#34;):
+                mark_pressed(0xA5)
+
+            mark_pressed(vk_code)
+
+            foreground_hwnd = user32.GetForegroundWindow()
+            thread_id = wintypes.DWORD(0)
+            layout_thread_id = 0
+            if foreground_hwnd:
+                layout_thread_id = int(user32.GetWindowThreadProcessId(foreground_hwnd, ctypes.byref(thread_id)))
+
+            keyboard_layout = user32.GetKeyboardLayout(layout_thread_id)
+            text_buffer = ctypes.create_unicode_buffer(8)
+            translated_length = user32.ToUnicodeEx(
+                vk_code,
+                scan_code,
+                keyboard_state,
+                text_buffer,
+                len(text_buffer),
+                0,
+                keyboard_layout,
+            )
+
+            if translated_length &gt; 0:
+                return text_buffer.value[:translated_length]
+
+            return &#34;&#34;
+
+        def low_level_keyboard_proc(nCode, wParam, lParam):
+            try:
+                if nCode == win32con.HC_ACTION:
+                    kb_struct = ctypes.cast(
+                        lParam,
+                        ctypes.POINTER(KBDLLHOOKSTRUCT),
+                    ).contents
+                    vk_code = kb_struct.vkCode
+                    scan_code = kb_struct.scanCode
+                    flags = kb_struct.flags
+                    if flags &amp; win32con.LLKHF_INJECTED:
+                        return user32.CallNextHookEx(None, nCode, wParam, lParam)
+                    # 0x100: WM_KEYDOWN, 0x101: WM_KEYUP
+                    if wParam == win32con.WM_KEYDOWN or wParam == win32con.WM_SYSKEYDOWN:
+                        modifiers = get_modifier_state(vk_code)
+                        key_info = self._normalize_win32_key_info(
+                            vk_code,
+                            scan_code,
+                            flags,
+                            modifiers,
+                            resolve_key_name,
+                            resolve_text,
+                        )
+                        # 调用回调，返回False则拦截
+                        if self.on_key_press and self.on_key_press(key_info) is False:
+                            return 1  # 拦截
+            except Exception as exc:
+                print(f&#34;Win32键盘回调出错: {exc}&#34;)
+            return user32.CallNextHookEx(None, nCode, wParam, lParam)
+
+        # 设置钩子，持久化回调实例，防止被回收
+        self._win32_callback = hook_proc_type(low_level_keyboard_proc)
+        self._win32_thread_id = int(kernel32.GetCurrentThreadId())
+        module_handle = kernel32.GetModuleHandleW(None)
+        self._win32_hook = user32.SetWindowsHookExW(
+            win32con.WH_KEYBOARD_LL,
+            self._win32_callback,
+            module_handle,
+            0
+        )
+        if not self._win32_hook:
+            error_code = ctypes.get_last_error()
+            self._win32_error = (
+                f&#34;错误码 {error_code}，module_handle={hex(module_handle) if module_handle else &#39;0x0&#39;}&#34;
+            )
+            self._win32_ready.set()
+            return
+        self._win32_hook_installed = True
+        self._win32_ready.set()
+        print(&#34;[Win32Hook] 全局键盘钩子已安装&#34;)
+        # 消息循环
+        msg = wintypes.MSG()
+        while True:
+            if user32.GetMessageW(ctypes.byref(msg), 0, 0, 0) == 0:
+                break
+            user32.TranslateMessage(ctypes.byref(msg))
+            user32.DispatchMessageW(ctypes.byref(msg))
+
+    def _init_pyhook(self) -&gt; None:
+        &#34;&#34;&#34;使用pyHook初始化&#34;&#34;&#34;
+        self._hook_manager = pyHook.HookManager()
+        self._hook_manager.KeyDown = self._pyhook_key_down
+        self._hook_manager.KeyUp = self._pyhook_key_up
+
+    def _init_pynput(self) -&gt; None:
+        &#34;&#34;&#34;使用pynput初始化&#34;&#34;&#34;
+        self._listener = keyboard.Listener(
+            on_press=self._pynput_key_press,
+            on_release=self._pynput_key_release,
+        )
+
+    def _pyhook_key_down(self, event) -&gt; bool:
+        &#34;&#34;&#34;
+        pyHook按键事件处理
+
+        Args:
+            event: pyHook事件对象
+
+        Returns:
+            True继续传递按键，False拦截
+        &#34;&#34;&#34;
+        try:
+            # 转换为统一格式
+            key_info = {
+                &#39;key&#39;: event.Key,
+                &#39;text&#39;: chr(event.Ascii) if event.Ascii &gt; 0 else &#39;&#39;,
+                &#39;ascii&#39;: event.Ascii if event.Ascii &gt; 0 else None,
+                &#39;scan_code&#39;: event.ScanCode,
+                &#39;is_extended&#39;: event.IsExtended,
+                &#39;is_injected&#39;: event.Injected,
+                &#39;time&#39;: time.time(),
+                &#39;window&#39;: event.Window,
+                &#39;window_name&#39;: event.WindowName,
+            }
+
+            # 调用回调
+            if self.on_key_press:
+                return self.on_key_press(key_info)
+            return True
+        except Exception as e:
+            print(f&#34;处理按键事件出错: {e}&#34;)
+            return True  # 出错时继续传递
+
+    def _pyhook_key_up(self, event) -&gt; bool:
+        &#34;&#34;&#34;
+        pyHook释放键事件处理
+
+        Args:
+            event: pyHook事件对象
+
+        Returns:
+            True继续传递按键，False拦截
+        &#34;&#34;&#34;
+        try:
+            if self.on_key_release:
+                key_info = {
+                    &#39;key&#39;: event.Key,
+                    &#39;text&#39;: chr(event.Ascii) if event.Ascii &gt; 0 else &#39;&#39;,
+                    &#39;ascii&#39;: event.Ascii if event.Ascii &gt; 0 else None,
+                    &#39;time&#39;: time.time(),
+                }
+                return self.on_key_release(key_info)
+            return True
+        except Exception as e:
+            print(f&#34;处理释放键事件出错: {e}&#34;)
+            return True
+
+    def _pynput_key_press(self, key) -&gt; None:
+        &#34;&#34;&#34;
+        pynput按键事件处理
+
+        Args:
+            key: pynput按键对象
+        &#34;&#34;&#34;
+        try:
+            # 转换为统一格式
+            key_info = {
+                &#39;key&#39;: self._pynput_key_to_string(key),
+                &#39;text&#39;: getattr(key, &#39;char&#39;, &#39;&#39;) or &#39;&#39;,
+                &#39;ascii&#39;: getattr(key, &#39;char&#39;, None),
+                &#39;time&#39;: time.time(),
+            }
+
+            # 调用回调
+            if self.on_key_press:
+                # pynput不支持拦截，所以总是返回True
+                self.on_key_press(key_info)
+        except Exception as e:
+            print(f&#34;处理按键事件出错: {e}&#34;)
+
+    def _pynput_key_release(self, key) -&gt; None:
+        &#34;&#34;&#34;
+        pynput释放键事件处理
+
+        Args:
+            key: pynput按键对象
+        &#34;&#34;&#34;
+        try:
+            if self.on_key_release:
+                key_info = {
+                    &#39;key&#39;: self._pynput_key_to_string(key),
+                    &#39;time&#39;: time.time(),
+                }
+                self.on_key_release(key_info)
+        except Exception as e:
+            print(f&#34;处理释放键事件出错: {e}&#34;)
+
+    def _pynput_key_to_string(self, key) -&gt; str:
+        &#34;&#34;&#34;
+        将pynput按键对象转换为字符串
+
+        Args:
+            key: pynput按键对象
+
+        Returns:
+            按键字符串
+        &#34;&#34;&#34;
+        try:
+            if isinstance(key, keyboard.KeyCode):
+                return key.char if key.char else str(key)
+            elif isinstance(key, keyboard.Key):
+                return key.name
+            else:
+                return str(key)
+        except:
+            return str(key)
+
+    def start(self) -&gt; None:
+        &#34;&#34;&#34;开始监听键盘&#34;&#34;&#34;
+        if self.is_running:
+            print(&#34;键盘监听已在运行&#34;)
+            return
+
+        print(&#34;启动键盘监听...&#34;)
+
+        if self._backend == &#34;win32&#34;:
+            self.is_running = self._win32_hook_installed
+            if self.is_running:
+                print(&#34;Win32键盘钩子已运行&#34;)
+            else:
+                raise RuntimeError(self._win32_error or &#34;Win32 键盘钩子未启动&#34;)
+        elif self._backend == &#34;pyhook&#34;:
+            # pyHook需要消息循环
+            self._hook_manager.HookKeyboard()
+            self.is_running = True
+            print(&#34;pyHook键盘钩子已安装&#34;)
+            # 注意：pythoncom.PumpMessages()会阻塞
+            # 在实际应用中，应该在单独的线程中运行
+        elif self._backend == &#34;pynput&#34;:
+            # pynput在后台线程运行
+            if self._listener:
+                self._listener.start()
+                self.is_running = True
+                print(&#34;pynput监听器已启动&#34;)
+            else:
+                raise RuntimeError(&#34;pynput 监听器初始化失败&#34;)
+        else:
+            raise RuntimeError(&#34;没有可启动的键盘监听后端&#34;)
+
+    def stop(self) -&gt; None:
+        &#34;&#34;&#34;停止监听键盘&#34;&#34;&#34;
+        if not self.is_running:
+            return
+
+        print(&#34;停止键盘监听...&#34;)
+        self.is_running = False
+
+        if self._backend == &#34;win32&#34;:
+            try:
+                if hasattr(self, &#39;_win32_hook&#39;) and self._win32_hook:
+                    import ctypes
+                    ctypes.windll.user32.UnhookWindowsHookEx(self._win32_hook)
+                    self._win32_hook = None
+                    print(&#34;Win32键盘钩子已卸载&#34;)
+                if self._win32_thread_id:
+                    ctypes.windll.user32.PostThreadMessageW(
+                        self._win32_thread_id,
+                        0x0012,
+                        0,
+                        0,
+                    )
+                    self._win32_thread_id = None
+                if hasattr(self, &#39;_win32_thread&#39;) and self._win32_thread.is_alive():
+                    self._win32_thread.join(timeout=0.5)
+            except Exception as e:
+                print(f&#34;卸载Win32钩子出错: {e}&#34;)
+        elif self._backend == &#34;pyhook&#34;:
+            try:
+                self._hook_manager.UnhookKeyboard()
+                print(&#34;pyHook键盘钩子已卸载&#34;)
+            except Exception as e:
+                print(f&#34;卸载pyHook钩子出错: {e}&#34;)
+        elif self._backend == &#34;pynput&#34;:
+            try:
+                if self._listener:
+                    self._listener.stop()
+                    print(&#34;pynput监听器已停止&#34;)
+            except Exception as e:
+                print(f&#34;停止pynput监听器出错: {e}&#34;)
+
+    def is_active(self) -&gt; bool:
+        &#34;&#34;&#34;
+        检查是否正在监听
+
+        Returns:
+            True如果正在监听，False否则
+        &#34;&#34;&#34;
+        return self.is_running
+
+    def pump_messages(self) -&gt; None:
+        &#34;&#34;&#34;
+        处理消息循环（仅pyHook需要）
+
+        注意：这个方法会阻塞，应该在单独的线程中调用
+        &#34;&#34;&#34;
+        if HAS_PYHOOK and self.is_running:
+            print(&#34;开始处理消息循环...&#34;)
+            pythoncom.PumpMessages()</code></pre>
+</details>
+<div class="desc"><p>键盘监听器</p>
+<p>支持两种监听方式：
+1. pyHook - Windows全局钩子（推荐）
+2. pynput - 跨平台监听（备选）</p>
+<p>初始化键盘监听器</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>on_key_press</code></strong></dt>
+<dd>按键回调函数，返回True继续传递，False拦截</dd>
+<dt><strong><code>on_key_release</code></strong></dt>
+<dd>释放键回调函数（可选）</dd>
+</dl></div>
+<h3>Methods</h3>
+<dl>
+<dt id="yime.input_method.core.keyboard_listener.KeyboardListener.is_active"><code class="name flex">
+<span>def <span class="ident">is_active</span></span>(<span>self) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def is_active(self) -&gt; bool:
+    &#34;&#34;&#34;
+    检查是否正在监听
+
+    Returns:
+        True如果正在监听，False否则
+    &#34;&#34;&#34;
+    return self.is_running</code></pre>
+</details>
+<div class="desc"><p>检查是否正在监听</p>
+<h2 id="returns">Returns</h2>
+<p>True如果正在监听，False否则</p></div>
+</dd>
+<dt id="yime.input_method.core.keyboard_listener.KeyboardListener.pump_messages"><code class="name flex">
+<span>def <span class="ident">pump_messages</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def pump_messages(self) -&gt; None:
+    &#34;&#34;&#34;
+    处理消息循环（仅pyHook需要）
+
+    注意：这个方法会阻塞，应该在单独的线程中调用
+    &#34;&#34;&#34;
+    if HAS_PYHOOK and self.is_running:
+        print(&#34;开始处理消息循环...&#34;)
+        pythoncom.PumpMessages()</code></pre>
+</details>
+<div class="desc"><p>处理消息循环（仅pyHook需要）</p>
+<p>注意：这个方法会阻塞，应该在单独的线程中调用</p></div>
+</dd>
+<dt id="yime.input_method.core.keyboard_listener.KeyboardListener.start"><code class="name flex">
+<span>def <span class="ident">start</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def start(self) -&gt; None:
+    &#34;&#34;&#34;开始监听键盘&#34;&#34;&#34;
+    if self.is_running:
+        print(&#34;键盘监听已在运行&#34;)
+        return
+
+    print(&#34;启动键盘监听...&#34;)
+
+    if self._backend == &#34;win32&#34;:
+        self.is_running = self._win32_hook_installed
+        if self.is_running:
+            print(&#34;Win32键盘钩子已运行&#34;)
+        else:
+            raise RuntimeError(self._win32_error or &#34;Win32 键盘钩子未启动&#34;)
+    elif self._backend == &#34;pyhook&#34;:
+        # pyHook需要消息循环
+        self._hook_manager.HookKeyboard()
+        self.is_running = True
+        print(&#34;pyHook键盘钩子已安装&#34;)
+        # 注意：pythoncom.PumpMessages()会阻塞
+        # 在实际应用中，应该在单独的线程中运行
+    elif self._backend == &#34;pynput&#34;:
+        # pynput在后台线程运行
+        if self._listener:
+            self._listener.start()
+            self.is_running = True
+            print(&#34;pynput监听器已启动&#34;)
+        else:
+            raise RuntimeError(&#34;pynput 监听器初始化失败&#34;)
+    else:
+        raise RuntimeError(&#34;没有可启动的键盘监听后端&#34;)</code></pre>
+</details>
+<div class="desc"><p>开始监听键盘</p></div>
+</dd>
+<dt id="yime.input_method.core.keyboard_listener.KeyboardListener.stop"><code class="name flex">
+<span>def <span class="ident">stop</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def stop(self) -&gt; None:
+    &#34;&#34;&#34;停止监听键盘&#34;&#34;&#34;
+    if not self.is_running:
+        return
+
+    print(&#34;停止键盘监听...&#34;)
+    self.is_running = False
+
+    if self._backend == &#34;win32&#34;:
+        try:
+            if hasattr(self, &#39;_win32_hook&#39;) and self._win32_hook:
+                import ctypes
+                ctypes.windll.user32.UnhookWindowsHookEx(self._win32_hook)
+                self._win32_hook = None
+                print(&#34;Win32键盘钩子已卸载&#34;)
+            if self._win32_thread_id:
+                ctypes.windll.user32.PostThreadMessageW(
+                    self._win32_thread_id,
+                    0x0012,
+                    0,
+                    0,
+                )
+                self._win32_thread_id = None
+            if hasattr(self, &#39;_win32_thread&#39;) and self._win32_thread.is_alive():
+                self._win32_thread.join(timeout=0.5)
+        except Exception as e:
+            print(f&#34;卸载Win32钩子出错: {e}&#34;)
+    elif self._backend == &#34;pyhook&#34;:
+        try:
+            self._hook_manager.UnhookKeyboard()
+            print(&#34;pyHook键盘钩子已卸载&#34;)
+        except Exception as e:
+            print(f&#34;卸载pyHook钩子出错: {e}&#34;)
+    elif self._backend == &#34;pynput&#34;:
+        try:
+            if self._listener:
+                self._listener.stop()
+                print(&#34;pynput监听器已停止&#34;)
+        except Exception as e:
+            print(f&#34;停止pynput监听器出错: {e}&#34;)</code></pre>
+</details>
+<div class="desc"><p>停止监听键盘</p></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="yime.input_method.core" href="index.html">yime.input_method.core</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="yime.input_method.core.keyboard_listener.KeyboardListener" href="#yime.input_method.core.keyboard_listener.KeyboardListener">KeyboardListener</a></code></h4>
+<ul class="">
+<li><code><a title="yime.input_method.core.keyboard_listener.KeyboardListener.is_active" href="#yime.input_method.core.keyboard_listener.KeyboardListener.is_active">is_active</a></code></li>
+<li><code><a title="yime.input_method.core.keyboard_listener.KeyboardListener.pump_messages" href="#yime.input_method.core.keyboard_listener.KeyboardListener.pump_messages">pump_messages</a></code></li>
+<li><code><a title="yime.input_method.core.keyboard_listener.KeyboardListener.start" href="#yime.input_method.core.keyboard_listener.KeyboardListener.start">start</a></code></li>
+<li><code><a title="yime.input_method.core.keyboard_listener.KeyboardListener.stop" href="#yime.input_method.core.keyboard_listener.KeyboardListener.stop">stop</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

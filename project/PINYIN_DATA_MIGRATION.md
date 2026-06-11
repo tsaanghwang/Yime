@@ -1,0 +1,104 @@
+# 拼音数据迁移说明
+
+本文档只说明当前主线的数据重建入口、独立 `.yaml` 导出入口，以及哪些旧脚本已经降级为 legacy-compatible。
+
+## 1. 当前主线 rebuild 链
+
+当前推荐的数据主线是：
+
+1. 外部上游文本导入到 `source_pinyin.db`
+2. 从 `source_pinyin.db` 重建 prototype tables
+3. 用 canonical 码面刷新 runtime 资产
+
+默认建议把生成产物放在仓库外置的工作区路径，而不是继续改动已跟踪的大文件：
+
+- `c:/dev/Yime/.generated/source_pinyin.db`
+- `c:/dev/Yime/.generated/runtime_candidates_by_code_true.json`
+
+兼容策略：
+
+- 运行时读取优先级：`YIME_RUNTIME_CANDIDATES_JSON` -> `.generated/runtime_candidates_by_code_true.json` -> 旧仓库路径
+- source DB 读取优先级：`YIME_SOURCE_PINYIN_DB` -> `.generated/source_pinyin.db` -> 旧仓库路径
+
+对应入口：
+
+- [build_source_pinyin_db.py](/c:/dev/Yime/internal_data/pinyin_source_db/build_source_pinyin_db.py)
+- [validate_source_pinyin_db.py](/c:/dev/Yime/internal_data/pinyin_source_db/validate_source_pinyin_db.py)
+- [import_danzi_into_prototype_tables.py](/c:/dev/Yime/yime/import_danzi_into_prototype_tables.py)（兼容入口；真实实现位于 `yime/utils/prototype_single_char_import.py`）
+- [import_duozi_into_prototype_tables.py](/c:/dev/Yime/yime/import_duozi_into_prototype_tables.py)（兼容入口；真实实现位于 `yime/utils/prototype_phrase_import.py`）
+- [refresh_runtime_yime_codes.py](/c:/dev/Yime/yime/refresh_runtime_yime_codes.py)（兼容入口；真实实现位于 `yime/utils/runtime_codes_refresh.py`）
+
+这条链的关键点是：
+
+- runtime 主线已经改为 `pinyin_tone -> yime_code`，不再依赖旧 `音元拼音.全拼 UNIQUE`。
+- 单字和词语 prototype 导入不再从旧 `汉字 / 数字标调拼音 / 词汇` 表借字段或主键。
+- `numeric_pinyin_patch.csv` 与 `canonical_yime_patch.csv` 只作为受控兜底层，不再把旧表当主线真源。
+
+推荐执行顺序：
+
+```bash
+c:/dev/Yime/.venv/Scripts/python.exe internal_data/pinyin_source_db/build_source_pinyin_db.py
+c:/dev/Yime/.venv/Scripts/python.exe internal_data/pinyin_source_db/validate_source_pinyin_db.py
+c:/dev/Yime/.venv/Scripts/python.exe yime/import_danzi_into_prototype_tables.py
+c:/dev/Yime/.venv/Scripts/python.exe yime/import_duozi_into_prototype_tables.py
+c:/dev/Yime/.venv/Scripts/python.exe yime/refresh_runtime_yime_codes.py --apply
+c:/dev/Yime/.venv/Scripts/python.exe yime/export_runtime_candidates_json.py
+```
+
+其中：
+
+- `build_source_pinyin_db.py` 默认会把 SQLite 产物写到 `.generated/source_pinyin.db`
+- `export_runtime_candidates_json.py`（兼容入口；真实实现位于 `yime/utils/runtime_candidates_export.py`）默认会把 runtime true JSON 写到 `.generated/runtime_candidates_by_code_true.json`
+
+## 2. 独立 `.yaml` 导出链
+
+如果你的目标只是从仓库内 `.yaml` 词库导出：
+
+- `danzi_pinyin.json`
+- `duozi_pinyin.json`
+
+那么不需要经过 SQLite rebuild 链。
+
+独立入口：
+
+- [export_yaml_lexicon_json.py](/c:/dev/Yime/internal_data/pinyin_source_db/export_yaml_lexicon_json.py)
+
+执行方式：
+
+```bash
+c:/dev/Yime/.venv/Scripts/python.exe internal_data/pinyin_source_db/export_yaml_lexicon_json.py
+```
+
+这条链只做：
+
+- `internal_data/pinyin_source_db/lexicon_sources/hanzi_pinyin_danzi.yaml -> internal_data/pinyin_source_db/lexicon_exports/danzi_pinyin.json`
+- `internal_data/pinyin_source_db/lexicon_sources/hanzi_pinyin_duozi.yaml -> internal_data/pinyin_source_db/lexicon_exports/duozi_pinyin.json`
+
+它和 `source_pinyin.db`、prototype tables、runtime refresh 是分离的。
+
+## 3. 当前 legacy-compatible 区域
+
+下面这些对象仍然保留在仓库里，但不属于当前主线 rebuild：
+
+- 兼容脚本入口：`yime/run_db_setup.py`（legacy shim）
+- 兼容实现位置：`yime/legacy/pending_removal/run_db_setup.py`
+- 待清除实现层：`yime/legacy/pending_removal/` 下的旧 DB / JSON 实现与兼容资源
+
+保留原因：
+
+- 仍被旧文档、旧测试或旧入口引用。
+- 仍可用于历史库审计、兼容导入或旧结构排障。
+
+但它们不再定义当前主线的“正确 rebuild 方式”。
+
+兼容层分工可以这样理解：
+
+- `yime/run_db_setup.py` 只是指向 `yime/legacy/pending_removal/run_db_setup.py` 的兼容 shim；真实实现仍只服务 `db_manager.py` 这层 legacy schema 维护，不负责当前主线 rebuild。
+- 旧 DB / JSON 真实实现不再保留主目录或 `yime/legacy/` 顶层同名壳；旧 schema / 汉字接口保留在 `yime/legacy/pending_removal/`，三表生成链移到 `yime/utils/legacy_pinyin_tables/`。
+- 当前主线如果需要真正刷新可消费数据，仍应回到本文第 1 节的 `source_pinyin.db -> prototype tables -> runtime` 链。
+
+## 4. 已归档的旧脚本
+
+已经移入 [yime/legacy/README.md](/c:/dev/Yime/yime/legacy/README.md) 所在目录的脚本，都是只服务旧结构、且当前主线没有引用的工具。
+
+这一步的目的是把主目录中的误用面降下来，避免把旧表检查脚本误认为当前 rebuild 入口。

@@ -1,0 +1,408 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>yime.input_method.core.input_visualization API documentation</title>
+<meta name="description" content="">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>yime.input_method.core.input_visualization</code></h1>
+</header>
+<section id="section-intro">
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="yime.input_method.core.input_visualization.build_code_display"><code class="name flex">
+<span>def <span class="ident">build_code_display</span></span>(<span>raw_text: str, canonical_code: str, active_code: str) ‑> str</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def build_code_display(raw_text: str, canonical_code: str, active_code: str) -&gt; str:
+    if not active_code:
+        return &#34;&#34;
+
+    active_display = format_codepoints(active_code)
+    if len(active_code) &gt; 4 and len(active_code) % 4 == 0:
+        active_label = f&#34;当前{len(active_code) // 4}音节码&#34;
+    else:
+        active_label = &#34;当前4码&#34;
+
+    if not canonical_code:
+        return active_display
+
+    if raw_text and raw_text != canonical_code:
+        return (
+            f&#34;{active_label} {active_display} | 输入 {format_codepoints(raw_text)}&#34;
+            f&#34; | 规范化后共 {len(canonical_code)} 码&#34;
+        )
+
+    if active_code != canonical_code:
+        return f&#34;{active_label} {active_display} | 累计输入 {len(canonical_code)} 码&#34;
+
+    return active_display</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.input_visualization.build_input_outline"><code class="name flex">
+<span>def <span class="ident">build_input_outline</span></span>(<span>text: str, visual_map: Dict[str, str]) ‑> str</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def build_input_outline(text: str, visual_map: Dict[str, str]) -&gt; str:
+    if not text:
+        return &#34;&#34;
+
+    tokens: List[str] = []
+    for char in text:
+        token = visual_map.get(char)
+        if token:
+            tokens.append(token)
+            continue
+
+        codepoint = ord(char)
+        fallback = f&#34;U+{codepoint:06X}&#34; if codepoint &gt; 0xFFFF else f&#34;U+{codepoint:04X}&#34;
+        tokens.append(f&#34;[{fallback}]&#34;)
+
+    return &#34; &#34;.join(tokens)</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.input_visualization.build_input_sound_notes"><code class="name flex">
+<span>def <span class="ident">build_input_sound_notes</span></span>(<span>text: str, visual_map: Dict[str, str]) ‑> str</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def build_input_sound_notes(text: str, visual_map: Dict[str, str]) -&gt; str:
+    if not text:
+        return &#34;&#34;
+
+    notes: List[str] = []
+    for char in text:
+        token = visual_map.get(char)
+        if token:
+            notes.append(_strip_slot_from_visual_token(token))
+            continue
+
+        codepoint = ord(char)
+        notes.append(f&#34;U+{codepoint:06X}&#34; if codepoint &gt; 0xFFFF else f&#34;U+{codepoint:04X}&#34;)
+
+    return &#34;&#34;.join(note for note in notes if note)</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.input_visualization.build_input_visual_map"><code class="name flex">
+<span>def <span class="ident">build_input_visual_map</span></span>(<span>repo_root: Path) ‑> Dict[str, str]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def build_input_visual_map(repo_root: Path) -&gt; Dict[str, str]:
+    projection = _load_visual_json(
+        repo_root / &#34;internal_data&#34; / &#34;bmp_pua_trial_projection.json&#34;
+    )
+    key_to_symbol = _load_visual_json(repo_root / &#34;internal_data&#34; / &#34;key_to_symbol.json&#34;)
+    shouyin_payload = _load_visual_json(
+        repo_root / &#34;syllable&#34; / &#34;yinyuan&#34; / &#34;shouyin_codepoint.json&#34;
+    )
+    yinyuan_payload = _load_visual_json(
+        repo_root / &#34;syllable&#34; / &#34;yinyuan&#34; / &#34;yinyuan_codepoint.json&#34;
+    )
+
+    label_by_bmp: Dict[str, str] = {}
+    for label, char in shouyin_payload.get(&#34;首音&#34;, {}).items():
+        label_by_bmp[str(char)] = str(label)
+    for namespace in (&#34;zaoyin&#34;, &#34;yueyin&#34;):
+        for label, char in yinyuan_payload.get(namespace, {}).items():
+            label_by_bmp[str(char)] = str(label)
+
+    visual_map: Dict[str, str] = {}
+    for slot_key, slot_info in projection.get(&#34;used_mapping&#34;, {}).items():
+        bmp_char = str(slot_info.get(&#34;char&#34;, &#34;&#34;))
+        canonical_char = str(key_to_symbol.get(slot_key, &#34;&#34;))
+        label = label_by_bmp.get(bmp_char) or slot_key
+        token = f&#34;[{slot_key} {label}]&#34;
+        if bmp_char:
+            visual_map[bmp_char] = token
+        if canonical_char:
+            visual_map[canonical_char] = token
+
+    for reserved in projection.get(&#34;reserved_slots&#34;, []):
+        bmp_char = str(reserved.get(&#34;char&#34;, &#34;&#34;))
+        slot_key = str(reserved.get(&#34;label&#34;) or &#34;reserved&#34;).split(&#34;_&#34;, 1)[0]
+        if bmp_char:
+            visual_map[bmp_char] = f&#34;[{slot_key}]&#34;
+
+    return visual_map</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.input_visualization.build_manual_key_output_map"><code class="name flex">
+<span>def <span class="ident">build_manual_key_output_map</span></span>(<span>repo_root: Path) ‑> Dict[tuple[str, str], str]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def build_manual_key_output_map(repo_root: Path) -&gt; Dict[tuple[str, str], str]:
+    manual_layout = _load_visual_json(
+        repo_root / &#34;internal_data&#34; / &#34;manual_key_layout.resolved.json&#34;
+    )
+
+    output_map: Dict[tuple[str, str], str] = {}
+    for row in manual_layout.get(&#34;layers&#34;, []):
+        physical_key = str(row.get(&#34;physical_key&#34;) or &#34;&#34;).strip().lower()
+        output_layer = str(row.get(&#34;output_layer&#34;) or &#34;&#34;).strip().lower()
+        resolved_char = str(row.get(&#34;resolved_char&#34;) or &#34;&#34;)
+        if not physical_key or not output_layer or not resolved_char:
+            continue
+        output_map[(physical_key, output_layer)] = resolved_char
+
+    return output_map</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.input_visualization.build_non_base_literal_output_chars"><code class="name flex">
+<span>def <span class="ident">build_non_base_literal_output_chars</span></span>(<span>repo_root: Path) ‑> set[str]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def build_non_base_literal_output_chars(repo_root: Path) -&gt; set[str]:
+    manual_layout = _load_visual_json(
+        repo_root / &#34;internal_data&#34; / &#34;manual_key_layout.resolved.json&#34;
+    )
+
+    passthrough_chars: set[str] = set()
+    for row in manual_layout.get(&#34;layers&#34;, []):
+        output_layer = str(row.get(&#34;output_layer&#34;) or &#34;&#34;).strip().lower()
+        resolved_category = str(row.get(&#34;resolved_category&#34;) or &#34;&#34;).strip().lower()
+        resolved_char = str(row.get(&#34;resolved_char&#34;) or &#34;&#34;)
+        if output_layer == &#34;base&#34; or resolved_category != &#34;literal&#34; or len(resolved_char) != 1:
+            continue
+        passthrough_chars.add(resolved_char)
+
+    return passthrough_chars</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.input_visualization.build_physical_input_map"><code class="name flex">
+<span>def <span class="ident">build_physical_input_map</span></span>(<span>repo_root: Path) ‑> Dict[str, str]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def build_physical_input_map(repo_root: Path) -&gt; Dict[str, str]:
+    manual_layout = _load_visual_json(repo_root / &#34;internal_data&#34; / &#34;manual_key_layout.json&#34;)
+    slot_to_bmp = _load_visual_json(repo_root / &#34;syllable&#34; / &#34;codec&#34; / &#34;key_to_code.json&#34;)
+    slot_to_symbol = _load_visual_json(repo_root / &#34;internal_data&#34; / &#34;key_to_symbol.json&#34;)
+
+    physical_map: Dict[str, str] = {}
+    for row in manual_layout.get(&#34;layers&#34;, []):
+        symbol_key = row.get(&#34;symbol_key&#34;)
+        if not symbol_key:
+            continue
+
+        input_token = str(row.get(&#34;display_label&#34;) or row.get(&#34;physical_key&#34;) or &#34;&#34;)
+        bmp_char = slot_to_bmp.get(str(symbol_key))
+        symbol_char = slot_to_symbol.get(str(symbol_key))
+        if bmp_char and input_token and len(input_token) == 1:
+            physical_map[input_token] = str(bmp_char)
+        if bmp_char and symbol_char:
+            physical_map[str(symbol_char)] = str(bmp_char)
+
+    return physical_map</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.input_visualization.build_projected_to_keycap_map"><code class="name flex">
+<span>def <span class="ident">build_projected_to_keycap_map</span></span>(<span>repo_root: Path) ‑> Dict[str, str]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def build_projected_to_keycap_map(repo_root: Path) -&gt; Dict[str, str]:
+    manual_layout = _load_visual_json(repo_root / &#34;internal_data&#34; / &#34;manual_key_layout.json&#34;)
+    slot_to_bmp = _load_visual_json(repo_root / &#34;syllable&#34; / &#34;codec&#34; / &#34;key_to_code.json&#34;)
+    slot_to_symbol = _load_visual_json(repo_root / &#34;internal_data&#34; / &#34;key_to_symbol.json&#34;)
+
+    projected_to_keycap: Dict[str, str] = {}
+    for row in manual_layout.get(&#34;layers&#34;, []):
+        symbol_key = row.get(&#34;symbol_key&#34;)
+        physical_key = str(row.get(&#34;physical_key&#34;) or &#34;&#34;)
+        bmp_char = slot_to_bmp.get(str(symbol_key)) if symbol_key else None
+        symbol_char = slot_to_symbol.get(str(symbol_key)) if symbol_key else None
+        if len(physical_key) != 1:
+            continue
+
+        keycap = physical_key.lower()
+        if bmp_char:
+            projected_to_keycap.setdefault(str(bmp_char), keycap)
+        if symbol_char:
+            projected_to_keycap.setdefault(str(symbol_char), keycap)
+
+    return projected_to_keycap</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.input_visualization.build_projected_to_physical_map"><code class="name flex">
+<span>def <span class="ident">build_projected_to_physical_map</span></span>(<span>physical_map: Dict[str, str]) ‑> Dict[str, str]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def build_projected_to_physical_map(
+    physical_map: Dict[str, str]
+) -&gt; Dict[str, str]:
+    return {projected: physical for physical, projected in physical_map.items()}</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.input_visualization.format_codepoints"><code class="name flex">
+<span>def <span class="ident">format_codepoints</span></span>(<span>text: str) ‑> str</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def format_codepoints(text: str) -&gt; str:
+    if not text:
+        return &#34;&#34;
+    return &#34; &#34;.join(
+        f&#34;U+{ord(char):06X}&#34; if ord(char) &gt; 0xFFFF else f&#34;U+{ord(char):04X}&#34;
+        for char in text
+    )</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.input_visualization.project_physical_input"><code class="name flex">
+<span>def <span class="ident">project_physical_input</span></span>(<span>text: str, physical_map: Dict[str, str]) ‑> str</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def project_physical_input(text: str, physical_map: Dict[str, str]) -&gt; str:
+    if not text:
+        return &#34;&#34;
+
+    projected_chars: List[str] = []
+    for char in text:
+        projected_chars.append(physical_map.get(char, char))
+    return &#34;&#34;.join(projected_chars)</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.input_visualization.unproject_physical_input"><code class="name flex">
+<span>def <span class="ident">unproject_physical_input</span></span>(<span>text: str, projected_to_physical_map: Dict[str, str]) ‑> str</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def unproject_physical_input(
+    text: str, projected_to_physical_map: Dict[str, str]
+) -&gt; str:
+    if not text:
+        return &#34;&#34;
+
+    physical_chars: List[str] = []
+    for char in text:
+        physical_chars.append(projected_to_physical_map.get(char, char))
+    return &#34;&#34;.join(physical_chars)</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="yime.input_method.core" href="index.html">yime.input_method.core</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="yime.input_method.core.input_visualization.build_code_display" href="#yime.input_method.core.input_visualization.build_code_display">build_code_display</a></code></li>
+<li><code><a title="yime.input_method.core.input_visualization.build_input_outline" href="#yime.input_method.core.input_visualization.build_input_outline">build_input_outline</a></code></li>
+<li><code><a title="yime.input_method.core.input_visualization.build_input_sound_notes" href="#yime.input_method.core.input_visualization.build_input_sound_notes">build_input_sound_notes</a></code></li>
+<li><code><a title="yime.input_method.core.input_visualization.build_input_visual_map" href="#yime.input_method.core.input_visualization.build_input_visual_map">build_input_visual_map</a></code></li>
+<li><code><a title="yime.input_method.core.input_visualization.build_manual_key_output_map" href="#yime.input_method.core.input_visualization.build_manual_key_output_map">build_manual_key_output_map</a></code></li>
+<li><code><a title="yime.input_method.core.input_visualization.build_non_base_literal_output_chars" href="#yime.input_method.core.input_visualization.build_non_base_literal_output_chars">build_non_base_literal_output_chars</a></code></li>
+<li><code><a title="yime.input_method.core.input_visualization.build_physical_input_map" href="#yime.input_method.core.input_visualization.build_physical_input_map">build_physical_input_map</a></code></li>
+<li><code><a title="yime.input_method.core.input_visualization.build_projected_to_keycap_map" href="#yime.input_method.core.input_visualization.build_projected_to_keycap_map">build_projected_to_keycap_map</a></code></li>
+<li><code><a title="yime.input_method.core.input_visualization.build_projected_to_physical_map" href="#yime.input_method.core.input_visualization.build_projected_to_physical_map">build_projected_to_physical_map</a></code></li>
+<li><code><a title="yime.input_method.core.input_visualization.format_codepoints" href="#yime.input_method.core.input_visualization.format_codepoints">format_codepoints</a></code></li>
+<li><code><a title="yime.input_method.core.input_visualization.project_physical_input" href="#yime.input_method.core.input_visualization.project_physical_input">project_physical_input</a></code></li>
+<li><code><a title="yime.input_method.core.input_visualization.unproject_physical_input" href="#yime.input_method.core.input_visualization.unproject_physical_input">unproject_physical_input</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>
