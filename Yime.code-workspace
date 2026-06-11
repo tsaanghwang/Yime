@@ -35,6 +35,8 @@
 		},
 		"sqltools.useNodeRuntime": false,
 		"python-envs.defaultPackageManager": "ms-python.python:conda",
-		"powershell.cwd": "Yime"
+		"powershell.cwd": "Yime",
+		"python.django.project.supportEnabled": false,
+		"python.missingDependencies.doNotShow": true
 	}
 }

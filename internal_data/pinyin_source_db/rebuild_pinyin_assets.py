@@ -12,7 +12,8 @@ from pathlib import Path
 SCRIPT_DIR = Path(__file__).resolve().parent
 WORKSPACE_ROOT = SCRIPT_DIR.parent.parent
 DEFAULT_DB_PATH = WORKSPACE_ROOT / ".generated" / "source_pinyin.db"
-DEFAULT_CHAR_SOURCE = Path("C:/dev/Word-frequency/unicode_hanzi.txt")
+# Default char source now comes from workspace-level external_data
+DEFAULT_CHAR_SOURCE = WORKSPACE_ROOT / "external_data" / "unicode_hanzi.txt"
 DEFAULT_PHRASE_SOURCE = Path("C:/dev/pinyin-data/tools/phrase-pinyin-data/pinyin.txt")
 DEFAULT_NORMALIZED_OUTPUT = SCRIPT_DIR / "lexicon_exports" / "pinyin_normalized.json"
 DEFAULT_YINJIE_OUTPUT = WORKSPACE_ROOT / "syllable" / "codec" / "yinjie_code.json"

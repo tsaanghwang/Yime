@@ -15,7 +15,8 @@ WORKSPACE_ROOT = SCRIPT_DIR.parent.parent
 DEFAULT_DB_PATH = WORKSPACE_ROOT / ".generated" / "source_pinyin.db"
 LEGACY_DB_PATH = WORKSPACE_ROOT / "internal_data" / "pinyin_source_db" / "source_pinyin.db"
 DEFAULT_SCHEMA_PATH = SCRIPT_DIR / "schema.sql"
-DEFAULT_CHAR_SOURCE = Path("C:/dev/Word-frequency/unicode_hanzi.txt")
+# Default char source now comes from workspace-level external_data
+DEFAULT_CHAR_SOURCE = WORKSPACE_ROOT / "external_data" / "unicode_hanzi.txt"
 DEFAULT_PHRASE_SOURCE = Path("C:/dev/pinyin-data/tools/phrase-pinyin-data/pinyin.txt")
 NUMERIC_SYLLABLE_RE = re.compile(r"^[a-zêü]+[1-5]$")
 

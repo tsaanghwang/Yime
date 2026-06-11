@@ -2,6 +2,7 @@
     "recommendations": [
         "zaaack.markdown-editor",
         "fantasy.markdown-all-in-one-for-web",
-        "herzshen.mmd-live-preview"
+        "herzshen.mmd-live-preview",
+        "alexcvzz.vscode-sqlite"
     ]
 }

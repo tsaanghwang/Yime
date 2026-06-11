@@ -2,18 +2,19 @@ from __future__ import annotations
 
 import argparse
 import csv
-import shutil
+
 import sqlite3
 from dataclasses import dataclass
 from pathlib import Path
 
 
 SCRIPT_DIR = Path(__file__).resolve().parent
-DB_FILE = SCRIPT_DIR / "unicode_hanzi.db"
-FREQ_DIR = SCRIPT_DIR / "char_freq"
-ARCHIVE_DIR = Path("C:/dev/Word-frequency/char_freq")
+DB_FILE = SCRIPT_DIR / "hanzi_pinyin.db"
+# Default frequency files are stored in the workspace-level external_data directory
+FREQ_DIR = Path(__file__).resolve().parents[2] / "external_data" / "char_freq"
+
 DEFAULT_GLOB = "*.txt"
-DEFAULT_EXPECTED_FILE_COUNT = 1
+DEFAULT_EXPECTED_FILE_COUNT = 6
 
 
 @dataclass
@@ -27,26 +28,16 @@ class FileStats:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Import char frequency files into unicode_hanzi.db.hanzi.frequency using max(existing, incoming)."
+        description="Import char frequency files into hanzi_pinyin.db.hanzi.frequency using max(existing, incoming)."
     )
-    parser.add_argument("--db", default=str(DB_FILE), help="Target unicode_hanzi.db path")
+    parser.add_argument("--db", default=str(DB_FILE), help="Target hanzi_pinyin.db path")
     parser.add_argument("--freq-dir", default=str(FREQ_DIR), help="Directory containing char frequency CSV files")
-    parser.add_argument(
-        "--archive-dir",
-        default=str(ARCHIVE_DIR),
-        help="Directory to move processed frequency files into after a successful import",
-    )
     parser.add_argument("--glob", default=DEFAULT_GLOB, help="Glob for frequency files inside freq-dir")
     parser.add_argument(
         "--expected-file-count",
         type=int,
         default=DEFAULT_EXPECTED_FILE_COUNT,
         help="Minimum number of matching frequency files required before import",
-    )
-    parser.add_argument(
-        "--keep-source-files",
-        action="store_true",
-        help="Keep matched frequency files after a successful import",
     )
     parser.add_argument("--dry-run", action="store_true", help="Parse and compare without committing updates")
     return parser.parse_args()
@@ -92,55 +83,72 @@ def iter_frequency_rows(path: Path) -> list[tuple[str, int]]:
     return rows
 
 
-def load_current_frequency(cur: sqlite3.Cursor, hanzi: str) -> int | None:
-    row = cur.execute("SELECT frequency FROM hanzi WHERE hanzi = ?", (hanzi,)).fetchone()
-    if row is None:
-        return None
-    value = row[0]
-    return None if value is None else int(value)
+def build_hanzi_frequency_table(cur: sqlite3.Cursor) -> None:
+    cur.execute("DROP TABLE IF EXISTS hanzi_frequency")
+    cur.execute("""
+        CREATE TABLE hanzi_frequency (
+            codepoint   TEXT PRIMARY KEY REFERENCES hanzi(codepoint) ON DELETE RESTRICT,
+            frequency   INTEGER NOT NULL DEFAULT 0
+        )
+    """)
+    cur.execute("""
+        INSERT INTO hanzi_frequency (codepoint, frequency)
+        SELECT codepoint, 0 FROM hanzi
+    """)
+    cur.execute("CREATE INDEX IF NOT EXISTS idx_hanzi_freq ON hanzi_frequency(frequency DESC)")
 
 
-def update_file_frequencies(cur: sqlite3.Cursor, path: Path) -> FileStats:
+def load_frequency_map(cur: sqlite3.Cursor) -> dict[str, int]:
+    cur.execute(
+        "SELECT h.hanzi, hf.frequency FROM hanzi_frequency hf JOIN hanzi h ON hf.codepoint = h.codepoint"
+    )
+    return {row[0]: int(row[1]) for row in cur.fetchall()}
+
+
+def update_file_frequencies(cur: sqlite3.Cursor, path: Path, freq_map: dict[str, int]) -> FileStats:
     stats = FileStats(file_name=path.name)
+    updates: list[tuple[int, str]] = []
     for hanzi, incoming_freq in iter_frequency_rows(path):
         stats.parsed_rows += 1
-        current_freq = load_current_frequency(cur, hanzi)
+        current_freq = freq_map.get(hanzi)
         if current_freq is None:
-            exists = cur.execute("SELECT 1 FROM hanzi WHERE hanzi = ?", (hanzi,)).fetchone()
-            if exists is None:
-                stats.skipped_missing_hanzi += 1
-                continue
-            current_freq = 0
+            stats.skipped_missing_hanzi += 1
+            continue
 
         if incoming_freq <= current_freq:
             stats.skipped_not_greater += 1
             continue
 
-        cur.execute(
-            "UPDATE hanzi SET frequency = ? WHERE hanzi = ?",
-            (incoming_freq, hanzi),
-        )
+        updates.append((incoming_freq, hanzi))
+        freq_map[hanzi] = incoming_freq
         stats.updated_rows += 1
+
+    if updates:
+        cur.executemany(
+            "UPDATE hanzi_frequency SET frequency = ? WHERE codepoint = (SELECT codepoint FROM hanzi WHERE hanzi = ?)",
+            updates,
+        )
     return stats
 
 
-def move_source_files(paths: list[Path], archive_dir: Path) -> int:
-    archive_dir.mkdir(parents=True, exist_ok=True)
-    moved = 0
-    for path in paths:
-        target_path = archive_dir / path.name
-        if target_path.exists():
-            target_path.unlink()
-        shutil.move(str(path), str(target_path))
-        moved += 1
-    return moved
+
+def create_views(cur: sqlite3.Cursor) -> None:
+    cur.execute("DROP VIEW IF EXISTS view_pinyin_by_frequency")
+    cur.execute("""
+        CREATE VIEW view_pinyin_by_frequency AS
+        SELECT h.codepoint, h.hanzi, hr.common_reading AS pinyin, hr.readings AS pinyin_candidates, hf.frequency, h.block
+        FROM hanzi h
+        LEFT JOIN hanzi_pinyin hr ON h.codepoint = hr.codepoint
+        LEFT JOIN hanzi_frequency hf ON h.codepoint = hf.codepoint
+        ORDER BY hf.frequency DESC, h.codepoint ASC
+    """)
 
 
 def main() -> int:
     args = parse_args()
     db_path = Path(args.db)
     freq_dir = Path(args.freq_dir)
-    archive_dir = Path(args.archive_dir)
+
 
     if not db_path.exists():
         raise FileNotFoundError(f"database file not found: {db_path}")
@@ -154,11 +162,14 @@ def main() -> int:
     try:
         conn.execute("PRAGMA foreign_keys = ON")
         cur = conn.cursor()
+        build_hanzi_frequency_table(cur)
+        conn.commit()
+        freq_map = load_frequency_map(cur)
         all_stats: list[FileStats] = []
         total_updated_rows = 0
 
         for path in freq_files:
-            stats = update_file_frequencies(cur, path)
+            stats = update_file_frequencies(cur, path, freq_map)
             all_stats.append(stats)
             total_updated_rows += stats.updated_rows
             print(
@@ -171,13 +182,10 @@ def main() -> int:
             print("dry-run: rolled back all updates")
         else:
             conn.commit()
+            create_views(cur)
+            conn.commit()
             print(f"committed updates to: {db_path}")
-            if args.keep_source_files:
-                print("source_files_cleanup: skipped (--keep-source-files)")
-            else:
-                moved_source_files = move_source_files(freq_files, archive_dir)
-                print(f"source_files_moved: {moved_source_files}")
-                print(f"source_files_archive_dir: {archive_dir}")
+            print("source_files_cleanup: skipped (files kept)")
 
         print(f"files_processed: {len(all_stats)}")
         print(f"total_updated_rows: {total_updated_rows}")

@@ -1,20 +1,20 @@
 {
-  "generated_at": "2026-04-25T01:23:33.421771+00:00",
-  "db_path": "C:\\dev\\Yime\\internal_data\\pinyin_source_db\\source_pinyin.db",
-  "normalized_output": "C:\\dev\\Yime\\pinyin\\hanzi_pinyin\\pinyin_normalized.json",
-  "yinjie_output": "C:\\dev\\Yime\\yinjie_code.json",
+  "generated_at": "2026-06-02T14:12:52.701172+00:00",
+  "db_path": "C:\\dev\\Yime\\.generated\\source_pinyin.db",
+  "normalized_output": "C:\\dev\\Yime\\internal_data\\pinyin_source_db\\lexicon_exports\\pinyin_normalized.json",
+  "yinjie_output": "C:\\dev\\Yime\\syllable\\codec\\yinjie_code.json",
   "skip_yinjie": false,
   "db_metadata": {
-    "phrase_rows": "0",
-    "phrase_source": "",
-    "schema_version": "source_pinyin_v1",
-    "single_char_rows": "53457",
-    "single_char_source": "C:\\dev\\pinyin-data\\pinyin.txt"
+    "char_rows": "60780",
+    "char_source": "C:\\dev\\Yime\\external_data\\unicode_hanzi.txt",
+    "phrase_rows": "47082",
+    "phrase_source": "C:\\dev\\pinyin-data\\tools\\phrase-pinyin-data\\pinyin.txt",
+    "schema_version": "source_pinyin_v1"
   },
   "counts": {
-    "single_char_rows": 53457,
-    "phrase_rows": 0,
-    "normalized_rows": 1549,
-    "yinjie_rows": 1549
+    "char_rows": 60780,
+    "phrase_rows": 47082,
+    "normalized_rows": 1563,
+    "yinjie_rows": 1563
   }
 }

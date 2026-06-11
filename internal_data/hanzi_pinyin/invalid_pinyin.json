@@ -1,0 +1,598 @@
+{
+  "U+366E": [
+    {
+      "candidate": "da",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+3F91": [
+    {
+      "candidate": "da",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+4EEC": [
+    {
+      "candidate": "men",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+4EF7": [
+    {
+      "candidate": "jie",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+4F19": [
+    {
+      "candidate": "huo",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+5011": [
+    {
+      "candidate": "men",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+507A": [
+    {
+      "candidate": "zan",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+513F": [
+    {
+      "candidate": "er",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+52D2": [
+    {
+      "candidate": "lei",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+53ED": [
+    {
+      "candidate": "ba",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+5417": [
+    {
+      "candidate": "ma",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+5427": [
+    {
+      "candidate": "ba",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+5440": [
+    {
+      "candidate": "ya",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+5443": [
+    {
+      "candidate": "e",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+5450": [
+    {
+      "candidate": "na",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    },
+    {
+      "candidate": "ne",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+5463": [
+    {
+      "candidate": "m̀",
+      "reason": "toned_outside_codebook",
+      "source": "staging"
+    }
+  ],
+  "U+5475": [
+    {
+      "candidate": "a",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+548C": [
+    {
+      "candidate": "huo",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+5495": [
+    {
+      "candidate": "gu",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+54A7": [
+    {
+      "candidate": "lie",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+54A9": [
+    {
+      "candidate": "mie",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+54B1": [
+    {
+      "candidate": "zan",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+54C7": [
+    {
+      "candidate": "wa",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+54DF": [
+    {
+      "candidate": "yo",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+54E9": [
+    {
+      "candidate": "li",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+54EA": [
+    {
+      "candidate": "na",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+554A": [
+    {
+      "candidate": "a",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+5566": [
+    {
+      "candidate": "la",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+5570": [
+    {
+      "candidate": "luo",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+5575": [
+    {
+      "candidate": "bo",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+5580": [
+    {
+      "candidate": "ke",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+5587": [
+    {
+      "candidate": "la",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+5592": [
+    {
+      "candidate": "zan",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+5594": [
+    {
+      "candidate": "o",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+55B2": [
+    {
+      "candidate": "yo",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+55B3": [
+    {
+      "candidate": "zha",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+55BD": [
+    {
+      "candidate": "lou",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+55C4": [
+    {
+      "candidate": "a",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+55CE": [
+    {
+      "candidate": "ma",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+55D2": [
+    {
+      "candidate": "da",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+55E6": [
+    {
+      "candidate": "suo",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+55FB": [
+    {
+      "candidate": "zhe",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+560D": [
+    {
+      "candidate": "lou",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+5614": [
+    {
+      "candidate": "ou",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+561B": [
+    {
+      "candidate": "ma",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+5638": [
+    {
+      "candidate": "m̄",
+      "reason": "toned_outside_codebook",
+      "source": "staging"
+    }
+  ],
+  "U+56B9": [
+    {
+      "candidate": "la",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+56C9": [
+    {
+      "candidate": "luo",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+56D4": [
+    {
+      "candidate": "nang",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+5783": [
+    {
+      "candidate": "la",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+5854": [
+    {
+      "candidate": "da",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+5934": [
+    {
+      "candidate": "tou",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+5B50": [
+    {
+      "candidate": "zi",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+5BB6": [
+    {
+      "candidate": "jia",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+5F97": [
+    {
+      "candidate": "de",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+614C": [
+    {
+      "candidate": "huang",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+62C9": [
+    {
+      "candidate": "la",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+6311": [
+    {
+      "candidate": "tiao",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+6B38": [
+    {
+      "candidate": "ê̄",
+      "reason": "toned_outside_codebook",
+      "source": "staging"
+    },
+    {
+      "candidate": "ê̌",
+      "reason": "toned_outside_codebook",
+      "source": "staging"
+    }
+  ],
+  "U+6B96": [
+    {
+      "candidate": "shi",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+74C8": [
+    {
+      "candidate": "li",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+7576": [
+    {
+      "candidate": "dang",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+7629": [
+    {
+      "candidate": "da",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+7F62": [
+    {
+      "candidate": "ba",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+7F77": [
+    {
+      "candidate": "ba",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+7F85": [
+    {
+      "candidate": "luo",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+8126": [
+    {
+      "candidate": "te",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+8514": [
+    {
+      "candidate": "bo",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+8A92": [
+    {
+      "candidate": "ê̄",
+      "reason": "toned_outside_codebook",
+      "source": "staging"
+    },
+    {
+      "candidate": "ê̌",
+      "reason": "toned_outside_codebook",
+      "source": "staging"
+    }
+  ],
+  "U+8DF6": [
+    {
+      "candidate": "da",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+8FB9": [
+    {
+      "candidate": "bian",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+904E": [
+    {
+      "candidate": "guo",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+9062": [
+    {
+      "candidate": "ta",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+908A": [
+    {
+      "candidate": "bian",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+91CC": [
+    {
+      "candidate": "li",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+963F": [
+    {
+      "candidate": "a",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+982D": [
+    {
+      "candidate": "tou",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+9EBD": [
+    {
+      "candidate": "ma",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+20C3B": [
+    {
+      "candidate": "wai",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+20C8E": [
+    {
+      "candidate": "fa",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+210BF": [
+    {
+      "candidate": "ou",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+2143F": [
+    {
+      "candidate": "da",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ],
+  "U+26782": [
+    {
+      "candidate": "da",
+      "reason": "duplicate_with_tonal_equivalent",
+      "source": "staging"
+    }
+  ]
+}
