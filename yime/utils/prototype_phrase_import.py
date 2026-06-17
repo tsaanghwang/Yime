@@ -5,6 +5,8 @@ from pathlib import Path
 
 from yime.asset_paths import resolve_source_pinyin_db_path
 from yime.canonical_yime_mapping import load_canonical_code_map, sync_canonical_mapping_table
+from yime.utils.char_frequency_policy import PHRASE_LEXICON_DEFAULT_FREQUENCY
+from yime.utils.source_pinyin_db_loader import prototype_source_name, uses_v2_source_schema
 
 
 WORKSPACE_ROOT = Path(__file__).resolve().parents[2]
@@ -25,6 +27,40 @@ def apply_schema(conn: sqlite3.Connection) -> None:
 def load_source_phrase_rows(path: Path) -> tuple[list[tuple[str, str, str]], list[tuple[int, str, str, str, str, int, str | None, str]]]:
     with sqlite3.connect(path) as source_conn:
         source_cur = source_conn.cursor()
+        if uses_v2_source_schema(source_conn):
+            source_files = [
+                (prototype_source_name(source_kind, source_path), source_kind, source_path)
+                for source_kind, source_path in source_cur.execute(
+                    '''
+                    SELECT source_kind, source_path
+                    FROM source_files
+                    WHERE source_kind = 'phrase'
+                    ORDER BY source_kind
+                    '''
+                ).fetchall()
+            ]
+            default_source_name = source_files[0][0] if source_files else "phrase:phrase_pinyin.txt"
+            rows = [
+                (
+                    row_id,
+                    default_source_name,
+                    phrase,
+                    marked_pinyin,
+                    numeric_pinyin,
+                    reading_rank,
+                    None,
+                    "",
+                )
+                for row_id, phrase, marked_pinyin, numeric_pinyin, reading_rank in source_cur.execute(
+                    '''
+                    SELECT id, phrase, marked_pinyin, numeric_pinyin, reading_rank
+                    FROM phrase_readings
+                    ORDER BY id
+                    '''
+                ).fetchall()
+            ]
+            return source_files, rows
+
         source_files = source_cur.execute(
             '''
             SELECT source_name, source_kind, source_path
@@ -50,7 +86,7 @@ def parse_numeric_pinyin_parts(pinyin_tone: str) -> tuple[str | None, str | None
     return None, final or None, tone_number
 
 
-def parse_phrase_frequency(raw_line: str) -> float | None:
+def parse_phrase_frequency(raw_line: str) -> int | None:
     payload = raw_line.split("#", 1)[0].strip()
     if not payload or ":" in payload:
         return None
@@ -60,7 +96,7 @@ def parse_phrase_frequency(raw_line: str) -> float | None:
         return None
 
     try:
-        return float(parts[2])
+        return int(parts[2])
     except ValueError:
         return None
 
@@ -115,7 +151,7 @@ def import_phrases_and_mappings(
 
     missing_numeric_rows: list[tuple[str, str | None, str | None, int, int | None, int | None]] = []
     seen_missing_numeric: set[str] = set()
-    phrase_rows_by_text: dict[str, tuple[str, str | None, float, int, int, int | None]] = {}
+    phrase_rows_by_text: dict[str, tuple[str, str | None, int | None, int, int, int | None]] = {}
     phrase_map_rows: list[tuple[int, str, int, str, str]] = []
 
     for _, source_name, phrase, _, numeric_pinyin, reading_rank, comment, raw_line in source_rows:
@@ -125,7 +161,9 @@ def import_phrases_and_mappings(
             initial, final, tone_number = parse_numeric_pinyin_parts(syllable)
             missing_numeric_rows.append((syllable, initial, final, tone_number, None, None))
             seen_missing_numeric.add(syllable)
-        phrase_frequency = parse_phrase_frequency(raw_line) or 1.0
+        phrase_frequency = parse_phrase_frequency(raw_line)
+        if phrase_frequency is None:
+            phrase_frequency = PHRASE_LEXICON_DEFAULT_FREQUENCY
         if phrase not in phrase_rows_by_text:
             primary_yime_code = build_phrase_yime_code(numeric_pinyin, yime_by_pinyin)
             stored_phrase_code = primary_yime_code or numeric_pinyin
@@ -140,6 +178,8 @@ def import_phrases_and_mappings(
             continue
 
         existing_phrase, stored_phrase_code, existing_frequency, phrase_length, is_common_phrase, legacy_phrase_id = phrase_rows_by_text[phrase]
+        if existing_frequency is None:
+            existing_frequency = PHRASE_LEXICON_DEFAULT_FREQUENCY
         if phrase_frequency > existing_frequency:
             phrase_rows_by_text[phrase] = (
                 existing_phrase,

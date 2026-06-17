@@ -41,11 +41,10 @@ LEFT JOIN phrase_pinyin_map ppm
 WHERE ppm.id IS NULL
 ORDER BY pi.phrase;
 
--- 7. 看看哪些单字还没有频率。
-SELECT *
+-- 7. 看看哪些单字还没有写入频率（导入后应全部为 NULL 以外）。
+SELECT hanzi, char_frequency_abs, frequency_source
 FROM char_lexicon
 WHERE char_frequency_abs IS NULL
-  AND char_frequency_rel IS NULL
 ORDER BY hanzi;
 
 -- 8. 统一看候选，按编码或拼音都可以筛选。

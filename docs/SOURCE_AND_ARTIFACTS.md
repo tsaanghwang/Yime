@@ -273,9 +273,9 @@
 
 - `yime/backup/`
   - 分类：本地数据库备份目录。
-  - 原因：`yime/run_full_import.py` 与 `yime/borrow_wanxiang_frequency.py`（现为 shim，真实实现位于 `yime/utils/wanxiang_frequency_import.py`）会在修改 `yime/pinyin_hanzi.db` 前生成保护性备份；这些文件属于本地维护副产物，不应进入版本控制。
+  - 原因：`yime/run_full_import.py` 与 `yime/import_blcu_word_frequency.py`（真实实现位于 `yime/utils/blcu_word_frequency_import.py`）会在修改 `yime/pinyin_hanzi.db` 前生成保护性备份；这些文件属于本地维护副产物，不应进入版本控制。
 
-- `yime/*.wanxiang_borrow_*.bak`
+- `yime/*.blcu_word_freq_*.bak`
 - `yime/*.pre_*`
 - `yime/*.bak*`
   - 分类：本地数据库备份文件模式。
@@ -307,9 +307,21 @@
   - 分类：已移除的旧数据库词语主表。
   - 原因：非归档桥接脚本和查询模板已切到 `phrase_inventory / phrase_pinyin_map`；继续保留旧 `词汇` 表只会维持历史双轨结构。
 
+- `yime/borrow_wanxiang_frequency.py`、`yime/utils/wanxiang_frequency_import.py`
+  - 分类：已删除的万象语料频率借用脚本。
+  - 原因：字词频主链已统一为 BCC + `char_frequency_policy.py`。
+
+- `yime/import_xiandaihaiyu_phrase_frequency.py`、`yime/utils/xiandaihaiyu_phrase_frequency_import.py`
+  - 分类：已删除的现代汉语语料词频导入脚本。
+  - 原因：词语频率改由 `import_blcu_word_frequency.py` 写入 BCC count 或词库默认 1。
+
+- `yime/import_8105_char_frequency.py`、`yime/utils/char_frequency_8105_import.py`
+  - 分类：已删除的 8105.dict.yaml 字频导入脚本。
+  - 原因：字频主链已改为 BCC（`import_blcu_word_frequency.py`）；TGHZ2013 3500/6500/8105 分层改由 `external_data/unihan_readings/unihan_readings.db` 的 `view_tghz2013_frequency` 提供。
+
 - 已清退旧单字主表与频率表：`汉字`、`汉字频率`
   - 分类：已移除的旧数据库单字主表与频率表。
-  - 原因：8105 字频导入和 runtime 频率状态读取都已切到 `char_inventory`；继续保留旧 `汉字 / 汉字频率` 只会维持历史双轨结构。
+  - 原因：字频与 runtime 频率状态读取都已切到 `char_inventory`（BCC 导入 + unihan TGHZ2013 分层）；继续保留旧 `汉字 / 汉字频率` 只会维持历史双轨结构。
 
 - 已清退旧中文词条/字符观察表：`专用单字`、`字符`、`字符扩展`、`字词`、`字词关联`、`生僻单字`、`词语`、`通用单字`
   - 分类：已移除的旧数据库观察/占位表。
@@ -547,7 +559,7 @@
 
 - `import_frequency_data.py`
   - 分类：已删除的根目录旧字频导入脚本。
-  - 原因：仓库内没有任何入口再依赖它；它通过修改 `汉字拼音初始数据` 表结构并写回频率，已经偏离当前直接写入 `char_inventory` 的单字频率导入链，现行主线由 `yime/import_8105_char_frequency.py` 与相关频率脚本承担。
+  - 原因：仓库内没有任何入口再依赖它；它通过修改 `汉字拼音初始数据` 表结构并写回频率，已经偏离当前直接写入 `char_inventory` 的单字频率导入链；现行字频由 `yime/import_blcu_word_frequency.py` 写入，TGHZ2013 分层由 `unihan_readings.db` 视图供 `refresh_runtime_yime_codes.py` 使用。
 
 - `decompose_syllables.py`
   - 分类：已删除的根目录空文件残留。
@@ -774,13 +786,17 @@
   - 分类：projection/runtime 一致性审计结果。
   - 原因：它消费 `manual_key_layout.json`、`key_to_symbol.json`、`bmp_pua_trial_projection.json` 与 `yinjie_runtime_key_symbol_mapping.json`，职责是报告当前布局层与 runtime 层是否一致；它应作为检查输出保留，而不是被误当成新的配置面。
 
-- `external_data/8105.dict.yaml`
-  - 分类：已删除的可下载外部频率增强资源。
-  - 原因：当前主链已改为“缺失时跳过增强并提示下载”；仓库不再需要继续跟踪这份开源字频文件，本地如需恢复 8105 单字频率增强，可重新下载后放回 `external_data/`。
+- `external_data/unihan_readings/unihan_readings.db`
+  - 分类：Unihan 读音 + BCC 单字频 + TGHZ2013 分层视图。
+  - 原因：`view_tghz2013_frequency` 供 `yime/refresh_runtime_yime_codes.py` 构建 `char_usage_profile`；由 `external_data/unihan_readings/build_all.py` 构建。
 
-- `external_data/xiandaihaiyuchangyongcibiao.txt`
-  - 分类：已删除的可下载外部频率增强资源。
-  - 原因：当前主链已改为“缺失时跳过增强并提示下载”；仓库不再需要继续跟踪这份公开词表资料，本地如需恢复现代汉语常用词表频率增强，可重新下载后放回 `external_data/`。
+- `external_data/char_freq/merged_char_freq.txt`
+  - 分类：BCC **字频频道**合并单字频（`merge_char_freq.py`）。
+  - 原因：Yime 字频写库与 `char_frequency_policy` 合成兜底的 BCC 真源；供 `import_blcu_word_frequency.py`、`import_hanzi_frequency.py` 等使用。
+
+- `external_data/char_freq/word_freq_merged_single_char_freq.txt`
+  - 分类：BCC **词频频道**中的单字条目（`merge_word_freq.py` 从 `word_freq/*.txt` 分出 `len(word)==1`）。
+  - 原因：词频统计本身含单字行，与专用字频频道口径不同；保留作对照/分析，**不**作为 runtime 写库真源。
 
 - `data_json_files/key_symbol_mapping.json`
   - 分类：已删除的误命名重复副本。

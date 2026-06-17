@@ -48,9 +48,8 @@
 
 ### 可下载外部频率资源
 
-- `external_data/8105.dict.yaml`：可选单字频率增强输入；缺失时，`yime/refresh_runtime_yime_codes.py` 与 `yime/import_8105_char_frequency.py`（兼容入口；真实实现位于 `yime/utils/char_frequency_8105_import.py`）会跳过对应增强步骤。
-- `external_data/xiandaihaiyuchangyongcibiao.txt`：可选单字/词频增强输入；缺失时，`yime/refresh_runtime_yime_codes.py` 与 `yime/import_xiandaihaiyu_phrase_frequency.py`（兼容入口；真实实现位于 `yime/utils/xiandaihaiyu_phrase_frequency_import.py`）会跳过对应增强步骤。
-- `external_data/word_freq/`：待接入的外部词频目录；当前口径按原始 `word,freq` 整数计数理解，目录内可同时包含单字与多字词条，后续如新增导入脚本或中间产物，默认都应把这些文件视为原始 count 源，而不是排序权重。
+- `external_data/unihan_readings/unihan_readings.db`：`view_tghz2013_frequency` 提供《通用规范汉字表》8105 字 + BCC 单字频；`yime/refresh_runtime_yime_codes.py` 据此构建 `char_usage_profile` 分层（3500/6500/8105），不再依赖 `8105.dict.yaml`。
+- `external_data/word_freq/`、`external_data/char_freq/`：BCC 合并词频目录；见 [external_data/word_freq_README.md](../external_data/word_freq_README.md)。`yime/import_blcu_word_frequency.py` 按 `char_frequency_policy.py` 写入 `phrase_frequency` / `char_inventory.char_frequency_abs`；`yime/refresh_runtime_yime_codes.py` 读取 `merged_char_freq.txt` 构建 `char_modern_common_profile`（BCC 序位），TGHZ 分层与非 TGHZ 辅助排序分别来自 `unihan_readings.db` 与 `char_inventory`。
 - 边界：它们属于可重新下载的外部公开资源，不属于仓库当前必须跟踪的 `internal_data` 真源或派生产物。
 
 ### syllable/codec/key_to_code.json

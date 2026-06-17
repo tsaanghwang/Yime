@@ -16,32 +16,30 @@ IMPORT_SINGLE_CHAR_SCRIPT = YIME_DIR / "import_danzi_into_prototype_tables.py"
 IMPORT_PHRASE_SCRIPT = YIME_DIR / "import_duozi_into_prototype_tables.py"
 REFRESH_RUNTIME_SCRIPT = YIME_DIR / "refresh_runtime_yime_codes.py"
 
-DEFAULT_CHAR_SOURCE = Path("C:/dev/pinyin-data/pinyin.txt")
-DEFAULT_PHRASE_SOURCE = Path(
-    "C:/dev/RIME-LMDG/万象双拼得由来/语料统计词频表.txt"
-)
+DEFAULT_CHAR_SOURCE = ROOT / "internal_data" / "hanzi_pinyin" / "pinyin.txt"
+DEFAULT_PHRASE_SOURCE = ROOT / "internal_data" / "phrase_pinyin" / "phrase_pinyin.txt"
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
-            "用外部词语拼音源重建 Yime 当前主线词库；如果来源带词频，"
-            "会在导入 prototype 时写入 phrase_frequency："
-            "source_pinyin.db -> prototype tables -> runtime。"
+            "用外部词语拼音源重建 Yime 当前主线词库；词频由后续 "
+            "`import_blcu_word_frequency.py` 写入（BCC 或词库默认 1）。"
+            "流程：source_pinyin.db -> prototype tables -> BCC 词频导入 -> runtime。"
             "默认真正执行；可先用 --dry-run 看将要跑哪些命令。"
         )
     )
     parser.add_argument(
         "--char-source",
         default=str(DEFAULT_CHAR_SOURCE),
-        help="单字拼音来源，默认使用 C:/dev/pinyin-data/pinyin.txt",
+        help="单字拼音来源，默认使用 internal_data/hanzi_pinyin/pinyin.txt",
     )
     parser.add_argument(
         "--phrase-source",
         default=str(DEFAULT_PHRASE_SOURCE),
         help=(
             "词语拼音来源，默认使用 "
-            "C:/dev/RIME-LMDG/万象双拼得由来/语料统计词频表.txt"
+            "internal_data/phrase_pinyin/phrase_pinyin.txt"
         ),
     )
     parser.add_argument(

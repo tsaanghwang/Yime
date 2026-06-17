@@ -60,14 +60,14 @@ def _ranked_cte_sql() -> str:
              COALESCE(tier_sort_weight, 0.0)
                + CASE WHEN is_common_reading = 1 THEN COALESCE(modern_common_boost, 0.0) ELSE 0.0 END
                + COALESCE(reading_phrase_prior_boost, 0.0)
-               + COALESCE(char_frequency_rel, char_frequency_abs, 1.0)
+               + COALESCE(char_frequency_abs, 0)
                + COALESCE(reading_weight, CASE WHEN is_common_reading = 1 THEN 1.0 ELSE 0.5 END) AS sort_weight,
              ROW_NUMBER() OVER (
                PARTITION BY yime_code
                ORDER BY COALESCE(tier_sort_weight, 0.0)
                  + CASE WHEN is_common_reading = 1 THEN COALESCE(modern_common_boost, 0.0) ELSE 0.0 END
                  + COALESCE(reading_phrase_prior_boost, 0.0)
-                 + COALESCE(char_frequency_rel, char_frequency_abs, 1.0)
+                 + COALESCE(char_frequency_abs, 0)
                  + COALESCE(reading_weight, CASE WHEN is_common_reading = 1 THEN 1.0 ELSE 0.5 END) DESC,
                  hanzi
              ) AS rn,

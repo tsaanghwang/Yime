@@ -40,7 +40,7 @@ def load_runtime_db_char_rows(path: Path) -> list[dict[str, object]]:
                 COALESCE(tier_sort_weight, 0.0)
                     + CASE WHEN is_common_reading = 1 THEN COALESCE(modern_common_boost, 0.0) ELSE 0.0 END
                     + COALESCE(reading_phrase_prior_boost, 0.0)
-                    + COALESCE(char_frequency_rel, char_frequency_abs, 1.0)
+                    + COALESCE(char_frequency_abs, 0)
                     + COALESCE(reading_weight, CASE WHEN is_common_reading = 1 THEN 1.0 ELSE 0.5 END) AS sort_weight,
                 is_common_reading AS is_common,
                 1 AS text_length,
@@ -74,12 +74,12 @@ def build_char_ordering_comparison(db_path: Path, *, page_size: int) -> dict[str
     for scenario_name, scorer in {
         "tier_only": lambda entry: float(entry.get("usage_tier_sort_boost", 0.0) or 0.0),
         "tier_plus_frequency": lambda entry: float(entry.get("usage_tier_sort_boost", 0.0) or 0.0)
-        + float(entry.get("char_frequency_rel", entry.get("char_frequency_abs", 0.0)) or 0.0),
+        + float(entry.get("char_frequency_abs", 0) or 0),
         "tier_plus_frequency_plus_modern_common": lambda entry: float(entry.get("usage_tier_sort_boost", 0.0) or 0.0)
-        + float(entry.get("char_frequency_rel", entry.get("char_frequency_abs", 0.0)) or 0.0)
+        + float(entry.get("char_frequency_abs", 0) or 0)
         + (float(entry.get("modern_common_boost", 0.0) or 0.0) if bool(entry.get("is_common")) else 0.0),
         "current_runtime": lambda entry: float(entry.get("usage_tier_sort_boost", 0.0) or 0.0)
-        + float(entry.get("char_frequency_rel", entry.get("char_frequency_abs", 0.0)) or 0.0)
+        + float(entry.get("char_frequency_abs", 0) or 0)
         + (float(entry.get("modern_common_boost", 0.0) or 0.0) if bool(entry.get("is_common")) else 0.0)
         + float(entry.get("reading_phrase_prior_boost", 0.0) or 0.0)
         + float(entry.get("reading_weight", 1.0) or 1.0),

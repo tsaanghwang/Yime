@@ -31,14 +31,19 @@ if errorlevel 1 (
 )
 
 "%PYTHON%" -m unittest ^
-  tests\yinjie\verify_yinjie_encoder.py ^
+  tests\yinjie\test_yinjie_encoder.py ^
   tests\yinjie\test_yinjie_decoder.py ^
   tests\yinjie\test_pinyin_bidirectional_validation.py ^
   tests\yinjie\test_yinjie_roundtrip.py ^
-  tests\yinjie\verify_yinjie_encoder_stages.py ^
-  tests\yinjie\verify_yinjie_entry_manifests.py ^
+  tests\yinjie\test_yinjie_encoder_stages.py ^
+  tests\yinjie\test_yinjie_entry_manifests.py ^
   tests\syllable_analysis\test_encode_ganyin.py ^
-  utils/test_pinyin_normalizer.py
+  tests\pinyin_source_db\test_marked_syllable_to_numeric.py ^
+  tests\pinyin_source_db\test_export_pinyin_normalized_inventory.py ^
+  tests\yime\test_char_frequency_policy.py ^
+  tests\yime\test_blcu_word_frequency_import.py ^
+  tests\yime\test_unihan_readings_frequency.py ^
+  tests\test_pinyin_normalizer.py
 
 set "EXIT_CODE=%ERRORLEVEL%"
 

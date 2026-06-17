@@ -21,6 +21,16 @@ from yime.canonical_yime_mapping import (
     load_canonical_patch_map,
     sync_canonical_mapping_table,
 )
+from yime.utils.blcu_word_frequency_import import load_char_frequency_map
+from yime.utils.char_frequency_policy import (
+    BCC_SOURCE,
+    DEFAULT_BCC_CHAR_FREQ_PATH,
+    purge_legacy_frequency_metadata,
+)
+from yime.utils.unihan_readings_frequency import (
+    DEFAULT_UNIHAN_READINGS_DB,
+    load_tghz2013_char_frequencies,
+)
 
 
 MODULE_DIR = Path(__file__).resolve().parent
@@ -33,20 +43,20 @@ EXPORT_SCRIPT = PACKAGE_DIR / "export_runtime_candidates_json.py"
 SCHEMA_PATH = PACKAGE_DIR / "create_prototype_schema_additions.sql"
 DEFAULT_TUNING_SCAN_JSON_OUTPUT = PACKAGE_DIR / "reports" / "runtime_tuning_scan.json"
 DEFAULT_TUNING_SCAN_MARKDOWN_OUTPUT = PACKAGE_DIR / "reports" / "runtime_tuning_scan.md"
-DEFAULT_8105_SOURCE = REPO_ROOT / "external_data" / "8105.dict.yaml"
+DEFAULT_UNIHAN_READINGS_DB_PATH = DEFAULT_UNIHAN_READINGS_DB
 DEFAULT_XHC1983_SOURCE = Path("C:/dev/pinyin-data/kXHC1983.txt")
-DEFAULT_SINGLE_CHAR_FREQ_SOURCE = REPO_ROOT / "external_data" / "xiandaihaiyuchangyongcibiao.txt"
+DEFAULT_BLCU_CHAR_FREQ_SOURCE = DEFAULT_BCC_CHAR_FREQ_PATH
 
 OPTIONAL_EXTERNAL_FREQUENCY_SOURCES = (
     (
-        DEFAULT_8105_SOURCE,
-        "单字频率分层(8105)",
-        "缺失时将跳过 8105 频率分层增强；需要时可重新下载后放回 external_data/。",
+        DEFAULT_UNIHAN_READINGS_DB_PATH,
+        "《通用规范汉字表》TGHZ2013 + BCC 单字频",
+        "缺失时将跳过 TGHZ2013 单字分层增强；需要时可运行 external_data/unihan_readings/build_all.py 重建 unihan_readings.db。",
     ),
     (
-        DEFAULT_SINGLE_CHAR_FREQ_SOURCE,
-        "现代常用单字序位增强",
-        "缺失时将跳过现代常用单字序位增强；需要时可重新下载后放回 external_data/。",
+        DEFAULT_BLCU_CHAR_FREQ_SOURCE,
+        "BCC 合并单字频（merged_char_freq.txt）",
+        "缺失时将跳过 BCC 单字序位增强；需要时可运行 merge_char_freq.py 生成后放回 external_data/char_freq/。",
     ),
 )
 
@@ -110,6 +120,76 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--db", default=str(DB_PATH), help="SQLite 数据库路径")
     parser.add_argument("--apply", action="store_true", help="真正写入数据库；默认仅 dry-run")
     parser.add_argument("--no-backup", action="store_true", help="写库前不创建数据库备份")
+    parser.add_argument(
+        "--skip-runtime-export",
+        action="store_true",
+        help="写库后不刷新 runtime_candidates JSON 导出",
+    )
+    parser.add_argument(
+        "--show-examples",
+        type=int,
+        default=10,
+        help="每类问题最多展示多少条样例",
+    )
+    parser.add_argument(
+        "--backup-retain",
+        type=int,
+        default=DEFAULT_BACKUP_RETAIN_COUNT,
+        help="保留最近多少份数据库备份",
+    )
+    parser.add_argument(
+        "--scan-runtime-tuning",
+        action="store_true",
+        help="在事务内批量扫描弱先验参数组合，并输出首屏指标对比；不会持久写库。",
+    )
+    parser.add_argument(
+        "--scan-limit",
+        type=int,
+        default=20,
+        help="扫描模式下输出前多少组结果。",
+    )
+    parser.add_argument(
+        "--scan-page-size",
+        type=int,
+        default=5,
+        help="扫描模式下按多少候选计算首屏可见率。",
+    )
+    parser.add_argument(
+        "--scan-reading-weight-magnitudes",
+        default="2,5,10",
+        help="扫描模式下常用/非常用读音权重幅度列表；会自动展开成 +v / -v。",
+    )
+    parser.add_argument(
+        "--scan-prior-scale-values",
+        default="2,5",
+        help="扫描模式下词语读音先验 scale 列表。",
+    )
+    parser.add_argument(
+        "--scan-prior-share-values",
+        default="0.98,0.995,0.999",
+        help="扫描模式下 reading_share 门槛列表。",
+    )
+    parser.add_argument(
+        "--scan-prior-min-phrase-count-values",
+        default="1,2,3",
+        help="扫描模式下最小 phrase_count 门槛列表。",
+    )
+    parser.add_argument(
+        "--scan-prior-min-evidence-weight-values",
+        default="0,2,5",
+        help="扫描模式下最小 evidence_weight 门槛列表。",
+    )
+    parser.add_argument(
+        "--scan-high-collision-bucket-limit",
+        type=int,
+        default=20,
+        help="扫描模式下局部评分关注的高碰撞单字顶数量。",
+    )
+    parser.add_argument(
+        "--scan-json-output",
+        default=str(DEFAULT_TUNING_SCAN_JSON_OUTPUT),
+        help="扫描结果 JSON 输出路径。",
+    )
     parser.add_argument(
         "--scan-markdown-output",
         default=str(DEFAULT_TUNING_SCAN_MARKDOWN_OUTPUT),
@@ -385,65 +465,43 @@ def refresh_runtime_export(db_path: Path) -> None:
     )
 
 
-def load_8105_char_frequencies(path: Path) -> dict[str, int]:
-    frequency_by_char: dict[str, int] = {}
-    if not path.exists():
-        return frequency_by_char
-
-    for raw_line in path.read_text(encoding="utf-8").splitlines():
-        line = raw_line.strip()
-        if not line or line.startswith("#") or line in {"---", "..."}:
-            continue
-        if "\t" not in line:
-            continue
-        parts = line.split("\t")
-        if len(parts) < 3:
-            continue
-        hanzi = parts[0].strip()
-        if len(hanzi) != 1:
-            continue
-        try:
-            frequency = int(parts[2].strip())
-        except ValueError:
-            continue
-        previous = frequency_by_char.get(hanzi)
-        if previous is None or frequency > previous:
-            frequency_by_char[hanzi] = frequency
-
-    return frequency_by_char
-
-
 def summarize_char_frequency_state(conn: sqlite3.Connection) -> dict[str, int | str]:
-    existing_row = conn.execute(
+    row = conn.execute(
         """
-        SELECT COUNT(*), SUM(CASE WHEN char_frequency_abs IS NOT NULL OR char_frequency_rel IS NOT NULL THEN 1 ELSE 0 END)
+        SELECT
+            COUNT(*),
+            SUM(CASE WHEN char_frequency_abs IS NOT NULL THEN 1 ELSE 0 END),
+            SUM(CASE WHEN frequency_source = ? THEN 1 ELSE 0 END),
+            SUM(
+                CASE
+                    WHEN frequency_source IS NOT NULL
+                     AND frequency_source <> ? THEN 1
+                    ELSE 0
+                END
+            )
         FROM char_inventory
-        """
+        """,
+        (BCC_SOURCE, BCC_SOURCE),
     ).fetchone()
-    total_chars = int(existing_row[0] or 0) if existing_row is not None else 0
-    populated_now = int(existing_row[1] or 0) if existing_row is not None else 0
+    total_chars = int(row[0] or 0) if row is not None else 0
+    populated = int(row[1] or 0) if row is not None else 0
+    bcc_rows = int(row[2] or 0) if row is not None else 0
+    synthetic_rows = int(row[3] or 0) if row is not None else 0
 
     source_counter = Counter(
-        str(row[0] or "").strip()
-        for row in conn.execute(
+        str(item[0] or "").strip()
+        for item in conn.execute(
             """
             SELECT frequency_source
             FROM char_inventory
-            WHERE char_frequency_abs IS NOT NULL OR char_frequency_rel IS NOT NULL
+            WHERE frequency_source IS NOT NULL AND TRIM(frequency_source) <> ''
             """
         )
-        if str(row[0] or "").strip()
+        if str(item[0] or "").strip()
     )
-
-    populated_after = conn.execute(
-        """
-        SELECT SUM(CASE WHEN char_frequency_abs IS NOT NULL OR char_frequency_rel IS NOT NULL THEN 1 ELSE 0 END)
-        FROM char_inventory
-        """
-    ).fetchone()
-    populated_after_count = int(populated_after[0] or 0) if populated_after is not None else 0
     dominant_source = source_counter.most_common(1)[0][0] if source_counter else ""
 
+    purge_legacy_frequency_metadata(conn)
     conn.executemany(
         '''
         INSERT OR REPLACE INTO prototype_metadata (key, value, note, updated_at)
@@ -451,33 +509,38 @@ def summarize_char_frequency_state(conn: sqlite3.Connection) -> dict[str, int | 
         ''',
         [
             (
-                "prototype_char_frequency_bridge_total_chars",
+                "prototype_char_frequency_state_total_chars",
                 str(total_chars),
-                "现行 char_inventory 总字数",
+                "char_inventory 总字数",
             ),
             (
-                "prototype_char_frequency_bridge_populated_before",
-                str(populated_now),
-                "统计时 char_inventory 中已有频率的字数",
+                "prototype_char_frequency_state_populated",
+                str(populated),
+                "char_inventory 已写入 char_frequency_abs 的字数",
             ),
             (
-                "prototype_char_frequency_bridge_populated_after",
-                str(populated_after_count),
-                "统计后 char_inventory 中已有频率的字数",
+                "prototype_char_frequency_state_bcc_rows",
+                str(bcc_rows),
+                "frequency_source 为 BCC 的字数",
             ),
             (
-                "prototype_char_frequency_bridge_dominant_source",
+                "prototype_char_frequency_state_synthetic_rows",
+                str(synthetic_rows),
+                "frequency_source 为 Unihan 合成兜底的字数",
+            ),
+            (
+                "prototype_char_frequency_state_dominant_source",
                 dominant_source,
-                "当前 char_inventory 中采用最多的频率来源标签",
+                "char_inventory 中出现最多的 frequency_source",
             ),
         ],
     )
 
     return {
         "total_chars": total_chars,
-        "populated_before": populated_now,
-        "populated_after": populated_after_count,
-        "bridged_rows": 0,
+        "populated": populated,
+        "bcc_rows": bcc_rows,
+        "synthetic_rows": synthetic_rows,
         "dominant_source": dominant_source,
     }
 
@@ -497,56 +560,32 @@ def load_dictionary_chars(path: Path) -> set[str]:
     return chars
 
 
+def load_char_inventory_frequencies(conn: sqlite3.Connection) -> dict[str, int]:
+    return {
+        str(row[0]): int(row[1] or 0)
+        for row in conn.execute(
+            "SELECT hanzi, COALESCE(char_frequency_abs, 0) FROM char_inventory"
+        )
+    }
+
+
 def load_single_char_word_frequencies(path: Path) -> dict[str, int]:
-    frequency_by_char: dict[str, int] = {}
     if not path.exists():
-        return frequency_by_char
-
-    for raw_line in path.read_text(encoding="utf-8").splitlines():
-        line = raw_line.strip()
-        if not line or line.startswith("#") or "\t" not in line:
-            continue
-        parts = line.split("\t")
-        if len(parts) < 3:
-            continue
-        hanzi = parts[0].strip()
-        if len(hanzi) != 1:
-            continue
-        try:
-            frequency = int(parts[2].strip())
-        except ValueError:
-            continue
-        previous = frequency_by_char.get(hanzi)
-        if previous is None or frequency > previous:
-            frequency_by_char[hanzi] = frequency
-
-    return frequency_by_char
+        return {}
+    by_char, _parsed_rows = load_char_frequency_map(path)
+    return by_char
 
 
 def load_single_char_word_ranks(path: Path) -> dict[str, int]:
-    rank_by_char: dict[str, int] = {}
-    if not path.exists():
-        return rank_by_char
-
-    for raw_line in path.read_text(encoding="utf-8").splitlines():
-        line = raw_line.strip()
-        if not line or line.startswith("#") or "\t" not in line:
-            continue
-        parts = line.split("\t")
-        if len(parts) < 3:
-            continue
-        hanzi = parts[0].strip()
-        if len(hanzi) != 1:
-            continue
-        try:
-            rank = int(parts[2].strip())
-        except ValueError:
-            continue
-        previous = rank_by_char.get(hanzi)
-        if previous is None or rank < previous:
-            rank_by_char[hanzi] = rank
-
-    return rank_by_char
+    frequency_by_char = load_single_char_word_frequencies(path)
+    sorted_chars = sorted(
+        frequency_by_char.items(),
+        key=lambda item: (-item[1], item[0]),
+    )
+    return {
+        hanzi: index
+        for index, (hanzi, _frequency) in enumerate(sorted_chars, start=1)
+    }
 
 
 def upsert_runtime_tuning_parameters(conn: sqlite3.Connection, parameters: dict[str, float]) -> None:
@@ -609,7 +648,7 @@ def load_runtime_db_char_rows_from_connection(conn: sqlite3.Connection) -> list[
             COALESCE(tier_sort_weight, 0.0)
                 + CASE WHEN is_common_reading = 1 THEN COALESCE(modern_common_boost, 0.0) ELSE 0.0 END
                 + COALESCE(reading_phrase_prior_boost, 0.0)
-                + COALESCE(char_frequency_rel, char_frequency_abs, 1.0)
+                + COALESCE(char_frequency_abs, 0)
                 + COALESCE(reading_weight, CASE WHEN is_common_reading = 1 THEN 1.0 ELSE 0.5 END) AS sort_weight,
             is_common_reading AS is_common,
             COALESCE(tier_sort_weight, 0.0) AS usage_tier_sort_boost,
@@ -644,12 +683,12 @@ def build_scenario_summaries_from_rows(
     scenario_scorers = {
         "tier_only": lambda entry: float(entry.get("usage_tier_sort_boost", 0.0) or 0.0),
         "tier_plus_frequency": lambda entry: float(entry.get("usage_tier_sort_boost", 0.0) or 0.0)
-        + float(entry.get("char_frequency_rel", entry.get("char_frequency_abs", 0.0)) or 0.0),
+        + float(entry.get("char_frequency_abs", 0) or 0),
         "tier_plus_frequency_plus_modern_common": lambda entry: float(entry.get("usage_tier_sort_boost", 0.0) or 0.0)
-        + float(entry.get("char_frequency_rel", entry.get("char_frequency_abs", 0.0)) or 0.0)
+        + float(entry.get("char_frequency_abs", 0) or 0)
         + (float(entry.get("modern_common_boost", 0.0) or 0.0) if bool(entry.get("is_common")) else 0.0),
         "current_runtime": lambda entry: float(entry.get("usage_tier_sort_boost", 0.0) or 0.0)
-        + float(entry.get("char_frequency_rel", entry.get("char_frequency_abs", 0.0)) or 0.0)
+        + float(entry.get("char_frequency_abs", 0) or 0)
         + (float(entry.get("modern_common_boost", 0.0) or 0.0) if bool(entry.get("is_common")) else 0.0)
         + float(entry.get("reading_phrase_prior_boost", 0.0) or 0.0)
         + float(entry.get("reading_weight", 1.0) or 1.0),
@@ -708,7 +747,7 @@ def build_high_collision_bucket_reference(
             key=lambda entry: (
                 -(
                     float(entry.get("usage_tier_sort_boost", 0.0) or 0.0)
-                    + float(entry.get("char_frequency_rel", entry.get("char_frequency_abs", 0.0)) or 0.0)
+                    + float(entry.get("char_frequency_abs", 0) or 0)
                     + (float(entry.get("modern_common_boost", 0.0) or 0.0) if bool(entry.get("is_common")) else 0.0)
                     + float(entry.get("reading_phrase_prior_boost", 0.0) or 0.0)
                     + float(entry.get("reading_weight", 1.0) or 1.0)
@@ -1233,7 +1272,7 @@ def rebuild_char_modern_common_profile(conn: sqlite3.Connection, tuning_paramete
         for row in conn.execute("SELECT hanzi FROM char_inventory")
         if str(row[0] or "")
     }
-    modern_rank_by_char = load_single_char_word_ranks(DEFAULT_SINGLE_CHAR_FREQ_SOURCE)
+    modern_rank_by_char = load_single_char_word_ranks(DEFAULT_BLCU_CHAR_FREQ_SOURCE)
     max_rank = int(tuning_parameters.get("modern_common_max_rank", MODERN_COMMON_MAX_RANK))
     rank_divisor = float(tuning_parameters.get("modern_common_rank_divisor", MODERN_COMMON_RANK_DIVISOR)) or 1.0
 
@@ -1244,7 +1283,7 @@ def rebuild_char_modern_common_profile(conn: sqlite3.Connection, tuning_paramete
         if rank > max_rank:
             continue
         boost = max(max_rank - rank, 0) / rank_divisor
-        rows.append((hanzi, rank, float(boost), "xiandaihaiyuchangyongcibiao_single_char_rank"))
+        rows.append((hanzi, rank, float(boost), "blcu_bcc_single_char_rank"))
 
     conn.execute("DELETE FROM char_modern_common_profile")
     if rows:
@@ -1325,7 +1364,7 @@ def rebuild_char_reading_prior(conn: sqlite3.Connection, tuning_parameters: dict
     }
     phrase_rows = conn.execute(
         '''
-        SELECT pi.phrase, ppm.pinyin_tone, COALESCE(pi.phrase_frequency, 1.0)
+        SELECT pi.phrase, ppm.pinyin_tone, COALESCE(pi.phrase_frequency, 0)
         FROM phrase_inventory AS pi
         JOIN phrase_pinyin_map AS ppm
             ON ppm.phrase_id = pi.id
@@ -1352,7 +1391,7 @@ def rebuild_char_reading_prior(conn: sqlite3.Connection, tuning_parameters: dict
         if not text or not syllables or len(text) != len(syllables):
             stats["skipped_mismatched_phrase_rows"] += 1
             continue
-        frequency = float(phrase_frequency or 1.0)
+        frequency = int(phrase_frequency or 0)
         stats["phrase_rows"] += 1
         for hanzi, syllable in zip(text, syllables, strict=False):
             if hanzi not in existing_chars:
@@ -1439,7 +1478,7 @@ def build_phrase_support_by_char(conn: sqlite3.Connection) -> dict[str, float]:
     support_by_char: dict[str, float] = defaultdict(float)
     rows = conn.execute(
         '''
-        SELECT phrase, COALESCE(phrase_frequency, 1.0)
+        SELECT phrase, COALESCE(phrase_frequency, 0)
         FROM phrase_inventory
         WHERE phrase IS NOT NULL AND phrase <> ''
         '''
@@ -1463,13 +1502,13 @@ def build_char_usage_profile_rows(conn: sqlite3.Connection) -> list[tuple[str, s
     if not existing_chars:
         return []
 
-    freq_8105 = load_8105_char_frequencies(DEFAULT_8105_SOURCE)
-    sorted_8105_chars = [
+    tghz_freq = load_tghz2013_char_frequencies(DEFAULT_UNIHAN_READINGS_DB_PATH)
+    sorted_tghz_chars = [
         hanzi
         for hanzi, _frequency in sorted(
             (
                 (hanzi, frequency)
-                for hanzi, frequency in freq_8105.items()
+                for hanzi, frequency in tghz_freq.items()
                 if hanzi in existing_chars
             ),
             key=lambda item: (-item[1], item[0]),
@@ -1477,12 +1516,12 @@ def build_char_usage_profile_rows(conn: sqlite3.Connection) -> list[tuple[str, s
     ]
 
     dictionary_chars = load_dictionary_chars(DEFAULT_XHC1983_SOURCE) & existing_chars
-    single_char_word_freq = load_single_char_word_frequencies(DEFAULT_SINGLE_CHAR_FREQ_SOURCE)
+    single_char_word_freq = load_char_inventory_frequencies(conn)
     phrase_support = build_phrase_support_by_char(conn)
 
-    high_common_chars = sorted_8105_chars[:COMMON_HIGH_COUNT]
-    low_common_chars = sorted_8105_chars[COMMON_HIGH_COUNT:COMMON_HIGH_COUNT + COMMON_LOW_COUNT]
-    high_special_chars = sorted_8105_chars[
+    high_common_chars = sorted_tghz_chars[:COMMON_HIGH_COUNT]
+    low_common_chars = sorted_tghz_chars[COMMON_HIGH_COUNT:COMMON_HIGH_COUNT + COMMON_LOW_COUNT]
+    high_special_chars = sorted_tghz_chars[
         COMMON_HIGH_COUNT + COMMON_LOW_COUNT:
         COMMON_HIGH_COUNT + COMMON_LOW_COUNT + SPECIAL_HIGH_COUNT
     ]
@@ -1516,9 +1555,9 @@ def build_char_usage_profile_rows(conn: sqlite3.Connection) -> list[tuple[str, s
                 source_note,
             ))
 
-    append_rows(high_common_chars, "common_high", "8105_frequency_top_3500")
-    append_rows(low_common_chars, "common_low", "8105_frequency_3501_6500")
-    append_rows(high_special_chars, "special_high", "8105_frequency_6501_8105")
+    append_rows(high_common_chars, "common_high", "tghz2013_bcc_frequency_top_3500")
+    append_rows(low_common_chars, "common_low", "tghz2013_bcc_frequency_3501_6500")
+    append_rows(high_special_chars, "special_high", "tghz2013_bcc_frequency_6501_8105")
     append_rows(low_special_chars, "special_low", "dictionary_and_lexicon_support_to_13000")
     append_rows(rare_chars, "rare", "out_of_primary_13000")
     return rows
@@ -1727,10 +1766,11 @@ def main() -> int:
         bridge_stats = summarize_char_frequency_state(conn)
         reading_weight_stats = rebuild_char_pinyin_reading_weights(conn, tuning_parameters)
         print(
-            "已检查单字频率状态: "
-            f"命中 {bridge_stats['bridged_rows']} 字，"
-            f"桥接前已填充 {bridge_stats['populated_before']}，"
-            f"桥接后已填充 {bridge_stats['populated_after']}"
+            "已记录单字频率状态: "
+            f"总计 {bridge_stats['total_chars']}，"
+            f"已填充 {bridge_stats['populated']}（"
+            f"BCC {bridge_stats['bcc_rows']}，"
+            f"合成 {bridge_stats['synthetic_rows']}）"
         )
         print(
             "已加载运行时调参: "
