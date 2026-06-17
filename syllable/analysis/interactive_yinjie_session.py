@@ -40,4 +40,18 @@ def interactive_encoder(
             cli_policy.interactive_unexpected_error(error)
 
 
-__all__ = ["interactive_encoder"]
+def main(input_reader=input) -> None:
+    """模块统一 CLI 入口。"""
+    try:
+        from .yinjie_composition import run_default_interactive_session
+    except ImportError:
+        from yinjie_composition import run_default_interactive_session
+
+    run_default_interactive_session(input_reader=input_reader)
+
+
+__all__ = ["interactive_encoder", "main"]
+
+
+if __name__ == "__main__":
+    main()

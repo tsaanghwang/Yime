@@ -121,7 +121,7 @@
 				"name": "interactive_yinjie",
 				"type": "python",
 				"request": "launch",
-				"program": "${workspaceFolder}\\syllable\\codec\\interactive_yinjie.py",
+				"program": "${workspaceFolder}\\syllable\\analysis\\interactive_yinjie_session.py",
 				"currentFileConfiguration": false,
 				"cwd": "${workspaceFolder}",
 				"addSourceRootsToPythonpath": true
@@ -199,16 +199,6 @@
 				"type": "python",
 				"request": "launch",
 				"program": "${workspaceFolder}\\syllable\\analysis\\yinjie_encoder.py",
-				"currentFileConfiguration": false,
-				"cwd": "${workspaceFolder}\\syllable\\analysis",
-				"addSourceRootsToPythonpath": true,
-				"noDebug": true
-			},
-			{
-				"name": "yinjie_encoder",
-				"type": "python",
-				"request": "launch",
-				"program": "${workspaceFolder}\\syllable\\codec\\yinjie_encoder.py",
 				"currentFileConfiguration": false,
 				"cwd": "${workspaceFolder}",
 				"addSourceRootsToPythonpath": true,

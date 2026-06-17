@@ -3,7 +3,7 @@ import json
 import tempfile
 from pathlib import Path
 
-from syllable.codec.yinjie_encoder import (
+from syllable.analysis.yinjie_encoder import (
     YinjieEncoder,
     YinjieEncodingError,
 )

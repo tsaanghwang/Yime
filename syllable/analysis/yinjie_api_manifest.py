@@ -33,6 +33,7 @@ YINJIE_COMPOSITION_EXPORTS = [
     "get_default_cli_policy",
     "get_default_error_policy",
     "get_default_reporting_policy",
+    "main",
     "run_default_interactive_session",
 ]
 
@@ -40,8 +41,6 @@ YINJIE_FACADE_EXPORTS = [
     *YINJIE_IMPLEMENTATION_EXPORTS,
     *YINJIE_COMPOSITION_EXPORTS,
 ]
-
-YINJIE_ROOT_ENTRY_EXPORTS = YINJIE_FACADE_EXPORTS
 
 YINJIE_INTERACTIVE_ENTRY_EXPORTS = [
     "interactive_encoder",
@@ -53,5 +52,4 @@ __all__ = [
     "YINJIE_FACADE_EXPORTS",
     "YINJIE_INTERACTIVE_ENTRY_EXPORTS",
     "YINJIE_IMPLEMENTATION_EXPORTS",
-    "YINJIE_ROOT_ENTRY_EXPORTS",
 ]
