@@ -1,6 +1,7 @@
 # Ignore sqlite DB and backups
 yime/pinyin_hanzi.db
 yime/pinyin_hanzi.db.*
+yime/pinyin_hanzi.json
 yime/user_lexicon.db
 yime/ui_settings.json
 yime/*.db-wal

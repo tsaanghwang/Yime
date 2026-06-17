@@ -155,8 +155,8 @@
 - `yime/pinyin_normalized.json`
   - 当前承担 `数字标调拼音 -> 调号标调拼音` 的显示层资料。
   - 由 `rebuild_pinyin_assets.py` 从 `lexicon_exports/pinyin_normalized.json` 同步复制，供 IME/static decoder 读取。
-  - 当前输入法主链优先走运行时 `runtime_candidates` JSON，并在缺失时回退 SQLite `runtime_candidates` 视图；`pinyin_normalized.json` 与 `yime/pinyin_hanzi.json` 现在只服务静态候选兜底层，不再是主候选源。
-  - 静态候选解码链仍直接将它与 `syllable/codec/yinjie_code.json`、`yime/pinyin_hanzi.json` 组合使用，不再经过 `yinjie_mapping.json` / `enhanced_yinjie_mapping.json` 中间产物。
+  - 当前输入法主链优先走 SQLite `runtime_candidates` 视图，并在缺失时回退 `.generated/runtime_candidates_by_code_true.json`；`pinyin_normalized.json` 仍服务静态解码器的码元→拼音映射，但不再是主候选源。
+  - 可选的 `yime/pinyin_hanzi.json` 仅作静态拼音→汉字兜底（已 gitignore；缺失时静态回退只解码拼音、不出汉字候选）。
 
 #### 3. 布局解析与布局安装产物
 

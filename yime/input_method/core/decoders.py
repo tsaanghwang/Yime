@@ -61,7 +61,7 @@ class StaticCandidateDecoder:
             self.bmp_to_canonical,
         )
         self.code_mapping = self._build_code_mapping(marked_pinyin_path)
-        self.pinyin_hanzi = self._load_first_available_json(pinyin_hanzi_paths)
+        self.pinyin_hanzi = self._load_optional_json(pinyin_hanzi_paths)
 
     def _load_json(self, path: Path) -> JSONDict:
         with path.open("r", encoding="utf-8") as handle:
@@ -74,6 +74,12 @@ class StaticCandidateDecoder:
                 return self._load_json(path)
         joined = ", ".join(str(path) for path in paths)
         raise FileNotFoundError(f"未找到候选数据文件: {joined}")
+
+    def _load_optional_json(self, paths: List[Path]) -> JSONDict:
+        for path in paths:
+            if path.exists():
+                return self._load_json(path)
+        return {}
 
     def _build_bmp_to_canonical_map(
         self, projection_path: Path, key_to_symbol_path: Path
