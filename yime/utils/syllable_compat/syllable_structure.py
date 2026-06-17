@@ -13,7 +13,6 @@
       - 末音(乐音)
 """
 
-import sqlite3
 from typing import Dict, List, Optional, Tuple
 
 
@@ -27,15 +26,6 @@ class SyllableStructure:
         peak: Optional[str] = None,
         descender: Optional[str] = None
     ):
-        """
-        初始化音节对象
-
-        参数:
-            initial: 首音(噪音)
-            ascender: 呼音(乐音)
-            peak: 主音(乐音)
-            descender: 末音(乐音)
-        """
         self.initial = initial
         self.ascender = ascender
         self.peak = peak
@@ -165,62 +155,6 @@ class SyllableStructure:
     def get_yunyin_code(self) -> str:
         """获取韵音部分编码"""
         return (self.peak or '') + (self.descender or '')
-
-    @classmethod
-    def from_db_dict(cls, db_dict: Dict) -> 'SyllableStructure':
-        """从数据库字典创建音节结构对象"""
-        return cls(
-            initial=db_dict.get('首音'),
-            ascender=db_dict.get('呼音'),
-            peak=db_dict.get('主音'),
-            descender=db_dict.get('末音')
-        )
-
-    def to_db_dict(self) -> Dict[str, str]:
-        """将音节结构转换为数据库写入字段。"""
-        full_code = self.get_full_code()
-        return {
-            '全拼': full_code,
-            '简拼': self.get_abbreviation(),
-            '首音': self.initial or '',
-            '干音': self.get_ganyin_code(),
-            '呼音': self.ascender or '',
-            '主音': self.peak or '',
-            '末音': self.descender or '',
-            '间音': self.get_jianyin_code(),
-            '韵音': self.get_yunyin_code(),
-        }
-
-    def save_to_db(self, db_connection: sqlite3.Connection) -> None:
-        """将音节结构保存到数据库"""
-        data = self.to_db_dict()
-        cursor = db_connection.cursor()
-        cursor.execute(
-            """
-            INSERT OR REPLACE INTO 音元拼音 (
-                全拼, 简拼, 首音, 干音, 呼音, 主音, 末音, 间音, 韵音
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """,
-            tuple(data.values()),
-        )
-        db_connection.commit()
-
-    @classmethod
-    def load_from_db(
-        cls,
-        db_connection: sqlite3.Connection,
-        full_code: str
-    ) -> Optional['SyllableStructure']:
-        """从数据库加载音节结构"""
-        cursor = db_connection.cursor()
-        cursor.execute("SELECT * FROM 音元拼音 WHERE 全拼=?", (full_code,))
-        row = cursor.fetchone()
-        if row:
-            return cls.from_db_dict(dict(zip(
-                ['编号', '全拼', '简拼', '首音', '干音', '呼音', '主音', '末音', '间音', '韵音', '最近更新'],
-                row
-            )))
-        return None
 
     @staticmethod
     def from_string(pinyin: str) -> 'SyllableStructure':

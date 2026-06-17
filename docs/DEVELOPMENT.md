@@ -38,11 +38,7 @@ npm install
 
 #### 4. 初始化数据库
 
-```bash
-python yime/run_db_setup.py
-```
-
-这条命令现在只是 legacy shim；真实兼容实现位于 `yime/legacy/pending_removal/run_db_setup.py`。
+当前主线不再使用 `run_db_setup`；prototype schema 由导入脚本直接应用。见 `docs/project/PINYIN_DATA_MIGRATION.md`。
 
 #### 5. 运行测试
 
@@ -66,9 +62,8 @@ YIME/
 │   ├── import_danzi_into_prototype_tables.py  # 兼容入口；真实实现位于 yime/utils/prototype_single_char_import.py
 │   ├── import_duozi_into_prototype_tables.py  # 兼容入口；真实实现位于 yime/utils/prototype_phrase_import.py
 │   ├── refresh_runtime_yime_codes.py          # 兼容 shim；真实实现位于 yime/utils/runtime_codes_refresh.py
-│   ├── utils/legacy_pinyin_tables/            # 保留的旧拼音参考表链与兼容实现
-│   └── legacy/pending_removal/                # legacy-compatible 旧数据库接口归档
-│       └── db_manager.py                      # 旧数据库管理入口
+│   ├── utils/syllable_compat/                 # 音节结构/解码兼容实现
+│   └── legacy/pending_removal/                # 归档（仅 windows_candidate_box）
 │
 ├── pinyin/               # 拼音处理模块
 │   ├── yunmu_to_keys.py       # 韵母转换
@@ -79,7 +74,7 @@ YIME/
 
 当前仓库对主包根目录的兼容入口采用下面约定：
 
-- 如果 `yime/` 根目录文件只为保留公开导入路径或历史脚本路径，则真实实现应下沉到 `yime/utils/`、`yime/utils/legacy_pinyin_tables/` 或 `yime/legacy/pending_removal/`。
+- 如果 `yime/` 根目录文件只为保留公开导入路径或历史脚本路径，则真实实现应下沉到 `yime/utils/` 或 `yime/legacy/pending_removal/`。
 - 这类根目录兼容入口应尽量显式导出 `__all__`；若需要动态透传整模块，才使用 `__getattr__` / `__dir__`。
 - 仍保留脚本入口的 shim，应统一用 `raise SystemExit(main())`；若真实实现本身是 `None` 返回的应用入口，则 shim 只负责调用，不强行包成整数返回值。
 
@@ -105,7 +100,7 @@ YIME/
 
 补充说明：旧的 JS / React 输入法原型链已经迁出主仓库，当前正式外置位置为单独的 `Yime-js-prototype` 仓库。
 本仓库当前开发主线以 `yime/` 下的 Windows IME Python 实现为准。
-拼音数据当前主线 rebuild 链请改看 `docs/project/PINYIN_DATA_MIGRATION.md`，不要再把 `db_manager.py` 视为默认入口；`hanzi_db_manager.py` 已退场。
+拼音数据当前主线 rebuild 链请改看 `docs/project/PINYIN_DATA_MIGRATION.md`。旧 `db_manager` 三表链已于 2026-06 删除。
 
 ---
 
@@ -277,8 +272,7 @@ sqlite3 yime/pinyin_hanzi.db
 
 ### 2. 添加新表
 
-如果你是在维护 legacy-compatible 中文表结构，才在 `yime/legacy/pending_removal/db_manager.py` 中修改；
-如果你是在维护当前主线 rebuild/runtime 链，应优先修改：
+当前主线 rebuild/runtime 链应修改：
 
 - `yime/create_prototype_schema_additions.sql`
 - `yime/import_danzi_into_prototype_tables.py`（兼容入口；真实实现位于 `yime/utils/prototype_single_char_import.py`）
@@ -561,15 +555,7 @@ python -m build
 
 ### Q: 如何添加新的拼音映射？
 
-A: 当前主线不要再直接维护旧短表名映射接口。
-如果你是在维护资料层拼音对照，请修改 `pinyin_yime_code` 来源并重跑：
-
-```python
-from yime.utils.legacy_pinyin_tables.Initialize_pinyin_mapping import rebuild_mappings_from_db
-
-count = rebuild_mappings_from_db()
-print(count)
-```
+A: 当前主线通过 `source_pinyin.db` 与 prototype 导入链维护；见 `docs/project/PINYIN_DATA_MIGRATION.md`。
 
 ### Q: 如何优化转换性能？
 

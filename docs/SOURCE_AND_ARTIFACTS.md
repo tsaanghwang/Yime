@@ -290,13 +290,13 @@
   - 分类：当前迁移说明。
   - 原因：该文档明确区分当前主线 `source_pinyin.db -> prototype tables -> runtime` rebuild 链与 legacy-compatible 区域。
 
-- `yime/legacy/pending_removal/`
-  - 分类：旧 schema / 旧数据库接口的 legacy-compatible 保留面。
-  - 原因：仍被 `db_manager`、`windows_candidate_box`、`run_db_setup` 等 shim 引用；`maintenance_tests/`、`manual_db_experiments/`、`pinyin_db_prototype/` 子树已删除。
+- `yime/legacy/pending_removal/`（2026-06 Phase E）
+  - 分类：归档目录；仅保留 `windows_candidate_box.py`。
+  - 原因：`db_manager.py`、`run_db_setup.py`、`yime/utils/legacy_pinyin_tables/` 三表链已删除。
 
-- 待清除实现层：`yime/utils/legacy_pinyin_tables/Initialize_pinyin_mapping.py`
-  - 分类：已从主目录剥离的 legacy-compatible 初始化/数据库接口实现。
-  - 原因：当前主线已不再通过主目录入口暴露这些旧接口；三表生成链已移到 `yime/utils/legacy_pinyin_tables/`，剩余旧 DB 入口仅保留 `db_manager.py` 一条兼容迁移面。
+- `yime/utils/syllable_compat/`
+  - 分类：音节结构/解码兼容实现（自 legacy 链迁出）。
+  - 原因：`yime/syllable_structure.py` 与 `yime/syllable_decoder.py` 仍为公开 shim。
 
 - 已清退旧汉字拼音映射表：`汉字音元拼音映射`、`汉字数字标调拼音映射`
   - 分类：已移除的旧数据库关联表。
@@ -330,18 +330,6 @@
   - 分类：已移除的旧数据库 FTS5 虚拟表及影子表。
   - 原因：仓库内已无任何代码、文档或脚本再读取这两组全文检索对象；继续保留只会把无消费者的 FTS5 影子表留在主库里，扩大历史 schema 面。
 
-- 待清除实现层：`yime/utils/legacy_pinyin_tables/split_numeric_pinyin.py`、`yime/utils/legacy_pinyin_tables/rebuild_yinyuan_structure_table.py`
-  - 分类：已从主目录剥离的 legacy-compatible 实现模块。
-  - 原因：它们只服务 `多式拼音映射关系 / 音元拼音 / 数字标调拼音` 三表的生成链，已从 `legacy` 归档目录移到 `utils` 下的专用子包。
-
-- 保留中的兼容实现：`yime/utils/legacy_pinyin_tables/syllable_decoder.py`
-  - 分类：已从主目录剥离的 legacy-compatible 音节解码实现。
-  - 原因：源码内活动消费者只剩三表重建链；主包根目录 `yime/syllable_decoder.py` 现仅保留公开导入路径与 API 文档入口所需的 shim。
-
-- 保留中的兼容实现：`yime/utils/legacy_pinyin_tables/syllable_structure.py`
-  - 分类：已从主目录剥离的 legacy-compatible 音节结构实现。
-  - 原因：源码内活动消费者只剩三表重建链和兼容音节解码器；主包根目录 `yime/syllable_structure.py` 现仅保留公开导入路径与 API 文档入口所需的 shim。
-
 - 已清退旧中文辅助视图：`多音字视图`、`拼音映射视图`、`汉字拼音映射视图`、`汉字标准拼音视图`、`汉字音元拼音视图`
   - 分类：已移除的旧数据库辅助视图。
   - 原因：它们只服务旧中文表观察/审计，不再被当前主线 rebuild/runtime 或保留的 legacy-compatible 三表生成链读取；继续保留只会扩大历史 schema 面。
@@ -349,9 +337,9 @@
 当前处理原则补充：
 
 1. 主线重建优先走 `internal_data/pinyin_source_db/` 与 prototype 导入链，不再把旧中文表维护脚本当成默认入口。
-2. 主包根目录里仍保留的同名入口，默认应理解为兼容 shim；除应用级顶层入口外，这些 shim 现在都尽量显式声明 `__all__`，并把真实实现放在 `yime/utils/`、`yime/utils/legacy_pinyin_tables/` 或 `yime/legacy/pending_removal/`。
+2. 主包根目录里仍保留的同名入口，默认应理解为兼容 shim；除应用级顶层入口外，这些 shim 现在都尽量显式声明 `__all__`，并把真实实现放在 `yime/utils/` 或 `yime/legacy/pending_removal/`。
 3. `tools/` 下凡是代理外部键盘布局仓库或系统脚本的 orchestration 入口，默认应先做路径预检，并统一使用 `YIME_KEYBOARD_LAYOUT_REPO` 解析外部 `Yime-keyboard-layout` 仓库位置。
-4. `yime/legacy/` 中的脚本默认不继续扩展新功能，只保留历史兼容与审计用途；其中旧 schema / 汉字接口继续留在 `yime/legacy/pending_removal/`，而三表生成链已移到 `yime/utils/legacy_pinyin_tables/`。数据库维护脚本产生的 `.bak`/`pre_*` 等回退文件应统一视为本地副产物，不再提交。
+4. `yime/legacy/` 中的脚本默认不继续扩展新功能；`pending_removal/` 仅保留 `windows_candidate_box`。数据库维护脚本产生的 `.bak`/`pre_*` 等回退文件应统一视为本地副产物，不再提交。
 
 #### 6C. `yime/reports/` 运行桥接文件与分析产物（2026-05）
 
@@ -388,11 +376,7 @@
 
 - `run_db_setup.py`
   - 分类：已删除的根级旧初始化脚本。
-  - 原因：它默认操作根目录 `pinyin_hanzi.db`，与 `yime/run_db_setup.py` 这条模块内链重复，保留它只会继续制造“根目录库 vs 模块目录库”的混淆。
-
-- `yime/legacy/pending_removal/run_db_setup.py`
-  - 分类：保留中的 legacy-compatible DB bootstrap 实现。
-  - 原因：它只负责调用 `db_manager.run_schema_migrations()` 维护旧 schema 兼容面；主包根目录的 `yime/run_db_setup.py` 现已降级为同名 shim，避免把真实兼容实现继续留在主目录。
+  - 原因：它默认操作根目录 `pinyin_hanzi.db`；模块内 `yime/run_db_setup.py` 与 pending_removal 实现亦于 2026-06 Phase E 删除。
 
 当前处理原则补充：
 
@@ -401,15 +385,16 @@
 
 #### 6D–12. 历史清理记录（2026-04 ~ 2026-06，归档）
 
-2026-04 至 2026-06 多轮清理已移除：根目录旧启动/安装包装脚本、演示数据库与临时导出、外迁的 \	ools/releases/\ 与旧 HTML/JS 原型链、根目录 legacy/ 树、YAML 并行词库链、yime/legacy/ 实验子树，以及无引用的 freq 诊断工具等。
+2026-04 至 2026-06 多轮清理已移除：根目录旧启动/安装包装脚本、演示数据库与临时导出、外迁的 `tools/releases/` 与旧 HTML/JS 原型链、根目录 legacy/ 树、YAML 并行词库链、yime/legacy/ 实验子树、db_manager 三表链，以及无引用的 freq 诊断工具等。
 
 **不再在本文件逐项列举已删路径。** 需要核对时：
 
-\\ash
+```bash
 git log --oneline --grep='Remove\|legacy\|cleanup\|删除'
 git show <commit> --stat
-\
-2026-06 仍保留的 legacy 兼容面：yime/legacy/pending_removal/、yime/utils/legacy_pinyin_tables/（见 docs/project/PINYIN_DATA_MIGRATION.md）。
+```
+
+2026-06 Phase E 后仍保留：`yime/legacy/pending_removal/windows_candidate_box.py`、`yime/utils/syllable_compat/`（见 docs/project/PINYIN_DATA_MIGRATION.md）。
 
 ### E. 审计与过渡辅助文件
 

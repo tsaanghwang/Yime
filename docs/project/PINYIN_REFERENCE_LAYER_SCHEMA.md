@@ -181,13 +181,4 @@ CREATE TABLE IF NOT EXISTS "多式拼音映射关系" (
 
 ## 当前仓库的着手点
 
-如果开始落地，最先需要看的文件是：
-
-- `yime/legacy/pending_removal/db_manager.py`
-  - 当前隔离后的 legacy schema 定义入口
-- `yime/utils/legacy_pinyin_tables/Initialize_pinyin_mapping.py`
-  - 三表生成链的初始化脚本，现已只建并写入 `多式拼音映射关系`
-- `yime/utils/legacy_pinyin_tables/split_numeric_pinyin.py`
-  - 数字标调拼音导入逻辑，现已只把 `多式拼音映射关系` 作为资料层来源
-
-下一步重点是评估是否把当前最小版进一步提升为推荐版三表结构。
+旧三表生成链（`db_manager`、`Initialize_pinyin_mapping`、`split_numeric_pinyin`）已于 2026-06 删除。当前主线见 `docs/project/PINYIN_DATA_MIGRATION.md` 与 `yime/create_prototype_schema_additions.sql`。

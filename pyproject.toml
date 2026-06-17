@@ -36,7 +36,7 @@ exclude = ["tests*", "tools*"]
 [tool.setuptools.package-data]
 "syllable" = ["yinyuan/*.json"]
 "syllable.codec" = ["*.json"]
-"yime" = ["*.json", "*.sql", "*.txt", "*.csv", "utils/legacy_pinyin_tables/compat_internal_data/*.json"]
+"yime" = ["*.json", "*.sql", "*.txt", "*.csv"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

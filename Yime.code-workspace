@@ -61,25 +61,6 @@
 				"addSourceRootsToPythonpath": true
 			},
 			{
-				"name": "Initialize_pinyin_mapping (legacy)",
-				"type": "python",
-				"request": "launch",
-				"program": "${workspaceFolder}\\yime\\utils\\legacy_pinyin_tables\\Initialize_pinyin_mapping.py",
-				"currentFileConfiguration": false,
-				"cwd": "${workspaceFolder}",
-				"addSourceRootsToPythonpath": true
-			},
-			{
-				"name": "split_numeric_pinyin",
-				"type": "python",
-				"request": "launch",
-				"program": "${workspaceFolder}\\yime\\utils\\legacy_pinyin_tables\\split_numeric_pinyin.py",
-				"currentFileConfiguration": false,
-				"cwd": "${workspaceFolder}",
-				"addSourceRootsToPythonpath": true,
-				"noDebug": true
-			},
-			{
 				"name": "syllable_structure",
 				"type": "python",
 				"request": "launch",
@@ -115,16 +96,6 @@
 				"program": "${workspaceFolder}\\yime\\pinyin_importer.py",
 				"currentFileConfiguration": false,
 				"cwd": "${workspaceFolder}\\yime",
-				"addSourceRootsToPythonpath": true,
-				"noDebug": true
-			},
-			{
-				"name": "db_manager",
-				"type": "python",
-				"request": "launch",
-				"program": "${workspaceFolder}\\yime\\legacy\\pending_removal\\db_manager.py",
-				"currentFileConfiguration": false,
-				"cwd": "${workspaceFolder}",
 				"addSourceRootsToPythonpath": true,
 				"noDebug": true
 			},

@@ -50,26 +50,16 @@ c:/dev/Yime/.venv/Scripts/python.exe yime/export_runtime_candidates_json.py
 - `build_source_pinyin_db.py` 默认会把 SQLite 产物写到 `.generated/source_pinyin.db`
 - `export_runtime_candidates_json.py`（兼容入口；真实实现位于 `yime/utils/runtime_candidates_export.py`）默认会把 runtime true JSON 写到 `.generated/runtime_candidates_by_code_true.json`
 
-## 2. 当前 legacy-compatible 区域
+## 2. 已退役的 legacy-compatible 区域（2026-06）
 
-下面这些对象仍然保留在仓库里，但不属于当前主线 rebuild：
+以下对象已从仓库删除；恢复请查 git 历史：
 
-- 兼容脚本入口：`yime/run_db_setup.py`（legacy shim）
-- 兼容实现位置：`yime/legacy/pending_removal/run_db_setup.py`
-- 待清除实现层：`yime/legacy/pending_removal/` 下的旧 DB / JSON 实现与兼容资源
+- `yime/run_db_setup.py` 与 `yime/legacy/pending_removal/db_manager.py`（旧中文 schema 维护链）
+- `yime/utils/legacy_pinyin_tables/`（`多式拼音映射关系` / `数字标调拼音` / `音元拼音` 三表生成链）
 
-保留原因：
+音节结构/解码兼容实现已迁到 `yime/utils/syllable_compat/`；公开 shim 仍为 `yime/syllable_structure.py` 与 `yime/syllable_decoder.py`。
 
-- 仍被旧文档、旧测试或旧入口引用。
-- 仍可用于历史库审计、兼容导入或旧结构排障。
-
-但它们不再定义当前主线的“正确 rebuild 方式”。
-
-兼容层分工可以这样理解：
-
-- `yime/run_db_setup.py` 只是指向 `yime/legacy/pending_removal/run_db_setup.py` 的兼容 shim；真实实现仍只服务 `db_manager.py` 这层 legacy schema 维护，不负责当前主线 rebuild。
-- 旧 DB / JSON 真实实现不再保留主目录或 `yime/legacy/` 顶层同名壳；旧 schema / 汉字接口保留在 `yime/legacy/pending_removal/`，三表生成链移到 `yime/utils/legacy_pinyin_tables/`。
-- 当前主线如果需要真正刷新可消费数据，仍应回到本文第 1 节的 `source_pinyin.db -> prototype tables -> runtime` 链。
+当前主线如果需要真正刷新可消费数据，仍应回到本文第 1 节的 `source_pinyin.db -> prototype tables -> runtime` 链。
 
 ## 3. 已归档的旧脚本
 

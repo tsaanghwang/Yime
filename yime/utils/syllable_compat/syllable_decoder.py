@@ -7,13 +7,7 @@ except Exception:
     from utils_charfilter import is_allowed_code_char, is_pua_char
 from syllable.codec.yinjie_decoder import YinjieDecoder
 
-try:
-    from yime.utils.legacy_pinyin_tables.syllable_structure import SyllableStructure
-except Exception:
-    try:
-        from syllable_structure import SyllableStructure
-    except Exception:
-        SyllableStructure = None
+from yime.utils.syllable_compat.syllable_structure import SyllableStructure
 
 
 def _normalize_split(res):
@@ -69,7 +63,7 @@ class SyllableDecoder(YinjieDecoder):
 
     def split_encoded_syllable(self, encoded: str):
         """统一入口：优先使用 SyllableStructure.split_encoded_syllable，失败时回退本地解析。"""
-        if SyllableStructure is not None and hasattr(SyllableStructure, "split_encoded_syllable"):
+        if hasattr(SyllableStructure, "split_encoded_syllable"):
             try:
                 return SyllableStructure.split_encoded_syllable(encoded)
             except Exception:
@@ -85,34 +79,12 @@ class SyllableDecoder(YinjieDecoder):
         peak = yunyin[0] if len(yunyin) > 0 else None
         descender = yunyin[1:] if len(yunyin) > 1 else None
 
-        if SyllableStructure is not None:
-            return SyllableStructure(
-                initial=initial,
-                ascender=ascender,
-                peak=peak,
-                descender=descender,
-            )
-
-        class _S:
-            def __init__(self, i, a, p, d):
-                self.initial = i
-                self.ascender = a
-                self.peak = p
-                self.descender = d
-
-            def get_full_code(self):
-                return ''.join(x for x in (self.initial or '', self.ascender or '', self.peak or '', self.descender or ''))
-
-            def get_ganyin_code(self):
-                return (self.ascender or '') + (self.peak or '') + (self.descender or '')
-
-            def get_jianyin_code(self):
-                return (self.ascender or '') + (self.peak or '')
-
-            def get_abbreviation(self):
-                return (self.initial or '') + ((self.ascender or '')[:1] if (self.ascender or '') else '')
-
-        return _S(initial, ascender, peak, descender)
+        return SyllableStructure(
+            initial=initial,
+            ascender=ascender,
+            peak=peak,
+            descender=descender,
+        )
 
     def get_ganyin(self, code_or_input: str) -> str:
         """兼容旧接口：返回干音（简化）。"""

@@ -139,7 +139,7 @@ print(f"乐音: {musical}")  # ['a']
 
 ### 1. 当前主线数据入口
 
-当前主线没有把 `db_manager.py` 作为默认数据库 API 入口；旧 `hanzi_db_manager.py` 已退场。
+当前主线没有把 `db_manager.py` 作为默认数据库 API 入口；该模块已于 2026-06 Phase E 删除。
 如果你的目标是重建当前拼音数据链，请优先使用：
 
 - `internal_data/pinyin_source_db/build_source_pinyin_db.py`
@@ -150,52 +150,9 @@ print(f"乐音: {musical}")  # ['a']
 
 ---
 
-### 2. Legacy-compatible 数据库管理器
+### 2. Legacy-compatible 数据库管理器（已删除）
 
-以下 API 属于 legacy-compatible 中文表结构接口，不是当前主线 rebuild 入口。
-当前主线请改看 `docs/project/PINYIN_DATA_MIGRATION.md` 中的 `source_pinyin.db -> prototype tables -> runtime` 链。
-
-#### 类：`yime.db_manager.数据库管理器`
-
-封装数据库连接和基本操作。
-
-##### 使用示例
-
-```python
-from yime.db_manager import 数据库管理器, 表管理器
-
-# legacy-compatible 通用数据库操作示例
-# 这里的 pinyin_hanzi.db 是现有数据库文件路径，不表示当前主线 rebuild 入口
-with 数据库管理器("pinyin_hanzi.db") as conn:
-    表管理器.创建表
-
-    # 执行数据库操作
-    cursor = conn.cursor()
-    cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
-    results = cursor.fetchall()
-```
-
-##### 旧中文表示例
-
-如果你确实在维护 legacy-compatible 中文表结构，才继续使用类似下面的查询：
-
-```python
-from yime.db_manager import 数据库管理器
-
-# legacy-compatible 中文表查询示例
-with 数据库管理器("pinyin_hanzi.db") as conn:
-    cursor = conn.cursor()
-    cursor.execute('SELECT * FROM "音元拼音"')
-    results = cursor.fetchall()
-```
-
-`音元拼音` 表的语义边界：
-
-- 这张表保存的是按音元分析法拆开的单音节结构结果。
-- 它的核心用途不是当前 runtime 候选生成，而是保留 `全拼 -> 简拼` 和 `全拼 -> 音节组成部分` 的结构信息。
-- 常见列可以这样理解：`全拼` 是完整音元编码，`简拼` 是对完整结构做规则化压缩后的缩写；`首音/干音/呼音/主音/末音/间音/韵音` 则分别保留音节在不同观察角度下的组成部分。
-- 如果你是在维护当前主线输入链，请优先修改 `prototype tables`、`mapping_yime_code`、`runtime_candidates` 相关对象，而不是把 `音元拼音` 当成 runtime 主线表。
-- 如果后续需要面向外部工具提供 ASCII 名称，建议新增视图或别名层，而不是直接把这张中文表当场改名。
+`yime.db_manager` 与 `run_db_setup` 已于 2026-06 Phase E 删除。历史 API 说明保留在 git 历史中；当前主线请改看 `docs/project/PINYIN_DATA_MIGRATION.md`。
 
 ---
 
