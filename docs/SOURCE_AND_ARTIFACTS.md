@@ -287,13 +287,9 @@
   - 分类：当前迁移说明。
   - 原因：该文档明确区分当前主线 `source_pinyin.db -> prototype tables -> runtime` rebuild 链，与独立 `.yaml -> .json` 导出链。
 
-- `yime/legacy/`
-  - 分类：旧结构归档脚本目录。
-  - 原因：该目录下的脚本只服务旧 `音元拼音 / 数字标调拼音 / 词汇` 结构审计或迁移，不再属于当前主线 rebuild 面。
-
-- `yime/legacy/manual_db_experiments/convert_pinyin_to_hanzi.py`
-  - 分类：已归档的旧数据库实验脚本。
-  - 原因：仓库主线已经切到 `yinjie_code.json + pinyin_normalized.json + input_method decoder` 组合链；该脚本只剩手动调试价值，因此迁入 `yime/legacy/`。
+- `yime/legacy/pending_removal/`
+  - 分类：旧 schema / 旧数据库接口的 legacy-compatible 保留面。
+  - 原因：仍被 `db_manager`、`windows_candidate_box`、`run_db_setup` 等 shim 引用；`maintenance_tests/`、`manual_db_experiments/`、`pinyin_db_prototype/` 子树已删除。
 
 - 待清除实现层：`yime/utils/legacy_pinyin_tables/Initialize_pinyin_mapping.py`
   - 分类：已从主目录剥离的 legacy-compatible 初始化/数据库接口实现。

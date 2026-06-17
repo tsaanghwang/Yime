@@ -61,15 +61,6 @@
 				"addSourceRootsToPythonpath": true
 			},
 			{
-				"name": "test_duplicate_groups",
-				"type": "python",
-				"request": "launch",
-				"program": "${workspaceFolder}\\yime\\legacy\\maintenance_tests\\test_duplicate_groups.py",
-				"currentFileConfiguration": false,
-				"cwd": "${workspaceFolder}",
-				"addSourceRootsToPythonpath": true
-			},
-			{
 				"name": "Initialize_pinyin_mapping (legacy)",
 				"type": "python",
 				"request": "launch",
@@ -136,44 +127,6 @@
 				"cwd": "${workspaceFolder}",
 				"addSourceRootsToPythonpath": true,
 				"noDebug": true
-			},
-			{
-				"name": "import_initial",
-				"type": "python",
-				"request": "launch",
-				"program": "${workspaceFolder}\\yime\\legacy\\pinyin_db_prototype\\import_initial.py",
-				"currentFileConfiguration": false,
-				"cwd": "${workspaceFolder}",
-				"addSourceRootsToPythonpath": true
-			},
-			{
-				"name": "update_table",
-				"type": "python",
-				"request": "launch",
-				"program": "${workspaceFolder}\\yime\\legacy\\pinyin_db_prototype\\update_table.py",
-				"currentFileConfiguration": false,
-				"cwd": "${workspaceFolder}",
-				"addSourceRootsToPythonpath": true,
-				"noDebug": true
-			},
-			{
-				"name": "create_table",
-				"type": "python",
-				"request": "launch",
-				"program": "${workspaceFolder}\\yime\\legacy\\pinyin_db_prototype\\create_table.py",
-				"currentFileConfiguration": false,
-				"cwd": "${workspaceFolder}",
-				"addSourceRootsToPythonpath": true,
-				"noDebug": true
-			},
-			{
-				"name": "convert_pinyin_to_hanzi",
-				"type": "python",
-				"request": "launch",
-				"program": "${workspaceFolder}\\yime\\legacy\\manual_db_experiments\\convert_pinyin_to_hanzi.py",
-				"currentFileConfiguration": false,
-				"cwd": "${workspaceFolder}\\yime",
-				"addSourceRootsToPythonpath": true
 			},
 			{
 				"name": "normalize_pinyin_file",
