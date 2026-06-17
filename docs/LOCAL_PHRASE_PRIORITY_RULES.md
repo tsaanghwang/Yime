@@ -32,7 +32,7 @@
 
 当前规则不是手工逐条硬编码，而是基于高碰撞桶自动生成：
 
-- 高碰撞桶来源：`yime/reports/runtime_tuning_scan.json`
+- 高碰撞桶来源：`yime/reports/runtime_tuning_scan.json`（由 `refresh_runtime_yime_codes.py` 本地生成，不入库）
 - 规则文件：`internal_data/local_phrase_priority_rules.json`
 - 样本文件：`internal_data/local_phrase_priority_samples.json`
 - 生成脚本：`tools/generate_local_phrase_priority_baseline.py`

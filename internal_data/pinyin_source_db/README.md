@@ -30,7 +30,7 @@ Default rebuild **does not** touch `syllable/codec/yinjie_code.json`. Marked for
 python internal_data/pinyin_source_db/rebuild_pinyin_assets.py
 ```
 
-Steps: `build_source_pinyin_db.py` → `validate_source_pinyin_db.py` → `refresh_materialized_syllable_inventory.py` → `export_pinyin_normalized.py` → yinyuan consistency check.
+Steps: `build_source_pinyin_db.py` → `validate_source_pinyin_db.py` → `refresh_materialized_syllable_inventory.py` → `export_pinyin_normalized.py` → copy to `yime/pinyin_normalized.json` → yinyuan consistency check.
 
 Gate before runtime or codebook replacement:
 
@@ -89,7 +89,8 @@ Removed from v1: per-row `source_name`, `raw_line`, `comment` (structured TSV re
 ## Downstream
 
 - `yime/utils/prototype_single_char_import.py` / `prototype_phrase_import.py` clone into `pinyin_hanzi.db`
-- `lexicon_exports/pinyin_normalized.json` — syllable codebook export
+- `lexicon_exports/pinyin_normalized.json` — syllable codebook export (canonical rebuild output)
+- `yime/pinyin_normalized.json` — runtime copy synced by `rebuild_pinyin_assets.py` for IME/static decoder
 
 See also `docs/project/PINYIN_DATA_MIGRATION.md`.
 

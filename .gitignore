@@ -73,7 +73,10 @@ yime/reports/phoneme_dict.json
 yime/reports/runtime_candidates_by_code.json
 yime/reports/runtime_candidates_by_code_true.json
 yime/reports/runtime_candidates_placeholder_phrases.json
+yime/reports/runtime_tuning_scan.json
+yime/reports/runtime_tuning_scan.md
 yime/reports/summary.txt
+internal_data/pinyin_source_db/rebuild_summary.json
 coverage.xml
 *.egg-info/
 .generated/

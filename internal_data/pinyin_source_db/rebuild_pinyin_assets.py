@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import shutil
 import sqlite3
 import subprocess
 import sys
@@ -14,6 +15,7 @@ from build_source_pinyin_db import DEFAULT_CHAR_SOURCE, DEFAULT_DB_PATH, DEFAULT
 SCRIPT_DIR = Path(__file__).resolve().parent
 WORKSPACE_ROOT = SCRIPT_DIR.parent.parent
 DEFAULT_NORMALIZED_OUTPUT = SCRIPT_DIR / "lexicon_exports" / "pinyin_normalized.json"
+DEFAULT_RUNTIME_NORMALIZED_OUTPUT = WORKSPACE_ROOT / "yime" / "pinyin_normalized.json"
 DEFAULT_YINJIE_OUTPUT = WORKSPACE_ROOT / "syllable" / "codec" / "yinjie_code.json"
 DEFAULT_SUMMARY_OUTPUT = SCRIPT_DIR / "rebuild_summary.json"
 
@@ -40,6 +42,16 @@ def parse_args() -> argparse.Namespace:
         "--normalized-output",
         default=str(DEFAULT_NORMALIZED_OUTPUT),
         help="Output path for pinyin_normalized.json",
+    )
+    parser.add_argument(
+        "--runtime-normalized-output",
+        default=str(DEFAULT_RUNTIME_NORMALIZED_OUTPUT),
+        help="Copy export to this runtime path (default: yime/pinyin_normalized.json for IME/static decoder)",
+    )
+    parser.add_argument(
+        "--skip-runtime-normalized-sync",
+        action="store_true",
+        help="Do not copy lexicon export to the runtime pinyin_normalized.json path.",
     )
     parser.add_argument(
         "--apply-codebook",
@@ -80,9 +92,17 @@ def load_db_metadata(db_path: Path) -> dict[str, str]:
         conn.close()
 
 
+def sync_runtime_normalized_export(source: Path, destination: Path) -> None:
+    if not source.is_file():
+        raise FileNotFoundError(f"normalized export not found: {source}")
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(source, destination)
+
+
 def build_summary(
     db_path: Path,
     normalized_output: Path,
+    runtime_normalized_output: Path | None,
     yinjie_output: Path,
     apply_codebook: bool,
 ) -> dict[str, object]:
@@ -91,6 +111,7 @@ def build_summary(
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "db_path": str(db_path),
         "normalized_output": str(normalized_output),
+        "runtime_normalized_output": str(runtime_normalized_output) if runtime_normalized_output else None,
         "yinjie_output": str(yinjie_output),
         "apply_codebook": apply_codebook,
         "db_metadata": metadata,
@@ -111,6 +132,9 @@ def main() -> int:
     args = parse_args()
     db_path = Path(args.db)
     normalized_output = Path(args.normalized_output)
+    runtime_normalized_output = (
+        None if args.skip_runtime_normalized_sync else Path(args.runtime_normalized_output)
+    )
     summary_output = Path(args.summary_output)
 
     build_command = [
@@ -151,6 +175,10 @@ def main() -> int:
     ]
     run_step("export", export_command)
 
+    if runtime_normalized_output is not None:
+        sync_runtime_normalized_export(normalized_output, runtime_normalized_output)
+        print(f"runtime_normalized_output: {runtime_normalized_output}")
+
     apply_codebook = args.apply_codebook and not args.skip_yinjie
     if apply_codebook:
         codebook_command = [
@@ -169,6 +197,7 @@ def main() -> int:
     summary = build_summary(
         db_path=db_path,
         normalized_output=normalized_output,
+        runtime_normalized_output=runtime_normalized_output,
         yinjie_output=DEFAULT_YINJIE_OUTPUT,
         apply_codebook=apply_codebook,
     )
