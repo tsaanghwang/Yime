@@ -46,9 +46,18 @@
 				"name": "merge_char_freq",
 				"type": "python",
 				"request": "launch",
-				"program": "${workspaceFolder}\\external_data\\char_freq\\merge_char_freq.py",
+				"program": "${workspaceFolder}\\tools\\merge_char_freq.py",
 				"currentFileConfiguration": false,
-				"cwd": "${workspaceFolder}\\external_data\\char_freq",
+				"cwd": "${workspaceFolder}",
+				"addSourceRootsToPythonpath": true
+			},
+			{
+				"name": "merge_word_freq",
+				"type": "python",
+				"request": "launch",
+				"program": "${workspaceFolder}\\tools\\merge_word_freq.py",
+				"currentFileConfiguration": false,
+				"cwd": "${workspaceFolder}",
 				"addSourceRootsToPythonpath": true
 			},
 			{

@@ -90,8 +90,6 @@ scripts/run_tests.cmd
 
 ## 4. 已归档的旧脚本
 
-根目录 `legacy/`（旧 YAML 比较链、早期音节分析试验、`pinyin` helper 快照等）已于 2026-06 删除；恢复请查 git 历史。
-
-已经移入 [yime/legacy/README.md](/c:/dev/Yime/yime/legacy/README.md) 所在目录的脚本，都是只服务旧结构、且当前主线没有引用的工具。
+根目录 `legacy/`（旧 YAML 比较链、早期音节分析试验、`pinyin` helper 快照等）与 `yime/legacy/`（含 `windows_candidate_box`）已于 2026-06 删除；恢复请查 git 历史。
 
 这一步的目的是把主目录中的误用面降下来，避免把旧表检查脚本误认为当前 rebuild 入口。

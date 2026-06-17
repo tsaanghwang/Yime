@@ -64,9 +64,8 @@ yime/pinyin_hanzi.db
 external_data/Unihan_Readings.txt
 external_data/hanzi_pinyin.txt
 external_data/phrase_pinyin.txt
-external_data/word_freq/
-internal_data/hanzi_pinyin/pinyin.txt
-external_data/char_freq/
+external_data/word_freq/*.txt
+external_data/char_freq/*.txt
 external_data/unihan_readings/
 yime/reports/efficiency_baseline.json
 yime/reports/phrase_code_backfill.json

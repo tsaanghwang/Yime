@@ -56,7 +56,7 @@ OPTIONAL_EXTERNAL_FREQUENCY_SOURCES = (
     (
         DEFAULT_BLCU_CHAR_FREQ_SOURCE,
         "BCC 合并单字频（merged_char_freq.txt）",
-        "缺失时将跳过 BCC 单字序位增强；需要时可运行 merge_char_freq.py 生成后放回 external_data/char_freq/。",
+        "缺失时将跳过 BCC 单字序位增强；需要时可运行 tools/merge_char_freq.py 生成后放回 external_data/char_freq/。",
     ),
 )
 

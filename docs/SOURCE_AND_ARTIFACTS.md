@@ -185,16 +185,16 @@
   - 原因：该文件定义 `runtime_candidates` 视图，而当前输入法的 SQLite 回退链会直接读取这个视图，因此它不能按普通旧脚本附件处理。
 
 - `yime/import_danzi_into_prototype_tables.py`
-  - 分类：待确认旧链。
-  - 原因：它属于“把单字数据导入原型数据库”的维护脚本，会配合 `create_prototype_schema_additions.sql` 和 `source_pinyin.db` 工作，但当前不是输入法前台运行主线的直接入口；真实实现现已下沉到 `yime/utils/prototype_single_char_import.py`，根路径保留兼容脚本入口。
+  - 分类：**当前 rebuild 入口**（兼容壳；真实实现 `yime/utils/prototype_single_char_import.py`）。
 
 - `yime/import_duozi_into_prototype_tables.py`
-  - 分类：待确认旧链。
-  - 原因：它属于“把词语数据导入原型数据库”的维护脚本，角色与单字导入脚本相同，目前更像原型库维护链的一部分，而不是当前交互主线的一部分；真实实现现已下沉到 `yime/utils/prototype_phrase_import.py`，根路径保留兼容脚本入口。
+  - 分类：**当前 rebuild 入口**（兼容壳；真实实现 `yime/utils/prototype_phrase_import.py`）。
 
 - `yime/refresh_runtime_yime_codes.py`
-  - 分类：当前间接依赖。
-  - 原因：它仍是当前 `source_pinyin.db -> prototype tables -> runtime_candidates` 主线中的 runtime 刷新入口，但真实实现现已下沉到 `yime/utils/runtime_codes_refresh.py`，根路径仅保留兼容脚本入口。
+  - 分类：**当前 rebuild 入口**（兼容壳；真实实现 `yime/utils/runtime_codes_refresh.py`）。
+
+- `tools/merge_char_freq.py`、`tools/merge_word_freq.py`
+  - 分类：BCC 频表合并脚本（版本化）；原始 `*.txt` 频道下载仍 gitignore。
 
 - `releases/`
   - 分类：可归档但暂不删除。
@@ -202,9 +202,8 @@
 
 当前处理原则：
 
-1. 对 `当前间接依赖` 对象，现阶段不得因为“看起来像旧文件”而直接删除、搬移或改名。
-2. 对 `待确认旧链` 对象，现阶段只允许继续审计、补说明或补替代链，不直接清理，直到能明确当前数据库构建链已有稳定替代入口。
-3. 对 `可归档但暂不删除` 对象，现阶段只做目录级分类和用途标注，不碰包内容；等发布样本与历史沉积物拆分标准明确后再动。
+1. 对 rebuild/runtime 入口，不得因“看起来像旧文件”而删除兼容壳；改 `yime/utils/` 内真实实现。
+2. 对 `可归档但暂不删除` 对象，现阶段只做目录级分类和用途标注。
 
 `releases/` 顶层子目录当前可先按下面方式理解：
 
@@ -290,13 +289,8 @@
   - 分类：当前迁移说明。
   - 原因：该文档明确区分当前主线 `source_pinyin.db -> prototype tables -> runtime` rebuild 链与 legacy-compatible 区域。
 
-- `yime/legacy/pending_removal/`（2026-06 Phase E）
-  - 分类：归档目录；仅保留 `windows_candidate_box.py`。
-  - 原因：`db_manager.py`、`run_db_setup.py`、`yime/utils/legacy_pinyin_tables/` 三表链已删除。
-
 - `yime/utils/syllable_compat/`
-  - 分类：音节结构/解码兼容实现（自 legacy 链迁出）。
-  - 原因：`yime/syllable_structure.py` 与 `yime/syllable_decoder.py` 仍为公开 shim。
+  - 分类：音节结构/解码兼容实现。
 
 - 已清退旧汉字拼音映射表：`汉字音元拼音映射`、`汉字数字标调拼音映射`
   - 分类：已移除的旧数据库关联表。
@@ -337,9 +331,9 @@
 当前处理原则补充：
 
 1. 主线重建优先走 `internal_data/pinyin_source_db/` 与 prototype 导入链，不再把旧中文表维护脚本当成默认入口。
-2. 主包根目录里仍保留的同名入口，默认应理解为兼容 shim；除应用级顶层入口外，这些 shim 现在都尽量显式声明 `__all__`，并把真实实现放在 `yime/utils/` 或 `yime/legacy/pending_removal/`。
+2. 主包根目录里仍保留的同名入口，默认应理解为兼容 shim；真实实现放在 `yime/utils/`。
 3. `tools/` 下凡是代理外部键盘布局仓库或系统脚本的 orchestration 入口，默认应先做路径预检，并统一使用 `YIME_KEYBOARD_LAYOUT_REPO` 解析外部 `Yime-keyboard-layout` 仓库位置。
-4. `yime/legacy/` 中的脚本默认不继续扩展新功能；`pending_removal/` 仅保留 `windows_candidate_box`。数据库维护脚本产生的 `.bak`/`pre_*` 等回退文件应统一视为本地副产物，不再提交。
+4. BCC 频表合并脚本位于 `tools/merge_char_freq.py`、`tools/merge_word_freq.py`；原始 `*.txt` 下载仍 gitignore。数据库维护脚本产生的 `.bak`/`pre_*` 等回退文件应统一视为本地副产物，不再提交。
 
 #### 6C. `yime/reports/` 运行桥接文件与分析产物（2026-05）
 
@@ -385,7 +379,7 @@
 
 #### 6D–12. 历史清理记录（2026-04 ~ 2026-06，归档）
 
-2026-04 至 2026-06 多轮清理已移除：根目录旧启动/安装包装脚本、演示数据库与临时导出、外迁的 `tools/releases/` 与旧 HTML/JS 原型链、根目录 legacy/ 树、YAML 并行词库链、yime/legacy/ 实验子树、db_manager 三表链，以及无引用的 freq 诊断工具等。
+2026-04 至 2026-06 多轮清理已移除：根目录旧启动/安装包装脚本、演示数据库与临时导出、外迁的 `tools/releases/` 与旧 HTML/JS 原型链、根目录 legacy/ 树、YAML 并行词库链、`yime/legacy/` 与 `windows_candidate_box`、db_manager 三表链，以及无引用的 freq 诊断工具等。
 
 **不再在本文件逐项列举已删路径。** 需要核对时：
 
@@ -394,7 +388,7 @@ git log --oneline --grep='Remove\|legacy\|cleanup\|删除'
 git show <commit> --stat
 ```
 
-2026-06 Phase E 后仍保留：`yime/legacy/pending_removal/windows_candidate_box.py`、`yime/utils/syllable_compat/`（见 docs/project/PINYIN_DATA_MIGRATION.md）。
+2026-06 Phase F 后仍保留的兼容层：`yime/utils/syllable_compat/`（见 docs/project/PINYIN_DATA_MIGRATION.md）。
 
 ### E. 审计与过渡辅助文件
 
@@ -475,11 +469,11 @@ git show <commit> --stat
   - 原因：`view_tghz2013_frequency` 供 `yime/refresh_runtime_yime_codes.py` 构建 `char_usage_profile`；由 `external_data/unihan_readings/build_all.py` 构建。
 
 - `external_data/char_freq/merged_char_freq.txt`
-  - 分类：BCC **字频频道**合并单字频（`merge_char_freq.py`）。
+  - 分类：BCC **字频频道**合并单字频（`tools/merge_char_freq.py`）。
   - 原因：Yime 字频写库与 `char_frequency_policy` 合成兜底的 BCC 真源；供 `import_blcu_word_frequency.py`、`import_hanzi_frequency.py` 等使用。
 
 - `external_data/char_freq/word_freq_merged_single_char_freq.txt`
-  - 分类：BCC **词频频道**中的单字条目（`merge_word_freq.py` 从 `word_freq/*.txt` 分出 `len(word)==1`）。
+  - 分类：BCC **词频频道**中的单字条目（`tools/merge_word_freq.py` 从 `word_freq/*.txt` 分出 `len(word)==1`）。
   - 原因：词频统计本身含单字行，与专用字频频道口径不同；保留作对照/分析，**不**作为 runtime 写库真源。
 
 - `data_json_files/key_symbol_mapping.json`

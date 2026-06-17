@@ -110,8 +110,8 @@ KLC 文档分工：
 | --- | --- |
 | 数据 rebuild | `source_pinyin.db` → prototype 导入 → `refresh_runtime_yime_codes` |
 | 运行时查词 | **SQLite** `pinyin_hanzi.db` / `runtime_candidates` 为主；JSON 导出可选 |
-| 已删除 | `db_manager`、`run_db_setup`、`legacy_pinyin_tables` 三表链 |
-| 兼容保留 | `yime/utils/syllable_compat/`；`yime/legacy/pending_removal/windows_candidate_box.py` |
+| 已删除 | `db_manager`、`run_db_setup`、`legacy_pinyin_tables`、`yime/legacy/`、`windows_candidate_box` |
+| 兼容保留 | `yime/utils/syllable_compat/` |
 | 静态兜底 | `pinyin_hanzi.json` 已 gitignore，缺失不影响主链 |
 | 本地验证 | `scripts/run_tests.cmd`（unittest + pytest input_method） |
 

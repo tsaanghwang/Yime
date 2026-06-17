@@ -1,136 +1,63 @@
 # 音元输入法贡献指南
 
-欢迎参与音元输入法(YIME)项目开发！本指南将帮助您了解如何为项目做出贡献。
+欢迎参与音元输入法 (YIME) 项目开发。
 
 ## 贡献方式
 
-我们接受以下类型的贡献:
-
-- 代码改进与新功能开发
-- 文档完善与翻译
-- Bug报告与修复
+- 代码改进与新功能
+- 文档完善
+- Bug 报告与修复
 - 测试用例补充
-- 用户体验优化
 
-## 开发环境配置
+## 开发环境
 
-1. 克隆仓库:
+1. 克隆仓库：
 
 ```bash
-git clone https://github.com/huangchang/yinyuan-input-method.git
+git clone https://github.com/tsaanghwang/Yime.git
+cd Yime
 ```
 
-1. 安装依赖:
+2. 创建 Python 3.12 虚拟环境并安装依赖：
 
 ```bash
-# Python依赖
+python -m venv .venv
+.venv\Scripts\activate
 pip install -r requirements.txt
-
-# 前端依赖
-npm install
 ```
 
-1. 配置开发环境:
+3. 验证：
 
 ```bash
-npm run setup
+scripts/run_tests.cmd
+python run_input_method.py
 ```
+
+当前主线是 **Windows + Python 3.12 + pywin32** 桌面输入法原型，不再使用 npm / Web 前端链。历史 JS 原型已外置到单独仓库。
 
 ## 代码规范
 
-### Python 代码
+- Python 遵循 PEP 8，推荐使用类型注解
+- 重要函数包含 docstring
+- 文档使用 Markdown
 
-- 遵循 PEP 8 风格指南
-- 推荐使用类型注解 (Type Hints)
-- 重要函数需包含 docstring
-- 推荐使用 [black](https://black.readthedocs.io/) 自动格式化
-
-### JavaScript/TypeScript 代码
-
-- 遵循 ESLint 配置
-- 使用 TypeScript 严格模式
-- React 组件使用函数式组件
-- 推荐使用 [prettier](https://prettier.io/) 自动格式化
-
-### 文档规范
-
-- 推荐使用 Markdown 编写文档，结构清晰、语法规范
-- 图片请统一放在 docs/Assets 或 images/ 目录，命名简明
-- 文档内容建议包含：背景、用途、示例、注意事项等
-
-## 提交规范
-
-### 创建特性分支
+## 提交与 Pull Request
 
 ```bash
 git checkout -b feat/your-feature
+# ... 修改 ...
+scripts/run_tests.cmd
+git commit -m "feat: 简要描述"
 ```
 
-### 提交信息格式
+PR 前请确保 `scripts/run_tests.cmd` 或等价的 pytest/unittest 通过。
 
-```text
-类型(范围): 简要描述
-
-详细描述(可选)
-
-关联问题: #123
-```
-
-**类型说明**:
-
-- feat: 新功能
-- fix: Bug修复
-- docs: 文档变更
-- style: 代码格式
-- refactor: 代码重构
-- test: 测试相关
-- chore: 构建/依赖更新
-
-## Pull Request 流程与审查标准
-
-- Fork 主仓库并创建分支。
-- 确保通过所有测试。
-
-```bash
-npm test
-pytest
-```
-
-- 更新 CHANGELOG.md（如有重要变更）。
-- 提交 Pull Request 到主仓库 dev 分支。
-- PR 审查标准如下：
-
-- 必须通过 CI 自动测试和格式检查。
-- 需有至少一位维护者或核心开发者审核通过。
-- 代码需无明显安全、性能或兼容性问题。
-- 文档和注释需齐全。
-
-- 重大变更或新功能建议先在 Discussions 或 Issues 区发起讨论，达成共识后再开发。
+提交信息类型：`feat` / `fix` / `docs` / `refactor` / `test` / `chore`。
 
 ## 报告问题
 
-请在 GitHub Issues 区提交问题报告，内容包括：
-
-1. 问题描述
-2. 复现步骤
-3. 预期与实际行为
-4. 环境信息（操作系统、Python/Node 版本等）
-5. 如有截图、日志、相关文件请一并附上
-
-## 社区准则
-
-所有贡献者需遵守 [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)，保持专业、尊重和包容的交流氛围。
+在 GitHub Issues 中提供：问题描述、复现步骤、预期与实际行为、Python 版本与相关日志。
 
 ## 授权说明
 
-向本仓库提交代码、文档或其他内容，即表示您确认自己有权提交该内容，并同意该贡献按本仓库当前许可策略发布：默认允许非商用使用，商用需另行授权。
-
-如果您的贡献包含第三方材料、受雇作品或其他受限制内容，请先确认您拥有足够的再许可或提交权限。
-
-## 鸣谢
-
-感谢所有贡献者为项目做出的努力！您的名字将被记录在 [CONTRIBUTORS.md](CONTRIBUTORS.md) 中。
-
----
-
-如有疑问，欢迎在 Issues 区提问或联系核心团队。
+向本仓库提交内容即表示同意按 [LICENSE](LICENSE) 与非商用/商用授权策略发布。
