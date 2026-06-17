@@ -957,9 +957,9 @@ class BaseInputMethodApp:
     def _describe_runtime_candidate_source(self) -> str:
         source = str(getattr(self, "runtime_decoder_source", "unknown") or "unknown").lower()
         if source == "json":
-            return "运行时 JSON 导出文件"
+            return "运行时 JSON 导出文件（备用）"
         if source == "sqlite":
-            return "SQLite runtime_candidates 回退"
+            return "SQLite runtime_candidates 视图"
         if source == "static":
             return "静态候选表兜底"
         return "当前未识别候选来源"
@@ -992,19 +992,25 @@ class BaseInputMethodApp:
             None,
         )
 
+    def _runtime_json_export_severity(self, *, missing: bool = False) -> str:
+        runtime_source = str(getattr(self, "runtime_decoder_source", "unknown") or "unknown").lower()
+        if runtime_source == "sqlite" and missing:
+            return "提示"
+        return "警告"
+
     def _check_runtime_candidate_json_file(self) -> tuple[str, str, Optional[str]]:
         runtime_json_path = Path(getattr(self, "runtime_candidates_json_path", "") or "")
         if not str(runtime_json_path):
             return (
-                "警告",
+                self._runtime_json_export_severity(missing=True),
                 "当前未配置运行时 JSON 导出文件路径",
-                "请检查运行时编码表路径配置。",
+                "当前以 SQLite 为主；如需人工核对可配置导出路径。",
             )
         if not runtime_json_path.exists():
             return (
-                "警告",
-                f"未找到文件：{runtime_json_path}",
-                "请重新生成运行时 JSON 导出文件。",
+                self._runtime_json_export_severity(missing=True),
+                f"未生成可选导出文件：{runtime_json_path}",
+                "当前以 SQLite 为主；如需人工 diff 可运行 export_runtime_candidates_json.py。",
             )
         if not runtime_json_path.is_file():
             return (
@@ -1045,9 +1051,9 @@ class BaseInputMethodApp:
         runtime_json_path = Path(getattr(self, "runtime_candidates_json_path", "") or "")
         if not str(runtime_json_path) or not runtime_json_path.exists() or not runtime_json_path.is_file():
             return (
-                "警告",
-                "当前无法判断运行时 JSON 新鲜度",
-                "请先确认运行时 JSON 导出文件已生成。",
+                self._runtime_json_export_severity(missing=True),
+                "当前未生成可选 JSON 导出",
+                "当前以 SQLite 为主；如需人工核对可运行 export_runtime_candidates_json.py。",
             )
 
         try:
@@ -1202,12 +1208,7 @@ class BaseInputMethodApp:
         if runtime_source == "json":
             items.append(("候选来源", "正常", candidate_source, None))
         elif runtime_source == "sqlite":
-            items.append((
-                "候选来源",
-                "警告",
-                candidate_source,
-                "请检查运行时 JSON 导出文件是否生成。",
-            ))
+            items.append(("候选来源", "正常", candidate_source, None))
         else:
             items.append((
                 "候选来源",
@@ -1221,11 +1222,16 @@ class BaseInputMethodApp:
 
         warning = str(getattr(self, "runtime_decoder_warning", "") or "").strip()
         if warning:
+            advice = (
+                "请检查 yime/pinyin_hanzi.db 与 runtime_candidates 视图。"
+                if runtime_source == "sqlite"
+                else "请检查运行时 JSON 导出文件或重新生成候选数据。"
+            )
             items.append((
                 "运行时编码表",
                 "警告",
                 warning,
-                "请检查运行时 JSON 导出文件或重新生成候选数据。",
+                advice,
             ))
         else:
             items.append(("运行时编码表", "正常", "已启用运行时编码表", None))

@@ -346,9 +346,9 @@ class InputMethodApp(BaseInputMethodApp):
         self._configure_input_mode()
 
         if self.runtime_decoder_source == "sqlite":
-            print("[Decoder] 运行时候选已回退到 SQLite 数据库视图 runtime_candidates")
+            print("[Decoder] 运行时候选来源: SQLite 数据库视图 runtime_candidates")
         elif self.runtime_decoder_source == "json":
-            print("[Decoder] 运行时候选来源: JSON 导出文件")
+            print("[Decoder] 运行时候选来源: JSON 导出文件（SQLite 不可用时的备用）")
 
         if self.runtime_decoder_warning:
             print(f"[Decoder] 运行时编码表未启用: {self.runtime_decoder_warning}")

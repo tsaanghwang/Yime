@@ -104,17 +104,17 @@ def test_build_runtime_readiness_summary_includes_structured_diagnostics_and_adv
     )
 
     assert "当前模式：受限模式（热键当前未启用）" in summary
-    assert "诊断结论：发现 6 项警告、0 项提示；另有 6 项正常。" in summary
+    assert "诊断结论：发现 3 项警告、2 项提示；另有 7 项正常。" in summary
     assert "给普通用户的结论：当前还能继续用，但有配置或数据问题需要优先处理。" in summary
     assert "需优先处理：" in summary
     assert "已确认正常：" in summary
     assert "- 唤起方式：正常。点击右下角的'音'图标" in summary
     assert "- 休眠方式：正常。右键候选框" in summary
     assert "- 热键状态：警告。已启用 Ctrl+Shift+Y，但与已知系统快捷键冲突 建议：建议改用 Ctrl+Alt+Insert。" in summary
-    assert "- 候选来源：警告。SQLite runtime_candidates 回退 建议：请检查运行时 JSON 导出文件是否生成。" in summary
-    assert f"- 运行时 JSON 文件：警告。未找到文件：{missing_runtime_json} 建议：请重新生成运行时 JSON 导出文件。" in summary
-    assert "- 运行时数据新鲜度：警告。当前无法判断运行时 JSON 新鲜度 建议：请先确认运行时 JSON 导出文件已生成。" in summary
-    assert "- 运行时编码表：警告。运行时编码表未启用 建议：请检查运行时 JSON 导出文件或重新生成候选数据。" in summary
+    assert "- 候选来源：正常。SQLite runtime_candidates 视图" in summary
+    assert f"- 运行时 JSON 文件：提示。未生成可选导出文件：{missing_runtime_json} 建议：当前以 SQLite 为主；如需人工 diff 可运行 export_runtime_candidates_json.py。" in summary
+    assert "- 运行时数据新鲜度：提示。当前未生成可选 JSON 导出 建议：当前以 SQLite 为主；如需人工核对可运行 export_runtime_candidates_json.py。" in summary
+    assert "- 运行时编码表：警告。运行时编码表未启用 建议：请检查 yime/pinyin_hanzi.db 与 runtime_candidates 视图。" in summary
     assert f"- 设置文件：正常。已定位且内容合法：{app.ui_settings_path}" in summary
     assert f"- 用户词库状态：正常。已就绪：{app.user_db_path}" in summary
     assert f"- 用户词库目录：警告。路径已被文件占用：{occupied_path} 建议：请删除同名文件或改用可写目录。" in summary
