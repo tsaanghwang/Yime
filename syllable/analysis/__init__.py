@@ -1,1 +1,1 @@
-"""syllable.analysis implementation package."""
+"""音系分析、首音/干音试验工具（生产编解码见 ``syllable.codec``）。"""

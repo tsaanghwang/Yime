@@ -415,7 +415,7 @@ git show <commit> --stat
 
 - `internal_data/key_symbol_mapping.json`
   - 分类：旧手工键位映射参考文件。
-  - 原因：它仍可作旧手工布局/符号表参考，但不是 `syllable/analysis/yinjie_encoder.py` 当前 runtime 链的真源；相关审计说明已收敛到 `internal_data/yinjie_runtime_key_symbol_mapping.json`。
+  - 原因：它仍可作旧手工布局/符号表参考，但不是 `syllable/codec/yinjie_encoder.py` 当前 runtime 链的真源；相关审计说明已收敛到 `internal_data/yinjie_runtime_key_symbol_mapping.json`。
 
 - `internal_data/key_to_symbol.json`
   - 分类：当前 canonical 槽位到字符映射。
@@ -491,7 +491,7 @@ git show <commit> --stat
 
 ### 2. 运行时字符文件被过度当作真源
 
-当前 `syllable/analysis/yinjie_encoder.py` 仍然直接消费：
+当前 `syllable/codec/yinjie_encoder.py` 仍然直接消费：
 
 - `syllable/yinyuan/shouyin_codepoint.json`
 - `syllable/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json`

@@ -11,7 +11,7 @@ if str(ROOT) not in sys.path:
 
 from syllable.analysis.ganyin_encoder import GanyinEncoder
 from syllable.analysis.shouyin_encoder import ShouyinEncoder
-from syllable.analysis.yinjie_encoder import YinjieEncoder
+from syllable.codec.yinjie_encoder import YinjieEncoder
 from yime.utils.reverse_key_value_pairs import reverse_key_value_pairs
 
 

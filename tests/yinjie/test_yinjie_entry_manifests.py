@@ -1,10 +1,10 @@
 import unittest
 
-from syllable.analysis import interactive_yinjie_session as interactive_entry_module
-from syllable.analysis import yinjie_composition as package_yinjie_composition
-from syllable.analysis import yinjie_encoder as package_yinjie_encoder
-from syllable.analysis.interactive_yinjie_session import interactive_encoder
-from syllable.analysis.yinjie_api_manifest import (
+from syllable.codec import interactive_yinjie_session as interactive_entry_module
+from syllable.codec import yinjie_composition as package_yinjie_composition
+from syllable.codec import yinjie_encoder as package_yinjie_encoder
+from syllable.codec.interactive_yinjie_session import interactive_encoder
+from syllable.codec.yinjie_api_manifest import (
     YINJIE_COMPOSITION_EXPORTS,
     YINJIE_FACADE_EXPORTS,
     YINJIE_INTERACTIVE_ENTRY_EXPORTS,

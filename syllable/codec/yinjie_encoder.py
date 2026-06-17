@@ -11,14 +11,14 @@ from typing import Any
 
 try:
     from .yinjie_api_manifest import YINJIE_IMPLEMENTATION_EXPORTS
-    from .syllable_encoding_pipeline import SyllableEncodingPipeline
-    from .shouyin_encoder import ShouyinEncoder
-    from .ganyin_encoder import GanyinEncoder
+    from ..analysis.syllable_encoding_pipeline import SyllableEncodingPipeline
+    from ..analysis.shouyin_encoder import ShouyinEncoder
+    from ..analysis.ganyin_encoder import GanyinEncoder
 except ImportError:
     from yinjie_api_manifest import YINJIE_IMPLEMENTATION_EXPORTS
-    from syllable_encoding_pipeline import SyllableEncodingPipeline
-    from shouyin_encoder import ShouyinEncoder
-    from ganyin_encoder import GanyinEncoder
+    from syllable.analysis.syllable_encoding_pipeline import SyllableEncodingPipeline
+    from syllable.analysis.shouyin_encoder import ShouyinEncoder
+    from syllable.analysis.ganyin_encoder import GanyinEncoder
 # 配置日志
 logging.basicConfig(
     level=logging.INFO,

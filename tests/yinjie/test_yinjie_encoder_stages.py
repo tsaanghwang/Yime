@@ -1,8 +1,8 @@
 import unittest
 import tempfile
 from pathlib import Path
-from syllable.analysis.interactive_yinjie_session import interactive_encoder
-from syllable.analysis.yinjie_encoder import (
+from syllable.codec.interactive_yinjie_session import interactive_encoder
+from syllable.codec.yinjie_encoder import (
     YinjieApplicationRunner,
     BatchInputResult,
     EncodedComponentResult,
@@ -26,7 +26,7 @@ from syllable.analysis.yinjie_encoder import (
     yinjie_cli_policy,
     yinjie_reporting_policy,
 )
-from syllable.analysis.yinjie_composition import (
+from syllable.codec.yinjie_composition import (
     create_default_application_runner,
     create_default_encoder,
     get_default_cli_policy,
