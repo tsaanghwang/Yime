@@ -465,8 +465,16 @@ git show <commit> --stat
   - 原因：它消费 `manual_key_layout.json`、`key_to_symbol.json`、`bmp_pua_trial_projection.json` 与 `yinjie_runtime_key_symbol_mapping.json`，职责是报告当前布局层与 runtime 层是否一致；它应作为检查输出保留，而不是被误当成新的配置面。
 
 - `external_data/unihan_readings/unihan_readings.db`
-  - 分类：Unihan 读音 + BCC 单字频 + TGHZ2013 分层视图。
-  - 原因：`view_tghz2013_frequency` 供 `yime/refresh_runtime_yime_codes.py` 构建 `char_usage_profile`；由 `external_data/unihan_readings/build_all.py` 构建。
+  - 分类：Unihan 读音 + BCC 单字频 + TGHZ2013 分层视图（**本地构建产物，gitignore**）。
+  - 原因：`view_tghz2013_frequency` 供 `yime/refresh_runtime_yime_codes.py` 构建 `char_usage_profile`；由 `external_data/unihan_readings/build_all.py` 构建。同目录下的 `README.md`、构建脚本与 `mandarin_readings_corrections.txt` **纳入 git**。
+
+- `internal_data/hanzi_pinyin/pinyin.txt`
+  - 分类：**rebuild 上游真源**（版本化 curated 单字 TSV）。
+  - 原因：`build_source_pinyin_db.py` 默认输入；由 `internal_data/hanzi_pinyin/build_valid_pinyin.py` 从 Unihan 链导出。`external_data/hanzi_pinyin.txt` 为可再生中间层，gitignore。
+
+- `internal_data/phrase_pinyin/phrase_pinyin.txt`
+  - 分类：**rebuild 上游真源**（版本化 curated 词语 TSV）。
+  - 原因：同上，词语侧；由 phrase-pinyin-data 经校验后导出。`external_data/phrase_pinyin.txt` 为上游快照，gitignore。
 
 - `external_data/char_freq/merged_char_freq.txt`
   - 分类：BCC **字频频道**合并单字频（`tools/merge_char_freq.py`）。

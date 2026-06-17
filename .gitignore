@@ -59,14 +59,16 @@ pip-wheel-metadata/
 internal_data/pinyin_source_db/source_pinyin.db
 internal_data/hanzi_pinyin/hanzi_pinyin.db
 internal_data/phrase_pinyin/phrase_pinyin.db
-internal_data/phrase_pinyin/phrase_pinyin.txt
 yime/pinyin_hanzi.db
-external_data/Unihan_Readings.txt
+# Upstream / regenerable exports (rebuild uses internal_data/*/ curated TSV)
 external_data/hanzi_pinyin.txt
 external_data/phrase_pinyin.txt
 external_data/word_freq/*.txt
 external_data/char_freq/*.txt
-external_data/unihan_readings/
+# Unihan build scripts are tracked; large downloads and DB are local-only
+external_data/unihan_readings/unihan_readings.db
+external_data/unihan_readings/Unihan_Readings.txt
+external_data/Unihan_Readings.txt
 yime/reports/efficiency_baseline.json
 yime/reports/phrase_code_backfill.json
 yime/reports/phoneme_dict.json
