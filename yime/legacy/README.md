@@ -35,7 +35,6 @@
 - `split_numeric_pinyin.py`
 - `rebuild_yinyuan_structure_table.py`
 - `consolidate_mappings.py`
-- `run_full_import.py`
 - `Initialize_pinyin_mapping.py`
 - `compat_internal_data/*.json`
 
@@ -51,7 +50,3 @@
 - `yime/import_danzi_into_prototype_tables.py`
 - `yime/import_duozi_into_prototype_tables.py`
 - `yime/refresh_runtime_yime_codes.py`（兼容入口；真实实现位于 `yime/utils/runtime_codes_refresh.py`）
-
-如果只需要从 `.yaml` 导出 JSON，请改走：
-
-- `internal_data/pinyin_source_db/export_yaml_lexicon_json.py`

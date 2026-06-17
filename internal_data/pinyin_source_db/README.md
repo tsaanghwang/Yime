@@ -90,7 +90,6 @@ Removed from v1: per-row `source_name`, `raw_line`, `comment` (structured TSV re
 
 - `yime/utils/prototype_single_char_import.py` / `prototype_phrase_import.py` clone into `pinyin_hanzi.db`
 - `lexicon_exports/pinyin_normalized.json` — syllable codebook export
-- Independent YAML export: `export_yaml_lexicon_json.py` (does not use this DB)
 
 See also `docs/project/PINYIN_DATA_MIGRATION.md`.
 

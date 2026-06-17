@@ -273,7 +273,7 @@
 
 - `yime/backup/`
   - 分类：本地数据库备份目录。
-  - 原因：`yime/run_full_import.py` 与 `yime/import_blcu_word_frequency.py`（真实实现位于 `yime/utils/blcu_word_frequency_import.py`）会在修改 `yime/pinyin_hanzi.db` 前生成保护性备份；这些文件属于本地维护副产物，不应进入版本控制。
+  - 原因：词库/频度导入脚本（如 `yime/import_blcu_word_frequency.py`，真实实现位于 `yime/utils/blcu_word_frequency_import.py`）会在修改 `yime/pinyin_hanzi.db` 前生成保护性备份；这些文件属于本地维护副产物，不应进入版本控制。
 
 - `yime/*.blcu_word_freq_*.bak`
 - `yime/*.pre_*`
@@ -350,10 +350,9 @@
 当前处理原则补充：
 
 1. 主线重建优先走 `internal_data/pinyin_source_db/` 与 prototype 导入链，不再把旧中文表维护脚本当成默认入口。
-2. `.yaml` 词库导出已经独立到 `internal_data/pinyin_source_db/export_yaml_lexicon_json.py`，可单独执行，不必穿过 SQLite 链。
-3. 主包根目录里仍保留的同名入口，默认应理解为兼容 shim；除应用级顶层入口外，这些 shim 现在都尽量显式声明 `__all__`，并把真实实现放在 `yime/utils/`、`yime/utils/legacy_pinyin_tables/` 或 `yime/legacy/pending_removal/`。
-4. `tools/` 下凡是代理外部键盘布局仓库或系统脚本的 orchestration 入口，默认应先做路径预检，并统一使用 `YIME_KEYBOARD_LAYOUT_REPO` 解析外部 `Yime-keyboard-layout` 仓库位置。
-5. `yime/legacy/` 中的脚本默认不继续扩展新功能，只保留历史兼容与审计用途；其中旧 schema / 汉字接口继续留在 `yime/legacy/pending_removal/`，而三表生成链已移到 `yime/utils/legacy_pinyin_tables/`。数据库维护脚本产生的 `.bak`/`pre_*` 等回退文件应统一视为本地副产物，不再提交。
+2. 主包根目录里仍保留的同名入口，默认应理解为兼容 shim；除应用级顶层入口外，这些 shim 现在都尽量显式声明 `__all__`，并把真实实现放在 `yime/utils/`、`yime/utils/legacy_pinyin_tables/` 或 `yime/legacy/pending_removal/`。
+3. `tools/` 下凡是代理外部键盘布局仓库或系统脚本的 orchestration 入口，默认应先做路径预检，并统一使用 `YIME_KEYBOARD_LAYOUT_REPO` 解析外部 `Yime-keyboard-layout` 仓库位置。
+4. `yime/legacy/` 中的脚本默认不继续扩展新功能，只保留历史兼容与审计用途；其中旧 schema / 汉字接口继续留在 `yime/legacy/pending_removal/`，而三表生成链已移到 `yime/utils/legacy_pinyin_tables/`。数据库维护脚本产生的 `.bak`/`pre_*` 等回退文件应统一视为本地副产物，不再提交。
 
 #### 6C. `yime/reports/` 运行桥接文件与分析产物（2026-05）
 
@@ -405,7 +404,7 @@
 
 - `ci-summary.json`
   - 分类：已删除的 CI 汇总输出样本。
-  - 原因：该文件曾由旧入口 `legacy/ci_scripts/generate_ci_report.py` 生成，只是一次运行产物，不承担仓库真源职责。
+  - 原因：该文件曾由已删除的旧 CI 汇总脚本生成，只是一次运行产物，不承担仓库真源职责。
 
 - `pinyin_import.log`
   - 分类：已删除的导入日志文件。
@@ -419,11 +418,11 @@
 
 - `character_positions.db`
   - 分类：已删除的示例字符位置数据库。
-  - 原因：它只对应 `legacy/utils_prototypes/position.py` 一类演示/实验用途，不参与当前输入法运行、导入或发布主线。
+  - 原因：它只对应已删除的演示/实验脚本用途，不参与当前输入法运行、导入或发布主线。
 
 - `character_table.json`
   - 分类：已删除的示例字符统计输出。
-  - 原因：它由 `legacy/utils_prototypes/example.py` 直接生成，内容仅服务于演示示例，不应占据根目录并进入版本控制。
+  - 原因：它由已删除的演示示例脚本直接生成，内容仅服务于演示，不应占据根目录并进入版本控制。
 
 - `yime.db`
   - 分类：已删除的根目录辅助观测库。
@@ -451,7 +450,7 @@
 
 - `keys_to_yunmu.json`
   - 分类：已删除的根目录重复映射副本。
-  - 原因：这份根目录文件早就没有读取方；而仓库内原先位于 `pinyin/keys_to_yunmu.json` 的生成链也已一并迁入 `legacy/pinyin_generated/`，不再属于当前活动包面。
+  - 原因：这份根目录文件早就没有读取方；原先的旧 `pinyin/` 生成链也已删除，不再属于当前活动包面。
 
 - `ganyin_encoding.json`
   - 分类：已删除的根目录孤立干音编码快照。
@@ -764,7 +763,7 @@
 
 - `external_data/finals_IPA_mapping.json`
   - 分类：外部语音学输入映射。
-  - 原因：它承担 finals 侧 IPA 到项目拼写约定的外部输入面，当前仍被 `tools/final_components.py`、`tools/final_classifier.py` 等现行链路当作上游输入；因此不应与 `internal_data/ipa_of_finals.json`、`internal_data/yinyuan_pianyin_mapping.json` 这类内部派生产物混并。旧 `tools/orchestrator.py` 分析链已归档到 `legacy/syllable_analysis_tools/`，不再视为当前入口。
+  - 原因：它承担 finals 侧 IPA 到项目拼写约定的外部输入面，当前仍被 `tools/final_components.py`、`tools/final_classifier.py` 等现行链路当作上游输入；因此不应与 `internal_data/ipa_of_finals.json`、`internal_data/yinyuan_pianyin_mapping.json` 这类内部派生产物混并。旧 orchestrator 分析链已删除，不再视为当前入口。
 
 - `external_data/initials_IPA_mapping.json`
   - 分类：外部声母 IPA 输入映射。

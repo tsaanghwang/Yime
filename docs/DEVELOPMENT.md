@@ -248,47 +248,11 @@ python -m pytest tests/syllable_analysis/test_encode_ganyin.py tests/yinjie/test
 
 ## 添加新功能
 
-### 示例：添加新的转换规则
-
-#### 1. 定义规则
-
-在 `pinyin/yunmu_to_keys.py` 中添加：
-
-```python
-new_rule = ConversionRule(
-    condition=lambda k: k == "your_yunmu",
-    action=lambda v: "converted_value",
-    description="新规则描述",
-    priority=10
-)
-```
-
-#### 2. 添加到规则列表
-
-```python
-def _get_default_rules(self) -> List[ConversionRule]:
-    rules = [
-        # 现有规则...
-        new_rule,
-    ]
-    return rules
-```
-
-#### 3. 编写测试
-
-如果你只是维护已归档的旧 `pinyin` helper，可在 `legacy/pinyin_package/test/test_yunmu_to_keys.py` 中添加：
-
-```python
-def test_new_rule(self):
-    """测试新规则"""
-    result = self.converter.convert({"your_yunmu": ""})
-    self.assertEqual(result["your_yunmu"], "converted_value")
-```
-
-#### 4. 运行测试
+旧 `pinyin/yunmu_to_keys` 规则插件链已随根目录 `legacy/` 移除。当前请在对应现行模块旁添加测试；音节编码与词库相关改动优先跑：
 
 ```bash
-pytest legacy/pinyin_package/test/test_yunmu_to_keys.py::test_new_rule
+scripts/run_tests.cmd
+pytest tests/yinjie/ -k your_case
 ```
 
 ---

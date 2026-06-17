@@ -1,6 +1,6 @@
 # 拼音数据迁移说明
 
-本文档只说明当前主线的数据重建入口、独立 `.yaml` 导出入口，以及哪些旧脚本已经降级为 legacy-compatible。
+本文档只说明当前主线的数据重建入口，以及哪些旧脚本已经降级为 legacy-compatible。
 
 ## 1. 当前主线 rebuild 链
 
@@ -50,33 +50,7 @@ c:/dev/Yime/.venv/Scripts/python.exe yime/export_runtime_candidates_json.py
 - `build_source_pinyin_db.py` 默认会把 SQLite 产物写到 `.generated/source_pinyin.db`
 - `export_runtime_candidates_json.py`（兼容入口；真实实现位于 `yime/utils/runtime_candidates_export.py`）默认会把 runtime true JSON 写到 `.generated/runtime_candidates_by_code_true.json`
 
-## 2. 独立 `.yaml` 导出链
-
-如果你的目标只是从仓库内 `.yaml` 词库导出：
-
-- `danzi_pinyin.json`
-- `duozi_pinyin.json`
-
-那么不需要经过 SQLite rebuild 链。
-
-独立入口：
-
-- [export_yaml_lexicon_json.py](/c:/dev/Yime/internal_data/pinyin_source_db/export_yaml_lexicon_json.py)
-
-执行方式：
-
-```bash
-c:/dev/Yime/.venv/Scripts/python.exe internal_data/pinyin_source_db/export_yaml_lexicon_json.py
-```
-
-这条链只做：
-
-- `internal_data/pinyin_source_db/lexicon_sources/hanzi_pinyin_danzi.yaml -> internal_data/pinyin_source_db/lexicon_exports/danzi_pinyin.json`
-- `internal_data/pinyin_source_db/lexicon_sources/hanzi_pinyin_duozi.yaml -> internal_data/pinyin_source_db/lexicon_exports/duozi_pinyin.json`
-
-它和 `source_pinyin.db`、prototype tables、runtime refresh 是分离的。
-
-## 3. 当前 legacy-compatible 区域
+## 2. 当前 legacy-compatible 区域
 
 下面这些对象仍然保留在仓库里，但不属于当前主线 rebuild：
 
@@ -97,7 +71,9 @@ c:/dev/Yime/.venv/Scripts/python.exe internal_data/pinyin_source_db/export_yaml_
 - 旧 DB / JSON 真实实现不再保留主目录或 `yime/legacy/` 顶层同名壳；旧 schema / 汉字接口保留在 `yime/legacy/pending_removal/`，三表生成链移到 `yime/utils/legacy_pinyin_tables/`。
 - 当前主线如果需要真正刷新可消费数据，仍应回到本文第 1 节的 `source_pinyin.db -> prototype tables -> runtime` 链。
 
-## 4. 已归档的旧脚本
+## 3. 已归档的旧脚本
+
+根目录 `legacy/`（旧 YAML 比较链、早期音节分析试验、`pinyin` helper 快照等）已于 2026-06 删除；恢复请查 git 历史。
 
 已经移入 [yime/legacy/README.md](/c:/dev/Yime/yime/legacy/README.md) 所在目录的脚本，都是只服务旧结构、且当前主线没有引用的工具。
 
