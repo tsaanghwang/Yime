@@ -9,8 +9,6 @@ DROP VIEW IF EXISTS vw_klc_layout_observation_all;
 DROP VIEW IF EXISTS vw_symbol_crosswalk;
 DROP VIEW IF EXISTS vw_symbol_inventory;
 DROP VIEW IF EXISTS vw_key_symbol_layout;
-DROP VIEW IF EXISTS vw_entry_encoding_detail;
-
 DROP TABLE IF EXISTS key_symbol_map;
 DROP TABLE IF EXISTS symbol;
 
@@ -82,79 +80,11 @@ CREATE TABLE IF NOT EXISTS klc_layout_source (
     UNIQUE (scan_code, vk_name, source_file)
 );
 
-CREATE TABLE IF NOT EXISTS lexicon_entry (
-    entry_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    surface_text TEXT NOT NULL,
-    entry_type TEXT NOT NULL CHECK (entry_type IN ('character', 'word', 'phrase')),
-    char_count INTEGER NOT NULL DEFAULT 1,
-    source_tag TEXT,
-    is_active INTEGER NOT NULL DEFAULT 1 CHECK (is_active IN (0, 1)),
-    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE IF NOT EXISTS entry_pronunciation (
-    pronunciation_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    entry_id INTEGER NOT NULL,
-    original_pinyin TEXT NOT NULL,
-    normalized_pinyin TEXT,
-    syllable_count INTEGER,
-    source_tag TEXT,
-    FOREIGN KEY (entry_id) REFERENCES lexicon_entry(entry_id) ON DELETE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS entry_encoding (
-    encoding_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    pronunciation_id INTEGER NOT NULL,
-    symbol_sequence TEXT NOT NULL,
-    pua_sequence TEXT,
-    encoding_version TEXT NOT NULL DEFAULT 'v1',
-    is_primary INTEGER NOT NULL DEFAULT 1 CHECK (is_primary IN (0, 1)),
-    sort_priority INTEGER NOT NULL DEFAULT 0,
-    notes_zh TEXT,
-    UNIQUE (pronunciation_id, symbol_sequence),
-    FOREIGN KEY (pronunciation_id) REFERENCES entry_pronunciation(pronunciation_id) ON DELETE CASCADE
-);
-
 CREATE INDEX IF NOT EXISTS idx_physical_key_group_order
     ON physical_key(key_group, display_order);
 
 CREATE INDEX IF NOT EXISTS idx_key_symbol_map_symbol
     ON key_symbol_map(symbol_id);
-
-CREATE INDEX IF NOT EXISTS idx_lexicon_entry_surface
-    ON lexicon_entry(surface_text);
-
-CREATE INDEX IF NOT EXISTS idx_entry_pronunciation_entry
-    ON entry_pronunciation(entry_id);
-
-CREATE INDEX IF NOT EXISTS idx_entry_pronunciation_pinyin
-    ON entry_pronunciation(normalized_pinyin);
-
-CREATE INDEX IF NOT EXISTS idx_entry_encoding_symbol_sequence
-    ON entry_encoding(symbol_sequence);
-
-DROP VIEW IF EXISTS vw_entry_encoding_detail;
-
-CREATE VIEW vw_entry_encoding_detail AS
-SELECT
-    le.entry_id,
-    le.surface_text,
-    le.entry_type,
-    ep.pronunciation_id,
-    ep.original_pinyin,
-    ep.normalized_pinyin,
-    ee.encoding_id,
-    ee.symbol_sequence,
-    ee.pua_sequence,
-    ee.encoding_version,
-    ee.is_primary,
-    ee.sort_priority
-FROM lexicon_entry AS le
-JOIN entry_pronunciation AS ep
-    ON ep.entry_id = le.entry_id
-JOIN entry_encoding AS ee
-    ON ee.pronunciation_id = ep.pronunciation_id;
 
 DROP VIEW IF EXISTS vw_key_symbol_layout;
 
@@ -482,35 +412,6 @@ VALUES
     ('column', 'klc_layout_source', 'comment_text', 'KLC 行尾注释'),
     ('column', 'klc_layout_source', 'source_file', '导入来源文件名'),
 
-    ('table', 'lexicon_entry', NULL, '词条表，记录汉字、词语或短语本体'),
-    ('column', 'lexicon_entry', 'entry_id', '词条主键'),
-    ('column', 'lexicon_entry', 'surface_text', '词条文本内容'),
-    ('column', 'lexicon_entry', 'entry_type', '词条类型，可为单字、词语或短语'),
-    ('column', 'lexicon_entry', 'char_count', '词条字数'),
-    ('column', 'lexicon_entry', 'source_tag', '数据来源标签'),
-    ('column', 'lexicon_entry', 'is_active', '是否启用该词条'),
-    ('column', 'lexicon_entry', 'created_at', '创建时间'),
-    ('column', 'lexicon_entry', 'updated_at', '更新时间'),
-
-    ('table', 'entry_pronunciation', NULL, '词条读音表，记录原始拼音及规范化拼音'),
-    ('column', 'entry_pronunciation', 'pronunciation_id', '读音主键'),
-    ('column', 'entry_pronunciation', 'entry_id', '关联 lexicon_entry 的词条 ID'),
-    ('column', 'entry_pronunciation', 'original_pinyin', '原始拼音表示'),
-    ('column', 'entry_pronunciation', 'normalized_pinyin', '规范化后的拼音表示'),
-    ('column', 'entry_pronunciation', 'syllable_count', '音节数'),
-    ('column', 'entry_pronunciation', 'source_tag', '读音来源标签'),
-
-    ('table', 'entry_encoding', NULL, '词条编码表，记录音元序列和私用区字符序列'),
-    ('column', 'entry_encoding', 'encoding_id', '编码主键'),
-    ('column', 'entry_encoding', 'pronunciation_id', '关联 entry_pronunciation 的读音 ID'),
-    ('column', 'entry_encoding', 'symbol_sequence', '逻辑码元序列，例如 AbcZ'),
-    ('column', 'entry_encoding', 'pua_sequence', '对应的私用区字符序列'),
-    ('column', 'entry_encoding', 'encoding_version', '编码方案版本'),
-    ('column', 'entry_encoding', 'is_primary', '是否为主编码'),
-    ('column', 'entry_encoding', 'sort_priority', '候选排序优先级'),
-    ('column', 'entry_encoding', 'notes_zh', '编码说明'),
-
-    ('view', 'vw_entry_encoding_detail', NULL, '观察用视图，展开词条、拼音和编码的主要字段'),
     ('view', 'vw_key_symbol_layout', NULL, '观察用视图，展示 52 键位到 52 码元及私用区字符的映射关系'),
     ('view', 'vw_symbol_inventory', NULL, '观察用视图，汇总每个音元符号被哪些键位映射'),
     ('view', 'vw_symbol_crosswalk', NULL, '对照视图，展示槽位、BMP PUA、SPUA-B 与物理键位聚合结果'),

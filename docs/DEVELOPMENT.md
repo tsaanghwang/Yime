@@ -220,6 +220,8 @@ FROM runtime_candidates
 LIMIT 10;
 ```
 
+如果需要快速理解当前 `yime/pinyin_hanzi.db` 中各类表的职责分层，参见 `docs/PINYIN_HANZI_DB_DOMAINS.md`。
+
 ### 2. 添加新表
 
 当前主线 rebuild/runtime 链应修改：
