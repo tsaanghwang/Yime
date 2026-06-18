@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import shutil
 import sqlite3
 import subprocess
@@ -65,13 +66,14 @@ COMMON_LOW_COUNT = 3000
 SPECIAL_HIGH_COUNT = 1605
 SPECIAL_LOW_COUNT = 4895
 
-TIER_BASE_WEIGHTS = {
-    "common_high": 40_000_000.0,
-    "common_low": 30_000_000.0,
-    "special_high": 20_000_000.0,
-    "special_low": 10_000_000.0,
-    "rare": 0.0,
+TIER_BASE_WEIGHT_MULTIPLIERS = {
+    "common_high": 4,
+    "common_low": 3,
+    "special_high": 2,
+    "special_low": 1,
+    "rare": 0,
 }
+TIER_BASE_WEIGHT_GRANULARITY = 10_000_000.0
 
 MODERN_COMMON_MAX_RANK = 12_000
 MODERN_COMMON_RANK_DIVISOR = 20.0
@@ -1493,7 +1495,41 @@ def build_phrase_support_by_char(conn: sqlite3.Connection) -> dict[str, float]:
     return dict(support_by_char)
 
 
-def build_char_usage_profile_rows(conn: sqlite3.Connection) -> list[tuple[str, str, int, float, str]]:
+def compute_char_usage_tier_base_weights(
+    conn: sqlite3.Connection,
+    tuning_parameters: dict[str, float] | None = None,
+) -> dict[str, float]:
+    max_char_frequency = float(
+        conn.execute("SELECT MAX(COALESCE(char_frequency_abs, 0)) FROM char_inventory").fetchone()[0] or 0.0
+    )
+    parameters = tuning_parameters or {}
+    max_rank = int(parameters.get("modern_common_max_rank", MODERN_COMMON_MAX_RANK))
+    rank_divisor = float(parameters.get("modern_common_rank_divisor", MODERN_COMMON_RANK_DIVISOR)) or 1.0
+    max_modern_common_boost = max(max_rank - 1, 0) / rank_divisor
+    max_prior_boost = max(float(parameters.get("phrase_reading_prior_scale", PHRASE_READING_PRIOR_SCALE)), 0.0)
+    common_weight = float(parameters.get("common_reading_weight", COMMON_READING_WEIGHT))
+    uncommon_weight = float(parameters.get("uncommon_reading_weight", UNCOMMON_READING_WEIGHT))
+    max_reading_weight = max(common_weight, uncommon_weight, 0.0)
+    max_non_tier_weight = (
+        max_char_frequency
+        + max_modern_common_boost
+        + max_prior_boost
+        + max_reading_weight
+    )
+    tier_step = max(
+        TIER_BASE_WEIGHT_GRANULARITY,
+        math.ceil(max_non_tier_weight / TIER_BASE_WEIGHT_GRANULARITY) * TIER_BASE_WEIGHT_GRANULARITY,
+    )
+    return {
+        tier_name: float(multiplier) * tier_step
+        for tier_name, multiplier in TIER_BASE_WEIGHT_MULTIPLIERS.items()
+    }
+
+
+def build_char_usage_profile_rows(
+    conn: sqlite3.Connection,
+    tuning_parameters: dict[str, float] | None = None,
+) -> list[tuple[str, str, int, float, str]]:
     existing_chars = {
         str(row[0] or "")
         for row in conn.execute("SELECT hanzi FROM char_inventory")
@@ -1501,6 +1537,8 @@ def build_char_usage_profile_rows(conn: sqlite3.Connection) -> list[tuple[str, s
     }
     if not existing_chars:
         return []
+
+    tier_base_weights = compute_char_usage_tier_base_weights(conn, tuning_parameters)
 
     tghz_freq = load_tghz2013_char_frequencies(DEFAULT_UNIHAN_READINGS_DB_PATH)
     sorted_tghz_chars = [
@@ -1543,15 +1581,13 @@ def build_char_usage_profile_rows(conn: sqlite3.Connection) -> list[tuple[str, s
     rows: list[tuple[str, str, int, float, str]] = []
 
     def append_rows(chars: list[str], tier_name: str, source_note: str) -> None:
-        base_weight = TIER_BASE_WEIGHTS[tier_name]
-        tier_size = len(chars)
+        base_weight = tier_base_weights[tier_name]
         for index, hanzi in enumerate(chars, start=1):
-            residual_rank_weight = max(tier_size - index, 0) / 10_000.0
             rows.append((
                 hanzi,
                 tier_name,
                 index,
-                base_weight + residual_rank_weight,
+                base_weight,
                 source_note,
             ))
 
@@ -1563,8 +1599,9 @@ def build_char_usage_profile_rows(conn: sqlite3.Connection) -> list[tuple[str, s
     return rows
 
 
-def rebuild_char_usage_profile(conn: sqlite3.Connection) -> Counter:
-    rows = build_char_usage_profile_rows(conn)
+def rebuild_char_usage_profile(conn: sqlite3.Connection, tuning_parameters: dict[str, float] | None = None) -> Counter:
+    rows = build_char_usage_profile_rows(conn, tuning_parameters)
+    tier_base_weights = compute_char_usage_tier_base_weights(conn, tuning_parameters)
     conn.execute("DELETE FROM char_usage_profile")
     if rows:
         conn.executemany(
@@ -1585,6 +1622,7 @@ def rebuild_char_usage_profile(conn: sqlite3.Connection) -> Counter:
     for _hanzi, usage_tier, _tier_rank, _tier_sort_weight, _source_note in rows:
         stats[usage_tier] += 1
     stats["total"] = len(rows)
+    stats["tier_step"] = int(tier_base_weights["special_low"])
     return stats
 
 
@@ -1761,6 +1799,10 @@ def main() -> int:
 
         canonical_mapping_count = sync_canonical_mapping_table(conn, repo_root)
         print(f"已同步 canonical pinyin_yime_code 行: {canonical_mapping_count}")
+        decomp_count = conn.execute(
+            "SELECT COUNT(*) FROM yinjie_slot_decomposition"
+        ).fetchone()[0]
+        print(f"已同步 yinjie_slot_decomposition 行: {decomp_count}")
         print(f"已同步 phrase_reading_preference 行: {preferred_phrase_count}")
         tuning_parameters = load_runtime_tuning_parameters(conn)
         bridge_stats = summarize_char_frequency_state(conn)

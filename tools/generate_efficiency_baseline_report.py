@@ -167,6 +167,129 @@ def load_runtime_tuning_summary(db_path: Path) -> dict[str, float] | None:
     return {str(key): float(value) for key, value in rows if key is not None and value is not None}
 
 
+def load_char_usage_tier_summary(db_path: Path) -> dict[str, object] | None:
+    conn = sqlite3.connect(db_path)
+    try:
+        rows = conn.execute(
+            """
+            SELECT usage_tier, COUNT(*), MIN(tier_sort_weight), MAX(tier_sort_weight)
+            FROM char_lexicon
+            GROUP BY usage_tier
+            ORDER BY MAX(tier_sort_weight) DESC, usage_tier
+            """
+        ).fetchall()
+    except sqlite3.OperationalError:
+        conn.close()
+        return None
+    finally:
+        conn.close()
+
+    if not rows:
+        return None
+
+    weights_by_tier = {
+        str(usage_tier): float(max_weight or 0.0)
+        for usage_tier, _count, _min_weight, max_weight in rows
+        if usage_tier is not None
+    }
+    positive_weights = sorted({weight for weight in weights_by_tier.values() if weight > 0.0})
+    tier_step = 0.0
+    if len(positive_weights) >= 2:
+        tier_step = min(
+            positive_weights[index + 1] - positive_weights[index]
+            for index in range(len(positive_weights) - 1)
+        )
+    elif len(positive_weights) == 1:
+        tier_step = positive_weights[0]
+
+    return {
+        "tier_step": float(tier_step),
+        "weights_by_tier": weights_by_tier,
+        "rows": [
+            {
+                "usage_tier": str(usage_tier),
+                "count": int(count),
+                "min_weight": float(min_weight or 0.0),
+                "max_weight": float(max_weight or 0.0),
+            }
+            for usage_tier, count, min_weight, max_weight in rows
+            if usage_tier is not None
+        ],
+    }
+
+
+def load_char_frequency_profile_summary(db_path: Path) -> dict[str, object] | None:
+    conn = sqlite3.connect(db_path)
+    try:
+        total_row = conn.execute(
+            "SELECT COUNT(*), SUM(COALESCE(char_frequency_abs, 0)) FROM char_inventory"
+        ).fetchone()
+        source_rows = conn.execute(
+            """
+            SELECT frequency_source, COUNT(*), MIN(char_frequency_abs), MAX(char_frequency_abs), SUM(COALESCE(char_frequency_abs, 0))
+            FROM char_inventory
+            GROUP BY frequency_source
+            ORDER BY COUNT(*) DESC, frequency_source
+            """
+        ).fetchall()
+        top10_row = conn.execute(
+            """
+            WITH ranked AS (
+                SELECT char_frequency_abs AS frequency
+                FROM char_inventory
+                ORDER BY frequency DESC, hanzi
+                LIMIT 10
+            )
+            SELECT SUM(frequency) FROM ranked
+            """
+        ).fetchone()
+        top100_row = conn.execute(
+            """
+            WITH ranked AS (
+                SELECT char_frequency_abs AS frequency
+                FROM char_inventory
+                ORDER BY frequency DESC, hanzi
+                LIMIT 100
+            )
+            SELECT SUM(frequency) FROM ranked
+            """
+        ).fetchone()
+        synthetic_row = conn.execute(
+            "SELECT SUM(COALESCE(char_frequency_abs, 0)) FROM char_inventory WHERE frequency_source LIKE 'synthetic/%'"
+        ).fetchone()
+    except sqlite3.OperationalError:
+        conn.close()
+        return None
+    finally:
+        conn.close()
+
+    total_chars = int((total_row or (0, 0))[0] or 0)
+    total_frequency = float((total_row or (0, 0))[1] or 0.0)
+    top10_frequency = float((top10_row or (0,))[0] or 0.0)
+    top100_frequency = float((top100_row or (0,))[0] or 0.0)
+    synthetic_frequency = float((synthetic_row or (0,))[0] or 0.0)
+    if total_chars <= 0:
+        return None
+
+    return {
+        "total_chars": total_chars,
+        "total_frequency": total_frequency,
+        "top10_frequency_share": (top10_frequency / total_frequency) if total_frequency else 0.0,
+        "top100_frequency_share": (top100_frequency / total_frequency) if total_frequency else 0.0,
+        "synthetic_frequency_share": (synthetic_frequency / total_frequency) if total_frequency else 0.0,
+        "source_rows": [
+            {
+                "frequency_source": str(frequency_source or ""),
+                "count": int(count or 0),
+                "min_frequency": int(min_frequency or 0),
+                "max_frequency": int(max_frequency or 0),
+                "total_frequency": float(total_frequency_by_source or 0.0),
+            }
+            for frequency_source, count, min_frequency, max_frequency, total_frequency_by_source in source_rows
+        ],
+    }
+
+
 def percentile(values: list[int], pct: float) -> float:
     if not values:
         return 0.0
@@ -861,6 +984,8 @@ def build_payload(report: dict, page_size: int, db_path: Path) -> dict[str, obje
     )
     char_ordering_comparison = build_char_ordering_comparison(db_path, page_size=page_size)
     runtime_tuning_summary = load_runtime_tuning_summary(db_path)
+    char_usage_tier_summary = load_char_usage_tier_summary(db_path)
+    char_frequency_profile_summary = load_char_frequency_profile_summary(db_path)
 
     return {
         "generated_at": datetime.now(UTC).isoformat().replace("+00:00", "Z"),
@@ -884,6 +1009,8 @@ def build_payload(report: dict, page_size: int, db_path: Path) -> dict[str, obje
         "char_tiers": char_tiers,
         "char_ordering_comparison": char_ordering_comparison,
         "runtime_tuning_summary": runtime_tuning_summary,
+        "char_usage_tier_summary": char_usage_tier_summary,
+        "char_frequency_profile_summary": char_frequency_profile_summary,
         "code_length_baseline": code_length_baseline,
         "syllable_jianpin_examples": syllable_jianpin_examples,
         "syllable_jianpin_rule_stats": syllable_jianpin_rule_stats,
@@ -943,6 +1070,8 @@ def build_markdown(payload: dict[str, object]) -> str:
     char_tiers = payload["char_tiers"]
     char_ordering_comparison = payload["char_ordering_comparison"]
     runtime_tuning_summary = payload["runtime_tuning_summary"]
+    char_usage_tier_summary = payload["char_usage_tier_summary"]
+    char_frequency_profile_summary = payload["char_frequency_profile_summary"]
     code_length_baseline = payload["code_length_baseline"]
     syllable_jianpin_examples = payload["syllable_jianpin_examples"]
     syllable_jianpin_rule_stats = payload["syllable_jianpin_rule_stats"]
@@ -950,6 +1079,15 @@ def build_markdown(payload: dict[str, object]) -> str:
     page_size = headline["page_thresholds"]["current_page_size"]
     selection_window_size = headline["page_thresholds"]["selection_window_size"]
     generated_at = payload["generated_at"]
+    tier_step = float((char_usage_tier_summary or {}).get("tier_step", 0.0) or 0.0)
+    top100_share = float((char_frequency_profile_summary or {}).get("top100_frequency_share", 0.0) or 0.0)
+    synthetic_share = float((char_frequency_profile_summary or {}).get("synthetic_frequency_share", 0.0) or 0.0)
+    bcc_source_rows = [
+        row
+        for row in (char_frequency_profile_summary or {}).get("source_rows", [])
+        if row.get("frequency_source") == "external_data/BCC-word-freq"
+    ]
+    bcc_char_count = int(bcc_source_rows[0]["count"]) if bcc_source_rows else 0
 
     lines = [
         "# 效率基线报告",
@@ -969,7 +1107,9 @@ def build_markdown(payload: dict[str, object]) -> str:
         f"- 以当前 `sort_weight` 作为频率代理时，词语加权首选命中率为 `{format_pct(float(weighted_visibility['phrases']['weighted_top1_share']))}`，单字加权首选命中率为 `{format_pct(float(weighted_visibility['chars']['weighted_top1_share']))}`。",
         f"- 以当前 `sort_weight` 作为频率代理时，词语加权首屏可见率为 `{format_pct(float(weighted_visibility['phrases']['weighted_first_page_share']))}`，单字加权首屏可见率为 `{format_pct(float(weighted_visibility['chars']['weighted_first_page_share']))}`。",
         f"- 单字按《通用规范汉字表》同等数量对齐后，一级字（前 3500）加权首屏可见率为 `{format_pct(float(char_tiers['level_1']['weighted_visibility']['weighted_first_page_share']))}`，二级前字（前 6500）为 `{format_pct(float(char_tiers['level_2']['weighted_visibility']['weighted_first_page_share']))}`，三级前字（前 8105）为 `{format_pct(float(char_tiers['level_3']['weighted_visibility']['weighted_first_page_share']))}`。",
-        f"- 若只保留 5 档分层骨架、但不接入真单字频率，则按同一份真单字频率做需求加权时，单字首屏可见率为 `{format_pct(float(char_ordering_comparison['tier_only']['weighted_first_page_share']))}`；接入真单字频率后为 `{format_pct(float(char_ordering_comparison['tier_plus_frequency']['weighted_first_page_share']))}`；再叠加现代常用轻量约束后为 `{format_pct(float(char_ordering_comparison['tier_plus_frequency_plus_modern_common']['weighted_first_page_share']))}`；继续接入读音纠偏与词语先验后的当前 runtime 为 `{format_pct(float(char_ordering_comparison['current_runtime']['weighted_first_page_share']))}`。",
+        f"- 当前单字先用按新频率量级动态定标的 5 档分层骨架分桶（当前档间步长 `{format_float(tier_step)}`），但不接入真单字频率时，按同一份真单字频率做需求加权的单字首屏可见率为 `{format_pct(float(char_ordering_comparison['tier_only']['weighted_first_page_share']))}`；接入真单字频率后为 `{format_pct(float(char_ordering_comparison['tier_plus_frequency']['weighted_first_page_share']))}`；再叠加现代常用轻量约束后为 `{format_pct(float(char_ordering_comparison['tier_plus_frequency_plus_modern_common']['weighted_first_page_share']))}`；继续接入读音纠偏与词语先验后的当前 runtime 为 `{format_pct(float(char_ordering_comparison['current_runtime']['weighted_first_page_share']))}`。",
+        f"- 上述“真单字频率”需求权重直接来自 BCC 字频频道 `external_data/char_freq/merged_char_freq.txt` 写入的原始整数 count，并由 `char_frequency_policy.py` 对未命中字做 Unihan 5..1/0 合成兜底；当前 BCC 直命中单字 `{bcc_char_count}` 个，而合成兜底虽然覆盖大量长尾字形，但累计需求权重只占 `{format_pct(synthetic_share)}`。",
+        f"- 因为这份 BCC 单字频本身高度偏斜，前 `100` 个单字已经占全部单字需求权重的 `{format_pct(top100_share)}`，所以这里的 `93.04%` 更接近“高需求单字被放进首屏”的结论，而不是“全体单字整体都容易选中”。",
         (
             f"- 当前默认弱先验配置取更保守档：`cw={format_float(float(runtime_tuning_summary['common_reading_weight']))}`、`uw={format_float(float(runtime_tuning_summary['uncommon_reading_weight']))}`、`scale={format_float(float(runtime_tuning_summary['phrase_reading_prior_scale']))}`、`share>={runtime_tuning_summary['phrase_reading_prior_min_share']:.3f}`、`count>={int(round(float(runtime_tuning_summary['phrase_reading_prior_min_phrase_count'])))}`、`evidence>={format_float(float(runtime_tuning_summary['phrase_reading_prior_min_evidence_weight']))}`；最近窄扫描显示 `scale=0.25/0.50` 都能守住全局与高碰撞桶基线，因此当前默认采用更保守的 `0.25`。"
             if runtime_tuning_summary
@@ -986,7 +1126,7 @@ def build_markdown(payload: dict[str, object]) -> str:
         "",
         "## 频率加权可见率与首选命中率",
         "",
-        f"这里直接把运行时导出里的 `sort_weight` 当作当前最接近实际排序行为的频率代理，用来观察当前排序下，频率质量能有多少直接落在首选、首屏 `{page_size}` 个候选和 `1-{selection_window_size}` 选择窗口里。",
+        f"这里直接把运行时导出里的 `sort_weight` 当作当前最接近实际排序行为的频率代理，用来观察当前排序下，频率质量能有多少直接落在首选、首屏 `{page_size}` 个候选和 `1-{selection_window_size}` 选择窗口里。当前 JSON 导出层会把 `sort_weight` 量化到固定小数位，只是为了消除 `3.7152000000000003` 这类二进制尾差显示；SQLite 库内保存值与运行时排序逻辑本身不因此改写。",
         "",
         f"| 类型 | 有效编码桶数 | 加权首选命中率 | 加权首屏可见率 | 加权 1-{selection_window_size} 可见率 | 首选即最高权重桶占比 |",
         "| --- | ---: | ---: | ---: | ---: | ---: |",
@@ -1006,7 +1146,7 @@ def build_markdown(payload: dict[str, object]) -> str:
         "",
         "## 单字排序策略对比",
         "",
-        f"这组对比固定使用同一份单字真实频率作为需求权重，只替换单字桶内的排序策略：`tier_only` 表示只按 5 档分层骨架排序，`tier_plus_frequency` 表示在同样 5 档骨架上继续叠加单字真频率，`tier_plus_frequency_plus_modern_common` 表示在此基础上再叠加“现代常用单字优先”的轻量约束，`current_runtime` 表示继续叠加读音纠偏与词语读音先验后的当前排序。",
+        f"这组对比固定使用同一份单字真实频率作为需求权重，只替换单字桶内的排序策略：`tier_only` 表示只按当前按新频率量级动态定标的 5 档分层骨架排序（当前档间步长 `{format_float(tier_step)}`），`tier_plus_frequency` 表示在同样 5 档骨架上继续叠加单字真频率，`tier_plus_frequency_plus_modern_common` 表示在此基础上再叠加“现代常用单字优先”的轻量约束，`current_runtime` 表示继续叠加读音纠偏与词语读音先验后的当前排序。",
         "",
         "| 策略 | 有效编码桶数 | 真实频率加权首选命中率 | 真实频率加权首屏可见率 |",
         "| --- | ---: | ---: | ---: |",
@@ -1137,6 +1277,7 @@ def build_markdown(payload: dict[str, object]) -> str:
             "## 当前还不能证明什么",
             "",
             "- `sort_weight` 目前仍然只是仓库运行时排序所使用的频率代理，不等于完整真实用户输入日志。",
+            "- 单字排序策略对比虽然使用了 BCC 字频频道的原始整数 count 作为需求权重，但这仍然是离线频表，不是输入法真实选字日志。",
             "- 这份报告里的全拼/双拼部分目前只是结构码长对照，不是第三方输入法的真实候选排序实测。",
             "- 这份报告还没有纳入真实用户输入日志，所以不能直接推出实际打字速度。",
             "- 这份报告目前描述的是运行时重码结构，不是完整的人机工效结论。",

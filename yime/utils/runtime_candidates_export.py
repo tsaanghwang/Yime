@@ -27,6 +27,9 @@ pinyin_tone
 """
 
 
+SORT_WEIGHT_EXPORT_DECIMALS = 4
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="从 runtime_candidates 视图导出输入系统可调用的 JSON")
     parser.add_argument("--db", default=str(DB_PATH), help="SQLite 数据库路径")
@@ -37,6 +40,10 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
+def normalize_sort_weight_for_export(value: object) -> float:
+    return round(float(value or 0.0), SORT_WEIGHT_EXPORT_DECIMALS)
+
+
 def build_candidate_record(row: sqlite3.Row) -> dict[str, object]:
     return {
         "text": row["text"],
@@ -44,7 +51,7 @@ def build_candidate_record(row: sqlite3.Row) -> dict[str, object]:
         "entry_id": row["entry_id"],
         "pinyin_tone": row["pinyin_tone"],
         "yime_code": row["yime_code"],
-        "sort_weight": row["sort_weight"],
+        "sort_weight": normalize_sort_weight_for_export(row["sort_weight"]),
         "is_common": row["is_common"],
         "text_length": row["text_length"],
         "updated_at": row["updated_at"],
