@@ -130,7 +130,7 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "editor.fontFamily": "\"Noto Sans\", \"MiSans L3\", \"YinYuan\", \"音元\", Consolas, 'Courier New', monospace",
-  "terminal.integrated.fontFamily": "\"Noto Sans\", \"MiSans L3\", Consolas, 'Courier New', monospace",
+  "terminal.integrated.fontFamily": "monospace",
   "terminal.integrated.fontLigatures.enabled": true,
   "[query-editor]": {
     "editor.defaultFormatter": "yy0931.vscode-sqlite3-editor"
