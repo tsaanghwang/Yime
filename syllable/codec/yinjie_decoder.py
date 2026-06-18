@@ -6,9 +6,11 @@ from typing import Any, cast
 try:
     from .paths import KEY_TO_CODE_PATH, PACKAGE_ROOT, REPO_ROOT, YINJIE_CODE_PATH
     from .yinjie import Yinjie
+    from .yinjie_loose_split import split_loose_encoded_string
 except ImportError:
     from paths import KEY_TO_CODE_PATH, PACKAGE_ROOT, REPO_ROOT, YINJIE_CODE_PATH
     from yinjie import Yinjie
+    from yinjie_loose_split import split_loose_encoded_string
 
 
 DecodedMap = dict[str, Yinjie]
@@ -107,21 +109,32 @@ class YinjieDecoder:
     # === 核心解码功能 ===
     def decode(self, pinyin: str) -> Yinjie:
         """解码单个拼音为Yinjie实例"""
-        code = self.code_map.get(pinyin)
+        code = self.resolve_code(pinyin)
         if not code:
             raise ValueError(f"未找到拼音 '{pinyin}' 的编码")
 
         if len(code) != 4:
             raise ValueError(f"编码 '{code}' 长度不正确，应为4个字符")
 
-        yinjie = Yinjie(
-            initial=code[0],  # 首音
-            ascender=code[1], # 呼音
-            peak=code[2],     # 主音
-            descender=code[3] # 末音
-        )
+        return Yinjie.from_code(code)
 
-        return yinjie
+    def resolve_code(self, key: str) -> str | None:
+        """按带调拼音键或四码值反查 canonical 编码串。"""
+        if key in self.code_map:
+            return self.code_map[key]
+        for value in self.code_map.values():
+            if value == key:
+                return value
+        return None
+
+    @staticmethod
+    def split_encoded_string(encoded: str) -> Yinjie:
+        """切分编码串为 ``Yinjie``：固定四码走 ``from_code``，否则 legacy 宽松切分。"""
+        if not encoded:
+            raise ValueError("encoded syllable required")
+        if len(encoded) == 4:
+            return Yinjie.from_code(encoded)
+        return split_loose_encoded_string(encoded)
 
     def decode_all(self) -> DecodedMap:
         """解码所有拼音为Yinjie实例字典"""

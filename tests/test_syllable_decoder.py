@@ -8,8 +8,9 @@ from yime.syllable_decoder import (
     SyllableDecoder,
     is_pua_string,
     is_valid_encoded_string,
-    _normalize_split
+    _normalize_split,
 )
+from syllable.codec.yinjie import Yinjie
 
 class TestSyllableDecoder(unittest.TestCase):
     """测试音节解码器"""
@@ -75,9 +76,7 @@ class TestSyllableDecoder(unittest.TestCase):
         """测试基本音节分割"""
         # 测试简单编码
         result = self.decoder.split_encoded_syllable("zhong")
-        # 结果可能是 None 或 SyllableStructure 实例
-        # 这里只验证不会抛出异常
-        self.assertIsNotNone(result)
+        self.assertIsInstance(result, Yinjie)
 
     def test_split_encoded_syllable_empty(self):
         """测试空字符串分割"""

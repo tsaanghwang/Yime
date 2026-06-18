@@ -8,6 +8,9 @@ The Yinyuan system is best understood as a general analytic framework in which s
 
 This document defines several key terms used in the Yinyuan system, together with their intended English renderings and their relation to more familiar concepts in phonetics and phonology.
 
+**Hub index, quick reference, and AI rules:** [TERMINOLOGY_INDEX.md](TERMINOLOGY_INDEX.md).  
+**Code identifiers:** [syllable/NAMING.md](../syllable/NAMING.md).
+
 The goal is not to force the Yinyuan system into the exact terminology of traditional phonemics or traditional phonetics. Instead, this document clarifies:
 
 1. which existing English words can be reused,
@@ -193,6 +196,30 @@ In non-tonal languages, however, where semantic contrast is carried by quality a
 
 1. the two systems may yield equivalent analyses in such languages, and
 2. the Yinyuan system should be understood as a more general analytic framework, of which the phonemic system can be a special case.
+
+## Syllable-Structure Terms (Implementation)
+
+These terms belong to the **Yinjie syllable model** used in `syllable/` encoding. They are related to, but not identical with, pianyin/yinyuan layering: here **structural portions** vs **phonic/yinyuan categories**.
+
+| Chinese | Identifier | Note |
+|---------|------------|------|
+| 音节 | yinjie | Syllable; onset + ganyin |
+| 首音 | shouyin | **Initial + tone linked to initial** (colloquially: initial / consonant); see `syllable/analysis/syllable.py`; **for a concrete shouyin, equivalent to the initial** |
+| 干音 | ganyin | **Final + tone linked to final** (colloquially: toned final); see `syllable/analysis/syllable.py` `Ganyin`; **not** synonymous with yueyin |
+| 乐音 | yueyin | Pitched segment **category**; fills huyin / peak / descender (pre-/peak/post-peak) inside ganyin |
+| 噪音 | zaoyin | Noise category; onset side |
+| 呼音 | huyin | **Pre-peak** segment of ganyin (`ascender`); **not** medial / onset glide |
+| 主音 | — | **Peak** segment (`peak`) |
+| 末音 | — | **Post-peak** segment (`descender`); **not** rime coda |
+
+Canonical tree: [TERMINOLOGY_INDEX.md](TERMINOLOGY_INDEX.md) §音节结构. **Do not** equate huyin with medial or descender with coda. Each peak-relative slot is filled by a **segment** = quality portion + linked tone (e.g. triplex/post-long huyin: medial + linked tone; front-long huyin: pre-peak portion of nucleus + linked tone; monophthong ganyin: pre-final portion + linked tone). See `sound_variable_analysis.md`.
+
+- **Segment definitions:** `syllable/analysis/syllable.py` — shouyin = initial + `shoudiao`; ganyin = final + `gandiao`.
+- **Internal Yinjie tree:** `syllable/codec/yinjie.py`.
+
+**Two axes:** shouyin and ganyin are **segments** (“initial + linked tone” / “final + linked tone”); zaoyin and yueyin are **categories** that fill those segments—they are not siblings of shouyin/ganyin.
+
+**Common mistake:** equating shouyin with zaoyin, or ganyin with yueyin; or rewriting the tree without the ganyin layer. See [TERMINOLOGY_INDEX.md](TERMINOLOGY_INDEX.md) and [syllable/NAMING.md](../syllable/NAMING.md).
 
 ## Recommended Usage
 

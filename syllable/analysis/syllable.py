@@ -8,6 +8,8 @@
 4. 切分音节的首音和干音：
 - 首音(Shouyin)指由声母和与其联结的调段构成的音段，实际就是声母(Initial consonant)
 - 干音(Ganyin)指由韵母和与其联结的调段构成的音段，实际就是带调韵母(声调与韵母构成的音段 (Final with tone))
+
+音段层术语索引：docs/TERMINOLOGY_INDEX.md §音节结构
 """
 
 

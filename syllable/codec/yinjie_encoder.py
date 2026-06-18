@@ -1,5 +1,7 @@
 """音节编码入口，统一负责输入定位、切分编码与结果输出。"""
 
+from __future__ import annotations
+
 import json
 import logging
 import sys
@@ -11,14 +13,20 @@ from typing import Any
 
 try:
     from .yinjie_api_manifest import YINJIE_IMPLEMENTATION_EXPORTS
-    from ..analysis.syllable_encoding_pipeline import SyllableEncodingPipeline
-    from ..analysis.shouyin_encoder import ShouyinEncoder
+    from .yinjie import Yinjie
     from ..analysis.ganyin_encoder import GanyinEncoder
+    from ..analysis.ganyin_yinyuan_slots import GanyinYinyuanSlots
+    from ..analysis.segment_split import SegmentSplitResult
+    from ..analysis.shouyin_encoder import ShouyinEncoder
+    from ..analysis.syllable_encoding_pipeline import SyllableEncodingPipeline
 except ImportError:
     from yinjie_api_manifest import YINJIE_IMPLEMENTATION_EXPORTS
-    from syllable.analysis.syllable_encoding_pipeline import SyllableEncodingPipeline
-    from syllable.analysis.shouyin_encoder import ShouyinEncoder
+    from yinjie import Yinjie
     from syllable.analysis.ganyin_encoder import GanyinEncoder
+    from syllable.analysis.ganyin_yinyuan_slots import GanyinYinyuanSlots
+    from syllable.analysis.segment_split import SegmentSplitResult
+    from syllable.analysis.shouyin_encoder import ShouyinEncoder
+    from syllable.analysis.syllable_encoding_pipeline import SyllableEncodingPipeline
 # 配置日志
 logging.basicConfig(
     level=logging.INFO,
@@ -211,11 +219,44 @@ class YinjieApplicationRunner:
 
 @dataclass(frozen=True)
 class SplitSyllableResult:
-    """音节切分阶段的输出。"""
+    """音节切分阶段的输出。
+
+    ``shouyin`` / ``ganyin`` 为 **首音段 / 干音段** 的拼音侧标签（供编码器查表），
+    对应 ``SyllableEncodingPipeline`` 对 ``(声母, 带调韵母)`` 的切分；不是 ``Yinjie`` 四槽内的音元字符。
+    音段层定义见 ``syllable.analysis.syllable``；槽位层见 ``syllable.codec.yinjie``。
+    """
 
     syllable: str
-    shouyin: str
-    ganyin: str
+    shouyin: str  # 首音段标签（声母侧）
+    ganyin: str  # 干音段标签（韵母+调，如 ong1）
+    segments: SegmentSplitResult | None = None
+
+    @classmethod
+    def from_segments(cls, segments: SegmentSplitResult) -> SplitSyllableResult:
+        return cls(
+            syllable=segments.source,
+            shouyin=segments.shouyin_label,
+            ganyin=segments.ganyin_label,
+            segments=segments,
+        )
+
+
+@dataclass(frozen=True)
+class EncodedYinjieResult:
+    """单音节编码的结构化结果：音段切分 + 四槽音元 + ``Yinjie`` 视图。"""
+
+    syllable: str
+    segments: SegmentSplitResult
+    shouyin_yinyuan: str
+    ganyin_slots: GanyinYinyuanSlots
+
+    @property
+    def code(self) -> str:
+        return self.shouyin_yinyuan + self.ganyin_slots.combined
+
+    @property
+    def yinjie(self) -> Yinjie:
+        return Yinjie.from_code(self.code)
 
 
 @dataclass(frozen=True)
@@ -308,15 +349,8 @@ class SyllableSplitStage:
 
     def run(self, syllable: str) -> SplitSyllableResult:
         try:
-            parts = SyllableEncodingPipeline.analyze_syllable(syllable)
-            if len(parts) != 2:
-                raise yinjie_error_policy.syllable_failure(
-                    "split",
-                    syllable,
-                    "音节切分结果无效，应返回(首音,干音)元组",
-                )
-            shouyin, ganyin = parts
-            return SplitSyllableResult(syllable=syllable, shouyin=shouyin, ganyin=ganyin)
+            segments = SyllableEncodingPipeline.analyze_syllable_segments(syllable)
+            return SplitSyllableResult.from_segments(segments)
         except YinjieEncodingError:
             raise
         except Exception as error:
@@ -526,14 +560,43 @@ class YinjieEncoder:
         return self.project_root_stage.run(self.base_dir)
 
     def encode_single_yinjie(self, syllable: object) -> str:
-        """编码单个音节。"""
+        """编码单个音节（返回四字符音元串，与 ``yinjie_code.json`` 一致）。"""
+        return self.encode_yinjie_structured(syllable).code
+
+    def encode_yinjie_structured(self, syllable: object) -> EncodedYinjieResult:
+        """编码单个音节并返回音段切分、干音三槽与 ``Yinjie`` 视图。"""
         if not syllable or not isinstance(syllable, str):
             raise yinjie_error_policy.invalid_input(syllable)
 
         split_result = self.split_stage.run(syllable)
+        segments = split_result.segments
+        if segments is None:
+            segments = SyllableEncodingPipeline.analyze_syllable_segments(syllable)
         shouyin_result = self.shouyin_stage.run(split_result)
         ganyin_result = self.ganyin_stage.run(split_result)
-        return self.assemble_stage.run(shouyin_result, ganyin_result)
+        code = self.assemble_stage.run(shouyin_result, ganyin_result)
+
+        ganyin_code = ganyin_result.value
+        if len(ganyin_code) != 3:
+            raise yinjie_error_policy.syllable_failure(
+                "ganyin_encode",
+                split_result.syllable,
+                f"干音段 '{split_result.ganyin}' 编码无效: {ganyin_code!r}",
+            )
+
+        ganyin_slots = GanyinYinyuanSlots(
+            ganyin_label=split_result.ganyin,
+            huyin=ganyin_code[0],
+            zhuyin=ganyin_code[1],
+            moyin=ganyin_code[2],
+        )
+
+        return EncodedYinjieResult(
+            syllable=split_result.syllable,
+            segments=segments,
+            shouyin_yinyuan=shouyin_result.value,
+            ganyin_slots=ganyin_slots,
+        )
 
     def encode_all_yinjie(self, output_subdir: str = "") -> Path:
         """编码全部音节并写入统一输出文件。"""

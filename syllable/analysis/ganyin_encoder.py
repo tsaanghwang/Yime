@@ -1,8 +1,9 @@
 import json
-from typing import Dict, Any
 import sys
+from typing import Dict, Any
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+from .ganyin_yinyuan_slots import GanyinYinyuanSlots
 from .yueyin_yinyuan import YueyinYinyuan
 
 class GanyinEncoder:
@@ -97,10 +98,10 @@ class GanyinEncoder:
 
     def encode_ganyin(self, ganyin: str) -> str:
         """
-        编码干音字符串为音元序列
+        编码干音段标签为音元序列
 
         参数:
-            ganyin: 干音字符串，格式为"韵母+声调"，如"i1", "a2"等
+            ganyin: 干音段标签，格式为"韵母+声调"，如"i1", "a2"等
 
         返回:
             对应的音元编码字符串
@@ -108,16 +109,25 @@ class GanyinEncoder:
         异常:
             ValueError: 当输入不是有效的干音时抛出
         """
+        return self.encode_ganyin_slots(ganyin).combined
+
+    def encode_ganyin_slots(self, ganyin: str) -> GanyinYinyuanSlots:
+        """编码干音段为三槽乐音音元（呼 / 主 / 末），与 ``Yinjie.huyin/zhuyin/moyin`` 对齐。"""
         normalized_ganyin = self._normalize_ganyin_name(ganyin)
 
-        # 输入验证
         if not self._is_valid_ganyin(normalized_ganyin):
             raise ValueError(f"无效的干音输入: '{ganyin}'")
 
-        return self._encode_from_parts(normalized_ganyin)
+        huyin, zhuyin, moyin = self._encode_slot_characters(normalized_ganyin)
+        return GanyinYinyuanSlots(
+            ganyin_label=normalized_ganyin,
+            huyin=huyin,
+            zhuyin=zhuyin,
+            moyin=moyin,
+        )
 
     def _normalize_ganyin_name(self, ganyin: str) -> str:
-        """将兼容写法归并到当前编码表使用的基础干音键名。"""
+        """将兼容写法归并到当前编码表使用的基础干音段标签。"""
         if not isinstance(ganyin, str):
             return ""
 
@@ -136,16 +146,21 @@ class GanyinEncoder:
 
         return ganyin
 
-    def _encode_from_parts(self, ganyin: str) -> str:
-        """按呼音/主音/末音序列即时生成三码编码。"""
-        parts = self.ganyin_part_map[ganyin]
+    def _encode_slot_characters(self, normalized_ganyin: str) -> tuple[str, str, str]:
+        """按呼音/主音/末音序列生成三槽音元字符。"""
+        parts = self.ganyin_part_map[normalized_ganyin]
         yinyuan_symbols = [
             self.convert_pianyin_to_yinyuan(parts.get("呼音", "")),
             self.convert_pianyin_to_yinyuan(parts.get("主音", "")),
             self.convert_pianyin_to_yinyuan(parts.get("末音", "")),
         ]
+        return tuple(
+            self._resolve_yinyuan_codepoint(symbol) for symbol in yinyuan_symbols
+        )
 
-        return "".join(self._resolve_yinyuan_codepoint(symbol) for symbol in yinyuan_symbols)
+    def _encode_from_parts(self, ganyin: str) -> str:
+        """按呼音/主音/末音序列即时生成三码编码。"""
+        return "".join(self._encode_slot_characters(ganyin))
 
     def _resolve_yinyuan_codepoint(self, symbol: str) -> str:
         """把音元符号解析到当前仓库使用的单码点字符。"""

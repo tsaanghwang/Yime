@@ -137,5 +137,32 @@ class TestYinjieDecoderKeyToCodeGeneration(unittest.TestCase):
             self.assertEqual(result["M02"], "B")
 
 
+class TestYinjieDecoderResolveAndSplit(unittest.TestCase):
+    def setUp(self):
+        self.temp_file = tempfile.NamedTemporaryFile(
+            mode="w", delete=False, suffix=".json", encoding="utf-8"
+        )
+        json.dump({"ma1": "ABCD", "ABCD": "ABCD"}, self.temp_file, ensure_ascii=False)
+        self.temp_file.close()
+        self.decoder = YinjieDecoder(code_file=self.temp_file.name)
+
+    def tearDown(self):
+        Path(self.temp_file.name).unlink(missing_ok=True)
+
+    def test_resolve_code_by_pinyin_and_value(self):
+        self.assertEqual(self.decoder.resolve_code("ma1"), "ABCD")
+        self.assertEqual(self.decoder.resolve_code("ABCD"), "ABCD")
+        self.assertIsNone(self.decoder.resolve_code("missing"))
+
+    def test_split_encoded_string_four_code(self):
+        yinjie = YinjieDecoder.split_encoded_string("ABCD")
+        self.assertEqual(yinjie.to_code(), "ABCD")
+
+    def test_split_encoded_string_loose_legacy(self):
+        yinjie = YinjieDecoder.split_encoded_string("abcde")
+        self.assertEqual(yinjie.initial, "a")
+        self.assertEqual(yinjie.descender, "de")
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -3,13 +3,19 @@
 from typing import Tuple
 
 try:
+    from .segment_split import SegmentSplitResult
     from .syllable_splitter import SyllableSplitter
 except ImportError:
+    from segment_split import SegmentSplitResult
     from syllable_splitter import SyllableSplitter
 
 
 class SyllableEncodingPipeline:
-    """为编码流程提供无副作用的音节规范化与切分逻辑。"""
+    """为编码流程提供无副作用的音节规范化与切分逻辑。
+
+    切分产出 **首音段 / 干音段** 拼音侧标签（供 ``ShouyinEncoder`` / ``GanyinEncoder`` 查表），
+    不是 ``codec.yinjie.Yinjie`` 四槽内的音元字符。音段层对象见 ``analyze_syllable_segments``。
+    """
 
     TONE_MAPPING = {
         'ā': 'a1', 'á': 'a2', 'ǎ': 'a3', 'à': 'a4',
@@ -92,7 +98,18 @@ class SyllableEncodingPipeline:
         return SyllableSplitter.split_syllable(normalized_syllable)
 
     @classmethod
-    def analyze_syllable(cls, syllable: str) -> Tuple[str, str]:
-        """执行编码专用的完整音节处理流水线。"""
+    def analyze_syllable_segments(cls, syllable: str) -> SegmentSplitResult:
+        """完整流水线：归一化并切分为首音段 / 干音段，附带 ``Syllable`` / ``Ganyin`` 还原入口。"""
         normalized_syllable = cls.normalize_syllable(syllable)
-        return cls.split_normalized_syllable(normalized_syllable)
+        shouyin_label, ganyin_label = cls.split_normalized_syllable(normalized_syllable)
+        return SegmentSplitResult(
+            source=syllable,
+            normalized=normalized_syllable,
+            shouyin_label=shouyin_label,
+            ganyin_label=ganyin_label,
+        )
+
+    @classmethod
+    def analyze_syllable(cls, syllable: str) -> Tuple[str, str]:
+        """执行编码专用的完整音节处理流水线（返回首音段 / 干音段标签元组）。"""
+        return cls.analyze_syllable_segments(syllable).as_tuple()
