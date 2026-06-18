@@ -6,8 +6,10 @@
 
 ### 术语入口
 
+- **[术语总入口（请先读）](TERMINOLOGY_INDEX.md)** — 索引、速查、AI 提醒；链到下列专题
 - [音元系统术语说明](YINYUAN_TERMINOLOGY.md)
 - [Terminology of the Yinyuan System](YINYUAN_TERMINOLOGY_EN.md)
+- [syllable 代码命名约定](../syllable/NAMING.md)
 
 ### 技术衔接入口
 

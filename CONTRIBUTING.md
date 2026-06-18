@@ -35,6 +35,15 @@ python run_input_method.py
 
 当前主线是 **Windows + Python 3.12 + pywin32** 桌面输入法原型，不再使用 npm / Web 前端链。历史 JS 原型已外置到单独仓库。
 
+## 术语与命名（请先读）
+
+修改 `syllable/`、音系/编码相关代码或文档前，请先阅读：
+
+- [docs/TERMINOLOGY_INDEX.md](docs/TERMINOLOGY_INDEX.md) — 概念速查、干音 ≠ 乐音、AI 硬性提醒（含 **给英文背景 AI 的特别提醒**）  
+- [syllable/NAMING.md](syllable/NAMING.md) — Python 类名/模块唯一约定  
+
+专题正文：[docs/YINYUAN_TERMINOLOGY.md](docs/YINYUAN_TERMINOLOGY.md)（中文）、[docs/YINYUAN_TERMINOLOGY_EN.md](docs/YINYUAN_TERMINOLOGY_EN.md)（英文）。
+
 ## 代码规范
 
 - Python 遵循 PEP 8，推荐使用类型注解

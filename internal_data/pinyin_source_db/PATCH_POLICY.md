@@ -19,7 +19,7 @@ c:/dev/Yime/.venv/Scripts/python.exe yime/refresh_runtime_yime_codes.py
 
 - 如果样例是 `<missing pinyin_tone>`，说明缺的是 `char_readings -> numeric_pinyin_inventory` 这一层，应补 `numeric_pinyin_patch.csv`。
 - 如果样例是 `<missing in code map>`，说明数字调拼音已经进库，但 `syllable/codec/yinjie_code.json` 没有对应 canonical 码，应补 `canonical_yime_patch.csv`。
-- 如果两者都不是，而是 `单字受旧表唯一约束阻塞行`，这不是补丁文件要解决的问题，而是旧 `音元拼音.全拼 UNIQUE` 结构残留问题。
+- 如果两者都不是，而是 `单字受旧表唯一约束阻塞行`，这不是补丁文件要解决的问题，而是旧 schema 残留问题（旧 `音元拼音.全拼 UNIQUE` 表已退役）。
 
 ## 2. 什么时候补 `numeric_pinyin_patch.csv`
 

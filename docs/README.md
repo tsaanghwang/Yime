@@ -10,16 +10,17 @@
 
 ## 📚 文档导航
 
-建议阅读顺序：先看 [../README.md](../README.md) 了解项目边界，再看 [project/INPUT_METHOD_SOLUTION.md](project/INPUT_METHOD_SOLUTION.md) 确认当前输入法主线，最后再按需要进入理论、术语和生成链文档。
+建议阅读顺序：先看 [../README.md](../README.md) 了解项目边界，**改 `syllable/` 或用 AI 前读 [TERMINOLOGY_INDEX.md](TERMINOLOGY_INDEX.md)**，再看 [project/INPUT_METHOD_SOLUTION.md](project/INPUT_METHOD_SOLUTION.md) 确认当前输入法主线，最后再按需要进入理论、术语和生成链文档。
 
 ### 重要设计约束
 
+- **[术语总入口（请先读）](TERMINOLOGY_INDEX.md)** - 音元/片音/干音/乐音命名索引、常见误解、AI 提醒；链到中英文专题文档与 [syllable/NAMING.md](../syllable/NAMING.md)
 - **[码点与中间层策略](CODEPOINT_POLICY.md)** - 说明 `N01-N24`、`M01-M33` 的语义层地位，以及 canonical 与 projection 的分工
 - **[真源文件与生成产物清单](SOURCE_AND_ARTIFACTS.md)** - 区分哪些文件是设计真源，哪些文件只是可重建产物
-- **[音元系统术语说明](YINYUAN_TERMINOLOGY.md)** - 说明“时段”“片音”“音元”等核心术语的中英文定义与相互关系
-- **[Terminology of the Yinyuan System](YINYUAN_TERMINOLOGY_EN.md)** - The English counterpart of the terminology note for external readers
-- **[片音与语音技术单位的对应关系](PIANYIN_TECH_BRIDGE.md)** - 说明片音如何与语音识别、语音合成中的技术单位建立对应关系
-- **[Correspondence Between Pianyin and Speech-Technology Units](PIANYIN_TECH_BRIDGE_EN.md)** - English note on how pianyin relates to units used in speech recognition and synthesis
+- **[音元系统术语说明](YINYUAN_TERMINOLOGY.md)** - 「时段」「片音」「音元」及音节结构术语的中英文定义（专题正文）
+- **[Terminology of the Yinyuan System](YINYUAN_TERMINOLOGY_EN.md)** - English counterpart
+- **[片音与语音技术单位的对应关系](PIANYIN_TECH_BRIDGE.md)** - 片音与 ASR/TTS 技术单位的衔接
+- **[Correspondence Between Pianyin and Speech-Technology Units](PIANYIN_TECH_BRIDGE_EN.md)** - English bridge note
 
 ### 快速开始
 
@@ -68,6 +69,7 @@ KLC 文档分工：
 - **[理论索引](THEORY_INDEX.md)** - 理论文档总入口与实现约束入口
 - **[真源文件与生成产物清单](SOURCE_AND_ARTIFACTS.md)** - 当前主线的结构边界、生成链分层与关键资产归属
 - **[数据文件结构说明](DATAFILES.md)** - 数据文件、导入产物与目录层次说明
+- **[syllable 包说明](../syllable/README.md)** - 音节分析、编解码目录、CLI 与 Phase 1/2 rebuild 边界
 
 ### 项目管理
 
@@ -110,8 +112,8 @@ KLC 文档分工：
 | --- | --- |
 | 数据 rebuild | `source_pinyin.db` → prototype 导入 → `refresh_runtime_yime_codes` |
 | 运行时查词 | **SQLite** `pinyin_hanzi.db` / `runtime_candidates` 为主；JSON 导出可选 |
-| 已删除 | `db_manager`、`run_db_setup`、`legacy_pinyin_tables`、`yime/legacy/`、`windows_candidate_box` |
-| 兼容保留 | `yime/utils/syllable_compat/` |
+| 已删除 | `db_manager`、`run_db_setup`、`legacy_pinyin_tables`、`yime/legacy/`、`windows_candidate_box`、`yime/syllable_structure.py`、`yime/utils/syllable_compat/` |
+| 兼容保留 | `yime/syllable_decoder.py`（旧 import 路径；结构真源在 `syllable/codec/yinjie.py`） |
 | 静态兜底 | `pinyin_hanzi.json` 已 gitignore，缺失不影响主链 |
 | 本地验证 | `scripts/run_tests.cmd`（unittest + pytest input_method） |
 

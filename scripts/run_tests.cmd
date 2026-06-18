@@ -32,6 +32,9 @@ if errorlevel 1 (
 
 "%PYTHON%" -m unittest ^
   tests\yinjie\test_yinjie_encoder.py ^
+  tests\yinjie\test_yinjie_model.py ^
+  tests\test_yinjie_legacy_helpers.py ^
+  tests\yinjie\test_yinjie_structure_pipeline.py ^
   tests\yinjie\test_yinjie_decoder.py ^
   tests\yinjie\test_pinyin_bidirectional_validation.py ^
   tests\yinjie\test_yinjie_roundtrip.py ^
@@ -41,6 +44,7 @@ if errorlevel 1 (
   tests\pinyin_source_db\test_marked_syllable_to_numeric.py ^
   tests\pinyin_source_db\test_export_pinyin_normalized_inventory.py ^
   tests\yime\test_char_frequency_policy.py ^
+  tests\yime\test_yinjie_slot_decomposition.py ^
   tests\yime\test_blcu_word_frequency_import.py ^
   tests\yime\test_unihan_readings_frequency.py ^
   tests\test_pinyin_normalizer.py
