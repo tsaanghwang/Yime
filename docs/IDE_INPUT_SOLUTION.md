@@ -114,6 +114,17 @@
 }
 ```
 
+**SQLite Explorer 补丁**：
+
+如果 `sqlite3 editor` 因 Windows 或扩展冲突无法注册，而改用 `zknpr.sqlite-explorer`，它的表格与视图字体默认不会跟随 `editor.fontFamily`。仓库里已经提供了一个可重复执行的补丁任务：
+
+1. 保持工作区里的 `editor.fontFamily` 以 `Noto Sans` 开头。
+2. 扩展更新后，在 VS Code 里运行 `Tasks: Run Task`。
+3. 选择 `Patch SQLite Explorer Font`。
+4. 重新打开 SQLite Explorer 标签页，必要时执行一次 `Developer: Reload Window`。
+
+对应脚本是 `tools/patch_sqlite_explorer_font.py`。它会自动查找已安装的 `zknpr.sqlite-explorer-*` 目录，并把 SQLite Explorer 的表格/视图 Webview 改成继承 VS Code 的编辑器字体。
+
 **输入法设置**：
 - VS Code通常支持IME
 - 如果不支持，可能需要：

@@ -5,7 +5,6 @@
   "python.analysis.extraPaths": ["./tools", "./internal_data/hanzi_pinyin"],
   "workbench.editor.autoLockGroups": {
     "pdf.preview": true,
-    "mainThreadWebview-markdown.preview": true,
     "workbench.input.interactive": true
   },
   "cSpell.words": [
@@ -129,12 +128,21 @@
   "[jsonc]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
+  "workbench.editorAssociations": {
+    "*.db": "sqlite-explorer.option",
+    "*.db3": "default",
+    "*.sqlite": "default",
+    "*.sqlite3": "default",
+    "*.sdb": "default",
+    "*.s3db": "default",
+    "*.copilotmd": "vscode.markdown.preview.editor",
+    "*.md": "default",
+    "*.mmd": "default",
+    "*.tex": "default"
+  },
   "editor.fontFamily": "\"Noto Sans\", \"MiSans L3\", \"YinYuan\", \"音元\", Consolas, 'Courier New', monospace",
   "terminal.integrated.fontFamily": "monospace",
   "terminal.integrated.fontLigatures.enabled": true,
-  "[query-editor]": {
-    "editor.defaultFormatter": "yy0931.vscode-sqlite3-editor"
-  },
   "chat.editor.fontFamily": "\"Noto Sans\", \"MiSans L3\", \"YinYuan Regular\", \"音元 常规\", Consolas, 'Courier New', monospace",
   "editor.inlayHints.fontFamily": "\"Noto Sans\", \"MiSans L3\", \"YinYuan Regular\", \"音元 常规\", Consolas, 'Courier New', monospace",
   "scm.inputFontFamily": "\"Noto Sans\", \"MiSans L3\", \"YinYuan Regular\", \"音元 常规\", Consolas, 'Courier New', monospace",
@@ -192,7 +200,7 @@
   "python.defaultInterpreterPath": "${workspaceFolder}/.venv/Scripts/python.exe",
   "python-envs.defaultInterpreterPath": "${workspaceFolder}/.venv/Scripts/python.exe",
   "sqltools.useNodeRuntime": false,
-  "python-envs.defaultPackageManager": "ms-python.python:conda",
+  "python-envs.defaultPackageManager": "ms-python.python:pip",
   "cursorpyright.analysis.extraPaths": [
     "./tools",
     "./internal_data/hanzi_pinyin"

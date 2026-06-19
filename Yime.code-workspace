@@ -7,8 +7,15 @@
 	"settings": {
 		"workbench.editor.autoLockGroups": {
 			"pdf.preview": true,
-			"mainThreadWebview-markdown.preview": true,
 			"workbench.input.interactive": true
+		},
+		"workbench.editorAssociations": {
+			"*.db": "default",
+			"*.db3": "default",
+			"*.sqlite": "default",
+			"*.sqlite3": "default",
+			"*.sdb": "default",
+			"*.s3db": "default"
 		},
 		"wolf.disableHotModeWarning": true,
 		"editor.fontFamily": "\"Noto Sans\", \"MiSans L3\", \"YinYuan\", \"音元\", Consolas, 'Courier New', monospace",
