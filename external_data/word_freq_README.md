@@ -7,7 +7,7 @@
 合并后的词频来自 [北京语言大学 BCC 语料库](https://bcc.blcu.edu.cn/) 下载中心提供的字词频统计。BCC 提供两类下载：**词频**（`word,freq`，行内可含单字）与 **字频**（`char,freq`，仅单字）。仓库用两条合并链分别处理：
 
 | 输出 | 路径 | 合并脚本 | 含义 |
-|------|------|----------|------|
+| ------ | ------ | ---------- | ------ |
 | 多字词频 | `external_data/word_freq/merged_word_freq.txt` | `tools/merge_word_freq.py` | 词频频道 `*.txt` 中 `len(word) >= 2` 的条目，各频道取 **max(freq)** |
 | 词频中的单字 | `external_data/char_freq/word_freq_merged_single_char_freq.txt` | `tools/merge_word_freq.py`（同上） | 词频频道里 **`len(word) == 1`** 的条目；反映「语料词表统计里出现的单字频」，与专用字频频道不是同一文件 |
 | 字频频道单字 | `external_data/char_freq/merged_char_freq.txt` | `tools/merge_char_freq.py` | `char_freq/` 下各频道 `*.txt`（专用字频下载），各频道取 **max(freq)** |
@@ -22,7 +22,7 @@
 
 > 荀恩东, 饶高琦, 肖晓悦, 臧娇娇. 大数据背景下 BCC 语料库的研制[J]. 语料库语言学, 2016(1).
 
-BCC 在线语料库：https://bcc.blcu.edu.cn/
+BCC 在线语料库：<https://bcc.blcu.edu.cn/>
 
 ## 口径
 

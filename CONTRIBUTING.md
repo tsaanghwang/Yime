@@ -18,7 +18,7 @@ git clone https://github.com/tsaanghwang/Yime.git
 cd Yime
 ```
 
-2. 创建 Python 3.12 虚拟环境并安装依赖：
+1. 创建 Python 3.12 虚拟环境并安装依赖：
 
 ```bash
 python -m venv .venv
@@ -26,7 +26,7 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-3. 验证：
+1. 验证：
 
 ```bash
 scripts/run_tests.cmd

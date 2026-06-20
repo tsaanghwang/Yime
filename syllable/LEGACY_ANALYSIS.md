@@ -5,7 +5,7 @@
 ## 处置原则
 
 | 类别 | 做法 |
-|------|------|
+| ------ | ------ |
 | **生产编解码主链** | 只保留 [NAMING.md](NAMING.md) 登记的 canonical 模块 |
 | **重复副本**（与 canonical 逐字同源） | 标记 deprecated，不扩展；合并前须 diff 确认无独有注释/试验逻辑 |
 | **试验 / 一次性分析脚本** | 保留在 `tools/syllable_analysis/`，或把结论写入 `docs/project/syllable_analysis/` |
@@ -14,7 +14,7 @@
 ## 当前清单
 
 | 路径 | 引用情况 | 建议处置 |
-|------|----------|----------|
+| ------ | ---------- | ---------- |
 | `syllable/pianyin/pianyin.py` | 主链 / 试验 | **Canonical** 片音简单模型 |
 | `syllable/analysis/pianyin.py` | 零 import | **重复副本**；与上 diff 后仅删若完全同源；保留前记录于 git |
 | `syllable/pianyin/indeterminate_pitch_pianyin.py` | pianyin 包 | **Canonical** 无调片音 |

@@ -22,7 +22,7 @@ syllable/
 ### 职责边界
 
 | 子目录 | 做什么 | 典型入口 |
-|--------|--------|----------|
+| -------- | -------- | ---------- |
 | **`codec/`** | 音节 `Yinjie` 模型；批量/交互编码；从 `yinjie_code.json` 解码；输出 `yinjie_code.json`、`key_to_code.json` | `yinjie_encoder.py`、`yinjie_decoder.py`、`interactive_yinjie_session.py` |
 | **`analysis/`** | 拼音切分、首音/干音编码器、片音/乐音/噪音分析组件；被 `codec/yinjie_encoder.py` 调用 | `syllable_encoding_pipeline.py`、`shouyin_encoder.py`、`ganyin_encoder.py` |
 | **`yinyuan/`** | 存首音码点、干音定长序列、增强映射等 JSON；由 `ShouyinEncoder` / `GanyinEncoder` 读写 | 见下文「数据文件」 |
@@ -87,7 +87,7 @@ python syllable/codec/yinjie_decoder.py
 词库 rebuild（`internal_data/pinyin_source_db/rebuild_pinyin_assets.py`）与音节 **编码表** rebuild 是 **两条 Phase**，不要混用：
 
 | Phase | 做什么 | 典型命令 |
-|-------|--------|----------|
+| --- | --- | --- |
 | **Phase 1 — 词库 + 音节表导出** | `source_pinyin.db` → `pinyin_normalized.json`；**默认不**改 `yinjie_code.json` | `python internal_data/pinyin_source_db/rebuild_pinyin_assets.py` 或 `scripts/run_tests.cmd` 前置步骤 |
 | **Phase 2 — 编码表** | 首音/干音 JSON → `yinjie_code.json` → `yime/code_pinyin.json` | `python tools/rebuild_encoding_assets.py` 或 `scripts/apply_syllable_codebook.cmd` |
 
@@ -113,14 +113,14 @@ python tools/rebuild_encoding_assets.py --skip-code-pinyin
 ### `codec/`（运行时消费）
 
 | 文件 | 说明 |
-|------|------|
+| --- | --- |
 | `yinjie_code.json` | 带调 numeric 音节 → 4 码音元串；IME 与解码器主读 |
 | `key_to_code.json` | 键位槽位 → 字符映射；解码器写键位映射时用 |
 
 ### `yinyuan/`（编码链中间/映射层）
 
 | 文件 | 说明 |
-|------|------|
+| ------ | ------ |
 | `zaoyin_yinyuan_enhanced.json` | 噪音（首音）音元增强映射源 |
 | `yueyin_yinyuan_enhanced.json` | 干音/乐音增强映射源 |
 | `shouyin_codepoint.json` | 首音 runtime 码点映射（由 `ShouyinEncoder` 生成） |

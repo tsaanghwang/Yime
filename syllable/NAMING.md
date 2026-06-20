@@ -8,7 +8,7 @@
 ## 层次与目录
 
 | 目录 | 职责 | 应用层命名后缀 |
-|------|------|----------------|
+| ------ | ------ | ---------------- |
 | `syllable/pianyin/` | 片音（phonic slice）模型 | `*Pianyin` |
 | `syllable/analysis/` | 音系分析、首音/干音组件、试验脚本 | 见下表 |
 | `syllable/codec/` | 编解码、CLI、`yinjie_code.json` | `Yinjie*`、`*Encoder`（结构向） |
@@ -21,7 +21,7 @@
 ## 概念 → 唯一代码标识
 
 | 中文概念 | 唯一类 / 模块 | 禁止混淆 |
-|----------|---------------|----------|
+| ---------- | --------------- | ---------- |
 | 乐音片音（简单模型） | `syllable.pianyin.PitchedPianyin` | ≠ `analysis.pitched_pianyin.PitchedPianyin` |
 | 噪音片音（简单模型） | `syllable.pianyin.UnpitchedPianyin` | |
 | 乐音片音（试验/切片链） | `analysis.pitched_pianyin.YueyinPianyin` | 仅 `tools/syllable_analysis/ganyin_slicer.py` 等试验链；**非**主链默认 |
@@ -47,13 +47,13 @@
 ## 禁止（AI 与贡献者）
 
 | 禁止行为 | 原因 |
-|----------|------|
+| ---------- | ------ |
 | 新建 `analysis/pianyin.py` 或复制 `pianyin/pianyin.py` | 已有 canonical 副本 |
 | 新建第二个「乐音片音」类名如 `MusicalPianyin` | 用上表已有类 |
 | 将 `Ganyin*` 类重命名为 `Yueyin*` | 干音 ≠ 乐音 |
 | 改写 `Yinjie` 层级或新建平行音节类（如「首音+乐音」两分支） | 真源为 `codec/yinjie.py` + [TERMINOLOGY_INDEX](../docs/TERMINOLOGY_INDEX.md) |
 | 在说明文字里写「干音=乐音」或省略干音/韵音中间层 | 历史 AI 篡改模式，禁止传播 |
-| 将 `yueyin_yinyuan_enhanced.json` 理解为「干音表」| 文件名含 yueyin = 乐音 **音元** 增强映射 |
+| 将 `yueyin_yinyuan_enhanced.json` 理解为「干音表」 | 文件名含 yueyin = 乐音 **音元** 增强映射 |
 | 用英文单词替代 numeric 拼音作为码表键 | 运行时约定为 `zhong1` 等 |
 
 ---
@@ -63,7 +63,7 @@
 完整处置原则见 **[LEGACY_ANALYSIS.md](LEGACY_ANALYSIS.md)**。摘要：**零 import ≠ 可删**；须区分重复副本、试验链与 `tools/syllable_analysis/` 思想成果。
 
 | 路径 | 状态 |
-|------|------|
+| ------ | ------ |
 | `analysis/pianyin.py` | 与 `pianyin/pianyin.py` 重复，**零引用**；**勿 import**；删除前 diff + 见 LEGACY_ANALYSIS |
 | `analysis/unpitched_pianyin.py` | 与 `pianyin/indeterminate_pitch_pianyin.py` 重复，**零引用**；同上 |
 | `analysis/pitched_pianyin.py` | **试验链**（`ganyin_slicer`）；**保留** |
