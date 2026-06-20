@@ -12,7 +12,12 @@ FIRST_PAGE_LIMIT = 5
 
 
 def _require_runtime_db() -> None:
-    header = DB_PATH.read_bytes()[:32]
+    if not DB_PATH.is_file():
+        pytest.skip("runtime SQLite database is unavailable in this environment")
+    try:
+        header = DB_PATH.read_bytes()[:32]
+    except OSError:
+        pytest.skip("runtime SQLite database is unavailable in this environment")
     if header.startswith(b"version https://git-lfs.github.com/spec/v1"):
         pytest.skip("runtime SQLite database is only available as a Git LFS pointer")
     if not header.startswith(b"SQLite format 3\x00"):
