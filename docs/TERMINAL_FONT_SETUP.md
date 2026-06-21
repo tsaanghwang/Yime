@@ -1,6 +1,7 @@
 # Windows Terminal 字体配置指南
 
 ## 问题说明
+
 在交互窗口使用 "YinYuan Regular" 字体时，字符宽度有问题。
 改用 "Noto Sans" 字体可以正常显示，包括私用区字符。
 
@@ -75,24 +76,28 @@ $Host.UI.RawUI.FontName = "Noto Sans"
 ## Noto Sans 字体说明
 
 ### 优点
+
 - ✅ 支持私用区字符（PUA）
 - ✅ 字符宽度正确
 - ✅ 显示清晰
 - ✅ 开源免费
 
 ### 包含的私用区字符
+
 - U+E000-U+F8FF: 基本多文种平面私用区
 - 音元系统使用的特殊字符
 
 ## 验证字体是否可用
 
 ### PowerShell
+
 ```powershell
 # 列出所有可用字体
 [System.Drawing.FontFamily]::Families | Where-Object { $_.Name -like "*Noto*" } | Select-Object Name
 ```
 
 ### Python
+
 ```python
 import tkinter as tk
 root = tk.Tk()
@@ -105,7 +110,7 @@ root.destroy()
 
 ### 安装 Noto Sans 字体
 
-1. 访问 Google Fonts: https://fonts.google.com/noto
+1. 访问 Google Fonts: <https://fonts.google.com/noto>
 2. 下载 Noto Sans 字体
 3. 解压后右键字体文件 → 安装
 4. 重启终端

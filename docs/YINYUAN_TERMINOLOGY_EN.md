@@ -8,7 +8,7 @@ The Yinyuan system is best understood as a general analytic framework in which s
 
 This document defines several key terms used in the Yinyuan system, together with their intended English renderings and their relation to more familiar concepts in phonetics and phonology.
 
-**Hub index, quick reference, and AI rules:** [TERMINOLOGY_INDEX.md](TERMINOLOGY_INDEX.md).  
+**Hub index, quick reference, and AI rules:** [TERMINOLOGY_INDEX.md](TERMINOLOGY_INDEX.md).
 **Code identifiers:** [syllable/NAMING.md](../syllable/NAMING.md).
 
 The goal is not to force the Yinyuan system into the exact terminology of traditional phonemics or traditional phonetics. Instead, this document clarifies:
@@ -202,7 +202,7 @@ In non-tonal languages, however, where semantic contrast is carried by quality a
 These terms belong to the **Yinjie syllable model** used in `syllable/` encoding. They are related to, but not identical with, pianyin/yinyuan layering: here **structural portions** vs **phonic/yinyuan categories**.
 
 | Chinese | Identifier | Note |
-|---------|------------|------|
+| --------- | ------------ | ------ |
 | 音节 | yinjie | Syllable; onset + ganyin |
 | 首音 | shouyin | **Initial + tone linked to initial** (colloquially: initial / consonant); see `syllable/analysis/syllable.py`; **for a concrete shouyin, equivalent to the initial** |
 | 干音 | ganyin | **Final + tone linked to final** (colloquially: toned final); see `syllable/analysis/syllable.py` `Ganyin`; **not** synonymous with yueyin |
