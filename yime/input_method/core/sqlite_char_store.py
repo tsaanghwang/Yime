@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import sqlite3
-from typing import Dict, List, Tuple
+from typing import Dict, List, SupportsFloat, Tuple, cast
 
 from .char_code_index import CharCodeCandidate
 from .sqlite_runtime_source import SQLiteRuntimeSource
@@ -9,7 +9,13 @@ from .sqlite_runtime_source import SQLiteRuntimeSource
 
 def _as_float_value(value: object) -> float:
     try:
-        return float(value)
+        if isinstance(value, (str, bytes, bytearray)):
+            return float(value)
+        if hasattr(value, "__float__"):
+            return float(cast(SupportsFloat, value))
+        if hasattr(value, "__index__"):
+            return float(cast(int, value))
+        return 0.0
     except (TypeError, ValueError):
         return 0.0
 

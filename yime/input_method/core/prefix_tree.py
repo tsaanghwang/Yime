@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Generic, TypeVar
+from typing import Generic, TypeVar, cast
 
 
 T = TypeVar("T")
@@ -11,8 +11,10 @@ T = TypeVar("T")
 
 @dataclass
 class _PrefixTreeNode(Generic[T]):
-    children: dict[str, "_PrefixTreeNode[T]"] = field(default_factory=dict)
-    values: list[T] = field(default_factory=list)
+    children: dict[str, "_PrefixTreeNode[T]"] = field(
+        default_factory=lambda: cast(dict[str, "_PrefixTreeNode[T]"], {})
+    )
+    values: list[T] = field(default_factory=lambda: cast(list[T], []))
 
 
 class PrefixTree(Generic[T]):

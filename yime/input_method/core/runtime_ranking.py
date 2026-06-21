@@ -3,14 +3,23 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, List, Mapping, Optional
+from typing import Callable, Dict, List, Mapping, Optional, cast
 
 
 def _as_float_value(value: object) -> float:
     try:
-        return float(value)
+        return float(cast("str | int | float", value))
     except (TypeError, ValueError):
         return 0.0
+
+
+def _as_int_value(value: object) -> int:
+    try:
+        if isinstance(value, (str, int, float)):
+            return int(value)
+    except (TypeError, ValueError):
+        pass
+    return 0
 
 
 def _as_bool_value(value: object) -> bool:
@@ -56,7 +65,7 @@ _STAGE_B_RARE_REPRESENTATIVE_MIN_EXACT_CHAR_COUNT = 64
 def load_local_phrase_priority_rules(
     path: Path,
     pinyin_to_canonical: Dict[str, str],
-    resolve_canonical_code_from_pinyin_tone,
+    resolve_canonical_code_from_pinyin_tone: Callable[[str, Dict[str, str]], object],
     *,
     expected_lookup_code_length: Optional[int] = 4,
     min_lookup_code_length: int = 1,
@@ -65,33 +74,36 @@ def load_local_phrase_priority_rules(
         return {}
 
     payload = json.loads(path.read_text(encoding="utf-8"))
-    raw_rules = payload.get("rules") if isinstance(payload, dict) else None
+    payload_mapping = cast(Mapping[str, object], payload) if isinstance(payload, dict) else None
+    raw_rules = payload_mapping.get("rules") if payload_mapping is not None else None
     if not isinstance(raw_rules, list):
         return {}
 
     rules_by_lookup_code: Dict[str, Dict[str, float]] = {}
-    for raw_rule in raw_rules:
+    for raw_rule in cast(List[object], raw_rules):
         if not isinstance(raw_rule, dict):
             continue
-        lookup_code = str(raw_rule.get("lookup_code", "") or "").strip()
+        rule = cast(Mapping[str, object], raw_rule)
+        lookup_code = str(rule.get("lookup_code", "") or "").strip()
         if not lookup_code:
-            lookup_code = resolve_canonical_code_from_pinyin_tone(
-                str(raw_rule.get("lookup_pinyin_tone", "") or "").strip(),
+            lookup_code = str(resolve_canonical_code_from_pinyin_tone(
+                str(rule.get("lookup_pinyin_tone", "") or "").strip(),
                 pinyin_to_canonical,
-            )
+            ) or "").strip()
         if expected_lookup_code_length is not None and len(lookup_code) != expected_lookup_code_length:
             continue
         if len(lookup_code) < min_lookup_code_length:
             continue
-        raw_targets = raw_rule.get("targets")
+        raw_targets = rule.get("targets")
         if not isinstance(raw_targets, list):
             continue
         target_boosts: Dict[str, float] = rules_by_lookup_code.setdefault(lookup_code, {})
-        for raw_target in raw_targets:
+        for raw_target in cast(List[object], raw_targets):
             if not isinstance(raw_target, dict):
                 continue
-            text = str(raw_target.get("text", "") or "").strip()
-            boost = _as_float_value(raw_target.get("boost", 0.0))
+            target = cast(Mapping[str, object], raw_target)
+            text = str(target.get("text", "") or "").strip()
+            boost = _as_float_value(target.get("boost", 0.0))
             if not text or boost <= 0.0:
                 continue
             target_boosts[text] = max(target_boosts.get(text, 0.0), boost)
@@ -182,7 +194,7 @@ def resolve_candidate_source_tag(candidate: Dict[str, object]) -> str:
     source_tag = str(candidate.get("_candidate_source", "") or "").strip()
     if source_tag:
         return source_tag
-    matched_code_length = int(candidate.get("_matched_code_length") or 0)
+    matched_code_length = _as_int_value(candidate.get("_matched_code_length"))
     return "prefix" if matched_code_length > 0 else "exact"
 
 
@@ -203,9 +215,14 @@ def resolve_local_phrase_priority_boost(
     if boost <= 0.0:
         return 0.0
 
-    matched_code_length = int(candidate.get("_matched_code_length") or 0)
+    matched_code_length = _as_int_value(candidate.get("_matched_code_length"))
     full_code = str(candidate.get("yime_code", "") or lookup_code).strip()
-    full_code_length = int(candidate.get("_full_code_length") or len(full_code))
+    full_code_length_value = candidate.get("_full_code_length")
+    full_code_length = (
+        int(full_code_length_value)
+        if isinstance(full_code_length_value, (int, float, str)) and full_code_length_value
+        else len(full_code)
+    )
     if matched_code_length > 0:
         if matched_code_length != len(lookup_code) or full_code_length <= matched_code_length:
             return 0.0
@@ -292,7 +309,8 @@ def build_head_char_cluster_weight_map(
     for candidate in raw_candidates:
         if str(candidate.get("entry_type", "") or "").strip() != "phrase":
             continue
-        matched_code_length = int(candidate.get("_matched_code_length") or 0)
+        matched_code_length_value = candidate.get("_matched_code_length", 0)
+        matched_code_length = int(matched_code_length_value) if isinstance(matched_code_length_value, (str, int, float)) else 0
         if matched_code_length != 1:
             continue
         text = str(candidate.get("text", "") or "").strip()
@@ -332,7 +350,8 @@ def build_phrase_prefix_index(
             text = str(candidate.get("text", "") or "").strip()
             if not text:
                 continue
-            text_length = int(candidate.get("text_length") or len(text))
+            raw_text_length = candidate.get("text_length")
+            text_length = raw_text_length if isinstance(raw_text_length, int) else len(text)
             if not (2 <= text_length <= 4):
                 continue
             max_prefix_length = min(len(normalized_code) - 1, 15)
@@ -365,7 +384,7 @@ def build_runtime_candidate_records(
         text = str(candidate.get("text", "")).strip()
         if not text:
             continue
-        text_length = int(candidate.get("text_length") or len(text))
+        text_length = _as_int_value(candidate.get("text_length") or len(text))
         (
             phrase_priority_tier,
             local_phrase_priority_boost,
@@ -386,8 +405,8 @@ def build_runtime_candidate_records(
                 sort_weight=_as_float_value(candidate.get("sort_weight", 0.0)),
                 text_length=text_length,
                 is_common=_as_bool_value(candidate.get("is_common", False)),
-                matched_code_length=int(candidate.get("_matched_code_length") or 0),
-                full_code_length=int(
+                matched_code_length=_as_int_value(candidate.get("_matched_code_length") or 0),
+                full_code_length=_as_int_value(
                     candidate.get("_full_code_length")
                     or len(str(candidate.get("yime_code", "") or lookup_code).strip())
                 ),

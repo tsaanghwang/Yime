@@ -5,8 +5,8 @@
 """
 
 import time
-from typing import Callable, Optional, List, Dict, Any
-from dataclasses import dataclass, field
+from typing import Callable, List, Dict, Any, cast
+from dataclasses import dataclass
 
 from .input_visualization import build_code_display
 
@@ -89,7 +89,7 @@ class InputManager:
         key = key_info.get('key', '')
         text = key_info.get('text', '')
         ascii_char = key_info.get('ascii')
-        modifiers = key_info.get('modifiers', {}) or {}
+        modifiers = cast(Dict[str, Any], key_info.get('modifiers') or {})
 
         # 系统快捷键和窗口管理组合键必须直接放行，避免破坏复制、切窗等行为。
         if modifiers.get('win'):

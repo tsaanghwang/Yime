@@ -5,6 +5,7 @@ import json
 import sqlite3
 from collections import defaultdict
 from pathlib import Path
+from typing import SupportsFloat, SupportsIndex
 
 from yime.asset_paths import generated_runtime_candidates_json_path
 
@@ -40,7 +41,7 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def normalize_sort_weight_for_export(value: object) -> float:
+def normalize_sort_weight_for_export(value: SupportsFloat | SupportsIndex | str | bytes | bytearray | None) -> float:
     return round(float(value or 0.0), SORT_WEIGHT_EXPORT_DECIMALS)
 
 

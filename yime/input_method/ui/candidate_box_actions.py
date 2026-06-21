@@ -4,12 +4,15 @@ import re
 import tkinter as tk
 from pathlib import Path
 from tkinter import messagebox, simpledialog
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Literal, Optional
 
 from .manual_input_resolver import ManualInputResolver
 
 if TYPE_CHECKING:
     from .candidate_box import CandidateBox
+
+
+_MenuItemState = Literal["normal", "disabled"]
 
 
 class CandidateBoxActions:
@@ -118,26 +121,26 @@ class CandidateBoxActions:
                 return callable(getattr(self.box, hook_attr, None))
         return callable(getattr(self.box, callback_name, None))
 
-    def _menu_item_state(self, callback_name: str, *hook_attrs: str) -> str:
-        return tk.NORMAL if self._has_menu_item_handler(callback_name, *hook_attrs) else tk.DISABLED
+    def _menu_item_state(self, callback_name: str, *hook_attrs: str) -> _MenuItemState:
+        return "normal" if self._has_menu_item_handler(callback_name, *hook_attrs) else "disabled"
 
     @staticmethod
-    def _cascade_state(*states: str) -> str:
-        return tk.NORMAL if any(state == tk.NORMAL for state in states) else tk.DISABLED
+    def _cascade_state(*states: _MenuItemState) -> _MenuItemState:
+        return "normal" if any(state == "normal" for state in states) else "disabled"
 
-    def _user_lexicon_edit_reload_menu_state(self) -> str:
+    def _user_lexicon_edit_reload_menu_state(self) -> _MenuItemState:
         return self._cascade_state(
             self._menu_item_state("edit_user_lexicon_callback", "_on_edit_user_lexicon"),
             self._menu_item_state("reload_user_lexicon_callback", "_on_reload_user_lexicon"),
         )
 
-    def _user_lexicon_import_export_menu_state(self) -> str:
+    def _user_lexicon_import_export_menu_state(self) -> _MenuItemState:
         return self._cascade_state(
             self._menu_item_state("import_user_lexicon_callback", "_on_import_user_lexicon"),
             self._menu_item_state("export_user_lexicon_callback", "_on_export_user_lexicon"),
         )
 
-    def _user_lexicon_menu_state(self) -> str:
+    def _user_lexicon_menu_state(self) -> _MenuItemState:
         return self._cascade_state(
             self._menu_item_state("add_input_to_user_lexicon_callback", "_on_add_input_to_user_lexicon"),
             self._menu_item_state("delete_input_from_user_lexicon_callback", "_on_delete_input_from_user_lexicon"),
@@ -873,7 +876,8 @@ class CandidateBoxActions:
 
     def show_hotkey_info(self) -> None:
         callback = getattr(self.box, "hotkey_summary_callback", None)
-        summary = callback() if callable(callback) else None
+        callback_summary = callback() if callable(callback) else None
+        summary = callback_summary if isinstance(callback_summary, str) else ""
         if not summary:
             summary = "当前未提供快捷键信息。"
         self._emit_feedback("快捷键", summary)
@@ -959,11 +963,11 @@ class CandidateBoxActions:
         runtime_data_guidance = guidance_callback() if callable(guidance_callback) else None
 
         sections: list[str] = []
-        if readiness_summary:
+        if isinstance(readiness_summary, str) and readiness_summary:
             sections.append(readiness_summary)
-        if runtime_data_guidance:
+        if isinstance(runtime_data_guidance, str) and runtime_data_guidance:
             sections.append(runtime_data_guidance)
-        if hotkey_summary:
+        if isinstance(hotkey_summary, str) and hotkey_summary:
             sections.append(hotkey_summary)
         message = "\n\n".join(section for section in sections if section).strip()
         return message or "当前未提供运行诊断信息。"

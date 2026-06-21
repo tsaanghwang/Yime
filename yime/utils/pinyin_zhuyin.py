@@ -178,7 +178,7 @@ class PinyinZhuyinConverter:
     @classmethod
     def process_pinyin_dict(cls, input_dict: Dict[str, str]) -> Tuple[Dict[str, str], int]:
         """处理拼音字典并返回注音符号字典和键值不匹配计数"""
-        zhuyin_dict = {}
+        zhuyin_dict: Dict[str, str] = {}
         mismatch_count = 0
 
         for key, value in input_dict.items():

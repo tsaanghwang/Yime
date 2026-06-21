@@ -3,7 +3,12 @@
 from __future__ import annotations
 
 from importlib import import_module
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from .clipboard import ClipboardManager
+    from .keyboard_simulator import KeyboardSimulator
+    from .window_manager import WindowManager
 
 __all__ = ["ClipboardManager", "WindowManager", "KeyboardSimulator"]
 

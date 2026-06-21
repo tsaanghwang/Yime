@@ -1,57 +1,47 @@
 """键盘监听模块。"""
 
 import ctypes
+import importlib.util
 import threading
 import time
-from typing import Any, Callable, Dict, Optional
+from typing import Any, Callable, ClassVar, Dict, Optional, Protocol, cast
 
 from ..utils.modifier_state import is_alt_gr_active
 
 
 # 尝试导入pywin32
-try:
-    import win32con
-    import win32api
-    import win32gui
-    import win32event
-    import win32clipboard
-    import win32process
-    import win32console
-    import win32ui
-    import win32file
-    import win32com
-    import win32com.client
-    import win32com.server
-    import win32com.shell
-    import win32com.shell.shell
-    import win32com.shell.shellcon
-    import win32com.taskscheduler
-    import win32timezone
-    import win32evtlog
-    import win32evtlogutil
-    import win32evtlog
-    import win32evtlogutil
-    import win32security
-    import win32ts
-    import win32wnet
-    import pythoncom
-    HAS_WIN32 = True
-except ImportError:
-    HAS_WIN32 = False
+HAS_WIN32 = importlib.util.find_spec("win32con") is not None
 
 # 尝试导入pyHook
+_has_pyhook = False
 try:
-    import pyHook
-    HAS_PYHOOK = True
+    import pyHook as _pyHook  # pyright: ignore[reportMissingImports]
+    pyHook: Any = _pyHook
+    _has_pyhook = True
 except ImportError:
-    HAS_PYHOOK = False
+    pyHook = None
+HAS_PYHOOK = _has_pyhook
 
 # 尝试导入pynput
+_has_pyput = False
 try:
-    from pynput import keyboard
-    HAS_PYPUT = True
+    from pynput import keyboard as pynput_keyboard
+    keyboard: Any = pynput_keyboard
+    _has_pyput = True
 except ImportError:
-    HAS_PYPUT = False
+    keyboard = None
+HAS_PYPUT = _has_pyput
+
+
+class _PyHookManager(Protocol):
+    KeyDown: Callable[[Any], bool]
+    KeyUp: Callable[[Any], bool]
+
+    def HookKeyboard(self) -> None:
+        ...
+
+    def UnhookKeyboard(self) -> None:
+        ...
 
 
 class KeyboardListener:
@@ -90,7 +80,7 @@ class KeyboardListener:
         0xDE: "'",
     }
 
-    _MODIFIER_VK_CODES = {
+    _MODIFIER_VK_CODES: ClassVar[Dict[str, tuple[int, ...]]] = {
         "shift": (0x10,),
         "ctrl": (0x11,),
         "alt": (0x12,),
@@ -114,6 +104,7 @@ class KeyboardListener:
         self.on_key_release = on_key_release
         self.is_running = False
         self._listener = None
+        self._hook_manager: Optional[_PyHookManager] = None
         self._backend = None
         self._win32_hook = None
         self._win32_callback = None
@@ -415,7 +406,11 @@ class KeyboardListener:
 
             return ""
 
-        def low_level_keyboard_proc(nCode, wParam, lParam):
+        def low_level_keyboard_proc(
+            nCode: int,
+            wParam: wintypes.WPARAM,
+            lParam: wintypes.LPARAM,
+        ) -> int:
             try:
                 if nCode == win32con.HC_ACTION:
                     kb_struct = ctypes.cast(
@@ -428,7 +423,8 @@ class KeyboardListener:
                     if flags & win32con.LLKHF_INJECTED:
                         return user32.CallNextHookEx(None, nCode, wParam, lParam)
                     # 0x100: WM_KEYDOWN, 0x101: WM_KEYUP
-                    if wParam == win32con.WM_KEYDOWN or wParam == win32con.WM_SYSKEYDOWN:
+                    wparam_value = int(getattr(wParam, "value", wParam))
+                    if wparam_value in (win32con.WM_KEYDOWN, win32con.WM_SYSKEYDOWN):
                         modifiers = get_modifier_state(vk_code)
                         key_info = self._normalize_win32_key_info(
                             vk_code,
@@ -439,7 +435,7 @@ class KeyboardListener:
                             resolve_text,
                         )
                         # 调用回调，返回False则拦截
-                        if self.on_key_press and self.on_key_press(key_info) is False:
+                        if self.on_key_press(key_info) is False:
                             return 1  # 拦截
             except Exception as exc:
                 print(f"Win32键盘回调出错: {exc}")
@@ -475,7 +471,9 @@ class KeyboardListener:
 
     def _init_pyhook(self) -> None:
         """使用pyHook初始化"""
-        self._hook_manager = pyHook.HookManager()
+        if pyHook is None:
+            raise RuntimeError("pyHook不可用")
+        self._hook_manager = cast(_PyHookManager, pyHook.HookManager())
         self._hook_manager.KeyDown = self._pyhook_key_down
         self._hook_manager.KeyUp = self._pyhook_key_up
 
@@ -486,7 +484,7 @@ class KeyboardListener:
             on_release=self._pynput_key_release,
         )
 
-    def _pyhook_key_down(self, event) -> bool:
+    def _pyhook_key_down(self, event: Any) -> bool:
         """
         pyHook按键事件处理
 
@@ -498,7 +496,7 @@ class KeyboardListener:
         """
         try:
             # 转换为统一格式
-            key_info = {
+            key_info: Dict[str, Any] = {
                 'key': event.Key,
                 'text': chr(event.Ascii) if event.Ascii > 0 else '',
                 'ascii': event.Ascii if event.Ascii > 0 else None,
@@ -511,14 +509,12 @@ class KeyboardListener:
             }
 
             # 调用回调
-            if self.on_key_press:
-                return self.on_key_press(key_info)
-            return True
+            return self.on_key_press(key_info)
         except Exception as e:
             print(f"处理按键事件出错: {e}")
             return True  # 出错时继续传递
 
-    def _pyhook_key_up(self, event) -> bool:
+    def _pyhook_key_up(self, event: Any) -> bool:
         """
         pyHook释放键事件处理
 
@@ -530,10 +526,11 @@ class KeyboardListener:
         """
         try:
             if self.on_key_release:
-                key_info = {
-                    'key': event.Key,
-                    'text': chr(event.Ascii) if event.Ascii > 0 else '',
-                    'ascii': event.Ascii if event.Ascii > 0 else None,
+                ascii_code = int(getattr(event, 'Ascii', 0) or 0)
+                key_info: Dict[str, Any] = {
+                    'key': getattr(event, 'Key', ''),
+                    'text': chr(ascii_code) if ascii_code > 0 else '',
+                    'ascii': ascii_code if ascii_code > 0 else None,
                     'time': time.time(),
                 }
                 return self.on_key_release(key_info)
@@ -542,7 +539,7 @@ class KeyboardListener:
             print(f"处理释放键事件出错: {e}")
             return True
 
-    def _pynput_key_press(self, key) -> None:
+    def _pynput_key_press(self, key: object) -> None:
         """
         pynput按键事件处理
 
@@ -551,21 +548,19 @@ class KeyboardListener:
         """
         try:
             # 转换为统一格式
-            key_info = {
+            key_info: Dict[str, Any] = {
                 'key': self._pynput_key_to_string(key),
                 'text': getattr(key, 'char', '') or '',
                 'ascii': getattr(key, 'char', None),
                 'time': time.time(),
             }
 
-            # 调用回调
-            if self.on_key_press:
-                # pynput不支持拦截，所以总是返回True
-                self.on_key_press(key_info)
+            # 调用回调；pynput不支持拦截，所以忽略返回值
+            self.on_key_press(key_info)
         except Exception as e:
             print(f"处理按键事件出错: {e}")
 
-    def _pynput_key_release(self, key) -> None:
+    def _pynput_key_release(self, key: object) -> None:
         """
         pynput释放键事件处理
 
@@ -574,7 +569,7 @@ class KeyboardListener:
         """
         try:
             if self.on_key_release:
-                key_info = {
+                key_info: Dict[str, Any] = {
                     'key': self._pynput_key_to_string(key),
                     'time': time.time(),
                 }
@@ -582,7 +577,7 @@ class KeyboardListener:
         except Exception as e:
             print(f"处理释放键事件出错: {e}")
 
-    def _pynput_key_to_string(self, key) -> str:
+    def _pynput_key_to_string(self, key: object) -> str:
         """
         将pynput按键对象转换为字符串
 
@@ -594,9 +589,11 @@ class KeyboardListener:
         """
         try:
             if isinstance(key, keyboard.KeyCode):
-                return key.char if key.char else str(key)
+                key_char = getattr(key, "char", None)
+                return str(key_char) if key_char else str(key)
             elif isinstance(key, keyboard.Key):
-                return key.name
+                key_name = getattr(key, "name", None)
+                return str(key_name) if key_name else str(key)
             else:
                 return str(key)
         except:
@@ -618,7 +615,10 @@ class KeyboardListener:
                 raise RuntimeError(self._win32_error or "Win32 键盘钩子未启动")
         elif self._backend == "pyhook":
             # pyHook需要消息循环
-            self._hook_manager.HookKeyboard()
+            hook_manager = self._hook_manager
+            if hook_manager is None:
+                raise RuntimeError("pyHook 钩子管理器初始化失败")
+            hook_manager.HookKeyboard()
             self.is_running = True
             print("pyHook键盘钩子已安装")
             # 注意：pythoncom.PumpMessages()会阻塞
@@ -644,8 +644,9 @@ class KeyboardListener:
 
         if self._backend == "win32":
             try:
+                import ctypes
+
                 if hasattr(self, '_win32_hook') and self._win32_hook:
-                    import ctypes
                     ctypes.windll.user32.UnhookWindowsHookEx(self._win32_hook)
                     self._win32_hook = None
                     print("Win32键盘钩子已卸载")
@@ -663,7 +664,9 @@ class KeyboardListener:
                 print(f"卸载Win32钩子出错: {e}")
         elif self._backend == "pyhook":
             try:
-                self._hook_manager.UnhookKeyboard()
+                hook_manager = self._hook_manager
+                if hook_manager:
+                    hook_manager.UnhookKeyboard()
                 print("pyHook键盘钩子已卸载")
             except Exception as e:
                 print(f"卸载pyHook钩子出错: {e}")
@@ -692,4 +695,6 @@ class KeyboardListener:
         """
         if HAS_PYHOOK and self.is_running:
             print("开始处理消息循环...")
+            import pythoncom
+
             pythoncom.PumpMessages()

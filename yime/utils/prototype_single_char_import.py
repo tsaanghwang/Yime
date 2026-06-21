@@ -25,8 +25,8 @@ def load_source_single_char_rows(path: Path) -> tuple[list[tuple[str, str, str]]
     with sqlite3.connect(path) as source_conn:
         source_cur = source_conn.cursor()
         if uses_v2_source_schema(source_conn):
-            source_files = [
-                (prototype_source_name(source_kind, source_path), source_kind, source_path)
+            source_files: list[tuple[str, str, str]] = [
+                (prototype_source_name(str(source_kind), str(source_path)), str(source_kind), str(source_path))
                 for source_kind, source_path in source_cur.execute(
                     '''
                     SELECT source_kind, source_path
@@ -37,16 +37,16 @@ def load_source_single_char_rows(path: Path) -> tuple[list[tuple[str, str, str]]
                 ).fetchall()
             ]
             default_source_name = source_files[0][0] if source_files else "char:pinyin.txt"
-            rows = [
+            rows: list[tuple[int, str, str, str, str, str, int, int, str | None, str]] = [
                 (
-                    row_id,
+                    int(row_id),
                     default_source_name,
-                    codepoint,
-                    hanzi,
-                    marked_pinyin,
-                    numeric_pinyin,
-                    reading_rank,
-                    is_primary,
+                    str(codepoint),
+                    str(hanzi),
+                    str(marked_pinyin),
+                    str(numeric_pinyin),
+                    int(reading_rank),
+                    int(is_primary),
                     None,
                     "",
                 )
@@ -162,7 +162,7 @@ def import_hanzi_and_mappings(conn: sqlite3.Connection, source_rows: list[tuple[
     conn.execute('DELETE FROM char_inventory')
     conn.execute('DELETE FROM numeric_pinyin_inventory')
 
-    for _, source_name, codepoint, hanzi, _, numeric_pinyin, reading_rank, is_primary, comment, _ in source_rows:
+    for _, source_name, _, hanzi, _, numeric_pinyin, reading_rank, is_primary, comment, _ in source_rows:
         numeric_pinyin = standardize_numeric_pinyin(numeric_pinyin)
         char_id = ord(hanzi)
         if char_id not in seen_chars:

@@ -218,8 +218,8 @@ class CandidateBox(CandidateRendererMixin):
         self.pager_frame = self.layout_builder.pager_frame
 
         # 兼容旧的按钮名称
-        self.prev_page_button = self.layout_builder.prev_button
-        self.next_page_button = self.layout_builder.next_button
+        self.prev_page_button = cast(Any, self.layout_builder.prev_button)
+        self.next_page_button = cast(Any, self.layout_builder.next_button)
 
         # 创建缺失的变量
         self.page_size_var = tk.IntVar(value=max_candidates)
@@ -245,12 +245,12 @@ class CandidateBox(CandidateRendererMixin):
         # 从 LayoutBuilder 获取对应的 UI 控件和变量
         self.pager_frame = self.layout_builder.pager_frame
         self.pager_button_frame = self.layout_builder.pager_frame
-        self.first_page_button = self.layout_builder.first_page_button
+        self.first_page_button = cast(Any, self.layout_builder.first_page_button)
         self.prev_button = self.layout_builder.prev_button
         self.next_button = self.layout_builder.next_button
-        self.last_page_button = self.layout_builder.last_page_button
-        self.toolbar_menu_button = self.layout_builder.toolbar_menu_button
-        self.drag_grip = self.layout_builder.drag_grip
+        self.last_page_button = cast(Any, self.layout_builder.last_page_button)
+        self.toolbar_menu_button = cast(Any, self.layout_builder.toolbar_menu_button)
+        self.drag_grip = cast(Any, self.layout_builder.drag_grip)
         self.standby_frame = self.layout_builder.standby_frame
         self.standby_icon = self.layout_builder.standby_icon
         self.main_frame = self.layout_builder.main_frame
@@ -284,7 +284,8 @@ class CandidateBox(CandidateRendererMixin):
         if self._is_standby:
             return
         try:
-            if self.root.state() == "withdrawn":
+            root_state = cast(Callable[[], str], getattr(self.root, "state"))
+            if root_state() == "withdrawn":
                 return
         except tk.TclError:
             return
@@ -296,12 +297,13 @@ class CandidateBox(CandidateRendererMixin):
         current_y = self.root.winfo_y()
         target_width = self.root.winfo_reqwidth()
         target_height = self.root.winfo_reqheight()
-        self.root.geometry(f"{target_width}x{target_height}+{current_x}+{current_y}")
+        set_geometry = cast(Callable[[str], str], getattr(self.root, "geometry"))
+        set_geometry(f"{target_width}x{target_height}+{current_x}+{current_y}")
         self.root.update_idletasks()
 
     def _bind_keys(self) -> None:
         """绑定快捷键"""
-        self.actions.bind_keys()
+        cast(CandidateBoxActions, self.actions).bind_keys()
 
     def _get_user32(self):
         if hasattr(self, "window_system") and self.window_system:
@@ -319,6 +321,10 @@ class CandidateBox(CandidateRendererMixin):
     def _lift_root(self) -> None:
         lift = cast(Callable[[], None], getattr(self.root, "lift"))
         lift()
+
+    def _deiconify_root(self) -> None:
+        deiconify = cast(Callable[[], None], getattr(self.root, "deiconify"))
+        deiconify()
 
     def notify_input_change(self, event: Optional[object] = None) -> None:
         if self._on_input_change_callback:
@@ -764,7 +770,7 @@ class CandidateBox(CandidateRendererMixin):
 
         geom_x = f"+{new_x}" if new_x >= 0 else str(new_x)
         geom_y = f"+{new_y}" if new_y >= 0 else str(new_y)
-        self.root.geometry(f"{geom_x}{geom_y}")
+        cast(Any, self.root).geometry(f"{geom_x}{geom_y}")
         return "break"
 
     def _on_drag_release(self, event: tk.Event) -> str:
@@ -800,7 +806,7 @@ class CandidateBox(CandidateRendererMixin):
 
     def _on_window_focus_in(self, event: object) -> None:
         """当输入候选框获得焦点时，把光标输入插入点（cursor焦点）跳转到输入框输入点。"""
-        self.actions.on_window_focus_in(event)
+        cast(CandidateBoxActions, self.actions).on_window_focus_in(event)
 
     def _reactivate_from_passive(self, event: Optional[tk.Event] = None) -> None:
         """半透明静置态点击后恢复可输入状态。"""
@@ -809,9 +815,9 @@ class CandidateBox(CandidateRendererMixin):
         if self._is_standby or self._manual_input_enabled:
             return
         if self._on_restore_from_standby:
-            self.actions.restore_from_standby(event)
+            cast(CandidateBoxActions, self.actions).restore_from_standby(event)
             return
-        self.actions.activate_for_manual_input(event)
+        cast(CandidateBoxActions, self.actions).activate_for_manual_input(event)
 
     def _on_window_unmap(self, event: Optional[tk.Event] = None) -> None:
         """仅在用户显式最小化时，转成右下角待命图标。"""
@@ -820,7 +826,8 @@ class CandidateBox(CandidateRendererMixin):
         if self._handling_iconify:
             return
         try:
-            if self.root.state() != "iconic":
+            root_state = cast(Callable[[], str], getattr(self.root, "state"))
+            if root_state() != "iconic":
                 return
         except tk.TclError:
             return
@@ -835,7 +842,7 @@ class CandidateBox(CandidateRendererMixin):
 
     def _on_input_change(self, event: Optional[tk.Event] = None) -> None:
         """输入变化事件处理"""
-        self.actions.on_input_change(event)
+        cast(CandidateBoxActions, self.actions).on_input_change(event)
 
     def _format_codepoints(self, text: str) -> str:
         if not text:
@@ -853,11 +860,11 @@ class CandidateBox(CandidateRendererMixin):
 
     def _activate_for_manual_input(self, event: Optional[tk.Event] = None) -> None:
         """鼠标点入输入框时允许窗口激活，便于手动粘贴测试编码。"""
-        self.actions.activate_for_manual_input(event)
+        cast(CandidateBoxActions, self.actions).activate_for_manual_input(event)
 
     def _restore_from_standby(self, event: Optional[tk.Event] = None) -> str:
         """从待命小图标恢复主候选框。"""
-        return self.actions.restore_from_standby(event)
+        return cast(CandidateBoxActions, self.actions).restore_from_standby(event)
 
     def _request_standby_from_mouse(self, event: Optional[tk.Event] = None) -> str:
         """主候选框右键时返回待命图标。"""
@@ -865,7 +872,7 @@ class CandidateBox(CandidateRendererMixin):
             return "break"
         if self._is_standby:
             return "break"
-        return self.actions.request_standby(event)
+        return cast(CandidateBoxActions, self.actions).request_standby(event)
 
     def set_mouse_wake_enabled(self, enabled: bool) -> None:
         self._mouse_wake_enabled = enabled
@@ -896,7 +903,7 @@ class CandidateBox(CandidateRendererMixin):
         self._active_alpha_value = normalized / 100.0
         if not self._is_standby:
             try:
-                if self.root.state() != "withdrawn":
+                if cast(Any, self.root).state() != "withdrawn":
                     self._set_root_alpha(self._active_alpha_value)
             except tk.TclError:
                 return
@@ -906,7 +913,7 @@ class CandidateBox(CandidateRendererMixin):
         self.active_topmost_var.set(enabled)
         if not self._is_standby:
             try:
-                if self.root.state() != "withdrawn":
+                if cast(Any, self.root).state() != "withdrawn":
                     self._set_root_topmost(enabled)
             except tk.TclError:
                 return
@@ -925,7 +932,7 @@ class CandidateBox(CandidateRendererMixin):
             self.toolbar_menu_button,
             self.layout_builder.drag_grip,
         ):
-            widget.configure(foreground=normalized)
+            cast(Any, widget).configure(foreground=normalized)
 
         self.candidate_text.configure(fg=normalized, insertbackground=normalized)
         self._configure_candidate_text_tags()
@@ -946,7 +953,7 @@ class CandidateBox(CandidateRendererMixin):
             self.toolbar_menu_button,
             self.layout_builder.drag_grip,
         ):
-            widget.configure(background=normalized)
+            cast(Any, widget).configure(background=normalized)
 
         self.standby_frame.configure(bg=normalized)
         self.standby_icon.configure(bg=normalized)
@@ -1022,19 +1029,19 @@ class CandidateBox(CandidateRendererMixin):
         if self._is_standby:
             self.standby_frame.pack_forget()
             self.main_frame.pack(fill=tk.BOTH, expand=True)
-            self.root.geometry("")  # 清除待命态 54x54 显式尺寸，让主界面按内容重新撑开
+            cast(tk.Tk, self.root).geometry("")  # 清除待命态 54x54 显式尺寸，让主界面按内容重新撑开
             self.root.update_idletasks()
             self._is_standby = False
         self._set_root_alpha(getattr(self, "_active_alpha_value", self._ACTIVE_ALPHA))
-        self.root.title("音元拼音")
+        cast(tk.Tk, self.root).title("音元拼音")
 
     def _on_confirm_key(self, event: Optional[tk.Event] = None) -> str:
         """有候选时先将首选加入缓冲区，否则发送缓冲区到外部编辑器。"""
-        return self.actions.on_confirm_key(event)
+        return cast(CandidateBoxActions, self.actions).on_confirm_key(event)
 
     def _on_digit_shortcut(self, event: Optional[tk.Event], value: int) -> str:
         """数字键快捷处理入口。默认帮助文档不再将其作为主选择方式。"""
-        return self.actions.on_digit_shortcut(event, value)
+        return cast(CandidateBoxActions, self.actions).on_digit_shortcut(event, value)
 
     def _clear_input(self, focus_input: bool = True) -> None:
         """清空输入"""
@@ -1099,7 +1106,7 @@ class CandidateBox(CandidateRendererMixin):
         tooltip.withdraw()
         tooltip.overrideredirect(True)
         try:
-            tooltip.attributes("-topmost", True)
+            cast(Any, tooltip).attributes("-topmost", True)
         except tk.TclError:
             pass
         label = tk.Label(
@@ -1185,7 +1192,7 @@ class CandidateBox(CandidateRendererMixin):
 
     def _on_commit_backspace(self, event: Optional[tk.Event] = None) -> str:
         """缓冲区为空时，退格回退最近一次已选字。"""
-        return self.actions.on_commit_backspace(event)
+        return cast(CandidateBoxActions, self.actions).on_commit_backspace(event)
 
     def _select_candidate_by_index(self, index: int) -> None:
         """
@@ -1194,11 +1201,11 @@ class CandidateBox(CandidateRendererMixin):
         Args:
             index: 候选词索引
         """
-        self.actions.select_candidate_by_index(index)
+        cast(CandidateBoxActions, self.actions).select_candidate_by_index(index)
 
     def _click_candidate_by_index(self, index: int) -> None:
         """鼠标点击候选时立即提交到外部编辑器。"""
-        self.actions.on_candidate_click(index)
+        cast(CandidateBoxActions, self.actions).on_candidate_click(index)
 
     def _copy_candidate(self, index: int) -> None:
         """
@@ -1207,7 +1214,7 @@ class CandidateBox(CandidateRendererMixin):
         Args:
             index: 候选词索引
         """
-        self.actions.copy_candidate(index)
+        cast(CandidateBoxActions, self.actions).copy_candidate(index)
 
     def _close(self) -> None:
         """关闭窗口"""
@@ -1244,14 +1251,15 @@ class CandidateBox(CandidateRendererMixin):
         """
         was_standby = self._is_standby
         try:
-            previous_state = self.root.state()
+            root_state = cast(Callable[[], str], getattr(self.root, "state"))
+            previous_state = root_state()
         except tk.TclError:
             previous_state = "withdrawn"
 
         self._show_main_frame()
         self.set_manual_input_enabled(focus_input)
         last_main_geometry = self._get_last_main_geometry()
-        preserve_current_position = (
+        preserve_current_position = bool(
             x is None
             and y is None
             and anchor_hwnd is None
@@ -1288,14 +1296,15 @@ class CandidateBox(CandidateRendererMixin):
             )
 
         # 移除显式指定尺寸的设定，使用Tkinter自适应
-        self.root.geometry(f"+{target_x}+{target_y}")
+        set_root_geometry = cast(Callable[[str], str], getattr(self.root, "geometry"))
+        set_root_geometry(f"+{target_x}+{target_y}")
         hwnd = self.root.winfo_id()
         user32 = self._get_user32()
         active_topmost_enabled = getattr(self, "_active_topmost_enabled", True)
         if not focus_input:
             self._set_noactivate(True)
             self._set_root_topmost(active_topmost_enabled)
-            self.root.deiconify()
+            self._deiconify_root()
             self.root.update_idletasks()
             user32.ShowWindow(hwnd, self._SW_SHOWNOACTIVATE)
             user32.SetWindowPos(
@@ -1312,8 +1321,9 @@ class CandidateBox(CandidateRendererMixin):
             )
         else:
             self._set_noactivate(False)
-            self.root.state("normal")
-            self.root.deiconify()
+            set_root_state = cast(Callable[[str], str], getattr(self.root, "state"))
+            set_root_state("normal")
+            self._deiconify_root()
             self._set_root_topmost(active_topmost_enabled)
             user32.ShowWindow(hwnd, self._SW_SHOW)
             user32.SetWindowPos(
@@ -1334,7 +1344,7 @@ class CandidateBox(CandidateRendererMixin):
         if self._DEBUG_UI:
             is_visible = bool(user32.IsWindowVisible(hwnd))
             print(
-                f"[CandidateBox.show] hwnd={hwnd} visible={is_visible} focus_input={focus_input} geometry=auto+{target_x}+{target_y} state={self.root.state()}"
+                f"[CandidateBox.show] hwnd={hwnd} visible={is_visible} focus_input={focus_input} geometry=auto+{target_x}+{target_y}"
             )
         if focus_input:
             self._focus_input_with_retry(hwnd)
@@ -1361,10 +1371,10 @@ class CandidateBox(CandidateRendererMixin):
             else:
                 pt_x, pt_y = WindowManager.get_cursor_position()
                 target_x, target_y = self._screen_to_tk_coords(pt_x + 12, pt_y + 24)
-        self.root.geometry(f"{width}x{height}+{target_x}+{target_y}")
-        self.root.title("音")
+        cast(tk.Tk, self.root).geometry(f"{width}x{height}+{target_x}+{target_y}")
+        cast(tk.Tk, self.root).title("音")
         self._set_root_alpha(0.58)
-        self.root.deiconify()
+        cast(tk.Tk, self.root).deiconify()
         self.root.update_idletasks()
         hwnd = self.root.winfo_id()
         user32 = self._get_user32()
@@ -1390,7 +1400,7 @@ class CandidateBox(CandidateRendererMixin):
         self.root.update_idletasks()
         last_main_geometry = self._get_last_main_geometry()
 
-        if self.root.state() == "withdrawn":
+        if cast(tk.Tk, self.root).state() == "withdrawn":
             if last_main_geometry is not None:
                 target_x, target_y, width, height = last_main_geometry
             else:
@@ -1403,10 +1413,10 @@ class CandidateBox(CandidateRendererMixin):
             width = self.root.winfo_width() or self.root.winfo_reqwidth()
             height = self.root.winfo_height() or self.root.winfo_reqheight()
 
-        self.root.geometry(f"{width}x{height}+{target_x}+{target_y}")
+        cast(tk.Tk, self.root).geometry(f"{width}x{height}+{target_x}+{target_y}")
         self._set_root_alpha(self._PASSIVE_ALPHA)
         self._set_root_topmost(False)
-        self.root.deiconify()
+        cast(tk.Tk, self.root).deiconify()
         self.root.update_idletasks()
 
         hwnd = self.root.winfo_id()
@@ -1431,7 +1441,7 @@ class CandidateBox(CandidateRendererMixin):
         """隐藏候选框"""
         if self._DEBUG_UI:
             print("[CandidateBox.hide] withdraw")
-        self.root.withdraw()
+        cast(tk.Tk, self.root).withdraw()
 
     def update_candidates(
         self,

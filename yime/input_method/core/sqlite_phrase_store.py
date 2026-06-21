@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import sqlite3
 from typing import Dict, List, Mapping
 
 from .runtime_ranking import (
@@ -47,8 +46,9 @@ class SQLitePhraseCandidateStore:
         normalized_code = str(lookup_code or "").strip()
         if not normalized_code:
             return []
-        cached = self._runtime_candidate_cache.get(normalized_code)
-        if cached is None:
+        try:
+            cached = self._runtime_candidate_cache[normalized_code]
+        except KeyError:
             with self.runtime_source.connect() as conn:
                 rows = conn.execute(
                     f"""
@@ -72,7 +72,7 @@ class SQLitePhraseCandidateStore:
                     ).fetchall()
                 }
 
-            cached = []
+            cached: List[Dict[str, object]] = []
             for row in rows:
                 candidate = dict(row)
                 if str(candidate.get("entry_type", "") or "").strip() == "char":
@@ -90,7 +90,6 @@ class SQLitePhraseCandidateStore:
         merged.extend(
             annotate_candidate_source(candidate, "overlay")
             for candidate in phrase_candidate_overlays.get(normalized_code, [])
-            if isinstance(candidate, dict)
         )
         return merged
 
@@ -147,7 +146,6 @@ class SQLitePhraseCandidateStore:
                         len(normalized_code),
                     )
                     for candidate in overlay_candidates
-                    if isinstance(candidate, dict)
                 )
 
         merged.sort(key=phrase_candidate_payload_sort_key)

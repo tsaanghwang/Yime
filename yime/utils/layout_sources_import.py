@@ -5,6 +5,7 @@ import os
 import re
 import sqlite3
 from pathlib import Path
+from typing import Any, cast
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -74,13 +75,23 @@ def build_label_index() -> dict[str, str]:
     labels: dict[str, str] = {}
 
     shouyin_payload = load_json(SHOUYIN_PATH)
-    shouyin_map = shouyin_payload.get("首音", {})
+    shouyin_data: dict[str, Any] = (
+        cast(dict[str, Any], shouyin_payload) if isinstance(shouyin_payload, dict) else {}
+    )
+    shouyin_map_payload = shouyin_data.get("首音", {})
+    shouyin_map: dict[str, Any] = (
+        cast(dict[str, Any], shouyin_map_payload) if isinstance(shouyin_map_payload, dict) else {}
+    )
     for label, char in shouyin_map.items():
         labels[str(char)] = str(label)
 
     yinyuan_payload = load_json(YINYUAN_PATH)
+    yinyuan_data: dict[str, Any] = (
+        cast(dict[str, Any], yinyuan_payload) if isinstance(yinyuan_payload, dict) else {}
+    )
     for namespace in ("zaoyin", "yueyin"):
-        namespace_map = yinyuan_payload.get(namespace, {})
+        namespace_map = yinyuan_data.get(namespace, {})
+        namespace_map = cast(dict[str, Any], namespace_map) if isinstance(namespace_map, dict) else {}
         for label, char in namespace_map.items():
             labels[str(char)] = str(label)
 
@@ -93,16 +104,31 @@ def slot_sort_key(slot_key: str) -> tuple[int, int]:
 
 
 def load_symbol_catalog() -> list[dict[str, object]]:
-    runtime_map = load_json(RUNTIME_SYMBOL_PATH)
-    canonical_map = load_json(CANONICAL_SYMBOL_PATH)
-    projection_payload = load_json(PROJECTION_PATH)
-    projection_map = projection_payload.get("used_mapping", {})
+    runtime_map_raw = load_json(RUNTIME_SYMBOL_PATH)
+    runtime_map: dict[str, str] = (
+        cast(dict[str, str], runtime_map_raw) if isinstance(runtime_map_raw, dict) else {}
+    )
+    canonical_map_raw = load_json(CANONICAL_SYMBOL_PATH)
+    canonical_map: dict[str, str] = (
+        cast(dict[str, str], canonical_map_raw) if isinstance(canonical_map_raw, dict) else {}
+    )
+    projection_payload_raw = load_json(PROJECTION_PATH)
+    projection_payload: dict[str, Any] = (
+        cast(dict[str, Any], projection_payload_raw) if isinstance(projection_payload_raw, dict) else {}
+    )
+    projection_map_raw = projection_payload.get("used_mapping", {})
+    projection_map: dict[str, Any] = (
+        cast(dict[str, Any], projection_map_raw) if isinstance(projection_map_raw, dict) else {}
+    )
     label_index = build_label_index()
 
     rows: list[dict[str, object]] = []
     slot_keys = sorted(projection_map.keys(), key=slot_sort_key)
     for ordinal, slot_key in enumerate(slot_keys, start=1):
-        projection_entry = projection_map.get(slot_key, {})
+        projection_entry_raw = projection_map.get(slot_key, {})
+        projection_entry: dict[str, Any] = (
+            cast(dict[str, Any], projection_entry_raw) if isinstance(projection_entry_raw, dict) else {}
+        )
         bmp_char = runtime_map.get(slot_key) or projection_entry.get("char")
         canonical_char = canonical_map.get(slot_key)
         category = "initial" if slot_key.startswith("N") else "musical"

@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import csv
 import sqlite3
+from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -79,7 +80,7 @@ def _column_present(value: object) -> bool:
 
 
 def synthetic_frequency_from_unihan_columns(
-    columns: dict[str, object] | None,
+    columns: Mapping[str, object] | None,
 ) -> ResolvedCharFrequency:
     best_freq = 0
     best_source = SYNTHETIC_NONE_SOURCE
@@ -94,7 +95,7 @@ def synthetic_frequency_from_unihan_columns(
 def resolve_char_frequency(
     *,
     bcc_frequency: int | None,
-    unihan_columns: dict[str, object] | None = None,
+    unihan_columns: Mapping[str, object] | None = None,
     bcc_source: str = BCC_SOURCE,
 ) -> ResolvedCharFrequency:
     if bcc_frequency is not None and bcc_frequency > 0:

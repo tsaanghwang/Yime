@@ -6,9 +6,6 @@ import ctypes
 import tkinter as tk
 from ctypes import wintypes
 
-class _POINT(ctypes.Structure):
-    _fields_ = [("x", ctypes.c_long), ("y", ctypes.c_long)]
-
 class CandidateWindowSystem:
     _GWL_EXSTYLE = -20
     _GWL_STYLE = -16
@@ -107,7 +104,12 @@ class CandidateWindowSystem:
         self._default_wndproc = default_wndproc
 
         @wndproc_type
-        def window_proc(window_handle, message, wparam, lparam):
+        def window_proc(
+            window_handle: wintypes.HWND,
+            message: wintypes.UINT,
+            wparam: wintypes.WPARAM,
+            lparam: wintypes.LPARAM,
+        ) -> int:
             if self._handle_wndproc_message(
                 int(window_handle),
                 int(message),
@@ -166,7 +168,7 @@ class CandidateWindowSystem:
         self.enable_nonclient_right_drag()
         self.root.update_idletasks()
         hwnd = self.root.winfo_id()
-        user32, get_window_long_ptr, set_window_long_ptr, set_window_pos = self._get_window_style_api()
+        _user32, get_window_long_ptr, set_window_long_ptr, set_window_pos = self._get_window_style_api()
 
         style = int(get_window_long_ptr(hwnd, self._GWL_STYLE) or 0)
         style &= ~self._WS_MAXIMIZEBOX

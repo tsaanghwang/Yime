@@ -9,8 +9,6 @@ from .app_base import BaseInputMethodApp
 from .core.input_visualization import project_physical_input
 from .core.keyboard_listener import KeyboardListener
 from .core.input_manager import InputManager
-from .ui.candidate_box import CandidateBox
-
 class GlobalListenerApp(BaseInputMethodApp):
     """
     独立全局监听模式应用
@@ -120,7 +118,11 @@ class GlobalListenerApp(BaseInputMethodApp):
             self._sync_display_input_buffer(projected_key_info, raw_text, handled)
 
             # 如果是从空缓存变为有缓存（开始输入），还原悬浮框大小
-            if buffer_was_empty and self.input_manager.get_buffer() and not self.candidate_box.root.state() == "withdrawn":
+            root_state = cast(
+                Callable[[], str],
+                getattr(self.candidate_box.root, "state", lambda: ""),
+            )()
+            if buffer_was_empty and self.input_manager.get_buffer() and root_state != "withdrawn":
                 x, y = getattr(self.candidate_box, "get_pointer_position", lambda: (0, 0))()
                 self._schedule_ui(0, lambda: self.candidate_box.show(x, y + 20, focus_input=False))
 

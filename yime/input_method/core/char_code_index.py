@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Iterable, Mapping
+from typing import Iterable, Mapping, cast
 
 from .prefix_tree import PrefixTree
 
@@ -82,7 +82,7 @@ class CharCodeIndex:
 
 def _as_float(value: object) -> float:
     try:
-        return float(value)
+        return float(cast(float | str, value))
     except (TypeError, ValueError):
         return 0.0
 

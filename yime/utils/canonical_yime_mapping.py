@@ -4,6 +4,7 @@ import csv
 import json
 import sqlite3
 from pathlib import Path
+from typing import Any, TypedDict, cast
 
 from yime.utils.numeric_pinyin_standardizer import standardize_numeric_pinyin
 from yime.utils.yinjie_slot_decomposition import sync_yinjie_slot_decomposition
@@ -13,8 +14,8 @@ WORKSPACE_ROOT = Path(__file__).resolve().parents[2]
 CANONICAL_PATCH_PATH = WORKSPACE_ROOT / "internal_data" / "pinyin_source_db" / "canonical_yime_patch.csv"
 
 
-def load_json(path: Path) -> dict:
-    return json.loads(path.read_text(encoding="utf-8"))
+def load_json(path: Path) -> dict[str, Any]:
+    return cast(dict[str, Any], json.loads(path.read_text(encoding="utf-8")))
 
 
 def build_bmp_to_canonical_map(repo_root: Path | None = None) -> dict[str, str]:
@@ -112,6 +113,10 @@ def build_canonical_mapping_rows(
 ) -> list[tuple[int, str, str]]:
     from collections import defaultdict
 
+    class MappingGroup(TypedDict):
+        codes: set[str]
+        tones: list[str]
+
     canonical_code_map = load_canonical_code_map(repo_root)
     canonical_patch_map = load_canonical_patch_map(repo_root)
     rows = conn.execute(
@@ -123,7 +128,9 @@ def build_canonical_mapping_rows(
         '''
     ).fetchall()
 
-    grouped: dict[int, dict[str, object]] = defaultdict(lambda: {"codes": set(), "tones": []})
+    grouped: dict[int, MappingGroup] = defaultdict(
+        lambda: cast(MappingGroup, {"codes": set(), "tones": []})
+    )
     for mapping_id_raw, pinyin_tone_raw in rows:
         mapping_id = int(mapping_id_raw)
         pinyin_tone = standardize_numeric_pinyin(str(pinyin_tone_raw or "").strip())

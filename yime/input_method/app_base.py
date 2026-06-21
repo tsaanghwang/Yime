@@ -25,7 +25,6 @@ from .core.input_visualization import (
     build_physical_input_map,
     build_projected_to_keycap_map,
     build_projected_to_physical_map,
-    project_physical_input,
     unproject_physical_input,
 )
 from .ui.candidate_box import CandidateBox
@@ -535,6 +534,7 @@ class BaseInputMethodApp:
                 f"设置文件根节点不是对象：{settings_path}",
                 "请确保 ui_settings.json 使用 JSON 对象结构。",
             )
+        payload = cast(dict[str, object], payload)
 
         allowed_keys = {
             "candidate_page_size",
@@ -1319,8 +1319,10 @@ class BaseInputMethodApp:
     def _build_runtime_readiness_display_summary(self) -> str:
         wake_hint = getattr(self, "_wake_trigger_hint", None)
         standby_hint = getattr(self, "_standby_trigger_hint", None)
-        wake_text = wake_hint() if callable(wake_hint) else None
-        standby_text = standby_hint() if callable(standby_hint) else None
+        wake_result = wake_hint() if callable(wake_hint) else None
+        standby_result = standby_hint() if callable(standby_hint) else None
+        wake_text = wake_result if isinstance(wake_result, str) else None
+        standby_text = standby_result if isinstance(standby_result, str) else None
 
         hotkey_mode = str(getattr(self, "_hotkey_mode", "unknown") or "unknown")
         if hotkey_mode == "hotkey":
@@ -1356,7 +1358,7 @@ class BaseInputMethodApp:
         if not text:
             return ""
 
-        passthrough_chars = getattr(self, "literal_passthrough_chars", set())
+        passthrough_chars = getattr(self, "literal_passthrough_chars", set[str]())
         projected_chars: list[str] = []
         for char in text:
             if char in passthrough_chars:
@@ -1789,7 +1791,7 @@ class BaseInputMethodApp:
                 [],
                 "",
                 "",
-                CandidateBox._DEFAULT_STATUS_TEXT,
+                cast(str, getattr(CandidateBox, "_DEFAULT_STATUS_TEXT")),
             )
             return
 

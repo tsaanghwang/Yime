@@ -3,14 +3,15 @@ from __future__ import annotations
 import argparse
 import json
 import math
-import shutil
 import sqlite3
 import subprocess
 import sys
 from collections import Counter, defaultdict
 from dataclasses import dataclass
+from datetime import datetime
 from itertools import product
 from pathlib import Path
+from typing import Callable, cast
 
 try:
     from yime.utils.backup import create_timestamped_backup
@@ -304,7 +305,7 @@ def build_char_updates(
     conn: sqlite3.Connection,
     canonical_code_map: dict[str, str],
     examples_limit: int,
-) -> tuple[list[tuple[str, str, str]], Counter, dict[str, list[tuple[object, ...]]]]:
+) -> tuple[list[tuple[str, str, str]], Counter[str], dict[str, list[tuple[object, ...]]]]:
     patch_pinyin_tones = set(load_canonical_patch_map(REPO_ROOT))
     rows = conn.execute(
         '''
@@ -317,13 +318,12 @@ def build_char_updates(
     ).fetchall()
 
     updates: list[tuple[str, str, str]] = []
-    stats = Counter()
+    stats: Counter[str] = Counter()
     examples: dict[str, list[tuple[object, ...]]] = defaultdict(list)
 
     for row in rows:
         pinyin_tone = str(row[0] or "").strip()
         current_code = str(row[1] or "")
-        current_source = str(row[2] or "")
         stats["total"] += 1
         if not pinyin_tone:
             stats["missing_expected"] += 1
@@ -358,7 +358,7 @@ def build_phrase_updates(
     conn: sqlite3.Connection,
     canonical_code_map: dict[str, str],
     examples_limit: int,
-) -> tuple[list[tuple[str, int]], Counter, dict[str, list[tuple[object, ...]]]]:
+) -> tuple[list[tuple[str, int]], Counter[str], dict[str, list[tuple[object, ...]]]]:
     rows = conn.execute(
         '''
         SELECT pi.id, pi.phrase, pi.yime_code, ppm.pinyin_tone, pref.preferred_pinyin_tone
@@ -371,7 +371,10 @@ def build_phrase_updates(
         '''
     ).fetchall()
 
-    grouped: dict[int, dict[str, object]] = {}
+    grouped: dict[
+        int,
+        dict[str, str | list[str]],
+    ] = {}
     for row in rows:
         phrase_id = int(row[0])
         record = grouped.setdefault(
@@ -385,17 +388,17 @@ def build_phrase_updates(
         )
         pinyin_tone = str(row[3] or "").strip()
         if pinyin_tone:
-            record["tones"].append(pinyin_tone)
+            cast(list[str], record["tones"]).append(pinyin_tone)
 
     updates: list[tuple[str, int]] = []
-    stats = Counter()
+    stats: Counter[str] = Counter()
     examples: dict[str, list[tuple[object, ...]]] = defaultdict(list)
 
     for phrase_id, record in grouped.items():
         stats["total"] += 1
         phrase = str(record["phrase"])
         stored_code = str(record["stored"])
-        tones = list(dict.fromkeys(record["tones"]))
+        tones = list(dict.fromkeys(cast(list[str], record["tones"])))
         preferred_tone = str(record.get("preferred_tone") or "").strip()
         if not tones:
             stats["missing_pinyin"] += 1
@@ -672,6 +675,21 @@ def build_scenario_summaries_from_rows(
     page_size: int,
     include_codes: set[str] | None = None,
 ) -> dict[str, dict[str, float | int]]:
+    def _to_float(value: object, default: float = 0.0) -> float:
+        if isinstance(value, bool):
+            return float(value)
+        if isinstance(value, (int, float)):
+            return float(value)
+        if isinstance(value, str):
+            try:
+                return float(value)
+            except ValueError:
+                return default
+        return default
+
+    def _entry_float(entry: dict[str, object], key: str, default: float = 0.0) -> float:
+        return _to_float(entry.get(key), default)
+
     by_code: dict[str, list[dict[str, object]]] = defaultdict(list)
     for row in rows:
         code = str(row.get("yime_code", "") or "").strip()
@@ -682,18 +700,18 @@ def build_scenario_summaries_from_rows(
         by_code[code].append(row)
 
     scenario_summaries: dict[str, dict[str, float | int]] = {}
-    scenario_scorers = {
-        "tier_only": lambda entry: float(entry.get("usage_tier_sort_boost", 0.0) or 0.0),
-        "tier_plus_frequency": lambda entry: float(entry.get("usage_tier_sort_boost", 0.0) or 0.0)
-        + float(entry.get("char_frequency_abs", 0) or 0),
-        "tier_plus_frequency_plus_modern_common": lambda entry: float(entry.get("usage_tier_sort_boost", 0.0) or 0.0)
-        + float(entry.get("char_frequency_abs", 0) or 0)
-        + (float(entry.get("modern_common_boost", 0.0) or 0.0) if bool(entry.get("is_common")) else 0.0),
-        "current_runtime": lambda entry: float(entry.get("usage_tier_sort_boost", 0.0) or 0.0)
-        + float(entry.get("char_frequency_abs", 0) or 0)
-        + (float(entry.get("modern_common_boost", 0.0) or 0.0) if bool(entry.get("is_common")) else 0.0)
-        + float(entry.get("reading_phrase_prior_boost", 0.0) or 0.0)
-        + float(entry.get("reading_weight", 1.0) or 1.0),
+    scenario_scorers: dict[str, Callable[[dict[str, object]], float]] = {
+        "tier_only": lambda entry: _entry_float(entry, "usage_tier_sort_boost", 0.0),
+        "tier_plus_frequency": lambda entry: _entry_float(entry, "usage_tier_sort_boost", 0.0)
+        + _entry_float(entry, "char_frequency_abs", 0.0),
+        "tier_plus_frequency_plus_modern_common": lambda entry: _entry_float(entry, "usage_tier_sort_boost", 0.0)
+        + _entry_float(entry, "char_frequency_abs", 0.0)
+        + (_entry_float(entry, "modern_common_boost", 0.0) if bool(entry.get("is_common")) else 0.0),
+        "current_runtime": lambda entry: _entry_float(entry, "usage_tier_sort_boost", 0.0)
+        + _entry_float(entry, "char_frequency_abs", 0.0)
+        + (_entry_float(entry, "modern_common_boost", 0.0) if bool(entry.get("is_common")) else 0.0)
+        + _entry_float(entry, "reading_phrase_prior_boost", 0.0)
+        + _entry_float(entry, "reading_weight", 1.0),
     }
     for scenario_name, scorer in scenario_scorers.items():
         weighted_candidate_sum = 0.0
@@ -702,7 +720,7 @@ def build_scenario_summaries_from_rows(
         bucket_count = 0
         for entries in by_code.values():
             ranked = sorted(entries, key=lambda entry: (-scorer(entry), str(entry.get("text", ""))))
-            demand_weights = [float(entry.get("char_frequency_abs", 0.0) or 0.0) for entry in ranked]
+            demand_weights = [_entry_float(entry, "char_frequency_abs", 0.0) for entry in ranked]
             total_weight = sum(demand_weights)
             if total_weight <= 0:
                 continue
@@ -724,6 +742,17 @@ def build_high_collision_bucket_reference(
     *,
     bucket_limit: int,
 ) -> list[dict[str, object]]:
+    def _entry_float(entry: dict[str, object], key: str, default: float = 0.0) -> float:
+        value = entry.get(key)
+        if isinstance(value, (int, float)):
+            return float(value)
+        if isinstance(value, str):
+            try:
+                return float(value)
+            except ValueError:
+                return default
+        return default
+
     by_code: dict[str, list[dict[str, object]]] = defaultdict(list)
     for row in rows:
         code = str(row.get("yime_code", "") or "").strip()
@@ -734,25 +763,25 @@ def build_high_collision_bucket_reference(
     selected_codes = sorted(
         by_code.items(),
         key=lambda item: (
-            -sum(float(entry.get("char_frequency_abs", 0.0) or 0.0) for entry in item[1]) * len(item[1]),
-            -sum(float(entry.get("char_frequency_abs", 0.0) or 0.0) for entry in item[1]),
+            -sum(_entry_float(entry, "char_frequency_abs", 0.0) for entry in item[1]) * len(item[1]),
+            -sum(_entry_float(entry, "char_frequency_abs", 0.0) for entry in item[1]),
             -len(item[1]),
             item[0],
         ),
     )[:bucket_limit]
     payload: list[dict[str, object]] = []
     for code, entries in selected_codes:
-        demand_weight_sum = sum(float(entry.get("char_frequency_abs", 0.0) or 0.0) for entry in entries)
+        demand_weight_sum = sum(_entry_float(entry, "char_frequency_abs", 0.0) for entry in entries)
         collision_demand_score = demand_weight_sum * len(entries)
         ranked = sorted(
             entries,
             key=lambda entry: (
                 -(
-                    float(entry.get("usage_tier_sort_boost", 0.0) or 0.0)
-                    + float(entry.get("char_frequency_abs", 0) or 0)
-                    + (float(entry.get("modern_common_boost", 0.0) or 0.0) if bool(entry.get("is_common")) else 0.0)
-                    + float(entry.get("reading_phrase_prior_boost", 0.0) or 0.0)
-                    + float(entry.get("reading_weight", 1.0) or 1.0)
+                    _entry_float(entry, "usage_tier_sort_boost", 0.0)
+                    + _entry_float(entry, "char_frequency_abs", 0.0)
+                    + (_entry_float(entry, "modern_common_boost", 0.0) if bool(entry.get("is_common")) else 0.0)
+                    + _entry_float(entry, "reading_phrase_prior_boost", 0.0)
+                    + _entry_float(entry, "reading_weight", 1.0)
                 ),
                 str(entry.get("text", "")),
             ),
@@ -956,11 +985,13 @@ def format_pct(value: float) -> str:
 
 
 def build_runtime_tuning_scan_markdown(payload: dict[str, object], *, limit: int) -> str:
-    baseline = payload["baseline"]
-    local_baseline = baseline["high_collision_focus"]
-    recommendations = payload["recommendations"]
-    tolerances = recommendations["tolerances"]
-    default_tuning = payload.get("default_tuning") or {}
+    baseline = cast(dict[str, object], payload["baseline"])
+    global_baseline = cast(dict[str, object], baseline["tier_plus_frequency_plus_modern_common"])
+    local_baseline = cast(dict[str, object], baseline["high_collision_focus"])
+    local_baseline_modern = cast(dict[str, object], local_baseline["tier_plus_frequency_plus_modern_common"])
+    recommendations = cast(dict[str, object], payload["recommendations"])
+    tolerances = cast(dict[str, object], recommendations["tolerances"])
+    default_tuning = cast(dict[str, object], payload.get("default_tuning") or {})
     lines = [
         "# Runtime Tuning Scan",
         "",
@@ -968,10 +999,10 @@ def build_runtime_tuning_scan_markdown(payload: dict[str, object], *, limit: int
         f"- combinations: `{payload['combination_count']}`",
         f"- page_size: `{payload['page_size']}`",
         f"- high_collision_bucket_limit: `{payload['high_collision_bucket_limit']}`",
-        f"- global baseline modern_common: top1 `{format_pct(float(baseline['tier_plus_frequency_plus_modern_common']['weighted_top1_share']))}`, first-page `{format_pct(float(baseline['tier_plus_frequency_plus_modern_common']['weighted_first_page_share']))}`",
-        f"- local baseline modern_common: top1 `{format_pct(float(local_baseline['tier_plus_frequency_plus_modern_common']['weighted_top1_share']))}`, first-page `{format_pct(float(local_baseline['tier_plus_frequency_plus_modern_common']['weighted_first_page_share']))}`",
+        f"- global baseline modern_common: top1 `{format_pct(float(cast(float | int | str, global_baseline['weighted_top1_share'])))}`, first-page `{format_pct(float(cast(float | int | str, global_baseline['weighted_first_page_share'])))}`",
+        f"- local baseline modern_common: top1 `{format_pct(float(cast(float | int | str, local_baseline_modern['weighted_top1_share'])))}`, first-page `{format_pct(float(cast(float | int | str, local_baseline_modern['weighted_first_page_share'])))}`",
         (
-            f"- current_default_tuning: `cw={float(default_tuning['common_reading_weight']):.2f}, uw={float(default_tuning['uncommon_reading_weight']):.2f}, scale={float(default_tuning['phrase_reading_prior_scale']):.2f}, share>={float(default_tuning['phrase_reading_prior_min_share']):.3f}, count>={int(round(float(default_tuning['phrase_reading_prior_min_phrase_count'])))}, evidence>={float(default_tuning['phrase_reading_prior_min_evidence_weight']):.2f}`"
+            f"- current_default_tuning: `cw={float(cast(float | int | str, default_tuning['common_reading_weight'])):.2f}, uw={float(cast(float | int | str, default_tuning['uncommon_reading_weight'])):.2f}, scale={float(cast(float | int | str, default_tuning['phrase_reading_prior_scale'])):.2f}, share>={float(cast(float | int | str, default_tuning['phrase_reading_prior_min_share'])):.3f}, count>={int(round(float(cast(float | int | str, default_tuning['phrase_reading_prior_min_phrase_count']))))}, evidence>={float(cast(float | int | str, default_tuning['phrase_reading_prior_min_evidence_weight'])):.2f}`"
             if default_tuning
             else "- current_default_tuning: `<unavailable>`"
         ),
@@ -984,17 +1015,17 @@ def build_runtime_tuning_scan_markdown(payload: dict[str, object], *, limit: int
         f"- local_improvement_count: `{recommendations['local_improvement_count']}`",
         f"- strict_usable_count: `{recommendations['strict_usable_count']}`",
         f"- tolerant_usable_count: `{recommendations['tolerant_usable_count']}`",
-        f"- tolerance_band: `global_first_page>={-float(tolerances['global_first_page']):.6f}, global_top1>={-float(tolerances['global_top1']):.6f}, local_first_page>={-float(tolerances['local_first_page']):.6f}, local_top1>={-float(tolerances['local_top1']):.6f}`",
+        f"- tolerance_band: `global_first_page>={-float(cast(float | int | str, tolerances['global_first_page'])):.6f}, global_top1>={-float(cast(float | int | str, tolerances['global_top1'])):.6f}, local_first_page>={-float(cast(float | int | str, tolerances['local_first_page'])):.6f}, local_top1>={-float(cast(float | int | str, tolerances['local_top1'])):.6f}`",
     ]
     if recommendations["best_global_first_page"]:
-        best_global = recommendations["best_global_first_page"]
+        best_global = cast(dict[str, float | int | str], recommendations["best_global_first_page"])
         lines.append(
-            f"- best_global_first_page: `cw={best_global['common_reading_weight']:.2f}, scale={best_global['phrase_reading_prior_scale']:.2f}, share>={best_global['phrase_reading_prior_min_share']:.3f}, count>={best_global['phrase_reading_prior_min_phrase_count']}, evidence>={best_global['phrase_reading_prior_min_evidence_weight']:.2f}, first-page={format_pct(float(best_global['weighted_first_page_share']))}`"
+            f"- best_global_first_page: `cw={float(best_global['common_reading_weight']):.2f}, scale={float(best_global['phrase_reading_prior_scale']):.2f}, share>={float(best_global['phrase_reading_prior_min_share']):.3f}, count>={int(round(float(best_global['phrase_reading_prior_min_phrase_count'])))}, evidence>={float(best_global['phrase_reading_prior_min_evidence_weight']):.2f}, first-page={format_pct(float(best_global['weighted_first_page_share']))}`"
         )
     if recommendations["best_local_first_page"]:
-        best_local = recommendations["best_local_first_page"]
+        best_local = cast(dict[str, float | int | str], recommendations["best_local_first_page"])
         lines.append(
-            f"- best_local_first_page: `cw={best_local['common_reading_weight']:.2f}, scale={best_local['phrase_reading_prior_scale']:.2f}, share>={best_local['phrase_reading_prior_min_share']:.3f}, count>={best_local['phrase_reading_prior_min_phrase_count']}, evidence>={best_local['phrase_reading_prior_min_evidence_weight']:.2f}, local_first-page={format_pct(float(best_local['high_collision_weighted_first_page_share']))}`"
+            f"- best_local_first_page: `cw={float(best_local['common_reading_weight']):.2f}, scale={float(best_local['phrase_reading_prior_scale']):.2f}, share>={float(best_local['phrase_reading_prior_min_share']):.3f}, count>={int(round(float(best_local['phrase_reading_prior_min_phrase_count'])))}, evidence>={float(best_local['phrase_reading_prior_min_evidence_weight']):.2f}, local_first-page={format_pct(float(best_local['high_collision_weighted_first_page_share']))} `"
         )
     lines.extend(
         [
@@ -1003,14 +1034,15 @@ def build_runtime_tuning_scan_markdown(payload: dict[str, object], *, limit: int
             "",
         ]
     )
-    if recommendations["tolerant_usable"]:
+    tolerant_usable_rows = cast(list[dict[str, float | int]], recommendations["tolerant_usable"])
+    if tolerant_usable_rows:
         lines.extend(
             [
                 "| rank | cw | uw | scale | share | count | evidence | Δglobal top1 | Δglobal first-page | Δlocal top1 | Δlocal first-page |",
                 "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
             ]
         )
-        for index, row in enumerate(recommendations["tolerant_usable"][:limit], start=1):
+        for index, row in enumerate(tolerant_usable_rows[:limit], start=1):
             lines.append(
                 "| "
                 f"{index} | {row['common_reading_weight']:.2f} | {row['uncommon_reading_weight']:.2f} | {row['phrase_reading_prior_scale']:.2f} | "
@@ -1027,14 +1059,15 @@ def build_runtime_tuning_scan_markdown(payload: dict[str, object], *, limit: int
             "",
         ]
     )
-    if recommendations["strict_usable"]:
+    strict_usable_rows = cast(list[dict[str, float | int]], recommendations["strict_usable"])
+    if strict_usable_rows:
         lines.extend(
             [
                 "| rank | cw | uw | scale | share | count | evidence | global top1 | global first-page | local top1 | local first-page |",
                 "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
             ]
         )
-        for index, row in enumerate(recommendations["strict_usable"][:limit], start=1):
+        for index, row in enumerate(strict_usable_rows[:limit], start=1):
             lines.append(
                 "| "
                 f"{index} | {row['common_reading_weight']:.2f} | {row['uncommon_reading_weight']:.2f} | {row['phrase_reading_prior_scale']:.2f} | "
@@ -1053,7 +1086,8 @@ def build_runtime_tuning_scan_markdown(payload: dict[str, object], *, limit: int
             "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
         ]
     )
-    for index, row in enumerate(recommendations["pareto_frontier"][:limit], start=1):
+    pareto_frontier_rows = cast(list[dict[str, float | int]], recommendations["pareto_frontier"])
+    for index, row in enumerate(pareto_frontier_rows[:limit], start=1):
         lines.append(
             "| "
             f"{index} | {row['common_reading_weight']:.2f} | {row['uncommon_reading_weight']:.2f} | {row['phrase_reading_prior_scale']:.2f} | "
@@ -1070,7 +1104,8 @@ def build_runtime_tuning_scan_markdown(payload: dict[str, object], *, limit: int
         "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
         ]
     )
-    for index, row in enumerate(payload["results"][:limit], start=1):
+    result_rows = cast(list[dict[str, float | int | bool]], payload["results"])
+    for index, row in enumerate(result_rows[:limit], start=1):
         lines.append(
             "| "
             f"{index} | {row['common_reading_weight']:.2f} | {row['uncommon_reading_weight']:.2f} | {row['phrase_reading_prior_scale']:.2f} | "
@@ -1088,9 +1123,15 @@ def build_runtime_tuning_scan_markdown(payload: dict[str, object], *, limit: int
             "| --- | --- | ---: | ---: | ---: | --- |",
         ]
     )
-    for bucket in payload["baseline"]["high_collision_focus"]["buckets"]:
+    baseline = cast(dict[str, object], payload["baseline"])
+    high_collision_focus = cast(dict[str, object], baseline["high_collision_focus"])
+    high_collision_buckets = cast(
+        list[dict[str, str | int | float | list[str]]],
+        high_collision_focus["buckets"],
+    )
+    for bucket in high_collision_buckets:
         lines.append(
-            f"| {bucket['pinyin_tone']} | {bucket['yime_code']} | {bucket['candidate_count']} | {bucket['demand_weight_sum']:.0f} | {bucket['collision_demand_score']:.0f} | {'、'.join(bucket['top_current_runtime_texts'])} |"
+            f"| {bucket['pinyin_tone']} | {bucket['yime_code']} | {bucket['candidate_count']} | {bucket['demand_weight_sum']:.0f} | {bucket['collision_demand_score']:.0f} | {'、'.join(cast(list[str], bucket['top_current_runtime_texts']))} |"
         )
     lines.append("")
     return "\n".join(lines)
@@ -1137,8 +1178,9 @@ def scan_runtime_tuning_parameters(
         page_size=page_size,
         high_collision_bucket_limit=high_collision_bucket_limit,
     )
-    baseline_modern = baseline_comparison["tier_plus_frequency_plus_modern_common"]
-    baseline_local_modern = baseline_comparison["high_collision_focus"]["tier_plus_frequency_plus_modern_common"]
+    baseline_modern = cast(dict[str, float], baseline_comparison["tier_plus_frequency_plus_modern_common"])
+    baseline_high_collision_focus = cast(dict[str, object], baseline_comparison["high_collision_focus"])
+    baseline_local_modern = cast(dict[str, float], baseline_high_collision_focus["tier_plus_frequency_plus_modern_common"])
     combinations = list(
         product(
             reading_weight_magnitudes,
@@ -1172,10 +1214,17 @@ def scan_runtime_tuning_parameters(
                 page_size=page_size,
                 high_collision_bucket_limit=high_collision_bucket_limit,
             )
-            current_runtime = comparison["current_runtime"]
-            modern_delta = comparison["delta_current_runtime_vs_modern_common"]
-            local_current = comparison["high_collision_focus"]["current_runtime"]
-            local_delta = comparison["high_collision_focus"]["delta_current_runtime_vs_modern_common"]
+            current_runtime = cast(dict[str, float], comparison["current_runtime"])
+            modern_delta = cast(
+                dict[str, float],
+                comparison["delta_current_runtime_vs_modern_common"],
+            )
+            high_collision_focus = cast(dict[str, object], comparison["high_collision_focus"])
+            local_current = cast(dict[str, float], high_collision_focus["current_runtime"])
+            local_delta = cast(
+                dict[str, float],
+                high_collision_focus["delta_current_runtime_vs_modern_common"],
+            )
             results.append(
                 {
                     "common_reading_weight": float(magnitude),
@@ -1268,7 +1317,7 @@ def scan_runtime_tuning_parameters(
     }
 
 
-def rebuild_char_modern_common_profile(conn: sqlite3.Connection, tuning_parameters: dict[str, float]) -> Counter:
+def rebuild_char_modern_common_profile(conn: sqlite3.Connection, tuning_parameters: dict[str, float]) -> Counter[str]:
     existing_chars = {
         str(row[0] or "")
         for row in conn.execute("SELECT hanzi FROM char_inventory")
@@ -1278,7 +1327,7 @@ def rebuild_char_modern_common_profile(conn: sqlite3.Connection, tuning_paramete
     max_rank = int(tuning_parameters.get("modern_common_max_rank", MODERN_COMMON_MAX_RANK))
     rank_divisor = float(tuning_parameters.get("modern_common_rank_divisor", MODERN_COMMON_RANK_DIVISOR)) or 1.0
 
-    rows = []
+    rows: list[tuple[str, int, float, str]] = []
     for hanzi, rank in sorted(modern_rank_by_char.items(), key=lambda item: (item[1], item[0])):
         if hanzi not in existing_chars:
             continue
@@ -1302,13 +1351,13 @@ def rebuild_char_modern_common_profile(conn: sqlite3.Connection, tuning_paramete
             rows,
         )
 
-    stats = Counter()
+    stats: Counter[str] = Counter()
     stats["total"] = len(rows)
     stats["threshold"] = max_rank
     return stats
 
 
-def rebuild_char_pinyin_reading_weights(conn: sqlite3.Connection, tuning_parameters: dict[str, float]) -> Counter:
+def rebuild_char_pinyin_reading_weights(conn: sqlite3.Connection, tuning_parameters: dict[str, float]) -> Counter[str]:
     rows = conn.execute(
         '''
         SELECT rowid, is_common_reading
@@ -1317,7 +1366,7 @@ def rebuild_char_pinyin_reading_weights(conn: sqlite3.Connection, tuning_paramet
     ).fetchall()
 
     updates: list[tuple[float, int]] = []
-    stats = Counter()
+    stats: Counter[str] = Counter()
     common_weight = float(tuning_parameters.get("common_reading_weight", COMMON_READING_WEIGHT))
     uncommon_weight = float(tuning_parameters.get("uncommon_reading_weight", UNCOMMON_READING_WEIGHT))
     for rowid, is_common_reading in rows:
@@ -1358,7 +1407,7 @@ def reading_prior_is_enabled(
     )
 
 
-def rebuild_char_reading_prior(conn: sqlite3.Connection, tuning_parameters: dict[str, float]) -> Counter:
+def rebuild_char_reading_prior(conn: sqlite3.Connection, tuning_parameters: dict[str, float]) -> dict[str, int | float]:
     existing_chars = {
         str(row[0] or "")
         for row in conn.execute("SELECT hanzi FROM char_inventory")
@@ -1385,7 +1434,7 @@ def rebuild_char_reading_prior(conn: sqlite3.Connection, tuning_parameters: dict
     evidence_by_pair: dict[tuple[str, str], float] = defaultdict(float)
     phrase_count_by_pair: Counter[tuple[str, str]] = Counter()
     total_by_char: dict[str, float] = defaultdict(float)
-    stats = Counter()
+    stats: defaultdict[str, int | float] = defaultdict(int)
 
     for phrase, pinyin_tone, phrase_frequency in phrase_rows:
         text = str(phrase or "")
@@ -1420,7 +1469,7 @@ def rebuild_char_reading_prior(conn: sqlite3.Connection, tuning_parameters: dict
             PHRASE_READING_PRIOR_MIN_EVIDENCE_WEIGHT,
         )
     )
-    rows = []
+    rows: list[tuple[str, str, int, float, float, float, str]] = []
     for (hanzi, syllable), evidence_weight in sorted(evidence_by_pair.items(), key=lambda item: (item[0][0], item[0][1])):
         char_total = total_by_char.get(hanzi, 0.0)
         if char_total <= 0:
@@ -1599,7 +1648,7 @@ def build_char_usage_profile_rows(
     return rows
 
 
-def rebuild_char_usage_profile(conn: sqlite3.Connection, tuning_parameters: dict[str, float] | None = None) -> Counter:
+def rebuild_char_usage_profile(conn: sqlite3.Connection, tuning_parameters: dict[str, float] | None = None) -> Counter[str]:
     rows = build_char_usage_profile_rows(conn, tuning_parameters)
     tier_base_weights = compute_char_usage_tier_base_weights(conn, tuning_parameters)
     conn.execute("DELETE FROM char_usage_profile")
@@ -1618,7 +1667,7 @@ def rebuild_char_usage_profile(conn: sqlite3.Connection, tuning_parameters: dict
             rows,
         )
 
-    stats = Counter()
+    stats: Counter[str] = Counter()
     for _hanzi, usage_tier, _tier_rank, _tier_sort_weight, _source_note in rows:
         stats[usage_tier] += 1
     stats["total"] = len(rows)

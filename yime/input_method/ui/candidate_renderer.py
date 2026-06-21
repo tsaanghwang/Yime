@@ -4,11 +4,51 @@
 """
 import math
 import tkinter as tk
+import tkinter.font as tkfont
 from tkinter import ttk
-from typing import Callable, Optional
+from typing import Callable, Optional, Protocol, cast
+
+
+class _CandidateRendererActionsProtocol(Protocol):
+    def on_previous_page_key(self, event: Optional[tk.Event] = None) -> str:
+        ...
+
+    def on_next_page_key(self, event: Optional[tk.Event] = None) -> str:
+        ...
+
+    def on_page_size_change(self, event: Optional[tk.Event] = None) -> None:
+        ...
+
+    def should_allow_native_edit_key(self, event: Optional[tk.Event]) -> bool:
+        ...
+
 
 class CandidateRendererMixin:
+    root: tk.Misc
+    actions: _CandidateRendererActionsProtocol
+    _is_standby: bool
+    _manual_input_enabled: bool
+    page_size_var: tk.IntVar
+    page_info_var: tk.StringVar
+    candidate_layout_var: tk.StringVar
+    all_candidates: list[str]
+    first_page_button: ttk.Button
+    prev_page_button: ttk.Button
+    next_page_button: ttk.Button
+    last_page_button: ttk.Button
+    toolbar_menu_button: ttk.Button
+    drag_grip: ttk.Frame
+    pager_button_frame: ttk.Frame
+    input_entry: ttk.Entry
+    commit_entry: ttk.Entry
+    candidate_text: tk.Text
+    text_font: tkfont.Font
+    ui_font: tkfont.Font
+
     _DEFAULT_CANDIDATE_LAYOUT = "horizontal"
+    _CANDIDATE_TAG_PREFIX = "candidate_"
+    _PAGER_PREV_TAG = "pager_prev"
+    _PAGER_NEXT_TAG = "pager_next"
 
     def _normalize_candidate_layout(self, layout: str) -> str:
         return (
@@ -209,7 +249,7 @@ class CandidateRendererMixin:
         if not self._manual_input_enabled:
             return False
         try:
-            focused = self.root.focus_get()
+            focused = cast(Optional[tk.Widget], self.root.focus_get())
         except tk.TclError:
             return False
         return focused in {
@@ -293,6 +333,10 @@ class CandidateRendererMixin:
         )
 
     def _render_candidate_text_item(self, index: int, hanzi: str) -> None:
+        click_candidate_by_index = cast(
+            Callable[[int], None],
+            getattr(self, "_click_candidate_by_index"),
+        )
         candidate_tag = f"{self._CANDIDATE_TAG_PREFIX}{index}"
         index_tags = ["candidate_index", candidate_tag]
         text_tags = ["candidate_text", candidate_tag]
@@ -312,7 +356,7 @@ class CandidateRendererMixin:
         )
         self._bind_candidate_text_tag(
             candidate_tag,
-            lambda _event, value=index: self._click_candidate_by_index(value),
+            lambda _event, value=index: click_candidate_by_index(value),
             enabled=True,
         )
 

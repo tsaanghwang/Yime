@@ -7,7 +7,7 @@ from functools import lru_cache
 import json
 import sqlite3
 from pathlib import Path
-from typing import Any, Dict, List, Literal, Mapping
+from typing import Any, Dict, List, Literal, Mapping, cast
 
 from yime.canonical_yime_mapping import load_canonical_code_map
 from yime.utils.numeric_pinyin_standardizer import standardize_numeric_pinyin
@@ -440,7 +440,7 @@ class UserLexiconStore:
         return int(cursor.rowcount or 0)
 
     def export_payload(self, *, include_frequency: bool = True) -> dict[str, Any]:
-        phrase_entries = [
+        phrase_entries: list[dict[str, Any]] = [
             {
                 "phrase": row.phrase,
                 "numeric_pinyin": row.numeric_pinyin,
@@ -625,8 +625,11 @@ class UserLexiconStore:
         replace_existing: bool = False,
         include_frequency: bool = True,
     ) -> dict[str, int]:
-        phrase_entries = payload.get("phrase_entries") or []
-        candidate_frequency = payload.get("candidate_frequency") or []
+        phrase_entries = cast(list[Mapping[str, Any]], payload.get("phrase_entries") or [])
+        candidate_frequency = cast(
+            list[Mapping[str, Any]],
+            payload.get("candidate_frequency") or [],
+        )
 
         imported_phrases = 0
         imported_frequency_rows = 0
@@ -716,7 +719,7 @@ class UserLexiconStore:
         replace_existing: bool = False,
         include_frequency: bool = True,
     ) -> dict[str, int]:
-        payload = json.loads(path.read_text(encoding="utf-8"))
+        payload: Mapping[str, Any] = json.loads(path.read_text(encoding="utf-8"))
         if not isinstance(payload, dict):
             raise ValueError("导入文件格式无效：顶层必须是 JSON object")
         return self.import_payload(

@@ -5,7 +5,7 @@ import json
 import os
 from pathlib import Path
 import unicodedata
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, cast
 
 from .runtime_lookup import (
     RuntimeLookupPlan,
@@ -105,19 +105,21 @@ class RuntimeDecoderBase:
 
     runtime_source_label = "运行时编码表"
 
-    def _load_json(self, path: Path) -> dict:
+    def _load_json(self, path: Path) -> Dict[str, object]:
         with path.open("r", encoding="utf-8") as handle:
-            return json.load(handle)
+            return cast(Dict[str, object], json.load(handle))
 
     def _build_bmp_to_canonical_map(
         self, projection_path: Path, key_to_symbol_path: Path
     ) -> Dict[str, str]:
         projection = self._load_json(projection_path)
-        key_to_symbol = self._load_json(key_to_symbol_path)
+        key_to_symbol = cast(Dict[str, str], self._load_json(key_to_symbol_path))
         bmp_to_canonical: Dict[str, str] = {}
 
-        for symbol_key, slot_info in projection["used_mapping"].items():
-            bmp_char = slot_info["char"]
+        used_mapping = cast(Dict[str, Dict[str, object]], projection["used_mapping"])
+
+        for symbol_key, slot_info in used_mapping.items():
+            bmp_char = cast(str, slot_info["char"])
             canonical_char = key_to_symbol.get(symbol_key)
             if canonical_char:
                 bmp_to_canonical[bmp_char] = canonical_char

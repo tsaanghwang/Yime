@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import sqlite3
 from pathlib import Path
+from typing import cast
 
 from yime.asset_paths import resolve_source_pinyin_db_path
 from yime.canonical_yime_mapping import load_canonical_code_map, sync_canonical_mapping_table
@@ -28,19 +29,33 @@ def load_source_phrase_rows(path: Path) -> tuple[list[tuple[str, str, str]], lis
     with sqlite3.connect(path) as source_conn:
         source_cur = source_conn.cursor()
         if uses_v2_source_schema(source_conn):
-            source_files = [
-                (prototype_source_name(source_kind, source_path), source_kind, source_path)
-                for source_kind, source_path in source_cur.execute(
+            source_file_rows = cast(
+                list[tuple[str, str]],
+                source_cur.execute(
                     '''
                     SELECT source_kind, source_path
                     FROM source_files
                     WHERE source_kind = 'phrase'
                     ORDER BY source_kind
                     '''
-                ).fetchall()
+                ).fetchall(),
+            )
+            source_files = [
+                (prototype_source_name(source_kind, source_path), source_kind, source_path)
+                for source_kind, source_path in source_file_rows
             ]
             default_source_name = source_files[0][0] if source_files else "phrase:phrase_pinyin.txt"
-            rows = [
+            phrase_rows = cast(
+                list[tuple[int, str, str, str, int]],
+                source_cur.execute(
+                    '''
+                    SELECT id, phrase, marked_pinyin, numeric_pinyin, reading_rank
+                    FROM phrase_readings
+                    ORDER BY id
+                    '''
+                ).fetchall(),
+            )
+            rows: list[tuple[int, str, str, str, str, int, str | None, str]] = [
                 (
                     row_id,
                     default_source_name,
@@ -51,32 +66,32 @@ def load_source_phrase_rows(path: Path) -> tuple[list[tuple[str, str, str]], lis
                     None,
                     "",
                 )
-                for row_id, phrase, marked_pinyin, numeric_pinyin, reading_rank in source_cur.execute(
-                    '''
-                    SELECT id, phrase, marked_pinyin, numeric_pinyin, reading_rank
-                    FROM phrase_readings
-                    ORDER BY id
-                    '''
-                ).fetchall()
+                for row_id, phrase, marked_pinyin, numeric_pinyin, reading_rank in phrase_rows
             ]
             return source_files, rows
 
-        source_files = source_cur.execute(
-            '''
-            SELECT source_name, source_kind, source_path
-            FROM source_files
-            WHERE source_kind = 'phrase'
-            ORDER BY source_name
-            '''
-        ).fetchall()
-        rows = source_cur.execute(
-            '''
-            SELECT id, source_name, phrase, marked_pinyin, numeric_pinyin,
-                   reading_rank, comment, raw_line
-            FROM phrase_readings
-            ORDER BY id
-            '''
-        ).fetchall()
+        source_files = cast(
+            list[tuple[str, str, str]],
+            source_cur.execute(
+                '''
+                SELECT source_name, source_kind, source_path
+                FROM source_files
+                WHERE source_kind = 'phrase'
+                ORDER BY source_name
+                '''
+            ).fetchall(),
+        )
+        rows = cast(
+            list[tuple[int, str, str, str, str, int, str | None, str]],
+            source_cur.execute(
+                '''
+                SELECT id, source_name, phrase, marked_pinyin, numeric_pinyin,
+                       reading_rank, comment, raw_line
+                FROM phrase_readings
+                ORDER BY id
+                '''
+            ).fetchall(),
+        )
     return source_files, rows
 
 

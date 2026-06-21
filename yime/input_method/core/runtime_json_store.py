@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Callable, Dict, List, Optional, Tuple, cast
 
 from .char_code_index import CharCodeCandidate, CharCodeIndex
 from .runtime_ranking import (
@@ -20,7 +20,9 @@ class JSONRuntimeCandidateStore:
         self,
         runtime_path: Path,
         pinyin_to_canonical: Dict[str, str],
-        resolve_canonical_code_from_pinyin_tone,
+        resolve_canonical_code_from_pinyin_tone: Callable[
+            [str, Dict[str, str]], Optional[str]
+        ],
     ) -> None:
         self.runtime_path = runtime_path
         self.pinyin_to_canonical = pinyin_to_canonical
@@ -30,12 +32,15 @@ class JSONRuntimeCandidateStore:
         self.phrase_prefix_index: Dict[str, List[Dict[str, object]]] = {}
         self.char_code_index = CharCodeIndex.from_runtime_candidates({})
 
-    def _load_json(self, path: Path) -> dict:
+    def _load_json(self, path: Path) -> Dict[str, object]:
         raw_text = path.read_text(encoding="utf-8")
         stripped = raw_text.lstrip()
         if stripped.startswith("version https://git-lfs.github.com/spec/v1"):
             raise ValueError(f"运行时候选文件是 Git LFS 指针，未拉取实际内容: {path}")
-        return json.loads(raw_text)
+        payload = json.loads(raw_text)
+        if not isinstance(payload, dict):
+            raise ValueError(f"运行时候选文件格式无效: {path}")
+        return cast(Dict[str, object], payload)
 
     def load_runtime_candidates(
         self,
@@ -45,28 +50,33 @@ class JSONRuntimeCandidateStore:
         if not target_path.exists():
             raise FileNotFoundError(f"未找到运行时候选文件: {target_path}")
         payload = self._load_json(target_path)
-        by_code = payload.get("by_code")
-        if not isinstance(by_code, dict):
+        raw_by_code = payload.get("by_code")
+        if not isinstance(raw_by_code, dict):
             raise ValueError(f"运行时候选文件格式无效: {target_path}")
+        by_code = cast(Dict[str, object], raw_by_code)
 
         regrouped: Dict[str, List[Dict[str, object]]] = {}
         for raw_candidates in by_code.values():
             if not isinstance(raw_candidates, list):
                 continue
-            for candidate in raw_candidates:
+            for candidate in cast(List[object], raw_candidates):
                 if not isinstance(candidate, dict):
                     continue
-                canonical_code = str(candidate.get("yime_code", "") or "").strip()
+                candidate_dict = cast(Dict[str, object], candidate)
+                canonical_code = str(candidate_dict.get("yime_code", "") or "").strip()
                 if not canonical_code:
-                    pinyin_tone = str(candidate.get("pinyin_tone", "") or "").strip()
-                    canonical_code = self._resolve_canonical_code_from_pinyin_tone(
-                        pinyin_tone,
-                        self.pinyin_to_canonical,
-                    )
+                    pinyin_tone = str(candidate_dict.get("pinyin_tone", "") or "").strip()
+                    canonical_code = str(
+                        self._resolve_canonical_code_from_pinyin_tone(
+                            pinyin_tone,
+                            self.pinyin_to_canonical,
+                        )
+                        or ""
+                    ).strip()
                 if not canonical_code:
                     continue
                 regrouped.setdefault(canonical_code, []).append(
-                    annotate_candidate_source(candidate, "exact")
+                    annotate_candidate_source(candidate_dict, "exact")
                 )
         return regrouped
 
@@ -76,7 +86,6 @@ class JSONRuntimeCandidateStore:
             by_code.setdefault(code, []).extend(
                 annotate_candidate_source(candidate, "overlay")
                 for candidate in candidates
-                if isinstance(candidate, dict)
             )
         self.set_runtime_candidates(by_code)
 

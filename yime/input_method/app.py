@@ -80,6 +80,10 @@ class InputMethodApp(BaseInputMethodApp):
     _HOTKEY_WAKE_DELAY_MS = 90
     _HOTKEY_REACTIVATION_DEBOUNCE_SECONDS = 0.8
 
+    @classmethod
+    def default_hotkey(cls) -> str:
+        return cls._DEFAULT_HOTKEY
+
     def _format_hotkey_label(self) -> str:
         """将 pynput 风格的热键定义转换为更适合状态提示的文本。"""
         segments: list[str] = []
@@ -771,8 +775,9 @@ class InputMethodApp(BaseInputMethodApp):
         self._passive_standby_reason = "manual"
         self.last_replace_length = 0
         self._display_input_buffer = ""
-        if getattr(self, "input_manager", None):
-            self.input_manager.clear_buffer(notify=False)
+        input_manager = getattr(self, "input_manager", None)
+        if input_manager is not None:
+            input_manager.clear_buffer(notify=False)
         self.candidate_box.clear_input(focus_input=False)
         pointer_x: Optional[int] = None
         pointer_y: Optional[int] = None
@@ -842,8 +847,9 @@ class InputMethodApp(BaseInputMethodApp):
         )
         self.last_replace_length = 0
         self._display_input_buffer = ""
-        if getattr(self, "input_manager", None):
-            self.input_manager.clear_buffer(notify=False)
+        input_manager = getattr(self, "input_manager", None)
+        if input_manager is not None:
+            input_manager.clear_buffer(notify=False)
         self.candidate_box.clear_input(focus_input=False)
         self.candidate_box.clear_commit_text()
         self._enter_passive_standby(reason="idle")
@@ -930,10 +936,12 @@ class InputMethodApp(BaseInputMethodApp):
         self._cancel_scheduled_callbacks()
 
         # 停止键盘监听
-        if getattr(self, "keyboard_listener", None):
-            self.keyboard_listener.stop()
-        if getattr(self, "hotkey_listener", None):
-            self.hotkey_listener.stop()
+        keyboard_listener = getattr(self, "keyboard_listener", None)
+        if keyboard_listener is not None:
+            keyboard_listener.stop()
+        hotkey_listener = getattr(self, "hotkey_listener", None)
+        if hotkey_listener is not None:
+            hotkey_listener.stop()
 
         self.candidate_box.close()
 
@@ -945,9 +953,10 @@ class InputMethodApp(BaseInputMethodApp):
 
     def _enter_passive_standby(self, reason: str) -> None:
         """进入待命图标并暂停全局接管，直到用户显式恢复。"""
-        if getattr(self, "_manual_session_trigger", None):
+        manual_session_trigger = self._manual_session_trigger
+        if manual_session_trigger:
             self._remember_manual_session_context(
-                self._manual_session_trigger,
+                manual_session_trigger,
                 self._current_manual_target_hwnd(),
             )
         self._manual_session_trigger = None
@@ -1014,7 +1023,7 @@ class InputMethodApp(BaseInputMethodApp):
 
 def parse_args() -> argparse.Namespace:
     """解析命令行参数"""
-    default_hotkey = InputMethodApp._DEFAULT_HOTKEY
+    default_hotkey = InputMethodApp.default_hotkey()
     parser = argparse.ArgumentParser(description="音元输入法 Windows 候选框")
     parser.add_argument(
         "--input-mode",

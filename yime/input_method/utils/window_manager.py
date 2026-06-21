@@ -6,7 +6,7 @@
 
 import ctypes
 from ctypes import wintypes
-from typing import Optional, Tuple
+from typing import Any, Optional, Tuple
 
 
 # Windows API常量
@@ -30,7 +30,7 @@ class WindowManager:
 
     @staticmethod
     def _hwnd_to_int(hwnd: object) -> int:
-        value = getattr(hwnd, "value", hwnd)
+        value: Any = getattr(hwnd, "value", hwnd)
         return int(value) if value else 0
 
     @classmethod
