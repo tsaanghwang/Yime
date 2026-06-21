@@ -8,8 +8,6 @@ from typing import Any
 __version__ = "1.0.0"
 __author__ = "Yime Team"
 
-InputMethodApp = getattr(import_module(".app", __name__), "InputMethodApp")
-
 __all__ = ["InputMethodApp", "main"]
 
 
@@ -19,7 +17,7 @@ def main(*args: Any, **kwargs: Any) -> Any:
 
 
 def __getattr__(name: str) -> Any:
-	if name == "main":
+	if name in {"InputMethodApp", "main"}:
 		module = import_module(".app", __name__)
 		return getattr(module, name)
 	raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
