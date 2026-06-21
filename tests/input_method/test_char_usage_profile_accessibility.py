@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import sqlite3
+import sys
 from pathlib import Path
 
 import pytest
@@ -12,6 +13,8 @@ FIRST_PAGE_LIMIT = 5
 
 
 def _require_runtime_db() -> None:
+    if not DB_PATH.exists():
+        pytest.skip("runtime SQLite database is unavailable in this environment")
     header = DB_PATH.read_bytes()[:32]
     if header.startswith(b"version https://git-lfs.github.com/spec/v1"):
         pytest.skip("runtime SQLite database is only available as a Git LFS pointer")
@@ -39,6 +42,16 @@ def _load_ranked_char_bucket(yime_code: str) -> list[sqlite3.Row]:
             ''',
             (yime_code,),
         ).fetchall()
+
+
+def test_require_runtime_db_skips_when_runtime_db_is_absent(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    missing_db_path = DB_PATH.parent / "pinyin_hanzi.absent.db"
+    monkeypatch.setattr(sys.modules[__name__], "DB_PATH", missing_db_path)
+
+    with pytest.raises(pytest.skip.Exception, match="runtime SQLite database is unavailable"):
+        _require_runtime_db()
 
 
 def test_special_tier_chars_remain_reachable_in_real_collision_bucket() -> None:
