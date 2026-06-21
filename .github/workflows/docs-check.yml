@@ -32,7 +32,14 @@ jobs:
           if [ "${{ github.event_name }}" = "pull_request" ]; then
             changed_files=$(git diff --name-only "${{ github.event.pull_request.base.sha }}" "${{ github.event.pull_request.head.sha }}" -- '*.md' '*.mdx' 'docs/**')
           else
-            changed_files=$(git diff --name-only "${{ github.event.before }}" "${{ github.sha }}" -- '*.md' '*.mdx' 'docs/**')
+            before="${{ github.event.before }}"
+            # On new branch/tag pushes the "before" SHA is all zeros (null SHA),
+            # which is not a valid git object. Fall back to the empty-tree SHA so
+            # that git diff treats every file in the commit as newly added.
+            if [ "$before" = "0000000000000000000000000000000000000000" ]; then
+              before="4b825dc642cb6eb9a060e54bf8d69288fbee4904"
+            fi
+            changed_files=$(git diff --name-only "$before" "${{ github.sha }}" -- '*.md' '*.mdx' 'docs/**')
           fi
 
           changed_files=$(printf '%s\n' "$changed_files" | sed '/^$/d')
