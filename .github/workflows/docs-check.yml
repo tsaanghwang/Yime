@@ -32,7 +32,12 @@ jobs:
           if [ "${{ github.event_name }}" = "pull_request" ]; then
             changed_files=$(git diff --name-only "${{ github.event.pull_request.base.sha }}" "${{ github.event.pull_request.head.sha }}" -- '*.md' '*.mdx' 'docs/**')
           else
-            changed_files=$(git diff --name-only "${{ github.event.before }}" "${{ github.sha }}" -- '*.md' '*.mdx' 'docs/**')
+            before_sha="${{ github.event.before }}"
+            after_sha="${{ github.sha }}"
+            if [ "$before_sha" = "0000000000000000000000000000000000000000" ] || ! git cat-file -e "${before_sha}^{commit}" 2>/dev/null; then
+              before_sha=$(git hash-object -t tree /dev/null)
+            fi
+            changed_files=$(git diff --name-only "$before_sha" "$after_sha" -- '*.md' '*.mdx' 'docs/**')
           fi
 
           changed_files=$(printf '%s\n' "$changed_files" | sed '/^$/d')
