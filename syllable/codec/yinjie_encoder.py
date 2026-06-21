@@ -222,8 +222,8 @@ class SplitSyllableResult:
     """音节切分阶段的输出。
 
     ``shouyin`` / ``ganyin`` 为 **首音段 / 干音段** 的拼音侧标签（供编码器查表），
-    对应 ``SyllableEncodingPipeline`` 对 ``(声母, 带调韵母)`` 的切分；不是 ``Yinjie`` 四槽内的音元字符。
-    音段层定义见 ``syllable.analysis.syllable``；槽位层见 ``syllable.codec.yinjie``。
+    对应 ``SyllableEncodingPipeline`` 对 ``(声母, 带调韵母)`` 的切分；不是 ``Yinjie`` 四音元位中的音元字符。
+    音段层定义见 ``syllable.analysis.syllable``；四音元位编解码层见 ``syllable.codec.yinjie``。
     """
 
     syllable: str
@@ -243,7 +243,7 @@ class SplitSyllableResult:
 
 @dataclass(frozen=True)
 class EncodedYinjieResult:
-    """单音节编码的结构化结果：音段切分 + 四槽音元 + ``Yinjie`` 视图。"""
+    """单音节编码的结构化结果：音段切分 + 四音元位字符 + ``Yinjie`` 视图。"""
 
     syllable: str
     segments: SegmentSplitResult

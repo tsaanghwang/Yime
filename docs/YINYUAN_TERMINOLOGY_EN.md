@@ -201,6 +201,12 @@ In non-tonal languages, however, where semantic contrast is carried by quality a
 
 These terms belong to the **Yinjie syllable model** used in `syllable/` encoding. They are related to, but not identical with, pianyin/yinyuan layering: here **structural portions** vs **phonic/yinyuan categories**.
 
+When referring to the four-character `yinjie` code, keep a third layer distinct: **code positions** versus the **yinyuan characters** occupying them. The first through fourth positions are fixed **positions** in the encoding order; what they hold, respectively, are the **shouyin yinyuan**, **huyin yinyuan**, **zhuyin yinyuan**, and **moyin yinyuan**. Therefore:
+
+1. it is fine to say **four yinyuan positions** or **the first through fourth code positions**;
+2. it is fine to say **shouyin yinyuan / huyin yinyuan / zhuyin yinyuan / moyin yinyuan**;
+3. do **not** shorten these positions to `phoneme`, and do **not** translate the Chinese word 位 here as a phonological `phoneme`.
+
 | Chinese | Identifier | Note |
 | --------- | ------------ | ------ |
 | 音节 | yinjie | Syllable; onset + ganyin |
@@ -220,6 +226,8 @@ Canonical tree: [TERMINOLOGY_INDEX.md](TERMINOLOGY_INDEX.md) §音节结构. **D
 **Two axes:** shouyin and ganyin are **segments** (“initial + linked tone” / “final + linked tone”); zaoyin and yueyin are **categories** that fill those segments—they are not siblings of shouyin/ganyin.
 
 **Common mistake:** equating shouyin with zaoyin, or ganyin with yueyin; or rewriting the tree without the ganyin layer. See [TERMINOLOGY_INDEX.md](TERMINOLOGY_INDEX.md) and [syllable/NAMING.md](../syllable/NAMING.md).
+
+**Additional mistake to avoid:** conflating code positions with phonological units. In `Yinjie`, the four positions are encoding positions, while shouyin/huyin/zhuyin/moyin yinyuan are the units occupying those positions.
 
 ## Recommended Usage
 

@@ -12,7 +12,7 @@ from syllable.codec.yinjie import Yinjie
 def split_loose_encoded_string(encoded_syllable: str) -> Yinjie:
     """将任意非空编码串按首音 + 干音 + 韵音层次切分为 ``Yinjie``。
 
-    末音槽可能包含多个字符（``yunyin[1:]`` 剩余段），与固定四音元位不同。
+    ``descender`` 字段可能包含多个字符（``yunyin[1:]`` 剩余段），与固定四音元位不同。
     """
     if not encoded_syllable:
         raise ValueError("编码音节不能为空")

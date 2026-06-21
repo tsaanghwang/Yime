@@ -14,7 +14,7 @@ class SyllableEncodingPipeline:
     """为编码流程提供无副作用的音节规范化与切分逻辑。
 
     切分产出 **首音段 / 干音段** 拼音侧标签（供 ``ShouyinEncoder`` / ``GanyinEncoder`` 查表），
-    不是 ``codec.yinjie.Yinjie`` 四槽内的音元字符。音段层对象见 ``analyze_syllable_segments``。
+    不是 ``codec.yinjie.Yinjie`` 四音元位中的音元字符。音段层对象见 ``analyze_syllable_segments``。
     """
 
     TONE_MAPPING = {

@@ -120,7 +120,7 @@ from syllable.codec.yinjie import Yinjie
 # 四码构造（推荐）
 yinjie = Yinjie.from_code("NABC")
 
-# 或按槽赋值
+# 或按四项音元赋值
 yinjie = Yinjie(initial="N", ascender="A", peak="B", descender="C")
 ```
 
