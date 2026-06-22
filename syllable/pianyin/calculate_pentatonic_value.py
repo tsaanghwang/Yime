@@ -1,7 +1,7 @@
 import math
 
 
-def calculate_pentatonic_value(f, f_min, f_max):
+def calculate_pentatonic_value(f: float, f_min: float, f_max: float) -> float:
     """
     计算调域五度值
     :param f: 当前频率值(Hz)
@@ -14,8 +14,8 @@ def calculate_pentatonic_value(f, f_min, f_max):
     if f < f_min or f > f_max:
         raise ValueError("当前频率必须在最小和最大频率范围内")
 
-    numerator = math.log(f) - math.log(f_min)
-    denominator = math.log(f_max) - math.log(f_min)
+    numerator = math.log(float(f)) - math.log(float(f_min))
+    denominator = math.log(float(f_max)) - math.log(float(f_min))
     pentatonic_value = 5 * (numerator / denominator)
 
     return pentatonic_value

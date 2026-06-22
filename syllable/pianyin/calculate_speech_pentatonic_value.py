@@ -1,7 +1,10 @@
 import math
+from typing import Sequence
 
 
-def calculate_speech_pentatonic_value(f_current, f_min, f_max):
+def calculate_speech_pentatonic_value(
+    f_current: float, f_min: float, f_max: float
+) -> float:
     """
     计算话语调域五度值
     :param f_current: 当前语音频率值(Hz)
@@ -26,7 +29,7 @@ def calculate_speech_pentatonic_value(f_current, f_min, f_max):
     return pentatonic_value
 
 
-def analyze_speech_range(speech_samples):
+def analyze_speech_range(speech_samples: Sequence[float]) -> tuple[float, float]:
     """
     分析语音样本，获取调域范围
     :param speech_samples: 语音频率样本列表(Hz)
@@ -36,7 +39,7 @@ def analyze_speech_range(speech_samples):
     if not speech_samples:
         raise ValueError("语音样本不能为空")
 
-    return min(speech_samples), max(speech_samples)
+    return float(min(speech_samples)), float(max(speech_samples))
 
 
 # 示例使用

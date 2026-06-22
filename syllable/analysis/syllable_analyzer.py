@@ -1,13 +1,25 @@
 """音节分析器实现与兼容公开入口。"""
 
 from pathlib import Path
-from typing import Dict
+from typing import Any, Dict, cast
 import json
 import os
 import sys
 
 from .ganyin_categorizer import GanyinCategorizer
 from .syllable_splitter import SyllableSplitter
+
+
+def _remove_tone_from_ganyin(value: str) -> str:
+    """移除干音中的声调信息（数字与拼音音调符号）。"""
+    tone_map = str.maketrans(
+        "āáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜü",
+        "aaaaeeeeiiiioooouuuuvvvvu",
+    )
+    cleaned = value.translate(tone_map)
+    if cleaned and cleaned[-1].isdigit():
+        cleaned = cleaned[:-1]
+    return cleaned
 
 
 def _find_repo_root(start: Path) -> Path:
@@ -44,10 +56,12 @@ class GanyinAnalyzer:
                 raise FileNotFoundError(f"输入文件不存在: {self.input_path}")
 
             with open(self.input_path, 'r', encoding='utf-8') as file:
-                pinyin_data = json.load(file)
+                pinyin_data_raw: Any = json.load(file)
 
-            if not isinstance(pinyin_data, dict):
+            if not isinstance(pinyin_data_raw, dict):
                 raise ValueError("输入JSON数据格式不正确，应为字典类型")
+
+            pinyin_data = cast(Dict[str, str], pinyin_data_raw)
 
             if not pinyin_data:
                 raise ValueError("输入JSON数据为空")
@@ -85,7 +99,7 @@ class GanyinAnalyzer:
 
     def categorize_ganyin_data(self, ganyin_data: Dict[str, str]) -> Dict[str, Dict[str, str]]:
         """按干音分类整理干音数据。"""
-        categorized = {
+        categorized: Dict[str, Dict[str, str]] = {
             "single quality ganyin": {},
             "front long ganyin": {},
             "back long ganyin": {},
@@ -99,7 +113,7 @@ class GanyinAnalyzer:
         }
 
         for num_final, tone_final in ganyin_data.items():
-            final = GanyinCategorizer._remove_tone_from_ganyin(num_final)
+            final = _remove_tone_from_ganyin(num_final)
             category_cn = GanyinCategorizer.categorize(final)
             category_en = category_map.get(category_cn, "single quality ganyin")
             categorized[category_en][num_final] = tone_final
@@ -110,8 +124,8 @@ class GanyinAnalyzer:
             sorted_ganyin = sorted(
                 categorized[category_en].items(),
                 key=lambda item: (
-                    finals.index(GanyinCategorizer._remove_tone_from_ganyin(item[0]))
-                    if GanyinCategorizer._remove_tone_from_ganyin(item[0]) in finals
+                    finals.index(_remove_tone_from_ganyin(item[0]))
+                    if _remove_tone_from_ganyin(item[0]) in finals
                     else len(finals)
                 ),
             )
@@ -121,11 +135,11 @@ class GanyinAnalyzer:
 
     def _generate_ganyin_data(self, pinyin_data: Dict[str, str]) -> Dict[str, str]:
         """生成干音数据。"""
-        ganyin_data = {}
+        ganyin_data: Dict[str, str] = {}
         tongue_tip_initials = {'z', 'c', 's', 'zh', 'ch', 'sh', 'r'}
 
         for num_pinyin, tone_pinyin in pinyin_data.items():
-            if GanyinCategorizer._is_special_syllable(num_pinyin):
+            if num_pinyin in GanyinCategorizer.SPECIAL_SYLLABLES:
                 ganyin_data[num_pinyin] = GanyinCategorizer.SPECIAL_SYLLABLES.get(
                     num_pinyin, tone_pinyin,
                 )

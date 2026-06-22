@@ -2,7 +2,7 @@
 
 完整三条简拼规则（虚首音省略、干音去重、同音质中调省略）见
 ``tools/generate_efficiency_baseline_report.py``；将来统一迁入
-``syllable.codec.yinjie_jianpin``。当前仅保留干音相邻重复合并，供历史
+``syllable.codec.yinjie_jianpin``。当前仅保留干音内部相邻音元重复合并，供历史
 调用面与测试占位。
 """
 
@@ -18,7 +18,7 @@ def simplify_ganyin_repeats(full_code: str | list[str] | tuple[str, ...] | None)
         return ""
 
     if isinstance(full_code, (list, tuple)):
-        seq = [str(x) for x in full_code if x is not None]
+        seq = [str(x) for x in full_code]
     else:
         seq = list(str(full_code))
 

@@ -15,7 +15,6 @@ except ImportError:
 
 DecodedMap = dict[str, Yinjie]
 PhonemeSets = dict[str, set[str]]
-PhonemeLists = tuple[list[str], list[str]]
 ROOT = PACKAGE_ROOT
 DEFAULT_PHONEME_REPORT = REPO_ROOT / 'yime' / 'reports' / 'phoneme_dict.json'
 
@@ -61,14 +60,16 @@ class YinjieDecoder:
         entries = source_data.get('entries')
         if not isinstance(entries, dict) or not entries:
             raise ValueError(f"真源文件缺少 entries: {source_path}")
+        typed_entries = cast(dict[str, Any], entries)
 
         keyed_entries: list[tuple[int, str, str]] = []
-        for entry_name, entry in entries.items():
+        for entry_name, entry in typed_entries.items():
             if not isinstance(entry, dict):
                 raise ValueError(f"真源条目格式不正确: {source_path} -> {entry_name}")
+            entry_dict = cast(dict[str, Any], entry)
 
-            layout_slot = entry.get('layout_slot')
-            runtime_char = entry.get('runtime_char')
+            layout_slot = entry_dict.get('layout_slot')
+            runtime_char = entry_dict.get('runtime_char')
             if not isinstance(layout_slot, str) or not layout_slot:
                 raise ValueError(f"真源条目缺少 layout_slot: {source_path} -> {entry_name}")
             if not isinstance(runtime_char, str) or not runtime_char:
@@ -148,7 +149,7 @@ class YinjieDecoder:
         }
 
         for yinjie in decoded_map.values():
-            noise, musical = cast(PhonemeLists, yinjie.classify_phonemes())
+            noise, musical = yinjie.classify_phonemes()
             phoneme_sets["noise"].update(noise)
             phoneme_sets["musical"].update(musical)
 
@@ -215,7 +216,7 @@ class YinjieDecoder:
                 yinjie = decoded_map[pinyin]
                 print(f"\n解码 '{pinyin}':")
                 print(f"音节线性结构: {yinjie}")
-                noise, musical = cast(PhonemeLists, yinjie.classify_phonemes())
+                noise, musical = yinjie.classify_phonemes()
                 print(f"噪音音元: {self._display_phonemes(noise)}")
                 print(f"乐音音元: {self._display_phonemes(musical)}")
             except KeyError:

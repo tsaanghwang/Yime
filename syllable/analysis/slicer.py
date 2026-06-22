@@ -2,7 +2,7 @@
 class Slicer:
     """片音分析处理器，封装复杂分析逻辑"""
 
-    def process_slices(self, syllable):
+    def process_slices(self, syllable: str | None) -> dict[str, list[str]]:
         """
         执行实际的片音分析
         :param syllable: 待分析的音节对象

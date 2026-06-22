@@ -16,7 +16,7 @@
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Optional, Union, Literal
+from typing import Union, Literal
 
 # 类型别名定义
 DurationType = Literal['short', 'neutral', 'long']
@@ -24,7 +24,7 @@ LoudnessType = Literal['weak', 'neutral', 'strong']
 PitchType = Union[str, bool, None]
 PitchStyle = Literal['number', 'mark']
 
-@dataclass
+@dataclass(kw_only=True)
 class YinyuanBase(ABC):
     """音元基类，定义音元的基本属性和行为"""
     quality: str
@@ -57,7 +57,7 @@ class YinyuanBase(ABC):
         ]
         return f"{self.__class__.__name__}({', '.join(attrs)})"
 
-@dataclass
+@dataclass(kw_only=True)
 class UncertainPitchYinyuan(YinyuanBase, ABC):
     """
     音调不定的音元(UncertainPitchYinyuan)基类
@@ -72,7 +72,7 @@ class UncertainPitchYinyuan(YinyuanBase, ABC):
         """生成音元代码"""
         return f"UPY_{initial.upper()}"
 
-@dataclass
+@dataclass(kw_only=True)
 class UnstablePitchYinyuan(UncertainPitchYinyuan):
     """有不稳定/非规律性音高的音元"""
     quality: str
@@ -90,7 +90,7 @@ class UnstablePitchYinyuan(UncertainPitchYinyuan):
     def is_valid(self) -> bool:
         return bool(self.quality.strip())
 
-@dataclass
+@dataclass(kw_only=True)
 class UnpitchedYinyuan(UncertainPitchYinyuan):
     """完全无调的音元"""
     quality: str
@@ -108,13 +108,17 @@ class UnpitchedYinyuan(UncertainPitchYinyuan):
     def is_valid(self) -> bool:
         return bool(self.quality.strip())
 
-@dataclass
+@dataclass(kw_only=True)
 class PitchedYinyuan(YinyuanBase):
     """有稳定音调的音元"""
-    pitch: str  # 使用1-5表示音高
+    _pitch: str  # 使用1-5表示音高
     quality: str
     duration: DurationType = 'neutral'
     loudness: LoudnessType = 'neutral'
+
+    @property
+    def pitch(self) -> str:
+        return self._pitch
 
     @property
     def type(self) -> str:

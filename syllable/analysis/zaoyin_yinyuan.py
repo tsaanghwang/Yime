@@ -8,8 +8,8 @@
 在通用现代汉语中，噪音类音元实际就是声母。
 """
 
-from dataclasses import dataclass
-from typing import Optional, Dict
+from dataclasses import dataclass, field
+from typing import Optional, Dict, Mapping, Tuple
 from .yinyuan import (
     DurationType,
     LoudnessType,
@@ -25,7 +25,15 @@ class NoiseYinyuan(UncertainPitchYinyuan):
     quality: str = ""  # 音质特征
     duration: DurationType = 'neutral'  # 时长类型
     loudness: LoudnessType = 'neutral'  # 响度类型
-    pitch: Optional[bool] = None  # 改为普通实例属性，None表示无调，True表示有不稳定音高
+    _pitch: Optional[bool] = field(default=None, init=False, repr=False)
+
+    @property
+    def pitch(self) -> Optional[bool]:
+        return self._pitch
+
+    @pitch.setter
+    def pitch(self, value: Optional[bool]) -> None:
+        self._pitch = value
 
     def is_valid(self) -> bool:
         """验证音元是否有效"""
@@ -35,17 +43,17 @@ class NoiseYinyuan(UncertainPitchYinyuan):
         """将音元明确定义为无调音元"""
         self.pitch = None
 
-    def _process_mid_high_model(self, data: Dict) -> Dict:
+    def _process_mid_high_model(self, data: Dict[str, Tuple[str, Optional[bool]]]) -> Dict[str, str]:
         """处理中高模型数据，将音质和音高信息转换为音元符号"""
-        result = {}
+        result: Dict[str, str] = {}
         for key, (quality, pitch) in data.items():
             self.quality = quality
-            self.pitch = pitch  # 现在可以直接设置
+            self.pitch = pitch
             if self.is_valid():
                 result[key] = f"{self.quality}{'ˊ' if self.pitch else ''}"
         return result
 
-    def convert(self, pianyin_data: dict) -> dict:
+    def convert(self, pianyin_data: Mapping[str, str]) -> dict[str, str | bool | None]:
             """将片音数据转换为音元表示
 
             Args:
@@ -54,9 +62,6 @@ class NoiseYinyuan(UncertainPitchYinyuan):
             Returns:
                 返回音元表示字典，包含音质、音高和类型信息
             """
-            if not isinstance(pianyin_data, dict):
-                return {}
-
             return {
                 "quality": pianyin_data.get("pinyin", ""),
                 "pitch": self.pitch,
@@ -70,7 +75,8 @@ class ClearNoise(NoiseYinyuan):
     清音类噪音(无调音元)
     对应清辅音，没有音调
     """
-    pitch: None = None  # 明确标注无音调
+    def __post_init__(self) -> None:
+        self.pitch = None
 
     @property
     def subtype(self) -> str:
@@ -83,7 +89,8 @@ class VoicedNoise(NoiseYinyuan):
     浊辅音类噪音(不稳定音高音元)
     可能有非规律性音高特征
     """
-    pitch: bool = True  # 表示有不稳定音高
+    def __post_init__(self) -> None:
+        self.pitch = True
 
     @property
     def subtype(self) -> str:

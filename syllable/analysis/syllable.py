@@ -14,16 +14,16 @@
 
 
 class Ganyin:
-    """由韵母和与其联结调段组成的轻量值对象。"""
+    """由韵母和与其联结的调段组成的音段。"""
 
-    def __init__(self, final: str, gandiao: str = None):
+    def __init__(self, final: str, gandiao: str | None = None):
         self.final = final
         self.gandiao = gandiao
 
     @classmethod
     def from_syllable(cls, syllable: "Syllable"):
-        if not isinstance(syllable, Syllable):
-            raise TypeError("输入必须是Syllable对象")
+        if syllable.final is None:
+            raise ValueError("Syllable.final 不能为空")
 
         return cls(final=syllable.final, gandiao=syllable.tone)
 
@@ -41,7 +41,7 @@ class Syllable:
     - 提取音节的音调和音质
     """
 
-    def __init__(self, initial: str = None, final: str = None, tone: str = None):
+    def __init__(self, initial: str | None = None, final: str | None = None, tone: str | None = None):
         """
         初始化音节对象
 
@@ -55,8 +55,8 @@ class Syllable:
         self.tone = tone
 
         # 调段部分
-        self.shoudiao = None  # 与声母联结的调段
-        self.gandiao = tone   # 与韵母联结的调段
+        self.shoudiao: str | None = None  # 与声母联结的调段
+        self.gandiao: str | None = tone   # 与韵母联结的调段
 
     @property
     def quality(self):
@@ -73,7 +73,7 @@ class Syllable:
         """干音：由韵母和与其联结的调段构成"""
         return (self.final, self.gandiao)
 
-    def tone(self, shoudiao=None, gandiao=None):
+    def set_tone_segments(self, shoudiao: str | None = None, gandiao: str | None = None):
         """
         设置调段信息，并返回调段元组
 

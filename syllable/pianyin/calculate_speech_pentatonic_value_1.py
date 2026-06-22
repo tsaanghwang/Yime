@@ -1,19 +1,24 @@
 import math
 
 
-def sigmoid(x, center=0.5, steepness=10):
+def sigmoid(x: float, center: float = 0.5, steepness: float = 10.0) -> float:
     """Sigmoid函数实现平滑过渡"""
     return 1 / (1 + math.exp(-steepness * (x - center)))
 
 
-def calculate_speech_pentatonic_value(f_current, f_min, f_max, gender=None):
+def calculate_speech_pentatonic_value(
+    f_current: float,
+    f_min: float,
+    f_max: float,
+    gender: str | None = None,
+) -> float:
     """
     计算符合五声调式五度制映射的话语调域五度值(改进版)
     改进点:
     - 使用Sigmoid函数实现平滑过渡
     - 增加性别参数适应不同基频范围
 
-    规则: 
+    规则:
     - 使用对数划分，更符合五声调式的频率感知特性
     - 通过Sigmoid函数实现五度值之间的平滑过渡
     - 性别参数可调整划分边界(默认无差别)

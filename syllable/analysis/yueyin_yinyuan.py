@@ -5,12 +5,13 @@
 """
 
 from typing import Literal, Union
-from .pitched_yinyuan import MusicalYinyuan
+from .pitched_yinyuan import MusicalYinyuan, DurationType
 from syllable.pianyin import PitchedPianyin, UnpitchedPianyin
 import os
 import json
 
 PitchStyle = Literal['number', 'mark']
+LoudnessType = Literal['weak', 'neutral', 'strong']
 
 
 class YueyinYinyuan(MusicalYinyuan):
@@ -20,12 +21,12 @@ class YueyinYinyuan(MusicalYinyuan):
     继承所有 MusicalYinyuan 的功能，并添加中文语境专用方法。
     """
 
-    def __init__(self, quality: str, pitch: str, duration: str = 'neutral',
-                loudness: str = 'neutral', pitch_style: str = 'number',
-                config_path: str = None):  # 添加可选参数
+    def __init__(self, quality: str, pitch: str, duration: DurationType = 'neutral',
+                loudness: LoudnessType = 'neutral', pitch_style: PitchStyle = 'number',
+                config_path: str | None = None):  # 添加可选参数
         super().__init__(
             quality=quality,
-            pitch=pitch,
+            _pitch=pitch,
             duration=duration,
             loudness=loudness,
             pitch_style=pitch_style,
@@ -42,17 +43,7 @@ class YueyinYinyuan(MusicalYinyuan):
         self.quality_variables = self.config['quality_variables']
         self.pitch_variables = self.config['pitch_variables']
 
-    @property
-    def pitch(self) -> str:
-        """实现抽象属性 pitch"""
-        return self._pitch
-
-    @pitch.setter
-    def pitch(self, value: str):
-        """设置 pitch 属性"""
-        self._pitch = value
-
-    def to_chinese_dict(self) -> dict:
+    def to_chinese_dict(self) -> dict[str, str]:
         """转换为中文键名的字典表示"""
         return {
             '类型': '乐音',
@@ -69,7 +60,7 @@ class YueyinYinyuan(MusicalYinyuan):
         if isinstance(pianyin, PitchedPianyin):
             return cls(
                 quality=pianyin.quality,
-                pitch=pianyin.pitch,
+                pitch=pianyin.pitch or '4',
                 duration='neutral',
                 loudness='neutral',
                 pitch_style='number'
@@ -87,19 +78,23 @@ class YueyinYinyuan(MusicalYinyuan):
         """中文友好的字符串表示"""
         return f"乐音类音元(音质={self.quality}, 音调={self.pitch})"
 
-    def process_pitched_yinyuan(self, input_data, is_mid_level_median_model=False):
+    def process_pitched_yinyuan(
+        self,
+        input_data: dict[str, tuple[str, str]],
+        is_mid_level_median_model: bool = False
+    ) -> dict[str, list[str]]:
         """处理乐音类音元数据"""
         if is_mid_level_median_model:
             return self._process_mid_level_model(input_data)
         else:
             return self._process_mid_high_model(input_data)
 
-    def _process_mid_high_model(self, input_data):
+    def _process_mid_high_model(self, input_data: dict[str, tuple[str, str]]) -> dict[str, list[str]]:
         """处理音元系统的乐音类音元数据"""
         pitch_class = self.pitch_variables['mid_high_median_model']
-        output = {}
+        output: dict[str, list[str]] = {}
 
-        for key, (quality, pitch) in input_data.items():
+        for _, (quality, pitch) in input_data.items():
             # 先检查音调和音质是否有效
             if not self._is_valid_pitch(pitch) or not self._is_valid_quality(quality):
                 continue
@@ -125,12 +120,12 @@ class YueyinYinyuan(MusicalYinyuan):
 
         return output
 
-    def _process_mid_level_model(self, input_data):
+    def _process_mid_level_model(self, input_data: dict[str, tuple[str, str]]) -> dict[str, list[str]]:
         """处理mid_level_median_model的乐音类音元数据"""
         pitch_class = self.pitch_variables['mid_level_median_model']
-        output = {}
+        output: dict[str, list[str]] = {}
 
-        for key, (quality, pitch) in input_data.items():
+        for _, (quality, pitch) in input_data.items():
             # 先检查音调和音质是否有效
             if not self._is_valid_pitch(pitch) or not self._is_valid_quality(quality):
                 continue
@@ -156,7 +151,7 @@ class YueyinYinyuan(MusicalYinyuan):
 
         return output
 
-    def _change_pitch_style(self, input_data: dict) -> dict:
+    def _change_pitch_style(self, input_data: dict[str, dict[str, dict[str, str]]]) -> dict[str, dict[str, dict[str, str]]]:
         """转换音高标记方式
 
         参数:
@@ -165,7 +160,7 @@ class YueyinYinyuan(MusicalYinyuan):
         返回:
             转换后的字典数据，音高标记已替换为对应的标记符号
         """
-        result = {}
+        result: dict[str, dict[str, dict[str, str]]] = {}
         pitch_marks = self.config["pitch_variables"]["pitch_marks"]
 
         for ganyin_type, ganyin_list in input_data.items():

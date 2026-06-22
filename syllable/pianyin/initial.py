@@ -36,7 +36,13 @@ class Initial(UnpitchedPianyin):
         "0": "꜌"   # 与清声母联结的调段
     }
 
-    def __init__(self, consonant, tone_segment=None, representation='pinyin', pitch_style='number'):
+    def __init__(
+        self,
+        consonant: str,
+        tone_segment: str | int | None = None,
+        representation: str = 'pinyin',
+        pitch_style: str = 'number'
+    ):
         """
         Initialize an Initial instance.
         初始化首音实例
@@ -57,7 +63,7 @@ class Initial(UnpitchedPianyin):
 
     def _validate_input(self):
         """Validate the input parameters. 验证输入参数"""
-        if not isinstance(self.quality, str) or not self.quality:
+        if not self.quality:
             raise ValueError("Consonant must be a non-empty string")
 
         if self.tone_segment is not None and self.tone_segment not in ["0", "1", "2", "3", "4", "5"]:
@@ -84,7 +90,12 @@ class Initial(UnpitchedPianyin):
         return f"{self.quality}"
 
     @classmethod
-    def generate_from_consonant_table(cls, consonant_table, representation='pinyin', pitch_style='number'):
+    def generate_from_consonant_table(
+        cls,
+        consonant_table: list[str] | dict[object, object],
+        representation: str = 'pinyin',
+        pitch_style: str = 'number'
+    ) -> dict[str, "Initial"]:
         """
         从声母表生成首音对象映射
         Args:
@@ -97,12 +108,10 @@ class Initial(UnpitchedPianyin):
         if isinstance(consonant_table, list):
             return {consonant: cls(consonant, representation=representation, pitch_style=pitch_style)
                     for consonant in consonant_table}
-        elif isinstance(consonant_table, dict):
-            # 处理嵌套字典结构，只使用键(拼音字母)作为声母
-            return {k: cls(k, representation=representation, pitch_style=pitch_style)
-                    for k in consonant_table.keys()}
         else:
-            raise ValueError("consonant_table 必须是列表或字典")
+            # 处理嵌套字典结构，只使用键(拼音字母)作为声母
+            return {str(k): cls(str(k), representation=representation, pitch_style=pitch_style)
+                for k in consonant_table.keys()}
 
     def is_valid(self) -> bool:
         """检查首音对象是否有效"""

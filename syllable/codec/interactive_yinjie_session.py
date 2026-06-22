@@ -40,7 +40,7 @@ def interactive_encoder(
             cli_policy.interactive_unexpected_error(error)
 
 
-def main(input_reader=input) -> None:
+def main(input_reader: Callable[[str], str] = input) -> None:
     """模块统一 CLI 入口。"""
     try:
         from .yinjie_composition import run_default_interactive_session

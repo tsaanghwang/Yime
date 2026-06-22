@@ -14,11 +14,11 @@ Quality: required attribute
 Pitch: required attribute
 """
 
-from .pitched_yinyuan import MusicalYinyuan
+from typing import Any
 
 
 class PitchedPianyin:
-    def __init__(self, quality, pitch):
+    def __init__(self, quality: str, pitch: str):
         if not quality:
             raise ValueError("quality cannot be empty")
         if not pitch:
@@ -26,8 +26,8 @@ class PitchedPianyin:
 
         self.quality = quality
         self.pitch = pitch
-        self.duration = None
-        self.loudness = None
+        self.duration: Any | None = None
+        self.loudness: Any | None = None
 
 
 class YueyinPianyin(PitchedPianyin):
@@ -50,7 +50,13 @@ class YueyinPianyin(PitchedPianyin):
         "1": "˩",  # 低平
     }
 
-    def __init__(self, quality, pitch, representation="pianyin", pitch_style="number"):
+    def __init__(
+        self,
+        quality: str,
+        pitch: str,
+        representation: str = "pianyin",
+        pitch_style: str = "number",
+    ):
         """
         Initializes a YueyinPianyin instance.
 
@@ -85,7 +91,7 @@ class YueyinPianyin(PitchedPianyin):
         # Here we use the same format as pinyin for demonstration
         return self._pianyin_representation()
 
-    def to_dict(self):
+    def to_dict(self) -> dict[str, Any]:
         """Returns a dictionary representation of the YueyinPianyin object"""
         return {
             "quality": self.quality,
@@ -97,17 +103,31 @@ class YueyinPianyin(PitchedPianyin):
         }
 
     @classmethod
-    def from_dict(cls, data):
+    def from_dict(cls, data: dict[str, Any]):
         """Creates a YueyinPianyin instance from a dictionary"""
+        quality = data.get("quality")
+        pitch = data.get("pitch")
+
+        if not isinstance(quality, str):
+            raise ValueError("quality must be a string")
+        if not isinstance(pitch, str):
+            raise ValueError("pitch must be a string")
+
         return cls(
-            quality=data.get("quality"),
-            pitch=data.get("pitch"),
+            quality=quality,
+            pitch=pitch,
             representation=data.get("representation", "pianyin"),
             pitch_style=data.get("pitch_style", "number")
         )
 
     @classmethod
-    def create_yueyin(cls, quality, pitch, representation="pianyin", pitch_style="number"):
+    def create_yueyin(
+        cls,
+        quality: str,
+        pitch: str,
+        representation: str = "pianyin",
+        pitch_style: str = "number",
+    ):
         """
         创建乐音类片音实例的便捷方法
 

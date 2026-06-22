@@ -131,9 +131,6 @@ class GanyinEncoder:
 
     def _normalize_ganyin_name(self, ganyin: str) -> str:
         """将兼容写法归并到当前编码表使用的基础干音段标签。"""
-        if not isinstance(ganyin, str):
-            return ""
-
         for source, target in (("hng", "ng"), ("hm", "m"), ("hn", "n")):
             if ganyin.startswith(source) and len(ganyin) >= len(source) + 1:
                 return f"{target}{ganyin[-1]}"
@@ -157,8 +154,10 @@ class GanyinEncoder:
             self.convert_pianyin_to_yinyuan(parts.get("主音", "")),
             self.convert_pianyin_to_yinyuan(parts.get("末音", "")),
         ]
-        return tuple(
-            self._resolve_yinyuan_codepoint(symbol) for symbol in yinyuan_symbols
+        return (
+            self._resolve_yinyuan_codepoint(yinyuan_symbols[0]),
+            self._resolve_yinyuan_codepoint(yinyuan_symbols[1]),
+            self._resolve_yinyuan_codepoint(yinyuan_symbols[2]),
         )
 
     def _encode_from_parts(self, ganyin: str) -> str:
@@ -190,7 +189,7 @@ class GanyinEncoder:
 
     def _is_valid_ganyin(self, ganyin: str) -> bool:
         """检查输入是否是有效的干音格式"""
-        if not isinstance(ganyin, str) or len(ganyin) < 2:
+        if len(ganyin) < 2:
             return False
 
         return ganyin in self.ganyin_part_map
@@ -220,13 +219,13 @@ class GanyinEncoder:
         pianyin = pianyin.split("/")[0]  # 处理多值情况
         quality = pianyin[:-1] if len(pianyin) > 1 else pianyin
         pitch = pianyin[-1] if len(pianyin) > 1 else ""
-        processed = self.yueyin_yinyuan._process_mid_high_model(
+        processed = self.yueyin_yinyuan._process_mid_high_model(  # pyright: ignore[reportPrivateUsage]
             {"temp": (quality, pitch)})
         return next(iter(processed.keys())) if processed else ""
 
     def process_ganyin(self, ganyin_data: Dict[str, Any]) -> Dict[str, Any]:
         """处理干音数据生成音元序列"""
-        result = {}
+        result: Dict[str, Dict[str, Dict[str, str]]] = {}
         for ganyin_type, ganyin_list in ganyin_data.items():
             result[ganyin_type] = {
                 ganyin_name: {
@@ -276,7 +275,7 @@ class GanyinEncoder:
         self.save_yinyuan_data(output_file, yinyuan_data)
 
         # 3. 生成音调标记格式数据
-        marks_data = self.yueyin_yinyuan._change_pitch_style(yinyuan_data)
+        marks_data = self.yueyin_yinyuan._change_pitch_style(yinyuan_data)  # pyright: ignore[reportPrivateUsage]
         marks_output_path = self.derived_output_path("ganyin_to_yinyuan_seq_marks.json")
         self.save_yinyuan_data(marks_output_path, marks_data)
 
@@ -295,8 +294,8 @@ class GanyinEncoder:
         self.save_yinyuan_data(notes_output_path, notes_data)
 
         # 5. 生成简化版干音音符数据
-        simplified_notes_data = {
-            ganyin_name: "".join(parts.values())
+        simplified_notes_data: Dict[str, str] = {
+            ganyin_name: "".join(str(part) for part in parts.values())
             for ganyin_type in notes_data
             for ganyin_name, parts in notes_data[ganyin_type].items()
         }
@@ -304,7 +303,7 @@ class GanyinEncoder:
         self.save_yinyuan_data(fixed_length_encoding_output_path, simplified_notes_data)
 
         # 6. 生成干音简式拼式字典
-        def simplify_consecutive_chars(s):
+        def simplify_consecutive_chars(s: str) -> str:
             """合并连续相同的音元字符"""
             if not s:
                 return s
@@ -314,7 +313,7 @@ class GanyinEncoder:
                     result.append(char)
             return "".join(result)
 
-        simplified_dict = {
+        simplified_dict: Dict[str, list[str]] = {
             ganyin_name: [value, simplify_consecutive_chars(value)]
             for ganyin_name, value in simplified_notes_data.items()
         }

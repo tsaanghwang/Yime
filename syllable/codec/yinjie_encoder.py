@@ -574,7 +574,7 @@ class YinjieEncoder:
             segments = SyllableEncodingPipeline.analyze_syllable_segments(syllable)
         shouyin_result = self.shouyin_stage.run(split_result)
         ganyin_result = self.ganyin_stage.run(split_result)
-        code = self.assemble_stage.run(shouyin_result, ganyin_result)
+        self.assemble_stage.run(shouyin_result, ganyin_result)
 
         ganyin_code = ganyin_result.value
         if len(ganyin_code) != 3:
@@ -644,7 +644,7 @@ def main(cli_policy: YinjieCliPolicy | None = None):
     composition_main(cli_policy=cli_policy)
 
 
-__all__ = YINJIE_IMPLEMENTATION_EXPORTS
+__all__ = YINJIE_IMPLEMENTATION_EXPORTS  # pyright: ignore[reportUnsupportedDunderAll]
 
 
 if __name__ == "__main__":

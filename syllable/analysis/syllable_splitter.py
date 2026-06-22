@@ -47,6 +47,7 @@ class SyllableSplitter:
                 cls._MARKED_GANYIN_CACHE = flattened
             else:
                 cls._MARKED_GANYIN_CACHE = payload
+        assert cls._MARKED_GANYIN_CACHE is not None
         return cls._MARKED_GANYIN_CACHE
 
     @classmethod

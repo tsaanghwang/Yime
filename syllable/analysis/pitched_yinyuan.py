@@ -5,11 +5,18 @@
 """
 
 from dataclasses import dataclass
-from typing import Literal
+from typing import Literal, cast
 # from syllable.analysis.yinyuan import PitchedYinyuan, DurationType, LoudnessType
 from .yinyuan import PitchedYinyuan, DurationType, LoudnessType
 
 PitchStyle = Literal['number', 'mark']
+PITCH_MARKS: dict[int, str] = {
+    1: 'ˉ',
+    2: 'ˊ',
+    3: 'ˇ',
+    4: 'ˋ',
+    5: '˙',
+}
 
 
 @dataclass
@@ -27,12 +34,12 @@ class MusicalYinyuan(PitchedYinyuan):
     def __str__(self) -> str:
         """返回音元的字符串表示，根据 pitch_style 显示音调"""
         if self.pitch_style == 'mark':
-            return f"{self.quality}{self.pitch_style.get(self.pitch, '')}"
+            return f"{self.quality}{PITCH_MARKS.get(cast(int, self.pitch), '')}"
         return f"{self.quality}{self.pitch}"
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, object]:
         """转换为字典表示"""
-        return {
+        result: dict[str, object] = {
             'type': 'musical',
             'quality': self.quality,
             'pitch': self.pitch,
@@ -40,16 +47,17 @@ class MusicalYinyuan(PitchedYinyuan):
             'duration': self.duration,
             'loudness': self.loudness
         }
+        return result
 
     @classmethod
-    def from_dict(cls, data: dict) -> 'MusicalYinyuan':
+    def from_dict(cls, data: dict[str, object]) -> 'MusicalYinyuan':
         """从字典创建实例"""
         return cls(
-            quality=data['quality'],
-            pitch=data['pitch'],
-            duration=data.get('duration', 'neutral'),
-            loudness=data.get('loudness', 'neutral'),
-            pitch_style=data.get('pitch_style', 'number'),
+            quality=cast(str, data['quality']),
+            _pitch=str(data['pitch']),
+            duration=cast(DurationType, data.get('duration', 'neutral')),
+            loudness=cast(LoudnessType, data.get('loudness', 'neutral')),
+            pitch_style=cast(PitchStyle, data.get('pitch_style', 'number')),
         )
 
 

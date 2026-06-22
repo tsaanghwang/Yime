@@ -5,7 +5,7 @@ tone_statistics_analyzer.py
 """
 
 import math
-from typing import List, Optional
+from typing import Dict, List, Optional, Sequence
 
 
 class ToneStatisticsAnalyzer:
@@ -33,7 +33,7 @@ class ToneStatisticsAnalyzer:
                     f"五度值必须在{ToneStatisticsAnalyzer.MIN_TONE_LEVEL}-{ToneStatisticsAnalyzer.MAX_TONE_LEVEL}之间，当前值: {level}")
 
     @staticmethod
-    def calculate_tone_value_stats(pitch_levels: List[int], weights: Optional[List[float]] = None) -> dict:
+    def calculate_tone_value_stats(pitch_levels: List[int], weights: Optional[List[float]] = None) -> Dict[str, float]:
         """
         计算单个调值的统计指标(中值、范围、标准差)
         :param pitch_levels: 调值列表
@@ -70,7 +70,7 @@ class ToneStatisticsAnalyzer:
         }
 
     @staticmethod
-    def calculate_tone_category_stats(tone_values_stats: List[dict], weights: Optional[List[float]] = None) -> dict:
+    def calculate_tone_category_stats(tone_values_stats: List[Dict[str, float]], weights: Optional[List[float]] = None) -> Dict[str, float]:
         """
         计算调类统计指标
         :param tone_values_stats: 该调类的多个调值统计指标列表
@@ -99,7 +99,7 @@ class ToneStatisticsAnalyzer:
         }
 
     @staticmethod
-    def calculate_tone_system_stats(category_stats: List[dict]) -> dict:
+    def calculate_tone_system_stats(category_stats: List[Dict[str, float]]) -> Dict[str, float]:
         """
         计算调系统计指标
         :param category_stats: 各调类统计指标列表
@@ -118,10 +118,11 @@ class ToneStatisticsAnalyzer:
         }
 
     @staticmethod
-    def calculate_variation_coefficient(values):
+    def calculate_variation_coefficient(values: Sequence[float]) -> float:
         """计算变异系数（标准差/均值）评估离散程度"""
         mean = sum(values) / len(values)
-        std_dev = (sum((x - mean)**2 for x in values) / len(values))**0.5
+        squared_diffs = ((x - mean) ** 2 for x in values)
+        std_dev = (sum(squared_diffs) / len(values)) ** 0.5
         return std_dev / mean
 
     # 应用示例
