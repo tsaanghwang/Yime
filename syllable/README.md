@@ -168,7 +168,7 @@ from syllable import Syllable, SyllableCategorizer, YinjieAnalyzer
 完整约定见 **[NAMING.md](NAMING.md)**。摘要：
 
 - **`syllable/pianyin/`**：片音 canonical 模块；主链 `from_pianyin` 使用 `PitchedPianyin` / `UnpitchedPianyin`。
-- **`syllable/analysis/pianyin.py`**：与 `pianyin/pianyin.py` 重复副本；**勿 import**；处置见 [LEGACY_ANALYSIS.md](LEGACY_ANALYSIS.md)
+- **已删除 `syllable/analysis/pianyin.py`**：原为与 `pianyin/pianyin.py` 重复的旧副本；请统一使用 canonical 的 `syllable/pianyin/`。
 - **`syllable/analysis/pitched_pianyin.py`**：`YueyinPianyin` 仅试验链；≠ `pianyin.PitchedPianyin`。
 
 ## 测试

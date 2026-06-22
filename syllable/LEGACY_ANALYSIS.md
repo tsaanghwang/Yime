@@ -16,9 +16,8 @@
 | 路径 | 引用情况 | 建议处置 |
 | ------ | ---------- | ---------- |
 | `syllable/pianyin/pianyin.py` | 主链 / 试验 | **Canonical** 片音简单模型 |
-| `syllable/analysis/pianyin.py` | 零 import | **重复副本**；与上 diff 后仅删若完全同源；保留前记录于 git |
+| `syllable/analysis/pianyin.py` | 已删除 | 原为与 `syllable/pianyin/pianyin.py` 重复的旧副本；后续勿恢复 |
 | `syllable/pianyin/indeterminate_pitch_pianyin.py` | pianyin 包 | **Canonical** 无调片音 |
-| `syllable/analysis/unpitched_pianyin.py` | 零 import | **重复副本**；同上 |
 | `syllable/analysis/pitched_pianyin.py` | `tools/syllable_analysis/ganyin_slicer.py` | **试验链**；`YueyinPianyin` 非主链默认，**保留** |
 | `syllable/analysis/yueyin_yinyuan.py` | `GanyinEncoder` 等 | **生产** 乐音音元 |
 | `syllable/analysis/pitched_yinyuan.py` | 被 yueyin 继承 | **生产**；末尾空壳 `YueyinYinyuan: pass` 勿扩展 |

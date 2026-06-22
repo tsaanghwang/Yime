@@ -51,7 +51,7 @@ class TestYinyuanRefactorFlow(unittest.TestCase):
         self.assertEqual(yueyin.quality, "a")
         self.assertEqual(yueyin.pitch, "4")
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             YueyinYinyuan.from_pianyin(UnpitchedPianyin("p"))
 
 

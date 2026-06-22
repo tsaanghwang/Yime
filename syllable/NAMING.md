@@ -51,7 +51,7 @@
 
 | 禁止行为 | 原因 |
 | ---------- | ------ |
-| 新建 `analysis/pianyin.py` 或复制 `pianyin/pianyin.py` | 已有 canonical 副本 |
+| 新建 `analysis/pianyin.py` 或复制 `pianyin/pianyin.py` | 旧重复副本已删除；请只使用 canonical 模块 |
 | 新建第二个「乐音片音」类名如 `MusicalPianyin` | 用上表已有类 |
 | 将 `Ganyin*` 类重命名为 `Yueyin*` | 干音 ≠ 乐音 |
 | 改写 `Yinjie` 层级或新建平行音节类（如「首音+乐音」两分支） | 真源为 `codec/yinjie.py` + [TERMINOLOGY_INDEX](../docs/TERMINOLOGY_INDEX.md) |
@@ -67,8 +67,6 @@
 
 | 路径 | 状态 |
 | ------ | ------ |
-| `analysis/pianyin.py` | 与 `pianyin/pianyin.py` 重复，**零引用**；**勿 import**；删除前 diff + 见 LEGACY_ANALYSIS |
-| `analysis/unpitched_pianyin.py` | 与 `pianyin/indeterminate_pitch_pianyin.py` 重复，**零引用**；同上 |
 | `analysis/pitched_pianyin.py` | **试验链**（`ganyin_slicer`）；**保留** |
 | `pitched_yinyuan.py` 末尾空壳 `class YueyinYinyuan: pass` | 兼容占位；真类在 `yueyin_yinyuan.py`；**勿扩展** |
 

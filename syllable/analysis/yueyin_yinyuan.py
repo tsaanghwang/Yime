@@ -40,8 +40,8 @@ class YueyinYinyuan(MusicalYinyuan):
     @classmethod
     def from_pianyin(cls, pianyin: PitchedPianyin) -> 'YueyinYinyuan':
         """从乐音片音对象创建乐音音元对象。"""
-        if not isinstance(pianyin, PitchedPianyin):
-            raise TypeError("YueyinYinyuan 只能由乐音片音创建")
+        if pianyin.pitch is None:
+            raise ValueError("YueyinYinyuan 只能由带音高的乐音片音创建")
 
         return cls(
             quality=pianyin.quality,
