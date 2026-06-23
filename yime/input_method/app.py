@@ -12,7 +12,7 @@ import os
 import queue
 import time
 import tkinter as tk
-from typing import Any, Callable, Optional, cast
+from typing import Callable, Optional
 
 from .app_base import BaseInputMethodApp
 from .ui.candidate_box import CandidateBox

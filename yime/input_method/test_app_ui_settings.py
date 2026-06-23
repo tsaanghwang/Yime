@@ -1,3 +1,5 @@
+# pyright: reportPrivateUsage=false, reportAttributeAccessIssue=false, reportUnknownMemberType=false
+
 import json
 from pathlib import Path
 
@@ -107,7 +109,7 @@ def test_on_candidate_page_size_change_persists_setting(tmp_path: Path) -> None:
     app.background_color = "#f0f0f0"
     app.active_topmost_enabled = True
     app.reverse_lookup_display_mode = "default"
-    app._on_input_change = lambda event=None: None
+    app._on_input_change = lambda _event=None: None
 
     app._on_candidate_page_size_change(8)
     app._on_candidate_layout_change("vertical")
@@ -295,7 +297,7 @@ def test_hotkey_change_persists_and_rebinds_listener(tmp_path: Path) -> None:
     app._is_hotkey_wake_enabled = InputMethodApp._is_hotkey_wake_enabled.__get__(app, InputMethodApp)
     app._is_hotkey_standby_enabled = InputMethodApp._is_hotkey_standby_enabled.__get__(app, InputMethodApp)
     app._save_ui_settings = BaseInputMethodApp._save_ui_settings.__get__(app, BaseInputMethodApp)
-    app._emit_feedback = lambda title, message, level="info", dialog=False: feedback_calls.append((title, message))
+    app._emit_feedback = lambda title, message, _level="info", _dialog=False: feedback_calls.append((title, message))
 
     changed = InputMethodApp._on_hotkey_change(app, "Ctrl+Shift+Y")
 

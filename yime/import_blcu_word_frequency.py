@@ -3,7 +3,6 @@
 from yime.utils.blcu_word_frequency_import import (
     BCC_CITATION,
     ImportStats,
-    OBSOLETE_FREQUENCY_METADATA_KEYS,
     apply_frequency_updates,
     backup_database,
     load_char_frequency_map,
@@ -22,7 +21,6 @@ from yime.utils.blcu_word_frequency_import import (
 __all__ = [
     "BCC_CITATION",
     "ImportStats",
-    "OBSOLETE_FREQUENCY_METADATA_KEYS",
     "apply_frequency_updates",
     "backup_database",
     "load_char_frequency_map",

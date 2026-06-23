@@ -1,5 +1,6 @@
 import tkinter as tk
 from types import SimpleNamespace
+from typing import Any, cast
 
 import pytest
 
@@ -102,7 +103,7 @@ def test_set_candidate_layout_requests_resize_when_layout_changes() -> None:
 
     class _FakeBox(CandidateRendererMixin):
         def __init__(self) -> None:
-            self.candidate_layout_var = _FakeVar()
+            self.candidate_layout_var = cast(Any, _FakeVar())
             self._candidate_layout = "horizontal"
             self.sync_calls = 0
             self.render_calls = 0
@@ -121,8 +122,8 @@ def test_set_candidate_layout_requests_resize_when_layout_changes() -> None:
 
     box.set_candidate_layout("vertical")
 
-    assert box.candidate_layout_var.value == "vertical"
-    assert box._candidate_layout == "vertical"
+    assert cast(Any, box.candidate_layout_var).value == "vertical"
+    assert cast(Any, box)._candidate_layout == "vertical"
     assert box.sync_calls == 1
     assert box.render_calls == 1
     assert box.resize_calls == 1
@@ -142,24 +143,26 @@ def test_hover_tip_lifecycle_uses_real_tk_tooltip_window() -> None:
         box.set_status("候选区提示")
         box.root.update_idletasks()
 
-        box._on_hover_tip_enter(SimpleNamespace(x_root=240, y_root=160), lambda: box._status_text)
+        event = cast(Any, SimpleNamespace(x_root=240, y_root=160))
+        getattr(box, "_on_hover_tip_enter")(event, lambda: cast(Any, box)._status_text)
         box.root.update_idletasks()
 
-        assert box._tooltip_window is not None
-        assert box._tooltip_label is not None
-        assert box._tooltip_window.winfo_exists() == 1
-        assert str(box._tooltip_label.cget("text")) == "候选区提示"
+        assert cast(Any, box)._tooltip_window is not None
+        assert cast(Any, box)._tooltip_label is not None
+        assert cast(Any, box)._tooltip_window.winfo_exists() == 1
+        assert str(cast(Any, box)._tooltip_label.cget("text")) == "候选区提示"
 
         box.set_hover_tip_enabled(False)
         box.root.update_idletasks()
 
-        assert box._tooltip_window is None
-        assert box._tooltip_label is None
+        assert cast(Any, box)._tooltip_window is None
+        assert cast(Any, box)._tooltip_label is None
 
-        box._on_hover_tip_enter(SimpleNamespace(x_root=260, y_root=180), lambda: box._status_text)
+        event = cast(Any, SimpleNamespace(x_root=260, y_root=180))
+        getattr(box, "_on_hover_tip_enter")(event, lambda: cast(Any, box)._status_text)
         box.root.update_idletasks()
 
-        assert box._tooltip_window is None
-        assert box._tooltip_label is None
+        assert cast(Any, box)._tooltip_window is None
+        assert cast(Any, box)._tooltip_label is None
     finally:
         box.root.destroy()

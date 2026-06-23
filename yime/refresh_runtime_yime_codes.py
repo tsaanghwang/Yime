@@ -18,7 +18,7 @@ def __dir__() -> list[str]:
     return sorted(set(globals()) | set(dir(_impl)))
 
 
-__all__ = [name for name in dir(_impl) if not name.startswith("_")]
+__all__ = getattr(_impl, "__all__", ())  # pyright: ignore[reportUnsupportedDunderAll]
 
 
 if __name__ == "__main__":

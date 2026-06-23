@@ -3,7 +3,11 @@
 from __future__ import annotations
 
 from importlib import import_module
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+
+if TYPE_CHECKING:
+	from .app import InputMethodApp
 
 __version__ = "1.0.0"
 __author__ = "Yime Team"

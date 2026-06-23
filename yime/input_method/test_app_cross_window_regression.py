@@ -1,5 +1,12 @@
+# pyright: reportAttributeAccessIssue=false, reportPrivateUsage=false
+
+from collections.abc import Callable
+
 from yime.input_method.app import InputMethodApp
 from yime.input_method.app_base import BaseInputMethodApp
+
+
+_ScheduledCallbacks = list[tuple[int, Callable[[], None]]]
 
 
 class _FakeKeyboardSimulator:
@@ -32,8 +39,8 @@ class _FakeCandidateBox:
         self._events.append(("clear_input", focus_input))
 
 
-def _run_scheduled_callbacks(scheduled: list[tuple[int, object]]) -> None:
-    for _delay, callback in scheduled:
+def _run_scheduled_callbacks(scheduled: _ScheduledCallbacks) -> None:
+    for _, callback in scheduled:
         callback()
 
 
@@ -98,7 +105,7 @@ def test_paste_to_previous_window_reports_restore_failure_and_unlocks() -> None:
 def test_paste_to_previous_window_replaces_existing_code_and_refocuses_when_keep_input() -> None:
     app = BaseInputMethodApp.__new__(BaseInputMethodApp)
     events: list[object] = []
-    scheduled: list[tuple[int, object]] = []
+    scheduled: _ScheduledCallbacks = []
     app.keyboard_simulator = _FakeKeyboardSimulator(events)
     app.last_replace_length = 4
     app._current_external_target_hwnd = lambda: 30003
@@ -123,13 +130,13 @@ def test_paste_to_previous_window_replaces_existing_code_and_refocuses_when_keep
         ("feedback", "回贴", "已替换 4 个编码字符: 你好 -> hwnd=30003 标题=Fake 类=Fake"),
         "refocus",
     ]
-    assert [delay for delay, _callback in scheduled] == [40, 80, 170, 280, 320]
+    assert [delay for delay, _ in scheduled] == [40, 80, 170, 280, 320]
 
 
 def test_paste_to_previous_window_pastes_without_backspace_and_unlocks_when_not_keep_input() -> None:
     app = BaseInputMethodApp.__new__(BaseInputMethodApp)
     events: list[object] = []
-    scheduled: list[tuple[int, object]] = []
+    scheduled: _ScheduledCallbacks = []
     app.keyboard_simulator = _FakeKeyboardSimulator(events)
     app.last_replace_length = 0
     app._current_external_target_hwnd = lambda: 30003
@@ -153,13 +160,13 @@ def test_paste_to_previous_window_pastes_without_backspace_and_unlocks_when_not_
         ("feedback", "回贴", "已回贴: 你好 -> hwnd=30003 标题=Fake 类=Fake"),
         "unlock",
     ]
-    assert [delay for delay, _callback in scheduled] == [40, 80, 180, 220]
+    assert [delay for delay, _ in scheduled] == [40, 80, 180, 220]
 
 
 def test_commit_candidate_box_text_schedules_paste_and_clears_commit_text_when_target_exists() -> None:
     app = BaseInputMethodApp.__new__(BaseInputMethodApp)
     events: list[object] = []
-    scheduled: list[tuple[int, object]] = []
+    scheduled: _ScheduledCallbacks = []
     app.clipboard = _FakeClipboard(events)
     app.candidate_box = _FakeCandidateBox(events)
     app.last_replace_length = 9
@@ -178,13 +185,13 @@ def test_commit_candidate_box_text_schedules_paste_and_clears_commit_text_when_t
         ("clear_input", False),
         ("paste", "你好"),
     ]
-    assert [delay for delay, _callback in scheduled] == [50]
+    assert [delay for delay, _ in scheduled] == [50]
 
 
 def test_commit_candidate_box_text_unlocks_without_scheduling_paste_when_no_target() -> None:
     app = BaseInputMethodApp.__new__(BaseInputMethodApp)
     events: list[object] = []
-    scheduled: list[tuple[int, object]] = []
+    scheduled: _ScheduledCallbacks = []
     app.clipboard = _FakeClipboard(events)
     app.candidate_box = _FakeCandidateBox(events)
     app.last_replace_length = 9
@@ -208,7 +215,7 @@ def test_commit_candidate_box_text_unlocks_without_scheduling_paste_when_no_targ
 def test_commit_candidate_box_text_can_schedule_three_consecutive_cross_window_pastes() -> None:
     app = BaseInputMethodApp.__new__(BaseInputMethodApp)
     events: list[object] = []
-    scheduled: list[tuple[int, object]] = []
+    scheduled: _ScheduledCallbacks = []
     app.clipboard = _FakeClipboard(events)
     app.candidate_box = _FakeCandidateBox(events)
     app.last_replace_length = 7

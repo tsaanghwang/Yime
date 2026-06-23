@@ -1,3 +1,7 @@
+# pyright: reportAttributeAccessIssue=false, reportMissingParameterType=false, reportPrivateUsage=false, reportUnknownLambdaType=false, reportUnknownMemberType=false, reportUnknownParameterType=false, reportUnknownVariableType=false
+
+from pathlib import Path
+
 from yime.input_method.app import InputMethodApp
 from yime.input_method.app_base import BaseInputMethodApp
 from yime.input_method.app_global import GlobalListenerApp
@@ -11,7 +15,7 @@ class _FakeCandidateBox:
         self.statuses.append(status)
 
 
-def test_configure_input_mode_uses_unified_feedback_for_hotkey_mode(tmp_path) -> None:
+def test_configure_input_mode_uses_unified_feedback_for_hotkey_mode(tmp_path: Path) -> None:
     app = InputMethodApp.__new__(InputMethodApp)
     app.input_mode = "hotkey"
     app.hotkey = InputMethodApp._DEFAULT_HOTKEY
@@ -74,7 +78,7 @@ def test_configure_input_mode_uses_unified_feedback_for_hotkey_mode(tmp_path) ->
     assert app.candidate_box.statuses == [message]
 
 
-def test_build_runtime_readiness_summary_includes_structured_diagnostics_and_advice(tmp_path) -> None:
+def test_build_runtime_readiness_summary_includes_structured_diagnostics_and_advice(tmp_path: Path) -> None:
     app = BaseInputMethodApp.__new__(BaseInputMethodApp)
     occupied_path = tmp_path / "UserLexicon"
     occupied_path.write_text("occupied", encoding="utf-8")
@@ -137,7 +141,7 @@ def test_return_hotkey_session_to_standby_uses_unified_feedback() -> None:
     app.input_manager = type(
         "FakeInputManager",
         (),
-        {"clear_buffer": lambda self, notify=False: events.append(("clear_buffer", notify))},
+        {"clear_buffer": lambda _self, notify=False: events.append(("clear_buffer", notify))},
     )()
     app.candidate_box.clear_input = lambda focus_input=False: events.append(("clear", focus_input))
     app.candidate_box.clear_commit_text = lambda: events.append("clear_commit")
@@ -197,10 +201,10 @@ def test_global_listener_run_uses_unified_feedback_for_ready_status() -> None:
         def is_active(self) -> bool:
             return False
 
-    app._on_key_press = lambda key_info: True
+    app._on_key_press = lambda _key_info: True
 
     original_keyboard_listener = GlobalListenerApp.run.__globals__["KeyboardListener"] if "KeyboardListener" in GlobalListenerApp.run.__globals__ else None
-    GlobalListenerApp.run.__globals__["KeyboardListener"] = lambda on_key_press: _FakeKeyboardListener()
+    GlobalListenerApp.run.__globals__["KeyboardListener"] = lambda _on_key_press: _FakeKeyboardListener()
     try:
         GlobalListenerApp.run(app)
     finally:

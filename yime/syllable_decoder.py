@@ -12,8 +12,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 try:
     from yime.utils.charfilter import is_allowed_code_char, is_pua_char
@@ -28,19 +29,30 @@ from syllable.codec.yinjie_decoder import (
     YinjieDecoderRunResult,
 )
 
+type _SplitPiece = tuple[object, ...]
+type _NormalizedSplit = tuple[object, object | None, _SplitPiece, _SplitPiece]
 
-def _normalize_split(res: object) -> tuple | None:
+
+def _tuple_piece(value: object) -> _SplitPiece:
+    """把分段值稳定转换为 tuple，避免动态返回值带来 Unknown 类型。"""
+    if isinstance(value, (list, tuple)):
+        return tuple(cast(Sequence[object], value))
+    return (value,)
+
+
+def _normalize_split(res: object) -> _NormalizedSplit | None:
     """把不同实现的返回值归一化为 (initial, None, (ascender,yunyin), (peak,descender))。"""
     if not res:
         return None
     if isinstance(res, (list, tuple)):
-        if len(res) == 4:
-            return tuple(res)
-        if len(res) >= 3:
-            initial = res[0]
-            third = res[2] if len(res) > 2 else ("", "")
-            fourth = res[3] if len(res) > 3 else ("", "")
-            return (initial, None, tuple(third), tuple(fourth))
+        parts = cast(Sequence[object], res)
+        if len(parts) == 4:
+            return (parts[0], parts[1], _tuple_piece(parts[2]), _tuple_piece(parts[3]))
+        if len(parts) >= 3:
+            initial = parts[0]
+            third = parts[2]
+            fourth: object = parts[3] if len(parts) > 3 else ("", "")
+            return (initial, None, _tuple_piece(third), _tuple_piece(fourth))
     return None
 
 
@@ -80,17 +92,17 @@ class SyllableDecoder(YinjieDecoder):
     def get_ganyin(self, code_or_input: str) -> str:
         """兼容旧接口：返回干音（简化）。"""
         code = self.resolve_code(code_or_input) or code_or_input
-        return (code[0] if code else "") if isinstance(code, str) else ""
+        return code[0] if code else ""
 
     def get_yunyin(self, code_or_input: str) -> str:
         """兼容旧接口：返回韵音（简化）。"""
         code = self.resolve_code(code_or_input) or code_or_input
-        return (code[-1] if code else "") if isinstance(code, str) else ""
+        return code[-1] if code else ""
 
     def get_jianyin_code(self, code_or_input: str) -> str:
         """兼容旧接口：返回简拼（非常简单的缩写）。"""
         code = self.resolve_code(code_or_input) or code_or_input
-        if not isinstance(code, str) or not code:
+        if not code:
             return ""
         return code[:2]
 

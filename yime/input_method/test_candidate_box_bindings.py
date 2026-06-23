@@ -1,3 +1,6 @@
+# pyright: reportPrivateUsage=false, reportArgumentType=false, reportAttributeAccessIssue=false, reportUnknownMemberType=false, reportUnknownArgumentType=false, reportUnknownVariableType=false, reportMissingParameterType=false, reportUnknownParameterType=false, reportUnknownLambdaType=false, reportCallIssue=false
+# cspell:words rootx rooty unconfigured
+
 from yime.input_method.ui.candidate_box_actions import CandidateBoxActions
 from yime.input_method.ui.candidate_box import CandidateBox
 from types import SimpleNamespace

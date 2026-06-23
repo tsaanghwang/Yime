@@ -1,5 +1,6 @@
 from pathlib import Path
 import json
+from typing import Any, cast
 
 from yime.input_method.core.decoders import SQLiteRuntimeCandidateDecoder
 from yime.input_method.utils.runtime_reverse_lookup import RuntimeReverseLookup
@@ -33,7 +34,7 @@ def test_normalize_numeric_pinyin_syllable_spacing_standardizes_v_series() -> No
     assert normalize_numeric_pinyin_syllable_spacing("lvan2 nve4") == "lüan2 nüe4"
 
 
-def test_user_lexicon_store_persists_phrase_entry(tmp_path) -> None:
+def test_user_lexicon_store_persists_phrase_entry(tmp_path: Path) -> None:
     store = UserLexiconStore(tmp_path / "user_lexicon.db")
     action = store.upsert_phrase(
         "日本",
@@ -52,7 +53,7 @@ def test_user_lexicon_store_persists_phrase_entry(tmp_path) -> None:
     assert grouped["ABCD1234"][0]["text"] == "日本"
 
 
-def test_user_lexicon_store_normalizes_compact_numeric_pinyin_spacing(tmp_path) -> None:
+def test_user_lexicon_store_normalizes_compact_numeric_pinyin_spacing(tmp_path: Path) -> None:
     store = UserLexiconStore(tmp_path / "user_lexicon.db")
 
     store.upsert_phrase(
@@ -68,7 +69,7 @@ def test_user_lexicon_store_normalizes_compact_numeric_pinyin_spacing(tmp_path) 
     assert entry.numeric_pinyin == "ri4 ben3"
 
 
-def test_user_lexicon_store_reports_updated_for_existing_phrase(tmp_path) -> None:
+def test_user_lexicon_store_reports_updated_for_existing_phrase(tmp_path: Path) -> None:
     store = UserLexiconStore(tmp_path / "user_lexicon.db")
     store.upsert_phrase("日本", "ri4 ben3", marked_pinyin="rì běn", yime_code="CODE1")
 
@@ -80,10 +81,12 @@ def test_user_lexicon_store_reports_updated_for_existing_phrase(tmp_path) -> Non
     )
 
     assert action == "updated"
-    assert store.lookup_first_phrase("日本").yime_code == "CODE2"
+    updated_entry = store.lookup_first_phrase("日本")
+    assert updated_entry is not None
+    assert updated_entry.yime_code == "CODE2"
 
 
-def test_user_lexicon_store_lists_phrase_entries(tmp_path) -> None:
+def test_user_lexicon_store_lists_phrase_entries(tmp_path: Path) -> None:
     store = UserLexiconStore(tmp_path / "user_lexicon.db")
     store.upsert_phrase("日本", "ri4 ben3", marked_pinyin="rì běn", yime_code="CODE1")
     store.upsert_phrase("今日", "jin1 ri4", marked_pinyin="jīn rì", yime_code="CODE2")
@@ -94,7 +97,7 @@ def test_user_lexicon_store_lists_phrase_entries(tmp_path) -> None:
     assert rows[0].numeric_pinyin == "jin1 ri4"
 
 
-def test_user_lexicon_store_lists_and_resets_frequency_entries(tmp_path) -> None:
+def test_user_lexicon_store_lists_and_resets_frequency_entries(tmp_path: Path) -> None:
     store = UserLexiconStore(tmp_path / "user_lexicon.db")
     store.upsert_phrase("日本", "ri4 ben3", marked_pinyin="rì běn", yime_code="YIME")
     store.record_candidate_selection("ABCD1234", "日本")
@@ -113,7 +116,7 @@ def test_user_lexicon_store_lists_and_resets_frequency_entries(tmp_path) -> None
     assert store.list_candidate_frequency_entries(limit=10) == []
 
 
-def test_user_lexicon_store_exports_and_imports_backup(tmp_path) -> None:
+def test_user_lexicon_store_exports_and_imports_backup(tmp_path: Path) -> None:
     source_store = UserLexiconStore(tmp_path / "source_user_lexicon.db")
     source_store.upsert_phrase(
         "日本",
@@ -141,7 +144,7 @@ def test_user_lexicon_store_exports_and_imports_backup(tmp_path) -> None:
     assert frequency_rows[0].freq == 1
 
 
-def test_user_lexicon_store_exports_and_imports_text_exchange_file(tmp_path) -> None:
+def test_user_lexicon_store_exports_and_imports_text_exchange_file(tmp_path: Path) -> None:
     repo_root = Path(__file__).resolve().parents[2]
     source_store = UserLexiconStore(tmp_path / "source_user_lexicon.db")
     code_ri_ben = resolve_yime_code_from_numeric_pinyin(repo_root, "ri4 ben3")
@@ -188,7 +191,7 @@ def test_user_lexicon_store_exports_and_imports_text_exchange_file(tmp_path) -> 
     assert [(row.text, row.freq) for row in frequency_rows] == [("日本", 2), ("日", 1)]
 
 
-def test_user_lexicon_store_lists_recent_entries(tmp_path) -> None:
+def test_user_lexicon_store_lists_recent_entries(tmp_path: Path) -> None:
     store = UserLexiconStore(tmp_path / "user_lexicon.db")
     store.upsert_phrase("日本", "ri4 ben3", marked_pinyin="rì běn", yime_code="CODE1")
     store.upsert_phrase("今日", "jin1 ri4", marked_pinyin="jīn rì", yime_code="CODE2")
@@ -199,7 +202,7 @@ def test_user_lexicon_store_lists_recent_entries(tmp_path) -> None:
     assert rows[0].phrase in {"日本", "今日"}
 
 
-def test_runtime_reverse_lookup_prefers_user_phrase_entry(tmp_path) -> None:
+def test_runtime_reverse_lookup_prefers_user_phrase_entry(tmp_path: Path) -> None:
     _require_runtime_db()
     repo_root = Path(__file__).resolve().parents[2]
     user_db_path = tmp_path / "user_lexicon.db"
@@ -240,7 +243,7 @@ def test_resolve_yime_code_from_v_series_matches_standard_u_umlaut_input() -> No
     assert resolve_yime_code_from_numeric_pinyin(repo_root, "lvan2 nve4") == resolve_yime_code_from_numeric_pinyin(repo_root, "lüan2 nüe4")
 
 
-def test_sqlite_runtime_decoder_merges_user_phrase_candidates(tmp_path) -> None:
+def test_sqlite_runtime_decoder_merges_user_phrase_candidates(tmp_path: Path) -> None:
     _require_runtime_db()
     repo_root = Path(__file__).resolve().parents[2]
     app_dir = repo_root / "yime"
@@ -264,14 +267,14 @@ def test_sqlite_runtime_decoder_merges_user_phrase_candidates(tmp_path) -> None:
     assert "日本" in candidates
 
 
-def test_sqlite_runtime_decoder_persists_user_frequency_across_instances(tmp_path) -> None:
+def test_sqlite_runtime_decoder_persists_user_frequency_across_instances(tmp_path: Path) -> None:
     _require_runtime_db()
     repo_root = Path(__file__).resolve().parents[2]
     app_dir = repo_root / "yime"
     user_db_path = tmp_path / "user_lexicon.db"
 
     decoder = SQLiteRuntimeCandidateDecoder(app_dir, user_db_path=user_db_path)
-    decoder.by_code = {
+    cast(Any, decoder).by_code = {
         "abcdefgh": [
             {
                 "text": "安全",
@@ -291,7 +294,7 @@ def test_sqlite_runtime_decoder_persists_user_frequency_across_instances(tmp_pat
             },
         ]
     }
-    decoder._user_freq_by_candidate = decoder.user_lexicon.load_candidate_frequency()
+    setattr(decoder, "_user_freq_by_candidate", decoder.user_lexicon.load_candidate_frequency())
 
     _canonical, _active, _pinyin, candidates, _status = decoder.decode_text("abcdefgh")
     assert candidates[:2] == ["安全", "安权"]
@@ -299,8 +302,8 @@ def test_sqlite_runtime_decoder_persists_user_frequency_across_instances(tmp_pat
     decoder.record_selection("abcdefgh", "安权")
 
     reloaded = SQLiteRuntimeCandidateDecoder(app_dir, user_db_path=user_db_path)
-    reloaded.by_code = decoder.by_code
-    reloaded._user_freq_by_candidate = reloaded.user_lexicon.load_candidate_frequency()
+    cast(Any, reloaded).by_code = cast(Any, decoder).by_code
+    setattr(reloaded, "_user_freq_by_candidate", reloaded.user_lexicon.load_candidate_frequency())
 
     _canonical, _active, _pinyin, promoted, _status = reloaded.decode_text("abcdefgh")
     assert promoted[:2] == ["安权", "安全"]
