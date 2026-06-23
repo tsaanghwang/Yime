@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from typing import Any
 
 import pytest
 
@@ -17,7 +18,7 @@ SAMPLES_PATH = REPO_ROOT / "internal_data" / "local_phrase_priority_samples.json
 RULES_PATH = REPO_ROOT / "internal_data" / "local_phrase_priority_rules.json"
 
 
-def _load_json(path: Path) -> dict:
+def _load_json(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
@@ -78,7 +79,7 @@ def test_local_phrase_priority_sample_hits_top5(
     decoder = request.getfixturevalue(decoder_fixture)
     canonical_code = decoder.pinyin_to_canonical[lookup_pinyin_tone]
 
-    canonical, active, _pinyin, candidates, status = decoder.decode_text(canonical_code)
+    canonical, active, _, candidates, status = decoder.decode_text(canonical_code)
 
     assert canonical == canonical_code
     assert active == canonical_code

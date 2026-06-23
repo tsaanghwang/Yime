@@ -9,12 +9,14 @@
 5. 集成测试 - InputMethodApp
 """
 
+# pyright: reportPrivateUsage=false, reportAttributeAccessIssue=false, reportUnknownMemberType=false, reportUnknownArgumentType=false, reportUnknownVariableType=false, reportMissingParameterType=false, reportUnknownParameterType=false, reportUnusedImport=false, reportPossiblyUnboundVariable=false, reportOptionalMemberAccess=false, reportUnknownLambdaType=false, reportArgumentType=false, reportRedeclaration=false, reportUnusedVariable=false
+# cspell:disable
+
 import sys
 import json
 import time
 import tempfile
 from pathlib import Path
-from typing import Tuple, List
 
 # 添加项目根目录到路径
 project_root = Path(__file__).resolve().parent.parent.parent
@@ -25,7 +27,6 @@ from yime.input_method.core.decoders import (
     RuntimeCandidateDecoder,
     SQLiteRuntimeCandidateDecoder,
     CompositeCandidateDecoder,
-    RuntimeCandidateRecord,
 )
 from yime.input_method.core.input_visualization import (
     build_input_sound_notes,
@@ -48,7 +49,7 @@ class TestResult:
     def __init__(self):
         self.passed = 0
         self.failed = 0
-        self.errors = []
+        self.errors: list[tuple[str, str]] = []
 
     def add_pass(self, test_name: str):
         self.passed += 1

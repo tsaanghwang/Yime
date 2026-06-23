@@ -1,3 +1,6 @@
+# pyright: reportAttributeAccessIssue=false, reportMissingParameterType=false, reportPrivateUsage=false, reportReturnType=false, reportUnknownArgumentType=false, reportUnknownLambdaType=false, reportUnknownMemberType=false, reportUnknownParameterType=false, reportUnusedClass=false
+# cspell: words Reloadable USERCODE
+
 from pathlib import Path
 
 from yime.input_method.app_base import BaseInputMethodApp
