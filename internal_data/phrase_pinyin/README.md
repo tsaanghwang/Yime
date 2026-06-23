@@ -10,7 +10,7 @@ Yime 使用的 **词语普通话读音** SQLite 库。上游数据来自 [phrase
 
 格式示例（`#` 开头为注释行）：
 
-```
+```text
 # version: 0.19.0
 词语: pīn yīn
 一一对应: yī yī duì yìng
@@ -48,12 +48,12 @@ python build_valid_pinyin.py
 
 字段说明：
 
-| 列               | 含义                     |        |
-| ---------------- | ------------------------ | ------ |
-| `phrase`         | 词语文本（主键）         |        |
-| `phrase_len`     | 词语字数                 |        |
-| `common_reading` | 默认读音（空格分隔音节） |        |
-| `readings`       | 全部候选读音，`          | ` 分隔 |
+| 列               | 含义                     |
+| ---------------- | ------------------------ |
+| `phrase`         | 词语文本（主键）         |
+| `phrase_len`     | 词语字数                 |
+| `common_reading` | 默认读音（空格分隔音节） |
+| `readings`       | 全部候选读音，以竖线分隔 |
 
 ## 人工检视
 
@@ -82,8 +82,8 @@ python export_phrase_txt.py
 
 ## 与 hanzi_pinyin 的区别
 
-| | hanzi_pinyin | phrase_pinyin |
-|--|--------------|---------------|
-| 上游源 | Unihan 合并 TSV | phrase-pinyin-data 冒号文本 |
-| 是否音节校验 | 否（原样写入） | 是（对照 `pinyin_normalized.json`） |
-| 多读音分隔 | `,`（音节级） | `|`（整句读音级） |
+| 维度         | hanzi_pinyin    | phrase_pinyin                       |
+| ------------ | --------------- | ----------------------------------- |
+| 上游源       | Unihan 合并 TSV | phrase-pinyin-data 冒号文本         |
+| 是否音节校验 | 否（原样写入）  | 是（对照 `pinyin_normalized.json`） |
+| 多读音分隔   | `,`（音节级）   | 竖线分隔（整句读音级）              |

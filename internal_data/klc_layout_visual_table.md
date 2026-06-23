@@ -1,5 +1,7 @@
 # KLC Visual Table
 
+<!-- markdownlint-disable MD022 MD032 MD058 -->
+
 来源：`internal_data/manual_key_layout.resolved.json`
 
 说明：默认按标准 48 键观察，不包含 `DECIMAL`。单元格显示 `symbol_key + codepoint`。
