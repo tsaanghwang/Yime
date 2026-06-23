@@ -5,6 +5,7 @@ import json
 import sqlite3
 from collections import defaultdict, OrderedDict
 from pathlib import Path
+from typing import Any
 
 from build_source_pinyin_db import DEFAULT_DB_PATH
 from validate_source_pinyin_db import (
@@ -22,7 +23,7 @@ DEFAULT_CODEBOOK_PATH = WORKSPACE_ROOT / "syllable" / "codec" / "yinjie_code.jso
 DEFAULT_SUPPLEMENTAL_PATCH_PATH = SCRIPT_DIR / "pinyin_normalized_patch.json"
 DEFAULT_INVENTORY_TABLE = "m_distinct_syllable_inventory"
 
-PRECOMPOSED_TONE_MARKS = {
+TONE_MARKS = {
     "a": {"1": "ā", "2": "á", "3": "ǎ", "4": "à"},
     "e": {"1": "ē", "2": "é", "3": "ě", "4": "è"},
     "ê": {"1": "ê̄", "2": "ế", "3": "ê̌", "4": "ề"},
@@ -72,7 +73,7 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def validate_db_for_export(conn: sqlite3.Connection) -> dict:
+def validate_db_for_export(conn: sqlite3.Connection) -> dict[str, Any]:
     report = make_report(sample_limit=20)
     validate_source_file_metadata(conn, report)
     validate_char_rows(conn, report)
@@ -191,14 +192,14 @@ def numeric_to_marked_syllable(numeric_pinyin: str) -> str:
     if syllable in special_cases:
         base = special_cases[syllable]
         if syllable == "ng":
-            return PRECOMPOSED_TONE_MARKS["n"][tone] + "g"
+            return TONE_MARKS["n"][tone] + "g"
         if syllable == "hm":
-            return "h" + PRECOMPOSED_TONE_MARKS["m"][tone]
+            return "h" + TONE_MARKS["m"][tone]
         if syllable == "hn":
-            return "h" + PRECOMPOSED_TONE_MARKS["n"][tone]
+            return "h" + TONE_MARKS["n"][tone]
         if syllable == "hng":
-            return "h" + PRECOMPOSED_TONE_MARKS["n"][tone] + "g"
-        return PRECOMPOSED_TONE_MARKS[base][tone]
+            return "h" + TONE_MARKS["n"][tone] + "g"
+        return TONE_MARKS[base][tone]
 
     tone_index: int | None = None
     for vowel in ("a", "o", "e"):
@@ -218,7 +219,7 @@ def numeric_to_marked_syllable(numeric_pinyin: str) -> str:
         return syllable
 
     vowel = syllable[tone_index]
-    marked_vowel = PRECOMPOSED_TONE_MARKS.get(vowel, {}).get(tone)
+    marked_vowel = TONE_MARKS.get(vowel, {}).get(tone)
     if marked_vowel is None:
         return syllable
     return syllable[:tone_index] + marked_vowel + syllable[tone_index + 1:]

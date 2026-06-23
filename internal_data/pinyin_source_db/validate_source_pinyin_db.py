@@ -13,6 +13,7 @@ from build_source_pinyin_db import DEFAULT_DB_PATH, marked_phrase_to_numeric, ma
 
 CODEPOINT_RE = re.compile(r"^U\+[0-9A-F]{4,6}$")
 NUMERIC_SYLLABLE_RE = re.compile(r"^[a-zêü]+[1-5]$")
+# cspell:disable-next-line
 MARKED_ALLOWED_RE = re.compile(r"^[a-zêüāáǎàēéěèếềīíǐìōóǒòūúǔùǖǘǚǜńňǹḿ̄́̌̀]+$")
 
 

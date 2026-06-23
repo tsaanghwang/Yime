@@ -20,7 +20,19 @@ DEFAULT_YINJIE_OUTPUT = WORKSPACE_ROOT / "syllable" / "codec" / "yinjie_code.jso
 DEFAULT_SUMMARY_OUTPUT = SCRIPT_DIR / "rebuild_summary.json"
 
 
-def parse_args() -> argparse.Namespace:
+class Args(argparse.Namespace):
+    db: str
+    char_source: str
+    phrase_source: str
+    normalized_output: str
+    runtime_normalized_output: str
+    skip_runtime_normalized_sync: bool
+    apply_codebook: bool
+    skip_yinjie: bool
+    summary_output: str
+
+
+def parse_args() -> Args:
     parser = argparse.ArgumentParser(
         description=(
             "Rebuild source pinyin assets: import -> validate -> export pinyin_normalized.json. "
@@ -71,7 +83,7 @@ def parse_args() -> argparse.Namespace:
         default=str(DEFAULT_SUMMARY_OUTPUT),
         help="Output path for rebuild summary JSON",
     )
-    return parser.parse_args()
+    return parser.parse_args(namespace=Args())
 
 
 def run_step(step_name: str, command: list[str]) -> None:
@@ -107,6 +119,11 @@ def build_summary(
     apply_codebook: bool,
 ) -> dict[str, object]:
     metadata = load_db_metadata(db_path)
+    counts: dict[str, int] = {
+        "char_rows": int(metadata.get("char_rows", metadata.get("single_char_rows", "0"))),
+        "phrase_rows": int(metadata.get("phrase_rows", "0")),
+        "normalized_rows": load_json_count(normalized_output),
+    }
     summary: dict[str, object] = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "db_path": str(db_path),
@@ -115,16 +132,12 @@ def build_summary(
         "yinjie_output": str(yinjie_output),
         "apply_codebook": apply_codebook,
         "db_metadata": metadata,
-        "counts": {
-            "char_rows": int(metadata.get("char_rows", metadata.get("single_char_rows", "0"))),
-            "phrase_rows": int(metadata.get("phrase_rows", "0")),
-            "normalized_rows": load_json_count(normalized_output),
-        },
+        "counts": counts,
     }
     if yinjie_output.exists():
-        summary["counts"]["yinjie_rows"] = load_json_count(yinjie_output)
+        counts["yinjie_rows"] = load_json_count(yinjie_output)
     else:
-        summary["counts"]["yinjie_rows"] = 0
+        counts["yinjie_rows"] = 0
     return summary
 
 
