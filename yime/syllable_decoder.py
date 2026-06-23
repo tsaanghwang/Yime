@@ -29,8 +29,8 @@ from syllable.codec.yinjie_decoder import (
     YinjieDecoderRunResult,
 )
 
-type _SplitPiece = tuple[object, ...]
-type _NormalizedSplit = tuple[object, object | None, _SplitPiece, _SplitPiece]
+_SplitPiece = tuple[object, ...]
+_NormalizedSplit = tuple[object, object | None, _SplitPiece, _SplitPiece]
 
 
 def _tuple_piece(value: object) -> _SplitPiece:
