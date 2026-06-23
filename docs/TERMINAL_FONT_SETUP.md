@@ -93,7 +93,9 @@ $Host.UI.RawUI.FontName = "Noto Sans"
 
 ```powershell
 # 列出所有可用字体
-[System.Drawing.FontFamily]::Families | Where-Object { $_.Name -like "*Noto*" } | Select-Object Name
+[System.Drawing.FontFamily]::Families |
+    Where-Object { $_.Name -like "*Noto*" } |
+    Select-Object Name
 ```
 
 ### Python

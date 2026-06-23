@@ -34,36 +34,36 @@ python build_valid_pinyin.py
 
 ## 产物
 
-| 文件 | 说明 |
-|------|------|
-| `phrase_pinyin.db` | SQLite 库 |
+| 文件                | 说明                     |
+| ------------------- | ------------------------ |
+| `phrase_pinyin.db`  | SQLite 库                |
 | `phrase_pinyin.txt` | 制表符导出（供人工检视） |
 
 ## 核心表
 
-| 表 | 说明 |
-|----|------|
-| `phrase_source_staging` | 本次从上游导入的原始读音（合并后） |
-| `phrase_pinyin` | **产品用**校验通过的词语读音（稀疏表） |
+| 表                      | 说明                                   |
+| ----------------------- | -------------------------------------- |
+| `phrase_source_staging` | 本次从上游导入的原始读音（合并后）     |
+| `phrase_pinyin`         | **产品用**校验通过的词语读音（稀疏表） |
 
 字段说明：
 
-| 列 | 含义 |
-|----|------|
-| `phrase` | 词语文本（主键） |
-| `phrase_len` | 词语字数 |
-| `common_reading` | 默认读音（空格分隔音节） |
-| `readings` | 全部候选读音，`|` 分隔 |
+| 列               | 含义                     |        |
+| ---------------- | ------------------------ | ------ |
+| `phrase`         | 词语文本（主键）         |        |
+| `phrase_len`     | 词语字数                 |        |
+| `common_reading` | 默认读音（空格分隔音节） |        |
+| `readings`       | 全部候选读音，`          | ` 分隔 |
 
 ## 人工检视
 
-| 视图 / 文件 | 用途 |
-|-------------|------|
-| `phrase_pinyin` | 直接浏览有读音词条（约 41 万条） |
-| `phrase_pinyin.txt` | 同上，TSV 格式便于表格工具打开 |
-| `view_phrase_inspection` | 读音数量、是否有拼音、是否多音 |
-| `view_phrase_staging_diff` | staging 与 `phrase_pinyin` 差异 |
-| `view_staging_inspection` | staging 侧检视 |
+| 视图 / 文件                | 用途                             |
+| -------------------------- | -------------------------------- |
+| `phrase_pinyin`            | 直接浏览有读音词条（约 41 万条） |
+| `phrase_pinyin.txt`        | 同上，TSV 格式便于表格工具打开   |
+| `view_phrase_inspection`   | 读音数量、是否有拼音、是否多音   |
+| `view_phrase_staging_diff` | staging 与 `phrase_pinyin` 差异  |
+| `view_staging_inspection`  | staging 侧检视                   |
 
 校验未通过的词条不会进入 `phrase_pinyin`；`append_pinyin.py` 运行时会打印 `invalid_phrases` 计数与示例。
 

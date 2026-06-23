@@ -1,20 +1,30 @@
 # YIME 商业许可证模板
 
-本文件为商业许可证合同模板，供双方根据具体交易填写、审阅和签署。未经双方正式签署，它本身不单独产生授权效力。
+本文件为商业许可证合同模板，供双方根据具体交易填写、审阅和签署。
+未经双方正式签署，它本身不单独产生授权效力。
 
-This document is a commercial license agreement template for the parties to complete, review, and execute based on a specific transaction. It does not create any license rights by itself unless formally executed by both parties.
+This document is a commercial license agreement template for the parties to
+complete, review, and execute based on a specific transaction. It does not
+create any license rights by itself unless formally executed by both parties.
 
 ## 填写说明
 
 1. 本模板用于整理商业许可证的核心条款，空白项应由双方根据实际交易填写。
-2. 如涉及跨境交易、关联主体共同使用、再分发或客户交付，应在“授权范围”与“授权限制”中明确写明。
-3. 如存在技术支持、升级承诺、服务级别、验收或驻场义务，应在“维护、支持与升级”或附件中补充。
+2. 如涉及跨境交易、关联主体共同使用、再分发或客户交付，
+   应在“授权范围”与“授权限制”中明确写明。
+3. 如存在技术支持、升级承诺、服务级别、验收或驻场义务，
+   应在“维护、支持与升级”或附件中补充。
 
 ## Instructions for Completion
 
-1. This template is intended to capture the core terms of a commercial license, and all blank fields should be completed by the parties based on the actual transaction.
-2. Cross-border use, affiliate use, redistribution, and client-delivery rights should be stated expressly in the scope and restriction sections.
-3. Technical support, upgrade commitments, service levels, acceptance obligations, or on-site obligations should be added in the support section or in an attachment when applicable.
+1. This template is intended to capture the core terms of a commercial license,
+   and all blank fields should be completed by the parties based on the actual
+   transaction.
+2. Cross-border use, affiliate use, redistribution, and client-delivery rights
+   should be stated expressly in the scope and restriction sections.
+3. Technical support, upgrade commitments, service levels, acceptance
+   obligations, or on-site obligations should be added in the support section or
+   in an attachment when applicable.
 
 如果需要按具体商业模式细分，另见：
 
@@ -36,13 +46,15 @@ This document is a commercial license agreement template for the parties to comp
 
 - 项目名称：YIME
 - 授权版本或代码范围：________________
-- 授权交付物：源代码 / 二进制 / 衍生作品 / 文档 / 其他：________________
+- 授权交付物：源代码 / 二进制 / 衍生作品 / 文档 / 其他：
+  ________________
 
 ## 2. Licensed Project and Materials
 
 - Project name: YIME
 - Licensed version or code scope: ________________
-- Licensed deliverables: source code / binaries / derivative works / documentation / other: ________________
+- Licensed deliverables: source code / binaries / derivative works /
+  documentation / other: ________________
 
 ## 3. 许可用途
 
@@ -83,8 +95,10 @@ This document is a commercial license agreement template for the parties to comp
 ## 5. Restrictions
 
 - The licensee may not use the project beyond the agreed scope.
-- No sublicensing to any third party is allowed without prior written consent from the licensor.
-- Any expansion of product scope, customer scope, deployment volume, or service scope requires a separate supplemental agreement.
+- No sublicensing to any third party is allowed without prior written consent
+  from the licensor.
+- Any expansion of product scope, customer scope, deployment volume, or service
+  scope requires a separate supplemental agreement.
 
 ## 6. 费用与支付
 
@@ -112,7 +126,8 @@ This document is a commercial license agreement template for the parties to comp
 - Effective date: ________________
 - License term: ________________
 - Termination conditions: ________________
-- Obligations after termination, including cessation of use, deletion, return, or archival handling: ________________
+- Obligations after termination, including cessation of use, deletion, return,
+  or archival handling: ________________
 
 ## 8. 维护、支持与升级
 
@@ -131,18 +146,24 @@ This document is a commercial license agreement template for the parties to comp
 ## 9. 知识产权、保密与标识
 
 - YIME 及其原始代码、文档和标识的知识产权归许可方所有。
-- 被许可方基于授权范围进行的配置、接口适配或约定成果，其权利归属由双方另行约定。
+- 被许可方基于授权范围进行的配置、接口适配或约定成果，
+  其权利归属由双方另行约定。
 - 商务条件、源代码、内部文档及未公开技术信息是否纳入保密范围：是 / 否
 - 保密期限：________________
 - 是否允许使用许可方名称、标识或项目名称进行市场宣传：允许 / 不允许
 
 ## 9. Intellectual Property, Confidentiality, and Attribution
 
-- Intellectual property in YIME and its original code, documentation, and identifiers remains with the licensor.
-- Ownership of configurations, interface adaptations, or agreed deliverables created within the licensed scope shall be determined separately by the parties.
-- Confidential treatment for commercial terms, source code, internal documentation, and non-public technical information: yes / no
+- Intellectual property in YIME and its original code, documentation, and
+  identifiers remains with the licensor.
+- Ownership of configurations, interface adaptations, or agreed deliverables
+  created within the licensed scope shall be determined separately by the
+  parties.
+- Confidential treatment for commercial terms, source code, internal
+  documentation, and non-public technical information: yes / no
 - Confidentiality period: ________________
-- Use of the licensor name, identifiers, or project name in marketing materials: allowed / not allowed
+- Use of the licensor name, identifiers, or project name in marketing
+  materials: allowed / not allowed
 
 ## 10. 责任限制、适用法律与争议解决
 

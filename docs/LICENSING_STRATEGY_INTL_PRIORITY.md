@@ -27,7 +27,14 @@
 
 可在英文网站、邮件或合同前言中使用如下正式表述：
 
-> This project is available for non-commercial use by default. Any use connected with sales, paid services, client delivery, closed-source integration, SaaS hosting, or other revenue-generating business activity requires a separate written commercial license in advance. The exact scope, term, fees, support commitments, and dispute-resolution terms are governed exclusively by the commercial license signed by the parties.
+> This project is available for non-commercial use by default.
+> Any use connected with sales, paid services, client delivery,
+> closed-source integration, SaaS hosting, or other
+> revenue-generating business activity requires a separate written
+> commercial license in advance.
+> The exact scope, term, fees, support commitments, and
+> dispute-resolution terms are governed exclusively by the commercial
+> license signed by the parties.
 
 ## 优点
 

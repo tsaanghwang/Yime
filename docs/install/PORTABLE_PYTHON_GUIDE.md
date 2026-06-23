@@ -37,7 +37,7 @@
 
 ## 方案一：Python Embedded 3.12
 
-### 1. 下载
+### 1. 下载 WinPython
 
 官方下载目录：
 
@@ -174,7 +174,9 @@ python -m yime.input_method.app
 
 ## 如果你已经有用户级 conda
 
-如果你的机器虽然没有管理员权限，但已经可以使用自己的 Miniconda / conda，那么优先改走主安装文档里的 `yime_env` 路线，不必坚持便携 Python。
+如果你的机器虽然没有管理员权限，但已经可以使用自己的
+Miniconda / conda，那么优先改走主安装文档里的 `yime_env` 路线，
+不必坚持便携 Python。
 
 ## 仓库现有辅助脚本
 

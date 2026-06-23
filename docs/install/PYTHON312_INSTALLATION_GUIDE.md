@@ -48,7 +48,7 @@ conda activate yime_env
 conda activate yime_env
 ```
 
-### 3. 安装依赖
+### 3. 安装依赖（venv312）
 
 ```bash
 python -m pip install --upgrade pip

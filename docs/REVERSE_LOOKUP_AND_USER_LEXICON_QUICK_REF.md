@@ -13,7 +13,7 @@
 
 ## 1. 反查拼音、编码和键位序列
 
-### 在输入法 UI 中
+### 在输入法 UI 中添加词条
 
 1. 启动：
 
@@ -36,7 +36,7 @@ python run_input_method.py
 
 如果你只关心要敲哪几个键，可以在“设置 -> 反查信息”里改成“仅键位序列”。
 
-### 在终端里
+### 在终端里查反查信息
 
 ```bash
 python tools/query_phrase_code.py 日本
@@ -68,7 +68,7 @@ python tools/query_phrase_code.py 日 --like
 已更新当前词条: 日本 | rì běn / ri4 ben3 | <音元编码>
 ```
 
-### 在终端里
+### 在终端里添加词条
 
 ```bash
 python tools/add_user_phrase.py 日本 "ri4 ben3" --marked-pinyin "rì běn"

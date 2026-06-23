@@ -1,3 +1,4 @@
+<!-- markdownlint-disable MD013 -->
 # 音元系统术语说明
 
 ## 文档定位
@@ -223,16 +224,16 @@
 2. 可以说 **首音元 / 呼音元 / 主音元 / 末音元**。
 3. **不要**把“音元位”简写成“音位”。在汉语语音学语境里，“音位”默认对应 `phoneme`，容易造成误读。
 
-| 中文 | 推荐标识 | 说明 |
-| ------ | ---------- | ------ |
-| 音节 | yinjie | 分析单位；分为首音 + 干音 |
-| 首音 | shouyin | **声母及与其联结的调段**构成的音段（通俗：**声母 / 辅音**）；真源见 `syllable/analysis/syllable.py`；**就具体首音而言，实际就是声母** |
-| 干音 | ganyin | **韵母及与其联结的调段**构成的音段（通俗：**带声调的韵母**）；真源见 `syllable/analysis/syllable.py` 的 `Ganyin`；**不是**「乐音」的同义词 |
-| 乐音 | yueyin | 有稳定调段的片音/音元 **类别**；填充干音内呼音、主音、末音（峰前/峰/峰后段） |
-| 噪音 | zaoyin | 首音侧片音/音元类别 |
-| 呼音 | huyin | **Pre-peak** segment of ganyin (`ascender`); **not** medial / onset glide |
-| 主音 | — | **Peak** segment (`peak`) |
-| 末音 | — | **Post-peak** segment (`descender`); **not** rime coda |
+| 中文   | 推荐标识   | 说明                                                                                                                                       |
+| ------ | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| 音节   | yinjie     | 分析单位；分为首音 + 干音                                                                                                                  |
+| 首音   | shouyin    | **声母及与其联结的调段**构成的音段（通俗：**声母 / 辅音**）；真源见 `syllable/analysis/syllable.py`；**就具体首音而言，实际就是声母**      |
+| 干音   | ganyin     | **韵母及与其联结的调段**构成的音段（通俗：**带声调的韵母**）；真源见 `syllable/analysis/syllable.py` 的 `Ganyin`；**不是**「乐音」的同义词 |
+| 乐音   | yueyin     | 有稳定调段的片音/音元 **类别**；填充干音内呼音、主音、末音（峰前/峰/峰后段）                                                               |
+| 噪音   | zaoyin     | 首音侧片音/音元类别                                                                                                                        |
+| 呼音   | huyin      | **Pre-peak** segment of ganyin (`ascender`); **not** medial / onset glide                                                                  |
+| 主音   | —          | **Peak** segment (`peak`)                                                                                                                  |
+| 末音   | —          | **Post-peak** segment (`descender`); **not** rime coda                                                                                     |
 
 结构关系（与 `syllable/codec/yinjie.py` 一致；**禁止改层级**，详见 [TERMINOLOGY_INDEX.md](TERMINOLOGY_INDEX.md)「音节结构」节）：
 

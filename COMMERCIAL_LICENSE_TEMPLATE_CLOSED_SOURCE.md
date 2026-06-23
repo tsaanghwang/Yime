@@ -1,20 +1,29 @@
 # YIME 商业许可证模板（闭源集成版）
 
-本模板适用于将 YIME 集成到闭源桌面软件、闭源服务端产品或商业发行版中的商业许可证场景。未经双方正式签署，它本身不单独产生授权效力。
+本模板适用于将 YIME 集成到闭源桌面软件、闭源服务端产品或商业发行版中的
+商业许可证场景。未经双方正式签署，它本身不单独产生授权效力。
 
-This template is intended for commercial licensing scenarios where YIME is integrated into a closed-source desktop application, server-side product, or commercial distribution. It does not create any license rights by itself unless formally executed by both parties.
+This template is intended for commercial licensing scenarios where YIME is
+integrated into a closed-source desktop application, server-side product, or
+commercial distribution. It does not create any license rights by itself unless
+formally executed by both parties.
 
 ## 填写说明
 
 1. 请明确产品名称、产品类型、版本线以及允许集成的代码范围。
-2. 如授权仅限特定版本、特定分支或特定交付物，应在“期限、终止与后续处理”中写明。
-3. 如涉及闭源分发、品牌露出、升级支持或替换义务，应在相应章节写清适用条件。
+2. 如授权仅限特定版本、特定分支或特定交付物，
+   应在“期限、终止与后续处理”中写明。
+3. 如涉及闭源分发、品牌露出、升级支持或替换义务，
+   应在相应章节写清适用条件。
 
 ## Instructions for Completion
 
-1. Specify the product name, product type, version line, and the exact code scope that may be integrated.
-2. If the license is limited to a specific version, branch, or deliverable, state that expressly in the term section.
-3. Closed-source distribution, branding, upgrade support, and replacement obligations should be stated clearly in the applicable sections.
+1. Specify the product name, product type, version line, and the exact code
+   scope that may be integrated.
+2. If the license is limited to a specific version, branch, or deliverable,
+   state that expressly in the term section.
+3. Closed-source distribution, branding, upgrade support, and replacement
+   obligations should be stated clearly in the applicable sections.
 
 ## 1. 当事人
 
@@ -47,7 +56,8 @@ This template is intended for commercial licensing scenarios where YIME is integ
 ## 3. Licensed Use
 
 - Product name: ________________
-- Product type: desktop software / server-side product / embedded system / other: ________________
+- Product type: desktop software / server-side product / embedded system /
+  other: ________________
 - Planned scope of YIME integration: ________________
 
 ## 4. 授权范围
@@ -66,15 +76,20 @@ This template is intended for commercial licensing scenarios where YIME is integ
 
 ## 5. 授权限制
 
-- 未经书面同意，不得将本授权解释为对其他产品线、其他品牌或其他关联主体的普遍授权。
+- 未经书面同意，不得将本授权解释为对其他产品线、其他品牌或
+  其他关联主体的普遍授权。
 - 未经书面同意，不得单独再许可、出售或输出 YIME 源代码。
 - 被许可方应保证其闭源产品不会删除或伪造 YIME 的权属来源说明。
 
 ## 5. Restrictions
 
-- Without prior written consent, this license may not be interpreted as a general license for other product lines, other brands, or other affiliated entities.
-- Without prior written consent, YIME source code may not be sublicensed, sold, or separately exported.
-- The licensee must ensure that its closed-source product does not remove or falsify YIME ownership attribution.
+- Without prior written consent, this license may not be interpreted as a
+  general license for other product lines, other brands, or other affiliated
+  entities.
+- Without prior written consent, YIME source code may not be sublicensed, sold,
+  or separately exported.
+- The licensee must ensure that its closed-source product does not remove or
+  falsify YIME ownership attribution.
 
 ## 6. 费用与支付
 
@@ -102,7 +117,8 @@ This template is intended for commercial licensing scenarios where YIME is integ
 - License term: ________________
 - Limited to a specific commit, branch, or release version: yes / no
 - Automatic inclusion of later upgrades: yes / no
-- Obligations after termination, including end of distribution, takedown, replacement, or deletion: ________________
+- Obligations after termination, including end of distribution, takedown,
+  replacement, or deletion: ________________
 
 ## 8. 维护、支持与升级
 
@@ -124,9 +140,12 @@ This template is intended for commercial licensing scenarios where YIME is integ
 
 ## 9. Intellectual Property, Confidentiality, and Attribution
 
-- Intellectual property in YIME and its original code, documentation, and identifiers remains with the licensor.
-- Confidential treatment for source code, integration documentation, and non-public commercial terms: yes / no
-- Use of the project name or licensor name in product materials: allowed / not allowed
+- Intellectual property in YIME and its original code, documentation, and
+  identifiers remains with the licensor.
+- Confidential treatment for source code, integration documentation, and
+  non-public commercial terms: yes / no
+- Use of the project name or licensor name in product materials: allowed / not
+  allowed
 
 ## 10. 责任限制、适用法律与争议解决
 
@@ -136,8 +155,11 @@ This template is intended for commercial licensing scenarios where YIME is integ
 
 ## 10. Liability, Governing Law, and Dispute Resolution
 
-- Integration beyond the licensed scope, distribution beyond the licensed scope, or unauthorized sublicensing constitutes a material breach.
-- The licensor may require discontinuation of distribution, removal of unauthorized versions, execution of a supplemental commercial license, or other contractual remedies.
+- Integration beyond the licensed scope, distribution beyond the licensed scope,
+  or unauthorized sublicensing constitutes a material breach.
+- The licensor may require discontinuation of distribution, removal of
+  unauthorized versions, execution of a supplemental commercial license, or
+  other contractual remedies.
 - Governing law and dispute resolution: ________________
 
 ## 11. 签署

@@ -55,7 +55,8 @@
 说明：
 
 - 仓库里有一些历史文档提到其他 Python 版本，但当前 Windows 输入法主线应以 Python 3.12 为准。
-- 即使未拉取完整 Git LFS 数据，只要本地有 `yime/pinyin_hanzi.db`，运行时即可通过 SQLite `runtime_candidates` 查候选，不是安装阻塞项。
+- 即使未拉取完整 Git LFS 数据，只要本地有 `yime/pinyin_hanzi.db`，
+  运行时即可通过 SQLite `runtime_candidates` 查候选，不是安装阻塞项。
 
 ## 依赖
 

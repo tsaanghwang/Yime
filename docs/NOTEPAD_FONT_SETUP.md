@@ -38,9 +38,26 @@
 # 设置记事本字体
 $fontKey = "HKCU:\Software\Microsoft\Notepad"
 
-Set-ItemProperty -Path $fontKey -Name "lfFaceName" -Value "Noto Sans" -Type String -Force
-Set-ItemProperty -Path $fontKey -Name "lfHeight" -Value "-12" -Type DWord -Force
-Set-ItemProperty -Path $fontKey -Name "lfWeight" -Value "400" -Type DWord -Force
+Set-ItemProperty `
+    -Path $fontKey `
+    -Name "lfFaceName" `
+    -Value "Noto Sans" `
+    -Type String `
+    -Force
+
+Set-ItemProperty `
+    -Path $fontKey `
+    -Name "lfHeight" `
+    -Value "-12" `
+    -Type DWord `
+    -Force
+
+Set-ItemProperty `
+    -Path $fontKey `
+    -Name "lfWeight" `
+    -Value "400" `
+    -Type DWord `
+    -Force
 ```
 
 ---
@@ -52,7 +69,7 @@ Set-ItemProperty -Path $fontKey -Name "lfWeight" -Value "400" -Type DWord -Force
 1. 下载：<https://notepad-plus-plus.org/downloads/>
 2. 安装
 
-### 设置字体
+### 在Notepad++中设置字体
 
 1. 打开Notepad++
 2. 设置 → 首选项
@@ -72,7 +89,7 @@ Set-ItemProperty -Path $fontKey -Name "lfWeight" -Value "400" -Type DWord -Force
 
 ## 方法5：使用VS Code
 
-### 设置字体
+### 在VS Code中设置字体
 
 1. 打开VS Code
 2. Ctrl + , 打开设置
@@ -93,27 +110,27 @@ Set-ItemProperty -Path $fontKey -Name "lfWeight" -Value "400" -Type DWord -Force
 
 ## 方法6：使用Windows Terminal测试
 
-**最简单的方法**：直接在Windows Terminal中测试
+最简单的方法：直接在Windows Terminal中测试
 
 ```bash
 # 测试私用区字符
 python -c "print('\uE4F1 \uE4E9 \uE4EA')"
 ```
 
-**Windows Terminal已配置Noto Sans字体，可以直接显示私用区字符**
+Windows Terminal已配置Noto Sans字体，可以直接显示私用区字符。
 
 ---
 
 ## 推荐编辑器对比
 
-| 编辑器 | 字体设置 | 私用区字符 | 推荐度 |
-| --- | --- | --- | --- |
-| **Windows Terminal** | ✅ 支持 | ✅ 显示 | ⭐⭐⭐⭐⭐ |
-| **Notepad++** | ✅ 支持 | ✅ 显示 | ⭐⭐⭐⭐⭐ |
-| **VS Code** | ✅ 支持 | ✅ 显示 | ⭐⭐⭐⭐⭐ |
-| **Word** | ✅ 支持 | ✅ 显示 | ⭐⭐⭐⭐☆ |
-| **记事本 (Win11)** | ✅ 支持 | ⚠️ 可能 | ⭐⭐⭐☆☆ |
-| **记事本 (Win10)** | ❌ 不支持 | ❌ 不显示 | ⭐☆☆☆☆ |
+| 编辑器               | 字体设置  | 私用区字符 | 推荐度     |
+| -------------------- | --------- | ---------- | ---------- |
+| **Windows Terminal** | ✅ 支持   | ✅ 显示    | ⭐⭐⭐⭐⭐ |
+| **Notepad++**        | ✅ 支持   | ✅ 显示    | ⭐⭐⭐⭐⭐ |
+| **VS Code**          | ✅ 支持   | ✅ 显示    | ⭐⭐⭐⭐⭐ |
+| **Word**             | ✅ 支持   | ✅ 显示    | ⭐⭐⭐⭐☆  |
+| **记事本 (Win11)**   | ✅ 支持   | ⚠️ 可能    | ⭐⭐⭐☆☆   |
+| **记事本 (Win10)**   | ❌ 不支持 | ❌ 不显示  | ⭐☆☆☆☆     |
 
 ---
 
@@ -149,13 +166,13 @@ for char in chars:
 
 ## 建议
 
-**最佳实践**：
+### 最佳实践
 
 1. **开发测试**：使用Windows Terminal
 2. **文档编辑**：使用Word或Notepad++
 3. **代码编辑**：使用VS Code
 
-**避免使用**：
+### 避免使用
 
 - Windows 10 记事本（不支持自定义字体）
 - 旧版CMD（字体支持有限）

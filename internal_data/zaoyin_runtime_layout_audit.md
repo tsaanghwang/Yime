@@ -10,15 +10,15 @@
 
 ## 一、来源链总表
 
-| 阶段 | 文件 / 代码 | 作用 | 决定了什么 |
-| --- | --- | --- | --- |
-| 1 | `syllable/yinyuan/zaoyin_yinyuan_enhanced.json` | 首音唯一真源，显式保存 `semantic_code`、`ipa`、`type`、`runtime_char` | 首音标签、语义码与运行时字符的源定义 |
-| 2 | `syllable/analysis/shouyin_encoder.py` 中 `process_shouyin()` | 读取增强版真源中的 `entries` | 运行时首音标签与显式字符映射 |
-| 3 | `syllable/yinyuan/shouyin_codepoint.json` | 保存首音标签到私用区字符的最终运行时映射 | 例如 `b -> `、`zh -> `、`y -> ` |
-| 4 | `syllable/yinyuan/yinyuan_codepoint.json` 中的 `zaoyin` 段 | 保存与 `shouyin_codepoint.json` 平行的一份运行时首音映射 | 运行时总映射文件中的首音部分 |
-| 5 | `internal_data/yinyuan_derived/zaoyin_yinyuan.json` | 由真源导出的兼容文件，只保留 `shouyin -> ipa` | 旧脚本兼容与人工查看 |
-| 6 | `internal_data/key_to_symbol.json` | 当前布局/KLC 侧使用的 `N01-N24` 符号表 | 布局侧字符是否和运行时首音字符一致 |
-| 7 | `internal_data/manual_key_layout.json` / `internal_data/manual_key_layout.resolved.json` | 当前候选布局的物理键分配 | 每个 `Nxx` 被放到哪个键位和层级 |
+| 阶段 | 文件 / 代码                                                                              | 作用                                                                  | 决定了什么                           |
+| ---- | ---------------------------------------------------------------------------------------- | --------------------------------------------------------------------- | ------------------------------------ |
+| 1    | `syllable/yinyuan/zaoyin_yinyuan_enhanced.json`                                          | 首音唯一真源，显式保存 `semantic_code`、`ipa`、`type`、`runtime_char` | 首音标签、语义码与运行时字符的源定义 |
+| 2    | `syllable/analysis/shouyin_encoder.py` 中 `process_shouyin()`                            | 读取增强版真源中的 `entries`                                          | 运行时首音标签与显式字符映射         |
+| 3    | `syllable/yinyuan/shouyin_codepoint.json`                                                | 保存首音标签到私用区字符的最终运行时映射                              | 例如 `b -> `、`zh -> `、`y -> `   |
+| 4    | `syllable/yinyuan/yinyuan_codepoint.json` 中的 `zaoyin` 段                               | 保存与 `shouyin_codepoint.json` 平行的一份运行时首音映射              | 运行时总映射文件中的首音部分         |
+| 5    | `internal_data/yinyuan_derived/zaoyin_yinyuan.json`                                      | 由真源导出的兼容文件，只保留 `shouyin -> ipa`                         | 旧脚本兼容与人工查看                 |
+| 6    | `internal_data/key_to_symbol.json`                                                       | 当前布局/KLC 侧使用的 `N01-N24` 符号表                                | 布局侧字符是否和运行时首音字符一致   |
+| 7    | `internal_data/manual_key_layout.json` / `internal_data/manual_key_layout.resolved.json` | 当前候选布局的物理键分配                                              | 每个 `Nxx` 被放到哪个键位和层级      |
 
 ## 二、与乐音链路的关键差别
 
@@ -38,58 +38,58 @@
 
 ## 三、关键代码锚点
 
-| 位置 | 含义 |
-| --- | --- |
-| `syllable/analysis/shouyin_encoder.py:13` | 首音唯一真源文件 `zaoyin_yinyuan_enhanced.json` |
-| `syllable/analysis/shouyin_encoder.py` | 兼容首音清单输出到 `internal_data/yinyuan_derived/zaoyin_yinyuan.json` |
-| `syllable/analysis/shouyin_encoder.py:15` | 运行时首音映射输出文件 `shouyin_codepoint.json` |
-| `syllable/analysis/shouyin_encoder.py:48` | 读取运行时首音映射产物 |
-| `syllable/analysis/shouyin_encoder.py:76` | 处理增强版真源中的 `entries` 并提取显式字符映射 |
-| `syllable/analysis/shouyin_encoder.py:105` | 从唯一真源读取显式首音到运行时字符映射 |
-| `syllable/analysis/shouyin_encoder.py:124` | 写入 `yinyuan_codepoint.json` 的 `zaoyin` 段 |
-| `syllable/analysis/shouyin_encoder.py:149` | 写入 `shouyin_codepoint.json` 的 `首音` 段 |
+| 位置                                       | 含义                                                                   |
+| ------------------------------------------ | ---------------------------------------------------------------------- |
+| `syllable/analysis/shouyin_encoder.py:13`  | 首音唯一真源文件 `zaoyin_yinyuan_enhanced.json`                        |
+| `syllable/analysis/shouyin_encoder.py`     | 兼容首音清单输出到 `internal_data/yinyuan_derived/zaoyin_yinyuan.json` |
+| `syllable/analysis/shouyin_encoder.py:15`  | 运行时首音映射输出文件 `shouyin_codepoint.json`                        |
+| `syllable/analysis/shouyin_encoder.py:48`  | 读取运行时首音映射产物                                                 |
+| `syllable/analysis/shouyin_encoder.py:76`  | 处理增强版真源中的 `entries` 并提取显式字符映射                        |
+| `syllable/analysis/shouyin_encoder.py:105` | 从唯一真源读取显式首音到运行时字符映射                                 |
+| `syllable/analysis/shouyin_encoder.py:124` | 写入 `yinyuan_codepoint.json` 的 `zaoyin` 段                           |
+| `syllable/analysis/shouyin_encoder.py:149` | 写入 `shouyin_codepoint.json` 的 `首音` 段                             |
 
 ## 四、源标签、IPA 示例、运行时字符与当前布局位置对照
 
-| 槽位 | 首音标签 | IPA 示例 | 运行时字符 | 当前布局位置 |
-| --- | --- | --- | --- | --- |
-| N01 | `b` | `p` | `􀀀` | `base:h` |
-| N02 | `p` | `pʰ` | `􀀁` | `base:y` |
-| N03 | `f` | `f`, `ɸ` | `􀀂` | `base:p` |
-| N04 | `m` | `m` | `􀀃` | `base:[` |
-| N05 | `d` | `t` | `􀀄` | `base:g` |
-| N06 | `t` | `tʰ` | `􀀅` | `base:b` |
-| N07 | `l` | `l`, `ɾ` | `􀀆` | `base:a` |
-| N08 | `n` | `n`, `n̠` | `􀀇` | `base:z` |
-| N09 | `g` | `k` | `􀀈` | `base:8` |
-| N10 | `k` | `kʰ` | `􀀉` | `base:9` |
-| N11 | `h` | `x`, `χ`, `h` | `􀀊` | `base:0` |
-| N12 | `z` | `ʦ` | `􀀋` | `base:5` |
-| N13 | `c` | `ʦʰ` | `􀀌` | `base:6` |
-| N14 | `s` | `s` | `􀀍` | `base:7` |
-| N15 | `zh` | `ʈʂ`, `ꭧ` | `􀀎` | `base:4` |
-| N16 | `ch` | `ʈʂʰ`, `ʦʰ` | `􀀏` | `base:3` |
-| N17 | `sh` | `ʂ` | `􀀐` | `base:2` |
-| N18 | `r` | `ɻ`, `ʐ`, `ɹ`, `z` | `􀀑` | `base:1` |
-| N19 | `j` | `ʨ` | `􀀒` | `base:w` |
-| N20 | `q` | `ʨʰ` | `􀀓` | `base:q` |
-| N21 | `x` | `ɕ` | `􀀔` | `base:]` |
-| N22 | `'` | `ʔ`, ``, `ɣ`, `ŋ` | `􀀕` | 未放入当前布局 |
-| N23 | `w` | `w`, `ʋ` | `􀀖` | 未放入当前布局 |
-| N24 | `y` | `j`, `ɥ` | `􀀗` | 未放入当前布局 |
+| 槽位 | 首音标签 | IPA 示例           | 运行时字符 | 当前布局位置   |
+| ---- | -------- | ------------------ | ---------- | -------------- |
+| N01  | `b`      | `p`                | `􀀀`        | `base:h`       |
+| N02  | `p`      | `pʰ`               | `􀀁`        | `base:y`       |
+| N03  | `f`      | `f`, `ɸ`           | `􀀂`        | `base:p`       |
+| N04  | `m`      | `m`                | `􀀃`        | `base:[`       |
+| N05  | `d`      | `t`                | `􀀄`        | `base:g`       |
+| N06  | `t`      | `tʰ`               | `􀀅`        | `base:b`       |
+| N07  | `l`      | `l`, `ɾ`           | `􀀆`        | `base:a`       |
+| N08  | `n`      | `n`, `n̠`           | `􀀇`        | `base:z`       |
+| N09  | `g`      | `k`                | `􀀈`        | `base:8`       |
+| N10  | `k`      | `kʰ`               | `􀀉`        | `base:9`       |
+| N11  | `h`      | `x`, `χ`, `h`      | `􀀊`        | `base:0`       |
+| N12  | `z`      | `ʦ`                | `􀀋`        | `base:5`       |
+| N13  | `c`      | `ʦʰ`               | `􀀌`        | `base:6`       |
+| N14  | `s`      | `s`                | `􀀍`        | `base:7`       |
+| N15  | `zh`     | `ʈʂ`, `ꭧ`          | `􀀎`        | `base:4`       |
+| N16  | `ch`     | `ʈʂʰ`, `ʦʰ`        | `􀀏`        | `base:3`       |
+| N17  | `sh`     | `ʂ`                | `􀀐`        | `base:2`       |
+| N18  | `r`      | `ɻ`, `ʐ`, `ɹ`, `z` | `􀀑`        | `base:1`       |
+| N19  | `j`      | `ʨ`                | `􀀒`        | `base:w`       |
+| N20  | `q`      | `ʨʰ`               | `􀀓`        | `base:q`       |
+| N21  | `x`      | `ɕ`                | `􀀔`        | `base:]`       |
+| N22  | `'`      | `ʔ`, ``, `ɣ`, `ŋ`  | `􀀕`        | 未放入当前布局 |
+| N23  | `w`      | `w`, `ʋ`           | `􀀖`        | 未放入当前布局 |
+| N24  | `y`      | `j`, `ɥ`           | `􀀗`        | 未放入当前布局 |
 
 ## 五、如何读取首音模板字段
 
 在读取 `internal_data/shouyin_group_template.json` 里新增的布局字段时，可以按下面理解：
 
-| 字段名 | 含义 | 例子 |
-| --- | --- | --- |
-| `runtime_semantic_label` | 该小组在运行时链路里对应的语义类别说明 | `唇音与相关唇部首音`、`翘舌组` |
-| `current_layout_position` | 单个 `Nxx` 当前落在哪个层和物理键 | `base:h`、`base:4`、`base:]` |
-| `physical_reading_order_symbol_keys` | 该小组按当前实际阅读顺序排列的 `Nxx` 列表 | `['N18', 'N17', 'N16', 'N15']` |
-| `physical_reading_order_source_names` | 上一字段对应的运行时首音标签顺序 | `['r', 'sh', 'ch', 'zh']` |
-| `physical_reading_order_positions` | 上一字段对应的物理键位顺序 | `['base:1', 'base:2', 'base:3', 'base:4']` |
-| `unplaced_symbol_keys` | 仍在运行时库存和模板里、但当前布局未落位的槽位 | `['N22']`、`['N23']` |
+| 字段名                                | 含义                                           | 例子                                       |
+| ------------------------------------- | ---------------------------------------------- | ------------------------------------------ |
+| `runtime_semantic_label`              | 该小组在运行时链路里对应的语义类别说明         | `唇音与相关唇部首音`、`翘舌组`             |
+| `current_layout_position`             | 单个 `Nxx` 当前落在哪个层和物理键              | `base:h`、`base:4`、`base:]`               |
+| `physical_reading_order_symbol_keys`  | 该小组按当前实际阅读顺序排列的 `Nxx` 列表      | `['N18', 'N17', 'N16', 'N15']`             |
+| `physical_reading_order_source_names` | 上一字段对应的运行时首音标签顺序               | `['r', 'sh', 'ch', 'zh']`                  |
+| `physical_reading_order_positions`    | 上一字段对应的物理键位顺序                     | `['base:1', 'base:2', 'base:3', 'base:4']` |
+| `unplaced_symbol_keys`                | 仍在运行时库存和模板里、但当前布局未落位的槽位 | `['N22']`、`['N23']`                       |
 
 阅读原则：
 

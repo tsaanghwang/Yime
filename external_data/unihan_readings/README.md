@@ -24,21 +24,21 @@ python build_mandarin_readings_merged.py
 
 ## 核心表
 
-| 表 | 说明 |
-| ---- | ------ |
-| `hanzi` | 码点、汉字、Unicode 块名 |
-| `unihan_readings_raw` | 五列普通话原始值（`kHanyuPinlu` 保留频度，供选常用音） |
-| `unihan_readings_clean` | 五列普通话清洗后（与 merged 合并源一致） |
-| `mandarin_readings_merged` | **产品用**普通话读音：五列全合并 + merge 后补充 + approved 校正 |
-| `mandarin_readings_corrections` | 人工审核覆盖（仅 `status=approved` 在 apply 时 UPDATE merged） |
-| `hanzi_frequency` | BCC 有效单字频 + `frequency_source`（`import_hanzi_frequency.py` 自 `merged_char_freq.txt` 导入；BCC 未命中时用 Unihan 合成序位 5..1/0） |
+| 表                              | 说明                                                                                                                                     |
+| ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `hanzi`                         | 码点、汉字、Unicode 块名                                                                                                                 |
+| `unihan_readings_raw`           | 五列普通话原始值（`kHanyuPinlu` 保留频度，供选常用音）                                                                                   |
+| `unihan_readings_clean`         | 五列普通话清洗后（与 merged 合并源一致）                                                                                                 |
+| `mandarin_readings_merged`      | **产品用**普通话读音：五列全合并 + merge 后补充 + approved 校正                                                                          |
+| `mandarin_readings_corrections` | 人工审核覆盖（仅 `status=approved` 在 apply 时 UPDATE merged）                                                                           |
+| `hanzi_frequency`               | BCC 有效单字频 + `frequency_source`（`import_hanzi_frequency.py` 自 `merged_char_freq.txt` 导入；BCC 未命中时用 Unihan 合成序位 5..1/0） |
 
 ### 分层用视图
 
-| 视图 | 说明 |
-| ------ | ------ |
-| `view_TGHZ2013` | 《通用规范汉字表》8105 字：`codepoint`, `hanzi`, `reading` |
-| `view_hanzi_frequency` | 全部已导入字频：`codepoint`, `hanzi`, `frequency` |
+| 视图                      | 说明                                                                                                             |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `view_TGHZ2013`           | 《通用规范汉字表》8105 字：`codepoint`, `hanzi`, `reading`                                                       |
+| `view_hanzi_frequency`    | 全部已导入字频：`codepoint`, `hanzi`, `frequency`                                                                |
 | `view_tghz2013_frequency` | TGHZ2013 字 + BCC 单字频；`yime/refresh_runtime_yime_codes.py` 据此构建 `char_usage_profile` 3500/6500/8105 分层 |
 
 `cleanup_unihan.py` 会重建上述视图。
@@ -61,11 +61,11 @@ python build_mandarin_readings_merged.py
 
 ### 背景
 
-| 项目 | 情况 |
-| ------ | ------ |
-| Unicode / `hanzi` 表 | U+3007「〇」在 `hanzi_catalog` 中单独列为块「小写零字」 |
-| Unihan Database | 五列普通话字段 **均无** U+3007 |
-| 规范辞书 | 较新版本《新华字典》《现代汉语词典》收「〇」，释 **「零的空位」**，读音 **líng** |
+| 项目                 | 情况                                                                             |
+| -------------------- | -------------------------------------------------------------------------------- |
+| Unicode / `hanzi` 表 | U+3007「〇」在 `hanzi_catalog` 中单独列为块「小写零字」                          |
+| Unihan Database      | 五列普通话字段 **均无** U+3007                                                   |
+| 规范辞书             | 较新版本《新华字典》《现代汉语词典》收「〇」，释 **「零的空位」**，读音 **líng** |
 
 辞书释「〇」为 **零的空位**（数字书写中表示零的占位符）。输入法需要支持，但不应伪造进 `unihan_readings_clean`（非 Unihan 官方数据）。
 

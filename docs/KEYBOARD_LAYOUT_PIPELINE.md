@@ -12,14 +12,18 @@
 当前流程依赖四个前提：
 
 1. `N01-N24` 与 `M01-M33` 是语义槽位层，不是可以删除的临时中间结果。
-2. `internal_data/manual_key_layout.json` 是历史文件名，当前语义应理解为布局真源，不表示 manual install 或手工编译。
+2. `internal_data/manual_key_layout.json` 是历史文件名，
+  当前语义应理解为布局真源，不表示 manual install 或手工编译。
 3. 布局真源只负责“物理键位 -> 语义槽位”的关系，不负责决定长期 canonical 码点。
-4. Windows 当前发布链统一走 `BMP PUA projection -> yinyuan.klc -> MSKLC GUI -> MSI`，不要再绕回旧的 DLL 直装路径。
+4. Windows 当前发布链统一走
+  `BMP PUA projection -> yinyuan.klc -> MSKLC GUI -> MSI`，
+  不要再绕回旧的 DLL 直装路径。
 
 ## 当前有效的生成链
 
 ```text
-拼音/音元语义 -> 槽位与字符映射 -> 布局真源 manual_key_layout.json -> yinyuan.klc -> MSKLC 打包输出 -> MSI 安装
+拼音/音元语义 -> 槽位与字符映射 -> 布局真源 manual_key_layout.json
+-> yinyuan.klc -> MSKLC 打包输出 -> MSI 安装
 ```
 
 ## 各层职责
@@ -53,7 +57,8 @@
 - `internal_data/klc_layout_visual_table.md`
 - `yinyuan.klc`
 - `..\Yime-keyboard-layout\releases\msklc-package\` 下的 MSI、setup、DLL
-- `..\Yime-keyboard-layout\releases\msklc-amd64\`、`..\Yime-keyboard-layout\releases\msklc-wow64\` 下的同步 DLL
+- `..\Yime-keyboard-layout\releases\msklc-amd64\`、
+  `..\Yime-keyboard-layout\releases\msklc-wow64\` 下的同步 DLL
 
 这些都应重建，不应手工长期维护。
 
@@ -97,7 +102,11 @@ python tools/run_msklc_install_pipeline.py --install-mode msi
 如需把布局加入当前用户键盘列表，再运行：
 
 ```powershell
-$klcRepo = if ($env:YIME_KEYBOARD_LAYOUT_REPO) { $env:YIME_KEYBOARD_LAYOUT_REPO } else { (Resolve-Path ..\Yime-keyboard-layout).Path }
+$klcRepo = if ($env:YIME_KEYBOARD_LAYOUT_REPO) {
+  $env:YIME_KEYBOARD_LAYOUT_REPO
+} else {
+  (Resolve-Path ..\Yime-keyboard-layout).Path
+}
 & (Join-Path $klcRepo 'releases\msklc-package\enable-yinyuan-for-current-user.ps1')
 ```
 
@@ -108,14 +117,22 @@ $klcRepo = if ($env:YIME_KEYBOARD_LAYOUT_REPO) { $env:YIME_KEYBOARD_LAYOUT_REPO 
 1. 回滚当前用户键盘项
 
 ```powershell
-$klcRepo = if ($env:YIME_KEYBOARD_LAYOUT_REPO) { $env:YIME_KEYBOARD_LAYOUT_REPO } else { (Resolve-Path ..\Yime-keyboard-layout).Path }
+$klcRepo = if ($env:YIME_KEYBOARD_LAYOUT_REPO) {
+  $env:YIME_KEYBOARD_LAYOUT_REPO
+} else {
+  (Resolve-Path ..\Yime-keyboard-layout).Path
+}
 & (Join-Path $klcRepo 'releases\msklc-package\restore-default-chinese-keyboards.ps1')
 ```
 
 1. 清理机器级注册和系统 DLL
 
 ```powershell
-$klcRepo = if ($env:YIME_KEYBOARD_LAYOUT_REPO) { $env:YIME_KEYBOARD_LAYOUT_REPO } else { (Resolve-Path ..\Yime-keyboard-layout).Path }
+$klcRepo = if ($env:YIME_KEYBOARD_LAYOUT_REPO) {
+  $env:YIME_KEYBOARD_LAYOUT_REPO
+} else {
+  (Resolve-Path ..\Yime-keyboard-layout).Path
+}
 & (Join-Path $klcRepo 'releases\msklc-package\unregister-yinyuan-machine.ps1')
 ```
 

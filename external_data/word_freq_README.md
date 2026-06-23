@@ -6,11 +6,11 @@
 
 合并后的词频来自 [北京语言大学 BCC 语料库](https://bcc.blcu.edu.cn/) 下载中心提供的字词频统计。BCC 提供两类下载：**词频**（`word,freq`，行内可含单字）与 **字频**（`char,freq`，仅单字）。仓库用两条合并链分别处理：
 
-| 输出 | 路径 | 合并脚本 | 含义 |
-| ------ | ------ | ---------- | ------ |
-| 多字词频 | `external_data/word_freq/merged_word_freq.txt` | `tools/merge_word_freq.py` | 词频频道 `*.txt` 中 `len(word) >= 2` 的条目，各频道取 **max(freq)** |
+| 输出         | 路径                                                            | 合并脚本                           | 含义                                                                                                   |
+| ------------ | --------------------------------------------------------------- | ---------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| 多字词频     | `external_data/word_freq/merged_word_freq.txt`                  | `tools/merge_word_freq.py`         | 词频频道 `*.txt` 中 `len(word) >= 2` 的条目，各频道取 **max(freq)**                                    |
 | 词频中的单字 | `external_data/char_freq/word_freq_merged_single_char_freq.txt` | `tools/merge_word_freq.py`（同上） | 词频频道里 **`len(word) == 1`** 的条目；反映「语料词表统计里出现的单字频」，与专用字频频道不是同一文件 |
-| 字频频道单字 | `external_data/char_freq/merged_char_freq.txt` | `tools/merge_char_freq.py` | `char_freq/` 下各频道 `*.txt`（专用字频下载），各频道取 **max(freq)** |
+| 字频频道单字 | `external_data/char_freq/merged_char_freq.txt`                  | `tools/merge_char_freq.py`         | `char_freq/` 下各频道 `*.txt`（专用字频下载），各频道取 **max(freq)**                                  |
 
 **Yime 写库与 runtime 字频导入统一使用 `merged_char_freq.txt`**（专用字频频道 + `char_frequency_policy` 合成兜底）。`word_freq_merged_single_char_freq.txt` 仍保留，用于对照词频派生单字与专用字频频道的差异，或离线分析；二者键集与 count 可能不一致（词频单字 ⊂ 或 ≠ 字频频道，且同字 max 值可能不同）。
 

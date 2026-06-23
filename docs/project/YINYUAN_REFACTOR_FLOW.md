@@ -48,15 +48,21 @@ flowchart TD
 
 ## 模块职责
 
-| 模块 | 重构后职责 |
-| --- | --- |
-| `syllable.analysis.yinyuan_categories` | 共享 `zaoyin / yueyin` 类别轴 |
-| `syllable.pianyin.pianyin` | 片音对象与共享 `category` 接口 |
-| `syllable.analysis.yinyuan` | 音元对象与共享 `category` 接口 |
-| `syllable.analysis.yueyin_yinyuan` | 乐音音元对象；仅保留对象语义与受控桥接 |
-| `syllable.analysis.yueyin_mapper` | 乐音片音归并、双模型归并、调号样式转换 |
-| `syllable.analysis.ganyin_encoder` | 干音结构编码主链 |
-| `tools/syllable_analysis/*` | 统一复用 `YueyinMapper`，不再直接调用 `YueyinYinyuan` 私有方法 |
+- `syllable.analysis.yinyuan_categories`
+  - 共享 `zaoyin / yueyin` 类别轴
+- `syllable.pianyin.pianyin`
+  - 片音对象与共享 `category` 接口
+- `syllable.analysis.yinyuan`
+  - 音元对象与共享 `category` 接口
+- `syllable.analysis.yueyin_yinyuan`
+  - 乐音音元对象；仅保留对象语义与受控桥接
+- `syllable.analysis.yueyin_mapper`
+  - 乐音片音归并、双模型归并、调号样式转换
+- `syllable.analysis.ganyin_encoder`
+  - 干音结构编码主链
+- `tools/syllable_analysis/*`
+  - 统一复用 `YueyinMapper`，不再直接调用
+    `YueyinYinyuan` 私有方法
 
 ## 不再推荐的旧模式
 

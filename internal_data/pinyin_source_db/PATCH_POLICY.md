@@ -17,8 +17,12 @@ c:/dev/Yime/.venv/Scripts/python.exe yime/refresh_runtime_yime_codes.py
 
 按输出判定：
 
-- 如果样例是 `<missing pinyin_tone>`，说明缺的是 `char_readings -> numeric_pinyin_inventory` 这一层，应补 `numeric_pinyin_patch.csv`。
-- 如果样例是 `<missing in code map>`，说明数字调拼音已经进库，但 `syllable/codec/yinjie_code.json` 没有对应 canonical 码，应补 `canonical_yime_patch.csv`。
+- 如果样例是 `<missing pinyin_tone>`，说明缺的是
+  `char_readings -> numeric_pinyin_inventory` 这一层，应补
+  `numeric_pinyin_patch.csv`。
+- 如果样例是 `<missing in code map>`，说明数字调拼音已经进库，
+  但 `syllable/codec/yinjie_code.json` 没有对应 canonical 码，应补
+  `canonical_yime_patch.csv`。
 - 如果两者都不是，而是 `单字受旧表唯一约束阻塞行`，这不是补丁文件要解决的问题，而是旧 schema 残留问题（旧 `音元拼音.全拼 UNIQUE` 表已退役）。
 
 ## 2. 什么时候补 `numeric_pinyin_patch.csv`
@@ -38,7 +42,9 @@ c:/dev/Yime/.venv/Scripts/python.exe yime/refresh_runtime_yime_codes.py
 - `mapping_id`
 - `legacy_numeric_pinyin_id`
 
-它由 [import_danzi_into_prototype_tables.py](../../yime/import_danzi_into_prototype_tables.py) 消费，用来补齐 `numeric_pinyin_inventory`。
+它由
+[import_danzi_into_prototype_tables.py](../../yime/import_danzi_into_prototype_tables.py)
+消费，用来补齐 `numeric_pinyin_inventory`。
 
 简单说：
 
@@ -59,7 +65,10 @@ c:/dev/Yime/.venv/Scripts/python.exe yime/refresh_runtime_yime_codes.py
 - `mapping_id`
 - `yime_code`
 
-它由 [canonical_yime_mapping.py](../../yime/canonical_yime_mapping.py) 消费，用来补齐 canonical 码面，并同步到 `pinyin_yime_code`；`mapping_yime_code` 只作为兼容映射面保留。
+它由
+[canonical_yime_mapping.py](../../yime/canonical_yime_mapping.py)
+消费，用来补齐 canonical 码面，并同步到 `pinyin_yime_code`；
+`mapping_yime_code` 只作为兼容映射面保留。
 
 简单说：
 

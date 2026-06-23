@@ -32,14 +32,19 @@
 
 当前规则不是手工逐条硬编码，而是基于高碰撞桶自动生成：
 
-- 高碰撞桶来源：`yime/reports/runtime_tuning_scan.json`（由 `refresh_runtime_yime_codes.py` 本地生成，不入库）
+- 高碰撞桶来源：`yime/reports/runtime_tuning_scan.json`
+  （由 `refresh_runtime_yime_codes.py` 本地生成，不入库）
 - 规则文件：`internal_data/local_phrase_priority_rules.json`
 - 样本文件：`internal_data/local_phrase_priority_samples.json`
 - 生成脚本：`tools/generate_local_phrase_priority_baseline.py`
 
-当前默认覆盖前 20 个高碰撞单音节桶，每个桶给出 5 条定点词语目标和 10 条样本词语。
+当前默认覆盖前 20 个高碰撞单音节桶，
+每个桶给出 5 条定点词语目标和 10 条样本词语。
 
-`local_phrase_priority_samples.json` 现在除了样本词语外，也会保留每个桶的 `lookup_code`、`candidate_count`、`demand_weight_sum`、`collision_demand_score` 和本轮 `target_phrases`，便于后续连续输入规则继续复用同一批样本入口。
+`local_phrase_priority_samples.json` 现在除了样本词语外，
+也会保留每个桶的 `lookup_code`、`candidate_count`、
+`demand_weight_sum`、`collision_demand_score` 和本轮
+`target_phrases`，便于后续连续输入规则继续复用同一批样本入口。
 
 ## 当前筛选原则
 
@@ -73,7 +78,8 @@
 python tools/generate_local_phrase_priority_baseline.py --write --validate
 ```
 
-如果只想检查当前仓库里的 rules/samples 是否仍与生成逻辑一致，可运行：
+如果只想检查当前仓库里的 rules/samples
+是否仍与生成逻辑一致，可运行：
 
 ```bash
 python tools/generate_local_phrase_priority_baseline.py --validate
@@ -82,8 +88,10 @@ python tools/generate_local_phrase_priority_baseline.py --validate
 对应回归测试：
 
 ```bash
-python -m pytest tests/input_method/test_generate_local_phrase_priority_baseline.py -q
-python -m pytest yime/input_method/test_local_phrase_priority_baseline.py -q
+python -m pytest \
+  tests/input_method/test_generate_local_phrase_priority_baseline.py -q
+python -m pytest \
+  yime/input_method/test_local_phrase_priority_baseline.py -q
 ```
 
 ## 当前边界
@@ -93,7 +101,8 @@ python -m pytest yime/input_method/test_local_phrase_priority_baseline.py -q
 目前仍然没有处理的事情包括：
 
 - 更系统的词库净化与严格词/高频组合分层
-- 连续输入阶段更长上下文下的词语排序
+- 连续输入阶段更长上下文下的
+  词语排序
 - 特殊桶的人工白名单或人工覆盖层
 
 因此应把这套规则理解为：

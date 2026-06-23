@@ -176,7 +176,8 @@ python -m yime.input_method.app
 - `python tools/manage_user_lexicon.py list-recent --limit 10`
 - `python tools/manage_user_lexicon.py export backups/user_lexicon_backup.json`
 - `python tools/manage_user_lexicon.py import backups/user_lexicon_backup.json`
-- `python tools/diagnose_candidate_order.py --numeric-pinyin "ri4 ben3" --limit 10`
+- `python tools/diagnose_candidate_order.py --numeric-pinyin "ri4 ben3"`
+- `python tools/diagnose_candidate_order.py --limit 10`
 
 ## 当前限制
 

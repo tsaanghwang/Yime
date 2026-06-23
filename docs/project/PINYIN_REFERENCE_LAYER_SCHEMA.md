@@ -2,16 +2,18 @@
 
 ## 当前状态（2026-06）
 
-本地库中的旧中文表 **`数字标调拼音` / `多式拼音映射关系` / `音元拼音`** 已从主线移除；生成脚本 `legacy_pinyin_tables/` 亦已删除。
+本地库中的旧中文表
+**`数字标调拼音` / `多式拼音映射关系` / `音元拼音`**
+已从主线移除；生成脚本 `legacy_pinyin_tables/` 亦已删除。
 
 **Runtime 真源（英文表）：**
 
-| 职责 | 表 |
-| --- | --- |
-| 带调音节清单 | `numeric_pinyin_inventory` |
-| 拼音 → 四码 | `pinyin_yime_code` |
-| 四码槽位分解 | `yinjie_slot_decomposition` |
-| 旧 mapping_id 兼容 | `mapping_yime_code` |
+| 职责               | 表                          |
+| ------------------ | --------------------------- |
+| 带调音节清单       | `numeric_pinyin_inventory`  |
+| 拼音 → 四码        | `pinyin_yime_code`          |
+| 四码槽位分解       | `yinjie_slot_decomposition` |
+| 旧 mapping_id 兼容 | `mapping_yime_code`         |
 
 清理工具：`tools/drop_legacy_chinese_pinyin_tables.py`
 
@@ -200,4 +202,8 @@ CREATE TABLE IF NOT EXISTS "多式拼音映射关系" (
 
 ## 当前仓库的着手点
 
-旧三表生成链（`db_manager`、`Initialize_pinyin_mapping`、`split_numeric_pinyin`）已于 2026-06 删除。当前主线见 `docs/project/PINYIN_DATA_MIGRATION.md` 与 `yime/create_prototype_schema_additions.sql`。
+旧三表生成链
+（`db_manager`、`Initialize_pinyin_mapping`、`split_numeric_pinyin`）
+已于 2026-06 删除。当前主线见
+`docs/project/PINYIN_DATA_MIGRATION.md`
+与 `yime/create_prototype_schema_additions.sql`。

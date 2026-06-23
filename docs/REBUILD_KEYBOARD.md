@@ -27,7 +27,11 @@
 如果只想把布局加入当前用户键盘列表，再运行：
 
 ```powershell
-$klcRepo = if ($env:YIME_KEYBOARD_LAYOUT_REPO) { $env:YIME_KEYBOARD_LAYOUT_REPO } else { (Resolve-Path ..\Yime-keyboard-layout).Path }
+$klcRepo = if ($env:YIME_KEYBOARD_LAYOUT_REPO) {
+    $env:YIME_KEYBOARD_LAYOUT_REPO
+} else {
+    (Resolve-Path ..\Yime-keyboard-layout).Path
+}
 & (Join-Path $klcRepo 'releases\msklc-package\enable-yinyuan-for-current-user.ps1')
 ```
 
@@ -36,14 +40,22 @@ $klcRepo = if ($env:YIME_KEYBOARD_LAYOUT_REPO) { $env:YIME_KEYBOARD_LAYOUT_REPO 
 回滚当前用户键盘项：
 
 ```powershell
-$klcRepo = if ($env:YIME_KEYBOARD_LAYOUT_REPO) { $env:YIME_KEYBOARD_LAYOUT_REPO } else { (Resolve-Path ..\Yime-keyboard-layout).Path }
+$klcRepo = if ($env:YIME_KEYBOARD_LAYOUT_REPO) {
+    $env:YIME_KEYBOARD_LAYOUT_REPO
+} else {
+    (Resolve-Path ..\Yime-keyboard-layout).Path
+}
 & (Join-Path $klcRepo 'releases\msklc-package\restore-default-chinese-keyboards.ps1')
 ```
 
 彻底清理机器级注册：
 
 ```powershell
-$klcRepo = if ($env:YIME_KEYBOARD_LAYOUT_REPO) { $env:YIME_KEYBOARD_LAYOUT_REPO } else { (Resolve-Path ..\Yime-keyboard-layout).Path }
+$klcRepo = if ($env:YIME_KEYBOARD_LAYOUT_REPO) {
+    $env:YIME_KEYBOARD_LAYOUT_REPO
+} else {
+    (Resolve-Path ..\Yime-keyboard-layout).Path
+}
 & (Join-Path $klcRepo 'releases\msklc-package\unregister-yinyuan-machine.ps1')
 ```
 

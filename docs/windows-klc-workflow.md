@@ -15,7 +15,15 @@
 
 ## 当前最小顺序
 
-1. 运行 `python tools/run_layout_pipeline.py --on-warning continue --open-msklc never --export-visual-table`
+1. 运行：
+
+   ```bash
+   python tools/run_layout_pipeline.py \
+     --on-warning continue \
+     --open-msklc never \
+     --export-visual-table
+   ```
+
 2. 运行 `python tools/run_msklc_packaging_pipeline.py`
 3. 在 MSKLC GUI 中执行 `Build DLL and Setup Package`
 4. 运行 `python tools/run_msklc_install_pipeline.py --install-mode msi`
@@ -33,15 +41,25 @@
 把 Yinyuan 作为单独键盘项加入当前用户：
 
 ```powershell
-$klcRepo = if ($env:YIME_KEYBOARD_LAYOUT_REPO) { $env:YIME_KEYBOARD_LAYOUT_REPO } else { (Resolve-Path ..\Yime-keyboard-layout).Path }
-& (Join-Path $klcRepo 'releases\msklc-package\enable-yinyuan-for-current-user.ps1')
+$klcRepo = if ($env:YIME_KEYBOARD_LAYOUT_REPO) {
+    $env:YIME_KEYBOARD_LAYOUT_REPO
+} else {
+    (Resolve-Path ..\Yime-keyboard-layout).Path
+}
+& (Join-Path $klcRepo `
+    'releases\msklc-package\enable-yinyuan-for-current-user.ps1')
 ```
 
 恢复默认中文键盘：
 
 ```powershell
-$klcRepo = if ($env:YIME_KEYBOARD_LAYOUT_REPO) { $env:YIME_KEYBOARD_LAYOUT_REPO } else { (Resolve-Path ..\Yime-keyboard-layout).Path }
-& (Join-Path $klcRepo 'releases\msklc-package\restore-default-chinese-keyboards.ps1')
+$klcRepo = if ($env:YIME_KEYBOARD_LAYOUT_REPO) {
+    $env:YIME_KEYBOARD_LAYOUT_REPO
+} else {
+    (Resolve-Path ..\Yime-keyboard-layout).Path
+}
+& (Join-Path $klcRepo `
+    'releases\msklc-package\restore-default-chinese-keyboards.ps1')
 ```
 
 ## 机器级清理入口
@@ -55,8 +73,13 @@ python tools/reset_msklc_install_state.py
 如需直接调用外部仓库里的脚本：
 
 ```powershell
-$klcRepo = if ($env:YIME_KEYBOARD_LAYOUT_REPO) { $env:YIME_KEYBOARD_LAYOUT_REPO } else { (Resolve-Path ..\Yime-keyboard-layout).Path }
-& (Join-Path $klcRepo 'releases\msklc-package\unregister-yinyuan-machine.ps1')
+$klcRepo = if ($env:YIME_KEYBOARD_LAYOUT_REPO) {
+    $env:YIME_KEYBOARD_LAYOUT_REPO
+} else {
+    (Resolve-Path ..\Yime-keyboard-layout).Path
+}
+& (Join-Path $klcRepo `
+    'releases\msklc-package\unregister-yinyuan-machine.ps1')
 ```
 
 ## 一句话定位
@@ -90,22 +113,37 @@ python tools/reset_msklc_install_state.py
 把 Yinyuan 作为单独键盘项加入当前用户：
 
 ```powershell
-$klcRepo = if ($env:YIME_KEYBOARD_LAYOUT_REPO) { $env:YIME_KEYBOARD_LAYOUT_REPO } else { (Resolve-Path ..\Yime-keyboard-layout).Path }
-& (Join-Path $klcRepo 'releases\msklc-package\enable-yinyuan-for-current-user.ps1')
+$klcRepo = if ($env:YIME_KEYBOARD_LAYOUT_REPO) {
+    $env:YIME_KEYBOARD_LAYOUT_REPO
+} else {
+    (Resolve-Path ..\Yime-keyboard-layout).Path
+}
+& (Join-Path $klcRepo `
+    'releases\msklc-package\enable-yinyuan-for-current-user.ps1')
 ```
 
 恢复默认中文键盘：
 
 ```powershell
-$klcRepo = if ($env:YIME_KEYBOARD_LAYOUT_REPO) { $env:YIME_KEYBOARD_LAYOUT_REPO } else { (Resolve-Path ..\Yime-keyboard-layout).Path }
-& (Join-Path $klcRepo 'releases\msklc-package\restore-default-chinese-keyboards.ps1')
+$klcRepo = if ($env:YIME_KEYBOARD_LAYOUT_REPO) {
+    $env:YIME_KEYBOARD_LAYOUT_REPO
+} else {
+    (Resolve-Path ..\Yime-keyboard-layout).Path
+}
+& (Join-Path $klcRepo `
+    'releases\msklc-package\restore-default-chinese-keyboards.ps1')
 ```
 
 彻底清理机器级注册：
 
 ```powershell
-$klcRepo = if ($env:YIME_KEYBOARD_LAYOUT_REPO) { $env:YIME_KEYBOARD_LAYOUT_REPO } else { (Resolve-Path ..\Yime-keyboard-layout).Path }
-& (Join-Path $klcRepo 'releases\msklc-package\unregister-yinyuan-machine.ps1')
+$klcRepo = if ($env:YIME_KEYBOARD_LAYOUT_REPO) {
+    $env:YIME_KEYBOARD_LAYOUT_REPO
+} else {
+    (Resolve-Path ..\Yime-keyboard-layout).Path
+}
+& (Join-Path $klcRepo `
+    'releases\msklc-package\unregister-yinyuan-machine.ps1')
 ```
 
 ## 一句话顺序

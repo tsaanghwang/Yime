@@ -23,7 +23,9 @@
 
 本索引自动生成，所有理论内容请以 Yime.wiki 子项目为权威来源。下列条目均可在 Yime.wiki 中找到，建议直接跳转阅读详细内容。
 
-`Yime.wiki` 作为 Git 子模块接入本仓库，默认主远端约定为 `origin = https://github.com/tsaanghwang/Yime.wiki.git`；如需同步镜像，可使用子模块内保留的 `gitee` 远端。维护子模块连接关系时，应优先保持父仓库 `.gitmodules`、本地子模块配置和子模块内 `origin` 一致，避免再引入并行但重复的 GitHub 远端别名。
+`Yime.wiki` 作为 Git 子模块接入本仓库，默认主远端约定为 `origin = https://github.com/tsaanghwang/Yime.wiki.git`；
+如需同步镜像，可使用子模块内保留的 `gitee` 远端。
+维护子模块连接关系时，应优先保持父仓库 `.gitmodules`、本地子模块配置和子模块内 `origin` 一致，避免再引入并行但重复的 GitHub 远端别名。
 
 ---
 

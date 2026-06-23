@@ -80,4 +80,7 @@ python run_input_method.py
 3. 状态栏最后一句话。
 4. 是否发生误删、误贴、丢焦点或丢目标窗口。
 
-如果这两条都稳定，再考虑补更细的外部应用兼容清单；如果这两条都不稳，优先回到 `test_app_cross_window_regression.py` 和 `app_base.py` 的跨窗口提交流程继续收敛。
+如果这两条都稳定，再考虑补更细的外部应用兼容清单；
+如果这两条都不稳，优先回到
+`test_app_cross_window_regression.py` 和 `app_base.py`
+的跨窗口提交流程继续收敛。

@@ -69,13 +69,42 @@
 
 ## splitter 判别规则表
 
-| 规则组 | 输入模式 | splitter 输出 | 当前运行时 canonical 映射 | 说明 |
-| --- | --- | --- | --- | --- |
-| `y -> j` | `ya/ye/yao/you/yan/yin/yang/ying/yong` 等 `y` 引导且不属 `yu` 系 | `y_j` | `y` | 表示更接近硬腭近音 `j` 的起首 |
-| `y -> ɥ` | `yu/yue/yuan/yun` | `y_rounded` | `y` | 表示更接近圆唇硬腭近音 `ɥ` 的起首 |
-| 零起首普通类 | 元音起首、`ê/m/n` 特殊音节 | `zero_plain` | `'` | 汇总 `ʔ`、空起首、`ɣ` 等零起首情况 |
-| 零起首鼻音类 | `ng/ng1/ng2/ng3/ng4/ng5` | `zero_ng` | `'` | 单列 `ŋ` 类起首，便于编码和语音说明 |
-| `r -> r_ɹ` | 由显式 override 规则表命中 | `r_ɹ` | `r_ɹ` | 单列 `ɹ/z` 类实际起首，避免后续槽位字符错位 |
+1. 规则组：`y -> j`
+
+   - 输入模式：
+     `ya/ye/yao/you/yan/yin/yang/ying/yong` 等 `y` 引导且不属
+     `yu` 系。
+   - splitter 输出：`y_j`
+   - 当前运行时 canonical 映射：`y`
+   - 说明：表示更接近硬腭近音 `j` 的起首。
+
+1. 规则组：`y -> ɥ`
+
+   - 输入模式：`yu/yue/yuan/yun`
+   - splitter 输出：`y_rounded`
+   - 当前运行时 canonical 映射：`y`
+   - 说明：表示更接近圆唇硬腭近音 `ɥ` 的起首。
+
+1. 规则组：零起首普通类
+
+   - 输入模式：元音起首、`ê/m/n` 特殊音节。
+   - splitter 输出：`zero_plain`
+   - 当前运行时 canonical 映射：`'`
+   - 说明：汇总 `ʔ`、空起首、`ɣ` 等零起首情况。
+
+1. 规则组：零起首鼻音类
+
+   - 输入模式：`ng/ng1/ng2/ng3/ng4/ng5`
+   - splitter 输出：`zero_ng`
+   - 当前运行时 canonical 映射：`'`
+   - 说明：单列 `ŋ` 类起首，便于编码和语音说明。
+
+1. 规则组：`r -> r_ɹ`
+
+   - 输入模式：由显式 override 规则表命中。
+   - splitter 输出：`r_ɹ`
+   - 当前运行时 canonical 映射：`r_ɹ`
+   - 说明：单列 `ɹ/z` 类实际起首，避免后续槽位字符错位。
 
 ## 自动规则与 override 规则
 

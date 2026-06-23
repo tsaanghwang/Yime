@@ -1,3 +1,5 @@
+<!-- markdownlint-disable-file MD013 -->
+
 # 术语总入口（人类与 AI 请先读）
 
 本页是 Yime 仓库里 **音元 / 片音 / 音节结构** 相关命名的 **canonical 索引**。
@@ -9,8 +11,8 @@
 
 ## 先读哪一份
 
-| 读者 | 建议顺序 |
-|------|----------|
+| 读者   | 建议顺序   |
+| ------ | ---------- |
 
 | 中文维护者 | 本文 → [YINYUAN_TERMINOLOGY.md](YINYUAN_TERMINOLOGY.md) → [syllable/NAMING.md](../syllable/NAMING.md) |
 | 英文读者 | 本文「Quick reference」→ [YINYUAN_TERMINOLOGY_EN.md](YINYUAN_TERMINOLOGY_EN.md) |
@@ -26,8 +28,8 @@
 
 ### 四套说法，各管一层
 
-| 中文 | 英文 | 文档 | 指什么 | 本仓库怎么用 |
-|------|------|------|--------|--------------|
+| 中文   | 英文   | 文档   | 指什么   | 本仓库怎么用   |
+| ------ | ------ | ------ | -------- | -------------- |
 
 | **时段** | temporal slot | [YINYUAN_TERMINOLOGY.md](YINYUAN_TERMINOLOGY.md) §1 | 语流中可被语音单位占据的**时间位置** | 音元 **占时段**；中文 **不用「槽」** 译 temporal slot |
 | **段**（结构段） | segment (project sense) | 本文「音节结构」、`yinjie.py` 文件头 | 首音 / 干音 / 呼 / 主 / 末等 **音系切分** | 首音**段**、干音**段**；段由 **音元类别** 填充（噪音 / 乐音） |
@@ -46,8 +48,8 @@
 
 ### 推荐 / 避免
 
-| 推荐 | 避免 |
-|------|------|
+| 推荐   | 避免   |
+| ------ | ------ |
 
 | 首音**段**、干音**段**、呼音**段** | 首音**槽**、呼音**槽**（像键盘插孔，且易与 Mxx 混淆） |
 | 四**音元位**、**编码位**、四段**所填音元** | 四**槽**、音元**槽位层**（与 N/M **语义槽位** 撞名） |
@@ -68,8 +70,8 @@
 
 ## 核心术语速查（中文）
 
-| 中文 | 推荐英文 / 标识 | 层次 | 一句话 |
-|------|-----------------|------|--------|
+| 中文   | 推荐英文 / 标识   | 层次   | 一句话   |
+| ------ | ----------------- | ------ | -------- |
 
 | 时段 | temporal slot | 抽象 | 语流中可被占据的时间位置 |
 | 片音 | pianyin, phonic slice | 语音切分 | 按时域切出的语音片片；见专题文档，≠ phone |
@@ -97,16 +99,16 @@
 
 **两条轴（必须分开，不可混为一层）：**
 
-| 轴 | 问什么 | 本仓库答案 |
-|----|--------|------------|
+| 轴   | 问什么   | 本仓库答案   |
+| ---- | -------- | ------------ |
 
 | **结构段** | 音节按位置怎么切？ | **递归二分**（见下表；不是线性链） |
 | **音元类别** | 各段由哪类音元充当？ | 首音 ← **噪音**；呼/主/末 ← **乐音** |
 
 **结构段递归分解**（每一行：父节点 → 子节点之和；与 `yinjie.py` 一致）：
 
-| 节点 | → | 分解 |
-|------|---|------|
+| 节点   | →   | 分解   |
+| ------ | --- | ------ |
 
 | 音节 | → | (首音 + 干音) |
 | 干音 | → | (呼音 + 韵音) |
@@ -186,8 +188,8 @@
 
 ## Quick reference (English)
 
-| Term | Identifier | Layer |
-|------|------------|-------|
+| Term   | Identifier   | Layer   |
+| ------ | ------------ | ------- |
 
 | pianyin | phonic slice | concrete temporal slice |
 | yinyuan | yinyuan | abstract slot-filling unit |
@@ -236,9 +238,11 @@ Do **not** rename project concepts to generic English (`MusicalSegment`, `RimeTo
 2. **禁止** 新建第二份 `pianyin.py`、第二个 `PitchedPianyin` 等同义类（见 NAMING 文档中的「禁止」表）。
 3. **禁止** 将 `ganyin`（干音结构）与 `yueyin`（乐音类别）混为同一概念或类名。
 4. **禁止** 改写 [`syllable/codec/yinjie.py`](../syllable/codec/yinjie.py) 所定义的音节层级（例如压成「首音 + 乐音」、删除干音/韵音中间层、或新建平行 `Yinjie` 结构）。
-5. 无法用英文忠实翻译的概念，**保留拼音标识**（`yinyuan`、`pianyin`、`ganyin`），不要强行换成 `MusicalYinyuan` 之类自造英文名除非 NAMING 表已登记。
+5. 无法用英文忠实翻译的概念，**保留拼音标识**（`yinyuan`、`pianyin`、`ganyin`），
+   不要强行换成 `MusicalYinyuan` 之类自造英文名除非 NAMING 表已登记。
 6. 运行时码表键使用 **带调 numeric 拼音**（如 `zhong1`），不要用英文单词键替代。
-7. 不确定时 **扩写 [TERMINOLOGY_INDEX.md](TERMINOLOGY_INDEX.md) 音节结构节**，不要在外部博客式表述里重新定义术语（易形成错误传播，且曾被 AI 二次放大）。
+7. 不确定时 **扩写 [TERMINOLOGY_INDEX.md](TERMINOLOGY_INDEX.md) 音节结构节**，
+   不要在外部博客式表述里重新定义术语（易形成错误传播，且曾被 AI 二次放大）。
 8. **禁止** 在中文文档里用 **「槽」** 指结构段或四码位；结构用 **段**，四码用 **位**，N/M 用 **语义槽位**（见本文「段/位/时段/语义槽位」节）。
 
 贡献流程亦见 [CONTRIBUTING.md](../CONTRIBUTING.md)。
@@ -254,4 +258,8 @@ Do **not** rename project concepts to generic English (`MusicalSegment`, `RimeTo
 
 ---
 
-**维护说明**：新增「音元/片音/音节结构」相关公开术语时，应先更新 [YINYUAN_TERMINOLOGY.md](YINYUAN_TERMINOLOGY.md)（及 EN 版），再更新 [syllable/NAMING.md](../syllable/NAMING.md)，最后在本页速查表补一行。
+**维护说明**：新增「音元/片音/音节结构」相关公开术语时，应：
+
+1. 先更新 [YINYUAN_TERMINOLOGY.md](YINYUAN_TERMINOLOGY.md)（及 EN 版）；
+2. 再更新 [syllable/NAMING.md](../syllable/NAMING.md)；
+3. 最后在本页速查表补一行。

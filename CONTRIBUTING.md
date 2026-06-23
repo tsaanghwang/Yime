@@ -39,8 +39,9 @@ python run_input_method.py
 
 修改 `syllable/`、音系/编码相关代码或文档前，请先阅读：
 
-- [docs/TERMINOLOGY_INDEX.md](docs/TERMINOLOGY_INDEX.md) — 概念速查、干音 ≠ 乐音、AI 硬性提醒（含 **给英文背景 AI 的特别提醒**）  
-- [syllable/NAMING.md](syllable/NAMING.md) — Python 类名/模块唯一约定  
+- [docs/TERMINOLOGY_INDEX.md](docs/TERMINOLOGY_INDEX.md) — 概念速查、
+  干音 ≠ 乐音、AI 硬性提醒（含 **给英文背景 AI 的特别提醒**）
+- [syllable/NAMING.md](syllable/NAMING.md) — Python 类名/模块唯一约定
 
 专题正文：[docs/YINYUAN_TERMINOLOGY.md](docs/YINYUAN_TERMINOLOGY.md)（中文）、[docs/YINYUAN_TERMINOLOGY_EN.md](docs/YINYUAN_TERMINOLOGY_EN.md)（英文）。
 

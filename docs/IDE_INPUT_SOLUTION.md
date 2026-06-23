@@ -116,7 +116,7 @@
 
 ## IDE特殊配置
 
-### VS Code
+### VS Code（高级配置）
 
 **字体设置**：
 
@@ -130,14 +130,18 @@
 
 **SQLite Explorer 补丁**：
 
-如果 `sqlite3 editor` 因 Windows 或扩展冲突无法注册，而改用 `zknpr.sqlite-explorer`，它的表格与视图字体默认不会跟随 `editor.fontFamily`。仓库里已经提供了一个可重复执行的补丁任务：
+如果 `sqlite3 editor` 因 Windows 或扩展冲突无法注册，而改用
+`zknpr.sqlite-explorer`，它的表格与视图字体默认不会跟随
+`editor.fontFamily`。仓库里已经提供了一个可重复执行的补丁任务：
 
 1. 保持工作区里的 `editor.fontFamily` 以 `Noto Sans` 开头。
 2. 扩展更新后，在 VS Code 里运行 `Tasks: Run Task`。
 3. 选择 `Patch SQLite Explorer Font`。
 4. 重新打开 SQLite Explorer 标签页，必要时执行一次 `Developer: Reload Window`。
 
-对应脚本是 `tools/patch_sqlite_explorer_font.py`。它会自动查找已安装的 `zknpr.sqlite-explorer-*` 目录，并把 SQLite Explorer 的表格/视图 Webview 改成继承 VS Code 的编辑器字体。
+对应脚本是 `tools/patch_sqlite_explorer_font.py`。它会自动查找
+已安装的 `zknpr.sqlite-explorer-*` 目录，并把 SQLite Explorer 的
+表格/视图 Webview 改成继承 VS Code 的编辑器字体。
 
 **输入法设置**：
 
@@ -225,11 +229,11 @@ python tests/manual/test_font_support.py
 
 ### 问题分类
 
-| 问题 | 原因 | 解决方案 |
-| --- | --- | --- |
+| 问题             | 原因          | 解决方案                |
+| ---------------- | ------------- | ----------------------- |
 | **编辑区无显示** | IDE输入法支持 | 配置IDE或使用其他编辑器 |
-| **显示占位符** | 字体不支持 | 使用Noto Sans |
-| **预览区正常** | 字符本身正常 | 在预览区编辑 |
+| **显示占位符**   | 字体不支持    | 使用Noto Sans           |
+| **预览区正常**   | 字符本身正常  | 在预览区编辑            |
 
 ### 建议
 

@@ -1,16 +1,18 @@
+<!-- markdownlint-disable MD013 -->
+
 # Yinyuan Analysis Process
 
 ## Description of the Yinyuan Analysis Process
 
-**Start**
+### Start
 
 - The process of yinyuan analysis is initiated.
 
-**Syllable Analysis**
+### Syllable Analysis
 
 - A syllable is analyzed as a sequence of yinyuan (phonetic variables).
 
-**Initial Sound and Subsequent Sound**
+### Initial Sound and Subsequent Sound
 
 - The syllable is divided into two major segments: the Initial Sound and the Subsequent Sound.
   - **Initial Sound**
@@ -24,14 +26,14 @@
       - The Subsequent Tonal Segment is the tonal segment associated with the Final.
     - After yinyuan analysis, the Subsequent Sound is constituted by Pitched Sounds.
 
-**Initial Sound Analysis**
+### Initial Sound Analysis
 
 - The Initial Sound is divided into two types: Substantial Initial Sound and Insubstantial Initial Sound.
 - Whether substantial or insubstantial, the Initial Sound may be further analyzed in terms of pitch and quality.
 - The pitch of the Initial Sound exhibits no stable pitch and therefore constitutes a non-distinctive feature, whereas the quality of the Initial Sound remains stable and functions as a distinctive feature.
 - Accordingly, in yinyuan analysis, the Initial Sound is represented by Unpitched Sound.
 
-**Subsequent Sound Analysis**
+### Subsequent Sound Analysis
 
 - The Subsequent Sound is divided into four types:
   - **Tri-Quality Subsequent Sound**
@@ -87,7 +89,7 @@
       - The Last Pitch and the Last Quality together form the Last Sound.
     - The Second Sound, the Main Sound, and the Last Sound together constitute the Single-Quality Subsequent Sound.
 
-**End**
+### End
 
 - The process of yinyuan analysis is concluded.
 
@@ -131,7 +133,7 @@ The theoretical significance of yinyuan analysis lies in its treatment of the sy
 
 If the theory is to be further developed, several directions merit particular attention: the addition of more detailed analyses of different final types, the correlation of yinyuan analysis with actual phonetic data, and the clarification of its relationship to more traditional phonological terminology.
 
-### Yinyuan Analysis Process
+### Yinyuan Analysis Flowchart
 
 ```mermaid
 graph TB

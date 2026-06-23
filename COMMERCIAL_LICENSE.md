@@ -2,15 +2,21 @@
 
 本文件用于说明 YIME 的商业许可证政策、适用边界、申请材料和联系路径。
 
-This document states the YIME commercial license policy, the general scope of commercial use, the information required for a request, and the contact path for obtaining a commercial license.
+This document states the YIME commercial license policy, the
+general scope of commercial use, the information required for a
+request, and the contact path for obtaining a commercial license.
 
 YIME 默认允许非商用使用；任何商用使用都必须事先取得作者签发的单独书面商业许可证。
 
-YIME is available for non-commercial use by default. Any commercial use requires a separate written commercial license issued by the author in advance.
+YIME is available for non-commercial use by default. Any
+commercial use requires a separate written commercial license
+issued by the author in advance.
 
 除非双方另有书面约定，本文件本身不构成授权合同，也不单独授予任何商用权利。
 
-Unless otherwise agreed in writing by the parties, this document is not itself a license agreement and does not independently grant any commercial rights.
+Unless otherwise agreed in writing by the parties, this document
+is not itself a license agreement and does not independently grant
+any commercial rights.
 
 ## 中文说明
 
@@ -51,27 +57,45 @@ Unless otherwise agreed in writing by the parties, this document is not itself a
 
 ### What will normally be treated as commercial use
 
-The following situations will normally be treated as commercial use:
+The following situations will normally be treated as commercial
+use:
 
-1. Selling this project or a modified version of it, bundling it with paid software, or distributing it as part of a paid offering.
-2. Integrating this project into a paid product, a SaaS service, an internal paid business system, or a client delivery project.
-3. Using this project to directly support revenue-generating operations, commercial workflows, or paid customer services.
-4. Deploying this project under a commercial brand, within a commercial organization, or under a commercial contract where the deployment is directly related to revenue, cost savings, or customer delivery.
+1. Selling this project or a modified version of it, bundling it
+    with paid software, or distributing it as part of a paid
+    offering.
+2. Integrating this project into a paid product, a SaaS service,
+    an internal paid business system, or a client delivery project.
+3. Using this project to directly support revenue-generating
+    operations, commercial workflows, or paid customer services.
+4. Deploying this project under a commercial brand, within a
+    commercial organization, or under a commercial contract where
+    the deployment is directly related to revenue, cost savings, or
+    customer delivery.
 
-If you are unsure whether your use is commercial, treat it as commercial first and contact the author for confirmation.
+If you are unsure whether your use is commercial, treat it as
+commercial first and contact the author for confirmation.
 
 ### What a commercial license may cover
 
-A separate commercial license may be negotiated based on actual needs. Common points include:
+A separate commercial license may be negotiated based on actual
+needs. Common points include:
 
-1. The licensed entity, the licensed materials, and the scope of rights.
-2. The products, services, projects, or customer environments in which deployment is allowed.
-3. Whether closed-source integration, redistribution, custom development, hosted service operation, or technical support is allowed.
+1. The licensed entity, the licensed materials, and the scope of
+   rights.
+2. The products, services, projects, or customer environments in
+    which deployment is allowed.
+3. Whether closed-source integration, redistribution, custom
+    development, hosted service operation, or technical support is
+    allowed.
 4. The term, territory, fees, renewal method, and termination conditions.
 
-No commercial rights are granted automatically merely because this repository is publicly available, unless the parties agree otherwise in writing.
+No commercial rights are granted automatically merely because
+this repository is publicly available, unless the parties agree
+otherwise in writing.
 
-If the parties proceed to a formal transaction, their specific rights and obligations should be governed exclusively by the executed commercial license agreement.
+If the parties proceed to a formal transaction, their specific
+rights and obligations should be governed exclusively by the
+executed commercial license agreement.
 
 ### Information to include when requesting a commercial license
 
@@ -79,8 +103,10 @@ To help evaluate the request efficiently, please include:
 
 1. Your name or organization name.
 2. Your intended use.
-3. Whether the use involves external sales, paid services, SaaS hosting, or client delivery.
-4. The expected deployment scale, time frame, and whether technical support is needed.
+3. Whether the use involves external sales, paid services, SaaS
+   hosting, or client delivery.
+4. The expected deployment scale, time frame, and whether
+    technical support is needed.
 
 ## 联系方式 / Contact
 
@@ -89,4 +115,5 @@ To help evaluate the request efficiently, please include:
 
 作者保留是否授予商业许可证以及具体授权条件的决定权。
 
-The author reserves the right to decide whether to grant a commercial license and under what specific terms.
+The author reserves the right to decide whether to grant a
+commercial license and under what specific terms.

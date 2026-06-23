@@ -150,7 +150,8 @@ python tools/add_user_phrase.py 今日 "jin1 ri4" --marked-pinyin "jīn rì"
 如果你已经知道编码，也可以手工指定：
 
 ```bash
-python tools/add_user_phrase.py 日本 "ri4 ben3" --marked-pinyin "rì běn" --yime-code "<音元编码>"
+python tools/add_user_phrase.py 日本 "ri4 ben3" \
+   --marked-pinyin "rì běn" --yime-code "<音元编码>"
 ```
 
 当前脚本会把词条写入 `user_lexicon.db`，并打印：
@@ -279,7 +280,9 @@ python tools/manage_user_lexicon.py export yime/user_lexicon_seed.json --no-freq
 
 1. 打包时把这个 `yime/user_lexicon_seed.json` 一起带上。
 2. 不要同时把开发机正在使用的 `yime/user_lexicon.db` 原样塞进安装包。
-3. 目标机器首次启动 `python run_input_method.py` 时，如果当前用户词库为空且还没有导入过 seed，程序会自动创建用户词库并导入这份 seed 文件。
+3. 目标机器首次启动 `python run_input_method.py` 时，
+   如果当前用户词库为空且还没有导入过 seed，
+   程序会自动创建用户词库并导入这份 seed 文件。
 4. 导入完成后，目标机器后续新增的词和调序频率都继续写进它自己的 `yime/user_lexicon.db`，不再回写 seed 文件。
 
 仓库中也提供了一个最小示例文件：`yime/user_lexicon_seed.json`，可直接作为打包参考。

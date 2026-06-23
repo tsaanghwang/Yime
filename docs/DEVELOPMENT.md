@@ -46,7 +46,12 @@ pytest
 仓库里的 cSpell 现在按 3 层管理，新增词时先判断作用域，再决定放在哪里：
 
 - `dictionary`：项目共享词，提交到仓库。
-当前拆成 4 个文件：`.cspell/yime-pinyin-normalized.txt`（数调拼音和带调拼音）、`.cspell/yime-domain-terms.txt`（音系、术语、项目领域词）、`.cspell/yime-windows-terms.txt`（Windows API、Tk/GUI、键盘事件相关词）、`.cspell/yime-tooling-terms.txt`（Python、SQLite、构建与工具链相关词，例如 `pycache`、`pytest`）。
+    当前拆成 4 个文件：
+    `.cspell/yime-pinyin-normalized.txt`（数调拼音和带调拼音）、
+    `.cspell/yime-domain-terms.txt`（音系、术语、项目领域词）、
+    `.cspell/yime-windows-terms.txt`（Windows API、Tk/GUI、键盘事件相关词）、
+    `.cspell/yime-tooling-terms.txt`（Python、SQLite、构建与工具链相关词，
+    例如 `pycache`、`pytest`）。
 - `workspace`：只放当前工作区特有、但不值得进仓库词典的编辑器或扩展标识词。当前 `.vscode/settings.json` 只保留这类词。
 - `user`：只放你个人跨仓库常用、且不应该提交到本仓库的词，位置在 VS Code user settings 的 `cSpell.userWords`。
 
@@ -59,7 +64,12 @@ pytest
 改完词表后，至少跑一次和改动范围相符的检查，例如：
 
 ```bash
-npx cspell lint yime/pinyin_normalized.json internal_data/ipa_pinyin_mapping.json internal_data/tonally_marked_finals.json tools/final_with_tone_mark.py --no-progress --no-summary --words-only --unique
+npx cspell lint \
+    yime/pinyin_normalized.json \
+    internal_data/ipa_pinyin_mapping.json \
+    internal_data/tonally_marked_finals.json \
+    tools/final_with_tone_mark.py \
+    --no-progress --no-summary --words-only --unique
 ```
 
 ---
@@ -87,7 +97,8 @@ YIME/
 
 - 根目录兼容入口的真实实现应下沉到 `yime/utils/`。
 - shim 应尽量显式导出 `__all__`。
-- `tools/` 下 orchestration 脚本优先显式 `validate_*` 预检；键盘布局外置仓库路径用 `YIME_KEYBOARD_LAYOUT_REPO`。
+- `tools/` 下 orchestration 脚本优先显式 `validate_*` 预检；
+    键盘布局外置仓库路径用 `YIME_KEYBOARD_LAYOUT_REPO`。
 
 补充：旧 JS 原型已外置；本仓库主线为 `yime/` 下 Windows IME Python 实现。拼音 rebuild 见 `docs/project/PINYIN_DATA_MIGRATION.md`。
 
@@ -175,7 +186,9 @@ Git Bash 下对应写法：
 .venv/Scripts/python.exe tools/rebuild_encoding_assets.py --skip-code-pinyin
 ```
 
-注意：`python run_input_method.py` 本身不会自动重建这些产物；它只会读取现成的 `syllable/codec/yinjie_code.json` 和相关运行时 JSON。所以规则改完但没先执行重建时，启动输入法不会自动带出新编码。
+注意：`python run_input_method.py` 本身不会自动重建这些产物；
+它只会读取现成的 `syllable/codec/yinjie_code.json` 和相关运行时 JSON。
+所以规则改完但没先执行重建时，启动输入法不会自动带出新编码。
 
 建议配套做一次最小验证：
 
@@ -256,7 +269,9 @@ prototype 表结构示例见 `yime/create_prototype_schema_additions.sql`。
 
 ### 3. 数据迁移
 
-Schema 变更应直接修改 `create_prototype_schema_additions.sql` 并重建/迁移本地 `yime/pinyin_hanzi.db`；旧 `db_manager` 中文表迁移链已删除。
+Schema 变更应直接修改 `create_prototype_schema_additions.sql`，
+并重建/迁移本地 `yime/pinyin_hanzi.db`；
+旧 `db_manager` 中文表迁移链已删除。
 
 ---
 

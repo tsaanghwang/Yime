@@ -1,20 +1,28 @@
 # YIME 商业许可证模板（SaaS 托管版）
 
-本模板适用于将 YIME 集成到 SaaS、云服务或在线托管系统中的商业许可证场景。未经双方正式签署，它本身不单独产生授权效力。
+本模板适用于将 YIME 集成到 SaaS、云服务或在线托管系统中的商业许可证场景。
+未经双方正式签署，它本身不单独产生授权效力。
 
-This template is intended for commercial licensing scenarios where YIME is integrated into a SaaS service, cloud offering, or hosted online system. It does not create any license rights by itself unless formally executed by both parties.
+This template is intended for commercial licensing scenarios where YIME is
+integrated into a SaaS service, cloud offering, or hosted online system. It does
+not create any license rights by itself unless formally executed by both parties.
 
 ## 填写说明
 
 1. 请明确服务名称、部署环境、租户模式、客户范围以及是否允许关联主体共同运营。
-2. 如计费与调用量、客户数量、实例数量或地域范围相关，应在“费用与支付”中写明计算口径。
-3. 如涉及 SLA、数据处理或合规责任，请在“维护、支持与升级”及“责任限制、适用法律与争议解决”中补充完整。
+2. 如计费与调用量、客户数量、实例数量或地域范围相关，
+   应在“费用与支付”中写明计算口径。
+3. 如涉及 SLA、数据处理或合规责任，
+   请在“维护、支持与升级”及“责任限制、适用法律与争议解决”中补充完整。
 
 ## Instructions for Completion
 
-1. Specify the service name, deployment environment, tenant model, customer scope, and whether affiliates may jointly operate the service.
-2. If pricing depends on usage volume, customer count, instance count, or territory, state the calculation method expressly in the fees section.
-3. SLA, data handling, and compliance obligations should be completed in the support and liability sections when relevant.
+1. Specify the service name, deployment environment, tenant model, customer
+   scope, and whether affiliates may jointly operate the service.
+2. If pricing depends on usage volume, customer count, instance count, or
+   territory, state the calculation method expressly in the fees section.
+3. SLA, data handling, and compliance obligations should be completed in the
+   support and liability sections when relevant.
 
 ## 1. 当事人
 
@@ -46,7 +54,8 @@ This template is intended for commercial licensing scenarios where YIME is integ
 
 ## 3. Licensed Use
 
-- Licensed use is limited to integration of YIME into a SaaS service, cloud offering, hosted platform, or online system operated by the licensee.
+- Licensed use is limited to integration of YIME into a SaaS service, cloud
+  offering, hosted platform, or online system operated by the licensee.
 - Service name: ________________
 - Service domain name or main deployment environment: ________________
 
@@ -76,9 +85,12 @@ This template is intended for commercial licensing scenarios where YIME is integ
 
 ## 5. Restrictions
 
-- Without prior written consent, this license may not be extended to other SaaS products or other branded services.
-- Without prior written consent, customers may not extract, resell, or redistribute YIME on a standalone basis.
-- If customer count, usage scale, or deployment territory exceeds the agreed scope, an expanded license must be obtained separately.
+- Without prior written consent, this license may not be extended to other SaaS
+  products or other branded services.
+- Without prior written consent, customers may not extract, resell, or
+  redistribute YIME on a standalone basis.
+- If customer count, usage scale, or deployment territory exceeds the agreed
+  scope, an expanded license must be obtained separately.
 
 ## 6. 费用与支付
 
@@ -90,7 +102,8 @@ This template is intended for commercial licensing scenarios where YIME is integ
 ## 6. Fees and Payment
 
 - License fee: ________________
-- Billing model: one-time / annual / per customer / per instance / per usage volume
+- Billing model: one-time / annual / per customer / per instance / per usage
+  volume
 - Payment timing: ________________
 - License term: ________________
 
@@ -104,7 +117,8 @@ This template is intended for commercial licensing scenarios where YIME is integ
 
 - Effective date: ________________
 - Termination conditions: ________________
-- Obligations after termination, including disablement, deletion, migration, or customer notice: ________________
+- Obligations after termination, including disablement, deletion, migration, or
+  customer notice: ________________
 
 ## 8. 维护、支持与升级
 
@@ -126,9 +140,12 @@ This template is intended for commercial licensing scenarios where YIME is integ
 
 ## 9. Intellectual Property, Confidentiality, and Attribution
 
-- Intellectual property in YIME and its original code, documentation, and identifiers remains with the licensor.
-- Confidential treatment for source code, interface documentation, and internal deployment information: yes / no
-- Use of the YIME name or licensor name in marketing materials: allowed / not allowed
+- Intellectual property in YIME and its original code, documentation, and
+  identifiers remains with the licensor.
+- Confidential treatment for source code, interface documentation, and internal
+  deployment information: yes / no
+- Use of the YIME name or licensor name in marketing materials: allowed / not
+  allowed
 
 ## 10. 责任限制、适用法律与争议解决
 
@@ -138,8 +155,11 @@ This template is intended for commercial licensing scenarios where YIME is integ
 
 ## 10. Liability, Governing Law, and Dispute Resolution
 
-- The licensee is responsible for customer data, operational data, and compliance obligations in its SaaS service.
-- Unless otherwise agreed in writing, the licensor does not assume responsibility for SaaS business continuity, customer indemnity, or regulatory compliance obligations.
+- The licensee is responsible for customer data, operational data, and
+  compliance obligations in its SaaS service.
+- Unless otherwise agreed in writing, the licensor does not assume
+  responsibility for SaaS business continuity, customer indemnity, or regulatory
+  compliance obligations.
 - Governing law and dispute resolution: ________________
 
 ## 11. 签署

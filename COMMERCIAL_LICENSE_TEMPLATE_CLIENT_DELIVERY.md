@@ -2,7 +2,10 @@
 
 本模板适用于将 YIME 用于外包项目、定制项目或客户交付成果的商业许可证场景。未经双方正式签署，它本身不单独产生授权效力。
 
-This template is intended for commercial licensing scenarios where YIME is used in outsourced projects, custom projects, or client-delivery work products. It does not create any license rights by itself unless formally executed by both parties.
+This template is intended for commercial licensing scenarios where YIME is
+used in outsourced projects, custom projects, or client-delivery work
+products. It does not create any license rights by itself unless formally
+executed by both parties.
 
 ## 填写说明
 
@@ -12,9 +15,12 @@ This template is intended for commercial licensing scenarios where YIME is used 
 
 ## Instructions for Completion
 
-1. Specify the client name, client project name, delivery type, and whether the license is limited to a single client and single project.
-2. If the end client needs source access, copying rights, or post-delivery maintenance rights, state them expressly in the scope and term sections.
-3. Where a delivery contract exists alongside the commercial license, distinguish clearly between delivery obligations and license obligations.
+1. Specify the client name, client project name, delivery type, and whether
+   the license is limited to a single client and single project.
+2. If the end client needs source access, copying rights, or post-delivery
+   maintenance rights, state them expressly in the scope and term sections.
+3. Where a delivery contract exists alongside the commercial license,
+   distinguish clearly between delivery obligations and license obligations.
 
 ## 1. 当事人
 
@@ -48,7 +54,8 @@ This template is intended for commercial licensing scenarios where YIME is used 
 
 - Client name: ________________
 - Client project name: ________________
-- Delivery type: custom development / outsourced delivery / systems integration / other: ________________
+- Delivery type: custom development / outsourced delivery / systems
+  integration / other: ________________
 
 ## 4. 授权范围
 
@@ -73,8 +80,11 @@ This template is intended for commercial licensing scenarios where YIME is used 
 ## 5. Restrictions
 
 - This license covers only the specific client and project expressly identified.
-- Without prior written consent, the same license may not be automatically extended to other clients, other projects, or later support and maintenance contracts.
-- If the client requests broader rights directly, the client or the licensee must apply separately for an additional license.
+- Without prior written consent, the same license may not be automatically
+  extended to other clients, other projects, or later support and
+  maintenance contracts.
+- If the client requests broader rights directly, the client or the licensee
+  must apply separately for an additional license.
 
 ## 6. 费用与支付
 
@@ -103,7 +113,8 @@ This template is intended for commercial licensing scenarios where YIME is used 
 - Effective date: ________________
 - License term: ________________
 - Termination conditions: ________________
-- Whether copies without continued authorization must be deleted or disabled after project completion: yes / no
+- Whether copies without continued authorization must be deleted or
+  disabled after project completion: yes / no
 - Follow-on maintenance, renewal, and expansion mechanism: ________________
 
 ## 8. 维护、支持与升级
@@ -126,9 +137,12 @@ This template is intended for commercial licensing scenarios where YIME is used 
 
 ## 9. Intellectual Property, Confidentiality, and Attribution
 
-- Intellectual property in YIME and its original code, documentation, and identifiers remains with the licensor.
-- Confidential treatment for source code, project documentation, delivery inventories, and commercial terms: yes / no
-- Use of the project name or licensor name in promotion by the licensee or end client: allowed / not allowed
+- Intellectual property in YIME and its original code, documentation, and
+  identifiers remains with the licensor.
+- Confidential treatment for source code, project documentation, delivery
+  inventories, and commercial terms: yes / no
+- Use of the project name or licensor name in promotion by the licensee or
+  end client: allowed / not allowed
 
 ## 10. 责任限制、适用法律与争议解决
 
@@ -138,8 +152,11 @@ This template is intended for commercial licensing scenarios where YIME is used 
 
 ## 10. Liability, Governing Law, and Dispute Resolution
 
-- The licensee remains responsible for delivery obligations, acceptance obligations, and project management obligations under its contract with the client.
-- Unless otherwise agreed in writing, the licensor does not owe direct delivery, acceptance, or on-site support obligations to the end client.
+- The licensee remains responsible for delivery obligations, acceptance
+  obligations, and project management obligations under its contract with
+  the client.
+- Unless otherwise agreed in writing, the licensor does not owe direct
+  delivery, acceptance, or on-site support obligations to the end client.
 - Governing law and dispute resolution: ________________
 
 ## 11. 签署
