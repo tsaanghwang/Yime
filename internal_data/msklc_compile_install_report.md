@@ -1,5 +1,7 @@
 # MSKLC Compile And Install Report
 
+<!-- cspell:ignore kbdutool -->
+
 日期：2026-04-08
 
 归档说明：这是一份历史调查记录，用来保存当时那台机器上的 MSKLC 编译、GUI 打包与安装试验现象。
@@ -44,7 +46,7 @@
 命令行能力结论：
 
 - `kbdutool.exe` 提供的命令行参数只覆盖 `x86/IA64/AMD64/WOW64` 编译与源文件生成，不包含 setup/package/install 参数。
-- `MSKLC.exe` 表现为 GUI 程序，未确认到可稳定调用的命令行打包入口；当前调查中它不会像 `kbdutool.exe -?` 那样返回 CLI 帮助文本。
+- `MSKLC.exe` 表现为 GUI 程序，未确认到可稳定调用的命令行打包入口；当前调查中它不会像 `kbdutool.exe -?` 那样返回 `kbdutool` CLI 帮助文本。
 
 ## 本机架构
 

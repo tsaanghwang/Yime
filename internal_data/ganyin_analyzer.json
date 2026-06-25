@@ -1,5 +1,5 @@
 {
-  "description": "干音分析结果(包含三质韵母、前长韵母、后长韵母和单质韵母)",
+  "description": "干音分析结果(包含韵母为三质韵母、前长韵母、后长韵母和单质韵母的四类干音)",
   "encoding_rules": {
     "general_pattern": {
       "first_tone_ganyin": "三个高调音元的组合",
@@ -7,8 +7,17 @@
       "third_tone_ganyin": "三个低调音元的组合",
       "fourth_tone_ganyin": "高调音元、中调音元、低调音元的组合"
     },
+    "triphthong_special_rule": {
+      "description": "三质韵母由三段不同音质构成；与这类韵母的每段音质联结的四类声调的调段分别为：高高高、低中高、低低低、高中低。",
+      "example": {
+        "first_tone": "i˥ɑ˥ᴜ˥",
+        "second_tone": "i˩ɑ˦ᴜ˥",
+        "third_tone": "i˩ɑ˩ᴜ˩",
+        "fourth_tone": "i˥ɑ˦ᴜ˩"
+      }
+    },
     "front_long_special_rule": {
-      "description": "前长韵母的第一个音标重复表示，如'an'变为'aan'",
+      "description": "前长韵母的第一段音质分成相同两段，如'an'变为'aan'; 与这类韵母的每段音质联结的四类声调的调段分别为：高高高、低中高、低低低、高中低'",
       "example": {
         "first_tone": "a˥a˥n˥",
         "second_tone": "a˩a˦n˥",
@@ -17,7 +26,7 @@
       }
     },
     "back_long_special_rule": {
-      "description": "后长韵母的第二个音标重复表示，如'uo'变为'uoo'",
+      "description": "后长韵母的第二段音质分成相同两段，如'uo'变为'uoo'; 与这类韵母的每段音质联结的四类声调的调段分别为：高高高、低中高、低低低、高中低'",
       "example": {
         "first_tone": "u˥o˥o˥",
         "second_tone": "u˩o˦o˥",
@@ -26,7 +35,7 @@
       }
     },
     "monophthong_special_rule": {
-      "description": "单质韵母的音标重复三次表示，如'o'变为'ooo'",
+      "description": "单质韵母的整段音质分成相同三段，如'o'变为'ooo'; 与这类韵母的每段音质联结的四类声调的调段分别为：高高高、低中高、低低低、高中低'",
       "example": {
         "first_tone": "o˥o˥o˥",
         "second_tone": "o˩o˦o˥",

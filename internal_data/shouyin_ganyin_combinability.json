@@ -2,7 +2,7 @@
   "metadata": {
     "source_yinjie_code": "yinjie_code.json",
     "source_symbol_map": "internal_data/key_to_symbol.json",
-    "description": "Derived combinability table from runtime syllable codes. Direct-following musical means the first Mxx immediately after Nxx in each encoded syllable."
+    "description": "Derived compatibility table from runtime syllable codes. Direct-following musical means the first Mxx immediately after Nxx in each encoded syllable."
   },
   "summary": {
     "noise_symbol_count": 24,
@@ -16764,7 +16764,7 @@
         "quan5",
         "qun5",
         "qv5",
-        "qvan5",
+        "quan5",
         "qvn5",
         "xiong5",
         "xu5",
@@ -16799,7 +16799,7 @@
         "jun3",
         "jv2",
         "jv3",
-        "jvan3",
+        "juan3",
         "jve2",
         "jve3"
       ]

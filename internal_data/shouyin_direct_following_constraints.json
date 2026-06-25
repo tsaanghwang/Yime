@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "source": "internal_data/shouyin_ganyin_combinability.json",
+    "source": "internal_data/shouyin_ganyin_compatibility.json",
     "description": "Compact direct-following constraints for keyboard layout design. Each Nxx lists the Mxx values that can appear immediately after it in encoded syllables."
   },
   "summary": {

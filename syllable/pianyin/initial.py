@@ -1,16 +1,19 @@
-# Initial Sound Representation Module
-# 首音表示模块
-#
-# This module provides a class to represent the initial sound in Chinese phonetics,
-# supporting multiple representation methods including pinyin, phonetic, pianyin and yinyuan.
-#
-# 首音: 由声母和与声母联结的调段构成的音段
-# 声母 (initial): 必选属性
-# 首调: 与声母联结的调段, 可选属性, 默认值 None
-#
-# The initial sound is a syllable segment composed of the initial consonant and the tone segment connected to the initial consonant
-# The initial consonant is a required attribute
-# The tone of the initial sound (the tone segment connected to the initial consonant), named initial tone, is an optional attribute
+"""Initial Sound Representation Module.
+首音表示模块。
+
+This module provides a class to represent the initial sound in Chinese phonetics,
+supporting multiple representation methods including pinyin, phonetic, pianyin and yinyuan.
+
+首音: 由声母和与声母联结的调段构成的音段。
+声母 (initial): 必选属性。
+首调: 与声母联结的调段, 可选属性, 默认值 None。
+
+The initial sound is a syllable segment composed of the initial consonant and the tone segment
+connected to the initial consonant.
+The initial consonant is a required attribute.
+The tone of the initial sound, the tone segment connected to the initial consonant,
+named initial tone, is an optional attribute.
+"""
 
 from .pianyin import UnpitchedPianyin
 

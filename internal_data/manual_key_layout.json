@@ -5,7 +5,7 @@
     "layout_status": "final_candidate_right_pinky_relief_v1",
     "symbol_source": "internal_data/key_to_symbol.json",
     "ergonomic_strategy": "High-frequency musical groups center on f/j and expand outward; initials use g/h as anchors; low-frequency musical groups move to shift and AltGr.",
-    "design_warning": "Selected compileable candidate with right-pinky relief, sparse AltGr, and only the accepted ergonomic swaps promoted to source.",
+    "design_warning": "Selected compilable candidate with right-pinky relief, sparse AltGr, and only the accepted ergonomic swaps promoted to source.",
     "symbol_key_format": {
       "noise": "N01-N24",
       "musical": "M01-M33"

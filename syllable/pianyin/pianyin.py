@@ -1,14 +1,18 @@
-# 片音(Pianyin)表示法
-# 片音具有音质、音调、音长和音强四个属性
-# 在通用现代汉语中，片音的音质和音调是必选的，音长和音强是默认的
-# 片音类表示汉语音节的片音
-# Pianyin notation
-# A Pianyin has four attributes: quality, pitch, duration, and loudness
-# In Standard Modern Chinese, quality and pitch are required, while duration and loudness are default
-# The Pianyin class represents the phonetic components of a Chinese syllable
-# 片音(Pianyin)分成噪音和乐音两类
-# 噪音的音调是空，音质就是噪音
-# 乐音的音调非空，音质和音调构成乐音
+"""片音(Pianyin)表示法。
+
+片音具有音质、音调、音长和音强四个属性。
+在通用现代汉语中，片音的音质和音调是必选的，音长和音强是默认的。
+片音类表示汉语音节的片音。
+
+Pianyin notation.
+A Pianyin has four attributes: quality, pitch, duration, and loudness.
+In Standard Modern Chinese, quality and pitch are required, while duration and loudness are default.
+The Pianyin class represents the phonetic components of a Chinese syllable.
+
+片音(Pianyin)分成噪音和乐音两类。
+噪音的音调是空，音质就是噪音。
+乐音的音调非空，音质和音调构成乐音。
+"""
 
 from abc import ABC, abstractmethod
 from typing import Optional
