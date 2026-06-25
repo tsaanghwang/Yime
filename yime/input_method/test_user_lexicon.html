@@ -1,0 +1,511 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>yime.input_method.test_user_lexicon API documentation</title>
+<meta name="description" content="">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>yime.input_method.test_user_lexicon</code></h1>
+</header>
+<section id="section-intro">
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="yime.input_method.test_user_lexicon.test_normalize_numeric_pinyin_syllable_spacing_splits_compact_tone_numbers"><code class="name flex">
+<span>def <span class="ident">test_normalize_numeric_pinyin_syllable_spacing_splits_compact_tone_numbers</span></span>(<span>) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_normalize_numeric_pinyin_syllable_spacing_splits_compact_tone_numbers() -&gt; None:
+    assert normalize_numeric_pinyin_syllable_spacing(&#34;ri4ben3&#34;) == &#34;ri4 ben3&#34;
+    assert normalize_numeric_pinyin_syllable_spacing(&#34;jin1ri4&#34;) == &#34;jin1 ri4&#34;
+    assert normalize_numeric_pinyin_syllable_spacing(&#34;duori4&#34;) == &#34;duori4&#34;</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.test_user_lexicon.test_normalize_numeric_pinyin_syllable_spacing_standardizes_v_series"><code class="name flex">
+<span>def <span class="ident">test_normalize_numeric_pinyin_syllable_spacing_standardizes_v_series</span></span>(<span>) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_normalize_numeric_pinyin_syllable_spacing_standardizes_v_series() -&gt; None:
+    assert normalize_numeric_pinyin_syllable_spacing(&#34;lve4&#34;) == &#34;lüe4&#34;
+    assert normalize_numeric_pinyin_syllable_spacing(&#34;nve4&#34;) == &#34;nüe4&#34;
+    assert normalize_numeric_pinyin_syllable_spacing(&#34;lv2&#34;) == &#34;lü2&#34;
+    assert normalize_numeric_pinyin_syllable_spacing(&#34;lvan2 nve4&#34;) == &#34;lüan2 nüe4&#34;</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.test_user_lexicon.test_resolve_yime_code_from_compact_numeric_pinyin_matches_spaced_input"><code class="name flex">
+<span>def <span class="ident">test_resolve_yime_code_from_compact_numeric_pinyin_matches_spaced_input</span></span>(<span>) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_resolve_yime_code_from_compact_numeric_pinyin_matches_spaced_input() -&gt; None:
+    repo_root = Path(__file__).resolve().parents[2]
+
+    spaced = resolve_yime_code_from_numeric_pinyin(repo_root, &#34;ri4 ben3&#34;)
+    compact = resolve_yime_code_from_numeric_pinyin(repo_root, &#34;ri4ben3&#34;)
+
+    assert compact == spaced</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.test_user_lexicon.test_resolve_yime_code_from_v_series_matches_standard_u_umlaut_input"><code class="name flex">
+<span>def <span class="ident">test_resolve_yime_code_from_v_series_matches_standard_u_umlaut_input</span></span>(<span>) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_resolve_yime_code_from_v_series_matches_standard_u_umlaut_input() -&gt; None:
+    repo_root = Path(__file__).resolve().parents[2]
+
+    assert resolve_yime_code_from_numeric_pinyin(repo_root, &#34;lve4&#34;) == resolve_yime_code_from_numeric_pinyin(repo_root, &#34;lüe4&#34;)
+    assert resolve_yime_code_from_numeric_pinyin(repo_root, &#34;nve4&#34;) == resolve_yime_code_from_numeric_pinyin(repo_root, &#34;nüe4&#34;)
+    assert resolve_yime_code_from_numeric_pinyin(repo_root, &#34;lv2&#34;) == resolve_yime_code_from_numeric_pinyin(repo_root, &#34;lü2&#34;)
+    assert resolve_yime_code_from_numeric_pinyin(repo_root, &#34;lvan2 nve4&#34;) == resolve_yime_code_from_numeric_pinyin(repo_root, &#34;lüan2 nüe4&#34;)</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.test_user_lexicon.test_runtime_reverse_lookup_prefers_user_phrase_entry"><code class="name flex">
+<span>def <span class="ident">test_runtime_reverse_lookup_prefers_user_phrase_entry</span></span>(<span>tmp_path: pathlib.Path) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_runtime_reverse_lookup_prefers_user_phrase_entry(tmp_path: Path) -&gt; None:
+    _require_runtime_db()
+    repo_root = Path(__file__).resolve().parents[2]
+    user_db_path = tmp_path / &#34;user_lexicon.db&#34;
+    store = UserLexiconStore(user_db_path)
+    store.upsert_phrase(
+        &#34;今日&#34;,
+        &#34;jin1 ri4&#34;,
+        marked_pinyin=&#34;jīn rì&#34;,
+        yime_code=resolve_yime_code_from_numeric_pinyin(repo_root, &#34;jin1 ri4&#34;),
+    )
+
+    lookup = RuntimeReverseLookup(
+        repo_root / &#34;yime&#34; / &#34;pinyin_hanzi.db&#34;,
+        user_db_path=user_db_path,
+    )
+    record = lookup.lookup_first(&#34;今日&#34;)
+
+    assert record is not None
+    assert record.marked_pinyin == &#34;jīn rì&#34;
+    assert record.numeric_pinyin == &#34;jin1 ri4&#34;</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.test_user_lexicon.test_sqlite_runtime_decoder_merges_user_phrase_candidates"><code class="name flex">
+<span>def <span class="ident">test_sqlite_runtime_decoder_merges_user_phrase_candidates</span></span>(<span>tmp_path: pathlib.Path) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_sqlite_runtime_decoder_merges_user_phrase_candidates(tmp_path: Path) -&gt; None:
+    _require_runtime_db()
+    repo_root = Path(__file__).resolve().parents[2]
+    app_dir = repo_root / &#34;yime&#34;
+    user_db_path = tmp_path / &#34;user_lexicon.db&#34;
+    store = UserLexiconStore(user_db_path)
+    code = resolve_yime_code_from_numeric_pinyin(repo_root, &#34;ri4 ben3&#34;)
+    store.upsert_phrase(
+        &#34;日本&#34;,
+        &#34;ri4 ben3&#34;,
+        marked_pinyin=&#34;rì běn&#34;,
+        yime_code=code,
+    )
+
+    decoder = SQLiteRuntimeCandidateDecoder(app_dir, user_db_path=user_db_path)
+    canonical_code = (
+        decoder.pinyin_to_canonical[&#34;ri4&#34;]
+        + decoder.pinyin_to_canonical[&#34;ben3&#34;]
+    )
+    _canonical, _active, _pinyin, candidates, _status = decoder.decode_text(canonical_code)
+
+    assert &#34;日本&#34; in candidates</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.test_user_lexicon.test_sqlite_runtime_decoder_persists_user_frequency_across_instances"><code class="name flex">
+<span>def <span class="ident">test_sqlite_runtime_decoder_persists_user_frequency_across_instances</span></span>(<span>tmp_path: pathlib.Path) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_sqlite_runtime_decoder_persists_user_frequency_across_instances(tmp_path: Path) -&gt; None:
+    _require_runtime_db()
+    repo_root = Path(__file__).resolve().parents[2]
+    app_dir = repo_root / &#34;yime&#34;
+    user_db_path = tmp_path / &#34;user_lexicon.db&#34;
+
+    decoder = SQLiteRuntimeCandidateDecoder(app_dir, user_db_path=user_db_path)
+    cast(Any, decoder).by_code = {
+        &#34;abcdefgh&#34;: [
+            {
+                &#34;text&#34;: &#34;安全&#34;,
+                &#34;entry_type&#34;: &#34;phrase&#34;,
+                &#34;pinyin_tone&#34;: &#34;an1 quan2&#34;,
+                &#34;sort_weight&#34;: 100.0,
+                &#34;text_length&#34;: 2,
+                &#34;is_common&#34;: 1,
+            },
+            {
+                &#34;text&#34;: &#34;安权&#34;,
+                &#34;entry_type&#34;: &#34;phrase&#34;,
+                &#34;pinyin_tone&#34;: &#34;an1 quan2&#34;,
+                &#34;sort_weight&#34;: 100.0,
+                &#34;text_length&#34;: 2,
+                &#34;is_common&#34;: 1,
+            },
+        ]
+    }
+    setattr(decoder, &#34;_user_freq_by_candidate&#34;, decoder.user_lexicon.load_candidate_frequency())
+
+    _canonical, _active, _pinyin, candidates, _status = decoder.decode_text(&#34;abcdefgh&#34;)
+    assert candidates[:2] == [&#34;安全&#34;, &#34;安权&#34;]
+
+    decoder.record_selection(&#34;abcdefgh&#34;, &#34;安权&#34;)
+
+    reloaded = SQLiteRuntimeCandidateDecoder(app_dir, user_db_path=user_db_path)
+    cast(Any, reloaded).by_code = cast(Any, decoder).by_code
+    setattr(reloaded, &#34;_user_freq_by_candidate&#34;, reloaded.user_lexicon.load_candidate_frequency())
+
+    _canonical, _active, _pinyin, promoted, _status = reloaded.decode_text(&#34;abcdefgh&#34;)
+    assert promoted[:2] == [&#34;安权&#34;, &#34;安全&#34;]</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.test_user_lexicon.test_user_lexicon_store_exports_and_imports_backup"><code class="name flex">
+<span>def <span class="ident">test_user_lexicon_store_exports_and_imports_backup</span></span>(<span>tmp_path: pathlib.Path) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_user_lexicon_store_exports_and_imports_backup(tmp_path: Path) -&gt; None:
+    source_store = UserLexiconStore(tmp_path / &#34;source_user_lexicon.db&#34;)
+    source_store.upsert_phrase(
+        &#34;日本&#34;,
+        &#34;ri4 ben3&#34;,
+        marked_pinyin=&#34;rì běn&#34;,
+        yime_code=&#34;CODE1&#34;,
+        source_note=&#34;seed&#34;,
+    )
+    source_store.record_candidate_selection(&#34;ABCD1234&#34;, &#34;日本&#34;)
+    backup_path = tmp_path / &#34;backup.json&#34;
+
+    source_store.write_export_file(backup_path)
+    backup_payload = json.loads(backup_path.read_text(encoding=&#34;utf-8&#34;))
+
+    assert backup_payload[&#34;phrase_entries&#34;][0][&#34;phrase&#34;] == &#34;日本&#34;
+    assert backup_payload[&#34;candidate_frequency&#34;][0][&#34;text&#34;] == &#34;日本&#34;
+
+    target_store = UserLexiconStore(tmp_path / &#34;target_user_lexicon.db&#34;)
+    result = target_store.import_file(backup_path)
+
+    assert result == {&#34;phrase_entries&#34;: 1, &#34;candidate_frequency&#34;: 1}
+    assert target_store.lookup_first_phrase(&#34;日本&#34;) is not None
+    frequency_rows = target_store.list_candidate_frequency_entries(limit=10)
+    assert len(frequency_rows) == 1
+    assert frequency_rows[0].freq == 1</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.test_user_lexicon.test_user_lexicon_store_exports_and_imports_text_exchange_file"><code class="name flex">
+<span>def <span class="ident">test_user_lexicon_store_exports_and_imports_text_exchange_file</span></span>(<span>tmp_path: pathlib.Path) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_user_lexicon_store_exports_and_imports_text_exchange_file(tmp_path: Path) -&gt; None:
+    repo_root = Path(__file__).resolve().parents[2]
+    source_store = UserLexiconStore(tmp_path / &#34;source_user_lexicon.db&#34;)
+    code_ri_ben = resolve_yime_code_from_numeric_pinyin(repo_root, &#34;ri4 ben3&#34;)
+    code_ri = resolve_yime_code_from_numeric_pinyin(repo_root, &#34;ri4&#34;)
+    source_store.upsert_phrase(
+        &#34;日本&#34;,
+        &#34;ri4 ben3&#34;,
+        marked_pinyin=&#34;rì běn&#34;,
+        yime_code=code_ri_ben,
+        source_note=&#34;seed&#34;,
+    )
+    source_store.upsert_phrase(
+        &#34;日&#34;,
+        &#34;ri4&#34;,
+        marked_pinyin=&#34;rì&#34;,
+        yime_code=code_ri,
+        source_note=&#34;seed&#34;,
+    )
+    source_store.record_candidate_selection(code_ri_ben, &#34;日本&#34;)
+    source_store.record_candidate_selection(code_ri_ben, &#34;日本&#34;)
+    source_store.record_candidate_selection(code_ri, &#34;日&#34;)
+    export_path = tmp_path / &#34;user_lexicon_export.txt&#34;
+
+    result = source_store.write_text_export_file(export_path)
+
+    assert result == {&#34;phrase_entries&#34;: 2, &#34;candidate_frequency&#34;: 2}
+    assert export_path.read_text(encoding=&#34;utf-8&#34;) == (
+        &#34;词语\t数字标调拼音\t初始频率\n&#34;
+        &#34;日\tri4\t1\n&#34;
+        &#34;日本\tri4 ben3\t2\n&#34;
+    )
+
+    target_store = UserLexiconStore(tmp_path / &#34;target_user_lexicon.db&#34;)
+    import_result = target_store.import_text_file(export_path, repo_root=repo_root)
+
+    assert import_result == {&#34;phrase_entries&#34;: 2, &#34;candidate_frequency&#34;: 2}
+    ri_entry = target_store.lookup_first_phrase(&#34;日&#34;)
+    ri_ben_entry = target_store.lookup_first_phrase(&#34;日本&#34;)
+    assert ri_entry is not None
+    assert ri_ben_entry is not None
+    assert ri_entry.numeric_pinyin == &#34;ri4&#34;
+    assert ri_ben_entry.numeric_pinyin == &#34;ri4 ben3&#34;
+    frequency_rows = target_store.list_candidate_frequency_entries(limit=10)
+    assert [(row.text, row.freq) for row in frequency_rows] == [(&#34;日本&#34;, 2), (&#34;日&#34;, 1)]</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.test_user_lexicon.test_user_lexicon_store_lists_and_resets_frequency_entries"><code class="name flex">
+<span>def <span class="ident">test_user_lexicon_store_lists_and_resets_frequency_entries</span></span>(<span>tmp_path: pathlib.Path) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_user_lexicon_store_lists_and_resets_frequency_entries(tmp_path: Path) -&gt; None:
+    store = UserLexiconStore(tmp_path / &#34;user_lexicon.db&#34;)
+    store.upsert_phrase(&#34;日本&#34;, &#34;ri4 ben3&#34;, marked_pinyin=&#34;rì běn&#34;, yime_code=&#34;YIME&#34;)
+    store.record_candidate_selection(&#34;ABCD1234&#34;, &#34;日本&#34;)
+    store.record_candidate_selection(&#34;ABCD1234&#34;, &#34;日本&#34;)
+
+    rows = store.list_candidate_frequency_entries(&#34;日&#34;, use_like=True, limit=10)
+
+    assert len(rows) == 1
+    assert rows[0].text == &#34;日本&#34;
+    assert rows[0].freq == 2
+    assert rows[0].numeric_pinyin == &#34;ri4 ben3&#34;
+
+    deleted_rows = store.reset_candidate_frequency(text=&#34;日本&#34;, lookup_code=&#34;ABCD1234&#34;)
+
+    assert deleted_rows == 1
+    assert store.list_candidate_frequency_entries(limit=10) == []</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.test_user_lexicon.test_user_lexicon_store_lists_phrase_entries"><code class="name flex">
+<span>def <span class="ident">test_user_lexicon_store_lists_phrase_entries</span></span>(<span>tmp_path: pathlib.Path) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_user_lexicon_store_lists_phrase_entries(tmp_path: Path) -&gt; None:
+    store = UserLexiconStore(tmp_path / &#34;user_lexicon.db&#34;)
+    store.upsert_phrase(&#34;日本&#34;, &#34;ri4 ben3&#34;, marked_pinyin=&#34;rì běn&#34;, yime_code=&#34;CODE1&#34;)
+    store.upsert_phrase(&#34;今日&#34;, &#34;jin1 ri4&#34;, marked_pinyin=&#34;jīn rì&#34;, yime_code=&#34;CODE2&#34;)
+
+    rows = store.list_phrase_entries(&#34;日&#34;, use_like=True, limit=10)
+
+    assert [row.phrase for row in rows] == [&#34;今日&#34;, &#34;日本&#34;]
+    assert rows[0].numeric_pinyin == &#34;jin1 ri4&#34;</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.test_user_lexicon.test_user_lexicon_store_lists_recent_entries"><code class="name flex">
+<span>def <span class="ident">test_user_lexicon_store_lists_recent_entries</span></span>(<span>tmp_path: pathlib.Path) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_user_lexicon_store_lists_recent_entries(tmp_path: Path) -&gt; None:
+    store = UserLexiconStore(tmp_path / &#34;user_lexicon.db&#34;)
+    store.upsert_phrase(&#34;日本&#34;, &#34;ri4 ben3&#34;, marked_pinyin=&#34;rì běn&#34;, yime_code=&#34;CODE1&#34;)
+    store.upsert_phrase(&#34;今日&#34;, &#34;jin1 ri4&#34;, marked_pinyin=&#34;jīn rì&#34;, yime_code=&#34;CODE2&#34;)
+
+    rows = store.list_recent_phrase_entries(limit=1)
+
+    assert len(rows) == 1
+    assert rows[0].phrase in {&#34;日本&#34;, &#34;今日&#34;}</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.test_user_lexicon.test_user_lexicon_store_normalizes_compact_numeric_pinyin_spacing"><code class="name flex">
+<span>def <span class="ident">test_user_lexicon_store_normalizes_compact_numeric_pinyin_spacing</span></span>(<span>tmp_path: pathlib.Path) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_user_lexicon_store_normalizes_compact_numeric_pinyin_spacing(tmp_path: Path) -&gt; None:
+    store = UserLexiconStore(tmp_path / &#34;user_lexicon.db&#34;)
+
+    store.upsert_phrase(
+        &#34;日本&#34;,
+        &#34;ri4ben3&#34;,
+        marked_pinyin=&#34;rì běn&#34;,
+        yime_code=&#34;TESTCODE&#34;,
+    )
+
+    entry = store.lookup_first_phrase(&#34;日本&#34;)
+
+    assert entry is not None
+    assert entry.numeric_pinyin == &#34;ri4 ben3&#34;</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.test_user_lexicon.test_user_lexicon_store_persists_phrase_entry"><code class="name flex">
+<span>def <span class="ident">test_user_lexicon_store_persists_phrase_entry</span></span>(<span>tmp_path: pathlib.Path) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_user_lexicon_store_persists_phrase_entry(tmp_path: Path) -&gt; None:
+    store = UserLexiconStore(tmp_path / &#34;user_lexicon.db&#34;)
+    action = store.upsert_phrase(
+        &#34;日本&#34;,
+        &#34;ri4 ben3&#34;,
+        marked_pinyin=&#34;rì běn&#34;,
+        yime_code=&#34;TESTCODE&#34;,
+    )
+
+    reloaded = UserLexiconStore(tmp_path / &#34;user_lexicon.db&#34;)
+    entry = reloaded.lookup_first_phrase(&#34;日本&#34;)
+    grouped = reloaded.load_phrase_candidates({&#34;ri4&#34;: &#34;ABCD&#34;, &#34;ben3&#34;: &#34;1234&#34;})
+
+    assert action == &#34;inserted&#34;
+    assert entry is not None
+    assert entry.marked_pinyin == &#34;rì běn&#34;
+    assert grouped[&#34;ABCD1234&#34;][0][&#34;text&#34;] == &#34;日本&#34;</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.test_user_lexicon.test_user_lexicon_store_reports_updated_for_existing_phrase"><code class="name flex">
+<span>def <span class="ident">test_user_lexicon_store_reports_updated_for_existing_phrase</span></span>(<span>tmp_path: pathlib.Path) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_user_lexicon_store_reports_updated_for_existing_phrase(tmp_path: Path) -&gt; None:
+    store = UserLexiconStore(tmp_path / &#34;user_lexicon.db&#34;)
+    store.upsert_phrase(&#34;日本&#34;, &#34;ri4 ben3&#34;, marked_pinyin=&#34;rì běn&#34;, yime_code=&#34;CODE1&#34;)
+
+    action = store.upsert_phrase(
+        &#34;日本&#34;,
+        &#34;ri4 ben3&#34;,
+        marked_pinyin=&#34;rì běn&#34;,
+        yime_code=&#34;CODE2&#34;,
+    )
+
+    assert action == &#34;updated&#34;
+    updated_entry = store.lookup_first_phrase(&#34;日本&#34;)
+    assert updated_entry is not None
+    assert updated_entry.yime_code == &#34;CODE2&#34;</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="yime.input_method" href="index.html">yime.input_method</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="yime.input_method.test_user_lexicon.test_normalize_numeric_pinyin_syllable_spacing_splits_compact_tone_numbers" href="#yime.input_method.test_user_lexicon.test_normalize_numeric_pinyin_syllable_spacing_splits_compact_tone_numbers">test_normalize_numeric_pinyin_syllable_spacing_splits_compact_tone_numbers</a></code></li>
+<li><code><a title="yime.input_method.test_user_lexicon.test_normalize_numeric_pinyin_syllable_spacing_standardizes_v_series" href="#yime.input_method.test_user_lexicon.test_normalize_numeric_pinyin_syllable_spacing_standardizes_v_series">test_normalize_numeric_pinyin_syllable_spacing_standardizes_v_series</a></code></li>
+<li><code><a title="yime.input_method.test_user_lexicon.test_resolve_yime_code_from_compact_numeric_pinyin_matches_spaced_input" href="#yime.input_method.test_user_lexicon.test_resolve_yime_code_from_compact_numeric_pinyin_matches_spaced_input">test_resolve_yime_code_from_compact_numeric_pinyin_matches_spaced_input</a></code></li>
+<li><code><a title="yime.input_method.test_user_lexicon.test_resolve_yime_code_from_v_series_matches_standard_u_umlaut_input" href="#yime.input_method.test_user_lexicon.test_resolve_yime_code_from_v_series_matches_standard_u_umlaut_input">test_resolve_yime_code_from_v_series_matches_standard_u_umlaut_input</a></code></li>
+<li><code><a title="yime.input_method.test_user_lexicon.test_runtime_reverse_lookup_prefers_user_phrase_entry" href="#yime.input_method.test_user_lexicon.test_runtime_reverse_lookup_prefers_user_phrase_entry">test_runtime_reverse_lookup_prefers_user_phrase_entry</a></code></li>
+<li><code><a title="yime.input_method.test_user_lexicon.test_sqlite_runtime_decoder_merges_user_phrase_candidates" href="#yime.input_method.test_user_lexicon.test_sqlite_runtime_decoder_merges_user_phrase_candidates">test_sqlite_runtime_decoder_merges_user_phrase_candidates</a></code></li>
+<li><code><a title="yime.input_method.test_user_lexicon.test_sqlite_runtime_decoder_persists_user_frequency_across_instances" href="#yime.input_method.test_user_lexicon.test_sqlite_runtime_decoder_persists_user_frequency_across_instances">test_sqlite_runtime_decoder_persists_user_frequency_across_instances</a></code></li>
+<li><code><a title="yime.input_method.test_user_lexicon.test_user_lexicon_store_exports_and_imports_backup" href="#yime.input_method.test_user_lexicon.test_user_lexicon_store_exports_and_imports_backup">test_user_lexicon_store_exports_and_imports_backup</a></code></li>
+<li><code><a title="yime.input_method.test_user_lexicon.test_user_lexicon_store_exports_and_imports_text_exchange_file" href="#yime.input_method.test_user_lexicon.test_user_lexicon_store_exports_and_imports_text_exchange_file">test_user_lexicon_store_exports_and_imports_text_exchange_file</a></code></li>
+<li><code><a title="yime.input_method.test_user_lexicon.test_user_lexicon_store_lists_and_resets_frequency_entries" href="#yime.input_method.test_user_lexicon.test_user_lexicon_store_lists_and_resets_frequency_entries">test_user_lexicon_store_lists_and_resets_frequency_entries</a></code></li>
+<li><code><a title="yime.input_method.test_user_lexicon.test_user_lexicon_store_lists_phrase_entries" href="#yime.input_method.test_user_lexicon.test_user_lexicon_store_lists_phrase_entries">test_user_lexicon_store_lists_phrase_entries</a></code></li>
+<li><code><a title="yime.input_method.test_user_lexicon.test_user_lexicon_store_lists_recent_entries" href="#yime.input_method.test_user_lexicon.test_user_lexicon_store_lists_recent_entries">test_user_lexicon_store_lists_recent_entries</a></code></li>
+<li><code><a title="yime.input_method.test_user_lexicon.test_user_lexicon_store_normalizes_compact_numeric_pinyin_spacing" href="#yime.input_method.test_user_lexicon.test_user_lexicon_store_normalizes_compact_numeric_pinyin_spacing">test_user_lexicon_store_normalizes_compact_numeric_pinyin_spacing</a></code></li>
+<li><code><a title="yime.input_method.test_user_lexicon.test_user_lexicon_store_persists_phrase_entry" href="#yime.input_method.test_user_lexicon.test_user_lexicon_store_persists_phrase_entry">test_user_lexicon_store_persists_phrase_entry</a></code></li>
+<li><code><a title="yime.input_method.test_user_lexicon.test_user_lexicon_store_reports_updated_for_existing_phrase" href="#yime.input_method.test_user_lexicon.test_user_lexicon_store_reports_updated_for_existing_phrase">test_user_lexicon_store_reports_updated_for_existing_phrase</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

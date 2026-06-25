@@ -1,0 +1,689 @@
+# 真源文件与生成产物清单
+
+## 文档定位
+
+本文档用于区分当前仓库中的：
+
+1. 语义真源文件
+2. 规范映射文件
+3. 平台投影文件
+4. 运行时生成产物
+5. 审计与过渡辅助文件
+
+本文档服务于下一步把生成链拆回稳定结构，避免继续把产物文件误当作真源来修改。
+
+建议与 [码点与中间层策略](CODEPOINT_POLICY.md) 配合阅读。
+
+2026-06 起，**已删除路径的历史审计**不再在本文件逐项追加；见下文「历史清理记录（归档）」与 git 历史。
+
+与首音细分层相关的规则说明草案，见 [首音细分规则与真源 Schema 提案](SHOUYIN_SPLITTER_RULES.md)。当前代码链未启用该草案中的细分切分方案。
+
+## 判定原则
+
+### 真源文件
+
+满足以下条件之一：
+
+1. 直接表达语义结构，而不是表达某次导出结果。
+2. 改动后应触发重新生成其他文件。
+3. 不应该由测试过程直接回写修正。
+
+### 生成产物文件
+
+满足以下条件之一：
+
+1. 可由真源文件重新构建。
+2. 当前内容依赖某种码点区或平台投影选择。
+3. 在重建流程中应被覆盖，而不是手工长期维护。
+
+## 当前建议分层
+
+### A. 语义真源层
+
+这些文件应当被视为下一步拆回生成链的核心基础。
+
+#### 1. 键位语义真源
+
+- `internal_data/manual_key_layout.json`
+  - 文件名里的 `manual` 是历史命名，当前语义应理解为“布局真源”，不是“manual install”或“手工编译流程”。
+  - 定义物理键位与 `Nxx/Mxx` 槽位的关系。
+  - 这是布局层真源，不应通过改 `yinyuan.klc` 反向修复。
+  - 外部 `Yime-keyboard-layout` 仓库可以消费它的快照副本来生成
+    KLC 和打包产物，但那边的
+    `source_snapshots/manual_key_layout.json` 不是 canonical。
+
+#### 2. 槽位到规范字符映射真源
+
+- `internal_data/key_to_symbol.json`
+  - 当前表达 `N01-N24` 与 `M01-M33` 到规范字符的映射。
+  - 按策略文档，应将其理解为“语义槽位到 canonical 字符”的稳定层。
+  - 外部 `Yime-keyboard-layout` 仓库中如果存在对应快照，也只能视为同步副本，不得反向覆盖这里。
+
+#### 3. 理论与流程约束真源
+
+- `docs/CODEPOINT_POLICY.md`
+  - 规范语义槽位层、canonical 层和 projection 层之间的职责。
+- `docs/KEYBOARD_LAYOUT_PIPELINE.md`
+  - 规范键盘布局生成链应如何组织。
+
+### B. 应尽快补齐的缺失真源层
+
+这些文件在结构上应存在，但目前仓库里还没有稳定落地为独立真源。
+
+#### 1. 首音语义映射真源
+
+- 建议新增：`internal_data/shouyin_to_symbol_key.json`
+  - 用来表达：`b -> N01`、`zh -> N15` 这类语义关系。
+  - 这样首音语义就不再依赖具体字符文件。
+
+#### 2. 干音语义序列真源
+
+- 建议新增：`internal_data/ganyin_to_symbol_key_sequence.json`
+  - 用来表达：`i1 -> M01 M01 M01`、`an4 -> M10 M11 M30` 这类三乐音序列。
+  - 这样干音编码不会再直接绑定某个 Unicode 码点区。
+
+这两份文件应当成为后续修复生成链时最优先补上的真源层。
+
+### C. 平台投影层
+
+这些文件表达的是 projection，不是最终语义真源。
+
+#### 1. BMP PUA 投影
+
+- `internal_data/bmp_pua_trial_projection.json`
+  - 当前用于把 canonical 槽位投影到 BMP PUA。
+  - 应继续保留，但应明确其职责是 projection，不是 canonical。
+  - 独立出来的键盘布局辅助仓库可以复制它做 Windows 打包试验，但复制件仍只是快照。
+
+- `internal_data/bmp_pua_trial_projection.md`
+  - 对应投影的说明文件。
+
+### D. 当前生成产物层
+
+这些文件都可以重建，不应被长期手工承担真源职责。
+
+当前首音链已经切换为：
+
+- `syllable/yinyuan/zaoyin_yinyuan_enhanced.json`
+  - 首音唯一真源。
+  - 每条记录显式保存 `semantic_code`、`ipa`、`type`、`runtime_char`。
+
+- `internal_data/yinyuan_derived/zaoyin_yinyuan.json`
+  - 兼容产物，只保留 `shouyin -> ipa` 的旧结构，供旧脚本和人工查看。
+  - 已从 `syllable/yinyuan/` 活动目录迁出，避免与首音真源混放。
+
+当前干音链已经切换为：
+
+- `syllable/yinyuan/yueyin_yinyuan_enhanced.json`
+  - 干音唯一真源。
+  - 每条记录显式保存 `semantic_code`、`layout_slot`、`aliases`、`runtime_char`。
+
+- `internal_data/yinyuan_derived/yueyin_yinyuan.json`
+  - 兼容产物，只保留 `canonical yueyin -> aliases` 的旧结构。
+  - 已从 `syllable/yinyuan/` 活动目录迁出，避免与干音真源混放。
+
+#### 1. 运行时字符映射产物
+
+- `internal_data/yinyuan_derived/ganyin_enhanced.json`
+  - 干音增强视图产物，供后续切分链读取。
+  - 已从 `syllable/yinyuan/` 活动目录迁出，避免与真源和运行时产物混放。
+
+- `internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json`
+  - 干音到三段片音序列的中间输入表，供后续编码链和派生脚本读取。
+  - 已从 `syllable/yinyuan/` 活动目录迁出，避免与运行时产物混放。
+
+- `internal_data/yinyuan_derived/ganyin_to_yinyuan_sequence.json`
+  - 干音到三段音元序列的中间产物。
+  - 已从 `syllable/yinyuan/` 活动目录迁出，避免与 fixed-length 运行时编码混放。
+
+- `syllable/yinyuan/shouyin_codepoint.json`
+  - 当前是首音到字符的运行时映射结果。
+  - 按策略，它应从“首音语义映射真源 + 码点映射层”生成。
+
+- `syllable/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json`
+  - 当前是干音到固定长度三字符序列的运行时产物。
+  - 按策略，它应从“干音语义序列真源 + 码点映射层”生成。
+
+- `syllable/yinyuan/yinyuan_codepoint.json`
+  - 当前是运行时总字符映射汇总文件。
+  - 应视为聚合产物，而不是单独真源。
+
+#### 2. 音节编码产物
+
+- `syllable/codec/yinjie_code.json`
+  - 当前是最终音节到四字符编码的产物。
+  - 应从首音语义层、干音语义层和码点映射层生成。
+
+- `yime/pinyin_normalized.json`
+  - 当前承担 `数字标调拼音 -> 调号标调拼音` 的显示层资料。
+  - 由 `rebuild_pinyin_assets.py` 从
+    `lexicon_exports/pinyin_normalized.json` 同步复制，供
+    IME/static decoder 读取。
+  - 当前输入法主链以 SQLite `runtime_candidates` 为主；JSON
+    导出与静态层为备用。`pinyin_normalized.json`
+    服务码元→拼音显示。
+  - 可选的 `yime/pinyin_hanzi.json` 仅作静态拼音→汉字兜底（已 gitignore；缺失时静态回退只解码拼音、不出汉字候选）。
+
+#### 3. 布局解析与布局安装产物
+
+- `internal_data/manual_key_layout.resolved.json`
+  - 是 `manual_key_layout.json + key_to_symbol.json` 的解析产物。
+
+- `yinyuan.klc`
+  - 是键盘布局安装链的构建产物。
+  - 不应反向充当键位真源。
+  - 当前正式保留位置应理解为外部 `Yime-keyboard-layout/yinyuan.klc`；主仓库根目录不再要求长期保留副本。
+
+#### 4. 数据库导入与运行时消费产物
+
+- `yime/pinyin_hanzi.db`
+  - 作为数据库运行时资产，应被视为导入结果和消费结果，不应承担字符系统真源职责。
+- `yime/pinyin_hanzi.db-wal`
+- `yime/pinyin_hanzi.db-shm`
+  - 都是数据库运行时副产物，绝不是设计真源。
+
+#### 5. 第二批轻清理对象分类（2026-04）
+
+以下对象已经做过一轮“只分类、不删除”的轻审查，当前建议如下。
+
+- `yime/create_prototype_schema_additions.sql`
+  - 分类：当前间接依赖。
+  - 原因：该文件定义 `runtime_candidates` 视图，而当前输入法的 SQLite 回退链会直接读取这个视图，因此它不能按普通旧脚本附件处理。
+
+- `yime/import_danzi_into_prototype_tables.py`
+  - 分类：**当前 rebuild 入口**（兼容壳；真实实现
+    `yime/utils/prototype_single_char_import.py`）。
+
+- `yime/import_duozi_into_prototype_tables.py`
+  - 分类：**当前 rebuild 入口**（兼容壳；真实实现
+    `yime/utils/prototype_phrase_import.py`）。
+
+- `yime/refresh_runtime_yime_codes.py`
+  - 分类：**当前 rebuild 入口**（兼容壳；真实实现 `yime/utils/runtime_codes_refresh.py`）。
+
+- `tools/merge_char_freq.py`、`tools/merge_word_freq.py`
+  - 分类：BCC 频表合并脚本（版本化）；原始 `*.txt` 频道下载仍 gitignore。
+
+- `releases/`
+  - 分类：可归档但暂不删除。
+  - 原因：该目录更接近历史发布/打包沉积区，包含安装包、MSI 和按架构拆分的打包结果；当前没有发现运行时代码对它的直接依赖，但它仍可能承载可用安装样本与发布记录，因此现阶段先归档理解，不做删除处理。
+
+当前处理原则：
+
+1. 对 rebuild/runtime 入口，不得因“看起来像旧文件”而删除兼容壳；改 `yime/utils/` 内真实实现。
+2. 对 `可归档但暂不删除` 对象，现阶段只做目录级分类和用途标注。
+
+`releases/` 顶层子目录当前可先按下面方式理解：
+
+补充说明：当前 Windows 键盘布局打包链已经独立到外部
+`Yime-keyboard-layout` 仓库。主仓库里的 `releases/`
+更应理解为过渡镜像和历史残留，而不是 IME 主线自带发布系统。
+
+- `releases/msklc-package/`
+  - 分类：已迁出主仓库。
+  - 原因：当前可解释的安装样本已经保留在外部
+    `Yime-keyboard-layout` 仓库中，主仓库不再需要继续携带这份镜像目录。
+
+- `releases/msklc-amd64/`
+  - 分类：已迁出主仓库。
+  - 原因：分架构 DLL 快照已经保留在外部 `Yime-keyboard-layout` 仓库中，主仓库不再继续保存重复副本。
+
+- `releases/msklc-wow64/`
+  - 分类：已迁出主仓库。
+  - 原因：分架构 DLL 快照已经保留在外部 `Yime-keyboard-layout` 仓库中，主仓库不再继续保存重复副本。
+
+- `releases/msklc-docs/`
+  - 分类：空目录占位。
+  - 原因：当前为空，暂时没有形成有效内容；该目录已在轻清理中删除。
+
+- `releases/msklc-test/`
+  - 分类：空目录占位。
+  - 原因：当前为空，暂时没有形成有效内容；该目录已在轻清理中删除。
+
+- `releases/v1.0/`
+  - 分类：已移除的过渡占位目录。
+  - 原因：正式键盘布局 `v1.0` 说明已经迁到外部
+    `Yime-keyboard-layout` 仓库，而主仓库内已不再存在对此目录的消费入口，
+    因此这层占位本身也可以移除。
+
+当前已完成的 `releases/` 轻清理结论是：
+
+1. `releases/msklc-docs/` 与 `releases/msklc-test/` 两个空目录占位已删除。
+2. `releases/yinyuan/` 已删除，因为它与 `releases/msklc-package/` 的代表性包文件重复，且当前运行/打包说明链没有引用它。
+3. 旧的 `releases/v2.2/` 与 `releases/v2.3/` 版本说明已删除，因为它们为空或与当前主线失配。
+4. 键盘布局辅助工程已经独立到外部 `Yime-keyboard-layout`
+  仓库，主仓库中的 `releases/v1.0/` 占位目录也已移除，正式入口统一改由外部仓库承载。
+5. `releases/msklc-package/`、`releases/msklc-amd64/` 与
+  `releases/msklc-wow64/` 已从主仓库移除，正式样本改由外部
+  `Yime-keyboard-layout` 仓库承载。
+
+#### 6A. 覆盖率报告目录（2026-05）
+
+- `coverage/`
+  - 分类：前端测试生成物。
+  - 原因：当前仅承载 `lcov.info`、`coverage-final.json` 以及 `lcov-report/` HTML 报告，它们都属于测试运行后的可再生输出，而不是仓库真源。
+
+- `htmlcov/`
+  - 分类：Python 覆盖率生成物。
+  - 原因：该目录是 `pytest --cov-report=html` 的标准输出目录，已经在本地存在，但不应作为版本化资产维护。
+
+当前处理原则补充：
+
+1. `coverage/` 与 `htmlcov/` 应视为测试生成物，允许删除并重新生成。
+2. 工作流可以校验这些目录中的文件是否被生成，但主仓库不应继续跟踪报告内容本身。
+
+#### 6AA. 根目录覆盖率与缓存残留（2026-05）
+
+以下对象应视为本地临时文件，已在 `.gitignore` 中忽略；
+2026-06 另删除误提交的 `.venvLibsite-packages/`、`.arts/`、
+`.debug_scripts/`、无引用的 `Assets/` 与根级 `__init__.py`。
+
+#### 6B. 数据库备份副产物（2026-05）
+
+- `yime/backup/`
+  - 分类：本地数据库备份目录。
+  - 原因：词库/频度导入脚本（如
+    `yime/import_blcu_word_frequency.py`，真实实现位于
+    `yime/utils/blcu_word_frequency_import.py`）会在修改
+    `yime/pinyin_hanzi.db` 前生成保护性备份；这些文件属于本地维护副产物，
+    不应进入版本控制。
+
+- `yime/*.blcu_word_freq_*.bak`
+- `yime/*.pre_*`
+- `yime/*.bak*`
+  - 分类：本地数据库备份文件模式。
+  - 原因：它们是导入、借频或人工维护阶段生成的回退文件，只服务于本地回滚，不是仓库真源。
+
+#### 6C. 拼音数据库迁移链（2026-05）
+
+- `docs/project/PINYIN_DATA_MIGRATION.md`
+  - 分类：当前迁移说明。
+  - 原因：该文档明确区分当前主线
+    `source_pinyin.db -> prototype tables -> runtime` rebuild 链与
+    legacy-compatible 区域。
+
+- `syllable/codec/yinjie.py`（``Yinjie`` 四音元位真源）
+- `syllable/codec/yinjie_loose_split.py`
+  （legacy 可变长切分，非 IME 主链）
+- `syllable/codec/yinjie_jianpin_draft.py`
+  （简拼草稿，非 IME 输入链）
+- `yime/syllable_decoder.py`
+  （``SyllableDecoder`` 旧 import 路径，直接继承 ``YinjieDecoder``）
+
+- 已清退：`yime/syllable_structure.py`、`yime/utils/syllable_compat/`
+  （2026-06 后合并入主链，恢复请查 git 历史）
+
+- 已清退本地 DB 旧中文拼音表：`数字标调拼音`、`多式拼音映射关系`、`音元拼音`
+  - 分类：legacy 三表链残留（无 Python 读面）
+  - 替代：`numeric_pinyin_inventory`、`pinyin_yime_code`、`yinjie_slot_decomposition`
+  - 清理：`tools/drop_legacy_chinese_pinyin_tables.py`
+
+- 已清退旧汉字拼音映射表：`汉字音元拼音映射`、`汉字数字标调拼音映射`
+  - 分类：已移除的旧数据库关联表。
+  - 原因：当前主线 rebuild/runtime 与保留的非归档脚本都不再通过这两张
+    “汉字编号 ↔ 旧拼音编号”关联表取数；继续保留只会扩大历史 schema 面。
+
+- 已清退旧词语表：`词汇`
+  - 分类：已移除的旧数据库词语主表。
+  - 原因：非归档桥接脚本和查询模板已切到 `phrase_inventory / phrase_pinyin_map`；继续保留旧 `词汇` 表只会维持历史双轨结构。
+
+- `yime/borrow_wanxiang_frequency.py`、`yime/utils/wanxiang_frequency_import.py`
+  - 分类：已删除的万象语料频率借用脚本。
+  - 原因：字词频主链已统一为 BCC + `char_frequency_policy.py`。
+
+- `yime/import_xiandaihaiyu_phrase_frequency.py`、`yime/utils/xiandaihaiyu_phrase_frequency_import.py`
+  - 分类：已删除的现代汉语语料词频导入脚本。
+  - 原因：词语频率改由 `import_blcu_word_frequency.py` 写入 BCC count
+    或词库默认 1。
+
+- `yime/import_8105_char_frequency.py`、`yime/utils/char_frequency_8105_import.py`
+  - 分类：已删除的 8105.dict.yaml 字频导入脚本。
+  - 原因：字频主链已改为 BCC（`import_blcu_word_frequency.py`）；
+    TGHZ2013 3500/6500/8105 分层改由
+    `external_data/unihan_readings/unihan_readings.db` 的
+    `view_tghz2013_frequency` 提供。
+
+- 已清退旧单字主表与频率表：`汉字`、`汉字频率`
+  - 分类：已移除的旧数据库单字主表与频率表。
+  - 原因：字频与 runtime 频率状态读取都已切到 `char_inventory`
+    （BCC 导入 + unihan TGHZ2013 分层）；继续保留旧
+    `汉字 / 汉字频率` 只会维持历史双轨结构。
+
+- 已清退旧中文词条/字符观察表：`专用单字`、`字符`、`字符扩展`、`字词`、`字词关联`、`生僻单字`、`词语`、`通用单字`
+  - 分类：已移除的旧数据库观察/占位表。
+  - 原因：这些表没有活动代码读取面，主库中也只剩空表或空字符串占位行；
+    继续保留只会扩大历史 schema 面，并与当前
+    `char_inventory / phrase_inventory` 原型链并存制造误导。
+
+- 已清退旧全文检索虚拟表与影子表：`词语搜索*`、`通用单字搜索*`
+  - 分类：已移除的旧数据库 FTS5 虚拟表及影子表。
+  - 原因：仓库内已无任何代码、文档或脚本再读取这两组全文检索对象；
+    继续保留只会把无消费者的 FTS5 影子表留在主库里，扩大历史 schema 面。
+
+- 已清退旧中文辅助视图：`多音字视图`、`拼音映射视图`、`汉字拼音映射视图`、`汉字标准拼音视图`、`汉字音元拼音视图`
+  - 分类：已移除的旧数据库辅助视图。
+  - 原因：它们只服务旧中文表观察/审计，不再被当前主线
+    rebuild/runtime 或保留的 legacy-compatible 三表生成链读取；
+    继续保留只会扩大历史 schema 面。
+
+当前处理原则补充：
+
+1. 主线重建优先走 `internal_data/pinyin_source_db/` 与 prototype 导入链，不再把旧中文表维护脚本当成默认入口。
+2. 主包根目录里仍保留的同名入口，默认应理解为兼容 shim；真实实现放在 `yime/utils/`。
+3. `tools/` 下凡是代理外部键盘布局仓库或系统脚本的
+  orchestration 入口，默认应先做路径预检，并统一使用
+  `YIME_KEYBOARD_LAYOUT_REPO` 解析外部 `Yime-keyboard-layout`
+  仓库位置。
+4. BCC 频表合并脚本位于 `tools/merge_char_freq.py`、
+  `tools/merge_word_freq.py`；原始 `*.txt` 下载仍 gitignore。
+  数据库维护脚本产生的 `.bak`/`pre_*` 等回退文件应统一视为本地副产物，
+  不再提交。
+
+#### 6C. `yime/reports/` 运行桥接文件与分析产物（2026-05）
+
+补充：生成这些运行桥接 JSON 的兼容入口仍保留在 `yime/export_runtime_candidates_json.py`，但真实实现现已下沉到 `yime/utils/runtime_candidates_export.py`。
+补充：生成这些运行桥接 JSON 的兼容入口仍保留在
+`yime/export_runtime_candidates_json.py`，但真实实现现已下沉到
+`yime/utils/runtime_candidates_export.py`。
+
+- `yime/reports/runtime_candidates_by_code_true.json`
+  - 分类：保留的运行时桥接导出。
+  - 原因：当前输入法候选框与相关分析文档仍直接消费这份
+    “仅真实音元编码键”的 JSON，它虽然可以从数据库重导出，
+    但在当前仓库里承担实际运行输入面。
+
+- `yime/reports/runtime_candidates_by_code.json`
+- `yime/reports/runtime_candidates_placeholder_phrases.json`
+- `yime/reports/phrase_code_backfill.json`
+- `yime/reports/efficiency_baseline.json`
+- `yime/reports/summary.txt`
+  - 分类：已删除的可再生报告/分析产物。
+  - 原因：这些文件只有导出脚本或分析脚本负责生成，没有运行时消费入口；它们属于数据库或报告流程的可再生输出，不应长期版本化。
+
+当前处理原则补充：
+
+1. `yime/reports/` 中若文件被输入法运行面直接读取，可以作为桥接导出保留。
+2. 纯分析、回填、汇总类 JSON/TXT 报告应默认视为生成物，删除后按需重建，并通过 ignore 规则防止再次入库。
+
+#### 6. 根目录旧原型数据库链（2026-04）
+
+以下对象已经确认为旧原型/练习链，且已从主仓库移除：
+
+- `pinyin_hanzi.db`
+  - 分类：已删除的根级练习库。
+  - 原因：当前运行时与数据库维护主线都已统一到 `yime/pinyin_hanzi.db`，这个根目录 SQLite 文件体量很小、表结构也明显更旧，更接近早期练习或原型残留，而不是现行输入法资产。
+
+- `create_tables_from_manager.py`
+  - 分类：已删除的根级旧建表脚本。
+  - 原因：它只操作根目录 `pinyin_hanzi.db`，不参与当前 `yime/` 模块内的数据库运行/导入链，已被模块内数据库脚本体系替代。
+
+- `run_db_setup.py`
+  - 分类：已删除的根级旧初始化脚本。
+  - 原因：它默认操作根目录 `pinyin_hanzi.db`；模块内
+    `yime/run_db_setup.py` 与 pending_removal 实现亦于 2026-06
+    Phase E 删除。
+
+当前处理原则补充：
+
+1. 数据库相关脚本若仍以仓库根目录 `pinyin_hanzi.db` 为默认目标，应优先视为旧原型链候选，而不是当前主线入口。
+2. 当前输入法运行、导入、诊断与测试的数据库主线统一以 `yime/pinyin_hanzi.db` 为准。
+
+#### 6D–12. 历史清理记录（2026-04 ~ 2026-06，归档）
+
+2026-04 至 2026-06 多轮清理已移除：根目录旧启动/安装包装脚本、
+演示数据库与临时导出、外迁的 `tools/releases/` 与旧 HTML/JS 原型链、
+根目录 legacy/ 树、YAML 并行词库链、`yime/legacy/` 与
+`windows_candidate_box`、db_manager 三表链，以及无引用的 freq
+诊断工具等。
+
+**不再在本文件逐项列举已删路径。** 需要核对时：
+
+```bash
+git log --oneline --grep='Remove\|legacy\|cleanup\|删除'
+git show <commit> --stat
+```
+
+2026-06 后音节结构已收编至 `syllable/codec/yinjie.py`；
+`yime/utils/syllable_compat/` 与 `yime/syllable_structure.py`
+已删除。旧 import 路径仅保留 `yime/syllable_decoder.py`
+（见 [PINYIN_DATA_MIGRATION.md](project/PINYIN_DATA_MIGRATION.md)）。
+
+### E. 审计与过渡辅助文件
+
+这些文件很有价值，但它们的职责是“帮助审计现状”，不是“定义未来结构”。
+
+- `internal_data/yinjie_runtime_key_symbol_mapping.json`
+  - 用来审计当前 runtime 字符与槽位关系。
+  - 非真源。
+
+- `internal_data/layout_runtime_consistency_report.json`
+  - 一致性检查输出。
+  - 非真源。
+
+- `internal_data/bmp_pua_trial_projection.json`
+  - Windows BMP 投影文件。
+  - 非真源，但属于当前布局/编译链会实际消费的 projection
+    层，不应与 `internal_data/key_to_symbol.json` 的 canonical
+    层混并。
+
+- `internal_data/zaoyin_runtime_layout_audit.md`
+  - 首音运行时链路审计文档。
+  - 非真源。
+
+- `internal_data/yueyin_runtime_layout_audit.md`
+  - 乐音运行时链路审计文档。
+  - 非真源。
+
+#### 13. `data_json_files/` 并入后的映射边界（2026-05）
+
+- `internal_data/ganyin_pinyin_mapping.json`
+  - 分类：项目内生映射真源。
+  - 原因：原 `data_json_files/ganyin_pinyin_mapping.json`
+    已并入此处；它保存 PUA 音元序列到带调干音字符串的内部映射，
+    不属于外部原始语料。
+
+- `internal_data/ipa_pinyin_mapping.json`
+  - 分类：项目内生对照映射。
+  - 原因：原 `data_json_files/ipa_pinyin_mapping.json` 已并入此处；
+    它保存带调 IPA / 音标串到数字调拼音的内部对照关系，
+    同样不属于外部原始语料。
+
+- `internal_data/key_symbol_mapping.json`
+  - 分类：旧手工键位映射参考文件。
+  - 原因：它仍可作旧手工布局/符号表参考，但不是
+    `syllable/codec/yinjie_encoder.py` 当前 runtime 链的真源；
+    相关审计说明已收敛到
+    `internal_data/yinjie_runtime_key_symbol_mapping.json`。
+
+- `internal_data/key_to_symbol.json`
+  - 分类：当前 canonical 槽位到字符映射。
+  - 原因：它与 `internal_data/key_symbol_mapping.json`、
+    `internal_data/yinjie_runtime_key_symbol_mapping.json` 职责不同，
+    不应再按“同名映射”继续合并；前者面向布局 canonical 字符表，
+    后两者分别面向旧手工参考和 runtime 审计。
+
+- `internal_data/slot_symbol_crosswalk.json`
+  - 分类：跨层对照审计产物。
+  - 原因：它不是新的真源映射，而是把
+    `internal_data/key_to_symbol.json`、
+    `internal_data/bmp_pua_trial_projection.json`、
+    `internal_data/manual_key_layout.json` 和 runtime BMP 结果拉平到同一张对照表里，
+    方便检查 canonical / projection / physical key / runtime
+    之间是否一致。
+
+- `internal_data/yinjie_runtime_key_symbol_mapping.json`
+  - 分类：runtime 审计产物。
+  - 原因：它也不是 canonical 真源；它回答的是
+    “当前 `yinjie_encoder` 实际产出的 runtime 字符槽位关系是什么”，
+    而不是“布局侧应以什么字符为准”。因此它和
+    `slot_symbol_crosswalk.json` 一样属于审计面，但关注点更偏
+    runtime 结果而非多层交叉对照。
+
+- `external_data/finals_IPA_mapping.json`
+  - 分类：外部语音学输入映射。
+  - 原因：它承担 finals 侧 IPA 到项目拼写约定的外部输入面，
+    当前仍被 `tools/final_components.py`、`tools/final_classifier.py`
+    等现行链路当作上游输入；因此不应与
+    `internal_data/ipa_of_finals.json`、
+    `internal_data/yinyuan_pianyin_mapping.json`
+    这类内部派生产物混并。旧 orchestrator 分析链已删除，
+    不再视为当前入口。
+
+- `external_data/initials_IPA_mapping.json`
+  - 分类：外部声母 IPA 输入映射。
+  - 原因：它和 `external_data/finals_IPA_mapping.json`
+    一样属于外部原始映射面，服务于拼音/IPA 分析工具的输入边界，
+    而不是项目内部 runtime 或布局真源。
+
+- `internal_data/ipa_of_finals.json`
+  - 分类：内部汇总/投影结果。
+  - 原因：它不是 `external_data/finals_IPA_mapping.json`
+    的替代真源，而是当前内部整理后的 finals IPA 汇总面；
+    如果上游外部 IPA 对照发生变化，这类内部文件应理解为可再生结果，
+    而不是首选手改入口。
+
+- `internal_data/yinyuan_pianyin_mapping.json`
+  - 分类：内部派生语义映射。
+  - 原因：它基于内部音元质量/音高分组生成，职责是把项目内部
+    `yinyuan` 语义空间映射到 `pianyin` 计数与分布，
+    不是外部 IPA 原始表的平移副本；因此它应和
+    `external_data/*_IPA_mapping.json` 保持“上游输入 vs 内部派生”边界。
+
+- `internal_data/bmp_pua_trial_projection.json`
+  - 分类：当前 Windows/BMP projection 层。
+  - 原因：它虽然不是 canonical 真源，但也不是普通审计快照；
+    当前 `tools/generate_klc_from_manual_layout.py`、
+    `tools/check_layout_runtime_consistency.py`、以及若干运行时可视化入口都直接读取它，
+    因此应理解为“布局投影层输入”，而不是可随意删除的中间文件。
+
+- `internal_data/layout_runtime_consistency_report.json`
+  - 分类：projection/runtime 一致性审计结果。
+  - 原因：它消费 `manual_key_layout.json`、`key_to_symbol.json`、
+    `bmp_pua_trial_projection.json` 与
+    `yinjie_runtime_key_symbol_mapping.json`，职责是报告当前布局层与
+    runtime 层是否一致；它应作为检查输出保留，而不是被误当成新的配置面。
+
+- `external_data/unihan_readings/unihan_readings.db`
+  - 分类：Unihan 读音 + BCC 单字频 + TGHZ2013 分层视图（**本地构建产物，gitignore**）。
+  - 原因：`view_tghz2013_frequency` 供
+    `yime/refresh_runtime_yime_codes.py` 构建 `char_usage_profile`；
+    由 `external_data/unihan_readings/build_all.py` 构建。
+    同目录下的 `README.md`、构建脚本与
+    `mandarin_readings_corrections.txt` **纳入 git**。
+
+- `internal_data/hanzi_pinyin/pinyin.txt`
+  - 分类：**rebuild 上游真源**（版本化 curated 单字 TSV）。
+  - 原因：`build_source_pinyin_db.py` 默认输入；由
+    `internal_data/hanzi_pinyin/build_valid_pinyin.py` 从 Unihan 链导出。
+    `external_data/hanzi_pinyin.txt` 为可再生中间层，gitignore。
+
+- `internal_data/phrase_pinyin/phrase_pinyin.txt`
+  - 分类：**rebuild 上游真源**（版本化 curated 词语 TSV）。
+  - 原因：同上，词语侧；由 phrase-pinyin-data 经校验后导出。
+    `external_data/phrase_pinyin.txt` 为上游快照，gitignore。
+
+- `external_data/char_freq/merged_char_freq.txt`
+  - 分类：BCC **字频频道**合并单字频（`tools/merge_char_freq.py`）。
+  - 原因：Yime 字频写库与 `char_frequency_policy` 合成兜底的 BCC 真源；
+    供 `import_blcu_word_frequency.py`、`import_hanzi_frequency.py`
+    等使用。
+
+- `external_data/char_freq/word_freq_merged_single_char_freq.txt`
+  - 分类：BCC **词频频道**中的单字条目（`tools/merge_word_freq.py` 从 `word_freq/*.txt` 分出 `len(word)==1`）。
+  - 原因：词频统计本身含单字行，与专用字频频道口径不同；
+    保留作对照/分析，**不**作为 runtime 写库真源。
+
+- `data_json_files/key_symbol_mapping.json`
+  - 分类：已删除的误命名重复副本。
+  - 原因：文件内容与原
+    `data_json_files/ganyin_pinyin_mapping.json` 实际一致，
+    只是历史上以错误文件名重复保存；在并入
+    `internal_data` 时已一并清理。
+
+## 当前结构的主要问题
+
+### 1. 语义层缺失独立文件
+
+当前首音和干音的语义关系仍然大量隐含在“字符结果文件”里，而不是明确落在 `N/M` 槽位映射文件中。
+
+这导致：
+
+1. 一旦换码点区，语义层也会跟着漂移。
+2. 测试失败时，容易直接去改字符结果。
+3. 生成链难以稳定拆分。
+
+### 2. 运行时字符文件被过度当作真源
+
+当前 `syllable/codec/yinjie_encoder.py` 仍然直接消费：
+
+- `syllable/yinyuan/shouyin_codepoint.json`
+- `syllable/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json`
+
+这意味着字符层文件事实上仍在扮演真源角色，与策略文档要求不一致。
+
+### 3. 数据库文件容易被误改为修复入口
+
+当测试或运行链不通时，如果没有明确“数据库只是消费端产物”，就很容易出现“为提高测试通过率直接改库”的错误做法。
+
+## 下一步拆链建议
+
+建议按以下顺序进行。
+
+### 第一步：补齐语义真源层
+
+新增：
+
+1. `internal_data/shouyin_to_symbol_key.json`
+2. `internal_data/ganyin_to_symbol_key_sequence.json`
+
+目标：先把“首音/干音语义”与“Unicode 字符”彻底拆开。
+
+### 第二步：让运行时字符文件退回生成产物角色
+
+调整生成链，使以下文件由语义层自动生成：
+
+1. `syllable/yinyuan/shouyin_codepoint.json`
+2. `syllable/yinyuan/ganyin_to_fixed_length_yinyuan_sequence.json`
+3. `syllable/yinyuan/yinyuan_codepoint.json`
+4. `syllable/codec/yinjie_code.json`
+
+### 第三步：明确 canonical 与 projection 的分工
+
+建议：
+
+1. `internal_data/key_to_symbol.json` 继续承担 canonical 映射职责。
+2. `internal_data/bmp_pua_trial_projection.json` 继续承担 BMP projection 职责。
+3. `yinyuan.klc` 由布局真源 + 选定 projection/canonical 模式生成。
+
+### 第四步：把数据库完全降级为消费端产物
+
+目标：
+
+1. 数据库不再被视为修复字符系统的入口。
+2. 需要修字符系统时，回到语义层和码点层修，再重建数据库导入结果。
+
+## 最终目标结构
+
+理想结构如下：
+
+1. 语义层
+   - `manual_key_layout.json`
+   - `shouyin_to_symbol_key.json`
+   - `ganyin_to_symbol_key_sequence.json`
+
+2. 规范码点层
+   - `key_to_symbol.json`
+
+3. 平台投影层
+   - `bmp_pua_trial_projection.json`
+
+4. 生成产物层包括：
+
+- `shouyin_codepoint.json`
+- `ganyin_to_fixed_length_yinyuan_sequence.json`
+- `yinyuan_codepoint.json`
+- `syllable/codec/yinjie_code.json`
+- `yinyuan.klc`
+- 数据库与导出文件
+
+只要这个分层稳定下来，后续无论换码点区、重做布局、修复工具链还是重建数据库，都可以各改各层，不会再互相污染。

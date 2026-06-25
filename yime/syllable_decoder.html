@@ -1,0 +1,840 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>yime.syllable_decoder API documentation</title>
+<meta name="description" content="``yime.syllable_decoder`` — 主链 ``syllable.codec.yinjie_decoder`` 的兼容入口。 …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>yime.syllable_decoder</code></h1>
+</header>
+<section id="section-intro">
+<p><code><a title="yime.syllable_decoder" href="#yime.syllable_decoder">yime.syllable_decoder</a></code> — 主链 <code>syllable.codec.yinjie_decoder</code> 的兼容入口。</p>
+<p>关联关系：</p>
+<ul>
+<li><strong>编解码真源</strong>：<code>syllable.codec.yinjie_decoder.YinjieDecoder</code></li>
+<li><strong>结构模型</strong>：<code>syllable.codec.yinjie.Yinjie</code></li>
+<li><strong>本模块</strong>：<code><a title="yime.syllable_decoder.SyllableDecoder" href="#yime.syllable_decoder.SyllableDecoder">SyllableDecoder</a></code> 继承 <code><a title="yime.syllable_decoder.YinjieDecoder" href="#yime.syllable_decoder.YinjieDecoder">YinjieDecoder</a></code>，仅保留旧脚本需要的
+宽容码表加载（缺失 JSON → 空映射）与历史方法名（<code>split_encoded_syllable</code> 等）</li>
+</ul>
+<p>新代码请直接使用 <code>from syllable.codec.yinjie_decoder import <a title="yime.syllable_decoder.YinjieDecoder" href="#yime.syllable_decoder.YinjieDecoder">YinjieDecoder</a></code>。</p>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="yime.syllable_decoder._normalize_split"><code class="name flex">
+<span>def <span class="ident">_normalize_split</span></span>(<span>res: object) ‑> tuple[object, object | None, tuple[object, ...], tuple[object, ...]] | None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def _normalize_split(res: object) -&gt; _NormalizedSplit | None:
+    &#34;&#34;&#34;把不同实现的返回值归一化为 (initial, None, (ascender,yunyin), (peak,descender))。&#34;&#34;&#34;
+    if not res:
+        return None
+    if isinstance(res, (list, tuple)):
+        parts = cast(Sequence[object], res)
+        if len(parts) == 4:
+            return (parts[0], parts[1], _tuple_piece(parts[2]), _tuple_piece(parts[3]))
+        if len(parts) &gt;= 3:
+            initial = parts[0]
+            third = parts[2]
+            fourth: object = parts[3] if len(parts) &gt; 3 else (&#34;&#34;, &#34;&#34;)
+            return (initial, None, _tuple_piece(third), _tuple_piece(fourth))
+    return None</code></pre>
+</details>
+<div class="desc"><p>把不同实现的返回值归一化为 (initial, None, (ascender,yunyin), (peak,descender))。</p></div>
+</dd>
+<dt id="yime.syllable_decoder.is_pua_string"><code class="name flex">
+<span>def <span class="ident">is_pua_string</span></span>(<span>s: str) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def is_pua_string(s: str) -&gt; bool:
+    &#34;&#34;&#34;判断是否全由 PUA 字符构成（仅用于区分 PUA，不据此拒绝其它编码）。&#34;&#34;&#34;
+    return bool(s) and all(is_pua_char(ch) for ch in s)</code></pre>
+</details>
+<div class="desc"><p>判断是否全由 PUA 字符构成（仅用于区分 PUA，不据此拒绝其它编码）。</p></div>
+</dd>
+<dt id="yime.syllable_decoder.is_valid_encoded_string"><code class="name flex">
+<span>def <span class="ident">is_valid_encoded_string</span></span>(<span>s: str) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def is_valid_encoded_string(s: str) -&gt; bool:
+    &#34;&#34;&#34;允许任意非控制字符；使用统一判定函数以兼容自定义音码。&#34;&#34;&#34;
+    return bool(s) and all(is_allowed_code_char(ch) for ch in s)</code></pre>
+</details>
+<div class="desc"><p>允许任意非控制字符；使用统一判定函数以兼容自定义音码。</p></div>
+</dd>
+<dt id="yime.syllable_decoder.main"><code class="name flex">
+<span>def <span class="ident">main</span></span>(<span>) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def main() -&gt; None:
+    &#34;&#34;&#34;CLI 入口：与 ``syllable.codec.yinjie_decoder.main`` 相同。&#34;&#34;&#34;
+    YinjieDecoder.run_example()</code></pre>
+</details>
+<div class="desc"><p>CLI 入口：与 <code>syllable.codec.yinjie_decoder.main</code> 相同。</p></div>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="yime.syllable_decoder.SyllableDecoder"><code class="flex name class">
+<span>class <span class="ident">SyllableDecoder</span></span>
+<span>(</span><span>code_file: str | Path | None = None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class SyllableDecoder(YinjieDecoder):
+    &#34;&#34;&#34;``YinjieDecoder`` 兼容子类：历史 import 名，行为委托主链实现。&#34;&#34;&#34;
+
+    def __init__(self, code_file: str | Path | None = None):
+        super().__init__(code_file or YINJIE_CODE_PATH)
+
+    def _load_code_map(self) -&gt; dict[str, str]:
+        &#34;&#34;&#34;兼容旧行为：文件不存在或 JSON 无效时返回空映射。&#34;&#34;&#34;
+        if not self.code_file.exists():
+            return {}
+        try:
+            return super()._load_code_map()
+        except Exception:
+            return {}
+
+    def _get_code(self, key: str) -&gt; Any:
+        &#34;&#34;&#34;兼容旧名：同 ``resolve_code``。&#34;&#34;&#34;
+        return self.resolve_code(key)
+
+    def split_encoded_syllable(self, encoded: str) -&gt; Yinjie:
+        &#34;&#34;&#34;兼容旧名：同 ``YinjieDecoder.split_encoded_string``。&#34;&#34;&#34;
+        return self.split_encoded_string(encoded)
+
+    def get_ganyin(self, code_or_input: str) -&gt; str:
+        &#34;&#34;&#34;兼容旧接口：返回干音（简化）。&#34;&#34;&#34;
+        code = self.resolve_code(code_or_input) or code_or_input
+        return code[0] if code else &#34;&#34;
+
+    def get_yunyin(self, code_or_input: str) -&gt; str:
+        &#34;&#34;&#34;兼容旧接口：返回韵音（简化）。&#34;&#34;&#34;
+        code = self.resolve_code(code_or_input) or code_or_input
+        return code[-1] if code else &#34;&#34;
+
+    def get_jianyin_code(self, code_or_input: str) -&gt; str:
+        &#34;&#34;&#34;兼容旧接口：返回简拼（非常简单的缩写）。&#34;&#34;&#34;
+        code = self.resolve_code(code_or_input) or code_or_input
+        if not code:
+            return &#34;&#34;
+        return code[:2]
+
+    @staticmethod
+    def run_example() -&gt; YinjieDecoderRunResult:
+        &#34;&#34;&#34;兼容旧示例入口：转发到主链 ``YinjieDecoder.run_example``。&#34;&#34;&#34;
+        return YinjieDecoder.run_example()</code></pre>
+</details>
+<div class="desc"><p><code><a title="yime.syllable_decoder.YinjieDecoder" href="#yime.syllable_decoder.YinjieDecoder">YinjieDecoder</a></code> 兼容子类：历史 import 名，行为委托主链实现。</p>
+<p>初始化解码器，加载编码文件</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>syllable.codec.yinjie_decoder.YinjieDecoder</li>
+</ul>
+<h3>Static methods</h3>
+<dl>
+<dt id="yime.syllable_decoder.SyllableDecoder.run_example"><code class="name flex">
+<span>def <span class="ident">run_example</span></span>(<span>) ‑> syllable.codec.yinjie_decoder.YinjieDecoderRunResult</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@staticmethod
+def run_example() -&gt; YinjieDecoderRunResult:
+    &#34;&#34;&#34;兼容旧示例入口：转发到主链 ``YinjieDecoder.run_example``。&#34;&#34;&#34;
+    return YinjieDecoder.run_example()</code></pre>
+</details>
+<div class="desc"><p>兼容旧示例入口：转发到主链 <code><a title="yime.syllable_decoder.YinjieDecoder.run_example" href="#yime.syllable_decoder.YinjieDecoder.run_example">YinjieDecoder.run_example()</a></code>。</p></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="yime.syllable_decoder.SyllableDecoder.get_ganyin"><code class="name flex">
+<span>def <span class="ident">get_ganyin</span></span>(<span>self, code_or_input: str) ‑> str</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_ganyin(self, code_or_input: str) -&gt; str:
+    &#34;&#34;&#34;兼容旧接口：返回干音（简化）。&#34;&#34;&#34;
+    code = self.resolve_code(code_or_input) or code_or_input
+    return code[0] if code else &#34;&#34;</code></pre>
+</details>
+<div class="desc"><p>兼容旧接口：返回干音（简化）。</p></div>
+</dd>
+<dt id="yime.syllable_decoder.SyllableDecoder.get_jianyin_code"><code class="name flex">
+<span>def <span class="ident">get_jianyin_code</span></span>(<span>self, code_or_input: str) ‑> str</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_jianyin_code(self, code_or_input: str) -&gt; str:
+    &#34;&#34;&#34;兼容旧接口：返回简拼（非常简单的缩写）。&#34;&#34;&#34;
+    code = self.resolve_code(code_or_input) or code_or_input
+    if not code:
+        return &#34;&#34;
+    return code[:2]</code></pre>
+</details>
+<div class="desc"><p>兼容旧接口：返回简拼（非常简单的缩写）。</p></div>
+</dd>
+<dt id="yime.syllable_decoder.SyllableDecoder.get_yunyin"><code class="name flex">
+<span>def <span class="ident">get_yunyin</span></span>(<span>self, code_or_input: str) ‑> str</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_yunyin(self, code_or_input: str) -&gt; str:
+    &#34;&#34;&#34;兼容旧接口：返回韵音（简化）。&#34;&#34;&#34;
+    code = self.resolve_code(code_or_input) or code_or_input
+    return code[-1] if code else &#34;&#34;</code></pre>
+</details>
+<div class="desc"><p>兼容旧接口：返回韵音（简化）。</p></div>
+</dd>
+<dt id="yime.syllable_decoder.SyllableDecoder.split_encoded_syllable"><code class="name flex">
+<span>def <span class="ident">split_encoded_syllable</span></span>(<span>self, encoded: str) ‑> syllable.codec.yinjie.Yinjie</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def split_encoded_syllable(self, encoded: str) -&gt; Yinjie:
+    &#34;&#34;&#34;兼容旧名：同 ``YinjieDecoder.split_encoded_string``。&#34;&#34;&#34;
+    return self.split_encoded_string(encoded)</code></pre>
+</details>
+<div class="desc"><p>兼容旧名：同 <code><a title="yime.syllable_decoder.YinjieDecoder.split_encoded_string" href="#yime.syllable_decoder.YinjieDecoder.split_encoded_string">YinjieDecoder.split_encoded_string()</a></code>。</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="yime.syllable_decoder.YinjieDecoder"><code class="flex name class">
+<span>class <span class="ident">YinjieDecoder</span></span>
+<span>(</span><span>code_file: str | pathlib.Path = PosixPath('/home/runner/work/Yime/Yime/syllable/codec/yinjie_code.json'))</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class YinjieDecoder:
+    # === 初始化相关 ===
+    def __init__(self, code_file: str | Path = YINJIE_CODE_PATH):
+        &#34;&#34;&#34;初始化解码器，加载编码文件&#34;&#34;&#34;
+        self.code_file = Path(code_file)
+        self.code_map: dict[str, str] = self._load_code_map()
+
+    def _load_code_map(self) -&gt; dict[str, str]:
+        &#34;&#34;&#34;从JSON文件加载编码映射&#34;&#34;&#34;
+        with self.code_file.open(&#39;r&#39;, encoding=&#39;utf-8&#39;) as f:
+            return json.load(f)
+
+    def _save_json(self, output_file: str | Path, data: Any) -&gt; Path:
+        &#34;&#34;&#34;统一的 JSON 写入入口。&#34;&#34;&#34;
+        output_path = Path(output_file)
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        with output_path.open(&#39;w&#39;, encoding=&#39;utf-8&#39;) as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+        return output_path
+
+    def _get_shouyin_source_path(self) -&gt; Path:
+        return ROOT / &#39;syllable&#39; / &#39;yinyuan&#39; / &#39;zaoyin_yinyuan_enhanced.json&#39;
+
+    def _get_yueyin_source_path(self) -&gt; Path:
+        return ROOT / &#39;syllable&#39; / &#39;yinyuan&#39; / &#39;yueyin_yinyuan_enhanced.json&#39;
+
+    def _load_layout_mapping_from_source(self, source_path: Path, expected_prefix: str) -&gt; dict[str, str]:
+        with source_path.open(&#39;r&#39;, encoding=&#39;utf-8&#39;) as f:
+            source_data = json.load(f)
+
+        entries = source_data.get(&#39;entries&#39;)
+        if not isinstance(entries, dict) or not entries:
+            raise ValueError(f&#34;真源文件缺少 entries: {source_path}&#34;)
+        typed_entries = cast(dict[str, Any], entries)
+
+        keyed_entries: list[tuple[int, str, str]] = []
+        for entry_name, entry in typed_entries.items():
+            if not isinstance(entry, dict):
+                raise ValueError(f&#34;真源条目格式不正确: {source_path} -&gt; {entry_name}&#34;)
+            entry_dict = cast(dict[str, Any], entry)
+
+            layout_slot = entry_dict.get(&#39;layout_slot&#39;)
+            runtime_char = entry_dict.get(&#39;runtime_char&#39;)
+            if not isinstance(layout_slot, str) or not layout_slot:
+                raise ValueError(f&#34;真源条目缺少 layout_slot: {source_path} -&gt; {entry_name}&#34;)
+            if not isinstance(runtime_char, str) or not runtime_char:
+                raise ValueError(f&#34;真源条目缺少 runtime_char: {source_path} -&gt; {entry_name}&#34;)
+            if not layout_slot.startswith(expected_prefix):
+                raise ValueError(
+                    f&#34;真源条目槽位前缀不正确: {source_path} -&gt; {entry_name} uses {layout_slot}, expected {expected_prefix}xx&#34;
+                )
+
+            try:
+                slot_index = int(layout_slot[1:])
+            except ValueError as exc:
+                raise ValueError(f&#34;真源条目槽位编号不正确: {source_path} -&gt; {entry_name} uses {layout_slot}&#34;) from exc
+
+            keyed_entries.append((slot_index, layout_slot, runtime_char))
+
+        keyed_entries.sort(key=lambda item: item[0])
+
+        slot_to_char: dict[str, str] = {}
+        for _, layout_slot, runtime_char in keyed_entries:
+            if layout_slot in slot_to_char:
+                raise ValueError(f&#34;真源条目出现重复槽位: {source_path} -&gt; {layout_slot}&#34;)
+            slot_to_char[layout_slot] = runtime_char
+
+        return slot_to_char
+
+    # === 显示辅助方法 ===
+    def _display_char(self, char: str) -&gt; str:
+        &#34;&#34;&#34;辅助函数：直接返回字符本身而不是Unicode转义序列&#34;&#34;&#34;
+        return char if char else &#39;&#39;
+
+    def _display_phonemes(self, phonemes: list[str]) -&gt; str:
+        &#34;&#34;&#34;改进的音元列表显示方法&#34;&#34;&#34;
+        if not phonemes:
+            return &#34;[]&#34;
+        return &#34;[&#34; + &#34;, &#34;.join(f&#34;&#39;{self._display_char(c)}&#39;&#34; for c in phonemes) + &#34;]&#34;
+
+    # === 核心解码功能 ===
+    def decode(self, pinyin: str) -&gt; Yinjie:
+        &#34;&#34;&#34;解码单个拼音为Yinjie实例&#34;&#34;&#34;
+        code = self.resolve_code(pinyin)
+        if not code:
+            raise ValueError(f&#34;未找到拼音 &#39;{pinyin}&#39; 的编码&#34;)
+
+        if len(code) != 4:
+            raise ValueError(f&#34;编码 &#39;{code}&#39; 长度不正确，应为4个字符&#34;)
+
+        return Yinjie.from_code(code)
+
+    def resolve_code(self, key: str) -&gt; str | None:
+        &#34;&#34;&#34;按带调拼音键或四码值反查 canonical 编码串。&#34;&#34;&#34;
+        if key in self.code_map:
+            return self.code_map[key]
+        for value in self.code_map.values():
+            if value == key:
+                return value
+        return None
+
+    @staticmethod
+    def split_encoded_string(encoded: str) -&gt; Yinjie:
+        &#34;&#34;&#34;切分编码串为 ``Yinjie``：固定四码走 ``from_code``，否则 legacy 宽松切分。&#34;&#34;&#34;
+        if not encoded:
+            raise ValueError(&#34;encoded syllable required&#34;)
+        if len(encoded) == 4:
+            return Yinjie.from_code(encoded)
+        return split_loose_encoded_string(encoded)
+
+    def decode_all(self) -&gt; DecodedMap:
+        &#34;&#34;&#34;解码所有拼音为Yinjie实例字典&#34;&#34;&#34;
+        return {pinyin: self.decode(pinyin) for pinyin in self.code_map}
+
+    def _collect_phoneme_sets(self, decoded_map: DecodedMap) -&gt; PhonemeSets:
+        &#34;&#34;&#34;从已解码结果中收集噪音和乐音集合。&#34;&#34;&#34;
+        phoneme_sets: PhonemeSets = {
+            &#34;noise&#34;: set(),
+            &#34;musical&#34;: set(),
+        }
+
+        for yinjie in decoded_map.values():
+            noise, musical = yinjie.classify_phonemes()
+            phoneme_sets[&#34;noise&#34;].update(noise)
+            phoneme_sets[&#34;musical&#34;].update(musical)
+
+        return phoneme_sets
+
+    # === 音元分类和映射生成 ===
+    def generate_phoneme_mapping(self, decoded_map: DecodedMap | None = None) -&gt; dict[str, Any]:
+        &#34;&#34;&#34;生成音元分类映射字典&#34;&#34;&#34;
+        decoded_map = decoded_map or self.decode_all()
+        mapping = self._collect_phoneme_sets(decoded_map)
+
+        return {
+            &#34;forward&#34;: {
+                &#34;noise&#34;: sorted(mapping[&#34;noise&#34;]),
+                &#34;musical&#34;: sorted(mapping[&#34;musical&#34;])
+            },
+            &#34;reverse&#34;: {
+                phoneme: &#34;noise&#34; for phoneme in mapping[&#34;noise&#34;]
+            }
+        }
+
+    def build_phoneme_dict(self, decoded_map: DecodedMap | None = None) -&gt; dict[str, list[str]]:
+        &#34;&#34;&#34;从已解码结果构造音元分类字典。&#34;&#34;&#34;
+        decoded_map = decoded_map or self.decode_all()
+        phoneme_sets = self._collect_phoneme_sets(decoded_map)
+        return {
+            &#34;noise_phonemes&#34;: sorted(phoneme_sets[&#34;noise&#34;]),
+            &#34;musical_phonemes&#34;: sorted(phoneme_sets[&#34;musical&#34;]),
+        }
+
+    # === 文件操作和保存 ===
+    def save_phoneme_dict(self, output_file: str | Path = DEFAULT_PHONEME_REPORT, decoded_map: DecodedMap | None = None) -&gt; Path:
+        &#34;&#34;&#34;将分类后的音元保存到JSON文件&#34;&#34;&#34;
+        phoneme_dict = self.build_phoneme_dict(decoded_map=decoded_map)
+        return self._save_json(output_file, phoneme_dict)
+
+    def _build_category_keys(self, phonemes: list[str], prefix: str) -&gt; dict[str, str]:
+        &#34;&#34;&#34;按类别前缀生成等长编码键。&#34;&#34;&#34;
+        return {
+            f&#34;{prefix}{index:02d}&#34;: phoneme
+            for index, phoneme in enumerate(phonemes, start=1)
+        }
+
+    def map_key_to_code(self, output_file: str | Path = KEY_TO_CODE_PATH, decoded_map: DecodedMap | None = None) -&gt; dict[str, str]:
+        &#34;&#34;&#34;从当前真源条目生成类别前缀键到 PUA 字符的映射字典并保存到文件。&#34;&#34;&#34;
+        noise_keys = self._load_layout_mapping_from_source(self._get_shouyin_source_path(), &#39;N&#39;)
+        musical_keys = self._load_layout_mapping_from_source(self._get_yueyin_source_path(), &#39;M&#39;)
+
+        key_to_code = {
+            **noise_keys,
+            **musical_keys,
+        }
+
+        output_path = self._save_json(output_file, key_to_code)
+
+        print(f&#34;已生成并保存键位映射到 {output_path}&#34;)
+        return key_to_code
+
+    def show_examples(self, examples: list[str], decoded_map: DecodedMap | None = None) -&gt; None:
+        &#34;&#34;&#34;输出示例拼音的解码结果。&#34;&#34;&#34;
+        decoded_map = decoded_map or self.decode_all()
+        for pinyin in examples:
+            try:
+                yinjie = decoded_map[pinyin]
+                print(f&#34;\n解码 &#39;{pinyin}&#39;:&#34;)
+                print(f&#34;音节线性结构: {yinjie}&#34;)
+                noise, musical = yinjie.classify_phonemes()
+                print(f&#34;噪音音元: {self._display_phonemes(noise)}&#34;)
+                print(f&#34;乐音音元: {self._display_phonemes(musical)}&#34;)
+            except KeyError:
+                print(f&#34;解码 &#39;{pinyin}&#39; 时出错: 未找到拼音 &#39;{pinyin}&#39; 的编码&#34;)
+            except ValueError as e:
+                print(f&#34;解码 &#39;{pinyin}&#39; 时出错: {e}&#34;)
+
+    def run(
+        self,
+        phoneme_output: str | Path = DEFAULT_PHONEME_REPORT,
+        key_output: str | Path = KEY_TO_CODE_PATH,
+        examples: list[str] | None = None,
+    ) -&gt; YinjieDecoderRunResult:
+        &#34;&#34;&#34;统一调用入口：一次全量解码后完成导出与示例输出。&#34;&#34;&#34;
+        decoded_map = self.decode_all()
+        phoneme_dict_path = self.save_phoneme_dict(phoneme_output, decoded_map=decoded_map)
+        if examples:
+            self.show_examples(examples, decoded_map=decoded_map)
+
+        print(f&#34;\n解码了 {len(decoded_map)} 个音节&#34;)
+        self.map_key_to_code(key_output, decoded_map=decoded_map)
+        return YinjieDecoderRunResult(
+            decoded_count=len(decoded_map),
+            phoneme_dict_path=phoneme_dict_path,
+            key_to_code_path=Path(key_output),
+        )
+
+    # === 主程序示例 ===
+    @staticmethod
+    def run_example() -&gt; YinjieDecoderRunResult:
+        &#34;&#34;&#34;运行解码器示例&#34;&#34;&#34;
+        decoder = YinjieDecoder()
+        return decoder.run(examples=[&#34;ma1&#34;, &#34;ni3&#34;, &#34;hao3&#34;, &#34;shang4&#34;, &#34;xia4&#34;])</code></pre>
+</details>
+<div class="desc"><p>初始化解码器，加载编码文件</p></div>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="yime.syllable_decoder.SyllableDecoder" href="#yime.syllable_decoder.SyllableDecoder">SyllableDecoder</a></li>
+</ul>
+<h3>Static methods</h3>
+<dl>
+<dt id="yime.syllable_decoder.YinjieDecoder.run_example"><code class="name flex">
+<span>def <span class="ident">run_example</span></span>(<span>) ‑> syllable.codec.yinjie_decoder.YinjieDecoderRunResult</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@staticmethod
+def run_example() -&gt; YinjieDecoderRunResult:
+    &#34;&#34;&#34;运行解码器示例&#34;&#34;&#34;
+    decoder = YinjieDecoder()
+    return decoder.run(examples=[&#34;ma1&#34;, &#34;ni3&#34;, &#34;hao3&#34;, &#34;shang4&#34;, &#34;xia4&#34;])</code></pre>
+</details>
+<div class="desc"><p>运行解码器示例</p></div>
+</dd>
+<dt id="yime.syllable_decoder.YinjieDecoder.split_encoded_string"><code class="name flex">
+<span>def <span class="ident">split_encoded_string</span></span>(<span>encoded: str) ‑> syllable.codec.yinjie.Yinjie</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@staticmethod
+def split_encoded_string(encoded: str) -&gt; Yinjie:
+    &#34;&#34;&#34;切分编码串为 ``Yinjie``：固定四码走 ``from_code``，否则 legacy 宽松切分。&#34;&#34;&#34;
+    if not encoded:
+        raise ValueError(&#34;encoded syllable required&#34;)
+    if len(encoded) == 4:
+        return Yinjie.from_code(encoded)
+    return split_loose_encoded_string(encoded)</code></pre>
+</details>
+<div class="desc"><p>切分编码串为 <code>Yinjie</code>：固定四码走 <code>from_code</code>，否则 legacy 宽松切分。</p></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="yime.syllable_decoder.YinjieDecoder.build_phoneme_dict"><code class="name flex">
+<span>def <span class="ident">build_phoneme_dict</span></span>(<span>self, decoded_map: dict[str, syllable.codec.yinjie.Yinjie] | None = None) ‑> dict[str, list[str]]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def build_phoneme_dict(self, decoded_map: DecodedMap | None = None) -&gt; dict[str, list[str]]:
+    &#34;&#34;&#34;从已解码结果构造音元分类字典。&#34;&#34;&#34;
+    decoded_map = decoded_map or self.decode_all()
+    phoneme_sets = self._collect_phoneme_sets(decoded_map)
+    return {
+        &#34;noise_phonemes&#34;: sorted(phoneme_sets[&#34;noise&#34;]),
+        &#34;musical_phonemes&#34;: sorted(phoneme_sets[&#34;musical&#34;]),
+    }</code></pre>
+</details>
+<div class="desc"><p>从已解码结果构造音元分类字典。</p></div>
+</dd>
+<dt id="yime.syllable_decoder.YinjieDecoder.decode"><code class="name flex">
+<span>def <span class="ident">decode</span></span>(<span>self, pinyin: str) ‑> syllable.codec.yinjie.Yinjie</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def decode(self, pinyin: str) -&gt; Yinjie:
+    &#34;&#34;&#34;解码单个拼音为Yinjie实例&#34;&#34;&#34;
+    code = self.resolve_code(pinyin)
+    if not code:
+        raise ValueError(f&#34;未找到拼音 &#39;{pinyin}&#39; 的编码&#34;)
+
+    if len(code) != 4:
+        raise ValueError(f&#34;编码 &#39;{code}&#39; 长度不正确，应为4个字符&#34;)
+
+    return Yinjie.from_code(code)</code></pre>
+</details>
+<div class="desc"><p>解码单个拼音为Yinjie实例</p></div>
+</dd>
+<dt id="yime.syllable_decoder.YinjieDecoder.decode_all"><code class="name flex">
+<span>def <span class="ident">decode_all</span></span>(<span>self) ‑> dict[str, syllable.codec.yinjie.Yinjie]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def decode_all(self) -&gt; DecodedMap:
+    &#34;&#34;&#34;解码所有拼音为Yinjie实例字典&#34;&#34;&#34;
+    return {pinyin: self.decode(pinyin) for pinyin in self.code_map}</code></pre>
+</details>
+<div class="desc"><p>解码所有拼音为Yinjie实例字典</p></div>
+</dd>
+<dt id="yime.syllable_decoder.YinjieDecoder.generate_phoneme_mapping"><code class="name flex">
+<span>def <span class="ident">generate_phoneme_mapping</span></span>(<span>self, decoded_map: dict[str, syllable.codec.yinjie.Yinjie] | None = None) ‑> dict[str, typing.Any]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def generate_phoneme_mapping(self, decoded_map: DecodedMap | None = None) -&gt; dict[str, Any]:
+    &#34;&#34;&#34;生成音元分类映射字典&#34;&#34;&#34;
+    decoded_map = decoded_map or self.decode_all()
+    mapping = self._collect_phoneme_sets(decoded_map)
+
+    return {
+        &#34;forward&#34;: {
+            &#34;noise&#34;: sorted(mapping[&#34;noise&#34;]),
+            &#34;musical&#34;: sorted(mapping[&#34;musical&#34;])
+        },
+        &#34;reverse&#34;: {
+            phoneme: &#34;noise&#34; for phoneme in mapping[&#34;noise&#34;]
+        }
+    }</code></pre>
+</details>
+<div class="desc"><p>生成音元分类映射字典</p></div>
+</dd>
+<dt id="yime.syllable_decoder.YinjieDecoder.map_key_to_code"><code class="name flex">
+<span>def <span class="ident">map_key_to_code</span></span>(<span>self,<br>output_file: str | pathlib.Path = PosixPath('/home/runner/work/Yime/Yime/syllable/codec/key_to_code.json'),<br>decoded_map: dict[str, syllable.codec.yinjie.Yinjie] | None = None) ‑> dict[str, str]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def map_key_to_code(self, output_file: str | Path = KEY_TO_CODE_PATH, decoded_map: DecodedMap | None = None) -&gt; dict[str, str]:
+    &#34;&#34;&#34;从当前真源条目生成类别前缀键到 PUA 字符的映射字典并保存到文件。&#34;&#34;&#34;
+    noise_keys = self._load_layout_mapping_from_source(self._get_shouyin_source_path(), &#39;N&#39;)
+    musical_keys = self._load_layout_mapping_from_source(self._get_yueyin_source_path(), &#39;M&#39;)
+
+    key_to_code = {
+        **noise_keys,
+        **musical_keys,
+    }
+
+    output_path = self._save_json(output_file, key_to_code)
+
+    print(f&#34;已生成并保存键位映射到 {output_path}&#34;)
+    return key_to_code</code></pre>
+</details>
+<div class="desc"><p>从当前真源条目生成类别前缀键到 PUA 字符的映射字典并保存到文件。</p></div>
+</dd>
+<dt id="yime.syllable_decoder.YinjieDecoder.resolve_code"><code class="name flex">
+<span>def <span class="ident">resolve_code</span></span>(<span>self, key: str) ‑> str | None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def resolve_code(self, key: str) -&gt; str | None:
+    &#34;&#34;&#34;按带调拼音键或四码值反查 canonical 编码串。&#34;&#34;&#34;
+    if key in self.code_map:
+        return self.code_map[key]
+    for value in self.code_map.values():
+        if value == key:
+            return value
+    return None</code></pre>
+</details>
+<div class="desc"><p>按带调拼音键或四码值反查 canonical 编码串。</p></div>
+</dd>
+<dt id="yime.syllable_decoder.YinjieDecoder.run"><code class="name flex">
+<span>def <span class="ident">run</span></span>(<span>self,<br>phoneme_output: str | pathlib.Path = PosixPath('/home/runner/work/Yime/Yime/yime/reports/phoneme_dict.json'),<br>key_output: str | pathlib.Path = PosixPath('/home/runner/work/Yime/Yime/syllable/codec/key_to_code.json'),<br>examples: list[str] | None = None) ‑> syllable.codec.yinjie_decoder.YinjieDecoderRunResult</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def run(
+    self,
+    phoneme_output: str | Path = DEFAULT_PHONEME_REPORT,
+    key_output: str | Path = KEY_TO_CODE_PATH,
+    examples: list[str] | None = None,
+) -&gt; YinjieDecoderRunResult:
+    &#34;&#34;&#34;统一调用入口：一次全量解码后完成导出与示例输出。&#34;&#34;&#34;
+    decoded_map = self.decode_all()
+    phoneme_dict_path = self.save_phoneme_dict(phoneme_output, decoded_map=decoded_map)
+    if examples:
+        self.show_examples(examples, decoded_map=decoded_map)
+
+    print(f&#34;\n解码了 {len(decoded_map)} 个音节&#34;)
+    self.map_key_to_code(key_output, decoded_map=decoded_map)
+    return YinjieDecoderRunResult(
+        decoded_count=len(decoded_map),
+        phoneme_dict_path=phoneme_dict_path,
+        key_to_code_path=Path(key_output),
+    )</code></pre>
+</details>
+<div class="desc"><p>统一调用入口：一次全量解码后完成导出与示例输出。</p></div>
+</dd>
+<dt id="yime.syllable_decoder.YinjieDecoder.save_phoneme_dict"><code class="name flex">
+<span>def <span class="ident">save_phoneme_dict</span></span>(<span>self,<br>output_file: str | pathlib.Path = PosixPath('/home/runner/work/Yime/Yime/yime/reports/phoneme_dict.json'),<br>decoded_map: dict[str, syllable.codec.yinjie.Yinjie] | None = None) ‑> pathlib.Path</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def save_phoneme_dict(self, output_file: str | Path = DEFAULT_PHONEME_REPORT, decoded_map: DecodedMap | None = None) -&gt; Path:
+    &#34;&#34;&#34;将分类后的音元保存到JSON文件&#34;&#34;&#34;
+    phoneme_dict = self.build_phoneme_dict(decoded_map=decoded_map)
+    return self._save_json(output_file, phoneme_dict)</code></pre>
+</details>
+<div class="desc"><p>将分类后的音元保存到JSON文件</p></div>
+</dd>
+<dt id="yime.syllable_decoder.YinjieDecoder.show_examples"><code class="name flex">
+<span>def <span class="ident">show_examples</span></span>(<span>self,<br>examples: list[str],<br>decoded_map: dict[str, syllable.codec.yinjie.Yinjie] | None = None) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def show_examples(self, examples: list[str], decoded_map: DecodedMap | None = None) -&gt; None:
+    &#34;&#34;&#34;输出示例拼音的解码结果。&#34;&#34;&#34;
+    decoded_map = decoded_map or self.decode_all()
+    for pinyin in examples:
+        try:
+            yinjie = decoded_map[pinyin]
+            print(f&#34;\n解码 &#39;{pinyin}&#39;:&#34;)
+            print(f&#34;音节线性结构: {yinjie}&#34;)
+            noise, musical = yinjie.classify_phonemes()
+            print(f&#34;噪音音元: {self._display_phonemes(noise)}&#34;)
+            print(f&#34;乐音音元: {self._display_phonemes(musical)}&#34;)
+        except KeyError:
+            print(f&#34;解码 &#39;{pinyin}&#39; 时出错: 未找到拼音 &#39;{pinyin}&#39; 的编码&#34;)
+        except ValueError as e:
+            print(f&#34;解码 &#39;{pinyin}&#39; 时出错: {e}&#34;)</code></pre>
+</details>
+<div class="desc"><p>输出示例拼音的解码结果。</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="yime.syllable_decoder.YinjieDecoderRunResult"><code class="flex name class">
+<span>class <span class="ident">YinjieDecoderRunResult</span></span>
+<span>(</span><span>decoded_count: int,<br>phoneme_dict_path: pathlib.Path,<br>key_to_code_path: pathlib.Path)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@dataclass(frozen=True)
+class YinjieDecoderRunResult:
+    &#34;&#34;&#34;统一运行入口的输出结果。&#34;&#34;&#34;
+
+    decoded_count: int
+    phoneme_dict_path: Path
+    key_to_code_path: Path</code></pre>
+</details>
+<div class="desc"><p>统一运行入口的输出结果。</p></div>
+<h3>Instance variables</h3>
+<dl>
+<dt id="yime.syllable_decoder.YinjieDecoderRunResult.decoded_count"><code class="name">var <span class="ident">decoded_count</span> : int</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="yime.syllable_decoder.YinjieDecoderRunResult.key_to_code_path"><code class="name">var <span class="ident">key_to_code_path</span> : pathlib.Path</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="yime.syllable_decoder.YinjieDecoderRunResult.phoneme_dict_path"><code class="name">var <span class="ident">phoneme_dict_path</span> : pathlib.Path</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="yime.syllable_decoder._normalize_split" href="#yime.syllable_decoder._normalize_split">_normalize_split</a></code></li>
+<li><code><a title="yime.syllable_decoder.is_pua_string" href="#yime.syllable_decoder.is_pua_string">is_pua_string</a></code></li>
+<li><code><a title="yime.syllable_decoder.is_valid_encoded_string" href="#yime.syllable_decoder.is_valid_encoded_string">is_valid_encoded_string</a></code></li>
+<li><code><a title="yime.syllable_decoder.main" href="#yime.syllable_decoder.main">main</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="yime.syllable_decoder.SyllableDecoder" href="#yime.syllable_decoder.SyllableDecoder">SyllableDecoder</a></code></h4>
+<ul class="">
+<li><code><a title="yime.syllable_decoder.SyllableDecoder.get_ganyin" href="#yime.syllable_decoder.SyllableDecoder.get_ganyin">get_ganyin</a></code></li>
+<li><code><a title="yime.syllable_decoder.SyllableDecoder.get_jianyin_code" href="#yime.syllable_decoder.SyllableDecoder.get_jianyin_code">get_jianyin_code</a></code></li>
+<li><code><a title="yime.syllable_decoder.SyllableDecoder.get_yunyin" href="#yime.syllable_decoder.SyllableDecoder.get_yunyin">get_yunyin</a></code></li>
+<li><code><a title="yime.syllable_decoder.SyllableDecoder.run_example" href="#yime.syllable_decoder.SyllableDecoder.run_example">run_example</a></code></li>
+<li><code><a title="yime.syllable_decoder.SyllableDecoder.split_encoded_syllable" href="#yime.syllable_decoder.SyllableDecoder.split_encoded_syllable">split_encoded_syllable</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="yime.syllable_decoder.YinjieDecoder" href="#yime.syllable_decoder.YinjieDecoder">YinjieDecoder</a></code></h4>
+<ul class="">
+<li><code><a title="yime.syllable_decoder.YinjieDecoder.build_phoneme_dict" href="#yime.syllable_decoder.YinjieDecoder.build_phoneme_dict">build_phoneme_dict</a></code></li>
+<li><code><a title="yime.syllable_decoder.YinjieDecoder.decode" href="#yime.syllable_decoder.YinjieDecoder.decode">decode</a></code></li>
+<li><code><a title="yime.syllable_decoder.YinjieDecoder.decode_all" href="#yime.syllable_decoder.YinjieDecoder.decode_all">decode_all</a></code></li>
+<li><code><a title="yime.syllable_decoder.YinjieDecoder.generate_phoneme_mapping" href="#yime.syllable_decoder.YinjieDecoder.generate_phoneme_mapping">generate_phoneme_mapping</a></code></li>
+<li><code><a title="yime.syllable_decoder.YinjieDecoder.map_key_to_code" href="#yime.syllable_decoder.YinjieDecoder.map_key_to_code">map_key_to_code</a></code></li>
+<li><code><a title="yime.syllable_decoder.YinjieDecoder.resolve_code" href="#yime.syllable_decoder.YinjieDecoder.resolve_code">resolve_code</a></code></li>
+<li><code><a title="yime.syllable_decoder.YinjieDecoder.run" href="#yime.syllable_decoder.YinjieDecoder.run">run</a></code></li>
+<li><code><a title="yime.syllable_decoder.YinjieDecoder.run_example" href="#yime.syllable_decoder.YinjieDecoder.run_example">run_example</a></code></li>
+<li><code><a title="yime.syllable_decoder.YinjieDecoder.save_phoneme_dict" href="#yime.syllable_decoder.YinjieDecoder.save_phoneme_dict">save_phoneme_dict</a></code></li>
+<li><code><a title="yime.syllable_decoder.YinjieDecoder.show_examples" href="#yime.syllable_decoder.YinjieDecoder.show_examples">show_examples</a></code></li>
+<li><code><a title="yime.syllable_decoder.YinjieDecoder.split_encoded_string" href="#yime.syllable_decoder.YinjieDecoder.split_encoded_string">split_encoded_string</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="yime.syllable_decoder.YinjieDecoderRunResult" href="#yime.syllable_decoder.YinjieDecoderRunResult">YinjieDecoderRunResult</a></code></h4>
+<ul class="">
+<li><code><a title="yime.syllable_decoder.YinjieDecoderRunResult.decoded_count" href="#yime.syllable_decoder.YinjieDecoderRunResult.decoded_count">decoded_count</a></code></li>
+<li><code><a title="yime.syllable_decoder.YinjieDecoderRunResult.key_to_code_path" href="#yime.syllable_decoder.YinjieDecoderRunResult.key_to_code_path">key_to_code_path</a></code></li>
+<li><code><a title="yime.syllable_decoder.YinjieDecoderRunResult.phoneme_dict_path" href="#yime.syllable_decoder.YinjieDecoderRunResult.phoneme_dict_path">phoneme_dict_path</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

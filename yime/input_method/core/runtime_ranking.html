@@ -1,0 +1,817 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>yime.input_method.core.runtime_ranking API documentation</title>
+<meta name="description" content="">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>yime.input_method.core.runtime_ranking</code></h1>
+</header>
+<section id="section-intro">
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="yime.input_method.core.runtime_ranking.annotate_candidate_source"><code class="name flex">
+<span>def <span class="ident">annotate_candidate_source</span></span>(<span>candidate: Dict[str, object], source_tag: str) ‑> Dict[str, object]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def annotate_candidate_source(
+    candidate: Dict[str, object],
+    source_tag: str,
+) -&gt; Dict[str, object]:
+    annotated = dict(candidate)
+    annotated[&#34;_candidate_source&#34;] = source_tag
+    return annotated</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.runtime_ranking.annotate_phrase_prefix_candidate"><code class="name flex">
+<span>def <span class="ident">annotate_phrase_prefix_candidate</span></span>(<span>candidate: Dict[str, object], matched_code_length: int) ‑> Dict[str, object]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def annotate_phrase_prefix_candidate(
+    candidate: Dict[str, object],
+    matched_code_length: int,
+) -&gt; Dict[str, object]:
+    annotated = dict(candidate)
+    full_code = str(candidate.get(&#34;yime_code&#34;, &#34;&#34;) or &#34;&#34;).strip()
+    annotated[&#34;_matched_code_length&#34;] = matched_code_length
+    annotated[&#34;_full_code_length&#34;] = len(full_code) if full_code else matched_code_length
+    current_source = str(candidate.get(&#34;_candidate_source&#34;, &#34;&#34;) or &#34;&#34;).strip()
+    if current_source == &#34;overlay&#34;:
+        annotated[&#34;_candidate_source&#34;] = &#34;prefix-overlay&#34;
+    elif current_source != &#34;prefix-overlay&#34;:
+        annotated[&#34;_candidate_source&#34;] = &#34;prefix&#34;
+    return annotated</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.runtime_ranking.apply_stage_b_rare_representative_guardrail"><code class="name flex">
+<span>def <span class="ident">apply_stage_b_rare_representative_guardrail</span></span>(<span>candidates: List[<a title="yime.input_method.core.runtime_ranking.RuntimeCandidateRecord" href="#yime.input_method.core.runtime_ranking.RuntimeCandidateRecord">RuntimeCandidateRecord</a>],<br>*,<br>page_limit: int = 5,<br>second_page_slot: int = 2,<br>min_exact_char_count: int = 64) ‑> List[<a title="yime.input_method.core.runtime_ranking.RuntimeCandidateRecord" href="#yime.input_method.core.runtime_ranking.RuntimeCandidateRecord">RuntimeCandidateRecord</a>]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def apply_stage_b_rare_representative_guardrail(
+    candidates: List[RuntimeCandidateRecord],
+    *,
+    page_limit: int = _STAGE_B_RARE_REPRESENTATIVE_PAGE_LIMIT,
+    second_page_slot: int = _STAGE_B_RARE_REPRESENTATIVE_SECOND_PAGE_SLOT,
+    min_exact_char_count: int = _STAGE_B_RARE_REPRESENTATIVE_MIN_EXACT_CHAR_COUNT,
+) -&gt; List[RuntimeCandidateRecord]:
+    normalized_page_limit = max(int(page_limit or 0), 0)
+    normalized_second_page_slot = max(int(second_page_slot or 0), 1)
+    normalized_target_rank = normalized_page_limit + normalized_second_page_slot
+    target_index = normalized_target_rank - 1
+    if normalized_page_limit &lt;= 0 or len(candidates) &lt;= target_index:
+        return list(candidates)
+
+    exact_char_candidates = [candidate for candidate in candidates if candidate.entry_type == &#34;char&#34;]
+    if len(exact_char_candidates) &lt; max(int(min_exact_char_count or 0), 0):
+        return list(candidates)
+
+    if any(
+        candidate.entry_type == &#34;char&#34; and candidate.usage_tier == &#34;rare&#34;
+        for candidate in candidates[:normalized_target_rank]
+    ):
+        return list(candidates)
+
+    representative_index = next(
+        (
+            index
+            for index, candidate in enumerate(candidates)
+            if candidate.entry_type == &#34;char&#34; and candidate.usage_tier == &#34;rare&#34;
+        ),
+        -1,
+    )
+    if representative_index &lt; normalized_target_rank:
+        return list(candidates)
+    if representative_index &lt; 0:
+        return list(candidates)
+
+    reordered = list(candidates)
+    representative = reordered.pop(representative_index)
+    reordered.insert(target_index, representative)
+    return reordered</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.runtime_ranking.build_char_sort_weight_index"><code class="name flex">
+<span>def <span class="ident">build_char_sort_weight_index</span></span>(<span>by_code: Dict[str, List[Dict[str, object]]]) ‑> Dict[str, float]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def build_char_sort_weight_index(
+    by_code: Dict[str, List[Dict[str, object]]],
+) -&gt; Dict[str, float]:
+    weight_by_char: Dict[str, float] = {}
+    for candidates in by_code.values():
+        for candidate in candidates:
+            if str(candidate.get(&#34;entry_type&#34;, &#34;&#34;) or &#34;&#34;).strip() != &#34;char&#34;:
+                continue
+            text = str(candidate.get(&#34;text&#34;, &#34;&#34;) or &#34;&#34;).strip()
+            if len(text) != 1:
+                continue
+            sort_weight = _as_float_value(candidate.get(&#34;sort_weight&#34;, 0.0))
+            if sort_weight &gt; weight_by_char.get(text, float(&#34;-inf&#34;)):
+                weight_by_char[text] = sort_weight
+    return weight_by_char</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.runtime_ranking.build_head_char_cluster_weight_map"><code class="name flex">
+<span>def <span class="ident">build_head_char_cluster_weight_map</span></span>(<span>raw_candidates: List[Dict[str, object]]) ‑> Dict[str, float]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def build_head_char_cluster_weight_map(
+    raw_candidates: List[Dict[str, object]],
+) -&gt; Dict[str, float]:
+    cluster_weight_by_char: Dict[str, float] = {}
+    for candidate in raw_candidates:
+        if str(candidate.get(&#34;entry_type&#34;, &#34;&#34;) or &#34;&#34;).strip() != &#34;phrase&#34;:
+            continue
+        matched_code_length_value = candidate.get(&#34;_matched_code_length&#34;, 0)
+        matched_code_length = int(matched_code_length_value) if isinstance(matched_code_length_value, (str, int, float)) else 0
+        if matched_code_length != 1:
+            continue
+        text = str(candidate.get(&#34;text&#34;, &#34;&#34;) or &#34;&#34;).strip()
+        if not text:
+            continue
+        cluster_weight_by_char[text[:1]] = cluster_weight_by_char.get(text[:1], 0.0) + _as_float_value(candidate.get(&#34;sort_weight&#34;, 0.0))
+    return cluster_weight_by_char</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.runtime_ranking.build_phrase_prefix_index"><code class="name flex">
+<span>def <span class="ident">build_phrase_prefix_index</span></span>(<span>by_code: Dict[str, List[Dict[str, object]]]) ‑> Dict[str, List[Dict[str, object]]]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def build_phrase_prefix_index(
+    by_code: Dict[str, List[Dict[str, object]]],
+) -&gt; Dict[str, List[Dict[str, object]]]:
+    prefix_index: Dict[str, List[Dict[str, object]]] = {}
+    for canonical_code, candidates in by_code.items():
+        normalized_code = str(canonical_code or &#34;&#34;).strip()
+        if len(normalized_code) &lt;= 1:
+            continue
+        for candidate in candidates:
+            if str(candidate.get(&#34;entry_type&#34;, &#34;&#34;) or &#34;&#34;).strip() != &#34;phrase&#34;:
+                continue
+            text = str(candidate.get(&#34;text&#34;, &#34;&#34;) or &#34;&#34;).strip()
+            if not text:
+                continue
+            raw_text_length = candidate.get(&#34;text_length&#34;)
+            text_length = raw_text_length if isinstance(raw_text_length, int) else len(text)
+            if not (2 &lt;= text_length &lt;= 4):
+                continue
+            max_prefix_length = min(len(normalized_code) - 1, 15)
+            for prefix_length in range(1, max_prefix_length + 1):
+                prefix_index.setdefault(normalized_code[:prefix_length], []).append(candidate)
+
+    for prefix, items in prefix_index.items():
+        items.sort(key=phrase_candidate_payload_sort_key)
+        prefix_index[prefix] = items[:_PHRASE_PREFIX_CANDIDATE_LIMIT]
+    return prefix_index</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.runtime_ranking.build_runtime_candidate_records"><code class="name flex">
+<span>def <span class="ident">build_runtime_candidate_records</span></span>(<span>lookup_code: str,<br>raw_candidates: List[Dict[str, object]],<br>*,<br>stage: str = '',<br>priority_lookup_code: str = '',<br>char_sort_weight_by_text: Optional[Mapping[str, float]] = None,<br>local_phrase_priority_rules: Optional[Mapping[str, Mapping[str, float]]] = None,<br>continuous_input_priority_rules: Optional[Mapping[str, Mapping[str, float]]] = None) ‑> List[<a title="yime.input_method.core.runtime_ranking.RuntimeCandidateRecord" href="#yime.input_method.core.runtime_ranking.RuntimeCandidateRecord">RuntimeCandidateRecord</a>]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def build_runtime_candidate_records(
+    lookup_code: str,
+    raw_candidates: List[Dict[str, object]],
+    *,
+    stage: str = &#34;&#34;,
+    priority_lookup_code: str = &#34;&#34;,
+    char_sort_weight_by_text: Optional[Mapping[str, float]] = None,
+    local_phrase_priority_rules: Optional[Mapping[str, Mapping[str, float]]] = None,
+    continuous_input_priority_rules: Optional[Mapping[str, Mapping[str, float]]] = None,
+) -&gt; List[RuntimeCandidateRecord]:
+    records: List[RuntimeCandidateRecord] = []
+    head_char_cluster_weight_by_text = build_head_char_cluster_weight_map(raw_candidates)
+    boost_lookup_code = str(priority_lookup_code or lookup_code).strip()
+    local_rules = local_phrase_priority_rules or {}
+    continuous_rules = continuous_input_priority_rules or {}
+    first_char_weight_map = dict(char_sort_weight_by_text or {})
+    for candidate in raw_candidates:
+        text = str(candidate.get(&#34;text&#34;, &#34;&#34;)).strip()
+        if not text:
+            continue
+        text_length = _as_int_value(candidate.get(&#34;text_length&#34;) or len(text))
+        (
+            phrase_priority_tier,
+            local_phrase_priority_boost,
+            debug_tag,
+        ) = resolve_stage_phrase_priority_metadata(
+            stage,
+            boost_lookup_code,
+            candidate,
+            local_rules,
+            continuous_rules,
+        )
+        records.append(
+            RuntimeCandidateRecord(
+                lookup_code=lookup_code,
+                text=text,
+                entry_type=str(candidate.get(&#34;entry_type&#34;, &#34;&#34;)).strip(),
+                pinyin_tone=str(candidate.get(&#34;pinyin_tone&#34;, &#34;&#34;)).strip(),
+                sort_weight=_as_float_value(candidate.get(&#34;sort_weight&#34;, 0.0)),
+                text_length=text_length,
+                is_common=_as_bool_value(candidate.get(&#34;is_common&#34;, False)),
+                matched_code_length=_as_int_value(candidate.get(&#34;_matched_code_length&#34;) or 0),
+                full_code_length=_as_int_value(
+                    candidate.get(&#34;_full_code_length&#34;)
+                    or len(str(candidate.get(&#34;yime_code&#34;, &#34;&#34;) or lookup_code).strip())
+                ),
+                first_char_sort_weight=float(first_char_weight_map.get(text[:1], 0.0)),
+                short_prefix_template_bonus=compute_short_prefix_template_bonus(text),
+                head_char_cluster_weight=float(head_char_cluster_weight_by_text.get(text[:1], 0.0)),
+                candidate_source_tag=resolve_candidate_source_tag(candidate),
+                phrase_priority_tier=phrase_priority_tier,
+                local_phrase_priority_boost=local_phrase_priority_boost,
+                debug_tag=debug_tag,
+                usage_tier=str(candidate.get(&#34;usage_tier&#34;, &#34;&#34;) or &#34;&#34;).strip(),
+            )
+        )
+    return records</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.runtime_ranking.compute_short_prefix_template_bonus"><code class="name flex">
+<span>def <span class="ident">compute_short_prefix_template_bonus</span></span>(<span>text: str) ‑> int</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def compute_short_prefix_template_bonus(text: str) -&gt; int:
+    normalized_text = str(text or &#34;&#34;).strip()
+    if len(normalized_text) &lt; 2:
+        return 0
+    bonus = 0
+    if len(normalized_text) == 2:
+        bonus += 2
+    if normalized_text[1] in _SHORT_PREFIX_TEMPLATE_CHARS:
+        bonus += 2
+    return bonus</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.runtime_ranking.format_runtime_debug_summary"><code class="name flex">
+<span>def <span class="ident">format_runtime_debug_summary</span></span>(<span>candidates: List[<a title="yime.input_method.core.runtime_ranking.RuntimeCandidateRecord" href="#yime.input_method.core.runtime_ranking.RuntimeCandidateRecord">RuntimeCandidateRecord</a>],<br>*,<br>limit: int = 3) ‑> str</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def format_runtime_debug_summary(
+    candidates: List[RuntimeCandidateRecord],
+    *,
+    limit: int = 3,
+) -&gt; str:
+    if limit &lt;= 0:
+        return &#34;&#34;
+
+    visible = candidates[:limit]
+    if not visible:
+        return &#34;&#34;
+    return &#34;, &#34;.join(
+        f&#34;{candidate.text}[{candidate.candidate_source_tag}/{candidate.debug_tag}]&#34;
+        for candidate in visible
+    )</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.runtime_ranking.load_local_phrase_priority_rules"><code class="name flex">
+<span>def <span class="ident">load_local_phrase_priority_rules</span></span>(<span>path: Path,<br>pinyin_to_canonical: Dict[str, str],<br>resolve_canonical_code_from_pinyin_tone: Callable[[str, Dict[str, str]], object],<br>*,<br>expected_lookup_code_length: Optional[int] = 4,<br>min_lookup_code_length: int = 1) ‑> Dict[str, Dict[str, float]]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def load_local_phrase_priority_rules(
+    path: Path,
+    pinyin_to_canonical: Dict[str, str],
+    resolve_canonical_code_from_pinyin_tone: Callable[[str, Dict[str, str]], object],
+    *,
+    expected_lookup_code_length: Optional[int] = 4,
+    min_lookup_code_length: int = 1,
+) -&gt; Dict[str, Dict[str, float]]:
+    if not path.exists():
+        return {}
+
+    payload = json.loads(path.read_text(encoding=&#34;utf-8&#34;))
+    payload_mapping = cast(Mapping[str, object], payload) if isinstance(payload, dict) else None
+    raw_rules = payload_mapping.get(&#34;rules&#34;) if payload_mapping is not None else None
+    if not isinstance(raw_rules, list):
+        return {}
+
+    rules_by_lookup_code: Dict[str, Dict[str, float]] = {}
+    for raw_rule in cast(List[object], raw_rules):
+        if not isinstance(raw_rule, dict):
+            continue
+        rule = cast(Mapping[str, object], raw_rule)
+        lookup_code = str(rule.get(&#34;lookup_code&#34;, &#34;&#34;) or &#34;&#34;).strip()
+        if not lookup_code:
+            lookup_code = str(resolve_canonical_code_from_pinyin_tone(
+                str(rule.get(&#34;lookup_pinyin_tone&#34;, &#34;&#34;) or &#34;&#34;).strip(),
+                pinyin_to_canonical,
+            ) or &#34;&#34;).strip()
+        if expected_lookup_code_length is not None and len(lookup_code) != expected_lookup_code_length:
+            continue
+        if len(lookup_code) &lt; min_lookup_code_length:
+            continue
+        raw_targets = rule.get(&#34;targets&#34;)
+        if not isinstance(raw_targets, list):
+            continue
+        target_boosts: Dict[str, float] = rules_by_lookup_code.setdefault(lookup_code, {})
+        for raw_target in cast(List[object], raw_targets):
+            if not isinstance(raw_target, dict):
+                continue
+            target = cast(Mapping[str, object], raw_target)
+            text = str(target.get(&#34;text&#34;, &#34;&#34;) or &#34;&#34;).strip()
+            boost = _as_float_value(target.get(&#34;boost&#34;, 0.0))
+            if not text or boost &lt;= 0.0:
+                continue
+            target_boosts[text] = max(target_boosts.get(text, 0.0), boost)
+    return {
+        lookup_code: target_boosts
+        for lookup_code, target_boosts in rules_by_lookup_code.items()
+        if target_boosts
+    }</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.runtime_ranking.merge_phrase_priority_rule_maps"><code class="name flex">
+<span>def <span class="ident">merge_phrase_priority_rule_maps</span></span>(<span>*rule_maps: Mapping[str, Mapping[str, float]]) ‑> Dict[str, Dict[str, float]]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def merge_phrase_priority_rule_maps(
+    *rule_maps: Mapping[str, Mapping[str, float]],
+) -&gt; Dict[str, Dict[str, float]]:
+    merged: Dict[str, Dict[str, float]] = {}
+    for rule_map in rule_maps:
+        for lookup_code, target_boosts in rule_map.items():
+            merged_targets = merged.setdefault(lookup_code, {})
+            for text, boost in target_boosts.items():
+                if boost &gt; merged_targets.get(text, 0.0):
+                    merged_targets[text] = boost
+    return merged</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.runtime_ranking.phrase_candidate_payload_sort_key"><code class="name flex">
+<span>def <span class="ident">phrase_candidate_payload_sort_key</span></span>(<span>candidate: Dict[str, object]) ‑> tuple[float, str, str]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def phrase_candidate_payload_sort_key(candidate: Dict[str, object]) -&gt; tuple[float, str, str]:
+    return (
+        -_as_float_value(candidate.get(&#34;sort_weight&#34;, 0.0)),
+        str(candidate.get(&#34;text&#34;, &#34;&#34;) or &#34;&#34;).strip(),
+        str(candidate.get(&#34;pinyin_tone&#34;, &#34;&#34;) or &#34;&#34;).strip(),
+    )</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.runtime_ranking.rank_runtime_candidates"><code class="name flex">
+<span>def <span class="ident">rank_runtime_candidates</span></span>(<span>candidates: List[<a title="yime.input_method.core.runtime_ranking.RuntimeCandidateRecord" href="#yime.input_method.core.runtime_ranking.RuntimeCandidateRecord">RuntimeCandidateRecord</a>],<br>user_freq_by_candidate: Mapping[tuple[str, str], int]) ‑> List[<a title="yime.input_method.core.runtime_ranking.RuntimeCandidateRecord" href="#yime.input_method.core.runtime_ranking.RuntimeCandidateRecord">RuntimeCandidateRecord</a>]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def rank_runtime_candidates(
+    candidates: List[RuntimeCandidateRecord],
+    user_freq_by_candidate: Mapping[tuple[str, str], int],
+) -&gt; List[RuntimeCandidateRecord]:
+    best_by_text: dict[str, RuntimeCandidateRecord] = {}
+    for candidate in candidates:
+        if candidate.entry_type == &#34;phrase&#34; and not (2 &lt;= candidate.text_length &lt;= 4):
+            continue
+        existing = best_by_text.get(candidate.text)
+        candidate_freq = user_freq_by_candidate.get((candidate.lookup_code, candidate.text), 0)
+        if existing is None:
+            best_by_text[candidate.text] = candidate
+            continue
+        existing_freq = user_freq_by_candidate.get((existing.lookup_code, existing.text), 0)
+        if runtime_candidate_sort_key(candidate, candidate_freq) &lt; runtime_candidate_sort_key(existing, existing_freq):
+            best_by_text[candidate.text] = candidate
+
+    ranked = list(best_by_text.values())
+    ranked.sort(
+        key=lambda candidate: runtime_candidate_sort_key(
+            candidate,
+            user_freq_by_candidate.get((candidate.lookup_code, candidate.text), 0),
+        )
+    )
+    return ranked</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.runtime_ranking.resolve_candidate_source_tag"><code class="name flex">
+<span>def <span class="ident">resolve_candidate_source_tag</span></span>(<span>candidate: Dict[str, object]) ‑> str</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def resolve_candidate_source_tag(candidate: Dict[str, object]) -&gt; str:
+    source_tag = str(candidate.get(&#34;_candidate_source&#34;, &#34;&#34;) or &#34;&#34;).strip()
+    if source_tag:
+        return source_tag
+    matched_code_length = _as_int_value(candidate.get(&#34;_matched_code_length&#34;))
+    return &#34;prefix&#34; if matched_code_length &gt; 0 else &#34;exact&#34;</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.runtime_ranking.resolve_local_phrase_priority_boost"><code class="name flex">
+<span>def <span class="ident">resolve_local_phrase_priority_boost</span></span>(<span>lookup_code: str,<br>candidate: Dict[str, object],<br>rules_by_lookup_code: Mapping[str, Mapping[str, float]]) ‑> float</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def resolve_local_phrase_priority_boost(
+    lookup_code: str,
+    candidate: Dict[str, object],
+    rules_by_lookup_code: Mapping[str, Mapping[str, float]],
+) -&gt; float:
+    entry_type = str(candidate.get(&#34;entry_type&#34;, &#34;&#34;) or &#34;&#34;).strip()
+    if entry_type != &#34;phrase&#34;:
+        return 0.0
+
+    text = str(candidate.get(&#34;text&#34;, &#34;&#34;) or &#34;&#34;).strip()
+    if not text:
+        return 0.0
+
+    boost = _as_float_value(rules_by_lookup_code.get(lookup_code, {}).get(text, 0.0))
+    if boost &lt;= 0.0:
+        return 0.0
+
+    matched_code_length = _as_int_value(candidate.get(&#34;_matched_code_length&#34;))
+    full_code = str(candidate.get(&#34;yime_code&#34;, &#34;&#34;) or lookup_code).strip()
+    full_code_length_value = candidate.get(&#34;_full_code_length&#34;)
+    full_code_length = (
+        int(full_code_length_value)
+        if isinstance(full_code_length_value, (int, float, str)) and full_code_length_value
+        else len(full_code)
+    )
+    if matched_code_length &gt; 0:
+        if matched_code_length != len(lookup_code) or full_code_length &lt;= matched_code_length:
+            return 0.0
+        return boost
+
+    if len(lookup_code) &lt;= 4:
+        return 0.0
+    if full_code != lookup_code or full_code_length != len(lookup_code):
+        return 0.0
+
+    return boost</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.runtime_ranking.resolve_stage_phrase_priority_metadata"><code class="name flex">
+<span>def <span class="ident">resolve_stage_phrase_priority_metadata</span></span>(<span>stage: str,<br>lookup_code: str,<br>candidate: Dict[str, object],<br>local_phrase_priority_rules: Mapping[str, Mapping[str, float]],<br>continuous_input_priority_rules: Mapping[str, Mapping[str, float]]) ‑> tuple[int, float, str]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def resolve_stage_phrase_priority_metadata(
+    stage: str,
+    lookup_code: str,
+    candidate: Dict[str, object],
+    local_phrase_priority_rules: Mapping[str, Mapping[str, float]],
+    continuous_input_priority_rules: Mapping[str, Mapping[str, float]],
+) -&gt; tuple[int, float, str]:
+    local_boost = resolve_local_phrase_priority_boost(
+        lookup_code,
+        candidate,
+        local_phrase_priority_rules,
+    )
+    continuous_boost = resolve_local_phrase_priority_boost(
+        lookup_code,
+        candidate,
+        continuous_input_priority_rules,
+    )
+
+    if stage == &#34;B&#34;:
+        if local_boost &gt; 0.0:
+            return 0, local_boost, &#34;B-local&#34;
+        if continuous_boost &gt; 0.0:
+            return 1, continuous_boost, &#34;B-continuous&#34;
+        return 2, 0.0, &#34;normal&#34;
+    if stage in {&#34;C&#34;, &#34;D&#34;}:
+        if continuous_boost &gt; 0.0:
+            return 0, continuous_boost, f&#34;{stage}-continuous&#34;
+        if local_boost &gt; 0.0:
+            return 1, local_boost, f&#34;{stage}-local&#34;
+        return 2, 0.0, &#34;normal&#34;
+    if local_boost &gt; 0.0:
+        return 0, local_boost, &#34;local&#34;
+    if continuous_boost &gt; 0.0:
+        return 1, continuous_boost, &#34;continuous&#34;
+    return 2, 0.0, &#34;normal&#34;</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.runtime_ranking.runtime_candidate_priority"><code class="name flex">
+<span>def <span class="ident">runtime_candidate_priority</span></span>(<span>candidate: <a title="yime.input_method.core.runtime_ranking.RuntimeCandidateRecord" href="#yime.input_method.core.runtime_ranking.RuntimeCandidateRecord">RuntimeCandidateRecord</a>) ‑> int</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def runtime_candidate_priority(candidate: RuntimeCandidateRecord) -&gt; int:
+    if candidate.entry_type == &#34;phrase&#34; and 2 &lt;= candidate.text_length &lt;= 4:
+        return 0
+    if candidate.entry_type == &#34;char&#34;:
+        return 1
+    return 2</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.runtime_ranking.runtime_candidate_sort_key"><code class="name flex">
+<span>def <span class="ident">runtime_candidate_sort_key</span></span>(<span>candidate: <a title="yime.input_method.core.runtime_ranking.RuntimeCandidateRecord" href="#yime.input_method.core.runtime_ranking.RuntimeCandidateRecord">RuntimeCandidateRecord</a>,<br>user_freq: int) ‑> tuple[int, int, int, float, float, int, str, str]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def runtime_candidate_sort_key(
+    candidate: RuntimeCandidateRecord,
+    user_freq: int,
+) -&gt; tuple[int, int, int, float, float, int, str, str]:
+    is_partial_phrase = (
+        candidate.entry_type == &#34;phrase&#34;
+        and candidate.matched_code_length &gt; 0
+        and candidate.full_code_length &gt; candidate.matched_code_length
+    )
+    return (
+        runtime_candidate_priority(candidate),
+        0 if is_partial_phrase else 1,
+        candidate.phrase_priority_tier,
+        -candidate.local_phrase_priority_boost,
+        -candidate.sort_weight,
+        -user_freq,
+        candidate.text,
+        candidate.pinyin_tone,
+    )</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="yime.input_method.core.runtime_ranking.RuntimeCandidateRecord"><code class="flex name class">
+<span>class <span class="ident">RuntimeCandidateRecord</span></span>
+<span>(</span><span>lookup_code: str,<br>text: str,<br>entry_type: str,<br>pinyin_tone: str = '',<br>sort_weight: float = 0.0,<br>text_length: int = 0,<br>is_common: bool = False,<br>matched_code_length: int = 0,<br>full_code_length: int = 0,<br>first_char_sort_weight: float = 0.0,<br>short_prefix_template_bonus: int = 0,<br>head_char_cluster_weight: float = 0.0,<br>candidate_source_tag: str = 'exact',<br>phrase_priority_tier: int = 2,<br>local_phrase_priority_boost: float = 0.0,<br>debug_tag: str = 'normal',<br>usage_tier: str = '')</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@dataclass(frozen=True)
+class RuntimeCandidateRecord:
+    &#34;&#34;&#34;Normalized runtime candidate used for phrase-aware ranking.&#34;&#34;&#34;
+
+    lookup_code: str
+    text: str
+    entry_type: str
+    pinyin_tone: str = &#34;&#34;
+    sort_weight: float = 0.0
+    text_length: int = 0
+    is_common: bool = False
+    matched_code_length: int = 0
+    full_code_length: int = 0
+    first_char_sort_weight: float = 0.0
+    short_prefix_template_bonus: int = 0
+    head_char_cluster_weight: float = 0.0
+    candidate_source_tag: str = &#34;exact&#34;
+    phrase_priority_tier: int = 2
+    local_phrase_priority_boost: float = 0.0
+    debug_tag: str = &#34;normal&#34;
+    usage_tier: str = &#34;&#34;</code></pre>
+</details>
+<div class="desc"><p>Normalized runtime candidate used for phrase-aware ranking.</p></div>
+<h3>Instance variables</h3>
+<dl>
+<dt id="yime.input_method.core.runtime_ranking.RuntimeCandidateRecord.candidate_source_tag"><code class="name">var <span class="ident">candidate_source_tag</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.runtime_ranking.RuntimeCandidateRecord.debug_tag"><code class="name">var <span class="ident">debug_tag</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.runtime_ranking.RuntimeCandidateRecord.entry_type"><code class="name">var <span class="ident">entry_type</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.runtime_ranking.RuntimeCandidateRecord.first_char_sort_weight"><code class="name">var <span class="ident">first_char_sort_weight</span> : float</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.runtime_ranking.RuntimeCandidateRecord.full_code_length"><code class="name">var <span class="ident">full_code_length</span> : int</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.runtime_ranking.RuntimeCandidateRecord.head_char_cluster_weight"><code class="name">var <span class="ident">head_char_cluster_weight</span> : float</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.runtime_ranking.RuntimeCandidateRecord.is_common"><code class="name">var <span class="ident">is_common</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.runtime_ranking.RuntimeCandidateRecord.local_phrase_priority_boost"><code class="name">var <span class="ident">local_phrase_priority_boost</span> : float</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.runtime_ranking.RuntimeCandidateRecord.lookup_code"><code class="name">var <span class="ident">lookup_code</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.runtime_ranking.RuntimeCandidateRecord.matched_code_length"><code class="name">var <span class="ident">matched_code_length</span> : int</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.runtime_ranking.RuntimeCandidateRecord.phrase_priority_tier"><code class="name">var <span class="ident">phrase_priority_tier</span> : int</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.runtime_ranking.RuntimeCandidateRecord.pinyin_tone"><code class="name">var <span class="ident">pinyin_tone</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.runtime_ranking.RuntimeCandidateRecord.short_prefix_template_bonus"><code class="name">var <span class="ident">short_prefix_template_bonus</span> : int</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.runtime_ranking.RuntimeCandidateRecord.sort_weight"><code class="name">var <span class="ident">sort_weight</span> : float</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.runtime_ranking.RuntimeCandidateRecord.text"><code class="name">var <span class="ident">text</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.runtime_ranking.RuntimeCandidateRecord.text_length"><code class="name">var <span class="ident">text_length</span> : int</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.runtime_ranking.RuntimeCandidateRecord.usage_tier"><code class="name">var <span class="ident">usage_tier</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="yime.input_method.core" href="index.html">yime.input_method.core</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="yime.input_method.core.runtime_ranking.annotate_candidate_source" href="#yime.input_method.core.runtime_ranking.annotate_candidate_source">annotate_candidate_source</a></code></li>
+<li><code><a title="yime.input_method.core.runtime_ranking.annotate_phrase_prefix_candidate" href="#yime.input_method.core.runtime_ranking.annotate_phrase_prefix_candidate">annotate_phrase_prefix_candidate</a></code></li>
+<li><code><a title="yime.input_method.core.runtime_ranking.apply_stage_b_rare_representative_guardrail" href="#yime.input_method.core.runtime_ranking.apply_stage_b_rare_representative_guardrail">apply_stage_b_rare_representative_guardrail</a></code></li>
+<li><code><a title="yime.input_method.core.runtime_ranking.build_char_sort_weight_index" href="#yime.input_method.core.runtime_ranking.build_char_sort_weight_index">build_char_sort_weight_index</a></code></li>
+<li><code><a title="yime.input_method.core.runtime_ranking.build_head_char_cluster_weight_map" href="#yime.input_method.core.runtime_ranking.build_head_char_cluster_weight_map">build_head_char_cluster_weight_map</a></code></li>
+<li><code><a title="yime.input_method.core.runtime_ranking.build_phrase_prefix_index" href="#yime.input_method.core.runtime_ranking.build_phrase_prefix_index">build_phrase_prefix_index</a></code></li>
+<li><code><a title="yime.input_method.core.runtime_ranking.build_runtime_candidate_records" href="#yime.input_method.core.runtime_ranking.build_runtime_candidate_records">build_runtime_candidate_records</a></code></li>
+<li><code><a title="yime.input_method.core.runtime_ranking.compute_short_prefix_template_bonus" href="#yime.input_method.core.runtime_ranking.compute_short_prefix_template_bonus">compute_short_prefix_template_bonus</a></code></li>
+<li><code><a title="yime.input_method.core.runtime_ranking.format_runtime_debug_summary" href="#yime.input_method.core.runtime_ranking.format_runtime_debug_summary">format_runtime_debug_summary</a></code></li>
+<li><code><a title="yime.input_method.core.runtime_ranking.load_local_phrase_priority_rules" href="#yime.input_method.core.runtime_ranking.load_local_phrase_priority_rules">load_local_phrase_priority_rules</a></code></li>
+<li><code><a title="yime.input_method.core.runtime_ranking.merge_phrase_priority_rule_maps" href="#yime.input_method.core.runtime_ranking.merge_phrase_priority_rule_maps">merge_phrase_priority_rule_maps</a></code></li>
+<li><code><a title="yime.input_method.core.runtime_ranking.phrase_candidate_payload_sort_key" href="#yime.input_method.core.runtime_ranking.phrase_candidate_payload_sort_key">phrase_candidate_payload_sort_key</a></code></li>
+<li><code><a title="yime.input_method.core.runtime_ranking.rank_runtime_candidates" href="#yime.input_method.core.runtime_ranking.rank_runtime_candidates">rank_runtime_candidates</a></code></li>
+<li><code><a title="yime.input_method.core.runtime_ranking.resolve_candidate_source_tag" href="#yime.input_method.core.runtime_ranking.resolve_candidate_source_tag">resolve_candidate_source_tag</a></code></li>
+<li><code><a title="yime.input_method.core.runtime_ranking.resolve_local_phrase_priority_boost" href="#yime.input_method.core.runtime_ranking.resolve_local_phrase_priority_boost">resolve_local_phrase_priority_boost</a></code></li>
+<li><code><a title="yime.input_method.core.runtime_ranking.resolve_stage_phrase_priority_metadata" href="#yime.input_method.core.runtime_ranking.resolve_stage_phrase_priority_metadata">resolve_stage_phrase_priority_metadata</a></code></li>
+<li><code><a title="yime.input_method.core.runtime_ranking.runtime_candidate_priority" href="#yime.input_method.core.runtime_ranking.runtime_candidate_priority">runtime_candidate_priority</a></code></li>
+<li><code><a title="yime.input_method.core.runtime_ranking.runtime_candidate_sort_key" href="#yime.input_method.core.runtime_ranking.runtime_candidate_sort_key">runtime_candidate_sort_key</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="yime.input_method.core.runtime_ranking.RuntimeCandidateRecord" href="#yime.input_method.core.runtime_ranking.RuntimeCandidateRecord">RuntimeCandidateRecord</a></code></h4>
+<ul class="">
+<li><code><a title="yime.input_method.core.runtime_ranking.RuntimeCandidateRecord.candidate_source_tag" href="#yime.input_method.core.runtime_ranking.RuntimeCandidateRecord.candidate_source_tag">candidate_source_tag</a></code></li>
+<li><code><a title="yime.input_method.core.runtime_ranking.RuntimeCandidateRecord.debug_tag" href="#yime.input_method.core.runtime_ranking.RuntimeCandidateRecord.debug_tag">debug_tag</a></code></li>
+<li><code><a title="yime.input_method.core.runtime_ranking.RuntimeCandidateRecord.entry_type" href="#yime.input_method.core.runtime_ranking.RuntimeCandidateRecord.entry_type">entry_type</a></code></li>
+<li><code><a title="yime.input_method.core.runtime_ranking.RuntimeCandidateRecord.first_char_sort_weight" href="#yime.input_method.core.runtime_ranking.RuntimeCandidateRecord.first_char_sort_weight">first_char_sort_weight</a></code></li>
+<li><code><a title="yime.input_method.core.runtime_ranking.RuntimeCandidateRecord.full_code_length" href="#yime.input_method.core.runtime_ranking.RuntimeCandidateRecord.full_code_length">full_code_length</a></code></li>
+<li><code><a title="yime.input_method.core.runtime_ranking.RuntimeCandidateRecord.head_char_cluster_weight" href="#yime.input_method.core.runtime_ranking.RuntimeCandidateRecord.head_char_cluster_weight">head_char_cluster_weight</a></code></li>
+<li><code><a title="yime.input_method.core.runtime_ranking.RuntimeCandidateRecord.is_common" href="#yime.input_method.core.runtime_ranking.RuntimeCandidateRecord.is_common">is_common</a></code></li>
+<li><code><a title="yime.input_method.core.runtime_ranking.RuntimeCandidateRecord.local_phrase_priority_boost" href="#yime.input_method.core.runtime_ranking.RuntimeCandidateRecord.local_phrase_priority_boost">local_phrase_priority_boost</a></code></li>
+<li><code><a title="yime.input_method.core.runtime_ranking.RuntimeCandidateRecord.lookup_code" href="#yime.input_method.core.runtime_ranking.RuntimeCandidateRecord.lookup_code">lookup_code</a></code></li>
+<li><code><a title="yime.input_method.core.runtime_ranking.RuntimeCandidateRecord.matched_code_length" href="#yime.input_method.core.runtime_ranking.RuntimeCandidateRecord.matched_code_length">matched_code_length</a></code></li>
+<li><code><a title="yime.input_method.core.runtime_ranking.RuntimeCandidateRecord.phrase_priority_tier" href="#yime.input_method.core.runtime_ranking.RuntimeCandidateRecord.phrase_priority_tier">phrase_priority_tier</a></code></li>
+<li><code><a title="yime.input_method.core.runtime_ranking.RuntimeCandidateRecord.pinyin_tone" href="#yime.input_method.core.runtime_ranking.RuntimeCandidateRecord.pinyin_tone">pinyin_tone</a></code></li>
+<li><code><a title="yime.input_method.core.runtime_ranking.RuntimeCandidateRecord.short_prefix_template_bonus" href="#yime.input_method.core.runtime_ranking.RuntimeCandidateRecord.short_prefix_template_bonus">short_prefix_template_bonus</a></code></li>
+<li><code><a title="yime.input_method.core.runtime_ranking.RuntimeCandidateRecord.sort_weight" href="#yime.input_method.core.runtime_ranking.RuntimeCandidateRecord.sort_weight">sort_weight</a></code></li>
+<li><code><a title="yime.input_method.core.runtime_ranking.RuntimeCandidateRecord.text" href="#yime.input_method.core.runtime_ranking.RuntimeCandidateRecord.text">text</a></code></li>
+<li><code><a title="yime.input_method.core.runtime_ranking.RuntimeCandidateRecord.text_length" href="#yime.input_method.core.runtime_ranking.RuntimeCandidateRecord.text_length">text_length</a></code></li>
+<li><code><a title="yime.input_method.core.runtime_ranking.RuntimeCandidateRecord.usage_tier" href="#yime.input_method.core.runtime_ranking.RuntimeCandidateRecord.usage_tier">usage_tier</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

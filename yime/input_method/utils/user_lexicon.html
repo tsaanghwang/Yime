@@ -1,0 +1,2688 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>yime.input_method.utils.user_lexicon API documentation</title>
+<meta name="description" content="">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>yime.input_method.utils.user_lexicon</code></h1>
+</header>
+<section id="section-intro">
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="yime.input_method.utils.user_lexicon.normalize_numeric_pinyin_syllable_spacing"><code class="name flex">
+<span>def <span class="ident">normalize_numeric_pinyin_syllable_spacing</span></span>(<span>raw_pinyin: str) ‑> str</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def normalize_numeric_pinyin_syllable_spacing(raw_pinyin: str) -&gt; str:
+    normalized_tokens: list[str] = []
+    for token in raw_pinyin.split():
+        normalized_tokens.extend(_split_compact_numeric_pinyin_token(token))
+    return &#34; &#34;.join(standardize_numeric_pinyin(token) for token in normalized_tokens if token)</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.utils.user_lexicon.resolve_canonical_code_from_numeric_pinyin"><code class="name flex">
+<span>def <span class="ident">resolve_canonical_code_from_numeric_pinyin</span></span>(<span>pinyin_to_canonical: Mapping[str, str], numeric_pinyin: str) ‑> str</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def resolve_canonical_code_from_numeric_pinyin(
+    pinyin_to_canonical: Mapping[str, str],
+    numeric_pinyin: str,
+) -&gt; str:
+    normalized = normalize_numeric_pinyin_syllable_spacing(numeric_pinyin)
+    if not normalized:
+        return &#34;&#34;
+
+    parts: list[str] = []
+    for syllable in normalized.split(&#34; &#34;):
+        canonical_code = str(pinyin_to_canonical.get(syllable) or &#34;&#34;).strip()
+        if not canonical_code:
+            return &#34;&#34;
+        parts.append(canonical_code)
+    return &#34;&#34;.join(parts)</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.utils.user_lexicon.resolve_yime_code_from_numeric_pinyin"><code class="name flex">
+<span>def <span class="ident">resolve_yime_code_from_numeric_pinyin</span></span>(<span>repo_root: Path, numeric_pinyin: str) ‑> str</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def resolve_yime_code_from_numeric_pinyin(repo_root: Path, numeric_pinyin: str) -&gt; str:
+    normalized = normalize_numeric_pinyin_syllable_spacing(numeric_pinyin)
+    if not normalized:
+        return &#34;&#34;
+
+    mapping = _load_numeric_yime_code_map(str(repo_root))
+    parts: list[str] = []
+    for syllable in normalized.split(&#34; &#34;):
+        yime_code = mapping.get(syllable)
+        if not yime_code:
+            return &#34;&#34;
+        parts.append(yime_code)
+    return &#34;&#34;.join(parts)</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="yime.input_method.utils.user_lexicon.UserCandidateFrequencyEntry"><code class="flex name class">
+<span>class <span class="ident">UserCandidateFrequencyEntry</span></span>
+<span>(</span><span>lookup_code: str,<br>text: str,<br>freq: int,<br>last_used_at: str,<br>numeric_pinyin: str,<br>marked_pinyin: str,<br>yime_code: str,<br>source_note: str)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@dataclass(frozen=True)
+class UserCandidateFrequencyEntry:
+    lookup_code: str
+    text: str
+    freq: int
+    last_used_at: str
+    numeric_pinyin: str
+    marked_pinyin: str
+    yime_code: str
+    source_note: str</code></pre>
+</details>
+<div class="desc"><p>UserCandidateFrequencyEntry(lookup_code: 'str', text: 'str', freq: 'int', last_used_at: 'str', numeric_pinyin: 'str', marked_pinyin: 'str', yime_code: 'str', source_note: 'str')</p></div>
+<h3>Instance variables</h3>
+<dl>
+<dt id="yime.input_method.utils.user_lexicon.UserCandidateFrequencyEntry.freq"><code class="name">var <span class="ident">freq</span> : int</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.utils.user_lexicon.UserCandidateFrequencyEntry.last_used_at"><code class="name">var <span class="ident">last_used_at</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.utils.user_lexicon.UserCandidateFrequencyEntry.lookup_code"><code class="name">var <span class="ident">lookup_code</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.utils.user_lexicon.UserCandidateFrequencyEntry.marked_pinyin"><code class="name">var <span class="ident">marked_pinyin</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.utils.user_lexicon.UserCandidateFrequencyEntry.numeric_pinyin"><code class="name">var <span class="ident">numeric_pinyin</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.utils.user_lexicon.UserCandidateFrequencyEntry.source_note"><code class="name">var <span class="ident">source_note</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.utils.user_lexicon.UserCandidateFrequencyEntry.text"><code class="name">var <span class="ident">text</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.utils.user_lexicon.UserCandidateFrequencyEntry.yime_code"><code class="name">var <span class="ident">yime_code</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="yime.input_method.utils.user_lexicon.UserLexiconStore"><code class="flex name class">
+<span>class <span class="ident">UserLexiconStore</span></span>
+<span>(</span><span>db_path: Path)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class UserLexiconStore:
+    DEFAULT_PHRASE_SORT_WEIGHT = 1_000_000.0
+    TEXT_EXCHANGE_HEADER = (&#34;词语&#34;, &#34;数字标调拼音&#34;, &#34;初始频率&#34;)
+
+    def __init__(self, db_path: Path) -&gt; None:
+        self.db_path = db_path
+        self.db_path.parent.mkdir(parents=True, exist_ok=True)
+        self.ensure_schema()
+
+    def _connect(self, readonly: bool = False) -&gt; sqlite3.Connection:
+        if readonly:
+            connection = sqlite3.connect(f&#34;file:{self.db_path}?mode=ro&#34;, uri=True)
+        else:
+            connection = sqlite3.connect(self.db_path)
+        connection.row_factory = sqlite3.Row
+        return connection
+
+    def ensure_schema(self) -&gt; None:
+        with self._connect() as connection:
+            connection.executescript(
+                &#34;&#34;&#34;
+                CREATE TABLE IF NOT EXISTS user_phrase_entries (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    phrase TEXT NOT NULL UNIQUE,
+                    numeric_pinyin TEXT NOT NULL,
+                    marked_pinyin TEXT NOT NULL DEFAULT &#39;&#39;,
+                    yime_code TEXT NOT NULL,
+                    source_note TEXT NOT NULL DEFAULT &#39;&#39;,
+                    sort_weight REAL NOT NULL DEFAULT 1000000.0,
+                    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+                );
+
+                CREATE INDEX IF NOT EXISTS idx_user_phrase_entries_numeric
+                ON user_phrase_entries(numeric_pinyin);
+
+                CREATE TABLE IF NOT EXISTS user_candidate_frequency (
+                    lookup_code TEXT NOT NULL,
+                    text TEXT NOT NULL,
+                    freq INTEGER NOT NULL DEFAULT 0,
+                    last_used_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    PRIMARY KEY (lookup_code, text)
+                );
+
+                CREATE INDEX IF NOT EXISTS idx_user_candidate_frequency_last_used
+                ON user_candidate_frequency(last_used_at);
+
+                CREATE TABLE IF NOT EXISTS user_lexicon_meta (
+                    meta_key TEXT PRIMARY KEY,
+                    meta_value TEXT NOT NULL DEFAULT &#39;&#39;
+                );
+                &#34;&#34;&#34;
+            )
+
+    def get_meta(self, key: str) -&gt; str:
+        normalized_key = key.strip()
+        if not normalized_key:
+            raise ValueError(&#34;meta key 不能为空&#34;)
+
+        with self._connect(readonly=True) as connection:
+            row = connection.execute(
+                &#34;SELECT meta_value FROM user_lexicon_meta WHERE meta_key = ? LIMIT 1&#34;,
+                (normalized_key,),
+            ).fetchone()
+        return str(row[&#34;meta_value&#34;] or &#34;&#34;) if row is not None else &#34;&#34;
+
+    def set_meta(self, key: str, value: str) -&gt; None:
+        normalized_key = key.strip()
+        if not normalized_key:
+            raise ValueError(&#34;meta key 不能为空&#34;)
+
+        with self._connect() as connection:
+            connection.execute(
+                &#34;&#34;&#34;
+                INSERT INTO user_lexicon_meta (meta_key, meta_value)
+                VALUES (?, ?)
+                ON CONFLICT(meta_key) DO UPDATE SET
+                    meta_value = excluded.meta_value
+                &#34;&#34;&#34;,
+                (normalized_key, value),
+            )
+
+    def has_user_data(self) -&gt; bool:
+        with self._connect(readonly=True) as connection:
+            phrase_row = connection.execute(
+                &#34;SELECT 1 FROM user_phrase_entries LIMIT 1&#34;
+            ).fetchone()
+            if phrase_row is not None:
+                return True
+            frequency_row = connection.execute(
+                &#34;SELECT 1 FROM user_candidate_frequency LIMIT 1&#34;
+            ).fetchone()
+        return frequency_row is not None
+
+    def list_recent_phrase_entries(self, limit: int = 20) -&gt; list[UserPhraseEntryDetail]:
+        return self.list_phrase_entries(limit=limit)
+
+    def upsert_phrase(
+        self,
+        phrase: str,
+        numeric_pinyin: str,
+        *,
+        marked_pinyin: str = &#34;&#34;,
+        yime_code: str,
+        source_note: str = &#34;&#34;,
+        sort_weight: float | None = None,
+    ) -&gt; Literal[&#34;inserted&#34;, &#34;updated&#34;]:
+        normalized_phrase = phrase.strip()
+        normalized_numeric = normalize_numeric_pinyin_syllable_spacing(numeric_pinyin)
+        normalized_marked = &#34; &#34;.join(marked_pinyin.split())
+        normalized_code = yime_code.strip()
+        if not normalized_phrase:
+            raise ValueError(&#34;phrase 不能为空&#34;)
+        if not normalized_numeric:
+            raise ValueError(&#34;numeric_pinyin 不能为空&#34;)
+        if not normalized_code:
+            raise ValueError(&#34;yime_code 不能为空&#34;)
+
+        weight = (
+            self.DEFAULT_PHRASE_SORT_WEIGHT
+            if sort_weight is None
+            else float(sort_weight)
+        )
+        with self._connect() as connection:
+            existing = connection.execute(
+                &#34;SELECT 1 FROM user_phrase_entries WHERE phrase = ? LIMIT 1&#34;,
+                (normalized_phrase,),
+            ).fetchone()
+            connection.execute(
+                &#34;&#34;&#34;
+                INSERT INTO user_phrase_entries (
+                    phrase,
+                    numeric_pinyin,
+                    marked_pinyin,
+                    yime_code,
+                    source_note,
+                    sort_weight
+                ) VALUES (?, ?, ?, ?, ?, ?)
+                ON CONFLICT(phrase) DO UPDATE SET
+                    numeric_pinyin = excluded.numeric_pinyin,
+                    marked_pinyin = excluded.marked_pinyin,
+                    yime_code = excluded.yime_code,
+                    source_note = excluded.source_note,
+                    sort_weight = excluded.sort_weight,
+                    updated_at = CURRENT_TIMESTAMP
+                &#34;&#34;&#34;,
+                (
+                    normalized_phrase,
+                    normalized_numeric,
+                    normalized_marked,
+                    normalized_code,
+                    source_note.strip(),
+                    weight,
+                ),
+            )
+        return &#34;updated&#34; if existing is not None else &#34;inserted&#34;
+
+    def delete_phrase(self, phrase: str) -&gt; bool:
+        normalized_phrase = phrase.strip()
+        if not normalized_phrase:
+            raise ValueError(&#34;phrase 不能为空&#34;)
+
+        with self._connect() as connection:
+            row = connection.execute(
+                &#34;&#34;&#34;
+                SELECT yime_code
+                FROM user_phrase_entries
+                WHERE phrase = ?
+                LIMIT 1
+                &#34;&#34;&#34;,
+                (normalized_phrase,),
+            ).fetchone()
+            if row is None:
+                return False
+
+            yime_code = str(row[&#34;yime_code&#34;] or &#34;&#34;).strip()
+            connection.execute(
+                &#34;DELETE FROM user_phrase_entries WHERE phrase = ?&#34;,
+                (normalized_phrase,),
+            )
+            if yime_code:
+                connection.execute(
+                    &#34;DELETE FROM user_candidate_frequency WHERE lookup_code = ? AND text = ?&#34;,
+                    (yime_code, normalized_phrase),
+                )
+        return True
+
+    def load_candidate_frequency(self) -&gt; dict[tuple[str, str], int]:
+        with self._connect(readonly=True) as connection:
+            rows = connection.execute(
+                &#34;&#34;&#34;
+                SELECT lookup_code, text, freq
+                FROM user_candidate_frequency
+                WHERE freq &gt; 0
+                &#34;&#34;&#34;
+            ).fetchall()
+        return {
+            (str(row[&#34;lookup_code&#34;] or &#34;&#34;).strip(), str(row[&#34;text&#34;] or &#34;&#34;).strip()): int(row[&#34;freq&#34;] or 0)
+            for row in rows
+            if str(row[&#34;lookup_code&#34;] or &#34;&#34;).strip() and str(row[&#34;text&#34;] or &#34;&#34;).strip()
+        }
+
+    def list_phrase_entries(
+        self,
+        term: str = &#34;&#34;,
+        *,
+        use_like: bool = False,
+        limit: int = 50,
+    ) -&gt; list[UserPhraseEntryDetail]:
+        comparator = &#34;LIKE&#34; if use_like else &#34;=&#34;
+        match_value = f&#34;%{term.strip()}%&#34; if use_like else term.strip()
+        query = f&#34;&#34;&#34;
+            SELECT
+                phrase,
+                numeric_pinyin,
+                marked_pinyin,
+                yime_code,
+                source_note,
+                sort_weight,
+                created_at,
+                updated_at
+            FROM user_phrase_entries
+            {{where_clause}}
+            ORDER BY updated_at DESC, phrase
+            LIMIT ?
+        &#34;&#34;&#34;
+        params: list[object] = []
+        where_clause = &#34;&#34;
+        if match_value:
+            where_clause = f&#34;WHERE phrase {comparator} ?&#34;
+            params.append(match_value)
+        params.append(limit)
+
+        with self._connect(readonly=True) as connection:
+            rows = connection.execute(query.format(where_clause=where_clause), params).fetchall()
+
+        return [
+            UserPhraseEntryDetail(
+                phrase=str(row[&#34;phrase&#34;] or &#34;&#34;),
+                numeric_pinyin=str(row[&#34;numeric_pinyin&#34;] or &#34;&#34;),
+                marked_pinyin=str(row[&#34;marked_pinyin&#34;] or &#34;&#34;),
+                yime_code=str(row[&#34;yime_code&#34;] or &#34;&#34;),
+                source_note=str(row[&#34;source_note&#34;] or &#34;&#34;),
+                sort_weight=float(row[&#34;sort_weight&#34;] or self.DEFAULT_PHRASE_SORT_WEIGHT),
+                created_at=str(row[&#34;created_at&#34;] or &#34;&#34;),
+                updated_at=str(row[&#34;updated_at&#34;] or &#34;&#34;),
+            )
+            for row in rows
+        ]
+
+    def list_candidate_frequency_entries(
+        self,
+        term: str = &#34;&#34;,
+        *,
+        use_like: bool = False,
+        limit: int = 50,
+    ) -&gt; list[UserCandidateFrequencyEntry]:
+        comparator = &#34;LIKE&#34; if use_like else &#34;=&#34;
+        match_value = f&#34;%{term.strip()}%&#34; if use_like else term.strip()
+        query = f&#34;&#34;&#34;
+            SELECT
+                ucf.lookup_code,
+                ucf.text,
+                ucf.freq,
+                ucf.last_used_at,
+                COALESCE(upe.numeric_pinyin, &#39;&#39;) AS numeric_pinyin,
+                COALESCE(upe.marked_pinyin, &#39;&#39;) AS marked_pinyin,
+                COALESCE(upe.yime_code, &#39;&#39;) AS yime_code,
+                COALESCE(upe.source_note, &#39;&#39;) AS source_note
+            FROM user_candidate_frequency AS ucf
+            LEFT JOIN user_phrase_entries AS upe
+                ON upe.phrase = ucf.text
+            {{where_clause}}
+            ORDER BY ucf.freq DESC, ucf.last_used_at DESC, ucf.text
+            LIMIT ?
+        &#34;&#34;&#34;
+        params: list[object] = []
+        where_clause = &#34;&#34;
+        if match_value:
+            where_clause = f&#34;WHERE ucf.text {comparator} ?&#34;
+            params.append(match_value)
+        params.append(limit)
+
+        with self._connect(readonly=True) as connection:
+            rows = connection.execute(query.format(where_clause=where_clause), params).fetchall()
+
+        return [
+            UserCandidateFrequencyEntry(
+                lookup_code=str(row[&#34;lookup_code&#34;] or &#34;&#34;),
+                text=str(row[&#34;text&#34;] or &#34;&#34;),
+                freq=int(row[&#34;freq&#34;] or 0),
+                last_used_at=str(row[&#34;last_used_at&#34;] or &#34;&#34;),
+                numeric_pinyin=str(row[&#34;numeric_pinyin&#34;] or &#34;&#34;),
+                marked_pinyin=str(row[&#34;marked_pinyin&#34;] or &#34;&#34;),
+                yime_code=str(row[&#34;yime_code&#34;] or &#34;&#34;),
+                source_note=str(row[&#34;source_note&#34;] or &#34;&#34;),
+            )
+            for row in rows
+        ]
+
+    def reset_candidate_frequency(
+        self,
+        *,
+        text: str | None = None,
+        lookup_code: str | None = None,
+    ) -&gt; int:
+        normalized_text = (text or &#34;&#34;).strip()
+        normalized_lookup_code = (lookup_code or &#34;&#34;).strip()
+        if not normalized_text and not normalized_lookup_code:
+            raise ValueError(&#34;text 和 lookup_code 不能同时为空&#34;)
+
+        clauses: list[str] = []
+        params: list[object] = []
+        if normalized_text:
+            clauses.append(&#34;text = ?&#34;)
+            params.append(normalized_text)
+        if normalized_lookup_code:
+            clauses.append(&#34;lookup_code = ?&#34;)
+            params.append(normalized_lookup_code)
+
+        with self._connect() as connection:
+            cursor = connection.execute(
+                f&#34;DELETE FROM user_candidate_frequency WHERE {&#39; AND &#39;.join(clauses)}&#34;,
+                params,
+            )
+        return int(cursor.rowcount or 0)
+
+    def export_payload(self, *, include_frequency: bool = True) -&gt; dict[str, Any]:
+        phrase_entries: list[dict[str, Any]] = [
+            {
+                &#34;phrase&#34;: row.phrase,
+                &#34;numeric_pinyin&#34;: row.numeric_pinyin,
+                &#34;marked_pinyin&#34;: row.marked_pinyin,
+                &#34;yime_code&#34;: row.yime_code,
+                &#34;source_note&#34;: row.source_note,
+                &#34;sort_weight&#34;: row.sort_weight,
+                &#34;created_at&#34;: row.created_at,
+                &#34;updated_at&#34;: row.updated_at,
+            }
+            for row in self.list_phrase_entries(limit=1_000_000)
+        ]
+        payload: dict[str, Any] = {
+            &#34;schema_version&#34;: 1,
+            &#34;exported_at&#34;: datetime.now(timezone.utc).isoformat(),
+            &#34;phrase_entries&#34;: phrase_entries,
+        }
+        if include_frequency:
+            payload[&#34;candidate_frequency&#34;] = [
+                {
+                    &#34;lookup_code&#34;: row.lookup_code,
+                    &#34;text&#34;: row.text,
+                    &#34;freq&#34;: row.freq,
+                    &#34;last_used_at&#34;: row.last_used_at,
+                }
+                for row in self.list_candidate_frequency_entries(limit=1_000_000)
+            ]
+        return payload
+
+    def write_export_file(
+        self,
+        path: Path,
+        *,
+        include_frequency: bool = True,
+    ) -&gt; Path:
+        payload = self.export_payload(include_frequency=include_frequency)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(
+            json.dumps(payload, ensure_ascii=False, indent=2) + &#34;\n&#34;,
+            encoding=&#34;utf-8&#34;,
+        )
+        return path
+
+    def write_text_export_file(self, path: Path) -&gt; dict[str, int]:
+        frequency_by_key = {
+            (row.lookup_code, row.text): row.freq
+            for row in self.list_candidate_frequency_entries(limit=1_000_000)
+        }
+        phrase_rows = self.list_phrase_entries(limit=1_000_000)
+
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with path.open(&#34;w&#34;, encoding=&#34;utf-8&#34;, newline=&#34;&#34;) as handle:
+            writer = csv.writer(handle, delimiter=&#34;\t&#34;, lineterminator=&#34;\n&#34;)
+            writer.writerow(self.TEXT_EXCHANGE_HEADER)
+            for row in phrase_rows:
+                writer.writerow(
+                    [
+                        row.phrase,
+                        row.numeric_pinyin,
+                        frequency_by_key.get((row.yime_code, row.phrase), 0),
+                    ]
+                )
+
+        return {
+            &#34;phrase_entries&#34;: len(phrase_rows),
+            &#34;candidate_frequency&#34;: sum(
+                1
+                for row in phrase_rows
+                if frequency_by_key.get((row.yime_code, row.phrase), 0) &gt; 0
+            ),
+        }
+
+    def import_text_file(
+        self,
+        path: Path,
+        *,
+        repo_root: Path,
+        replace_existing: bool = False,
+    ) -&gt; dict[str, int]:
+        parsed_rows: list[tuple[str, str, str, int]] = []
+
+        with path.open(&#34;r&#34;, encoding=&#34;utf-8-sig&#34;, newline=&#34;&#34;) as handle:
+            reader = csv.reader(handle, delimiter=&#34;\t&#34;)
+            for line_number, row in enumerate(reader, start=1):
+                if not row or not any(str(cell).strip() for cell in row):
+                    continue
+
+                normalized_cells = [str(cell).strip() for cell in row]
+                if tuple(normalized_cells[:3]) == self.TEXT_EXCHANGE_HEADER:
+                    continue
+                if len(normalized_cells) != 3:
+                    raise ValueError(f&#34;导入文件格式无效：第 {line_number} 行应包含 3 列。&#34;)
+
+                phrase = normalized_cells[0]
+                numeric_pinyin = normalize_numeric_pinyin_syllable_spacing(normalized_cells[1])
+                if not phrase:
+                    raise ValueError(f&#34;导入文件格式无效：第 {line_number} 行“词语”不能为空。&#34;)
+                if not numeric_pinyin:
+                    raise ValueError(f&#34;导入文件格式无效：第 {line_number} 行“数字标调拼音”不能为空。&#34;)
+
+                try:
+                    initial_frequency = int(normalized_cells[2])
+                except ValueError as exc:
+                    raise ValueError(
+                        f&#34;导入文件格式无效：第 {line_number} 行“初始频率”必须是整数。&#34;
+                    ) from exc
+                if initial_frequency &lt; 0:
+                    raise ValueError(
+                        f&#34;导入文件格式无效：第 {line_number} 行“初始频率”不能为负数。&#34;
+                    )
+
+                yime_code = resolve_yime_code_from_numeric_pinyin(repo_root, numeric_pinyin)
+                if not yime_code:
+                    raise ValueError(
+                        f&#34;导入文件格式无效：第 {line_number} 行无法根据数字标调拼音推导音元编码。&#34;
+                    )
+
+                parsed_rows.append((phrase, numeric_pinyin, yime_code, initial_frequency))
+
+        imported_phrases = 0
+        imported_frequency_rows = 0
+        with self._connect() as connection:
+            if replace_existing:
+                connection.execute(&#34;DELETE FROM user_candidate_frequency&#34;)
+                connection.execute(&#34;DELETE FROM user_phrase_entries&#34;)
+
+            for phrase, numeric_pinyin, yime_code, initial_frequency in parsed_rows:
+                connection.execute(
+                    &#34;&#34;&#34;
+                    INSERT INTO user_phrase_entries (
+                        phrase,
+                        numeric_pinyin,
+                        marked_pinyin,
+                        yime_code,
+                        source_note,
+                        sort_weight
+                    ) VALUES (?, ?, &#39;&#39;, ?, &#39;ui_import_txt&#39;, ?)
+                    ON CONFLICT(phrase) DO UPDATE SET
+                        numeric_pinyin = excluded.numeric_pinyin,
+                        yime_code = excluded.yime_code,
+                        source_note = excluded.source_note,
+                        sort_weight = excluded.sort_weight,
+                        updated_at = CURRENT_TIMESTAMP
+                    &#34;&#34;&#34;,
+                    (
+                        phrase,
+                        numeric_pinyin,
+                        yime_code,
+                        self.DEFAULT_PHRASE_SORT_WEIGHT,
+                    ),
+                )
+                imported_phrases += 1
+
+                if initial_frequency &lt;= 0:
+                    continue
+
+                connection.execute(
+                    &#34;&#34;&#34;
+                    INSERT INTO user_candidate_frequency (
+                        lookup_code,
+                        text,
+                        freq,
+                        last_used_at
+                    ) VALUES (?, ?, ?, CURRENT_TIMESTAMP)
+                    ON CONFLICT(lookup_code, text) DO UPDATE SET
+                        freq = excluded.freq,
+                        last_used_at = excluded.last_used_at
+                    &#34;&#34;&#34;,
+                    (yime_code, phrase, initial_frequency),
+                )
+                imported_frequency_rows += 1
+
+        return {
+            &#34;phrase_entries&#34;: imported_phrases,
+            &#34;candidate_frequency&#34;: imported_frequency_rows,
+        }
+
+    def import_payload(
+        self,
+        payload: Mapping[str, Any],
+        *,
+        replace_existing: bool = False,
+        include_frequency: bool = True,
+    ) -&gt; dict[str, int]:
+        phrase_entries = cast(list[Mapping[str, Any]], payload.get(&#34;phrase_entries&#34;) or [])
+        candidate_frequency = cast(
+            list[Mapping[str, Any]],
+            payload.get(&#34;candidate_frequency&#34;) or [],
+        )
+
+        imported_phrases = 0
+        imported_frequency_rows = 0
+
+        with self._connect() as connection:
+            if replace_existing:
+                connection.execute(&#34;DELETE FROM user_candidate_frequency&#34;)
+                connection.execute(&#34;DELETE FROM user_phrase_entries&#34;)
+
+            for raw_entry in phrase_entries:
+                phrase = str(raw_entry.get(&#34;phrase&#34;) or &#34;&#34;).strip()
+                numeric_pinyin = normalize_numeric_pinyin_syllable_spacing(
+                    str(raw_entry.get(&#34;numeric_pinyin&#34;) or &#34;&#34;)
+                )
+                yime_code = str(raw_entry.get(&#34;yime_code&#34;) or &#34;&#34;).strip()
+                if not phrase or not numeric_pinyin or not yime_code:
+                    continue
+                connection.execute(
+                    &#34;&#34;&#34;
+                    INSERT INTO user_phrase_entries (
+                        phrase,
+                        numeric_pinyin,
+                        marked_pinyin,
+                        yime_code,
+                        source_note,
+                        sort_weight,
+                        created_at,
+                        updated_at
+                    ) VALUES (?, ?, ?, ?, ?, ?, COALESCE(?, CURRENT_TIMESTAMP), COALESCE(?, CURRENT_TIMESTAMP))
+                    ON CONFLICT(phrase) DO UPDATE SET
+                        numeric_pinyin = excluded.numeric_pinyin,
+                        marked_pinyin = excluded.marked_pinyin,
+                        yime_code = excluded.yime_code,
+                        source_note = excluded.source_note,
+                        sort_weight = excluded.sort_weight,
+                        updated_at = excluded.updated_at
+                    &#34;&#34;&#34;,
+                    (
+                        phrase,
+                        numeric_pinyin,
+                        str(raw_entry.get(&#34;marked_pinyin&#34;) or &#34;&#34;).strip(),
+                        yime_code,
+                        str(raw_entry.get(&#34;source_note&#34;) or &#34;&#34;).strip(),
+                        float(raw_entry.get(&#34;sort_weight&#34;) or self.DEFAULT_PHRASE_SORT_WEIGHT),
+                        str(raw_entry.get(&#34;created_at&#34;) or &#34;&#34;).strip() or None,
+                        str(raw_entry.get(&#34;updated_at&#34;) or &#34;&#34;).strip() or None,
+                    ),
+                )
+                imported_phrases += 1
+
+            if include_frequency:
+                for raw_entry in candidate_frequency:
+                    lookup_code = str(raw_entry.get(&#34;lookup_code&#34;) or &#34;&#34;).strip()
+                    text = str(raw_entry.get(&#34;text&#34;) or &#34;&#34;).strip()
+                    if not lookup_code or not text:
+                        continue
+                    connection.execute(
+                        &#34;&#34;&#34;
+                        INSERT INTO user_candidate_frequency (
+                            lookup_code,
+                            text,
+                            freq,
+                            last_used_at
+                        ) VALUES (?, ?, ?, COALESCE(?, CURRENT_TIMESTAMP))
+                        ON CONFLICT(lookup_code, text) DO UPDATE SET
+                            freq = excluded.freq,
+                            last_used_at = excluded.last_used_at
+                        &#34;&#34;&#34;,
+                        (
+                            lookup_code,
+                            text,
+                            int(raw_entry.get(&#34;freq&#34;) or 0),
+                            str(raw_entry.get(&#34;last_used_at&#34;) or &#34;&#34;).strip() or None,
+                        ),
+                    )
+                    imported_frequency_rows += 1
+
+        return {
+            &#34;phrase_entries&#34;: imported_phrases,
+            &#34;candidate_frequency&#34;: imported_frequency_rows,
+        }
+
+    def import_file(
+        self,
+        path: Path,
+        *,
+        replace_existing: bool = False,
+        include_frequency: bool = True,
+    ) -&gt; dict[str, int]:
+        payload: Mapping[str, Any] = json.loads(path.read_text(encoding=&#34;utf-8&#34;))
+        if not isinstance(payload, dict):
+            raise ValueError(&#34;导入文件格式无效：顶层必须是 JSON object&#34;)
+        return self.import_payload(
+            payload,
+            replace_existing=replace_existing,
+            include_frequency=include_frequency,
+        )
+
+    def check_repairable_issues(self, repo_root: Path) -&gt; dict[str, int]:
+        issues = {
+            &#34;sqlite_integrity_errors&#34;: 0,
+            &#34;user_phrase_entries&#34;: 0,
+            &#34;persisted_reorder_entries&#34;: 0,
+            &#34;meta_entries&#34;: 0,
+            &#34;invalid_phrase_rows&#34;: 0,
+            &#34;normalizable_phrase_rows&#34;: 0,
+            &#34;duplicate_phrase_rows&#34;: 0,
+            &#34;invalid_frequency_rows&#34;: 0,
+            &#34;normalizable_frequency_rows&#34;: 0,
+            &#34;duplicate_frequency_rows&#34;: 0,
+            &#34;invalid_meta_rows&#34;: 0,
+            &#34;normalizable_meta_rows&#34;: 0,
+        }
+
+        with self._connect(readonly=True) as connection:
+            integrity_rows = connection.execute(&#34;PRAGMA integrity_check&#34;).fetchall()
+            integrity_messages = [str(row[0] or &#34;&#34;) for row in integrity_rows]
+            issues[&#34;sqlite_integrity_errors&#34;] = sum(
+                1 for message in integrity_messages if message.strip().lower() != &#34;ok&#34;
+            )
+
+            phrase_rows = connection.execute(
+                &#34;&#34;&#34;
+                SELECT id, phrase, numeric_pinyin, marked_pinyin, yime_code, source_note
+                FROM user_phrase_entries
+                ORDER BY updated_at DESC, id DESC
+                &#34;&#34;&#34;
+            ).fetchall()
+            issues[&#34;user_phrase_entries&#34;] = len(phrase_rows)
+
+            normalized_phrases: dict[str, int] = {}
+            for row in phrase_rows:
+                normalized_phrase = str(row[&#34;phrase&#34;] or &#34;&#34;).strip()
+                normalized_numeric = normalize_numeric_pinyin_syllable_spacing(
+                    str(row[&#34;numeric_pinyin&#34;] or &#34;&#34;)
+                )
+                normalized_marked = &#34; &#34;.join(str(row[&#34;marked_pinyin&#34;] or &#34;&#34;).split())
+                normalized_yime = str(row[&#34;yime_code&#34;] or &#34;&#34;).strip()
+                normalized_note = str(row[&#34;source_note&#34;] or &#34;&#34;).strip()
+
+                if not normalized_phrase or not normalized_numeric:
+                    issues[&#34;invalid_phrase_rows&#34;] += 1
+                    continue
+
+                resolved_yime = resolve_yime_code_from_numeric_pinyin(repo_root, normalized_numeric)
+                if not resolved_yime:
+                    issues[&#34;invalid_phrase_rows&#34;] += 1
+                    continue
+
+                if (
+                    normalized_phrase != str(row[&#34;phrase&#34;] or &#34;&#34;)
+                    or normalized_numeric != str(row[&#34;numeric_pinyin&#34;] or &#34;&#34;)
+                    or normalized_marked != str(row[&#34;marked_pinyin&#34;] or &#34;&#34;)
+                    or normalized_note != str(row[&#34;source_note&#34;] or &#34;&#34;)
+                    or resolved_yime != normalized_yime
+                ):
+                    issues[&#34;normalizable_phrase_rows&#34;] += 1
+
+                normalized_phrases[normalized_phrase] = normalized_phrases.get(normalized_phrase, 0) + 1
+
+            issues[&#34;duplicate_phrase_rows&#34;] = sum(
+                count - 1 for count in normalized_phrases.values() if count &gt; 1
+            )
+
+            frequency_rows = connection.execute(
+                &#34;&#34;&#34;
+                SELECT rowid, lookup_code, text, freq, last_used_at
+                FROM user_candidate_frequency
+                ORDER BY last_used_at DESC, rowid DESC
+                &#34;&#34;&#34;
+            ).fetchall()
+            issues[&#34;persisted_reorder_entries&#34;] = len(frequency_rows)
+
+            normalized_frequency_keys: dict[tuple[str, str], int] = {}
+            for row in frequency_rows:
+                normalized_lookup = str(row[&#34;lookup_code&#34;] or &#34;&#34;).strip()
+                normalized_text = str(row[&#34;text&#34;] or &#34;&#34;).strip()
+                freq = int(row[&#34;freq&#34;] or 0)
+                if not normalized_lookup or not normalized_text or freq &lt;= 0:
+                    issues[&#34;invalid_frequency_rows&#34;] += 1
+                    continue
+
+                if (
+                    normalized_lookup != str(row[&#34;lookup_code&#34;] or &#34;&#34;)
+                    or normalized_text != str(row[&#34;text&#34;] or &#34;&#34;)
+                ):
+                    issues[&#34;normalizable_frequency_rows&#34;] += 1
+
+                key = (normalized_lookup, normalized_text)
+                normalized_frequency_keys[key] = normalized_frequency_keys.get(key, 0) + 1
+
+            issues[&#34;duplicate_frequency_rows&#34;] = sum(
+                count - 1 for count in normalized_frequency_keys.values() if count &gt; 1
+            )
+
+            meta_rows = connection.execute(
+                &#34;SELECT meta_key, meta_value FROM user_lexicon_meta ORDER BY meta_key&#34;
+            ).fetchall()
+            issues[&#34;meta_entries&#34;] = len(meta_rows)
+
+        has_user_data = self.has_user_data()
+        for row in meta_rows:
+            meta_key = str(row[&#34;meta_key&#34;] or &#34;&#34;).strip()
+            meta_value = str(row[&#34;meta_value&#34;] or &#34;&#34;)
+            normalized_value = meta_value.strip()
+            if meta_key != &#34;seed_import_completed&#34;:
+                if normalized_value != meta_value:
+                    issues[&#34;normalizable_meta_rows&#34;] += 1
+                continue
+            if not normalized_value:
+                issues[&#34;invalid_meta_rows&#34;] += 1
+                continue
+            if normalized_value == &#34;skipped_existing_user_data&#34; and not has_user_data:
+                issues[&#34;invalid_meta_rows&#34;] += 1
+                continue
+            if normalized_value.startswith((&#34;imported:&#34;, &#34;empty_seed:&#34;)) or normalized_value == &#34;skipped_existing_user_data&#34;:
+                if normalized_value != meta_value:
+                    issues[&#34;normalizable_meta_rows&#34;] += 1
+                continue
+            issues[&#34;invalid_meta_rows&#34;] += 1
+
+        return issues
+
+    def repair_phrase_entries(self, repo_root: Path) -&gt; dict[str, int]:
+        rows: list[sqlite3.Row]
+        with self._connect() as connection:
+            rows = connection.execute(
+                &#34;&#34;&#34;
+                SELECT id, phrase, numeric_pinyin, marked_pinyin, yime_code, source_note, sort_weight, created_at, updated_at
+                FROM user_phrase_entries
+                ORDER BY updated_at DESC, id DESC
+                &#34;&#34;&#34;
+            ).fetchall()
+
+            deleted_invalid_rows = 0
+            updated_rows = 0
+            deleted_duplicate_rows = 0
+            kept_phrase_ids: set[int] = set()
+
+            grouped_rows: dict[str, list[sqlite3.Row]] = {}
+            for row in rows:
+                normalized_phrase = str(row[&#34;phrase&#34;] or &#34;&#34;).strip()
+                normalized_numeric = normalize_numeric_pinyin_syllable_spacing(
+                    str(row[&#34;numeric_pinyin&#34;] or &#34;&#34;)
+                )
+                if not normalized_phrase or not normalized_numeric:
+                    connection.execute(&#34;DELETE FROM user_phrase_entries WHERE id = ?&#34;, (int(row[&#34;id&#34;]),))
+                    deleted_invalid_rows += 1
+                    continue
+                resolved_yime = resolve_yime_code_from_numeric_pinyin(repo_root, normalized_numeric)
+                if not resolved_yime:
+                    connection.execute(&#34;DELETE FROM user_phrase_entries WHERE id = ?&#34;, (int(row[&#34;id&#34;]),))
+                    deleted_invalid_rows += 1
+                    continue
+                grouped_rows.setdefault(normalized_phrase, []).append(row)
+
+            for normalized_phrase, phrase_rows in grouped_rows.items():
+                keeper = phrase_rows[0]
+                keeper_id = int(keeper[&#34;id&#34;])
+                kept_phrase_ids.add(keeper_id)
+                normalized_numeric = normalize_numeric_pinyin_syllable_spacing(
+                    str(keeper[&#34;numeric_pinyin&#34;] or &#34;&#34;)
+                )
+                normalized_marked = &#34; &#34;.join(str(keeper[&#34;marked_pinyin&#34;] or &#34;&#34;).split())
+                normalized_note = str(keeper[&#34;source_note&#34;] or &#34;&#34;).strip()
+                resolved_yime = resolve_yime_code_from_numeric_pinyin(repo_root, normalized_numeric)
+
+                if (
+                    normalized_phrase != str(keeper[&#34;phrase&#34;] or &#34;&#34;)
+                    or normalized_numeric != str(keeper[&#34;numeric_pinyin&#34;] or &#34;&#34;)
+                    or normalized_marked != str(keeper[&#34;marked_pinyin&#34;] or &#34;&#34;)
+                    or normalized_note != str(keeper[&#34;source_note&#34;] or &#34;&#34;)
+                    or resolved_yime != str(keeper[&#34;yime_code&#34;] or &#34;&#34;).strip()
+                ):
+                    connection.execute(
+                        &#34;&#34;&#34;
+                        UPDATE user_phrase_entries
+                        SET phrase = ?, numeric_pinyin = ?, marked_pinyin = ?, yime_code = ?, source_note = ?, updated_at = CURRENT_TIMESTAMP
+                        WHERE id = ?
+                        &#34;&#34;&#34;,
+                        (
+                            normalized_phrase,
+                            normalized_numeric,
+                            normalized_marked,
+                            resolved_yime,
+                            normalized_note,
+                            keeper_id,
+                        ),
+                    )
+                    updated_rows += 1
+
+                for duplicate in phrase_rows[1:]:
+                    connection.execute(&#34;DELETE FROM user_phrase_entries WHERE id = ?&#34;, (int(duplicate[&#34;id&#34;]),))
+                    deleted_duplicate_rows += 1
+
+        return {
+            &#34;deleted_invalid_phrase_rows&#34;: deleted_invalid_rows,
+            &#34;updated_phrase_rows&#34;: updated_rows,
+            &#34;deleted_duplicate_phrase_rows&#34;: deleted_duplicate_rows,
+        }
+
+    def repair_candidate_frequency_entries(self) -&gt; dict[str, int]:
+        with self._connect() as connection:
+            rows = connection.execute(
+                &#34;&#34;&#34;
+                SELECT rowid, lookup_code, text, freq, last_used_at
+                FROM user_candidate_frequency
+                ORDER BY last_used_at DESC, rowid DESC
+                &#34;&#34;&#34;
+            ).fetchall()
+
+            deleted_invalid_rows = 0
+            updated_rows = 0
+            deleted_duplicate_rows = 0
+            grouped_rows: dict[tuple[str, str], list[sqlite3.Row]] = {}
+
+            for row in rows:
+                normalized_lookup = str(row[&#34;lookup_code&#34;] or &#34;&#34;).strip()
+                normalized_text = str(row[&#34;text&#34;] or &#34;&#34;).strip()
+                freq = int(row[&#34;freq&#34;] or 0)
+                if not normalized_lookup or not normalized_text or freq &lt;= 0:
+                    connection.execute(
+                        &#34;DELETE FROM user_candidate_frequency WHERE rowid = ?&#34;,
+                        (int(row[&#34;rowid&#34;]),),
+                    )
+                    deleted_invalid_rows += 1
+                    continue
+                grouped_rows.setdefault((normalized_lookup, normalized_text), []).append(row)
+
+            for (normalized_lookup, normalized_text), frequency_rows in grouped_rows.items():
+                keeper = frequency_rows[0]
+                merged_freq = sum(int(row[&#34;freq&#34;] or 0) for row in frequency_rows)
+                latest_last_used_at = max(str(row[&#34;last_used_at&#34;] or &#34;&#34;) for row in frequency_rows)
+                if (
+                    normalized_lookup != str(keeper[&#34;lookup_code&#34;] or &#34;&#34;)
+                    or normalized_text != str(keeper[&#34;text&#34;] or &#34;&#34;)
+                    or merged_freq != int(keeper[&#34;freq&#34;] or 0)
+                    or latest_last_used_at != str(keeper[&#34;last_used_at&#34;] or &#34;&#34;)
+                ):
+                    connection.execute(
+                        &#34;&#34;&#34;
+                        UPDATE user_candidate_frequency
+                        SET lookup_code = ?, text = ?, freq = ?, last_used_at = ?
+                        WHERE rowid = ?
+                        &#34;&#34;&#34;,
+                        (
+                            normalized_lookup,
+                            normalized_text,
+                            merged_freq,
+                            latest_last_used_at,
+                            int(keeper[&#34;rowid&#34;]),
+                        ),
+                    )
+                    updated_rows += 1
+
+                for duplicate in frequency_rows[1:]:
+                    connection.execute(
+                        &#34;DELETE FROM user_candidate_frequency WHERE rowid = ?&#34;,
+                        (int(duplicate[&#34;rowid&#34;]),),
+                    )
+                    deleted_duplicate_rows += 1
+
+        return {
+            &#34;deleted_invalid_frequency_rows&#34;: deleted_invalid_rows,
+            &#34;updated_frequency_rows&#34;: updated_rows,
+            &#34;deleted_duplicate_frequency_rows&#34;: deleted_duplicate_rows,
+        }
+
+    def repair_meta_entries(self) -&gt; dict[str, int]:
+        with self._connect() as connection:
+            rows = connection.execute(
+                &#34;SELECT meta_key, meta_value FROM user_lexicon_meta ORDER BY meta_key&#34;
+            ).fetchall()
+
+            updated_rows = 0
+            deleted_invalid_rows = 0
+            has_user_data = self.has_user_data()
+
+            for row in rows:
+                meta_key = str(row[&#34;meta_key&#34;] or &#34;&#34;).strip()
+                meta_value = str(row[&#34;meta_value&#34;] or &#34;&#34;)
+                normalized_value = meta_value.strip()
+
+                if meta_key != &#34;seed_import_completed&#34;:
+                    if normalized_value != meta_value:
+                        connection.execute(
+                            &#34;UPDATE user_lexicon_meta SET meta_value = ? WHERE meta_key = ?&#34;,
+                            (normalized_value, meta_key),
+                        )
+                        updated_rows += 1
+                    continue
+
+                is_valid_seed_value = (
+                    normalized_value.startswith((&#34;imported:&#34;, &#34;empty_seed:&#34;))
+                    or normalized_value == &#34;skipped_existing_user_data&#34;
+                )
+                should_delete = (
+                    not normalized_value
+                    or not is_valid_seed_value
+                    or (normalized_value == &#34;skipped_existing_user_data&#34; and not has_user_data)
+                )
+                if should_delete:
+                    connection.execute(
+                        &#34;DELETE FROM user_lexicon_meta WHERE meta_key = ?&#34;,
+                        (meta_key,),
+                    )
+                    deleted_invalid_rows += 1
+                    continue
+
+                if normalized_value != meta_value:
+                    connection.execute(
+                        &#34;UPDATE user_lexicon_meta SET meta_value = ? WHERE meta_key = ?&#34;,
+                        (normalized_value, meta_key),
+                    )
+                    updated_rows += 1
+
+        return {
+            &#34;deleted_invalid_meta_rows&#34;: deleted_invalid_rows,
+            &#34;updated_meta_rows&#34;: updated_rows,
+        }
+
+    def record_candidate_selection(self, lookup_code: str, text: str) -&gt; int:
+        normalized_lookup_code = lookup_code.strip()
+        normalized_text = text.strip()
+        if not normalized_lookup_code:
+            raise ValueError(&#34;lookup_code 不能为空&#34;)
+        if not normalized_text:
+            raise ValueError(&#34;text 不能为空&#34;)
+
+        with self._connect() as connection:
+            connection.execute(
+                &#34;&#34;&#34;
+                INSERT INTO user_candidate_frequency (lookup_code, text, freq)
+                VALUES (?, ?, 1)
+                ON CONFLICT(lookup_code, text) DO UPDATE SET
+                    freq = user_candidate_frequency.freq + 1,
+                    last_used_at = CURRENT_TIMESTAMP
+                &#34;&#34;&#34;,
+                (normalized_lookup_code, normalized_text),
+            )
+            row = connection.execute(
+                &#34;&#34;&#34;
+                SELECT freq
+                FROM user_candidate_frequency
+                WHERE lookup_code = ? AND text = ?
+                &#34;&#34;&#34;,
+                (normalized_lookup_code, normalized_text),
+            ).fetchone()
+        return int(row[&#34;freq&#34;] or 0) if row is not None else 0
+
+    def load_phrase_candidates(
+        self,
+        pinyin_to_canonical: Mapping[str, str],
+    ) -&gt; Dict[str, List[Dict[str, object]]]:
+        with self._connect(readonly=True) as connection:
+            rows = connection.execute(
+                &#34;&#34;&#34;
+                SELECT id, phrase, numeric_pinyin, yime_code, sort_weight, updated_at
+                FROM user_phrase_entries
+                ORDER BY sort_weight DESC, updated_at DESC, phrase
+                &#34;&#34;&#34;
+            ).fetchall()
+
+        grouped: Dict[str, List[Dict[str, object]]] = {}
+        for row in rows:
+            pinyin_tone = str(row[&#34;numeric_pinyin&#34;] or &#34;&#34;).strip()
+            canonical_code = resolve_canonical_code_from_numeric_pinyin(
+                pinyin_to_canonical,
+                pinyin_tone,
+            )
+            if not canonical_code:
+                continue
+            phrase = str(row[&#34;phrase&#34;] or &#34;&#34;).strip()
+            if not phrase:
+                continue
+            grouped.setdefault(canonical_code, []).append(
+                {
+                    &#34;text&#34;: phrase,
+                    &#34;entry_type&#34;: &#34;phrase&#34;,
+                    &#34;entry_id&#34;: f&#34;user_phrase:{row[&#39;id&#39;]}&#34;,
+                    &#34;pinyin_tone&#34;: pinyin_tone,
+                    &#34;sort_weight&#34;: row[&#34;sort_weight&#34;],
+                    &#34;is_common&#34;: True,
+                    &#34;text_length&#34;: len(phrase),
+                    &#34;updated_at&#34;: row[&#34;updated_at&#34;],
+                    &#34;yime_code&#34;: row[&#34;yime_code&#34;],
+                }
+            )
+        return grouped
+
+    def lookup_first_phrase(self, phrase: str) -&gt; UserPhraseEntry | None:
+        normalized_phrase = phrase.strip()
+        if not normalized_phrase:
+            return None
+
+        with self._connect(readonly=True) as connection:
+            row = connection.execute(
+                &#34;&#34;&#34;
+                SELECT phrase, numeric_pinyin, marked_pinyin, yime_code, sort_weight
+                FROM user_phrase_entries
+                WHERE phrase = ?
+                ORDER BY sort_weight DESC, updated_at DESC
+                LIMIT 1
+                &#34;&#34;&#34;,
+                (normalized_phrase,),
+            ).fetchone()
+        if row is None:
+            return None
+        return UserPhraseEntry(
+            phrase=str(row[&#34;phrase&#34;] or &#34;&#34;),
+            numeric_pinyin=str(row[&#34;numeric_pinyin&#34;] or &#34;&#34;),
+            marked_pinyin=str(row[&#34;marked_pinyin&#34;] or &#34;&#34;),
+            yime_code=str(row[&#34;yime_code&#34;] or &#34;&#34;),
+            sort_weight=float(row[&#34;sort_weight&#34;] or self.DEFAULT_PHRASE_SORT_WEIGHT),
+        )</code></pre>
+</details>
+<div class="desc"></div>
+<h3>Class variables</h3>
+<dl>
+<dt id="yime.input_method.utils.user_lexicon.UserLexiconStore.DEFAULT_PHRASE_SORT_WEIGHT"><code class="name">var <span class="ident">DEFAULT_PHRASE_SORT_WEIGHT</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.utils.user_lexicon.UserLexiconStore.TEXT_EXCHANGE_HEADER"><code class="name">var <span class="ident">TEXT_EXCHANGE_HEADER</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="yime.input_method.utils.user_lexicon.UserLexiconStore.check_repairable_issues"><code class="name flex">
+<span>def <span class="ident">check_repairable_issues</span></span>(<span>self, repo_root: Path) ‑> dict[str, int]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def check_repairable_issues(self, repo_root: Path) -&gt; dict[str, int]:
+    issues = {
+        &#34;sqlite_integrity_errors&#34;: 0,
+        &#34;user_phrase_entries&#34;: 0,
+        &#34;persisted_reorder_entries&#34;: 0,
+        &#34;meta_entries&#34;: 0,
+        &#34;invalid_phrase_rows&#34;: 0,
+        &#34;normalizable_phrase_rows&#34;: 0,
+        &#34;duplicate_phrase_rows&#34;: 0,
+        &#34;invalid_frequency_rows&#34;: 0,
+        &#34;normalizable_frequency_rows&#34;: 0,
+        &#34;duplicate_frequency_rows&#34;: 0,
+        &#34;invalid_meta_rows&#34;: 0,
+        &#34;normalizable_meta_rows&#34;: 0,
+    }
+
+    with self._connect(readonly=True) as connection:
+        integrity_rows = connection.execute(&#34;PRAGMA integrity_check&#34;).fetchall()
+        integrity_messages = [str(row[0] or &#34;&#34;) for row in integrity_rows]
+        issues[&#34;sqlite_integrity_errors&#34;] = sum(
+            1 for message in integrity_messages if message.strip().lower() != &#34;ok&#34;
+        )
+
+        phrase_rows = connection.execute(
+            &#34;&#34;&#34;
+            SELECT id, phrase, numeric_pinyin, marked_pinyin, yime_code, source_note
+            FROM user_phrase_entries
+            ORDER BY updated_at DESC, id DESC
+            &#34;&#34;&#34;
+        ).fetchall()
+        issues[&#34;user_phrase_entries&#34;] = len(phrase_rows)
+
+        normalized_phrases: dict[str, int] = {}
+        for row in phrase_rows:
+            normalized_phrase = str(row[&#34;phrase&#34;] or &#34;&#34;).strip()
+            normalized_numeric = normalize_numeric_pinyin_syllable_spacing(
+                str(row[&#34;numeric_pinyin&#34;] or &#34;&#34;)
+            )
+            normalized_marked = &#34; &#34;.join(str(row[&#34;marked_pinyin&#34;] or &#34;&#34;).split())
+            normalized_yime = str(row[&#34;yime_code&#34;] or &#34;&#34;).strip()
+            normalized_note = str(row[&#34;source_note&#34;] or &#34;&#34;).strip()
+
+            if not normalized_phrase or not normalized_numeric:
+                issues[&#34;invalid_phrase_rows&#34;] += 1
+                continue
+
+            resolved_yime = resolve_yime_code_from_numeric_pinyin(repo_root, normalized_numeric)
+            if not resolved_yime:
+                issues[&#34;invalid_phrase_rows&#34;] += 1
+                continue
+
+            if (
+                normalized_phrase != str(row[&#34;phrase&#34;] or &#34;&#34;)
+                or normalized_numeric != str(row[&#34;numeric_pinyin&#34;] or &#34;&#34;)
+                or normalized_marked != str(row[&#34;marked_pinyin&#34;] or &#34;&#34;)
+                or normalized_note != str(row[&#34;source_note&#34;] or &#34;&#34;)
+                or resolved_yime != normalized_yime
+            ):
+                issues[&#34;normalizable_phrase_rows&#34;] += 1
+
+            normalized_phrases[normalized_phrase] = normalized_phrases.get(normalized_phrase, 0) + 1
+
+        issues[&#34;duplicate_phrase_rows&#34;] = sum(
+            count - 1 for count in normalized_phrases.values() if count &gt; 1
+        )
+
+        frequency_rows = connection.execute(
+            &#34;&#34;&#34;
+            SELECT rowid, lookup_code, text, freq, last_used_at
+            FROM user_candidate_frequency
+            ORDER BY last_used_at DESC, rowid DESC
+            &#34;&#34;&#34;
+        ).fetchall()
+        issues[&#34;persisted_reorder_entries&#34;] = len(frequency_rows)
+
+        normalized_frequency_keys: dict[tuple[str, str], int] = {}
+        for row in frequency_rows:
+            normalized_lookup = str(row[&#34;lookup_code&#34;] or &#34;&#34;).strip()
+            normalized_text = str(row[&#34;text&#34;] or &#34;&#34;).strip()
+            freq = int(row[&#34;freq&#34;] or 0)
+            if not normalized_lookup or not normalized_text or freq &lt;= 0:
+                issues[&#34;invalid_frequency_rows&#34;] += 1
+                continue
+
+            if (
+                normalized_lookup != str(row[&#34;lookup_code&#34;] or &#34;&#34;)
+                or normalized_text != str(row[&#34;text&#34;] or &#34;&#34;)
+            ):
+                issues[&#34;normalizable_frequency_rows&#34;] += 1
+
+            key = (normalized_lookup, normalized_text)
+            normalized_frequency_keys[key] = normalized_frequency_keys.get(key, 0) + 1
+
+        issues[&#34;duplicate_frequency_rows&#34;] = sum(
+            count - 1 for count in normalized_frequency_keys.values() if count &gt; 1
+        )
+
+        meta_rows = connection.execute(
+            &#34;SELECT meta_key, meta_value FROM user_lexicon_meta ORDER BY meta_key&#34;
+        ).fetchall()
+        issues[&#34;meta_entries&#34;] = len(meta_rows)
+
+    has_user_data = self.has_user_data()
+    for row in meta_rows:
+        meta_key = str(row[&#34;meta_key&#34;] or &#34;&#34;).strip()
+        meta_value = str(row[&#34;meta_value&#34;] or &#34;&#34;)
+        normalized_value = meta_value.strip()
+        if meta_key != &#34;seed_import_completed&#34;:
+            if normalized_value != meta_value:
+                issues[&#34;normalizable_meta_rows&#34;] += 1
+            continue
+        if not normalized_value:
+            issues[&#34;invalid_meta_rows&#34;] += 1
+            continue
+        if normalized_value == &#34;skipped_existing_user_data&#34; and not has_user_data:
+            issues[&#34;invalid_meta_rows&#34;] += 1
+            continue
+        if normalized_value.startswith((&#34;imported:&#34;, &#34;empty_seed:&#34;)) or normalized_value == &#34;skipped_existing_user_data&#34;:
+            if normalized_value != meta_value:
+                issues[&#34;normalizable_meta_rows&#34;] += 1
+            continue
+        issues[&#34;invalid_meta_rows&#34;] += 1
+
+    return issues</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.utils.user_lexicon.UserLexiconStore.delete_phrase"><code class="name flex">
+<span>def <span class="ident">delete_phrase</span></span>(<span>self, phrase: str) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def delete_phrase(self, phrase: str) -&gt; bool:
+    normalized_phrase = phrase.strip()
+    if not normalized_phrase:
+        raise ValueError(&#34;phrase 不能为空&#34;)
+
+    with self._connect() as connection:
+        row = connection.execute(
+            &#34;&#34;&#34;
+            SELECT yime_code
+            FROM user_phrase_entries
+            WHERE phrase = ?
+            LIMIT 1
+            &#34;&#34;&#34;,
+            (normalized_phrase,),
+        ).fetchone()
+        if row is None:
+            return False
+
+        yime_code = str(row[&#34;yime_code&#34;] or &#34;&#34;).strip()
+        connection.execute(
+            &#34;DELETE FROM user_phrase_entries WHERE phrase = ?&#34;,
+            (normalized_phrase,),
+        )
+        if yime_code:
+            connection.execute(
+                &#34;DELETE FROM user_candidate_frequency WHERE lookup_code = ? AND text = ?&#34;,
+                (yime_code, normalized_phrase),
+            )
+    return True</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.utils.user_lexicon.UserLexiconStore.ensure_schema"><code class="name flex">
+<span>def <span class="ident">ensure_schema</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def ensure_schema(self) -&gt; None:
+    with self._connect() as connection:
+        connection.executescript(
+            &#34;&#34;&#34;
+            CREATE TABLE IF NOT EXISTS user_phrase_entries (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                phrase TEXT NOT NULL UNIQUE,
+                numeric_pinyin TEXT NOT NULL,
+                marked_pinyin TEXT NOT NULL DEFAULT &#39;&#39;,
+                yime_code TEXT NOT NULL,
+                source_note TEXT NOT NULL DEFAULT &#39;&#39;,
+                sort_weight REAL NOT NULL DEFAULT 1000000.0,
+                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+            );
+
+            CREATE INDEX IF NOT EXISTS idx_user_phrase_entries_numeric
+            ON user_phrase_entries(numeric_pinyin);
+
+            CREATE TABLE IF NOT EXISTS user_candidate_frequency (
+                lookup_code TEXT NOT NULL,
+                text TEXT NOT NULL,
+                freq INTEGER NOT NULL DEFAULT 0,
+                last_used_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                PRIMARY KEY (lookup_code, text)
+            );
+
+            CREATE INDEX IF NOT EXISTS idx_user_candidate_frequency_last_used
+            ON user_candidate_frequency(last_used_at);
+
+            CREATE TABLE IF NOT EXISTS user_lexicon_meta (
+                meta_key TEXT PRIMARY KEY,
+                meta_value TEXT NOT NULL DEFAULT &#39;&#39;
+            );
+            &#34;&#34;&#34;
+        )</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.utils.user_lexicon.UserLexiconStore.export_payload"><code class="name flex">
+<span>def <span class="ident">export_payload</span></span>(<span>self, *, include_frequency: bool = True) ‑> dict[str, typing.Any]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def export_payload(self, *, include_frequency: bool = True) -&gt; dict[str, Any]:
+    phrase_entries: list[dict[str, Any]] = [
+        {
+            &#34;phrase&#34;: row.phrase,
+            &#34;numeric_pinyin&#34;: row.numeric_pinyin,
+            &#34;marked_pinyin&#34;: row.marked_pinyin,
+            &#34;yime_code&#34;: row.yime_code,
+            &#34;source_note&#34;: row.source_note,
+            &#34;sort_weight&#34;: row.sort_weight,
+            &#34;created_at&#34;: row.created_at,
+            &#34;updated_at&#34;: row.updated_at,
+        }
+        for row in self.list_phrase_entries(limit=1_000_000)
+    ]
+    payload: dict[str, Any] = {
+        &#34;schema_version&#34;: 1,
+        &#34;exported_at&#34;: datetime.now(timezone.utc).isoformat(),
+        &#34;phrase_entries&#34;: phrase_entries,
+    }
+    if include_frequency:
+        payload[&#34;candidate_frequency&#34;] = [
+            {
+                &#34;lookup_code&#34;: row.lookup_code,
+                &#34;text&#34;: row.text,
+                &#34;freq&#34;: row.freq,
+                &#34;last_used_at&#34;: row.last_used_at,
+            }
+            for row in self.list_candidate_frequency_entries(limit=1_000_000)
+        ]
+    return payload</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.utils.user_lexicon.UserLexiconStore.get_meta"><code class="name flex">
+<span>def <span class="ident">get_meta</span></span>(<span>self, key: str) ‑> str</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_meta(self, key: str) -&gt; str:
+    normalized_key = key.strip()
+    if not normalized_key:
+        raise ValueError(&#34;meta key 不能为空&#34;)
+
+    with self._connect(readonly=True) as connection:
+        row = connection.execute(
+            &#34;SELECT meta_value FROM user_lexicon_meta WHERE meta_key = ? LIMIT 1&#34;,
+            (normalized_key,),
+        ).fetchone()
+    return str(row[&#34;meta_value&#34;] or &#34;&#34;) if row is not None else &#34;&#34;</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.utils.user_lexicon.UserLexiconStore.has_user_data"><code class="name flex">
+<span>def <span class="ident">has_user_data</span></span>(<span>self) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def has_user_data(self) -&gt; bool:
+    with self._connect(readonly=True) as connection:
+        phrase_row = connection.execute(
+            &#34;SELECT 1 FROM user_phrase_entries LIMIT 1&#34;
+        ).fetchone()
+        if phrase_row is not None:
+            return True
+        frequency_row = connection.execute(
+            &#34;SELECT 1 FROM user_candidate_frequency LIMIT 1&#34;
+        ).fetchone()
+    return frequency_row is not None</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.utils.user_lexicon.UserLexiconStore.import_file"><code class="name flex">
+<span>def <span class="ident">import_file</span></span>(<span>self, path: Path, *, replace_existing: bool = False, include_frequency: bool = True) ‑> dict[str, int]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def import_file(
+    self,
+    path: Path,
+    *,
+    replace_existing: bool = False,
+    include_frequency: bool = True,
+) -&gt; dict[str, int]:
+    payload: Mapping[str, Any] = json.loads(path.read_text(encoding=&#34;utf-8&#34;))
+    if not isinstance(payload, dict):
+        raise ValueError(&#34;导入文件格式无效：顶层必须是 JSON object&#34;)
+    return self.import_payload(
+        payload,
+        replace_existing=replace_existing,
+        include_frequency=include_frequency,
+    )</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.utils.user_lexicon.UserLexiconStore.import_payload"><code class="name flex">
+<span>def <span class="ident">import_payload</span></span>(<span>self,<br>payload: Mapping[str, Any],<br>*,<br>replace_existing: bool = False,<br>include_frequency: bool = True) ‑> dict[str, int]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def import_payload(
+    self,
+    payload: Mapping[str, Any],
+    *,
+    replace_existing: bool = False,
+    include_frequency: bool = True,
+) -&gt; dict[str, int]:
+    phrase_entries = cast(list[Mapping[str, Any]], payload.get(&#34;phrase_entries&#34;) or [])
+    candidate_frequency = cast(
+        list[Mapping[str, Any]],
+        payload.get(&#34;candidate_frequency&#34;) or [],
+    )
+
+    imported_phrases = 0
+    imported_frequency_rows = 0
+
+    with self._connect() as connection:
+        if replace_existing:
+            connection.execute(&#34;DELETE FROM user_candidate_frequency&#34;)
+            connection.execute(&#34;DELETE FROM user_phrase_entries&#34;)
+
+        for raw_entry in phrase_entries:
+            phrase = str(raw_entry.get(&#34;phrase&#34;) or &#34;&#34;).strip()
+            numeric_pinyin = normalize_numeric_pinyin_syllable_spacing(
+                str(raw_entry.get(&#34;numeric_pinyin&#34;) or &#34;&#34;)
+            )
+            yime_code = str(raw_entry.get(&#34;yime_code&#34;) or &#34;&#34;).strip()
+            if not phrase or not numeric_pinyin or not yime_code:
+                continue
+            connection.execute(
+                &#34;&#34;&#34;
+                INSERT INTO user_phrase_entries (
+                    phrase,
+                    numeric_pinyin,
+                    marked_pinyin,
+                    yime_code,
+                    source_note,
+                    sort_weight,
+                    created_at,
+                    updated_at
+                ) VALUES (?, ?, ?, ?, ?, ?, COALESCE(?, CURRENT_TIMESTAMP), COALESCE(?, CURRENT_TIMESTAMP))
+                ON CONFLICT(phrase) DO UPDATE SET
+                    numeric_pinyin = excluded.numeric_pinyin,
+                    marked_pinyin = excluded.marked_pinyin,
+                    yime_code = excluded.yime_code,
+                    source_note = excluded.source_note,
+                    sort_weight = excluded.sort_weight,
+                    updated_at = excluded.updated_at
+                &#34;&#34;&#34;,
+                (
+                    phrase,
+                    numeric_pinyin,
+                    str(raw_entry.get(&#34;marked_pinyin&#34;) or &#34;&#34;).strip(),
+                    yime_code,
+                    str(raw_entry.get(&#34;source_note&#34;) or &#34;&#34;).strip(),
+                    float(raw_entry.get(&#34;sort_weight&#34;) or self.DEFAULT_PHRASE_SORT_WEIGHT),
+                    str(raw_entry.get(&#34;created_at&#34;) or &#34;&#34;).strip() or None,
+                    str(raw_entry.get(&#34;updated_at&#34;) or &#34;&#34;).strip() or None,
+                ),
+            )
+            imported_phrases += 1
+
+        if include_frequency:
+            for raw_entry in candidate_frequency:
+                lookup_code = str(raw_entry.get(&#34;lookup_code&#34;) or &#34;&#34;).strip()
+                text = str(raw_entry.get(&#34;text&#34;) or &#34;&#34;).strip()
+                if not lookup_code or not text:
+                    continue
+                connection.execute(
+                    &#34;&#34;&#34;
+                    INSERT INTO user_candidate_frequency (
+                        lookup_code,
+                        text,
+                        freq,
+                        last_used_at
+                    ) VALUES (?, ?, ?, COALESCE(?, CURRENT_TIMESTAMP))
+                    ON CONFLICT(lookup_code, text) DO UPDATE SET
+                        freq = excluded.freq,
+                        last_used_at = excluded.last_used_at
+                    &#34;&#34;&#34;,
+                    (
+                        lookup_code,
+                        text,
+                        int(raw_entry.get(&#34;freq&#34;) or 0),
+                        str(raw_entry.get(&#34;last_used_at&#34;) or &#34;&#34;).strip() or None,
+                    ),
+                )
+                imported_frequency_rows += 1
+
+    return {
+        &#34;phrase_entries&#34;: imported_phrases,
+        &#34;candidate_frequency&#34;: imported_frequency_rows,
+    }</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.utils.user_lexicon.UserLexiconStore.import_text_file"><code class="name flex">
+<span>def <span class="ident">import_text_file</span></span>(<span>self, path: Path, *, repo_root: Path, replace_existing: bool = False) ‑> dict[str, int]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def import_text_file(
+    self,
+    path: Path,
+    *,
+    repo_root: Path,
+    replace_existing: bool = False,
+) -&gt; dict[str, int]:
+    parsed_rows: list[tuple[str, str, str, int]] = []
+
+    with path.open(&#34;r&#34;, encoding=&#34;utf-8-sig&#34;, newline=&#34;&#34;) as handle:
+        reader = csv.reader(handle, delimiter=&#34;\t&#34;)
+        for line_number, row in enumerate(reader, start=1):
+            if not row or not any(str(cell).strip() for cell in row):
+                continue
+
+            normalized_cells = [str(cell).strip() for cell in row]
+            if tuple(normalized_cells[:3]) == self.TEXT_EXCHANGE_HEADER:
+                continue
+            if len(normalized_cells) != 3:
+                raise ValueError(f&#34;导入文件格式无效：第 {line_number} 行应包含 3 列。&#34;)
+
+            phrase = normalized_cells[0]
+            numeric_pinyin = normalize_numeric_pinyin_syllable_spacing(normalized_cells[1])
+            if not phrase:
+                raise ValueError(f&#34;导入文件格式无效：第 {line_number} 行“词语”不能为空。&#34;)
+            if not numeric_pinyin:
+                raise ValueError(f&#34;导入文件格式无效：第 {line_number} 行“数字标调拼音”不能为空。&#34;)
+
+            try:
+                initial_frequency = int(normalized_cells[2])
+            except ValueError as exc:
+                raise ValueError(
+                    f&#34;导入文件格式无效：第 {line_number} 行“初始频率”必须是整数。&#34;
+                ) from exc
+            if initial_frequency &lt; 0:
+                raise ValueError(
+                    f&#34;导入文件格式无效：第 {line_number} 行“初始频率”不能为负数。&#34;
+                )
+
+            yime_code = resolve_yime_code_from_numeric_pinyin(repo_root, numeric_pinyin)
+            if not yime_code:
+                raise ValueError(
+                    f&#34;导入文件格式无效：第 {line_number} 行无法根据数字标调拼音推导音元编码。&#34;
+                )
+
+            parsed_rows.append((phrase, numeric_pinyin, yime_code, initial_frequency))
+
+    imported_phrases = 0
+    imported_frequency_rows = 0
+    with self._connect() as connection:
+        if replace_existing:
+            connection.execute(&#34;DELETE FROM user_candidate_frequency&#34;)
+            connection.execute(&#34;DELETE FROM user_phrase_entries&#34;)
+
+        for phrase, numeric_pinyin, yime_code, initial_frequency in parsed_rows:
+            connection.execute(
+                &#34;&#34;&#34;
+                INSERT INTO user_phrase_entries (
+                    phrase,
+                    numeric_pinyin,
+                    marked_pinyin,
+                    yime_code,
+                    source_note,
+                    sort_weight
+                ) VALUES (?, ?, &#39;&#39;, ?, &#39;ui_import_txt&#39;, ?)
+                ON CONFLICT(phrase) DO UPDATE SET
+                    numeric_pinyin = excluded.numeric_pinyin,
+                    yime_code = excluded.yime_code,
+                    source_note = excluded.source_note,
+                    sort_weight = excluded.sort_weight,
+                    updated_at = CURRENT_TIMESTAMP
+                &#34;&#34;&#34;,
+                (
+                    phrase,
+                    numeric_pinyin,
+                    yime_code,
+                    self.DEFAULT_PHRASE_SORT_WEIGHT,
+                ),
+            )
+            imported_phrases += 1
+
+            if initial_frequency &lt;= 0:
+                continue
+
+            connection.execute(
+                &#34;&#34;&#34;
+                INSERT INTO user_candidate_frequency (
+                    lookup_code,
+                    text,
+                    freq,
+                    last_used_at
+                ) VALUES (?, ?, ?, CURRENT_TIMESTAMP)
+                ON CONFLICT(lookup_code, text) DO UPDATE SET
+                    freq = excluded.freq,
+                    last_used_at = excluded.last_used_at
+                &#34;&#34;&#34;,
+                (yime_code, phrase, initial_frequency),
+            )
+            imported_frequency_rows += 1
+
+    return {
+        &#34;phrase_entries&#34;: imported_phrases,
+        &#34;candidate_frequency&#34;: imported_frequency_rows,
+    }</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.utils.user_lexicon.UserLexiconStore.list_candidate_frequency_entries"><code class="name flex">
+<span>def <span class="ident">list_candidate_frequency_entries</span></span>(<span>self, term: str = '', *, use_like: bool = False, limit: int = 50) ‑> list[<a title="yime.input_method.utils.user_lexicon.UserCandidateFrequencyEntry" href="#yime.input_method.utils.user_lexicon.UserCandidateFrequencyEntry">UserCandidateFrequencyEntry</a>]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def list_candidate_frequency_entries(
+    self,
+    term: str = &#34;&#34;,
+    *,
+    use_like: bool = False,
+    limit: int = 50,
+) -&gt; list[UserCandidateFrequencyEntry]:
+    comparator = &#34;LIKE&#34; if use_like else &#34;=&#34;
+    match_value = f&#34;%{term.strip()}%&#34; if use_like else term.strip()
+    query = f&#34;&#34;&#34;
+        SELECT
+            ucf.lookup_code,
+            ucf.text,
+            ucf.freq,
+            ucf.last_used_at,
+            COALESCE(upe.numeric_pinyin, &#39;&#39;) AS numeric_pinyin,
+            COALESCE(upe.marked_pinyin, &#39;&#39;) AS marked_pinyin,
+            COALESCE(upe.yime_code, &#39;&#39;) AS yime_code,
+            COALESCE(upe.source_note, &#39;&#39;) AS source_note
+        FROM user_candidate_frequency AS ucf
+        LEFT JOIN user_phrase_entries AS upe
+            ON upe.phrase = ucf.text
+        {{where_clause}}
+        ORDER BY ucf.freq DESC, ucf.last_used_at DESC, ucf.text
+        LIMIT ?
+    &#34;&#34;&#34;
+    params: list[object] = []
+    where_clause = &#34;&#34;
+    if match_value:
+        where_clause = f&#34;WHERE ucf.text {comparator} ?&#34;
+        params.append(match_value)
+    params.append(limit)
+
+    with self._connect(readonly=True) as connection:
+        rows = connection.execute(query.format(where_clause=where_clause), params).fetchall()
+
+    return [
+        UserCandidateFrequencyEntry(
+            lookup_code=str(row[&#34;lookup_code&#34;] or &#34;&#34;),
+            text=str(row[&#34;text&#34;] or &#34;&#34;),
+            freq=int(row[&#34;freq&#34;] or 0),
+            last_used_at=str(row[&#34;last_used_at&#34;] or &#34;&#34;),
+            numeric_pinyin=str(row[&#34;numeric_pinyin&#34;] or &#34;&#34;),
+            marked_pinyin=str(row[&#34;marked_pinyin&#34;] or &#34;&#34;),
+            yime_code=str(row[&#34;yime_code&#34;] or &#34;&#34;),
+            source_note=str(row[&#34;source_note&#34;] or &#34;&#34;),
+        )
+        for row in rows
+    ]</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.utils.user_lexicon.UserLexiconStore.list_phrase_entries"><code class="name flex">
+<span>def <span class="ident">list_phrase_entries</span></span>(<span>self, term: str = '', *, use_like: bool = False, limit: int = 50) ‑> list[<a title="yime.input_method.utils.user_lexicon.UserPhraseEntryDetail" href="#yime.input_method.utils.user_lexicon.UserPhraseEntryDetail">UserPhraseEntryDetail</a>]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def list_phrase_entries(
+    self,
+    term: str = &#34;&#34;,
+    *,
+    use_like: bool = False,
+    limit: int = 50,
+) -&gt; list[UserPhraseEntryDetail]:
+    comparator = &#34;LIKE&#34; if use_like else &#34;=&#34;
+    match_value = f&#34;%{term.strip()}%&#34; if use_like else term.strip()
+    query = f&#34;&#34;&#34;
+        SELECT
+            phrase,
+            numeric_pinyin,
+            marked_pinyin,
+            yime_code,
+            source_note,
+            sort_weight,
+            created_at,
+            updated_at
+        FROM user_phrase_entries
+        {{where_clause}}
+        ORDER BY updated_at DESC, phrase
+        LIMIT ?
+    &#34;&#34;&#34;
+    params: list[object] = []
+    where_clause = &#34;&#34;
+    if match_value:
+        where_clause = f&#34;WHERE phrase {comparator} ?&#34;
+        params.append(match_value)
+    params.append(limit)
+
+    with self._connect(readonly=True) as connection:
+        rows = connection.execute(query.format(where_clause=where_clause), params).fetchall()
+
+    return [
+        UserPhraseEntryDetail(
+            phrase=str(row[&#34;phrase&#34;] or &#34;&#34;),
+            numeric_pinyin=str(row[&#34;numeric_pinyin&#34;] or &#34;&#34;),
+            marked_pinyin=str(row[&#34;marked_pinyin&#34;] or &#34;&#34;),
+            yime_code=str(row[&#34;yime_code&#34;] or &#34;&#34;),
+            source_note=str(row[&#34;source_note&#34;] or &#34;&#34;),
+            sort_weight=float(row[&#34;sort_weight&#34;] or self.DEFAULT_PHRASE_SORT_WEIGHT),
+            created_at=str(row[&#34;created_at&#34;] or &#34;&#34;),
+            updated_at=str(row[&#34;updated_at&#34;] or &#34;&#34;),
+        )
+        for row in rows
+    ]</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.utils.user_lexicon.UserLexiconStore.list_recent_phrase_entries"><code class="name flex">
+<span>def <span class="ident">list_recent_phrase_entries</span></span>(<span>self, limit: int = 20) ‑> list[<a title="yime.input_method.utils.user_lexicon.UserPhraseEntryDetail" href="#yime.input_method.utils.user_lexicon.UserPhraseEntryDetail">UserPhraseEntryDetail</a>]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def list_recent_phrase_entries(self, limit: int = 20) -&gt; list[UserPhraseEntryDetail]:
+    return self.list_phrase_entries(limit=limit)</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.utils.user_lexicon.UserLexiconStore.load_candidate_frequency"><code class="name flex">
+<span>def <span class="ident">load_candidate_frequency</span></span>(<span>self) ‑> dict[tuple[str, str], int]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def load_candidate_frequency(self) -&gt; dict[tuple[str, str], int]:
+    with self._connect(readonly=True) as connection:
+        rows = connection.execute(
+            &#34;&#34;&#34;
+            SELECT lookup_code, text, freq
+            FROM user_candidate_frequency
+            WHERE freq &gt; 0
+            &#34;&#34;&#34;
+        ).fetchall()
+    return {
+        (str(row[&#34;lookup_code&#34;] or &#34;&#34;).strip(), str(row[&#34;text&#34;] or &#34;&#34;).strip()): int(row[&#34;freq&#34;] or 0)
+        for row in rows
+        if str(row[&#34;lookup_code&#34;] or &#34;&#34;).strip() and str(row[&#34;text&#34;] or &#34;&#34;).strip()
+    }</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.utils.user_lexicon.UserLexiconStore.load_phrase_candidates"><code class="name flex">
+<span>def <span class="ident">load_phrase_candidates</span></span>(<span>self, pinyin_to_canonical: Mapping[str, str]) ‑> Dict[str, List[Dict[str, object]]]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def load_phrase_candidates(
+    self,
+    pinyin_to_canonical: Mapping[str, str],
+) -&gt; Dict[str, List[Dict[str, object]]]:
+    with self._connect(readonly=True) as connection:
+        rows = connection.execute(
+            &#34;&#34;&#34;
+            SELECT id, phrase, numeric_pinyin, yime_code, sort_weight, updated_at
+            FROM user_phrase_entries
+            ORDER BY sort_weight DESC, updated_at DESC, phrase
+            &#34;&#34;&#34;
+        ).fetchall()
+
+    grouped: Dict[str, List[Dict[str, object]]] = {}
+    for row in rows:
+        pinyin_tone = str(row[&#34;numeric_pinyin&#34;] or &#34;&#34;).strip()
+        canonical_code = resolve_canonical_code_from_numeric_pinyin(
+            pinyin_to_canonical,
+            pinyin_tone,
+        )
+        if not canonical_code:
+            continue
+        phrase = str(row[&#34;phrase&#34;] or &#34;&#34;).strip()
+        if not phrase:
+            continue
+        grouped.setdefault(canonical_code, []).append(
+            {
+                &#34;text&#34;: phrase,
+                &#34;entry_type&#34;: &#34;phrase&#34;,
+                &#34;entry_id&#34;: f&#34;user_phrase:{row[&#39;id&#39;]}&#34;,
+                &#34;pinyin_tone&#34;: pinyin_tone,
+                &#34;sort_weight&#34;: row[&#34;sort_weight&#34;],
+                &#34;is_common&#34;: True,
+                &#34;text_length&#34;: len(phrase),
+                &#34;updated_at&#34;: row[&#34;updated_at&#34;],
+                &#34;yime_code&#34;: row[&#34;yime_code&#34;],
+            }
+        )
+    return grouped</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.utils.user_lexicon.UserLexiconStore.lookup_first_phrase"><code class="name flex">
+<span>def <span class="ident">lookup_first_phrase</span></span>(<span>self, phrase: str) ‑> <a title="yime.input_method.utils.user_lexicon.UserPhraseEntry" href="#yime.input_method.utils.user_lexicon.UserPhraseEntry">UserPhraseEntry</a> | None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def lookup_first_phrase(self, phrase: str) -&gt; UserPhraseEntry | None:
+    normalized_phrase = phrase.strip()
+    if not normalized_phrase:
+        return None
+
+    with self._connect(readonly=True) as connection:
+        row = connection.execute(
+            &#34;&#34;&#34;
+            SELECT phrase, numeric_pinyin, marked_pinyin, yime_code, sort_weight
+            FROM user_phrase_entries
+            WHERE phrase = ?
+            ORDER BY sort_weight DESC, updated_at DESC
+            LIMIT 1
+            &#34;&#34;&#34;,
+            (normalized_phrase,),
+        ).fetchone()
+    if row is None:
+        return None
+    return UserPhraseEntry(
+        phrase=str(row[&#34;phrase&#34;] or &#34;&#34;),
+        numeric_pinyin=str(row[&#34;numeric_pinyin&#34;] or &#34;&#34;),
+        marked_pinyin=str(row[&#34;marked_pinyin&#34;] or &#34;&#34;),
+        yime_code=str(row[&#34;yime_code&#34;] or &#34;&#34;),
+        sort_weight=float(row[&#34;sort_weight&#34;] or self.DEFAULT_PHRASE_SORT_WEIGHT),
+    )</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.utils.user_lexicon.UserLexiconStore.record_candidate_selection"><code class="name flex">
+<span>def <span class="ident">record_candidate_selection</span></span>(<span>self, lookup_code: str, text: str) ‑> int</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def record_candidate_selection(self, lookup_code: str, text: str) -&gt; int:
+    normalized_lookup_code = lookup_code.strip()
+    normalized_text = text.strip()
+    if not normalized_lookup_code:
+        raise ValueError(&#34;lookup_code 不能为空&#34;)
+    if not normalized_text:
+        raise ValueError(&#34;text 不能为空&#34;)
+
+    with self._connect() as connection:
+        connection.execute(
+            &#34;&#34;&#34;
+            INSERT INTO user_candidate_frequency (lookup_code, text, freq)
+            VALUES (?, ?, 1)
+            ON CONFLICT(lookup_code, text) DO UPDATE SET
+                freq = user_candidate_frequency.freq + 1,
+                last_used_at = CURRENT_TIMESTAMP
+            &#34;&#34;&#34;,
+            (normalized_lookup_code, normalized_text),
+        )
+        row = connection.execute(
+            &#34;&#34;&#34;
+            SELECT freq
+            FROM user_candidate_frequency
+            WHERE lookup_code = ? AND text = ?
+            &#34;&#34;&#34;,
+            (normalized_lookup_code, normalized_text),
+        ).fetchone()
+    return int(row[&#34;freq&#34;] or 0) if row is not None else 0</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.utils.user_lexicon.UserLexiconStore.repair_candidate_frequency_entries"><code class="name flex">
+<span>def <span class="ident">repair_candidate_frequency_entries</span></span>(<span>self) ‑> dict[str, int]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def repair_candidate_frequency_entries(self) -&gt; dict[str, int]:
+    with self._connect() as connection:
+        rows = connection.execute(
+            &#34;&#34;&#34;
+            SELECT rowid, lookup_code, text, freq, last_used_at
+            FROM user_candidate_frequency
+            ORDER BY last_used_at DESC, rowid DESC
+            &#34;&#34;&#34;
+        ).fetchall()
+
+        deleted_invalid_rows = 0
+        updated_rows = 0
+        deleted_duplicate_rows = 0
+        grouped_rows: dict[tuple[str, str], list[sqlite3.Row]] = {}
+
+        for row in rows:
+            normalized_lookup = str(row[&#34;lookup_code&#34;] or &#34;&#34;).strip()
+            normalized_text = str(row[&#34;text&#34;] or &#34;&#34;).strip()
+            freq = int(row[&#34;freq&#34;] or 0)
+            if not normalized_lookup or not normalized_text or freq &lt;= 0:
+                connection.execute(
+                    &#34;DELETE FROM user_candidate_frequency WHERE rowid = ?&#34;,
+                    (int(row[&#34;rowid&#34;]),),
+                )
+                deleted_invalid_rows += 1
+                continue
+            grouped_rows.setdefault((normalized_lookup, normalized_text), []).append(row)
+
+        for (normalized_lookup, normalized_text), frequency_rows in grouped_rows.items():
+            keeper = frequency_rows[0]
+            merged_freq = sum(int(row[&#34;freq&#34;] or 0) for row in frequency_rows)
+            latest_last_used_at = max(str(row[&#34;last_used_at&#34;] or &#34;&#34;) for row in frequency_rows)
+            if (
+                normalized_lookup != str(keeper[&#34;lookup_code&#34;] or &#34;&#34;)
+                or normalized_text != str(keeper[&#34;text&#34;] or &#34;&#34;)
+                or merged_freq != int(keeper[&#34;freq&#34;] or 0)
+                or latest_last_used_at != str(keeper[&#34;last_used_at&#34;] or &#34;&#34;)
+            ):
+                connection.execute(
+                    &#34;&#34;&#34;
+                    UPDATE user_candidate_frequency
+                    SET lookup_code = ?, text = ?, freq = ?, last_used_at = ?
+                    WHERE rowid = ?
+                    &#34;&#34;&#34;,
+                    (
+                        normalized_lookup,
+                        normalized_text,
+                        merged_freq,
+                        latest_last_used_at,
+                        int(keeper[&#34;rowid&#34;]),
+                    ),
+                )
+                updated_rows += 1
+
+            for duplicate in frequency_rows[1:]:
+                connection.execute(
+                    &#34;DELETE FROM user_candidate_frequency WHERE rowid = ?&#34;,
+                    (int(duplicate[&#34;rowid&#34;]),),
+                )
+                deleted_duplicate_rows += 1
+
+    return {
+        &#34;deleted_invalid_frequency_rows&#34;: deleted_invalid_rows,
+        &#34;updated_frequency_rows&#34;: updated_rows,
+        &#34;deleted_duplicate_frequency_rows&#34;: deleted_duplicate_rows,
+    }</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.utils.user_lexicon.UserLexiconStore.repair_meta_entries"><code class="name flex">
+<span>def <span class="ident">repair_meta_entries</span></span>(<span>self) ‑> dict[str, int]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def repair_meta_entries(self) -&gt; dict[str, int]:
+    with self._connect() as connection:
+        rows = connection.execute(
+            &#34;SELECT meta_key, meta_value FROM user_lexicon_meta ORDER BY meta_key&#34;
+        ).fetchall()
+
+        updated_rows = 0
+        deleted_invalid_rows = 0
+        has_user_data = self.has_user_data()
+
+        for row in rows:
+            meta_key = str(row[&#34;meta_key&#34;] or &#34;&#34;).strip()
+            meta_value = str(row[&#34;meta_value&#34;] or &#34;&#34;)
+            normalized_value = meta_value.strip()
+
+            if meta_key != &#34;seed_import_completed&#34;:
+                if normalized_value != meta_value:
+                    connection.execute(
+                        &#34;UPDATE user_lexicon_meta SET meta_value = ? WHERE meta_key = ?&#34;,
+                        (normalized_value, meta_key),
+                    )
+                    updated_rows += 1
+                continue
+
+            is_valid_seed_value = (
+                normalized_value.startswith((&#34;imported:&#34;, &#34;empty_seed:&#34;))
+                or normalized_value == &#34;skipped_existing_user_data&#34;
+            )
+            should_delete = (
+                not normalized_value
+                or not is_valid_seed_value
+                or (normalized_value == &#34;skipped_existing_user_data&#34; and not has_user_data)
+            )
+            if should_delete:
+                connection.execute(
+                    &#34;DELETE FROM user_lexicon_meta WHERE meta_key = ?&#34;,
+                    (meta_key,),
+                )
+                deleted_invalid_rows += 1
+                continue
+
+            if normalized_value != meta_value:
+                connection.execute(
+                    &#34;UPDATE user_lexicon_meta SET meta_value = ? WHERE meta_key = ?&#34;,
+                    (normalized_value, meta_key),
+                )
+                updated_rows += 1
+
+    return {
+        &#34;deleted_invalid_meta_rows&#34;: deleted_invalid_rows,
+        &#34;updated_meta_rows&#34;: updated_rows,
+    }</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.utils.user_lexicon.UserLexiconStore.repair_phrase_entries"><code class="name flex">
+<span>def <span class="ident">repair_phrase_entries</span></span>(<span>self, repo_root: Path) ‑> dict[str, int]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def repair_phrase_entries(self, repo_root: Path) -&gt; dict[str, int]:
+    rows: list[sqlite3.Row]
+    with self._connect() as connection:
+        rows = connection.execute(
+            &#34;&#34;&#34;
+            SELECT id, phrase, numeric_pinyin, marked_pinyin, yime_code, source_note, sort_weight, created_at, updated_at
+            FROM user_phrase_entries
+            ORDER BY updated_at DESC, id DESC
+            &#34;&#34;&#34;
+        ).fetchall()
+
+        deleted_invalid_rows = 0
+        updated_rows = 0
+        deleted_duplicate_rows = 0
+        kept_phrase_ids: set[int] = set()
+
+        grouped_rows: dict[str, list[sqlite3.Row]] = {}
+        for row in rows:
+            normalized_phrase = str(row[&#34;phrase&#34;] or &#34;&#34;).strip()
+            normalized_numeric = normalize_numeric_pinyin_syllable_spacing(
+                str(row[&#34;numeric_pinyin&#34;] or &#34;&#34;)
+            )
+            if not normalized_phrase or not normalized_numeric:
+                connection.execute(&#34;DELETE FROM user_phrase_entries WHERE id = ?&#34;, (int(row[&#34;id&#34;]),))
+                deleted_invalid_rows += 1
+                continue
+            resolved_yime = resolve_yime_code_from_numeric_pinyin(repo_root, normalized_numeric)
+            if not resolved_yime:
+                connection.execute(&#34;DELETE FROM user_phrase_entries WHERE id = ?&#34;, (int(row[&#34;id&#34;]),))
+                deleted_invalid_rows += 1
+                continue
+            grouped_rows.setdefault(normalized_phrase, []).append(row)
+
+        for normalized_phrase, phrase_rows in grouped_rows.items():
+            keeper = phrase_rows[0]
+            keeper_id = int(keeper[&#34;id&#34;])
+            kept_phrase_ids.add(keeper_id)
+            normalized_numeric = normalize_numeric_pinyin_syllable_spacing(
+                str(keeper[&#34;numeric_pinyin&#34;] or &#34;&#34;)
+            )
+            normalized_marked = &#34; &#34;.join(str(keeper[&#34;marked_pinyin&#34;] or &#34;&#34;).split())
+            normalized_note = str(keeper[&#34;source_note&#34;] or &#34;&#34;).strip()
+            resolved_yime = resolve_yime_code_from_numeric_pinyin(repo_root, normalized_numeric)
+
+            if (
+                normalized_phrase != str(keeper[&#34;phrase&#34;] or &#34;&#34;)
+                or normalized_numeric != str(keeper[&#34;numeric_pinyin&#34;] or &#34;&#34;)
+                or normalized_marked != str(keeper[&#34;marked_pinyin&#34;] or &#34;&#34;)
+                or normalized_note != str(keeper[&#34;source_note&#34;] or &#34;&#34;)
+                or resolved_yime != str(keeper[&#34;yime_code&#34;] or &#34;&#34;).strip()
+            ):
+                connection.execute(
+                    &#34;&#34;&#34;
+                    UPDATE user_phrase_entries
+                    SET phrase = ?, numeric_pinyin = ?, marked_pinyin = ?, yime_code = ?, source_note = ?, updated_at = CURRENT_TIMESTAMP
+                    WHERE id = ?
+                    &#34;&#34;&#34;,
+                    (
+                        normalized_phrase,
+                        normalized_numeric,
+                        normalized_marked,
+                        resolved_yime,
+                        normalized_note,
+                        keeper_id,
+                    ),
+                )
+                updated_rows += 1
+
+            for duplicate in phrase_rows[1:]:
+                connection.execute(&#34;DELETE FROM user_phrase_entries WHERE id = ?&#34;, (int(duplicate[&#34;id&#34;]),))
+                deleted_duplicate_rows += 1
+
+    return {
+        &#34;deleted_invalid_phrase_rows&#34;: deleted_invalid_rows,
+        &#34;updated_phrase_rows&#34;: updated_rows,
+        &#34;deleted_duplicate_phrase_rows&#34;: deleted_duplicate_rows,
+    }</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.utils.user_lexicon.UserLexiconStore.reset_candidate_frequency"><code class="name flex">
+<span>def <span class="ident">reset_candidate_frequency</span></span>(<span>self, *, text: str | None = None, lookup_code: str | None = None) ‑> int</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def reset_candidate_frequency(
+    self,
+    *,
+    text: str | None = None,
+    lookup_code: str | None = None,
+) -&gt; int:
+    normalized_text = (text or &#34;&#34;).strip()
+    normalized_lookup_code = (lookup_code or &#34;&#34;).strip()
+    if not normalized_text and not normalized_lookup_code:
+        raise ValueError(&#34;text 和 lookup_code 不能同时为空&#34;)
+
+    clauses: list[str] = []
+    params: list[object] = []
+    if normalized_text:
+        clauses.append(&#34;text = ?&#34;)
+        params.append(normalized_text)
+    if normalized_lookup_code:
+        clauses.append(&#34;lookup_code = ?&#34;)
+        params.append(normalized_lookup_code)
+
+    with self._connect() as connection:
+        cursor = connection.execute(
+            f&#34;DELETE FROM user_candidate_frequency WHERE {&#39; AND &#39;.join(clauses)}&#34;,
+            params,
+        )
+    return int(cursor.rowcount or 0)</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.utils.user_lexicon.UserLexiconStore.set_meta"><code class="name flex">
+<span>def <span class="ident">set_meta</span></span>(<span>self, key: str, value: str) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_meta(self, key: str, value: str) -&gt; None:
+    normalized_key = key.strip()
+    if not normalized_key:
+        raise ValueError(&#34;meta key 不能为空&#34;)
+
+    with self._connect() as connection:
+        connection.execute(
+            &#34;&#34;&#34;
+            INSERT INTO user_lexicon_meta (meta_key, meta_value)
+            VALUES (?, ?)
+            ON CONFLICT(meta_key) DO UPDATE SET
+                meta_value = excluded.meta_value
+            &#34;&#34;&#34;,
+            (normalized_key, value),
+        )</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.utils.user_lexicon.UserLexiconStore.upsert_phrase"><code class="name flex">
+<span>def <span class="ident">upsert_phrase</span></span>(<span>self,<br>phrase: str,<br>numeric_pinyin: str,<br>*,<br>marked_pinyin: str = '',<br>yime_code: str,<br>source_note: str = '',<br>sort_weight: float | None = None) ‑> Literal['inserted', 'updated']</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def upsert_phrase(
+    self,
+    phrase: str,
+    numeric_pinyin: str,
+    *,
+    marked_pinyin: str = &#34;&#34;,
+    yime_code: str,
+    source_note: str = &#34;&#34;,
+    sort_weight: float | None = None,
+) -&gt; Literal[&#34;inserted&#34;, &#34;updated&#34;]:
+    normalized_phrase = phrase.strip()
+    normalized_numeric = normalize_numeric_pinyin_syllable_spacing(numeric_pinyin)
+    normalized_marked = &#34; &#34;.join(marked_pinyin.split())
+    normalized_code = yime_code.strip()
+    if not normalized_phrase:
+        raise ValueError(&#34;phrase 不能为空&#34;)
+    if not normalized_numeric:
+        raise ValueError(&#34;numeric_pinyin 不能为空&#34;)
+    if not normalized_code:
+        raise ValueError(&#34;yime_code 不能为空&#34;)
+
+    weight = (
+        self.DEFAULT_PHRASE_SORT_WEIGHT
+        if sort_weight is None
+        else float(sort_weight)
+    )
+    with self._connect() as connection:
+        existing = connection.execute(
+            &#34;SELECT 1 FROM user_phrase_entries WHERE phrase = ? LIMIT 1&#34;,
+            (normalized_phrase,),
+        ).fetchone()
+        connection.execute(
+            &#34;&#34;&#34;
+            INSERT INTO user_phrase_entries (
+                phrase,
+                numeric_pinyin,
+                marked_pinyin,
+                yime_code,
+                source_note,
+                sort_weight
+            ) VALUES (?, ?, ?, ?, ?, ?)
+            ON CONFLICT(phrase) DO UPDATE SET
+                numeric_pinyin = excluded.numeric_pinyin,
+                marked_pinyin = excluded.marked_pinyin,
+                yime_code = excluded.yime_code,
+                source_note = excluded.source_note,
+                sort_weight = excluded.sort_weight,
+                updated_at = CURRENT_TIMESTAMP
+            &#34;&#34;&#34;,
+            (
+                normalized_phrase,
+                normalized_numeric,
+                normalized_marked,
+                normalized_code,
+                source_note.strip(),
+                weight,
+            ),
+        )
+    return &#34;updated&#34; if existing is not None else &#34;inserted&#34;</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.utils.user_lexicon.UserLexiconStore.write_export_file"><code class="name flex">
+<span>def <span class="ident">write_export_file</span></span>(<span>self, path: Path, *, include_frequency: bool = True) ‑> pathlib.Path</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def write_export_file(
+    self,
+    path: Path,
+    *,
+    include_frequency: bool = True,
+) -&gt; Path:
+    payload = self.export_payload(include_frequency=include_frequency)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2) + &#34;\n&#34;,
+        encoding=&#34;utf-8&#34;,
+    )
+    return path</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.utils.user_lexicon.UserLexiconStore.write_text_export_file"><code class="name flex">
+<span>def <span class="ident">write_text_export_file</span></span>(<span>self, path: Path) ‑> dict[str, int]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def write_text_export_file(self, path: Path) -&gt; dict[str, int]:
+    frequency_by_key = {
+        (row.lookup_code, row.text): row.freq
+        for row in self.list_candidate_frequency_entries(limit=1_000_000)
+    }
+    phrase_rows = self.list_phrase_entries(limit=1_000_000)
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open(&#34;w&#34;, encoding=&#34;utf-8&#34;, newline=&#34;&#34;) as handle:
+        writer = csv.writer(handle, delimiter=&#34;\t&#34;, lineterminator=&#34;\n&#34;)
+        writer.writerow(self.TEXT_EXCHANGE_HEADER)
+        for row in phrase_rows:
+            writer.writerow(
+                [
+                    row.phrase,
+                    row.numeric_pinyin,
+                    frequency_by_key.get((row.yime_code, row.phrase), 0),
+                ]
+            )
+
+    return {
+        &#34;phrase_entries&#34;: len(phrase_rows),
+        &#34;candidate_frequency&#34;: sum(
+            1
+            for row in phrase_rows
+            if frequency_by_key.get((row.yime_code, row.phrase), 0) &gt; 0
+        ),
+    }</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="yime.input_method.utils.user_lexicon.UserPhraseEntry"><code class="flex name class">
+<span>class <span class="ident">UserPhraseEntry</span></span>
+<span>(</span><span>phrase: str,<br>numeric_pinyin: str,<br>marked_pinyin: str,<br>yime_code: str,<br>sort_weight: float)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@dataclass(frozen=True)
+class UserPhraseEntry:
+    phrase: str
+    numeric_pinyin: str
+    marked_pinyin: str
+    yime_code: str
+    sort_weight: float</code></pre>
+</details>
+<div class="desc"><p>UserPhraseEntry(phrase: 'str', numeric_pinyin: 'str', marked_pinyin: 'str', yime_code: 'str', sort_weight: 'float')</p></div>
+<h3>Instance variables</h3>
+<dl>
+<dt id="yime.input_method.utils.user_lexicon.UserPhraseEntry.marked_pinyin"><code class="name">var <span class="ident">marked_pinyin</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.utils.user_lexicon.UserPhraseEntry.numeric_pinyin"><code class="name">var <span class="ident">numeric_pinyin</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.utils.user_lexicon.UserPhraseEntry.phrase"><code class="name">var <span class="ident">phrase</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.utils.user_lexicon.UserPhraseEntry.sort_weight"><code class="name">var <span class="ident">sort_weight</span> : float</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.utils.user_lexicon.UserPhraseEntry.yime_code"><code class="name">var <span class="ident">yime_code</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="yime.input_method.utils.user_lexicon.UserPhraseEntryDetail"><code class="flex name class">
+<span>class <span class="ident">UserPhraseEntryDetail</span></span>
+<span>(</span><span>phrase: str,<br>numeric_pinyin: str,<br>marked_pinyin: str,<br>yime_code: str,<br>source_note: str,<br>sort_weight: float,<br>created_at: str,<br>updated_at: str)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@dataclass(frozen=True)
+class UserPhraseEntryDetail:
+    phrase: str
+    numeric_pinyin: str
+    marked_pinyin: str
+    yime_code: str
+    source_note: str
+    sort_weight: float
+    created_at: str
+    updated_at: str</code></pre>
+</details>
+<div class="desc"><p>UserPhraseEntryDetail(phrase: 'str', numeric_pinyin: 'str', marked_pinyin: 'str', yime_code: 'str', source_note: 'str', sort_weight: 'float', created_at: 'str', updated_at: 'str')</p></div>
+<h3>Instance variables</h3>
+<dl>
+<dt id="yime.input_method.utils.user_lexicon.UserPhraseEntryDetail.created_at"><code class="name">var <span class="ident">created_at</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.utils.user_lexicon.UserPhraseEntryDetail.marked_pinyin"><code class="name">var <span class="ident">marked_pinyin</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.utils.user_lexicon.UserPhraseEntryDetail.numeric_pinyin"><code class="name">var <span class="ident">numeric_pinyin</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.utils.user_lexicon.UserPhraseEntryDetail.phrase"><code class="name">var <span class="ident">phrase</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.utils.user_lexicon.UserPhraseEntryDetail.sort_weight"><code class="name">var <span class="ident">sort_weight</span> : float</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.utils.user_lexicon.UserPhraseEntryDetail.source_note"><code class="name">var <span class="ident">source_note</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.utils.user_lexicon.UserPhraseEntryDetail.updated_at"><code class="name">var <span class="ident">updated_at</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.utils.user_lexicon.UserPhraseEntryDetail.yime_code"><code class="name">var <span class="ident">yime_code</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="yime.input_method.utils" href="index.html">yime.input_method.utils</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="yime.input_method.utils.user_lexicon.normalize_numeric_pinyin_syllable_spacing" href="#yime.input_method.utils.user_lexicon.normalize_numeric_pinyin_syllable_spacing">normalize_numeric_pinyin_syllable_spacing</a></code></li>
+<li><code><a title="yime.input_method.utils.user_lexicon.resolve_canonical_code_from_numeric_pinyin" href="#yime.input_method.utils.user_lexicon.resolve_canonical_code_from_numeric_pinyin">resolve_canonical_code_from_numeric_pinyin</a></code></li>
+<li><code><a title="yime.input_method.utils.user_lexicon.resolve_yime_code_from_numeric_pinyin" href="#yime.input_method.utils.user_lexicon.resolve_yime_code_from_numeric_pinyin">resolve_yime_code_from_numeric_pinyin</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="yime.input_method.utils.user_lexicon.UserCandidateFrequencyEntry" href="#yime.input_method.utils.user_lexicon.UserCandidateFrequencyEntry">UserCandidateFrequencyEntry</a></code></h4>
+<ul class="two-column">
+<li><code><a title="yime.input_method.utils.user_lexicon.UserCandidateFrequencyEntry.freq" href="#yime.input_method.utils.user_lexicon.UserCandidateFrequencyEntry.freq">freq</a></code></li>
+<li><code><a title="yime.input_method.utils.user_lexicon.UserCandidateFrequencyEntry.last_used_at" href="#yime.input_method.utils.user_lexicon.UserCandidateFrequencyEntry.last_used_at">last_used_at</a></code></li>
+<li><code><a title="yime.input_method.utils.user_lexicon.UserCandidateFrequencyEntry.lookup_code" href="#yime.input_method.utils.user_lexicon.UserCandidateFrequencyEntry.lookup_code">lookup_code</a></code></li>
+<li><code><a title="yime.input_method.utils.user_lexicon.UserCandidateFrequencyEntry.marked_pinyin" href="#yime.input_method.utils.user_lexicon.UserCandidateFrequencyEntry.marked_pinyin">marked_pinyin</a></code></li>
+<li><code><a title="yime.input_method.utils.user_lexicon.UserCandidateFrequencyEntry.numeric_pinyin" href="#yime.input_method.utils.user_lexicon.UserCandidateFrequencyEntry.numeric_pinyin">numeric_pinyin</a></code></li>
+<li><code><a title="yime.input_method.utils.user_lexicon.UserCandidateFrequencyEntry.source_note" href="#yime.input_method.utils.user_lexicon.UserCandidateFrequencyEntry.source_note">source_note</a></code></li>
+<li><code><a title="yime.input_method.utils.user_lexicon.UserCandidateFrequencyEntry.text" href="#yime.input_method.utils.user_lexicon.UserCandidateFrequencyEntry.text">text</a></code></li>
+<li><code><a title="yime.input_method.utils.user_lexicon.UserCandidateFrequencyEntry.yime_code" href="#yime.input_method.utils.user_lexicon.UserCandidateFrequencyEntry.yime_code">yime_code</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="yime.input_method.utils.user_lexicon.UserLexiconStore" href="#yime.input_method.utils.user_lexicon.UserLexiconStore">UserLexiconStore</a></code></h4>
+<ul class="">
+<li><code><a title="yime.input_method.utils.user_lexicon.UserLexiconStore.DEFAULT_PHRASE_SORT_WEIGHT" href="#yime.input_method.utils.user_lexicon.UserLexiconStore.DEFAULT_PHRASE_SORT_WEIGHT">DEFAULT_PHRASE_SORT_WEIGHT</a></code></li>
+<li><code><a title="yime.input_method.utils.user_lexicon.UserLexiconStore.TEXT_EXCHANGE_HEADER" href="#yime.input_method.utils.user_lexicon.UserLexiconStore.TEXT_EXCHANGE_HEADER">TEXT_EXCHANGE_HEADER</a></code></li>
+<li><code><a title="yime.input_method.utils.user_lexicon.UserLexiconStore.check_repairable_issues" href="#yime.input_method.utils.user_lexicon.UserLexiconStore.check_repairable_issues">check_repairable_issues</a></code></li>
+<li><code><a title="yime.input_method.utils.user_lexicon.UserLexiconStore.delete_phrase" href="#yime.input_method.utils.user_lexicon.UserLexiconStore.delete_phrase">delete_phrase</a></code></li>
+<li><code><a title="yime.input_method.utils.user_lexicon.UserLexiconStore.ensure_schema" href="#yime.input_method.utils.user_lexicon.UserLexiconStore.ensure_schema">ensure_schema</a></code></li>
+<li><code><a title="yime.input_method.utils.user_lexicon.UserLexiconStore.export_payload" href="#yime.input_method.utils.user_lexicon.UserLexiconStore.export_payload">export_payload</a></code></li>
+<li><code><a title="yime.input_method.utils.user_lexicon.UserLexiconStore.get_meta" href="#yime.input_method.utils.user_lexicon.UserLexiconStore.get_meta">get_meta</a></code></li>
+<li><code><a title="yime.input_method.utils.user_lexicon.UserLexiconStore.has_user_data" href="#yime.input_method.utils.user_lexicon.UserLexiconStore.has_user_data">has_user_data</a></code></li>
+<li><code><a title="yime.input_method.utils.user_lexicon.UserLexiconStore.import_file" href="#yime.input_method.utils.user_lexicon.UserLexiconStore.import_file">import_file</a></code></li>
+<li><code><a title="yime.input_method.utils.user_lexicon.UserLexiconStore.import_payload" href="#yime.input_method.utils.user_lexicon.UserLexiconStore.import_payload">import_payload</a></code></li>
+<li><code><a title="yime.input_method.utils.user_lexicon.UserLexiconStore.import_text_file" href="#yime.input_method.utils.user_lexicon.UserLexiconStore.import_text_file">import_text_file</a></code></li>
+<li><code><a title="yime.input_method.utils.user_lexicon.UserLexiconStore.list_candidate_frequency_entries" href="#yime.input_method.utils.user_lexicon.UserLexiconStore.list_candidate_frequency_entries">list_candidate_frequency_entries</a></code></li>
+<li><code><a title="yime.input_method.utils.user_lexicon.UserLexiconStore.list_phrase_entries" href="#yime.input_method.utils.user_lexicon.UserLexiconStore.list_phrase_entries">list_phrase_entries</a></code></li>
+<li><code><a title="yime.input_method.utils.user_lexicon.UserLexiconStore.list_recent_phrase_entries" href="#yime.input_method.utils.user_lexicon.UserLexiconStore.list_recent_phrase_entries">list_recent_phrase_entries</a></code></li>
+<li><code><a title="yime.input_method.utils.user_lexicon.UserLexiconStore.load_candidate_frequency" href="#yime.input_method.utils.user_lexicon.UserLexiconStore.load_candidate_frequency">load_candidate_frequency</a></code></li>
+<li><code><a title="yime.input_method.utils.user_lexicon.UserLexiconStore.load_phrase_candidates" href="#yime.input_method.utils.user_lexicon.UserLexiconStore.load_phrase_candidates">load_phrase_candidates</a></code></li>
+<li><code><a title="yime.input_method.utils.user_lexicon.UserLexiconStore.lookup_first_phrase" href="#yime.input_method.utils.user_lexicon.UserLexiconStore.lookup_first_phrase">lookup_first_phrase</a></code></li>
+<li><code><a title="yime.input_method.utils.user_lexicon.UserLexiconStore.record_candidate_selection" href="#yime.input_method.utils.user_lexicon.UserLexiconStore.record_candidate_selection">record_candidate_selection</a></code></li>
+<li><code><a title="yime.input_method.utils.user_lexicon.UserLexiconStore.repair_candidate_frequency_entries" href="#yime.input_method.utils.user_lexicon.UserLexiconStore.repair_candidate_frequency_entries">repair_candidate_frequency_entries</a></code></li>
+<li><code><a title="yime.input_method.utils.user_lexicon.UserLexiconStore.repair_meta_entries" href="#yime.input_method.utils.user_lexicon.UserLexiconStore.repair_meta_entries">repair_meta_entries</a></code></li>
+<li><code><a title="yime.input_method.utils.user_lexicon.UserLexiconStore.repair_phrase_entries" href="#yime.input_method.utils.user_lexicon.UserLexiconStore.repair_phrase_entries">repair_phrase_entries</a></code></li>
+<li><code><a title="yime.input_method.utils.user_lexicon.UserLexiconStore.reset_candidate_frequency" href="#yime.input_method.utils.user_lexicon.UserLexiconStore.reset_candidate_frequency">reset_candidate_frequency</a></code></li>
+<li><code><a title="yime.input_method.utils.user_lexicon.UserLexiconStore.set_meta" href="#yime.input_method.utils.user_lexicon.UserLexiconStore.set_meta">set_meta</a></code></li>
+<li><code><a title="yime.input_method.utils.user_lexicon.UserLexiconStore.upsert_phrase" href="#yime.input_method.utils.user_lexicon.UserLexiconStore.upsert_phrase">upsert_phrase</a></code></li>
+<li><code><a title="yime.input_method.utils.user_lexicon.UserLexiconStore.write_export_file" href="#yime.input_method.utils.user_lexicon.UserLexiconStore.write_export_file">write_export_file</a></code></li>
+<li><code><a title="yime.input_method.utils.user_lexicon.UserLexiconStore.write_text_export_file" href="#yime.input_method.utils.user_lexicon.UserLexiconStore.write_text_export_file">write_text_export_file</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="yime.input_method.utils.user_lexicon.UserPhraseEntry" href="#yime.input_method.utils.user_lexicon.UserPhraseEntry">UserPhraseEntry</a></code></h4>
+<ul class="">
+<li><code><a title="yime.input_method.utils.user_lexicon.UserPhraseEntry.marked_pinyin" href="#yime.input_method.utils.user_lexicon.UserPhraseEntry.marked_pinyin">marked_pinyin</a></code></li>
+<li><code><a title="yime.input_method.utils.user_lexicon.UserPhraseEntry.numeric_pinyin" href="#yime.input_method.utils.user_lexicon.UserPhraseEntry.numeric_pinyin">numeric_pinyin</a></code></li>
+<li><code><a title="yime.input_method.utils.user_lexicon.UserPhraseEntry.phrase" href="#yime.input_method.utils.user_lexicon.UserPhraseEntry.phrase">phrase</a></code></li>
+<li><code><a title="yime.input_method.utils.user_lexicon.UserPhraseEntry.sort_weight" href="#yime.input_method.utils.user_lexicon.UserPhraseEntry.sort_weight">sort_weight</a></code></li>
+<li><code><a title="yime.input_method.utils.user_lexicon.UserPhraseEntry.yime_code" href="#yime.input_method.utils.user_lexicon.UserPhraseEntry.yime_code">yime_code</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="yime.input_method.utils.user_lexicon.UserPhraseEntryDetail" href="#yime.input_method.utils.user_lexicon.UserPhraseEntryDetail">UserPhraseEntryDetail</a></code></h4>
+<ul class="two-column">
+<li><code><a title="yime.input_method.utils.user_lexicon.UserPhraseEntryDetail.created_at" href="#yime.input_method.utils.user_lexicon.UserPhraseEntryDetail.created_at">created_at</a></code></li>
+<li><code><a title="yime.input_method.utils.user_lexicon.UserPhraseEntryDetail.marked_pinyin" href="#yime.input_method.utils.user_lexicon.UserPhraseEntryDetail.marked_pinyin">marked_pinyin</a></code></li>
+<li><code><a title="yime.input_method.utils.user_lexicon.UserPhraseEntryDetail.numeric_pinyin" href="#yime.input_method.utils.user_lexicon.UserPhraseEntryDetail.numeric_pinyin">numeric_pinyin</a></code></li>
+<li><code><a title="yime.input_method.utils.user_lexicon.UserPhraseEntryDetail.phrase" href="#yime.input_method.utils.user_lexicon.UserPhraseEntryDetail.phrase">phrase</a></code></li>
+<li><code><a title="yime.input_method.utils.user_lexicon.UserPhraseEntryDetail.sort_weight" href="#yime.input_method.utils.user_lexicon.UserPhraseEntryDetail.sort_weight">sort_weight</a></code></li>
+<li><code><a title="yime.input_method.utils.user_lexicon.UserPhraseEntryDetail.source_note" href="#yime.input_method.utils.user_lexicon.UserPhraseEntryDetail.source_note">source_note</a></code></li>
+<li><code><a title="yime.input_method.utils.user_lexicon.UserPhraseEntryDetail.updated_at" href="#yime.input_method.utils.user_lexicon.UserPhraseEntryDetail.updated_at">updated_at</a></code></li>
+<li><code><a title="yime.input_method.utils.user_lexicon.UserPhraseEntryDetail.yime_code" href="#yime.input_method.utils.user_lexicon.UserPhraseEntryDetail.yime_code">yime_code</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

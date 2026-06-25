@@ -1,0 +1,723 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>yime.input_method.core.input_manager API documentation</title>
+<meta name="description" content="输入管理模块 …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>yime.input_method.core.input_manager</code></h1>
+</header>
+<section id="section-intro">
+<p>输入管理模块</p>
+<p>管理输入状态、累积输入、触发解码等</p>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="yime.input_method.core.input_manager.InputManager"><code class="flex name class">
+<span>class <span class="ident">InputManager</span></span>
+<span>(</span><span>on_candidates_update: Callable[[List[str], str, str, str], None],<br>on_input_commit: Callable[[str], None],<br>timeout: float = 3.0,<br>max_buffer_length: int = 20)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class InputManager:
+    &#34;&#34;&#34;
+    输入管理器
+
+    负责管理输入状态、累积输入、触发解码等
+    &#34;&#34;&#34;
+
+    def __init__(
+        self,
+        on_candidates_update: Callable[[List[str], str, str, str], None],
+        on_input_commit: Callable[[str], None],
+        timeout: float = 3.0,
+        max_buffer_length: int = 20,
+    ) -&gt; None:
+        &#34;&#34;&#34;
+        初始化输入管理器
+
+        Args:
+            on_candidates_update: 候选词更新回调
+                参数：(candidates, pinyin, code, status)
+            on_input_commit: 输入提交回调
+                参数：(hanzi)
+            timeout: 输入超时时间（秒）
+            max_buffer_length: 最大缓冲区长度
+        &#34;&#34;&#34;
+        self.on_candidates_update = on_candidates_update
+        self.on_input_commit = on_input_commit
+        self.timeout = timeout
+        self.max_buffer_length = max_buffer_length
+        self.state = InputState()
+
+        # 候选词列表
+        self.current_candidates: List[str] = []
+
+        # 解码器（由主应用设置）
+        self.decoder = None
+
+    def set_decoder(self, decoder: Any) -&gt; None:
+        &#34;&#34;&#34;
+        设置解码器
+
+        Args:
+            decoder: 解码器对象
+        &#34;&#34;&#34;
+        self.decoder = decoder
+
+    def process_key(self, key_info: Dict[str, Any]) -&gt; bool:
+        &#34;&#34;&#34;
+        处理按键
+
+        Args:
+            key_info: 按键信息字典
+
+        Returns:
+            True继续传递按键，False拦截按键
+        &#34;&#34;&#34;
+        # 检查是否超时
+        current_time = time.time()
+        if (current_time - self.state.last_key_time) &gt; self.timeout:
+            # 超时，清空缓冲区
+            self.clear_buffer(notify=False)
+
+        self.state.last_key_time = current_time
+        self.state.total_keys += 1
+
+        # 获取按键信息
+        key = key_info.get(&#39;key&#39;, &#39;&#39;)
+        text = key_info.get(&#39;text&#39;, &#39;&#39;)
+        ascii_char = key_info.get(&#39;ascii&#39;)
+        modifiers = cast(Dict[str, Any], key_info.get(&#39;modifiers&#39;) or {})
+
+        # 系统快捷键和窗口管理组合键必须直接放行，避免破坏复制、切窗等行为。
+        if modifiers.get(&#39;win&#39;):
+            return True
+
+        if modifiers.get(&#39;ctrl&#39;) and not modifiers.get(&#39;alt_gr&#39;):
+            return True
+
+        if modifiers.get(&#39;alt&#39;) and not modifiers.get(&#39;alt_gr&#39;):
+            return True
+
+        # 处理特殊键
+        if self._handle_special_key(key):
+            return False  # 拦截特殊键
+
+        # 优先消费按当前键盘布局实际产出的字符，包括 BMP PUA / SPUA-B 等非 ASCII 编码字符。
+        if isinstance(text, str) and len(text) == 1 and text &gt;= &#39; &#39;:
+            self.add_char(text)
+            return False
+
+        # 处理普通字符输入
+        if ascii_char is not None:
+            # 确保ascii_char是整数
+            if isinstance(ascii_char, str):
+                if len(ascii_char) == 1:
+                    ascii_char = ord(ascii_char)
+                else:
+                    ascii_char = None
+
+            if ascii_char and 32 &lt;= ascii_char &lt;= 126:
+                # 可打印ASCII字符
+                self.add_char(chr(ascii_char))
+                return False  # 拦截输入字符
+
+        # 其他键继续传递
+        return True
+
+    def _handle_special_key(self, key: str) -&gt; bool:
+        &#34;&#34;&#34;
+        处理特殊键
+
+        Args:
+            key: 按键字符串
+
+        Returns:
+            True如果处理了，False否则
+        &#34;&#34;&#34;
+        is_composing = bool(self.state.buffer or self.current_candidates)
+
+        # Escape - 清空输入
+        if key in (&#39;Escape&#39;, &#39;esc&#39;):
+            if is_composing:
+                self.clear_buffer()
+                return True
+            return False
+
+        # Backspace - 删除最后一个字符
+        if key in (&#39;Backspace&#39;, &#39;backspace&#39;):
+            if self.state.buffer:
+                self.backspace()
+                return True
+            return False
+
+        # Enter/Return - 提交首选候选词
+        if key in (&#39;Return&#39;, &#39;Enter&#39;, &#39;enter&#39;):
+            if self.current_candidates:
+                self.commit_first_candidate()
+                return True
+            if self.state.buffer:
+                self.clear_buffer()
+                return True
+            return False
+
+        # Space - 提交首选或添加空格
+        if key in (&#39;space&#39;, &#39;Space&#39;):
+            if self.current_candidates:
+                self.commit_first_candidate()
+                return True
+            # 如果没有候选词，继续传递空格
+            return False
+
+        return False
+
+    def add_char(self, char: str) -&gt; None:
+        &#34;&#34;&#34;
+        添加字符到缓冲区
+
+        Args:
+            char: 字符
+        &#34;&#34;&#34;
+        # 检查缓冲区长度
+        if len(self.state.buffer) &gt;= self.max_buffer_length:
+            self.clear_buffer(notify=False)
+
+        self.state.buffer += char
+        self.state.is_composing = True
+
+        # 触发候选词更新
+        self._update_candidates()
+
+    def backspace(self) -&gt; None:
+        &#34;&#34;&#34;删除最后一个字符&#34;&#34;&#34;
+        if self.state.buffer:
+            self.state.buffer = self.state.buffer[:-1]
+
+            if self.state.buffer:
+                self._update_candidates()
+            else:
+                self.clear_buffer()
+
+    def clear_buffer(self, notify: bool = True) -&gt; None:
+        &#34;&#34;&#34;清空缓冲区&#34;&#34;&#34;
+        self.state.buffer = &#34;&#34;
+        self.state.is_composing = False
+        self.current_candidates = []
+
+        # 通知清空候选词
+        if notify:
+            self.on_candidates_update([], &#34;&#34;, &#34;&#34;, &#34;输入已清空&#34;)
+
+    def select_candidate(self, index: int) -&gt; None:
+        &#34;&#34;&#34;
+        选择候选词
+
+        Args:
+            index: 候选词索引
+        &#34;&#34;&#34;
+        if 0 &lt;= index &lt; len(self.current_candidates):
+            hanzi = self.current_candidates[index]
+
+            # 提交输入
+            self.on_input_commit(hanzi)
+
+            # 清空缓冲区
+            self.clear_buffer()
+
+    def commit_first_candidate(self) -&gt; None:
+        &#34;&#34;&#34;提交首选候选词&#34;&#34;&#34;
+        if self.current_candidates:
+            self.select_candidate(0)
+
+    def get_buffer(self) -&gt; str:
+        &#34;&#34;&#34;
+        获取当前缓冲区
+
+        Returns:
+            当前输入缓冲区
+        &#34;&#34;&#34;
+        return self.state.buffer
+
+    def is_composing(self) -&gt; bool:
+        &#34;&#34;&#34;
+        是否正在组合输入
+
+        Returns:
+            True如果正在组合，False否则
+        &#34;&#34;&#34;
+        return self.state.is_composing
+
+    def get_candidates(self) -&gt; List[str]:
+        &#34;&#34;&#34;
+        获取当前候选词列表
+
+        Returns:
+            候选词列表
+        &#34;&#34;&#34;
+        return self.current_candidates
+
+    def _update_candidates(self) -&gt; None:
+        &#34;&#34;&#34;更新候选词&#34;&#34;&#34;
+        if not self.decoder:
+            self.on_candidates_update([], &#34;&#34;, &#34;&#34;, &#34;解码器未设置&#34;)
+            return
+
+        if not self.state.buffer:
+            self.on_candidates_update([], &#34;&#34;, &#34;&#34;, &#34;&#34;)
+            return
+
+        try:
+            # 调用解码器
+            canonical_code, active_code, pinyin, candidates, status = (
+                self.decoder.decode_text(self.state.buffer)
+            )
+
+            # 保存候选词，分页由 UI 层处理
+            self.current_candidates = candidates
+
+            # 更新显示
+            code_display = build_code_display(
+                self.state.buffer,
+                canonical_code,
+                active_code,
+            )
+
+            self.on_candidates_update(
+                self.current_candidates,
+                pinyin,
+                code_display,
+                status,
+            )
+
+        except Exception as e:
+            self.on_candidates_update([], &#34;&#34;, &#34;&#34;, f&#34;解码出错: {e}&#34;)</code></pre>
+</details>
+<div class="desc"><p>输入管理器</p>
+<p>负责管理输入状态、累积输入、触发解码等</p>
+<p>初始化输入管理器</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>on_candidates_update</code></strong></dt>
+<dd>候选词更新回调
+参数：(candidates, pinyin, code, status)</dd>
+<dt><strong><code>on_input_commit</code></strong></dt>
+<dd>输入提交回调
+参数：(hanzi)</dd>
+<dt><strong><code>timeout</code></strong></dt>
+<dd>输入超时时间（秒）</dd>
+<dt><strong><code>max_buffer_length</code></strong></dt>
+<dd>最大缓冲区长度</dd>
+</dl></div>
+<h3>Methods</h3>
+<dl>
+<dt id="yime.input_method.core.input_manager.InputManager.add_char"><code class="name flex">
+<span>def <span class="ident">add_char</span></span>(<span>self, char: str) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_char(self, char: str) -&gt; None:
+    &#34;&#34;&#34;
+    添加字符到缓冲区
+
+    Args:
+        char: 字符
+    &#34;&#34;&#34;
+    # 检查缓冲区长度
+    if len(self.state.buffer) &gt;= self.max_buffer_length:
+        self.clear_buffer(notify=False)
+
+    self.state.buffer += char
+    self.state.is_composing = True
+
+    # 触发候选词更新
+    self._update_candidates()</code></pre>
+</details>
+<div class="desc"><p>添加字符到缓冲区</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>char</code></strong></dt>
+<dd>字符</dd>
+</dl></div>
+</dd>
+<dt id="yime.input_method.core.input_manager.InputManager.backspace"><code class="name flex">
+<span>def <span class="ident">backspace</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def backspace(self) -&gt; None:
+    &#34;&#34;&#34;删除最后一个字符&#34;&#34;&#34;
+    if self.state.buffer:
+        self.state.buffer = self.state.buffer[:-1]
+
+        if self.state.buffer:
+            self._update_candidates()
+        else:
+            self.clear_buffer()</code></pre>
+</details>
+<div class="desc"><p>删除最后一个字符</p></div>
+</dd>
+<dt id="yime.input_method.core.input_manager.InputManager.clear_buffer"><code class="name flex">
+<span>def <span class="ident">clear_buffer</span></span>(<span>self, notify: bool = True) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def clear_buffer(self, notify: bool = True) -&gt; None:
+    &#34;&#34;&#34;清空缓冲区&#34;&#34;&#34;
+    self.state.buffer = &#34;&#34;
+    self.state.is_composing = False
+    self.current_candidates = []
+
+    # 通知清空候选词
+    if notify:
+        self.on_candidates_update([], &#34;&#34;, &#34;&#34;, &#34;输入已清空&#34;)</code></pre>
+</details>
+<div class="desc"><p>清空缓冲区</p></div>
+</dd>
+<dt id="yime.input_method.core.input_manager.InputManager.commit_first_candidate"><code class="name flex">
+<span>def <span class="ident">commit_first_candidate</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def commit_first_candidate(self) -&gt; None:
+    &#34;&#34;&#34;提交首选候选词&#34;&#34;&#34;
+    if self.current_candidates:
+        self.select_candidate(0)</code></pre>
+</details>
+<div class="desc"><p>提交首选候选词</p></div>
+</dd>
+<dt id="yime.input_method.core.input_manager.InputManager.get_buffer"><code class="name flex">
+<span>def <span class="ident">get_buffer</span></span>(<span>self) ‑> str</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_buffer(self) -&gt; str:
+    &#34;&#34;&#34;
+    获取当前缓冲区
+
+    Returns:
+        当前输入缓冲区
+    &#34;&#34;&#34;
+    return self.state.buffer</code></pre>
+</details>
+<div class="desc"><p>获取当前缓冲区</p>
+<h2 id="returns">Returns</h2>
+<p>当前输入缓冲区</p></div>
+</dd>
+<dt id="yime.input_method.core.input_manager.InputManager.get_candidates"><code class="name flex">
+<span>def <span class="ident">get_candidates</span></span>(<span>self) ‑> List[str]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_candidates(self) -&gt; List[str]:
+    &#34;&#34;&#34;
+    获取当前候选词列表
+
+    Returns:
+        候选词列表
+    &#34;&#34;&#34;
+    return self.current_candidates</code></pre>
+</details>
+<div class="desc"><p>获取当前候选词列表</p>
+<h2 id="returns">Returns</h2>
+<p>候选词列表</p></div>
+</dd>
+<dt id="yime.input_method.core.input_manager.InputManager.is_composing"><code class="name flex">
+<span>def <span class="ident">is_composing</span></span>(<span>self) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def is_composing(self) -&gt; bool:
+    &#34;&#34;&#34;
+    是否正在组合输入
+
+    Returns:
+        True如果正在组合，False否则
+    &#34;&#34;&#34;
+    return self.state.is_composing</code></pre>
+</details>
+<div class="desc"><p>是否正在组合输入</p>
+<h2 id="returns">Returns</h2>
+<p>True如果正在组合，False否则</p></div>
+</dd>
+<dt id="yime.input_method.core.input_manager.InputManager.process_key"><code class="name flex">
+<span>def <span class="ident">process_key</span></span>(<span>self, key_info: Dict[str, Any]) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def process_key(self, key_info: Dict[str, Any]) -&gt; bool:
+    &#34;&#34;&#34;
+    处理按键
+
+    Args:
+        key_info: 按键信息字典
+
+    Returns:
+        True继续传递按键，False拦截按键
+    &#34;&#34;&#34;
+    # 检查是否超时
+    current_time = time.time()
+    if (current_time - self.state.last_key_time) &gt; self.timeout:
+        # 超时，清空缓冲区
+        self.clear_buffer(notify=False)
+
+    self.state.last_key_time = current_time
+    self.state.total_keys += 1
+
+    # 获取按键信息
+    key = key_info.get(&#39;key&#39;, &#39;&#39;)
+    text = key_info.get(&#39;text&#39;, &#39;&#39;)
+    ascii_char = key_info.get(&#39;ascii&#39;)
+    modifiers = cast(Dict[str, Any], key_info.get(&#39;modifiers&#39;) or {})
+
+    # 系统快捷键和窗口管理组合键必须直接放行，避免破坏复制、切窗等行为。
+    if modifiers.get(&#39;win&#39;):
+        return True
+
+    if modifiers.get(&#39;ctrl&#39;) and not modifiers.get(&#39;alt_gr&#39;):
+        return True
+
+    if modifiers.get(&#39;alt&#39;) and not modifiers.get(&#39;alt_gr&#39;):
+        return True
+
+    # 处理特殊键
+    if self._handle_special_key(key):
+        return False  # 拦截特殊键
+
+    # 优先消费按当前键盘布局实际产出的字符，包括 BMP PUA / SPUA-B 等非 ASCII 编码字符。
+    if isinstance(text, str) and len(text) == 1 and text &gt;= &#39; &#39;:
+        self.add_char(text)
+        return False
+
+    # 处理普通字符输入
+    if ascii_char is not None:
+        # 确保ascii_char是整数
+        if isinstance(ascii_char, str):
+            if len(ascii_char) == 1:
+                ascii_char = ord(ascii_char)
+            else:
+                ascii_char = None
+
+        if ascii_char and 32 &lt;= ascii_char &lt;= 126:
+            # 可打印ASCII字符
+            self.add_char(chr(ascii_char))
+            return False  # 拦截输入字符
+
+    # 其他键继续传递
+    return True</code></pre>
+</details>
+<div class="desc"><p>处理按键</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>key_info</code></strong></dt>
+<dd>按键信息字典</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>True继续传递按键，False拦截按键</p></div>
+</dd>
+<dt id="yime.input_method.core.input_manager.InputManager.select_candidate"><code class="name flex">
+<span>def <span class="ident">select_candidate</span></span>(<span>self, index: int) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def select_candidate(self, index: int) -&gt; None:
+    &#34;&#34;&#34;
+    选择候选词
+
+    Args:
+        index: 候选词索引
+    &#34;&#34;&#34;
+    if 0 &lt;= index &lt; len(self.current_candidates):
+        hanzi = self.current_candidates[index]
+
+        # 提交输入
+        self.on_input_commit(hanzi)
+
+        # 清空缓冲区
+        self.clear_buffer()</code></pre>
+</details>
+<div class="desc"><p>选择候选词</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>index</code></strong></dt>
+<dd>候选词索引</dd>
+</dl></div>
+</dd>
+<dt id="yime.input_method.core.input_manager.InputManager.set_decoder"><code class="name flex">
+<span>def <span class="ident">set_decoder</span></span>(<span>self, decoder: Any) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_decoder(self, decoder: Any) -&gt; None:
+    &#34;&#34;&#34;
+    设置解码器
+
+    Args:
+        decoder: 解码器对象
+    &#34;&#34;&#34;
+    self.decoder = decoder</code></pre>
+</details>
+<div class="desc"><p>设置解码器</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>decoder</code></strong></dt>
+<dd>解码器对象</dd>
+</dl></div>
+</dd>
+</dl>
+</dd>
+<dt id="yime.input_method.core.input_manager.InputState"><code class="flex name class">
+<span>class <span class="ident">InputState</span></span>
+<span>(</span><span>buffer: str = '',<br>last_key_time: float = 0,<br>is_composing: bool = False,<br>total_keys: int = 0)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@dataclass
+class InputState:
+    &#34;&#34;&#34;输入状态&#34;&#34;&#34;
+    buffer: str = &#34;&#34;  # 输入缓冲区
+    last_key_time: float = 0  # 最后按键时间
+    is_composing: bool = False  # 是否正在组合
+    total_keys: int = 0  # 总按键数</code></pre>
+</details>
+<div class="desc"><p>输入状态</p></div>
+<h3>Instance variables</h3>
+<dl>
+<dt id="yime.input_method.core.input_manager.InputState.buffer"><code class="name">var <span class="ident">buffer</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.input_manager.InputState.is_composing"><code class="name">var <span class="ident">is_composing</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.input_manager.InputState.last_key_time"><code class="name">var <span class="ident">last_key_time</span> : float</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="yime.input_method.core.input_manager.InputState.total_keys"><code class="name">var <span class="ident">total_keys</span> : int</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="yime.input_method.core" href="index.html">yime.input_method.core</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="yime.input_method.core.input_manager.InputManager" href="#yime.input_method.core.input_manager.InputManager">InputManager</a></code></h4>
+<ul class="">
+<li><code><a title="yime.input_method.core.input_manager.InputManager.add_char" href="#yime.input_method.core.input_manager.InputManager.add_char">add_char</a></code></li>
+<li><code><a title="yime.input_method.core.input_manager.InputManager.backspace" href="#yime.input_method.core.input_manager.InputManager.backspace">backspace</a></code></li>
+<li><code><a title="yime.input_method.core.input_manager.InputManager.clear_buffer" href="#yime.input_method.core.input_manager.InputManager.clear_buffer">clear_buffer</a></code></li>
+<li><code><a title="yime.input_method.core.input_manager.InputManager.commit_first_candidate" href="#yime.input_method.core.input_manager.InputManager.commit_first_candidate">commit_first_candidate</a></code></li>
+<li><code><a title="yime.input_method.core.input_manager.InputManager.get_buffer" href="#yime.input_method.core.input_manager.InputManager.get_buffer">get_buffer</a></code></li>
+<li><code><a title="yime.input_method.core.input_manager.InputManager.get_candidates" href="#yime.input_method.core.input_manager.InputManager.get_candidates">get_candidates</a></code></li>
+<li><code><a title="yime.input_method.core.input_manager.InputManager.is_composing" href="#yime.input_method.core.input_manager.InputManager.is_composing">is_composing</a></code></li>
+<li><code><a title="yime.input_method.core.input_manager.InputManager.process_key" href="#yime.input_method.core.input_manager.InputManager.process_key">process_key</a></code></li>
+<li><code><a title="yime.input_method.core.input_manager.InputManager.select_candidate" href="#yime.input_method.core.input_manager.InputManager.select_candidate">select_candidate</a></code></li>
+<li><code><a title="yime.input_method.core.input_manager.InputManager.set_decoder" href="#yime.input_method.core.input_manager.InputManager.set_decoder">set_decoder</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="yime.input_method.core.input_manager.InputState" href="#yime.input_method.core.input_manager.InputState">InputState</a></code></h4>
+<ul class="">
+<li><code><a title="yime.input_method.core.input_manager.InputState.buffer" href="#yime.input_method.core.input_manager.InputState.buffer">buffer</a></code></li>
+<li><code><a title="yime.input_method.core.input_manager.InputState.is_composing" href="#yime.input_method.core.input_manager.InputState.is_composing">is_composing</a></code></li>
+<li><code><a title="yime.input_method.core.input_manager.InputState.last_key_time" href="#yime.input_method.core.input_manager.InputState.last_key_time">last_key_time</a></code></li>
+<li><code><a title="yime.input_method.core.input_manager.InputState.total_keys" href="#yime.input_method.core.input_manager.InputState.total_keys">total_keys</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>
