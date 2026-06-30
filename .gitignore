@@ -5,4 +5,7 @@ build_arm64/
 python/__pycache__/
 tools/downloads/
 node/input_methods/McBopomofo
+go-backend/input_methods/rime/data/
+go-backend/build/
+go-backend/.gotmp/
 installer/*.exe
