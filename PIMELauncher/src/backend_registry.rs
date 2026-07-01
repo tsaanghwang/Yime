@@ -80,7 +80,8 @@ impl BackendRegistry {
             }
         };
 
-        let configs: Vec<BackendConfig> = match serde_json::from_str(&content) {
+        let content = content.trim_start_matches('\u{feff}');
+        let configs: Vec<BackendConfig> = match serde_json::from_str(content) {
             Ok(c) => c,
             Err(e) => {
                 error!("Failed to parse backends.json: {}", e);
@@ -188,5 +189,29 @@ mod tests {
             Some(&"chewing".to_string())
         );
         assert_eq!(registry.resolve_guid("unknown"), None);
+    }
+
+    #[test]
+    fn test_registry_load_with_utf8_bom() {
+        let dir = tempdir().unwrap();
+        let pime_root = dir.path();
+
+        let backends_json = "\u{feff}[{\"name\":\"go-backend\",\"command\":\"go-backend\\\\server.exe\",\"workingDir\":\"go-backend\",\"params\":\"\"}]";
+        fs::write(pime_root.join("backends.json"), backends_json).unwrap();
+
+        let im_dir = pime_root
+            .join("go-backend")
+            .join("input_methods")
+            .join("rime");
+        fs::create_dir_all(&im_dir).unwrap();
+        fs::write(im_dir.join("ime.json"), r#"{"guid": "{ABC-123}"}"#).unwrap();
+
+        let registry = BackendRegistry::load(pime_root);
+
+        assert!(registry.backends.contains_key("go-backend"));
+        assert_eq!(
+            registry.resolve_guid("{ABC-123}"),
+            Some(&"go-backend".to_string())
+        );
     }
 }
