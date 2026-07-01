@@ -44,14 +44,30 @@ ImeModule::ImeModule(HMODULE module):
 	Ime::ImeModule(module, g_textServiceClsid) {
 	wchar_t path[MAX_PATH];
 	HRESULT result;
-	// get the program data directory
-	// try C:\program files (x86) first
-	result = ::SHGetFolderPathW(NULL, CSIDL_PROGRAM_FILESX86, NULL, 0, path);
-	if(result != S_OK) // failed, fall back to C:\program files
-		result = ::SHGetFolderPathW(NULL, CSIDL_PROGRAM_FILES, NULL, 0, path);
-	if(result == S_OK) { // program files folder is found
+	if (::GetModuleFileNameW(module, path, MAX_PATH) > 0) {
 		programDir_ = path;
-		programDir_ += L"\\PIME";
+		auto slash = programDir_.find_last_of(L"\\/");
+		if (slash != std::wstring::npos) {
+			programDir_.resize(slash);
+			auto leafSlash = programDir_.find_last_of(L"\\/");
+			auto leaf = leafSlash == std::wstring::npos ? programDir_ : programDir_.substr(leafSlash + 1);
+			if (leaf == L"x64" || leaf == L"x86" || leaf == L"arm64") {
+				programDir_.resize(leafSlash);
+			}
+		}
+	}
+	if(programDir_.empty()) {
+		// get the program data directory
+		// try C:\program files (x86) first
+		result = ::SHGetFolderPathW(NULL, CSIDL_PROGRAM_FILESX86, NULL, 0, path);
+		if(result != S_OK) // failed, fall back to C:\program files
+			result = ::SHGetFolderPathW(NULL, CSIDL_PROGRAM_FILES, NULL, 0, path);
+		if(result == S_OK) { // program files folder is found
+			programDir_ = path;
+			programDir_ += L"\\PIME";
+		}
+	}
+	if(!programDir_.empty()) {
 
 		// load backend information
 		std::ifstream fp(programDir_ + L"\\backends.json", std::ifstream::binary);
