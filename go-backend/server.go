@@ -311,7 +311,7 @@ func (s *Server) convertResponse(resp *pime.Response) map[string]interface{} {
 	if resp.ReturnData != nil {
 		m["return"] = resp.ReturnData
 	} else {
-		m["return"] = resp.ReturnValue
+		m["return"] = resp.ReturnValue != 0
 	}
 
 	if resp.CommitString != "" {

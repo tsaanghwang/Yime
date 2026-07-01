@@ -176,7 +176,7 @@ func TestServerHandleMessageMeowRequestResponseFlow(t *testing.T) {
 		"keyCode":  0x4D,
 		"charCode": 'm',
 	})
-	if filterResp["return"] != float64(1) {
+	if filterResp["return"] != true {
 		t.Fatalf("expected filterKeyDown to handle m, got %#v", filterResp)
 	}
 
@@ -189,8 +189,8 @@ func TestServerHandleMessageMeowRequestResponseFlow(t *testing.T) {
 	if firstKeyResp["compositionString"] != "喵" {
 		t.Fatalf("expected first m to build composition 喵, got %#v", firstKeyResp)
 	}
-	if firstKeyResp["return"] != float64(1) {
-		t.Fatalf("expected first m return 1, got %#v", firstKeyResp)
+	if firstKeyResp["return"] != true {
+		t.Fatalf("expected first m return true, got %#v", firstKeyResp)
 	}
 
 	_, secondKeyResp := sendProtocolMessage(t, server, "client-2", map[string]interface{}{
@@ -224,8 +224,8 @@ func TestServerHandleMessageMeowRequestResponseFlow(t *testing.T) {
 	if selectResp["showCandidates"] != false {
 		t.Fatalf("expected candidate window to close, got %#v", selectResp)
 	}
-	if selectResp["return"] != float64(1) {
-		t.Fatalf("expected candidate selection return 1, got %#v", selectResp)
+	if selectResp["return"] != true {
+		t.Fatalf("expected candidate selection return true, got %#v", selectResp)
 	}
 }
 
@@ -298,8 +298,8 @@ func TestServerHandleMessageSimplePinyinRequestResponseFlow(t *testing.T) {
 	if firstResp["compositionString"] != "n" {
 		t.Fatalf("expected first key to build composition n, got %#v", firstResp)
 	}
-	if firstResp["return"] != float64(1) {
-		t.Fatalf("expected first key return 1, got %#v", firstResp)
+	if firstResp["return"] != true {
+		t.Fatalf("expected first key return true, got %#v", firstResp)
 	}
 
 	_, secondResp := sendProtocolMessage(t, server, "client-4", map[string]interface{}{
@@ -330,8 +330,8 @@ func TestServerHandleMessageSimplePinyinRequestResponseFlow(t *testing.T) {
 	if selectResp["commitString"] != "测试" {
 		t.Fatalf("expected number key to commit first fallback candidate, got %#v", selectResp)
 	}
-	if selectResp["return"] != float64(1) {
-		t.Fatalf("expected candidate selection return 1, got %#v", selectResp)
+	if selectResp["return"] != true {
+		t.Fatalf("expected candidate selection return true, got %#v", selectResp)
 	}
 	if selectResp["showCandidates"] != false {
 		t.Fatalf("expected candidate window to close, got %#v", selectResp)
@@ -377,8 +377,8 @@ func TestServerHandleMessageSimplePinyinExactCandidateCommitFlow(t *testing.T) {
 	if commitResp["commitString"] != "你好" {
 		t.Fatalf("expected enter to commit exact first candidate 你好, got %#v", commitResp)
 	}
-	if commitResp["return"] != float64(1) {
-		t.Fatalf("expected enter commit return 1, got %#v", commitResp)
+	if commitResp["return"] != true {
+		t.Fatalf("expected enter commit return true, got %#v", commitResp)
 	}
 }
 
@@ -409,8 +409,8 @@ func TestServerHandleMessageRimeRequestResponseFlow(t *testing.T) {
 		"keyCode":  0x4E,
 		"charCode": 'n',
 	})
-	if firstResp["return"] != float64(1) {
-		t.Fatalf("expected first key return 1, got %#v", firstResp)
+	if firstResp["return"] != true {
+		t.Fatalf("expected first key return true, got %#v", firstResp)
 	}
 
 	_, firstKeyState := sendProtocolMessage(t, server, "client-6", map[string]interface{}{
@@ -436,8 +436,8 @@ func TestServerHandleMessageRimeRequestResponseFlow(t *testing.T) {
 		"keyCode":  0x49,
 		"charCode": 'i',
 	})
-	if secondResp["return"] != float64(1) {
-		t.Fatalf("expected second key return 1, got %#v", secondResp)
+	if secondResp["return"] != true {
+		t.Fatalf("expected second key return true, got %#v", secondResp)
 	}
 
 	_, secondKeyState := sendProtocolMessage(t, server, "client-6", map[string]interface{}{
@@ -462,7 +462,7 @@ func TestServerHandleMessageRimeRequestResponseFlow(t *testing.T) {
 		"seqNum":  6,
 		"keyCode": 0x32,
 	})
-	if selectFilterResp["return"] != float64(1) {
+	if selectFilterResp["return"] != true {
 		t.Fatalf("expected number filter to be handled, got %#v", selectFilterResp)
 	}
 
@@ -474,8 +474,8 @@ func TestServerHandleMessageRimeRequestResponseFlow(t *testing.T) {
 	if selectResp["commitString"] != "呢" {
 		t.Fatalf("expected number key to commit 呢, got %#v", selectResp)
 	}
-	if selectResp["return"] != float64(1) {
-		t.Fatalf("expected candidate selection return 1, got %#v", selectResp)
+	if selectResp["return"] != true {
+		t.Fatalf("expected candidate selection return true, got %#v", selectResp)
 	}
 }
 
@@ -501,8 +501,8 @@ func TestServerHandleMessageFcitx5RequestResponseFlow(t *testing.T) {
 	if firstResp["compositionString"] != "ha" {
 		t.Fatalf("expected first key to build ha, got %#v", firstResp)
 	}
-	if firstResp["return"] != float64(1) {
-		t.Fatalf("expected first key return 1, got %#v", firstResp)
+	if firstResp["return"] != true {
+		t.Fatalf("expected first key return true, got %#v", firstResp)
 	}
 	candidateList, ok := firstResp["candidateList"].([]interface{})
 	if !ok {
@@ -524,7 +524,7 @@ func TestServerHandleMessageFcitx5RequestResponseFlow(t *testing.T) {
 	if selectResp["commitString"] != "喝" {
 		t.Fatalf("expected number key to commit 喝, got %#v", selectResp)
 	}
-	if selectResp["return"] != float64(1) {
-		t.Fatalf("expected candidate selection return 1, got %#v", selectResp)
+	if selectResp["return"] != true {
+		t.Fatalf("expected candidate selection return true, got %#v", selectResp)
 	}
 }
