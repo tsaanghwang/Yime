@@ -5,6 +5,7 @@ package rime
 import (
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 
@@ -14,7 +15,11 @@ import (
 func newRealRimeSession(t *testing.T) RimeSessionId {
 	t.Helper()
 
-	wd := "D:\\vscode\\moqi-input-method-projs\\PIME\\go-backend\\input_methods\\rime"
+	_, filename, _, ok := runtime.Caller(0)
+	if !ok {
+		t.Fatal("failed to locate rime runtime test directory")
+	}
+	wd := filepath.Dir(filename)
 	appData := os.Getenv("APPDATA")
 	if appData == "" {
 		t.Skip("APPDATA is not set")
@@ -47,7 +52,7 @@ func newRealRimeSession(t *testing.T) RimeSessionId {
 func TestRealRimeCanCommitText(t *testing.T) {
 	sessionID := newRealRimeSession(t)
 
-	for _, input := range []string{"nihao", "xpxp", "gegegojxyzgegegojxdegoge"} {
+	for _, input := range []string{"yonsx", "puta", "qu"} {
 		t.Run(input, func(t *testing.T) {
 			ClearComposition(sessionID)
 			for _, key := range []rune(input) {

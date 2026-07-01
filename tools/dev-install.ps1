@@ -84,6 +84,15 @@ function Copy-RequiredFile {
         [string]$Description
     )
 
+    if (Test-Path -LiteralPath $Destination) {
+        $sourceHash = (Get-FileHash -LiteralPath $Source).Hash
+        $destinationHash = (Get-FileHash -LiteralPath $Destination).Hash
+        if ($sourceHash -eq $destinationHash) {
+            Write-Host "$Description is already up to date."
+            return
+        }
+    }
+
     Write-Host "Copying $Description..."
     Copy-Item -LiteralPath $Source -Destination $Destination -Force
 }

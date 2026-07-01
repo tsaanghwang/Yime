@@ -24,6 +24,9 @@ func TestConvertResponseIncludesClearedCompositionState(t *testing.T) {
 	if value, ok := got["showCandidates"]; !ok || value.(bool) {
 		t.Fatalf("expected showCandidates=false, got %#v", got["showCandidates"])
 	}
+	if value, ok := got["return"]; !ok || value.(int) != 1 {
+		t.Fatalf("expected return=1, got %#v", got["return"])
+	}
 	if value, ok := got["selStart"]; !ok || value.(int) != 0 {
 		t.Fatalf("expected selStart=0, got %#v", got["selStart"])
 	}
