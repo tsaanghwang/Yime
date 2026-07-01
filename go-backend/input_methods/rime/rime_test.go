@@ -19,10 +19,11 @@ type testBackend struct {
 	commitString string
 	asciiMode    bool
 	fullShape    bool
+	schemaID     string
 }
 
 func newTestBackend() *testBackend {
-	return &testBackend{}
+	return &testBackend{schemaID: "yime_variable"}
 }
 
 func (b *testBackend) Initialize(sharedDir, userDir string, firstRun bool) bool {
@@ -145,6 +146,19 @@ func (b *testBackend) GetOption(name string) bool {
 	default:
 		return false
 	}
+}
+
+func (b *testBackend) SelectSchema(schemaID string) bool {
+	if schemaID == "" {
+		return false
+	}
+	b.schemaID = schemaID
+	b.ClearComposition()
+	return true
+}
+
+func (b *testBackend) CurrentSchema() string {
+	return b.schemaID
 }
 
 func (b *testBackend) currentCommit() string {
@@ -576,6 +590,28 @@ func TestOnCommandHandlesKnownAndMissingCommand(t *testing.T) {
 	}
 }
 
+func TestOnCommandSwitchesYimeSchema(t *testing.T) {
+	ime := newTestIME()
+	backend := ime.backend.(*testBackend)
+	backend.composition = "ni"
+	backend.refreshCandidates()
+
+	resp := ime.onCommand(&pime.Request{
+		SeqNum: 14,
+		ID:     pime.FlexibleID{Int: ID_YIME_FULL, IsInt: true},
+	}, pime.NewResponse(14, true))
+
+	if resp.ReturnValue != 1 {
+		t.Fatalf("expected schema switch command to be handled, got %d", resp.ReturnValue)
+	}
+	if backend.CurrentSchema() != "yime_full" {
+		t.Fatalf("expected yime_full schema, got %q", backend.CurrentSchema())
+	}
+	if backend.composition != "" || backend.candidates != nil {
+		t.Fatal("expected schema switch to clear active composition")
+	}
+}
+
 func TestOnMenuReturnsSettingsMenu(t *testing.T) {
 	ime := newTestIME()
 
@@ -590,6 +626,15 @@ func TestOnMenuReturnsSettingsMenu(t *testing.T) {
 	}
 	if text, ok := items[0]["text"].(string); !ok || text == "" {
 		t.Fatalf("expected first menu item text, got %#v", items[0])
+	}
+	if text, ok := items[0]["text"].(string); !ok || text != "变长模式" {
+		t.Fatalf("expected variable mode menu item first, got %#v", items[0])
+	}
+	if checked, ok := items[0]["checked"].(bool); !ok || !checked {
+		t.Fatalf("expected variable mode checked by default, got %#v", items[0])
+	}
+	if text, ok := items[1]["text"].(string); !ok || text != "等长模式" {
+		t.Fatalf("expected full mode menu item second, got %#v", items[1])
 	}
 }
 

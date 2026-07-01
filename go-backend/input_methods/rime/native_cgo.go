@@ -106,3 +106,21 @@ func (b *nativeBackend) GetOption(name string) bool {
 	}
 	return GetOption(b.sessionID, name)
 }
+
+func (b *nativeBackend) SelectSchema(schemaID string) bool {
+	if !b.EnsureSession() {
+		return false
+	}
+	return SelectSchema(b.sessionID, schemaID)
+}
+
+func (b *nativeBackend) CurrentSchema() string {
+	if !b.EnsureSession() {
+		return ""
+	}
+	schemaID, ok := GetCurrentSchema(b.sessionID)
+	if !ok {
+		return ""
+	}
+	return schemaID
+}

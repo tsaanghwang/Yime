@@ -129,6 +129,8 @@ var (
 		freeContext           *syscall.LazyProc
 		setOption             *syscall.LazyProc
 		getOption             *syscall.LazyProc
+		getCurrentSchema      *syscall.LazyProc
+		selectSchema          *syscall.LazyProc
 		getVersion            *syscall.LazyProc
 	}
 )
@@ -163,6 +165,8 @@ func loadRimeDLL(dllPath string) error {
 		freeContext           *syscall.LazyProc
 		setOption             *syscall.LazyProc
 		getOption             *syscall.LazyProc
+		getCurrentSchema      *syscall.LazyProc
+		selectSchema          *syscall.LazyProc
 		getVersion            *syscall.LazyProc
 	}{
 		setup:                 dll.NewProc("RimeSetup"),
@@ -182,6 +186,8 @@ func loadRimeDLL(dllPath string) error {
 		freeContext:           dll.NewProc("RimeFreeContext"),
 		setOption:             dll.NewProc("RimeSetOption"),
 		getOption:             dll.NewProc("RimeGetOption"),
+		getCurrentSchema:      dll.NewProc("RimeGetCurrentSchema"),
+		selectSchema:          dll.NewProc("RimeSelectSchema"),
 		getVersion:            dll.NewProc("RimeGetVersion"),
 	}
 
@@ -189,7 +195,7 @@ func loadRimeDLL(dllPath string) error {
 		procs.setup, procs.initialize, procs.finalize, procs.startMaintenance, procs.joinMaintenanceThread,
 		procs.deployConfigFile, procs.createSession, procs.findSession, procs.destroySession, procs.processKey,
 		procs.clearComposition, procs.getCommit, procs.freeCommit, procs.getContext, procs.freeContext,
-		procs.setOption, procs.getOption,
+		procs.setOption, procs.getOption, procs.getCurrentSchema, procs.selectSchema,
 	} {
 		if err := proc.Find(); err != nil {
 			return err
@@ -344,6 +350,31 @@ func SetOption(sessionId RimeSessionId, option string, value bool) {
 func GetOption(sessionId RimeSessionId, option string) bool {
 	name := utf8Ptr(option)
 	r1, _, _ := rimeProcs.getOption.Call(uintptr(sessionId), uintptr(unsafe.Pointer(name)))
+	runtime.KeepAlive(name)
+	return boolResult(r1)
+}
+
+func GetCurrentSchema(sessionId RimeSessionId) (string, bool) {
+	buf := make([]byte, 128)
+	r1, _, _ := rimeProcs.getCurrentSchema.Call(
+		uintptr(sessionId),
+		uintptr(unsafe.Pointer(&buf[0])),
+		uintptr(len(buf)),
+	)
+	if !boolResult(r1) {
+		return "", false
+	}
+	for i, b := range buf {
+		if b == 0 {
+			return string(buf[:i]), true
+		}
+	}
+	return string(buf), true
+}
+
+func SelectSchema(sessionId RimeSessionId, schemaID string) bool {
+	name := utf8Ptr(schemaID)
+	r1, _, _ := rimeProcs.selectSchema.Call(uintptr(sessionId), uintptr(unsafe.Pointer(name)))
 	runtime.KeepAlive(name)
 	return boolResult(r1)
 }

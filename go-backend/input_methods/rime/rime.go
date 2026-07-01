@@ -21,6 +21,8 @@ const (
 	ID_FULL_SHAPE         = 3
 	ID_ASCII_PUNCT        = 4
 	ID_TRADITIONALIZATION = 5
+	ID_YIME_VARIABLE      = 20
+	ID_YIME_FULL          = 21
 	ID_DEPLOY             = 10
 	ID_SYNC               = 11
 	ID_SYNC_DIR           = 12
@@ -67,6 +69,8 @@ type rimeBackend interface {
 	State() rimeState
 	SetOption(name string, value bool)
 	GetOption(name string) bool
+	SelectSchema(schemaID string) bool
+	CurrentSchema() string
 }
 
 type IME struct {
@@ -226,6 +230,10 @@ func (ime *IME) onCommand(req *pime.Request, resp *pime.Response) *pime.Response
 		ime.toggleOption("ascii_punct")
 	case ID_TRADITIONALIZATION:
 		ime.toggleOption("traditionalization")
+	case ID_YIME_VARIABLE:
+		ime.selectSchema("yime_variable")
+	case ID_YIME_FULL:
+		ime.selectSchema("yime_full")
 	case ID_DEPLOY:
 		log.Println("重新部署尚未实现")
 	case ID_SYNC:
@@ -477,6 +485,15 @@ func (ime *IME) toggleOption(name string) {
 	ime.backend.SetOption(name, !ime.backend.GetOption(name))
 }
 
+func (ime *IME) selectSchema(schemaID string) {
+	if ime.backend == nil || schemaID == "" {
+		return
+	}
+	if ime.backend.SelectSchema(schemaID) {
+		ime.backend.ClearComposition()
+	}
+}
+
 func (ime *IME) updateLangStatus(req *pime.Request, resp *pime.Response) {
 	if !ime.style.DisplayTrayIcon || ime.backend == nil {
 		return
@@ -594,6 +611,10 @@ func (ime *IME) buildMenu() []map[string]interface{} {
 	fullShape := ime.backend != nil && ime.backend.GetOption("full_shape")
 	asciiPunct := ime.backend != nil && ime.backend.GetOption("ascii_punct")
 	traditionalization := ime.backend != nil && ime.backend.GetOption("traditionalization")
+	currentSchema := ""
+	if ime.backend != nil {
+		currentSchema = ime.backend.CurrentSchema()
+	}
 
 	asciiText := "中文 → 英文"
 	if asciiMode {
@@ -613,6 +634,9 @@ func (ime *IME) buildMenu() []map[string]interface{} {
 	}
 
 	return []map[string]interface{}{
+		{"id": ID_YIME_VARIABLE, "text": "变长模式", "checked": currentSchema == "" || currentSchema == "yime_variable"},
+		{"id": ID_YIME_FULL, "text": "等长模式", "checked": currentSchema == "yime_full"},
+		{"text": ""},
 		{"id": ID_ASCII_MODE, "text": asciiText},
 		{"id": ID_TRADITIONALIZATION, "text": traditionalizationText},
 		{"id": ID_ASCII_PUNCT, "text": punctText},
