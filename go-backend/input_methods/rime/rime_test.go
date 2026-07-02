@@ -719,23 +719,27 @@ func TestOnMenuReturnsSettingsMenu(t *testing.T) {
 	if text, ok := items[0]["text"].(string); !ok || text == "" {
 		t.Fatalf("expected first menu item text, got %#v", items[0])
 	}
-	if text, ok := items[0]["text"].(string); !ok || text != "变长模式" {
-		t.Fatalf("expected variable mode menu item first, got %#v", items[0])
+	modeMenu := findSubmenuItem(t, items, "模式")
+	if len(modeMenu) != 3 {
+		t.Fatalf("expected mode submenu with full/variable/shorthand items, got %#v", modeMenu)
 	}
-	if checked, ok := items[0]["checked"].(bool); !ok || !checked {
-		t.Fatalf("expected variable mode checked by default, got %#v", items[0])
+	if text, ok := modeMenu[0]["text"].(string); !ok || text != "等长" {
+		t.Fatalf("expected full mode menu item first, got %#v", modeMenu[0])
 	}
-	if text, ok := items[1]["text"].(string); !ok || text != "等长模式" {
-		t.Fatalf("expected full mode menu item second, got %#v", items[1])
+	if text, ok := modeMenu[1]["text"].(string); !ok || text != "变长" {
+		t.Fatalf("expected variable mode menu item second, got %#v", modeMenu[1])
 	}
-	if text, ok := items[2]["text"].(string); !ok || text != "省键模式" {
-		t.Fatalf("expected shorthand mode menu item third, got %#v", items[2])
+	if checked, ok := modeMenu[1]["checked"].(bool); !ok || !checked {
+		t.Fatalf("expected variable mode checked by default, got %#v", modeMenu[1])
 	}
-	if checked, ok := items[2]["checked"].(bool); !ok || checked {
-		t.Fatalf("expected shorthand mode unchecked by default, got %#v", items[2])
+	if text, ok := modeMenu[2]["text"].(string); !ok || text != "省键" {
+		t.Fatalf("expected shorthand mode menu item third, got %#v", modeMenu[2])
 	}
-	if enabled, ok := items[2]["enabled"].(bool); !ok || enabled {
-		t.Fatalf("expected shorthand mode disabled without bundled schema, got %#v", items[2])
+	if checked, ok := modeMenu[2]["checked"].(bool); !ok || checked {
+		t.Fatalf("expected shorthand mode unchecked by default, got %#v", modeMenu[2])
+	}
+	if enabled, ok := modeMenu[2]["enabled"].(bool); !ok || enabled {
+		t.Fatalf("expected shorthand mode disabled without bundled schema, got %#v", modeMenu[2])
 	}
 
 	pageSizeMenu := findSubmenuItem(t, items, "候选每页数量")

@@ -871,9 +871,11 @@ func (ime *IME) buildMenu() []map[string]interface{} {
 	}
 
 	return []map[string]interface{}{
-		{"id": ID_YIME_VARIABLE, "text": "变长模式", "checked": currentSchema == "" || currentSchema == "yime_variable"},
-		{"id": ID_YIME_FULL, "text": "等长模式", "checked": currentSchema == "yime_full"},
-		{"id": ID_YIME_SHORTHAND, "text": "省键模式", "checked": currentSchema == "yime_shorthand", "enabled": ime.schemaAvailable("yime_shorthand")},
+		{"text": "模式", "submenu": []map[string]interface{}{
+			{"id": ID_YIME_FULL, "text": "等长", "checked": currentSchema == "yime_full"},
+			{"id": ID_YIME_VARIABLE, "text": "变长", "checked": currentSchema == "" || currentSchema == "yime_variable"},
+			{"id": ID_YIME_SHORTHAND, "text": "省键", "checked": currentSchema == "yime_shorthand", "enabled": ime.schemaAvailable("yime_shorthand")},
+		}},
 		{"text": ""},
 		{"id": ID_ASCII_MODE, "text": asciiText},
 		{"id": ID_TRADITIONALIZATION, "text": traditionalizationText},
