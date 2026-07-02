@@ -9,3 +9,4 @@ go-backend/input_methods/rime/data/
 go-backend/build/
 go-backend/.gotmp/
 installer/*.exe
+.arts/
