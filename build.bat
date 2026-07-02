@@ -30,6 +30,11 @@ if defined SKIP_ARM64 (
 	"%CMAKE_EXE%" --build build_arm64 --config Release --target PIMETextService || exit /b 1
 )
 
+echo "Start building go-backend"
+pushd go-backend || exit /b 1
+cmd /C build.bat || exit /b 1
+popd
+
 echo "Start building McBopomofo"
 pushd McBopomofoWeb || exit /b 1
 cmd /C npm install || exit /b 1
