@@ -14,7 +14,8 @@ style:
   inline_preedit: composition #composition, preview, input, false
   display_tray_icon: true
   candidate_format: "{0} {1}" #0-candidate, 1-comment
-  candidate_per_row: 1
+  horizontal: true
+  candidate_per_row: 10
   candidate_use_cursor: true
   soft_cursor: false
   menu_opencc: "" #tw2s.json, t2s.json
@@ -26,6 +27,8 @@ menu:
     states: [ 半角, 全角 ]
   - name: ascii_punct
     states: [ 。，, ．， ]
+  - name: _horizontal
+    states: [ 竖排, 横排 ]
   - text: ""
   - text: "方案列表(&L)"
     command: "get_schema_list"

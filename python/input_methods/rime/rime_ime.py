@@ -27,6 +27,9 @@ import os
 APP = "PIME"
 APP_VERSION = "0.01"
 CONFIG_FILE = APP + ".yaml"
+HORIZONTAL_OPTION = b'_horizontal'
+HORIZONTAL_CANDIDATES_PER_ROW = 10
+VERTICAL_CANDIDATES_PER_ROW = 1
 
 user_dir = os.path.join(os.path.expandvars("%APPDATA%"), APP, RIME)
 first_run = not os.path.isdir(user_dir)
@@ -119,7 +122,7 @@ class RimeTextService(TextService):
                 candPerRow = self.style.candidate_per_row,
                 candUseCursor = self.style.candidate_use_cursor)
             rime.set_option(self.session_id, b'soft_cursor', self.style.soft_cursor)
-            rime.set_option(self.session_id, b'_horizontal', self.style.candidate_per_row > 1)
+            rime.set_option(self.session_id, HORIZONTAL_OPTION, self.style.candidate_per_row > 1)
 
     def onDeactivate(self):
         TextService.onDeactivate(self)
@@ -268,7 +271,13 @@ class RimeTextService(TextService):
 
     def toggleOption(self, name):
         ret = rime.get_option(self.session_id, name)
-        rime.set_option(self.session_id, name, not ret)
+        enabled = not ret
+        rime.set_option(self.session_id, name, enabled)
+        if name == HORIZONTAL_OPTION:
+            candPerRow = HORIZONTAL_CANDIDATES_PER_ROW if enabled else VERTICAL_CANDIDATES_PER_ROW
+            self.customizeUI(candPerRow = candPerRow)
+            if self.style:
+                self.style.candidate_per_row = candPerRow
         self.updateLangStatus()
 
     def onCommand(self, commandId, commandType):
