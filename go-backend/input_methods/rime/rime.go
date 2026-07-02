@@ -894,8 +894,8 @@ func (ime *IME) addButtons(resp *pime.Response) {
 		resp.AddButton = append(resp.AddButton, pime.ButtonInfo{
 			ID:        "switch-shape",
 			Icon:      iconPath,
-			Text:      "全半角切换",
-			Tooltip:   "全角/半角切换",
+			Text:      "全半宽切换",
+			Tooltip:   "全宽/半宽切换",
 			CommandID: ID_FULL_SHAPE,
 		})
 	}
@@ -909,8 +909,8 @@ func (ime *IME) addButtons(resp *pime.Response) {
 	}
 	resp.AddButton = append(resp.AddButton, pime.ButtonInfo{
 		ID:      "reverse-lookup",
-		Text:    "反查编码",
-		Tooltip: "反查编码",
+		Text:    "显示编码",
+		Tooltip: "显示编码",
 		Type:    "menu",
 	})
 	resp.AddButton = append(resp.AddButton, pime.ButtonInfo{
@@ -1063,7 +1063,7 @@ func (ime *IME) buildReverseLookupMenu() []map[string]interface{} {
 	return []map[string]interface{}{
 		{"id": ID_REVERSE_LOOKUP_DEFAULT, "text": "默认：标准拼音 + 音元拼音", "checked": ime.reverseLookupDisplayMode == "default"},
 		{"id": ID_REVERSE_LOOKUP_FULL, "text": "完整：标准拼音、音元拼音和键位序列", "checked": ime.reverseLookupDisplayMode == "full"},
-		{"id": ID_REVERSE_LOOKUP_HIDDEN, "text": "隐藏反查编码", "checked": ime.reverseLookupDisplayMode == "hidden"},
+		{"id": ID_REVERSE_LOOKUP_HIDDEN, "text": "隐藏编码", "checked": ime.reverseLookupDisplayMode == "hidden"},
 		{"text": ""},
 		{"id": ID_REVERSE_LOOKUP_STANDARD_PINYIN, "text": "仅标准拼音", "checked": ime.reverseLookupDisplayMode == "standard_pinyin"},
 		{"id": ID_REVERSE_LOOKUP_YIME_PINYIN, "text": "仅音元拼音", "checked": ime.reverseLookupDisplayMode == "yime_pinyin"},

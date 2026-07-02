@@ -42,7 +42,7 @@ def rimeCallback(context_object, session_id, message_type, message_value):
 rime_callback = RimeNotificationHandler(rimeCallback)
 rime.set_notification_handler(rime_callback, None)
 
-class RimeTextService(TextService):   
+class RimeTextService(TextService):
     session_id = None
     icon_dir = os.path.join(curdir, "icons")
     style = None
@@ -82,8 +82,8 @@ class RimeTextService(TextService):
         icon_name = "full.ico"
         self.addButton("switch-shape",
             icon = os.path.join(self.icon_dir, icon_name),
-            text = "全半角切換",
-            tooltip = "全角/半角切換",
+            text = "全半宽切換",
+            tooltip = "全宽/半宽切換",
             commandId = ID_FULL_SHAPE
         )
         # 設定
@@ -195,7 +195,7 @@ class RimeTextService(TextService):
         is_caps_on = self.getKeyState(VK_CAPITAL)
 
         if self.client.isWindows8Above: # windows 8 mode icon
-            # FIXME: we need a better set of icons to meet the 
+            # FIXME: we need a better set of icons to meet the
             #        WIndows 8 IME guideline and UX guidelines.
             icon_name = "%s_%s_caps%s.ico" % ("eng" if is_ascii_mode else "chi", "full" if is_full_shape else "half", "on" if is_caps_on else "off")
             icon_path = os.path.join(self.icon_dir, icon_name)
@@ -270,7 +270,7 @@ class RimeTextService(TextService):
         ret = rime.get_option(self.session_id, name)
         rime.set_option(self.session_id, name, not ret)
         self.updateLangStatus()
-        
+
     def onCommand(self, commandId, commandType):
         print("onCommand", commandId, commandType)
         global user_dir, shared_dir
@@ -283,7 +283,7 @@ class RimeTextService(TextService):
             self.toggleOption(self.style.get_option(commandId))
         elif commandId in (ID_ASCII_MODE, ID_MODE_ICON) and commandType == COMMAND_LEFT_CLICK:  # 切換中英文模式
             self.toggleOption(b'ascii_mode')
-        elif commandId == ID_FULL_SHAPE:  # 切換全半角
+        elif commandId == ID_FULL_SHAPE:  # 切換全半宽
             self.toggleOption(b'full_shape')
         elif commandId == ID_USER_DIR:
             os.startfile(user_dir)
