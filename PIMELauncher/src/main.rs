@@ -75,6 +75,20 @@ fn signal_quit_event() {
     }
 }
 
+/// Clears any stale quit signal left by a previous `/quit` invocation.
+fn reset_quit_event() {
+    use windows::core::w;
+    use windows::Win32::Foundation::CloseHandle;
+    use windows::Win32::System::Threading::{CreateEventW, ResetEvent};
+
+    unsafe {
+        if let Ok(handle) = CreateEventW(None, true, false, w!("PIMELauncher2_QuitEvent")) {
+            let _ = ResetEvent(handle);
+            let _ = CloseHandle(handle);
+        }
+    }
+}
+
 /// Waits asynchronously for the named quit event to be signaled.
 async fn wait_for_quit_event() {
     use windows::core::w;
@@ -136,6 +150,7 @@ async fn main() {
     };
 
     if !is_worker {
+        reset_quit_event();
         run_watchdog(&args).await;
     } else {
         run_worker().await;
