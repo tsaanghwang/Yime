@@ -15,11 +15,6 @@ import (
 func newRealRimeSession(t *testing.T) RimeSessionId {
 	t.Helper()
 
-	_, filename, _, ok := runtime.Caller(0)
-	if !ok {
-		t.Fatal("failed to locate rime runtime test directory")
-	}
-	wd := filepath.Dir(filename)
 	appData := os.Getenv("APPDATA")
 	if appData == "" {
 		t.Skip("APPDATA is not set")
@@ -28,7 +23,7 @@ func newRealRimeSession(t *testing.T) RimeSessionId {
 	if info, err := os.Stat(userDir); err != nil || !info.IsDir() {
 		t.Skip("existing user Rime directory is required")
 	}
-	dataDir := filepath.Join(wd, "data")
+	dataDir := rimeRuntimeTestDataDir(t)
 
 	if !RimeInit(dataDir, userDir, APP, APP_VERSION, false) {
 		t.Fatal("RimeInit failed")
@@ -47,6 +42,15 @@ func newRealRimeSession(t *testing.T) RimeSessionId {
 	SetOption(sessionID, "ascii_mode", false)
 	t.Logf("ascii_mode after forcing off: %t", GetOption(sessionID, "ascii_mode"))
 	return sessionID
+}
+
+func rimeRuntimeTestDataDir(t *testing.T) string {
+	t.Helper()
+	_, filename, _, ok := runtime.Caller(0)
+	if !ok {
+		t.Fatal("failed to locate rime runtime test directory")
+	}
+	return filepath.Join(filepath.Dir(filename), "data")
 }
 
 func TestRealRimeCanCommitText(t *testing.T) {
@@ -87,6 +91,28 @@ func TestRealRimeCanCommitText(t *testing.T) {
 				t.Fatalf("expected converted text commit for %s, got %q", input, commit.Text)
 			}
 		})
+	}
+}
+
+func TestRealRimeCanSelectYimeShorthandSchema(t *testing.T) {
+	sessionID := newRealRimeSession(t)
+	schemaPath := filepath.Join(rimeRuntimeTestDataDir(t), "yime_shorthand.schema.yaml")
+
+	if !deploySchemaConfig(schemaPath) {
+		t.Fatalf("expected yime_shorthand schema deploy to succeed: %s", schemaPath)
+	}
+
+	if !SelectSchema(sessionID, "yime_shorthand") {
+		t.Fatal("expected yime_shorthand schema to be selectable")
+	}
+	if schemaID, ok := GetCurrentSchema(sessionID); !ok || schemaID != "yime_shorthand" {
+		t.Fatalf("expected current schema yime_shorthand, got %q ok=%t", schemaID, ok)
+	}
+
+	typeASCII(t, sessionID, "qu")
+	menu, ok := GetMenu(sessionID)
+	if !ok || len(menu.Candidates) == 0 {
+		t.Fatalf("expected shorthand candidates after qu, got %#v", menu)
 	}
 }
 

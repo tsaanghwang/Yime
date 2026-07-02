@@ -1,0 +1,48 @@
+# Rime schema
+# encoding: utf-8
+# Generated from Yime runtime_candidates_materialized.
+
+schema:
+  schema_id: yime_shorthand
+  name: "Yime 省键模式"
+  version: "2026-07-02"
+
+engine:
+  processors:
+    - ascii_composer
+    - recognizer
+    - key_binder
+    - speller
+    - punctuator
+    - selector
+    - navigator
+    - express_editor
+  segmentors:
+    - ascii_segmentor
+    - matcher
+    - abc_segmentor
+    - punct_segmentor
+    - fallback_segmentor
+  translators:
+    - table_translator
+    - punct_translator
+
+speller:
+  alphabet: "qufvkc;gxwlj$op[strhdm.aibe%8/,y]1'n564JKL7930z2SDMAN@!#"
+  delimiter: " "
+
+translator:
+  dictionary: yime_shorthand
+  enable_user_dict: true
+  enable_sentence: false
+  enable_completion: true
+
+menu:
+  page_size: 9
+
+punctuator:
+  import_preset: default
+
+key_binder:
+  import_preset: default
+

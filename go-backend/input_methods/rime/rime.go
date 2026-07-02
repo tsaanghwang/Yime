@@ -549,6 +549,11 @@ func (ime *IME) selectSchema(schemaID string) {
 	if ime.backend == nil || schemaID == "" {
 		return
 	}
+	if schemaPath := ime.schemaPath(schemaID); schemaPath != "" {
+		if !deploySchemaConfig(schemaPath) {
+			log.Printf("部署方案失败: %s", schemaPath)
+		}
+	}
 	if ime.backend.SelectSchema(schemaID) {
 		ime.backend.ClearComposition()
 	}
@@ -685,12 +690,19 @@ func (ime *IME) iconPath(name string) string {
 }
 
 func (ime *IME) schemaAvailable(schemaID string) bool {
+	return ime.schemaPath(schemaID) != ""
+}
+
+func (ime *IME) schemaPath(schemaID string) string {
 	if schemaID == "" {
-		return false
+		return ""
 	}
 	schemaPath := filepath.Join(ime.sharedDir(), schemaID+".schema.yaml")
 	info, err := os.Stat(schemaPath)
-	return err == nil && !info.IsDir()
+	if err == nil && !info.IsDir() {
+		return schemaPath
+	}
+	return ""
 }
 
 func (ime *IME) buildMenu() []map[string]interface{} {
