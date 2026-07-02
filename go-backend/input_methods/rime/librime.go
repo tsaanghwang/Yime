@@ -100,6 +100,12 @@ type rimeCommitC struct {
 	Text     *byte
 }
 
+type rimeCandidateListIteratorC struct {
+	Ptr       uintptr
+	Index     int32
+	Candidate rimeCandidateC
+}
+
 type rimeContextC struct {
 	DataSize          int32
 	Composition       rimeCompositionC
@@ -132,6 +138,9 @@ var (
 		getCurrentSchema      *syscall.LazyProc
 		selectSchema          *syscall.LazyProc
 		selectCandidate       *syscall.LazyProc
+		candidateListBegin    *syscall.LazyProc
+		candidateListNext     *syscall.LazyProc
+		candidateListEnd      *syscall.LazyProc
 		getVersion            *syscall.LazyProc
 	}
 )
@@ -169,6 +178,9 @@ func loadRimeDLL(dllPath string) error {
 		getCurrentSchema      *syscall.LazyProc
 		selectSchema          *syscall.LazyProc
 		selectCandidate       *syscall.LazyProc
+		candidateListBegin    *syscall.LazyProc
+		candidateListNext     *syscall.LazyProc
+		candidateListEnd      *syscall.LazyProc
 		getVersion            *syscall.LazyProc
 	}{
 		setup:                 dll.NewProc("RimeSetup"),
@@ -191,6 +203,9 @@ func loadRimeDLL(dllPath string) error {
 		getCurrentSchema:      dll.NewProc("RimeGetCurrentSchema"),
 		selectSchema:          dll.NewProc("RimeSelectSchema"),
 		selectCandidate:       dll.NewProc("RimeSelectCandidateOnCurrentPage"),
+		candidateListBegin:    dll.NewProc("RimeCandidateListBegin"),
+		candidateListNext:     dll.NewProc("RimeCandidateListNext"),
+		candidateListEnd:      dll.NewProc("RimeCandidateListEnd"),
 		getVersion:            dll.NewProc("RimeGetVersion"),
 	}
 
@@ -199,6 +214,7 @@ func loadRimeDLL(dllPath string) error {
 		procs.deployConfigFile, procs.createSession, procs.findSession, procs.destroySession, procs.processKey,
 		procs.clearComposition, procs.getCommit, procs.freeCommit, procs.getContext, procs.freeContext,
 		procs.setOption, procs.getOption, procs.getCurrentSchema, procs.selectSchema, procs.selectCandidate,
+		procs.candidateListBegin, procs.candidateListNext, procs.candidateListEnd,
 	} {
 		if err := proc.Find(); err != nil {
 			return err
@@ -223,8 +239,8 @@ func cString(ptr *byte) string {
 		return ""
 	}
 	bytes := make([]byte, 0, 32)
-	for p := uintptr(unsafe.Pointer(ptr)); ; p++ {
-		b := *(*byte)(unsafe.Pointer(p))
+	for i := 0; ; i++ {
+		b := *(*byte)(unsafe.Add(unsafe.Pointer(ptr), i))
 		if b == 0 {
 			break
 		}
@@ -316,7 +332,6 @@ func GetMenu(sessionId RimeSessionId) (RimeMenu, bool) {
 		NumCandidates:             int(context.Menu.NumCandidates),
 		SelectKeys:                cString(context.Menu.SelectKeys),
 	}
-
 	if context.Menu.NumCandidates > 0 && context.Menu.Candidates != nil {
 		candidates := unsafe.Slice(context.Menu.Candidates, int(context.Menu.NumCandidates))
 		menu.Candidates = make([]RimeCandidate, 0, len(candidates))
@@ -328,6 +343,31 @@ func GetMenu(sessionId RimeSessionId) (RimeMenu, bool) {
 		}
 	}
 	return menu, true
+}
+
+func GetCandidateList(sessionId RimeSessionId) ([]RimeCandidate, bool) {
+	if rimeProcs.candidateListBegin == nil || rimeProcs.candidateListNext == nil || rimeProcs.candidateListEnd == nil {
+		return nil, false
+	}
+	iterator := rimeCandidateListIteratorC{}
+	r1, _, _ := rimeProcs.candidateListBegin.Call(uintptr(sessionId), uintptr(unsafe.Pointer(&iterator)))
+	if !boolResult(r1) {
+		return nil, false
+	}
+	defer rimeProcs.candidateListEnd.Call(uintptr(unsafe.Pointer(&iterator)))
+
+	candidates := make([]RimeCandidate, 0, RIME_MAX_NUM_CANDIDATES)
+	for {
+		r1, _, _ = rimeProcs.candidateListNext.Call(uintptr(unsafe.Pointer(&iterator)))
+		if !boolResult(r1) {
+			break
+		}
+		candidates = append(candidates, RimeCandidate{
+			Text:    cString(iterator.Candidate.Text),
+			Comment: cString(iterator.Candidate.Comment),
+		})
+	}
+	return candidates, true
 }
 
 func GetCommit(sessionId RimeSessionId) (RimeCommit, bool) {
@@ -414,14 +454,7 @@ func GetName() string {
 }
 
 func GetVersion() string {
-	if rimeProcs.getVersion == nil {
-		return ""
-	}
-	if err := rimeProcs.getVersion.Find(); err != nil {
-		return ""
-	}
-	r1, _, _ := rimeProcs.getVersion.Call()
-	return cString((*byte)(unsafe.Pointer(r1)))
+	return ""
 }
 
 func RimeInit(datadir, userdir, appname, appver string, fullcheck bool) bool {

@@ -70,6 +70,10 @@ func (b *nativeBackend) SelectCandidate(index int) bool {
 	return SelectCandidate(b.sessionID, index)
 }
 
+func (b *nativeBackend) UsesBackendCandidatePaging() bool {
+	return true
+}
+
 func (b *nativeBackend) State() rimeState {
 	state := rimeState{}
 	if b.sessionID == 0 {

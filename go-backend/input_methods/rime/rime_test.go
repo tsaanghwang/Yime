@@ -22,6 +22,24 @@ type testBackend struct {
 	schemaID     string
 }
 
+type backendPagingTestBackend struct {
+	*testBackend
+	processedKeys []int
+}
+
+func (b *backendPagingTestBackend) UsesBackendCandidatePaging() bool {
+	return true
+}
+
+func (b *backendPagingTestBackend) ProcessKey(req *pime.Request, translatedKeyCode, modifiers int) bool {
+	b.processedKeys = append(b.processedKeys, translatedKeyCode)
+	if req.KeyCode == vkNext {
+		b.candidates = []candidateItem{{Text: "六"}, {Text: "七"}, {Text: "八"}, {Text: "九"}, {Text: "十"}}
+		return true
+	}
+	return b.testBackend.ProcessKey(req, translatedKeyCode, modifiers)
+}
+
 func newTestBackend() *testBackend {
 	return &testBackend{schemaID: "yime_variable"}
 }
@@ -275,6 +293,18 @@ func TestNewInitialState(t *testing.T) {
 	}
 }
 
+func TestInitWithMissingUserDirDoesNotPanic(t *testing.T) {
+	t.Setenv("APPDATA", t.TempDir())
+	ime := New(&pime.Client{ID: "test-client"}).(*IME)
+
+	if !ime.Init(&pime.Request{}) {
+		t.Fatal("expected Init to keep service available when user RIME data is missing")
+	}
+	if ime.BackendAvailable() {
+		t.Fatal("expected native backend to stay unavailable without user RIME data")
+	}
+}
+
 func TestFilterKeyDownProcessesKeyWithoutUpdatingUI(t *testing.T) {
 	ime := newTestIME()
 
@@ -400,6 +430,39 @@ func TestOnKeyDownBacktickSelectsSecondCandidate(t *testing.T) {
 	}
 }
 
+func TestOnKeyDownMinusSelectsThirdCandidate(t *testing.T) {
+	ime := newTestIME()
+	backend := ime.backend.(*testBackend)
+	backend.composition = "ni"
+	backend.candidates = []candidateItem{{Text: "你"}, {Text: "呢"}, {Text: "泥"}}
+	ime.keyComposing = true
+
+	filterResp := ime.filterKeyDown(&pime.Request{
+		SeqNum:   4,
+		KeyCode:  0xBD,
+		CharCode: '-',
+	}, pime.NewResponse(4, true))
+	if filterResp.ReturnValue != 1 {
+		t.Fatalf("expected minus selection to be handled, got %d", filterResp.ReturnValue)
+	}
+
+	resp := ime.onKeyDown(&pime.Request{
+		SeqNum:   5,
+		KeyCode:  0xBD,
+		CharCode: '-',
+	}, pime.NewResponse(5, true))
+
+	if resp.ReturnValue != 1 {
+		t.Fatalf("expected onKeyDown after selection to succeed, got %d", resp.ReturnValue)
+	}
+	if resp.CommitString != "泥" {
+		t.Fatalf("expected third candidate 泥, got %q", resp.CommitString)
+	}
+	if backend.composition != "" || backend.candidates != nil {
+		t.Fatal("expected state reset after candidate selection")
+	}
+}
+
 func TestSelectCandidateByIndexCommitsCandidate(t *testing.T) {
 	ime := newTestIME()
 	backend := ime.backend.(*testBackend)
@@ -423,6 +486,37 @@ func TestSelectCandidateByIndexCommitsCandidate(t *testing.T) {
 	}
 	if backend.composition != "" || backend.candidates != nil {
 		t.Fatal("expected state reset after direct candidate selection")
+	}
+}
+
+func TestSelectCandidateUsesVisiblePageOffset(t *testing.T) {
+	ime := newTestIME()
+	ime.candidatePageSize = 5
+	ime.candidatePageStart = 5
+	backend := ime.backend.(*testBackend)
+	backend.composition = "abc"
+	backend.candidates = []candidateItem{
+		{Text: "一"}, {Text: "二"}, {Text: "三"}, {Text: "四"}, {Text: "五"},
+		{Text: "六"}, {Text: "七"}, {Text: "八"}, {Text: "九"},
+	}
+	ime.keyComposing = true
+
+	resp := ime.HandleRequest(&pime.Request{
+		Method: "selectCandidate",
+		SeqNum: 7,
+		Data: map[string]interface{}{
+			"candidateIndex": float64(0),
+		},
+	})
+
+	if resp.ReturnValue != 1 {
+		t.Fatalf("expected selectCandidate to be handled, got %d", resp.ReturnValue)
+	}
+	if resp.CommitString != "六" {
+		t.Fatalf("expected first visible candidate on second page 六, got %q", resp.CommitString)
+	}
+	if backend.composition != "" || backend.candidates != nil {
+		t.Fatal("expected state reset after paged candidate selection")
 	}
 }
 
@@ -742,7 +836,7 @@ func TestOnMenuReturnsSettingsMenu(t *testing.T) {
 		t.Fatalf("expected shorthand mode disabled without bundled schema, got %#v", modeMenu[2])
 	}
 
-	pageSizeMenu := findSubmenuItem(t, items, "候选每页数量")
+	pageSizeMenu := findSubmenuItem(t, items, "候选数量")
 	if len(pageSizeMenu) != 5 {
 		t.Fatalf("expected page size 5-9 menu items, got %#v", pageSizeMenu)
 	}
@@ -753,6 +847,115 @@ func TestOnMenuReturnsSettingsMenu(t *testing.T) {
 	item = findMenuItem(t, pageSizeMenu, ID_CANDIDATE_PAGE_SIZE_9)
 	if text, ok := item["text"].(string); !ok || text != "9 项" {
 		t.Fatalf("expected page size 9 menu text, got %#v", item)
+	}
+}
+
+func TestCandidatePageSizeLimitsVisibleCandidates(t *testing.T) {
+	ime := newTestIME()
+	ime.candidatePageSize = 5
+	state := rimeState{
+		Composition: "abc",
+		Candidates: []candidateItem{
+			{Text: "一"}, {Text: "二"}, {Text: "三"}, {Text: "四"}, {Text: "五"},
+			{Text: "六"}, {Text: "七"}, {Text: "八"}, {Text: "九"},
+		},
+	}
+	resp := pime.NewResponse(20, true)
+
+	ime.applyStateToResponse(resp, state)
+
+	if resp.SetSelKeys != "1234567890" {
+		t.Fatalf("expected numeric candidate labels, got %q", resp.SetSelKeys)
+	}
+	if len(resp.CandidateList) != 5 {
+		t.Fatalf("expected 5 visible candidates, got %#v", resp.CandidateList)
+	}
+	if resp.CandidateList[0] != "一" || resp.CandidateList[4] != "五" {
+		t.Fatalf("expected first page candidates 一-五, got %#v", resp.CandidateList)
+	}
+}
+
+func TestCandidatePageDownShowsNextVisibleCandidates(t *testing.T) {
+	ime := newTestIME()
+	ime.candidatePageSize = 5
+	backend := ime.backend.(*testBackend)
+	backend.composition = "abc"
+	backend.candidates = []candidateItem{
+		{Text: "一"}, {Text: "二"}, {Text: "三"}, {Text: "四"}, {Text: "五"},
+		{Text: "六"}, {Text: "七"}, {Text: "八"}, {Text: "九"},
+	}
+
+	filterResp := ime.filterKeyDown(&pime.Request{SeqNum: 21, KeyCode: vkNext}, pime.NewResponse(21, true))
+	if filterResp.ReturnValue != 1 {
+		t.Fatalf("expected PgDn to be handled for local candidate paging, got %d", filterResp.ReturnValue)
+	}
+	resp := ime.onKeyDown(&pime.Request{SeqNum: 22, KeyCode: vkNext}, pime.NewResponse(22, true))
+
+	if got, want := resp.CandidateList, []string{"六", "七", "八", "九"}; strings.Join(got, "") != strings.Join(want, "") {
+		t.Fatalf("expected second page candidates %#v, got %#v", want, got)
+	}
+}
+
+func TestBackendPagingPageDownPassesThroughToBackend(t *testing.T) {
+	ime := newTestIME()
+	ime.candidatePageSize = 5
+	backend := &backendPagingTestBackend{testBackend: newTestBackend()}
+	backend.composition = "abc"
+	backend.candidates = []candidateItem{{Text: "一"}, {Text: "二"}, {Text: "三"}, {Text: "四"}, {Text: "五"}}
+	ime.backend = backend
+	ime.keyComposing = true
+
+	filterResp := ime.filterKeyDown(&pime.Request{SeqNum: 25, KeyCode: vkNext}, pime.NewResponse(25, true))
+	if filterResp.ReturnValue != 1 {
+		t.Fatalf("expected PgDn to be handled by backend paging, got %d", filterResp.ReturnValue)
+	}
+	if ime.candidatePageStart != 0 {
+		t.Fatalf("expected backend paging not to alter local page start, got %d", ime.candidatePageStart)
+	}
+	if len(backend.processedKeys) == 0 || backend.processedKeys[0] != translateKeyCode(&pime.Request{KeyCode: vkNext}) {
+		t.Fatalf("expected PgDn to pass through to backend, got %#v", backend.processedKeys)
+	}
+
+	resp := ime.onKeyDown(&pime.Request{SeqNum: 26, KeyCode: vkNext}, pime.NewResponse(26, true))
+	if got, want := resp.CandidateList, []string{"六", "七", "八", "九", "十"}; strings.Join(got, "") != strings.Join(want, "") {
+		t.Fatalf("expected backend-provided page candidates %#v, got %#v", want, got)
+	}
+}
+
+func TestOutOfRangeCandidateShortcutIsConsumedOnShortPage(t *testing.T) {
+	ime := newTestIME()
+	ime.candidatePageSize = 5
+	ime.candidatePageStart = 5
+	ime.keyComposing = true
+	backend := ime.backend.(*testBackend)
+	backend.composition = "abc"
+	backend.candidates = []candidateItem{
+		{Text: "一"}, {Text: "二"}, {Text: "三"}, {Text: "四"}, {Text: "五"},
+		{Text: "六"}, {Text: "七"}, {Text: "八"}, {Text: "九"},
+	}
+
+	filterResp := ime.filterKeyDown(&pime.Request{
+		SeqNum:   23,
+		KeyCode:  0xDC,
+		CharCode: '\\',
+	}, pime.NewResponse(23, true))
+	if filterResp.ReturnValue != 1 {
+		t.Fatalf("expected out-of-range shortcut to be consumed, got %d", filterResp.ReturnValue)
+	}
+	resp := ime.onKeyDown(&pime.Request{
+		SeqNum:   24,
+		KeyCode:  0xDC,
+		CharCode: '\\',
+	}, pime.NewResponse(24, true))
+
+	if resp.CommitString != "" {
+		t.Fatalf("expected no candidate commit for out-of-range shortcut, got %q", resp.CommitString)
+	}
+	if backend.composition != "abc" || len(backend.candidates) != 9 {
+		t.Fatalf("expected composition and candidates to remain, got composition=%q candidates=%#v", backend.composition, backend.candidates)
+	}
+	if got, want := resp.CandidateList, []string{"六", "七", "八", "九"}; strings.Join(got, "") != strings.Join(want, "") {
+		t.Fatalf("expected second page candidates %#v, got %#v", want, got)
 	}
 }
 

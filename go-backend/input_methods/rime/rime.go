@@ -58,7 +58,7 @@ const (
 	defaultCandidatePageSize = 5
 	minCandidatePageSize     = 5
 	maxCandidatePageSize     = 9
-	yimeCandidateSelectKeys  = "␣`-=\\····"
+	yimeCandidateSelectKeys  = "1234567890"
 )
 
 type Style struct {
@@ -104,6 +104,10 @@ type rimeBackend interface {
 	CurrentSchema() string
 }
 
+type backendCandidatePager interface {
+	UsesBackendCandidatePaging() bool
+}
+
 type IME struct {
 	*pime.TextServiceBase
 	iconDir                  string
@@ -111,6 +115,7 @@ type IME struct {
 	selectKeys               string
 	reverseLookupDisplayMode string
 	candidatePageSize        int
+	candidatePageStart       int
 	lastKeyDownCode          int
 	lastKeySkip              int
 	lastKeyDownRet           bool
@@ -243,6 +248,9 @@ func (ime *IME) onSelectCandidate(req *pime.Request, resp *pime.Response) *pime.
 	if index < 0 || ime.backend == nil {
 		resp.ReturnValue = 0
 		return resp
+	}
+	if !ime.backendUsesCandidatePaging() {
+		index += ime.candidatePageStart
 	}
 
 	ime.createSession(resp)
@@ -378,7 +386,7 @@ func (ime *IME) onMenu(req *pime.Request, resp *pime.Response) *pime.Response {
 			buttonID = raw
 		}
 	}
-	if buttonID != "settings" && buttonID != "windows-mode-icon" && buttonID != "candidate-page-size" && buttonID != "reverse-lookup" &&
+	if buttonID != "settings" && buttonID != "windows-mode-icon" && buttonID != "reverse-lookup" &&
 		buttonID != "user-lexicon" && buttonID != "help" {
 		resp.ReturnData = []map[string]interface{}{}
 		resp.ReturnValue = 0
@@ -392,8 +400,6 @@ func (ime *IME) onMenu(req *pime.Request, resp *pime.Response) *pime.Response {
 		resp.ReturnData = ime.buildReverseLookupMenu()
 	case "user-lexicon":
 		resp.ReturnData = ime.buildUserLexiconMenu()
-	case "candidate-page-size":
-		resp.ReturnData = ime.buildCandidatePageSizeMenu()
 	default:
 		resp.ReturnData = ime.buildMenu()
 	}
@@ -421,7 +427,11 @@ func (ime *IME) Init(req *pime.Request) bool {
 	}
 	userDir := filepath.Join(appData, APP, "Rime")
 	info, statErr := os.Stat(userDir)
-	if statErr != nil || !info.IsDir() {
+	if statErr != nil {
+		log.Printf("未找到用户 RIME 数据目录，原生 RIME 不可用: %v", statErr)
+		return true
+	}
+	if !info.IsDir() {
 		log.Println("未找到用户 RIME 数据目录，原生 RIME 不可用")
 		return true
 	}
@@ -453,13 +463,20 @@ func (ime *IME) processKey(req *pime.Request, isUp bool) bool {
 	if !isUp {
 		ime.keyComposing = ime.isComposing()
 	}
-	translatedKeyCode := translateKeyCode(req)
-	modifiers := translateModifiers(req, isUp)
-	if !isUp && modifiers == 0 && ime.keyComposing {
-		if remapped, ok := remapYimeCandidateSelectionKey(req); ok {
-			translatedKeyCode = remapped
+	if !isUp && ime.keyComposing {
+		if !ime.backendUsesCandidatePaging() && ime.handleCandidatePageKey(req) {
+			ime.logShortcutTrace(req, isUp, 0, 0, false, true)
+			return true
+		}
+		if _, ok := candidateSelectionIndex(req); ok && ime.hasCandidates() {
+			selected := ime.handleVisibleCandidateSelectionKey(req)
+			ime.logShortcutTrace(req, isUp, 0, 0, selected, true)
+			return true
 		}
 	}
+	ime.candidatePageStart = 0
+	translatedKeyCode := translateKeyCode(req)
+	modifiers := translateModifiers(req, isUp)
 	backendRet := ime.backend.ProcessKey(req, translatedKeyCode, modifiers)
 	handled := backendRet
 	if backendRet {
@@ -550,6 +567,109 @@ func remapYimeCandidateSelectionKey(req *pime.Request) (int, bool) {
 	}
 }
 
+func candidateSelectionIndex(req *pime.Request) (int, bool) {
+	switch req.KeyCode {
+	case vkSpace:
+		return 0, true
+	case 0xC0: // VK_OEM_3: `
+		return 1, true
+	case 0xBD: // VK_OEM_MINUS: -
+		return 2, true
+	case 0xBB: // VK_OEM_PLUS: =
+		return 3, true
+	case 0xDC: // VK_OEM_5: backslash
+		return 4, true
+	}
+	switch req.CharCode {
+	case ' ':
+		return 0, true
+	case '`':
+		return 1, true
+	case '-':
+		return 2, true
+	case '=':
+		return 3, true
+	case '\\':
+		return 4, true
+	default:
+		return 0, false
+	}
+}
+
+func isCandidatePageKey(req *pime.Request) bool {
+	if req == nil {
+		return false
+	}
+	switch req.KeyCode {
+	case vkHome, vkPrior, vkNext, vkEnd:
+		return true
+	default:
+		return false
+	}
+}
+
+func (ime *IME) hasCandidates() bool {
+	if ime.backend == nil {
+		return false
+	}
+	return len(ime.backend.State().Candidates) > 0
+}
+
+func (ime *IME) handleCandidatePageKey(req *pime.Request) bool {
+	if !isCandidatePageKey(req) || ime.backend == nil {
+		return false
+	}
+	state := ime.backend.State()
+	if len(state.Candidates) == 0 {
+		return false
+	}
+	pageSize := ime.normalizedCandidatePageSize()
+	lastStart := ((len(state.Candidates) - 1) / pageSize) * pageSize
+	oldStart := ime.candidatePageStart
+	switch req.KeyCode {
+	case vkHome:
+		ime.candidatePageStart = 0
+	case vkPrior:
+		ime.candidatePageStart -= pageSize
+		if ime.candidatePageStart < 0 {
+			ime.candidatePageStart = 0
+		}
+	case vkNext:
+		if ime.candidatePageStart < lastStart {
+			ime.candidatePageStart += pageSize
+			if ime.candidatePageStart > lastStart {
+				ime.candidatePageStart = lastStart
+			}
+		}
+	case vkEnd:
+		ime.candidatePageStart = lastStart
+	}
+	return ime.candidatePageStart != oldStart
+}
+
+func (ime *IME) handleVisibleCandidateSelectionKey(req *pime.Request) bool {
+	if ime.backend == nil {
+		return false
+	}
+	index, ok := candidateSelectionIndex(req)
+	if !ok {
+		return false
+	}
+	state := ime.backend.State()
+	globalIndex := index
+	if !ime.backendUsesCandidatePaging() {
+		globalIndex += ime.candidatePageStart
+	}
+	if globalIndex < 0 || globalIndex >= len(state.Candidates) {
+		return false
+	}
+	if !ime.backend.SelectCandidate(globalIndex) {
+		return false
+	}
+	ime.candidatePageStart = 0
+	return true
+}
+
 func (ime *IME) onKey(req *pime.Request, resp *pime.Response) bool {
 	if ime.backend == nil {
 		ime.clearResponse(resp)
@@ -588,13 +708,62 @@ func (ime *IME) applyStateToResponse(resp *pime.Response, state rimeState) {
 	resp.SelEnd = state.SelEnd
 
 	if len(state.Candidates) > 0 {
-		resp.CandidateList = ime.formatCandidates(state.Candidates)
-		resp.CandidateCursor = state.CandidateCursor
+		visibleCandidates, cursor := ime.visibleCandidates(state.Candidates, state.CandidateCursor)
+		resp.CandidateList = ime.formatCandidates(visibleCandidates)
+		resp.CandidateCursor = cursor
 		resp.ShowCandidates = true
 	} else {
+		ime.candidatePageStart = 0
 		resp.ShowCandidates = false
 	}
 	ime.keyComposing = true
+}
+
+func (ime *IME) normalizedCandidatePageSize() int {
+	if ime.candidatePageSize < minCandidatePageSize || ime.candidatePageSize > maxCandidatePageSize {
+		return defaultCandidatePageSize
+	}
+	return ime.candidatePageSize
+}
+
+func (ime *IME) visibleCandidates(candidates []candidateItem, candidateCursor int) ([]candidateItem, int) {
+	if len(candidates) == 0 {
+		ime.candidatePageStart = 0
+		return nil, 0
+	}
+	if ime.backendUsesCandidatePaging() {
+		ime.candidatePageStart = 0
+		if candidateCursor < 0 || candidateCursor >= len(candidates) {
+			candidateCursor = 0
+		}
+		return candidates, candidateCursor
+	}
+	pageSize := ime.normalizedCandidatePageSize()
+	lastStart := ((len(candidates) - 1) / pageSize) * pageSize
+	if ime.candidatePageStart < 0 {
+		ime.candidatePageStart = 0
+	}
+	if ime.candidatePageStart > lastStart {
+		ime.candidatePageStart = lastStart
+	}
+	start := ime.candidatePageStart
+	end := start + pageSize
+	if end > len(candidates) {
+		end = len(candidates)
+	}
+	cursor := candidateCursor - start
+	if cursor < 0 || cursor >= end-start {
+		cursor = 0
+	}
+	return candidates[start:end], cursor
+}
+
+func (ime *IME) backendUsesCandidatePaging() bool {
+	if ime.backend == nil {
+		return false
+	}
+	pager, ok := ime.backend.(backendCandidatePager)
+	return ok && pager.UsesBackendCandidatePaging()
 }
 
 func (ime *IME) createSession(resp *pime.Response) {
@@ -622,6 +791,7 @@ func (ime *IME) destroySession(resp *pime.Response) {
 	}
 	ime.keyComposing = false
 	ime.selectKeys = ""
+	ime.candidatePageStart = 0
 }
 
 func (ime *IME) clearResponse(resp *pime.Response) {
@@ -738,12 +908,6 @@ func (ime *IME) addButtons(resp *pime.Response) {
 		})
 	}
 	resp.AddButton = append(resp.AddButton, pime.ButtonInfo{
-		ID:      "candidate-page-size",
-		Text:    "候选项数",
-		Tooltip: "候选项数",
-		Type:    "menu",
-	})
-	resp.AddButton = append(resp.AddButton, pime.ButtonInfo{
 		ID:      "reverse-lookup",
 		Text:    "反查编码",
 		Tooltip: "反查编码",
@@ -767,7 +931,7 @@ func (ime *IME) removeButtons(resp *pime.Response) {
 	if !ime.style.DisplayTrayIcon || resp == nil {
 		return
 	}
-	resp.RemoveButton = append(resp.RemoveButton, "switch-lang", "switch-shape", "settings", "candidate-page-size", "reverse-lookup", "user-lexicon", "help")
+	resp.RemoveButton = append(resp.RemoveButton, "switch-lang", "switch-shape", "settings", "reverse-lookup", "user-lexicon", "help")
 	if ime.Client != nil && ime.Client.IsWindows8Above {
 		resp.RemoveButton = append(resp.RemoveButton, "windows-mode-icon")
 	}
@@ -882,7 +1046,7 @@ func (ime *IME) buildMenu() []map[string]interface{} {
 		{"id": ID_ASCII_PUNCT, "text": punctText},
 		{"id": ID_FULL_SHAPE, "text": shapeText},
 		{"text": ""},
-		{"text": "候选每页数量", "submenu": ime.buildCandidatePageSizeMenu()},
+		{"text": "候选数量", "submenu": ime.buildCandidatePageSizeMenu()},
 		{"text": ""},
 		{"id": ID_DEPLOY, "text": "重新部署(&D)"},
 		{"id": ID_SYNC, "text": "同步(&S)"},
@@ -1125,6 +1289,7 @@ func (ime *IME) setCandidatePageSize(size int) error {
 		return os.ErrInvalid
 	}
 	ime.candidatePageSize = size
+	ime.candidatePageStart = 0
 	if ime.backend != nil {
 		schemaID := ime.backend.CurrentSchema()
 		if schemaID == "" {
