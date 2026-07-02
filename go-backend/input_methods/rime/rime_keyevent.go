@@ -119,13 +119,14 @@ var vkMaps = map[int]int{
 
 func translateKeyCode(req *pime.Request) int {
 	keyCode := req.KeyCode
-	if keyCode == vkShift {
+	switch keyCode {
+	case vkShift:
 		if req.KeyStates.IsKeyToggled(vkRShift) {
 			keyCode = vkRShift
 		} else {
 			keyCode = vkLShift
 		}
-	} else if keyCode == vkControl {
+	case vkControl:
 		if req.KeyStates.IsKeyToggled(vkRControl) {
 			keyCode = vkRControl
 		} else {
