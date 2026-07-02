@@ -16,19 +16,35 @@ const (
 	APP         = "PIME"
 	APP_VERSION = "0.01"
 
-	ID_MODE_ICON          = 1
-	ID_ASCII_MODE         = 2
-	ID_FULL_SHAPE         = 3
-	ID_ASCII_PUNCT        = 4
-	ID_TRADITIONALIZATION = 5
-	ID_YIME_VARIABLE      = 20
-	ID_YIME_FULL          = 21
-	ID_DEPLOY             = 10
-	ID_SYNC               = 11
-	ID_SYNC_DIR           = 12
-	ID_SHARED_DIR         = 13
-	ID_USER_DIR           = 14
-	ID_LOG_DIR            = 16
+	ID_MODE_ICON                      = 1
+	ID_ASCII_MODE                     = 2
+	ID_FULL_SHAPE                     = 3
+	ID_ASCII_PUNCT                    = 4
+	ID_TRADITIONALIZATION             = 5
+	ID_YIME_VARIABLE                  = 20
+	ID_YIME_FULL                      = 21
+	ID_YIME_SHORTHAND                 = 22
+	ID_DEPLOY                         = 10
+	ID_SYNC                           = 11
+	ID_SYNC_DIR                       = 12
+	ID_SHARED_DIR                     = 13
+	ID_USER_DIR                       = 14
+	ID_LOG_DIR                        = 16
+	ID_USER_LEXICON_ADD               = 30
+	ID_USER_LEXICON_DELETE            = 31
+	ID_USER_LEXICON_EDIT              = 32
+	ID_USER_LEXICON_APPLY             = 33
+	ID_USER_LEXICON_IMPORT            = 34
+	ID_USER_LEXICON_EXPORT            = 35
+	ID_REVERSE_LOOKUP_DEFAULT         = 40
+	ID_REVERSE_LOOKUP_FULL            = 41
+	ID_REVERSE_LOOKUP_HIDDEN          = 42
+	ID_REVERSE_LOOKUP_STANDARD_PINYIN = 43
+	ID_REVERSE_LOOKUP_YIME_PINYIN     = 44
+	ID_REVERSE_LOOKUP_KEY_SEQUENCE    = 45
+	ID_HELP_VIEW                      = 60
+	ID_HELP_TRIAL_FEEDBACK            = 61
+	ID_HELP_COPY_TRIAL_TEMPLATE       = 62
 )
 
 type Style struct {
@@ -75,16 +91,17 @@ type rimeBackend interface {
 
 type IME struct {
 	*pime.TextServiceBase
-	iconDir         string
-	style           Style
-	selectKeys      string
-	lastKeyDownCode int
-	lastKeySkip     int
-	lastKeyDownRet  bool
-	lastKeyUpCode   int
-	lastKeyUpRet    bool
-	keyComposing    bool
-	backend         rimeBackend
+	iconDir                  string
+	style                    Style
+	selectKeys               string
+	reverseLookupDisplayMode string
+	lastKeyDownCode          int
+	lastKeySkip              int
+	lastKeyDownRet           bool
+	lastKeyUpCode            int
+	lastKeyUpRet             bool
+	keyComposing             bool
+	backend                  rimeBackend
 }
 
 func New(client *pime.Client) pime.TextService {
@@ -100,6 +117,7 @@ func New(client *pime.Client) pime.TextService {
 			InlinePreedit:      "composition",
 			SoftCursor:         false,
 		},
+		reverseLookupDisplayMode: "default",
 	}
 }
 
@@ -234,6 +252,8 @@ func (ime *IME) onCommand(req *pime.Request, resp *pime.Response) *pime.Response
 		ime.selectSchema("yime_variable")
 	case ID_YIME_FULL:
 		ime.selectSchema("yime_full")
+	case ID_YIME_SHORTHAND:
+		ime.selectSchema("yime_shorthand")
 	case ID_DEPLOY:
 		log.Println("重新部署尚未实现")
 	case ID_SYNC:
@@ -246,6 +266,27 @@ func (ime *IME) onCommand(req *pime.Request, resp *pime.Response) *pime.Response
 		ime.openPath(filepath.Join(ime.userDir(), "sync"))
 	case ID_LOG_DIR:
 		ime.openPath(filepath.Join(os.Getenv("LOCALAPPDATA"), "PIME", "Logs"))
+	case ID_USER_LEXICON_ADD, ID_USER_LEXICON_DELETE, ID_USER_LEXICON_EDIT,
+		ID_USER_LEXICON_APPLY, ID_USER_LEXICON_IMPORT, ID_USER_LEXICON_EXPORT:
+		log.Printf("用户词库命令尚未接入: %d", commandID)
+	case ID_REVERSE_LOOKUP_DEFAULT:
+		ime.setReverseLookupDisplayMode("default")
+	case ID_REVERSE_LOOKUP_FULL:
+		ime.setReverseLookupDisplayMode("full")
+	case ID_REVERSE_LOOKUP_HIDDEN:
+		ime.setReverseLookupDisplayMode("hidden")
+	case ID_REVERSE_LOOKUP_STANDARD_PINYIN:
+		ime.setReverseLookupDisplayMode("standard_pinyin")
+	case ID_REVERSE_LOOKUP_YIME_PINYIN:
+		ime.setReverseLookupDisplayMode("yime_pinyin")
+	case ID_REVERSE_LOOKUP_KEY_SEQUENCE:
+		ime.setReverseLookupDisplayMode("key_sequence")
+	case ID_HELP_VIEW:
+		ime.openPath(filepath.Join(ime.helpDir(), "README.md"))
+	case ID_HELP_TRIAL_FEEDBACK:
+		ime.openPath(filepath.Join(ime.helpDir(), "trial-feedback.md"))
+	case ID_HELP_COPY_TRIAL_TEMPLATE:
+		ime.copyTextToClipboard(ime.trialFeedbackTemplate())
 	default:
 		log.Printf("未知命令: %d", commandID)
 		resp.ReturnValue = 0
@@ -257,6 +298,15 @@ func (ime *IME) onCommand(req *pime.Request, resp *pime.Response) *pime.Response
 	return resp
 }
 
+func (ime *IME) setReverseLookupDisplayMode(mode string) {
+	switch mode {
+	case "default", "full", "hidden", "standard_pinyin", "yime_pinyin", "key_sequence":
+		ime.reverseLookupDisplayMode = mode
+	default:
+		ime.reverseLookupDisplayMode = "default"
+	}
+}
+
 func (ime *IME) onMenu(req *pime.Request, resp *pime.Response) *pime.Response {
 	buttonID := req.ID.StringValue()
 	if buttonID == "" && req.Data != nil {
@@ -266,13 +316,23 @@ func (ime *IME) onMenu(req *pime.Request, resp *pime.Response) *pime.Response {
 			buttonID = raw
 		}
 	}
-	if buttonID != "settings" && buttonID != "windows-mode-icon" {
+	if buttonID != "settings" && buttonID != "windows-mode-icon" && buttonID != "reverse-lookup" &&
+		buttonID != "user-lexicon" && buttonID != "help" {
 		resp.ReturnData = []map[string]interface{}{}
 		resp.ReturnValue = 0
 		return resp
 	}
 
-	resp.ReturnData = ime.buildMenu()
+	switch buttonID {
+	case "help":
+		resp.ReturnData = ime.buildHelpMenu()
+	case "reverse-lookup":
+		resp.ReturnData = ime.buildReverseLookupMenu()
+	case "user-lexicon":
+		resp.ReturnData = ime.buildUserLexiconMenu()
+	default:
+		resp.ReturnData = ime.buildMenu()
+	}
 	resp.ReturnValue = 1
 	return resp
 }
@@ -566,13 +626,31 @@ func (ime *IME) addButtons(resp *pime.Response) {
 			Type: "menu",
 		})
 	}
+	resp.AddButton = append(resp.AddButton, pime.ButtonInfo{
+		ID:      "reverse-lookup",
+		Text:    "反查编码",
+		Tooltip: "反查编码",
+		Type:    "menu",
+	})
+	resp.AddButton = append(resp.AddButton, pime.ButtonInfo{
+		ID:      "user-lexicon",
+		Text:    "用户词库",
+		Tooltip: "用户词库",
+		Type:    "menu",
+	})
+	resp.AddButton = append(resp.AddButton, pime.ButtonInfo{
+		ID:      "help",
+		Text:    "帮助",
+		Tooltip: "帮助",
+		Type:    "menu",
+	})
 }
 
 func (ime *IME) removeButtons(resp *pime.Response) {
 	if !ime.style.DisplayTrayIcon || resp == nil {
 		return
 	}
-	resp.RemoveButton = append(resp.RemoveButton, "switch-lang", "switch-shape", "settings")
+	resp.RemoveButton = append(resp.RemoveButton, "switch-lang", "switch-shape", "settings", "reverse-lookup", "user-lexicon", "help")
 	if ime.Client != nil && ime.Client.IsWindows8Above {
 		resp.RemoveButton = append(resp.RemoveButton, "windows-mode-icon")
 	}
@@ -606,6 +684,15 @@ func (ime *IME) iconPath(name string) string {
 	return iconPath
 }
 
+func (ime *IME) schemaAvailable(schemaID string) bool {
+	if schemaID == "" {
+		return false
+	}
+	schemaPath := filepath.Join(ime.sharedDir(), schemaID+".schema.yaml")
+	info, err := os.Stat(schemaPath)
+	return err == nil && !info.IsDir()
+}
+
 func (ime *IME) buildMenu() []map[string]interface{} {
 	asciiMode := ime.backend != nil && ime.backend.GetOption("ascii_mode")
 	fullShape := ime.backend != nil && ime.backend.GetOption("full_shape")
@@ -636,6 +723,7 @@ func (ime *IME) buildMenu() []map[string]interface{} {
 	return []map[string]interface{}{
 		{"id": ID_YIME_VARIABLE, "text": "变长模式", "checked": currentSchema == "" || currentSchema == "yime_variable"},
 		{"id": ID_YIME_FULL, "text": "等长模式", "checked": currentSchema == "yime_full"},
+		{"id": ID_YIME_SHORTHAND, "text": "省键模式", "checked": currentSchema == "yime_shorthand", "enabled": ime.schemaAvailable("yime_shorthand")},
 		{"text": ""},
 		{"id": ID_ASCII_MODE, "text": asciiText},
 		{"id": ID_TRADITIONALIZATION, "text": traditionalizationText},
@@ -650,6 +738,42 @@ func (ime *IME) buildMenu() []map[string]interface{} {
 			{"id": ID_SYNC_DIR, "text": "同步文件夹"},
 			{"id": ID_LOG_DIR, "text": "日志文件夹"},
 		}},
+	}
+}
+
+func (ime *IME) buildReverseLookupMenu() []map[string]interface{} {
+	return []map[string]interface{}{
+		{"id": ID_REVERSE_LOOKUP_DEFAULT, "text": "默认：标准拼音 + 音元拼音", "checked": ime.reverseLookupDisplayMode == "default"},
+		{"id": ID_REVERSE_LOOKUP_FULL, "text": "完整：标准拼音、音元拼音和键位序列", "checked": ime.reverseLookupDisplayMode == "full"},
+		{"id": ID_REVERSE_LOOKUP_HIDDEN, "text": "隐藏反查编码", "checked": ime.reverseLookupDisplayMode == "hidden"},
+		{"text": ""},
+		{"id": ID_REVERSE_LOOKUP_STANDARD_PINYIN, "text": "仅标准拼音", "checked": ime.reverseLookupDisplayMode == "standard_pinyin"},
+		{"id": ID_REVERSE_LOOKUP_YIME_PINYIN, "text": "仅音元拼音", "checked": ime.reverseLookupDisplayMode == "yime_pinyin"},
+		{"id": ID_REVERSE_LOOKUP_KEY_SEQUENCE, "text": "仅键位序列", "checked": ime.reverseLookupDisplayMode == "key_sequence"},
+	}
+}
+
+func (ime *IME) buildUserLexiconMenu() []map[string]interface{} {
+	return []map[string]interface{}{
+		{"id": ID_USER_LEXICON_ADD, "text": "添加当前词条（输入数字标调拼音）", "enabled": false},
+		{"id": ID_USER_LEXICON_DELETE, "text": "删除当前词条", "enabled": false},
+		{"text": ""},
+		{"text": "编辑与重载", "submenu": []map[string]interface{}{
+			{"id": ID_USER_LEXICON_EDIT, "text": "编辑用户词库", "enabled": false},
+			{"id": ID_USER_LEXICON_APPLY, "text": "应用用户词库", "enabled": false},
+		}},
+		{"text": "导入与导出", "submenu": []map[string]interface{}{
+			{"id": ID_USER_LEXICON_IMPORT, "text": "导入用户词库", "enabled": false},
+			{"id": ID_USER_LEXICON_EXPORT, "text": "导出用户词库", "enabled": false},
+		}},
+	}
+}
+
+func (ime *IME) buildHelpMenu() []map[string]interface{} {
+	return []map[string]interface{}{
+		{"id": ID_HELP_VIEW, "text": "查看帮助"},
+		{"id": ID_HELP_TRIAL_FEEDBACK, "text": "查看试用反馈说明"},
+		{"id": ID_HELP_COPY_TRIAL_TEMPLATE, "text": "复制试用反馈模板"},
 	}
 }
 
@@ -669,6 +793,14 @@ func (ime *IME) userDir() string {
 	return filepath.Join(appData, APP, "Rime")
 }
 
+func (ime *IME) helpDir() string {
+	exePath, err := os.Executable()
+	if err != nil {
+		return ""
+	}
+	return filepath.Join(filepath.Dir(exePath), "input_methods", "rime", "help")
+}
+
 func (ime *IME) openPath(path string) {
 	if path == "" {
 		return
@@ -676,6 +808,34 @@ func (ime *IME) openPath(path string) {
 	if err := exec.Command("explorer.exe", path).Start(); err != nil {
 		log.Printf("打开路径失败 %s: %v", path, err)
 	}
+}
+
+func (ime *IME) copyTextToClipboard(text string) {
+	if text == "" {
+		return
+	}
+	cmd := exec.Command("powershell.exe", "-NoProfile", "-Command", "Set-Clipboard -Value ([Console]::In.ReadToEnd())")
+	cmd.Stdin = strings.NewReader(text)
+	if err := cmd.Start(); err != nil {
+		log.Printf("复制到剪贴板失败: %v", err)
+	}
+}
+
+func (ime *IME) trialFeedbackTemplate() string {
+	return `【Yime / PIME 试用反馈模板】
+请选择最接近的一项：
+- 装不上
+- 能装但打不开
+- 能打开但唤不起候选框
+- 候选框能出来但不能上屏
+- 第一次能用，重开后失效
+- 基本能用，但某个键位或手感很怪
+
+请补充：
+1. 你是在什么程序里试的
+2. 你做了什么操作
+3. 实际看到了什么现象
+`
 }
 
 func (ime *IME) openURL(rawURL string) {

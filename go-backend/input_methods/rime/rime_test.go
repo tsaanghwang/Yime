@@ -610,6 +610,24 @@ func TestOnCommandSwitchesYimeSchema(t *testing.T) {
 	if backend.composition != "" || backend.candidates != nil {
 		t.Fatal("expected schema switch to clear active composition")
 	}
+
+	backend.composition = "ni"
+	backend.refreshCandidates()
+
+	resp = ime.onCommand(&pime.Request{
+		SeqNum: 15,
+		ID:     pime.FlexibleID{Int: ID_YIME_SHORTHAND, IsInt: true},
+	}, pime.NewResponse(15, true))
+
+	if resp.ReturnValue != 1 {
+		t.Fatalf("expected shorthand schema switch command to be handled, got %d", resp.ReturnValue)
+	}
+	if backend.CurrentSchema() != "yime_shorthand" {
+		t.Fatalf("expected yime_shorthand schema, got %q", backend.CurrentSchema())
+	}
+	if backend.composition != "" || backend.candidates != nil {
+		t.Fatal("expected shorthand schema switch to clear active composition")
+	}
 }
 
 func TestOnMenuReturnsSettingsMenu(t *testing.T) {
@@ -636,6 +654,180 @@ func TestOnMenuReturnsSettingsMenu(t *testing.T) {
 	if text, ok := items[1]["text"].(string); !ok || text != "等长模式" {
 		t.Fatalf("expected full mode menu item second, got %#v", items[1])
 	}
+	if text, ok := items[2]["text"].(string); !ok || text != "省键模式" {
+		t.Fatalf("expected shorthand mode menu item third, got %#v", items[2])
+	}
+	if checked, ok := items[2]["checked"].(bool); !ok || checked {
+		t.Fatalf("expected shorthand mode unchecked by default, got %#v", items[2])
+	}
+	if enabled, ok := items[2]["enabled"].(bool); !ok || enabled {
+		t.Fatalf("expected shorthand mode disabled without bundled schema, got %#v", items[2])
+	}
+}
+
+func TestOnCommandSwitchesReverseLookupDisplayMode(t *testing.T) {
+	ime := newTestIME()
+
+	resp := ime.onCommand(&pime.Request{
+		SeqNum: 16,
+		ID:     pime.FlexibleID{Int: ID_REVERSE_LOOKUP_KEY_SEQUENCE, IsInt: true},
+	}, pime.NewResponse(16, true))
+
+	if resp.ReturnValue != 1 {
+		t.Fatalf("expected reverse lookup display command to be handled, got %d", resp.ReturnValue)
+	}
+	if ime.reverseLookupDisplayMode != "key_sequence" {
+		t.Fatalf("expected key_sequence mode, got %q", ime.reverseLookupDisplayMode)
+	}
+
+	reverseMenu := ime.buildReverseLookupMenu()
+	keySequence := findMenuItem(t, reverseMenu, ID_REVERSE_LOOKUP_KEY_SEQUENCE)
+	if checked, ok := keySequence["checked"].(bool); !ok || !checked {
+		t.Fatalf("expected key sequence reverse lookup item checked, got %#v", keySequence)
+	}
+}
+
+func TestBuildMenuIncludesYimeUserLexiconMenu(t *testing.T) {
+	ime := newTestIME()
+
+	userLexiconMenu := ime.buildUserLexiconMenu()
+	if len(userLexiconMenu) == 0 {
+		t.Fatal("expected user lexicon submenu")
+	}
+
+	for _, id := range []int{
+		ID_USER_LEXICON_ADD,
+		ID_USER_LEXICON_DELETE,
+		ID_USER_LEXICON_EDIT,
+		ID_USER_LEXICON_APPLY,
+		ID_USER_LEXICON_IMPORT,
+		ID_USER_LEXICON_EXPORT,
+	} {
+		item := findMenuItem(t, userLexiconMenu, id)
+		if enabled, ok := item["enabled"].(bool); !ok || enabled {
+			t.Fatalf("expected user lexicon item %d disabled until backend is connected, got %#v", id, item)
+		}
+	}
+}
+
+func TestAddButtonsIncludesTopLevelMenuButtons(t *testing.T) {
+	ime := newTestIME()
+	resp := pime.NewResponse(17, true)
+
+	ime.addButtons(resp)
+
+	want := map[string]bool{
+		"reverse-lookup": false,
+		"user-lexicon":   false,
+		"help":           false,
+	}
+	for _, button := range resp.AddButton {
+		if _, ok := want[button.ID]; !ok {
+			continue
+		}
+		want[button.ID] = true
+		if button.Type != "menu" {
+			t.Fatalf("expected %s button to be a menu, got %#v", button.ID, button)
+		}
+	}
+	for id, found := range want {
+		if !found {
+			t.Fatalf("expected %s menu button in %#v", id, resp.AddButton)
+		}
+	}
+}
+
+func TestOnMenuReturnsTopLevelReverseLookupAndUserLexiconMenus(t *testing.T) {
+	ime := newTestIME()
+
+	reverseResp := ime.onMenu(&pime.Request{
+		SeqNum: 18,
+		ID:     pime.FlexibleID{String: "reverse-lookup"},
+	}, pime.NewResponse(18, true))
+	reverseItems, ok := reverseResp.ReturnData.([]map[string]interface{})
+	if !ok || len(reverseItems) == 0 {
+		t.Fatalf("expected reverse lookup menu items, got %#v", reverseResp.ReturnData)
+	}
+	if item := findMenuItem(t, reverseItems, ID_REVERSE_LOOKUP_FULL); !strings.Contains(item["text"].(string), "键位序列") {
+		t.Fatalf("expected full reverse lookup item to describe key sequence, got %#v", item)
+	}
+
+	userResp := ime.onMenu(&pime.Request{
+		SeqNum: 19,
+		ID:     pime.FlexibleID{String: "user-lexicon"},
+	}, pime.NewResponse(19, true))
+	userItems, ok := userResp.ReturnData.([]map[string]interface{})
+	if !ok || len(userItems) == 0 {
+		t.Fatalf("expected user lexicon menu items, got %#v", userResp.ReturnData)
+	}
+	if item := findMenuItem(t, userItems, ID_USER_LEXICON_ADD); !strings.Contains(item["text"].(string), "数字标调拼音") {
+		t.Fatalf("expected add phrase item to mention numeric-tone pinyin, got %#v", item)
+	}
+}
+
+func TestOnMenuReturnsHelpMenu(t *testing.T) {
+	ime := newTestIME()
+
+	resp := ime.onMenu(&pime.Request{
+		SeqNum: 18,
+		ID:     pime.FlexibleID{String: "help"},
+	}, pime.NewResponse(18, true))
+
+	items, ok := resp.ReturnData.([]map[string]interface{})
+	if !ok || len(items) != 3 {
+		t.Fatalf("expected three help menu items, got %#v", resp.ReturnData)
+	}
+	for _, id := range []int{ID_HELP_VIEW, ID_HELP_TRIAL_FEEDBACK, ID_HELP_COPY_TRIAL_TEMPLATE} {
+		if item := findMenuItem(t, items, id); item["text"] == "" {
+			t.Fatalf("expected help menu item %d to have text, got %#v", id, item)
+		}
+	}
+}
+
+func findSubmenuItem(t *testing.T, items []map[string]interface{}, text string) []map[string]interface{} {
+	t.Helper()
+	for _, item := range items {
+		if item["text"] != text {
+			continue
+		}
+		submenu, ok := item["submenu"].([]map[string]interface{})
+		if !ok {
+			t.Fatalf("expected submenu for %q, got %#v", text, item)
+		}
+		return submenu
+	}
+	t.Fatalf("expected submenu item %q in %#v", text, items)
+	return nil
+}
+
+func findMenuItem(t *testing.T, items []map[string]interface{}, id int) map[string]interface{} {
+	t.Helper()
+	for _, item := range items {
+		if gotID, ok := item["id"].(int); ok && gotID == id {
+			return item
+		}
+		if submenu, ok := item["submenu"].([]map[string]interface{}); ok {
+			if found := findMenuItemInSubmenu(submenu, id); found != nil {
+				return found
+			}
+		}
+	}
+	t.Fatalf("expected menu item id %d in %#v", id, items)
+	return nil
+}
+
+func findMenuItemInSubmenu(items []map[string]interface{}, id int) map[string]interface{} {
+	for _, item := range items {
+		if gotID, ok := item["id"].(int); ok && gotID == id {
+			return item
+		}
+		if submenu, ok := item["submenu"].([]map[string]interface{}); ok {
+			if found := findMenuItemInSubmenu(submenu, id); found != nil {
+				return found
+			}
+		}
+	}
+	return nil
 }
 
 func TestHandleRequestCompositionTerminatedResetsState(t *testing.T) {
