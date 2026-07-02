@@ -44,7 +44,7 @@ TextService::TextService(ImeModule* module):
 	updateFont_(false),
 	candPerRow_(10),
 	selKeys_(L"1234567890"),
-	candUseCursor_(false),
+	candUseCursor_(true),
 	candFontSize_(12) {
 
 	// font for candidate and mesasge windows

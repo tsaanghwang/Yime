@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"github.com/EasyIME/pime-go/pime"
@@ -46,6 +47,18 @@ const (
 	ID_HELP_VIEW                      = 60
 	ID_HELP_TRIAL_FEEDBACK            = 61
 	ID_HELP_COPY_TRIAL_TEMPLATE       = 62
+	ID_CANDIDATE_PAGE_SIZE_5          = 70
+	ID_CANDIDATE_PAGE_SIZE_6          = 71
+	ID_CANDIDATE_PAGE_SIZE_7          = 72
+	ID_CANDIDATE_PAGE_SIZE_8          = 73
+	ID_CANDIDATE_PAGE_SIZE_9          = 74
+)
+
+const (
+	defaultCandidatePageSize = 5
+	minCandidatePageSize     = 5
+	maxCandidatePageSize     = 9
+	yimeCandidateSelectKeys  = "␣`-=\\····"
 )
 
 type Style struct {
@@ -96,6 +109,7 @@ type IME struct {
 	style                    Style
 	selectKeys               string
 	reverseLookupDisplayMode string
+	candidatePageSize        int
 	lastKeyDownCode          int
 	lastKeySkip              int
 	lastKeyDownRet           bool
@@ -112,13 +126,14 @@ func New(client *pime.Client) pime.TextService {
 			DisplayTrayIcon:    true,
 			CandidateFormat:    "{0} {1}",
 			CandidatePerRow:    1,
-			CandidateUseCursor: false,
+			CandidateUseCursor: true,
 			FontFace:           "MingLiu",
 			FontPoint:          20,
 			InlinePreedit:      "composition",
 			SoftCursor:         false,
 		},
 		reverseLookupDisplayMode: "default",
+		candidatePageSize:        defaultCandidatePageSize,
 	}
 }
 
@@ -303,6 +318,10 @@ func (ime *IME) onCommand(req *pime.Request, resp *pime.Response) *pime.Response
 		ime.openPath(filepath.Join(ime.helpDir(), "trial-feedback.md"))
 	case ID_HELP_COPY_TRIAL_TEMPLATE:
 		ime.copyTextToClipboard(ime.trialFeedbackTemplate())
+	case ID_CANDIDATE_PAGE_SIZE_5, ID_CANDIDATE_PAGE_SIZE_6, ID_CANDIDATE_PAGE_SIZE_7, ID_CANDIDATE_PAGE_SIZE_8, ID_CANDIDATE_PAGE_SIZE_9:
+		if err := ime.setCandidatePageSize(minCandidatePageSize + commandID - ID_CANDIDATE_PAGE_SIZE_5); err != nil {
+			log.Printf("设置候选页大小失败: %v", err)
+		}
 	default:
 		log.Printf("未知命令: %d", commandID)
 		resp.ReturnValue = 0
@@ -407,6 +426,11 @@ func (ime *IME) processKey(req *pime.Request, isUp bool) bool {
 	}
 	translatedKeyCode := translateKeyCode(req)
 	modifiers := translateModifiers(req, isUp)
+	if !isUp && modifiers == 0 && ime.keyComposing {
+		if remapped, ok := remapYimeCandidateSelectionKey(req); ok {
+			translatedKeyCode = remapped
+		}
+	}
 	backendRet := ime.backend.ProcessKey(req, translatedKeyCode, modifiers)
 	handled := backendRet
 	if backendRet {
@@ -468,6 +492,35 @@ func (ime *IME) shouldPassThroughModifierOnKey(req *pime.Request, filterHandled 
 	return req.KeyStates.IsKeyDown(vkControl) || req.KeyStates.IsKeyDown(vkMenu)
 }
 
+func remapYimeCandidateSelectionKey(req *pime.Request) (int, bool) {
+	switch req.KeyCode {
+	case vkSpace:
+		return int('1'), true
+	case 0xC0: // VK_OEM_3: `
+		return int('2'), true
+	case 0xBD: // VK_OEM_MINUS: -
+		return int('3'), true
+	case 0xBB: // VK_OEM_PLUS: =
+		return int('4'), true
+	case 0xDC: // VK_OEM_5: backslash
+		return int('5'), true
+	}
+	switch req.CharCode {
+	case ' ':
+		return int('1'), true
+	case '`':
+		return int('2'), true
+	case '-':
+		return int('3'), true
+	case '=':
+		return int('4'), true
+	case '\\':
+		return int('5'), true
+	default:
+		return 0, false
+	}
+}
+
 func (ime *IME) onKey(req *pime.Request, resp *pime.Response) bool {
 	if ime.backend == nil {
 		ime.clearResponse(resp)
@@ -485,7 +538,10 @@ func (ime *IME) onKey(req *pime.Request, resp *pime.Response) bool {
 		return true
 	}
 
-	if state.SelectKeys != "" && state.SelectKeys != ime.selectKeys {
+	if len(state.Candidates) > 0 && ime.selectKeys != yimeCandidateSelectKeys {
+		resp.SetSelKeys = yimeCandidateSelectKeys
+		ime.selectKeys = yimeCandidateSelectKeys
+	} else if len(state.Candidates) == 0 && state.SelectKeys != "" && state.SelectKeys != ime.selectKeys {
 		resp.SetSelKeys = state.SelectKeys
 		ime.selectKeys = state.SelectKeys
 	}
@@ -784,6 +840,8 @@ func (ime *IME) buildMenu() []map[string]interface{} {
 		{"id": ID_ASCII_PUNCT, "text": punctText},
 		{"id": ID_FULL_SHAPE, "text": shapeText},
 		{"text": ""},
+		{"text": "候选每页数量", "submenu": ime.buildCandidatePageSizeMenu()},
+		{"text": ""},
 		{"id": ID_DEPLOY, "text": "重新部署(&D)"},
 		{"id": ID_SYNC, "text": "同步(&S)"},
 		{"text": "打开文件夹(&O)", "submenu": []map[string]interface{}{
@@ -805,6 +863,22 @@ func (ime *IME) buildReverseLookupMenu() []map[string]interface{} {
 		{"id": ID_REVERSE_LOOKUP_YIME_PINYIN, "text": "仅音元拼音", "checked": ime.reverseLookupDisplayMode == "yime_pinyin"},
 		{"id": ID_REVERSE_LOOKUP_KEY_SEQUENCE, "text": "仅键位序列", "checked": ime.reverseLookupDisplayMode == "key_sequence"},
 	}
+}
+
+func (ime *IME) buildCandidatePageSizeMenu() []map[string]interface{} {
+	pageSize := ime.candidatePageSize
+	if pageSize < minCandidatePageSize || pageSize > maxCandidatePageSize {
+		pageSize = defaultCandidatePageSize
+	}
+	items := make([]map[string]interface{}, 0, maxCandidatePageSize-minCandidatePageSize+1)
+	for size := minCandidatePageSize; size <= maxCandidatePageSize; size++ {
+		items = append(items, map[string]interface{}{
+			"id":      ID_CANDIDATE_PAGE_SIZE_5 + size - minCandidatePageSize,
+			"text":    strconv.Itoa(size) + " 项",
+			"checked": size == pageSize,
+		})
+	}
+	return items
 }
 
 func (ime *IME) buildUserLexiconMenu() []map[string]interface{} {
@@ -981,6 +1055,64 @@ func normalizeNumericTonePinyin(value string) string {
 	value = strings.ReplaceAll(value, "u:", "ü")
 	value = strings.ReplaceAll(value, "v", "ü")
 	return value
+}
+
+func (ime *IME) setCandidatePageSize(size int) error {
+	if size < minCandidatePageSize || size > maxCandidatePageSize {
+		size = defaultCandidatePageSize
+	}
+	userDir := ime.userDir()
+	if userDir == "" {
+		return os.ErrNotExist
+	}
+	if err := os.MkdirAll(userDir, 0o755); err != nil {
+		return err
+	}
+	configPath := filepath.Join(userDir, "default.custom.yaml")
+	content := ""
+	if data, err := os.ReadFile(configPath); err == nil {
+		content = string(data)
+	} else if !os.IsNotExist(err) {
+		return err
+	}
+	updated := updateDefaultCustomPageSize(content, size)
+	if err := os.WriteFile(configPath, []byte(updated), 0o644); err != nil {
+		return err
+	}
+	if !deployDefaultCustomConfig(configPath) {
+		return os.ErrInvalid
+	}
+	ime.candidatePageSize = size
+	if ime.backend != nil {
+		schemaID := ime.backend.CurrentSchema()
+		if schemaID == "" {
+			schemaID = "yime_variable"
+		}
+		ime.selectSchema(schemaID)
+	}
+	return nil
+}
+
+func updateDefaultCustomPageSize(content string, size int) string {
+	line := "  menu/page_size: " + strconv.Itoa(size)
+	if strings.TrimSpace(content) == "" {
+		return "patch:\n" + line + "\n"
+	}
+	lines := strings.Split(strings.ReplaceAll(content, "\r\n", "\n"), "\n")
+	for i, existing := range lines {
+		if strings.HasPrefix(strings.TrimSpace(existing), "menu/page_size:") {
+			indent := existing[:len(existing)-len(strings.TrimLeft(existing, " \t"))]
+			lines[i] = indent + "menu/page_size: " + strconv.Itoa(size)
+			return strings.TrimRight(strings.Join(lines, "\n"), "\n") + "\n"
+		}
+	}
+	for i, existing := range lines {
+		if strings.TrimSpace(existing) == "patch:" {
+			lines = append(lines[:i+1], append([]string{line}, lines[i+1:]...)...)
+			return strings.TrimRight(strings.Join(lines, "\n"), "\n") + "\n"
+		}
+	}
+	return strings.TrimRight(content, "\r\n") + "\n\npatch:\n" + line + "\n"
 }
 
 func (ime *IME) openPath(path string) {

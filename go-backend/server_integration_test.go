@@ -458,21 +458,23 @@ func TestServerHandleMessageRimeRequestResponseFlow(t *testing.T) {
 	}
 
 	_, selectFilterResp := sendProtocolMessage(t, server, "client-6", map[string]interface{}{
-		"method":  "filterKeyDown",
-		"seqNum":  6,
-		"keyCode": 0x32,
+		"method":   "filterKeyDown",
+		"seqNum":   6,
+		"keyCode":  0xC0,
+		"charCode": '`',
 	})
 	if selectFilterResp["return"] != true {
-		t.Fatalf("expected number filter to be handled, got %#v", selectFilterResp)
+		t.Fatalf("expected backtick filter to be handled, got %#v", selectFilterResp)
 	}
 
 	_, selectResp := sendProtocolMessage(t, server, "client-6", map[string]interface{}{
-		"method":  "onKeyDown",
-		"seqNum":  7,
-		"keyCode": 0x32,
+		"method":   "onKeyDown",
+		"seqNum":   7,
+		"keyCode":  0xC0,
+		"charCode": '`',
 	})
 	if selectResp["commitString"] != "呢" {
-		t.Fatalf("expected number key to commit 呢, got %#v", selectResp)
+		t.Fatalf("expected backtick key to commit 呢, got %#v", selectResp)
 	}
 	if selectResp["return"] != true {
 		t.Fatalf("expected candidate selection return true, got %#v", selectResp)

@@ -53,11 +53,24 @@ func (b *testBackend) ProcessKey(req *pime.Request, translatedKeyCode, modifiers
 	if charCode == 0 && keyCode >= 'A' && keyCode <= 'Z' {
 		charCode = keyCode + 32
 	}
+	if charCode == 0 && keyCode >= '0' && keyCode <= '9' {
+		charCode = keyCode
+	}
 	if b.asciiMode && b.composition == "" && charCode >= 0x20 {
 		return false
 	}
 	if modifiers&releaseMask != 0 {
 		return false
+	}
+
+	if b.composition != "" && translatedKeyCode >= '1' && translatedKeyCode <= '9' {
+		index := translatedKeyCode - '1'
+		if index >= 0 && index < len(b.candidates) {
+			b.commitString = b.candidates[index].Text
+			b.composition = ""
+			b.candidates = nil
+			return true
+		}
 	}
 
 	switch keyCode {
@@ -84,17 +97,7 @@ func (b *testBackend) ProcessKey(req *pime.Request, translatedKeyCode, modifiers
 		return true
 	}
 
-	if b.composition != "" && keyCode >= '1' && keyCode <= '9' {
-		index := keyCode - '1'
-		if index >= 0 && index < len(b.candidates) {
-			b.commitString = b.candidates[index].Text
-			b.composition = ""
-			b.candidates = nil
-			return true
-		}
-	}
-
-	if charCode >= 'a' && charCode <= 'z' {
+	if (charCode >= 'a' && charCode <= 'z') || (charCode >= '0' && charCode <= '9') {
 		b.composition += string(rune(charCode))
 		b.refreshCandidates()
 		return true
@@ -232,13 +235,14 @@ func newTestIME() *IME {
 			DisplayTrayIcon:    true,
 			CandidateFormat:    "{0} {1}",
 			CandidatePerRow:    1,
-			CandidateUseCursor: false,
+			CandidateUseCursor: true,
 			FontFace:           "MingLiu",
 			FontPoint:          20,
 			InlinePreedit:      "composition",
 			SoftCursor:         false,
 		},
-		backend: newTestBackend(),
+		candidatePageSize: defaultCandidatePageSize,
+		backend:           newTestBackend(),
 	}
 }
 
@@ -321,7 +325,7 @@ func TestOnKeyDownReflectsBackendStateAfterFilter(t *testing.T) {
 	}
 }
 
-func TestOnKeyDownNumberSelectsCandidate(t *testing.T) {
+func TestOnKeyDownNumberExtendsComposition(t *testing.T) {
 	ime := newTestIME()
 	backend := ime.backend.(*testBackend)
 	backend.composition = "ni"
@@ -333,12 +337,45 @@ func TestOnKeyDownNumberSelectsCandidate(t *testing.T) {
 		KeyCode: 0x32,
 	}, pime.NewResponse(4, true))
 	if filterResp.ReturnValue != 1 {
-		t.Fatalf("expected number selection to be handled, got %d", filterResp.ReturnValue)
+		t.Fatalf("expected number code input to be handled, got %d", filterResp.ReturnValue)
 	}
 
 	resp := ime.onKeyDown(&pime.Request{
 		SeqNum:  5,
 		KeyCode: 0x32,
+	}, pime.NewResponse(5, true))
+
+	if resp.ReturnValue != 1 {
+		t.Fatalf("expected onKeyDown after number input to succeed, got %d", resp.ReturnValue)
+	}
+	if resp.CommitString != "" {
+		t.Fatalf("expected number key not to commit candidate, got %q", resp.CommitString)
+	}
+	if backend.composition != "ni2" {
+		t.Fatalf("expected number key to extend composition to ni2, got %q", backend.composition)
+	}
+}
+
+func TestOnKeyDownBacktickSelectsSecondCandidate(t *testing.T) {
+	ime := newTestIME()
+	backend := ime.backend.(*testBackend)
+	backend.composition = "ni"
+	backend.candidates = []candidateItem{{Text: "你"}, {Text: "呢"}, {Text: "泥"}}
+	ime.keyComposing = true
+
+	filterResp := ime.filterKeyDown(&pime.Request{
+		SeqNum:   4,
+		KeyCode:  0xC0,
+		CharCode: '`',
+	}, pime.NewResponse(4, true))
+	if filterResp.ReturnValue != 1 {
+		t.Fatalf("expected backtick selection to be handled, got %d", filterResp.ReturnValue)
+	}
+
+	resp := ime.onKeyDown(&pime.Request{
+		SeqNum:   5,
+		KeyCode:  0xC0,
+		CharCode: '`',
 	}, pime.NewResponse(5, true))
 
 	if resp.ReturnValue != 1 {
@@ -662,6 +699,36 @@ func TestOnMenuReturnsSettingsMenu(t *testing.T) {
 	}
 	if enabled, ok := items[2]["enabled"].(bool); !ok || enabled {
 		t.Fatalf("expected shorthand mode disabled without bundled schema, got %#v", items[2])
+	}
+
+	pageSizeMenu := findSubmenuItem(t, items, "候选每页数量")
+	if len(pageSizeMenu) != 5 {
+		t.Fatalf("expected page size 5-9 menu items, got %#v", pageSizeMenu)
+	}
+	item := findMenuItem(t, pageSizeMenu, ID_CANDIDATE_PAGE_SIZE_5)
+	if checked, ok := item["checked"].(bool); !ok || !checked {
+		t.Fatalf("expected page size 5 checked by default, got %#v", item)
+	}
+	item = findMenuItem(t, pageSizeMenu, ID_CANDIDATE_PAGE_SIZE_9)
+	if text, ok := item["text"].(string); !ok || text != "9 项" {
+		t.Fatalf("expected page size 9 menu text, got %#v", item)
+	}
+}
+
+func TestUpdateDefaultCustomPageSize(t *testing.T) {
+	created := updateDefaultCustomPageSize("", 7)
+	if created != "patch:\n  menu/page_size: 7\n" {
+		t.Fatalf("expected new default.custom.yaml content, got %q", created)
+	}
+
+	updated := updateDefaultCustomPageSize("patch:\n  schema_list:\n    - schema: yime_variable\n", 8)
+	if !strings.Contains(updated, "  menu/page_size: 8\n") {
+		t.Fatalf("expected page size inserted under patch, got %q", updated)
+	}
+
+	replaced := updateDefaultCustomPageSize("patch:\n  menu/page_size: 5\n", 9)
+	if strings.Count(replaced, "menu/page_size:") != 1 || !strings.Contains(replaced, "  menu/page_size: 9\n") {
+		t.Fatalf("expected page size replacement, got %q", replaced)
 	}
 }
 
