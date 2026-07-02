@@ -9,8 +9,8 @@ if not "%errorlevel%"=="0" (
 
 cd /d "%~dp0"
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0dev-uninstall.ps1"
-if errorlevel 1 (
-    set "EXIT_CODE=%errorlevel%"
+set "EXIT_CODE=%errorlevel%"
+if not "%EXIT_CODE%"=="0" (
     echo.
     echo PIME test uninstall failed with exit code %EXIT_CODE%.
     pause

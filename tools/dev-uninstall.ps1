@@ -78,6 +78,30 @@ function Remove-UserProfileValuesForTextService {
     }
 }
 
+function Report-TextServiceDllUsers {
+    $output = & tasklist.exe /m PIMETextService.dll 2>$null
+    if ($LASTEXITCODE -eq 0 -and $output) {
+        Write-Host ""
+        Write-Host "PIMETextService.dll is still loaded by these processes:"
+        $output | ForEach-Object { Write-Host $_ }
+        Write-Host ""
+    }
+}
+
+function Remove-InstallTree {
+    param([string]$Path)
+
+    Write-Host "Removing installation tree $Path"
+    try {
+        Remove-Item -LiteralPath $Path -Recurse -Force -ErrorAction Stop
+    } catch {
+        Report-TextServiceDllUsers
+        Write-Host "The installation tree could not be removed because one or more files are still locked."
+        Write-Host "Switch to another input method, sign out or reboot Windows, then run Reinstall-PIME-Test.cmd again."
+        throw
+    }
+}
+
 $installRootFull = $InstallRoot
 if (Test-Path -LiteralPath $InstallRoot) {
     $installRootFull = (Resolve-Path -LiteralPath $InstallRoot).Path
@@ -114,8 +138,7 @@ Remove-RegistryTree -Path "HKLM:\SOFTWARE\WOW6432Node\Classes\CLSID\$TextService
 Remove-UserProfileValuesForTextService -Clsid $TextServiceClsid
 
 if (-not $KeepInstallRoot -and (Test-Path -LiteralPath $InstallRoot)) {
-    Write-Host "Removing installation tree $InstallRoot"
-    Remove-Item -LiteralPath $InstallRoot -Recurse -Force
+    Remove-InstallTree -Path $InstallRoot
 } elseif ($KeepInstallRoot) {
     Write-Host "Keeping installation tree $InstallRoot"
 }
