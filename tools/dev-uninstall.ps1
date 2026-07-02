@@ -1,5 +1,6 @@
 param(
-    [string]$InstallRoot = "C:\Program Files (x86)\PIME"
+    [string]$InstallRoot = "C:\Program Files (x86)\PIME",
+    [switch]$KeepInstallRoot
 )
 
 $ErrorActionPreference = "Stop"
@@ -14,15 +15,82 @@ function Assert-Admin {
 
 Assert-Admin
 
+$TextServiceClsid = "{35F67E9D-A54D-4177-9697-8B0AB71A9E04}"
 $launcherExe = Join-Path $InstallRoot "PIMELauncher.exe"
 $x64Dll = Join-Path $InstallRoot "x64\PIMETextService.dll"
 $x86Dll = Join-Path $InstallRoot "x86\PIMETextService.dll"
 
-Write-Host "Stopping PIMELauncher if it is running..."
+function Remove-RegistryTree {
+    param([string]$Path)
+    Remove-Item -Path $Path -Recurse -Force -ErrorAction SilentlyContinue
+}
+
+function Remove-RegistryValue {
+    param(
+        [string]$Path,
+        [string]$Name
+    )
+    Remove-ItemProperty -Path $Path -Name $Name -ErrorAction SilentlyContinue
+}
+
+function Stop-ProcessByPathPrefix {
+    param(
+        [string]$Name,
+        [string]$PathPrefix
+    )
+
+    $processes = @(Get-Process -Name $Name -ErrorAction SilentlyContinue)
+    foreach ($process in $processes) {
+        $path = ""
+        try {
+            $path = $process.Path
+        } catch {
+            $path = ""
+        }
+        if ($path -and $path.StartsWith($PathPrefix, [System.StringComparison]::OrdinalIgnoreCase)) {
+            Write-Host "Stopping $Name pid=$($process.Id)"
+            Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue
+        }
+    }
+}
+
+function Remove-UserProfileValuesForTextService {
+    param([string]$Clsid)
+
+    $sidKeys = @(Get-ChildItem -LiteralPath "Registry::HKEY_USERS" -ErrorAction SilentlyContinue)
+    foreach ($sidKey in $sidKeys) {
+        $profileRoot = Join-Path $sidKey.PSPath "Control Panel\International\User Profile"
+        if (-not (Test-Path -LiteralPath $profileRoot)) {
+            continue
+        }
+        foreach ($localeKey in @(Get-ChildItem -LiteralPath $profileRoot -ErrorAction SilentlyContinue)) {
+            $properties = Get-ItemProperty -LiteralPath $localeKey.PSPath -ErrorAction SilentlyContinue
+            if ($null -eq $properties) {
+                continue
+            }
+            foreach ($property in $properties.PSObject.Properties) {
+                if ($property.Name -like "*$Clsid*") {
+                    Write-Host "Removing user language profile value $($property.Name)"
+                    Remove-ItemProperty -LiteralPath $localeKey.PSPath -Name $property.Name -ErrorAction SilentlyContinue
+                }
+            }
+        }
+    }
+}
+
+$installRootFull = $InstallRoot
+if (Test-Path -LiteralPath $InstallRoot) {
+    $installRootFull = (Resolve-Path -LiteralPath $InstallRoot).Path
+}
+
+Write-Host "Stopping PIMELauncher and installed Go backend if they are running..."
 if (Test-Path -LiteralPath $launcherExe) {
     & $launcherExe /quit | Out-Null
     Start-Sleep -Seconds 1
 }
+Stop-ProcessByPathPrefix -Name "PIMELauncher" -PathPrefix $installRootFull
+Stop-ProcessByPathPrefix -Name "server" -PathPrefix (Join-Path $installRootFull "go-backend")
+Start-Sleep -Milliseconds 500
 
 Write-Host "Unregistering text service DLLs..."
 if (Test-Path -LiteralPath $x64Dll) {
@@ -33,12 +101,23 @@ if (Test-Path -LiteralPath $x86Dll) {
 }
 
 Write-Host "Removing launcher autorun and install markers..."
-Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" -Name "PIMELauncher" -ErrorAction SilentlyContinue
-Remove-Item -Path "HKLM:\SOFTWARE\PIME" -Recurse -Force -ErrorAction SilentlyContinue
+Remove-RegistryValue -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" -Name "PIMELauncher"
+Remove-RegistryValue -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Run" -Name "PIMELauncher"
+Remove-RegistryTree -Path "HKLM:\SOFTWARE\PIME"
+Remove-RegistryTree -Path "HKLM:\SOFTWARE\WOW6432Node\PIME"
+Remove-RegistryTree -Path "HKLM:\SOFTWARE\Microsoft\CTF\TIP\$TextServiceClsid"
+Remove-RegistryTree -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\CTF\TIP\$TextServiceClsid"
+Remove-RegistryTree -Path "HKCU:\SOFTWARE\Microsoft\CTF\TIP\$TextServiceClsid"
+Remove-RegistryTree -Path "Registry::HKEY_CLASSES_ROOT\CLSID\$TextServiceClsid"
+Remove-RegistryTree -Path "HKLM:\SOFTWARE\Classes\CLSID\$TextServiceClsid"
+Remove-RegistryTree -Path "HKLM:\SOFTWARE\WOW6432Node\Classes\CLSID\$TextServiceClsid"
+Remove-UserProfileValuesForTextService -Clsid $TextServiceClsid
 
-if (Test-Path -LiteralPath $InstallRoot) {
+if (-not $KeepInstallRoot -and (Test-Path -LiteralPath $InstallRoot)) {
     Write-Host "Removing installation tree $InstallRoot"
     Remove-Item -LiteralPath $InstallRoot -Recurse -Force
+} elseif ($KeepInstallRoot) {
+    Write-Host "Keeping installation tree $InstallRoot"
 }
 
 Write-Host "Developer uninstall completed."

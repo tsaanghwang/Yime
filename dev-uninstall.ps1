@@ -1,5 +1,6 @@
 param(
-    [string]$InstallRoot = "C:\Program Files (x86)\PIME"
+    [string]$InstallRoot = "C:\Program Files (x86)\PIME",
+    [switch]$KeepInstallRoot
 )
 
 $ErrorActionPreference = "Stop"
@@ -9,4 +10,4 @@ if (-not (Test-Path -LiteralPath $scriptPath)) {
     throw "Missing script: $scriptPath"
 }
 
-& $scriptPath -InstallRoot $InstallRoot
+& $scriptPath -InstallRoot $InstallRoot -KeepInstallRoot:$KeepInstallRoot
