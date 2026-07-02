@@ -48,7 +48,7 @@
     "PATH": "${env:PATH};C:\\Program Files (x86)\\NSIS"
   },
   "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
-  "python.defaultInterpreterPath": "py",
+  "python.defaultInterpreterPath": "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
   "python.analysis.exclude": [
     "python/python3/**",
     "jsoncpp/**",
