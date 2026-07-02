@@ -56,5 +56,8 @@
     "libchewing/**",
     "libIME2/**",
     "spdlog-1.2.1/**"
+  ],
+  "cSpell.words": [
+    "pime"
   ]
 }
