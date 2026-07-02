@@ -687,6 +687,19 @@ func TestOnCommandSwitchesReverseLookupDisplayMode(t *testing.T) {
 	}
 }
 
+func TestNormalizeNumericTonePinyin(t *testing.T) {
+	tests := map[string]string{
+		" Lv4 ": "lü4",
+		"lu:4":  "lü4",
+		"Nv3":   "nü3",
+	}
+	for input, want := range tests {
+		if got := normalizeNumericTonePinyin(input); got != want {
+			t.Fatalf("normalizeNumericTonePinyin(%q) = %q, want %q", input, got, want)
+		}
+	}
+}
+
 func TestBuildMenuIncludesYimeUserLexiconMenu(t *testing.T) {
 	ime := newTestIME()
 
@@ -697,15 +710,23 @@ func TestBuildMenuIncludesYimeUserLexiconMenu(t *testing.T) {
 
 	for _, id := range []int{
 		ID_USER_LEXICON_ADD,
-		ID_USER_LEXICON_DELETE,
 		ID_USER_LEXICON_EDIT,
 		ID_USER_LEXICON_APPLY,
-		ID_USER_LEXICON_IMPORT,
 		ID_USER_LEXICON_EXPORT,
 	} {
 		item := findMenuItem(t, userLexiconMenu, id)
+		if enabled, ok := item["enabled"].(bool); ok && !enabled {
+			t.Fatalf("expected user lexicon item %d enabled, got %#v", id, item)
+		}
+	}
+
+	for _, id := range []int{
+		ID_USER_LEXICON_DELETE,
+		ID_USER_LEXICON_IMPORT,
+	} {
+		item := findMenuItem(t, userLexiconMenu, id)
 		if enabled, ok := item["enabled"].(bool); !ok || enabled {
-			t.Fatalf("expected user lexicon item %d disabled until backend is connected, got %#v", id, item)
+			t.Fatalf("expected user lexicon item %d disabled until workflow is connected, got %#v", id, item)
 		}
 	}
 }

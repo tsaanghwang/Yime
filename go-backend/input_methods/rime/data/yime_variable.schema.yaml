@@ -3,9 +3,9 @@
 # Generated from Yime runtime_candidates_materialized.
 
 schema:
-  schema_id: yime_shorthand
-  name: "Yime 省键模式"
-  version: "2026-07-02"
+  schema_id: yime_variable
+  name: "Yime 变长模式"
+  version: "2026-06-30"
 
 engine:
   processors:
@@ -33,7 +33,7 @@ speller:
   delimiter: " "
 
 translator:
-  dictionary: yime_shorthand
+  dictionary: yime_variable
   enable_user_dict: true
   enable_sentence: false
   enable_completion: true
@@ -54,3 +54,4 @@ punctuator:
 
 key_binder:
   import_preset: default
+

@@ -17,11 +17,11 @@ Rime frontend.
   shorthand entry is enabled when the shorthand schema is bundled with the
   installed Rime data.
 - Reverse code lookup: choose how reverse lookup codes are displayed for Hanzi.
-- User lexicon: add, delete, edit, apply, import, and export user phrases. The
-  add-phrase flow should use numeric-tone pinyin, for example `zhong1 guo2`,
-  because it is much easier to type than pinyin with tone marks. The PIME menu
-  already exposes these entries, and the storage backend will be connected in a
-  later step.
+- User lexicon: add, edit, apply, and open the user lexicon folder. The
+  add-phrase flow reads the clipboard as the default phrase and asks for
+  numeric-tone pinyin, for example `zhong1 guo2`, because it is much easier to
+  type than pinyin with tone marks. Entries are written to
+  `%APPDATA%\PIME\Rime\custom_phrase.txt`.
 - Help: view this help, view trial feedback guidance, and copy a trial feedback
   template.
 

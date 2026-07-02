@@ -3,6 +3,7 @@
 package rime
 
 import (
+	"bufio"
 	"log"
 	"os"
 	"os/exec"
@@ -266,8 +267,23 @@ func (ime *IME) onCommand(req *pime.Request, resp *pime.Response) *pime.Response
 		ime.openPath(filepath.Join(ime.userDir(), "sync"))
 	case ID_LOG_DIR:
 		ime.openPath(filepath.Join(os.Getenv("LOCALAPPDATA"), "PIME", "Logs"))
-	case ID_USER_LEXICON_ADD, ID_USER_LEXICON_DELETE, ID_USER_LEXICON_EDIT,
-		ID_USER_LEXICON_APPLY, ID_USER_LEXICON_IMPORT, ID_USER_LEXICON_EXPORT:
+	case ID_USER_LEXICON_ADD:
+		if err := ime.addUserLexiconPhrase(); err != nil {
+			log.Printf("添加用户词条失败: %v", err)
+		}
+	case ID_USER_LEXICON_EDIT:
+		if path, err := ime.ensureUserLexiconFile(); err == nil {
+			ime.openPath(path)
+		} else {
+			log.Printf("打开用户词库失败: %v", err)
+		}
+	case ID_USER_LEXICON_APPLY:
+		if err := ime.applyUserLexicon(); err != nil {
+			log.Printf("应用用户词库失败: %v", err)
+		}
+	case ID_USER_LEXICON_EXPORT:
+		ime.openPath(ime.userDir())
+	case ID_USER_LEXICON_DELETE, ID_USER_LEXICON_IMPORT:
 		log.Printf("用户词库命令尚未接入: %d", commandID)
 	case ID_REVERSE_LOOKUP_DEFAULT:
 		ime.setReverseLookupDisplayMode("default")
@@ -549,7 +565,7 @@ func (ime *IME) selectSchema(schemaID string) {
 	if ime.backend == nil || schemaID == "" {
 		return
 	}
-	if schemaPath := ime.schemaPath(schemaID); schemaPath != "" {
+	if schemaPath := ime.prepareUserSchema(schemaID); schemaPath != "" {
 		if !deploySchemaConfig(schemaPath) {
 			log.Printf("部署方案失败: %s", schemaPath)
 		}
@@ -705,6 +721,32 @@ func (ime *IME) schemaPath(schemaID string) string {
 	return ""
 }
 
+func (ime *IME) prepareUserSchema(schemaID string) string {
+	sharedSchemaPath := ime.schemaPath(schemaID)
+	if sharedSchemaPath == "" {
+		return ""
+	}
+	userDir := ime.userDir()
+	if userDir == "" {
+		return sharedSchemaPath
+	}
+	if err := os.MkdirAll(userDir, 0o755); err != nil {
+		log.Printf("创建 RIME 用户目录失败: %v", err)
+		return sharedSchemaPath
+	}
+	userSchemaPath := filepath.Join(userDir, schemaID+".schema.yaml")
+	content, err := os.ReadFile(sharedSchemaPath)
+	if err != nil {
+		log.Printf("读取方案文件失败 %s: %v", sharedSchemaPath, err)
+		return sharedSchemaPath
+	}
+	if err := os.WriteFile(userSchemaPath, content, 0o644); err != nil {
+		log.Printf("写入用户方案文件失败 %s: %v", userSchemaPath, err)
+		return sharedSchemaPath
+	}
+	return userSchemaPath
+}
+
 func (ime *IME) buildMenu() []map[string]interface{} {
 	asciiMode := ime.backend != nil && ime.backend.GetOption("ascii_mode")
 	fullShape := ime.backend != nil && ime.backend.GetOption("full_shape")
@@ -767,16 +809,16 @@ func (ime *IME) buildReverseLookupMenu() []map[string]interface{} {
 
 func (ime *IME) buildUserLexiconMenu() []map[string]interface{} {
 	return []map[string]interface{}{
-		{"id": ID_USER_LEXICON_ADD, "text": "添加当前词条（输入数字标调拼音）", "enabled": false},
+		{"id": ID_USER_LEXICON_ADD, "text": "添加词条（输入数字标调拼音）"},
 		{"id": ID_USER_LEXICON_DELETE, "text": "删除当前词条", "enabled": false},
 		{"text": ""},
 		{"text": "编辑与重载", "submenu": []map[string]interface{}{
-			{"id": ID_USER_LEXICON_EDIT, "text": "编辑用户词库", "enabled": false},
-			{"id": ID_USER_LEXICON_APPLY, "text": "应用用户词库", "enabled": false},
+			{"id": ID_USER_LEXICON_EDIT, "text": "编辑用户词库"},
+			{"id": ID_USER_LEXICON_APPLY, "text": "应用用户词库"},
 		}},
 		{"text": "导入与导出", "submenu": []map[string]interface{}{
 			{"id": ID_USER_LEXICON_IMPORT, "text": "导入用户词库", "enabled": false},
-			{"id": ID_USER_LEXICON_EXPORT, "text": "导出用户词库", "enabled": false},
+			{"id": ID_USER_LEXICON_EXPORT, "text": "打开用户词库文件夹"},
 		}},
 	}
 }
@@ -811,6 +853,158 @@ func (ime *IME) helpDir() string {
 		return ""
 	}
 	return filepath.Join(filepath.Dir(exePath), "input_methods", "rime", "help")
+}
+
+func (ime *IME) userLexiconPath() string {
+	userDir := ime.userDir()
+	if userDir == "" {
+		return ""
+	}
+	return filepath.Join(userDir, "custom_phrase.txt")
+}
+
+func (ime *IME) ensureUserLexiconFile() (string, error) {
+	path := ime.userLexiconPath()
+	if path == "" {
+		return "", os.ErrNotExist
+	}
+	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+		return "", err
+	}
+	if _, err := os.Stat(path); err == nil {
+		return path, nil
+	} else if !os.IsNotExist(err) {
+		return "", err
+	}
+	header := "# PIME Yime user phrases\n# format: phrase<TAB>code<TAB>weight\n"
+	return path, os.WriteFile(path, []byte(header), 0o644)
+}
+
+func (ime *IME) addUserLexiconPhrase() error {
+	entry, ok, err := ime.promptUserLexiconEntry()
+	if err != nil || !ok {
+		return err
+	}
+	code, err := ime.encodeNumericTonePinyin(entry.Pinyin, ime.currentYimeMode())
+	if err != nil {
+		return err
+	}
+	path, err := ime.ensureUserLexiconFile()
+	if err != nil {
+		return err
+	}
+	line := entry.Phrase + "\t" + code + "\t1000000\n"
+	file, err := os.OpenFile(path, os.O_APPEND|os.O_WRONLY, 0o644)
+	if err != nil {
+		return err
+	}
+	if _, err := file.WriteString(line); err != nil {
+		_ = file.Close()
+		return err
+	}
+	if err := file.Close(); err != nil {
+		return err
+	}
+	return ime.applyUserLexicon()
+}
+
+func (ime *IME) currentYimeMode() string {
+	if ime.backend == nil {
+		return "variable"
+	}
+	switch ime.backend.CurrentSchema() {
+	case "yime_full":
+		return "full"
+	case "yime_shorthand":
+		return "shorthand"
+	default:
+		return "variable"
+	}
+}
+
+func (ime *IME) applyUserLexicon() error {
+	if _, err := ime.ensureUserLexiconFile(); err != nil {
+		return err
+	}
+	if ime.backend == nil {
+		return nil
+	}
+	schemaID := ime.backend.CurrentSchema()
+	if schemaID == "" {
+		schemaID = "yime_variable"
+	}
+	ime.selectSchema(schemaID)
+	return nil
+}
+
+func (ime *IME) encodeNumericTonePinyin(pinyin, mode string) (string, error) {
+	codes, err := ime.loadPinyinCodeMap()
+	if err != nil {
+		return "", err
+	}
+	parts := strings.Fields(strings.TrimSpace(pinyin))
+	var encoded strings.Builder
+	for _, part := range parts {
+		key := normalizeNumericTonePinyin(part)
+		record, ok := codes[key]
+		if !ok {
+			return "", os.ErrNotExist
+		}
+		switch mode {
+		case "full":
+			encoded.WriteString(record.Full)
+		case "shorthand":
+			encoded.WriteString(record.Shorthand)
+		default:
+			encoded.WriteString(record.Variable)
+		}
+	}
+	return encoded.String(), nil
+}
+
+type pinyinCodeRecord struct {
+	Full      string
+	Variable  string
+	Shorthand string
+}
+
+func (ime *IME) loadPinyinCodeMap() (map[string]pinyinCodeRecord, error) {
+	path := filepath.Join(ime.sharedDir(), "yime_pinyin_codes.tsv")
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	records := make(map[string]pinyinCodeRecord)
+	scanner := bufio.NewScanner(file)
+	first := true
+	for scanner.Scan() {
+		line := scanner.Text()
+		if first {
+			first = false
+			continue
+		}
+		fields := strings.Split(line, "\t")
+		if len(fields) != 4 {
+			continue
+		}
+		key := normalizeNumericTonePinyin(fields[0])
+		record := pinyinCodeRecord{Full: fields[1], Variable: fields[2], Shorthand: fields[3]}
+		records[key] = record
+		if strings.Contains(key, "ü") {
+			records[strings.ReplaceAll(key, "ü", "v")] = record
+			records[strings.ReplaceAll(key, "ü", "u:")] = record
+		}
+	}
+	return records, scanner.Err()
+}
+
+func normalizeNumericTonePinyin(value string) string {
+	value = strings.ToLower(strings.TrimSpace(value))
+	value = strings.ReplaceAll(value, "u:", "ü")
+	value = strings.ReplaceAll(value, "v", "ü")
+	return value
 }
 
 func (ime *IME) openPath(path string) {

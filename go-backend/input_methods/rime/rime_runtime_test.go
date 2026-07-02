@@ -96,7 +96,7 @@ func TestRealRimeCanCommitText(t *testing.T) {
 
 func TestRealRimeCanSelectYimeShorthandSchema(t *testing.T) {
 	sessionID := newRealRimeSession(t)
-	schemaPath := filepath.Join(rimeRuntimeTestDataDir(t), "yime_shorthand.schema.yaml")
+	schemaPath := prepareRuntimeTestUserSchema(t, "yime_shorthand")
 
 	if !deploySchemaConfig(schemaPath) {
 		t.Fatalf("expected yime_shorthand schema deploy to succeed: %s", schemaPath)
@@ -114,6 +114,28 @@ func TestRealRimeCanSelectYimeShorthandSchema(t *testing.T) {
 	if !ok || len(menu.Candidates) == 0 {
 		t.Fatalf("expected shorthand candidates after qu, got %#v", menu)
 	}
+}
+
+func prepareRuntimeTestUserSchema(t *testing.T, schemaID string) string {
+	t.Helper()
+	appData := os.Getenv("APPDATA")
+	if appData == "" {
+		t.Skip("APPDATA is not set")
+	}
+	sharedPath := filepath.Join(rimeRuntimeTestDataDir(t), schemaID+".schema.yaml")
+	userDir := filepath.Join(appData, APP, "Rime")
+	if err := os.MkdirAll(userDir, 0o755); err != nil {
+		t.Fatalf("failed to create user Rime directory: %v", err)
+	}
+	content, err := os.ReadFile(sharedPath)
+	if err != nil {
+		t.Fatalf("failed to read schema: %v", err)
+	}
+	userPath := filepath.Join(userDir, schemaID+".schema.yaml")
+	if err := os.WriteFile(userPath, content, 0o644); err != nil {
+		t.Fatalf("failed to write user schema: %v", err)
+	}
+	return userPath
 }
 
 func TestRealRimeControlShortcuts(t *testing.T) {
