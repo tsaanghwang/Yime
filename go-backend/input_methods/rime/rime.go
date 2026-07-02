@@ -96,6 +96,7 @@ type rimeBackend interface {
 	DestroySession()
 	ClearComposition()
 	ProcessKey(req *pime.Request, translatedKeyCode, modifiers int) bool
+	SelectCandidate(index int) bool
 	State() rimeState
 	SetOption(name string, value bool)
 	GetOption(name string) bool
@@ -159,6 +160,8 @@ func (ime *IME) HandleRequest(req *pime.Request) *pime.Response {
 		return ime.onCommand(req, resp)
 	case "onMenu":
 		return ime.onMenu(req, resp)
+	case "selectCandidate":
+		return ime.onSelectCandidate(req, resp)
 	default:
 		resp.ReturnValue = 0
 		return resp
@@ -227,6 +230,30 @@ func (ime *IME) onKeyUp(req *pime.Request, resp *pime.Response) *pime.Response {
 		return resp
 	}
 	resp.ReturnValue = boolToInt(ime.onKey(req, resp))
+	return resp
+}
+
+func (ime *IME) onSelectCandidate(req *pime.Request, resp *pime.Response) *pime.Response {
+	index := -1
+	if req.Data != nil {
+		if raw, ok := req.Data["candidateIndex"].(float64); ok {
+			index = int(raw)
+		}
+	}
+	if index < 0 || ime.backend == nil {
+		resp.ReturnValue = 0
+		return resp
+	}
+
+	ime.createSession(resp)
+	if !ime.backend.SelectCandidate(index) {
+		resp.ReturnValue = 0
+		return resp
+	}
+
+	resp.ReturnValue = 1
+	ime.updateLangStatus(req, resp)
+	ime.applyStateToResponse(resp, ime.backend.State())
 	return resp
 }
 
@@ -351,7 +378,7 @@ func (ime *IME) onMenu(req *pime.Request, resp *pime.Response) *pime.Response {
 			buttonID = raw
 		}
 	}
-	if buttonID != "settings" && buttonID != "windows-mode-icon" && buttonID != "reverse-lookup" &&
+	if buttonID != "settings" && buttonID != "windows-mode-icon" && buttonID != "candidate-page-size" && buttonID != "reverse-lookup" &&
 		buttonID != "user-lexicon" && buttonID != "help" {
 		resp.ReturnData = []map[string]interface{}{}
 		resp.ReturnValue = 0
@@ -365,6 +392,8 @@ func (ime *IME) onMenu(req *pime.Request, resp *pime.Response) *pime.Response {
 		resp.ReturnData = ime.buildReverseLookupMenu()
 	case "user-lexicon":
 		resp.ReturnData = ime.buildUserLexiconMenu()
+	case "candidate-page-size":
+		resp.ReturnData = ime.buildCandidatePageSizeMenu()
 	default:
 		resp.ReturnData = ime.buildMenu()
 	}
@@ -529,13 +558,19 @@ func (ime *IME) onKey(req *pime.Request, resp *pime.Response) bool {
 	}
 	ime.updateLangStatus(req, resp)
 	state := ime.backend.State()
+	ime.applyStateToResponse(resp, state)
+	ime.keyComposing = state.Composition != "" || len(state.Candidates) > 0
+	return true
+}
+
+func (ime *IME) applyStateToResponse(resp *pime.Response, state rimeState) {
 	if state.CommitString != "" {
 		resp.CommitString = state.CommitString
 	}
 	if state.Composition == "" {
 		ime.clearResponse(resp)
 		ime.keyComposing = false
-		return true
+		return
 	}
 
 	if len(state.Candidates) > 0 && ime.selectKeys != yimeCandidateSelectKeys {
@@ -560,7 +595,6 @@ func (ime *IME) onKey(req *pime.Request, resp *pime.Response) bool {
 		resp.ShowCandidates = false
 	}
 	ime.keyComposing = true
-	return true
 }
 
 func (ime *IME) createSession(resp *pime.Response) {
@@ -704,6 +738,12 @@ func (ime *IME) addButtons(resp *pime.Response) {
 		})
 	}
 	resp.AddButton = append(resp.AddButton, pime.ButtonInfo{
+		ID:      "candidate-page-size",
+		Text:    "候选项数",
+		Tooltip: "候选项数",
+		Type:    "menu",
+	})
+	resp.AddButton = append(resp.AddButton, pime.ButtonInfo{
 		ID:      "reverse-lookup",
 		Text:    "反查编码",
 		Tooltip: "反查编码",
@@ -727,7 +767,7 @@ func (ime *IME) removeButtons(resp *pime.Response) {
 	if !ime.style.DisplayTrayIcon || resp == nil {
 		return
 	}
-	resp.RemoveButton = append(resp.RemoveButton, "switch-lang", "switch-shape", "settings", "reverse-lookup", "user-lexicon", "help")
+	resp.RemoveButton = append(resp.RemoveButton, "switch-lang", "switch-shape", "settings", "candidate-page-size", "reverse-lookup", "user-lexicon", "help")
 	if ime.Client != nil && ime.Client.IsWindows8Above {
 		resp.RemoveButton = append(resp.RemoveButton, "windows-mode-icon")
 	}

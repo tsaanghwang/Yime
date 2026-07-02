@@ -131,6 +131,7 @@ var (
 		getOption             *syscall.LazyProc
 		getCurrentSchema      *syscall.LazyProc
 		selectSchema          *syscall.LazyProc
+		selectCandidate       *syscall.LazyProc
 		getVersion            *syscall.LazyProc
 	}
 )
@@ -167,6 +168,7 @@ func loadRimeDLL(dllPath string) error {
 		getOption             *syscall.LazyProc
 		getCurrentSchema      *syscall.LazyProc
 		selectSchema          *syscall.LazyProc
+		selectCandidate       *syscall.LazyProc
 		getVersion            *syscall.LazyProc
 	}{
 		setup:                 dll.NewProc("RimeSetup"),
@@ -188,6 +190,7 @@ func loadRimeDLL(dllPath string) error {
 		getOption:             dll.NewProc("RimeGetOption"),
 		getCurrentSchema:      dll.NewProc("RimeGetCurrentSchema"),
 		selectSchema:          dll.NewProc("RimeSelectSchema"),
+		selectCandidate:       dll.NewProc("RimeSelectCandidateOnCurrentPage"),
 		getVersion:            dll.NewProc("RimeGetVersion"),
 	}
 
@@ -195,7 +198,7 @@ func loadRimeDLL(dllPath string) error {
 		procs.setup, procs.initialize, procs.finalize, procs.startMaintenance, procs.joinMaintenanceThread,
 		procs.deployConfigFile, procs.createSession, procs.findSession, procs.destroySession, procs.processKey,
 		procs.clearComposition, procs.getCommit, procs.freeCommit, procs.getContext, procs.freeContext,
-		procs.setOption, procs.getOption, procs.getCurrentSchema, procs.selectSchema,
+		procs.setOption, procs.getOption, procs.getCurrentSchema, procs.selectSchema, procs.selectCandidate,
 	} {
 		if err := proc.Find(); err != nil {
 			return err
@@ -379,9 +382,9 @@ func SelectSchema(sessionId RimeSessionId, schemaID string) bool {
 	return boolResult(r1)
 }
 
-func SelectCandidate(sessionId RimeSessionId, index int) {
-	_ = sessionId
-	_ = index
+func SelectCandidate(sessionId RimeSessionId, index int) bool {
+	r1, _, _ := rimeProcs.selectCandidate.Call(uintptr(sessionId), uintptr(index))
+	return boolResult(r1)
 }
 
 func SelectPage(sessionId RimeSessionId, pageNo int) {

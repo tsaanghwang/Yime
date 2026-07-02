@@ -116,6 +116,17 @@ func (b *testBackend) ProcessKey(req *pime.Request, translatedKeyCode, modifiers
 	return false
 }
 
+func (b *testBackend) SelectCandidate(index int) bool {
+	b.commitString = ""
+	if index < 0 || index >= len(b.candidates) {
+		return false
+	}
+	b.commitString = b.candidates[index].Text
+	b.composition = ""
+	b.candidates = nil
+	return true
+}
+
 func (b *testBackend) State() rimeState {
 	state := rimeState{
 		CommitString:    b.commitString,
@@ -386,6 +397,32 @@ func TestOnKeyDownBacktickSelectsSecondCandidate(t *testing.T) {
 	}
 	if backend.composition != "" || backend.candidates != nil {
 		t.Fatal("expected state reset after candidate selection")
+	}
+}
+
+func TestSelectCandidateByIndexCommitsCandidate(t *testing.T) {
+	ime := newTestIME()
+	backend := ime.backend.(*testBackend)
+	backend.composition = "ni"
+	backend.candidates = []candidateItem{{Text: "cand1"}, {Text: "cand2"}, {Text: "cand3"}, {Text: "cand4"}, {Text: "cand5"}, {Text: "cand6"}}
+	ime.keyComposing = true
+
+	resp := ime.HandleRequest(&pime.Request{
+		Method: "selectCandidate",
+		SeqNum: 6,
+		Data: map[string]interface{}{
+			"candidateIndex": float64(5),
+		},
+	})
+
+	if resp.ReturnValue != 1 {
+		t.Fatalf("expected selectCandidate to be handled, got %d", resp.ReturnValue)
+	}
+	if resp.CommitString != "cand6" {
+		t.Fatalf("expected sixth candidate cand6, got %q", resp.CommitString)
+	}
+	if backend.composition != "" || backend.candidates != nil {
+		t.Fatal("expected state reset after direct candidate selection")
 	}
 }
 

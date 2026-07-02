@@ -142,6 +142,26 @@ bool TextService::onCommand(UINT id, CommandType type) {
 	return client_->onCommand(id, type);
 }
 
+// virtual
+bool TextService::onCandidateSelected(int index) {
+	if(!client_)
+		return false;
+	auto context = currentContext();
+	if(!context)
+		return false;
+
+	bool handled = false;
+	HRESULT sessionResult;
+	auto session = Ime::ComPtr<Ime::EditSession>::make(
+		context,
+		[&](Ime::EditSession* session, TfEditCookie cookie) {
+			handled = client_->selectCandidate(index, session);
+		}
+	);
+	context->RequestEditSession(clientId(), session, TF_ES_SYNC|TF_ES_READWRITE, &sessionResult);
+	return handled;
+}
+
 
 // called when a language bar button needs a menu
 // virtual

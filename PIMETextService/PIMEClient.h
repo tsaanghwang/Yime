@@ -58,6 +58,7 @@ public:
 	bool onPreservedKey(const GUID& guid);
 
 	bool onCommand(UINT id, Ime::TextService::CommandType type);
+	bool selectCandidate(int index, Ime::EditSession* session);
 
 	// called when a language bar button needs a menu
 	bool onMenu(LangBarButton* btn, ITfMenu* pMenu);

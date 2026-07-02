@@ -52,6 +52,7 @@ public:
 	virtual bool onPreservedKey(const GUID& guid);
 
 	virtual bool onCommand(UINT id, CommandType type);
+	virtual bool onCandidateSelected(int index);
 
 	// called when a language bar button needs a menu
 	virtual bool onMenu(LangBarButton* btn, ITfMenu* pMenu);

@@ -63,6 +63,13 @@ func (b *nativeBackend) ProcessKey(req *pime.Request, translatedKeyCode, modifie
 	return ProcessKey(b.sessionID, translatedKeyCode, modifiers)
 }
 
+func (b *nativeBackend) SelectCandidate(index int) bool {
+	if !b.EnsureSession() {
+		return false
+	}
+	return SelectCandidate(b.sessionID, index)
+}
+
 func (b *nativeBackend) State() rimeState {
 	state := rimeState{}
 	if b.sessionID == 0 {

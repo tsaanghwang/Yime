@@ -54,6 +54,20 @@ bool uuidFromString(const char* uuidStr, UUID& result) {
 	return SUCCEEDED(CLSIDFromString(utf16UuidStr.c_str(), &result));
 }
 
+static bool isCandidateWindowKey(Ime::KeyEvent& keyEvent) {
+	switch (keyEvent.keyCode()) {
+	case VK_UP:
+	case VK_DOWN:
+	case VK_LEFT:
+	case VK_RIGHT:
+	case VK_RETURN:
+	case VK_SPACE:
+		return true;
+	default:
+		return false;
+	}
+}
+
 Client::Client(TextService* service, REFIID langProfileGuid):
 	textService_(service),
 	pipe_(INVALID_HANDLE_VALUE),
@@ -406,6 +420,10 @@ void Client::onDeactivate() {
 }
 
 bool Client::filterKeyDown(Ime::KeyEvent& keyEvent) {
+	if (textService_->candidateWindow_ != nullptr && textService_->showingCandidates() && isCandidateWindowKey(keyEvent)) {
+		return true;
+	}
+
 	json req = createRpcRequest("filterKeyDown");
 	addKeyEventToRpcRequest(req, keyEvent);
 
@@ -418,6 +436,17 @@ bool Client::filterKeyDown(Ime::KeyEvent& keyEvent) {
 }
 
 bool Client::onKeyDown(Ime::KeyEvent& keyEvent, Ime::EditSession* session) {
+	if (textService_->candidateWindow_ != nullptr && textService_->showingCandidates() && isCandidateWindowKey(keyEvent)) {
+		if (textService_->candidateWindow_->filterKeyEvent(keyEvent)) {
+			if (textService_->candidateWindow_->hasResult()) {
+				int index = textService_->candidateWindow_->currentSel();
+				textService_->candidateWindow_->clearResult();
+				return selectCandidate(index, session);
+			}
+			return true;
+		}
+	}
+
 	json req = createRpcRequest("onKeyDown");
 	addKeyEventToRpcRequest(req, keyEvent);
 
@@ -476,6 +505,20 @@ bool Client::onCommand(UINT id, Ime::TextService::CommandType type) {
 	json ret;
 	callRpcMethod(req, ret);
 	if (handleRpcResponse(ret)) {
+		return ret["return"].get<bool>();
+	}
+	return false;
+}
+
+bool Client::selectCandidate(int index, Ime::EditSession* session) {
+	json req = createRpcRequest("selectCandidate");
+	req["data"] = {
+		{"candidateIndex", index},
+	};
+
+	json ret;
+	callRpcMethod(req, ret);
+	if (handleRpcResponse(ret, session)) {
 		return ret["return"].get<bool>();
 	}
 	return false;

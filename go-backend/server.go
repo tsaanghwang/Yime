@@ -251,7 +251,7 @@ func (s *Server) handleRequest(clientID string, req *pime.Request) map[string]in
 		}
 
 	case "onActivate", "onDeactivate", "filterKeyDown", "onKeyDown",
-		"filterKeyUp", "onKeyUp", "onCommand", "onMenu", "onCompositionTerminated",
+		"filterKeyUp", "onKeyUp", "onCommand", "onMenu", "selectCandidate", "onCompositionTerminated",
 		"onPreservedKey", "onLangProfileActivated":
 		// 转发到输入法服务
 		client, ok := s.clients[clientID]
