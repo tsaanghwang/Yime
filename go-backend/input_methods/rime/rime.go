@@ -881,31 +881,7 @@ func (ime *IME) ensureUserLexiconFile() (string, error) {
 }
 
 func (ime *IME) addUserLexiconPhrase() error {
-	entry, ok, err := ime.promptUserLexiconEntry()
-	if err != nil || !ok {
-		return err
-	}
-	code, err := ime.encodeNumericTonePinyin(entry.Pinyin, ime.currentYimeMode())
-	if err != nil {
-		return err
-	}
-	path, err := ime.ensureUserLexiconFile()
-	if err != nil {
-		return err
-	}
-	line := entry.Phrase + "\t" + code + "\t1000000\n"
-	file, err := os.OpenFile(path, os.O_APPEND|os.O_WRONLY, 0o644)
-	if err != nil {
-		return err
-	}
-	if _, err := file.WriteString(line); err != nil {
-		_ = file.Close()
-		return err
-	}
-	if err := file.Close(); err != nil {
-		return err
-	}
-	return ime.applyUserLexicon()
+	return ime.startUserLexiconAddHelper(ime.currentYimeMode())
 }
 
 func (ime *IME) currentYimeMode() string {
