@@ -433,6 +433,9 @@ func SelectPage(sessionId RimeSessionId, pageNo int) {
 }
 
 func DeployConfigFile(filePath, key string) bool {
+	if rimeProcs.deployConfigFile == nil {
+		return false
+	}
 	cFile := utf8Ptr(filePath)
 	cKey := utf8Ptr(key)
 	r1, _, _ := rimeProcs.deployConfigFile.Call(uintptr(unsafe.Pointer(cFile)), uintptr(unsafe.Pointer(cKey)))

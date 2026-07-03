@@ -2,6 +2,7 @@ package rime
 
 import (
 	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -842,7 +843,15 @@ func TestOnMenuReturnsSettingsMenu(t *testing.T) {
 		t.Fatalf("expected shorthand mode disabled without bundled schema, got %#v", modeMenu[2])
 	}
 
-	pageSizeMenu := findSubmenuItem(t, items, "候选数量")
+	candidateWindowMenu := findSubmenuItem(t, items, "候选窗体")
+	if len(candidateWindowMenu) != 2 {
+		t.Fatalf("expected candidate window menu with layout/page size submenus, got %#v", candidateWindowMenu)
+	}
+	layoutMenu := findSubmenuItem(t, candidateWindowMenu, "排列方式")
+	if len(layoutMenu) != 2 {
+		t.Fatalf("expected candidate layout menu items, got %#v", layoutMenu)
+	}
+	pageSizeMenu := findSubmenuItem(t, candidateWindowMenu, "候选数量")
 	if len(pageSizeMenu) != 5 {
 		t.Fatalf("expected page size 5-9 menu items, got %#v", pageSizeMenu)
 	}
@@ -855,10 +864,6 @@ func TestOnMenuReturnsSettingsMenu(t *testing.T) {
 		t.Fatalf("expected page size 9 menu text, got %#v", item)
 	}
 
-	layoutMenu := findSubmenuItem(t, items, "候选排列")
-	if len(layoutMenu) != 2 {
-		t.Fatalf("expected candidate layout menu items, got %#v", layoutMenu)
-	}
 	item = findMenuItem(t, layoutMenu, ID_CANDIDATE_LAYOUT_HORIZONTAL)
 	if checked, ok := item["checked"].(bool); !ok || checked {
 		t.Fatalf("expected horizontal layout unchecked by default, got %#v", item)
@@ -907,6 +912,24 @@ func TestOnCommandSwitchesCandidateLayout(t *testing.T) {
 	}
 }
 
+func TestCandidatePageSizeCommandUpdatesCurrentSessionEvenIfDeployFails(t *testing.T) {
+	t.Setenv("APPDATA", t.TempDir())
+	ime := newTestIME()
+	resp := ime.onCommand(&pime.Request{
+		SeqNum: 27,
+		ID:     pime.FlexibleID{Int: ID_CANDIDATE_PAGE_SIZE_7, IsInt: true},
+	}, pime.NewResponse(27, true))
+
+	if resp.ReturnValue != 1 {
+		t.Fatalf("expected page size command to be handled, got %d", resp.ReturnValue)
+	}
+	if ime.candidatePageSize != 7 {
+		t.Fatalf("expected current session page size 7, got %d", ime.candidatePageSize)
+	}
+	if ime.candidatePageStart != 0 {
+		t.Fatalf("expected page start reset, got %d", ime.candidatePageStart)
+	}
+}
 func TestCandidatePageSizeLimitsVisibleCandidates(t *testing.T) {
 	ime := newTestIME()
 	ime.candidatePageSize = 5
@@ -1068,6 +1091,79 @@ func TestNormalizeNumericTonePinyin(t *testing.T) {
 	}
 }
 
+func TestNormalizeNumericTonePinyinSyllableSpacing(t *testing.T) {
+	tests := map[string]string{
+		"ri4ben3":      "ri4 ben3",
+		"jin1 ri4":     "jin1 ri4",
+		"lvan2 nve4":   "lüan2 nüe4",
+		"duori4":       "duori4",
+		" zhong1guo2 ": "zhong1 guo2",
+	}
+	for input, want := range tests {
+		if got := normalizeNumericTonePinyinSyllableSpacing(input); got != want {
+			t.Fatalf("normalizeNumericTonePinyinSyllableSpacing(%q) = %q, want %q", input, got, want)
+		}
+	}
+}
+
+func TestLoadUserLexiconEntriesNormalizesNumericTonePinyin(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "yime_user_phrases.txt")
+	content := "# header\n日本\tri4ben3\t1000000\n女儿\tnv3 er2\t1000000\n"
+	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
+		t.Fatalf("write fixture failed: %v", err)
+	}
+
+	entries, err := loadUserLexiconEntries(path)
+	if err != nil {
+		t.Fatalf("loadUserLexiconEntries failed: %v", err)
+	}
+	if len(entries) != 2 {
+		t.Fatalf("expected 2 entries, got %#v", entries)
+	}
+	if entries[0].Pinyin != "ri4 ben3" || entries[1].Pinyin != "nü3 er2" {
+		t.Fatalf("expected normalized pinyin, got %#v", entries)
+	}
+}
+
+func TestLoadUserLexiconEntriesRejectsInvalidWeight(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "yime_user_phrases.txt")
+	content := "日本\tri4 ben3\theavy\n"
+	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
+		t.Fatalf("write fixture failed: %v", err)
+	}
+
+	_, err := loadUserLexiconEntries(path)
+	if err == nil || !strings.Contains(err.Error(), "权重必须是整数") {
+		t.Fatalf("expected invalid weight error, got %v", err)
+	}
+}
+
+func TestLoadUserLexiconEntriesRejectsInvalidPinyin(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "yime_user_phrases.txt")
+	content := "日本\tri4 ben\t1000000\n"
+	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
+		t.Fatalf("write fixture failed: %v", err)
+	}
+
+	_, err := loadUserLexiconEntries(path)
+	if err == nil || !strings.Contains(err.Error(), "数字标调拼音格式错误") {
+		t.Fatalf("expected invalid pinyin error, got %v", err)
+	}
+}
+
+func TestLoadUserLexiconEntriesRejectsExtraColumns(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "yime_user_phrases.txt")
+	content := "日本\tri4 ben3\t1000000\textra\n"
+	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
+		t.Fatalf("write fixture failed: %v", err)
+	}
+
+	_, err := loadUserLexiconEntries(path)
+	if err == nil || !strings.Contains(err.Error(), "格式应为") {
+		t.Fatalf("expected format error, got %v", err)
+	}
+}
+
 func TestEnsureUserLexiconFileCreatesEditableNumericToneSource(t *testing.T) {
 	t.Setenv("APPDATA", t.TempDir())
 	ime := newTestIME()
@@ -1172,7 +1268,7 @@ func TestOnMenuReturnsTopLevelReverseLookupAndUserLexiconMenus(t *testing.T) {
 	if !ok || len(userItems) == 0 {
 		t.Fatalf("expected user lexicon menu items, got %#v", userResp.ReturnData)
 	}
-	if item := findMenuItem(t, userItems, ID_USER_LEXICON_ADD); !strings.Contains(item["text"].(string), "数字标调拼音") {
+	if item := findMenuItem(t, userItems, ID_USER_LEXICON_ADD); !strings.Contains(item["text"].(string), "用户词库") {
 		t.Fatalf("expected add phrase item to mention numeric-tone pinyin, got %#v", item)
 	}
 }

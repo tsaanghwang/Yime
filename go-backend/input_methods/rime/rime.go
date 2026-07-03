@@ -326,18 +326,15 @@ func (ime *IME) onCommand(req *pime.Request, resp *pime.Response) *pime.Response
 	case ID_LOG_DIR:
 		ime.openPath(filepath.Join(os.Getenv("LOCALAPPDATA"), "PIME", "Logs"))
 	case ID_USER_LEXICON_ADD:
-		if err := ime.addUserLexiconPhrase(); err != nil {
-			log.Printf("添加用户词条失败: %v", err)
-		}
+		ime.editUserLexicon()
 	case ID_USER_LEXICON_EDIT:
-		if path, err := ime.ensureUserLexiconFile(); err == nil {
-			ime.openPath(path)
-		} else {
-			log.Printf("打开用户词库失败: %v", err)
-		}
+		ime.editUserLexicon()
 	case ID_USER_LEXICON_APPLY:
 		if err := ime.applyUserLexicon(); err != nil {
 			log.Printf("应用用户词库失败: %v", err)
+			ime.showUserLexiconMessage("应用用户词库失败", err.Error(), "Error")
+		} else {
+			ime.showUserLexiconMessage("应用用户词库", "用户词库格式校验通过，已重建 Rime custom_phrase.txt。", "Information")
 		}
 	case ID_USER_LEXICON_EXPORT:
 		ime.openPath(ime.userDir())
@@ -1050,9 +1047,9 @@ func (ime *IME) buildMenu() []map[string]interface{} {
 	if asciiMode {
 		asciiText = "英文 → 中文"
 	}
-	shapeText := "半角 → 全角"
+	shapeText := "半宽 → 全宽"
 	if fullShape {
-		shapeText = "全角 → 半角"
+		shapeText = "全宽 → 半宽"
 	}
 	punctText := "中文标点 → 英文标点"
 	if asciiPunct {
@@ -1075,8 +1072,7 @@ func (ime *IME) buildMenu() []map[string]interface{} {
 		{"id": ID_ASCII_PUNCT, "text": punctText},
 		{"id": ID_FULL_SHAPE, "text": shapeText},
 		{"text": ""},
-		{"text": "候选排列", "submenu": ime.buildCandidateLayoutMenu()},
-		{"text": "候选数量", "submenu": ime.buildCandidatePageSizeMenu()},
+		{"text": "候选窗体", "submenu": ime.buildCandidateWindowMenu()},
 		{"text": ""},
 		{"id": ID_DEPLOY, "text": "重新部署(&D)"},
 		{"id": ID_SYNC, "text": "同步(&S)"},
@@ -1098,6 +1094,13 @@ func (ime *IME) buildReverseLookupMenu() []map[string]interface{} {
 		{"id": ID_REVERSE_LOOKUP_STANDARD_PINYIN, "text": "仅标准拼音", "checked": ime.reverseLookupDisplayMode == "standard_pinyin"},
 		{"id": ID_REVERSE_LOOKUP_YIME_PINYIN, "text": "仅音元拼音", "checked": ime.reverseLookupDisplayMode == "yime_pinyin"},
 		{"id": ID_REVERSE_LOOKUP_KEY_SEQUENCE, "text": "仅键位序列", "checked": ime.reverseLookupDisplayMode == "key_sequence"},
+	}
+}
+
+func (ime *IME) buildCandidateWindowMenu() []map[string]interface{} {
+	return []map[string]interface{}{
+		{"text": "排列方式", "submenu": ime.buildCandidateLayoutMenu()},
+		{"text": "候选数量", "submenu": ime.buildCandidatePageSizeMenu()},
 	}
 }
 
@@ -1127,11 +1130,11 @@ func (ime *IME) buildCandidatePageSizeMenu() []map[string]interface{} {
 
 func (ime *IME) buildUserLexiconMenu() []map[string]interface{} {
 	return []map[string]interface{}{
-		{"id": ID_USER_LEXICON_ADD, "text": "添加词条（输入数字标调拼音）"},
+		{"id": ID_USER_LEXICON_ADD, "text": "打开用户词库"},
 		{"id": ID_USER_LEXICON_DELETE, "text": "删除当前词条", "enabled": false},
 		{"text": ""},
 		{"text": "编辑与重载", "submenu": []map[string]interface{}{
-			{"id": ID_USER_LEXICON_EDIT, "text": "编辑数字拼音词库"},
+			{"id": ID_USER_LEXICON_EDIT, "text": "编辑用户词库"},
 			{"id": ID_USER_LEXICON_APPLY, "text": "应用用户词库"},
 		}},
 		{"text": "导入与导出", "submenu": []map[string]interface{}{
@@ -1206,6 +1209,16 @@ func (ime *IME) ensureUserLexiconFile() (string, error) {
 	return path, os.WriteFile(path, []byte(header), 0o644)
 }
 
+func (ime *IME) editUserLexicon() {
+	path, err := ime.ensureUserLexiconFile()
+	if err != nil {
+		log.Printf("打开用户词库失败: %v", err)
+		ime.showUserLexiconMessage("打开用户词库失败", err.Error(), "Error")
+		return
+	}
+	ime.openPath(path)
+}
+
 func (ime *IME) addUserLexiconPhrase() error {
 	return ime.startUserLexiconAddHelper(ime.currentYimeMode())
 }
@@ -1252,13 +1265,17 @@ func (ime *IME) encodeNumericTonePinyin(pinyin, mode string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	parts := strings.Fields(strings.TrimSpace(pinyin))
+	normalizedPinyin := normalizeNumericTonePinyinSyllableSpacing(pinyin)
+	if normalizedPinyin == "" {
+		return "", os.ErrInvalid
+	}
+	parts := strings.Fields(normalizedPinyin)
 	var encoded strings.Builder
 	for _, part := range parts {
 		key := normalizeNumericTonePinyin(part)
 		record, ok := codes[key]
 		if !ok {
-			return "", os.ErrNotExist
+			return "", fmt.Errorf("找不到拼音 %q", part)
 		}
 		switch mode {
 		case "full":
@@ -1317,6 +1334,76 @@ func normalizeNumericTonePinyin(value string) string {
 	return value
 }
 
+func splitCompactNumericTonePinyinToken(token string) []string {
+	normalizedToken := strings.TrimSpace(token)
+	if normalizedToken == "" {
+		return nil
+	}
+
+	parts := []string{}
+	start := 0
+	sawToneDigit := false
+	for index, char := range normalizedToken {
+		if char < '1' || char > '5' {
+			continue
+		}
+		sawToneDigit = true
+		if index == start {
+			return []string{normalizedToken}
+		}
+		parts = append(parts, normalizedToken[start:index+1])
+		start = index + 1
+	}
+	if !sawToneDigit || start != len(normalizedToken) {
+		return []string{normalizedToken}
+	}
+	return parts
+}
+
+func normalizeNumericTonePinyinSyllableSpacing(rawPinyin string) string {
+	normalizedTokens := []string{}
+	for _, token := range strings.Fields(rawPinyin) {
+		for _, part := range splitCompactNumericTonePinyinToken(token) {
+			normalized := normalizeNumericTonePinyin(part)
+			if normalized != "" {
+				normalizedTokens = append(normalizedTokens, normalized)
+			}
+		}
+	}
+	return strings.Join(normalizedTokens, " ")
+}
+
+func isValidNumericTonePinyin(pinyin string) bool {
+	parts := strings.Fields(pinyin)
+	if len(parts) == 0 {
+		return false
+	}
+	for _, part := range parts {
+		if !isValidNumericTonePinyinSyllable(part) {
+			return false
+		}
+	}
+	return true
+}
+
+func isValidNumericTonePinyinSyllable(part string) bool {
+	runes := []rune(part)
+	if len(runes) < 2 {
+		return false
+	}
+	last := runes[len(runes)-1]
+	if last < '1' || last > '5' {
+		return false
+	}
+	for _, char := range runes[:len(runes)-1] {
+		if (char >= 'a' && char <= 'z') || char == 'ü' {
+			continue
+		}
+		return false
+	}
+	return true
+}
+
 func (ime *IME) setCandidatePageSize(size int) error {
 	if size < minCandidatePageSize || size > maxCandidatePageSize {
 		size = defaultCandidatePageSize
@@ -1339,11 +1426,12 @@ func (ime *IME) setCandidatePageSize(size int) error {
 	if err := os.WriteFile(configPath, []byte(updated), 0o644); err != nil {
 		return err
 	}
-	if !deployDefaultCustomConfig(configPath) {
-		return os.ErrInvalid
-	}
 	ime.candidatePageSize = size
 	ime.candidatePageStart = 0
+	if !deployDefaultCustomConfig(configPath) {
+		log.Printf("部署候选数量配置失败，当前会话仍使用 %d 个候选", size)
+		return nil
+	}
 	if ime.backend != nil {
 		schemaID := ime.backend.CurrentSchema()
 		if schemaID == "" {
@@ -1378,17 +1466,23 @@ func loadUserLexiconEntries(path string) ([]userLexiconEntry, error) {
 			continue
 		}
 		fields := strings.Split(line, "\t")
-		if len(fields) < 2 {
+		if len(fields) < 2 || len(fields) > 3 {
 			return nil, fmt.Errorf("用户词库第 %d 行格式应为：词条<TAB>数字标调拼音<TAB>权重", lineNumber)
 		}
 		phrase := strings.TrimSpace(fields[0])
-		pinyin := strings.TrimSpace(fields[1])
+		pinyin := normalizeNumericTonePinyinSyllableSpacing(fields[1])
 		weight := defaultUserLexiconWeight
 		if len(fields) >= 3 && strings.TrimSpace(fields[2]) != "" {
 			weight = strings.TrimSpace(fields[2])
 		}
 		if phrase == "" || pinyin == "" {
 			return nil, fmt.Errorf("用户词库第 %d 行词条和数字标调拼音不能为空", lineNumber)
+		}
+		if !isValidNumericTonePinyin(pinyin) {
+			return nil, fmt.Errorf("用户词库第 %d 行数字标调拼音格式错误：%s", lineNumber, pinyin)
+		}
+		if _, err := strconv.Atoi(weight); err != nil {
+			return nil, fmt.Errorf("用户词库第 %d 行权重必须是整数", lineNumber)
 		}
 		entries = append(entries, userLexiconEntry{Phrase: phrase, Pinyin: pinyin, Weight: weight, LineNumber: lineNumber})
 	}

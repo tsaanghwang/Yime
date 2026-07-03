@@ -12,18 +12,17 @@ import (
 	"github.com/EasyIME/pime-go/pime"
 )
 
-func newRealRimeSession(t *testing.T) RimeSessionId {
+type realRimeTestSession struct {
+	sessionID RimeSessionId
+	userDir   string
+}
+
+func newRealRimeSession(t *testing.T) realRimeTestSession {
 	t.Helper()
 
-	appData := os.Getenv("APPDATA")
-	if appData == "" {
-		t.Skip("APPDATA is not set")
-	}
-	userDir := filepath.Join(appData, APP, "Rime")
-	if info, err := os.Stat(userDir); err != nil || !info.IsDir() {
-		t.Skip("existing user Rime directory is required")
-	}
 	dataDir := rimeRuntimeTestDataDir(t)
+	userDir := filepath.Join(t.TempDir(), "Rime")
+	writeRuntimeTestDefaultCustom(t, userDir)
 
 	if !RimeInit(dataDir, userDir, APP, APP_VERSION, false) {
 		t.Fatal("RimeInit failed")
@@ -31,17 +30,41 @@ func newRealRimeSession(t *testing.T) RimeSessionId {
 
 	sessionID, ok := StartSession()
 	if !ok || sessionID == 0 {
+		Finalize()
 		t.Fatal("StartSession failed")
 	}
 	t.Cleanup(func() {
 		EndSession(sessionID)
 		Finalize()
 	})
+	if !SelectSchema(sessionID, "yime_variable") {
+		t.Fatal("expected yime_variable schema to be selectable")
+	}
+	t.Logf("runtime test user dir: %s", userDir)
 	t.Logf("ascii_mode before typing: %t", GetOption(sessionID, "ascii_mode"))
 	t.Logf("full_shape before typing: %t", GetOption(sessionID, "full_shape"))
 	SetOption(sessionID, "ascii_mode", false)
 	t.Logf("ascii_mode after forcing off: %t", GetOption(sessionID, "ascii_mode"))
-	return sessionID
+	return realRimeTestSession{sessionID: sessionID, userDir: userDir}
+}
+
+func writeRuntimeTestDefaultCustom(t *testing.T, userDir string) {
+	t.Helper()
+	if err := os.MkdirAll(userDir, 0o755); err != nil {
+		t.Fatalf("failed to create test Rime user dir: %v", err)
+	}
+	content := strings.Join([]string{
+		"patch:",
+		"  schema_list:",
+		"    - schema: yime_variable",
+		"    - schema: yime_full",
+		"    - schema: yime_shorthand",
+		"    - schema: luna_pinyin",
+		"",
+	}, "\n")
+	if err := os.WriteFile(filepath.Join(userDir, "default.custom.yaml"), []byte(content), 0o644); err != nil {
+		t.Fatalf("failed to write test default.custom.yaml: %v", err)
+	}
 }
 
 func rimeRuntimeTestDataDir(t *testing.T) string {
@@ -54,7 +77,8 @@ func rimeRuntimeTestDataDir(t *testing.T) string {
 }
 
 func TestRealRimeCanCommitText(t *testing.T) {
-	sessionID := newRealRimeSession(t)
+	session := newRealRimeSession(t)
+	sessionID := session.sessionID
 
 	for _, input := range []string{"yonsx", "puta", "qu"} {
 		t.Run(input, func(t *testing.T) {
@@ -95,8 +119,9 @@ func TestRealRimeCanCommitText(t *testing.T) {
 }
 
 func TestRealRimeCanSelectYimeShorthandSchema(t *testing.T) {
-	sessionID := newRealRimeSession(t)
-	schemaPath := prepareRuntimeTestUserSchema(t, "yime_shorthand")
+	session := newRealRimeSession(t)
+	sessionID := session.sessionID
+	schemaPath := prepareRuntimeTestUserSchema(t, session.userDir, "yime_shorthand")
 
 	if !deploySchemaConfig(schemaPath) {
 		t.Fatalf("expected yime_shorthand schema deploy to succeed: %s", schemaPath)
@@ -116,14 +141,9 @@ func TestRealRimeCanSelectYimeShorthandSchema(t *testing.T) {
 	}
 }
 
-func prepareRuntimeTestUserSchema(t *testing.T, schemaID string) string {
+func prepareRuntimeTestUserSchema(t *testing.T, userDir, schemaID string) string {
 	t.Helper()
-	appData := os.Getenv("APPDATA")
-	if appData == "" {
-		t.Skip("APPDATA is not set")
-	}
 	sharedPath := filepath.Join(rimeRuntimeTestDataDir(t), schemaID+".schema.yaml")
-	userDir := filepath.Join(appData, APP, "Rime")
 	if err := os.MkdirAll(userDir, 0o755); err != nil {
 		t.Fatalf("failed to create user Rime directory: %v", err)
 	}
@@ -139,7 +159,8 @@ func prepareRuntimeTestUserSchema(t *testing.T, schemaID string) string {
 }
 
 func TestRealRimeControlShortcuts(t *testing.T) {
-	sessionID := newRealRimeSession(t)
+	session := newRealRimeSession(t)
+	sessionID := session.sessionID
 
 	tests := []struct {
 		name string
@@ -196,7 +217,8 @@ func TestRealRimeControlShortcuts(t *testing.T) {
 }
 
 func TestRealRimeBackspaceUpdatesComposition(t *testing.T) {
-	sessionID := newRealRimeSession(t)
+	session := newRealRimeSession(t)
+	sessionID := session.sessionID
 	ClearComposition(sessionID)
 
 	typeASCII(t, sessionID, "ni")
@@ -222,7 +244,8 @@ func TestRealRimeBackspaceUpdatesComposition(t *testing.T) {
 }
 
 func TestRealRimeEscapeClearsComposition(t *testing.T) {
-	sessionID := newRealRimeSession(t)
+	session := newRealRimeSession(t)
+	sessionID := session.sessionID
 	ClearComposition(sessionID)
 
 	typeASCII(t, sessionID, "ni")
@@ -245,7 +268,8 @@ func TestRealRimeEscapeClearsComposition(t *testing.T) {
 }
 
 func TestRealRimePunctuationKeys(t *testing.T) {
-	sessionID := newRealRimeSession(t)
+	session := newRealRimeSession(t)
+	sessionID := session.sessionID
 
 	tests := []struct {
 		name          string

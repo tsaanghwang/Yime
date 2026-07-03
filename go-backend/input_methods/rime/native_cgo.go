@@ -71,7 +71,7 @@ func (b *nativeBackend) SelectCandidate(index int) bool {
 }
 
 func (b *nativeBackend) UsesBackendCandidatePaging() bool {
-	return true
+	return false
 }
 
 func (b *nativeBackend) State() rimeState {
