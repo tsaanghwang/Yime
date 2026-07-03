@@ -1,6 +1,7 @@
 package rime
 
 import (
+	"os"
 	"strings"
 	"testing"
 
@@ -19,6 +20,7 @@ type testBackend struct {
 	commitString string
 	asciiMode    bool
 	fullShape    bool
+	horizontal   bool
 	schemaID     string
 }
 
@@ -166,6 +168,8 @@ func (b *testBackend) SetOption(name string, value bool) {
 		b.asciiMode = value
 	case "full_shape":
 		b.fullShape = value
+	case "_horizontal":
+		b.horizontal = value
 	}
 }
 
@@ -175,6 +179,8 @@ func (b *testBackend) GetOption(name string) bool {
 		return b.asciiMode
 	case "full_shape":
 		return b.fullShape
+	case "_horizontal":
+		return b.horizontal
 	default:
 		return false
 	}
@@ -263,7 +269,7 @@ func newTestIME() *IME {
 		style: Style{
 			DisplayTrayIcon:    true,
 			CandidateFormat:    "{0} {1}",
-			CandidatePerRow:    1,
+			CandidatePerRow:    verticalCandidatesPerRow,
 			CandidateUseCursor: true,
 			FontFace:           "MingLiu",
 			FontPoint:          20,
@@ -848,6 +854,57 @@ func TestOnMenuReturnsSettingsMenu(t *testing.T) {
 	if text, ok := item["text"].(string); !ok || text != "9 项" {
 		t.Fatalf("expected page size 9 menu text, got %#v", item)
 	}
+
+	layoutMenu := findSubmenuItem(t, items, "候选排列")
+	if len(layoutMenu) != 2 {
+		t.Fatalf("expected candidate layout menu items, got %#v", layoutMenu)
+	}
+	item = findMenuItem(t, layoutMenu, ID_CANDIDATE_LAYOUT_HORIZONTAL)
+	if checked, ok := item["checked"].(bool); !ok || checked {
+		t.Fatalf("expected horizontal layout unchecked by default, got %#v", item)
+	}
+	item = findMenuItem(t, layoutMenu, ID_CANDIDATE_LAYOUT_VERTICAL)
+	if checked, ok := item["checked"].(bool); !ok || !checked {
+		t.Fatalf("expected vertical layout checked by default, got %#v", item)
+	}
+}
+
+func TestOnCommandSwitchesCandidateLayout(t *testing.T) {
+	ime := newTestIME()
+	backend := ime.backend.(*testBackend)
+
+	resp := ime.onCommand(&pime.Request{
+		SeqNum: 16,
+		ID:     pime.FlexibleID{Int: ID_CANDIDATE_LAYOUT_VERTICAL, IsInt: true},
+	}, pime.NewResponse(16, true))
+
+	if resp.ReturnValue != 1 {
+		t.Fatalf("expected vertical layout command to be handled, got %d", resp.ReturnValue)
+	}
+	if ime.style.CandidatePerRow != verticalCandidatesPerRow {
+		t.Fatalf("expected vertical candPerRow, got %d", ime.style.CandidatePerRow)
+	}
+	if backend.horizontal {
+		t.Fatal("expected backend _horizontal option to be false")
+	}
+	if got := resp.CustomizeUI["candPerRow"]; got != verticalCandidatesPerRow {
+		t.Fatalf("expected customizeUI candPerRow %d, got %#v", verticalCandidatesPerRow, got)
+	}
+
+	resp = ime.onCommand(&pime.Request{
+		SeqNum: 17,
+		ID:     pime.FlexibleID{Int: ID_CANDIDATE_LAYOUT_HORIZONTAL, IsInt: true},
+	}, pime.NewResponse(17, true))
+
+	if resp.ReturnValue != 1 {
+		t.Fatalf("expected horizontal layout command to be handled, got %d", resp.ReturnValue)
+	}
+	if ime.style.CandidatePerRow != horizontalCandidatesPerRow {
+		t.Fatalf("expected horizontal candPerRow, got %d", ime.style.CandidatePerRow)
+	}
+	if !backend.horizontal {
+		t.Fatal("expected backend _horizontal option to be true")
+	}
 }
 
 func TestCandidatePageSizeLimitsVisibleCandidates(t *testing.T) {
@@ -1008,6 +1065,29 @@ func TestNormalizeNumericTonePinyin(t *testing.T) {
 		if got := normalizeNumericTonePinyin(input); got != want {
 			t.Fatalf("normalizeNumericTonePinyin(%q) = %q, want %q", input, got, want)
 		}
+	}
+}
+
+func TestEnsureUserLexiconFileCreatesEditableNumericToneSource(t *testing.T) {
+	t.Setenv("APPDATA", t.TempDir())
+	ime := newTestIME()
+
+	path, err := ime.ensureUserLexiconFile()
+	if err != nil {
+		t.Fatalf("ensureUserLexiconFile failed: %v", err)
+	}
+	if !strings.HasSuffix(path, userLexiconSourceFileName) {
+		t.Fatalf("expected editable source path, got %q", path)
+	}
+	if rimePath := ime.rimeUserLexiconPath(); !strings.HasSuffix(rimePath, rimeUserLexiconFileName) {
+		t.Fatalf("expected generated Rime lexicon path, got %q", rimePath)
+	}
+	content, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatalf("read user lexicon source failed: %v", err)
+	}
+	if !strings.Contains(string(content), "numeric-tone-pinyin") || !strings.Contains(string(content), "zhong1 guo2") {
+		t.Fatalf("expected numeric-tone pinyin source header, got %q", string(content))
 	}
 }
 

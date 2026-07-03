@@ -18,10 +18,12 @@ Rime frontend.
   installed Rime data.
 - Reverse code lookup: choose how reverse lookup codes are displayed for Hanzi.
 - User lexicon: add, edit, apply, and open the user lexicon folder. The
-  add-phrase flow reads the clipboard as the default phrase and asks for
-  numeric-tone pinyin, for example `zhong1 guo2`, because it is much easier to
-  type than pinyin with tone marks. Entries are written to
-  `%APPDATA%\PIME\Rime\custom_phrase.txt`.
+  add-phrase flow opens a small dialog, reads the clipboard as the default
+  phrase, and asks for numeric-tone pinyin, for example `zhong1 guo2`, because
+  it is much easier to type than pinyin with tone marks. Editable entries are
+  written to `%APPDATA%\PIME\Rime\yime_user_phrases.txt` as
+  `phrase<TAB>numeric-tone-pinyin<TAB>weight`; applying the lexicon generates
+  Rime's `%APPDATA%\PIME\Rime\custom_phrase.txt` table-code file.
 - Help: view this help, view trial feedback guidance, and copy a trial feedback
   template.
 

@@ -4,6 +4,7 @@ package rime
 
 import (
 	"bufio"
+	"fmt"
 	"log"
 	"os"
 	"os/exec"
@@ -52,13 +53,20 @@ const (
 	ID_CANDIDATE_PAGE_SIZE_7          = 72
 	ID_CANDIDATE_PAGE_SIZE_8          = 73
 	ID_CANDIDATE_PAGE_SIZE_9          = 74
+	ID_CANDIDATE_LAYOUT_HORIZONTAL    = 75
+	ID_CANDIDATE_LAYOUT_VERTICAL      = 76
 )
 
 const (
-	defaultCandidatePageSize = 5
-	minCandidatePageSize     = 5
-	maxCandidatePageSize     = 9
-	yimeCandidateSelectKeys  = "1234567890"
+	defaultCandidatePageSize   = 5
+	minCandidatePageSize       = 5
+	maxCandidatePageSize       = 9
+	horizontalCandidatesPerRow = 10
+	verticalCandidatesPerRow   = 1
+	yimeCandidateSelectKeys    = "1234567890"
+	userLexiconSourceFileName  = "yime_user_phrases.txt"
+	rimeUserLexiconFileName    = "custom_phrase.txt"
+	defaultUserLexiconWeight   = "1000000"
 )
 
 type Style struct {
@@ -131,7 +139,7 @@ func New(client *pime.Client) pime.TextService {
 		style: Style{
 			DisplayTrayIcon:    true,
 			CandidateFormat:    "{0} {1}",
-			CandidatePerRow:    1,
+			CandidatePerRow:    verticalCandidatesPerRow,
 			CandidateUseCursor: true,
 			FontFace:           "MingLiu",
 			FontPoint:          20,
@@ -357,6 +365,10 @@ func (ime *IME) onCommand(req *pime.Request, resp *pime.Response) *pime.Response
 		if err := ime.setCandidatePageSize(minCandidatePageSize + commandID - ID_CANDIDATE_PAGE_SIZE_5); err != nil {
 			log.Printf("设置候选页大小失败: %v", err)
 		}
+	case ID_CANDIDATE_LAYOUT_HORIZONTAL:
+		ime.setCandidateLayout(true, resp)
+	case ID_CANDIDATE_LAYOUT_VERTICAL:
+		ime.setCandidateLayout(false, resp)
 	default:
 		log.Printf("未知命令: %d", commandID)
 		resp.ReturnValue = 0
@@ -821,6 +833,23 @@ func (ime *IME) toggleOption(name string) {
 	ime.backend.SetOption(name, !ime.backend.GetOption(name))
 }
 
+func (ime *IME) setCandidateLayout(horizontal bool, resp *pime.Response) {
+	if horizontal {
+		ime.style.CandidatePerRow = horizontalCandidatesPerRow
+	} else {
+		ime.style.CandidatePerRow = verticalCandidatesPerRow
+	}
+	if ime.backend != nil {
+		ime.backend.SetOption("_horizontal", horizontal)
+	}
+	if resp != nil {
+		if resp.CustomizeUI == nil {
+			resp.CustomizeUI = map[string]interface{}{}
+		}
+		resp.CustomizeUI["candPerRow"] = ime.style.CandidatePerRow
+	}
+}
+
 func (ime *IME) selectSchema(schemaID string) {
 	if ime.backend == nil || schemaID == "" {
 		return
@@ -1046,6 +1075,7 @@ func (ime *IME) buildMenu() []map[string]interface{} {
 		{"id": ID_ASCII_PUNCT, "text": punctText},
 		{"id": ID_FULL_SHAPE, "text": shapeText},
 		{"text": ""},
+		{"text": "候选排列", "submenu": ime.buildCandidateLayoutMenu()},
 		{"text": "候选数量", "submenu": ime.buildCandidatePageSizeMenu()},
 		{"text": ""},
 		{"id": ID_DEPLOY, "text": "重新部署(&D)"},
@@ -1071,6 +1101,14 @@ func (ime *IME) buildReverseLookupMenu() []map[string]interface{} {
 	}
 }
 
+func (ime *IME) buildCandidateLayoutMenu() []map[string]interface{} {
+	horizontal := ime.style.CandidatePerRow > verticalCandidatesPerRow
+	return []map[string]interface{}{
+		{"id": ID_CANDIDATE_LAYOUT_HORIZONTAL, "text": "横排", "checked": horizontal},
+		{"id": ID_CANDIDATE_LAYOUT_VERTICAL, "text": "竖排", "checked": !horizontal},
+	}
+}
+
 func (ime *IME) buildCandidatePageSizeMenu() []map[string]interface{} {
 	pageSize := ime.candidatePageSize
 	if pageSize < minCandidatePageSize || pageSize > maxCandidatePageSize {
@@ -1093,7 +1131,7 @@ func (ime *IME) buildUserLexiconMenu() []map[string]interface{} {
 		{"id": ID_USER_LEXICON_DELETE, "text": "删除当前词条", "enabled": false},
 		{"text": ""},
 		{"text": "编辑与重载", "submenu": []map[string]interface{}{
-			{"id": ID_USER_LEXICON_EDIT, "text": "编辑用户词库"},
+			{"id": ID_USER_LEXICON_EDIT, "text": "编辑数字拼音词库"},
 			{"id": ID_USER_LEXICON_APPLY, "text": "应用用户词库"},
 		}},
 		{"text": "导入与导出", "submenu": []map[string]interface{}{
@@ -1140,7 +1178,15 @@ func (ime *IME) userLexiconPath() string {
 	if userDir == "" {
 		return ""
 	}
-	return filepath.Join(userDir, "custom_phrase.txt")
+	return filepath.Join(userDir, userLexiconSourceFileName)
+}
+
+func (ime *IME) rimeUserLexiconPath() string {
+	userDir := ime.userDir()
+	if userDir == "" {
+		return ""
+	}
+	return filepath.Join(userDir, rimeUserLexiconFileName)
 }
 
 func (ime *IME) ensureUserLexiconFile() (string, error) {
@@ -1156,7 +1202,7 @@ func (ime *IME) ensureUserLexiconFile() (string, error) {
 	} else if !os.IsNotExist(err) {
 		return "", err
 	}
-	header := "# PIME Yime user phrases\n# format: phrase<TAB>code<TAB>weight\n"
+	header := "# PIME Yime user phrases\n# format: phrase<TAB>numeric-tone-pinyin<TAB>weight\n# example: 中国\tzhong1 guo2\t1000000\n"
 	return path, os.WriteFile(path, []byte(header), 0o644)
 }
 
@@ -1179,7 +1225,15 @@ func (ime *IME) currentYimeMode() string {
 }
 
 func (ime *IME) applyUserLexicon() error {
-	if _, err := ime.ensureUserLexiconFile(); err != nil {
+	sourcePath, err := ime.ensureUserLexiconFile()
+	if err != nil {
+		return err
+	}
+	targetPath := ime.rimeUserLexiconPath()
+	if targetPath == "" {
+		return os.ErrNotExist
+	}
+	if err := ime.writeRimeUserLexicon(sourcePath, targetPath, ime.currentYimeMode()); err != nil {
 		return err
 	}
 	if ime.backend == nil {
@@ -1300,6 +1354,72 @@ func (ime *IME) setCandidatePageSize(size int) error {
 	return nil
 }
 
+type userLexiconEntry struct {
+	Phrase     string
+	Pinyin     string
+	Weight     string
+	LineNumber int
+}
+
+func loadUserLexiconEntries(path string) ([]userLexiconEntry, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	entries := []userLexiconEntry{}
+	scanner := bufio.NewScanner(file)
+	lineNumber := 0
+	for scanner.Scan() {
+		lineNumber++
+		line := strings.TrimSpace(scanner.Text())
+		if line == "" || strings.HasPrefix(line, "#") {
+			continue
+		}
+		fields := strings.Split(line, "\t")
+		if len(fields) < 2 {
+			return nil, fmt.Errorf("用户词库第 %d 行格式应为：词条<TAB>数字标调拼音<TAB>权重", lineNumber)
+		}
+		phrase := strings.TrimSpace(fields[0])
+		pinyin := strings.TrimSpace(fields[1])
+		weight := defaultUserLexiconWeight
+		if len(fields) >= 3 && strings.TrimSpace(fields[2]) != "" {
+			weight = strings.TrimSpace(fields[2])
+		}
+		if phrase == "" || pinyin == "" {
+			return nil, fmt.Errorf("用户词库第 %d 行词条和数字标调拼音不能为空", lineNumber)
+		}
+		entries = append(entries, userLexiconEntry{Phrase: phrase, Pinyin: pinyin, Weight: weight, LineNumber: lineNumber})
+	}
+	return entries, scanner.Err()
+}
+
+func (ime *IME) writeRimeUserLexicon(sourcePath, targetPath, mode string) error {
+	entries, err := loadUserLexiconEntries(sourcePath)
+	if err != nil {
+		return err
+	}
+
+	var content strings.Builder
+	content.WriteString("# Generated by PIME Yime from ")
+	content.WriteString(userLexiconSourceFileName)
+	content.WriteString("\n# format: phrase<TAB>code<TAB>weight\n")
+	for _, entry := range entries {
+		code, err := ime.encodeNumericTonePinyin(entry.Pinyin, mode)
+		if err != nil {
+			return fmt.Errorf("用户词库第 %d 行拼音 %q 无法转换: %w", entry.LineNumber, entry.Pinyin, err)
+		}
+		content.WriteString(entry.Phrase)
+		content.WriteByte('\t')
+		content.WriteString(code)
+		content.WriteByte('\t')
+		content.WriteString(entry.Weight)
+		content.WriteByte('\n')
+	}
+	return os.WriteFile(targetPath, []byte(content.String()), 0o644)
+}
+
 func updateDefaultCustomPageSize(content string, size int) string {
 	line := "  menu/page_size: " + strconv.Itoa(size)
 	if strings.TrimSpace(content) == "" {
@@ -1326,7 +1446,7 @@ func (ime *IME) openPath(path string) {
 	if path == "" {
 		return
 	}
-	if err := exec.Command("explorer.exe", path).Start(); err != nil {
+	if err := exec.Command("rundll32.exe", "url.dll,FileProtocolHandler", path).Start(); err != nil {
 		log.Printf("打开路径失败 %s: %v", path, err)
 	}
 }
