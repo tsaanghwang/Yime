@@ -1,11 +1,16 @@
-# PIME
+# Yime for Windows
 
-[![Build status](https://ci.appveyor.com/api/projects/status/ju8c225nt9qgxeee?svg=true)](https://ci.appveyor.com/project/EasyIME/PIME)
-[![GitHub release](https://img.shields.io/github/release/EasyIME/PIME.svg)](https://github.com/EasyIME/PIME/releases)
+**Yime for Windows**（音元拼音）is a Rime-powered Chinese phonetic input method for Windows,
+built on the [PIME](https://github.com/EasyIME/PIME) text-service framework.
 
-Implement input methods easily for Windows via Text Services Framework:
+- **音元拼音** is the input scheme users select in the language bar (display name).
+- **Rime** (`librime` / `rime.dll`) is the conversion engine.
+- **PIME** is the Windows Text Services Framework (TSF) host and multi-backend service framework this repository is forked from.
+
+The Windows integration is implemented via the Text Services Framework:
 *   LibIME contains a library which aims to be a simple wrapper for Windows Text Service Framework (TSF).
 *   PIMETextService contains an backbone implementation of Windows text service for using libIME.
+*   The Go backend (`go-backend`) hosts the `yime` service that drives the Rime engine.
 *   The python server part requires python 3.x and pywin32 package.
 
 All parts are licensed under GNU LGPL v2.1 license.
@@ -22,8 +27,8 @@ All parts are licensed under GNU LGPL v2.1 license.
 ## How to Build
 *   Get source from github.
 
-        git clone https://github.com/EasyIME/PIME.git
-        cd PIME
+        git clone <your-fork-url>/Yime-for-Windows.git Yime
+        cd Yime
         git submodule update --init
 
 *   Ensure the 32-bit Rust target is installed:
@@ -82,7 +87,10 @@ All parts are licensed under GNU LGPL v2.1 license.
 *   NOTICE: the `regsvr32` command needs to be run as Administrator. Otherwise you'll get access denied error.
 
 # Bug Report
-Please report any issue to [here](https://github.com/EasyIME/PIME/issues).
+Please report any issue to the Yime for Windows repository's issue tracker.
+
+Framework-level issues that also affect upstream PIME can be referenced from
+[EasyIME/PIME issues](https://github.com/EasyIME/PIME/issues).
 
 # Debugging
 If you encounter issues, you can run PIMELauncher.exe with the /console argument:
