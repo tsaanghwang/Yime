@@ -2,6 +2,7 @@
 build
 build64
 build_arm64/
+build_clean/
 python/__pycache__/
 tools/downloads/
 node/input_methods/McBopomofo
@@ -9,4 +10,6 @@ go-backend/input_methods/yime/data/
 go-backend/build/
 go-backend/.gotmp/
 installer/*.exe
+.tmp/
+PIMELauncher/target/
 .arts/
