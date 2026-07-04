@@ -41,6 +41,7 @@ const (
 	ID_USER_LEXICON_APPLY             = 33
 	ID_USER_LEXICON_IMPORT            = 34
 	ID_USER_LEXICON_EXPORT            = 35
+	ID_USER_LEXICON_MANAGER           = 36
 	ID_REVERSE_LOOKUP_DEFAULT         = 40
 	ID_REVERSE_LOOKUP_FULL            = 41
 	ID_REVERSE_LOOKUP_HIDDEN          = 42
@@ -364,6 +365,11 @@ func (ime *IME) onCommand(req *pime.Request, resp *pime.Response) *pime.Response
 		}
 	case ID_USER_LEXICON_EXPORT:
 		ime.openPath(ime.userDir())
+	case ID_USER_LEXICON_MANAGER:
+		if err := ime.openUserLexiconManager(); err != nil {
+			log.Printf("打开词库管理失败: %v", err)
+			ime.showUserLexiconMessage("打开词库管理失败", err.Error(), "Error")
+		}
 	case ID_USER_LEXICON_DELETE, ID_USER_LEXICON_IMPORT:
 		log.Printf("用户词库命令尚未接入: %d", commandID)
 	case ID_REVERSE_LOOKUP_DEFAULT, ID_REVERSE_LOOKUP_FULL:
@@ -415,7 +421,7 @@ func (ime *IME) commandShouldRefreshState(commandID int) bool {
 	case ID_REVERSE_LOOKUP_DEFAULT, ID_REVERSE_LOOKUP_FULL, ID_REVERSE_LOOKUP_HIDDEN,
 		ID_REVERSE_LOOKUP_STANDARD_PINYIN, ID_REVERSE_LOOKUP_YIME_PINYIN, ID_REVERSE_LOOKUP_KEY_SEQUENCE,
 		ID_HELP_VIEW, ID_HELP_TRIAL_FEEDBACK, ID_HELP_COPY_TRIAL_TEMPLATE,
-		ID_USER_DIR, ID_SHARED_DIR, ID_SYNC_DIR, ID_LOG_DIR, ID_SYNC,
+		ID_USER_DIR, ID_SHARED_DIR, ID_SYNC_DIR, ID_LOG_DIR, ID_SYNC, ID_USER_LEXICON_MANAGER,
 		ID_CANDIDATE_PAGE_SIZE_5, ID_CANDIDATE_PAGE_SIZE_6, ID_CANDIDATE_PAGE_SIZE_7, ID_CANDIDATE_PAGE_SIZE_8, ID_CANDIDATE_PAGE_SIZE_9:
 		return false
 	default:
@@ -474,7 +480,7 @@ func (ime *IME) onMenu(req *pime.Request, resp *pime.Response) *pime.Response {
 		}
 	}
 	if buttonID != "settings" && buttonID != "windows-mode-icon" && buttonID != "candidate-layout" && buttonID != "reverse-lookup" &&
-		buttonID != "user-lexicon" && buttonID != "help" {
+		buttonID != "user-lexicon" && buttonID != "lexicon-manager" && buttonID != "help" {
 		resp.ReturnData = []map[string]interface{}{}
 		resp.ReturnValue = 0
 		return resp
@@ -488,7 +494,7 @@ func (ime *IME) onMenu(req *pime.Request, resp *pime.Response) *pime.Response {
 		resp.ReturnData = []map[string]interface{}{}
 	case "reverse-lookup":
 		resp.ReturnData = ime.buildReverseLookupMenu()
-	case "user-lexicon":
+	case "user-lexicon", "lexicon-manager":
 		resp.ReturnData = ime.buildUserLexiconMenu()
 	default:
 		resp.ReturnData = ime.buildMenu()
@@ -1039,7 +1045,7 @@ func (ime *IME) addButtons(resp *pime.Response) {
 		Type:    "menu",
 	})
 	resp.AddButton = append(resp.AddButton, pime.ButtonInfo{
-		ID:      "user-lexicon",
+		ID:      "lexicon-manager",
 		Text:    "用户词库",
 		Tooltip: "用户词库",
 		Type:    "menu",
@@ -1064,7 +1070,7 @@ func (ime *IME) removeButtons(resp *pime.Response) {
 	if !ime.style.DisplayTrayIcon || resp == nil {
 		return
 	}
-	resp.RemoveButton = append(resp.RemoveButton, "switch-lang", "switch-shape", "candidate-layout", "reverse-lookup", "user-lexicon", "settings", "help")
+	resp.RemoveButton = append(resp.RemoveButton, "switch-lang", "switch-shape", "candidate-layout", "reverse-lookup", "user-lexicon", "lexicon-manager", "settings", "help")
 	if ime.Client != nil && ime.Client.IsWindows8Above {
 		resp.RemoveButton = append(resp.RemoveButton, "windows-mode-icon")
 	}
@@ -1432,14 +1438,7 @@ func (ime *IME) buildCandidatePageSizeMenu() []map[string]interface{} {
 
 func (ime *IME) buildUserLexiconMenu() []map[string]interface{} {
 	return []map[string]interface{}{
-		{"id": ID_USER_LEXICON_ADD, "text": "添加用户词条"},
-		{"id": ID_USER_LEXICON_DELETE, "text": "删除用户词条", "enabled": false},
-		{"text": ""},
-		{"id": ID_USER_LEXICON_EDIT, "text": "编辑用户词库"},
-		{"id": ID_USER_LEXICON_APPLY, "text": "应用用户词库"},
-		{"text": ""},
-		{"id": ID_USER_LEXICON_IMPORT, "text": "导入用户词库", "enabled": false},
-		{"id": ID_USER_LEXICON_EXPORT, "text": "导出用户词库"},
+		{"id": ID_USER_LEXICON_MANAGER, "text": "打开词库管理"},
 	}
 }
 
@@ -1520,6 +1519,10 @@ func (ime *IME) editUserLexicon() {
 
 func (ime *IME) addUserLexiconPhrase() error {
 	return ime.startUserLexiconAddHelper(ime.currentYimeMode())
+}
+
+func (ime *IME) openUserLexiconManager() error {
+	return ime.startUserLexiconManagerHelper(ime.currentYimeMode())
 }
 
 func (ime *IME) currentYimeMode() string {

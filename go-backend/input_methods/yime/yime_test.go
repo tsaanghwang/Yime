@@ -1512,47 +1512,12 @@ func TestBuildMenuIncludesYimeUserLexiconMenu(t *testing.T) {
 	ime := newTestIME()
 
 	userLexiconMenu := ime.buildUserLexiconMenu()
-	if len(userLexiconMenu) != 8 {
-		t.Fatalf("expected flat user lexicon menu, got %#v", userLexiconMenu)
+	if len(userLexiconMenu) != 1 {
+		t.Fatalf("expected single lexicon-manager entry, got %#v", userLexiconMenu)
 	}
-	if hasSubmenuItem(userLexiconMenu, "编辑与重载") || hasSubmenuItem(userLexiconMenu, "导入与导出") {
-		t.Fatalf("expected user lexicon actions to stay at top menu level, got %#v", userLexiconMenu)
-	}
-	wantText := map[int]string{
-		ID_USER_LEXICON_ADD:    "添加用户词条",
-		ID_USER_LEXICON_DELETE: "删除用户词条",
-		ID_USER_LEXICON_EDIT:   "编辑用户词库",
-		ID_USER_LEXICON_APPLY:  "应用用户词库",
-		ID_USER_LEXICON_IMPORT: "导入用户词库",
-		ID_USER_LEXICON_EXPORT: "导出用户词库",
-	}
-	for id, text := range wantText {
-		item := findTopLevelMenuItem(t, userLexiconMenu, id)
-		if item["text"] != text {
-			t.Fatalf("expected user lexicon item %d text %q, got %#v", id, text, item)
-		}
-	}
-
-	for _, id := range []int{
-		ID_USER_LEXICON_ADD,
-		ID_USER_LEXICON_EDIT,
-		ID_USER_LEXICON_APPLY,
-		ID_USER_LEXICON_EXPORT,
-	} {
-		item := findMenuItem(t, userLexiconMenu, id)
-		if enabled, ok := item["enabled"].(bool); ok && !enabled {
-			t.Fatalf("expected user lexicon item %d enabled, got %#v", id, item)
-		}
-	}
-
-	for _, id := range []int{
-		ID_USER_LEXICON_DELETE,
-		ID_USER_LEXICON_IMPORT,
-	} {
-		item := findMenuItem(t, userLexiconMenu, id)
-		if enabled, ok := item["enabled"].(bool); !ok || enabled {
-			t.Fatalf("expected user lexicon item %d disabled until workflow is connected, got %#v", id, item)
-		}
+	item := findTopLevelMenuItem(t, userLexiconMenu, ID_USER_LEXICON_MANAGER)
+	if item["text"] != "打开词库管理" {
+		t.Fatalf("expected lexicon manager entry text, got %#v", item)
 	}
 }
 
@@ -1565,7 +1530,7 @@ func TestAddButtonsIncludesTopLevelMenuButtons(t *testing.T) {
 	want := map[string]bool{
 		"candidate-layout": false,
 		"reverse-lookup":   false,
-		"user-lexicon":     false,
+		"lexicon-manager":  false,
 		"help":             false,
 	}
 	for _, button := range resp.AddButton {
@@ -1573,7 +1538,11 @@ func TestAddButtonsIncludesTopLevelMenuButtons(t *testing.T) {
 			continue
 		}
 		want[button.ID] = true
-		if button.Type != "menu" {
+		if button.ID == "candidate-layout" {
+			if button.Type != "button" {
+				t.Fatalf("expected candidate-layout button to be a direct toggle button, got %#v", button)
+			}
+		} else if button.Type != "menu" {
 			t.Fatalf("expected %s button to be a menu, got %#v", button.ID, button)
 		}
 		if button.ID == "candidate-layout" && button.CommandID != ID_CANDIDATE_LAYOUT_TOGGLE {
@@ -1583,6 +1552,14 @@ func TestAddButtonsIncludesTopLevelMenuButtons(t *testing.T) {
 	for id, found := range want {
 		if !found {
 			t.Fatalf("expected %s menu button in %#v", id, resp.AddButton)
+		}
+	}
+	for _, button := range resp.AddButton {
+		if button.ID == "lexicon-manager" {
+			if button.Text != "用户词库" {
+				t.Fatalf("expected lexicon-manager button text 用户词库, got %#v", button)
+			}
+			break
 		}
 	}
 }
@@ -1604,23 +1581,23 @@ func TestOnMenuReturnsTopLevelLayoutReverseLookupAndUserLexiconMenus(t *testing.
 		ID:     pime.FlexibleID{String: "reverse-lookup"},
 	}, pime.NewResponse(18, true))
 	reverseItems, ok := reverseResp.ReturnData.([]map[string]interface{})
-	if !ok || len(reverseItems) == 0 {
+	if !ok || len(reverseItems) != 4 {
 		t.Fatalf("expected reverse lookup menu items, got %#v", reverseResp.ReturnData)
 	}
-	if item := findMenuItem(t, reverseItems, ID_REVERSE_LOOKUP_FULL); !strings.Contains(item["text"].(string), "键位序列") {
-		t.Fatalf("expected full reverse lookup item to describe key sequence, got %#v", item)
+	if item := findMenuItem(t, reverseItems, ID_REVERSE_LOOKUP_KEY_SEQUENCE); item["text"] != "键位序列" {
+		t.Fatalf("expected key-sequence reverse lookup item text, got %#v", item)
 	}
 
 	userResp := ime.onMenu(&pime.Request{
 		SeqNum: 19,
-		ID:     pime.FlexibleID{String: "user-lexicon"},
+		ID:     pime.FlexibleID{String: "lexicon-manager"},
 	}, pime.NewResponse(19, true))
 	userItems, ok := userResp.ReturnData.([]map[string]interface{})
-	if !ok || len(userItems) == 0 {
-		t.Fatalf("expected user lexicon menu items, got %#v", userResp.ReturnData)
+	if !ok || len(userItems) != 1 {
+		t.Fatalf("expected lexicon manager menu item, got %#v", userResp.ReturnData)
 	}
-	if item := findTopLevelMenuItem(t, userItems, ID_USER_LEXICON_ADD); item["text"] != "添加用户词条" {
-		t.Fatalf("expected add phrase item text, got %#v", item)
+	if item := findTopLevelMenuItem(t, userItems, ID_USER_LEXICON_MANAGER); item["text"] != "打开词库管理" {
+		t.Fatalf("expected lexicon manager item text, got %#v", item)
 	}
 }
 
