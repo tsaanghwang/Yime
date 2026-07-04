@@ -102,6 +102,7 @@ func (b *nativeBackend) State() rimeState {
 		state.Candidates = candidates
 		state.CandidateCursor = menu.HighlightedCandidateIndex
 		state.SelectKeys = menu.SelectKeys
+		state.PageSize = menu.PageSize
 	}
 	state.AsciiMode = b.GetOption("ascii_mode")
 	state.FullShape = b.GetOption("full_shape")

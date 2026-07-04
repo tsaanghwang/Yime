@@ -871,7 +871,7 @@ func TestOnMenuReturnsSettingsMenu(t *testing.T) {
 	if len(layoutMenu) != 1 {
 		t.Fatalf("expected one direct layout toggle item, got %#v", layoutMenu)
 	}
-	item := findMenuItem(t, layoutMenu, ID_CANDIDATE_LAYOUT_HORIZONTAL)
+	item := findMenuItem(t, layoutMenu, ID_CANDIDATE_LAYOUT_TOGGLE)
 	if text, ok := item["text"].(string); !ok || text != "竖排 → 横排" {
 		t.Fatalf("expected vertical-to-horizontal toggle text, got %#v", item)
 	}
@@ -928,38 +928,38 @@ func TestOnCommandSwitchesCandidateLayout(t *testing.T) {
 
 	resp := ime.onCommand(&pime.Request{
 		SeqNum: 16,
-		ID:     pime.FlexibleID{Int: ID_CANDIDATE_LAYOUT_VERTICAL, IsInt: true},
+		ID:     pime.FlexibleID{Int: ID_CANDIDATE_LAYOUT_TOGGLE, IsInt: true},
 	}, pime.NewResponse(16, true))
 
 	if resp.ReturnValue != 1 {
-		t.Fatalf("expected vertical layout command to be handled, got %d", resp.ReturnValue)
-	}
-	if ime.style.CandidatePerRow != verticalCandidatesPerRow {
-		t.Fatalf("expected vertical candPerRow, got %d", ime.style.CandidatePerRow)
-	}
-	if backend.horizontal {
-		t.Fatal("expected backend _horizontal option to be false")
-	}
-	if got := resp.CustomizeUI["candPerRow"]; got != verticalCandidatesPerRow {
-		t.Fatalf("expected customizeUI candPerRow %d, got %#v", verticalCandidatesPerRow, got)
-	}
-
-	resp = ime.onCommand(&pime.Request{
-		SeqNum: 17,
-		ID:     pime.FlexibleID{Int: ID_CANDIDATE_LAYOUT_HORIZONTAL, IsInt: true},
-	}, pime.NewResponse(17, true))
-
-	if resp.ReturnValue != 1 {
-		t.Fatalf("expected horizontal layout command to be handled, got %d", resp.ReturnValue)
+		t.Fatalf("expected layout toggle command to be handled, got %d", resp.ReturnValue)
 	}
 	if ime.style.CandidatePerRow != horizontalCandidatesPerRow {
-		t.Fatalf("expected horizontal candPerRow, got %d", ime.style.CandidatePerRow)
+		t.Fatalf("expected horizontal candPerRow after toggle from vertical, got %d", ime.style.CandidatePerRow)
 	}
 	if !backend.horizontal {
 		t.Fatal("expected backend _horizontal option to be true")
 	}
-	if len(resp.ChangeButton) == 0 || resp.ChangeButton[0].CommandID != ID_CANDIDATE_LAYOUT_VERTICAL {
-		t.Fatalf("expected layout button command to toggle back to vertical, got %#v", resp.ChangeButton)
+	if got := resp.CustomizeUI["candPerRow"]; got != horizontalCandidatesPerRow {
+		t.Fatalf("expected customizeUI candPerRow %d, got %#v", horizontalCandidatesPerRow, got)
+	}
+
+	resp = ime.onCommand(&pime.Request{
+		SeqNum: 17,
+		ID:     pime.FlexibleID{Int: ID_CANDIDATE_LAYOUT_TOGGLE, IsInt: true},
+	}, pime.NewResponse(17, true))
+
+	if resp.ReturnValue != 1 {
+		t.Fatalf("expected layout toggle command to be handled, got %d", resp.ReturnValue)
+	}
+	if ime.style.CandidatePerRow != verticalCandidatesPerRow {
+		t.Fatalf("expected vertical candPerRow after toggle from horizontal, got %d", ime.style.CandidatePerRow)
+	}
+	if backend.horizontal {
+		t.Fatal("expected backend _horizontal option to be false")
+	}
+	if len(resp.ChangeButton) == 0 || resp.ChangeButton[0].CommandID != ID_CANDIDATE_LAYOUT_TOGGLE {
+		t.Fatalf("expected layout button command ID to be toggle, got %#v", resp.ChangeButton)
 	}
 }
 
@@ -1473,7 +1473,7 @@ func TestAddButtonsIncludesTopLevelMenuButtons(t *testing.T) {
 		if button.Type != "menu" {
 			t.Fatalf("expected %s button to be a menu, got %#v", button.ID, button)
 		}
-		if button.ID == "candidate-layout" && button.CommandID != ID_CANDIDATE_LAYOUT_HORIZONTAL {
+		if button.ID == "candidate-layout" && button.CommandID != ID_CANDIDATE_LAYOUT_TOGGLE {
 			t.Fatalf("expected candidate-layout button to toggle to horizontal by default, got %#v", button)
 		}
 	}
@@ -1492,11 +1492,8 @@ func TestOnMenuReturnsTopLevelLayoutReverseLookupAndUserLexiconMenus(t *testing.
 		ID:     pime.FlexibleID{String: "candidate-layout"},
 	}, pime.NewResponse(17, true))
 	layoutItems, ok := layoutResp.ReturnData.([]map[string]interface{})
-	if !ok || len(layoutItems) != 1 {
-		t.Fatalf("expected candidate layout menu items, got %#v", layoutResp.ReturnData)
-	}
-	if item := findMenuItem(t, layoutItems, ID_CANDIDATE_LAYOUT_HORIZONTAL); item["text"] != "竖排 → 横排" {
-		t.Fatalf("expected layout toggle item text, got %#v", item)
+	if !ok || len(layoutItems) != 0 {
+		t.Fatalf("expected empty candidate layout menu (toggle is now a button), got %#v", layoutResp.ReturnData)
 	}
 
 	reverseResp := ime.onMenu(&pime.Request{

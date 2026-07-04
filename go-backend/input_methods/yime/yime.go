@@ -53,8 +53,7 @@ const (
 	ID_CANDIDATE_PAGE_SIZE_7          = 72
 	ID_CANDIDATE_PAGE_SIZE_8          = 73
 	ID_CANDIDATE_PAGE_SIZE_9          = 74
-	ID_CANDIDATE_LAYOUT_HORIZONTAL    = 75
-	ID_CANDIDATE_LAYOUT_VERTICAL      = 76
+	ID_CANDIDATE_LAYOUT_TOGGLE        = 75
 )
 
 const (
@@ -94,6 +93,7 @@ type rimeState struct {
 	Candidates      []candidateItem
 	CandidateCursor int
 	SelectKeys      string
+	PageSize        int
 	AsciiMode       bool
 	FullShape       bool
 }
@@ -368,10 +368,8 @@ func (ime *IME) onCommand(req *pime.Request, resp *pime.Response) *pime.Response
 		if err := ime.setCandidatePageSize(minCandidatePageSize + commandID - ID_CANDIDATE_PAGE_SIZE_5); err != nil {
 			log.Printf("设置候选页大小失败: %v", err)
 		}
-	case ID_CANDIDATE_LAYOUT_HORIZONTAL:
-		ime.setCandidateLayout(true, resp)
-	case ID_CANDIDATE_LAYOUT_VERTICAL:
-		ime.setCandidateLayout(false, resp)
+	case ID_CANDIDATE_LAYOUT_TOGGLE:
+		ime.setCandidateLayout(ime.style.CandidatePerRow <= verticalCandidatesPerRow, resp)
 	default:
 		log.Printf("未知命令: %d", commandID)
 		resp.ReturnValue = 0
@@ -447,7 +445,8 @@ func (ime *IME) onMenu(req *pime.Request, resp *pime.Response) *pime.Response {
 	case "help":
 		resp.ReturnData = ime.buildHelpMenu()
 	case "candidate-layout":
-		resp.ReturnData = ime.buildCandidateLayoutMenu()
+		ime.setCandidateLayout(ime.style.CandidatePerRow <= verticalCandidatesPerRow, nil)
+		resp.ReturnData = []map[string]interface{}{}
 	case "reverse-lookup":
 		resp.ReturnData = ime.buildReverseLookupMenu()
 	case "user-lexicon":
@@ -491,6 +490,9 @@ func (ime *IME) Init(req *pime.Request) bool {
 	real := newNativeBackend()
 	if real != nil && real.Initialize(sharedDir, userDir, false) {
 		ime.backend = real
+		if state := real.State(); state.PageSize >= minCandidatePageSize && state.PageSize <= maxCandidatePageSize {
+			ime.candidatePageSize = state.PageSize
+		}
 	} else {
 		ime.backend = nil
 	}
@@ -736,6 +738,9 @@ func (ime *IME) onKey(req *pime.Request, resp *pime.Response) bool {
 }
 
 func (ime *IME) applyStateToResponse(resp *pime.Response, state rimeState) {
+	if state.PageSize >= minCandidatePageSize && state.PageSize <= maxCandidatePageSize {
+		ime.candidatePageSize = state.PageSize
+	}
 	if state.CommitString != "" {
 		resp.CommitString = state.CommitString
 	}
@@ -889,7 +894,7 @@ func (ime *IME) setCandidateLayout(horizontal bool, resp *pime.Response) {
 		resp.CustomizeUI["candPerRow"] = ime.style.CandidatePerRow
 		change := pime.ButtonInfo{
 			ID:        "candidate-layout",
-			CommandID: candidateLayoutCommandID(horizontal),
+			CommandID: ID_CANDIDATE_LAYOUT_TOGGLE,
 		}
 		if iconPath := ime.iconPath(candidateLayoutIconName(horizontal)); iconPath != "" {
 			change.Icon = iconPath
@@ -985,11 +990,11 @@ func (ime *IME) addButtons(resp *pime.Response) {
 		})
 	}
 	layoutButton := pime.ButtonInfo{
-		ID:      "candidate-layout",
-		Text:    "排列方式",
-		Tooltip: "排列方式",
-		CommandID: candidateLayoutCommandID(ime.style.CandidatePerRow > verticalCandidatesPerRow),
-		Type:    "menu",
+		ID:        "candidate-layout",
+		Text:      candidateLayoutToggleText(ime.style.CandidatePerRow > verticalCandidatesPerRow),
+		Tooltip:   "排列方式",
+		CommandID: ID_CANDIDATE_LAYOUT_TOGGLE,
+		Type:      "button",
 	}
 	if iconPath := ime.iconPath(candidateLayoutIconName(ime.style.CandidatePerRow > verticalCandidatesPerRow)); iconPath != "" {
 		layoutButton.Icon = iconPath
@@ -1138,7 +1143,7 @@ func (ime *IME) buildMenu() []map[string]interface{} {
 		{"id": ID_ASCII_PUNCT, "text": punctText},
 		{"id": ID_FULL_SHAPE, "text": shapeText},
 		{"text": ""},
-		{"text": "排列方式", "submenu": ime.buildCandidateLayoutMenu()},
+		{"id": ID_CANDIDATE_LAYOUT_TOGGLE, "text": candidateLayoutToggleText(ime.style.CandidatePerRow > verticalCandidatesPerRow)},
 		{"text": "候选项数", "submenu": ime.buildCandidatePageSizeMenu()},
 		{"text": ""},
 		{"id": ID_DEPLOY, "text": "重新部署(&D)"},
@@ -1164,15 +1169,6 @@ func (ime *IME) buildReverseLookupMenu() []map[string]interface{} {
 	}
 }
 
-func (ime *IME) buildCandidateLayoutMenu() []map[string]interface{} {
-	horizontal := ime.style.CandidatePerRow > verticalCandidatesPerRow
-	return []map[string]interface{}{
-		{
-			"id":   candidateLayoutCommandID(horizontal),
-			"text": candidateLayoutToggleText(horizontal),
-		},
-	}
-}
 
 func (ime *IME) buildCandidatePageSizeMenu() []map[string]interface{} {
 	pageSize := ime.candidatePageSize
@@ -1508,6 +1504,9 @@ func (ime *IME) setCandidatePageSize(size int) error {
 			log.Printf("部署候选数量方案配置失败: %s", schemaPath)
 		}
 		ime.reloadBackendForSchema(schemaID)
+		if newState := ime.backend.State(); newState.PageSize >= minCandidatePageSize && newState.PageSize <= maxCandidatePageSize {
+			ime.candidatePageSize = newState.PageSize
+		}
 		ime.restoreComposition(previousState.Composition)
 	}
 	return nil
@@ -1795,12 +1794,6 @@ func candidateLayoutIconName(horizontal bool) string {
 	return "layout_vertical.ico"
 }
 
-func candidateLayoutCommandID(horizontal bool) int {
-	if horizontal {
-		return ID_CANDIDATE_LAYOUT_VERTICAL
-	}
-	return ID_CANDIDATE_LAYOUT_HORIZONTAL
-}
 
 func candidateLayoutToggleText(horizontal bool) string {
 	if horizontal {
