@@ -348,6 +348,25 @@ func typeASCII(t *testing.T, sessionID RimeSessionId, input string) {
 	}
 }
 
+func rimeMenuAfterASCII(t *testing.T, sessionID RimeSessionId, input string) (RimeMenu, bool) {
+	t.Helper()
+	ClearComposition(sessionID)
+	typeASCII(t, sessionID, input)
+	return GetMenu(sessionID)
+}
+
+func rimeProbeInputWithMinCandidates(t *testing.T, sessionID RimeSessionId, min int) (string, RimeMenu) {
+	t.Helper()
+	for _, input := range []string{"ni", "yonsx", "puta", "qu", "zhong", "zhongguo"} {
+		menu, ok := rimeMenuAfterASCII(t, sessionID, input)
+		if ok && len(menu.Candidates) >= min {
+			return input, menu
+		}
+	}
+	t.Skipf("bundled dictionary has no input with at least %d candidates", min)
+	return "", RimeMenu{}
+}
+
 func writeUserSchemaWithPageSize(t *testing.T, dataDir, userDir, schemaID string, size int) string {
 	t.Helper()
 	sharedPath := filepath.Join(dataDir, schemaID+".schema.yaml")
@@ -388,10 +407,8 @@ func TestRealRimeRedeployAppliesPageSize(t *testing.T) {
 		t.Fatal("expected yime_variable schema to be selectable")
 	}
 	SetOption(baseline, "ascii_mode", false)
-	typeASCII(t, baseline, "yonsx")
-	if menu, gotMenu := GetMenu(baseline); gotMenu {
-		t.Logf("baseline page size=%d candidates=%d", menu.PageSize, len(menu.Candidates))
-	}
+	input, baselineMenu := rimeProbeInputWithMinCandidates(t, baseline, 6)
+	t.Logf("baseline input=%q page size=%d candidates=%d", input, baselineMenu.PageSize, len(baselineMenu.Candidates))
 	EndSession(baseline)
 
 	const wantPageSize = 8
@@ -412,14 +429,17 @@ func TestRealRimeRedeployAppliesPageSize(t *testing.T) {
 		t.Fatal("expected yime_variable schema to be selectable after redeploy")
 	}
 	SetOption(sessionID, "ascii_mode", false)
-	typeASCII(t, sessionID, "yonsx")
+	typeASCII(t, sessionID, input)
 	menu, gotMenu := GetMenu(sessionID)
 	if !gotMenu {
 		t.Fatal("expected menu after redeploy")
 	}
-	t.Logf("after redeploy page size=%d candidates=%d", menu.PageSize, len(menu.Candidates))
+	t.Logf("after redeploy input=%q page size=%d candidates=%d", input, menu.PageSize, len(menu.Candidates))
 	if menu.PageSize != wantPageSize {
 		t.Fatalf("expected page size %d after redeploy, got %d", wantPageSize, menu.PageSize)
+	}
+	if len(menu.Candidates) > wantPageSize {
+		t.Fatalf("expected at most %d visible candidates, got %d", wantPageSize, len(menu.Candidates))
 	}
 }
 

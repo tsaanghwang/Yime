@@ -998,11 +998,13 @@ func TestCandidatePageSizeCommandRestoresCompositionState(t *testing.T) {
 	if resp.ReturnValue != 1 {
 		t.Fatalf("expected page size command to be handled, got %d", resp.ReturnValue)
 	}
-	if resp.CompositionString != "ni" {
-		t.Fatalf("expected composition restored after page size change, got %q", resp.CompositionString)
+	if ime.candidatePageSize != 7 {
+		t.Fatalf("expected current session page size 7, got %d", ime.candidatePageSize)
 	}
-	if len(resp.CandidateList) != 7 {
-		t.Fatalf("expected page size change to immediately show 7 candidates, got %#v", resp.CandidateList)
+	// Session reload clears composition by design; do not replay keys during
+	// language-bar clicks (AGENTS.md host stability).
+	if backend.composition != "" {
+		t.Fatalf("expected composition cleared after page size session reload, got %q", backend.composition)
 	}
 }
 
@@ -1048,7 +1050,7 @@ func TestCandidatePageSizeCommandUpdatesCurrentUserSchema(t *testing.T) {
 	}
 }
 
-func TestCandidatePageSizeUsesRedeployWhenSupported(t *testing.T) {
+func TestSetCandidatePageSizeDoesNotRedeploy(t *testing.T) {
 	t.Setenv("APPDATA", t.TempDir())
 	ime := newTestIME()
 	backend := &redeployTestBackend{testBackend: newTestBackend(), redeployResult: true}
@@ -1063,52 +1065,20 @@ func TestCandidatePageSizeUsesRedeployWhenSupported(t *testing.T) {
 	if resp.ReturnValue != 1 {
 		t.Fatalf("expected page size command to be handled, got %d", resp.ReturnValue)
 	}
-	if backend.redeployCount != 1 {
-		t.Fatalf("expected exactly one redeploy for the page size change, got %d", backend.redeployCount)
+	if backend.redeployCount != 0 {
+		t.Fatalf("expected page size change to avoid full redeploy, got %d", backend.redeployCount)
 	}
-	// Redeploy owns its own session teardown; the caller must not issue an
-	// additional DestroySession, so the session is torn down exactly once.
 	if backend.destroyCount != 1 {
-		t.Fatalf("expected session torn down exactly once via redeploy, got %d", backend.destroyCount)
+		t.Fatalf("expected one lightweight session reload, destroyCount=%d", backend.destroyCount)
 	}
 	if !backend.session {
-		t.Fatal("expected a fresh session after redeploy")
+		t.Fatal("expected a fresh session after reload")
 	}
 	if backend.schemaID != "yime_variable" {
-		t.Fatalf("expected schema to be reselected after redeploy, got %q", backend.schemaID)
+		t.Fatalf("expected schema to be reselected after reload, got %q", backend.schemaID)
 	}
 	if ime.candidatePageSize != 7 {
 		t.Fatalf("expected current session page size 7, got %d", ime.candidatePageSize)
-	}
-}
-
-func TestCandidatePageSizeFallsBackWhenRedeployFails(t *testing.T) {
-	t.Setenv("APPDATA", t.TempDir())
-	ime := newTestIME()
-	backend := &redeployTestBackend{testBackend: newTestBackend(), redeployResult: false}
-	backend.session = true
-	ime.backend = backend
-
-	resp := ime.onCommand(&pime.Request{
-		SeqNum: 42,
-		ID:     pime.FlexibleID{Int: ID_CANDIDATE_PAGE_SIZE_9, IsInt: true},
-	}, pime.NewResponse(42, true))
-
-	if resp.ReturnValue != 1 {
-		t.Fatalf("expected page size command to be handled, got %d", resp.ReturnValue)
-	}
-	if backend.redeployCount != 1 {
-		t.Fatalf("expected one redeploy attempt, got %d", backend.redeployCount)
-	}
-	// When redeploy fails we fall back to recreating the session directly.
-	if backend.destroyCount != 1 {
-		t.Fatalf("expected fallback session recreate, destroyCount=%d", backend.destroyCount)
-	}
-	if !backend.session {
-		t.Fatal("expected session recreated after fallback")
-	}
-	if ime.candidatePageSize != 9 {
-		t.Fatalf("expected current session page size 9, got %d", ime.candidatePageSize)
 	}
 }
 
@@ -1274,8 +1244,27 @@ func TestUpdateSchemaMenuPageSize(t *testing.T) {
 	}
 }
 
+func TestReadPageSizeFromCustomConfig(t *testing.T) {
+	if got := readPageSizeFromCustomConfig(filepath.Join(t.TempDir(), "missing.yaml")); got != 0 {
+		t.Fatalf("expected 0 for missing file, got %d", got)
+	}
+
+	dir := t.TempDir()
+	path := filepath.Join(dir, "default.custom.yaml")
+	if err := os.WriteFile(path, []byte("patch:\n  menu/page_size: 7\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if got := readPageSizeFromCustomConfig(path); got != 7 {
+		t.Fatalf("expected page size 7, got %d", got)
+	}
+}
+
 func TestOnCommandSwitchesReverseLookupDisplayMode(t *testing.T) {
 	ime := newTestIME()
+	backend := ime.backend.(*testBackend)
+	backend.session = true
+	backend.composition = "ni"
+	backend.refreshCandidates()
 
 	resp := ime.onCommand(&pime.Request{
 		SeqNum: 16,
@@ -1288,11 +1277,86 @@ func TestOnCommandSwitchesReverseLookupDisplayMode(t *testing.T) {
 	if ime.reverseLookupDisplayMode != "key_sequence" {
 		t.Fatalf("expected key_sequence mode, got %q", ime.reverseLookupDisplayMode)
 	}
+	if resp.CompositionString != "" || resp.ShowCandidates || len(resp.CandidateList) != 0 {
+		t.Fatalf("expected reverse lookup command not to refresh host candidate state, got %#v", resp)
+	}
+	if backend.composition != "ni" {
+		t.Fatalf("expected backend composition untouched, got %q", backend.composition)
+	}
 
 	reverseMenu := ime.buildReverseLookupMenu()
 	keySequence := findMenuItem(t, reverseMenu, ID_REVERSE_LOOKUP_KEY_SEQUENCE)
 	if checked, ok := keySequence["checked"].(bool); !ok || !checked {
 		t.Fatalf("expected key sequence reverse lookup item checked, got %#v", keySequence)
+	}
+}
+
+func TestOnCommandReverseLookupYimePinyinDoesNotRedeploy(t *testing.T) {
+	t.Setenv("APPDATA", t.TempDir())
+	ime := newTestIME()
+	backend := &redeployTestBackend{testBackend: newTestBackend(), redeployResult: true}
+	backend.session = true
+	backend.composition = "ni"
+	backend.refreshCandidates()
+	ime.backend = backend
+
+	resp := ime.onCommand(&pime.Request{
+		SeqNum: 47,
+		ID:     pime.FlexibleID{Int: ID_REVERSE_LOOKUP_YIME_PINYIN, IsInt: true},
+	}, pime.NewResponse(47, true))
+
+	if resp.ReturnValue != 1 {
+		t.Fatalf("expected 仅音元拼音 command to be handled, got %d", resp.ReturnValue)
+	}
+	if ime.reverseLookupDisplayMode != "yime_pinyin" {
+		t.Fatalf("expected yime_pinyin mode, got %q", ime.reverseLookupDisplayMode)
+	}
+	if backend.redeployCount != 0 {
+		t.Fatalf("expected reverse lookup click to avoid redeploy, got %d", backend.redeployCount)
+	}
+	if backend.destroyCount != 0 {
+		t.Fatalf("expected reverse lookup click to avoid session reload, destroyCount=%d", backend.destroyCount)
+	}
+	if resp.CompositionString != "" || resp.ShowCandidates {
+		t.Fatalf("expected no candidate refresh on reverse lookup click, got %#v", resp)
+	}
+	if backend.composition != "ni" {
+		t.Fatalf("expected composition preserved, got %q", backend.composition)
+	}
+}
+
+func TestPageSizeThenReverseLookupYimePinyinDoesNotRedeploy(t *testing.T) {
+	t.Setenv("APPDATA", t.TempDir())
+	ime := newTestIME()
+	backend := &redeployTestBackend{testBackend: newTestBackend(), redeployResult: true}
+	backend.session = true
+	backend.composition = "ni"
+	backend.refreshCandidates()
+	ime.backend = backend
+
+	pageResp := ime.onCommand(&pime.Request{
+		SeqNum: 48,
+		ID:     pime.FlexibleID{Int: ID_CANDIDATE_PAGE_SIZE_7, IsInt: true},
+	}, pime.NewResponse(48, true))
+	if pageResp.ReturnValue != 1 {
+		t.Fatalf("expected page size command to be handled, got %d", pageResp.ReturnValue)
+	}
+
+	reverseResp := ime.onCommand(&pime.Request{
+		SeqNum: 49,
+		ID:     pime.FlexibleID{Int: ID_REVERSE_LOOKUP_YIME_PINYIN, IsInt: true},
+	}, pime.NewResponse(49, true))
+	if reverseResp.ReturnValue != 1 {
+		t.Fatalf("expected 仅音元拼音 command to be handled, got %d", reverseResp.ReturnValue)
+	}
+	if backend.redeployCount != 0 {
+		t.Fatalf("expected no redeploy across page size then reverse lookup, got %d", backend.redeployCount)
+	}
+	if ime.reverseLookupDisplayMode != "yime_pinyin" {
+		t.Fatalf("expected yime_pinyin mode, got %q", ime.reverseLookupDisplayMode)
+	}
+	if reverseResp.ShowCandidates || reverseResp.CompositionString != "" {
+		t.Fatalf("expected reverse lookup not to push candidate state, got %#v", reverseResp)
 	}
 }
 

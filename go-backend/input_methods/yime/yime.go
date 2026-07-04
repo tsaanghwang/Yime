@@ -377,11 +377,28 @@ func (ime *IME) onCommand(req *pime.Request, resp *pime.Response) *pime.Response
 	}
 
 	ime.updateLangStatus(req, resp)
-	if ime.backend != nil {
+	if ime.commandShouldRefreshState(commandID) && ime.backend != nil {
 		ime.applyStateToResponse(resp, ime.backend.State())
 	}
 	resp.ReturnValue = 1
 	return resp
+}
+
+// commandShouldRefreshState reports whether an onCommand handler should push
+// composition/candidate state back to the host. Display-only language-bar
+// commands such as reverse-lookup mode must not refresh Rime state during the
+// menu click callback; doing so after a session reload/redeploy destabilizes
+// the host (see AGENTS.md).
+func (ime *IME) commandShouldRefreshState(commandID int) bool {
+	switch commandID {
+	case ID_REVERSE_LOOKUP_DEFAULT, ID_REVERSE_LOOKUP_FULL, ID_REVERSE_LOOKUP_HIDDEN,
+		ID_REVERSE_LOOKUP_STANDARD_PINYIN, ID_REVERSE_LOOKUP_YIME_PINYIN, ID_REVERSE_LOOKUP_KEY_SEQUENCE,
+		ID_HELP_VIEW, ID_HELP_TRIAL_FEEDBACK, ID_HELP_COPY_TRIAL_TEMPLATE,
+		ID_USER_DIR, ID_SHARED_DIR, ID_SYNC_DIR, ID_LOG_DIR, ID_SYNC:
+		return false
+	default:
+		return true
+	}
 }
 
 func commandIDFromRequest(req *pime.Request) int {
@@ -490,8 +507,8 @@ func (ime *IME) Init(req *pime.Request) bool {
 	real := newNativeBackend()
 	if real != nil && real.Initialize(sharedDir, userDir, false) {
 		ime.backend = real
-		if state := real.State(); state.PageSize >= minCandidatePageSize && state.PageSize <= maxCandidatePageSize {
-			ime.candidatePageSize = state.PageSize
+		if ps := readPageSizeFromCustomConfig(filepath.Join(userDir, "default.custom.yaml")); ps >= minCandidatePageSize && ps <= maxCandidatePageSize {
+			ime.candidatePageSize = ps
 		}
 	} else {
 		ime.backend = nil
@@ -981,14 +998,6 @@ func (ime *IME) addButtons(resp *pime.Response) {
 			CommandID: ID_FULL_SHAPE,
 		})
 	}
-	if iconPath := ime.iconPath("config.ico"); iconPath != "" {
-		resp.AddButton = append(resp.AddButton, pime.ButtonInfo{
-			ID:   "settings",
-			Icon: iconPath,
-			Text: "设置",
-			Type: "menu",
-		})
-	}
 	layoutButton := pime.ButtonInfo{
 		ID:        "candidate-layout",
 		Text:      "横竖排切换",
@@ -1012,6 +1021,14 @@ func (ime *IME) addButtons(resp *pime.Response) {
 		Tooltip: "用户词库",
 		Type:    "menu",
 	})
+	if iconPath := ime.iconPath("config.ico"); iconPath != "" {
+		resp.AddButton = append(resp.AddButton, pime.ButtonInfo{
+			ID:   "settings",
+			Icon: iconPath,
+			Text: "设置",
+			Type: "menu",
+		})
+	}
 	resp.AddButton = append(resp.AddButton, pime.ButtonInfo{
 		ID:      "help",
 		Text:    "帮助",
@@ -1024,7 +1041,7 @@ func (ime *IME) removeButtons(resp *pime.Response) {
 	if !ime.style.DisplayTrayIcon || resp == nil {
 		return
 	}
-	resp.RemoveButton = append(resp.RemoveButton, "switch-lang", "switch-shape", "settings", "candidate-layout", "reverse-lookup", "user-lexicon", "help")
+	resp.RemoveButton = append(resp.RemoveButton, "switch-lang", "switch-shape", "candidate-layout", "reverse-lookup", "user-lexicon", "settings", "help")
 	if ime.Client != nil && ime.Client.IsWindows8Above {
 		resp.RemoveButton = append(resp.RemoveButton, "windows-mode-icon")
 	}
@@ -1481,10 +1498,6 @@ func (ime *IME) setCandidatePageSize(size int) error {
 	if err := os.WriteFile(configPath, []byte(updated), 0o644); err != nil {
 		return err
 	}
-	var previousState rimeState
-	if ime.backend != nil {
-		previousState = ime.backend.State()
-	}
 	ime.candidatePageSize = size
 	ime.candidatePageStart = 0
 	if !deployDefaultCustomConfig(configPath) {
@@ -1503,33 +1516,16 @@ func (ime *IME) setCandidatePageSize(size int) error {
 		if schemaPath := ime.prepareUserSchema(schemaID); schemaPath != "" && !deploySchemaConfig(schemaPath) {
 			log.Printf("部署候选数量方案配置失败: %s", schemaPath)
 		}
-		ime.reloadBackendForSchema(schemaID)
+		// Do not call RimeRedeploy here. Full redeploy during a language-bar click
+		// invalidates librime inside the TSF callback and breaks subsequent menu
+		// clicks such as reverse-lookup "仅音元拼音". Use a lightweight session
+		// reload instead; full cache invalidation stays on the "重新部署" command.
+		ime.reloadBackendSessionForSchema(schemaID)
 		if newState := ime.backend.State(); newState.PageSize >= minCandidatePageSize && newState.PageSize <= maxCandidatePageSize {
 			ime.candidatePageSize = newState.PageSize
 		}
-		ime.restoreComposition(previousState.Composition)
 	}
 	return nil
-}
-
-func (ime *IME) restoreComposition(composition string) bool {
-	if ime.backend == nil || composition == "" {
-		return false
-	}
-	for _, r := range composition {
-		if !isReplayableCompositionRune(r) {
-			return false
-		}
-		req := &pime.Request{CharCode: int(r)}
-		if !ime.backend.ProcessKey(req, int(r), 0) {
-			return false
-		}
-	}
-	return true
-}
-
-func isReplayableCompositionRune(r rune) bool {
-	return (r >= 'a' && r <= 'z') || (r >= '0' && r <= '9') || r == '\''
 }
 
 // redeployBackend re-runs a full RIME deployment for the current schema. It is
@@ -1546,11 +1542,24 @@ func (ime *IME) redeployBackend() {
 	ime.reloadBackendForSchema(schemaID)
 }
 
+// reloadBackendSessionForSchema recreates the current Rime session without a
+// full redeploy. It is safe to call from language-bar commands such as page
+// size changes. It does not invalidate librime's compiled config cache.
+func (ime *IME) reloadBackendSessionForSchema(schemaID string) {
+	if ime.backend == nil {
+		return
+	}
+	ime.backend.DestroySession()
+	if ime.backend.EnsureSession() {
+		ime.backend.SelectSchema(schemaID)
+		ime.backend.ClearComposition()
+	}
+}
+
 // reloadBackendForSchema makes freshly written RIME configuration take effect.
 // Native RIME caches compiled schema configs in memory, so per-file deploys are
-// not enough: a full redeploy is required to invalidate that cache. Backends
-// that support redeployment go through that path; others fall back to simply
-// recreating the session.
+// not enough: a full redeploy is required to invalidate that cache. This path
+// is reserved for the explicit "重新部署" command, not language-bar clicks.
 func (ime *IME) reloadBackendForSchema(schemaID string) {
 	if ime.backend == nil {
 		return
@@ -1564,10 +1573,7 @@ func (ime *IME) reloadBackendForSchema(schemaID string) {
 		}
 		log.Println("Rime 重新部署失败，回退到重建会话")
 	}
-	ime.backend.DestroySession()
-	if ime.backend.EnsureSession() && ime.backend.SelectSchema(schemaID) {
-		ime.backend.ClearComposition()
-	}
+	ime.reloadBackendSessionForSchema(schemaID)
 }
 
 func (ime *IME) writeSchemaCustomPageSize(schemaID string, size int) (string, error) {
@@ -1665,6 +1671,24 @@ func (ime *IME) writeRimeUserLexicon(sourcePath, targetPath, mode string) error 
 		content.WriteByte('\n')
 	}
 	return os.WriteFile(targetPath, []byte(content.String()), 0o644)
+}
+
+func readPageSizeFromCustomConfig(path string) int {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return 0
+	}
+	lines := strings.Split(strings.ReplaceAll(string(data), "\r\n", "\n"), "\n")
+	for _, line := range lines {
+		trimmed := strings.TrimSpace(line)
+		if strings.HasPrefix(trimmed, "menu/page_size:") {
+			val := strings.TrimSpace(strings.TrimPrefix(trimmed, "menu/page_size:"))
+			if n, err := strconv.Atoi(val); err == nil {
+				return n
+			}
+		}
+	}
+	return 0
 }
 
 func updateDefaultCustomPageSize(content string, size int) string {
