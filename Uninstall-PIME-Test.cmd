@@ -13,9 +13,9 @@ set "EXIT_CODE=%errorlevel%"
 
 echo.
 if "%EXIT_CODE%"=="0" (
-    echo PIME test uninstall completed.
+    echo YIME test uninstall completed.
 ) else (
-    echo PIME test uninstall failed with exit code %EXIT_CODE%.
+    echo YIME test uninstall failed with exit code %EXIT_CODE%.
 )
 pause
 exit /b %EXIT_CODE%

@@ -13,9 +13,9 @@ set "EXIT_CODE=%errorlevel%"
 
 echo.
 if "%EXIT_CODE%"=="0" (
-    echo PIME test install completed.
+    echo YIME test install completed.
 ) else (
-    echo PIME test install failed with exit code %EXIT_CODE%.
+    echo YIME test install failed with exit code %EXIT_CODE%.
 )
 pause
 exit /b %EXIT_CODE%
