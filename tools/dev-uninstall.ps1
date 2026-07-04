@@ -1,5 +1,5 @@
 param(
-    [string]$InstallRoot = "C:\Program Files (x86)\PIME",
+    [string]$InstallRoot = "C:\Program Files (x86)\YIME",
     [switch]$KeepInstallRoot
 )
 
@@ -127,6 +127,8 @@ if (Test-Path -LiteralPath $x86Dll) {
 Write-Host "Removing launcher autorun and install markers..."
 Remove-RegistryValue -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" -Name "PIMELauncher"
 Remove-RegistryValue -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Run" -Name "PIMELauncher"
+Remove-RegistryTree -Path "HKLM:\SOFTWARE\YIME"
+Remove-RegistryTree -Path "HKLM:\SOFTWARE\WOW6432Node\YIME"
 Remove-RegistryTree -Path "HKLM:\SOFTWARE\PIME"
 Remove-RegistryTree -Path "HKLM:\SOFTWARE\WOW6432Node\PIME"
 Remove-RegistryTree -Path "HKLM:\SOFTWARE\Microsoft\CTF\TIP\$TextServiceClsid"

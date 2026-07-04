@@ -1,6 +1,6 @@
 param(
     [string]$RepoRoot = (Split-Path -Parent $PSScriptRoot),
-    [string]$InstallRoot = "C:\Program Files (x86)\PIME"
+    [string]$InstallRoot = "C:\Program Files (x86)\YIME"
 )
 
 $ErrorActionPreference = "Stop"
@@ -174,8 +174,8 @@ Write-Host "Registering text service DLLs..."
 & "$env:WINDIR\SysWOW64\regsvr32.exe" /s (Join-Path $InstallRoot "x86\PIMETextService.dll")
 
 Write-Host "Writing launcher autorun and install markers..."
-New-Item -Path "HKLM:\SOFTWARE\PIME" -Force | Out-Null
-Set-ItemProperty -Path "HKLM:\SOFTWARE\PIME" -Name "(default)" -Value $InstallRoot
+New-Item -Path "HKLM:\SOFTWARE\YIME" -Force | Out-Null
+Set-ItemProperty -Path "HKLM:\SOFTWARE\YIME" -Name "(default)" -Value $InstallRoot
 New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" -Force | Out-Null
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" -Name "PIMELauncher" -Value (Join-Path $InstallRoot "PIMELauncher.exe")
 

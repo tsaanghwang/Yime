@@ -1,7 +1,7 @@
 param(
     [string]$SourceRoot = (Join-Path $PSScriptRoot "build\go-backend"),
-    [string]$InstallRoot = "C:\Program Files (x86)\PIME\go-backend",
-    [string]$LauncherPath = "C:\Program Files (x86)\PIME\PIMELauncher.exe"
+    [string]$InstallRoot = "C:\Program Files (x86)\YIME\go-backend",
+    [string]$LauncherPath = "C:\Program Files (x86)\YIME\PIMELauncher.exe"
 )
 
 $ErrorActionPreference = "Stop"

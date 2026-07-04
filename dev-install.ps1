@@ -1,6 +1,6 @@
 param(
     [string]$RepoRoot = $PSScriptRoot,
-    [string]$InstallRoot = "C:\Program Files (x86)\PIME"
+    [string]$InstallRoot = "C:\Program Files (x86)\YIME"
 )
 
 $ErrorActionPreference = "Stop"

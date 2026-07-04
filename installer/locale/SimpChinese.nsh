@@ -3,13 +3,13 @@
 !insertmacro LANG_STRING INSTALLER_LANGUAGE_TITLE "安装程序语言"
 !insertmacro LANG_STRING INSTALL_LANGUAGE_MESSAGE "请选择安装程序语言"
 
-!insertmacro LANG_STRING PRODUCT_NAME "PIME 输入法"
+!insertmacro LANG_STRING PRODUCT_NAME "YIME 输入法"
 
 !insertmacro LANG_STRING INST_TYPE_STD "标准安装"
 !insertmacro LANG_STRING INST_TYPE_FULL "完整安装"
 !insertmacro LANG_STRING MB_REBOOT_REQUIRED "安装程序需要重新开机来完成卸载。$\r$\n你要立即重新开机吗？ (若你想要在稍后才重新开机请选择「否」)"
-!insertmacro LANG_STRING PRODUCT_PAGE "PIME 项目主页"
-!insertmacro LANG_STRING PRODUCT_PUBLISHER "PIME 开发团队"
+!insertmacro LANG_STRING PRODUCT_PAGE "YIME 项目主页"
+!insertmacro LANG_STRING PRODUCT_PUBLISHER "YIME 开发团队"
 
 !insertmacro LANG_STRING AtLeastWinVista_MESSAGE "抱歉，本程序目前只能支持 Windows Vista 以上版本"
 !insertmacro LANG_STRING REBOOT_QUESTION "安装发生错误，无法完成。$\r$\n有时是有文件正在使用中，暂时无法删除或覆写。$\n$\n建议重新开机后，再次执行安装程序。$\r$\n你要立即重新开机吗？ (若你想要在稍后才重新开机请选择「否」)"
@@ -19,7 +19,7 @@
 !insertmacro LANG_STRING DOWNLOAD_VCREDIST_FAILED_MESSAGE "无法正确下载，请稍后再试，或手动安装 VC++ Redistributable"
 !insertmacro LANG_STRING INST_VCREDIST_FAILED_MESSAGE "VC++ Redistributable 并未正确安装，请参阅相关微软文档进行更新。"
 
-!insertmacro LANG_STRING SECTION_MAIN "PIME 输入法平台"
+!insertmacro LANG_STRING SECTION_MAIN "YIME 输入法平台"
 !insertmacro LANG_STRING PYTHON_SECTION_GROUP "Python 输入法模块"
 !insertmacro LANG_STRING PYTHON_CHT_SECTION_GROUP "中文繁体"
 !insertmacro LANG_STRING PYTHON_CHS_SECTION_GROUP "中文简体"
@@ -80,4 +80,4 @@
 !insertmacro LANG_STRING SET_CHEEZ "设置轻松输入法"
 !insertmacro LANG_STRING SET_BRAILLE_CHEWING "设置盲文酷音输入法"
 
-!insertmacro LANG_STRING UNINSTALL_PIME "卸载 PIME"
+!insertmacro LANG_STRING UNINSTALL_PIME "卸载 YIME"

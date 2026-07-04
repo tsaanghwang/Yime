@@ -49,16 +49,19 @@ AllowSkipFiles off ; cannot skip a file
 !define HAVE_ARM64_PIMETS
 !endif
 
-!define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\PIME"
+!define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\YIME"
+!define LEGACY_PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\PIME"
+!define PRODUCT_INSTALL_KEY "Software\YIME"
+!define LEGACY_PRODUCT_INSTALL_KEY "Software\PIME"
 !define HOMEPAGE_URL "https://github.com/EasyIME/"
 
 Name "$(PRODUCT_NAME)"
 BrandingText "$(PRODUCT_NAME)"
 
-OutFile "PIME-${PRODUCT_VERSION}-setup.exe" ; The generated installer file name
+OutFile "YIME-${PRODUCT_VERSION}-setup.exe" ; The generated installer file name
 
 ; We install everything to C:\Program Files (x86)
-InstallDir "$PROGRAMFILES32\PIME"
+InstallDir "$PROGRAMFILES32\YIME"
 
 ;Request application privileges (need administrator to install)
 RequestExecutionLevel admin
@@ -120,16 +123,25 @@ Function uninstallOldVersion
 	ClearErrors
 	;  run uninstaller
 	ReadRegStr $R0 HKLM "${PRODUCT_UNINST_KEY}" "UninstallString"
+	${If} $R0 == ""
+		ReadRegStr $R0 HKLM "${LEGACY_PRODUCT_UNINST_KEY}" "UninstallString"
+	${EndIf}
 	${If} $R0 != ""
 		ClearErrors
+		ReadRegStr $INSTDIR HKLM "${PRODUCT_INSTALL_KEY}" ""
+		${If} $INSTDIR == ""
+			ReadRegStr $INSTDIR HKLM "${LEGACY_PRODUCT_INSTALL_KEY}" ""
+		${EndIf}
 		${If} ${FileExists} "$INSTDIR\Uninstall.exe"
 			MessageBox MB_OKCANCEL|MB_ICONQUESTION $(UNINSTALL_OLD) /SD IDOK IDOK +2
 			Abort ; this is skipped if the user select OK
 
 			; Remove the launcher from auto-start
-			DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\PIME"
+			DeleteRegKey HKLM "${PRODUCT_UNINST_KEY}"
+			DeleteRegKey HKLM "${LEGACY_PRODUCT_UNINST_KEY}"
 			DeleteRegValue HKLM "Software\Microsoft\Windows\CurrentVersion\Run" "PIMELauncher"
-			DeleteRegKey HKLM "Software\PIME"
+			DeleteRegKey HKLM "${PRODUCT_INSTALL_KEY}"
+			DeleteRegKey HKLM "${LEGACY_PRODUCT_INSTALL_KEY}"
 
 			; Unregister COM objects (NSIS UnRegDLL command is broken and cannot be used)
 			ExecWait '"$SYSDIR\regsvr32.exe" /u /s "$INSTDIR\x86\PIMETextService.dll"'
@@ -671,7 +683,7 @@ Section "" Register
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Run" "PIMELauncher" "$INSTDIR\PIMELauncher.exe"
 
 	;Store installation folder in the registry
-	WriteRegStr HKLM "Software\PIME" "" $INSTDIR
+	WriteRegStr HKLM "${PRODUCT_INSTALL_KEY}" "" $INSTDIR
 	;Write an entry to Add & Remove applications
 	WriteRegStr HKLM "${PRODUCT_UNINST_KEY}" "DisplayName" $(PRODUCT_NAME)
 	WriteRegStr HKLM "${PRODUCT_UNINST_KEY}" "UninstallString" "$\"$INSTDIR\uninstall.exe$\""
@@ -767,9 +779,11 @@ Section "Uninstall"
 	${EndIf}
 
 	; Remove the launcher from auto-start
-	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\PIME"
+	DeleteRegKey HKLM "${PRODUCT_UNINST_KEY}"
+	DeleteRegKey HKLM "${LEGACY_PRODUCT_UNINST_KEY}"
 	DeleteRegValue HKLM "Software\Microsoft\Windows\CurrentVersion\Run" "PIMELauncher"
-	DeleteRegKey HKLM "Software\PIME"
+	DeleteRegKey HKLM "${PRODUCT_INSTALL_KEY}"
+	DeleteRegKey HKLM "${LEGACY_PRODUCT_INSTALL_KEY}"
 
 	; Unregister COM objects (NSIS UnRegDLL command is broken and cannot be used)
 	ExecWait '"$SYSDIR\regsvr32.exe" /u /s "$INSTDIR\x86\PIMETextService.dll"'
