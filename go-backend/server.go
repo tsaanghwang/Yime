@@ -17,8 +17,8 @@ import (
 	// 导入输入法包
 	"github.com/EasyIME/pime-go/input_methods/fcitx5"
 	"github.com/EasyIME/pime-go/input_methods/meow"
-	"github.com/EasyIME/pime-go/input_methods/rime"
 	simplepinyin "github.com/EasyIME/pime-go/input_methods/simple_pinyin"
+	"github.com/EasyIME/pime-go/input_methods/yime"
 )
 
 // Client 客户端连接
@@ -388,10 +388,10 @@ func loadInputMethods(server *Server) {
 			server.RegisterService(guid, func(client *pime.Client, g string) pime.TextService {
 				return meow.New(client)
 			})
-		case "rime":
-			// RIME 输入法
+		case "yime":
+			// 音元拼音（基于 RIME 引擎）
 			server.RegisterService(guid, func(client *pime.Client, g string) pime.TextService {
-				return rime.New(client)
+				return yime.New(client)
 			})
 		case "simple_pinyin":
 			// 拼音输入法

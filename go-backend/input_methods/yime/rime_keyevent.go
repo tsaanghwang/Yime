@@ -1,4 +1,4 @@
-package rime
+package yime
 
 import "github.com/EasyIME/pime-go/pime"
 

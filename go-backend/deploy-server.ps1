@@ -144,12 +144,12 @@ if (-not (Test-Path -LiteralPath $InstallRoot)) {
 
 $sourceServer = Join-Path $SourceRoot "server.exe"
 $destinationServer = Join-Path $InstallRoot "server.exe"
-$sourceRimeDLL = Join-Path $SourceRoot "input_methods\rime\rime.dll"
-$destinationRimeDLL = Join-Path $InstallRoot "input_methods\rime\rime.dll"
+$sourceRimeDLL = Join-Path $SourceRoot "input_methods\yime\rime.dll"
+$destinationRimeDLL = Join-Path $InstallRoot "input_methods\yime\rime.dll"
 
-$sourceDataDir = Join-Path $SourceRoot "input_methods\rime\data"
-$sourceIconsDir = Join-Path $SourceRoot "input_methods\rime\icons"
-$sourceIMEJSON = Join-Path $SourceRoot "input_methods\rime\ime.json"
+$sourceDataDir = Join-Path $SourceRoot "input_methods\yime\data"
+$sourceIconsDir = Join-Path $SourceRoot "input_methods\yime\icons"
+$sourceIMEJSON = Join-Path $SourceRoot "input_methods\yime\ime.json"
 
 $sourcePaths = @($sourceServer, $sourceRimeDLL, $sourceDataDir, $sourceIconsDir, $sourceIMEJSON)
 foreach ($path in $sourcePaths) {
@@ -174,4 +174,3 @@ try {
 finally {
     Start-PIMELauncher -Path $LauncherPath
 }
- 

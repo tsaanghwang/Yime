@@ -13,9 +13,9 @@ set "BUILD_ROOT=%ROOT_DIR%\build"
 set "PACKAGE_DIR=%BUILD_ROOT%\go-backend"
 set "SERVER_EXE=%PACKAGE_DIR%\server.exe"
 set "BACKEND_SNIPPET=%BUILD_ROOT%\backends.go-backend.json"
-set "RIME_DIR=%ROOT_DIR%\input_methods\rime"
+set "RIME_DIR=%ROOT_DIR%\input_methods\yime"
 set "RIME_DATA_DIR=%RIME_DIR%\data"
-set "PACKAGE_RIME_DIR=%PACKAGE_DIR%\input_methods\rime"
+set "PACKAGE_RIME_DIR=%PACKAGE_DIR%\input_methods\yime"
 set "PACKAGE_RIME_DATA_DIR=%PACKAGE_RIME_DIR%\data"
 set "PLUM_DIR=%PIME_ROOT%\plum"
 set "PLUM_INSTALL=%PLUM_DIR%\rime-install"
@@ -127,18 +127,18 @@ if errorlevel 1 (
     exit /b 1
 )
 
-if exist "%PACKAGE_DIR%\input_methods\rime\brise" (
-    rmdir /s /q "%PACKAGE_DIR%\input_methods\rime\brise"
+if exist "%PACKAGE_DIR%\input_methods\yime\brise" (
+    rmdir /s /q "%PACKAGE_DIR%\input_methods\yime\brise"
     if errorlevel 1 (
-        echo [ERROR] Failed to remove packaged rime\brise directory
+        echo [ERROR] Failed to remove packaged yime\brise directory
         popd
         exit /b 1
     )
-    echo [INFO] Removed rime\brise from package output
+    echo [INFO] Removed yime\brise from package output
 )
 
-if exist "%PACKAGE_DIR%\input_methods\rime\*.go" (
-    del /q "%PACKAGE_DIR%\input_methods\rime\*.go" >nul
+if exist "%PACKAGE_DIR%\input_methods\yime\*.go" (
+    del /q "%PACKAGE_DIR%\input_methods\yime\*.go" >nul
     if errorlevel 1 (
         echo [ERROR] Failed to remove packaged Go source files
         popd
@@ -147,8 +147,8 @@ if exist "%PACKAGE_DIR%\input_methods\rime\*.go" (
     echo [INFO] Removed packaged Go source files
 )
 
-if exist "%PACKAGE_DIR%\input_methods\rime\rime.dll.bak-32bit" (
-    del /q "%PACKAGE_DIR%\input_methods\rime\rime.dll.bak-32bit" >nul
+if exist "%PACKAGE_DIR%\input_methods\yime\rime.dll.bak-32bit" (
+    del /q "%PACKAGE_DIR%\input_methods\yime\rime.dll.bak-32bit" >nul
     if errorlevel 1 (
         echo [ERROR] Failed to remove packaged backup DLL
         popd
@@ -157,8 +157,8 @@ if exist "%PACKAGE_DIR%\input_methods\rime\rime.dll.bak-32bit" (
     echo [INFO] Removed packaged backup DLL
 )
 
-if exist "%PACKAGE_DIR%\input_methods\rime\icons\icons" (
-    rmdir /s /q "%PACKAGE_DIR%\input_methods\rime\icons\icons"
+if exist "%PACKAGE_DIR%\input_methods\yime\icons\icons" (
+    rmdir /s /q "%PACKAGE_DIR%\input_methods\yime\icons\icons"
     if errorlevel 1 (
         echo [ERROR] Failed to remove nested icons directory
         popd
@@ -168,7 +168,7 @@ if exist "%PACKAGE_DIR%\input_methods\rime\icons\icons" (
 )
 
 if exist "%RIME_DIR%\rime.dll" (
-    copy /Y "%RIME_DIR%\rime.dll" "%PACKAGE_DIR%\input_methods\rime\rime.dll" >nul
+    copy /Y "%RIME_DIR%\rime.dll" "%PACKAGE_DIR%\input_methods\yime\rime.dll" >nul
     echo [INFO] Copied rime.dll into package output
 )
 
@@ -206,7 +206,7 @@ echo 1. backends.json in this repo uses a top-level array.
 echo 2. Ensure C:\Program Files (x86)\PIME\backends.json includes go-backend.
 echo 3. Ensure C:\Program Files (x86)\PIME\go-backend\input_methods\*\ime.json exists.
 echo 4. Re-register both PIMETextService.dll files after copying.
-echo 5. Ensure C:\Program Files (x86)\PIME\go-backend\input_methods\rime contains rime.dll.
+echo 5. Ensure C:\Program Files (x86)\PIME\go-backend\input_methods\yime contains rime.dll.
 echo 6. Start or restart PIMELauncher.exe after install.
 echo.
 exit /b 0

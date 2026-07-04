@@ -1,6 +1,6 @@
 //go:build !windows
 
-package rime
+package yime
 
 func (ime *IME) startUserLexiconAddHelper(mode string) error {
 	return nil

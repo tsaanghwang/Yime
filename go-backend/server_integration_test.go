@@ -9,8 +9,8 @@ import (
 
 	fcitx5ime "github.com/EasyIME/pime-go/input_methods/fcitx5"
 	meowime "github.com/EasyIME/pime-go/input_methods/meow"
-	rimeime "github.com/EasyIME/pime-go/input_methods/rime"
 	simplepinyinime "github.com/EasyIME/pime-go/input_methods/simple_pinyin"
+	yimeime "github.com/EasyIME/pime-go/input_methods/yime"
 	"github.com/EasyIME/pime-go/pime"
 )
 
@@ -38,7 +38,7 @@ func newTestServerWithSimplePinyin() *Server {
 func newTestServerWithRime() *Server {
 	server := NewServer()
 	server.RegisterService(testRimeGUID, func(client *pime.Client, guid string) pime.TextService {
-		return rimeime.New(client)
+		return yimeime.New(client)
 	})
 	return server
 }
@@ -395,7 +395,7 @@ func TestServerHandleMessageRimeRequestResponseFlow(t *testing.T) {
 		"isConsole":       false,
 	})
 
-	service, ok := server.clients["client-6"].Service.(*rimeime.IME)
+	service, ok := server.clients["client-6"].Service.(*yimeime.IME)
 	if !ok {
 		t.Fatal("expected concrete Rime IME service")
 	}

@@ -47,5 +47,5 @@ and typing tone-marked pinyin is not.
 
 - PIME user Rime data: `%APPDATA%\PIME\Rime`
 - PIME shared Rime data: installed under
-  `PIME\go-backend\input_methods\rime\data`
+  `PIME\go-backend\input_methods\yime\data`
 - PIME Go backend logs: `%LOCALAPPDATA%\PIME\Logs`

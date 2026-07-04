@@ -1,6 +1,6 @@
 //go:build windows
 
-package rime
+package yime
 
 import (
 	"os"

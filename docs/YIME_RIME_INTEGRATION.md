@@ -5,13 +5,13 @@ This branch prepares PIME to consume Yime through the upstream Go Rime backend.
 ## Data flow
 
 1. Yime exports one Rime schema and dictionary from `C:\dev\Yime-variable-length`.
-2. PIME keeps shared Rime data under `go-backend\input_methods\rime\data`.
+2. PIME keeps shared Rime data under `go-backend\input_methods\yime\data`.
 3. PIME keeps user Rime data under `%AppData%\PIME\Rime`.
-4. The Go Rime backend loads `go-backend\input_methods\rime\rime.dll`, initializes librime with those two directories, and uses the selected Yime schema.
+4. The Go Rime backend loads `go-backend\input_methods\yime\rime.dll`, initializes librime with those two directories, and uses the selected Yime schema.
 
 ## Prepare local data
 
-From `C:\dev\Pime`:
+From `C:\dev\Yime`:
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File tools\deploy-yime-rime-data.ps1
@@ -51,6 +51,6 @@ cmd /c build.bat
 
 Do not commit generated Rime data:
 
-- `go-backend\input_methods\rime\data\`
+- `go-backend\input_methods\yime\data\`
 - `%AppData%\PIME\Rime\`
 - `%AppData%\PIME\Rime\build\`

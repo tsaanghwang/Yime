@@ -1,6 +1,6 @@
 //go:build !windows
 
-package rime
+package yime
 
 func newNativeBackend() rimeBackend {
 	return nil

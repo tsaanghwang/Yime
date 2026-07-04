@@ -66,7 +66,7 @@ if (-not $RimeUserDir) {
 
 $schemaId = "yime_$Mode"
 $exporter = Resolve-RequiredPath -Path (Join-Path $YimeRoot "yime\export_rime_yime.py") -Label "Yime Rime exporter"
-$pimeSharedDir = Join-Path $PimeRoot "go-backend\input_methods\rime\data"
+$pimeSharedDir = Join-Path $PimeRoot "go-backend\input_methods\yime\data"
 
 New-Item -ItemType Directory -Path $OutputDir -Force | Out-Null
 New-Item -ItemType Directory -Path $RimeUserDir -Force | Out-Null
