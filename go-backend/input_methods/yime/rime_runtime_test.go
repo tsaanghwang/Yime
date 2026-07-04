@@ -4,6 +4,7 @@ package yime
 
 import (
 	"os"
+	"os/exec"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -407,7 +408,12 @@ func TestRealRimeRedeployAppliesPageSize(t *testing.T) {
 		t.Fatal("expected yime_variable schema to be selectable")
 	}
 	SetOption(baseline, "ascii_mode", false)
-	input, baselineMenu := rimeProbeInputWithMinCandidates(t, baseline, 6)
+	const input = "qu"
+	typeASCII(t, baseline, input)
+	baselineMenu, gotBaselineMenu := GetMenu(baseline)
+	if !gotBaselineMenu {
+		t.Fatal("expected baseline menu")
+	}
 	t.Logf("baseline input=%q page size=%d candidates=%d", input, baselineMenu.PageSize, len(baselineMenu.Candidates))
 	EndSession(baseline)
 
@@ -440,6 +446,77 @@ func TestRealRimeRedeployAppliesPageSize(t *testing.T) {
 	}
 	if len(menu.Candidates) > wantPageSize {
 		t.Fatalf("expected at most %d visible candidates, got %d", wantPageSize, len(menu.Candidates))
+	}
+}
+
+// TestRealRimeExternalBuildAppliesPageSize guards the safe page-size path used
+// by language-bar clicks: rebuild config outside the current process, then
+// recreate the Rime session so librime picks up the new menu.page_size without
+// an in-callback RimeRedeploy.
+func TestRealRimeExternalBuildAppliesPageSize(t *testing.T) {
+	dataDir := rimeRuntimeTestDataDir(t)
+	userDir := filepath.Join(t.TempDir(), "Rime")
+	writeRuntimeTestDefaultCustom(t, userDir)
+
+	if !RimeInit(dataDir, userDir, APP, APP_VERSION, false) {
+		t.Fatal("RimeInit failed")
+	}
+	defer Finalize()
+
+	baseline, ok := StartSession()
+	if !ok || baseline == 0 {
+		t.Fatal("StartSession failed")
+	}
+	if !SelectSchema(baseline, "yime_variable") {
+		t.Fatal("expected yime_variable schema to be selectable")
+	}
+	SetOption(baseline, "ascii_mode", false)
+	const input = "qu"
+	typeASCII(t, baseline, input)
+	baselineMenu, gotBaselineMenu := GetMenu(baseline)
+	if !gotBaselineMenu {
+		t.Fatal("expected baseline menu")
+	}
+	t.Logf("baseline input=%q page size=%d candidates=%d", input, baselineMenu.PageSize, len(baselineMenu.Candidates))
+	EndSession(baseline)
+
+	const wantPageSize = 8
+	userSchemaPath := writeUserSchemaWithPageSize(t, dataDir, userDir, "yime_variable", wantPageSize)
+	if !deploySchemaConfig(userSchemaPath) {
+		t.Fatalf("expected user schema deploy to succeed: %s", userSchemaPath)
+	}
+
+	deployerPath := `C:\dev\librime\build\bin\Release\rime_deployer.exe`
+	if _, err := os.Stat(deployerPath); err != nil {
+		t.Skipf("external rime_deployer not available: %v", err)
+	}
+	cmd := exec.Command(deployerPath, "--build", userDir, dataDir, filepath.Join(userDir, "build"))
+	if out, err := cmd.CombinedOutput(); err != nil {
+		t.Fatalf("external rime_deployer build failed: %v\n%s", err, out)
+	} else {
+		t.Logf("external build output: %s", strings.TrimSpace(string(out)))
+	}
+
+	sessionID, ok := StartSession()
+	if !ok || sessionID == 0 {
+		t.Fatal("StartSession after external build failed")
+	}
+	defer EndSession(sessionID)
+	if !SelectSchema(sessionID, "yime_variable") {
+		t.Fatal("expected yime_variable schema to be selectable after external build")
+	}
+	SetOption(sessionID, "ascii_mode", false)
+	typeASCII(t, sessionID, input)
+	menu, gotMenu := GetMenu(sessionID)
+	if !gotMenu {
+		t.Fatal("expected menu after external build")
+	}
+	t.Logf("after external build input=%q page size=%d candidates=%d", input, menu.PageSize, len(menu.Candidates))
+	if menu.PageSize != wantPageSize {
+		t.Fatalf("expected page size %d after external build, got %d", wantPageSize, menu.PageSize)
+	}
+	if len(menu.Candidates) > wantPageSize {
+		t.Fatalf("expected at most %d visible candidates after external build, got %d", wantPageSize, len(menu.Candidates))
 	}
 }
 

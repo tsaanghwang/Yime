@@ -66,6 +66,9 @@ cmd /C rd /s /q node\input_methods\McBopomofo
 cmd /C mkdir node\input_methods\McBopomofo || exit /b 1
 cmd /C xcopy /s /q /y /f McBopomofoWeb\output\pime node\input_methods\McBopomofo\. || exit /b 1
 
+echo "Refresh test install command files"
+powershell -NoProfile -ExecutionPolicy Bypass -File "%ROOT_DIR%\tools\refresh-dev-test-cmds.ps1" -RepoRoot "%ROOT_DIR%" || exit /b 1
+
 goto :eof
 
 :find_vsdevcmd

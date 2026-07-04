@@ -32,12 +32,10 @@ Rime frontend.
 The reverse code lookup menu controls what code representations should be shown
 for Chinese text lookup:
 
-- Default: standard pinyin plus Yime pinyin.
-- Full: standard pinyin, Yime pinyin, and key sequence.
 - Hidden: keep only candidate/status information.
-- Standard pinyin only.
-- Yime pinyin only.
-- Key sequence only.
+- Standard pinyin.
+- Yime pinyin.
+- Key sequence.
 
 Numeric-tone pinyin is intentionally not a normal display mode. It is an input
 format for adding user phrases, where typing `lv4` or `ri4 ben3` is practical

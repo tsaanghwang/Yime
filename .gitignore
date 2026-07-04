@@ -6,7 +6,8 @@ build_clean/
 python/__pycache__/
 tools/downloads/
 node/input_methods/McBopomofo
-go-backend/input_methods/yime/data/
+go-backend/input_methods/yime/data/**
+!go-backend/input_methods/yime/data/pinyin_normalized.json
 go-backend/build/
 go-backend/.gotmp/
 installer/*.exe

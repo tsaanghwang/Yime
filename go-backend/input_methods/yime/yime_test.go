@@ -299,8 +299,12 @@ func newTestIME() *IME {
 			InlinePreedit:      "composition",
 			SoftCursor:         false,
 		},
-		candidatePageSize: defaultCandidatePageSize,
-		backend:           newTestBackend(),
+		reversePinyinBySchema: map[string]map[string]string{},
+		reversePinyinLoaded:   map[string]bool{},
+		yimePinyinBySchema:    map[string]map[string]string{},
+		yimePinyinLoaded:      map[string]bool{},
+		candidatePageSize:     defaultCandidatePageSize,
+		backend:               newTestBackend(),
 	}
 }
 
@@ -1291,6 +1295,41 @@ func TestOnCommandSwitchesReverseLookupDisplayMode(t *testing.T) {
 	}
 }
 
+func TestLookupStandardPinyinUsesPinyinNormalizedChainASCII(t *testing.T) {
+	ime := newTestIME()
+	ime.numericToMarkedLoaded = true
+	ime.numericToMarkedPinyin = map[string]string{
+		"ri4":   "ri-marked",
+		"ben3":  "ben-marked",
+		"jin1":  "jin-marked",
+		"tian1": "tian-marked",
+	}
+	ime.reversePinyinLoaded = map[string]bool{"yime_variable": true}
+	ime.reversePinyinBySchema = map[string]map[string]string{
+		"yime_variable": {
+			"q":  "ri4",
+			"j":  "ben3",
+			"ab": "jin1",
+			"c":  "tian1",
+		},
+	}
+	ime.yimePinyinLoaded = map[string]bool{"yime_variable": true}
+	ime.yimePinyinBySchema = map[string]map[string]string{
+		"yime_variable": {
+			"word": "qj",
+			"x":    "ab",
+			"y":    "c",
+		},
+	}
+
+	if got := ime.lookupStandardPinyin("word"); got != "ri-marked ben-marked" {
+		t.Fatalf("expected word code to decode through pinyin_normalized chain, got %q", got)
+	}
+	if got := ime.lookupStandardPinyin("xy"); got != "jin-marked tian-marked" {
+		t.Fatalf("expected rune fallback to decode through pinyin_normalized chain, got %q", got)
+	}
+}
+
 func TestOnCommandReverseLookupYimePinyinDoesNotRedeploy(t *testing.T) {
 	t.Setenv("APPDATA", t.TempDir())
 	ime := newTestIME()
@@ -1525,9 +1564,9 @@ func TestAddButtonsIncludesTopLevelMenuButtons(t *testing.T) {
 
 	want := map[string]bool{
 		"candidate-layout": false,
-		"reverse-lookup": false,
-		"user-lexicon":   false,
-		"help":           false,
+		"reverse-lookup":   false,
+		"user-lexicon":     false,
+		"help":             false,
 	}
 	for _, button := range resp.AddButton {
 		if _, ok := want[button.ID]; !ok {

@@ -4,6 +4,7 @@ package yime
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -11,6 +12,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"unicode/utf8"
 
 	"github.com/EasyIME/pime-go/pime"
 )
@@ -124,13 +126,24 @@ type backendRedeployer interface {
 	Redeploy() bool
 }
 
+var runRimeExternalBuild = runRimeExternalBuildDefault
+
 type IME struct {
 	*pime.TextServiceBase
 	iconDir                  string
 	style                    Style
 	selectKeys               string
 	reverseLookupDisplayMode string
+	standardPinyinByText     map[string]string
+	standardPinyinLoaded     bool
+	numericToMarkedPinyin    map[string]string
+	numericToMarkedLoaded    bool
+	reversePinyinBySchema    map[string]map[string]string
+	reversePinyinLoaded      map[string]bool
+	yimePinyinBySchema       map[string]map[string]string
+	yimePinyinLoaded         map[string]bool
 	candidatePageSize        int
+	pendingSchemaRedeploy    string
 	candidatePageStart       int
 	lastKeyDownCode          int
 	lastKeySkip              int
@@ -154,12 +167,19 @@ func New(client *pime.Client) pime.TextService {
 			InlinePreedit:      "composition",
 			SoftCursor:         false,
 		},
-		reverseLookupDisplayMode: "default",
+		reverseLookupDisplayMode: "key_sequence",
+		reversePinyinBySchema:    map[string]map[string]string{},
+		reversePinyinLoaded:      map[string]bool{},
+		yimePinyinBySchema:       map[string]map[string]string{},
+		yimePinyinLoaded:         map[string]bool{},
 		candidatePageSize:        defaultCandidatePageSize,
 	}
 }
 
 func (ime *IME) HandleRequest(req *pime.Request) *pime.Response {
+	if req != nil && ime.shouldApplyPendingSchemaRedeploy(req.Method) {
+		ime.applyPendingSchemaRedeploy()
+	}
 	resp := pime.NewResponse(req.SeqNum, true)
 
 	switch req.Method {
@@ -346,10 +366,11 @@ func (ime *IME) onCommand(req *pime.Request, resp *pime.Response) *pime.Response
 		ime.openPath(ime.userDir())
 	case ID_USER_LEXICON_DELETE, ID_USER_LEXICON_IMPORT:
 		log.Printf("用户词库命令尚未接入: %d", commandID)
-	case ID_REVERSE_LOOKUP_DEFAULT:
-		ime.setReverseLookupDisplayMode("default")
-	case ID_REVERSE_LOOKUP_FULL:
-		ime.setReverseLookupDisplayMode("full")
+	case ID_REVERSE_LOOKUP_DEFAULT, ID_REVERSE_LOOKUP_FULL:
+		// Older builds exposed combined reverse-lookup modes that do not map
+		// cleanly onto the current single-comment candidate window. Keep the
+		// command IDs harmless by falling back to key-sequence display.
+		ime.setReverseLookupDisplayMode("key_sequence")
 	case ID_REVERSE_LOOKUP_HIDDEN:
 		ime.setReverseLookupDisplayMode("hidden")
 	case ID_REVERSE_LOOKUP_STANDARD_PINYIN:
@@ -394,7 +415,8 @@ func (ime *IME) commandShouldRefreshState(commandID int) bool {
 	case ID_REVERSE_LOOKUP_DEFAULT, ID_REVERSE_LOOKUP_FULL, ID_REVERSE_LOOKUP_HIDDEN,
 		ID_REVERSE_LOOKUP_STANDARD_PINYIN, ID_REVERSE_LOOKUP_YIME_PINYIN, ID_REVERSE_LOOKUP_KEY_SEQUENCE,
 		ID_HELP_VIEW, ID_HELP_TRIAL_FEEDBACK, ID_HELP_COPY_TRIAL_TEMPLATE,
-		ID_USER_DIR, ID_SHARED_DIR, ID_SYNC_DIR, ID_LOG_DIR, ID_SYNC:
+		ID_USER_DIR, ID_SHARED_DIR, ID_SYNC_DIR, ID_LOG_DIR, ID_SYNC,
+		ID_CANDIDATE_PAGE_SIZE_5, ID_CANDIDATE_PAGE_SIZE_6, ID_CANDIDATE_PAGE_SIZE_7, ID_CANDIDATE_PAGE_SIZE_8, ID_CANDIDATE_PAGE_SIZE_9:
 		return false
 	default:
 		return true
@@ -435,10 +457,10 @@ func commandIDFromRequest(req *pime.Request) int {
 
 func (ime *IME) setReverseLookupDisplayMode(mode string) {
 	switch mode {
-	case "default", "full", "hidden", "standard_pinyin", "yime_pinyin", "key_sequence":
+	case "hidden", "standard_pinyin", "yime_pinyin", "key_sequence":
 		ime.reverseLookupDisplayMode = mode
 	default:
-		ime.reverseLookupDisplayMode = "default"
+		ime.reverseLookupDisplayMode = "key_sequence"
 	}
 }
 
@@ -782,7 +804,8 @@ func (ime *IME) applyStateToResponse(resp *pime.Response, state rimeState) {
 	resp.SelEnd = state.SelEnd
 
 	if len(state.Candidates) > 0 {
-		visibleCandidates, cursor := ime.visibleCandidates(state.Candidates, state.CandidateCursor)
+		displayCandidates := ime.reverseLookupDisplayCandidates(state.Candidates)
+		visibleCandidates, cursor := ime.visibleCandidates(displayCandidates, state.CandidateCursor)
 		resp.CandidateList = ime.formatCandidates(visibleCandidates)
 		resp.CandidateCursor = cursor
 		resp.ShowCandidates = true
@@ -1064,6 +1087,214 @@ func (ime *IME) formatCandidates(candidates []candidateItem) []string {
 	return formatted
 }
 
+func (ime *IME) reverseLookupDisplayCandidates(candidates []candidateItem) []candidateItem {
+	if len(candidates) == 0 {
+		return candidates
+	}
+
+	switch ime.reverseLookupDisplayMode {
+	case "hidden":
+		display := append([]candidateItem(nil), candidates...)
+		for i := range display {
+			display[i].Comment = ""
+		}
+		return display
+	case "standard_pinyin":
+		display := append([]candidateItem(nil), candidates...)
+		for i := range display {
+			display[i].Comment = ime.lookupStandardPinyin(display[i].Text)
+		}
+		return display
+	case "yime_pinyin":
+		display := append([]candidateItem(nil), candidates...)
+		for i := range display {
+			display[i].Comment = ime.lookupYimePinyin(display[i].Text)
+		}
+		return display
+	default:
+		return candidates
+	}
+}
+
+func (ime *IME) lookupStandardPinyin(text string) string {
+	if ime.standardPinyinLoaded && len(ime.standardPinyinByText) > 0 {
+		if value := ime.standardPinyinByText[strings.TrimSpace(text)]; value != "" {
+			return value
+		}
+		return joinRuneLookup(text, ime.standardPinyinByText, " ")
+	}
+	codeLookup := ime.yimePinyinLookup()
+	if len(codeLookup) == 0 {
+		return ""
+	}
+	code := codeLookup[strings.TrimSpace(text)]
+	if code == "" {
+		code = joinRuneLookup(text, codeLookup, "")
+	}
+	if code == "" {
+		return ""
+	}
+	reverseLookup := ime.reversePinyinLookup()
+	if len(reverseLookup) == 0 {
+		return ""
+	}
+	numericParts, ok := splitYimeCodeToNumericTonePinyin(code, reverseLookup)
+	if !ok {
+		return ""
+	}
+	return ime.markNumericTonePinyin(strings.Join(numericParts, " "))
+}
+
+func (ime *IME) reversePinyinLookup() map[string]string {
+	schemaID := ime.currentSchemaID()
+	if ime.reversePinyinLoaded[schemaID] {
+		return ime.reversePinyinBySchema[schemaID]
+	}
+	ime.reversePinyinLoaded[schemaID] = true
+	codes, err := ime.loadPinyinCodeMap()
+	if err != nil {
+		ime.reversePinyinBySchema[schemaID] = map[string]string{}
+		return ime.reversePinyinBySchema[schemaID]
+	}
+	column := yimeCodeColumnForSchema(schemaID)
+	lookup := make(map[string]string, len(codes))
+	for numericPinyin, record := range codes {
+		code := record.Variable
+		switch column {
+		case "full":
+			code = record.Full
+		case "shorthand":
+			code = record.Shorthand
+		}
+		if code == "" {
+			continue
+		}
+		if _, exists := lookup[code]; !exists {
+			lookup[code] = numericPinyin
+		}
+	}
+	ime.reversePinyinBySchema[schemaID] = lookup
+	return ime.reversePinyinBySchema[schemaID]
+}
+
+func (ime *IME) lookupYimePinyin(text string) string {
+	lookup := ime.yimePinyinLookup()
+	if len(lookup) == 0 {
+		return ""
+	}
+	if value := lookup[strings.TrimSpace(text)]; value != "" {
+		return value
+	}
+	return joinRuneLookup(text, lookup, "")
+}
+
+func (ime *IME) yimePinyinLookup() map[string]string {
+	schemaID := ime.currentSchemaID()
+	if ime.yimePinyinLoaded[schemaID] {
+		return ime.yimePinyinBySchema[schemaID]
+	}
+	ime.yimePinyinLoaded[schemaID] = true
+	lookup := loadYimeCodeLookup(filepath.Join(ime.sharedDir(), schemaID+".dict.yaml"))
+	ime.yimePinyinBySchema[schemaID] = lookup
+	return lookup
+}
+
+func (ime *IME) currentSchemaID() string {
+	if ime.backend == nil {
+		return "yime_variable"
+	}
+	schemaID := strings.TrimSpace(ime.backend.CurrentSchema())
+	switch schemaID {
+	case "yime_full", "yime_variable", "yime_shorthand":
+		return schemaID
+	default:
+		return "yime_variable"
+	}
+}
+
+func yimeCodeColumnForSchema(schemaID string) string {
+	switch schemaID {
+	case "yime_full":
+		return "full"
+	case "yime_shorthand":
+		return "shorthand"
+	default:
+		return "variable"
+	}
+}
+
+func splitYimeCodeToNumericTonePinyin(code string, lookup map[string]string) ([]string, bool) {
+	code = strings.TrimSpace(code)
+	if code == "" {
+		return nil, false
+	}
+	memo := map[int][]string{}
+	failed := map[int]bool{}
+	var decode func(start int) ([]string, bool)
+	decode = func(start int) ([]string, bool) {
+		if start == len(code) {
+			return []string{}, true
+		}
+		if failed[start] {
+			return nil, false
+		}
+		if cached, ok := memo[start]; ok {
+			return append([]string(nil), cached...), true
+		}
+		for end := len(code); end > start; end-- {
+			numeric := lookup[code[start:end]]
+			if numeric == "" {
+				continue
+			}
+			suffix, ok := decode(end)
+			if !ok {
+				continue
+			}
+			result := make([]string, 0, len(suffix)+1)
+			result = append(result, numeric)
+			result = append(result, suffix...)
+			memo[start] = result
+			return append([]string(nil), result...), true
+		}
+		failed[start] = true
+		return nil, false
+	}
+	return decode(0)
+}
+
+func (ime *IME) markNumericTonePinyin(value string) string {
+	lookup := ime.numericToMarkedPinyinLookup()
+	if len(lookup) == 0 {
+		return numericTonePinyinToMarked(value)
+	}
+	parts := strings.Fields(value)
+	if len(parts) == 0 {
+		return ""
+	}
+	marked := make([]string, 0, len(parts))
+	for _, part := range parts {
+		normalized := normalizeNumericTonePinyin(part)
+		if normalized == "" {
+			continue
+		}
+		if result := lookup[normalized]; result != "" {
+			marked = append(marked, result)
+			continue
+		}
+		marked = append(marked, numericToneSyllableToMarked(normalized))
+	}
+	return strings.Join(marked, " ")
+}
+
+func (ime *IME) numericToMarkedPinyinLookup() map[string]string {
+	if ime.numericToMarkedLoaded {
+		return ime.numericToMarkedPinyin
+	}
+	ime.numericToMarkedLoaded = true
+	ime.numericToMarkedPinyin = loadNumericToMarkedPinyinLookup(filepath.Join(ime.sharedDir(), "pinyin_normalized.json"))
+	return ime.numericToMarkedPinyin
+}
+
 func (ime *IME) iconPath(name string) string {
 	if ime.iconDir == "" || name == "" {
 		return ""
@@ -1176,16 +1407,12 @@ func (ime *IME) buildMenu() []map[string]interface{} {
 
 func (ime *IME) buildReverseLookupMenu() []map[string]interface{} {
 	return []map[string]interface{}{
-		{"id": ID_REVERSE_LOOKUP_DEFAULT, "text": "默认：标准拼音 + 音元拼音", "checked": ime.reverseLookupDisplayMode == "default"},
-		{"id": ID_REVERSE_LOOKUP_FULL, "text": "完整：标准拼音、音元拼音和键位序列", "checked": ime.reverseLookupDisplayMode == "full"},
 		{"id": ID_REVERSE_LOOKUP_HIDDEN, "text": "隐藏编码", "checked": ime.reverseLookupDisplayMode == "hidden"},
-		{"text": ""},
-		{"id": ID_REVERSE_LOOKUP_STANDARD_PINYIN, "text": "仅标准拼音", "checked": ime.reverseLookupDisplayMode == "standard_pinyin"},
-		{"id": ID_REVERSE_LOOKUP_YIME_PINYIN, "text": "仅音元拼音", "checked": ime.reverseLookupDisplayMode == "yime_pinyin"},
-		{"id": ID_REVERSE_LOOKUP_KEY_SEQUENCE, "text": "仅键位序列", "checked": ime.reverseLookupDisplayMode == "key_sequence"},
+		{"id": ID_REVERSE_LOOKUP_STANDARD_PINYIN, "text": "标准拼音", "checked": ime.reverseLookupDisplayMode == "standard_pinyin"},
+		{"id": ID_REVERSE_LOOKUP_YIME_PINYIN, "text": "音元拼音", "checked": ime.reverseLookupDisplayMode == "yime_pinyin"},
+		{"id": ID_REVERSE_LOOKUP_KEY_SEQUENCE, "text": "键位序列", "checked": ime.reverseLookupDisplayMode == "key_sequence"},
 	}
 }
-
 
 func (ime *IME) buildCandidatePageSizeMenu() []map[string]interface{} {
 	pageSize := ime.candidatePageSize
@@ -1406,6 +1633,177 @@ func normalizeNumericTonePinyin(value string) string {
 	return value
 }
 
+func numericTonePinyinToMarked(value string) string {
+	parts := strings.Fields(value)
+	if len(parts) == 0 {
+		return ""
+	}
+	marked := make([]string, 0, len(parts))
+	for _, part := range parts {
+		marked = append(marked, numericToneSyllableToMarked(part))
+	}
+	return strings.Join(marked, " ")
+}
+
+func numericToneSyllableToMarked(syllable string) string {
+	normalized := normalizeNumericTonePinyin(syllable)
+	if normalized == "" {
+		return ""
+	}
+	runes := []rune(normalized)
+	last := runes[len(runes)-1]
+	if last < '1' || last > '5' {
+		return normalized
+	}
+	tone := int(last - '0')
+	base := []rune(string(runes[:len(runes)-1]))
+	if tone == 5 || len(base) == 0 {
+		return string(base)
+	}
+	index := markedVowelIndex(base)
+	if index < 0 {
+		return string(base)
+	}
+	base[index] = accentVowel(base[index], tone)
+	return string(base)
+}
+
+func markedVowelIndex(syllable []rune) int {
+	for i, r := range syllable {
+		if r == 'a' || r == 'e' {
+			return i
+		}
+	}
+	for i := 0; i < len(syllable)-1; i++ {
+		if syllable[i] == 'o' && syllable[i+1] == 'u' {
+			return i
+		}
+	}
+	for i := len(syllable) - 1; i >= 0; i-- {
+		switch syllable[i] {
+		case 'a', 'e', 'i', 'o', 'u', 'ü':
+			return i
+		}
+	}
+	return -1
+}
+
+func accentVowel(vowel rune, tone int) rune {
+	switch vowel {
+	case 'a':
+		return []rune{'a', 'ā', 'á', 'ǎ', 'à'}[tone]
+	case 'e':
+		return []rune{'e', 'ē', 'é', 'ě', 'è'}[tone]
+	case 'i':
+		return []rune{'i', 'ī', 'í', 'ǐ', 'ì'}[tone]
+	case 'o':
+		return []rune{'o', 'ō', 'ó', 'ǒ', 'ò'}[tone]
+	case 'u':
+		return []rune{'u', 'ū', 'ú', 'ǔ', 'ù'}[tone]
+	case 'ü':
+		return []rune{'ü', 'ǖ', 'ǘ', 'ǚ', 'ǜ'}[tone]
+	default:
+		return vowel
+	}
+}
+
+func loadYimeCodeLookup(path string) map[string]string {
+	lookup := map[string]string{}
+	file, err := os.Open(path)
+	if err != nil {
+		return lookup
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	inData := false
+	for scanner.Scan() {
+		line := strings.TrimSpace(scanner.Text())
+		if !inData {
+			if line == "..." {
+				inData = true
+			}
+			continue
+		}
+		if line == "" || strings.HasPrefix(line, "#") {
+			continue
+		}
+		fields := strings.Split(line, "\t")
+		if len(fields) < 2 {
+			continue
+		}
+		text := strings.TrimSpace(fields[0])
+		code := strings.TrimSpace(fields[1])
+		if text == "" || code == "" {
+			continue
+		}
+		if _, exists := lookup[text]; !exists {
+			lookup[text] = code
+		}
+	}
+	return lookup
+}
+
+func loadNumericToMarkedPinyinLookup(path string) map[string]string {
+	lookup := map[string]string{}
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return lookup
+	}
+	if err := json.Unmarshal(data, &lookup); err != nil {
+		return map[string]string{}
+	}
+	normalizedLookup := make(map[string]string, len(lookup))
+	for key, value := range lookup {
+		normalizedKey := normalizeNumericTonePinyin(key)
+		if normalizedKey == "" || value == "" {
+			continue
+		}
+		normalizedLookup[normalizedKey] = strings.TrimSpace(value)
+	}
+	return normalizedLookup
+}
+
+func mergeReverseLookupMap(dst, src map[string]string) {
+	for key, value := range src {
+		if key == "" || value == "" {
+			continue
+		}
+		if _, exists := dst[key]; !exists {
+			dst[key] = value
+		}
+	}
+}
+
+func existingPaths(paths []string) []string {
+	existing := make([]string, 0, len(paths))
+	for _, path := range paths {
+		if path == "" {
+			continue
+		}
+		if info, err := os.Stat(path); err == nil && !info.IsDir() {
+			existing = append(existing, path)
+		}
+	}
+	return existing
+}
+
+func joinRuneLookup(text string, lookup map[string]string, separator string) string {
+	text = strings.TrimSpace(text)
+	if text == "" {
+		return ""
+	}
+	parts := make([]string, 0, utf8.RuneCountInString(text))
+	for _, r := range text {
+		value := lookup[string(r)]
+		if value == "" {
+			return ""
+		}
+		parts = append(parts, value)
+	}
+	return strings.Join(parts, separator)
+}
+
 func splitCompactNumericTonePinyinToken(token string) []string {
 	normalizedToken := strings.TrimSpace(token)
 	if normalizedToken == "" {
@@ -1520,9 +1918,15 @@ func (ime *IME) setCandidatePageSize(size int) error {
 		// invalidates librime inside the TSF callback and breaks subsequent menu
 		// clicks such as reverse-lookup "仅音元拼音". Use a lightweight session
 		// reload instead; full cache invalidation stays on the "重新部署" command.
+		if !runRimeExternalBuild(ime.sharedDir(), userDir) {
+			log.Printf("external rime_deployer build unavailable; falling back to session reload for %s", schemaID)
+		}
+		ime.pendingSchemaRedeploy = schemaID
 		ime.reloadBackendSessionForSchema(schemaID)
-		if newState := ime.backend.State(); newState.PageSize >= minCandidatePageSize && newState.PageSize <= maxCandidatePageSize {
+		if newState := ime.backend.State(); newState.PageSize >= minCandidatePageSize && newState.PageSize <= maxCandidatePageSize && newState.PageSize == size {
 			ime.candidatePageSize = newState.PageSize
+		} else if newState.PageSize >= minCandidatePageSize && newState.PageSize <= maxCandidatePageSize {
+			log.Printf("candidate page size reload mismatch: requested=%d actual=%d; preserving requested size until a fresh Rime state arrives", size, newState.PageSize)
 		}
 	}
 	return nil
@@ -1574,6 +1978,37 @@ func (ime *IME) reloadBackendForSchema(schemaID string) {
 		log.Println("Rime 重新部署失败，回退到重建会话")
 	}
 	ime.reloadBackendSessionForSchema(schemaID)
+}
+
+func runRimeExternalBuildDefault(sharedDir, userDir string) bool {
+	if sharedDir == "" || userDir == "" {
+		return false
+	}
+	deployerPath := findRimeExternalDeployer(sharedDir)
+	if deployerPath == "" {
+		return false
+	}
+	buildDir := filepath.Join(userDir, "build")
+	cmd := exec.Command(deployerPath, "--build", userDir, sharedDir, buildDir)
+	if output, err := cmd.CombinedOutput(); err != nil {
+		log.Printf("external rime_deployer build failed: %v; output=%s", err, strings.TrimSpace(string(output)))
+		return false
+	}
+	return true
+}
+
+func findRimeExternalDeployer(sharedDir string) string {
+	candidates := []string{
+		filepath.Join(filepath.Dir(sharedDir), "rime_deployer.exe"),
+		filepath.Join(filepath.Clean(filepath.Join(sharedDir, "..", "..", "..", "..", "..", "librime", "build", "bin", "Release")), "rime_deployer.exe"),
+		`C:\dev\librime\build\bin\Release\rime_deployer.exe`,
+	}
+	for _, candidate := range candidates {
+		if _, err := os.Stat(candidate); err == nil {
+			return candidate
+		}
+	}
+	return ""
 }
 
 func (ime *IME) writeSchemaCustomPageSize(schemaID string, size int) (string, error) {
@@ -1681,8 +2116,7 @@ func readPageSizeFromCustomConfig(path string) int {
 	lines := strings.Split(strings.ReplaceAll(string(data), "\r\n", "\n"), "\n")
 	for _, line := range lines {
 		trimmed := strings.TrimSpace(line)
-		if strings.HasPrefix(trimmed, "menu/page_size:") {
-			val := strings.TrimSpace(strings.TrimPrefix(trimmed, "menu/page_size:"))
+		if val, ok := parseMenuPageSizeValue(trimmed); ok {
 			if n, err := strconv.Atoi(val); err == nil {
 				return n
 			}
@@ -1692,15 +2126,15 @@ func readPageSizeFromCustomConfig(path string) int {
 }
 
 func updateDefaultCustomPageSize(content string, size int) string {
-	line := "  menu/page_size: " + strconv.Itoa(size)
+	line := `  "menu/page_size": ` + strconv.Itoa(size)
 	if strings.TrimSpace(content) == "" {
 		return "patch:\n" + line + "\n"
 	}
 	lines := strings.Split(strings.ReplaceAll(content, "\r\n", "\n"), "\n")
 	for i, existing := range lines {
-		if strings.HasPrefix(strings.TrimSpace(existing), "menu/page_size:") {
+		if _, ok := parseMenuPageSizeValue(strings.TrimSpace(existing)); ok {
 			indent := existing[:len(existing)-len(strings.TrimLeft(existing, " \t"))]
-			lines[i] = indent + "menu/page_size: " + strconv.Itoa(size)
+			lines[i] = indent + `"menu/page_size": ` + strconv.Itoa(size)
 			return strings.TrimRight(strings.Join(lines, "\n"), "\n") + "\n"
 		}
 	}
@@ -1711,6 +2145,35 @@ func updateDefaultCustomPageSize(content string, size int) string {
 		}
 	}
 	return strings.TrimRight(content, "\r\n") + "\n\npatch:\n" + line + "\n"
+}
+
+func parseMenuPageSizeValue(trimmed string) (string, bool) {
+	switch {
+	case strings.HasPrefix(trimmed, "menu/page_size:"):
+		return strings.TrimSpace(strings.TrimPrefix(trimmed, "menu/page_size:")), true
+	case strings.HasPrefix(trimmed, `"menu/page_size":`):
+		return strings.TrimSpace(strings.TrimPrefix(trimmed, `"menu/page_size":`)), true
+	default:
+		return "", false
+	}
+}
+
+func (ime *IME) applyPendingSchemaRedeploy() {
+	schemaID := ime.pendingSchemaRedeploy
+	if schemaID == "" || ime.backend == nil {
+		return
+	}
+	ime.pendingSchemaRedeploy = ""
+	ime.reloadBackendForSchema(schemaID)
+}
+
+func (ime *IME) shouldApplyPendingSchemaRedeploy(method string) bool {
+	switch method {
+	case "onActivate", "filterKeyDown", "filterKeyUp", "onKeyDown", "onKeyUp", "selectCandidate":
+		return true
+	default:
+		return false
+	}
 }
 
 func updateSchemaMenuPageSize(content string, size int) string {
@@ -1817,7 +2280,6 @@ func candidateLayoutIconName(horizontal bool) string {
 	}
 	return "layout_vertical.ico"
 }
-
 
 func candidateLayoutToggleText(horizontal bool) string {
 	if horizontal {

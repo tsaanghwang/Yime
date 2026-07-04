@@ -15,6 +15,7 @@ set "SERVER_EXE=%PACKAGE_DIR%\server.exe"
 set "BACKEND_SNIPPET=%BUILD_ROOT%\backends.go-backend.json"
 set "RIME_DIR=%ROOT_DIR%\input_methods\yime"
 set "RIME_DATA_DIR=%RIME_DIR%\data"
+set "LIBRIME_BUILD_DIR=%PIME_ROOT%\..\librime\build\bin\Release"
 set "PACKAGE_RIME_DIR=%PACKAGE_DIR%\input_methods\yime"
 set "PACKAGE_RIME_DATA_DIR=%PACKAGE_RIME_DIR%\data"
 set "PLUM_DIR=%PIME_ROOT%\plum"
@@ -170,6 +171,15 @@ if exist "%PACKAGE_DIR%\input_methods\yime\icons\icons" (
 if exist "%RIME_DIR%\rime.dll" (
     copy /Y "%RIME_DIR%\rime.dll" "%PACKAGE_DIR%\input_methods\yime\rime.dll" >nul
     echo [INFO] Copied rime.dll into package output
+)
+
+if exist "%RIME_DIR%\rime_deployer.exe" (
+    copy /Y "%RIME_DIR%\rime_deployer.exe" "%PACKAGE_DIR%\input_methods\yime\rime_deployer.exe" >nul
+    echo [INFO] Copied rime_deployer.exe into package output
+)
+if not exist "%PACKAGE_DIR%\input_methods\yime\rime_deployer.exe" if exist "%LIBRIME_BUILD_DIR%\rime_deployer.exe" (
+    copy /Y "%LIBRIME_BUILD_DIR%\rime_deployer.exe" "%PACKAGE_DIR%\input_methods\yime\rime_deployer.exe" >nul
+    echo [INFO] Copied rime_deployer.exe from librime build output into package output
 )
 
 echo.
