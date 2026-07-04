@@ -199,14 +199,14 @@ echo Output directory:
 echo   "%PACKAGE_DIR%"
 echo.
 echo Install target:
-echo   C:\Program Files (x86)\PIME\go-backend
+echo   C:\Program Files (x86)\YIME\go-backend
 echo.
 echo Notes:
 echo 1. backends.json in this repo uses a top-level array.
-echo 2. Ensure C:\Program Files (x86)\PIME\backends.json includes go-backend.
-echo 3. Ensure C:\Program Files (x86)\PIME\go-backend\input_methods\*\ime.json exists.
+echo 2. Ensure C:\Program Files (x86)\YIME\backends.json includes go-backend.
+echo 3. Ensure C:\Program Files (x86)\YIME\go-backend\input_methods\*\ime.json exists.
 echo 4. Re-register both PIMETextService.dll files after copying.
-echo 5. Ensure C:\Program Files (x86)\PIME\go-backend\input_methods\yime contains rime.dll.
+echo 5. Ensure C:\Program Files (x86)\YIME\go-backend\input_methods\yime contains rime.dll.
 echo 6. Start or restart PIMELauncher.exe after install.
 echo.
 exit /b 0

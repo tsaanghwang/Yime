@@ -65,14 +65,14 @@ All parts are licensed under GNU LGPL v2.1 license.
 *   [Creating a DACL](http://msdn.microsoft.com/en-us/library/windows/apps/ms717798.aspx)
 
 # Install
-*   Copy `PIMETextService.dll` to C:\Program Files (X86)\PIME\x86\.
-*   Copy `PIMETextService.dll` to C:\Program Files (X86)\PIME\x64\.
-*   Copy the folder `python` to `C:\Program Files (X86)\PIME\`
-*   Copy the folder `node` to `C:\Program Files (X86)\PIME\`
+*   Copy `PIMETextService.dll` to `C:\Program Files (X86)\YIME\x86\`.
+*   Copy `PIMETextService.dll` to `C:\Program Files (X86)\YIME\x64\`.
+*   Copy the folder `python` to `C:\Program Files (X86)\YIME\`
+*   Copy the folder `node` to `C:\Program Files (X86)\YIME\`
 *   Use `regsvr32` to register `PIMETextService.dll`. 64-bit system need to register both 32-bit and 64-bit `PIMETextService.dll`
 
-        regsvr32 "C:\Program Files (X86)\PIME\x86\PIMETextService.dll" (run as administrator)
-        regsvr32 "C:\Program Files (X86)\PIME\x64\PIMETextService.dll" (run as administrator)
+        regsvr32 "C:\Program Files (X86)\YIME\x86\PIMETextService.dll" (run as administrator)
+        regsvr32 "C:\Program Files (X86)\YIME\x64\PIMETextService.dll" (run as administrator)
 
 *   NOTICE: the `regsvr32` command needs to be run as Administrator. Otherwise you'll get access denied error.
 *   In Windows 8, if you put the dlls in places other than C:\Windows or C:\Program Files, they will not be accessible in metro apps.
@@ -80,9 +80,9 @@ All parts are licensed under GNU LGPL v2.1 license.
 # Uninstall
 *   Use `regsvr32` to unregister `PIMETextService.dll`. 64-bit system need to unregister both 32-bit and 64-bit `PIMETextService.dll`
 
-        regsvr32 /u "C:\Program Files (X86)\PIME\x86\PIMETextService.dll" (run as administrator)
-        regsvr32 /u "C:\Program Files (X86)\PIME\x64\PIMETextService.dll" (run as administrator)
-*   Remove `C:\Program Files (X86)\PIME`
+        regsvr32 /u "C:\Program Files (X86)\YIME\x86\PIMETextService.dll" (run as administrator)
+        regsvr32 /u "C:\Program Files (X86)\YIME\x64\PIMETextService.dll" (run as administrator)
+*   Remove `C:\Program Files (X86)\YIME`
 
 *   NOTICE: the `regsvr32` command needs to be run as Administrator. Otherwise you'll get access denied error.
 

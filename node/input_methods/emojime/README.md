@@ -15,10 +15,10 @@ Now NIME doesn't has it own installation, so we use PIME for development `emojim
 
 - Prepare Node v6.x environment.
 - Install [PIME](https://github.com/EasyIME/PIME/releases) v0.14.x
-- Create `emojime` folder into `C:\Program Files (x86)\PIME\server\input_methods\`
-- Copy `ime.json` and `icon.ico` into `C:\Program Files (x86)\PIME\server\input_methods\emojime\`
-- `regsvr32 "C:\Program Files (X86)\PIME\x86\PIMETextService.dll" (run as administrator)`
-- `regsvr32 "C:\Program Files (X86)\PIME\x64\PIMETextService.dll" (run as administrator)`
+- Create `emojime` folder into `C:\Program Files (x86)\YIME\server\input_methods\`
+- Copy `ime.json` and `icon.ico` into `C:\Program Files (x86)\YIME\server\input_methods\emojime\`
+- `regsvr32 "C:\Program Files (X86)\YIME\x86\PIMETextService.dll" (run as administrator)`
+- `regsvr32 "C:\Program Files (X86)\YIME\x64\PIMETextService.dll" (run as administrator)`
 - `npm i`
 - `npm start`
 

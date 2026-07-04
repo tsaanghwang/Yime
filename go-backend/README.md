@@ -57,7 +57,7 @@ build/
 
 ### 3. 注册输入法
 
-确保 `C:\Program Files (x86)\PIME\go-backend\input_methods\*\ime.json` 存在。比如：
+确保 `C:\Program Files (x86)\YIME\go-backend\input_methods\*\ime.json` 存在。比如：
 
 ```json
 {

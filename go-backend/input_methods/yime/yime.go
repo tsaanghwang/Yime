@@ -461,7 +461,7 @@ func (ime *IME) Init(req *pime.Request) bool {
 
 	exeDir := filepath.Dir(exePath)
 	ime.iconDir = filepath.Join(exeDir, "input_methods", "yime", "icons")
-	// After installation this resolves to C:\Program Files (x86)\PIME\go-backend\input_methods\yime\data.
+	// After installation this resolves to C:\Program Files (x86)\YIME\go-backend\input_methods\yime\data.
 	sharedDir := filepath.Join(exeDir, "input_methods", "yime", "data")
 
 	appData := os.Getenv("APPDATA")
