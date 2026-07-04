@@ -991,7 +991,7 @@ func (ime *IME) addButtons(resp *pime.Response) {
 	}
 	layoutButton := pime.ButtonInfo{
 		ID:        "candidate-layout",
-		Text:      candidateLayoutToggleText(ime.style.CandidatePerRow > verticalCandidatesPerRow),
+		Text:      "横竖排切换",
 		Tooltip:   "排列方式",
 		CommandID: ID_CANDIDATE_LAYOUT_TOGGLE,
 		Type:      "button",
