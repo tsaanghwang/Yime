@@ -194,6 +194,9 @@ func (ime *IME) onActivate(req *pime.Request, resp *pime.Response) *pime.Respons
 	ime.createSession(resp)
 	ime.addButtons(resp)
 	ime.updateLangStatus(req, resp)
+	if ime.backend != nil {
+		ime.applyStateToResponse(resp, ime.backend.State())
+	}
 	resp.ReturnValue = 1
 	return resp
 }
@@ -376,6 +379,9 @@ func (ime *IME) onCommand(req *pime.Request, resp *pime.Response) *pime.Response
 	}
 
 	ime.updateLangStatus(req, resp)
+	if ime.backend != nil {
+		ime.applyStateToResponse(resp, ime.backend.State())
+	}
 	resp.ReturnValue = 1
 	return resp
 }
@@ -430,7 +436,7 @@ func (ime *IME) onMenu(req *pime.Request, resp *pime.Response) *pime.Response {
 			buttonID = raw
 		}
 	}
-	if buttonID != "settings" && buttonID != "windows-mode-icon" && buttonID != "reverse-lookup" &&
+	if buttonID != "settings" && buttonID != "windows-mode-icon" && buttonID != "candidate-layout" && buttonID != "reverse-lookup" &&
 		buttonID != "user-lexicon" && buttonID != "help" {
 		resp.ReturnData = []map[string]interface{}{}
 		resp.ReturnValue = 0
@@ -440,6 +446,8 @@ func (ime *IME) onMenu(req *pime.Request, resp *pime.Response) *pime.Response {
 	switch buttonID {
 	case "help":
 		resp.ReturnData = ime.buildHelpMenu()
+	case "candidate-layout":
+		resp.ReturnData = ime.buildCandidateLayoutMenu()
 	case "reverse-lookup":
 		resp.ReturnData = ime.buildReverseLookupMenu()
 	case "user-lexicon":
@@ -879,6 +887,14 @@ func (ime *IME) setCandidateLayout(horizontal bool, resp *pime.Response) {
 			resp.CustomizeUI = map[string]interface{}{}
 		}
 		resp.CustomizeUI["candPerRow"] = ime.style.CandidatePerRow
+		change := pime.ButtonInfo{
+			ID:        "candidate-layout",
+			CommandID: candidateLayoutCommandID(horizontal),
+		}
+		if iconPath := ime.iconPath(candidateLayoutIconName(horizontal)); iconPath != "" {
+			change.Icon = iconPath
+		}
+		resp.ChangeButton = append(resp.ChangeButton, change)
 	}
 }
 
@@ -968,6 +984,17 @@ func (ime *IME) addButtons(resp *pime.Response) {
 			Type: "menu",
 		})
 	}
+	layoutButton := pime.ButtonInfo{
+		ID:      "candidate-layout",
+		Text:    "排列方式",
+		Tooltip: "排列方式",
+		CommandID: candidateLayoutCommandID(ime.style.CandidatePerRow > verticalCandidatesPerRow),
+		Type:    "menu",
+	}
+	if iconPath := ime.iconPath(candidateLayoutIconName(ime.style.CandidatePerRow > verticalCandidatesPerRow)); iconPath != "" {
+		layoutButton.Icon = iconPath
+	}
+	resp.AddButton = append(resp.AddButton, layoutButton)
 	resp.AddButton = append(resp.AddButton, pime.ButtonInfo{
 		ID:      "reverse-lookup",
 		Text:    "显示编码",
@@ -992,7 +1019,7 @@ func (ime *IME) removeButtons(resp *pime.Response) {
 	if !ime.style.DisplayTrayIcon || resp == nil {
 		return
 	}
-	resp.RemoveButton = append(resp.RemoveButton, "switch-lang", "switch-shape", "settings", "reverse-lookup", "user-lexicon", "help")
+	resp.RemoveButton = append(resp.RemoveButton, "switch-lang", "switch-shape", "settings", "candidate-layout", "reverse-lookup", "user-lexicon", "help")
 	if ime.Client != nil && ime.Client.IsWindows8Above {
 		resp.RemoveButton = append(resp.RemoveButton, "windows-mode-icon")
 	}
@@ -1111,7 +1138,8 @@ func (ime *IME) buildMenu() []map[string]interface{} {
 		{"id": ID_ASCII_PUNCT, "text": punctText},
 		{"id": ID_FULL_SHAPE, "text": shapeText},
 		{"text": ""},
-		{"text": "候选窗体", "submenu": ime.buildCandidateWindowMenu()},
+		{"text": "排列方式", "submenu": ime.buildCandidateLayoutMenu()},
+		{"text": "候选项数", "submenu": ime.buildCandidatePageSizeMenu()},
 		{"text": ""},
 		{"id": ID_DEPLOY, "text": "重新部署(&D)"},
 		{"id": ID_SYNC, "text": "同步(&S)"},
@@ -1136,18 +1164,13 @@ func (ime *IME) buildReverseLookupMenu() []map[string]interface{} {
 	}
 }
 
-func (ime *IME) buildCandidateWindowMenu() []map[string]interface{} {
-	items := ime.buildCandidateLayoutMenu()
-	items = append(items, map[string]interface{}{"text": ""})
-	items = append(items, ime.buildCandidatePageSizeMenu()...)
-	return items
-}
-
 func (ime *IME) buildCandidateLayoutMenu() []map[string]interface{} {
 	horizontal := ime.style.CandidatePerRow > verticalCandidatesPerRow
 	return []map[string]interface{}{
-		{"id": ID_CANDIDATE_LAYOUT_HORIZONTAL, "text": "横排", "checked": horizontal},
-		{"id": ID_CANDIDATE_LAYOUT_VERTICAL, "text": "竖排", "checked": !horizontal},
+		{
+			"id":   candidateLayoutCommandID(horizontal),
+			"text": candidateLayoutToggleText(horizontal),
+		},
 	}
 }
 
@@ -1462,6 +1485,10 @@ func (ime *IME) setCandidatePageSize(size int) error {
 	if err := os.WriteFile(configPath, []byte(updated), 0o644); err != nil {
 		return err
 	}
+	var previousState rimeState
+	if ime.backend != nil {
+		previousState = ime.backend.State()
+	}
 	ime.candidatePageSize = size
 	ime.candidatePageStart = 0
 	if !deployDefaultCustomConfig(configPath) {
@@ -1481,8 +1508,29 @@ func (ime *IME) setCandidatePageSize(size int) error {
 			log.Printf("部署候选数量方案配置失败: %s", schemaPath)
 		}
 		ime.reloadBackendForSchema(schemaID)
+		ime.restoreComposition(previousState.Composition)
 	}
 	return nil
+}
+
+func (ime *IME) restoreComposition(composition string) bool {
+	if ime.backend == nil || composition == "" {
+		return false
+	}
+	for _, r := range composition {
+		if !isReplayableCompositionRune(r) {
+			return false
+		}
+		req := &pime.Request{CharCode: int(r)}
+		if !ime.backend.ProcessKey(req, int(r), 0) {
+			return false
+		}
+	}
+	return true
+}
+
+func isReplayableCompositionRune(r rune) bool {
+	return (r >= 'a' && r <= 'z') || (r >= '0' && r <= '9') || r == '\''
 }
 
 // redeployBackend re-runs a full RIME deployment for the current schema. It is
@@ -1738,6 +1786,27 @@ func shapeIconName(fullShape bool) string {
 		return "full.ico"
 	}
 	return "half.ico"
+}
+
+func candidateLayoutIconName(horizontal bool) string {
+	if horizontal {
+		return "layout_horizontal.ico"
+	}
+	return "layout_vertical.ico"
+}
+
+func candidateLayoutCommandID(horizontal bool) int {
+	if horizontal {
+		return ID_CANDIDATE_LAYOUT_VERTICAL
+	}
+	return ID_CANDIDATE_LAYOUT_HORIZONTAL
+}
+
+func candidateLayoutToggleText(horizontal bool) string {
+	if horizontal {
+		return "横排 → 竖排"
+	}
+	return "竖排 → 横排"
 }
 
 func boolToInt(v bool) int {

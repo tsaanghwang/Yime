@@ -864,35 +864,31 @@ func TestOnMenuReturnsSettingsMenu(t *testing.T) {
 	if enabled, ok := modeMenu[2]["enabled"].(bool); !ok || enabled {
 		t.Fatalf("expected shorthand mode disabled without bundled schema, got %#v", modeMenu[2])
 	}
-	candidateWindowMenu := findSubmenuItem(t, items, "候选窗体")
-	if hasSubmenuItem(candidateWindowMenu, "排列方式") || hasSubmenuItem(candidateWindowMenu, "候选数量") {
-		t.Fatalf("expected candidate window settings to stay one submenu level under settings, got %#v", candidateWindowMenu)
+	layoutMenu := findSubmenuItem(t, items, "排列方式")
+	if hasSubmenuItem(layoutMenu, "候选项数") {
+		t.Fatalf("expected layout submenu to stay flat, got %#v", layoutMenu)
 	}
-	if len(candidateWindowMenu) != 8 {
-		t.Fatalf("expected direct layout items, separator, and page size items, got %#v", candidateWindowMenu)
+	if len(layoutMenu) != 1 {
+		t.Fatalf("expected one direct layout toggle item, got %#v", layoutMenu)
 	}
-	layoutMenu := candidateWindowMenu[:2]
-	separator := candidateWindowMenu[2]
-	pageSizeMenu := candidateWindowMenu[3:]
-	if text, ok := separator["text"].(string); !ok || text != "" {
-		t.Fatalf("expected separator between layout and page size items, got %#v", separator)
+	item := findMenuItem(t, layoutMenu, ID_CANDIDATE_LAYOUT_HORIZONTAL)
+	if text, ok := item["text"].(string); !ok || text != "竖排 → 横排" {
+		t.Fatalf("expected vertical-to-horizontal toggle text, got %#v", item)
 	}
-	item := findMenuItem(t, pageSizeMenu, ID_CANDIDATE_PAGE_SIZE_5)
+	pageSizeMenu := findSubmenuItem(t, items, "候选项数")
+	if hasSubmenuItem(pageSizeMenu, "排列方式") {
+		t.Fatalf("expected candidate count submenu to stay flat, got %#v", pageSizeMenu)
+	}
+	if len(pageSizeMenu) != 5 {
+		t.Fatalf("expected five direct page-size items, got %#v", pageSizeMenu)
+	}
+	item = findMenuItem(t, pageSizeMenu, ID_CANDIDATE_PAGE_SIZE_5)
 	if checked, ok := item["checked"].(bool); !ok || !checked {
 		t.Fatalf("expected page size 5 checked by default, got %#v", item)
 	}
 	item = findMenuItem(t, pageSizeMenu, ID_CANDIDATE_PAGE_SIZE_9)
 	if text, ok := item["text"].(string); !ok || text != "9 项" {
 		t.Fatalf("expected page size 9 menu text, got %#v", item)
-	}
-
-	item = findMenuItem(t, layoutMenu, ID_CANDIDATE_LAYOUT_HORIZONTAL)
-	if checked, ok := item["checked"].(bool); !ok || checked {
-		t.Fatalf("expected horizontal layout unchecked by default, got %#v", item)
-	}
-	item = findMenuItem(t, layoutMenu, ID_CANDIDATE_LAYOUT_VERTICAL)
-	if checked, ok := item["checked"].(bool); !ok || !checked {
-		t.Fatalf("expected vertical layout checked by default, got %#v", item)
 	}
 
 	if item := findTopLevelMenuItem(t, items, ID_DEPLOY); item["text"] != "重新部署(&D)" {
@@ -962,6 +958,9 @@ func TestOnCommandSwitchesCandidateLayout(t *testing.T) {
 	if !backend.horizontal {
 		t.Fatal("expected backend _horizontal option to be true")
 	}
+	if len(resp.ChangeButton) == 0 || resp.ChangeButton[0].CommandID != ID_CANDIDATE_LAYOUT_VERTICAL {
+		t.Fatalf("expected layout button command to toggle back to vertical, got %#v", resp.ChangeButton)
+	}
 }
 
 func TestCandidatePageSizeCommandUpdatesCurrentSessionEvenIfDeployFails(t *testing.T) {
@@ -980,6 +979,30 @@ func TestCandidatePageSizeCommandUpdatesCurrentSessionEvenIfDeployFails(t *testi
 	}
 	if ime.candidatePageStart != 0 {
 		t.Fatalf("expected page start reset, got %d", ime.candidatePageStart)
+	}
+}
+
+func TestCandidatePageSizeCommandRestoresCompositionState(t *testing.T) {
+	t.Setenv("APPDATA", t.TempDir())
+	ime := newTestIME()
+	backend := ime.backend.(*testBackend)
+	backend.session = true
+	backend.composition = "ni"
+	backend.refreshCandidates()
+
+	resp := ime.onCommand(&pime.Request{
+		SeqNum: 44,
+		ID:     pime.FlexibleID{Int: ID_CANDIDATE_PAGE_SIZE_7, IsInt: true},
+	}, pime.NewResponse(44, true))
+
+	if resp.ReturnValue != 1 {
+		t.Fatalf("expected page size command to be handled, got %d", resp.ReturnValue)
+	}
+	if resp.CompositionString != "ni" {
+		t.Fatalf("expected composition restored after page size change, got %q", resp.CompositionString)
+	}
+	if len(resp.CandidateList) != 7 {
+		t.Fatalf("expected page size change to immediately show 7 candidates, got %#v", resp.CandidateList)
 	}
 }
 
@@ -1437,6 +1460,7 @@ func TestAddButtonsIncludesTopLevelMenuButtons(t *testing.T) {
 	ime.addButtons(resp)
 
 	want := map[string]bool{
+		"candidate-layout": false,
 		"reverse-lookup": false,
 		"user-lexicon":   false,
 		"help":           false,
@@ -1449,6 +1473,9 @@ func TestAddButtonsIncludesTopLevelMenuButtons(t *testing.T) {
 		if button.Type != "menu" {
 			t.Fatalf("expected %s button to be a menu, got %#v", button.ID, button)
 		}
+		if button.ID == "candidate-layout" && button.CommandID != ID_CANDIDATE_LAYOUT_HORIZONTAL {
+			t.Fatalf("expected candidate-layout button to toggle to horizontal by default, got %#v", button)
+		}
 	}
 	for id, found := range want {
 		if !found {
@@ -1457,8 +1484,20 @@ func TestAddButtonsIncludesTopLevelMenuButtons(t *testing.T) {
 	}
 }
 
-func TestOnMenuReturnsTopLevelReverseLookupAndUserLexiconMenus(t *testing.T) {
+func TestOnMenuReturnsTopLevelLayoutReverseLookupAndUserLexiconMenus(t *testing.T) {
 	ime := newTestIME()
+
+	layoutResp := ime.onMenu(&pime.Request{
+		SeqNum: 17,
+		ID:     pime.FlexibleID{String: "candidate-layout"},
+	}, pime.NewResponse(17, true))
+	layoutItems, ok := layoutResp.ReturnData.([]map[string]interface{})
+	if !ok || len(layoutItems) != 1 {
+		t.Fatalf("expected candidate layout menu items, got %#v", layoutResp.ReturnData)
+	}
+	if item := findMenuItem(t, layoutItems, ID_CANDIDATE_LAYOUT_HORIZONTAL); item["text"] != "竖排 → 横排" {
+		t.Fatalf("expected layout toggle item text, got %#v", item)
+	}
 
 	reverseResp := ime.onMenu(&pime.Request{
 		SeqNum: 18,
