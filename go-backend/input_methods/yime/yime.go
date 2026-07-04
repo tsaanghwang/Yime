@@ -1,6 +1,6 @@
-// RIME 输入法 Go 实现
+// 音元拼音输入法 Go 实现（基于 Rime 引擎）
 // 对齐 python/input_methods/rime/rime_ime.py
-package rime
+package yime
 
 import (
 	"bufio"
@@ -114,6 +114,14 @@ type rimeBackend interface {
 
 type backendCandidatePager interface {
 	UsesBackendCandidatePaging() bool
+}
+
+// backendRedeployer is implemented by backends that can perform a full RIME
+// redeployment to pick up on-disk configuration changes (for example an
+// updated menu/page_size). Backends that do not implement it fall back to
+// recreating the session.
+type backendRedeployer interface {
+	Redeploy() bool
 }
 
 type IME struct {
@@ -285,12 +293,7 @@ func (ime *IME) onCompositionTerminated(req *pime.Request, resp *pime.Response) 
 }
 
 func (ime *IME) onCommand(req *pime.Request, resp *pime.Response) *pime.Response {
-	commandID := req.ID.IntValue()
-	if commandID == 0 && req.Data != nil {
-		if raw, ok := req.Data["commandId"].(float64); ok {
-			commandID = int(raw)
-		}
-	}
+	commandID := commandIDFromRequest(req)
 	if commandID == 0 {
 		resp.ReturnValue = 0
 		return resp
@@ -314,7 +317,7 @@ func (ime *IME) onCommand(req *pime.Request, resp *pime.Response) *pime.Response
 	case ID_YIME_SHORTHAND:
 		ime.selectSchema("yime_shorthand")
 	case ID_DEPLOY:
-		log.Println("重新部署尚未实现")
+		ime.redeployBackend()
 	case ID_SYNC:
 		log.Println("同步用户数据尚未实现")
 	case ID_USER_DIR:
@@ -377,6 +380,38 @@ func (ime *IME) onCommand(req *pime.Request, resp *pime.Response) *pime.Response
 	return resp
 }
 
+func commandIDFromRequest(req *pime.Request) int {
+	if req == nil {
+		return 0
+	}
+	if commandID := req.ID.IntValue(); commandID != 0 {
+		return commandID
+	}
+	if req.Data == nil {
+		return 0
+	}
+	raw, ok := req.Data["commandId"]
+	if !ok {
+		return 0
+	}
+	switch value := raw.(type) {
+	case int:
+		return value
+	case int32:
+		return int(value)
+	case int64:
+		return int(value)
+	case float64:
+		return int(value)
+	case string:
+		commandID, err := strconv.Atoi(strings.TrimSpace(value))
+		if err == nil {
+			return commandID
+		}
+	}
+	return 0
+}
+
 func (ime *IME) setReverseLookupDisplayMode(mode string) {
 	switch mode {
 	case "default", "full", "hidden", "standard_pinyin", "yime_pinyin", "key_sequence":
@@ -425,9 +460,9 @@ func (ime *IME) Init(req *pime.Request) bool {
 	}
 
 	exeDir := filepath.Dir(exePath)
-	ime.iconDir = filepath.Join(exeDir, "input_methods", "rime", "icons")
-	// After installation this resolves to C:\Program Files (x86)\PIME\go-backend\input_methods\rime\data.
-	sharedDir := filepath.Join(exeDir, "input_methods", "rime", "data")
+	ime.iconDir = filepath.Join(exeDir, "input_methods", "yime", "icons")
+	// After installation this resolves to C:\Program Files (x86)\PIME\go-backend\input_methods\yime\data.
+	sharedDir := filepath.Join(exeDir, "input_methods", "yime", "data")
 
 	appData := os.Getenv("APPDATA")
 	if appData == "" {
@@ -1026,7 +1061,11 @@ func (ime *IME) prepareUserSchema(schemaID string) string {
 		log.Printf("读取方案文件失败 %s: %v", sharedSchemaPath, err)
 		return sharedSchemaPath
 	}
-	if err := os.WriteFile(userSchemaPath, content, 0o644); err != nil {
+	userSchemaContent := string(content)
+	if strings.HasPrefix(schemaID, "yime_") {
+		userSchemaContent = updateSchemaMenuPageSize(userSchemaContent, ime.normalizedCandidatePageSize())
+	}
+	if err := os.WriteFile(userSchemaPath, []byte(userSchemaContent), 0o644); err != nil {
 		log.Printf("写入用户方案文件失败 %s: %v", userSchemaPath, err)
 		return sharedSchemaPath
 	}
@@ -1098,10 +1137,10 @@ func (ime *IME) buildReverseLookupMenu() []map[string]interface{} {
 }
 
 func (ime *IME) buildCandidateWindowMenu() []map[string]interface{} {
-	return []map[string]interface{}{
-		{"text": "排列方式", "submenu": ime.buildCandidateLayoutMenu()},
-		{"text": "候选数量", "submenu": ime.buildCandidatePageSizeMenu()},
-	}
+	items := ime.buildCandidateLayoutMenu()
+	items = append(items, map[string]interface{}{"text": ""})
+	items = append(items, ime.buildCandidatePageSizeMenu()...)
+	return items
 }
 
 func (ime *IME) buildCandidateLayoutMenu() []map[string]interface{} {
@@ -1130,17 +1169,14 @@ func (ime *IME) buildCandidatePageSizeMenu() []map[string]interface{} {
 
 func (ime *IME) buildUserLexiconMenu() []map[string]interface{} {
 	return []map[string]interface{}{
-		{"id": ID_USER_LEXICON_ADD, "text": "打开用户词库"},
-		{"id": ID_USER_LEXICON_DELETE, "text": "删除当前词条", "enabled": false},
+		{"id": ID_USER_LEXICON_ADD, "text": "添加用户词条"},
+		{"id": ID_USER_LEXICON_DELETE, "text": "删除用户词条", "enabled": false},
 		{"text": ""},
-		{"text": "编辑与重载", "submenu": []map[string]interface{}{
-			{"id": ID_USER_LEXICON_EDIT, "text": "编辑用户词库"},
-			{"id": ID_USER_LEXICON_APPLY, "text": "应用用户词库"},
-		}},
-		{"text": "导入与导出", "submenu": []map[string]interface{}{
-			{"id": ID_USER_LEXICON_IMPORT, "text": "导入用户词库", "enabled": false},
-			{"id": ID_USER_LEXICON_EXPORT, "text": "打开用户词库文件夹"},
-		}},
+		{"id": ID_USER_LEXICON_EDIT, "text": "编辑用户词库"},
+		{"id": ID_USER_LEXICON_APPLY, "text": "应用用户词库"},
+		{"text": ""},
+		{"id": ID_USER_LEXICON_IMPORT, "text": "导入用户词库", "enabled": false},
+		{"id": ID_USER_LEXICON_EXPORT, "text": "导出用户词库"},
 	}
 }
 
@@ -1157,7 +1193,7 @@ func (ime *IME) sharedDir() string {
 	if err != nil {
 		return ""
 	}
-	return filepath.Join(filepath.Dir(exePath), "input_methods", "rime", "data")
+	return filepath.Join(filepath.Dir(exePath), "input_methods", "yime", "data")
 }
 
 func (ime *IME) userDir() string {
@@ -1173,7 +1209,7 @@ func (ime *IME) helpDir() string {
 	if err != nil {
 		return ""
 	}
-	return filepath.Join(filepath.Dir(exePath), "input_methods", "rime", "help")
+	return filepath.Join(filepath.Dir(exePath), "input_methods", "yime", "help")
 }
 
 func (ime *IME) userLexiconPath() string {
@@ -1429,17 +1465,87 @@ func (ime *IME) setCandidatePageSize(size int) error {
 	ime.candidatePageSize = size
 	ime.candidatePageStart = 0
 	if !deployDefaultCustomConfig(configPath) {
-		log.Printf("部署候选数量配置失败，当前会话仍使用 %d 个候选", size)
-		return nil
+		log.Printf("部署默认候选数量配置失败，继续更新当前方案: %s", configPath)
 	}
 	if ime.backend != nil {
 		schemaID := ime.backend.CurrentSchema()
 		if schemaID == "" {
 			schemaID = "yime_variable"
 		}
-		ime.selectSchema(schemaID)
+		if customPath, err := ime.writeSchemaCustomPageSize(schemaID, size); err != nil {
+			log.Printf("写入候选数量方案自定义配置失败: %v", err)
+		} else if customPath != "" && !deploySchemaCustomConfig(customPath) {
+			log.Printf("部署候选数量方案自定义配置失败: %s", customPath)
+		}
+		if schemaPath := ime.prepareUserSchema(schemaID); schemaPath != "" && !deploySchemaConfig(schemaPath) {
+			log.Printf("部署候选数量方案配置失败: %s", schemaPath)
+		}
+		ime.reloadBackendForSchema(schemaID)
 	}
 	return nil
+}
+
+// redeployBackend re-runs a full RIME deployment for the current schema. It is
+// used by the "重新部署" menu command to let users force configuration to be
+// recompiled and reloaded.
+func (ime *IME) redeployBackend() {
+	if ime.backend == nil {
+		return
+	}
+	schemaID := ime.backend.CurrentSchema()
+	if schemaID == "" {
+		schemaID = "yime_variable"
+	}
+	ime.reloadBackendForSchema(schemaID)
+}
+
+// reloadBackendForSchema makes freshly written RIME configuration take effect.
+// Native RIME caches compiled schema configs in memory, so per-file deploys are
+// not enough: a full redeploy is required to invalidate that cache. Backends
+// that support redeployment go through that path; others fall back to simply
+// recreating the session.
+func (ime *IME) reloadBackendForSchema(schemaID string) {
+	if ime.backend == nil {
+		return
+	}
+	if redeployer, ok := ime.backend.(backendRedeployer); ok {
+		if redeployer.Redeploy() {
+			if ime.backend.SelectSchema(schemaID) {
+				ime.backend.ClearComposition()
+			}
+			return
+		}
+		log.Println("Rime 重新部署失败，回退到重建会话")
+	}
+	ime.backend.DestroySession()
+	if ime.backend.EnsureSession() && ime.backend.SelectSchema(schemaID) {
+		ime.backend.ClearComposition()
+	}
+}
+
+func (ime *IME) writeSchemaCustomPageSize(schemaID string, size int) (string, error) {
+	if schemaID == "" {
+		return "", os.ErrNotExist
+	}
+	userDir := ime.userDir()
+	if userDir == "" {
+		return "", os.ErrNotExist
+	}
+	if err := os.MkdirAll(userDir, 0o755); err != nil {
+		return "", err
+	}
+	configPath := filepath.Join(userDir, schemaID+".custom.yaml")
+	content := ""
+	if data, err := os.ReadFile(configPath); err == nil {
+		content = string(data)
+	} else if !os.IsNotExist(err) {
+		return "", err
+	}
+	updated := updateDefaultCustomPageSize(content, size)
+	if err := os.WriteFile(configPath, []byte(updated), 0o644); err != nil {
+		return "", err
+	}
+	return configPath, nil
 }
 
 type userLexiconEntry struct {
@@ -1534,6 +1640,28 @@ func updateDefaultCustomPageSize(content string, size int) string {
 		}
 	}
 	return strings.TrimRight(content, "\r\n") + "\n\npatch:\n" + line + "\n"
+}
+
+func updateSchemaMenuPageSize(content string, size int) string {
+	line := "  page_size: " + strconv.Itoa(size)
+	if strings.TrimSpace(content) == "" {
+		return "menu:\n" + line + "\n"
+	}
+	lines := strings.Split(strings.ReplaceAll(content, "\r\n", "\n"), "\n")
+	for i, existing := range lines {
+		if strings.HasPrefix(strings.TrimSpace(existing), "page_size:") {
+			indent := existing[:len(existing)-len(strings.TrimLeft(existing, " \t"))]
+			lines[i] = indent + "page_size: " + strconv.Itoa(size)
+			return strings.TrimRight(strings.Join(lines, "\n"), "\n") + "\n"
+		}
+	}
+	for i, existing := range lines {
+		if strings.TrimSpace(existing) == "menu:" {
+			lines = append(lines[:i+1], append([]string{line}, lines[i+1:]...)...)
+			return strings.TrimRight(strings.Join(lines, "\n"), "\n") + "\n"
+		}
+	}
+	return strings.TrimRight(content, "\r\n") + "\n\nmenu:\n" + line + "\n"
 }
 
 func (ime *IME) openPath(path string) {

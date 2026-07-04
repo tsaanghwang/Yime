@@ -47,7 +47,7 @@ custom_phrase:
   initial_quality: 1
 
 menu:
-  page_size: 9
+  page_size: 5
 
 punctuator:
   import_preset: default

@@ -1,6 +1,6 @@
 //go:build windows
 
-package rime
+package yime
 
 import (
 	"os"
@@ -345,6 +345,81 @@ func typeASCII(t *testing.T, sessionID RimeSessionId, input string) {
 		if !ProcessKey(sessionID, int(key), 0) {
 			t.Fatalf("ProcessKey failed for %q", key)
 		}
+	}
+}
+
+func writeUserSchemaWithPageSize(t *testing.T, dataDir, userDir, schemaID string, size int) string {
+	t.Helper()
+	sharedPath := filepath.Join(dataDir, schemaID+".schema.yaml")
+	content, err := os.ReadFile(sharedPath)
+	if err != nil {
+		t.Fatalf("failed to read shared schema: %v", err)
+	}
+	if err := os.MkdirAll(userDir, 0o755); err != nil {
+		t.Fatalf("failed to create user Rime dir: %v", err)
+	}
+	userPath := filepath.Join(userDir, schemaID+".schema.yaml")
+	updated := updateSchemaMenuPageSize(string(content), size)
+	if err := os.WriteFile(userPath, []byte(updated), 0o644); err != nil {
+		t.Fatalf("failed to write user schema: %v", err)
+	}
+	return userPath
+}
+
+// TestRealRimeRedeployAppliesPageSize guards the fix for the "候选窗体" page size
+// setting: writing menu/page_size into the schema and calling RimeRedeploy must
+// invalidate librime's cached config so the new page size takes effect. A plain
+// per-file deploy without redeploy leaves the running engine on the stale value.
+func TestRealRimeRedeployAppliesPageSize(t *testing.T) {
+	dataDir := rimeRuntimeTestDataDir(t)
+	userDir := filepath.Join(t.TempDir(), "Rime")
+	writeRuntimeTestDefaultCustom(t, userDir)
+
+	if !RimeInit(dataDir, userDir, APP, APP_VERSION, false) {
+		t.Fatal("RimeInit failed")
+	}
+	defer Finalize()
+
+	baseline, ok := StartSession()
+	if !ok || baseline == 0 {
+		t.Fatal("StartSession failed")
+	}
+	if !SelectSchema(baseline, "yime_variable") {
+		t.Fatal("expected yime_variable schema to be selectable")
+	}
+	SetOption(baseline, "ascii_mode", false)
+	typeASCII(t, baseline, "yonsx")
+	if menu, gotMenu := GetMenu(baseline); gotMenu {
+		t.Logf("baseline page size=%d candidates=%d", menu.PageSize, len(menu.Candidates))
+	}
+	EndSession(baseline)
+
+	const wantPageSize = 8
+	userSchemaPath := writeUserSchemaWithPageSize(t, dataDir, userDir, "yime_variable", wantPageSize)
+	if !deploySchemaConfig(userSchemaPath) {
+		t.Fatalf("expected user schema deploy to succeed: %s", userSchemaPath)
+	}
+	if !RimeRedeploy() {
+		t.Fatal("RimeRedeploy failed")
+	}
+
+	sessionID, ok := StartSession()
+	if !ok || sessionID == 0 {
+		t.Fatal("StartSession after redeploy failed")
+	}
+	defer EndSession(sessionID)
+	if !SelectSchema(sessionID, "yime_variable") {
+		t.Fatal("expected yime_variable schema to be selectable after redeploy")
+	}
+	SetOption(sessionID, "ascii_mode", false)
+	typeASCII(t, sessionID, "yonsx")
+	menu, gotMenu := GetMenu(sessionID)
+	if !gotMenu {
+		t.Fatal("expected menu after redeploy")
+	}
+	t.Logf("after redeploy page size=%d candidates=%d", menu.PageSize, len(menu.Candidates))
+	if menu.PageSize != wantPageSize {
+		t.Fatalf("expected page size %d after redeploy, got %d", wantPageSize, menu.PageSize)
 	}
 }
 

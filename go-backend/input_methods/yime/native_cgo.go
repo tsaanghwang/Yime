@@ -1,6 +1,6 @@
 //go:build windows
 
-package rime
+package yime
 
 import (
 	"log"
@@ -71,7 +71,10 @@ func (b *nativeBackend) SelectCandidate(index int) bool {
 }
 
 func (b *nativeBackend) UsesBackendCandidatePaging() bool {
-	return false
+	// Native Rime owns paging for real sessions. Do not switch this to Go-side
+	// paging to force candidate counts; doing so can destabilize activation and
+	// language-bar/menu click paths in host applications.
+	return true
 }
 
 func (b *nativeBackend) State() rimeState {
@@ -134,4 +137,21 @@ func (b *nativeBackend) CurrentSchema() string {
 		return ""
 	}
 	return schemaID
+}
+
+// Redeploy performs a full RIME redeployment so that on-disk configuration
+// changes (such as an updated menu/page_size) invalidate librime's config
+// cache and take effect. RimeRedeploy finalizes the service and destroys all
+// sessions, so the current session is torn down first and a fresh one is
+// created afterwards.
+func (b *nativeBackend) Redeploy() bool {
+	if !rimeInitOK {
+		return false
+	}
+	b.DestroySession()
+	if !RimeRedeploy() {
+		log.Println("RIME 重新部署失败")
+		return false
+	}
+	return b.EnsureSession()
 }

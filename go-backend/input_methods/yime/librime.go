@@ -2,7 +2,7 @@
 
 // RIME Windows DLL 动态加载封装
 // 参考 python/librime.py
-package rime
+package yime
 
 import (
 	"fmt"
@@ -460,6 +460,17 @@ func GetVersion() string {
 	return ""
 }
 
+var (
+	rimeDeployMu    sync.Mutex
+	rimeDeployState struct {
+		traits  RimeTraits
+		datadir string
+		userdir string
+		appname string
+		ready   bool
+	}
+)
+
 func RimeInit(datadir, userdir, appname, appver string, fullcheck bool) bool {
 	if err := os.MkdirAll(userdir, 0700); err != nil {
 		log.Printf("创建用户目录失败: %v", err)
@@ -483,6 +494,37 @@ func RimeInit(datadir, userdir, appname, appver string, fullcheck bool) bool {
 		DistributionVersion:  appver,
 		AppName:              fmt.Sprintf("Rime.%s", appname),
 	}
+
+	rimeDeployMu.Lock()
+	rimeDeployState.traits = traits
+	rimeDeployState.datadir = datadir
+	rimeDeployState.userdir = userdir
+	rimeDeployState.appname = appname
+	rimeDeployState.ready = true
+	rimeDeployMu.Unlock()
+
+	return rimeDeploy(traits, datadir, userdir, appname, fullcheck)
+}
+
+// RimeRedeploy tears down the running RIME service and re-runs a full
+// deployment. This invalidates librime's in-memory config cache so that
+// on-disk configuration changes (for example an updated menu/page_size)
+// actually take effect for subsequently created sessions. It reuses the
+// traits captured during RimeInit. All existing sessions are invalidated by
+// RimeFinalize, so callers must recreate their session afterwards.
+func RimeRedeploy() bool {
+	rimeDeployMu.Lock()
+	state := rimeDeployState
+	rimeDeployMu.Unlock()
+	if !state.ready {
+		log.Println("RIME 尚未初始化，无法重新部署")
+		return false
+	}
+	Finalize()
+	return rimeDeploy(state.traits, state.datadir, state.userdir, state.appname, true)
+}
+
+func rimeDeploy(traits RimeTraits, datadir, userdir, appname string, fullcheck bool) bool {
 	if !Init(traits) {
 		log.Println("RIME setup 失败")
 		return false

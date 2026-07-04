@@ -1,8 +1,9 @@
-package rime
+package yime
 
 import (
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"testing"
 
@@ -16,6 +17,7 @@ type testDictEntry struct {
 
 type testBackend struct {
 	session      bool
+	destroyCount int
 	composition  string
 	candidates   []candidateItem
 	commitString string
@@ -43,6 +45,25 @@ func (b *backendPagingTestBackend) ProcessKey(req *pime.Request, translatedKeyCo
 	return b.testBackend.ProcessKey(req, translatedKeyCode, modifiers)
 }
 
+// redeployTestBackend models a backend that supports full RIME redeployment,
+// mirroring nativeBackend.Redeploy: it tears down the session and recreates it
+// rather than requiring the caller to issue a separate DestroySession.
+type redeployTestBackend struct {
+	*testBackend
+	redeployCount  int
+	redeployResult bool
+}
+
+func (b *redeployTestBackend) Redeploy() bool {
+	b.redeployCount++
+	if !b.redeployResult {
+		return false
+	}
+	b.DestroySession()
+	b.EnsureSession()
+	return true
+}
+
 func newTestBackend() *testBackend {
 	return &testBackend{schemaID: "yime_variable"}
 }
@@ -57,6 +78,7 @@ func (b *testBackend) EnsureSession() bool {
 }
 
 func (b *testBackend) DestroySession() {
+	b.destroyCount++
 	b.session = false
 	b.ClearComposition()
 }
@@ -842,18 +864,18 @@ func TestOnMenuReturnsSettingsMenu(t *testing.T) {
 	if enabled, ok := modeMenu[2]["enabled"].(bool); !ok || enabled {
 		t.Fatalf("expected shorthand mode disabled without bundled schema, got %#v", modeMenu[2])
 	}
-
 	candidateWindowMenu := findSubmenuItem(t, items, "候选窗体")
-	if len(candidateWindowMenu) != 2 {
-		t.Fatalf("expected candidate window menu with layout/page size submenus, got %#v", candidateWindowMenu)
+	if hasSubmenuItem(candidateWindowMenu, "排列方式") || hasSubmenuItem(candidateWindowMenu, "候选数量") {
+		t.Fatalf("expected candidate window settings to stay one submenu level under settings, got %#v", candidateWindowMenu)
 	}
-	layoutMenu := findSubmenuItem(t, candidateWindowMenu, "排列方式")
-	if len(layoutMenu) != 2 {
-		t.Fatalf("expected candidate layout menu items, got %#v", layoutMenu)
+	if len(candidateWindowMenu) != 8 {
+		t.Fatalf("expected direct layout items, separator, and page size items, got %#v", candidateWindowMenu)
 	}
-	pageSizeMenu := findSubmenuItem(t, candidateWindowMenu, "候选数量")
-	if len(pageSizeMenu) != 5 {
-		t.Fatalf("expected page size 5-9 menu items, got %#v", pageSizeMenu)
+	layoutMenu := candidateWindowMenu[:2]
+	separator := candidateWindowMenu[2]
+	pageSizeMenu := candidateWindowMenu[3:]
+	if text, ok := separator["text"].(string); !ok || text != "" {
+		t.Fatalf("expected separator between layout and page size items, got %#v", separator)
 	}
 	item := findMenuItem(t, pageSizeMenu, ID_CANDIDATE_PAGE_SIZE_5)
 	if checked, ok := item["checked"].(bool); !ok || !checked {
@@ -871,6 +893,36 @@ func TestOnMenuReturnsSettingsMenu(t *testing.T) {
 	item = findMenuItem(t, layoutMenu, ID_CANDIDATE_LAYOUT_VERTICAL)
 	if checked, ok := item["checked"].(bool); !ok || !checked {
 		t.Fatalf("expected vertical layout checked by default, got %#v", item)
+	}
+
+	if item := findTopLevelMenuItem(t, items, ID_DEPLOY); item["text"] != "重新部署(&D)" {
+		t.Fatalf("expected deploy command to remain in settings root, got %#v", item)
+	}
+	if item := findTopLevelMenuItem(t, items, ID_SYNC); item["text"] != "同步(&S)" {
+		t.Fatalf("expected sync command to remain in settings root, got %#v", item)
+	}
+	openFolderMenu := findSubmenuItem(t, items, "打开文件夹(&O)")
+	if len(openFolderMenu) != 4 {
+		t.Fatalf("expected open-folder submenu to remain in settings root, got %#v", openFolderMenu)
+	}
+}
+
+func TestOnCommandAcceptsDataCommandIDForCandidatePageSize(t *testing.T) {
+	t.Setenv("APPDATA", t.TempDir())
+	ime := newTestIME()
+
+	resp := ime.onCommand(&pime.Request{
+		SeqNum: 28,
+		Data: map[string]interface{}{
+			"commandId": strconv.Itoa(ID_CANDIDATE_PAGE_SIZE_7),
+		},
+	}, pime.NewResponse(28, true))
+
+	if resp.ReturnValue != 1 {
+		t.Fatalf("expected string commandId page size command to be handled, got %d", resp.ReturnValue)
+	}
+	if ime.candidatePageSize != 7 {
+		t.Fatalf("expected current session page size 7, got %d", ime.candidatePageSize)
 	}
 }
 
@@ -930,6 +982,137 @@ func TestCandidatePageSizeCommandUpdatesCurrentSessionEvenIfDeployFails(t *testi
 		t.Fatalf("expected page start reset, got %d", ime.candidatePageStart)
 	}
 }
+
+func TestCandidatePageSizeCommandUpdatesCurrentUserSchema(t *testing.T) {
+	t.Setenv("APPDATA", t.TempDir())
+	ime := newTestIME()
+	backend := ime.backend.(*testBackend)
+	backend.session = true
+	sharedDir := ime.sharedDir()
+	if err := os.MkdirAll(sharedDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	sharedSchemaPath := filepath.Join(sharedDir, "yime_variable.schema.yaml")
+	if err := os.WriteFile(sharedSchemaPath, []byte("schema:\n  schema_id: yime_variable\n\nmenu:\n  page_size: 9\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	resp := ime.onCommand(&pime.Request{
+		SeqNum: 29,
+		ID:     pime.FlexibleID{Int: ID_CANDIDATE_PAGE_SIZE_7, IsInt: true},
+	}, pime.NewResponse(29, true))
+
+	if resp.ReturnValue != 1 {
+		t.Fatalf("expected page size command to be handled, got %d", resp.ReturnValue)
+	}
+	userSchemaPath := filepath.Join(ime.userDir(), "yime_variable.schema.yaml")
+	data, err := os.ReadFile(userSchemaPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(string(data), "  page_size: 7\n") {
+		t.Fatalf("expected current user schema page size 7, got %q", string(data))
+	}
+	customData, err := os.ReadFile(filepath.Join(ime.userDir(), "yime_variable.custom.yaml"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(string(customData), "  menu/page_size: 7\n") {
+		t.Fatalf("expected current schema custom page size 7, got %q", string(customData))
+	}
+	if backend.destroyCount != 1 || !backend.session {
+		t.Fatalf("expected current Rime session to reload after page size change, destroyCount=%d session=%t", backend.destroyCount, backend.session)
+	}
+}
+
+func TestCandidatePageSizeUsesRedeployWhenSupported(t *testing.T) {
+	t.Setenv("APPDATA", t.TempDir())
+	ime := newTestIME()
+	backend := &redeployTestBackend{testBackend: newTestBackend(), redeployResult: true}
+	backend.session = true
+	ime.backend = backend
+
+	resp := ime.onCommand(&pime.Request{
+		SeqNum: 41,
+		ID:     pime.FlexibleID{Int: ID_CANDIDATE_PAGE_SIZE_7, IsInt: true},
+	}, pime.NewResponse(41, true))
+
+	if resp.ReturnValue != 1 {
+		t.Fatalf("expected page size command to be handled, got %d", resp.ReturnValue)
+	}
+	if backend.redeployCount != 1 {
+		t.Fatalf("expected exactly one redeploy for the page size change, got %d", backend.redeployCount)
+	}
+	// Redeploy owns its own session teardown; the caller must not issue an
+	// additional DestroySession, so the session is torn down exactly once.
+	if backend.destroyCount != 1 {
+		t.Fatalf("expected session torn down exactly once via redeploy, got %d", backend.destroyCount)
+	}
+	if !backend.session {
+		t.Fatal("expected a fresh session after redeploy")
+	}
+	if backend.schemaID != "yime_variable" {
+		t.Fatalf("expected schema to be reselected after redeploy, got %q", backend.schemaID)
+	}
+	if ime.candidatePageSize != 7 {
+		t.Fatalf("expected current session page size 7, got %d", ime.candidatePageSize)
+	}
+}
+
+func TestCandidatePageSizeFallsBackWhenRedeployFails(t *testing.T) {
+	t.Setenv("APPDATA", t.TempDir())
+	ime := newTestIME()
+	backend := &redeployTestBackend{testBackend: newTestBackend(), redeployResult: false}
+	backend.session = true
+	ime.backend = backend
+
+	resp := ime.onCommand(&pime.Request{
+		SeqNum: 42,
+		ID:     pime.FlexibleID{Int: ID_CANDIDATE_PAGE_SIZE_9, IsInt: true},
+	}, pime.NewResponse(42, true))
+
+	if resp.ReturnValue != 1 {
+		t.Fatalf("expected page size command to be handled, got %d", resp.ReturnValue)
+	}
+	if backend.redeployCount != 1 {
+		t.Fatalf("expected one redeploy attempt, got %d", backend.redeployCount)
+	}
+	// When redeploy fails we fall back to recreating the session directly.
+	if backend.destroyCount != 1 {
+		t.Fatalf("expected fallback session recreate, destroyCount=%d", backend.destroyCount)
+	}
+	if !backend.session {
+		t.Fatal("expected session recreated after fallback")
+	}
+	if ime.candidatePageSize != 9 {
+		t.Fatalf("expected current session page size 9, got %d", ime.candidatePageSize)
+	}
+}
+
+func TestDeployCommandRedeploysCurrentSchema(t *testing.T) {
+	t.Setenv("APPDATA", t.TempDir())
+	ime := newTestIME()
+	backend := &redeployTestBackend{testBackend: newTestBackend(), redeployResult: true}
+	backend.session = true
+	backend.schemaID = "yime_full"
+	ime.backend = backend
+
+	resp := ime.onCommand(&pime.Request{
+		SeqNum: 43,
+		ID:     pime.FlexibleID{Int: ID_DEPLOY, IsInt: true},
+	}, pime.NewResponse(43, true))
+
+	if resp.ReturnValue != 1 {
+		t.Fatalf("expected deploy command to be handled, got %d", resp.ReturnValue)
+	}
+	if backend.redeployCount != 1 {
+		t.Fatalf("expected deploy command to trigger one redeploy, got %d", backend.redeployCount)
+	}
+	if backend.schemaID != "yime_full" {
+		t.Fatalf("expected current schema preserved across redeploy, got %q", backend.schemaID)
+	}
+}
+
 func TestCandidatePageSizeLimitsVisibleCandidates(t *testing.T) {
 	ime := newTestIME()
 	ime.candidatePageSize = 5
@@ -1053,6 +1236,18 @@ func TestUpdateDefaultCustomPageSize(t *testing.T) {
 	replaced := updateDefaultCustomPageSize("patch:\n  menu/page_size: 5\n", 9)
 	if strings.Count(replaced, "menu/page_size:") != 1 || !strings.Contains(replaced, "  menu/page_size: 9\n") {
 		t.Fatalf("expected page size replacement, got %q", replaced)
+	}
+}
+
+func TestUpdateSchemaMenuPageSize(t *testing.T) {
+	replaced := updateSchemaMenuPageSize("schema:\n  schema_id: yime_variable\n\nmenu:\n  page_size: 9\n", 6)
+	if strings.Count(replaced, "page_size:") != 1 || !strings.Contains(replaced, "  page_size: 6\n") {
+		t.Fatalf("expected schema page size replacement, got %q", replaced)
+	}
+
+	inserted := updateSchemaMenuPageSize("schema:\n  schema_id: yime_variable\n\nmenu:\n", 8)
+	if !strings.Contains(inserted, "menu:\n  page_size: 8\n") {
+		t.Fatalf("expected schema page size inserted under menu, got %q", inserted)
 	}
 }
 
@@ -1191,8 +1386,25 @@ func TestBuildMenuIncludesYimeUserLexiconMenu(t *testing.T) {
 	ime := newTestIME()
 
 	userLexiconMenu := ime.buildUserLexiconMenu()
-	if len(userLexiconMenu) == 0 {
-		t.Fatal("expected user lexicon submenu")
+	if len(userLexiconMenu) != 8 {
+		t.Fatalf("expected flat user lexicon menu, got %#v", userLexiconMenu)
+	}
+	if hasSubmenuItem(userLexiconMenu, "编辑与重载") || hasSubmenuItem(userLexiconMenu, "导入与导出") {
+		t.Fatalf("expected user lexicon actions to stay at top menu level, got %#v", userLexiconMenu)
+	}
+	wantText := map[int]string{
+		ID_USER_LEXICON_ADD:    "添加用户词条",
+		ID_USER_LEXICON_DELETE: "删除用户词条",
+		ID_USER_LEXICON_EDIT:   "编辑用户词库",
+		ID_USER_LEXICON_APPLY:  "应用用户词库",
+		ID_USER_LEXICON_IMPORT: "导入用户词库",
+		ID_USER_LEXICON_EXPORT: "导出用户词库",
+	}
+	for id, text := range wantText {
+		item := findTopLevelMenuItem(t, userLexiconMenu, id)
+		if item["text"] != text {
+			t.Fatalf("expected user lexicon item %d text %q, got %#v", id, text, item)
+		}
 	}
 
 	for _, id := range []int{
@@ -1268,8 +1480,8 @@ func TestOnMenuReturnsTopLevelReverseLookupAndUserLexiconMenus(t *testing.T) {
 	if !ok || len(userItems) == 0 {
 		t.Fatalf("expected user lexicon menu items, got %#v", userResp.ReturnData)
 	}
-	if item := findMenuItem(t, userItems, ID_USER_LEXICON_ADD); !strings.Contains(item["text"].(string), "用户词库") {
-		t.Fatalf("expected add phrase item to mention numeric-tone pinyin, got %#v", item)
+	if item := findTopLevelMenuItem(t, userItems, ID_USER_LEXICON_ADD); item["text"] != "添加用户词条" {
+		t.Fatalf("expected add phrase item text, got %#v", item)
 	}
 }
 
@@ -1308,6 +1520,16 @@ func findSubmenuItem(t *testing.T, items []map[string]interface{}, text string) 
 	return nil
 }
 
+func hasSubmenuItem(items []map[string]interface{}, text string) bool {
+	for _, item := range items {
+		if item["text"] == text {
+			_, ok := item["submenu"].([]map[string]interface{})
+			return ok
+		}
+	}
+	return false
+}
+
 func findMenuItem(t *testing.T, items []map[string]interface{}, id int) map[string]interface{} {
 	t.Helper()
 	for _, item := range items {
@@ -1321,6 +1543,17 @@ func findMenuItem(t *testing.T, items []map[string]interface{}, id int) map[stri
 		}
 	}
 	t.Fatalf("expected menu item id %d in %#v", id, items)
+	return nil
+}
+
+func findTopLevelMenuItem(t *testing.T, items []map[string]interface{}, id int) map[string]interface{} {
+	t.Helper()
+	for _, item := range items {
+		if gotID, ok := item["id"].(int); ok && gotID == id {
+			return item
+		}
+	}
+	t.Fatalf("expected top-level menu item id %d in %#v", id, items)
 	return nil
 }
 
