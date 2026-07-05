@@ -868,16 +868,9 @@ func TestOnMenuReturnsSettingsMenu(t *testing.T) {
 	if enabled, ok := modeMenu[2]["enabled"].(bool); !ok || enabled {
 		t.Fatalf("expected shorthand mode disabled without bundled schema, got %#v", modeMenu[2])
 	}
-	layoutMenu := findSubmenuItem(t, items, "排列方式")
-	if hasSubmenuItem(layoutMenu, "候选项数") {
-		t.Fatalf("expected layout submenu to stay flat, got %#v", layoutMenu)
-	}
-	if len(layoutMenu) != 1 {
-		t.Fatalf("expected one direct layout toggle item, got %#v", layoutMenu)
-	}
-	item := findMenuItem(t, layoutMenu, ID_CANDIDATE_LAYOUT_TOGGLE)
+	item := findTopLevelMenuItem(t, items, ID_CANDIDATE_LAYOUT_TOGGLE)
 	if text, ok := item["text"].(string); !ok || text != "竖排 → 横排" {
-		t.Fatalf("expected vertical-to-horizontal toggle text, got %#v", item)
+		t.Fatalf("expected top-level vertical-to-horizontal toggle text, got %#v", item)
 	}
 	pageSizeMenu := findSubmenuItem(t, items, "候选项数")
 	if hasSubmenuItem(pageSizeMenu, "排列方式") {
@@ -1083,7 +1076,7 @@ func TestCandidatePageSizeCommandUpdatesCurrentUserSchema(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !strings.Contains(string(customData), "  menu/page_size: 7\n") {
+	if got := string(customData); !strings.Contains(got, "  menu/page_size: 7\n") && !strings.Contains(got, "  \"menu/page_size\": 7\n") {
 		t.Fatalf("expected current schema custom page size 7, got %q", string(customData))
 	}
 	if backend.destroyCount != 1 || !backend.session {
@@ -1258,18 +1251,25 @@ func TestOutOfRangeCandidateShortcutIsConsumedOnShortPage(t *testing.T) {
 
 func TestUpdateDefaultCustomPageSize(t *testing.T) {
 	created := updateDefaultCustomPageSize("", 7)
-	if created != "patch:\n  menu/page_size: 7\n" {
+	if created != "patch:\n  \"menu/page_size\": 7\n" {
 		t.Fatalf("expected new default.custom.yaml content, got %q", created)
 	}
 
 	updated := updateDefaultCustomPageSize("patch:\n  schema_list:\n    - schema: yime_variable\n", 8)
-	if !strings.Contains(updated, "  menu/page_size: 8\n") {
+	if !strings.Contains(updated, "  \"menu/page_size\": 8\n") {
 		t.Fatalf("expected page size inserted under patch, got %q", updated)
 	}
 
 	replaced := updateDefaultCustomPageSize("patch:\n  menu/page_size: 5\n", 9)
-	if strings.Count(replaced, "menu/page_size:") != 1 || !strings.Contains(replaced, "  menu/page_size: 9\n") {
+	if strings.Count(replaced, "menu/page_size") != 1 || !strings.Contains(replaced, "  \"menu/page_size\": 9\n") {
 		t.Fatalf("expected page size replacement, got %q", replaced)
+	}
+}
+
+func TestUpdateDefaultCustomPageSizeReplacesQuotedKey(t *testing.T) {
+	replaced := updateDefaultCustomPageSize("patch:\n  \"menu/page_size\": 5\n", 6)
+	if strings.Count(replaced, "menu/page_size") != 1 || !strings.Contains(replaced, "  \"menu/page_size\": 6\n") {
+		t.Fatalf("expected quoted page size replacement, got %q", replaced)
 	}
 }
 
@@ -1297,6 +1297,13 @@ func TestReadPageSizeFromCustomConfig(t *testing.T) {
 	}
 	if got := readPageSizeFromCustomConfig(path); got != 7 {
 		t.Fatalf("expected page size 7, got %d", got)
+	}
+
+	if err := os.WriteFile(path, []byte("patch:\n  \"menu/page_size\": 8\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if got := readPageSizeFromCustomConfig(path); got != 8 {
+		t.Fatalf("expected quoted page size 8, got %d", got)
 	}
 }
 
@@ -1525,10 +1532,34 @@ func TestToolHubScriptShowsDialogInsideTopLevelTry(t *testing.T) {
 }
 
 func TestStandaloneSettingsAndDiagnosticsScriptsProvideRealWindowShells(t *testing.T) {
-	if !strings.Contains(settingsToolScript, "Settings-side standalone tool shell") {
-		t.Fatalf("expected settings tool script shell copy")
+	if !strings.Contains(settingsToolScript, "Yime settings panel") {
+		t.Fatalf("expected settings tool script panel copy")
 	}
-	if !strings.Contains(settingsToolScript, "Open settings guide") {
+	if !strings.Contains(settingsToolScript, "Apply-Settings") {
+		t.Fatalf("expected settings tool script to apply settings")
+	}
+	if !strings.Contains(settingsToolScript, "Apply and rebuild") {
+		t.Fatalf("expected settings tool script to expose an apply-and-rebuild action")
+	}
+	if !strings.Contains(settingsToolScript, "Invoke-RimeBuild") {
+		t.Fatalf("expected settings tool script to rebuild runtime config when requested")
+	}
+	if !strings.Contains(settingsToolScript, "Write-StandaloneSettingsState") {
+		t.Fatalf("expected settings tool script to persist standalone UI settings")
+	}
+	if !strings.Contains(settingsToolScript, "Read-ConfiguredSchema") || !strings.Contains(settingsToolScript, "Read-ConfiguredPageSize") {
+		t.Fatalf("expected settings tool script to read current schema and page-size config")
+	}
+	if !strings.Contains(settingsToolScript, "previously_selected_schema") || !strings.Contains(settingsToolScript, "\"menu/page_size\"") {
+		t.Fatalf("expected settings tool script to update the same schema and page-size files Yime already uses")
+	}
+	if !strings.Contains(settingsToolScript, "reverse_lookup_display_mode") || !strings.Contains(settingsToolScript, "candidate_layout") {
+		t.Fatalf("expected settings tool script to persist reverse-lookup and layout preferences")
+	}
+	if !strings.Contains(settingsToolScript, "Switch back to Yime") {
+		t.Fatalf("expected settings tool script to explain when external settings take effect")
+	}
+	if !strings.Contains(settingsToolScript, "Settings guide") || !strings.Contains(settingsToolScript, "Main help") {
 		t.Fatalf("expected settings tool script to expose guide entry points")
 	}
 	if !strings.Contains(diagnosticsToolScript, "Yime diagnostics panel") {
@@ -1545,6 +1576,15 @@ func TestStandaloneSettingsAndDiagnosticsScriptsProvideRealWindowShells(t *testi
 	}
 	if !strings.Contains(diagnosticsToolScript, "Get-RimeUserFilesSummary") {
 		t.Fatalf("expected diagnostics tool script to inspect key user Rime files")
+	}
+	if !strings.Contains(diagnosticsToolScript, "Get-SettingsChainSummary") {
+		t.Fatalf("expected diagnostics tool script to expose a dedicated settings-chain summary")
+	}
+	if !strings.Contains(diagnosticsToolScript, "Read-SettingsConfiguredSchema") || !strings.Contains(diagnosticsToolScript, "Read-SettingsConfiguredPageSize") {
+		t.Fatalf("expected diagnostics tool script to parse configured schema and page size from the written settings files")
+	}
+	if !strings.Contains(diagnosticsToolScript, "Read-StandaloneSettingsSnapshot") {
+		t.Fatalf("expected diagnostics tool script to parse standalone settings state JSON")
 	}
 	if !strings.Contains(diagnosticsToolScript, "Copy structured report") {
 		t.Fatalf("expected diagnostics tool script to support copying its structured report")
@@ -1636,7 +1676,7 @@ func TestStandaloneSettingsAndDiagnosticsScriptsProvideRealWindowShells(t *testi
 	if !strings.Contains(diagnosticsToolScript, "updatingPresetSelection") {
 		t.Fatalf("expected diagnostics tool script to guard preset synchronization from recursive updates")
 	}
-	if !strings.Contains(diagnosticsToolScript, "Save preset") {
+	if !strings.Contains(diagnosticsToolScript, "Save") {
 		t.Fatalf("expected diagnostics tool script to expose a save-preset action")
 	}
 	if !strings.Contains(diagnosticsToolScript, "Rename") {
@@ -1750,6 +1790,9 @@ func TestStandaloneSettingsAndDiagnosticsScriptsProvideRealWindowShells(t *testi
 	if !strings.Contains(diagnosticsToolScript, "== Findings ==") {
 		t.Fatalf("expected diagnostics tool script to emit a findings section")
 	}
+	if !strings.Contains(diagnosticsToolScript, "== Settings chain ==") {
+		t.Fatalf("expected diagnostics tool script to emit a dedicated settings-chain section")
+	}
 	if !strings.Contains(diagnosticsToolScript, "Get-DiagnosticFindings") {
 		t.Fatalf("expected diagnostics tool script to derive troubleshooting findings")
 	}
@@ -1812,6 +1855,18 @@ func TestStandaloneSettingsAndDiagnosticsScriptsProvideRealWindowShells(t *testi
 	}
 	if !strings.Contains(diagnosticsToolScript, "安装里的二进制在，但 PIMELauncher 和 server 都没在跑") {
 		t.Fatalf("expected diagnostics tool script to encode restart-needed guidance")
+	}
+	if !strings.Contains(diagnosticsToolScript, "tool-launcher.exe") {
+		t.Fatalf("expected diagnostics tool script to inspect standalone tool launcher installation")
+	}
+	if !strings.Contains(diagnosticsToolScript, "yime_settings_state.json") {
+		t.Fatalf("expected diagnostics tool script to inspect standalone settings state file")
+	}
+	if !strings.Contains(diagnosticsToolScript, "previously_selected_schema") || !strings.Contains(diagnosticsToolScript, "reverse_lookup_display_mode") || !strings.Contains(diagnosticsToolScript, "candidate_layout") {
+		t.Fatalf("expected diagnostics tool script to surface key settings-chain values")
+	}
+	if !strings.Contains(diagnosticsToolScript, "Apply writes files first; Yime resyncs them on the next onActivate") {
+		t.Fatalf("expected diagnostics tool script to explain the activation-based settings sync boundary")
 	}
 }
 
@@ -2426,5 +2481,83 @@ func TestHandleRequestOnKeyboardStatusChangedReturnsHandled(t *testing.T) {
 	}
 	if resp.ReturnValue != 1 {
 		t.Fatalf("expected onKeyboardStatusChanged to return 1, got %d", resp.ReturnValue)
+	}
+}
+
+func TestReadStandaloneSettingsStateNormalizesValues(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "yime_settings_state.json")
+	payload := `{"reverse_lookup_display_mode":"yime_pinyin","candidate_layout":"horizontal"}`
+	if err := os.WriteFile(path, []byte(payload), 0o644); err != nil {
+		t.Fatalf("write settings state failed: %v", err)
+	}
+
+	state := readStandaloneSettingsState(path)
+	if state.ReverseLookupDisplayMode != "yime_pinyin" {
+		t.Fatalf("expected yime_pinyin reverse lookup mode, got %q", state.ReverseLookupDisplayMode)
+	}
+	if state.CandidateLayout != "horizontal" {
+		t.Fatalf("expected horizontal layout, got %q", state.CandidateLayout)
+	}
+
+	if got := readStandaloneSettingsState(filepath.Join(t.TempDir(), "missing.json")); got.ReverseLookupDisplayMode != "" || got.CandidateLayout != "" {
+		t.Fatalf("expected zero state for missing file, got %#v", got)
+	}
+}
+
+func TestReadSelectedSchemaFromUserConfig(t *testing.T) {
+	userDir := t.TempDir()
+	if err := os.WriteFile(filepath.Join(userDir, "user.yaml"), []byte("var:\n  previously_selected_schema: yime_full\n"), 0o644); err != nil {
+		t.Fatalf("write user.yaml failed: %v", err)
+	}
+	if got := readSelectedSchemaFromUserConfig(userDir); got != "yime_full" {
+		t.Fatalf("expected yime_full from user.yaml, got %q", got)
+	}
+
+	if err := os.Remove(filepath.Join(userDir, "user.yaml")); err != nil {
+		t.Fatalf("remove user.yaml failed: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(userDir, "default.custom.yaml"), []byte("patch:\n  schema_list:\n    - schema: yime_shorthand\n"), 0o644); err != nil {
+		t.Fatalf("write default.custom.yaml failed: %v", err)
+	}
+	if got := readSelectedSchemaFromUserConfig(userDir); got != "yime_shorthand" {
+		t.Fatalf("expected yime_shorthand from default.custom.yaml, got %q", got)
+	}
+}
+
+func TestOnActivateSyncsStandaloneSettingsState(t *testing.T) {
+	userDir := t.TempDir()
+	ime := newTestIME()
+	backend := ime.backend.(*testBackend)
+	backend.session = true
+	backend.schemaID = "yime_variable"
+	ime.style.CandidatePerRow = verticalCandidatesPerRow
+	ime.reverseLookupDisplayMode = "key_sequence"
+	t.Setenv("APPDATA", userDir)
+
+	statePath := filepath.Join(userDir, APP, "Rime", "yime_settings_state.json")
+	if err := os.MkdirAll(filepath.Dir(statePath), 0o755); err != nil {
+		t.Fatalf("mkdir settings state dir failed: %v", err)
+	}
+	payload := `{"reverse_lookup_display_mode":"standard_pinyin","candidate_layout":"horizontal"}`
+	if err := os.WriteFile(statePath, []byte(payload), 0o644); err != nil {
+		t.Fatalf("write settings state failed: %v", err)
+	}
+
+	resp := ime.HandleRequest(&pime.Request{
+		SeqNum: 23,
+		Method: "onActivate",
+	})
+
+	if !resp.Success || resp.ReturnValue != 1 {
+		t.Fatalf("expected activate response handled, got %#v", resp)
+	}
+	if ime.reverseLookupDisplayMode != "standard_pinyin" {
+		t.Fatalf("expected standard_pinyin reverse lookup mode, got %q", ime.reverseLookupDisplayMode)
+	}
+	if ime.style.CandidatePerRow != horizontalCandidatesPerRow {
+		t.Fatalf("expected horizontal candidate layout, got %d", ime.style.CandidatePerRow)
+	}
+	if !backend.horizontal {
+		t.Fatal("expected backend horizontal option set from standalone settings")
 	}
 }

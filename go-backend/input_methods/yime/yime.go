@@ -227,6 +227,7 @@ func (ime *IME) HandleRequest(req *pime.Request) *pime.Response {
 func (ime *IME) onActivate(req *pime.Request, resp *pime.Response) *pime.Response {
 	log.Println("RIME 输入法已激活")
 	ime.createSession(resp)
+	ime.syncStandaloneSettings()
 	ime.addButtons(resp)
 	ime.updateLangStatus(req, resp)
 	if ime.backend != nil {
@@ -457,6 +458,77 @@ func (ime *IME) commandShouldRefreshState(commandID int) bool {
 	default:
 		return true
 	}
+}
+
+type standaloneSettingsState struct {
+	ReverseLookupDisplayMode string `json:"reverse_lookup_display_mode,omitempty"`
+	CandidateLayout          string `json:"candidate_layout,omitempty"`
+}
+
+func (ime *IME) syncStandaloneSettings() {
+	if ime.backend == nil {
+		return
+	}
+	userDir := ime.userDir()
+	if userDir == "" {
+		return
+	}
+	if schemaID := readSelectedSchemaFromUserConfig(userDir); schemaID != "" && schemaID != ime.currentSchemaID() && ime.schemaAvailable(schemaID) {
+		ime.selectSchema(schemaID)
+	}
+	if pageSize := readPageSizeFromCustomConfig(filepath.Join(userDir, "default.custom.yaml")); pageSize >= minCandidatePageSize && pageSize <= maxCandidatePageSize && pageSize != ime.candidatePageSize {
+		if err := ime.setCandidatePageSize(pageSize); err != nil {
+			log.Printf("sync standalone page size failed: %v", err)
+		}
+	}
+	ime.applyStandaloneSettingsState(readStandaloneSettingsState(ime.standaloneSettingsStatePath()))
+}
+
+func (ime *IME) standaloneSettingsStatePath() string {
+	userDir := ime.userDir()
+	if userDir == "" {
+		return ""
+	}
+	return filepath.Join(userDir, "yime_settings_state.json")
+}
+
+func (ime *IME) applyStandaloneSettingsState(state standaloneSettingsState) {
+	ime.setReverseLookupDisplayMode(state.ReverseLookupDisplayMode)
+	switch state.CandidateLayout {
+	case "horizontal":
+		if ime.style.CandidatePerRow <= verticalCandidatesPerRow {
+			ime.setCandidateLayout(true, nil)
+		}
+	case "vertical":
+		if ime.style.CandidatePerRow > verticalCandidatesPerRow {
+			ime.setCandidateLayout(false, nil)
+		}
+	}
+}
+
+func readStandaloneSettingsState(path string) standaloneSettingsState {
+	if path == "" {
+		return standaloneSettingsState{}
+	}
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return standaloneSettingsState{}
+	}
+	var state standaloneSettingsState
+	if err := json.Unmarshal(data, &state); err != nil {
+		return standaloneSettingsState{}
+	}
+	switch state.ReverseLookupDisplayMode {
+	case "hidden", "standard_pinyin", "yime_pinyin", "key_sequence":
+	default:
+		state.ReverseLookupDisplayMode = ""
+	}
+	switch state.CandidateLayout {
+	case "horizontal", "vertical":
+	default:
+		state.CandidateLayout = ""
+	}
+	return state
 }
 
 func commandIDFromRequest(req *pime.Request) int {
@@ -2200,6 +2272,55 @@ func parseMenuPageSizeValue(trimmed string) (string, bool) {
 		return strings.TrimSpace(strings.TrimPrefix(trimmed, `"menu/page_size":`)), true
 	default:
 		return "", false
+	}
+}
+
+func readSelectedSchemaFromUserConfig(userDir string) string {
+	if userDir == "" {
+		return ""
+	}
+	if schemaID := readPreviouslySelectedSchema(filepath.Join(userDir, "user.yaml")); schemaID != "" {
+		return schemaID
+	}
+	return readSchemaListSelection(filepath.Join(userDir, "default.custom.yaml"))
+}
+
+func readPreviouslySelectedSchema(path string) string {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return ""
+	}
+	lines := strings.Split(strings.ReplaceAll(string(data), "\r\n", "\n"), "\n")
+	for _, line := range lines {
+		trimmed := strings.TrimSpace(line)
+		if strings.HasPrefix(trimmed, "previously_selected_schema:") {
+			return normalizeSelectedSchemaID(strings.TrimSpace(strings.TrimPrefix(trimmed, "previously_selected_schema:")))
+		}
+	}
+	return ""
+}
+
+func readSchemaListSelection(path string) string {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return ""
+	}
+	lines := strings.Split(strings.ReplaceAll(string(data), "\r\n", "\n"), "\n")
+	for _, line := range lines {
+		trimmed := strings.TrimSpace(line)
+		if strings.HasPrefix(trimmed, "- schema:") {
+			return normalizeSelectedSchemaID(strings.TrimSpace(strings.TrimPrefix(trimmed, "- schema:")))
+		}
+	}
+	return ""
+}
+
+func normalizeSelectedSchemaID(schemaID string) string {
+	switch strings.TrimSpace(schemaID) {
+	case "yime_full", "yime_variable", "yime_shorthand":
+		return strings.TrimSpace(schemaID)
+	default:
+		return ""
 	}
 }
 

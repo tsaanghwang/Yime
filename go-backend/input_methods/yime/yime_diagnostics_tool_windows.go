@@ -92,6 +92,18 @@ function Get-ServerBinaryPath {
   }
 }
 
+function Get-ToolLauncherPath {
+  param([string]$RuntimeSharedDir)
+  if ([string]::IsNullOrWhiteSpace($RuntimeSharedDir)) {
+    return ""
+  }
+  try {
+    return (Join-Path ([System.IO.Directory]::GetParent([System.IO.Directory]::GetParent([System.IO.Directory]::GetParent($RuntimeSharedDir).FullName).FullName).FullName) "tool-launcher.exe")
+  } catch {
+    return ""
+  }
+}
+
 function Get-DeployerCandidates {
   param([string]$RuntimeSharedDir)
   $candidates = New-Object System.Collections.Generic.List[string]
@@ -506,15 +518,135 @@ function Get-RimeUserFilesSummary {
   if ([string]::IsNullOrWhiteSpace($RuntimeUserDir) -or -not (Test-Path -LiteralPath $RuntimeUserDir)) {
     return @(
       (Format-StatusLine "default.custom.yaml" "missing" "user dir unavailable"),
+      (Format-StatusLine "user.yaml" "missing" "user dir unavailable"),
+      (Format-StatusLine "yime_settings_state.json" "missing" "user dir unavailable"),
       (Format-StatusLine "custom_phrase.txt" "missing" "user dir unavailable"),
       (Format-StatusLine "yime_user_phrases.txt" "missing" "user dir unavailable")
     )
   }
   return @(
     (Get-FileCheck "default.custom.yaml" (Join-Path $RuntimeUserDir "default.custom.yaml")),
+    (Get-FileCheck "user.yaml" (Join-Path $RuntimeUserDir "user.yaml")),
+    (Get-FileCheck "yime_settings_state.json" (Join-Path $RuntimeUserDir "yime_settings_state.json")),
     (Get-FileCheck "custom_phrase.txt" (Join-Path $RuntimeUserDir "custom_phrase.txt")),
     (Get-FileCheck "yime_user_phrases.txt" (Join-Path $RuntimeUserDir "yime_user_phrases.txt"))
   )
+}
+
+function Read-SettingsFileText {
+  param([string]$Path)
+  if ([string]::IsNullOrWhiteSpace($Path) -or -not (Test-Path -LiteralPath $Path)) {
+    return ""
+  }
+  try {
+    return [System.IO.File]::ReadAllText($Path)
+  } catch {
+    return ""
+  }
+}
+
+function Read-SettingsConfiguredSchema {
+  param([string]$RuntimeUserDir)
+  if ([string]::IsNullOrWhiteSpace($RuntimeUserDir)) {
+    return ""
+  }
+  $userYamlPath = Join-Path $RuntimeUserDir "user.yaml"
+  foreach ($line in ((Read-SettingsFileText $userYamlPath) -split "\r?\n")) {
+    $trimmed = $line.Trim()
+    if ($trimmed.StartsWith("previously_selected_schema:")) {
+      return ($trimmed.Substring("previously_selected_schema:".Length)).Trim()
+    }
+  }
+
+  $defaultCustomPath = Join-Path $RuntimeUserDir "default.custom.yaml"
+  foreach ($line in ((Read-SettingsFileText $defaultCustomPath) -split "\r?\n")) {
+    $trimmed = $line.Trim()
+    if ($trimmed.StartsWith("- schema:")) {
+      return ($trimmed.Substring("- schema:".Length)).Trim()
+    }
+  }
+  return ""
+}
+
+function Read-SettingsConfiguredPageSize {
+  param([string]$RuntimeUserDir)
+  if ([string]::IsNullOrWhiteSpace($RuntimeUserDir)) {
+    return ""
+  }
+  $defaultCustomPath = Join-Path $RuntimeUserDir "default.custom.yaml"
+  foreach ($line in ((Read-SettingsFileText $defaultCustomPath) -split "\r?\n")) {
+    $trimmed = $line.Trim()
+    if ($trimmed.StartsWith('"menu/page_size":')) {
+      return ($trimmed.Substring('"menu/page_size":'.Length)).Trim()
+    }
+    if ($trimmed.StartsWith("menu/page_size:")) {
+      return ($trimmed.Substring("menu/page_size:".Length)).Trim()
+    }
+  }
+  return ""
+}
+
+function Read-StandaloneSettingsSnapshot {
+  param([string]$RuntimeUserDir)
+  $snapshot = [ordered]@{
+    reverse_lookup_display_mode = ""
+    candidate_layout            = ""
+    parse_status                = "missing"
+    parse_detail                = "yime_settings_state.json not found"
+  }
+
+  if ([string]::IsNullOrWhiteSpace($RuntimeUserDir)) {
+    $snapshot.parse_detail = "user dir unavailable"
+    return [pscustomobject]$snapshot
+  }
+
+  $statePath = Join-Path $RuntimeUserDir "yime_settings_state.json"
+  if (-not (Test-Path -LiteralPath $statePath)) {
+    return [pscustomobject]$snapshot
+  }
+
+  try {
+    $state = Get-Content -LiteralPath $statePath -Raw -Encoding UTF8 | ConvertFrom-Json -ErrorAction Stop
+    $snapshot.reverse_lookup_display_mode = [string]$state.reverse_lookup_display_mode
+    $snapshot.candidate_layout = [string]$state.candidate_layout
+    $snapshot.parse_status = "ok"
+    $snapshot.parse_detail = "JSON parsed"
+  } catch {
+    $snapshot.parse_status = "invalid"
+    $snapshot.parse_detail = $_.Exception.Message
+  }
+
+  return [pscustomobject]$snapshot
+}
+
+function Get-SettingsChainSummary {
+  param([string]$RuntimeUserDir)
+
+  if ([string]::IsNullOrWhiteSpace($RuntimeUserDir) -or -not (Test-Path -LiteralPath $RuntimeUserDir)) {
+    return @(
+      (Format-StatusLine "Settings chain" "missing" "user dir unavailable")
+    )
+  }
+
+  $defaultCustomPath = Join-Path $RuntimeUserDir "default.custom.yaml"
+  $userYamlPath = Join-Path $RuntimeUserDir "user.yaml"
+  $statePath = Join-Path $RuntimeUserDir "yime_settings_state.json"
+  $schemaID = Read-SettingsConfiguredSchema $RuntimeUserDir
+  $pageSize = Read-SettingsConfiguredPageSize $RuntimeUserDir
+  $state = Read-StandaloneSettingsSnapshot $RuntimeUserDir
+
+  $summary = New-Object System.Collections.Generic.List[string]
+  $summary.Add((Format-StatusLine "default.custom.yaml" $(if (Test-Path -LiteralPath $defaultCustomPath) { "present" } else { "missing" }) $defaultCustomPath))
+  $summary.Add((Format-StatusLine "Configured schema" $(if ([string]::IsNullOrWhiteSpace($schemaID)) { "unknown" } else { "seen" }) $(if ([string]::IsNullOrWhiteSpace($schemaID)) { "no schema_list selection found" } else { $schemaID })))
+  $summary.Add((Format-StatusLine "Configured page size" $(if ([string]::IsNullOrWhiteSpace($pageSize)) { "unknown" } else { "seen" }) $(if ([string]::IsNullOrWhiteSpace($pageSize)) { "no menu/page_size key found" } else { $pageSize })))
+  $summary.Add((Format-StatusLine "user.yaml" $(if (Test-Path -LiteralPath $userYamlPath) { "present" } else { "missing" }) $userYamlPath))
+  $summary.Add((Format-StatusLine "previously_selected_schema" $(if ([string]::IsNullOrWhiteSpace($schemaID)) { "unknown" } else { "seen" }) $(if ([string]::IsNullOrWhiteSpace($schemaID)) { "no schema selection found" } else { $schemaID })))
+  $summary.Add((Format-StatusLine "yime_settings_state.json" $(if (Test-Path -LiteralPath $statePath) { "present" } else { "missing" }) $statePath))
+  $summary.Add((Format-StatusLine "Standalone state parse" $state.parse_status $state.parse_detail))
+  $summary.Add((Format-StatusLine "reverse_lookup_display_mode" $(if ([string]::IsNullOrWhiteSpace($state.reverse_lookup_display_mode)) { "unknown" } else { "seen" }) $(if ([string]::IsNullOrWhiteSpace($state.reverse_lookup_display_mode)) { "value missing" } else { $state.reverse_lookup_display_mode })))
+  $summary.Add((Format-StatusLine "candidate_layout" $(if ([string]::IsNullOrWhiteSpace($state.candidate_layout)) { "unknown" } else { "seen" }) $(if ([string]::IsNullOrWhiteSpace($state.candidate_layout)) { "value missing" } else { $state.candidate_layout })))
+  $summary.Add((Format-StatusLine "Activation sync hint" "observe" "Apply writes files first; Yime resyncs them on the next onActivate, and rebuild only matters for schema/page-size changes that need deployment."))
+  return $summary.ToArray()
 }
 
 function Convert-SectionLinesToMarkdown {
@@ -626,6 +758,7 @@ function Protect-ReportLines {
 function Get-EnvironmentSummaryLines {
   $installRoot = Get-InstallRoot $SharedDir
   $serverPath = Get-ServerBinaryPath $SharedDir
+  $toolLauncherPath = Get-ToolLauncherPath $SharedDir
   $launcherRunning = @(Get-Process -Name "PIMELauncher" -ErrorAction SilentlyContinue).Count -gt 0
   $serverRunning = @(Get-Process -Name "server" -ErrorAction SilentlyContinue).Count -gt 0
 
@@ -637,6 +770,7 @@ function Get-EnvironmentSummaryLines {
     (Format-StatusLine "OS" "version" [System.Environment]::OSVersion.VersionString),
     (Format-StatusLine "Install root" "path" $installRoot),
     (Format-StatusLine "server.exe" "path" $serverPath),
+    (Format-StatusLine "tool-launcher.exe" "path" $toolLauncherPath),
     (Format-StatusLine "PIMELauncher" ($(if ($launcherRunning) { "running" } else { "stopped" })) "snapshot"),
     (Format-StatusLine "server" ($(if ($serverRunning) { "running" } else { "stopped" })) "snapshot"),
     (Format-StatusLine "UserDir" "path" $UserDir),
@@ -815,12 +949,14 @@ function Get-DiagnosticFindings {
   $findings = New-Object System.Collections.Generic.List[string]
   $installRoot = Get-InstallRoot $SharedDir
   $serverPath = Get-ServerBinaryPath $SharedDir
+  $toolLauncherPath = Get-ToolLauncherPath $SharedDir
   $deployerCandidates = Get-DeployerCandidates $SharedDir
 
   $userDirExists = -not [string]::IsNullOrWhiteSpace($UserDir) -and (Test-Path -LiteralPath $UserDir)
   $sharedDirExists = -not [string]::IsNullOrWhiteSpace($SharedDir) -and (Test-Path -LiteralPath $SharedDir)
   $logDirExists = -not [string]::IsNullOrWhiteSpace($LogDir) -and (Test-Path -LiteralPath $LogDir)
   $serverExists = -not [string]::IsNullOrWhiteSpace($serverPath) -and (Test-Path -LiteralPath $serverPath)
+  $toolLauncherExists = -not [string]::IsNullOrWhiteSpace($toolLauncherPath) -and (Test-Path -LiteralPath $toolLauncherPath)
 
   $deployerExists = $false
   foreach ($candidate in $deployerCandidates) {
@@ -834,8 +970,13 @@ function Get-DiagnosticFindings {
   $serverRunning = @(Get-Process -Name "server" -ErrorAction SilentlyContinue).Count -gt 0
 
   $defaultCustomExists = $userDirExists -and (Test-Path -LiteralPath (Join-Path $UserDir "default.custom.yaml"))
+  $userYamlExists = $userDirExists -and (Test-Path -LiteralPath (Join-Path $UserDir "user.yaml"))
+  $settingsStateExists = $userDirExists -and (Test-Path -LiteralPath (Join-Path $UserDir "yime_settings_state.json"))
   $customPhraseExists = $userDirExists -and (Test-Path -LiteralPath (Join-Path $UserDir "custom_phrase.txt"))
   $userPhraseSourceExists = $userDirExists -and (Test-Path -LiteralPath (Join-Path $UserDir "yime_user_phrases.txt"))
+  $configuredSchema = Read-SettingsConfiguredSchema $UserDir
+  $configuredPageSize = Read-SettingsConfiguredPageSize $UserDir
+  $standaloneState = Read-StandaloneSettingsSnapshot $UserDir
 
   $logFiles = @()
   if ($logDirExists) {
@@ -850,6 +991,10 @@ function Get-DiagnosticFindings {
     $findings.Add("判定：共享数据目录存在，但安装里的 server.exe 不见了，像是安装不完整，或者运行时目录和主程序版本没有对齐。")
   }
 
+  if ($sharedDirExists -and -not $toolLauncherExists) {
+    $findings.Add("判定：共享数据目录存在，但安装里的 tool-launcher.exe 不见了，独立 settings/diagnostics 工具可能根本起不来。")
+  }
+
   if ($serverExists -and -not $deployerExists) {
     $findings.Add("判定：server.exe 在，但 rime_deployer.exe 没找到。配置写到了磁盘也可能不会真正部署生效。")
   }
@@ -860,6 +1005,26 @@ function Get-DiagnosticFindings {
 
   if ($userDirExists -and -not $defaultCustomExists -and -not $customPhraseExists -and -not $userPhraseSourceExists) {
     $findings.Add("判定：用户目录有了，但关键 Yime/Rime 文件几乎都没出现，像是首次部署还没跑通。")
+  }
+
+  if ($userDirExists -and $defaultCustomExists -and -not $userYamlExists) {
+    $findings.Add("判定：default.custom.yaml 已经有了，但 user.yaml 缺失。schema/page-size 可能写到了盘上，但当前 schema 选择来源不完整。")
+  }
+
+  if ($userDirExists -and ($defaultCustomExists -or $userYamlExists) -and -not $settingsStateExists) {
+    $findings.Add("判定：Rime 配置文件已经存在，但 yime_settings_state.json 缺失。reverse lookup 和 candidate layout 这条 standalone 设置链路还没有落盘。")
+  }
+
+  if ($userDirExists -and $settingsStateExists -and $standaloneState.parse_status -ne "ok") {
+    $findings.Add("判定：yime_settings_state.json 存在，但当前内容无法正常解析。standalone UI 偏好可能写坏了，onActivate 也就没法稳定回放。")
+  }
+
+  if ($userDirExists -and $defaultCustomExists -and [string]::IsNullOrWhiteSpace($configuredPageSize)) {
+    $findings.Add("判定：default.custom.yaml 在，但没有读到 menu/page_size。候选项数看起来改了却不生效时，先检查这里到底有没有写到 quoted 或 unquoted key。")
+  }
+
+  if ($userDirExists -and ($defaultCustomExists -or $userYamlExists) -and [string]::IsNullOrWhiteSpace($configuredSchema)) {
+    $findings.Add("判定：配置文件在，但没有读到 schema 选择。若 settings 工具里切过方案却没生效，先回看 schema_list 和 previously_selected_schema。")
   }
 
   if (($serverRunning -or $launcherRunning) -and (-not $logDirExists -or $logFiles.Count -eq 0)) {
@@ -896,6 +1061,7 @@ function Get-DiagnosticFindings {
 function Build-DiagnosticsReport {
   $installRoot = Get-InstallRoot $SharedDir
   $serverPath = Get-ServerBinaryPath $SharedDir
+  $toolLauncherPath = Get-ToolLauncherPath $SharedDir
 
   $sections = @()
   $sections += "== Findings =="
@@ -910,11 +1076,15 @@ function Build-DiagnosticsReport {
   $sections += "== Installed runtime =="
   $sections += (Get-InstallFlavorCheck $installRoot)
   $sections += (Get-FileCheck "server.exe" $serverPath)
+  $sections += (Get-FileCheck "tool-launcher.exe" $toolLauncherPath)
   $sections += (Get-DeployerCheck $SharedDir)
   $sections += ""
   $sections += "== Running processes =="
   $sections += (Get-ProcessSummary "PIMELauncher")
   $sections += (Get-ProcessSummary "server")
+  $sections += ""
+  $sections += "== Settings chain =="
+  $sections += (Get-SettingsChainSummary $UserDir)
   $sections += ""
   $sections += "== User Rime files =="
   $sections += (Get-RimeUserFilesSummary $UserDir)
