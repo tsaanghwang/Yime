@@ -26,6 +26,7 @@ add_library(PIMETextService SHARED
     PIMEClient.h
     PIMELangBarButton.cpp
     PIMELangBarButton.h
+    PIMERpcResponse.h
     DllEntry.cpp
     # resources
     ${CMAKE_CURRENT_BINARY_DIR}/PIMETextService.rc
@@ -34,3 +35,11 @@ add_library(PIMETextService SHARED
 target_link_libraries(PIMETextService
     libIME2_static
 )
+
+# Regression tests: RPC responses / menu JSON must never throw into the host.
+add_executable(PIMERpcResponseTests
+    tests/PIMERpcResponseTests.cpp
+    PIMERpcResponse.h
+)
+target_compile_options(PIMERpcResponseTests PRIVATE /utf-8)
+add_test(NAME PIMERpcResponseTests COMMAND PIMERpcResponseTests)

@@ -46,7 +46,11 @@ LangBarButton::~LangBarButton() {
 
 LangBarButton* LangBarButton::fromJson(TextService* service, json& info) {
 	if (info.is_object()) {
-		std::string id = info.value("id", "");
+		std::string id;
+		const auto idIt = info.find("id");
+		if (idIt != info.end() && idIt->is_string()) {
+			id = idIt->get<std::string>();
+		}
 
 		DWORD style = TF_LBI_STYLE_BTN_BUTTON;
 		auto& styleValue = info["style"];
