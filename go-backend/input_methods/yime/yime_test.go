@@ -1693,6 +1693,12 @@ func TestStandaloneSettingsAndDiagnosticsScriptsProvideRealWindowShells(t *testi
 	if !strings.Contains(settingsToolScript, "Settings guide") || !strings.Contains(settingsToolScript, "Main help") {
 		t.Fatalf("expected settings tool script to expose guide entry points")
 	}
+	if !strings.Contains(settingsToolScript, "$form.Add_Shown({") || !strings.Contains(settingsToolScript, "$form.Activate()") || !strings.Contains(settingsToolScript, "$form.BringToFront()") || !strings.Contains(settingsToolScript, "Refresh-SettingsView") {
+		t.Fatalf("expected settings tool script to restore a centered foreground window and refresh state when shown")
+	}
+	if strings.Contains(settingsToolScript, "try {\n  Refresh-SettingsView\n  [void]$form.ShowDialog()") {
+		t.Fatalf("expected settings tool script not to refresh state before the dialog is shown")
+	}
 	if !strings.Contains(diagnosticsToolScript, "Yime diagnostics panel") {
 		t.Fatalf("expected diagnostics tool script shell copy")
 	}

@@ -481,13 +481,22 @@ $form.MinimumSize = New-Object System.Drawing.Size(820, 680)
 $form.MaximizeBox = $false
 $form.WindowState = [System.Windows.Forms.FormWindowState]::Normal
 $form.Add_Shown({
-  $form.WindowState = [System.Windows.Forms.FormWindowState]::Normal
-  $screenBounds = [System.Windows.Forms.Screen]::PrimaryScreen.WorkingArea
-  $x = $screenBounds.Left + [int](($screenBounds.Width - $form.Width) / 2)
-  $y = $screenBounds.Top + [int](($screenBounds.Height - $form.Height) / 2)
-  if ($x -lt $screenBounds.Left) { $x = $screenBounds.Left }
-  if ($y -lt $screenBounds.Top) { $y = $screenBounds.Top }
-  $form.Location = New-Object System.Drawing.Point($x, $y)
+  try {
+    $form.WindowState = [System.Windows.Forms.FormWindowState]::Normal
+    $screenBounds = [System.Windows.Forms.Screen]::PrimaryScreen.WorkingArea
+    $x = $screenBounds.Left + [int](($screenBounds.Width - $form.Width) / 2)
+    $y = $screenBounds.Top + [int](($screenBounds.Height - $form.Height) / 2)
+    if ($x -lt $screenBounds.Left) { $x = $screenBounds.Left }
+    if ($y -lt $screenBounds.Top) { $y = $screenBounds.Top }
+    $form.Location = New-Object System.Drawing.Point($x, $y)
+    $form.TopMost = $true
+    $form.Activate()
+    $form.BringToFront()
+    $form.TopMost = $false
+    Refresh-SettingsView
+  } catch {
+    Show-Error $_.Exception.Message
+  }
 })
 
 $title = New-Object System.Windows.Forms.Label
@@ -827,7 +836,6 @@ $configFilesButton.Add_Click({
 })
 
 try {
-  Refresh-SettingsView
   [void]$form.ShowDialog()
 } catch {
   Show-Error $_.Exception.Message
