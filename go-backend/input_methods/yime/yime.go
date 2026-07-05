@@ -227,7 +227,7 @@ func (ime *IME) HandleRequest(req *pime.Request) *pime.Response {
 func (ime *IME) onActivate(req *pime.Request, resp *pime.Response) *pime.Response {
 	log.Println("RIME 输入法已激活")
 	ime.createSession(resp)
-	ime.syncStandaloneSettings()
+	ime.syncStandaloneUISettings()
 	ime.addButtons(resp)
 	ime.updateLangStatus(req, resp)
 	if ime.backend != nil {
@@ -465,21 +465,9 @@ type standaloneSettingsState struct {
 	CandidateLayout          string `json:"candidate_layout,omitempty"`
 }
 
-func (ime *IME) syncStandaloneSettings() {
+func (ime *IME) syncStandaloneUISettings() {
 	if ime.backend == nil {
 		return
-	}
-	userDir := ime.userDir()
-	if userDir == "" {
-		return
-	}
-	if schemaID := readSelectedSchemaFromUserConfig(userDir); schemaID != "" && schemaID != ime.currentSchemaID() && ime.schemaAvailable(schemaID) {
-		ime.selectSchema(schemaID)
-	}
-	if pageSize := readPageSizeFromCustomConfig(filepath.Join(userDir, "default.custom.yaml")); pageSize >= minCandidatePageSize && pageSize <= maxCandidatePageSize && pageSize != ime.candidatePageSize {
-		if err := ime.setCandidatePageSize(pageSize); err != nil {
-			log.Printf("sync standalone page size failed: %v", err)
-		}
 	}
 	ime.applyStandaloneSettingsState(readStandaloneSettingsState(ime.standaloneSettingsStatePath()))
 }

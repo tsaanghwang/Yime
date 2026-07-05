@@ -368,7 +368,6 @@ function Show-EntryDialog {
   $okButton.Left = 260
   $okButton.Top = 216
   $okButton.Width = 78
-  $okButton.DialogResult = [System.Windows.Forms.DialogResult]::OK
   $dialog.Controls.Add($okButton)
 
   $cancelButton = New-Object System.Windows.Forms.Button
@@ -381,8 +380,26 @@ function Show-EntryDialog {
 
   $dialog.Text = $DialogTitle
   $okButton.Text = $OkText
-  $dialog.AcceptButton = $okButton
   $dialog.CancelButton = $cancelButton
+
+  $okButton.Add_Click({
+    $phraseValue = $phraseBox.Text.Trim()
+    $pinyinValue = Normalize-PinyinSpacing $pinyinBox.Text
+    $weightValue = $(if ([string]::IsNullOrWhiteSpace($weightBox.Text)) { "1000000" } else { $weightBox.Text.Trim() })
+    try {
+      Assert-EntryFields ([pscustomobject]@{
+        Phrase = $phraseValue
+        Pinyin = $pinyinValue
+        Weight = $weightValue
+      })
+      $dialog.DialogResult = [System.Windows.Forms.DialogResult]::OK
+      $dialog.Close()
+    } catch {
+      Show-Error $_.Exception.Message
+    }
+  })
+
+  $dialog.AcceptButton = $okButton
 
   $result = $dialog.ShowDialog()
   if ($result -ne [System.Windows.Forms.DialogResult]::OK) { return $null }
@@ -390,6 +407,29 @@ function Show-EntryDialog {
     Phrase = $phraseBox.Text.Trim()
     Pinyin = Normalize-PinyinSpacing $pinyinBox.Text
     Weight = $(if ([string]::IsNullOrWhiteSpace($weightBox.Text)) { "1000000" } else { $weightBox.Text.Trim() })
+  }
+}
+
+function Assert-EntryFields {
+  param([pscustomobject]$Entry)
+
+  if ($null -eq $Entry) {
+    throw "未收到要保存的词条内容。"
+  }
+  if ([string]::IsNullOrWhiteSpace($Entry.Phrase)) {
+    throw "请输入词条。"
+  }
+  if ([string]::IsNullOrWhiteSpace($Entry.Pinyin)) {
+    throw "请输入数字标调拼音，例如 zhong1 guo2。"
+  }
+  if ([string]::IsNullOrWhiteSpace($Entry.Weight)) {
+    throw "请输入权重。"
+  }
+  if ($Entry.Phrase -match '[\t\r\n]') {
+    throw "词条不能包含制表符或换行。"
+  }
+  if ($Entry.Weight -notmatch '^\d+$') {
+    throw "权重必须是整数。"
   }
 }
 
@@ -768,8 +808,10 @@ function Show-SetWeightDialog {
 }
 
 function Add-Entry {
+  # Dialog-level validation already runs before closing; keep a shared guard here too.
   $entry = Show-EntryDialog
   if ($null -eq $entry) { return }
+  Assert-EntryFields $entry
   if ([string]::IsNullOrWhiteSpace($entry.Phrase)) { throw "词条汉字不能为空。" }
   if ([string]::IsNullOrWhiteSpace($entry.Pinyin)) { throw "数字标调拼音不能为空。" }
   if ([string]::IsNullOrWhiteSpace($entry.Weight)) { throw "权重不能为空。" }
@@ -1312,16 +1354,17 @@ function Open-UserFolder {
 function Add-ActionButton {
   param([string]$Text, [scriptblock]$Action)
   $button = New-Object System.Windows.Forms.Button
+  $actionBlock = $Action.GetNewClosure()
   $button.Text = $Text
   $button.Width = 108
   $button.Height = 28
   $button.Add_Click({
     try {
-      & $Action
+      & $actionBlock
     } catch {
       Show-Error $_.Exception.Message
     }
-  })
+  }.GetNewClosure())
   $toolbar.Controls.Add($button)
   return $button
 }
@@ -1333,13 +1376,14 @@ function Add-MenuAction {
     [scriptblock]$Action
   )
   $item = New-Object System.Windows.Forms.ToolStripMenuItem($Text)
+  $actionBlock = $Action.GetNewClosure()
   $item.Add_Click({
     try {
-      & $Action
+      & $actionBlock
     } catch {
       Show-Error $_.Exception.Message
     }
-  })
+  }.GetNewClosure())
   $Parent.DropDownItems.Add($item) | Out-Null
   return $item
 }

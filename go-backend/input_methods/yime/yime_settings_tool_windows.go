@@ -537,7 +537,7 @@ $pageSizeHintLabel.Left = 346
 $pageSizeHintLabel.Top = 84
 $pageSizeHintLabel.Width = 390
 $pageSizeHintLabel.Height = 36
-$pageSizeHintLabel.Text = "This writes %APPDATA%\PIME\Rime\default.custom.yaml and lets Yime sync the running session on the next activation."
+$pageSizeHintLabel.Text = "This writes %APPDATA%\PIME\Rime\default.custom.yaml. Use Apply and rebuild when you want schema and page-size changes compiled into the next runtime session."
 $settingsGroup.Controls.Add($pageSizeHintLabel)
 
 $reverseLookupLabel = New-Object System.Windows.Forms.Label
@@ -647,7 +647,7 @@ $applyHintLabel.Left = 20
 $applyHintLabel.Top = 76
 $applyHintLabel.Width = 720
 $applyHintLabel.Height = 42
-$applyHintLabel.Text = "Apply writes default.custom.yaml, user.yaml, and yime_settings_state.json. Switch back to Yime after saving so the IME can resync these settings on the next activation."
+$applyHintLabel.Text = "Apply writes default.custom.yaml, user.yaml, and yime_settings_state.json. Switching back to Yime restores reverse-lookup and layout preferences on activation; use Apply and rebuild for schema or page-size changes."
 $actionsGroup.Controls.Add($applyHintLabel)
 
 $pathsGroup = New-Object System.Windows.Forms.GroupBox

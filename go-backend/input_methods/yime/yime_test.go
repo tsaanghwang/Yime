@@ -1421,6 +1421,9 @@ func TestUserLexiconManagerScriptShowsDialogInsideTopLevelTry(t *testing.T) {
 	if !strings.Contains(userLexiconManagerScript, "Show-SetWeightDialog") {
 		t.Fatalf("expected lexicon manager script to support setting an exact weight")
 	}
+	if !strings.Contains(userLexiconManagerScript, "Assert-EntryFields") || !strings.Contains(userLexiconManagerScript, "请输入词条。") || !strings.Contains(userLexiconManagerScript, "请输入数字标调拼音，例如 zhong1 guo2。") {
+		t.Fatalf("expected lexicon manager script to validate entry input with localized Chinese prompts")
+	}
 	if !strings.Contains(userLexiconManagerScript, "设置词条权重") {
 		t.Fatalf("expected lexicon manager script to localize the exact-weight dialog")
 	}
@@ -1465,6 +1468,9 @@ func TestUserLexiconManagerScriptShowsDialogInsideTopLevelTry(t *testing.T) {
 	}
 	if !strings.Contains(userLexiconManagerScript, "$copyHistoryButton.Add_Click") {
 		t.Fatalf("expected lexicon manager script to wire the copy-summary action button")
+	}
+	if !strings.Contains(userLexiconManagerScript, "$actionBlock = $Action.GetNewClosure()") || !strings.Contains(userLexiconManagerScript, "& $actionBlock") {
+		t.Fatalf("expected lexicon manager action handlers to capture button/menu callbacks with GetNewClosure")
 	}
 	if !strings.Contains(userLexiconManagerScript, "Add-ActionButton \"打开目录\" { Open-UserFolder }") {
 		t.Fatalf("expected lexicon manager script to expose the user lexicon directory as a top-level toolbar action")
@@ -1556,8 +1562,8 @@ func TestStandaloneSettingsAndDiagnosticsScriptsProvideRealWindowShells(t *testi
 	if !strings.Contains(settingsToolScript, "reverse_lookup_display_mode") || !strings.Contains(settingsToolScript, "candidate_layout") {
 		t.Fatalf("expected settings tool script to persist reverse-lookup and layout preferences")
 	}
-	if !strings.Contains(settingsToolScript, "Switch back to Yime") {
-		t.Fatalf("expected settings tool script to explain when external settings take effect")
+	if !strings.Contains(settingsToolScript, "Switching back to Yime restores reverse-lookup and layout preferences on activation; use Apply and rebuild for schema or page-size changes.") {
+		t.Fatalf("expected settings tool script to distinguish activation-safe UI sync from schema/page-size rebuild requirements")
 	}
 	if !strings.Contains(settingsToolScript, "Settings guide") || !strings.Contains(settingsToolScript, "Main help") {
 		t.Fatalf("expected settings tool script to expose guide entry points")
@@ -1865,8 +1871,8 @@ func TestStandaloneSettingsAndDiagnosticsScriptsProvideRealWindowShells(t *testi
 	if !strings.Contains(diagnosticsToolScript, "previously_selected_schema") || !strings.Contains(diagnosticsToolScript, "reverse_lookup_display_mode") || !strings.Contains(diagnosticsToolScript, "candidate_layout") {
 		t.Fatalf("expected diagnostics tool script to surface key settings-chain values")
 	}
-	if !strings.Contains(diagnosticsToolScript, "Apply writes files first; Yime resyncs them on the next onActivate") {
-		t.Fatalf("expected diagnostics tool script to explain the activation-based settings sync boundary")
+	if !strings.Contains(diagnosticsToolScript, "onActivate only restores standalone reverse-lookup and layout preferences") {
+		t.Fatalf("expected diagnostics tool script to explain that activation sync is limited to standalone UI preferences")
 	}
 }
 
@@ -2559,5 +2565,50 @@ func TestOnActivateSyncsStandaloneSettingsState(t *testing.T) {
 	}
 	if !backend.horizontal {
 		t.Fatal("expected backend horizontal option set from standalone settings")
+	}
+}
+
+func TestOnActivateDoesNotApplySchemaOrPageSizeFromStandaloneFiles(t *testing.T) {
+	userDir := t.TempDir()
+	ime := newTestIME()
+	backend := ime.backend.(*testBackend)
+	backend.session = true
+	backend.schemaID = "yime_variable"
+	ime.candidatePageSize = defaultCandidatePageSize
+	t.Setenv("APPDATA", userDir)
+
+	rimeUserDir := filepath.Join(userDir, APP, "Rime")
+	if err := os.MkdirAll(rimeUserDir, 0o755); err != nil {
+		t.Fatalf("mkdir user dir failed: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(rimeUserDir, "user.yaml"), []byte("var:\n  previously_selected_schema: yime_full\n"), 0o644); err != nil {
+		t.Fatalf("write user.yaml failed: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(rimeUserDir, "default.custom.yaml"), []byte("patch:\n  schema_list:\n    - schema: yime_full\n  \"menu/page_size\": 7\n"), 0o644); err != nil {
+		t.Fatalf("write default.custom.yaml failed: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(rimeUserDir, "yime_settings_state.json"), []byte(`{"reverse_lookup_display_mode":"hidden","candidate_layout":"vertical"}`), 0o644); err != nil {
+		t.Fatalf("write settings state failed: %v", err)
+	}
+
+	resp := ime.HandleRequest(&pime.Request{
+		SeqNum: 24,
+		Method: "onActivate",
+	})
+
+	if !resp.Success || resp.ReturnValue != 1 {
+		t.Fatalf("expected activate response handled, got %#v", resp)
+	}
+	if backend.schemaID != "yime_variable" {
+		t.Fatalf("expected onActivate not to switch schema from standalone files, got %q", backend.schemaID)
+	}
+	if ime.candidatePageSize != defaultCandidatePageSize {
+		t.Fatalf("expected onActivate not to change candidate page size, got %d", ime.candidatePageSize)
+	}
+	if backend.destroyCount != 0 {
+		t.Fatalf("expected onActivate not to reload the backend session, destroyCount=%d", backend.destroyCount)
+	}
+	if ime.reverseLookupDisplayMode != "hidden" {
+		t.Fatalf("expected standalone UI state to still apply reverse lookup mode, got %q", ime.reverseLookupDisplayMode)
 	}
 }

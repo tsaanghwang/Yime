@@ -645,7 +645,7 @@ function Get-SettingsChainSummary {
   $summary.Add((Format-StatusLine "Standalone state parse" $state.parse_status $state.parse_detail))
   $summary.Add((Format-StatusLine "reverse_lookup_display_mode" $(if ([string]::IsNullOrWhiteSpace($state.reverse_lookup_display_mode)) { "unknown" } else { "seen" }) $(if ([string]::IsNullOrWhiteSpace($state.reverse_lookup_display_mode)) { "value missing" } else { $state.reverse_lookup_display_mode })))
   $summary.Add((Format-StatusLine "candidate_layout" $(if ([string]::IsNullOrWhiteSpace($state.candidate_layout)) { "unknown" } else { "seen" }) $(if ([string]::IsNullOrWhiteSpace($state.candidate_layout)) { "value missing" } else { $state.candidate_layout })))
-  $summary.Add((Format-StatusLine "Activation sync hint" "observe" "Apply writes files first; Yime resyncs them on the next onActivate, and rebuild only matters for schema/page-size changes that need deployment."))
+  $summary.Add((Format-StatusLine "Activation sync hint" "observe" "onActivate only restores standalone reverse-lookup and layout preferences; schema and page-size changes still need an explicit rebuild/deploy path."))
   return $summary.ToArray()
 }
 
