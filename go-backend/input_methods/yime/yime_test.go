@@ -802,6 +802,78 @@ func TestOnCommandHandlesKnownAndMissingCommand(t *testing.T) {
 	}
 }
 
+func TestYimeCommandIDsStayOutOfLowHostCollisionRange(t *testing.T) {
+	commandIDs := []int{
+		ID_MODE_ICON,
+		ID_ASCII_MODE,
+		ID_FULL_SHAPE,
+		ID_ASCII_PUNCT,
+		ID_TRADITIONALIZATION,
+		ID_DEPLOY,
+		ID_SYNC,
+		ID_SYNC_DIR,
+		ID_SHARED_DIR,
+		ID_USER_DIR,
+		ID_LOG_DIR,
+		ID_YIME_VARIABLE,
+		ID_YIME_FULL,
+		ID_YIME_SHORTHAND,
+		ID_USER_LEXICON_ADD,
+		ID_USER_LEXICON_DELETE,
+		ID_USER_LEXICON_EDIT,
+		ID_USER_LEXICON_APPLY,
+		ID_USER_LEXICON_IMPORT,
+		ID_USER_LEXICON_EXPORT,
+		ID_USER_LEXICON_MANAGER,
+		ID_REVERSE_LOOKUP_DEFAULT,
+		ID_REVERSE_LOOKUP_FULL,
+		ID_REVERSE_LOOKUP_HIDDEN,
+		ID_REVERSE_LOOKUP_STANDARD_PINYIN,
+		ID_REVERSE_LOOKUP_YIME_PINYIN,
+		ID_REVERSE_LOOKUP_KEY_SEQUENCE,
+		ID_HELP_VIEW,
+		ID_HELP_TRIAL_FEEDBACK,
+		ID_HELP_COPY_TRIAL_TEMPLATE,
+		ID_HELP_TOOL_HUB,
+		ID_CANDIDATE_PAGE_SIZE_5,
+		ID_CANDIDATE_PAGE_SIZE_6,
+		ID_CANDIDATE_PAGE_SIZE_7,
+		ID_CANDIDATE_PAGE_SIZE_8,
+		ID_CANDIDATE_PAGE_SIZE_9,
+		ID_CANDIDATE_LAYOUT_TOGGLE,
+	}
+
+	for _, commandID := range commandIDs {
+		if commandID < 3000 {
+			t.Fatalf("expected Yime command ID %d to stay above the low host-collision range", commandID)
+		}
+	}
+}
+
+func TestOnCommandIgnoresLegacyLowIDCollisionForReverseLookupYimePinyin(t *testing.T) {
+	ime := newTestIME()
+	backend := ime.backend.(*testBackend)
+	backend.session = true
+	backend.composition = "ni"
+	backend.refreshCandidates()
+	ime.reverseLookupDisplayMode = "key_sequence"
+
+	resp := ime.onCommand(&pime.Request{
+		SeqNum: 13,
+		ID:     pime.FlexibleID{Int: 44, IsInt: true},
+	}, pime.NewResponse(13, true))
+
+	if resp.ReturnValue != 0 {
+		t.Fatalf("expected legacy low id collision to be ignored, got %d", resp.ReturnValue)
+	}
+	if ime.reverseLookupDisplayMode != "key_sequence" {
+		t.Fatalf("expected reverse lookup mode unchanged on low id collision, got %q", ime.reverseLookupDisplayMode)
+	}
+	if backend.composition != "ni" {
+		t.Fatalf("expected composition preserved on low id collision, got %q", backend.composition)
+	}
+}
+
 func TestOnCommandSwitchesYimeSchema(t *testing.T) {
 	ime := newTestIME()
 	backend := ime.backend.(*testBackend)
@@ -1937,6 +2009,8 @@ func TestBuildToolHubManifestProvidesExtensibleToolEntries(t *testing.T) {
 		`C:\logs`,
 		`C:\runtime\tool-launcher.exe`,
 		`C:\user\lexicon.ps1`,
+		`C:\user\settings.ps1`,
+		`C:\user\diagnostics.ps1`,
 		"variable",
 	)
 	if err := validateToolHubManifest(manifest); err != nil {
@@ -1974,6 +2048,20 @@ func TestBuildToolHubManifestProvidesExtensibleToolEntries(t *testing.T) {
 			}
 			if len(tool.Arguments) < 2 || tool.Arguments[0] != "powershell-script" {
 				t.Fatalf("expected %s launcher arguments to start with powershell-script, got %#v", tool.ID, tool.Arguments)
+			}
+			switch tool.ID {
+			case "lexicon-manager":
+				if tool.Arguments[1] != `C:\user\lexicon.ps1` {
+					t.Fatalf("expected lexicon-manager script path to be preserved, got %#v", tool.Arguments)
+				}
+			case "settings-tool":
+				if tool.Arguments[1] != `C:\user\settings.ps1` {
+					t.Fatalf("expected settings-tool script path to be preserved, got %#v", tool.Arguments)
+				}
+			case "diagnostics-tool":
+				if tool.Arguments[1] != `C:\user\diagnostics.ps1` {
+					t.Fatalf("expected diagnostics-tool script path to be preserved, got %#v", tool.Arguments)
+				}
 			}
 			if !tool.CloseAfterLaunch {
 				t.Fatalf("expected %s to close the tool hub after launch, got %#v", tool.ID, tool)

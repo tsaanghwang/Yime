@@ -30,9 +30,7 @@ type toolHubManifest struct {
 	Tools   []toolHubEntry `json:"tools"`
 }
 
-func buildToolHubManifest(sharedDir, userDir, helpDir, logDir, launcherPath, lexiconManagerScript, mode string) toolHubManifest {
-	settingsToolScript := filepath.Join(userDir, "pime_yime_settings_tool.ps1")
-	diagnosticsToolScript := filepath.Join(userDir, "pime_yime_diagnostics_tool.ps1")
+func buildToolHubManifest(sharedDir, userDir, helpDir, logDir, launcherPath, lexiconManagerScript, settingsToolScript, diagnosticsToolScript, mode string) toolHubManifest {
 
 	return toolHubManifest{
 		Title:   "Yime Tool Hub",

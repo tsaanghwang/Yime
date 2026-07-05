@@ -2,6 +2,33 @@
 
 package yime
 
+import (
+	"os"
+	"path/filepath"
+)
+
+func (ime *IME) startSettingsToolHelper() error {
+	userDir := ime.userDir()
+	sharedDir := ime.sharedDir()
+	helpDir := ime.helpDir()
+	if userDir == "" || sharedDir == "" || helpDir == "" {
+		return os.ErrNotExist
+	}
+	scriptPath, err := ime.ensureSettingsToolScript()
+	if err != nil {
+		return err
+	}
+	return startDetachedExecutable(
+		ime.toolLauncherPath(),
+		"powershell-script",
+		scriptPath,
+		"-UserDir", userDir,
+		"-SharedDir", sharedDir,
+		"-HelpDir", helpDir,
+		"-LogDir", filepath.Join(os.Getenv("LOCALAPPDATA"), "PIME", "Logs"),
+	)
+}
+
 func (ime *IME) ensureSettingsToolScript() (string, error) {
 	return ime.ensureStandaloneToolScript("pime_yime_settings_tool.ps1", settingsToolScript)
 }
@@ -806,4 +833,3 @@ try {
   Show-Error $_.Exception.Message
 }
 `
-

@@ -43,10 +43,12 @@ func (ime *IME) ensureToolHubManifest() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	if _, err := ime.ensureSettingsToolScript(); err != nil {
+	settingsToolScript, err := ime.ensureSettingsToolScript()
+	if err != nil {
 		return "", err
 	}
-	if _, err := ime.ensureDiagnosticsToolScript(); err != nil {
+	diagnosticsToolScript, err := ime.ensureDiagnosticsToolScript()
+	if err != nil {
 		return "", err
 	}
 	manifest := buildToolHubManifest(
@@ -56,6 +58,8 @@ func (ime *IME) ensureToolHubManifest() (string, error) {
 		filepath.Join(os.Getenv("LOCALAPPDATA"), "PIME", "Logs"),
 		launcherPath,
 		lexiconManagerScript,
+		settingsToolScript,
+		diagnosticsToolScript,
 		ime.currentYimeMode(),
 	)
 	if err := validateToolHubManifest(manifest); err != nil {

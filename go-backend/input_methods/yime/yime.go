@@ -22,43 +22,48 @@ const (
 	APP         = "PIME"
 	APP_VERSION = "0.01"
 
-	ID_MODE_ICON                      = 1
-	ID_ASCII_MODE                     = 2
-	ID_FULL_SHAPE                     = 3
-	ID_ASCII_PUNCT                    = 4
-	ID_TRADITIONALIZATION             = 5
-	ID_YIME_VARIABLE                  = 20
-	ID_YIME_FULL                      = 21
-	ID_YIME_SHORTHAND                 = 22
-	ID_DEPLOY                         = 10
-	ID_SYNC                           = 11
-	ID_SYNC_DIR                       = 12
-	ID_SHARED_DIR                     = 13
-	ID_USER_DIR                       = 14
-	ID_LOG_DIR                        = 16
-	ID_USER_LEXICON_ADD               = 30
-	ID_USER_LEXICON_DELETE            = 31
-	ID_USER_LEXICON_EDIT              = 32
-	ID_USER_LEXICON_APPLY             = 33
-	ID_USER_LEXICON_IMPORT            = 34
-	ID_USER_LEXICON_EXPORT            = 35
-	ID_USER_LEXICON_MANAGER           = 36
-	ID_REVERSE_LOOKUP_DEFAULT         = 40
-	ID_REVERSE_LOOKUP_FULL            = 41
-	ID_REVERSE_LOOKUP_HIDDEN          = 42
-	ID_REVERSE_LOOKUP_STANDARD_PINYIN = 43
-	ID_REVERSE_LOOKUP_YIME_PINYIN     = 44
-	ID_REVERSE_LOOKUP_KEY_SEQUENCE    = 45
-	ID_HELP_VIEW                      = 60
-	ID_HELP_TRIAL_FEEDBACK            = 61
-	ID_HELP_COPY_TRIAL_TEMPLATE       = 62
-	ID_HELP_TOOL_HUB                  = 63
-	ID_CANDIDATE_PAGE_SIZE_5          = 70
-	ID_CANDIDATE_PAGE_SIZE_6          = 71
-	ID_CANDIDATE_PAGE_SIZE_7          = 72
-	ID_CANDIDATE_PAGE_SIZE_8          = 73
-	ID_CANDIDATE_PAGE_SIZE_9          = 74
-	ID_CANDIDATE_LAYOUT_TOGGLE        = 75
+	// Keep Yime command IDs in a dedicated high range so host-side callback IDs
+	// from the language bar or input-profile UI do not collide with real Yime
+	// actions such as schema switches or reverse-lookup mode changes.
+	yimeCommandBase = 3200
+
+	ID_MODE_ICON                      = yimeCommandBase + 1
+	ID_ASCII_MODE                     = yimeCommandBase + 2
+	ID_FULL_SHAPE                     = yimeCommandBase + 3
+	ID_ASCII_PUNCT                    = yimeCommandBase + 4
+	ID_TRADITIONALIZATION             = yimeCommandBase + 5
+	ID_DEPLOY                         = yimeCommandBase + 10
+	ID_SYNC                           = yimeCommandBase + 11
+	ID_SYNC_DIR                       = yimeCommandBase + 12
+	ID_SHARED_DIR                     = yimeCommandBase + 13
+	ID_USER_DIR                       = yimeCommandBase + 14
+	ID_LOG_DIR                        = yimeCommandBase + 16
+	ID_YIME_VARIABLE                  = yimeCommandBase + 20
+	ID_YIME_FULL                      = yimeCommandBase + 21
+	ID_YIME_SHORTHAND                 = yimeCommandBase + 22
+	ID_USER_LEXICON_ADD               = yimeCommandBase + 30
+	ID_USER_LEXICON_DELETE            = yimeCommandBase + 31
+	ID_USER_LEXICON_EDIT              = yimeCommandBase + 32
+	ID_USER_LEXICON_APPLY             = yimeCommandBase + 33
+	ID_USER_LEXICON_IMPORT            = yimeCommandBase + 34
+	ID_USER_LEXICON_EXPORT            = yimeCommandBase + 35
+	ID_USER_LEXICON_MANAGER           = yimeCommandBase + 36
+	ID_REVERSE_LOOKUP_DEFAULT         = yimeCommandBase + 40
+	ID_REVERSE_LOOKUP_FULL            = yimeCommandBase + 41
+	ID_REVERSE_LOOKUP_HIDDEN          = yimeCommandBase + 42
+	ID_REVERSE_LOOKUP_STANDARD_PINYIN = yimeCommandBase + 43
+	ID_REVERSE_LOOKUP_YIME_PINYIN     = yimeCommandBase + 44
+	ID_REVERSE_LOOKUP_KEY_SEQUENCE    = yimeCommandBase + 45
+	ID_HELP_VIEW                      = yimeCommandBase + 60
+	ID_HELP_TRIAL_FEEDBACK            = yimeCommandBase + 61
+	ID_HELP_COPY_TRIAL_TEMPLATE       = yimeCommandBase + 62
+	ID_HELP_TOOL_HUB                  = yimeCommandBase + 63
+	ID_CANDIDATE_PAGE_SIZE_5          = yimeCommandBase + 70
+	ID_CANDIDATE_PAGE_SIZE_6          = yimeCommandBase + 71
+	ID_CANDIDATE_PAGE_SIZE_7          = yimeCommandBase + 72
+	ID_CANDIDATE_PAGE_SIZE_8          = yimeCommandBase + 73
+	ID_CANDIDATE_PAGE_SIZE_9          = yimeCommandBase + 74
+	ID_CANDIDATE_LAYOUT_TOGGLE        = yimeCommandBase + 75
 )
 
 const (
@@ -1646,6 +1651,10 @@ func (ime *IME) addUserLexiconPhrase() error {
 
 func (ime *IME) openUserLexiconManager() error {
 	return ime.startUserLexiconManagerHelper(ime.currentYimeMode())
+}
+
+func (ime *IME) openSettingsTool() error {
+	return ime.startSettingsToolHelper()
 }
 
 func (ime *IME) currentYimeMode() string {
