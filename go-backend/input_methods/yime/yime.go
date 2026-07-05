@@ -129,6 +129,13 @@ type backendRedeployer interface {
 	Redeploy() bool
 }
 
+// backendUserDataSyncer is implemented by backends that expose Rime's native
+// user-data sync capability. This is intentionally limited to Rime-managed
+// user data and must not be extended to Yime-only standalone state.
+type backendUserDataSyncer interface {
+	SyncUserData() bool
+}
+
 var runRimeExternalBuild = runRimeExternalBuildDefault
 var scheduleStandaloneToolLaunch = func(run func() error, onError func(error)) {
 	go func() {
@@ -368,7 +375,9 @@ func (ime *IME) onCommand(req *pime.Request, resp *pime.Response) *pime.Response
 	case ID_DEPLOY:
 		ime.redeployBackend()
 	case ID_SYNC:
-		log.Println("同步用户数据尚未实现")
+		if !ime.syncBackendUserData() {
+			log.Println("同步用户数据失败或后端未提供该能力")
+		}
 	case ID_USER_DIR:
 		ime.openPath(ime.userDir())
 	case ID_SHARED_DIR:
@@ -1493,13 +1502,13 @@ func (ime *IME) buildMenu() []map[string]interface{} {
 		{"id": ID_CANDIDATE_LAYOUT_TOGGLE, "text": candidateLayoutToggleText(ime.style.CandidatePerRow > verticalCandidatesPerRow)},
 		{"text": "候选项数", "submenu": ime.buildCandidatePageSizeMenu()},
 		{"text": ""},
-		{"id": ID_DEPLOY, "text": "重新部署(&D)"},
-		{"id": ID_SYNC, "text": "同步(&S)"},
-		{"text": "打开文件夹(&O)", "submenu": []map[string]interface{}{
-			{"id": ID_USER_DIR, "text": "用户文件夹"},
-			{"id": ID_SHARED_DIR, "text": "共享文件夹"},
-			{"id": ID_SYNC_DIR, "text": "同步文件夹"},
-			{"id": ID_LOG_DIR, "text": "日志文件夹"},
+		{"id": ID_DEPLOY, "text": "重新部署 Rime(&D)"},
+		{"id": ID_SYNC, "text": "同步 Rime 用户数据(&S)"},
+		{"text": "打开数据与日志文件夹(&O)", "submenu": []map[string]interface{}{
+			{"id": ID_USER_DIR, "text": "用户 Rime 数据目录"},
+			{"id": ID_SHARED_DIR, "text": "内置共享数据目录"},
+			{"id": ID_SYNC_DIR, "text": "Rime 同步目录"},
+			{"id": ID_LOG_DIR, "text": "PIME 日志目录"},
 		}},
 	}
 }
@@ -2049,6 +2058,17 @@ func (ime *IME) redeployBackend() {
 		schemaID = "yime_variable"
 	}
 	ime.reloadBackendForSchema(schemaID)
+}
+
+func (ime *IME) syncBackendUserData() bool {
+	if ime.backend == nil {
+		return false
+	}
+	syncer, ok := ime.backend.(backendUserDataSyncer)
+	if !ok {
+		return false
+	}
+	return syncer.SyncUserData()
 }
 
 // reloadBackendSessionForSchema recreates the current Rime session without a

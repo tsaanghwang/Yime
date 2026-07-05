@@ -124,6 +124,7 @@ var (
 		startMaintenance      *syscall.LazyProc
 		joinMaintenanceThread *syscall.LazyProc
 		deployConfigFile      *syscall.LazyProc
+		syncUserData          *syscall.LazyProc
 		createSession         *syscall.LazyProc
 		findSession           *syscall.LazyProc
 		destroySession        *syscall.LazyProc
@@ -164,6 +165,7 @@ func loadRimeDLL(dllPath string) error {
 		startMaintenance      *syscall.LazyProc
 		joinMaintenanceThread *syscall.LazyProc
 		deployConfigFile      *syscall.LazyProc
+		syncUserData          *syscall.LazyProc
 		createSession         *syscall.LazyProc
 		findSession           *syscall.LazyProc
 		destroySession        *syscall.LazyProc
@@ -189,6 +191,7 @@ func loadRimeDLL(dllPath string) error {
 		startMaintenance:      dll.NewProc("RimeStartMaintenance"),
 		joinMaintenanceThread: dll.NewProc("RimeJoinMaintenanceThread"),
 		deployConfigFile:      dll.NewProc("RimeDeployConfigFile"),
+		syncUserData:          dll.NewProc("RimeSyncUserData"),
 		createSession:         dll.NewProc("RimeCreateSession"),
 		findSession:           dll.NewProc("RimeFindSession"),
 		destroySession:        dll.NewProc("RimeDestroySession"),
@@ -211,7 +214,7 @@ func loadRimeDLL(dllPath string) error {
 
 	for _, proc := range []*syscall.LazyProc{
 		procs.setup, procs.initialize, procs.finalize, procs.startMaintenance, procs.joinMaintenanceThread,
-		procs.deployConfigFile, procs.createSession, procs.findSession, procs.destroySession, procs.processKey,
+		procs.deployConfigFile, procs.syncUserData, procs.createSession, procs.findSession, procs.destroySession, procs.processKey,
 		procs.clearComposition, procs.getCommit, procs.freeCommit, procs.getContext, procs.freeContext,
 		procs.setOption, procs.getOption, procs.getCurrentSchema, procs.selectSchema, procs.selectCandidate,
 		procs.candidateListBegin, procs.candidateListNext, procs.candidateListEnd,
@@ -299,6 +302,11 @@ func ProcessKey(sessionId RimeSessionId, keyCode, modifiers int) bool {
 
 func ClearComposition(sessionId RimeSessionId) {
 	rimeProcs.clearComposition.Call(uintptr(sessionId))
+}
+
+func SyncUserData() bool {
+	r1, _, _ := rimeProcs.syncUserData.Call()
+	return boolResult(r1)
 }
 
 func GetComposition(sessionId RimeSessionId) (RimeComposition, bool) {

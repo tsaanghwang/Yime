@@ -16,9 +16,13 @@ Rime frontend.
   to gather heavy UI surfaces so the TSF/PIME language bar only needs to
   dispatch lightweight commands.
 - Settings: Yime variable-length, fixed-length, and shorthand schemas,
-  Chinese/English mode, shape, punctuation, deploy, sync, and data folders. The
-  shorthand entry is enabled when the shorthand schema is bundled with the
-  installed Rime data.
+  Chinese/English mode, shape, punctuation, `重新部署 Rime`, `同步 Rime 用户数据`,
+  and data/log folders. `重新部署 Rime` is the full runtime redeploy path for the
+  currently installed Rime data; it is not a "re-import system lexicon" button.
+  `同步 Rime 用户数据` is Rime's native user-data sync action and does not include
+  Yime-only standalone state such as `yime_settings_state.json`. The shorthand
+  entry is enabled when the shorthand schema is bundled with the installed
+  Rime data.
 - Reverse code lookup: choose how reverse lookup codes are displayed for Hanzi.
 - User lexicon: opens the independent lexicon-manager dialog for adding,
   deleting, editing, searching, importing, exporting, and applying the user

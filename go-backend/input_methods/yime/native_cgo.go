@@ -140,6 +140,13 @@ func (b *nativeBackend) CurrentSchema() string {
 	return schemaID
 }
 
+func (b *nativeBackend) SyncUserData() bool {
+	if !rimeInitOK {
+		return false
+	}
+	return SyncUserData()
+}
+
 // Redeploy performs a full RIME redeployment so that on-disk configuration
 // changes (such as an updated menu/page_size) invalidate librime's config
 // cache and take effect. RimeRedeploy finalizes the service and destroys all

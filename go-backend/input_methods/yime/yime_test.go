@@ -64,6 +64,17 @@ func (b *redeployTestBackend) Redeploy() bool {
 	return true
 }
 
+type syncTestBackend struct {
+	*testBackend
+	syncCount  int
+	syncResult bool
+}
+
+func (b *syncTestBackend) SyncUserData() bool {
+	b.syncCount++
+	return b.syncResult
+}
+
 func newTestBackend() *testBackend {
 	return &testBackend{schemaID: "yime_variable"}
 }
@@ -888,15 +899,27 @@ func TestOnMenuReturnsSettingsMenu(t *testing.T) {
 		t.Fatalf("expected page size 9 menu text, got %#v", item)
 	}
 
-	if item := findTopLevelMenuItem(t, items, ID_DEPLOY); item["text"] != "重新部署(&D)" {
+	if item := findTopLevelMenuItem(t, items, ID_DEPLOY); item["text"] != "重新部署 Rime(&D)" {
 		t.Fatalf("expected deploy command to remain in settings root, got %#v", item)
 	}
-	if item := findTopLevelMenuItem(t, items, ID_SYNC); item["text"] != "同步(&S)" {
+	if item := findTopLevelMenuItem(t, items, ID_SYNC); item["text"] != "同步 Rime 用户数据(&S)" {
 		t.Fatalf("expected sync command to remain in settings root, got %#v", item)
 	}
-	openFolderMenu := findSubmenuItem(t, items, "打开文件夹(&O)")
+	openFolderMenu := findSubmenuItem(t, items, "打开数据与日志文件夹(&O)")
 	if len(openFolderMenu) != 4 {
 		t.Fatalf("expected open-folder submenu to remain in settings root, got %#v", openFolderMenu)
+	}
+	if item := findTopLevelMenuItem(t, openFolderMenu, ID_USER_DIR); item["text"] != "用户 Rime 数据目录" {
+		t.Fatalf("expected user-data directory label, got %#v", item)
+	}
+	if item := findTopLevelMenuItem(t, openFolderMenu, ID_SHARED_DIR); item["text"] != "内置共享数据目录" {
+		t.Fatalf("expected shared-data directory label, got %#v", item)
+	}
+	if item := findTopLevelMenuItem(t, openFolderMenu, ID_SYNC_DIR); item["text"] != "Rime 同步目录" {
+		t.Fatalf("expected sync directory label, got %#v", item)
+	}
+	if item := findTopLevelMenuItem(t, openFolderMenu, ID_LOG_DIR); item["text"] != "PIME 日志目录" {
+		t.Fatalf("expected log directory label, got %#v", item)
 	}
 }
 
@@ -1137,6 +1160,36 @@ func TestDeployCommandRedeploysCurrentSchema(t *testing.T) {
 	}
 	if backend.schemaID != "yime_full" {
 		t.Fatalf("expected current schema preserved across redeploy, got %q", backend.schemaID)
+	}
+}
+
+func TestSyncCommandUsesNativeRimeUserDataSyncWithoutRefreshingHostState(t *testing.T) {
+	ime := newTestIME()
+	backend := &syncTestBackend{testBackend: newTestBackend(), syncResult: true}
+	backend.session = true
+	backend.composition = "ni"
+	backend.refreshCandidates()
+	ime.backend = backend
+
+	resp := ime.onCommand(&pime.Request{
+		SeqNum: 44,
+		ID:     pime.FlexibleID{Int: ID_SYNC, IsInt: true},
+	}, pime.NewResponse(44, true))
+
+	if resp.ReturnValue != 1 {
+		t.Fatalf("expected sync command to be handled, got %d", resp.ReturnValue)
+	}
+	if backend.syncCount != 1 {
+		t.Fatalf("expected sync command to trigger one native user-data sync, got %d", backend.syncCount)
+	}
+	if resp.CompositionString != "" || resp.ShowCandidates || len(resp.CandidateList) != 0 {
+		t.Fatalf("expected sync command not to refresh host candidate state, got %#v", resp)
+	}
+	if backend.destroyCount != 0 {
+		t.Fatalf("expected sync command not to reload the session, destroyCount=%d", backend.destroyCount)
+	}
+	if backend.composition != "ni" {
+		t.Fatalf("expected composition preserved across sync, got %q", backend.composition)
 	}
 }
 
@@ -1424,6 +1477,9 @@ func TestUserLexiconManagerScriptShowsDialogInsideTopLevelTry(t *testing.T) {
 	if !strings.Contains(userLexiconManagerScript, "Assert-EntryFields") || !strings.Contains(userLexiconManagerScript, "请输入词条。") || !strings.Contains(userLexiconManagerScript, "请输入数字标调拼音，例如 zhong1 guo2。") {
 		t.Fatalf("expected lexicon manager script to validate entry input with localized Chinese prompts")
 	}
+	if !strings.Contains(userLexiconManagerScript, "$confirmMessage = \"确定要删除 $($phrases.Count) 条词条吗？\"") || !strings.Contains(userLexiconManagerScript, "Add-OperationHistory \"删除词条 $($phrases.Count) 条\"") {
+		t.Fatalf("expected delete-entry messages to avoid brittle PowerShell format-string placeholders")
+	}
 	if !strings.Contains(userLexiconManagerScript, "设置词条权重") {
 		t.Fatalf("expected lexicon manager script to localize the exact-weight dialog")
 	}
@@ -1465,9 +1521,6 @@ func TestUserLexiconManagerScriptShowsDialogInsideTopLevelTry(t *testing.T) {
 	}
 	if !strings.Contains(userLexiconManagerScript, "复制导入摘要") {
 		t.Fatalf("expected lexicon manager script to support copying an import-preview summary")
-	}
-	if !strings.Contains(userLexiconManagerScript, "$copyHistoryButton.Add_Click") {
-		t.Fatalf("expected lexicon manager script to wire the copy-summary action button")
 	}
 	if !strings.Contains(userLexiconManagerScript, "$actionBlock = $Action.GetNewClosure()") || !strings.Contains(userLexiconManagerScript, "& $actionBlock") {
 		t.Fatalf("expected lexicon manager action handlers to capture button/menu callbacks with GetNewClosure")

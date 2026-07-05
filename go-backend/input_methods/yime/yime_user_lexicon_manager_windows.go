@@ -583,7 +583,6 @@ $copyHistoryButton.Top = 346
 $copyHistoryButton.Width = 108
 $copyHistoryButton.Height = 28
 $copyHistoryButton.Text = "复制摘要"
-$form.Controls.Add($copyHistoryButton)
 
 $script:isLexiconDirty = $false
 $script:sortField = "phrase"
@@ -870,8 +869,9 @@ function Delete-Entry {
   if ($phrases.Count -gt 5) {
     $previewText += " 等"
   }
+  $confirmMessage = "确定要删除 $($phrases.Count) 条词条吗？" + [Environment]::NewLine + $previewText
   $confirm = [System.Windows.Forms.MessageBox]::Show(
-    ("确定要删除 {0} 条词条吗？" + [Environment]::NewLine + "{1}") -f $phrases.Count, $previewText,
+    $confirmMessage,
     "词库管理",
     "YesNo",
     "Question"
@@ -885,8 +885,8 @@ function Delete-Entry {
   }
   Set-DirtyState $true
   Refresh-EntryList
-  Add-OperationHistory ("删除词条 {0} 条" -f $phrases.Count)
-  Set-Status ("已从源词库删除 {0} 条词条，点击应用用户词库使其生效。" -f $phrases.Count)
+  Add-OperationHistory "删除词条 $($phrases.Count) 条"
+  Set-Status "已从源词库删除 $($phrases.Count) 条词条，点击应用用户词库使其生效。"
 }
 
 function Apply-Lexicon {
@@ -1459,14 +1459,6 @@ $listView.Add_ColumnClick({
 $listView.Add_ItemSelectionChanged({
   try {
     Set-SelectionSummary
-  } catch {
-    Show-Error $_.Exception.Message
-  }
-})
-
-$copyHistoryButton.Add_Click({
-  try {
-    Copy-RecentOperationSummary
   } catch {
     Show-Error $_.Exception.Message
   }
