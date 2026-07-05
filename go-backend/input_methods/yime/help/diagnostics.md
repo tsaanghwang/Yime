@@ -15,6 +15,8 @@ Current first places to inspect:
 - `%LOCALAPPDATA%\PIME\Logs`
 - `%APPDATA%\PIME\Rime`
 - the installed `server.exe` and bundled `rime_deployer.exe`
+- the local admin-test helper logs under `go-backend\.tmp_go` when
+  `run_admin_yime_tests.cmd` has been used during repository-side debugging
 
 The current diagnostics tool already checks these concrete layers:
 
@@ -69,3 +71,21 @@ The current diagnostics tool already checks these concrete layers:
 - recommended actions that turn those signals into concrete next steps such as
   retry deploy, restart PIMELauncher/server, inspect the last error line, or
   verify user-side configuration content
+
+## Local Admin Test Wrapper
+
+Repository-side debugging now also includes `go-backend\run_admin_yime_tests.cmd`.
+
+- This script is a local developer helper, not a shipped runtime feature.
+- It pins `TMP`, `TEMP`, `GOTMPDIR`, and `GOCACHE` into the repository's
+  `go-backend\.tmp_go` and `go-backend\.go_cache` directories before running
+  `go test ./input_methods/yime`.
+- It writes `admin-yime-test.env.log`, `admin-yime-test.full.log`, and
+  `admin-yime-test.meta.log` under `go-backend\.tmp_go` so later debugging can
+  see both the Go environment and the final test exit code.
+
+Current known limitation on this machine:
+
+- Even with an elevated launch, Windows Application Control can still block the
+  generated `yime.test.exe` under `go-build...`, so "admin run" alone is not
+  proof that package tests are actually runnable here.

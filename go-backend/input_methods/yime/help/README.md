@@ -57,6 +57,10 @@ that reduces pressure on the language-bar callback path.
   entries, and the external tool-hub window renders and dispatches them.
 - The current tool hub already includes standalone settings and diagnostics
   shells, even though their detailed workflows are still intentionally light.
+- Repository-side debugging also has a local helper
+  `go-backend\run_admin_yime_tests.cmd` for repeatable elevated test attempts.
+  It is for developer troubleshooting only and is not part of the installed
+  runtime surface.
 
 ## Reverse Code Lookup
 
