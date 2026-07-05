@@ -4,9 +4,7 @@ package yime
 
 import (
 	"os"
-	"os/exec"
 	"path/filepath"
-	"syscall"
 )
 
 func (ime *IME) startUserLexiconAddHelper(mode string) error {
@@ -23,14 +21,11 @@ func (ime *IME) startUserLexiconAddHelper(mode string) error {
 	if err := os.WriteFile(scriptPath, scriptContent, 0o644); err != nil {
 		return err
 	}
-	cmd := exec.Command(
-		"powershell.exe",
+	cmd := newUIPowerShellCommand(
 		"-NoProfile",
 		"-STA",
 		"-ExecutionPolicy",
 		"Bypass",
-		"-WindowStyle",
-		"Hidden",
 		"-File",
 		scriptPath,
 		"-SharedDir",
@@ -40,7 +35,6 @@ func (ime *IME) startUserLexiconAddHelper(mode string) error {
 		"-Mode",
 		mode,
 	)
-	cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
 	return cmd.Start()
 }
 

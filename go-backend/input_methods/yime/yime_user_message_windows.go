@@ -3,7 +3,6 @@
 package yime
 
 import (
-	"os/exec"
 	"strings"
 )
 
@@ -18,7 +17,7 @@ func (ime *IME) showUserLexiconMessage(title, message, icon string) {
 		icon = "Information"
 	}
 	script := "Add-Type -AssemblyName System.Windows.Forms; [System.Windows.Forms.MessageBox]::Show(" + powerShellSingleQuoted(message) + ", " + powerShellSingleQuoted(title) + ", 'OK', '" + icon + "') | Out-Null"
-	cmd := exec.Command("powershell.exe", "-NoProfile", "-STA", "-ExecutionPolicy", "Bypass", "-WindowStyle", "Hidden", "-Command", script)
+	cmd := newUIPowerShellCommand("-NoProfile", "-STA", "-ExecutionPolicy", "Bypass", "-Command", script)
 	_ = cmd.Start()
 }
 

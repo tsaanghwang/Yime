@@ -12,6 +12,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"time"
 	"unicode/utf8"
 
 	"github.com/EasyIME/pime-go/pime"
@@ -51,6 +52,7 @@ const (
 	ID_HELP_VIEW                      = 60
 	ID_HELP_TRIAL_FEEDBACK            = 61
 	ID_HELP_COPY_TRIAL_TEMPLATE       = 62
+	ID_HELP_TOOL_HUB                  = 63
 	ID_CANDIDATE_PAGE_SIZE_5          = 70
 	ID_CANDIDATE_PAGE_SIZE_6          = 71
 	ID_CANDIDATE_PAGE_SIZE_7          = 72
@@ -128,6 +130,14 @@ type backendRedeployer interface {
 }
 
 var runRimeExternalBuild = runRimeExternalBuildDefault
+var scheduleStandaloneToolLaunch = func(run func() error, onError func(error)) {
+	go func() {
+		time.Sleep(150 * time.Millisecond)
+		if err := run(); err != nil && onError != nil {
+			onError(err)
+		}
+	}()
+}
 
 type IME struct {
 	*pime.TextServiceBase
@@ -188,6 +198,10 @@ func (ime *IME) HandleRequest(req *pime.Request) *pime.Response {
 		return ime.onActivate(req, resp)
 	case "onDeactivate":
 		return ime.onDeactivate(req, resp)
+	case "onCompartmentChanged":
+		return ime.onCompartmentChanged(req, resp)
+	case "onKeyboardStatusChanged":
+		return ime.onKeyboardStatusChanged(req, resp)
 	case "filterKeyDown":
 		return ime.filterKeyDown(req, resp)
 	case "onKeyDown":
@@ -226,6 +240,16 @@ func (ime *IME) onDeactivate(req *pime.Request, resp *pime.Response) *pime.Respo
 	log.Println("RIME 输入法已失活")
 	ime.destroySession(resp)
 	ime.removeButtons(resp)
+	resp.ReturnValue = 1
+	return resp
+}
+
+func (ime *IME) onCompartmentChanged(req *pime.Request, resp *pime.Response) *pime.Response {
+	resp.ReturnValue = 1
+	return resp
+}
+
+func (ime *IME) onKeyboardStatusChanged(req *pime.Request, resp *pime.Response) *pime.Response {
 	resp.ReturnValue = 1
 	return resp
 }
@@ -366,10 +390,7 @@ func (ime *IME) onCommand(req *pime.Request, resp *pime.Response) *pime.Response
 	case ID_USER_LEXICON_EXPORT:
 		ime.openPath(ime.userDir())
 	case ID_USER_LEXICON_MANAGER:
-		if err := ime.openUserLexiconManager(); err != nil {
-			log.Printf("打开词库管理失败: %v", err)
-			ime.showUserLexiconMessage("打开词库管理失败", err.Error(), "Error")
-		}
+		ime.launchStandaloneToolAsync(ime.openUserLexiconManager, "打开词库管理失败")
 	case ID_USER_LEXICON_DELETE, ID_USER_LEXICON_IMPORT:
 		log.Printf("用户词库命令尚未接入: %d", commandID)
 	case ID_REVERSE_LOOKUP_DEFAULT, ID_REVERSE_LOOKUP_FULL:
@@ -391,6 +412,8 @@ func (ime *IME) onCommand(req *pime.Request, resp *pime.Response) *pime.Response
 		ime.openPath(filepath.Join(ime.helpDir(), "trial-feedback.md"))
 	case ID_HELP_COPY_TRIAL_TEMPLATE:
 		ime.copyTextToClipboard(ime.trialFeedbackTemplate())
+	case ID_HELP_TOOL_HUB:
+		ime.launchStandaloneToolAsync(ime.openToolHub, "打开工具箱失败")
 	case ID_CANDIDATE_PAGE_SIZE_5, ID_CANDIDATE_PAGE_SIZE_6, ID_CANDIDATE_PAGE_SIZE_7, ID_CANDIDATE_PAGE_SIZE_8, ID_CANDIDATE_PAGE_SIZE_9:
 		if err := ime.setCandidatePageSize(minCandidatePageSize + commandID - ID_CANDIDATE_PAGE_SIZE_5); err != nil {
 			log.Printf("设置候选页大小失败: %v", err)
@@ -411,6 +434,13 @@ func (ime *IME) onCommand(req *pime.Request, resp *pime.Response) *pime.Response
 	return resp
 }
 
+func (ime *IME) launchStandaloneToolAsync(run func() error, failureTitle string) {
+	scheduleStandaloneToolLaunch(run, func(err error) {
+		log.Printf("%s: %v", failureTitle, err)
+		ime.showUserLexiconMessage(failureTitle, err.Error(), "Error")
+	})
+}
+
 // commandShouldRefreshState reports whether an onCommand handler should push
 // composition/candidate state back to the host. Display-only language-bar
 // commands such as reverse-lookup mode must not refresh Rime state during the
@@ -420,7 +450,7 @@ func (ime *IME) commandShouldRefreshState(commandID int) bool {
 	switch commandID {
 	case ID_REVERSE_LOOKUP_DEFAULT, ID_REVERSE_LOOKUP_FULL, ID_REVERSE_LOOKUP_HIDDEN,
 		ID_REVERSE_LOOKUP_STANDARD_PINYIN, ID_REVERSE_LOOKUP_YIME_PINYIN, ID_REVERSE_LOOKUP_KEY_SEQUENCE,
-		ID_HELP_VIEW, ID_HELP_TRIAL_FEEDBACK, ID_HELP_COPY_TRIAL_TEMPLATE,
+		ID_HELP_VIEW, ID_HELP_TRIAL_FEEDBACK, ID_HELP_COPY_TRIAL_TEMPLATE, ID_HELP_TOOL_HUB,
 		ID_USER_DIR, ID_SHARED_DIR, ID_SYNC_DIR, ID_LOG_DIR, ID_SYNC, ID_USER_LEXICON_MANAGER,
 		ID_CANDIDATE_PAGE_SIZE_5, ID_CANDIDATE_PAGE_SIZE_6, ID_CANDIDATE_PAGE_SIZE_7, ID_CANDIDATE_PAGE_SIZE_8, ID_CANDIDATE_PAGE_SIZE_9:
 		return false
@@ -441,7 +471,10 @@ func commandIDFromRequest(req *pime.Request) int {
 	}
 	raw, ok := req.Data["commandId"]
 	if !ok {
-		return 0
+		raw, ok = req.Data["id"]
+		if !ok {
+			return 0
+		}
 	}
 	switch value := raw.(type) {
 	case int:
@@ -1444,6 +1477,7 @@ func (ime *IME) buildUserLexiconMenu() []map[string]interface{} {
 
 func (ime *IME) buildHelpMenu() []map[string]interface{} {
 	return []map[string]interface{}{
+		{"id": ID_HELP_TOOL_HUB, "text": "打开工具箱"},
 		{"id": ID_HELP_VIEW, "text": "查看帮助"},
 		{"id": ID_HELP_TRIAL_FEEDBACK, "text": "查看试用反馈说明"},
 		{"id": ID_HELP_COPY_TRIAL_TEMPLATE, "text": "复制试用反馈模板"},
@@ -1472,6 +1506,14 @@ func (ime *IME) helpDir() string {
 		return ""
 	}
 	return filepath.Join(filepath.Dir(exePath), "input_methods", "yime", "help")
+}
+
+func (ime *IME) toolLauncherPath() string {
+	exePath, err := os.Executable()
+	if err != nil {
+		return ""
+	}
+	return filepath.Join(filepath.Dir(exePath), "tool-launcher.exe")
 }
 
 func (ime *IME) userLexiconPath() string {

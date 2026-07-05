@@ -12,6 +12,7 @@ for %%I in ("%ROOT_DIR%\..") do set "PIME_ROOT=%%~fI"
 set "BUILD_ROOT=%ROOT_DIR%\build"
 set "PACKAGE_DIR=%BUILD_ROOT%\go-backend"
 set "SERVER_EXE=%PACKAGE_DIR%\server.exe"
+set "TOOL_LAUNCHER_EXE=%PACKAGE_DIR%\tool-launcher.exe"
 set "BACKEND_SNIPPET=%BUILD_ROOT%\backends.go-backend.json"
 set "RIME_DIR=%ROOT_DIR%\input_methods\yime"
 set "RIME_DATA_DIR=%RIME_DIR%\data"
@@ -93,6 +94,16 @@ if errorlevel 1 (
 )
 
 echo [INFO] Built: "%SERVER_EXE%"
+
+echo [INFO] Building tool-launcher.exe ...
+go build -ldflags "-s -w -H=windowsgui" -o "%TOOL_LAUNCHER_EXE%" .\cmd\tool-launcher
+if errorlevel 1 (
+    echo [ERROR] Failed to build tool-launcher.exe
+    popd
+    exit /b 1
+)
+
+echo [INFO] Built: "%TOOL_LAUNCHER_EXE%"
 
 echo.
 echo ============================================

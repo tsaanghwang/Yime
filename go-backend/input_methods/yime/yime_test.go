@@ -926,6 +926,43 @@ func TestOnCommandAcceptsDataCommandIDForCandidatePageSize(t *testing.T) {
 	}
 }
 
+func TestOnCommandAcceptsSubmenuItemIDForReverseLookupYimePinyin(t *testing.T) {
+	t.Setenv("APPDATA", t.TempDir())
+	ime := newTestIME()
+	backend := &redeployTestBackend{testBackend: newTestBackend(), redeployResult: true}
+	backend.session = true
+	backend.composition = "ni"
+	backend.refreshCandidates()
+	ime.backend = backend
+
+	resp := ime.onCommand(&pime.Request{
+		SeqNum: 29,
+		ID:     pime.FlexibleID{String: "reverse-lookup"},
+		Data: map[string]interface{}{
+			"id": float64(ID_REVERSE_LOOKUP_YIME_PINYIN),
+		},
+	}, pime.NewResponse(29, true))
+
+	if resp.ReturnValue != 1 {
+		t.Fatalf("expected reverse-lookup submenu item id to be handled, got %d", resp.ReturnValue)
+	}
+	if ime.reverseLookupDisplayMode != "yime_pinyin" {
+		t.Fatalf("expected yime_pinyin mode, got %q", ime.reverseLookupDisplayMode)
+	}
+	if backend.redeployCount != 0 {
+		t.Fatalf("expected reverse lookup submenu click to avoid redeploy, got %d", backend.redeployCount)
+	}
+	if backend.destroyCount != 0 {
+		t.Fatalf("expected reverse lookup submenu click to avoid session reload, destroyCount=%d", backend.destroyCount)
+	}
+	if resp.CompositionString != "" || resp.ShowCandidates || len(resp.CandidateList) != 0 {
+		t.Fatalf("expected reverse lookup submenu click not to refresh host candidate state, got %#v", resp)
+	}
+	if backend.composition != "ni" {
+		t.Fatalf("expected composition preserved, got %q", backend.composition)
+	}
+}
+
 func TestOnCommandSwitchesCandidateLayout(t *testing.T) {
 	ime := newTestIME()
 	backend := ime.backend.(*testBackend)
@@ -1263,6 +1300,596 @@ func TestReadPageSizeFromCustomConfig(t *testing.T) {
 	}
 }
 
+func TestNewUIPowerShellCommandUsesWindowsPowerShellWithoutHidingUI(t *testing.T) {
+	cmd := newUIPowerShellCommand("-NoProfile", "-Command", "Write-Output ok")
+
+	if !strings.HasSuffix(strings.ToLower(cmd.Path), "\\powershell.exe") {
+		t.Fatalf("expected powershell.exe path, got %q", cmd.Path)
+	}
+	if cmd.SysProcAttr == nil || !cmd.SysProcAttr.HideWindow {
+		t.Fatalf("expected UI PowerShell command to hide only the backing console window, got %#v", cmd.SysProcAttr)
+	}
+}
+
+func TestBuildDetachedUIPowerShellLauncherScriptQuotesProgramFilesArguments(t *testing.T) {
+	script := buildDetachedUIPowerShellLauncherScript(
+		"-NoProfile",
+		"-STA",
+		"-File",
+		`C:\Program Files (x86)\YIME\go-backend\input_methods\yime\tool.ps1`,
+		"-SharedDir",
+		`C:\Program Files (x86)\YIME\go-backend\input_methods\yime\data`,
+	)
+
+	if !strings.Contains(script, "Start-Process -FilePath ") {
+		t.Fatalf("expected detached launcher script to use Start-Process, got %q", script)
+	}
+	if !strings.Contains(script, `"-File" "C:\Program Files (x86)\YIME\go-backend\input_methods\yime\tool.ps1"`) {
+		t.Fatalf("expected detached launcher script to preserve quoted Program Files script path, got %q", script)
+	}
+	if !strings.Contains(script, `"-SharedDir" "C:\Program Files (x86)\YIME\go-backend\input_methods\yime\data"`) {
+		t.Fatalf("expected detached launcher script to preserve quoted Program Files shared-data path, got %q", script)
+	}
+	if !strings.Contains(script, "-WindowStyle Hidden") {
+		t.Fatalf("expected detached launcher script to hide the helper console window, got %q", script)
+	}
+}
+
+func TestWindowsPowerShellPathUsesSystemRootWhenAvailable(t *testing.T) {
+	systemRoot := os.Getenv("SystemRoot")
+	if systemRoot == "" {
+		t.Skip("SystemRoot is not set")
+	}
+
+	got := strings.ToLower(windowsPowerShellPath())
+	wantSuffix := strings.ToLower(filepath.Join("System32", "WindowsPowerShell", "v1.0", "powershell.exe"))
+	if !strings.HasSuffix(got, wantSuffix) {
+		t.Fatalf("expected windowsPowerShellPath to use the Windows PowerShell binary under SystemRoot, got %q", got)
+	}
+}
+
+func TestStandalonePowerShellScriptsDoNotContainSmartQuotes(t *testing.T) {
+	scripts := map[string]string{
+		"user lexicon manager": userLexiconManagerScript,
+		"tool hub":             toolHubScript,
+		"settings tool":        settingsToolScript,
+		"diagnostics tool":     diagnosticsToolScript,
+	}
+	for name, script := range scripts {
+		if strings.Contains(script, "“") || strings.Contains(script, "”") {
+			t.Fatalf("expected %s PowerShell script to avoid smart quotes that break parsing", name)
+		}
+	}
+}
+
+func TestUserLexiconManagerScriptShowsDialogInsideTopLevelTry(t *testing.T) {
+	if !strings.Contains(userLexiconManagerScript, "try {\n  [void]$form.ShowDialog()\n} catch {\n  Show-Error $_.Exception.Message\n}") {
+		t.Fatalf("expected lexicon manager script to show dialog inside top-level try/catch")
+	}
+	if !strings.Contains(userLexiconManagerScript, "Edit-Entry") {
+		t.Fatalf("expected lexicon manager script to expose entry editing")
+	}
+	if !strings.Contains(userLexiconManagerScript, "$searchBox.Add_TextChanged") {
+		t.Fatalf("expected lexicon manager script to refresh from search changes")
+	}
+	if !strings.Contains(userLexiconManagerScript, "$listView.Add_DoubleClick") {
+		t.Fatalf("expected lexicon manager script to support double-click editing")
+	}
+	if !strings.Contains(userLexiconManagerScript, "源词库: {0}") || !strings.Contains(userLexiconManagerScript, "生成词库: {1}") {
+		t.Fatalf("expected lexicon manager script to show source and generated lexicon paths")
+	}
+	if !strings.Contains(userLexiconManagerScript, "权重") {
+		t.Fatalf("expected lexicon manager script to expose lexicon-entry weight editing")
+	}
+	if !strings.Contains(userLexiconManagerScript, "Set-DirtyState") {
+		t.Fatalf("expected lexicon manager script to track unapplied source-lexicon changes")
+	}
+	if !strings.Contains(userLexiconManagerScript, "Get-SortedEntries") {
+		t.Fatalf("expected lexicon manager script to sort visible lexicon entries")
+	}
+	if !strings.Contains(userLexiconManagerScript, "$sortFieldComboBox.Add_SelectedIndexChanged") {
+		t.Fatalf("expected lexicon manager script to refresh after sort field changes")
+	}
+	if !strings.Contains(userLexiconManagerScript, "$sortDirectionButton.Add_Click") {
+		t.Fatalf("expected lexicon manager script to toggle sort direction")
+	}
+	if !strings.Contains(userLexiconManagerScript, "源词库有未应用改动") {
+		t.Fatalf("expected lexicon manager script to warn about unapplied source changes")
+	}
+	if !strings.Contains(userLexiconManagerScript, "Get-SelectedPhrases") {
+		t.Fatalf("expected lexicon manager script to support multi-selection workflows")
+	}
+	if !strings.Contains(userLexiconManagerScript, "Adjust-SelectedWeights") {
+		t.Fatalf("expected lexicon manager script to support batch weight adjustment")
+	}
+	if !strings.Contains(userLexiconManagerScript, "Get-ImportConflictPreview") {
+		t.Fatalf("expected lexicon manager script to preview import conflicts before applying them")
+	}
+	if !strings.Contains(userLexiconManagerScript, "Show-ImportConflictPreviewDialog") {
+		t.Fatalf("expected lexicon manager script to show an import-conflict preview dialog")
+	}
+	if !strings.Contains(userLexiconManagerScript, "$form.Add_FormClosing") {
+		t.Fatalf("expected lexicon manager script to warn before closing with unapplied changes")
+	}
+	if !strings.Contains(userLexiconManagerScript, "Show-SetWeightDialog") {
+		t.Fatalf("expected lexicon manager script to support setting an exact weight")
+	}
+	if !strings.Contains(userLexiconManagerScript, "设置词条权重") {
+		t.Fatalf("expected lexicon manager script to localize the exact-weight dialog")
+	}
+	if !strings.Contains(userLexiconManagerScript, "Set-SelectedWeights") {
+		t.Fatalf("expected lexicon manager script to set exact weights for selected entries")
+	}
+	if !strings.Contains(userLexiconManagerScript, "Set-SelectionSummary") {
+		t.Fatalf("expected lexicon manager script to summarize the current multi-selection")
+	}
+	if !strings.Contains(userLexiconManagerScript, "Refresh-OperationHistory") {
+		t.Fatalf("expected lexicon manager script to render a recent-operation history panel")
+	}
+	if !strings.Contains(userLexiconManagerScript, "Add-OperationHistory") {
+		t.Fatalf("expected lexicon manager script to append recent-operation history entries")
+	}
+	if !strings.Contains(userLexiconManagerScript, "Copy-RecentOperationSummary") {
+		t.Fatalf("expected lexicon manager script to copy a structured recent-operation summary")
+	}
+	if !strings.Contains(userLexiconManagerScript, "外部窗口中的输入法可能随 Windows 切换") || !strings.Contains(userLexiconManagerScript, "批量修改更建议优先用导入、编辑源文件、打开目录。") {
+		t.Fatalf("expected lexicon manager script to explain the Windows input-method limitation and recommend file-oriented workflows")
+	}
+	if !strings.Contains(userLexiconManagerScript, "Save-UndoSnapshot") {
+		t.Fatalf("expected lexicon manager script to capture undo snapshots before source changes")
+	}
+	if !strings.Contains(userLexiconManagerScript, "Undo-LastSourceChange") {
+		t.Fatalf("expected lexicon manager script to support undoing the most recent source change")
+	}
+	if !strings.Contains(userLexiconManagerScript, "SelectedConflictPhrases") {
+		t.Fatalf("expected lexicon manager script to return checked conflict phrases from import preview")
+	}
+	if !strings.Contains(userLexiconManagerScript, "全选冲突") || !strings.Contains(userLexiconManagerScript, "清空冲突") {
+		t.Fatalf("expected lexicon manager script to support selecting or clearing import conflicts")
+	}
+	if !strings.Contains(userLexiconManagerScript, "冲突项") || !strings.Contains(userLexiconManagerScript, "新增项") {
+		t.Fatalf("expected lexicon manager script to split import preview between conflict and new-entry views")
+	}
+	if !strings.Contains(userLexiconManagerScript, "只看冲突") || !strings.Contains(userLexiconManagerScript, "只看新增") || !strings.Contains(userLexiconManagerScript, "查看全部") {
+		t.Fatalf("expected lexicon manager script to expose import-preview view filters")
+	}
+	if !strings.Contains(userLexiconManagerScript, "复制导入摘要") {
+		t.Fatalf("expected lexicon manager script to support copying an import-preview summary")
+	}
+	if !strings.Contains(userLexiconManagerScript, "$copyHistoryButton.Add_Click") {
+		t.Fatalf("expected lexicon manager script to wire the copy-summary action button")
+	}
+	if !strings.Contains(userLexiconManagerScript, "Add-ActionButton \"打开目录\" { Open-UserFolder }") {
+		t.Fatalf("expected lexicon manager script to expose the user lexicon directory as a top-level toolbar action")
+	}
+	if !strings.Contains(userLexiconManagerScript, "Set-SortFromColumn") {
+		t.Fatalf("expected lexicon manager script to map column clicks into sort changes")
+	}
+	if !strings.Contains(userLexiconManagerScript, "$listView.Add_ColumnClick") {
+		t.Fatalf("expected lexicon manager script to sort from list column clicks")
+	}
+	if !strings.Contains(userLexiconManagerScript, "$listView.Add_ItemSelectionChanged") {
+		t.Fatalf("expected lexicon manager script to refresh selection summary from selection changes")
+	}
+	if strings.Contains(userLexiconManagerScript, "TsfActivator") || strings.Contains(userLexiconManagerScript, "TF_CreateInputProcessorProfiles") || strings.Contains(userLexiconManagerScript, "ActivateLanguageProfile(ref") {
+		t.Fatalf("expected lexicon manager script to avoid in-script TSF activation that can destabilize the host")
+	}
+	if strings.Contains(userLexiconManagerScript, "Ensure-YimeInputProfile") || strings.Contains(userLexiconManagerScript, "Register-YimeInputProfileControl") || strings.Contains(userLexiconManagerScript, "yimeActivationTimer") {
+		t.Fatalf("expected lexicon manager script to remove residual input-method preservation hooks once that workflow is abandoned")
+	}
+	if !strings.Contains(userLexiconManagerScript, "$form.Add_Shown({") || !strings.Contains(userLexiconManagerScript, "[System.Windows.Forms.Screen]::PrimaryScreen.WorkingArea") || !strings.Contains(userLexiconManagerScript, "$form.Location = New-Object System.Drawing.Point($x, $y)") || !strings.Contains(userLexiconManagerScript, "$form.Activate()") {
+		t.Fatalf("expected lexicon manager script to restore a centered foreground window when shown")
+	}
+}
+
+func TestToolLauncherDoesNotForceTSFLanguageProfileActivation(t *testing.T) {
+	sourcePath := filepath.Join("..", "..", "cmd", "tool-launcher", "main.go")
+	content, err := os.ReadFile(sourcePath)
+	if err != nil {
+		t.Fatalf("read tool launcher source failed: %v", err)
+	}
+	source := string(content)
+	if strings.Contains(source, "ActivateLanguageProfile") || strings.Contains(source, "ChangeCurrentLanguage") || strings.Contains(source, "TF_CreateInputProcessorProfiles") {
+		t.Fatalf("expected tool launcher to avoid direct TSF profile activation during standalone tool launch")
+	}
+}
+
+func TestToolHubScriptShowsDialogInsideTopLevelTry(t *testing.T) {
+	if !strings.Contains(toolHubScript, "try {\n  [void]$form.ShowDialog()\n} catch {\n  Show-Error $_.Exception.Message\n}") {
+		t.Fatalf("expected tool hub script to show dialog inside top-level try/catch")
+	}
+	if !strings.Contains(toolHubScript, "ConvertFrom-Json") {
+		t.Fatalf("expected tool hub script to render from a manifest-driven payload")
+	}
+	if !strings.Contains(toolHubScript, "-WindowStyle Hidden") {
+		t.Fatalf("expected tool hub script to hide child PowerShell console windows")
+	}
+	if !strings.Contains(toolHubScript, "function Quote-ProcessArgument") || !strings.Contains(toolHubScript, "$argumentLine = ($arguments | ForEach-Object { Quote-ProcessArgument ([string]$_) }) -join \" \"") {
+		t.Fatalf("expected tool hub script to quote PowerShell child-process arguments so Program Files paths survive launch")
+	}
+	if !strings.Contains(toolHubScript, "\"run_executable\"") || !strings.Contains(toolHubScript, "Missing executable: ") || !strings.Contains(toolHubScript, "Start-Process -FilePath $Tool.target_path -ArgumentList $argumentLine") {
+		t.Fatalf("expected tool hub script to launch standalone executables through a dedicated action path")
+	}
+	if !strings.Contains(toolHubScript, "$shouldClose = [bool]$Tool.close_after_launch") || !strings.Contains(toolHubScript, "return $shouldClose") {
+		t.Fatalf("expected tool hub script to report when a child tool wants the hub to exit after launch")
+	}
+	if !strings.Contains(toolHubScript, "$closeTimer = New-Object System.Windows.Forms.Timer") || !strings.Contains(toolHubScript, "$form.Hide()") || !strings.Contains(toolHubScript, "$closeTimer.Start()") {
+		t.Fatalf("expected tool hub script to defer self-close until after the click handler returns")
+	}
+	if !strings.Contains(toolHubScript, "$form.Add_Shown({") || !strings.Contains(toolHubScript, "[System.Windows.Forms.Screen]::PrimaryScreen.WorkingArea") || !strings.Contains(toolHubScript, "$form.Location = New-Object System.Drawing.Point($x, $y)") {
+		t.Fatalf("expected tool hub script to restore a normal centered window when shown")
+	}
+	if strings.Contains(toolHubScript, "$form.TopMost = $true") || strings.Contains(toolHubScript, "$form.BringToFront()") {
+		t.Fatalf("expected tool hub script to avoid aggressive foreground forcing that can lock input-method state")
+	}
+}
+
+func TestStandaloneSettingsAndDiagnosticsScriptsProvideRealWindowShells(t *testing.T) {
+	if !strings.Contains(settingsToolScript, "Settings-side standalone tool shell") {
+		t.Fatalf("expected settings tool script shell copy")
+	}
+	if !strings.Contains(settingsToolScript, "Open settings guide") {
+		t.Fatalf("expected settings tool script to expose guide entry points")
+	}
+	if !strings.Contains(diagnosticsToolScript, "Yime diagnostics panel") {
+		t.Fatalf("expected diagnostics tool script shell copy")
+	}
+	if !strings.Contains(diagnosticsToolScript, "Refresh-Status") {
+		t.Fatalf("expected diagnostics tool script to expose a refreshable status view")
+	}
+	if !strings.Contains(diagnosticsToolScript, "Get-ProcessSummary") {
+		t.Fatalf("expected diagnostics tool script to inspect running-process status")
+	}
+	if !strings.Contains(diagnosticsToolScript, "Get-DeployerCheck") {
+		t.Fatalf("expected diagnostics tool script to inspect installed deployer status")
+	}
+	if !strings.Contains(diagnosticsToolScript, "Get-RimeUserFilesSummary") {
+		t.Fatalf("expected diagnostics tool script to inspect key user Rime files")
+	}
+	if !strings.Contains(diagnosticsToolScript, "Copy structured report") {
+		t.Fatalf("expected diagnostics tool script to support copying its structured report")
+	}
+	if !strings.Contains(diagnosticsToolScript, "Build-StructuredDiagnosticReport") {
+		t.Fatalf("expected diagnostics tool script to build a structured shareable report")
+	}
+	if !strings.Contains(diagnosticsToolScript, "# Yime Diagnostics Report") {
+		t.Fatalf("expected diagnostics tool script to label the structured report clearly")
+	}
+	if !strings.Contains(diagnosticsToolScript, "Include env summary") {
+		t.Fatalf("expected diagnostics tool script to expose an environment-summary report option")
+	}
+	if !strings.Contains(diagnosticsToolScript, "Include actions") {
+		t.Fatalf("expected diagnostics tool script to expose a recommended-actions report option")
+	}
+	if !strings.Contains(diagnosticsToolScript, "Include raw log excerpt") {
+		t.Fatalf("expected diagnostics tool script to expose a raw-log report option")
+	}
+	if !strings.Contains(diagnosticsToolScript, "Anonymize report") {
+		t.Fatalf("expected diagnostics tool script to expose an anonymize-report option")
+	}
+	if !strings.Contains(diagnosticsToolScript, "Keep drive") {
+		t.Fatalf("expected diagnostics tool script to expose a keep-drive anonymization option")
+	}
+	if !strings.Contains(diagnosticsToolScript, "Anonymize mode:") {
+		t.Fatalf("expected diagnostics tool script to expose an anonymize-mode selector")
+	}
+	if !strings.Contains(diagnosticsToolScript, "Names only") {
+		t.Fatalf("expected diagnostics tool script to expose a names-only anonymization mode")
+	}
+	if !strings.Contains(diagnosticsToolScript, "Raw log excerpt mode:") {
+		t.Fatalf("expected diagnostics tool script to expose a raw-log excerpt mode selector")
+	}
+	if !strings.Contains(diagnosticsToolScript, "Preset:") {
+		t.Fatalf("expected diagnostics tool script to expose a report preset selector")
+	}
+	if !strings.Contains(diagnosticsToolScript, "Apply-ReportPreset") {
+		t.Fatalf("expected diagnostics tool script to centralize report preset application")
+	}
+	if !strings.Contains(diagnosticsToolScript, "Apply-ReportOptions") {
+		t.Fatalf("expected diagnostics tool script to apply report options from both built-in and saved presets")
+	}
+	if !strings.Contains(diagnosticsToolScript, "Get-CurrentReportOptions") {
+		t.Fatalf("expected diagnostics tool script to snapshot the current report options for saving")
+	}
+	if !strings.Contains(diagnosticsToolScript, "Load-SavedReportPresets") {
+		t.Fatalf("expected diagnostics tool script to load saved report presets from user data")
+	}
+	if !strings.Contains(diagnosticsToolScript, "Save-SavedReportPresets") {
+		t.Fatalf("expected diagnostics tool script to persist saved report presets to user data")
+	}
+	if !strings.Contains(diagnosticsToolScript, "Get-SelectedSavedPresetName") {
+		t.Fatalf("expected diagnostics tool script to detect when a saved preset is currently selected")
+	}
+	if !strings.Contains(diagnosticsToolScript, "Get-SavedPresetIndexByName") {
+		t.Fatalf("expected diagnostics tool script to look up saved presets by name")
+	}
+	if !strings.Contains(diagnosticsToolScript, "Get-ExportedReportPresetPath") {
+		t.Fatalf("expected diagnostics tool script to build a stable export path for current presets")
+	}
+	if !strings.Contains(diagnosticsToolScript, "Get-ImportedReportPresetCandidates") {
+		t.Fatalf("expected diagnostics tool script to discover importable preset files from user data")
+	}
+	if !strings.Contains(diagnosticsToolScript, "Show-ImportPresetPicker") {
+		t.Fatalf("expected diagnostics tool script to present a dedicated picker for importing preset files")
+	}
+	if !strings.Contains(diagnosticsToolScript, "Refresh-PresetComboBoxItems") {
+		t.Fatalf("expected diagnostics tool script to rebuild the preset list after saved-preset changes")
+	}
+	if !strings.Contains(diagnosticsToolScript, "diagnostics_report_presets.json") {
+		t.Fatalf("expected diagnostics tool script to store saved presets in a stable user-data file")
+	}
+	if !strings.Contains(diagnosticsToolScript, "Issue-ready") {
+		t.Fatalf("expected diagnostics tool script to expose an issue-ready preset")
+	}
+	if !strings.Contains(diagnosticsToolScript, "Local debugging") {
+		t.Fatalf("expected diagnostics tool script to expose a local-debugging preset")
+	}
+	if !strings.Contains(diagnosticsToolScript, "Minimal share") {
+		t.Fatalf("expected diagnostics tool script to expose a minimal-share preset")
+	}
+	if !strings.Contains(diagnosticsToolScript, "Custom") {
+		t.Fatalf("expected diagnostics tool script to expose a custom preset state")
+	}
+	if !strings.Contains(diagnosticsToolScript, "Sync-ReportPresetSelection") {
+		t.Fatalf("expected diagnostics tool script to resync the preset label after manual option changes")
+	}
+	if !strings.Contains(diagnosticsToolScript, "updatingPresetSelection") {
+		t.Fatalf("expected diagnostics tool script to guard preset synchronization from recursive updates")
+	}
+	if !strings.Contains(diagnosticsToolScript, "Save preset") {
+		t.Fatalf("expected diagnostics tool script to expose a save-preset action")
+	}
+	if !strings.Contains(diagnosticsToolScript, "Rename") {
+		t.Fatalf("expected diagnostics tool script to expose a rename-preset action")
+	}
+	if !strings.Contains(diagnosticsToolScript, "Delete") {
+		t.Fatalf("expected diagnostics tool script to expose a delete-preset action")
+	}
+	if !strings.Contains(diagnosticsToolScript, "Export") {
+		t.Fatalf("expected diagnostics tool script to expose an export-preset action")
+	}
+	if !strings.Contains(diagnosticsToolScript, "Import") {
+		t.Fatalf("expected diagnostics tool script to expose an import-preset action")
+	}
+	if !strings.Contains(diagnosticsToolScript, "Export diagnostics preset") {
+		t.Fatalf("expected diagnostics tool script to guide exporting a preset to a user-side file")
+	}
+	if !strings.Contains(diagnosticsToolScript, "Import diagnostics preset") {
+		t.Fatalf("expected diagnostics tool script to guide importing a preset from a user-side file")
+	}
+	if !strings.Contains(diagnosticsToolScript, "Choose an exported preset file to import") {
+		t.Fatalf("expected diagnostics tool script to show a file-picking dialog for importing presets")
+	}
+	if !strings.Contains(diagnosticsToolScript, "Delete saved preset") {
+		t.Fatalf("expected diagnostics tool script to confirm deleting a saved preset")
+	}
+	if !strings.Contains(diagnosticsToolScript, "[Saved] ") {
+		t.Fatalf("expected diagnostics tool script to label saved user presets distinctly")
+	}
+	if !strings.Contains(diagnosticsToolScript, "[Built-in] ") {
+		t.Fatalf("expected diagnostics tool script to label built-in presets distinctly")
+	}
+	if !strings.Contains(diagnosticsToolScript, ".diagnostics_preset.json") {
+		t.Fatalf("expected diagnostics tool script to export current presets to a dedicated file format")
+	}
+	if !strings.Contains(diagnosticsToolScript, "Context window radius:") {
+		t.Fatalf("expected diagnostics tool script to expose a context-window radius selector")
+	}
+	if !strings.Contains(diagnosticsToolScript, "10 lines") || !strings.Contains(diagnosticsToolScript, "20 lines") || !strings.Contains(diagnosticsToolScript, "40 lines") {
+		t.Fatalf("expected diagnostics tool script to expose concrete command-window radius choices")
+	}
+	if !strings.Contains(diagnosticsToolScript, "Error lines only") {
+		t.Fatalf("expected diagnostics tool script to expose an error-only raw-log excerpt mode")
+	}
+	if !strings.Contains(diagnosticsToolScript, "Last command window") {
+		t.Fatalf("expected diagnostics tool script to expose a command-window raw-log excerpt mode")
+	}
+	if !strings.Contains(diagnosticsToolScript, "Last error window") {
+		t.Fatalf("expected diagnostics tool script to expose an error-window raw-log excerpt mode")
+	}
+	if !strings.Contains(diagnosticsToolScript, "Get-EnvironmentSummaryLines") {
+		t.Fatalf("expected diagnostics tool script to generate an environment summary section")
+	}
+	if !strings.Contains(diagnosticsToolScript, "Get-LatestRecommendedActionLines") {
+		t.Fatalf("expected diagnostics tool script to generate a recommended-actions section")
+	}
+	if !strings.Contains(diagnosticsToolScript, "Get-RawLogExcerptLines") {
+		t.Fatalf("expected diagnostics tool script to generate a raw-log excerpt section")
+	}
+	if !strings.Contains(diagnosticsToolScript, "Protect-SensitiveText") {
+		t.Fatalf("expected diagnostics tool script to redact sensitive text in copied reports")
+	}
+	if !strings.Contains(diagnosticsToolScript, "Protect-ReportLines") {
+		t.Fatalf("expected diagnostics tool script to redact report lines consistently")
+	}
+	if !strings.Contains(diagnosticsToolScript, "Convert-SectionLinesToMarkdown") {
+		t.Fatalf("expected diagnostics tool script to normalize section formatting for copied reports")
+	}
+	if !strings.Contains(diagnosticsToolScript, "== Environment summary ==") {
+		t.Fatalf("expected diagnostics tool script to define an environment summary section")
+	}
+	if !strings.Contains(diagnosticsToolScript, "== Raw log excerpt ==") {
+		t.Fatalf("expected diagnostics tool script to define a raw log excerpt section")
+	}
+	if !strings.Contains(diagnosticsToolScript, "Anonymized: ") {
+		t.Fatalf("expected diagnostics tool script to mark whether copied reports were anonymized")
+	}
+	if !strings.Contains(diagnosticsToolScript, "Anonymize mode: ") {
+		t.Fatalf("expected diagnostics tool script to mark which anonymization mode was used")
+	}
+	if !strings.Contains(diagnosticsToolScript, "Keep drive letter: ") {
+		t.Fatalf("expected diagnostics tool script to mark whether copied reports preserved drive letters")
+	}
+	if !strings.Contains(diagnosticsToolScript, "Excerpt mode") {
+		t.Fatalf("expected diagnostics tool script to label which raw-log excerpt mode was used")
+	}
+	if !strings.Contains(diagnosticsToolScript, "\"tail\", \"errors\", \"command-window\", \"error-window\"") {
+		t.Fatalf("expected diagnostics tool script to define the supported raw-log excerpt modes")
+	}
+	if !strings.Contains(diagnosticsToolScript, "\"full\", \"names-only\"") {
+		t.Fatalf("expected diagnostics tool script to define the supported anonymization modes")
+	}
+	if !strings.Contains(diagnosticsToolScript, "<user>") {
+		t.Fatalf("expected diagnostics tool script to replace usernames during anonymization")
+	}
+	if !strings.Contains(diagnosticsToolScript, "<path>") {
+		t.Fatalf("expected diagnostics tool script to replace absolute paths during anonymization")
+	}
+	if !strings.Contains(diagnosticsToolScript, ":\\\\<path>") {
+		t.Fatalf("expected diagnostics tool script to support keeping drive letters while redacting paths")
+	}
+	if !strings.Contains(diagnosticsToolScript, "ContextWindowRadius") {
+		t.Fatalf("expected diagnostics tool script to parameterize context-window excerpt size")
+	}
+	if !strings.Contains(diagnosticsToolScript, "window around last command (") {
+		t.Fatalf("expected diagnostics tool script to describe the selected command-window radius")
+	}
+	if !strings.Contains(diagnosticsToolScript, "window around last error-like line (") {
+		t.Fatalf("expected diagnostics tool script to describe the selected error-window radius")
+	}
+	if !strings.Contains(diagnosticsToolScript, "== Findings ==") {
+		t.Fatalf("expected diagnostics tool script to emit a findings section")
+	}
+	if !strings.Contains(diagnosticsToolScript, "Get-DiagnosticFindings") {
+		t.Fatalf("expected diagnostics tool script to derive troubleshooting findings")
+	}
+	if !strings.Contains(diagnosticsToolScript, "== Log interpretation ==") {
+		t.Fatalf("expected diagnostics tool script to emit a log interpretation section")
+	}
+	if !strings.Contains(diagnosticsToolScript, "Get-LogInterpretation") {
+		t.Fatalf("expected diagnostics tool script to derive log interpretation")
+	}
+	if !strings.Contains(diagnosticsToolScript, "Get-CommandInterpretation") {
+		t.Fatalf("expected diagnostics tool script to derive command-level interpretation")
+	}
+	if !strings.Contains(diagnosticsToolScript, "Get-RecommendedActions") {
+		t.Fatalf("expected diagnostics tool script to map log signals into recommended actions")
+	}
+	if !strings.Contains(diagnosticsToolScript, "Get-CommandMeaning") {
+		t.Fatalf("expected diagnostics tool script to translate command ids into user-facing meanings")
+	}
+	if !strings.Contains(diagnosticsToolScript, "Get-LineTimestamp") {
+		t.Fatalf("expected diagnostics tool script to parse timestamps from recent log lines")
+	}
+	if !strings.Contains(diagnosticsToolScript, "Format-TimeGap") {
+		t.Fatalf("expected diagnostics tool script to summarize time gaps between signals")
+	}
+	if !strings.Contains(diagnosticsToolScript, "method=onCommand|commandId=") {
+		t.Fatalf("expected diagnostics tool script to inspect command-hit log patterns")
+	}
+	if !strings.Contains(diagnosticsToolScript, "commandId=(\\d+)") {
+		t.Fatalf("expected diagnostics tool script to extract recent command ids")
+	}
+	if !strings.Contains(diagnosticsToolScript, "反查显示：音元拼音") {
+		t.Fatalf("expected diagnostics tool script to map reverse-lookup command ids")
+	}
+	if !strings.Contains(diagnosticsToolScript, "候选项数：9") {
+		t.Fatalf("expected diagnostics tool script to map candidate-count command ids")
+	}
+	if !strings.Contains(diagnosticsToolScript, "deploy|Redeploy|重新部署|部署") {
+		t.Fatalf("expected diagnostics tool script to inspect deploy or reload log patterns")
+	}
+	if !strings.Contains(diagnosticsToolScript, "error|failed|timeout|unknown|错误|失败|hung|panic") {
+		t.Fatalf("expected diagnostics tool script to inspect error-like log patterns")
+	}
+	if !strings.Contains(diagnosticsToolScript, "a recent command was seen, but no later deploy/reload timestamp was found") {
+		t.Fatalf("expected diagnostics tool script to encode missing-post-command-deploy guidance")
+	}
+	if !strings.Contains(diagnosticsToolScript, "an error-like line appeared") {
+		t.Fatalf("expected diagnostics tool script to encode post-command error timing guidance")
+	}
+	if !strings.Contains(diagnosticsToolScript, "命令到了但没看到 deploy/reload；先重试一次重新部署") {
+		t.Fatalf("expected diagnostics tool script to recommend retrying deploy when commands arrive without deploy signals")
+	}
+	if !strings.Contains(diagnosticsToolScript, "最后一次部署早于最后一次命令；优先再做一次部署") {
+		t.Fatalf("expected diagnostics tool script to recommend redeploy or restart when deploy lags behind the last command")
+	}
+	if !strings.Contains(diagnosticsToolScript, "先看最后一条 error-like line") {
+		t.Fatalf("expected diagnostics tool script to recommend inspecting the last error-like line")
+	}
+	if !strings.Contains(diagnosticsToolScript, "PIMELauncher 在跑，但 server.exe 没在跑") {
+		t.Fatalf("expected diagnostics tool script to encode launcher-vs-server guidance")
+	}
+	if !strings.Contains(diagnosticsToolScript, "安装里的二进制在，但 PIMELauncher 和 server 都没在跑") {
+		t.Fatalf("expected diagnostics tool script to encode restart-needed guidance")
+	}
+}
+
+func TestBuildToolHubManifestProvidesExtensibleToolEntries(t *testing.T) {
+	manifest := buildToolHubManifest(
+		`C:\shared`,
+		`C:\user`,
+		`C:\help`,
+		`C:\logs`,
+		`C:\runtime\tool-launcher.exe`,
+		`C:\user\lexicon.ps1`,
+		"variable",
+	)
+	if err := validateToolHubManifest(manifest); err != nil {
+		t.Fatalf("expected valid tool hub manifest, got %v", err)
+	}
+	if manifest.Title != "Yime Tool Hub" {
+		t.Fatalf("expected tool hub title, got %#v", manifest.Title)
+	}
+	if len(manifest.Tools) < 10 {
+		t.Fatalf("expected framework-ready tool entries, got %#v", manifest.Tools)
+	}
+	required := map[string]bool{
+		"lexicon-manager":     false,
+		"settings-tool":       false,
+		"settings-data":       false,
+		"shared-data":         false,
+		"diagnostics-tool":    false,
+		"diagnostics-guide":   false,
+		"diagnostics-logs":    false,
+		"settings-guide":      false,
+		"help-readme":         false,
+		"help-trial-feedback": false,
+	}
+	for _, tool := range manifest.Tools {
+		if _, ok := required[tool.ID]; ok {
+			required[tool.ID] = true
+		}
+		switch tool.ID {
+		case "lexicon-manager", "settings-tool", "diagnostics-tool":
+			if tool.ActionType != toolActionRunExecutable {
+				t.Fatalf("expected %s to use the tool launcher executable, got %#v", tool.ID, tool)
+			}
+			if tool.TargetPath != `C:\runtime\tool-launcher.exe` {
+				t.Fatalf("expected %s launcher path to be preserved, got %#v", tool.ID, tool)
+			}
+			if len(tool.Arguments) < 2 || tool.Arguments[0] != "powershell-script" {
+				t.Fatalf("expected %s launcher arguments to start with powershell-script, got %#v", tool.ID, tool.Arguments)
+			}
+			if !tool.CloseAfterLaunch {
+				t.Fatalf("expected %s to close the tool hub after launch, got %#v", tool.ID, tool)
+			}
+		default:
+			if tool.CloseAfterLaunch {
+				t.Fatalf("expected non-executable helper %s not to close the tool hub, got %#v", tool.ID, tool)
+			}
+		}
+	}
+	for id, found := range required {
+		if !found {
+			t.Fatalf("expected tool hub entry %q in %#v", id, manifest.Tools)
+		}
+	}
+}
+
+func TestValidateToolHubManifestRejectsDuplicateIDs(t *testing.T) {
+	manifest := toolHubManifest{
+		Title: "dup check",
+		Tools: []toolHubEntry{
+			{ID: "same", Label: "One", TargetPath: `C:\one`},
+			{ID: "same", Label: "Two", TargetPath: `C:\two`},
+		},
+	}
+	if err := validateToolHubManifest(manifest); err == nil || !strings.Contains(err.Error(), "duplicated") {
+		t.Fatalf("expected duplicate-id validation error, got %v", err)
+	}
+}
+
 func TestOnCommandSwitchesReverseLookupDisplayMode(t *testing.T) {
 	ime := newTestIME()
 	backend := ime.backend.(*testBackend)
@@ -1292,6 +1919,51 @@ func TestOnCommandSwitchesReverseLookupDisplayMode(t *testing.T) {
 	keySequence := findMenuItem(t, reverseMenu, ID_REVERSE_LOOKUP_KEY_SEQUENCE)
 	if checked, ok := keySequence["checked"].(bool); !ok || !checked {
 		t.Fatalf("expected key sequence reverse lookup item checked, got %#v", keySequence)
+	}
+}
+
+func TestOnCommandSchedulesStandaloneToolsOutsideTSFCallback(t *testing.T) {
+	ime := newTestIME()
+
+	originalScheduler := scheduleStandaloneToolLaunch
+	defer func() { scheduleStandaloneToolLaunch = originalScheduler }()
+
+	scheduled := 0
+	runs := 0
+	scheduleStandaloneToolLaunch = func(run func() error, onError func(error)) {
+		scheduled++
+		if run == nil {
+			t.Fatalf("expected standalone-tool callback to be provided")
+		}
+		if onError == nil {
+			t.Fatalf("expected standalone-tool error handler to be provided")
+		}
+	}
+
+	respLexicon := ime.onCommand(&pime.Request{
+		SeqNum: 88,
+		ID:     pime.FlexibleID{Int: ID_USER_LEXICON_MANAGER, IsInt: true},
+	}, pime.NewResponse(88, true))
+	if respLexicon.ReturnValue != 1 {
+		t.Fatalf("expected lexicon-manager command to be handled, got %d", respLexicon.ReturnValue)
+	}
+
+	respToolHub := ime.onCommand(&pime.Request{
+		SeqNum: 89,
+		ID:     pime.FlexibleID{Int: ID_HELP_TOOL_HUB, IsInt: true},
+	}, pime.NewResponse(89, true))
+	if respToolHub.ReturnValue != 1 {
+		t.Fatalf("expected tool-hub command to be handled, got %d", respToolHub.ReturnValue)
+	}
+
+	if scheduled != 2 {
+		t.Fatalf("expected both standalone-tool commands to be scheduled asynchronously, got %d", scheduled)
+	}
+	if runs != 0 {
+		t.Fatalf("expected no standalone tool to launch synchronously inside onCommand, got %d immediate runs", runs)
+	}
+	if respLexicon.ShowCandidates || respToolHub.ShowCandidates {
+		t.Fatalf("expected standalone-tool commands not to refresh candidate UI during TSF callback")
 	}
 }
 
@@ -1610,10 +2282,10 @@ func TestOnMenuReturnsHelpMenu(t *testing.T) {
 	}, pime.NewResponse(18, true))
 
 	items, ok := resp.ReturnData.([]map[string]interface{})
-	if !ok || len(items) != 3 {
-		t.Fatalf("expected three help menu items, got %#v", resp.ReturnData)
+	if !ok || len(items) != 4 {
+		t.Fatalf("expected four help menu items, got %#v", resp.ReturnData)
 	}
-	for _, id := range []int{ID_HELP_VIEW, ID_HELP_TRIAL_FEEDBACK, ID_HELP_COPY_TRIAL_TEMPLATE} {
+	for _, id := range []int{ID_HELP_TOOL_HUB, ID_HELP_VIEW, ID_HELP_TRIAL_FEEDBACK, ID_HELP_COPY_TRIAL_TEMPLATE} {
 		if item := findMenuItem(t, items, id); item["text"] == "" {
 			t.Fatalf("expected help menu item %d to have text, got %#v", id, item)
 		}
@@ -1722,5 +2394,37 @@ func TestHandleRequestOnDeactivateReturnsHandled(t *testing.T) {
 	}
 	if backend.composition != "" || backend.candidates != nil {
 		t.Fatal("expected deactivate to clear composition state")
+	}
+}
+
+func TestHandleRequestOnCompartmentChangedReturnsHandled(t *testing.T) {
+	ime := newTestIME()
+
+	resp := ime.HandleRequest(&pime.Request{
+		SeqNum: 15,
+		Method: "onCompartmentChanged",
+	})
+
+	if !resp.Success {
+		t.Fatal("expected onCompartmentChanged response to succeed")
+	}
+	if resp.ReturnValue != 1 {
+		t.Fatalf("expected onCompartmentChanged to return 1, got %d", resp.ReturnValue)
+	}
+}
+
+func TestHandleRequestOnKeyboardStatusChangedReturnsHandled(t *testing.T) {
+	ime := newTestIME()
+
+	resp := ime.HandleRequest(&pime.Request{
+		SeqNum: 16,
+		Method: "onKeyboardStatusChanged",
+	})
+
+	if !resp.Success {
+		t.Fatal("expected onKeyboardStatusChanged response to succeed")
+	}
+	if resp.ReturnValue != 1 {
+		t.Fatalf("expected onKeyboardStatusChanged to return 1, got %d", resp.ReturnValue)
 	}
 }
