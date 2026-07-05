@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Yime 设置与数据</title>
+<style>
+body {
+  margin: 0;
+  font: 16px/1.75 "Microsoft YaHei UI", "Segoe UI", sans-serif;
+  color: #1e2930;
+  background: linear-gradient(180deg, #eef6f4 0%, #f9fcfb 100%);
+}
+main {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 32px 20px 56px;
+}
+article {
+  background: rgba(255,255,255,0.94);
+  border: 1px solid #cfe0da;
+  border-radius: 18px;
+  padding: 26px 28px;
+  box-shadow: 0 14px 34px rgba(32, 74, 66, 0.08);
+  margin-bottom: 18px;
+}
+h1, h2 { line-height: 1.2; margin: 0 0 14px; }
+h1 { font-size: 31px; }
+h2 { font-size: 22px; color: #206056; }
+ul { margin: 0; padding-left: 22px; }
+li, p { margin: 0 0 10px; }
+code {
+  font-family: Consolas, "Courier New", monospace;
+  background: #edf5f3;
+  border-radius: 6px;
+  padding: 1px 5px;
+}
+</style>
+</head>
+<body>
+<main>
+  <article>
+    <h1>设置与数据</h1>
+    <p>这页帮助主要解释 Yime 设置项写到哪里、哪些操作只是保存文件、哪些操作会触发重新构建，以及为什么独立工具窗口不保证继续保持当前输入法激活。</p>
+  </article>
+
+  <article>
+    <h2>主要目录</h2>
+    <ul>
+      <li>用户配置与用户词库：<code>%APPDATA%\PIME\Rime</code></li>
+      <li>日志目录：<code>%LOCALAPPDATA%\PIME\Logs</code></li>
+      <li>共享运行时数据：<code>go-backend\input_methods\yime\data</code></li>
+    </ul>
+  </article>
+
+  <article>
+    <h2>语言栏里的维护项</h2>
+    <ul>
+      <li><strong>重新部署 Rime</strong>：重新编译并部署当前运行时配置，让已经写入的方案文件或配置生效。</li>
+      <li><strong>同步 Rime 用户数据</strong>：调用 Rime 自带的同步能力，适用于 Rime 自己管理的数据。</li>
+      <li><strong>打开数据与日志目录</strong>：直接打开用户目录、共享目录、同步目录和日志目录，方便检查“文件有没有真的写进去”。</li>
+    </ul>
+    <p><strong>注意：</strong><code>yime_settings_state.json</code> 这类 Yime 独立界面状态不属于 Rime 原生同步范围。</p>
+  </article>
+
+  <article>
+    <h2>为什么有些设置需要“应用并重建”</h2>
+    <p>像方案切换、候选项数这类设置，不只是改界面显示，还需要让 Rime 运行时重新读取并编译相关配置。所以单纯保存文件可能不够，通常需要再执行一次重建或重新部署。</p>
+    <ul>
+      <li>保存文件：把设置写到用户目录中的配置文件。</li>
+      <li>应用并重建：保存后再调用 <code>rime_deployer.exe</code>，让运行时真正看到新值。</li>
+    </ul>
+  </article>
+
+  <article>
+    <h2>独立窗口与输入法切换</h2>
+    <p>Yime 的设置页、词库管理器、诊断页都是外部窗口。Windows 在切换到另一个顶层窗口时，可能恢复那个窗口自己的输入法上下文，而不是延续刚才宿主应用里的 Yime。</p>
+    <p>这不是产品“忘记了保持输入法”，而是刻意避免用更激进的 TSF 或焦点操作去强拉输入法状态。那样虽然看起来“更自动”，但更容易带来焦点跳动、菜单异常或宿主不稳定。</p>
+  </article>
+</main>
+</body>
+</html>

@@ -1974,7 +1974,7 @@ $guideButton.Top = 552
 $guideButton.Width = 160
 $guideButton.Height = 32
 $guideButton.Text = "Open diagnostics guide"
-$guideButton.Add_Click({ Open-Path (Join-Path $HelpDir "diagnostics.md") })
+$guideButton.Add_Click({ Open-Path (Join-Path $HelpDir "diagnostics.html") })
 $form.Controls.Add($guideButton)
 
 Refresh-Status

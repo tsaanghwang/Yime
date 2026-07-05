@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Yime 诊断说明</title>
+<style>
+body {
+  margin: 0;
+  font: 16px/1.75 "Microsoft YaHei UI", "Segoe UI", sans-serif;
+  color: #1d2430;
+  background:
+    radial-gradient(circle at top left, #dbeafe 0, transparent 26rem),
+    linear-gradient(180deg, #f5f9ff 0%, #fbfdff 100%);
+}
+main {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 32px 20px 56px;
+}
+section {
+  background: rgba(255,255,255,0.95);
+  border: 1px solid #d6e3f7;
+  border-radius: 18px;
+  padding: 24px 28px;
+  box-shadow: 0 12px 30px rgba(44, 77, 130, 0.08);
+  margin-bottom: 18px;
+}
+h1, h2 { margin: 0 0 14px; line-height: 1.2; }
+h1 { font-size: 31px; }
+h2 { font-size: 22px; color: #24539a; }
+ul { margin: 0; padding-left: 22px; }
+li, p { margin: 0 0 10px; }
+code {
+  font-family: Consolas, "Courier New", monospace;
+  background: #eef4ff;
+  border-radius: 6px;
+  padding: 1px 5px;
+}
+</style>
+</head>
+<body>
+<main>
+  <section>
+    <h1>诊断说明</h1>
+    <p>Yime 诊断工具的目标不是只展示路径，而是帮你判断“命令有没有打到后端、部署有没有真正发生、当前运行的是不是预期安装、问题更像配置没写进去还是运行时没刷新”。</p>
+  </section>
+
+  <section>
+    <h2>优先检查的几层</h2>
+    <ul>
+      <li><code>%LOCALAPPDATA%\PIME\Logs</code>：看后端日志有没有请求、命令、部署和错误信号。</li>
+      <li><code>%APPDATA%\PIME\Rime</code>：看用户配置和用户词库有没有真的写到磁盘。</li>
+      <li>已安装的 <code>server.exe</code> 与 <code>rime_deployer.exe</code>：确认问题不是“源码修了但安装没更新”。</li>
+      <li>正在运行的 <code>PIMELauncher</code> 与 <code>server.exe</code>：确认进程已经重启到新版本。</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>诊断工具当前会做什么</h2>
+    <ul>
+      <li>检查用户目录、共享目录、帮助目录、日志目录是否存在。</li>
+      <li>检查安装路径、运行中的 <code>PIMELauncher</code> / <code>server.exe</code>、以及关键二进制修改时间。</li>
+      <li>检查 <code>default.custom.yaml</code>、<code>custom_phrase.txt</code>、<code>yime_user_phrases.txt</code>、<code>yime_settings_state.json</code>。</li>
+      <li>解释最近的 <code>commandId=</code>、部署信号、错误样式日志和它们之间的时间先后关系。</li>
+      <li>生成可复制的结构化报告，支持匿名化、预设和日志摘录。</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>看到“设置无效”时先怎么判断</h2>
+    <ul>
+      <li>先看日志里有没有对应的 <code>onCommand</code> 或 <code>commandId</code>。</li>
+      <li>再看用户目录下的文件有没有被写到正确的值，例如 <code>menu/page_size</code>。</li>
+      <li>最后看部署或重建信号有没有跟在命令之后出现。</li>
+    </ul>
+    <p>如果命令到了、文件也改了，但部署没发生，问题往往不在菜单点击本身，而在部署链路或运行时刷新。</p>
+  </section>
+
+  <section>
+    <h2>本地调试辅助</h2>
+    <p>仓库侧还有一个开发者辅助脚本：<code>go-backend\run_admin_yime_tests.cmd</code>。它用于本地调试和提权测试，不属于已安装给普通用户使用的运行时功能。</p>
+  </section>
+</main>
+</body>
+</html>

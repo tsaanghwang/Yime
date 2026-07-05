@@ -663,8 +663,8 @@ $pathButtons = @(
   @{ Left = 142; Text = "Shared data"; Target = $SharedDir },
   @{ Left = 264; Text = "Log dir"; Target = $LogDir },
   @{ Left = 386; Text = "Sync dir"; Target = (Get-SyncDir) },
-  @{ Left = 508; Text = "Settings guide"; Target = (Join-Path $HelpDir "settings-and-data.md") },
-  @{ Left = 630; Text = "Main help"; Target = (Join-Path $HelpDir "README.md") }
+  @{ Left = 508; Text = "Settings guide"; Target = (Join-Path $HelpDir "settings-and-data.html") },
+  @{ Left = 630; Text = "Main help"; Target = (Join-Path $HelpDir "README.html") }
 )
 
 foreach ($pathButtonInfo in $pathButtons) {

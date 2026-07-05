@@ -417,9 +417,9 @@ func (ime *IME) onCommand(req *pime.Request, resp *pime.Response) *pime.Response
 	case ID_REVERSE_LOOKUP_KEY_SEQUENCE:
 		ime.setReverseLookupDisplayMode("key_sequence")
 	case ID_HELP_VIEW:
-		ime.openPath(filepath.Join(ime.helpDir(), "README.md"))
+		ime.openPath(ime.helpDocumentPath("README"))
 	case ID_HELP_TRIAL_FEEDBACK:
-		ime.openPath(filepath.Join(ime.helpDir(), "trial-feedback.md"))
+		ime.openPath(ime.helpDocumentPath("trial-feedback"))
 	case ID_HELP_COPY_TRIAL_TEMPLATE:
 		ime.copyTextToClipboard(ime.trialFeedbackTemplate())
 	case ID_HELP_TOOL_HUB:
@@ -1575,6 +1575,18 @@ func (ime *IME) helpDir() string {
 		return ""
 	}
 	return filepath.Join(filepath.Dir(exePath), "input_methods", "yime", "help")
+}
+
+func (ime *IME) helpDocumentPath(name string) string {
+	helpDir := ime.helpDir()
+	if helpDir == "" || name == "" {
+		return ""
+	}
+	htmlPath := filepath.Join(helpDir, name+".html")
+	if _, err := os.Stat(htmlPath); err == nil {
+		return htmlPath
+	}
+	return filepath.Join(helpDir, name+".md")
 }
 
 func (ime *IME) toolLauncherPath() string {

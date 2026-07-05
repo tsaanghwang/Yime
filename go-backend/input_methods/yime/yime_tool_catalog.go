@@ -105,7 +105,7 @@ func buildToolHubManifest(sharedDir, userDir, helpDir, logDir, launcherPath, lex
 				Label:       "诊断说明",
 				Description: "Open the diagnostics guide for this input method.",
 				ActionType:  toolActionOpenPath,
-				TargetPath:  filepath.Join(helpDir, "diagnostics.md"),
+				TargetPath:  filepath.Join(helpDir, "diagnostics.html"),
 			},
 			{
 				ID:          "diagnostics-logs",
@@ -119,21 +119,21 @@ func buildToolHubManifest(sharedDir, userDir, helpDir, logDir, launcherPath, lex
 				Label:       "设置说明",
 				Description: "Open the settings and data guide.",
 				ActionType:  toolActionOpenPath,
-				TargetPath:  filepath.Join(helpDir, "settings-and-data.md"),
+				TargetPath:  filepath.Join(helpDir, "settings-and-data.html"),
 			},
 			{
 				ID:          "help-readme",
 				Label:       "查看帮助",
 				Description: "Open the main help document.",
 				ActionType:  toolActionOpenPath,
-				TargetPath:  filepath.Join(helpDir, "README.md"),
+				TargetPath:  filepath.Join(helpDir, "README.html"),
 			},
 			{
 				ID:          "help-trial-feedback",
 				Label:       "试用反馈说明",
 				Description: "Open the trial feedback guide.",
 				ActionType:  toolActionOpenPath,
-				TargetPath:  filepath.Join(helpDir, "trial-feedback.md"),
+				TargetPath:  filepath.Join(helpDir, "trial-feedback.html"),
 			},
 		},
 	}
