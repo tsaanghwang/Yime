@@ -38,12 +38,6 @@ Rime frontend.
   editable source file is `%APPDATA%\PIME\Rime\yime_user_phrases.txt`, using the format
   `phrase<TAB>numeric-tone-pinyin<TAB>weight`; applying the lexicon generates
   Rime's `%APPDATA%\PIME\Rime\custom_phrase.txt` table-code file.
-  Because this dialog is an external window rather than the original TSF host
-  context, Windows may restore another input method such as Microsoft Pinyin
-  when the focus enters it. Yime does not try to forcibly seize the input
-  method back inside that external window, because doing so is not aligned with
-  normal Windows input-method switching and has proven likely to destabilize
-  the host application, taskbar focus, or other system UI.
 - Help: view this help, view trial feedback guidance, and copy a trial feedback
   template.
 

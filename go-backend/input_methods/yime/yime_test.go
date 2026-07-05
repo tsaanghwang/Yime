@@ -971,6 +971,19 @@ func TestOnMenuReturnsSettingsMenu(t *testing.T) {
 		t.Fatalf("expected page size 9 menu text, got %#v", item)
 	}
 
+	// 显示编码 (reverse lookup) moved off the language bar into a single settings
+	// submenu. It must stay one level deep with the four display modes.
+	reverseMenu := findSubmenuItem(t, items, "显示编码")
+	if len(reverseMenu) != 4 {
+		t.Fatalf("expected four reverse-lookup display modes in settings submenu, got %#v", reverseMenu)
+	}
+	if item := findMenuItem(t, reverseMenu, ID_REVERSE_LOOKUP_KEY_SEQUENCE); item["text"] != "键位序列" {
+		t.Fatalf("expected key-sequence reverse lookup item in settings submenu, got %#v", item)
+	}
+	if item := findMenuItem(t, reverseMenu, ID_REVERSE_LOOKUP_YIME_PINYIN); item["text"] != "音元拼音" {
+		t.Fatalf("expected yime-pinyin reverse lookup item in settings submenu, got %#v", item)
+	}
+
 	if item := findTopLevelMenuItem(t, items, ID_DEPLOY); item["text"] != "重新部署 Rime(&D)" {
 		t.Fatalf("expected deploy command to remain in settings root, got %#v", item)
 	}
@@ -2449,31 +2462,69 @@ func TestAddButtonsIncludesTopLevelMenuButtons(t *testing.T) {
 
 	want := map[string]bool{
 		"candidate-layout": false,
-		"reverse-lookup":   false,
 		"lexicon-manager":  false,
-		"help":             false,
+		"tools":            false,
 	}
 	for _, button := range resp.AddButton {
 		if _, ok := want[button.ID]; !ok {
 			continue
 		}
 		want[button.ID] = true
-		if button.ID == "candidate-layout" {
+		switch button.ID {
+		case "candidate-layout":
 			if button.Type != "button" {
 				t.Fatalf("expected candidate-layout button to be a direct toggle button, got %#v", button)
 			}
-		} else if button.Type != "menu" {
-			t.Fatalf("expected %s button to be a menu, got %#v", button.ID, button)
-		}
-		if button.ID == "candidate-layout" && button.CommandID != ID_CANDIDATE_LAYOUT_TOGGLE {
-			t.Fatalf("expected candidate-layout button to toggle to horizontal by default, got %#v", button)
+			if button.CommandID != ID_CANDIDATE_LAYOUT_TOGGLE {
+				t.Fatalf("expected candidate-layout button to toggle to horizontal by default, got %#v", button)
+			}
+		case "lexicon-manager":
+			// The user lexicon entry is a single-layer button: clicking it must
+			// directly deliver ID_USER_LEXICON_MANAGER through onCommand instead
+			// of opening a one-item menu. Keeping the command id on the button is
+			// what keeps that host click path from falling back to command 0.
+			if button.Type != "button" {
+				t.Fatalf("expected lexicon-manager to be a direct button, got %#v", button)
+			}
+			if button.CommandID != ID_USER_LEXICON_MANAGER {
+				t.Fatalf("expected lexicon-manager button to carry ID_USER_LEXICON_MANAGER, got %#v", button)
+			}
+		case "tools":
+			// The former 帮助 menu became a single 工具 button that opens the
+			// aggregated tool hub directly. It must carry ID_HELP_TOOL_HUB so the
+			// host click path reaches the async launcher instead of command 0.
+			if button.Type != "button" {
+				t.Fatalf("expected tools to be a direct button, got %#v", button)
+			}
+			if button.CommandID != ID_HELP_TOOL_HUB {
+				t.Fatalf("expected tools button to carry ID_HELP_TOOL_HUB, got %#v", button)
+			}
+			if button.Text != "工具" {
+				t.Fatalf("expected tools button text 工具, got %#v", button)
+			}
+		default:
+			if button.Type != "menu" {
+				t.Fatalf("expected %s button to be a menu, got %#v", button.ID, button)
+			}
 		}
 	}
 	for id, found := range want {
 		if !found {
-			t.Fatalf("expected %s menu button in %#v", id, resp.AddButton)
+			t.Fatalf("expected %s button in %#v", id, resp.AddButton)
 		}
 	}
+
+	// The slimmed language bar must no longer expose a standalone reverse-lookup
+	// button (now a 设置 submenu) or a 帮助 menu (now the 工具 button).
+	for _, button := range resp.AddButton {
+		if button.ID == "reverse-lookup" {
+			t.Fatalf("expected reverse-lookup to move into the settings menu, still present as %#v", button)
+		}
+		if button.ID == "help" {
+			t.Fatalf("expected 帮助 menu to be replaced by the 工具 button, still present as %#v", button)
+		}
+	}
+
 	for _, button := range resp.AddButton {
 		if button.ID == "lexicon-manager" {
 			if button.Text != "用户词库" {
@@ -2484,7 +2535,64 @@ func TestAddButtonsIncludesTopLevelMenuButtons(t *testing.T) {
 	}
 }
 
-func TestOnMenuReturnsTopLevelLayoutReverseLookupAndUserLexiconMenus(t *testing.T) {
+// TestUserLexiconAndToolsButtonsUseIcons wires the 用户词库 and 工具 buttons to
+// their icon assets so the language bar can later switch to an icon-only look.
+// The buttons must still carry text as a fallback when the icon is missing.
+func TestUserLexiconAndToolsButtonsUseIcons(t *testing.T) {
+	iconDir := t.TempDir()
+	for _, name := range []string{"lexicon.ico", "tools.ico"} {
+		if err := os.WriteFile(filepath.Join(iconDir, name), []byte("icon"), 0o644); err != nil {
+			t.Fatalf("failed to seed icon %s: %v", name, err)
+		}
+	}
+
+	ime := newTestIME()
+	ime.iconDir = iconDir
+	resp := pime.NewResponse(21, true)
+	ime.addButtons(resp)
+
+	wantIcon := map[string]string{
+		"lexicon-manager": filepath.Join(iconDir, "lexicon.ico"),
+		"tools":           filepath.Join(iconDir, "tools.ico"),
+	}
+	seen := map[string]bool{}
+	for _, button := range resp.AddButton {
+		want, ok := wantIcon[button.ID]
+		if !ok {
+			continue
+		}
+		seen[button.ID] = true
+		if button.Icon != want {
+			t.Fatalf("expected %s button icon %q, got %#v", button.ID, want, button)
+		}
+		if button.Text == "" {
+			t.Fatalf("expected %s button to keep its text as an icon-off fallback, got %#v", button.ID, button)
+		}
+	}
+	for id := range wantIcon {
+		if !seen[id] {
+			t.Fatalf("expected %s button to be present with an icon", id)
+		}
+	}
+
+	// Missing icon files must degrade gracefully to a text-only button, never
+	// drop the button.
+	ime.iconDir = filepath.Join(iconDir, "does-not-exist")
+	resp = pime.NewResponse(22, true)
+	ime.addButtons(resp)
+	for _, button := range resp.AddButton {
+		if button.ID == "lexicon-manager" || button.ID == "tools" {
+			if button.Icon != "" {
+				t.Fatalf("expected %s button to have no icon when the file is missing, got %#v", button.ID, button)
+			}
+			if button.Text == "" {
+				t.Fatalf("expected %s button to keep text when the icon is missing, got %#v", button.ID, button)
+			}
+		}
+	}
+}
+
+func TestOnMenuReturnsTopLevelLayoutAndUserLexiconMenus(t *testing.T) {
 	ime := newTestIME()
 
 	layoutResp := ime.onMenu(&pime.Request{
@@ -2496,16 +2604,14 @@ func TestOnMenuReturnsTopLevelLayoutReverseLookupAndUserLexiconMenus(t *testing.
 		t.Fatalf("expected empty candidate layout menu (toggle is now a button), got %#v", layoutResp.ReturnData)
 	}
 
+	// reverse-lookup is no longer a top-level language-bar menu; it now lives as
+	// a 显示编码 submenu inside 设置. Opening it as a button must be a no-op.
 	reverseResp := ime.onMenu(&pime.Request{
 		SeqNum: 18,
 		ID:     pime.FlexibleID{String: "reverse-lookup"},
 	}, pime.NewResponse(18, true))
-	reverseItems, ok := reverseResp.ReturnData.([]map[string]interface{})
-	if !ok || len(reverseItems) != 4 {
-		t.Fatalf("expected reverse lookup menu items, got %#v", reverseResp.ReturnData)
-	}
-	if item := findMenuItem(t, reverseItems, ID_REVERSE_LOOKUP_KEY_SEQUENCE); item["text"] != "键位序列" {
-		t.Fatalf("expected key-sequence reverse lookup item text, got %#v", item)
+	if reverseResp.ReturnValue != 0 {
+		t.Fatalf("expected reverse-lookup to no longer be a top-level menu, got return %d", reverseResp.ReturnValue)
 	}
 
 	userResp := ime.onMenu(&pime.Request{
@@ -2518,25 +2624,6 @@ func TestOnMenuReturnsTopLevelLayoutReverseLookupAndUserLexiconMenus(t *testing.
 	}
 	if item := findTopLevelMenuItem(t, userItems, ID_USER_LEXICON_MANAGER); item["text"] != "打开词库管理" {
 		t.Fatalf("expected lexicon manager item text, got %#v", item)
-	}
-}
-
-func TestOnMenuReturnsHelpMenu(t *testing.T) {
-	ime := newTestIME()
-
-	resp := ime.onMenu(&pime.Request{
-		SeqNum: 18,
-		ID:     pime.FlexibleID{String: "help"},
-	}, pime.NewResponse(18, true))
-
-	items, ok := resp.ReturnData.([]map[string]interface{})
-	if !ok || len(items) != 4 {
-		t.Fatalf("expected four help menu items, got %#v", resp.ReturnData)
-	}
-	for _, id := range []int{ID_HELP_TOOL_HUB, ID_HELP_VIEW, ID_HELP_TRIAL_FEEDBACK, ID_HELP_COPY_TRIAL_TEMPLATE} {
-		if item := findMenuItem(t, items, id); item["text"] == "" {
-			t.Fatalf("expected help menu item %d to have text, got %#v", id, item)
-		}
 	}
 }
 

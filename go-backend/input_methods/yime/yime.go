@@ -586,21 +586,17 @@ func (ime *IME) onMenu(req *pime.Request, resp *pime.Response) *pime.Response {
 			buttonID = raw
 		}
 	}
-	if buttonID != "settings" && buttonID != "windows-mode-icon" && buttonID != "candidate-layout" && buttonID != "reverse-lookup" &&
-		buttonID != "user-lexicon" && buttonID != "lexicon-manager" && buttonID != "help" {
+	if buttonID != "settings" && buttonID != "windows-mode-icon" && buttonID != "candidate-layout" &&
+		buttonID != "user-lexicon" && buttonID != "lexicon-manager" {
 		resp.ReturnData = []map[string]interface{}{}
 		resp.ReturnValue = 0
 		return resp
 	}
 
 	switch buttonID {
-	case "help":
-		resp.ReturnData = ime.buildHelpMenu()
 	case "candidate-layout":
 		ime.setCandidateLayout(ime.style.CandidatePerRow <= verticalCandidatesPerRow, nil)
 		resp.ReturnData = []map[string]interface{}{}
-	case "reverse-lookup":
-		resp.ReturnData = ime.buildReverseLookupMenu()
 	case "user-lexicon", "lexicon-manager":
 		resp.ReturnData = ime.buildUserLexiconMenu()
 	default:
@@ -1145,18 +1141,17 @@ func (ime *IME) addButtons(resp *pime.Response) {
 		layoutButton.Icon = iconPath
 	}
 	resp.AddButton = append(resp.AddButton, layoutButton)
-	resp.AddButton = append(resp.AddButton, pime.ButtonInfo{
-		ID:      "reverse-lookup",
-		Text:    "显示编码",
-		Tooltip: "显示编码",
-		Type:    "menu",
-	})
-	resp.AddButton = append(resp.AddButton, pime.ButtonInfo{
-		ID:      "lexicon-manager",
-		Text:    "用户词库",
-		Tooltip: "用户词库",
-		Type:    "menu",
-	})
+	lexiconButton := pime.ButtonInfo{
+		ID:        "lexicon-manager",
+		Text:      "用户词库",
+		Tooltip:   "用户词库",
+		CommandID: ID_USER_LEXICON_MANAGER,
+		Type:      "button",
+	}
+	if iconPath := ime.iconPath("lexicon.ico"); iconPath != "" {
+		lexiconButton.Icon = iconPath
+	}
+	resp.AddButton = append(resp.AddButton, lexiconButton)
 	if iconPath := ime.iconPath("config.ico"); iconPath != "" {
 		resp.AddButton = append(resp.AddButton, pime.ButtonInfo{
 			ID:   "settings",
@@ -1165,19 +1160,29 @@ func (ime *IME) addButtons(resp *pime.Response) {
 			Type: "menu",
 		})
 	}
-	resp.AddButton = append(resp.AddButton, pime.ButtonInfo{
-		ID:      "help",
-		Text:    "帮助",
-		Tooltip: "帮助",
-		Type:    "menu",
-	})
+	// The former "帮助" menu only duplicated tool-hub entries, so it is now a
+	// single direct "工具" button that opens the aggregated tool hub. Help and
+	// trial-feedback documents live inside that hub.
+	toolsButton := pime.ButtonInfo{
+		ID:        "tools",
+		Text:      "工具",
+		Tooltip:   "工具",
+		CommandID: ID_HELP_TOOL_HUB,
+		Type:      "button",
+	}
+	if iconPath := ime.iconPath("tools.ico"); iconPath != "" {
+		toolsButton.Icon = iconPath
+	}
+	resp.AddButton = append(resp.AddButton, toolsButton)
 }
 
 func (ime *IME) removeButtons(resp *pime.Response) {
 	if !ime.style.DisplayTrayIcon || resp == nil {
 		return
 	}
-	resp.RemoveButton = append(resp.RemoveButton, "switch-lang", "switch-shape", "candidate-layout", "reverse-lookup", "user-lexicon", "lexicon-manager", "settings", "help")
+	// "reverse-lookup" and "help" are legacy button ids kept here so an upgrade
+	// from an older build still clears them from the language bar.
+	resp.RemoveButton = append(resp.RemoveButton, "switch-lang", "switch-shape", "candidate-layout", "reverse-lookup", "user-lexicon", "lexicon-manager", "settings", "tools", "help")
 	if ime.Client != nil && ime.Client.IsWindows8Above {
 		resp.RemoveButton = append(resp.RemoveButton, "windows-mode-icon")
 	}
@@ -1506,6 +1511,7 @@ func (ime *IME) buildMenu() []map[string]interface{} {
 		{"text": ""},
 		{"id": ID_CANDIDATE_LAYOUT_TOGGLE, "text": candidateLayoutToggleText(ime.style.CandidatePerRow > verticalCandidatesPerRow)},
 		{"text": "候选项数", "submenu": ime.buildCandidatePageSizeMenu()},
+		{"text": "显示编码", "submenu": ime.buildReverseLookupMenu()},
 		{"text": ""},
 		{"id": ID_DEPLOY, "text": "重新部署 Rime(&D)"},
 		{"id": ID_SYNC, "text": "同步 Rime 用户数据(&S)"},
@@ -1546,15 +1552,6 @@ func (ime *IME) buildCandidatePageSizeMenu() []map[string]interface{} {
 func (ime *IME) buildUserLexiconMenu() []map[string]interface{} {
 	return []map[string]interface{}{
 		{"id": ID_USER_LEXICON_MANAGER, "text": "打开词库管理"},
-	}
-}
-
-func (ime *IME) buildHelpMenu() []map[string]interface{} {
-	return []map[string]interface{}{
-		{"id": ID_HELP_TOOL_HUB, "text": "打开工具箱"},
-		{"id": ID_HELP_VIEW, "text": "查看帮助"},
-		{"id": ID_HELP_TRIAL_FEEDBACK, "text": "查看试用反馈说明"},
-		{"id": ID_HELP_COPY_TRIAL_TEMPLATE, "text": "复制试用反馈模板"},
 	}
 }
 
@@ -1875,6 +1872,9 @@ func loadYimeCodeLookup(path string) map[string]string {
 		if _, exists := lookup[text]; !exists {
 			lookup[text] = code
 		}
+	}
+	if err := scanner.Err(); err != nil {
+		return lookup
 	}
 	return lookup
 }
