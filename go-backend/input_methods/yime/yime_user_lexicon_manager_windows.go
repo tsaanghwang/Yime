@@ -474,7 +474,7 @@ $workflowHintLabel.Left = 12
 $workflowHintLabel.Top = 104
 $workflowHintLabel.Width = 820
 $workflowHintLabel.Height = 28
-$workflowHintLabel.Text = "外部窗口中的输入法可能随 Windows 切换；批量修改更建议优先用导入、编辑源文件、打开目录。"
+$workflowHintLabel.Text = "在此管理用户词库：添加、编辑、搜索、导入/导出、应用与撤销。"
 $form.Controls.Add($workflowHintLabel)
 
 $searchLabel = New-Object System.Windows.Forms.Label

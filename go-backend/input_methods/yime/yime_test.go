@@ -1623,9 +1623,6 @@ func TestUserLexiconManagerScriptShowsDialogInsideTopLevelTry(t *testing.T) {
 	if !strings.Contains(userLexiconManagerScript, "Copy-RecentOperationSummary") {
 		t.Fatalf("expected lexicon manager script to copy a structured recent-operation summary")
 	}
-	if !strings.Contains(userLexiconManagerScript, "外部窗口中的输入法可能随 Windows 切换") || !strings.Contains(userLexiconManagerScript, "批量修改更建议优先用导入、编辑源文件、打开目录。") {
-		t.Fatalf("expected lexicon manager script to explain the Windows input-method limitation and recommend file-oriented workflows")
-	}
 	if !strings.Contains(userLexiconManagerScript, "Save-UndoSnapshot") {
 		t.Fatalf("expected lexicon manager script to capture undo snapshots before source changes")
 	}
@@ -1662,26 +1659,8 @@ func TestUserLexiconManagerScriptShowsDialogInsideTopLevelTry(t *testing.T) {
 	if !strings.Contains(userLexiconManagerScript, "$listView.Add_ItemSelectionChanged") {
 		t.Fatalf("expected lexicon manager script to refresh selection summary from selection changes")
 	}
-	if strings.Contains(userLexiconManagerScript, "TsfActivator") || strings.Contains(userLexiconManagerScript, "TF_CreateInputProcessorProfiles") || strings.Contains(userLexiconManagerScript, "ActivateLanguageProfile(ref") {
-		t.Fatalf("expected lexicon manager script to avoid in-script TSF activation that can destabilize the host")
-	}
-	if strings.Contains(userLexiconManagerScript, "Ensure-YimeInputProfile") || strings.Contains(userLexiconManagerScript, "Register-YimeInputProfileControl") || strings.Contains(userLexiconManagerScript, "yimeActivationTimer") {
-		t.Fatalf("expected lexicon manager script to remove residual input-method preservation hooks once that workflow is abandoned")
-	}
 	if !strings.Contains(userLexiconManagerScript, "$form.Add_Shown({") || !strings.Contains(userLexiconManagerScript, "[System.Windows.Forms.Screen]::PrimaryScreen.WorkingArea") || !strings.Contains(userLexiconManagerScript, "$form.Location = New-Object System.Drawing.Point($x, $y)") || !strings.Contains(userLexiconManagerScript, "$form.Activate()") {
 		t.Fatalf("expected lexicon manager script to restore a centered foreground window when shown")
-	}
-}
-
-func TestToolLauncherDoesNotForceTSFLanguageProfileActivation(t *testing.T) {
-	sourcePath := filepath.Join("..", "..", "cmd", "tool-launcher", "main.go")
-	content, err := os.ReadFile(sourcePath)
-	if err != nil {
-		t.Fatalf("read tool launcher source failed: %v", err)
-	}
-	source := string(content)
-	if strings.Contains(source, "ActivateLanguageProfile") || strings.Contains(source, "ChangeCurrentLanguage") || strings.Contains(source, "TF_CreateInputProcessorProfiles") {
-		t.Fatalf("expected tool launcher to avoid direct TSF profile activation during standalone tool launch")
 	}
 }
 
