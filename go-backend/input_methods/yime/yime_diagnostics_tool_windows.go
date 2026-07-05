@@ -825,7 +825,7 @@ function Get-RawLogExcerptLines {
   $excerptDetail = ""
 
   if ($Mode -eq "errors") {
-    $excerpt = @($lines | Where-Object { $_ -match "error|failed|timeout|unknown|閿欒|澶辫触|hung|panic" } | Select-Object -Last $TailCount)
+    $excerpt = @($lines | Where-Object { $_ -match "error|failed|timeout|unknown|错误|失败|hung|panic" } | Select-Object -Last $TailCount)
     $excerptDetail = "error-related lines"
     if ($excerpt.Count -eq 0) {
       $excerpt = @("no recent error-like lines matched the current filter")

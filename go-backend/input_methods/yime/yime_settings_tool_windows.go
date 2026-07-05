@@ -106,9 +106,9 @@ function Get-DeployerPath {
 
 function Get-AvailableSchemaOptions {
   $options = @(
-    [pscustomobject]@{ Id = "yime_variable"; Label = "鍙橀暱"; Enabled = $true },
-    [pscustomobject]@{ Id = "yime_full"; Label = "绛夐暱"; Enabled = $true },
-    [pscustomobject]@{ Id = "yime_shorthand"; Label = "鐪侀敭"; Enabled = (Test-Path -LiteralPath (Join-Path $SharedDir "yime_shorthand.schema.yaml")) }
+    [pscustomobject]@{ Id = "yime_variable"; Label = "变长"; Enabled = $true },
+    [pscustomobject]@{ Id = "yime_full"; Label = "等长"; Enabled = $true },
+    [pscustomobject]@{ Id = "yime_shorthand"; Label = "省键"; Enabled = (Test-Path -LiteralPath (Join-Path $SharedDir "yime_shorthand.schema.yaml")) }
   )
   return $options
 }
@@ -405,21 +405,21 @@ function Get-CurrentSettings {
 function Build-SettingsSummary {
   param($Settings)
   $schemaLabel = switch ($Settings.SchemaId) {
-    "yime_full" { "绛夐暱" }
-    "yime_shorthand" { "鐪侀敭" }
-    default { "鍙橀暱" }
+    "yime_full" { "等长" }
+    "yime_shorthand" { "省键" }
+    default { "变长" }
   }
   $reverseLookupLabel = switch ($Settings.ReverseLookupMode) {
-    "hidden" { "闅愯棌缂栫爜" }
-    "standard_pinyin" { "鏍囧噯鎷奸煶" }
-    "yime_pinyin" { "闊冲厓鎷奸煶" }
-    default { "閿綅搴忓垪" }
+    "hidden" { "隐藏编码" }
+    "standard_pinyin" { "标准拼音" }
+    "yime_pinyin" { "音元拼音" }
+    default { "键位序列" }
   }
   $layoutLabel = switch ($Settings.CandidateLayout) {
-    "horizontal" { "妯帓" }
-    default { "绔栨帓" }
+    "horizontal" { "横排" }
+    default { "竖排" }
   }
-  return ("褰撳墠璁剧疆锛氭柟妗?{0}锛屽€欓€夐」鏁?{1}锛屽弽鏌ユ樉绀?{2}锛屽€欓€夋帓鍒?{3}" -f $schemaLabel, $Settings.PageSize, $reverseLookupLabel, $layoutLabel)
+  return ("当前设置：方案 {0}，候选项数 {1}，反查显示 {2}，候选排列 {3}" -f $schemaLabel, $Settings.PageSize, $reverseLookupLabel, $layoutLabel)
 }
 
 function Invoke-RimeBuild {
@@ -467,9 +467,9 @@ function Apply-Settings {
   $settings = Get-CurrentSettings
   $summaryLabel.Text = Build-SettingsSummary $settings
   $statusLabel.Text = $(if ($RunBuildAfterApply) {
-    "宸插啓鍏ヨ缃苟鎵ц鏋勫缓銆傚垏鍥為煶鍏冩嫾闊冲悗浼氬湪閲嶆柊婵€娲绘椂鍚屾銆?
+    "已写入设置并执行构建。切回音元拼音后会在重新激活时同步。"
   } else {
-    "宸插啓鍏ヨ缃€傚垏鍥為煶鍏冩嫾闊冲悗浼氬湪閲嶆柊婵€娲绘椂鍚屾锛涘闇€绔嬪嵆閲嶇紪璇戝彲鍐嶇偣 \"Apply and rebuild\"銆?
+    "已写入设置。切回音元拼音后会在重新激活时同步；如需立即重编译可再点 Apply and rebuild 按钮。"
   })
 }
 
@@ -588,10 +588,10 @@ $reverseLookupComboBox.Left = 144
 $reverseLookupComboBox.Top = 128
 $reverseLookupComboBox.Width = 180
 $reverseLookupComboBox.DropDownStyle = [System.Windows.Forms.ComboBoxStyle]::DropDownList
-[void]$reverseLookupComboBox.Items.Add([pscustomobject]@{ Label = "闅愯棌缂栫爜"; Value = "hidden" })
-[void]$reverseLookupComboBox.Items.Add([pscustomobject]@{ Label = "鏍囧噯鎷奸煶"; Value = "standard_pinyin" })
-[void]$reverseLookupComboBox.Items.Add([pscustomobject]@{ Label = "闊冲厓鎷奸煶"; Value = "yime_pinyin" })
-[void]$reverseLookupComboBox.Items.Add([pscustomobject]@{ Label = "閿綅搴忓垪"; Value = "key_sequence" })
+[void]$reverseLookupComboBox.Items.Add([pscustomobject]@{ Label = "隐藏编码"; Value = "hidden" })
+[void]$reverseLookupComboBox.Items.Add([pscustomobject]@{ Label = "标准拼音"; Value = "standard_pinyin" })
+[void]$reverseLookupComboBox.Items.Add([pscustomobject]@{ Label = "音元拼音"; Value = "yime_pinyin" })
+[void]$reverseLookupComboBox.Items.Add([pscustomobject]@{ Label = "键位序列"; Value = "key_sequence" })
 $reverseLookupComboBox.DisplayMember = "Label"
 $reverseLookupComboBox.ValueMember = "Value"
 $settingsGroup.Controls.Add($reverseLookupComboBox)
@@ -616,8 +616,8 @@ $candidateLayoutComboBox.Left = 144
 $candidateLayoutComboBox.Top = 176
 $candidateLayoutComboBox.Width = 180
 $candidateLayoutComboBox.DropDownStyle = [System.Windows.Forms.ComboBoxStyle]::DropDownList
-[void]$candidateLayoutComboBox.Items.Add([pscustomobject]@{ Label = "绔栨帓"; Value = "vertical" })
-[void]$candidateLayoutComboBox.Items.Add([pscustomobject]@{ Label = "妯帓"; Value = "horizontal" })
+[void]$candidateLayoutComboBox.Items.Add([pscustomobject]@{ Label = "竖排"; Value = "vertical" })
+[void]$candidateLayoutComboBox.Items.Add([pscustomobject]@{ Label = "横排"; Value = "horizontal" })
 $candidateLayoutComboBox.DisplayMember = "Label"
 $candidateLayoutComboBox.ValueMember = "Value"
 $settingsGroup.Controls.Add($candidateLayoutComboBox)
@@ -799,7 +799,7 @@ $applyAndRebuildButton.Add_Click({
 $rebuildOnlyButton.Add_Click({
   try {
     Invoke-RimeBuild
-    $statusLabel.Text = "宸叉墽琛?rime_deployer 鏋勫缓銆傚垏鍥為煶鍏冩嫾闊冲悗濡備粛涓嶄竴鑷达紝鍐嶉噸寮€ PIMELauncher銆?
+    $statusLabel.Text = "已执行 rime_deployer 构建。切回音元拼音后如仍不一致，再重开 PIMELauncher。"
   } catch {
     Show-Error $_.Exception.Message
   }
@@ -816,7 +816,7 @@ $refreshButton.Add_Click({
 $copySummaryButton.Add_Click({
   try {
     [System.Windows.Forms.Clipboard]::SetText(($summaryLabel.Text + [Environment]::NewLine + $statusLabel.Text))
-    $statusLabel.Text = "宸插鍒惰缃憳瑕併€?
+    $statusLabel.Text = "已复制设置摘要。"
   } catch {
     Show-Error $_.Exception.Message
   }

@@ -1494,6 +1494,46 @@ func TestStandalonePowerShellScriptsDoNotContainSmartQuotes(t *testing.T) {
 	}
 }
 
+// Regression guard for the "设置工具" instant-exit bug: the embedded PowerShell
+// scripts were double-encoded (UTF-8 read as GBK then re-saved as UTF-8). The
+// corruption left Unicode private-use / surrogate characters behind and, worse,
+// swallowed the closing double quote of several string literals (e.g. `。"`
+// became a single mangled glyph), which made PowerShell fail to parse the whole
+// script so the window closed immediately. Any recurrence of that encoding
+// damage reintroduces those code points, so fail fast if we see them again.
+func TestStandalonePowerShellScriptsAreFreeOfEncodingCorruption(t *testing.T) {
+	scripts := map[string]string{
+		"user lexicon manager": userLexiconManagerScript,
+		"tool hub":             toolHubScript,
+		"settings tool":        settingsToolScript,
+		"diagnostics tool":     diagnosticsToolScript,
+	}
+	for name, script := range scripts {
+		for i, r := range script {
+			if (r >= 0xE000 && r <= 0xF8FF) || (r >= 0xD800 && r <= 0xDFFF) || r == 0xFFFD {
+				t.Fatalf("%s PowerShell script contains corruption marker %#U at byte offset %d; the file was likely re-saved with a wrong (non-UTF-8) encoding", name, r, i)
+			}
+		}
+	}
+
+	// The settings tool must keep its intended, human-readable labels/messages.
+	// These exact strings were destroyed by the encoding corruption, so their
+	// presence proves the recovery is intact.
+	wantSettings := []string{
+		"音元拼音",
+		"变长", "等长", "省键",
+		"隐藏编码", "标准拼音", "键位序列",
+		"横排", "竖排",
+		"当前设置：方案",
+		"已复制设置摘要。",
+	}
+	for _, want := range wantSettings {
+		if !strings.Contains(settingsToolScript, want) {
+			t.Fatalf("expected settings tool script to contain %q; encoding recovery may be incomplete", want)
+		}
+	}
+}
+
 func TestUserLexiconManagerScriptShowsDialogInsideTopLevelTry(t *testing.T) {
 	if !strings.Contains(userLexiconManagerScript, "try {\n  [void]$form.ShowDialog()\n} catch {\n  Show-Error $_.Exception.Message\n}") {
 		t.Fatalf("expected lexicon manager script to show dialog inside top-level try/catch")
