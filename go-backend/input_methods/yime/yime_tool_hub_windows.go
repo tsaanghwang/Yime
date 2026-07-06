@@ -171,6 +171,8 @@ function Invoke-Tool {
       $arguments = @(
         "-NoProfile",
         "-STA",
+        "-WindowStyle",
+        "Hidden",
         "-ExecutionPolicy",
         "Bypass",
         "-File",

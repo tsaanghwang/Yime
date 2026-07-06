@@ -1389,40 +1389,45 @@ function Add-MenuAction {
   return $item
 }
 
-[void](Add-ActionButton "添加词条" { Add-Entry })
-[void](Add-ActionButton "删除词条" { Delete-Entry })
-[void](Add-ActionButton "权重+1000" { Adjust-SelectedWeights 1000 })
-[void](Add-ActionButton "权重-1000" { Adjust-SelectedWeights -1000 })
-[void](Add-ActionButton "设权重" { Set-SelectedWeights })
-[void](Add-ActionButton "撤销" { Undo-LastSourceChange })
-[void](Add-ActionButton "复制摘要" { Copy-RecentOperationSummary })
-[void](Add-ActionButton "编辑源文件" { Open-SourceFile })
-[void](Add-ActionButton "打开目录" { Open-UserFolder })
-[void](Add-ActionButton "应用用户词库" { Apply-Lexicon })
-[void](Add-ActionButton "导入" { Import-Lexicon })
-[void](Add-ActionButton "导出" { Export-Lexicon })
-[void](Add-ActionButton "刷新列表" { Refresh-EntryList })
+try {
+  [void](Add-ActionButton "添加词条" { Add-Entry })
+  [void](Add-ActionButton "删除词条" { Delete-Entry })
+  [void](Add-ActionButton "权重+1000" { Adjust-SelectedWeights 1000 })
+  [void](Add-ActionButton "权重-1000" { Adjust-SelectedWeights -1000 })
+  [void](Add-ActionButton "设权重" { Set-SelectedWeights })
+  [void](Add-ActionButton "撤销" { Undo-LastSourceChange })
+  [void](Add-ActionButton "复制摘要" { Copy-RecentOperationSummary })
+  [void](Add-ActionButton "编辑源文件" { Open-SourceFile })
+  [void](Add-ActionButton "打开目录" { Open-UserFolder })
+  [void](Add-ActionButton "应用用户词库" { Apply-Lexicon })
+  [void](Add-ActionButton "导入" { Import-Lexicon })
+  [void](Add-ActionButton "导出" { Export-Lexicon })
+  [void](Add-ActionButton "刷新列表" { Refresh-EntryList })
 
-[void](Add-MenuAction $fileMenu "导入用户词库" { Import-Lexicon })
-[void](Add-MenuAction $fileMenu "导出用户词库" { Export-Lexicon })
-$fileMenu.DropDownItems.Add((New-Object System.Windows.Forms.ToolStripSeparator)) | Out-Null
-[void](Add-MenuAction $fileMenu "打开源文件" { Open-SourceFile })
-[void](Add-MenuAction $fileMenu "打开词库目录" { Open-UserFolder })
-$fileMenu.DropDownItems.Add((New-Object System.Windows.Forms.ToolStripSeparator)) | Out-Null
-[void](Add-MenuAction $fileMenu "关闭" { $form.Close() })
+  [void](Add-MenuAction $fileMenu "导入用户词库" { Import-Lexicon })
+  [void](Add-MenuAction $fileMenu "导出用户词库" { Export-Lexicon })
+  $fileMenu.DropDownItems.Add((New-Object System.Windows.Forms.ToolStripSeparator)) | Out-Null
+  [void](Add-MenuAction $fileMenu "打开源文件" { Open-SourceFile })
+  [void](Add-MenuAction $fileMenu "打开词库目录" { Open-UserFolder })
+  $fileMenu.DropDownItems.Add((New-Object System.Windows.Forms.ToolStripSeparator)) | Out-Null
+  [void](Add-MenuAction $fileMenu "关闭" { $form.Close() })
 
-[void](Add-MenuAction $actionMenu "添加词条" { Add-Entry })
-[void](Add-MenuAction $actionMenu "删除词条" { Delete-Entry })
-[void](Add-MenuAction $actionMenu "权重 +1000" { Adjust-SelectedWeights 1000 })
-[void](Add-MenuAction $actionMenu "权重 -1000" { Adjust-SelectedWeights -1000 })
-[void](Add-MenuAction $actionMenu "设置权重" { Set-SelectedWeights })
-[void](Add-MenuAction $actionMenu "撤销最近改动" { Undo-LastSourceChange })
-[void](Add-MenuAction $actionMenu "复制最近摘要" { Copy-RecentOperationSummary })
-[void](Add-MenuAction $actionMenu "应用用户词库" { Apply-Lexicon })
-[void](Add-MenuAction $actionMenu "刷新列表" { Refresh-EntryList })
+  [void](Add-MenuAction $actionMenu "添加词条" { Add-Entry })
+  [void](Add-MenuAction $actionMenu "删除词条" { Delete-Entry })
+  [void](Add-MenuAction $actionMenu "权重 +1000" { Adjust-SelectedWeights 1000 })
+  [void](Add-MenuAction $actionMenu "权重 -1000" { Adjust-SelectedWeights -1000 })
+  [void](Add-MenuAction $actionMenu "设置权重" { Set-SelectedWeights })
+  [void](Add-MenuAction $actionMenu "撤销最近改动" { Undo-LastSourceChange })
+  [void](Add-MenuAction $actionMenu "复制最近摘要" { Copy-RecentOperationSummary })
+  [void](Add-MenuAction $actionMenu "应用用户词库" { Apply-Lexicon })
+  [void](Add-MenuAction $actionMenu "刷新列表" { Refresh-EntryList })
 
-[void](Add-ActionButton "编辑" { Edit-Entry })
-[void](Add-MenuAction $actionMenu "编辑" { Edit-Entry })
+  [void](Add-ActionButton "编辑" { Edit-Entry })
+  [void](Add-MenuAction $actionMenu "编辑" { Edit-Entry })
+} catch {
+  Show-Error $_.Exception.Message
+  return
+}
 
 $sortFieldComboBox.Add_SelectedIndexChanged({
   try {

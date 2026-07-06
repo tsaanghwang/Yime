@@ -16,12 +16,66 @@ const diagnosticsToolScript = `param(
 $ErrorActionPreference = "Stop"
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
-Add-Type -AssemblyName Microsoft.VisualBasic
 [System.Windows.Forms.Application]::EnableVisualStyles()
 
 function Show-Error {
   param([string]$Message)
   [System.Windows.Forms.MessageBox]::Show($Message, "Yime Diagnostics", "OK", "Error") | Out-Null
+}
+
+function Show-TextInputDialog {
+  param(
+    [string]$Prompt,
+    [string]$Title,
+    [string]$DefaultValue = ""
+  )
+
+  $dialog = New-Object System.Windows.Forms.Form
+  $dialog.Text = $Title
+  $dialog.StartPosition = "CenterParent"
+  $dialog.FormBorderStyle = "FixedDialog"
+  $dialog.MaximizeBox = $false
+  $dialog.MinimizeBox = $false
+  $dialog.ClientSize = New-Object System.Drawing.Size(420, 140)
+
+  $label = New-Object System.Windows.Forms.Label
+  $label.Left = 12
+  $label.Top = 12
+  $label.Width = 396
+  $label.Height = 40
+  $label.Text = $Prompt
+  $dialog.Controls.Add($label)
+
+  $textBox = New-Object System.Windows.Forms.TextBox
+  $textBox.Left = 12
+  $textBox.Top = 58
+  $textBox.Width = 396
+  $textBox.Text = $DefaultValue
+  $dialog.Controls.Add($textBox)
+
+  $okButton = New-Object System.Windows.Forms.Button
+  $okButton.Text = "OK"
+  $okButton.Left = 248
+  $okButton.Top = 100
+  $okButton.Width = 75
+  $okButton.DialogResult = [System.Windows.Forms.DialogResult]::OK
+  $dialog.AcceptButton = $okButton
+  $dialog.Controls.Add($okButton)
+
+  $cancelButton = New-Object System.Windows.Forms.Button
+  $cancelButton.Text = "Cancel"
+  $cancelButton.Left = 333
+  $cancelButton.Top = 100
+  $cancelButton.Width = 75
+  $cancelButton.DialogResult = [System.Windows.Forms.DialogResult]::Cancel
+  $dialog.CancelButton = $cancelButton
+  $dialog.Controls.Add($cancelButton)
+
+  $result = $dialog.ShowDialog()
+  if ($result -eq [System.Windows.Forms.DialogResult]::OK) {
+    return $textBox.Text.Trim()
+  }
+  return ""
 }
 
 function Open-Path {
@@ -1422,7 +1476,7 @@ function Refresh-PresetComboBoxItems {
   if ($null -ne $currentSelection -and $presetComboBox.Items.Contains($currentSelection)) {
     $presetComboBox.SelectedItem = $currentSelection
   } else {
-    $presetComboBox.SelectedItem = "Issue-ready"
+    $presetComboBox.SelectedItem = "[Built-in] Issue-ready"
   }
   $script:updatingPresetSelection = $false
 }
@@ -1697,8 +1751,12 @@ $windowSizeComboBox.DropDownStyle = [System.Windows.Forms.ComboBoxStyle]::DropDo
 $windowSizeComboBox.SelectedIndex = 1
 $form.Controls.Add($windowSizeComboBox)
 
-$script:savedReportPresets = Load-SavedReportPresets
-Refresh-PresetComboBoxItems
+try {
+  $script:savedReportPresets = Load-SavedReportPresets
+  Refresh-PresetComboBoxItems
+} catch {
+  Show-Error $_.Exception.Message
+}
 
 $presetComboBox.Add_SelectedIndexChanged({
   if ($script:updatingPresetSelection) {
@@ -1721,7 +1779,7 @@ $presetComboBox.Add_SelectedIndexChanged({
 $savePresetButton.Add_Click({
   $presetName = Get-SelectedSavedPresetName
   if ([string]::IsNullOrWhiteSpace($presetName)) {
-    $presetName = [Microsoft.VisualBasic.Interaction]::InputBox("Name this report preset:", "Save diagnostics preset", "diagnostics preset")
+    $presetName = Show-TextInputDialog -Prompt "Name this report preset:" -Title "Save diagnostics preset" -DefaultValue "diagnostics preset"
     if ([string]::IsNullOrWhiteSpace($presetName)) {
       return
     }
@@ -1753,7 +1811,7 @@ $renamePresetButton.Add_Click({
     return
   }
 
-  $newName = [Microsoft.VisualBasic.Interaction]::InputBox("Rename this saved preset:", "Rename diagnostics preset", $selectedSavedName)
+  $newName = Show-TextInputDialog -Prompt "Rename this saved preset:" -Title "Rename diagnostics preset" -DefaultValue $selectedSavedName
   if ([string]::IsNullOrWhiteSpace($newName) -or $newName -eq $selectedSavedName) {
     return
   }
@@ -1821,7 +1879,7 @@ $exportPresetButton.Add_Click({
     $defaultName = $selectedSavedName
   }
 
-  $exportName = [Microsoft.VisualBasic.Interaction]::InputBox("Export current report options to a user-side file named:", "Export diagnostics preset", $defaultName)
+  $exportName = Show-TextInputDialog -Prompt "Export current report options to a user-side file named:" -Title "Export diagnostics preset" -DefaultValue $defaultName
   if ([string]::IsNullOrWhiteSpace($exportName)) {
     return
   }

@@ -1668,6 +1668,9 @@ func TestUserLexiconManagerScriptShowsDialogInsideTopLevelTry(t *testing.T) {
 	if strings.Contains(userLexiconManagerScript, "$form.TopMost = $true") || strings.Contains(userLexiconManagerScript, "$form.Activate()") || strings.Contains(userLexiconManagerScript, "$form.BringToFront()") {
 		t.Fatalf("expected lexicon manager script to avoid aggressive foreground forcing that can collapse the language bar")
 	}
+	if !strings.Contains(userLexiconManagerScript, "try {\n  [void](Add-ActionButton \"添加词条\" { Add-Entry })") || !strings.Contains(userLexiconManagerScript, "} catch {\n  Show-Error $_.Exception.Message\n  return\n}") {
+		t.Fatalf("expected lexicon manager script to guard toolbar/menu setup before ShowDialog")
+	}
 }
 
 func TestToolHubScriptShowsDialogInsideTopLevelTry(t *testing.T) {
@@ -1850,6 +1853,18 @@ func TestStandaloneSettingsAndDiagnosticsScriptsProvideRealWindowShells(t *testi
 	}
 	if !strings.Contains(diagnosticsToolScript, "Issue-ready") {
 		t.Fatalf("expected diagnostics tool script to expose an issue-ready preset")
+	}
+	if !strings.Contains(diagnosticsToolScript, `$presetComboBox.SelectedItem = "[Built-in] Issue-ready"`) {
+		t.Fatalf("expected diagnostics tool script to select the built-in issue-ready preset label")
+	}
+	if strings.Contains(diagnosticsToolScript, "Microsoft.VisualBasic") {
+		t.Fatalf("expected diagnostics tool script to avoid Microsoft.VisualBasic startup dependency")
+	}
+	if !strings.Contains(diagnosticsToolScript, "function Show-TextInputDialog") {
+		t.Fatalf("expected diagnostics tool script to provide a WinForms text-input dialog")
+	}
+	if !strings.Contains(diagnosticsToolScript, "try {\n  $script:savedReportPresets = Load-SavedReportPresets\n  Refresh-PresetComboBoxItems\n} catch {") {
+		t.Fatalf("expected diagnostics tool script to guard preset initialization before ShowDialog")
 	}
 	if !strings.Contains(diagnosticsToolScript, "Local debugging") {
 		t.Fatalf("expected diagnostics tool script to expose a local-debugging preset")
@@ -2146,6 +2161,9 @@ func TestToolHubScriptUsesShellExecuteForPowerShellChildren(t *testing.T) {
 	}
 	if strings.Contains(toolHubScript, `Start-Process -FilePath "powershell.exe" -ArgumentList $argumentLine -WindowStyle Hidden`) {
 		t.Fatalf("expected tool hub script not to use the old Start-Process PowerShell child launcher")
+	}
+	if !strings.Contains(toolHubScript, `"-WindowStyle",`) || !strings.Contains(toolHubScript, `"Hidden",`) {
+		t.Fatalf("expected tool hub script to pass -WindowStyle Hidden to child PowerShell processes")
 	}
 }
 
