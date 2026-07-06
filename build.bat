@@ -85,9 +85,11 @@ goto :eof
 set "VS_DEV_CMD="
 
 rem vswhere.exe is the canonical locator for VS 2017+ installations.
+rem Try the environment-variable path first, then the hard-coded fallback.
 set "_VSWHERE=%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe"
+if not exist "%_VSWHERE%" set "_VSWHERE=C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe"
 if exist "%_VSWHERE%" (
-	for /f "usebackq delims=" %%I in (`"%_VSWHERE%" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath 2^>nul`) do (
+	for /f "usebackq delims=" %%I in (`"%_VSWHERE%" -latest -products * -property installationPath 2^>nul`) do (
 		if exist "%%I\Common7\Tools\VsDevCmd.bat" (
 			set "VS_DEV_CMD=%%I\Common7\Tools\VsDevCmd.bat"
 			goto :vsdevcmd_found
@@ -113,6 +115,9 @@ if exist "C:\BuildTools\Common7\Tools\VsDevCmd.bat" (
 	goto :vsdevcmd_found
 )
 echo Visual Studio environment script was not found.
+echo   vswhere path: %_VSWHERE%
+echo   ProgramFiles: %ProgramFiles%
+echo   ProgramFiles(x86): %ProgramFiles(x86)%
 exit /b 1
 
 :vsdevcmd_found
