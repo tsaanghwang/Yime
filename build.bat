@@ -27,20 +27,11 @@ if exist "%_VSWHERE%" (
 
 where cmake >nul 2>&1
 if errorlevel 1 (
-	for %%Y in (2022 2019) do (
-		for %%E in (BuildTools Enterprise Community Professional) do (
-			if exist "%ProgramFiles(x86)%\Microsoft Visual Studio\%%Y\%%E\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" (
-				set "CMAKE_EXE=%ProgramFiles(x86)%\Microsoft Visual Studio\%%Y\%%E\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe"
-				goto :cmake_found
-			)
-			if exist "%ProgramFiles%\Microsoft Visual Studio\%%Y\%%E\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" (
-				set "CMAKE_EXE=%ProgramFiles%\Microsoft Visual Studio\%%Y\%%E\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe"
-				goto :cmake_found
-			)
-		)
+	call :find_vs_cmake
+	if errorlevel 1 (
+		echo CMake was not found. Install CMake or add it to PATH.
+		exit /b 1
 	)
-	echo CMake was not found. Install CMake or add it to PATH.
-	exit /b 1
 )
 :cmake_found
 
@@ -81,17 +72,53 @@ powershell -NoProfile -ExecutionPolicy Bypass -File "%ROOT_DIR%\tools\refresh-de
 
 goto :eof
 
+:find_vs_cmake
+set "CMAKE_EXE="
+call :set_cmake_from_vs_root "%VS_INSTALL_ROOT%"
+if defined CMAKE_EXE exit /b 0
+
+for %%Y in (2022 2019) do (
+	for %%E in (BuildTools Enterprise Community Professional) do (
+		if exist "%ProgramFiles(x86)%\Microsoft Visual Studio\%%Y\%%E\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" (
+			set "CMAKE_EXE=%ProgramFiles(x86)%\Microsoft Visual Studio\%%Y\%%E\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe"
+			exit /b 0
+		)
+		if exist "%ProgramFiles%\Microsoft Visual Studio\%%Y\%%E\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" (
+			set "CMAKE_EXE=%ProgramFiles%\Microsoft Visual Studio\%%Y\%%E\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe"
+			exit /b 0
+		)
+	)
+)
+exit /b 1
+
 :find_vsdevcmd
 set "VS_DEV_CMD="
+set "VS_INSTALL_ROOT="
+
+if defined VSINSTALLDIR (
+	if exist "%VSINSTALLDIR%Common7\Tools\VsDevCmd.bat" (
+		set "VS_DEV_CMD=%VSINSTALLDIR%Common7\Tools\VsDevCmd.bat"
+		set "VS_INSTALL_ROOT=%VSINSTALLDIR%"
+		goto :vsdevcmd_found
+	)
+)
 
 rem vswhere.exe is the canonical locator for VS 2017+ installations.
 rem Try the environment-variable path first, then the hard-coded fallback.
 set "_VSWHERE=%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe"
 if not exist "%_VSWHERE%" set "_VSWHERE=C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe"
 if exist "%_VSWHERE%" (
+	for /f "usebackq delims=" %%I in (`"%_VSWHERE%" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath 2^>nul`) do (
+		if exist "%%~I\Common7\Tools\VsDevCmd.bat" (
+			set "VS_DEV_CMD=%%~I\Common7\Tools\VsDevCmd.bat"
+			set "VS_INSTALL_ROOT=%%~I\"
+			goto :vsdevcmd_found
+		)
+	)
 	for /f "usebackq delims=" %%I in (`"%_VSWHERE%" -latest -products * -property installationPath 2^>nul`) do (
-		if exist "%%I\Common7\Tools\VsDevCmd.bat" (
-			set "VS_DEV_CMD=%%I\Common7\Tools\VsDevCmd.bat"
+		if exist "%%~I\Common7\Tools\VsDevCmd.bat" (
+			set "VS_DEV_CMD=%%~I\Common7\Tools\VsDevCmd.bat"
+			set "VS_INSTALL_ROOT=%%~I\"
 			goto :vsdevcmd_found
 		)
 	)
@@ -102,16 +129,19 @@ for %%Y in (2022 2019) do (
 	for %%E in (Enterprise Community Professional BuildTools) do (
 		if exist "%ProgramFiles%\Microsoft Visual Studio\%%Y\%%E\Common7\Tools\VsDevCmd.bat" (
 			set "VS_DEV_CMD=%ProgramFiles%\Microsoft Visual Studio\%%Y\%%E\Common7\Tools\VsDevCmd.bat"
+			set "VS_INSTALL_ROOT=%ProgramFiles%\Microsoft Visual Studio\%%Y\%%E\"
 			goto :vsdevcmd_found
 		)
 		if exist "%ProgramFiles(x86)%\Microsoft Visual Studio\%%Y\%%E\Common7\Tools\VsDevCmd.bat" (
 			set "VS_DEV_CMD=%ProgramFiles(x86)%\Microsoft Visual Studio\%%Y\%%E\Common7\Tools\VsDevCmd.bat"
+			set "VS_INSTALL_ROOT=%ProgramFiles(x86)%\Microsoft Visual Studio\%%Y\%%E\"
 			goto :vsdevcmd_found
 		)
 	)
 )
 if exist "C:\BuildTools\Common7\Tools\VsDevCmd.bat" (
 	set "VS_DEV_CMD=C:\BuildTools\Common7\Tools\VsDevCmd.bat"
+	set "VS_INSTALL_ROOT=C:\BuildTools\"
 	goto :vsdevcmd_found
 )
 echo Visual Studio environment script was not found.
@@ -120,5 +150,15 @@ echo   ProgramFiles: %ProgramFiles%
 echo   ProgramFiles(x86): %ProgramFiles(x86)%
 exit /b 1
 
+:set_cmake_from_vs_root
+set "_VS_ROOT=%~1"
+if not defined _VS_ROOT exit /b 1
+if exist "%_VS_ROOT%Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" (
+	set "CMAKE_EXE=%_VS_ROOT%Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe"
+	exit /b 0
+)
+exit /b 1
+
 :vsdevcmd_found
 exit /b 0
+

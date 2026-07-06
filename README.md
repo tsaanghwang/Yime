@@ -80,6 +80,20 @@ cmake --build build64 --config Release --target PIMETextService
 
 Generated installer artifacts are placed under the installer output path after packaging.
 
+## Initial Checklist
+
+Use this checklist for a first local bring-up or when validating that a fresh sync is still healthy:
+
+- [ ] Clone the repository, initialize submodules, and confirm the required toolchain is installed.
+- [ ] Run `Build.cmd` from the repository root to build the Windows host components.
+- [ ] Run `cmd /c build.bat` from `go-backend` to rebuild the Go backend package.
+- [ ] If Yime Rime data changed, deploy or refresh it with `tools\deploy-yime-rime-data.ps1` as described in [docs/YIME_RIME_INTEGRATION.md](/C:/dev/Yime/docs/YIME_RIME_INTEGRATION.md:1).
+- [ ] Reinstall the local test runtime with `Reinstall-PIME-Test.cmd` from an elevated prompt.
+- [ ] Switch to Yime and sanity-check activation, candidate display, settings, and reverse lookup behavior.
+- [ ] Run `go test ./input_methods/yime/...` from `go-backend` before shipping backend-facing changes.
+
+For deeper Yime/Rime data maintenance steps, including the vendored `pinyin_normalized.json` flow, see the maintainer checklist in [docs/YIME_RIME_INTEGRATION.md](/C:/dev/Yime/docs/YIME_RIME_INTEGRATION.md:100).
+
 ## Install Notes
 
 Typical local installation requires:
