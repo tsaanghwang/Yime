@@ -1,101 +1,123 @@
 # Yime for Windows
 
-**Yime for Windows**（音元拼音）is a Rime-powered Chinese phonetic input method for Windows,
-built on the [PIME](https://github.com/EasyIME/PIME) text-service framework.
+Yime for Windows is a Windows Chinese phonetic input method project built on top of the [PIME](https://github.com/EasyIME/PIME) text-service framework and powered by the Rime engine.
 
-- **音元拼音** is the input scheme users select in the language bar (display name).
-- **Rime** (`librime` / `rime.dll`) is the conversion engine.
-- **PIME** is the Windows Text Services Framework (TSF) host and multi-backend service framework this repository is forked from.
+This repository is the Windows integration and host-side implementation of Yime. It is distinct from the separate `Yime-prototype` repository, which is used for encoding, API, lexicon, and experiment-heavy prototype work.
 
-The Windows integration is implemented via the Text Services Framework:
-*   LibIME contains a library which aims to be a simple wrapper for Windows Text Service Framework (TSF).
-*   PIMETextService contains an backbone implementation of Windows text service for using libIME.
-*   The Go backend (`go-backend`) hosts the `yime` service that drives the Rime engine.
-*   The python server part requires python 3.x and pywin32 package.
+## Project Scope
 
-All parts are licensed under GNU LGPL v2.1 license.
+This repository focuses on the Windows product and integration layer:
 
-# Development
+- TSF host integration through the PIME-based text service.
+- Rime-backed runtime behavior for the Yime input method.
+- Go backend services under `go-backend`.
+- Windows packaging, deployment, and runtime validation.
+- Host-facing behavior such as language-bar commands, menu handling, candidate paging, and regression coverage.
 
-## Tool Requirements
-*   [CMake](http://www.cmake.org/) >= 3.0
-*   [Visual Studio 2019](https://visualstudio.microsoft.com/vs)
-*   [Rust Toolchain](https://rustup.rs/) (Stable channel with `i686-pc-windows-msvc` target)
-*   [git](http://windows.github.com/)
-*   [Node.js](https://nodejs.org/) (Required for some backends like McBopomofo)
+In this repository:
 
-## How to Build
-*   Get source from github.
+- `PIMETextService` contains the Windows text service host implementation.
+- `go-backend` contains the backend services, including the Yime integration that drives Rime.
+- `python` and `node` contain supporting runtime components inherited from the broader PIME architecture where still applicable.
+- `installer`, build scripts, and deployment assets support packaging and local installation workflows.
 
-        git clone <your-fork-url>/Yime-for-Windows.git Yime
-        cd Yime
-        git submodule update --init
+## Repository Layout
 
-*   Ensure the 32-bit Rust target is installed:
+- `go-backend/`: Go services and Yime-specific backend logic.
+- `PIMETextService/`: TSF text service host implementation.
+- `PIMELauncher/`: launcher and runtime process management.
+- `python/`: Python-side support components.
+- `node/`: Node-side support components.
+- `installer/`: installer assets and packaging output.
+- `libIME2/`, `libchewing/`, `McBopomofoWeb/`: upstream or related components preserved in the Windows host tree.
 
-        rustup target add i686-pc-windows-msvc
+## Development Status
 
-*   Use `build.bat` to build everything, or use the following CMake commands to generate Visual Studio project.
+The project is currently organized around these branches:
 
-        cmake . -Bbuild -G "Visual Studio 16 2019" -A Win32
-        cmake --build build --config Release
+- `main`: stable baseline for the Windows repository.
+- `yime-on-pime`: active Windows integration branch.
 
-        # For 64-bit Text Service (Required for 64-bit apps)
-        cmake . -Bbuild64 -G "Visual Studio 16 2019" -A x64
-        cmake --build build64 --config Release --target PIMETextService
+The prototype and transition-oriented reference materials live in the separate `Yime-prototype` repository.
 
-*   The generated installer will be in the `installer` folder after running `makensis`.
+## Build Requirements
 
-## TSF References
-*   [Text Services Framework](http://msdn.microsoft.com/en-us/library/windows/desktop/ms629032%28v=vs.85%29.aspx)
-*   [Guidelines and checklist for IME development (Windows Store apps)](http://msdn.microsoft.com/en-us/library/windows/apps/hh967425.aspx)
-*   [Input Method Editors (Windows Store apps)](http://msdn.microsoft.com/en-us/library/windows/apps/hh967426.aspx)
-*   [Third-party input method editors](http://msdn.microsoft.com/en-us/library/windows/desktop/hh848069%28v=vs.85%29.aspx)
-*   [Strategies for App Communication between Windows 8 UI and Windows 8 Desktop](http://software.intel.com/en-us/articles/strategies-for-app-communication-between-windows-8-ui-and-windows-8-desktop)
-*   [TSF Aware, Dictation, Windows Speech Recognition, and Text Services Framework. (blog)](http://blogs.msdn.com/b/tsfaware/?Redirected=true)
-*   [Win32 and COM for Windows Store apps](http://msdn.microsoft.com/en-us/library/windows/apps/br205757.aspx)
-*   [Input Method Editor (IME) sample supporting Windows 8](http://code.msdn.microsoft.com/windowsdesktop/Input-Method-Editor-IME-b1610980)
+- [CMake](http://www.cmake.org/) 3.0 or later
+- [Visual Studio 2019](https://visualstudio.microsoft.com/vs)
+- [Rust Toolchain](https://rustup.rs/) with `i686-pc-windows-msvc`
+- [Git](https://git-scm.com/)
+- [Node.js](https://nodejs.org/)
 
-## Windows ACL (Access Control List) references
-*   [The Windows Access Control Model Part 1](http://www.codeproject.com/Articles/10042/The-Windows-Access-Control-Model-Part-1#SID)
-*   [The Windows Access Control Model: Part 2](http://www.codeproject.com/Articles/10200/The-Windows-Access-Control-Model-Part-2#SidFun)
-*   [Windows 8 App Container Security Notes - Part 1](http://recxltd.blogspot.tw/2012/03/windows-8-app-container-security-notes.html)
-*   [How AccessCheck Works](http://msdn.microsoft.com/en-us/library/windows/apps/aa446683.aspx)
-*   [GetAppContainerNamedObjectPath function (enable accessing object outside app containers using ACL)](http://msdn.microsoft.com/en-us/library/windows/desktop/hh448493)
-*   [Creating a DACL](http://msdn.microsoft.com/en-us/library/windows/apps/ms717798.aspx)
+## Build
 
-# Install
-*   Copy `PIMETextService.dll` to `C:\Program Files (X86)\YIME\x86\`.
-*   Copy `PIMETextService.dll` to `C:\Program Files (X86)\YIME\x64\`.
-*   Copy the folder `python` to `C:\Program Files (X86)\YIME\`
-*   Copy the folder `node` to `C:\Program Files (X86)\YIME\`
-*   Use `regsvr32` to register `PIMETextService.dll`. 64-bit system need to register both 32-bit and 64-bit `PIMETextService.dll`
+Clone the repository and initialize submodules:
 
-        regsvr32 "C:\Program Files (X86)\YIME\x86\PIMETextService.dll" (run as administrator)
-        regsvr32 "C:\Program Files (X86)\YIME\x64\PIMETextService.dll" (run as administrator)
+```powershell
+git clone <your-fork-url>/Yime.git
+cd Yime
+git submodule update --init
+```
 
-*   NOTICE: the `regsvr32` command needs to be run as Administrator. Otherwise you'll get access denied error.
-*   In Windows 8, if you put the dlls in places other than C:\Windows or C:\Program Files, they will not be accessible in metro apps.
+Install the 32-bit Rust target if needed:
 
-# Uninstall
-*   Use `regsvr32` to unregister `PIMETextService.dll`. 64-bit system need to unregister both 32-bit and 64-bit `PIMETextService.dll`
+```powershell
+rustup target add i686-pc-windows-msvc
+```
 
-        regsvr32 /u "C:\Program Files (X86)\YIME\x86\PIMETextService.dll" (run as administrator)
-        regsvr32 /u "C:\Program Files (X86)\YIME\x64\PIMETextService.dll" (run as administrator)
-*   Remove `C:\Program Files (X86)\YIME`
+Build the 32-bit host:
 
-*   NOTICE: the `regsvr32` command needs to be run as Administrator. Otherwise you'll get access denied error.
+```powershell
+cmake . -Bbuild -G "Visual Studio 16 2019" -A Win32
+cmake --build build --config Release
+```
 
-# Bug Report
-Please report any issue to the Yime for Windows repository's issue tracker.
+Build the 64-bit text service host for 64-bit applications:
 
-Framework-level issues that also affect upstream PIME can be referenced from
-[EasyIME/PIME issues](https://github.com/EasyIME/PIME/issues).
+```powershell
+cmake . -Bbuild64 -G "Visual Studio 16 2019" -A x64
+cmake --build build64 --config Release --target PIMETextService
+```
 
-# Debugging
-If you encounter issues, you can run PIMELauncher.exe with the /console argument:
+Generated installer artifacts are placed under the installer output path after packaging.
 
-    PIMELauncher.exe /console
+## Install Notes
 
-This opens a console window which displays debug logs, making it easier to
-troubleshoot backend communication and other internal events.
+Typical local installation requires:
+
+- placing `PIMETextService.dll` under both `x86` and `x64` runtime directories
+- copying required runtime folders such as `python` and `node`
+- registering the text service with `regsvr32` as Administrator
+
+Example registration commands:
+
+```powershell
+regsvr32 "C:\Program Files (x86)\YIME\x86\PIMETextService.dll"
+regsvr32 "C:\Program Files (x86)\YIME\x64\PIMETextService.dll"
+```
+
+To unregister:
+
+```powershell
+regsvr32 /u "C:\Program Files (x86)\YIME\x86\PIMETextService.dll"
+regsvr32 /u "C:\Program Files (x86)\YIME\x64\PIMETextService.dll"
+```
+
+## Debugging
+
+To run the launcher with a console window:
+
+```powershell
+PIMELauncher.exe /console
+```
+
+This is useful when investigating backend startup, host callbacks, menu commands, and runtime integration issues.
+
+## Issues
+
+Report repository-specific issues in this repository.
+
+Framework-level issues that also affect upstream PIME may also need cross-reference against [EasyIME/PIME](https://github.com/EasyIME/PIME).
+
+## License
+
+This repository follows the licensing inherited from the upstream project tree. See the license files in the repository root for details.
