@@ -29,13 +29,29 @@ jobs:
         with:
           nsis-version: 3.08
       - name: Run build.bat
+        shell: cmd
         env:
           Rust_COMPILER: ${{ env.CARGO_HOME }}\bin\rustc.exe
+        run: call build.bat --sanitized
+      - name: Verify native build outputs
+        shell: cmd
         run: |
-          .\build.bat
+          if not exist "build\PIMETextService\Release\PIMETextService.dll" (
+            echo Missing Win32 PIMETextService.dll
+            exit /b 1
+          )
+          if not exist "build64\PIMETextService\Release\PIMETextService.dll" (
+            echo Missing x64 PIMETextService.dll
+            exit /b 1
+          )
+          if not exist "build\PIMELauncher\Release\PIMELauncher.exe" (
+            echo Missing PIMELauncher.exe
+            exit /b 1
+          )
       - name: Build the installer
+        shell: cmd
         run: |
-          cmd /C "C:\Program Files (x86)\NSIS\Bin\makensis.exe" ".\installer\installer.nsi"
+          "C:\Program Files (x86)\NSIS\Bin\makensis.exe" ".\installer\installer.nsi"
       - uses: actions/upload-artifact@v4
         with:
           name: Installer
