@@ -149,17 +149,22 @@ try {
 
 Add-InstallRootCandidate -Candidates $installRoots -Path $LegacyDefaultInstallRoot
 
-Write-Host "Stopping PIMELauncher and installed Go backend if they are running..."
-foreach ($root in $installRoots) {
-    $launcherExe = Join-Path $root "PIMELauncher.exe"
-    if (Test-Path -LiteralPath $launcherExe) {
-        & $launcherExe /quit | Out-Null
-        Start-Sleep -Seconds 1
+$stopScript = Join-Path $PSScriptRoot "dev-stop-pime.ps1"
+if (Test-Path -LiteralPath $stopScript) {
+    & $stopScript -InstallRoots $installRoots -Quiet
+} else {
+    Write-Host "Stopping PIMELauncher and installed Go backend if they are running..."
+    foreach ($root in $installRoots) {
+        $launcherExe = Join-Path $root "PIMELauncher.exe"
+        if (Test-Path -LiteralPath $launcherExe) {
+            & $launcherExe /quit | Out-Null
+            Start-Sleep -Seconds 1
+        }
+        Stop-ProcessByPathPrefix -Name "PIMELauncher" -PathPrefix $root
+        Stop-ProcessByPathPrefix -Name "server" -PathPrefix (Join-Path $root "go-backend")
     }
-    Stop-ProcessByPathPrefix -Name "PIMELauncher" -PathPrefix $root
-    Stop-ProcessByPathPrefix -Name "server" -PathPrefix (Join-Path $root "go-backend")
+    Start-Sleep -Milliseconds 500
 }
-Start-Sleep -Milliseconds 500
 
 Write-Host "Unregistering text service DLLs..."
 foreach ($root in $installRoots) {

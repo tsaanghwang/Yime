@@ -232,89 +232,35 @@ function Update-DefaultCustomSchemaAndPageSize {
     return ("patch:" + $newline + "  schema_list:" + $newline + $schemaLine + $newline + $pageLine + $newline)
   }
 
+  # Rebuild patch: keep any header such as __build_info:, but always write a single
+  # schema_list entry so corrupted duplicates cannot leave Rime on luna_pinyin fallback.
   $lines = [System.Collections.Generic.List[string]]::new()
   foreach ($line in ($Content -split "\r?\n")) {
     $lines.Add($line)
   }
-
-  $foundPatch = $false
-  $foundSchemaList = $false
-  $schemaLineIndex = -1
-  $pageLineIndex = -1
-
+  $header = [System.Collections.Generic.List[string]]::new()
   for ($index = 0; $index -lt $lines.Count; $index++) {
-    $trimmed = $lines[$index].Trim()
-    if ($trimmed -eq "patch:") {
-      $foundPatch = $true
+    if ($lines[$index].Trim() -eq "patch:") {
+      break
     }
-    if ($trimmed -eq "schema_list:") {
-      $foundSchemaList = $true
-    }
-    if ($trimmed.StartsWith("- schema:")) {
-      $schemaLineIndex = $index
-    }
-    if (-not [string]::IsNullOrWhiteSpace((Parse-MenuPageSizeValue $lines[$index]))) {
-      $pageLineIndex = $index
-    }
+    $header.Add($lines[$index])
+  }
+  while ($header.Count -gt 0 -and [string]::IsNullOrWhiteSpace($header[$header.Count - 1])) {
+    $header.RemoveAt($header.Count - 1)
   }
 
-  if ($pageLineIndex -ge 0) {
-    $indent = ($lines[$pageLineIndex] -replace '^(\s*).*$', '$1')
-    $lines[$pageLineIndex] = ($indent + '"menu/page_size": ' + $PageSize)
-  } else {
-    if (-not $foundPatch) {
-      if ($lines.Count -gt 0 -and -not [string]::IsNullOrWhiteSpace($lines[$lines.Count - 1])) {
-        $lines.Add("")
-      }
-      $lines.Add("patch:")
-      $foundPatch = $true
-    }
-    if (-not $foundSchemaList) {
-      $insertAt = $lines.IndexOf("patch:") + 1
-      if ($insertAt -lt 0) { $insertAt = $lines.Count }
-      $lines.Insert($insertAt, $pageLine)
-      $lines.Insert($insertAt, "  schema_list:")
-      $lines.Insert($insertAt + 1, $schemaLine)
-      return (([string]::Join($newline, $lines)).TrimEnd() + $newline)
-    }
-    $insertAt = $lines.IndexOf("patch:") + 1
-    if ($schemaLineIndex -ge 0) {
-      $insertAt = $schemaLineIndex + 1
-    }
-    if ($insertAt -lt 0) { $insertAt = $lines.Count }
-    $lines.Insert($insertAt, $pageLine)
+  $out = [System.Collections.Generic.List[string]]::new()
+  foreach ($line in $header) {
+    $out.Add($line)
   }
-
-  if ($schemaLineIndex -ge 0) {
-    $indent = ($lines[$schemaLineIndex] -replace '^(\s*).*$', '$1')
-    $lines[$schemaLineIndex] = ($indent + "- schema: " + $SchemaId)
-  } else {
-    if (-not $foundPatch) {
-      if ($lines.Count -gt 0 -and -not [string]::IsNullOrWhiteSpace($lines[$lines.Count - 1])) {
-        $lines.Add("")
-      }
-      $lines.Add("patch:")
-      $foundPatch = $true
-    }
-    $schemaListIndex = -1
-    for ($index = 0; $index -lt $lines.Count; $index++) {
-      if ($lines[$index].Trim() -eq "schema_list:") {
-        $schemaListIndex = $index
-        break
-      }
-    }
-    if ($schemaListIndex -ge 0) {
-      $lines.Insert($schemaListIndex + 1, $schemaLine)
-    } else {
-      $patchIndex = $lines.IndexOf("patch:")
-      $insertAt = $patchIndex + 1
-      if ($insertAt -lt 0) { $insertAt = $lines.Count }
-      $lines.Insert($insertAt, "  schema_list:")
-      $lines.Insert($insertAt + 1, $schemaLine)
-    }
+  if ($header.Count -gt 0) {
+    $out.Add("")
   }
-
-  return (([string]::Join($newline, $lines)).TrimEnd() + $newline)
+  $out.Add("patch:")
+  $out.Add("  schema_list:")
+  $out.Add($schemaLine)
+  $out.Add($pageLine)
+  return (([string]::Join($newline, $out)).TrimEnd() + $newline)
 }
 
 function Update-UserYamlSelectedSchema {
@@ -434,9 +380,29 @@ function Invoke-RimeBuild {
   }
   $buildDir = Join-Path $UserDir "build"
   $argumentList = @("--build", $UserDir, $SharedDir, $buildDir)
-  $process = Start-Process -FilePath $deployer -ArgumentList $argumentList -Wait -PassThru -WindowStyle Hidden
-  if ($process.ExitCode -ne 0) {
-    throw ("rime_deployer.exe exited with code " + $process.ExitCode)
+  $stdoutPath = Join-Path ([System.IO.Path]::GetTempPath()) ("yime_rime_deployer_out_" + [guid]::NewGuid().ToString("N") + ".log")
+  $stderrPath = Join-Path ([System.IO.Path]::GetTempPath()) ("yime_rime_deployer_err_" + [guid]::NewGuid().ToString("N") + ".log")
+  try {
+    $process = Start-Process -FilePath $deployer -ArgumentList $argumentList -Wait -PassThru -WindowStyle Hidden -RedirectStandardOutput $stdoutPath -RedirectStandardError $stderrPath
+    if ($process.ExitCode -ne 0) {
+      $detail = ""
+      if (Test-Path -LiteralPath $stderrPath) {
+        $detail = (Read-FileText $stderrPath).Trim()
+      }
+      if ([string]::IsNullOrWhiteSpace($detail) -and (Test-Path -LiteralPath $stdoutPath)) {
+        $detail = (Read-FileText $stdoutPath).Trim()
+      }
+      if ([string]::IsNullOrWhiteSpace($detail)) {
+        $detail = "无输出。若 PIME 正在运行，请先退出托盘中的 PIME，再点【应用并重建】。"
+      }
+      throw ("rime_deployer.exe exited with code " + $process.ExitCode + $newline + $detail)
+    }
+  } finally {
+    foreach ($path in @($stdoutPath, $stderrPath)) {
+      if (-not [string]::IsNullOrWhiteSpace($path) -and (Test-Path -LiteralPath $path)) {
+        Remove-Item -LiteralPath $path -Force -ErrorAction SilentlyContinue
+      }
+    }
   }
 }
 

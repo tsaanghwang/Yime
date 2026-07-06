@@ -1768,6 +1768,9 @@ func TestStandaloneSettingsAndDiagnosticsScriptsProvideRealWindowShells(t *testi
 	if !strings.Contains(settingsToolScript, `'^(\s*).*$'`) {
 		t.Fatalf("expected settings tool script to preserve YAML line indentation when replacing schema and page-size keys")
 	}
+	if !strings.Contains(settingsToolScript, "Rebuild patch: keep any header such as __build_info:") {
+		t.Fatalf("expected settings tool script to rebuild default.custom.yaml patch with a single schema_list entry")
+	}
 	if !strings.Contains(settingsToolScript, "reverse_lookup_display_mode") || !strings.Contains(settingsToolScript, "candidate_layout") {
 		t.Fatalf("expected settings tool script to persist reverse-lookup and layout preferences")
 	}

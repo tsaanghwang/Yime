@@ -81,7 +81,8 @@ function Copy-RequiredFile {
     param(
         [string]$Source,
         [string]$Destination,
-        [string]$Description
+        [string]$Description,
+        [switch]$AllowLocked
     )
 
     if (Test-Path -LiteralPath $Destination) {
@@ -94,7 +95,15 @@ function Copy-RequiredFile {
     }
 
     Write-Host "Copying $Description..."
-    Copy-Item -LiteralPath $Source -Destination $Destination -Force
+    try {
+        Copy-Item -LiteralPath $Source -Destination $Destination -Force -ErrorAction Stop
+    } catch {
+        if ($AllowLocked) {
+            Write-Warning "Could not replace locked file $Description. Reboot for a clean DLL update."
+            return
+        }
+        throw
+    }
 }
 
 Assert-Admin
@@ -122,18 +131,23 @@ Assert-PathExists -Path (Join-Path $pythonRoot "python3\python.exe") -Descriptio
 Assert-PathExists -Path (Join-Path $nodeRoot "node.exe") -Description "bundled Node runtime"
 Assert-PathExists -Path (Join-Path $goBackendRoot "server.exe") -Description "go-backend server.exe"
 
-Write-Host "Stopping any running PIMELauncher instance..."
-$installedLauncher = Join-Path $InstallRoot "PIMELauncher.exe"
-$runningLaunchers = @(Get-Process -Name "PIMELauncher" -ErrorAction SilentlyContinue)
-if ($runningLaunchers.Count -gt 0) {
-    if (Test-Path -LiteralPath $installedLauncher) {
-        Start-Process -FilePath $installedLauncher -ArgumentList "/quit" -WindowStyle Hidden | Out-Null
-        Start-Sleep -Seconds 2
-    }
+$stopScript = Join-Path $PSScriptRoot "dev-stop-pime.ps1"
+if (Test-Path -LiteralPath $stopScript) {
+    & $stopScript -InstallRoots @($InstallRoot, "C:\Program Files (x86)\PIME") -Quiet
+} else {
+    Write-Host "Stopping any running PIMELauncher instance..."
+    $installedLauncher = Join-Path $InstallRoot "PIMELauncher.exe"
     $runningLaunchers = @(Get-Process -Name "PIMELauncher" -ErrorAction SilentlyContinue)
     if ($runningLaunchers.Count -gt 0) {
-        $runningLaunchers | Stop-Process -Force
-        Start-Sleep -Seconds 1
+        if (Test-Path -LiteralPath $installedLauncher) {
+            Start-Process -FilePath $installedLauncher -ArgumentList "/quit" -WindowStyle Hidden | Out-Null
+            Start-Sleep -Seconds 2
+        }
+        $runningLaunchers = @(Get-Process -Name "PIMELauncher" -ErrorAction SilentlyContinue)
+        if ($runningLaunchers.Count -gt 0) {
+            $runningLaunchers | Stop-Process -Force
+            Start-Sleep -Seconds 1
+        }
     }
 }
 
@@ -157,8 +171,8 @@ New-Item -ItemType Directory -Path (Join-Path $InstallRoot "x64") -Force | Out-N
 Copy-RequiredFile -Source $versionFile -Destination (Join-Path $InstallRoot "version.txt") -Description "version.txt"
 Copy-RequiredFile -Source $backendsFile -Destination (Join-Path $InstallRoot "backends.json") -Description "backends.json"
 Copy-RequiredFile -Source $launcherExe -Destination (Join-Path $InstallRoot "PIMELauncher.exe") -Description "PIMELauncher.exe"
-Copy-RequiredFile -Source $x86Dll -Destination (Join-Path $InstallRoot "x86\PIMETextService.dll") -Description "Win32 PIMETextService.dll"
-Copy-RequiredFile -Source $x64Dll -Destination (Join-Path $InstallRoot "x64\PIMETextService.dll") -Description "x64 PIMETextService.dll"
+Copy-RequiredFile -Source $x86Dll -Destination (Join-Path $InstallRoot "x86\PIMETextService.dll") -Description "Win32 PIMETextService.dll" -AllowLocked
+Copy-RequiredFile -Source $x64Dll -Destination (Join-Path $InstallRoot "x64\PIMETextService.dll") -Description "x64 PIMETextService.dll" -AllowLocked
 
 Write-Host "Copying Python backend..."
 Copy-Tree -Source $pythonRoot -Destination (Join-Path $InstallRoot "python") -ExcludeDirs @("__pycache__")
