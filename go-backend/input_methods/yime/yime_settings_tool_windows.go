@@ -53,13 +53,13 @@ $newline = [Environment]::NewLine
 
 function Show-Error {
   param([string]$Message)
-  [System.Windows.Forms.MessageBox]::Show($Message, "Yime Settings", "OK", "Error") | Out-Null
+  [System.Windows.Forms.MessageBox]::Show($Message, "Yime 设置", "OK", "Error") | Out-Null
 }
 
 function Open-Path {
   param([string]$Path)
   if ([string]::IsNullOrWhiteSpace($Path) -or -not (Test-Path -LiteralPath $Path)) {
-    Show-Error ("Missing target: " + $Path)
+    Show-Error ("找不到目标：" + $Path)
     return
   }
   Start-Process -FilePath $Path | Out-Null
@@ -430,7 +430,7 @@ function Build-SettingsSummary {
 function Invoke-RimeBuild {
   $deployer = Get-DeployerPath
   if ([string]::IsNullOrWhiteSpace($deployer)) {
-    throw "No rime_deployer.exe was found for this runtime."
+    throw "当前运行环境未找到 rime_deployer.exe。"
   }
   $buildDir = Join-Path $UserDir "build"
   $argumentList = @("--build", $UserDir, $SharedDir, $buildDir)
@@ -444,13 +444,13 @@ function Apply-Settings {
   param([bool]$RunBuildAfterApply)
 
   if ([string]::IsNullOrWhiteSpace($UserDir) -or [string]::IsNullOrWhiteSpace($SharedDir)) {
-    throw "UserDir or SharedDir is empty."
+    throw "用户目录或共享数据目录为空。"
   }
   [void](New-Item -ItemType Directory -Path $UserDir -Force)
 
   $selectedSchemaId = Normalize-SchemaId ([string]$schemaComboBox.SelectedValue)
   if ($selectedSchemaId -eq "yime_shorthand" -and -not (Test-Path -LiteralPath (Join-Path $SharedDir "yime_shorthand.schema.yaml"))) {
-    throw "The shorthand schema is not bundled in the current shared data."
+    throw "当前共享数据目录未包含省键方案文件。"
   }
   $selectedPageSize = Normalize-PageSize ([string]$pageSizeComboBox.SelectedItem)
   $selectedReverseLookupMode = Normalize-ReverseLookupMode ([string]$reverseLookupComboBox.SelectedValue)
@@ -474,12 +474,12 @@ function Apply-Settings {
   $statusLabel.Text = $(if ($RunBuildAfterApply) {
     "已写入设置并执行构建。"
   } else {
-    "已写入设置；如需立即重编译可再点 Apply and rebuild 按钮。"
+    "已写入设置；如需立即重编译可再点【应用并重建】按钮。"
   })
 }
 
 $form = New-Object System.Windows.Forms.Form
-$form.Text = "Yime Settings"
+$form.Text = "Yime 设置"
 $form.StartPosition = "CenterScreen"
 $form.Size = New-Object System.Drawing.Size(820, 680)
 $form.MinimumSize = New-Object System.Drawing.Size(820, 680)
@@ -506,7 +506,7 @@ $title.Top = 16
 $title.Width = 760
 $title.Height = 26
 $title.Font = New-Object System.Drawing.Font("Microsoft YaHei UI", 12, [System.Drawing.FontStyle]::Bold)
-$title.Text = "Yime settings panel"
+$title.Text = "Yime 设置面板"
 $form.Controls.Add($title)
 
 $summary = New-Object System.Windows.Forms.Label
@@ -514,7 +514,7 @@ $summary.Left = 16
 $summary.Top = 48
 $summary.Width = 770
 $summary.Height = 44
-$summary.Text = "This panel keeps settings-oriented work out of the TSF callback path. It writes the same runtime files Yime already uses, and standalone-only UI preferences are applied when you switch back to Yime."
+$summary.Text = "此面板把设置相关工作从输入法回调路径中拆出。它会写入 Yime 已使用的同一套运行时文件；独立 UI 偏好会在你切回音元拼音后恢复。"
 $form.Controls.Add($summary)
 
 $settingsGroup = New-Object System.Windows.Forms.GroupBox
@@ -522,14 +522,14 @@ $settingsGroup.Left = 16
 $settingsGroup.Top = 104
 $settingsGroup.Width = 770
 $settingsGroup.Height = 224
-$settingsGroup.Text = "Active settings"
+$settingsGroup.Text = "当前设置"
 $form.Controls.Add($settingsGroup)
 
 $schemaLabel = New-Object System.Windows.Forms.Label
 $schemaLabel.Left = 20
 $schemaLabel.Top = 34
 $schemaLabel.Width = 120
-$schemaLabel.Text = "Schema"
+$schemaLabel.Text = "输入方案"
 $settingsGroup.Controls.Add($schemaLabel)
 
 $schemaComboBox = New-Object System.Windows.Forms.ComboBox
@@ -549,14 +549,14 @@ $schemaHintLabel.Left = 346
 $schemaHintLabel.Top = 34
 $schemaHintLabel.Width = 390
 $schemaHintLabel.Height = 40
-$schemaHintLabel.Text = "Shorthand remains unavailable unless its schema file is bundled in the installed shared data."
+$schemaHintLabel.Text = "仅当共享数据目录中包含省键方案文件时，省键才可选。"
 $settingsGroup.Controls.Add($schemaHintLabel)
 
 $pageSizeLabel = New-Object System.Windows.Forms.Label
 $pageSizeLabel.Left = 20
 $pageSizeLabel.Top = 84
 $pageSizeLabel.Width = 120
-$pageSizeLabel.Text = "Candidates / page"
+$pageSizeLabel.Text = "候选项数"
 $settingsGroup.Controls.Add($pageSizeLabel)
 
 $pageSizeComboBox = New-Object System.Windows.Forms.ComboBox
@@ -574,14 +574,14 @@ $pageSizeHintLabel.Left = 346
 $pageSizeHintLabel.Top = 84
 $pageSizeHintLabel.Width = 390
 $pageSizeHintLabel.Height = 36
-$pageSizeHintLabel.Text = "This writes %APPDATA%\PIME\Rime\default.custom.yaml. Use Apply and rebuild when you want schema and page-size changes compiled into the next runtime session."
+$pageSizeHintLabel.Text = "写入 %APPDATA%\PIME\Rime\default.custom.yaml。修改方案或候选项数后，请使用【应用并重建】编译到下一次运行时。"
 $settingsGroup.Controls.Add($pageSizeHintLabel)
 
 $reverseLookupLabel = New-Object System.Windows.Forms.Label
 $reverseLookupLabel.Left = 20
 $reverseLookupLabel.Top = 132
 $reverseLookupLabel.Width = 120
-$reverseLookupLabel.Text = "Reverse lookup"
+$reverseLookupLabel.Text = "显示编码"
 $settingsGroup.Controls.Add($reverseLookupLabel)
 
 $reverseLookupComboBox = New-Object System.Windows.Forms.ComboBox
@@ -602,14 +602,14 @@ $reverseLookupHintLabel.Left = 346
 $reverseLookupHintLabel.Top = 132
 $reverseLookupHintLabel.Width = 390
 $reverseLookupHintLabel.Height = 36
-$reverseLookupHintLabel.Text = "This is persisted in yime_settings_state.json so Yime can apply it again when the IME is reactivated."
+$reverseLookupHintLabel.Text = "写入 yime_settings_state.json，供 Yime 在重新激活时恢复。"
 $settingsGroup.Controls.Add($reverseLookupHintLabel)
 
 $candidateLayoutLabel = New-Object System.Windows.Forms.Label
 $candidateLayoutLabel.Left = 20
 $candidateLayoutLabel.Top = 180
 $candidateLayoutLabel.Width = 120
-$candidateLayoutLabel.Text = "Candidate layout"
+$candidateLayoutLabel.Text = "候选排列"
 $settingsGroup.Controls.Add($candidateLayoutLabel)
 
 $candidateLayoutComboBox = New-Object System.Windows.Forms.ComboBox
@@ -628,7 +628,7 @@ $candidateLayoutHintLabel.Left = 346
 $candidateLayoutHintLabel.Top = 180
 $candidateLayoutHintLabel.Width = 390
 $candidateLayoutHintLabel.Height = 36
-$candidateLayoutHintLabel.Text = "Layout preference is stored separately from Rime config so Yime can restore it without adding more menu work back into TSF."
+$candidateLayoutHintLabel.Text = "候选排列偏好与 Rime 配置分开保存，避免把更多菜单逻辑塞回 TSF 回调。"
 $settingsGroup.Controls.Add($candidateLayoutHintLabel)
 
 $actionsGroup = New-Object System.Windows.Forms.GroupBox
@@ -636,7 +636,7 @@ $actionsGroup.Left = 16
 $actionsGroup.Top = 342
 $actionsGroup.Width = 770
 $actionsGroup.Height = 132
-$actionsGroup.Text = "Apply and maintenance"
+$actionsGroup.Text = "应用与维护"
 $form.Controls.Add($actionsGroup)
 
 $applyButton = New-Object System.Windows.Forms.Button
@@ -644,7 +644,7 @@ $applyButton.Left = 20
 $applyButton.Top = 28
 $applyButton.Width = 160
 $applyButton.Height = 34
-$applyButton.Text = "Apply settings"
+$applyButton.Text = "应用设置"
 $actionsGroup.Controls.Add($applyButton)
 
 $applyAndRebuildButton = New-Object System.Windows.Forms.Button
@@ -652,7 +652,7 @@ $applyAndRebuildButton.Left = 194
 $applyAndRebuildButton.Top = 28
 $applyAndRebuildButton.Width = 180
 $applyAndRebuildButton.Height = 34
-$applyAndRebuildButton.Text = "Apply and rebuild"
+$applyAndRebuildButton.Text = "应用并重建"
 $actionsGroup.Controls.Add($applyAndRebuildButton)
 
 $rebuildOnlyButton = New-Object System.Windows.Forms.Button
@@ -660,7 +660,7 @@ $rebuildOnlyButton.Left = 388
 $rebuildOnlyButton.Top = 28
 $rebuildOnlyButton.Width = 132
 $rebuildOnlyButton.Height = 34
-$rebuildOnlyButton.Text = "Rebuild now"
+$rebuildOnlyButton.Text = "立即重建"
 $actionsGroup.Controls.Add($rebuildOnlyButton)
 
 $refreshButton = New-Object System.Windows.Forms.Button
@@ -668,7 +668,7 @@ $refreshButton.Left = 534
 $refreshButton.Top = 28
 $refreshButton.Width = 100
 $refreshButton.Height = 34
-$refreshButton.Text = "Refresh"
+$refreshButton.Text = "刷新"
 $actionsGroup.Controls.Add($refreshButton)
 
 $copySummaryButton = New-Object System.Windows.Forms.Button
@@ -676,7 +676,7 @@ $copySummaryButton.Left = 648
 $copySummaryButton.Top = 28
 $copySummaryButton.Width = 100
 $copySummaryButton.Height = 34
-$copySummaryButton.Text = "Copy summary"
+$copySummaryButton.Text = "复制摘要"
 $actionsGroup.Controls.Add($copySummaryButton)
 
 $applyHintLabel = New-Object System.Windows.Forms.Label
@@ -684,7 +684,7 @@ $applyHintLabel.Left = 20
 $applyHintLabel.Top = 76
 $applyHintLabel.Width = 720
 $applyHintLabel.Height = 42
-$applyHintLabel.Text = "Apply writes default.custom.yaml, user.yaml, and yime_settings_state.json. Use Apply and rebuild for schema or page-size changes."
+$applyHintLabel.Text = "应用会写入 default.custom.yaml、user.yaml 和 yime_settings_state.json。修改方案或候选项数时请使用【应用并重建】。"
 $actionsGroup.Controls.Add($applyHintLabel)
 
 $pathsGroup = New-Object System.Windows.Forms.GroupBox
@@ -692,16 +692,16 @@ $pathsGroup.Left = 16
 $pathsGroup.Top = 488
 $pathsGroup.Width = 770
 $pathsGroup.Height = 132
-$pathsGroup.Text = "Data and docs"
+$pathsGroup.Text = "数据与文档"
 $form.Controls.Add($pathsGroup)
 
 $pathButtons = @(
-  @{ Left = 20; Text = "User data"; Target = $UserDir },
-  @{ Left = 142; Text = "Shared data"; Target = $SharedDir },
-  @{ Left = 264; Text = "Log dir"; Target = $LogDir },
-  @{ Left = 386; Text = "Sync dir"; Target = (Get-SyncDir) },
-  @{ Left = 508; Text = "Settings guide"; Target = (Join-Path $HelpDir "settings-and-data.html") },
-  @{ Left = 630; Text = "Main help"; Target = (Join-Path $HelpDir "README.html") }
+  @{ Left = 20; Text = "用户目录"; Target = $UserDir },
+  @{ Left = 142; Text = "共享数据"; Target = $SharedDir },
+  @{ Left = 264; Text = "日志目录"; Target = $LogDir },
+  @{ Left = 386; Text = "同步目录"; Target = (Get-SyncDir) },
+  @{ Left = 508; Text = "设置说明"; Target = (Join-Path $HelpDir "settings-and-data.html") },
+  @{ Left = 630; Text = "查看帮助"; Target = (Join-Path $HelpDir "README.html") }
 )
 
 foreach ($pathButtonInfo in $pathButtons) {
@@ -721,7 +721,7 @@ $configFilesButton.Left = 20
 $configFilesButton.Top = 76
 $configFilesButton.Width = 160
 $configFilesButton.Height = 30
-$configFilesButton.Text = "Open current config file"
+$configFilesButton.Text = "打开当前配置"
 $pathsGroup.Controls.Add($configFilesButton)
 
 $configFilesHintLabel = New-Object System.Windows.Forms.Label
@@ -729,7 +729,7 @@ $configFilesHintLabel.Left = 194
 $configFilesHintLabel.Top = 82
 $configFilesHintLabel.Width = 550
 $configFilesHintLabel.Height = 24
-$configFilesHintLabel.Text = "Opens default.custom.yaml when it exists, otherwise opens the user data directory."
+$configFilesHintLabel.Text = "若存在 default.custom.yaml 则打开它，否则打开用户数据目录。"
 $pathsGroup.Controls.Add($configFilesHintLabel)
 
 $summaryLabel = New-Object System.Windows.Forms.Label
@@ -745,7 +745,7 @@ $statusLabel.Left = 16
 $statusLabel.Top = 652
 $statusLabel.Width = 770
 $statusLabel.Height = 22
-$statusLabel.Text = "Ready."
+$statusLabel.Text = "就绪。"
 $form.Controls.Add($statusLabel)
 
 function Refresh-SettingsView {
@@ -773,11 +773,11 @@ function Refresh-SettingsView {
   if ([string]::IsNullOrWhiteSpace($settings.DeployerPath)) {
     $applyAndRebuildButton.Enabled = $false
     $rebuildOnlyButton.Enabled = $false
-    $statusLabel.Text = "Ready. No rime_deployer.exe was found; Apply settings still writes the files."
+    $statusLabel.Text = "就绪。未找到 rime_deployer.exe；【应用设置】仍会写入文件。"
   } else {
     $applyAndRebuildButton.Enabled = $true
     $rebuildOnlyButton.Enabled = $true
-    $statusLabel.Text = "Ready. Apply writes files; Apply and rebuild also runs rime_deployer.exe."
+    $statusLabel.Text = "就绪。【应用设置】写入文件；【应用并重建】还会运行 rime_deployer.exe。"
   }
 }
 

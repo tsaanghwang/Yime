@@ -20,7 +20,7 @@ Add-Type -AssemblyName System.Drawing
 
 function Show-Error {
   param([string]$Message)
-  [System.Windows.Forms.MessageBox]::Show($Message, "Yime Diagnostics", "OK", "Error") | Out-Null
+  [System.Windows.Forms.MessageBox]::Show($Message, "Yime 诊断", "OK", "Error") | Out-Null
 }
 
 function Show-TextInputDialog {
@@ -54,7 +54,7 @@ function Show-TextInputDialog {
   $dialog.Controls.Add($textBox)
 
   $okButton = New-Object System.Windows.Forms.Button
-  $okButton.Text = "OK"
+  $okButton.Text = "确定"
   $okButton.Left = 248
   $okButton.Top = 100
   $okButton.Width = 75
@@ -63,7 +63,7 @@ function Show-TextInputDialog {
   $dialog.Controls.Add($okButton)
 
   $cancelButton = New-Object System.Windows.Forms.Button
-  $cancelButton.Text = "Cancel"
+  $cancelButton.Text = "取消"
   $cancelButton.Left = 333
   $cancelButton.Top = 100
   $cancelButton.Width = 75
@@ -78,10 +78,37 @@ function Show-TextInputDialog {
   return ""
 }
 
+function Get-BuiltInPresetLabel {
+  param([string]$PresetKey)
+  switch ($PresetKey) {
+    "Issue-ready" { return "问题反馈" }
+    "Local debugging" { return "本地调试" }
+    "Minimal share" { return "精简分享" }
+    default { return $PresetKey }
+  }
+}
+
+function Format-BuiltInPresetDisplay {
+  param([string]$PresetKey)
+  return ("[内置] " + (Get-BuiltInPresetLabel $PresetKey))
+}
+
+function Resolve-BuiltInPresetKey {
+  param([string]$DisplayLabel)
+  if ($DisplayLabel -like "[[]内置[]] *") {
+    switch ($DisplayLabel.Substring(5)) {
+      "问题反馈" { return "Issue-ready" }
+      "本地调试" { return "Local debugging" }
+      "精简分享" { return "Minimal share" }
+    }
+  }
+  return ""
+}
+
 function Open-Path {
   param([string]$Path)
   if ([string]::IsNullOrWhiteSpace($Path) -or -not (Test-Path -LiteralPath $Path)) {
-    Show-Error ("Missing target: " + $Path)
+    Show-Error ("找不到目标：" + $Path)
     return
   }
   Start-Process -FilePath $Path | Out-Null
@@ -1152,7 +1179,7 @@ function Build-DiagnosticsReport {
 }
 
 $form = New-Object System.Windows.Forms.Form
-$form.Text = "Yime Diagnostics"
+$form.Text = "Yime 诊断"
 $form.StartPosition = "CenterScreen"
 $form.Size = New-Object System.Drawing.Size(900, 620)
 $form.MinimumSize = New-Object System.Drawing.Size(900, 620)
@@ -1184,7 +1211,7 @@ $title.Top = 16
 $title.Width = 860
 $title.Height = 24
 $title.Font = New-Object System.Drawing.Font("Microsoft YaHei UI", 12, [System.Drawing.FontStyle]::Bold)
-$title.Text = "Yime diagnostics panel"
+$title.Text = "Yime 诊断面板"
 $form.Controls.Add($title)
 
 $summary = New-Object System.Windows.Forms.Label
@@ -1192,7 +1219,7 @@ $summary.Left = 16
 $summary.Top = 48
 $summary.Width = 860
 $summary.Height = 36
-$summary.Text = "This panel checks the concrete layers that usually make source fixes look ineffective: paths, installed binaries, running processes, user Rime files, and current logs."
+$summary.Text = "此面板检查那些会让源码修复看起来没生效的具体层面：路径、已安装二进制、运行进程、用户 Rime 文件和当前日志。"
 $form.Controls.Add($summary)
 
 $statusBox = New-Object System.Windows.Forms.TextBox
@@ -1236,7 +1263,7 @@ function Get-ImportedReportPresetCandidates {
   try {
     return @(Get-ChildItem -LiteralPath $UserDir -Filter *.diagnostics_preset.json -File -ErrorAction Stop | Sort-Object Name)
   } catch {
-    Show-Error ("Failed to list exported preset files: " + $_.Exception.Message)
+    Show-Error ("无法列出可导入的预设文件：" + $_.Exception.Message)
     return @()
   }
 }
@@ -1252,7 +1279,7 @@ function Show-ImportPresetPicker {
   }
 
   $dialog = New-Object System.Windows.Forms.Form
-  $dialog.Text = "Import diagnostics preset"
+  $dialog.Text = "导入诊断预设"
   $dialog.StartPosition = "CenterParent"
   $dialog.Size = New-Object System.Drawing.Size(560, 420)
   $dialog.MinimumSize = New-Object System.Drawing.Size(560, 420)
@@ -1265,7 +1292,7 @@ function Show-ImportPresetPicker {
   $title.Width = 510
   $title.Height = 24
   $title.Font = New-Object System.Drawing.Font("Microsoft YaHei UI", 10, [System.Drawing.FontStyle]::Bold)
-  $title.Text = "Choose an exported preset file to import"
+  $title.Text = "选择要导入的预设文件"
   $dialog.Controls.Add($title)
 
   $hint = New-Object System.Windows.Forms.Label
@@ -1273,7 +1300,7 @@ function Show-ImportPresetPicker {
   $hint.Top = 44
   $hint.Width = 510
   $hint.Height = 32
-  $hint.Text = "Files are listed from the current user data directory. Importing will add or replace a saved preset by name."
+  $hint.Text = "列表来自当前用户数据目录。导入后会按名称新增或替换已保存预设。"
   $dialog.Controls.Add($hint)
 
   $listBox = New-Object System.Windows.Forms.ListBox
@@ -1320,7 +1347,7 @@ function Show-ImportPresetPicker {
   $importButton.Top = 368
   $importButton.Width = 84
   $importButton.Height = 28
-  $importButton.Text = "Import"
+  $importButton.Text = "导入"
   $importButton.Add_Click({
     if ($listBox.SelectedIndex -lt 0) {
       return
@@ -1336,7 +1363,7 @@ function Show-ImportPresetPicker {
   $cancelButton.Top = 368
   $cancelButton.Width = 84
   $cancelButton.Height = 28
-  $cancelButton.Text = "Cancel"
+  $cancelButton.Text = "取消"
   $cancelButton.Add_Click({
     $dialog.DialogResult = [System.Windows.Forms.DialogResult]::Cancel
     $dialog.Close()
@@ -1436,7 +1463,7 @@ function Load-SavedReportPresets {
       return @($loaded)
     }
   } catch {
-    Show-Error ("Failed to load saved report presets: " + $_.Exception.Message)
+    Show-Error ("无法加载已保存的报告预设：" + $_.Exception.Message)
   }
   return @()
 }
@@ -1444,7 +1471,7 @@ function Load-SavedReportPresets {
 function Save-SavedReportPresets {
   $path = Get-ReportPresetStorePath
   if ([string]::IsNullOrWhiteSpace($path)) {
-    Show-Error "UserDir is unavailable; cannot save report presets."
+    Show-Error "用户目录不可用，无法保存报告预设。"
     return $false
   }
   try {
@@ -1455,7 +1482,7 @@ function Save-SavedReportPresets {
     ($script:savedReportPresets | ConvertTo-Json -Depth 6) | Set-Content -LiteralPath $path -Encoding UTF8
     return $true
   } catch {
-    Show-Error ("Failed to save report presets: " + $_.Exception.Message)
+    Show-Error ("无法保存报告预设：" + $_.Exception.Message)
     return $false
   }
 }
@@ -1465,18 +1492,18 @@ function Refresh-PresetComboBoxItems {
   $script:updatingPresetSelection = $true
   $presetComboBox.Items.Clear()
   foreach ($item in @("Issue-ready", "Local debugging", "Minimal share")) {
-    [void]$presetComboBox.Items.Add(("[Built-in] " + $item))
+    [void]$presetComboBox.Items.Add((Format-BuiltInPresetDisplay $item))
   }
   foreach ($preset in $script:savedReportPresets) {
     if ($null -ne $preset.name -and -not [string]::IsNullOrWhiteSpace([string]$preset.name)) {
-      [void]$presetComboBox.Items.Add(("[Saved] " + [string]$preset.name))
+      [void]$presetComboBox.Items.Add(("[已保存] " + [string]$preset.name))
     }
   }
-  [void]$presetComboBox.Items.Add("Custom")
+  [void]$presetComboBox.Items.Add("自定义")
   if ($null -ne $currentSelection -and $presetComboBox.Items.Contains($currentSelection)) {
     $presetComboBox.SelectedItem = $currentSelection
   } else {
-    $presetComboBox.SelectedItem = "[Built-in] Issue-ready"
+    $presetComboBox.SelectedItem = (Format-BuiltInPresetDisplay "Issue-ready")
   }
   $script:updatingPresetSelection = $false
 }
@@ -1486,8 +1513,8 @@ function Get-SelectedSavedPresetName {
     return ""
   }
   $selected = $presetComboBox.SelectedItem.ToString()
-  if ($selected -like "[[]Saved[]] *") {
-    return $selected.Substring(8)
+  if ($selected -like "[[]已保存[]] *") {
+    return $selected.Substring(6)
   }
   return ""
 }
@@ -1554,14 +1581,14 @@ function Sync-ReportPresetSelection {
     return
   }
 
-  $matchedPreset = "Custom"
+  $matchedPreset = "自定义"
   $options = Get-CurrentReportOptions
   if ($options.includeEnvironmentSummary -and $options.includeActions -and $options.includeRawLogExcerpt -and $options.anonymize -and -not $options.keepDriveLetter -and $options.anonymizeMode -eq "full" -and $options.rawLogExcerptMode -eq "error-window" -and $options.contextWindowRadius -eq 20) {
-    $matchedPreset = "Issue-ready"
+    $matchedPreset = (Format-BuiltInPresetDisplay "Issue-ready")
   } elseif ($options.includeEnvironmentSummary -and $options.includeActions -and $options.includeRawLogExcerpt -and -not $options.anonymize -and $options.keepDriveLetter -and $options.anonymizeMode -eq "full" -and $options.rawLogExcerptMode -eq "command-window" -and $options.contextWindowRadius -eq 40) {
-    $matchedPreset = "Local debugging"
+    $matchedPreset = (Format-BuiltInPresetDisplay "Local debugging")
   } elseif (-not $options.includeEnvironmentSummary -and $options.includeActions -and -not $options.includeRawLogExcerpt -and $options.anonymize -and -not $options.keepDriveLetter -and $options.anonymizeMode -eq "names-only" -and $options.rawLogExcerptMode -eq "tail" -and $options.contextWindowRadius -eq 10) {
-    $matchedPreset = "Minimal share"
+    $matchedPreset = (Format-BuiltInPresetDisplay "Minimal share")
   } else {
     foreach ($preset in $script:savedReportPresets) {
       if ($null -eq $preset.options) {
@@ -1569,7 +1596,7 @@ function Sync-ReportPresetSelection {
       }
       $saved = $preset.options
       if ([bool]$saved.includeEnvironmentSummary -eq $options.includeEnvironmentSummary -and [bool]$saved.includeActions -eq $options.includeActions -and [bool]$saved.includeRawLogExcerpt -eq $options.includeRawLogExcerpt -and [bool]$saved.anonymize -eq $options.anonymize -and [bool]$saved.keepDriveLetter -eq $options.keepDriveLetter -and [string]$saved.anonymizeMode -eq $options.anonymizeMode -and [string]$saved.rawLogExcerptMode -eq $options.rawLogExcerptMode -and [int]$saved.contextWindowRadius -eq $options.contextWindowRadius) {
-        $matchedPreset = ("[Saved] " + [string]$preset.name)
+        $matchedPreset = ("[已保存] " + [string]$preset.name)
         break
       }
     }
@@ -1585,7 +1612,7 @@ $reportOptionsLabel.Left = 16
 $reportOptionsLabel.Top = 478
 $reportOptionsLabel.Width = 160
 $reportOptionsLabel.Height = 20
-$reportOptionsLabel.Text = "Structured report options:"
+$reportOptionsLabel.Text = "结构化报告选项："
 $form.Controls.Add($reportOptionsLabel)
 
 $presetLabel = New-Object System.Windows.Forms.Label
@@ -1593,7 +1620,7 @@ $presetLabel.Left = 186
 $presetLabel.Top = 478
 $presetLabel.Width = 50
 $presetLabel.Height = 20
-$presetLabel.Text = "Preset:"
+$presetLabel.Text = "预设："
 $form.Controls.Add($presetLabel)
 
 $presetComboBox = New-Object System.Windows.Forms.ComboBox
@@ -1611,7 +1638,7 @@ $savePresetButton.Left = 366
 $savePresetButton.Top = 474
 $savePresetButton.Width = 56
 $savePresetButton.Height = 24
-$savePresetButton.Text = "Save"
+$savePresetButton.Text = "保存"
 $form.Controls.Add($savePresetButton)
 
 $renamePresetButton = New-Object System.Windows.Forms.Button
@@ -1619,7 +1646,7 @@ $renamePresetButton.Left = 428
 $renamePresetButton.Top = 474
 $renamePresetButton.Width = 62
 $renamePresetButton.Height = 24
-$renamePresetButton.Text = "Rename"
+$renamePresetButton.Text = "重命名"
 $form.Controls.Add($renamePresetButton)
 
 $deletePresetButton = New-Object System.Windows.Forms.Button
@@ -1627,7 +1654,7 @@ $deletePresetButton.Left = 496
 $deletePresetButton.Top = 474
 $deletePresetButton.Width = 56
 $deletePresetButton.Height = 24
-$deletePresetButton.Text = "Delete"
+$deletePresetButton.Text = "删除"
 $form.Controls.Add($deletePresetButton)
 
 $exportPresetButton = New-Object System.Windows.Forms.Button
@@ -1635,7 +1662,7 @@ $exportPresetButton.Left = 558
 $exportPresetButton.Top = 474
 $exportPresetButton.Width = 56
 $exportPresetButton.Height = 24
-$exportPresetButton.Text = "Export"
+$exportPresetButton.Text = "导出"
 $form.Controls.Add($exportPresetButton)
 
 $importPresetButton = New-Object System.Windows.Forms.Button
@@ -1643,7 +1670,7 @@ $importPresetButton.Left = 620
 $importPresetButton.Top = 474
 $importPresetButton.Width = 56
 $importPresetButton.Height = 24
-$importPresetButton.Text = "Import"
+$importPresetButton.Text = "导入"
 $form.Controls.Add($importPresetButton)
 
 $environmentCheckBox = New-Object System.Windows.Forms.CheckBox
@@ -1651,7 +1678,7 @@ $environmentCheckBox.Left = 16
 $environmentCheckBox.Top = 500
 $environmentCheckBox.Width = 170
 $environmentCheckBox.Height = 24
-$environmentCheckBox.Text = "Include env summary"
+$environmentCheckBox.Text = "包含环境摘要"
 $environmentCheckBox.Checked = $true
 $form.Controls.Add($environmentCheckBox)
 
@@ -1660,7 +1687,7 @@ $actionsCheckBox.Left = 196
 $actionsCheckBox.Top = 500
 $actionsCheckBox.Width = 190
 $actionsCheckBox.Height = 24
-$actionsCheckBox.Text = "Include actions"
+$actionsCheckBox.Text = "包含建议操作"
 $actionsCheckBox.Checked = $true
 $form.Controls.Add($actionsCheckBox)
 
@@ -1669,7 +1696,7 @@ $rawLogCheckBox.Left = 396
 $rawLogCheckBox.Top = 500
 $rawLogCheckBox.Width = 220
 $rawLogCheckBox.Height = 24
-$rawLogCheckBox.Text = "Include raw log excerpt"
+$rawLogCheckBox.Text = "包含原始日志摘录"
 $rawLogCheckBox.Checked = $false
 $form.Controls.Add($rawLogCheckBox)
 
@@ -1678,7 +1705,7 @@ $anonymizeCheckBox.Left = 626
 $anonymizeCheckBox.Top = 500
 $anonymizeCheckBox.Width = 150
 $anonymizeCheckBox.Height = 24
-$anonymizeCheckBox.Text = "Anonymize report"
+$anonymizeCheckBox.Text = "匿名化报告"
 $anonymizeCheckBox.Checked = $true
 $form.Controls.Add($anonymizeCheckBox)
 
@@ -1687,7 +1714,7 @@ $keepDriveLetterCheckBox.Left = 776
 $keepDriveLetterCheckBox.Top = 500
 $keepDriveLetterCheckBox.Width = 110
 $keepDriveLetterCheckBox.Height = 24
-$keepDriveLetterCheckBox.Text = "Keep drive"
+$keepDriveLetterCheckBox.Text = "保留盘符"
 $keepDriveLetterCheckBox.Checked = $false
 $form.Controls.Add($keepDriveLetterCheckBox)
 
@@ -1696,7 +1723,7 @@ $anonymizeModeLabel.Left = 706
 $anonymizeModeLabel.Top = 526
 $anonymizeModeLabel.Width = 110
 $anonymizeModeLabel.Height = 20
-$anonymizeModeLabel.Text = "Anonymize mode:"
+$anonymizeModeLabel.Text = "匿名模式："
 $form.Controls.Add($anonymizeModeLabel)
 
 $anonymizeModeComboBox = New-Object System.Windows.Forms.ComboBox
@@ -1705,8 +1732,8 @@ $anonymizeModeComboBox.Top = 522
 $anonymizeModeComboBox.Width = 72
 $anonymizeModeComboBox.Height = 24
 $anonymizeModeComboBox.DropDownStyle = [System.Windows.Forms.ComboBoxStyle]::DropDownList
-[void]$anonymizeModeComboBox.Items.Add("Full")
-[void]$anonymizeModeComboBox.Items.Add("Names only")
+[void]$anonymizeModeComboBox.Items.Add("完全匿名")
+[void]$anonymizeModeComboBox.Items.Add("仅姓名")
 $anonymizeModeComboBox.SelectedIndex = 0
 $form.Controls.Add($anonymizeModeComboBox)
 
@@ -1715,7 +1742,7 @@ $excerptModeLabel.Left = 16
 $excerptModeLabel.Top = 526
 $excerptModeLabel.Width = 150
 $excerptModeLabel.Height = 20
-$excerptModeLabel.Text = "Raw log excerpt mode:"
+$excerptModeLabel.Text = "日志摘录模式："
 $form.Controls.Add($excerptModeLabel)
 
 $excerptModeComboBox = New-Object System.Windows.Forms.ComboBox
@@ -1724,10 +1751,10 @@ $excerptModeComboBox.Top = 522
 $excerptModeComboBox.Width = 220
 $excerptModeComboBox.Height = 24
 $excerptModeComboBox.DropDownStyle = [System.Windows.Forms.ComboBoxStyle]::DropDownList
-[void]$excerptModeComboBox.Items.Add("Tail excerpt")
-[void]$excerptModeComboBox.Items.Add("Error lines only")
-[void]$excerptModeComboBox.Items.Add("Last command window")
-[void]$excerptModeComboBox.Items.Add("Last error window")
+[void]$excerptModeComboBox.Items.Add("尾部摘录")
+[void]$excerptModeComboBox.Items.Add("仅错误行")
+[void]$excerptModeComboBox.Items.Add("最近命令窗口")
+[void]$excerptModeComboBox.Items.Add("最近错误窗口")
 $excerptModeComboBox.SelectedIndex = 0
 $form.Controls.Add($excerptModeComboBox)
 
@@ -1736,7 +1763,7 @@ $windowSizeLabel.Left = 406
 $windowSizeLabel.Top = 526
 $windowSizeLabel.Width = 150
 $windowSizeLabel.Height = 20
-$windowSizeLabel.Text = "Context window radius:"
+$windowSizeLabel.Text = "上下文窗口半径："
 $form.Controls.Add($windowSizeLabel)
 
 $windowSizeComboBox = New-Object System.Windows.Forms.ComboBox
@@ -1745,9 +1772,9 @@ $windowSizeComboBox.Top = 522
 $windowSizeComboBox.Width = 120
 $windowSizeComboBox.Height = 24
 $windowSizeComboBox.DropDownStyle = [System.Windows.Forms.ComboBoxStyle]::DropDownList
-[void]$windowSizeComboBox.Items.Add("10 lines")
-[void]$windowSizeComboBox.Items.Add("20 lines")
-[void]$windowSizeComboBox.Items.Add("40 lines")
+[void]$windowSizeComboBox.Items.Add("10 行")
+[void]$windowSizeComboBox.Items.Add("20 行")
+[void]$windowSizeComboBox.Items.Add("40 行")
 $windowSizeComboBox.SelectedIndex = 1
 $form.Controls.Add($windowSizeComboBox)
 
@@ -1764,14 +1791,17 @@ $presetComboBox.Add_SelectedIndexChanged({
   }
   if ($presetComboBox.SelectedItem) {
     $preset = $presetComboBox.SelectedItem.ToString()
-    if ($preset -like "[[]Saved[]] *") {
-      $presetName = $preset.Substring(8)
+    if ($preset -like "[[]已保存[]] *") {
+      $presetName = $preset.Substring(6)
       $savedPreset = $script:savedReportPresets | Where-Object { [string]$_.name -eq $presetName } | Select-Object -First 1
       if ($null -ne $savedPreset) {
         Apply-ReportOptions $savedPreset.options
       }
-    } elseif ($preset -like "[[]Built-in[]] *") {
-      Apply-ReportPreset $preset.Substring(11)
+    } elseif ($preset -like "[[]内置[]] *") {
+      $presetKey = Resolve-BuiltInPresetKey $preset
+      if (-not [string]::IsNullOrWhiteSpace($presetKey)) {
+        Apply-ReportPreset $presetKey
+      }
     }
   }
 })
@@ -1779,7 +1809,7 @@ $presetComboBox.Add_SelectedIndexChanged({
 $savePresetButton.Add_Click({
   $presetName = Get-SelectedSavedPresetName
   if ([string]::IsNullOrWhiteSpace($presetName)) {
-    $presetName = Show-TextInputDialog -Prompt "Name this report preset:" -Title "Save diagnostics preset" -DefaultValue "diagnostics preset"
+    $presetName = Show-TextInputDialog -Prompt "请为报告预设命名：" -Title "保存诊断预设" -DefaultValue "诊断预设"
     if ([string]::IsNullOrWhiteSpace($presetName)) {
       return
     }
@@ -1800,51 +1830,51 @@ $savePresetButton.Add_Click({
 
   if (Save-SavedReportPresets) {
     Refresh-PresetComboBoxItems
-    $presetComboBox.SelectedItem = ("[Saved] " + $presetName)
+    $presetComboBox.SelectedItem = ("[已保存] " + $presetName)
   }
 })
 
 $renamePresetButton.Add_Click({
   $selectedSavedName = Get-SelectedSavedPresetName
   if ([string]::IsNullOrWhiteSpace($selectedSavedName)) {
-    Show-Error "Select a saved preset before renaming it."
+    Show-Error "请先选择一个已保存预设，再重命名。"
     return
   }
 
-  $newName = Show-TextInputDialog -Prompt "Rename this saved preset:" -Title "Rename diagnostics preset" -DefaultValue $selectedSavedName
+  $newName = Show-TextInputDialog -Prompt "请输入新的预设名称：" -Title "重命名诊断预设" -DefaultValue $selectedSavedName
   if ([string]::IsNullOrWhiteSpace($newName) -or $newName -eq $selectedSavedName) {
     return
   }
 
   $existingIndex = Get-SavedPresetIndexByName $newName
   if ($existingIndex -ge 0) {
-    Show-Error ("A saved preset named '" + $newName + "' already exists.")
+    Show-Error ("已存在名为【" + $newName + "】的预设。")
     return
   }
 
   $selectedIndex = Get-SavedPresetIndexByName $selectedSavedName
   if ($selectedIndex -lt 0) {
-    Show-Error "The selected saved preset could not be found."
+    Show-Error "找不到所选已保存预设。"
     return
   }
 
   $script:savedReportPresets[$selectedIndex].name = $newName
   if (Save-SavedReportPresets) {
     Refresh-PresetComboBoxItems
-    $presetComboBox.SelectedItem = ("[Saved] " + $newName)
+    $presetComboBox.SelectedItem = ("[已保存] " + $newName)
   }
 })
 
 $deletePresetButton.Add_Click({
   $selectedSavedName = Get-SelectedSavedPresetName
   if ([string]::IsNullOrWhiteSpace($selectedSavedName)) {
-    Show-Error "Select a saved preset before deleting it."
+    Show-Error "请先选择一个已保存预设，再删除。"
     return
   }
 
   $confirm = [System.Windows.Forms.MessageBox]::Show(
-    ("Delete saved preset '" + $selectedSavedName + "'?"),
-    "Delete diagnostics preset",
+    ("确定删除已保存预设【" + $selectedSavedName + "】吗？"),
+    "删除诊断预设",
     [System.Windows.Forms.MessageBoxButtons]::OKCancel,
     [System.Windows.Forms.MessageBoxIcon]::Question
   )
@@ -1854,7 +1884,7 @@ $deletePresetButton.Add_Click({
 
   $selectedIndex = Get-SavedPresetIndexByName $selectedSavedName
   if ($selectedIndex -lt 0) {
-    Show-Error "The selected saved preset could not be found."
+    Show-Error "找不到所选已保存预设。"
     return
   }
 
@@ -1879,14 +1909,14 @@ $exportPresetButton.Add_Click({
     $defaultName = $selectedSavedName
   }
 
-  $exportName = Show-TextInputDialog -Prompt "Export current report options to a user-side file named:" -Title "Export diagnostics preset" -DefaultValue $defaultName
+  $exportName = Show-TextInputDialog -Prompt "请输入要导出到用户目录的文件名：" -Title "导出诊断预设" -DefaultValue $defaultName
   if ([string]::IsNullOrWhiteSpace($exportName)) {
     return
   }
 
   $exportPath = Get-ExportedReportPresetPath $exportName
   if ([string]::IsNullOrWhiteSpace($exportPath)) {
-    Show-Error "UserDir is unavailable; cannot export the current preset."
+    Show-Error "用户目录不可用，无法导出当前预设。"
     return
   }
 
@@ -1898,16 +1928,16 @@ $exportPresetButton.Add_Click({
 
   try {
     ($exportRecord | ConvertTo-Json -Depth 6) | Set-Content -LiteralPath $exportPath -Encoding UTF8
-    [System.Windows.Forms.MessageBox]::Show(("Exported current preset to " + $exportPath), "Export diagnostics preset", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information) | Out-Null
+    [System.Windows.Forms.MessageBox]::Show(("已将当前预设导出到 " + $exportPath), "导出诊断预设", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information) | Out-Null
   } catch {
-    Show-Error ("Failed to export current preset: " + $_.Exception.Message)
+    Show-Error ("导出当前预设失败：" + $_.Exception.Message)
   }
 })
 
 $importPresetButton.Add_Click({
   $candidates = Get-ImportedReportPresetCandidates
   if ($candidates.Count -eq 0) {
-    Show-Error "No exported preset files were found in the user data directory."
+    Show-Error "用户数据目录中未找到可导入的预设文件。"
     return
   }
 
@@ -1928,19 +1958,19 @@ $importPresetButton.Add_Click({
 
   $selectedFile = $candidates | Where-Object { $_.Name -eq $selectedFileName } | Select-Object -First 1
   if ($null -eq $selectedFile) {
-    Show-Error ("Could not find exported preset file '" + $selectedFileName + "'.")
+    Show-Error ("找不到导出的预设文件【" + $selectedFileName + "】。")
     return
   }
 
   try {
     $imported = Get-Content -LiteralPath $selectedFile.FullName -Raw -ErrorAction Stop | ConvertFrom-Json -ErrorAction Stop
   } catch {
-    Show-Error ("Failed to import preset file: " + $_.Exception.Message)
+    Show-Error ("导入预设文件失败：" + $_.Exception.Message)
     return
   }
 
   if ($null -eq $imported -or $null -eq $imported.options) {
-    Show-Error "The selected preset file does not contain an options payload."
+    Show-Error "所选预设文件不包含可导入的选项数据。"
     return
   }
 
@@ -1963,7 +1993,7 @@ $importPresetButton.Add_Click({
 
   if (Save-SavedReportPresets) {
     Refresh-PresetComboBoxItems
-    $presetComboBox.SelectedItem = ("[Saved] " + $importedName)
+    $presetComboBox.SelectedItem = ("[已保存] " + $importedName)
     Apply-ReportOptions $imported.options
     Sync-ReportPresetSelection
   }
@@ -1982,7 +2012,7 @@ $refreshButton.Left = 16
 $refreshButton.Top = 552
 $refreshButton.Width = 100
 $refreshButton.Height = 32
-$refreshButton.Text = "Refresh"
+$refreshButton.Text = "刷新"
 $refreshButton.Add_Click({ Refresh-Status })
 $form.Controls.Add($refreshButton)
 
@@ -1991,7 +2021,7 @@ $copyButton.Left = 132
 $copyButton.Top = 552
 $copyButton.Width = 170
 $copyButton.Height = 32
-$copyButton.Text = "Copy structured report"
+$copyButton.Text = "复制结构化报告"
 $copyButton.Add_Click({
   $rawLogExcerptMode = "tail"
   if ($excerptModeComboBox.SelectedIndex -eq 1) {
@@ -2024,7 +2054,7 @@ $logsButton.Left = 318
 $logsButton.Top = 552
 $logsButton.Width = 100
 $logsButton.Height = 32
-$logsButton.Text = "Open logs"
+$logsButton.Text = "打开日志"
 $logsButton.Add_Click({ Open-Path $LogDir })
 $form.Controls.Add($logsButton)
 
@@ -2033,7 +2063,7 @@ $userButton.Left = 434
 $userButton.Top = 552
 $userButton.Width = 120
 $userButton.Height = 32
-$userButton.Text = "Open user data"
+$userButton.Text = "打开用户目录"
 $userButton.Add_Click({ Open-Path $UserDir })
 $form.Controls.Add($userButton)
 
@@ -2042,7 +2072,7 @@ $sharedButton.Left = 570
 $sharedButton.Top = 552
 $sharedButton.Width = 130
 $sharedButton.Height = 32
-$sharedButton.Text = "Open shared data"
+$sharedButton.Text = "打开共享数据"
 $sharedButton.Add_Click({ Open-Path $SharedDir })
 $form.Controls.Add($sharedButton)
 
@@ -2051,7 +2081,7 @@ $guideButton.Left = 716
 $guideButton.Top = 552
 $guideButton.Width = 160
 $guideButton.Height = 32
-$guideButton.Text = "Open diagnostics guide"
+$guideButton.Text = "打开诊断说明"
 $guideButton.Add_Click({ Open-Path (Join-Path $HelpDir "diagnostics.html") })
 $form.Controls.Add($guideButton)
 

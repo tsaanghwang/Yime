@@ -1539,10 +1539,28 @@ func TestStandalonePowerShellScriptsAreFreeOfEncodingCorruption(t *testing.T) {
 		"横排", "竖排",
 		"当前设置：方案",
 		"已复制设置摘要。",
+		"Yime 设置面板",
+		"应用并重建",
+		"应用设置",
+		"用户目录",
+		"设置说明",
 	}
 	for _, want := range wantSettings {
 		if !strings.Contains(settingsToolScript, want) {
 			t.Fatalf("expected settings tool script to contain %q; encoding recovery may be incomplete", want)
+		}
+	}
+	wantDiagnosticsUI := []string{
+		"Yime 诊断面板",
+		"复制结构化报告",
+		"包含环境摘要",
+		"问题反馈",
+		"[内置] ",
+		"[已保存] ",
+	}
+	for _, want := range wantDiagnosticsUI {
+		if !strings.Contains(diagnosticsToolScript, want) {
+			t.Fatalf("expected diagnostics tool script to contain %q; localization may be incomplete", want)
 		}
 	}
 }
@@ -1707,13 +1725,13 @@ func TestToolHubScriptShowsDialogInsideTopLevelTry(t *testing.T) {
 }
 
 func TestStandaloneSettingsAndDiagnosticsScriptsProvideRealWindowShells(t *testing.T) {
-	if !strings.Contains(settingsToolScript, "Yime settings panel") {
+	if !strings.Contains(settingsToolScript, "Yime 设置面板") {
 		t.Fatalf("expected settings tool script panel copy")
 	}
 	if !strings.Contains(settingsToolScript, "Apply-Settings") {
 		t.Fatalf("expected settings tool script to apply settings")
 	}
-	if !strings.Contains(settingsToolScript, "Apply and rebuild") {
+	if !strings.Contains(settingsToolScript, `$applyAndRebuildButton.Text = "应用并重建"`) {
 		t.Fatalf("expected settings tool script to expose an apply-and-rebuild action")
 	}
 	if !strings.Contains(settingsToolScript, "Invoke-RimeBuild") {
@@ -1731,10 +1749,10 @@ func TestStandaloneSettingsAndDiagnosticsScriptsProvideRealWindowShells(t *testi
 	if !strings.Contains(settingsToolScript, "reverse_lookup_display_mode") || !strings.Contains(settingsToolScript, "candidate_layout") {
 		t.Fatalf("expected settings tool script to persist reverse-lookup and layout preferences")
 	}
-	if !strings.Contains(settingsToolScript, "Use Apply and rebuild for schema or page-size changes.") {
+	if !strings.Contains(settingsToolScript, "修改方案或候选项数时请使用【应用并重建】。") {
 		t.Fatalf("expected settings tool script to keep schema/page-size rebuild guidance without input-method activation claims")
 	}
-	if !strings.Contains(settingsToolScript, "Settings guide") || !strings.Contains(settingsToolScript, "Main help") {
+	if !strings.Contains(settingsToolScript, "设置说明") || !strings.Contains(settingsToolScript, "查看帮助") {
 		t.Fatalf("expected settings tool script to expose guide entry points")
 	}
 	if !strings.Contains(settingsToolScript, "$form.Add_Shown({") || !strings.Contains(settingsToolScript, "[System.Windows.Forms.Screen]::PrimaryScreen.WorkingArea") || !strings.Contains(settingsToolScript, "$form.Location = New-Object System.Drawing.Point($x, $y)") || !strings.Contains(settingsToolScript, "Refresh-SettingsView") {
@@ -1746,7 +1764,7 @@ func TestStandaloneSettingsAndDiagnosticsScriptsProvideRealWindowShells(t *testi
 	if strings.Contains(settingsToolScript, "try {\n  Refresh-SettingsView\n  [void]$form.ShowDialog()") {
 		t.Fatalf("expected settings tool script not to refresh state before the dialog is shown")
 	}
-	if !strings.Contains(diagnosticsToolScript, "Yime diagnostics panel") {
+	if !strings.Contains(diagnosticsToolScript, "Yime 诊断面板") {
 		t.Fatalf("expected diagnostics tool script shell copy")
 	}
 	if !strings.Contains(diagnosticsToolScript, "$form.Add_Shown({") || !strings.Contains(diagnosticsToolScript, "[System.Windows.Forms.Screen]::PrimaryScreen.WorkingArea") || !strings.Contains(diagnosticsToolScript, "$form.Location = New-Object System.Drawing.Point($x, $y)") {
@@ -1779,7 +1797,7 @@ func TestStandaloneSettingsAndDiagnosticsScriptsProvideRealWindowShells(t *testi
 	if !strings.Contains(diagnosticsToolScript, "Read-StandaloneSettingsSnapshot") {
 		t.Fatalf("expected diagnostics tool script to parse standalone settings state JSON")
 	}
-	if !strings.Contains(diagnosticsToolScript, "Copy structured report") {
+	if !strings.Contains(diagnosticsToolScript, "复制结构化报告") {
 		t.Fatalf("expected diagnostics tool script to support copying its structured report")
 	}
 	if !strings.Contains(diagnosticsToolScript, "Build-StructuredDiagnosticReport") {
@@ -1788,31 +1806,31 @@ func TestStandaloneSettingsAndDiagnosticsScriptsProvideRealWindowShells(t *testi
 	if !strings.Contains(diagnosticsToolScript, "# Yime Diagnostics Report") {
 		t.Fatalf("expected diagnostics tool script to label the structured report clearly")
 	}
-	if !strings.Contains(diagnosticsToolScript, "Include env summary") {
+	if !strings.Contains(diagnosticsToolScript, "包含环境摘要") {
 		t.Fatalf("expected diagnostics tool script to expose an environment-summary report option")
 	}
-	if !strings.Contains(diagnosticsToolScript, "Include actions") {
+	if !strings.Contains(diagnosticsToolScript, "包含建议操作") {
 		t.Fatalf("expected diagnostics tool script to expose a recommended-actions report option")
 	}
-	if !strings.Contains(diagnosticsToolScript, "Include raw log excerpt") {
+	if !strings.Contains(diagnosticsToolScript, "包含原始日志摘录") {
 		t.Fatalf("expected diagnostics tool script to expose a raw-log report option")
 	}
-	if !strings.Contains(diagnosticsToolScript, "Anonymize report") {
+	if !strings.Contains(diagnosticsToolScript, "匿名化报告") {
 		t.Fatalf("expected diagnostics tool script to expose an anonymize-report option")
 	}
-	if !strings.Contains(diagnosticsToolScript, "Keep drive") {
+	if !strings.Contains(diagnosticsToolScript, "保留盘符") {
 		t.Fatalf("expected diagnostics tool script to expose a keep-drive anonymization option")
 	}
-	if !strings.Contains(diagnosticsToolScript, "Anonymize mode:") {
+	if !strings.Contains(diagnosticsToolScript, "匿名模式：") {
 		t.Fatalf("expected diagnostics tool script to expose an anonymize-mode selector")
 	}
-	if !strings.Contains(diagnosticsToolScript, "Names only") {
+	if !strings.Contains(diagnosticsToolScript, "仅姓名") {
 		t.Fatalf("expected diagnostics tool script to expose a names-only anonymization mode")
 	}
-	if !strings.Contains(diagnosticsToolScript, "Raw log excerpt mode:") {
+	if !strings.Contains(diagnosticsToolScript, "日志摘录模式：") {
 		t.Fatalf("expected diagnostics tool script to expose a raw-log excerpt mode selector")
 	}
-	if !strings.Contains(diagnosticsToolScript, "Preset:") {
+	if !strings.Contains(diagnosticsToolScript, "预设：") {
 		t.Fatalf("expected diagnostics tool script to expose a report preset selector")
 	}
 	if !strings.Contains(diagnosticsToolScript, "Apply-ReportPreset") {
@@ -1854,8 +1872,11 @@ func TestStandaloneSettingsAndDiagnosticsScriptsProvideRealWindowShells(t *testi
 	if !strings.Contains(diagnosticsToolScript, "Issue-ready") {
 		t.Fatalf("expected diagnostics tool script to expose an issue-ready preset")
 	}
-	if !strings.Contains(diagnosticsToolScript, `$presetComboBox.SelectedItem = "[Built-in] Issue-ready"`) {
+	if !strings.Contains(diagnosticsToolScript, `$presetComboBox.SelectedItem = (Format-BuiltInPresetDisplay "Issue-ready")`) {
 		t.Fatalf("expected diagnostics tool script to select the built-in issue-ready preset label")
+	}
+	if !strings.Contains(diagnosticsToolScript, "function Format-BuiltInPresetDisplay") {
+		t.Fatalf("expected diagnostics tool script to map built-in preset keys to Chinese labels")
 	}
 	if strings.Contains(diagnosticsToolScript, "Microsoft.VisualBasic") {
 		t.Fatalf("expected diagnostics tool script to avoid Microsoft.VisualBasic startup dependency")
@@ -1872,7 +1893,7 @@ func TestStandaloneSettingsAndDiagnosticsScriptsProvideRealWindowShells(t *testi
 	if !strings.Contains(diagnosticsToolScript, "Minimal share") {
 		t.Fatalf("expected diagnostics tool script to expose a minimal-share preset")
 	}
-	if !strings.Contains(diagnosticsToolScript, "Custom") {
+	if !strings.Contains(diagnosticsToolScript, "自定义") {
 		t.Fatalf("expected diagnostics tool script to expose a custom preset state")
 	}
 	if !strings.Contains(diagnosticsToolScript, "Sync-ReportPresetSelection") {
@@ -1881,55 +1902,55 @@ func TestStandaloneSettingsAndDiagnosticsScriptsProvideRealWindowShells(t *testi
 	if !strings.Contains(diagnosticsToolScript, "updatingPresetSelection") {
 		t.Fatalf("expected diagnostics tool script to guard preset synchronization from recursive updates")
 	}
-	if !strings.Contains(diagnosticsToolScript, "Save") {
+	if !strings.Contains(diagnosticsToolScript, `$savePresetButton.Text = "保存"`) {
 		t.Fatalf("expected diagnostics tool script to expose a save-preset action")
 	}
-	if !strings.Contains(diagnosticsToolScript, "Rename") {
+	if !strings.Contains(diagnosticsToolScript, `$renamePresetButton.Text = "重命名"`) {
 		t.Fatalf("expected diagnostics tool script to expose a rename-preset action")
 	}
-	if !strings.Contains(diagnosticsToolScript, "Delete") {
+	if !strings.Contains(diagnosticsToolScript, `$deletePresetButton.Text = "删除"`) {
 		t.Fatalf("expected diagnostics tool script to expose a delete-preset action")
 	}
-	if !strings.Contains(diagnosticsToolScript, "Export") {
+	if !strings.Contains(diagnosticsToolScript, `$exportPresetButton.Text = "导出"`) {
 		t.Fatalf("expected diagnostics tool script to expose an export-preset action")
 	}
-	if !strings.Contains(diagnosticsToolScript, "Import") {
+	if !strings.Contains(diagnosticsToolScript, `$importPresetButton.Text = "导入"`) {
 		t.Fatalf("expected diagnostics tool script to expose an import-preset action")
 	}
-	if !strings.Contains(diagnosticsToolScript, "Export diagnostics preset") {
+	if !strings.Contains(diagnosticsToolScript, "导出诊断预设") {
 		t.Fatalf("expected diagnostics tool script to guide exporting a preset to a user-side file")
 	}
-	if !strings.Contains(diagnosticsToolScript, "Import diagnostics preset") {
+	if !strings.Contains(diagnosticsToolScript, "导入诊断预设") {
 		t.Fatalf("expected diagnostics tool script to guide importing a preset from a user-side file")
 	}
-	if !strings.Contains(diagnosticsToolScript, "Choose an exported preset file to import") {
+	if !strings.Contains(diagnosticsToolScript, "选择要导入的预设文件") {
 		t.Fatalf("expected diagnostics tool script to show a file-picking dialog for importing presets")
 	}
-	if !strings.Contains(diagnosticsToolScript, "Delete saved preset") {
+	if !strings.Contains(diagnosticsToolScript, "删除诊断预设") {
 		t.Fatalf("expected diagnostics tool script to confirm deleting a saved preset")
 	}
-	if !strings.Contains(diagnosticsToolScript, "[Saved] ") {
+	if !strings.Contains(diagnosticsToolScript, "[已保存] ") {
 		t.Fatalf("expected diagnostics tool script to label saved user presets distinctly")
 	}
-	if !strings.Contains(diagnosticsToolScript, "[Built-in] ") {
+	if !strings.Contains(diagnosticsToolScript, "[内置] ") {
 		t.Fatalf("expected diagnostics tool script to label built-in presets distinctly")
 	}
 	if !strings.Contains(diagnosticsToolScript, ".diagnostics_preset.json") {
 		t.Fatalf("expected diagnostics tool script to export current presets to a dedicated file format")
 	}
-	if !strings.Contains(diagnosticsToolScript, "Context window radius:") {
+	if !strings.Contains(diagnosticsToolScript, "上下文窗口半径：") {
 		t.Fatalf("expected diagnostics tool script to expose a context-window radius selector")
 	}
-	if !strings.Contains(diagnosticsToolScript, "10 lines") || !strings.Contains(diagnosticsToolScript, "20 lines") || !strings.Contains(diagnosticsToolScript, "40 lines") {
+	if !strings.Contains(diagnosticsToolScript, "10 行") || !strings.Contains(diagnosticsToolScript, "20 行") || !strings.Contains(diagnosticsToolScript, "40 行") {
 		t.Fatalf("expected diagnostics tool script to expose concrete command-window radius choices")
 	}
-	if !strings.Contains(diagnosticsToolScript, "Error lines only") {
+	if !strings.Contains(diagnosticsToolScript, "仅错误行") {
 		t.Fatalf("expected diagnostics tool script to expose an error-only raw-log excerpt mode")
 	}
-	if !strings.Contains(diagnosticsToolScript, "Last command window") {
+	if !strings.Contains(diagnosticsToolScript, "最近命令窗口") {
 		t.Fatalf("expected diagnostics tool script to expose a command-window raw-log excerpt mode")
 	}
-	if !strings.Contains(diagnosticsToolScript, "Last error window") {
+	if !strings.Contains(diagnosticsToolScript, "最近错误窗口") {
 		t.Fatalf("expected diagnostics tool script to expose an error-window raw-log excerpt mode")
 	}
 	if !strings.Contains(diagnosticsToolScript, "Get-EnvironmentSummaryLines") {
