@@ -1717,7 +1717,7 @@ func TestToolHubScriptShowsDialogInsideTopLevelTry(t *testing.T) {
 	if !strings.Contains(toolHubScript, "-WindowStyle Hidden") {
 		t.Fatalf("expected tool hub script to hide child PowerShell console windows")
 	}
-	if !strings.Contains(toolHubScript, "function Quote-ProcessArgument") || !strings.Contains(toolHubScript, "$argumentLine = ($arguments | ForEach-Object { Quote-ProcessArgument ([string]$_) }) -join \" \"") {
+	if !strings.Contains(toolHubScript, "function Quote-ProcessArgument") || !strings.Contains(toolHubScript, "$argumentLine = ($Tool.arguments | ForEach-Object { Quote-ProcessArgument ([string]$_) }) -join \" \"") {
 		t.Fatalf("expected tool hub script to quote PowerShell child-process arguments so Program Files paths survive launch")
 	}
 	if !strings.Contains(toolHubScript, "\"run_executable\"") || !strings.Contains(toolHubScript, "Missing executable: ") || !strings.Contains(toolHubScript, "Start-Process -FilePath $Tool.target_path -ArgumentList $argumentLine") {
