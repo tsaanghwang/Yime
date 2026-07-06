@@ -1762,8 +1762,17 @@ func TestStandaloneSettingsAndDiagnosticsScriptsProvideRealWindowShells(t *testi
 	if !strings.Contains(settingsToolScript, "previously_selected_schema") || !strings.Contains(settingsToolScript, "\"menu/page_size\"") {
 		t.Fatalf("expected settings tool script to update the same schema and page-size files Yime already uses")
 	}
+	if strings.Contains(settingsToolScript, `'^(\\s*).*$'`) {
+		t.Fatalf("expected settings tool script to use a whitespace indent regex, not a broken literal backslash-s pattern")
+	}
+	if !strings.Contains(settingsToolScript, `'^(\s*).*$'`) {
+		t.Fatalf("expected settings tool script to preserve YAML line indentation when replacing schema and page-size keys")
+	}
 	if !strings.Contains(settingsToolScript, "reverse_lookup_display_mode") || !strings.Contains(settingsToolScript, "candidate_layout") {
 		t.Fatalf("expected settings tool script to persist reverse-lookup and layout preferences")
+	}
+	if !strings.Contains(settingsToolScript, "$reverseLookupComboBox.SelectedItem.Value") || !strings.Contains(settingsToolScript, "$candidateLayoutComboBox.SelectedItem.Value") {
+		t.Fatalf("expected settings tool script to read combo-box values from SelectedItem.Value")
 	}
 	if !strings.Contains(settingsToolScript, "修改方案或候选项数时请使用【应用并重建】。") {
 		t.Fatalf("expected settings tool script to keep schema/page-size rebuild guidance without input-method activation claims")
@@ -2900,6 +2909,14 @@ func TestReadSelectedSchemaFromUserConfig(t *testing.T) {
 	}
 	if got := readSelectedSchemaFromUserConfig(userDir); got != "yime_shorthand" {
 		t.Fatalf("expected yime_shorthand from default.custom.yaml, got %q", got)
+	}
+
+	corruptedUser := filepath.Join(userDir, "user.yaml")
+	if err := os.WriteFile(corruptedUser, []byte("var:\n  previously_selected_schema: yime_variablepreviously_selected_schema: yime_variable\n"), 0o644); err != nil {
+		t.Fatalf("write corrupted user.yaml failed: %v", err)
+	}
+	if got := readSelectedSchemaFromUserConfig(userDir); got != "yime_variable" {
+		t.Fatalf("expected corrupted user.yaml to recover yime_variable prefix, got %q", got)
 	}
 }
 

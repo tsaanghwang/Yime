@@ -259,7 +259,7 @@ function Update-DefaultCustomSchemaAndPageSize {
   }
 
   if ($pageLineIndex -ge 0) {
-    $indent = ($lines[$pageLineIndex] -replace '^(\\s*).*$', '$1')
+    $indent = ($lines[$pageLineIndex] -replace '^(\s*).*$', '$1')
     $lines[$pageLineIndex] = ($indent + '"menu/page_size": ' + $PageSize)
   } else {
     if (-not $foundPatch) {
@@ -286,7 +286,7 @@ function Update-DefaultCustomSchemaAndPageSize {
   }
 
   if ($schemaLineIndex -ge 0) {
-    $indent = ($lines[$schemaLineIndex] -replace '^(\\s*).*$', '$1')
+    $indent = ($lines[$schemaLineIndex] -replace '^(\s*).*$', '$1')
     $lines[$schemaLineIndex] = ($indent + "- schema: " + $SchemaId)
   } else {
     if (-not $foundPatch) {
@@ -340,7 +340,7 @@ function Update-UserYamlSelectedSchema {
       $foundVar = $true
     }
     if ($trimmed.StartsWith("previously_selected_schema:")) {
-      $indent = ($lines[$index] -replace '^(\\s*).*$', '$1')
+      $indent = ($lines[$index] -replace '^(\s*).*$', '$1')
       $lines[$index] = ($indent + "previously_selected_schema: " + $SchemaId)
       $updated = $true
     }
@@ -453,8 +453,8 @@ function Apply-Settings {
     throw "当前共享数据目录未包含省键方案文件。"
   }
   $selectedPageSize = Normalize-PageSize ([string]$pageSizeComboBox.SelectedItem)
-  $selectedReverseLookupMode = Normalize-ReverseLookupMode ([string]$reverseLookupComboBox.SelectedValue)
-  $selectedCandidateLayout = Normalize-CandidateLayout ([string]$candidateLayoutComboBox.SelectedValue)
+  $selectedReverseLookupMode = Normalize-ReverseLookupMode ([string]$reverseLookupComboBox.SelectedItem.Value)
+  $selectedCandidateLayout = Normalize-CandidateLayout ([string]$candidateLayoutComboBox.SelectedItem.Value)
 
   $defaultCustomPath = Get-DefaultCustomPath
   $userYamlPath = Get-UserYamlPath

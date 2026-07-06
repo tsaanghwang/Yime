@@ -2345,12 +2345,13 @@ func readSchemaListSelection(path string) string {
 }
 
 func normalizeSelectedSchemaID(schemaID string) string {
-	switch strings.TrimSpace(schemaID) {
-	case "yime_full", "yime_variable", "yime_shorthand":
-		return strings.TrimSpace(schemaID)
-	default:
-		return ""
+	schemaID = strings.TrimSpace(schemaID)
+	for _, id := range []string{"yime_full", "yime_variable", "yime_shorthand"} {
+		if schemaID == id || strings.HasPrefix(schemaID, id) {
+			return id
+		}
 	}
+	return ""
 }
 
 func (ime *IME) applyPendingSchemaRedeploy() {
