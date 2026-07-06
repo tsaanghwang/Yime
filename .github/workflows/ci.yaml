@@ -37,20 +37,21 @@ jobs:
           Rust_COMPILER: ${{ env.CARGO_HOME }}\bin\rustc.exe
         run: cmd /C "build.bat --sanitized"
       - name: Verify native build outputs
-        shell: cmd
+        shell: pwsh
         run: |
-          if not exist "build\PIMETextService\Release\PIMETextService.dll" (
-            echo Missing Win32 PIMETextService.dll
-            exit /b 1
-          )
-          if not exist "build64\PIMETextService\Release\PIMETextService.dll" (
-            echo Missing x64 PIMETextService.dll
-            exit /b 1
-          )
-          if not exist "build\PIMELauncher\Release\PIMELauncher.exe" (
-            echo Missing PIMELauncher.exe
-            exit /b 1
-          )
+          Get-ChildItem -Recurse -Filter "PIMETextService.dll" | ForEach-Object { $_.FullName }
+          if (-not (Test-Path "build\PIMETextService\Release\PIMETextService.dll")) {
+            Write-Error "Missing Win32 PIMETextService.dll"
+            exit 1
+          }
+          if (-not (Test-Path "build64\PIMETextService\Release\PIMETextService.dll")) {
+            Write-Error "Missing x64 PIMETextService.dll"
+            exit 1
+          }
+          if (-not (Test-Path "build\PIMELauncher\Release\PIMELauncher.exe")) {
+            Write-Error "Missing PIMELauncher.exe"
+            exit 1
+          }
       - name: Build the installer
         shell: cmd
         run: |
