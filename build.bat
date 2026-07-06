@@ -24,15 +24,22 @@ dir /b /s "%ProgramFiles(x86)%\Microsoft Visual Studio\2022\BuildTools\VC\Tools\
 
 where cmake >nul 2>&1
 if errorlevel 1 (
-	if exist "%ProgramFiles(x86)%\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" (
-		set "CMAKE_EXE=%ProgramFiles(x86)%\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe"
-	) else if exist "%ProgramFiles(x86)%\Microsoft Visual Studio\2019\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" (
-		set "CMAKE_EXE=%ProgramFiles(x86)%\Microsoft Visual Studio\2019\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe"
-	) else (
-		echo CMake was not found. Install CMake or add it to PATH.
-		exit /b 1
+	for %%Y in (2022 2019) do (
+		for %%E in (BuildTools Enterprise Community Professional) do (
+			if exist "%ProgramFiles(x86)%\Microsoft Visual Studio\%%Y\%%E\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" (
+				set "CMAKE_EXE=%ProgramFiles(x86)%\Microsoft Visual Studio\%%Y\%%E\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe"
+				goto :cmake_found
+			)
+			if exist "%ProgramFiles%\Microsoft Visual Studio\%%Y\%%E\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" (
+				set "CMAKE_EXE=%ProgramFiles%\Microsoft Visual Studio\%%Y\%%E\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe"
+				goto :cmake_found
+			)
+		)
 	)
+	echo CMake was not found. Install CMake or add it to PATH.
+	exit /b 1
 )
+:cmake_found
 
 call "%VS_DEV_CMD%" -arch=x86 -host_arch=x64 >nul || exit /b 1
 "%CMAKE_EXE%" . -Bbuild -G "Visual Studio 17 2022" -A Win32 -DCMAKE_POLICY_VERSION_MINIMUM=3.5 || exit /b 1
@@ -73,14 +80,24 @@ goto :eof
 
 :find_vsdevcmd
 set "VS_DEV_CMD="
-if exist "%ProgramFiles(x86)%\Microsoft Visual Studio\2022\BuildTools\Common7\Tools\VsDevCmd.bat" (
-	set "VS_DEV_CMD=%ProgramFiles(x86)%\Microsoft Visual Studio\2022\BuildTools\Common7\Tools\VsDevCmd.bat"
-) else if exist "%ProgramFiles%\Microsoft Visual Studio\2022\BuildTools\Common7\Tools\VsDevCmd.bat" (
-	set "VS_DEV_CMD=%ProgramFiles%\Microsoft Visual Studio\2022\BuildTools\Common7\Tools\VsDevCmd.bat"
-) else if exist "C:\BuildTools\Common7\Tools\VsDevCmd.bat" (
-	set "VS_DEV_CMD=C:\BuildTools\Common7\Tools\VsDevCmd.bat"
-) else (
-	echo Visual Studio Build Tools environment script was not found.
-	exit /b 1
+for %%Y in (2022 2019) do (
+	for %%E in (BuildTools Enterprise Community Professional) do (
+		if exist "%ProgramFiles(x86)%\Microsoft Visual Studio\%%Y\%%E\Common7\Tools\VsDevCmd.bat" (
+			set "VS_DEV_CMD=%ProgramFiles(x86)%\Microsoft Visual Studio\%%Y\%%E\Common7\Tools\VsDevCmd.bat"
+			goto :vsdevcmd_found
+		)
+		if exist "%ProgramFiles%\Microsoft Visual Studio\%%Y\%%E\Common7\Tools\VsDevCmd.bat" (
+			set "VS_DEV_CMD=%ProgramFiles%\Microsoft Visual Studio\%%Y\%%E\Common7\Tools\VsDevCmd.bat"
+			goto :vsdevcmd_found
+		)
+	)
 )
+if exist "C:\BuildTools\Common7\Tools\VsDevCmd.bat" (
+	set "VS_DEV_CMD=C:\BuildTools\Common7\Tools\VsDevCmd.bat"
+	goto :vsdevcmd_found
+)
+echo Visual Studio environment script was not found.
+exit /b 1
+
+:vsdevcmd_found
 exit /b 0
