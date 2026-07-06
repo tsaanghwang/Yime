@@ -31,11 +31,37 @@ jobs:
         uses: repolevedavaj/install-nsis@v1.2.0
         with:
           nsis-version: 3.08
-      - name: Run build.bat
+
+      - name: Build Win32 C++ components
         shell: pwsh
-        env:
-          Rust_COMPILER: ${{ env.CARGO_HOME }}\bin\rustc.exe
-        run: cmd /C "build.bat --sanitized"
+        run: |
+          cmake . -Bbuild -G "Visual Studio 17 2022" -A Win32 -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+          cmake --build build --config Release
+
+      - name: Build x64 C++ components
+        shell: pwsh
+        run: |
+          cmake . -Bbuild64 -G "Visual Studio 17 2022" -A x64 -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+          cmake --build build64 --config Release --target PIMETextService
+
+      - name: Build Go backend
+        shell: pwsh
+        run: |
+          pushd go-backend
+          cmd /C build.bat
+          popd
+
+      - name: Build McBopomofo
+        shell: pwsh
+        run: |
+          pushd McBopomofoWeb
+          npm install
+          npm run build:pime
+          popd
+          if (Test-Path "node\input_methods\McBopomofo") { Remove-Item -Recurse -Force "node\input_methods\McBopomofo" }
+          New-Item -ItemType Directory -Force -Path "node\input_methods\McBopomofo" | Out-Null
+          Copy-Item -Recurse -Force "McBopomofoWeb\output\pime\*" "node\input_methods\McBopomofo\"
+
       - name: Verify native build outputs
         shell: pwsh
         run: |
@@ -52,10 +78,14 @@ jobs:
             Write-Error "Missing PIMELauncher.exe"
             exit 1
           }
+
       - name: Build the installer
         shell: cmd
         run: |
-          "C:\Program Files (x86)\NSIS\Bin\makensis.exe" ".\installer\installer.nsi"
+          pushd installer
+          "C:\Program Files (x86)\NSIS\Bin\makensis.exe" "installer.nsi"
+          popd
+
       - uses: actions/upload-artifact@v4
         with:
           name: Installer
