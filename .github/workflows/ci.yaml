@@ -60,21 +60,17 @@ jobs:
           nsis-version: 3.08
 
       - name: Build Win32 C++ components
-        shell: pwsh
+        shell: cmd
         run: |
-          $vsDevCmd = Join-Path $env:VSINSTALLDIR 'Common7\Tools\VsDevCmd.bat'
-          cmd /c "`"$vsDevCmd`" -arch=x86 -host_arch=x64 >nul"
-          if ($LASTEXITCODE -ne 0) { throw "VsDevCmd.bat (x86) failed." }
-          cmake . -Bbuild -G "Visual Studio 17 2022" -A Win32 "-DCMAKE_POLICY_VERSION_MINIMUM=3.5"
+          call "%VSINSTALLDIR%Common7\Tools\VsDevCmd.bat" -arch=x86 -host_arch=x64 >nul
+          cmake . -Bbuild -G "Visual Studio 17 2022" -A Win32 -DCMAKE_POLICY_VERSION_MINIMUM=3.5
           cmake --build build --config Release
 
       - name: Build x64 C++ components
-        shell: pwsh
+        shell: cmd
         run: |
-          $vsDevCmd = Join-Path $env:VSINSTALLDIR 'Common7\Tools\VsDevCmd.bat'
-          cmd /c "`"$vsDevCmd`" -arch=x64 -host_arch=x64 >nul"
-          if ($LASTEXITCODE -ne 0) { throw "VsDevCmd.bat (x64) failed." }
-          cmake . -Bbuild64 -G "Visual Studio 17 2022" -A x64 "-DCMAKE_POLICY_VERSION_MINIMUM=3.5"
+          call "%VSINSTALLDIR%Common7\Tools\VsDevCmd.bat" -arch=x64 -host_arch=x64 >nul
+          cmake . -Bbuild64 -G "Visual Studio 17 2022" -A x64 -DCMAKE_POLICY_VERSION_MINIMUM=3.5
           cmake --build build64 --config Release --target PIMETextService
 
       - name: Build Go backend
