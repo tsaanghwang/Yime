@@ -50,12 +50,17 @@ func (ime *IME) ensureToolHubManifest() (string, error) {
 	if err != nil {
 		return "", err
 	}
+	reverseLookupToolScript, err := ime.ensureReverseLookupToolScript()
+	if err != nil {
+		return "", err
+	}
 	manifest := buildToolHubManifest(
 		sharedDir,
 		userDir,
 		helpDir,
 		filepath.Join(os.Getenv("LOCALAPPDATA"), "PIME", "Logs"),
 		lexiconManagerScript,
+		reverseLookupToolScript,
 		settingsToolScript,
 		diagnosticsToolScript,
 		ime.currentYimeMode(),

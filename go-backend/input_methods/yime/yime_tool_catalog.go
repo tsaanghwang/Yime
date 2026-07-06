@@ -30,7 +30,7 @@ type toolHubManifest struct {
 	Tools   []toolHubEntry `json:"tools"`
 }
 
-func buildToolHubManifest(sharedDir, userDir, helpDir, logDir, lexiconManagerScript, settingsToolScript, diagnosticsToolScript, mode string) toolHubManifest {
+func buildToolHubManifest(sharedDir, userDir, helpDir, logDir, lexiconManagerScript, reverseLookupToolScript, settingsToolScript, diagnosticsToolScript, mode string) toolHubManifest {
 
 	return toolHubManifest{
 		Title:   "Yime Tool Hub",
@@ -43,6 +43,19 @@ func buildToolHubManifest(sharedDir, userDir, helpDir, logDir, lexiconManagerScr
 				Description:      "Open the standalone lexicon manager dialog.",
 				ActionType:       toolActionRunPowerShell,
 				TargetPath:       lexiconManagerScript,
+				CloseAfterLaunch: true,
+				Arguments: []string{
+					"-SharedDir", sharedDir,
+					"-UserDir", userDir,
+					"-Mode", mode,
+				},
+			},
+			{
+				ID:               "reverse-lookup-tool",
+				Label:            "反查编码",
+				Description:      "Open the standalone reverse lookup tool.",
+				ActionType:       toolActionRunPowerShell,
+				TargetPath:       reverseLookupToolScript,
 				CloseAfterLaunch: true,
 				Arguments: []string{
 					"-SharedDir", sharedDir,

@@ -1499,6 +1499,7 @@ func TestStandalonePowerShellScriptsDoNotContainSmartQuotes(t *testing.T) {
 		"tool hub":             toolHubScript,
 		"settings tool":        settingsToolScript,
 		"diagnostics tool":     diagnosticsToolScript,
+		"reverse lookup tool":  reverseLookupToolScript,
 	}
 	for name, script := range scripts {
 		if strings.Contains(script, "“") || strings.Contains(script, "”") {
@@ -1520,6 +1521,7 @@ func TestStandalonePowerShellScriptsAreFreeOfEncodingCorruption(t *testing.T) {
 		"tool hub":             toolHubScript,
 		"settings tool":        settingsToolScript,
 		"diagnostics tool":     diagnosticsToolScript,
+		"reverse lookup tool":  reverseLookupToolScript,
 	}
 	for name, script := range scripts {
 		for i, r := range script {
@@ -1561,6 +1563,20 @@ func TestStandalonePowerShellScriptsAreFreeOfEncodingCorruption(t *testing.T) {
 	for _, want := range wantDiagnosticsUI {
 		if !strings.Contains(diagnosticsToolScript, want) {
 			t.Fatalf("expected diagnostics tool script to contain %q; localization may be incomplete", want)
+		}
+	}
+	wantReverseLookupUI := []string{
+		"Yime 反查编码",
+		"查询词条",
+		"包含匹配",
+		"数字标调",
+		"标准拼音",
+		"用户词库",
+		"系统词库",
+	}
+	for _, want := range wantReverseLookupUI {
+		if !strings.Contains(reverseLookupToolScript, want) {
+			t.Fatalf("expected reverse lookup tool script to contain %q; localization may be incomplete", want)
 		}
 	}
 }
@@ -2096,6 +2112,33 @@ func TestStandaloneSettingsAndDiagnosticsScriptsProvideRealWindowShells(t *testi
 	}
 }
 
+func TestReverseLookupToolScriptProvidesStandaloneQueryShell(t *testing.T) {
+	if !strings.Contains(reverseLookupToolScript, "Yime 反查编码") {
+		t.Fatalf("expected reverse lookup tool script panel copy")
+	}
+	if !strings.Contains(reverseLookupToolScript, "Load-DictLookup") || !strings.Contains(reverseLookupToolScript, "yime_pinyin_codes.tsv") {
+		t.Fatalf("expected reverse lookup tool script to load shared runtime data files")
+	}
+	if !strings.Contains(reverseLookupToolScript, "yime_user_phrases.txt") {
+		t.Fatalf("expected reverse lookup tool script to consult the user phrase source file")
+	}
+	if !strings.Contains(reverseLookupToolScript, "Search-ReverseLookup") {
+		t.Fatalf("expected reverse lookup tool script to centralize lookup queries")
+	}
+	if !strings.Contains(reverseLookupToolScript, "$form.Add_Shown({") || !strings.Contains(reverseLookupToolScript, "[System.Windows.Forms.Screen]::PrimaryScreen.WorkingArea") {
+		t.Fatalf("expected reverse lookup tool script to restore a centered window when shown")
+	}
+	if !strings.Contains(reverseLookupToolScript, "$form.BeginInvoke([System.Windows.Forms.MethodInvoker]{") {
+		t.Fatalf("expected reverse lookup tool script to defer data loading until after the window is shown")
+	}
+	if strings.Contains(reverseLookupToolScript, "$form.TopMost = $true") || strings.Contains(reverseLookupToolScript, "$form.Activate()") || strings.Contains(reverseLookupToolScript, "$form.BringToFront()") {
+		t.Fatalf("expected reverse lookup tool script to avoid aggressive foreground forcing that can collapse the language bar")
+	}
+	if !strings.Contains(reverseLookupToolScript, "try {\n  [void]$form.ShowDialog()\n} catch {\n  Show-Error $_.Exception.Message\n}") {
+		t.Fatalf("expected reverse lookup tool script to show dialog inside top-level try/catch")
+	}
+}
+
 func TestBuildToolHubManifestProvidesExtensibleToolEntries(t *testing.T) {
 	manifest := buildToolHubManifest(
 		`C:\shared`,
@@ -2103,6 +2146,7 @@ func TestBuildToolHubManifestProvidesExtensibleToolEntries(t *testing.T) {
 		`C:\help`,
 		`C:\logs`,
 		`C:\user\lexicon.ps1`,
+		`C:\user\reverse_lookup.ps1`,
 		`C:\user\settings.ps1`,
 		`C:\user\diagnostics.ps1`,
 		"variable",
@@ -2113,12 +2157,13 @@ func TestBuildToolHubManifestProvidesExtensibleToolEntries(t *testing.T) {
 	if manifest.Title != "Yime Tool Hub" {
 		t.Fatalf("expected tool hub title, got %#v", manifest.Title)
 	}
-	if len(manifest.Tools) < 10 {
+	if len(manifest.Tools) < 11 {
 		t.Fatalf("expected framework-ready tool entries, got %#v", manifest.Tools)
 	}
 	required := map[string]bool{
-		"lexicon-manager":     false,
-		"settings-tool":       false,
+		"lexicon-manager":      false,
+		"reverse-lookup-tool":  false,
+		"settings-tool":        false,
 		"settings-data":       false,
 		"shared-data":         false,
 		"diagnostics-tool":    false,
@@ -2133,7 +2178,7 @@ func TestBuildToolHubManifestProvidesExtensibleToolEntries(t *testing.T) {
 			required[tool.ID] = true
 		}
 		switch tool.ID {
-		case "lexicon-manager", "settings-tool", "diagnostics-tool":
+		case "lexicon-manager", "reverse-lookup-tool", "settings-tool", "diagnostics-tool":
 			if tool.ActionType != toolActionRunPowerShell {
 				t.Fatalf("expected %s to launch the script directly, got %#v", tool.ID, tool)
 			}
@@ -2141,6 +2186,10 @@ func TestBuildToolHubManifestProvidesExtensibleToolEntries(t *testing.T) {
 			case "lexicon-manager":
 				if tool.TargetPath != `C:\user\lexicon.ps1` {
 					t.Fatalf("expected lexicon-manager script path to be preserved, got %#v", tool)
+				}
+			case "reverse-lookup-tool":
+				if tool.TargetPath != `C:\user\reverse_lookup.ps1` {
+					t.Fatalf("expected reverse-lookup-tool script path to be preserved, got %#v", tool)
 				}
 			case "settings-tool":
 				if tool.TargetPath != `C:\user\settings.ps1` {
