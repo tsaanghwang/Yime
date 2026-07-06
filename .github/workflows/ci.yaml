@@ -32,10 +32,10 @@ jobs:
         with:
           nsis-version: 3.08
       - name: Run build.bat
-        shell: cmd
+        shell: pwsh
         env:
           Rust_COMPILER: ${{ env.CARGO_HOME }}\bin\rustc.exe
-        run: call build.bat --sanitized
+        run: cmd /C "build.bat --sanitized"
       - name: Verify native build outputs
         shell: cmd
         run: |
