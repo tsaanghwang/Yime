@@ -19,8 +19,11 @@ call :find_vsdevcmd
 if errorlevel 1 exit /b 1
 
 set "CMAKE_EXE=cmake"
-if not exist "%ProgramFiles(x86)%\Microsoft Visual Studio\2022\BuildTools\MSBuild\Microsoft\VC\v170\Platforms\ARM64" set "SKIP_ARM64=1"
-dir /b /s "%ProgramFiles(x86)%\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\*\bin\Hostx64\arm64\cl.exe" >nul 2>&1 || set "SKIP_ARM64=1"
+set "SKIP_ARM64=1"
+set "_VSWHERE=%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe"
+if exist "%_VSWHERE%" (
+	"%_VSWHERE%" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.ARM64 -property installationPath >nul 2>&1 && set "SKIP_ARM64="
+)
 
 where cmake >nul 2>&1
 if errorlevel 1 (
@@ -80,14 +83,27 @@ goto :eof
 
 :find_vsdevcmd
 set "VS_DEV_CMD="
-for %%Y in (2022 2019) do (
-	for %%E in (BuildTools Enterprise Community Professional) do (
-		if exist "%ProgramFiles(x86)%\Microsoft Visual Studio\%%Y\%%E\Common7\Tools\VsDevCmd.bat" (
-			set "VS_DEV_CMD=%ProgramFiles(x86)%\Microsoft Visual Studio\%%Y\%%E\Common7\Tools\VsDevCmd.bat"
+
+rem vswhere.exe is the canonical locator for VS 2017+ installations.
+set "_VSWHERE=%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe"
+if exist "%_VSWHERE%" (
+	for /f "usebackq delims=" %%I in (`"%_VSWHERE%" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath 2^>nul`) do (
+		if exist "%%I\Common7\Tools\VsDevCmd.bat" (
+			set "VS_DEV_CMD=%%I\Common7\Tools\VsDevCmd.bat"
 			goto :vsdevcmd_found
 		)
+	)
+)
+
+rem Fall back to well-known fixed paths.
+for %%Y in (2022 2019) do (
+	for %%E in (Enterprise Community Professional BuildTools) do (
 		if exist "%ProgramFiles%\Microsoft Visual Studio\%%Y\%%E\Common7\Tools\VsDevCmd.bat" (
 			set "VS_DEV_CMD=%ProgramFiles%\Microsoft Visual Studio\%%Y\%%E\Common7\Tools\VsDevCmd.bat"
+			goto :vsdevcmd_found
+		)
+		if exist "%ProgramFiles(x86)%\Microsoft Visual Studio\%%Y\%%E\Common7\Tools\VsDevCmd.bat" (
+			set "VS_DEV_CMD=%ProgramFiles(x86)%\Microsoft Visual Studio\%%Y\%%E\Common7\Tools\VsDevCmd.bat"
 			goto :vsdevcmd_found
 		)
 	)
