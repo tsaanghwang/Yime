@@ -2,8 +2,9 @@ name: Build
 
 on:
   push:
+    branches: [yime-stable]
   pull_request:
-    branches: [main]
+    branches: [yime-stable]
 
 jobs:
   build:
