@@ -35,7 +35,6 @@ func (ime *IME) ensureToolHubManifest() (string, error) {
 	userDir := ime.userDir()
 	sharedDir := ime.sharedDir()
 	helpDir := ime.helpDir()
-	launcherPath := ime.toolLauncherPath()
 	if userDir == "" || sharedDir == "" || helpDir == "" {
 		return "", os.ErrNotExist
 	}
@@ -56,7 +55,6 @@ func (ime *IME) ensureToolHubManifest() (string, error) {
 		userDir,
 		helpDir,
 		filepath.Join(os.Getenv("LOCALAPPDATA"), "PIME", "Logs"),
-		launcherPath,
 		lexiconManagerScript,
 		settingsToolScript,
 		diagnosticsToolScript,
@@ -117,6 +115,35 @@ function Quote-ProcessArgument {
   return ('"{0}"' -f $Value.Replace('"', '\"'))
 }
 
+function Get-SystemPowerShellPath {
+  $systemRoot = $env:SystemRoot
+  if (-not [string]::IsNullOrWhiteSpace($systemRoot)) {
+    $candidate = Join-Path $systemRoot "System32\WindowsPowerShell\v1.0\powershell.exe"
+    if (Test-Path -LiteralPath $candidate) {
+      return $candidate
+    }
+  }
+  return "powershell.exe"
+}
+
+function Start-ShellExecuteProcess {
+  param(
+    [string]$FilePath,
+    [string[]]$Arguments = @(),
+    [System.Diagnostics.ProcessWindowStyle]$WindowStyle = [System.Diagnostics.ProcessWindowStyle]::Normal
+  )
+
+  $startInfo = New-Object System.Diagnostics.ProcessStartInfo
+  $startInfo.UseShellExecute = $true
+  $startInfo.Verb = "open"
+  $startInfo.FileName = $FilePath
+  $startInfo.WindowStyle = $WindowStyle
+  if ($Arguments -and $Arguments.Count -gt 0) {
+    $startInfo.Arguments = ($Arguments | ForEach-Object { Quote-ProcessArgument ([string]$_) }) -join " "
+  }
+  [System.Diagnostics.Process]::Start($startInfo) | Out-Null
+}
+
 function Invoke-Tool {
   param($Tool)
 
@@ -154,9 +181,8 @@ function Invoke-Tool {
           $arguments += [string]$argument
         }
       }
-      $argumentLine = ($arguments | ForEach-Object { Quote-ProcessArgument ([string]$_) }) -join " "
-      Start-Process -FilePath "powershell.exe" -ArgumentList $argumentLine -WindowStyle Hidden | Out-Null
-      return
+      Start-ShellExecuteProcess -FilePath (Get-SystemPowerShellPath) -Arguments $arguments -WindowStyle Hidden
+      return $shouldClose
     }
     "run_executable" {
       if (-not (Test-Path -LiteralPath $Tool.target_path)) {
@@ -210,7 +236,7 @@ $form.MinimumSize = New-Object System.Drawing.Size(620, 360)
 $form.MaximizeBox = $false
 $form.WindowState = [System.Windows.Forms.FormWindowState]::Normal
 $closeTimer = New-Object System.Windows.Forms.Timer
-$closeTimer.Interval = 1
+$closeTimer.Interval = 800
 $closeTimer.Add_Tick({
   $closeTimer.Stop()
   $form.Hide()

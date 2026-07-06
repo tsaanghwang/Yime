@@ -30,7 +30,7 @@ type toolHubManifest struct {
 	Tools   []toolHubEntry `json:"tools"`
 }
 
-func buildToolHubManifest(sharedDir, userDir, helpDir, logDir, launcherPath, lexiconManagerScript, settingsToolScript, diagnosticsToolScript, mode string) toolHubManifest {
+func buildToolHubManifest(sharedDir, userDir, helpDir, logDir, lexiconManagerScript, settingsToolScript, diagnosticsToolScript, mode string) toolHubManifest {
 
 	return toolHubManifest{
 		Title:   "Yime Tool Hub",
@@ -41,12 +41,10 @@ func buildToolHubManifest(sharedDir, userDir, helpDir, logDir, launcherPath, lex
 				ID:               "lexicon-manager",
 				Label:            "用户词库管理",
 				Description:      "Open the standalone lexicon manager dialog.",
-				ActionType:       toolActionRunExecutable,
-				TargetPath:       launcherPath,
+				ActionType:       toolActionRunPowerShell,
+				TargetPath:       lexiconManagerScript,
 				CloseAfterLaunch: true,
 				Arguments: []string{
-					"powershell-script",
-					lexiconManagerScript,
 					"-SharedDir", sharedDir,
 					"-UserDir", userDir,
 					"-Mode", mode,
@@ -56,12 +54,10 @@ func buildToolHubManifest(sharedDir, userDir, helpDir, logDir, launcherPath, lex
 				ID:               "settings-tool",
 				Label:            "设置工具",
 				Description:      "Open the standalone settings shell.",
-				ActionType:       toolActionRunExecutable,
-				TargetPath:       launcherPath,
+				ActionType:       toolActionRunPowerShell,
+				TargetPath:       settingsToolScript,
 				CloseAfterLaunch: true,
 				Arguments: []string{
-					"powershell-script",
-					settingsToolScript,
 					"-UserDir", userDir,
 					"-SharedDir", sharedDir,
 					"-HelpDir", helpDir,
@@ -86,12 +82,10 @@ func buildToolHubManifest(sharedDir, userDir, helpDir, logDir, launcherPath, lex
 				ID:               "diagnostics-tool",
 				Label:            "诊断工具",
 				Description:      "Open the standalone diagnostics shell.",
-				ActionType:       toolActionRunExecutable,
-				TargetPath:       launcherPath,
+				ActionType:       toolActionRunPowerShell,
+				TargetPath:       diagnosticsToolScript,
 				CloseAfterLaunch: true,
 				Arguments: []string{
-					"powershell-script",
-					diagnosticsToolScript,
 					"-UserDir", userDir,
 					"-SharedDir", sharedDir,
 					"-HelpDir", helpDir,

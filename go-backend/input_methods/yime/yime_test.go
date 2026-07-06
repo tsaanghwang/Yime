@@ -1659,8 +1659,14 @@ func TestUserLexiconManagerScriptShowsDialogInsideTopLevelTry(t *testing.T) {
 	if !strings.Contains(userLexiconManagerScript, "$listView.Add_ItemSelectionChanged") {
 		t.Fatalf("expected lexicon manager script to refresh selection summary from selection changes")
 	}
-	if !strings.Contains(userLexiconManagerScript, "$form.Add_Shown({") || !strings.Contains(userLexiconManagerScript, "[System.Windows.Forms.Screen]::PrimaryScreen.WorkingArea") || !strings.Contains(userLexiconManagerScript, "$form.Location = New-Object System.Drawing.Point($x, $y)") || !strings.Contains(userLexiconManagerScript, "$form.Activate()") {
-		t.Fatalf("expected lexicon manager script to restore a centered foreground window when shown")
+	if !strings.Contains(userLexiconManagerScript, "$form.Add_Shown({") || !strings.Contains(userLexiconManagerScript, "[System.Windows.Forms.Screen]::PrimaryScreen.WorkingArea") || !strings.Contains(userLexiconManagerScript, "$form.Location = New-Object System.Drawing.Point($x, $y)") {
+		t.Fatalf("expected lexicon manager script to restore a centered window when shown")
+	}
+	if !strings.Contains(userLexiconManagerScript, "$form.BeginInvoke([System.Windows.Forms.MethodInvoker]{") || !strings.Contains(userLexiconManagerScript, "$script:codeMap = Load-CodeMap") {
+		t.Fatalf("expected lexicon manager script to defer code-map initialization until after the window is shown")
+	}
+	if strings.Contains(userLexiconManagerScript, "$form.TopMost = $true") || strings.Contains(userLexiconManagerScript, "$form.Activate()") || strings.Contains(userLexiconManagerScript, "$form.BringToFront()") {
+		t.Fatalf("expected lexicon manager script to avoid aggressive foreground forcing that can collapse the language bar")
 	}
 }
 
@@ -1685,6 +1691,9 @@ func TestToolHubScriptShowsDialogInsideTopLevelTry(t *testing.T) {
 	}
 	if !strings.Contains(toolHubScript, "$closeTimer = New-Object System.Windows.Forms.Timer") || !strings.Contains(toolHubScript, "$form.Hide()") || !strings.Contains(toolHubScript, "$closeTimer.Start()") {
 		t.Fatalf("expected tool hub script to defer self-close until after the click handler returns")
+	}
+	if !strings.Contains(toolHubScript, "$closeTimer.Interval = 800") {
+		t.Fatalf("expected tool hub script to leave enough delay before closing so slower child windows can surface")
 	}
 	if !strings.Contains(toolHubScript, "$form.Add_Shown({") || !strings.Contains(toolHubScript, "[System.Windows.Forms.Screen]::PrimaryScreen.WorkingArea") || !strings.Contains(toolHubScript, "$form.Location = New-Object System.Drawing.Point($x, $y)") {
 		t.Fatalf("expected tool hub script to restore a normal centered window when shown")
@@ -1719,20 +1728,32 @@ func TestStandaloneSettingsAndDiagnosticsScriptsProvideRealWindowShells(t *testi
 	if !strings.Contains(settingsToolScript, "reverse_lookup_display_mode") || !strings.Contains(settingsToolScript, "candidate_layout") {
 		t.Fatalf("expected settings tool script to persist reverse-lookup and layout preferences")
 	}
-	if !strings.Contains(settingsToolScript, "Switching back to Yime restores reverse-lookup and layout preferences on activation; use Apply and rebuild for schema or page-size changes.") {
-		t.Fatalf("expected settings tool script to distinguish activation-safe UI sync from schema/page-size rebuild requirements")
+	if !strings.Contains(settingsToolScript, "Use Apply and rebuild for schema or page-size changes.") {
+		t.Fatalf("expected settings tool script to keep schema/page-size rebuild guidance without input-method activation claims")
 	}
 	if !strings.Contains(settingsToolScript, "Settings guide") || !strings.Contains(settingsToolScript, "Main help") {
 		t.Fatalf("expected settings tool script to expose guide entry points")
 	}
-	if !strings.Contains(settingsToolScript, "$form.Add_Shown({") || !strings.Contains(settingsToolScript, "$form.Activate()") || !strings.Contains(settingsToolScript, "$form.BringToFront()") || !strings.Contains(settingsToolScript, "Refresh-SettingsView") {
-		t.Fatalf("expected settings tool script to restore a centered foreground window and refresh state when shown")
+	if !strings.Contains(settingsToolScript, "$form.Add_Shown({") || !strings.Contains(settingsToolScript, "[System.Windows.Forms.Screen]::PrimaryScreen.WorkingArea") || !strings.Contains(settingsToolScript, "$form.Location = New-Object System.Drawing.Point($x, $y)") || !strings.Contains(settingsToolScript, "Refresh-SettingsView") {
+		t.Fatalf("expected settings tool script to restore a centered window and refresh state when shown")
+	}
+	if strings.Contains(settingsToolScript, "$form.TopMost = $true") || strings.Contains(settingsToolScript, "$form.Activate()") || strings.Contains(settingsToolScript, "$form.BringToFront()") {
+		t.Fatalf("expected settings tool script to avoid aggressive foreground forcing that can collapse the language bar")
 	}
 	if strings.Contains(settingsToolScript, "try {\n  Refresh-SettingsView\n  [void]$form.ShowDialog()") {
 		t.Fatalf("expected settings tool script not to refresh state before the dialog is shown")
 	}
 	if !strings.Contains(diagnosticsToolScript, "Yime diagnostics panel") {
 		t.Fatalf("expected diagnostics tool script shell copy")
+	}
+	if !strings.Contains(diagnosticsToolScript, "$form.Add_Shown({") || !strings.Contains(diagnosticsToolScript, "[System.Windows.Forms.Screen]::PrimaryScreen.WorkingArea") || !strings.Contains(diagnosticsToolScript, "$form.Location = New-Object System.Drawing.Point($x, $y)") {
+		t.Fatalf("expected diagnostics tool script to restore a centered window when shown")
+	}
+	if !strings.Contains(diagnosticsToolScript, "$form.BeginInvoke([System.Windows.Forms.MethodInvoker]{") || !strings.Contains(diagnosticsToolScript, `Apply-ReportPreset "Issue-ready"`) {
+		t.Fatalf("expected diagnostics tool script to defer the initial refresh until after the window is shown")
+	}
+	if strings.Contains(diagnosticsToolScript, "$form.TopMost = $true") || strings.Contains(diagnosticsToolScript, "$form.Activate()") || strings.Contains(diagnosticsToolScript, "$form.BringToFront()") {
+		t.Fatalf("expected diagnostics tool script to avoid aggressive foreground forcing that can collapse the language bar")
 	}
 	if !strings.Contains(diagnosticsToolScript, "Refresh-Status") {
 		t.Fatalf("expected diagnostics tool script to expose a refreshable status view")
@@ -2045,7 +2066,6 @@ func TestBuildToolHubManifestProvidesExtensibleToolEntries(t *testing.T) {
 		`C:\user`,
 		`C:\help`,
 		`C:\logs`,
-		`C:\runtime\tool-launcher.exe`,
 		`C:\user\lexicon.ps1`,
 		`C:\user\settings.ps1`,
 		`C:\user\diagnostics.ps1`,
@@ -2078,28 +2098,25 @@ func TestBuildToolHubManifestProvidesExtensibleToolEntries(t *testing.T) {
 		}
 		switch tool.ID {
 		case "lexicon-manager", "settings-tool", "diagnostics-tool":
-			if tool.ActionType != toolActionRunExecutable {
-				t.Fatalf("expected %s to use the tool launcher executable, got %#v", tool.ID, tool)
-			}
-			if tool.TargetPath != `C:\runtime\tool-launcher.exe` {
-				t.Fatalf("expected %s launcher path to be preserved, got %#v", tool.ID, tool)
-			}
-			if len(tool.Arguments) < 2 || tool.Arguments[0] != "powershell-script" {
-				t.Fatalf("expected %s launcher arguments to start with powershell-script, got %#v", tool.ID, tool.Arguments)
+			if tool.ActionType != toolActionRunPowerShell {
+				t.Fatalf("expected %s to launch the script directly, got %#v", tool.ID, tool)
 			}
 			switch tool.ID {
 			case "lexicon-manager":
-				if tool.Arguments[1] != `C:\user\lexicon.ps1` {
-					t.Fatalf("expected lexicon-manager script path to be preserved, got %#v", tool.Arguments)
+				if tool.TargetPath != `C:\user\lexicon.ps1` {
+					t.Fatalf("expected lexicon-manager script path to be preserved, got %#v", tool)
 				}
 			case "settings-tool":
-				if tool.Arguments[1] != `C:\user\settings.ps1` {
-					t.Fatalf("expected settings-tool script path to be preserved, got %#v", tool.Arguments)
+				if tool.TargetPath != `C:\user\settings.ps1` {
+					t.Fatalf("expected settings-tool script path to be preserved, got %#v", tool)
 				}
 			case "diagnostics-tool":
-				if tool.Arguments[1] != `C:\user\diagnostics.ps1` {
-					t.Fatalf("expected diagnostics-tool script path to be preserved, got %#v", tool.Arguments)
+				if tool.TargetPath != `C:\user\diagnostics.ps1` {
+					t.Fatalf("expected diagnostics-tool script path to be preserved, got %#v", tool)
 				}
+			}
+			if len(tool.Arguments) == 0 || tool.Arguments[0] == "powershell-script" {
+				t.Fatalf("expected %s direct script arguments without launcher shim, got %#v", tool.ID, tool.Arguments)
 			}
 			if !tool.CloseAfterLaunch {
 				t.Fatalf("expected %s to close the tool hub after launch, got %#v", tool.ID, tool)
@@ -2114,6 +2131,21 @@ func TestBuildToolHubManifestProvidesExtensibleToolEntries(t *testing.T) {
 		if !found {
 			t.Fatalf("expected tool hub entry %q in %#v", id, manifest.Tools)
 		}
+	}
+}
+
+func TestToolHubScriptUsesShellExecuteForPowerShellChildren(t *testing.T) {
+	if !strings.Contains(toolHubScript, "function Start-ShellExecuteProcess") {
+		t.Fatalf("expected tool hub script to define a shell-execute launcher helper")
+	}
+	if !strings.Contains(toolHubScript, "$startInfo.UseShellExecute = $true") {
+		t.Fatalf("expected tool hub script to use shell execute semantics for child launches")
+	}
+	if !strings.Contains(toolHubScript, `Start-ShellExecuteProcess -FilePath (Get-SystemPowerShellPath) -Arguments $arguments -WindowStyle Hidden`) {
+		t.Fatalf("expected tool hub script to launch child PowerShell processes through the shell-execute helper")
+	}
+	if strings.Contains(toolHubScript, `Start-Process -FilePath "powershell.exe" -ArgumentList $argumentLine -WindowStyle Hidden`) {
+		t.Fatalf("expected tool hub script not to use the old Start-Process PowerShell child launcher")
 	}
 }
 

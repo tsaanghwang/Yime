@@ -18,9 +18,14 @@ func (ime *IME) startSettingsToolHelper() error {
 	if err != nil {
 		return err
 	}
-	return startDetachedExecutable(
-		ime.toolLauncherPath(),
-		"powershell-script",
+	return startDetachedUIPowerShell(
+		"-NoProfile",
+		"-STA",
+		"-WindowStyle",
+		"Hidden",
+		"-ExecutionPolicy",
+		"Bypass",
+		"-File",
 		scriptPath,
 		"-UserDir", userDir,
 		"-SharedDir", sharedDir,
@@ -467,9 +472,9 @@ function Apply-Settings {
   $settings = Get-CurrentSettings
   $summaryLabel.Text = Build-SettingsSummary $settings
   $statusLabel.Text = $(if ($RunBuildAfterApply) {
-    "已写入设置并执行构建。切回音元拼音后会在重新激活时同步。"
+    "已写入设置并执行构建。"
   } else {
-    "已写入设置。切回音元拼音后会在重新激活时同步；如需立即重编译可再点 Apply and rebuild 按钮。"
+    "已写入设置；如需立即重编译可再点 Apply and rebuild 按钮。"
   })
 }
 
@@ -489,10 +494,6 @@ $form.Add_Shown({
     if ($x -lt $screenBounds.Left) { $x = $screenBounds.Left }
     if ($y -lt $screenBounds.Top) { $y = $screenBounds.Top }
     $form.Location = New-Object System.Drawing.Point($x, $y)
-    $form.TopMost = $true
-    $form.Activate()
-    $form.BringToFront()
-    $form.TopMost = $false
     Refresh-SettingsView
   } catch {
     Show-Error $_.Exception.Message
@@ -683,7 +684,7 @@ $applyHintLabel.Left = 20
 $applyHintLabel.Top = 76
 $applyHintLabel.Width = 720
 $applyHintLabel.Height = 42
-$applyHintLabel.Text = "Apply writes default.custom.yaml, user.yaml, and yime_settings_state.json. Switching back to Yime restores reverse-lookup and layout preferences on activation; use Apply and rebuild for schema or page-size changes."
+$applyHintLabel.Text = "Apply writes default.custom.yaml, user.yaml, and yime_settings_state.json. Use Apply and rebuild for schema or page-size changes."
 $actionsGroup.Controls.Add($applyHintLabel)
 
 $pathsGroup = New-Object System.Windows.Forms.GroupBox
@@ -799,7 +800,7 @@ $applyAndRebuildButton.Add_Click({
 $rebuildOnlyButton.Add_Click({
   try {
     Invoke-RimeBuild
-    $statusLabel.Text = "已执行 rime_deployer 构建。切回音元拼音后如仍不一致，再重开 PIMELauncher。"
+    $statusLabel.Text = "已执行 rime_deployer 构建；如仍不一致，再重开 PIMELauncher。"
   } catch {
     Show-Error $_.Exception.Message
   }

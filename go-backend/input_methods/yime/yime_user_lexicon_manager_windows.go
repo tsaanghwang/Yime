@@ -17,9 +17,14 @@ func (ime *IME) startUserLexiconManagerHelper(mode string) error {
 	if err != nil {
 		return err
 	}
-	return startDetachedExecutable(
-		ime.toolLauncherPath(),
-		"powershell-script",
+	return startDetachedUIPowerShell(
+		"-NoProfile",
+		"-STA",
+		"-WindowStyle",
+		"Hidden",
+		"-ExecutionPolicy",
+		"Bypass",
+		"-File",
 		scriptPath,
 		"-SharedDir",
 		sharedDir,
@@ -314,7 +319,6 @@ function Show-EntryDialog {
   $dialog = New-Object System.Windows.Forms.Form
   $dialog.Text = "添加用户词条"
   $dialog.StartPosition = "CenterParent"
-  $dialog.TopMost = $true
   $dialog.Width = 460
   $dialog.Height = 302
   $dialog.FormBorderStyle = "FixedDialog"
@@ -435,13 +439,12 @@ function Assert-EntryFields {
 
 $sourcePath = Join-Path $UserDir "yime_user_phrases.txt"
 $rimeLexiconPath = Join-Path $UserDir "custom_phrase.txt"
-$codeMap = Load-CodeMap (Join-Path $SharedDir "yime_pinyin_codes.tsv")
-Ensure-SourceFile $sourcePath
+$script:codeMap = @{}
+$script:lexiconLoaded = $false
 
 $form = New-Object System.Windows.Forms.Form
 $form.Text = "词库管理"
 $form.StartPosition = "CenterScreen"
-$form.TopMost = $true
 $form.Width = 860
 $form.Height = 560
 
@@ -761,7 +764,6 @@ function Show-SetWeightDialog {
   $dialog = New-Object System.Windows.Forms.Form
   $dialog.Text = "设置词条权重"
   $dialog.StartPosition = "CenterParent"
-  $dialog.TopMost = $true
   $dialog.Width = 380
   $dialog.Height = 180
   $dialog.FormBorderStyle = "FixedDialog"
@@ -816,7 +818,7 @@ function Add-Entry {
   if ([string]::IsNullOrWhiteSpace($entry.Weight)) { throw "权重不能为空。" }
   if ($entry.Phrase -match '[\t\r\n]') { throw "词条不能包含制表符或换行。" }
   if ($entry.Weight -notmatch '^\d+$') { throw "权重必须是整数。" }
-  Validate-EntryForCurrentMode $codeMap $entry | Out-Null
+  Validate-EntryForCurrentMode $script:codeMap $entry | Out-Null
   Save-UndoSnapshot "添加/更新词条"
   $action = Upsert-SourceEntry $sourcePath $entry
   Set-DirtyState $true
@@ -847,7 +849,7 @@ function Edit-Entry {
   if ([string]::IsNullOrWhiteSpace($entry.Weight)) { throw "权重不能为空。" }
   if ($entry.Phrase -match '[\t\r\n]') { throw "词条不能包含制表符或换行。" }
   if ($entry.Weight -notmatch '^\d+$') { throw "权重必须是整数。" }
-  Validate-EntryForCurrentMode $codeMap $entry | Out-Null
+  Validate-EntryForCurrentMode $script:codeMap $entry | Out-Null
   Save-UndoSnapshot "编辑词条"
   if ($entry.Phrase -ne $phrase) {
     [void](Remove-SourceEntry $sourcePath $phrase)
@@ -890,7 +892,7 @@ function Delete-Entry {
 }
 
 function Apply-Lexicon {
-  Rebuild-RimeLexicon $sourcePath $rimeLexiconPath $codeMap $Mode
+  Rebuild-RimeLexicon $sourcePath $rimeLexiconPath $script:codeMap $Mode
   Set-DirtyState $false
   Refresh-EntryList
   Add-OperationHistory "应用用户词库并重建 custom_phrase.txt"
@@ -1026,7 +1028,6 @@ function Show-ImportConflictPreviewDialog {
   $dialog = New-Object System.Windows.Forms.Form
   $dialog.Text = "导入预览"
   $dialog.StartPosition = "CenterParent"
-  $dialog.TopMost = $true
   $dialog.Width = 760
   $dialog.Height = 470
 
@@ -1256,7 +1257,7 @@ function Import-Lexicon {
 
   $importEntries = @(Load-SourceEntries $dialog.FileName)
   foreach ($entry in $importEntries) {
-    Validate-EntryForCurrentMode $codeMap $entry | Out-Null
+    Validate-EntryForCurrentMode $script:codeMap $entry | Out-Null
   }
 
   $currentEntries = @(Load-SourceEntries $sourcePath)
@@ -1527,13 +1528,20 @@ $form.Add_Shown({
     if ($x -lt $screenBounds.Left) { $x = $screenBounds.Left }
     if ($y -lt $screenBounds.Top) { $y = $screenBounds.Top }
     $form.Location = New-Object System.Drawing.Point($x, $y)
-    $form.TopMost = $true
-    $form.Activate()
-    $form.BringToFront()
-    $form.TopMost = $false
-    Refresh-OperationHistory
-    Set-SelectionSummary
-    Refresh-EntryList
+    $form.BeginInvoke([System.Windows.Forms.MethodInvoker]{
+      try {
+        if (-not $script:lexiconLoaded) {
+          $script:codeMap = Load-CodeMap (Join-Path $SharedDir "yime_pinyin_codes.tsv")
+          Ensure-SourceFile $sourcePath
+          $script:lexiconLoaded = $true
+        }
+        Refresh-OperationHistory
+        Set-SelectionSummary
+        Refresh-EntryList
+      } catch {
+        Show-Error $_.Exception.Message
+      }
+    }) | Out-Null
   } catch {
     Show-Error $_.Exception.Message
   }

@@ -1103,6 +1103,26 @@ $form.StartPosition = "CenterScreen"
 $form.Size = New-Object System.Drawing.Size(900, 620)
 $form.MinimumSize = New-Object System.Drawing.Size(900, 620)
 $form.MaximizeBox = $false
+$form.Add_Shown({
+  try {
+    $screenBounds = [System.Windows.Forms.Screen]::PrimaryScreen.WorkingArea
+    $x = $screenBounds.Left + [int](($screenBounds.Width - $form.Width) / 2)
+    $y = $screenBounds.Top + [int](($screenBounds.Height - $form.Height) / 2)
+    if ($x -lt $screenBounds.Left) { $x = $screenBounds.Left }
+    if ($y -lt $screenBounds.Top) { $y = $screenBounds.Top }
+    $form.Location = New-Object System.Drawing.Point($x, $y)
+    $form.BeginInvoke([System.Windows.Forms.MethodInvoker]{
+      try {
+        Apply-ReportPreset "Issue-ready"
+        Refresh-Status
+      } catch {
+        Show-Error $_.Exception.Message
+      }
+    }) | Out-Null
+  } catch {
+    Show-Error $_.Exception.Message
+  }
+})
 
 $title = New-Object System.Windows.Forms.Label
 $title.Left = 16
@@ -1976,9 +1996,6 @@ $guideButton.Height = 32
 $guideButton.Text = "Open diagnostics guide"
 $guideButton.Add_Click({ Open-Path (Join-Path $HelpDir "diagnostics.html") })
 $form.Controls.Add($guideButton)
-
-Refresh-Status
-Apply-ReportPreset "Issue-ready"
 
 try {
   [void]$form.ShowDialog()
