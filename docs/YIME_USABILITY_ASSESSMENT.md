@@ -1,6 +1,6 @@
-# 音元输入法可用性完整评估
+# 音元输入法可用性评估
 
-> 评估日期：2026-07-07
+> 评估日期：2026-07-07（最终版）
 > 评估范围：Yime Go 后端 + Rime 引擎 + 编码体系 + 词典 + 工具链
 > 分支：yime-stable
 
@@ -10,7 +10,7 @@
 
 音元输入法（Yime）是基于 PIME/TSF 框架的 Windows 中文输入法，采用 Go + Rime 双层架构。编码体系设计精巧（声母规律映射到 QWERTY 键盘），词典规模可观（468K 条/方案），工具链覆盖设置、诊断、反查、词库管理。
 
-当前可用性存在 **1 个高优先级问题**（候选选择键不足，编码约束暂不修改）和 **4 个中优先级问题**。重复按键吞键、回车键被吞、候选项数变更丢失输入、Rime 初始化失败不可恢复问题已修复。
+所有已知可用性问题均已修复，仅剩 1 个编码约束问题（候选选择键仅 5 个，暂不修改）。
 
 ### 评分卡
 
@@ -18,10 +18,10 @@
 |------|------|------|
 | 编码体系设计 | ★★★★☆ | 声母映射有规律，三种模式灵活，但独立声母 m/n 编码复杂 |
 | 词典质量 | ★★★★☆ | 规模大、权重合理，但自动生成可能含噪声 |
-| 按键处理可靠性 | ★★★★☆ | 回车键已修复；重复按键抑制已修复 |
-| 候选窗交互 | ★★★☆☆ | 选择键仅5个（支持到9），数字键不选词 |
-| 设置与工具 | ★★★★☆ | 工具链完善，候选项数变更已保留组字状态 |
-| 错误恢复 | ★★★☆☆ | Rime 初始化失败可重试；部署失败静默无提示 |
+| 按键处理可靠性 | ★★★★★ | 重复按键抑制、回车键、翻页位置均已修复 |
+| 候选窗交互 | ★★★☆☆ | 选择键仅5个（编码约束），数字键不选词 |
+| 设置与工具 | ★★★★★ | 工具链完善，所有操作有反馈，反查即时搜索 |
+| 错误恢复 | ★★★★☆ | Rime 初始化失败可重试；部署/打开/剪贴板失败有用户提示 |
 | 可发现性 | ★★★☆☆ | 候选选择键映射非标准，用户难以自行发现 |
 
 ---
@@ -52,7 +52,9 @@
 │    ├── default.custom.yaml                      │
 │    ├── yime_variable.custom.yaml                │
 │    ├── yime_user_phrases.txt                    │
-│    ├── custom_phrase.txt                        │
+│    ├── custom_phrase_variable.txt               │
+│    ├── custom_phrase_full.txt                   │
+│    ├── custom_phrase_shorthand.txt              │
 │    └── yime_settings_state.json                 │
 └─────────────────────────────────────────────────┘
 ```
@@ -63,6 +65,7 @@
 2. **独立工具优先**：重 UI 操作通过独立 PowerShell WinForms 窗口实现，不在 TSF 回调路径中
 3. **轻量语言栏**：语言栏仅分发命令，不承载复杂 UI
 4. **延迟 redeploy**：语言栏点击使用轻量会话重建，完整 redeploy 仅在显式"重新部署"时触发
+5. **多音字完整保留**：反查工具保留所有读音编码，候选窗注释仅取首选读音
 
 ---
 
@@ -78,8 +81,6 @@
 
 ### 3.2 声母→键盘映射
 
-核心映射规律：
-
 | 分组 | 声母 | 映射键 | 规律 |
 |------|------|--------|------|
 | 翘舌音 | zh/ch/sh | 7/8/9 | 数字行递增 |
@@ -90,8 +91,6 @@
 | 舌根音 | g/k/h | ]/'/n | 右侧+中部 |
 | 零声母 | (a系) | H | 中右 |
 | 半元音 | w/y | %/$ | Shift+数字 |
-
-**评价**：映射规律性强，翘舌/舌面/平舌三组在数字行形成对称布局，学习曲线相对平缓。
 
 ### 3.3 编码体系问题
 
@@ -113,18 +112,7 @@
 | 拼音-编码映射 | 1,625 条（含声调变体） |
 | 拼音归一化 | 1,729 条 |
 | 权重范围 | 1 ~ 240,230,122 |
-
-### 权重梯度
-
-| 权重范围 | 含义 | 典型词 |
-|----------|------|--------|
-| 100M+ | 极高频 | 的、是、了 |
-| 10M+ | 高频 | 而且、而已 |
-| 1M+ | 中频 | 媲美 |
-| 100-1K | 低频 | 逼供 |
-| 1-10 | 极低频 | 生僻字 |
-
-**评价**：权重梯度合理，高频词权重远高于低频词，能有效保证候选排序质量。
+| 多音字词数 | 8,788（1.9%），最多 11 个编码（欸） |
 
 **问题**：
 - 词典注释 `Generated from Yime runtime_candidates_materialized`，为自动生成，可能含噪声（权重=1 的极低频词）
@@ -132,226 +120,119 @@
 
 ---
 
-## 5. 高优先级可用性问题
+## 5. 已修复的高优先级问题
 
-### 5.1 ~~重复按键抑制可能吞键~~ ✅ 已修复
+### 5.1 重复按键抑制吞键 ✅
 
-**位置**：`yime.go:270-282`（`filterKeyDown` / `filterKeyUp`）
+**修复**：`keysDown map[int]bool` 替代计数器，基于 key-down/key-up 配对追踪。提交 `edd6e0ab`。
 
-**修复提交**：`edd6e0ab`
+### 5.2 回车键在组字时被吞 ✅
 
-**原问题**：快速连按同一键时（如打"nn"），第二个按键被静默丢弃。
+**修复**：Rime 拒绝回车时提交原始编码上屏（`pendingRawCommit`）。提交 `ef52fe2a`。
 
-**原根因**：重复按键抑制逻辑基于 `KeyCode` 计数（`lastKeyDownCode` + `lastKeySkip`），当同一 `KeyCode` 连续出现两次时跳过第二次。但未检查第一次 key-down 是否已被配对的 key-up 消费。
+### 5.3 候选项数变更丢失当前输入 ✅
 
-**修复方案**：用 `keysDown map[int]bool` 替代计数器，追踪哪些键当前处于按下状态。只有当同一键已按下（未收到 key-up）时才抑制重复 key-down；key-up 后从 map 中删除，下次 key-down 正常处理。
+**修复**：`reloadBackendSessionForSchema` 保存组字内容，重建后逐字重放。提交 `1bf5063f`。
 
-**回归测试**：`TestRapidSameKeyNotSwallowedAfterKeyUp`、`TestDuplicateKeyDownWithoutKeyUpSuppressed`、`TestKeyUpClearsKeyDownState`
+### 5.4 候选选择键仅5个（编码约束，暂不修改）
 
----
-
-### 5.2 ~~回车键在组字时被吞~~ ✅ 已修复
-
-**位置**：`yime.go:676-685`（`processKey`）
-
-**原问题**：用户正在组字时按回车，按键被消费但没有任何可见效果——既不上屏也不传递给应用程序。
-
-**原根因**：Rime 后端拒绝了回车键（`backendRet == false`），Go 层设置 `handled = true` 并返回 `true`，导致回车被静默吞掉。
-
-**修复方案**：当 Rime 拒绝回车且正在组字时，将当前组字内容作为原始编码上屏（`pendingRawCommit`），然后清除组字状态。`onKey` 中消费 `pendingRawCommit` 写入 `resp.CommitString`。
-
-**回归测试**：`TestReturnKeyCommitsRawInputDuringComposition`、`TestReturnKeyPassesThroughWhenNotComposing`
+57 音元（24 首音 + 33 乐音）占满 47 个可打印键位。数字键是编码的一部分，不是选字键。候选选择键仅有 Space/`/-/=/\ 五个，这是编码体系的必然结果。改变选择键方案需重建整个编码体系。
 
 ---
 
-### 5.3 ~~候选项数变更丢失当前输入~~ ✅ 已修复
+## 6. 已修复的中优先级问题
 
-**位置**：`yime.go:2097-2114`（`reloadBackendSessionForSchema`）
+### 6.1 Rime 初始化失败不可恢复 ✅
 
-**原问题**：用户正在输入时通过语言栏调整候选项数，当前组字状态被清除，已输入的编码消失。
+**修复**：`sync.Once` → `sync.Mutex` + `rimeInitDone`/`rimeInitOK` 双标志。提交 `3e24351d`。
 
-**原根因**：`setCandidatePageSize` 触发会话重建（`reloadBackendSessionForSchema`），Rime 会话被销毁并重建，`ClearComposition()` 清除了组字状态。
+### 6.2 部署/打开/剪贴板失败无用户反馈 ✅
 
-**修复方案**：在 `reloadBackendSessionForSchema` 中，重建会话前保存当前组字内容（`backend.State().Composition`），重建后通过 `ProcessKey` 逐字重放，恢复组字状态。
+**修复**：为 `openPath`、`copyTextToClipboard`、`redeployBackend`、`syncBackendUserData`、`selectSchema`、`setCandidatePageSize` 添加 `showUserMessage` 反馈，含 panic recover 保护。
 
-**回归测试**：`TestSetCandidatePageSizePreservesComposition`
+### 6.3 反查注释遇生僻字整体消失 ✅
 
----
+**修复**：`joinRuneLookup` 对缺失字符显示 `?` 占位符。`lookupStandardPinyin` 编码路径含 `?` 时逐字符拆分查找拼音。
 
-### 5.4 候选选择键仅5个，但支持到9个（编码约束，暂不修改）
+### 6.4 用户词库只重建当前方案 ✅
 
-**位置**：`yime.go:743-799`
-
-**现象**：候选选择键映射为 Space=1, `` ` ``=2, `-`=3, `=`=4, `\`=5，但 `maxCandidatePageSize` 为 9。当候选项数 ≥ 6 时，第 6-9 个候选项只能鼠标点击。
-
-**根因**：音元编码体系使用了 57 个音元字符（24 个首音 + 33 个乐音），映射到 QWERTY 键盘的 47 个可打印键位（base 层 + shift 层）上。键位分配如下：
-
-- **数字行 base 层**（12 键）：全部用于首音（zh/ch/sh/j/q/x/z/c/s/r/x/'）和标点
-- **字母行 base 层**（26 键）：首音占 10 键（b/p/f/m/d/t/l/n/g/k），乐音占 16 键
-- **shift 层**（47 键）：5 个用于乐音（J/K/L/A/S/D/N/M），1 个用于零声母（H），3 个用于 AltGr 替代键（$/%/!/@/#），其余用于标点输入
-- **AltGr 层**：Rime 不可直接输入，用 shift 层替代键代替
-
-当前首音排键遵循**音系分组原则**（同组声母相邻排列），而非**首音原则**（声母映射到其拼音首字母键位）。24 个首音中仅有 p 一个匹配其拼音首字母键位。若改为首音原则，需将乐音从字母键位腾出，重新分配整个键盘布局，等同于重建编码体系。
-
-**当前方案**：Space/`/-/=/\ 五个键是 alphabet 之外仅剩的可用于选字的键。第 6-9 个候选需鼠标点击或方向键导航。
-
-**已知问题**：
-- `SetSelKeys` 设为 `"1234567890"` 但数字键实际用于编码，候选窗标签与操作不一致
-- 键盘用户无法高效选择第 6-9 个候选
-
-**为何暂不修改**：改变选择键方案需要重新分配键位。当前首音按音系分组排键（唇音组 q/p/[/h、龈音组 w/./b/y、软腭组 ]/'/n、齿音组 6/5/4、翘舌组 7/8/9/0、硬腭组 3/2/1），同组声母相邻排列便于记忆和输入。若改为首音原则（b→b 键、d→d 键、n→n 键等），需将乐音从这些字母键位腾出，重新分配整个键盘布局，修改编码体系，重建原型导入流程和全部词典，等同于重建项目。当前方案是在编码约束下的最优折中。
-
-**可接受的后续改进**（不涉及编码变更）：
-- 修正 `SetSelKeys` 使候选窗标签与实际选择键一致
-- 支持上下方向键移动候选光标 + Enter 确认，作为键盘选第 6-9 个候选的替代路径
-- 将默认 `candidatePageSize` 限制为 5，减少用户遇到第 6-9 个候选的频率
-
----
-
-## 6. 中优先级可用性问题
-
-### 6.1 ~~Rime 初始化失败不可恢复~~ ✅ 已修复
-
-**位置**：`native_cgo.go:16-41`
-
-**原问题**：`sync.Once` 保证 Rime 初始化仅执行一次。若初始化失败（如用户数据临时不可用），后端在进程生命周期内永久禁用。
-
-**原根因**：`sync.Once.Do` 不区分成功和失败，一旦执行过就不再重试。同时 `IME.Init` 在用户目录不存在时直接返回，不调用 `nativeBackend.Initialize`，导致初始化状态未被记录。
-
-**修复方案**：
-1. 将 `sync.Once` 替换为 `sync.Mutex` + `rimeInitDone`/`rimeInitOK` 两个标志。初始化失败时 `rimeInitDone=true, rimeInitOK=false`，下次调用 `Initialize` 时重置 `rimeInitDone=false` 并重试
-2. 移除 `IME.Init` 中的用户目录存在性检查，让 `RimeInit` 自行处理（其内部已有 `MkdirAll`），确保每次 `Init` 都经过 `nativeBackend.Initialize` 的重试逻辑
-
-**回归测试**：`TestRimeInitRetryAfterFailure`
-
-**不会回退到 PIME/Rime 默认词库**：重试时 `sharedDir` 由 `server.exe` 所在目录推导（`exeDir/input_methods/yime/data`），路径固定，始终指向 Yime 专属数据目录。Rime 的 `startMaintenance` 只编译 `SharedDataDir` 下的 schema，不会引入其他目录的方案。因此重试不会导致 Rime 回退到 luna_pinyin 等 PIME 默认方案。**不可随意将 `SharedDataDir` 回退到 PIME 通用数据目录**，否则 Yime 编码链路将完全失效且难以恢复——Yime 的 57 音元编码体系与 PIME 默认的拼音方案不兼容，一旦用户数据被默认方案覆盖，需要完整重新部署才能修复。
-
-### 6.2 部署/打开/剪贴板失败无用户反馈 ✅ 已修复
-
-**位置**：`yime.go:2397-2414`
-
-**现象**：`openPath()`、`copyTextToClipboard()`、`deploySchemaConfig()` 等操作失败时仅记录日志，用户看不到任何提示。
-
-**影响**：用户操作"看起来没反应"，无法判断是功能缺失还是操作失败。
-
-**建议**：对关键操作增加失败提示（如 MessageBox 或语言栏通知）。
-
-**修复**：已为 `openPath`、`copyTextToClipboard`、`redeployBackend`、`syncBackendUserData`、`selectSchema`、`setCandidatePageSize` 添加 `showUserMessage` 反馈（成功/失败/异常），含 panic recover 保护。
-
-### 6.3 反查注释遇生僻字整体消失 ✅ 已修复
-
-**位置**：`yime.go:1926-1940`（`joinRuneLookup`）
-
-**现象**：多字词的反查注释中，任一字符在查找表中缺失则整词注释返回空字符串。
-
-**影响**：含生僻字、标点、emoji 的候选词注释完全消失。
-
-**建议**：对缺失字符显示占位符（如 `?`），而非整体返回空。
-
-**修复**：`joinRuneLookup` 对缺失字符显示 `?` 占位符而非整体返回空。`lookupStandardPinyin` 编码路径含 `?` 时逐字符拆分查找拼音，缺失字符保留 `?`。新增 `TestJoinRuneLookupPartialMissing`、`TestLookupStandardPinyinPartialMissing` 回归测试。
-
-### 6.4 用户词库只重建当前方案 ✅ 已修复
-
-**位置**：`yime.go:1671-1692`
-
-**现象**：`applyUserLexicon` 仅为当前方案重建 `custom_phrase.txt`。切换方案后词库需重新应用。
-
-**影响**：用户在变长模式添加的词，切换到等长模式后不可见，且无提示。
-
-**建议**：切换方案时自动重新应用词库，或为每种方案维护独立的 `custom_phrase.txt`。
-
-**修复**：`applyUserLexicon` 现在为三种模式（variable/full/shorthand）各生成独立的 `custom_phrase_{mode}.txt`。三种 schema 各自引用对应的 `user_dict`。新增 `TestApplyUserLexiconWritesAllThreeModes`、`TestRimeUserLexiconPathPerMode` 回归测试。
+**修复**：`applyUserLexicon` 为三种模式各生成独立的 `custom_phrase_{mode}.txt`。三种 schema 各自引用对应的 `user_dict`。
 
 ### 6.5 数字键在组字时作为编码输入 — 设计约束，非缺陷
 
-**位置**：`yime.go` processKey
-
-**现象**：组字时按数字键（1-9）扩展编码字符串而非选择候选项，与主流中文输入法的行为不同。
-
-**影响**：习惯数字键选词的用户会困惑。
-
-**原因**：57 音元编码体系中，24 个首音占满数字行 base 层全部 10 个键位（`1-0`），字母行也用于首音+乐音。数字键本身就是编码的一部分。候选选择键仅有 5 个（`Space`/`` ` ``/`-`/`=`/`\`），这是 47 个可打印键位被 57 个音元占满后的必然结果——没有多余键位留给数字选字。此行为由编码体系决定，无法在不重建编码的前提下更改。
+57 音元编码体系中，24 个首音占满数字行 base 层全部 10 个键位。数字键本身就是编码的一部分。候选选择键仅有 5 个，这是 47 个可打印键位被 57 个音元占满后的必然结果。
 
 ---
 
-## 7. 低优先级问题
+## 7. 已修复的低优先级问题
 
-| # | 问题 | 位置 | 说明 |
-|---|------|------|------|
-| 1 | ~~反查工具首次加载无进度提示~~ ✅ 已修复 | `yime_reverse_lookup_tool_windows.go` | 窗体显示时状态栏提示"正在加载数据" |
-| 2 | ~~反查搜索结果上限100条无截断提示~~ ✅ 已修复 | `yime_reverse_lookup_tool_windows.go` | 上限提升至200条，截断时状态栏提示"已截断" |
-| 3 | ~~多音字只取首个编码~~ ✅ 已修复 | `yime_reverse_lookup_tool_windows.go` | `Load-DictLookupMulti` 保留所有读音编码，逐字拼接支持笛卡尔积 |
-| 4 | ~~每次查询重新加载词库~~ ✅ 已修复 | `yime_reverse_lookup_tool_windows.go` | 去除 `$script:lookupLoaded = $false`，数据只加载一次 |
-| 5 | ~~方案切换时 dictLookup 不重新加载~~ ✅ 已修复 | `yime_reverse_lookup_tool_windows.go` | `Ensure-LookupData` 按 `loadedSchemaID` 判断是否需要重载 |
-| 6 | ~~`findRimeExternalDeployer` 含硬编码开发路径~~ ✅ 已修复 | `yime.go:2194` | 移除 `C:\dev\librime\` 路径 |
-| 7 | ~~`remapYimeCandidateSelectionKey` 是死代码~~ ✅ 已修复 | `yime.go:730` | 删除未调用的函数 |
-| 8 | ~~YAML 操作不支持行内注释~~ ✅ 已修复 | `yime.go:2344` | `parseMenuPageSizeValue` 先剥离 `#` 注释 |
-| 9 | ~~`candidatePageStart` 在非分页键时重置~~ ✅ 已修复 | `yime.go:660` | 只在 `backendRet==true` 时重置 |
-| 10 | ~~`commandShouldRefreshState` 白名单维护负担~~ ✅ 已修复 | `yime.go:453` | 改为黑名单，只列出需刷新的命令 |
+| # | 问题 | 修复 |
+|---|------|------|
+| 1 | 反查工具首次加载无进度提示 | 窗体显示时状态栏提示"正在加载数据" |
+| 2 | 反查搜索结果上限100条无截断提示 | 上限提升至200条，截断时提示"已截断" |
+| 3 | 多音字只取首个编码 | `Load-DictLookupMulti` 保留所有读音编码，逐字拼接支持笛卡尔积 |
+| 4 | 每次查询重新加载词库 | 数据只加载一次，跨查询复用 |
+| 5 | 方案切换时 dictLookup 不重新加载 | `Ensure-LookupData` 按 `loadedSchemaID` 判断是否需要重载 |
+| 6 | `findRimeExternalDeployer` 含硬编码开发路径 | 移除 `C:\dev\librime\` 候选项 |
+| 7 | `remapYimeCandidateSelectionKey` 是死代码 | 删除未调用的函数 |
+| 8 | YAML 操作不支持行内注释 | `parseMenuPageSizeValue` 先剥离 `#` 注释 |
+| 9 | `candidatePageStart` 在非分页键时重置 | 只在 `backendRet==true` 时重置 |
+| 10 | `commandShouldRefreshState` 白名单维护负担 | 改为黑名单，只列出需刷新的 11 个命令 |
 
 ---
 
-## 8. 测试覆盖评估
+## 8. 测试覆盖
 
 ### 已覆盖的关键路径
 
 - 原生 Rime 候选分页权守卫
 - 子菜单点击通过 `data.id` 传递
 - 候选项数变更不触发完整 redeploy
-- YAML 引号/非引号 key 兼容
+- YAML 引号/非引号 key 兼容 + 行内注释
 - PowerShell 脚本编码损坏守卫
 - PowerShell 脚本智能引号守卫
 - redeploy 使 page_size 生效
 
-### 未覆盖的场景
+### 已覆盖的边界场景
 
-| 场景 | 风险 | 状态 |
-|------|------|------|
-| 并发按键/语言栏点击 | 数据竞争 | ✅ `TestConcurrentKeyAndCommandNoDataRace` |
-| 大候选列表（> page_size）Go 侧分页 | 分页逻辑正确性 | ✅ `TestLargeCandidateListGoSidePaging` |
-| Unicode 边界（emoji、扩展汉字、代理对） | 编码/显示异常 | ✅ `TestUnicodeBoundaryEmojiAndExtendedHan` |
-| 组字中切换方案失败 | 状态不一致 | ✅ `TestSchemaSwitchFailureDuringComposition` |
-| 超长用户词组 | 词库构建异常 | ✅ `TestLongUserPhraseLexiconBuild` |
-| `onCompositionTerminated(forced=false)` | 非强制终止路径 | ✅ `TestCompositionTerminatedNonForced` / `Forced` |
+| 场景 | 测试 |
+|------|------|
+| 并发按键/语言栏点击 | `TestConcurrentKeyAndCommandNoDataRace` |
+| 大候选列表 Go 侧分页 | `TestLargeCandidateListGoSidePaging` |
+| Unicode 边界（emoji、扩展汉字、代理对） | `TestUnicodeBoundaryEmojiAndExtendedHan` |
+| 组字中切换方案失败 | `TestSchemaSwitchFailureDuringComposition` |
+| 超长用户词组 | `TestLongUserPhraseLexiconBuild` |
+| `onCompositionTerminated` 非强制/强制终止 | `TestCompositionTerminatedNonForced` / `Forced` |
 
 ---
 
 ## 9. 工具链评估
 
-| 工具 | 功能完整度 | 可用性问题 |
-|------|-----------|-----------|
+| 工具 | 功能完整度 | 说明 |
+|------|-----------|------|
 | 设置工具 | ★★★★☆ | 修改方案/候选数需"应用并重建"才生效 |
 | 诊断工具 | ★★★★★ | 完善，含预设、匿名化、命令解读 |
-| 反查工具 | ★★★★☆ | ~~首次加载慢、结果截断无提示、无即时搜索~~ 已修复加载进度、截断提示、即时搜索（500ms debounce） |
-| 词库管理 | ★★★★☆ | ~~删除和导入功能未实现（仅记录日志）~~ 已接入词库管理器；工具箱标题/描述已中文化 |
+| 反查工具 | ★★★★☆ | 多音字完整展示、即时搜索（500ms debounce）、加载进度、截断提示 |
+| 词库管理 | ★★★★☆ | 删除/导入/冲突预览已实现；工具箱已中文化 |
 
 ---
 
-## 10. 综合建议
+## 10. 遗留问题
 
-### 即时修复（1-2 周）
+### 编码约束（暂不修改）
 
-1. ~~修复回车键行为：组字时回车应上屏原始编码~~ ✅ 已修复
-2. ~~修复重复按键抑制：改为 key-down/key-up 配对检测~~ ✅ 已修复（`edd6e0ab`）
-3. 为第 6-9 个候选项增加选择键
+- 候选选择键仅 5 个，第 6-9 个候选需鼠标点击
+- 数字键在组字时作为编码输入，不选词
+- `SetSelKeys` 设为 `"1234567890"` 但数字键实际用于编码
 
-### 短期改进（2-4 周）
+### 可接受的后续改进（不涉及编码变更）
 
-4. 候选项数变更时保存/恢复组字状态
-5. 关键操作失败时增加用户可见提示
-6. `joinRuneLookup` 缺失字符显示占位符
-7. 用户词库跨方案自动同步
-
-### 中期改进（1-2 月）
-
-8. 反查工具增加加载进度提示和结果截断提示
-9. 实现词库删除和导入功能
-10. 移除硬编码开发路径和死代码
-11. 增加并发安全和 Unicode 边界测试
+- 修正 `SetSelKeys` 使候选窗标签与实际选择键一致
+- 支持上下方向键移动候选光标 + Enter 确认
+- 将默认 `candidatePageSize` 限制为 5
 
 ### 长期方向
 
-12. 考虑组字时数字键选词模式（可配置）
-13. Rime 初始化失败可重试机制
-14. 词典噪声清理（权重=1 的极低频词）
-15. 非标准音节审查（`bong4`, `wong4`）
+- 词典噪声清理（权重=1 的极低频词）
+- 非标准音节审查（`bong4`, `wong4`）
+- 组字时数字键选词模式（可配置，需编码体系配合）

@@ -1,6 +1,6 @@
 # 音元输入法架构文档
 
-> 版本：2026-07-07
+> 版本：2026-07-07（最终版）
 > 配套文档：[可用性评估](YIME_USABILITY_ASSESSMENT.md) | [开发路线图](YIME_DEVELOPMENT_ROADMAP.md)
 
 ---
@@ -63,9 +63,112 @@
 
 ## 2. 关键机制
 
-### 2.1 候选项数同步链
+### 2.1 按键状态追踪（keysDown）
 
-这是 AGENTS.md 重点保护的机制，三层状态必须保持一致：
+替代旧的 `lastKeyDownCode`+`lastKeySkip` 计数器方案，解决重复按键抑制吞键问题。
+
+```
+onKeyDown(keyCode)
+    │
+    ├── keysDown[keyCode] 已存在？
+    │     ├── 是 → 忽略（重复 key-down，不传给 Rime）
+    │     └── 否 → keysDown[keyCode] = true，传给 Rime
+    │
+onKeyUp(keyCode)
+    │
+    └── keysDown[keyCode] = false（清除追踪）
+```
+
+**设计要点**：
+- 基于 key-down/key-up 配对追踪，而非计数器
+- 避免快速连打同一键时丢失有效按键
+- `keysDown map[int]bool` 在 `IME` 结构体中定义
+
+### 2.2 回车键原始编码上屏（pendingRawCommit）
+
+解决组字时回车键被静默吞掉的问题。
+
+```
+onKeyDown(VK_RETURN) during composition
+    │
+    ├── Rime 接受回车 → 正常提交流程
+    │
+    └── Rime 拒绝回车 (backendRet == false)
+          │
+          ├── 旧行为: handled=true，静默吞掉
+          │
+          └── 新行为: pendingRawCommit = compositionString
+                      handled=true
+                      下次 onKeyUp 时 commit pendingRawCommit
+```
+
+**设计要点**：
+- `pendingRawCommit string` 字段存储待上屏的原始编码
+- 在 `onKeyUp` 中检查并提交，避免在 key-down 回调中触发二次提交
+- 非组字状态下回车正常穿透（`handled=false`）
+
+### 2.3 组字状态保存与重放
+
+解决候选项数变更/方案切换时丢失当前输入的问题。
+
+```
+reloadBackendSessionForSchema()
+    │
+    ├── 1. 保存当前组字内容
+    │     savedComposition = ime.getCompositionString()
+    │
+    ├── 2. DestroySession + ClearComposition
+    │
+    ├── 3. 重建会话 (CreateSession + ApplySchema)
+    │
+    └── 4. 逐字重放组字内容
+          for _, ch := range savedComposition {
+              ProcessKey(ch)
+          }
+```
+
+**设计要点**：
+- 重放使用 `ProcessKey` 逐字符输入，确保 Rime 状态一致
+- 重放失败时静默处理（不阻断主流程）
+- 仅在组字状态非空时执行重放
+
+### 2.4 Rime 初始化重试机制
+
+替代 `sync.Once`，解决初始化失败后不可恢复的问题。
+
+```
+ensureRimeInitialized()
+    │
+    ├── rimeInitMu.Lock()
+    │
+    ├── rimeInitDone == true && rimeInitOK == true?
+    │     └── 是 → 直接返回（成功初始化过）
+    │
+    ├── rimeInitDone == true && rimeInitOK == false?
+    │     └── 重新尝试初始化（允许重试）
+    │
+    └── rimeInitDone == false?
+          └── 首次初始化
+                │
+                ├── Initialize(traits)
+                │
+                ├── 成功 → rimeInitOK = true
+                └── 失败 → rimeInitOK = false
+                │
+                └── rimeInitDone = true
+                      （无论成功失败都标记 done，
+                        允许下次重试）
+```
+
+**设计要点**：
+- `rimeInitMu sync.Mutex` — 保护初始化过程
+- `rimeInitDone bool` — 是否已尝试过初始化
+- `rimeInitOK bool` — 初始化是否成功
+- 移除了 `IME.Init` 中的用户目录预检（该预检导致用户目录不存在时跳过 `Initialize`）
+
+### 2.5 候选项数同步链
+
+AGENTS.md 重点保护的机制，三层状态必须保持一致：
 
 ```
 ┌─────────────────┐     ┌──────────────────┐     ┌─────────────────────┐
@@ -94,10 +197,10 @@
 | 会话重建后 | Rime → Go | `backend.State().PageSize` 读回确认 |
 
 **已知限制**：
-- 无候选时 `State().PageSize` 返回 0，读回失败
-- `setCandidatePageSize` 中读回 mismatch 仅记录日志，不阻断
+- 无候选时 `State().PageSize` 返回 0，读回失败（仅记录日志，不阻断）
+- YAML key 必须同时支持引号和非引号形式（`menu/page_size` 和 `"menu/page_size"`）
 
-### 2.2 候选分页权
+### 2.6 候选分页权
 
 ```
                     UsesBackendCandidatePaging()
@@ -115,7 +218,23 @@
 
 **约束**：`nativeBackend` 必须返回 `true`，Go 侧不可对原生 Rime 会话做候选切片。
 
-### 2.3 语言栏命令分发
+### 2.7 candidatePageStart 重置策略
+
+```
+processKey()
+    │
+    ├── backendRet == true（Rime 接受按键）
+    │     └── ime.candidatePageStart = 0（重置翻页位置）
+    │
+    └── backendRet == false（Rime 拒绝按键）
+          └── 不重置 candidatePageStart（保留翻页位置）
+```
+
+**设计要点**：
+- 旧逻辑在 `processKey` 中无条件重置，导致无效按键丢失翻页位置
+- `applyStateToResponse` 在候选列表为空时仍会重置（这是合理的）
+
+### 2.8 语言栏命令分发
 
 ```
 TSF 语言栏点击
@@ -137,8 +256,10 @@ onCommand(req)
     ▼
 commandShouldRefreshState(ID)?
     │
-    ├── 是 → 跳过状态刷新 (避免 TSF 回调中触发 Rime 操作)
-    └── 否 → 刷新 Rime 状态到响应
+    ├── 在黑名单中 → 跳过状态刷新
+    │     (避免 TSF 回调中触发 Rime 操作)
+    │
+    └── 不在黑名单中 → 刷新 Rime 状态到响应
 ```
 
 **命令 ID 分配**：
@@ -152,7 +273,82 @@ commandShouldRefreshState(ID)?
 | 81-89 | 宿主集成 | 中西文/简繁/标点/全半角 |
 | 90+ | 维护 | 重新部署/同步/打开目录/帮助/词库 |
 
-### 2.4 Rime 部署流程
+**黑名单设计**：
+- 旧方案使用白名单（列出所有不需要刷新的命令），维护负担大
+- 新方案改为黑名单，只列出 11 个需要刷新状态的命令
+- 新增命令默认不刷新，需显式加入黑名单才刷新
+
+### 2.9 用户消息反馈（showUserMessage）
+
+为关键操作提供用户可见的反馈。
+
+```
+操作执行
+    │
+    ├── 成功 → showUserMessage("音元输入法", "操作成功提示")
+    │
+    └── 失败 → showUserMessage("音元输入法", "操作失败提示")
+    │
+showUserMessage(title, message)
+    │
+    ├── Windows: MessageBoxW (MB_ICONINFORMATION / MB_ICONERROR)
+    └── Stub: log.Printf (测试环境)
+```
+
+**覆盖的操作**：
+- `openPath` — 打开目录/文件
+- `copyTextToClipboard` — 复制到剪贴板
+- `redeployBackend` — 重新部署
+- `syncBackendUserData` — 同步用户数据
+- `selectSchema` — 切换方案
+- `setCandidatePageSize` — 设置候选项数
+
+**panic recover 保护**：所有调用 `showUserMessage` 的函数都包裹在 `defer recover()` 中，防止消息弹窗本身崩溃导致整个输入法进程退出。
+
+### 2.10 反查注释占位符
+
+```
+joinRuneLookup(runes)
+    │
+    ├── 每个字符查找编码
+    │     ├── 找到 → 拼接编码
+    │     └── 未找到 → 拼接 "?" 占位符
+    │
+    └── 返回完整注释字符串
+
+lookupStandardPinyin(codes)
+    │
+    ├── codes 含 "?" ?
+    │     └── 是 → 逐字符拆分查找拼音
+    │           （避免整串查找失败导致整行注释消失）
+    │
+    └── 否 → 整串查找拼音
+```
+
+### 2.11 用户词库跨方案同步
+
+```
+applyUserLexicon()
+    │
+    ├── 读取 yime_user_phrases.txt
+    │
+    ├── 为每种模式生成独立词库文件
+    │     ├── custom_phrase_variable.txt  → yime_variable.schema.yaml 引用
+    │     ├── custom_phrase_full.txt      → yime_full.schema.yaml 引用
+    │     └── custom_phrase_shorthand.txt → yime_shorthand.schema.yaml 引用
+    │
+    └── 每种 schema 使用独立的 user_dict
+          ├── yime_variable.schema.yaml → user_dict: custom_phrase_variable
+          ├── yime_full.schema.yaml     → user_dict: custom_phrase_full
+          └── yime_shorthand.schema.yaml → user_dict: custom_phrase_shorthand
+```
+
+**设计要点**：
+- 旧方案只重建当前方案的词库，切换方案后用户词丢失
+- 新方案为三种模式各生成独立的 `custom_phrase_{mode}.txt`
+- 三种 schema 各自引用对应的 `user_dict`，互不干扰
+
+### 2.12 Rime 部署流程
 
 ```
 rimeDeploy(traits, datadir, userdir, appname, fullcheck)
@@ -172,7 +368,7 @@ rimeDeploy(traits, datadir, userdir, appname, fullcheck)
            └── <userdir>/*.custom.yaml (排除 default.custom.yaml)
 ```
 
-### 2.5 独立工具调度
+### 2.13 独立工具调度
 
 ```
 onCommand → 启动独立工具
@@ -186,8 +382,18 @@ onCommand → 启动独立工具
           ├── 设置工具: 方案/候选数/反查/排列
           ├── 诊断工具: 安装/进程/日志/命令解读
           ├── 反查工具: 汉字→编码查询
-          └── 词库管理: 添加/查看用户词
+          │     ├── Load-DictLookupMulti: 多音字完整保留
+          │     ├── 即时搜索: 500ms debounce
+          │     ├── 加载进度提示
+          │     └── 200 条截断提示
+          └── 词库管理: 添加/删除/导入/冲突预览
 ```
+
+**反查工具多音字支持**：
+- `Load-DictLookupMulti` 替代 `Load-DictLookup`，保留所有读音编码
+- 逐字拼接支持笛卡尔积（如"行"有 xing2/hang2 两个编码，"走"有 zou3 1 个，组合出 2 种编码）
+- 方案切换时按 `loadedSchemaID` 判断是否需要重载
+- 不再每次查询重置 `$script:lookupLoaded`
 
 ---
 
@@ -200,9 +406,9 @@ onCommand → 启动独立工具
 | 文件 | 类型 | 说明 |
 |------|------|------|
 | `default.yaml` | Rime 配置 | 基础 schema_list、page_size、按键绑定、标点 |
-| `yime_variable.schema.yaml` | Rime 方案 | 变长模式定义 |
-| `yime_full.schema.yaml` | Rime 方案 | 等长模式定义 |
-| `yime_shorthand.schema.yaml` | Rime 方案 | 省键模式定义 |
+| `yime_variable.schema.yaml` | Rime 方案 | 变长模式，user_dict: custom_phrase_variable |
+| `yime_full.schema.yaml` | Rime 方案 | 等长模式，user_dict: custom_phrase_full |
+| `yime_shorthand.schema.yaml` | Rime 方案 | 省键模式，user_dict: custom_phrase_shorthand |
 | `yime_variable.dict.yaml` | Rime 词典 | 变长模式，468K 条 |
 | `yime_full.dict.yaml` | Rime 词典 | 等长模式，468K 条 |
 | `yime_shorthand.dict.yaml` | Rime 词典 | 省键模式，468K 条 |
@@ -220,9 +426,13 @@ onCommand → 启动独立工具
 |------|------|------|
 | `default.custom.yaml` | YAML | 用户方案选择 + page_size 覆盖 |
 | `yime_variable.custom.yaml` | YAML | 变长方案自定义（如 page_size） |
+| `yime_full.custom.yaml` | YAML | 等长方案自定义 |
+| `yime_shorthand.custom.yaml` | YAML | 省键方案自定义 |
 | `user.yaml` | YAML | Rime 用户状态（previously_selected_schema） |
 | `yime_user_phrases.txt` | TSV | 用户词库源文件（词条\t数字标调拼音\t权重） |
-| `custom_phrase.txt` | TSV | Rime 格式用户词库（词条\t音元编码\t权重） |
+| `custom_phrase_variable.txt` | TSV | 变长模式 Rime 格式用户词库 |
+| `custom_phrase_full.txt` | TSV | 等长模式 Rime 格式用户词库 |
+| `custom_phrase_shorthand.txt` | TSV | 省键模式 Rime 格式用户词库 |
 | `yime_settings_state.json` | JSON | 独立 UI 偏好（反查模式、候选排列） |
 | `build/` | 目录 | Rime 编译缓存 |
 
@@ -292,8 +502,24 @@ go test ./input_methods/yime/ -v -count=1
 | `TestUpdateDefaultCustomPageSizeReplacesQuotedKey` | YAML 引号 key 兼容 |
 | `TestStandalonePowerShellScriptsAreFreeOfEncodingCorruption` | 编码损坏守卫 |
 | `TestStandalonePowerShellScriptsDoNotContainSmartQuotes` | 智能引号守卫 |
+| `TestReturnKeyCommitsRawInputDuringComposition` | 回车键原始编码上屏 |
+| `TestRapidSameKey*` / `TestDuplicateKeyDown*` / `TestKeyUpClears*` | 重复按键抑制 |
+| `TestSetCandidatePageSizePreservesComposition` | 候选项数变更保存组字状态 |
+| `TestJoinRuneLookupPartialMissing` | 反查缺失字符占位符 |
+| `TestApplyUserLexiconWritesAllThreeModes` | 用户词库跨方案同步 |
 
-### 5.2 运行时集成测试
+### 5.2 边界场景测试
+
+| 场景 | 测试 |
+|------|------|
+| 并发按键/语言栏点击 | `TestConcurrentKeyAndCommandNoDataRace` |
+| 大候选列表 Go 侧分页 | `TestLargeCandidateListGoSidePaging` |
+| Unicode 边界（emoji、扩展汉字、代理对） | `TestUnicodeBoundaryEmojiAndExtendedHan` |
+| 组字中切换方案失败 | `TestSchemaSwitchFailureDuringComposition` |
+| 超长用户词组 | `TestLongUserPhraseLexiconBuild` |
+| `onCompositionTerminated` 非强制/强制终止 | `TestCompositionTerminatedNonForced` / `Forced` |
+
+### 5.3 运行时集成测试
 
 `rime_runtime_test.go` — 需要真实 Rime 运行时
 
@@ -307,7 +533,7 @@ go test ./input_methods/yime/ -run TestReal -v -count=1
 | `TestRealRimeRedeployAppliesPageSize` | redeploy 使 page_size 生效 |
 | `TestRealRimeExternalBuildAppliesPageSize` | 外部构建路径验证 |
 
-### 5.3 本地管理员测试
+### 5.4 本地管理员测试
 
 ```powershell
 go-backend\run_admin_yime_tests.cmd
@@ -338,7 +564,7 @@ go-backend\run_admin_yime_tests.cmd
 | `-` | 第3个 | 减号 |
 | `=` | 第4个 | 等号 |
 | `\` | 第5个 | 反斜杠 |
-| 6-9 | 无快捷键 | 需鼠标点击 ⚠️ |
+| 6-9 | 无快捷键 | 需鼠标点击（编码约束） |
 
 ### 6.3 alphabet 字符集
 
