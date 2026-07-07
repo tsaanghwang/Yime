@@ -2765,8 +2765,8 @@ func TestEnsureUserLexiconFileCreatesEditableNumericToneSource(t *testing.T) {
 	if !strings.HasSuffix(path, userLexiconSourceFileName) {
 		t.Fatalf("expected editable source path, got %q", path)
 	}
-	if rimePath := ime.rimeUserLexiconPath(); !strings.HasSuffix(rimePath, rimeUserLexiconFileName) {
-		t.Fatalf("expected generated Rime lexicon path, got %q", rimePath)
+	if rimePath := ime.rimeUserLexiconPath("variable"); !strings.HasSuffix(rimePath, "custom_phrase_variable.txt") {
+		t.Fatalf("expected generated Rime lexicon path for variable mode, got %q", rimePath)
 	}
 	content, err := os.ReadFile(path)
 	if err != nil {
@@ -3289,5 +3289,70 @@ func TestLookupStandardPinyinPartialMissing(t *testing.T) {
 	}
 	if got := ime.lookupStandardPinyin("你𠀀好"); got != "ní ? hǎo" {
 		t.Fatalf("expected mixed pinyin with middle placeholder, got %q", got)
+	}
+}
+
+func TestApplyUserLexiconWritesAllThreeModes(t *testing.T) {
+	t.Setenv("APPDATA", t.TempDir())
+	ime := newTestIME()
+	backend := ime.backend.(*testBackend)
+	backend.session = true
+
+	sharedDir := ime.sharedDir()
+	if err := os.MkdirAll(sharedDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	tsvContent := "pinyin\tfull\tvariable\tshorthand\nzhong1\tzf\tzv\tzs\nguo2\tgf\tgv\tgs\n"
+	if err := os.WriteFile(filepath.Join(sharedDir, "yime_pinyin_codes.tsv"), []byte(tsvContent), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	sourcePath, err := ime.ensureUserLexiconFile()
+	if err != nil {
+		t.Fatalf("ensureUserLexiconFile failed: %v", err)
+	}
+	userEntry := "中国\tzhong1 guo2\t1000000\n"
+	if err := os.WriteFile(sourcePath, []byte(userEntry), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := ime.applyUserLexicon(); err != nil {
+		t.Fatalf("applyUserLexicon failed: %v", err)
+	}
+
+	userDir := ime.userDir()
+	for _, mode := range yimeModes {
+		targetPath := filepath.Join(userDir, "custom_phrase_"+mode+".txt")
+		data, err := os.ReadFile(targetPath)
+		if err != nil {
+			t.Fatalf("expected custom_phrase_%s.txt to exist, got error: %v", mode, err)
+		}
+		content := string(data)
+		if !strings.Contains(content, "中国") {
+			t.Fatalf("expected custom_phrase_%s.txt to contain phrase, got %q", mode, content)
+		}
+	}
+
+	varData, _ := os.ReadFile(filepath.Join(userDir, "custom_phrase_variable.txt"))
+	fullData, _ := os.ReadFile(filepath.Join(userDir, "custom_phrase_full.txt"))
+	shortData, _ := os.ReadFile(filepath.Join(userDir, "custom_phrase_shorthand.txt"))
+	varContent := string(varData)
+	fullContent := string(fullData)
+	shortContent := string(shortData)
+
+	if varContent == fullContent || varContent == shortContent || fullContent == shortContent {
+		t.Fatalf("expected different encodings per mode, got variable=%q full=%q shorthand=%q", varContent, fullContent, shortContent)
+	}
+}
+
+func TestRimeUserLexiconPathPerMode(t *testing.T) {
+	t.Setenv("APPDATA", t.TempDir())
+	ime := newTestIME()
+	for _, mode := range yimeModes {
+		path := ime.rimeUserLexiconPath(mode)
+		expected := "custom_phrase_" + mode + ".txt"
+		if !strings.HasSuffix(path, expected) {
+			t.Fatalf("expected rimeUserLexiconPath(%q) to end with %q, got %q", mode, expected, path)
+		}
 	}
 }

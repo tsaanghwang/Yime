@@ -250,7 +250,7 @@
 
 **修复**：`joinRuneLookup` 对缺失字符显示 `?` 占位符而非整体返回空。`lookupStandardPinyin` 编码路径含 `?` 时逐字符拆分查找拼音，缺失字符保留 `?`。新增 `TestJoinRuneLookupPartialMissing`、`TestLookupStandardPinyinPartialMissing` 回归测试。
 
-### 6.4 用户词库只重建当前方案
+### 6.4 用户词库只重建当前方案 ✅ 已修复
 
 **位置**：`yime.go:1671-1692`
 
@@ -259,6 +259,8 @@
 **影响**：用户在变长模式添加的词，切换到等长模式后不可见，且无提示。
 
 **建议**：切换方案时自动重新应用词库，或为每种方案维护独立的 `custom_phrase.txt`。
+
+**修复**：`applyUserLexicon` 现在为三种模式（variable/full/shorthand）各生成独立的 `custom_phrase_{mode}.txt`。三种 schema 各自引用对应的 `user_dict`。新增 `TestApplyUserLexiconWritesAllThreeModes`、`TestRimeUserLexiconPathPerMode` 回归测试。
 
 ### 6.5 数字键在组字时作为编码输入
 

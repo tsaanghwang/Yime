@@ -74,9 +74,10 @@ const (
 	verticalCandidatesPerRow   = 1
 	yimeCandidateSelectKeys    = "1234567890"
 	userLexiconSourceFileName  = "yime_user_phrases.txt"
-	rimeUserLexiconFileName    = "custom_phrase.txt"
 	defaultUserLexiconWeight   = "1000000"
 )
+
+var yimeModes = []string{"variable", "full", "shorthand"}
 
 type Style struct {
 	DisplayTrayIcon    bool
@@ -1618,12 +1619,12 @@ func (ime *IME) userLexiconPath() string {
 	return filepath.Join(userDir, userLexiconSourceFileName)
 }
 
-func (ime *IME) rimeUserLexiconPath() string {
+func (ime *IME) rimeUserLexiconPath(mode string) string {
 	userDir := ime.userDir()
 	if userDir == "" {
 		return ""
 	}
-	return filepath.Join(userDir, rimeUserLexiconFileName)
+	return filepath.Join(userDir, "custom_phrase_"+mode+".txt")
 }
 
 func (ime *IME) ensureUserLexiconFile() (string, error) {
@@ -1684,12 +1685,14 @@ func (ime *IME) applyUserLexicon() error {
 	if err != nil {
 		return err
 	}
-	targetPath := ime.rimeUserLexiconPath()
-	if targetPath == "" {
-		return os.ErrNotExist
-	}
-	if err := ime.writeRimeUserLexicon(sourcePath, targetPath, ime.currentYimeMode()); err != nil {
-		return err
+	for _, mode := range yimeModes {
+		targetPath := ime.rimeUserLexiconPath(mode)
+		if targetPath == "" {
+			return os.ErrNotExist
+		}
+		if err := ime.writeRimeUserLexicon(sourcePath, targetPath, mode); err != nil {
+			return fmt.Errorf("写入 %s 模式词库失败: %w", mode, err)
+		}
 	}
 	if ime.backend == nil {
 		return nil
