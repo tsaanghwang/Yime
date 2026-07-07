@@ -140,13 +140,13 @@ setCandidatePageSize(size)
 |---|------|----------|----------|----------|
 | 1.1 | ~~修复回车键行为~~ ✅ 已修复 | `yime.go:676-685` | 无 | `TestReturnKeyCommitsRawInputDuringComposition`, `TestReturnKeyPassesThroughWhenNotComposing` |
 | 1.2 | ~~修复重复按键抑制~~ ✅ 已修复（`edd6e0ab`） | `yime.go:270-282` | 无 | `TestRapidSameKey*`, `TestDuplicateKeyDown*`, `TestKeyUpClears*` |
-| 1.3 | 扩展候选选择键至 9 个 | `yime.go:743-799` | 1.1（回车行为先修） | 新增 `TestCandidateSelectionKeysCoverAllPageSize` |
+| 1.3 | ~~扩展候选选择键至 9 个~~ 暂缓（编码约束） | `yime.go:743-799` | 编码体系重建 | — |
 | 1.4 | 候选项数变更保存/恢复组字状态 | `yime.go:2012-2067` | 无 | 新增 `TestSetCandidatePageSizePreservesComposition` |
 
 **验收标准**：
 - ~~快速连打同一键不丢字~~ ✅ 已修复
 - ~~组字时回车有可见效果~~ ✅ 已修复
-- 候选项数 6-9 时全部可通过键盘选择
+- 候选项数 6-9 时全部可通过键盘选择（暂缓：57 音元占满键位，改选字键需重建编码体系）
 - 调整候选项数不丢失当前输入
 
 ---
@@ -204,7 +204,7 @@ setCandidatePageSize(size)
 ├── W1-W2: Phase 1 — 关键可用性修复
 │   ├── 1.1 回车键行为 ✅
 │   ├── 1.2 重复按键抑制 ✅
-│   ├── 1.3 候选选择键扩展
+│   ├── 1.3 候选选择键扩展（暂缓）
 │   └── 1.4 组字状态保存
 │
 2026-07 ~ 2026-08
