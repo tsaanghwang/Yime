@@ -172,6 +172,7 @@ type IME struct {
 	lastKeyDownRet           bool
 	lastKeyUpRet             bool
 	keyComposing             bool
+	pendingRawCommit         string
 	backend                  rimeBackend
 }
 
@@ -673,8 +674,14 @@ func (ime *IME) processKey(req *pime.Request, isUp bool) bool {
 		return true
 	}
 	if ime.keyComposing && req.KeyCode == vkReturn {
-		handled = true
-		ime.logShortcutTrace(req, isUp, translatedKeyCode, modifiers, backendRet, handled)
+		composition := ime.backend.State().Composition
+		if composition != "" {
+			ime.pendingRawCommit = composition
+			ime.backend.ClearComposition()
+			ime.keyComposing = false
+			ime.candidatePageStart = 0
+		}
+		ime.logShortcutTrace(req, isUp, translatedKeyCode, modifiers, backendRet, true)
 		return true
 	}
 	if (req.KeyCode == vkShift || req.KeyCode == vkCapital) &&
@@ -862,6 +869,14 @@ func (ime *IME) handleVisibleCandidateSelectionKey(req *pime.Request) bool {
 func (ime *IME) onKey(req *pime.Request, resp *pime.Response) bool {
 	if ime.backend == nil {
 		ime.clearResponse(resp)
+		ime.keyComposing = false
+		return true
+	}
+	if ime.pendingRawCommit != "" {
+		raw := ime.pendingRawCommit
+		ime.pendingRawCommit = ""
+		ime.clearResponse(resp)
+		resp.CommitString = raw
 		ime.keyComposing = false
 		return true
 	}

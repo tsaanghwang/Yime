@@ -16,15 +16,16 @@ type testDictEntry struct {
 }
 
 type testBackend struct {
-	session      bool
-	destroyCount int
-	composition  string
-	candidates   []candidateItem
-	commitString string
-	asciiMode    bool
-	fullShape    bool
-	horizontal   bool
-	schemaID     string
+	session            bool
+	destroyCount       int
+	composition        string
+	candidates         []candidateItem
+	commitString       string
+	asciiMode          bool
+	fullShape          bool
+	horizontal         bool
+	schemaID           string
+	returnKeyHandled   bool
 }
 
 type backendPagingTestBackend struct {
@@ -76,7 +77,7 @@ func (b *syncTestBackend) SyncUserData() bool {
 }
 
 func newTestBackend() *testBackend {
-	return &testBackend{schemaID: "yime_variable"}
+	return &testBackend{schemaID: "yime_variable", returnKeyHandled: true}
 }
 
 func (b *testBackend) Initialize(sharedDir, userDir string, firstRun bool) bool {
@@ -141,14 +142,18 @@ func (b *testBackend) ProcessKey(req *pime.Request, translatedKeyCode, modifiers
 		}
 		b.ClearComposition()
 		return true
-	case vkReturn, vkSpace:
+	case vkReturn:
 		if b.composition == "" {
+			return false
+		}
+		if !b.returnKeyHandled {
 			return false
 		}
 		b.commitString = b.currentCommit()
 		b.composition = ""
 		b.candidates = nil
 		return true
+	case vkSpace:
 	}
 
 	if (charCode >= 'a' && charCode <= 'z') || (charCode >= '0' && charCode <= '9') {
@@ -783,6 +788,52 @@ func TestKeyUpClearsKeyDownState(t *testing.T) {
 
 	if ime.keysDown[0x4E] {
 		t.Fatal("expected key to be cleared after key-up")
+	}
+}
+
+func TestReturnKeyCommitsRawInputDuringComposition(t *testing.T) {
+	ime := newTestIME()
+	backend := ime.backend.(*testBackend)
+	backend.composition = "ni"
+	backend.candidates = []candidateItem{{Text: "你"}, {Text: "呢"}}
+	ime.keyComposing = true
+	backend.returnKeyHandled = false
+
+	filterResp := ime.filterKeyDown(&pime.Request{
+		SeqNum:   1,
+		KeyCode:  vkReturn,
+		CharCode: '\r',
+	}, pime.NewResponse(1, true))
+	if filterResp.ReturnValue != 1 {
+		t.Fatalf("expected return key to be handled, got %d", filterResp.ReturnValue)
+	}
+
+	resp := ime.onKeyDown(&pime.Request{
+		SeqNum:   2,
+		KeyCode:  vkReturn,
+		CharCode: '\r',
+	}, pime.NewResponse(2, true))
+	if resp.ReturnValue != 1 {
+		t.Fatalf("expected onKeyDown to succeed, got %d", resp.ReturnValue)
+	}
+	if resp.CommitString != "ni" {
+		t.Fatalf("expected raw composition 'ni' committed, got %q", resp.CommitString)
+	}
+	if ime.keyComposing {
+		t.Fatal("expected keyComposing to be false after return commits raw input")
+	}
+}
+
+func TestReturnKeyPassesThroughWhenNotComposing(t *testing.T) {
+	ime := newTestIME()
+
+	filterResp := ime.filterKeyDown(&pime.Request{
+		SeqNum:   1,
+		KeyCode:  vkReturn,
+		CharCode: '\r',
+	}, pime.NewResponse(1, true))
+	if filterResp.ReturnValue != 0 {
+		t.Fatalf("expected return key to pass through when not composing, got %d", filterResp.ReturnValue)
 	}
 }
 
