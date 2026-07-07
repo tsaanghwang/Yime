@@ -396,7 +396,7 @@ func (ime *IME) onCommand(req *pime.Request, resp *pime.Response) *pime.Response
 	case ID_USER_LEXICON_MANAGER:
 		ime.launchStandaloneToolAsync(ime.openUserLexiconManager, "打开词库管理失败")
 	case ID_USER_LEXICON_DELETE, ID_USER_LEXICON_IMPORT:
-		log.Printf("用户词库命令尚未接入: %d", commandID)
+		ime.launchStandaloneToolAsync(ime.openUserLexiconManager, "打开词库管理失败")
 	case ID_REVERSE_LOOKUP_DEFAULT, ID_REVERSE_LOOKUP_FULL:
 		// Older builds exposed combined reverse-lookup modes that do not map
 		// cleanly onto the current single-comment candidate window. Keep the

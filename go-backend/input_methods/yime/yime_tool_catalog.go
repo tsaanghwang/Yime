@@ -33,14 +33,14 @@ type toolHubManifest struct {
 func buildToolHubManifest(sharedDir, userDir, helpDir, logDir, lexiconManagerScript, reverseLookupToolScript, settingsToolScript, diagnosticsToolScript, mode string) toolHubManifest {
 
 	return toolHubManifest{
-		Title:   "Yime Tool Hub",
-		Summary: "Keep rich UI in standalone tools, and keep the language-bar callback path lightweight.",
-		Note:    "Add future standalone settings or diagnostics programs by extending this tool manifest rather than expanding the TSF callback path.",
+		Title:   "Yime 工具箱",
+		Summary: "独立工具界面，不影响语言栏轻量回调路径。",
+		Note:    "扩展工具时请修改此清单，而非扩展 TSF 回调路径。",
 		Tools: []toolHubEntry{
 			{
 				ID:               "lexicon-manager",
 				Label:            "用户词库管理",
-				Description:      "Open the standalone lexicon manager dialog.",
+				Description:      "打开词库管理器，添加、删除、导入词条。",
 				ActionType:       toolActionRunPowerShell,
 				TargetPath:       lexiconManagerScript,
 				CloseAfterLaunch: true,
@@ -53,7 +53,7 @@ func buildToolHubManifest(sharedDir, userDir, helpDir, logDir, lexiconManagerScr
 			{
 				ID:               "reverse-lookup-tool",
 				Label:            "反查编码",
-				Description:      "Open the standalone reverse lookup tool.",
+				Description:      "打开反查编码工具，查询字词的拼音和音元编码。",
 				ActionType:       toolActionRunPowerShell,
 				TargetPath:       reverseLookupToolScript,
 				CloseAfterLaunch: true,
@@ -66,7 +66,7 @@ func buildToolHubManifest(sharedDir, userDir, helpDir, logDir, lexiconManagerScr
 			{
 				ID:               "settings-tool",
 				Label:            "设置工具",
-				Description:      "Open the standalone settings shell.",
+				Description:      "打开设置工具，修改方案、候选项数等配置。",
 				ActionType:       toolActionRunPowerShell,
 				TargetPath:       settingsToolScript,
 				CloseAfterLaunch: true,
@@ -80,21 +80,21 @@ func buildToolHubManifest(sharedDir, userDir, helpDir, logDir, lexiconManagerScr
 			{
 				ID:          "settings-data",
 				Label:       "设置与用户目录",
-				Description: "Open the Yime user data directory.",
+				Description: "打开 Yime 用户数据目录。",
 				ActionType:  toolActionOpenPath,
 				TargetPath:  userDir,
 			},
 			{
 				ID:          "shared-data",
 				Label:       "共享数据目录",
-				Description: "Open the installed shared runtime data.",
+				Description: "打开已安装的共享运行时数据目录。",
 				ActionType:  toolActionOpenPath,
 				TargetPath:  sharedDir,
 			},
 			{
 				ID:               "diagnostics-tool",
 				Label:            "诊断工具",
-				Description:      "Open the standalone diagnostics shell.",
+				Description:      "打开诊断工具，收集系统信息和运行状态。",
 				ActionType:       toolActionRunPowerShell,
 				TargetPath:       diagnosticsToolScript,
 				CloseAfterLaunch: true,
@@ -108,35 +108,35 @@ func buildToolHubManifest(sharedDir, userDir, helpDir, logDir, lexiconManagerScr
 			{
 				ID:          "diagnostics-guide",
 				Label:       "诊断说明",
-				Description: "Open the diagnostics guide for this input method.",
+				Description: "打开诊断说明文档。",
 				ActionType:  toolActionOpenPath,
 				TargetPath:  filepath.Join(helpDir, "diagnostics.html"),
 			},
 			{
 				ID:          "diagnostics-logs",
 				Label:       "诊断日志目录",
-				Description: "Open the PIME log directory.",
+				Description: "打开 PIME 日志目录。",
 				ActionType:  toolActionOpenPath,
 				TargetPath:  logDir,
 			},
 			{
 				ID:          "settings-guide",
 				Label:       "设置说明",
-				Description: "Open the settings and data guide.",
+				Description: "打开设置与数据说明文档。",
 				ActionType:  toolActionOpenPath,
 				TargetPath:  filepath.Join(helpDir, "settings-and-data.html"),
 			},
 			{
 				ID:          "help-readme",
 				Label:       "查看帮助",
-				Description: "Open the main help document.",
+				Description: "打开主帮助文档。",
 				ActionType:  toolActionOpenPath,
 				TargetPath:  filepath.Join(helpDir, "README.html"),
 			},
 			{
 				ID:          "help-trial-feedback",
 				Label:       "试用反馈说明",
-				Description: "Open the trial feedback guide.",
+				Description: "打开试用反馈说明文档。",
 				ActionType:  toolActionOpenPath,
 				TargetPath:  filepath.Join(helpDir, "trial-feedback.html"),
 			},

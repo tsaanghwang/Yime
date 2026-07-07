@@ -633,6 +633,25 @@ $searchButton.Add_Click({
   try { Invoke-Search } catch { Show-Error $_.Exception.Message }
 })
 
+$script:searchTimer = $null
+$searchBox.Add_TextChanged({
+  try {
+    if ($null -ne $script:searchTimer) { $script:searchTimer.Stop() }
+    $script:searchTimer = New-Object System.Windows.Forms.Timer
+    $script:searchTimer.Interval = 500
+    $script:searchTimer.Add_Tick({
+      $script:searchTimer.Stop()
+      if (-not [string]::IsNullOrWhiteSpace($searchBox.Text.Trim())) {
+        Invoke-Search
+      } else {
+        $listView.Items.Clear()
+        $detailLabel.Text = ""
+      }
+    })
+    $script:searchTimer.Start()
+  } catch {}
+})
+
 $searchBox.Add_KeyDown({
   param($sender, $eventArgs)
   if ($eventArgs.KeyCode -eq "Enter") {
