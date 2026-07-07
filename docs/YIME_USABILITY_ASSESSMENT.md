@@ -150,17 +150,17 @@
 
 ---
 
-### 5.2 回车键在组字时被吞
+### 5.2 ~~回车键在组字时被吞~~ ✅ 已修复
 
-**位置**：`yime.go:688-692`
+**位置**：`yime.go:676-685`（`processKey`）
 
-**现象**：用户正在组字时按回车，按键被消费（`handled = true`）但没有任何可见效果——既不上屏也不传递给应用程序。
+**原问题**：用户正在组字时按回车，按键被消费但没有任何可见效果——既不上屏也不传递给应用程序。
 
-**根因**：Rime 后端拒绝了回车键，Go 层将其吞掉而非传递给宿主应用。
+**原根因**：Rime 后端拒绝了回车键（`backendRet == false`），Go 层设置 `handled = true` 并返回 `true`，导致回车被静默吞掉。
 
-**影响**：**高**。用户按回车期望"确认"或"换行"，无响应令人困惑。
+**修复方案**：当 Rime 拒绝回车且正在组字时，将当前组字内容作为原始编码上屏（`pendingRawCommit`），然后清除组字状态。`onKey` 中消费 `pendingRawCommit` 写入 `resp.CommitString`。
 
-**建议修复**：组字时回车应提交原始编码（上屏编码字符串），或传递给宿主应用处理。
+**回归测试**：`TestReturnKeyCommitsRawInputDuringComposition`、`TestReturnKeyPassesThroughWhenNotComposing`
 
 ---
 
