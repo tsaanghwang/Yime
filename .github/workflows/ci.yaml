@@ -73,6 +73,17 @@ jobs:
           cmake . -Bbuild64 -G "Visual Studio 17 2022" -A x64 -DCMAKE_POLICY_VERSION_MINIMUM=3.5
           cmake --build build64 --config Release --target PIMETextService
 
+      - name: Fetch Rime shared data
+        shell: pwsh
+        run: |
+          $dataDir = "go-backend\input_methods\yime\data"
+          if (-not (Test-Path "$dataDir\default.yaml")) {
+            git clone --depth=1 https://github.com/gaboolic/rime-frost.git $env:RUNNER_TEMP\rime-frost
+            Copy-Item -Force $env:RUNNER_TEMP\rime-frost\default.yaml $dataDir\
+            Get-ChildItem $env:RUNNER_TEMP\rime-frost\*.yaml | Where-Object { $_.Name -notlike "*.custom*" } | Copy-Item -Force -Destination $dataDir\
+            if (Test-Path $env:RUNNER_TEMP\rime-frost\opencc) { Copy-Item -Recurse -Force $env:RUNNER_TEMP\rime-frost\opencc $dataDir\ }
+          }
+
       - name: Build Go backend
         shell: pwsh
         run: |
