@@ -1,4 +1,5 @@
 .vs
+/git
 build
 build64
 build_arm64/
