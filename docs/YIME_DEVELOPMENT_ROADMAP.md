@@ -160,8 +160,8 @@ setCandidatePageSize(size)
 | 2.1 | ~~关键操作失败时增加用户提示~~ ✅ 已修复 | `yime.go` openPath/copyTextToClipboard/redeployBackend/syncBackendUserData/selectSchema/setCandidatePageSize | 无 | 手动验证 |
 | 2.2 | ~~`joinRuneLookup` 缺失字符显示占位符~~ ✅ 已修复 | `yime.go:1921-1935` | 无 | `TestJoinRuneLookupPartialMissing`、`TestLookupStandardPinyinPartialMissing` |
 | 2.3 | ~~用户词库跨方案自动同步~~ ✅ 已修复 | `yime.go:1684-1703` schema.yaml | 无 | `TestApplyUserLexiconWritesAllThreeModes`、`TestRimeUserLexiconPathPerMode` |
-| 2.4 | 反查工具加载进度提示 | `yime_reverse_lookup_tool_windows.go` | 无 | 手动验证 |
-| 2.5 | 反查搜索结果截断提示 | `yime_reverse_lookup_tool_windows.go:430` | 无 | 手动验证 |
+| 2.4 | ~~反查工具加载进度提示~~ ✅ 已修复 | `yime_reverse_lookup_tool_windows.go` | 无 | 手动验证 |
+| 2.5 | ~~反查搜索结果截断提示~~ ✅ 已修复 | `yime_reverse_lookup_tool_windows.go` | 无 | 手动验证 |
 | 2.6 | 实现词库删除功能 | `yime_user_lexicon_windows.go` | 无 | 新增测试 |
 
 ---

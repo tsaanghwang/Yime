@@ -278,13 +278,16 @@
 
 | # | 问题 | 位置 | 说明 |
 |---|------|------|------|
-| 1 | 反查工具首次加载无进度提示 | `yime_reverse_lookup_tool_windows.go:539-554` | 用户可能以为搜索卡死 |
-| 2 | 反查搜索结果上限100条无截断提示 | `yime_reverse_lookup_tool_windows.go:430` | 常见部件可能找不到目标字 |
-| 3 | `findRimeExternalDeployer` 含硬编码开发路径 | `yime.go:2150` | `C:\dev\librime\build\bin\Release\` |
-| 4 | `remapYimeCandidateSelectionKey` 是死代码 | `yime.go:743-770` | 定义但未调用 |
-| 5 | YAML 操作不支持行内注释 | `yime.go:2257-2272` | `readPageSizeFromCustomConfig` 可能读错 |
-| 6 | `candidatePageStart` 在非分页键时重置 | `yime.go:679` | 无效按键导致翻页位置丢失 |
-| 7 | `commandShouldRefreshState` 白名单维护负担 | `yime.go:464-475` | 新增命令 ID 需手动更新 |
+| 1 | ~~反查工具首次加载无进度提示~~ ✅ 已修复 | `yime_reverse_lookup_tool_windows.go` | 窗体显示时状态栏提示"正在加载数据" |
+| 2 | ~~反查搜索结果上限100条无截断提示~~ ✅ 已修复 | `yime_reverse_lookup_tool_windows.go` | 上限提升至200条，截断时状态栏提示"已截断" |
+| 3 | ~~多音字只取首个编码~~ ✅ 已修复 | `yime_reverse_lookup_tool_windows.go` | `Load-DictLookupMulti` 保留所有读音编码，逐字拼接支持笛卡尔积 |
+| 4 | ~~每次查询重新加载词库~~ ✅ 已修复 | `yime_reverse_lookup_tool_windows.go` | 去除 `$script:lookupLoaded = $false`，数据只加载一次 |
+| 5 | ~~方案切换时 dictLookup 不重新加载~~ ✅ 已修复 | `yime_reverse_lookup_tool_windows.go` | `Ensure-LookupData` 按 `loadedSchemaID` 判断是否需要重载 |
+| 6 | `findRimeExternalDeployer` 含硬编码开发路径 | `yime.go:2150` | `C:\dev\librime\build\bin\Release\` |
+| 7 | `remapYimeCandidateSelectionKey` 是死代码 | `yime.go:743-770` | 定义但未调用 |
+| 8 | YAML 操作不支持行内注释 | `yime.go:2257-2272` | `readPageSizeFromCustomConfig` 可能读错 |
+| 9 | `candidatePageStart` 在非分页键时重置 | `yime.go:679` | 无效按键导致翻页位置丢失 |
+| 10 | `commandShouldRefreshState` 白名单维护负担 | `yime.go:464-475` | 新增命令 ID 需手动更新 |
 
 ---
 
