@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Yime 本地编译与重装</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #f6f7f9;
+      --card: #ffffff;
+      --text: #1a1d21;
+      --muted: #5c6570;
+      --border: #d8dee6;
+      --accent: #0b5fff;
+      --code-bg: #eef1f5;
+      --warn-bg: #fff8e6;
+      --warn-border: #f0c36d;
+      --ok-bg: #edf9f0;
+      --ok-border: #7bc48a;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #111418;
+        --card: #1a1f26;
+        --text: #e8edf3;
+        --muted: #9aa6b2;
+        --border: #2d3640;
+        --accent: #5b9bff;
+        --code-bg: #0f141a;
+        --warn-bg: #2a2418;
+        --warn-border: #8a6d2f;
+        --ok-bg: #14241a;
+        --ok-border: #3f8f57;
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font: 16px/1.6 "Segoe UI", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    main {
+      max-width: 52rem;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 3rem;
+    }
+    h1 {
+      margin: 0 0 0.5rem;
+      font-size: 1.75rem;
+      line-height: 1.25;
+    }
+    .lede {
+      margin: 0 0 1.5rem;
+      color: var(--muted);
+    }
+    section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem 1.35rem;
+      margin-bottom: 1rem;
+    }
+    h2 {
+      margin: 0 0 0.75rem;
+      font-size: 1.15rem;
+    }
+    h3 {
+      margin: 1rem 0 0.5rem;
+      font-size: 1rem;
+    }
+    p { margin: 0 0 0.75rem; }
+    p:last-child { margin-bottom: 0; }
+    pre {
+      margin: 0.75rem 0;
+      padding: 0.9rem 1rem;
+      overflow-x: auto;
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font: 0.92rem/1.5 Consolas, "Cascadia Mono", monospace;
+      user-select: all;
+    }
+    code {
+      font: 0.92em Consolas, "Cascadia Mono", monospace;
+      background: var(--code-bg);
+      padding: 0.1em 0.35em;
+      border-radius: 4px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0.75rem 0 0;
+      font-size: 0.95rem;
+    }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 0.55rem 0.65rem;
+      text-align: left;
+      vertical-align: top;
+    }
+    th { background: var(--code-bg); }
+    ul, ol {
+      margin: 0.5rem 0 0;
+      padding-left: 1.25rem;
+    }
+    li + li { margin-top: 0.35rem; }
+    .note {
+      border-radius: 8px;
+      padding: 0.85rem 1rem;
+      margin-top: 0.75rem;
+    }
+    .note.ok {
+      background: var(--ok-bg);
+      border: 1px solid var(--ok-border);
+    }
+    .note.warn {
+      background: var(--warn-bg);
+      border: 1px solid var(--warn-border);
+    }
+    .path {
+      color: var(--accent);
+      word-break: break-all;
+    }
+    footer {
+      margin-top: 1.25rem;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Yime 本地编译与重装</h1>
+    <p class="lede">
+      在浏览器里打开本页对照操作，不会把说明误输入到编辑器或终端。
+      仓库路径：<span class="path">C:\dev\Yime</span> ·
+      快捷打开：<code>Open-Dev-Guide.cmd</code>
+    </p>
+
+    <section>
+      <h2>日常开发（推荐）</h2>
+      <p>在仓库根目录依次执行：</p>
+      <pre>Set-Location C:\dev\Yime
+.\Build.cmd
+.\Reinstall-PIME-Test.cmd</pre>
+      <table>
+        <thead>
+          <tr><th>命令</th><th>做什么</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>Build.cmd</code></td>
+            <td><code>Build.ps1</code> → <code>build.bat</code>（Win32 / x64 / 可选 ARM64 C++、go-backend、McBopomofo）→ NSIS 安装包</td>
+          </tr>
+          <tr>
+            <td><code>Reinstall-PIME-Test.cmd</code></td>
+            <td><strong>强制版</strong>开发重装：自动预检、DLL 被锁时原地升级、成功不暂停；装到 <code>C:\Program Files (x86)\YIME</code>，<strong>含 go-backend</strong></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="note ok">
+        <strong>装完后：</strong>先切到别的输入法，再切回「音元拼音」，语言栏才会刷新。
+      </div>
+    </section>
+
+    <section>
+      <h2>只改了 Go 后端（更快）</h2>
+      <pre>Set-Location C:\dev\Yime\go-backend
+cmd /c build.bat
+Set-Location C:\dev\Yime
+.\Reinstall-PIME-Test.cmd</pre>
+      <p>不必每次全量跑 <code>Build.cmd</code>。</p>
+    </section>
+
+    <section>
+      <h2>重装脚本：强制版（勿改回简化版）</h2>
+      <p>根目录的 <code>Reinstall-PIME-Test.cmd</code> 是<strong>副本</strong>，每次 <code>Build.cmd</code> 结束时会从模板覆盖。要改流程请改模板：</p>
+      <pre>正本（唯一应编辑的文件）：
+  tools\templates\Reinstall-PIME-Test.cmd
+
+同步到根目录：
+  tools\refresh-dev-test-cmds.ps1
+  （build.bat 在每次完整编译后自动调用）
+
+根目录副本（会被覆盖，不要当正本改）：
+  Reinstall-PIME-Test.cmd</pre>
+
+      <h3>强制版流程（当前行为）</h3>
+      <ol>
+        <li>自动请求管理员权限（UAC）</li>
+        <li>调用 <code>dev-stop-pime.ps1 -Auto</code>：不等待「按 Enter」；尽量结束 PIMELauncher / go-backend</li>
+        <li>若 <code>PIMETextService.dll</code> 仍被加载（常见：<code>explorer.exe</code>、Cursor、浏览器）→ 退出码 <code>2</code> → <strong>跳过完整卸载</strong></li>
+        <li>否则先跑 <code>dev-uninstall.ps1</code>；若卸载报错也<strong>自动继续</strong>原地安装（不再问 Y/N）</li>
+        <li>跑 <code>dev-install.ps1</code>：复制 DLL / PIMELauncher / python / node / <strong>go-backend</strong>，注册 TSF</li>
+        <li>成功时<strong>不 pause</strong>，直接结束；只有失败才暂停</li>
+      </ol>
+
+      <h3>相关脚本</h3>
+      <table>
+        <thead>
+          <tr><th>文件</th><th>作用</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>tools\dev-stop-pime.ps1</code></td>
+            <td>预检停进程；<code>-Auto</code> 跳过交互；DLL 仍加载时 <code>exit 2</code></td>
+          </tr>
+          <tr>
+            <td><code>tools\dev-uninstall.ps1</code></td>
+            <td>注销 TSF、清注册表；DLL 被锁时保留安装目录（<code>KeepInstallRoot</code>），不硬删</td>
+          </tr>
+          <tr>
+            <td><code>tools\dev-install.ps1</code></td>
+            <td>复制构建产物到 <code>C:\Program Files (x86)\YIME</code>；DLL 被锁时用 <code>-AllowLocked</code> 跳过替换并警告</td>
+          </tr>
+          <tr>
+            <td><code>dev-*.ps1</code>（根目录）</td>
+            <td>薄包装，转发到 <code>tools\</code> 下同名脚本</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="note warn">
+        <strong>简化版已废弃：</strong>「直接 uninstall → install、DLL 被锁就失败」的旧流程会浪费大量时间。
+        <code>AGENTS.md</code> 已写明：AI 不得把重装脚本改回简化版。
+      </div>
+    </section>
+
+    <section>
+      <h2>为什么不用 NSIS 安装包做开发重装？</h2>
+      <p>音元拼音依赖 <strong>go-backend</strong>。<code>installer\YIME-*-setup.exe</code> <strong>不会</strong>打包 go-backend。</p>
+      <p>日常开发测试只用 <code>Reinstall-PIME-Test.cmd</code>。</p>
+    </section>
+
+    <section>
+      <h2>验证是否装对</h2>
+      <ul>
+        <li>语言栏：中西文 / 设置 / 工具</li>
+        <li>输入 <code>q</code> → 音元编码（如 <code>巴 ~d</code>），不是 <code>luna_pinyin</code>（去、其）</li>
+        <li>日志：<code>%LOCALAPPDATA%\PIME\Logs\go_backend.log</code></li>
+        <li>Rime 配置：<code>%APPDATA%\PIME\Rime\</code></li>
+        <li>安装目录：<code>C:\Program Files (x86)\YIME\go-backend\server.exe</code> 时间戳应晚于本次编译</li>
+      </ul>
+      <div class="note warn">
+        源码改对了但行为没变：先确认 <code>server.exe</code> 已重装，且 PIMELauncher / server 进程已重启。旧进程会让修复看起来无效。
+      </div>
+    </section>
+
+    <section>
+      <h2>常见问题</h2>
+
+      <h3>DLL 被锁（explorer / Cursor / 浏览器）</h3>
+      <p>强制版会自动原地安装；<strong>go-backend 等未锁文件会更新</strong>。被锁的 <code>PIMETextService.dll</code> 可能暂时换不了，需重启后再重装才能彻底替换 DLL。</p>
+
+      <h3>Build.cmd：Application Control (os error 4551)</h3>
+      <p>Windows 智能应用控制拦截了 <code>build\Win32\Release\cargo\</code> 下的 Rust build-script。</p>
+      <p>当前 <code>build.bat</code>：Win32 只编 <code>PIMETextService</code>；PIMELauncher 用 <code>PIMELauncher\</code> 下 <code>cargo build</code>（<code>target\</code> 目录，通常不受拦）。</p>
+      <p>不要设置 <code>CARGO_TARGET_DIR</code> 指到 <code>.tmp\</code>，也可能被拦。仍失败则在安全中心关闭智能应用控制或为 <code>C:\dev\Yime</code> 加信任。</p>
+
+      <h3>ARM64 编译</h3>
+      <p>未检测到 <code>arm64\cl.exe</code> 时会跳过 ARM64（不影响日常 x86/x64 开发）。需要时在 VS Installer 为 <code>C:\BuildTools</code> 添加 <code>MSVC v143 - VS 2022 C++ ARM64 build tools</code>。</p>
+
+      <h3>CI 与本地 build.bat 不同</h3>
+      <p>GitHub Actions 用 <code>.github\workflows\ci.yaml</code> 直接跑 cmake，<strong>不调用</strong>根目录 <code>build.bat</code>。本地 <code>build.bat</code> 的 PIMELauncher cargo 绕过、ARM64 检测等改动<strong>不影响 CI</strong>。</p>
+    </section>
+
+    <section>
+      <h2>不建议的做法</h2>
+      <ul>
+        <li>在 <code>C:\WINDOWS\system32</code> 里跑 <code>.\Reinstall-PIME-Test.cmd</code>（必须先 <code>cd C:\dev\Yime</code>）</li>
+        <li>只改根目录 <code>Reinstall-PIME-Test.cmd</code> 而不改 <code>tools\templates\</code>（下次 Build 会被覆盖）</li>
+        <li>把重装脚本改回「只 uninstall + install」简化版</li>
+        <li>用 <code>installer\*.exe</code> 做开发重装（缺 go-backend）</li>
+        <li>全量 <code>Build.cmd</code> 时又单独跑 <code>go-backend\build.bat</code>（已包含）</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>维护者备忘</h2>
+      <ul>
+        <li>改正本：<code>tools\templates\Reinstall-PIME-Test.cmd</code></li>
+        <li>手动同步：<code>powershell -File tools\refresh-dev-test-cmds.ps1</code></li>
+        <li>约束文档：<code>AGENTS.md</code>（含不得简化重装流程）</li>
+        <li>分支：<code>yime-stable</code> 为当前稳定开发线</li>
+      </ul>
+    </section>
+
+    <footer>
+      本页：<code>docs\dev-build-reinstall.html</code> · 打开：<code>Open-Dev-Guide.cmd</code>
+    </footer>
+  </main>
+</body>
+</html>

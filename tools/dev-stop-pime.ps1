@@ -3,7 +3,8 @@ param(
         "C:\Program Files (x86)\YIME",
         "C:\Program Files (x86)\PIME"
     ),
-    [switch]$Quiet
+    [switch]$Quiet,
+    [switch]$Auto
 )
 
 $ErrorActionPreference = "Stop"
@@ -52,13 +53,16 @@ function Stop-ProcessByName {
     return $stopped
 }
 
-if (-not $Quiet) {
+if (-not $Quiet -and -not $Auto) {
     Write-Host ""
     Write-Host "Before reinstall, please:"
     Write-Host "  1. Switch input method to English or another IME (not Yime)."
     Write-Host "  2. Close apps where you are typing (Notepad, browser, IDE, etc.)."
     Write-Host ""
     Read-Host "Press Enter when ready"
+    Write-Host ""
+} elseif (-not $Quiet -and $Auto) {
+    Write-Host "Auto mode: stopping PIME processes (switch away from Yime if you can)."
     Write-Host ""
 }
 

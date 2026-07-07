@@ -20,10 +20,7 @@ if errorlevel 1 exit /b 1
 
 set "CMAKE_EXE=cmake"
 set "SKIP_ARM64=1"
-set "_VSWHERE=%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe"
-if exist "%_VSWHERE%" (
-	"%_VSWHERE%" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.ARM64 -property installationPath >nul 2>&1 && set "SKIP_ARM64="
-)
+call :detect_arm64_toolchain
 
 where cmake >nul 2>&1
 if errorlevel 1 (
@@ -37,7 +34,8 @@ if errorlevel 1 (
 
 call "%VS_DEV_CMD%" -arch=x86 -host_arch=x64 >nul || exit /b 1
 "%CMAKE_EXE%" . -Bbuild -G "Visual Studio 17 2022" -A Win32 -DCMAKE_POLICY_VERSION_MINIMUM=3.5 || exit /b 1
-"%CMAKE_EXE%" --build build --config Release || exit /b 1
+"%CMAKE_EXE%" --build build --config Release --target PIMETextService || exit /b 1
+call :build_pimelauncher || exit /b 1
 
 call "%VS_DEV_CMD%" -arch=x64 -host_arch=x64 >nul || exit /b 1
 "%CMAKE_EXE%" . -Bbuild64 -G "Visual Studio 17 2022" -A x64 -DCMAKE_POLICY_VERSION_MINIMUM=3.5 || exit /b 1
@@ -71,6 +69,51 @@ echo "Refresh test install command files"
 powershell -NoProfile -ExecutionPolicy Bypass -File "%ROOT_DIR%\tools\refresh-dev-test-cmds.ps1" -RepoRoot "%ROOT_DIR%" || exit /b 1
 
 goto :eof
+
+:detect_arm64_toolchain
+rem vswhere may report the ARM64 component even when cl.exe for arm64 is not installed.
+rem Only enable the ARM64 build when the compiler binary is actually present.
+set "_ARM64_CL="
+if defined VS_INSTALL_ROOT (
+	for /d %%M in ("%VS_INSTALL_ROOT%VC\Tools\MSVC\*") do (
+		if exist "%%~fM\bin\Hostx64\arm64\cl.exe" set "_ARM64_CL=%%~fM\bin\Hostx64\arm64\cl.exe"
+	)
+)
+if not defined _ARM64_CL if exist "C:\BuildTools\VC\Tools\MSVC" (
+	for /d %%M in ("C:\BuildTools\VC\Tools\MSVC\*") do (
+		if exist "%%~fM\bin\Hostx64\arm64\cl.exe" set "_ARM64_CL=%%~fM\bin\Hostx64\arm64\cl.exe"
+	)
+)
+if not defined _ARM64_CL (
+	for %%Y in (2022 2019) do (
+		for %%E in (BuildTools Enterprise Community Professional) do (
+			for /d %%M in ("%ProgramFiles(x86)%\Microsoft Visual Studio\%%Y\%%E\VC\Tools\MSVC\*") do (
+				if exist "%%~fM\bin\Hostx64\arm64\cl.exe" set "_ARM64_CL=%%~fM\bin\Hostx64\arm64\cl.exe"
+			)
+			for /d %%M in ("%ProgramFiles%\Microsoft Visual Studio\%%Y\%%E\VC\Tools\MSVC\*") do (
+				if exist "%%~fM\bin\Hostx64\arm64\cl.exe" set "_ARM64_CL=%%~fM\bin\Hostx64\arm64\cl.exe"
+			)
+		)
+	)
+)
+if defined _ARM64_CL set "SKIP_ARM64="
+exit /b 0
+
+:build_pimelauncher
+rem Corrosion builds under build\Win32\Release\cargo\ and Windows Application Control
+rem (Smart App Control / WDAC, os error 4551) may block those ephemeral build-script exes.
+rem cargo build in PIMELauncher\target\ is not affected; stage the output for installer/dev-install.
+echo "Start building PIMELauncher"
+set "CARGO_TARGET_DIR="
+pushd "%ROOT_DIR%\PIMELauncher" || exit /b 1
+cargo build --release --target i686-pc-windows-msvc || (
+	popd
+	exit /b 1
+)
+popd
+if not exist "%ROOT_DIR%\build\PIMELauncher" mkdir "%ROOT_DIR%\build\PIMELauncher" >nul 2>&1
+copy /Y "%ROOT_DIR%\PIMELauncher\target\i686-pc-windows-msvc\release\PIMELauncher.exe" "%ROOT_DIR%\build\PIMELauncher\PIMELauncher.exe" >nul || exit /b 1
+exit /b 0
 
 :find_vs_cmake
 set "CMAKE_EXE="

@@ -76,9 +76,21 @@ function Remove-UserProfileValuesForTextService {
     }
 }
 
-function Report-TextServiceDllUsers {
-    $output = & tasklist.exe /m PIMETextService.dll 2>$null
-    if ($LASTEXITCODE -eq 0 -and $output) {
+function Get-TextServiceDllUsers {
+    $output = @(& tasklist.exe /m PIMETextService.dll 2>$null)
+    if ($LASTEXITCODE -eq 0 -and $output.Count -gt 1) {
+        return $output
+    }
+    return @()
+}
+
+function Test-TextServiceDllLoaded {
+    return (Get-TextServiceDllUsers).Count -gt 0
+}
+
+function Show-TextServiceDllUsers {
+    $output = Get-TextServiceDllUsers
+    if ($output) {
         Write-Host ""
         Write-Host "PIMETextService.dll is still loaded by these processes:"
         $output | ForEach-Object { Write-Host $_ }
@@ -93,7 +105,7 @@ function Remove-InstallTree {
     try {
         Remove-Item -LiteralPath $Path -Recurse -Force -ErrorAction Stop
     } catch {
-        Report-TextServiceDllUsers
+        Show-TextServiceDllUsers
         Write-Host "The installation tree could not be removed because one or more files are still locked."
         Write-Host "Switch to another input method, sign out or reboot Windows, then run Reinstall-PIME-Test.cmd again."
         throw
@@ -152,6 +164,10 @@ Add-InstallRootCandidate -Candidates $installRoots -Path $LegacyDefaultInstallRo
 $stopScript = Join-Path $PSScriptRoot "dev-stop-pime.ps1"
 if (Test-Path -LiteralPath $stopScript) {
     & $stopScript -InstallRoots $installRoots -Quiet
+    if ($LASTEXITCODE -eq 2) {
+        Write-Host "PIMETextService.dll is still loaded; keeping installation tree for in-place upgrade."
+        $KeepInstallRoot = $true
+    }
 } else {
     Write-Host "Stopping PIMELauncher and installed Go backend if they are running..."
     foreach ($root in $installRoots) {
@@ -193,6 +209,13 @@ Remove-RegistryTree -Path "HKLM:\SOFTWARE\Classes\CLSID\$TextServiceClsid"
 Remove-RegistryTree -Path "HKLM:\SOFTWARE\WOW6432Node\Classes\CLSID\$TextServiceClsid"
 Remove-UserProfileValuesForTextService -Clsid $TextServiceClsid
 
+if (-not $KeepInstallRoot -and (Test-TextServiceDllLoaded)) {
+    Show-TextServiceDllUsers
+    Write-Host "Skipping installation tree removal because PIMETextService.dll is still loaded."
+    Write-Host "Continuing with in-place upgrade; reboot later for a clean DLL replacement."
+    $KeepInstallRoot = $true
+}
+
 if (-not $KeepInstallRoot) {
     foreach ($root in $installRoots) {
         if (Test-Path -LiteralPath $root) {
@@ -207,3 +230,4 @@ if (-not $KeepInstallRoot) {
 }
 
 Write-Host "Developer uninstall completed."
+
