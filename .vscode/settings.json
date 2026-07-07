@@ -139,5 +139,13 @@
     "yime",
     "zyenpheng"
   ],
-  "terminal.integrated.fontFamily": "monospace"
+  "cSpell.useCustomDecorations": false,
+  "cSpell.diagnosticLevel": "Hint",
+  "terminal.integrated.fontFamily": "monospace",
+  "[Log]": {
+    "cSpell.enabled": false
+  },
+  "[code-text-output]": {
+    "cSpell.enabled": false
+  }
 }
