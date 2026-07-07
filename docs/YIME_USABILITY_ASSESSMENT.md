@@ -283,11 +283,11 @@
 | 3 | ~~多音字只取首个编码~~ ✅ 已修复 | `yime_reverse_lookup_tool_windows.go` | `Load-DictLookupMulti` 保留所有读音编码，逐字拼接支持笛卡尔积 |
 | 4 | ~~每次查询重新加载词库~~ ✅ 已修复 | `yime_reverse_lookup_tool_windows.go` | 去除 `$script:lookupLoaded = $false`，数据只加载一次 |
 | 5 | ~~方案切换时 dictLookup 不重新加载~~ ✅ 已修复 | `yime_reverse_lookup_tool_windows.go` | `Ensure-LookupData` 按 `loadedSchemaID` 判断是否需要重载 |
-| 6 | `findRimeExternalDeployer` 含硬编码开发路径 | `yime.go:2150` | `C:\dev\librime\build\bin\Release\` |
-| 7 | `remapYimeCandidateSelectionKey` 是死代码 | `yime.go:743-770` | 定义但未调用 |
-| 8 | YAML 操作不支持行内注释 | `yime.go:2257-2272` | `readPageSizeFromCustomConfig` 可能读错 |
-| 9 | `candidatePageStart` 在非分页键时重置 | `yime.go:679` | 无效按键导致翻页位置丢失 |
-| 10 | `commandShouldRefreshState` 白名单维护负担 | `yime.go:464-475` | 新增命令 ID 需手动更新 |
+| 6 | ~~`findRimeExternalDeployer` 含硬编码开发路径~~ ✅ 已修复 | `yime.go:2194` | 移除 `C:\dev\librime\` 路径 |
+| 7 | ~~`remapYimeCandidateSelectionKey` 是死代码~~ ✅ 已修复 | `yime.go:730` | 删除未调用的函数 |
+| 8 | ~~YAML 操作不支持行内注释~~ ✅ 已修复 | `yime.go:2344` | `parseMenuPageSizeValue` 先剥离 `#` 注释 |
+| 9 | ~~`candidatePageStart` 在非分页键时重置~~ ✅ 已修复 | `yime.go:660` | 只在 `backendRet==true` 时重置 |
+| 10 | ~~`commandShouldRefreshState` 白名单维护负担~~ ✅ 已修复 | `yime.go:453` | 改为黑名单，只列出需刷新的命令 |
 
 ---
 

@@ -446,20 +446,19 @@ func (ime *IME) launchStandaloneToolAsync(run func() error, failureTitle string)
 }
 
 // commandShouldRefreshState reports whether an onCommand handler should push
-// composition/candidate state back to the host. Display-only language-bar
-// commands such as reverse-lookup mode must not refresh Rime state during the
+// composition/candidate state back to the host. Only commands that change the
+// active Rime session state (schema switch, deploy, mode toggle) need a refresh.
+// Display-only and tool-launch commands must not refresh Rime state during the
 // menu click callback; doing so after a session reload/redeploy destabilizes
 // the host (see AGENTS.md).
 func (ime *IME) commandShouldRefreshState(commandID int) bool {
 	switch commandID {
-	case ID_REVERSE_LOOKUP_DEFAULT, ID_REVERSE_LOOKUP_FULL, ID_REVERSE_LOOKUP_HIDDEN,
-		ID_REVERSE_LOOKUP_STANDARD_PINYIN, ID_REVERSE_LOOKUP_YIME_PINYIN, ID_REVERSE_LOOKUP_KEY_SEQUENCE,
-		ID_HELP_VIEW, ID_HELP_TRIAL_FEEDBACK, ID_HELP_COPY_TRIAL_TEMPLATE, ID_HELP_TOOL_HUB,
-		ID_USER_DIR, ID_SHARED_DIR, ID_SYNC_DIR, ID_LOG_DIR, ID_SYNC, ID_USER_LEXICON_MANAGER,
-		ID_CANDIDATE_PAGE_SIZE_5, ID_CANDIDATE_PAGE_SIZE_6, ID_CANDIDATE_PAGE_SIZE_7, ID_CANDIDATE_PAGE_SIZE_8, ID_CANDIDATE_PAGE_SIZE_9:
-		return false
-	default:
+	case ID_ASCII_MODE, ID_MODE_ICON, ID_FULL_SHAPE, ID_ASCII_PUNCT,
+		ID_TRADITIONALIZATION, ID_YIME_VARIABLE, ID_YIME_FULL, ID_YIME_SHORTHAND,
+		ID_DEPLOY, ID_USER_LEXICON_APPLY, ID_CANDIDATE_LAYOUT_TOGGLE:
 		return true
+	default:
+		return false
 	}
 }
 
@@ -657,12 +656,12 @@ func (ime *IME) processKey(req *pime.Request, isUp bool) bool {
 			return true
 		}
 	}
-	ime.candidatePageStart = 0
 	translatedKeyCode := translateKeyCode(req)
 	modifiers := translateModifiers(req, isUp)
 	backendRet := ime.backend.ProcessKey(req, translatedKeyCode, modifiers)
 	handled := backendRet
 	if backendRet {
+		ime.candidatePageStart = 0
 		ime.logShortcutTrace(req, isUp, translatedKeyCode, modifiers, backendRet, true)
 		return true
 	}
@@ -727,34 +726,6 @@ func (ime *IME) shouldPassThroughModifierOnKey(req *pime.Request, filterHandled 
 	return req.KeyStates.IsKeyDown(vkControl) || req.KeyStates.IsKeyDown(vkMenu)
 }
 
-func remapYimeCandidateSelectionKey(req *pime.Request) (int, bool) {
-	switch req.KeyCode {
-	case vkSpace:
-		return int('1'), true
-	case 0xC0: // VK_OEM_3: `
-		return int('2'), true
-	case 0xBD: // VK_OEM_MINUS: -
-		return int('3'), true
-	case 0xBB: // VK_OEM_PLUS: =
-		return int('4'), true
-	case 0xDC: // VK_OEM_5: backslash
-		return int('5'), true
-	}
-	switch req.CharCode {
-	case ' ':
-		return int('1'), true
-	case '`':
-		return int('2'), true
-	case '-':
-		return int('3'), true
-	case '=':
-		return int('4'), true
-	case '\\':
-		return int('5'), true
-	default:
-		return 0, false
-	}
-}
 
 func candidateSelectionIndex(req *pime.Request) (int, bool) {
 	switch req.KeyCode {
@@ -2195,7 +2166,7 @@ func findRimeExternalDeployer(sharedDir string) string {
 	candidates := []string{
 		filepath.Join(filepath.Dir(sharedDir), "rime_deployer.exe"),
 		filepath.Join(filepath.Clean(filepath.Join(sharedDir, "..", "..", "..", "..", "..", "librime", "build", "bin", "Release")), "rime_deployer.exe"),
-		`C:\dev\librime\build\bin\Release\rime_deployer.exe`,
+
 	}
 	for _, candidate := range candidates {
 		if _, err := os.Stat(candidate); err == nil {
@@ -2342,6 +2313,9 @@ func updateDefaultCustomPageSize(content string, size int) string {
 }
 
 func parseMenuPageSizeValue(trimmed string) (string, bool) {
+	if idx := strings.Index(trimmed, "#"); idx >= 0 {
+		trimmed = strings.TrimSpace(trimmed[:idx])
+	}
 	switch {
 	case strings.HasPrefix(trimmed, "menu/page_size:"):
 		return strings.TrimSpace(strings.TrimPrefix(trimmed, "menu/page_size:")), true

@@ -1668,6 +1668,20 @@ func TestReadPageSizeFromCustomConfig(t *testing.T) {
 	if got := readPageSizeFromCustomConfig(path); got != 8 {
 		t.Fatalf("expected quoted page size 8, got %d", got)
 	}
+
+	if err := os.WriteFile(path, []byte("patch:\n  \"menu/page_size\": 9 # user preference\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if got := readPageSizeFromCustomConfig(path); got != 9 {
+		t.Fatalf("expected page size 9 with inline comment, got %d", got)
+	}
+
+	if err := os.WriteFile(path, []byte("patch:\n  menu/page_size: 6#compact\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if got := readPageSizeFromCustomConfig(path); got != 6 {
+		t.Fatalf("expected page size 6 with no-space comment, got %d", got)
+	}
 }
 
 func TestNewUIPowerShellCommandUsesWindowsPowerShellWithoutHidingUI(t *testing.T) {
@@ -3354,5 +3368,41 @@ func TestRimeUserLexiconPathPerMode(t *testing.T) {
 		if !strings.HasSuffix(path, expected) {
 			t.Fatalf("expected rimeUserLexiconPath(%q) to end with %q, got %q", mode, expected, path)
 		}
+	}
+}
+
+func TestCandidatePageStartPreservedOnRejectedKey(t *testing.T) {
+	t.Setenv("APPDATA", t.TempDir())
+	ime := newTestIME()
+	backend := ime.backend.(*testBackend)
+	backend.session = true
+	ime.candidatePageStart = 1
+
+	req := &pime.Request{SeqNum: 1, KeyCode: 0x41, CharCode: 'a'}
+	ime.processKey(req, true)
+
+	if ime.candidatePageStart != 1 {
+		t.Fatalf("expected candidatePageStart preserved on key-up (rejected), got %d", ime.candidatePageStart)
+	}
+}
+
+func TestCandidatePageStartResetOnAcceptedKey(t *testing.T) {
+	t.Setenv("APPDATA", t.TempDir())
+	ime := newTestIME()
+	backend := ime.backend.(*testBackend)
+	backend.session = true
+	backend.composition = "ni"
+	backend.candidates = []candidateItem{{Text: "你"}}
+	ime.candidatePageStart = 5
+
+	req := &pime.Request{
+		SeqNum:   1,
+		KeyCode:  0x41,
+		CharCode: 'a',
+	}
+	ime.processKey(req, false)
+
+	if ime.candidatePageStart != 0 {
+		t.Fatalf("expected candidatePageStart reset when backend accepts key, got %d", ime.candidatePageStart)
 	}
 }
