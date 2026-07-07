@@ -3230,3 +3230,64 @@ func TestOnActivateDoesNotApplySchemaOrPageSizeFromStandaloneFiles(t *testing.T)
 		t.Fatalf("expected standalone UI state to still apply reverse lookup mode, got %q", ime.reverseLookupDisplayMode)
 	}
 }
+
+func TestJoinRuneLookupPartialMissing(t *testing.T) {
+	lookup := map[string]string{
+		"你": "ni3",
+		"好": "hao3",
+	}
+	if got := joinRuneLookup("你好", lookup, " "); got != "ni3 hao3" {
+		t.Fatalf("expected full match, got %q", got)
+	}
+	if got := joinRuneLookup("你X", lookup, " "); got != "ni3 ?" {
+		t.Fatalf("expected partial match with placeholder, got %q", got)
+	}
+	if got := joinRuneLookup("X好", lookup, " "); got != "? hao3" {
+		t.Fatalf("expected partial match with leading placeholder, got %q", got)
+	}
+	if got := joinRuneLookup("XY", lookup, " "); got != "? ?" {
+		t.Fatalf("expected all placeholders for all-missing text, got %q", got)
+	}
+	if got := joinRuneLookup("你X好", lookup, " "); got != "ni3 ? hao3" {
+		t.Fatalf("expected mixed match with middle placeholder, got %q", got)
+	}
+	if got := joinRuneLookup("", lookup, " "); got != "" {
+		t.Fatalf("expected empty for empty input, got %q", got)
+	}
+}
+
+func TestLookupStandardPinyinPartialMissing(t *testing.T) {
+	t.Setenv("APPDATA", t.TempDir())
+	ime := newTestIME()
+	ime.numericToMarkedPinyin = map[string]string{
+		"ni3":  "ní",
+		"hao3": "hǎo",
+	}
+	ime.reversePinyinLoaded = map[string]bool{"yime_variable": true}
+	ime.reversePinyinBySchema = map[string]map[string]string{
+		"yime_variable": {
+			"n": "ni3",
+			"h": "hao3",
+		},
+	}
+	ime.yimePinyinLoaded = map[string]bool{"yime_variable": true}
+	ime.yimePinyinBySchema = map[string]map[string]string{
+		"yime_variable": {
+			"你": "n",
+			"好": "h",
+		},
+	}
+
+	if got := ime.lookupStandardPinyin("你好"); got != "ní hǎo" {
+		t.Fatalf("expected full pinyin, got %q", got)
+	}
+	if got := ime.lookupStandardPinyin("你𠀀"); got != "ní ?" {
+		t.Fatalf("expected partial pinyin with placeholder for CJKV char without mapping, got %q", got)
+	}
+	if got := ime.lookupStandardPinyin("𠀀好"); got != "? hǎo" {
+		t.Fatalf("expected leading placeholder for CJKV char without mapping, got %q", got)
+	}
+	if got := ime.lookupStandardPinyin("你𠀀好"); got != "ní ? hǎo" {
+		t.Fatalf("expected mixed pinyin with middle placeholder, got %q", got)
+	}
+}

@@ -158,7 +158,7 @@ setCandidatePageSize(size)
 | # | 任务 | 涉及文件 | 前置条件 | 回归测试 |
 |---|------|----------|----------|----------|
 | 2.1 | ~~关键操作失败时增加用户提示~~ ✅ 已修复 | `yime.go` openPath/copyTextToClipboard/redeployBackend/syncBackendUserData/selectSchema/setCandidatePageSize | 无 | 手动验证 |
-| 2.2 | `joinRuneLookup` 缺失字符显示占位符 | `yime.go:1926-1940` | 无 | 新增 `TestJoinRuneLookupPartialMissing` |
+| 2.2 | ~~`joinRuneLookup` 缺失字符显示占位符~~ ✅ 已修复 | `yime.go:1921-1935` | 无 | `TestJoinRuneLookupPartialMissing`、`TestLookupStandardPinyinPartialMissing` |
 | 2.3 | 用户词库跨方案自动同步 | `yime.go:1671-1692` | 无 | 新增 `TestUserLexiconSyncOnSchemaSwitch` |
 | 2.4 | 反查工具加载进度提示 | `yime_reverse_lookup_tool_windows.go` | 无 | 手动验证 |
 | 2.5 | 反查搜索结果截断提示 | `yime_reverse_lookup_tool_windows.go:430` | 无 | 手动验证 |

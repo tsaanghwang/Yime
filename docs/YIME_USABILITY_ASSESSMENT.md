@@ -238,7 +238,7 @@
 
 **修复**：已为 `openPath`、`copyTextToClipboard`、`redeployBackend`、`syncBackendUserData`、`selectSchema`、`setCandidatePageSize` 添加 `showUserMessage` 反馈（成功/失败/异常），含 panic recover 保护。
 
-### 6.3 反查注释遇生僻字整体消失
+### 6.3 反查注释遇生僻字整体消失 ✅ 已修复
 
 **位置**：`yime.go:1926-1940`（`joinRuneLookup`）
 
@@ -247,6 +247,8 @@
 **影响**：含生僻字、标点、emoji 的候选词注释完全消失。
 
 **建议**：对缺失字符显示占位符（如 `?`），而非整体返回空。
+
+**修复**：`joinRuneLookup` 对缺失字符显示 `?` 占位符而非整体返回空。`lookupStandardPinyin` 编码路径含 `?` 时逐字符拆分查找拼音，缺失字符保留 `?`。新增 `TestJoinRuneLookupPartialMissing`、`TestLookupStandardPinyinPartialMissing` 回归测试。
 
 ### 6.4 用户词库只重建当前方案
 

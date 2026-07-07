@@ -1251,11 +1251,27 @@ func (ime *IME) lookupStandardPinyin(text string) string {
 	if len(reverseLookup) == 0 {
 		return ""
 	}
-	numericParts, ok := splitYimeCodeToNumericTonePinyin(code, reverseLookup)
-	if !ok {
-		return ""
+	if !strings.Contains(code, "?") {
+		numericParts, ok := splitYimeCodeToNumericTonePinyin(code, reverseLookup)
+		if ok {
+			return ime.markNumericTonePinyin(strings.Join(numericParts, " "))
+		}
 	}
-	return ime.markNumericTonePinyin(strings.Join(numericParts, " "))
+	parts := make([]string, 0, utf8.RuneCountInString(text))
+	for _, r := range text {
+		charCode := codeLookup[string(r)]
+		if charCode == "" {
+			parts = append(parts, "?")
+			continue
+		}
+		numericParts, ok := splitYimeCodeToNumericTonePinyin(charCode, reverseLookup)
+		if !ok {
+			parts = append(parts, "?")
+			continue
+		}
+		parts = append(parts, ime.markNumericTonePinyin(strings.Join(numericParts, " ")))
+	}
+	return strings.Join(parts, " ")
 }
 
 func (ime *IME) reversePinyinLookup() map[string]string {
@@ -1927,9 +1943,10 @@ func joinRuneLookup(text string, lookup map[string]string, separator string) str
 	for _, r := range text {
 		value := lookup[string(r)]
 		if value == "" {
-			return ""
+			parts = append(parts, "?")
+		} else {
+			parts = append(parts, value)
 		}
-		parts = append(parts, value)
 	}
 	return strings.Join(parts, separator)
 }
