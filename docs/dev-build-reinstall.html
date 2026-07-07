@@ -140,6 +140,62 @@
     </p>
 
     <section>
+      <h2>脚本分层（没有 bash 版）</h2>
+      <p>本仓库是 <strong>Windows 专用</strong>工具链，<strong>没有</strong>独立的 bash/sh 编译或重装脚本。你看到的「两套」是同一流程的不同层次：</p>
+      <table>
+        <thead>
+          <tr><th>层次</th><th>文件</th><th>作用</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>入口 <code>.cmd</code></td>
+            <td><code>Build.cmd</code>、<code>Reinstall-PIME-Test.cmd</code>、<code>Install-PIME-Test.cmd</code></td>
+            <td>双击或命令行启动；重装类自动 UAC 提权；失败时 <code>pause</code></td>
+          </tr>
+          <tr>
+            <td>逻辑 <code>.ps1</code></td>
+            <td><code>Build.ps1</code>、<code>tools\dev-*.ps1</code></td>
+            <td>真正干活的 PowerShell（停进程、复制文件、注册 TSF、打 NSIS）</td>
+          </tr>
+          <tr>
+            <td>编译 <code>.bat</code></td>
+            <td><code>build.bat</code>、<code>go-backend\build.bat</code></td>
+            <td>调用 cmake / cargo / MSBuild 等原生构建工具</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>根目录 <code>dev-*.ps1</code> 只是薄包装，转发到 <code>tools\dev-*.ps1</code>。<strong>改流程只改正本和 tools 下的 PS 脚本</strong>，不要假设还有另一套 bash 流程要对齐。</p>
+      <div class="note ok">
+        <strong>同一流程：</strong><code>Reinstall-PIME-Test.cmd</code> → <code>dev-stop-pime.ps1 -Auto</code> →（可选）<code>dev-uninstall.ps1</code> → <code>dev-install.ps1</code>。与 <code>Install-PIME-Test.cmd</code> 共用同一套 <code>dev-install.ps1</code>。
+      </div>
+    </section>
+
+    <section>
+      <h2>开发机 vs 分发安装（其它机器）</h2>
+      <p><strong><code>Reinstall-PIME-Test.cmd</code> 仅供本机开发调试</strong>，不要把这套流程当作「发给用户 / 装到别的电脑」的分发方式。</p>
+
+      <h3>本机开发（当前文档描述的流程）</h3>
+      <ul>
+        <li>前提：已 clone 仓库、有 VS / Rust / Go / NSIS 等工具链</li>
+        <li><code>Build.cmd</code> + <code>Reinstall-PIME-Test.cmd</code></li>
+        <li>安装到固定开发路径：<code>C:\Program Files (x86)\YIME</code></li>
+        <li>从 <code>build\</code>、<code>go-backend\build\</code> 等<strong>构建树直接复制</strong>，含 <strong>go-backend</strong></li>
+      </ul>
+
+      <h3>分发到其它机器（正式发布时应另做）</h3>
+      <ul>
+        <li>产物：<code>installer\YIME-*-setup.exe</code>（<code>Build.cmd</code> 成功后生成）</li>
+        <li>用户在目标机运行安装包，<strong>不需要</strong>仓库、不需要 <code>Reinstall-PIME-Test.cmd</code></li>
+        <li><strong>当前缺口（发版前必须处理）：</strong>NSIS 安装包<strong>尚未打包 go-backend</strong>。若直接拿现有 setup.exe 装到别的机器，音元拼音可能缺后端、语言栏/编码异常</li>
+        <li>发版前检查清单：安装包是否包含 go-backend（或等价部署步骤）、Rime 数据、版本号、卸载/升级路径是否与开发机硬编码路径脱钩</li>
+      </ul>
+
+      <div class="note warn">
+        <strong>备忘：</strong>开发重装快、可原地升级，但<strong>不能替代</strong>面向其它机器的安装包。要做分发版本时，应改 <code>installer\installer.nsi</code>（及必要打包脚本），而不是把 <code>Reinstall-PIME-Test.cmd</code> 拷给用户。
+      </div>
+    </section>
+
+    <section>
       <h2>日常开发（推荐）</h2>
       <p>在仓库根目录依次执行：</p>
       <pre>Set-Location C:\dev\Yime

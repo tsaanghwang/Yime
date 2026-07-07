@@ -1,30 +1,126 @@
-# Settings And Data
+# 设置与数据
 
-This is the placeholder settings-side guide for the standalone Yime tools
-direction.
+## 输入方案
 
-Use this page as the stable landing point for future work such as:
+音元输入法提供三种编码模式：
 
-- user-facing settings windows
-- data directory explanations
-- deploy and reload guidance
-- schema-specific configuration notes
+| 方案 | 名称 | 编码长度 | 特点 |
+|------|------|----------|------|
+| 变长 | yime_variable | 2-4 键 | 默认方案，编码长度随音节变化 |
+| 等长 | yime_full | 固定 4 键 | 每音节等长，无重码 |
+| 省键 | yime_shorthand | 1-3 键 | 最短编码，需安装省键方案数据 |
 
-For now, the main operational directories are:
+通过语言栏"模式"菜单或设置工具切换方案。
 
-- `%APPDATA%\PIME\Rime`
-- `%LOCALAPPDATA%\PIME\Logs`
-- installed shared data under `go-backend\input_methods\yime\data`
+## 候选设置
 
-## Language-Bar Maintenance Items
+### 候选项数
 
-The Settings menu keeps a small group of runtime-maintenance commands:
+支持 5-9 个候选项，默认 5 个。通过语言栏"候选项数"菜单或设置工具调整。
 
-- `重新部署 Rime`: re-runs the current Rime runtime deployment so changed schema
-  files or configuration can take effect. This is not a "re-import system
-  lexicon" action.
-- `同步 Rime 用户数据`: calls Rime's native user-data sync capability. It is
-  intended for Rime-managed user data and does not include Yime-only standalone
-  state such as `yime_settings_state.json`.
-- `打开数据与日志文件夹`: opens the user-data, shared-data, sync, and log
-  directories directly.
+修改候选项数会触发 Rime 会话重建，当前输入会被清除。这是设计行为——修改后请重新输入。
+
+### 候选排列
+
+支持竖排（默认）和横排。通过语言栏"横竖排切换"按钮或设置工具切换。
+
+### 候选选择键
+
+| 按键 | 选择 |
+|------|------|
+| Space | 第 1 个候选 |
+| `` ` `` | 第 2 个候选 |
+| `-` | 第 3 个候选 |
+| `=` | 第 4 个候选 |
+| `\` | 第 5 个候选 |
+
+当候选项数超过 5 个时，第 6-9 个候选项需用鼠标点击选择。
+
+### 反查显示
+
+控制候选窗中汉字编码注释的显示方式：
+
+| 模式 | 说明 |
+|------|------|
+| 键位序列 | 显示 Rime 返回的原始编码注释（默认） |
+| 隐藏编码 | 不显示编码注释 |
+| 标准拼音 | 显示带调号的标准拼音（如 zhōng） |
+| 音元拼音 | 显示音元编码 |
+
+## 数据目录
+
+### 用户数据
+
+`%APPDATA%\PIME\Rime\`
+
+| 文件 | 说明 |
+|------|------|
+| `default.custom.yaml` | 方案选择和候选项数覆盖 |
+| `yime_variable.custom.yaml` | 变长方案自定义配置 |
+| `user.yaml` | Rime 用户状态（上次选择的方案） |
+| `yime_user_phrases.txt` | 用户词库源文件 |
+| `custom_phrase.txt` | Rime 格式用户词库（自动生成） |
+| `yime_settings_state.json` | 独立 UI 偏好（反查模式、候选排列） |
+
+### 共享数据
+
+安装目录下 `go-backend\input_methods\yime\data\`
+
+包含方案定义、词典、编码映射表、拼音归一化表等运行时数据。
+
+### 日志
+
+`%LOCALAPPDATA%\PIME\Logs\`
+
+- `go_backend.log` — Go 后端主日志
+
+## 语言栏维护命令
+
+- **重新部署 Rime**：重新运行 Rime 运行时部署，使修改后的方案文件或配置生效。这不是"重新导入系统词库"。
+- **同步 Rime 用户数据**：调用 Rime 原生用户数据同步功能。仅同步 Rime 管理的数据，不包括 `yime_settings_state.json` 等 Yime 独立状态。
+- **打开数据与日志文件夹**：直接打开用户数据、共享数据、同步和日志目录。
+
+## 用户词库
+
+### 添加词条
+
+1. 通过语言栏"用户词库"菜单打开词库管理器
+2. 输入汉字和数字标调拼音（如 `zhong1 guo2`）
+3. 系统自动将拼音转换为音元编码
+4. 写入 `yime_user_phrases.txt`
+
+### 词库格式
+
+源文件 `yime_user_phrases.txt`：
+
+```
+词条<TAB>数字标调拼音<TAB>权重
+中国	zhong1 guo2	1000000
+```
+
+生成文件 `custom_phrase.txt`（Rime 格式）：
+
+```
+词条<TAB>音元编码<TAB>权重
+中国	7dgo	1000000
+```
+
+### 注意事项
+
+- 用户词库仅为当前方案重建。切换方案后需重新应用词库。
+- 拼音中 `ü` 可用 `v` 或 `u:` 代替。
+- 默认权重为 1000000，用户词会优先于主词典显示。
+
+## 设置工具
+
+独立 PowerShell WinForms 窗口，提供：
+
+- 输入方案选择
+- 候选项数调整
+- 反查显示模式
+- 候选排列方式
+- "应用并重建"按钮
+
+修改方案或候选项数后，需点击"应用并重建"使配置生效。该操作会：
+1. 写入 `default.custom.yaml`、`user.yaml`、`yime_settings_state.json`
+2. 调用 `rime_deployer.exe` 重建 Rime 运行时数据

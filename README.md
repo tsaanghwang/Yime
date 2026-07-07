@@ -1,108 +1,113 @@
 # Yime for Windows
 
-Yime for Windows is a Windows Chinese phonetic input method project built on top of the [PIME](https://github.com/EasyIME/PIME) text-service framework and powered by the Rime engine.
+**音元拼音** — A Windows Chinese phonetic input method built on [PIME](https://github.com/EasyIME/PIME) and powered by the [Rime](https://rime.im) engine.
 
-This repository is the Windows integration and host-side implementation of Yime. It is distinct from the separate `Yime-prototype` repository, which is used for encoding, API, lexicon, and experiment-heavy prototype work.
+[中文文档](README.zh-CN.md)
 
-## Project Scope
+Yime maps pinyin syllables to a structured keyboard encoding where initials follow memorable patterns (zh/ch/sh → 7/8/9, j/q/x → 3/2/1, z/c/s → 6/5/4). Three encoding modes are available: variable-length (default), fixed-length (4 keys per syllable, unambiguous), and shorthand (shortest codes).
 
-This repository focuses on the Windows product and integration layer:
+## Features
 
-- TSF host integration through the PIME-based text service.
-- Rime-backed runtime behavior for the Yime input method.
-- Go backend services under `go-backend`.
-- Windows packaging, deployment, and runtime validation.
-- Host-facing behavior such as language-bar commands, menu handling, candidate paging, and regression coverage.
-
-In this repository:
-
-- `PIMETextService` contains the Windows text service host implementation.
-- `go-backend` contains the backend services, including the Yime integration that drives Rime.
-- `python` and `node` contain supporting runtime components inherited from the broader PIME architecture where still applicable.
-- `installer`, build scripts, and deployment assets support packaging and local installation workflows.
+- **Three encoding modes** — variable-length, fixed-length, and shorthand, switchable from the language bar
+- **Rime-powered engine** — table translator with 468K+ entries per schema, weighted frequency sorting
+- **Candidate window** — 5–9 candidates per page, vertical or horizontal layout, one-click toggle
+- **Reverse lookup** — display standard pinyin, Yime codes, or key sequences alongside candidates
+- **User lexicon** — add custom phrases with numeric-tone pinyin; auto-converts to Yime codes
+- **Standalone tools** — settings, diagnostics, reverse-lookup, and lexicon manager run as independent windows (not inside TSF callbacks)
+- **Language bar** — lightweight dispatcher for schema, layout, page size, reverse-lookup, and maintenance commands
 
 ## Repository Layout
 
-- `go-backend/`: Go services and Yime-specific backend logic.
-- `PIMETextService/`: TSF text service host implementation.
-- `PIMELauncher/`: launcher and runtime process management.
-- `python/`: Python-side support components.
-- `node/`: Node-side support components.
-- `installer/`: installer assets and packaging output.
-- `libIME2/`, `libchewing/`, `McBopomofoWeb/`: upstream or related components preserved in the Windows host tree.
+```
+go-backend/              Go backend: Yime IME logic, Rime integration, standalone tools
+  input_methods/yime/    Yime-specific code and data
+    yime.go              Core IME: key handling, language bar, candidate window
+    librime.go           Rime DLL loader and deployment
+    data/                Schemas, dictionaries, code maps, pinyin tables
+    help/                User-facing help documents
+PIMETextService/         TSF text service host (C++/COM)
+PIMELauncher/            Process launcher and monitor (Rust)
+python/                  Python-side support components
+node/                    Node-side support components
+installer/               NSIS installer assets
+libIME2/                 Upstream IME library
+libchewing/              Upstream chewing library
+McBopomofofoWeb/         Upstream Bopomofo components
+docs/                    Development documentation
+```
 
-## Development Status
+## Branches
 
-The project is currently organized around these branches:
+| Branch | Purpose |
+|--------|---------|
+| `main` | Stable baseline |
+| `yime-stable` | Active development (CI target) |
+| `yime-on-pime` | Windows integration branch |
 
-- `main`: stable baseline for the Windows repository.
-- `yime-on-pime`: active Windows integration branch.
-
-The prototype and transition-oriented reference materials live in the separate `Yime-prototype` repository.
+The encoding, lexicon, and experiment-heavy prototype work lives in the separate `Yime-prototype` repository.
 
 ## Build Requirements
 
-- [CMake](http://www.cmake.org/) 3.0 or later
-- [Visual Studio 2019](https://visualstudio.microsoft.com/vs)
-- [Rust Toolchain](https://rustup.rs/) with `i686-pc-windows-msvc`
+- [Visual Studio 2022](https://visualstudio.microsoft.com/vs/) with C++ desktop workload
+- [CMake](https://cmake.org/) 3.0+
+- [Rust](https://rustup.rs/) with `i686-pc-windows-msvc` target
+- [Go](https://go.dev/) 1.21+
+- [Node.js](https://nodejs.org/) 18+
 - [Git](https://git-scm.com/)
-- [Node.js](https://nodejs.org/)
 
 ## Build
 
-Clone the repository and initialize submodules:
+### Clone and initialize
 
 ```powershell
-git clone <your-fork-url>/Yime.git
+git clone git@github.com:tsaanghwang/Yime.git
 cd Yime
 git submodule update --init
 ```
 
-Install the 32-bit Rust target if needed:
+### Install Rust target
 
 ```powershell
 rustup target add i686-pc-windows-msvc
 ```
 
-Build the 32-bit host:
+### Build the host (32-bit)
 
 ```powershell
-cmake . -Bbuild -G "Visual Studio 16 2019" -A Win32
-cmake --build build --config Release
+cmd /c build.bat
 ```
 
-Build the 64-bit text service host for 64-bit applications:
+### Build the Go backend
 
 ```powershell
-cmake . -Bbuild64 -G "Visual Studio 16 2019" -A x64
+cd go-backend
+cmd /c build.bat
+```
+
+### Build the 64-bit text service
+
+```powershell
+cmake . -Bbuild64 -G "Visual Studio 17 2022" -A x64
 cmake --build build64 --config Release --target PIMETextService
 ```
 
-Generated installer artifacts are placed under the installer output path after packaging.
+## Install
 
-## Initial Checklist
+### Development reinstall
 
-Use this checklist for a first local bring-up or when validating that a fresh sync is still healthy:
+From an elevated prompt:
 
-- [ ] Clone the repository, initialize submodules, and confirm the required toolchain is installed.
-- [ ] Run `Build.cmd` from the repository root to build the Windows host components.
-- [ ] Run `cmd /c build.bat` from `go-backend` to rebuild the Go backend package.
-- [ ] If Yime Rime data changed, deploy or refresh it with `tools\deploy-yime-rime-data.ps1` as described in [docs/YIME_RIME_INTEGRATION.md](/C:/dev/Yime/docs/YIME_RIME_INTEGRATION.md:1).
-- [ ] Reinstall the local test runtime with `Reinstall-PIME-Test.cmd` from an elevated prompt.
-- [ ] Switch to Yime and sanity-check activation, candidate display, settings, and reverse lookup behavior.
-- [ ] Run `go test ./input_methods/yime/...` from `go-backend` before shipping backend-facing changes.
+```powershell
+.\Reinstall-PIME-Test.cmd
+```
 
-For deeper Yime/Rime data maintenance steps, including the vendored `pinyin_normalized.json` flow, see the maintainer checklist in [docs/YIME_RIME_INTEGRATION.md](/C:/dev/Yime/docs/YIME_RIME_INTEGRATION.md:100).
+This script includes pre-flight checks, DLL-lock detection, and automatic fallback. Do not simplify it — see `AGENTS.md` for constraints.
 
-## Install Notes
+### Distribution
 
-Typical local installation requires:
+Ship `installer\YIME-*-setup.exe` after verifying the NSIS package includes the Go backend. See [docs/dev-build-reinstall.html](docs/dev-build-reinstall.html).
 
-- placing `PIMETextService.dll` under both `x86` and `x64` runtime directories
-- copying required runtime folders such as `python` and `node`
-- registering the text service with `regsvr32` as Administrator
-
-Example registration commands:
+### Manual registration
 
 ```powershell
 regsvr32 "C:\Program Files (x86)\YIME\x86\PIMETextService.dll"
@@ -116,21 +121,64 @@ regsvr32 /u "C:\Program Files (x86)\YIME\x86\PIMETextService.dll"
 regsvr32 /u "C:\Program Files (x86)\YIME\x64\PIMETextService.dll"
 ```
 
+## First-Run Checklist
+
+- [ ] Clone, initialize submodules, confirm toolchain installed
+- [ ] Run `cmd /c build.bat` from repository root
+- [ ] Run `cmd /c build.bat` from `go-backend`
+- [ ] If Rime data changed, run `tools\deploy-yime-rime-data.ps1` (see [docs/YIME_RIME_INTEGRATION.md](docs/YIME_RIME_INTEGRATION.md))
+- [ ] Run `.\Reinstall-PIME-Test.cmd` from an elevated prompt
+- [ ] Switch to Yime in a text application and verify: activation, candidates, settings, reverse lookup
+- [ ] Run `go test ./input_methods/yime/...` from `go-backend` before shipping backend changes
+
+## Encoding Reference
+
+### Initial → key mapping
+
+| Initial | Key | Initial | Key | Initial | Key |
+|---------|-----|---------|-----|---------|-----|
+| b | q | p | p | m | h | f | [ |
+| d | w | t | . | n | y | l | b |
+| g | ] | k | ' | h | n | | |
+| zh | 7 | ch | 8 | sh | 9 | r | 0 |
+| z | 6 | c | 5 | s | 4 | | |
+| j | 3 | q | 2 | x | 1 | | |
+| w | % | y | $ | | | | |
+
+### Candidate selection keys
+
+| Key | Selects |
+|-----|---------|
+| Space | 1st candidate |
+| `` ` `` | 2nd candidate |
+| `-` | 3rd candidate |
+| `=` | 4th candidate |
+| `\` | 5th candidate |
+
 ## Debugging
 
-To run the launcher with a console window:
+Run the launcher with a console window:
 
 ```powershell
 PIMELauncher.exe /console
 ```
 
-This is useful when investigating backend startup, host callbacks, menu commands, and runtime integration issues.
+Check logs at `%LOCALAPPDATA%\PIME\Logs\go_backend.log`.
+
+## Documentation
+
+| Document | Description |
+|----------|-------------|
+| [Architecture](docs/YIME_ARCHITECTURE.md) | System architecture, key mechanisms, data files |
+| [Usability Assessment](docs/YIME_USABILITY_ASSESSMENT.md) | Current usability issues and priorities |
+| [Development Roadmap](docs/YIME_DEVELOPMENT_ROADMAP.md) | Phased roadmap, fix workflows, AGENTS.md constraints |
+| [Rime Integration](docs/YIME_RIME_INTEGRATION.md) | Rime data flow, pinyin_normalized.json chain, maintainer checklist |
+| [Tooling Strategy](docs/YIME_TOOLING_STRATEGY.md) | Standalone tools vs. language-bar UI design |
+| [AGENTS.md](AGENTS.md) | AI-assisted development constraints |
 
 ## Issues
 
-Report repository-specific issues in this repository.
-
-Framework-level issues that also affect upstream PIME may also need cross-reference against [EasyIME/PIME](https://github.com/EasyIME/PIME).
+Report issues in this repository. Framework-level issues that also affect upstream PIME should cross-reference [EasyIME/PIME](https://github.com/EasyIME/PIME).
 
 ## License
 
