@@ -5,7 +5,9 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"sync"
 	"testing"
+	"unicode/utf8"
 
 	"github.com/EasyIME/pime-go/pime"
 )
@@ -3404,5 +3406,208 @@ func TestCandidatePageStartResetOnAcceptedKey(t *testing.T) {
 
 	if ime.candidatePageStart != 0 {
 		t.Fatalf("expected candidatePageStart reset when backend accepts key, got %d", ime.candidatePageStart)
+	}
+}
+
+func TestConcurrentKeyAndCommandNoDataRace(t *testing.T) {
+	t.Setenv("APPDATA", t.TempDir())
+	ime := newTestIME()
+	backend := ime.backend.(*testBackend)
+	backend.session = true
+	backend.composition = "ni"
+	backend.candidates = []candidateItem{{Text: "你"}, {Text: "尼"}}
+
+	var wg sync.WaitGroup
+	for i := 0; i < 20; i++ {
+		wg.Add(2)
+		go func() {
+			defer wg.Done()
+			ime.processKey(&pime.Request{SeqNum: 1, KeyCode: 0x41, CharCode: 'a'}, false)
+		}()
+		go func() {
+			defer wg.Done()
+			ime.onCommand(&pime.Request{SeqNum: 1, ID: pime.FlexibleID{Int: ID_ASCII_MODE, IsInt: true}}, pime.NewResponse(1, true))
+		}()
+	}
+	wg.Wait()
+}
+
+func TestLargeCandidateListGoSidePaging(t *testing.T) {
+	t.Setenv("APPDATA", t.TempDir())
+	ime := newTestIME()
+	backend := ime.backend.(*testBackend)
+	backend.session = true
+
+	candidates := make([]candidateItem, 25)
+	for i := range candidates {
+		candidates[i] = candidateItem{Text: string(rune('A' + i))}
+	}
+	backend.composition = "test"
+	backend.candidates = candidates
+	ime.candidatePageSize = 5
+	ime.keyComposing = true
+
+	ime.processKey(&pime.Request{SeqNum: 1, KeyCode: vkNext}, false)
+	if ime.candidatePageStart != 5 {
+		t.Fatalf("expected page start 5 after PageDown, got %d", ime.candidatePageStart)
+	}
+
+	ime.processKey(&pime.Request{SeqNum: 2, KeyCode: vkNext}, false)
+	if ime.candidatePageStart != 10 {
+		t.Fatalf("expected page start 10 after second PageDown, got %d", ime.candidatePageStart)
+	}
+
+	ime.processKey(&pime.Request{SeqNum: 3, KeyCode: vkPrior}, false)
+	if ime.candidatePageStart != 5 {
+		t.Fatalf("expected page start 5 after PageUp, got %d", ime.candidatePageStart)
+	}
+
+	ime.processKey(&pime.Request{SeqNum: 4, KeyCode: vkHome}, false)
+	if ime.candidatePageStart != 0 {
+		t.Fatalf("expected page start 0 after Home, got %d", ime.candidatePageStart)
+	}
+
+	ime.processKey(&pime.Request{SeqNum: 5, KeyCode: vkEnd}, false)
+	if ime.candidatePageStart != 20 {
+		t.Fatalf("expected page start 20 after End, got %d", ime.candidatePageStart)
+	}
+}
+
+func TestUnicodeBoundaryEmojiAndExtendedHan(t *testing.T) {
+	lookup := map[string]string{
+		"你": "ni3",
+		"好": "hao3",
+	}
+
+	if got := joinRuneLookup("你好", lookup, " "); got != "ni3 hao3" {
+		t.Fatalf("expected basic CJK, got %q", got)
+	}
+
+	if got := joinRuneLookup("你😀好", lookup, " "); got != "ni3 ? hao3" {
+		t.Fatalf("expected emoji placeholder, got %q", got)
+	}
+
+	if got := joinRuneLookup("你𠀀好", lookup, " "); got != "ni3 ? hao3" {
+		t.Fatalf("expected CJK Ext-B placeholder, got %q", got)
+	}
+
+	if got := joinRuneLookup("你𠀀", lookup, " "); got != "ni3 ?" {
+		t.Fatalf("expected trailing CJK Ext-B placeholder, got %q", got)
+	}
+
+	smp := "\U00020000"
+	if utf8.RuneLen([]rune(smp)[0]) != 4 {
+		t.Fatalf("expected 4-byte rune for CJK Ext-B, got %d", utf8.RuneLen([]rune(smp)[0]))
+	}
+}
+
+func TestSchemaSwitchFailureDuringComposition(t *testing.T) {
+	t.Setenv("APPDATA", t.TempDir())
+	ime := newTestIME()
+	backend := ime.backend.(*testBackend)
+	backend.session = true
+	backend.composition = "ni"
+	backend.candidates = []candidateItem{{Text: "你"}}
+
+	ime.selectSchema("yime_full")
+	if backend.composition != "" {
+		t.Fatalf("expected composition cleared after successful schema switch, got %q", backend.composition)
+	}
+
+	backend.composition = "hao"
+	backend.candidates = []candidateItem{{Text: "好"}}
+	backend.schemaID = ""
+	ime.selectSchema("")
+	if backend.composition != "hao" {
+		t.Fatalf("expected composition preserved when schema switch skipped (empty ID), got %q", backend.composition)
+	}
+}
+
+func TestLongUserPhraseLexiconBuild(t *testing.T) {
+	t.Setenv("APPDATA", t.TempDir())
+	ime := newTestIME()
+	backend := ime.backend.(*testBackend)
+	backend.session = true
+
+	sharedDir := ime.sharedDir()
+	if err := os.MkdirAll(sharedDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	tsvContent := "pinyin\tfull\tvariable\tshorthand\nzhong1\tzf\tzv\tzs\nguo2\tgf\tgv\tgs\n"
+	if err := os.WriteFile(filepath.Join(sharedDir, "yime_pinyin_codes.tsv"), []byte(tsvContent), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	sourcePath, err := ime.ensureUserLexiconFile()
+	if err != nil {
+		t.Fatalf("ensureUserLexiconFile failed: %v", err)
+	}
+
+	longPhrase := ""
+	for i := 0; i < 50; i++ {
+		longPhrase += "中国"
+	}
+	longPinyin := ""
+	for i := 0; i < 50; i++ {
+		if i > 0 {
+			longPinyin += " "
+		}
+		longPinyin += "zhong1 guo2"
+	}
+	entry := longPhrase + "\t" + longPinyin + "\t1000000\n"
+	if err := os.WriteFile(sourcePath, []byte(entry), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := ime.applyUserLexicon(); err != nil {
+		t.Fatalf("applyUserLexicon failed for long phrase: %v", err)
+	}
+
+	userDir := ime.userDir()
+	for _, mode := range yimeModes {
+		data, err := os.ReadFile(filepath.Join(userDir, "custom_phrase_"+mode+".txt"))
+		if err != nil {
+			t.Fatalf("expected custom_phrase_%s.txt for long phrase, got error: %v", mode, err)
+		}
+		if !strings.Contains(string(data), longPhrase) {
+			t.Fatalf("expected long phrase in %s mode output", mode)
+		}
+	}
+}
+
+func TestCompositionTerminatedNonForced(t *testing.T) {
+	t.Setenv("APPDATA", t.TempDir())
+	ime := newTestIME()
+	backend := ime.backend.(*testBackend)
+	backend.session = true
+	backend.composition = "ni"
+	backend.candidates = []candidateItem{{Text: "你"}}
+
+	resp := ime.onCompositionTerminated(&pime.Request{SeqNum: 1, Forced: false}, pime.NewResponse(1, true))
+	if resp.ReturnValue != 1 {
+		t.Fatalf("expected ReturnValue 1, got %d", resp.ReturnValue)
+	}
+	if backend.composition != "" {
+		t.Fatalf("expected composition cleared on non-forced termination, got %q", backend.composition)
+	}
+	if backend.session != true {
+		t.Fatalf("expected session preserved on non-forced termination, got %t", backend.session)
+	}
+}
+
+func TestCompositionTerminatedForced(t *testing.T) {
+	t.Setenv("APPDATA", t.TempDir())
+	ime := newTestIME()
+	backend := ime.backend.(*testBackend)
+	backend.session = true
+	backend.composition = "ni"
+	backend.candidates = []candidateItem{{Text: "你"}}
+
+	resp := ime.onCompositionTerminated(&pime.Request{SeqNum: 1, Forced: true}, pime.NewResponse(1, true))
+	if resp.ReturnValue != 1 {
+		t.Fatalf("expected ReturnValue 1, got %d", resp.ReturnValue)
+	}
+	if backend.session != false {
+		t.Fatalf("expected session destroyed on forced termination, got %t", backend.session)
 	}
 }

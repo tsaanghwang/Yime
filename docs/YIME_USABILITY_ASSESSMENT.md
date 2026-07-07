@@ -305,14 +305,14 @@
 
 ### 未覆盖的场景
 
-| 场景 | 风险 |
-|------|------|
-| 并发按键/语言栏点击 | 数据竞争 |
-| 大候选列表（> page_size）Go 侧分页 | 分页逻辑正确性 |
-| Unicode 边界（emoji、扩展汉字、代理对） | 编码/显示异常 |
-| 组字中切换方案失败 | 状态不一致 |
-| 超长用户词组 | 词库构建异常 |
-| `onCompositionTerminated(forced=false)` | 非强制终止路径 |
+| 场景 | 风险 | 状态 |
+|------|------|------|
+| 并发按键/语言栏点击 | 数据竞争 | ✅ `TestConcurrentKeyAndCommandNoDataRace` |
+| 大候选列表（> page_size）Go 侧分页 | 分页逻辑正确性 | ✅ `TestLargeCandidateListGoSidePaging` |
+| Unicode 边界（emoji、扩展汉字、代理对） | 编码/显示异常 | ✅ `TestUnicodeBoundaryEmojiAndExtendedHan` |
+| 组字中切换方案失败 | 状态不一致 | ✅ `TestSchemaSwitchFailureDuringComposition` |
+| 超长用户词组 | 词库构建异常 | ✅ `TestLongUserPhraseLexiconBuild` |
+| `onCompositionTerminated(forced=false)` | 非强制终止路径 | ✅ `TestCompositionTerminatedNonForced` / `Forced` |
 
 ---
 
