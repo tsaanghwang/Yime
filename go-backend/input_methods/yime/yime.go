@@ -1053,6 +1053,7 @@ func (ime *IME) selectSchema(schemaID string) {
 	if schemaPath := ime.prepareUserSchema(schemaID); schemaPath != "" {
 		if !deploySchemaConfig(schemaPath) {
 			log.Printf("部署方案失败: %s", schemaPath)
+			ime.showUserMessage("切换方案", "部署方案配置失败: "+schemaID+"\n方案切换可能未完全生效。", "Warning")
 		}
 	}
 	if ime.backend.SelectSchema(schemaID) {
@@ -2007,6 +2008,13 @@ func (ime *IME) setCandidatePageSize(size int) error {
 	if size < minCandidatePageSize || size > maxCandidatePageSize {
 		size = defaultCandidatePageSize
 	}
+	defer func() {
+		if r := recover(); r != nil {
+			log.Printf("候选项数变更期间发生异常: %v", r)
+			ime.showUserMessage("候选项数变更异常", "变更候选项数过程中发生异常。\n建议通过 语言栏 / 重新部署 恢复。\n异常: "+fmt.Sprintf("%v", r), "Error")
+		}
+	}()
+
 	userDir := ime.userDir()
 	if userDir == "" {
 		return os.ErrNotExist
@@ -2029,6 +2037,7 @@ func (ime *IME) setCandidatePageSize(size int) error {
 	ime.candidatePageStart = 0
 	if !deployDefaultCustomConfig(configPath) {
 		log.Printf("部署默认候选数量配置失败，继续更新当前方案: %s", configPath)
+		ime.showUserMessage("候选项数", "部署默认配置失败，候选项数可能未生效。\n请尝试 语言栏 / 重新部署。", "Warning")
 	}
 	if ime.backend != nil {
 		schemaID := ime.backend.CurrentSchema()
@@ -2066,24 +2075,40 @@ func (ime *IME) setCandidatePageSize(size int) error {
 // recompiled and reloaded.
 func (ime *IME) redeployBackend() {
 	if ime.backend == nil {
+		ime.showUserMessage("重新部署", "Rime 后端不可用，无法重新部署。\n请尝试重启输入法或检查安装。", "Warning")
 		return
 	}
+	defer func() {
+		if r := recover(); r != nil {
+			log.Printf("重新部署期间发生异常: %v", r)
+			ime.showUserMessage("重新部署异常", "重新部署过程中发生异常，输入法可能不稳定。\n建议重启输入法（注销或重启 PIMELauncher）。\n异常: "+fmt.Sprintf("%v", r), "Error")
+		}
+	}()
 	schemaID := ime.backend.CurrentSchema()
 	if schemaID == "" {
 		schemaID = "yime_variable"
 	}
 	ime.reloadBackendForSchema(schemaID)
+	ime.showUserMessage("重新部署", "Rime 已完成重新部署。", "Information")
 }
 
 func (ime *IME) syncBackendUserData() bool {
 	if ime.backend == nil {
+		ime.showUserMessage("同步用户数据", "Rime 后端不可用，无法同步。", "Warning")
 		return false
 	}
 	syncer, ok := ime.backend.(backendUserDataSyncer)
 	if !ok {
+		ime.showUserMessage("同步用户数据", "当前后端不支持用户数据同步。", "Warning")
 		return false
 	}
-	return syncer.SyncUserData()
+	result := syncer.SyncUserData()
+	if !result {
+		ime.showUserMessage("同步用户数据失败", "Rime 用户数据同步未成功完成。\n请检查日志: %LOCALAPPDATA%\\PIME\\Logs", "Error")
+	} else {
+		ime.showUserMessage("同步用户数据", "用户数据同步完成。", "Information")
+	}
+	return result
 }
 
 // reloadBackendSessionForSchema recreates the current Rime session without a
@@ -2399,10 +2424,12 @@ func updateSchemaMenuPageSize(content string, size int) string {
 
 func (ime *IME) openPath(path string) {
 	if path == "" {
+		ime.showUserMessage("打开路径", "路径为空，无法打开。", "Warning")
 		return
 	}
 	if err := exec.Command("rundll32.exe", "url.dll,FileProtocolHandler", path).Start(); err != nil {
 		log.Printf("打开路径失败 %s: %v", path, err)
+		ime.showUserMessage("打开路径失败", "无法打开: "+path+"\n错误: "+err.Error(), "Error")
 	}
 }
 
@@ -2414,6 +2441,7 @@ func (ime *IME) copyTextToClipboard(text string) {
 	cmd.Stdin = strings.NewReader(text)
 	if err := cmd.Start(); err != nil {
 		log.Printf("复制到剪贴板失败: %v", err)
+		ime.showUserMessage("复制失败", "无法复制到剪贴板。\n错误: "+err.Error(), "Error")
 	}
 }
 

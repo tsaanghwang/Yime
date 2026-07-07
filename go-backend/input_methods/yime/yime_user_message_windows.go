@@ -7,8 +7,12 @@ import (
 )
 
 func (ime *IME) showUserLexiconMessage(title, message, icon string) {
+	ime.showUserMessage(title, message, icon)
+}
+
+func (ime *IME) showUserMessage(title, message, icon string) {
 	if title == "" {
-		title = "用户词库"
+		title = "音元输入法"
 	}
 	if message == "" {
 		return

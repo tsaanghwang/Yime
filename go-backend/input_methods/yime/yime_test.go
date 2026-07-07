@@ -1400,15 +1400,17 @@ func TestCandidatePageSizeCommandUpdatesCurrentUserSchema(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !strings.Contains(string(data), "  page_size: 7\n") {
-		t.Fatalf("expected current user schema page size 7, got %q", string(data))
+	normalized := strings.ReplaceAll(string(data), "\r\n", "\n")
+	if !strings.Contains(normalized, "  page_size: 7\n") {
+		t.Fatalf("expected current user schema page size 7, got %q", normalized)
 	}
 	customData, err := os.ReadFile(filepath.Join(ime.userDir(), "yime_variable.custom.yaml"))
 	if err != nil {
 		t.Fatal(err)
 	}
-	if got := string(customData); !strings.Contains(got, "  menu/page_size: 7\n") && !strings.Contains(got, "  \"menu/page_size\": 7\n") {
-		t.Fatalf("expected current schema custom page size 7, got %q", string(customData))
+	customNorm := strings.ReplaceAll(string(customData), "\r\n", "\n")
+	if !strings.Contains(customNorm, "  menu/page_size: 7\n") && !strings.Contains(customNorm, "  \"menu/page_size\": 7\n") {
+		t.Fatalf("expected current schema custom page size 7, got %q", customNorm)
 	}
 	if backend.destroyCount != 1 || !backend.session {
 		t.Fatalf("expected current Rime session to reload after page size change, destroyCount=%d session=%t", backend.destroyCount, backend.session)
