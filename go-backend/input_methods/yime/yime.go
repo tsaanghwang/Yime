@@ -168,10 +168,8 @@ type IME struct {
 	candidatePageSize        int
 	pendingSchemaRedeploy    string
 	candidatePageStart       int
-	lastKeyDownCode          int
-	lastKeySkip              int
+	keysDown                 map[int]bool
 	lastKeyDownRet           bool
-	lastKeyUpCode            int
 	lastKeyUpRet             bool
 	keyComposing             bool
 	backend                  rimeBackend
@@ -196,6 +194,7 @@ func New(client *pime.Client) pime.TextService {
 		yimePinyinBySchema:       map[string]map[string]string{},
 		yimePinyinLoaded:         map[string]bool{},
 		candidatePageSize:        defaultCandidatePageSize,
+		keysDown:                 map[int]bool{},
 	}
 }
 
@@ -268,31 +267,19 @@ func (ime *IME) onKeyboardStatusChanged(req *pime.Request, resp *pime.Response) 
 }
 
 func (ime *IME) filterKeyDown(req *pime.Request, resp *pime.Response) *pime.Response {
-	if ime.lastKeyDownCode == req.KeyCode {
-		ime.lastKeySkip++
-		if ime.lastKeySkip >= 2 {
-			ime.lastKeyDownCode = 0
-			ime.lastKeySkip = 0
-		}
-	} else {
-		ime.lastKeyDownCode = req.KeyCode
-		ime.lastKeySkip = 0
-		ime.lastKeyDownRet = ime.processKey(req, false)
+	if ime.keysDown[req.KeyCode] {
+		resp.ReturnValue = boolToInt(ime.lastKeyDownRet)
+		return resp
 	}
-	ime.lastKeyUpCode = 0
+	ime.keysDown[req.KeyCode] = true
+	ime.lastKeyDownRet = ime.processKey(req, false)
 	resp.ReturnValue = boolToInt(ime.lastKeyDownRet)
 	return resp
 }
 
 func (ime *IME) filterKeyUp(req *pime.Request, resp *pime.Response) *pime.Response {
-	if ime.lastKeyUpCode == req.KeyCode {
-		ime.lastKeyUpCode = 0
-	} else {
-		ime.lastKeyUpCode = req.KeyCode
-		ime.lastKeyUpRet = ime.processKey(req, true)
-	}
-	ime.lastKeyDownCode = 0
-	ime.lastKeySkip = 0
+	delete(ime.keysDown, req.KeyCode)
+	ime.lastKeyUpRet = ime.processKey(req, true)
 	resp.ReturnValue = boolToInt(ime.lastKeyUpRet)
 	return resp
 }

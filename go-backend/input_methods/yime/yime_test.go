@@ -315,6 +315,7 @@ func newTestIME() *IME {
 		yimePinyinBySchema:    map[string]map[string]string{},
 		yimePinyinLoaded:      map[string]bool{},
 		candidatePageSize:     defaultCandidatePageSize,
+		keysDown:              map[int]bool{},
 		backend:               newTestBackend(),
 	}
 }
@@ -696,6 +697,92 @@ func TestOnKeyDownAsciiModePassesThroughWhenIdle(t *testing.T) {
 
 	if resp.ReturnValue != 0 {
 		t.Fatalf("expected ascii mode to pass through idle typing, got %d", resp.ReturnValue)
+	}
+}
+
+func TestRapidSameKeyNotSwallowedAfterKeyUp(t *testing.T) {
+	ime := newTestIME()
+
+	resp1 := ime.filterKeyDown(&pime.Request{
+		SeqNum:   1,
+		KeyCode:  0x4E,
+		CharCode: 'n',
+	}, pime.NewResponse(1, true))
+	if resp1.ReturnValue != 1 {
+		t.Fatalf("expected first n to be handled, got %d", resp1.ReturnValue)
+	}
+
+	ime.filterKeyUp(&pime.Request{
+		SeqNum:  2,
+		KeyCode: 0x4E,
+	}, pime.NewResponse(2, true))
+
+	resp2 := ime.filterKeyDown(&pime.Request{
+		SeqNum:   3,
+		KeyCode:  0x4E,
+		CharCode: 'n',
+	}, pime.NewResponse(3, true))
+	if resp2.ReturnValue != 1 {
+		t.Fatalf("expected second n after key-up to be handled, got %d", resp2.ReturnValue)
+	}
+}
+
+func TestDuplicateKeyDownWithoutKeyUpSuppressed(t *testing.T) {
+	ime := newTestIME()
+
+	resp1 := ime.filterKeyDown(&pime.Request{
+		SeqNum:   1,
+		KeyCode:  0x4E,
+		CharCode: 'n',
+	}, pime.NewResponse(1, true))
+	if resp1.ReturnValue != 1 {
+		t.Fatalf("expected first n to be handled, got %d", resp1.ReturnValue)
+	}
+
+	resp2 := ime.filterKeyDown(&pime.Request{
+		SeqNum:   2,
+		KeyCode:  0x4E,
+		CharCode: 'n',
+	}, pime.NewResponse(2, true))
+	if resp2.ReturnValue != 1 {
+		t.Fatalf("expected duplicate key-down to reuse last return value, got %d", resp2.ReturnValue)
+	}
+
+	ime.filterKeyUp(&pime.Request{
+		SeqNum:  3,
+		KeyCode: 0x4E,
+	}, pime.NewResponse(3, true))
+
+	resp3 := ime.filterKeyDown(&pime.Request{
+		SeqNum:   4,
+		KeyCode:  0x4E,
+		CharCode: 'n',
+	}, pime.NewResponse(4, true))
+	if resp3.ReturnValue != 1 {
+		t.Fatalf("expected n after key-up to be handled again, got %d", resp3.ReturnValue)
+	}
+}
+
+func TestKeyUpClearsKeyDownState(t *testing.T) {
+	ime := newTestIME()
+
+	ime.filterKeyDown(&pime.Request{
+		SeqNum:   1,
+		KeyCode:  0x4E,
+		CharCode: 'n',
+	}, pime.NewResponse(1, true))
+
+	if !ime.keysDown[0x4E] {
+		t.Fatal("expected key to be tracked as down")
+	}
+
+	ime.filterKeyUp(&pime.Request{
+		SeqNum:  2,
+		KeyCode: 0x4E,
+	}, pime.NewResponse(2, true))
+
+	if ime.keysDown[0x4E] {
+		t.Fatal("expected key to be cleared after key-up")
 	}
 }
 
