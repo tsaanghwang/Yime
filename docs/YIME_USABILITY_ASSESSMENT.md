@@ -224,6 +224,8 @@
 
 **回归测试**：`TestRimeInitRetryAfterFailure`
 
+**不会回退到 PIME/Rime 默认词库**：重试时 `sharedDir` 由 `server.exe` 所在目录推导（`exeDir/input_methods/yime/data`），路径固定，始终指向 Yime 专属数据目录。Rime 的 `startMaintenance` 只编译 `SharedDataDir` 下的 schema，不会引入其他目录的方案。因此重试不会导致 Rime 回退到 luna_pinyin 等 PIME 默认方案。**不可随意将 `SharedDataDir` 回退到 PIME 通用数据目录**，否则 Yime 编码链路将完全失效且难以恢复——Yime 的 57 音元编码体系与 PIME 默认的拼音方案不兼容，一旦用户数据被默认方案覆盖，需要完整重新部署才能修复。
+
 ### 6.2 部署/打开/剪贴板失败无用户反馈
 
 **位置**：`yime.go:2397-2414`
