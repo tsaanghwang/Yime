@@ -791,6 +791,42 @@ func TestKeyUpClearsKeyDownState(t *testing.T) {
 	}
 }
 
+func TestSetCandidatePageSizePreservesComposition(t *testing.T) {
+	ime := newTestIME()
+	backend := ime.backend.(*testBackend)
+
+	ime.filterKeyDown(&pime.Request{
+		SeqNum:   1,
+		KeyCode:  0x4E,
+		CharCode: 'n',
+	}, pime.NewResponse(1, true))
+	ime.filterKeyDown(&pime.Request{
+		SeqNum:   2,
+		KeyCode:  0x49,
+		CharCode: 'i',
+	}, pime.NewResponse(2, true))
+	ime.onKeyDown(&pime.Request{
+		SeqNum:   3,
+		KeyCode:  0x49,
+		CharCode: 'i',
+	}, pime.NewResponse(3, true))
+
+	if backend.composition != "ni" {
+		t.Fatalf("expected composition 'ni' before page size change, got %q", backend.composition)
+	}
+
+	tmpDir := t.TempDir()
+	t.Setenv("APPDATA", tmpDir)
+	ime.setCandidatePageSize(7)
+
+	if backend.composition != "ni" {
+		t.Fatalf("expected composition 'ni' preserved after page size change, got %q", backend.composition)
+	}
+	if ime.candidatePageSize != 7 {
+		t.Fatalf("expected candidatePageSize 7, got %d", ime.candidatePageSize)
+	}
+}
+
 func TestReturnKeyCommitsRawInputDuringComposition(t *testing.T) {
 	ime := newTestIME()
 	backend := ime.backend.(*testBackend)
@@ -1281,10 +1317,9 @@ func TestCandidatePageSizeCommandRestoresCompositionState(t *testing.T) {
 	if ime.candidatePageSize != 7 {
 		t.Fatalf("expected current session page size 7, got %d", ime.candidatePageSize)
 	}
-	// Session reload clears composition by design; do not replay keys during
-	// language-bar clicks (AGENTS.md host stability).
-	if backend.composition != "" {
-		t.Fatalf("expected composition cleared after page size session reload, got %q", backend.composition)
+	// Session reload now preserves composition by replaying keys after rebuild.
+	if backend.composition != "ni" {
+		t.Fatalf("expected composition 'ni' preserved after page size session reload, got %q", backend.composition)
 	}
 }
 

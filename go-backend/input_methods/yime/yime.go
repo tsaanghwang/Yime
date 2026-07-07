@@ -2101,10 +2101,19 @@ func (ime *IME) reloadBackendSessionForSchema(schemaID string) {
 	if ime.backend == nil {
 		return
 	}
+	var savedComposition string
+	if state := ime.backend.State(); state.Composition != "" {
+		savedComposition = state.Composition
+	}
 	ime.backend.DestroySession()
 	if ime.backend.EnsureSession() {
 		ime.backend.SelectSchema(schemaID)
 		ime.backend.ClearComposition()
+		if savedComposition != "" {
+			for _, ch := range savedComposition {
+				ime.backend.ProcessKey(&pime.Request{CharCode: int(ch)}, int(ch), 0)
+			}
+		}
 	}
 }
 
