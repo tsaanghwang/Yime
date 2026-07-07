@@ -10,7 +10,7 @@ jobs:
   build:
     runs-on: windows-2022
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           submodules: 'true'
       - name: Set up MSVC developer environment
@@ -43,7 +43,7 @@ jobs:
             }
           }
       - name: Use Node.js 21.x
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
           node-version: 21.x
       - name: Install Rust
@@ -117,7 +117,7 @@ jobs:
           Set-Location installer
           & "C:\Program Files (x86)\NSIS\Bin\makensis.exe" "installer.nsi"
 
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         with:
           name: Installer
           path: installer/*.exe
