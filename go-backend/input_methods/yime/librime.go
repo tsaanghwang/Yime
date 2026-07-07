@@ -562,6 +562,18 @@ func rimeDeploy(traits RimeTraits, datadir, userdir, appname string, fullcheck b
 			return false
 		}
 	}
+
+	customPattern := filepath.Join(userdir, "*.custom.yaml")
+	customMatches, _ := filepath.Glob(customPattern)
+	for _, customFile := range customMatches {
+		if filepath.Base(customFile) == "default.custom.yaml" {
+			continue
+		}
+		if !DeployConfigFile(customFile, "schema") {
+			log.Printf("部署方案自定义配置失败: %s", customFile)
+		}
+	}
+
 	return true
 }
 
