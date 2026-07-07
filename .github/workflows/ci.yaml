@@ -117,7 +117,7 @@ jobs:
           Set-Location installer
           & "C:\Program Files (x86)\NSIS\Bin\makensis.exe" "installer.nsi"
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: Installer
           path: installer/*.exe
