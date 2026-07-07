@@ -355,6 +355,56 @@ func TestInitWithMissingUserDirDoesNotPanic(t *testing.T) {
 	}
 }
 
+func TestRimeInitRetryAfterFailure(t *testing.T) {
+	rimeInitMu.Lock()
+	rimeInitDone = false
+	rimeInitOK = false
+	rimeInitMu.Unlock()
+	t.Cleanup(func() {
+		rimeInitMu.Lock()
+		rimeInitDone = false
+		rimeInitOK = false
+		rimeInitMu.Unlock()
+	})
+
+	badDir := t.TempDir()
+	t.Setenv("APPDATA", badDir)
+
+	ime := New(&pime.Client{ID: "test-client"}).(*IME)
+	ime.Init(&pime.Request{})
+	if ime.BackendAvailable() {
+		t.Fatal("expected backend unavailable with missing Rime data")
+	}
+
+	rimeInitMu.Lock()
+	doneAfterFirst := rimeInitDone
+	okAfterFirst := rimeInitOK
+	rimeInitMu.Unlock()
+	if !doneAfterFirst {
+		t.Fatal("expected rimeInitDone true after first init attempt")
+	}
+	if okAfterFirst {
+		t.Fatal("expected rimeInitOK false after failed init")
+	}
+
+	goodDir := t.TempDir()
+	userRime := filepath.Join(goodDir, "PIME", "Rime")
+	if err := os.MkdirAll(userRime, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("APPDATA", goodDir)
+
+	ime2 := New(&pime.Client{ID: "test-client-2"}).(*IME)
+	ime2.Init(&pime.Request{})
+
+	rimeInitMu.Lock()
+	doneAfterRetry := rimeInitDone
+	rimeInitMu.Unlock()
+	if !doneAfterRetry {
+		t.Fatal("expected rimeInitDone true after retry")
+	}
+}
+
 func TestFilterKeyDownProcessesKeyWithoutUpdatingUI(t *testing.T) {
 	ime := newTestIME()
 

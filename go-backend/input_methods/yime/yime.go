@@ -613,15 +613,7 @@ func (ime *IME) Init(req *pime.Request) bool {
 		return true
 	}
 	userDir := filepath.Join(appData, APP, "Rime")
-	info, statErr := os.Stat(userDir)
-	if statErr != nil {
-		log.Printf("未找到用户 RIME 数据目录，原生 RIME 不可用: %v", statErr)
-		return true
-	}
-	if !info.IsDir() {
-		log.Println("未找到用户 RIME 数据目录，原生 RIME 不可用")
-		return true
-	}
+
 
 	real := newNativeBackend()
 	if real != nil && real.Initialize(sharedDir, userDir, false) {
