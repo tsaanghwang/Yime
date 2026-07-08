@@ -1,6 +1,6 @@
 # 音元输入法开发路线图
 
-> 版本：2026-07-07
+> 版本：2026-07-07（最终版）
 > 分支：yime-stable
 > 配套文档：[可用性评估](YIME_USABILITY_ASSESSMENT.md) | [架构文档](YIME_ARCHITECTURE.md)
 
@@ -8,20 +8,33 @@
 
 ## 1. 当前状态
 
-### 已完成
+### 已完成里程碑
 
-| 里程碑 | 提交 | 状态 |
-|--------|------|------|
-| 候选项数同步机制 | 1343632 | ✅ rimeState.PageSize 回读链 |
-| 语言栏排列方式简化 | a2b6923 | ✅ 一次点击切换横竖排 |
-| CI 构建流水线修复 | d9d8a0ca | ✅ windows-2022 + vswhere |
-| rimeDeploy schema custom 部署 | 423658c | ✅ *.custom.yaml glob 部署 |
-| 子模块推送 | — | ✅ libIME2 + McBopomofoWeb |
-| cSpell 词表扩展 | 16eda9b | ✅ 60+ 项目专有词 |
+| # | 里程碑 | 提交 | 说明 |
+|---|--------|------|------|
+| 1 | 候选项数同步机制 | 1343632 | rimeState.PageSize 回读链 |
+| 2 | 重复按键抑制吞键修复 | edd6e0ab | keysDown map 替代计数器 |
+| 3 | 回车键组字时被吞修复 | ef52fe2a | pendingRawCommit 原始编码上屏 |
+| 4 | 候选项数变更保存组字状态 | 1bf5063f | reloadBackendSessionForSchema 重放 |
+| 5 | Rime 初始化失败可重试 | 3e24351d | sync.Mutex + 双标志替代 sync.Once |
+| 6 | rimeDeploy schema custom 部署 | 423658c5 | *.custom.yaml glob 部署 |
+| 7 | 语言栏排列方式简化 | a2b6923 | 一次点击切换横竖排 |
+| 8 | CI 构建流水线修复 | d9d8a0ca | windows-2022 + vswhere |
+| 9 | 部署/打开/剪贴板操作用户反馈 | e2353639 | showUserMessage + panic recover |
+| 10 | 反查注释遇生僻字占位符 | 7800d552 | joinRuneLookup 用 ? 占位 |
+| 11 | 用户词库跨方案同步 | fec6b129 | 三模式独立 custom_phrase + user_dict |
+| 12 | 反查工具重设计 | e7a3a461 | 多音字、即时搜索、加载进度、截断提示 |
+| 13 | 低优先级问题 #6-#10 全部修复 | dce1295b | 硬编码路径、死代码、YAML 注释、翻页重置、命令黑名单 |
+| 14 | 未覆盖场景测试 | 526c5a2c | 并发、分页、Unicode、方案切换、超长词组、终止 |
+| 15 | 工具链补充 | 63ef77c5 | DELETE/IMPORT 词库、即时搜索 debounce、工具箱中文化 |
+| 16 | cSpell 词表扩展 | 16eda9b | 60+ 项目专有词 |
+| 17 | 子模块推送 | — | libIME2 + McBopomofoWeb |
 
-### 已知缺陷（按严重度排序）
+### 遗留编码约束（暂不修改）
 
-详见 [可用性评估 §5-7](YIME_USABILITY_ASSESSMENT.md#5-高优先级可用性问题)
+- 候选选择键仅 5 个（Space/`/-/=/\），第 6-9 个候选需鼠标点击
+- 数字键在组字时作为编码输入，不选词
+- 57 音元占满 47 个可打印键位，改选字键需重建编码体系
 
 ---
 
@@ -120,9 +133,9 @@ setCandidatePageSize(size)
     ├── 6. 运行 rime_deployer.exe (runRimeExternalBuild)
     ├── 7. 设置 pendingSchemaRedeploy
     ├── 8. 重建会话 (reloadBackendSessionForSchema)
-    │       └── 当前组字状态丢失 ⚠️
+    │       └── 保存并重放组字状态 ✅
     └── 9. 读回 PageSize (backend.State().PageSize)
-            └── 无候选时 PageSize=0，读回失败 ⚠️
+            └── 无候选时 PageSize=0，读回失败（仅记录日志）
     │
     ▼
 下次按键时执行 pendingSchemaRedeploy
@@ -132,104 +145,108 @@ setCandidatePageSize(size)
 
 ## 3. 路线图
 
-### Phase 1：关键可用性修复（1-2 周）
+### Phase 1：关键可用性修复 ✅ 已完成
 
-目标：修复直接影响打字体验的 4 个高优先级问题。
-
-| # | 任务 | 涉及文件 | 前置条件 | 回归测试 |
-|---|------|----------|----------|----------|
-| 1.1 | 修复回车键行为：组字时回车上屏原始编码 | `yime.go:688-692` | 无 | 新增 `TestReturnKeyCommitsRawInputDuringComposition` |
-| 1.2 | 修复重复按键抑制：改为 key-down/key-up 配对 | `yime.go:271-298` | 无 | 新增 `TestDuplicateKeySuppressionRespectsKeyUp` |
-| 1.3 | 扩展候选选择键至 9 个 | `yime.go:743-799` | 1.1（回车行为先修） | 新增 `TestCandidateSelectionKeysCoverAllPageSize` |
-| 1.4 | 候选项数变更保存/恢复组字状态 | `yime.go:2012-2067` | 无 | 新增 `TestSetCandidatePageSizePreservesComposition` |
-
-**验收标准**：
-- 快速连打同一键不丢字
-- 组字时回车有可见效果
-- 候选项数 6-9 时全部可通过键盘选择
-- 调整候选项数不丢失当前输入
+| # | 任务 | 提交 | 回归测试 |
+|---|------|------|----------|
+| 1.1 | 修复回车键行为 | ef52fe2a | `TestReturnKeyCommitsRawInputDuringComposition`, `TestReturnKeyPassesThroughWhenNotComposing` |
+| 1.2 | 修复重复按键抑制 | edd6e0ab | `TestRapidSameKey*`, `TestDuplicateKeyDown*`, `TestKeyUpClears*` |
+| 1.3 | 候选选择键扩展 | 暂缓 | 编码约束：57 音元占满键位 |
+| 1.4 | 候选项数变更保存组字状态 | 1bf5063f | `TestSetCandidatePageSizePreservesComposition` |
 
 ---
 
-### Phase 2：用户体验改善（2-4 周）
+### Phase 2：用户体验改善 ✅ 已完成
 
-目标：修复中优先级问题，提升操作反馈和一致性。
-
-| # | 任务 | 涉及文件 | 前置条件 | 回归测试 |
-|---|------|----------|----------|----------|
-| 2.1 | 关键操作失败时增加用户提示 | `yime.go` openPath/copyTextToClipboard | 无 | 手动验证 |
-| 2.2 | `joinRuneLookup` 缺失字符显示占位符 | `yime.go:1926-1940` | 无 | 新增 `TestJoinRuneLookupPartialMissing` |
-| 2.3 | 用户词库跨方案自动同步 | `yime.go:1671-1692` | 无 | 新增 `TestUserLexiconSyncOnSchemaSwitch` |
-| 2.4 | 反查工具加载进度提示 | `yime_reverse_lookup_tool_windows.go` | 无 | 手动验证 |
-| 2.5 | 反查搜索结果截断提示 | `yime_reverse_lookup_tool_windows.go:430` | 无 | 手动验证 |
-| 2.6 | 实现词库删除功能 | `yime_user_lexicon_windows.go` | 无 | 新增测试 |
+| # | 任务 | 提交 | 回归测试 |
+|---|------|------|----------|
+| 2.1 | 关键操作失败用户提示 | e2353639 | 手动验证 |
+| 2.2 | 反查缺失字符占位符 | 7800d552 | `TestJoinRuneLookupPartialMissing`, `TestLookupStandardPinyinPartialMissing` |
+| 2.3 | 用户词库跨方案同步 | fec6b129 | `TestApplyUserLexiconWritesAllThreeModes`, `TestRimeUserLexiconPathPerMode` |
+| 2.4 | 反查工具加载进度提示 | e7a3a461 | 手动验证 |
+| 2.5 | 反查搜索结果截断提示 | e7a3a461 | 手动验证 |
+| 2.6 | 词库删除/导入功能 | 63ef77c5 | 手动验证 |
 
 ---
 
-### Phase 3：代码质量与健壮性（1-2 月）
+### Phase 3：代码质量与健壮性 ✅ 已完成
 
-目标：清理技术债务，增强测试覆盖。
-
-| # | 任务 | 涉及文件 | 说明 |
-|---|------|----------|------|
-| 3.1 | 移除硬编码开发路径 | `yime.go:2150` | 删除 `C:\dev\librime\` 路径 |
-| 3.2 | 移除死代码 `remapYimeCandidateSelectionKey` | `yime.go:743-770` | 定义但未调用 |
-| 3.3 | `commandShouldRefreshState` 改为黑名单 | `yime.go:464-475` | 降低维护负担 |
-| 3.4 | 增加并发安全测试 | `yime_test.go` | 多按键/多命令并发 |
-| 3.5 | 增加 Unicode 边界测试 | `yime_test.go` | emoji、扩展汉字、代理对 |
-| 3.6 | YAML 操作支持行内注释 | `yime.go:2257-2272` | `readPageSizeFromCustomConfig` |
-| 3.7 | `candidatePageStart` 仅在候选列表变化时重置 | `yime.go:679` | 无效按键不应丢失翻页位置 |
+| # | 任务 | 提交 | 说明 |
+|---|------|------|------|
+| 3.1 | 移除硬编码开发路径 | dce1295b | 删除 `C:\dev\librime\` 路径 |
+| 3.2 | 移除死代码 | dce1295b | 删除未调用的 `remapYimeCandidateSelectionKey` |
+| 3.3 | 命令刷新改为黑名单 | dce1295b | 只列出需刷新的 11 个命令 |
+| 3.4 | 并发安全测试 | 526c5a2c | `TestConcurrentKeyAndCommandNoDataRace` |
+| 3.5 | Unicode 边界测试 | 526c5a2c | emoji、扩展汉字、代理对 |
+| 3.6 | YAML 行内注释支持 | dce1295b | `parseMenuPageSizeValue` 剥离 `#` 注释 |
+| 3.7 | candidatePageStart 仅按键生效时重置 | dce1295b | `backendRet==true` 时才重置 |
 
 ---
 
-### Phase 4：功能增强（2-3 月）
+### Phase 4：功能增强 — 部分完成
 
-目标：基于稳定基础增加用户请求的功能。
+| # | 任务 | 状态 | 说明 |
+|---|------|------|------|
+| 4.1 | 组字时数字键选词模式 | 暂缓 | 需编码体系配合 |
+| 4.2 | Rime 初始化失败可重试 | ✅ 3e24351d | sync.Mutex + 双标志 |
+| 4.3 | 词典噪声清理 | 待做 | 审查权重=1 的极低频词（优化，非缺陷） |
+| 4.4 | 非标准音节审查 | 不处理 | bong4/wong4 等为 Unihan 台版/方言读音遗留，权重极低不影响使用 |
+| 4.5 | 词库导入功能 | ✅ 63ef77c5 | DELETE/IMPORT 接入词库管理器 |
+| 4.6 | 反查工具即时搜索 | ✅ e7a3a461 | 500ms debounce 即时搜索 |
 
-| # | 任务 | 说明 |
-|---|------|------|
-| 4.1 | 组字时数字键选词模式（可配置） | 用户可在"数字选词"和"数字编码"间切换 |
-| 4.2 | Rime 初始化失败可重试机制 | 替代 `sync.Once`，支持手动重试 |
-| 4.3 | 词典噪声清理 | 审查权重=1 的极低频词 |
-| 4.4 | 非标准音节审查 | 确认 `bong4`, `wong4` 等是否有对应汉字 |
-| 4.5 | 词库导入功能实现 | 当前仅记录日志 |
-| 4.6 | 反查工具即时搜索 | 输入即搜索，无需点击"查询" |
+---
+
+### Phase 5：后续改进（待规划）
+
+| # | 任务 | 说明 | 前置条件 |
+|---|------|------|----------|
+| 5.1 | 候选窗标签与选择键一致 | 修正 `SetSelKeys` 使标签反映实际选择键 | 无 |
+| 5.2 | 方向键移动候选光标 | 上下方向键移动 + Enter 确认 | 无 |
+| 5.3 | 默认 candidatePageSize 限制为 5 | 避免超出选择键数量 | 无 |
+| 5.4 | 词语字频回退排序 | 无 BCC 词频时用组成字频率估计，改善 weight=1 词语间排序 | Yime-python-prototype 管线 |
+| 5.5 | 组字时数字键选词模式 | 可配置，数字键在"选词"和"编码"间切换 | 编码体系配合 |
 
 ---
 
 ## 4. 里程碑时间线
 
 ```
-2026-07
-├── W1-W2: Phase 1 — 关键可用性修复
-│   ├── 1.1 回车键行为
-│   ├── 1.2 重复按键抑制
-│   ├── 1.3 候选选择键扩展
-│   └── 1.4 组字状态保存
+2026-07 W1-W2
+├── Phase 1 ✅ 关键可用性修复
+│   ├── 1.1 回车键行为 ✅
+│   ├── 1.2 重复按键抑制 ✅
+│   ├── 1.3 候选选择键扩展（暂缓）
+│   └── 1.4 组字状态保存 ✅
 │
-2026-07 ~ 2026-08
-├── W3-W6: Phase 2 — 用户体验改善
-│   ├── 2.1 失败提示
-│   ├── 2.2 反查占位符
-│   ├── 2.3 词库跨方案同步
-│   ├── 2.4-2.5 反查工具改进
-│   └── 2.6 词库删除功能
+2026-07 W3-W4
+├── Phase 2 ✅ 用户体验改善
+│   ├── 2.1 失败提示 ✅
+│   ├── 2.2 反查占位符 ✅
+│   ├── 2.3 词库跨方案同步 ✅
+│   ├── 2.4-2.5 反查工具改进 ✅
+│   └── 2.6 词库删除/导入 ✅
 │
-2026-08 ~ 2026-09
-├── W7-W14: Phase 3 — 代码质量与健壮性
-│   ├── 3.1-3.2 代码清理
-│   ├── 3.3 命令白名单重构
-│   ├── 3.4-3.5 测试增强
-│   ├── 3.6-3.7 边界修复
-│   └── Beta 发布候选
+2026-07 W5-W6
+├── Phase 3 ✅ 代码质量与健壮性
+│   ├── 3.1-3.2 代码清理 ✅
+│   ├── 3.3 命令黑名单 ✅
+│   ├── 3.4-3.5 测试增强 ✅
+│   └── 3.6-3.7 边界修复 ✅
 │
-2026-09 ~ 2026-11
-└── W15-W22: Phase 4 — 功能增强
-    ├── 4.1 数字键选词模式
-    ├── 4.2 初始化重试
-    ├── 4.3-4.4 词典审查
-    ├── 4.5-4.6 功能完善
-    └── 正式版发布
+2026-07 W7+
+├── Phase 4 部分完成
+│   ├── 4.2 初始化重试 ✅
+│   ├── 4.5 词库导入 ✅
+│   ├── 4.6 反查即时搜索 ✅
+│   ├── 4.1 数字键选词（暂缓）
+│   ├── 4.3 词典噪声清理（待做，优化项）
+│   └── 4.4 非标准音节审查（不处理）
+│
+待规划
+└── Phase 5 后续改进
+    ├── 5.1-5.3 候选窗改进
+    ├── 5.4 词语字频回退排序
+    └── 5.5 数字键选词模式
 ```
 
 ---

@@ -14,7 +14,8 @@ type nativeBackend struct {
 }
 
 var (
-	rimeInitOnce sync.Once
+	rimeInitMu   sync.Mutex
+	rimeInitDone bool
 	rimeInitOK   bool
 )
 
@@ -23,12 +24,19 @@ func newNativeBackend() rimeBackend {
 }
 
 func (b *nativeBackend) Initialize(sharedDir, userDir string, firstRun bool) bool {
-	rimeInitOnce.Do(func() {
-		rimeInitOK = RimeInit(sharedDir, userDir, APP, APP_VERSION, firstRun)
-		if !rimeInitOK {
-			log.Println("RIME 初始化失败，原生后端不可用")
-		}
-	})
+	rimeInitMu.Lock()
+	defer rimeInitMu.Unlock()
+	if rimeInitDone && rimeInitOK {
+		return true
+	}
+	if rimeInitDone && !rimeInitOK {
+		rimeInitDone = false
+	}
+	rimeInitOK = RimeInit(sharedDir, userDir, APP, APP_VERSION, firstRun)
+	rimeInitDone = true
+	if !rimeInitOK {
+		log.Println("RIME 初始化失败，下次激活时将重试")
+	}
 	return rimeInitOK
 }
 

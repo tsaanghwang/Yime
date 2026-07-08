@@ -33,7 +33,16 @@ function Copy-TestCommandTemplate {
         throw "Missing reinstall template: $templatePath"
     }
 
+    if (Test-Path -LiteralPath $Destination) {
+        Remove-Item -LiteralPath $Destination -Force
+    }
+
     Copy-Item -LiteralPath $templatePath -Destination $Destination -Force
+    $item = Get-Item -LiteralPath $Destination
+    $now = Get-Date
+    $item.CreationTime = $now
+    $item.LastWriteTime = $now
+    $item.LastAccessTime = $now
 }
 
 $repoRoot = (Resolve-Path -LiteralPath $RepoRoot).Path

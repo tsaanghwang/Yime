@@ -190,7 +190,7 @@ Write-Host "Registering text service DLLs..."
 Write-Host "Writing launcher autorun and install markers..."
 New-Item -Path "HKLM:\SOFTWARE\YIME" -Force | Out-Null
 Set-ItemProperty -Path "HKLM:\SOFTWARE\YIME" -Name "(default)" -Value $InstallRoot
-New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" -Force | Out-Null
+
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" -Name "PIMELauncher" -Value (Join-Path $InstallRoot "PIMELauncher.exe")
 
 Write-Host "Starting PIMELauncher..."

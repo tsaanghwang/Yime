@@ -85,7 +85,7 @@ function Load-CodeMap {
   return $map
 }
 
-function Load-DictLookup {
+function Load-DictLookupMulti {
   param([string]$Path)
   $lookup = @{}
   if (-not (Test-Path -LiteralPath $Path)) { return $lookup }
@@ -102,7 +102,8 @@ function Load-DictLookup {
     $text = $fields[0].Trim()
     $code = $fields[1].Trim()
     if ([string]::IsNullOrWhiteSpace($text) -or [string]::IsNullOrWhiteSpace($code)) { continue }
-    if (-not $lookup.ContainsKey($text)) { $lookup[$text] = $code }
+    if (-not $lookup.ContainsKey($text)) { $lookup[$text] = New-Object System.Collections.Generic.List[string] }
+    if ($lookup[$text] -notcontains $code) { $lookup[$text].Add($code) }
   }
   return $lookup
 }
@@ -206,19 +207,32 @@ function Split-YimeCodeToNumericPinyin {
   return $parts.ToArray()
 }
 
-function Join-CharCodeLookup {
+function Join-CharCodeLookupMulti {
   param(
     [string]$Text,
-    [hashtable]$Lookup,
-    [string]$Separator = ""
+    [hashtable]$Lookup
   )
-  $parts = New-Object System.Collections.Generic.List[string]
+  $charResults = New-Object System.Collections.Generic.List[string[]]
   foreach ($char in $Text.ToCharArray()) {
     $key = [string]$char
-    if (-not $Lookup.ContainsKey($key)) { return "" }
-    $parts.Add($Lookup[$key])
+    if (-not $Lookup.ContainsKey($key)) { return $null }
+    $charResults.Add($Lookup[$key].ToArray())
   }
-  return ($parts.ToArray() -join $Separator)
+  if ($charResults.Count -eq 0) { return $null }
+  $result = New-Object System.Collections.Generic.List[string]
+  foreach ($code in $charResults[0]) {
+    [void]$result.Add($code)
+  }
+  for ($i = 1; $i -lt $charResults.Count; $i++) {
+    $next = New-Object System.Collections.Generic.List[string]
+    foreach ($prefix in $result) {
+      foreach ($suffix in $charResults[$i]) {
+        [void]$next.Add($prefix + $suffix)
+      }
+    }
+    $result = $next
+  }
+  return $result.ToArray()
 }
 
 function Get-MarkedVowelIndex {
@@ -360,7 +374,7 @@ function Build-LookupResult {
   }
 }
 
-function Resolve-PhraseLookup {
+function Resolve-PhraseLookupMulti {
   param(
     [string]$Phrase,
     [System.Collections.IEnumerable]$UserEntries,
@@ -372,29 +386,30 @@ function Resolve-PhraseLookup {
   )
 
   $text = $Phrase.Trim()
-  if ([string]::IsNullOrWhiteSpace($text)) { return $null }
+  if ([string]::IsNullOrWhiteSpace($text)) { return @() }
+
+  $results = New-Object System.Collections.Generic.List[object]
 
   foreach ($entry in $UserEntries) {
     if ($entry.Phrase -eq $text) {
-      return Build-LookupResult $text "用户词库" $entry.Pinyin "" $CodeMap $ReverseLookup $MarkedLookup $ActiveColumn
+      [void]$results.Add((Build-LookupResult $text "用户词库" $entry.Pinyin "" $CodeMap $ReverseLookup $MarkedLookup $ActiveColumn))
     }
   }
 
-  $yimeCode = ""
-  $source = ""
   if ($DictLookup.ContainsKey($text)) {
-    $yimeCode = $DictLookup[$text]
-    $source = "系统词库"
+    foreach ($yimeCode in $DictLookup[$text]) {
+      [void]$results.Add((Build-LookupResult $text "系统词库" "" $yimeCode $CodeMap $ReverseLookup $MarkedLookup $ActiveColumn))
+    }
   } else {
-    $joined = Join-CharCodeLookup $text $DictLookup ""
-    if (-not [string]::IsNullOrWhiteSpace($joined)) {
-      $yimeCode = $joined
-      $source = "逐字拼接"
+    $joinedCodes = Join-CharCodeLookupMulti $text $DictLookup
+    if ($null -ne $joinedCodes) {
+      foreach ($yimeCode in $joinedCodes) {
+        [void]$results.Add((Build-LookupResult $text "逐字拼接" "" $yimeCode $CodeMap $ReverseLookup $MarkedLookup $ActiveColumn))
+      }
     }
   }
 
-  if ([string]::IsNullOrWhiteSpace($yimeCode)) { return $null }
-  return Build-LookupResult $text $source "" $yimeCode $CodeMap $ReverseLookup $MarkedLookup $ActiveColumn
+  return $results.ToArray()
 }
 
 function Search-ReverseLookup {
@@ -414,35 +429,42 @@ function Search-ReverseLookup {
 
   $results = New-Object System.Collections.Generic.List[object]
   $seen = @{}
+  $maxResults = 200
 
   function Add-Result {
     param($Item)
     if ($null -eq $Item) { return }
-    if ($seen.ContainsKey($Item.Phrase)) { return }
-    $seen[$Item.Phrase] = $true
+    $key = $Item.Phrase + "|" + $Item.ActiveCode
+    if ($seen.ContainsKey($key)) { return }
+    $seen[$key] = $true
     $results.Add($Item)
   }
 
-  Add-Result (Resolve-PhraseLookup $text $UserEntries $DictLookup $CodeMap $ReverseLookup $MarkedLookup $ActiveColumn)
+  foreach ($item in (Resolve-PhraseLookupMulti $text $UserEntries $DictLookup $CodeMap $ReverseLookup $MarkedLookup $ActiveColumn)) {
+    Add-Result $item
+  }
   if ($results.Count -gt 0 -and -not $ContainsMatch) { return $results.ToArray() }
 
   foreach ($entry in $UserEntries) {
-    if ($results.Count -ge 100) { break }
+    if ($results.Count -ge $maxResults) { break }
     if ($entry.Phrase -eq $text) { continue }
     if ($ContainsMatch) {
       if ($entry.Phrase -notlike ("*" + $text + "*")) { continue }
     } else {
       continue
     }
-    Add-Result (Resolve-PhraseLookup $entry.Phrase $UserEntries $DictLookup $CodeMap $ReverseLookup $MarkedLookup $ActiveColumn)
+    foreach ($item in (Resolve-PhraseLookupMulti $entry.Phrase $UserEntries $DictLookup $CodeMap $ReverseLookup $MarkedLookup $ActiveColumn)) {
+      Add-Result $item
+    }
   }
 
   if ($ContainsMatch) {
     foreach ($phrase in $DictLookup.Keys) {
-      if ($results.Count -ge 100) { break }
-      if ($seen.ContainsKey($phrase)) { continue }
+      if ($results.Count -ge $maxResults) { break }
       if ($phrase -notlike ("*" + $text + "*")) { continue }
-      Add-Result (Resolve-PhraseLookup $phrase $UserEntries $DictLookup $CodeMap $ReverseLookup $MarkedLookup $ActiveColumn)
+      foreach ($item in (Resolve-PhraseLookupMulti $phrase $UserEntries $DictLookup $CodeMap $ReverseLookup $MarkedLookup $ActiveColumn)) {
+        Add-Result $item
+      }
     }
   }
 
@@ -456,12 +478,13 @@ $script:userEntries = $null
 $script:markedLookup = $null
 $script:reverseLookup = $null
 $script:activeColumn = Get-CodeColumnFromMode $Mode
+$script:loadedSchemaID = ""
 
 $form = New-Object System.Windows.Forms.Form
 $form.Text = "Yime 反查编码"
 $form.StartPosition = "CenterScreen"
-$form.ClientSize = New-Object System.Drawing.Size(920, 560)
-$form.MinimumSize = New-Object System.Drawing.Size(760, 480)
+$form.ClientSize = New-Object System.Drawing.Size(720, 520)
+$form.MinimumSize = New-Object System.Drawing.Size(600, 400)
 
 $searchLabel = New-Object System.Windows.Forms.Label
 $searchLabel.Left = 12
@@ -473,27 +496,27 @@ $form.Controls.Add($searchLabel)
 $searchBox = New-Object System.Windows.Forms.TextBox
 $searchBox.Left = 88
 $searchBox.Top = 10
-$searchBox.Width = 360
+$searchBox.Width = 300
 $form.Controls.Add($searchBox)
 
 $containsCheckBox = New-Object System.Windows.Forms.CheckBox
-$containsCheckBox.Left = 456
+$containsCheckBox.Left = 396
 $containsCheckBox.Top = 12
 $containsCheckBox.Width = 96
 $containsCheckBox.Text = "包含匹配"
 $form.Controls.Add($containsCheckBox)
 
 $modeLabel = New-Object System.Windows.Forms.Label
-$modeLabel.Left = 568
+$modeLabel.Left = 500
 $modeLabel.Top = 14
 $modeLabel.Width = 40
 $modeLabel.Text = "方案"
 $form.Controls.Add($modeLabel)
 
 $modeComboBox = New-Object System.Windows.Forms.ComboBox
-$modeComboBox.Left = 612
+$modeComboBox.Left = 544
 $modeComboBox.Top = 10
-$modeComboBox.Width = 120
+$modeComboBox.Width = 100
 $modeComboBox.DropDownStyle = "DropDownList"
 [void]$modeComboBox.Items.Add([pscustomobject]@{ Label = "变长"; Value = "variable" })
 [void]$modeComboBox.Items.Add([pscustomobject]@{ Label = "等长"; Value = "full" })
@@ -503,53 +526,66 @@ $modeComboBox.ValueMember = "Value"
 $form.Controls.Add($modeComboBox)
 
 $searchButton = New-Object System.Windows.Forms.Button
-$searchButton.Left = 744
+$searchButton.Left = 652
 $searchButton.Top = 8
-$searchButton.Width = 80
+$searchButton.Width = 56
 $searchButton.Text = "查询"
 $form.Controls.Add($searchButton)
 
 $listView = New-Object System.Windows.Forms.ListView
 $listView.Left = 12
 $listView.Top = 44
-$listView.Width = 896
-$listView.Height = 460
+$listView.Width = 696
+$listView.Height = 340
 $listView.View = "Details"
 $listView.FullRowSelect = $true
 $listView.GridLines = $true
 $listView.MultiSelect = $false
-[void]$listView.Columns.Add("词条", 96)
-[void]$listView.Columns.Add("来源", 88)
-[void]$listView.Columns.Add("数字标调", 160)
-[void]$listView.Columns.Add("标准拼音", 160)
+[void]$listView.Columns.Add("词条", 80)
+[void]$listView.Columns.Add("来源", 64)
+[void]$listView.Columns.Add("标准拼音", 180)
 [void]$listView.Columns.Add("当前编码", 120)
-[void]$listView.Columns.Add("全码", 96)
-[void]$listView.Columns.Add("变长", 96)
-[void]$listView.Columns.Add("省键", 96)
+[void]$listView.Columns.Add("等长", 80)
+[void]$listView.Columns.Add("变长", 80)
+[void]$listView.Columns.Add("省键", 80)
 $form.Controls.Add($listView)
+
+$detailLabel = New-Object System.Windows.Forms.Label
+$detailLabel.Left = 12
+$detailLabel.Top = 392
+$detailLabel.Width = 696
+$detailLabel.Height = 60
+$detailLabel.BorderStyle = "FixedSingle"
+$detailLabel.Text = ""
+$form.Controls.Add($detailLabel)
 
 $statusLabel = New-Object System.Windows.Forms.Label
 $statusLabel.Left = 12
-$statusLabel.Top = 512
-$statusLabel.Width = 896
+$statusLabel.Top = 460
+$statusLabel.Width = 696
 $statusLabel.Height = 36
 $statusLabel.Text = "输入字词后点击【查询】，可查看标准拼音、数字标调与音元编码。"
 $form.Controls.Add($statusLabel)
 
 function Ensure-LookupData {
-  if ($script:lookupLoaded) { return }
+  $schemaID = Get-SchemaIDFromMode ([string]$modeComboBox.SelectedItem.Value)
+  if ($script:lookupLoaded -and $script:loadedSchemaID -eq $schemaID) { return }
+
   $codeMapPath = Join-Path $SharedDir "yime_pinyin_codes.tsv"
   $markedPath = Join-Path $SharedDir "pinyin_normalized.json"
   $userPhrasePath = Join-Path $UserDir "yime_user_phrases.txt"
-  $schemaID = Get-SchemaIDFromMode ([string]$modeComboBox.SelectedItem.Value)
   $dictPath = Join-Path $SharedDir ($schemaID + ".dict.yaml")
 
-  $script:codeMap = Load-CodeMap $codeMapPath
-  $script:markedLookup = Load-NumericToMarkedLookup $markedPath
-  $script:userEntries = Load-UserPhraseEntries $userPhrasePath
-  $script:dictLookup = Load-DictLookup $dictPath
+  if (-not $script:lookupLoaded) {
+    $script:codeMap = Load-CodeMap $codeMapPath
+    $script:markedLookup = Load-NumericToMarkedLookup $markedPath
+    $script:userEntries = Load-UserPhraseEntries $userPhrasePath
+  }
+
+  $script:dictLookup = Load-DictLookupMulti $dictPath
   $script:activeColumn = Get-CodeColumnFromMode ([string]$modeComboBox.SelectedItem.Value)
   $script:reverseLookup = Build-ReverseCodeLookup $script:codeMap $script:activeColumn
+  $script:loadedSchemaID = $schemaID
   $script:lookupLoaded = $true
 }
 
@@ -557,12 +593,12 @@ function Refresh-ResultList {
   param([string]$Term)
   Ensure-LookupData
   $listView.Items.Clear()
+  $detailLabel.Text = ""
   $results = Search-ReverseLookup $Term $containsCheckBox.Checked $script:userEntries $script:dictLookup $script:codeMap $script:reverseLookup $script:markedLookup $script:activeColumn
 
   foreach ($item in $results) {
     $row = New-Object System.Windows.Forms.ListViewItem($item.Phrase)
     [void]$row.SubItems.Add($item.Source)
-    [void]$row.SubItems.Add($item.NumericPinyin)
     [void]$row.SubItems.Add($item.StandardPinyin)
     [void]$row.SubItems.Add($item.ActiveCode)
     [void]$row.SubItems.Add($item.FullCode)
@@ -573,8 +609,10 @@ function Refresh-ResultList {
 
   if ($results.Count -eq 0) {
     $statusLabel.Text = "未找到匹配结果。可勾选【包含匹配】在用户词库和系统词库中模糊搜索。"
+  } elseif ($results.Count -ge 200) {
+    $statusLabel.Text = ("找到 {0}+ 条结果（已截断）。请缩小搜索范围。" -f $results.Count)
   } else {
-    $statusLabel.Text = ("找到 {0} 条结果。当前方案列显示的是所选编码方案。" -f $results.Count)
+    $statusLabel.Text = ("找到 {0} 条结果。点击词条查看详情。" -f $results.Count)
   }
 }
 
@@ -585,7 +623,6 @@ function Invoke-Search {
     return
   }
   try {
-    $script:lookupLoaded = $false
     Refresh-ResultList $term
   } catch {
     Show-Error $_.Exception.Message
@@ -596,12 +633,50 @@ $searchButton.Add_Click({
   try { Invoke-Search } catch { Show-Error $_.Exception.Message }
 })
 
+$script:searchTimer = $null
+$searchBox.Add_TextChanged({
+  try {
+    if ($null -ne $script:searchTimer) { $script:searchTimer.Stop() }
+    $script:searchTimer = New-Object System.Windows.Forms.Timer
+    $script:searchTimer.Interval = 500
+    $script:searchTimer.Add_Tick({
+      $script:searchTimer.Stop()
+      if (-not [string]::IsNullOrWhiteSpace($searchBox.Text.Trim())) {
+        Invoke-Search
+      } else {
+        $listView.Items.Clear()
+        $detailLabel.Text = ""
+      }
+    })
+    $script:searchTimer.Start()
+  } catch {}
+})
+
 $searchBox.Add_KeyDown({
   param($sender, $eventArgs)
   if ($eventArgs.KeyCode -eq "Enter") {
     $eventArgs.SuppressKeyPress = $true
     try { Invoke-Search } catch { Show-Error $_.Exception.Message }
   }
+})
+
+$listView.Add_SelectedIndexChanged({
+  try {
+    if ($listView.SelectedItems.Count -eq 0) {
+      $detailLabel.Text = ""
+      return
+    }
+    $item = $listView.SelectedItems[0]
+    $phrase = $item.Text
+    $source = $item.SubItems[1].Text
+    $standardPinyin = $item.SubItems[2].Text
+    $activeCode = $item.SubItems[3].Text
+    $fullCode = $item.SubItems[4].Text
+    $variableCode = $item.SubItems[5].Text
+    $shorthandCode = $item.SubItems[6].Text
+    $nl = [Environment]::NewLine
+    $detailLabel.Text = ("{0} [{1}]  拼音: {2}$nl 等长: {3}  变长: {4}  省键: {5}" -f $phrase, $source, $standardPinyin, $fullCode, $variableCode, $shorthandCode)
+  } catch {}
 })
 
 $modeComboBox.Add_SelectedIndexChanged({
@@ -611,6 +686,7 @@ $modeComboBox.Add_SelectedIndexChanged({
       if ($script:codeMap) {
         $script:reverseLookup = Build-ReverseCodeLookup $script:codeMap $script:activeColumn
       }
+      $script:loadedSchemaID = ""
       if (-not [string]::IsNullOrWhiteSpace($searchBox.Text.Trim())) {
         Refresh-ResultList $searchBox.Text.Trim()
       }
@@ -639,6 +715,7 @@ $form.Add_Shown({
       $modeComboBox.SelectedIndex = 0
     }
 
+    $statusLabel.Text = "正在加载数据，请稍候..."
     $form.BeginInvoke([System.Windows.Forms.MethodInvoker]{
       try {
         Ensure-LookupData

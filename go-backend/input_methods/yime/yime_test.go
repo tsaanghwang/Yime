@@ -5,7 +5,9 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"sync"
 	"testing"
+	"unicode/utf8"
 
 	"github.com/EasyIME/pime-go/pime"
 )
@@ -16,15 +18,16 @@ type testDictEntry struct {
 }
 
 type testBackend struct {
-	session      bool
-	destroyCount int
-	composition  string
-	candidates   []candidateItem
-	commitString string
-	asciiMode    bool
-	fullShape    bool
-	horizontal   bool
-	schemaID     string
+	session            bool
+	destroyCount       int
+	composition        string
+	candidates         []candidateItem
+	commitString       string
+	asciiMode          bool
+	fullShape          bool
+	horizontal         bool
+	schemaID           string
+	returnKeyHandled   bool
 }
 
 type backendPagingTestBackend struct {
@@ -76,7 +79,7 @@ func (b *syncTestBackend) SyncUserData() bool {
 }
 
 func newTestBackend() *testBackend {
-	return &testBackend{schemaID: "yime_variable"}
+	return &testBackend{schemaID: "yime_variable", returnKeyHandled: true}
 }
 
 func (b *testBackend) Initialize(sharedDir, userDir string, firstRun bool) bool {
@@ -141,14 +144,18 @@ func (b *testBackend) ProcessKey(req *pime.Request, translatedKeyCode, modifiers
 		}
 		b.ClearComposition()
 		return true
-	case vkReturn, vkSpace:
+	case vkReturn:
 		if b.composition == "" {
+			return false
+		}
+		if !b.returnKeyHandled {
 			return false
 		}
 		b.commitString = b.currentCommit()
 		b.composition = ""
 		b.candidates = nil
 		return true
+	case vkSpace:
 	}
 
 	if (charCode >= 'a' && charCode <= 'z') || (charCode >= '0' && charCode <= '9') {
@@ -315,6 +322,7 @@ func newTestIME() *IME {
 		yimePinyinBySchema:    map[string]map[string]string{},
 		yimePinyinLoaded:      map[string]bool{},
 		candidatePageSize:     defaultCandidatePageSize,
+		keysDown:              map[int]bool{},
 		backend:               newTestBackend(),
 	}
 }
@@ -346,6 +354,56 @@ func TestInitWithMissingUserDirDoesNotPanic(t *testing.T) {
 	}
 	if ime.BackendAvailable() {
 		t.Fatal("expected native backend to stay unavailable without user RIME data")
+	}
+}
+
+func TestRimeInitRetryAfterFailure(t *testing.T) {
+	rimeInitMu.Lock()
+	rimeInitDone = false
+	rimeInitOK = false
+	rimeInitMu.Unlock()
+	t.Cleanup(func() {
+		rimeInitMu.Lock()
+		rimeInitDone = false
+		rimeInitOK = false
+		rimeInitMu.Unlock()
+	})
+
+	badDir := t.TempDir()
+	t.Setenv("APPDATA", badDir)
+
+	ime := New(&pime.Client{ID: "test-client"}).(*IME)
+	ime.Init(&pime.Request{})
+	if ime.BackendAvailable() {
+		t.Fatal("expected backend unavailable with missing Rime data")
+	}
+
+	rimeInitMu.Lock()
+	doneAfterFirst := rimeInitDone
+	okAfterFirst := rimeInitOK
+	rimeInitMu.Unlock()
+	if !doneAfterFirst {
+		t.Fatal("expected rimeInitDone true after first init attempt")
+	}
+	if okAfterFirst {
+		t.Fatal("expected rimeInitOK false after failed init")
+	}
+
+	goodDir := t.TempDir()
+	userRime := filepath.Join(goodDir, "PIME", "Rime")
+	if err := os.MkdirAll(userRime, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("APPDATA", goodDir)
+
+	ime2 := New(&pime.Client{ID: "test-client-2"}).(*IME)
+	ime2.Init(&pime.Request{})
+
+	rimeInitMu.Lock()
+	doneAfterRetry := rimeInitDone
+	rimeInitMu.Unlock()
+	if !doneAfterRetry {
+		t.Fatal("expected rimeInitDone true after retry")
 	}
 }
 
@@ -696,6 +754,174 @@ func TestOnKeyDownAsciiModePassesThroughWhenIdle(t *testing.T) {
 
 	if resp.ReturnValue != 0 {
 		t.Fatalf("expected ascii mode to pass through idle typing, got %d", resp.ReturnValue)
+	}
+}
+
+func TestRapidSameKeyNotSwallowedAfterKeyUp(t *testing.T) {
+	ime := newTestIME()
+
+	resp1 := ime.filterKeyDown(&pime.Request{
+		SeqNum:   1,
+		KeyCode:  0x4E,
+		CharCode: 'n',
+	}, pime.NewResponse(1, true))
+	if resp1.ReturnValue != 1 {
+		t.Fatalf("expected first n to be handled, got %d", resp1.ReturnValue)
+	}
+
+	ime.filterKeyUp(&pime.Request{
+		SeqNum:  2,
+		KeyCode: 0x4E,
+	}, pime.NewResponse(2, true))
+
+	resp2 := ime.filterKeyDown(&pime.Request{
+		SeqNum:   3,
+		KeyCode:  0x4E,
+		CharCode: 'n',
+	}, pime.NewResponse(3, true))
+	if resp2.ReturnValue != 1 {
+		t.Fatalf("expected second n after key-up to be handled, got %d", resp2.ReturnValue)
+	}
+}
+
+func TestDuplicateKeyDownWithoutKeyUpSuppressed(t *testing.T) {
+	ime := newTestIME()
+
+	resp1 := ime.filterKeyDown(&pime.Request{
+		SeqNum:   1,
+		KeyCode:  0x4E,
+		CharCode: 'n',
+	}, pime.NewResponse(1, true))
+	if resp1.ReturnValue != 1 {
+		t.Fatalf("expected first n to be handled, got %d", resp1.ReturnValue)
+	}
+
+	resp2 := ime.filterKeyDown(&pime.Request{
+		SeqNum:   2,
+		KeyCode:  0x4E,
+		CharCode: 'n',
+	}, pime.NewResponse(2, true))
+	if resp2.ReturnValue != 1 {
+		t.Fatalf("expected duplicate key-down to reuse last return value, got %d", resp2.ReturnValue)
+	}
+
+	ime.filterKeyUp(&pime.Request{
+		SeqNum:  3,
+		KeyCode: 0x4E,
+	}, pime.NewResponse(3, true))
+
+	resp3 := ime.filterKeyDown(&pime.Request{
+		SeqNum:   4,
+		KeyCode:  0x4E,
+		CharCode: 'n',
+	}, pime.NewResponse(4, true))
+	if resp3.ReturnValue != 1 {
+		t.Fatalf("expected n after key-up to be handled again, got %d", resp3.ReturnValue)
+	}
+}
+
+func TestKeyUpClearsKeyDownState(t *testing.T) {
+	ime := newTestIME()
+
+	ime.filterKeyDown(&pime.Request{
+		SeqNum:   1,
+		KeyCode:  0x4E,
+		CharCode: 'n',
+	}, pime.NewResponse(1, true))
+
+	if !ime.keysDown[0x4E] {
+		t.Fatal("expected key to be tracked as down")
+	}
+
+	ime.filterKeyUp(&pime.Request{
+		SeqNum:  2,
+		KeyCode: 0x4E,
+	}, pime.NewResponse(2, true))
+
+	if ime.keysDown[0x4E] {
+		t.Fatal("expected key to be cleared after key-up")
+	}
+}
+
+func TestSetCandidatePageSizePreservesComposition(t *testing.T) {
+	ime := newTestIME()
+	backend := ime.backend.(*testBackend)
+
+	ime.filterKeyDown(&pime.Request{
+		SeqNum:   1,
+		KeyCode:  0x4E,
+		CharCode: 'n',
+	}, pime.NewResponse(1, true))
+	ime.filterKeyDown(&pime.Request{
+		SeqNum:   2,
+		KeyCode:  0x49,
+		CharCode: 'i',
+	}, pime.NewResponse(2, true))
+	ime.onKeyDown(&pime.Request{
+		SeqNum:   3,
+		KeyCode:  0x49,
+		CharCode: 'i',
+	}, pime.NewResponse(3, true))
+
+	if backend.composition != "ni" {
+		t.Fatalf("expected composition 'ni' before page size change, got %q", backend.composition)
+	}
+
+	tmpDir := t.TempDir()
+	t.Setenv("APPDATA", tmpDir)
+	ime.setCandidatePageSize(7)
+
+	if backend.composition != "ni" {
+		t.Fatalf("expected composition 'ni' preserved after page size change, got %q", backend.composition)
+	}
+	if ime.candidatePageSize != 7 {
+		t.Fatalf("expected candidatePageSize 7, got %d", ime.candidatePageSize)
+	}
+}
+
+func TestReturnKeyCommitsRawInputDuringComposition(t *testing.T) {
+	ime := newTestIME()
+	backend := ime.backend.(*testBackend)
+	backend.composition = "ni"
+	backend.candidates = []candidateItem{{Text: "你"}, {Text: "呢"}}
+	ime.keyComposing = true
+	backend.returnKeyHandled = false
+
+	filterResp := ime.filterKeyDown(&pime.Request{
+		SeqNum:   1,
+		KeyCode:  vkReturn,
+		CharCode: '\r',
+	}, pime.NewResponse(1, true))
+	if filterResp.ReturnValue != 1 {
+		t.Fatalf("expected return key to be handled, got %d", filterResp.ReturnValue)
+	}
+
+	resp := ime.onKeyDown(&pime.Request{
+		SeqNum:   2,
+		KeyCode:  vkReturn,
+		CharCode: '\r',
+	}, pime.NewResponse(2, true))
+	if resp.ReturnValue != 1 {
+		t.Fatalf("expected onKeyDown to succeed, got %d", resp.ReturnValue)
+	}
+	if resp.CommitString != "ni" {
+		t.Fatalf("expected raw composition 'ni' committed, got %q", resp.CommitString)
+	}
+	if ime.keyComposing {
+		t.Fatal("expected keyComposing to be false after return commits raw input")
+	}
+}
+
+func TestReturnKeyPassesThroughWhenNotComposing(t *testing.T) {
+	ime := newTestIME()
+
+	filterResp := ime.filterKeyDown(&pime.Request{
+		SeqNum:   1,
+		KeyCode:  vkReturn,
+		CharCode: '\r',
+	}, pime.NewResponse(1, true))
+	if filterResp.ReturnValue != 0 {
+		t.Fatalf("expected return key to pass through when not composing, got %d", filterResp.ReturnValue)
 	}
 }
 
@@ -1143,10 +1369,9 @@ func TestCandidatePageSizeCommandRestoresCompositionState(t *testing.T) {
 	if ime.candidatePageSize != 7 {
 		t.Fatalf("expected current session page size 7, got %d", ime.candidatePageSize)
 	}
-	// Session reload clears composition by design; do not replay keys during
-	// language-bar clicks (AGENTS.md host stability).
-	if backend.composition != "" {
-		t.Fatalf("expected composition cleared after page size session reload, got %q", backend.composition)
+	// Session reload now preserves composition by replaying keys after rebuild.
+	if backend.composition != "ni" {
+		t.Fatalf("expected composition 'ni' preserved after page size session reload, got %q", backend.composition)
 	}
 }
 
@@ -1177,15 +1402,17 @@ func TestCandidatePageSizeCommandUpdatesCurrentUserSchema(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !strings.Contains(string(data), "  page_size: 7\n") {
-		t.Fatalf("expected current user schema page size 7, got %q", string(data))
+	normalized := strings.ReplaceAll(string(data), "\r\n", "\n")
+	if !strings.Contains(normalized, "  page_size: 7\n") {
+		t.Fatalf("expected current user schema page size 7, got %q", normalized)
 	}
 	customData, err := os.ReadFile(filepath.Join(ime.userDir(), "yime_variable.custom.yaml"))
 	if err != nil {
 		t.Fatal(err)
 	}
-	if got := string(customData); !strings.Contains(got, "  menu/page_size: 7\n") && !strings.Contains(got, "  \"menu/page_size\": 7\n") {
-		t.Fatalf("expected current schema custom page size 7, got %q", string(customData))
+	customNorm := strings.ReplaceAll(string(customData), "\r\n", "\n")
+	if !strings.Contains(customNorm, "  menu/page_size: 7\n") && !strings.Contains(customNorm, "  \"menu/page_size\": 7\n") {
+		t.Fatalf("expected current schema custom page size 7, got %q", customNorm)
 	}
 	if backend.destroyCount != 1 || !backend.session {
 		t.Fatalf("expected current Rime session to reload after page size change, destroyCount=%d session=%t", backend.destroyCount, backend.session)
@@ -1443,6 +1670,20 @@ func TestReadPageSizeFromCustomConfig(t *testing.T) {
 	if got := readPageSizeFromCustomConfig(path); got != 8 {
 		t.Fatalf("expected quoted page size 8, got %d", got)
 	}
+
+	if err := os.WriteFile(path, []byte("patch:\n  \"menu/page_size\": 9 # user preference\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if got := readPageSizeFromCustomConfig(path); got != 9 {
+		t.Fatalf("expected page size 9 with inline comment, got %d", got)
+	}
+
+	if err := os.WriteFile(path, []byte("patch:\n  menu/page_size: 6#compact\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if got := readPageSizeFromCustomConfig(path); got != 6 {
+		t.Fatalf("expected page size 6 with no-space comment, got %d", got)
+	}
 }
 
 func TestNewUIPowerShellCommandUsesWindowsPowerShellWithoutHidingUI(t *testing.T) {
@@ -1681,8 +1922,8 @@ func TestUserLexiconManagerScriptShowsDialogInsideTopLevelTry(t *testing.T) {
 	if !strings.Contains(userLexiconManagerScript, "$actionBlock = $Action.GetNewClosure()") || !strings.Contains(userLexiconManagerScript, "& $actionBlock") {
 		t.Fatalf("expected lexicon manager action handlers to capture button/menu callbacks with GetNewClosure")
 	}
-	if !strings.Contains(userLexiconManagerScript, "Add-ActionButton \"打开目录\" { Open-UserFolder }") {
-		t.Fatalf("expected lexicon manager script to expose the user lexicon directory as a top-level toolbar action")
+	if !strings.Contains(userLexiconManagerScript, "Add-MenuAction $fileMenu \"打开词库目录\" { Open-UserFolder }") {
+		t.Fatalf("expected lexicon manager script to expose the user lexicon directory as a menu action")
 	}
 	if !strings.Contains(userLexiconManagerScript, "Set-SortFromColumn") {
 		t.Fatalf("expected lexicon manager script to map column clicks into sort changes")
@@ -1702,7 +1943,7 @@ func TestUserLexiconManagerScriptShowsDialogInsideTopLevelTry(t *testing.T) {
 	if strings.Contains(userLexiconManagerScript, "$form.TopMost = $true") || strings.Contains(userLexiconManagerScript, "$form.Activate()") || strings.Contains(userLexiconManagerScript, "$form.BringToFront()") {
 		t.Fatalf("expected lexicon manager script to avoid aggressive foreground forcing that can collapse the language bar")
 	}
-	if !strings.Contains(userLexiconManagerScript, "try {\n  [void](Add-ActionButton \"添加词条\" { Add-Entry })") || !strings.Contains(userLexiconManagerScript, "} catch {\n  Show-Error $_.Exception.Message\n  return\n}") {
+	if !strings.Contains(userLexiconManagerScript, "try {\n  [void](Add-ActionButton \"添加\" { Add-Entry })") || !strings.Contains(userLexiconManagerScript, "} catch {\n  Show-Error $_.Exception.Message\n  return\n}") {
 		t.Fatalf("expected lexicon manager script to guard toolbar/menu setup before ShowDialog")
 	}
 }
@@ -2540,8 +2781,8 @@ func TestEnsureUserLexiconFileCreatesEditableNumericToneSource(t *testing.T) {
 	if !strings.HasSuffix(path, userLexiconSourceFileName) {
 		t.Fatalf("expected editable source path, got %q", path)
 	}
-	if rimePath := ime.rimeUserLexiconPath(); !strings.HasSuffix(rimePath, rimeUserLexiconFileName) {
-		t.Fatalf("expected generated Rime lexicon path, got %q", rimePath)
+	if rimePath := ime.rimeUserLexiconPath("variable"); !strings.HasSuffix(rimePath, "custom_phrase_variable.txt") {
+		t.Fatalf("expected generated Rime lexicon path for variable mode, got %q", rimePath)
 	}
 	content, err := os.ReadFile(path)
 	if err != nil {
@@ -3003,5 +3244,370 @@ func TestOnActivateDoesNotApplySchemaOrPageSizeFromStandaloneFiles(t *testing.T)
 	}
 	if ime.reverseLookupDisplayMode != "hidden" {
 		t.Fatalf("expected standalone UI state to still apply reverse lookup mode, got %q", ime.reverseLookupDisplayMode)
+	}
+}
+
+func TestJoinRuneLookupPartialMissing(t *testing.T) {
+	lookup := map[string]string{
+		"你": "ni3",
+		"好": "hao3",
+	}
+	if got := joinRuneLookup("你好", lookup, " "); got != "ni3 hao3" {
+		t.Fatalf("expected full match, got %q", got)
+	}
+	if got := joinRuneLookup("你X", lookup, " "); got != "ni3 ?" {
+		t.Fatalf("expected partial match with placeholder, got %q", got)
+	}
+	if got := joinRuneLookup("X好", lookup, " "); got != "? hao3" {
+		t.Fatalf("expected partial match with leading placeholder, got %q", got)
+	}
+	if got := joinRuneLookup("XY", lookup, " "); got != "? ?" {
+		t.Fatalf("expected all placeholders for all-missing text, got %q", got)
+	}
+	if got := joinRuneLookup("你X好", lookup, " "); got != "ni3 ? hao3" {
+		t.Fatalf("expected mixed match with middle placeholder, got %q", got)
+	}
+	if got := joinRuneLookup("", lookup, " "); got != "" {
+		t.Fatalf("expected empty for empty input, got %q", got)
+	}
+}
+
+func TestLookupStandardPinyinPartialMissing(t *testing.T) {
+	t.Setenv("APPDATA", t.TempDir())
+	ime := newTestIME()
+	ime.numericToMarkedPinyin = map[string]string{
+		"ni3":  "ní",
+		"hao3": "hǎo",
+	}
+	ime.reversePinyinLoaded = map[string]bool{"yime_variable": true}
+	ime.reversePinyinBySchema = map[string]map[string]string{
+		"yime_variable": {
+			"n": "ni3",
+			"h": "hao3",
+		},
+	}
+	ime.yimePinyinLoaded = map[string]bool{"yime_variable": true}
+	ime.yimePinyinBySchema = map[string]map[string]string{
+		"yime_variable": {
+			"你": "n",
+			"好": "h",
+		},
+	}
+
+	if got := ime.lookupStandardPinyin("你好"); got != "ní hǎo" {
+		t.Fatalf("expected full pinyin, got %q", got)
+	}
+	if got := ime.lookupStandardPinyin("你𠀀"); got != "ní ?" {
+		t.Fatalf("expected partial pinyin with placeholder for CJKV char without mapping, got %q", got)
+	}
+	if got := ime.lookupStandardPinyin("𠀀好"); got != "? hǎo" {
+		t.Fatalf("expected leading placeholder for CJKV char without mapping, got %q", got)
+	}
+	if got := ime.lookupStandardPinyin("你𠀀好"); got != "ní ? hǎo" {
+		t.Fatalf("expected mixed pinyin with middle placeholder, got %q", got)
+	}
+}
+
+func TestApplyUserLexiconWritesAllThreeModes(t *testing.T) {
+	t.Setenv("APPDATA", t.TempDir())
+	ime := newTestIME()
+	backend := ime.backend.(*testBackend)
+	backend.session = true
+
+	sharedDir := ime.sharedDir()
+	if err := os.MkdirAll(sharedDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	tsvContent := "pinyin\tfull\tvariable\tshorthand\nzhong1\tzf\tzv\tzs\nguo2\tgf\tgv\tgs\n"
+	if err := os.WriteFile(filepath.Join(sharedDir, "yime_pinyin_codes.tsv"), []byte(tsvContent), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	sourcePath, err := ime.ensureUserLexiconFile()
+	if err != nil {
+		t.Fatalf("ensureUserLexiconFile failed: %v", err)
+	}
+	userEntry := "中国\tzhong1 guo2\t1000000\n"
+	if err := os.WriteFile(sourcePath, []byte(userEntry), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := ime.applyUserLexicon(); err != nil {
+		t.Fatalf("applyUserLexicon failed: %v", err)
+	}
+
+	userDir := ime.userDir()
+	for _, mode := range yimeModes {
+		targetPath := filepath.Join(userDir, "custom_phrase_"+mode+".txt")
+		data, err := os.ReadFile(targetPath)
+		if err != nil {
+			t.Fatalf("expected custom_phrase_%s.txt to exist, got error: %v", mode, err)
+		}
+		content := string(data)
+		if !strings.Contains(content, "中国") {
+			t.Fatalf("expected custom_phrase_%s.txt to contain phrase, got %q", mode, content)
+		}
+	}
+
+	varData, _ := os.ReadFile(filepath.Join(userDir, "custom_phrase_variable.txt"))
+	fullData, _ := os.ReadFile(filepath.Join(userDir, "custom_phrase_full.txt"))
+	shortData, _ := os.ReadFile(filepath.Join(userDir, "custom_phrase_shorthand.txt"))
+	varContent := string(varData)
+	fullContent := string(fullData)
+	shortContent := string(shortData)
+
+	if varContent == fullContent || varContent == shortContent || fullContent == shortContent {
+		t.Fatalf("expected different encodings per mode, got variable=%q full=%q shorthand=%q", varContent, fullContent, shortContent)
+	}
+}
+
+func TestRimeUserLexiconPathPerMode(t *testing.T) {
+	t.Setenv("APPDATA", t.TempDir())
+	ime := newTestIME()
+	for _, mode := range yimeModes {
+		path := ime.rimeUserLexiconPath(mode)
+		expected := "custom_phrase_" + mode + ".txt"
+		if !strings.HasSuffix(path, expected) {
+			t.Fatalf("expected rimeUserLexiconPath(%q) to end with %q, got %q", mode, expected, path)
+		}
+	}
+}
+
+func TestCandidatePageStartPreservedOnRejectedKey(t *testing.T) {
+	t.Setenv("APPDATA", t.TempDir())
+	ime := newTestIME()
+	backend := ime.backend.(*testBackend)
+	backend.session = true
+	ime.candidatePageStart = 1
+
+	req := &pime.Request{SeqNum: 1, KeyCode: 0x41, CharCode: 'a'}
+	ime.processKey(req, true)
+
+	if ime.candidatePageStart != 1 {
+		t.Fatalf("expected candidatePageStart preserved on key-up (rejected), got %d", ime.candidatePageStart)
+	}
+}
+
+func TestCandidatePageStartResetOnAcceptedKey(t *testing.T) {
+	t.Setenv("APPDATA", t.TempDir())
+	ime := newTestIME()
+	backend := ime.backend.(*testBackend)
+	backend.session = true
+	backend.composition = "ni"
+	backend.candidates = []candidateItem{{Text: "你"}}
+	ime.candidatePageStart = 5
+
+	req := &pime.Request{
+		SeqNum:   1,
+		KeyCode:  0x41,
+		CharCode: 'a',
+	}
+	ime.processKey(req, false)
+
+	if ime.candidatePageStart != 0 {
+		t.Fatalf("expected candidatePageStart reset when backend accepts key, got %d", ime.candidatePageStart)
+	}
+}
+
+func TestConcurrentKeyAndCommandNoDataRace(t *testing.T) {
+	t.Setenv("APPDATA", t.TempDir())
+	ime := newTestIME()
+	backend := ime.backend.(*testBackend)
+	backend.session = true
+	backend.composition = "ni"
+	backend.candidates = []candidateItem{{Text: "你"}, {Text: "尼"}}
+
+	var wg sync.WaitGroup
+	for i := 0; i < 20; i++ {
+		wg.Add(2)
+		go func() {
+			defer wg.Done()
+			ime.processKey(&pime.Request{SeqNum: 1, KeyCode: 0x41, CharCode: 'a'}, false)
+		}()
+		go func() {
+			defer wg.Done()
+			ime.onCommand(&pime.Request{SeqNum: 1, ID: pime.FlexibleID{Int: ID_ASCII_MODE, IsInt: true}}, pime.NewResponse(1, true))
+		}()
+	}
+	wg.Wait()
+}
+
+func TestLargeCandidateListGoSidePaging(t *testing.T) {
+	t.Setenv("APPDATA", t.TempDir())
+	ime := newTestIME()
+	backend := ime.backend.(*testBackend)
+	backend.session = true
+
+	candidates := make([]candidateItem, 25)
+	for i := range candidates {
+		candidates[i] = candidateItem{Text: string(rune('A' + i))}
+	}
+	backend.composition = "test"
+	backend.candidates = candidates
+	ime.candidatePageSize = 5
+	ime.keyComposing = true
+
+	ime.processKey(&pime.Request{SeqNum: 1, KeyCode: vkNext}, false)
+	if ime.candidatePageStart != 5 {
+		t.Fatalf("expected page start 5 after PageDown, got %d", ime.candidatePageStart)
+	}
+
+	ime.processKey(&pime.Request{SeqNum: 2, KeyCode: vkNext}, false)
+	if ime.candidatePageStart != 10 {
+		t.Fatalf("expected page start 10 after second PageDown, got %d", ime.candidatePageStart)
+	}
+
+	ime.processKey(&pime.Request{SeqNum: 3, KeyCode: vkPrior}, false)
+	if ime.candidatePageStart != 5 {
+		t.Fatalf("expected page start 5 after PageUp, got %d", ime.candidatePageStart)
+	}
+
+	ime.processKey(&pime.Request{SeqNum: 4, KeyCode: vkHome}, false)
+	if ime.candidatePageStart != 0 {
+		t.Fatalf("expected page start 0 after Home, got %d", ime.candidatePageStart)
+	}
+
+	ime.processKey(&pime.Request{SeqNum: 5, KeyCode: vkEnd}, false)
+	if ime.candidatePageStart != 20 {
+		t.Fatalf("expected page start 20 after End, got %d", ime.candidatePageStart)
+	}
+}
+
+func TestUnicodeBoundaryEmojiAndExtendedHan(t *testing.T) {
+	lookup := map[string]string{
+		"你": "ni3",
+		"好": "hao3",
+	}
+
+	if got := joinRuneLookup("你好", lookup, " "); got != "ni3 hao3" {
+		t.Fatalf("expected basic CJK, got %q", got)
+	}
+
+	if got := joinRuneLookup("你😀好", lookup, " "); got != "ni3 ? hao3" {
+		t.Fatalf("expected emoji placeholder, got %q", got)
+	}
+
+	if got := joinRuneLookup("你𠀀好", lookup, " "); got != "ni3 ? hao3" {
+		t.Fatalf("expected CJK Ext-B placeholder, got %q", got)
+	}
+
+	if got := joinRuneLookup("你𠀀", lookup, " "); got != "ni3 ?" {
+		t.Fatalf("expected trailing CJK Ext-B placeholder, got %q", got)
+	}
+
+	smp := "\U00020000"
+	if utf8.RuneLen([]rune(smp)[0]) != 4 {
+		t.Fatalf("expected 4-byte rune for CJK Ext-B, got %d", utf8.RuneLen([]rune(smp)[0]))
+	}
+}
+
+func TestSchemaSwitchFailureDuringComposition(t *testing.T) {
+	t.Setenv("APPDATA", t.TempDir())
+	ime := newTestIME()
+	backend := ime.backend.(*testBackend)
+	backend.session = true
+	backend.composition = "ni"
+	backend.candidates = []candidateItem{{Text: "你"}}
+
+	ime.selectSchema("yime_full")
+	if backend.composition != "" {
+		t.Fatalf("expected composition cleared after successful schema switch, got %q", backend.composition)
+	}
+
+	backend.composition = "hao"
+	backend.candidates = []candidateItem{{Text: "好"}}
+	backend.schemaID = ""
+	ime.selectSchema("")
+	if backend.composition != "hao" {
+		t.Fatalf("expected composition preserved when schema switch skipped (empty ID), got %q", backend.composition)
+	}
+}
+
+func TestLongUserPhraseLexiconBuild(t *testing.T) {
+	t.Setenv("APPDATA", t.TempDir())
+	ime := newTestIME()
+	backend := ime.backend.(*testBackend)
+	backend.session = true
+
+	sharedDir := ime.sharedDir()
+	if err := os.MkdirAll(sharedDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	tsvContent := "pinyin\tfull\tvariable\tshorthand\nzhong1\tzf\tzv\tzs\nguo2\tgf\tgv\tgs\n"
+	if err := os.WriteFile(filepath.Join(sharedDir, "yime_pinyin_codes.tsv"), []byte(tsvContent), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	sourcePath, err := ime.ensureUserLexiconFile()
+	if err != nil {
+		t.Fatalf("ensureUserLexiconFile failed: %v", err)
+	}
+
+	longPhrase := ""
+	for i := 0; i < 50; i++ {
+		longPhrase += "中国"
+	}
+	longPinyin := ""
+	for i := 0; i < 50; i++ {
+		if i > 0 {
+			longPinyin += " "
+		}
+		longPinyin += "zhong1 guo2"
+	}
+	entry := longPhrase + "\t" + longPinyin + "\t1000000\n"
+	if err := os.WriteFile(sourcePath, []byte(entry), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := ime.applyUserLexicon(); err != nil {
+		t.Fatalf("applyUserLexicon failed for long phrase: %v", err)
+	}
+
+	userDir := ime.userDir()
+	for _, mode := range yimeModes {
+		data, err := os.ReadFile(filepath.Join(userDir, "custom_phrase_"+mode+".txt"))
+		if err != nil {
+			t.Fatalf("expected custom_phrase_%s.txt for long phrase, got error: %v", mode, err)
+		}
+		if !strings.Contains(string(data), longPhrase) {
+			t.Fatalf("expected long phrase in %s mode output", mode)
+		}
+	}
+}
+
+func TestCompositionTerminatedNonForced(t *testing.T) {
+	t.Setenv("APPDATA", t.TempDir())
+	ime := newTestIME()
+	backend := ime.backend.(*testBackend)
+	backend.session = true
+	backend.composition = "ni"
+	backend.candidates = []candidateItem{{Text: "你"}}
+
+	resp := ime.onCompositionTerminated(&pime.Request{SeqNum: 1, Forced: false}, pime.NewResponse(1, true))
+	if resp.ReturnValue != 1 {
+		t.Fatalf("expected ReturnValue 1, got %d", resp.ReturnValue)
+	}
+	if backend.composition != "" {
+		t.Fatalf("expected composition cleared on non-forced termination, got %q", backend.composition)
+	}
+	if backend.session != true {
+		t.Fatalf("expected session preserved on non-forced termination, got %t", backend.session)
+	}
+}
+
+func TestCompositionTerminatedForced(t *testing.T) {
+	t.Setenv("APPDATA", t.TempDir())
+	ime := newTestIME()
+	backend := ime.backend.(*testBackend)
+	backend.session = true
+	backend.composition = "ni"
+	backend.candidates = []candidateItem{{Text: "你"}}
+
+	resp := ime.onCompositionTerminated(&pime.Request{SeqNum: 1, Forced: true}, pime.NewResponse(1, true))
+	if resp.ReturnValue != 1 {
+		t.Fatalf("expected ReturnValue 1, got %d", resp.ReturnValue)
+	}
+	if backend.session != false {
+		t.Fatalf("expected session destroyed on forced termination, got %t", backend.session)
 	}
 }
