@@ -397,9 +397,73 @@ onCommand → 启动独立工具
 
 ---
 
-## 3. 数据文件
+## 3. 数据管线与文件
 
-### 3.1 共享数据目录
+### 3.1 词典生成管线
+
+词典由 `Yime-python-prototype` 项目生成，经多步管线到达 Go 后端：
+
+```
+BCC 语料库 (6频道字频+词频)
+    │
+    ├── merge_char_freq.py → merged_char_freq.txt (同字取max)
+    └── merge_word_freq.py → merged_word_freq.txt (同词取max)
+
+Unihan_Readings.txt (五列普通话字段)
+    │
+    └── build_all.py → unihan_readings.db (读音+合成频率)
+
+source_pinyin.db (单字+词语拼音源)
+    │
+    ├── prototype_single_char_import.py → pinyin_hanzi.db
+    └── prototype_phrase_import.py → pinyin_hanzi.db
+          └── 词语无频率时默认 weight=1
+
+blcu_word_frequency_import.py
+    │
+    ├── BCC 字频 → char_frequency_abs (BCC优先，否则Unihan合成阶梯)
+    └── BCC 词频 → phrase_frequency (BCC优先，否则默认1)
+
+runtime_codes_refresh.py --apply
+    │
+    ├── 重建 char_usage_profile (5档分层: common_high/low, special_high/low, rare)
+    ├── 重建 char_modern_common_profile (BCC单字序位加成)
+    ├── 重建 char_reading_prior (词语频率累积的字-读音先验)
+    ├── 重建 runtime_candidates_materialized
+    └── JSON 导出 → .generated/runtime_candidates.json
+
+Go 后端
+    │
+    └── runtime_candidates.json → dict.yaml (Rime 词典格式)
+```
+
+**频率策略**：
+
+| 场景 | 策略 | 说明 |
+|------|------|------|
+| 单字有 BCC 频率 | 直接使用 BCC count | 最小正值 6 |
+| 单字无 BCC 频率 | Unihan 合成阶梯 (1-5) | 刻意低于 BCC 最低值 6，分层由 tier_sort_weight 保护 |
+| 词语有 BCC 频率 | 直接使用 BCC count | — |
+| 词语无 BCC 频率 | 默认 weight=1 | 排在候选列表底部，不影响正常使用 |
+
+**合成阶梯**（BCC 无命中时取最高命中列）：
+
+| Unihan 列 | 合成值 | 来源 |
+|-----------|--------|------|
+| kTGHZ2013 | 5 | 《通用规范汉字表》2013版 |
+| kHanyuPinlu | 4 | 汉语拼音频率 |
+| kXHC1983 | 3 | 《现代汉语词典》1983版 |
+| kHanyuPinyin | 2 | 汉语拼音 |
+| kMandarin | 1 | Mandarin 读音（含台版/方言遗留如 bong4/wong4） |
+
+**sort_weight 计算公式**：
+
+- 单字：`tier_sort_weight + modern_common_boost + reading_phrase_prior_boost + char_frequency_abs + reading_weight`
+- 词语：`phrase_frequency`（无 BCC 频率时 = 1）
+
+**项目分离现状**：`Yime-python-prototype`（数据生成）与 `Yime`（运行时）分属不同仓库，管线为手动执行。当前编码体系已固定，词典更新频率低，分离可接受。若管线成为瓶颈可考虑合并。
+
+### 3.2 共享数据目录
 
 `go-backend/input_methods/yime/data/`
 
