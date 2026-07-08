@@ -1922,8 +1922,8 @@ func TestUserLexiconManagerScriptShowsDialogInsideTopLevelTry(t *testing.T) {
 	if !strings.Contains(userLexiconManagerScript, "$actionBlock = $Action.GetNewClosure()") || !strings.Contains(userLexiconManagerScript, "& $actionBlock") {
 		t.Fatalf("expected lexicon manager action handlers to capture button/menu callbacks with GetNewClosure")
 	}
-	if !strings.Contains(userLexiconManagerScript, "Add-ActionButton \"打开目录\" { Open-UserFolder }") {
-		t.Fatalf("expected lexicon manager script to expose the user lexicon directory as a top-level toolbar action")
+	if !strings.Contains(userLexiconManagerScript, "Add-MenuAction $fileMenu \"打开词库目录\" { Open-UserFolder }") {
+		t.Fatalf("expected lexicon manager script to expose the user lexicon directory as a menu action")
 	}
 	if !strings.Contains(userLexiconManagerScript, "Set-SortFromColumn") {
 		t.Fatalf("expected lexicon manager script to map column clicks into sort changes")
@@ -1943,7 +1943,7 @@ func TestUserLexiconManagerScriptShowsDialogInsideTopLevelTry(t *testing.T) {
 	if strings.Contains(userLexiconManagerScript, "$form.TopMost = $true") || strings.Contains(userLexiconManagerScript, "$form.Activate()") || strings.Contains(userLexiconManagerScript, "$form.BringToFront()") {
 		t.Fatalf("expected lexicon manager script to avoid aggressive foreground forcing that can collapse the language bar")
 	}
-	if !strings.Contains(userLexiconManagerScript, "try {\n  [void](Add-ActionButton \"添加词条\" { Add-Entry })") || !strings.Contains(userLexiconManagerScript, "} catch {\n  Show-Error $_.Exception.Message\n  return\n}") {
+	if !strings.Contains(userLexiconManagerScript, "try {\n  [void](Add-ActionButton \"添加\" { Add-Entry })") || !strings.Contains(userLexiconManagerScript, "} catch {\n  Show-Error $_.Exception.Message\n  return\n}") {
 		t.Fatalf("expected lexicon manager script to guard toolbar/menu setup before ShowDialog")
 	}
 }

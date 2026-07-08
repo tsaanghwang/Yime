@@ -445,8 +445,9 @@ $script:lexiconLoaded = $false
 $form = New-Object System.Windows.Forms.Form
 $form.Text = "词库管理"
 $form.StartPosition = "CenterScreen"
-$form.Width = 860
-$form.Height = 560
+$form.Width = 780
+$form.Height = 520
+$form.MinimumSize = New-Object System.Drawing.Size(640, 420)
 
 $menu = New-Object System.Windows.Forms.MenuStrip
 $fileMenu = New-Object System.Windows.Forms.ToolStripMenuItem("文件")
@@ -457,61 +458,47 @@ $form.MainMenuStrip = $menu
 $form.Controls.Add($menu)
 
 $toolbar = New-Object System.Windows.Forms.FlowLayoutPanel
-$toolbar.Left = 12
-$toolbar.Top = 36
-$toolbar.Width = 820
-$toolbar.Height = 40
+$toolbar.Left = 8
+$toolbar.Top = 28
+$toolbar.Width = 746
+$toolbar.Height = 38
 $toolbar.WrapContents = $false
 $toolbar.AutoScroll = $true
 $form.Controls.Add($toolbar)
 
 $modeLabel = New-Object System.Windows.Forms.Label
-$modeLabel.Left = 12
-$modeLabel.Top = 82
-$modeLabel.Width = 820
-$modeLabel.Text = "当前编码方案：$Mode"
+$modeLabel.Left = 8
+$modeLabel.Top = 72
+$modeLabel.Width = 746
+$modeLabel.Text = "编码方案：$Mode"
 $form.Controls.Add($modeLabel)
 
-$workflowHintLabel = New-Object System.Windows.Forms.Label
-$workflowHintLabel.Left = 12
-$workflowHintLabel.Top = 104
-$workflowHintLabel.Width = 820
-$workflowHintLabel.Height = 28
-$workflowHintLabel.Text = "在此管理用户词库：添加、编辑、搜索、导入/导出、应用与撤销。"
-$form.Controls.Add($workflowHintLabel)
-
 $searchLabel = New-Object System.Windows.Forms.Label
-$searchLabel.Left = 12
-$searchLabel.Top = 138
-$searchLabel.Width = 96
+$searchLabel.Left = 8
+
+$searchLabel.Top = 96
+$searchLabel.Width = 40
 $searchLabel.Text = "搜索"
 $form.Controls.Add($searchLabel)
 
 $searchBox = New-Object System.Windows.Forms.TextBox
-$searchBox.Left = 110
-$searchBox.Top = 134
-$searchBox.Width = 560
+$searchBox.Left = 52
+$searchBox.Top = 93
+$searchBox.Width = 480
 $form.Controls.Add($searchBox)
 
 $searchResetButton = New-Object System.Windows.Forms.Button
-$searchResetButton.Left = 682
-$searchResetButton.Top = 132
-$searchResetButton.Width = 72
-$searchResetButton.Height = 28
+$searchResetButton.Left = 540
+$searchResetButton.Top = 91
+$searchResetButton.Width = 56
+$searchResetButton.Height = 26
 $searchResetButton.Text = "清空"
 $form.Controls.Add($searchResetButton)
 
-$sortLabel = New-Object System.Windows.Forms.Label
-$sortLabel.Left = 12
-$sortLabel.Top = 168
-$sortLabel.Width = 72
-$sortLabel.Text = "排序"
-$form.Controls.Add($sortLabel)
-
 $sortFieldComboBox = New-Object System.Windows.Forms.ComboBox
-$sortFieldComboBox.Left = 84
-$sortFieldComboBox.Top = 164
-$sortFieldComboBox.Width = 150
+$sortFieldComboBox.Left = 616
+$sortFieldComboBox.Top = 93
+$sortFieldComboBox.Width = 80
 $sortFieldComboBox.DropDownStyle = [System.Windows.Forms.ComboBoxStyle]::DropDownList
 [void]$sortFieldComboBox.Items.Add("词条")
 [void]$sortFieldComboBox.Items.Add("拼音")
@@ -520,72 +507,55 @@ $sortFieldComboBox.SelectedIndex = 0
 $form.Controls.Add($sortFieldComboBox)
 
 $sortDirectionButton = New-Object System.Windows.Forms.Button
-$sortDirectionButton.Left = 244
-$sortDirectionButton.Top = 162
-$sortDirectionButton.Width = 88
-$sortDirectionButton.Height = 28
+$sortDirectionButton.Left = 702
+$sortDirectionButton.Top = 91
+$sortDirectionButton.Width = 52
+$sortDirectionButton.Height = 26
 $sortDirectionButton.Text = "升序"
 $form.Controls.Add($sortDirectionButton)
 
 $listView = New-Object System.Windows.Forms.ListView
-$listView.Left = 12
-$listView.Top = 200
-$listView.Width = 580
-$listView.Height = 264
+$listView.Left = 8
+$listView.Top = 124
+$listView.Width = 746
+$listView.Height = 280
+$listView.Anchor = [System.Windows.Forms.AnchorStyles]::Top -bor [System.Windows.Forms.AnchorStyles]::Bottom -bor [System.Windows.Forms.AnchorStyles]::Left -bor [System.Windows.Forms.AnchorStyles]::Right
 $listView.View = [System.Windows.Forms.View]::Details
 $listView.FullRowSelect = $true
 $listView.GridLines = $true
 $listView.MultiSelect = $true
 $listView.HideSelection = $false
-[void]$listView.Columns.Add("词条", 180)
-[void]$listView.Columns.Add("数字标调拼音", 430)
-[void]$listView.Columns.Add("权重", 120)
+[void]$listView.Columns.Add("词条", 140)
+[void]$listView.Columns.Add("数字标调拼音", 440)
+[void]$listView.Columns.Add("权重", 100)
 $form.Controls.Add($listView)
 
-$statusLabel = New-Object System.Windows.Forms.Label
-$statusLabel.Left = 12
-$statusLabel.Top = 500
-$statusLabel.Width = 820
-$statusLabel.Height = 28
-$statusLabel.Text = "就绪。"
-$form.Controls.Add($statusLabel)
-
-$summaryLabel = New-Object System.Windows.Forms.Label
-$summaryLabel.Left = 12
-$summaryLabel.Top = 468
-$summaryLabel.Width = 820
-$summaryLabel.Height = 32
-$summaryLabel.Text = ""
-$form.Controls.Add($summaryLabel)
-
 $selectionLabel = New-Object System.Windows.Forms.Label
-$selectionLabel.Left = 340
-$selectionLabel.Top = 168
-$selectionLabel.Width = 252
-$selectionLabel.Height = 24
+$selectionLabel.Left = 8
+$selectionLabel.Top = 410
+$selectionLabel.Width = 746
+$selectionLabel.Height = 20
+$selectionLabel.Anchor = [System.Windows.Forms.AnchorStyles]::Bottom -bor [System.Windows.Forms.AnchorStyles]::Left -bor [System.Windows.Forms.AnchorStyles]::Right
 $selectionLabel.Text = ""
 $form.Controls.Add($selectionLabel)
 
-$historyLabel = New-Object System.Windows.Forms.Label
-$historyLabel.Left = 600
-$historyLabel.Top = 168
-$historyLabel.Width = 232
-$historyLabel.Text = "最近操作"
-$form.Controls.Add($historyLabel)
+$summaryLabel = New-Object System.Windows.Forms.Label
+$summaryLabel.Left = 8
+$summaryLabel.Top = 432
+$summaryLabel.Width = 746
+$summaryLabel.Height = 18
+$summaryLabel.Anchor = [System.Windows.Forms.AnchorStyles]::Bottom -bor [System.Windows.Forms.AnchorStyles]::Left -bor [System.Windows.Forms.AnchorStyles]::Right
+$summaryLabel.Text = ""
+$form.Controls.Add($summaryLabel)
 
-$historyListBox = New-Object System.Windows.Forms.ListBox
-$historyListBox.Left = 600
-$historyListBox.Top = 194
-$historyListBox.Width = 232
-$historyListBox.Height = 146
-$form.Controls.Add($historyListBox)
-
-$copyHistoryButton = New-Object System.Windows.Forms.Button
-$copyHistoryButton.Left = 600
-$copyHistoryButton.Top = 346
-$copyHistoryButton.Width = 108
-$copyHistoryButton.Height = 28
-$copyHistoryButton.Text = "复制摘要"
+$statusLabel = New-Object System.Windows.Forms.Label
+$statusLabel.Left = 8
+$statusLabel.Top = 454
+$statusLabel.Width = 746
+$statusLabel.Height = 20
+$statusLabel.Anchor = [System.Windows.Forms.AnchorStyles]::Bottom -bor [System.Windows.Forms.AnchorStyles]::Left -bor [System.Windows.Forms.AnchorStyles]::Right
+$statusLabel.Text = "就绪。"
+$form.Controls.Add($statusLabel)
 
 $script:isLexiconDirty = $false
 $script:sortField = "phrase"
@@ -615,10 +585,7 @@ function Add-OperationHistory {
 }
 
 function Refresh-OperationHistory {
-  $historyListBox.Items.Clear()
-  foreach ($item in $script:operationHistory) {
-    [void]$historyListBox.Items.Add($item)
-  }
+
 }
 
 function Copy-RecentOperationSummary {
@@ -1390,40 +1357,27 @@ function Add-MenuAction {
 }
 
 try {
-  [void](Add-ActionButton "添加词条" { Add-Entry })
-  [void](Add-ActionButton "删除词条" { Delete-Entry })
-  [void](Add-ActionButton "权重+1000" { Adjust-SelectedWeights 1000 })
-  [void](Add-ActionButton "权重-1000" { Adjust-SelectedWeights -1000 })
+  [void](Add-ActionButton "添加" { Add-Entry })
+  [void](Add-ActionButton "编辑" { Edit-Entry })
+  [void](Add-ActionButton "删除" { Delete-Entry })
   [void](Add-ActionButton "设权重" { Set-SelectedWeights })
   [void](Add-ActionButton "撤销" { Undo-LastSourceChange })
-  [void](Add-ActionButton "复制摘要" { Copy-RecentOperationSummary })
-  [void](Add-ActionButton "编辑源文件" { Open-SourceFile })
-  [void](Add-ActionButton "打开目录" { Open-UserFolder })
-  [void](Add-ActionButton "应用用户词库" { Apply-Lexicon })
-  [void](Add-ActionButton "导入" { Import-Lexicon })
-  [void](Add-ActionButton "导出" { Export-Lexicon })
-  [void](Add-ActionButton "刷新列表" { Refresh-EntryList })
+  [void](Add-ActionButton "应用" { Apply-Lexicon })
 
-  [void](Add-MenuAction $fileMenu "导入用户词库" { Import-Lexicon })
-  [void](Add-MenuAction $fileMenu "导出用户词库" { Export-Lexicon })
+  [void](Add-MenuAction $fileMenu "导入词库" { Import-Lexicon })
+  [void](Add-MenuAction $fileMenu "导出词库" { Export-Lexicon })
   $fileMenu.DropDownItems.Add((New-Object System.Windows.Forms.ToolStripSeparator)) | Out-Null
   [void](Add-MenuAction $fileMenu "打开源文件" { Open-SourceFile })
   [void](Add-MenuAction $fileMenu "打开词库目录" { Open-UserFolder })
   $fileMenu.DropDownItems.Add((New-Object System.Windows.Forms.ToolStripSeparator)) | Out-Null
   [void](Add-MenuAction $fileMenu "关闭" { $form.Close() })
 
-  [void](Add-MenuAction $actionMenu "添加词条" { Add-Entry })
-  [void](Add-MenuAction $actionMenu "删除词条" { Delete-Entry })
   [void](Add-MenuAction $actionMenu "权重 +1000" { Adjust-SelectedWeights 1000 })
   [void](Add-MenuAction $actionMenu "权重 -1000" { Adjust-SelectedWeights -1000 })
   [void](Add-MenuAction $actionMenu "设置权重" { Set-SelectedWeights })
-  [void](Add-MenuAction $actionMenu "撤销最近改动" { Undo-LastSourceChange })
-  [void](Add-MenuAction $actionMenu "复制最近摘要" { Copy-RecentOperationSummary })
-  [void](Add-MenuAction $actionMenu "应用用户词库" { Apply-Lexicon })
+  $actionMenu.DropDownItems.Add((New-Object System.Windows.Forms.ToolStripSeparator)) | Out-Null
   [void](Add-MenuAction $actionMenu "刷新列表" { Refresh-EntryList })
-
-  [void](Add-ActionButton "编辑" { Edit-Entry })
-  [void](Add-MenuAction $actionMenu "编辑" { Edit-Entry })
+  [void](Add-MenuAction $actionMenu "复制操作摘要" { Copy-RecentOperationSummary })
 } catch {
   Show-Error $_.Exception.Message
   return
