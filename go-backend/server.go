@@ -21,6 +21,8 @@ import (
 	"github.com/EasyIME/pime-go/input_methods/yime"
 )
 
+var version = "dev"
+
 // Client 客户端连接
 type Client struct {
 	ID              string
@@ -457,7 +459,7 @@ func main() {
 	}
 
 	log.Println("=" + strings.Repeat("=", 50))
-	log.Println("PIME Go 后端启动")
+	log.Printf("PIME Go 后端启动 (version %s)", version)
 	log.Println("=" + strings.Repeat("=", 50))
 
 	// 创建服务器

@@ -12,6 +12,8 @@ import (
 	"unsafe"
 )
 
+var version = "dev"
+
 func main() {
 	if len(os.Args) < 3 {
 		exitWithError("usage: tool-launcher.exe powershell-script <script-path> [args...]")

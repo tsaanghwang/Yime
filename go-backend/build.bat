@@ -85,23 +85,48 @@ set "GOOS=windows"
 set "GOARCH=amd64"
 set "CGO_ENABLED=0"
 
+set "APP_VERSION=1.0.0"
+for /f "tokens=*" %%v in ('git describe --tags --always --dirty 2^>nul') do set "APP_VERSION=%%v"
+
+echo [INFO] App version: %APP_VERSION%
+
+echo [INFO] Generating Windows VERSIONINFO resources ...
+go-winres simply --arch amd64 --product-version "%APP_VERSION%" --file-version "%APP_VERSION%" --product-name "YIME" --file-description "PIME Go Backend Server" --original-filename "server.exe" --manifest cli --out rsrc_server
+if errorlevel 1 (
+    echo [WARN] go-winres failed for server.exe, building without VERSIONINFO
+    if exist rsrc_server_windows_amd64.syso del rsrc_server_windows_amd64.syso
+)
+
 echo [INFO] Building server.exe with dynamic DLL loading ...
-go build -ldflags "-s -w" -o "%SERVER_EXE%" .
+go build -ldflags "-s -w -X main.version=%APP_VERSION%" -o "%SERVER_EXE%" .
 if errorlevel 1 (
     echo [ERROR] Failed to build server.exe
+    if exist rsrc_server_windows_amd64.syso del rsrc_server_windows_amd64.syso
     popd
     exit /b 1
 )
+
+if exist rsrc_server_windows_amd64.syso del rsrc_server_windows_amd64.syso
 
 echo [INFO] Built: "%SERVER_EXE%"
 
+echo [INFO] Generating Windows VERSIONINFO resources for tool-launcher ...
+go-winres simply --arch amd64 --product-version "%APP_VERSION%" --file-version "%APP_VERSION%" --product-name "YIME" --file-description "YIME Tool Launcher" --original-filename "tool-launcher.exe" --manifest gui --out cmd\tool-launcher\rsrc_tool
+if errorlevel 1 (
+    echo [WARN] go-winres failed for tool-launcher.exe, building without VERSIONINFO
+    if exist cmd\tool-launcher\rsrc_tool_windows_amd64.syso del cmd\tool-launcher\rsrc_tool_windows_amd64.syso
+)
+
 echo [INFO] Building tool-launcher.exe ...
-go build -ldflags "-s -w -H=windowsgui" -o "%TOOL_LAUNCHER_EXE%" .\cmd\tool-launcher
+go build -ldflags "-s -w -H=windowsgui -X main.version=%APP_VERSION%" -o "%TOOL_LAUNCHER_EXE%" .\cmd\tool-launcher
 if errorlevel 1 (
     echo [ERROR] Failed to build tool-launcher.exe
+    if exist cmd\tool-launcher\rsrc_tool_windows_amd64.syso del cmd\tool-launcher\rsrc_tool_windows_amd64.syso
     popd
     exit /b 1
 )
+
+if exist cmd\tool-launcher\rsrc_tool_windows_amd64.syso del cmd\tool-launcher\rsrc_tool_windows_amd64.syso
 
 echo [INFO] Built: "%TOOL_LAUNCHER_EXE%"
 
@@ -234,10 +259,17 @@ exit /b 0
 
 :prepare_rime_data
 if exist "%PACKAGE_RIME_DATA_DIR%" (
-    rmdir /s /q "%PACKAGE_RIME_DATA_DIR%"
+    rmdir /s /q "%PACKAGE_RIME_DATA_DIR%" 2>nul
+    if exist "%PACKAGE_RIME_DATA_DIR%" (
+        echo [WARN] Could not remove existing data directory, clearing contents instead.
+        del /q "%PACKAGE_RIME_DATA_DIR%\*" 2>nul
+        for /d %%d in ("%PACKAGE_RIME_DATA_DIR%\*") do (
+            rmdir /s /q "%%d" 2>nul
+        )
+    )
 )
-mkdir "%PACKAGE_RIME_DATA_DIR%"
-if errorlevel 1 (
+if not exist "%PACKAGE_RIME_DATA_DIR%" mkdir "%PACKAGE_RIME_DATA_DIR%"
+if not exist "%PACKAGE_RIME_DATA_DIR%" (
     echo [ERROR] Failed to create packaged Rime data directory: "%PACKAGE_RIME_DATA_DIR%"
     exit /b 1
 )
