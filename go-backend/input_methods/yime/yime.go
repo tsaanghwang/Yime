@@ -146,7 +146,7 @@ type backendUserDataSyncer interface {
 var runRimeExternalBuild = runRimeExternalBuildDefault
 var scheduleStandaloneToolLaunch = func(run func() error, onError func(error)) {
 	go func() {
-		time.Sleep(150 * time.Millisecond)
+		time.Sleep(300 * time.Millisecond)
 		if err := run(); err != nil && onError != nil {
 			onError(err)
 		}
@@ -170,6 +170,7 @@ type IME struct {
 	candidatePageSize        int
 	pendingSchemaRedeploy    string
 	candidatePageStart       int
+	candidateBackendIndexMap []int
 	keysDown                 map[int]bool
 	lastKeyDownRet           bool
 	lastKeyUpRet             bool
@@ -243,7 +244,7 @@ func (ime *IME) onActivate(req *pime.Request, resp *pime.Response) *pime.Respons
 	ime.createSession(resp)
 	ime.syncStandaloneUISettings()
 	ime.addButtons(resp)
-	ime.updateLangStatus(req, resp)
+	ime.updateWindowsModeIcon(req, resp)
 	go ime.warmReverseLookupCache()
 	if ime.backend != nil {
 		ime.applyStateToResponse(resp, ime.backend.State())
@@ -317,18 +318,19 @@ func (ime *IME) onSelectCandidate(req *pime.Request, resp *pime.Response) *pime.
 		resp.ReturnValue = 0
 		return resp
 	}
-	if !ime.backendUsesCandidatePaging() {
-		index += ime.candidatePageStart
+	backendIndex, ok := ime.mapCandidateSelectionIndex(index)
+	if !ok {
+		resp.ReturnValue = 0
+		return resp
 	}
 
 	ime.createSession(resp)
-	if !ime.backend.SelectCandidate(index) {
+	if !ime.backend.SelectCandidate(backendIndex) {
 		resp.ReturnValue = 0
 		return resp
 	}
 
 	resp.ReturnValue = 1
-	ime.updateLangStatus(req, resp)
 	ime.applyStateToResponse(resp, ime.backend.State())
 	return resp
 }
@@ -356,8 +358,12 @@ func (ime *IME) onCommand(req *pime.Request, resp *pime.Response) *pime.Response
 	switch commandID {
 	case ID_ASCII_MODE, ID_MODE_ICON:
 		ime.toggleOption("ascii_mode")
+		ime.changeLangBarAsciiButton(resp)
+		ime.updateWindowsModeIcon(req, resp)
 	case ID_FULL_SHAPE:
 		ime.toggleOption("full_shape")
+		ime.changeLangBarShapeButton(resp)
+		ime.updateWindowsModeIcon(req, resp)
 	case ID_ASCII_PUNCT:
 		ime.toggleOption("ascii_punct")
 	case ID_TRADITIONALIZATION:
@@ -428,13 +434,18 @@ func (ime *IME) onCommand(req *pime.Request, resp *pime.Response) *pime.Response
 		}
 	case ID_CANDIDATE_LAYOUT_TOGGLE:
 		ime.setCandidateLayout(ime.style.CandidatePerRow <= verticalCandidatesPerRow, resp)
+		ime.changeLangBarCandidateLayoutButton(resp)
 	default:
 		log.Printf("未知命令: %d", commandID)
 		resp.ReturnValue = 0
 		return resp
 	}
 
-	ime.updateLangStatus(req, resp)
+	if commandID == ID_ASCII_MODE || commandID == ID_MODE_ICON || commandID == ID_FULL_SHAPE || commandID == ID_CANDIDATE_LAYOUT_TOGGLE {
+		// Toggle buttons were updated above; avoid refreshing unrelated buttons.
+	} else {
+		ime.updateWindowsModeIcon(req, resp)
+	}
 	if ime.commandShouldRefreshState(commandID) && ime.backend != nil {
 		ime.applyStateToResponse(resp, ime.backend.State())
 	}
@@ -819,15 +830,11 @@ func (ime *IME) handleVisibleCandidateSelectionKey(req *pime.Request) bool {
 	if !ok {
 		return false
 	}
-	state := ime.backend.State()
-	globalIndex := index
-	if !ime.backendUsesCandidatePaging() {
-		globalIndex += ime.candidatePageStart
-	}
-	if globalIndex < 0 || globalIndex >= len(state.Candidates) {
+	backendIndex, ok := ime.mapCandidateSelectionIndex(index)
+	if !ok {
 		return false
 	}
-	if !ime.backend.SelectCandidate(globalIndex) {
+	if !ime.backend.SelectCandidate(backendIndex) {
 		return false
 	}
 	ime.candidatePageStart = 0
@@ -848,7 +855,7 @@ func (ime *IME) onKey(req *pime.Request, resp *pime.Response) bool {
 		ime.keyComposing = false
 		return true
 	}
-	ime.updateLangStatus(req, resp)
+	ime.updateWindowsModeIcon(req, resp)
 	state := ime.backend.State()
 	ime.applyStateToResponse(resp, state)
 	ime.keyComposing = state.Composition != "" || len(state.Candidates) > 0
@@ -884,11 +891,15 @@ func (ime *IME) applyStateToResponse(resp *pime.Response, state rimeState) {
 
 	if len(state.Candidates) > 0 {
 		displayCandidates := ime.reverseLookupDisplayCandidates(state.Candidates)
-		visibleCandidates, cursor := ime.visibleCandidates(displayCandidates, state.CandidateCursor)
+		filtered, indexMap := filterBlockedCandidates(displayCandidates, ime.blockedCandidateSet())
+		ime.candidateBackendIndexMap = indexMap
+		mappedCursor := remapCandidateCursor(state.CandidateCursor, indexMap)
+		visibleCandidates, cursor := ime.visibleCandidates(filtered, mappedCursor)
 		resp.CandidateList = ime.formatCandidates(visibleCandidates)
 		resp.CandidateCursor = cursor
-		resp.ShowCandidates = true
+		resp.ShowCandidates = len(visibleCandidates) > 0
 	} else {
+		ime.candidateBackendIndexMap = nil
 		ime.candidatePageStart = 0
 		resp.ShowCandidates = false
 	}
@@ -1011,14 +1022,59 @@ func (ime *IME) setCandidateLayout(horizontal bool, resp *pime.Response) {
 			resp.CustomizeUI = map[string]interface{}{}
 		}
 		resp.CustomizeUI["candPerRow"] = ime.style.CandidatePerRow
-		change := pime.ButtonInfo{
-			ID:        "candidate-layout",
-			CommandID: ID_CANDIDATE_LAYOUT_TOGGLE,
-		}
-		if iconPath := ime.iconPath(candidateLayoutIconName(horizontal)); iconPath != "" {
-			change.Icon = iconPath
-		}
-		resp.ChangeButton = append(resp.ChangeButton, change)
+	}
+}
+
+func (ime *IME) appendLangBarButtonChange(resp *pime.Response, id, text, iconName string) {
+	if resp == nil || !ime.style.DisplayTrayIcon {
+		return
+	}
+	change := pime.ButtonInfo{
+		ID:   id,
+		Text: text,
+	}
+	if iconPath := ime.iconPath(iconName); iconPath != "" {
+		change.Icon = iconPath
+	}
+	resp.ChangeButton = append(resp.ChangeButton, change)
+}
+
+func (ime *IME) changeLangBarAsciiButton(resp *pime.Response) {
+	if ime.backend == nil {
+		return
+	}
+	asciiMode := ime.backend.GetOption("ascii_mode")
+	ime.appendLangBarButtonChange(resp, "switch-lang", langButtonText(asciiMode), langIconName(asciiMode))
+}
+
+func (ime *IME) changeLangBarShapeButton(resp *pime.Response) {
+	if ime.backend == nil {
+		return
+	}
+	fullShape := ime.backend.GetOption("full_shape")
+	ime.appendLangBarButtonChange(resp, "switch-shape", shapeButtonText(fullShape), shapeIconName(fullShape))
+}
+
+func (ime *IME) changeLangBarCandidateLayoutButton(resp *pime.Response) {
+	horizontal := ime.style.CandidatePerRow > verticalCandidatesPerRow
+	ime.appendLangBarButtonChange(resp, "candidate-layout", candidateLayoutButtonText(horizontal), candidateLayoutIconName(horizontal))
+}
+
+func (ime *IME) updateWindowsModeIcon(req *pime.Request, resp *pime.Response) {
+	if !ime.style.DisplayTrayIcon || ime.backend == nil {
+		return
+	}
+	if ime.Client == nil || !ime.Client.IsWindows8Above {
+		return
+	}
+	asciiMode := ime.backend.GetOption("ascii_mode")
+	fullShape := ime.backend.GetOption("full_shape")
+	capsOn := req != nil && req.KeyStates.IsKeyToggled(vkCapital)
+	if iconPath := ime.iconPath(modeIconName(asciiMode, fullShape, capsOn)); iconPath != "" {
+		resp.ChangeButton = append(resp.ChangeButton, pime.ButtonInfo{
+			ID:   "windows-mode-icon",
+			Icon: iconPath,
+		})
 	}
 }
 
@@ -1034,36 +1090,6 @@ func (ime *IME) selectSchema(schemaID string) {
 	}
 	if ime.backend.SelectSchema(schemaID) {
 		ime.backend.ClearComposition()
-	}
-}
-
-func (ime *IME) updateLangStatus(req *pime.Request, resp *pime.Response) {
-	if !ime.style.DisplayTrayIcon || ime.backend == nil {
-		return
-	}
-	asciiMode := ime.backend.GetOption("ascii_mode")
-	fullShape := ime.backend.GetOption("full_shape")
-	capsOn := req != nil && req.KeyStates.IsKeyToggled(vkCapital)
-
-	if ime.Client != nil && ime.Client.IsWindows8Above {
-		if iconPath := ime.iconPath(modeIconName(asciiMode, fullShape, capsOn)); iconPath != "" {
-			resp.ChangeButton = append(resp.ChangeButton, pime.ButtonInfo{
-				ID:   "windows-mode-icon",
-				Icon: iconPath,
-			})
-		}
-	}
-	if iconPath := ime.iconPath(langIconName(asciiMode)); iconPath != "" {
-		resp.ChangeButton = append(resp.ChangeButton, pime.ButtonInfo{
-			ID:   "switch-lang",
-			Icon: iconPath,
-		})
-	}
-	if iconPath := ime.iconPath(shapeIconName(fullShape)); iconPath != "" {
-		resp.ChangeButton = append(resp.ChangeButton, pime.ButtonInfo{
-			ID:   "switch-shape",
-			Icon: iconPath,
-		})
 	}
 }
 
@@ -1083,32 +1109,37 @@ func (ime *IME) addButtons(resp *pime.Response) {
 			})
 		}
 	}
+	langButton := pime.ButtonInfo{
+		ID:        "switch-lang",
+		Text:      langButtonText(asciiMode),
+		Tooltip:   "中西文切换",
+		CommandID: ID_ASCII_MODE,
+	}
 	if iconPath := ime.iconPath(langIconName(asciiMode)); iconPath != "" {
-		resp.AddButton = append(resp.AddButton, pime.ButtonInfo{
-			ID:        "switch-lang",
-			Icon:      iconPath,
-			Text:      "中西文切换",
-			Tooltip:   "中西文切换",
-			CommandID: ID_ASCII_MODE,
-		})
+		langButton.Icon = iconPath
+	}
+	resp.AddButton = append(resp.AddButton, langButton)
+
+	shapeButton := pime.ButtonInfo{
+		ID:        "switch-shape",
+		Text:      shapeButtonText(fullShape),
+		Tooltip:   "全半宽切换",
+		CommandID: ID_FULL_SHAPE,
 	}
 	if iconPath := ime.iconPath(shapeIconName(fullShape)); iconPath != "" {
-		resp.AddButton = append(resp.AddButton, pime.ButtonInfo{
-			ID:        "switch-shape",
-			Icon:      iconPath,
-			Text:      "全半宽切换",
-			Tooltip:   "全宽/半宽切换",
-			CommandID: ID_FULL_SHAPE,
-		})
+		shapeButton.Icon = iconPath
 	}
+	resp.AddButton = append(resp.AddButton, shapeButton)
+
+	horizontal := ime.style.CandidatePerRow > verticalCandidatesPerRow
 	layoutButton := pime.ButtonInfo{
 		ID:        "candidate-layout",
-		Text:      "横竖排切换",
-		Tooltip:   "排列方式",
+		Text:      candidateLayoutButtonText(horizontal),
+		Tooltip:   "横竖排切换",
 		CommandID: ID_CANDIDATE_LAYOUT_TOGGLE,
 		Type:      "button",
 	}
-	if iconPath := ime.iconPath(candidateLayoutIconName(ime.style.CandidatePerRow > verticalCandidatesPerRow)); iconPath != "" {
+	if iconPath := ime.iconPath(candidateLayoutIconName(horizontal)); iconPath != "" {
 		layoutButton.Icon = iconPath
 	}
 	resp.AddButton = append(resp.AddButton, layoutButton)
@@ -2486,6 +2517,27 @@ func modeIconName(asciiMode, fullShape, capsOn bool) string {
 		caps = "on"
 	}
 	return lang + "_" + shape + "_caps" + caps + ".ico"
+}
+
+func langButtonText(asciiMode bool) string {
+	if asciiMode {
+		return "西文"
+	}
+	return "中文"
+}
+
+func shapeButtonText(fullShape bool) string {
+	if fullShape {
+		return "全宽"
+	}
+	return "半宽"
+}
+
+func candidateLayoutButtonText(horizontal bool) string {
+	if horizontal {
+		return "横排"
+	}
+	return "竖排"
 }
 
 func langIconName(asciiMode bool) string {

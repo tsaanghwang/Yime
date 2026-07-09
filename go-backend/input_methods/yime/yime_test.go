@@ -1,6 +1,7 @@
 package yime
 
 import (
+	"encoding/json"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -1331,9 +1332,122 @@ func TestOnCommandSwitchesCandidateLayout(t *testing.T) {
 	if backend.horizontal {
 		t.Fatal("expected backend _horizontal option to be false")
 	}
-	if len(resp.ChangeButton) == 0 || resp.ChangeButton[0].CommandID != ID_CANDIDATE_LAYOUT_TOGGLE {
-		t.Fatalf("expected layout button command ID to be toggle, got %#v", resp.ChangeButton)
+	if len(resp.ChangeButton) == 0 {
+		t.Fatalf("expected layout button change, got %#v", resp.ChangeButton)
 	}
+	if change := findLangBarChangeButton(resp.ChangeButton, "candidate-layout"); change == nil || change.Text != "竖排" {
+		t.Fatalf("expected candidate-layout button text to reflect vertical layout, got %#v", resp.ChangeButton)
+	}
+}
+
+func TestIMEDisplayNameIsYime(t *testing.T) {
+	data, err := os.ReadFile("ime.json")
+	if err != nil {
+		t.Fatalf("read ime.json failed: %v", err)
+	}
+	var profile struct {
+		Name string `json:"name"`
+	}
+	if err := json.Unmarshal(data, &profile); err != nil {
+		t.Fatalf("parse ime.json failed: %v", err)
+	}
+	if profile.Name != "音元" {
+		t.Fatalf("expected IME list name 音元, got %q", profile.Name)
+	}
+}
+
+func TestLanguageBarToggleButtonsShowCurrentState(t *testing.T) {
+	ime := newTestIME()
+	resp := pime.NewResponse(1, true)
+	ime.addButtons(resp)
+
+	if button := findLangBarButton(resp.AddButton, "switch-lang"); button == nil || button.Text != "中文" {
+		t.Fatalf("expected switch-lang button to show 中文 by default, got %#v", button)
+	}
+	if button := findLangBarButton(resp.AddButton, "switch-shape"); button == nil || button.Text != "半宽" {
+		t.Fatalf("expected switch-shape button to show 半宽 by default, got %#v", button)
+	}
+	if button := findLangBarButton(resp.AddButton, "candidate-layout"); button == nil || button.Text != "竖排" {
+		t.Fatalf("expected candidate-layout button to show 竖排 by default, got %#v", button)
+	}
+
+	asciiResp := ime.onCommand(&pime.Request{
+		SeqNum: 2,
+		ID:     pime.FlexibleID{Int: ID_ASCII_MODE, IsInt: true},
+	}, pime.NewResponse(2, true))
+	if change := findLangBarChangeButton(asciiResp.ChangeButton, "switch-lang"); change == nil || change.Text != "西文" {
+		t.Fatalf("expected switch-lang button to update to 西文 after toggle, got %#v", asciiResp.ChangeButton)
+	}
+
+	shapeResp := ime.onCommand(&pime.Request{
+		SeqNum: 3,
+		ID:     pime.FlexibleID{Int: ID_FULL_SHAPE, IsInt: true},
+	}, pime.NewResponse(3, true))
+	if change := findLangBarChangeButton(shapeResp.ChangeButton, "switch-shape"); change == nil || change.Text != "全宽" {
+		t.Fatalf("expected switch-shape button to update to 全宽 after toggle, got %#v", shapeResp.ChangeButton)
+	}
+
+	layoutResp := ime.onCommand(&pime.Request{
+		SeqNum: 4,
+		ID:     pime.FlexibleID{Int: ID_CANDIDATE_LAYOUT_TOGGLE, IsInt: true},
+	}, pime.NewResponse(4, true))
+	if change := findLangBarChangeButton(layoutResp.ChangeButton, "candidate-layout"); change == nil || change.Text != "横排" {
+		t.Fatalf("expected candidate-layout button to update to 横排 after toggle, got %#v", layoutResp.ChangeButton)
+	}
+}
+
+func findLangBarButton(buttons []pime.ButtonInfo, id string) *pime.ButtonInfo {
+	for i := range buttons {
+		if buttons[i].ID == id {
+			return &buttons[i]
+		}
+	}
+	return nil
+}
+
+func TestOnKeyDoesNotRefreshUnrelatedLangBarToggleButtons(t *testing.T) {
+	ime := newTestIME()
+	backend := ime.backend.(*testBackend)
+	backend.composition = "ni"
+	backend.refreshCandidates()
+
+	resp := pime.NewResponse(20, true)
+	if !ime.onKey(&pime.Request{SeqNum: 20, KeyCode: 'h'}, resp) {
+		t.Fatal("expected key to be handled")
+	}
+	for _, change := range resp.ChangeButton {
+		switch change.ID {
+		case "switch-lang", "switch-shape", "candidate-layout":
+			t.Fatalf("expected onKey not to refresh toggle button %q, got %#v", change.ID, resp.ChangeButton)
+		}
+	}
+}
+
+func TestOnCommandAsciiModeUpdatesOnlyLangButton(t *testing.T) {
+	ime := newTestIME()
+
+	resp := ime.onCommand(&pime.Request{
+		SeqNum: 21,
+		ID:     pime.FlexibleID{Int: ID_ASCII_MODE, IsInt: true},
+	}, pime.NewResponse(21, true))
+
+	if len(resp.ChangeButton) == 0 {
+		t.Fatalf("expected lang bar button change, got %#v", resp.ChangeButton)
+	}
+	for _, change := range resp.ChangeButton {
+		switch change.ID {
+		case "switch-lang":
+			if change.Text != "西文" {
+				t.Fatalf("expected switch-lang text 西文, got %#v", change)
+			}
+		case "switch-shape", "candidate-layout":
+			t.Fatalf("expected ascii toggle not to refresh %q, got %#v", change.ID, resp.ChangeButton)
+		}
+	}
+}
+
+func findLangBarChangeButton(buttons []pime.ButtonInfo, id string) *pime.ButtonInfo {
+	return findLangBarButton(buttons, id)
 }
 
 func TestCandidatePageSizeCommandUpdatesCurrentSessionEvenIfDeployFails(t *testing.T) {
@@ -1821,6 +1935,8 @@ func TestBuildToolHubManifestProvidesExtensibleToolEntries(t *testing.T) {
 		`C:\logs`,
 		`C:\go-backend\lexicon-manager.exe`,
 		`C:\go-backend\reverse-lookup.exe`,
+		`C:\go-backend\system-lexicon-audit.exe`,
+		`C:\go-backend\blocklist-manager.exe`,
 		`C:\go-backend\settings-tool.exe`,
 		`C:\go-backend\diagnostics-tool.exe`,
 		"variable",
@@ -1831,33 +1947,40 @@ func TestBuildToolHubManifestProvidesExtensibleToolEntries(t *testing.T) {
 	if manifest.Title != "Yime 工具箱" {
 		t.Fatalf("expected tool hub title, got %#v", manifest.Title)
 	}
-	if len(manifest.Tools) < 11 {
+	if len(manifest.Tools) < 10 {
 		t.Fatalf("expected framework-ready tool entries, got %#v", manifest.Tools)
 	}
 	required := map[string]bool{
-		"lexicon-manager":      false,
-		"reverse-lookup-tool":  false,
-		"settings-tool":        false,
-		"settings-data":       false,
-		"shared-data":         false,
-		"diagnostics-tool":    false,
-		"diagnostics-guide":   false,
-		"diagnostics-logs":    false,
-		"settings-guide":      false,
-		"help-readme":         false,
-		"help-trial-feedback": false,
+		"lexicon-manager":        false,
+		"reverse-lookup-tool":    false,
+		"system-lexicon-audit":   false,
+		"user-blocklist-manager": false,
+		"settings-tool":          false,
+		"settings-data":          false,
+		"shared-data":            false,
+		"diagnostics-tool":       false,
+		"help-readme":            false,
+		"help-trial-feedback":    false,
 	}
-	for _, tool := range manifest.Tools {
+	diagnosticsIndex := -1
+	settingsDataIndex := -1
+	for index, tool := range manifest.Tools {
 		if _, ok := required[tool.ID]; ok {
 			required[tool.ID] = true
 		}
 		switch tool.ID {
-		case "lexicon-manager", "reverse-lookup-tool", "settings-tool", "diagnostics-tool":
+		case "diagnostics-tool":
+			diagnosticsIndex = index
+		case "settings-data":
+			settingsDataIndex = index
+		}
+		switch tool.ID {
+		case "lexicon-manager", "reverse-lookup-tool", "system-lexicon-audit", "user-blocklist-manager", "settings-tool", "diagnostics-tool":
 			if tool.ActionType != toolActionRunExecutable {
 				t.Fatalf("expected %s to launch native executable, got %#v", tool.ID, tool)
 			}
-			if !tool.CloseAfterLaunch {
-				t.Fatalf("expected %s to close the tool hub after launch, got %#v", tool.ID, tool)
+			if tool.CloseAfterLaunch {
+				t.Fatalf("expected %s to keep the tool hub open after launch, got %#v", tool.ID, tool)
 			}
 			switch tool.ID {
 			case "lexicon-manager":
@@ -1873,6 +1996,20 @@ func TestBuildToolHubManifestProvidesExtensibleToolEntries(t *testing.T) {
 				}
 				if len(tool.Arguments) < 6 || tool.Arguments[0] != "-SharedDir" || tool.Arguments[2] != "-UserDir" || tool.Arguments[4] != "-Mode" {
 					t.Fatalf("expected reverse-lookup-tool executable arguments, got %#v", tool.Arguments)
+				}
+			case "system-lexicon-audit":
+				if tool.TargetPath != `C:\go-backend\system-lexicon-audit.exe` {
+					t.Fatalf("expected system-lexicon-audit executable path to be preserved, got %#v", tool)
+				}
+				if len(tool.Arguments) < 6 || tool.Arguments[0] != "-SharedDir" || tool.Arguments[2] != "-UserDir" || tool.Arguments[4] != "-Mode" {
+					t.Fatalf("expected system-lexicon-audit executable arguments, got %#v", tool.Arguments)
+				}
+			case "user-blocklist-manager":
+				if tool.TargetPath != `C:\go-backend\blocklist-manager.exe` {
+					t.Fatalf("expected user-blocklist-manager executable path to be preserved, got %#v", tool)
+				}
+				if len(tool.Arguments) != 2 || tool.Arguments[0] != "-UserDir" || tool.Arguments[1] != `C:\user` {
+					t.Fatalf("expected user-blocklist-manager executable arguments, got %#v", tool.Arguments)
 				}
 			case "settings-tool":
 				if tool.TargetPath != `C:\go-backend\settings-tool.exe` {
@@ -1899,6 +2036,15 @@ func TestBuildToolHubManifestProvidesExtensibleToolEntries(t *testing.T) {
 		if !found {
 			t.Fatalf("expected tool hub entry %q in %#v", id, manifest.Tools)
 		}
+	}
+	if diagnosticsIndex < 0 || settingsDataIndex < 0 {
+		t.Fatalf("expected diagnostics-tool and settings-data entries in %#v", manifest.Tools)
+	}
+	if diagnosticsIndex >= settingsDataIndex {
+		t.Fatalf("expected diagnostics-tool before settings-data, got diagnostics=%d settings-data=%d", diagnosticsIndex, settingsDataIndex)
+	}
+	if manifest.Summary != "" || manifest.Note != "" {
+		t.Fatalf("expected empty summary/note in tool hub manifest, got summary=%q note=%q", manifest.Summary, manifest.Note)
 	}
 }
 
