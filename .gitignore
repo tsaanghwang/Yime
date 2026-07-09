@@ -11,6 +11,7 @@ go-backend/input_methods/yime/data/**
 !go-backend/input_methods/yime/data/pinyin_normalized.json
 go-backend/build/
 go-backend/.gotmp/
+go-backend/*.exe
 installer/*.exe
 .tmp/
 PIMELauncher/target/

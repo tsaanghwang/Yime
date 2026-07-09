@@ -147,5 +147,13 @@
   },
   "[code-text-output]": {
     "cSpell.enabled": false
-  }
+  },
+  "cursorpyright.analysis.exclude": [
+    "python/python3/**",
+    "jsoncpp/**",
+    "libuv/**",
+    "libchewing/**",
+    "libIME2/**",
+    "spdlog-1.2.1/**"
+  ]
 }
