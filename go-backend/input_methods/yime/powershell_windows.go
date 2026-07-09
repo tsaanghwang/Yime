@@ -9,6 +9,8 @@ import (
 	"strings"
 	"syscall"
 	"unsafe"
+
+	"github.com/EasyIME/pime-go/input_methods/yime/win32ui"
 )
 
 const shellExecuteOpenVerb = "open"
@@ -33,8 +35,7 @@ func newUIPowerShellCommand(args ...string) *exec.Cmd {
 }
 
 func startDetachedExecutable(filePath string, args ...string) error {
-	parameters := joinWindowsProcessArguments(args)
-	return shellExecute(filePath, parameters, swShowNormal)
+	return win32ui.StartDetachedGUIExecutable(filePath, args...)
 }
 
 func shellExecute(filePath, parameters string, showCmd uintptr) error {

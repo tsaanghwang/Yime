@@ -6,16 +6,20 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"os/exec"
+	"path/filepath"
 	"runtime"
 	"strings"
 	"syscall"
 	"unsafe"
 
 	"github.com/EasyIME/pime-go/input_methods/yime/diagnostics"
+	"github.com/EasyIME/pime-go/input_methods/yime/win32ui"
 )
 
 const (
-	wmAppCommand = 0x0400 + 1
+	wmAppCommand  = 0x0400 + 1
+	wmAppRefresh  = 0x0400 + 2
 
 	wsExControlparent  = 0x00010000
 	wsExAppwindow      = 0x00040000
@@ -35,6 +39,8 @@ const (
 	idAnonymize       = 106
 	idBtnRefresh      = 201
 	idBtnCopy         = 202
+	idBtnGuide        = 203
+	idBtnLogs         = 204
 )
 
 var (
@@ -147,6 +153,11 @@ func main() {
 func runApp(state *appState) error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+
+	if win32ui.ActivateExistingWindow("YimeDiagnosticsTool") {
+		return nil
+	}
+
 	icc := initCommonControlsEx{Size: uint32(unsafe.Sizeof(initCommonControlsEx{})), ICC: 0x000000FF}
 	procInitCommonControlsEx.Call(uintptr(unsafe.Pointer(&icc)))
 	instance, _, _ := procGetModuleHandleW.Call(0)
@@ -156,7 +167,17 @@ func runApp(state *appState) error {
 	wndProcCallback = syscall.NewCallback(func(hwnd syscall.Handle, msg uint32, wParam, lParam uintptr) uintptr {
 		return state.wndProc(hwnd, msg, wParam, lParam)
 	})
-	wndClass := wndclassex{Size: uint32(unsafe.Sizeof(wndclassex{})), WndProc: wndProcCallback, Instance: syscall.Handle(instance), Icon: syscall.Handle(icon), IconSm: syscall.Handle(icon), Cursor: syscall.Handle(cursor), ClassName: className}
+	wndClass := wndclassex{
+		Style:      win32ui.ClassRedraw,
+		Size:       uint32(unsafe.Sizeof(wndclassex{})),
+		WndProc:    wndProcCallback,
+		Instance:   syscall.Handle(instance),
+		Icon:       syscall.Handle(icon),
+		IconSm:     syscall.Handle(icon),
+		Cursor:     syscall.Handle(cursor),
+		Background: win32ui.ColorWindowBackground,
+		ClassName:  className,
+	}
 	procRegisterClassExW.Call(uintptr(unsafe.Pointer(&wndClass)))
 	title, _ := syscall.UTF16PtrFromString("Yime 诊断")
 	winW, winH := windowSizeForClient(900, 620)
@@ -170,8 +191,9 @@ func runApp(state *appState) error {
 	}
 	state.mainHWND = syscall.Handle(hwnd)
 	state.createControls()
-	state.refreshStatus()
+	setWindowText(state.statusHWND, "正在收集诊断信息，请稍候…")
 	state.presentMainWindow()
+	procPostMessageW.Call(uintptr(state.mainHWND), wmAppRefresh, 0, 0)
 	var message winMsg
 	for {
 		ret, _, _ := procGetMessageW.Call(uintptr(unsafe.Pointer(&message)), 0, 0, 0)
@@ -202,6 +224,8 @@ func (state *appState) createControls() {
 	procSendMessageW.Call(uintptr(state.anonHWND), 0x00F1, 1, 0)
 	createButton(state.mainHWND, "刷新", rect{16, 520, 100, 548}, idBtnRefresh)
 	createButton(state.mainHWND, "复制结构化报告", rect{112, 520, 260, 548}, idBtnCopy)
+	createButton(state.mainHWND, "诊断说明", rect{272, 520, 372, 548}, idBtnGuide)
+	createButton(state.mainHWND, "日志目录", rect{384, 520, 484, 548}, idBtnLogs)
 }
 
 func (state *appState) refreshStatus() {
@@ -225,6 +249,21 @@ func (state *appState) wndProc(hwnd syscall.Handle, message uint32, wParam, lPar
 	case wmAppCommand:
 		state.handleCommand(wParam)
 		return 0
+	case wmAppRefresh:
+		state.refreshStatus()
+		return 0
+	case 0x0006: // WM_ACTIVATE
+		if win32ui.IsActivateMessage(wParam) {
+			win32ui.RedrawChildrenNow(state.mainHWND)
+		}
+		ret, _, _ := procDefWindowProcW.Call(uintptr(hwnd), uintptr(message), wParam, lParam)
+		return ret
+	case 0x0018: // WM_SHOWWINDOW
+		if wParam != 0 && lParam == 0 {
+			win32ui.PresentMainWindow(state.mainHWND)
+		}
+		ret, _, _ := procDefWindowProcW.Call(uintptr(hwnd), uintptr(message), wParam, lParam)
+		return ret
 	case 0x0010, 0x0002:
 		procPostQuitMessage.Call(0)
 		return 0
@@ -242,18 +281,28 @@ func (state *appState) handleCommand(wParam uintptr) {
 		if err := setClipboardText(report); err != nil {
 			showError(err.Error())
 		}
+	case idBtnGuide:
+		if strings.TrimSpace(state.ctx.HelpDir) == "" {
+			showError("缺少 HelpDir，无法打开诊断说明。")
+			return
+		}
+		guidePath := filepath.Join(state.ctx.HelpDir, "diagnostics.html")
+		if err := openPath(guidePath); err != nil {
+			showError(err.Error())
+		}
+	case idBtnLogs:
+		if strings.TrimSpace(state.ctx.LogDir) == "" {
+			showError("缺少 LogDir，无法打开日志目录。")
+			return
+		}
+		if err := openPath(state.ctx.LogDir); err != nil {
+			showError(err.Error())
+		}
 	}
 }
 
 func (state *appState) presentMainWindow() {
-	hwnd := uintptr(state.mainHWND)
-	if iconic, _, _ := procIsIconic.Call(hwnd); iconic != 0 {
-		procShowWindow.Call(hwnd, swRestore)
-	}
-	procBringWindowToTop.Call(hwnd)
-	procSetForegroundWindow.Call(hwnd)
-	procShowWindow.Call(hwnd, swShowNormal)
-	procUpdateWindow.Call(hwnd)
+	win32ui.PresentMainWindow(state.mainHWND)
 }
 
 func isChecked(hwnd syscall.Handle) bool {
@@ -320,4 +369,14 @@ func showError(message string) {
 func setWindowText(hwnd syscall.Handle, text string) {
 	ptr, _ := syscall.UTF16PtrFromString(text)
 	procSetWindowTextW.Call(uintptr(hwnd), uintptr(unsafe.Pointer(ptr)))
+}
+
+func openPath(path string) error {
+	if strings.TrimSpace(path) == "" {
+		return fmt.Errorf("路径为空")
+	}
+	if _, err := os.Stat(path); err != nil {
+		return fmt.Errorf("找不到路径：%s", path)
+	}
+	return exec.Command("explorer.exe", path).Start()
 }

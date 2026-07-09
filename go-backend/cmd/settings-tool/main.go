@@ -14,6 +14,7 @@ import (
 
 	"github.com/EasyIME/pime-go/input_methods/yime/settings"
 	"github.com/EasyIME/pime-go/input_methods/yime/toolhub"
+	"github.com/EasyIME/pime-go/input_methods/yime/win32ui"
 )
 
 const (
@@ -109,6 +110,7 @@ func main() {
 	userDir := flag.String("UserDir", "", "Yime user data directory")
 	sharedDir := flag.String("SharedDir", "", "Yime shared runtime data directory")
 	helpDir := flag.String("HelpDir", "", "Yime help directory")
+	_ = flag.String("LogDir", "", "PIME log directory")
 	flag.Parse()
 	if strings.TrimSpace(*userDir) == "" || strings.TrimSpace(*sharedDir) == "" {
 		showError("缺少 UserDir 或 SharedDir 参数。")
@@ -129,6 +131,11 @@ func main() {
 func runApp(state *appState) error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+
+	if win32ui.ActivateExistingWindow("YimeSettingsTool") {
+		return nil
+	}
+
 	icc := initCommonControlsEx{Size: uint32(unsafe.Sizeof(initCommonControlsEx{})), ICC: 0x000000FF}
 	procInitCommonControlsEx.Call(uintptr(unsafe.Pointer(&icc)))
 	instance, _, _ := procGetModuleHandleW.Call(0)
@@ -138,8 +145,20 @@ func runApp(state *appState) error {
 	wndProcCallback = syscall.NewCallback(func(hwnd syscall.Handle, msg uint32, wParam, lParam uintptr) uintptr {
 		return state.wndProc(hwnd, msg, wParam, lParam)
 	})
-	wndClass := wndclassex{Size: uint32(unsafe.Sizeof(wndclassex{})), WndProc: wndProcCallback, Instance: syscall.Handle(instance), Icon: syscall.Handle(icon), IconSm: syscall.Handle(icon), Cursor: syscall.Handle(cursor), ClassName: className}
-	procRegisterClassExW.Call(uintptr(unsafe.Pointer(&wndClass)))
+	wndClass := wndclassex{
+		Style:      win32ui.ClassRedraw,
+		Size:       uint32(unsafe.Sizeof(wndclassex{})),
+		WndProc:    wndProcCallback,
+		Instance:   syscall.Handle(instance),
+		Icon:       syscall.Handle(icon),
+		IconSm:     syscall.Handle(icon),
+		Cursor:     syscall.Handle(cursor),
+		Background: win32ui.ColorWindowBackground,
+		ClassName:  className,
+	}
+	if ret, _, _ := procRegisterClassExW.Call(uintptr(unsafe.Pointer(&wndClass))); ret == 0 {
+		return fmt.Errorf("RegisterClassEx failed")
+	}
 	title, _ := syscall.UTF16PtrFromString("Yime 设置")
 	winW, winH := windowSizeForClient(820, 680)
 	screenWidth, _, _ := procGetSystemMetrics.Call(0)
@@ -153,7 +172,7 @@ func runApp(state *appState) error {
 	state.mainHWND = syscall.Handle(hwnd)
 	state.createControls()
 	state.refreshView()
-	state.presentMainWindow()
+	state.presentMainWindowAfterLaunch()
 	var message winMsg
 	for {
 		ret, _, _ := procGetMessageW.Call(uintptr(unsafe.Pointer(&message)), 0, 0, 0)
@@ -212,7 +231,7 @@ func (state *appState) createControls() {
 func (state *appState) refreshView() {
 	snapshot := settings.LoadSnapshot(state.userDir, state.sharedDir)
 	setComboBySchema(state.schemaHWND, state.schemaOptions, snapshot.SchemaID)
-	setComboByText(state.pageHWND, fmt.Sprintf("%d", snapshot.PageSize))
+	setComboByText(state.pageHWND, fmt.Sprintf("%d", settings.NormalizePageSizeValue(snapshot.PageSize)))
 	setComboByValue(state.reverseHWND, settings.ReverseLookupOptions(), snapshot.ReverseLookupMode)
 	setComboByValue(state.layoutHWND, settings.CandidateLayoutOptions(), snapshot.CandidateLayout)
 	setWindowText(state.summaryHWND, settings.SummaryText(snapshot))
@@ -226,10 +245,25 @@ func (state *appState) wndProc(hwnd syscall.Handle, message uint32, wParam, lPar
 	case wmAppCommand:
 		state.handleCommand(wParam)
 		return 0
-	case 0x0010:
+	case win32ui.WmDeferredPresent:
+		win32ui.PresentMainWindow(state.mainHWND)
+		return 0
+	case 0x0006: // WM_ACTIVATE
+		if win32ui.IsActivateMessage(wParam) {
+			win32ui.RedrawChildrenNow(state.mainHWND)
+		}
+		ret, _, _ := procDefWindowProcW.Call(uintptr(hwnd), uintptr(message), wParam, lParam)
+		return ret
+	case 0x0018: // WM_SHOWWINDOW
+		if wParam != 0 && lParam == 0 {
+			state.presentMainWindow()
+		}
+		ret, _, _ := procDefWindowProcW.Call(uintptr(hwnd), uintptr(message), wParam, lParam)
+		return ret
+	case 0x0010: // WM_CLOSE
 		procPostQuitMessage.Call(0)
 		return 0
-	case 0x0002:
+	case 0x0002: // WM_DESTROY
 		procPostQuitMessage.Call(0)
 		return 0
 	}
@@ -254,7 +288,7 @@ func (state *appState) handleCommand(wParam uintptr) {
 
 func (state *appState) apply(runBuild bool) {
 	schemaID := selectedSchemaID(state.schemaHWND, state.schemaOptions)
-	pageSize := atoiDefault(getWindowText(state.pageHWND), 5)
+	pageSize := settings.NormalizePageSizeValue(atoiDefault(selectedComboText(state.pageHWND), 5))
 	reverseMode := selectedComboValue(state.reverseHWND, settings.ReverseLookupOptions())
 	layout := selectedComboValue(state.layoutHWND, settings.CandidateLayoutOptions())
 	if err := settings.Apply(state.userDir, state.sharedDir, schemaID, pageSize, reverseMode, layout, runBuild); err != nil {
@@ -270,14 +304,11 @@ func (state *appState) apply(runBuild bool) {
 }
 
 func (state *appState) presentMainWindow() {
-	hwnd := uintptr(state.mainHWND)
-	if iconic, _, _ := procIsIconic.Call(hwnd); iconic != 0 {
-		procShowWindow.Call(hwnd, swRestore)
-	}
-	procBringWindowToTop.Call(hwnd)
-	procSetForegroundWindow.Call(hwnd)
-	procShowWindow.Call(hwnd, swShowNormal)
-	procUpdateWindow.Call(hwnd)
+	win32ui.PresentMainWindow(state.mainHWND)
+}
+
+func (state *appState) presentMainWindowAfterLaunch() {
+	win32ui.PresentMainWindowAfterLaunch(state.mainHWND)
 }
 
 func selectedSchemaID(hwnd syscall.Handle, options []settings.SchemaOption) string {
@@ -338,6 +369,17 @@ func setComboByText(hwnd syscall.Handle, text string) {
 			return
 		}
 	}
+	procSendMessageW.Call(uintptr(hwnd), 0x014E, 0, 0)
+}
+
+func selectedComboText(hwnd syscall.Handle) string {
+	index, _, _ := procSendMessageW.Call(uintptr(hwnd), 0x0147, 0, 0)
+	if int32(index) < 0 {
+		return ""
+	}
+	buf := make([]uint16, 256)
+	procSendMessageW.Call(uintptr(hwnd), 0x0148, index, uintptr(unsafe.Pointer(&buf[0])))
+	return syscall.UTF16ToString(buf)
 }
 
 func createStatic(parent syscall.Handle, text string, box rect, id int) syscall.Handle {

@@ -3,7 +3,6 @@ package diagnostics
 import (
 	"fmt"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"regexp"
 	"sort"
@@ -420,15 +419,6 @@ func processSummary(name string) string {
 		return statusLine(name, "running", "process snapshot")
 	}
 	return statusLine(name, "stopped", "no running process found")
-}
-
-func processRunning(name string) bool {
-	out, err := exec.Command("tasklist", "/FI", "IMAGENAME eq "+name+".exe", "/NH").Output()
-	if err != nil {
-		return false
-	}
-	lower := strings.ToLower(string(out))
-	return strings.Contains(lower, strings.ToLower(name+".exe")) && !strings.Contains(lower, "no tasks are running")
 }
 
 func processStateLabel(name string) string {

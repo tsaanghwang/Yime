@@ -199,13 +199,73 @@ func ReadConfiguredPageSize(userDir string) int {
 	if userDir == "" {
 		return 5
 	}
-	content, _ := readFileText(filepath.Join(userDir, "default.custom.yaml"))
+	if size := readPageSizeFromDefaultCustom(filepath.Join(userDir, "default.custom.yaml")); size > 0 {
+		return size
+	}
+	schemaID := ReadConfiguredSchema(userDir)
+	if size := readPageSizeFromSchemaFiles(userDir, schemaID); size > 0 {
+		return size
+	}
+	return 5
+}
+
+func readPageSizeFromDefaultCustom(path string) int {
+	content, err := readFileText(path)
+	if err != nil {
+		return 0
+	}
 	for _, line := range splitLines(content) {
 		if value, ok := parseMenuPageSizeValue(strings.TrimSpace(line)); ok {
 			return normalizePageSize(atoiDefault(value, 5))
 		}
 	}
-	return 5
+	return 0
+}
+
+func readPageSizeFromSchemaFiles(userDir, schemaID string) int {
+	if userDir == "" || schemaID == "" {
+		return 0
+	}
+	for _, name := range []string{schemaID + ".custom.yaml", schemaID + ".schema.yaml"} {
+		if size := readPageSizeFromSchemaContent(readFileTextOrEmpty(filepath.Join(userDir, name))); size > 0 {
+			return size
+		}
+	}
+	return 0
+}
+
+func readPageSizeFromSchemaContent(content string) int {
+	if strings.TrimSpace(content) == "" {
+		return 0
+	}
+	inMenu := false
+	for _, line := range splitLines(content) {
+		trimmed := strings.TrimSpace(line)
+		if trimmed == "menu:" {
+			inMenu = true
+			continue
+		}
+		if inMenu {
+			if strings.HasPrefix(trimmed, "page_size:") {
+				return normalizePageSize(atoiDefault(strings.TrimSpace(strings.TrimPrefix(trimmed, "page_size:")), 0))
+			}
+			if !strings.HasPrefix(line, " ") && !strings.HasPrefix(line, "\t") && trimmed != "" && !strings.HasPrefix(trimmed, "#") {
+				inMenu = false
+			}
+		}
+		if value, ok := parseMenuPageSizeValue(trimmed); ok {
+			return normalizePageSize(atoiDefault(value, 0))
+		}
+	}
+	return 0
+}
+
+func readFileTextOrEmpty(path string) string {
+	content, err := readFileText(path)
+	if err != nil {
+		return ""
+	}
+	return content
 }
 
 func normalizeSchemaID(schemaID string) string {
@@ -245,6 +305,11 @@ func normalizePageSize(size int) int {
 		return 9
 	}
 	return size
+}
+
+// NormalizePageSizeValue clamps a page size into the supported 5-9 range.
+func NormalizePageSizeValue(size int) int {
+	return normalizePageSize(size)
 }
 
 func readPreviouslySelectedSchema(path string) string {
