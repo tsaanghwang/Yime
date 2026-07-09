@@ -178,6 +178,12 @@ Check logs at `%LOCALAPPDATA%\PIME\Logs\go_backend.log`.
 | [Development Roadmap](docs/YIME_DEVELOPMENT_ROADMAP.md) | Phased roadmap, fix workflows, AGENTS.md constraints |
 | [Rime Integration](docs/YIME_RIME_INTEGRATION.md) | Rime data flow, pinyin_normalized.json chain, maintainer checklist |
 | [Tooling Strategy](docs/YIME_TOOLING_STRATEGY.md) | Standalone tools vs. language-bar UI design |
+| [Tool Development Guide](docs/YIME_TOOL_DEVELOPMENT_GUIDE.md) | How to add a new standalone tool |
+| [Data Format Reference](docs/YIME_DATA_FORMAT_REFERENCE.md) | TSV/JSON/YAML data file format specifications |
+| [User Install Guide](docs/YIME_USER_INSTALL_GUIDE.md) | Installation and usage instructions for end users |
+| [Troubleshooting](docs/YIME_TROUBLESHOOTING.md) | Common issues and solutions |
+| [Changelog](CHANGELOG.md) | Version change history |
+| [Contributing](CONTRIBUTING.md) | PR process, code style, commit format |
 | [AGENTS.md](AGENTS.md) | AI-assisted development constraints |
 
 ## Issues

@@ -1,0 +1,110 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+### Added
+
+- Embed Windows VERSIONINFO in server.exe and tool-launcher.exe via go-winres, bypassing Smart App Control blocks on unsigned executables without version info
+- Native Win32 tool executables: reverse-lookup.exe, tool-hub.exe, lexicon-manager.exe, system-lexicon-audit.exe, blocklist-manager.exe, settings-tool.exe, diagnostics-tool.exe
+- Go reverselookup package with disk cache and search
+- Runtime user blocklist candidate filtering
+- Native Win32 tool-hub.exe launcher
+- Reverse lookup tool with multi-pronunciation support and detail panel
+- Instant search in reverse lookup with 500ms debounce
+- User lexicon manager standalone dialog
+- System lexicon audit tool (read-only)
+- User blocklist manager
+- Settings tool and diagnostics tool as standalone Win32 executables
+- Candidate page size sync with Rime menu/page_size across three layers
+- Candidate layout toggle (vertical/horizontal) via single language bar button
+- Rime initialization retry after transient failure (replaces sync.Once with retryable mutex)
+- Enter key commits raw composition when Rime rejects it (pendingRawCommit)
+- Key-down/key-up pair tracking to replace duplicate-key counter
+- User feedback messages for deploy/open/clipboard/setCandidatePageSize failures
+- Placeholder '?' for missing characters in reverse lookup annotations
+- User lexicon rebuild for all three schema modes (variable/full/shorthand)
+- Marquee progress bar and per-step status messages during reverse lookup data loading
+- Chinese localization for tool hub, settings, and diagnostics UIs
+
+### Changed
+
+- Replace Get-Content with [IO.File]::ReadAllLines/ReadAllText for 5-10x faster dict.yaml loading
+- Simplify lexicon manager toolbar from 12 buttons to 6; move secondary actions into menus
+- Remove right-side history panel from lexicon manager; expand list to full width
+- Brand renamed from PIME to Yime for Windows
+- Go backend renamed from pime-rime to yime
+- Language bar slimmed: removed false IME-switch assumptions
+- Tool hub catalog refactored to manifest-driven architecture
+- Remove obsolete PowerShell standalone tool launchers in favor of native executables
+- Language bar layout toggle changed from submenu to direct toggle
+- commandShouldRefreshState changed from whitelist to blacklist
+
+### Fixed
+
+- Smart App Control blocking server.exe due to missing VERSIONINFO
+- Reverse lookup window marked as "not responding" during data loading
+- Result count not displayed in reverse lookup (PowerShell single-element array unwrapping)
+- Detail label content silently lost when phrase contains curly braces breaking -f formatting
+- dev-install.ps1 UnauthorizedAccessException on existing HKLM Run registry key
+- refresh-dev-test-cmds.ps1 preserving template timestamps instead of showing fresh timestamps
+- build.bat Rime data directory cleanup failure when directory is locked
+- Duplicate key-down suppression swallowing legitimate rapid same-key presses
+- Enter key silently swallowed when Rime rejects it during composition
+- Composition state lost when changing candidate page size
+- Reverse lookup data inconsistency on schema switch
+- User phrases lost when switching schema modes
+- Missing characters in reverse lookup annotations discarding entire annotation
+- setCandidatePageSize syntax error (extra closing brace)
+- Hardcoded dev path in findRimeExternalDeployer
+- parseMenuPageSizeValue failing on inline comments
+- candidatePageStart reset on rejected keys
+- Settings tool corrupting Rime YAML on apply
+- Host crash when selecting Yime with backend down
+- CSS -webkit-user-select prefix missing for Safari compatibility
+
+### Removed
+
+- Unused remapYimeCandidateSelectionKey dead code
+- Legacy PIME files removed during dev reinstall
+
+## [1.3.0-beta2] - 2021-12-14
+
+### Added
+
+- Ctrl+F12 hotkey to switch Traditional/Simplified Chinese for cin-based input methods
+- Simplified Chinese status icons for cin-based input methods
+- Delete phrase option on candidate list
+- Test input popup window in config page
+- sweetalert2 for user phrase UI
+- Improved config page
+
+### Fixed
+
+- NSIS installer script including non-installer files
+- User phrase checkbox bug
+- Delete phrase popup message error
+- Wrong URL in config
+- Typos in hsu and eten 26 keyboard layout images
+
+### Changed
+
+- Use jQuery UI Dialog instead of sweetalert2
+
+### Dependencies
+
+- Update Python to 3.8.10
+- Update libchewing to 452f622
+- Update sweetalert2 to v11.1.8
+- Update Bootstrap to 4.6
+- Update jquery-loading-overlay
+- Update tornado to 6.1
+- Bump debug from 2.3.3 to 2.6.9
+
+## [1.3.0-beta] - 2020-06-01
+
+- Initial beta release based on PIME framework with Yime (音元拼音) input method

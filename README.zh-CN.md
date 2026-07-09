@@ -176,6 +176,12 @@ PIMELauncher.exe /console
 | [开发路线图](docs/YIME_DEVELOPMENT_ROADMAP.md) | 分阶段路线图、修复流程、AGENTS.md 约束 |
 | [Rime 集成](docs/YIME_RIME_INTEGRATION.md) | Rime 数据流、pinyin_normalized.json 链、维护检查清单 |
 | [工具策略](docs/YIME_TOOLING_STRATEGY.md) | 独立工具 vs. 语言栏 UI 设计 |
+| [独立工具开发指南](docs/YIME_TOOL_DEVELOPMENT_GUIDE.md) | 如何添加新的独立工具 |
+| [数据文件格式参考](docs/YIME_DATA_FORMAT_REFERENCE.md) | TSV/JSON/YAML 数据文件格式规范 |
+| [用户安装指南](docs/YIME_USER_INSTALL_GUIDE.md) | 面向最终用户的安装和使用说明 |
+| [故障排除指南](docs/YIME_TROUBLESHOOTING.md) | 常见问题排查 |
+| [变更日志](CHANGELOG.md) | 版本变更记录 |
+| [贡献指南](CONTRIBUTING.md) | PR 流程、代码风格、commit 格式 |
 | [AGENTS.md](AGENTS.md) | AI 辅助开发约束 |
 
 ## 问题反馈
