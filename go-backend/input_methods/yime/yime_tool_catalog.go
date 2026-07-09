@@ -9,7 +9,6 @@ type toolActionType string
 
 const (
 	toolActionOpenPath      toolActionType = "open_path"
-	toolActionRunPowerShell toolActionType = "run_powershell"
 	toolActionRunExecutable toolActionType = "run_executable"
 )
 
@@ -30,7 +29,7 @@ type toolHubManifest struct {
 	Tools   []toolHubEntry `json:"tools"`
 }
 
-func buildToolHubManifest(sharedDir, userDir, helpDir, logDir, lexiconManagerScript, reverseLookupToolPath, settingsToolScript, diagnosticsToolScript, mode string) toolHubManifest {
+func buildToolHubManifest(sharedDir, userDir, helpDir, logDir, lexiconManagerPath, reverseLookupToolPath, settingsToolPath, diagnosticsToolPath, mode string) toolHubManifest {
 
 	return toolHubManifest{
 		Title:   "Yime 工具箱",
@@ -41,8 +40,8 @@ func buildToolHubManifest(sharedDir, userDir, helpDir, logDir, lexiconManagerScr
 				ID:               "lexicon-manager",
 				Label:            "用户词库管理",
 				Description:      "打开词库管理器，添加、删除、导入词条。",
-				ActionType:       toolActionRunPowerShell,
-				TargetPath:       lexiconManagerScript,
+				ActionType:       toolActionRunExecutable,
+				TargetPath:       lexiconManagerPath,
 				CloseAfterLaunch: true,
 				Arguments: []string{
 					"-SharedDir", sharedDir,
@@ -67,8 +66,8 @@ func buildToolHubManifest(sharedDir, userDir, helpDir, logDir, lexiconManagerScr
 				ID:               "settings-tool",
 				Label:            "设置工具",
 				Description:      "打开设置工具，修改方案、候选项数等配置。",
-				ActionType:       toolActionRunPowerShell,
-				TargetPath:       settingsToolScript,
+				ActionType:       toolActionRunExecutable,
+				TargetPath:       settingsToolPath,
 				CloseAfterLaunch: true,
 				Arguments: []string{
 					"-UserDir", userDir,
@@ -95,8 +94,8 @@ func buildToolHubManifest(sharedDir, userDir, helpDir, logDir, lexiconManagerScr
 				ID:               "diagnostics-tool",
 				Label:            "诊断工具",
 				Description:      "打开诊断工具，收集系统信息和运行状态。",
-				ActionType:       toolActionRunPowerShell,
-				TargetPath:       diagnosticsToolScript,
+				ActionType:       toolActionRunExecutable,
+				TargetPath:       diagnosticsToolPath,
 				CloseAfterLaunch: true,
 				Arguments: []string{
 					"-UserDir", userDir,
