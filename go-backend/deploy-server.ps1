@@ -6,6 +6,8 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+. (Join-Path $PSScriptRoot "..\tools\pime-registry-cleanup.ps1")
+
 function Test-Admin {
     $identity = [Security.Principal.WindowsIdentity]::GetCurrent()
     $principal = New-Object Security.Principal.WindowsPrincipal($identity)
@@ -163,10 +165,23 @@ Write-FileDetails -Label "Destination server.exe (before)" -Path $destinationSer
 Write-FileDetails -Label "Source rime.dll" -Path $sourceRimeDLL
 Write-FileDetails -Label "Destination rime.dll (before)" -Path $destinationRimeDLL
 
+function Register-PIMETextServiceProfiles {
+    param([string]$PimeRoot)
+
+    try {
+        Reset-PIMETextServiceProfiles -InstallRoot $PimeRoot
+    }
+    catch {
+        Write-Host "[WARN] Could not refresh language profiles: $($_.Exception.Message)"
+    }
+}
+
 try {
     Stop-PIMELauncher -Path $LauncherPath
 
     Sync-GoBackendRuntime -Source $SourceRoot -Destination $InstallRoot
+
+    Register-PIMETextServiceProfiles -PimeRoot (Split-Path -Parent $InstallRoot)
 
     Write-FileDetails -Label "Destination server.exe (after)" -Path $destinationServer
     Write-FileDetails -Label "Destination rime.dll (after)" -Path $destinationRimeDLL
