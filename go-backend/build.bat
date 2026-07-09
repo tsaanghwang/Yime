@@ -12,8 +12,11 @@ for %%I in ("%ROOT_DIR%\..") do set "PIME_ROOT=%%~fI"
 set "BUILD_ROOT=%ROOT_DIR%\build"
 set "PACKAGE_DIR=%BUILD_ROOT%\go-backend"
 set "SERVER_EXE=%PACKAGE_DIR%\server.exe"
-set "TOOL_LAUNCHER_EXE=%PACKAGE_DIR%\tool-launcher.exe"
 set "REVERSE_LOOKUP_EXE=%PACKAGE_DIR%\reverse-lookup.exe"
+set "TOOL_HUB_EXE=%PACKAGE_DIR%\tool-hub.exe"
+set "LEXICON_MANAGER_EXE=%PACKAGE_DIR%\lexicon-manager.exe"
+set "SETTINGS_TOOL_EXE=%PACKAGE_DIR%\settings-tool.exe"
+set "DIAGNOSTICS_TOOL_EXE=%PACKAGE_DIR%\diagnostics-tool.exe"
 set "BACKEND_SNIPPET=%BUILD_ROOT%\backends.go-backend.json"
 set "RIME_DIR=%ROOT_DIR%\input_methods\yime"
 set "RIME_DATA_DIR=%RIME_DIR%\data"
@@ -111,26 +114,6 @@ if exist rsrc_server_windows_amd64.syso del rsrc_server_windows_amd64.syso
 
 echo [INFO] Built: "%SERVER_EXE%"
 
-echo [INFO] Generating Windows VERSIONINFO resources for tool-launcher ...
-go-winres simply --arch amd64 --product-version "%APP_VERSION%" --file-version "%APP_VERSION%" --product-name "YIME" --file-description "YIME Tool Launcher" --original-filename "tool-launcher.exe" --manifest gui --out cmd\tool-launcher\rsrc_tool
-if errorlevel 1 (
-    echo [WARN] go-winres failed for tool-launcher.exe, building without VERSIONINFO
-    if exist cmd\tool-launcher\rsrc_tool_windows_amd64.syso del cmd\tool-launcher\rsrc_tool_windows_amd64.syso
-)
-
-echo [INFO] Building tool-launcher.exe ...
-go build -ldflags "-s -w -H=windowsgui -X main.version=%APP_VERSION%" -o "%TOOL_LAUNCHER_EXE%" .\cmd\tool-launcher
-if errorlevel 1 (
-    echo [ERROR] Failed to build tool-launcher.exe
-    if exist cmd\tool-launcher\rsrc_tool_windows_amd64.syso del cmd\tool-launcher\rsrc_tool_windows_amd64.syso
-    popd
-    exit /b 1
-)
-
-if exist cmd\tool-launcher\rsrc_tool_windows_amd64.syso del cmd\tool-launcher\rsrc_tool_windows_amd64.syso
-
-echo [INFO] Built: "%TOOL_LAUNCHER_EXE%"
-
 echo [INFO] Generating Windows VERSIONINFO resources for reverse-lookup ...
 go-winres simply --arch amd64 --product-version "%APP_VERSION%" --file-version "%APP_VERSION%" --product-name "YIME" --file-description "Yime Reverse Lookup Tool" --original-filename "reverse-lookup.exe" --manifest gui --out cmd\reverse-lookup-tool\rsrc_reverse
 if errorlevel 1 (
@@ -150,6 +133,86 @@ if errorlevel 1 (
 if exist cmd\reverse-lookup-tool\rsrc_reverse_windows_amd64.syso del cmd\reverse-lookup-tool\rsrc_reverse_windows_amd64.syso
 
 echo [INFO] Built: "%REVERSE_LOOKUP_EXE%"
+
+echo [INFO] Generating Windows VERSIONINFO resources for tool-hub ...
+go-winres simply --arch amd64 --product-version "%APP_VERSION%" --file-version "%APP_VERSION%" --product-name "YIME" --file-description "Yime Tool Hub" --original-filename "tool-hub.exe" --manifest gui --out cmd\tool-hub\rsrc_hub
+if errorlevel 1 (
+    echo [WARN] go-winres failed for tool-hub.exe, building without VERSIONINFO
+    if exist cmd\tool-hub\rsrc_hub_windows_amd64.syso del cmd\tool-hub\rsrc_hub_windows_amd64.syso
+)
+
+echo [INFO] Building tool-hub.exe ...
+go build -ldflags "-s -w -H=windowsgui -X main.version=%APP_VERSION%" -o "%TOOL_HUB_EXE%" .\cmd\tool-hub
+if errorlevel 1 (
+    echo [ERROR] Failed to build tool-hub.exe
+    if exist cmd\tool-hub\rsrc_hub_windows_amd64.syso del cmd\tool-hub\rsrc_hub_windows_amd64.syso
+    popd
+    exit /b 1
+)
+
+if exist cmd\tool-hub\rsrc_hub_windows_amd64.syso del cmd\tool-hub\rsrc_hub_windows_amd64.syso
+
+echo [INFO] Built: "%TOOL_HUB_EXE%"
+
+echo [INFO] Generating Windows VERSIONINFO resources for lexicon-manager ...
+go-winres simply --arch amd64 --product-version "%APP_VERSION%" --file-version "%APP_VERSION%" --product-name "YIME" --file-description "Yime Lexicon Manager" --original-filename "lexicon-manager.exe" --manifest gui --out cmd\lexicon-manager\rsrc_lexicon
+if errorlevel 1 (
+    echo [WARN] go-winres failed for lexicon-manager.exe, building without VERSIONINFO
+    if exist cmd\lexicon-manager\rsrc_lexicon_windows_amd64.syso del cmd\lexicon-manager\rsrc_lexicon_windows_amd64.syso
+)
+
+echo [INFO] Building lexicon-manager.exe ...
+go build -ldflags "-s -w -H=windowsgui -X main.version=%APP_VERSION%" -o "%LEXICON_MANAGER_EXE%" .\cmd\lexicon-manager
+if errorlevel 1 (
+    echo [ERROR] Failed to build lexicon-manager.exe
+    if exist cmd\lexicon-manager\rsrc_lexicon_windows_amd64.syso del cmd\lexicon-manager\rsrc_lexicon_windows_amd64.syso
+    popd
+    exit /b 1
+)
+
+if exist cmd\lexicon-manager\rsrc_lexicon_windows_amd64.syso del cmd\lexicon-manager\rsrc_lexicon_windows_amd64.syso
+
+echo [INFO] Built: "%LEXICON_MANAGER_EXE%"
+
+echo [INFO] Generating Windows VERSIONINFO resources for settings-tool ...
+go-winres simply --arch amd64 --product-version "%APP_VERSION%" --file-version "%APP_VERSION%" --product-name "YIME" --file-description "Yime Settings Tool" --original-filename "settings-tool.exe" --manifest gui --out cmd\settings-tool\rsrc_settings
+if errorlevel 1 (
+    echo [WARN] go-winres failed for settings-tool.exe, building without VERSIONINFO
+    if exist cmd\settings-tool\rsrc_settings_windows_amd64.syso del cmd\settings-tool\rsrc_settings_windows_amd64.syso
+)
+
+echo [INFO] Building settings-tool.exe ...
+go build -ldflags "-s -w -H=windowsgui -X main.version=%APP_VERSION%" -o "%SETTINGS_TOOL_EXE%" .\cmd\settings-tool
+if errorlevel 1 (
+    echo [ERROR] Failed to build settings-tool.exe
+    if exist cmd\settings-tool\rsrc_settings_windows_amd64.syso del cmd\settings-tool\rsrc_settings_windows_amd64.syso
+    popd
+    exit /b 1
+)
+
+if exist cmd\settings-tool\rsrc_settings_windows_amd64.syso del cmd\settings-tool\rsrc_settings_windows_amd64.syso
+
+echo [INFO] Built: "%SETTINGS_TOOL_EXE%"
+
+echo [INFO] Generating Windows VERSIONINFO resources for diagnostics-tool ...
+go-winres simply --arch amd64 --product-version "%APP_VERSION%" --file-version "%APP_VERSION%" --product-name "YIME" --file-description "Yime Diagnostics Tool" --original-filename "diagnostics-tool.exe" --manifest gui --out cmd\diagnostics-tool\rsrc_diagnostics
+if errorlevel 1 (
+    echo [WARN] go-winres failed for diagnostics-tool.exe, building without VERSIONINFO
+    if exist cmd\diagnostics-tool\rsrc_diagnostics_windows_amd64.syso del cmd\diagnostics-tool\rsrc_diagnostics_windows_amd64.syso
+)
+
+echo [INFO] Building diagnostics-tool.exe ...
+go build -ldflags "-s -w -H=windowsgui -X main.version=%APP_VERSION%" -o "%DIAGNOSTICS_TOOL_EXE%" .\cmd\diagnostics-tool
+if errorlevel 1 (
+    echo [ERROR] Failed to build diagnostics-tool.exe
+    if exist cmd\diagnostics-tool\rsrc_diagnostics_windows_amd64.syso del cmd\diagnostics-tool\rsrc_diagnostics_windows_amd64.syso
+    popd
+    exit /b 1
+)
+
+if exist cmd\diagnostics-tool\rsrc_diagnostics_windows_amd64.syso del cmd\diagnostics-tool\rsrc_diagnostics_windows_amd64.syso
+
+echo [INFO] Built: "%DIAGNOSTICS_TOOL_EXE%"
 
 echo.
 echo ============================================

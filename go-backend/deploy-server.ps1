@@ -118,12 +118,7 @@ function Sync-GoBackendRuntime {
 
     $sourceServer = Join-Path $Source "server.exe"
     $destinationServer = Join-Path $Destination "server.exe"
-    $sourceLauncher = Join-Path $Source "tool-launcher.exe"
-    $destinationLauncher = Join-Path $Destination "tool-launcher.exe"
     Copy-Item -LiteralPath $sourceServer -Destination $destinationServer -Force
-    if (Test-Path -LiteralPath $sourceLauncher) {
-        Copy-Item -LiteralPath $sourceLauncher -Destination $destinationLauncher -Force
-    }
 
     $sourceInputMethods = Join-Path $Source "input_methods"
     $destinationInputMethods = Join-Path $Destination "input_methods"
@@ -149,8 +144,6 @@ if (-not (Test-Path -LiteralPath $InstallRoot)) {
 
 $sourceServer = Join-Path $SourceRoot "server.exe"
 $destinationServer = Join-Path $InstallRoot "server.exe"
-$sourceLauncher = Join-Path $SourceRoot "tool-launcher.exe"
-$destinationLauncher = Join-Path $InstallRoot "tool-launcher.exe"
 $sourceRimeDLL = Join-Path $SourceRoot "input_methods\yime\rime.dll"
 $destinationRimeDLL = Join-Path $InstallRoot "input_methods\yime\rime.dll"
 
@@ -158,7 +151,7 @@ $sourceDataDir = Join-Path $SourceRoot "input_methods\yime\data"
 $sourceIconsDir = Join-Path $SourceRoot "input_methods\yime\icons"
 $sourceIMEJSON = Join-Path $SourceRoot "input_methods\yime\ime.json"
 
-$sourcePaths = @($sourceServer, $sourceLauncher, $sourceRimeDLL, $sourceDataDir, $sourceIconsDir, $sourceIMEJSON)
+$sourcePaths = @($sourceServer, $sourceRimeDLL, $sourceDataDir, $sourceIconsDir, $sourceIMEJSON)
 foreach ($path in $sourcePaths) {
     if (-not (Test-Path -LiteralPath $path)) {
         throw "Required source path not found: $path"
@@ -167,8 +160,6 @@ foreach ($path in $sourcePaths) {
 
 Write-FileDetails -Label "Source server.exe" -Path $sourceServer
 Write-FileDetails -Label "Destination server.exe (before)" -Path $destinationServer
-Write-FileDetails -Label "Source tool-launcher.exe" -Path $sourceLauncher
-Write-FileDetails -Label "Destination tool-launcher.exe (before)" -Path $destinationLauncher
 Write-FileDetails -Label "Source rime.dll" -Path $sourceRimeDLL
 Write-FileDetails -Label "Destination rime.dll (before)" -Path $destinationRimeDLL
 
@@ -178,7 +169,6 @@ try {
     Sync-GoBackendRuntime -Source $SourceRoot -Destination $InstallRoot
 
     Write-FileDetails -Label "Destination server.exe (after)" -Path $destinationServer
-    Write-FileDetails -Label "Destination tool-launcher.exe (after)" -Path $destinationLauncher
     Write-FileDetails -Label "Destination rime.dll (after)" -Path $destinationRimeDLL
 }
 finally {
