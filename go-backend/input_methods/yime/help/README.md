@@ -12,9 +12,14 @@ Rime frontend.
 
 ## Menus
 
-- Tool hub: opens the standalone Yime tool window. This is the preferred place
-  to gather heavy UI surfaces so the TSF/PIME language bar only needs to
-  dispatch lightweight commands.
+- Tool hub: opens `tool-hub.exe`, the standalone Yime tool window. This is the
+  preferred place to gather heavy UI surfaces so the TSF/PIME language bar only
+  needs to dispatch lightweight commands.
+- Language bar quick buttons:
+  - **用户词库** → `lexicon-manager.exe`
+  - **反查编码** → `reverse-lookup.exe`
+  - **工具** → `tool-hub.exe`
+  - **中西切换 / 全半切换 / 横竖切换** — fixed labels; state shown by icons
 - Settings: Yime variable-length, fixed-length, and shorthand schemas,
   Chinese/English mode, shape, punctuation, `重新部署 Rime`, `同步 Rime 用户数据`,
   and data/log folders. `重新部署 Rime` is the full runtime redeploy path for the
@@ -43,18 +48,15 @@ Rime frontend.
 
 ## Standalone Tools Direction
 
-Yime now treats user-facing tools as standalone windows or documents whenever
-that reduces pressure on the language-bar callback path.
+Yime treats user-facing tools as standalone Win32 executables shipped next to
+`server.exe`, not as PowerShell scripts inside the TSF callback path.
 
-- Lexicon management already runs as an external dialog.
-- Settings-facing material, diagnostics, logs, and help should prefer the same
-  pattern over adding more complex UI inside the TSF callback chain.
+- Lexicon management, reverse lookup, settings, diagnostics, system lexicon
+  audit, and user blocklist all run as native GUI apps.
+- The tool hub (`tool-hub.exe`) renders a manifest built in Go
+  (`yime_tool_catalog.go`) and launches each tool via `run_executable`.
 - The `C:\dev\Yime-variable-length` prototype is the reference proof that this
   tool-oriented workflow is practical for Yime rather than an afterthought.
-- The current framework is manifest-driven: the Go backend defines the tool
-  entries, and the external tool-hub window renders and dispatches them.
-- The current tool hub already includes standalone settings and diagnostics
-  shells, even though their detailed workflows are still intentionally light.
 - Repository-side debugging also has a local helper
   `go-backend\run_admin_yime_tests.cmd` for repeatable elevated test attempts.
   It is for developer troubleshooting only and is not part of the installed

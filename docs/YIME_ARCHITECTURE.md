@@ -1,6 +1,6 @@
 # 音元输入法架构文档
 
-> 版本：2026-07-07（最终版）
+> 版本：2026-07-10
 > 配套文档：[可用性评估](YIME_USABILITY_ASSESSMENT.md) | [开发路线图](YIME_DEVELOPMENT_ROADMAP.md)
 
 ---
@@ -27,11 +27,16 @@
 │    │     └── 独立工具调度器                                │
 │    └── rime.dll (librime, 动态加载 via syscall.NewLazyDLL)│
 ├──────────────────────────────────────────────────────────┤
-│  独立工具进程 (PowerShell WinForms)                       │
-│    ├── 设置工具 (yime_settings_tool_windows.go)           │
-│    ├── 诊断工具 (yime_diagnostics_tool_windows.go)        │
-│    ├── 反查工具 (yime_reverse_lookup_tool_windows.go)     │
-│    └── 词库管理 (yime_user_lexicon_windows.go)            │
+│  独立工具进程 (Go 编译的 Win32 GUI)                       │
+│    ├── server.exe 同目录下的工具可执行文件                 │
+│    │     ├── settings-tool.exe      设置工具              │
+│    │     ├── diagnostics-tool.exe   诊断工具              │
+│    │     ├── lexicon-manager.exe    词库管理              │
+│    │     ├── reverse-lookup.exe     反查编码              │
+│    │     ├── tool-hub.exe           工具箱                │
+│    │     ├── system-lexicon-audit.exe  系统词库审查       │
+│    │     └── blocklist-manager.exe  用户屏蔽词表         │
+│    └── 语言栏/工具箱通过 manifest 以 run_executable 启动   │
 └──────────────────────────────────────────────────────────┘
 ```
 
@@ -371,25 +376,68 @@ rimeDeploy(traits, datadir, userdir, appname, fullcheck)
 ### 2.13 独立工具调度
 
 ```
-onCommand → 启动独立工具
+onCommand / 语言栏按钮
     │
-    ├── 写入 PowerShell 脚本到临时文件
-    │     └── BOM 前缀 (0xEF, 0xBB, 0xBF) 确保 UTF-8 编码
+    ├── 直接按钮（用户词库、反查编码、工具箱）
+    │     └── startDetached(同目录 .exe, 参数)
     │
-    ├── exec.Command("powershell", "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", scriptPath)
-    │
-    └── 脚本内嵌完整 WinForms GUI
-          ├── 设置工具: 方案/候选数/反查/排列
-          ├── 诊断工具: 安装/进程/日志/命令解读
-          ├── 反查工具: 汉字→编码查询
-          │     ├── Load-DictLookupMulti: 多音字完整保留
-          │     ├── 即时搜索: 500ms debounce
-          │     ├── 加载进度提示
-          │     └── 200 条截断提示
-          └── 词库管理: 添加/删除/导入/冲突预览
+    └── 工具箱 (tool-hub.exe)
+          ├── Go 生成 toolHubManifest JSON
+          ├── 用户点击条目 → run_executable / open_path
+          └── 子工具保持 hub 窗口不关闭，便于连续操作
 ```
 
-**反查工具多音字支持**：
+**当前工具箱条目**（`yime_tool_catalog.go`）：
+
+| ID | 标签 | 动作 |
+|----|------|------|
+| lexicon-manager | 词库管理 | `lexicon-manager.exe` |
+| reverse-lookup-tool | 反查编码 | `reverse-lookup.exe` |
+| system-lexicon-audit | 系统词库审查 | `system-lexicon-audit.exe` |
+| user-blocklist-manager | 用户屏蔽词表 | `blocklist-manager.exe` |
+| settings-tool | 设置工具 | `settings-tool.exe` |
+| diagnostics-tool | 诊断工具 | `diagnostics-tool.exe` |
+| settings-data / shared-data / help-* | 打开目录或帮助 HTML | `open_path` |
+
+**设计要点**：
+- 重 UI 不在 TSF/PIME 回调线程内绘制；语言栏只做轻量分发
+- `go-backend/build.bat` 与安装包一并产出上述 `.exe`
+- 反查工具保留多音字、即时搜索、加载进度与结果截断提示
+
+### 2.14 语言栏切换按钮
+
+IME 列表显示名为「音元」。语言栏三个切换按钮使用**静态标签**，避免 Win10/11 上动态改文字引发按钮闪烁或错位：
+
+| 按钮 ID | 标签 | 切换时行为 |
+|---------|------|------------|
+| switch-lang | 中西切换 | 仅更新图标（中文/西文） |
+| switch-shape | 全半切换 | 仅更新图标（半宽/全宽） |
+| candidate-layout | 横竖切换 | 仅更新图标（竖排/横排） |
+
+`updateLangBarToggleButtons` 通过 `ChangeButton` 只下发 `Icon` 字段；`libIME2`/`PIMETextService` 侧批量 `refreshAppearance`，并按 remove → change → add 顺序应用按钮更新。
+
+### 2.15 用户屏蔽词表
+
+```
+userblocklist.LoadSet(yime_user_blocklist.txt)
+    │
+    └── applyStateToResponse 过滤候选文本命中屏蔽词的条目
+```
+
+- 源文件由 `blocklist-manager.exe` 维护
+- 过滤在组字有候选时生效；与 Rime 分页权无冲突
+
+### 2.16 安装与 profile 维护
+
+开发/重装脚本共享 `tools/pime-registry-cleanup.ps1`：
+
+- 清理 CTF TIP 与用户 profile 残留
+- `Unregister-PIMETextServiceDlls` / `Remove-PIMETextServiceRegistry`
+- `Refresh-IME-Profiles.cmd` 用于 IME 显示名等 profile 变更后的刷新
+
+`libIME2` 在 `AddLanguageProfile` 前先 `RemoveLanguageProfile`，使 `ime.json` 名称更新在 `regsvr32` 重注册后即可生效。
+
+**反查工具多音字支持**（历史实现，仍适用）：
 - `Load-DictLookupMulti` 替代 `Load-DictLookup`，保留所有读音编码
 - 逐字拼接支持笛卡尔积（如"行"有 xing2/hang2 两个编码，"走"有 zou3 1 个，组合出 2 种编码）
 - 方案切换时按 `loadedSchemaID` 判断是否需要重载
@@ -498,6 +546,7 @@ Go 后端
 | `custom_phrase_full.txt` | TSV | 等长模式 Rime 格式用户词库 |
 | `custom_phrase_shorthand.txt` | TSV | 省键模式 Rime 格式用户词库 |
 | `yime_settings_state.json` | JSON | 独立 UI 偏好（反查模式、候选排列） |
+| `yime_user_blocklist.txt` | 文本 | 用户屏蔽词表源文件 |
 | `build/` | 目录 | Rime 编译缓存 |
 
 ### 3.3 日志
@@ -527,18 +576,21 @@ cd go-backend
 cmd /c build.bat
 ```
 
-产物：`build/go-backend/server.exe`, `build/go-backend/input_methods/`
+产物：`build/go-backend/server.exe`、`build/go-backend/*.exe`（工具链）、`build/go-backend/input_methods/`
+
+本地 ad-hoc 构建落在 `go-backend/*.exe` 时已被 `.gitignore` 忽略。
 
 ### 4.3 CI 流水线
 
 `.github/workflows/ci.yaml`（触发分支：yime-stable）
 
 ```
-checkout → vswhere/VsDevCmd → cmake build → go build → nsis installer → upload artifact
+checkout(含子模块) → vswhere/VsDevCmd → Rust test → cmake build → go build → McBopomofo → nsis → artifact
 ```
 
 关键步骤：
 - `windows-2022` 运行器
+- **子模块必须先推到 fork remote**（`libIME2`、`McBopomofoWeb` 等），否则 checkout 失败
 - 内联 vswhere + VsDevCmd 设置（非 ilammy/msvc-dev-cmd）
 - CMake 构建用 `shell: cmd` 确保 VsDevCmd 环境持久
 - rime-frost 数据获取步骤
@@ -564,8 +616,10 @@ go test ./input_methods/yime/ -v -count=1
 | `TestOnCommandIgnoresLegacyLowIDCollisionForReverseLookupYimePinyin` | 低 ID 碰撞忽略 |
 | `TestSetCandidatePageSizeDoesNotRedeploy` | page_size 变更不触发完整 redeploy |
 | `TestUpdateDefaultCustomPageSizeReplacesQuotedKey` | YAML 引号 key 兼容 |
-| `TestStandalonePowerShellScriptsAreFreeOfEncodingCorruption` | 编码损坏守卫 |
-| `TestStandalonePowerShellScriptsDoNotContainSmartQuotes` | 智能引号守卫 |
+| `TestStandalonePowerShellScriptsAreFreeOfEncodingCorruption` | 历史 PS 脚本编码守卫（工具已迁移至原生 exe） |
+| `TestLanguageBarToggleButtonsUseStaticLabels` | 语言栏静态切换标签 |
+| `TestBlockedCandidatesHiddenFromResponse` | 用户屏蔽词表过滤 |
+| `TestBuildToolHubManifest*` | 工具箱 manifest 与可执行路径 |
 | `TestReturnKeyCommitsRawInputDuringComposition` | 回车键原始编码上屏 |
 | `TestRapidSameKey*` / `TestDuplicateKeyDown*` / `TestKeyUpClears*` | 重复按键抑制 |
 | `TestSetCandidatePageSizePreservesComposition` | 候选项数变更保存组字状态 |

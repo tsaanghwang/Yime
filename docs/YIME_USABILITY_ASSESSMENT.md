@@ -1,6 +1,6 @@
 # 音元输入法可用性评估
 
-> 评估日期：2026-07-07（最终版）
+> 评估日期：2026-07-10
 > 评估范围：Yime Go 后端 + Rime 引擎 + 编码体系 + 词典 + 工具链
 > 分支：yime-stable
 
@@ -37,11 +37,14 @@
 │          ├── pime-go 桥接层 (stdin/stdout JSON)  │
 │          ├── yime.go (按键/语言栏/候选窗)        │
 │          ├── rime.dll (librime, 动态加载)        │
-│          ├── 独立工具 (PowerShell WinForms)      │
-│          │     ├── 设置工具                      │
-│          │     ├── 诊断工具                      │
-│          │     ├── 反查工具                      │
-│          │     └── 词库管理                      │
+│          ├── 独立工具 (Go Win32 GUI)             │
+│          │     ├── settings-tool.exe            │
+│          │     ├── diagnostics-tool.exe         │
+│          │     ├── lexicon-manager.exe          │
+│          │     ├── reverse-lookup.exe          │
+│          │     ├── tool-hub.exe                 │
+│          │     ├── system-lexicon-audit.exe     │
+│          │     └── blocklist-manager.exe        │
 │          └── 数据层                              │
 │                ├── data/*.schema.yaml (3方案)    │
 │                ├── data/*.dict.yaml (468K条/方案) │
@@ -62,8 +65,8 @@
 ### 关键设计决策
 
 1. **原生 Rime 候选分页**：`UsesBackendCandidatePaging()` 返回 `true`，Go 侧不做候选切片
-2. **独立工具优先**：重 UI 操作通过独立 PowerShell WinForms 窗口实现，不在 TSF 回调路径中
-3. **轻量语言栏**：语言栏仅分发命令，不承载复杂 UI
+2. **独立工具优先**：重 UI 通过 Go 编译的 Win32 可执行文件实现，不在 TSF 回调路径中
+3. **轻量语言栏**：语言栏仅分发命令；切换按钮使用静态标签，状态由图标表示
 4. **延迟 redeploy**：语言栏点击使用轻量会话重建，完整 redeploy 仅在显式"重新部署"时触发
 5. **多音字完整保留**：反查工具保留所有读音编码，候选窗注释仅取首选读音
 
