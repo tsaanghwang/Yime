@@ -65,8 +65,9 @@ function Load-CodeMap {
   param([string]$Path)
   if (-not (Test-Path -LiteralPath $Path)) { throw "找不到拼音编码表：$Path" }
   $map = @{}
-  $lines = Get-Content -LiteralPath $Path -Encoding UTF8
-  foreach ($line in $lines | Select-Object -Skip 1) {
+  $lines = [System.IO.File]::ReadAllLines($Path, [System.Text.Encoding]::UTF8)
+  for ($i = 1; $i -lt $lines.Count; $i++) {
+    $line = $lines[$i]
     if ([string]::IsNullOrWhiteSpace($line)) { continue }
     $fields = $line -split ([string][char]9)
     if ($fields.Count -ne 4) { continue }
@@ -90,7 +91,7 @@ function Load-DictLookupMulti {
   $lookup = @{}
   if (-not (Test-Path -LiteralPath $Path)) { return $lookup }
   $inData = $false
-  foreach ($line in (Get-Content -LiteralPath $Path -Encoding UTF8)) {
+  foreach ($line in [System.IO.File]::ReadAllLines($Path, [System.Text.Encoding]::UTF8)) {
     $trimmed = $line.Trim()
     if (-not $inData) {
       if ($trimmed -eq "...") { $inData = $true }
@@ -113,7 +114,7 @@ function Load-NumericToMarkedLookup {
   $lookup = @{}
   if (-not (Test-Path -LiteralPath $Path)) { return $lookup }
   try {
-    $raw = Get-Content -LiteralPath $Path -Raw -Encoding UTF8 | ConvertFrom-Json
+    $raw = [System.IO.File]::ReadAllText($Path, [System.Text.Encoding]::UTF8) | ConvertFrom-Json
     foreach ($property in $raw.PSObject.Properties) {
       $key = Normalize-Pinyin $property.Name
       $value = [string]$property.Value
@@ -132,7 +133,7 @@ function Load-UserPhraseEntries {
   $entries = New-Object System.Collections.Generic.List[object]
   if (-not (Test-Path -LiteralPath $Path)) { return $entries }
   $lineNumber = 0
-  foreach ($line in (Get-Content -LiteralPath $Path -Encoding UTF8)) {
+  foreach ($line in [System.IO.File]::ReadAllLines($Path, [System.Text.Encoding]::UTF8)) {
     $lineNumber++
     if ([string]::IsNullOrWhiteSpace($line) -or $line.TrimStart().StartsWith("#")) { continue }
     $fields = $line -split ([string][char]9)
@@ -486,6 +487,15 @@ $form.StartPosition = "CenterScreen"
 $form.ClientSize = New-Object System.Drawing.Size(720, 520)
 $form.MinimumSize = New-Object System.Drawing.Size(600, 400)
 
+$progressBar = New-Object System.Windows.Forms.ProgressBar
+$progressBar.Style = [System.Windows.Forms.ProgressBarStyle]::Marquee
+$progressBar.Left = 12
+$progressBar.Top = 460
+$progressBar.Width = 696
+$progressBar.Height = 18
+$progressBar.Visible = $false
+$form.Controls.Add($progressBar)
+
 $searchLabel = New-Object System.Windows.Forms.Label
 $searchLabel.Left = 12
 $searchLabel.Top = 14
@@ -576,17 +586,44 @@ function Ensure-LookupData {
   $userPhrasePath = Join-Path $UserDir "yime_user_phrases.txt"
   $dictPath = Join-Path $SharedDir ($schemaID + ".dict.yaml")
 
+  $statusLabel.Visible = $false
+  $progressBar.Visible = $true
+  $form.Text = "Yime 反查编码 - 正在加载..."
+  [System.Windows.Forms.Application]::DoEvents()
+
   if (-not $script:lookupLoaded) {
+    $statusLabel.Visible = $true
+    $statusLabel.Text = "正在加载拼音编码表..."
+    [System.Windows.Forms.Application]::DoEvents()
     $script:codeMap = Load-CodeMap $codeMapPath
+
+    $statusLabel.Text = "正在加载拼音映射..."
+    [System.Windows.Forms.Application]::DoEvents()
     $script:markedLookup = Load-NumericToMarkedLookup $markedPath
+
+    $statusLabel.Text = "正在加载用户词库..."
+    [System.Windows.Forms.Application]::DoEvents()
     $script:userEntries = Load-UserPhraseEntries $userPhrasePath
   }
 
+  $statusLabel.Visible = $true
+  $statusLabel.Text = "正在加载系统词库（约 46 万条），请稍候..."
+  [System.Windows.Forms.Application]::DoEvents()
   $script:dictLookup = Load-DictLookupMulti $dictPath
+
+  $statusLabel.Text = "正在构建反查索引..."
+  [System.Windows.Forms.Application]::DoEvents()
   $script:activeColumn = Get-CodeColumnFromMode ([string]$modeComboBox.SelectedItem.Value)
   $script:reverseLookup = Build-ReverseCodeLookup $script:codeMap $script:activeColumn
+
   $script:loadedSchemaID = $schemaID
   $script:lookupLoaded = $true
+
+  $progressBar.Visible = $false
+  $statusLabel.Visible = $true
+  $form.Text = "Yime 反查编码"
+  $dictCount = $script:dictLookup.Count
+  $statusLabel.Text = "数据已加载（系统词库 $dictCount 条）。输入字词后点击【查询】。"
 }
 
 function Refresh-ResultList {
@@ -594,7 +631,7 @@ function Refresh-ResultList {
   Ensure-LookupData
   $listView.Items.Clear()
   $detailLabel.Text = ""
-  $results = Search-ReverseLookup $Term $containsCheckBox.Checked $script:userEntries $script:dictLookup $script:codeMap $script:reverseLookup $script:markedLookup $script:activeColumn
+  $results = @(Search-ReverseLookup $Term $containsCheckBox.Checked $script:userEntries $script:dictLookup $script:codeMap $script:reverseLookup $script:markedLookup $script:activeColumn)
 
   foreach ($item in $results) {
     $row = New-Object System.Windows.Forms.ListViewItem($item.Phrase)
@@ -607,12 +644,13 @@ function Refresh-ResultList {
     [void]$listView.Items.Add($row)
   }
 
-  if ($results.Count -eq 0) {
+  $resultCount = $results.Count
+  if ($resultCount -eq 0) {
     $statusLabel.Text = "未找到匹配结果。可勾选【包含匹配】在用户词库和系统词库中模糊搜索。"
-  } elseif ($results.Count -ge 200) {
-    $statusLabel.Text = ("找到 {0}+ 条结果（已截断）。请缩小搜索范围。" -f $results.Count)
+  } elseif ($resultCount -ge 200) {
+    $statusLabel.Text = "找到 ${resultCount}+ 条结果（已截断）。请缩小搜索范围。"
   } else {
-    $statusLabel.Text = ("找到 {0} 条结果。点击词条查看详情。" -f $results.Count)
+    $statusLabel.Text = "找到 ${resultCount} 条结果。点击词条查看详情。"
   }
 }
 
@@ -674,8 +712,8 @@ $listView.Add_SelectedIndexChanged({
     $fullCode = $item.SubItems[4].Text
     $variableCode = $item.SubItems[5].Text
     $shorthandCode = $item.SubItems[6].Text
-    $nl = [Environment]::NewLine
-    $detailLabel.Text = ("{0} [{1}]  拼音: {2}$nl 等长: {3}  变长: {4}  省键: {5}" -f $phrase, $source, $standardPinyin, $fullCode, $variableCode, $shorthandCode)
+    $nl = [string][char]13 + [string][char]10
+    $detailLabel.Text = "$phrase [$source]  拼音: $standardPinyin$nl 等长: $fullCode  变长: $variableCode  省键: $shorthandCode"
   } catch {}
 })
 
@@ -689,6 +727,8 @@ $modeComboBox.Add_SelectedIndexChanged({
       $script:loadedSchemaID = ""
       if (-not [string]::IsNullOrWhiteSpace($searchBox.Text.Trim())) {
         Refresh-ResultList $searchBox.Text.Trim()
+      } else {
+        $statusLabel.Text = "已切换到 $([string]$modeComboBox.SelectedItem.Value) 模式。输入字词后点击【查询】。"
       }
     }
   } catch {
@@ -716,14 +756,11 @@ $form.Add_Shown({
     }
 
     $statusLabel.Text = "正在加载数据，请稍候..."
-    $form.BeginInvoke([System.Windows.Forms.MethodInvoker]{
-      try {
-        Ensure-LookupData
-        $statusLabel.Text = "数据已加载。输入字词后点击【查询】。"
-      } catch {
-        Show-Error $_.Exception.Message
-      }
-    }) | Out-Null
+    try {
+      Ensure-LookupData
+    } catch {
+      Show-Error $_.Exception.Message
+    }
   } catch {
     Show-Error $_.Exception.Message
   }

@@ -124,8 +124,9 @@ function Load-CodeMap {
   param([string]$Path)
   if (-not (Test-Path -LiteralPath $Path)) { throw "找不到拼音编码表：$Path" }
   $map = @{}
-  $lines = Get-Content -LiteralPath $Path -Encoding UTF8
-  foreach ($line in $lines | Select-Object -Skip 1) {
+  $lines = [System.IO.File]::ReadAllLines($Path, [System.Text.Encoding]::UTF8)
+  for ($i = 1; $i -lt $lines.Count; $i++) {
+    $line = $lines[$i]
     if ([string]::IsNullOrWhiteSpace($line)) { continue }
     $fields = $line -split ([string][char]9)
     if ($fields.Count -ne 4) { continue }
@@ -182,7 +183,7 @@ function Load-SourceEntries {
   Ensure-SourceFile $Path
   $entries = New-Object System.Collections.Generic.List[object]
   $lineNumber = 0
-  foreach ($line in (Get-Content -LiteralPath $Path -Encoding UTF8)) {
+  foreach ($line in [System.IO.File]::ReadAllLines($Path, [System.Text.Encoding]::UTF8)) {
     $lineNumber++
     if ([string]::IsNullOrWhiteSpace($line) -or $line.TrimStart().StartsWith("#")) { continue }
     $fields = $line -split ([string][char]9)

@@ -2381,8 +2381,11 @@ func TestReverseLookupToolScriptProvidesStandaloneQueryShell(t *testing.T) {
 	if !strings.Contains(reverseLookupToolScript, "$form.Add_Shown({") || !strings.Contains(reverseLookupToolScript, "[System.Windows.Forms.Screen]::PrimaryScreen.WorkingArea") {
 		t.Fatalf("expected reverse lookup tool script to restore a centered window when shown")
 	}
-	if !strings.Contains(reverseLookupToolScript, "$form.BeginInvoke([System.Windows.Forms.MethodInvoker]{") {
-		t.Fatalf("expected reverse lookup tool script to defer data loading until after the window is shown")
+	if !strings.Contains(reverseLookupToolScript, "[System.Windows.Forms.Application]::DoEvents()") {
+		t.Fatalf("expected reverse lookup tool script to pump the message loop during data loading to avoid \"not responding\"")
+	}
+	if !strings.Contains(reverseLookupToolScript, "$progressBar") {
+		t.Fatalf("expected reverse lookup tool script to show a progress bar during data loading")
 	}
 	if strings.Contains(reverseLookupToolScript, "$form.TopMost = $true") || strings.Contains(reverseLookupToolScript, "$form.Activate()") || strings.Contains(reverseLookupToolScript, "$form.BringToFront()") {
 		t.Fatalf("expected reverse lookup tool script to avoid aggressive foreground forcing that can collapse the language bar")
