@@ -159,12 +159,14 @@ type appState struct {
 	statusHWND        syscall.Handle
 	clientW           int32
 	clientH           int32
+	addOnLoad         bool
 }
 
 func main() {
 	sharedDir := flag.String("SharedDir", "", "Yime shared runtime data directory")
 	userDir := flag.String("UserDir", "", "Yime user data directory")
 	mode := flag.String("Mode", "variable", "Yime schema mode: variable, full, shorthand")
+	addMode := flag.Bool("Add", false, "Open the add-phrase dialog immediately after launch")
 	flag.Parse()
 	if strings.TrimSpace(*sharedDir) == "" || strings.TrimSpace(*userDir) == "" {
 		showMessageBox("缺少 SharedDir 或 UserDir 参数。", 0x10)
@@ -176,6 +178,7 @@ func main() {
 		mode:            reverselookup.Mode(strings.TrimSpace(*mode)),
 		sourcePath:      filepath.Join(strings.TrimSpace(*userDir), userlexicon.SourceFileName),
 		rimeLexiconPath: userlexicon.RimeLexiconPath(strings.TrimSpace(*userDir), strings.TrimSpace(*mode)),
+		addOnLoad:       *addMode,
 	}
 	if err := runApp(state); err != nil {
 		showMessageBox(err.Error(), 0x10)
@@ -248,6 +251,10 @@ func runApp(state *appState) error {
 		state.codeMapErr = err
 		state.codeMapLoaded = true
 		procPostMessageW.Call(uintptr(state.mainHWND), wmAppLoadDone, 0, 0)
+		if state.addOnLoad {
+			time.Sleep(50 * time.Millisecond)
+			procPostMessageW.Call(uintptr(state.mainHWND), wmAppCommand, uintptr(idBtnAdd), 0)
+		}
 	}()
 
 	var message winMsg

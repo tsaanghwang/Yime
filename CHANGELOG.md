@@ -30,8 +30,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - User lexicon rebuild for all three schema modes (variable/full/shorthand)
 - Marquee progress bar and per-step status messages during reverse lookup data loading
 - Chinese localization for tool hub, settings, and diagnostics UIs
+- `-Add` flag for lexicon-manager.exe to open add-phrase dialog on launch
 
 ### Changed
+
+- Replace showUserMessage PowerShell MessageBox with direct Win32 MessageBoxW syscall, eliminating PowerShell process spawn for every user notification
+- Replace copyTextToClipboard PowerShell Set-Clipboard with direct Win32 clipboard API, also fixing missing HideWindow flag that caused console flash
+- Replace userLexiconAddScript PowerShell dialog with lexicon-manager.exe -Add, removing 287-line embedded PowerShell script from runtime path
+- Remove ActionRunPowerShell dead code from toolhub/manifest.go (all tools now use ActionRunExecutable)
 
 - Replace Get-Content with [IO.File]::ReadAllLines/ReadAllText for 5-10x faster dict.yaml loading
 - Simplify lexicon manager toolbar from 12 buttons to 6; move secondary actions into menus

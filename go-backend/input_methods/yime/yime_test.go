@@ -1809,29 +1809,6 @@ func TestReadPageSizeFromCustomConfig(t *testing.T) {
 	}
 }
 
-func TestNewUIPowerShellCommandUsesWindowsPowerShellWithoutHidingUI(t *testing.T) {
-	cmd := newUIPowerShellCommand("-NoProfile", "-Command", "Write-Output ok")
-
-	if !strings.HasSuffix(strings.ToLower(cmd.Path), "\\powershell.exe") {
-		t.Fatalf("expected powershell.exe path, got %q", cmd.Path)
-	}
-	if cmd.SysProcAttr == nil || !cmd.SysProcAttr.HideWindow {
-		t.Fatalf("expected UI PowerShell command to hide only the backing console window, got %#v", cmd.SysProcAttr)
-	}
-}
-
-func TestWindowsPowerShellPathUsesSystemRootWhenAvailable(t *testing.T) {
-	systemRoot := os.Getenv("SystemRoot")
-	if systemRoot == "" {
-		t.Skip("SystemRoot is not set")
-	}
-
-	got := strings.ToLower(windowsPowerShellPath())
-	wantSuffix := strings.ToLower(filepath.Join("System32", "WindowsPowerShell", "v1.0", "powershell.exe"))
-	if !strings.HasSuffix(got, wantSuffix) {
-		t.Fatalf("expected windowsPowerShellPath to use the Windows PowerShell binary under SystemRoot, got %q", got)
-	}
-}
 
 func TestUserLexiconManagerLaunchesNativeExecutable(t *testing.T) {
 	ime := newTestIME()

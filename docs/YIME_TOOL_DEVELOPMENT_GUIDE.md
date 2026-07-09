@@ -106,13 +106,22 @@ if exist cmd\my-tool\rsrc_mytool_windows_amd64.syso del cmd\my-tool\rsrc_mytool_
 - 工具目录中包含新工具的条目
 - manifest 验证通过（ID 唯一、Label 非空、TargetPath 非空）
 
-## PowerShell 脚本工具（旧方式）
+## PowerShell 脚本工具（旧方式，已废弃）
 
-部分工具（反查编码、词库管理器）仍使用嵌入 Go 字符串常量的 PowerShell 脚本，通过 `tool-launcher.exe` 启动。新工具建议使用原生 Win32 可执行文件方式。
+早期工具使用嵌入 Go 字符串常量的 PowerShell 脚本，通过 `tool-launcher.exe` 启动。所有运行时 PowerShell 依赖已迁移到原生 Win32：
 
-如果必须使用 PowerShell 脚本：
+| 旧实现 | 新实现 |
+|--------|--------|
+| `showUserMessage` → PowerShell `MessageBox` | Win32 `MessageBoxW` syscall |
+| `copyTextToClipboard` → PowerShell `Set-Clipboard` | Win32 clipboard API (`OpenClipboard`/`SetClipboardData`) |
+| `userLexiconAddScript` → PowerShell WinForms 对话框 | `lexicon-manager.exe -Add` |
+| `ActionRunPowerShell` → toolhub manifest 类型 | 已删除，所有工具使用 `ActionRunExecutable` |
+
+部分工具（反查编码、词库管理器、设置工具、诊断工具）的 UI 仍使用嵌入 Go 字符串的 PowerShell 脚本，但这些脚本由原生 Win32 可执行文件内部调度，不再经过 `tool-launcher.exe` 或 `newUIPowerShellCommand`。
+
+如果必须编写新的 PowerShell 脚本嵌入 Go 代码：
 - 脚本嵌入在 Go 文件的原始字符串常量中（反引号包围）
-- PowerShell 的反引号转义（`` `n ``、`` `r `` 等）不可用，用 `[char]13` + `[char]10` 代替
+- PowerShell 的反引号转义不可用，用 `[char]13` + `[char]10` 代替
 - 用 `[IO.File]::ReadAllLines()` 代替 `Get-Content` 以获得更好的 I/O 性能
 - 用 `@()` 包裹函数返回值防止 PowerShell 拆包单元素数组
 - 用变量插值代替 `-f` 格式化，避免词条中的花括号导致异常

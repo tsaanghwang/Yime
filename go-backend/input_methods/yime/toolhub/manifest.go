@@ -14,7 +14,7 @@ type ActionType string
 
 const (
 	ActionOpenPath      ActionType = "open_path"
-	ActionRunPowerShell ActionType = "run_powershell"
+
 	ActionRunExecutable ActionType = "run_executable"
 )
 
@@ -75,8 +75,7 @@ func Invoke(entry Entry) (bool, error) {
 			return false, err
 		}
 		return false, nil
-	case ActionRunPowerShell:
-		return false, fmt.Errorf("工具 %q 仍使用已废弃的 PowerShell 启动方式，请重新编译并安装 Yime 后从语言栏重新打开工具箱", entry.ID)
+
 	case ActionRunExecutable:
 		if _, err := os.Stat(entry.TargetPath); err != nil {
 			return false, fmt.Errorf("missing executable: %s", entry.TargetPath)

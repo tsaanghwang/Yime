@@ -2478,9 +2478,7 @@ func (ime *IME) copyTextToClipboard(text string) {
 	if text == "" {
 		return
 	}
-	cmd := exec.Command("powershell.exe", "-NoProfile", "-Command", "Set-Clipboard -Value ([Console]::In.ReadToEnd())")
-	cmd.Stdin = strings.NewReader(text)
-	if err := cmd.Start(); err != nil {
+	if err := win32CopyToClipboard(text); err != nil {
 		log.Printf("复制到剪贴板失败: %v", err)
 		ime.showUserMessage("复制失败", "无法复制到剪贴板。\n错误: "+err.Error(), "Error")
 	}
