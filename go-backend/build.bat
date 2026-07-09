@@ -15,6 +15,8 @@ set "SERVER_EXE=%PACKAGE_DIR%\server.exe"
 set "REVERSE_LOOKUP_EXE=%PACKAGE_DIR%\reverse-lookup.exe"
 set "TOOL_HUB_EXE=%PACKAGE_DIR%\tool-hub.exe"
 set "LEXICON_MANAGER_EXE=%PACKAGE_DIR%\lexicon-manager.exe"
+set "SYSTEM_LEXICON_AUDIT_EXE=%PACKAGE_DIR%\system-lexicon-audit.exe"
+set "BLOCKLIST_MANAGER_EXE=%PACKAGE_DIR%\blocklist-manager.exe"
 set "SETTINGS_TOOL_EXE=%PACKAGE_DIR%\settings-tool.exe"
 set "DIAGNOSTICS_TOOL_EXE=%PACKAGE_DIR%\diagnostics-tool.exe"
 set "BACKEND_SNIPPET=%BUILD_ROOT%\backends.go-backend.json"
@@ -173,6 +175,46 @@ if errorlevel 1 (
 if exist cmd\lexicon-manager\rsrc_lexicon_windows_amd64.syso del cmd\lexicon-manager\rsrc_lexicon_windows_amd64.syso
 
 echo [INFO] Built: "%LEXICON_MANAGER_EXE%"
+
+echo [INFO] Generating Windows VERSIONINFO resources for system-lexicon-audit ...
+go-winres simply --arch amd64 --product-version "%APP_VERSION%" --file-version "%APP_VERSION%" --product-name "YIME" --file-description "Yime System Lexicon Audit" --original-filename "system-lexicon-audit.exe" --manifest gui --out cmd\system-lexicon-audit\rsrc_audit
+if errorlevel 1 (
+    echo [WARN] go-winres failed for system-lexicon-audit.exe, building without VERSIONINFO
+    if exist cmd\system-lexicon-audit\rsrc_audit_windows_amd64.syso del cmd\system-lexicon-audit\rsrc_audit_windows_amd64.syso
+)
+
+echo [INFO] Building system-lexicon-audit.exe ...
+go build -ldflags "-s -w -H=windowsgui -X main.version=%APP_VERSION%" -o "%SYSTEM_LEXICON_AUDIT_EXE%" .\cmd\system-lexicon-audit
+if errorlevel 1 (
+    echo [ERROR] Failed to build system-lexicon-audit.exe
+    if exist cmd\system-lexicon-audit\rsrc_audit_windows_amd64.syso del cmd\system-lexicon-audit\rsrc_audit_windows_amd64.syso
+    popd
+    exit /b 1
+)
+
+if exist cmd\system-lexicon-audit\rsrc_audit_windows_amd64.syso del cmd\system-lexicon-audit\rsrc_audit_windows_amd64.syso
+
+echo [INFO] Built: "%SYSTEM_LEXICON_AUDIT_EXE%"
+
+echo [INFO] Generating Windows VERSIONINFO resources for blocklist-manager ...
+go-winres simply --arch amd64 --product-version "%APP_VERSION%" --file-version "%APP_VERSION%" --product-name "YIME" --file-description "Yime User Blocklist Manager" --original-filename "blocklist-manager.exe" --manifest gui --out cmd\blocklist-manager\rsrc_blocklist
+if errorlevel 1 (
+    echo [WARN] go-winres failed for blocklist-manager.exe, building without VERSIONINFO
+    if exist cmd\blocklist-manager\rsrc_blocklist_windows_amd64.syso del cmd\blocklist-manager\rsrc_blocklist_windows_amd64.syso
+)
+
+echo [INFO] Building blocklist-manager.exe ...
+go build -ldflags "-s -w -H=windowsgui -X main.version=%APP_VERSION%" -o "%BLOCKLIST_MANAGER_EXE%" .\cmd\blocklist-manager
+if errorlevel 1 (
+    echo [ERROR] Failed to build blocklist-manager.exe
+    if exist cmd\blocklist-manager\rsrc_blocklist_windows_amd64.syso del cmd\blocklist-manager\rsrc_blocklist_windows_amd64.syso
+    popd
+    exit /b 1
+)
+
+if exist cmd\blocklist-manager\rsrc_blocklist_windows_amd64.syso del cmd\blocklist-manager\rsrc_blocklist_windows_amd64.syso
+
+echo [INFO] Built: "%BLOCKLIST_MANAGER_EXE%"
 
 echo [INFO] Generating Windows VERSIONINFO resources for settings-tool ...
 go-winres simply --arch amd64 --product-version "%APP_VERSION%" --file-version "%APP_VERSION%" --product-name "YIME" --file-description "Yime Settings Tool" --original-filename "settings-tool.exe" --manifest gui --out cmd\settings-tool\rsrc_settings

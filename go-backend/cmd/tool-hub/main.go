@@ -10,15 +10,14 @@ import (
 	"runtime"
 	"strings"
 	"syscall"
-	"time"
 	"unsafe"
 
 	"github.com/EasyIME/pime-go/input_methods/yime/toolhub"
+	"github.com/EasyIME/pime-go/input_methods/yime/win32ui"
 )
 
 const (
-	wmAppCommand  = 0x0400 + 1
-	wmAppCloseHub = 0x0400 + 2
+	wmAppCommand = 0x0400 + 1
 
 	wsExControlparent  = 0x00010000
 	wsExAppwindow      = 0x00040000
@@ -96,11 +95,12 @@ type initCommonControlsEx struct {
 }
 
 type appState struct {
-	manifest  toolhub.Manifest
-	mainHWND  syscall.Handle
-	clientW   int32
-	clientH   int32
-	buttonTop int32
+	manifestPath string
+	manifest     toolhub.Manifest
+	mainHWND     syscall.Handle
+	clientW      int32
+	clientH      int32
+	buttonTop    int32
 }
 
 func main() {
@@ -124,7 +124,7 @@ func main() {
 		showError(err.Error())
 		os.Exit(1)
 	}
-	if err := runApp(&appState{manifest: manifest}); err != nil {
+	if err := runApp(&appState{manifest: manifest, manifestPath: strings.TrimSpace(*manifestPath)}); err != nil {
 		showError(err.Error())
 		os.Exit(1)
 	}
@@ -133,6 +133,10 @@ func main() {
 func runApp(state *appState) error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+
+	if win32ui.ActivateExistingWindow("YimeToolHub") {
+		return nil
+	}
 
 	state.computeLayout()
 
@@ -148,13 +152,15 @@ func runApp(state *appState) error {
 	})
 
 	wndClass := wndclassex{
-		Size:      uint32(unsafe.Sizeof(wndclassex{})),
-		WndProc:   wndProcCallback,
-		Instance:  syscall.Handle(instance),
-		Icon:      syscall.Handle(icon),
-		IconSm:    syscall.Handle(icon),
-		Cursor:    syscall.Handle(cursor),
-		ClassName: className,
+		Style:      win32ui.ClassRedraw,
+		Size:       uint32(unsafe.Sizeof(wndclassex{})),
+		WndProc:    wndProcCallback,
+		Instance:   syscall.Handle(instance),
+		Icon:       syscall.Handle(icon),
+		IconSm:     syscall.Handle(icon),
+		Cursor:     syscall.Handle(cursor),
+		Background: win32ui.ColorWindowBackground,
+		ClassName:  className,
 	}
 	if ret, _, _ := procRegisterClassExW.Call(uintptr(unsafe.Pointer(&wndClass))); ret == 0 {
 		return fmt.Errorf("RegisterClassEx failed")
@@ -180,7 +186,7 @@ func runApp(state *appState) error {
 	}
 	state.mainHWND = syscall.Handle(hwnd)
 	state.createControls()
-	state.presentMainWindow()
+	state.presentMainWindowAfterLaunch()
 
 	var message winMsg
 	for {
@@ -200,29 +206,22 @@ func runApp(state *appState) error {
 
 func (state *appState) computeLayout() {
 	const (
-		width      = int32(620)
-		margin     = int32(16)
-		titleH     = int32(26)
-		summaryH   = int32(44)
-		rowHeight  = int32(52)
-		noteH      = int32(42)
-		gap        = int32(8)
+		width     = int32(620)
+		margin    = int32(16)
+		rowHeight = int32(52)
 	)
 	rowCount := (len(state.manifest.Tools) + 1) / 2
 	if rowCount < 4 {
 		rowCount = 4
 	}
 	state.clientW = width
-	state.buttonTop = margin + titleH + gap + summaryH + gap
-	state.clientH = state.buttonTop + int32(rowCount)*rowHeight + gap + noteH + margin
+	state.buttonTop = margin
+	state.clientH = margin + int32(rowCount)*rowHeight + margin
 }
 
 func (state *appState) createControls() {
-	const margin = int32(16)
-	createStatic(state.mainHWND, state.manifest.Title, rect{margin, 16, 580, 42}, 0)
-	createStatic(state.mainHWND, state.manifest.Summary, rect{margin, 48, 596, 92}, 0)
-
 	const (
+		margin    = int32(16)
 		rowHeight = int32(52)
 		colWidth  = int32(284)
 		gap       = int32(12)
@@ -236,9 +235,6 @@ func (state *appState) createControls() {
 		y := top + int32(row)*rowHeight
 		createButton(state.mainHWND, tool.Label, rect{x, y, x + colWidth, y + 40}, idButtonBase+index)
 	}
-
-	noteTop := state.clientH - 42 - margin
-	createStatic(state.mainHWND, state.manifest.Note, rect{margin, noteTop, 596, noteTop + 42}, 0)
 }
 
 func (state *appState) wndProc(hwnd syscall.Handle, message uint32, wParam, lParam uintptr) uintptr {
@@ -249,13 +245,18 @@ func (state *appState) wndProc(hwnd syscall.Handle, message uint32, wParam, lPar
 	case wmAppCommand:
 		state.handleCommand(wParam)
 		return 0
-	case wmAppCloseHub:
-		procShowWindow.Call(uintptr(hwnd), 0)
-		procPostQuitMessage.Call(0)
+	case win32ui.WmDeferredPresent:
+		win32ui.PresentMainWindow(state.mainHWND)
 		return 0
+	case 0x0006: // WM_ACTIVATE
+		if win32ui.IsActivateMessage(wParam) {
+			win32ui.RedrawChildrenNow(state.mainHWND)
+		}
+		ret, _, _ := procDefWindowProcW.Call(uintptr(hwnd), uintptr(message), wParam, lParam)
+		return ret
 	case 0x0018: // WM_SHOWWINDOW
 		if wParam != 0 && lParam == 0 {
-			state.ensureRestored()
+			state.presentMainWindow()
 		}
 		ret, _, _ := procDefWindowProcW.Call(uintptr(hwnd), uintptr(message), wParam, lParam)
 		return ret
@@ -268,32 +269,43 @@ func (state *appState) wndProc(hwnd syscall.Handle, message uint32, wParam, lPar
 }
 
 func (state *appState) handleCommand(wParam uintptr) {
+	if err := state.reloadManifest(); err != nil {
+		showError("无法刷新工具清单：" + err.Error())
+		return
+	}
 	id := int(wParam & 0xffff)
 	index := id - idButtonBase
 	if index < 0 || index >= len(state.manifest.Tools) {
 		return
 	}
 	entry := state.manifest.Tools[index]
-	closeHub, err := toolhub.Invoke(entry)
-	if err != nil {
+	if _, err := toolhub.Invoke(entry); err != nil {
 		showError(err.Error())
-		return
-	}
-	if closeHub {
-		hwnd := state.mainHWND
-		time.AfterFunc(800*time.Millisecond, func() {
-			procPostMessageW.Call(uintptr(hwnd), wmAppCloseHub, 0, 0)
-		})
 	}
 }
 
+func (state *appState) reloadManifest() error {
+	data, err := os.ReadFile(state.manifestPath)
+	if err != nil {
+		return err
+	}
+	manifest := toolhub.Manifest{}
+	if err := json.Unmarshal(data, &manifest); err != nil {
+		return err
+	}
+	if err := toolhub.Validate(manifest); err != nil {
+		return err
+	}
+	state.manifest = manifest
+	return nil
+}
+
 func (state *appState) presentMainWindow() {
-	hwnd := uintptr(state.mainHWND)
-	state.ensureRestored()
-	procBringWindowToTop.Call(hwnd)
-	procSetForegroundWindow.Call(hwnd)
-	procShowWindow.Call(hwnd, swShowNormal)
-	procUpdateWindow.Call(hwnd)
+	win32ui.PresentMainWindow(state.mainHWND)
+}
+
+func (state *appState) presentMainWindowAfterLaunch() {
+	win32ui.PresentMainWindowAfterLaunch(state.mainHWND)
 }
 
 func (state *appState) ensureRestored() {
@@ -302,10 +314,6 @@ func (state *appState) ensureRestored() {
 	if iconic != 0 {
 		procShowWindow.Call(hwnd, swRestore)
 	}
-}
-
-func createStatic(parent syscall.Handle, text string, box rect, id int) {
-	createControl("STATIC", text, 0x50000000, box, parent, id)
 }
 
 func createButton(parent syscall.Handle, text string, box rect, id int) {

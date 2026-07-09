@@ -17,3 +17,11 @@ func (ime *IME) settingsToolPath() string {
 func (ime *IME) diagnosticsToolPath() string {
 	return ""
 }
+
+func (ime *IME) systemLexiconAuditToolPath() string {
+	return ""
+}
+
+func (ime *IME) blocklistManagerToolPath() string {
+	return ""
+}

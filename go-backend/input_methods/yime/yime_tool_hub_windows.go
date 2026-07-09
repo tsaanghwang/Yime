@@ -4,6 +4,7 @@ package yime
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"path/filepath"
 )
@@ -32,10 +33,17 @@ func (ime *IME) ensureToolHubManifest() (string, error) {
 	}
 	lexiconManagerPath := ime.lexiconManagerToolPath()
 	reverseLookupToolPath := ime.reverseLookupToolPath()
+	systemLexiconAuditPath := ime.systemLexiconAuditToolPath()
+	blocklistManagerPath := ime.blocklistManagerToolPath()
 	settingsToolPath := ime.settingsToolPath()
 	diagnosticsToolPath := ime.diagnosticsToolPath()
-	if lexiconManagerPath == "" || reverseLookupToolPath == "" || settingsToolPath == "" || diagnosticsToolPath == "" {
+	if lexiconManagerPath == "" || reverseLookupToolPath == "" || systemLexiconAuditPath == "" || blocklistManagerPath == "" || settingsToolPath == "" || diagnosticsToolPath == "" {
 		return "", os.ErrNotExist
+	}
+	for _, toolPath := range []string{lexiconManagerPath, reverseLookupToolPath, systemLexiconAuditPath, blocklistManagerPath, settingsToolPath, diagnosticsToolPath} {
+		if _, err := os.Stat(toolPath); err != nil {
+			return "", fmt.Errorf("missing native tool executable: %s", toolPath)
+		}
 	}
 	manifest := buildToolHubManifest(
 		sharedDir,
@@ -44,6 +52,8 @@ func (ime *IME) ensureToolHubManifest() (string, error) {
 		filepath.Join(os.Getenv("LOCALAPPDATA"), "PIME", "Logs"),
 		lexiconManagerPath,
 		reverseLookupToolPath,
+		systemLexiconAuditPath,
+		blocklistManagerPath,
 		settingsToolPath,
 		diagnosticsToolPath,
 		ime.currentYimeMode(),

@@ -5,6 +5,8 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/EasyIME/pime-go/input_methods/yime/win32ui"
 )
 
 // ActionType describes how a tool hub entry should be launched.
@@ -74,28 +76,12 @@ func Invoke(entry Entry) (bool, error) {
 		}
 		return false, nil
 	case ActionRunPowerShell:
-		if _, err := os.Stat(entry.TargetPath); err != nil {
-			return false, fmt.Errorf("missing script: %s", entry.TargetPath)
-		}
-		args := append([]string{
-			"-NoProfile",
-			"-STA",
-			"-WindowStyle",
-			"Hidden",
-			"-ExecutionPolicy",
-			"Bypass",
-			"-File",
-			entry.TargetPath,
-		}, entry.Arguments...)
-		if err := shellExecute(windowsPowerShellPath(), joinWindowsProcessArguments(args), swHide); err != nil {
-			return false, err
-		}
-		return entry.CloseAfterLaunch, nil
+		return false, fmt.Errorf("工具 %q 仍使用已废弃的 PowerShell 启动方式，请重新编译并安装 Yime 后从语言栏重新打开工具箱", entry.ID)
 	case ActionRunExecutable:
 		if _, err := os.Stat(entry.TargetPath); err != nil {
 			return false, fmt.Errorf("missing executable: %s", entry.TargetPath)
 		}
-		if err := shellExecute(entry.TargetPath, joinWindowsProcessArguments(entry.Arguments), swShowNormal); err != nil {
+		if err := win32ui.StartDetachedGUIExecutable(entry.TargetPath, entry.Arguments...); err != nil {
 			return false, err
 		}
 		return entry.CloseAfterLaunch, nil
