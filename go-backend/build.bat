@@ -13,6 +13,7 @@ set "BUILD_ROOT=%ROOT_DIR%\build"
 set "PACKAGE_DIR=%BUILD_ROOT%\go-backend"
 set "SERVER_EXE=%PACKAGE_DIR%\server.exe"
 set "TOOL_LAUNCHER_EXE=%PACKAGE_DIR%\tool-launcher.exe"
+set "REVERSE_LOOKUP_EXE=%PACKAGE_DIR%\reverse-lookup.exe"
 set "BACKEND_SNIPPET=%BUILD_ROOT%\backends.go-backend.json"
 set "RIME_DIR=%ROOT_DIR%\input_methods\yime"
 set "RIME_DATA_DIR=%RIME_DIR%\data"
@@ -129,6 +130,26 @@ if errorlevel 1 (
 if exist cmd\tool-launcher\rsrc_tool_windows_amd64.syso del cmd\tool-launcher\rsrc_tool_windows_amd64.syso
 
 echo [INFO] Built: "%TOOL_LAUNCHER_EXE%"
+
+echo [INFO] Generating Windows VERSIONINFO resources for reverse-lookup ...
+go-winres simply --arch amd64 --product-version "%APP_VERSION%" --file-version "%APP_VERSION%" --product-name "YIME" --file-description "Yime Reverse Lookup Tool" --original-filename "reverse-lookup.exe" --manifest gui --out cmd\reverse-lookup-tool\rsrc_reverse
+if errorlevel 1 (
+    echo [WARN] go-winres failed for reverse-lookup.exe, building without VERSIONINFO
+    if exist cmd\reverse-lookup-tool\rsrc_reverse_windows_amd64.syso del cmd\reverse-lookup-tool\rsrc_reverse_windows_amd64.syso
+)
+
+echo [INFO] Building reverse-lookup.exe ...
+go build -ldflags "-s -w -H=windowsgui -X main.version=%APP_VERSION%" -o "%REVERSE_LOOKUP_EXE%" .\cmd\reverse-lookup-tool
+if errorlevel 1 (
+    echo [ERROR] Failed to build reverse-lookup.exe
+    if exist cmd\reverse-lookup-tool\rsrc_reverse_windows_amd64.syso del cmd\reverse-lookup-tool\rsrc_reverse_windows_amd64.syso
+    popd
+    exit /b 1
+)
+
+if exist cmd\reverse-lookup-tool\rsrc_reverse_windows_amd64.syso del cmd\reverse-lookup-tool\rsrc_reverse_windows_amd64.syso
+
+echo [INFO] Built: "%REVERSE_LOOKUP_EXE%"
 
 echo.
 echo ============================================
