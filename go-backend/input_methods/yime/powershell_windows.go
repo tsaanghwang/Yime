@@ -13,11 +13,7 @@ import (
 
 const shellExecuteOpenVerb = "open"
 
-const (
-	swHide       = 0
-	swShowNormal = 1
-	swRestore    = 9
-)
+const swShowNormal = 1
 
 func windowsPowerShellPath() string {
 	systemRoot := os.Getenv("SystemRoot")
@@ -36,20 +32,9 @@ func newUIPowerShellCommand(args ...string) *exec.Cmd {
 	return cmd
 }
 
-func startDetachedUIPowerShell(args ...string) error {
-	parameters := joinWindowsProcessArguments(args)
-	return shellExecute(windowsPowerShellPath(), parameters, swHide)
-}
-
 func startDetachedExecutable(filePath string, args ...string) error {
 	parameters := joinWindowsProcessArguments(args)
 	return shellExecute(filePath, parameters, swShowNormal)
-}
-
-func buildDetachedUIPowerShellLauncherScript(args ...string) string {
-	return "Start-Process -FilePath " + powerShellSingleQuoted(windowsPowerShellPath()) +
-		" -ArgumentList " + powerShellSingleQuoted(joinWindowsProcessArguments(args)) +
-		" -WindowStyle Hidden"
 }
 
 func shellExecute(filePath, parameters string, showCmd uintptr) error {

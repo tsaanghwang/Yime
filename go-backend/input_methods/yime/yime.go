@@ -1589,14 +1589,6 @@ func (ime *IME) helpDocumentPath(name string) string {
 	return filepath.Join(helpDir, name+".md")
 }
 
-func (ime *IME) toolLauncherPath() string {
-	exePath, err := os.Executable()
-	if err != nil {
-		return ""
-	}
-	return filepath.Join(filepath.Dir(exePath), "tool-launcher.exe")
-}
-
 func (ime *IME) userLexiconPath() string {
 	userDir := ime.userDir()
 	if userDir == "" {
