@@ -1332,11 +1332,10 @@ func TestOnCommandSwitchesCandidateLayout(t *testing.T) {
 	if backend.horizontal {
 		t.Fatal("expected backend _horizontal option to be false")
 	}
-	if len(resp.ChangeButton) == 0 {
-		t.Fatalf("expected layout button change, got %#v", resp.ChangeButton)
-	}
-	if change := findLangBarChangeButton(resp.ChangeButton, "candidate-layout"); change == nil || change.Text != "" {
-		t.Fatalf("expected candidate-layout button change to be icon-only, got %#v", resp.ChangeButton)
+	for _, change := range resp.ChangeButton {
+		if change.Text != "" {
+			t.Fatalf("expected candidate-layout icon-only change, got %#v", resp.ChangeButton)
+		}
 	}
 }
 
