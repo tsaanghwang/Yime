@@ -13,6 +13,12 @@ import (
 
 const shellExecuteOpenVerb = "open"
 
+const (
+	swHide       = 0
+	swShowNormal = 1
+	swRestore    = 9
+)
+
 func windowsPowerShellPath() string {
 	systemRoot := os.Getenv("SystemRoot")
 	if systemRoot != "" {
@@ -32,12 +38,12 @@ func newUIPowerShellCommand(args ...string) *exec.Cmd {
 
 func startDetachedUIPowerShell(args ...string) error {
 	parameters := joinWindowsProcessArguments(args)
-	return shellExecute(windowsPowerShellPath(), parameters)
+	return shellExecute(windowsPowerShellPath(), parameters, swHide)
 }
 
 func startDetachedExecutable(filePath string, args ...string) error {
 	parameters := joinWindowsProcessArguments(args)
-	return shellExecute(filePath, parameters)
+	return shellExecute(filePath, parameters, swShowNormal)
 }
 
 func buildDetachedUIPowerShellLauncherScript(args ...string) string {
@@ -46,7 +52,7 @@ func buildDetachedUIPowerShellLauncherScript(args ...string) string {
 		" -WindowStyle Hidden"
 }
 
-func shellExecute(filePath, parameters string) error {
+func shellExecute(filePath, parameters string, showCmd uintptr) error {
 	shell32 := syscall.NewLazyDLL("shell32.dll")
 	shellExecuteW := shell32.NewProc("ShellExecuteW")
 	verbPtr, err := syscall.UTF16PtrFromString(shellExecuteOpenVerb)
@@ -70,7 +76,7 @@ func shellExecute(filePath, parameters string) error {
 		uintptr(unsafe.Pointer(filePtr)),
 		uintptr(unsafe.Pointer(parametersPtr)),
 		0,
-		1,
+		showCmd,
 	)
 	if result <= 32 {
 		if callErr != syscall.Errno(0) {

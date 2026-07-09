@@ -30,7 +30,7 @@ type toolHubManifest struct {
 	Tools   []toolHubEntry `json:"tools"`
 }
 
-func buildToolHubManifest(sharedDir, userDir, helpDir, logDir, lexiconManagerScript, reverseLookupToolScript, settingsToolScript, diagnosticsToolScript, mode string) toolHubManifest {
+func buildToolHubManifest(sharedDir, userDir, helpDir, logDir, lexiconManagerScript, reverseLookupToolPath, settingsToolScript, diagnosticsToolScript, mode string) toolHubManifest {
 
 	return toolHubManifest{
 		Title:   "Yime 工具箱",
@@ -54,8 +54,8 @@ func buildToolHubManifest(sharedDir, userDir, helpDir, logDir, lexiconManagerScr
 				ID:               "reverse-lookup-tool",
 				Label:            "反查编码",
 				Description:      "打开反查编码工具，查询字词的拼音和音元编码。",
-				ActionType:       toolActionRunPowerShell,
-				TargetPath:       reverseLookupToolScript,
+				ActionType:       toolActionRunExecutable,
+				TargetPath:       reverseLookupToolPath,
 				CloseAfterLaunch: true,
 				Arguments: []string{
 					"-SharedDir", sharedDir,

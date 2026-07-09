@@ -58,6 +58,7 @@ const (
 	ID_HELP_TRIAL_FEEDBACK            = yimeCommandBase + 61
 	ID_HELP_COPY_TRIAL_TEMPLATE       = yimeCommandBase + 62
 	ID_HELP_TOOL_HUB                  = yimeCommandBase + 63
+	ID_REVERSE_LOOKUP_TOOL            = yimeCommandBase + 64
 	ID_CANDIDATE_PAGE_SIZE_5          = yimeCommandBase + 70
 	ID_CANDIDATE_PAGE_SIZE_6          = yimeCommandBase + 71
 	ID_CANDIDATE_PAGE_SIZE_7          = yimeCommandBase + 72
@@ -243,6 +244,7 @@ func (ime *IME) onActivate(req *pime.Request, resp *pime.Response) *pime.Respons
 	ime.syncStandaloneUISettings()
 	ime.addButtons(resp)
 	ime.updateLangStatus(req, resp)
+	go ime.warmReverseLookupCache()
 	if ime.backend != nil {
 		ime.applyStateToResponse(resp, ime.backend.State())
 	}
@@ -418,6 +420,8 @@ func (ime *IME) onCommand(req *pime.Request, resp *pime.Response) *pime.Response
 		ime.copyTextToClipboard(ime.trialFeedbackTemplate())
 	case ID_HELP_TOOL_HUB:
 		ime.launchStandaloneToolAsync(ime.openToolHub, "打开工具箱失败")
+	case ID_REVERSE_LOOKUP_TOOL:
+		ime.launchStandaloneToolAsync(ime.openReverseLookupTool, "打开反查编码失败")
 	case ID_CANDIDATE_PAGE_SIZE_5, ID_CANDIDATE_PAGE_SIZE_6, ID_CANDIDATE_PAGE_SIZE_7, ID_CANDIDATE_PAGE_SIZE_8, ID_CANDIDATE_PAGE_SIZE_9:
 		if err := ime.setCandidatePageSize(minCandidatePageSize + commandID - ID_CANDIDATE_PAGE_SIZE_5); err != nil {
 			log.Printf("设置候选页大小失败: %v", err)
@@ -1119,6 +1123,17 @@ func (ime *IME) addButtons(resp *pime.Response) {
 		lexiconButton.Icon = iconPath
 	}
 	resp.AddButton = append(resp.AddButton, lexiconButton)
+	reverseLookupButton := pime.ButtonInfo{
+		ID:        "reverse-lookup",
+		Text:      "反查编码",
+		Tooltip:   "反查编码",
+		CommandID: ID_REVERSE_LOOKUP_TOOL,
+		Type:      "button",
+	}
+	if iconPath := ime.iconPath("reverse-lookup.ico"); iconPath != "" {
+		reverseLookupButton.Icon = iconPath
+	}
+	resp.AddButton = append(resp.AddButton, reverseLookupButton)
 	if iconPath := ime.iconPath("config.ico"); iconPath != "" {
 		resp.AddButton = append(resp.AddButton, pime.ButtonInfo{
 			ID:   "settings",

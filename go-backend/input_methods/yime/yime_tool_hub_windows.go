@@ -50,9 +50,9 @@ func (ime *IME) ensureToolHubManifest() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	reverseLookupToolScript, err := ime.ensureReverseLookupToolScript()
-	if err != nil {
-		return "", err
+	reverseLookupToolPath := ime.reverseLookupToolPath()
+	if reverseLookupToolPath == "" {
+		return "", os.ErrNotExist
 	}
 	manifest := buildToolHubManifest(
 		sharedDir,
@@ -60,7 +60,7 @@ func (ime *IME) ensureToolHubManifest() (string, error) {
 		helpDir,
 		filepath.Join(os.Getenv("LOCALAPPDATA"), "PIME", "Logs"),
 		lexiconManagerScript,
-		reverseLookupToolScript,
+		reverseLookupToolPath,
 		settingsToolScript,
 		diagnosticsToolScript,
 		ime.currentYimeMode(),

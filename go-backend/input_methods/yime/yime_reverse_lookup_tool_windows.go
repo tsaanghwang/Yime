@@ -2,6 +2,13 @@
 
 package yime
 
+import (
+	"os"
+	"path/filepath"
+
+	"github.com/EasyIME/pime-go/input_methods/yime/reverselookup"
+)
+
 func (ime *IME) ensureReverseLookupToolScript() (string, error) {
 	return ime.ensureStandaloneToolScript("pime_yime_reverse_lookup_tool.ps1", reverseLookupToolScript)
 }
@@ -772,3 +779,34 @@ try {
   Show-Error $_.Exception.Message
 }
 `
+
+func (ime *IME) reverseLookupToolPath() string {
+	exePath, err := os.Executable()
+	if err != nil {
+		return ""
+	}
+	return filepath.Join(filepath.Dir(exePath), "reverse-lookup.exe")
+}
+
+func (ime *IME) openReverseLookupTool() error {
+	toolPath := ime.reverseLookupToolPath()
+	if toolPath == "" {
+		return os.ErrNotExist
+	}
+	return startDetachedExecutable(
+		toolPath,
+		"-SharedDir", ime.sharedDir(),
+		"-UserDir", ime.userDir(),
+		"-Mode", ime.currentYimeMode(),
+	)
+}
+
+func (ime *IME) warmReverseLookupCache() {
+	sharedDir := ime.sharedDir()
+	userDir := ime.userDir()
+	if sharedDir == "" || userDir == "" {
+		return
+	}
+	reverselookup.WarmCache(sharedDir, userDir, reverselookup.Mode(ime.currentYimeMode()))
+}
+
