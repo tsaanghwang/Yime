@@ -14,6 +14,8 @@ import (
 	"unsafe"
 
 	"github.com/EasyIME/pime-go/input_methods/yime/reverselookup"
+	"github.com/EasyIME/pime-go/input_methods/yime/userlexicon"
+	"github.com/EasyIME/pime-go/input_methods/yime/win32ui"
 )
 
 const (
@@ -37,7 +39,6 @@ const (
 	idResultList    = 105
 	idDetailView    = 106
 	idStatusLabel   = 107
-	idCopyCodeButton = 108
 
 	cbsDropdownlist       = 0x0003
 	lbResetcontent        = 0x0184
@@ -50,11 +51,8 @@ const (
 	cbGetcursel           = 0x0147
 	cbSelchange           = 1
 	lbnSelchange          = 1
-	lbnDblclk             = 2
 	bmGetcheck            = 0x00F0
 	bstChecked            = 1
-	cfUnicode             = 13
-	gmemMoveable          = 0x0002
 
 	wsChild     = 0x40000000
 	wsVisible   = 0x10000000
@@ -81,7 +79,6 @@ var (
 	procDispatchMessageW     = moduser32.NewProc("DispatchMessageW")
 	procGetMessageW          = moduser32.NewProc("GetMessageW")
 	procTranslateMessageW    = moduser32.NewProc("TranslateMessage")
-	procIsDialogMessageW     = moduser32.NewProc("IsDialogMessageW")
 	procPostQuitMessage      = moduser32.NewProc("PostQuitMessage")
 	procRegisterClassExW     = moduser32.NewProc("RegisterClassExW")
 	procSendMessageW         = moduser32.NewProc("SendMessageW")
@@ -99,13 +96,6 @@ var (
 	procIsIconic             = moduser32.NewProc("IsIconic")
 	procLoadIconW            = moduser32.NewProc("LoadIconW")
 	procAdjustWindowRectEx   = moduser32.NewProc("AdjustWindowRectEx")
-	procOpenClipboard        = moduser32.NewProc("OpenClipboard")
-	procCloseClipboard       = moduser32.NewProc("CloseClipboard")
-	procEmptyClipboard       = moduser32.NewProc("EmptyClipboard")
-	procSetClipboardData     = moduser32.NewProc("SetClipboardData")
-	procGlobalAlloc          = modkernel32.NewProc("GlobalAlloc")
-	procGlobalLock           = modkernel32.NewProc("GlobalLock")
-	procGlobalUnlock         = modkernel32.NewProc("GlobalUnlock")
 	procGetModuleHandleW     = modkernel32.NewProc("GetModuleHandleW")
 	procLoadCursorW          = moduser32.NewProc("LoadCursorW")
 	procInitCommonControlsEx = modcomctl32.NewProc("InitCommonControlsEx")
@@ -161,7 +151,6 @@ type uiLayout struct {
 	searchButton     rect
 	resultList       rect
 	detailView       rect
-	copyButton       rect
 	statusLabel      rect
 }
 
@@ -185,7 +174,6 @@ type appState struct {
 	resultHWND         syscall.Handle
 	detailHWND         syscall.Handle
 	statusHWND         syscall.Handle
-	copyHWND           syscall.Handle
 	modeOptions        []modeOption
 }
 
@@ -218,50 +206,49 @@ func main() {
 
 func buildUILayout() uiLayout {
 	const (
-		margin      = int32(12)
-		gap         = int32(8)
-		rowH        = int32(26)
-		searchLabelW = int32(72)
-		searchEditW  = int32(320)
-		containsW    = int32(88)
-		modeLabelW   = int32(36)
-		modeComboW   = int32(92)
-		searchBtnW   = int32(56)
-		copyBtnW     = int32(96)
+		margin       = int32(12)
+		gap          = int32(8)
+		rowGap       = int32(6)
+		rowH         = int32(26)
+		clientW      = int32(680)
+		searchLabelW = int32(60)
+		searchBtnW   = int32(64)
+		containsW    = int32(104)
+		modeLabelW   = int32(40)
+		modeComboW   = int32(100)
 		listH        = int32(280)
 		detailH      = int32(76)
 		statusH      = int32(44)
 	)
 
 	row1Y := int32(10)
+	row2Y := row1Y + rowH + rowGap
+
+	layout := uiLayout{clientW: clientW}
+
 	x := margin
-
-	layout := uiLayout{}
 	layout.searchLabel = rect{x, row1Y + 4, x + searchLabelW, row1Y + 4 + 18}
-	x += searchLabelW + gap
-	layout.searchEdit = rect{x, row1Y, x + searchEditW, row1Y + rowH}
-	x += searchEditW + gap
-	layout.containsCheck = rect{x, row1Y + 2, x + containsW, row1Y + 2 + 22}
-	x += containsW + gap
-	layout.modeLabel = rect{x, row1Y + 4, x + modeLabelW, row1Y + 4 + 18}
-	x += modeLabelW + gap
-	layout.modeCombo = rect{x, row1Y, x + modeComboW, row1Y + 120}
-	x += modeComboW + gap
-	layout.searchButton = rect{x, row1Y, x + searchBtnW, row1Y + rowH}
-	row1Right := layout.searchButton.Right + margin
+	searchEditLeft := margin + searchLabelW + gap
+	searchBtnLeft := clientW - margin - searchBtnW
+	layout.searchEdit = rect{searchEditLeft, row1Y, searchBtnLeft - gap, row1Y + rowH}
+	layout.searchButton = rect{searchBtnLeft, row1Y, clientW - margin, row1Y + rowH}
 
-	listY := row1Y + rowH + gap
-	layout.resultList = rect{margin, listY, row1Right - margin, listY + listH}
+	x = margin
+	layout.containsCheck = rect{x, row2Y + 2, x + containsW, row2Y + 2 + 22}
+	x += containsW + gap
+	layout.modeLabel = rect{x, row2Y + 4, x + modeLabelW, row2Y + 4 + 18}
+	x += modeLabelW + gap
+	layout.modeCombo = rect{x, row2Y, x + modeComboW, row2Y + 120}
+
+	listY := row2Y + rowH + gap
+	layout.resultList = rect{margin, listY, clientW - margin, listY + listH}
 
 	detailY := layout.resultList.Bottom + gap
-	detailW := row1Right - margin*2 - gap - copyBtnW
-	layout.detailView = rect{margin, detailY, margin + detailW, detailY + detailH}
-	layout.copyButton = rect{layout.detailView.Right + gap, detailY + 20, layout.detailView.Right + gap + copyBtnW, detailY + 20 + rowH}
+	layout.detailView = rect{margin, detailY, clientW - margin, detailY + detailH}
 
 	statusY := layout.detailView.Bottom + gap
-	layout.statusLabel = rect{margin, statusY, row1Right-margin, statusY + statusH}
+	layout.statusLabel = rect{margin, statusY, clientW - margin, statusY + statusH}
 
-	layout.clientW = row1Right
 	layout.clientH = layout.statusLabel.Bottom + margin
 	return layout
 }
@@ -284,6 +271,10 @@ func runWin32App(state *appState) error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 
+	if win32ui.ActivateExistingWindow("YimeReverseLookupTool") {
+		return nil
+	}
+
 	state.layout = buildUILayout()
 
 	icc := initCommonControlsEx{Size: uint32(unsafe.Sizeof(initCommonControlsEx{})), ICC: 0x000000FF}
@@ -299,13 +290,15 @@ func runWin32App(state *appState) error {
 	})
 
 	wndClass := wndclassex{
-		Size:      uint32(unsafe.Sizeof(wndclassex{})),
-		WndProc:   wndProcCallback,
-		Instance:  syscall.Handle(instance),
-		Icon:      syscall.Handle(icon),
-		IconSm:    syscall.Handle(icon),
-		Cursor:    syscall.Handle(cursor),
-		ClassName: className,
+		Style:      win32ui.ClassRedraw,
+		Size:       uint32(unsafe.Sizeof(wndclassex{})),
+		WndProc:    wndProcCallback,
+		Instance:   syscall.Handle(instance),
+		Icon:       syscall.Handle(icon),
+		IconSm:     syscall.Handle(icon),
+		Cursor:     syscall.Handle(cursor),
+		Background: win32ui.ColorWindowBackground,
+		ClassName:  className,
 	}
 	if ret, _, _ := procRegisterClassExW.Call(uintptr(unsafe.Pointer(&wndClass))); ret == 0 {
 		return fmt.Errorf("RegisterClassEx failed")
@@ -334,7 +327,7 @@ func runWin32App(state *appState) error {
 	}
 	state.mainHWND = syscall.Handle(hwnd)
 	state.createChildControls()
-	state.presentMainWindow()
+	state.presentMainWindowAfterLaunch()
 
 	state.startLoadIndex()
 
@@ -343,10 +336,6 @@ func runWin32App(state *appState) error {
 		ret, _, _ := procGetMessageW.Call(uintptr(unsafe.Pointer(&message)), 0, 0, 0)
 		if int32(ret) <= 0 {
 			break
-		}
-		isDialog, _, _ := procIsDialogMessageW.Call(uintptr(state.mainHWND), uintptr(unsafe.Pointer(&message)))
-		if isDialog != 0 {
-			continue
 		}
 		procTranslateMessageW.Call(uintptr(unsafe.Pointer(&message)))
 		procDispatchMessageW.Call(uintptr(unsafe.Pointer(&message)))
@@ -376,8 +365,7 @@ func (state *appState) createChildControls() {
 	createControl("BUTTON", "查询", 0x50010000, l.searchButton, state.mainHWND, idSearchButton)
 	state.resultHWND = createControl("LISTBOX", "", listBoxStyle, l.resultList, state.mainHWND, idResultList)
 	state.detailHWND = createControl("EDIT", "选中词条后在此显示拼音与各方案编码。", detailViewStyle, l.detailView, state.mainHWND, idDetailView)
-	state.copyHWND = createControl("BUTTON", "复制编码", 0x50010000, l.copyButton, state.mainHWND, idCopyCodeButton)
-	state.statusHWND = createControl("STATIC", "输入字词后点击【查询】，可查看标准拼音、数字标调与音元编码。双击结果行也可复制编码。", 0x50000000, l.statusLabel, state.mainHWND, idStatusLabel)
+	state.statusHWND = createControl("STATIC", "输入字词后点击【查询】，可查看标准拼音、数字标调与音元编码。", 0x50000000, l.statusLabel, state.mainHWND, idStatusLabel)
 }
 
 func createControl(className, text string, style int32, box rect, parent syscall.Handle, id int) syscall.Handle {
@@ -413,9 +401,18 @@ func (state *appState) wndProc(hwnd syscall.Handle, message uint32, wParam, lPar
 	case wmAppSearchDone:
 		state.onSearchDone()
 		return 0
+	case win32ui.WmDeferredPresent:
+		win32ui.PresentMainWindow(state.mainHWND)
+		return 0
+	case 0x0006: // WM_ACTIVATE
+		if win32ui.IsActivateMessage(wParam) {
+			win32ui.RedrawChildrenNow(state.mainHWND)
+		}
+		ret, _, _ := procDefWindowProcW.Call(uintptr(hwnd), uintptr(message), wParam, lParam)
+		return ret
 	case 0x0018: // WM_SHOWWINDOW
 		if wParam != 0 && lParam == 0 {
-			state.ensureMainWindowRestored()
+			state.presentMainWindow()
 		}
 		ret, _, _ := procDefWindowProcW.Call(uintptr(hwnd), uintptr(message), wParam, lParam)
 		return ret
@@ -430,14 +427,18 @@ func (state *appState) wndProc(hwnd syscall.Handle, message uint32, wParam, lPar
 }
 
 func (state *appState) presentMainWindow() {
-	hwnd := uintptr(state.mainHWND)
-	if hwnd == 0 {
+	if uintptr(state.mainHWND) == 0 {
 		return
 	}
-	state.ensureMainWindowRestored()
-	procBringWindowToTop.Call(hwnd)
-	procSetForegroundWindow.Call(hwnd)
-	procUpdateWindow.Call(hwnd)
+	win32ui.PresentMainWindow(state.mainHWND)
+	procSetFocus.Call(uintptr(state.searchHWND))
+}
+
+func (state *appState) presentMainWindowAfterLaunch() {
+	if uintptr(state.mainHWND) == 0 {
+		return
+	}
+	win32ui.PresentMainWindowAfterLaunch(state.mainHWND)
 	procSetFocus.Call(uintptr(state.searchHWND))
 }
 
@@ -461,10 +462,6 @@ func (state *appState) handleWMCommand(wParam, lParam uintptr) {
 		if notifyCode == 0 {
 			state.requestSearch()
 		}
-	case idCopyCodeButton:
-		if notifyCode == 0 {
-			state.copySelectedCode()
-		}
 	case idSearchEdit:
 		if notifyCode == enChange {
 			state.scheduleSearch()
@@ -484,67 +481,8 @@ func (state *appState) handleWMCommand(wParam, lParam uintptr) {
 		switch notifyCode {
 		case lbnSelchange:
 			state.updateDetail(-1)
-		case lbnDblclk:
-			state.copySelectedCode()
 		}
 	}
-}
-
-func (state *appState) selectedResult() (reverselookup.Result, bool) {
-	state.mu.Lock()
-	results := state.results
-	state.mu.Unlock()
-
-	sel, _, _ := procSendMessageW.Call(uintptr(state.resultHWND), lbGetcursel, 0, 0)
-	selected := int(sel)
-	if selected < 0 || selected >= len(results) {
-		return reverselookup.Result{}, false
-	}
-	return results[selected], true
-}
-
-func (state *appState) copySelectedCode() {
-	item, ok := state.selectedResult()
-	if !ok || strings.TrimSpace(item.ActiveCode) == "" {
-		state.setStatus("请先选中一条包含编码的结果。")
-		return
-	}
-	if err := setClipboardText(item.ActiveCode); err != nil {
-		showWin32Error("复制到剪贴板失败：" + err.Error())
-		return
-	}
-	state.setStatus(fmt.Sprintf("已复制编码 %s，可回到输入法中直接粘贴输入。", item.ActiveCode))
-}
-
-func setClipboardText(text string) error {
-	utf16Text, err := syscall.UTF16FromString(text)
-	if err != nil {
-		return err
-	}
-	byteLen := len(utf16Text) * 2
-	ret, _, err := procOpenClipboard.Call(0)
-	if ret == 0 {
-		return err
-	}
-	defer procCloseClipboard.Call()
-
-	procEmptyClipboard.Call()
-	hMem, _, err := procGlobalAlloc.Call(gmemMoveable, uintptr(byteLen))
-	if hMem == 0 {
-		return err
-	}
-	memPtr, _, err := procGlobalLock.Call(hMem)
-	if memPtr == 0 {
-		return err
-	}
-	copy((*[1 << 20]uint16)(unsafe.Pointer(memPtr))[:len(utf16Text)], utf16Text)
-	procGlobalUnlock.Call(hMem)
-
-	ret, _, err = procSetClipboardData.Call(cfUnicode, hMem)
-	if ret == 0 {
-		return err
-	}
-	return nil
 }
 
 func (state *appState) onModeChanged() {
@@ -586,6 +524,10 @@ func (state *appState) startLoadIndex() {
 	mode := state.mode
 
 	go func() {
+		codeMap, codeMapErr := reverselookup.LoadSharedCodeMap(sharedDir)
+		if codeMapErr == nil {
+			_, _ = userlexicon.HydrateSourceIfEmpty(userDir, mode, codeMap)
+		}
 		index, err := reverselookup.Load(sharedDir, userDir, mode)
 		state.mu.Lock()
 		state.index = index
@@ -636,7 +578,7 @@ func (state *appState) runSearchAsync() {
 		state.results = nil
 		state.refreshResultList(nil)
 		state.setDetail("选中词条后在此显示拼音与各方案编码。")
-		state.setStatus("输入字词后点击【查询】，可查看标准拼音、数字标调与音元编码。双击结果行也可复制编码。")
+		state.setStatus("输入字词后点击【查询】，可查看标准拼音、数字标调与音元编码。")
 		return
 	}
 
@@ -679,9 +621,9 @@ func (state *appState) onSearchDone() {
 	case len(results) == 0:
 		state.setStatus("未找到匹配结果。可勾选【包含匹配】在用户词库和系统词库中模糊搜索。")
 	case len(results) >= 200:
-		state.setStatus(fmt.Sprintf("找到 %d+ 条结果（已截断）。请缩小搜索范围。双击一行可复制编码。", len(results)))
+		state.setStatus(fmt.Sprintf("找到 %d+ 条结果（已截断）。请缩小搜索范围。", len(results)))
 	default:
-		state.setStatus(fmt.Sprintf("找到 %d 条结果。选中后查看详情，或点【复制编码】/双击行复制。", len(results)))
+		state.setStatus(fmt.Sprintf("找到 %d 条结果。选中后可在下方详情区查看编码。", len(results)))
 	}
 }
 

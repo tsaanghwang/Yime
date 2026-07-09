@@ -35,7 +35,7 @@ func sourceTimes(sharedDir, userDir, schemaID string) (map[string]int64, error) 
 	codeMapPath := filepath.Join(sharedDir, "yime_pinyin_codes.tsv")
 	markedPath := filepath.Join(sharedDir, "pinyin_normalized.json")
 	userPhrasePath := filepath.Join(userDir, "yime_user_phrases.txt")
-	dictPath := filepath.Join(sharedDir, schemaID+".dict.yaml")
+	dictPath := resolveDictPath(sharedDir, userDir, schemaID)
 	paths := []string{codeMapPath, markedPath, userPhrasePath, dictPath}
 	times := make(map[string]int64, len(paths))
 	for _, path := range paths {
@@ -76,6 +76,12 @@ func loadCachedIndex(sharedDir, userDir, schemaID string) (*Index, bool) {
 	}
 	for path, modTime := range currentTimes {
 		if payload.Header.SourceTimes[path] != modTime {
+			return nil, false
+		}
+	}
+	if len(payload.DictLookup) == 0 {
+		dictPath := resolveDictPath(sharedDir, userDir, schemaID)
+		if info, err := os.Stat(dictPath); err == nil && info.Size() > 0 {
 			return nil, false
 		}
 	}

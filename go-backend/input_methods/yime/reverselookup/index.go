@@ -29,7 +29,7 @@ func Load(sharedDir, userDir string, mode Mode) (*Index, error) {
 	if err != nil {
 		return nil, err
 	}
-	userEntries, err := loadUserPhraseEntries(userPhrasePath)
+	userEntries, err := loadUserPhraseEntries(userPhrasePath, codeMap, mode)
 	if err != nil {
 		return nil, err
 	}

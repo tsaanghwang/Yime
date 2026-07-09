@@ -22,6 +22,12 @@ func EnsureSourceFile(path string) error {
 
 // LoadSourceEntries reads user lexicon entries from the source TSV file.
 func LoadSourceEntries(path string) ([]Entry, error) {
+	return LoadSourceEntriesWithResolver(path, nil, "")
+}
+
+// LoadSourceEntriesWithResolver reads entries and can interpret the second column as
+// numeric-tone pinyin or, when a code map is available, as a Yime encoding.
+func LoadSourceEntriesWithResolver(path string, codeMap map[string]reverselookup.CodeRecord, mode reverselookup.Mode) ([]Entry, error) {
 	if err := EnsureSourceFile(path); err != nil {
 		return nil, err
 	}
@@ -42,26 +48,30 @@ func LoadSourceEntries(path string) ([]Entry, error) {
 		}
 		fields := strings.Split(line, "\t")
 		if len(fields) < 2 {
-			return nil, fmt.Errorf("用户词库第 %d 行格式应为：词条<TAB>数字标调拼音<TAB>权重", lineNumber)
+			continue
 		}
-		phrase := strings.TrimSpace(fields[0])
-		pinyin := reverselookup.NormalizeNumericTonePinyinSpacing(fields[1])
-		weight := DefaultEntryWeight
-		if len(fields) >= 3 && strings.TrimSpace(fields[2]) != "" {
-			weight = strings.TrimSpace(fields[2])
+		entry, ok := parseSourceEntry(fields, lineNumber, codeMap, mode)
+		if !ok {
+			continue
 		}
-		if phrase == "" || pinyin == "" {
-			return nil, fmt.Errorf("用户词库第 %d 行词条和数字标调拼音不能为空", lineNumber)
-		}
-		if !reverselookup.ValidateNumericTonePinyin(pinyin) {
-			return nil, fmt.Errorf("用户词库第 %d 行数字标调拼音格式错误：%s", lineNumber, pinyin)
-		}
-		if _, err := strconv.Atoi(weight); err != nil {
-			return nil, fmt.Errorf("用户词库第 %d 行权重必须是整数", lineNumber)
-		}
-		entries = append(entries, Entry{Phrase: phrase, Pinyin: pinyin, Weight: weight, LineNumber: lineNumber})
+		entries = append(entries, entry)
 	}
 	return entries, scanner.Err()
+}
+
+func parseSourceEntry(fields []string, lineNumber int, codeMap map[string]reverselookup.CodeRecord, mode reverselookup.Mode) (Entry, bool) {
+	weight := DefaultEntryWeight
+	if len(fields) >= 3 && strings.TrimSpace(fields[2]) != "" {
+		weight = strings.TrimSpace(fields[2])
+	}
+	if _, err := strconv.Atoi(weight); err != nil {
+		return Entry{}, false
+	}
+	phrase, pinyin, ok := reverselookup.ParseUserPhraseFields(fields, codeMap, mode)
+	if !ok {
+		return Entry{}, false
+	}
+	return Entry{Phrase: phrase, Pinyin: pinyin, Weight: weight, LineNumber: lineNumber}, true
 }
 
 // WriteSourceEntries writes entries back to the source lexicon file.

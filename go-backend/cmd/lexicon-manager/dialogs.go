@@ -119,7 +119,7 @@ func showImportPreviewDialog(owner syscall.Handle, preview userlexicon.ImportPre
 	accepted := showModalForm(owner, "导入预览", 760, 470, func(hwnd syscall.Handle) {
 		summary := fmt.Sprintf("新增：%d    覆盖：%d    相同：%d", preview.NewCount, preview.ReplaceCount, preview.SameCount)
 		createStatic(hwnd, summary, rect{16, 16, 700, 54}, 0)
-		list := createControl("LISTBOX", "", 0x50210121, rect{16, 78, 720, 340}, hwnd, idImportList)
+		list := createControl("LISTBOX", "", entryListStyle, rect{16, 78, 720, 340}, hwnd, idImportList)
 		for _, conflict := range preview.Conflicts {
 			line := fmt.Sprintf("%s | %s/%s -> %s/%s", conflict.Phrase, conflict.CurrentPinyin, conflict.CurrentWeight, conflict.ImportedPinyin, conflict.ImportedWeight)
 			text, _ := syscall.UTF16PtrFromString(line)

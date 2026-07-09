@@ -15,11 +15,16 @@ import (
 	"github.com/EasyIME/pime-go/input_methods/yime/reverselookup"
 	"github.com/EasyIME/pime-go/input_methods/yime/toolhub"
 	"github.com/EasyIME/pime-go/input_methods/yime/userlexicon"
+	"github.com/EasyIME/pime-go/input_methods/yime/win32ui"
 )
+
+func (state *appState) loadSourceEntries() ([]userlexicon.Entry, error) {
+	return userlexicon.LoadSourceEntriesWithResolver(state.sourcePath, state.codeMap, state.mode)
+}
 
 func (state *appState) refreshList() {
 	selected := state.selectedPhrases()
-	entries, err := userlexicon.LoadSourceEntries(state.sourcePath)
+	entries, err := state.loadSourceEntries()
 	if err != nil {
 		setWindowText(state.statusHWND, err.Error())
 		return
@@ -35,6 +40,7 @@ func (state *appState) refreshList() {
 	for _, phrase := range selected {
 		selectedSet[phrase] = true
 	}
+	maxExtent := int32(0)
 	for _, entry := range filtered {
 		line := fmt.Sprintf("%s    %s    %s", entry.Phrase, entry.Pinyin, entry.Weight)
 		text, _ := syscall.UTF16PtrFromString(line)
@@ -42,7 +48,15 @@ func (state *appState) refreshList() {
 		if selectedSet[entry.Phrase] {
 			procSendMessageW.Call(uintptr(state.listHWND), 0x0185, index, 1) // LB_SETSEL
 		}
+		if extent := int32(len(line) * 7); extent > maxExtent {
+			maxExtent = extent
+		}
 	}
+	if maxExtent < 764 {
+		maxExtent = 764
+	}
+	procSendMessageW.Call(uintptr(state.listHWND), 0x0194, uintptr(maxExtent), 0) // LB_SETHORIZONTALEXTENT
+	win32ui.RedrawChildrenNow(state.mainHWND)
 	state.updateSummary(len(entries), len(filtered))
 	state.updateSelectionSummary()
 }
@@ -61,11 +75,12 @@ func (state *appState) currentSortField() userlexicon.SortField {
 
 func (state *appState) selectedPhrases() []string {
 	count, _, _ := procSendMessageW.Call(uintptr(state.listHWND), 0x0186, 0, 0) // LB_GETSELCOUNT
-	if count == 0 {
+	selCount := int32(count)
+	if selCount <= 0 {
 		return nil
 	}
-	items := make([]int32, count)
-	procSendMessageW.Call(uintptr(state.listHWND), 0x0187, count, uintptr(unsafe.Pointer(&items[0])))
+	items := make([]int32, selCount)
+	procSendMessageW.Call(uintptr(state.listHWND), 0x0187, uintptr(selCount), uintptr(unsafe.Pointer(&items[0])))
 	phrases := make([]string, 0, len(items))
 	for _, index := range items {
 		if index < 0 || int(index) >= len(state.visibleEntries) {
@@ -120,7 +135,7 @@ func (state *appState) updateSelectionSummary() {
 }
 
 func (state *appState) saveUndoSnapshot(label string) {
-	entries, err := userlexicon.LoadSourceEntries(state.sourcePath)
+	entries, err := state.loadSourceEntries()
 	if err != nil {
 		return
 	}
@@ -188,7 +203,7 @@ func (state *appState) editSelected() {
 		showMessageBox(err.Error(), 0x10)
 		return
 	}
-	entries, err := userlexicon.LoadSourceEntries(state.sourcePath)
+	entries, err := state.loadSourceEntries()
 	if err != nil {
 		showMessageBox(err.Error(), 0x10)
 		return
@@ -270,7 +285,7 @@ func (state *appState) setSelectedWeights() {
 		showMessageBox("权重必须是整数。", 0x10)
 		return
 	}
-	entries, err := userlexicon.LoadSourceEntries(state.sourcePath)
+	entries, err := state.loadSourceEntries()
 	if err != nil {
 		showMessageBox(err.Error(), 0x10)
 		return
@@ -340,7 +355,7 @@ func (state *appState) importLexicon() {
 	if !ok {
 		return
 	}
-	importEntries, err := userlexicon.LoadSourceEntries(path)
+	importEntries, err := userlexicon.LoadSourceEntriesWithResolver(path, state.codeMap, state.mode)
 	if err != nil {
 		showMessageBox(err.Error(), 0x10)
 		return
@@ -351,7 +366,7 @@ func (state *appState) importLexicon() {
 			return
 		}
 	}
-	currentEntries, err := userlexicon.LoadSourceEntries(state.sourcePath)
+	currentEntries, err := state.loadSourceEntries()
 	if err != nil {
 		showMessageBox(err.Error(), 0x10)
 		return

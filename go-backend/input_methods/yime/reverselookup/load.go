@@ -94,7 +94,7 @@ func loadDictLookupMulti(path string) (map[string][]string, error) {
 	return lookup, nil
 }
 
-func loadUserPhraseEntries(path string) ([]UserPhraseEntry, error) {
+func loadUserPhraseEntries(path string, codeMap map[string]CodeRecord, mode Mode) ([]UserPhraseEntry, error) {
 	entries := []UserPhraseEntry{}
 	file, err := os.Open(path)
 	if err != nil {
@@ -112,12 +112,8 @@ func loadUserPhraseEntries(path string) ([]UserPhraseEntry, error) {
 			continue
 		}
 		fields := strings.Split(line, "\t")
-		if len(fields) < 2 {
-			continue
-		}
-		phrase := strings.TrimSpace(fields[0])
-		pinyin := normalizeNumericTonePinyinSpacing(fields[1])
-		if phrase == "" || pinyin == "" {
+		phrase, pinyin, ok := ParseUserPhraseFields(fields, codeMap, mode)
+		if !ok {
 			continue
 		}
 		entries = append(entries, UserPhraseEntry{Phrase: phrase, Pinyin: pinyin})
@@ -171,8 +167,26 @@ func dataPaths(sharedDir, userDir string, mode Mode) (codeMapPath, markedPath, u
 	codeMapPath = filepath.Join(sharedDir, "yime_pinyin_codes.tsv")
 	markedPath = filepath.Join(sharedDir, "pinyin_normalized.json")
 	userPhrasePath = filepath.Join(userDir, "yime_user_phrases.txt")
-	dictPath = filepath.Join(sharedDir, schemaID+".dict.yaml")
+	dictPath = resolveDictPath(sharedDir, userDir, schemaID)
 	return
+}
+
+func resolveDictPath(sharedDir, userDir, schemaID string) string {
+	candidates := []string{
+		filepath.Join(sharedDir, schemaID+".dict.yaml"),
+	}
+	if userDir != "" {
+		candidates = append(candidates, filepath.Join(userDir, schemaID+".dict.yaml"))
+	}
+	for _, candidate := range candidates {
+		if info, err := os.Stat(candidate); err == nil && info.Size() > 0 {
+			return candidate
+		}
+	}
+	if len(candidates) > 0 {
+		return candidates[0]
+	}
+	return ""
 }
 
 func containsString(values []string, target string) bool {

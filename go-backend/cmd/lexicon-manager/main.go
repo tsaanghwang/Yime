@@ -15,6 +15,7 @@ import (
 
 	"github.com/EasyIME/pime-go/input_methods/yime/reverselookup"
 	"github.com/EasyIME/pime-go/input_methods/yime/userlexicon"
+	"github.com/EasyIME/pime-go/input_methods/yime/win32ui"
 )
 
 const (
@@ -22,6 +23,8 @@ const (
 	wmAppLoadDone  = 0x0400 + 2
 	wmAppRefresh   = 0x0400 + 3
 	wmAppShowError = 0x0400 + 4
+
+	enChange = 0x0300
 
 	wsExControlparent  = 0x00010000
 	wsExAppwindow      = 0x00040000
@@ -47,6 +50,17 @@ const (
 	idBtnImport       = 207
 	idBtnExport       = 208
 	idBtnOpenFolder   = 209
+
+	wsChild          = 0x40000000
+	wsVisible        = 0x10000000
+	wsBorder         = 0x00800000
+	wsVscroll        = 0x00200000
+	wsTabstop        = 0x00010000
+	lbsNotify        = 0x0001
+	lbsHasstrings    = 0x0040
+	lbsMultiplesel   = 0x0008
+	lbsExtendedsel   = 0x0800
+	entryListStyle   = wsChild | wsVisible | wsBorder | wsVscroll | wsTabstop | lbsNotify | lbsHasstrings | lbsMultiplesel | lbsExtendedsel
 )
 
 var (
@@ -172,6 +186,11 @@ func main() {
 func runApp(state *appState) error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+
+	if win32ui.ActivateExistingWindow("YimeLexiconManager") {
+		return nil
+	}
+
 	state.clientW = 780
 	state.clientH = 520
 
@@ -187,13 +206,15 @@ func runApp(state *appState) error {
 	})
 
 	wndClass := wndclassex{
-		Size:      uint32(unsafe.Sizeof(wndclassex{})),
-		WndProc:   wndProcCallback,
-		Instance:  syscall.Handle(instance),
-		Icon:      syscall.Handle(icon),
-		IconSm:    syscall.Handle(icon),
-		Cursor:    syscall.Handle(cursor),
-		ClassName: className,
+		Style:      win32ui.ClassRedraw,
+		Size:       uint32(unsafe.Sizeof(wndclassex{})),
+		WndProc:    wndProcCallback,
+		Instance:   syscall.Handle(instance),
+		Icon:       syscall.Handle(icon),
+		IconSm:     syscall.Handle(icon),
+		Cursor:     syscall.Handle(cursor),
+		Background: win32ui.ColorWindowBackground,
+		ClassName:  className,
 	}
 	if ret, _, _ := procRegisterClassExW.Call(uintptr(unsafe.Pointer(&wndClass))); ret == 0 {
 		return fmt.Errorf("RegisterClassEx failed")
@@ -219,7 +240,7 @@ func runApp(state *appState) error {
 	}
 	state.mainHWND = syscall.Handle(hwnd)
 	state.createControls()
-	state.presentMainWindow()
+	state.presentMainWindowAfterLaunch()
 	go func() {
 		codeMap, err := reverselookup.LoadSharedCodeMap(state.sharedDir)
 		time.Sleep(10 * time.Millisecond)
@@ -234,10 +255,6 @@ func runApp(state *appState) error {
 		ret, _, _ := procGetMessageW.Call(uintptr(unsafe.Pointer(&message)), 0, 0, 0)
 		if int32(ret) <= 0 {
 			break
-		}
-		isDialog, _, _ := procIsDialogMessageW.Call(uintptr(state.mainHWND), uintptr(unsafe.Pointer(&message)))
-		if isDialog != 0 {
-			continue
 		}
 		procTranslateMessageW.Call(uintptr(unsafe.Pointer(&message)))
 		procDispatchMessageW.Call(uintptr(unsafe.Pointer(&message)))
@@ -256,7 +273,7 @@ func (state *appState) createControls() {
 		{"添加", idBtnAdd},
 		{"编辑", idBtnEdit},
 		{"删除", idBtnDelete},
-		{"设权重", idBtnSetWeight},
+		{"权重", idBtnSetWeight},
 		{"撤销", idBtnUndo},
 		{"应用", idBtnApply},
 		{"导入", idBtnImport},
@@ -283,8 +300,7 @@ func (state *appState) createControls() {
 
 	state.sortDirectionHWND = createButton(state.mainHWND, "升序", rect{708, 68, 764, 94}, idSortDirection)
 
-	listStyle := int32(0x50208121) // child|visible|border|vscroll|notify|hasstrings|extendedsel|multiplesel
-	state.listHWND = createControl("LISTBOX", "", listStyle, rect{margin, 100, 772, 380}, state.mainHWND, idEntryList)
+	state.listHWND = createControl("LISTBOX", "", entryListStyle, rect{margin, 100, 772, 380}, state.mainHWND, idEntryList)
 
 	state.selectionHWND = createStatic(state.mainHWND, "未选中词条", rect{margin, 388, 772, 408}, idSelectionLabel)
 	state.summaryHWND = createStatic(state.mainHWND, "", rect{margin, 412, 772, 452}, idSummaryLabel)
@@ -310,6 +326,15 @@ func (state *appState) wndProc(hwnd syscall.Handle, message uint32, wParam, lPar
 	case wmAppShowError:
 		showMessageBox(state.readQueuedError(lParam), 0x10)
 		return 0
+	case win32ui.WmDeferredPresent:
+		win32ui.PresentMainWindow(state.mainHWND)
+		return 0
+	case 0x0006: // WM_ACTIVATE
+		if win32ui.IsActivateMessage(wParam) {
+			win32ui.RedrawChildrenNow(state.mainHWND)
+		}
+		ret, _, _ := procDefWindowProcW.Call(uintptr(hwnd), uintptr(message), wParam, lParam)
+		return ret
 	case 0x0203: // WM_LBUTTONDBLCLK
 		if uintptr(hwnd) == uintptr(state.listHWND) {
 			state.editSelected()
@@ -327,7 +352,7 @@ func (state *appState) wndProc(hwnd syscall.Handle, message uint32, wParam, lPar
 		return 0
 	case 0x0018: // WM_SHOWWINDOW
 		if wParam != 0 && lParam == 0 {
-			state.ensureRestored()
+			state.presentMainWindow()
 		}
 		ret, _, _ := procDefWindowProcW.Call(uintptr(hwnd), uintptr(message), wParam, lParam)
 		return ret
@@ -350,7 +375,7 @@ func (state *appState) readQueuedError(_ uintptr) string {
 func (state *appState) handleCommand(wParam, _ uintptr) {
 	id := int(wParam & 0xffff)
 	notify := int((wParam >> 16) & 0xffff)
-	if id == idSearchEdit && notify == 1 {
+	if id == idSearchEdit && notify == enChange {
 		state.refreshList()
 		return
 	}
@@ -396,6 +421,9 @@ func (state *appState) onCodeMapLoaded() {
 		setWindowText(state.statusHWND, "编码表加载失败："+state.codeMapErr.Error())
 		return
 	}
+	if _, err := userlexicon.HydrateSourceIfEmpty(state.userDir, state.mode, state.codeMap); err != nil {
+		setWindowText(state.statusHWND, "同步用户词库失败："+err.Error())
+	}
 	state.refreshList()
 }
 
@@ -410,12 +438,11 @@ func (state *appState) requireCodeMap() error {
 }
 
 func (state *appState) presentMainWindow() {
-	hwnd := uintptr(state.mainHWND)
-	state.ensureRestored()
-	procBringWindowToTop.Call(hwnd)
-	procSetForegroundWindow.Call(hwnd)
-	procShowWindow.Call(hwnd, swShowNormal)
-	procUpdateWindow.Call(hwnd)
+	win32ui.PresentMainWindow(state.mainHWND)
+}
+
+func (state *appState) presentMainWindowAfterLaunch() {
+	win32ui.PresentMainWindowAfterLaunch(state.mainHWND)
 }
 
 func (state *appState) ensureRestored() {
