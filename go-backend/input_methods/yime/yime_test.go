@@ -1061,6 +1061,7 @@ func TestYimeCommandIDsStayOutOfLowHostCollisionRange(t *testing.T) {
 		ID_HELP_TRIAL_FEEDBACK,
 		ID_HELP_COPY_TRIAL_TEMPLATE,
 		ID_HELP_TOOL_HUB,
+		ID_REVERSE_LOOKUP_TOOL,
 		ID_CANDIDATE_PAGE_SIZE_5,
 		ID_CANDIDATE_PAGE_SIZE_6,
 		ID_CANDIDATE_PAGE_SIZE_7,
@@ -2402,7 +2403,7 @@ func TestBuildToolHubManifestProvidesExtensibleToolEntries(t *testing.T) {
 		`C:\help`,
 		`C:\logs`,
 		`C:\user\lexicon.ps1`,
-		`C:\user\reverse_lookup.ps1`,
+		`C:\go-backend\reverse-lookup.exe`,
 		`C:\user\settings.ps1`,
 		`C:\user\diagnostics.ps1`,
 		"variable",
@@ -2410,7 +2411,7 @@ func TestBuildToolHubManifestProvidesExtensibleToolEntries(t *testing.T) {
 	if err := validateToolHubManifest(manifest); err != nil {
 		t.Fatalf("expected valid tool hub manifest, got %v", err)
 	}
-	if manifest.Title != "Yime Tool Hub" {
+	if manifest.Title != "Yime 工具箱" {
 		t.Fatalf("expected tool hub title, got %#v", manifest.Title)
 	}
 	if len(manifest.Tools) < 11 {
@@ -2434,7 +2435,7 @@ func TestBuildToolHubManifestProvidesExtensibleToolEntries(t *testing.T) {
 			required[tool.ID] = true
 		}
 		switch tool.ID {
-		case "lexicon-manager", "reverse-lookup-tool", "settings-tool", "diagnostics-tool":
+		case "lexicon-manager", "settings-tool", "diagnostics-tool":
 			if tool.ActionType != toolActionRunPowerShell {
 				t.Fatalf("expected %s to launch the script directly, got %#v", tool.ID, tool)
 			}
@@ -2442,10 +2443,6 @@ func TestBuildToolHubManifestProvidesExtensibleToolEntries(t *testing.T) {
 			case "lexicon-manager":
 				if tool.TargetPath != `C:\user\lexicon.ps1` {
 					t.Fatalf("expected lexicon-manager script path to be preserved, got %#v", tool)
-				}
-			case "reverse-lookup-tool":
-				if tool.TargetPath != `C:\user\reverse_lookup.ps1` {
-					t.Fatalf("expected reverse-lookup-tool script path to be preserved, got %#v", tool)
 				}
 			case "settings-tool":
 				if tool.TargetPath != `C:\user\settings.ps1` {
@@ -2461,6 +2458,19 @@ func TestBuildToolHubManifestProvidesExtensibleToolEntries(t *testing.T) {
 			}
 			if !tool.CloseAfterLaunch {
 				t.Fatalf("expected %s to close the tool hub after launch, got %#v", tool.ID, tool)
+			}
+		case "reverse-lookup-tool":
+			if tool.ActionType != toolActionRunExecutable {
+				t.Fatalf("expected reverse-lookup-tool to launch native executable, got %#v", tool)
+			}
+			if tool.TargetPath != `C:\go-backend\reverse-lookup.exe` {
+				t.Fatalf("expected reverse-lookup-tool executable path to be preserved, got %#v", tool)
+			}
+			if len(tool.Arguments) < 6 || tool.Arguments[0] != "-SharedDir" || tool.Arguments[2] != "-UserDir" || tool.Arguments[4] != "-Mode" {
+				t.Fatalf("expected reverse-lookup-tool executable arguments, got %#v", tool.Arguments)
+			}
+			if !tool.CloseAfterLaunch {
+				t.Fatalf("expected reverse-lookup-tool to close the tool hub after launch, got %#v", tool)
 			}
 		default:
 			if tool.CloseAfterLaunch {
@@ -2572,13 +2582,21 @@ func TestOnCommandSchedulesStandaloneToolsOutsideTSFCallback(t *testing.T) {
 		t.Fatalf("expected tool-hub command to be handled, got %d", respToolHub.ReturnValue)
 	}
 
-	if scheduled != 2 {
-		t.Fatalf("expected both standalone-tool commands to be scheduled asynchronously, got %d", scheduled)
+	respReverseLookup := ime.onCommand(&pime.Request{
+		SeqNum: 90,
+		ID:     pime.FlexibleID{Int: ID_REVERSE_LOOKUP_TOOL, IsInt: true},
+	}, pime.NewResponse(90, true))
+	if respReverseLookup.ReturnValue != 1 {
+		t.Fatalf("expected reverse-lookup command to be handled, got %d", respReverseLookup.ReturnValue)
+	}
+
+	if scheduled != 3 {
+		t.Fatalf("expected all standalone-tool commands to be scheduled asynchronously, got %d", scheduled)
 	}
 	if runs != 0 {
 		t.Fatalf("expected no standalone tool to launch synchronously inside onCommand, got %d immediate runs", runs)
 	}
-	if respLexicon.ShowCandidates || respToolHub.ShowCandidates {
+	if respLexicon.ShowCandidates || respToolHub.ShowCandidates || respReverseLookup.ShowCandidates {
 		t.Fatalf("expected standalone-tool commands not to refresh candidate UI during TSF callback")
 	}
 }
@@ -2818,6 +2836,7 @@ func TestAddButtonsIncludesTopLevelMenuButtons(t *testing.T) {
 	want := map[string]bool{
 		"candidate-layout": false,
 		"lexicon-manager":  false,
+		"reverse-lookup":   false,
 		"tools":            false,
 	}
 	for _, button := range resp.AddButton {
@@ -2844,6 +2863,16 @@ func TestAddButtonsIncludesTopLevelMenuButtons(t *testing.T) {
 			if button.CommandID != ID_USER_LEXICON_MANAGER {
 				t.Fatalf("expected lexicon-manager button to carry ID_USER_LEXICON_MANAGER, got %#v", button)
 			}
+		case "reverse-lookup":
+			if button.Type != "button" {
+				t.Fatalf("expected reverse-lookup to be a direct button, got %#v", button)
+			}
+			if button.CommandID != ID_REVERSE_LOOKUP_TOOL {
+				t.Fatalf("expected reverse-lookup button to carry ID_REVERSE_LOOKUP_TOOL, got %#v", button)
+			}
+			if button.Text != "反查编码" {
+				t.Fatalf("expected reverse-lookup button text 反查编码, got %#v", button)
+			}
 		case "tools":
 			// The former 帮助 menu became a single 工具 button that opens the
 			// aggregated tool hub directly. It must carry ID_HELP_TOOL_HUB so the
@@ -2869,12 +2898,9 @@ func TestAddButtonsIncludesTopLevelMenuButtons(t *testing.T) {
 		}
 	}
 
-	// The slimmed language bar must no longer expose a standalone reverse-lookup
-	// button (now a 设置 submenu) or a 帮助 menu (now the 工具 button).
+	// The former 帮助 menu became a single 工具 button; reverse-lookup is now a
+	// direct language-bar button again for fast native lookup.
 	for _, button := range resp.AddButton {
-		if button.ID == "reverse-lookup" {
-			t.Fatalf("expected reverse-lookup to move into the settings menu, still present as %#v", button)
-		}
 		if button.ID == "help" {
 			t.Fatalf("expected 帮助 menu to be replaced by the 工具 button, still present as %#v", button)
 		}
@@ -2895,7 +2921,7 @@ func TestAddButtonsIncludesTopLevelMenuButtons(t *testing.T) {
 // The buttons must still carry text as a fallback when the icon is missing.
 func TestUserLexiconAndToolsButtonsUseIcons(t *testing.T) {
 	iconDir := t.TempDir()
-	for _, name := range []string{"lexicon.ico", "tools.ico"} {
+	for _, name := range []string{"lexicon.ico", "tools.ico", "reverse-lookup.ico"} {
 		if err := os.WriteFile(filepath.Join(iconDir, name), []byte("icon"), 0o644); err != nil {
 			t.Fatalf("failed to seed icon %s: %v", name, err)
 		}
@@ -2908,6 +2934,7 @@ func TestUserLexiconAndToolsButtonsUseIcons(t *testing.T) {
 
 	wantIcon := map[string]string{
 		"lexicon-manager": filepath.Join(iconDir, "lexicon.ico"),
+		"reverse-lookup":  filepath.Join(iconDir, "reverse-lookup.ico"),
 		"tools":           filepath.Join(iconDir, "tools.ico"),
 	}
 	seen := map[string]bool{}
@@ -2936,7 +2963,7 @@ func TestUserLexiconAndToolsButtonsUseIcons(t *testing.T) {
 	resp = pime.NewResponse(22, true)
 	ime.addButtons(resp)
 	for _, button := range resp.AddButton {
-		if button.ID == "lexicon-manager" || button.ID == "tools" {
+		if button.ID == "lexicon-manager" || button.ID == "tools" || button.ID == "reverse-lookup" {
 			if button.Icon != "" {
 				t.Fatalf("expected %s button to have no icon when the file is missing, got %#v", button.ID, button)
 			}
@@ -2959,8 +2986,7 @@ func TestOnMenuReturnsTopLevelLayoutAndUserLexiconMenus(t *testing.T) {
 		t.Fatalf("expected empty candidate layout menu (toggle is now a button), got %#v", layoutResp.ReturnData)
 	}
 
-	// reverse-lookup is no longer a top-level language-bar menu; it now lives as
-	// a 显示编码 submenu inside 设置. Opening it as a button must be a no-op.
+	// reverse-lookup is a direct language-bar button; opening it as a menu must be a no-op.
 	reverseResp := ime.onMenu(&pime.Request{
 		SeqNum: 18,
 		ID:     pime.FlexibleID{String: "reverse-lookup"},
