@@ -358,11 +358,11 @@ func (ime *IME) onCommand(req *pime.Request, resp *pime.Response) *pime.Response
 	switch commandID {
 	case ID_ASCII_MODE, ID_MODE_ICON:
 		ime.toggleOption("ascii_mode")
-		ime.changeLangBarAsciiButton(resp)
+		ime.updateLangBarToggleButtons(resp)
 		ime.updateWindowsModeIcon(req, resp)
 	case ID_FULL_SHAPE:
 		ime.toggleOption("full_shape")
-		ime.changeLangBarShapeButton(resp)
+		ime.updateLangBarToggleButtons(resp)
 		ime.updateWindowsModeIcon(req, resp)
 	case ID_ASCII_PUNCT:
 		ime.toggleOption("ascii_punct")
@@ -434,7 +434,7 @@ func (ime *IME) onCommand(req *pime.Request, resp *pime.Response) *pime.Response
 		}
 	case ID_CANDIDATE_LAYOUT_TOGGLE:
 		ime.setCandidateLayout(ime.style.CandidatePerRow <= verticalCandidatesPerRow, resp)
-		ime.changeLangBarCandidateLayoutButton(resp)
+		ime.updateLangBarToggleButtons(resp)
 	default:
 		log.Printf("未知命令: %d", commandID)
 		resp.ReturnValue = 0
@@ -1025,39 +1025,81 @@ func (ime *IME) setCandidateLayout(horizontal bool, resp *pime.Response) {
 	}
 }
 
-func (ime *IME) appendLangBarButtonChange(resp *pime.Response, id, text, iconName string) {
+const (
+	langBarToggleLangLabel   = "中西切换"
+	langBarToggleShapeLabel  = "全半切换"
+	langBarToggleLayoutLabel = "横竖切换"
+)
+
+func (ime *IME) appendLangBarToggleAddButtons(resp *pime.Response) {
+	if resp == nil || !ime.style.DisplayTrayIcon || ime.backend == nil {
+		return
+	}
+	asciiMode := ime.backend.GetOption("ascii_mode")
+	fullShape := ime.backend.GetOption("full_shape")
+	horizontal := ime.style.CandidatePerRow > verticalCandidatesPerRow
+
+	langButton := pime.ButtonInfo{
+		ID:        "switch-lang",
+		Text:      langBarToggleLangLabel,
+		Tooltip:   langBarToggleLangLabel,
+		CommandID: ID_ASCII_MODE,
+		Type:      "button",
+	}
+	if iconPath := ime.iconPath(langIconName(asciiMode)); iconPath != "" {
+		langButton.Icon = iconPath
+	}
+	resp.AddButton = append(resp.AddButton, langButton)
+
+	shapeButton := pime.ButtonInfo{
+		ID:        "switch-shape",
+		Text:      langBarToggleShapeLabel,
+		Tooltip:   langBarToggleShapeLabel,
+		CommandID: ID_FULL_SHAPE,
+		Type:      "button",
+	}
+	if iconPath := ime.iconPath(shapeIconName(fullShape)); iconPath != "" {
+		shapeButton.Icon = iconPath
+	}
+	resp.AddButton = append(resp.AddButton, shapeButton)
+
+	layoutButton := pime.ButtonInfo{
+		ID:        "candidate-layout",
+		Text:      langBarToggleLayoutLabel,
+		Tooltip:   langBarToggleLayoutLabel,
+		CommandID: ID_CANDIDATE_LAYOUT_TOGGLE,
+		Type:      "button",
+	}
+	if iconPath := ime.iconPath(candidateLayoutIconName(horizontal)); iconPath != "" {
+		layoutButton.Icon = iconPath
+	}
+	resp.AddButton = append(resp.AddButton, layoutButton)
+}
+
+func (ime *IME) appendLangBarButtonChange(resp *pime.Response, id, iconName string) {
 	if resp == nil || !ime.style.DisplayTrayIcon {
 		return
 	}
-	change := pime.ButtonInfo{
+	iconPath := ime.iconPath(iconName)
+	if iconPath == "" {
+		return
+	}
+	resp.ChangeButton = append(resp.ChangeButton, pime.ButtonInfo{
 		ID:   id,
-		Text: text,
-	}
-	if iconPath := ime.iconPath(iconName); iconPath != "" {
-		change.Icon = iconPath
-	}
-	resp.ChangeButton = append(resp.ChangeButton, change)
+		Icon: iconPath,
+	})
 }
 
-func (ime *IME) changeLangBarAsciiButton(resp *pime.Response) {
+func (ime *IME) updateLangBarToggleButtons(resp *pime.Response) {
 	if ime.backend == nil {
 		return
 	}
 	asciiMode := ime.backend.GetOption("ascii_mode")
-	ime.appendLangBarButtonChange(resp, "switch-lang", langButtonText(asciiMode), langIconName(asciiMode))
-}
-
-func (ime *IME) changeLangBarShapeButton(resp *pime.Response) {
-	if ime.backend == nil {
-		return
-	}
 	fullShape := ime.backend.GetOption("full_shape")
-	ime.appendLangBarButtonChange(resp, "switch-shape", shapeButtonText(fullShape), shapeIconName(fullShape))
-}
-
-func (ime *IME) changeLangBarCandidateLayoutButton(resp *pime.Response) {
 	horizontal := ime.style.CandidatePerRow > verticalCandidatesPerRow
-	ime.appendLangBarButtonChange(resp, "candidate-layout", candidateLayoutButtonText(horizontal), candidateLayoutIconName(horizontal))
+	ime.appendLangBarButtonChange(resp, "switch-lang", langIconName(asciiMode))
+	ime.appendLangBarButtonChange(resp, "switch-shape", shapeIconName(fullShape))
+	ime.appendLangBarButtonChange(resp, "candidate-layout", candidateLayoutIconName(horizontal))
 }
 
 func (ime *IME) updateWindowsModeIcon(req *pime.Request, resp *pime.Response) {
@@ -1109,40 +1151,7 @@ func (ime *IME) addButtons(resp *pime.Response) {
 			})
 		}
 	}
-	langButton := pime.ButtonInfo{
-		ID:        "switch-lang",
-		Text:      langButtonText(asciiMode),
-		Tooltip:   "中西文切换",
-		CommandID: ID_ASCII_MODE,
-	}
-	if iconPath := ime.iconPath(langIconName(asciiMode)); iconPath != "" {
-		langButton.Icon = iconPath
-	}
-	resp.AddButton = append(resp.AddButton, langButton)
-
-	shapeButton := pime.ButtonInfo{
-		ID:        "switch-shape",
-		Text:      shapeButtonText(fullShape),
-		Tooltip:   "全半宽切换",
-		CommandID: ID_FULL_SHAPE,
-	}
-	if iconPath := ime.iconPath(shapeIconName(fullShape)); iconPath != "" {
-		shapeButton.Icon = iconPath
-	}
-	resp.AddButton = append(resp.AddButton, shapeButton)
-
-	horizontal := ime.style.CandidatePerRow > verticalCandidatesPerRow
-	layoutButton := pime.ButtonInfo{
-		ID:        "candidate-layout",
-		Text:      candidateLayoutButtonText(horizontal),
-		Tooltip:   "横竖排切换",
-		CommandID: ID_CANDIDATE_LAYOUT_TOGGLE,
-		Type:      "button",
-	}
-	if iconPath := ime.iconPath(candidateLayoutIconName(horizontal)); iconPath != "" {
-		layoutButton.Icon = iconPath
-	}
-	resp.AddButton = append(resp.AddButton, layoutButton)
+	ime.appendLangBarToggleAddButtons(resp)
 	lexiconButton := pime.ButtonInfo{
 		ID:        "lexicon-manager",
 		Text:      "用户词库",
@@ -2517,27 +2526,6 @@ func modeIconName(asciiMode, fullShape, capsOn bool) string {
 		caps = "on"
 	}
 	return lang + "_" + shape + "_caps" + caps + ".ico"
-}
-
-func langButtonText(asciiMode bool) string {
-	if asciiMode {
-		return "西文"
-	}
-	return "中文"
-}
-
-func shapeButtonText(fullShape bool) string {
-	if fullShape {
-		return "全宽"
-	}
-	return "半宽"
-}
-
-func candidateLayoutButtonText(horizontal bool) string {
-	if horizontal {
-		return "横排"
-	}
-	return "竖排"
 }
 
 func langIconName(asciiMode bool) string {

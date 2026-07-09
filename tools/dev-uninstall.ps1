@@ -53,7 +53,7 @@ function Stop-ProcessByPathPrefix {
     }
 }
 
-function Remove-RegistryValue {
+function Get-TextServiceDllUsers {
     $output = @(& tasklist.exe /m PIMETextService.dll 2>$null)
     if ($LASTEXITCODE -eq 0 -and $output.Count -gt 1) {
         return $output

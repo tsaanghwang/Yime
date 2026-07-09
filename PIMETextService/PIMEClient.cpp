@@ -253,19 +253,7 @@ void Client::updateComposition(json& msg, Ime::EditSession* session, bool& endCo
 }
 
 void Client::updateLanguageButtons(json& msg) {
-	// language buttons
-	auto& addButtonVal = msg["addButton"];
-	if (addButtonVal.is_array()) {
-		for (auto& btn : addButtonVal) {
-			// FIXME: when to clear the id <=> button map??
-			auto langBtn = Ime::ComPtr<PIME::LangBarButton>::takeover(PIME::LangBarButton::fromJson(textService_, btn));
-			if (langBtn != nullptr) {
-				buttons_.emplace(langBtn->id(), langBtn); // insert into the map
-				textService_->addButton(langBtn);
-			}
-		}
-	}
-
+	// Remove stale buttons before applying updates or re-adding replacements.
 	const auto& removeButtonVal = msg["removeButton"];
 	if (removeButtonVal.is_array()) {
 		// FIXME: handle windows-mode-icon
@@ -280,6 +268,7 @@ void Client::updateLanguageButtons(json& msg) {
 			}
 		}
 	}
+
 	auto& changeButtonVal = msg["changeButton"];
 	if (changeButtonVal.is_array()) {
 		// FIXME: handle windows-mode-icon
@@ -290,6 +279,19 @@ void Client::updateLanguageButtons(json& msg) {
 				if (map_it != buttons_.end()) {
 					map_it->second->updateFromJson(btn);
 				}
+			}
+		}
+	}
+
+	// language buttons
+	auto& addButtonVal = msg["addButton"];
+	if (addButtonVal.is_array()) {
+		for (auto& btn : addButtonVal) {
+			// FIXME: when to clear the id <=> button map??
+			auto langBtn = Ime::ComPtr<PIME::LangBarButton>::takeover(PIME::LangBarButton::fromJson(textService_, btn));
+			if (langBtn != nullptr) {
+				buttons_.emplace(langBtn->id(), langBtn); // insert into the map
+				textService_->addButton(langBtn);
 			}
 		}
 	}
