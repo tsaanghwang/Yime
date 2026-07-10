@@ -372,7 +372,7 @@ func (state *appState) setSelectedWeights() {
 
 func (state *appState) undoLastChange() {
 	if state.lastUndoEntries == nil {
-		showMessageBox("当前没有可撤销的最近一次源词库改动。", 0x10)
+		showNoticeDialog(state.mainHWND, "撤销", "当前没有可撤销的最近一次源词库改动。")
 		return
 	}
 	if err := userlexicon.WriteSourceEntries(state.sourcePath, state.lastUndoEntries); err != nil {
