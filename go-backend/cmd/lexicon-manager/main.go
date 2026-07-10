@@ -93,7 +93,7 @@ var (
 	procGetSystemMetrics      = moduser32.NewProc("GetSystemMetrics")
 	procGetDC                 = moduser32.NewProc("GetDC")
 	procReleaseDC             = moduser32.NewProc("ReleaseDC")
-	procMessageBoxW           = moduser32.NewProc("MessageBoxW")
+	procGetActiveWindow       = moduser32.NewProc("GetActiveWindow")
 	procPostMessageW          = moduser32.NewProc("PostMessageW")
 	procShowWindow            = moduser32.NewProc("ShowWindow")
 	procUpdateWindow          = moduser32.NewProc("UpdateWindow")
@@ -604,9 +604,23 @@ func windowSizeForClient(clientW, clientH int32) (winW, winH int32) {
 }
 
 func showMessageBox(message string, flags uintptr) {
-	text, _ := syscall.UTF16PtrFromString(message)
-	title, _ := syscall.UTF16PtrFromString("词库管理")
-	procMessageBoxW.Call(0, uintptr(unsafe.Pointer(text)), uintptr(unsafe.Pointer(title)), flags)
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	owner, _, _ := procGetActiveWindow.Call()
+	showNoticeDialog(syscall.Handle(owner), noticeTitleForFlags(flags), message)
+}
+
+func noticeTitleForFlags(flags uintptr) string {
+	switch flags & 0xF0 {
+	case 0x10:
+		return "操作失败"
+	case 0x30:
+		return "提示"
+	case 0x40:
+		return "操作完成"
+	default:
+		return "词库管理"
+	}
 }
 
 func setWindowText(hwnd syscall.Handle, text string) {

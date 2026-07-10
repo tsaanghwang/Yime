@@ -75,3 +75,20 @@ func TestWeightAdjustmentRectsFillContentRow(t *testing.T) {
 		t.Fatalf("step input has invalid width: %#v", step)
 	}
 }
+
+func TestNoticeTitleForFlags(t *testing.T) {
+	tests := []struct {
+		flags uintptr
+		want  string
+	}{
+		{flags: 0x10, want: "操作失败"},
+		{flags: 0x30, want: "提示"},
+		{flags: 0x40, want: "操作完成"},
+		{flags: 0, want: "词库管理"},
+	}
+	for _, test := range tests {
+		if got := noticeTitleForFlags(test.flags); got != test.want {
+			t.Fatalf("noticeTitleForFlags(%#x) = %q, want %q", test.flags, got, test.want)
+		}
+	}
+}
