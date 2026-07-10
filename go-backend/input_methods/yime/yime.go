@@ -172,6 +172,9 @@ type IME struct {
 	candidatePageSize        int
 	pendingSchemaRedeploy    string
 	runtimeChangeRevision    int64
+	settingsChangeRevision   int64
+	lexiconChangeRevision    int64
+	redeployChangeRevision   int64
 	candidatePageStart       int
 	candidateBackendIndexMap []int
 	keysDown                 map[int]bool
@@ -633,7 +636,7 @@ func (ime *IME) Init(req *pime.Request) bool {
 	}
 	userDir := filepath.Join(appData, APP, "Rime")
 	if event, err := runtimechange.Read(userDir); err == nil {
-		ime.runtimeChangeRevision = event.Revision
+		ime.recordRuntimeChange(event)
 	}
 
 	real := createRimeBackend()
@@ -657,19 +660,29 @@ func (ime *IME) pollRuntimeChange() {
 	if err != nil || event.Revision <= ime.runtimeChangeRevision {
 		return
 	}
-	ime.runtimeChangeRevision = event.Revision
-	if event.Scope == runtimechange.ScopeSettings {
+	if event.SettingsRevision > ime.settingsChangeRevision {
 		ime.syncStandaloneUISettings()
+		ime.settingsChangeRevision = event.SettingsRevision
 	}
-	if event.Scope == runtimechange.ScopeLexicon {
+	if event.LexiconRevision > ime.lexiconChangeRevision {
 		ime.reversePinyinLoaded = map[string]bool{}
 		ime.reversePinyinBySchema = map[string]map[string]string{}
 		ime.yimePinyinLoaded = map[string]bool{}
 		ime.yimePinyinBySchema = map[string]map[string]string{}
+		ime.lexiconChangeRevision = event.LexiconRevision
 	}
-	if event.RequiresRedeploy && ime.backend != nil {
+	if event.RedeployRevision > ime.redeployChangeRevision && ime.backend != nil {
 		ime.pendingSchemaRedeploy = ime.currentSchemaID()
 	}
+	ime.redeployChangeRevision = event.RedeployRevision
+	ime.runtimeChangeRevision = event.Revision
+}
+
+func (ime *IME) recordRuntimeChange(event runtimechange.Event) {
+	ime.runtimeChangeRevision = event.Revision
+	ime.settingsChangeRevision = event.SettingsRevision
+	ime.lexiconChangeRevision = event.LexiconRevision
+	ime.redeployChangeRevision = event.RedeployRevision
 }
 
 func (ime *IME) Close() {

@@ -148,6 +148,28 @@ sort: by_weight
 | reverse_lookup_display_mode | `hidden`、`standard_pinyin`、`yime_pinyin`、`key_sequence` | `key_sequence` | 候选窗反查注释显示模式 |
 | candidate_layout | `vertical`、`horizontal` | `vertical` | 候选排列方向 |
 
+### yime_runtime_change.json
+
+独立工具通知活动输入会话刷新设置、词库缓存或 Rime 部署状态的广播标记。它不是单消费者队列，每个 IME 会话独立记录已处理的修订号。
+
+```json
+{
+  "revision": 1700000000000000000,
+  "settings_revision": 1700000000000000000,
+  "lexicon_revision": 1699999999999999999,
+  "redeploy_revision": 1700000000000000000
+}
+```
+
+| 字段 | 说明 |
+|------|------|
+| revision | 最近一次任意变更的单调修订号 |
+| settings_revision | 最近一次设置变更修订号；没有时省略 |
+| lexicon_revision | 最近一次词库变更修订号；没有时省略 |
+| redeploy_revision | 最近一次要求重新部署的修订号；没有时省略 |
+
+兼容旧格式中的 `scope` 和 `requires_redeploy`；读取时会把旧标记映射到对应修订号。写入由 `.yime-runtime-change.lock` 跨进程串行化，锁文件只在更新期间短暂存在。无法解析的旧标记会备份为 `yime_runtime_change.json.corrupt` 后重建，便于诊断而不阻断后续通知。
+
 ### yime_variable.custom.yaml / yime_full.custom.yaml / yime_shorthand.custom.yaml
 
 Rime 方案自定义配置，由设置工具和候选数设置写入。

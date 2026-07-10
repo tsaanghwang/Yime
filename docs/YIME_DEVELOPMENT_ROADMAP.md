@@ -2,7 +2,7 @@
 
 > 版本：2026-07-10
 > 分支：yime-stable
-> 配套文档：[可用性评估](YIME_USABILITY_ASSESSMENT.md) | [架构文档](YIME_ARCHITECTURE.md)
+> 配套文档：[项目综合评估](YIME_PROJECT_ASSESSMENT.md) | [可用性评估](YIME_USABILITY_ASSESSMENT.md) | [架构文档](YIME_ARCHITECTURE.md)
 
 ---
 
@@ -221,7 +221,7 @@ setCandidatePageSize(size)
 | 5.3 | 默认 candidatePageSize 限制为 5 | 避免超出选择键数量 | 无 |
 | 5.4 | 词语字频回退排序 | 无 BCC 词频时用组成字频率估计，改善 weight=1 词语间排序 | Yime-python-prototype 管线 |
 | 5.5 | 组字时数字键选词模式 | 可配置，数字键在"选词"和"编码"间切换 | 编码体系配合 |
-| 5.6 | 独立工具通知活动输入会话 | ✅ | 原子变更标记；设置同步、词库缓存清理和按需 redeploy |
+| 5.6 | 独立工具通知活动输入会话 | ✅ | 跨进程锁与累积修订标记；设置同步、词库缓存清理和按需 redeploy |
 | 5.7 | 根包测试隔离 | ✅ | 可替换后端工厂、语义断言；全量根包测试进入 CI |
 | 5.8 | 清理语言栏实验代码 | ✅ | 移除原生 sort/fixed-GUID，保留静态标签并增加源码守卫 |
 

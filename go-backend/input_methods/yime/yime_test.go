@@ -403,6 +403,50 @@ func TestRuntimeLexiconChangeClearsCachesAndSchedulesRedeploy(t *testing.T) {
 	}
 }
 
+func TestRuntimeChangesPreserveLexiconAndSettingsBeforePolling(t *testing.T) {
+	root := t.TempDir()
+	t.Setenv("APPDATA", root)
+	userDir := filepath.Join(root, APP, "Rime")
+	if err := settings.WriteState(userDir, settings.State{ReverseLookupDisplayMode: "hidden", CandidateLayout: "vertical"}); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := runtimechange.Notify(userDir, runtimechange.ScopeLexicon, true); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := runtimechange.Notify(userDir, runtimechange.ScopeSettings, false); err != nil {
+		t.Fatal(err)
+	}
+	ime := newTestIME()
+	ime.reversePinyinLoaded["yime_variable"] = true
+	ime.yimePinyinLoaded["yime_variable"] = true
+	ime.pollRuntimeChange()
+	if ime.reverseLookupDisplayMode != "hidden" || ime.style.CandidatePerRow != verticalCandidatesPerRow {
+		t.Fatal("expected the settings notification to be applied")
+	}
+	if len(ime.reversePinyinLoaded) != 0 || len(ime.yimePinyinLoaded) != 0 {
+		t.Fatal("expected the earlier lexicon notification to clear caches")
+	}
+	if ime.pendingSchemaRedeploy != "yime_variable" {
+		t.Fatalf("expected the earlier lexicon notification to schedule redeploy, got %q", ime.pendingSchemaRedeploy)
+	}
+}
+
+func TestRuntimeChangeIsObservedByMultipleIMESessions(t *testing.T) {
+	root := t.TempDir()
+	t.Setenv("APPDATA", root)
+	userDir := filepath.Join(root, APP, "Rime")
+	if _, err := runtimechange.Notify(userDir, runtimechange.ScopeLexicon, true); err != nil {
+		t.Fatal(err)
+	}
+	first := newTestIME()
+	second := newTestIME()
+	first.pollRuntimeChange()
+	second.pollRuntimeChange()
+	if first.pendingSchemaRedeploy != "yime_variable" || second.pendingSchemaRedeploy != "yime_variable" {
+		t.Fatalf("all sessions must observe the marker: first=%q second=%q", first.pendingSchemaRedeploy, second.pendingSchemaRedeploy)
+	}
+}
+
 func TestInitWithMissingUserDirDoesNotPanic(t *testing.T) {
 	t.Setenv("APPDATA", t.TempDir())
 	oldFactory := createRimeBackend

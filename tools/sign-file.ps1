@@ -25,6 +25,27 @@ if ([string]::IsNullOrWhiteSpace($signTool) -or -not (Test-Path -LiteralPath $si
     throw 'signtool.exe was not found. Set YIME_SIGNTOOL_EXE.'
 }
 
+$certificate = @(
+    Get-ChildItem Cert:\CurrentUser\My, Cert:\LocalMachine\My -ErrorAction SilentlyContinue |
+        Where-Object { $_.Thumbprint -eq $thumbprint }
+) | Select-Object -First 1
+if (-not $certificate) {
+    throw "The signing certificate $thumbprint was not found."
+}
+if (-not $certificate.HasPrivateKey) {
+    throw 'The signing certificate does not have an accessible private key.'
+}
+if ($certificate.NotBefore -gt (Get-Date) -or $certificate.NotAfter -le (Get-Date)) {
+    throw 'The signing certificate is outside its validity period.'
+}
+if ($certificate.PublicKey.Oid.Value -ne '1.2.840.113549.1.1.1') {
+    throw 'Yime release signing requires an RSA certificate.'
+}
+$codeSigningOid = '1.3.6.1.5.5.7.3.3'
+if ($certificate.EnhancedKeyUsageList.ObjectId.Value -notcontains $codeSigningOid) {
+    throw 'The signing certificate is not valid for code signing.'
+}
+
 $timestamp = $env:YIME_TIMESTAMP_URL
 if ([string]::IsNullOrWhiteSpace($timestamp)) {
     $timestamp = 'http://timestamp.digicert.com'

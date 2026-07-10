@@ -45,7 +45,7 @@ $env:YIME_SIGNTOOL_EXE = "C:\Program Files (x86)\Windows Kits\10\bin\<version>\x
 $env:YIME_TIMESTAMP_URL = "http://timestamp.digicert.com"
 ```
 
-`YIME_SIGNTOOL_EXE` 和 `YIME_TIMESTAMP_URL` 可省略；脚本会尝试从 `PATH` 查找 `signtool.exe`，并使用默认时间戳服务。正式发布还要设置 `YIME_RELEASE_SIGNING_REQUIRED=1`，缺少证书或任一签名失败都会中止构建。
+`YIME_SIGNTOOL_EXE` 和 `YIME_TIMESTAMP_URL` 可省略；脚本会尝试从 `PATH` 查找 `signtool.exe`，并使用默认时间戳服务。正式发布还要设置 `YIME_RELEASE_SIGNING_REQUIRED=1`，缺少证书或任一签名失败都会中止构建。签名前会验证证书带可访问私钥、位于有效期、使用 RSA 公钥，并包含代码签名 EKU（`1.3.6.1.5.5.7.3.3`）。
 
 需要签名的 Go 文件：
 
@@ -64,7 +64,7 @@ $env:YIME_TIMESTAMP_URL = "http://timestamp.digicert.com"
 .\tools\sign-release.ps1 -RequireComplete
 ```
 
-该脚本覆盖 Go EXE、`rime_deployer.exe`、PIMELauncher 和各架构 TSF DLL。NSIS 的 `!uninstfinalize` 与 `!finalize` 会分别签名卸载程序和最终安装包。
+该脚本覆盖 Go EXE、`rime.dll`、`rime_deployer.exe`、PIMELauncher 和各架构 TSF DLL。NSIS 的 `!uninstfinalize` 与 `!finalize` 会分别签名卸载程序和最终安装包。
 
 验证：
 
@@ -72,9 +72,22 @@ $env:YIME_TIMESTAMP_URL = "http://timestamp.digicert.com"
 .\tools\verify-release-signatures.ps1 -IncludeInstaller
 ```
 
-`Status` 必须为 `Valid`，并确认时间戳和证书链有效。
+`Status` 必须为 `Valid`；验证脚本还会要求签名者指纹等于 `YIME_SIGN_CERT_SHA1`，并确认每个文件都有时间戳证书。
 
-标签 `v*` 会触发正式发布签名门禁。仓库需配置 `YIME_SIGN_CERT_BASE64`（PFX 的 Base64）和 `YIME_SIGN_CERT_PASSWORD`；标签构建缺少密钥会直接失败。PR 与普通分支构建允许未签名测试产物，但不得作为公开发布包。
+标签 `v*` 会触发正式发布签名门禁。仓库需配置 `YIME_SIGN_CERT_BASE64`（PFX 的 Base64）和 `YIME_SIGN_CERT_PASSWORD`；标签构建缺少密钥会直接失败，临时 PFX 在导入后立即删除。标签产物名为 `YIME-signed-installer`；PR 与普通分支产物名为 `YIME-unsigned-test-installer`，不得作为公开发布包。
+
+### 3.1 开发包与证书选择
+
+签名不是本地编译的前置条件。开发者本机和受控测试机可以使用未签名开发包；CI 普通分支也允许产出明确标记的未签名测试安装包。不要为了开发便利移除正式标签的签名门禁。
+
+| 使用场景 | 建议 |
+|----------|------|
+| 本机开发 | 未签名构建即可；只运行自己核对过的源码产物 |
+| 受控团队测试 | 使用内部 PKI、自签名测试证书或设备策略部署信任 |
+| 公开开源发布 | 优先评估 SignPath Foundation 开源签名或 Microsoft Artifact Signing |
+| 商业/组织发布 | 使用受信任 CA 或托管签名服务，并保护私钥/HSM 凭据 |
+
+自签名证书不会被普通用户的 Windows 默认信任，只适合开发和受控环境。公开发行时，签名必须覆盖安装器及其实际启动、加载和安装的内部 EXE/DLL；只签最外层安装包仍可能在安装过程中被 Application Control 阻止。
 
 ## 4. 构建与测试
 
@@ -94,6 +107,7 @@ cmd /c build.bat
 - 安装包版本与 `version.txt` 一致
 - `go-backend/build/go-backend/` 中 8 个 Go EXE 全部存在
 - `input_methods/yime/data/`、`rime.dll`、`rime_deployer.exe` 已打包
+- 打包目录 `input_methods/` 下没有 `.go` 源码或测试文件
 - x86/x64 `PIMETextService.dll` 均存在
 - 安装包和内部二进制签名有效
 - 安装包 SHA-256 已记录在发布说明中

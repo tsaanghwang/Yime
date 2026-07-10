@@ -98,6 +98,7 @@ if exist cmd\my-tool\rsrc_mytool_windows_amd64.syso del cmd\my-tool\rsrc_mytool_
 关键参数：
 - `-H=windowsgui`：隐藏控制台窗口
 - `-trimpath -buildvcs=false`：避免源码路径和每次提交的 VCS 修订号改变未修改工具的文件哈希
+- `go-winres simply --icon input_methods\yime\icon.ico`：所有 Go EXE 使用同一产品图标，构建不得回退到不存在的默认 `winres/icon.png`
 - `--manifest gui`：生成 GUI 应用 manifest（非 CLI）
 - `go-winres` 生成的 `.syso` 文件放在 `cmd/<tool>/` 目录下，编译后立即清理
 

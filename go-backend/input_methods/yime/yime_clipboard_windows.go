@@ -18,6 +18,7 @@ func win32CopyToClipboard(text string) error {
 	globalAlloc := kernel32.NewProc("GlobalAlloc")
 	globalLock := kernel32.NewProc("GlobalLock")
 	globalUnlock := kernel32.NewProc("GlobalUnlock")
+	globalFree := kernel32.NewProc("GlobalFree")
 	rtlMoveMemory := kernel32.NewProc("RtlMoveMemory")
 
 	utf16, err := syscall.UTF16FromString(text)
@@ -31,6 +32,12 @@ func win32CopyToClipboard(text string) error {
 	if hMem == 0 {
 		return syscall.GetLastError()
 	}
+	transferred := false
+	defer func() {
+		if !transferred {
+			globalFree.Call(hMem)
+		}
+	}()
 
 	ptr, _, _ := globalLock.Call(hMem)
 	if ptr == 0 {
@@ -51,5 +58,6 @@ func win32CopyToClipboard(text string) error {
 	if r == 0 {
 		return syscall.GetLastError()
 	}
+	transferred = true
 	return nil
 }

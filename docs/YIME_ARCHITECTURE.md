@@ -1,7 +1,7 @@
 # 音元输入法架构文档
 
 > 版本：2026-07-10
-> 配套文档：[可用性评估](YIME_USABILITY_ASSESSMENT.md) | [开发路线图](YIME_DEVELOPMENT_ROADMAP.md)
+> 配套文档：[项目综合评估](YIME_PROJECT_ASSESSMENT.md) | [可用性评估](YIME_USABILITY_ASSESSMENT.md) | [开发路线图](YIME_DEVELOPMENT_ROADMAP.md)
 
 ---
 
@@ -404,7 +404,8 @@ onCommand / 语言栏按钮
 - `go-backend/build.bat` 与安装包一并产出上述 `.exe`
 - 反查工具保留多音字、即时搜索、加载进度与结果截断提示
 - 设置和词库部署在后台 goroutine 执行，通过 `WM_APP` 回到 UI 线程
-- 成功后写入 `yime_runtime_change.json`；活动 IME 在下一次宿主请求前同步设置、清理词库缓存并按需重新部署
+- 成功后在跨进程锁保护下更新 `yime_runtime_change.json`；文件保存设置、词库和 redeploy 的独立累积修订号，连续通知不会互相覆盖
+- 每个活动 IME 会话独立记录已处理修订号，在下一次宿主请求前同步设置、清理词库缓存并按需重新部署；损坏标记会备份为 `.corrupt` 后重建
 
 ### 2.14 语言栏切换按钮
 
@@ -584,7 +585,7 @@ cmd /c build.bat
 
 本地 ad-hoc 构建落在 `go-backend/*.exe` 时已被 `.gitignore` 忽略。
 
-Go 可执行文件版本取自仓库根目录 `version.txt`，并统一使用 `-trimpath -buildvcs=false`，避免无关提交改变未修改工具的文件哈希。发布流水线通过 `tools/sign-release.ps1`、NSIS `!finalize`/`!uninstfinalize` 和 `tools/verify-release-signatures.ps1` 覆盖内部二进制、安装器及卸载器；Smart App Control 的稳定发布必须使用受信任提供商签发的 RSA 证书，VERSIONINFO 不能替代签名。
+Go 可执行文件版本取自仓库根目录 `version.txt`，并统一使用 `-trimpath -buildvcs=false`，避免无关提交改变未修改工具的文件哈希。8 个 Go EXE 统一嵌入 Yime 图标；打包脚本递归删除复制到输出目录的 `.go` 源码。发布流水线通过 `tools/sign-release.ps1`、NSIS `!finalize`/`!uninstfinalize` 和 `tools/verify-release-signatures.ps1` 覆盖内部二进制、安装器及卸载器；Smart App Control 的稳定发布必须使用受信任提供商签发的 RSA 证书，VERSIONINFO 不能替代签名。
 
 ### 4.3 CI 流水线
 

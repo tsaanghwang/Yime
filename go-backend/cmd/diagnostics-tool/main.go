@@ -80,6 +80,7 @@ var (
 	procGlobalAlloc          = modkernel32.NewProc("GlobalAlloc")
 	procGlobalLock           = modkernel32.NewProc("GlobalLock")
 	procGlobalUnlock         = modkernel32.NewProc("GlobalUnlock")
+	procGlobalFree           = modkernel32.NewProc("GlobalFree")
 	procRtlMoveMemory        = modkernel32.NewProc("RtlMoveMemory")
 
 	wndProcCallback uintptr
@@ -327,6 +328,12 @@ func setClipboardText(text string) error {
 	if mem == 0 {
 		return fmt.Errorf("无法分配剪贴板内存")
 	}
+	transferred := false
+	defer func() {
+		if !transferred {
+			procGlobalFree.Call(mem)
+		}
+	}()
 	lock, _, _ := procGlobalLock.Call(mem)
 	if lock == 0 {
 		return fmt.Errorf("无法锁定剪贴板内存")
@@ -337,6 +344,7 @@ func setClipboardText(text string) error {
 	if r == 0 {
 		return fmt.Errorf("无法写入剪贴板")
 	}
+	transferred = true
 	return nil
 }
 

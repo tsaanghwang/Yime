@@ -45,7 +45,9 @@ CI 当前重点保护：
 
 `go test ./input_methods/yime -timeout 60s` 已进入 CI。普通单元测试通过可替换后端工厂、独立用户目录和语义化 YAML 断言与真实 librime 隔离；不得删除断言、放宽候选分页守卫或默认跳过普通测试来制造绿色结果。
 
-独立工具通知活动会话的文件协议由 `runtimechange` 包测试，设置/词库工具还必须覆盖“成功后通知、失败不通知”。Win32 长任务应把外部部署放在 goroutine，并通过 `WM_APP` 返回 UI 线程。
+独立工具通知活动会话的文件协议由 `runtimechange` 包测试，必须覆盖连续通知、并发写入、旧格式迁移、损坏恢复和多个 IME 会话独立观察；设置/词库工具还必须覆盖“成功后通知、失败不通知”。Win32 长任务应把外部部署放在 goroutine，并通过 `WM_APP` 返回 UI 线程。
+
+运行 `go test ./...` 前后都不应发现 `go-backend/build/go-backend/input_methods` 下残留 `.go` 文件；发布包不得携带复制来的 Go 源码或测试。
 
 ## 4. 真实 Rime 集成测试
 
@@ -108,7 +110,7 @@ cd go-backend
 cmd /c build.bat
 ```
 
-连续构建哈希验证见 [发布与签名指南](YIME_RELEASE_AND_SIGNING.md)。若 `go test` 在 `%TEMP%` 被 Application Control 阻止，可将 `GOCACHE` 和 `GOTMPDIR` 指向工作区；这只解决本地测试执行位置，不替代发布签名。
+连续构建哈希验证见 [发布与签名指南](YIME_RELEASE_AND_SIGNING.md)。`go-backend/build.bat` 在变量未设置时会把 `GOCACHE` 和 `GOTMPDIR` 指向仓库 `.tmp`；手工运行 `go test` 遭 Application Control 阻止时也应使用这两个工作区目录。这只解决本地执行位置，不替代发布签名。
 
 ## 8. 安装态验证
 

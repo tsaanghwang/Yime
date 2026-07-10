@@ -173,6 +173,7 @@ PIMELauncher.exe /console
 
 | 文档 | 说明 |
 |------|------|
+| [项目综合评估](docs/YIME_PROJECT_ASSESSMENT.md) | 两轮全面评估结论、已完成修复、验证证据和剩余风险 |
 | [架构文档](docs/YIME_ARCHITECTURE.md) | 系统架构、关键机制、数据文件 |
 | [可用性评估](docs/YIME_USABILITY_ASSESSMENT.md) | 当前可用性问题及优先级 |
 | [开发路线图](docs/YIME_DEVELOPMENT_ROADMAP.md) | 分阶段路线图、修复流程、AGENTS.md 约束 |

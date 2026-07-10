@@ -175,6 +175,7 @@ Check logs at `%LOCALAPPDATA%\PIME\Logs\go_backend.log`.
 
 | Document | Description |
 |----------|-------------|
+| [Project Assessment](docs/YIME_PROJECT_ASSESSMENT.md) | Consolidated review findings, completed fixes, verification evidence, and remaining risks |
 | [Architecture](docs/YIME_ARCHITECTURE.md) | System architecture, key mechanisms, data files |
 | [Usability Assessment](docs/YIME_USABILITY_ASSESSMENT.md) | Current usability issues and priorities |
 | [Development Roadmap](docs/YIME_DEVELOPMENT_ROADMAP.md) | Phased roadmap, fix workflows, AGENTS.md constraints |

@@ -3,9 +3,8 @@ use pimelauncher::backend_registry::{BackendConfig, BackendRegistry};
 use pimelauncher::pipe_server::PipeServer;
 use std::collections::HashMap;
 use std::fs;
-use std::path::PathBuf;
 use std::time::Duration;
-use tempfile::tempdir;
+use tempfile::{tempdir, TempDir};
 use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
 use tokio::net::windows::named_pipe::{ClientOptions, PipeMode};
 use tokio::time::timeout;
@@ -14,10 +13,7 @@ use pimelauncher::testing::*;
 
 type TestResult = Result<(), Box<dyn std::error::Error + Send + Sync>>;
 
-async fn send_msg<W: tokio::io::AsyncWriteExt + Unpin>(
-    writer: &mut W,
-    msg: &str,
-) -> TestResult {
+async fn send_msg<W: tokio::io::AsyncWriteExt + Unpin>(writer: &mut W, msg: &str) -> TestResult {
     writer.write_all(msg.as_bytes()).await?;
     writer.write_all(b"\n").await?;
     writer.flush().await?;
@@ -33,9 +29,9 @@ async fn read_line<R: tokio::io::AsyncBufReadExt + Unpin>(
     line.ok_or_else(|| "EOF unexpected".into())
 }
 
-async fn setup_test_environment(pipe_name: &str) -> (BackendManager, PathBuf) {
+async fn setup_test_environment(pipe_name: &str) -> (BackendManager, TempDir) {
     let dir = tempdir().unwrap();
-    let pime_root = dir.into_path(); // This prevents the directory from being deleted
+    let pime_root = dir.path().to_path_buf();
 
     let mock_backend_exe = env!("CARGO_BIN_EXE_mock_backend");
 
@@ -87,7 +83,7 @@ async fn setup_test_environment(pipe_name: &str) -> (BackendManager, PathBuf) {
 
     tokio::time::sleep(Duration::from_millis(200)).await;
 
-    (manager, pime_root)
+    (manager, dir)
 }
 
 async fn connect_with_retry(pipe_name: &str) -> tokio::net::windows::named_pipe::NamedPipeClient {

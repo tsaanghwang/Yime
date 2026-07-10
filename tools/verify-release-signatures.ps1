@@ -26,7 +26,11 @@ if (-not $files) {
 $invalid = foreach ($file in $files | Sort-Object FullName -Unique) {
     $signature = Get-AuthenticodeSignature -LiteralPath $file.FullName
     Write-Host "$($signature.Status)`t$($file.FullName)"
-    if ($signature.Status -ne 'Valid') {
+    $wrongSigner = (-not [string]::IsNullOrWhiteSpace($env:YIME_SIGN_CERT_SHA1)) -and ($signature.SignerCertificate.Thumbprint -ne $env:YIME_SIGN_CERT_SHA1)
+    $missingTimestamp = $null -eq $signature.TimeStamperCertificate
+    if ($signature.Status -ne 'Valid' -or $wrongSigner -or $missingTimestamp) {
+        if ($wrongSigner) { Write-Warning "Unexpected signer for $($file.FullName)" }
+        if ($missingTimestamp) { Write-Warning "Missing timestamp for $($file.FullName)" }
         $file.FullName
     }
 }
