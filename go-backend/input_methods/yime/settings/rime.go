@@ -27,6 +27,7 @@ func InvokeRimeBuild(userDir, sharedDir string) error {
 	}
 	buildDir := filepath.Join(userDir, "build")
 	cmd := exec.Command(deployer, "--build", userDir, sharedDir, buildDir)
+	configureBuildCommand(cmd)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		detail := strings.TrimSpace(string(output))
