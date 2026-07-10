@@ -19,6 +19,8 @@ func TestReleasePipelineSignsPayloadInstallerAndUninstaller(t *testing.T) {
 	ci := read(filepath.Join(root, ".github", "workflows", "ci.yaml"))
 	buildScript := read(filepath.Join(root, "go-backend", "build.bat"))
 	installer := read(filepath.Join(root, "installer", "installer.nsi"))
+	installer = strings.ReplaceAll(installer, "\r\n", "\n")
+	devUninstaller := read(filepath.Join(root, "tools", "dev-uninstall.ps1"))
 	signer := read(filepath.Join(root, "tools", "sign-release.ps1"))
 	verifier := read(filepath.Join(root, "tools", "verify-release-signatures.ps1"))
 	signFile := read(filepath.Join(root, "tools", "sign-file.ps1"))
@@ -31,6 +33,31 @@ func TestReleasePipelineSignsPayloadInstallerAndUninstaller(t *testing.T) {
 	for _, fragment := range []string{"!finalize", "!uninstfinalize", "sign-file.ps1"} {
 		if !strings.Contains(installer, fragment) {
 			t.Fatalf("NSIS signing hooks are missing %q", fragment)
+		}
+	}
+	for _, fragment := range []string{
+		`InstallDir "$PROGRAMFILES32\YIME"`,
+		`ReadRegStr $R1 HKLM "${PRODUCT_INSTALL_KEY}" ""`,
+		`StrCpy $INSTDIR $R1`,
+		`StrCpy $INSTDIR "$PROGRAMFILES32\YIME"`,
+		`File /r "..\go-backend\build\go-backend\*.*"`,
+	} {
+		if !strings.Contains(installer, fragment) {
+			t.Fatalf("NSIS installer is missing install-path or Yime payload guard %q", fragment)
+		}
+	}
+	if strings.Contains(installer, `ReadRegStr $INSTDIR`) {
+		t.Fatal("NSIS registry probing must not clear the default installation directory")
+	}
+	if strings.Contains(installer, "Section $(CHEWING) chewing\n\t\t\tSectionIn 1 2") {
+		t.Fatal("standard Yime installation must not select the legacy Python Chewing backend")
+	}
+	for _, fragment := range []string{
+		`Microsoft\Windows\CurrentVersion\Uninstall\YIME`,
+		`Microsoft\Windows\CurrentVersion\Uninstall\PIME`,
+	} {
+		if !strings.Contains(devUninstaller, fragment) {
+			t.Fatalf("developer uninstall must remove stale uninstall registration %q", fragment)
 		}
 	}
 	for _, fragment := range []string{"PIMELauncher.exe", "PIMETextService.dll", "rime_deployer.exe", "rime.dll"} {

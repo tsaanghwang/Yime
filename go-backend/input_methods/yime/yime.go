@@ -16,6 +16,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/EasyIME/pime-go/input_methods/yime/runtimechange"
+	"github.com/EasyIME/pime-go/input_methods/yime/userlexicon"
 	"github.com/EasyIME/pime-go/pime"
 )
 
@@ -1765,6 +1766,9 @@ func (ime *IME) applyUserLexicon() error {
 	}
 	userDir := ime.userDir()
 	sharedDir := ime.sharedDir()
+	if err := userlexicon.SyncRimeSchemas(sharedDir, userDir); err != nil {
+		return err
+	}
 	if !runRimeExternalBuild(sharedDir, userDir) {
 		log.Printf("external rime_deployer build unavailable or failed for user lexicon update; sharedDir=%s userDir=%s", sharedDir, userDir)
 	}

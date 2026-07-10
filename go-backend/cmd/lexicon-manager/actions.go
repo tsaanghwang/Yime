@@ -453,6 +453,9 @@ func (state *appState) rebuildAndDeployAllLexicons() error {
 	if err := state.rebuildAllLexicons(); err != nil {
 		return err
 	}
+	if err := userlexicon.SyncRimeSchemas(state.sharedDir, state.userDir); err != nil {
+		return err
+	}
 	if err := invokeRimeBuild(state.userDir, state.sharedDir); err != nil {
 		return err
 	}

@@ -49,6 +49,8 @@ CI 当前重点保护：
 
 运行 `go test ./...` 前后都不应发现 `go-backend/build/go-backend/input_methods` 下残留 `.go` 文件；发布包不得携带复制来的 Go 源码或测试。
 
+普通 IME 测试不得消费开发者真实 `%APPDATA%` 中的 `yime_runtime_change.json`。测试会话应把现有修订号作为基线；只有通知协议专用测试从零修订开始观察，避免候选测试在选择前意外触发 redeploy。
+
 ## 4. 真实 Rime 集成测试
 
 真实测试默认跳过，显式设置环境变量：
@@ -91,6 +93,8 @@ C++ RPC 回归测试通过 `ctest --test-dir build -C Release --output-on-failur
 
 UI 修改还必须构建对应 EXE，并在安装目录中实际打开一次；源码测试通过不代表 Smart App Control、焦点和模态行为正常。
 
+NSIS 守卫还必须确认默认安装目录不会被空注册表值覆盖、必装主组件包含 `go-backend`、标准安装不选择旧 Python Chewing，以及开发卸载会删除新旧卸载项。
+
 ## 6. TSF 与语言栏高风险测试
 
 修改下列区域前先添加具体失败路径的回归测试：
@@ -130,6 +134,8 @@ cmd /c build.bat
 6. 检查 CodeIntegrity Operational 日志
 
 语言栏或 TSF 问题必须在安装态至少复现一次；不能用源码目录中的临时 EXE 代替。
+
+2026-07-11 的未签名开发包已完成一次真实安装验证：安装到 `C:\Program Files (x86)\YIME`，输入响应正常，用户词“云笺试码”和“笺砚验码”应用后可在活动会话直接出词。该记录证明核心路径，不替代重启、自启动、全部工具和三模式的完整清单。
 
 ## 9. 修改类型与最低验证
 

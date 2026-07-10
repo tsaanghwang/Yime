@@ -130,9 +130,14 @@ Function uninstallOldVersion
 	${EndIf}
 	${If} $R0 != ""
 		ClearErrors
-		ReadRegStr $INSTDIR HKLM "${PRODUCT_INSTALL_KEY}" ""
-		${If} $INSTDIR == ""
-			ReadRegStr $INSTDIR HKLM "${LEGACY_PRODUCT_INSTALL_KEY}" ""
+		; Read into a temporary register so a stale uninstall entry cannot
+		; erase the InstallDir default when the install-location key is gone.
+		ReadRegStr $R1 HKLM "${PRODUCT_INSTALL_KEY}" ""
+		${If} $R1 == ""
+			ReadRegStr $R1 HKLM "${LEGACY_PRODUCT_INSTALL_KEY}" ""
+		${EndIf}
+		${If} $R1 != ""
+			StrCpy $INSTDIR $R1
 		${EndIf}
 		${If} ${FileExists} "$INSTDIR\Uninstall.exe"
 			MessageBox MB_OKCANCEL|MB_ICONQUESTION $(UNINSTALL_OLD) /SD IDOK IDOK +2
@@ -347,6 +352,9 @@ Function .onInit
 
 	; check if old version is installed and uninstall it first
 	Call uninstallOldVersion
+	${If} $INSTDIR == ""
+		StrCpy $INSTDIR "$PROGRAMFILES32\YIME"
+	${EndIf}
 	Call hideSection
 FunctionEnd
 
@@ -480,12 +488,17 @@ Section $(SECTION_MAIN) SecMain
 
 	; Install the launcher responsible to launch the backends
 	File "..\build\PIMELauncher\PIMELauncher.exe"
+
+	; Yime is the standard product payload. Keep it in the required main
+	; section so a default install always contains the configured backend.
+	SetOutPath "$INSTDIR\go-backend"
+	File /r "..\go-backend\build\go-backend\*.*"
 SectionEnd
 
 SectionGroup /e $(PYTHON_SECTION_GROUP) python_section_group
 	SectionGroup /e $(PYTHON_CHT_SECTION_GROUP) python_cht_section_group
 		Section $(CHEWING) chewing
-			SectionIn 1 2
+			SectionIn 2
 			SetOutPath "$INSTDIR\python\input_methods\chewing"
 			File /r "..\python\input_methods\chewing\*.*"
 			StrCpy $INST_PYTHON "True"

@@ -61,6 +61,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Installer losing `$INSTDIR` after a developer uninstall left a stale uninstall entry, causing files to be written under the drive root
+- Standard installer omitting the Yime Go backend while selecting the legacy Python Chewing backend by default
+- Developer uninstall leaving stale YIME/PIME Add/Remove Programs entries
+- Upgraded full/shorthand user schemas retaining obsolete `custom_phrase` references instead of their mode-specific lexicons
+- Go tests reading the developer's real runtime-change marker and redeploying test backends unexpectedly
 - Smart App Control blocking server.exe due to missing VERSIONINFO
 - Reverse lookup window marked as "not responding" during data loading
 - Result count not displayed in reverse lookup (PowerShell single-element array unwrapping)

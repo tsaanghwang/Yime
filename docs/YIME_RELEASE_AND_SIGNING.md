@@ -106,11 +106,13 @@ cmd /c build.bat
 
 - 安装包版本与 `version.txt` 一致
 - `go-backend/build/go-backend/` 中 8 个 Go EXE 全部存在
+- NSIS 必装主组件递归包含 `go-backend/build/go-backend/`，默认标准安装不依赖旧 Python 输入法
 - `input_methods/yime/data/`、`rime.dll`、`rime_deployer.exe` 已打包
 - 打包目录 `input_methods/` 下没有 `.go` 源码或测试文件
 - x86/x64 `PIMETextService.dll` 均存在
 - 安装包和内部二进制签名有效
 - 安装包 SHA-256 已记录在发布说明中
+- 全新安装、开发卸载后安装和已有版本升级三种情况下，目标目录都保持为 `C:\Program Files (x86)\YIME`
 
 ```powershell
 Get-FileHash .\installer\YIME-*-setup.exe -Algorithm SHA256

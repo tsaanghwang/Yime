@@ -169,6 +169,8 @@ Remove-RegistryTree -Path "HKLM:\SOFTWARE\YIME"
 Remove-RegistryTree -Path "HKLM:\SOFTWARE\WOW6432Node\YIME"
 Remove-RegistryTree -Path "HKLM:\SOFTWARE\PIME"
 Remove-RegistryTree -Path "HKLM:\SOFTWARE\WOW6432Node\PIME"
+Remove-RegistryTree -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\YIME"
+Remove-RegistryTree -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\PIME"
 Remove-PIMETextServiceRegistry -IncludeClassRegistration
 
 if (-not $KeepInstallRoot -and (Test-TextServiceDllLoaded)) {

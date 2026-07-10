@@ -352,6 +352,8 @@ applyUserLexicon()
 - 旧方案只重建当前方案的词库，切换方案后用户词丢失
 - 新方案为三种模式各生成独立的 `custom_phrase_{mode}.txt`
 - 三种 schema 各自引用对应的 `user_dict`，互不干扰
+- 每次应用词库都从安装目录同步三套 `yime_{mode}.schema.yaml` 到用户目录，再运行 Rime build；升级遗留 schema 不会继续引用旧 `custom_phrase`
+- 数字标调拼音是用户词编码真源。多音字的逐字拼接可能列出多个编码，只有与用户填写拼音对应的编码会命中该用户词
 
 ### 2.12 Rime 部署流程
 
@@ -587,6 +589,8 @@ cmd /c build.bat
 
 Go 可执行文件版本取自仓库根目录 `version.txt`，并统一使用 `-trimpath -buildvcs=false`，避免无关提交改变未修改工具的文件哈希。8 个 Go EXE 统一嵌入 Yime 图标；打包脚本递归删除复制到输出目录的 `.go` 源码。发布流水线通过 `tools/sign-release.ps1`、NSIS `!finalize`/`!uninstfinalize` 和 `tools/verify-release-signatures.ps1` 覆盖内部二进制、安装器及卸载器；Smart App Control 的稳定发布必须使用受信任提供商签发的 RSA 证书，VERSIONINFO 不能替代签名。
 
+NSIS 的必装主组件包含 PIMELauncher、`backends.json` 和完整 `go-backend` 包。标准安装只安装 Yime；旧 Python/Node 输入法属于可选的完整安装。读取新旧安装注册表时先写入临时寄存器，不能用空值覆盖 `InstallDir "$PROGRAMFILES32\YIME"`。
+
 ### 4.3 CI 流水线
 
 `.github/workflows/ci.yaml`（触发分支：yime-stable）
@@ -644,6 +648,8 @@ CI 使用上述稳定回归集并执行 CTest。真实 Rime 测试仍由 `YIME_R
 | `TestSetCandidatePageSizePreservesComposition` | 候选项数变更保存组字状态 |
 | `TestJoinRuneLookupPartialMissing` | 反查缺失字符占位符 |
 | `TestApplyUserLexiconWritesAllThreeModes` | 用户词库跨方案同步 |
+| `TestSyncRimeSchemasRefreshesAllModes` | 升级后的三套用户 schema 指向各自词库 |
+| `TestReleasePipelineSignsPayloadInstallerAndUninstaller` | 安装路径兜底、Go 后端打包、标准组件和签名链 |
 
 ### 5.2 边界场景测试
 

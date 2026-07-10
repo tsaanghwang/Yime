@@ -320,7 +320,7 @@ func trimLastRuneForTest(s string) string {
 }
 
 func newTestIME() *IME {
-	return &IME{
+	ime := &IME{
 		TextServiceBase: pime.NewTextServiceBase(&pime.Client{ID: "test-client"}),
 		style: Style{
 			DisplayTrayIcon:    true,
@@ -340,6 +340,20 @@ func newTestIME() *IME {
 		keysDown:              map[int]bool{},
 		backend:               newTestBackend(),
 	}
+	userDir := filepath.Join(os.Getenv("APPDATA"), APP, "Rime")
+	if event, err := runtimechange.Read(userDir); err == nil {
+		ime.recordRuntimeChange(event)
+	}
+	return ime
+}
+
+func newRuntimeChangeTestIME() *IME {
+	ime := newTestIME()
+	ime.runtimeChangeRevision = 0
+	ime.settingsChangeRevision = 0
+	ime.lexiconChangeRevision = 0
+	ime.redeployChangeRevision = 0
+	return ime
 }
 
 func TestNewInitialState(t *testing.T) {
@@ -371,7 +385,7 @@ func TestRuntimeSettingsChangeSynchronizesActiveIME(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	ime := newTestIME()
+	ime := newRuntimeChangeTestIME()
 	ime.pollRuntimeChange()
 	if ime.runtimeChangeRevision != event.Revision {
 		t.Fatalf("expected revision %d, got %d", event.Revision, ime.runtimeChangeRevision)
@@ -391,7 +405,7 @@ func TestRuntimeLexiconChangeClearsCachesAndSchedulesRedeploy(t *testing.T) {
 	if _, err := runtimechange.Notify(userDir, runtimechange.ScopeLexicon, true); err != nil {
 		t.Fatal(err)
 	}
-	ime := newTestIME()
+	ime := newRuntimeChangeTestIME()
 	ime.reversePinyinLoaded["yime_variable"] = true
 	ime.yimePinyinLoaded["yime_variable"] = true
 	ime.pollRuntimeChange()
@@ -416,7 +430,7 @@ func TestRuntimeChangesPreserveLexiconAndSettingsBeforePolling(t *testing.T) {
 	if _, err := runtimechange.Notify(userDir, runtimechange.ScopeSettings, false); err != nil {
 		t.Fatal(err)
 	}
-	ime := newTestIME()
+	ime := newRuntimeChangeTestIME()
 	ime.reversePinyinLoaded["yime_variable"] = true
 	ime.yimePinyinLoaded["yime_variable"] = true
 	ime.pollRuntimeChange()
@@ -438,8 +452,8 @@ func TestRuntimeChangeIsObservedByMultipleIMESessions(t *testing.T) {
 	if _, err := runtimechange.Notify(userDir, runtimechange.ScopeLexicon, true); err != nil {
 		t.Fatal(err)
 	}
-	first := newTestIME()
-	second := newTestIME()
+	first := newRuntimeChangeTestIME()
+	second := newRuntimeChangeTestIME()
 	first.pollRuntimeChange()
 	second.pollRuntimeChange()
 	if first.pendingSchemaRedeploy != "yime_variable" || second.pendingSchemaRedeploy != "yime_variable" {
