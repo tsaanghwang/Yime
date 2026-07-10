@@ -42,6 +42,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Remove ActionRunPowerShell dead code from toolhub/manifest.go (all tools now use ActionRunExecutable)
 - Remove remaining runtime PowerShell helpers while retaining PowerShell only for development, testing, and build automation
 - Use stable two-character language-bar labels (`中西` / `全半` / `横竖`) and represent state through icons
+- Align native lexicon dialogs with content-width labels, equal-width control rows, centered action buttons, and Chinese confirmation choices
 
 - Replace Get-Content with [IO.File]::ReadAllLines/ReadAllText for 5-10x faster dict.yaml loading
 - Simplify lexicon manager toolbar from 12 buttons to 6; move secondary actions into menus

@@ -14,28 +14,59 @@ import (
 )
 
 const (
-	idDlgPhrase    = 301
-	idDlgPinyin    = 302
-	idDlgWeight    = 303
-	idDlgOK        = 1
-	idDlgCancel    = 2
-	idWeightValue  = 401
-	idWeightStep   = 402
-	idWeightMinus  = 403
-	idWeightPlus   = 404
-	idWeightOK     = 1
-	idWeightCancel = 2
-	idImportList   = 501
-	idImportOK     = 1
-	idImportCancel = 2
+	idDlgPhrase       = 301
+	idDlgPinyin       = 302
+	idDlgWeight       = 303
+	idDlgOK           = 1
+	idDlgCancel       = 2
+	idWeightValue     = 401
+	idWeightStep      = 402
+	idWeightMinus     = 403
+	idWeightPlus      = 404
+	idWeightOK        = 1
+	idWeightCancel    = 2
+	idImportList      = 501
+	idImportOK        = 1
+	idImportCancel    = 2
+	idChoicePrimary   = 601
+	idChoiceSecondary = 602
 )
 
 type entryDialogResult int
+
+type dialogChoice struct {
+	ID    int
+	Label string
+}
 
 const (
 	entryDialogCanceled entryDialogResult = iota
 	entryDialogSavedAndContinue
 )
+
+func centeredButtonRects(left, right, top, height, gap int32, widths []int32) []rect {
+	if len(widths) == 0 {
+		return nil
+	}
+	totalWidth := gap * int32(len(widths)-1)
+	for _, width := range widths {
+		totalWidth += width
+	}
+	x := left + (right-left-totalWidth)/2
+	result := make([]rect, len(widths))
+	for index, width := range widths {
+		result[index] = rect{x, top, x + width, top + height}
+		x += width + gap
+	}
+	return result
+}
+
+func weightAdjustmentRects(left, right, top, height, buttonWidth, gap int32) (minus, step, plus rect) {
+	minus = rect{left, top, left + buttonWidth, top + height}
+	plus = rect{right - buttonWidth, top, right, top + height}
+	step = rect{minus.Right + gap, top, plus.Left - gap, top + height - 2}
+	return minus, step, plus
+}
 
 type openFilename struct {
 	StructSize      uint32
@@ -67,17 +98,19 @@ func showEntryDialog(owner syscall.Handle, initial userlexicon.Entry, title, okT
 	result := userlexicon.Entry{}
 	dialogResult := entryDialogCanceled
 	accepted := showModalForm(owner, title, 520, 302, func(hwnd syscall.Handle) {
-		createStatic(hwnd, "词条汉字", rect{16, 18, 400, 36}, 0)
-		phrase := createEdit(hwnd, rect{16, 40, 490, 66}, idDlgPhrase)
-		createStatic(hwnd, "数字标调拼音，例如 zhong1 guo2", rect{16, 76, 490, 94}, 0)
-		pinyin := createEdit(hwnd, rect{16, 98, 490, 124}, idDlgPinyin)
-		createStatic(hwnd, "权重", rect{16, 134, 490, 152}, 0)
-		weight := createEdit(hwnd, rect{16, 156, 490, 182}, idDlgWeight)
+		const contentLeft, contentRight = int32(16), int32(504)
+		createAutoStatic(hwnd, "词条汉字", contentLeft, 18, 18, 0)
+		phrase := createEdit(hwnd, rect{contentLeft, 40, contentRight, 66}, idDlgPhrase)
+		createAutoStatic(hwnd, "数字标调拼音，例如 zhong1 guo2", contentLeft, 76, 18, 0)
+		pinyin := createEdit(hwnd, rect{contentLeft, 98, contentRight, 124}, idDlgPinyin)
+		createAutoStatic(hwnd, "权重", contentLeft, 134, 18, 0)
+		weight := createEdit(hwnd, rect{contentLeft, 156, contentRight, 182}, idDlgWeight)
 		setWindowText(phrase, initial.Phrase)
 		setWindowText(pinyin, initial.Pinyin)
 		setWindowText(weight, initial.Weight)
-		createButton(hwnd, okText, rect{170, 216, 248, 244}, idDlgOK)
-		createButton(hwnd, "退出", rect{258, 216, 336, 244}, idDlgCancel)
+		buttons := centeredButtonRects(contentLeft, contentRight, 216, 28, 10, []int32{88, 88})
+		createButton(hwnd, okText, buttons[0], idDlgOK)
+		createButton(hwnd, "退出", buttons[1], idDlgCancel)
 	}, func(hwnd syscall.Handle, id int) bool {
 		if id != idDlgOK {
 			return false
@@ -140,16 +173,20 @@ func adjustWeightValue(currentValue, stepValue string, direction int) (string, e
 func showWeightDialog(owner syscall.Handle, initial string) (string, bool) {
 	value := ""
 	accepted := showModalForm(owner, "设置词条权重", 380, 220, func(hwnd syscall.Handle) {
-		createStatic(hwnd, "权重", rect{16, 18, 320, 36}, 0)
-		edit := createEdit(hwnd, rect{16, 42, 346, 68}, idWeightValue)
+		const contentLeft, contentRight = int32(16), int32(364)
+		createAutoStatic(hwnd, "权重", contentLeft, 18, 18, 0)
+		edit := createEdit(hwnd, rect{contentLeft, 42, contentRight, 68}, idWeightValue)
 		setWindowText(edit, initial)
-		createStatic(hwnd, "每次增减", rect{16, 82, 320, 100}, 0)
-		createButton(hwnd, "减", rect{16, 106, 82, 134}, idWeightMinus)
-		stepEdit := createEdit(hwnd, rect{92, 106, 160, 132}, idWeightStep)
+		createAutoStatic(hwnd, "每次增减", contentLeft, 82, 18, 0)
+		const adjustButtonW, controlGap = int32(74), int32(10)
+		minusRect, stepRect, plusRect := weightAdjustmentRects(contentLeft, contentRight, 106, 28, adjustButtonW, controlGap)
+		createButton(hwnd, "减", minusRect, idWeightMinus)
+		stepEdit := createEdit(hwnd, stepRect, idWeightStep)
 		setWindowText(stepEdit, "1")
-		createButton(hwnd, "加", rect{170, 106, 236, 134}, idWeightPlus)
-		createButton(hwnd, "确定", rect{180, 154, 258, 182}, idWeightOK)
-		createButton(hwnd, "取消", rect{268, 154, 346, 182}, idWeightCancel)
+		createButton(hwnd, "加", plusRect, idWeightPlus)
+		buttons := centeredButtonRects(contentLeft, contentRight, 154, 28, 10, []int32{78, 78})
+		createButton(hwnd, "确认", buttons[0], idWeightOK)
+		createButton(hwnd, "取消", buttons[1], idWeightCancel)
 	}, func(hwnd syscall.Handle, id int) bool {
 		switch id {
 		case idWeightMinus, idWeightPlus:
@@ -191,9 +228,10 @@ func showImportPreviewDialog(owner syscall.Handle, preview userlexicon.ImportPre
 		selected[conflict.Phrase] = true
 	}
 	accepted := showModalForm(owner, "导入预览", 760, 470, func(hwnd syscall.Handle) {
+		const contentLeft, contentRight = int32(16), int32(744)
 		summary := fmt.Sprintf("新增：%d    覆盖：%d    相同：%d", preview.NewCount, preview.ReplaceCount, preview.SameCount)
-		createStatic(hwnd, summary, rect{16, 16, 700, 54}, 0)
-		list := createControl("LISTBOX", "", entryListStyle, rect{16, 78, 720, 340}, hwnd, idImportList)
+		createAutoStatic(hwnd, summary, contentLeft, 16, 22, 0)
+		list := createControl("LISTBOX", "", entryListStyle, rect{contentLeft, 54, contentRight, 360}, hwnd, idImportList)
 		for _, conflict := range preview.Conflicts {
 			line := fmt.Sprintf("%s | %s/%s -> %s/%s", conflict.Phrase, conflict.CurrentPinyin, conflict.CurrentWeight, conflict.ImportedPinyin, conflict.ImportedWeight)
 			text, _ := syscall.UTF16PtrFromString(line)
@@ -205,8 +243,9 @@ func showImportPreviewDialog(owner syscall.Handle, preview userlexicon.ImportPre
 			text, _ := syscall.UTF16PtrFromString(line)
 			procSendMessageW.Call(uintptr(list), lbAddstring, 0, uintptr(unsafe.Pointer(text)))
 		}
-		createButton(hwnd, "继续合并", rect{560, 390, 650, 418}, idImportOK)
-		createButton(hwnd, "取消", rect{662, 390, 736, 418}, idImportCancel)
+		buttons := centeredButtonRects(contentLeft, contentRight, 390, 28, 12, []int32{96, 88})
+		createButton(hwnd, "继续合并", buttons[0], idImportOK)
+		createButton(hwnd, "取消", buttons[1], idImportCancel)
 	}, func(hwnd syscall.Handle, id int) bool {
 		if id != idImportOK {
 			return false
@@ -228,6 +267,72 @@ func showImportPreviewDialog(owner syscall.Handle, preview userlexicon.ImportPre
 		return true
 	})
 	return selected, accepted
+}
+
+func showChoiceDialog(owner syscall.Handle, title, message string, choices []dialogChoice) int {
+	if len(choices) == 0 {
+		return 0
+	}
+	const (
+		clientW      = int32(460)
+		contentLeft  = int32(16)
+		contentRight = int32(444)
+		buttonH      = int32(30)
+		buttonGap    = int32(10)
+	)
+	lineCount := int32(strings.Count(message, "\n") + 1)
+	messageH := lineCount * 20
+	if messageH < 54 {
+		messageH = 54
+	}
+	buttonsTop := int32(22) + messageH + 16
+	clientH := buttonsTop + buttonH + 20
+
+	result := 0
+	showModalForm(owner, title, clientW, clientH, func(hwnd syscall.Handle) {
+		createStatic(hwnd, message, rect{contentLeft, 18, contentRight, 18 + messageH}, 0)
+		widths := make([]int32, len(choices))
+		for index, choice := range choices {
+			widths[index] = measureTextWidth(hwnd, choice.Label) + 32
+			if widths[index] < 88 {
+				widths[index] = 88
+			}
+		}
+		buttons := centeredButtonRects(contentLeft, contentRight, buttonsTop, buttonH, buttonGap, widths)
+		for index, choice := range choices {
+			createButton(hwnd, choice.Label, buttons[index], choice.ID)
+		}
+	}, func(_ syscall.Handle, id int) bool {
+		for _, choice := range choices {
+			if id == choice.ID {
+				result = id
+				return true
+			}
+		}
+		return false
+	})
+	return result
+}
+
+func showConfirmDialog(owner syscall.Handle, title, message string) bool {
+	return showChoiceDialog(owner, title, message, []dialogChoice{
+		{ID: idChoicePrimary, Label: "确认"},
+		{ID: idDlgCancel, Label: "取消"},
+	}) == idChoicePrimary
+}
+
+func showNoticeDialog(owner syscall.Handle, title, message string) {
+	showChoiceDialog(owner, title, message, []dialogChoice{
+		{ID: idChoicePrimary, Label: "确认"},
+	})
+}
+
+func showImportModeDialog(owner syscall.Handle, message string) int {
+	return showChoiceDialog(owner, "选择导入方式", message, []dialogChoice{
+		{ID: idChoicePrimary, Label: "完全替换"},
+		{ID: idChoiceSecondary, Label: "合并导入"},
+		{ID: idDlgCancel, Label: "取消"},
+	})
 }
 
 var (

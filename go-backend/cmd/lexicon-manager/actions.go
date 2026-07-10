@@ -311,8 +311,8 @@ func (state *appState) deleteSelected() {
 		showMessageBox("请先在列表中选中要删除的词条。", 0x10)
 		return
 	}
-	message := fmt.Sprintf("确定要删除 %d 条词条吗？", len(phrases))
-	if showMessageBoxResult(message, 0x24) != 6 {
+	message := fmt.Sprintf("确认要删除 %d 条词条吗？", len(phrases))
+	if !showConfirmDialog(state.mainHWND, "删除词条", message) {
 		return
 	}
 	state.saveUndoSnapshot("删除词条")
@@ -400,7 +400,7 @@ func (state *appState) applyLexicon() {
 	state.refreshList()
 	state.addOperationHistory("应用用户词库并重建三种模式")
 	setWindowText(state.statusHWND, "已重建 variable / full / shorthand 三套用户词库。")
-	showMessageBox("用户词库格式校验通过，已重建 variable / full / shorthand 三套用户词库。", 0x40)
+	showNoticeDialog(state.mainHWND, "应用完成", "用户词库格式校验通过，已重建 variable / full / shorthand 三套用户词库。")
 }
 
 func (state *appState) rebuildAllLexicons() error {
@@ -454,12 +454,12 @@ func (state *appState) importLexicon() {
 	if len(preview.Samples) > 0 {
 		message += "\n示例：\n" + strings.Join(preview.Samples, "\n")
 	}
-	message += "\n\n选择导入方式：\n是 = 完全替换当前源词库\n否 = 按词条合并并覆盖同名项\n取消 = 放弃导入"
-	result := showMessageBoxResult(message, 0x23)
-	if result == 2 {
+	message += "\n\n请选择完全替换当前源词库，或按词条合并并覆盖同名项。"
+	result := showImportModeDialog(state.mainHWND, message)
+	if result == 0 {
 		return
 	}
-	if result == 6 {
+	if result == idChoicePrimary {
 		state.saveUndoSnapshot("导入词库（替换）")
 		if err := userlexicon.WriteSourceEntries(state.sourcePath, importEntries); err != nil {
 			showMessageBox(err.Error(), 0x10)

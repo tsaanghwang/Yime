@@ -45,3 +45,33 @@ func TestAdjustWeightValue(t *testing.T) {
 		})
 	}
 }
+
+func TestCenteredButtonRectsCentersGroupAndPreservesGaps(t *testing.T) {
+	buttons := centeredButtonRects(16, 504, 216, 28, 10, []int32{88, 96, 88})
+	if len(buttons) != 3 {
+		t.Fatalf("expected 3 buttons, got %d", len(buttons))
+	}
+	leftSpace := buttons[0].Left - 16
+	rightSpace := 504 - buttons[len(buttons)-1].Right
+	if leftSpace != rightSpace {
+		t.Fatalf("button group is not centered: left=%d right=%d", leftSpace, rightSpace)
+	}
+	for index := 1; index < len(buttons); index++ {
+		if buttons[index].Left-buttons[index-1].Right != 10 {
+			t.Fatalf("unexpected gap between buttons %d and %d", index-1, index)
+		}
+	}
+}
+
+func TestWeightAdjustmentRectsFillContentRow(t *testing.T) {
+	minus, step, plus := weightAdjustmentRects(16, 364, 106, 28, 74, 10)
+	if minus.Left != 16 || plus.Right != 364 {
+		t.Fatalf("adjustment row does not fill content width: minus=%#v plus=%#v", minus, plus)
+	}
+	if step.Left-minus.Right != 10 || plus.Left-step.Right != 10 {
+		t.Fatalf("adjustment row gaps are inconsistent: minus=%#v step=%#v plus=%#v", minus, step, plus)
+	}
+	if step.Right <= step.Left {
+		t.Fatalf("step input has invalid width: %#v", step)
+	}
+}

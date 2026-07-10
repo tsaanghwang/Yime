@@ -76,35 +76,39 @@ var (
 	modkernel32 = syscall.NewLazyDLL("kernel32.dll")
 	modcomctl32 = syscall.NewLazyDLL("comctl32.dll")
 	modcomdlg32 = syscall.NewLazyDLL("comdlg32.dll")
+	modgdi32    = syscall.NewLazyDLL("gdi32.dll")
 
-	procCreateWindowExW      = moduser32.NewProc("CreateWindowExW")
-	procDefWindowProcW       = moduser32.NewProc("DefWindowProcW")
-	procDispatchMessageW     = moduser32.NewProc("DispatchMessageW")
-	procGetMessageW          = moduser32.NewProc("GetMessageW")
-	procTranslateMessageW    = moduser32.NewProc("TranslateMessage")
-	procIsDialogMessageW     = moduser32.NewProc("IsDialogMessageW")
-	procPostQuitMessage      = moduser32.NewProc("PostQuitMessage")
-	procRegisterClassExW     = moduser32.NewProc("RegisterClassExW")
-	procSendMessageW         = moduser32.NewProc("SendMessageW")
-	procSetWindowTextW       = moduser32.NewProc("SetWindowTextW")
-	procGetWindowTextLengthW = moduser32.NewProc("GetWindowTextLengthW")
-	procGetWindowTextW       = moduser32.NewProc("GetWindowTextW")
-	procGetSystemMetrics     = moduser32.NewProc("GetSystemMetrics")
-	procMessageBoxW          = moduser32.NewProc("MessageBoxW")
-	procPostMessageW         = moduser32.NewProc("PostMessageW")
-	procShowWindow           = moduser32.NewProc("ShowWindow")
-	procUpdateWindow         = moduser32.NewProc("UpdateWindow")
-	procSetForegroundWindow  = moduser32.NewProc("SetForegroundWindow")
-	procBringWindowToTop     = moduser32.NewProc("BringWindowToTop")
-	procIsIconic             = moduser32.NewProc("IsIconic")
-	procLoadIconW            = moduser32.NewProc("LoadIconW")
-	procLoadCursorW          = moduser32.NewProc("LoadCursorW")
-	procAdjustWindowRectEx   = moduser32.NewProc("AdjustWindowRectEx")
-	procGetModuleHandleW     = modkernel32.NewProc("GetModuleHandleW")
-	procInitCommonControlsEx = modcomctl32.NewProc("InitCommonControlsEx")
-	procGetOpenFileNameW     = modcomdlg32.NewProc("GetOpenFileNameW")
-	procGetSaveFileNameW     = modcomdlg32.NewProc("GetSaveFileNameW")
-	procFindWindowW          = moduser32.NewProc("FindWindowW")
+	procCreateWindowExW       = moduser32.NewProc("CreateWindowExW")
+	procDefWindowProcW        = moduser32.NewProc("DefWindowProcW")
+	procDispatchMessageW      = moduser32.NewProc("DispatchMessageW")
+	procGetMessageW           = moduser32.NewProc("GetMessageW")
+	procTranslateMessageW     = moduser32.NewProc("TranslateMessage")
+	procIsDialogMessageW      = moduser32.NewProc("IsDialogMessageW")
+	procPostQuitMessage       = moduser32.NewProc("PostQuitMessage")
+	procRegisterClassExW      = moduser32.NewProc("RegisterClassExW")
+	procSendMessageW          = moduser32.NewProc("SendMessageW")
+	procSetWindowTextW        = moduser32.NewProc("SetWindowTextW")
+	procGetWindowTextLengthW  = moduser32.NewProc("GetWindowTextLengthW")
+	procGetWindowTextW        = moduser32.NewProc("GetWindowTextW")
+	procGetSystemMetrics      = moduser32.NewProc("GetSystemMetrics")
+	procGetDC                 = moduser32.NewProc("GetDC")
+	procReleaseDC             = moduser32.NewProc("ReleaseDC")
+	procMessageBoxW           = moduser32.NewProc("MessageBoxW")
+	procPostMessageW          = moduser32.NewProc("PostMessageW")
+	procShowWindow            = moduser32.NewProc("ShowWindow")
+	procUpdateWindow          = moduser32.NewProc("UpdateWindow")
+	procSetForegroundWindow   = moduser32.NewProc("SetForegroundWindow")
+	procBringWindowToTop      = moduser32.NewProc("BringWindowToTop")
+	procIsIconic              = moduser32.NewProc("IsIconic")
+	procLoadIconW             = moduser32.NewProc("LoadIconW")
+	procLoadCursorW           = moduser32.NewProc("LoadCursorW")
+	procAdjustWindowRectEx    = moduser32.NewProc("AdjustWindowRectEx")
+	procGetModuleHandleW      = modkernel32.NewProc("GetModuleHandleW")
+	procInitCommonControlsEx  = modcomctl32.NewProc("InitCommonControlsEx")
+	procGetOpenFileNameW      = modcomdlg32.NewProc("GetOpenFileNameW")
+	procGetSaveFileNameW      = modcomdlg32.NewProc("GetSaveFileNameW")
+	procGetTextExtentPoint32W = modgdi32.NewProc("GetTextExtentPoint32W")
+	procFindWindowW           = moduser32.NewProc("FindWindowW")
 
 	wndProcCallback uintptr
 )
@@ -135,6 +139,11 @@ type winMsg struct {
 
 type rect struct {
 	Left, Top, Right, Bottom int32
+}
+
+type textSize struct {
+	Width  int32
+	Height int32
 }
 
 type initCommonControlsEx struct {
@@ -385,8 +394,7 @@ func (state *appState) wndProc(hwnd syscall.Handle, message uint32, wParam, lPar
 		return ret
 	case 0x0010:
 		if state.dirty {
-			result := showMessageBoxResult("源词库有未应用改动，确定要关闭吗？", 0x23)
-			if result == 2 {
+			if !showConfirmDialog(state.mainHWND, "退出词库管理", "源词库有未应用改动，确认要关闭吗？") {
 				return 0
 			}
 		}
@@ -524,6 +532,35 @@ func createStatic(parent syscall.Handle, text string, box rect, id int) syscall.
 	return createControl("STATIC", text, 0x50000000, box, parent, id)
 }
 
+func createAutoStatic(parent syscall.Handle, text string, left, top, height int32, id int) syscall.Handle {
+	width := measureTextWidth(parent, text) + 4
+	return createStatic(parent, text, rect{left, top, left + width, top + height}, id)
+}
+
+func measureTextWidth(parent syscall.Handle, text string) int32 {
+	data, err := syscall.UTF16FromString(text)
+	if err != nil || len(data) <= 1 {
+		return int32(len([]rune(text))) * 16
+	}
+	dc, _, _ := procGetDC.Call(uintptr(parent))
+	if dc == 0 {
+		return int32(len([]rune(text))) * 16
+	}
+	defer procReleaseDC.Call(uintptr(parent), dc)
+
+	size := textSize{}
+	ret, _, _ := procGetTextExtentPoint32W.Call(
+		dc,
+		uintptr(unsafe.Pointer(&data[0])),
+		uintptr(len(data)-1),
+		uintptr(unsafe.Pointer(&size)),
+	)
+	if ret == 0 || size.Width <= 0 {
+		return int32(len([]rune(text))) * 16
+	}
+	return size.Width
+}
+
 func createButton(parent syscall.Handle, text string, box rect, id int) syscall.Handle {
 	return createControl("BUTTON", text, 0x50010000, box, parent, id)
 }
@@ -570,13 +607,6 @@ func showMessageBox(message string, flags uintptr) {
 	text, _ := syscall.UTF16PtrFromString(message)
 	title, _ := syscall.UTF16PtrFromString("词库管理")
 	procMessageBoxW.Call(0, uintptr(unsafe.Pointer(text)), uintptr(unsafe.Pointer(title)), flags)
-}
-
-func showMessageBoxResult(message string, flags uintptr) int {
-	text, _ := syscall.UTF16PtrFromString(message)
-	title, _ := syscall.UTF16PtrFromString("词库管理")
-	result, _, _ := procMessageBoxW.Call(0, uintptr(unsafe.Pointer(text)), uintptr(unsafe.Pointer(title)), flags)
-	return int(result)
 }
 
 func setWindowText(hwnd syscall.Handle, text string) {
