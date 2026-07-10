@@ -1367,6 +1367,11 @@ func TestLanguageBarToggleButtonsShowCurrentState(t *testing.T) {
 	if button := findLangBarButton(resp.AddButton, "candidate-layout"); button == nil || button.Text != "竖排" {
 		t.Fatalf("expected candidate-layout button to show 竖排, got %#v", button)
 	}
+	for _, id := range []string{"switch-lang", "switch-shape", "candidate-layout"} {
+		if button := findLangBarButton(resp.AddButton, id); button == nil || button.Icon != "" {
+			t.Fatalf("expected %s to be a text-only button, got %#v", id, button)
+		}
+	}
 
 	asciiResp := ime.onCommand(&pime.Request{
 		SeqNum: 2,
@@ -1374,6 +1379,8 @@ func TestLanguageBarToggleButtonsShowCurrentState(t *testing.T) {
 	}, pime.NewResponse(2, true))
 	if change := findLangBarChangeButton(asciiResp.ChangeButton, "switch-lang"); change == nil || change.Text != "西文" {
 		t.Fatalf("expected switch-lang text 西文, got %#v", asciiResp.ChangeButton)
+	} else if change.Icon != "" {
+		t.Fatalf("expected switch-lang update to be text-only, got %#v", change)
 	}
 
 	shapeResp := ime.onCommand(&pime.Request{
@@ -1382,6 +1389,8 @@ func TestLanguageBarToggleButtonsShowCurrentState(t *testing.T) {
 	}, pime.NewResponse(3, true))
 	if change := findLangBarChangeButton(shapeResp.ChangeButton, "switch-shape"); change == nil || change.Text != "全宽" {
 		t.Fatalf("expected switch-shape text 全宽, got %#v", shapeResp.ChangeButton)
+	} else if change.Icon != "" {
+		t.Fatalf("expected switch-shape update to be text-only, got %#v", change)
 	}
 
 	layoutResp := ime.onCommand(&pime.Request{
@@ -1390,6 +1399,8 @@ func TestLanguageBarToggleButtonsShowCurrentState(t *testing.T) {
 	}, pime.NewResponse(4, true))
 	if change := findLangBarChangeButton(layoutResp.ChangeButton, "candidate-layout"); change == nil || change.Text != "横排" {
 		t.Fatalf("expected candidate-layout text 横排, got %#v", layoutResp.ChangeButton)
+	} else if change.Icon != "" {
+		t.Fatalf("expected candidate-layout update to be text-only, got %#v", change)
 	}
 }
 

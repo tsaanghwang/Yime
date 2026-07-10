@@ -27,7 +27,17 @@
 static const GUID _GUID_LBI_INPUTMODE =
 { 0x2C77A81E, 0x41CC, 0x4178, { 0xA3, 0xA7, 0x5F, 0x8A, 0x98, 0x75, 0x68, 0xE6 } };
 
+static const GUID _GUID_LBI_SWITCH_LANG =
+{ 0x7C73A1D1, 0x9F11, 0x4A6A, { 0x90, 0x21, 0x5C, 0xA3, 0x48, 0x51, 0x70, 0x01 } };
+static const GUID _GUID_LBI_SWITCH_SHAPE =
+{ 0x7C73A1D2, 0x9F11, 0x4A6A, { 0x90, 0x21, 0x5C, 0xA3, 0x48, 0x51, 0x70, 0x02 } };
+static const GUID _GUID_LBI_CANDIDATE_LAYOUT =
+{ 0x7C73A1D3, 0x9F11, 0x4A6A, { 0x90, 0x21, 0x5C, 0xA3, 0x48, 0x51, 0x70, 0x03 } };
+
 static const char WINDOWS_MODE_ICON_ID[] = "windows-mode-icon";
+static const char SWITCH_LANG_ID[] = "switch-lang";
+static const char SWITCH_SHAPE_ID[] = "switch-shape";
+static const char CANDIDATE_LAYOUT_ID[] = "candidate-layout";
 
 using json = nlohmann::json;
 
@@ -62,6 +72,12 @@ LangBarButton* LangBarButton::fromJson(TextService* service, json& info, ULONG s
 		if (id == WINDOWS_MODE_ICON_ID) {
 			// Windows 8 systray IME mode icon
 			guid = _GUID_LBI_INPUTMODE;
+		} else if (id == SWITCH_LANG_ID) {
+			guid = _GUID_LBI_SWITCH_LANG;
+		} else if (id == SWITCH_SHAPE_ID) {
+			guid = _GUID_LBI_SWITCH_SHAPE;
+		} else if (id == CANDIDATE_LAYOUT_ID) {
+			guid = _GUID_LBI_CANDIDATE_LAYOUT;
 		}
 		else {
 			CoCreateGuid(&guid);
