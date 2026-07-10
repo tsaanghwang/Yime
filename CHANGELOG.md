@@ -33,6 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `-Add` flag for lexicon-manager.exe to open add-phrase dialog on launch
 - Continuous user-lexicon add flow with explicit exit, system-lexicon duplicate rejection, and adjustable weight step controls
 - Go regression-test coverage in CI for native tools, user lexicon, language-bar labels, and Rime-owned candidate paging
+- Maintainer guides for release signing, test layers, native Win32 UI conventions, and security reporting
 
 ### Changed
 

@@ -181,11 +181,15 @@ Check logs at `%LOCALAPPDATA%\PIME\Logs\go_backend.log`.
 | [Rime Integration](docs/YIME_RIME_INTEGRATION.md) | Rime data flow, pinyin_normalized.json chain, maintainer checklist |
 | [Tooling Strategy](docs/YIME_TOOLING_STRATEGY.md) | Standalone tools vs. language-bar UI design |
 | [Tool Development Guide](docs/YIME_TOOL_DEVELOPMENT_GUIDE.md) | How to add a new standalone tool |
+| [Native UI Guidelines](docs/YIME_NATIVE_UI_GUIDELINES.md) | Win32 layout, dialogs, wording, focus, and UI tests |
+| [Testing Guide](docs/YIME_TESTING_GUIDE.md) | CI layers, real Rime tests, and installed-runtime verification |
+| [Release and Signing](docs/YIME_RELEASE_AND_SIGNING.md) | Reproducible builds, Authenticode, packaging, and rollback |
 | [Data Format Reference](docs/YIME_DATA_FORMAT_REFERENCE.md) | TSV/JSON/YAML data file format specifications |
 | [User Install Guide](docs/YIME_USER_INSTALL_GUIDE.md) | Installation and usage instructions for end users |
 | [Troubleshooting](docs/YIME_TROUBLESHOOTING.md) | Common issues and solutions |
 | [Changelog](CHANGELOG.md) | Version change history |
 | [Contributing](CONTRIBUTING.md) | PR process, code style, commit format |
+| [Security Policy](SECURITY.md) | Private vulnerability reporting and supported security boundaries |
 | [AGENTS.md](AGENTS.md) | AI-assisted development constraints |
 
 ## Issues

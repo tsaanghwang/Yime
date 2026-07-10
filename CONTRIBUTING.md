@@ -24,11 +24,12 @@
 - 导出函数必须有 godoc 注释
 - 错误处理使用显式 `if err != nil`，不使用 panic
 
-### PowerShell（嵌入 Go 字符串常量）
+### PowerShell
 
-- 函数名使用 `Verb-Noun` 格式
-- 变量名使用 camelCase
-- 在 Go 原始字符串（反引号）中，PowerShell 的反引号转义（`` `n `` 等）不可用，需用 `[char]13` + `[char]10` 代替
+- 运行时工具、输入法服务和语言栏回调不得启动或嵌入 PowerShell
+- PowerShell 仅用于开发、测试、构建、安装和维护脚本
+- 函数名使用 `Verb-Noun`，变量名使用 camelCase
+- 原生工具 UI 修改遵循 [原生 Win32 UI 规范](docs/YIME_NATIVE_UI_GUIDELINES.md)
 
 ### Commit 消息
 
@@ -63,7 +64,7 @@
 ## Pull Request 流程
 
 1. 从 `yime-stable` 创建特性分支
-2. 确保通过所有测试：`go test ./...`（在 `go-backend/` 目录）
+2. 按 [测试与验证指南](docs/YIME_TESTING_GUIDE.md) 运行 CI 稳定集；不要用当前尚未隔离完成的 `go test ./...` 作为唯一结论
 3. 确保通过构建：`build.bat`（在 `go-backend/` 目录）
 4. 提交 PR，标题使用 Conventional Commits 格式
 5. 等待 review 后合并
@@ -79,6 +80,8 @@
 - TSF 回调行为
 
 源码修改后**必须**验证安装效果：确认 `C:\Program Files (x86)\YIME\go-backend\server.exe` 时间戳已更新，并重启 PIMELauncher 和 server.exe 进程。
+
+涉及版本、构建脚本、安装包或对外发布时，遵循 [发布与代码签名指南](docs/YIME_RELEASE_AND_SIGNING.md)。
 
 ## 许可证
 
