@@ -44,6 +44,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Use stable two-character language-bar labels (`中西` / `全半` / `横竖`) and represent state through icons
 - Align native lexicon dialogs with content-width labels, equal-width control rows, centered action buttons, and Chinese confirmation choices
 - Make Go executable builds reproducible across unrelated commits and add optional trusted Authenticode signing for Smart App Control compatibility
+- Arrange reverse-lookup controls in one equal-width content layout with a content-sized window
+- Replace all lexicon-manager system `OK` / `Yes/No` prompts with centered Chinese action dialogs
 
 - Replace Get-Content with [IO.File]::ReadAllLines/ReadAllText for 5-10x faster dict.yaml loading
 - Simplify lexicon manager toolbar from 12 buttons to 6; move secondary actions into menus

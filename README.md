@@ -88,6 +88,8 @@ cd go-backend
 cmd /c build.bat
 ```
 
+Go tool versions come from `version.txt`, and reproducible flags keep hashes stable across unrelated commits. Release builds should set `YIME_SIGN_CERT_SHA1` to use an RSA code-signing certificate from a trusted provider; VERSIONINFO alone does not guarantee Smart App Control acceptance.
+
 ### Build the 64-bit text service
 
 ```powershell

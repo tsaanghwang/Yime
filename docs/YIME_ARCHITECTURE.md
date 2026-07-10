@@ -437,11 +437,11 @@ userblocklist.LoadSet(yime_user_blocklist.txt)
 
 `libIME2` 在 `AddLanguageProfile` 前先 `RemoveLanguageProfile`，使 `ime.json` 名称更新在 `regsvr32` 重注册后即可生效。
 
-**反查工具多音字支持**（历史实现，仍适用）：
-- `Load-DictLookupMulti` 替代 `Load-DictLookup`，保留所有读音编码
-- 逐字拼接支持笛卡尔积（如"行"有 xing2/hang2 两个编码，"走"有 zou3 1 个，组合出 2 种编码）
-- 方案切换时按 `loadedSchemaID` 判断是否需要重载
-- 不再每次查询重置 `$script:lookupLoaded`
+**反查工具实现**：
+- `reverselookup.Load` 加载并缓存系统词库、用户词库、拼音映射和三种模式编码
+- `loadDictLookupMulti` 保留同一词条的全部读音编码；`joinCharCodeLookupMulti` 支持逐字笛卡尔积
+- `Index.SetMode` 切换当前编码列，`Index.Search` 同时支持精确匹配和包含匹配，最多返回 200 条
+- Win32 顶部控件按“查询词条 / 输入框 / 包含匹配 / 方案 / 下拉框 / 查询”单排布局；结果、详情和状态区等宽，客户区由内容边界计算
 
 ---
 
@@ -580,6 +580,8 @@ cmd /c build.bat
 
 本地 ad-hoc 构建落在 `go-backend/*.exe` 时已被 `.gitignore` 忽略。
 
+Go 可执行文件版本取自仓库根目录 `version.txt`，并统一使用 `-trimpath -buildvcs=false`，避免无关提交改变未修改工具的文件哈希。设置 `YIME_SIGN_CERT_SHA1` 后，构建脚本通过 `signtool.exe` 为全部 Go EXE 添加 SHA-256 Authenticode 签名和时间戳；Smart App Control 的稳定发布必须使用受信任提供商签发的 RSA 证书，VERSIONINFO 不能替代签名。
+
 ### 4.3 CI 流水线
 
 `.github/workflows/ci.yaml`（触发分支：yime-stable）
@@ -594,6 +596,7 @@ checkout(含子模块) → vswhere/VsDevCmd → Rust test → cmake build → go
 - 内联 vswhere + VsDevCmd 设置（非 ilammy/msvc-dev-cmd）
 - CMake 构建用 `shell: cmd` 确保 VsDevCmd 环境持久
 - rime-frost 数据获取步骤
+- Go 纯逻辑包、原生工具布局及关键语言栏/Rime 回归测试
 - NSIS 打包用 `pwsh` + `Set-Location`
 
 ---
@@ -604,9 +607,11 @@ checkout(含子模块) → vswhere/VsDevCmd → Rust test → cmake build → go
 
 ```powershell
 cd go-backend
-go test ./input_methods/yime/ -v -count=1
-go test ./cmd/lexicon-manager -v -count=1
+go test . ./cmd/lexicon-manager ./cmd/reverse-lookup-tool ./input_methods/yime/reverselookup ./input_methods/yime/settings ./input_methods/yime/systemlexicon ./input_methods/yime/userblocklist ./input_methods/yime/userlexicon
+go test ./input_methods/yime -run 'Test(NativeBackendKeepsRimeOwnedCandidatePaging|LanguageBarToggleButtonsUseStableTwoCharacterLabels|DeployCommandRedeploysCurrentSchema|ApplyUserLexiconWritesAllThreeModes|ApplyUserLexiconRunsExternalBuildAndSchedulesReload)$'
 ```
+
+CI 使用上述稳定回归集。`go test ./input_methods/yime` 全量运行仍需完成原生 Rime 全局状态、临时目录和拼音缓存隔离；真实 Rime 测试另由 `YIME_RUN_REAL_RIME_TESTS=1` 显式启用。
 
 关键守卫测试：
 
@@ -620,6 +625,11 @@ go test ./cmd/lexicon-manager -v -count=1
 | `TestLanguageBarToggleButtonsUseStableTwoCharacterLabels` | 语言栏稳定的双字静态切换标签 |
 | `TestValidateEntryForAddRejectsSystemPhraseBeforePinyinValidation` | 添加时优先拒绝系统词库已有词条 |
 | `TestAdjustWeightValue` | 权重步进、非法输入及整数边界 |
+| `TestCenteredButtonRectsCentersGroupAndPreservesGaps` | 词库对话框按钮组居中与间距 |
+| `TestNoticeTitleForFlags` | 词库提示统一使用中文标题和“确认”按钮 |
+| `TestBuildUILayoutPlacesSearchControlsInOneRow` | 反查顶部控件顺序与无重叠 |
+| `TestBuildUILayoutUsesEqualRowWidthsAndContentSizedWindow` | 反查各排等宽及内容决定窗体尺寸 |
+| `TestBuildScriptKeepsGoExecutableHashesStableAndSupportsSigning` | 可复现 Go 构建与可信签名入口 |
 | `TestBlockedCandidatesHiddenFromResponse` | 用户屏蔽词表过滤 |
 | `TestBuildToolHubManifest*` | 工具箱 manifest 与可执行路径 |
 | `TestReturnKeyCommitsRawInputDuringComposition` | 回车键原始编码上屏 |

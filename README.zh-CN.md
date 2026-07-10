@@ -86,6 +86,8 @@ cd go-backend
 cmd /c build.bat
 ```
 
+Go 工具版本取自 `version.txt`，构建使用稳定哈希参数。正式发布时应设置 `YIME_SIGN_CERT_SHA1`，使用受信任提供商签发的 RSA 代码签名证书；仅有 VERSIONINFO 不能保证通过 Smart App Control。
+
 ### 构建 64 位文本服务
 
 ```powershell

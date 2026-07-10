@@ -37,6 +37,10 @@
 | 23 | libIME2 语言栏/注册表 | 2f4f5659 | `refreshAppearance`、profile 重注册、按钮更新顺序 |
 | 24 | 注册表清理脚本 | eacb769a | `pime-registry-cleanup.ps1`、`Refresh-IME-Profiles.cmd` |
 | 25 | IME 列表名与开发环境 | fc507057 | 列表显示名「音元」；`.gitignore` 忽略 `go-backend/*.exe` |
+| 26 | 反查工具布局统一 | ac6d88bf | 顶部控件单排、各内容排等宽、窗体按内容定尺寸 |
+| 27 | 词库管理对话框统一 | e98704c8 | 标签自适应、按钮组居中、所有系统 `OK/Yes/No` 改为中文选择 |
+| 28 | Smart App Control 构建稳定性 | ee2c51d7 | 稳定版本、`-trimpath -buildvcs=false`、可选可信签名 |
+| 29 | Go 回归测试进入 CI | 847bc40a | 原生工具、词库逻辑、语言栏与 Rime 分页守卫 |
 
 ### 遗留编码约束（暂不修改）
 
@@ -315,7 +319,7 @@ cmd /c build.bat
 
 ```powershell
 cd go-backend
-go test ./input_methods/yime/ -v -count=1
+go test . ./cmd/lexicon-manager ./cmd/reverse-lookup-tool ./input_methods/yime/reverselookup ./input_methods/yime/settings ./input_methods/yime/systemlexicon ./input_methods/yime/userblocklist ./input_methods/yime/userlexicon
 go vet ./...
 ```
 

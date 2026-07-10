@@ -59,6 +59,8 @@ The current implementation uses a manifest-driven tool hub:
   the same executables directly.
 - Settings, diagnostics, lexicon manager, reverse lookup, system lexicon audit,
   and blocklist manager are all native Win32 apps with Chinese UI.
+- Lexicon-manager notices use native custom dialogs with Chinese action labels;
+  operational paths no longer expose system `OK` or `Yes/No` buttons.
 
 Shipped executables (under `go-backend/` in the install tree):
 
@@ -76,3 +78,12 @@ This does not mean every future feature must become a separate executable
 immediately. It means the architecture assumes "tool first, language-bar second",
 and new heavy UI should default to the native executable pattern rather than
 PowerShell-in-callback.
+
+## Build Identity And Signing
+
+Tool versions come from the stable repository `version.txt`. Go builds use
+`-trimpath -buildvcs=false` so unrelated commits do not create new hashes for
+unchanged tools. Release builds can set `YIME_SIGN_CERT_SHA1` (and optionally
+`YIME_SIGNTOOL_EXE` / `YIME_TIMESTAMP_URL`) to sign every Go executable.
+VERSIONINFO is required metadata, but Smart App Control compatibility ultimately
+requires an RSA code-signing certificate from a trusted provider.

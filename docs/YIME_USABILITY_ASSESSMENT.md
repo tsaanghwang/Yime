@@ -181,7 +181,7 @@
 |---|------|------|
 | 1 | 反查工具首次加载无进度提示 | 窗体显示时状态栏提示"正在加载数据" |
 | 2 | 反查搜索结果上限100条无截断提示 | 上限提升至200条，截断时提示"已截断" |
-| 3 | 多音字只取首个编码 | `Load-DictLookupMulti` 保留所有读音编码，逐字拼接支持笛卡尔积 |
+| 3 | 多音字只取首个编码 | Go `loadDictLookupMulti` 保留所有读音编码，`joinCharCodeLookupMulti` 逐字拼接支持笛卡尔积 |
 | 4 | 每次查询重新加载词库 | 数据只加载一次，跨查询复用 |
 | 5 | 方案切换时 dictLookup 不重新加载 | `Ensure-LookupData` 按 `loadedSchemaID` 判断是否需要重载 |
 | 6 | `findRimeExternalDeployer` 含硬编码开发路径 | 移除 `C:\dev\librime\` 候选项 |
