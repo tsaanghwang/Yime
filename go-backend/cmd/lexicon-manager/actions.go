@@ -5,7 +5,6 @@ package main
 import (
 	"fmt"
 	"os"
-	"path/filepath"
 	"strconv"
 	"strings"
 	"syscall"
@@ -13,10 +12,14 @@ import (
 	"unsafe"
 
 	"github.com/EasyIME/pime-go/input_methods/yime/reverselookup"
+	"github.com/EasyIME/pime-go/input_methods/yime/settings"
+	"github.com/EasyIME/pime-go/input_methods/yime/systemlexicon"
 	"github.com/EasyIME/pime-go/input_methods/yime/toolhub"
 	"github.com/EasyIME/pime-go/input_methods/yime/userlexicon"
 	"github.com/EasyIME/pime-go/input_methods/yime/win32ui"
 )
+
+var invokeRimeBuild = settings.InvokeRimeBuild
 
 func (state *appState) loadSourceEntries() ([]userlexicon.Entry, error) {
 	return userlexicon.LoadSourceEntriesWithResolver(state.sourcePath, state.codeMap, state.mode)
@@ -35,7 +38,7 @@ func (state *appState) refreshList() {
 	filtered = userlexicon.SortEntries(filtered, state.sortField, state.sortDescending)
 	state.visibleEntries = filtered
 
-	procSendMessageW.Call(uintptr(state.listHWND), 0x0184, 0, 0) // LB_RESETCONTENT
+	procSendMessageW.Call(uintptr(state.listHWND), lbResetcontent, 0, 0)
 	selectedSet := map[string]bool{}
 	for _, phrase := range selected {
 		selectedSet[phrase] = true
@@ -44,9 +47,9 @@ func (state *appState) refreshList() {
 	for _, entry := range filtered {
 		line := fmt.Sprintf("%s    %s    %s", entry.Phrase, entry.Pinyin, entry.Weight)
 		text, _ := syscall.UTF16PtrFromString(line)
-		index, _, _ := procSendMessageW.Call(uintptr(state.listHWND), 0x0180, 0, uintptr(unsafe.Pointer(text)))
+		index, _, _ := procSendMessageW.Call(uintptr(state.listHWND), lbAddstring, 0, uintptr(unsafe.Pointer(text)))
 		if selectedSet[entry.Phrase] {
-			procSendMessageW.Call(uintptr(state.listHWND), 0x0185, index, 1) // LB_SETSEL
+			procSendMessageW.Call(uintptr(state.listHWND), lbSetsel, index, 1)
 		}
 		if extent := int32(len(line) * 7); extent > maxExtent {
 			maxExtent = extent
@@ -55,7 +58,7 @@ func (state *appState) refreshList() {
 	if maxExtent < 764 {
 		maxExtent = 764
 	}
-	procSendMessageW.Call(uintptr(state.listHWND), 0x0194, uintptr(maxExtent), 0) // LB_SETHORIZONTALEXTENT
+	procSendMessageW.Call(uintptr(state.listHWND), lbSethorizontalextent, uintptr(maxExtent), 0)
 	win32ui.RedrawChildrenNow(state.mainHWND)
 	state.updateSummary(len(entries), len(filtered))
 	state.updateSelectionSummary()
@@ -74,13 +77,13 @@ func (state *appState) currentSortField() userlexicon.SortField {
 }
 
 func (state *appState) selectedPhrases() []string {
-	count, _, _ := procSendMessageW.Call(uintptr(state.listHWND), 0x0186, 0, 0) // LB_GETSELCOUNT
+	count, _, _ := procSendMessageW.Call(uintptr(state.listHWND), lbGetselcount, 0, 0)
 	selCount := int32(count)
 	if selCount <= 0 {
 		return nil
 	}
 	items := make([]int32, selCount)
-	procSendMessageW.Call(uintptr(state.listHWND), 0x0187, uintptr(selCount), uintptr(unsafe.Pointer(&items[0])))
+	procSendMessageW.Call(uintptr(state.listHWND), lbGetselitems, uintptr(selCount), uintptr(unsafe.Pointer(&items[0])))
 	phrases := make([]string, 0, len(items))
 	for _, index := range items {
 		if index < 0 || int(index) >= len(state.visibleEntries) {
@@ -92,11 +95,11 @@ func (state *appState) selectedPhrases() []string {
 }
 
 func (state *appState) updateSummary(totalCount, visibleCount int) {
-	pending := "状态：源词库与生成词库已同步"
+	pending := "状态：源词库与生成词库已同步。"
 	if state.dirty {
-		pending = "状态：源词库已修改，尚未应用"
+		pending = "状态：源词库已修改，尚未应用。"
 	}
-	text := fmt.Sprintf("源词库: %s\r\n生成词库: %s    %s", state.sourcePath, state.rimeLexiconPath, pending)
+	text := fmt.Sprintf("源词库：%s\r\n当前模式生成词库：%s    %s", state.sourcePath, state.rimeLexiconPath, pending)
 	setWindowText(state.summaryHWND, text)
 
 	sortLabel := "词条"
@@ -110,7 +113,7 @@ func (state *appState) updateSummary(totalCount, visibleCount int) {
 	if state.sortDescending {
 		direction = "降序"
 	}
-	status := fmt.Sprintf("当前显示 %d / %d 条词条，按%s%s。", visibleCount, totalCount, sortLabel, direction)
+	status := fmt.Sprintf("当前显示 %d / %d 条词条，按 %s %s 排序。", visibleCount, totalCount, sortLabel, direction)
 	if state.dirty {
 		status += " 源词库有未应用改动。"
 	}
@@ -155,37 +158,83 @@ func (state *appState) addOperationHistory(text string) {
 	}
 }
 
+func (state *appState) loadSystemLexicon() error {
+	if state.systemLexiconOnce {
+		return state.systemLexiconErr
+	}
+	state.systemLexiconOnce = true
+
+	path := systemlexicon.DictPath(state.sharedDir, state.userDir, state.mode)
+	entries, err := systemlexicon.LoadDictFile(path)
+	if err != nil {
+		state.systemLexiconErr = err
+		return err
+	}
+
+	state.systemLexicon = make(map[string]struct{}, len(entries))
+	for _, entry := range entries {
+		phrase := strings.TrimSpace(entry.Text)
+		if phrase == "" {
+			continue
+		}
+		state.systemLexicon[phrase] = struct{}{}
+	}
+	return nil
+}
+
+func (state *appState) isSystemLexiconPhrase(phrase string) (bool, error) {
+	if err := state.loadSystemLexicon(); err != nil {
+		return false, err
+	}
+	_, ok := state.systemLexicon[strings.TrimSpace(phrase)]
+	return ok, nil
+}
+
 func (state *appState) addEntry() {
 	if err := state.requireCodeMap(); err != nil {
 		showMessageBox(err.Error(), 0x10)
 		return
 	}
-	entry, ok := showEntryDialog(state.mainHWND, userlexicon.Entry{Weight: userlexicon.DefaultEntryWeight}, "添加用户词条", "保存")
-	if !ok {
-		return
-	}
-	if err := userlexicon.AssertEntryFields(entry); err != nil {
-		showMessageBox(err.Error(), 0x10)
-		return
-	}
-	if err := reverselookup.ValidateEntryForMode(state.codeMap, entry.Phrase, entry.Pinyin, state.mode); err != nil {
-		showMessageBox(err.Error(), 0x10)
-		return
-	}
-	state.saveUndoSnapshot("添加/更新词条")
-	updated, err := userlexicon.UpsertSourceEntry(state.sourcePath, entry)
-	if err != nil {
-		showMessageBox(err.Error(), 0x10)
-		return
-	}
-	state.dirty = true
-	state.refreshList()
-	if updated {
-		state.addOperationHistory("更新词条：" + entry.Phrase)
-		setWindowText(state.statusHWND, "已更新词条，点击应用用户词库使其生效。")
-	} else {
-		state.addOperationHistory("添加词条：" + entry.Phrase)
-		setWindowText(state.statusHWND, "已添加词条，点击应用用户词库使其生效。")
+	initial := userlexicon.Entry{Weight: userlexicon.DefaultEntryWeight}
+	for {
+		entry, result := showEntryDialog(state.mainHWND, initial, "添加用户词条", "保存")
+		if result == entryDialogCanceled {
+			return
+		}
+		if err := userlexicon.AssertEntryFields(entry); err != nil {
+			showMessageBox(err.Error(), 0x10)
+			return
+		}
+		if err := reverselookup.ValidateEntryForMode(state.codeMap, entry.Phrase, entry.Pinyin, state.mode); err != nil {
+			showMessageBox(err.Error(), 0x10)
+			return
+		}
+		state.saveUndoSnapshot("添加/更新词条")
+		existsInSystem, err := state.isSystemLexiconPhrase(entry.Phrase)
+		if err != nil {
+			showMessageBox(err.Error(), 0x10)
+			return
+		}
+		if existsInSystem {
+			showMessageBox("该词条已存在于系统词库中，无需重复添加。", 0x30)
+			initial = entry
+			continue
+		}
+		updated, err := userlexicon.UpsertSourceEntry(state.sourcePath, entry)
+		if err != nil {
+			showMessageBox(err.Error(), 0x10)
+			return
+		}
+		state.dirty = true
+		state.refreshList()
+		if updated {
+			state.addOperationHistory("更新词条：" + entry.Phrase)
+			setWindowText(state.statusHWND, "已更新词条，点击“应用”生成三套用户词库。")
+		} else {
+			state.addOperationHistory("添加词条：" + entry.Phrase)
+			setWindowText(state.statusHWND, "已添加词条，点击“应用”生成三套用户词库。")
+		}
+		initial = userlexicon.Entry{Weight: userlexicon.DefaultEntryWeight}
 	}
 }
 
@@ -219,8 +268,8 @@ func (state *appState) editSelected() {
 		showMessageBox("在源词库中找不到所选词条。", 0x10)
 		return
 	}
-	entry, ok := showEntryDialog(state.mainHWND, existing.Clone(), "编辑用户词条", "保存修改")
-	if !ok {
+	entry, result := showEntryDialog(state.mainHWND, existing.Clone(), "编辑用户词条", "保存修改")
+	if result == entryDialogCanceled {
 		return
 	}
 	if err := userlexicon.AssertEntryFields(entry); err != nil {
@@ -245,7 +294,7 @@ func (state *appState) editSelected() {
 	state.dirty = true
 	state.refreshList()
 	state.addOperationHistory("编辑词条：" + entry.Phrase)
-	setWindowText(state.statusHWND, "已编辑词条，点击应用用户词库使其生效。")
+	setWindowText(state.statusHWND, "已编辑词条，点击“应用”生成三套用户词库。")
 }
 
 func (state *appState) deleteSelected() {
@@ -255,7 +304,7 @@ func (state *appState) deleteSelected() {
 		return
 	}
 	message := fmt.Sprintf("确定要删除 %d 条词条吗？", len(phrases))
-	if showMessageBoxResult(message, 0x24) != 6 { // IDYES
+	if showMessageBoxResult(message, 0x24) != 6 {
 		return
 	}
 	state.saveUndoSnapshot("删除词条")
@@ -268,7 +317,7 @@ func (state *appState) deleteSelected() {
 	state.dirty = true
 	state.refreshList()
 	state.addOperationHistory(fmt.Sprintf("删除词条 %d 条", len(phrases)))
-	setWindowText(state.statusHWND, fmt.Sprintf("已从源词库删除 %d 条词条，点击应用用户词库使其生效。", len(phrases)))
+	setWindowText(state.statusHWND, fmt.Sprintf("已从源词库删除 %d 条词条，点击“应用”生成三套用户词库。", len(phrases)))
 }
 
 func (state *appState) setSelectedWeights() {
@@ -302,14 +351,14 @@ func (state *appState) setSelectedWeights() {
 		entries[i].Weight = weight
 		updated++
 	}
-	state.saveUndoSnapshot("批量设定权重 " + weight)
+	state.saveUndoSnapshot("批量设置权重 " + weight)
 	if err := userlexicon.WriteSourceEntries(state.sourcePath, entries); err != nil {
 		showMessageBox(err.Error(), 0x10)
 		return
 	}
 	state.dirty = true
 	state.refreshList()
-	state.addOperationHistory(fmt.Sprintf("批量设定权重 %d 条 -> %s", updated, weight))
+	state.addOperationHistory(fmt.Sprintf("批量设置权重 %d 条 -> %s", updated, weight))
 	setWindowText(state.statusHWND, fmt.Sprintf("已将 %d 条词条的权重设为 %s。", updated, weight))
 }
 
@@ -335,15 +384,36 @@ func (state *appState) applyLexicon() {
 		showMessageBox(err.Error(), 0x10)
 		return
 	}
-	if err := userlexicon.RebuildRimeLexicon(state.sourcePath, state.rimeLexiconPath, state.codeMap, state.mode); err != nil {
+	if err := state.rebuildAndDeployAllLexicons(); err != nil {
 		showMessageBox(err.Error(), 0x10)
 		return
 	}
 	state.dirty = false
 	state.refreshList()
-	state.addOperationHistory("应用用户词库并重建 " + filepath.Base(state.rimeLexiconPath))
-	setWindowText(state.statusHWND, "已重建 "+filepath.Base(state.rimeLexiconPath)+"。")
-	showMessageBox("用户词库格式校验通过，已重建 "+filepath.Base(state.rimeLexiconPath)+"。", 0x40)
+	state.addOperationHistory("应用用户词库并重建三种模式")
+	setWindowText(state.statusHWND, "已重建 variable / full / shorthand 三套用户词库。")
+	showMessageBox("用户词库格式校验通过，已重建 variable / full / shorthand 三套用户词库。", 0x40)
+}
+
+func (state *appState) rebuildAllLexicons() error {
+	for _, mode := range []reverselookup.Mode{
+		reverselookup.ModeVariable,
+		reverselookup.ModeFull,
+		reverselookup.ModeShorthand,
+	} {
+		targetPath := userlexicon.RimeLexiconPath(state.userDir, string(mode))
+		if err := userlexicon.RebuildRimeLexicon(state.sourcePath, targetPath, state.codeMap, mode); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (state *appState) rebuildAndDeployAllLexicons() error {
+	if err := state.rebuildAllLexicons(); err != nil {
+		return err
+	}
+	return invokeRimeBuild(state.userDir, state.sharedDir)
 }
 
 func (state *appState) importLexicon() {
@@ -381,7 +451,7 @@ func (state *appState) importLexicon() {
 	if result == 2 {
 		return
 	}
-	if result == 6 { // yes replace
+	if result == 6 {
 		state.saveUndoSnapshot("导入词库（替换）")
 		if err := userlexicon.WriteSourceEntries(state.sourcePath, importEntries); err != nil {
 			showMessageBox(err.Error(), 0x10)
@@ -390,7 +460,7 @@ func (state *appState) importLexicon() {
 		state.dirty = true
 		state.refreshList()
 		state.addOperationHistory(fmt.Sprintf("替换导入词库：%d 条", len(importEntries)))
-		setWindowText(state.statusHWND, "已替换当前源词库，点击应用用户词库使其生效。")
+		setWindowText(state.statusHWND, "已替换当前源词库，点击“应用”生成三套用户词库。")
 		return
 	}
 	selectedConflicts, ok := showImportPreviewDialog(state.mainHWND, preview)
@@ -408,7 +478,7 @@ func (state *appState) importLexicon() {
 	state.dirty = true
 	state.refreshList()
 	state.addOperationHistory(fmt.Sprintf("合并导入词库：新增/覆盖 %d 条", len(filtered)))
-	setWindowText(state.statusHWND, "已合并导入到源词库，点击应用用户词库使其生效。")
+	setWindowText(state.statusHWND, "已合并导入到源词库，点击“应用”生成三套用户词库。")
 }
 
 func (state *appState) exportLexicon() {

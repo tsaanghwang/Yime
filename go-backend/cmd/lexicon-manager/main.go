@@ -24,7 +24,7 @@ const (
 	wmAppRefresh   = 0x0400 + 3
 	wmAppShowError = 0x0400 + 4
 
-	enChange = 0x0300
+	enChange = 0x0300 // EN_CHANGE
 
 	wsExControlparent  = 0x00010000
 	wsExAppwindow      = 0x00040000
@@ -33,34 +33,42 @@ const (
 	swRestore    = 9
 	swShowNormal = 1
 
-	idSearchEdit      = 101
-	idSearchReset     = 102
-	idSortFieldCombo  = 103
-	idSortDirection   = 104
-	idEntryList       = 105
-	idSelectionLabel  = 106
-	idSummaryLabel    = 107
-	idStatusLabel     = 108
-	idBtnAdd          = 201
-	idBtnEdit         = 202
-	idBtnDelete       = 203
-	idBtnSetWeight    = 204
-	idBtnUndo         = 205
-	idBtnApply        = 206
-	idBtnImport       = 207
-	idBtnExport       = 208
-	idBtnOpenFolder   = 209
+	idSearchEdit     = 101
+	idSearchReset    = 102
+	idSortFieldCombo = 103
+	idSortDirection  = 104
+	idEntryList      = 105
+	idSelectionLabel = 106
+	idSummaryLabel   = 107
+	idStatusLabel    = 108
+	idBtnAdd         = 201
+	idBtnEdit        = 202
+	idBtnDelete      = 203
+	idBtnSetWeight   = 204
+	idBtnUndo        = 205
+	idBtnApply       = 206
+	idBtnImport      = 207
+	idBtnExport      = 208
+	idBtnOpenFolder  = 209
 
-	wsChild          = 0x40000000
-	wsVisible        = 0x10000000
-	wsBorder         = 0x00800000
-	wsVscroll        = 0x00200000
-	wsTabstop        = 0x00010000
-	lbsNotify        = 0x0001
-	lbsHasstrings    = 0x0040
-	lbsMultiplesel   = 0x0008
-	lbsExtendedsel   = 0x0800
-	entryListStyle   = wsChild | wsVisible | wsBorder | wsVscroll | wsTabstop | lbsNotify | lbsHasstrings | lbsMultiplesel | lbsExtendedsel
+	wsChild               = 0x40000000
+	wsVisible             = 0x10000000
+	wsBorder              = 0x00800000
+	wsVscroll             = 0x00200000
+	wsTabstop             = 0x00010000
+	lbsNotify             = 0x0001
+	lbsHasstrings         = 0x0040
+	lbsMultiplesel        = 0x0008
+	lbsExtendedsel        = 0x0800
+	entryListStyle        = wsChild | wsVisible | wsBorder | wsVscroll | wsTabstop | lbsNotify | lbsHasstrings | lbsMultiplesel | lbsExtendedsel
+	lbResetcontent        = 0x0184
+	lbAddstring           = 0x0180
+	lbSetsel              = 0x0185
+	lbGetselcount         = 0x0190
+	lbGetselitems         = 0x0191
+	lbSethorizontalextent = 0x0194
+	lbnSelchange          = 1
+	lbnDblclk             = 2
 )
 
 var (
@@ -96,6 +104,7 @@ var (
 	procInitCommonControlsEx = modcomctl32.NewProc("InitCommonControlsEx")
 	procGetOpenFileNameW     = modcomdlg32.NewProc("GetOpenFileNameW")
 	procGetSaveFileNameW     = modcomdlg32.NewProc("GetSaveFileNameW")
+	procFindWindowW          = moduser32.NewProc("FindWindowW")
 
 	wndProcCallback uintptr
 )
@@ -142,6 +151,9 @@ type appState struct {
 	codeMap           map[string]reverselookup.CodeRecord
 	codeMapLoaded     bool
 	codeMapErr        error
+	systemLexicon     map[string]struct{}
+	systemLexiconErr  error
+	systemLexiconOnce bool
 	dirty             bool
 	sortField         userlexicon.SortField
 	sortDescending    bool
@@ -190,7 +202,11 @@ func runApp(state *appState) error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 
-	if win32ui.ActivateExistingWindow("YimeLexiconManager") {
+	if hwnd := findExistingWindow("YimeLexiconManager"); hwnd != 0 {
+		win32ui.PresentMainWindow(hwnd)
+		if state.addOnLoad {
+			procPostMessageW.Call(uintptr(hwnd), wmAppCommand, uintptr(idBtnAdd), 0)
+		}
 		return nil
 	}
 
@@ -270,10 +286,19 @@ func runApp(state *appState) error {
 }
 
 func (state *appState) createControls() {
-	const margin = int32(8)
-	toolbarY := int32(8)
-	x := margin
-	for _, spec := range []struct {
+	const (
+		margin       = int32(8)
+		contentLeft  = margin
+		contentRight = int32(772)
+		contentW     = contentRight - contentLeft
+		gap          = int32(6)
+		toolbarY     = int32(8)
+		toolbarH     = int32(28)
+		rowY         = int32(68)
+		rowH         = int32(26)
+	)
+
+	toolbar := []struct {
 		text string
 		id   int
 	}{
@@ -286,40 +311,56 @@ func (state *appState) createControls() {
 		{"导入", idBtnImport},
 		{"导出", idBtnExport},
 		{"目录", idBtnOpenFolder},
-	} {
-		createButton(state.mainHWND, spec.text, rect{x, toolbarY, x + 72, toolbarY + 28}, spec.id)
-		x += 76
+	}
+	btnW := (contentW - gap*int32(len(toolbar)-1)) / int32(len(toolbar))
+	x := contentLeft
+	for i, spec := range toolbar {
+		w := btnW
+		if i == len(toolbar)-1 {
+			w = contentRight - x
+		}
+		createButton(state.mainHWND, spec.text, rect{x, toolbarY, x + w, toolbarY + toolbarH}, spec.id)
+		x += w + gap
 	}
 
 	modeText := fmt.Sprintf("编码方案：%s", state.mode)
-	createStatic(state.mainHWND, modeText, rect{margin, 44, 760, 64}, 0)
+	createStatic(state.mainHWND, modeText, rect{contentLeft, 44, contentRight, 64}, 0)
 
-	createStatic(state.mainHWND, "搜索", rect{margin, 72, margin + 36, 92}, 0)
-	state.searchHWND = createEdit(state.mainHWND, rect{52, 68, 540, 94}, idSearchEdit)
-	createButton(state.mainHWND, "清空", rect{548, 68, 604, 94}, idSearchReset)
+	const labelW, resetW, comboW, dirW = int32(48), int32(64), int32(88), int32(64)
+	labelRight := contentLeft + labelW
+	searchLeft := labelRight + gap
+	resetRight := contentRight - comboW - gap - dirW - gap
+	resetLeft := resetRight - resetW
+	searchRight := resetLeft - gap
+	comboLeft := resetRight + gap
+	comboRight := comboLeft + comboW
+	dirLeft := comboRight + gap
 
-	state.sortFieldHWND = createCombo(state.mainHWND, rect{616, 68, 700, 200}, idSortFieldCombo)
+	createStatic(state.mainHWND, "搜索", rect{contentLeft, rowY + 4, labelRight, rowY + 24}, 0)
+	state.searchHWND = createEdit(state.mainHWND, rect{searchLeft, rowY, searchRight, rowY + rowH}, idSearchEdit)
+	createButton(state.mainHWND, "清空", rect{resetLeft, rowY, resetRight, rowY + rowH}, idSearchReset)
+
+	state.sortFieldHWND = createCombo(state.mainHWND, rect{comboLeft, rowY, comboRight, rowY + 132}, idSortFieldCombo)
 	for _, label := range []string{"词条", "拼音", "权重"} {
 		text, _ := syscall.UTF16PtrFromString(label)
 		procSendMessageW.Call(uintptr(state.sortFieldHWND), 0x0143, 0, uintptr(unsafe.Pointer(text)))
 	}
 	procSendMessageW.Call(uintptr(state.sortFieldHWND), 0x014E, 0, 0)
 
-	state.sortDirectionHWND = createButton(state.mainHWND, "升序", rect{708, 68, 764, 94}, idSortDirection)
+	state.sortDirectionHWND = createButton(state.mainHWND, "升序", rect{dirLeft, rowY, contentRight, rowY + rowH}, idSortDirection)
 
-	state.listHWND = createControl("LISTBOX", "", entryListStyle, rect{margin, 100, 772, 380}, state.mainHWND, idEntryList)
-
-	state.selectionHWND = createStatic(state.mainHWND, "未选中词条", rect{margin, 388, 772, 408}, idSelectionLabel)
-	state.summaryHWND = createStatic(state.mainHWND, "", rect{margin, 412, 772, 452}, idSummaryLabel)
-	state.statusHWND = createStatic(state.mainHWND, "就绪。", rect{margin, 456, 772, 476}, idStatusLabel)
+	state.listHWND = createControl("LISTBOX", "", entryListStyle, rect{contentLeft, 100, contentRight, 380}, state.mainHWND, idEntryList)
+	state.selectionHWND = createStatic(state.mainHWND, "未选中词条", rect{contentLeft, 388, contentRight, 408}, idSelectionLabel)
+	state.summaryHWND = createStatic(state.mainHWND, "", rect{contentLeft, 412, contentRight, 452}, idSummaryLabel)
+	state.statusHWND = createStatic(state.mainHWND, "就绪。", rect{contentLeft, 456, contentRight, 476}, idStatusLabel)
 
 	state.refreshList()
 }
 
 func (state *appState) wndProc(hwnd syscall.Handle, message uint32, wParam, lParam uintptr) uintptr {
 	switch message {
-	case 0x0111: // WM_COMMAND
-		procPostMessageW.Call(uintptr(state.mainHWND), wmAppCommand, wParam, lParam)
+	case 0x0111:
+		state.handleCommand(wParam, lParam)
 		return 0
 	case wmAppCommand:
 		state.handleCommand(wParam, lParam)
@@ -336,35 +377,31 @@ func (state *appState) wndProc(hwnd syscall.Handle, message uint32, wParam, lPar
 	case win32ui.WmDeferredPresent:
 		win32ui.PresentMainWindow(state.mainHWND)
 		return 0
-	case 0x0006: // WM_ACTIVATE
+	case 0x0006:
 		if win32ui.IsActivateMessage(wParam) {
 			win32ui.RedrawChildrenNow(state.mainHWND)
 		}
 		ret, _, _ := procDefWindowProcW.Call(uintptr(hwnd), uintptr(message), wParam, lParam)
 		return ret
-	case 0x0203: // WM_LBUTTONDBLCLK
-		if uintptr(hwnd) == uintptr(state.listHWND) {
-			state.editSelected()
-		}
-		ret, _, _ := procDefWindowProcW.Call(uintptr(hwnd), uintptr(message), wParam, lParam)
-		return ret
-	case 0x0010: // WM_CLOSE
+	case 0x0010:
 		if state.dirty {
 			result := showMessageBoxResult("源词库有未应用改动，确定要关闭吗？", 0x23)
-			if result == 2 { // IDCANCEL
+			if result == 2 {
 				return 0
 			}
 		}
 		procPostQuitMessage.Call(0)
 		return 0
-	case 0x0018: // WM_SHOWWINDOW
+	case 0x0018:
 		if wParam != 0 && lParam == 0 {
 			state.presentMainWindow()
 		}
 		ret, _, _ := procDefWindowProcW.Call(uintptr(hwnd), uintptr(message), wParam, lParam)
 		return ret
-	case 0x0002: // WM_DESTROY
-		procPostQuitMessage.Call(0)
+	case 0x0002:
+		if hwnd == state.mainHWND {
+			procPostQuitMessage.Call(0)
+		}
 		return 0
 	}
 	ret, _, _ := procDefWindowProcW.Call(uintptr(hwnd), uintptr(message), wParam, lParam)
@@ -379,6 +416,15 @@ func (state *appState) readQueuedError(_ uintptr) string {
 	return msg
 }
 
+func findExistingWindow(className string) syscall.Handle {
+	classPtr, err := syscall.UTF16PtrFromString(className)
+	if err != nil {
+		return 0
+	}
+	hwnd, _, _ := procFindWindowW.Call(uintptr(unsafe.Pointer(classPtr)), 0)
+	return syscall.Handle(hwnd)
+}
+
 func (state *appState) handleCommand(wParam, _ uintptr) {
 	id := int(wParam & 0xffff)
 	notify := int((wParam >> 16) & 0xffff)
@@ -386,9 +432,23 @@ func (state *appState) handleCommand(wParam, _ uintptr) {
 		state.refreshList()
 		return
 	}
-	if notify == 1 && id == idSortFieldCombo { // CBN_SELCHANGE
+	if notify == 1 && id == idSortFieldCombo {
 		state.refreshList()
 		return
+	}
+	if id == idEntryList && notify == lbnSelchange {
+		state.updateSelectionSummary()
+		return
+	}
+	if id == idEntryList && notify == lbnDblclk {
+		state.editSelected()
+		return
+	}
+	switch id {
+	case idBtnAdd, idBtnEdit, idBtnDelete, idBtnSetWeight, idBtnUndo, idBtnApply, idBtnImport, idBtnExport, idBtnOpenFolder, idSearchReset, idSortDirection:
+		if notify != 0 {
+			return
+		}
 	}
 	switch id {
 	case idBtnAdd:
@@ -436,7 +496,7 @@ func (state *appState) onCodeMapLoaded() {
 
 func (state *appState) requireCodeMap() error {
 	if !state.codeMapLoaded {
-		return fmt.Errorf("编码表仍在加载，请稍候再试")
+		return fmt.Errorf("编码表仍在加载，请稍后再试。")
 	}
 	if state.codeMapErr != nil {
 		return state.codeMapErr
