@@ -249,20 +249,20 @@ func (state *appState) addEntry() {
 func (state *appState) editSelected() {
 	phrases := state.selectedPhrases()
 	if len(phrases) == 0 {
-		showMessageBox("请先在列表中选中要编辑的词条。", 0x10)
+		showNoticeDialog(state.mainHWND, "编辑", "请先在列表中选中要编辑的词条。")
 		return
 	}
 	if len(phrases) > 1 {
-		showMessageBox("编辑词条时请只选择一条。", 0x10)
+		showNoticeDialog(state.mainHWND, "编辑", "编辑词条时请只选择一条。")
 		return
 	}
 	if err := state.requireCodeMap(); err != nil {
-		showMessageBox(err.Error(), 0x10)
+		showNoticeDialog(state.mainHWND, "编辑失败", err.Error())
 		return
 	}
 	entries, err := state.loadSourceEntries()
 	if err != nil {
-		showMessageBox(err.Error(), 0x10)
+		showNoticeDialog(state.mainHWND, "编辑失败", err.Error())
 		return
 	}
 	var existing *userlexicon.Entry
@@ -273,7 +273,7 @@ func (state *appState) editSelected() {
 		}
 	}
 	if existing == nil {
-		showMessageBox("在源词库中找不到所选词条。", 0x10)
+		showNoticeDialog(state.mainHWND, "编辑失败", "在源词库中找不到所选词条。")
 		return
 	}
 	entry, result := showEntryDialog(state.mainHWND, existing.Clone(), "编辑用户词条", "保存修改")
@@ -281,22 +281,22 @@ func (state *appState) editSelected() {
 		return
 	}
 	if err := userlexicon.AssertEntryFields(entry); err != nil {
-		showMessageBox(err.Error(), 0x10)
+		showNoticeDialog(state.mainHWND, "编辑失败", err.Error())
 		return
 	}
 	if err := reverselookup.ValidateEntryForMode(state.codeMap, entry.Phrase, entry.Pinyin, state.mode); err != nil {
-		showMessageBox(err.Error(), 0x10)
+		showNoticeDialog(state.mainHWND, "编辑失败", err.Error())
 		return
 	}
 	state.saveUndoSnapshot("编辑词条")
 	if entry.Phrase != existing.Phrase {
 		if _, err := userlexicon.RemoveSourceEntry(state.sourcePath, existing.Phrase); err != nil {
-			showMessageBox(err.Error(), 0x10)
+			showNoticeDialog(state.mainHWND, "编辑失败", err.Error())
 			return
 		}
 	}
 	if _, err := userlexicon.UpsertSourceEntry(state.sourcePath, entry); err != nil {
-		showMessageBox(err.Error(), 0x10)
+		showNoticeDialog(state.mainHWND, "编辑失败", err.Error())
 		return
 	}
 	state.dirty = true
