@@ -37,8 +37,8 @@ type openFilename struct {
 	CustData        uintptr
 	Hook            uintptr
 	TemplateName    *uint16
-	PvReserved0     uintptr
-	PvReserved1     uintptr
+	PvReserved      uintptr
+	DwReserved      uint32
 	FlagsEx         uint32
 }
 
@@ -78,11 +78,13 @@ func showPhraseDialog(owner syscall.Handle, initial, title, okText string) (stri
 
 func showOpenFileDialog(owner syscall.Handle, initialDir, filter string) (string, bool) {
 	buf := make([]uint16, 260)
+	instance, _, _ := procGetModuleHandleW.Call(0)
 	dirPtr, _ := syscall.UTF16PtrFromString(initialDir)
 	filterPtr, _ := syscall.UTF16PtrFromString(filter)
 	ofn := openFilename{
 		StructSize: uint32(unsafe.Sizeof(openFilename{})),
 		Owner:      owner,
+		Instance:   syscall.Handle(instance),
 		Filter:     filterPtr,
 		File:       &buf[0],
 		MaxFile:    uint32(len(buf)),
@@ -105,9 +107,11 @@ func showSaveFileDialog(owner syscall.Handle, defaultName, filter string) (strin
 		buf = padded
 	}
 	filterPtr, _ := syscall.UTF16PtrFromString(filter)
+	instance, _, _ := procGetModuleHandleW.Call(0)
 	ofn := openFilename{
 		StructSize: uint32(unsafe.Sizeof(openFilename{})),
 		Owner:      owner,
+		Instance:   syscall.Handle(instance),
 		Filter:     filterPtr,
 		File:       &buf[0],
 		MaxFile:    uint32(len(buf)),

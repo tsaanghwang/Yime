@@ -21,7 +21,7 @@ import (
 const (
 	wmAppCommand  = 0x0400 + 1
 	wmAppRefresh  = 0x0400 + 2
-	enChange      = 0x0300
+	enChange      = 0x0300 // EN_CHANGE
 
 	wsExControlparent  = 0x00010000
 	wsExAppwindow      = 0x00040000
@@ -49,6 +49,14 @@ const (
 	lbsMultiplesel = 0x0008
 	lbsExtendedsel = 0x0800
 	entryListStyle = wsChild | wsVisible | wsBorder | wsVscroll | wsTabstop | lbsNotify | lbsHasstrings | lbsMultiplesel | lbsExtendedsel
+
+	lbResetcontent        = 0x0184
+	lbAddstring           = 0x0180
+	lbSetsel              = 0x0185
+	lbGetselcount         = 0x0190
+	lbGetselitems         = 0x0191
+	lbSethorizontalextent = 0x0194
+	lbnSelchange          = 1
 )
 
 var (

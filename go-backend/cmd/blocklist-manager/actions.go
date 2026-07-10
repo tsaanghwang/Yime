@@ -34,14 +34,14 @@ func (state *appState) refreshList() {
 		selectedSet[phrase] = true
 	}
 
-	procSendMessageW.Call(uintptr(state.listHWND), 0x0184, 0, 0)
+	procSendMessageW.Call(uintptr(state.listHWND), lbResetcontent, 0, 0)
 	maxExtent := int32(0)
 	for _, entry := range filtered {
 		line := entry.Phrase
 		text, _ := syscall.UTF16PtrFromString(line)
-		index, _, _ := procSendMessageW.Call(uintptr(state.listHWND), 0x0180, 0, uintptr(unsafe.Pointer(text)))
+		index, _, _ := procSendMessageW.Call(uintptr(state.listHWND), lbAddstring, 0, uintptr(unsafe.Pointer(text)))
 		if selectedSet[entry.Phrase] {
-			procSendMessageW.Call(uintptr(state.listHWND), 0x0185, index, 1)
+			procSendMessageW.Call(uintptr(state.listHWND), lbSetsel, index, 1)
 		}
 		if extent := int32(len(line) * 7); extent > maxExtent {
 			maxExtent = extent
@@ -50,20 +50,20 @@ func (state *appState) refreshList() {
 	if maxExtent < 640 {
 		maxExtent = 640
 	}
-	procSendMessageW.Call(uintptr(state.listHWND), 0x0194, uintptr(maxExtent), 0)
+	procSendMessageW.Call(uintptr(state.listHWND), lbSethorizontalextent, uintptr(maxExtent), 0)
 	win32ui.RedrawChildrenNow(state.mainHWND)
 	state.updateSummary(len(entries), len(filtered))
 	state.updateSelectionSummary()
 }
 
 func (state *appState) selectedPhrases() []string {
-	count, _, _ := procSendMessageW.Call(uintptr(state.listHWND), 0x0186, 0, 0)
+	count, _, _ := procSendMessageW.Call(uintptr(state.listHWND), lbGetselcount, 0, 0)
 	selCount := int32(count)
 	if selCount <= 0 {
 		return nil
 	}
 	items := make([]int32, selCount)
-	procSendMessageW.Call(uintptr(state.listHWND), 0x0187, uintptr(selCount), uintptr(unsafe.Pointer(&items[0])))
+	procSendMessageW.Call(uintptr(state.listHWND), lbGetselitems, uintptr(selCount), uintptr(unsafe.Pointer(&items[0])))
 	phrases := make([]string, 0, len(items))
 	for _, index := range items {
 		if index < 0 || int(index) >= len(state.visibleEntries) {
