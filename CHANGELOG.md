@@ -31,6 +31,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Marquee progress bar and per-step status messages during reverse lookup data loading
 - Chinese localization for tool hub, settings, and diagnostics UIs
 - `-Add` flag for lexicon-manager.exe to open add-phrase dialog on launch
+- Continuous user-lexicon add flow with explicit exit, system-lexicon duplicate rejection, and adjustable weight step controls
+- Go regression-test coverage in CI for native tools, user lexicon, language-bar labels, and Rime-owned candidate paging
 
 ### Changed
 
@@ -38,6 +40,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Replace copyTextToClipboard PowerShell Set-Clipboard with direct Win32 clipboard API, also fixing missing HideWindow flag that caused console flash
 - Replace userLexiconAddScript PowerShell dialog with lexicon-manager.exe -Add, removing 287-line embedded PowerShell script from runtime path
 - Remove ActionRunPowerShell dead code from toolhub/manifest.go (all tools now use ActionRunExecutable)
+- Remove remaining runtime PowerShell helpers while retaining PowerShell only for development, testing, and build automation
+- Use stable two-character language-bar labels (`中西` / `全半` / `横竖`) and represent state through icons
 
 - Replace Get-Content with [IO.File]::ReadAllLines/ReadAllText for 5-10x faster dict.yaml loading
 - Simplify lexicon manager toolbar from 12 buttons to 6; move secondary actions into menus
@@ -64,6 +68,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Composition state lost when changing candidate page size
 - Reverse lookup data inconsistency on schema switch
 - User phrases lost when switching schema modes
+- Rejected user-lexicon additions closing the continuous-add workflow or overwriting the undo snapshot
+- Console flashes while rebuilding through rime_deployer.exe
 - Missing characters in reverse lookup annotations discarding entire annotation
 - setCandidatePageSize syntax error (extra closing brace)
 - Hardcoded dev path in findRimeExternalDeployer

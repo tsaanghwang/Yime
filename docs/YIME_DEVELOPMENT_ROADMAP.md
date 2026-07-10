@@ -33,7 +33,7 @@
 | 19 | 移除 PowerShell 启动器 | 2f7c9b44 | 工具箱改 `run_executable`，删除 PS 独立脚本 |
 | 20 | 系统词库审查工具 | fd3edfc0 | `system-lexicon-audit.exe` 只读扫描与导出 |
 | 21 | 用户屏蔽词表 | 0518d6fd | `blocklist-manager.exe` + 运行时候选过滤 |
-| 22 | 语言栏切换稳定性 | 73b74e99 | 静态标签（中西/全半/横竖切换）+ 仅图标更新 |
+| 22 | 语言栏切换稳定性 | f2b3b04c | 静态双字标签（中西/全半/横竖）+ 仅图标更新 |
 | 23 | libIME2 语言栏/注册表 | 2f4f5659 | `refreshAppearance`、profile 重注册、按钮更新顺序 |
 | 24 | 注册表清理脚本 | eacb769a | `pime-registry-cleanup.ps1`、`Refresh-IME-Profiles.cmd` |
 | 25 | IME 列表名与开发环境 | fc507057 | 列表显示名「音元」；`.gitignore` 忽略 `go-backend/*.exe` |
@@ -217,6 +217,9 @@ setCandidatePageSize(size)
 | 5.3 | 默认 candidatePageSize 限制为 5 | 避免超出选择键数量 | 无 |
 | 5.4 | 词语字频回退排序 | 无 BCC 词频时用组成字频率估计，改善 weight=1 词语间排序 | Yime-python-prototype 管线 |
 | 5.5 | 组字时数字键选词模式 | 可配置，数字键在"选词"和"编码"间切换 | 编码体系配合 |
+| 5.6 | 独立工具通知活动输入会话 | 词库“应用”和设置“应用并重建”完成后显式通知当前 Go/Rime 会话刷新 | 设计轻量 IPC 或变更标记 |
+| 5.7 | 根包测试隔离 | 隔离原生 Rime 全局状态、临时数据目录和拼音缓存，使 `go test ./input_methods/yime` 全量稳定 | 保留真实 Rime 测试环境开关 |
+| 5.8 | 清理语言栏实验代码 | 评估并移除动态标签实验遗留的原生 sort/fixed-GUID 逻辑，补宿主点击回归测试 | 安装态 TSF 验证 |
 
 ---
 

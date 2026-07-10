@@ -19,7 +19,7 @@ Rime frontend.
   - **用户词库** → `lexicon-manager.exe`
   - **反查编码** → `reverse-lookup.exe`
   - **工具** → `tool-hub.exe`
-  - **中西切换 / 全半切换 / 横竖切换** — fixed labels; state shown by icons
+  - **中西 / 全半 / 横竖** — fixed two-character labels; state shown by icons
 - Settings: Yime variable-length, fixed-length, and shorthand schemas,
   Chinese/English mode, shape, punctuation, `重新部署 Rime`, `同步 Rime 用户数据`,
   and data/log folders. `重新部署 Rime` is the full runtime redeploy path for the

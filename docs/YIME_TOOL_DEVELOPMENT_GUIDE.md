@@ -117,14 +117,9 @@ if exist cmd\my-tool\rsrc_mytool_windows_amd64.syso del cmd\my-tool\rsrc_mytool_
 | `userLexiconAddScript` → PowerShell WinForms 对话框 | `lexicon-manager.exe -Add` |
 | `ActionRunPowerShell` → toolhub manifest 类型 | 已删除，所有工具使用 `ActionRunExecutable` |
 
-部分工具（反查编码、词库管理器、设置工具、诊断工具）的 UI 仍使用嵌入 Go 字符串的 PowerShell 脚本，但这些脚本由原生 Win32 可执行文件内部调度，不再经过 `tool-launcher.exe` 或 `newUIPowerShellCommand`。
+运行时工具不得再通过 Go 启动或嵌入 PowerShell。新增界面使用原生 Win32 控件，工具入口使用 `ActionRunExecutable`，文件和系统操作优先使用 Go 标准库或明确的 Win32 API。
 
-如果必须编写新的 PowerShell 脚本嵌入 Go 代码：
-- 脚本嵌入在 Go 文件的原始字符串常量中（反引号包围）
-- PowerShell 的反引号转义不可用，用 `[char]13` + `[char]10` 代替
-- 用 `[IO.File]::ReadAllLines()` 代替 `Get-Content` 以获得更好的 I/O 性能
-- 用 `@()` 包裹函数返回值防止 PowerShell 拆包单元素数组
-- 用变量插值代替 `-f` 格式化，避免词条中的花括号导致异常
+PowerShell 仅保留在开发、测试、构建、安装和维护脚本中，不得进入语言栏回调、输入法服务或用户工具运行路径。审查时可用 `rg` 检查 Go 源码中的 `powershell`、`pwsh`、`-EncodedCommand` 和 `ActionRunPowerShell`。
 
 ## 已注册工具列表
 
