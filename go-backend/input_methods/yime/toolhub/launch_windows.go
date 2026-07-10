@@ -3,9 +3,6 @@
 package toolhub
 
 import (
-	"os"
-	"path/filepath"
-	"strings"
 	"syscall"
 	"unsafe"
 )
@@ -16,17 +13,6 @@ const (
 	swHide       uintptr = 0
 	swShowNormal uintptr = 1
 )
-
-func windowsPowerShellPath() string {
-	systemRoot := os.Getenv("SystemRoot")
-	if systemRoot != "" {
-		candidate := filepath.Join(systemRoot, "System32", "WindowsPowerShell", "v1.0", "powershell.exe")
-		if _, err := os.Stat(candidate); err == nil {
-			return candidate
-		}
-	}
-	return "powershell.exe"
-}
 
 func shellExecute(filePath, parameters string, showCmd uintptr) error {
 	shell32 := syscall.NewLazyDLL("shell32.dll")
@@ -61,19 +47,4 @@ func shellExecute(filePath, parameters string, showCmd uintptr) error {
 		return syscall.Errno(result)
 	}
 	return nil
-}
-
-func joinWindowsProcessArguments(args []string) string {
-	quoted := make([]string, 0, len(args))
-	for _, arg := range args {
-		quoted = append(quoted, quoteWindowsProcessArgument(arg))
-	}
-	return strings.Join(quoted, " ")
-}
-
-func quoteWindowsProcessArgument(value string) string {
-	if value == "" {
-		return `""`
-	}
-	return `"` + strings.ReplaceAll(value, `"`, `\"`) + `"`
 }
