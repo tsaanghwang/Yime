@@ -48,6 +48,7 @@ func TestBlockedCandidatesHiddenFromResponse(t *testing.T) {
 
 	ime := newTestIME()
 	backend := ime.backend.(*testBackend)
+	backend.composition = "n"
 	backend.candidates = []candidateItem{{Text: "你"}, {Text: "呢"}, {Text: "泥"}}
 
 	resp := &pime.Response{}

@@ -9,16 +9,19 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+	"sync"
 	"syscall"
 	"unsafe"
 
+	"github.com/EasyIME/pime-go/input_methods/yime/runtimechange"
 	"github.com/EasyIME/pime-go/input_methods/yime/settings"
 	"github.com/EasyIME/pime-go/input_methods/yime/toolhub"
 	"github.com/EasyIME/pime-go/input_methods/yime/win32ui"
 )
 
 const (
-	wmAppCommand = 0x0400 + 1
+	wmAppCommand   = 0x0400 + 1
+	wmAppApplyDone = 0x0400 + 2
 
 	wsExControlparent  = 0x00010000
 	wsExAppwindow      = 0x00040000
@@ -89,11 +92,11 @@ type wndclassex struct {
 }
 
 type winMsg struct {
-	Hwnd syscall.Handle
-	Message uint32
+	Hwnd           syscall.Handle
+	Message        uint32
 	WParam, LParam uintptr
-	Time uint32
-	Pt struct{ X, Y int32 }
+	Time           uint32
+	Pt             struct{ X, Y int32 }
 }
 
 type rect struct{ Left, Top, Right, Bottom int32 }
@@ -102,9 +105,26 @@ type initCommonControlsEx struct{ Size, ICC uint32 }
 
 type appState struct {
 	userDir, sharedDir, helpDir string
+
 	mainHWND, schemaHWND, pageHWND, reverseHWND, layoutHWND, summaryHWND, statusHWND syscall.Handle
-	schemaOptions []settings.SchemaOption
+	schemaOptions                                                                    []settings.SchemaOption
+
+	applyMu                 sync.Mutex
+	applyRunning            bool
+	applyErr                error
+	applyCompletedWithBuild bool
 }
+
+type applyRequest struct {
+	schemaID    string
+	pageSize    int
+	reverseMode string
+	layout      string
+	runBuild    bool
+}
+
+var applySettings = settings.Apply
+var notifyRuntimeChange = runtimechange.Notify
 
 func main() {
 	userDir := flag.String("UserDir", "", "Yime user data directory")
@@ -117,9 +137,9 @@ func main() {
 		os.Exit(1)
 	}
 	state := &appState{
-		userDir: strings.TrimSpace(*userDir),
-		sharedDir: strings.TrimSpace(*sharedDir),
-		helpDir: strings.TrimSpace(*helpDir),
+		userDir:       strings.TrimSpace(*userDir),
+		sharedDir:     strings.TrimSpace(*sharedDir),
+		helpDir:       strings.TrimSpace(*helpDir),
 		schemaOptions: settings.AvailableSchemaOptions(strings.TrimSpace(*sharedDir)),
 	}
 	if err := runApp(state); err != nil {
@@ -245,6 +265,9 @@ func (state *appState) wndProc(hwnd syscall.Handle, message uint32, wParam, lPar
 	case wmAppCommand:
 		state.handleCommand(wParam)
 		return 0
+	case wmAppApplyDone:
+		state.finishApply()
+		return 0
 	case win32ui.WmDeferredPresent:
 		win32ui.PresentMainWindow(state.mainHWND)
 		return 0
@@ -261,6 +284,10 @@ func (state *appState) wndProc(hwnd syscall.Handle, message uint32, wParam, lPar
 		ret, _, _ := procDefWindowProcW.Call(uintptr(hwnd), uintptr(message), wParam, lParam)
 		return ret
 	case 0x0010: // WM_CLOSE
+		if state.isApplyRunning() {
+			setWindowText(state.statusHWND, "正在应用设置，请等待完成后再关闭。")
+			return 0
+		}
 		procPostQuitMessage.Call(0)
 		return 0
 	case 0x0002: // WM_DESTROY
@@ -274,9 +301,9 @@ func (state *appState) wndProc(hwnd syscall.Handle, message uint32, wParam, lPar
 func (state *appState) handleCommand(wParam uintptr) {
 	switch int(wParam & 0xffff) {
 	case idBtnApply:
-		state.apply(false)
+		state.startApply(false)
 	case idBtnApplyBuild:
-		state.apply(true)
+		state.startApply(true)
 	case idBtnOpenUser:
 		_, _ = toolhub.Invoke(toolhub.Entry{ActionType: toolhub.ActionOpenPath, TargetPath: state.userDir})
 	case idBtnOpenHelp:
@@ -286,20 +313,64 @@ func (state *appState) handleCommand(wParam uintptr) {
 	}
 }
 
-func (state *appState) apply(runBuild bool) {
-	schemaID := selectedSchemaID(state.schemaHWND, state.schemaOptions)
-	pageSize := settings.NormalizePageSizeValue(atoiDefault(selectedComboText(state.pageHWND), 5))
-	reverseMode := selectedComboValue(state.reverseHWND, settings.ReverseLookupOptions())
-	layout := selectedComboValue(state.layoutHWND, settings.CandidateLayoutOptions())
-	if err := settings.Apply(state.userDir, state.sharedDir, schemaID, pageSize, reverseMode, layout, runBuild); err != nil {
+func (state *appState) startApply(runBuild bool) {
+	state.applyMu.Lock()
+	if state.applyRunning {
+		state.applyMu.Unlock()
+		return
+	}
+	state.applyRunning = true
+	state.applyMu.Unlock()
+
+	request := applyRequest{
+		schemaID:    selectedSchemaID(state.schemaHWND, state.schemaOptions),
+		pageSize:    settings.NormalizePageSizeValue(atoiDefault(selectedComboText(state.pageHWND), 5)),
+		reverseMode: selectedComboValue(state.reverseHWND, settings.ReverseLookupOptions()),
+		layout:      selectedComboValue(state.layoutHWND, settings.CandidateLayoutOptions()),
+		runBuild:    runBuild,
+	}
+	setWindowText(state.statusHWND, "正在应用设置，请稍候……")
+	go func() {
+		err := executeApply(state.userDir, state.sharedDir, request)
+		state.applyMu.Lock()
+		state.applyErr = err
+		state.applyCompletedWithBuild = runBuild
+		state.applyMu.Unlock()
+		procPostMessageW.Call(uintptr(state.mainHWND), wmAppApplyDone, 0, 0)
+	}()
+}
+
+func (state *appState) isApplyRunning() bool {
+	state.applyMu.Lock()
+	defer state.applyMu.Unlock()
+	return state.applyRunning
+}
+
+func executeApply(userDir, sharedDir string, request applyRequest) error {
+	if err := applySettings(userDir, sharedDir, request.schemaID, request.pageSize, request.reverseMode, request.layout, request.runBuild); err != nil {
+		return err
+	}
+	_, err := notifyRuntimeChange(userDir, runtimechange.ScopeSettings, request.runBuild)
+	return err
+}
+
+func (state *appState) finishApply() {
+	state.applyMu.Lock()
+	err := state.applyErr
+	runBuild := state.applyCompletedWithBuild
+	state.applyErr = nil
+	state.applyRunning = false
+	state.applyMu.Unlock()
+	if err != nil {
 		showError(err.Error())
+		setWindowText(state.statusHWND, "应用失败。")
 		return
 	}
 	state.refreshView()
 	if runBuild {
-		setWindowText(state.statusHWND, "已写入设置并执行构建。")
+		setWindowText(state.statusHWND, "已写入设置并执行构建；活动输入会话将在下一次操作前刷新。")
 	} else {
-		setWindowText(state.statusHWND, "已写入设置；如需立即重编译可再点【应用并重建】。")
+		setWindowText(state.statusHWND, "已写入设置；显示设置将在活动输入会话的下一次操作前同步。")
 	}
 }
 

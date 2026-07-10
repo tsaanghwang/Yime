@@ -18,6 +18,7 @@ func win32CopyToClipboard(text string) error {
 	globalAlloc := kernel32.NewProc("GlobalAlloc")
 	globalLock := kernel32.NewProc("GlobalLock")
 	globalUnlock := kernel32.NewProc("GlobalUnlock")
+	rtlMoveMemory := kernel32.NewProc("RtlMoveMemory")
 
 	utf16, err := syscall.UTF16FromString(text)
 	if err != nil {
@@ -35,7 +36,7 @@ func win32CopyToClipboard(text string) error {
 	if ptr == 0 {
 		return syscall.GetLastError()
 	}
-	copy(unsafe.Slice((*uint16)(unsafe.Pointer(ptr)), len(utf16)), utf16)
+	rtlMoveMemory.Call(ptr, uintptr(unsafe.Pointer(&utf16[0])), uintptr(size))
 	globalUnlock.Call(hMem)
 
 	ret, _, _ := openClipboard.Call(0)

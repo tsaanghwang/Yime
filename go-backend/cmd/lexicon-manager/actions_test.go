@@ -10,6 +10,7 @@ import (
 	"testing"
 
 	"github.com/EasyIME/pime-go/input_methods/yime/reverselookup"
+	"github.com/EasyIME/pime-go/input_methods/yime/runtimechange"
 	"github.com/EasyIME/pime-go/input_methods/yime/userlexicon"
 )
 
@@ -74,6 +75,7 @@ func TestRebuildAndDeployAllLexiconsInvokesRimeBuild(t *testing.T) {
 
 	called := 0
 	oldInvoke := invokeRimeBuild
+	oldNotify := notifyRuntimeChange
 	invokeRimeBuild = func(gotUserDir, gotSharedDir string) error {
 		called++
 		if gotUserDir != userDir || gotSharedDir != sharedDir {
@@ -81,13 +83,40 @@ func TestRebuildAndDeployAllLexiconsInvokesRimeBuild(t *testing.T) {
 		}
 		return nil
 	}
-	defer func() { invokeRimeBuild = oldInvoke }()
+	notified := 0
+	notifyRuntimeChange = func(gotUserDir, scope string, requiresRedeploy bool) (runtimechange.Event, error) {
+		notified++
+		if gotUserDir != userDir || scope != runtimechange.ScopeLexicon || !requiresRedeploy {
+			t.Fatalf("unexpected notification userDir=%q scope=%q redeploy=%t", gotUserDir, scope, requiresRedeploy)
+		}
+		return runtimechange.Event{}, nil
+	}
+	defer func() {
+		invokeRimeBuild = oldInvoke
+		notifyRuntimeChange = oldNotify
+	}()
 
 	if err := state.rebuildAndDeployAllLexicons(); err != nil {
 		t.Fatalf("rebuildAndDeployAllLexicons failed: %v", err)
 	}
 	if called != 1 {
 		t.Fatalf("expected invokeRimeBuild to be called once, got %d", called)
+	}
+	if notified != 1 {
+		t.Fatalf("expected one runtime notification, got %d", notified)
+	}
+}
+
+func TestRebuildAndDeployDoesNotNotifyAfterBuildFailure(t *testing.T) {
+	state := &appState{userDir: t.TempDir(), sharedDir: t.TempDir(), sourcePath: filepath.Join(t.TempDir(), "missing.txt")}
+	oldNotify := notifyRuntimeChange
+	notifyRuntimeChange = func(string, string, bool) (runtimechange.Event, error) {
+		t.Fatal("runtime notification must not run after rebuild failure")
+		return runtimechange.Event{}, nil
+	}
+	defer func() { notifyRuntimeChange = oldNotify }()
+	if err := state.rebuildAndDeployAllLexicons(); err == nil {
+		t.Fatal("expected rebuild failure")
 	}
 }
 

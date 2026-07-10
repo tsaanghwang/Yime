@@ -11,6 +11,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/EasyIME/pime-go/input_methods/yime/diagnostics"
+	"github.com/EasyIME/pime-go/input_methods/yime/runtimechange"
 	"github.com/EasyIME/pime-go/input_methods/yime/settings"
 	"github.com/EasyIME/pime-go/input_methods/yime/toolhub"
 	"github.com/EasyIME/pime-go/input_methods/yime/userlexicon"
@@ -33,6 +34,15 @@ type testBackend struct {
 	horizontal       bool
 	schemaID         string
 	returnKeyHandled bool
+}
+
+type configurableInitBackend struct {
+	*testBackend
+	initializeResult bool
+}
+
+func (b *configurableInitBackend) Initialize(sharedDir, userDir string, firstRun bool) bool {
+	return b.initializeResult
 }
 
 type backendPagingTestBackend struct {
@@ -350,8 +360,56 @@ func TestNewInitialState(t *testing.T) {
 	}
 }
 
+func TestRuntimeSettingsChangeSynchronizesActiveIME(t *testing.T) {
+	root := t.TempDir()
+	t.Setenv("APPDATA", root)
+	userDir := filepath.Join(root, APP, "Rime")
+	if err := settings.WriteState(userDir, settings.State{ReverseLookupDisplayMode: "hidden", CandidateLayout: "vertical"}); err != nil {
+		t.Fatal(err)
+	}
+	event, err := runtimechange.Notify(userDir, runtimechange.ScopeSettings, false)
+	if err != nil {
+		t.Fatal(err)
+	}
+	ime := newTestIME()
+	ime.pollRuntimeChange()
+	if ime.runtimeChangeRevision != event.Revision {
+		t.Fatalf("expected revision %d, got %d", event.Revision, ime.runtimeChangeRevision)
+	}
+	if ime.reverseLookupDisplayMode != "hidden" || ime.style.CandidatePerRow != verticalCandidatesPerRow {
+		t.Fatalf("settings were not synchronized: mode=%q perRow=%d", ime.reverseLookupDisplayMode, ime.style.CandidatePerRow)
+	}
+	if ime.pendingSchemaRedeploy != "" {
+		t.Fatalf("non-build settings change should not redeploy, got %q", ime.pendingSchemaRedeploy)
+	}
+}
+
+func TestRuntimeLexiconChangeClearsCachesAndSchedulesRedeploy(t *testing.T) {
+	root := t.TempDir()
+	t.Setenv("APPDATA", root)
+	userDir := filepath.Join(root, APP, "Rime")
+	if _, err := runtimechange.Notify(userDir, runtimechange.ScopeLexicon, true); err != nil {
+		t.Fatal(err)
+	}
+	ime := newTestIME()
+	ime.reversePinyinLoaded["yime_variable"] = true
+	ime.yimePinyinLoaded["yime_variable"] = true
+	ime.pollRuntimeChange()
+	if ime.pendingSchemaRedeploy != "yime_variable" {
+		t.Fatalf("expected yime_variable redeploy, got %q", ime.pendingSchemaRedeploy)
+	}
+	if len(ime.reversePinyinLoaded) != 0 || len(ime.yimePinyinLoaded) != 0 {
+		t.Fatal("expected lexicon-derived caches to be cleared")
+	}
+}
+
 func TestInitWithMissingUserDirDoesNotPanic(t *testing.T) {
 	t.Setenv("APPDATA", t.TempDir())
+	oldFactory := createRimeBackend
+	createRimeBackend = func() rimeBackend {
+		return &configurableInitBackend{testBackend: newTestBackend(), initializeResult: false}
+	}
+	t.Cleanup(func() { createRimeBackend = oldFactory })
 	ime := New(&pime.Client{ID: "test-client"}).(*IME)
 
 	if !ime.Init(&pime.Request{}) {
@@ -363,16 +421,14 @@ func TestInitWithMissingUserDirDoesNotPanic(t *testing.T) {
 }
 
 func TestRimeInitRetryAfterFailure(t *testing.T) {
-	rimeInitMu.Lock()
-	rimeInitDone = false
-	rimeInitOK = false
-	rimeInitMu.Unlock()
-	t.Cleanup(func() {
-		rimeInitMu.Lock()
-		rimeInitDone = false
-		rimeInitOK = false
-		rimeInitMu.Unlock()
-	})
+	oldFactory := createRimeBackend
+	initializeResults := []bool{false, true}
+	createRimeBackend = func() rimeBackend {
+		result := initializeResults[0]
+		initializeResults = initializeResults[1:]
+		return &configurableInitBackend{testBackend: newTestBackend(), initializeResult: result}
+	}
+	t.Cleanup(func() { createRimeBackend = oldFactory })
 
 	badDir := t.TempDir()
 	t.Setenv("APPDATA", badDir)
@@ -381,17 +437,6 @@ func TestRimeInitRetryAfterFailure(t *testing.T) {
 	ime.Init(&pime.Request{})
 	if ime.BackendAvailable() {
 		t.Fatal("expected backend unavailable with missing Rime data")
-	}
-
-	rimeInitMu.Lock()
-	doneAfterFirst := rimeInitDone
-	okAfterFirst := rimeInitOK
-	rimeInitMu.Unlock()
-	if !doneAfterFirst {
-		t.Fatal("expected rimeInitDone true after first init attempt")
-	}
-	if okAfterFirst {
-		t.Fatal("expected rimeInitOK false after failed init")
 	}
 
 	goodDir := t.TempDir()
@@ -403,12 +448,11 @@ func TestRimeInitRetryAfterFailure(t *testing.T) {
 
 	ime2 := New(&pime.Client{ID: "test-client-2"}).(*IME)
 	ime2.Init(&pime.Request{})
-
-	rimeInitMu.Lock()
-	doneAfterRetry := rimeInitDone
-	rimeInitMu.Unlock()
-	if !doneAfterRetry {
-		t.Fatal("expected rimeInitDone true after retry")
+	if !ime2.BackendAvailable() {
+		t.Fatal("expected a later initialization attempt to install the available backend")
+	}
+	if len(initializeResults) != 0 {
+		t.Fatalf("expected both initialization attempts to run, remaining=%d", len(initializeResults))
 	}
 }
 
@@ -1400,6 +1444,33 @@ func TestLanguageBarToggleButtonsUseStableTwoCharacterLabels(t *testing.T) {
 	}
 }
 
+func TestNativeLanguageBarLeavesToggleIdentityAndSortToHost(t *testing.T) {
+	root := filepath.Clean(filepath.Join("..", "..", ".."))
+	paths := []string{
+		filepath.Join(root, "PIMETextService", "PIMELangBarButton.cpp"),
+		filepath.Join(root, "PIMETextService", "PIMELangBarButton.h"),
+		filepath.Join(root, "PIMETextService", "PIMEClient.cpp"),
+		filepath.Join(root, "PIMETextService", "PIMEClient.h"),
+	}
+	var combined strings.Builder
+	for _, path := range paths {
+		data, err := os.ReadFile(path)
+		if err != nil {
+			t.Fatal(err)
+		}
+		combined.Write(data)
+	}
+	source := combined.String()
+	for _, forbidden := range []string{"nextLangBarButtonSort_", "sortOrder_", "info->ulSort", "_GUID_LBI_SWITCH_LANG", "_GUID_LBI_SWITCH_SHAPE", "_GUID_LBI_CANDIDATE_LAYOUT"} {
+		if strings.Contains(source, forbidden) {
+			t.Fatalf("native language bar must leave toggle identity and ordering to the host; found %q", forbidden)
+		}
+	}
+	if !strings.Contains(source, "_GUID_LBI_INPUTMODE") {
+		t.Fatal("the Windows input-mode icon must retain its system GUID")
+	}
+}
+
 func findLangBarButton(buttons []pime.ButtonInfo, id string) *pime.ButtonInfo {
 	for i := range buttons {
 		if buttons[i].ID == id {
@@ -1557,9 +1628,8 @@ func TestCandidatePageSizeCommandUpdatesCurrentUserSchema(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	customNorm := strings.ReplaceAll(string(customData), "\r\n", "\n")
-	if !strings.Contains(customNorm, "  menu/page_size: 7\n") && !strings.Contains(customNorm, "  \"menu/page_size\": 7\n") {
-		t.Fatalf("expected current schema custom page size 7, got %q", customNorm)
+	if got := readPageSizeFromCustomConfig(filepath.Join(ime.userDir(), "yime_variable.custom.yaml")); got != 7 {
+		t.Fatalf("expected current schema custom page size 7, got %d from %q", got, string(customData))
 	}
 	if backend.destroyCount != 1 || !backend.session {
 		t.Fatalf("expected current Rime session to reload after page size change, destroyCount=%d session=%t", backend.destroyCount, backend.session)
@@ -2877,16 +2947,16 @@ func TestLookupStandardPinyinPartialMissing(t *testing.T) {
 		},
 	}
 
-	if got := ime.lookupStandardPinyin("你好"); got != "ní hǎo" {
+	if got := ime.lookupStandardPinyin("你好"); got != "nǐ hǎo" {
 		t.Fatalf("expected full pinyin, got %q", got)
 	}
-	if got := ime.lookupStandardPinyin("你𠀀"); got != "ní ?" {
+	if got := ime.lookupStandardPinyin("你𠀀"); got != "nǐ ?" {
 		t.Fatalf("expected partial pinyin with placeholder for CJKV char without mapping, got %q", got)
 	}
 	if got := ime.lookupStandardPinyin("𠀀好"); got != "? hǎo" {
 		t.Fatalf("expected leading placeholder for CJKV char without mapping, got %q", got)
 	}
-	if got := ime.lookupStandardPinyin("你𠀀好"); got != "ní ? hǎo" {
+	if got := ime.lookupStandardPinyin("你𠀀好"); got != "nǐ ? hǎo" {
 		t.Fatalf("expected mixed pinyin with middle placeholder, got %q", got)
 	}
 }

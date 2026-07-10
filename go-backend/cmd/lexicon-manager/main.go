@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+	"sync"
 	"syscall"
 	"time"
 	"unsafe"
@@ -23,6 +24,7 @@ const (
 	wmAppLoadDone  = 0x0400 + 2
 	wmAppRefresh   = 0x0400 + 3
 	wmAppShowError = 0x0400 + 4
+	wmAppApplyDone = 0x0400 + 5
 
 	enChange = 0x0300 // EN_CHANGE
 
@@ -181,6 +183,9 @@ type appState struct {
 	clientW           int32
 	clientH           int32
 	addOnLoad         bool
+	applyMu           sync.Mutex
+	applyRunning      bool
+	applyErr          error
 }
 
 func main() {
@@ -383,6 +388,9 @@ func (state *appState) wndProc(hwnd syscall.Handle, message uint32, wParam, lPar
 	case wmAppShowError:
 		showMessageBox(state.readQueuedError(lParam), 0x10)
 		return 0
+	case wmAppApplyDone:
+		state.finishApplyLexicon()
+		return 0
 	case win32ui.WmDeferredPresent:
 		win32ui.PresentMainWindow(state.mainHWND)
 		return 0
@@ -393,6 +401,10 @@ func (state *appState) wndProc(hwnd syscall.Handle, message uint32, wParam, lPar
 		ret, _, _ := procDefWindowProcW.Call(uintptr(hwnd), uintptr(message), wParam, lParam)
 		return ret
 	case 0x0010:
+		if state.isApplyRunning() {
+			setWindowText(state.statusHWND, "正在应用用户词库，请等待完成后再关闭。")
+			return 0
+		}
 		if state.dirty {
 			if !showConfirmDialog(state.mainHWND, "退出词库管理", "源词库有未应用改动，确认要关闭吗？") {
 				return 0
@@ -436,6 +448,9 @@ func findExistingWindow(className string) syscall.Handle {
 func (state *appState) handleCommand(wParam, _ uintptr) {
 	id := int(wParam & 0xffff)
 	notify := int((wParam >> 16) & 0xffff)
+	if state.isApplyRunning() && id != idBtnOpenFolder {
+		return
+	}
 	if id == idSearchEdit && notify == enChange {
 		state.refreshList()
 		return

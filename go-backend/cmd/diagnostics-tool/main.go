@@ -18,8 +18,8 @@ import (
 )
 
 const (
-	wmAppCommand  = 0x0400 + 1
-	wmAppRefresh  = 0x0400 + 2
+	wmAppCommand = 0x0400 + 1
+	wmAppRefresh = 0x0400 + 2
 
 	wsExControlparent  = 0x00010000
 	wsExAppwindow      = 0x00040000
@@ -28,19 +28,19 @@ const (
 	swRestore    = 9
 	swShowNormal = 1
 
-	cfUnicode   = 13
+	cfUnicode    = 13
 	gmemMoveable = 0x0002
 
-	idStatusView      = 101
-	idPresetCombo     = 102
-	idIncludeEnv      = 103
-	idIncludeActions  = 104
-	idIncludeLogs     = 105
-	idAnonymize       = 106
-	idBtnRefresh      = 201
-	idBtnCopy         = 202
-	idBtnGuide        = 203
-	idBtnLogs         = 204
+	idStatusView     = 101
+	idPresetCombo    = 102
+	idIncludeEnv     = 103
+	idIncludeActions = 104
+	idIncludeLogs    = 105
+	idAnonymize      = 106
+	idBtnRefresh     = 201
+	idBtnCopy        = 202
+	idBtnGuide       = 203
+	idBtnLogs        = 204
 )
 
 var (
@@ -80,6 +80,7 @@ var (
 	procGlobalAlloc          = modkernel32.NewProc("GlobalAlloc")
 	procGlobalLock           = modkernel32.NewProc("GlobalLock")
 	procGlobalUnlock         = modkernel32.NewProc("GlobalUnlock")
+	procRtlMoveMemory        = modkernel32.NewProc("RtlMoveMemory")
 
 	wndProcCallback uintptr
 )
@@ -113,13 +114,13 @@ type rect struct{ Left, Top, Right, Bottom int32 }
 type initCommonControlsEx struct{ Size, ICC uint32 }
 
 type appState struct {
-	ctx        diagnostics.Context
-	mainHWND   syscall.Handle
-	statusHWND syscall.Handle
-	envHWND    syscall.Handle
+	ctx         diagnostics.Context
+	mainHWND    syscall.Handle
+	statusHWND  syscall.Handle
+	envHWND     syscall.Handle
 	actionsHWND syscall.Handle
-	logsHWND   syscall.Handle
-	anonHWND   syscall.Handle
+	logsHWND    syscall.Handle
+	anonHWND    syscall.Handle
 }
 
 func main() {
@@ -133,10 +134,10 @@ func main() {
 		os.Exit(1)
 	}
 	state := &appState{ctx: diagnostics.Context{
-		UserDir: strings.TrimSpace(*userDir),
+		UserDir:   strings.TrimSpace(*userDir),
 		SharedDir: strings.TrimSpace(*sharedDir),
-		HelpDir: strings.TrimSpace(*helpDir),
-		LogDir: strings.TrimSpace(*logDir),
+		HelpDir:   strings.TrimSpace(*helpDir),
+		LogDir:    strings.TrimSpace(*logDir),
 	}}
 	if state.ctx.LogDir == "" {
 		state.ctx.LogDir = strings.TrimSpace(os.Getenv("LOCALAPPDATA"))
@@ -330,7 +331,7 @@ func setClipboardText(text string) error {
 	if lock == 0 {
 		return fmt.Errorf("无法锁定剪贴板内存")
 	}
-	copy((*[1 << 20]uint16)(unsafe.Pointer(lock))[:len(utf16):len(utf16)], utf16)
+	procRtlMoveMemory.Call(lock, uintptr(unsafe.Pointer(&utf16[0])), uintptr(size))
 	procGlobalUnlock.Call(mem)
 	r, _, _ := procSetClipboardData.Call(cfUnicode, mem)
 	if r == 0 {

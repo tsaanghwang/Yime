@@ -13,6 +13,7 @@ import (
 	"unsafe"
 
 	"github.com/EasyIME/pime-go/input_methods/yime/reverselookup"
+	"github.com/EasyIME/pime-go/input_methods/yime/runtimechange"
 	"github.com/EasyIME/pime-go/input_methods/yime/settings"
 	"github.com/EasyIME/pime-go/input_methods/yime/systemlexicon"
 	"github.com/EasyIME/pime-go/input_methods/yime/toolhub"
@@ -21,6 +22,7 @@ import (
 )
 
 var invokeRimeBuild = settings.InvokeRimeBuild
+var notifyRuntimeChange = runtimechange.Notify
 
 var errPhraseInSystemLexicon = errors.New("该词条已存在于系统词库中，无需重复添加")
 
@@ -392,15 +394,45 @@ func (state *appState) applyLexicon() {
 		showMessageBox(err.Error(), 0x10)
 		return
 	}
-	if err := state.rebuildAndDeployAllLexicons(); err != nil {
+	state.applyMu.Lock()
+	if state.applyRunning {
+		state.applyMu.Unlock()
+		return
+	}
+	state.applyRunning = true
+	state.applyMu.Unlock()
+	setWindowText(state.statusHWND, "正在重建并应用三套用户词库，请稍候……")
+	go func() {
+		err := state.rebuildAndDeployAllLexicons()
+		state.applyMu.Lock()
+		state.applyErr = err
+		state.applyMu.Unlock()
+		procPostMessageW.Call(uintptr(state.mainHWND), wmAppApplyDone, 0, 0)
+	}()
+}
+
+func (state *appState) isApplyRunning() bool {
+	state.applyMu.Lock()
+	defer state.applyMu.Unlock()
+	return state.applyRunning
+}
+
+func (state *appState) finishApplyLexicon() {
+	state.applyMu.Lock()
+	err := state.applyErr
+	state.applyErr = nil
+	state.applyRunning = false
+	state.applyMu.Unlock()
+	if err != nil {
 		showMessageBox(err.Error(), 0x10)
+		setWindowText(state.statusHWND, "应用失败。")
 		return
 	}
 	state.dirty = false
 	state.refreshList()
 	state.addOperationHistory("应用用户词库并重建三种模式")
-	setWindowText(state.statusHWND, "已重建 variable / full / shorthand 三套用户词库。")
-	showNoticeDialog(state.mainHWND, "应用完成", "用户词库格式校验通过，已重建 variable / full / shorthand 三套用户词库。")
+	setWindowText(state.statusHWND, "已重建三套用户词库；活动输入会话将在下一次操作前刷新。")
+	showNoticeDialog(state.mainHWND, "应用完成", "用户词库格式校验通过，已重建 variable / full / shorthand 三套用户词库。活动输入会话将在下一次操作前刷新。")
 }
 
 func (state *appState) rebuildAllLexicons() error {
@@ -421,7 +453,11 @@ func (state *appState) rebuildAndDeployAllLexicons() error {
 	if err := state.rebuildAllLexicons(); err != nil {
 		return err
 	}
-	return invokeRimeBuild(state.userDir, state.sharedDir)
+	if err := invokeRimeBuild(state.userDir, state.sharedDir); err != nil {
+		return err
+	}
+	_, err := notifyRuntimeChange(state.userDir, runtimechange.ScopeLexicon, true)
+	return err
 }
 
 func (state *appState) importLexicon() {

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"sync"
 	"syscall"
 	"unsafe"
 
@@ -336,17 +337,15 @@ func showImportModeDialog(owner syscall.Handle, message string) int {
 }
 
 var (
-	procEndDialog         = moduser32.NewProc("EndDialog")
-	procGetDlgItem        = moduser32.NewProc("GetDlgItem")
-	procEnableWindow      = moduser32.NewProc("EnableWindow")
-	procGetWindowRect     = moduser32.NewProc("GetWindowRect")
-	procUnregisterClassW  = moduser32.NewProc("UnregisterClassW")
-	procDestroyWindow     = moduser32.NewProc("DestroyWindow")
-	procSetWindowLongPtrW = moduser32.NewProc("SetWindowLongPtrW")
-	procGetWindowLongPtrW = moduser32.NewProc("GetWindowLongPtrW")
-
-	gwlpUserdata = ^uintptr(20)
+	procEndDialog        = moduser32.NewProc("EndDialog")
+	procGetDlgItem       = moduser32.NewProc("GetDlgItem")
+	procEnableWindow     = moduser32.NewProc("EnableWindow")
+	procGetWindowRect    = moduser32.NewProc("GetWindowRect")
+	procUnregisterClassW = moduser32.NewProc("UnregisterClassW")
+	procDestroyWindow    = moduser32.NewProc("DestroyWindow")
 )
+
+var modalContexts sync.Map
 
 type modalFormContext struct {
 	accepted    *bool
@@ -355,12 +354,12 @@ type modalFormContext struct {
 }
 
 func modalWndProc(hwnd syscall.Handle, msg uint32, wParam, lParam uintptr) uintptr {
-	ctxPtr, _, _ := procGetWindowLongPtrW.Call(uintptr(hwnd), gwlpUserdata)
-	if ctxPtr == 0 {
+	value, ok := modalContexts.Load(hwnd)
+	if !ok {
 		ret, _, _ := procDefWindowProcW.Call(uintptr(hwnd), uintptr(msg), wParam, lParam)
 		return ret
 	}
-	ctx := (*modalFormContext)(unsafe.Pointer(ctxPtr))
+	ctx := value.(*modalFormContext)
 	switch msg {
 	case 0x0111:
 		id := int(wParam & 0xffff)
@@ -379,6 +378,7 @@ func modalWndProc(hwnd syscall.Handle, msg uint32, wParam, lParam uintptr) uintp
 		return 0
 	case 0x0002:
 		*ctx.modalClosed = true
+		modalContexts.Delete(hwnd)
 		return 0
 	}
 	ret, _, _ := procDefWindowProcW.Call(uintptr(hwnd), uintptr(msg), wParam, lParam)
@@ -442,7 +442,8 @@ func showModalForm(owner syscall.Handle, title string, width, height int32, buil
 	if dlg == 0 {
 		return false
 	}
-	procSetWindowLongPtrW.Call(uintptr(dlg), gwlpUserdata, uintptr(unsafe.Pointer(&ctx)))
+	modalContexts.Store(dlg, &ctx)
+	defer modalContexts.Delete(dlg)
 	build(dlg)
 	if owner != 0 {
 		procEnableWindow.Call(uintptr(owner), 0)

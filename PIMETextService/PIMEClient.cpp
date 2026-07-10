@@ -72,7 +72,6 @@ static bool isCandidateWindowKey(Ime::KeyEvent& keyEvent) {
 Client::Client(TextService* service, REFIID langProfileGuid):
 	textService_(service),
 	pipe_(INVALID_HANDLE_VALUE),
-	nextLangBarButtonSort_(0),
 	nextSeqNum_(0),
 	isActivated_(false),
 	guid_{ uuidToString(langProfileGuid) },
@@ -289,7 +288,7 @@ void Client::updateLanguageButtons(json& msg) {
 	if (addButtonVal.is_array()) {
 		for (auto& btn : addButtonVal) {
 			// FIXME: when to clear the id <=> button map??
-			auto langBtn = Ime::ComPtr<PIME::LangBarButton>::takeover(PIME::LangBarButton::fromJson(textService_, btn, nextLangBarButtonSort_++));
+			auto langBtn = Ime::ComPtr<PIME::LangBarButton>::takeover(PIME::LangBarButton::fromJson(textService_, btn));
 			if (langBtn != nullptr) {
 				buttons_.emplace(langBtn->id(), langBtn); // insert into the map
 				textService_->addButton(langBtn);
@@ -923,7 +922,6 @@ void Client::resetTextServiceState() {
 		}
 		buttons_.clear();
 	}
-	nextLangBarButtonSort_ = 0;
 }
 
 void Client::closeRpcConnection() {

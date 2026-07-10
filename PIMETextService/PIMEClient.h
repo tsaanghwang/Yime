@@ -113,7 +113,6 @@ private:
 	std::string guid_;
 	HANDLE pipe_;
 	std::unordered_map<std::string, Ime::ComPtr<PIME::LangBarButton>> buttons_; // map buttons to string IDs
-	ULONG nextLangBarButtonSort_;
 	unsigned int nextSeqNum_;
 	bool isActivated_;
 	bool shouldWaitConnection_;

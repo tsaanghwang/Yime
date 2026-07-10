@@ -31,9 +31,9 @@ class TextService;
 
 class LangBarButton : public Ime::LangBarButton {
 public:
-	LangBarButton(TextService* service, const std::string& id, const GUID& guid, ULONG sortOrder, UINT commandId = 0, const wchar_t* text = NULL, DWORD style = TF_LBI_STYLE_BTN_BUTTON);
+	LangBarButton(TextService* service, const std::string& id, const GUID& guid, UINT commandId = 0, const wchar_t* text = NULL, DWORD style = TF_LBI_STYLE_BTN_BUTTON);
 
-	static LangBarButton* fromJson(TextService* service, nlohmann::json& info, ULONG sortOrder);
+	static LangBarButton* fromJson(TextService* service, nlohmann::json& info);
 	void updateFromJson(nlohmann::json& info);
 
 	const std::string& id() const {
@@ -44,9 +44,6 @@ public:
 
 	static void clearIconCache();
 
-	// ITfLangBarItem
-	STDMETHODIMP GetInfo(TF_LANGBARITEMINFO* info);
-
 	// ITfLangBarItemButton
 	STDMETHODIMP OnClick(TfLBIClick click, POINT pt, const RECT *prcArea);
 	STDMETHODIMP InitMenu(ITfMenu *pMenu);
@@ -56,7 +53,6 @@ protected:
 
 private:
 	std::string id_;
-	ULONG sortOrder_;
     std::wstring iconFile_;
 	static std::unordered_map<std::wstring, HICON> iconCache_; // cache loaded icons
 };

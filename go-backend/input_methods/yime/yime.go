@@ -15,6 +15,7 @@ import (
 	"time"
 	"unicode/utf8"
 
+	"github.com/EasyIME/pime-go/input_methods/yime/runtimechange"
 	"github.com/EasyIME/pime-go/pime"
 )
 
@@ -144,6 +145,7 @@ type backendUserDataSyncer interface {
 }
 
 var runRimeExternalBuild = runRimeExternalBuildDefault
+var createRimeBackend = newNativeBackend
 var scheduleStandaloneToolLaunch = func(run func() error, onError func(error)) {
 	go func() {
 		time.Sleep(300 * time.Millisecond)
@@ -169,6 +171,7 @@ type IME struct {
 	yimePinyinLoaded         map[string]bool
 	candidatePageSize        int
 	pendingSchemaRedeploy    string
+	runtimeChangeRevision    int64
 	candidatePageStart       int
 	candidateBackendIndexMap []int
 	keysDown                 map[int]bool
@@ -203,6 +206,7 @@ func New(client *pime.Client) pime.TextService {
 }
 
 func (ime *IME) HandleRequest(req *pime.Request) *pime.Response {
+	ime.pollRuntimeChange()
 	if req != nil && ime.shouldApplyPendingSchemaRedeploy(req.Method) {
 		ime.applyPendingSchemaRedeploy()
 	}
@@ -628,8 +632,11 @@ func (ime *IME) Init(req *pime.Request) bool {
 		return true
 	}
 	userDir := filepath.Join(appData, APP, "Rime")
+	if event, err := runtimechange.Read(userDir); err == nil {
+		ime.runtimeChangeRevision = event.Revision
+	}
 
-	real := newNativeBackend()
+	real := createRimeBackend()
 	if real != nil && real.Initialize(sharedDir, userDir, false) {
 		ime.backend = real
 		if ps := readPageSizeFromCustomConfig(filepath.Join(userDir, "default.custom.yaml")); ps >= minCandidatePageSize && ps <= maxCandidatePageSize {
@@ -639,6 +646,30 @@ func (ime *IME) Init(req *pime.Request) bool {
 		ime.backend = nil
 	}
 	return true
+}
+
+func (ime *IME) pollRuntimeChange() {
+	userDir := ime.userDir()
+	if userDir == "" {
+		return
+	}
+	event, err := runtimechange.Read(userDir)
+	if err != nil || event.Revision <= ime.runtimeChangeRevision {
+		return
+	}
+	ime.runtimeChangeRevision = event.Revision
+	if event.Scope == runtimechange.ScopeSettings {
+		ime.syncStandaloneUISettings()
+	}
+	if event.Scope == runtimechange.ScopeLexicon {
+		ime.reversePinyinLoaded = map[string]bool{}
+		ime.reversePinyinBySchema = map[string]map[string]string{}
+		ime.yimePinyinLoaded = map[string]bool{}
+		ime.yimePinyinBySchema = map[string]map[string]string{}
+	}
+	if event.RequiresRedeploy && ime.backend != nil {
+		ime.pendingSchemaRedeploy = ime.currentSchemaID()
+	}
 }
 
 func (ime *IME) Close() {
