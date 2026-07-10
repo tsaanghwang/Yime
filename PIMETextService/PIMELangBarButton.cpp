@@ -36,15 +36,16 @@ namespace PIME {
 // static
 std::unordered_map<std::wstring, HICON> LangBarButton::iconCache_; // cache loaded icons
 
-LangBarButton::LangBarButton(TextService* service, const std::string& id, const GUID& guid, UINT commandId, const wchar_t* text, DWORD style):
+LangBarButton::LangBarButton(TextService* service, const std::string& id, const GUID& guid, ULONG sortOrder, UINT commandId, const wchar_t* text, DWORD style):
 	Ime::LangBarButton(service, guid, commandId, text, style),
-	id_(id) {
+	id_(id),
+	sortOrder_(sortOrder) {
 }
 
 LangBarButton::~LangBarButton() {
 }
 
-LangBarButton* LangBarButton::fromJson(TextService* service, json& info) {
+LangBarButton* LangBarButton::fromJson(TextService* service, json& info, ULONG sortOrder) {
 	if (info.is_object()) {
 		std::string id;
 		const auto idIt = info.find("id");
@@ -66,7 +67,7 @@ LangBarButton* LangBarButton::fromJson(TextService* service, json& info) {
 			CoCreateGuid(&guid);
 		}
 
-		LangBarButton* langBtn = new LangBarButton(service, id, guid, 0, NULL, style);
+		LangBarButton* langBtn = new LangBarButton(service, id, guid, sortOrder, 0, NULL, style);
 		if (langBtn != nullptr) {
 			langBtn->updateFromJson(info);
 			return langBtn;
@@ -171,6 +172,14 @@ void LangBarButton::clearIconCache() {
 		DestroyIcon(it->second);
 	}
 	iconCache_.clear();
+}
+
+STDMETHODIMP LangBarButton::GetInfo(TF_LANGBARITEMINFO* info) {
+	HRESULT result = Ime::LangBarButton::GetInfo(info);
+	if (SUCCEEDED(result)) {
+		info->ulSort = sortOrder_;
+	}
+	return result;
 }
 
 STDMETHODIMP LangBarButton::OnClick(TfLBIClick click, POINT pt, const RECT* prcArea) {
