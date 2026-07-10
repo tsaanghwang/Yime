@@ -26,6 +26,8 @@ add_definitions(
     -D_WIN32_WINNT=0x0600
 )
 
+enable_testing()
+
 add_subdirectory(${PROJECT_SOURCE_DIR}/libIME2)
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/PIMETextService)
@@ -43,5 +45,3 @@ if("${CMAKE_SIZEOF_VOID_P}" EQUAL "4")
 
     add_subdirectory(${PROJECT_SOURCE_DIR}/PIMELauncher)
 endif("${CMAKE_SIZEOF_VOID_P}" EQUAL "4")
-
-enable_testing()

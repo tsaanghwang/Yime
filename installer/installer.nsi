@@ -59,6 +59,8 @@ Name "$(PRODUCT_NAME)"
 BrandingText "$(PRODUCT_NAME)"
 
 OutFile "YIME-${PRODUCT_VERSION}-setup.exe" ; The generated installer file name
+!finalize 'powershell.exe -NoProfile -ExecutionPolicy Bypass -File "..\tools\sign-file.ps1" -Path "%1"' = 0
+!uninstfinalize 'powershell.exe -NoProfile -ExecutionPolicy Bypass -File "..\tools\sign-file.ps1" -Path "%1"' = 0
 
 ; We install everything to C:\Program Files (x86)
 InstallDir "$PROGRAMFILES32\YIME"

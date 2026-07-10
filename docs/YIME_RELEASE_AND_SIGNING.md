@@ -45,7 +45,7 @@ $env:YIME_SIGNTOOL_EXE = "C:\Program Files (x86)\Windows Kits\10\bin\<version>\x
 $env:YIME_TIMESTAMP_URL = "http://timestamp.digicert.com"
 ```
 
-`YIME_SIGNTOOL_EXE` 和 `YIME_TIMESTAMP_URL` 可省略；脚本会尝试从 `PATH` 查找 `signtool.exe`，并使用默认时间戳服务。只要设置了 `YIME_SIGN_CERT_SHA1`，任何一个 EXE 签名失败都必须使构建失败。
+`YIME_SIGNTOOL_EXE` 和 `YIME_TIMESTAMP_URL` 可省略；脚本会尝试从 `PATH` 查找 `signtool.exe`，并使用默认时间戳服务。正式发布还要设置 `YIME_RELEASE_SIGNING_REQUIRED=1`，缺少证书或任一签名失败都会中止构建。
 
 需要签名的 Go 文件：
 
@@ -58,18 +58,23 @@ $env:YIME_TIMESTAMP_URL = "http://timestamp.digicert.com"
 - `system-lexicon-audit.exe`
 - `blocklist-manager.exe`
 
-正式发布还应签名 TSF DLL、PIMELauncher、卸载程序和最终安装包；当前 `go-backend/build.bat` 的签名入口只覆盖 Go EXE，其他产物由发布流水线负责。
+统一签名入口：
+
+```powershell
+.\tools\sign-release.ps1 -RequireComplete
+```
+
+该脚本覆盖 Go EXE、`rime_deployer.exe`、PIMELauncher 和各架构 TSF DLL。NSIS 的 `!uninstfinalize` 与 `!finalize` 会分别签名卸载程序和最终安装包。
 
 验证：
 
 ```powershell
-Get-AuthenticodeSignature .\go-backend\build\go-backend\settings-tool.exe |
-  Format-List Status,StatusMessage,SignerCertificate
-
-& $env:YIME_SIGNTOOL_EXE verify /pa /all /v .\go-backend\build\go-backend\settings-tool.exe
+.\tools\verify-release-signatures.ps1 -IncludeInstaller
 ```
 
 `Status` 必须为 `Valid`，并确认时间戳和证书链有效。
+
+标签 `v*` 会触发正式发布签名门禁。仓库需配置 `YIME_SIGN_CERT_BASE64`（PFX 的 Base64）和 `YIME_SIGN_CERT_PASSWORD`；标签构建缺少密钥会直接失败。PR 与普通分支构建允许未签名测试产物，但不得作为公开发布包。
 
 ## 4. 构建与测试
 
@@ -129,4 +134,3 @@ $built.Hash -eq $installed.Hash
 - 回滚优先使用独立提交或发布标签，不使用 `git reset --hard`
 - 若 DLL 被宿主锁定，标准重装流程会自动采用就地安装；只有确需替换被锁 DLL 时才重启 Windows
 - 回滚后重新核对安装文件哈希和运行进程时间，不要只检查源码分支
-

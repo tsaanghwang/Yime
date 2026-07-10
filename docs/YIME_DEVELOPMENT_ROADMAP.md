@@ -221,9 +221,9 @@ setCandidatePageSize(size)
 | 5.3 | 默认 candidatePageSize 限制为 5 | 避免超出选择键数量 | 无 |
 | 5.4 | 词语字频回退排序 | 无 BCC 词频时用组成字频率估计，改善 weight=1 词语间排序 | Yime-python-prototype 管线 |
 | 5.5 | 组字时数字键选词模式 | 可配置，数字键在"选词"和"编码"间切换 | 编码体系配合 |
-| 5.6 | 独立工具通知活动输入会话 | 词库“应用”和设置“应用并重建”完成后显式通知当前 Go/Rime 会话刷新 | 设计轻量 IPC 或变更标记 |
-| 5.7 | 根包测试隔离 | 隔离原生 Rime 全局状态、临时数据目录和拼音缓存，使 `go test ./input_methods/yime` 全量稳定 | 保留真实 Rime 测试环境开关 |
-| 5.8 | 清理语言栏实验代码 | 评估并移除动态标签实验遗留的原生 sort/fixed-GUID 逻辑，补宿主点击回归测试 | 安装态 TSF 验证 |
+| 5.6 | 独立工具通知活动输入会话 | ✅ | 原子变更标记；设置同步、词库缓存清理和按需 redeploy |
+| 5.7 | 根包测试隔离 | ✅ | 可替换后端工厂、语义断言；全量根包测试进入 CI |
+| 5.8 | 清理语言栏实验代码 | ✅ | 移除原生 sort/fixed-GUID，保留静态标签并增加源码守卫 |
 
 ---
 
@@ -319,7 +319,9 @@ cmd /c build.bat
 
 ```powershell
 cd go-backend
-go test . ./cmd/lexicon-manager ./cmd/reverse-lookup-tool ./input_methods/yime/reverselookup ./input_methods/yime/settings ./input_methods/yime/systemlexicon ./input_methods/yime/userblocklist ./input_methods/yime/userlexicon
+go vet ./...
+go test . ./cmd/lexicon-manager ./cmd/reverse-lookup-tool ./cmd/settings-tool ./input_methods/yime/reverselookup ./input_methods/yime/runtimechange ./input_methods/yime/settings ./input_methods/yime/systemlexicon ./input_methods/yime/toolhub ./input_methods/yime/userblocklist ./input_methods/yime/userlexicon
+go test ./input_methods/yime -timeout 60s
 go vet ./...
 ```
 

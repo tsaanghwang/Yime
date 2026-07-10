@@ -17,13 +17,16 @@
 在 `go-backend` 目录运行：
 
 ```powershell
-go test . ./cmd/lexicon-manager ./cmd/reverse-lookup-tool `
+go vet ./...
+go test . ./cmd/lexicon-manager ./cmd/reverse-lookup-tool ./cmd/settings-tool `
   ./input_methods/yime/reverselookup `
+  ./input_methods/yime/runtimechange `
   ./input_methods/yime/settings `
   ./input_methods/yime/systemlexicon `
   ./input_methods/yime/toolhub `
   ./input_methods/yime/userblocklist `
   ./input_methods/yime/userlexicon
+go test ./input_methods/yime -timeout 60s
 ```
 
 根包使用与 `.github/workflows/ci.yaml` 一致的关键测试正则。修改 CI 守卫时，应同步更新 [架构文档](YIME_ARCHITECTURE.md)。
@@ -38,24 +41,11 @@ CI 当前重点保护：
 - 反查顶部单排布局与内容尺寸
 - 可复现构建和签名入口
 
-## 3. 当前全量根包测试债务
+## 3. 全量根包门禁
 
-`go test ./input_methods/yime` 当前不作为 CI 的单一门禁。以下测试仍受本机原生 Rime 全局状态、临时目录或缓存污染影响：
+`go test ./input_methods/yime -timeout 60s` 已进入 CI。普通单元测试通过可替换后端工厂、独立用户目录和语义化 YAML 断言与真实 librime 隔离；不得删除断言、放宽候选分页守卫或默认跳过普通测试来制造绿色结果。
 
-- `TestBlockedCandidatesHiddenFromResponse`
-- `TestInitWithMissingUserDirDoesNotPanic`
-- `TestRimeInitRetryAfterFailure`
-- `TestCandidatePageSizeCommandUpdatesCurrentUserSchema`
-- `TestLookupStandardPinyinPartialMissing`
-
-修复方向：
-
-- 为 Rime 初始化、外部部署和用户提示增加可替换边界
-- 每个测试使用独立的数据目录、用户目录和缓存
-- 避免真实 librime 重写测试断言所读取的 YAML
-- 清理跨测试共享的拼音与反查缓存
-
-不得通过删除断言、放宽候选分页守卫或默认跳过普通单元测试来制造绿色结果。
+独立工具通知活动会话的文件协议由 `runtimechange` 包测试，设置/词库工具还必须覆盖“成功后通知、失败不通知”。Win32 长任务应把外部部署放在 goroutine，并通过 `WM_APP` 返回 UI 线程。
 
 ## 4. 真实 Rime 集成测试
 
@@ -92,6 +82,10 @@ Win32 UI 应把可计算布局抽成纯函数并测试：
 - `TestCenteredButtonRectsCentersGroupAndPreservesGaps`
 - `TestWeightAdjustmentRectsFillContentRow`
 - `TestNoticeTitleForFlags`
+- `TestExecuteApplyNotifiesActiveSession`
+- `TestNativeLanguageBarLeavesToggleIdentityAndSortToHost`
+
+C++ RPC 回归测试通过 `ctest --test-dir build -C Release --output-on-failure` 执行，CI 不得只编译测试程序。
 
 UI 修改还必须构建对应 EXE，并在安装目录中实际打开一次；源码测试通过不代表 Smart App Control、焦点和模态行为正常。
 
@@ -145,4 +139,3 @@ cmd /c build.bat
 | Rime 配置/部署 | 设置与 Rime 测试 + 用户目录文件核对 + 安装态重载 |
 | 语言栏/TSF | 具体点击回归 + C++ 构建 + 安装态宿主验证 |
 | 发布构建 | CI 稳定集 + 可复现哈希 + 签名验证 + 安装烟雾测试 |
-

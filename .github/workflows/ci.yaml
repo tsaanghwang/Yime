@@ -3,6 +3,7 @@ name: Build
 on:
   push:
     branches: [yime-stable]
+    tags: ['v*']
   pull_request:
     branches: [yime-stable]
 
@@ -73,6 +74,10 @@ jobs:
           cmake . -Bbuild64 -G "Visual Studio 17 2022" -A x64 -DCMAKE_POLICY_VERSION_MINIMUM=3.5
           cmake --build build64 --config Release --target PIMETextService
 
+      - name: Run native C++ regression tests
+        shell: pwsh
+        run: ctest --test-dir build -C Release --output-on-failure
+
       - name: Fetch Rime shared data
         shell: pwsh
         run: |
@@ -95,7 +100,9 @@ jobs:
         shell: pwsh
         run: |
           Set-Location go-backend
-          go test . ./cmd/lexicon-manager ./input_methods/yime/reverselookup ./input_methods/yime/settings ./input_methods/yime/systemlexicon ./input_methods/yime/toolhub ./input_methods/yime/userblocklist ./input_methods/yime/userlexicon
+          go vet ./...
+          go test . ./cmd/lexicon-manager ./cmd/reverse-lookup-tool ./cmd/settings-tool ./input_methods/yime/reverselookup ./input_methods/yime/runtimechange ./input_methods/yime/settings ./input_methods/yime/systemlexicon ./input_methods/yime/toolhub ./input_methods/yime/userblocklist ./input_methods/yime/userlexicon
+          go test ./input_methods/yime -timeout 60s
           go test ./input_methods/yime -run 'Test(NativeBackendKeepsRimeOwnedCandidatePaging|LanguageBarToggleButtonsUseStableTwoCharacterLabels|DeployCommandRedeploysCurrentSchema|ApplyUserLexiconWritesAllThreeModes|ApplyUserLexiconRunsExternalBuildAndSchedulesReload|UserLexiconManagerLaunchesNativeExecutable|ToolHubLaunchesNativeExecutable|ReverseLookupToolLaunchesNativeExecutable|SettingsToolLaunchesNativeExecutable|DiagnosticsToolLaunchesNativeExecutable)$'
 
       - name: Build McBopomofo
@@ -118,11 +125,44 @@ jobs:
           Get-ChildItem -Recurse -Path "build" -Filter "*.dll" | ForEach-Object { $_.FullName }
           Get-ChildItem -Recurse -Path "build" -Filter "*.exe" | ForEach-Object { $_.FullName }
 
+      - name: Import release signing certificate
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: pwsh
+        env:
+          YIME_SIGN_CERT_BASE64: ${{ secrets.YIME_SIGN_CERT_BASE64 }}
+          YIME_SIGN_CERT_PASSWORD: ${{ secrets.YIME_SIGN_CERT_PASSWORD }}
+        run: |
+          if ([string]::IsNullOrWhiteSpace($env:YIME_SIGN_CERT_BASE64)) {
+            throw 'Tagged releases require YIME_SIGN_CERT_BASE64.'
+          }
+          $pfxPath = Join-Path $env:RUNNER_TEMP 'yime-release.pfx'
+          [IO.File]::WriteAllBytes($pfxPath, [Convert]::FromBase64String($env:YIME_SIGN_CERT_BASE64))
+          $password = ConvertTo-SecureString $env:YIME_SIGN_CERT_PASSWORD -AsPlainText -Force
+          $certificate = @(Import-PfxCertificate -FilePath $pfxPath -CertStoreLocation Cert:\CurrentUser\My -Password $password) |
+            Where-Object HasPrivateKey | Select-Object -First 1
+          if (-not $certificate) { throw 'The release certificate could not be imported.' }
+          $signTool = Get-ChildItem "${env:ProgramFiles(x86)}\Windows Kits\10\bin\*\x64\signtool.exe" |
+            Sort-Object FullName -Descending | Select-Object -First 1
+          if (-not $signTool) { throw 'signtool.exe was not found in the Windows SDK.' }
+          "YIME_SIGN_CERT_SHA1=$($certificate.Thumbprint)" | Out-File $env:GITHUB_ENV -Encoding utf8 -Append
+          "YIME_SIGNTOOL_EXE=$($signTool.FullName)" | Out-File $env:GITHUB_ENV -Encoding utf8 -Append
+          "YIME_RELEASE_SIGNING_REQUIRED=1" | Out-File $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Sign release payload
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: pwsh
+        run: .\tools\sign-release.ps1 -RequireComplete
+
       - name: Build the installer
         shell: pwsh
         run: |
           Set-Location installer
           & "C:\Program Files (x86)\NSIS\Bin\makensis.exe" "installer.nsi"
+
+      - name: Verify tagged release signatures
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: pwsh
+        run: .\tools\verify-release-signatures.ps1 -IncludeInstaller
 
       - uses: actions/upload-artifact@v6
         with:
