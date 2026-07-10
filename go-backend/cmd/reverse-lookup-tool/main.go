@@ -25,8 +25,8 @@ const (
 	wmAppCommand    = 0x0400 + 4
 	enChange        = 0x0300
 
-	wsExControlparent = 0x00010000
-	wsExAppwindow     = 0x00040000
+	wsExControlparent  = 0x00010000
+	wsExAppwindow      = 0x00040000
 	wsOverlappedwindow = 0x00CF0000
 
 	swRestore    = 9
@@ -54,18 +54,18 @@ const (
 	bmGetcheck            = 0x00F0
 	bstChecked            = 1
 
-	wsChild     = 0x40000000
-	wsVisible   = 0x10000000
-	wsBorder    = 0x00800000
-	wsVscroll   = 0x00200000
-	wsTabstop   = 0x00010000
-	lbsNotify   = 0x0001
+	wsChild       = 0x40000000
+	wsVisible     = 0x10000000
+	wsBorder      = 0x00800000
+	wsVscroll     = 0x00200000
+	wsTabstop     = 0x00010000
+	lbsNotify     = 0x0001
 	lbsHasstrings = 0x0040
-	listBoxStyle = wsChild | wsVisible | wsBorder | wsVscroll | wsTabstop | lbsNotify | lbsHasstrings
+	listBoxStyle  = wsChild | wsVisible | wsBorder | wsVscroll | wsTabstop | lbsNotify | lbsHasstrings
 
-	esMultiline   = 0x0004
-	esReadonly    = 0x0800
-	esAutoVscroll = 0x0040
+	esMultiline     = 0x0004
+	esReadonly      = 0x0800
+	esAutoVscroll   = 0x0040
 	detailViewStyle = wsChild | wsVisible | wsBorder | wsVscroll | wsTabstop | esMultiline | esReadonly | esAutoVscroll
 )
 
@@ -208,10 +208,9 @@ func buildUILayout() uiLayout {
 	const (
 		margin       = int32(12)
 		gap          = int32(8)
-		rowGap       = int32(6)
 		rowH         = int32(26)
-		clientW      = int32(680)
 		searchLabelW = int32(60)
+		searchEditW  = int32(248)
 		searchBtnW   = int32(64)
 		containsW    = int32(104)
 		modeLabelW   = int32(40)
@@ -221,33 +220,32 @@ func buildUILayout() uiLayout {
 		statusH      = int32(44)
 	)
 
-	row1Y := int32(10)
-	row2Y := row1Y + rowH + rowGap
-
-	layout := uiLayout{clientW: clientW}
+	rowY := int32(10)
+	layout := uiLayout{}
 
 	x := margin
-	layout.searchLabel = rect{x, row1Y + 4, x + searchLabelW, row1Y + 4 + 18}
-	searchEditLeft := margin + searchLabelW + gap
-	searchBtnLeft := clientW - margin - searchBtnW
-	layout.searchEdit = rect{searchEditLeft, row1Y, searchBtnLeft - gap, row1Y + rowH}
-	layout.searchButton = rect{searchBtnLeft, row1Y, clientW - margin, row1Y + rowH}
-
-	x = margin
-	layout.containsCheck = rect{x, row2Y + 2, x + containsW, row2Y + 2 + 22}
+	layout.searchLabel = rect{x, rowY + 4, x + searchLabelW, rowY + 4 + 18}
+	x = layout.searchLabel.Right + gap
+	layout.searchEdit = rect{x, rowY, x + searchEditW, rowY + rowH}
+	x = layout.searchEdit.Right + gap
+	layout.containsCheck = rect{x, rowY + 2, x + containsW, rowY + 2 + 22}
 	x += containsW + gap
-	layout.modeLabel = rect{x, row2Y + 4, x + modeLabelW, row2Y + 4 + 18}
+	layout.modeLabel = rect{x, rowY + 4, x + modeLabelW, rowY + 4 + 18}
 	x += modeLabelW + gap
-	layout.modeCombo = rect{x, row2Y, x + modeComboW, row2Y + 120}
+	layout.modeCombo = rect{x, rowY, x + modeComboW, rowY + 120}
+	x += modeComboW + gap
+	layout.searchButton = rect{x, rowY, x + searchBtnW, rowY + rowH}
+	contentRight := layout.searchButton.Right
+	layout.clientW = contentRight + margin
 
-	listY := row2Y + rowH + gap
-	layout.resultList = rect{margin, listY, clientW - margin, listY + listH}
+	listY := rowY + rowH + gap
+	layout.resultList = rect{margin, listY, contentRight, listY + listH}
 
 	detailY := layout.resultList.Bottom + gap
-	layout.detailView = rect{margin, detailY, clientW - margin, detailY + detailH}
+	layout.detailView = rect{margin, detailY, contentRight, detailY + detailH}
 
 	statusY := layout.detailView.Bottom + gap
-	layout.statusLabel = rect{margin, statusY, clientW - margin, statusY + statusH}
+	layout.statusLabel = rect{margin, statusY, contentRight, statusY + statusH}
 
 	layout.clientH = layout.statusLabel.Bottom + margin
 	return layout
