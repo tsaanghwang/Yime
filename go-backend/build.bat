@@ -92,7 +92,8 @@ set "GOARCH=amd64"
 set "CGO_ENABLED=0"
 
 set "APP_VERSION=1.0.0"
-for /f "tokens=*" %%v in ('git describe --tags --always --dirty 2^>nul') do set "APP_VERSION=%%v"
+if exist "%PIME_ROOT%\version.txt" set /p APP_VERSION=<"%PIME_ROOT%\version.txt"
+set "GO_REPRO_FLAGS=-trimpath -buildvcs=false"
 
 echo [INFO] App version: %APP_VERSION%
 
@@ -104,7 +105,7 @@ if errorlevel 1 (
 )
 
 echo [INFO] Building server.exe with dynamic DLL loading ...
-go build -ldflags "-s -w -X main.version=%APP_VERSION%" -o "%SERVER_EXE%" .
+go build %GO_REPRO_FLAGS% -ldflags "-s -w -X main.version=%APP_VERSION%" -o "%SERVER_EXE%" .
 if errorlevel 1 (
     echo [ERROR] Failed to build server.exe
     if exist rsrc_server_windows_amd64.syso del rsrc_server_windows_amd64.syso
@@ -124,7 +125,7 @@ if errorlevel 1 (
 )
 
 echo [INFO] Building reverse-lookup.exe ...
-go build -ldflags "-s -w -H=windowsgui -X main.version=%APP_VERSION%" -o "%REVERSE_LOOKUP_EXE%" .\cmd\reverse-lookup-tool
+go build %GO_REPRO_FLAGS% -ldflags "-s -w -H=windowsgui -X main.version=%APP_VERSION%" -o "%REVERSE_LOOKUP_EXE%" .\cmd\reverse-lookup-tool
 if errorlevel 1 (
     echo [ERROR] Failed to build reverse-lookup.exe
     if exist cmd\reverse-lookup-tool\rsrc_reverse_windows_amd64.syso del cmd\reverse-lookup-tool\rsrc_reverse_windows_amd64.syso
@@ -144,7 +145,7 @@ if errorlevel 1 (
 )
 
 echo [INFO] Building tool-hub.exe ...
-go build -ldflags "-s -w -H=windowsgui -X main.version=%APP_VERSION%" -o "%TOOL_HUB_EXE%" .\cmd\tool-hub
+go build %GO_REPRO_FLAGS% -ldflags "-s -w -H=windowsgui -X main.version=%APP_VERSION%" -o "%TOOL_HUB_EXE%" .\cmd\tool-hub
 if errorlevel 1 (
     echo [ERROR] Failed to build tool-hub.exe
     if exist cmd\tool-hub\rsrc_hub_windows_amd64.syso del cmd\tool-hub\rsrc_hub_windows_amd64.syso
@@ -164,7 +165,7 @@ if errorlevel 1 (
 )
 
 echo [INFO] Building lexicon-manager.exe ...
-go build -ldflags "-s -w -H=windowsgui -X main.version=%APP_VERSION%" -o "%LEXICON_MANAGER_EXE%" .\cmd\lexicon-manager
+go build %GO_REPRO_FLAGS% -ldflags "-s -w -H=windowsgui -X main.version=%APP_VERSION%" -o "%LEXICON_MANAGER_EXE%" .\cmd\lexicon-manager
 if errorlevel 1 (
     echo [ERROR] Failed to build lexicon-manager.exe
     if exist cmd\lexicon-manager\rsrc_lexicon_windows_amd64.syso del cmd\lexicon-manager\rsrc_lexicon_windows_amd64.syso
@@ -184,7 +185,7 @@ if errorlevel 1 (
 )
 
 echo [INFO] Building system-lexicon-audit.exe ...
-go build -ldflags "-s -w -H=windowsgui -X main.version=%APP_VERSION%" -o "%SYSTEM_LEXICON_AUDIT_EXE%" .\cmd\system-lexicon-audit
+go build %GO_REPRO_FLAGS% -ldflags "-s -w -H=windowsgui -X main.version=%APP_VERSION%" -o "%SYSTEM_LEXICON_AUDIT_EXE%" .\cmd\system-lexicon-audit
 if errorlevel 1 (
     echo [ERROR] Failed to build system-lexicon-audit.exe
     if exist cmd\system-lexicon-audit\rsrc_audit_windows_amd64.syso del cmd\system-lexicon-audit\rsrc_audit_windows_amd64.syso
@@ -204,7 +205,7 @@ if errorlevel 1 (
 )
 
 echo [INFO] Building blocklist-manager.exe ...
-go build -ldflags "-s -w -H=windowsgui -X main.version=%APP_VERSION%" -o "%BLOCKLIST_MANAGER_EXE%" .\cmd\blocklist-manager
+go build %GO_REPRO_FLAGS% -ldflags "-s -w -H=windowsgui -X main.version=%APP_VERSION%" -o "%BLOCKLIST_MANAGER_EXE%" .\cmd\blocklist-manager
 if errorlevel 1 (
     echo [ERROR] Failed to build blocklist-manager.exe
     if exist cmd\blocklist-manager\rsrc_blocklist_windows_amd64.syso del cmd\blocklist-manager\rsrc_blocklist_windows_amd64.syso
@@ -224,7 +225,7 @@ if errorlevel 1 (
 )
 
 echo [INFO] Building settings-tool.exe ...
-go build -ldflags "-s -w -H=windowsgui -X main.version=%APP_VERSION%" -o "%SETTINGS_TOOL_EXE%" .\cmd\settings-tool
+go build %GO_REPRO_FLAGS% -ldflags "-s -w -H=windowsgui -X main.version=%APP_VERSION%" -o "%SETTINGS_TOOL_EXE%" .\cmd\settings-tool
 if errorlevel 1 (
     echo [ERROR] Failed to build settings-tool.exe
     if exist cmd\settings-tool\rsrc_settings_windows_amd64.syso del cmd\settings-tool\rsrc_settings_windows_amd64.syso
@@ -244,7 +245,7 @@ if errorlevel 1 (
 )
 
 echo [INFO] Building diagnostics-tool.exe ...
-go build -ldflags "-s -w -H=windowsgui -X main.version=%APP_VERSION%" -o "%DIAGNOSTICS_TOOL_EXE%" .\cmd\diagnostics-tool
+go build %GO_REPRO_FLAGS% -ldflags "-s -w -H=windowsgui -X main.version=%APP_VERSION%" -o "%DIAGNOSTICS_TOOL_EXE%" .\cmd\diagnostics-tool
 if errorlevel 1 (
     echo [ERROR] Failed to build diagnostics-tool.exe
     if exist cmd\diagnostics-tool\rsrc_diagnostics_windows_amd64.syso del cmd\diagnostics-tool\rsrc_diagnostics_windows_amd64.syso
@@ -255,6 +256,12 @@ if errorlevel 1 (
 if exist cmd\diagnostics-tool\rsrc_diagnostics_windows_amd64.syso del cmd\diagnostics-tool\rsrc_diagnostics_windows_amd64.syso
 
 echo [INFO] Built: "%DIAGNOSTICS_TOOL_EXE%"
+
+call :sign_go_binaries
+if errorlevel 1 (
+    popd
+    exit /b 1
+)
 
 echo.
 echo ============================================
@@ -443,6 +450,41 @@ xcopy "%WEASEL_DATA_DIR%\*.*" "%PACKAGE_RIME_DATA_DIR%\" /E /I /Y /D >nul
 if errorlevel 1 (
     echo [ERROR] Failed to merge Weasel shared data from "%WEASEL_DATA_DIR%"
     exit /b 1
+)
+exit /b 0
+
+:sign_go_binaries
+if not defined YIME_SIGN_CERT_SHA1 (
+    echo [WARN] Go executables are unsigned. Smart App Control may block new or unknown builds.
+    echo [WARN] Set YIME_SIGN_CERT_SHA1 to a trusted RSA code-signing certificate thumbprint for release builds.
+    exit /b 0
+)
+
+if not defined YIME_SIGNTOOL_EXE (
+    for /f "delims=" %%S in ('where signtool.exe 2^>nul') do if not defined YIME_SIGNTOOL_EXE set "YIME_SIGNTOOL_EXE=%%S"
+)
+if not defined YIME_SIGNTOOL_EXE (
+    echo [ERROR] YIME_SIGN_CERT_SHA1 is set, but signtool.exe was not found. Set YIME_SIGNTOOL_EXE explicitly.
+    exit /b 1
+)
+if not defined YIME_TIMESTAMP_URL set "YIME_TIMESTAMP_URL=http://timestamp.digicert.com"
+
+for %%F in (
+    "%SERVER_EXE%"
+    "%REVERSE_LOOKUP_EXE%"
+    "%TOOL_HUB_EXE%"
+    "%LEXICON_MANAGER_EXE%"
+    "%SYSTEM_LEXICON_AUDIT_EXE%"
+    "%BLOCKLIST_MANAGER_EXE%"
+    "%SETTINGS_TOOL_EXE%"
+    "%DIAGNOSTICS_TOOL_EXE%"
+) do (
+    echo [INFO] Signing %%~nxF ...
+    "%YIME_SIGNTOOL_EXE%" sign /sha1 "%YIME_SIGN_CERT_SHA1%" /fd SHA256 /tr "%YIME_TIMESTAMP_URL%" /td SHA256 "%%~fF"
+    if errorlevel 1 (
+        echo [ERROR] Failed to sign %%~fF
+        exit /b 1
+    )
 )
 exit /b 0
 

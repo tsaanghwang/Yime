@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Embed Windows VERSIONINFO in server.exe and tool-launcher.exe via go-winres, bypassing Smart App Control blocks on unsigned executables without version info
+- Embed Windows VERSIONINFO in server.exe and native tools via go-winres so Windows can identify file version and publisher metadata
 - Native Win32 tool executables: reverse-lookup.exe, tool-hub.exe, lexicon-manager.exe, system-lexicon-audit.exe, blocklist-manager.exe, settings-tool.exe, diagnostics-tool.exe
 - Go reverselookup package with disk cache and search
 - Runtime user blocklist candidate filtering
@@ -43,6 +43,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Remove remaining runtime PowerShell helpers while retaining PowerShell only for development, testing, and build automation
 - Use stable two-character language-bar labels (`中西` / `全半` / `横竖`) and represent state through icons
 - Align native lexicon dialogs with content-width labels, equal-width control rows, centered action buttons, and Chinese confirmation choices
+- Make Go executable builds reproducible across unrelated commits and add optional trusted Authenticode signing for Smart App Control compatibility
 
 - Replace Get-Content with [IO.File]::ReadAllLines/ReadAllText for 5-10x faster dict.yaml loading
 - Simplify lexicon manager toolbar from 12 buttons to 6; move secondary actions into menus

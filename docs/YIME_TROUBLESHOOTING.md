@@ -65,13 +65,15 @@
 
 ## Smart App Control 问题
 
-**症状**：重装 Yime 后语言栏菜单完全消失，server.exe 无法启动。
+**症状**：重装 Yime 后语言栏菜单消失、`server.exe` 无法启动，或工具箱提示“An Application Control policy has blocked this file”。
 
-**原因**：Windows Smart App Control 会阻止没有版本信息和数字签名的可执行文件。Yime 1.3.0-beta2 之后的版本已在 server.exe 中嵌入版本信息，可被 Smart App Control 识别。
+**原因**：Smart App Control 会阻止信誉未知且未由受信任提供商签名的可执行文件。VERSIONINFO 有助于识别文件，但不能替代可信代码签名。若构建把每次提交号写入 EXE，无关改动也会产生新哈希并丢失既有信誉。
 
 **解决**：
 - 确保使用最新版本的 Yime 安装包
-- 如果问题仍然存在，检查 server.exe 是否有版本信息：右键 → 属性 → 详细信息，应显示版本号
+- 检查被阻止 EXE 的“属性 → 详细信息”和“数字签名”；正式发布物应同时有稳定版本信息和可信签名
+- 在“事件查看器 → Microsoft → Windows → CodeIntegrity → Operational”中确认事件 3033/3077/3118 指向的具体文件
+- 不建议为绕过单个工具而关闭 Smart App Control；开发构建应保持可复现，发布构建应配置 Trusted Signing 或受信任 CA 证书
 
 ## 重启后端
 

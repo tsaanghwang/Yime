@@ -84,7 +84,7 @@ if errorlevel 1 (
 )
 
 echo [INFO] Building my-tool.exe ...
-go build -ldflags "-s -w -H=windowsgui -X main.version=%APP_VERSION%" -o "%PACKAGE_DIR%\my-tool.exe" .\cmd\my-tool
+go build %GO_REPRO_FLAGS% -ldflags "-s -w -H=windowsgui -X main.version=%APP_VERSION%" -o "%PACKAGE_DIR%\my-tool.exe" .\cmd\my-tool
 if errorlevel 1 (
     echo [ERROR] Failed to build my-tool.exe
     if exist cmd\my-tool\rsrc_mytool_windows_amd64.syso del cmd\my-tool\rsrc_mytool_windows_amd64.syso
@@ -97,8 +97,11 @@ if exist cmd\my-tool\rsrc_mytool_windows_amd64.syso del cmd\my-tool\rsrc_mytool_
 
 关键参数：
 - `-H=windowsgui`：隐藏控制台窗口
+- `-trimpath -buildvcs=false`：避免源码路径和每次提交的 VCS 修订号改变未修改工具的文件哈希
 - `--manifest gui`：生成 GUI 应用 manifest（非 CLI）
 - `go-winres` 生成的 `.syso` 文件放在 `cmd/<tool>/` 目录下，编译后立即清理
+
+发布构建必须使用受信任提供商签发的 RSA 代码签名证书。设置 `YIME_SIGN_CERT_SHA1` 后，`build.bat` 会用 `signtool.exe` 对全部 Go 可执行文件签名；可通过 `YIME_SIGNTOOL_EXE` 和 `YIME_TIMESTAMP_URL` 指定工具及时间戳服务。VERSIONINFO 只能提供文件身份信息，不能替代 Smart App Control 所要求的可信签名。
 
 ### 5. 添加测试
 
