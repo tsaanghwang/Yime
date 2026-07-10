@@ -3,12 +3,14 @@
 package main
 
 import (
+	"errors"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
 
 	"github.com/EasyIME/pime-go/input_methods/yime/reverselookup"
+	"github.com/EasyIME/pime-go/input_methods/yime/userlexicon"
 )
 
 func TestRebuildAllLexiconsWritesAllModes(t *testing.T) {
@@ -118,5 +120,30 @@ func TestIsSystemLexiconPhrase(t *testing.T) {
 	}
 	if ok {
 		t.Fatal("expected phrase to be absent from system lexicon")
+	}
+}
+
+func TestValidateEntryForAddRejectsSystemPhraseBeforePinyinValidation(t *testing.T) {
+	sharedDir := t.TempDir()
+	if err := os.WriteFile(
+		filepath.Join(sharedDir, "yime_variable.dict.yaml"),
+		[]byte("name: test\n...\n中国\tzhongguo\t100\n"),
+		0o644,
+	); err != nil {
+		t.Fatal(err)
+	}
+
+	state := &appState{
+		sharedDir: sharedDir,
+		userDir:   t.TempDir(),
+		mode:      reverselookup.ModeVariable,
+	}
+	err := state.validateEntryForAdd(userlexicon.Entry{
+		Phrase: "中国",
+		Pinyin: "not-valid-pinyin",
+		Weight: "100",
+	})
+	if !errors.Is(err, errPhraseInSystemLexicon) {
+		t.Fatalf("expected system lexicon duplicate error, got %v", err)
 	}
 }

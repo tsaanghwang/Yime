@@ -70,6 +70,9 @@ func writeRuntimeTestDefaultCustom(t *testing.T, userDir string) {
 
 func rimeRuntimeTestDataDir(t *testing.T) string {
 	t.Helper()
+	if os.Getenv("YIME_RUN_REAL_RIME_TESTS") != "1" {
+		t.Skip("set YIME_RUN_REAL_RIME_TESTS=1 to run real Rime integration tests")
+	}
 	_, filename, _, ok := runtime.Caller(0)
 	if !ok {
 		t.Fatal("failed to locate rime runtime test directory")

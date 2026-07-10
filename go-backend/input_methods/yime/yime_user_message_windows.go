@@ -7,6 +7,8 @@ import (
 	"unsafe"
 )
 
+var showUserMessageBox = msgBoxW
+
 func (ime *IME) showUserLexiconMessage(title, message, icon string) {
 	ime.showUserMessage(title, message, icon)
 }
@@ -18,7 +20,7 @@ func (ime *IME) showUserMessage(title, message, icon string) {
 	if message == "" {
 		return
 	}
-	msgBoxW(title, message, icon)
+	showUserMessageBox(title, message, icon)
 }
 
 func msgBoxW(title, message, icon string) {

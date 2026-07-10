@@ -104,6 +104,39 @@ func showEntryDialog(owner syscall.Handle, initial userlexicon.Entry, title, okT
 	return result, dialogResult
 }
 
+func adjustWeightValue(currentValue, stepValue string, direction int) (string, error) {
+	currentValue = strings.TrimSpace(currentValue)
+	if currentValue == "" {
+		currentValue = "0"
+	}
+	current, err := strconv.Atoi(currentValue)
+	if err != nil {
+		return "", fmt.Errorf("当前权重必须是整数")
+	}
+
+	stepValue = strings.TrimSpace(stepValue)
+	if stepValue == "" {
+		stepValue = "1"
+	}
+	step, err := strconv.Atoi(stepValue)
+	if err != nil || step < 0 {
+		return "", fmt.Errorf("增减数值必须是非负整数")
+	}
+	if direction != -1 && direction != 1 {
+		return "", fmt.Errorf("无效的权重调整方向")
+	}
+
+	maxInt := int(^uint(0) >> 1)
+	minInt := -maxInt - 1
+	if direction > 0 && current > maxInt-step {
+		return "", fmt.Errorf("权重超出整数范围")
+	}
+	if direction < 0 && current < minInt+step {
+		return "", fmt.Errorf("权重超出整数范围")
+	}
+	return strconv.Itoa(current + direction*step), nil
+}
+
 func showWeightDialog(owner syscall.Handle, initial string) (string, bool) {
 	value := ""
 	accepted := showModalForm(owner, "设置词条权重", 380, 220, func(hwnd syscall.Handle) {
@@ -122,31 +155,21 @@ func showWeightDialog(owner syscall.Handle, initial string) (string, bool) {
 		case idWeightMinus, idWeightPlus:
 			weightHWND := findDlgItem(hwnd, idWeightValue)
 			stepHWND := findDlgItem(hwnd, idWeightStep)
-			currentValue := strings.TrimSpace(getWindowText(weightHWND))
-			if currentValue == "" {
-				currentValue = "0"
-			}
-			current, err := strconv.Atoi(currentValue)
-			if err != nil {
-				showMessageBox("当前权重必须是整数。", 0x10)
-				return false
-			}
 			stepValue := strings.TrimSpace(getWindowText(stepHWND))
 			if stepValue == "" {
 				stepValue = "1"
 				setWindowText(stepHWND, stepValue)
 			}
-			step, err := strconv.Atoi(stepValue)
-			if err != nil || step < 0 {
-				showMessageBox("增减数值必须是非负整数。", 0x10)
+			direction := 1
+			if id == idWeightMinus {
+				direction = -1
+			}
+			adjusted, err := adjustWeightValue(getWindowText(weightHWND), stepValue, direction)
+			if err != nil {
+				showMessageBox(err.Error(), 0x10)
 				return false
 			}
-			if id == idWeightMinus {
-				current -= step
-			} else {
-				current += step
-			}
-			setWindowText(weightHWND, strconv.Itoa(current))
+			setWindowText(weightHWND, adjusted)
 			return false
 		case idWeightOK:
 			value = strings.TrimSpace(getWindowText(findDlgItem(hwnd, idWeightValue)))

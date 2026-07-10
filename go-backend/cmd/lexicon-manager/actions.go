@@ -3,6 +3,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"strconv"
@@ -20,6 +21,8 @@ import (
 )
 
 var invokeRimeBuild = settings.InvokeRimeBuild
+
+var errPhraseInSystemLexicon = errors.New("该词条已存在于系统词库中，无需重复添加")
 
 func (state *appState) loadSourceEntries() ([]userlexicon.Entry, error) {
 	return userlexicon.LoadSourceEntriesWithResolver(state.sourcePath, state.codeMap, state.mode)
@@ -190,6 +193,20 @@ func (state *appState) isSystemLexiconPhrase(phrase string) (bool, error) {
 	return ok, nil
 }
 
+func (state *appState) validateEntryForAdd(entry userlexicon.Entry) error {
+	if err := userlexicon.AssertEntryFields(entry); err != nil {
+		return err
+	}
+	exists, err := state.isSystemLexiconPhrase(entry.Phrase)
+	if err != nil {
+		return err
+	}
+	if exists {
+		return errPhraseInSystemLexicon
+	}
+	return reverselookup.ValidateEntryForMode(state.codeMap, entry.Phrase, entry.Pinyin, state.mode)
+}
+
 func (state *appState) addEntry() {
 	if err := state.requireCodeMap(); err != nil {
 		showMessageBox(err.Error(), 0x10)
@@ -201,25 +218,16 @@ func (state *appState) addEntry() {
 		if result == entryDialogCanceled {
 			return
 		}
-		if err := userlexicon.AssertEntryFields(entry); err != nil {
-			showMessageBox(err.Error(), 0x10)
-			return
-		}
-		if err := reverselookup.ValidateEntryForMode(state.codeMap, entry.Phrase, entry.Pinyin, state.mode); err != nil {
-			showMessageBox(err.Error(), 0x10)
-			return
-		}
-		state.saveUndoSnapshot("添加/更新词条")
-		existsInSystem, err := state.isSystemLexiconPhrase(entry.Phrase)
-		if err != nil {
-			showMessageBox(err.Error(), 0x10)
-			return
-		}
-		if existsInSystem {
-			showMessageBox("该词条已存在于系统词库中，无需重复添加。", 0x30)
+		if err := state.validateEntryForAdd(entry); err != nil {
+			style := uintptr(0x10)
+			if errors.Is(err, errPhraseInSystemLexicon) {
+				style = 0x30
+			}
+			showMessageBox(err.Error(), style)
 			initial = entry
 			continue
 		}
+		state.saveUndoSnapshot("添加/更新词条")
 		updated, err := userlexicon.UpsertSourceEntry(state.sourcePath, entry)
 		if err != nil {
 			showMessageBox(err.Error(), 0x10)

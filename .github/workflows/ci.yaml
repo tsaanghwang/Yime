@@ -91,6 +91,13 @@ jobs:
           cmd /C build.bat
           popd
 
+      - name: Run Go regression tests
+        shell: pwsh
+        run: |
+          Set-Location go-backend
+          go test ./cmd/lexicon-manager ./input_methods/yime/reverselookup ./input_methods/yime/settings ./input_methods/yime/systemlexicon ./input_methods/yime/toolhub ./input_methods/yime/userblocklist ./input_methods/yime/userlexicon
+          go test ./input_methods/yime -run 'Test(NativeBackendKeepsRimeOwnedCandidatePaging|LanguageBarToggleButtonsUseStableTwoCharacterLabels|DeployCommandRedeploysCurrentSchema|ApplyUserLexiconWritesAllThreeModes|ApplyUserLexiconRunsExternalBuildAndSchedulesReload|UserLexiconManagerLaunchesNativeExecutable|ToolHubLaunchesNativeExecutable|ReverseLookupToolLaunchesNativeExecutable|SettingsToolLaunchesNativeExecutable|DiagnosticsToolLaunchesNativeExecutable)$'
+
       - name: Build McBopomofo
         shell: pwsh
         run: |
