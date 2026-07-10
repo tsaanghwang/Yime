@@ -23,16 +23,16 @@ type testDictEntry struct {
 }
 
 type testBackend struct {
-	session            bool
-	destroyCount       int
-	composition        string
-	candidates         []candidateItem
-	commitString       string
-	asciiMode          bool
-	fullShape          bool
-	horizontal         bool
-	schemaID           string
-	returnKeyHandled   bool
+	session          bool
+	destroyCount     int
+	composition      string
+	candidates       []candidateItem
+	commitString     string
+	asciiMode        bool
+	fullShape        bool
+	horizontal       bool
+	schemaID         string
+	returnKeyHandled bool
 }
 
 type backendPagingTestBackend struct {
@@ -1809,7 +1809,6 @@ func TestReadPageSizeFromCustomConfig(t *testing.T) {
 	}
 }
 
-
 func TestUserLexiconManagerLaunchesNativeExecutable(t *testing.T) {
 	ime := newTestIME()
 	path := ime.lexiconManagerToolPath()
@@ -1825,7 +1824,6 @@ func TestToolHubLaunchesNativeExecutable(t *testing.T) {
 		t.Fatalf("expected tool hub native executable path, got %q", path)
 	}
 }
-
 
 func TestReverseLookupToolLaunchesNativeExecutable(t *testing.T) {
 	ime := newTestIME()
@@ -2919,6 +2917,55 @@ func TestApplyUserLexiconWritesAllThreeModes(t *testing.T) {
 
 	if varContent == fullContent || varContent == shortContent || fullContent == shortContent {
 		t.Fatalf("expected different encodings per mode, got variable=%q full=%q shorthand=%q", varContent, fullContent, shortContent)
+	}
+}
+
+func TestApplyUserLexiconRunsExternalBuildAndSchedulesReload(t *testing.T) {
+	t.Setenv("APPDATA", t.TempDir())
+	ime := newTestIME()
+	backend := ime.backend.(*testBackend)
+	backend.session = true
+	backend.schemaID = "yime_full"
+
+	sharedDir := ime.sharedDir()
+	if err := os.MkdirAll(sharedDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	tsvContent := "pinyin\tfull\tvariable\tshorthand\nzhong1\tzf\tzv\tzs\nguo2\tgf\tgv\tgs\n"
+	if err := os.WriteFile(filepath.Join(sharedDir, "yime_pinyin_codes.tsv"), []byte(tsvContent), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	sourcePath, err := ime.ensureUserLexiconFile()
+	if err != nil {
+		t.Fatalf("ensureUserLexiconFile failed: %v", err)
+	}
+	if err := os.WriteFile(sourcePath, []byte("中国\tzhong1 guo2\t1000000\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	buildCalls := 0
+	oldRunBuild := runRimeExternalBuild
+	runRimeExternalBuild = func(gotSharedDir, gotUserDir string) bool {
+		buildCalls++
+		if gotSharedDir != sharedDir || gotUserDir != ime.userDir() {
+			t.Fatalf("unexpected build args sharedDir=%q userDir=%q", gotSharedDir, gotUserDir)
+		}
+		return true
+	}
+	defer func() { runRimeExternalBuild = oldRunBuild }()
+
+	if err := ime.applyUserLexicon(); err != nil {
+		t.Fatalf("applyUserLexicon failed: %v", err)
+	}
+	if buildCalls != 1 {
+		t.Fatalf("expected one external build, got %d", buildCalls)
+	}
+	if ime.pendingSchemaRedeploy != "yime_full" {
+		t.Fatalf("expected pendingSchemaRedeploy to be yime_full, got %q", ime.pendingSchemaRedeploy)
+	}
+	if backend.schemaID != "yime_full" {
+		t.Fatalf("expected schema to remain yime_full after reload, got %q", backend.schemaID)
 	}
 }
 

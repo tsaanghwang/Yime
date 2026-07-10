@@ -629,7 +629,6 @@ func (ime *IME) Init(req *pime.Request) bool {
 	}
 	userDir := filepath.Join(appData, APP, "Rime")
 
-
 	real := newNativeBackend()
 	if real != nil && real.Initialize(sharedDir, userDir, false) {
 		ime.backend = real
@@ -740,7 +739,6 @@ func (ime *IME) shouldPassThroughModifierOnKey(req *pime.Request, filterHandled 
 	}
 	return req.KeyStates.IsKeyDown(vkControl) || req.KeyStates.IsKeyDown(vkMenu)
 }
-
 
 func candidateSelectionIndex(req *pime.Request) (int, bool) {
 	switch req.KeyCode {
@@ -1712,6 +1710,11 @@ func (ime *IME) applyUserLexicon() error {
 			return fmt.Errorf("写入 %s 模式词库失败: %w", mode, err)
 		}
 	}
+	userDir := ime.userDir()
+	sharedDir := ime.sharedDir()
+	if !runRimeExternalBuild(sharedDir, userDir) {
+		log.Printf("external rime_deployer build unavailable or failed for user lexicon update; sharedDir=%s userDir=%s", sharedDir, userDir)
+	}
 	if ime.backend == nil {
 		return nil
 	}
@@ -1719,7 +1722,8 @@ func (ime *IME) applyUserLexicon() error {
 	if schemaID == "" {
 		schemaID = "yime_variable"
 	}
-	ime.selectSchema(schemaID)
+	ime.pendingSchemaRedeploy = schemaID
+	ime.reloadBackendSessionForSchema(schemaID)
 	return nil
 }
 
@@ -2213,7 +2217,6 @@ func findRimeExternalDeployer(sharedDir string) string {
 	candidates := []string{
 		filepath.Join(filepath.Dir(sharedDir), "rime_deployer.exe"),
 		filepath.Join(filepath.Clean(filepath.Join(sharedDir, "..", "..", "..", "..", "..", "librime", "build", "bin", "Release")), "rime_deployer.exe"),
-
 	}
 	for _, candidate := range candidates {
 		if _, err := os.Stat(candidate); err == nil {
