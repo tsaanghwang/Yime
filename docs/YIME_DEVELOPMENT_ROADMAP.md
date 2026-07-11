@@ -1,5 +1,9 @@
 # 音元输入法开发路线图
 
+> 下一阶段的数据治理准备见
+> [单一等长真源码表阶段准备](project/SINGLE_CANONICAL_LEXICON_PREPARATION.md)。
+> 在差异审计完成前，三套现有 Rime 字典仍是冻结的运行基准，不直接删除或合并。
+
 > 版本：2026-07-10
 > 分支：yime-stable
 > 配套文档：[项目综合评估](YIME_PROJECT_ASSESSMENT.md) | [可用性评估](YIME_USABILITY_ASSESSMENT.md) | [架构文档](YIME_ARCHITECTURE.md)
