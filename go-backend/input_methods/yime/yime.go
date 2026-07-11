@@ -12,6 +12,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 	"unicode/utf8"
 
@@ -159,6 +160,7 @@ var scheduleStandaloneToolLaunch = func(run func() error, onError func(error)) {
 
 type IME struct {
 	*pime.TextServiceBase
+	entryMu                  sync.Mutex
 	iconDir                  string
 	style                    Style
 	selectKeys               string
@@ -368,6 +370,8 @@ func (ime *IME) onCompositionTerminated(req *pime.Request, resp *pime.Response) 
 }
 
 func (ime *IME) onCommand(req *pime.Request, resp *pime.Response) *pime.Response {
+	ime.entryMu.Lock()
+	defer ime.entryMu.Unlock()
 	commandID := commandIDFromRequest(req)
 	if commandID == 0 {
 		resp.ReturnValue = 0
@@ -718,6 +722,8 @@ func (ime *IME) BackendAvailable() bool {
 }
 
 func (ime *IME) processKey(req *pime.Request, isUp bool) bool {
+	ime.entryMu.Lock()
+	defer ime.entryMu.Unlock()
 	ime.createSession(nil)
 	if ime.backend == nil {
 		ime.logShortcutTrace(req, isUp, 0, 0, false, false)

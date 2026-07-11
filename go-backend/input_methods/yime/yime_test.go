@@ -24,6 +24,7 @@ type testDictEntry struct {
 }
 
 type testBackend struct {
+	mu               sync.Mutex
 	session          bool
 	destroyCount     int
 	composition      string
@@ -102,23 +103,35 @@ func (b *testBackend) Initialize(sharedDir, userDir string, firstRun bool) bool 
 }
 
 func (b *testBackend) EnsureSession() bool {
+	b.mu.Lock()
+	defer b.mu.Unlock()
 	b.session = true
 	return true
 }
 
 func (b *testBackend) DestroySession() {
+	b.mu.Lock()
+	defer b.mu.Unlock()
 	b.destroyCount++
 	b.session = false
-	b.ClearComposition()
+	b.clearCompositionLocked()
 }
 
 func (b *testBackend) ClearComposition() {
+	b.mu.Lock()
+	defer b.mu.Unlock()
+	b.clearCompositionLocked()
+}
+
+func (b *testBackend) clearCompositionLocked() {
 	b.composition = ""
 	b.candidates = nil
 	b.commitString = ""
 }
 
 func (b *testBackend) ProcessKey(req *pime.Request, translatedKeyCode, modifiers int) bool {
+	b.mu.Lock()
+	defer b.mu.Unlock()
 	b.commitString = ""
 	keyCode := req.KeyCode
 	charCode := req.CharCode
@@ -151,13 +164,13 @@ func (b *testBackend) ProcessKey(req *pime.Request, translatedKeyCode, modifiers
 			return false
 		}
 		b.composition = trimLastRuneForTest(b.composition)
-		b.refreshCandidates()
+		b.refreshCandidatesLocked()
 		return true
 	case vkEscape:
 		if b.composition == "" {
 			return false
 		}
-		b.ClearComposition()
+		b.clearCompositionLocked()
 		return true
 	case vkReturn:
 		if b.composition == "" {
@@ -166,7 +179,7 @@ func (b *testBackend) ProcessKey(req *pime.Request, translatedKeyCode, modifiers
 		if !b.returnKeyHandled {
 			return false
 		}
-		b.commitString = b.currentCommit()
+		b.commitString = b.currentCommitLocked()
 		b.composition = ""
 		b.candidates = nil
 		return true
@@ -175,16 +188,16 @@ func (b *testBackend) ProcessKey(req *pime.Request, translatedKeyCode, modifiers
 
 	if (charCode >= 'a' && charCode <= 'z') || (charCode >= '0' && charCode <= '9') {
 		b.composition += string(rune(charCode))
-		b.refreshCandidates()
+		b.refreshCandidatesLocked()
 		return true
 	}
 	if charCode == '\'' && b.composition != "" && !strings.HasSuffix(b.composition, "'") {
 		b.composition += "'"
-		b.refreshCandidates()
+		b.refreshCandidatesLocked()
 		return true
 	}
 	if b.composition != "" && charCode >= 0x20 && charCode != '\'' {
-		b.commitString = b.currentCommit() + string(rune(charCode))
+		b.commitString = b.currentCommitLocked() + string(rune(charCode))
 		b.composition = ""
 		b.candidates = nil
 		return true
@@ -193,6 +206,8 @@ func (b *testBackend) ProcessKey(req *pime.Request, translatedKeyCode, modifiers
 }
 
 func (b *testBackend) SelectCandidate(index int) bool {
+	b.mu.Lock()
+	defer b.mu.Unlock()
 	b.commitString = ""
 	if index < 0 || index >= len(b.candidates) {
 		return false
@@ -204,6 +219,8 @@ func (b *testBackend) SelectCandidate(index int) bool {
 }
 
 func (b *testBackend) State() rimeState {
+	b.mu.Lock()
+	defer b.mu.Unlock()
 	state := rimeState{
 		CommitString:    b.commitString,
 		Composition:     b.composition,
@@ -219,6 +236,8 @@ func (b *testBackend) State() rimeState {
 }
 
 func (b *testBackend) SetOption(name string, value bool) {
+	b.mu.Lock()
+	defer b.mu.Unlock()
 	switch name {
 	case "ascii_mode":
 		b.asciiMode = value
@@ -230,6 +249,8 @@ func (b *testBackend) SetOption(name string, value bool) {
 }
 
 func (b *testBackend) GetOption(name string) bool {
+	b.mu.Lock()
+	defer b.mu.Unlock()
 	switch name {
 	case "ascii_mode":
 		return b.asciiMode
@@ -243,19 +264,23 @@ func (b *testBackend) GetOption(name string) bool {
 }
 
 func (b *testBackend) SelectSchema(schemaID string) bool {
+	b.mu.Lock()
+	defer b.mu.Unlock()
 	if schemaID == "" {
 		return false
 	}
 	b.schemaID = schemaID
-	b.ClearComposition()
+	b.clearCompositionLocked()
 	return true
 }
 
 func (b *testBackend) CurrentSchema() string {
+	b.mu.Lock()
+	defer b.mu.Unlock()
 	return b.schemaID
 }
 
-func (b *testBackend) currentCommit() string {
+func (b *testBackend) currentCommitLocked() string {
 	if len(b.candidates) > 0 {
 		return b.candidates[0].Text
 	}
@@ -263,6 +288,12 @@ func (b *testBackend) currentCommit() string {
 }
 
 func (b *testBackend) refreshCandidates() {
+	b.mu.Lock()
+	defer b.mu.Unlock()
+	b.refreshCandidatesLocked()
+}
+
+func (b *testBackend) refreshCandidatesLocked() {
 	code := strings.ReplaceAll(b.composition, "'", "")
 	if code == "" {
 		b.candidates = nil

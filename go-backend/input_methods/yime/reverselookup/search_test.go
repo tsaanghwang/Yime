@@ -10,7 +10,8 @@ func TestSearchResolvesUserPhraseAndDictEntry(t *testing.T) {
 	sharedDir := t.TempDir()
 	userDir := t.TempDir()
 
-	codeMapTSV := "pinyin\tfull\tvariable\tshorthand\nba1\tb\t~d\tb\n"
+	// 等长码（full）必须是 4 的倍数；~~dd 经 mergeAdjacent 推导出变长码 ~d。
+	codeMapTSV := "pinyin\tfull\tvariable\tshorthand\nba1\t~~dd\t~d\t~d\n"
 	if err := os.WriteFile(filepath.Join(sharedDir, "yime_pinyin_codes.tsv"), []byte(codeMapTSV), 0o644); err != nil {
 		t.Fatalf("write code map: %v", err)
 	}
@@ -43,7 +44,8 @@ func TestSearchContainsMatchFindsPartialPhrase(t *testing.T) {
 	sharedDir := t.TempDir()
 	userDir := t.TempDir()
 
-	codeMapTSV := "pinyin\tfull\tvariable\tshorthand\nzhong1\tzh\tz\tzh\n"
+	// 等长码 zzzz 推导出变长码 z，与词典中 中国\tz 的编码对应。
+	codeMapTSV := "pinyin\tfull\tvariable\tshorthand\nzhong1\tzzzz\tz\tz\n"
 	if err := os.WriteFile(filepath.Join(sharedDir, "yime_pinyin_codes.tsv"), []byte(codeMapTSV), 0o644); err != nil {
 		t.Fatalf("write code map: %v", err)
 	}
@@ -71,7 +73,8 @@ func TestCacheSpeedsUpSecondLoad(t *testing.T) {
 	cacheDir := t.TempDir()
 	t.Setenv("LOCALAPPDATA", cacheDir)
 
-	codeMapTSV := "pinyin\tfull\tvariable\tshorthand\nba1\tb\t~d\tb\n"
+	// 等长码 ~~dd 推导出变长码 ~d，与词典中 巴\t~d 的编码对应。
+	codeMapTSV := "pinyin\tfull\tvariable\tshorthand\nba1\t~~dd\t~d\t~d\n"
 	if err := os.WriteFile(filepath.Join(sharedDir, "yime_pinyin_codes.tsv"), []byte(codeMapTSV), 0o644); err != nil {
 		t.Fatalf("write code map: %v", err)
 	}

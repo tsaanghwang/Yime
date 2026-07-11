@@ -51,6 +51,18 @@ CI 当前重点保护：
 
 普通 IME 测试不得消费开发者真实 `%APPDATA%` 中的 `yime_runtime_change.json`。测试会话应把现有修订号作为基线；只有通知协议专用测试从零修订开始观察，避免候选测试在选择前意外触发 redeploy。
 
+### 3.1 竞态检测
+
+`go test -race ./... -timeout 300s` 是验证基线的一部分，必须在具备 C 工具链的环境运行。Windows Go race 构建依赖 GCC，本机已配置 MSYS2 UCRT64：
+
+```powershell
+go env -w CC=C:\msys64\ucrt64\bin\gcc.exe
+$env:PATH = "C:\msys64\ucrt64\bin;" + $env:PATH
+go test -race ./... -timeout 300s
+```
+
+`IME.processKey` 与 `onCommand` 通过 `entryMu` 串行化，`TestConcurrentKeyAndCommandNoDataRace` 必须在 `-race` 下保持绿色；不得为绕开竞争而删除该测试或放宽入口锁。CI runner 缺少 C 工具链时该门禁可跳过，但不得删除现有并发压力测试。
+
 ## 4. 真实 Rime 集成测试
 
 真实测试默认跳过，显式设置环境变量：

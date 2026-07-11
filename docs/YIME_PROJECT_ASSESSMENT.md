@@ -1,6 +1,6 @@
 # Yime 项目综合评估与收口报告
 
-> 评估日期：2026-07-11
+> 评估日期：2026-07-12
 >
 > 适用基线：`yime-stable` 分支及本轮待提交修改
 >
@@ -42,6 +42,7 @@ Yime 已从“功能基本可用但工具链和安装态边界不稳定”进入
 - 通知写入增加跨进程锁、旧格式迁移、损坏文件备份、Windows 文件替换重试和多会话独立消费。
 - 语言栏实验性动态移动、排序和固定 GUID 逻辑已清理；命令解析继续兼容宿主通过 `data.id` 上报子菜单点击。
 - 保持 Rime 拥有原生候选分页，不使用 Go 侧切片绕过候选数配置。
+- `IME.processKey` 与 `onCommand` 入口加互斥锁串行化，消除并发按键与命令访问共享状态的数据竞争；生产 TSF 公寓线程本就串行，该锁为无竞争零开销，但使 race 检测器认可的并发场景也安全。
 
 ### 2.3 构建、CI 与发布
 
@@ -56,6 +57,8 @@ Yime 已从“功能基本可用但工具链和安装态边界不稳定”进入
 - 修复开发卸载残留卸载项导致 `$INSTDIR` 变空、文件误写盘符根目录的问题；安装初始化保留默认路径并增加二次兜底。
 - Yime Go 后端进入 NSIS 必装主组件；标准安装不再默认选择旧 Python Chewing，旧输入法仅保留在完整安装中。
 - 应用用户词库前同步三套共享 schema 到用户目录，升级遗留的 `custom_phrase` 引用不会再阻断 full/shorthand 用户词。
+- 修复反查加载测试 fixture：单一等长真源重构后 `full` 列需为 4 的倍数，旧 `b`/`zh` 短码改为 `~~dd`/`zzzz` 等合规等长码。
+- 配置本机 MSYS2 UCRT64 GCC 16.1.0（`go env CC` 持久化），`go test -race ./...` 全量通过，补齐此前缺失的竞态检测完成证明。
 
 ## 3. 固化的架构约束
 
@@ -77,6 +80,7 @@ Yime 已从“功能基本可用但工具链和安装态边界不稳定”进入
 cd go-backend
 go vet ./...
 go test ./... -shuffle=on -count=2 -timeout 120s
+go test -race ./... -timeout 300s
 
 cd ..\PIMELauncher
 cargo fmt --check
@@ -90,6 +94,7 @@ git diff --check
 验证结果：
 
 - Go 全量测试通过，运行时通知并发压力测试连续 20 轮通过。
+- Go 竞态检测全量通过：本机 MSYS2 UCRT64 GCC 16.1.0 已配置（`go env CC`），`go test -race ./...` 全部通过；并发按键与命令测试 `TestConcurrentKeyAndCommandNoDataRace` 不再报告数据竞争。
 - Rust 11 个单元测试和 2 个集成测试通过。
 - CTest 3/3 通过。
 - 8 个 Go EXE 连续两次构建 SHA-256 一致。
@@ -99,7 +104,6 @@ git diff --check
 
 未纳入本轮完成证明：
 
-- `go test -race`：本机缺少 GCC，Windows Go race 构建无法执行。
 - 可信签名验证：本机没有用于本次构建的正式发布证书。
 - 完整安装态清单：核心安装、输入和用户词库已通过；重启自启动、全部工具入口和三种模式仍需逐项留痕。
 
@@ -128,7 +132,7 @@ git diff --check
 ### 可接受的开发期限制
 
 - 未签名开发包可能被 Smart App Control 或企业 Application Control 阻止。
-- 缺少 GCC 时不运行 Go race detector，但不得删除现有并发压力测试。
+- Go race detector 依赖本机 MSYS2 UCRT64 GCC；`go env CC` 已持久化指向 `C:\msys64\ucrt64\bin\gcc.exe`，CI 仍需在具备 C 工具链的 runner 上才能执行 `-race`。不得删除现有并发压力测试。
 - 真实 Rime 集成测试继续显式启用，避免普通测试共享本机 librime 全局状态。
 
 ## 7. 文档维护规则

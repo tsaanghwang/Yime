@@ -5,7 +5,7 @@
 > [单一等长真源码表阶段准备](project/SINGLE_CANONICAL_LEXICON_PREPARATION.md)。
 > 三套 Rime 字典继续保留为运行产物，但不再允许独立导入或人工维护。
 
-> 版本：2026-07-11
+> 版本：2026-07-12
 > 分支：yime-stable
 > 配套文档：[项目综合评估](YIME_PROJECT_ASSESSMENT.md) | [可用性评估](YIME_USABILITY_ASSESSMENT.md) | [架构文档](YIME_ARCHITECTURE.md)
 
@@ -46,6 +46,8 @@
 | 27 | 词库管理对话框统一 | e98704c8 | 标签自适应、按钮组居中、所有系统 `OK/Yes/No` 改为中文选择 |
 | 28 | Smart App Control 构建稳定性 | ee2c51d7 | 稳定版本、`-trimpath -buildvcs=false`、可选可信签名 |
 | 29 | Go 回归测试进入 CI | 847bc40a | 原生工具、词库逻辑、语言栏与 Rime 分页守卫 |
+| 30 | 竞态检测纳入验证基线 | 待提交 | 配置 MSYS2 GCC；`IME` 入口互斥锁；`TestConcurrentKeyAndCommandNoDataRace` 在 `-race` 下绿色 |
+| 31 | 反查测试 fixture 跟上真源重构 | 待提交 | `full` 列改为 4 倍数等长码，恢复 reverselookup 包测试 |
 
 ### 遗留编码约束（暂不修改）
 
