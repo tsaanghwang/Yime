@@ -1,1625 +1,1625 @@
-pinyin_tone	full	variable	shorthand
-a1	Hfff	f	f
-a2	Hsdf	sdf	sf
-a3	Hsss	s	s
-a4	Hfds	fds	fs
-a5	Hddd	d	d
-ai1	Hffu	fu	fu
-ai2	Hsdu	sdu	sdu
-ai3	Hsso	so	so
-ai4	Hfdo	fdo	fdo
-an1	Hffa	fa	fa
-an2	Hsda	sda	sda
-an3	Hssm	sm	sm
-an4	Hfdm	fdm	fdm
-ang1	Hffi	fi	fi
-ang2	Hsdi	sdi	sdi
-ang3	Hssc	sc	sc
-ang4	Hfdc	fdc	fdc
-ao1	Hffv	fv	fv
-ao2	Hsdv	sdv	sdv
-ao3	Hssx	sx	sx
-ao4	Hfdx	fdx	fdx
-ba1	qfff	qf	qf
-ba2	qsdf	qsdf	qsf
-ba3	qsss	qs	qs
-ba4	qfds	qfds	qfs
-ba5	qddd	qd	qd
-bai1	qffu	qfu	qfu
-bai2	qsdu	qsdu	qsdu
-bai3	qsso	qso	qso
-bai4	qfdo	qfdo	qfdo
-bai5	qdd;	qd;	qd;
-ban1	qffa	qfa	qfa
-ban3	qssm	qsm	qsm
-ban4	qfdm	qfdm	qfdm
-ban5	qddN	qdN	qdN
-bang1	qffi	qfi	qfi
-bang3	qssc	qsc	qsc
-bang4	qfdc	qfdc	qfdc
-bao1	qffv	qfv	qfv
-bao2	qsdv	qsdv	qsdv
-bao3	qssx	qsx	qsx
-bao4	qfdx	qfdx	qfdx
-bei1	qttu	qtu	qtu
-bei3	qeeo	qeo	qeo
-bei4	qtro	qtro	qtro
-bei5	qrr;	qr;	qr;
-ben1	qtta	qta	qta
-ben3	qeem	qem	qem
-ben4	qtrm	qtrm	qtrm
-beng1	qjji	qji	qji
-beng2	qlki	qlki	qlki
-beng3	qllc	qlc	qlc
-beng4	qjkc	qjkc	qjkc
-beng5	qkkM	qkM	qkM
-bi1	quuu	qu	qu
-bi2	qo;u	qo;u	qou
-bi3	qooo	qo	qo
-bi4	qu;o	qu;o	quo
-bian1	qufa	qufa	qufa
-bian3	qosm	qosm	qosm
-bian4	qudm	qudm	qudm
-bian5	q;dN	q;dN	q;dN
-biang2	qodi	qodi	qodi
-biang4	qudc	qudc	qudc
-biao1	qufv	qufv	qufv
-biao3	qosx	qosx	qosx
-biao4	qudx	qudx	qudx
-bie1	qutt	qut	qut
-bie2	qort	qort	qort
-bie3	qoee	qoe	qoe
-bie4	qure	qure	qure
-bin1	quta	quta	quta
-bin3	qoem	qoem	qoem
-bin4	qurm	qurm	qurm
-bin5	q;rN	q;rN	q;rN
-bing1	quji	quji	quji
-bing3	qolc	qolc	qolc
-bing4	qukc	qukc	qukc
-bing5	q;kM	q;kM	q;kM
-bo1	qjjj	qj	qj
-bo2	qlkj	qlkj	qlj
-bo3	qlll	ql	ql
-bo4	qjkl	qjkl	qjl
-bo5	qkkk	qk	qk
-bong4	qvkc	qvkc	qvkc
-bu1	qvvv	qv	qv
-bu2	qxgv	qxgv	qxv
-bu3	qxxx	qx	qx
-bu4	qvgx	qvgx	qvx
-bu5	qggg	qg	qg
-ca1	5fff	5f	5f
-ca3	5sss	5s	5s
-ca4	5fds	5fds	5fs
-cai1	5ffu	5fu	5fu
-cai2	5sdu	5sdu	5sdu
-cai3	5sso	5so	5so
-cai4	5fdo	5fdo	5fdo
-cai5	5dd;	5d;	5d;
-can1	5ffa	5fa	5fa
-can2	5sda	5sda	5sda
-can3	5ssm	5sm	5sm
-can4	5fdm	5fdm	5fdm
-cang1	5ffi	5fi	5fi
-cang2	5sdi	5sdi	5sdi
-cang3	5ssc	5sc	5sc
-cang4	5fdc	5fdc	5fdc
-cao1	5ffv	5fv	5fv
-cao2	5sdv	5sdv	5sdv
-cao3	5ssx	5sx	5sx
-cao4	5fdx	5fdx	5fdx
-ce4	5jkl	5jkl	5jl
-cei4	5tro	5tro	5tro
-cen1	5tta	5ta	5ta
-cen2	5era	5era	5era
-ceng1	5jji	5ji	5ji
-ceng2	5lki	5lki	5lki
-ceng4	5jkc	5jkc	5jkc
-cha1	8fff	8f	8f
-cha2	8sdf	8sdf	8sf
-cha3	8sss	8s	8s
-cha4	8fds	8fds	8fs
-chai1	8ffu	8fu	8fu
-chai2	8sdu	8sdu	8sdu
-chai3	8sso	8so	8so
-chai4	8fdo	8fdo	8fdo
-chan1	8ffa	8fa	8fa
-chan2	8sda	8sda	8sda
-chan3	8ssm	8sm	8sm
-chan4	8fdm	8fdm	8fdm
-chang1	8ffi	8fi	8fi
-chang2	8sdi	8sdi	8sdi
-chang3	8ssc	8sc	8sc
-chang4	8fdc	8fdc	8fdc
-chang5	8ddM	8dM	8dM
-chao1	8ffv	8fv	8fv
-chao2	8sdv	8sdv	8sdv
-chao3	8ssx	8sx	8sx
-chao4	8fdx	8fdx	8fdx
-che1	8jjj	8j	8j
-che2	8lkj	8lkj	8lj
-che3	8lll	8l	8l
-che4	8jkl	8jkl	8jl
-che5	8kkk	8k	8k
-chen1	8tta	8ta	8ta
-chen2	8era	8era	8era
-chen3	8eem	8em	8em
-chen4	8trm	8trm	8trm
-chen5	8rrN	8rN	8rN
-cheng1	8jji	8ji	8ji
-cheng2	8lki	8lki	8lki
-cheng3	8llc	8lc	8lc
-cheng4	8jkc	8jkc	8jkc
-cheng5	8kkM	8kM	8kM
-chi1	8JJJ	8J	8J
-chi2	8LKJ	8LKJ	8LJ
-chi3	8LLL	8L	8L
-chi4	8JKL	8JKL	8JL
-chi5	8KKK	8K	8K
-chong1	8vji	8vji	8vji
-chong2	8xki	8xki	8xki
-chong3	8xlc	8xlc	8xlc
-chong4	8vkc	8vkc	8vkc
-chou1	8jjv	8jv	8jv
-chou2	8lkv	8lkv	8lkv
-chou3	8llx	8lx	8lx
-chou4	8jkx	8jkx	8jkx
-chou5	8kkg	8kg	8kg
-chu1	8vvv	8v	8v
-chu2	8xgv	8xgv	8xv
-chu3	8xxx	8x	8x
-chu4	8vgx	8vgx	8vx
-chu5	8ggg	8g	8g
-chua1	8vff	8vf	8vf
-chua3	8xss	8xs	8xs
-chua4	8vds	8vds	8vds
-chuai1	8vfu	8vfu	8vfu
-chuai2	8xdu	8xdu	8xdu
-chuai3	8xso	8xso	8xso
-chuai4	8vdo	8vdo	8vdo
-chuan1	8vfa	8vfa	8vfa
-chuan2	8xda	8xda	8xda
-chuan3	8xsm	8xsm	8xsm
-chuan4	8vdm	8vdm	8vdm
-chuang1	8vfi	8vfi	8vfi
-chuang2	8xdi	8xdi	8xdi
-chuang3	8xsc	8xsc	8xsc
-chuang4	8vdc	8vdc	8vdc
-chui1	8vtu	8vtu	8vtu
-chui2	8xru	8xru	8xru
-chui3	8xeo	8xeo	8xeo
-chui4	8vro	8vro	8vro
-chun1	8vta	8vta	8vta
-chun2	8xra	8xra	8xra
-chun3	8xem	8xem	8xem
-chun5	8grN	8grN	8grN
-chuo1	8vjj	8vj	8vj
-chuo4	8vkl	8vkl	8vkl
-ci1	5JJJ	5J	5J
-ci2	5LKJ	5LKJ	5LJ
-ci3	5LLL	5L	5L
-ci4	5JKL	5JKL	5JL
-cong1	5vji	5vji	5vji
-cong2	5xki	5xki	5xki
-cong3	5xlc	5xlc	5xlc
-cong4	5vkc	5vkc	5vkc
-cou1	5jjv	5jv	5jv
-cou2	5lkv	5lkv	5lkv
-cou3	5llx	5lx	5lx
-cou4	5jkx	5jkx	5jkx
-cu1	5vvv	5v	5v
-cu2	5xgv	5xgv	5xv
-cu3	5xxx	5x	5x
-cu4	5vgx	5vgx	5vx
-cuan1	5vfa	5vfa	5vfa
-cuan2	5xda	5xda	5xda
-cuan4	5vdm	5vdm	5vdm
-cui1	5vtu	5vtu	5vtu
-cui3	5xeo	5xeo	5xeo
-cui4	5vro	5vro	5vro
-cui5	5gr;	5gr;	5gr;
-cun1	5vta	5vta	5vta
-cun2	5xra	5xra	5xra
-cun3	5xem	5xem	5xem
-cun4	5vrm	5vrm	5vrm
-cun5	5grN	5grN	5grN
-cuo1	5vjj	5vj	5vj
-cuo2	5xkj	5xkj	5xkj
-cuo3	5xll	5xl	5xl
-cuo4	5vkl	5vkl	5vkl
-da1	wfff	wf	wf
-da2	wsdf	wsdf	wsf
-da3	wsss	ws	ws
-da4	wfds	wfds	wfs
-da5	wddd	wd	wd
-dai1	wffu	wfu	wfu
-dai3	wsso	wso	wso
-dai4	wfdo	wfdo	wfdo
-dai5	wdd;	wd;	wd;
-dan1	wffa	wfa	wfa
-dan3	wssm	wsm	wsm
-dan4	wfdm	wfdm	wfdm
-dan5	wddN	wdN	wdN
-dang1	wffi	wfi	wfi
-dang3	wssc	wsc	wsc
-dang4	wfdc	wfdc	wfdc
-dang5	wddM	wdM	wdM
-dao1	wffv	wfv	wfv
-dao2	wsdv	wsdv	wsdv
-dao3	wssx	wsx	wsx
-dao4	wfdx	wfdx	wfdx
-dao5	wddg	wdg	wdg
-de1	wjjj	wj	wj
-de2	wlkj	wlkj	wlj
-de5	wkkk	wk	wk
-dei1	wttu	wtu	wtu
-dei3	weeo	weo	weo
-den4	wtrm	wtrm	wtrm
-deng1	wjji	wji	wji
-deng3	wllc	wlc	wlc
-deng4	wjkc	wjkc	wjkc
-di1	wuuu	wu	wu
-di2	wo;u	wo;u	wou
-di3	wooo	wo	wo
-di4	wu;o	wu;o	wuo
-di5	w;;;	w;	w;
-dia3	woss	wos	wos
-dian1	wufa	wufa	wufa
-dian2	woda	woda	woda
-dian3	wosm	wosm	wosm
-dian4	wudm	wudm	wudm
-diao1	wufv	wufv	wufv
-diao3	wosx	wosx	wosx
-diao4	wudx	wudx	wudx
-die1	wutt	wut	wut
-die2	wort	wort	wort
-die3	woee	woe	woe
-die4	wure	wure	wure
-din4	wurm	wurm	wurm
-ding1	wuji	wuji	wuji
-ding3	wolc	wolc	wolc
-ding4	wukc	wukc	wukc
-diu1	wujv	wujv	wujv
-dong1	wvji	wvji	wvji
-dong3	wxlc	wxlc	wxlc
-dong4	wvkc	wvkc	wvkc
-dou1	wjjv	wjv	wjv
-dou3	wllx	wlx	wlx
-dou4	wjkx	wjkx	wjkx
-du1	wvvv	wv	wv
-du2	wxgv	wxgv	wxv
-du3	wxxx	wx	wx
-du4	wvgx	wvgx	wvx
-du5	wggg	wg	wg
-duan1	wvfa	wvfa	wvfa
-duan3	wxsm	wxsm	wxsm
-duan4	wvdm	wvdm	wvdm
-dui1	wvtu	wvtu	wvtu
-dui3	wxeo	wxeo	wxeo
-dui4	wvro	wvro	wvro
-dun1	wvta	wvta	wvta
-dun3	wxem	wxem	wxem
-dun4	wvrm	wvrm	wvrm
-duo1	wvjj	wvj	wvj
-duo2	wxkj	wxkj	wxkj
-duo3	wxll	wxl	wxl
-duo4	wvkl	wvkl	wvkl
-duo5	wgkk	wgk	wgk
-e1	Hjjj	j	j
-e2	Hlkj	lkj	lj
-e3	Hlll	l	l
-e4	Hjkl	jkl	jl
-e5	Hkkk	k	k
-ei1	Httu	tu	tu
-ei2	Heru	eru	eru
-ei3	Heeo	eo	eo
-ei4	Htro	tro	tro
-en1	Htta	ta	ta
-en3	Heem	em	em
-en4	Htrm	trm	trm
-en5	HrrN	rN	rN
-eng1	Hjji	ji	ji
-er2	HDSA	DSA	DA
-er3	HDDD	D	D
-er4	HASD	ASD	AD
-er5	HSSS	S	S
-fa1	[fff	[f	[f
-fa2	[sdf	[sdf	[sf
-fa3	[sss	[s	[s
-fa4	[fds	[fds	[fs
-fa5	[ddd	[d	[d
-fan1	[ffa	[fa	[fa
-fan2	[sda	[sda	[sda
-fan3	[ssm	[sm	[sm
-fan4	[fdm	[fdm	[fdm
-fan5	[ddN	[dN	[dN
-fang1	[ffi	[fi	[fi
-fang2	[sdi	[sdi	[sdi
-fang3	[ssc	[sc	[sc
-fang4	[fdc	[fdc	[fdc
-fang5	[ddM	[dM	[dM
-fei1	[ttu	[tu	[tu
-fei2	[eru	[eru	[eru
-fei3	[eeo	[eo	[eo
-fei4	[tro	[tro	[tro
-fen1	[tta	[ta	[ta
-fen2	[era	[era	[era
-fen3	[eem	[em	[em
-fen4	[trm	[trm	[trm
-fen5	[rrN	[rN	[rN
-feng1	[jji	[ji	[ji
-feng2	[lki	[lki	[lki
-feng3	[llc	[lc	[lc
-feng4	[jkc	[jkc	[jkc
-fiao4	[udx	[udx	[udx
-fo2	[lkj	[lkj	[lj
-fou1	[jjv	[jv	[jv
-fou2	[lkv	[lkv	[lkv
-fou3	[llx	[lx	[lx
-fu1	[vvv	[v	[v
-fu2	[xgv	[xgv	[xv
-fu3	[xxx	[x	[x
-fu4	[vgx	[vgx	[vx
-fu5	[ggg	[g	[g
-ga1	]fff	]f	]f
-ga2	]sdf	]sdf	]sf
-ga3	]sss	]s	]s
-ga4	]fds	]fds	]fs
-gai1	]ffu	]fu	]fu
-gai3	]sso	]so	]so
-gai4	]fdo	]fdo	]fdo
-gai5	]dd;	]d;	]d;
-gan1	]ffa	]fa	]fa
-gan3	]ssm	]sm	]sm
-gan4	]fdm	]fdm	]fdm
-gang1	]ffi	]fi	]fi
-gang3	]ssc	]sc	]sc
-gang4	]fdc	]fdc	]fdc
-gao1	]ffv	]fv	]fv
-gao3	]ssx	]sx	]sx
-gao4	]fdx	]fdx	]fdx
-ge1	]jjj	]j	]j
-ge2	]lkj	]lkj	]lj
-ge3	]lll	]l	]l
-ge4	]jkl	]jkl	]jl
-ge5	]kkk	]k	]k
-gei3	]eeo	]eo	]eo
-gen1	]tta	]ta	]ta
-gen2	]era	]era	]era
-gen3	]eem	]em	]em
-gen4	]trm	]trm	]trm
-geng1	]jji	]ji	]ji
-geng3	]llc	]lc	]lc
-geng4	]jkc	]jkc	]jkc
-gong1	]vji	]vji	]vji
-gong3	]xlc	]xlc	]xlc
-gong4	]vkc	]vkc	]vkc
-gong5	]gkM	]gkM	]gkM
-gou1	]jjv	]jv	]jv
-gou3	]llx	]lx	]lx
-gou4	]jkx	]jkx	]jkx
-gu1	]vvv	]v	]v
-gu2	]xgv	]xgv	]xv
-gu3	]xxx	]x	]x
-gu4	]vgx	]vgx	]vx
-gu5	]ggg	]g	]g
-gua1	]vff	]vf	]vf
-gua2	]xdf	]xdf	]xdf
-gua3	]xss	]xs	]xs
-gua4	]vds	]vds	]vds
-guai1	]vfu	]vfu	]vfu
-guai3	]xso	]xso	]xso
-guai4	]vdo	]vdo	]vdo
-guan1	]vfa	]vfa	]vfa
-guan3	]xsm	]xsm	]xsm
-guan4	]vdm	]vdm	]vdm
-guang1	]vfi	]vfi	]vfi
-guang3	]xsc	]xsc	]xsc
-guang4	]vdc	]vdc	]vdc
-guang5	]gdM	]gdM	]gdM
-gui1	]vtu	]vtu	]vtu
-gui3	]xeo	]xeo	]xeo
-gui4	]vro	]vro	]vro
-gun3	]xem	]xem	]xem
-gun4	]vrm	]vrm	]vrm
-guo1	]vjj	]vj	]vj
-guo2	]xkj	]xkj	]xkj
-guo3	]xll	]xl	]xl
-guo4	]vkl	]vkl	]vkl
-guo5	]gkk	]gk	]gk
-ha1	nfff	nf	nf
-ha2	nsdf	nsdf	nsf
-ha3	nsss	ns	ns
-ha4	nfds	nfds	nfs
-hai1	nffu	nfu	nfu
-hai2	nsdu	nsdu	nsdu
-hai3	nsso	nso	nso
-hai4	nfdo	nfdo	nfdo
-hai5	ndd;	nd;	nd;
-han1	nffa	nfa	nfa
-han2	nsda	nsda	nsda
-han3	nssm	nsm	nsm
-han4	nfdm	nfdm	nfdm
-han5	nddN	ndN	ndN
-hang1	nffi	nfi	nfi
-hang2	nsdi	nsdi	nsdi
-hang3	nssc	nsc	nsc
-hang4	nfdc	nfdc	nfdc
-hao1	nffv	nfv	nfv
-hao2	nsdv	nsdv	nsdv
-hao3	nssx	nsx	nsx
-hao4	nfdx	nfdx	nfdx
-hao5	nddg	ndg	ndg
-he1	njjj	nj	nj
-he2	nlkj	nlkj	nlj
-he3	nlll	nl	nl
-he4	njkl	njkl	njl
-he5	nkkk	nk	nk
-hei1	nttu	ntu	ntu
-hen1	ntta	nta	nta
-hen2	nera	nera	nera
-hen3	neem	nem	nem
-hen4	ntrm	ntrm	ntrm
-heng1	njji	nji	nji
-heng2	nlki	nlki	nlki
-heng4	njkc	njkc	njkc
-hm5	n@@@	n@	n@
-hng5	nMMM	nM	nM
-hong1	nvji	nvji	nvji
-hong2	nxki	nxki	nxki
-hong3	nxlc	nxlc	nxlc
-hong4	nvkc	nvkc	nvkc
-hou1	njjv	njv	njv
-hou2	nlkv	nlkv	nlkv
-hou3	nllx	nlx	nlx
-hou4	njkx	njkx	njkx
-hou5	nkkg	nkg	nkg
-hu1	nvvv	nv	nv
-hu2	nxgv	nxgv	nxv
-hu3	nxxx	nx	nx
-hu4	nvgx	nvgx	nvx
-hu5	nggg	ng	ng
-hua1	nvff	nvf	nvf
-hua2	nxdf	nxdf	nxdf
-hua4	nvds	nvds	nvds
-hua5	ngdd	ngd	ngd
-huai2	nxdu	nxdu	nxdu
-huai4	nvdo	nvdo	nvdo
-huai5	ngd;	ngd;	ngd;
-huan1	nvfa	nvfa	nvfa
-huan2	nxda	nxda	nxda
-huan3	nxsm	nxsm	nxsm
-huan4	nvdm	nvdm	nvdm
-huan5	ngdN	ngdN	ngdN
-huang1	nvfi	nvfi	nvfi
-huang2	nxdi	nxdi	nxdi
-huang3	nxsc	nxsc	nxsc
-huang4	nvdc	nvdc	nvdc
-huang5	ngdM	ngdM	ngdM
-hui1	nvtu	nvtu	nvtu
-hui2	nxru	nxru	nxru
-hui3	nxeo	nxeo	nxeo
-hui4	nvro	nvro	nvro
-hui5	ngr;	ngr;	ngr;
-hun1	nvta	nvta	nvta
-hun2	nxra	nxra	nxra
-hun3	nxem	nxem	nxem
-hun4	nvrm	nvrm	nvrm
-huo1	nvjj	nvj	nvj
-huo2	nxkj	nxkj	nxkj
-huo3	nxll	nxl	nxl
-huo4	nvkl	nvkl	nvkl
-huo5	ngkk	ngk	ngk
-ji1	3uuu	3u	3u
-ji2	3o;u	3o;u	3ou
-ji3	3ooo	3o	3o
-ji4	3u;o	3u;o	3uo
-ji5	3;;;	3;	3;
-jia1	3uff	3uf	3uf
-jia2	3odf	3odf	3odf
-jia3	3oss	3os	3os
-jia4	3uds	3uds	3uds
-jia5	3;dd	3;d	3;d
-jian1	3ufa	3ufa	3ufa
-jian3	3osm	3osm	3osm
-jian4	3udm	3udm	3udm
-jian5	3;dN	3;dN	3;dN
-jiang1	3ufi	3ufi	3ufi
-jiang3	3osc	3osc	3osc
-jiang4	3udc	3udc	3udc
-jiang5	3;dM	3;dM	3;dM
-jiao1	3ufv	3ufv	3ufv
-jiao2	3odv	3odv	3odv
-jiao3	3osx	3osx	3osx
-jiao4	3udx	3udx	3udx
-jiao5	3;dg	3;dg	3;dg
-jie1	3utt	3ut	3ut
-jie2	3ort	3ort	3ort
-jie3	3oee	3oe	3oe
-jie4	3ure	3ure	3ure
-jie5	3;rr	3;r	3;r
-jin1	3uta	3uta	3uta
-jin3	3oem	3oem	3oem
-jin4	3urm	3urm	3urm
-jing1	3uji	3uji	3uji
-jing3	3olc	3olc	3olc
-jing4	3ukc	3ukc	3ukc
-jing5	3;kM	3;kM	3;kM
-jiong1	3/ji	3/ji	3/ji
-jiong3	3,lc	3,lc	3,lc
-jiong4	3/kc	3/kc	3/kc
-jiu1	3ujv	3ujv	3ujv
-jiu2	3okv	3okv	3okv
-jiu3	3olx	3olx	3olx
-jiu4	3ukx	3ukx	3ukx
-jiu5	3;kg	3;kg	3;kg
-ju1	3///	3/	3/
-ju2	3,z/	3,z/	3,/
-ju3	3,,,	3,	3,
-ju4	3/z,	3/z,	3/,
-ju5	3zzz	3z	3z
-juan1	3/fa	3/fa	3/fa
-juan3	3,sm	3,sm	3,sm
-juan4	3/dm	3/dm	3/dm
-jue1	3/tt	3/t	3/t
-jue2	3,rt	3,rt	3,rt
-jue3	3,ee	3,e	3,e
-jue4	3/re	3/re	3/re
-jun1	3/ta	3/ta	3/ta
-jun3	3,em	3,em	3,em
-jun4	3/rm	3/rm	3/rm
-ka1	'fff	'f	'f
-ka3	'sss	's	's
-kai1	'ffu	'fu	'fu
-kai3	'sso	'so	'so
-kai4	'fdo	'fdo	'fdo
-kan1	'ffa	'fa	'fa
-kan3	'ssm	'sm	'sm
-kan4	'fdm	'fdm	'fdm
-kang1	'ffi	'fi	'fi
-kang2	'sdi	'sdi	'sdi
-kang3	'ssc	'sc	'sc
-kang4	'fdc	'fdc	'fdc
-kao1	'ffv	'fv	'fv
-kao3	'ssx	'sx	'sx
-kao4	'fdx	'fdx	'fdx
-ke1	'jjj	'j	'j
-ke2	'lkj	'lkj	'lj
-ke3	'lll	'l	'l
-ke4	'jkl	'jkl	'jl
-ke5	'kkk	'k	'k
-kei1	'ttu	'tu	'tu
-ken1	'tta	'ta	'ta
-ken3	'eem	'em	'em
-ken4	'trm	'trm	'trm
-keng1	'jji	'ji	'ji
-keng3	'llc	'lc	'lc
-kong1	'vji	'vji	'vji
-kong3	'xlc	'xlc	'xlc
-kong4	'vkc	'vkc	'vkc
-kou1	'jjv	'jv	'jv
-kou3	'llx	'lx	'lx
-kou4	'jkx	'jkx	'jkx
-kou5	'kkg	'kg	'kg
-ku1	'vvv	'v	'v
-ku2	'xgv	'xgv	'xv
-ku3	'xxx	'x	'x
-ku4	'vgx	'vgx	'vx
-kua1	'vff	'vf	'vf
-kua3	'xss	'xs	'xs
-kua4	'vds	'vds	'vds
-kuai3	'xso	'xso	'xso
-kuai4	'vdo	'vdo	'vdo
-kuai5	'gd;	'gd;	'gd;
-kuan1	'vfa	'vfa	'vfa
-kuan3	'xsm	'xsm	'xsm
-kuang1	'vfi	'vfi	'vfi
-kuang2	'xdi	'xdi	'xdi
-kuang3	'xsc	'xsc	'xsc
-kuang4	'vdc	'vdc	'vdc
-kui1	'vtu	'vtu	'vtu
-kui2	'xru	'xru	'xru
-kui3	'xeo	'xeo	'xeo
-kui4	'vro	'vro	'vro
-kun1	'vta	'vta	'vta
-kun3	'xem	'xem	'xem
-kun4	'vrm	'vrm	'vrm
-kun5	'grN	'grN	'grN
-kuo4	'vkl	'vkl	'vkl
-la1	bfff	bf	bf
-la2	bsdf	bsdf	bsf
-la3	bsss	bs	bs
-la4	bfds	bfds	bfs
-la5	bddd	bd	bd
-lai2	bsdu	bsdu	bsdu
-lai3	bsso	bso	bso
-lai4	bfdo	bfdo	bfdo
-lan2	bsda	bsda	bsda
-lan3	bssm	bsm	bsm
-lan4	bfdm	bfdm	bfdm
-lang1	bffi	bfi	bfi
-lang2	bsdi	bsdi	bsdi
-lang3	bssc	bsc	bsc
-lang4	bfdc	bfdc	bfdc
-lang5	bddM	bdM	bdM
-lao1	bffv	bfv	bfv
-lao2	bsdv	bsdv	bsdv
-lao3	bssx	bsx	bsx
-lao4	bfdx	bfdx	bfdx
-le1	bjjj	bj	bj
-le4	bjkl	bjkl	bjl
-le5	bkkk	bk	bk
-lei1	bttu	btu	btu
-lei2	beru	beru	beru
-lei3	beeo	beo	beo
-lei4	btro	btro	btro
-lei5	brr;	br;	br;
-len4	btrm	btrm	btrm
-leng1	bjji	bji	bji
-leng2	blki	blki	blki
-leng3	bllc	blc	blc
-leng4	bjkc	bjkc	bjkc
-li1	buuu	bu	bu
-li2	bo;u	bo;u	bou
-li3	booo	bo	bo
-li4	bu;o	bu;o	buo
-li5	b;;;	b;	b;
-lia3	boss	bos	bos
-lian2	boda	boda	boda
-lian3	bosm	bosm	bosm
-lian4	budm	budm	budm
-liang2	bodi	bodi	bodi
-liang3	bosc	bosc	bosc
-liang4	budc	budc	budc
-liang5	b;dM	b;dM	b;dM
-liao1	bufv	bufv	bufv
-liao2	bodv	bodv	bodv
-liao3	bosx	bosx	bosx
-liao4	budx	budx	budx
-lie1	butt	but	but
-lie2	bort	bort	bort
-lie3	boee	boe	boe
-lie4	bure	bure	bure
-lie5	b;rr	b;r	b;r
-lin1	buta	buta	buta
-lin2	bora	bora	bora
-lin3	boem	boem	boem
-lin4	burm	burm	burm
-ling1	buji	buji	buji
-ling2	boki	boki	boki
-ling3	bolc	bolc	bolc
-ling4	bukc	bukc	bukc
-ling5	b;kM	b;kM	b;kM
-liu1	bujv	bujv	bujv
-liu2	bokv	bokv	bokv
-liu3	bolx	bolx	bolx
-liu4	bukx	bukx	bukx
-lo5	bkkk	bk	bk
-long1	bvji	bvji	bvji
-long2	bxki	bxki	bxki
-long3	bxlc	bxlc	bxlc
-long4	bvkc	bvkc	bvkc
-long5	bgkM	bgkM	bgkM
-lou1	bjjv	bjv	bjv
-lou2	blkv	blkv	blkv
-lou3	bllx	blx	blx
-lou4	bjkx	bjkx	bjkx
-lou5	bkkg	bkg	bkg
-lu1	bvvv	bv	bv
-lu2	bxgv	bxgv	bxv
-lu3	bxxx	bx	bx
-lu4	bvgx	bvgx	bvx
-lu5	bggg	bg	bg
-luan2	bxda	bxda	bxda
-luan3	bxsm	bxsm	bxsm
-luan4	bvdm	bvdm	bvdm
-lun1	bvta	bvta	bvta
-lun2	bxra	bxra	bxra
-lun3	bxem	bxem	bxem
-lun4	bvrm	bvrm	bvrm
-luo1	bvjj	bvj	bvj
-luo2	bxkj	bxkj	bxkj
-luo3	bxll	bxl	bxl
-luo4	bvkl	bvkl	bvkl
-luo5	bgkk	bgk	bgk
-lü2	b,z/	b,z/	b,/
-lü3	b,,,	b,	b,
-lü4	b/z,	b/z,	b/,
-lüe3	b,ee	b,e	b,e
-lüe4	b/re	b/re	b/re
-m1	H!!!	!	!
-m2	H#@!	#@!	#!
-m4	H!@#	!@#	!#
-ma1	hfff	hf	hf
-ma2	hsdf	hsdf	hsf
-ma3	hsss	hs	hs
-ma4	hfds	hfds	hfs
-ma5	hddd	hd	hd
-mai2	hsdu	hsdu	hsdu
-mai3	hsso	hso	hso
-mai4	hfdo	hfdo	hfdo
-mai5	hdd;	hd;	hd;
-man1	hffa	hfa	hfa
-man2	hsda	hsda	hsda
-man3	hssm	hsm	hsm
-man4	hfdm	hfdm	hfdm
-mang1	hffi	hfi	hfi
-mang2	hsdi	hsdi	hsdi
-mang3	hssc	hsc	hsc
-mang4	hfdc	hfdc	hfdc
-mao1	hffv	hfv	hfv
-mao2	hsdv	hsdv	hsdv
-mao3	hssx	hsx	hsx
-mao4	hfdx	hfdx	hfdx
-mao5	hddg	hdg	hdg
-me1	hjjj	hj	hj
-me5	hkkk	hk	hk
-mei2	heru	heru	heru
-mei3	heeo	heo	heo
-mei4	htro	htro	htro
-mei5	hrr;	hr;	hr;
-men1	htta	hta	hta
-men2	hera	hera	hera
-men4	htrm	htrm	htrm
-men5	hrrN	hrN	hrN
-meng1	hjji	hji	hji
-meng2	hlki	hlki	hlki
-meng3	hllc	hlc	hlc
-meng4	hjkc	hjkc	hjkc
-meng5	hkkM	hkM	hkM
-mi1	huuu	hu	hu
-mi2	ho;u	ho;u	hou
-mi3	hooo	ho	ho
-mi4	hu;o	hu;o	huo
-mian2	hoda	hoda	hoda
-mian3	hosm	hosm	hosm
-mian4	hudm	hudm	hudm
-mian5	h;dN	h;dN	h;dN
-miao1	hufv	hufv	hufv
-miao2	hodv	hodv	hodv
-miao3	hosx	hosx	hosx
-miao4	hudx	hudx	hudx
-mie1	hutt	hut	hut
-mie2	hort	hort	hort
-mie4	hure	hure	hure
-mie5	h;rr	h;r	h;r
-min2	hora	hora	hora
-min3	hoem	hoem	hoem
-min5	h;rN	h;rN	h;rN
-ming2	hoki	hoki	hoki
-ming3	holc	holc	holc
-ming4	hukc	hukc	hukc
-ming5	h;kM	h;kM	h;kM
-miu3	holx	holx	holx
-miu4	hukx	hukx	hukx
-mo1	hjjj	hj	hj
-mo2	hlkj	hlkj	hlj
-mo3	hlll	hl	hl
-mo4	hjkl	hjkl	hjl
-mo5	hkkk	hk	hk
-mou1	hjjv	hjv	hjv
-mou2	hlkv	hlkv	hlkv
-mou3	hllx	hlx	hlx
-mou4	hjkx	hjkx	hjkx
-mou5	hkkg	hkg	hkg
-mu2	hxgv	hxgv	hxv
-mu3	hxxx	hx	hx
-mu4	hvgx	hvgx	hvx
-mu5	hggg	hg	hg
-n2	HmNa	mNa	ma
-n3	Hmmm	m	m
-n4	HaNm	aNm	am
-n5	HNNN	N	N
-na1	yfff	yf	yf
-na2	ysdf	ysdf	ysf
-na3	ysss	ys	ys
-na4	yfds	yfds	yfs
-na5	yddd	yd	yd
-nai2	ysdu	ysdu	ysdu
-nai3	ysso	yso	yso
-nai4	yfdo	yfdo	yfdo
-nai5	ydd;	yd;	yd;
-nan1	yffa	yfa	yfa
-nan2	ysda	ysda	ysda
-nan3	yssm	ysm	ysm
-nan4	yfdm	yfdm	yfdm
-nan5	yddN	ydN	ydN
-nang1	yffi	yfi	yfi
-nang2	ysdi	ysdi	ysdi
-nang3	yssc	ysc	ysc
-nang4	yfdc	yfdc	yfdc
-nang5	yddM	ydM	ydM
-nao1	yffv	yfv	yfv
-nao2	ysdv	ysdv	ysdv
-nao3	yssx	ysx	ysx
-nao4	yfdx	yfdx	yfdx
-nao5	yddg	ydg	ydg
-ne2	ylkj	ylkj	ylj
-ne4	yjkl	yjkl	yjl
-ne5	ykkk	yk	yk
-nei2	yeru	yeru	yeru
-nei3	yeeo	yeo	yeo
-nei4	ytro	ytro	ytro
-nen4	ytrm	ytrm	ytrm
-neng2	ylki	ylki	ylki
-neng3	yllc	ylc	ylc
-neng4	yjkc	yjkc	yjkc
-ng2	HcMi	cMi	ci
-ng3	Hccc	c	c
-ng4	HiMc	iMc	ic
-ng5	HMMM	M	M
-ni1	yuuu	yu	yu
-ni2	yo;u	yo;u	you
-ni3	yooo	yo	yo
-ni4	yu;o	yu;o	yuo
-nia1	yuff	yuf	yuf
-nian1	yufa	yufa	yufa
-nian2	yoda	yoda	yoda
-nian3	yosm	yosm	yosm
-nian4	yudm	yudm	yudm
-niang2	yodi	yodi	yodi
-niang3	yosc	yosc	yosc
-niang4	yudc	yudc	yudc
-niang5	y;dM	y;dM	y;dM
-niao3	yosx	yosx	yosx
-niao4	yudx	yudx	yudx
-niao5	y;dg	y;dg	y;dg
-nie1	yutt	yut	yut
-nie2	yort	yort	yort
-nie3	yoee	yoe	yoe
-nie4	yure	yure	yure
-nin2	yora	yora	yora
-nin3	yoem	yoem	yoem
-nin5	y;rN	y;rN	y;rN
-ning2	yoki	yoki	yoki
-ning3	yolc	yolc	yolc
-ning4	yukc	yukc	yukc
-niu1	yujv	yujv	yujv
-niu2	yokv	yokv	yokv
-niu3	yolx	yolx	yolx
-niu4	yukx	yukx	yukx
-niu5	y;kg	y;kg	y;kg
-nong2	yxki	yxki	yxki
-nong3	yxlc	yxlc	yxlc
-nong4	yvkc	yvkc	yvkc
-nou2	ylkv	ylkv	ylkv
-nou3	yllx	ylx	ylx
-nou4	yjkx	yjkx	yjkx
-nu2	yxgv	yxgv	yxv
-nu3	yxxx	yx	yx
-nu4	yvgx	yvgx	yvx
-nuan2	yxda	yxda	yxda
-nuan3	yxsm	yxsm	yxsm
-nuan4	yvdm	yvdm	yvdm
-nun2	yxra	yxra	yxra
-nun4	yvrm	yvrm	yvrm
-nuo2	yxkj	yxkj	yxkj
-nuo3	yxll	yxl	yxl
-nuo4	yvkl	yvkl	yvkl
-nü2	y,z/	y,z/	y,/
-nü3	y,,,	y,	y,
-nü4	y/z,	y/z,	y/,
-nü5	yzzz	yz	yz
-nüe4	y/re	y/re	y/re
-o1	Hjjj	j	j
-o2	Hlkj	lkj	lj
-o3	Hlll	l	l
-o4	Hjkl	jkl	jl
-o5	Hkkk	k	k
-ou1	Hjjv	jv	jv
-ou2	Hlkv	lkv	lkv
-ou3	Hllx	lx	lx
-ou4	Hjkx	jkx	jkx
-ou5	Hkkg	kg	kg
-pa1	pfff	pf	pf
-pa2	psdf	psdf	psf
-pa3	psss	ps	ps
-pa4	pfds	pfds	pfs
-pai1	pffu	pfu	pfu
-pai2	psdu	psdu	psdu
-pai3	psso	pso	pso
-pai4	pfdo	pfdo	pfdo
-pan1	pffa	pfa	pfa
-pan2	psda	psda	psda
-pan3	pssm	psm	psm
-pan4	pfdm	pfdm	pfdm
-pan5	pddN	pdN	pdN
-pang1	pffi	pfi	pfi
-pang2	psdi	psdi	psdi
-pang3	pssc	psc	psc
-pang4	pfdc	pfdc	pfdc
-pao1	pffv	pfv	pfv
-pao2	psdv	psdv	psdv
-pao3	pssx	psx	psx
-pao4	pfdx	pfdx	pfdx
-pei1	pttu	ptu	ptu
-pei2	peru	peru	peru
-pei3	peeo	peo	peo
-pei4	ptro	ptro	ptro
-pen1	ptta	pta	pta
-pen2	pera	pera	pera
-pen3	peem	pem	pem
-pen4	ptrm	ptrm	ptrm
-peng1	pjji	pji	pji
-peng2	plki	plki	plki
-peng3	pllc	plc	plc
-peng4	pjkc	pjkc	pjkc
-peng5	pkkM	pkM	pkM
-pi1	puuu	pu	pu
-pi2	po;u	po;u	pou
-pi3	pooo	po	po
-pi4	pu;o	pu;o	puo
-pian1	pufa	pufa	pufa
-pian2	poda	poda	poda
-pian3	posm	posm	posm
-pian4	pudm	pudm	pudm
-piao1	pufv	pufv	pufv
-piao2	podv	podv	podv
-piao3	posx	posx	posx
-piao4	pudx	pudx	pudx
-pie1	putt	put	put
-pie3	poee	poe	poe
-pie4	pure	pure	pure
-pin1	puta	puta	puta
-pin2	pora	pora	pora
-pin3	poem	poem	poem
-pin4	purm	purm	purm
-ping1	puji	puji	puji
-ping2	poki	poki	poki
-ping3	polc	polc	polc
-ping4	pukc	pukc	pukc
-po1	pjjj	pj	pj
-po2	plkj	plkj	plj
-po3	plll	pl	pl
-po4	pjkl	pjkl	pjl
-po5	pkkk	pk	pk
-pou1	pjjv	pjv	pjv
-pou2	plkv	plkv	plkv
-pou3	pllx	plx	plx
-pou4	pjkx	pjkx	pjkx
-pu1	pvvv	pv	pv
-pu2	pxgv	pxgv	pxv
-pu3	pxxx	px	px
-pu4	pvgx	pvgx	pvx
-pu5	pggg	pg	pg
-qi1	2uuu	2u	2u
-qi2	2o;u	2o;u	2ou
-qi3	2ooo	2o	2o
-qi4	2u;o	2u;o	2uo
-qi5	2;;;	2;	2;
-qia1	2uff	2uf	2uf
-qia2	2odf	2odf	2odf
-qia3	2oss	2os	2os
-qia4	2uds	2uds	2uds
-qian1	2ufa	2ufa	2ufa
-qian2	2oda	2oda	2oda
-qian3	2osm	2osm	2osm
-qian4	2udm	2udm	2udm
-qian5	2;dN	2;dN	2;dN
-qiang1	2ufi	2ufi	2ufi
-qiang2	2odi	2odi	2odi
-qiang3	2osc	2osc	2osc
-qiang4	2udc	2udc	2udc
-qiao1	2ufv	2ufv	2ufv
-qiao2	2odv	2odv	2odv
-qiao3	2osx	2osx	2osx
-qiao4	2udx	2udx	2udx
-qie1	2utt	2ut	2ut
-qie2	2ort	2ort	2ort
-qie3	2oee	2oe	2oe
-qie4	2ure	2ure	2ure
-qin1	2uta	2uta	2uta
-qin2	2ora	2ora	2ora
-qin3	2oem	2oem	2oem
-qin4	2urm	2urm	2urm
-qin5	2;rN	2;rN	2;rN
-qing1	2uji	2uji	2uji
-qing2	2oki	2oki	2oki
-qing3	2olc	2olc	2olc
-qing4	2ukc	2ukc	2ukc
-qing5	2;kM	2;kM	2;kM
-qiong1	2/ji	2/ji	2/ji
-qiong2	2,ki	2,ki	2,ki
-qiong4	2/kc	2/kc	2/kc
-qiu1	2ujv	2ujv	2ujv
-qiu2	2okv	2okv	2okv
-qiu3	2olx	2olx	2olx
-qiu4	2ukx	2ukx	2ukx
-qu1	2///	2/	2/
-qu2	2,z/	2,z/	2,/
-qu3	2,,,	2,	2,
-qu4	2/z,	2/z,	2/,
-qu5	2zzz	2z	2z
-quan1	2/fa	2/fa	2/fa
-quan2	2,da	2,da	2,da
-quan3	2,sm	2,sm	2,sm
-quan4	2/dm	2/dm	2/dm
-quan5	2zdN	2zdN	2zdN
-que1	2/tt	2/t	2/t
-que2	2,rt	2,rt	2,rt
-que4	2/re	2/re	2/re
-que5	2zrr	2zr	2zr
-qun1	2/ta	2/ta	2/ta
-qun2	2,ra	2,ra	2,ra
-qun3	2,em	2,em	2,em
-ran2	0sda	0sda	0sda
-ran3	0ssm	0sm	0sm
-ran4	0fdm	0fdm	0fdm
-ran5	0ddN	0dN	0dN
-rang1	0ffi	0fi	0fi
-rang2	0sdi	0sdi	0sdi
-rang3	0ssc	0sc	0sc
-rang4	0fdc	0fdc	0fdc
-rao2	0sdv	0sdv	0sdv
-rao3	0ssx	0sx	0sx
-rao4	0fdx	0fdx	0fdx
-re2	0lkj	0lkj	0lj
-re3	0lll	0l	0l
-re4	0jkl	0jkl	0jl
-ren2	0era	0era	0era
-ren3	0eem	0em	0em
-ren4	0trm	0trm	0trm
-ren5	0rrN	0rN	0rN
-reng1	0jji	0ji	0ji
-reng2	0lki	0lki	0lki
-reng4	0jkc	0jkc	0jkc
-ri4	0JKL	0JKL	0JL
-rong1	0vji	0vji	0vji
-rong2	0xki	0xki	0xki
-rong3	0xlc	0xlc	0xlc
-rong4	0vkc	0vkc	0vkc
-rong5	0gkM	0gkM	0gkM
-rou2	0lkv	0lkv	0lkv
-rou3	0llx	0lx	0lx
-rou4	0jkx	0jkx	0jkx
-ru2	0xgv	0xgv	0xv
-ru3	0xxx	0x	0x
-ru4	0vgx	0vgx	0vx
-ru5	0ggg	0g	0g
-rua2	0xdf	0xdf	0xdf
-ruan2	0xda	0xda	0xda
-ruan3	0xsm	0xsm	0xsm
-ruan4	0vdm	0vdm	0vdm
-rui2	0xru	0xru	0xru
-rui3	0xeo	0xeo	0xeo
-rui4	0vro	0vro	0vro
-run2	0xra	0xra	0xra
-run3	0xem	0xem	0xem
-run4	0vrm	0vrm	0vrm
-ruo2	0xkj	0xkj	0xkj
-ruo4	0vkl	0vkl	0vkl
-sa1	4fff	4f	4f
-sa3	4sss	4s	4s
-sa4	4fds	4fds	4fs
-sa5	4ddd	4d	4d
-sai1	4ffu	4fu	4fu
-sai3	4sso	4so	4so
-sai4	4fdo	4fdo	4fdo
-san1	4ffa	4fa	4fa
-san3	4ssm	4sm	4sm
-san4	4fdm	4fdm	4fdm
-san5	4ddN	4dN	4dN
-sang1	4ffi	4fi	4fi
-sang3	4ssc	4sc	4sc
-sang4	4fdc	4fdc	4fdc
-sao1	4ffv	4fv	4fv
-sao3	4ssx	4sx	4sx
-sao4	4fdx	4fdx	4fdx
-sao5	4ddg	4dg	4dg
-se1	4jjj	4j	4j
-se4	4jkl	4jkl	4jl
-sen1	4tta	4ta	4ta
-sen3	4eem	4em	4em
-seng1	4jji	4ji	4ji
-seng4	4jkc	4jkc	4jkc
-sha1	9fff	9f	9f
-sha2	9sdf	9sdf	9sf
-sha3	9sss	9s	9s
-sha4	9fds	9fds	9fs
-sha5	9ddd	9d	9d
-shai1	9ffu	9fu	9fu
-shai3	9sso	9so	9so
-shai4	9fdo	9fdo	9fdo
-shan1	9ffa	9fa	9fa
-shan2	9sda	9sda	9sda
-shan3	9ssm	9sm	9sm
-shan4	9fdm	9fdm	9fdm
-shang1	9ffi	9fi	9fi
-shang3	9ssc	9sc	9sc
-shang4	9fdc	9fdc	9fdc
-shang5	9ddM	9dM	9dM
-shao1	9ffv	9fv	9fv
-shao2	9sdv	9sdv	9sdv
-shao3	9ssx	9sx	9sx
-shao4	9fdx	9fdx	9fdx
-shao5	9ddg	9dg	9dg
-she1	9jjj	9j	9j
-she2	9lkj	9lkj	9lj
-she3	9lll	9l	9l
-she4	9jkl	9jkl	9jl
-shei2	9eru	9eru	9eru
-shen1	9tta	9ta	9ta
-shen2	9era	9era	9era
-shen3	9eem	9em	9em
-shen4	9trm	9trm	9trm
-shen5	9rrN	9rN	9rN
-sheng1	9jji	9ji	9ji
-sheng2	9lki	9lki	9lki
-sheng3	9llc	9lc	9lc
-sheng4	9jkc	9jkc	9jkc
-sheng5	9kkM	9kM	9kM
-shi1	9JJJ	9J	9J
-shi2	9LKJ	9LKJ	9LJ
-shi3	9LLL	9L	9L
-shi4	9JKL	9JKL	9JL
-shi5	9KKK	9K	9K
-shou1	9jjv	9jv	9jv
-shou2	9lkv	9lkv	9lkv
-shou3	9llx	9lx	9lx
-shou4	9jkx	9jkx	9jkx
-shou5	9kkg	9kg	9kg
-shu1	9vvv	9v	9v
-shu2	9xgv	9xgv	9xv
-shu3	9xxx	9x	9x
-shu4	9vgx	9vgx	9vx
-shu5	9ggg	9g	9g
-shua1	9vff	9vf	9vf
-shua3	9xss	9xs	9xs
-shua4	9vds	9vds	9vds
-shuai1	9vfu	9vfu	9vfu
-shuai3	9xso	9xso	9xso
-shuai4	9vdo	9vdo	9vdo
-shuan1	9vfa	9vfa	9vfa
-shuan4	9vdm	9vdm	9vdm
-shuang1	9vfi	9vfi	9vfi
-shuang3	9xsc	9xsc	9xsc
-shuang4	9vdc	9vdc	9vdc
-shui2	9xru	9xru	9xru
-shui3	9xeo	9xeo	9xeo
-shui4	9vro	9vro	9vro
-shui5	9gr;	9gr;	9gr;
-shun3	9xem	9xem	9xem
-shun4	9vrm	9vrm	9vrm
-shuo1	9vjj	9vj	9vj
-shuo2	9xkj	9xkj	9xkj
-shuo4	9vkl	9vkl	9vkl
-si1	4JJJ	4J	4J
-si2	4LKJ	4LKJ	4LJ
-si3	4LLL	4L	4L
-si4	4JKL	4JKL	4JL
-si5	4KKK	4K	4K
-song1	4vji	4vji	4vji
-song2	4xki	4xki	4xki
-song3	4xlc	4xlc	4xlc
-song4	4vkc	4vkc	4vkc
-sou1	4jjv	4jv	4jv
-sou3	4llx	4lx	4lx
-sou4	4jkx	4jkx	4jkx
-sou5	4kkg	4kg	4kg
-su1	4vvv	4v	4v
-su2	4xgv	4xgv	4xv
-su3	4xxx	4x	4x
-su4	4vgx	4vgx	4vx
-su5	4ggg	4g	4g
-suan1	4vfa	4vfa	4vfa
-suan3	4xsm	4xsm	4xsm
-suan4	4vdm	4vdm	4vdm
-suan5	4gdN	4gdN	4gdN
-sui1	4vtu	4vtu	4vtu
-sui2	4xru	4xru	4xru
-sui3	4xeo	4xeo	4xeo
-sui4	4vro	4vro	4vro
-sun1	4vta	4vta	4vta
-sun3	4xem	4xem	4xem
-sun4	4vrm	4vrm	4vrm
-suo1	4vjj	4vj	4vj
-suo2	4xkj	4xkj	4xkj
-suo3	4xll	4xl	4xl
-suo4	4vkl	4vkl	4vkl
-suo5	4gkk	4gk	4gk
-ta1	.fff	.f	.f
-ta2	.sdf	.sdf	.sf
-ta3	.sss	.s	.s
-ta4	.fds	.fds	.fs
-ta5	.ddd	.d	.d
-tai1	.ffu	.fu	.fu
-tai2	.sdu	.sdu	.sdu
-tai3	.sso	.so	.so
-tai4	.fdo	.fdo	.fdo
-tai5	.dd;	.d;	.d;
-tan1	.ffa	.fa	.fa
-tan2	.sda	.sda	.sda
-tan3	.ssm	.sm	.sm
-tan4	.fdm	.fdm	.fdm
-tan5	.ddN	.dN	.dN
-tang1	.ffi	.fi	.fi
-tang2	.sdi	.sdi	.sdi
-tang3	.ssc	.sc	.sc
-tang4	.fdc	.fdc	.fdc
-tang5	.ddM	.dM	.dM
-tao1	.ffv	.fv	.fv
-tao2	.sdv	.sdv	.sdv
-tao3	.ssx	.sx	.sx
-tao4	.fdx	.fdx	.fdx
-te4	.jkl	.jkl	.jl
-te5	.kkk	.k	.k
-tei1	.ttu	.tu	.tu
-teng1	.jji	.ji	.ji
-teng2	.lki	.lki	.lki
-teng4	.jkc	.jkc	.jkc
-teng5	.kkM	.kM	.kM
-ti1	.uuu	.u	.u
-ti2	.o;u	.o;u	.ou
-ti3	.ooo	.o	.o
-ti4	.u;o	.u;o	.uo
-ti5	.;;;	.;	.;
-tian1	.ufa	.ufa	.ufa
-tian2	.oda	.oda	.oda
-tian3	.osm	.osm	.osm
-tian4	.udm	.udm	.udm
-tian5	.;dN	.;dN	.;dN
-tiao1	.ufv	.ufv	.ufv
-tiao2	.odv	.odv	.odv
-tiao3	.osx	.osx	.osx
-tiao4	.udx	.udx	.udx
-tiao5	.;dg	.;dg	.;dg
-tie1	.utt	.ut	.ut
-tie2	.ort	.ort	.ort
-tie3	.oee	.oe	.oe
-tie4	.ure	.ure	.ure
-ting1	.uji	.uji	.uji
-ting2	.oki	.oki	.oki
-ting3	.olc	.olc	.olc
-ting4	.ukc	.ukc	.ukc
-ting5	.;kM	.;kM	.;kM
-tong1	.vji	.vji	.vji
-tong2	.xki	.xki	.xki
-tong3	.xlc	.xlc	.xlc
-tong4	.vkc	.vkc	.vkc
-tong5	.gkM	.gkM	.gkM
-tou1	.jjv	.jv	.jv
-tou2	.lkv	.lkv	.lkv
-tou3	.llx	.lx	.lx
-tou4	.jkx	.jkx	.jkx
-tou5	.kkg	.kg	.kg
-tu1	.vvv	.v	.v
-tu2	.xgv	.xgv	.xv
-tu3	.xxx	.x	.x
-tu4	.vgx	.vgx	.vx
-tu5	.ggg	.g	.g
-tuan1	.vfa	.vfa	.vfa
-tuan2	.xda	.xda	.xda
-tuan3	.xsm	.xsm	.xsm
-tuan4	.vdm	.vdm	.vdm
-tui1	.vtu	.vtu	.vtu
-tui2	.xru	.xru	.xru
-tui3	.xeo	.xeo	.xeo
-tui4	.vro	.vro	.vro
-tun1	.vta	.vta	.vta
-tun2	.xra	.xra	.xra
-tun3	.xem	.xem	.xem
-tun4	.vrm	.vrm	.vrm
-tuo1	.vjj	.vj	.vj
-tuo2	.xkj	.xkj	.xkj
-tuo3	.xll	.xl	.xl
-tuo4	.vkl	.vkl	.vkl
-tuo5	.gkk	.gk	.gk
-wa1	%vff	%vf	%vf
-wa2	%xdf	%xdf	%xdf
-wa3	%xss	%xs	%xs
-wa4	%vds	%vds	%vds
-wa5	%gdd	%gd	%gd
-wai1	%vfu	%vfu	%vfu
-wai3	%xso	%xso	%xso
-wai4	%vdo	%vdo	%vdo
-wai5	%gd;	%gd;	%gd;
-wan1	%vfa	%vfa	%vfa
-wan2	%xda	%xda	%xda
-wan3	%xsm	%xsm	%xsm
-wan4	%vdm	%vdm	%vdm
-wang1	%vfi	%vfi	%vfi
-wang2	%xdi	%xdi	%xdi
-wang3	%xsc	%xsc	%xsc
-wang4	%vdc	%vdc	%vdc
-wang5	%gdM	%gdM	%gdM
-wei1	%vtu	%vtu	%vtu
-wei2	%xru	%xru	%xru
-wei3	%xeo	%xeo	%xeo
-wei4	%vro	%vro	%vro
-wei5	%gr;	%gr;	%gr;
-wen1	%vta	%vta	%vta
-wen2	%xra	%xra	%xra
-wen3	%xem	%xem	%xem
-wen4	%vrm	%vrm	%vrm
-wen5	%grN	%grN	%grN
-weng1	%vji	%vji	%vji
-weng3	%xlc	%xlc	%xlc
-weng4	%vkc	%vkc	%vkc
-wo1	%vjj	%vj	%vj
-wo3	%xll	%xl	%xl
-wo4	%vkl	%vkl	%vkl
-wong4	%vkc	%vkc	%vkc
-wu1	%vvv	%v	%v
-wu2	%xgv	%xgv	%xv
-wu3	%xxx	%x	%x
-wu4	%vgx	%vgx	%vx
-wu5	%ggg	%g	%g
-xi1	1uuu	1u	1u
-xi2	1o;u	1o;u	1ou
-xi3	1ooo	1o	1o
-xi4	1u;o	1u;o	1uo
-xi5	1;;;	1;	1;
-xia1	1uff	1uf	1uf
-xia2	1odf	1odf	1odf
-xia3	1oss	1os	1os
-xia4	1uds	1uds	1uds
-xia5	1;dd	1;d	1;d
-xian1	1ufa	1ufa	1ufa
-xian2	1oda	1oda	1oda
-xian3	1osm	1osm	1osm
-xian4	1udm	1udm	1udm
-xian5	1;dN	1;dN	1;dN
-xiang1	1ufi	1ufi	1ufi
-xiang2	1odi	1odi	1odi
-xiang3	1osc	1osc	1osc
-xiang4	1udc	1udc	1udc
-xiao1	1ufv	1ufv	1ufv
-xiao2	1odv	1odv	1odv
-xiao3	1osx	1osx	1osx
-xiao4	1udx	1udx	1udx
-xiao5	1;dg	1;dg	1;dg
-xie1	1utt	1ut	1ut
-xie2	1ort	1ort	1ort
-xie3	1oee	1oe	1oe
-xie4	1ure	1ure	1ure
-xie5	1;rr	1;r	1;r
-xin1	1uta	1uta	1uta
-xin2	1ora	1ora	1ora
-xin3	1oem	1oem	1oem
-xin4	1urm	1urm	1urm
-xin5	1;rN	1;rN	1;rN
-xing1	1uji	1uji	1uji
-xing2	1oki	1oki	1oki
-xing3	1olc	1olc	1olc
-xing4	1ukc	1ukc	1ukc
-xing5	1;kM	1;kM	1;kM
-xiong1	1/ji	1/ji	1/ji
-xiong2	1,ki	1,ki	1,ki
-xiong3	1,lc	1,lc	1,lc
-xiong4	1/kc	1/kc	1/kc
-xiong5	1zkM	1zkM	1zkM
-xiu1	1ujv	1ujv	1ujv
-xiu2	1okv	1okv	1okv
-xiu3	1olx	1olx	1olx
-xiu4	1ukx	1ukx	1ukx
-xu1	1///	1/	1/
-xu2	1,z/	1,z/	1,/
-xu3	1,,,	1,	1,
-xu4	1/z,	1/z,	1/,
-xu5	1zzz	1z	1z
-xuan1	1/fa	1/fa	1/fa
-xuan2	1,da	1,da	1,da
-xuan3	1,sm	1,sm	1,sm
-xuan4	1/dm	1/dm	1/dm
-xue1	1/tt	1/t	1/t
-xue2	1,rt	1,rt	1,rt
-xue3	1,ee	1,e	1,e
-xue4	1/re	1/re	1/re
-xun1	1/ta	1/ta	1/ta
-xun2	1,ra	1,ra	1,ra
-xun4	1/rm	1/rm	1/rm
-xun5	1zrN	1zrN	1zrN
-ya1	$uff	$uf	$uf
-ya2	$odf	$odf	$odf
-ya3	$oss	$os	$os
-ya4	$uds	$uds	$uds
-ya5	$;dd	$;d	$;d
-yan1	$ufa	$ufa	$ufa
-yan2	$oda	$oda	$oda
-yan3	$osm	$osm	$osm
-yan4	$udm	$udm	$udm
-yang1	$ufi	$ufi	$ufi
-yang2	$odi	$odi	$odi
-yang3	$osc	$osc	$osc
-yang4	$udc	$udc	$udc
-yang5	$;dM	$;dM	$;dM
-yao1	$ufv	$ufv	$ufv
-yao2	$odv	$odv	$odv
-yao3	$osx	$osx	$osx
-yao4	$udx	$udx	$udx
-ye1	$utt	$ut	$ut
-ye2	$ort	$ort	$ort
-ye3	$oee	$oe	$oe
-ye4	$ure	$ure	$ure
-ye5	$;rr	$;r	$;r
-yi1	$uuu	$u	$u
-yi2	$o;u	$o;u	$ou
-yi3	$ooo	$o	$o
-yi4	$u;o	$u;o	$uo
-yi5	$;;;	$;	$;
-yin1	$uta	$uta	$uta
-yin2	$ora	$ora	$ora
-yin3	$oem	$oem	$oem
-yin4	$urm	$urm	$urm
-yin5	$;rN	$;rN	$;rN
-ying1	$uji	$uji	$uji
-ying2	$oki	$oki	$oki
-ying3	$olc	$olc	$olc
-ying4	$ukc	$ukc	$ukc
-ying5	$;kM	$;kM	$;kM
-yo1	$ujj	$uj	$uj
-yo5	$;kk	$;k	$;k
-yong1	$/ji	$/ji	$/ji
-yong2	$,ki	$,ki	$,ki
-yong3	$,lc	$,lc	$,lc
-yong4	$/kc	$/kc	$/kc
-yong5	$zkM	$zkM	$zkM
-you1	$ujv	$ujv	$ujv
-you2	$okv	$okv	$okv
-you3	$olx	$olx	$olx
-you4	$ukx	$ukx	$ukx
-you5	$;kg	$;kg	$;kg
-yu1	$///	$/	$/
-yu2	$,z/	$,z/	$,/
-yu3	$,,,	$,	$,
-yu4	$/z,	$/z,	$/,
-yu5	$zzz	$z	$z
-yuan1	$/fa	$/fa	$/fa
-yuan2	$,da	$,da	$,da
-yuan3	$,sm	$,sm	$,sm
-yuan4	$/dm	$/dm	$/dm
-yuan5	$zdN	$zdN	$zdN
-yue1	$/tt	$/t	$/t
-yue2	$,rt	$,rt	$,rt
-yue3	$,ee	$,e	$,e
-yue4	$/re	$/re	$/re
-yue5	$zrr	$zr	$zr
-yun1	$/ta	$/ta	$/ta
-yun2	$,ra	$,ra	$,ra
-yun3	$,em	$,em	$,em
-yun4	$/rm	$/rm	$/rm
-yun5	$zrN	$zrN	$zrN
-za1	6fff	6f	6f
-za2	6sdf	6sdf	6sf
-za3	6sss	6s	6s
-za4	6fds	6fds	6fs
-zai1	6ffu	6fu	6fu
-zai3	6sso	6so	6so
-zai4	6fdo	6fdo	6fdo
-zan1	6ffa	6fa	6fa
-zan2	6sda	6sda	6sda
-zan3	6ssm	6sm	6sm
-zan4	6fdm	6fdm	6fdm
-zan5	6ddN	6dN	6dN
-zang1	6ffi	6fi	6fi
-zang3	6ssc	6sc	6sc
-zang4	6fdc	6fdc	6fdc
-zao1	6ffv	6fv	6fv
-zao2	6sdv	6sdv	6sdv
-zao3	6ssx	6sx	6sx
-zao4	6fdx	6fdx	6fdx
-ze2	6lkj	6lkj	6lj
-ze4	6jkl	6jkl	6jl
-ze5	6kkk	6k	6k
-zei2	6eru	6eru	6eru
-zen1	6tta	6ta	6ta
-zen3	6eem	6em	6em
-zen4	6trm	6trm	6trm
-zen5	6rrN	6rN	6rN
-zeng1	6jji	6ji	6ji
-zeng3	6llc	6lc	6lc
-zeng4	6jkc	6jkc	6jkc
-zha1	7fff	7f	7f
-zha2	7sdf	7sdf	7sf
-zha3	7sss	7s	7s
-zha4	7fds	7fds	7fs
-zha5	7ddd	7d	7d
-zhai1	7ffu	7fu	7fu
-zhai2	7sdu	7sdu	7sdu
-zhai3	7sso	7so	7so
-zhai4	7fdo	7fdo	7fdo
-zhan1	7ffa	7fa	7fa
-zhan2	7sda	7sda	7sda
-zhan3	7ssm	7sm	7sm
-zhan4	7fdm	7fdm	7fdm
-zhan5	7ddN	7dN	7dN
-zhang1	7ffi	7fi	7fi
-zhang3	7ssc	7sc	7sc
-zhang4	7fdc	7fdc	7fdc
-zhang5	7ddM	7dM	7dM
-zhao1	7ffv	7fv	7fv
-zhao2	7sdv	7sdv	7sdv
-zhao3	7ssx	7sx	7sx
-zhao4	7fdx	7fdx	7fdx
-zhao5	7ddg	7dg	7dg
-zhe1	7jjj	7j	7j
-zhe2	7lkj	7lkj	7lj
-zhe3	7lll	7l	7l
-zhe4	7jkl	7jkl	7jl
-zhe5	7kkk	7k	7k
-zhei4	7tro	7tro	7tro
-zhen1	7tta	7ta	7ta
-zhen2	7era	7era	7era
-zhen3	7eem	7em	7em
-zhen4	7trm	7trm	7trm
-zheng1	7jji	7ji	7ji
-zheng3	7llc	7lc	7lc
-zheng4	7jkc	7jkc	7jkc
-zheng5	7kkM	7kM	7kM
-zhi1	7JJJ	7J	7J
-zhi2	7LKJ	7LKJ	7LJ
-zhi3	7LLL	7L	7L
-zhi4	7JKL	7JKL	7JL
-zhi5	7KKK	7K	7K
-zhong1	7vji	7vji	7vji
-zhong3	7xlc	7xlc	7xlc
-zhong4	7vkc	7vkc	7vkc
-zhou1	7jjv	7jv	7jv
-zhou2	7lkv	7lkv	7lkv
-zhou3	7llx	7lx	7lx
-zhou4	7jkx	7jkx	7jkx
-zhou5	7kkg	7kg	7kg
-zhu1	7vvv	7v	7v
-zhu2	7xgv	7xgv	7xv
-zhu3	7xxx	7x	7x
-zhu4	7vgx	7vgx	7vx
-zhua1	7vff	7vf	7vf
-zhua3	7xss	7xs	7xs
-zhuai1	7vfu	7vfu	7vfu
-zhuai3	7xso	7xso	7xso
-zhuai4	7vdo	7vdo	7vdo
-zhuan1	7vfa	7vfa	7vfa
-zhuan3	7xsm	7xsm	7xsm
-zhuan4	7vdm	7vdm	7vdm
-zhuang1	7vfi	7vfi	7vfi
-zhuang3	7xsc	7xsc	7xsc
-zhuang4	7vdc	7vdc	7vdc
-zhui1	7vtu	7vtu	7vtu
-zhui3	7xeo	7xeo	7xeo
-zhui4	7vro	7vro	7vro
-zhui5	7gr;	7gr;	7gr;
-zhun1	7vta	7vta	7vta
-zhun3	7xem	7xem	7xem
-zhun4	7vrm	7vrm	7vrm
-zhuo1	7vjj	7vj	7vj
-zhuo2	7xkj	7xkj	7xkj
-zhuo4	7vkl	7vkl	7vkl
-zhuo5	7gkk	7gk	7gk
-zi1	6JJJ	6J	6J
-zi2	6LKJ	6LKJ	6LJ
-zi3	6LLL	6L	6L
-zi4	6JKL	6JKL	6JL
-zi5	6KKK	6K	6K
-zong1	6vji	6vji	6vji
-zong3	6xlc	6xlc	6xlc
-zong4	6vkc	6vkc	6vkc
-zong5	6gkM	6gkM	6gkM
-zou1	6jjv	6jv	6jv
-zou3	6llx	6lx	6lx
-zou4	6jkx	6jkx	6jkx
-zu1	6vvv	6v	6v
-zu2	6xgv	6xgv	6xv
-zu3	6xxx	6x	6x
-zu4	6vgx	6vgx	6vx
-zuan1	6vfa	6vfa	6vfa
-zuan3	6xsm	6xsm	6xsm
-zuan4	6vdm	6vdm	6vdm
-zui1	6vtu	6vtu	6vtu
-zui2	6xru	6xru	6xru
-zui3	6xeo	6xeo	6xeo
-zui4	6vro	6vro	6vro
-zui5	6gr;	6gr;	6gr;
-zun1	6vta	6vta	6vta
-zun2	6xra	6xra	6xra
-zun3	6xem	6xem	6xem
-zun4	6vrm	6vrm	6vrm
-zuo1	6vjj	6vj	6vj
-zuo2	6xkj	6xkj	6xkj
-zuo3	6xll	6xl	6xl
-zuo4	6vkl	6vkl	6vkl
-zuo5	6gkk	6gk	6gk
-ê1	Httt	t	t
-ê2	Hert	ert	et
-ê3	Heee	e	e
-ê4	Htre	tre	te
+pinyin_tone	full
+a1	Hfff
+a2	Hsdf
+a3	Hsss
+a4	Hfds
+a5	Hddd
+ai1	Hffu
+ai2	Hsdu
+ai3	Hsso
+ai4	Hfdo
+an1	Hffa
+an2	Hsda
+an3	Hssm
+an4	Hfdm
+ang1	Hffi
+ang2	Hsdi
+ang3	Hssc
+ang4	Hfdc
+ao1	Hffv
+ao2	Hsdv
+ao3	Hssx
+ao4	Hfdx
+ba1	qfff
+ba2	qsdf
+ba3	qsss
+ba4	qfds
+ba5	qddd
+bai1	qffu
+bai2	qsdu
+bai3	qsso
+bai4	qfdo
+bai5	qdd;
+ban1	qffa
+ban3	qssm
+ban4	qfdm
+ban5	qddN
+bang1	qffi
+bang3	qssc
+bang4	qfdc
+bao1	qffv
+bao2	qsdv
+bao3	qssx
+bao4	qfdx
+bei1	qttu
+bei3	qeeo
+bei4	qtro
+bei5	qrr;
+ben1	qtta
+ben3	qeem
+ben4	qtrm
+beng1	qjji
+beng2	qlki
+beng3	qllc
+beng4	qjkc
+beng5	qkkM
+bi1	quuu
+bi2	qo;u
+bi3	qooo
+bi4	qu;o
+bian1	qufa
+bian3	qosm
+bian4	qudm
+bian5	q;dN
+biang2	qodi
+biang4	qudc
+biao1	qufv
+biao3	qosx
+biao4	qudx
+bie1	qutt
+bie2	qort
+bie3	qoee
+bie4	qure
+bin1	quta
+bin3	qoem
+bin4	qurm
+bin5	q;rN
+bing1	quji
+bing3	qolc
+bing4	qukc
+bing5	q;kM
+bo1	qjjj
+bo2	qlkj
+bo3	qlll
+bo4	qjkl
+bo5	qkkk
+bong4	qvkc
+bu1	qvvv
+bu2	qxgv
+bu3	qxxx
+bu4	qvgx
+bu5	qggg
+ca1	5fff
+ca3	5sss
+ca4	5fds
+cai1	5ffu
+cai2	5sdu
+cai3	5sso
+cai4	5fdo
+cai5	5dd;
+can1	5ffa
+can2	5sda
+can3	5ssm
+can4	5fdm
+cang1	5ffi
+cang2	5sdi
+cang3	5ssc
+cang4	5fdc
+cao1	5ffv
+cao2	5sdv
+cao3	5ssx
+cao4	5fdx
+ce4	5jkl
+cei4	5tro
+cen1	5tta
+cen2	5era
+ceng1	5jji
+ceng2	5lki
+ceng4	5jkc
+cha1	8fff
+cha2	8sdf
+cha3	8sss
+cha4	8fds
+chai1	8ffu
+chai2	8sdu
+chai3	8sso
+chai4	8fdo
+chan1	8ffa
+chan2	8sda
+chan3	8ssm
+chan4	8fdm
+chang1	8ffi
+chang2	8sdi
+chang3	8ssc
+chang4	8fdc
+chang5	8ddM
+chao1	8ffv
+chao2	8sdv
+chao3	8ssx
+chao4	8fdx
+che1	8jjj
+che2	8lkj
+che3	8lll
+che4	8jkl
+che5	8kkk
+chen1	8tta
+chen2	8era
+chen3	8eem
+chen4	8trm
+chen5	8rrN
+cheng1	8jji
+cheng2	8lki
+cheng3	8llc
+cheng4	8jkc
+cheng5	8kkM
+chi1	8JJJ
+chi2	8LKJ
+chi3	8LLL
+chi4	8JKL
+chi5	8KKK
+chong1	8vji
+chong2	8xki
+chong3	8xlc
+chong4	8vkc
+chou1	8jjv
+chou2	8lkv
+chou3	8llx
+chou4	8jkx
+chou5	8kkg
+chu1	8vvv
+chu2	8xgv
+chu3	8xxx
+chu4	8vgx
+chu5	8ggg
+chua1	8vff
+chua3	8xss
+chua4	8vds
+chuai1	8vfu
+chuai2	8xdu
+chuai3	8xso
+chuai4	8vdo
+chuan1	8vfa
+chuan2	8xda
+chuan3	8xsm
+chuan4	8vdm
+chuang1	8vfi
+chuang2	8xdi
+chuang3	8xsc
+chuang4	8vdc
+chui1	8vtu
+chui2	8xru
+chui3	8xeo
+chui4	8vro
+chun1	8vta
+chun2	8xra
+chun3	8xem
+chun5	8grN
+chuo1	8vjj
+chuo4	8vkl
+ci1	5JJJ
+ci2	5LKJ
+ci3	5LLL
+ci4	5JKL
+cong1	5vji
+cong2	5xki
+cong3	5xlc
+cong4	5vkc
+cou1	5jjv
+cou2	5lkv
+cou3	5llx
+cou4	5jkx
+cu1	5vvv
+cu2	5xgv
+cu3	5xxx
+cu4	5vgx
+cuan1	5vfa
+cuan2	5xda
+cuan4	5vdm
+cui1	5vtu
+cui3	5xeo
+cui4	5vro
+cui5	5gr;
+cun1	5vta
+cun2	5xra
+cun3	5xem
+cun4	5vrm
+cun5	5grN
+cuo1	5vjj
+cuo2	5xkj
+cuo3	5xll
+cuo4	5vkl
+da1	wfff
+da2	wsdf
+da3	wsss
+da4	wfds
+da5	wddd
+dai1	wffu
+dai3	wsso
+dai4	wfdo
+dai5	wdd;
+dan1	wffa
+dan3	wssm
+dan4	wfdm
+dan5	wddN
+dang1	wffi
+dang3	wssc
+dang4	wfdc
+dang5	wddM
+dao1	wffv
+dao2	wsdv
+dao3	wssx
+dao4	wfdx
+dao5	wddg
+de1	wjjj
+de2	wlkj
+de5	wkkk
+dei1	wttu
+dei3	weeo
+den4	wtrm
+deng1	wjji
+deng3	wllc
+deng4	wjkc
+di1	wuuu
+di2	wo;u
+di3	wooo
+di4	wu;o
+di5	w;;;
+dia3	woss
+dian1	wufa
+dian2	woda
+dian3	wosm
+dian4	wudm
+diao1	wufv
+diao3	wosx
+diao4	wudx
+die1	wutt
+die2	wort
+die3	woee
+die4	wure
+din4	wurm
+ding1	wuji
+ding3	wolc
+ding4	wukc
+diu1	wujv
+dong1	wvji
+dong3	wxlc
+dong4	wvkc
+dou1	wjjv
+dou3	wllx
+dou4	wjkx
+du1	wvvv
+du2	wxgv
+du3	wxxx
+du4	wvgx
+du5	wggg
+duan1	wvfa
+duan3	wxsm
+duan4	wvdm
+dui1	wvtu
+dui3	wxeo
+dui4	wvro
+dun1	wvta
+dun3	wxem
+dun4	wvrm
+duo1	wvjj
+duo2	wxkj
+duo3	wxll
+duo4	wvkl
+duo5	wgkk
+e1	Hjjj
+e2	Hlkj
+e3	Hlll
+e4	Hjkl
+e5	Hkkk
+ei1	Httu
+ei2	Heru
+ei3	Heeo
+ei4	Htro
+en1	Htta
+en3	Heem
+en4	Htrm
+en5	HrrN
+eng1	Hjji
+er2	HDSA
+er3	HDDD
+er4	HASD
+er5	HSSS
+fa1	[fff
+fa2	[sdf
+fa3	[sss
+fa4	[fds
+fa5	[ddd
+fan1	[ffa
+fan2	[sda
+fan3	[ssm
+fan4	[fdm
+fan5	[ddN
+fang1	[ffi
+fang2	[sdi
+fang3	[ssc
+fang4	[fdc
+fang5	[ddM
+fei1	[ttu
+fei2	[eru
+fei3	[eeo
+fei4	[tro
+fen1	[tta
+fen2	[era
+fen3	[eem
+fen4	[trm
+fen5	[rrN
+feng1	[jji
+feng2	[lki
+feng3	[llc
+feng4	[jkc
+fiao4	[udx
+fo2	[lkj
+fou1	[jjv
+fou2	[lkv
+fou3	[llx
+fu1	[vvv
+fu2	[xgv
+fu3	[xxx
+fu4	[vgx
+fu5	[ggg
+ga1	]fff
+ga2	]sdf
+ga3	]sss
+ga4	]fds
+gai1	]ffu
+gai3	]sso
+gai4	]fdo
+gai5	]dd;
+gan1	]ffa
+gan3	]ssm
+gan4	]fdm
+gang1	]ffi
+gang3	]ssc
+gang4	]fdc
+gao1	]ffv
+gao3	]ssx
+gao4	]fdx
+ge1	]jjj
+ge2	]lkj
+ge3	]lll
+ge4	]jkl
+ge5	]kkk
+gei3	]eeo
+gen1	]tta
+gen2	]era
+gen3	]eem
+gen4	]trm
+geng1	]jji
+geng3	]llc
+geng4	]jkc
+gong1	]vji
+gong3	]xlc
+gong4	]vkc
+gong5	]gkM
+gou1	]jjv
+gou3	]llx
+gou4	]jkx
+gu1	]vvv
+gu2	]xgv
+gu3	]xxx
+gu4	]vgx
+gu5	]ggg
+gua1	]vff
+gua2	]xdf
+gua3	]xss
+gua4	]vds
+guai1	]vfu
+guai3	]xso
+guai4	]vdo
+guan1	]vfa
+guan3	]xsm
+guan4	]vdm
+guang1	]vfi
+guang3	]xsc
+guang4	]vdc
+guang5	]gdM
+gui1	]vtu
+gui3	]xeo
+gui4	]vro
+gun3	]xem
+gun4	]vrm
+guo1	]vjj
+guo2	]xkj
+guo3	]xll
+guo4	]vkl
+guo5	]gkk
+ha1	nfff
+ha2	nsdf
+ha3	nsss
+ha4	nfds
+hai1	nffu
+hai2	nsdu
+hai3	nsso
+hai4	nfdo
+hai5	ndd;
+han1	nffa
+han2	nsda
+han3	nssm
+han4	nfdm
+han5	nddN
+hang1	nffi
+hang2	nsdi
+hang3	nssc
+hang4	nfdc
+hao1	nffv
+hao2	nsdv
+hao3	nssx
+hao4	nfdx
+hao5	nddg
+he1	njjj
+he2	nlkj
+he3	nlll
+he4	njkl
+he5	nkkk
+hei1	nttu
+hen1	ntta
+hen2	nera
+hen3	neem
+hen4	ntrm
+heng1	njji
+heng2	nlki
+heng4	njkc
+hm5	n@@@
+hng5	nMMM
+hong1	nvji
+hong2	nxki
+hong3	nxlc
+hong4	nvkc
+hou1	njjv
+hou2	nlkv
+hou3	nllx
+hou4	njkx
+hou5	nkkg
+hu1	nvvv
+hu2	nxgv
+hu3	nxxx
+hu4	nvgx
+hu5	nggg
+hua1	nvff
+hua2	nxdf
+hua4	nvds
+hua5	ngdd
+huai2	nxdu
+huai4	nvdo
+huai5	ngd;
+huan1	nvfa
+huan2	nxda
+huan3	nxsm
+huan4	nvdm
+huan5	ngdN
+huang1	nvfi
+huang2	nxdi
+huang3	nxsc
+huang4	nvdc
+huang5	ngdM
+hui1	nvtu
+hui2	nxru
+hui3	nxeo
+hui4	nvro
+hui5	ngr;
+hun1	nvta
+hun2	nxra
+hun3	nxem
+hun4	nvrm
+huo1	nvjj
+huo2	nxkj
+huo3	nxll
+huo4	nvkl
+huo5	ngkk
+ji1	3uuu
+ji2	3o;u
+ji3	3ooo
+ji4	3u;o
+ji5	3;;;
+jia1	3uff
+jia2	3odf
+jia3	3oss
+jia4	3uds
+jia5	3;dd
+jian1	3ufa
+jian3	3osm
+jian4	3udm
+jian5	3;dN
+jiang1	3ufi
+jiang3	3osc
+jiang4	3udc
+jiang5	3;dM
+jiao1	3ufv
+jiao2	3odv
+jiao3	3osx
+jiao4	3udx
+jiao5	3;dg
+jie1	3utt
+jie2	3ort
+jie3	3oee
+jie4	3ure
+jie5	3;rr
+jin1	3uta
+jin3	3oem
+jin4	3urm
+jing1	3uji
+jing3	3olc
+jing4	3ukc
+jing5	3;kM
+jiong1	3/ji
+jiong3	3,lc
+jiong4	3/kc
+jiu1	3ujv
+jiu2	3okv
+jiu3	3olx
+jiu4	3ukx
+jiu5	3;kg
+ju1	3///
+ju2	3,z/
+ju3	3,,,
+ju4	3/z,
+ju5	3zzz
+juan1	3/fa
+juan3	3,sm
+juan4	3/dm
+jue1	3/tt
+jue2	3,rt
+jue3	3,ee
+jue4	3/re
+jun1	3/ta
+jun3	3,em
+jun4	3/rm
+ka1	'fff
+ka3	'sss
+kai1	'ffu
+kai3	'sso
+kai4	'fdo
+kan1	'ffa
+kan3	'ssm
+kan4	'fdm
+kang1	'ffi
+kang2	'sdi
+kang3	'ssc
+kang4	'fdc
+kao1	'ffv
+kao3	'ssx
+kao4	'fdx
+ke1	'jjj
+ke2	'lkj
+ke3	'lll
+ke4	'jkl
+ke5	'kkk
+kei1	'ttu
+ken1	'tta
+ken3	'eem
+ken4	'trm
+keng1	'jji
+keng3	'llc
+kong1	'vji
+kong3	'xlc
+kong4	'vkc
+kou1	'jjv
+kou3	'llx
+kou4	'jkx
+kou5	'kkg
+ku1	'vvv
+ku2	'xgv
+ku3	'xxx
+ku4	'vgx
+kua1	'vff
+kua3	'xss
+kua4	'vds
+kuai3	'xso
+kuai4	'vdo
+kuai5	'gd;
+kuan1	'vfa
+kuan3	'xsm
+kuang1	'vfi
+kuang2	'xdi
+kuang3	'xsc
+kuang4	'vdc
+kui1	'vtu
+kui2	'xru
+kui3	'xeo
+kui4	'vro
+kun1	'vta
+kun3	'xem
+kun4	'vrm
+kun5	'grN
+kuo4	'vkl
+la1	bfff
+la2	bsdf
+la3	bsss
+la4	bfds
+la5	bddd
+lai2	bsdu
+lai3	bsso
+lai4	bfdo
+lan2	bsda
+lan3	bssm
+lan4	bfdm
+lang1	bffi
+lang2	bsdi
+lang3	bssc
+lang4	bfdc
+lang5	bddM
+lao1	bffv
+lao2	bsdv
+lao3	bssx
+lao4	bfdx
+le1	bjjj
+le4	bjkl
+le5	bkkk
+lei1	bttu
+lei2	beru
+lei3	beeo
+lei4	btro
+lei5	brr;
+len4	btrm
+leng1	bjji
+leng2	blki
+leng3	bllc
+leng4	bjkc
+li1	buuu
+li2	bo;u
+li3	booo
+li4	bu;o
+li5	b;;;
+lia3	boss
+lian2	boda
+lian3	bosm
+lian4	budm
+liang2	bodi
+liang3	bosc
+liang4	budc
+liang5	b;dM
+liao1	bufv
+liao2	bodv
+liao3	bosx
+liao4	budx
+lie1	butt
+lie2	bort
+lie3	boee
+lie4	bure
+lie5	b;rr
+lin1	buta
+lin2	bora
+lin3	boem
+lin4	burm
+ling1	buji
+ling2	boki
+ling3	bolc
+ling4	bukc
+ling5	b;kM
+liu1	bujv
+liu2	bokv
+liu3	bolx
+liu4	bukx
+lo5	bkkk
+long1	bvji
+long2	bxki
+long3	bxlc
+long4	bvkc
+long5	bgkM
+lou1	bjjv
+lou2	blkv
+lou3	bllx
+lou4	bjkx
+lou5	bkkg
+lu1	bvvv
+lu2	bxgv
+lu3	bxxx
+lu4	bvgx
+lu5	bggg
+luan2	bxda
+luan3	bxsm
+luan4	bvdm
+lun1	bvta
+lun2	bxra
+lun3	bxem
+lun4	bvrm
+luo1	bvjj
+luo2	bxkj
+luo3	bxll
+luo4	bvkl
+luo5	bgkk
+lü2	b,z/
+lü3	b,,,
+lü4	b/z,
+lüe3	b,ee
+lüe4	b/re
+m1	H!!!
+m2	H#@!
+m4	H!@#
+ma1	hfff
+ma2	hsdf
+ma3	hsss
+ma4	hfds
+ma5	hddd
+mai2	hsdu
+mai3	hsso
+mai4	hfdo
+mai5	hdd;
+man1	hffa
+man2	hsda
+man3	hssm
+man4	hfdm
+mang1	hffi
+mang2	hsdi
+mang3	hssc
+mang4	hfdc
+mao1	hffv
+mao2	hsdv
+mao3	hssx
+mao4	hfdx
+mao5	hddg
+me1	hjjj
+me5	hkkk
+mei2	heru
+mei3	heeo
+mei4	htro
+mei5	hrr;
+men1	htta
+men2	hera
+men4	htrm
+men5	hrrN
+meng1	hjji
+meng2	hlki
+meng3	hllc
+meng4	hjkc
+meng5	hkkM
+mi1	huuu
+mi2	ho;u
+mi3	hooo
+mi4	hu;o
+mian2	hoda
+mian3	hosm
+mian4	hudm
+mian5	h;dN
+miao1	hufv
+miao2	hodv
+miao3	hosx
+miao4	hudx
+mie1	hutt
+mie2	hort
+mie4	hure
+mie5	h;rr
+min2	hora
+min3	hoem
+min5	h;rN
+ming2	hoki
+ming3	holc
+ming4	hukc
+ming5	h;kM
+miu3	holx
+miu4	hukx
+mo1	hjjj
+mo2	hlkj
+mo3	hlll
+mo4	hjkl
+mo5	hkkk
+mou1	hjjv
+mou2	hlkv
+mou3	hllx
+mou4	hjkx
+mou5	hkkg
+mu2	hxgv
+mu3	hxxx
+mu4	hvgx
+mu5	hggg
+n2	HmNa
+n3	Hmmm
+n4	HaNm
+n5	HNNN
+na1	yfff
+na2	ysdf
+na3	ysss
+na4	yfds
+na5	yddd
+nai2	ysdu
+nai3	ysso
+nai4	yfdo
+nai5	ydd;
+nan1	yffa
+nan2	ysda
+nan3	yssm
+nan4	yfdm
+nan5	yddN
+nang1	yffi
+nang2	ysdi
+nang3	yssc
+nang4	yfdc
+nang5	yddM
+nao1	yffv
+nao2	ysdv
+nao3	yssx
+nao4	yfdx
+nao5	yddg
+ne2	ylkj
+ne4	yjkl
+ne5	ykkk
+nei2	yeru
+nei3	yeeo
+nei4	ytro
+nen4	ytrm
+neng2	ylki
+neng3	yllc
+neng4	yjkc
+ng2	HcMi
+ng3	Hccc
+ng4	HiMc
+ng5	HMMM
+ni1	yuuu
+ni2	yo;u
+ni3	yooo
+ni4	yu;o
+nia1	yuff
+nian1	yufa
+nian2	yoda
+nian3	yosm
+nian4	yudm
+niang2	yodi
+niang3	yosc
+niang4	yudc
+niang5	y;dM
+niao3	yosx
+niao4	yudx
+niao5	y;dg
+nie1	yutt
+nie2	yort
+nie3	yoee
+nie4	yure
+nin2	yora
+nin3	yoem
+nin5	y;rN
+ning2	yoki
+ning3	yolc
+ning4	yukc
+niu1	yujv
+niu2	yokv
+niu3	yolx
+niu4	yukx
+niu5	y;kg
+nong2	yxki
+nong3	yxlc
+nong4	yvkc
+nou2	ylkv
+nou3	yllx
+nou4	yjkx
+nu2	yxgv
+nu3	yxxx
+nu4	yvgx
+nuan2	yxda
+nuan3	yxsm
+nuan4	yvdm
+nun2	yxra
+nun4	yvrm
+nuo2	yxkj
+nuo3	yxll
+nuo4	yvkl
+nü2	y,z/
+nü3	y,,,
+nü4	y/z,
+nü5	yzzz
+nüe4	y/re
+o1	Hjjj
+o2	Hlkj
+o3	Hlll
+o4	Hjkl
+o5	Hkkk
+ou1	Hjjv
+ou2	Hlkv
+ou3	Hllx
+ou4	Hjkx
+ou5	Hkkg
+pa1	pfff
+pa2	psdf
+pa3	psss
+pa4	pfds
+pai1	pffu
+pai2	psdu
+pai3	psso
+pai4	pfdo
+pan1	pffa
+pan2	psda
+pan3	pssm
+pan4	pfdm
+pan5	pddN
+pang1	pffi
+pang2	psdi
+pang3	pssc
+pang4	pfdc
+pao1	pffv
+pao2	psdv
+pao3	pssx
+pao4	pfdx
+pei1	pttu
+pei2	peru
+pei3	peeo
+pei4	ptro
+pen1	ptta
+pen2	pera
+pen3	peem
+pen4	ptrm
+peng1	pjji
+peng2	plki
+peng3	pllc
+peng4	pjkc
+peng5	pkkM
+pi1	puuu
+pi2	po;u
+pi3	pooo
+pi4	pu;o
+pian1	pufa
+pian2	poda
+pian3	posm
+pian4	pudm
+piao1	pufv
+piao2	podv
+piao3	posx
+piao4	pudx
+pie1	putt
+pie3	poee
+pie4	pure
+pin1	puta
+pin2	pora
+pin3	poem
+pin4	purm
+ping1	puji
+ping2	poki
+ping3	polc
+ping4	pukc
+po1	pjjj
+po2	plkj
+po3	plll
+po4	pjkl
+po5	pkkk
+pou1	pjjv
+pou2	plkv
+pou3	pllx
+pou4	pjkx
+pu1	pvvv
+pu2	pxgv
+pu3	pxxx
+pu4	pvgx
+pu5	pggg
+qi1	2uuu
+qi2	2o;u
+qi3	2ooo
+qi4	2u;o
+qi5	2;;;
+qia1	2uff
+qia2	2odf
+qia3	2oss
+qia4	2uds
+qian1	2ufa
+qian2	2oda
+qian3	2osm
+qian4	2udm
+qian5	2;dN
+qiang1	2ufi
+qiang2	2odi
+qiang3	2osc
+qiang4	2udc
+qiao1	2ufv
+qiao2	2odv
+qiao3	2osx
+qiao4	2udx
+qie1	2utt
+qie2	2ort
+qie3	2oee
+qie4	2ure
+qin1	2uta
+qin2	2ora
+qin3	2oem
+qin4	2urm
+qin5	2;rN
+qing1	2uji
+qing2	2oki
+qing3	2olc
+qing4	2ukc
+qing5	2;kM
+qiong1	2/ji
+qiong2	2,ki
+qiong4	2/kc
+qiu1	2ujv
+qiu2	2okv
+qiu3	2olx
+qiu4	2ukx
+qu1	2///
+qu2	2,z/
+qu3	2,,,
+qu4	2/z,
+qu5	2zzz
+quan1	2/fa
+quan2	2,da
+quan3	2,sm
+quan4	2/dm
+quan5	2zdN
+que1	2/tt
+que2	2,rt
+que4	2/re
+que5	2zrr
+qun1	2/ta
+qun2	2,ra
+qun3	2,em
+ran2	0sda
+ran3	0ssm
+ran4	0fdm
+ran5	0ddN
+rang1	0ffi
+rang2	0sdi
+rang3	0ssc
+rang4	0fdc
+rao2	0sdv
+rao3	0ssx
+rao4	0fdx
+re2	0lkj
+re3	0lll
+re4	0jkl
+ren2	0era
+ren3	0eem
+ren4	0trm
+ren5	0rrN
+reng1	0jji
+reng2	0lki
+reng4	0jkc
+ri4	0JKL
+rong1	0vji
+rong2	0xki
+rong3	0xlc
+rong4	0vkc
+rong5	0gkM
+rou2	0lkv
+rou3	0llx
+rou4	0jkx
+ru2	0xgv
+ru3	0xxx
+ru4	0vgx
+ru5	0ggg
+rua2	0xdf
+ruan2	0xda
+ruan3	0xsm
+ruan4	0vdm
+rui2	0xru
+rui3	0xeo
+rui4	0vro
+run2	0xra
+run3	0xem
+run4	0vrm
+ruo2	0xkj
+ruo4	0vkl
+sa1	4fff
+sa3	4sss
+sa4	4fds
+sa5	4ddd
+sai1	4ffu
+sai3	4sso
+sai4	4fdo
+san1	4ffa
+san3	4ssm
+san4	4fdm
+san5	4ddN
+sang1	4ffi
+sang3	4ssc
+sang4	4fdc
+sao1	4ffv
+sao3	4ssx
+sao4	4fdx
+sao5	4ddg
+se1	4jjj
+se4	4jkl
+sen1	4tta
+sen3	4eem
+seng1	4jji
+seng4	4jkc
+sha1	9fff
+sha2	9sdf
+sha3	9sss
+sha4	9fds
+sha5	9ddd
+shai1	9ffu
+shai3	9sso
+shai4	9fdo
+shan1	9ffa
+shan2	9sda
+shan3	9ssm
+shan4	9fdm
+shang1	9ffi
+shang3	9ssc
+shang4	9fdc
+shang5	9ddM
+shao1	9ffv
+shao2	9sdv
+shao3	9ssx
+shao4	9fdx
+shao5	9ddg
+she1	9jjj
+she2	9lkj
+she3	9lll
+she4	9jkl
+shei2	9eru
+shen1	9tta
+shen2	9era
+shen3	9eem
+shen4	9trm
+shen5	9rrN
+sheng1	9jji
+sheng2	9lki
+sheng3	9llc
+sheng4	9jkc
+sheng5	9kkM
+shi1	9JJJ
+shi2	9LKJ
+shi3	9LLL
+shi4	9JKL
+shi5	9KKK
+shou1	9jjv
+shou2	9lkv
+shou3	9llx
+shou4	9jkx
+shou5	9kkg
+shu1	9vvv
+shu2	9xgv
+shu3	9xxx
+shu4	9vgx
+shu5	9ggg
+shua1	9vff
+shua3	9xss
+shua4	9vds
+shuai1	9vfu
+shuai3	9xso
+shuai4	9vdo
+shuan1	9vfa
+shuan4	9vdm
+shuang1	9vfi
+shuang3	9xsc
+shuang4	9vdc
+shui2	9xru
+shui3	9xeo
+shui4	9vro
+shui5	9gr;
+shun3	9xem
+shun4	9vrm
+shuo1	9vjj
+shuo2	9xkj
+shuo4	9vkl
+si1	4JJJ
+si2	4LKJ
+si3	4LLL
+si4	4JKL
+si5	4KKK
+song1	4vji
+song2	4xki
+song3	4xlc
+song4	4vkc
+sou1	4jjv
+sou3	4llx
+sou4	4jkx
+sou5	4kkg
+su1	4vvv
+su2	4xgv
+su3	4xxx
+su4	4vgx
+su5	4ggg
+suan1	4vfa
+suan3	4xsm
+suan4	4vdm
+suan5	4gdN
+sui1	4vtu
+sui2	4xru
+sui3	4xeo
+sui4	4vro
+sun1	4vta
+sun3	4xem
+sun4	4vrm
+suo1	4vjj
+suo2	4xkj
+suo3	4xll
+suo4	4vkl
+suo5	4gkk
+ta1	.fff
+ta2	.sdf
+ta3	.sss
+ta4	.fds
+ta5	.ddd
+tai1	.ffu
+tai2	.sdu
+tai3	.sso
+tai4	.fdo
+tai5	.dd;
+tan1	.ffa
+tan2	.sda
+tan3	.ssm
+tan4	.fdm
+tan5	.ddN
+tang1	.ffi
+tang2	.sdi
+tang3	.ssc
+tang4	.fdc
+tang5	.ddM
+tao1	.ffv
+tao2	.sdv
+tao3	.ssx
+tao4	.fdx
+te4	.jkl
+te5	.kkk
+tei1	.ttu
+teng1	.jji
+teng2	.lki
+teng4	.jkc
+teng5	.kkM
+ti1	.uuu
+ti2	.o;u
+ti3	.ooo
+ti4	.u;o
+ti5	.;;;
+tian1	.ufa
+tian2	.oda
+tian3	.osm
+tian4	.udm
+tian5	.;dN
+tiao1	.ufv
+tiao2	.odv
+tiao3	.osx
+tiao4	.udx
+tiao5	.;dg
+tie1	.utt
+tie2	.ort
+tie3	.oee
+tie4	.ure
+ting1	.uji
+ting2	.oki
+ting3	.olc
+ting4	.ukc
+ting5	.;kM
+tong1	.vji
+tong2	.xki
+tong3	.xlc
+tong4	.vkc
+tong5	.gkM
+tou1	.jjv
+tou2	.lkv
+tou3	.llx
+tou4	.jkx
+tou5	.kkg
+tu1	.vvv
+tu2	.xgv
+tu3	.xxx
+tu4	.vgx
+tu5	.ggg
+tuan1	.vfa
+tuan2	.xda
+tuan3	.xsm
+tuan4	.vdm
+tui1	.vtu
+tui2	.xru
+tui3	.xeo
+tui4	.vro
+tun1	.vta
+tun2	.xra
+tun3	.xem
+tun4	.vrm
+tuo1	.vjj
+tuo2	.xkj
+tuo3	.xll
+tuo4	.vkl
+tuo5	.gkk
+wa1	%vff
+wa2	%xdf
+wa3	%xss
+wa4	%vds
+wa5	%gdd
+wai1	%vfu
+wai3	%xso
+wai4	%vdo
+wai5	%gd;
+wan1	%vfa
+wan2	%xda
+wan3	%xsm
+wan4	%vdm
+wang1	%vfi
+wang2	%xdi
+wang3	%xsc
+wang4	%vdc
+wang5	%gdM
+wei1	%vtu
+wei2	%xru
+wei3	%xeo
+wei4	%vro
+wei5	%gr;
+wen1	%vta
+wen2	%xra
+wen3	%xem
+wen4	%vrm
+wen5	%grN
+weng1	%vji
+weng3	%xlc
+weng4	%vkc
+wo1	%vjj
+wo3	%xll
+wo4	%vkl
+wong4	%vkc
+wu1	%vvv
+wu2	%xgv
+wu3	%xxx
+wu4	%vgx
+wu5	%ggg
+xi1	1uuu
+xi2	1o;u
+xi3	1ooo
+xi4	1u;o
+xi5	1;;;
+xia1	1uff
+xia2	1odf
+xia3	1oss
+xia4	1uds
+xia5	1;dd
+xian1	1ufa
+xian2	1oda
+xian3	1osm
+xian4	1udm
+xian5	1;dN
+xiang1	1ufi
+xiang2	1odi
+xiang3	1osc
+xiang4	1udc
+xiao1	1ufv
+xiao2	1odv
+xiao3	1osx
+xiao4	1udx
+xiao5	1;dg
+xie1	1utt
+xie2	1ort
+xie3	1oee
+xie4	1ure
+xie5	1;rr
+xin1	1uta
+xin2	1ora
+xin3	1oem
+xin4	1urm
+xin5	1;rN
+xing1	1uji
+xing2	1oki
+xing3	1olc
+xing4	1ukc
+xing5	1;kM
+xiong1	1/ji
+xiong2	1,ki
+xiong3	1,lc
+xiong4	1/kc
+xiong5	1zkM
+xiu1	1ujv
+xiu2	1okv
+xiu3	1olx
+xiu4	1ukx
+xu1	1///
+xu2	1,z/
+xu3	1,,,
+xu4	1/z,
+xu5	1zzz
+xuan1	1/fa
+xuan2	1,da
+xuan3	1,sm
+xuan4	1/dm
+xue1	1/tt
+xue2	1,rt
+xue3	1,ee
+xue4	1/re
+xun1	1/ta
+xun2	1,ra
+xun4	1/rm
+xun5	1zrN
+ya1	$uff
+ya2	$odf
+ya3	$oss
+ya4	$uds
+ya5	$;dd
+yan1	$ufa
+yan2	$oda
+yan3	$osm
+yan4	$udm
+yang1	$ufi
+yang2	$odi
+yang3	$osc
+yang4	$udc
+yang5	$;dM
+yao1	$ufv
+yao2	$odv
+yao3	$osx
+yao4	$udx
+ye1	$utt
+ye2	$ort
+ye3	$oee
+ye4	$ure
+ye5	$;rr
+yi1	$uuu
+yi2	$o;u
+yi3	$ooo
+yi4	$u;o
+yi5	$;;;
+yin1	$uta
+yin2	$ora
+yin3	$oem
+yin4	$urm
+yin5	$;rN
+ying1	$uji
+ying2	$oki
+ying3	$olc
+ying4	$ukc
+ying5	$;kM
+yo1	$ujj
+yo5	$;kk
+yong1	$/ji
+yong2	$,ki
+yong3	$,lc
+yong4	$/kc
+yong5	$zkM
+you1	$ujv
+you2	$okv
+you3	$olx
+you4	$ukx
+you5	$;kg
+yu1	$///
+yu2	$,z/
+yu3	$,,,
+yu4	$/z,
+yu5	$zzz
+yuan1	$/fa
+yuan2	$,da
+yuan3	$,sm
+yuan4	$/dm
+yuan5	$zdN
+yue1	$/tt
+yue2	$,rt
+yue3	$,ee
+yue4	$/re
+yue5	$zrr
+yun1	$/ta
+yun2	$,ra
+yun3	$,em
+yun4	$/rm
+yun5	$zrN
+za1	6fff
+za2	6sdf
+za3	6sss
+za4	6fds
+zai1	6ffu
+zai3	6sso
+zai4	6fdo
+zan1	6ffa
+zan2	6sda
+zan3	6ssm
+zan4	6fdm
+zan5	6ddN
+zang1	6ffi
+zang3	6ssc
+zang4	6fdc
+zao1	6ffv
+zao2	6sdv
+zao3	6ssx
+zao4	6fdx
+ze2	6lkj
+ze4	6jkl
+ze5	6kkk
+zei2	6eru
+zen1	6tta
+zen3	6eem
+zen4	6trm
+zen5	6rrN
+zeng1	6jji
+zeng3	6llc
+zeng4	6jkc
+zha1	7fff
+zha2	7sdf
+zha3	7sss
+zha4	7fds
+zha5	7ddd
+zhai1	7ffu
+zhai2	7sdu
+zhai3	7sso
+zhai4	7fdo
+zhan1	7ffa
+zhan2	7sda
+zhan3	7ssm
+zhan4	7fdm
+zhan5	7ddN
+zhang1	7ffi
+zhang3	7ssc
+zhang4	7fdc
+zhang5	7ddM
+zhao1	7ffv
+zhao2	7sdv
+zhao3	7ssx
+zhao4	7fdx
+zhao5	7ddg
+zhe1	7jjj
+zhe2	7lkj
+zhe3	7lll
+zhe4	7jkl
+zhe5	7kkk
+zhei4	7tro
+zhen1	7tta
+zhen2	7era
+zhen3	7eem
+zhen4	7trm
+zheng1	7jji
+zheng3	7llc
+zheng4	7jkc
+zheng5	7kkM
+zhi1	7JJJ
+zhi2	7LKJ
+zhi3	7LLL
+zhi4	7JKL
+zhi5	7KKK
+zhong1	7vji
+zhong3	7xlc
+zhong4	7vkc
+zhou1	7jjv
+zhou2	7lkv
+zhou3	7llx
+zhou4	7jkx
+zhou5	7kkg
+zhu1	7vvv
+zhu2	7xgv
+zhu3	7xxx
+zhu4	7vgx
+zhua1	7vff
+zhua3	7xss
+zhuai1	7vfu
+zhuai3	7xso
+zhuai4	7vdo
+zhuan1	7vfa
+zhuan3	7xsm
+zhuan4	7vdm
+zhuang1	7vfi
+zhuang3	7xsc
+zhuang4	7vdc
+zhui1	7vtu
+zhui3	7xeo
+zhui4	7vro
+zhui5	7gr;
+zhun1	7vta
+zhun3	7xem
+zhun4	7vrm
+zhuo1	7vjj
+zhuo2	7xkj
+zhuo4	7vkl
+zhuo5	7gkk
+zi1	6JJJ
+zi2	6LKJ
+zi3	6LLL
+zi4	6JKL
+zi5	6KKK
+zong1	6vji
+zong3	6xlc
+zong4	6vkc
+zong5	6gkM
+zou1	6jjv
+zou3	6llx
+zou4	6jkx
+zu1	6vvv
+zu2	6xgv
+zu3	6xxx
+zu4	6vgx
+zuan1	6vfa
+zuan3	6xsm
+zuan4	6vdm
+zui1	6vtu
+zui2	6xru
+zui3	6xeo
+zui4	6vro
+zui5	6gr;
+zun1	6vta
+zun2	6xra
+zun3	6xem
+zun4	6vrm
+zuo1	6vjj
+zuo2	6xkj
+zuo3	6xll
+zuo4	6vkl
+zuo5	6gkk
+ê1	Httt
+ê2	Hert
+ê3	Heee
+ê4	Htre

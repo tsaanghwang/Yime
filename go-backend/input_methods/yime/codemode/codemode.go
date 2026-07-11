@@ -1,0 +1,106 @@
+// Package codemode derives Yime variable and shorthand lookup codes from the
+// canonical fixed-length four-code representation.
+package codemode
+
+import (
+	"fmt"
+	"strings"
+)
+
+const (
+	SyllableCodeLength = 4
+	VirtualInitial     = 'H'
+)
+
+// Record contains all runtime representations derived from one canonical code.
+type Record struct {
+	Full      string
+	Variable  string
+	Shorthand string
+}
+
+type musicalMetadata struct {
+	quality int
+	tone    int
+}
+
+// Each triple is high, middle, low for one musical-quality group. These are
+// Rime layout-key projections of M01-M33, not a second lexicon source.
+var musicalGroups = []string{
+	"u;o", "vgx", "/z,", "fds", "jkl", "tre", "JKL", "ASD", "!@#", "aNm", "iMc",
+}
+
+var musicalByKey = buildMusicalMetadata()
+
+func buildMusicalMetadata() map[rune]musicalMetadata {
+	result := make(map[rune]musicalMetadata, len(musicalGroups)*3)
+	for quality, group := range musicalGroups {
+		keys := []rune(group)
+		for tone, key := range keys {
+			result[key] = musicalMetadata{quality: quality, tone: tone}
+		}
+	}
+	return result
+}
+
+// BuildRecord derives all modes from a canonical code containing one or more
+// complete four-code syllables.
+func BuildRecord(full string) (Record, error) {
+	full = strings.TrimSpace(full)
+	if full == "" {
+		return Record{}, fmt.Errorf("等长码不能为空")
+	}
+	runes := []rune(full)
+	if len(runes)%SyllableCodeLength != 0 {
+		return Record{}, fmt.Errorf("等长码长度必须是 %d 的倍数，实际为 %d：%q", SyllableCodeLength, len(runes), full)
+	}
+	var variable strings.Builder
+	var shorthand strings.Builder
+	for start := 0; start < len(runes); start += SyllableCodeLength {
+		syllable := runes[start : start+SyllableCodeLength]
+		merged := mergeAdjacent(syllable)
+		isVirtual := len(merged) > 0 && merged[0] == VirtualInitial
+		variablePart := merged
+		if isVirtual {
+			variablePart = variablePart[1:]
+		}
+		variable.WriteString(string(variablePart))
+
+		initial := []rune(nil)
+		ganyin := variablePart
+		if !isVirtual && len(variablePart) > 0 {
+			initial = variablePart[:1]
+			ganyin = variablePart[1:]
+		}
+		shorthand.WriteString(string(initial))
+		shorthand.WriteString(string(omitMiddleTone(ganyin)))
+	}
+	return Record{Full: full, Variable: variable.String(), Shorthand: shorthand.String()}, nil
+}
+
+func mergeAdjacent(input []rune) []rune {
+	merged := make([]rune, 0, len(input))
+	for _, item := range input {
+		if len(merged) == 0 || merged[len(merged)-1] != item {
+			merged = append(merged, item)
+		}
+	}
+	return merged
+}
+
+func omitMiddleTone(ganyin []rune) []rune {
+	if len(ganyin) != 3 {
+		return append([]rune(nil), ganyin...)
+	}
+	first, firstOK := musicalByKey[ganyin[0]]
+	middle, middleOK := musicalByKey[ganyin[1]]
+	last, lastOK := musicalByKey[ganyin[2]]
+	if !firstOK || !middleOK || !lastOK || first.quality != middle.quality || middle.quality != last.quality {
+		return append([]rune(nil), ganyin...)
+	}
+	if (first.tone == 0 && middle.tone == 1 && last.tone == 2) ||
+		(first.tone == 2 && middle.tone == 1 && last.tone == 0) {
+		return []rune{ganyin[0], ganyin[2]}
+	}
+	return append([]rune(nil), ganyin...)
+}

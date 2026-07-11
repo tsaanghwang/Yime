@@ -3123,7 +3123,7 @@ func TestApplyUserLexiconWritesAllThreeModes(t *testing.T) {
 	if err := os.MkdirAll(sharedDir, 0o755); err != nil {
 		t.Fatal(err)
 	}
-	tsvContent := "pinyin\tfull\tvariable\tshorthand\nzhong1\tzf\tzv\tzs\nguo2\tgf\tgv\tgs\n"
+	tsvContent := "pinyin_tone\tfull\nzhong1\tqsdf\nguo2\tHsdf\n"
 	if err := os.WriteFile(filepath.Join(sharedDir, "yime_pinyin_codes.tsv"), []byte(tsvContent), 0o644); err != nil {
 		t.Fatal(err)
 	}
@@ -3177,7 +3177,7 @@ func TestApplyUserLexiconRunsExternalBuildAndSchedulesReload(t *testing.T) {
 	if err := os.MkdirAll(sharedDir, 0o755); err != nil {
 		t.Fatal(err)
 	}
-	tsvContent := "pinyin\tfull\tvariable\tshorthand\nzhong1\tzf\tzv\tzs\nguo2\tgf\tgv\tgs\n"
+	tsvContent := "pinyin_tone\tfull\nzhong1\tqsdf\nguo2\tHsdf\n"
 	if err := os.WriteFile(filepath.Join(sharedDir, "yime_pinyin_codes.tsv"), []byte(tsvContent), 0o644); err != nil {
 		t.Fatal(err)
 	}
@@ -3387,7 +3387,7 @@ func TestLongUserPhraseLexiconBuild(t *testing.T) {
 	if err := os.MkdirAll(sharedDir, 0o755); err != nil {
 		t.Fatal(err)
 	}
-	tsvContent := "pinyin\tfull\tvariable\tshorthand\nzhong1\tzf\tzv\tzs\nguo2\tgf\tgv\tgs\n"
+	tsvContent := "pinyin_tone\tfull\nzhong1\tqsdf\nguo2\tHsdf\n"
 	if err := os.WriteFile(filepath.Join(sharedDir, "yime_pinyin_codes.tsv"), []byte(tsvContent), 0o644); err != nil {
 		t.Fatal(err)
 	}

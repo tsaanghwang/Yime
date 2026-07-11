@@ -15,6 +15,7 @@ import (
 	"time"
 	"unicode/utf8"
 
+	"github.com/EasyIME/pime-go/input_methods/yime/codemode"
 	"github.com/EasyIME/pime-go/input_methods/yime/runtimechange"
 	"github.com/EasyIME/pime-go/input_methods/yime/userlexicon"
 	"github.com/EasyIME/pime-go/pime"
@@ -1939,11 +1940,15 @@ func (ime *IME) loadPinyinCodeMap() (map[string]pinyinCodeRecord, error) {
 			continue
 		}
 		fields := strings.Split(line, "\t")
-		if len(fields) != 4 {
+		if len(fields) < 2 {
 			continue
 		}
 		key := normalizeNumericTonePinyin(fields[0])
-		record := pinyinCodeRecord{Full: fields[1], Variable: fields[2], Shorthand: fields[3]}
+		derived, err := codemode.BuildRecord(fields[1])
+		if err != nil {
+			return nil, fmt.Errorf("拼音编码表中的等长码无效（%s）: %w", fields[0], err)
+		}
+		record := pinyinCodeRecord{Full: derived.Full, Variable: derived.Variable, Shorthand: derived.Shorthand}
 		records[key] = record
 		if strings.Contains(key, "ü") {
 			records[strings.ReplaceAll(key, "ü", "v")] = record

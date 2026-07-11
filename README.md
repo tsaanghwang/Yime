@@ -132,7 +132,7 @@ regsvr32 /u "C:\Program Files (x86)\YIME\x64\PIMETextService.dll"
 - [ ] Clone, initialize submodules, confirm toolchain installed
 - [ ] Run `cmd /c build.bat` from repository root
 - [ ] Run `cmd /c build.bat` from `go-backend`
-- [ ] If Rime data changed, run `tools\deploy-yime-rime-data.ps1` (see [docs/YIME_RIME_INTEGRATION.md](docs/YIME_RIME_INTEGRATION.md))
+- [ ] If the fixed-length Rime lexicon changed, run `tools\deploy-yime-rime-data.ps1 -Input <full.dict.yaml>` (see [docs/YIME_RIME_INTEGRATION.md](docs/YIME_RIME_INTEGRATION.md))
 - [ ] Run `.\Reinstall-PIME-Test.cmd` from an elevated prompt
 - [ ] Switch to Yime in a text application and verify: activation, candidates, settings, reverse lookup
 - [ ] Run `go test ./input_methods/yime/...` from `go-backend` before shipping backend changes

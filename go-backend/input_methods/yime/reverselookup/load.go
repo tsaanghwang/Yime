@@ -7,6 +7,8 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/EasyIME/pime-go/input_methods/yime/codemode"
 )
 
 func loadCodeMap(path string) (map[string]CodeRecord, error) {
@@ -29,14 +31,18 @@ func loadCodeMap(path string) (map[string]CodeRecord, error) {
 			continue
 		}
 		fields := strings.Split(line, "\t")
-		if len(fields) != 4 {
+		if len(fields) < 2 {
 			continue
 		}
 		key := normalizeNumericTonePinyin(fields[0])
+		derived, err := codemode.BuildRecord(fields[1])
+		if err != nil {
+			return nil, fmt.Errorf("拼音编码表第 %d 行等长码无效: %w", lineNumber, err)
+		}
 		record := CodeRecord{
-			Full:      fields[1],
-			Variable:  fields[2],
-			Shorthand: fields[3],
+			Full:      derived.Full,
+			Variable:  derived.Variable,
+			Shorthand: derived.Shorthand,
 		}
 		codeMap[key] = record
 		if strings.Contains(key, "ü") {

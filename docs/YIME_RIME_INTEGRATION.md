@@ -4,30 +4,28 @@ This branch prepares PIME to consume Yime through the upstream Go Rime backend.
 
 ## Data flow
 
-1. Yime exports one Rime schema and dictionary from `C:\dev\Yime-variable-length`.
-2. PIME keeps shared Rime data under `go-backend\input_methods\yime\data`.
-3. PIME keeps user Rime data under `%AppData%\PIME\Rime`.
-4. The Go Rime backend loads `go-backend\input_methods\yime\rime.dll`, initializes librime with those two directories, and uses the selected Yime schema.
+1. The importer accepts one fixed-length `yime_full.dict.yaml` as the only external lexicon source.
+2. Go derives the full, variable, and shorthand Rime dictionaries plus a generation manifest.
+3. PIME keeps those runtime artifacts under `go-backend\input_methods\yime\data` and copies them to `%AppData%\PIME\Rime` when deployed.
+4. The Go Rime backend loads `go-backend\input_methods\yime\rime.dll`, initializes librime with those directories, and uses the selected Yime schema.
 
 ## Prepare local data
 
 From `C:\dev\Yime`:
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File tools\deploy-yime-rime-data.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\deploy-yime-rime-data.ps1 -Input C:\path\to\yime_full.dict.yaml
 ```
 
-The default mode is `variable`, which exports and deploys `yime_variable`.
-
-Other modes:
+To generate the three dictionaries without deploying them:
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File tools\deploy-yime-rime-data.ps1 -Mode full
-powershell -NoProfile -ExecutionPolicy Bypass -File tools\deploy-yime-rime-data.ps1 -Mode shorthand
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\import-yime-full-lexicon.ps1 -Input C:\path\to\yime_full.dict.yaml
 ```
 
-The script copies shared Rime data from `C:\dev\weasel\output\data` by default.
-Use `-WeaselDataDir` if the shared data lives elsewhere.
+There is no variable-mode or shorthand-mode import switch. Those files are
+reproducible runtime products and carry the source SHA-256 in
+`yime_lexicon_manifest.json`.
 
 ## Build notes
 

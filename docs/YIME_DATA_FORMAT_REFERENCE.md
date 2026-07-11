@@ -16,16 +16,17 @@
 |----|------|------|------|
 | 1 | pinyin_tone | 数字标调拼音 | `a1`、`ai2` |
 | 2 | full | 等长编码（4 键） | `Hfff`、`Hsdf` |
-| 3 | variable | 变长编码 | `f`、`sdf` |
-| 4 | shorthand | 省键编码 | `f`、`sf` |
 
 **示例**：
 ```
-pinyin_tone	full	variable	shorthand
-a1	Hfff	f	f
-a2	Hsdf	sdf	sf
-ai1	Hffu	fu	fu
+pinyin_tone	full
+a1	Hfff
+a2	Hsdf
+ai1	Hffu
 ```
+
+该文件只保存唯一的等长真源。变长码和省键码由 Go 包
+`input_methods/yime/codemode` 在加载时推导，不允许再作为可维护列写回该文件。
 
 **规模**：1624 条数据 + 1 行标题，约 32 KB。
 
@@ -66,7 +67,8 @@ ai1	Hffu	fu	fu
 
 ### yime_variable.dict.yaml / yime_full.dict.yaml / yime_shorthand.dict.yaml
 
-Rime 系统词库，每种编码方案一个文件。
+Rime 系统词库，每种编码方案一个文件。三者是由唯一导入的
+`yime_full.dict.yaml` 生成的内部运行产物，不是三份独立数据源；请勿手工修改。
 
 **格式**：Rime dict.yaml 格式。`---` 到 `...` 之间为头部元数据，`...` 之后为词条数据。
 
