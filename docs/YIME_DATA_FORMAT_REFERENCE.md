@@ -52,6 +52,18 @@ ai1	Hffu	fu	fu
 
 **规模**：约 1729 条，约 33 KB。
 
+### yime_pua_pinyin.json
+
+候选注释使用的 PUA 音元序列→数字标调拼音映射。Go 后端加载后会反转为“数字标调拼音→PUA 音元序列”，仅用于候选注释显示。
+
+```json
+{
+  "PUA 音元序列": ["a1"]
+}
+```
+
+该文件不参与 Rime 按键解析和词库编码；Rime 内部仍使用 `yime_pinyin_codes.tsv` 中的 ASCII 编码。`fonts/YinYuan-Regular.ttf` 提供 PUA 字形，由安装包注册到 Windows 字体目录。
+
 ### yime_variable.dict.yaml / yime_full.dict.yaml / yime_shorthand.dict.yaml
 
 Rime 系统词库，每种编码方案一个文件。

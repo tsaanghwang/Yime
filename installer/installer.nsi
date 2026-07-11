@@ -54,6 +54,7 @@ AllowSkipFiles off ; cannot skip a file
 !define PRODUCT_INSTALL_KEY "Software\YIME"
 !define LEGACY_PRODUCT_INSTALL_KEY "Software\PIME"
 !define HOMEPAGE_URL "https://github.com/EasyIME/"
+!define YIME_TIP "0x0804:{35F67E9D-A54D-4177-9697-8B0AB71A9E04}{3F6B5A12-8D44-4E71-9A2E-6B4F9C1D2A30}"
 
 Name "$(PRODUCT_NAME)"
 BrandingText "$(PRODUCT_NAME)"
@@ -119,6 +120,32 @@ var INST_NODE
 
 ; The table file of Liu input method
 var LIU_UNI_TAB_FILE
+
+; Stop the installed host before writing payload files. This must run even when
+; an interrupted or developer installation has no usable Uninstall.exe.
+Function stopRunningBackend
+	${If} ${FileExists} "$INSTDIR\PIMELauncher.exe"
+		ExecWait '"$INSTDIR\PIMELauncher.exe" /quit'
+		Sleep 1500
+	${EndIf}
+	; A stale launcher can retain both itself and the child Go server. The image
+	; name is product-specific, and /T closes that child process as well.
+	nsExec::ExecToLog '"$SYSDIR\taskkill.exe" /F /T /IM PIMELauncher.exe'
+	Sleep 500
+FunctionEnd
+
+Function enableYimeProfile
+	; Add the registered TSF profile to the current user's language list.
+	; Zero flags enable the TIP without replacing the user's existing layouts.
+	System::Call 'input.dll::InstallLayoutOrTip(w "${YIME_TIP}", i 0) i .r0'
+	DetailPrint "InstallLayoutOrTip enable result: $0"
+FunctionEnd
+
+Function un.disableYimeProfile
+	; ILOT_UNINSTALL (0x1) removes only this TIP from the user language list.
+	System::Call 'input.dll::InstallLayoutOrTip(w "${YIME_TIP}", i 1) i .r0'
+	DetailPrint "InstallLayoutOrTip disable result: $0"
+FunctionEnd
 
 ; Uninstall old versions
 Function uninstallOldVersion
@@ -355,6 +382,7 @@ Function .onInit
 	${If} $INSTDIR == ""
 		StrCpy $INSTDIR "$PROGRAMFILES32\YIME"
 	${EndIf}
+	Call stopRunningBackend
 	Call hideSection
 FunctionEnd
 
@@ -493,6 +521,16 @@ Section $(SECTION_MAIN) SecMain
 	; section so a default install always contains the configured backend.
 	SetOutPath "$INSTDIR\go-backend"
 	File /r "..\go-backend\build\go-backend\*.*"
+
+	; PUA candidate annotations require the YinYuan glyph font. Keep an
+	; existing system copy intact, but register the bundled copy when absent.
+	SetOutPath "$FONTS"
+	SetOverwrite off
+	File /oname=YinYuan-Regular.ttf "..\go-backend\input_methods\yime\data\fonts\YinYuan-Regular.ttf"
+	SetOverwrite on
+	WriteRegStr HKLM "SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts" "YinYuan Regular (TrueType)" "YinYuan-Regular.ttf"
+	System::Call 'gdi32::AddFontResource(t "$FONTS\YinYuan-Regular.ttf") i .r0'
+	SendMessage 0xffff 0x001D 0 0
 SectionEnd
 
 SectionGroup /e $(PYTHON_SECTION_GROUP) python_section_group
@@ -693,6 +731,7 @@ Section "" Register
 	${EndIf}
 	; Register COM objects (NSIS RegDLL command is broken and cannot be used)
 	ExecWait '"$SYSDIR\regsvr32.exe" /s "$INSTDIR\x86\PIMETextService.dll"'
+	Call enableYimeProfile
 
 	; Launch the python server on startup
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Run" "PIMELauncher" "$INSTDIR\PIMELauncher.exe"
@@ -799,6 +838,7 @@ Section "Uninstall"
 	DeleteRegValue HKLM "Software\Microsoft\Windows\CurrentVersion\Run" "PIMELauncher"
 	DeleteRegKey HKLM "${PRODUCT_INSTALL_KEY}"
 	DeleteRegKey HKLM "${LEGACY_PRODUCT_INSTALL_KEY}"
+	Call un.disableYimeProfile
 
 	; Unregister COM objects (NSIS UnRegDLL command is broken and cannot be used)
 	ExecWait '"$SYSDIR\regsvr32.exe" /u /s "$INSTDIR\x86\PIMETextService.dll"'

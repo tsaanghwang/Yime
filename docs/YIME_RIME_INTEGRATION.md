@@ -97,6 +97,17 @@ This means "标准拼音" display is now tied to the same phase-1 lexicon rebuil
 used by the prototype project, without importing the prototype runtime DB or
 candidate-window implementation into PIME.
 
+The `音元拼音` candidate annotation uses a separate display-only path:
+
+1. Prefer the actual ASCII code returned in the Rime candidate comment.
+2. Decode that code to numeric-tone pinyin through `yime_pinyin_codes.tsv`.
+3. Map each syllable to its BMP PUA sequence through `yime_pua_pinyin.json`.
+4. Render the copied candidate comment with the bundled `YinYuan` font.
+
+This conversion never changes Rime composition, key input, schema dictionaries,
+or user-lexicon codes. `键位序列` continues to expose Rime's original ASCII
+comment unchanged.
+
 ## Maintainer checklist
 
 Use this checklist when upstream lexicon or pinyin data changes in
@@ -110,12 +121,15 @@ display asset.
 3. Confirm the runtime copy exists at `yime\pinyin_normalized.json`.
 4. Copy that JSON into this repo as
    `go-backend\input_methods\yime\data\pinyin_normalized.json`.
-5. Keep `go-backend\input_methods\yime\data\yime_pinyin_codes.tsv` in sync
+5. Copy `yime\code_pinyin.json` into this repo as
+   `go-backend\input_methods\yime\data\yime_pua_pinyin.json` when the PUA
+   phonological mapping changes.
+6. Keep `go-backend\input_methods\yime\data\yime_pinyin_codes.tsv` in sync
    with the schema dictionaries that the Go backend ships.
-6. Rebuild the Go backend package with `cd go-backend` then `cmd /c build.bat`.
-7. Verify reverse lookup in the candidate window:
+7. Rebuild the Go backend package with `cd go-backend` then `cmd /c build.bat`.
+8. Verify reverse lookup in the candidate window:
    `隐藏编码`, `标准拼音`, `音元拼音`, `键位序列`.
-8. Sanity-check that `标准拼音` changes comments only and does not trigger a
+9. Sanity-check that both pinyin modes change comments only and do not trigger a
    schema reload or host exit during the language-bar click.
 
 Minimum local verification:
@@ -123,8 +137,8 @@ Minimum local verification:
 - `go-backend\input_methods\yime\yime.go` still loads
   `pinyin_normalized.json` from `sharedDir()`
 - `标准拼音` can resolve both a whole-word code path and a per-rune fallback path
-- `音元拼音` still comes from the current schema dictionary, not from
-  `pinyin_normalized.json`
+- `音元拼音` prefers the actual candidate code, produces PUA characters, and
+  leaves the source ASCII comment unchanged
 
 What not to copy from the prototype repo:
 

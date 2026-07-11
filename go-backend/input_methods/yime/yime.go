@@ -170,6 +170,9 @@ type IME struct {
 	reversePinyinLoaded      map[string]bool
 	yimePinyinBySchema       map[string]map[string]string
 	yimePinyinLoaded         map[string]bool
+	yimePUAByPinyin          map[string]string
+	yimePUALoaded            bool
+	pendingCandidateFont     bool
 	candidatePageSize        int
 	pendingSchemaRedeploy    string
 	runtimeChangeRevision    int64
@@ -204,6 +207,7 @@ func New(client *pime.Client) pime.TextService {
 		reversePinyinLoaded:      map[string]bool{},
 		yimePinyinBySchema:       map[string]map[string]string{},
 		yimePinyinLoaded:         map[string]bool{},
+		yimePUAByPinyin:          map[string]string{},
 		candidatePageSize:        defaultCandidatePageSize,
 		keysDown:                 map[int]bool{},
 	}
@@ -215,6 +219,9 @@ func (ime *IME) HandleRequest(req *pime.Request) *pime.Response {
 		ime.applyPendingSchemaRedeploy()
 	}
 	resp := pime.NewResponse(req.SeqNum, true)
+	if ime.pendingCandidateFont {
+		ime.applyCandidateFont(resp)
+	}
 
 	switch req.Method {
 	case "onActivate":
@@ -251,6 +258,11 @@ func (ime *IME) onActivate(req *pime.Request, resp *pime.Response) *pime.Respons
 	log.Println("RIME 输入法已激活")
 	ime.createSession(resp)
 	ime.syncStandaloneUISettings()
+	ime.applyCandidateFont(resp)
+	if resp.CustomizeUI == nil {
+		resp.CustomizeUI = map[string]interface{}{}
+	}
+	resp.CustomizeUI["candPerRow"] = ime.style.CandidatePerRow
 	ime.addButtons(resp)
 	ime.updateWindowsModeIcon(req, resp)
 	go ime.warmReverseLookupCache()
@@ -418,14 +430,19 @@ func (ime *IME) onCommand(req *pime.Request, resp *pime.Response) *pime.Response
 		// cleanly onto the current single-comment candidate window. Keep the
 		// command IDs harmless by falling back to key-sequence display.
 		ime.setReverseLookupDisplayMode("key_sequence")
+		ime.applyCandidateFont(resp)
 	case ID_REVERSE_LOOKUP_HIDDEN:
 		ime.setReverseLookupDisplayMode("hidden")
+		ime.applyCandidateFont(resp)
 	case ID_REVERSE_LOOKUP_STANDARD_PINYIN:
 		ime.setReverseLookupDisplayMode("standard_pinyin")
+		ime.applyCandidateFont(resp)
 	case ID_REVERSE_LOOKUP_YIME_PINYIN:
 		ime.setReverseLookupDisplayMode("yime_pinyin")
+		ime.applyCandidateFont(resp)
 	case ID_REVERSE_LOOKUP_KEY_SEQUENCE:
 		ime.setReverseLookupDisplayMode("key_sequence")
+		ime.applyCandidateFont(resp)
 	case ID_HELP_VIEW:
 		ime.openPath(ime.helpDocumentPath("README"))
 	case ID_HELP_TRIAL_FEEDBACK:
@@ -580,11 +597,15 @@ func commandIDFromRequest(req *pime.Request) int {
 }
 
 func (ime *IME) setReverseLookupDisplayMode(mode string) {
+	previous := ime.reverseLookupDisplayMode
 	switch mode {
 	case "hidden", "standard_pinyin", "yime_pinyin", "key_sequence":
 		ime.reverseLookupDisplayMode = mode
 	default:
 		ime.reverseLookupDisplayMode = "key_sequence"
+	}
+	if ime.reverseLookupDisplayMode != previous {
+		ime.pendingCandidateFont = true
 	}
 }
 
@@ -1005,12 +1026,30 @@ func (ime *IME) createSession(resp *pime.Response) {
 	}
 	if resp != nil {
 		resp.CustomizeUI = map[string]interface{}{
-			"candFontName":  ime.style.FontFace,
+			"candFontName":  ime.candidateFontName(),
 			"candFontSize":  ime.style.FontPoint,
 			"candPerRow":    ime.style.CandidatePerRow,
 			"candUseCursor": ime.style.CandidateUseCursor,
 		}
 	}
+}
+
+func (ime *IME) candidateFontName() string {
+	if ime.reverseLookupDisplayMode == "yime_pinyin" {
+		return "YinYuan"
+	}
+	return ime.style.FontFace
+}
+
+func (ime *IME) applyCandidateFont(resp *pime.Response) {
+	if resp == nil {
+		return
+	}
+	if resp.CustomizeUI == nil {
+		resp.CustomizeUI = map[string]interface{}{}
+	}
+	resp.CustomizeUI["candFontName"] = ime.candidateFontName()
+	ime.pendingCandidateFont = false
 }
 
 func (ime *IME) destroySession(resp *pime.Response) {
@@ -1300,7 +1339,7 @@ func (ime *IME) reverseLookupDisplayCandidates(candidates []candidateItem) []can
 	case "yime_pinyin":
 		display := append([]candidateItem(nil), candidates...)
 		for i := range display {
-			display[i].Comment = ime.lookupYimePinyin(display[i].Text)
+			display[i].Comment = ime.lookupYimePinyin(display[i].Text, display[i].Comment)
 		}
 		return display
 	default:
@@ -1385,15 +1424,78 @@ func (ime *IME) reversePinyinLookup() map[string]string {
 	return ime.reversePinyinBySchema[schemaID]
 }
 
-func (ime *IME) lookupYimePinyin(text string) string {
-	lookup := ime.yimePinyinLookup()
-	if len(lookup) == 0 {
+func (ime *IME) lookupYimePinyin(text, candidateCode string) string {
+	reverseLookup := ime.reversePinyinLookup()
+	puaLookup := ime.yimePUALookup()
+	if len(reverseLookup) == 0 || len(puaLookup) == 0 {
 		return ""
 	}
-	if value := lookup[strings.TrimSpace(text)]; value != "" {
-		return value
+	if pua, ok := yimeCodeToPUA(strings.TrimSpace(candidateCode), reverseLookup, puaLookup); ok {
+		return pua
 	}
-	return joinRuneLookup(text, lookup, "")
+
+	codeLookup := ime.yimePinyinLookup()
+	code := codeLookup[strings.TrimSpace(text)]
+	if code != "" {
+		if pua, ok := yimeCodeToPUA(code, reverseLookup, puaLookup); ok {
+			return pua
+		}
+	}
+
+	parts := make([]string, 0, utf8.RuneCountInString(text))
+	for _, r := range text {
+		pua, ok := yimeCodeToPUA(codeLookup[string(r)], reverseLookup, puaLookup)
+		if !ok {
+			parts = append(parts, "?")
+			continue
+		}
+		parts = append(parts, pua)
+	}
+	return strings.Join(parts, "")
+}
+
+func yimeCodeToPUA(code string, reverseLookup, puaLookup map[string]string) (string, bool) {
+	if code == "" {
+		return "", false
+	}
+	numericParts, ok := splitYimeCodeToNumericTonePinyin(code, reverseLookup)
+	if !ok {
+		return "", false
+	}
+	var converted strings.Builder
+	for _, numericPinyin := range numericParts {
+		pua := puaLookup[normalizeNumericTonePinyin(numericPinyin)]
+		if pua == "" {
+			return "", false
+		}
+		converted.WriteString(pua)
+	}
+	return converted.String(), true
+}
+
+func (ime *IME) yimePUALookup() map[string]string {
+	if ime.yimePUALoaded {
+		return ime.yimePUAByPinyin
+	}
+	ime.yimePUALoaded = true
+	ime.yimePUAByPinyin = map[string]string{}
+	data, err := os.ReadFile(filepath.Join(ime.sharedDir(), "yime_pua_pinyin.json"))
+	if err != nil {
+		return ime.yimePUAByPinyin
+	}
+	var pinyinByPUA map[string][]string
+	if err := json.Unmarshal(data, &pinyinByPUA); err != nil {
+		return ime.yimePUAByPinyin
+	}
+	for pua, pinyinValues := range pinyinByPUA {
+		for _, pinyin := range pinyinValues {
+			key := normalizeNumericTonePinyin(pinyin)
+			if key != "" {
+				ime.yimePUAByPinyin[key] = pua
+			}
+		}
+	}
+	return ime.yimePUAByPinyin
 }
 
 func (ime *IME) yimePinyinLookup() map[string]string {

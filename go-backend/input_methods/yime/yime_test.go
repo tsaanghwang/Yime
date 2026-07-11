@@ -336,6 +336,7 @@ func newTestIME() *IME {
 		reversePinyinLoaded:   map[string]bool{},
 		yimePinyinBySchema:    map[string]map[string]string{},
 		yimePinyinLoaded:      map[string]bool{},
+		yimePUAByPinyin:       map[string]string{},
 		candidatePageSize:     defaultCandidatePageSize,
 		keysDown:              map[int]bool{},
 		backend:               newTestBackend(),
@@ -378,7 +379,7 @@ func TestRuntimeSettingsChangeSynchronizesActiveIME(t *testing.T) {
 	root := t.TempDir()
 	t.Setenv("APPDATA", root)
 	userDir := filepath.Join(root, APP, "Rime")
-	if err := settings.WriteState(userDir, settings.State{ReverseLookupDisplayMode: "hidden", CandidateLayout: "vertical"}); err != nil {
+	if err := settings.WriteState(userDir, settings.State{ReverseLookupDisplayMode: "yime_pinyin", CandidateLayout: "vertical"}); err != nil {
 		t.Fatal(err)
 	}
 	event, err := runtimechange.Notify(userDir, runtimechange.ScopeSettings, false)
@@ -390,8 +391,12 @@ func TestRuntimeSettingsChangeSynchronizesActiveIME(t *testing.T) {
 	if ime.runtimeChangeRevision != event.Revision {
 		t.Fatalf("expected revision %d, got %d", event.Revision, ime.runtimeChangeRevision)
 	}
-	if ime.reverseLookupDisplayMode != "hidden" || ime.style.CandidatePerRow != verticalCandidatesPerRow {
+	if ime.reverseLookupDisplayMode != "yime_pinyin" || ime.style.CandidatePerRow != verticalCandidatesPerRow {
 		t.Fatalf("settings were not synchronized: mode=%q perRow=%d", ime.reverseLookupDisplayMode, ime.style.CandidatePerRow)
+	}
+	resp := ime.HandleRequest(&pime.Request{SeqNum: 1, Method: "onKeyboardStatusChanged"})
+	if got := resp.CustomizeUI["candFontName"]; got != "YinYuan" {
+		t.Fatalf("expected settings change to push PUA candidate font, got %#v", got)
 	}
 	if ime.pendingSchemaRedeploy != "" {
 		t.Fatalf("non-build settings change should not redeploy, got %q", ime.pendingSchemaRedeploy)
@@ -1383,6 +1388,9 @@ func TestOnCommandAcceptsSubmenuItemIDForReverseLookupYimePinyin(t *testing.T) {
 	}
 	if ime.reverseLookupDisplayMode != "yime_pinyin" {
 		t.Fatalf("expected yime_pinyin mode, got %q", ime.reverseLookupDisplayMode)
+	}
+	if got := resp.CustomizeUI["candFontName"]; got != "YinYuan" {
+		t.Fatalf("expected submenu switch to apply YinYuan candidate font, got %#v", got)
 	}
 	if backend.redeployCount != 0 {
 		t.Fatalf("expected reverse lookup submenu click to avoid redeploy, got %d", backend.redeployCount)
@@ -2889,7 +2897,7 @@ func TestOnActivateSyncsStandaloneSettingsState(t *testing.T) {
 	if err := os.MkdirAll(filepath.Dir(statePath), 0o755); err != nil {
 		t.Fatalf("mkdir settings state dir failed: %v", err)
 	}
-	payload := `{"reverse_lookup_display_mode":"standard_pinyin","candidate_layout":"horizontal"}`
+	payload := `{"reverse_lookup_display_mode":"yime_pinyin","candidate_layout":"horizontal"}`
 	if err := os.WriteFile(statePath, []byte(payload), 0o644); err != nil {
 		t.Fatalf("write settings state failed: %v", err)
 	}
@@ -2902,14 +2910,20 @@ func TestOnActivateSyncsStandaloneSettingsState(t *testing.T) {
 	if !resp.Success || resp.ReturnValue != 1 {
 		t.Fatalf("expected activate response handled, got %#v", resp)
 	}
-	if ime.reverseLookupDisplayMode != "standard_pinyin" {
-		t.Fatalf("expected standard_pinyin reverse lookup mode, got %q", ime.reverseLookupDisplayMode)
+	if ime.reverseLookupDisplayMode != "yime_pinyin" {
+		t.Fatalf("expected yime_pinyin reverse lookup mode, got %q", ime.reverseLookupDisplayMode)
 	}
 	if ime.style.CandidatePerRow != horizontalCandidatesPerRow {
 		t.Fatalf("expected horizontal candidate layout, got %d", ime.style.CandidatePerRow)
 	}
 	if !backend.horizontal {
 		t.Fatal("expected backend horizontal option set from standalone settings")
+	}
+	if got := resp.CustomizeUI["candFontName"]; got != "YinYuan" {
+		t.Fatalf("expected activation to apply PUA candidate font after loading settings, got %#v", got)
+	}
+	if got := resp.CustomizeUI["candPerRow"]; got != horizontalCandidatesPerRow {
+		t.Fatalf("expected activation to apply persisted candidate layout, got %#v", got)
 	}
 }
 
@@ -3016,6 +3030,86 @@ func TestLookupStandardPinyinPartialMissing(t *testing.T) {
 	}
 	if got := ime.lookupStandardPinyin("你𠀀好"); got != "nǐ ? hǎo" {
 		t.Fatalf("expected mixed pinyin with middle placeholder, got %q", got)
+	}
+}
+
+func TestYimePinyinCandidateCommentUsesActualCodeAndLeavesKeySequenceUntouched(t *testing.T) {
+	ime := newTestIME()
+	ime.reversePinyinLoaded = map[string]bool{"yime_variable": true}
+	ime.reversePinyinBySchema = map[string]map[string]string{
+		"yime_variable": {
+			"2uji": "qing1",
+			"$udm": "yan4",
+			"3udm": "jian4",
+		},
+	}
+	ime.yimePUALoaded = true
+	ime.yimePUAByPinyin = map[string]string{
+		"qing1": "\ue4fd\ue509\ue515\ue527",
+		"yan4":  "\ue500\ue509\ue513\ue526",
+		"jian4": "\ue4fc\ue509\ue513\ue526",
+	}
+
+	original := []candidateItem{{Text: "青砚验键", Comment: "2uji$udm$udm3udm"}}
+	ime.reverseLookupDisplayMode = "yime_pinyin"
+	display := ime.reverseLookupDisplayCandidates(original)
+	if got, want := display[0].Comment, "\ue4fd\ue509\ue515\ue527\ue500\ue509\ue513\ue526\ue500\ue509\ue513\ue526\ue4fc\ue509\ue513\ue526"; got != want {
+		t.Fatalf("expected PUA annotation decoded from actual candidate code, got %q want %q", got, want)
+	}
+	if original[0].Comment != "2uji$udm$udm3udm" {
+		t.Fatalf("expected source candidate comment to remain unchanged, got %q", original[0].Comment)
+	}
+
+	ime.reverseLookupDisplayMode = "key_sequence"
+	display = ime.reverseLookupDisplayCandidates(original)
+	if got := display[0].Comment; got != "2uji$udm$udm3udm" {
+		t.Fatalf("expected key-sequence mode to preserve ASCII input code, got %q", got)
+	}
+}
+
+func TestBundledYimePUAMapContainsExpectedPhonologicalMappings(t *testing.T) {
+	data, err := os.ReadFile(filepath.Join("data", "yime_pua_pinyin.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var pinyinByPUA map[string][]string
+	if err := json.Unmarshal(data, &pinyinByPUA); err != nil {
+		t.Fatal(err)
+	}
+	expected := map[string]string{
+		"qing1": "\ue4fd\ue509\ue515\ue527",
+		"yan4":  "\ue500\ue509\ue513\ue526",
+		"jian4": "\ue4fc\ue509\ue513\ue526",
+	}
+	found := map[string]string{}
+	for pua, values := range pinyinByPUA {
+		for _, value := range values {
+			found[normalizeNumericTonePinyin(value)] = pua
+		}
+	}
+	for pinyin, want := range expected {
+		if got := found[pinyin]; got != want {
+			t.Fatalf("expected bundled PUA mapping %s=%q, got %q", pinyin, want, got)
+		}
+	}
+}
+
+func TestCreateSessionUsesYinYuanFontOnlyForPUAAnnotations(t *testing.T) {
+	ime := newTestIME()
+	ime.backend.(*testBackend).session = true
+
+	ime.reverseLookupDisplayMode = "yime_pinyin"
+	resp := pime.NewResponse(1, true)
+	ime.createSession(resp)
+	if got := resp.CustomizeUI["candFontName"]; got != "YinYuan" {
+		t.Fatalf("expected YinYuan candidate font for PUA annotations, got %#v", got)
+	}
+
+	ime.reverseLookupDisplayMode = "key_sequence"
+	resp = pime.NewResponse(2, true)
+	ime.createSession(resp)
+	if got := resp.CustomizeUI["candFontName"]; got != ime.style.FontFace {
+		t.Fatalf("expected configured candidate font outside PUA mode, got %#v", got)
 	}
 }
 

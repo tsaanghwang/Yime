@@ -41,9 +41,26 @@ func TestReleasePipelineSignsPayloadInstallerAndUninstaller(t *testing.T) {
 		`StrCpy $INSTDIR $R1`,
 		`StrCpy $INSTDIR "$PROGRAMFILES32\YIME"`,
 		`File /r "..\go-backend\build\go-backend\*.*"`,
+		`File /oname=YinYuan-Regular.ttf "..\go-backend\input_methods\yime\data\fonts\YinYuan-Regular.ttf"`,
+		`AddFontResource`,
+		`YinYuan Regular (TrueType)`,
+		`Function stopRunningBackend`,
+		`Call stopRunningBackend`,
+		`ExecWait '"$INSTDIR\PIMELauncher.exe" /quit'`,
+		`taskkill.exe" /F /T /IM PIMELauncher.exe`,
+		`input.dll::InstallLayoutOrTip`,
+		`0x0804:{35F67E9D-A54D-4177-9697-8B0AB71A9E04}{3F6B5A12-8D44-4E71-9A2E-6B4F9C1D2A30}`,
 	} {
 		if !strings.Contains(installer, fragment) {
 			t.Fatalf("NSIS installer is missing install-path or Yime payload guard %q", fragment)
+		}
+	}
+	for _, path := range []string{
+		filepath.Join(root, "go-backend", "input_methods", "yime", "data", "yime_pua_pinyin.json"),
+		filepath.Join(root, "go-backend", "input_methods", "yime", "data", "fonts", "YinYuan-Regular.ttf"),
+	} {
+		if info, err := os.Stat(path); err != nil || info.Size() == 0 {
+			t.Fatalf("PUA annotation release asset is missing or empty: %s (%v)", path, err)
 		}
 	}
 	if strings.Contains(installer, `ReadRegStr $INSTDIR`) {

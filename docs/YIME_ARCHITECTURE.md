@@ -532,6 +532,8 @@ Go 后端
 | `yime_full.dict.yaml` | Rime 词典 | 等长模式，468K 条 |
 | `yime_shorthand.dict.yaml` | Rime 词典 | 省键模式，468K 条 |
 | `yime_pinyin_codes.tsv` | 编码映射 | 拼音→音元编码，1625 条 |
+| `yime_pua_pinyin.json` | PUA 显示映射 | 候选注释的数字标调拼音→PUA 音元序列 |
+| `fonts/YinYuan-Regular.ttf` | 候选字体 | 音元拼音模式使用的 PUA 字形 |
 | `pinyin_normalized.json` | 拼音归一化 | 数字标调→带调拼音，1729 条 |
 | `essay.txt` | 词频表 | 八股文 |
 | `rime.dll` | 动态库 | librime 运行时 |
