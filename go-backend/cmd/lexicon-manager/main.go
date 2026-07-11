@@ -102,7 +102,6 @@ var (
 	procSetForegroundWindow   = moduser32.NewProc("SetForegroundWindow")
 	procBringWindowToTop      = moduser32.NewProc("BringWindowToTop")
 	procIsIconic              = moduser32.NewProc("IsIconic")
-	procLoadIconW             = moduser32.NewProc("LoadIconW")
 	procLoadCursorW           = moduser32.NewProc("LoadCursorW")
 	procAdjustWindowRectEx    = moduser32.NewProc("AdjustWindowRectEx")
 	procGetModuleHandleW      = modkernel32.NewProc("GetModuleHandleW")
@@ -233,7 +232,7 @@ func runApp(state *appState) error {
 	instance, _, _ := procGetModuleHandleW.Call(0)
 	className, _ := syscall.UTF16PtrFromString("YimeLexiconManager")
 	cursor, _, _ := procLoadCursorW.Call(0, uintptr(32512))
-	icon, _, _ := procLoadIconW.Call(instance, uintptr(32512))
+	icon := win32ui.LoadYimeIcon(instance)
 	wndProcCallback = syscall.NewCallback(func(hwnd syscall.Handle, msg uint32, wParam, lParam uintptr) uintptr {
 		return state.wndProc(hwnd, msg, wParam, lParam)
 	})

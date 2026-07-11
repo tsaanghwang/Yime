@@ -28,25 +28,25 @@ const (
 	wsExAppwindow      = 0x00040000
 	wsOverlappedwindow = 0x00CF0000
 
-	idSearchEdit     = 101
-	idRuleCombo      = 102
-	idModeCombo      = 103
-	idRefreshButton  = 104
-	idResultList     = 105
-	idDetailView     = 106
-	idExportButton   = 107
-	idStatusLabel    = 108
+	idSearchEdit    = 101
+	idRuleCombo     = 102
+	idModeCombo     = 103
+	idRefreshButton = 104
+	idResultList    = 105
+	idDetailView    = 106
+	idExportButton  = 107
+	idStatusLabel   = 108
 
-	cbsDropdownlist = 0x0003
-	lbResetcontent  = 0x0184
-	lbAddstring     = 0x0180
-	lbGetcursel     = 0x0188
+	cbsDropdownlist       = 0x0003
+	lbResetcontent        = 0x0184
+	lbAddstring           = 0x0180
+	lbGetcursel           = 0x0188
 	lbSethorizontalextent = 0x0194
-	cbAddstring     = 0x0143
-	cbSetcursel     = 0x014E
-	cbGetcursel     = 0x0147
-	cbSelchange     = 1
-	lbnSelchange    = 1
+	cbAddstring           = 0x0143
+	cbSetcursel           = 0x014E
+	cbGetcursel           = 0x0147
+	cbSelchange           = 1
+	lbnSelchange          = 1
 
 	wsChild       = 0x40000000
 	wsVisible     = 0x10000000
@@ -57,9 +57,9 @@ const (
 	lbsHasstrings = 0x0040
 	listBoxStyle  = wsChild | wsVisible | wsBorder | wsVscroll | wsTabstop | lbsNotify | lbsHasstrings
 
-	esMultiline   = 0x0004
-	esReadonly    = 0x0800
-	esAutoVscroll = 0x0040
+	esMultiline     = 0x0004
+	esReadonly      = 0x0800
+	esAutoVscroll   = 0x0040
 	detailViewStyle = wsChild | wsVisible | wsBorder | wsVscroll | wsTabstop | esMultiline | esReadonly | esAutoVscroll
 )
 
@@ -84,7 +84,6 @@ var (
 	procPostMessageW         = moduser32.NewProc("PostMessageW")
 	procGetModuleHandleW     = modkernel32.NewProc("GetModuleHandleW")
 	procLoadCursorW          = moduser32.NewProc("LoadCursorW")
-	procLoadIconW            = moduser32.NewProc("LoadIconW")
 	procAdjustWindowRectEx   = moduser32.NewProc("AdjustWindowRectEx")
 	procInitCommonControlsEx = modcomctl32.NewProc("InitCommonControlsEx")
 	procSetFocus             = moduser32.NewProc("SetFocus")
@@ -281,7 +280,7 @@ func runWin32App(state *appState) error {
 	instance, _, _ := procGetModuleHandleW.Call(0)
 	className, _ := syscall.UTF16PtrFromString("YimeSystemLexiconAudit")
 	cursor, _, _ := procLoadCursorW.Call(0, uintptr(32512))
-	icon, _, _ := procLoadIconW.Call(instance, uintptr(32512))
+	icon := win32ui.LoadYimeIcon(instance)
 
 	wndProcCallback = syscall.NewCallback(func(hwnd syscall.Handle, msg uint32, wParam, lParam uintptr) uintptr {
 		return state.wndProc(hwnd, msg, wParam, lParam)

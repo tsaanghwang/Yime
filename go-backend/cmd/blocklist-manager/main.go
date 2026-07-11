@@ -19,9 +19,9 @@ import (
 )
 
 const (
-	wmAppCommand  = 0x0400 + 1
-	wmAppRefresh  = 0x0400 + 2
-	enChange      = 0x0300 // EN_CHANGE
+	wmAppCommand = 0x0400 + 1
+	wmAppRefresh = 0x0400 + 2
+	enChange     = 0x0300 // EN_CHANGE
 
 	wsExControlparent  = 0x00010000
 	wsExAppwindow      = 0x00040000
@@ -84,7 +84,6 @@ var (
 	procInitCommonControlsEx = modcomctl32.NewProc("InitCommonControlsEx")
 	procGetOpenFileNameW     = modcomdlg32.NewProc("GetOpenFileNameW")
 	procGetSaveFileNameW     = modcomdlg32.NewProc("GetSaveFileNameW")
-	procLoadIconW            = moduser32.NewProc("LoadIconW")
 	procLoadCursorW          = moduser32.NewProc("LoadCursorW")
 
 	wndProcCallback uintptr
@@ -171,7 +170,7 @@ func runApp(state *appState) error {
 	instance, _, _ := procGetModuleHandleW.Call(0)
 	className, _ := syscall.UTF16PtrFromString("YimeUserBlocklistManager")
 	cursor, _, _ := procLoadCursorW.Call(0, uintptr(32512))
-	icon, _, _ := procLoadIconW.Call(instance, uintptr(32512))
+	icon := win32ui.LoadYimeIcon(instance)
 	wndProcCallback = syscall.NewCallback(func(hwnd syscall.Handle, msg uint32, wParam, lParam uintptr) uintptr {
 		return state.wndProc(hwnd, msg, wParam, lParam)
 	})
