@@ -528,10 +528,11 @@ Go 后端
 | `yime_variable.schema.yaml` | Rime 方案 | 变长模式，user_dict: custom_phrase_variable |
 | `yime_full.schema.yaml` | Rime 方案 | 等长模式，user_dict: custom_phrase_full |
 | `yime_shorthand.schema.yaml` | Rime 方案 | 省键模式，user_dict: custom_phrase_shorthand |
-| `yime_variable.dict.yaml` | Rime 词典 | 变长模式，468K 条 |
-| `yime_full.dict.yaml` | Rime 词典 | 等长模式，468K 条 |
-| `yime_shorthand.dict.yaml` | Rime 词典 | 省键模式，468K 条 |
-| `yime_pinyin_codes.tsv` | 编码映射 | 拼音→音元编码，1625 条 |
+| `yime_full.dict.yaml` | Rime 词典 | 唯一导入的等长真源及等长运行产物，468K 条 |
+| `yime_variable.dict.yaml` | Rime 词典 | 由等长真源生成的变长运行产物，468K 条 |
+| `yime_shorthand.dict.yaml` | Rime 词典 | 由等长真源生成的省键运行产物，468K 条 |
+| `yime_lexicon_manifest.json` | 生成清单 | 源哈希、规则版本、条目数和三套输出哈希 |
+| `yime_pinyin_codes.tsv` | 编码映射 | 数字标调拼音→等长码，两列共 1625 行；其余模式运行时推导 |
 | `yime_pua_pinyin.json` | PUA 显示映射 | 候选注释的数字标调拼音→PUA 音元序列 |
 | `fonts/YinYuan-Regular.ttf` | 候选字体 | 音元拼音模式使用的 PUA 字形 |
 | `pinyin_normalized.json` | 拼音归一化 | 数字标调→带调拼音，1729 条 |

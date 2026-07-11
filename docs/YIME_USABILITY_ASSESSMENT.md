@@ -49,8 +49,9 @@
 │          │     └── blocklist-manager.exe        │
 │          └── 数据层                              │
 │                ├── data/*.schema.yaml (3方案)    │
-│                ├── data/*.dict.yaml (468K条/方案) │
-│                ├── data/yime_pinyin_codes.tsv    │
+│                ├── data/*.dict.yaml (单源生成)   │
+│                ├── data/yime_lexicon_manifest.json│
+│                ├── data/yime_pinyin_codes.tsv (两列)│
 │                └── data/pinyin_normalized.json   │
 ├─────────────────────────────────────────────────┤
 │  %APPDATA%\PIME\Rime\ (用户数据)                │

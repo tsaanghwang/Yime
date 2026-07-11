@@ -4,6 +4,8 @@
 > `yime_full.dict.yaml`，由 `codemode` 规则生成三套 Rime 运行词典；
 > `yime_pinyin_codes.tsv` 也已收敛为 `pinyin_tone`、`full` 两列。
 > 生成清单记录源文件 SHA-256、规则版本和各输出哈希。
+>
+> 本轮实施总结见 [从三套码表回到一个真源](SINGLE_SOURCE_LEXICON_REFACTOR.md)。
 
 ## 目标
 
@@ -38,7 +40,9 @@ Yime 的下一阶段恢复为“一个外部真源、三套内部运行产物”
 
 下一阶段应替换“系统词库的数据来源”，而不是重做输入法宿主、Rime 会话或候选窗。
 
-## 当前多真源风险
+## 重构前的多真源风险（历史记录）
+
+以下内容记录实施前的状态，用于解释本轮改造的来源；不再描述当前工程。
 
 当前共享数据包含：
 
@@ -59,9 +63,9 @@ Yime 的下一阶段恢复为“一个外部真源、三套内部运行产物”
 
 正式移植或重写前，以下实现是对照基准：
 
-- 模式统一入口：`C:\dev\Yime-variable-length\yime\utils\code_modes.py`
-- 变长转换：`C:\dev\Yime-variable-length\syllable\codec\variable_length_yinyuan\transform.py`
-- 省键中调省略：`C:\dev\Yime-variable-length\syllable\codec\input_shorthand\`
+- 历史模式统一入口：`C:\dev\Yime-python-prototype\yime\utils\code_modes.py`
+- 历史变长转换：`C:\dev\Yime-python-prototype\syllable\codec\variable_length_yinyuan\transform.py`
+- 历史省键中调省略：`C:\dev\Yime-python-prototype\syllable\codec\input_shorthand\`
 - 干音音质组和调级元数据：`yinjie_runtime_key_symbol_mapping.json` 与 `key_to_symbol.json`
 
 变长规则当前为：先合并相邻且完全相同的音元，再省略虚首音。省键规则在此基础上，还依据干音音质组和调级元数据省略同音质连续段的中调。
@@ -87,7 +91,7 @@ Yime 的下一阶段恢复为“一个外部真源、三套内部运行产物”
 | 模式转换规则和版本 | 程序代码 | 通过代码评审修改 |
 | 键盘布局投影和版本 | 程序数据 | 通过代码评审修改 |
 | 三套系统 `dict.yaml` | 生成器 | 否 |
-| `yime_pinyin_codes.tsv` 派生列 | 生成器 | 否 |
+| `yime_pinyin_codes.tsv` 的等长映射 | 项目内规范数据 | 通过审计后修改 |
 | Rime `.bin` / build 目录 | Rime | 否 |
 | 用户数字标调拼音词库 | 用户 | 是 |
 | 三套 `custom_phrase_{mode}.txt` | 生成器 | 否 |
@@ -96,14 +100,14 @@ Yime 的下一阶段恢复为“一个外部真源、三套内部运行产物”
 
 ## 实施阶段
 
-### 阶段 0：冻结与审计（当前阶段）
+### 阶段 0：冻结与审计（已完成）
 
 - 冻结当前三套系统字典和 `yime_pinyin_codes.tsv` 作为比较基准；
 - 记录文件 SHA-256、条目数、重复项和无法反查项；
 - 不改变当前安装包、schema 列表和运行时选择逻辑；
 - 建立“现有结果 vs 权威规则生成结果”的差异报告格式。
 
-### 阶段 1：离线单源生成器
+### 阶段 1：离线单源生成器（已完成）
 
 - 输入只接受一份等长真源码表；
 - 在临时目录生成三套系统字典和拼音编码映射；
@@ -111,7 +115,7 @@ Yime 的下一阶段恢复为“一个外部真源、三套内部运行产物”
 - 不自动覆盖已安装数据；
 - 用当前三套文件逐条对照，所有差异必须分类，不能静默接受。
 
-### 阶段 2：导入、原子替换与回滚
+### 阶段 2：导入、原子替换与回滚（已完成开发者入口）
 
 - 设置工具只暴露一个“导入等长真源码表”入口；
 - 完成解析、校验、转换和 Rime 试构建后才替换；
@@ -120,7 +124,7 @@ Yime 的下一阶段恢复为“一个外部真源、三套内部运行产物”
 - 失败时继续使用原运行数据，并提供可复制的错误摘要；
 - 成功后发出一次 lexicon + redeploy 修订通知，由现有延迟重载链处理活动会话。
 
-### 阶段 3：取消三套外部导入
+### 阶段 3：取消三套外部导入（已完成）
 
 - 删除或隐藏三种模式的独立系统词库导入入口；
 - 三套字典只作为内部缓存和安装包产物存在；

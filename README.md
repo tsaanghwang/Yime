@@ -186,6 +186,7 @@ Check logs at `%LOCALAPPDATA%\PIME\Logs\go_backend.log`.
 | [Testing Guide](docs/YIME_TESTING_GUIDE.md) | CI layers, real Rime tests, and installed-runtime verification |
 | [Release and Signing](docs/YIME_RELEASE_AND_SIGNING.md) | Reproducible builds, Authenticode, packaging, and rollback |
 | [Data Format Reference](docs/YIME_DATA_FORMAT_REFERENCE.md) | TSV/JSON/YAML data file format specifications |
+| [Single-Source Lexicon Refactor](docs/project/SINGLE_SOURCE_LEXICON_REFACTOR.md) | Why and how three maintained code tables became one fixed-length source |
 | [User Install Guide](docs/YIME_USER_INSTALL_GUIDE.md) | Installation and usage instructions for end users |
 | [Troubleshooting](docs/YIME_TROUBLESHOOTING.md) | Common issues and solutions |
 | [Changelog](CHANGELOG.md) | Version change history |

@@ -34,8 +34,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Continuous user-lexicon add flow with explicit exit, system-lexicon duplicate rejection, and adjustable weight step controls
 - Go regression-test coverage in CI for native tools, user lexicon, language-bar labels, and Rime-owned candidate paging
 - Maintainer guides for release signing, test layers, native Win32 UI conventions, and security reporting
+- Fixed-length lexicon importer, deterministic three-mode generator, and generation manifest with source/output hashes
 
 ### Changed
+
+- Treat the fixed-length dictionary as the only external system-lexicon source; variable and shorthand dictionaries are generated runtime artifacts
+- Reduce `yime_pinyin_codes.tsv` to `pinyin_tone` and `full`; derive variable and shorthand codes through the shared Go `codemode` rules
+- Regenerate the shorthand system dictionary, removing 178,317 historical entries that still used variable-length codes
 
 - Replace showUserMessage PowerShell MessageBox with direct Win32 MessageBoxW syscall, eliminating PowerShell process spawn for every user notification
 - Replace copyTextToClipboard PowerShell Set-Clipboard with direct Win32 clipboard API, also fixing missing HideWindow flag that caused console flash

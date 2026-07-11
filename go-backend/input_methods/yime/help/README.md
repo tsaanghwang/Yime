@@ -55,8 +55,9 @@ Yime treats user-facing tools as standalone Win32 executables shipped next to
   audit, and user blocklist all run as native GUI apps.
 - The tool hub (`tool-hub.exe`) renders a manifest built in Go
   (`yime_tool_catalog.go`) and launches each tool via `run_executable`.
-- The `C:\dev\Yime-variable-length` prototype is the reference proof that this
-  tool-oriented workflow is practical for Yime rather than an afterthought.
+- The earlier Python prototype proved that a tool-oriented workflow is
+  practical for Yime; the maintained prototype repository is now
+  `C:\dev\Yime-python-prototype`.
 - Repository-side debugging also has a local helper
   `go-backend\run_admin_yime_tests.cmd` for repeatable elevated test attempts.
   It is for developer troubleshooting only and is not part of the installed

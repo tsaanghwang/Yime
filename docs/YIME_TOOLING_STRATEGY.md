@@ -32,8 +32,9 @@ bar.
 ## Evidence
 
 - This repository ships native tool executables from `go-backend/build.bat`.
-- The `C:\dev\Yime-variable-length` prototype already proved out a tool-heavy
-  workflow with dedicated scripts, settings artifacts, diagnostics, and help.
+- The maintained `C:\dev\Yime-python-prototype` repository preserves the
+  earlier proof of a tool-heavy workflow with dedicated scripts, settings
+  artifacts, diagnostics, and help.
 - Production incidents with hidden PowerShell child processes (encoding,
   focus, and silent exit) motivated the move to compiled tools.
 

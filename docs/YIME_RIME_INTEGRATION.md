@@ -45,27 +45,28 @@ cd go-backend
 cmd /c build.bat
 ```
 
-## Generated files
+## Generated and packaged files
 
-Most generated Rime data should not be committed:
+The three `yime_*.dict.yaml` files and `yime_lexicon_manifest.json` under
+`go-backend\input_methods\yime\data\` are committed package inputs, but they
+are generated artifacts: regenerate them from one fixed-length dictionary and
+never edit the variable or shorthand dictionaries independently.
 
-- `go-backend\input_methods\yime\data\`
+Rime deployment caches remain local and must not be committed:
+
 - `%AppData%\PIME\Rime\`
 - `%AppData%\PIME\Rime\build\`
 
-Exception:
-
-- `go-backend\input_methods\yime\data\pinyin_normalized.json`
-
-That file is now a vendored runtime asset, not a local throwaway export.
+`pinyin_normalized.json`, `yime_pua_pinyin.json`, and the two-column
+`yime_pinyin_codes.tsv` are vendored runtime assets.
 
 ## `pinyin_normalized.json` chain
 
 The current Go Yime backend uses `pinyin_normalized.json` for the
 "标准拼音" reverse-lookup display mode.
 
-This file does not originate inside `C:\dev\Yime` itself. The formal source
-chain lives in `C:\dev\Yime-variable-length`:
+This file does not originate inside `C:\dev\Yime` itself. Its source chain is
+kept in `C:\dev\Yime-python-prototype`:
 
 1. `internal_data\hanzi_pinyin\pinyin.txt` and
    `internal_data\phrase_pinyin\phrase_pinyin.txt`
@@ -77,9 +78,9 @@ chain lives in `C:\dev\Yime-variable-length`:
 
 Upstream docs that describe this flow:
 
-- `C:\dev\Yime-variable-length\docs\project\PINYIN_DATA_MIGRATION.md`
-- `C:\dev\Yime-variable-length\internal_data\pinyin_source_db\README.md`
-- `C:\dev\Yime-variable-length\scripts\integrate_lexicon_trial.ps1`
+- `C:\dev\Yime-python-prototype\docs\project\PINYIN_DATA_MIGRATION.md`
+- `C:\dev\Yime-python-prototype\internal_data\pinyin_source_db\README.md`
+- `C:\dev\Yime-python-prototype\scripts\integrate_lexicon_trial.ps1`
 
 For the Go backend, we currently vendor the exported JSON into:
 
@@ -108,12 +109,11 @@ comment unchanged.
 
 ## Maintainer checklist
 
-Use this checklist when upstream lexicon or pinyin data changes in
-`C:\dev\Yime-variable-length` and this repo needs an updated standard-pinyin
-display asset.
+Use this checklist when pinyin display data changes in
+`C:\dev\Yime-python-prototype` and this repo needs an updated runtime asset.
 
-1. Rebuild the upstream phase-1 lexicon assets in
-   `C:\dev\Yime-variable-length`.
+1. Rebuild the upstream phase-1 pinyin assets in
+   `C:\dev\Yime-python-prototype`.
 2. Confirm the rebuilt export exists at
    `internal_data\pinyin_source_db\lexicon_exports\pinyin_normalized.json`.
 3. Confirm the runtime copy exists at `yime\pinyin_normalized.json`.
@@ -122,12 +122,16 @@ display asset.
 5. Copy `yime\code_pinyin.json` into this repo as
    `go-backend\input_methods\yime\data\yime_pua_pinyin.json` when the PUA
    phonological mapping changes.
-6. Keep `go-backend\input_methods\yime\data\yime_pinyin_codes.tsv` in sync
-   with the schema dictionaries that the Go backend ships.
-7. Rebuild the Go backend package with `cd go-backend` then `cmd /c build.bat`.
-8. Verify reverse lookup in the candidate window:
+6. Keep only `pinyin_tone` and canonical `full` in
+   `go-backend\input_methods\yime\data\yime_pinyin_codes.tsv`; derived columns
+   must not be restored.
+7. Import system lexicon changes only through
+   `tools\import-yime-full-lexicon.ps1 -Input <full.dict.yaml>` and confirm the
+   generated manifest and three output hashes.
+8. Rebuild the Go backend package with `cd go-backend` then `cmd /c build.bat`.
+9. Verify reverse lookup in the candidate window:
    `隐藏编码`, `标准拼音`, `音元拼音`, `键位序列`.
-9. Sanity-check that both pinyin modes change comments only and do not trigger a
+10. Sanity-check that both pinyin modes change comments only and do not trigger a
    schema reload or host exit during the language-bar click.
 
 Minimum local verification:
