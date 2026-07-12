@@ -35,3 +35,42 @@ func TestSyncRimeSchemasRefreshesAllModes(t *testing.T) {
 		}
 	}
 }
+
+func TestRefreshRimeSchemasReportsOnlyContentChanges(t *testing.T) {
+	sharedDir := t.TempDir()
+	userDir := t.TempDir()
+	for _, mode := range schemaModes {
+		name := "yime_" + mode + ".schema.yaml"
+		if err := os.WriteFile(filepath.Join(sharedDir, name), []byte("schema: "+mode+"\n"), 0o644); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	changed, err := RefreshRimeSchemas(sharedDir, userDir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !changed {
+		t.Fatal("first refresh must report changed schemas")
+	}
+
+	changed, err = RefreshRimeSchemas(sharedDir, userDir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if changed {
+		t.Fatal("identical schemas must not force a Rime rebuild")
+	}
+
+	path := filepath.Join(sharedDir, "yime_variable.schema.yaml")
+	if err := os.WriteFile(path, []byte("schema: variable-v2\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	changed, err = RefreshRimeSchemas(sharedDir, userDir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !changed {
+		t.Fatal("updated shared schema must request a Rime rebuild")
+	}
+}

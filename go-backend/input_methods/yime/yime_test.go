@@ -40,9 +40,11 @@ type testBackend struct {
 type configurableInitBackend struct {
 	*testBackend
 	initializeResult bool
+	firstRun         bool
 }
 
 func (b *configurableInitBackend) Initialize(sharedDir, userDir string, firstRun bool) bool {
+	b.firstRun = firstRun
 	return b.initializeResult
 }
 
@@ -511,6 +513,29 @@ func TestInitWithMissingUserDirDoesNotPanic(t *testing.T) {
 	}
 	if ime.BackendAvailable() {
 		t.Fatal("expected native backend to stay unavailable without user RIME data")
+	}
+}
+
+func TestInitRequestsFullDeployWhenInstalledSchemasChange(t *testing.T) {
+	t.Setenv("APPDATA", t.TempDir())
+	backend := &configurableInitBackend{testBackend: newTestBackend(), initializeResult: true}
+	oldFactory := createRimeBackend
+	oldRefresh := refreshRimeSchemasOnInit
+	createRimeBackend = func() rimeBackend { return backend }
+	refreshRimeSchemasOnInit = func(sharedDir, userDir string) (bool, error) {
+		return true, nil
+	}
+	t.Cleanup(func() {
+		createRimeBackend = oldFactory
+		refreshRimeSchemasOnInit = oldRefresh
+	})
+
+	ime := New(&pime.Client{ID: "test-client"}).(*IME)
+	if !ime.Init(&pime.Request{}) {
+		t.Fatal("expected initialization to succeed")
+	}
+	if !backend.firstRun {
+		t.Fatal("changed installed schemas must request a full Rime deployment")
 	}
 }
 

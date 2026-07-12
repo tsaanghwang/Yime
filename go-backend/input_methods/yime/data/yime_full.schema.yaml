@@ -42,7 +42,7 @@ custom_phrase:
   dictionary: ""
   user_dict: custom_phrase_full
   db_class: stabledb
-  enable_completion: false
+  enable_completion: true
   enable_sentence: false
   initial_quality: 1
 
