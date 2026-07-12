@@ -51,6 +51,12 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: i686-pc-windows-msvc
+      # The root CMakeLists.txt pins Rust_TOOLCHAIN=stable-i686-pc-windows-msvc for
+      # the Win32 PIMELauncher build (host == target avoids Corrosion leaking i686
+      # libs into host-side build-scripts). That HOST toolchain is separate from the
+      # i686 TARGET above and must be installed explicitly or CMake configure fails.
+      - name: Install i686 host toolchain for Win32 PIMELauncher
+        run: rustup toolchain install stable-i686-pc-windows-msvc --profile minimal
       - name: Run Rust tests
         run: |
           cd PIMELauncher
