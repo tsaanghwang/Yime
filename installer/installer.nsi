@@ -53,7 +53,7 @@ AllowSkipFiles off ; cannot skip a file
 !define LEGACY_PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\PIME"
 !define PRODUCT_INSTALL_KEY "Software\YIME"
 !define LEGACY_PRODUCT_INSTALL_KEY "Software\PIME"
-!define HOMEPAGE_URL "https://github.com/EasyIME/"
+!define HOMEPAGE_URL "https://github.com/tsaanghwang/Yime"
 !define YIME_TIP "0x0804:{35F67E9D-A54D-4177-9697-8B0AB71A9E04}{3F6B5A12-8D44-4E71-9A2E-6B4F9C1D2A30}"
 
 Name "$(PRODUCT_NAME)"
