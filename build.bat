@@ -3,8 +3,9 @@ setlocal
 
 if /I not "%~1"=="--sanitized" (
 	powershell -NoProfile -ExecutionPolicy Bypass -Command ^
-		"$path = [System.Environment]::GetEnvironmentVariable('Path', 'Process'); $script = '%~f0'; Remove-Item Env:PATH -ErrorAction SilentlyContinue; $env:Path = $path; & $script --sanitized" 
-	exit /b %errorlevel%
+		"$path = [System.Environment]::GetEnvironmentVariable('Path', 'Process'); $script = '%~f0'; Remove-Item Env:PATH -ErrorAction SilentlyContinue; $env:Path = $path; & $script --sanitized; exit $LASTEXITCODE"
+	if errorlevel 1 exit /b 1
+	exit /b 0
 )
 
 set "ROOT_DIR=%~dp0"

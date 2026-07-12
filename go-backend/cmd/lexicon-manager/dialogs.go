@@ -20,12 +20,9 @@ const (
 	idDlgWeight       = 303
 	idDlgOK           = 1
 	idDlgCancel       = 2
-	idWeightValue     = 401
 	idWeightStep      = 402
 	idWeightMinus     = 403
 	idWeightPlus      = 404
-	idWeightOK        = 1
-	idWeightCancel    = 2
 	idImportList      = 501
 	idImportOK        = 1
 	idImportCancel    = 2
@@ -98,7 +95,7 @@ type openFilename struct {
 func showEntryDialog(owner syscall.Handle, initial userlexicon.Entry, title, okText string) (userlexicon.Entry, entryDialogResult) {
 	result := userlexicon.Entry{}
 	dialogResult := entryDialogCanceled
-	accepted := showModalForm(owner, title, 520, 302, func(hwnd syscall.Handle) {
+	accepted := showModalForm(owner, title, 520, 362, func(hwnd syscall.Handle) {
 		const contentLeft, contentRight = int32(16), int32(504)
 		createAutoStatic(hwnd, "词条汉字", contentLeft, 18, 18, 0)
 		phrase := createEdit(hwnd, rect{contentLeft, 40, contentRight, 66}, idDlgPhrase)
@@ -106,31 +103,63 @@ func showEntryDialog(owner syscall.Handle, initial userlexicon.Entry, title, okT
 		pinyin := createEdit(hwnd, rect{contentLeft, 98, contentRight, 124}, idDlgPinyin)
 		createAutoStatic(hwnd, "权重", contentLeft, 134, 18, 0)
 		weight := createEdit(hwnd, rect{contentLeft, 156, contentRight, 182}, idDlgWeight)
+		createAutoStatic(hwnd, "每次增减", contentLeft, 192, 18, 0)
+		const adjustButtonW, controlGap = int32(74), int32(10)
+		minusRect, stepRect, plusRect := weightAdjustmentRects(contentLeft, contentRight, 214, 28, adjustButtonW, controlGap)
+		createButton(hwnd, "减", minusRect, idWeightMinus)
+		stepEdit := createEdit(hwnd, stepRect, idWeightStep)
+		setWindowText(stepEdit, "1")
+		createButton(hwnd, "加", plusRect, idWeightPlus)
 		setWindowText(phrase, initial.Phrase)
 		setWindowText(pinyin, initial.Pinyin)
 		setWindowText(weight, initial.Weight)
-		buttons := centeredButtonRects(contentLeft, contentRight, 216, 28, 10, []int32{88, 88})
+		buttons := centeredButtonRects(contentLeft, contentRight, 276, 28, 10, []int32{88, 88})
 		createButton(hwnd, okText, buttons[0], idDlgOK)
 		createButton(hwnd, "退出", buttons[1], idDlgCancel)
 	}, func(hwnd syscall.Handle, id int) bool {
-		if id != idDlgOK {
+		switch id {
+		case idWeightMinus, idWeightPlus:
+			weightHWND := findDlgItem(hwnd, idDlgWeight)
+			stepHWND := findDlgItem(hwnd, idWeightStep)
+			stepValue := strings.TrimSpace(getWindowText(stepHWND))
+			if stepValue == "" {
+				stepValue = "1"
+				setWindowText(stepHWND, stepValue)
+			}
+			direction := 1
+			if id == idWeightMinus {
+				direction = -1
+			}
+			current := strings.TrimSpace(getWindowText(weightHWND))
+			if current == "" {
+				current = userlexicon.DefaultEntryWeight
+			}
+			adjusted, err := adjustWeightValue(current, stepValue, direction)
+			if err != nil {
+				showMessageBox(err.Error(), 0x10)
+				return false
+			}
+			setWindowText(weightHWND, adjusted)
+			return false
+		case idDlgOK:
+			entry := userlexicon.Entry{
+				Phrase: strings.TrimSpace(getWindowText(findDlgItem(hwnd, idDlgPhrase))),
+				Pinyin: strings.TrimSpace(getWindowText(findDlgItem(hwnd, idDlgPinyin))),
+				Weight: strings.TrimSpace(getWindowText(findDlgItem(hwnd, idDlgWeight))),
+			}
+			if entry.Weight == "" {
+				entry.Weight = userlexicon.DefaultEntryWeight
+			}
+			if err := userlexicon.AssertEntryFields(entry); err != nil {
+				showMessageBox(err.Error(), 0x10)
+				return false
+			}
+			result = entry
+			dialogResult = entryDialogSavedAndContinue
+			return true
+		default:
 			return false
 		}
-		entry := userlexicon.Entry{
-			Phrase: strings.TrimSpace(getWindowText(findDlgItem(hwnd, idDlgPhrase))),
-			Pinyin: strings.TrimSpace(getWindowText(findDlgItem(hwnd, idDlgPinyin))),
-			Weight: strings.TrimSpace(getWindowText(findDlgItem(hwnd, idDlgWeight))),
-		}
-		if entry.Weight == "" {
-			entry.Weight = userlexicon.DefaultEntryWeight
-		}
-		if err := userlexicon.AssertEntryFields(entry); err != nil {
-			showMessageBox(err.Error(), 0x10)
-			return false
-		}
-		result = entry
-		dialogResult = entryDialogSavedAndContinue
-		return true
 	})
 	if !accepted {
 		return result, entryDialogCanceled
@@ -169,58 +198,6 @@ func adjustWeightValue(currentValue, stepValue string, direction int) (string, e
 		return "", fmt.Errorf("权重超出整数范围")
 	}
 	return strconv.Itoa(current + direction*step), nil
-}
-
-func showWeightDialog(owner syscall.Handle, initial string) (string, bool) {
-	value := ""
-	accepted := showModalForm(owner, "设置词条权重", 380, 220, func(hwnd syscall.Handle) {
-		const contentLeft, contentRight = int32(16), int32(364)
-		createAutoStatic(hwnd, "权重", contentLeft, 18, 18, 0)
-		edit := createEdit(hwnd, rect{contentLeft, 42, contentRight, 68}, idWeightValue)
-		setWindowText(edit, initial)
-		createAutoStatic(hwnd, "每次增减", contentLeft, 82, 18, 0)
-		const adjustButtonW, controlGap = int32(74), int32(10)
-		minusRect, stepRect, plusRect := weightAdjustmentRects(contentLeft, contentRight, 106, 28, adjustButtonW, controlGap)
-		createButton(hwnd, "减", minusRect, idWeightMinus)
-		stepEdit := createEdit(hwnd, stepRect, idWeightStep)
-		setWindowText(stepEdit, "1")
-		createButton(hwnd, "加", plusRect, idWeightPlus)
-		buttons := centeredButtonRects(contentLeft, contentRight, 154, 28, 10, []int32{78, 78})
-		createButton(hwnd, "确认", buttons[0], idWeightOK)
-		createButton(hwnd, "取消", buttons[1], idWeightCancel)
-	}, func(hwnd syscall.Handle, id int) bool {
-		switch id {
-		case idWeightMinus, idWeightPlus:
-			weightHWND := findDlgItem(hwnd, idWeightValue)
-			stepHWND := findDlgItem(hwnd, idWeightStep)
-			stepValue := strings.TrimSpace(getWindowText(stepHWND))
-			if stepValue == "" {
-				stepValue = "1"
-				setWindowText(stepHWND, stepValue)
-			}
-			direction := 1
-			if id == idWeightMinus {
-				direction = -1
-			}
-			adjusted, err := adjustWeightValue(getWindowText(weightHWND), stepValue, direction)
-			if err != nil {
-				showMessageBox(err.Error(), 0x10)
-				return false
-			}
-			setWindowText(weightHWND, adjusted)
-			return false
-		case idWeightOK:
-			value = strings.TrimSpace(getWindowText(findDlgItem(hwnd, idWeightValue)))
-			if value == "" {
-				showMessageBox("请输入权重。", 0x10)
-				return false
-			}
-			return true
-		default:
-			return false
-		}
-	})
-	return value, accepted
 }
 
 func showImportPreviewDialog(owner syscall.Handle, preview userlexicon.ImportPreview) (map[string]bool, bool) {
@@ -364,7 +341,7 @@ func modalWndProc(hwnd syscall.Handle, msg uint32, wParam, lParam uintptr) uintp
 	case 0x0111:
 		id := int(wParam & 0xffff)
 		notify := int((wParam >> 16) & 0xffff)
-		if id == idDlgCancel || id == idWeightCancel || id == idImportCancel {
+		if id == idDlgCancel || id == idImportCancel {
 			procDestroyWindow.Call(uintptr(hwnd))
 			return 0
 		}

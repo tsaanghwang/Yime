@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"strconv"
 	"strings"
 	"syscall"
 	"time"
@@ -278,7 +277,7 @@ func (state *appState) editSelected() {
 		showNoticeDialog(state.mainHWND, "编辑失败", "在源词库中找不到所选词条。")
 		return
 	}
-	entry, result := showEntryDialog(state.mainHWND, existing.Clone(), "编辑用户词条", "保存修改")
+	entry, result := showEntryDialog(state.mainHWND, existing.Clone(), "编辑用户词条", "保存")
 	if result == entryDialogCanceled {
 		return
 	}
@@ -328,48 +327,6 @@ func (state *appState) deleteSelected() {
 	state.refreshList()
 	state.addOperationHistory(fmt.Sprintf("删除词条 %d 条", len(phrases)))
 	setWindowText(state.statusHWND, fmt.Sprintf("已从源词库删除 %d 条词条，点击“应用”生成三套用户词库。", len(phrases)))
-}
-
-func (state *appState) setSelectedWeights() {
-	phrases := state.selectedPhrases()
-	if len(phrases) == 0 {
-		showMessageBox("请先选中要设置权重的词条。", 0x10)
-		return
-	}
-	weight, ok := showWeightDialog(state.mainHWND, userlexicon.DefaultEntryWeight)
-	if !ok {
-		return
-	}
-	if _, err := strconv.Atoi(weight); err != nil {
-		showMessageBox("权重必须是整数。", 0x10)
-		return
-	}
-	entries, err := state.loadSourceEntries()
-	if err != nil {
-		showMessageBox(err.Error(), 0x10)
-		return
-	}
-	selected := map[string]bool{}
-	for _, phrase := range phrases {
-		selected[phrase] = true
-	}
-	updated := 0
-	for i := range entries {
-		if !selected[entries[i].Phrase] {
-			continue
-		}
-		entries[i].Weight = weight
-		updated++
-	}
-	state.saveUndoSnapshot("批量设置权重 " + weight)
-	if err := userlexicon.WriteSourceEntries(state.sourcePath, entries); err != nil {
-		showMessageBox(err.Error(), 0x10)
-		return
-	}
-	state.dirty = true
-	state.refreshList()
-	state.addOperationHistory(fmt.Sprintf("批量设置权重 %d 条 -> %s", updated, weight))
-	setWindowText(state.statusHWND, fmt.Sprintf("已将 %d 条词条的权重设为 %s。", updated, weight))
 }
 
 func (state *appState) undoLastChange() {

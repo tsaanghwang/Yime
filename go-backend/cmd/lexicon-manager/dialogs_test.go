@@ -5,6 +5,8 @@ package main
 import (
 	"strconv"
 	"testing"
+
+	"github.com/EasyIME/pime-go/input_methods/yime/reverselookup"
 )
 
 func TestAdjustWeightValue(t *testing.T) {
@@ -64,8 +66,8 @@ func TestCenteredButtonRectsCentersGroupAndPreservesGaps(t *testing.T) {
 }
 
 func TestWeightAdjustmentRectsFillContentRow(t *testing.T) {
-	minus, step, plus := weightAdjustmentRects(16, 364, 106, 28, 74, 10)
-	if minus.Left != 16 || plus.Right != 364 {
+	minus, step, plus := weightAdjustmentRects(16, 504, 214, 28, 74, 10)
+	if minus.Left != 16 || plus.Right != 504 {
 		t.Fatalf("adjustment row does not fill content width: minus=%#v plus=%#v", minus, plus)
 	}
 	if step.Left-minus.Right != 10 || plus.Left-step.Right != 10 {
@@ -73,6 +75,23 @@ func TestWeightAdjustmentRectsFillContentRow(t *testing.T) {
 	}
 	if step.Right <= step.Left {
 		t.Fatalf("step input has invalid width: %#v", step)
+	}
+}
+
+func TestModeDisplayNameUsesChineseLabels(t *testing.T) {
+	tests := []struct {
+		mode reverselookup.Mode
+		want string
+	}{
+		{mode: reverselookup.ModeVariable, want: "变长模式"},
+		{mode: reverselookup.ModeFull, want: "等长模式"},
+		{mode: reverselookup.ModeShorthand, want: "省键模式"},
+		{mode: reverselookup.Mode("custom"), want: "custom"},
+	}
+	for _, test := range tests {
+		if got := modeDisplayName(test.mode); got != test.want {
+			t.Fatalf("modeDisplayName(%q) = %q, want %q", test.mode, got, test.want)
+		}
 	}
 }
 

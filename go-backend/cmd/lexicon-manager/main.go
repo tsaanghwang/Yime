@@ -46,7 +46,6 @@ const (
 	idBtnAdd         = 201
 	idBtnEdit        = 202
 	idBtnDelete      = 203
-	idBtnSetWeight   = 204
 	idBtnUndo        = 205
 	idBtnApply       = 206
 	idBtnImport      = 207
@@ -318,7 +317,6 @@ func (state *appState) createControls() {
 		{"添加", idBtnAdd},
 		{"编辑", idBtnEdit},
 		{"删除", idBtnDelete},
-		{"权重", idBtnSetWeight},
 		{"撤销", idBtnUndo},
 		{"应用", idBtnApply},
 		{"导入", idBtnImport},
@@ -336,7 +334,7 @@ func (state *appState) createControls() {
 		x += w + gap
 	}
 
-	modeText := fmt.Sprintf("编码方案：%s", state.mode)
+	modeText := fmt.Sprintf("编码方案：%s", modeDisplayName(state.mode))
 	createStatic(state.mainHWND, modeText, rect{contentLeft, 44, contentRight, 64}, 0)
 
 	const labelW, resetW, comboW, dirW = int32(48), int32(64), int32(88), int32(64)
@@ -467,7 +465,7 @@ func (state *appState) handleCommand(wParam, _ uintptr) {
 		return
 	}
 	switch id {
-	case idBtnAdd, idBtnEdit, idBtnDelete, idBtnSetWeight, idBtnUndo, idBtnApply, idBtnImport, idBtnExport, idBtnOpenFolder, idSearchReset, idSortDirection:
+	case idBtnAdd, idBtnEdit, idBtnDelete, idBtnUndo, idBtnApply, idBtnImport, idBtnExport, idBtnOpenFolder, idSearchReset, idSortDirection:
 		if notify != 0 {
 			return
 		}
@@ -479,8 +477,6 @@ func (state *appState) handleCommand(wParam, _ uintptr) {
 		state.editSelected()
 	case idBtnDelete:
 		state.deleteSelected()
-	case idBtnSetWeight:
-		state.setSelectedWeights()
 	case idBtnUndo:
 		state.undoLastChange()
 	case idBtnApply:
@@ -502,6 +498,19 @@ func (state *appState) handleCommand(wParam, _ uintptr) {
 			setWindowText(state.sortDirectionHWND, "升序")
 		}
 		state.refreshList()
+	}
+}
+
+func modeDisplayName(mode reverselookup.Mode) string {
+	switch mode {
+	case reverselookup.ModeVariable:
+		return "变长模式"
+	case reverselookup.ModeFull:
+		return "等长模式"
+	case reverselookup.ModeShorthand:
+		return "省键模式"
+	default:
+		return string(mode)
 	}
 }
 
