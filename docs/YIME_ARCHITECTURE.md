@@ -564,6 +564,7 @@ Go 后端
 `%LOCALAPPDATA%\PIME\Logs\`
 
 - `go_backend.log` — Go 后端主日志
+- `go_backend.log.1` 至 `go_backend.log.5` — 自动轮转的历史日志；当前日志达到 10 MiB 时轮转，最多保留 5 份
 - 命令 ID 解读、部署/重载信号、错误行
 
 ---

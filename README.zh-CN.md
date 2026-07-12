@@ -70,8 +70,14 @@ git submodule update --init
 ### 安装 Rust 目标
 
 ```powershell
-rustup target add i686-pc-windows-msvc
+rustup toolchain install stable-i686-pc-windows-msvc --profile minimal
 ```
+
+这里必须安装完整的 i686 **主机工具链**，不能只在默认 x64 工具链上执行
+`rustup target add i686-pc-windows-msvc`。根目录 CMake 已固定该工具链，以避免
+Corrosion 将 x64 主机构建脚本和 i686 MSVC 库混用。如果命令行找不到 `cargo`，
+但 `%USERPROFILE%\.cargo\bin\cargo.exe` 存在，应把该目录恢复到用户 `PATH`，
+不要修改 CMake、Corrosion 版本或 `PIMELauncher/.cargo/config.toml`。
 
 ### 构建宿主（32 位）
 

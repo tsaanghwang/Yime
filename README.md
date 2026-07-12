@@ -50,7 +50,7 @@ The encoding, lexicon, and experiment-heavy prototype work lives in the separate
 
 - [Visual Studio 2022](https://visualstudio.microsoft.com/vs/) with C++ desktop workload
 - [CMake](https://cmake.org/) 3.0+
-- [Rust](https://rustup.rs/) with `i686-pc-windows-msvc` target
+- [Rust](https://rustup.rs/) with the `stable-i686-pc-windows-msvc` host toolchain
 - [Go](https://go.dev/) 1.21+
 - [Node.js](https://nodejs.org/) 18+
 - [Git](https://git-scm.com/)
@@ -69,11 +69,18 @@ Submodules such as `libIME2` and `McBopomofoWeb` point at `tsaanghwang/*` forks.
 If you bump a submodule SHA in Yime, push that commit to the submodule remote
 **before** pushing the main repository, or CI checkout will fail.
 
-### Install Rust target
+### Install the pinned Rust host toolchain
 
 ```powershell
-rustup target add i686-pc-windows-msvc
+rustup toolchain install stable-i686-pc-windows-msvc --profile minimal
 ```
+
+The full i686 host toolchain is required, not only an i686 target added to an
+x64 toolchain. The root CMake build pins this host toolchain so Corrosion does
+not mix x64 host build scripts with i686 MSVC libraries. If `cargo` is not
+found but `%USERPROFILE%\.cargo\bin\cargo.exe` exists, restore that directory
+to the user `PATH` instead of changing the CMake, Corrosion, or Cargo target
+configuration.
 
 ### Build the host (32-bit)
 

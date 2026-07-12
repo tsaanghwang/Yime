@@ -6,6 +6,7 @@ import (
 	"bufio"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"path/filepath"
@@ -414,7 +415,7 @@ func loadInputMethods(server *Server) {
 	}
 }
 
-func openLogFile() (*os.File, error) {
+func openLogFile() (io.WriteCloser, error) {
 	candidates := []string{}
 
 	if localAppData := os.Getenv("LOCALAPPDATA"); localAppData != "" {
@@ -435,7 +436,7 @@ func openLogFile() (*os.File, error) {
 			}
 		}
 
-		logFile, err := os.OpenFile(logPath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+		logFile, err := newRotatingLogWriter(logPath, defaultLogMaxSize, defaultLogBackups)
 		if err == nil {
 			return logFile, nil
 		}
