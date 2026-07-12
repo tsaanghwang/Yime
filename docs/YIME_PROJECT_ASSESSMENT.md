@@ -101,6 +101,7 @@ git diff --check
 - NSIS 开发安装包构建成功，包内未发现 `.go` 源码。
 - 上一轮远端 GitHub Actions 构建成功。
 - 2026-07-11 使用未签名开发包完成真实安装；Go + Win32 输入路径响应流畅，新增“云笺试码”“笺砚验码”后可在活动会话直接出词。
+- 2026-07-12 C++/TSF DLL 调试链路就绪：CMake 新增 `PIME_RELEASE_DEBUG_INFO` 选项（默认 `ON`）持久化 Release PDB 生成（`/Zi` + 链接器 `/DEBUG`，去重追加、重复 configure 不累积）；`go test -race ./...` 复跑全绿；`.vscode/launch.json` 提供 `Debug PMERpcResponseTests`、`Debug IME in charmap (x64)` launch 配置，已用 `Reinstall-PIME-Test.cmd` 安装带符号开发包。Win11 `notepad.exe` 为重定向存根，调试改用 `charmap.exe`；cpptools 1.33.4 的 `pickProcess` 在 Cursor 里 attach 失败，需 attach 时用 VS Code。详见 [测试指南 §6.1](YIME_TESTING_GUIDE.md)。
 
 未纳入本轮完成证明：
 
@@ -134,6 +135,7 @@ git diff --check
 - 未签名开发包可能被 Smart App Control 或企业 Application Control 阻止。
 - Go race detector 依赖本机 MSYS2 UCRT64 GCC；`go env CC` 已持久化指向 `C:\msys64\ucrt64\bin\gcc.exe`，CI 仍需在具备 C 工具链的 runner 上才能执行 `-race`。不得删除现有并发压力测试。
 - 真实 Rime 集成测试继续显式启用，避免普通测试共享本机 librime 全局状态。
+- C++ 调试在 Cursor 里仅 launch 可用；cpptools 1.33.4 的 `pickProcess` 与 Cursor QuickPick 不兼容，attach 配置需在 VS Code 里运行。`ms-vscode.cpptools` 不在 Cursor 的 Open VSX 市场，需从 VS Code Marketplace 下载 win32-x64 VSIX 离线安装。
 
 ## 7. 文档维护规则
 

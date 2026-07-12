@@ -119,6 +119,30 @@ NSIS 守卫还必须确认默认安装目录不会被空注册表值覆盖、必
 
 必须遵守 `AGENTS.md`：原生 Rime 会话保持 `UsesBackendCandidatePaging() == true`，不得用 Go 侧候选切片掩盖配置问题。
 
+### 6.1 C++/TSF DLL 调试（Cursor / VS Code）
+
+C++ 侧（`PIMETextService.dll` 等组件）用 `cppvsdbg`（由 `ms-vscode.cpptools` 提供）调试。Release 默认产出 PDB，由 CMake 选项控制：
+
+- `PIME_RELEASE_DEBUG_INFO`（默认 `ON`）会给 Release 加 `/Zi` 和链接器 `/DEBUG`，生成 PDB。发布构建可 `-DPIME_RELEASE_DEBUG_INFO=OFF` 关掉以精简产物。标志在 `CMakeLists.txt` 中以去重方式追加，重复 configure 不会累积。
+- PDB 位于 `build64/PIMETextService/Release/*.pdb`；`launch.json` 的 `symbolSearchPath` 指向该目录与 `build/PIMETextService/Release`。
+
+`.vscode/launch.json` 提供三个 C++ 配置：
+
+| 配置 | 用途 | 备注 |
+|------|------|------|
+| `Debug PMERpcResponseTests (x64 Release)` | 直接启动 gtest 风格测试程序 | 冒烟验证 `cppvsdbg + PDB` 链路，不依赖 IME 激活 |
+| `Debug IME in charmap (x64)` | 用调试器启动 `charmap.exe`，切音元按键命中 DLL 断点 | launch 模式，能抓到 DLL 加载/注册阶段 |
+| `Attach to PIMETextService host (TSF)` / `... in charmap (x64)` | 附加到已加载 DLL 的宿主进程 | **Cursor 里不可用**，见下 |
+
+要点与坑：
+
+- **不用 notepad**：Win11 的 `C:\Windows\System32\notepad.exe` 是重定向存根，启动后转交 Store 版记事本并自身秒退（exit 0），vsdbg 附到存根会随之结束、断点不可能命中。改用 `charmap.exe`（字符映射表，含“搜索”文本框，常驻）。需要真实记事本大文本区时，从开始菜单打开 Store 记事本，再用 attach 配置附加。
+- **Cursor 里 attach 失败**：cpptools 1.33.4 的 `pickNativeProcess`（`${command:pickProcess}`）与 Cursor QuickPick API 不兼容，会抛 `TypeError: Cannot read properties of undefined (reading 'id')` → `Process not selected`。两个 attach 配置在 Cursor 里都会失败；**需要 attach 请用 VS Code**（同一份 `launch.json`/`tasks.json`，VS Code 的 cpptools pickProcess 正常）。Cursor 里 launch 配置不受影响。
+- **cpptools 装进 Cursor**：Cursor 的 Open VSX 市场没有 `ms-vscode.cpptools`，需从 VS Code Marketplace 下载 **win32-x64** 平台 VSIX（带 `?targetPlatform=win32-x64`）后 `cursor --install-extension <vsix>` 离线安装。下错成 universal/Linux 包会报「Incompatible or Mismatched C/C++ Extension Binaries」。
+- **前置**：先用 `.\Reinstall-PIME-Test.cmd` 安装与 `build64` 同位、带 PDB 的开发包，确保宿主加载的 `C:\Program Files (x86)\YIME\x64\PIMETextService.dll` 与源 PDB 一致。
+- **断点建议**（`PIMETextService/PIMETextService.cpp`）：`onLangProfileActivated`（切音元时建 Client 连接）验证激活；`filterKeyDown`/`onKeyDown` 验证按键路径。
+- **源码改动后**：`requireExactSource` 默认为 true，改 C++ 源后 PDB 校验和对不上、断点绑不上；必须 重建 x64 `PIMETextService` → `Reinstall-PIME-Test.cmd` → 再 F5。
+
 ## 7. 构建验证
 
 ```powershell

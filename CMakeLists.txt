@@ -28,6 +28,25 @@ add_definitions(
 
 enable_testing()
 
+# Generate PDB debug info for Release builds so the C++ TSF DLL/EXEs can be
+# debugged without switching to a slower Debug config. Default ON for dev
+# convenience; pass -DPIME_RELEASE_DEBUG_INFO=OFF for a lean release ship build.
+# Flags are appended (not replaced) and guarded against duplicates so repeated
+# reconfigures do not accumulate /Zi or /DEBUG.
+option(PIME_RELEASE_DEBUG_INFO "Generate PDB debug info for Release builds" ON)
+if(PIME_RELEASE_DEBUG_INFO AND MSVC)
+    foreach(_lang C CXX)
+        if(NOT CMAKE_${_lang}_FLAGS_RELEASE MATCHES "/Zi")
+            set(CMAKE_${_lang}_FLAGS_RELEASE "${CMAKE_${_lang}_FLAGS_RELEASE} /Zi" CACHE STRING "Release ${_lang} flags" FORCE)
+        endif()
+    endforeach()
+    foreach(_link SHARED_LINKER EXE_LINKER)
+        if(NOT CMAKE_${_link}_FLAGS_RELEASE MATCHES "/DEBUG")
+            set(CMAKE_${_link}_FLAGS_RELEASE "${CMAKE_${_link}_FLAGS_RELEASE} /DEBUG /OPT:REF /OPT:ICF" CACHE STRING "Release ${_link} flags" FORCE)
+        endif()
+    endforeach()
+endif()
+
 add_subdirectory(${PROJECT_SOURCE_DIR}/libIME2)
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/PIMETextService)
