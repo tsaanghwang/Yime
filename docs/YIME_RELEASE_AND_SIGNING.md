@@ -9,6 +9,7 @@
 - `version.txt` 已更新为本次发布版本，例如 `1.3.0-beta2`
 - `CHANGELOG.md` 的 `[Unreleased]` 已核对
 - Visual Studio、CMake、Rust、Go、Node.js、NSIS 和 `go-winres` 可用
+- Rust 已安装 i686 host 工具链：`rustup toolchain install stable-i686-pc-windows-msvc`。Win32 `PIMELauncher` 构建由根 `CMakeLists.txt` 固定 `Rust_TOOLCHAIN` 指向它（Corrosion v0.6.1），x64 host 工具链会因跨编译 build-script 链接错误而失败
 - 发布签名机器已安装受信任提供商签发的 RSA 代码签名证书
 
 ## 2. 版本与可复现构建

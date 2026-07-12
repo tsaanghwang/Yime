@@ -160,6 +160,28 @@ cmd /c build.bat
 .\Reinstall-PIME-Test.cmd
 ```
 
+### 8.1 Win32（`build/`）重建前置
+
+`dev-install.ps1` 硬性要求 `build/PIMELauncher/PIMELauncher.exe` 和 `build/PIMETextService/Release/PIMETextService.dll` 存在，缺失会在早期断言处中止重装。重建 Win32 树的前置与命令：
+
+```powershell
+# 一次性前置：i686 host 工具链（CMakeLists.txt 已固定 Rust_TOOLCHAIN 指向它）
+rustup toolchain install stable-i686-pc-windows-msvc
+
+# 需要重新拉取 Corrosion（FetchContent）时，git/cmake 不读 WinINET 系统代理，须显式设置
+$env:HTTPS_PROXY = "http://127.0.0.1:1081"; $env:HTTP_PROXY = $env:HTTPS_PROXY
+
+$env:Path = "$env:USERPROFILE\.cargo\bin;" + $env:Path
+cmake -S . -B build -G "Visual Studio 17 2022" -A Win32 "-DCMAKE_POLICY_VERSION_MINIMUM=3.5"
+cmake --build build --config Release
+```
+
+不得通过取消工具链固定、删除 `PIMELauncher/.cargo/config.toml` 的 `build.target` 或降级 Corrosion 来“修”链接错误：x64 host 跨编译 i686 时 Corrosion 会把 i686 目标库泄给 host 端 build-script，产生 LNK4272 与大量未解析符号（详见 `AGENTS.md`）。
+
+### 8.2 重装行为与验证顺序
+
+`PIMETextService.dll` 被 `explorer.exe` 等宿主加载时，脚本自动走就地安装（DLL 跳过、其余全部更新），这是设计行为不是失败；需要干净全量重装（含 DLL 替换、反注册重注册、删安装树）时先重启 Windows 再跑一次。
+
 验证顺序：
 
 1. 比较构建与安装 EXE 的 SHA-256
@@ -167,11 +189,14 @@ cmd /c build.bat
 3. 重启 PIMELauncher 和 `server.exe`，不需要注销 Windows
 4. 复现原始失败路径
 5. 检查 `%LOCALAPPDATA%\PIME\Logs\go_backend.log`
-6. 检查 CodeIntegrity Operational 日志
+6. 检查 CodeIntegrity Operational 日志（注意区分：本机 SAC 强制模式下，未签名 `server.exe` 的 3033/3077 为审计记录；Bonjour/Keyman 等第三方事件与 YIME 无关，先看事件消息中的文件路径再定性）
 
 语言栏或 TSF 问题必须在安装态至少复现一次；不能用源码目录中的临时 EXE 代替。
 
-2026-07-11 的未签名开发包已完成一次真实安装验证：安装到 `C:\Program Files (x86)\YIME`，输入响应正常，用户词“云笺试码”和“笺砚验码”应用后可在活动会话直接出词。该记录证明核心路径，不替代重启、自启动、全部工具和三模式的完整清单。
+### 8.3 已完成的验证记录
+
+- 2026-07-11：未签名开发包真实安装验证，输入响应正常，用户词“云笺试码”“笺砚验码”应用后活动会话直接出词。
+- 2026-07-12：完整安装态清单逐项跑完并留痕（[YIME_INSTALL_VERIFICATION_2026-07-12.md](YIME_INSTALL_VERIFICATION_2026-07-12.md)）——重启后干净全量重装、三件哈希构建↔安装全一致、重启自启动实测（开机 27 秒内自动拉起）、7 工具入口不崩、TIP 注册与真实组词日志、CodeIntegrity 核查、runtimechange 协议 `-race` 全绿。签名完成后须以该文档为模板复跑留新档。
 
 ## 9. 修改类型与最低验证
 

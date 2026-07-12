@@ -269,7 +269,9 @@ setCandidatePageSize(size)
 ├── 基础设施
 │   ├── 子模块 fork 推送流程 ✅
 │   ├── 注册表/profile 清理脚本 ✅
-│   └── CI checkout 子模块修复 ✅
+│   ├── CI checkout 子模块修复 ✅
+│   ├── Win32 PIMELauncher 重建链路修复（Corrosion v0.6.1 + i686 工具链锁定）✅
+│   └── 安装态验证清单跑完留痕（2026-07-12，仅剩签名）✅
 │
 待规划
 └── Phase 5 后续改进
@@ -294,6 +296,10 @@ setCandidatePageSize(size)
 | 安装验证 | 必须确认 server.exe 时间戳已更新并重启进程 | 源码修复"不生效" |
 | 重新安装脚本 | `Reinstall-PIME-Test.cmd` 不可简化 | DLL 锁检测失效 |
 | 子模块推送顺序 | bump 子模块指针前，先把 commit 推到 fork remote | CI checkout 失败 |
+| Win32 Rust 工具链 | `Rust_TOOLCHAIN=stable-i686-pc-windows-msvc` 固定不可取消 | build-script 链接错，PIMELauncher 无法重建 |
+| github 拉取走代理 | git/cmake 不读系统代理，需设 `HTTPS_PROXY=http://127.0.0.1:1081` | FetchContent 克隆 Corrosion 超时 |
+| DLL 被锁走就地安装 | explorer 加载 DLL 时就地安装是设计行为；干净重装先重启 | 误判重装失败、强杀 explorer |
+| CI 日志先看路径 | 3033/3077 事件先核对文件路径；SAC 审计未签名 `server.exe` 不是崩溃 | 把第三方噪声或审计记录误判为 YIME 故障 |
 
 ### 子模块推送（CI 必做）
 

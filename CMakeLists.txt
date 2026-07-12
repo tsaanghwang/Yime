@@ -55,10 +55,23 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/PIMETextService)
 if("${CMAKE_SIZEOF_VOID_P}" EQUAL "4")
     include(FetchContent)
 
+    # Pin the Rust toolchain to the 32-bit (i686) host so that host == target ==
+    # i686-pc-windows-msvc (target set by PIMELauncher/.cargo/config.toml). This
+    # AVOIDS cross-compilation: with an x86_64 host, Corrosion (even v0.6.1) leaks
+    # the i686 target MSVC lib paths into the host-side build-scripts / proc-macros
+    # (serde, getrandom, proc-macro2, ...), producing LNK4272 machine-type conflicts
+    # and 145+ unresolved externals. With an i686 host there is no host/target split
+    # and build-scripts link correctly. Requires: rustup toolchain install
+    # stable-i686-pc-windows-msvc  (i686 binaries run on x64 Windows via WoW64).
+    set(Rust_TOOLCHAIN "stable-i686-pc-windows-msvc" CACHE STRING "Rust toolchain for 32-bit PIMELauncher build")
+
+    # Corrosion v0.6.1 (2026-01-17) fixes host linker detection for build-scripts
+    # and proc-macros and adds CORROSION_HOST_TARGET_LINKER. v0.6.1 is the latest
+    # release as of 2026-07.
     FetchContent_Declare(
         Corrosion
         GIT_REPOSITORY https://github.com/corrosion-rs/corrosion.git
-        GIT_TAG v0.6 # Optionally specify a commit hash, version tag or branch here
+        GIT_TAG v0.6.1
     )
     FetchContent_MakeAvailable(Corrosion)
 

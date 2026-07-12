@@ -23,7 +23,7 @@ Yime 已从“功能基本可用但工具链和安装态边界不稳定”进入
 | 构建与打包 | 稳定 | 8 个 Go EXE 可复现、统一图标、包内不携带 Go 源码 |
 | CI 与测试 | 完整度较高 | Go、Rust、CTest 和发布守卫均进入流水线 |
 | 正式签名发布 | 流程已具备 | 尚需真实受信任证书和签名产物验证 |
-| 安装态验证 | 核心通过 | 未签名开发包已完成真实安装、输入和用户词库即时生效验证；完整工具/重启清单仍需继续 |
+| 安装态验证 | 清单已跑完 | 2026-07-12 完成逐项验证并留痕：干净全量重装、哈希全同步、重启自启动实测、7 工具入口、TIP 注册与真实组词日志、CodeIntegrity 审计核查、runtimechange 协议；详见[安装态验证留痕](YIME_INSTALL_VERIFICATION_2026-07-12.md) |
 
 ## 2. 两轮评估已处理事项
 
@@ -59,6 +59,7 @@ Yime 已从“功能基本可用但工具链和安装态边界不稳定”进入
 - 应用用户词库前同步三套共享 schema 到用户目录，升级遗留的 `custom_phrase` 引用不会再阻断 full/shorthand 用户词。
 - 修复反查加载测试 fixture：单一等长真源重构后 `full` 列需为 4 的倍数，旧 `b`/`zh` 短码改为 `~~dd`/`zzzz` 等合规等长码。
 - 配置本机 MSYS2 UCRT64 GCC 16.1.0（`go env CC` 持久化），`go test -race ./...` 全量通过，补齐此前缺失的竞态检测完成证明。
+- 修复 Win32 `PIMELauncher` 重建链路：Corrosion 升级到 v0.6.1 并在根 `CMakeLists.txt` 固定 `Rust_TOOLCHAIN=stable-i686-pc-windows-msvc`（host==target==i686，消除跨编译时 build-script 被链 i686 库导致的 LNK4272/145 个未解析符号）；前置为 `rustup toolchain install stable-i686-pc-windows-msvc`。
 
 ## 3. 固化的架构约束
 
@@ -102,11 +103,11 @@ git diff --check
 - 上一轮远端 GitHub Actions 构建成功。
 - 2026-07-11 使用未签名开发包完成真实安装；Go + Win32 输入路径响应流畅，新增“云笺试码”“笺砚验码”后可在活动会话直接出词。
 - 2026-07-12 C++/TSF DLL 调试链路就绪：CMake 新增 `PIME_RELEASE_DEBUG_INFO` 选项（默认 `ON`）持久化 Release PDB 生成（`/Zi` + 链接器 `/DEBUG`，去重追加、重复 configure 不累积）；`go test -race ./...` 复跑全绿；`.vscode/launch.json` 提供 `Debug PMERpcResponseTests`、`Debug IME in charmap (x64)` launch 配置，已用 `Reinstall-PIME-Test.cmd` 安装带符号开发包。Win11 `notepad.exe` 为重定向存根，调试改用 `charmap.exe`；cpptools 1.33.4 的 `pickProcess` 在 Cursor 里 attach 失败，需 attach 时用 VS Code。详见 [测试指南 §6.1](YIME_TESTING_GUIDE.md)。
+- 2026-07-12 安装态验证清单逐项跑完并留痕（[验证留痕](YIME_INSTALL_VERIFICATION_2026-07-12.md)）：重启后干净全量重装通过，`PIMELauncher.exe`/x86 DLL/x64 DLL 构建↔安装哈希全一致；重启自启动实测（开机 27 秒内 PIMELauncher 自动拉起）；7 个工具入口启动不崩且 SAC 强制模式未阻止；TSF TIP 注册指向安装 DLL，`go_backend.log` 有真实组词/选词/上屏与语言栏模式按钮更新记录；CodeIntegrity 无 3118，历史 3033/3077 为未签名 `server.exe` 的 SAC 审计（当前已放行、14h+ 无新增）；runtimechange 与全 yime 包 `-race -count=1` 全绿。
 
 未纳入本轮完成证明：
 
-- 可信签名验证：本机没有用于本次构建的正式发布证书。
-- 完整安装态清单：核心安装、输入和用户词库已通过；重启自启动、全部工具入口和三种模式仍需逐项留痕。
+- 可信签名验证：本机没有用于本次构建的正式发布证书。这是发布前唯一剩余的硬性门禁。
 
 ## 5. 开发版与发行版边界
 
@@ -124,11 +125,13 @@ git diff --check
 
 ### 发布前必须完成
 
-- 使用可信签名服务或证书生成一次完整签名安装包，并运行 `tools/verify-release-signatures.ps1 -IncludeInstaller`。
-- 通过标准 `Reinstall-PIME-Test.cmd` 安装，核对构建与安装文件哈希。
-- 在记事本等真实 TSF 宿主中验证激活、组字、选词、三个语言栏按钮和所有工具入口。
-- 检查 CodeIntegrity 日志没有新增 3033、3077 或 3118 阻止事件。
-- 验证设置“应用并重建”和用户词库应用后，已有输入会话无需注销即可刷新。
+- 使用可信签名服务或证书生成一次完整签名安装包，并运行 `tools/verify-release-signatures.ps1 -IncludeInstaller`。（唯一未完成项）
+- ~~通过标准 `Reinstall-PIME-Test.cmd` 安装，核对构建与安装文件哈希。~~ 2026-07-12 完成：干净全量重装，三件哈希构建↔安装全一致。
+- ~~在真实 TSF 宿主中验证激活、组字、选词、语言栏按钮和所有工具入口。~~ 2026-07-12 完成：`go_backend.log` 真实组词/上屏证据 + 7 工具入口启动验证。
+- ~~检查 CodeIntegrity 日志没有新增 3033、3077 或 3118 阻止事件。~~ 2026-07-12 完成：无 3118；3033/3077 为未签名开发包的 SAC 审计（签名后应复查归零）。
+- ~~验证设置“应用并重建”和用户词库应用后，已有输入会话无需注销即可刷新。~~ 2026-07-12 完成：runtimechange 协议 `-race -count=1` 全绿（协议层）；2026-07-11 已有活动会话直接出词的安装态实证。
+
+签名完成后需复跑一次上述清单（签名会改变全部二进制哈希与 SAC 信誉状态），以[验证留痕](YIME_INSTALL_VERIFICATION_2026-07-12.md)为模板留新档。
 
 ### 可接受的开发期限制
 
@@ -136,6 +139,8 @@ git diff --check
 - Go race detector 依赖本机 MSYS2 UCRT64 GCC；`go env CC` 已持久化指向 `C:\msys64\ucrt64\bin\gcc.exe`，CI 仍需在具备 C 工具链的 runner 上才能执行 `-race`。不得删除现有并发压力测试。
 - 真实 Rime 集成测试继续显式启用，避免普通测试共享本机 librime 全局状态。
 - C++ 调试在 Cursor 里仅 launch 可用；cpptools 1.33.4 的 `pickProcess` 与 Cursor QuickPick 不兼容，attach 配置需在 VS Code 里运行。`ms-vscode.cpptools` 不在 Cursor 的 Open VSX 市场，需从 VS Code Marketplace 下载 win32-x64 VSIX 离线安装。
+- Win32 `build/` 树重建依赖 `rustup toolchain install stable-i686-pc-windows-msvc`（`CMakeLists.txt` 已固定 `Rust_TOOLCHAIN`）；命令行 configure 需要重新拉取 Corrosion 时须设 `HTTPS_PROXY=http://127.0.0.1:1081`（本机 git/cmake 不读 WinINET 系统代理）。
+- 本机 Smart App Control 为强制模式；未签名 `server.exe` 会产生 CodeIntegrity 3033/3077 审计事件（当前已放行）。在其它 SAC/WDAC 强制机上未签名开发包可能被直接阻止。
 
 ## 7. 文档维护规则
 
