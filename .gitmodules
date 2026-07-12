@@ -1,12 +1,12 @@
 [submodule "python/input_methods/rime/brise"]
 	path = python/input_methods/rime/brise
-	url = https://github.com/tsaanghwang/brise.git
+	url = https://github.com/rime/brise.git
 [submodule "libIME2"]
 	path = libIME2
 	url = https://github.com/tsaanghwang/libIME2.git
 [submodule "libchewing"]
 	path = libchewing
-	url = https://github.com/chewing/libchewing.git
+	url = https://github.com/tsaanghwang/libchewing.git
 [submodule "McBopomofoWeb"]
 	path = McBopomofoWeb
 	url = https://github.com/tsaanghwang/McBopomofoWeb.git

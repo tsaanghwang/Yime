@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.11)
+cmake_minimum_required(VERSION 3.5...4.0)
 
 # override default c/c++ flags, add /MT to link VC++ runtime statically.
 # NOTE: these two lines should go before the project() command according to CMake FAQ:

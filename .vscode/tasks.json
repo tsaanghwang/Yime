@@ -209,6 +209,25 @@
         "cwd": "${workspaceFolder}"
       },
       "problemMatcher": []
+    },
+    {
+      // 用于附加调试前自动打开经典记事本。
+      // 使用 process 类型直接运行 powershell，避免不同默认 shell（cmd/git-bash）下
+      // start/引号转义差异导致静默失效。Start-Process 不等待，powershell 随即退出，
+      // preLaunchTask 得以完成、调试继续；记事本作为独立进程保留。
+      // 本机 notepad.exe 是经典记事本（非重定向存根），可正常常驻并被附加。
+      "label": "PIME: open notepad for IME debug",
+      "type": "process",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "Start-Process notepad.exe"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
     }
   ]
 }

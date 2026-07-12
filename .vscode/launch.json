@@ -1,24 +1,70 @@
 {
-  "version": "0.2.0",
-  "configurations": [
-    {
-      "name": "PIME Python backend",
-      "type": "debugpy",
-      "request": "launch",
-      "program": "${workspaceFolder}/python/server.py",
-      "console": "integratedTerminal",
-      "cwd": "${workspaceFolder}"
-    },
-    {
-      "name": "PIME Node backend",
-      "type": "node",
-      "request": "launch",
-      "program": "${workspaceFolder}/node/server.js",
-      "cwd": "${workspaceFolder}",
-      "console": "integratedTerminal",
-      "skipFiles": [
-        "<node_internals>/**"
-      ]
-    }
-  ]
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "PIME Python backend",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/python/server.py",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "name": "PIME Node backend",
+            "type": "node",
+            "request": "launch",
+            "program": "${workspaceFolder}/node/server.js",
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "skipFiles": ["<node_internals>/**"]
+        },
+        {
+            // 直接启动 gtest 风格的可执行测试，用于调试 RPC/菜单 JSON 回归用例。
+            "name": "Debug PMERpcResponseTests (x64 Release)",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build64/PIMETextService/Release/PIMERpcResponseTests.exe",
+            "args": [],
+            "cwd": "${workspaceFolder}/build64/PIMETextService/Release",
+            "console": "integratedTerminal",
+            "symbolSearchPath": "${workspaceFolder}/build64/PIMETextService/Release;${workspaceFolder}/build/PIMETextService/Release"
+        },
+        {
+            // 以调试器启动经典记事本：调试器从一开始就附加在 notepad 上。
+            // 在记事本里切到「音元」输入法并按键后，已注册的 PIMETextService.dll 会被加载，断点命中。
+            // 前置：已用 Reinstall-PIME-Test.cmd 安装与 build64 同位的开发包。
+            // 注：本机 C:\Windows\System32\notepad.exe 是经典记事本(360448 字节，非重定向存根)，
+            // 可正常被调试器启动并常驻，断点已验证可命中。
+            "name": "Debug IME in notepad (x64)",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "C:\\Windows\\System32\\notepad.exe",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "stopAtEntry": false,
+            "symbolSearchPath": "${workspaceFolder}/build64/PIMETextService/Release;${workspaceFolder}/build/PIMETextService/Release"
+        },
+        {
+            // 附加到已加载 PIMETextService.dll 的宿主进程
+            // （ctfmon.exe / TextInputHost.exe / 记事本等）。先在目标应用里激活音元输入法再附加。
+            "name": "Attach to PIMETextService host (TSF)",
+            "type": "cppvsdbg",
+            "request": "attach",
+            "processId": "${command:pickProcess}",
+            "symbolSearchPath": "${workspaceFolder}/build64/PIMETextService/Release;${workspaceFolder}/build/PIMETextService/Release"
+        },
+        {
+            // 推荐的附加流程：启动本配置会先自动打开经典记事本（preLaunchTask），
+            // 然后弹出进程选择框——在列表里筛选并选择刚打开的 notepad.exe 即可附加。
+            // 附加后在记事本里切换到「音元」输入法，PIMETextService.dll 便会载入并命中断点。
+            // 前置条件：已用 Reinstall-PIME-Test.cmd 安装与 build64 同位的开发包（x64 DLL 已核对一致）。
+            "name": "Attach to PIMETextService in notepad (x64)",
+            "type": "cppvsdbg",
+            "request": "attach",
+            "processId": "${command:pickProcess}",
+            "preLaunchTask": "PIME: open notepad for IME debug",
+            "symbolSearchPath": "${workspaceFolder}/build64/PIMETextService/Release;${workspaceFolder}/build/PIMETextService/Release"
+        }
+    ]
 }
