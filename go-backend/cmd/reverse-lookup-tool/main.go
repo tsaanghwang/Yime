@@ -391,6 +391,10 @@ func createControlEx(exStyle int32, className, text string, style int32, box rec
 }
 
 func (state *appState) wndProc(hwnd syscall.Handle, message uint32, wParam, lParam uintptr) uintptr {
+	if shouldPresentForWindowMessage(message) {
+		state.presentMainWindow()
+		return 0
+	}
 	switch message {
 	case 0x0111: // WM_COMMAND
 		procPostMessageW.Call(uintptr(state.mainHWND), wmAppCommand, wParam, lParam)
@@ -407,18 +411,9 @@ func (state *appState) wndProc(hwnd syscall.Handle, message uint32, wParam, lPar
 	case wmAppSearchDone:
 		state.onSearchDone()
 		return 0
-	case win32ui.WmDeferredPresent:
-		state.presentMainWindow()
-		return 0
 	case 0x0006: // WM_ACTIVATE
 		if win32ui.IsActivateMessage(wParam) {
 			win32ui.RedrawChildrenNow(state.mainHWND)
-		}
-		ret, _, _ := procDefWindowProcW.Call(uintptr(hwnd), uintptr(message), wParam, lParam)
-		return ret
-	case 0x0018: // WM_SHOWWINDOW
-		if wParam != 0 && lParam == 0 {
-			state.presentMainWindow()
 		}
 		ret, _, _ := procDefWindowProcW.Call(uintptr(hwnd), uintptr(message), wParam, lParam)
 		return ret
@@ -430,6 +425,10 @@ func (state *appState) wndProc(hwnd syscall.Handle, message uint32, wParam, lPar
 	}
 	ret, _, _ := procDefWindowProcW.Call(uintptr(hwnd), uintptr(message), wParam, lParam)
 	return ret
+}
+
+func shouldPresentForWindowMessage(message uint32) bool {
+	return win32ui.IsDeferredPresentMessage(message)
 }
 
 func (state *appState) presentMainWindow() {

@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/EasyIME/pime-go/input_methods/yime/reverselookup"
+	"github.com/EasyIME/pime-go/input_methods/yime/win32ui"
 )
 
 func TestAdjustWeightValue(t *testing.T) {
@@ -109,5 +110,14 @@ func TestNoticeTitleForFlags(t *testing.T) {
 		if got := noticeTitleForFlags(test.flags); got != test.want {
 			t.Fatalf("noticeTitleForFlags(%#x) = %q, want %q", test.flags, got, test.want)
 		}
+	}
+}
+
+func TestShowWindowDoesNotReenterPresentation(t *testing.T) {
+	if !shouldPresentForWindowMessage(win32ui.WmDeferredPresent) {
+		t.Fatal("the explicit deferred-present message must present the window")
+	}
+	if shouldPresentForWindowMessage(0x0018) { // WM_SHOWWINDOW
+		t.Fatal("WM_SHOWWINDOW must not reenter PresentMainWindow")
 	}
 }
