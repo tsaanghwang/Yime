@@ -34,7 +34,20 @@ if errorlevel 1 (
 :cmake_found
 
 call "%VS_DEV_CMD%" -arch=x86 -host_arch=x64 >nul || exit /b 1
-"%CMAKE_EXE%" . -Bbuild -G "Visual Studio 17 2022" -A Win32 -DCMAKE_POLICY_VERSION_MINIMUM=3.5 || exit /b 1
+rem Older Win32 build trees were configured before this script passed an explicit
+rem generator platform. CMake records those as an empty platform even though the
+rem generated solution and binaries are Win32, and rejects a later -A Win32 as a
+rem platform mismatch. Reuse only that legacy empty-platform cache; new build
+rem trees and caches with an explicit platform continue to require Win32.
+set "WIN32_CMAKE_PLATFORM=-A Win32"
+if exist "build\CMakeCache.txt" (
+	%SystemRoot%\System32\findstr.exe /x /c:"CMAKE_GENERATOR_PLATFORM:INTERNAL=" "build\CMakeCache.txt" >nul
+	if not errorlevel 1 (
+		echo Reusing legacy Win32 CMake cache with an empty generator-platform field.
+		set "WIN32_CMAKE_PLATFORM="
+	)
+)
+"%CMAKE_EXE%" . -Bbuild -G "Visual Studio 17 2022" %WIN32_CMAKE_PLATFORM% -DCMAKE_POLICY_VERSION_MINIMUM=3.5 || exit /b 1
 "%CMAKE_EXE%" --build build --config Release --target PIMETextService || exit /b 1
 call :build_pimelauncher || exit /b 1
 

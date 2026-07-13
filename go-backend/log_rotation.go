@@ -76,29 +76,42 @@ func (w *rotatingLogWriter) Close() error {
 	return err
 }
 
-func (w *rotatingLogWriter) rotate() error {
-	if err := w.file.Close(); err != nil {
+func (w *rotatingLogWriter) rotate() (err error) {
+	if err = w.file.Close(); err != nil {
+		w.file = nil
+		if reopenErr := w.open(); reopenErr != nil {
+			return fmt.Errorf("close log for rotation: %v; reopen log: %w", err, reopenErr)
+		}
 		return err
 	}
 	w.file = nil
+	defer func() {
+		if err == nil || w.file != nil {
+			return
+		}
+		if reopenErr := w.open(); reopenErr != nil {
+			err = fmt.Errorf("%v; reopen log after failed rotation: %w", err, reopenErr)
+		}
+	}()
 	if w.maxBackups == 0 {
-		if err := os.Remove(w.path); err != nil && !os.IsNotExist(err) {
+		if err = os.Remove(w.path); err != nil && !os.IsNotExist(err) {
 			return err
 		}
 	} else {
-		if err := os.Remove(backupLogPath(w.path, w.maxBackups)); err != nil && !os.IsNotExist(err) {
+		if err = os.Remove(backupLogPath(w.path, w.maxBackups)); err != nil && !os.IsNotExist(err) {
 			return err
 		}
 		for i := w.maxBackups - 1; i >= 1; i-- {
-			if err := renameIfExists(backupLogPath(w.path, i), backupLogPath(w.path, i+1)); err != nil {
+			if err = renameIfExists(backupLogPath(w.path, i), backupLogPath(w.path, i+1)); err != nil {
 				return err
 			}
 		}
-		if err := renameIfExists(w.path, backupLogPath(w.path, 1)); err != nil {
+		if err = renameIfExists(w.path, backupLogPath(w.path, 1)); err != nil {
 			return err
 		}
 	}
-	return w.open()
+	err = w.open()
+	return err
 }
 
 func backupLogPath(path string, index int) string { return fmt.Sprintf("%s.%d", path, index) }

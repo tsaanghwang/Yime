@@ -34,8 +34,6 @@ const (
 	idPageSizeCombo = 102
 	idReverseCombo  = 103
 	idLayoutCombo   = 104
-	idSummaryLabel  = 105
-	idStatusLabel   = 106
 	idBtnApply      = 201
 	idBtnApplyBuild = 202
 	idBtnOpenUser   = 203
@@ -102,16 +100,26 @@ type rect struct{ Left, Top, Right, Bottom int32 }
 
 type initCommonControlsEx struct{ Size, ICC uint32 }
 
+type settingsUILayout struct {
+	clientW, clientH               int32
+	schemaLabel, schemaCombo       rect
+	pageLabel, pageCombo           rect
+	reverseLabel, reverseCombo     rect
+	layoutLabel, layoutCombo       rect
+	applyButton, applyBuildButton  rect
+	openUserButton, openHelpButton rect
+}
+
 type appState struct {
 	userDir, sharedDir, helpDir string
 
-	mainHWND, schemaHWND, pageHWND, reverseHWND, layoutHWND, summaryHWND, statusHWND syscall.Handle
-	schemaOptions                                                                    []settings.SchemaOption
+	mainHWND, schemaHWND, pageHWND, reverseHWND, layoutHWND syscall.Handle
+	schemaOptions                                           []settings.SchemaOption
+	layout                                                  settingsUILayout
 
-	applyMu                 sync.Mutex
-	applyRunning            bool
-	applyErr                error
-	applyCompletedWithBuild bool
+	applyMu      sync.Mutex
+	applyRunning bool
+	applyErr     error
 }
 
 type applyRequest struct {
@@ -154,6 +162,7 @@ func runApp(state *appState) error {
 	if win32ui.ActivateExistingWindow("YimeSettingsTool") {
 		return nil
 	}
+	state.layout = buildSettingsUILayout(state.helpDir != "")
 
 	icc := initCommonControlsEx{Size: uint32(unsafe.Sizeof(initCommonControlsEx{})), ICC: 0x000000FF}
 	procInitCommonControlsEx.Call(uintptr(unsafe.Pointer(&icc)))
@@ -179,7 +188,7 @@ func runApp(state *appState) error {
 		return fmt.Errorf("RegisterClassEx failed")
 	}
 	title, _ := syscall.UTF16PtrFromString("Yime 设置")
-	winW, winH := windowSizeForClient(820, 680)
+	winW, winH := windowSizeForClient(state.layout.clientW, state.layout.clientH)
 	screenWidth, _, _ := procGetSystemMetrics.Call(0)
 	screenHeight, _, _ := procGetSystemMetrics.Call(1)
 	x := (int32(screenWidth) - winW) / 2
@@ -208,10 +217,12 @@ func runApp(state *appState) error {
 }
 
 func (state *appState) createControls() {
-	createStatic(state.mainHWND, "Yime 设置面板", rect{16, 16, 760, 42}, 0)
-	createStatic(state.mainHWND, "此面板把设置相关工作从输入法回调路径中拆出。它会写入 Yime 已使用的同一套运行时文件。", rect{16, 48, 770, 92}, 0)
-	createStatic(state.mainHWND, "输入方案", rect{36, 138, 156, 158}, 0)
-	state.schemaHWND = createCombo(state.mainHWND, rect{160, 134, 340, 260}, idSchemaCombo)
+	// The window caption already identifies this as the Yime settings panel.
+	// Developer note: this standalone panel keeps settings work out of the
+	// input-method callback path and writes the same runtime files Yime consumes.
+	l := state.layout
+	createStatic(state.mainHWND, "输入方案", l.schemaLabel, 0)
+	state.schemaHWND = createCombo(state.mainHWND, l.schemaCombo, idSchemaCombo)
 	for _, option := range state.schemaOptions {
 		if !option.Enabled {
 			continue
@@ -219,32 +230,80 @@ func (state *appState) createControls() {
 		text, _ := syscall.UTF16PtrFromString(option.Label)
 		procSendMessageW.Call(uintptr(state.schemaHWND), 0x0143, 0, uintptr(unsafe.Pointer(text)))
 	}
-	createStatic(state.mainHWND, "候选项数", rect{36, 188, 156, 208}, 0)
-	state.pageHWND = createCombo(state.mainHWND, rect{160, 184, 340, 310}, idPageSizeCombo)
+	createStatic(state.mainHWND, "候选项数", l.pageLabel, 0)
+	state.pageHWND = createCombo(state.mainHWND, l.pageCombo, idPageSizeCombo)
 	for size := 5; size <= 9; size++ {
 		text, _ := syscall.UTF16PtrFromString(fmt.Sprintf("%d", size))
 		procSendMessageW.Call(uintptr(state.pageHWND), 0x0143, 0, uintptr(unsafe.Pointer(text)))
 	}
-	createStatic(state.mainHWND, "显示编码", rect{36, 238, 156, 258}, 0)
-	state.reverseHWND = createCombo(state.mainHWND, rect{160, 234, 340, 360}, idReverseCombo)
+	createStatic(state.mainHWND, "显示编码", l.reverseLabel, 0)
+	state.reverseHWND = createCombo(state.mainHWND, l.reverseCombo, idReverseCombo)
 	for _, option := range settings.ReverseLookupOptions() {
 		text, _ := syscall.UTF16PtrFromString(option.Label)
 		procSendMessageW.Call(uintptr(state.reverseHWND), 0x0143, 0, uintptr(unsafe.Pointer(text)))
 	}
-	createStatic(state.mainHWND, "候选排列", rect{36, 288, 156, 308}, 0)
-	state.layoutHWND = createCombo(state.mainHWND, rect{160, 284, 340, 410}, idLayoutCombo)
+	createStatic(state.mainHWND, "候选排列", l.layoutLabel, 0)
+	state.layoutHWND = createCombo(state.mainHWND, l.layoutCombo, idLayoutCombo)
 	for _, option := range settings.CandidateLayoutOptions() {
 		text, _ := syscall.UTF16PtrFromString(option.Label)
 		procSendMessageW.Call(uintptr(state.layoutHWND), 0x0143, 0, uintptr(unsafe.Pointer(text)))
 	}
-	state.summaryHWND = createStatic(state.mainHWND, "", rect{16, 360, 770, 400}, idSummaryLabel)
-	createButton(state.mainHWND, "应用", rect{16, 430, 120, 458}, idBtnApply)
-	createButton(state.mainHWND, "应用并重建", rect{132, 430, 260, 458}, idBtnApplyBuild)
-	createButton(state.mainHWND, "打开用户目录", rect{276, 430, 404, 458}, idBtnOpenUser)
+	// The selected controls already show the current configuration; do not
+	// duplicate it in a developer-oriented "current configuration" summary.
+	createButton(state.mainHWND, "应用", l.applyButton, idBtnApply)
+	createButton(state.mainHWND, "应用并重建", l.applyBuildButton, idBtnApplyBuild)
+	createButton(state.mainHWND, "打开用户目录", l.openUserButton, idBtnOpenUser)
 	if state.helpDir != "" {
-		createButton(state.mainHWND, "设置说明", rect{420, 430, 548, 458}, idBtnOpenHelp)
+		createButton(state.mainHWND, "设置说明", l.openHelpButton, idBtnOpenHelp)
 	}
-	state.statusHWND = createStatic(state.mainHWND, "就绪。", rect{16, 470, 770, 510}, idStatusLabel)
+}
+
+func buildSettingsUILayout(withHelp bool) settingsUILayout {
+	const (
+		margin     = int32(16)
+		labelW     = int32(96)
+		comboW     = int32(220)
+		rowH       = int32(26)
+		rowGap     = int32(12)
+		controlGap = int32(8)
+		buttonH    = int32(30)
+		buttonGap  = int32(8)
+	)
+	l := settingsUILayout{}
+	labelX := margin
+	comboX := labelX + labelW + controlGap
+	row := func(index int32) (rect, rect) {
+		y := margin + index*(rowH+rowGap)
+		return rect{labelX, y + 4, labelX + labelW, y + rowH}, rect{comboX, y, comboX + comboW, y + 126}
+	}
+	l.schemaLabel, l.schemaCombo = row(0)
+	l.pageLabel, l.pageCombo = row(1)
+	l.reverseLabel, l.reverseCombo = row(2)
+	l.layoutLabel, l.layoutCombo = row(3)
+
+	buttonY := margin + 4*(rowH+rowGap) + 8
+	x := margin
+	button := func(width int32) rect {
+		result := rect{x, buttonY, x + width, buttonY + buttonH}
+		x = result.Right + buttonGap
+		return result
+	}
+	l.applyButton = button(84)
+	l.applyBuildButton = button(116)
+	l.openUserButton = button(116)
+	if withHelp {
+		l.openHelpButton = button(100)
+	}
+	contentRight := l.openUserButton.Right
+	if withHelp {
+		contentRight = l.openHelpButton.Right
+	}
+	if l.layoutCombo.Right > contentRight {
+		contentRight = l.layoutCombo.Right
+	}
+	l.clientW = contentRight + margin
+	l.clientH = l.applyButton.Bottom + margin
+	return l
 }
 
 func (state *appState) refreshView() {
@@ -253,7 +312,6 @@ func (state *appState) refreshView() {
 	setComboByText(state.pageHWND, fmt.Sprintf("%d", settings.NormalizePageSizeValue(snapshot.PageSize)))
 	setComboByValue(state.reverseHWND, settings.ReverseLookupOptions(), snapshot.ReverseLookupMode)
 	setComboByValue(state.layoutHWND, settings.CandidateLayoutOptions(), snapshot.CandidateLayout)
-	setWindowText(state.summaryHWND, settings.SummaryText(snapshot))
 }
 
 func (state *appState) wndProc(hwnd syscall.Handle, message uint32, wParam, lParam uintptr) uintptr {
@@ -284,7 +342,7 @@ func (state *appState) wndProc(hwnd syscall.Handle, message uint32, wParam, lPar
 		return ret
 	case 0x0010: // WM_CLOSE
 		if state.isApplyRunning() {
-			setWindowText(state.statusHWND, "正在应用设置，请等待完成后再关闭。")
+			showInfo("正在应用设置，请等待完成后再关闭。")
 			return 0
 		}
 		procPostQuitMessage.Call(0)
@@ -328,12 +386,11 @@ func (state *appState) startApply(runBuild bool) {
 		layout:      selectedComboValue(state.layoutHWND, settings.CandidateLayoutOptions()),
 		runBuild:    runBuild,
 	}
-	setWindowText(state.statusHWND, "正在应用设置，请稍候……")
+	setWindowText(state.mainHWND, "Yime 设置（正在应用……）")
 	go func() {
 		err := executeApply(state.userDir, state.sharedDir, request)
 		state.applyMu.Lock()
 		state.applyErr = err
-		state.applyCompletedWithBuild = runBuild
 		state.applyMu.Unlock()
 		procPostMessageW.Call(uintptr(state.mainHWND), wmAppApplyDone, 0, 0)
 	}()
@@ -356,21 +413,16 @@ func executeApply(userDir, sharedDir string, request applyRequest) error {
 func (state *appState) finishApply() {
 	state.applyMu.Lock()
 	err := state.applyErr
-	runBuild := state.applyCompletedWithBuild
 	state.applyErr = nil
 	state.applyRunning = false
 	state.applyMu.Unlock()
 	if err != nil {
+		setWindowText(state.mainHWND, "Yime 设置")
 		showError(err.Error())
-		setWindowText(state.statusHWND, "应用失败。")
 		return
 	}
 	state.refreshView()
-	if runBuild {
-		setWindowText(state.statusHWND, "已写入设置并执行构建；活动输入会话将在下一次操作前刷新。")
-	} else {
-		setWindowText(state.statusHWND, "已写入设置；显示设置将在活动输入会话的下一次操作前同步。")
-	}
+	setWindowText(state.mainHWND, "Yime 设置")
 }
 
 func (state *appState) presentMainWindow() {
@@ -465,7 +517,9 @@ func createControl(className, text string, style int32, box rect, parent syscall
 	classPtr, _ := syscall.UTF16PtrFromString(className)
 	textPtr, _ := syscall.UTF16PtrFromString(text)
 	hwnd, _, _ := procCreateWindowExW.Call(0, uintptr(unsafe.Pointer(classPtr)), uintptr(unsafe.Pointer(textPtr)), uintptr(style), uintptr(box.Left), uintptr(box.Top), uintptr(box.Right-box.Left), uintptr(box.Bottom-box.Top), uintptr(parent), uintptr(id), 0, 0)
-	return syscall.Handle(hwnd)
+	control := syscall.Handle(hwnd)
+	win32ui.ApplyDefaultGUIFont(control)
+	return control
 }
 func windowSizeForClient(clientW, clientH int32) (int32, int32) {
 	r := rect{0, 0, clientW, clientH}
@@ -478,6 +532,11 @@ func showError(message string) {
 	text, _ := syscall.UTF16PtrFromString(message)
 	title, _ := syscall.UTF16PtrFromString("Yime 设置")
 	procMessageBoxW.Call(0, uintptr(unsafe.Pointer(text)), uintptr(unsafe.Pointer(title)), 0x10)
+}
+func showInfo(message string) {
+	text, _ := syscall.UTF16PtrFromString(message)
+	title, _ := syscall.UTF16PtrFromString("Yime 设置")
+	procMessageBoxW.Call(0, uintptr(unsafe.Pointer(text)), uintptr(unsafe.Pointer(title)), 0x40)
 }
 func setWindowText(hwnd syscall.Handle, text string) {
 	ptr, _ := syscall.UTF16PtrFromString(text)

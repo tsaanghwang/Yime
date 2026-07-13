@@ -381,7 +381,9 @@ func createControl(className, text string, style int32, box rect, parent syscall
 		uintptr(box.Left), uintptr(box.Top), uintptr(width), uintptr(height),
 		uintptr(parent), uintptr(id), 0, 0,
 	)
-	return syscall.Handle(hwnd)
+	control := syscall.Handle(hwnd)
+	win32ui.ApplyDefaultGUIFont(control)
+	return control
 }
 
 func (state *appState) wndProc(hwnd syscall.Handle, message uint32, wParam, lParam uintptr) uintptr {

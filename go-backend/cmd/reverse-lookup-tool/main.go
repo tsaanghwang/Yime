@@ -27,6 +27,7 @@ const (
 
 	wsExControlparent  = 0x00010000
 	wsExAppwindow      = 0x00040000
+	wsExClientedge     = 0x00000200
 	wsOverlappedwindow = 0x00CF0000
 
 	swRestore    = 9
@@ -90,6 +91,8 @@ var (
 	procPostMessageW         = moduser32.NewProc("PostMessageW")
 	procShowWindow           = moduser32.NewProc("ShowWindow")
 	procUpdateWindow         = moduser32.NewProc("UpdateWindow")
+	procGetFocus             = moduser32.NewProc("GetFocus")
+	procGetParent            = moduser32.NewProc("GetParent")
 	procSetFocus             = moduser32.NewProc("SetFocus")
 	procSetForegroundWindow  = moduser32.NewProc("SetForegroundWindow")
 	procBringWindowToTop     = moduser32.NewProc("BringWindowToTop")
@@ -342,8 +345,8 @@ func runWin32App(state *appState) error {
 
 func (state *appState) createChildControls() {
 	l := state.layout
-	createControl("STATIC", "查询词条", 0x50000000, l.searchLabel, state.mainHWND, 0)
-	state.searchHWND = createControl("EDIT", "", 0x50210000, l.searchEdit, state.mainHWND, idSearchEdit)
+	createControl("STATIC", "输入", 0x50000000, l.searchLabel, state.mainHWND, 0)
+	state.searchHWND = createControlEx(wsExClientedge, "EDIT", "", 0x50210080, l.searchEdit, state.mainHWND, idSearchEdit)
 	state.containsHWND = createControl("BUTTON", "包含匹配", 0x50010003, l.containsCheck, state.mainHWND, idContainsCheck)
 	createControl("STATIC", "方案", 0x50000000, l.modeLabel, state.mainHWND, 0)
 	state.modeHWND = createControl("COMBOBOX", "", 0x50200000|cbsDropdownlist, l.modeCombo, state.mainHWND, idModeCombo)
@@ -366,19 +369,25 @@ func (state *appState) createChildControls() {
 }
 
 func createControl(className, text string, style int32, box rect, parent syscall.Handle, id int) syscall.Handle {
+	return createControlEx(0, className, text, style, box, parent, id)
+}
+
+func createControlEx(exStyle int32, className, text string, style int32, box rect, parent syscall.Handle, id int) syscall.Handle {
 	classPtr, _ := syscall.UTF16PtrFromString(className)
 	textPtr, _ := syscall.UTF16PtrFromString(text)
 	width := box.Right - box.Left
 	height := box.Bottom - box.Top
 	hwnd, _, _ := procCreateWindowExW.Call(
-		0,
+		uintptr(exStyle),
 		uintptr(unsafe.Pointer(classPtr)),
 		uintptr(unsafe.Pointer(textPtr)),
 		uintptr(style),
 		uintptr(box.Left), uintptr(box.Top), uintptr(width), uintptr(height),
 		uintptr(parent), uintptr(id), 0, 0,
 	)
-	return syscall.Handle(hwnd)
+	control := syscall.Handle(hwnd)
+	win32ui.ApplyDefaultGUIFont(control)
+	return control
 }
 
 func (state *appState) wndProc(hwnd syscall.Handle, message uint32, wParam, lParam uintptr) uintptr {
@@ -399,7 +408,7 @@ func (state *appState) wndProc(hwnd syscall.Handle, message uint32, wParam, lPar
 		state.onSearchDone()
 		return 0
 	case win32ui.WmDeferredPresent:
-		win32ui.PresentMainWindow(state.mainHWND)
+		state.presentMainWindow()
 		return 0
 	case 0x0006: // WM_ACTIVATE
 		if win32ui.IsActivateMessage(wParam) {
@@ -428,7 +437,7 @@ func (state *appState) presentMainWindow() {
 		return
 	}
 	win32ui.PresentMainWindow(state.mainHWND)
-	procSetFocus.Call(uintptr(state.searchHWND))
+	state.focusSearchIfNeeded()
 }
 
 func (state *appState) presentMainWindowAfterLaunch() {
@@ -436,7 +445,30 @@ func (state *appState) presentMainWindowAfterLaunch() {
 		return
 	}
 	win32ui.PresentMainWindowAfterLaunch(state.mainHWND)
+	state.focusSearchIfNeeded()
+}
+
+func (state *appState) focusSearchIfNeeded() {
+	if state.searchHWND == 0 {
+		return
+	}
+	focused, _, _ := procGetFocus.Call()
+	if focused != 0 && focused != uintptr(state.mainHWND) && isChildWindow(state.mainHWND, syscall.Handle(focused)) {
+		return
+	}
 	procSetFocus.Call(uintptr(state.searchHWND))
+	procSendMessageW.Call(uintptr(state.searchHWND), 0x00B1, 0, 0) // EM_SETSEL: caret at start.
+}
+
+func isChildWindow(parent, child syscall.Handle) bool {
+	for current := child; current != 0; {
+		if current == parent {
+			return true
+		}
+		next, _, _ := procGetParent.Call(uintptr(current))
+		current = syscall.Handle(next)
+	}
+	return false
 }
 
 func (state *appState) ensureMainWindowRestored() {

@@ -17,6 +17,7 @@ func TestReleasePipelineSignsPayloadInstallerAndUninstaller(t *testing.T) {
 	}
 	root := filepath.Clean(filepath.Join("..", "..", "..", ".."))
 	ci := read(filepath.Join(root, ".github", "workflows", "ci.yaml"))
+	rootBuildScript := read(filepath.Join(root, "build.bat"))
 	buildScript := read(filepath.Join(root, "go-backend", "build.bat"))
 	installer := read(filepath.Join(root, "installer", "installer.nsi"))
 	installer = strings.ReplaceAll(installer, "\r\n", "\n")
@@ -92,6 +93,15 @@ func TestReleasePipelineSignsPayloadInstallerAndUninstaller(t *testing.T) {
 	}
 	if count := strings.Count(buildScript, "--icon input_methods\\yime\\icon.ico"); count != 8 {
 		t.Fatalf("expected all 8 Go executables to embed the Yime icon, got %d", count)
+	}
+	for _, fragment := range []string{
+		`set "WIN32_CMAKE_PLATFORM=-A Win32"`,
+		`/c:"CMAKE_GENERATOR_PLATFORM:INTERNAL="`,
+		`%WIN32_CMAKE_PLATFORM% -DCMAKE_POLICY_VERSION_MINIMUM=3.5`,
+	} {
+		if !strings.Contains(rootBuildScript, fragment) {
+			t.Fatalf("root build script is missing legacy Win32 CMake-cache compatibility %q", fragment)
+		}
 	}
 	if !strings.Contains(buildScript, `for /r "%PACKAGE_DIR%\input_methods" %%F in (*.go)`) {
 		t.Fatal("package build must recursively remove copied Go source files")

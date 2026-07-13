@@ -102,10 +102,23 @@ set "APP_VERSION=1.0.0"
 if exist "%PIME_ROOT%\version.txt" set /p APP_VERSION=<"%PIME_ROOT%\version.txt"
 set "GO_REPRO_FLAGS=-trimpath -buildvcs=false"
 
+REM Prefer go-winres from PATH, then fall back to the standard GOPATH bin.
+REM Some launchers provide a malformed or incomplete user PATH even though the
+REM installed Go tool remains available under GOPATH\bin.
+set "GO_WINRES="
+for /f "delims=" %%I in ('where.exe go-winres.exe 2^>nul') do if not defined GO_WINRES set "GO_WINRES=%%~fI"
+if not defined GO_WINRES (
+    for /f "usebackq delims=" %%I in (`go env GOPATH`) do (
+        if exist "%%~fI\bin\go-winres.exe" set "GO_WINRES=%%~fI\bin\go-winres.exe"
+    )
+)
+if not defined GO_WINRES set "GO_WINRES=go-winres"
+
 echo [INFO] App version: %APP_VERSION%
+echo [INFO] go-winres: "%GO_WINRES%"
 
 echo [INFO] Generating Windows VERSIONINFO resources ...
-go-winres simply --arch amd64 --product-version "%APP_VERSION%" --file-version "%APP_VERSION%" --product-name "YIME" --file-description "PIME Go Backend Server" --original-filename "server.exe" --icon input_methods\yime\icon.ico --manifest cli --out rsrc_server
+"%GO_WINRES%" simply --arch amd64 --product-version "%APP_VERSION%" --file-version "%APP_VERSION%" --product-name "YIME" --file-description "PIME Go Backend Server" --original-filename "server.exe" --icon input_methods\yime\icon.ico --manifest cli --out rsrc_server
 if errorlevel 1 (
     echo [WARN] go-winres failed for server.exe, building without VERSIONINFO
     if exist rsrc_server_windows_amd64.syso del rsrc_server_windows_amd64.syso
@@ -125,7 +138,7 @@ if exist rsrc_server_windows_amd64.syso del rsrc_server_windows_amd64.syso
 echo [INFO] Built: "%SERVER_EXE%"
 
 echo [INFO] Generating Windows VERSIONINFO resources for reverse-lookup ...
-go-winres simply --arch amd64 --product-version "%APP_VERSION%" --file-version "%APP_VERSION%" --product-name "YIME" --file-description "Yime Reverse Lookup Tool" --original-filename "reverse-lookup.exe" --icon input_methods\yime\icon.ico --manifest gui --out cmd\reverse-lookup-tool\rsrc_reverse
+"%GO_WINRES%" simply --arch amd64 --product-version "%APP_VERSION%" --file-version "%APP_VERSION%" --product-name "YIME" --file-description "Yime Reverse Lookup Tool" --original-filename "reverse-lookup.exe" --icon input_methods\yime\icon.ico --manifest gui --out cmd\reverse-lookup-tool\rsrc_reverse
 if errorlevel 1 (
     echo [WARN] go-winres failed for reverse-lookup.exe, building without VERSIONINFO
     if exist cmd\reverse-lookup-tool\rsrc_reverse_windows_amd64.syso del cmd\reverse-lookup-tool\rsrc_reverse_windows_amd64.syso
@@ -145,7 +158,7 @@ if exist cmd\reverse-lookup-tool\rsrc_reverse_windows_amd64.syso del cmd\reverse
 echo [INFO] Built: "%REVERSE_LOOKUP_EXE%"
 
 echo [INFO] Generating Windows VERSIONINFO resources for tool-hub ...
-go-winres simply --arch amd64 --product-version "%APP_VERSION%" --file-version "%APP_VERSION%" --product-name "YIME" --file-description "Yime Tool Hub" --original-filename "tool-hub.exe" --icon input_methods\yime\icon.ico --manifest gui --out cmd\tool-hub\rsrc_hub
+"%GO_WINRES%" simply --arch amd64 --product-version "%APP_VERSION%" --file-version "%APP_VERSION%" --product-name "YIME" --file-description "Yime Tool Hub" --original-filename "tool-hub.exe" --icon input_methods\yime\icon.ico --manifest gui --out cmd\tool-hub\rsrc_hub
 if errorlevel 1 (
     echo [WARN] go-winres failed for tool-hub.exe, building without VERSIONINFO
     if exist cmd\tool-hub\rsrc_hub_windows_amd64.syso del cmd\tool-hub\rsrc_hub_windows_amd64.syso
@@ -165,7 +178,7 @@ if exist cmd\tool-hub\rsrc_hub_windows_amd64.syso del cmd\tool-hub\rsrc_hub_wind
 echo [INFO] Built: "%TOOL_HUB_EXE%"
 
 echo [INFO] Generating Windows VERSIONINFO resources for lexicon-manager ...
-go-winres simply --arch amd64 --product-version "%APP_VERSION%" --file-version "%APP_VERSION%" --product-name "YIME" --file-description "Yime Lexicon Manager" --original-filename "lexicon-manager.exe" --icon input_methods\yime\icon.ico --manifest gui --out cmd\lexicon-manager\rsrc_lexicon
+"%GO_WINRES%" simply --arch amd64 --product-version "%APP_VERSION%" --file-version "%APP_VERSION%" --product-name "YIME" --file-description "Yime Lexicon Manager" --original-filename "lexicon-manager.exe" --icon input_methods\yime\icon.ico --manifest gui --out cmd\lexicon-manager\rsrc_lexicon
 if errorlevel 1 (
     echo [WARN] go-winres failed for lexicon-manager.exe, building without VERSIONINFO
     if exist cmd\lexicon-manager\rsrc_lexicon_windows_amd64.syso del cmd\lexicon-manager\rsrc_lexicon_windows_amd64.syso
@@ -185,7 +198,7 @@ if exist cmd\lexicon-manager\rsrc_lexicon_windows_amd64.syso del cmd\lexicon-man
 echo [INFO] Built: "%LEXICON_MANAGER_EXE%"
 
 echo [INFO] Generating Windows VERSIONINFO resources for system-lexicon-audit ...
-go-winres simply --arch amd64 --product-version "%APP_VERSION%" --file-version "%APP_VERSION%" --product-name "YIME" --file-description "Yime System Lexicon Audit" --original-filename "system-lexicon-audit.exe" --icon input_methods\yime\icon.ico --manifest gui --out cmd\system-lexicon-audit\rsrc_audit
+"%GO_WINRES%" simply --arch amd64 --product-version "%APP_VERSION%" --file-version "%APP_VERSION%" --product-name "YIME" --file-description "Yime System Lexicon Audit" --original-filename "system-lexicon-audit.exe" --icon input_methods\yime\icon.ico --manifest gui --out cmd\system-lexicon-audit\rsrc_audit
 if errorlevel 1 (
     echo [WARN] go-winres failed for system-lexicon-audit.exe, building without VERSIONINFO
     if exist cmd\system-lexicon-audit\rsrc_audit_windows_amd64.syso del cmd\system-lexicon-audit\rsrc_audit_windows_amd64.syso
@@ -205,7 +218,7 @@ if exist cmd\system-lexicon-audit\rsrc_audit_windows_amd64.syso del cmd\system-l
 echo [INFO] Built: "%SYSTEM_LEXICON_AUDIT_EXE%"
 
 echo [INFO] Generating Windows VERSIONINFO resources for blocklist-manager ...
-go-winres simply --arch amd64 --product-version "%APP_VERSION%" --file-version "%APP_VERSION%" --product-name "YIME" --file-description "Yime User Blocklist Manager" --original-filename "blocklist-manager.exe" --icon input_methods\yime\icon.ico --manifest gui --out cmd\blocklist-manager\rsrc_blocklist
+"%GO_WINRES%" simply --arch amd64 --product-version "%APP_VERSION%" --file-version "%APP_VERSION%" --product-name "YIME" --file-description "Yime User Blocklist Manager" --original-filename "blocklist-manager.exe" --icon input_methods\yime\icon.ico --manifest gui --out cmd\blocklist-manager\rsrc_blocklist
 if errorlevel 1 (
     echo [WARN] go-winres failed for blocklist-manager.exe, building without VERSIONINFO
     if exist cmd\blocklist-manager\rsrc_blocklist_windows_amd64.syso del cmd\blocklist-manager\rsrc_blocklist_windows_amd64.syso
@@ -225,7 +238,7 @@ if exist cmd\blocklist-manager\rsrc_blocklist_windows_amd64.syso del cmd\blockli
 echo [INFO] Built: "%BLOCKLIST_MANAGER_EXE%"
 
 echo [INFO] Generating Windows VERSIONINFO resources for settings-tool ...
-go-winres simply --arch amd64 --product-version "%APP_VERSION%" --file-version "%APP_VERSION%" --product-name "YIME" --file-description "Yime Settings Tool" --original-filename "settings-tool.exe" --icon input_methods\yime\icon.ico --manifest gui --out cmd\settings-tool\rsrc_settings
+"%GO_WINRES%" simply --arch amd64 --product-version "%APP_VERSION%" --file-version "%APP_VERSION%" --product-name "YIME" --file-description "Yime Settings Tool" --original-filename "settings-tool.exe" --icon input_methods\yime\icon.ico --manifest gui --out cmd\settings-tool\rsrc_settings
 if errorlevel 1 (
     echo [WARN] go-winres failed for settings-tool.exe, building without VERSIONINFO
     if exist cmd\settings-tool\rsrc_settings_windows_amd64.syso del cmd\settings-tool\rsrc_settings_windows_amd64.syso
@@ -245,7 +258,7 @@ if exist cmd\settings-tool\rsrc_settings_windows_amd64.syso del cmd\settings-too
 echo [INFO] Built: "%SETTINGS_TOOL_EXE%"
 
 echo [INFO] Generating Windows VERSIONINFO resources for diagnostics-tool ...
-go-winres simply --arch amd64 --product-version "%APP_VERSION%" --file-version "%APP_VERSION%" --product-name "YIME" --file-description "Yime Diagnostics Tool" --original-filename "diagnostics-tool.exe" --icon input_methods\yime\icon.ico --manifest gui --out cmd\diagnostics-tool\rsrc_diagnostics
+"%GO_WINRES%" simply --arch amd64 --product-version "%APP_VERSION%" --file-version "%APP_VERSION%" --product-name "YIME" --file-description "Yime Diagnostics Tool" --original-filename "diagnostics-tool.exe" --icon input_methods\yime\icon.ico --manifest gui --out cmd\diagnostics-tool\rsrc_diagnostics
 if errorlevel 1 (
     echo [WARN] go-winres failed for diagnostics-tool.exe, building without VERSIONINFO
     if exist cmd\diagnostics-tool\rsrc_diagnostics_windows_amd64.syso del cmd\diagnostics-tool\rsrc_diagnostics_windows_amd64.syso

@@ -30,6 +30,7 @@ const (
 
 	wsExControlparent  = 0x00010000
 	wsExAppwindow      = 0x00040000
+	wsExClientedge     = 0x00000200
 	wsOverlappedwindow = 0x00CF0000
 
 	swRestore    = 9
@@ -96,6 +97,8 @@ var (
 	procReleaseDC             = moduser32.NewProc("ReleaseDC")
 	procGetActiveWindow       = moduser32.NewProc("GetActiveWindow")
 	procPostMessageW          = moduser32.NewProc("PostMessageW")
+	procGetFocus              = moduser32.NewProc("GetFocus")
+	procSetFocus              = moduser32.NewProc("SetFocus")
 	procShowWindow            = moduser32.NewProc("ShowWindow")
 	procUpdateWindow          = moduser32.NewProc("UpdateWindow")
 	procSetForegroundWindow   = moduser32.NewProc("SetForegroundWindow")
@@ -389,7 +392,7 @@ func (state *appState) wndProc(hwnd syscall.Handle, message uint32, wParam, lPar
 		state.finishApplyLexicon()
 		return 0
 	case win32ui.WmDeferredPresent:
-		win32ui.PresentMainWindow(state.mainHWND)
+		state.presentMainWindow()
 		return 0
 	case 0x0006:
 		if win32ui.IsActivateMessage(wParam) {
@@ -537,10 +540,24 @@ func (state *appState) requireCodeMap() error {
 
 func (state *appState) presentMainWindow() {
 	win32ui.PresentMainWindow(state.mainHWND)
+	state.focusSearchIfNeeded()
 }
 
 func (state *appState) presentMainWindowAfterLaunch() {
 	win32ui.PresentMainWindowAfterLaunch(state.mainHWND)
+	state.focusSearchIfNeeded()
+}
+
+func (state *appState) focusSearchIfNeeded() {
+	if state.searchHWND == 0 {
+		return
+	}
+	focused, _, _ := procGetFocus.Call()
+	if focused != 0 && focused != uintptr(state.mainHWND) && isChildOf(state.mainHWND, syscall.Handle(focused)) {
+		return
+	}
+	procSetFocus.Call(uintptr(state.searchHWND))
+	procSendMessageW.Call(uintptr(state.searchHWND), 0x00B1, 0, 0) // EM_SETSEL: caret at start.
 }
 
 func (state *appState) ensureRestored() {
@@ -589,7 +606,7 @@ func createButton(parent syscall.Handle, text string, box rect, id int) syscall.
 }
 
 func createEdit(parent syscall.Handle, box rect, id int) syscall.Handle {
-	return createControl("EDIT", "", 0x50210080, box, parent, id)
+	return createControlEx(wsExClientedge, "EDIT", "", 0x50210080, box, parent, id)
 }
 
 func createCombo(parent syscall.Handle, box rect, id int) syscall.Handle {
@@ -597,19 +614,25 @@ func createCombo(parent syscall.Handle, box rect, id int) syscall.Handle {
 }
 
 func createControl(className, text string, style int32, box rect, parent syscall.Handle, id int) syscall.Handle {
+	return createControlEx(0, className, text, style, box, parent, id)
+}
+
+func createControlEx(exStyle int32, className, text string, style int32, box rect, parent syscall.Handle, id int) syscall.Handle {
 	classPtr, _ := syscall.UTF16PtrFromString(className)
 	textPtr, _ := syscall.UTF16PtrFromString(text)
 	width := box.Right - box.Left
 	height := box.Bottom - box.Top
 	hwnd, _, _ := procCreateWindowExW.Call(
-		0,
+		uintptr(exStyle),
 		uintptr(unsafe.Pointer(classPtr)),
 		uintptr(unsafe.Pointer(textPtr)),
 		uintptr(style),
 		uintptr(box.Left), uintptr(box.Top), uintptr(width), uintptr(height),
 		uintptr(parent), uintptr(id), 0, 0,
 	)
-	return syscall.Handle(hwnd)
+	control := syscall.Handle(hwnd)
+	win32ui.ApplyDefaultGUIFont(control)
+	return control
 }
 
 func windowSizeForClient(clientW, clientH int32) (winW, winH int32) {

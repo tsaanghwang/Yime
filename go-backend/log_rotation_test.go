@@ -57,6 +57,35 @@ func TestRotatingLogWriterRejectsInvalidLimits(t *testing.T) {
 	}
 }
 
+func TestRotatingLogWriterRecoversAfterRotationFailure(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "go_backend.log")
+	w, err := newRotatingLogWriter(path, 10, 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := w.Write([]byte("existing")); err != nil {
+		t.Fatal(err)
+	}
+
+	blockedBackup := path + ".1"
+	if err := os.Mkdir(blockedBackup, 0o777); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(blockedBackup, "keep"), []byte("occupied"), 0o666); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := w.Write([]byte("trigger")); err == nil {
+		t.Fatal("expected rotation to fail while the backup path cannot be removed")
+	}
+	if _, err := w.Write([]byte("ok")); err != nil {
+		t.Fatalf("writer did not recover after failed rotation: %v", err)
+	}
+	if err := w.Close(); err != nil {
+		t.Fatal(err)
+	}
+	assertFileContents(t, path, "existingok")
+}
+
 func assertFileContents(t *testing.T, path, want string) {
 	t.Helper()
 	data, err := os.ReadFile(path)

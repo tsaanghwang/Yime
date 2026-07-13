@@ -427,6 +427,10 @@ func showModalForm(owner syscall.Handle, title string, width, height int32, buil
 	}
 	procShowWindow.Call(uintptr(dlg), swShowNormal)
 	win32ui.PresentMainWindow(dlg)
+	if firstEdit := findDlgItem(dlg, idDlgPhrase); firstEdit != 0 {
+		procSetFocus.Call(uintptr(firstEdit))
+		procSendMessageW.Call(uintptr(firstEdit), 0x00B1, 0, 0) // EM_SETSEL: caret at start.
+	}
 
 	var message winMsg
 	for !modalClosed {

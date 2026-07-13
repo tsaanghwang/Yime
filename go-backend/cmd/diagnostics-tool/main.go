@@ -113,6 +113,14 @@ type rect struct{ Left, Top, Right, Bottom int32 }
 
 type initCommonControlsEx struct{ Size, ICC uint32 }
 
+type diagnosticsUILayout struct {
+	clientW, clientH int32
+	description      rect
+	statusView       rect
+	optionBoxes      [4]rect
+	buttons          [4]rect
+}
+
 type appState struct {
 	ctx         diagnostics.Context
 	mainHWND    syscall.Handle
@@ -121,6 +129,7 @@ type appState struct {
 	actionsHWND syscall.Handle
 	logsHWND    syscall.Handle
 	anonHWND    syscall.Handle
+	layout      diagnosticsUILayout
 }
 
 func main() {
@@ -158,6 +167,7 @@ func runApp(state *appState) error {
 	if win32ui.ActivateExistingWindow("YimeDiagnosticsTool") {
 		return nil
 	}
+	state.layout = buildDiagnosticsUILayout()
 
 	icc := initCommonControlsEx{Size: uint32(unsafe.Sizeof(initCommonControlsEx{})), ICC: 0x000000FF}
 	procInitCommonControlsEx.Call(uintptr(unsafe.Pointer(&icc)))
@@ -181,7 +191,7 @@ func runApp(state *appState) error {
 	}
 	procRegisterClassExW.Call(uintptr(unsafe.Pointer(&wndClass)))
 	title, _ := syscall.UTF16PtrFromString("Yime 诊断")
-	winW, winH := windowSizeForClient(900, 620)
+	winW, winH := windowSizeForClient(state.layout.clientW, state.layout.clientH)
 	screenWidth, _, _ := procGetSystemMetrics.Call(0)
 	screenHeight, _, _ := procGetSystemMetrics.Call(1)
 	x := (int32(screenWidth) - winW) / 2
@@ -211,22 +221,62 @@ func runApp(state *appState) error {
 }
 
 func (state *appState) createControls() {
-	createStatic(state.mainHWND, "Yime 诊断面板", rect{16, 16, 860, 40}, 0)
-	createStatic(state.mainHWND, "此面板检查路径、已安装二进制、运行进程、用户 Rime 文件和当前日志。", rect{16, 48, 860, 84}, 0)
+	l := state.layout
+	createStatic(state.mainHWND, "这个工具检查路径、已安装二进制、运行进程、用户 Rime 文件和当前日志。", l.description, 0)
 	detailStyle := int32(0x50200000 | 0x10000000 | 0x00800000 | 0x00200000 | 0x00010000 | 0x0800 | 0x0004 | 0x0040)
-	state.statusHWND = createControl("EDIT", "", detailStyle, rect{16, 96, 876, 468}, state.mainHWND, idStatusView)
-	state.envHWND = createCheck(state.mainHWND, "包含环境摘要", rect{16, 480, 180, 504}, idIncludeEnv)
-	state.actionsHWND = createCheck(state.mainHWND, "包含建议操作", rect{188, 480, 360, 504}, idIncludeActions)
-	state.logsHWND = createCheck(state.mainHWND, "包含原始日志摘录", rect{372, 480, 560, 504}, idIncludeLogs)
-	state.anonHWND = createCheck(state.mainHWND, "匿名化报告", rect{572, 480, 720, 504}, idAnonymize)
+	state.statusHWND = createControl("EDIT", "", detailStyle, l.statusView, state.mainHWND, idStatusView)
+	state.envHWND = createCheck(state.mainHWND, "包含环境摘要", l.optionBoxes[0], idIncludeEnv)
+	state.actionsHWND = createCheck(state.mainHWND, "包含建议操作", l.optionBoxes[1], idIncludeActions)
+	state.logsHWND = createCheck(state.mainHWND, "包含原始日志摘录", l.optionBoxes[2], idIncludeLogs)
+	state.anonHWND = createCheck(state.mainHWND, "匿名化报告", l.optionBoxes[3], idAnonymize)
 	procSendMessageW.Call(uintptr(state.envHWND), 0x00F1, 1, 0)
 	procSendMessageW.Call(uintptr(state.actionsHWND), 0x00F1, 1, 0)
 	procSendMessageW.Call(uintptr(state.logsHWND), 0x00F1, 1, 0)
 	procSendMessageW.Call(uintptr(state.anonHWND), 0x00F1, 1, 0)
-	createButton(state.mainHWND, "刷新", rect{16, 520, 100, 548}, idBtnRefresh)
-	createButton(state.mainHWND, "复制结构化报告", rect{112, 520, 260, 548}, idBtnCopy)
-	createButton(state.mainHWND, "诊断说明", rect{272, 520, 372, 548}, idBtnGuide)
-	createButton(state.mainHWND, "日志目录", rect{384, 520, 484, 548}, idBtnLogs)
+	createButton(state.mainHWND, "刷新", l.buttons[0], idBtnRefresh)
+	createButton(state.mainHWND, "复制结构化报告", l.buttons[1], idBtnCopy)
+	createButton(state.mainHWND, "诊断说明", l.buttons[2], idBtnGuide)
+	createButton(state.mainHWND, "日志目录", l.buttons[3], idBtnLogs)
+}
+
+func buildDiagnosticsUILayout() diagnosticsUILayout {
+	const (
+		margin       = int32(16)
+		rowGap       = int32(12)
+		controlGap   = int32(12)
+		descriptionH = int32(36)
+		reportH      = int32(372)
+		optionH      = int32(24)
+		buttonH      = int32(30)
+		optionW      = int32(188) // Width of the longest option label.
+		buttonW      = int32(148) // Width of the longest button label.
+	)
+	optionRowW := 4*optionW + 3*controlGap
+	buttonRowW := 4*buttonW + 3*controlGap
+	contentW := optionRowW
+	if buttonRowW > contentW {
+		contentW = buttonRowW
+	}
+
+	l := diagnosticsUILayout{}
+	l.description = rect{margin, margin, margin + contentW, margin + descriptionH}
+	reportTop := l.description.Bottom + rowGap
+	l.statusView = rect{margin, reportTop, margin + contentW, reportTop + reportH}
+	optionTop := l.statusView.Bottom + rowGap
+	optionLeft := margin + (contentW-optionRowW)/2
+	for index := range l.optionBoxes {
+		left := optionLeft + int32(index)*(optionW+controlGap)
+		l.optionBoxes[index] = rect{left, optionTop, left + optionW, optionTop + optionH}
+	}
+	buttonTop := optionTop + optionH + rowGap
+	buttonLeft := margin + (contentW-buttonRowW)/2
+	for index := range l.buttons {
+		left := buttonLeft + int32(index)*(buttonW+controlGap)
+		l.buttons[index] = rect{left, buttonTop, left + buttonW, buttonTop + buttonH}
+	}
+	l.clientW = contentW + 2*margin
+	l.clientH = l.buttons[0].Bottom + margin
+	return l
 }
 
 func (state *appState) refreshStatus() {
@@ -360,7 +410,9 @@ func createControl(className, text string, style int32, box rect, parent syscall
 	classPtr, _ := syscall.UTF16PtrFromString(className)
 	textPtr, _ := syscall.UTF16PtrFromString(text)
 	hwnd, _, _ := procCreateWindowExW.Call(0, uintptr(unsafe.Pointer(classPtr)), uintptr(unsafe.Pointer(textPtr)), uintptr(style), uintptr(box.Left), uintptr(box.Top), uintptr(box.Right-box.Left), uintptr(box.Bottom-box.Top), uintptr(parent), uintptr(id), 0, 0)
-	return syscall.Handle(hwnd)
+	control := syscall.Handle(hwnd)
+	win32ui.ApplyDefaultGUIFont(control)
+	return control
 }
 func windowSizeForClient(clientW, clientH int32) (int32, int32) {
 	r := rect{0, 0, clientW, clientH}

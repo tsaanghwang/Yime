@@ -9,6 +9,27 @@ import (
 	"github.com/EasyIME/pime-go/input_methods/yime/runtimechange"
 )
 
+func TestSettingsUILayoutFitsVisibleControls(t *testing.T) {
+	withoutHelp := buildSettingsUILayout(false)
+	withHelp := buildSettingsUILayout(true)
+
+	if withoutHelp.clientW != withoutHelp.openUserButton.Right+16 {
+		t.Fatalf("window should fit the last visible button: width=%d right=%d", withoutHelp.clientW, withoutHelp.openUserButton.Right)
+	}
+	if withHelp.clientW != withHelp.openHelpButton.Right+16 {
+		t.Fatalf("window should fit the optional help button: width=%d right=%d", withHelp.clientW, withHelp.openHelpButton.Right)
+	}
+	if withHelp.clientH != withHelp.applyButton.Bottom+16 {
+		t.Fatalf("window should fit the button row: height=%d bottom=%d", withHelp.clientH, withHelp.applyButton.Bottom)
+	}
+	if withHelp.clientW <= withoutHelp.clientW {
+		t.Fatalf("help button should expand the content-sized window: with=%d without=%d", withHelp.clientW, withoutHelp.clientW)
+	}
+	if withHelp.clientW >= 820 || withHelp.clientH >= 680 {
+		t.Fatalf("content-sized layout should be smaller than the former fixed client area: %dx%d", withHelp.clientW, withHelp.clientH)
+	}
+}
+
 func TestExecuteApplyNotifiesActiveSession(t *testing.T) {
 	oldApply := applySettings
 	oldNotify := notifyRuntimeChange

@@ -40,6 +40,28 @@ func TestBuildScriptKeepsGoExecutableHashesStableAndSupportsSigning(t *testing.T
 	}
 }
 
+func TestBuildScriptFindsGoWinresOutsidePATH(t *testing.T) {
+	script := readBuildScript(t, "build.bat")
+
+	required := []string{
+		`where.exe go-winres.exe`,
+		`go env GOPATH`,
+		`\bin\go-winres.exe`,
+		`"%GO_WINRES%" simply`,
+	}
+	for _, fragment := range required {
+		if !strings.Contains(script, fragment) {
+			t.Fatalf("build.bat is missing go-winres discovery fragment %q", fragment)
+		}
+	}
+	if count := strings.Count(script, `"%GO_WINRES%" simply`); count != 8 {
+		t.Fatalf("expected all 8 resource builds to use resolved go-winres, got %d", count)
+	}
+	if strings.Contains(script, "\ngo-winres simply") || strings.Contains(script, "\r\ngo-winres simply") {
+		t.Fatal("resource generation must not rely on a bare go-winres command")
+	}
+}
+
 func TestBuildScriptPropagatesSanitizedChildFailure(t *testing.T) {
 	script := readBuildScript(t, filepath.Join("..", "build.bat"))
 
