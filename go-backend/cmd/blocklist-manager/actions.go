@@ -26,63 +26,56 @@ func (state *appState) refreshList() {
 	}
 	keyword := strings.TrimSpace(getWindowText(state.searchHWND))
 	filtered := userblocklist.FilterEntries(entries, keyword)
-	state.visibleEntries = filtered
-
 	selected := state.selectedPhrases()
+	state.visibleEntries = filtered
 	selectedSet := map[string]bool{}
 	for _, phrase := range selected {
 		selectedSet[phrase] = true
 	}
 
-	procSendMessageW.Call(uintptr(state.listHWND), lbResetcontent, 0, 0)
-	maxExtent := int32(0)
-	for _, entry := range filtered {
-		line := entry.Phrase
-		text, _ := syscall.UTF16PtrFromString(line)
-		index, _, _ := procSendMessageW.Call(uintptr(state.listHWND), lbAddstring, 0, uintptr(unsafe.Pointer(text)))
+	procSendMessageW.Call(uintptr(state.listHWND), lvmDeleteallitems, 0, 0)
+	for index, entry := range filtered {
+		text, _ := syscall.UTF16PtrFromString(entry.Phrase)
+		item := listViewItem{Mask: lvifText, Item: int32(index), Text: text}
+		if inserted, _, _ := procSendMessageW.Call(uintptr(state.listHWND), lvmInsertitemw, 0, uintptr(unsafe.Pointer(&item))); int32(inserted) < 0 {
+			continue
+		}
 		if selectedSet[entry.Phrase] {
-			procSendMessageW.Call(uintptr(state.listHWND), lbSetsel, index, 1)
-		}
-		if extent := int32(len(line) * 7); extent > maxExtent {
-			maxExtent = extent
+			selection := listViewItem{State: lvisSelected, StateMask: lvisSelected}
+			procSendMessageW.Call(uintptr(state.listHWND), lvmSetitemstate, uintptr(index), uintptr(unsafe.Pointer(&selection)))
 		}
 	}
-	if maxExtent < 640 {
-		maxExtent = 640
-	}
-	procSendMessageW.Call(uintptr(state.listHWND), lbSethorizontalextent, uintptr(maxExtent), 0)
 	win32ui.RedrawChildrenNow(state.mainHWND)
 	state.updateSummary(len(entries), len(filtered))
 	state.updateSelectionSummary()
 }
 
 func (state *appState) selectedPhrases() []string {
-	count, _, _ := procSendMessageW.Call(uintptr(state.listHWND), lbGetselcount, 0, 0)
-	selCount := int32(count)
-	if selCount <= 0 {
-		return nil
-	}
-	items := make([]int32, selCount)
-	procSendMessageW.Call(uintptr(state.listHWND), lbGetselitems, uintptr(selCount), uintptr(unsafe.Pointer(&items[0])))
-	phrases := make([]string, 0, len(items))
-	for _, index := range items {
-		if index < 0 || int(index) >= len(state.visibleEntries) {
-			continue
+	phrases := []string{}
+	index := ^uintptr(0)
+	for {
+		next, _, _ := procSendMessageW.Call(uintptr(state.listHWND), lvmGetnextitem, index, lvniSelected)
+		selected := int32(next)
+		if selected < 0 {
+			break
 		}
-		phrases = append(phrases, state.visibleEntries[index].Phrase)
+		if int(selected) < len(state.visibleEntries) {
+			phrases = append(phrases, state.visibleEntries[selected].Phrase)
+		}
+		index = uintptr(selected)
 	}
 	return phrases
 }
 
 func (state *appState) updateSummary(totalCount, visibleCount int) {
-	setWindowText(state.summaryHWND, fmt.Sprintf("词表文件: %s", state.sourcePath))
 	setWindowText(state.statusHWND, fmt.Sprintf("当前显示 %d / %d 条屏蔽词。保存后立即生效。", visibleCount, totalCount))
 }
 
 func (state *appState) updateSelectionSummary() {
 	phrases := state.selectedPhrases()
 	if len(phrases) == 0 {
-		setWindowText(state.selectionHWND, "未选中词条")
+		setWindowText(state.selectionHWND, "请在表格中选择要删除的词条。")
+		state.updateToolbarState()
 		return
 	}
 	preview := phrases
@@ -94,6 +87,7 @@ func (state *appState) updateSelectionSummary() {
 		text += " 等"
 	}
 	setWindowText(state.selectionHWND, fmt.Sprintf("已选中 %d 条：%s", len(phrases), text))
+	state.updateToolbarState()
 }
 
 func (state *appState) addEntry() {
@@ -102,6 +96,11 @@ func (state *appState) addEntry() {
 		return
 	}
 	if _, err := userblocklist.NormalizePhrase(phrase); err != nil {
+		showMessageBox(err.Error(), 0x10)
+		return
+	}
+	before, err := state.loadEntries()
+	if err != nil {
 		showMessageBox(err.Error(), 0x10)
 		return
 	}
@@ -114,8 +113,11 @@ func (state *appState) addEntry() {
 	if updated {
 		setWindowText(state.statusHWND, "该词条已在屏蔽词表中。")
 	} else {
+		state.lastUndoEntries = before
+		state.lastUndoLabel = "添加"
 		setWindowText(state.statusHWND, "已添加屏蔽词，输入时将不再显示该候选。")
 	}
+	state.updateToolbarState()
 }
 
 func (state *appState) deleteSelected() {
@@ -124,12 +126,37 @@ func (state *appState) deleteSelected() {
 		showMessageBox("请先在列表中选中要删除的词条。", 0x10)
 		return
 	}
+	if !showConfirmMessage(state.mainHWND, fmt.Sprintf("确认删除选中的 %d 条屏蔽词吗？", len(phrases))) {
+		return
+	}
+	before, err := state.loadEntries()
+	if err != nil {
+		showMessageBox(err.Error(), 0x10)
+		return
+	}
 	if err := userblocklist.RemovePhrases(state.sourcePath, phrases); err != nil {
 		showMessageBox(err.Error(), 0x10)
 		return
 	}
+	state.lastUndoEntries = before
+	state.lastUndoLabel = "删除"
 	state.refreshList()
 	setWindowText(state.statusHWND, fmt.Sprintf("已删除 %d 条屏蔽词。", len(phrases)))
+}
+
+func (state *appState) undoLastChange() {
+	if state.lastUndoEntries == nil {
+		return
+	}
+	label := state.lastUndoLabel
+	if err := userblocklist.WriteEntries(state.sourcePath, state.lastUndoEntries); err != nil {
+		showMessageBox(err.Error(), 0x10)
+		return
+	}
+	state.lastUndoEntries = nil
+	state.lastUndoLabel = ""
+	state.refreshList()
+	setWindowText(state.statusHWND, "已撤销最近一次"+label+"操作。")
 }
 
 func (state *appState) importEntries() {
@@ -142,12 +169,22 @@ func (state *appState) importEntries() {
 		showMessageBox(err.Error(), 0x10)
 		return
 	}
+	before, err := state.loadEntries()
+	if err != nil {
+		showMessageBox(err.Error(), 0x10)
+		return
+	}
 	added, skipped, err := userblocklist.ImportPhrases(state.sourcePath, lines)
 	if err != nil {
 		showMessageBox(err.Error(), 0x10)
 		return
 	}
 	state.refreshList()
+	if added > 0 {
+		state.lastUndoEntries = before
+		state.lastUndoLabel = "导入"
+		state.updateToolbarState()
+	}
 	setWindowText(state.statusHWND, fmt.Sprintf("导入完成：新增 %d 条，跳过 %d 条。", added, skipped))
 }
 

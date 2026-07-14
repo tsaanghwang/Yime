@@ -15,11 +15,15 @@ import (
 )
 
 func (state *appState) startLoadAudit() {
+	state.mu.Lock()
 	if state.loading {
+		state.mu.Unlock()
 		return
 	}
 	state.loading = true
+	state.mu.Unlock()
 	state.setStatus("正在扫描系统词库，请稍候...")
+	state.updateControlState()
 	mode := state.currentMode()
 	dictPath := systemlexicon.DictPath(state.sharedDir, state.userDir, mode)
 	go func() {
@@ -48,6 +52,7 @@ func (state *appState) onLoadDone() {
 	err := state.loadErr
 	summary := state.summary
 	state.mu.Unlock()
+	state.updateControlState()
 
 	if err != nil {
 		showWin32Error(err.Error())
@@ -87,13 +92,16 @@ func (state *appState) handleWMCommand(wParam, lParam uintptr) {
 			}
 			procPostMessageW.Call(uintptr(state.mainHWND), wmAppRefresh, 0, 0)
 		}
-	case idResultList:
-		if state.suppressListNotify {
-			return
-		}
-		if notifyCode == lbnSelchange {
-			state.updateDetail(-1)
-		}
+	}
+}
+
+func (state *appState) handleNotify(lParam uintptr) {
+	if lParam == 0 || state.suppressListNotify {
+		return
+	}
+	header := (*notifyHeader)(unsafe.Pointer(lParam))
+	if int(header.IDFrom) == idResultList && header.Code == -101 {
+		state.updateDetail(-1)
 	}
 }
 
@@ -123,29 +131,32 @@ func (state *appState) refreshVisibleList() {
 
 	keyword := getWindowText(state.searchHWND)
 	visible := systemlexicon.FilterFindings(allFindings, state.currentRule(), keyword)
+	state.mu.Lock()
 	state.visibleFindings = visible
+	state.mu.Unlock()
 
 	state.suppressListNotify = true
-	procSendMessageW.Call(uintptr(state.resultHWND), lbResetcontent, 0, 0)
-	maxExtent := int32(0)
-	for _, item := range visible {
-		line := fmt.Sprintf("%s | %s | %s | %d", item.RuleLabel, item.Text, item.Code, item.Weight)
-		text, _ := syscall.UTF16PtrFromString(line)
-		procSendMessageW.Call(uintptr(state.resultHWND), lbAddstring, 0, uintptr(unsafe.Pointer(text)))
-		if extent := int32(len(line) * 7); extent > maxExtent {
-			maxExtent = extent
+	procSendMessageW.Call(uintptr(state.resultHWND), lvmDeleteallitems, 0, 0)
+	for index, finding := range visible {
+		first, _ := syscall.UTF16PtrFromString(finding.RuleLabel)
+		item := listViewItem{Mask: lvifText, Item: int32(index), Text: first}
+		if inserted, _, _ := procSendMessageW.Call(uintptr(state.resultHWND), lvmInsertitemw, 0, uintptr(unsafe.Pointer(&item))); int32(inserted) < 0 {
+			continue
+		}
+		for subItem, value := range []string{finding.Text, finding.Code, fmt.Sprintf("%d", finding.Weight)} {
+			text, _ := syscall.UTF16PtrFromString(value)
+			cell := listViewItem{Item: int32(index), SubItem: int32(subItem + 1), Text: text}
+			procSendMessageW.Call(uintptr(state.resultHWND), lvmSetitemtextw, uintptr(index), uintptr(unsafe.Pointer(&cell)))
 		}
 	}
-	if maxExtent < state.layout.resultList.Right-state.layout.resultList.Left {
-		maxExtent = state.layout.resultList.Right - state.layout.resultList.Left
-	}
-	procSendMessageW.Call(uintptr(state.resultHWND), lbSethorizontalextent, uintptr(maxExtent), 0)
 	state.suppressListNotify = false
 	win32ui.RedrawChildrenNow(state.mainHWND)
 
 	if len(visible) == 0 {
 		state.setDetail("当前筛选条件下没有待审词条。")
 	} else {
+		selection := listViewItem{State: lvisSelected | lvisFocused, StateMask: lvisSelected | lvisFocused}
+		procSendMessageW.Call(uintptr(state.resultHWND), lvmSetitemstate, 0, uintptr(unsafe.Pointer(&selection)))
 		state.updateDetail(0)
 	}
 
@@ -160,8 +171,8 @@ func (state *appState) refreshVisibleList() {
 
 func (state *appState) updateDetail(selected int) {
 	if selected < 0 {
-		sel, _, _ := procSendMessageW.Call(uintptr(state.resultHWND), lbGetcursel, 0, 0)
-		selected = int(sel)
+		sel, _, _ := procSendMessageW.Call(uintptr(state.resultHWND), lvmGetnextitem, ^uintptr(0), lvniSelected)
+		selected = int(int32(sel))
 	}
 	if selected < 0 || selected >= len(state.visibleFindings) {
 		return
@@ -205,6 +216,43 @@ func (state *appState) exportReport() {
 		return
 	}
 	state.setStatus(fmt.Sprintf("已导出 %d 条到：%s", len(findings), jsonPath))
+	showWin32Info(fmt.Sprintf("已导出 %d 条待审项。\n\nJSON：%s\nTSV：%s", len(findings), jsonPath, tsvPath))
+}
+
+func (state *appState) isLoading() bool {
+	state.mu.Lock()
+	defer state.mu.Unlock()
+	return state.loading
+}
+
+func setControlEnabled(hwnd syscall.Handle, enabled bool) {
+	value := uintptr(0)
+	if enabled {
+		value = 1
+	}
+	procEnableWindow.Call(uintptr(hwnd), value)
+}
+
+func (state *appState) updateControlState() {
+	loading := state.isLoading()
+	setControlEnabled(state.searchHWND, !loading)
+	setControlEnabled(state.ruleHWND, !loading)
+	setControlEnabled(state.modeHWND, !loading)
+	setControlEnabled(state.refreshHWND, !loading)
+	state.mu.Lock()
+	canExport := state.summary.DictPath != ""
+	state.mu.Unlock()
+	setControlEnabled(state.exportHWND, !loading && canExport)
+	if loading {
+		setWindowText(state.refreshHWND, "扫描中…")
+		procSendMessageW.Call(uintptr(state.progressHWND), pbmSetMarquee, 1, 30)
+		procShowWindow.Call(uintptr(state.progressHWND), 5)
+	} else {
+		setWindowText(state.refreshHWND, "重新扫描")
+		procSendMessageW.Call(uintptr(state.progressHWND), pbmSetMarquee, 0, 0)
+		procShowWindow.Call(uintptr(state.progressHWND), 0)
+	}
+	state.layoutControls(state.layout.clientW, state.layout.clientH)
 }
 
 func (state *appState) setStatus(text string) {

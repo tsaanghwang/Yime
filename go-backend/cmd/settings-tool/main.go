@@ -11,17 +11,21 @@ import (
 	"strings"
 	"sync"
 	"syscall"
+	"time"
 	"unsafe"
 
 	"github.com/EasyIME/pime-go/input_methods/yime/runtimechange"
 	"github.com/EasyIME/pime-go/input_methods/yime/settings"
 	"github.com/EasyIME/pime-go/input_methods/yime/toolhub"
+	"github.com/EasyIME/pime-go/input_methods/yime/userbackup"
 	"github.com/EasyIME/pime-go/input_methods/yime/win32ui"
 )
 
 const (
-	wmAppCommand   = 0x0400 + 1
-	wmAppApplyDone = 0x0400 + 2
+	wmAppCommand     = 0x0400 + 1
+	wmAppApplyDone   = 0x0400 + 2
+	wmAppBackupDone  = 0x0400 + 3
+	wmAppRestoreDone = 0x0400 + 4
 
 	wsExControlparent  = 0x00010000
 	wsExAppwindow      = 0x00040000
@@ -35,7 +39,8 @@ const (
 	idReverseCombo  = 103
 	idLayoutCombo   = 104
 	idBtnApply      = 201
-	idBtnOpenUser   = 203
+	idBtnBackup     = 202
+	idBtnRestore    = 203
 	idBtnOpenHelp   = 204
 )
 
@@ -100,24 +105,26 @@ type rect struct{ Left, Top, Right, Bottom int32 }
 type initCommonControlsEx struct{ Size, ICC uint32 }
 
 type settingsUILayout struct {
-	clientW, clientH                            int32
-	schemaLabel, schemaCombo                    rect
-	pageLabel, pageCombo                        rect
-	reverseLabel, reverseCombo                  rect
-	layoutLabel, layoutCombo                    rect
-	applyButton, openUserButton, openHelpButton rect
+	clientW, clientH                                         int32
+	schemaLabel, schemaCombo                                 rect
+	pageLabel, pageCombo                                     rect
+	reverseLabel, reverseCombo                               rect
+	layoutLabel, layoutCombo                                 rect
+	backupHint                                               rect
+	applyButton, backupButton, restoreButton, openHelpButton rect
 }
 
 type appState struct {
-	userDir, sharedDir, helpDir string
+	userDir, sharedDir, helpDir, backupRoot string
 
 	mainHWND, schemaHWND, pageHWND, reverseHWND, layoutHWND syscall.Handle
 	schemaOptions                                           []settings.SchemaOption
 	layout                                                  settingsUILayout
 
-	applyMu      sync.Mutex
-	applyRunning bool
-	applyErr     error
+	applyMu       sync.Mutex
+	applyRunning  bool
+	applyErr      error
+	operationInfo string
 }
 
 type applyRequest struct {
@@ -129,6 +136,7 @@ type applyRequest struct {
 
 var applySettings = settings.Apply
 var notifyRuntimeChange = runtimechange.Notify
+var invokeRimeBuild = settings.InvokeRimeBuild
 
 func main() {
 	userDir := flag.String("UserDir", "", "Yime user data directory")
@@ -144,6 +152,7 @@ func main() {
 		userDir:       strings.TrimSpace(*userDir),
 		sharedDir:     strings.TrimSpace(*sharedDir),
 		helpDir:       strings.TrimSpace(*helpDir),
+		backupRoot:    defaultBackupRoot(),
 		schemaOptions: settings.AvailableSchemaOptions(strings.TrimSpace(*sharedDir)),
 	}
 	if err := runApp(state); err != nil {
@@ -247,8 +256,10 @@ func (state *appState) createControls() {
 	}
 	// The selected controls already show the current configuration; do not
 	// duplicate it in a developer-oriented "current configuration" summary.
+	createStatic(state.mainHWND, "备份包括设置、用户词库、屏蔽词表和 Rime 同步数据。\r\n如需保留自动学习词频，请先在语言栏执行“同步 Rime 用户数据”。", l.backupHint, 0)
 	createButton(state.mainHWND, "应用", l.applyButton, idBtnApply)
-	createButton(state.mainHWND, "打开用户目录", l.openUserButton, idBtnOpenUser)
+	createButton(state.mainHWND, "备份", l.backupButton, idBtnBackup)
+	createButton(state.mainHWND, "恢复", l.restoreButton, idBtnRestore)
 	if state.helpDir != "" {
 		createButton(state.mainHWND, "设置说明", l.openHelpButton, idBtnOpenHelp)
 	}
@@ -277,24 +288,23 @@ func buildSettingsUILayout(withHelp bool) settingsUILayout {
 	l.reverseLabel, l.reverseCombo = row(2)
 	l.layoutLabel, l.layoutCombo = row(3)
 
-	buttonY := margin + 4*(rowH+rowGap) + 8
+	hintY := margin + 4*(rowH+rowGap)
+	l.backupHint = rect{margin, hintY, l.layoutCombo.Right, hintY + 42}
+	buttonY := l.backupHint.Bottom + 8
+	buttons := []*rect{&l.applyButton, &l.backupButton, &l.restoreButton}
+	if withHelp {
+		buttons = append(buttons, &l.openHelpButton)
+	}
+	contentRight := l.layoutCombo.Right
+	buttonW := (contentRight - margin - buttonGap*int32(len(buttons)-1)) / int32(len(buttons))
 	x := margin
-	button := func(width int32) rect {
-		result := rect{x, buttonY, x + width, buttonY + buttonH}
-		x = result.Right + buttonGap
-		return result
-	}
-	l.applyButton = button(84)
-	l.openUserButton = button(116)
-	if withHelp {
-		l.openHelpButton = button(100)
-	}
-	contentRight := l.openUserButton.Right
-	if withHelp {
-		contentRight = l.openHelpButton.Right
-	}
-	if l.layoutCombo.Right > contentRight {
-		contentRight = l.layoutCombo.Right
+	for index, button := range buttons {
+		right := x + buttonW
+		if index == len(buttons)-1 {
+			right = contentRight
+		}
+		*button = rect{x, buttonY, right, buttonY + buttonH}
+		x = right + buttonGap
 	}
 	l.clientW = contentRight + margin
 	l.clientH = l.applyButton.Bottom + margin
@@ -320,6 +330,12 @@ func (state *appState) wndProc(hwnd syscall.Handle, message uint32, wParam, lPar
 	case wmAppApplyDone:
 		state.finishApply()
 		return 0
+	case wmAppBackupDone:
+		state.finishBackup()
+		return 0
+	case wmAppRestoreDone:
+		state.finishRestore()
+		return 0
 	case win32ui.WmDeferredPresent:
 		win32ui.PresentMainWindow(state.mainHWND)
 		return 0
@@ -337,7 +353,7 @@ func (state *appState) wndProc(hwnd syscall.Handle, message uint32, wParam, lPar
 		return ret
 	case 0x0010: // WM_CLOSE
 		if state.isApplyRunning() {
-			showInfo("正在应用设置，请等待完成后再关闭。")
+			showInfo("正在处理设置或用户数据，请等待完成后再关闭。")
 			return 0
 		}
 		procPostQuitMessage.Call(0)
@@ -354,8 +370,10 @@ func (state *appState) handleCommand(wParam uintptr) {
 	switch int(wParam & 0xffff) {
 	case idBtnApply:
 		state.startApply()
-	case idBtnOpenUser:
-		_, _ = toolhub.Invoke(toolhub.Entry{ActionType: toolhub.ActionOpenPath, TargetPath: state.userDir})
+	case idBtnBackup:
+		state.startBackup()
+	case idBtnRestore:
+		state.startRestore()
 	case idBtnOpenHelp:
 		if state.helpDir != "" {
 			_, _ = toolhub.Invoke(toolhub.Entry{ActionType: toolhub.ActionOpenPath, TargetPath: filepath.Join(state.helpDir, "settings-and-data.html")})
@@ -364,13 +382,9 @@ func (state *appState) handleCommand(wParam uintptr) {
 }
 
 func (state *appState) startApply() {
-	state.applyMu.Lock()
-	if state.applyRunning {
-		state.applyMu.Unlock()
+	if !state.beginOperation("Yime 设置（正在应用……）") {
 		return
 	}
-	state.applyRunning = true
-	state.applyMu.Unlock()
 
 	request := applyRequest{
 		schemaID:    selectedSchemaID(state.schemaHWND, state.schemaOptions),
@@ -378,7 +392,6 @@ func (state *appState) startApply() {
 		reverseMode: selectedComboValue(state.reverseHWND, settings.ReverseLookupOptions()),
 		layout:      selectedComboValue(state.layoutHWND, settings.CandidateLayoutOptions()),
 	}
-	setWindowText(state.mainHWND, "Yime 设置（正在应用……）")
 	go func() {
 		err := executeApply(state.userDir, state.sharedDir, request)
 		state.applyMu.Lock()
@@ -403,18 +416,137 @@ func executeApply(userDir, sharedDir string, request applyRequest) error {
 }
 
 func (state *appState) finishApply() {
-	state.applyMu.Lock()
-	err := state.applyErr
-	state.applyErr = nil
-	state.applyRunning = false
-	state.applyMu.Unlock()
+	err, _ := state.finishOperation()
 	if err != nil {
-		setWindowText(state.mainHWND, "Yime 设置")
 		showError(err.Error())
 		return
 	}
 	state.refreshView()
+}
+
+func (state *appState) startBackup() {
+	if state.backupRoot == "" {
+		showError("无法定位 Windows 用户文档目录。")
+		return
+	}
+	if !state.beginOperation("Yime 设置（正在备份……）") {
+		return
+	}
+	go func() {
+		snapshot, err := userbackup.Create(state.userDir, state.backupRoot, "用户数据", time.Now())
+		state.applyMu.Lock()
+		state.applyErr = err
+		if err == nil {
+			state.operationInfo = snapshot.Path
+		}
+		state.applyMu.Unlock()
+		procPostMessageW.Call(uintptr(state.mainHWND), wmAppBackupDone, 0, 0)
+	}()
+}
+
+func (state *appState) finishBackup() {
+	err, path := state.finishOperation()
+	if err != nil {
+		showError("备份失败：" + err.Error())
+		return
+	}
+	showInfo(fmt.Sprintf(
+		"可移植用户数据备份已经创建。\n\n位置：%s\n\n运行中被锁定的 *.userdb 数据库不会直接复制；需要保留其中的学习数据时，可先使用语言栏“同步 Rime 用户数据”生成 sync 快照。",
+		path,
+	))
+}
+
+func (state *appState) startRestore() {
+	if state.backupRoot == "" {
+		showError("无法定位 Windows 用户文档目录。")
+		return
+	}
+	snapshot, err := userbackup.Latest(state.backupRoot)
+	if err != nil {
+		showError(err.Error())
+		return
+	}
+	if !showConfirm(fmt.Sprintf(
+		"将恢复最近一次完整备份：\n%s\n\n恢复前会自动备份当前用户数据，随后重新构建 Rime。是否继续？",
+		snapshot.Path,
+	)) {
+		return
+	}
+	if !state.beginOperation("Yime 设置（正在恢复……）") {
+		return
+	}
+	go func() {
+		safety, restoreErr := executeRestore(state.userDir, state.sharedDir, state.backupRoot, snapshot, time.Now())
+		state.applyMu.Lock()
+		state.applyErr = restoreErr
+		if safety.Path != "" {
+			state.operationInfo = fmt.Sprintf("恢复来源：%s\n恢复前备份：%s", snapshot.Path, safety.Path)
+		}
+		state.applyMu.Unlock()
+		procPostMessageW.Call(uintptr(state.mainHWND), wmAppRestoreDone, 0, 0)
+	}()
+}
+
+func executeRestore(userDir, sharedDir, backupRoot string, snapshot userbackup.Snapshot, now time.Time) (userbackup.Snapshot, error) {
+	if err := userbackup.Validate(snapshot); err != nil {
+		return userbackup.Snapshot{}, err
+	}
+	safety, err := userbackup.Create(userDir, backupRoot, "恢复前", now)
+	if err != nil {
+		return userbackup.Snapshot{}, fmt.Errorf("创建恢复前安全备份失败：%w", err)
+	}
+	if err := userbackup.Restore(snapshot, userDir); err != nil {
+		return safety, err
+	}
+	if err := invokeRimeBuild(userDir, sharedDir); err != nil {
+		return safety, fmt.Errorf("用户数据已恢复，但 Rime 重新构建失败：%w", err)
+	}
+	if _, err := notifyRuntimeChange(userDir, runtimechange.ScopeSettings, true); err != nil {
+		return safety, err
+	}
+	if _, err := notifyRuntimeChange(userDir, runtimechange.ScopeLexicon, true); err != nil {
+		return safety, err
+	}
+	return safety, nil
+}
+
+func (state *appState) finishRestore() {
+	err, info := state.finishOperation()
+	if err != nil {
+		message := "恢复未能完整完成：" + err.Error()
+		if info != "" {
+			message += "\n\n" + info
+		}
+		showError(message)
+		return
+	}
+	state.refreshView()
+	showInfo("可移植用户数据已经恢复，Rime 已重新构建并通知 YIME 重新加载。\n\n" + info)
+}
+
+func (state *appState) beginOperation(title string) bool {
+	state.applyMu.Lock()
+	defer state.applyMu.Unlock()
+	if state.applyRunning {
+		return false
+	}
+	state.applyRunning = true
+	state.applyErr = nil
+	state.operationInfo = ""
+	setWindowText(state.mainHWND, title)
+	return true
+}
+
+func (state *appState) finishOperation() (error, string) {
+	state.applyMu.Lock()
+	defer state.applyMu.Unlock()
+	err := state.applyErr
+	info := state.operationInfo
+	state.applyErr = nil
+	state.operationInfo = ""
+	state.applyRunning = false
 	setWindowText(state.mainHWND, "Yime 设置")
+	return err, info
 }
 
 func (state *appState) presentMainWindow() {
@@ -529,6 +661,13 @@ func showInfo(message string) {
 	text, _ := syscall.UTF16PtrFromString(message)
 	title, _ := syscall.UTF16PtrFromString("Yime 设置")
 	procMessageBoxW.Call(0, uintptr(unsafe.Pointer(text)), uintptr(unsafe.Pointer(title)), 0x40)
+}
+
+func showConfirm(message string) bool {
+	text, _ := syscall.UTF16PtrFromString(message)
+	title, _ := syscall.UTF16PtrFromString("Yime 设置")
+	result, _, _ := procMessageBoxW.Call(0, uintptr(unsafe.Pointer(text)), uintptr(unsafe.Pointer(title)), 0x24)
+	return result == 6
 }
 func setWindowText(hwnd syscall.Handle, text string) {
 	ptr, _ := syscall.UTF16PtrFromString(text)

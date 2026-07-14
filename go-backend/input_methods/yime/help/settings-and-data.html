@@ -64,13 +64,22 @@ code {
   </article>
 
   <article>
-    <h2>为什么有些设置需要“应用并重建”</h2>
+    <h2>设置工具中的备份与恢复</h2>
+    <ul>
+      <li><strong>备份</strong>：在 Windows“文档\YIME 备份”中创建带时间戳、文件清单和 SHA-256 校验的完整用户数据快照。</li>
+      <li><strong>备份范围</strong>：包括 YIME 设置、用户词库、屏蔽词表和 Rime <code>sync</code> 同步数据；不包括可重新生成的 <code>build</code>、临时通知文件，以及输入法运行期间被锁定且不能一致复制的 <code>*.userdb</code> LevelDB 目录。</li>
+      <li><strong>恢复</strong>：恢复最近一次手工备份。恢复前自动保存当前数据，恢复后重新构建 Rime，并通知 YIME 重载设置和词库。</li>
+    </ul>
+  </article>
+
+  <article>
+    <h2>“应用”设置时为什么需要重建</h2>
     <p>像方案切换、候选项数这类设置，不只是改界面显示，还需要让 Rime 运行时重新读取并编译相关配置。所以单纯保存文件可能不够，通常需要再执行一次重建或重新部署。</p>
     <ul>
       <li>保存文件：把设置写到用户目录中的配置文件。</li>
-      <li>应用并重建：保存后再调用 <code>rime_deployer.exe</code>，让运行时真正看到新值。</li>
+      <li>应用：保存后再调用 <code>rime_deployer.exe</code>，让运行时真正看到新值。</li>
     </ul>
-    <p>独立工具完成重建后，已激活的输入会话可能仍持有旧状态。可重新激活输入法或使用语言栏“重新部署 Rime”刷新。</p>
+    <p>独立工具完成重建后，会通知当前 YIME 会话重新读取设置。</p>
   </article>
 
   <article>

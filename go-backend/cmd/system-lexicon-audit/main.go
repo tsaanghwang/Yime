@@ -36,26 +36,40 @@ const (
 	idDetailView    = 106
 	idExportButton  = 107
 	idStatusLabel   = 108
+	idBusyProgress  = 109
 
-	cbsDropdownlist       = 0x0003
-	lbResetcontent        = 0x0184
-	lbAddstring           = 0x0180
-	lbGetcursel           = 0x0188
-	lbSethorizontalextent = 0x0194
-	cbAddstring           = 0x0143
-	cbSetcursel           = 0x014E
-	cbGetcursel           = 0x0147
-	cbSelchange           = 1
-	lbnSelchange          = 1
+	cbsDropdownlist = 0x0003
+	cbAddstring     = 0x0143
+	cbSetcursel     = 0x014E
+	cbGetcursel     = 0x0147
+	cbSelchange     = 1
 
-	wsChild       = 0x40000000
-	wsVisible     = 0x10000000
-	wsBorder      = 0x00800000
-	wsVscroll     = 0x00200000
-	wsTabstop     = 0x00010000
-	lbsNotify     = 0x0001
-	lbsHasstrings = 0x0040
-	listBoxStyle  = wsChild | wsVisible | wsBorder | wsVscroll | wsTabstop | lbsNotify | lbsHasstrings
+	wsChild             = 0x40000000
+	wsVisible           = 0x10000000
+	wsBorder            = 0x00800000
+	wsVscroll           = 0x00200000
+	wsTabstop           = 0x00010000
+	listViewStyle       = wsChild | wsVisible | wsBorder | wsVscroll | wsTabstop | 0x0001 | 0x0004 | 0x0008
+	lvmFirst            = 0x1000
+	lvmDeleteallitems   = lvmFirst + 9
+	lvmGetnextitem      = lvmFirst + 12
+	lvmSetcolumnwidth   = lvmFirst + 30
+	lvmSetitemstate     = lvmFirst + 43
+	lvmSetextendedstyle = lvmFirst + 54
+	lvmInsertitemw      = lvmFirst + 77
+	lvmInsertcolumnw    = lvmFirst + 97
+	lvmSetitemtextw     = lvmFirst + 116
+	lvifText            = 0x0001
+	lvcfText            = 0x0004
+	lvcfWidth           = 0x0002
+	lvniSelected        = 0x0002
+	lvisFocused         = 0x0001
+	lvisSelected        = 0x0002
+	lvsExGridlines      = 0x00000001
+	lvsExFullrowselect  = 0x00000020
+	lvsExDoublebuffer   = 0x00010000
+	pbsMarquee          = 0x0008
+	pbmSetMarquee       = 0x040A
 
 	esMultiline     = 0x0004
 	esReadonly      = 0x0800
@@ -73,6 +87,7 @@ var (
 	procDispatchMessageW     = moduser32.NewProc("DispatchMessageW")
 	procGetMessageW          = moduser32.NewProc("GetMessageW")
 	procTranslateMessageW    = moduser32.NewProc("TranslateMessage")
+	procIsDialogMessageW     = moduser32.NewProc("IsDialogMessageW")
 	procPostQuitMessage      = moduser32.NewProc("PostQuitMessage")
 	procRegisterClassExW     = moduser32.NewProc("RegisterClassExW")
 	procSendMessageW         = moduser32.NewProc("SendMessageW")
@@ -87,6 +102,9 @@ var (
 	procAdjustWindowRectEx   = moduser32.NewProc("AdjustWindowRectEx")
 	procInitCommonControlsEx = modcomctl32.NewProc("InitCommonControlsEx")
 	procSetFocus             = moduser32.NewProc("SetFocus")
+	procEnableWindow         = moduser32.NewProc("EnableWindow")
+	procMoveWindow           = moduser32.NewProc("MoveWindow")
+	procShowWindow           = moduser32.NewProc("ShowWindow")
 
 	wndProcCallback uintptr
 )
@@ -119,9 +137,42 @@ type rect struct {
 	Left, Top, Right, Bottom int32
 }
 
+type point struct{ X, Y int32 }
+type minMaxInfo struct {
+	Reserved, MaxSize, MaxPosition, MinTrackSize, MaxTrackSize point
+}
+
 type initCommonControlsEx struct {
 	Size uint32
 	ICC  uint32
+}
+
+type listViewColumn struct {
+	Mask                                                               uint32
+	Format, Width                                                      int32
+	Text                                                               *uint16
+	TextMax, SubItem, Image, Order, MinWidth, DefaultWidth, IdealWidth int32
+}
+type listViewItem struct {
+	Mask             uint32
+	Item, SubItem    int32
+	State, StateMask uint32
+	Text             *uint16
+	TextMax, Image   int32
+	Param            uintptr
+	Indent, GroupID  int32
+	Columns          uint32
+	Column           *uint32
+	Group            int32
+}
+type notifyHeader struct {
+	WindowFrom syscall.Handle
+	IDFrom     uintptr
+	Code       int32
+}
+type auditColumnSpec struct {
+	title string
+	width int32
 }
 
 type modeOption struct {
@@ -158,12 +209,18 @@ type appState struct {
 	mu                 sync.Mutex
 	layout             uiLayout
 	mainHWND           syscall.Handle
+	searchLabelHWND    syscall.Handle
 	searchHWND         syscall.Handle
+	refreshHWND        syscall.Handle
+	ruleLabelHWND      syscall.Handle
 	ruleHWND           syscall.Handle
+	modeLabelHWND      syscall.Handle
 	modeHWND           syscall.Handle
+	exportHWND         syscall.Handle
 	resultHWND         syscall.Handle
 	detailHWND         syscall.Handle
 	statusHWND         syscall.Handle
+	progressHWND       syscall.Handle
 	modeOptions        []modeOption
 	ruleOptions        []systemlexicon.RuleID
 }
@@ -197,57 +254,34 @@ func main() {
 }
 
 func buildUILayout() uiLayout {
-	const (
-		margin       = int32(12)
-		gap          = int32(8)
-		rowGap       = int32(6)
-		rowH         = int32(26)
-		clientW      = int32(720)
-		searchLabelW = int32(36)
-		ruleLabelW   = int32(36)
-		modeLabelW   = int32(36)
-		ruleComboW   = int32(132)
-		modeComboW   = int32(92)
-		refreshBtnW  = int32(64)
-		exportBtnW   = int32(88)
-		listH        = int32(300)
-		detailH      = int32(72)
-		statusH      = int32(44)
-	)
+	return buildUILayoutForSize(820, 600)
+}
 
-	row1Y := int32(10)
-	row2Y := row1Y + rowH + rowGap
+func buildUILayoutForSize(clientW, clientH int32) uiLayout {
+	const margin, gap, rowH = int32(12), int32(8), int32(26)
+	l := uiLayout{clientW: clientW, clientH: clientH}
+	right := clientW - margin
+	l.searchLabel = rect{margin, 14, margin + 40, 32}
+	l.refreshButton = rect{right - 88, 10, right, 36}
+	l.searchEdit = rect{l.searchLabel.Right + gap, 10, l.refreshButton.Left - gap, 36}
 
-	layout := uiLayout{clientW: clientW}
+	const ruleLabelW, ruleComboW, modeLabelW, modeComboW, exportW = int32(40), int32(180), int32(40), int32(100), int32(96)
+	groupW := ruleLabelW + gap + ruleComboW + gap + modeLabelW + gap + modeComboW + gap + exportW
+	x := margin + (right-margin-groupW)/2
+	l.ruleLabel = rect{x, 46, x + ruleLabelW, 64}
+	x = l.ruleLabel.Right + gap
+	l.ruleCombo = rect{x, 42, x + ruleComboW, 162}
+	x = l.ruleCombo.Right + gap
+	l.modeLabel = rect{x, 46, x + modeLabelW, 64}
+	x = l.modeLabel.Right + gap
+	l.modeCombo = rect{x, 42, x + modeComboW, 162}
+	x = l.modeCombo.Right + gap
+	l.exportButton = rect{x, 42, x + exportW, 42 + rowH}
 
-	layout.searchLabel = rect{margin, row1Y + 4, margin + searchLabelW, row1Y + 4 + 18}
-	searchEditLeft := margin + searchLabelW + gap
-	searchEditRight := clientW - margin - refreshBtnW - gap
-	layout.searchEdit = rect{searchEditLeft, row1Y, searchEditRight, row1Y + rowH}
-	layout.refreshButton = rect{searchEditRight + gap, row1Y, clientW - margin, row1Y + rowH}
-
-	x := margin
-	layout.ruleLabel = rect{x, row2Y + 4, x + ruleLabelW, row2Y + 4 + 18}
-	x += ruleLabelW + gap
-	layout.ruleCombo = rect{x, row2Y, x + ruleComboW, row2Y + 120}
-	x += ruleComboW + gap
-	layout.modeLabel = rect{x, row2Y + 4, x + modeLabelW, row2Y + 4 + 18}
-	x += modeLabelW + gap
-	layout.modeCombo = rect{x, row2Y, x + modeComboW, row2Y + 120}
-	x += modeComboW + gap
-	layout.exportButton = rect{x, row2Y, x + exportBtnW, row2Y + rowH}
-
-	listY := row2Y + rowH + gap
-	layout.resultList = rect{margin, listY, clientW - margin, listY + listH}
-
-	detailY := layout.resultList.Bottom + gap
-	layout.detailView = rect{margin, detailY, clientW - margin, detailY + detailH}
-
-	statusY := layout.detailView.Bottom + gap
-	layout.statusLabel = rect{margin, statusY, clientW - margin, statusY + statusH}
-
-	layout.clientH = layout.statusLabel.Bottom + margin
-	return layout
+	l.statusLabel = rect{margin, clientH - margin - 28, right, clientH - margin}
+	l.detailView = rect{margin, l.statusLabel.Top - gap - 112, right, l.statusLabel.Top - gap}
+	l.resultList = rect{margin, 76, right, l.detailView.Top - gap}
+	return l
 }
 
 func windowSizeForClient(clientW, clientH int32) (winW, winH int32) {
@@ -330,19 +364,22 @@ func runWin32App(state *appState) error {
 		if int32(ret) <= 0 {
 			break
 		}
-		procTranslateMessageW.Call(uintptr(unsafe.Pointer(&message)))
-		procDispatchMessageW.Call(uintptr(unsafe.Pointer(&message)))
+		handled, _, _ := procIsDialogMessageW.Call(uintptr(state.mainHWND), uintptr(unsafe.Pointer(&message)))
+		if handled == 0 {
+			procTranslateMessageW.Call(uintptr(unsafe.Pointer(&message)))
+			procDispatchMessageW.Call(uintptr(unsafe.Pointer(&message)))
+		}
 	}
 	return nil
 }
 
 func (state *appState) createChildControls() {
 	l := state.layout
-	createControl("STATIC", "搜索", 0x50000000, l.searchLabel, state.mainHWND, 0)
+	state.searchLabelHWND = createControl("STATIC", "搜索", 0x50000000, l.searchLabel, state.mainHWND, 0)
 	state.searchHWND = createControl("EDIT", "", 0x50210000, l.searchEdit, state.mainHWND, idSearchEdit)
-	createControl("BUTTON", "刷新", 0x50010000, l.refreshButton, state.mainHWND, idRefreshButton)
+	state.refreshHWND = createControl("BUTTON", "重新扫描", 0x50010000, l.refreshButton, state.mainHWND, idRefreshButton)
 
-	createControl("STATIC", "规则", 0x50000000, l.ruleLabel, state.mainHWND, 0)
+	state.ruleLabelHWND = createControl("STATIC", "规则", 0x50000000, l.ruleLabel, state.mainHWND, 0)
 	state.ruleHWND = createControl("COMBOBOX", "", 0x50200000|cbsDropdownlist, l.ruleCombo, state.mainHWND, idRuleCombo)
 	for _, rule := range state.ruleOptions {
 		label, _ := syscall.UTF16PtrFromString(systemlexicon.RuleLabel(rule))
@@ -350,7 +387,7 @@ func (state *appState) createChildControls() {
 	}
 	procSendMessageW.Call(uintptr(state.ruleHWND), cbSetcursel, 0, 0)
 
-	createControl("STATIC", "方案", 0x50000000, l.modeLabel, state.mainHWND, 0)
+	state.modeLabelHWND = createControl("STATIC", "方案", 0x50000000, l.modeLabel, state.mainHWND, 0)
 	state.modeHWND = createControl("COMBOBOX", "", 0x50200000|cbsDropdownlist, l.modeCombo, state.mainHWND, idModeCombo)
 	selectedIndex := 0
 	for index, option := range state.modeOptions {
@@ -362,10 +399,80 @@ func (state *appState) createChildControls() {
 	}
 	procSendMessageW.Call(uintptr(state.modeHWND), cbSetcursel, uintptr(selectedIndex), 0)
 
-	createControl("BUTTON", "导出报告", 0x50010000, l.exportButton, state.mainHWND, idExportButton)
-	state.resultHWND = createControl("LISTBOX", "", listBoxStyle, l.resultList, state.mainHWND, idResultList)
+	state.exportHWND = createControl("BUTTON", "导出报告", 0x50010000, l.exportButton, state.mainHWND, idExportButton)
+	state.resultHWND = createControl("SysListView32", "", listViewStyle, l.resultList, state.mainHWND, idResultList)
+	state.configureAuditColumns()
 	state.detailHWND = createControl("EDIT", "审查结果将显示在此。本工具只读，不会修改系统词库。", detailViewStyle, l.detailView, state.mainHWND, idDetailView)
 	state.statusHWND = createControl("STATIC", "正在加载系统词库...", 0x50000000, l.statusLabel, state.mainHWND, idStatusLabel)
+	state.progressHWND = createControl("msctls_progress32", "", wsChild|pbsMarquee, l.statusLabel, state.mainHWND, idBusyProgress)
+	state.layoutControls(l.clientW, l.clientH)
+	state.updateControlState()
+	procSetFocus.Call(uintptr(state.searchHWND))
+}
+
+func auditColumns() []auditColumnSpec {
+	return []auditColumnSpec{{"规则", 160}, {"词条", 180}, {"编码", 300}, {"权重", 100}}
+}
+
+func (state *appState) configureAuditColumns() {
+	extended := uintptr(lvsExGridlines | lvsExFullrowselect | lvsExDoublebuffer)
+	procSendMessageW.Call(uintptr(state.resultHWND), lvmSetextendedstyle, extended, extended)
+	for index, spec := range auditColumns() {
+		text, _ := syscall.UTF16PtrFromString(spec.title)
+		column := listViewColumn{Mask: lvcfText | lvcfWidth, Width: spec.width, Text: text}
+		procSendMessageW.Call(uintptr(state.resultHWND), lvmInsertcolumnw, uintptr(index), uintptr(unsafe.Pointer(&column)))
+	}
+}
+
+func auditColumnWidths(listWidth int32) []int32 {
+	const rule, phrase, weight, chrome = int32(160), int32(180), int32(100), int32(22)
+	code := listWidth - rule - phrase - weight - chrome
+	if code < 220 {
+		code = 220
+	}
+	return []int32{rule, phrase, code, weight}
+}
+
+func moveControl(hwnd syscall.Handle, box rect) {
+	if hwnd == 0 {
+		return
+	}
+	procMoveWindow.Call(uintptr(hwnd), uintptr(box.Left), uintptr(box.Top), uintptr(box.Right-box.Left), uintptr(box.Bottom-box.Top), 1)
+}
+
+func statusProgressLayout(status rect, busy bool) (rect, rect) {
+	if !busy {
+		return status, rect{}
+	}
+	progress := rect{status.Right - 180, status.Top, status.Right, status.Bottom}
+	status.Right = progress.Left - 8
+	return status, progress
+}
+
+func (state *appState) layoutControls(clientW, clientH int32) {
+	if clientW <= 0 || clientH <= 0 {
+		return
+	}
+	state.layout = buildUILayoutForSize(clientW, clientH)
+	l := state.layout
+	moveControl(state.searchLabelHWND, l.searchLabel)
+	moveControl(state.searchHWND, l.searchEdit)
+	moveControl(state.refreshHWND, l.refreshButton)
+	moveControl(state.ruleLabelHWND, l.ruleLabel)
+	moveControl(state.ruleHWND, l.ruleCombo)
+	moveControl(state.modeLabelHWND, l.modeLabel)
+	moveControl(state.modeHWND, l.modeCombo)
+	moveControl(state.exportHWND, l.exportButton)
+	moveControl(state.resultHWND, l.resultList)
+	moveControl(state.detailHWND, l.detailView)
+	status, progress := statusProgressLayout(l.statusLabel, state.isLoading())
+	moveControl(state.statusHWND, status)
+	if progress.Right > progress.Left {
+		moveControl(state.progressHWND, progress)
+	}
+	for index, width := range auditColumnWidths(l.resultList.Right - l.resultList.Left) {
+		procSendMessageW.Call(uintptr(state.resultHWND), lvmSetcolumnwidth, uintptr(index), uintptr(width))
+	}
 }
 
 func createControl(className, text string, style int32, box rect, parent syscall.Handle, id int) syscall.Handle {
@@ -388,8 +495,20 @@ func createControl(className, text string, style int32, box rect, parent syscall
 
 func (state *appState) wndProc(hwnd syscall.Handle, message uint32, wParam, lParam uintptr) uintptr {
 	switch message {
+	case 0x0005:
+		state.layoutControls(int32(lParam&0xffff), int32((lParam>>16)&0xffff))
+		return 0
+	case 0x0024:
+		if lParam != 0 {
+			w, h := windowSizeForClient(820, 600)
+			(*minMaxInfo)(unsafe.Pointer(lParam)).MinTrackSize = point{w, h}
+		}
+		return 0
 	case 0x0111:
 		procPostMessageW.Call(uintptr(state.mainHWND), wmAppCommand, wParam, lParam)
+		return 0
+	case 0x004E:
+		state.handleNotify(lParam)
 		return 0
 	case wmAppCommand:
 		state.handleWMCommand(wParam, lParam)
@@ -426,4 +545,10 @@ func showWin32Error(message string) {
 	text, _ := syscall.UTF16PtrFromString(message)
 	title, _ := syscall.UTF16PtrFromString("Yime 系统词库审查")
 	procMessageBoxW.Call(0, uintptr(unsafe.Pointer(text)), uintptr(unsafe.Pointer(title)), 0x10)
+}
+
+func showWin32Info(message string) {
+	text, _ := syscall.UTF16PtrFromString(message)
+	title, _ := syscall.UTF16PtrFromString("Yime 系统词库审查")
+	procMessageBoxW.Call(0, uintptr(unsafe.Pointer(text)), uintptr(unsafe.Pointer(title)), 0x40)
 }

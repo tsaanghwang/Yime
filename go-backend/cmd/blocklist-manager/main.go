@@ -38,25 +38,30 @@ const (
 	idBtnImport      = 203
 	idBtnExport      = 204
 	idBtnOpenFolder  = 205
+	idBtnUndo        = 206
 
-	wsChild        = 0x40000000
-	wsVisible      = 0x10000000
-	wsBorder       = 0x00800000
-	wsVscroll      = 0x00200000
-	wsTabstop      = 0x00010000
-	lbsNotify      = 0x0001
-	lbsHasstrings  = 0x0040
-	lbsMultiplesel = 0x0008
-	lbsExtendedsel = 0x0800
-	entryListStyle = wsChild | wsVisible | wsBorder | wsVscroll | wsTabstop | lbsNotify | lbsHasstrings | lbsMultiplesel | lbsExtendedsel
-
-	lbResetcontent        = 0x0184
-	lbAddstring           = 0x0180
-	lbSetsel              = 0x0185
-	lbGetselcount         = 0x0190
-	lbGetselitems         = 0x0191
-	lbSethorizontalextent = 0x0194
-	lbnSelchange          = 1
+	wsChild             = 0x40000000
+	wsVisible           = 0x10000000
+	wsBorder            = 0x00800000
+	wsVscroll           = 0x00200000
+	wsTabstop           = 0x00010000
+	entryListStyle      = wsChild | wsVisible | wsBorder | wsVscroll | wsTabstop | 0x0001 | 0x0008
+	lvmFirst            = 0x1000
+	lvmDeleteallitems   = lvmFirst + 9
+	lvmGetnextitem      = lvmFirst + 12
+	lvmSetcolumnwidth   = lvmFirst + 30
+	lvmSetitemstate     = lvmFirst + 43
+	lvmSetextendedstyle = lvmFirst + 54
+	lvmInsertitemw      = lvmFirst + 77
+	lvmInsertcolumnw    = lvmFirst + 97
+	lvifText            = 0x0001
+	lvcfText            = 0x0004
+	lvcfWidth           = 0x0002
+	lvniSelected        = 0x0002
+	lvisSelected        = 0x0002
+	lvsExGridlines      = 0x00000001
+	lvsExFullrowselect  = 0x00000020
+	lvsExDoublebuffer   = 0x00010000
 )
 
 var (
@@ -70,6 +75,7 @@ var (
 	procDispatchMessageW     = moduser32.NewProc("DispatchMessageW")
 	procGetMessageW          = moduser32.NewProc("GetMessageW")
 	procTranslateMessageW    = moduser32.NewProc("TranslateMessage")
+	procIsDialogMessageW     = moduser32.NewProc("IsDialogMessageW")
 	procPostQuitMessage      = moduser32.NewProc("PostQuitMessage")
 	procRegisterClassExW     = moduser32.NewProc("RegisterClassExW")
 	procSendMessageW         = moduser32.NewProc("SendMessageW")
@@ -85,6 +91,8 @@ var (
 	procGetOpenFileNameW     = modcomdlg32.NewProc("GetOpenFileNameW")
 	procGetSaveFileNameW     = modcomdlg32.NewProc("GetSaveFileNameW")
 	procLoadCursorW          = moduser32.NewProc("LoadCursorW")
+	procMoveWindow           = moduser32.NewProc("MoveWindow")
+	procSetFocus             = moduser32.NewProc("SetFocus")
 
 	wndProcCallback uintptr
 )
@@ -117,23 +125,98 @@ type rect struct {
 	Left, Top, Right, Bottom int32
 }
 
+type point struct{ X, Y int32 }
+type minMaxInfo struct{ Reserved, MaxSize, MaxPosition, MinTrackSize, MaxTrackSize point }
+
 type initCommonControlsEx struct {
 	Size uint32
 	ICC  uint32
 }
 
+type listViewColumn struct {
+	Mask                                                               uint32
+	Format, Width                                                      int32
+	Text                                                               *uint16
+	TextMax, SubItem, Image, Order, MinWidth, DefaultWidth, IdealWidth int32
+}
+type listViewItem struct {
+	Mask             uint32
+	Item, SubItem    int32
+	State, StateMask uint32
+	Text             *uint16
+	TextMax, Image   int32
+	Param            uintptr
+	Indent, GroupID  int32
+	Columns          uint32
+	Column           *uint32
+	Group            int32
+}
+type notifyHeader struct {
+	WindowFrom syscall.Handle
+	IDFrom     uintptr
+	Code       int32
+}
+
+const blocklistColumnTitle = "屏蔽词"
+
+type blocklistLayout struct {
+	clientW, clientH                                                    int32
+	toolbar                                                             []rect
+	info, searchLabel, searchEdit, searchReset, list, selection, status rect
+}
+
 type appState struct {
-	userDir        string
-	sourcePath     string
-	visibleEntries []userblocklist.Entry
-	mainHWND       syscall.Handle
-	searchHWND     syscall.Handle
-	listHWND       syscall.Handle
-	selectionHWND  syscall.Handle
-	summaryHWND    syscall.Handle
-	statusHWND     syscall.Handle
-	clientW        int32
-	clientH        int32
+	userDir         string
+	sourcePath      string
+	visibleEntries  []userblocklist.Entry
+	lastUndoEntries []userblocklist.Entry
+	lastUndoLabel   string
+	mainHWND        syscall.Handle
+	toolbarHWNDs    []syscall.Handle
+	infoHWND        syscall.Handle
+	searchLabelHWND syscall.Handle
+	searchHWND      syscall.Handle
+	searchResetHWND syscall.Handle
+	listHWND        syscall.Handle
+	selectionHWND   syscall.Handle
+	statusHWND      syscall.Handle
+	clientW         int32
+	clientH         int32
+}
+
+func toolbarItems() []struct {
+	text string
+	id   int
+} {
+	return []struct {
+		text string
+		id   int
+	}{{"添加", idBtnAdd}, {"删除", idBtnDelete}, {"撤销", idBtnUndo}, {"导入", idBtnImport}, {"导出", idBtnExport}, {"目录", idBtnOpenFolder}}
+}
+
+func buildLayout(clientW, clientH int32) blocklistLayout {
+	const margin, gap = int32(8), int32(6)
+	l := blocklistLayout{clientW: clientW, clientH: clientH}
+	items := toolbarItems()
+	buttonW := (clientW - margin*2 - gap*int32(len(items)-1)) / int32(len(items))
+	if buttonW > 96 {
+		buttonW = 96
+	}
+	total := buttonW*int32(len(items)) + gap*int32(len(items)-1)
+	x := (clientW - total) / 2
+	for range items {
+		l.toolbar = append(l.toolbar, rect{x, 8, x + buttonW, 36})
+		x += buttonW + gap
+	}
+	l.info = rect{margin, 44, clientW - margin, 64}
+	l.searchLabel = rect{margin, 76, margin + 40, 96}
+	l.searchReset = rect{clientW - margin - 64, 72, clientW - margin, 98}
+	l.searchEdit = rect{l.searchLabel.Right + 4, 72, l.searchReset.Left - gap, 98}
+	listBottom := clientH - 80
+	l.list = rect{margin, 106, clientW - margin, listBottom}
+	l.selection = rect{margin, listBottom + 8, clientW - margin, listBottom + 32}
+	l.status = rect{margin, listBottom + 40, clientW - margin, listBottom + 64}
+	return l
 }
 
 func main() {
@@ -218,47 +301,111 @@ func runApp(state *appState) error {
 		if int32(ret) <= 0 {
 			break
 		}
-		procTranslateMessageW.Call(uintptr(unsafe.Pointer(&message)))
-		procDispatchMessageW.Call(uintptr(unsafe.Pointer(&message)))
+		handled, _, _ := procIsDialogMessageW.Call(uintptr(state.mainHWND), uintptr(unsafe.Pointer(&message)))
+		if handled == 0 {
+			procTranslateMessageW.Call(uintptr(unsafe.Pointer(&message)))
+			procDispatchMessageW.Call(uintptr(unsafe.Pointer(&message)))
+		}
 	}
 	return nil
 }
 
 func (state *appState) createControls() {
-	const margin = int32(8)
-	toolbarY := int32(8)
-	x := margin
-	for _, spec := range []struct {
-		text string
-		id   int
-	}{
-		{"添加", idBtnAdd},
-		{"删除", idBtnDelete},
-		{"导入", idBtnImport},
-		{"导出", idBtnExport},
-		{"目录", idBtnOpenFolder},
-	} {
-		createButton(state.mainHWND, spec.text, rect{x, toolbarY, x + 72, toolbarY + 28}, spec.id)
-		x += 76
+	l := buildLayout(state.clientW, state.clientH)
+	for index, spec := range toolbarItems() {
+		state.toolbarHWNDs = append(state.toolbarHWNDs, createButton(state.mainHWND, spec.text, l.toolbar[index], spec.id))
 	}
-
-	createStatic(state.mainHWND, "添加到本表的词条将不会出现在输入候选中。保存后立即生效，无需重新部署。", rect{margin, 44, 664, 64}, 0)
-	createStatic(state.mainHWND, "搜索", rect{margin, 72, margin + 36, 92}, 0)
-	state.searchHWND = createEdit(state.mainHWND, rect{52, 68, 540, 94}, idSearchEdit)
-	createButton(state.mainHWND, "清空", rect{548, 68, 604, 94}, idSearchReset)
-
-	state.listHWND = createControl("LISTBOX", "", entryListStyle, rect{margin, 100, 664, 360}, state.mainHWND, idEntryList)
-	state.selectionHWND = createStatic(state.mainHWND, "未选中词条", rect{margin, 368, 664, 388}, idSelectionLabel)
-	state.summaryHWND = createStatic(state.mainHWND, "", rect{margin, 392, 664, 420}, idSummaryLabel)
-	state.statusHWND = createStatic(state.mainHWND, "就绪。", rect{margin, 424, 664, 444}, idStatusLabel)
-
+	state.infoHWND = createStatic(state.mainHWND, "添加到本表的词条不会出现在输入候选中；所有改动保存后立即生效。", l.info, 0)
+	state.searchLabelHWND = createStatic(state.mainHWND, "搜索", l.searchLabel, 0)
+	state.searchHWND = createEdit(state.mainHWND, l.searchEdit, idSearchEdit)
+	state.searchResetHWND = createButton(state.mainHWND, "清空", l.searchReset, idSearchReset)
+	state.listHWND = createControl("SysListView32", "", entryListStyle, l.list, state.mainHWND, idEntryList)
+	state.configureListView()
+	state.selectionHWND = createStatic(state.mainHWND, "请在表格中选择要删除的词条。", l.selection, idSelectionLabel)
+	state.statusHWND = createStatic(state.mainHWND, "就绪。", l.status, idStatusLabel)
+	state.layoutControls(state.clientW, state.clientH)
 	state.refreshList()
+}
+
+func (state *appState) configureListView() {
+	extended := uintptr(lvsExGridlines | lvsExFullrowselect | lvsExDoublebuffer)
+	procSendMessageW.Call(uintptr(state.listHWND), lvmSetextendedstyle, extended, extended)
+	text, _ := syscall.UTF16PtrFromString(blocklistColumnTitle)
+	column := listViewColumn{Mask: lvcfText | lvcfWidth, Width: state.clientW - 38, Text: text}
+	procSendMessageW.Call(uintptr(state.listHWND), lvmInsertcolumnw, 0, uintptr(unsafe.Pointer(&column)))
+}
+
+func moveControl(hwnd syscall.Handle, box rect) {
+	if hwnd != 0 {
+		procMoveWindow.Call(uintptr(hwnd), uintptr(box.Left), uintptr(box.Top), uintptr(box.Right-box.Left), uintptr(box.Bottom-box.Top), 1)
+	}
+}
+
+func (state *appState) layoutControls(clientW, clientH int32) {
+	if clientW <= 0 || clientH <= 0 {
+		return
+	}
+	state.clientW, state.clientH = clientW, clientH
+	l := buildLayout(clientW, clientH)
+	for index, hwnd := range state.toolbarHWNDs {
+		moveControl(hwnd, l.toolbar[index])
+	}
+	moveControl(state.infoHWND, l.info)
+	moveControl(state.searchLabelHWND, l.searchLabel)
+	moveControl(state.searchHWND, l.searchEdit)
+	moveControl(state.searchResetHWND, l.searchReset)
+	moveControl(state.listHWND, l.list)
+	moveControl(state.selectionHWND, l.selection)
+	moveControl(state.statusHWND, l.status)
+	procSendMessageW.Call(uintptr(state.listHWND), lvmSetcolumnwidth, 0, uintptr(l.list.Right-l.list.Left-22))
+}
+
+func (state *appState) toolbarButton(id int) syscall.Handle {
+	for index, item := range toolbarItems() {
+		if item.id == id && index < len(state.toolbarHWNDs) {
+			return state.toolbarHWNDs[index]
+		}
+	}
+	return 0
+}
+
+func (state *appState) updateToolbarState() {
+	selected := len(state.selectedPhrases())
+	procEnableWindow.Call(uintptr(state.toolbarButton(idBtnDelete)), boolToUintptr(selected > 0))
+	procEnableWindow.Call(uintptr(state.toolbarButton(idBtnUndo)), boolToUintptr(state.lastUndoEntries != nil))
+	setWindowText(state.toolbarButton(idBtnUndo), undoButtonText(state.lastUndoLabel))
+}
+
+func undoButtonText(label string) string {
+	if strings.TrimSpace(label) == "" {
+		return "撤销"
+	}
+	return "撤销" + label
+}
+
+func boolToUintptr(value bool) uintptr {
+	if value {
+		return 1
+	}
+	return 0
 }
 
 func (state *appState) wndProc(hwnd syscall.Handle, message uint32, wParam, lParam uintptr) uintptr {
 	switch message {
+	case 0x0005:
+		state.layoutControls(int32(lParam&0xffff), int32((lParam>>16)&0xffff))
+		return 0
+	case 0x0024:
+		if lParam != 0 {
+			w, h := windowSizeForClient(680, 480)
+			(*minMaxInfo)(unsafe.Pointer(lParam)).MinTrackSize = point{w, h}
+		}
+		return 0
 	case 0x0111:
 		procPostMessageW.Call(uintptr(state.mainHWND), wmAppCommand, wParam, lParam)
+		return 0
+	case 0x004E:
+		state.handleNotify(lParam)
 		return 0
 	case wmAppCommand:
 		state.handleCommand(wParam, lParam)
@@ -297,6 +444,10 @@ func (state *appState) handleCommand(wParam, lParam uintptr) {
 		if notifyCode == 0 {
 			state.deleteSelected()
 		}
+	case idBtnUndo:
+		if notifyCode == 0 {
+			state.undoLastChange()
+		}
 	case idBtnImport:
 		if notifyCode == 0 {
 			state.importEntries()
@@ -318,10 +469,16 @@ func (state *appState) handleCommand(wParam, lParam uintptr) {
 		if notifyCode == enChange {
 			procPostMessageW.Call(uintptr(state.mainHWND), wmAppRefresh, 0, 0)
 		}
-	case idEntryList:
-		if notifyCode == 1 {
-			state.updateSelectionSummary()
-		}
+	}
+}
+
+func (state *appState) handleNotify(lParam uintptr) {
+	if lParam == 0 {
+		return
+	}
+	header := (*notifyHeader)(unsafe.Pointer(lParam))
+	if int(header.IDFrom) == idEntryList && header.Code == -101 {
+		state.updateSelectionSummary()
 	}
 }
 
@@ -382,6 +539,13 @@ func showMessageBox(message string, flags uintptr) {
 	text, _ := syscall.UTF16PtrFromString(message)
 	title, _ := syscall.UTF16PtrFromString("用户屏蔽词表")
 	procMessageBoxW.Call(uintptr(statelessOwner()), uintptr(unsafe.Pointer(text)), uintptr(unsafe.Pointer(title)), flags)
+}
+
+func showConfirmMessage(owner syscall.Handle, message string) bool {
+	text, _ := syscall.UTF16PtrFromString(message)
+	title, _ := syscall.UTF16PtrFromString("用户屏蔽词表")
+	result, _, _ := procMessageBoxW.Call(uintptr(owner), uintptr(unsafe.Pointer(text)), uintptr(unsafe.Pointer(title)), 0x24)
+	return result == 6
 }
 
 func statelessOwner() syscall.Handle {

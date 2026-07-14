@@ -60,8 +60,8 @@ func showPhraseDialog(owner syscall.Handle, initial, title, okText string) (stri
 		createStatic(hwnd, "要屏蔽的词条", rect{16, 18, 380, 36}, 0)
 		edit := createEdit(hwnd, rect{16, 40, 388, 66}, idDlgPhrase)
 		setWindowText(edit, initial)
-		createButton(hwnd, okText, rect{220, 96, 298, 124}, idDlgOK)
-		createButton(hwnd, "取消", rect{308, 96, 386, 124}, idDlgCancel)
+		createButton(hwnd, okText, rect{122, 96, 202, 124}, idDlgOK)
+		createButton(hwnd, "取消", rect{218, 96, 298, 124}, idDlgCancel)
 	}, func(hwnd syscall.Handle, id int) bool {
 		if id != idDlgOK {
 			return false
@@ -116,7 +116,7 @@ func showSaveFileDialog(owner syscall.Handle, defaultName, filter string) (strin
 		File:       &buf[0],
 		MaxFile:    uint32(len(buf)),
 		Title:      utf16Ptr("导出屏蔽词"),
-		Flags:      0x00080000 | 0x00000002 | 0x00001000,
+		Flags:      0x00080000 | 0x00000002 | 0x00000800,
 	}
 	ret, _, _ := procGetSaveFileNameW.Call(uintptr(unsafe.Pointer(&ofn)))
 	if ret == 0 {
@@ -160,18 +160,22 @@ func showModalForm(owner syscall.Handle, title string, width, height int32, buil
 
 	titlePtr, _ := syscall.UTF16PtrFromString(title)
 	winW, winH := windowSizeForClient(width, height)
+	screenW, _, _ := procGetSystemMetrics.Call(0)
+	screenH, _, _ := procGetSystemMetrics.Call(1)
+	x, y := (int32(screenW)-winW)/2, (int32(screenH)-winH)/2
 	hwnd, _, _ := procCreateWindowExW.Call(
 		uintptr(wsExControlparent|wsExAppwindow),
 		uintptr(unsafe.Pointer(className)),
 		uintptr(unsafe.Pointer(titlePtr)),
 		uintptr(wsOverlappedwindow&^0x00040000),
-		0, 0, uintptr(winW), uintptr(winH),
+		uintptr(x), uintptr(y), uintptr(winW), uintptr(winH),
 		uintptr(owner), 0, instance, 0,
 	)
 	dlg := syscall.Handle(hwnd)
 	build(dlg)
 	procEnableWindow.Call(uintptr(owner), 0)
 	procShowWindow.Call(uintptr(dlg), swShowNormal)
+	procSetFocus.Call(uintptr(findDlgItem(dlg, idDlgPhrase)))
 
 	var message winMsg
 	for !modalClosed {
@@ -179,7 +183,8 @@ func showModalForm(owner syscall.Handle, title string, width, height int32, buil
 		if int32(ret) <= 0 {
 			break
 		}
-		if uintptr(message.Hwnd) == uintptr(dlg) || isChildOf(dlg, message.Hwnd) {
+		handled, _, _ := procIsDialogMessageW.Call(uintptr(dlg), uintptr(unsafe.Pointer(&message)))
+		if handled == 0 {
 			procTranslateMessageW.Call(uintptr(unsafe.Pointer(&message)))
 			procDispatchMessageW.Call(uintptr(unsafe.Pointer(&message)))
 		}
