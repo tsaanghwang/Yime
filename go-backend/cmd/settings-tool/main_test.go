@@ -13,17 +13,20 @@ func TestSettingsUILayoutFitsVisibleControls(t *testing.T) {
 	withoutHelp := buildSettingsUILayout(false)
 	withHelp := buildSettingsUILayout(true)
 
-	if withoutHelp.clientW != withoutHelp.openUserButton.Right+16 {
-		t.Fatalf("window should fit the last visible button: width=%d right=%d", withoutHelp.clientW, withoutHelp.openUserButton.Right)
+	if withoutHelp.clientW != withoutHelp.layoutCombo.Right+16 {
+		t.Fatalf("window should fit the widest settings row: width=%d right=%d", withoutHelp.clientW, withoutHelp.layoutCombo.Right)
 	}
-	if withHelp.clientW != withHelp.openHelpButton.Right+16 {
-		t.Fatalf("window should fit the optional help button: width=%d right=%d", withHelp.clientW, withHelp.openHelpButton.Right)
+	if withHelp.clientW != withHelp.layoutCombo.Right+16 {
+		t.Fatalf("optional help should fit inside the settings width: width=%d right=%d", withHelp.clientW, withHelp.layoutCombo.Right)
 	}
 	if withHelp.clientH != withHelp.applyButton.Bottom+16 {
 		t.Fatalf("window should fit the button row: height=%d bottom=%d", withHelp.clientH, withHelp.applyButton.Bottom)
 	}
-	if withHelp.clientW <= withoutHelp.clientW {
-		t.Fatalf("help button should expand the content-sized window: with=%d without=%d", withHelp.clientW, withoutHelp.clientW)
+	if withoutHelp.applyButton.Right >= withoutHelp.openUserButton.Left {
+		t.Fatal("the merged apply button must not overlap the open-user-directory button")
+	}
+	if withHelp.openHelpButton.Right > withHelp.clientW-16 {
+		t.Fatal("the optional help button must stay inside the content area")
 	}
 	if withHelp.clientW >= 820 || withHelp.clientH >= 680 {
 		t.Fatalf("content-sized layout should be smaller than the former fixed client area: %dx%d", withHelp.clientW, withHelp.clientH)
@@ -53,7 +56,7 @@ func TestExecuteApplyNotifiesActiveSession(t *testing.T) {
 		return runtimechange.Event{}, nil
 	}
 
-	err := executeApply("user", "shared", applyRequest{schemaID: "yime_full", pageSize: 7, reverseMode: "hidden", layout: "vertical", runBuild: true})
+	err := executeApply("user", "shared", applyRequest{schemaID: "yime_full", pageSize: 7, reverseMode: "hidden", layout: "vertical"})
 	if err != nil {
 		t.Fatal(err)
 	}

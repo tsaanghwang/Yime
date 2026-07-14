@@ -32,7 +32,7 @@ func InvokeRimeBuild(userDir, sharedDir string) error {
 	if err != nil {
 		detail := strings.TrimSpace(string(output))
 		if detail == "" {
-			detail = "无输出。若 PIME 正在运行，请先退出托盘中的 PIME，再点【应用并重建】。"
+			detail = "无输出。若 PIME 正在运行，请先退出托盘中的 PIME，再点【应用】。"
 		}
 		return fmt.Errorf("rime_deployer.exe 失败: %w\n%s", err, detail)
 	}

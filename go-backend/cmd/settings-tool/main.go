@@ -35,7 +35,6 @@ const (
 	idReverseCombo  = 103
 	idLayoutCombo   = 104
 	idBtnApply      = 201
-	idBtnApplyBuild = 202
 	idBtnOpenUser   = 203
 	idBtnOpenHelp   = 204
 )
@@ -101,13 +100,12 @@ type rect struct{ Left, Top, Right, Bottom int32 }
 type initCommonControlsEx struct{ Size, ICC uint32 }
 
 type settingsUILayout struct {
-	clientW, clientH               int32
-	schemaLabel, schemaCombo       rect
-	pageLabel, pageCombo           rect
-	reverseLabel, reverseCombo     rect
-	layoutLabel, layoutCombo       rect
-	applyButton, applyBuildButton  rect
-	openUserButton, openHelpButton rect
+	clientW, clientH                            int32
+	schemaLabel, schemaCombo                    rect
+	pageLabel, pageCombo                        rect
+	reverseLabel, reverseCombo                  rect
+	layoutLabel, layoutCombo                    rect
+	applyButton, openUserButton, openHelpButton rect
 }
 
 type appState struct {
@@ -127,7 +125,6 @@ type applyRequest struct {
 	pageSize    int
 	reverseMode string
 	layout      string
-	runBuild    bool
 }
 
 var applySettings = settings.Apply
@@ -251,7 +248,6 @@ func (state *appState) createControls() {
 	// The selected controls already show the current configuration; do not
 	// duplicate it in a developer-oriented "current configuration" summary.
 	createButton(state.mainHWND, "应用", l.applyButton, idBtnApply)
-	createButton(state.mainHWND, "应用并重建", l.applyBuildButton, idBtnApplyBuild)
 	createButton(state.mainHWND, "打开用户目录", l.openUserButton, idBtnOpenUser)
 	if state.helpDir != "" {
 		createButton(state.mainHWND, "设置说明", l.openHelpButton, idBtnOpenHelp)
@@ -289,7 +285,6 @@ func buildSettingsUILayout(withHelp bool) settingsUILayout {
 		return result
 	}
 	l.applyButton = button(84)
-	l.applyBuildButton = button(116)
 	l.openUserButton = button(116)
 	if withHelp {
 		l.openHelpButton = button(100)
@@ -358,9 +353,7 @@ func (state *appState) wndProc(hwnd syscall.Handle, message uint32, wParam, lPar
 func (state *appState) handleCommand(wParam uintptr) {
 	switch int(wParam & 0xffff) {
 	case idBtnApply:
-		state.startApply(false)
-	case idBtnApplyBuild:
-		state.startApply(true)
+		state.startApply()
 	case idBtnOpenUser:
 		_, _ = toolhub.Invoke(toolhub.Entry{ActionType: toolhub.ActionOpenPath, TargetPath: state.userDir})
 	case idBtnOpenHelp:
@@ -370,7 +363,7 @@ func (state *appState) handleCommand(wParam uintptr) {
 	}
 }
 
-func (state *appState) startApply(runBuild bool) {
+func (state *appState) startApply() {
 	state.applyMu.Lock()
 	if state.applyRunning {
 		state.applyMu.Unlock()
@@ -384,7 +377,6 @@ func (state *appState) startApply(runBuild bool) {
 		pageSize:    settings.NormalizePageSizeValue(atoiDefault(selectedComboText(state.pageHWND), 5)),
 		reverseMode: selectedComboValue(state.reverseHWND, settings.ReverseLookupOptions()),
 		layout:      selectedComboValue(state.layoutHWND, settings.CandidateLayoutOptions()),
-		runBuild:    runBuild,
 	}
 	setWindowText(state.mainHWND, "Yime 设置（正在应用……）")
 	go func() {
@@ -403,10 +395,10 @@ func (state *appState) isApplyRunning() bool {
 }
 
 func executeApply(userDir, sharedDir string, request applyRequest) error {
-	if err := applySettings(userDir, sharedDir, request.schemaID, request.pageSize, request.reverseMode, request.layout, request.runBuild); err != nil {
+	if err := applySettings(userDir, sharedDir, request.schemaID, request.pageSize, request.reverseMode, request.layout, true); err != nil {
 		return err
 	}
-	_, err := notifyRuntimeChange(userDir, runtimechange.ScopeSettings, request.runBuild)
+	_, err := notifyRuntimeChange(userDir, runtimechange.ScopeSettings, true)
 	return err
 }
 
