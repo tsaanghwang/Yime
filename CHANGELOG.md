@@ -102,6 +102,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+- Retired Go demo input methods (`meow`, `simple_pinyin`, and `fcitx5`) and their production fallback registrations; protocol integration tests now use a test-only fixture
 - Unused remapYimeCandidateSelectionKey dead code
 - Legacy PIME files removed during dev reinstall
 

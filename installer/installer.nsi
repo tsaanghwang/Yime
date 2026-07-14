@@ -519,6 +519,12 @@ Section $(SECTION_MAIN) SecMain
 
 	; Yime is the standard product payload. Keep it in the required main
 	; section so a default install always contains the configured backend.
+	; These retired Go demo backends were shipped as empty directories by old
+	; development packages. Non-recursive RMDir removes only empty leftovers
+	; and preserves the directory if a user placed any files there.
+	RMDir "$INSTDIR\go-backend\input_methods\fcitx5"
+	RMDir "$INSTDIR\go-backend\input_methods\meow"
+	RMDir "$INSTDIR\go-backend\input_methods\simple_pinyin"
 	SetOutPath "$INSTDIR\go-backend"
 	File /r "..\go-backend\build\go-backend\*.*"
 
