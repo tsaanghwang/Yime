@@ -534,8 +534,9 @@ func (state *appState) wndProc(hwnd syscall.Handle, message uint32, wParam, lPar
 	case 0x0024: // WM_GETMINMAXINFO
 		if lParam != 0 {
 			width, height := windowSizeForClient(820, 560)
-			info := (*minMaxInfo)(unsafe.Pointer(lParam))
+			info := win32ui.ReadMessageStruct[minMaxInfo](lParam)
 			info.MinTrackSize = point{X: width, Y: height}
+			win32ui.WriteMessageStruct(lParam, &info)
 		}
 		return 0
 	case 0x0111: // WM_COMMAND
@@ -655,7 +656,7 @@ func (state *appState) handleNotify(lParam uintptr) {
 	if lParam == 0 || state.suppressListNotify {
 		return
 	}
-	header := (*notifyHeader)(unsafe.Pointer(lParam))
+	header := win32ui.ReadMessageStruct[notifyHeader](lParam)
 	if int(header.IDFrom) == idResultList && header.Code == -101 { // LVN_ITEMCHANGED
 		state.updateDetail(-1)
 	}

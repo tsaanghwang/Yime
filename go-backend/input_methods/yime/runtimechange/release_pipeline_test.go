@@ -31,6 +31,21 @@ func TestReleasePipelineSignsPayloadInstallerAndUninstaller(t *testing.T) {
 			t.Fatalf("CI release signing chain is missing %q", fragment)
 		}
 	}
+	for _, fragment := range []string{
+		"actions/setup-go@v6",
+		"go-version: '1.26.4'",
+		"$requiredYimeTests = @(",
+		"TestDeployCommandQueuesConfirmedExternalBuildWithoutNativeRedeploy",
+		"go test ./input_methods/yime -list '^Test'",
+		"$listedYimeTests -notcontains $testName",
+	} {
+		if !strings.Contains(ci, fragment) {
+			t.Fatalf("CI required-test guard is missing %q", fragment)
+		}
+	}
+	if strings.Contains(ci, "TestDeployCommandRedeploysCurrentSchema") {
+		t.Fatal("CI must not retain the removed synchronous native-redeploy test name")
+	}
 	for _, fragment := range []string{"!finalize", "!uninstfinalize", "sign-file.ps1"} {
 		if !strings.Contains(installer, fragment) {
 			t.Fatalf("NSIS signing hooks are missing %q", fragment)

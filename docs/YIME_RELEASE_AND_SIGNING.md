@@ -6,7 +6,7 @@
 
 - 工作区干净，目标提交已推送到 `yime-stable`
 - 子模块提交已先推送到各自 remote，主仓库不引用远端不存在的提交
-- `version.txt` 已更新为本次发布版本，例如 `1.3.0-beta2`
+- `version.txt` 已从开发标识（当前为 `1.4.0-dev`）更新为本次实际发布版本，例如 `1.4.0-beta1` 或 `1.4.0`
 - `CHANGELOG.md` 的 `[Unreleased]` 已核对
 - Visual Studio、CMake、Rust、Go、Node.js、NSIS 和 `go-winres` 可用
 - Rust 已安装 i686 host 工具链：`rustup toolchain install stable-i686-pc-windows-msvc`。Win32 `PIMELauncher` 构建由根 `CMakeLists.txt` 固定 `Rust_TOOLCHAIN` 指向它（Corrosion v0.6.1），x64 host 工具链会因跨编译 build-script 链接错误而失败
@@ -15,6 +15,10 @@
 ## 2. 版本与可复现构建
 
 Go 工具的文件版本和 `main.version` 均取自仓库根目录 `version.txt`。不要恢复使用 `git describe` 作为每次构建的文件版本；提交哈希变化会使所有 EXE 产生新哈希并丢失 Smart App Control 信誉。
+
+发布构建器与 CI 固定为 Go 1.26.4；`go.mod` 中的 `go 1.21` 仅表示源码语言兼容下限。调整发布构建器版本会改变二进制哈希，必须连同 `go vet`、全量测试、race 和连续构建哈希一起重新验证。
+
+日常开发包必须使用带 `-dev` 的版本，避免与历史正式标签或公开测试版混淆。创建发布标签前，先按语义化版本确定 beta/rc/正式版本，更新 `version.txt` 和 `CHANGELOG.md`，完成干净构建后再签名；不得直接给 `*-dev` 安装包创建公开发布标签。
 
 `go-backend/build.bat` 必须为全部 Go EXE 使用：
 

@@ -99,7 +99,7 @@ func (state *appState) handleNotify(lParam uintptr) {
 	if lParam == 0 || state.suppressListNotify {
 		return
 	}
-	header := (*notifyHeader)(unsafe.Pointer(lParam))
+	header := win32ui.ReadMessageStruct[notifyHeader](lParam)
 	if int(header.IDFrom) == idResultList && header.Code == -101 {
 		state.updateDetail(-1)
 	}

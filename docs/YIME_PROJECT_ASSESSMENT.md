@@ -1,8 +1,8 @@
 # Yime 项目综合评估与收口报告
 
-> 评估日期：2026-07-12
+> 评估日期：2026-07-14
 >
-> 适用基线：`yime-stable` 分支及本轮待提交修改
+> 适用基线：`yime-stable` 分支、`196c326b` 安装态验证及本轮工程门禁收口修改
 >
 > 相关文档：[架构](YIME_ARCHITECTURE.md) | [测试](YIME_TESTING_GUIDE.md) | [发布与签名](YIME_RELEASE_AND_SIGNING.md) | [原生 UI](YIME_NATIVE_UI_GUIDELINES.md)
 
@@ -21,8 +21,8 @@ Yime 已从“功能基本可用但工具链和安装态边界不稳定”进入
 | 活动会话刷新 | 已完成 | 设置、词库和 redeploy 使用独立累积修订号，不再互相覆盖 |
 | 语言栏 | 已清理 | 保留静态标签和稳定命令 ID；高风险点击路径有回归测试 |
 | 构建与打包 | 稳定 | 8 个 Go EXE 可复现、统一图标、包内不携带 Go 源码 |
-| CI 与测试 | 完整度较高 | Go、Rust、CTest 和发布守卫均进入流水线 |
-| 正式签名发布 | 流程已具备 | 尚需真实受信任证书和签名产物验证 |
+| CI 与测试 | 完整度较高 | Go、Rust、CTest 和发布守卫均进入流水线；关键测试名先枚举校验，避免重命名后静默少跑 |
+| 正式签名发布 | 流程已具备 | 开发版本已改为 `1.4.0-dev`；尚需确定实际发布版本、更新 Changelog，并完成受信任签名产物验证 |
 | 安装态验证 | 清单已跑完 | 2026-07-12 完成逐项验证并留痕：干净全量重装、哈希全同步、重启自启动实测、7 工具入口、TIP 注册与真实组词日志、CodeIntegrity 审计核查、runtimechange 协议；详见[安装态验证留痕](YIME_INSTALL_VERIFICATION_2026-07-12.md) |
 
 ## 2. 两轮评估已处理事项
@@ -63,6 +63,7 @@ Yime 已从“功能基本可用但工具链和安装态边界不稳定”进入
 - 修复反查加载测试 fixture：单一等长真源重构后 `full` 列需为 4 的倍数，旧 `b`/`zh` 短码改为 `~~dd`/`zzzz` 等合规等长码。
 - 配置本机 MSYS2 UCRT64 GCC 16.1.0（`go env CC` 持久化），`go test -race ./...` 全量通过，补齐此前缺失的竞态检测完成证明。
 - 修复 Win32 `PIMELauncher` 重建链路：Corrosion 升级到 v0.6.1 并在根 `CMakeLists.txt` 固定 `Rust_TOOLCHAIN=stable-i686-pc-windows-msvc`（host==target==i686，消除跨编译时 build-script 被链 i686 库导致的 LNK4272/145 个未解析符号）；前置为 `rustup toolchain install stable-i686-pc-windows-msvc`。
+- 2026-07-14 复评收口：Win32 回调地址改用显式结构体复制，`go vet ./...` 恢复绿色；CI 固定 Go 1.26.4，并在执行关键测试前逐项确认测试名存在；新增 `tools/test-go-race.ps1` 固化 CGO/GCC/PATH/缓存环境；开发包版本从历史 `1.3.0-beta2` 调整为 `1.4.0-dev`。
 
 ## 3. 固化的架构约束
 
@@ -85,6 +86,7 @@ cd go-backend
 go vet ./...
 go test ./... -shuffle=on -count=2 -timeout 120s
 go test -race ./... -timeout 300s
+# 或从仓库根目录运行：.\tools\test-go-race.ps1
 
 cd ..\PIMELauncher
 cargo fmt --check
@@ -110,7 +112,8 @@ git diff --check
 
 未纳入本轮完成证明：
 
-- 可信签名验证：本机没有用于本次构建的正式发布证书。这是发布前唯一剩余的硬性门禁。
+- 最终发布版本：当前仍为 `1.4.0-dev`，创建公开标签前必须确定 beta/rc/正式版本并更新 Changelog。
+- 可信签名验证：本机没有用于本次构建的正式发布证书，尚未生成和验证公开受信任的完整签名安装包。
 
 ## 5. 开发版与发行版边界
 
@@ -128,11 +131,14 @@ git diff --check
 
 ### 发布前必须完成
 
-- 使用可信签名服务或证书生成一次完整签名安装包，并运行 `tools/verify-release-signatures.ps1 -IncludeInstaller`。（唯一未完成项）
+- 将 `1.4.0-dev` 更新为实际发布版本，核对 `CHANGELOG.md`，在干净且已推送的目标提交上构建。
+- 使用可信签名服务或证书生成一次完整签名安装包，并运行 `tools/verify-release-signatures.ps1 -IncludeInstaller`。
+- 对最终版本和签名后的新二进制重新执行安装态 TSF、工具入口、语言栏菜单及 CodeIntegrity 清单。
 - ~~通过标准 `Reinstall-PIME-Test.cmd` 安装，核对构建与安装文件哈希。~~ 2026-07-12 完成：干净全量重装，三件哈希构建↔安装全一致。
 - ~~在真实 TSF 宿主中验证激活、组字、选词、语言栏按钮和所有工具入口。~~ 2026-07-12 完成：`go_backend.log` 真实组词/上屏证据 + 7 工具入口启动验证。
 - ~~检查 CodeIntegrity 日志没有新增 3033、3077 或 3118 阻止事件。~~ 2026-07-12 完成：无 3118；3033/3077 为未签名开发包的 SAC 审计（签名后应复查归零）。
 - ~~验证设置“应用并重建”和用户词库应用后，已有输入会话无需注销即可刷新。~~ 2026-07-12 完成：runtimechange 协议 `-race -count=1` 全绿（协议层）；2026-07-11 已有活动会话直接出词的安装态实证。
+- ~~验证“数据维护”全部可点击路径不会使宿主退出或静默无响应。~~ 2026-07-14 完成：重建安装后逐项点击同步、重新部署和目录入口，未发现异常；构建/安装 `server.exe`、`rime_deployer.exe` 和 x64 TSF DLL 哈希一致，相关进程已重启。
 
 签名完成后需复跑一次上述清单（签名会改变全部二进制哈希与 SAC 信誉状态），以[验证留痕](YIME_INSTALL_VERIFICATION_2026-07-12.md)为模板留新档。
 

@@ -501,7 +501,9 @@ func (state *appState) wndProc(hwnd syscall.Handle, message uint32, wParam, lPar
 	case 0x0024:
 		if lParam != 0 {
 			w, h := windowSizeForClient(820, 600)
-			(*minMaxInfo)(unsafe.Pointer(lParam)).MinTrackSize = point{w, h}
+			info := win32ui.ReadMessageStruct[minMaxInfo](lParam)
+			info.MinTrackSize = point{w, h}
+			win32ui.WriteMessageStruct(lParam, &info)
 		}
 		return 0
 	case 0x0111:

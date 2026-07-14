@@ -269,7 +269,9 @@ func (state *appState) wndProc(hwnd syscall.Handle, message uint32, wParam, lPar
 	case 0x0024: // WM_GETMINMAXINFO
 		if lParam != 0 {
 			minW, minH := windowSizeForClient(480, toolHubMinimumClientHeight(len(state.manifest.Tools)))
-			(*minMaxInfo)(unsafe.Pointer(lParam)).MinTrackSize = point{minW, minH}
+			info := win32ui.ReadMessageStruct[minMaxInfo](lParam)
+			info.MinTrackSize = point{minW, minH}
+			win32ui.WriteMessageStruct(lParam, &info)
 		}
 		return 0
 	case 0x0111: // WM_COMMAND

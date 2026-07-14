@@ -398,7 +398,9 @@ func (state *appState) wndProc(hwnd syscall.Handle, message uint32, wParam, lPar
 	case 0x0024:
 		if lParam != 0 {
 			w, h := windowSizeForClient(680, 480)
-			(*minMaxInfo)(unsafe.Pointer(lParam)).MinTrackSize = point{w, h}
+			info := win32ui.ReadMessageStruct[minMaxInfo](lParam)
+			info.MinTrackSize = point{w, h}
+			win32ui.WriteMessageStruct(lParam, &info)
 		}
 		return 0
 	case 0x0111:
@@ -476,7 +478,7 @@ func (state *appState) handleNotify(lParam uintptr) {
 	if lParam == 0 {
 		return
 	}
-	header := (*notifyHeader)(unsafe.Pointer(lParam))
+	header := win32ui.ReadMessageStruct[notifyHeader](lParam)
 	if int(header.IDFrom) == idEntryList && header.Code == -101 {
 		state.updateSelectionSummary()
 	}

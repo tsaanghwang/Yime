@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Repeatable `tools/test-go-race.ps1` entry point that pins CGO, MSYS2 UCRT64 GCC, PATH, and workspace-local Go caches
 - Embed Windows VERSIONINFO in server.exe and native tools via go-winres so Windows can identify file version and publisher metadata
 - Native Win32 tool executables: reverse-lookup.exe, tool-hub.exe, lexicon-manager.exe, system-lexicon-audit.exe, blocklist-manager.exe, settings-tool.exe, diagnostics-tool.exe
 - Go reverselookup package with disk cache and search
@@ -38,6 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Move development package identity from the historical `1.3.0-beta2` line to `1.4.0-dev`; release tags must replace the development suffix with the selected beta, RC, or final version
 - Treat the fixed-length dictionary as the only external system-lexicon source; variable and shorthand dictionaries are generated runtime artifacts
 - Reduce `yime_pinyin_codes.tsv` to `pinyin_tone` and `full`; derive variable and shorthand codes through the shared Go `codemode` rules
 - Regenerate the shorthand system dictionary, removing 178,317 historical entries that still used variable-length codes
@@ -66,6 +68,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Go 1.26 `go vet` failures for Win32 callback addresses by copying message structures through `RtlMoveMemory` instead of retaining `uintptr` values as Go pointers
+- CI required-test guard silently omitting a renamed deployment test; required test names are now enumerated and verified before execution
 - Installer losing `$INSTDIR` after a developer uninstall left a stale uninstall entry, causing files to be written under the drive root
 - Standard installer omitting the Yime Go backend while selecting the legacy Python Chewing backend by default
 - Developer uninstall leaving stale YIME/PIME Add/Remove Programs entries

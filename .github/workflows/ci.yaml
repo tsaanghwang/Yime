@@ -47,6 +47,11 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: 21.x
+      - name: Use Go 1.26.4
+        uses: actions/setup-go@v6
+        with:
+          go-version: '1.26.4'
+          cache-dependency-path: go-backend/go.sum
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
         with:
@@ -110,7 +115,28 @@ jobs:
           go vet ./...
           go test . ./cmd/lexicon-manager ./cmd/reverse-lookup-tool ./cmd/settings-tool ./input_methods/yime/reverselookup ./input_methods/yime/runtimechange ./input_methods/yime/settings ./input_methods/yime/systemlexicon ./input_methods/yime/toolhub ./input_methods/yime/userblocklist ./input_methods/yime/userlexicon
           go test ./input_methods/yime -timeout 60s
-          go test ./input_methods/yime -run 'Test(NativeBackendKeepsRimeOwnedCandidatePaging|LanguageBarToggleButtonsUseStableTwoCharacterLabels|DeployCommandRedeploysCurrentSchema|ApplyUserLexiconWritesAllThreeModes|ApplyUserLexiconRunsExternalBuildAndSchedulesReload|UserLexiconManagerLaunchesNativeExecutable|ToolHubLaunchesNativeExecutable|ReverseLookupToolLaunchesNativeExecutable|SettingsToolLaunchesNativeExecutable|DiagnosticsToolLaunchesNativeExecutable)$'
+          $requiredYimeTests = @(
+            'TestNativeBackendKeepsRimeOwnedCandidatePaging'
+            'TestLanguageBarToggleButtonsUseStableTwoCharacterLabels'
+            'TestDeployCommandQueuesConfirmedExternalBuildWithoutNativeRedeploy'
+            'TestApplyUserLexiconWritesAllThreeModes'
+            'TestApplyUserLexiconRunsExternalBuildAndSchedulesReload'
+            'TestUserLexiconManagerLaunchesNativeExecutable'
+            'TestToolHubLaunchesNativeExecutable'
+            'TestReverseLookupToolLaunchesNativeExecutable'
+            'TestSettingsToolLaunchesNativeExecutable'
+            'TestDiagnosticsToolLaunchesNativeExecutable'
+          )
+          $listedYimeTests = @(go test ./input_methods/yime -list '^Test')
+          if ($LASTEXITCODE -ne 0) { throw 'Could not enumerate Yime regression tests.' }
+          foreach ($testName in $requiredYimeTests) {
+            if ($listedYimeTests -notcontains $testName) {
+              throw "Required Yime regression test is missing: $testName"
+            }
+          }
+          $requiredPattern = '^(' + (($requiredYimeTests | ForEach-Object { [Regex]::Escape($_) }) -join '|') + ')$'
+          go test ./input_methods/yime -run $requiredPattern -count=1
+          if ($LASTEXITCODE -ne 0) { throw 'Required Yime regression tests failed.' }
 
       - name: Build McBopomofo
         shell: pwsh

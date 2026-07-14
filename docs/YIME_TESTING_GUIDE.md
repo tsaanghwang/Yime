@@ -29,7 +29,7 @@ go test . ./cmd/lexicon-manager ./cmd/reverse-lookup-tool ./cmd/settings-tool `
 go test ./input_methods/yime -timeout 60s
 ```
 
-根包使用与 `.github/workflows/ci.yaml` 一致的关键测试正则。修改 CI 守卫时，应同步更新 [架构文档](YIME_ARCHITECTURE.md)。
+根包使用与 `.github/workflows/ci.yaml` 一致的关键测试名单。CI 必须先通过 `go test -list` 逐项确认名单中的测试真实存在，再执行该名单；不得只依赖可部分匹配的正则。修改 CI 守卫时，应同步更新 [架构文档](YIME_ARCHITECTURE.md)。
 
 CI 当前重点保护：
 
@@ -40,6 +40,8 @@ CI 当前重点保护：
 - 词库重复拒绝、权重边界和中文对话框布局
 - 反查顶部单排布局与内容尺寸
 - 可复现构建和签名入口
+
+CI 使用 `actions/setup-go` 固定 Go 1.26.4；`go.mod` 的 `go 1.21` 是源码语言兼容下限，不是发布构建器版本。升级构建器时必须在同一变更中复跑 `go vet`、全量测试、race 和连续构建哈希验证。
 
 ## 3. 全量根包门禁
 
@@ -57,9 +59,18 @@ CI 当前重点保护：
 
 ```powershell
 go env -w CC=C:\msys64\ucrt64\bin\gcc.exe
+$env:CGO_ENABLED = "1"
 $env:PATH = "C:\msys64\ucrt64\bin;" + $env:PATH
 go test -race ./... -timeout 300s
 ```
+
+仓库根目录提供可重复入口，显式设置 CGO、GCC、PATH 和工作区缓存，不依赖当前 shell 的 `go env CGO_ENABLED`：
+
+```powershell
+.\tools\test-go-race.ps1
+```
+
+若受限执行环境阻止 `cgo.exe` 拉起 GCC，可能会在 `runtime/cgo` 阶段以 exit status 2 结束；应在正常开发终端复跑上述脚本。只有进入项目包编译或测试后的失败才能归因到项目代码。
 
 `IME.processKey` 与 `onCommand` 通过 `entryMu` 串行化，`TestConcurrentKeyAndCommandNoDataRace` 必须在 `-race` 下保持绿色；不得为绕开竞争而删除该测试或放宽入口锁。CI runner 缺少 C 工具链时该门禁可跳过，但不得删除现有并发压力测试。
 

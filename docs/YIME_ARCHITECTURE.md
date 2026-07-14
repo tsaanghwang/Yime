@@ -624,10 +624,11 @@ cd go-backend
 go vet ./...
 go test . ./cmd/lexicon-manager ./cmd/reverse-lookup-tool ./cmd/settings-tool ./cmd/tool-hub ./input_methods/yime/reverselookup ./input_methods/yime/runtimechange ./input_methods/yime/settings ./input_methods/yime/systemlexicon ./input_methods/yime/toolhub ./input_methods/yime/userbackup ./input_methods/yime/userblocklist ./input_methods/yime/userlexicon
 go test ./input_methods/yime -timeout 60s
+# CI 先用 go test -list 枚举并逐项确认关键测试名存在，再按同一名单执行。
 go test ./input_methods/yime -run 'Test(NativeBackendKeepsRimeOwnedCandidatePaging|LanguageBarToggleButtonsUseStableTwoCharacterLabels|DeployCommandQueuesConfirmedExternalBuildWithoutNativeRedeploy|ApplyUserLexiconWritesAllThreeModes|ApplyUserLexiconRunsExternalBuildAndSchedulesReload)$'
 ```
 
-CI 使用上述稳定回归集并执行 CTest。真实 Rime 测试仍由 `YIME_RUN_REAL_RIME_TESTS=1` 显式启用，避免普通单元测试共享本机 librime 全局状态。
+CI 使用上述稳定回归集并执行 CTest。定向回归在执行前必须逐项校验测试名，避免重命名后 `go test -run` 因仍有其它匹配项而静默少跑。真实 Rime 测试仍由 `YIME_RUN_REAL_RIME_TESTS=1` 显式启用，避免普通单元测试共享本机 librime 全局状态。
 
 关键守卫测试：
 
