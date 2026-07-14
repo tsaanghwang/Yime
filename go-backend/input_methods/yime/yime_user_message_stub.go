@@ -4,6 +4,10 @@ package yime
 
 import "log"
 
+func requestRimeRedeployConfirmation() bool { return false }
+
+func requestRimeSyncConfirmation() bool { return false }
+
 func (ime *IME) showUserLexiconMessage(title, message, icon string) {
 	ime.showUserMessage(title, message, icon)
 }

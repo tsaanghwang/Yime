@@ -13,6 +13,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 	"unicode/utf8"
 
@@ -132,14 +133,6 @@ type backendCandidatePager interface {
 	UsesBackendCandidatePaging() bool
 }
 
-// backendRedeployer is implemented by backends that can perform a full RIME
-// redeployment to pick up on-disk configuration changes (for example an
-// updated menu/page_size). Backends that do not implement it fall back to
-// recreating the session.
-type backendRedeployer interface {
-	Redeploy() bool
-}
-
 // backendUserDataSyncer is implemented by backends that expose Rime's native
 // user-data sync capability. This is intentionally limited to Rime-managed
 // user data and must not be extended to Yime-only standalone state.
@@ -150,6 +143,10 @@ type backendUserDataSyncer interface {
 var runRimeExternalBuild = runRimeExternalBuildDefault
 var refreshRimeSchemasOnInit = userlexicon.RefreshRimeSchemas
 var createRimeBackend = newNativeBackend
+var confirmRimeRedeployAction = requestRimeRedeployConfirmation
+var confirmRimeSyncAction = requestRimeSyncConfirmation
+var rimeMaintenanceRunning atomic.Bool
+var scheduleRimeMaintenance = func(run func()) { go run() }
 var scheduleStandaloneToolLaunch = func(run func() error, onError func(error)) {
 	go func() {
 		time.Sleep(300 * time.Millisecond)
@@ -401,11 +398,9 @@ func (ime *IME) onCommand(req *pime.Request, resp *pime.Response) *pime.Response
 	case ID_YIME_SHORTHAND:
 		ime.selectSchema("yime_shorthand")
 	case ID_DEPLOY:
-		ime.redeployBackend()
+		ime.startSafeRimeRedeploy()
 	case ID_SYNC:
-		if !ime.syncBackendUserData() {
-			log.Println("同步用户数据失败或后端未提供该能力")
-		}
+		ime.confirmAndSyncBackendUserData()
 	case ID_USER_DIR:
 		ime.openPath(ime.userDir())
 	case ID_SHARED_DIR:
@@ -501,7 +496,7 @@ func (ime *IME) commandShouldRefreshState(commandID int) bool {
 	switch commandID {
 	case ID_ASCII_MODE, ID_MODE_ICON, ID_FULL_SHAPE, ID_ASCII_PUNCT,
 		ID_TRADITIONALIZATION, ID_YIME_VARIABLE, ID_YIME_FULL, ID_YIME_SHORTHAND,
-		ID_DEPLOY, ID_USER_LEXICON_APPLY, ID_CANDIDATE_LAYOUT_TOGGLE:
+		ID_USER_LEXICON_APPLY, ID_CANDIDATE_LAYOUT_TOGGLE:
 		return true
 	default:
 		return false
@@ -1720,13 +1715,15 @@ func (ime *IME) buildMenu() []map[string]interface{} {
 		{"text": "候选项数", "submenu": ime.buildCandidatePageSizeMenu()},
 		{"text": "显示编码", "submenu": ime.buildReverseLookupMenu()},
 		{"text": ""},
-		{"id": ID_DEPLOY, "text": "重新部署 Rime(&D)"},
-		{"id": ID_SYNC, "text": "同步 Rime 用户数据(&S)"},
-		{"text": "打开数据与日志文件夹(&O)", "submenu": []map[string]interface{}{
-			{"id": ID_USER_DIR, "text": "用户 Rime 数据目录"},
-			{"id": ID_SHARED_DIR, "text": "内置共享数据目录"},
-			{"id": ID_SYNC_DIR, "text": "Rime 同步目录"},
-			{"id": ID_LOG_DIR, "text": "PIME 日志目录"},
+		{"text": "数据维护", "submenu": []map[string]interface{}{
+			{"id": ID_SYNC, "text": "同步数据…(&S)"},
+			{"id": ID_DEPLOY, "text": "重新部署…(&D)"},
+			{"text": "打开目录(&O)", "submenu": []map[string]interface{}{
+				{"id": ID_USER_DIR, "text": "用户 Rime 数据目录"},
+				{"id": ID_SHARED_DIR, "text": "内置共享数据目录"},
+				{"id": ID_SYNC_DIR, "text": "Rime 同步目录"},
+				{"id": ID_LOG_DIR, "text": "PIME 日志目录"},
+			}},
 		}},
 	}
 }
@@ -2275,7 +2272,8 @@ func (ime *IME) setCandidatePageSize(size int) error {
 		// Do not call RimeRedeploy here. Full redeploy during a language-bar click
 		// invalidates librime inside the TSF callback and breaks subsequent menu
 		// clicks such as reverse-lookup "仅音元拼音". Use a lightweight session
-		// reload instead; full cache invalidation stays on the "重新部署" command.
+		// reload instead. Explicit maintenance also builds out of process and
+		// reloads only the session at a safe request boundary.
 		if !runRimeExternalBuild(ime.sharedDir(), userDir) {
 			log.Printf("external rime_deployer build unavailable; falling back to session reload for %s", schemaID)
 		}
@@ -2290,26 +2288,94 @@ func (ime *IME) setCandidatePageSize(size int) error {
 	return nil
 }
 
-// redeployBackend re-runs a full RIME deployment for the current schema. It is
-// used by the "重新部署" menu command to let users force configuration to be
-// recompiled and reloaded.
-func (ime *IME) redeployBackend() {
+// startSafeRimeRedeploy keeps the native maintenance command available without
+// finalizing librime inside PIME's language-bar callback. The external deployer
+// builds on a worker goroutine; a runtime marker then asks active IME sessions
+// to recreate only their own session at the next safe request boundary.
+func (ime *IME) startSafeRimeRedeploy() {
 	if ime.backend == nil {
 		ime.showUserMessage("重新部署", "Rime 后端不可用，无法重新部署。\n请尝试重启输入法或检查安装。", "Warning")
 		return
 	}
-	defer func() {
-		if r := recover(); r != nil {
-			log.Printf("重新部署期间发生异常: %v", r)
-			ime.showUserMessage("重新部署异常", "重新部署过程中发生异常，输入法可能不稳定。\n建议重启输入法（注销或重启 PIMELauncher）。\n异常: "+fmt.Sprintf("%v", r), "Error")
-		}
-	}()
+	if rimeMaintenanceRunning.Load() {
+		ime.showUserMessage("数据维护", "已有 Rime 维护任务正在运行，请等待其完成。", "Information")
+		return
+	}
+	if !confirmRimeRedeployAction() {
+		return
+	}
+	if !rimeMaintenanceRunning.CompareAndSwap(false, true) {
+		ime.showUserMessage("数据维护", "已有 Rime 维护任务正在运行，请等待其完成。", "Information")
+		return
+	}
 	schemaID := ime.backend.CurrentSchema()
 	if schemaID == "" {
 		schemaID = "yime_variable"
 	}
-	ime.reloadBackendForSchema(schemaID)
-	ime.showUserMessage("重新部署", "Rime 已完成重新部署。", "Information")
+	sharedDir, userDir := ime.sharedDir(), ime.userDir()
+	if sharedDir == "" || userDir == "" {
+		rimeMaintenanceRunning.Store(false)
+		ime.showUserMessage("重新部署失败", "无法确定 Rime 数据目录，未开始重新部署。", "Error")
+		return
+	}
+	scheduleRimeMaintenance(func() {
+		defer rimeMaintenanceRunning.Store(false)
+		defer func() {
+			if r := recover(); r != nil {
+				log.Printf("后台重新部署期间发生异常: %v", r)
+				ime.showUserMessage("重新部署失败", "后台重新部署发生异常。该流程不会恢复默认词库或清空用户词库源文件。\n异常: "+fmt.Sprintf("%v", r), "Error")
+			}
+		}()
+		if !runRimeExternalBuild(sharedDir, userDir) {
+			ime.showUserMessage("重新部署失败", "Rime 后台构建未成功。当前用户配置和词库源文件没有被恢复或清空。\n请检查 PIME 日志后再处理。", "Error")
+			return
+		}
+		if err := validateCompiledRimeSchema(userDir, schemaID); err != nil {
+			log.Printf("重新部署结果校验失败: %v", err)
+			ime.showUserMessage("重新部署失败", "后台构建结束，但当前方案未通过结果校验，因此不会切换会话。\n错误: "+err.Error(), "Error")
+			return
+		}
+		if _, err := runtimechange.Notify(userDir, runtimechange.ScopeRedeploy, true); err != nil {
+			log.Printf("写入重新部署通知失败: %v", err)
+			ime.showUserMessage("重新部署未完全完成", "Rime 数据已经构建，但无法通知当前输入会话刷新。\n重新切换输入法或重启 PIMELauncher 后即可载入。\n错误: "+err.Error(), "Warning")
+			return
+		}
+		ime.showUserMessage("重新部署完成", "Rime 运行数据已在后台重新构建。当前方案保持为“"+schemaID+"”，下一次输入时会安全地重建会话。", "Information")
+	})
+}
+
+func validateCompiledRimeSchema(userDir, schemaID string) error {
+	schemaID = strings.TrimSpace(schemaID)
+	if schemaID == "" || schemaID == "." || schemaID == ".." || filepath.Base(schemaID) != schemaID {
+		return fmt.Errorf("当前方案 ID 无效: %q", schemaID)
+	}
+	path := filepath.Join(userDir, "build", schemaID+".schema.yaml")
+	info, err := os.Stat(path)
+	if err != nil {
+		return fmt.Errorf("没有生成当前方案 %s: %w", schemaID, err)
+	}
+	if info.IsDir() || info.Size() == 0 {
+		return fmt.Errorf("当前方案编译结果为空: %s", path)
+	}
+	return nil
+}
+
+func (ime *IME) confirmAndSyncBackendUserData() {
+	if rimeMaintenanceRunning.Load() {
+		ime.showUserMessage("数据维护", "已有 Rime 维护任务正在运行，请等待其完成。", "Information")
+		return
+	}
+	if !confirmRimeSyncAction() {
+		return
+	}
+	if !rimeMaintenanceRunning.CompareAndSwap(false, true) {
+		ime.showUserMessage("数据维护", "已有 Rime 维护任务正在运行，请等待其完成。", "Information")
+		return
+	}
+	defer rimeMaintenanceRunning.Store(false)
+	if !ime.syncBackendUserData() {
+		log.Println("同步用户数据失败或后端未提供该能力")
+	}
 }
 
 func (ime *IME) syncBackendUserData() bool {
@@ -2334,44 +2400,31 @@ func (ime *IME) syncBackendUserData() bool {
 // reloadBackendSessionForSchema recreates the current Rime session without a
 // full redeploy. It is safe to call from language-bar commands such as page
 // size changes. It does not invalidate librime's compiled config cache.
-func (ime *IME) reloadBackendSessionForSchema(schemaID string) {
+func (ime *IME) reloadBackendSessionForSchema(schemaID string) bool {
 	if ime.backend == nil {
-		return
+		return false
 	}
 	var savedComposition string
 	if state := ime.backend.State(); state.Composition != "" {
 		savedComposition = state.Composition
 	}
 	ime.backend.DestroySession()
-	if ime.backend.EnsureSession() {
-		ime.backend.SelectSchema(schemaID)
-		ime.backend.ClearComposition()
-		if savedComposition != "" {
-			for _, ch := range savedComposition {
-				ime.backend.ProcessKey(&pime.Request{CharCode: int(ch)}, int(ch), 0)
-			}
+	if !ime.backend.EnsureSession() {
+		return false
+	}
+	if !ime.backend.SelectSchema(schemaID) {
+		// Do not silently leave the freshly created session on a different Rime
+		// schema. That can look like an unexpected fallback dictionary.
+		ime.backend.DestroySession()
+		return false
+	}
+	ime.backend.ClearComposition()
+	if savedComposition != "" {
+		for _, ch := range savedComposition {
+			ime.backend.ProcessKey(&pime.Request{CharCode: int(ch)}, int(ch), 0)
 		}
 	}
-}
-
-// reloadBackendForSchema makes freshly written RIME configuration take effect.
-// Native RIME caches compiled schema configs in memory, so per-file deploys are
-// not enough: a full redeploy is required to invalidate that cache. This path
-// is reserved for the explicit "重新部署" command, not language-bar clicks.
-func (ime *IME) reloadBackendForSchema(schemaID string) {
-	if ime.backend == nil {
-		return
-	}
-	if redeployer, ok := ime.backend.(backendRedeployer); ok {
-		if redeployer.Redeploy() {
-			if ime.backend.SelectSchema(schemaID) {
-				ime.backend.ClearComposition()
-			}
-			return
-		}
-		log.Println("Rime 重新部署失败，回退到重建会话")
-	}
-	ime.reloadBackendSessionForSchema(schemaID)
+	return true
 }
 
 func runRimeExternalBuildDefault(sharedDir, userDir string) bool {
@@ -2610,7 +2663,10 @@ func (ime *IME) applyPendingSchemaRedeploy() {
 		return
 	}
 	ime.pendingSchemaRedeploy = ""
-	ime.reloadBackendForSchema(schemaID)
+	if !ime.reloadBackendSessionForSchema(schemaID) {
+		log.Printf("载入外部构建的 Rime 数据失败，未切换到其他方案: %s", schemaID)
+		ime.showUserMessage("Rime 会话刷新失败", "运行数据已经构建，但当前方案“"+schemaID+"”未能重新载入。\n为避免误用其他词库，会话已关闭；请重新切换输入法或检查诊断日志。", "Error")
+	}
 }
 
 func (ime *IME) shouldApplyPendingSchemaRedeploy(method string) bool {

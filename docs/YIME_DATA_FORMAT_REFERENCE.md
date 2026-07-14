@@ -184,9 +184,9 @@ sort: by_weight
 | revision | 最近一次任意变更的单调修订号 |
 | settings_revision | 最近一次设置变更修订号；没有时省略 |
 | lexicon_revision | 最近一次词库变更修订号；没有时省略 |
-| redeploy_revision | 最近一次要求重新部署的修订号；没有时省略 |
+| redeploy_revision | 最近一次外部构建完成、要求活动会话安全重建的修订号；没有时省略 |
 
-兼容旧格式中的 `scope` 和 `requires_redeploy`；读取时会把旧标记映射到对应修订号。写入由 `.yime-runtime-change.lock` 跨进程串行化，锁文件只在更新期间短暂存在。无法解析的旧标记会备份为 `yime_runtime_change.json.corrupt` 后重建，便于诊断而不阻断后续通知。
+兼容旧格式中的 `scope` 和 `requires_redeploy`；读取时会把旧标记映射到对应修订号。`scope: redeploy` 表示纯维护部署，不增加设置或词库修订号。写入由 `.yime-runtime-change.lock` 跨进程串行化，锁文件只在更新期间短暂存在。无法解析的旧标记会备份为 `yime_runtime_change.json.corrupt` 后重建，便于诊断而不阻断后续通知。
 
 ### yime_variable.custom.yaml / yime_full.custom.yaml / yime_shorthand.custom.yaml
 

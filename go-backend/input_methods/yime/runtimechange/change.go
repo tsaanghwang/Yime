@@ -14,6 +14,7 @@ const FileName = "yime_runtime_change.json"
 const (
 	ScopeSettings = "settings"
 	ScopeLexicon  = "lexicon"
+	ScopeRedeploy = "redeploy"
 )
 
 type Event struct {
@@ -67,6 +68,11 @@ func Notify(userDir, scope string, requiresRedeploy bool) (Event, error) {
 		event.SettingsRevision = revision
 	case ScopeLexicon:
 		event.LexiconRevision = revision
+	case ScopeRedeploy:
+		// A maintenance-only deployment does not imply that settings or the
+		// editable user lexicon changed. Its sole purpose is to make already
+		// written Rime data visible to active sessions.
+		requiresRedeploy = true
 	default:
 		return Event{}, errors.New("未知的运行时变更范围")
 	}

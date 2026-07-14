@@ -25,6 +25,17 @@ func TestNotifyRoundTrip(t *testing.T) {
 	}
 }
 
+func TestNotifyRedeployScopeDoesNotClaimSettingsOrLexiconChanged(t *testing.T) {
+	userDir := t.TempDir()
+	written, err := Notify(userDir, ScopeRedeploy, false)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if written.RedeployRevision == 0 || written.SettingsRevision != 0 || written.LexiconRevision != 0 {
+		t.Fatalf("expected redeploy-only notification, got %#v", written)
+	}
+}
+
 func TestNotifyReplacesMarkerWithIncreasingRevision(t *testing.T) {
 	userDir := t.TempDir()
 	first, err := Notify(userDir, ScopeSettings, false)

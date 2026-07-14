@@ -56,9 +56,10 @@ code {
   <article>
     <h2>语言栏里的维护项</h2>
     <ul>
-      <li><strong>重新部署 Rime</strong>：重新编译并部署当前运行时配置，让已经写入的方案文件或配置生效。</li>
-      <li><strong>同步 Rime 用户数据</strong>：调用 Rime 自带的同步能力，适用于 Rime 自己管理的数据。</li>
-      <li><strong>打开数据与日志目录</strong>：直接打开用户目录、共享目录、同步目录和日志目录，方便检查“文件有没有真的写进去”。</li>
+      <li><strong>数据维护</strong>：集中放置“同步数据…”“重新部署…”和“打开目录”；两项执行型维护命令都会再次确认。</li>
+      <li><strong>重新部署…</strong>：仅在手工修改或恢复配置、排查旧缓存时使用。确认后在后台构建并校验当前方案，再于安全请求边界重建会话；不会恢复默认词库、删除用户词库或重复启动任务。</li>
+      <li><strong>同步数据…</strong>：确认后调用 Rime 自带的同步能力，只处理 Rime 管理的学习数据，不包含 YIME 设置、用户词库源文件和屏蔽词表。</li>
+      <li><strong>打开目录</strong>：打开用户目录、共享目录、同步目录和日志目录，方便检查“文件有没有真的写进去”。</li>
     </ul>
     <p><strong>注意：</strong><code>yime_settings_state.json</code> 这类 Yime 独立界面状态不属于 Rime 原生同步范围。</p>
   </article>

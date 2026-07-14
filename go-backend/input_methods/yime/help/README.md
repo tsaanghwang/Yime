@@ -21,11 +21,13 @@ Rime frontend.
   - **工具** → `tool-hub.exe`
   - **中西 / 全半 / 横竖** — fixed two-character labels; state shown by icons
 - Settings: Yime variable-length, fixed-length, and shorthand schemas,
-  Chinese/English mode, shape, punctuation, `重新部署 Rime`, `同步 Rime 用户数据`,
-  and data/log folders. `重新部署 Rime` is the full runtime redeploy path for the
-  currently installed Rime data; it is not a "re-import system lexicon" button.
-  `同步 Rime 用户数据` is Rime's native user-data sync action and does not include
-  Yime-only standalone state such as `yime_settings_state.json`. The shorthand
+  Chinese/English mode, shape, punctuation, and data/log folders. Guarded Rime
+  maintenance commands live in the `数据维护` submenu. `重新部署…`
+  requires confirmation, builds with the external deployer, validates the
+  current schema, and reloads only the session at a safe request boundary; it
+  is not a "re-import system lexicon" button. `同步数据…` also requires
+  confirmation and uses Rime's native sync action. It does not include Yime-only
+  standalone state such as `yime_settings_state.json`. The shorthand
   entry is enabled when the shorthand schema is bundled with the installed
   Rime data.
 - Reverse code lookup: choose how reverse lookup codes are displayed for Hanzi.

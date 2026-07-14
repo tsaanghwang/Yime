@@ -91,6 +91,10 @@ type syncTestBackend struct {
 	syncResult bool
 }
 
+type schemaRejectingBackend struct{ *testBackend }
+
+func (b *schemaRejectingBackend) SelectSchema(string) bool { return false }
+
 func (b *syncTestBackend) SyncUserData() bool {
 	b.syncCount++
 	return b.syncResult
@@ -1379,15 +1383,22 @@ func TestOnMenuReturnsSettingsMenu(t *testing.T) {
 		t.Fatalf("expected yime-pinyin reverse lookup item in settings submenu, got %#v", item)
 	}
 
-	if item := findTopLevelMenuItem(t, items, ID_DEPLOY); item["text"] != "重新部署 Rime(&D)" {
-		t.Fatalf("expected deploy command to remain in settings root, got %#v", item)
+	maintenanceMenu := findSubmenuItem(t, items, "数据维护")
+	if len(maintenanceMenu) != 3 {
+		t.Fatalf("expected sync, deploy, and directory maintenance entries, got %#v", maintenanceMenu)
 	}
-	if item := findTopLevelMenuItem(t, items, ID_SYNC); item["text"] != "同步 Rime 用户数据(&S)" {
-		t.Fatalf("expected sync command to remain in settings root, got %#v", item)
+	if item := findTopLevelMenuItem(t, maintenanceMenu, ID_SYNC); item["text"] != "同步数据…(&S)" {
+		t.Fatalf("expected sync command inside maintenance submenu, got %#v", item)
 	}
-	openFolderMenu := findSubmenuItem(t, items, "打开数据与日志文件夹(&O)")
+	if item := findTopLevelMenuItem(t, maintenanceMenu, ID_DEPLOY); item["text"] != "重新部署…(&D)" {
+		t.Fatalf("expected deploy command inside maintenance submenu, got %#v", item)
+	}
+	if hasTopLevelMenuItemID(items, ID_DEPLOY) || hasTopLevelMenuItemID(items, ID_SYNC) {
+		t.Fatalf("maintenance commands must not remain directly in settings root: %#v", items)
+	}
+	openFolderMenu := findSubmenuItem(t, maintenanceMenu, "打开目录(&O)")
 	if len(openFolderMenu) != 4 {
-		t.Fatalf("expected open-folder submenu to remain in settings root, got %#v", openFolderMenu)
+		t.Fatalf("expected four directory entries inside data maintenance, got %#v", openFolderMenu)
 	}
 	if item := findTopLevelMenuItem(t, openFolderMenu, ID_USER_DIR); item["text"] != "用户 Rime 数据目录" {
 		t.Fatalf("expected user-data directory label, got %#v", item)
@@ -1419,6 +1430,18 @@ func TestOnCommandAcceptsDataCommandIDForCandidatePageSize(t *testing.T) {
 	}
 	if ime.candidatePageSize != 7 {
 		t.Fatalf("expected current session page size 7, got %d", ime.candidatePageSize)
+	}
+}
+
+func TestCommandIDFromRequestAcceptsDeepMaintenanceDirectoryDataID(t *testing.T) {
+	req := &pime.Request{
+		ID: pime.FlexibleID{String: "settings"},
+		Data: map[string]interface{}{
+			"id": float64(ID_USER_DIR),
+		},
+	}
+	if got := commandIDFromRequest(req); got != ID_USER_DIR {
+		t.Fatalf("expected deeply nested data-maintenance directory id %d, got %d", ID_USER_DIR, got)
 	}
 }
 
@@ -1790,7 +1813,7 @@ func TestSetCandidatePageSizeDoesNotRedeploy(t *testing.T) {
 	}
 }
 
-func TestDeployCommandRedeploysCurrentSchema(t *testing.T) {
+func TestDeployCommandQueuesConfirmedExternalBuildWithoutNativeRedeploy(t *testing.T) {
 	t.Setenv("APPDATA", t.TempDir())
 	ime := newTestIME()
 	backend := &redeployTestBackend{testBackend: newTestBackend(), redeployResult: true}
@@ -1798,19 +1821,167 @@ func TestDeployCommandRedeploysCurrentSchema(t *testing.T) {
 	backend.schemaID = "yime_full"
 	ime.backend = backend
 
+	oldConfirm := confirmRimeRedeployAction
+	oldSchedule := scheduleRimeMaintenance
+	oldBuild := runRimeExternalBuild
+	confirmRimeRedeployAction = func() bool { return true }
+	var queued func()
+	scheduleRimeMaintenance = func(run func()) { queued = run }
+	runRimeExternalBuild = func(_, userDir string) bool {
+		buildDir := filepath.Join(userDir, "build")
+		if err := os.MkdirAll(buildDir, 0o755); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(filepath.Join(buildDir, "yime_full.schema.yaml"), []byte("schema"), 0o644); err != nil {
+			t.Fatal(err)
+		}
+		return true
+	}
+	t.Cleanup(func() {
+		confirmRimeRedeployAction = oldConfirm
+		scheduleRimeMaintenance = oldSchedule
+		runRimeExternalBuild = oldBuild
+		rimeMaintenanceRunning.Store(false)
+	})
+
 	resp := ime.onCommand(&pime.Request{
 		SeqNum: 43,
-		ID:     pime.FlexibleID{Int: ID_DEPLOY, IsInt: true},
+		ID:     pime.FlexibleID{String: "settings"},
+		Data: map[string]interface{}{
+			"id": float64(ID_DEPLOY),
+		},
 	}, pime.NewResponse(43, true))
 
 	if resp.ReturnValue != 1 {
 		t.Fatalf("expected deploy command to be handled, got %d", resp.ReturnValue)
 	}
-	if backend.redeployCount != 1 {
-		t.Fatalf("expected deploy command to trigger one redeploy, got %d", backend.redeployCount)
+	if queued == nil {
+		t.Fatal("expected confirmed deploy command to queue background maintenance")
+	}
+	if backend.redeployCount != 0 || backend.destroyCount != 0 {
+		t.Fatalf("language-bar callback must not redeploy or reload the native backend: redeploy=%d destroy=%d", backend.redeployCount, backend.destroyCount)
+	}
+	if ime.commandShouldRefreshState(ID_DEPLOY) {
+		t.Fatal("queued maintenance command must not push native state during the host callback")
 	}
 	if backend.schemaID != "yime_full" {
-		t.Fatalf("expected current schema preserved across redeploy, got %q", backend.schemaID)
+		t.Fatalf("expected current schema preserved while maintenance is queued, got %q", backend.schemaID)
+	}
+
+	queued()
+	event, err := runtimechange.Read(ime.userDir())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if event.RedeployRevision == 0 || event.SettingsRevision != 0 || event.LexiconRevision != 0 {
+		t.Fatalf("expected a redeploy-only runtime notification, got %#v", event)
+	}
+}
+
+func TestDeployCommandCancellationDoesNotQueueMaintenance(t *testing.T) {
+	t.Setenv("APPDATA", t.TempDir())
+	ime := newTestIME()
+	oldConfirm := confirmRimeRedeployAction
+	oldSchedule := scheduleRimeMaintenance
+	confirmRimeRedeployAction = func() bool { return false }
+	queued := 0
+	scheduleRimeMaintenance = func(func()) { queued++ }
+	t.Cleanup(func() {
+		confirmRimeRedeployAction = oldConfirm
+		scheduleRimeMaintenance = oldSchedule
+		rimeMaintenanceRunning.Store(false)
+	})
+
+	ime.onCommand(&pime.Request{ID: pime.FlexibleID{Int: ID_DEPLOY, IsInt: true}}, pime.NewResponse(1, true))
+	if queued != 0 || rimeMaintenanceRunning.Load() {
+		t.Fatalf("cancelled deployment must remain a no-op: queued=%d running=%t", queued, rimeMaintenanceRunning.Load())
+	}
+}
+
+func TestDeployCommandRejectsRepeatedClickWhileMaintenanceIsQueued(t *testing.T) {
+	t.Setenv("APPDATA", t.TempDir())
+	ime := newTestIME()
+	oldConfirm := confirmRimeRedeployAction
+	oldSchedule := scheduleRimeMaintenance
+	confirmRimeRedeployAction = func() bool { return true }
+	queued := 0
+	scheduleRimeMaintenance = func(func()) { queued++ }
+	t.Cleanup(func() {
+		confirmRimeRedeployAction = oldConfirm
+		scheduleRimeMaintenance = oldSchedule
+		rimeMaintenanceRunning.Store(false)
+	})
+
+	req := &pime.Request{ID: pime.FlexibleID{Int: ID_DEPLOY, IsInt: true}}
+	ime.onCommand(req, pime.NewResponse(1, true))
+	ime.onCommand(req, pime.NewResponse(2, true))
+	if queued != 1 {
+		t.Fatalf("repeated click must not queue another deployment, queued=%d", queued)
+	}
+}
+
+func TestDeployBuildFailureDoesNotNotifySessionsOrRemainBusy(t *testing.T) {
+	t.Setenv("APPDATA", t.TempDir())
+	ime := newTestIME()
+	oldConfirm := confirmRimeRedeployAction
+	oldSchedule := scheduleRimeMaintenance
+	oldBuild := runRimeExternalBuild
+	confirmRimeRedeployAction = func() bool { return true }
+	scheduleRimeMaintenance = func(run func()) { run() }
+	runRimeExternalBuild = func(string, string) bool { return false }
+	t.Cleanup(func() {
+		confirmRimeRedeployAction = oldConfirm
+		scheduleRimeMaintenance = oldSchedule
+		runRimeExternalBuild = oldBuild
+		rimeMaintenanceRunning.Store(false)
+	})
+
+	ime.onCommand(&pime.Request{ID: pime.FlexibleID{Int: ID_DEPLOY, IsInt: true}}, pime.NewResponse(1, true))
+	event, err := runtimechange.Read(ime.userDir())
+	if err != nil && !os.IsNotExist(err) {
+		t.Fatal(err)
+	}
+	if event.RedeployRevision != 0 {
+		t.Fatalf("failed build must not ask sessions to reload, got %#v", event)
+	}
+	if rimeMaintenanceRunning.Load() {
+		t.Fatal("failed background build must release the maintenance guard")
+	}
+}
+
+func TestPendingExternalBuildReloadsOnlyTheCurrentSession(t *testing.T) {
+	ime := newTestIME()
+	backend := &redeployTestBackend{testBackend: newTestBackend(), redeployResult: true}
+	backend.session = true
+	backend.schemaID = "yime_variable"
+	ime.backend = backend
+	ime.pendingSchemaRedeploy = "yime_variable"
+
+	ime.applyPendingSchemaRedeploy()
+
+	if backend.redeployCount != 0 {
+		t.Fatalf("externally built data must not trigger native full redeploy, got %d", backend.redeployCount)
+	}
+	if backend.destroyCount != 1 || !backend.session || backend.schemaID != "yime_variable" {
+		t.Fatalf("expected one lightweight session reload preserving schema: destroy=%d session=%t schema=%q", backend.destroyCount, backend.session, backend.schemaID)
+	}
+}
+
+func TestPendingExternalBuildClosesSessionInsteadOfLeavingFallbackSchema(t *testing.T) {
+	ime := newTestIME()
+	backend := &schemaRejectingBackend{testBackend: newTestBackend()}
+	backend.session = true
+	backend.schemaID = "yime_variable"
+	ime.backend = backend
+	ime.pendingSchemaRedeploy = "yime_variable"
+
+	ime.applyPendingSchemaRedeploy()
+
+	if backend.session {
+		t.Fatal("failed schema reselection must close the session instead of leaving a fallback schema active")
+	}
+	if backend.destroyCount != 2 {
+		t.Fatalf("expected old and rejected replacement sessions to be destroyed, got %d", backend.destroyCount)
 	}
 }
 
@@ -1821,10 +1992,19 @@ func TestSyncCommandUsesNativeRimeUserDataSyncWithoutRefreshingHostState(t *test
 	backend.composition = "ni"
 	backend.refreshCandidates()
 	ime.backend = backend
+	oldConfirm := confirmRimeSyncAction
+	confirmRimeSyncAction = func() bool { return true }
+	t.Cleanup(func() {
+		confirmRimeSyncAction = oldConfirm
+		rimeMaintenanceRunning.Store(false)
+	})
 
 	resp := ime.onCommand(&pime.Request{
 		SeqNum: 44,
-		ID:     pime.FlexibleID{Int: ID_SYNC, IsInt: true},
+		ID:     pime.FlexibleID{String: "settings"},
+		Data: map[string]interface{}{
+			"id": float64(ID_SYNC),
+		},
 	}, pime.NewResponse(44, true))
 
 	if resp.ReturnValue != 1 {
@@ -1841,6 +2021,23 @@ func TestSyncCommandUsesNativeRimeUserDataSyncWithoutRefreshingHostState(t *test
 	}
 	if backend.composition != "ni" {
 		t.Fatalf("expected composition preserved across sync, got %q", backend.composition)
+	}
+}
+
+func TestSyncCommandCancellationDoesNotCallNativeSync(t *testing.T) {
+	ime := newTestIME()
+	backend := &syncTestBackend{testBackend: newTestBackend(), syncResult: true}
+	ime.backend = backend
+	oldConfirm := confirmRimeSyncAction
+	confirmRimeSyncAction = func() bool { return false }
+	t.Cleanup(func() {
+		confirmRimeSyncAction = oldConfirm
+		rimeMaintenanceRunning.Store(false)
+	})
+
+	ime.onCommand(&pime.Request{ID: pime.FlexibleID{Int: ID_SYNC, IsInt: true}}, pime.NewResponse(1, true))
+	if backend.syncCount != 0 {
+		t.Fatalf("cancelled sync must not call native Rime sync, got %d", backend.syncCount)
 	}
 }
 
@@ -2805,6 +3002,15 @@ func findTopLevelMenuItem(t *testing.T, items []map[string]interface{}, id int) 
 	}
 	t.Fatalf("expected top-level menu item id %d in %#v", id, items)
 	return nil
+}
+
+func hasTopLevelMenuItemID(items []map[string]interface{}, id int) bool {
+	for _, item := range items {
+		if gotID, ok := item["id"].(int); ok && gotID == id {
+			return true
+		}
+	}
+	return false
 }
 
 func findMenuItemInSubmenu(items []map[string]interface{}, id int) map[string]interface{} {

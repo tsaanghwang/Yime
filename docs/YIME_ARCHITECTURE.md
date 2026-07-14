@@ -303,7 +303,7 @@ showUserMessage(title, message)
 **覆盖的操作**：
 - `openPath` — 打开目录/文件
 - `copyTextToClipboard` — 复制到剪贴板
-- `redeployBackend` — 重新部署
+- `startSafeRimeRedeploy` — 确认后排队外部后台构建，校验当前方案并发送纯 redeploy 通知
 - `syncBackendUserData` — 同步用户数据
 - `selectSchema` — 切换方案
 - `setCandidatePageSize` — 设置候选项数
@@ -407,8 +407,8 @@ onCommand / 语言栏按钮
 - 反查工具保留多音字、即时搜索、加载进度与结果截断提示
 - 设置和词库部署在后台 goroutine 执行，通过 `WM_APP` 回到 UI 线程
 - 设置工具通过 `userbackup` 创建带版本清单和 SHA-256 校验的可移植快照；恢复前先生成安全快照，再调用部署器并分别通知设置与词库修订
-- 成功后在跨进程锁保护下更新 `yime_runtime_change.json`；文件保存设置、词库和 redeploy 的独立累积修订号，连续通知不会互相覆盖
-- 每个活动 IME 会话独立记录已处理修订号，在下一次宿主请求前同步设置、清理词库缓存并按需重新部署；损坏标记会备份为 `.corrupt` 后重建
+- 成功后在跨进程锁保护下更新 `yime_runtime_change.json`；文件保存设置、词库和 redeploy 的独立累积修订号，连续通知不会互相覆盖；显式维护使用 `ScopeRedeploy`，不会伪称设置或词库已改变
+- 每个活动 IME 会话独立记录已处理修订号，在下一次安全宿主请求前同步设置、清理词库缓存，并对已经由外部部署器构建的数据执行轻量会话重建；语言栏回调不再调用全局 `RimeFinalize/RimeRedeploy`。方案重选失败时销毁会话，避免静默停留在其他兜底方案
 
 ### 2.14 语言栏切换按钮
 
@@ -624,7 +624,7 @@ cd go-backend
 go vet ./...
 go test . ./cmd/lexicon-manager ./cmd/reverse-lookup-tool ./cmd/settings-tool ./cmd/tool-hub ./input_methods/yime/reverselookup ./input_methods/yime/runtimechange ./input_methods/yime/settings ./input_methods/yime/systemlexicon ./input_methods/yime/toolhub ./input_methods/yime/userbackup ./input_methods/yime/userblocklist ./input_methods/yime/userlexicon
 go test ./input_methods/yime -timeout 60s
-go test ./input_methods/yime -run 'Test(NativeBackendKeepsRimeOwnedCandidatePaging|LanguageBarToggleButtonsUseStableTwoCharacterLabels|DeployCommandRedeploysCurrentSchema|ApplyUserLexiconWritesAllThreeModes|ApplyUserLexiconRunsExternalBuildAndSchedulesReload)$'
+go test ./input_methods/yime -run 'Test(NativeBackendKeepsRimeOwnedCandidatePaging|LanguageBarToggleButtonsUseStableTwoCharacterLabels|DeployCommandQueuesConfirmedExternalBuildWithoutNativeRedeploy|ApplyUserLexiconWritesAllThreeModes|ApplyUserLexiconRunsExternalBuildAndSchedulesReload)$'
 ```
 
 CI 使用上述稳定回归集并执行 CTest。真实 Rime 测试仍由 `YIME_RUN_REAL_RIME_TESTS=1` 显式启用，避免普通单元测试共享本机 librime 全局状态。
