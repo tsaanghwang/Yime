@@ -12,9 +12,9 @@ Rime frontend.
 
 ## Menus
 
-- Tool hub: opens `tool-hub.exe`, the standalone Yime tool window. This is the
-  preferred place to gather heavy UI surfaces so the TSF/PIME language bar only
-  needs to dispatch lightweight commands.
+- Tool hub: opens `tool-hub.exe`, the standalone Yime tool window. It contains
+  lexicon management, reverse lookup, system-lexicon audit, blocklist,
+  settings, diagnostics, data directories, help, and feedback guidance.
 - Language bar quick buttons:
   - **用户词库** → `lexicon-manager.exe`
   - **反查编码** → `reverse-lookup.exe`
@@ -43,8 +43,10 @@ Rime frontend.
   editable source file is `%APPDATA%\PIME\Rime\yime_user_phrases.txt`, using the format
   `phrase<TAB>numeric-tone-pinyin<TAB>weight`; applying the lexicon generates
   Rime's `%APPDATA%\PIME\Rime\custom_phrase.txt` table-code file.
-- Help: view this help, view trial feedback guidance, and copy a trial feedback
-  template.
+- Settings tool: applies schema and candidate-display settings. It can also
+  create a verified portable backup under `Documents\YIME 备份` and restore the
+  latest manual backup after first creating a safety snapshot.
+- Help: view this help or the trial-feedback guidance.
 
 ## Standalone Tools Direction
 
@@ -52,16 +54,12 @@ Yime treats user-facing tools as standalone Win32 executables shipped next to
 `server.exe`, not as PowerShell scripts inside the TSF callback path.
 
 - Lexicon management, reverse lookup, settings, diagnostics, system lexicon
-  audit, and user blocklist all run as native GUI apps.
+  audit, and user blocklist all run as native GUI apps. Result lists use native
+  ListView tables with headers, selection state, and scrollbars.
 - The tool hub (`tool-hub.exe`) renders a manifest built in Go
   (`yime_tool_catalog.go`) and launches each tool via `run_executable`.
-- The earlier Python prototype proved that a tool-oriented workflow is
-  practical for Yime; the maintained prototype repository is now
-  `C:\dev\Yime-python-prototype`.
-- Repository-side debugging also has a local helper
-  `go-backend\run_admin_yime_tests.cmd` for repeatable elevated test attempts.
-  It is for developer troubleshooting only and is not part of the installed
-  runtime surface.
+- Settings and lexicon deployment run outside the language-bar callback and
+  notify active YIME sessions after their on-disk work completes.
 
 ## Reverse Code Lookup
 
@@ -83,3 +81,4 @@ and typing tone-marked pinyin is not.
 - PIME shared Rime data: installed under
   `PIME\go-backend\input_methods\yime\data`
 - PIME Go backend logs: `%LOCALAPPDATA%\PIME\Logs`
+- Portable user backups: `%USERPROFILE%\Documents\YIME 备份`

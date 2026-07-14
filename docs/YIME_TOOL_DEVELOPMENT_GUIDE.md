@@ -139,3 +139,7 @@ PowerShell 仅保留在开发、测试、构建、安装和维护脚本中，不
 | shared-data | 共享数据目录 | open_path | — |
 | help-readme | 查看帮助 | open_path | — |
 | help-trial-feedback | 反馈说明 | open_path | — |
+
+工具箱窗口按两列等宽排列条目，窗口缩放时按钮随客户区扩展并保持网格居中。清单只在窗口启动时读取；运行期间不重新映射按钮索引，避免清单变化造成按钮文字与启动目标错位。
+
+设置工具的用户数据备份由 `input_methods/yime/userbackup` 实现。快照必须带格式版本、用途、相对路径、大小和 SHA-256；恢复必须先完整校验并创建恢复前安全快照。不得直接复制运行中锁定的 `*.userdb` LevelDB，也不得强删被活动 Rime 会话占用的 `build` 文件。

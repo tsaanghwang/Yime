@@ -54,6 +54,7 @@ var (
 	procAdjustWindowRectEx   = moduser32.NewProc("AdjustWindowRectEx")
 	procGetSystemMetrics     = moduser32.NewProc("GetSystemMetrics")
 	procMessageBoxW          = moduser32.NewProc("MessageBoxW")
+	procMoveWindow           = moduser32.NewProc("MoveWindow")
 	procGetModuleHandleW     = modkernel32.NewProc("GetModuleHandleW")
 	procInitCommonControlsEx = modcomctl32.NewProc("InitCommonControlsEx")
 
@@ -93,13 +94,15 @@ type initCommonControlsEx struct {
 	ICC  uint32
 }
 
+type point struct{ X, Y int32 }
+type minMaxInfo struct{ Reserved, MaxSize, MaxPosition, MinTrackSize, MaxTrackSize point }
+
 type appState struct {
-	manifestPath string
-	manifest     toolhub.Manifest
-	mainHWND     syscall.Handle
-	clientW      int32
-	clientH      int32
-	buttonTop    int32
+	manifest toolhub.Manifest
+	mainHWND syscall.Handle
+	buttons  []syscall.Handle
+	clientW  int32
+	clientH  int32
 }
 
 func main() {
@@ -123,7 +126,7 @@ func main() {
 		showError(err.Error())
 		os.Exit(1)
 	}
-	if err := runApp(&appState{manifest: manifest, manifestPath: strings.TrimSpace(*manifestPath)}); err != nil {
+	if err := runApp(&appState{manifest: manifest}); err != nil {
 		showError(err.Error())
 		os.Exit(1)
 	}
@@ -204,40 +207,71 @@ func runApp(state *appState) error {
 }
 
 func (state *appState) computeLayout() {
-	const (
-		width     = int32(620)
-		margin    = int32(16)
-		rowHeight = int32(52)
-	)
-	rowCount := (len(state.manifest.Tools) + 1) / 2
-	if rowCount < 4 {
-		rowCount = 4
-	}
-	state.clientW = width
-	state.buttonTop = margin
-	state.clientH = margin + int32(rowCount)*rowHeight + margin
+	state.clientW = 620
+	state.clientH = toolHubMinimumClientHeight(len(state.manifest.Tools))
 }
 
 func (state *appState) createControls() {
-	const (
-		margin    = int32(16)
-		rowHeight = int32(52)
-		colWidth  = int32(284)
-		gap       = int32(12)
-	)
-	left := margin
-	top := state.buttonTop
+	boxes := toolHubButtonRects(state.clientW, state.clientH, len(state.manifest.Tools))
 	for index, tool := range state.manifest.Tools {
-		column := index % 2
-		row := index / 2
-		x := left + int32(column)*(colWidth+gap)
-		y := top + int32(row)*rowHeight
-		createButton(state.mainHWND, tool.Label, rect{x, y, x + colWidth, y + 40}, idButtonBase+index)
+		state.buttons = append(state.buttons, createButton(state.mainHWND, tool.Label, boxes[index], idButtonBase+index))
+	}
+}
+
+func toolHubMinimumClientHeight(toolCount int) int32 {
+	const margin, buttonH, gap = int32(16), int32(40), int32(12)
+	rows := (toolCount + 1) / 2
+	if rows < 1 {
+		rows = 1
+	}
+	return margin*2 + int32(rows)*buttonH + int32(rows-1)*gap
+}
+
+func toolHubButtonRects(clientW, clientH int32, toolCount int) []rect {
+	const margin, gap, buttonH = int32(16), int32(12), int32(40)
+	if toolCount <= 0 {
+		return nil
+	}
+	rows := (toolCount + 1) / 2
+	gridH := int32(rows)*buttonH + int32(rows-1)*gap
+	top := (clientH - gridH) / 2
+	if top < margin {
+		top = margin
+	}
+	columnW := (clientW - margin*2 - gap) / 2
+	boxes := make([]rect, 0, toolCount)
+	for index := 0; index < toolCount; index++ {
+		column, row := index%2, index/2
+		left := margin + int32(column)*(columnW+gap)
+		y := top + int32(row)*(buttonH+gap)
+		boxes = append(boxes, rect{left, y, left + columnW, y + buttonH})
+	}
+	return boxes
+}
+
+func (state *appState) layoutControls(clientW, clientH int32) {
+	if clientW <= 0 || clientH <= 0 {
+		return
+	}
+	state.clientW, state.clientH = clientW, clientH
+	boxes := toolHubButtonRects(clientW, clientH, len(state.buttons))
+	for index, hwnd := range state.buttons {
+		box := boxes[index]
+		procMoveWindow.Call(uintptr(hwnd), uintptr(box.Left), uintptr(box.Top), uintptr(box.Right-box.Left), uintptr(box.Bottom-box.Top), 1)
 	}
 }
 
 func (state *appState) wndProc(hwnd syscall.Handle, message uint32, wParam, lParam uintptr) uintptr {
 	switch message {
+	case 0x0005: // WM_SIZE
+		state.layoutControls(int32(lParam&0xffff), int32((lParam>>16)&0xffff))
+		return 0
+	case 0x0024: // WM_GETMINMAXINFO
+		if lParam != 0 {
+			minW, minH := windowSizeForClient(480, toolHubMinimumClientHeight(len(state.manifest.Tools)))
+			(*minMaxInfo)(unsafe.Pointer(lParam)).MinTrackSize = point{minW, minH}
+		}
+		return 0
 	case 0x0111: // WM_COMMAND
 		procPostMessageW.Call(uintptr(state.mainHWND), wmAppCommand, wParam, lParam)
 		return 0
@@ -268,8 +302,7 @@ func (state *appState) wndProc(hwnd syscall.Handle, message uint32, wParam, lPar
 }
 
 func (state *appState) handleCommand(wParam uintptr) {
-	if err := state.reloadManifest(); err != nil {
-		showError("无法刷新工具清单：" + err.Error())
+	if int((wParam>>16)&0xffff) != 0 {
 		return
 	}
 	id := int(wParam & 0xffff)
@@ -281,22 +314,6 @@ func (state *appState) handleCommand(wParam uintptr) {
 	if _, err := toolhub.Invoke(entry); err != nil {
 		showError(err.Error())
 	}
-}
-
-func (state *appState) reloadManifest() error {
-	data, err := os.ReadFile(state.manifestPath)
-	if err != nil {
-		return err
-	}
-	manifest := toolhub.Manifest{}
-	if err := json.Unmarshal(data, &manifest); err != nil {
-		return err
-	}
-	if err := toolhub.Validate(manifest); err != nil {
-		return err
-	}
-	state.manifest = manifest
-	return nil
 }
 
 func (state *appState) presentMainWindow() {
@@ -315,8 +332,8 @@ func (state *appState) ensureRestored() {
 	}
 }
 
-func createButton(parent syscall.Handle, text string, box rect, id int) {
-	createControl("BUTTON", text, 0x50010000, box, parent, id)
+func createButton(parent syscall.Handle, text string, box rect, id int) syscall.Handle {
+	return createControl("BUTTON", text, 0x50010000, box, parent, id)
 }
 
 func createControl(className, text string, style int32, box rect, parent syscall.Handle, id int) syscall.Handle {

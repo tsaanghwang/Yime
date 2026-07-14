@@ -15,4 +15,7 @@ Please also include:
 2. What you did.
 3. What you saw.
 
-You can use Help > Copy trial feedback template from the PIME language bar menu.
+For installation, startup, or unexplained runtime problems, open **工具 → 诊断工具**,
+run the relevant checks, and export the diagnostic report. Attach the report
+together with a screenshot when possible. Review the report before sharing if
+you enabled paths, process details, or log excerpts.

@@ -110,7 +110,6 @@ type settingsUILayout struct {
 	pageLabel, pageCombo                                     rect
 	reverseLabel, reverseCombo                               rect
 	layoutLabel, layoutCombo                                 rect
-	backupHint                                               rect
 	applyButton, backupButton, restoreButton, openHelpButton rect
 }
 
@@ -256,7 +255,6 @@ func (state *appState) createControls() {
 	}
 	// The selected controls already show the current configuration; do not
 	// duplicate it in a developer-oriented "current configuration" summary.
-	createStatic(state.mainHWND, "备份包括设置、用户词库、屏蔽词表和 Rime 同步数据。\r\n如需保留自动学习词频，请先在语言栏执行“同步 Rime 用户数据”。", l.backupHint, 0)
 	createButton(state.mainHWND, "应用", l.applyButton, idBtnApply)
 	createButton(state.mainHWND, "备份", l.backupButton, idBtnBackup)
 	createButton(state.mainHWND, "恢复", l.restoreButton, idBtnRestore)
@@ -288,9 +286,7 @@ func buildSettingsUILayout(withHelp bool) settingsUILayout {
 	l.reverseLabel, l.reverseCombo = row(2)
 	l.layoutLabel, l.layoutCombo = row(3)
 
-	hintY := margin + 4*(rowH+rowGap)
-	l.backupHint = rect{margin, hintY, l.layoutCombo.Right, hintY + 42}
-	buttonY := l.backupHint.Bottom + 8
+	buttonY := margin + 4*(rowH+rowGap) + 8
 	buttons := []*rect{&l.applyButton, &l.backupButton, &l.restoreButton}
 	if withHelp {
 		buttons = append(buttons, &l.openHelpButton)
@@ -451,7 +447,7 @@ func (state *appState) finishBackup() {
 		return
 	}
 	showInfo(fmt.Sprintf(
-		"可移植用户数据备份已经创建。\n\n位置：%s\n\n运行中被锁定的 *.userdb 数据库不会直接复制；需要保留其中的学习数据时，可先使用语言栏“同步 Rime 用户数据”生成 sync 快照。",
+		"可移植用户数据备份已经创建。\n\n备份包括设置、用户词库、屏蔽词表和 Rime 同步数据。\n如需保留自动学习词频，请先在语言栏执行“同步 Rime 用户数据”。\n\n运行中被锁定的 *.userdb 数据库不会直接复制。\n\n位置：%s",
 		path,
 	))
 }

@@ -26,11 +26,11 @@ func TestSettingsUILayoutFitsVisibleControls(t *testing.T) {
 	if withHelp.clientH != withHelp.applyButton.Bottom+16 {
 		t.Fatalf("window should fit the button row: height=%d bottom=%d", withHelp.clientH, withHelp.applyButton.Bottom)
 	}
-	if withHelp.backupHint.Top < withHelp.layoutLabel.Bottom || withHelp.backupHint.Bottom >= withHelp.applyButton.Top {
-		t.Fatalf("backup explanation must sit between settings and buttons: %#v", withHelp)
-	}
 	if withoutHelp.applyButton.Right >= withoutHelp.backupButton.Left || withoutHelp.backupButton.Right >= withoutHelp.restoreButton.Left {
 		t.Fatal("apply, backup, and restore buttons must be separate and ordered")
+	}
+	if gap := withHelp.applyButton.Top - withHelp.layoutLabel.Bottom; gap < 8 || gap > 24 {
+		t.Fatalf("button row should be compact below the final setting row, gap=%d", gap)
 	}
 	if withHelp.openHelpButton.Right > withHelp.clientW-16 {
 		t.Fatal("the optional help button must stay inside the content area")

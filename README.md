@@ -13,6 +13,7 @@ Yime maps pinyin syllables to a structured keyboard encoding where initials foll
 - **Candidate window** — 5–9 candidates per page, vertical or horizontal layout, one-click toggle
 - **Reverse lookup** — display standard pinyin, Yime codes, or key sequences alongside candidates
 - **User lexicon** — add custom phrases with numeric-tone pinyin; auto-converts to Yime codes
+- **Portable user backup** — verified settings, lexicon, blocklist, and Rime sync snapshots with guarded restore
 - **Standalone tools** — settings, diagnostics, reverse-lookup, lexicon manager, system lexicon audit, and blocklist manager as native Win32 executables (not PowerShell in TSF callbacks)
 - **Language bar** — IME list name「音元」; static two-character toggle labels (中西 / 全半 / 横竖) with icon state; dispatcher for schema, layout, page size, and maintenance commands
 

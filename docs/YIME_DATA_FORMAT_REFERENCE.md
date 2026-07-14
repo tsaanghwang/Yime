@@ -199,6 +199,15 @@ patch:
   "menu/page_size": 7
 ```
 
+### YIME 用户数据备份
+
+设置工具把备份写入 Windows“文档\YIME 备份”下的时间戳目录。每个快照包含：
+
+- `yime-backup.json`：格式版本、用途、创建时间，以及每个文件的相对路径、大小和 SHA-256。
+- `data\`：设置、用户词库、屏蔽词表、Rime `sync` 快照及其他可移植用户数据。
+
+备份排除可重新生成的 `build`、运行时通知临时文件，以及输入法运行时锁定且不能一致复制的 `*.userdb` LevelDB 目录。恢复前必须验证清单和全部文件摘要，并另建 `pre-restore-safety` 安全快照；恢复后由 `rime_deployer` 更新运行数据。
+
 **注意**：`menu/page_size` 键可能被引号包围（`"menu/page_size"`）也可能不被引号包围，读写时必须同时支持两种形式。
 
 ## 日志文件

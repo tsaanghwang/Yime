@@ -45,7 +45,7 @@ func buildToolHubManifest(sharedDir, userDir, helpDir, logDir, lexiconManagerPat
 			{
 				ID:          "lexicon-manager",
 				Label:       "词库管理",
-				Description: "打开词库管理器，添加、删除、导入个人词条。",
+				Description: "管理个人词条，支持增删改查、导入导出、撤销和应用。",
 				ActionType:  toolActionRunExecutable,
 				TargetPath:  lexiconManagerPath,
 				Arguments: []string{
@@ -81,7 +81,7 @@ func buildToolHubManifest(sharedDir, userDir, helpDir, logDir, lexiconManagerPat
 			{
 				ID:          "user-blocklist-manager",
 				Label:       "用户屏蔽词表",
-				Description: "管理个人屏蔽词表，被屏蔽的词条不会出现在输入候选中。",
+				Description: "管理个人屏蔽词表，支持多选删除、导入导出和一步撤销。",
 				ActionType:  toolActionRunExecutable,
 				TargetPath:  blocklistManagerPath,
 				Arguments: []string{
@@ -91,7 +91,7 @@ func buildToolHubManifest(sharedDir, userDir, helpDir, logDir, lexiconManagerPat
 			{
 				ID:          "settings-tool",
 				Label:       "设置工具",
-				Description: "打开设置工具，修改方案、候选项数等配置。",
+				Description: "修改方案和候选显示，应用设置，并备份或恢复用户数据。",
 				ActionType:  toolActionRunExecutable,
 				TargetPath:  settingsToolPath,
 				Arguments: []string{
@@ -104,7 +104,7 @@ func buildToolHubManifest(sharedDir, userDir, helpDir, logDir, lexiconManagerPat
 			{
 				ID:          "diagnostics-tool",
 				Label:       "诊断工具",
-				Description: "打开诊断工具，收集系统信息和运行状态。",
+				Description: "收集路径、进程和日志状态，并导出便于反馈的诊断报告。",
 				ActionType:  toolActionRunExecutable,
 				TargetPath:  diagnosticsToolPath,
 				Arguments: []string{
