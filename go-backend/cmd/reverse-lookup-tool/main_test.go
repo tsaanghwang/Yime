@@ -59,3 +59,58 @@ func TestShowWindowDoesNotReenterPresentation(t *testing.T) {
 		t.Fatal("WM_SHOWWINDOW must not reenter PresentMainWindow")
 	}
 }
+
+func TestResultColumnsRestoreOriginalComparisonFields(t *testing.T) {
+	columns := resultColumns()
+	want := []string{"词条", "来源", "标准拼音", "当前编码", "等长", "变长", "省键"}
+	if len(columns) != len(want) {
+		t.Fatalf("column count = %d, want %d", len(columns), len(want))
+	}
+	for index, title := range want {
+		if columns[index].title != title {
+			t.Fatalf("column %d = %q, want %q", index, columns[index].title, title)
+		}
+	}
+}
+
+func TestUILayoutExpandsResultListAndKeepsDetailReadable(t *testing.T) {
+	compact := buildUILayoutForSize(820, 560)
+	expanded := buildUILayoutForSize(1020, 760)
+	if expanded.resultList.Bottom-compact.resultList.Bottom != 200 {
+		t.Fatalf("result list did not absorb added height: compact=%#v expanded=%#v", compact.resultList, expanded.resultList)
+	}
+	if compact.detailView.Bottom-compact.detailView.Top != 140 || expanded.detailView.Bottom-expanded.detailView.Top != 140 {
+		t.Fatalf("detail area must remain fully readable: compact=%#v expanded=%#v", compact.detailView, expanded.detailView)
+	}
+	if expanded.searchEdit.Right-compact.searchEdit.Right != 200 {
+		t.Fatalf("search edit did not absorb added width: compact=%#v expanded=%#v", compact.searchEdit, expanded.searchEdit)
+	}
+}
+
+func TestResultColumnsGiveExtraWidthToPinyin(t *testing.T) {
+	compact := resultColumnWidths(796)
+	expanded := resultColumnWidths(996)
+	for index := range compact {
+		if index == 2 {
+			continue
+		}
+		if compact[index] != expanded[index] {
+			t.Fatalf("column %d should remain stable: compact=%v expanded=%v", index, compact, expanded)
+		}
+	}
+	if expanded[2]-compact[2] != 200 {
+		t.Fatalf("pinyin column should absorb extra width: compact=%v expanded=%v", compact, expanded)
+	}
+}
+
+func TestBusyProgressSharesStatusRow(t *testing.T) {
+	status := rect{Left: 12, Top: 520, Right: 808, Bottom: 548}
+	idleStatus, idleProgress := statusProgressLayout(status, false)
+	if idleStatus != status || idleProgress != (rect{}) {
+		t.Fatalf("idle status layout changed: status=%#v progress=%#v", idleStatus, idleProgress)
+	}
+	busyStatus, busyProgress := statusProgressLayout(status, true)
+	if busyProgress.Right != status.Right || busyProgress.Right-busyProgress.Left != 180 || busyStatus.Right >= busyProgress.Left {
+		t.Fatalf("busy status and progress layout invalid: status=%#v progress=%#v", busyStatus, busyProgress)
+	}
+}
