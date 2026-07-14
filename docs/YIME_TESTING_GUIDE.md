@@ -187,6 +187,14 @@ cmake -S . -B build -G "Visual Studio 17 2022" -A Win32 "-DCMAKE_POLICY_VERSION_
 cmake --build build --config Release
 ```
 
+构建完成后必须运行架构门禁：
+
+```powershell
+.\tools\test-build-guards.ps1
+```
+
+期望结果为 Win32 `PIMETextService.dll` 和 `PIMELauncher.exe` 均为 `0x014C`、x64 DLL 为 `0x8664`；存在 ARM64 DLL 时必须为 `0xAA64`。`build.bat` 不再仅凭空的 `CMAKE_GENERATOR_PLATFORM` 判断旧缓存为 Win32：只有解决方案明确包含 Win32 平台才允许复用，否则必须移走旧 `build/` 后以 `-A Win32` 重建。
+
 不得通过取消工具链固定、删除 `PIMELauncher/.cargo/config.toml` 的 `build.target` 或降级 Corrosion 来“修”链接错误：x64 host 跨编译 i686 时 Corrosion 会把 i686 目标库泄给 host 端 build-script，产生 LNK4272 与大量未解析符号（详见 `AGENTS.md`）。
 
 ### 8.2 重装行为与验证顺序
@@ -218,4 +226,4 @@ cmake --build build --config Release
 | 原生工具 UI | 目标包测试 + EXE 构建 + 安装态打开 |
 | Rime 配置/部署 | 设置与 Rime 测试 + 用户目录文件核对 + 安装态重载 |
 | 语言栏/TSF | 具体点击回归 + C++ 构建 + 安装态宿主验证 |
-| 发布构建 | CI 稳定集 + 可复现哈希 + 签名验证 + 安装烟雾测试 |
+| 发布构建 | CI 稳定集 + PE 架构门禁 + 可复现哈希 + 签名验证 + 安装烟雾测试 |

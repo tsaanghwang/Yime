@@ -103,6 +103,10 @@ cmd /c build.bat
 # Go 后端与原生工具
 cd go-backend
 cmd /c build.bat
+
+# 防止 x64 DLL 被误装进 x86 槽位
+cd ..
+.\tools\test-build-guards.ps1
 ```
 
 发布前运行 [测试与验证指南](YIME_TESTING_GUIDE.md) 中的 CI 稳定集、真实 Rime 集成测试和安装态烟雾测试。不得只依据 CI 构建绿色判断功能完整。
@@ -114,7 +118,8 @@ cmd /c build.bat
 - NSIS 必装主组件递归包含 `go-backend/build/go-backend/`，默认标准安装不依赖旧 Python 输入法
 - `input_methods/yime/data/`、`rime.dll`、`rime_deployer.exe` 已打包
 - 打包目录 `input_methods/` 下没有 `.go` 源码或测试文件
-- x86/x64 `PIMETextService.dll` 均存在
+- x86/x64 `PIMETextService.dll` 均存在，并通过 `tools/test-build-guards.ps1` 验证 PE machine type；仅检查文件名或存在性不算通过
+- `go-backend/build/go-backend/input_methods/` 只包含带 `ime.json` 的运行时输入法目录
 - 安装包和内部二进制签名有效
 - 安装包 SHA-256 已记录在发布说明中
 - 全新安装、开发卸载后安装和已有版本升级三种情况下，目标目录都保持为 `C:\Program Files (x86)\YIME`

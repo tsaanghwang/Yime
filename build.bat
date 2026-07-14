@@ -34,17 +34,23 @@ if errorlevel 1 (
 :cmake_found
 
 call "%VS_DEV_CMD%" -arch=x86 -host_arch=x64 >nul || exit /b 1
-rem Older Win32 build trees were configured before this script passed an explicit
-rem generator platform. CMake records those as an empty platform even though the
-rem generated solution and binaries are Win32, and rejects a later -A Win32 as a
-rem platform mismatch. Reuse only that legacy empty-platform cache; new build
-rem trees and caches with an explicit platform continue to require Win32.
+rem Older build trees may have an empty generator-platform field. That field alone
+rem does not prove the tree is Win32: a host-default x64 tree looks identical in
+rem CMakeCache.txt. Reuse it only when the generated solution explicitly says
+rem Win32; otherwise stop before an x64 DLL can be packaged as x86.
 set "WIN32_CMAKE_PLATFORM=-A Win32"
 if exist "build\CMakeCache.txt" (
 	%SystemRoot%\System32\findstr.exe /x /c:"CMAKE_GENERATOR_PLATFORM:INTERNAL=" "build\CMakeCache.txt" >nul
 	if not errorlevel 1 (
-		echo Reusing legacy Win32 CMake cache with an empty generator-platform field.
-		set "WIN32_CMAKE_PLATFORM="
+		%SystemRoot%\System32\findstr.exe /c:"|Win32" "build\PIME.sln" >nul 2>&1
+		if errorlevel 1 (
+			echo [ERROR] build uses an ambiguous legacy CMake cache and is not a Win32 solution.
+			echo [ERROR] Move or remove the build directory, then run Build.cmd again.
+			exit /b 1
+		) else (
+			echo Reusing verified legacy Win32 CMake cache with an empty generator-platform field.
+			set "WIN32_CMAKE_PLATFORM="
+		)
 	)
 )
 "%CMAKE_EXE%" . -Bbuild -G "Visual Studio 17 2022" %WIN32_CMAKE_PLATFORM% -DCMAKE_POLICY_VERSION_MINIMUM=3.5 || exit /b 1
@@ -62,6 +68,9 @@ if defined SKIP_ARM64 (
 	"%CMAKE_EXE%" . -Bbuild_arm64 -G "Visual Studio 17 2022" -A ARM64 -DCMAKE_POLICY_VERSION_MINIMUM=3.5 || exit /b 1
 	"%CMAKE_EXE%" --build build_arm64 --config Release --target PIMETextService || exit /b 1
 )
+
+echo "Verify native PE architectures"
+powershell -NoProfile -ExecutionPolicy Bypass -File "%ROOT_DIR%\tools\verify-pe-architectures.ps1" -RepoRoot "%ROOT_DIR%" || exit /b 1
 
 echo "Start building go-backend"
 pushd go-backend || exit /b 1

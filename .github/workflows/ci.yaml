@@ -152,6 +152,7 @@ jobs:
       - name: Verify native build outputs
         shell: pwsh
         run: |
+          .\tools\test-build-guards.ps1
           Write-Host "=== Listing all PIMETextService.dll ==="
           Get-ChildItem -Recurse -Filter "PIMETextService.dll" | ForEach-Object { $_.FullName }
           Write-Host "=== Listing build directory ==="

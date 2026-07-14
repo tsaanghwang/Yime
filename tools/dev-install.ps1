@@ -132,6 +132,12 @@ Assert-PathExists -Path $backendsFile -Description "backends.json"
 Assert-PathExists -Path (Join-Path $pythonRoot "python3\python.exe") -Description "bundled Python runtime"
 Assert-PathExists -Path (Join-Path $nodeRoot "node.exe") -Description "bundled Node runtime"
 Assert-PathExists -Path (Join-Path $goBackendRoot "server.exe") -Description "go-backend server.exe"
+
+& (Join-Path $PSScriptRoot 'verify-pe-architectures.ps1') `
+    -RepoRoot $repoRoot `
+    -X86TextService $x86Dll `
+    -X64TextService $x64Dll `
+    -X86Launcher $launcherExe
 foreach ($toolExe in @(
     "tool-hub.exe",
     "lexicon-manager.exe",

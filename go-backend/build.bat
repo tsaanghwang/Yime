@@ -295,9 +295,20 @@ if not exist "%ROOT_DIR%\input_methods" (
     exit /b 1
 )
 
-xcopy "%ROOT_DIR%\input_methods" "%PACKAGE_DIR%\input_methods\" /E /I /Y >nul
-if errorlevel 1 (
-    echo [ERROR] Failed to copy input_methods
+if exist "%PACKAGE_DIR%\input_methods" rmdir /s /q "%PACKAGE_DIR%\input_methods"
+mkdir "%PACKAGE_DIR%\input_methods"
+for /d %%D in ("%ROOT_DIR%\input_methods\*") do (
+    if exist "%%~fD\ime.json" (
+        xcopy "%%~fD" "%PACKAGE_DIR%\input_methods\%%~nxD\" /E /I /Y >nul
+        if errorlevel 1 (
+            echo [ERROR] Failed to copy runtime input method "%%~nxD"
+            popd
+            exit /b 1
+        )
+    )
+)
+if not exist "%PACKAGE_DIR%\input_methods\yime\ime.json" (
+    echo [ERROR] Packaged Yime ime.json is missing
     popd
     exit /b 1
 )

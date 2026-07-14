@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- PE machine-type verification for Win32, x64, and ARM64 native build outputs, enforced by local builds, development installs, and CI
 - Repeatable `tools/test-go-race.ps1` entry point that pins CGO, MSYS2 UCRT64 GCC, PATH, and workspace-local Go caches
 - Embed Windows VERSIONINFO in server.exe and native tools via go-winres so Windows can identify file version and publisher metadata
 - Native Win32 tool executables: reverse-lookup.exe, tool-hub.exe, lexicon-manager.exe, system-lexicon-audit.exe, blocklist-manager.exe, settings-tool.exe, diagnostics-tool.exe
@@ -39,6 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Reject ambiguous legacy `build/` CMake caches unless the generated solution is demonstrably Win32; package only input-method directories that contain `ime.json`
 - Move development package identity from the historical `1.3.0-beta2` line to `1.4.0-dev`; release tags must replace the development suffix with the selected beta, RC, or final version
 - Treat the fixed-length dictionary as the only external system-lexicon source; variable and shorthand dictionaries are generated runtime artifacts
 - Reduce `yime_pinyin_codes.tsv` to `pinyin_tone` and `full`; derive variable and shorthand codes through the shared Go `codemode` rules
