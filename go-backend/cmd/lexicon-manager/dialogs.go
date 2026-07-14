@@ -4,6 +4,8 @@ package main
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"sync"
@@ -14,12 +16,27 @@ import (
 	"github.com/EasyIME/pime-go/input_methods/yime/win32ui"
 )
 
+type knownFolderID struct {
+	Data1 uint32
+	Data2 uint16
+	Data3 uint16
+	Data4 [8]byte
+}
+
+var (
+	modshell32               = syscall.NewLazyDLL("shell32.dll")
+	modole32                 = syscall.NewLazyDLL("ole32.dll")
+	procSHGetKnownFolderPath = modshell32.NewProc("SHGetKnownFolderPath")
+	procCoTaskMemFree        = modole32.NewProc("CoTaskMemFree")
+)
+
 const (
 	idDlgPhrase       = 301
 	idDlgPinyin       = 302
 	idDlgWeight       = 303
 	idDlgOK           = 1
 	idDlgCancel       = 2
+	idDlgSaveContinue = 305
 	idWeightStep      = 402
 	idWeightMinus     = 403
 	idWeightPlus      = 404
@@ -28,6 +45,7 @@ const (
 	idImportCancel    = 2
 	idChoicePrimary   = 601
 	idChoiceSecondary = 602
+	idChoiceTertiary  = 603
 )
 
 type entryDialogResult int
@@ -39,8 +57,23 @@ type dialogChoice struct {
 
 const (
 	entryDialogCanceled entryDialogResult = iota
+	entryDialogSavedAndClose
 	entryDialogSavedAndContinue
 )
+
+func entryDialogChoices(allowContinue bool, okText string) []dialogChoice {
+	if allowContinue {
+		return []dialogChoice{
+			{ID: idDlgOK, Label: "保存并关闭"},
+			{ID: idDlgSaveContinue, Label: "保存并继续"},
+			{ID: idDlgCancel, Label: "取消"},
+		}
+	}
+	return []dialogChoice{
+		{ID: idDlgOK, Label: okText},
+		{ID: idDlgCancel, Label: "取消"},
+	}
+}
 
 func centeredButtonRects(left, right, top, height, gap int32, widths []int32) []rect {
 	if len(widths) == 0 {
@@ -92,7 +125,7 @@ type openFilename struct {
 	FlagsEx         uint32
 }
 
-func showEntryDialog(owner syscall.Handle, initial userlexicon.Entry, title, okText string) (userlexicon.Entry, entryDialogResult) {
+func showEntryDialog(owner syscall.Handle, initial userlexicon.Entry, title, okText string, allowContinue bool) (userlexicon.Entry, entryDialogResult) {
 	result := userlexicon.Entry{}
 	dialogResult := entryDialogCanceled
 	accepted := showModalForm(owner, title, 520, 362, func(hwnd syscall.Handle) {
@@ -113,9 +146,18 @@ func showEntryDialog(owner syscall.Handle, initial userlexicon.Entry, title, okT
 		setWindowText(phrase, initial.Phrase)
 		setWindowText(pinyin, initial.Pinyin)
 		setWindowText(weight, initial.Weight)
-		buttons := centeredButtonRects(contentLeft, contentRight, 276, 28, 10, []int32{88, 88})
-		createButton(hwnd, okText, buttons[0], idDlgOK)
-		createButton(hwnd, "退出", buttons[1], idDlgCancel)
+		choices := entryDialogChoices(allowContinue, okText)
+		widths := make([]int32, len(choices))
+		for index, choice := range choices {
+			widths[index] = measureTextWidth(hwnd, choice.Label) + 32
+			if widths[index] < 88 {
+				widths[index] = 88
+			}
+		}
+		buttons := centeredButtonRects(contentLeft, contentRight, 276, 28, 10, widths)
+		for index, choice := range choices {
+			createButton(hwnd, choice.Label, buttons[index], choice.ID)
+		}
 	}, func(hwnd syscall.Handle, id int) bool {
 		switch id {
 		case idWeightMinus, idWeightPlus:
@@ -141,7 +183,7 @@ func showEntryDialog(owner syscall.Handle, initial userlexicon.Entry, title, okT
 			}
 			setWindowText(weightHWND, adjusted)
 			return false
-		case idDlgOK:
+		case idDlgOK, idDlgSaveContinue:
 			entry := userlexicon.Entry{
 				Phrase: strings.TrimSpace(getWindowText(findDlgItem(hwnd, idDlgPhrase))),
 				Pinyin: strings.TrimSpace(getWindowText(findDlgItem(hwnd, idDlgPinyin))),
@@ -155,7 +197,10 @@ func showEntryDialog(owner syscall.Handle, initial userlexicon.Entry, title, okT
 				return false
 			}
 			result = entry
-			dialogResult = entryDialogSavedAndContinue
+			dialogResult = entryDialogSavedAndClose
+			if id == idDlgSaveContinue {
+				dialogResult = entryDialogSavedAndContinue
+			}
 			return true
 		default:
 			return false
@@ -297,6 +342,15 @@ func showConfirmDialog(owner syscall.Handle, title, message string) bool {
 		{ID: idChoicePrimary, Label: "确认"},
 		{ID: idDlgCancel, Label: "取消"},
 	}) == idChoicePrimary
+}
+
+func existingImportFileChoices() []dialogChoice {
+	return []dialogChoice{
+		{ID: idChoicePrimary, Label: "使用现有"},
+		{ID: idChoiceSecondary, Label: "另存副本"},
+		{ID: idChoiceTertiary, Label: "选择其他"},
+		{ID: idDlgCancel, Label: "取消"},
+	}
 }
 
 func showNoticeDialog(owner syscall.Handle, title, message string) {
@@ -465,10 +519,15 @@ func isChildOf(parent, child syscall.Handle) bool {
 	return false
 }
 
-func pickOpenFile(owner syscall.Handle, title, filter string) (string, bool) {
-	buf := make([]uint16, 260)
+func pickOpenFileAt(owner syscall.Handle, title, filter, initialPath string) (string, bool) {
+	buf := make([]uint16, 32768)
+	copy(buf, utf16FromString(initialPath))
 	instance, _, _ := procGetModuleHandleW.Call(0)
 	filterPtr, _ := syscall.UTF16PtrFromString(filter)
+	initialDir := ""
+	if initialPath != "" {
+		initialDir = filepath.Dir(initialPath)
+	}
 	ofn := openFilename{
 		StructSize: uint32(unsafe.Sizeof(openFilename{})),
 		Owner:      owner,
@@ -477,6 +536,7 @@ func pickOpenFile(owner syscall.Handle, title, filter string) (string, bool) {
 		File:       &buf[0],
 		MaxFile:    uint32(len(buf)),
 		Title:      utf16Ptr(title),
+		InitialDir: utf16Ptr(initialDir),
 		Flags:      0x00080000 | 0x00001000 | 0x00000800,
 	}
 	ret, _, _ := procGetOpenFileNameW.Call(uintptr(unsafe.Pointer(&ofn)))
@@ -484,6 +544,10 @@ func pickOpenFile(owner syscall.Handle, title, filter string) (string, bool) {
 		return "", false
 	}
 	return syscall.UTF16ToString(buf), true
+}
+
+func pickOpenFile(owner syscall.Handle, title, filter string) (string, bool) {
+	return pickOpenFileAt(owner, title, filter, "")
 }
 
 func pickSaveFile(owner syscall.Handle, title, defaultName, filter string) (string, bool) {
@@ -503,13 +567,78 @@ func pickSaveFile(owner syscall.Handle, title, defaultName, filter string) (stri
 		File:       &buf[0],
 		MaxFile:    uint32(len(buf)),
 		Title:      utf16Ptr(title),
-		Flags:      0x00080000 | 0x00000002 | 0x00001000,
+		Flags:      0x00080000 | 0x00000002 | 0x00000800,
 	}
 	ret, _, _ := procGetSaveFileNameW.Call(uintptr(unsafe.Pointer(&ofn)))
 	if ret == 0 {
 		return "", false
 	}
 	return syscall.UTF16ToString(buf), true
+}
+
+func pickSaveFileAt(owner syscall.Handle, title, initialPath, filter string) (string, bool) {
+	buf := make([]uint16, 32768)
+	copy(buf, utf16FromString(initialPath))
+	instance, _, _ := procGetModuleHandleW.Call(0)
+	filterPtr, _ := syscall.UTF16PtrFromString(filter)
+	ofn := openFilename{
+		StructSize: uint32(unsafe.Sizeof(openFilename{})),
+		Owner:      owner,
+		Instance:   syscall.Handle(instance),
+		Filter:     filterPtr,
+		File:       &buf[0],
+		MaxFile:    uint32(len(buf)),
+		Title:      utf16Ptr(title),
+		InitialDir: utf16Ptr(filepath.Dir(initialPath)),
+		Flags:      0x00080000 | 0x00000002 | 0x00000800,
+	}
+	ret, _, _ := procGetSaveFileNameW.Call(uintptr(unsafe.Pointer(&ofn)))
+	if ret == 0 {
+		return "", false
+	}
+	return syscall.UTF16ToString(buf), true
+}
+
+func windowsDocumentsDirectory() string {
+	documents := knownFolderID{
+		Data1: 0xFDD39AD0,
+		Data2: 0x238F,
+		Data3: 0x46AF,
+		Data4: [8]byte{0xAD, 0xB4, 0x6C, 0x85, 0x48, 0x03, 0x69, 0xC7},
+	}
+	var pathPtr *uint16
+	result, _, _ := procSHGetKnownFolderPath.Call(
+		uintptr(unsafe.Pointer(&documents)),
+		0,
+		0,
+		uintptr(unsafe.Pointer(&pathPtr)),
+	)
+	if result == 0 && pathPtr != nil {
+		defer procCoTaskMemFree.Call(uintptr(unsafe.Pointer(pathPtr)))
+		if path := utf16StringFromPointer(pathPtr); path != "" {
+			return path
+		}
+	}
+	home, err := os.UserHomeDir()
+	if err != nil || home == "" {
+		return ""
+	}
+	return filepath.Join(home, "Documents")
+}
+
+func utf16StringFromPointer(ptr *uint16) string {
+	if ptr == nil {
+		return ""
+	}
+	units := make([]uint16, 0, 260)
+	for index := uintptr(0); ; index++ {
+		unit := *(*uint16)(unsafe.Add(unsafe.Pointer(ptr), index*2))
+		if unit == 0 {
+			break
+		}
+		units = append(units, unit)
+	}
+	return syscall.UTF16ToString(units)
 }
 
 func utf16Ptr(value string) *uint16 {

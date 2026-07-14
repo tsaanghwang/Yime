@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 	"syscall"
 	"time"
@@ -34,6 +35,7 @@ func (state *appState) refreshList() {
 	entries, err := state.loadSourceEntries()
 	if err != nil {
 		setWindowText(state.statusHWND, err.Error())
+		state.updateToolbarState()
 		return
 	}
 	keyword := strings.TrimSpace(getWindowText(state.searchHWND))
@@ -42,27 +44,28 @@ func (state *appState) refreshList() {
 	filtered = userlexicon.SortEntries(filtered, state.sortField, state.sortDescending)
 	state.visibleEntries = filtered
 
-	procSendMessageW.Call(uintptr(state.listHWND), lbResetcontent, 0, 0)
+	procSendMessageW.Call(uintptr(state.listHWND), lvmDeleteallitems, 0, 0)
 	selectedSet := map[string]bool{}
 	for _, phrase := range selected {
 		selectedSet[phrase] = true
 	}
-	maxExtent := int32(0)
-	for _, entry := range filtered {
-		line := fmt.Sprintf("%s    %s    %s", entry.Phrase, entry.Pinyin, entry.Weight)
-		text, _ := syscall.UTF16PtrFromString(line)
-		index, _, _ := procSendMessageW.Call(uintptr(state.listHWND), lbAddstring, 0, uintptr(unsafe.Pointer(text)))
+	for index, entry := range filtered {
+		phrase, _ := syscall.UTF16PtrFromString(entry.Phrase)
+		item := listViewItem{Mask: lvifText, Item: int32(index), Text: phrase}
+		inserted, _, _ := procSendMessageW.Call(uintptr(state.listHWND), lvmInsertitemw, 0, uintptr(unsafe.Pointer(&item)))
+		if int32(inserted) < 0 {
+			continue
+		}
+		for subItem, value := range []string{entry.Pinyin, entry.Weight} {
+			text, _ := syscall.UTF16PtrFromString(value)
+			subItemData := listViewItem{Item: int32(index), SubItem: int32(subItem + 1), Text: text}
+			procSendMessageW.Call(uintptr(state.listHWND), lvmSetitemtextw, uintptr(index), uintptr(unsafe.Pointer(&subItemData)))
+		}
 		if selectedSet[entry.Phrase] {
-			procSendMessageW.Call(uintptr(state.listHWND), lbSetsel, index, 1)
-		}
-		if extent := int32(len(line) * 7); extent > maxExtent {
-			maxExtent = extent
+			selection := listViewItem{State: lvisSelected, StateMask: lvisSelected}
+			procSendMessageW.Call(uintptr(state.listHWND), lvmSetitemstate, uintptr(index), uintptr(unsafe.Pointer(&selection)))
 		}
 	}
-	if maxExtent < 764 {
-		maxExtent = 764
-	}
-	procSendMessageW.Call(uintptr(state.listHWND), lbSethorizontalextent, uintptr(maxExtent), 0)
 	win32ui.RedrawChildrenNow(state.mainHWND)
 	state.updateSummary(len(entries), len(filtered))
 	state.updateSelectionSummary()
@@ -81,30 +84,25 @@ func (state *appState) currentSortField() userlexicon.SortField {
 }
 
 func (state *appState) selectedPhrases() []string {
-	count, _, _ := procSendMessageW.Call(uintptr(state.listHWND), lbGetselcount, 0, 0)
-	selCount := int32(count)
-	if selCount <= 0 {
-		return nil
-	}
-	items := make([]int32, selCount)
-	procSendMessageW.Call(uintptr(state.listHWND), lbGetselitems, uintptr(selCount), uintptr(unsafe.Pointer(&items[0])))
-	phrases := make([]string, 0, len(items))
-	for _, index := range items {
-		if index < 0 || int(index) >= len(state.visibleEntries) {
-			continue
+	phrases := []string{}
+	index := ^uintptr(0)
+	for {
+		next, _, _ := procSendMessageW.Call(uintptr(state.listHWND), lvmGetnextitem, index, lvniSelected)
+		selectedIndex := int32(next)
+		if selectedIndex < 0 {
+			break
 		}
-		phrases = append(phrases, state.visibleEntries[index].Phrase)
+		if int(selectedIndex) < len(state.visibleEntries) {
+			phrases = append(phrases, state.visibleEntries[selectedIndex].Phrase)
+		}
+		index = uintptr(selectedIndex)
 	}
 	return phrases
 }
 
 func (state *appState) updateSummary(totalCount, visibleCount int) {
-	pending := "状态：源词库与生成词库已同步。"
-	if state.dirty {
-		pending = "状态：源词库已修改，尚未应用。"
-	}
-	text := fmt.Sprintf("源词库：%s\r\n当前模式生成词库：%s    %s", state.sourcePath, state.rimeLexiconPath, pending)
-	setWindowText(state.summaryHWND, text)
+	// 开发说明：state.sourcePath 是可编辑的源词库；state.rimeLexiconPath 是
+	// 当前编码模式生成的 Rime 词库。两者的同步状态由 state.dirty 表示。
 
 	sortLabel := "词条"
 	switch state.sortField {
@@ -127,7 +125,8 @@ func (state *appState) updateSummary(totalCount, visibleCount int) {
 func (state *appState) updateSelectionSummary() {
 	phrases := state.selectedPhrases()
 	if len(phrases) == 0 {
-		setWindowText(state.selectionHWND, "未选中词条")
+		setWindowText(state.selectionHWND, "请在搜索框中输入想要编辑的词条。")
+		state.updateToolbarState()
 		return
 	}
 	preview := phrases
@@ -139,6 +138,7 @@ func (state *appState) updateSelectionSummary() {
 		text += " 等"
 	}
 	setWindowText(state.selectionHWND, fmt.Sprintf("已选中 %d 条：%s", len(phrases), text))
+	state.updateToolbarState()
 }
 
 func (state *appState) saveUndoSnapshot(label string) {
@@ -215,7 +215,7 @@ func (state *appState) addEntry() {
 	}
 	initial := userlexicon.Entry{Weight: userlexicon.DefaultEntryWeight}
 	for {
-		entry, result := showEntryDialog(state.mainHWND, initial, "添加用户词条", "保存")
+		entry, result := showEntryDialog(state.mainHWND, initial, "添加用户词条", "保存", true)
 		if result == entryDialogCanceled {
 			return
 		}
@@ -242,6 +242,9 @@ func (state *appState) addEntry() {
 		} else {
 			state.addOperationHistory("添加词条：" + entry.Phrase)
 			setWindowText(state.statusHWND, "已添加词条，点击“应用”生成三套用户词库。")
+		}
+		if result == entryDialogSavedAndClose {
+			return
 		}
 		initial = userlexicon.Entry{Weight: userlexicon.DefaultEntryWeight}
 	}
@@ -277,7 +280,7 @@ func (state *appState) editSelected() {
 		showNoticeDialog(state.mainHWND, "编辑失败", "在源词库中找不到所选词条。")
 		return
 	}
-	entry, result := showEntryDialog(state.mainHWND, existing.Clone(), "编辑用户词条", "保存")
+	entry, result := showEntryDialog(state.mainHWND, existing.Clone(), "编辑用户词条", "保存", false)
 	if result == entryDialogCanceled {
 		return
 	}
@@ -339,11 +342,12 @@ func (state *appState) undoLastChange() {
 		return
 	}
 	state.dirty = true
-	state.refreshList()
-	setWindowText(state.statusHWND, "已撤销最近一次改动："+state.lastUndoLabel)
-	state.addOperationHistory("撤销最近改动：" + state.lastUndoLabel)
+	undoneLabel := state.lastUndoLabel
 	state.lastUndoEntries = nil
 	state.lastUndoLabel = ""
+	state.refreshList()
+	setWindowText(state.statusHWND, "已撤销最近一次改动："+undoneLabel)
+	state.addOperationHistory("撤销最近改动：" + undoneLabel)
 }
 
 func (state *appState) applyLexicon() {
@@ -359,6 +363,7 @@ func (state *appState) applyLexicon() {
 	state.applyRunning = true
 	state.applyMu.Unlock()
 	setWindowText(state.statusHWND, "正在重建并应用三套用户词库，请稍候……")
+	state.updateToolbarState()
 	go func() {
 		err := state.rebuildAndDeployAllLexicons()
 		state.applyMu.Lock()
@@ -381,14 +386,16 @@ func (state *appState) finishApplyLexicon() {
 	state.applyRunning = false
 	state.applyMu.Unlock()
 	if err != nil {
-		showMessageBox(err.Error(), 0x10)
 		setWindowText(state.statusHWND, "应用失败。")
+		state.updateToolbarState()
+		showMessageBox(err.Error(), 0x10)
 		return
 	}
 	state.dirty = false
 	state.refreshList()
 	state.addOperationHistory("应用用户词库并重建三种模式")
 	setWindowText(state.statusHWND, "已重建三套用户词库；活动输入会话将在下一次操作前刷新。")
+	state.updateToolbarState()
 	showNoticeDialog(state.mainHWND, "应用完成", "用户词库格式校验通过，已重建 variable / full / shorthand 三套用户词库。活动输入会话将在下一次操作前刷新。")
 }
 
@@ -425,7 +432,7 @@ func (state *appState) importLexicon() {
 		showMessageBox(err.Error(), 0x10)
 		return
 	}
-	path, ok := pickOpenFile(state.mainHWND, "导入用户词库", "文本文件 (*.txt;*.tsv)\x00*.txt;*.tsv\x00所有文件 (*.*)\x00*.*\x00")
+	path, ok := state.selectImportFile()
 	if !ok {
 		return
 	}
@@ -485,12 +492,139 @@ func (state *appState) importLexicon() {
 	setWindowText(state.statusHWND, "已合并导入到源词库，点击“应用”生成三套用户词库。")
 }
 
+func (state *appState) selectImportFile() (string, bool) {
+	documentsDir := windowsDocumentsDirectory()
+	if documentsDir == "" {
+		showNoticeDialog(state.mainHWND, "导入用户词库", "无法定位 Windows 用户文档目录。")
+		return "", false
+	}
+	if err := os.MkdirAll(documentsDir, 0o755); err != nil {
+		showNoticeDialog(state.mainHWND, "导入用户词库", err.Error())
+		return "", false
+	}
+
+	templateContent, err := buildImportTemplateContent(state.sourcePath)
+	if err != nil {
+		showNoticeDialog(state.mainHWND, "导入用户词库", err.Error())
+		return "", false
+	}
+	selectedTemplate := filepath.Join(documentsDir, userlexicon.SourceFileName)
+	if _, err := os.Stat(selectedTemplate); err == nil {
+		choice := showChoiceDialog(state.mainHWND, "准备导入文件",
+			"Windows 用户文档目录中已存在 yime_user_phrases.txt。\n请选择使用方式。",
+			existingImportFileChoices())
+		switch choice {
+		case idChoicePrimary:
+			return state.finishImportFileSelection(selectedTemplate, templateContent)
+		case idChoiceSecondary:
+			copyPath, ok := pickSaveFileAt(state.mainHWND, "另存导入副本", filepath.Join(documentsDir, "yime_user_phrases_副本.txt"), "文本文件 (*.txt)\x00*.txt\x00")
+			if !ok {
+				return "", false
+			}
+			if err := os.WriteFile(copyPath, templateContent, 0o644); err != nil {
+				showNoticeDialog(state.mainHWND, "创建导入副本失败", err.Error())
+				return "", false
+			}
+			return state.finishImportFileSelection(copyPath, templateContent)
+		case idChoiceTertiary:
+			path, ok := pickOpenFileAt(state.mainHWND, "请选择想要导入词条的文件", "文本文件 (*.txt;*.tsv)\x00*.txt;*.tsv\x00所有文件 (*.*)\x00*.*\x00", selectedTemplate)
+			if !ok {
+				return "", false
+			}
+			return state.finishImportFileSelection(path, templateContent)
+		default:
+			return "", false
+		}
+	} else if os.IsNotExist(err) {
+		if err := os.WriteFile(selectedTemplate, templateContent, 0o644); err != nil {
+			showNoticeDialog(state.mainHWND, "创建导入模板失败", err.Error())
+			return "", false
+		}
+	} else {
+		showNoticeDialog(state.mainHWND, "检查导入模板失败", err.Error())
+		return "", false
+	}
+
+	path, ok := pickOpenFileAt(state.mainHWND, "请选择想要导入词条的文件", "文本文件 (*.txt;*.tsv)\x00*.txt;*.tsv\x00所有文件 (*.*)\x00*.*\x00", selectedTemplate)
+	if !ok {
+		return "", false
+	}
+	return state.finishImportFileSelection(path, templateContent)
+}
+
+func (state *appState) finishImportFileSelection(path string, templateContent []byte) (string, bool) {
+	if importFileMatchesTemplate(path, templateContent) {
+		showNoticeDialog(state.mainHWND, "请先编辑导入文件",
+			"该文件目前只包含格式说明和源词库的前三条示例。\n请在文件末尾追加想要添加的词条，保存后再次点击“导入”。")
+		if _, err := toolhub.Invoke(toolhub.Entry{ID: "edit-import-template", Label: "edit", ActionType: toolhub.ActionOpenPath, TargetPath: path}); err != nil {
+			showNoticeDialog(state.mainHWND, "打开导入文件失败", err.Error())
+		}
+		return "", false
+	}
+	return path, true
+}
+
+func buildImportTemplateContent(sourcePath string) ([]byte, error) {
+	if err := userlexicon.EnsureSourceFile(sourcePath); err != nil {
+		return nil, err
+	}
+	data, err := os.ReadFile(sourcePath)
+	if err != nil {
+		return nil, err
+	}
+	lines := strings.Split(strings.ReplaceAll(string(data), "\r\n", "\n"), "\n")
+	result := make([]string, 0, 6)
+	dataCount := 0
+	readingHeader := true
+	for _, line := range lines {
+		trimmed := strings.TrimSpace(line)
+		if readingHeader && (trimmed == "" || strings.HasPrefix(trimmed, "#")) {
+			result = append(result, line)
+			continue
+		}
+		if trimmed == "" || strings.HasPrefix(trimmed, "#") {
+			continue
+		}
+		readingHeader = false
+		if dataCount < 3 {
+			result = append(result, line)
+			dataCount++
+		}
+	}
+	for len(result) > 0 && strings.TrimSpace(result[len(result)-1]) == "" {
+		result = result[:len(result)-1]
+	}
+	return []byte(strings.Join(result, "\n") + "\n"), nil
+}
+
+func importFileMatchesTemplate(path string, templateContent []byte) bool {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return false
+	}
+	normalize := func(content string) string {
+		content = strings.TrimPrefix(content, "\ufeff")
+		return strings.TrimSpace(strings.ReplaceAll(content, "\r\n", "\n"))
+	}
+	return normalize(string(data)) == normalize(string(templateContent))
+}
+
 func (state *appState) exportLexicon() {
 	if err := userlexicon.EnsureSourceFile(state.sourcePath); err != nil {
 		showMessageBox(err.Error(), 0x10)
 		return
 	}
-	path, ok := pickSaveFile(state.mainHWND, "导出用户词库", "yime_user_phrases.txt", "文本文件 (*.txt)\x00*.txt\x00TSV 文件 (*.tsv)\x00*.tsv\x00")
+	documentsDir := windowsDocumentsDirectory()
+	if documentsDir == "" {
+		showMessageBox("无法确定 Windows 用户文档目录。", 0x10)
+		return
+	}
+	if err := os.MkdirAll(documentsDir, 0o755); err != nil {
+		showMessageBox(err.Error(), 0x10)
+		return
+	}
+	defaultPath := filepath.Join(documentsDir, userlexicon.SourceFileName)
+	path, ok := pickSaveFileAt(state.mainHWND, "导出用户词库（请选择保存位置）", defaultPath, "文本文件 (*.txt)\x00*.txt\x00TSV 文件 (*.tsv)\x00*.tsv\x00")
 	if !ok {
 		return
 	}
@@ -507,9 +641,18 @@ func (state *appState) exportLexicon() {
 }
 
 func (state *appState) openUserFolder() {
-	if _, err := toolhub.Invoke(toolhub.Entry{ID: "open-folder", Label: "open", ActionType: toolhub.ActionOpenPath, TargetPath: state.userDir}); err != nil {
+	documentsDir := windowsDocumentsDirectory()
+	if documentsDir == "" {
+		showMessageBox("无法确定 Windows 用户文档目录。", 0x10)
+		return
+	}
+	if err := os.MkdirAll(documentsDir, 0o755); err != nil {
 		showMessageBox(err.Error(), 0x10)
 		return
 	}
-	setWindowText(state.statusHWND, "已打开用户词库目录。")
+	if _, err := toolhub.Invoke(toolhub.Entry{ID: "open-folder", Label: "open", ActionType: toolhub.ActionOpenPath, TargetPath: documentsDir}); err != nil {
+		showMessageBox(err.Error(), 0x10)
+		return
+	}
+	setWindowText(state.statusHWND, "已打开 Windows 用户文档目录。")
 }

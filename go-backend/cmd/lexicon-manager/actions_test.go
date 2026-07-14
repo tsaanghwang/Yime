@@ -176,3 +176,48 @@ func TestValidateEntryForAddRejectsSystemPhraseBeforePinyinValidation(t *testing
 		t.Fatalf("expected system lexicon duplicate error, got %v", err)
 	}
 }
+
+func TestBuildImportTemplateCopiesHeaderAndFirstThreeEntries(t *testing.T) {
+	sourcePath := filepath.Join(t.TempDir(), userlexicon.SourceFileName)
+	source := strings.Join([]string{
+		"# header one",
+		"# header two",
+		"one\tone1\t100",
+		"two\ttwo1\t200",
+		"three\tthree1\t300",
+		"four\tfour1\t400",
+	}, "\n") + "\n"
+	if err := os.WriteFile(sourcePath, []byte(source), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	got, err := buildImportTemplateContent(sourcePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	content := string(got)
+	for _, expected := range []string{"# header one", "# header two", "one\tone1\t100", "two\ttwo1\t200", "three\tthree1\t300"} {
+		if !strings.Contains(content, expected) {
+			t.Fatalf("template missing %q: %q", expected, content)
+		}
+	}
+	if strings.Contains(content, "four\tfour1\t400") {
+		t.Fatalf("template must not copy the fourth entry: %q", content)
+	}
+}
+
+func TestImportFileMatchesTemplateIgnoresLineEndingChanges(t *testing.T) {
+	path := filepath.Join(t.TempDir(), userlexicon.SourceFileName)
+	if err := os.WriteFile(path, []byte("# header\r\none\tone1\t100\r\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if !importFileMatchesTemplate(path, []byte("# header\none\tone1\t100\n")) {
+		t.Fatal("equivalent template content should be recognized")
+	}
+	if err := os.WriteFile(path, []byte("# header\r\none\tone1\t100\r\nnew\tnew1\t100\r\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if importFileMatchesTemplate(path, []byte("# header\none\tone1\t100\n")) {
+		t.Fatal("a template with appended entries must be importable")
+	}
+}

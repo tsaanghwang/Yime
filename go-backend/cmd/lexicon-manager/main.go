@@ -42,8 +42,8 @@ const (
 	idSortDirection  = 104
 	idEntryList      = 105
 	idSelectionLabel = 106
-	idSummaryLabel   = 107
 	idStatusLabel    = 108
+	idApplyProgress  = 109
 	idBtnAdd         = 201
 	idBtnEdit        = 202
 	idBtnDelete      = 203
@@ -57,12 +57,14 @@ const (
 	wsVisible             = 0x10000000
 	wsBorder              = 0x00800000
 	wsVscroll             = 0x00200000
+	wsHscroll             = 0x00100000
 	wsTabstop             = 0x00010000
 	lbsNotify             = 0x0001
 	lbsHasstrings         = 0x0040
 	lbsMultiplesel        = 0x0008
 	lbsExtendedsel        = 0x0800
 	entryListStyle        = wsChild | wsVisible | wsBorder | wsVscroll | wsTabstop | lbsNotify | lbsHasstrings | lbsMultiplesel | lbsExtendedsel
+	lexiconListViewStyle  = wsChild | wsVisible | wsBorder | wsVscroll | wsTabstop | 0x0001 | 0x0008 // LVS_REPORT | LVS_SHOWSELALWAYS
 	lbResetcontent        = 0x0184
 	lbAddstring           = 0x0180
 	lbSetsel              = 0x0185
@@ -71,6 +73,29 @@ const (
 	lbSethorizontalextent = 0x0194
 	lbnSelchange          = 1
 	lbnDblclk             = 2
+	lvmFirst              = 0x1000
+	lvmDeleteallitems     = lvmFirst + 9
+	lvmGetnextitem        = lvmFirst + 12
+	lvmSetcolumnwidth     = lvmFirst + 30
+	lvmSetitemstate       = lvmFirst + 43
+	lvmSetextendedstyle   = lvmFirst + 54
+	lvmInsertitemw        = lvmFirst + 77
+	lvmSetitemtextw       = lvmFirst + 116
+	lvmInsertcolumnw      = lvmFirst + 97
+	lvifText              = 0x0001
+	lvcfText              = 0x0004
+	lvcfWidth             = 0x0002
+	lvniSelected          = 0x0002
+	lvisSelected          = 0x0002
+	lvsExGridlines        = 0x00000001
+	lvsExFullrowselect    = 0x00000020
+	lvsExDoublebuffer     = 0x00010000
+	pbsMarquee            = 0x0008
+	pbmSetMarquee         = 0x040A
+	esMultiline           = 0x0004
+	esAutoVscroll         = 0x0040
+	esAutoHscroll         = 0x0080
+	esReadonly            = 0x0800
 )
 
 var (
@@ -112,6 +137,7 @@ var (
 	procGetSaveFileNameW      = modcomdlg32.NewProc("GetSaveFileNameW")
 	procGetTextExtentPoint32W = modgdi32.NewProc("GetTextExtentPoint32W")
 	procFindWindowW           = moduser32.NewProc("FindWindowW")
+	procMoveWindow            = moduser32.NewProc("MoveWindow")
 
 	wndProcCallback uintptr
 )
@@ -144,6 +170,19 @@ type rect struct {
 	Left, Top, Right, Bottom int32
 }
 
+type point struct {
+	X int32
+	Y int32
+}
+
+type minMaxInfo struct {
+	Reserved     point
+	MaxSize      point
+	MaxPosition  point
+	MinTrackSize point
+	MaxTrackSize point
+}
+
 type textSize struct {
 	Width  int32
 	Height int32
@@ -152,6 +191,57 @@ type textSize struct {
 type initCommonControlsEx struct {
 	Size uint32
 	ICC  uint32
+}
+
+type listViewColumn struct {
+	Mask         uint32
+	Format       int32
+	Width        int32
+	Text         *uint16
+	TextMax      int32
+	SubItem      int32
+	Image        int32
+	Order        int32
+	MinWidth     int32
+	DefaultWidth int32
+	IdealWidth   int32
+}
+
+type listViewItem struct {
+	Mask      uint32
+	Item      int32
+	SubItem   int32
+	State     uint32
+	StateMask uint32
+	Text      *uint16
+	TextMax   int32
+	Image     int32
+	Param     uintptr
+	Indent    int32
+	GroupID   int32
+	Columns   uint32
+	Column    *uint32
+	Group     int32
+}
+
+type notifyHeader struct {
+	WindowFrom syscall.Handle
+	IDFrom     uintptr
+	Code       int32
+}
+
+type lexiconInfoLayout struct {
+	list, selection, status rect
+}
+
+type lexiconToolbarItem struct {
+	text string
+	id   int
+}
+
+type lexiconColumnSpec struct {
+	title string
+	width int32
 }
 
 type appState struct {
@@ -174,13 +264,17 @@ type appState struct {
 	operationHistory  []string
 	visibleEntries    []userlexicon.Entry
 	mainHWND          syscall.Handle
+	toolbarHWNDs      []syscall.Handle
+	modeHWND          syscall.Handle
+	searchLabelHWND   syscall.Handle
 	searchHWND        syscall.Handle
+	searchResetHWND   syscall.Handle
 	sortFieldHWND     syscall.Handle
 	sortDirectionHWND syscall.Handle
 	listHWND          syscall.Handle
 	selectionHWND     syscall.Handle
-	summaryHWND       syscall.Handle
 	statusHWND        syscall.Handle
+	progressHWND      syscall.Handle
 	clientW           int32
 	clientH           int32
 	addOnLoad         bool
@@ -226,7 +320,7 @@ func runApp(state *appState) error {
 	}
 
 	state.clientW = 780
-	state.clientH = 520
+	state.clientH = 440
 
 	icc := initCommonControlsEx{Size: uint32(unsafe.Sizeof(initCommonControlsEx{})), ICC: 0x000000FF}
 	procInitCommonControlsEx.Call(uintptr(unsafe.Pointer(&icc)))
@@ -305,7 +399,6 @@ func (state *appState) createControls() {
 		margin       = int32(8)
 		contentLeft  = margin
 		contentRight = int32(772)
-		contentW     = contentRight - contentLeft
 		gap          = int32(6)
 		toolbarY     = int32(8)
 		toolbarH     = int32(28)
@@ -313,32 +406,17 @@ func (state *appState) createControls() {
 		rowH         = int32(26)
 	)
 
-	toolbar := []struct {
-		text string
-		id   int
-	}{
-		{"添加", idBtnAdd},
-		{"编辑", idBtnEdit},
-		{"删除", idBtnDelete},
-		{"撤销", idBtnUndo},
-		{"应用", idBtnApply},
-		{"导入", idBtnImport},
-		{"导出", idBtnExport},
-		{"目录", idBtnOpenFolder},
-	}
-	btnW := (contentW - gap*int32(len(toolbar)-1)) / int32(len(toolbar))
-	x := contentLeft
+	toolbar := lexiconToolbarItems()
+	buttonRects := toolbarButtonRects(contentLeft, contentRight, len(toolbar))
+	state.toolbarHWNDs = make([]syscall.Handle, 0, len(toolbar))
 	for i, spec := range toolbar {
-		w := btnW
-		if i == len(toolbar)-1 {
-			w = contentRight - x
-		}
-		createButton(state.mainHWND, spec.text, rect{x, toolbarY, x + w, toolbarY + toolbarH}, spec.id)
-		x += w + gap
+		box := buttonRects[i]
+		box.Top, box.Bottom = toolbarY, toolbarY+toolbarH
+		state.toolbarHWNDs = append(state.toolbarHWNDs, createButton(state.mainHWND, spec.text, box, spec.id))
 	}
 
 	modeText := fmt.Sprintf("编码方案：%s", modeDisplayName(state.mode))
-	createStatic(state.mainHWND, modeText, rect{contentLeft, 44, contentRight, 64}, 0)
+	state.modeHWND = createStatic(state.mainHWND, modeText, rect{contentLeft, 44, contentRight, 64}, 0)
 
 	const labelW, resetW, comboW, dirW = int32(48), int32(64), int32(88), int32(64)
 	labelRight := contentLeft + labelW
@@ -350,9 +428,9 @@ func (state *appState) createControls() {
 	comboRight := comboLeft + comboW
 	dirLeft := comboRight + gap
 
-	createStatic(state.mainHWND, "搜索", rect{contentLeft, rowY + 4, labelRight, rowY + 24}, 0)
+	state.searchLabelHWND = createStatic(state.mainHWND, "搜索", rect{contentLeft, rowY + 4, labelRight, rowY + 24}, 0)
 	state.searchHWND = createEdit(state.mainHWND, rect{searchLeft, rowY, searchRight, rowY + rowH}, idSearchEdit)
-	createButton(state.mainHWND, "清空", rect{resetLeft, rowY, resetRight, rowY + rowH}, idSearchReset)
+	state.searchResetHWND = createButton(state.mainHWND, "清空", rect{resetLeft, rowY, resetRight, rowY + rowH}, idSearchReset)
 
 	state.sortFieldHWND = createCombo(state.mainHWND, rect{comboLeft, rowY, comboRight, rowY + 132}, idSortFieldCombo)
 	for _, label := range []string{"词条", "拼音", "权重"} {
@@ -363,12 +441,232 @@ func (state *appState) createControls() {
 
 	state.sortDirectionHWND = createButton(state.mainHWND, "升序", rect{dirLeft, rowY, contentRight, rowY + rowH}, idSortDirection)
 
-	state.listHWND = createControl("LISTBOX", "", entryListStyle, rect{contentLeft, 100, contentRight, 380}, state.mainHWND, idEntryList)
-	state.selectionHWND = createStatic(state.mainHWND, "未选中词条", rect{contentLeft, 388, contentRight, 408}, idSelectionLabel)
-	state.summaryHWND = createStatic(state.mainHWND, "", rect{contentLeft, 412, contentRight, 452}, idSummaryLabel)
-	state.statusHWND = createStatic(state.mainHWND, "就绪。", rect{contentLeft, 456, contentRight, 476}, idStatusLabel)
+	info := buildLexiconInfoLayout(contentLeft, contentRight, state.clientH)
+	state.listHWND = createControl("SysListView32", "", lexiconListViewStyle, info.list, state.mainHWND, idEntryList)
+	state.configureLexiconColumns()
+	state.selectionHWND = createStatic(state.mainHWND, "请在搜索框中输入想要编辑的词条。", info.selection, idSelectionLabel)
+	state.statusHWND = createStatic(state.mainHWND, "就绪。", info.status, idStatusLabel)
+	state.progressHWND = createControl("msctls_progress32", "", wsChild|pbsMarquee, info.status, state.mainHWND, idApplyProgress)
 
+	state.layoutControls(state.clientW, state.clientH)
 	state.refreshList()
+	state.updateToolbarState()
+}
+
+func lexiconToolbarItems() []lexiconToolbarItem {
+	return []lexiconToolbarItem{
+		{"编辑", idBtnEdit},
+		{"添加", idBtnAdd},
+		{"删除", idBtnDelete},
+		{"撤销", idBtnUndo},
+		{"应用", idBtnApply},
+		{"导入", idBtnImport},
+		{"导出", idBtnExport},
+		{"文档", idBtnOpenFolder},
+	}
+}
+
+func toolbarButtonRects(left, right int32, count int) []rect {
+	if count <= 0 {
+		return nil
+	}
+	const gap, maxButtonWidth = int32(6), int32(96)
+	available := right - left
+	buttonWidth := (available - gap*int32(count-1)) / int32(count)
+	if buttonWidth > maxButtonWidth {
+		buttonWidth = maxButtonWidth
+	}
+	totalWidth := buttonWidth*int32(count) + gap*int32(count-1)
+	x := left + (available-totalWidth)/2
+	result := make([]rect, count)
+	for index := range result {
+		result[index] = rect{Left: x, Right: x + buttonWidth}
+		x += buttonWidth + gap
+	}
+	return result
+}
+
+func (state *appState) toolbarButton(id int) syscall.Handle {
+	for index, item := range lexiconToolbarItems() {
+		if item.id == id && index < len(state.toolbarHWNDs) {
+			return state.toolbarHWNDs[index]
+		}
+	}
+	return 0
+}
+
+func setControlEnabled(hwnd syscall.Handle, enabled bool) {
+	if hwnd == 0 {
+		return
+	}
+	value := uintptr(0)
+	if enabled {
+		value = 1
+	}
+	procEnableWindow.Call(uintptr(hwnd), value)
+}
+
+func (state *appState) updateToolbarState() {
+	busy := state.isApplyRunning()
+	selectedCount := len(state.selectedPhrases())
+	for _, item := range lexiconToolbarItems() {
+		enabled := !busy
+		switch item.id {
+		case idBtnEdit:
+			enabled = !busy && state.codeMapLoaded && state.codeMapErr == nil && selectedCount == 1
+		case idBtnDelete:
+			enabled = !busy && selectedCount > 0
+		case idBtnAdd, idBtnImport:
+			enabled = !busy && state.codeMapLoaded && state.codeMapErr == nil
+		case idBtnUndo:
+			enabled = !busy && state.lastUndoEntries != nil
+		case idBtnApply:
+			enabled = !busy && state.dirty && state.codeMapLoaded && state.codeMapErr == nil
+		case idBtnOpenFolder:
+			enabled = true
+		}
+		setControlEnabled(state.toolbarButton(item.id), enabled)
+	}
+	applyText := "应用"
+	if busy {
+		applyText = "应用中…"
+	}
+	setWindowText(state.toolbarButton(idBtnApply), applyText)
+	setWindowText(state.toolbarButton(idBtnUndo), undoButtonText(state.lastUndoLabel))
+	if busy {
+		procSendMessageW.Call(uintptr(state.progressHWND), pbmSetMarquee, 1, 30)
+		procShowWindow.Call(uintptr(state.progressHWND), 5)
+	} else {
+		procSendMessageW.Call(uintptr(state.progressHWND), pbmSetMarquee, 0, 0)
+		procShowWindow.Call(uintptr(state.progressHWND), 0)
+	}
+	state.layoutControls(state.clientW, state.clientH)
+}
+
+func undoButtonText(label string) string {
+	switch {
+	case strings.Contains(label, "导入"):
+		return "撤销导入"
+	case strings.Contains(label, "删除"):
+		return "撤销删除"
+	case strings.Contains(label, "编辑"):
+		return "撤销编辑"
+	case strings.Contains(label, "添加"), strings.Contains(label, "更新"):
+		return "撤销添加"
+	case strings.TrimSpace(label) != "":
+		return "撤销操作"
+	default:
+		return "撤销"
+	}
+}
+
+func lexiconColumns() []lexiconColumnSpec {
+	return []lexiconColumnSpec{
+		{title: "词条", width: 180},
+		{title: "数字标调拼音", width: 450},
+		{title: "权重", width: 110},
+	}
+}
+
+func (state *appState) configureLexiconColumns() {
+	extendedStyle := uintptr(lvsExGridlines | lvsExFullrowselect | lvsExDoublebuffer)
+	procSendMessageW.Call(uintptr(state.listHWND), lvmSetextendedstyle, extendedStyle, extendedStyle)
+	for index, spec := range lexiconColumns() {
+		text, _ := syscall.UTF16PtrFromString(spec.title)
+		column := listViewColumn{
+			Mask:    lvcfText | lvcfWidth,
+			Width:   spec.width,
+			Text:    text,
+			TextMax: int32(len([]rune(spec.title))),
+		}
+		procSendMessageW.Call(uintptr(state.listHWND), lvmInsertcolumnw, uintptr(index), uintptr(unsafe.Pointer(&column)))
+	}
+}
+
+func lexiconColumnWidths(listWidth int32) []int32 {
+	const phraseWidth, weightWidth, borderAndScrollbar = int32(180), int32(110), int32(22)
+	pinyinWidth := listWidth - phraseWidth - weightWidth - borderAndScrollbar
+	if pinyinWidth < 240 {
+		pinyinWidth = 240
+	}
+	return []int32{phraseWidth, pinyinWidth, weightWidth}
+}
+
+func (state *appState) resizeLexiconColumns(listWidth int32) {
+	for index, width := range lexiconColumnWidths(listWidth) {
+		procSendMessageW.Call(uintptr(state.listHWND), lvmSetcolumnwidth, uintptr(index), uintptr(width))
+	}
+}
+
+func buildLexiconInfoLayout(left, right, clientHeight int32) lexiconInfoLayout {
+	listBottom := clientHeight - 80
+	return lexiconInfoLayout{
+		list:      rect{left, 100, right, listBottom},
+		selection: rect{left, listBottom + 8, right, listBottom + 32},
+		status:    rect{left, listBottom + 40, right, listBottom + 64},
+	}
+}
+
+func moveControl(hwnd syscall.Handle, box rect) {
+	if hwnd == 0 {
+		return
+	}
+	procMoveWindow.Call(uintptr(hwnd), uintptr(box.Left), uintptr(box.Top), uintptr(box.Right-box.Left), uintptr(box.Bottom-box.Top), 1)
+}
+
+func statusProgressLayout(status rect, busy bool) (text rect, progress rect) {
+	text = status
+	if !busy {
+		return text, rect{}
+	}
+	const gap, progressWidth = int32(8), int32(180)
+	progress = rect{Left: status.Right - progressWidth, Top: status.Top, Right: status.Right, Bottom: status.Bottom}
+	text.Right = progress.Left - gap
+	return text, progress
+}
+
+func (state *appState) layoutControls(clientWidth, clientHeight int32) {
+	if clientWidth <= 0 || clientHeight <= 0 {
+		return
+	}
+	state.clientW, state.clientH = clientWidth, clientHeight
+	const margin, gap, toolbarY, toolbarH = int32(8), int32(6), int32(8), int32(28)
+	contentLeft, contentRight := margin, clientWidth-margin
+	if len(state.toolbarHWNDs) > 0 {
+		buttonRects := toolbarButtonRects(contentLeft, contentRight, len(state.toolbarHWNDs))
+		for index, hwnd := range state.toolbarHWNDs {
+			box := buttonRects[index]
+			box.Top, box.Bottom = toolbarY, toolbarY+toolbarH
+			moveControl(hwnd, box)
+		}
+	}
+	moveControl(state.modeHWND, rect{contentLeft, 44, contentRight, 64})
+
+	const rowY, rowH = int32(68), int32(26)
+	const labelW, resetW, comboW, dirW = int32(48), int32(64), int32(88), int32(64)
+	labelRight := contentLeft + labelW
+	searchLeft := labelRight + gap
+	resetRight := contentRight - comboW - gap - dirW - gap
+	resetLeft := resetRight - resetW
+	searchRight := resetLeft - gap
+	comboLeft := resetRight + gap
+	comboRight := comboLeft + comboW
+	dirLeft := comboRight + gap
+	moveControl(state.searchLabelHWND, rect{contentLeft, rowY + 4, labelRight, rowY + 24})
+	moveControl(state.searchHWND, rect{searchLeft, rowY, searchRight, rowY + rowH})
+	moveControl(state.searchResetHWND, rect{resetLeft, rowY, resetRight, rowY + rowH})
+	moveControl(state.sortFieldHWND, rect{comboLeft, rowY, comboRight, rowY + 132})
+	moveControl(state.sortDirectionHWND, rect{dirLeft, rowY, contentRight, rowY + rowH})
+
+	info := buildLexiconInfoLayout(contentLeft, contentRight, clientHeight)
+	moveControl(state.listHWND, info.list)
+	moveControl(state.selectionHWND, info.selection)
+	statusBox, progressBox := statusProgressLayout(info.status, state.isApplyRunning())
+	moveControl(state.statusHWND, statusBox)
+	if progressBox.Right > progressBox.Left {
+		moveControl(state.progressHWND, progressBox)
+	}
+	state.resizeLexiconColumns(info.list.Right - info.list.Left)
 }
 
 func (state *appState) wndProc(hwnd syscall.Handle, message uint32, wParam, lParam uintptr) uintptr {
@@ -377,8 +675,21 @@ func (state *appState) wndProc(hwnd syscall.Handle, message uint32, wParam, lPar
 		return 0
 	}
 	switch message {
+	case 0x0005: // WM_SIZE
+		state.layoutControls(int32(lParam&0xffff), int32((lParam>>16)&0xffff))
+		return 0
+	case 0x0024: // WM_GETMINMAXINFO
+		if lParam != 0 {
+			width, height := windowSizeForClient(780, 440)
+			info := (*minMaxInfo)(unsafe.Pointer(lParam))
+			info.MinTrackSize = point{X: width, Y: height}
+		}
+		return 0
 	case 0x0111:
 		state.handleCommand(wParam, lParam)
+		return 0
+	case 0x004E: // WM_NOTIFY
+		state.handleNotify(lParam)
 		return 0
 	case wmAppCommand:
 		state.handleCommand(wParam, lParam)
@@ -458,14 +769,6 @@ func (state *appState) handleCommand(wParam, _ uintptr) {
 		state.refreshList()
 		return
 	}
-	if id == idEntryList && notify == lbnSelchange {
-		state.updateSelectionSummary()
-		return
-	}
-	if id == idEntryList && notify == lbnDblclk {
-		state.editSelected()
-		return
-	}
 	switch id {
 	case idBtnAdd, idBtnEdit, idBtnDelete, idBtnUndo, idBtnApply, idBtnImport, idBtnExport, idBtnOpenFolder, idSearchReset, idSortDirection:
 		if notify != 0 {
@@ -503,6 +806,22 @@ func (state *appState) handleCommand(wParam, _ uintptr) {
 	}
 }
 
+func (state *appState) handleNotify(lParam uintptr) {
+	if lParam == 0 {
+		return
+	}
+	header := (*notifyHeader)(unsafe.Pointer(lParam))
+	if int(header.IDFrom) != idEntryList {
+		return
+	}
+	switch header.Code {
+	case -101: // LVN_ITEMCHANGED
+		state.updateSelectionSummary()
+	case -3: // NM_DBLCLK
+		state.editSelected()
+	}
+}
+
 func modeDisplayName(mode reverselookup.Mode) string {
 	switch mode {
 	case reverselookup.ModeVariable:
@@ -518,13 +837,19 @@ func modeDisplayName(mode reverselookup.Mode) string {
 
 func (state *appState) onCodeMapLoaded() {
 	if state.codeMapErr != nil {
-		setWindowText(state.statusHWND, "编码表加载失败："+state.codeMapErr.Error())
+		message := "编码表加载失败：" + state.codeMapErr.Error()
+		setWindowText(state.statusHWND, message)
+		state.updateToolbarState()
+		showNoticeDialog(state.mainHWND, "词库管理初始化失败", message)
 		return
 	}
-	if _, err := userlexicon.HydrateSourceIfEmpty(state.userDir, state.mode, state.codeMap); err != nil {
-		setWindowText(state.statusHWND, "同步用户词库失败："+err.Error())
-	}
+	_, syncErr := userlexicon.HydrateSourceIfEmpty(state.userDir, state.mode, state.codeMap)
 	state.refreshList()
+	if syncErr != nil {
+		message := "同步用户词库失败：" + syncErr.Error()
+		setWindowText(state.statusHWND, message)
+		showNoticeDialog(state.mainHWND, "词库同步失败", message)
+	}
 }
 
 func (state *appState) requireCodeMap() error {
@@ -606,6 +931,11 @@ func createButton(parent syscall.Handle, text string, box rect, id int) syscall.
 
 func createEdit(parent syscall.Handle, box rect, id int) syscall.Handle {
 	return createControlEx(wsExClientedge, "EDIT", "", 0x50210080, box, parent, id)
+}
+
+func createReadOnlyScrollEdit(parent syscall.Handle, box rect, id int) syscall.Handle {
+	style := int32(wsChild | wsVisible | wsBorder | wsVscroll | wsHscroll | wsTabstop | esMultiline | esAutoVscroll | esAutoHscroll | esReadonly)
+	return createControlEx(wsExClientedge, "EDIT", "", style, box, parent, id)
 }
 
 func createCombo(parent syscall.Handle, box rect, id int) syscall.Handle {
