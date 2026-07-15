@@ -5,8 +5,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/EasyIME/pime-go/input_methods/yime/userblocklist"
-	"github.com/EasyIME/pime-go/pime"
+	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/userblocklist"
+	"github.com/tsaanghwang/Yime/go-backend/pime"
 )
 
 func TestFilterBlockedCandidatesRemovesBlockedText(t *testing.T) {

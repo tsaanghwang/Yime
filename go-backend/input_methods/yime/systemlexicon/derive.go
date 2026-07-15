@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/EasyIME/pime-go/input_methods/yime/codemode"
+	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/codemode"
 )
 
 const ManifestFileName = "yime_lexicon_manifest.json"

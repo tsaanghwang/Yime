@@ -122,4 +122,6 @@ PIME_MSG|<client_id>|<JSON>
 
 ## 许可证
 
-LGPL-2.1 License
+除另有说明外，Yime 新增 Go 后端代码采用 `LGPL-2.1-or-later`。其中继承的 PIME
+协议代码保留原有版权和许可证。完整组件说明见仓库根目录的 `LICENSE.txt`、
+`NOTICE.md` 与 `THIRD_PARTY_NOTICES.md`。

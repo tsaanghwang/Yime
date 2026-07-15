@@ -10,7 +10,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/EasyIME/pime-go/pime"
+	"github.com/tsaanghwang/Yime/go-backend/pime"
 )
 
 type realRimeTestSession struct {

@@ -4,7 +4,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/EasyIME/pime-go/pime"
+	"github.com/tsaanghwang/Yime/go-backend/pime"
 )
 
 func TestInitDoesNotRequestFullDeployWithoutSuccessfulSchemaChange(t *testing.T) {

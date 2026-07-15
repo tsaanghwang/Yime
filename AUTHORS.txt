@@ -28,3 +28,8 @@ Gemini (Google DeepMind):
   by referencing the original PIMELauncher C++ implementation (also by PCMan).
   The human author significantly modified and audited all code to ensure
   correctness and maintain full copyright.
+
+Yime downstream contributors:
+* Yime-specific encoding, Rime integration, user tools, release engineering,
+  documentation, and maintenance are copyrighted by their respective
+  contributors. Git history is the authoritative attribution record.

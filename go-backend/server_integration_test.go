@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
-	yimeime "github.com/EasyIME/pime-go/input_methods/yime"
-	"github.com/EasyIME/pime-go/pime"
+	yimeime "github.com/tsaanghwang/Yime/go-backend/input_methods/yime"
+	"github.com/tsaanghwang/Yime/go-backend/pime"
 )
 
 const testFixtureGUID = "{7A1C2E93-5B64-4F88-AE21-3D9C6B70F145}"

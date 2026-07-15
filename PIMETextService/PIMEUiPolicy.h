@@ -1,3 +1,6 @@
+// Copyright (C) 2026 Yime contributors
+// SPDX-License-Identifier: LGPL-2.1-or-later
+
 #ifndef PIME_UI_POLICY_H
 #define PIME_UI_POLICY_H
 

@@ -57,6 +57,14 @@ func TestReleasePipelineSignsPayloadInstallerAndUninstaller(t *testing.T) {
 		`StrCpy $INSTDIR $R1`,
 		`StrCpy $INSTDIR "$PROGRAMFILES32\YIME"`,
 		`File /r "..\go-backend\build\go-backend\*.*"`,
+		`SetOutPath "$INSTDIR\licenses"`,
+		`File "..\LICENSE.txt"`,
+		`File "..\NOTICE.md"`,
+		`File "..\THIRD_PARTY_NOTICES.md"`,
+		`File "..\LICENSES\PIME-UPSTREAM-LICENSE.txt"`,
+		`File "..\LICENSES\RIME-FROST-GPL-3.0.txt"`,
+		`File "..\LICENSES\RUST-DEPENDENCIES.md"`,
+		`RMDir /REBOOTOK /r "$INSTDIR\licenses"`,
 		`RMDir "$INSTDIR\go-backend\input_methods\fcitx5"`,
 		`RMDir "$INSTDIR\go-backend\input_methods\meow"`,
 		`RMDir "$INSTDIR\go-backend\input_methods\simple_pinyin"`,
@@ -112,6 +120,9 @@ func TestReleasePipelineSignsPayloadInstallerAndUninstaller(t *testing.T) {
 	if count := strings.Count(buildScript, "--icon input_methods\\yime\\icon.ico"); count != 8 {
 		t.Fatalf("expected all 8 Go executables to embed the Yime icon, got %d", count)
 	}
+	if count := strings.Count(buildScript, `--copyright "Copyright (C) 2026 Yime contributors"`); count != 8 {
+		t.Fatalf("expected all 8 Go executables to embed Yime copyright metadata, got %d", count)
+	}
 	for _, fragment := range []string{
 		`set "WIN32_CMAKE_PLATFORM=-A Win32"`,
 		`/c:"CMAKE_GENERATOR_PLATFORM:INTERNAL="`,
@@ -123,6 +134,14 @@ func TestReleasePipelineSignsPayloadInstallerAndUninstaller(t *testing.T) {
 	}
 	if !strings.Contains(buildScript, `for /r "%PACKAGE_DIR%\input_methods" %%F in (*.go)`) {
 		t.Fatal("package build must recursively remove copied Go source files")
+	}
+	for _, fragment := range []string{
+		`if exist "%PACKAGE_RIME_DATA_DIR%\preview" rmdir /s /q "%PACKAGE_RIME_DATA_DIR%\preview"`,
+		`if exist "%PACKAGE_RIME_DATA_DIR%\weasel.yaml" del /q "%PACKAGE_RIME_DATA_DIR%\weasel.yaml"`,
+	} {
+		if !strings.Contains(buildScript, fragment) {
+			t.Fatalf("package build must remove Weasel-only runtime asset: %q", fragment)
+		}
 	}
 	for _, fragment := range []string{`if not defined GOCACHE set "GOCACHE=%PIME_ROOT%\.tmp\go-cache"`, `if not defined GOTMPDIR set "GOTMPDIR=%PIME_ROOT%\.tmp\go-tmp"`} {
 		if !strings.Contains(buildScript, fragment) {

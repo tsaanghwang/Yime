@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/EasyIME/pime-go/input_methods/yime/userblocklist"
+	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/userblocklist"
 )
 
 type blocklistCache struct {

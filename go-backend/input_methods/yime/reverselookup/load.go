@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/EasyIME/pime-go/input_methods/yime/codemode"
+	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/codemode"
 )
 
 func loadCodeMap(path string) (map[string]CodeRecord, error) {

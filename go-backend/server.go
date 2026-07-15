@@ -13,9 +13,9 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/EasyIME/pime-go/pime"
+	"github.com/tsaanghwang/Yime/go-backend/pime"
 
-	"github.com/EasyIME/pime-go/input_methods/yime"
+	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime"
 )
 
 var version = "dev"

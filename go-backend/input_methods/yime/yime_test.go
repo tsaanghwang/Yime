@@ -10,12 +10,12 @@ import (
 	"testing"
 	"unicode/utf8"
 
-	"github.com/EasyIME/pime-go/input_methods/yime/diagnostics"
-	"github.com/EasyIME/pime-go/input_methods/yime/runtimechange"
-	"github.com/EasyIME/pime-go/input_methods/yime/settings"
-	"github.com/EasyIME/pime-go/input_methods/yime/toolhub"
-	"github.com/EasyIME/pime-go/input_methods/yime/userlexicon"
-	"github.com/EasyIME/pime-go/pime"
+	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/diagnostics"
+	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/runtimechange"
+	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/settings"
+	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/toolhub"
+	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/userlexicon"
+	"github.com/tsaanghwang/Yime/go-backend/pime"
 )
 
 type testDictEntry struct {

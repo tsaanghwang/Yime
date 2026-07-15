@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/EasyIME/pime-go/input_methods/yime/codemode"
+	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/codemode"
 )
 
 func TestShippedCodeMapContainsOnlyCanonicalFullCodes(t *testing.T) {

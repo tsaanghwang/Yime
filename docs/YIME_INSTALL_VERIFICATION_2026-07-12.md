@@ -119,7 +119,7 @@ HKLM\SOFTWARE\YIME (default) = C:\Program Files (x86)\YIME
 
 ```
 go test -race -count=1 ./input_methods/yime/runtimechange/...
-  ok  github.com/EasyIME/pime-go/input_methods/yime/runtimechange  1.438s
+  ok  github.com/tsaanghwang/Yime/go-backend/input_methods/yime/runtimechange  1.438s
 
 go test -race -count=1 ./input_methods/yime/...
   ok  yime 1.473s | codemode 1.272s | reverselookup 1.317s

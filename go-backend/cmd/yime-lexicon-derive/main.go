@@ -6,7 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/EasyIME/pime-go/input_methods/yime/systemlexicon"
+	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/systemlexicon"
 )
 
 func main() {

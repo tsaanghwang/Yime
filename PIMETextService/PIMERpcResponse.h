@@ -1,5 +1,5 @@
 //
-//	Copyright (C) 2026 PIME contributors
+//	Copyright (C) 2026 Yime contributors
 //
 //	This library is free software; you can redistribute it and/or
 //	modify it under the terms of the GNU Library General Public

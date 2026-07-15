@@ -89,3 +89,12 @@ The development of PIMELauncher followed a "Human-in-the-Loop" approach:
 
 ### Copyright and Ownership
 Hong Jen Yee (PCMan) retains full copyright and responsibility for the system design and the final code implementation. The AI tools were utilized as an advanced development environment (IDE) enhancement rather than as an independent author.
+
+## Yime downstream modifications
+
+Yime redistributes this launcher as part of a downstream PIME-derived product.
+The statements above document the authorship of the upstream PIMELauncher
+implementation and remain intact. Subsequent Yime-specific modifications are
+copyrighted by their respective contributors and are distributed under the
+applicable project licenses. Yime is not an official PIME release and is not
+endorsed by the upstream PIME project.

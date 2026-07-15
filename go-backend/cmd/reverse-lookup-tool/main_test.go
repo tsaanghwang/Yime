@@ -5,7 +5,7 @@ package main
 import (
 	"testing"
 
-	"github.com/EasyIME/pime-go/input_methods/yime/win32ui"
+	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/win32ui"
 )
 
 func TestBuildUILayoutPlacesSearchControlsInOneRow(t *testing.T) {

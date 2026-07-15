@@ -1,6 +1,6 @@
 package yime
 
-import "github.com/EasyIME/pime-go/pime"
+import "github.com/tsaanghwang/Yime/go-backend/pime"
 
 const (
 	voidSymbol = 0xFFFFFF
