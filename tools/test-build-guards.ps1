@@ -52,12 +52,31 @@ $installerText = Get-Content -LiteralPath $installer -Raw
 if ($installerText -match 'YIME_ENABLE_RETIRED_PIME_BACKENDS|\\python\\|\\node\\|McBopomofo|libchewing') {
     throw 'Retired PIME backend code or paths returned to the YIME installer.'
 }
-$retiredTrackedPaths = @('python', 'node', 'McBopomofoWeb', 'libchewing')
+$retiredTrackedPaths = @('python', 'node', 'McBopomofoWeb', 'libchewing', 'tests')
 foreach ($retiredPath in $retiredTrackedPaths) {
     $tracked = @(& git -C $root ls-files -- $retiredPath)
     if ($tracked.Count -gt 0) {
         throw "Retired path is still tracked: $retiredPath"
     }
+}
+$retiredRootFiles = @(
+    'HACKING.txt',
+    'PSF.txt',
+    'appveyor.yml',
+    'appveyor.after_build.bat',
+    'appveyor.artifacts.ps1'
+)
+foreach ($retiredRootFile in $retiredRootFiles) {
+    $tracked = @(& git -C $root ls-files -- $retiredRootFile)
+    if ($tracked.Count -gt 0) {
+        throw "Retired root file is still tracked: $retiredRootFile"
+    }
+}
+$trackedRootData = @(
+    & git -C $root ls-files -- '*.schema.yaml' '*.dict.yaml' '*.ocd' 'default.yaml' 'symbols.yaml' 'essay.txt' 't2*.json' 's2*.json' 'hk2*.json' 'tw2*.json'
+) | Where-Object { -not $_.Contains('/') }
+if ($trackedRootData.Count -gt 0) {
+    throw "Retired root Rime/OpenCC data returned: $($trackedRootData -join ', ')"
 }
 $gitmodulesText = Get-Content -LiteralPath (Join-Path $root '.gitmodules') -Raw
 if ($gitmodulesText -match 'McBopomofoWeb|libchewing|python/input_methods/rime/brise') {

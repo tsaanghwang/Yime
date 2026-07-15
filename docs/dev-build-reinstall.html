@@ -250,7 +250,7 @@ Set-Location C:\dev\Yime
         <li>调用 <code>dev-stop-pime.ps1 -Auto</code>：不等待「按 Enter」；尽量结束 PIMELauncher / go-backend</li>
         <li>若 <code>PIMETextService.dll</code> 仍被加载（常见：<code>explorer.exe</code>、Cursor、浏览器）→ 退出码 <code>2</code> → <strong>跳过完整卸载</strong></li>
         <li>否则先跑 <code>dev-uninstall.ps1</code>；若卸载报错也<strong>自动继续</strong>原地安装（不再问 Y/N）</li>
-        <li>跑 <code>dev-install.ps1</code>：复制 DLL / PIMELauncher / python / node / <strong>go-backend</strong>，注册 TSF</li>
+        <li>跑 <code>dev-install.ps1</code>：复制 DLL / PIMELauncher / <strong>go-backend</strong>，注册 TSF</li>
         <li>成功时<strong>不 pause</strong>，直接结束；只有失败才暂停</li>
       </ol>
 

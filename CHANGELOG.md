@@ -43,6 +43,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Make the repository, installer, build, and CI product path YIME-only; permanently remove the retired Python, Node, McBopomofoWeb, libchewing backends and their submodule records
+- Remove the obsolete root-level Rime/Brise/OpenCC data mirror, retired AppVeyor pipeline, Python/Node hacking guide, embedded-Python license, and root libchewing test fixtures after confirming that the YIME build and installer have no dependency on them
 - Reuse message windows within the same TSF owner, keep candidate/message UI anchored after composition changes, replace duplicate language-bar button registrations, cache IME configuration metadata, and localize the missing-config-tool prompt
 - Reject ambiguous legacy `build/` CMake caches unless the generated solution is demonstrably Win32; package only input-method directories that contain `ime.json`
 - Move development package identity from the historical `1.3.0-beta2` line to `1.4.0-dev`; release tags must replace the development suffix with the selected beta, RC, or final version
