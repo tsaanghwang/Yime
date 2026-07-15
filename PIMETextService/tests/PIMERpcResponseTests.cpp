@@ -10,6 +10,7 @@
 // PIMEClient.cpp now uses for every RPC response and menu item.
 
 #include "../PIMERpcResponse.h"
+#include "../PIMEProcessValidation.h"
 #include "../PIMEUiPolicy.h"
 
 #include <cstdio>
@@ -140,6 +141,13 @@ static void testPopupAnchorStaysInsideWorkArea() {
 	CHECK(clamped.y == 0);
 }
 
+static void testLauncherExecutableValidation() {
+	CHECK(PIME::isExpectedLauncherExecutablePath(LR"(C:\Program Files (x86)\YIME\PIMELauncher.exe)"));
+	CHECK(PIME::isExpectedLauncherExecutablePath(LR"(C:\dev\Yime\build\PIMELauncher\pimelauncher.EXE)"));
+	CHECK(!PIME::isExpectedLauncherExecutablePath(LR"(C:\Windows\System32\cmd.exe)"));
+	CHECK(!PIME::isExpectedLauncherExecutablePath(L"PIMELauncher.exe.bak"));
+}
+
 int main() {
 	testNullResponseDoesNotThrow();
 	testMalformedResponsesDoNotThrow();
@@ -148,6 +156,7 @@ int main() {
 	testUiLessCandidateWindowPolicy();
 	testCandidateFontSizeIsBounded();
 	testPopupAnchorStaysInsideWorkArea();
+	testLauncherExecutableValidation();
 
 	if (failures == 0) {
 		std::printf("All PIMERpcResponse tests passed.\n");

@@ -227,8 +227,8 @@ impl BackendManager {
         stdout: tokio::process::ChildStdout,
         last_output_time: Arc<AtomicU64>,
     ) {
-        // TODO: Need to detect if the backend process hangs and is not responsive.
-        // When a backend process hangs, reading from its stdout may blocks forever.
+        // The input-side watchdog terminates a backend that produces no output for
+        // 15 seconds after a request. This reader can therefore wait normally.
         let mut stdout_reader = FramedRead::new(stdout, LinesCodec::new_with_max_length(1048576));
         while let Some(result) = stdout_reader.next().await {
             last_output_time.store(Self::current_ms(), Ordering::SeqCst);

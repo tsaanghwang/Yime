@@ -5,7 +5,7 @@ on:
     branches: [yime-stable]
     tags: ['v*']
   pull_request:
-    branches: [yime-stable]
+    branches: [main, yime-stable]
 
 jobs:
   build:

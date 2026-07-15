@@ -26,6 +26,7 @@ add_library(PIMETextService SHARED
     PIMEClient.h
     PIMELangBarButton.cpp
     PIMELangBarButton.h
+	PIMEProcessValidation.h
     PIMERpcResponse.h
     DllEntry.cpp
     # resources
@@ -39,6 +40,7 @@ target_link_libraries(PIMETextService
 # Regression tests: RPC responses / menu JSON must never throw into the host.
 add_executable(PIMERpcResponseTests
     tests/PIMERpcResponseTests.cpp
+	PIMEProcessValidation.h
     PIMERpcResponse.h
 )
 target_compile_options(PIMERpcResponseTests PRIVATE /utf-8)

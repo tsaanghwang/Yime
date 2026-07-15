@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.0] - 2026-07-15
+
 ### Added
 
 - Restore `go test -race ./...` as a required GitHub Actions gate with an explicitly provisioned MSYS2 UCRT64 GCC toolchain and a guard that rejects silent removal
@@ -46,7 +48,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Remove the obsolete root-level Rime/Brise/OpenCC data mirror, retired AppVeyor pipeline, Python/Node hacking guide, embedded-Python license, and root libchewing test fixtures after confirming that the YIME build and installer have no dependency on them
 - Reuse message windows within the same TSF owner, keep candidate/message UI anchored after composition changes, replace duplicate language-bar button registrations, cache IME configuration metadata, and localize the missing-config-tool prompt
 - Reject ambiguous legacy `build/` CMake caches unless the generated solution is demonstrably Win32; package only input-method directories that contain `ime.json`
-- Move development package identity from the historical `1.3.0-beta2` line to `1.4.0-dev`; release tags must replace the development suffix with the selected beta, RC, or final version
+- Finalize the independent YIME product version as `1.4.0`; future development must use a new development suffix rather than reusing this release identity
+- Validate the named-pipe server executable when Windows permits process inspection, while preserving the AppContainer ACL fallback; route candidate-list replacement through a TextService API instead of directly mutating its storage
+- Reduce installer locale resources to YIME-only strings and make the developer installer mirror the YIME-only payload and legal-notice layout
 - Treat the fixed-length dictionary as the only external system-lexicon source; variable and shorthand dictionaries are generated runtime artifacts
 - Reduce `yime_pinyin_codes.tsv` to `pinyin_tone` and `full`; derive variable and shorthand codes through the shared Go `codemode` rules
 - Regenerate the shorthand system dictionary, removing 178,317 historical entries that still used variable-length codes
@@ -75,6 +79,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Missing Windows FileVersion, ProductVersion, and ProductName metadata on PIMELauncher, the NSIS installer, and the generated uninstaller
+- Standard installer upgrades failing after partially deleting the installation: the old pre-install path tried to remove a still-nonempty install root and treated the resulting reboot flag as fatal, while loaded TSF DLLs were deleted recursively. Upgrades are now in-place and DLLs use staged immediate-or-reboot replacement
+- Standard fresh installations requiring sign-out or reboot before PIMELauncher first started; the installer now starts it immediately after registration
+- Developer reinstall still asserting and copying already-retired Python and Node runtimes after their repository removal
 - Go 1.26 `go vet` failures for Win32 callback addresses by copying message structures through `RtlMoveMemory` instead of retaining `uintptr` values as Go pointers
 - CI required-test guard silently omitting a renamed deployment test; required test names are now enumerated and verified before execution
 - Installer losing `$INSTDIR` after a developer uninstall left a stale uninstall entry, causing files to be written under the drive root

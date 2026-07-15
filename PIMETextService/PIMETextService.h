@@ -30,6 +30,7 @@
 #include "PIMEClient.h"
 #include "PIMEUiPolicy.h"
 #include <memory>
+#include <utility>
 
 
 namespace PIME {
@@ -125,6 +126,9 @@ public:
 	}
 
 	// candidate window
+	void replaceCandidates(std::vector<std::wstring> candidates) {
+		candidates_ = std::move(candidates);
+	}
 	void showCandidates(Ime::EditSession* session);
 	void updateCandidates(Ime::EditSession* session);
     void updateCandidatesWindow(Ime::EditSession* session);

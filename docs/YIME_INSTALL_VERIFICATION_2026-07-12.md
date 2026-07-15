@@ -3,6 +3,8 @@
 > 目的：按发布前安装态验证清单逐项跑一遍并留痕，作为“发布前干瘾”演练。
 > 范围：本机已安装运行时（`C:\Program Files (x86)\YIME`），不发布、不签名。
 > 环境：Windows 11（10.0.26100），Smart App Control = **Enforce**（`VerifiedAndReputablePolicyState=1`），Rust 1.96.1，MSVC 14.44.35207，GCC 14（MSYS2 UCRT64）。
+>
+> **历史快照说明**：本文只记录 2026-07-12 当日构建的结果。“仅剩签名”等表述是当时针对该轮缺口的结论，不取代当前的[项目综合评估](YIME_PROJECT_ASSESSMENT.md)和[发布指南](YIME_RELEASE_AND_SIGNING.md)。
 
 ## 结果总览
 
@@ -16,7 +18,7 @@
 | 6 | runtimechange “应用并重建/词库应用后会话刷新”协议 | ✅ 通过 | `go test -race -count=1` 全绿；整个 yime 包 -race 全绿 |
 | 附 | build64 Release PDB | ✅ 通过 | `PIMETextService.pdb`(5.7MB)、`PIMERpcResponseTests.pdb`(2.4MB) 均在 |
 
-**总判定**：安装态**功能可用**，本次验证暴露的缺口除签名外**全部修复**：Win32 PIMELauncher 重建链路恢复（Corrosion v0.6.1 + i686 工具链锁定）、重启后完成干净全量重装（哈希全同步）、重启自启动实测通过、corrosion 联网问题定位为本地代理并解决。发布前仅剩**签名**一项（事项 3）。
+**当日判定**：安装态**功能可用**，本次验证自身暴露的缺口除签名外**全部修复**：Win32 PIMELauncher 重建链路恢复（Corrosion v0.6.1 + i686 工具链锁定）、重启后完成干净全量重装（哈希全同步）、重启自启动实测通过、corrosion 联网问题定位为本地代理并解决。此结论不代表后续版本定稿、x86 宿主或新提交的发布验收已经在 2026-07-12 完成。
 
 ---
 
@@ -32,7 +34,7 @@
 3. `rustup toolchain install stable-i686-pc-windows-msvc`（rustc 1.97.0，i686 二进制经 WoW64 在 x64 Windows 运行）。
 4. `cmake --build build --config Release` 成功：`build/PIMELauncher/PIMELauncher.exe`(497152) + `build/PIMETextService/Release/PIMETextService.dll`(x86, 284160) + PDB 均产出。
 
-**重装成功（2026-07-12 12:51）**：再次提权 `Reinstall-PIME-Test.cmd`，dev-install 全程通过——复制 PIMELauncher.exe / x86+x64 DLL / Python / Node / Go 后端，重注册 DLL，写 Run 键+YIME 标记，启动 PIMELauncher。
+**重装成功（2026-07-12 12:51）**：再次提权 `Reinstall-PIME-Test.cmd`，dev-install 全程通过——复制 PIMELauncher.exe / x86+x64 DLL / 当时尚未裁剪的历史后端 / Go 后端，重注册 DLL，写 Run 键+YIME 标记，启动 PIMELauncher。当前 YIME-only 安装器已永久移除历史 Python/Node 后端。
 
 **哈希核对（SHA256 前 16 位，重装后）**：
 
@@ -147,7 +149,7 @@ build64/PIMETextService/Release/PIMERpcResponseTests.exe  SHA256前16=C280C6FEE1
 1. ~~**Win32 `PIMELauncher` 重建链路断裂**~~ ✅ **已修复（2026-07-12）**
    - 修复：`CMakeLists.txt` 升级 Corrosion 至 v0.6.1 + 固定 `Rust_TOOLCHAIN=stable-i686-pc-windows-msvc`（i686 host，消除跨编译）；新增前置 `rustup toolchain install stable-i686-pc-windows-msvc`。
    - 验证：`cmake --build build --config Release` 成功产出 `PIMELauncher.exe`+x86 DLL+PDB；`Reinstall-PIME-Test.cmd` 全程通过；build↔installed 三件哈希一致。
-   - 待办：把 `rustup toolchain install stable-i686-pc-windows-msvc` 写进开发文档前置步骤；后续若升级 Corrosion/ Rust 需复跑 Win32 全量重建。
+   - 已完成：`rustup toolchain install stable-i686-pc-windows-msvc --profile minimal` 已写入 README、CI 和发布前置步骤；后续若升级 Corrosion/Rust 仍需复跑 Win32 全量重建。
 
 2. ~~**installed 与 build64 不同步**~~ ✅ **已修复**：重装后 PIMELauncher.exe / x86 DLL / x64 DLL 三件 build↔installed 哈希全一致。
 
