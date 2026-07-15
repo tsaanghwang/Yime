@@ -72,11 +72,9 @@ foreach ($retiredRootFile in $retiredRootFiles) {
         throw "Retired root file is still tracked: $retiredRootFile"
     }
 }
-$trackedRootData = @(& git -C $root ls-files -- '*.yaml' '*.ocd' '*.json' 'essay.txt') |
-    Where-Object {
-        -not $_.Contains('/') -and
-        ($_.EndsWith('.yaml') -or $_.EndsWith('.ocd') -or $_ -eq 'essay.txt' -or ($_.EndsWith('.json') -and $_ -ne 'backends.json'))
-    }
+$trackedRootData = @(
+    & git -C $root ls-files -- '*.schema.yaml' '*.dict.yaml' '*.ocd' 'default.yaml' 'symbols.yaml' 'essay.txt' 't2*.json' 's2*.json' 'hk2*.json' 'tw2*.json'
+) | Where-Object { -not $_.Contains('/') }
 if ($trackedRootData.Count -gt 0) {
     throw "Retired root Rime/OpenCC data returned: $($trackedRootData -join ', ')"
 }
