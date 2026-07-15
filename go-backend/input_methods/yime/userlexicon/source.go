@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/EasyIME/pime-go/input_methods/yime/reverselookup"
+	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/reverselookup"
 )
 
 // EnsureSourceFile creates the source lexicon file with a header when missing.

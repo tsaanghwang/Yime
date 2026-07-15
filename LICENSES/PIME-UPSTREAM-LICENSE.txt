@@ -1,0 +1,46 @@
+PIME is composed of several parts with different licenses.
+
+Original author: Hong Jen-Yee <pcman.tw@gmail.com>
+
+Code in these directories are licensed under LGPL 2.0:
+  cmake
+  installer
+  libIME
+  libpipe
+  PIME
+  PIMELauncher
+  server
+
+The following components are from other projects:
+  python:
+    Embeddable version of python 3.5 is licensed under PSF.
+    https://www.python.org/
+
+  python\tornado:
+    Tornado is a python web framework licensed under Apache 2.0.
+    http://www.tornadoweb.org/en/stable/
+
+  jsoncpp:
+    C++ library used to parse and write json data licensed under MIT license.
+    https://github.com/open-source-parsers/jsoncpp
+
+  python\opencc:
+    OpenCC is a library used to convert between traditional and simplified
+    Chinese licensed under Apache 2.0 license.
+    https://github.com/BYVoid/OpenCC
+
+  python\input_methods\chewing\libchewing.dll, tests/tsi.src.txt, tests/phone.cin.txt:
+    libchewing is one of the best smart phonetic input method engine in Taiwan
+    licensed under GNU LGPL v2.1 license.
+    http://chewing.im/
+    https://github.com/chewing/libchewing
+
+  python\input_methods\rime\rime.dll:
+    libRIME is the core library of the excellent Chinese input method
+    framework + algorithm RIME developed by lotem licensed under BSD license.
+    http://rime.im/
+    https://github.com/rime
+
+This file is an unmodified archival copy of the EasyIME/PIME LICENSE.txt at
+Yime's upstream merge base. Paths describe the historical upstream tree and
+are not the current Yime package layout.

@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/EasyIME/pime-go/input_methods/yime/reverselookup"
+	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/reverselookup"
 )
 
 // Entry is one row from a Rime dict.yaml data section.

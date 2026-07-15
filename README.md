@@ -201,6 +201,26 @@ Check logs at `%LOCALAPPDATA%\PIME\Logs\go_backend.log`.
 
 Report issues in this repository. Framework-level issues that also affect upstream PIME should cross-reference [EasyIME/PIME](https://github.com/EasyIME/PIME).
 
+## Relationship to PIME
+
+Yime for Windows is an independently maintained downstream derivative of
+[EasyIME/PIME](https://github.com/EasyIME/PIME). It reuses and modifies PIME's
+Windows TSF text-service host, process launcher, backend protocol, and
+installation/registration infrastructure, while preserving the relevant
+upstream Git history, copyright notices, and license terms. The Yime encoding
+system, Rime integration, lexicons, maintenance tools, and YIME-specific
+product configuration are developed and maintained by the Yime project.
+
+Yime is not an official EasyIME/PIME release and is not affiliated with,
+sponsored by, or endorsed by EasyIME/PIME or its original authors. Retained
+internal PIME names are technical compatibility identifiers, not product or
+publisher branding. See [NOTICE.md](NOTICE.md) for the complete statement.
+
 ## License
 
-This repository follows the licensing inherited from the upstream project tree. See the license files in the repository root for details.
+PIME-derived components retain their original copyright notices and
+`LGPL-2.0-or-later` terms. Unless otherwise noted, Yime-specific software is
+licensed under `LGPL-2.1-or-later`. Third-party engines, data, fonts, libraries,
+and installer plug-ins retain their own licenses. See [LICENSE.txt](LICENSE.txt),
+[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md), and the [LICENSES](LICENSES)
+directory.

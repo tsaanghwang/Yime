@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/EasyIME/pime-go/input_methods/yime/reverselookup"
+	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/reverselookup"
 )
 
 // HydrateSourceIfEmpty imports user phrases from generated Rime lexicon files when the

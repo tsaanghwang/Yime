@@ -14,11 +14,11 @@ import (
 	"time"
 	"unsafe"
 
-	"github.com/EasyIME/pime-go/input_methods/yime/runtimechange"
-	"github.com/EasyIME/pime-go/input_methods/yime/settings"
-	"github.com/EasyIME/pime-go/input_methods/yime/toolhub"
-	"github.com/EasyIME/pime-go/input_methods/yime/userbackup"
-	"github.com/EasyIME/pime-go/input_methods/yime/win32ui"
+	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/runtimechange"
+	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/settings"
+	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/toolhub"
+	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/userbackup"
+	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/win32ui"
 )
 
 const (

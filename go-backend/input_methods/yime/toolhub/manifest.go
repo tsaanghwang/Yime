@@ -6,14 +6,14 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/EasyIME/pime-go/input_methods/yime/win32ui"
+	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/win32ui"
 )
 
 // ActionType describes how a tool hub entry should be launched.
 type ActionType string
 
 const (
-	ActionOpenPath      ActionType = "open_path"
+	ActionOpenPath ActionType = "open_path"
 
 	ActionRunExecutable ActionType = "run_executable"
 )

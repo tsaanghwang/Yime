@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/EasyIME/pime-go/input_methods/yime/runtimechange"
-	"github.com/EasyIME/pime-go/input_methods/yime/userbackup"
+	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/runtimechange"
+	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/userbackup"
 )
 
 func TestSettingsUILayoutFitsVisibleControls(t *testing.T) {

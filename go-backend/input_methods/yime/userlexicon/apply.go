@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/EasyIME/pime-go/input_methods/yime/reverselookup"
+	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/reverselookup"
 )
 
 // RimeLexiconPath returns the generated Rime lexicon path for a mode.

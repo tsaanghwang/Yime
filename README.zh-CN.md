@@ -196,6 +196,22 @@ PIMELauncher.exe /console
 
 在本仓库提交 Issue。涉及上游 PIME 的框架级问题应同时交叉引用 [EasyIME/PIME](https://github.com/EasyIME/PIME)。
 
+## 与 PIME 的关系
+
+Yime for Windows 是从 [EasyIME/PIME](https://github.com/EasyIME/PIME)
+派生并由 Yime 项目独立维护的下游发行版。Yime 复用并修改了 PIME 的 Windows
+TSF 文本服务宿主、进程启动器、后端通信协议以及安装与注册基础设施，并保留相关
+的上游 Git 历史、版权声明和许可证条款。音元编码体系、Rime 集成、词库、维护工具
+及 YIME 产品配置由 Yime 项目新增和维护。
+
+Yime 不是 EasyIME/PIME 的官方版本，与 EasyIME/PIME 及其原作者不存在隶属、
+授权代理、赞助或背书关系。代码和安装目录中保留的 PIME 内部名称只用于技术兼容，
+不代表产品或发布者品牌。完整说明见 [NOTICE.md](NOTICE.md)。
+
 ## 许可证
 
-本仓库遵循上游项目树的许可证。详见仓库根目录的许可证文件。
+PIME 派生组件保留原版权声明及 `LGPL-2.0-or-later` 条款；除非另有说明，Yime
+新增软件采用 `LGPL-2.1-or-later`。第三方引擎、数据、字体、库和安装器插件继续
+适用各自许可证。详见 [LICENSE.txt](LICENSE.txt)、
+[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) 和 [LICENSES](LICENSES)
+目录。

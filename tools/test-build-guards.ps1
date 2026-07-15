@@ -8,6 +8,7 @@ $workflow = Join-Path $root '.github\workflows\ci.yaml'
 $rootBuild = Join-Path $root 'build.bat'
 $installer = Join-Path $root 'installer\installer.nsi'
 $readme = Join-Path $root 'README.md'
+$textServiceResource = Join-Path $root 'PIMETextService\PIMETextService.rc.in'
 
 try {
     & $verifier -RepoRoot $root -X86TextService $x64Dll -X64TextService $x64Dll -X86Launcher $launcher
@@ -52,11 +53,119 @@ $installerText = Get-Content -LiteralPath $installer -Raw
 if ($installerText -match 'YIME_ENABLE_RETIRED_PIME_BACKENDS|\\python\\|\\node\\|McBopomofo|libchewing') {
     throw 'Retired PIME backend code or paths returned to the YIME installer.'
 }
+
+$requiredLegalFiles = @(
+    'LICENSE.txt',
+    'NOTICE.md',
+    'AUTHORS.txt',
+    'THIRD_PARTY_NOTICES.md',
+    'LGPL-2.0.txt',
+    'APACHE-2.0.txt',
+    'json\LICENSE.MIT',
+    'LICENSES\PIME-UPSTREAM-LICENSE.txt',
+    'LICENSES\RIME-BSD-3-Clause.txt',
+    'LICENSES\RIME-FROST-GPL-3.0.txt',
+    'LICENSES\SIL-OFL-1.1.txt',
+    'LICENSES\UNICODE-3.0.txt',
+    'LICENSES\RUST-DEPENDENCIES.md'
+)
+foreach ($relativePath in $requiredLegalFiles) {
+    if (-not (Test-Path -LiteralPath (Join-Path $root $relativePath) -PathType Leaf)) {
+        throw "Required legal notice is missing: $relativePath"
+    }
+}
+$strictUtf8 = New-Object System.Text.UTF8Encoding($false, $true)
+$noticeText = $strictUtf8.GetString([System.IO.File]::ReadAllBytes((Join-Path $root 'NOTICE.md')))
+foreach ($fragment in @('Relationship to PIME', 'not an official EasyIME/PIME release')) {
+    if (-not $noticeText.Contains($fragment)) {
+        throw "Provenance notice content or UTF-8 encoding guard is missing: $fragment"
+    }
+}
+$requiredInstallerLegalFragments = @(
+    'SetOutPath "$INSTDIR\licenses"',
+    'File "..\LICENSE.txt"',
+    'File "..\NOTICE.md"',
+    'File "..\THIRD_PARTY_NOTICES.md"',
+    'File "..\LICENSES\PIME-UPSTREAM-LICENSE.txt"',
+    'File "..\LICENSES\RIME-FROST-GPL-3.0.txt"',
+    'File "..\LICENSES\RUST-DEPENDENCIES.md"',
+    'RMDir /REBOOTOK /r "$INSTDIR\licenses"'
+)
+foreach ($fragment in $requiredInstallerLegalFragments) {
+    if (-not $installerText.Contains($fragment)) {
+        throw "Installer legal-notice packaging guard is missing: $fragment"
+    }
+}
+$resourceText = Get-Content -LiteralPath $textServiceResource -Raw
+foreach ($fragment in @('VALUE "CompanyName", "YIME Project"', 'VALUE "ProductName", "YIME"')) {
+    if (-not $resourceText.Contains($fragment)) {
+        throw "PIMETextService public YIME metadata guard is missing: $fragment"
+    }
+}
+$legacyGoModule = 'github.com/EasyIME/' + 'pime-go'
+$legacyModuleMatches = @(& git -C $root grep -n --fixed-strings $legacyGoModule -- 'go-backend/*.go' 'go-backend/**/*.go' 'go-backend/go.mod')
+if ($legacyModuleMatches.Count -gt 0) {
+    throw "Legacy upstream Go module namespace returned: $($legacyModuleMatches -join '; ')"
+}
+
 $retiredTrackedPaths = @('python', 'node', 'McBopomofoWeb', 'libchewing', 'tests')
 foreach ($retiredPath in $retiredTrackedPaths) {
     $tracked = @(& git -C $root ls-files -- $retiredPath)
     if ($tracked.Count -gt 0) {
         throw "Retired path is still tracked: $retiredPath"
+    }
+}
+$retiredUpstreamArtifacts = @(
+    'PIMELauncher/rustup-init.exe',
+    'PIMELauncher/cargo_check.log',
+    'PIMELauncher/test_backend.py',
+    'PIMELauncher/test_client.py',
+    'PIMELauncher/test_client.ps1',
+    'installer/README.txt',
+    'installer/StdUtils.2015-11-16',
+    'installer/inetc/Examples',
+    'installer/inetc/Plugins/amd64-unicode',
+    'installer/inetc/Plugins/x86-ansi',
+    'installer/md5dll/ANSI',
+    'installer/md5dll/MD5Example.nsi',
+    'json/CMakeLists.txt',
+    'json/cmake',
+    'json/include',
+    'json/nlohmann_json.natvis',
+    'go-backend/deploy-server.ps1',
+    'go-backend/pime/tray.go',
+    'go-backend/input_methods/yime/icon-yin.ico',
+    'go-backend/input_methods/yime/icon-yuan.ico',
+    'go-backend/input_methods/yime/icons/zh.ico'
+)
+foreach ($retiredArtifact in $retiredUpstreamArtifacts) {
+    $tracked = @(& git -C $root ls-files -- $retiredArtifact) | Where-Object {
+        Test-Path -LiteralPath (Join-Path $root $_)
+    }
+    if ($tracked.Count -gt 0) {
+        throw "Retired upstream or development artifact is still tracked: $retiredArtifact"
+    }
+}
+$requiredNlohmannFiles = @('json/LICENSE.MIT', 'json/single_include/nlohmann/json.hpp')
+foreach ($relativePath in $requiredNlohmannFiles) {
+    if (-not (Test-Path -LiteralPath (Join-Path $root $relativePath) -PathType Leaf)) {
+        throw "Required minimal nlohmann/json file is missing: $relativePath"
+    }
+}
+$requiredYimeIcons = @(
+    'chi.ico', 'eng.ico',
+    'chi_half_capsoff.ico', 'chi_half_capson.ico',
+    'chi_full_capsoff.ico', 'chi_full_capson.ico',
+    'eng_half_capsoff.ico', 'eng_half_capson.ico',
+    'eng_full_capsoff.ico', 'eng_full_capson.ico',
+    'half.ico', 'full.ico',
+    'layout_horizontal.ico', 'layout_vertical.ico',
+    'config.ico', 'lexicon.ico', 'reverse-lookup.ico', 'tools.ico'
+)
+$yimeIconDir = Join-Path $root 'go-backend\input_methods\yime\icons'
+foreach ($iconName in $requiredYimeIcons) {
+    if (-not (Test-Path -LiteralPath (Join-Path $yimeIconDir $iconName) -PathType Leaf)) {
+        throw "Required Yime language-bar icon is missing: $iconName"
     }
 }
 $retiredRootFiles = @(
@@ -83,4 +192,5 @@ if ($gitmodulesText -match 'McBopomofoWeb|libchewing|python/input_methods/rime/b
     throw 'Retired submodule metadata is still present.'
 }
 Write-Host 'YIME-only build and installer guard test passed.'
+Write-Host 'YIME provenance, metadata, and legal packaging guard test passed.'
 Write-Host 'Build guard tests passed.'

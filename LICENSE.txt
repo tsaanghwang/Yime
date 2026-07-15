@@ -1,23 +1,78 @@
-PIME is composed of several parts with different licenses.
+YIME LICENSE AND COMPONENT MAP
 
-Original author: Hong Jen-Yee <pcman.tw@gmail.com>
+Yime for Windows is an independently maintained downstream derivative of
+EasyIME/PIME. This file summarizes the applicable licenses; it does not
+replace copyright notices or license terms carried by individual files and
+components.
 
-Code in these directories are licensed under LGPL 2.0:
-  cmake
-  installer
-  libIME
-  libpipe
-  PIME
-  PIMELauncher
-  server
+Copyright and provenance
+------------------------
 
-The following components are from other projects:
-  jsoncpp:
-    C++ library used to parse and write json data licensed under MIT license.
-    https://github.com/open-source-parsers/jsoncpp
+Original PIME code and design:
+  Copyright (C) Hong Jen-Yee (PCMan) and the PIME contributors.
 
-  go-backend\input_methods\yime\rime.dll:
-    libRIME is the core library of the excellent Chinese input method 
-    framework + algorithm RIME developed by lotem licensed under BSD license.
-    http://rime.im/
-    https://github.com/rime
+Yime additions and modifications:
+  Copyright (C) 2026 Yime contributors.
+
+The complete inherited contributor list is retained in AUTHORS.txt. Git
+history is the authoritative record for individual changes.
+
+Component licenses
+------------------
+
+1. PIME-derived host and infrastructure
+
+   PIMETextService, PIMELauncher, the PIME backend protocol, installer code,
+   and related build/registration infrastructure contain code derived from
+   EasyIME/PIME. The inherited source notices grant the GNU Library General
+   Public License, version 2 or (at the recipient's option) any later version
+   (SPDX: LGPL-2.0-or-later). Original notices must be retained.
+
+   The historical upstream summary is archived at
+   LICENSES/PIME-UPSTREAM-LICENSE.txt. The repository's inherited file named
+   LGPL-2.0.txt contains the GNU Lesser General Public License version 2.1,
+   which is a permitted later-version choice under those source notices.
+
+2. Yime-specific software
+
+   Unless a file or component says otherwise, Yime-specific Go code, native
+   tools, scripts, documentation, tests, and modifications first added by the
+   Yime project are distributed under the GNU Lesser General Public License,
+   version 2.1 or (at the recipient's option) any later version
+   (SPDX: LGPL-2.1-or-later).
+
+3. libIME2
+
+   libIME2 is maintained as a separate submodule/fork and is licensed under
+   the GNU Lesser General Public License version 2.1. Its own repository,
+   copyright notices, and license file are authoritative.
+
+4. Third-party engines, data, fonts, libraries, and installer plug-ins
+
+   These components remain under their own licenses. See
+   THIRD_PARTY_NOTICES.md and the LICENSES directory. In particular:
+
+   * librime: BSD 3-Clause
+   * rime-frost runtime data: GNU General Public License version 3
+   * YinYuan-Regular.ttf, derived from Source Han Sans: SIL Open Font License
+     version 1.1; Adobe's Reserved Font Name "Source" is not used by Yime
+   * Unicode Unihan-derived data: Unicode License version 3
+   * nlohmann/json: MIT
+   * bundled NSIS plug-ins and Rust crates: their component-specific terms
+
+Relationship and non-endorsement
+--------------------------------
+
+Yime is not an official EasyIME/PIME release. It is not affiliated with,
+sponsored by, or endorsed by EasyIME/PIME, its maintainers, Adobe, Unicode,
+RIME, rime-frost, or other upstream projects. Names are used only to identify
+provenance, compatibility, and the applicable license notices.
+
+Source and notices
+------------------
+
+Corresponding source for each Yime release is published at:
+  https://github.com/tsaanghwang/Yime
+
+Release distributors must preserve this file, NOTICE.md, AUTHORS.txt,
+THIRD_PARTY_NOTICES.md, the LICENSES directory, and all file-level notices.

@@ -72,13 +72,13 @@ BEGIN
     BEGIN
         BLOCK "040404b0"
         BEGIN
-            VALUE "CompanyName", "PIME"
-            VALUE "FileDescription", "PIME"
+            VALUE "CompanyName", "YIME Project"
+            VALUE "FileDescription", "YIME Windows Text Service"
             VALUE "FileVersion", "@PIME_VERSION_MAJOR@.@PIME_VERSION_MINOR@.@PIME_VERSION_PATCH@"
             VALUE "InternalName", "PIMETextService.dll"
-            VALUE "LegalCopyright", "Copyright (C) 2013-2016 PIME developers"
+            VALUE "LegalCopyright", "Copyright (C) 2013-2026 PIME and Yime contributors"
             VALUE "OriginalFilename", "PIMETextService.dll"
-            VALUE "ProductName", "PIME"
+            VALUE "ProductName", "YIME"
             VALUE "ProductVersion", "@PIME_VERSION_MAJOR@.@PIME_VERSION_MINOR@.@PIME_VERSION_PATCH@"
         END
     END

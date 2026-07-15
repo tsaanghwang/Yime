@@ -1,5 +1,6 @@
 ﻿;
 ;	Copyright (C) 2013 - 2016 Hong Jen Yee (PCMan) <pcman.tw@gmail.com>
+;	Modifications Copyright (C) 2026 Yime contributors
 ;
 ;	This library is free software; you can redistribute it and/or
 ;	modify it under the terms of the GNU Library General Public
@@ -21,11 +22,6 @@
 !include "x64.nsh" ; NSIS plugin used to detect 64 bit Windows
 !include "Winver.nsh" ; Windows version detection
 !include "LogicLib.nsh" ; for ${If}, ${Switch} commands
-
-; We need the StdUtils plugin
-!addincludedir "StdUtils.2015-11-16\Include"
-!addplugindir /x86-unicode "StdUtils.2015-11-16\Plugins\Release_Unicode"
-!include "StdUtils.nsh" ; for ExecShellAsUser()
 
 ; We need the MD5 plugin
 !addplugindir /x86-unicode "md5dll\UNICODE"
@@ -496,6 +492,23 @@ Section $(SECTION_MAIN) SecMain
     ; Install backend informations
     File "..\backends.json"
 
+	; Ship the notices and complete license texts with every installed copy.
+	SetOutPath "$INSTDIR\licenses"
+	File "..\LICENSE.txt"
+	File "..\NOTICE.md"
+	File "..\AUTHORS.txt"
+	File "..\THIRD_PARTY_NOTICES.md"
+	File "..\LGPL-2.0.txt"
+	File "..\APACHE-2.0.txt"
+	File /oname=NLOHMANN-JSON-MIT.txt "..\json\LICENSE.MIT"
+	File "..\LICENSES\PIME-UPSTREAM-LICENSE.txt"
+	File "..\LICENSES\RIME-BSD-3-Clause.txt"
+	File "..\LICENSES\RIME-FROST-GPL-3.0.txt"
+	File "..\LICENSES\SIL-OFL-1.1.txt"
+	File "..\LICENSES\UNICODE-3.0.txt"
+	File "..\LICENSES\RUST-DEPENDENCIES.md"
+	SetOutPath "$INSTDIR"
+
 	; Install the launcher responsible to launch the backends
 	File "..\build\PIMELauncher\PIMELauncher.exe"
 
@@ -611,6 +624,7 @@ Section "Uninstall"
 	RMDir /REBOOTOK /r "$INSTDIR\x86"
 	RMDir /REBOOTOK /r "$INSTDIR\python"
 	RMDir /REBOOTOK /r "$INSTDIR\node"
+	RMDir /REBOOTOK /r "$INSTDIR\licenses"
     Delete "$INSTDIR\backends.json"
 
 	; Delete shortcuts in Start Menu

@@ -9,9 +9,9 @@ import (
 	"time"
 	"unsafe"
 
-	"github.com/EasyIME/pime-go/input_methods/yime/reverselookup"
-	"github.com/EasyIME/pime-go/input_methods/yime/systemlexicon"
-	"github.com/EasyIME/pime-go/input_methods/yime/win32ui"
+	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/reverselookup"
+	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/systemlexicon"
+	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/win32ui"
 )
 
 func (state *appState) startLoadAudit() {

@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/EasyIME/pime-go/input_methods/yime/reverselookup"
+	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/reverselookup"
 )
 
 func TestHydrateSourceIfEmptyImportsFromRimeLexicon(t *testing.T) {

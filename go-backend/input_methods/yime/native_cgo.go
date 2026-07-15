@@ -6,7 +6,7 @@ import (
 	"log"
 	"sync"
 
-	"github.com/EasyIME/pime-go/pime"
+	"github.com/tsaanghwang/Yime/go-backend/pime"
 )
 
 type nativeBackend struct {
