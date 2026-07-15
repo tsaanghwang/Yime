@@ -1,0 +1,25 @@
+# AI-sensitive build and release controls. A second human reviewer must be
+# added before GitHub's required Code Owner approval switch is enabled.
+/AGENTS.md @tsaanghwang
+/.github/** @tsaanghwang
+/Build.ps1 @tsaanghwang
+/build.bat @tsaanghwang
+/CMakeLists.txt @tsaanghwang
+/.gitmodules @tsaanghwang
+/version.txt @tsaanghwang
+
+/PIMELauncher/.cargo/** @tsaanghwang
+/PIMELauncher/Cargo.toml @tsaanghwang
+/PIMELauncher/Cargo.lock @tsaanghwang
+/PIMELauncher/build.rs @tsaanghwang
+/PIMETextService/CMakeLists.txt @tsaanghwang
+/go-backend/build.bat @tsaanghwang
+
+/tools/test-build-guards.ps1 @tsaanghwang
+/tools/test-go-race.ps1 @tsaanghwang
+/tools/verify-pe-architectures.ps1 @tsaanghwang
+/tools/dev-*.ps1 @tsaanghwang
+/tools/templates/** @tsaanghwang
+/tools/sign-*.ps1 @tsaanghwang
+/tools/verify-release-signatures.ps1 @tsaanghwang
+/installer/** @tsaanghwang

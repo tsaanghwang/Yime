@@ -5,6 +5,7 @@ $verifier = Join-Path $PSScriptRoot 'verify-pe-architectures.ps1'
 $x64Dll = Join-Path $root 'build64\PIMETextService\Release\PIMETextService.dll'
 $launcher = Join-Path $root 'build\PIMELauncher\PIMELauncher.exe'
 $workflow = Join-Path $root '.github\workflows\ci.yaml'
+$codeOwners = Join-Path $root '.github\CODEOWNERS'
 $rootBuild = Join-Path $root 'build.bat'
 $installer = Join-Path $root 'installer\installer.nsi'
 $devInstall = Join-Path $root 'tools\dev-install.ps1'
@@ -38,6 +39,42 @@ foreach ($guard in $requiredRaceGuards) {
     }
 }
 Write-Host 'CI MSYS2 Go race guard test passed.'
+
+$requiredGovernanceGuards = @(
+    'uses: tsaanghwang/Yime-build-contract/.github/workflows/validate.yml@d93a3e835cae58988792814d300d3c7cc872cfbb',
+    'core-build:',
+    'name: core-build',
+    'name: rust-i686-host',
+    'name: native-build',
+    'name: go-tests',
+    'name: go-race-msys2',
+    'name: installer-package',
+    'needs: [build-contract, core-build]',
+    'if: ${{ always() }}'
+)
+foreach ($guard in $requiredGovernanceGuards) {
+    if (-not $workflowText.Contains($guard)) {
+        throw "Protected CI governance check is missing: $guard"
+    }
+}
+
+$codeOwnersText = Get-Content -LiteralPath $codeOwners -Raw
+foreach ($guard in @(
+    '/AGENTS.md @tsaanghwang',
+    '/.github/** @tsaanghwang',
+    '/Build.ps1 @tsaanghwang',
+    '/build.bat @tsaanghwang',
+    '/CMakeLists.txt @tsaanghwang',
+    '/tools/test-build-guards.ps1 @tsaanghwang',
+    '/tools/test-go-race.ps1 @tsaanghwang',
+    '/tools/verify-pe-architectures.ps1 @tsaanghwang',
+    '/installer/** @tsaanghwang'
+)) {
+    if (-not $codeOwnersText.Contains($guard)) {
+        throw "Protected CODEOWNERS entry is missing: $guard"
+    }
+}
+Write-Host 'External build contract and named CI governance guards passed.'
 
 if (-not $workflowText.Contains('git submodule update --init --depth 1 libIME2')) {
     throw 'CI must checkout only the active libIME2 submodule.'
