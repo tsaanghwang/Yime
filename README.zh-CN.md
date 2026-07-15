@@ -13,8 +13,8 @@
 - **候选窗** — 每页 5–9 个候选，竖排或横排，一键切换
 - **反查功能** — 候选旁显示标准拼音、音元编码或键位序列
 - **用户词库** — 用数字标调拼音添加自定义词组，自动转换为音元编码
-- **独立工具** — 设置、诊断、反查、词库管理以独立窗口运行（不在 TSF 回调中）
-- **语言栏** — 轻量命令分发器，管理方案、排列、候选数、反查和维护命令
+- **独立工具** — 设置、诊断、反查、词库管理、系统词库审查、用户屏蔽词表均以原生 Win32 可执行文件运行
+- **语言栏** — 输入法列表名「音元」；切换按钮固定显示「中西 / 全半 / 横竖」，当前状态由图标表示
 
 ## 仓库结构
 
@@ -27,12 +27,8 @@ go-backend/              Go 后端：Yime 输入法逻辑、Rime 集成、独立
     help/                用户帮助文档
 PIMETextService/         TSF 文本服务宿主（C++/COM）
 PIMELauncher/            进程启动器和监控（Rust）
-python/                  Python 侧支持组件
-node/                    Node 侧支持组件
 installer/               NSIS 安装程序资源
 libIME2/                 上游 IME 库
-libchewing/              上游注音库
-McBopomofoWeb/           上游注音组件
 docs/                    开发文档
 ```
 
@@ -52,7 +48,6 @@ docs/                    开发文档
 - [CMake](https://cmake.org/) 3.0+
 - [Rust](https://rustup.rs/)，含 `i686-pc-windows-msvc` 目标
 - [Go](https://go.dev/) 1.21+
-- [Node.js](https://nodejs.org/) 18+
 - [Git](https://git-scm.com/)
 
 ## 构建
@@ -62,14 +57,22 @@ docs/                    开发文档
 ```powershell
 git clone git@github.com:tsaanghwang/Yime.git
 cd Yime
-git submodule update --init
+git submodule update --init libIME2
 ```
+
+活动子模块 `libIME2` 指向 `tsaanghwang/libIME2` fork。若在主仓库中更新了子模块指针，请**先**将对应 commit 推送到子模块 remote，再推送 Yime，否则 CI checkout 会失败。
 
 ### 安装 Rust 目标
 
 ```powershell
-rustup target add i686-pc-windows-msvc
+rustup toolchain install stable-i686-pc-windows-msvc --profile minimal
 ```
+
+这里必须安装完整的 i686 **主机工具链**，不能只在默认 x64 工具链上执行
+`rustup target add i686-pc-windows-msvc`。根目录 CMake 已固定该工具链，以避免
+Corrosion 将 x64 主机构建脚本和 i686 MSVC 库混用。如果命令行找不到 `cargo`，
+但 `%USERPROFILE%\.cargo\bin\cargo.exe` 存在，应把该目录恢复到用户 `PATH`，
+不要修改 CMake、Corrosion 版本或 `PIMELauncher/.cargo/config.toml`。
 
 ### 构建宿主（32 位）
 
@@ -83,6 +86,8 @@ cmd /c build.bat
 cd go-backend
 cmd /c build.bat
 ```
+
+Go 工具版本取自 `version.txt`，构建使用稳定哈希参数。正式发布时应设置 `YIME_SIGN_CERT_SHA1`，使用受信任提供商签发的 RSA 代码签名证书；仅有 VERSIONINFO 不能保证通过 Smart App Control。
 
 ### 构建 64 位文本服务
 
@@ -169,11 +174,22 @@ PIMELauncher.exe /console
 
 | 文档 | 说明 |
 |------|------|
+| [项目综合评估](docs/YIME_PROJECT_ASSESSMENT.md) | 两轮全面评估结论、已完成修复、验证证据和剩余风险 |
 | [架构文档](docs/YIME_ARCHITECTURE.md) | 系统架构、关键机制、数据文件 |
 | [可用性评估](docs/YIME_USABILITY_ASSESSMENT.md) | 当前可用性问题及优先级 |
 | [开发路线图](docs/YIME_DEVELOPMENT_ROADMAP.md) | 分阶段路线图、修复流程、AGENTS.md 约束 |
 | [Rime 集成](docs/YIME_RIME_INTEGRATION.md) | Rime 数据流、pinyin_normalized.json 链、维护检查清单 |
 | [工具策略](docs/YIME_TOOLING_STRATEGY.md) | 独立工具 vs. 语言栏 UI 设计 |
+| [独立工具开发指南](docs/YIME_TOOL_DEVELOPMENT_GUIDE.md) | 如何添加新的独立工具 |
+| [原生 UI 规范](docs/YIME_NATIVE_UI_GUIDELINES.md) | Win32 布局、对话框、用词、焦点与 UI 测试规范 |
+| [测试与验证指南](docs/YIME_TESTING_GUIDE.md) | CI 分层、真实 Rime 测试和安装态验证 |
+| [发布与代码签名](docs/YIME_RELEASE_AND_SIGNING.md) | 可复现构建、Authenticode、打包与回滚流程 |
+| [数据文件格式参考](docs/YIME_DATA_FORMAT_REFERENCE.md) | TSV/JSON/YAML 数据文件格式规范 |
+| [用户安装指南](docs/YIME_USER_INSTALL_GUIDE.md) | 面向最终用户的安装和使用说明 |
+| [故障排除指南](docs/YIME_TROUBLESHOOTING.md) | 常见问题排查 |
+| [变更日志](CHANGELOG.md) | 版本变更记录 |
+| [贡献指南](CONTRIBUTING.md) | PR 流程、代码风格、commit 格式 |
+| [安全策略](SECURITY.md) | 私密漏洞报告方式及项目安全边界 |
 | [AGENTS.md](AGENTS.md) | AI 辅助开发约束 |
 
 ## 问题反馈

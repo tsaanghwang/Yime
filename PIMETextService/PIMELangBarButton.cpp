@@ -61,8 +61,7 @@ LangBarButton* LangBarButton::fromJson(TextService* service, json& info) {
 		if (id == WINDOWS_MODE_ICON_ID) {
 			// Windows 8 systray IME mode icon
 			guid = _GUID_LBI_INPUTMODE;
-		}
-		else {
+		} else {
 			CoCreateGuid(&guid);
 		}
 
@@ -95,21 +94,44 @@ void LangBarButton::setIconFile(std::wstring filePath) {
 }
 
 void LangBarButton::updateFromJson(json& info) {
+	HICON pendingIcon = NULL;
+	const wchar_t* pendingText = NULL;
+	std::wstring pendingTextStorage;
+
 	auto& iconValue = info["icon"];
 	if (iconValue.is_string()) {
-		setIconFile(utf8ToUtf16(iconValue.get<std::string>().c_str()));
+		std::wstring filePath = utf8ToUtf16(iconValue.get<std::string>().c_str());
+		if (filePath != iconFile_) {
+			iconFile_ = std::move(filePath);
+
+			HICON icon = NULL;
+			auto icon_it = iconCache_.find(iconFile_);
+			if (icon_it != iconCache_.end()) {
+				icon = icon_it->second;
+			} else {
+				icon = (HICON)LoadImageW(NULL, iconFile_.c_str(), IMAGE_ICON, 0, 0, LR_DEFAULTCOLOR | LR_LOADFROMFILE);
+				iconCache_[iconFile_] = icon;
+			}
+			if (icon) {
+				pendingIcon = icon;
+			}
+		}
+	}
+
+	auto& textValue = info["text"];
+	if (textValue.is_string()) {
+		pendingTextStorage = utf8ToUtf16(textValue.get<std::string>().c_str());
+		pendingText = pendingTextStorage.c_str();
+	}
+
+	if (pendingText || pendingIcon) {
+		refreshAppearance(pendingText, pendingIcon);
 	}
 
 	auto& cmdValue = info["commandId"];
 	if (cmdValue.is_number_unsigned()) {
 		UINT cmd = cmdValue.get<unsigned int>();
 		setCommandId(cmd);
-	}
-
-	auto& textValue = info["text"];
-	if (textValue.is_string()) {
-		std::wstring text = utf8ToUtf16(textValue.get<std::string>().c_str());
-		setText(text.c_str());
 	}
 
 	auto& tooltipValue = info["tooltip"];

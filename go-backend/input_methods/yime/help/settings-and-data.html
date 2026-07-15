@@ -56,19 +56,59 @@ code {
   <article>
     <h2>语言栏里的维护项</h2>
     <ul>
-      <li><strong>重新部署 Rime</strong>：重新编译并部署当前运行时配置，让已经写入的方案文件或配置生效。</li>
-      <li><strong>同步 Rime 用户数据</strong>：调用 Rime 自带的同步能力，适用于 Rime 自己管理的数据。</li>
-      <li><strong>打开数据与日志目录</strong>：直接打开用户目录、共享目录、同步目录和日志目录，方便检查“文件有没有真的写进去”。</li>
+      <li><strong>数据维护</strong>：集中放置“同步数据…”“重新部署…”和“打开目录”；两项执行型维护命令都会再次确认。</li>
+      <li><strong>重新部署…</strong>：仅在手工修改或恢复配置、排查旧缓存时使用。确认后在后台构建并校验当前方案，再于安全请求边界重建会话；不会恢复默认词库、删除用户词库或重复启动任务。</li>
+      <li><strong>同步数据…</strong>：确认后调用 Rime 自带的同步能力，只处理 Rime 管理的学习数据，不包含 YIME 设置、用户词库源文件和屏蔽词表。</li>
+      <li><strong>打开目录</strong>：打开用户目录、共享目录、同步目录和日志目录，方便检查“文件有没有真的写进去”。</li>
     </ul>
     <p><strong>注意：</strong><code>yime_settings_state.json</code> 这类 Yime 独立界面状态不属于 Rime 原生同步范围。</p>
   </article>
 
   <article>
-    <h2>为什么有些设置需要“应用并重建”</h2>
+    <h2>设置工具中的备份与恢复</h2>
+    <ul>
+      <li><strong>备份</strong>：在 Windows“文档\YIME 备份”中创建带时间戳、文件清单和 SHA-256 校验的可移植用户数据快照。</li>
+      <li><strong>备份范围</strong>：包括 YIME 设置、用户词库、屏蔽词表和 Rime <code>sync</code> 同步数据；不包括可重新生成的 <code>build</code>、临时通知文件，以及输入法运行期间被锁定且不能一致复制的 <code>*.userdb</code> LevelDB 目录。</li>
+      <li><strong>恢复</strong>：恢复最近一次手工备份。恢复前自动保存当前数据，恢复后重新构建 Rime，并通知 YIME 重载设置和词库。</li>
+    </ul>
+  </article>
+
+  <article>
+    <h2>“应用”设置时为什么需要重建</h2>
     <p>像方案切换、候选项数这类设置，不只是改界面显示，还需要让 Rime 运行时重新读取并编译相关配置。所以单纯保存文件可能不够，通常需要再执行一次重建或重新部署。</p>
     <ul>
       <li>保存文件：把设置写到用户目录中的配置文件。</li>
-      <li>应用并重建：保存后再调用 <code>rime_deployer.exe</code>，让运行时真正看到新值。</li>
+      <li>应用：保存后再调用 <code>rime_deployer.exe</code>，让运行时真正看到新值。</li>
+    </ul>
+    <p>独立工具完成重建后，会通知当前 YIME 会话重新读取设置。</p>
+  </article>
+
+  <article>
+    <h2>用户词库</h2>
+    <ul>
+      <li>添加对话框点击“保存”后可继续添加；“退出”、取消或窗口 X 才结束。</li>
+      <li>系统初始词库中已有的词条会收到警示并被拒绝添加。</li>
+      <li>添加和编辑对话框内可输入步进值调整权重，每点击一次“加”或“减”调整一次。</li>
+      <li>添加、编辑、删除、撤销、应用、导入和错误提示统一使用居中的中文操作按钮，不再显示系统 OK 或 Yes/No。</li>
+      <li>点击“应用”会为变长、等长和省键三种方案生成词库并部署。</li>
+    </ul>
+  </article>
+
+  <article>
+    <h2>用户屏蔽词表</h2>
+    <ul>
+      <li>源文件为 <code>%APPDATA%\PIME\Rime\yime_blocklist.txt</code>。</li>
+      <li>工具支持添加、搜索、多选删除、导入、导出，以及撤销最近一次成功改动。</li>
+      <li>保存成功后立即影响后续候选过滤，无需重新部署。</li>
+    </ul>
+  </article>
+
+  <article>
+    <h2>工具箱中的目录与帮助</h2>
+    <ul>
+      <li><strong>用户数据目录</strong>：打开当前账户的设置、词库和 Rime 用户数据。</li>
+      <li><strong>共享数据目录</strong>：只用于查看随安装提供的方案、词典和编码数据，重装时会被覆盖。</li>
+      <li><strong>查看帮助</strong>：打开主帮助；<strong>反馈说明</strong>：说明如何配合诊断报告和截图反馈问题。</li>
     </ul>
   </article>
 </main>

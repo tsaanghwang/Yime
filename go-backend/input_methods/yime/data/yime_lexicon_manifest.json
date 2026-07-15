@@ -1,0 +1,14 @@
+{
+  "format_version": 1,
+  "generated_at": "2026-07-11T20:43:48+08:00",
+  "source_file": "yime_full.dict.yaml",
+  "source_sha256": "58a7597996f7dee3b5d2877c78a8590e403ef88bd88e6fd1f06458f6b55501f4",
+  "transform_version": "full-derived-v1",
+  "layout_version": "rime-layout-key-2026-04-25",
+  "entry_count": 468166,
+  "output_sha256": {
+    "yime_full.dict.yaml": "58a7597996f7dee3b5d2877c78a8590e403ef88bd88e6fd1f06458f6b55501f4",
+    "yime_shorthand.dict.yaml": "453be98a8285ddeb78d3aabf0ebeaa1ca71a0980f7ceafd493d6d913521d5be6",
+    "yime_variable.dict.yaml": "a7869b2824f67f4a227ac8906b37739747bcaa10e75a4c38d7225bfaecfed792"
+  }
+}

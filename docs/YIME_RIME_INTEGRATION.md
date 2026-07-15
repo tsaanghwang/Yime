@@ -4,30 +4,28 @@ This branch prepares PIME to consume Yime through the upstream Go Rime backend.
 
 ## Data flow
 
-1. Yime exports one Rime schema and dictionary from `C:\dev\Yime-variable-length`.
-2. PIME keeps shared Rime data under `go-backend\input_methods\yime\data`.
-3. PIME keeps user Rime data under `%AppData%\PIME\Rime`.
-4. The Go Rime backend loads `go-backend\input_methods\yime\rime.dll`, initializes librime with those two directories, and uses the selected Yime schema.
+1. The importer accepts one fixed-length `yime_full.dict.yaml` as the only external lexicon source.
+2. Go derives the full, variable, and shorthand Rime dictionaries plus a generation manifest.
+3. PIME keeps those runtime artifacts under `go-backend\input_methods\yime\data` and copies them to `%AppData%\PIME\Rime` when deployed.
+4. The Go Rime backend loads `go-backend\input_methods\yime\rime.dll`, initializes librime with those directories, and uses the selected Yime schema.
 
 ## Prepare local data
 
 From `C:\dev\Yime`:
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File tools\deploy-yime-rime-data.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\deploy-yime-rime-data.ps1 -Input C:\path\to\yime_full.dict.yaml
 ```
 
-The default mode is `variable`, which exports and deploys `yime_variable`.
-
-Other modes:
+To generate the three dictionaries without deploying them:
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File tools\deploy-yime-rime-data.ps1 -Mode full
-powershell -NoProfile -ExecutionPolicy Bypass -File tools\deploy-yime-rime-data.ps1 -Mode shorthand
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\import-yime-full-lexicon.ps1 -Input C:\path\to\yime_full.dict.yaml
 ```
 
-The script copies shared Rime data from `C:\dev\weasel\output\data` by default.
-Use `-WeaselDataDir` if the shared data lives elsewhere.
+There is no variable-mode or shorthand-mode import switch. Those files are
+reproducible runtime products and carry the source SHA-256 in
+`yime_lexicon_manifest.json`.
 
 ## Build notes
 
@@ -47,27 +45,28 @@ cd go-backend
 cmd /c build.bat
 ```
 
-## Generated files
+## Generated and packaged files
 
-Most generated Rime data should not be committed:
+The three `yime_*.dict.yaml` files and `yime_lexicon_manifest.json` under
+`go-backend\input_methods\yime\data\` are committed package inputs, but they
+are generated artifacts: regenerate them from one fixed-length dictionary and
+never edit the variable or shorthand dictionaries independently.
 
-- `go-backend\input_methods\yime\data\`
+Rime deployment caches remain local and must not be committed:
+
 - `%AppData%\PIME\Rime\`
 - `%AppData%\PIME\Rime\build\`
 
-Exception:
-
-- `go-backend\input_methods\yime\data\pinyin_normalized.json`
-
-That file is now a vendored runtime asset, not a local throwaway export.
+`pinyin_normalized.json`, `yime_pua_pinyin.json`, and the two-column
+`yime_pinyin_codes.tsv` are vendored runtime assets.
 
 ## `pinyin_normalized.json` chain
 
 The current Go Yime backend uses `pinyin_normalized.json` for the
 "标准拼音" reverse-lookup display mode.
 
-This file does not originate inside `C:\dev\Yime` itself. The formal source
-chain lives in `C:\dev\Yime-variable-length`:
+This file does not originate inside `C:\dev\Yime` itself. Its source chain is
+kept in `C:\dev\Yime-python-prototype`:
 
 1. `internal_data\hanzi_pinyin\pinyin.txt` and
    `internal_data\phrase_pinyin\phrase_pinyin.txt`
@@ -79,9 +78,9 @@ chain lives in `C:\dev\Yime-variable-length`:
 
 Upstream docs that describe this flow:
 
-- `C:\dev\Yime-variable-length\docs\project\PINYIN_DATA_MIGRATION.md`
-- `C:\dev\Yime-variable-length\internal_data\pinyin_source_db\README.md`
-- `C:\dev\Yime-variable-length\scripts\integrate_lexicon_trial.ps1`
+- `C:\dev\Yime-python-prototype\docs\project\PINYIN_DATA_MIGRATION.md`
+- `C:\dev\Yime-python-prototype\internal_data\pinyin_source_db\README.md`
+- `C:\dev\Yime-python-prototype\scripts\integrate_lexicon_trial.ps1`
 
 For the Go backend, we currently vendor the exported JSON into:
 
@@ -97,25 +96,42 @@ This means "标准拼音" display is now tied to the same phase-1 lexicon rebuil
 used by the prototype project, without importing the prototype runtime DB or
 candidate-window implementation into PIME.
 
+The `音元拼音` candidate annotation uses a separate display-only path:
+
+1. Prefer the actual ASCII code returned in the Rime candidate comment.
+2. Decode that code to numeric-tone pinyin through `yime_pinyin_codes.tsv`.
+3. Map each syllable to its BMP PUA sequence through `yime_pua_pinyin.json`.
+4. Render the copied candidate comment with the bundled `YinYuan` font.
+
+This conversion never changes Rime composition, key input, schema dictionaries,
+or user-lexicon codes. `键位序列` continues to expose Rime's original ASCII
+comment unchanged.
+
 ## Maintainer checklist
 
-Use this checklist when upstream lexicon or pinyin data changes in
-`C:\dev\Yime-variable-length` and this repo needs an updated standard-pinyin
-display asset.
+Use this checklist when pinyin display data changes in
+`C:\dev\Yime-python-prototype` and this repo needs an updated runtime asset.
 
-1. Rebuild the upstream phase-1 lexicon assets in
-   `C:\dev\Yime-variable-length`.
+1. Rebuild the upstream phase-1 pinyin assets in
+   `C:\dev\Yime-python-prototype`.
 2. Confirm the rebuilt export exists at
    `internal_data\pinyin_source_db\lexicon_exports\pinyin_normalized.json`.
 3. Confirm the runtime copy exists at `yime\pinyin_normalized.json`.
 4. Copy that JSON into this repo as
    `go-backend\input_methods\yime\data\pinyin_normalized.json`.
-5. Keep `go-backend\input_methods\yime\data\yime_pinyin_codes.tsv` in sync
-   with the schema dictionaries that the Go backend ships.
-6. Rebuild the Go backend package with `cd go-backend` then `cmd /c build.bat`.
-7. Verify reverse lookup in the candidate window:
+5. Copy `yime\code_pinyin.json` into this repo as
+   `go-backend\input_methods\yime\data\yime_pua_pinyin.json` when the PUA
+   phonological mapping changes.
+6. Keep only `pinyin_tone` and canonical `full` in
+   `go-backend\input_methods\yime\data\yime_pinyin_codes.tsv`; derived columns
+   must not be restored.
+7. Import system lexicon changes only through
+   `tools\import-yime-full-lexicon.ps1 -Input <full.dict.yaml>` and confirm the
+   generated manifest and three output hashes.
+8. Rebuild the Go backend package with `cd go-backend` then `cmd /c build.bat`.
+9. Verify reverse lookup in the candidate window:
    `隐藏编码`, `标准拼音`, `音元拼音`, `键位序列`.
-8. Sanity-check that `标准拼音` changes comments only and does not trigger a
+10. Sanity-check that both pinyin modes change comments only and do not trigger a
    schema reload or host exit during the language-bar click.
 
 Minimum local verification:
@@ -123,8 +139,8 @@ Minimum local verification:
 - `go-backend\input_methods\yime\yime.go` still loads
   `pinyin_normalized.json` from `sharedDir()`
 - `标准拼音` can resolve both a whole-word code path and a per-rune fallback path
-- `音元拼音` still comes from the current schema dictionary, not from
-  `pinyin_normalized.json`
+- `音元拼音` prefers the actual candidate code, produces PUA characters, and
+  leaves the source ASCII comment unchanged
 
 What not to copy from the prototype repo:
 

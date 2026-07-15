@@ -13,8 +13,9 @@ Yime maps pinyin syllables to a structured keyboard encoding where initials foll
 - **Candidate window** — 5–9 candidates per page, vertical or horizontal layout, one-click toggle
 - **Reverse lookup** — display standard pinyin, Yime codes, or key sequences alongside candidates
 - **User lexicon** — add custom phrases with numeric-tone pinyin; auto-converts to Yime codes
-- **Standalone tools** — settings, diagnostics, reverse-lookup, and lexicon manager run as independent windows (not inside TSF callbacks)
-- **Language bar** — lightweight dispatcher for schema, layout, page size, reverse-lookup, and maintenance commands
+- **Portable user backup** — verified settings, lexicon, blocklist, and Rime sync snapshots with guarded restore
+- **Standalone tools** — settings, diagnostics, reverse-lookup, lexicon manager, system lexicon audit, and blocklist manager as native Win32 executables (not PowerShell in TSF callbacks)
+- **Language bar** — IME list name「音元」; static two-character toggle labels (中西 / 全半 / 横竖) with icon state; dispatcher for schema, layout, page size, and maintenance commands
 
 ## Repository Layout
 
@@ -27,12 +28,8 @@ go-backend/              Go backend: Yime IME logic, Rime integration, standalon
     help/                User-facing help documents
 PIMETextService/         TSF text service host (C++/COM)
 PIMELauncher/            Process launcher and monitor (Rust)
-python/                  Python-side support components
-node/                    Node-side support components
 installer/               NSIS installer assets
 libIME2/                 Upstream IME library
-libchewing/              Upstream chewing library
-McBopomofofoWeb/         Upstream Bopomofo components
 docs/                    Development documentation
 ```
 
@@ -50,9 +47,8 @@ The encoding, lexicon, and experiment-heavy prototype work lives in the separate
 
 - [Visual Studio 2022](https://visualstudio.microsoft.com/vs/) with C++ desktop workload
 - [CMake](https://cmake.org/) 3.0+
-- [Rust](https://rustup.rs/) with `i686-pc-windows-msvc` target
+- [Rust](https://rustup.rs/) with the `stable-i686-pc-windows-msvc` host toolchain
 - [Go](https://go.dev/) 1.21+
-- [Node.js](https://nodejs.org/) 18+
 - [Git](https://git-scm.com/)
 
 ## Build
@@ -62,14 +58,25 @@ The encoding, lexicon, and experiment-heavy prototype work lives in the separate
 ```powershell
 git clone git@github.com:tsaanghwang/Yime.git
 cd Yime
-git submodule update --init
+git submodule update --init libIME2
 ```
 
-### Install Rust target
+The active `libIME2` submodule points at the maintained `tsaanghwang/libIME2` fork.
+If you bump a submodule SHA in Yime, push that commit to the submodule remote
+**before** pushing the main repository, or CI checkout will fail.
+
+### Install the pinned Rust host toolchain
 
 ```powershell
-rustup target add i686-pc-windows-msvc
+rustup toolchain install stable-i686-pc-windows-msvc --profile minimal
 ```
+
+The full i686 host toolchain is required, not only an i686 target added to an
+x64 toolchain. The root CMake build pins this host toolchain so Corrosion does
+not mix x64 host build scripts with i686 MSVC libraries. If `cargo` is not
+found but `%USERPROFILE%\.cargo\bin\cargo.exe` exists, restore that directory
+to the user `PATH` instead of changing the CMake, Corrosion, or Cargo target
+configuration.
 
 ### Build the host (32-bit)
 
@@ -83,6 +90,8 @@ cmd /c build.bat
 cd go-backend
 cmd /c build.bat
 ```
+
+Go tool versions come from `version.txt`, and reproducible flags keep hashes stable across unrelated commits. Release builds should set `YIME_SIGN_CERT_SHA1` to use an RSA code-signing certificate from a trusted provider; VERSIONINFO alone does not guarantee Smart App Control acceptance.
 
 ### Build the 64-bit text service
 
@@ -126,7 +135,7 @@ regsvr32 /u "C:\Program Files (x86)\YIME\x64\PIMETextService.dll"
 - [ ] Clone, initialize submodules, confirm toolchain installed
 - [ ] Run `cmd /c build.bat` from repository root
 - [ ] Run `cmd /c build.bat` from `go-backend`
-- [ ] If Rime data changed, run `tools\deploy-yime-rime-data.ps1` (see [docs/YIME_RIME_INTEGRATION.md](docs/YIME_RIME_INTEGRATION.md))
+- [ ] If the fixed-length Rime lexicon changed, run `tools\deploy-yime-rime-data.ps1 -Input <full.dict.yaml>` (see [docs/YIME_RIME_INTEGRATION.md](docs/YIME_RIME_INTEGRATION.md))
 - [ ] Run `.\Reinstall-PIME-Test.cmd` from an elevated prompt
 - [ ] Switch to Yime in a text application and verify: activation, candidates, settings, reverse lookup
 - [ ] Run `go test ./input_methods/yime/...` from `go-backend` before shipping backend changes
@@ -169,11 +178,23 @@ Check logs at `%LOCALAPPDATA%\PIME\Logs\go_backend.log`.
 
 | Document | Description |
 |----------|-------------|
+| [Project Assessment](docs/YIME_PROJECT_ASSESSMENT.md) | Consolidated review findings, completed fixes, verification evidence, and remaining risks |
 | [Architecture](docs/YIME_ARCHITECTURE.md) | System architecture, key mechanisms, data files |
 | [Usability Assessment](docs/YIME_USABILITY_ASSESSMENT.md) | Current usability issues and priorities |
 | [Development Roadmap](docs/YIME_DEVELOPMENT_ROADMAP.md) | Phased roadmap, fix workflows, AGENTS.md constraints |
 | [Rime Integration](docs/YIME_RIME_INTEGRATION.md) | Rime data flow, pinyin_normalized.json chain, maintainer checklist |
 | [Tooling Strategy](docs/YIME_TOOLING_STRATEGY.md) | Standalone tools vs. language-bar UI design |
+| [Tool Development Guide](docs/YIME_TOOL_DEVELOPMENT_GUIDE.md) | How to add a new standalone tool |
+| [Native UI Guidelines](docs/YIME_NATIVE_UI_GUIDELINES.md) | Win32 layout, dialogs, wording, focus, and UI tests |
+| [Testing Guide](docs/YIME_TESTING_GUIDE.md) | CI layers, real Rime tests, and installed-runtime verification |
+| [Release and Signing](docs/YIME_RELEASE_AND_SIGNING.md) | Reproducible builds, Authenticode, packaging, and rollback |
+| [Data Format Reference](docs/YIME_DATA_FORMAT_REFERENCE.md) | TSV/JSON/YAML data file format specifications |
+| [Single-Source Lexicon Refactor](docs/project/SINGLE_SOURCE_LEXICON_REFACTOR.md) | Why and how three maintained code tables became one fixed-length source |
+| [User Install Guide](docs/YIME_USER_INSTALL_GUIDE.md) | Installation and usage instructions for end users |
+| [Troubleshooting](docs/YIME_TROUBLESHOOTING.md) | Common issues and solutions |
+| [Changelog](CHANGELOG.md) | Version change history |
+| [Contributing](CONTRIBUTING.md) | PR process, code style, commit format |
+| [Security Policy](SECURITY.md) | Private vulnerability reporting and supported security boundaries |
 | [AGENTS.md](AGENTS.md) | AI-assisted development constraints |
 
 ## Issues

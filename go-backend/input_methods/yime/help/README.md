@@ -12,15 +12,22 @@ Rime frontend.
 
 ## Menus
 
-- Tool hub: opens the standalone Yime tool window. This is the preferred place
-  to gather heavy UI surfaces so the TSF/PIME language bar only needs to
-  dispatch lightweight commands.
+- Tool hub: opens `tool-hub.exe`, the standalone Yime tool window. It contains
+  lexicon management, reverse lookup, system-lexicon audit, blocklist,
+  settings, diagnostics, data directories, help, and feedback guidance.
+- Language bar quick buttons:
+  - **用户词库** → `lexicon-manager.exe`
+  - **反查编码** → `reverse-lookup.exe`
+  - **工具** → `tool-hub.exe`
+  - **中西 / 全半 / 横竖** — fixed two-character labels; state shown by icons
 - Settings: Yime variable-length, fixed-length, and shorthand schemas,
-  Chinese/English mode, shape, punctuation, `重新部署 Rime`, `同步 Rime 用户数据`,
-  and data/log folders. `重新部署 Rime` is the full runtime redeploy path for the
-  currently installed Rime data; it is not a "re-import system lexicon" button.
-  `同步 Rime 用户数据` is Rime's native user-data sync action and does not include
-  Yime-only standalone state such as `yime_settings_state.json`. The shorthand
+  Chinese/English mode, shape, punctuation, and data/log folders. Guarded Rime
+  maintenance commands live in the `数据维护` submenu. `重新部署…`
+  requires confirmation, builds with the external deployer, validates the
+  current schema, and reloads only the session at a safe request boundary; it
+  is not a "re-import system lexicon" button. `同步数据…` also requires
+  confirmation and uses Rime's native sync action. It does not include Yime-only
+  standalone state such as `yime_settings_state.json`. The shorthand
   entry is enabled when the shorthand schema is bundled with the installed
   Rime data.
 - Reverse code lookup: choose how reverse lookup codes are displayed for Hanzi.
@@ -38,27 +45,23 @@ Rime frontend.
   editable source file is `%APPDATA%\PIME\Rime\yime_user_phrases.txt`, using the format
   `phrase<TAB>numeric-tone-pinyin<TAB>weight`; applying the lexicon generates
   Rime's `%APPDATA%\PIME\Rime\custom_phrase.txt` table-code file.
-- Help: view this help, view trial feedback guidance, and copy a trial feedback
-  template.
+- Settings tool: applies schema and candidate-display settings. It can also
+  create a verified portable backup under `Documents\YIME 备份` and restore the
+  latest manual backup after first creating a safety snapshot.
+- Help: view this help or the trial-feedback guidance.
 
 ## Standalone Tools Direction
 
-Yime now treats user-facing tools as standalone windows or documents whenever
-that reduces pressure on the language-bar callback path.
+Yime treats user-facing tools as standalone Win32 executables shipped next to
+`server.exe`, not as PowerShell scripts inside the TSF callback path.
 
-- Lexicon management already runs as an external dialog.
-- Settings-facing material, diagnostics, logs, and help should prefer the same
-  pattern over adding more complex UI inside the TSF callback chain.
-- The `C:\dev\Yime-variable-length` prototype is the reference proof that this
-  tool-oriented workflow is practical for Yime rather than an afterthought.
-- The current framework is manifest-driven: the Go backend defines the tool
-  entries, and the external tool-hub window renders and dispatches them.
-- The current tool hub already includes standalone settings and diagnostics
-  shells, even though their detailed workflows are still intentionally light.
-- Repository-side debugging also has a local helper
-  `go-backend\run_admin_yime_tests.cmd` for repeatable elevated test attempts.
-  It is for developer troubleshooting only and is not part of the installed
-  runtime surface.
+- Lexicon management, reverse lookup, settings, diagnostics, system lexicon
+  audit, and user blocklist all run as native GUI apps. Result lists use native
+  ListView tables with headers, selection state, and scrollbars.
+- The tool hub (`tool-hub.exe`) renders a manifest built in Go
+  (`yime_tool_catalog.go`) and launches each tool via `run_executable`.
+- Settings and lexicon deployment run outside the language-bar callback and
+  notify active YIME sessions after their on-disk work completes.
 
 ## Reverse Code Lookup
 
@@ -80,3 +83,4 @@ and typing tone-marked pinyin is not.
 - PIME shared Rime data: installed under
   `PIME\go-backend\input_methods\yime\data`
 - PIME Go backend logs: `%LOCALAPPDATA%\PIME\Logs`
+- Portable user backups: `%USERPROFILE%\Documents\YIME 备份`

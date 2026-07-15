@@ -11,10 +11,8 @@ go-backend/
 │   ├── server.go       # 服务器实现
 │   ├── service.go      # 文本服务接口
 │   └── service_manager.go  # 服务管理器
-├── input_methods/            # 示例实现
-│   └── simple_ime/     # 简单输入法示例
-│       ├── main.go     # 入口文件
-│       └── ime.go      # 输入法实现
+├── input_methods/
+│   └── yime/           # 唯一产品输入法；Rime 后端与原生工具
 ├── go.mod              # Go 模块定义
 └── README.md           # 说明文档
 ```
@@ -57,63 +55,11 @@ build/
 
 ### 3. 注册输入法
 
-确保 `C:\Program Files (x86)\YIME\go-backend\input_methods\*\ime.json` 存在。比如：
+产品包只注册 `input_methods/yime/ime.json`。目录扫描不会为未知名称提供默认输入法实现；新增产品输入法必须显式实现并注册工厂，不能回退到测试或演示服务。
 
-```json
-{
-  "name": "GoSimpleIME",
-  "icon": "icon.ico",
-  "backend": "go-backend"
-}
-```
+## 测试输入法
 
-## 开发自定义输入法
-
-### 1. 实现 TextService 接口
-
-```go
-type MyIME struct {
-    *pime.TextServiceBase
-    // 自定义字段
-}
-
-func NewMyIME(client *pime.Client) *MyIME {
-    return &MyIME{
-        TextServiceBase: pime.NewTextServiceBase(client),
-    }
-}
-
-func (ime *MyIME) HandleRequest(req *pime.Request) *pime.Response {
-    resp := pime.NewResponse(req.SeqNum, true)
-    
-    switch req.Method {
-    case "filterKeyDown":
-        // 处理按键
-        return ime.handleKeyDown(req, resp)
-    // ... 其他方法
-    }
-    
-    return resp
-}
-```
-
-### 2. 注册到服务管理器
-
-```go
-func main() {
-    mgr := pime.NewServiceManager()
-    
-    // 注册输入法
-    mgr.Register("my_ime", func(clientID string) pime.TextService {
-        return NewMyIME(&pime.Client{ID: clientID})
-    })
-    
-    // 运行服务
-    if err := mgr.Run(); err != nil {
-        log.Fatal(err)
-    }
-}
-```
+服务器协议集成测试使用 `server_integration_test.go` 内的测试专用假服务。该 fixture 不进入生产二进制，也不在安装包中生成输入法目录。
 
 ## 协议说明
 

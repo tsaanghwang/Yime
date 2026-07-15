@@ -1,24 +1,77 @@
 {
-  "version": "0.2.0",
-  "configurations": [
-    {
-      "name": "PIME Python backend",
-      "type": "debugpy",
-      "request": "launch",
-      "program": "${workspaceFolder}/python/server.py",
-      "console": "integratedTerminal",
-      "cwd": "${workspaceFolder}"
-    },
-    {
-      "name": "PIME Node backend",
-      "type": "node",
-      "request": "launch",
-      "program": "${workspaceFolder}/node/server.js",
-      "cwd": "${workspaceFolder}",
-      "console": "integratedTerminal",
-      "skipFiles": [
-        "<node_internals>/**"
-      ]
-    }
-  ]
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "PIME Python backend",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/python/server.py",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "name": "PIME Node backend",
+            "type": "node",
+            "request": "launch",
+            "program": "${workspaceFolder}/node/server.js",
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "skipFiles": ["<node_internals>/**"]
+        },
+        {
+            // 直接启动 gtest 风格的可执行测试，用于调试 RPC/菜单 JSON 回归用例。
+            "name": "Debug PMERpcResponseTests (x64 Release)",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build64/PIMETextService/Release/PIMERpcResponseTests.exe",
+            "args": [],
+            "cwd": "${workspaceFolder}/build64/PIMETextService/Release",
+            "console": "integratedTerminal",
+            "symbolSearchPath": "${workspaceFolder}/build64/PIMETextService/Release;${workspaceFolder}/build/PIMETextService/Release"
+        },
+        {
+            // 以调试器启动一个常驻 Win32 GUI 文本宿主：调试器从一开始就附加在它身上。
+            // 在宿主文本框里切到「音元」输入法并按键后，已注册的 PIMETextService.dll 会被加载，断点命中。
+            // 前置：已用 Reinstall-PIME-Test.cmd 安装与 build64 同位的开发包。
+            // 注：本机 C:\Windows\System32\notepad.exe 已实测为重定向存根——启动后转交 Store 版记事本
+            // (C:\Program Files\WindowsApps\Microsoft.WindowsNotepad_...\Notepad.exe) 并自身秒退(exit 0)，
+            // vsdbg 附到存根会随之结束、断点不可能命中；故改用 charmap.exe(字符映射表，含"搜索"文本框，常驻)。
+            "name": "Debug IME in charmap (x64)",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "C:\\Windows\\System32\\charmap.exe",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "stopAtEntry": false,
+            "symbolSearchPath": "${workspaceFolder}/build64/PIMETextService/Release;${workspaceFolder}/build/PIMETextService/Release"
+        },
+        {
+            // 附加到已加载 PIMETextService.dll 的宿主进程
+            // （ctfmon.exe / TextInputHost.exe / 记事本等）。先在目标应用里激活音元输入法再附加。
+            // 注：Cursor 里 ${command:pickProcess} 因 cpptools pickNativeProcess 与 Cursor 不兼容会失败
+            // （TypeError "Process not selected"）；需要附加请在 VS Code 里跑本配置。
+            "name": "Attach to PIMETextService host (TSF)",
+            "type": "cppvsdbg",
+            "request": "attach",
+            "processId": "${command:pickProcess}",
+            "symbolSearchPath": "${workspaceFolder}/build64/PIMETextService/Release;${workspaceFolder}/build/PIMETextService/Release"
+        },
+        {
+            // 推荐的附加流程：启动本配置会先自动打开字符映射表（preLaunchTask），
+            // 然后弹出进程选择框——在列表里筛选并选择刚打开的 charmap.exe 即可附加。
+            // 附加后在"搜索"框里切换到「音元」输入法，PIMETextService.dll 便会载入并命中断点。
+            // 前置条件：已用 Reinstall-PIME-Test.cmd 安装与 build64 同位的开发包（x64 DLL 已核对一致）。
+            // 注1：不用 notepad——本机 notepad.exe 是重定向存根，秒退、窗口弹不出来。
+            // 注2：Cursor 里 cpptools 的 pickNativeProcess(${command:pickProcess}) 与 Cursor QuickPick API
+            // 不兼容，会抛 TypeError "Process not selected"，导致本配置在 Cursor 里 attach 失败。
+            // 需要附加请在 VS Code 里跑本配置（VS Code 的 cpptools pickProcess 正常）。
+            "name": "Attach to PIMETextService in charmap (x64)",
+            "type": "cppvsdbg",
+            "request": "attach",
+            "processId": "${command:pickProcess}",
+            "preLaunchTask": "PIME: open charmap for IME debug",
+            "symbolSearchPath": "${workspaceFolder}/build64/PIMETextService/Release;${workspaceFolder}/build/PIMETextService/Release"
+        }
+    ]
 }

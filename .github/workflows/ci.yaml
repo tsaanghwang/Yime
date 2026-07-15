@@ -3,6 +3,7 @@ name: Build
 on:
   push:
     branches: [yime-stable]
+    tags: ['v*']
   pull_request:
     branches: [yime-stable]
 
@@ -11,8 +12,9 @@ jobs:
     runs-on: windows-2022
     steps:
       - uses: actions/checkout@v6
-        with:
-          submodules: 'true'
+      - name: Checkout active TSF submodule
+        shell: pwsh
+        run: git submodule update --init --depth 1 libIME2
       - name: Set up MSVC developer environment
         shell: pwsh
         run: |
@@ -42,18 +44,33 @@ jobs:
               "$($matches[1])=$($matches[2])" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
             }
           }
-      - name: Use Node.js 21.x
-        uses: actions/setup-node@v6
+      - name: Use Go 1.26.4
+        uses: actions/setup-go@v6
         with:
-          node-version: 21.x
+          go-version: '1.26.4'
+          cache-dependency-path: go-backend/go.sum
+      - name: Install MSYS2 UCRT64 GCC for Go race detector
+        id: msys2
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          update: true
+          install: mingw-w64-ucrt-x86_64-gcc
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: i686-pc-windows-msvc
+      # The root CMakeLists.txt pins Rust_TOOLCHAIN=stable-i686-pc-windows-msvc for
+      # the Win32 PIMELauncher build (host == target avoids Corrosion leaking i686
+      # libs into host-side build-scripts). That HOST toolchain is separate from the
+      # i686 TARGET above and must be installed explicitly or CMake configure fails.
+      - name: Install i686 host toolchain for Win32 PIMELauncher
+        run: rustup toolchain install stable-i686-pc-windows-msvc --profile minimal
       - name: Run Rust tests
         run: |
           cd PIMELauncher
-          cargo test --verbose
+          cargo fmt --check
+          rustup run stable-i686-pc-windows-msvc cargo test --verbose
       - name: Use Install NSIS
         uses: repolevedavaj/install-nsis@v1.2.0
         with:
@@ -73,6 +90,10 @@ jobs:
           cmake . -Bbuild64 -G "Visual Studio 17 2022" -A x64 -DCMAKE_POLICY_VERSION_MINIMUM=3.5
           cmake --build build64 --config Release --target PIMETextService
 
+      - name: Run native C++ regression tests
+        shell: pwsh
+        run: ctest --test-dir build -C Release --output-on-failure
+
       - name: Fetch Rime shared data
         shell: pwsh
         run: |
@@ -91,25 +112,83 @@ jobs:
           cmd /C build.bat
           popd
 
-      - name: Build McBopomofo
+      - name: Run Go regression tests
         shell: pwsh
         run: |
-          pushd McBopomofoWeb
-          npm install
-          npm run build:pime
-          popd
-          if (Test-Path "node\input_methods\McBopomofo") { Remove-Item -Recurse -Force "node\input_methods\McBopomofo" }
-          New-Item -ItemType Directory -Force -Path "node\input_methods\McBopomofo" | Out-Null
-          Copy-Item -Recurse -Force "McBopomofoWeb\output\pime\*" "node\input_methods\McBopomofo\"
+          Set-Location go-backend
+          go vet ./...
+          go test . ./cmd/lexicon-manager ./cmd/reverse-lookup-tool ./cmd/settings-tool ./input_methods/yime/reverselookup ./input_methods/yime/runtimechange ./input_methods/yime/settings ./input_methods/yime/systemlexicon ./input_methods/yime/toolhub ./input_methods/yime/userblocklist ./input_methods/yime/userlexicon
+          go test ./input_methods/yime -timeout 60s
+          $requiredYimeTests = @(
+            'TestNativeBackendKeepsRimeOwnedCandidatePaging'
+            'TestLanguageBarToggleButtonsUseStableTwoCharacterLabels'
+            'TestDeployCommandQueuesConfirmedExternalBuildWithoutNativeRedeploy'
+            'TestApplyUserLexiconWritesAllThreeModes'
+            'TestApplyUserLexiconRunsExternalBuildAndSchedulesReload'
+            'TestUserLexiconManagerLaunchesNativeExecutable'
+            'TestToolHubLaunchesNativeExecutable'
+            'TestReverseLookupToolLaunchesNativeExecutable'
+            'TestSettingsToolLaunchesNativeExecutable'
+            'TestDiagnosticsToolLaunchesNativeExecutable'
+          )
+          $listedYimeTests = @(go test ./input_methods/yime -list '^Test')
+          if ($LASTEXITCODE -ne 0) { throw 'Could not enumerate Yime regression tests.' }
+          foreach ($testName in $requiredYimeTests) {
+            if ($listedYimeTests -notcontains $testName) {
+              throw "Required Yime regression test is missing: $testName"
+            }
+          }
+          $requiredPattern = '^(' + (($requiredYimeTests | ForEach-Object { [Regex]::Escape($_) }) -join '|') + ')$'
+          go test ./input_methods/yime -run $requiredPattern -count=1
+          if ($LASTEXITCODE -ne 0) { throw 'Required Yime regression tests failed.' }
+
+      - name: Run Go race detector
+        shell: pwsh
+        run: |
+          $gcc = Join-Path '${{ steps.msys2.outputs.msys2-location }}' 'ucrt64\bin\gcc.exe'
+          .\tools\test-go-race.ps1 -GccPath $gcc -TimeoutSeconds 300
 
       - name: Verify native build outputs
         shell: pwsh
         run: |
+          .\tools\test-build-guards.ps1
           Write-Host "=== Listing all PIMETextService.dll ==="
           Get-ChildItem -Recurse -Filter "PIMETextService.dll" | ForEach-Object { $_.FullName }
           Write-Host "=== Listing build directory ==="
           Get-ChildItem -Recurse -Path "build" -Filter "*.dll" | ForEach-Object { $_.FullName }
           Get-ChildItem -Recurse -Path "build" -Filter "*.exe" | ForEach-Object { $_.FullName }
+
+      - name: Import release signing certificate
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: pwsh
+        env:
+          YIME_SIGN_CERT_BASE64: ${{ secrets.YIME_SIGN_CERT_BASE64 }}
+          YIME_SIGN_CERT_PASSWORD: ${{ secrets.YIME_SIGN_CERT_PASSWORD }}
+        run: |
+          if ([string]::IsNullOrWhiteSpace($env:YIME_SIGN_CERT_BASE64)) {
+            throw 'Tagged releases require YIME_SIGN_CERT_BASE64.'
+          }
+          $pfxPath = Join-Path $env:RUNNER_TEMP 'yime-release.pfx'
+          [IO.File]::WriteAllBytes($pfxPath, [Convert]::FromBase64String($env:YIME_SIGN_CERT_BASE64))
+          try {
+            $password = ConvertTo-SecureString $env:YIME_SIGN_CERT_PASSWORD -AsPlainText -Force
+            $certificate = @(Import-PfxCertificate -FilePath $pfxPath -CertStoreLocation Cert:\CurrentUser\My -Password $password) |
+              Where-Object HasPrivateKey | Select-Object -First 1
+          } finally {
+            Remove-Item -LiteralPath $pfxPath -Force -ErrorAction SilentlyContinue
+          }
+          if (-not $certificate) { throw 'The release certificate could not be imported.' }
+          $signTool = Get-ChildItem "${env:ProgramFiles(x86)}\Windows Kits\10\bin\*\x64\signtool.exe" |
+            Sort-Object FullName -Descending | Select-Object -First 1
+          if (-not $signTool) { throw 'signtool.exe was not found in the Windows SDK.' }
+          "YIME_SIGN_CERT_SHA1=$($certificate.Thumbprint)" | Out-File $env:GITHUB_ENV -Encoding utf8 -Append
+          "YIME_SIGNTOOL_EXE=$($signTool.FullName)" | Out-File $env:GITHUB_ENV -Encoding utf8 -Append
+          "YIME_RELEASE_SIGNING_REQUIRED=1" | Out-File $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Sign release payload
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: pwsh
+        run: .\tools\sign-release.ps1 -RequireComplete
 
       - name: Build the installer
         shell: pwsh
@@ -117,7 +196,13 @@ jobs:
           Set-Location installer
           & "C:\Program Files (x86)\NSIS\Bin\makensis.exe" "installer.nsi"
 
+      - name: Verify tagged release signatures
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: pwsh
+        run: .\tools\verify-release-signatures.ps1 -IncludeInstaller
+
       - uses: actions/upload-artifact@v6
         with:
-          name: Installer
-          path: installer/*.exe
+          name: ${{ startsWith(github.ref, 'refs/tags/v') && 'YIME-signed-installer' || 'YIME-unsigned-test-installer' }}
+          path: installer/YIME-*-setup.exe
+          if-no-files-found: error

@@ -9,7 +9,6 @@ type toolActionType string
 
 const (
 	toolActionOpenPath      toolActionType = "open_path"
-	toolActionRunPowerShell toolActionType = "run_powershell"
 	toolActionRunExecutable toolActionType = "run_executable"
 )
 
@@ -30,20 +29,25 @@ type toolHubManifest struct {
 	Tools   []toolHubEntry `json:"tools"`
 }
 
-func buildToolHubManifest(sharedDir, userDir, helpDir, logDir, lexiconManagerScript, reverseLookupToolScript, settingsToolScript, diagnosticsToolScript, mode string) toolHubManifest {
+// buildToolHubManifest assembles the native tool hub menu.
+//
+// Summary and Note are intentionally omitted from the UI. Developer-facing hints
+// are kept here as comments only:
+//   - The hub launches standalone Win32 tools instead of running inside language-bar callbacks.
+//   - Opening a subtool keeps the hub window open for quick re-selection.
+func buildToolHubManifest(sharedDir, userDir, helpDir, logDir, lexiconManagerPath, reverseLookupToolPath, systemLexiconAuditPath, blocklistManagerPath, settingsToolPath, diagnosticsToolPath, mode string) toolHubManifest {
 
 	return toolHubManifest{
 		Title:   "Yime 工具箱",
-		Summary: "独立工具界面，不影响语言栏轻量回调路径。",
-		Note:    "扩展工具时请修改此清单，而非扩展 TSF 回调路径。",
+		Summary: "",
+		Note:    "",
 		Tools: []toolHubEntry{
 			{
-				ID:               "lexicon-manager",
-				Label:            "用户词库管理",
-				Description:      "打开词库管理器，添加、删除、导入词条。",
-				ActionType:       toolActionRunPowerShell,
-				TargetPath:       lexiconManagerScript,
-				CloseAfterLaunch: true,
+				ID:          "lexicon-manager",
+				Label:       "词库管理",
+				Description: "管理个人词条，支持增删改查、导入导出、撤销和应用。",
+				ActionType:  toolActionRunExecutable,
+				TargetPath:  lexiconManagerPath,
 				Arguments: []string{
 					"-SharedDir", sharedDir,
 					"-UserDir", userDir,
@@ -51,12 +55,11 @@ func buildToolHubManifest(sharedDir, userDir, helpDir, logDir, lexiconManagerScr
 				},
 			},
 			{
-				ID:               "reverse-lookup-tool",
-				Label:            "反查编码",
-				Description:      "打开反查编码工具，查询字词的拼音和音元编码。",
-				ActionType:       toolActionRunPowerShell,
-				TargetPath:       reverseLookupToolScript,
-				CloseAfterLaunch: true,
+				ID:          "reverse-lookup-tool",
+				Label:       "反查编码",
+				Description: "打开反查编码工具，查询字词的拼音和音元编码。",
+				ActionType:  toolActionRunExecutable,
+				TargetPath:  reverseLookupToolPath,
 				Arguments: []string{
 					"-SharedDir", sharedDir,
 					"-UserDir", userDir,
@@ -64,12 +67,46 @@ func buildToolHubManifest(sharedDir, userDir, helpDir, logDir, lexiconManagerScr
 				},
 			},
 			{
-				ID:               "settings-tool",
-				Label:            "设置工具",
-				Description:      "打开设置工具，修改方案、候选项数等配置。",
-				ActionType:       toolActionRunPowerShell,
-				TargetPath:       settingsToolScript,
-				CloseAfterLaunch: true,
+				ID:          "system-lexicon-audit",
+				Label:       "系统词库审查",
+				Description: "只读扫描已安装系统词库，列出疑似不合理词条并导出报告。",
+				ActionType:  toolActionRunExecutable,
+				TargetPath:  systemLexiconAuditPath,
+				Arguments: []string{
+					"-SharedDir", sharedDir,
+					"-UserDir", userDir,
+					"-Mode", mode,
+				},
+			},
+			{
+				ID:          "user-blocklist-manager",
+				Label:       "用户屏蔽词表",
+				Description: "管理个人屏蔽词表，支持多选删除、导入导出和一步撤销。",
+				ActionType:  toolActionRunExecutable,
+				TargetPath:  blocklistManagerPath,
+				Arguments: []string{
+					"-UserDir", userDir,
+				},
+			},
+			{
+				ID:          "settings-tool",
+				Label:       "设置工具",
+				Description: "修改方案和候选显示，应用设置，并备份或恢复用户数据。",
+				ActionType:  toolActionRunExecutable,
+				TargetPath:  settingsToolPath,
+				Arguments: []string{
+					"-UserDir", userDir,
+					"-SharedDir", sharedDir,
+					"-HelpDir", helpDir,
+					"-LogDir", logDir,
+				},
+			},
+			{
+				ID:          "diagnostics-tool",
+				Label:       "诊断工具",
+				Description: "收集路径、进程和日志状态，并导出便于反馈的诊断报告。",
+				ActionType:  toolActionRunExecutable,
+				TargetPath:  diagnosticsToolPath,
 				Arguments: []string{
 					"-UserDir", userDir,
 					"-SharedDir", sharedDir,
@@ -79,7 +116,7 @@ func buildToolHubManifest(sharedDir, userDir, helpDir, logDir, lexiconManagerScr
 			},
 			{
 				ID:          "settings-data",
-				Label:       "设置与用户目录",
+				Label:       "用户数据目录",
 				Description: "打开 Yime 用户数据目录。",
 				ActionType:  toolActionOpenPath,
 				TargetPath:  userDir,
@@ -92,41 +129,6 @@ func buildToolHubManifest(sharedDir, userDir, helpDir, logDir, lexiconManagerScr
 				TargetPath:  sharedDir,
 			},
 			{
-				ID:               "diagnostics-tool",
-				Label:            "诊断工具",
-				Description:      "打开诊断工具，收集系统信息和运行状态。",
-				ActionType:       toolActionRunPowerShell,
-				TargetPath:       diagnosticsToolScript,
-				CloseAfterLaunch: true,
-				Arguments: []string{
-					"-UserDir", userDir,
-					"-SharedDir", sharedDir,
-					"-HelpDir", helpDir,
-					"-LogDir", logDir,
-				},
-			},
-			{
-				ID:          "diagnostics-guide",
-				Label:       "诊断说明",
-				Description: "打开诊断说明文档。",
-				ActionType:  toolActionOpenPath,
-				TargetPath:  filepath.Join(helpDir, "diagnostics.html"),
-			},
-			{
-				ID:          "diagnostics-logs",
-				Label:       "诊断日志目录",
-				Description: "打开 PIME 日志目录。",
-				ActionType:  toolActionOpenPath,
-				TargetPath:  logDir,
-			},
-			{
-				ID:          "settings-guide",
-				Label:       "设置说明",
-				Description: "打开设置与数据说明文档。",
-				ActionType:  toolActionOpenPath,
-				TargetPath:  filepath.Join(helpDir, "settings-and-data.html"),
-			},
-			{
 				ID:          "help-readme",
 				Label:       "查看帮助",
 				Description: "打开主帮助文档。",
@@ -135,8 +137,8 @@ func buildToolHubManifest(sharedDir, userDir, helpDir, logDir, lexiconManagerScr
 			},
 			{
 				ID:          "help-trial-feedback",
-				Label:       "试用反馈说明",
-				Description: "打开试用反馈说明文档。",
+				Label:       "反馈说明",
+				Description: "打开反馈说明文档。",
 				ActionType:  toolActionOpenPath,
 				TargetPath:  filepath.Join(helpDir, "trial-feedback.html"),
 			},

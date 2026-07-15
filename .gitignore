@@ -9,8 +9,13 @@ tools/downloads/
 node/input_methods/McBopomofo
 go-backend/input_methods/yime/data/**
 !go-backend/input_methods/yime/data/pinyin_normalized.json
+!go-backend/input_methods/yime/data/yime_pua_pinyin.json
+!go-backend/input_methods/yime/data/yime_lexicon_manifest.json
+!go-backend/input_methods/yime/data/fonts/
+!go-backend/input_methods/yime/data/fonts/YinYuan-Regular.ttf
 go-backend/build/
 go-backend/.gotmp/
+go-backend/*.exe
 installer/*.exe
 .tmp/
 PIMELauncher/target/

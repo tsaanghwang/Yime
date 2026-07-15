@@ -24,6 +24,7 @@
 #include <libIME2/src/Utils.h>
 #include <libIME2/src/LangBarButton.h>
 #include "PIMEImeModule.h"
+#include "PIMEUiPolicy.h"
 #include "resource.h"
 #include <Shellapi.h>
 #include <sys/stat.h>
@@ -31,6 +32,30 @@
 using namespace std;
 
 namespace PIME {
+
+namespace {
+
+void movePopupNearSelection(HWND hwnd, const RECT& selection) {
+	if (!hwnd) {
+		return;
+	}
+	RECT windowRect = { 0 };
+	::GetWindowRect(hwnd, &windowRect);
+	SIZE size = {
+		windowRect.right > windowRect.left ? windowRect.right - windowRect.left : 0,
+		windowRect.bottom > windowRect.top ? windowRect.bottom - windowRect.top : 0
+	};
+	MONITORINFO monitorInfo = { sizeof(monitorInfo) };
+	HMONITOR monitor = ::MonitorFromRect(&selection, MONITOR_DEFAULTTONEAREST);
+	if (!monitor || !::GetMonitorInfoW(monitor, &monitorInfo)) {
+		return;
+	}
+	const POINT point = popupAnchorInWorkArea(selection, size, monitorInfo.rcWork);
+	::SetWindowPos(hwnd, HWND_TOPMOST, point.x, point.y, 0, 0,
+		SWP_NOACTIVATE | SWP_NOSIZE);
+}
+
+} // namespace
 
 TextService::TextService(ImeModule* module):
 	Ime::TextService(module),
@@ -45,13 +70,13 @@ TextService::TextService(ImeModule* module):
 	candPerRow_(10),
 	selKeys_(L"1234567890"),
 	candUseCursor_(true),
-	candFontSize_(12) {
+	candFontSize_(kDefaultCandidateFontSize) {
 
 	// font for candidate and mesasge windows
 	font_ = (HFONT)GetStockObject(DEFAULT_GUI_FONT);
 	LOGFONT lf;
 	GetObject(font_, sizeof(lf), &lf);
-	lf.lfHeight = candFontHeight(); // FIXME: make this configurable
+	lf.lfHeight = candFontHeight();
 	lf.lfWeight = FW_NORMAL;
 	font_ = CreateFontIndirect(&lf);
 }
@@ -68,8 +93,7 @@ TextService::~TextService(void) {
 		hideCandidates();
 	}
 
-	if(messageWindow_)
-		hideMessage();
+	destroyMessageWindow();
 
 	if(font_)
 		::DeleteObject(font_);
@@ -252,14 +276,14 @@ void TextService::createCandidateWindow(Ime::EditSession* session) {
 		candidateWindow_->Release();  // decrease ref count caused by new
 
 		candidateWindow_->setFont(font_);
+		BOOL hostRequestsOwnedWindow = TRUE;
 		auto elementMgr = Ime::ComPtr<ITfUIElementMgr>::queryFrom(threadMgr());
 		if (elementMgr) {
-			BOOL pbShow = false;
-			if (validCandidateListElementId_ =
-				(elementMgr->BeginUIElement(candidateWindow_, &pbShow, &candidateListElementId_) == S_OK)) {
-				candidateWindow_->Show(pbShow);
-			}
+			validCandidateListElementId_ =
+				(elementMgr->BeginUIElement(candidateWindow_, &hostRequestsOwnedWindow, &candidateListElementId_) == S_OK);
 		}
+		candidateWindow_->Show(shouldShowOwnedCandidateWindow(
+			validCandidateListElementId_, hostRequestsOwnedWindow));
 	}
 }
 
@@ -267,7 +291,8 @@ void TextService::updateCandidates(Ime::EditSession* session) {
 	createCandidateWindow(session);
 	candidateWindow_->clear();
 
-	// FIXME: is this the right place to do it?
+	// Apply deferred font changes immediately before measuring candidate rows,
+	// so candidate and message window sizes use the same current font.
 	if (updateFont_) {
 		// font for candidate and mesasge windows
 		LOGFONT lf;
@@ -278,8 +303,8 @@ void TextService::updateCandidates(Ime::EditSession* session) {
 			wcsncpy(lf.lfFaceName, candFontName_.c_str(), 31);
 		}
 		font_ = CreateFontIndirect(&lf); // create new font
-		// if (messageWindow_)
-		//	messageWindow_->setFont(font_);
+		if (messageWindow_)
+			messageWindow_->setFont(font_);
 		if (candidateWindow_)
 			candidateWindow_->setFont(font_);
 		updateFont_ = false;
@@ -300,8 +325,7 @@ void TextService::updateCandidates(Ime::EditSession* session) {
 	RECT textRect;
 	// get the position of composition area from TSF
 	if (selectionRect(session, &textRect)) {
-		// FIXME: where should we put the candidate window?
-		candidateWindow_->move(textRect.left, textRect.bottom);
+		movePopupNearSelection(candidateWindow_->hwnd(), textRect);
 	}
 
 	if (validCandidateListElementId_) {
@@ -317,8 +341,7 @@ void TextService::updateCandidatesWindow(Ime::EditSession* session) {
         RECT textRect;
         // get the position of composition area from TSF
         if (selectionRect(session, &textRect)) {
-            // FIXME: where should we put the candidate window?
-            candidateWindow_->move(textRect.left, textRect.bottom);
+			movePopupNearSelection(candidateWindow_->hwnd(), textRect);
         }
     }
 }
@@ -334,17 +357,9 @@ void TextService::refreshCandidates() {
 
 // show candidate list window
 void TextService::showCandidates(Ime::EditSession* session) {
-	// TODO: implement ITfCandidateListUIElement interface to support UI less mode
-	// Great reference: http://msdn.microsoft.com/en-us/library/windows/desktop/aa966970(v=vs.85).aspx
-
-	// NOTE: in Windows 8 store apps, candidate window should be owned by
-	// composition window, which can be returned by TextService::compositionWindow().
-	// Otherwise, the candidate window cannot be shown.
-	// Ime::CandidateWindow handles this internally. If you create your own
-	// candidate window, you need to call TextService::isImmersive() to check
-	// if we're in a Windows store app. If isImmersive() returns true,
-	// The candidate window created should be a child window of the composition window.
-	// Please see Ime::CandidateWindow::CandidateWindow() for an example.
+	// CandidateWindow implements ITfCandidateListUIElement. BeginUIElement decides
+	// whether this process draws the window; UI-less hosts can render the list from
+	// the COM element while the owned window remains hidden.
 	createCandidateWindow(session);
 	showingCandidates_ = true;
 }
@@ -367,22 +382,31 @@ void TextService::hideCandidates() {
 
 // message window
 void TextService::showMessage(Ime::EditSession* session, std::wstring message, int duration) {
-	// remove previous message if there's any
+	// Reuse the existing message window while the TSF composition owner stays the
+	// same. A focus change gets a new owner window to avoid attaching UI to a stale
+	// application window.
 	hideMessage();
-	// FIXME: reuse the window whenever possible
-	messageWindow_ = make_unique<Ime::MessageWindow>(this, session);
+	const HWND owner = compositionWindow(session);
+	if (messageWindow_ && ::GetWindow(messageWindow_->hwnd(), GW_OWNER) != owner) {
+		messageWindow_ = nullptr;
+	}
+	if (!messageWindow_) {
+		messageWindow_ = make_unique<Ime::MessageWindow>(this, session);
+	}
 	messageWindow_->setFont(font_);
 	messageWindow_->setText(message);
 	
-	int x = 0, y = 0;
+	bool positioned = false;
 	if(isComposing()) {
 		RECT rc;
 		if(selectionRect(session, &rc)) {
-			x = rc.left;
-			y = rc.bottom;
+			movePopupNearSelection(messageWindow_->hwnd(), rc);
+			positioned = true;
 		}
 	}
-	messageWindow_->move(x, y);
+	if (!positioned) {
+		messageWindow_->move(0, 0);
+	}
 	messageWindow_->show();
 
 	messageTimerId_ = ::SetTimer(messageWindow_->hwnd(), 1, duration * 1000, (TIMERPROC)TextService::onMessageTimeout);
@@ -393,20 +417,26 @@ void TextService::updateMessageWindow(Ime::EditSession* session) {
         RECT textRect;
         // get the position of composition area from TSF
         if (selectionRect(session, &textRect)) {
-            // FIXME: where should we put the message window?
-            messageWindow_->move(textRect.left, textRect.bottom);
+			movePopupNearSelection(messageWindow_->hwnd(), textRect);
         }
     }
 }
 
 void TextService::hideMessage() {
 	if(messageTimerId_) {
-		::KillTimer(messageWindow_->hwnd(), messageTimerId_);
+		if (messageWindow_) {
+			::KillTimer(messageWindow_->hwnd(), messageTimerId_);
+		}
 		messageTimerId_ = 0;
 	}
 	if(messageWindow_) {
-		messageWindow_ = nullptr;
+		messageWindow_->hide();
 	}
+}
+
+void TextService::destroyMessageWindow() {
+	hideMessage();
+	messageWindow_ = nullptr;
 }
 
 // called when the message window timeout
@@ -446,7 +476,7 @@ void TextService::closeClient() {
 		client_->onDeactivate();
 		client_ = nullptr;
 		// detroy UI resources
-		hideMessage();
+		destroyMessageWindow();
 		hideCandidates();
 	}
 }

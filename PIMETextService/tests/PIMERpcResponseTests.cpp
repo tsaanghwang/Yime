@@ -10,6 +10,7 @@
 // PIMEClient.cpp now uses for every RPC response and menu item.
 
 #include "../PIMERpcResponse.h"
+#include "../PIMEUiPolicy.h"
 
 #include <cstdio>
 #include <nlohmann/json.hpp>
@@ -112,11 +113,41 @@ static void testJsonStringOr() {
 	CHECK(PIME::jsonStringOr(json(), "id", "d") == "d");
 }
 
+static void testUiLessCandidateWindowPolicy() {
+	CHECK(PIME::shouldShowOwnedCandidateWindow(false, FALSE));
+	CHECK(PIME::shouldShowOwnedCandidateWindow(false, TRUE));
+	CHECK(!PIME::shouldShowOwnedCandidateWindow(true, FALSE));
+	CHECK(PIME::shouldShowOwnedCandidateWindow(true, TRUE));
+}
+
+static void testCandidateFontSizeIsBounded() {
+	CHECK(PIME::normalizeCandidateFontSize(-1) == PIME::kMinimumCandidateFontSize);
+	CHECK(PIME::normalizeCandidateFontSize(12) == 12);
+	CHECK(PIME::normalizeCandidateFontSize(999) == PIME::kMaximumCandidateFontSize);
+}
+
+static void testPopupAnchorStaysInsideWorkArea() {
+	const RECT workArea = { 0, 0, 1920, 1040 };
+	const RECT nearBottomRight = { 1900, 1010, 1910, 1030 };
+	const SIZE popup = { 300, 200 };
+	const POINT point = PIME::popupAnchorInWorkArea(nearBottomRight, popup, workArea);
+	CHECK(point.x == 1620);
+	CHECK(point.y == 810);
+
+	const RECT nearTopLeft = { -50, -20, -40, -10 };
+	const POINT clamped = PIME::popupAnchorInWorkArea(nearTopLeft, popup, workArea);
+	CHECK(clamped.x == 0);
+	CHECK(clamped.y == 0);
+}
+
 int main() {
 	testNullResponseDoesNotThrow();
 	testMalformedResponsesDoNotThrow();
 	testMenuItemsWithMixedIdTypesDoNotThrow();
 	testJsonStringOr();
+	testUiLessCandidateWindowPolicy();
+	testCandidateFontSizeIsBounded();
+	testPopupAnchorStaysInsideWorkArea();
 
 	if (failures == 0) {
 		std::printf("All PIMERpcResponse tests passed.\n");

@@ -209,6 +209,25 @@
         "cwd": "${workspaceFolder}"
       },
       "problemMatcher": []
+    },
+    {
+      // 用于附加调试前自动打开字符映射表（charmap.exe，常驻 Win32 GUI，含"搜索"文本框）。
+      // 用 process 类型直接运行 powershell，避免不同默认 shell（cmd/git-bash）下
+      // start/引号转义差异导致静默失效。Start-Process 不等待，powershell 随即退出，
+      // preLaunchTask 得以完成、调试继续；charmap 作为独立进程保留。
+      // 不用 notepad：本机 notepad.exe 实测为重定向存根，秒退(exit 0)、窗口弹不出来。
+      "label": "PIME: open charmap for IME debug",
+      "type": "process",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "Start-Process charmap.exe"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
     }
   ]
 }

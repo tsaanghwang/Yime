@@ -108,6 +108,8 @@ function Copy-RequiredFile {
 
 Assert-Admin
 
+. (Join-Path $PSScriptRoot "pime-registry-cleanup.ps1")
+
 $repoRoot = (Resolve-Path -LiteralPath $RepoRoot).Path
 $buildRoot = Join-Path $repoRoot "build"
 $build64Root = Join-Path $repoRoot "build64"
@@ -130,6 +132,23 @@ Assert-PathExists -Path $backendsFile -Description "backends.json"
 Assert-PathExists -Path (Join-Path $pythonRoot "python3\python.exe") -Description "bundled Python runtime"
 Assert-PathExists -Path (Join-Path $nodeRoot "node.exe") -Description "bundled Node runtime"
 Assert-PathExists -Path (Join-Path $goBackendRoot "server.exe") -Description "go-backend server.exe"
+
+& (Join-Path $PSScriptRoot 'verify-pe-architectures.ps1') `
+    -RepoRoot $repoRoot `
+    -X86TextService $x86Dll `
+    -X64TextService $x64Dll `
+    -X86Launcher $launcherExe
+foreach ($toolExe in @(
+    "tool-hub.exe",
+    "lexicon-manager.exe",
+    "system-lexicon-audit.exe",
+    "blocklist-manager.exe",
+    "reverse-lookup.exe",
+    "settings-tool.exe",
+    "diagnostics-tool.exe"
+)) {
+    Assert-PathExists -Path (Join-Path $goBackendRoot $toolExe) -Description "go-backend $toolExe"
+}
 
 $stopScript = Join-Path $PSScriptRoot "dev-stop-pime.ps1"
 if (Test-Path -LiteralPath $stopScript) {
@@ -154,13 +173,9 @@ if (Test-Path -LiteralPath $stopScript) {
 $installedX64Dll = Join-Path $InstallRoot "x64\PIMETextService.dll"
 $installedX86Dll = Join-Path $InstallRoot "x86\PIMETextService.dll"
 if ((Test-Path -LiteralPath $installedX64Dll) -or (Test-Path -LiteralPath $installedX86Dll)) {
-    Write-Host "Unregistering installed text service DLLs before copying..."
-    if (Test-Path -LiteralPath $installedX64Dll) {
-        & "$env:WINDIR\System32\regsvr32.exe" /u /s $installedX64Dll
-    }
-    if (Test-Path -LiteralPath $installedX86Dll) {
-        & "$env:WINDIR\SysWOW64\regsvr32.exe" /u /s $installedX86Dll
-    }
+    Write-Host "Unregistering installed text service DLLs before copying ..."
+    Unregister-PIMETextServiceDlls -InstallRoots @($InstallRoot)
+    Remove-PIMETextServiceRegistry
 }
 
 Write-Host "Creating installation layout at $InstallRoot"
@@ -183,9 +198,8 @@ Copy-Tree -Source $nodeRoot -Destination (Join-Path $InstallRoot "node") -Exclud
 Write-Host "Copying Go backend..."
 Copy-Tree -Source $goBackendRoot -Destination (Join-Path $InstallRoot "go-backend")
 
-Write-Host "Registering text service DLLs..."
-& "$env:WINDIR\System32\regsvr32.exe" /s (Join-Path $InstallRoot "x64\PIMETextService.dll")
-& "$env:WINDIR\SysWOW64\regsvr32.exe" /s (Join-Path $InstallRoot "x86\PIMETextService.dll")
+Write-Host "Registering text service DLLs ..."
+Register-PIMETextServiceDlls -InstallRoot $InstallRoot
 
 Write-Host "Writing launcher autorun and install markers..."
 New-Item -Path "HKLM:\SOFTWARE\YIME" -Force | Out-Null

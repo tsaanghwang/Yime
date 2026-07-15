@@ -1,8 +1,13 @@
 # 音元输入法开发路线图
 
-> 版本：2026-07-07（最终版）
+> 单一等长真源重构已经完成。实施结果见
+> [从三套码表回到一个真源](project/SINGLE_SOURCE_LEXICON_REFACTOR.md)，原阶段设计见
+> [单一等长真源码表阶段准备](project/SINGLE_CANONICAL_LEXICON_PREPARATION.md)。
+> 三套 Rime 字典继续保留为运行产物，但不再允许独立导入或人工维护。
+
+> 版本：2026-07-14
 > 分支：yime-stable
-> 配套文档：[可用性评估](YIME_USABILITY_ASSESSMENT.md) | [架构文档](YIME_ARCHITECTURE.md)
+> 配套文档：[项目综合评估](YIME_PROJECT_ASSESSMENT.md) | [可用性评估](YIME_USABILITY_ASSESSMENT.md) | [架构文档](YIME_ARCHITECTURE.md)
 
 ---
 
@@ -28,7 +33,25 @@
 | 14 | 未覆盖场景测试 | 526c5a2c | 并发、分页、Unicode、方案切换、超长词组、终止 |
 | 15 | 工具链补充 | 63ef77c5 | DELETE/IMPORT 词库、即时搜索 debounce、工具箱中文化 |
 | 16 | cSpell 词表扩展 | 16eda9b | 60+ 项目专有词 |
-| 17 | 子模块推送 | — | libIME2 + McBopomofoWeb |
+| 17 | 子模块推送 | 32eaf662 | libIME2 + McBopomofoWeb 指向 fork 且先推送子模块再推主仓库 |
+| 18 | 原生 Win32 工具链 | dd68a47a | settings/diagnostics/lexicon/reverse-lookup/tool-hub 等 `.exe` |
+| 19 | 移除 PowerShell 启动器 | 2f7c9b44 | 工具箱改 `run_executable`，删除 PS 独立脚本 |
+| 20 | 系统词库审查工具 | fd3edfc0 | `system-lexicon-audit.exe` 只读扫描与导出 |
+| 21 | 用户屏蔽词表 | 0518d6fd | `blocklist-manager.exe` + 运行时候选过滤 |
+| 22 | 语言栏切换稳定性 | f2b3b04c | 静态双字标签（中西/全半/横竖）+ 仅图标更新 |
+| 23 | libIME2 语言栏/注册表 | 2f4f5659 | `refreshAppearance`、profile 重注册、按钮更新顺序 |
+| 24 | 注册表清理脚本 | eacb769a | `pime-registry-cleanup.ps1`、`Refresh-IME-Profiles.cmd` |
+| 25 | IME 列表名与开发环境 | fc507057 | 列表显示名「音元」；`.gitignore` 忽略 `go-backend/*.exe` |
+| 26 | 反查工具布局统一 | ac6d88bf | 顶部控件单排、各内容排等宽、窗体按内容定尺寸 |
+| 27 | 词库管理对话框统一 | e98704c8 | 标签自适应、按钮组居中、所有系统 `OK/Yes/No` 改为中文选择 |
+| 28 | Smart App Control 构建稳定性 | ee2c51d7 | 稳定版本、`-trimpath -buildvcs=false`、可选可信签名 |
+| 29 | Go 回归测试进入 CI | 847bc40a | 原生工具、词库逻辑、语言栏与 Rime 分页守卫 |
+| 30 | 竞态检测纳入验证基线 | ab243ae7 | 配置 MSYS2 GCC；`IME` 入口互斥锁；`TestConcurrentKeyAndCommandNoDataRace` 在 `-race` 下绿色 |
+| 31 | 反查测试 fixture 跟上真源重构 | ab243ae7 | `full` 列改为 4 倍数等长码，恢复 reverselookup 包测试 |
+| 32 | 安全数据维护与真实宿主验证 | 196c326b | 后台重新部署、独立修订号、嵌套 `data.id`；2026-07-14 安装态逐项点击通过 |
+| 33 | 静态与 CI 门禁收口 | 本轮 | Win32 消息结构复制通过 `go vet`；关键测试名先枚举校验；race 入口可重复 |
+| 34 | 原生架构与打包门禁 | 本轮 | 拒绝伪 Win32 CMake 缓存；核对 x86/x64/ARM64 PE machine type；只打包带 `ime.json` 的运行时目录 |
+| 35 | Go 演示输入法退役 | 本轮 | 删除 meow/simple_pinyin/fcitx5 生产包与默认回退；协议测试改用专用 fixture；NSIS 安全清理旧空目录 |
 
 ### 遗留编码约束（暂不修改）
 
@@ -100,7 +123,7 @@ AGENTS.md 约束检查 ──→ 违反 ──→ 重新设计
     │
     ├── 轻量命令（语言栏分发）──→ onCommand + commandShouldRefreshState
     │
-    ├── 独立工具窗口 ──→ PowerShell WinForms + 工具清单注册
+    ├── 独立工具窗口 ──→ Go 编译的 Win32 `.exe` + 工具箱 manifest 注册
     │
     └── Rime 配置变更 ──→ YAML 读写 + DeployConfigFile + 会话重建
     │
@@ -193,6 +216,10 @@ setCandidatePageSize(size)
 | 4.4 | 非标准音节审查 | 不处理 | bong4/wong4 等为 Unihan 台版/方言读音遗留，权重极低不影响使用 |
 | 4.5 | 词库导入功能 | ✅ 63ef77c5 | DELETE/IMPORT 接入词库管理器 |
 | 4.6 | 反查工具即时搜索 | ✅ e7a3a461 | 500ms debounce 即时搜索 |
+| 4.7 | 用户屏蔽词表 | ✅ 0518d6fd | 运行时过滤 + `blocklist-manager.exe` |
+| 4.8 | 系统词库审查 | ✅ fd3edfc0 | 只读扫描已安装系统词库 |
+| 4.9 | 原生 Win32 工具链 | ✅ dd68a47a | 设置/诊断/词库/反查/工具箱等独立 `.exe` |
+| 4.10 | 语言栏切换稳定性 | ✅ 73b74e99 | 静态切换标签，切换时只更新图标 |
 
 ---
 
@@ -205,6 +232,9 @@ setCandidatePageSize(size)
 | 5.3 | 默认 candidatePageSize 限制为 5 | 避免超出选择键数量 | 无 |
 | 5.4 | 词语字频回退排序 | 无 BCC 词频时用组成字频率估计，改善 weight=1 词语间排序 | Yime-python-prototype 管线 |
 | 5.5 | 组字时数字键选词模式 | 可配置，数字键在"选词"和"编码"间切换 | 编码体系配合 |
+| 5.6 | 独立工具通知活动输入会话 | ✅ | 跨进程锁与累积修订标记；设置同步、词库缓存清理和按需 redeploy |
+| 5.7 | 根包测试隔离 | ✅ | 可替换后端工厂、语义断言；全量根包测试进入 CI |
+| 5.8 | 清理语言栏实验代码 | ✅ | 移除原生 sort/fixed-GUID，保留静态标签并增加源码守卫 |
 
 ---
 
@@ -233,14 +263,19 @@ setCandidatePageSize(size)
 │   ├── 3.4-3.5 测试增强 ✅
 │   └── 3.6-3.7 边界修复 ✅
 │
-2026-07 W7+
-├── Phase 4 部分完成
-│   ├── 4.2 初始化重试 ✅
-│   ├── 4.5 词库导入 ✅
-│   ├── 4.6 反查即时搜索 ✅
+2026-07 W7-W8
+├── Phase 4 延续
+│   ├── 4.7-4.10 工具链与语言栏 ✅
 │   ├── 4.1 数字键选词（暂缓）
 │   ├── 4.3 词典噪声清理（待做，优化项）
 │   └── 4.4 非标准音节审查（不处理）
+│
+├── 基础设施
+│   ├── 子模块 fork 推送流程 ✅
+│   ├── 注册表/profile 清理脚本 ✅
+│   ├── CI checkout 子模块修复 ✅
+│   ├── Win32 PIMELauncher 重建链路修复（Corrosion v0.6.1 + i686 工具链锁定）✅
+│   └── 安装态验证清单跑完留痕（2026-07-12，仅剩签名）✅
 │
 待规划
 └── Phase 5 后续改进
@@ -264,6 +299,23 @@ setCandidatePageSize(size)
 | 子菜单命令解析 | `commandIDFromRequest` 必须保留 `data.id` 回退 | 反查点击宿主崩溃 |
 | 安装验证 | 必须确认 server.exe 时间戳已更新并重启进程 | 源码修复"不生效" |
 | 重新安装脚本 | `Reinstall-PIME-Test.cmd` 不可简化 | DLL 锁检测失效 |
+| 子模块推送顺序 | bump 子模块指针前，先把 commit 推到 fork remote | CI checkout 失败 |
+| Win32 Rust 工具链 | `Rust_TOOLCHAIN=stable-i686-pc-windows-msvc` 固定不可取消 | build-script 链接错，PIMELauncher 无法重建 |
+| github 拉取走代理 | git/cmake 不读系统代理，需设 `HTTPS_PROXY=http://127.0.0.1:1081` | FetchContent 克隆 Corrosion 超时 |
+| DLL 被锁走就地安装 | explorer 加载 DLL 时就地安装是设计行为；干净重装先重启 | 误判重装失败、强杀 explorer |
+| CI 日志先看路径 | 3033/3077 事件先核对文件路径；SAC 审计未签名 `server.exe` 不是崩溃 | 把第三方噪声或审计记录误判为 YIME 故障 |
+
+### 子模块推送（CI 必做）
+
+Yime 的活动构建子模块 `libIME2` 指向 `tsaanghwang/libIME2` fork。主仓库引用新 SHA 之前，必须先把对应 commit 推到子模块 remote。McBopomofoWeb、libchewing 和 Python brise 已从仓库永久删除：
+
+```powershell
+cd libIME2
+git push git@github.com:tsaanghwang/libIME2.git master
+
+cd ..\Yime
+git push origin yime-stable
+```
 
 ---
 
@@ -284,7 +336,9 @@ cmd /c build.bat
 
 ```powershell
 cd go-backend
-go test ./input_methods/yime/ -v -count=1
+go vet ./...
+go test . ./cmd/lexicon-manager ./cmd/reverse-lookup-tool ./cmd/settings-tool ./input_methods/yime/reverselookup ./input_methods/yime/runtimechange ./input_methods/yime/settings ./input_methods/yime/systemlexicon ./input_methods/yime/toolhub ./input_methods/yime/userblocklist ./input_methods/yime/userlexicon
+go test ./input_methods/yime -timeout 60s
 go vet ./...
 ```
 

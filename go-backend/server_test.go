@@ -50,3 +50,15 @@ func TestConvertResponseUsesReturnDataWhenPresent(t *testing.T) {
 		t.Fatalf("expected menu return data, got %#v", got["return"])
 	}
 }
+
+func TestServiceFactoryOnlySupportsYime(t *testing.T) {
+	if factory, ok := serviceFactoryForInputMethod("yime"); !ok || factory == nil {
+		t.Fatal("expected yime to have a production service factory")
+	}
+
+	for _, name := range []string{"meow", "simple_pinyin", "fcitx5", "unknown"} {
+		if factory, ok := serviceFactoryForInputMethod(name); ok || factory != nil {
+			t.Fatalf("obsolete or unknown input method %q must not get a fallback service", name)
+		}
+	}
+}

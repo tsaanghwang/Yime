@@ -1,6 +1,8 @@
 # 音元输入法可用性评估
 
-> 评估日期：2026-07-07（最终版）
+> 本文保留功能与编码体系的历史评估；近期两轮工程完整性评估及当前剩余风险见 [项目综合评估](YIME_PROJECT_ASSESSMENT.md)。
+
+> 评估日期：2026-07-10
 > 评估范围：Yime Go 后端 + Rime 引擎 + 编码体系 + 词典 + 工具链
 > 分支：yime-stable
 
@@ -37,15 +39,19 @@
 │          ├── pime-go 桥接层 (stdin/stdout JSON)  │
 │          ├── yime.go (按键/语言栏/候选窗)        │
 │          ├── rime.dll (librime, 动态加载)        │
-│          ├── 独立工具 (PowerShell WinForms)      │
-│          │     ├── 设置工具                      │
-│          │     ├── 诊断工具                      │
-│          │     ├── 反查工具                      │
-│          │     └── 词库管理                      │
+│          ├── 独立工具 (Go Win32 GUI)             │
+│          │     ├── settings-tool.exe            │
+│          │     ├── diagnostics-tool.exe         │
+│          │     ├── lexicon-manager.exe          │
+│          │     ├── reverse-lookup.exe          │
+│          │     ├── tool-hub.exe                 │
+│          │     ├── system-lexicon-audit.exe     │
+│          │     └── blocklist-manager.exe        │
 │          └── 数据层                              │
 │                ├── data/*.schema.yaml (3方案)    │
-│                ├── data/*.dict.yaml (468K条/方案) │
-│                ├── data/yime_pinyin_codes.tsv    │
+│                ├── data/*.dict.yaml (单源生成)   │
+│                ├── data/yime_lexicon_manifest.json│
+│                ├── data/yime_pinyin_codes.tsv (两列)│
 │                └── data/pinyin_normalized.json   │
 ├─────────────────────────────────────────────────┤
 │  %APPDATA%\PIME\Rime\ (用户数据)                │
@@ -62,9 +68,9 @@
 ### 关键设计决策
 
 1. **原生 Rime 候选分页**：`UsesBackendCandidatePaging()` 返回 `true`，Go 侧不做候选切片
-2. **独立工具优先**：重 UI 操作通过独立 PowerShell WinForms 窗口实现，不在 TSF 回调路径中
-3. **轻量语言栏**：语言栏仅分发命令，不承载复杂 UI
-4. **延迟 redeploy**：语言栏点击使用轻量会话重建，完整 redeploy 仅在显式"重新部署"时触发
+2. **独立工具优先**：重 UI 通过 Go 编译的 Win32 可执行文件实现，不在 TSF 回调路径中
+3. **轻量语言栏**：语言栏仅分发命令；切换按钮使用静态标签，状态由图标表示
+4. **受保护的 Rime 维护**：同步与重新部署收进维护子菜单并二次确认；重新部署改为外部后台构建、结果校验和安全边界会话重建，不再从语言栏回调触发原生全局 redeploy
 5. **多音字完整保留**：反查工具保留所有读音编码，候选窗注释仅取首选读音
 
 ---
@@ -162,7 +168,7 @@
 
 **修复**：`joinRuneLookup` 对缺失字符显示 `?` 占位符。`lookupStandardPinyin` 编码路径含 `?` 时逐字符拆分查找拼音。
 
-### 6.4 用户词库只重建当前方案 ✅
+### 6.4 用户词库跨方案重建 ✅
 
 **修复**：`applyUserLexicon` 为三种模式各生成独立的 `custom_phrase_{mode}.txt`。三种 schema 各自引用对应的 `user_dict`。
 
@@ -178,7 +184,7 @@
 |---|------|------|
 | 1 | 反查工具首次加载无进度提示 | 窗体显示时状态栏提示"正在加载数据" |
 | 2 | 反查搜索结果上限100条无截断提示 | 上限提升至200条，截断时提示"已截断" |
-| 3 | 多音字只取首个编码 | `Load-DictLookupMulti` 保留所有读音编码，逐字拼接支持笛卡尔积 |
+| 3 | 多音字只取首个编码 | Go `loadDictLookupMulti` 保留所有读音编码，`joinCharCodeLookupMulti` 逐字拼接支持笛卡尔积 |
 | 4 | 每次查询重新加载词库 | 数据只加载一次，跨查询复用 |
 | 5 | 方案切换时 dictLookup 不重新加载 | `Ensure-LookupData` 按 `loadedSchemaID` 判断是否需要重载 |
 | 6 | `findRimeExternalDeployer` 含硬编码开发路径 | 移除 `C:\dev\librime\` 候选项 |
@@ -197,8 +203,8 @@
 - 子菜单点击通过 `data.id` 传递
 - 候选项数变更不触发完整 redeploy
 - YAML 引号/非引号 key 兼容 + 行内注释
-- PowerShell 脚本编码损坏守卫
-- PowerShell 脚本智能引号守卫
+- 原生工具启动路径与可执行文件回归测试
+- 语言栏稳定双字标签回归测试
 - redeploy 使 page_size 生效
 
 ### 已覆盖的边界场景
@@ -218,10 +224,10 @@
 
 | 工具 | 功能完整度 | 说明 |
 |------|-----------|------|
-| 设置工具 | ★★★★☆ | 修改方案/候选数需"应用并重建"才生效 |
+| 设置工具 | ★★★★☆ | “应用”负责保存并重建；另提供经校验的用户数据备份与恢复 |
 | 诊断工具 | ★★★★★ | 完善，含预设、匿名化、命令解读 |
 | 反查工具 | ★★★★☆ | 多音字完整展示、即时搜索（500ms debounce）、加载进度、截断提示 |
-| 词库管理 | ★★★★☆ | 删除/导入/冲突预览已实现；工具箱已中文化 |
+| 词库管理 | ★★★★★ | 连续添加、系统词重复拒绝、权重步进、删除/导入/冲突预览和活动会话通知已实现 |
 
 ---
 

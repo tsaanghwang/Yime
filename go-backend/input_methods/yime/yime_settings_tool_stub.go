@@ -6,6 +6,6 @@ func (ime *IME) startSettingsToolHelper() error {
 	return nil
 }
 
-func (ime *IME) ensureSettingsToolScript() (string, error) {
-	return "", nil
+func (ime *IME) settingsToolPath() string {
+	return ""
 }

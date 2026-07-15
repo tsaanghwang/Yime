@@ -6,6 +6,7 @@ import (
 	"bufio"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"path/filepath"
@@ -14,10 +15,6 @@ import (
 
 	"github.com/EasyIME/pime-go/pime"
 
-	// 导入输入法包
-	"github.com/EasyIME/pime-go/input_methods/fcitx5"
-	"github.com/EasyIME/pime-go/input_methods/meow"
-	simplepinyin "github.com/EasyIME/pime-go/input_methods/simple_pinyin"
 	"github.com/EasyIME/pime-go/input_methods/yime"
 )
 
@@ -338,6 +335,15 @@ func (s *Server) convertResponse(resp *pime.Response) map[string]interface{} {
 }
 
 // loadInputMethods 加载所有输入法
+func serviceFactoryForInputMethod(name string) (ServiceFactory, bool) {
+	if name != "yime" {
+		return nil, false
+	}
+	return func(client *pime.Client, guid string) pime.TextService {
+		return yime.New(client)
+	}, true
+}
+
 func loadInputMethods(server *Server) {
 	// 获取当前目录
 	exePath, err := os.Executable()
@@ -383,38 +389,18 @@ func loadInputMethods(server *Server) {
 
 		log.Printf("加载输入法: %s (%s)", name, guid)
 
-		// 根据输入法名称注册不同的服务实现
-		switch entry.Name() {
-		case "meow":
-			// 喵喵输入法
-			server.RegisterService(guid, func(client *pime.Client, g string) pime.TextService {
-				return meow.New(client)
-			})
-		case "yime":
-			// 音元拼音（基于 RIME 引擎）
-			server.RegisterService(guid, func(client *pime.Client, g string) pime.TextService {
-				return yime.New(client)
-			})
-		case "simple_pinyin":
-			// 拼音输入法
-			server.RegisterService(guid, func(client *pime.Client, g string) pime.TextService {
-				return simplepinyin.New(client)
-			})
-		case "fcitx5":
-			// Fcitx5 输入法
-			server.RegisterService(guid, func(client *pime.Client, g string) pime.TextService {
-				return fcitx5.New(client)
-			})
-		default:
-			// 默认使用拼音输入法
-			server.RegisterService(guid, func(client *pime.Client, g string) pime.TextService {
-				return simplepinyin.New(client)
-			})
+		factory, supported := serviceFactoryForInputMethod(entry.Name())
+		if !supported {
+			log.Printf("跳过没有 Go 实现的输入法目录: %s", entry.Name())
+			continue
 		}
+
+		// 音元拼音（基于 RIME 引擎）是 Go 后端唯一支持的产品输入法。
+		server.RegisterService(guid, factory)
 	}
 }
 
-func openLogFile() (*os.File, error) {
+func openLogFile() (io.WriteCloser, error) {
 	candidates := []string{}
 
 	if localAppData := os.Getenv("LOCALAPPDATA"); localAppData != "" {
@@ -435,7 +421,7 @@ func openLogFile() (*os.File, error) {
 			}
 		}
 
-		logFile, err := os.OpenFile(logPath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+		logFile, err := newRotatingLogWriter(logPath, defaultLogMaxSize, defaultLogBackups)
 		if err == nil {
 			return logFile, nil
 		}

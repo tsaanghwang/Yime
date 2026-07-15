@@ -12,30 +12,11 @@ Code in these directories are licensed under LGPL 2.0:
   server
 
 The following components are from other projects:
-  python:
-    Embeddable version of python 3.5 is licensed under PSF.
-    https://www.python.org/
-
-  python\tornado:
-    Tornado is a python web framework licensed under Apache 2.0.
-    http://www.tornadoweb.org/en/stable/
-
   jsoncpp:
     C++ library used to parse and write json data licensed under MIT license.
     https://github.com/open-source-parsers/jsoncpp
 
-  python\opencc:
-    OpenCC is a library used to convert between traditional and simplified
-    Chinese licensed under Apache 2.0 license.
-    https://github.com/BYVoid/OpenCC
-
-  python\input_methods\chewing\libchewing.dll, tests/tsi.src.txt, tests/phone.cin.txt:
-    libchewing is one of the best smart phonetic input method engine in Taiwan
-    licensed under GNU LGPL v2.1 license.
-    http://chewing.im/
-    https://github.com/chewing/libchewing
-
-  python\input_methods\rime\rime.dll:
+  go-backend\input_methods\yime\rime.dll:
     libRIME is the core library of the excellent Chinese input method 
     framework + algorithm RIME developed by lotem licensed under BSD license.
     http://rime.im/

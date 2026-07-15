@@ -289,14 +289,14 @@ impl BackendManager {
         loop {
             tokio::select! {
                 msg = stdin_rx.recv() => {
-                    let Some(data) = msg else { 
+                    let Some(data) = msg else {
                         info!("Backend {} stdin channel closed. Exiting input loop.", backend_name);
-                        break; 
+                        break;
                     };
                     let now = Self::current_ms();
                     last_request_time = Some(now);
                     info!("Backend {} received request from channel. Data len: {}. req_t={}", backend_name, data.len(), now);
-                    
+
                     // LinesCodec expects data without the newline, it will add it for us.
                     let write_res = tokio::time::timeout(Duration::from_secs(5), stdin_writer.send(data)).await;
                     if let Err(_) = write_res {
@@ -315,12 +315,12 @@ impl BackendManager {
                     if let Some(req_t) = last_request_time {
                         let last_out = last_output_time.load(Ordering::SeqCst);
                         // Log tick status occasionally or at least for debugging
-                        info!("Watchdog tick for {}: last_out={}, req_t={}, now={}, delta={}", 
+                        info!("Watchdog tick for {}: last_out={}, req_t={}, now={}, delta={}",
                             backend_name, last_out, req_t, now, now as i64 - req_t as i64);
-                        
+
                         // If no output has been received since the last request and it's been more than 15 seconds
                         if last_out < req_t && (now - req_t) > 15000 {
-                            error!("Backend {} seems to be hung (no output for 15s after request). last_out={}, req_t={}, now={}. Forcing restart.", 
+                            error!("Backend {} seems to be hung (no output for 15s after request). last_out={}, req_t={}, now={}. Forcing restart.",
                                 backend_name, last_out, req_t, now);
                             let _ = child_process.kill().await;
                             break;

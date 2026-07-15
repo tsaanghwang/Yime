@@ -12,9 +12,14 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"sync"
+	"sync/atomic"
 	"time"
 	"unicode/utf8"
 
+	"github.com/EasyIME/pime-go/input_methods/yime/codemode"
+	"github.com/EasyIME/pime-go/input_methods/yime/runtimechange"
+	"github.com/EasyIME/pime-go/input_methods/yime/userlexicon"
 	"github.com/EasyIME/pime-go/pime"
 )
 
@@ -58,6 +63,7 @@ const (
 	ID_HELP_TRIAL_FEEDBACK            = yimeCommandBase + 61
 	ID_HELP_COPY_TRIAL_TEMPLATE       = yimeCommandBase + 62
 	ID_HELP_TOOL_HUB                  = yimeCommandBase + 63
+	ID_REVERSE_LOOKUP_TOOL            = yimeCommandBase + 64
 	ID_CANDIDATE_PAGE_SIZE_5          = yimeCommandBase + 70
 	ID_CANDIDATE_PAGE_SIZE_6          = yimeCommandBase + 71
 	ID_CANDIDATE_PAGE_SIZE_7          = yimeCommandBase + 72
@@ -127,14 +133,6 @@ type backendCandidatePager interface {
 	UsesBackendCandidatePaging() bool
 }
 
-// backendRedeployer is implemented by backends that can perform a full RIME
-// redeployment to pick up on-disk configuration changes (for example an
-// updated menu/page_size). Backends that do not implement it fall back to
-// recreating the session.
-type backendRedeployer interface {
-	Redeploy() bool
-}
-
 // backendUserDataSyncer is implemented by backends that expose Rime's native
 // user-data sync capability. This is intentionally limited to Rime-managed
 // user data and must not be extended to Yime-only standalone state.
@@ -143,9 +141,15 @@ type backendUserDataSyncer interface {
 }
 
 var runRimeExternalBuild = runRimeExternalBuildDefault
+var refreshRimeSchemasOnInit = userlexicon.RefreshRimeSchemas
+var createRimeBackend = newNativeBackend
+var confirmRimeRedeployAction = requestRimeRedeployConfirmation
+var confirmRimeSyncAction = requestRimeSyncConfirmation
+var rimeMaintenanceRunning atomic.Bool
+var scheduleRimeMaintenance = func(run func()) { go run() }
 var scheduleStandaloneToolLaunch = func(run func() error, onError func(error)) {
 	go func() {
-		time.Sleep(150 * time.Millisecond)
+		time.Sleep(300 * time.Millisecond)
 		if err := run(); err != nil && onError != nil {
 			onError(err)
 		}
@@ -154,6 +158,7 @@ var scheduleStandaloneToolLaunch = func(run func() error, onError func(error)) {
 
 type IME struct {
 	*pime.TextServiceBase
+	entryMu                  sync.Mutex
 	iconDir                  string
 	style                    Style
 	selectKeys               string
@@ -166,9 +171,17 @@ type IME struct {
 	reversePinyinLoaded      map[string]bool
 	yimePinyinBySchema       map[string]map[string]string
 	yimePinyinLoaded         map[string]bool
+	yimePUAByPinyin          map[string]string
+	yimePUALoaded            bool
+	pendingCandidateFont     bool
 	candidatePageSize        int
 	pendingSchemaRedeploy    string
+	runtimeChangeRevision    int64
+	settingsChangeRevision   int64
+	lexiconChangeRevision    int64
+	redeployChangeRevision   int64
 	candidatePageStart       int
+	candidateBackendIndexMap []int
 	keysDown                 map[int]bool
 	lastKeyDownRet           bool
 	lastKeyUpRet             bool
@@ -195,16 +208,21 @@ func New(client *pime.Client) pime.TextService {
 		reversePinyinLoaded:      map[string]bool{},
 		yimePinyinBySchema:       map[string]map[string]string{},
 		yimePinyinLoaded:         map[string]bool{},
+		yimePUAByPinyin:          map[string]string{},
 		candidatePageSize:        defaultCandidatePageSize,
 		keysDown:                 map[int]bool{},
 	}
 }
 
 func (ime *IME) HandleRequest(req *pime.Request) *pime.Response {
+	ime.pollRuntimeChange()
 	if req != nil && ime.shouldApplyPendingSchemaRedeploy(req.Method) {
 		ime.applyPendingSchemaRedeploy()
 	}
 	resp := pime.NewResponse(req.SeqNum, true)
+	if ime.pendingCandidateFont {
+		ime.applyCandidateFont(resp)
+	}
 
 	switch req.Method {
 	case "onActivate":
@@ -241,8 +259,14 @@ func (ime *IME) onActivate(req *pime.Request, resp *pime.Response) *pime.Respons
 	log.Println("RIME 输入法已激活")
 	ime.createSession(resp)
 	ime.syncStandaloneUISettings()
+	ime.applyCandidateFont(resp)
+	if resp.CustomizeUI == nil {
+		resp.CustomizeUI = map[string]interface{}{}
+	}
+	resp.CustomizeUI["candPerRow"] = ime.style.CandidatePerRow
 	ime.addButtons(resp)
-	ime.updateLangStatus(req, resp)
+	ime.updateWindowsModeIcon(req, resp)
+	go ime.warmReverseLookupCache()
 	if ime.backend != nil {
 		ime.applyStateToResponse(resp, ime.backend.State())
 	}
@@ -315,18 +339,19 @@ func (ime *IME) onSelectCandidate(req *pime.Request, resp *pime.Response) *pime.
 		resp.ReturnValue = 0
 		return resp
 	}
-	if !ime.backendUsesCandidatePaging() {
-		index += ime.candidatePageStart
+	backendIndex, ok := ime.mapCandidateSelectionIndex(index)
+	if !ok {
+		resp.ReturnValue = 0
+		return resp
 	}
 
 	ime.createSession(resp)
-	if !ime.backend.SelectCandidate(index) {
+	if !ime.backend.SelectCandidate(backendIndex) {
 		resp.ReturnValue = 0
 		return resp
 	}
 
 	resp.ReturnValue = 1
-	ime.updateLangStatus(req, resp)
 	ime.applyStateToResponse(resp, ime.backend.State())
 	return resp
 }
@@ -343,6 +368,8 @@ func (ime *IME) onCompositionTerminated(req *pime.Request, resp *pime.Response) 
 }
 
 func (ime *IME) onCommand(req *pime.Request, resp *pime.Response) *pime.Response {
+	ime.entryMu.Lock()
+	defer ime.entryMu.Unlock()
 	commandID := commandIDFromRequest(req)
 	if commandID == 0 {
 		resp.ReturnValue = 0
@@ -354,8 +381,12 @@ func (ime *IME) onCommand(req *pime.Request, resp *pime.Response) *pime.Response
 	switch commandID {
 	case ID_ASCII_MODE, ID_MODE_ICON:
 		ime.toggleOption("ascii_mode")
+		ime.changeLangBarAsciiButton(resp)
+		ime.updateWindowsModeIcon(req, resp)
 	case ID_FULL_SHAPE:
 		ime.toggleOption("full_shape")
+		ime.changeLangBarShapeButton(resp)
+		ime.updateWindowsModeIcon(req, resp)
 	case ID_ASCII_PUNCT:
 		ime.toggleOption("ascii_punct")
 	case ID_TRADITIONALIZATION:
@@ -367,11 +398,9 @@ func (ime *IME) onCommand(req *pime.Request, resp *pime.Response) *pime.Response
 	case ID_YIME_SHORTHAND:
 		ime.selectSchema("yime_shorthand")
 	case ID_DEPLOY:
-		ime.redeployBackend()
+		ime.startSafeRimeRedeploy()
 	case ID_SYNC:
-		if !ime.syncBackendUserData() {
-			log.Println("同步用户数据失败或后端未提供该能力")
-		}
+		ime.confirmAndSyncBackendUserData()
 	case ID_USER_DIR:
 		ime.openPath(ime.userDir())
 	case ID_SHARED_DIR:
@@ -402,14 +431,19 @@ func (ime *IME) onCommand(req *pime.Request, resp *pime.Response) *pime.Response
 		// cleanly onto the current single-comment candidate window. Keep the
 		// command IDs harmless by falling back to key-sequence display.
 		ime.setReverseLookupDisplayMode("key_sequence")
+		ime.applyCandidateFont(resp)
 	case ID_REVERSE_LOOKUP_HIDDEN:
 		ime.setReverseLookupDisplayMode("hidden")
+		ime.applyCandidateFont(resp)
 	case ID_REVERSE_LOOKUP_STANDARD_PINYIN:
 		ime.setReverseLookupDisplayMode("standard_pinyin")
+		ime.applyCandidateFont(resp)
 	case ID_REVERSE_LOOKUP_YIME_PINYIN:
 		ime.setReverseLookupDisplayMode("yime_pinyin")
+		ime.applyCandidateFont(resp)
 	case ID_REVERSE_LOOKUP_KEY_SEQUENCE:
 		ime.setReverseLookupDisplayMode("key_sequence")
+		ime.applyCandidateFont(resp)
 	case ID_HELP_VIEW:
 		ime.openPath(ime.helpDocumentPath("README"))
 	case ID_HELP_TRIAL_FEEDBACK:
@@ -418,19 +452,26 @@ func (ime *IME) onCommand(req *pime.Request, resp *pime.Response) *pime.Response
 		ime.copyTextToClipboard(ime.trialFeedbackTemplate())
 	case ID_HELP_TOOL_HUB:
 		ime.launchStandaloneToolAsync(ime.openToolHub, "打开工具箱失败")
+	case ID_REVERSE_LOOKUP_TOOL:
+		ime.launchStandaloneToolAsync(ime.openReverseLookupTool, "打开反查编码失败")
 	case ID_CANDIDATE_PAGE_SIZE_5, ID_CANDIDATE_PAGE_SIZE_6, ID_CANDIDATE_PAGE_SIZE_7, ID_CANDIDATE_PAGE_SIZE_8, ID_CANDIDATE_PAGE_SIZE_9:
 		if err := ime.setCandidatePageSize(minCandidatePageSize + commandID - ID_CANDIDATE_PAGE_SIZE_5); err != nil {
 			log.Printf("设置候选页大小失败: %v", err)
 		}
 	case ID_CANDIDATE_LAYOUT_TOGGLE:
 		ime.setCandidateLayout(ime.style.CandidatePerRow <= verticalCandidatesPerRow, resp)
+		ime.changeLangBarCandidateLayoutButton(resp)
 	default:
 		log.Printf("未知命令: %d", commandID)
 		resp.ReturnValue = 0
 		return resp
 	}
 
-	ime.updateLangStatus(req, resp)
+	if commandID == ID_ASCII_MODE || commandID == ID_MODE_ICON || commandID == ID_FULL_SHAPE || commandID == ID_CANDIDATE_LAYOUT_TOGGLE {
+		// Toggle buttons were updated above; avoid refreshing unrelated buttons.
+	} else {
+		ime.updateWindowsModeIcon(req, resp)
+	}
 	if ime.commandShouldRefreshState(commandID) && ime.backend != nil {
 		ime.applyStateToResponse(resp, ime.backend.State())
 	}
@@ -455,7 +496,7 @@ func (ime *IME) commandShouldRefreshState(commandID int) bool {
 	switch commandID {
 	case ID_ASCII_MODE, ID_MODE_ICON, ID_FULL_SHAPE, ID_ASCII_PUNCT,
 		ID_TRADITIONALIZATION, ID_YIME_VARIABLE, ID_YIME_FULL, ID_YIME_SHORTHAND,
-		ID_DEPLOY, ID_USER_LEXICON_APPLY, ID_CANDIDATE_LAYOUT_TOGGLE:
+		ID_USER_LEXICON_APPLY, ID_CANDIDATE_LAYOUT_TOGGLE:
 		return true
 	default:
 		return false
@@ -557,11 +598,15 @@ func commandIDFromRequest(req *pime.Request) int {
 }
 
 func (ime *IME) setReverseLookupDisplayMode(mode string) {
+	previous := ime.reverseLookupDisplayMode
 	switch mode {
 	case "hidden", "standard_pinyin", "yime_pinyin", "key_sequence":
 		ime.reverseLookupDisplayMode = mode
 	default:
 		ime.reverseLookupDisplayMode = "key_sequence"
+	}
+	if ime.reverseLookupDisplayMode != previous {
+		ime.pendingCandidateFont = true
 	}
 }
 
@@ -613,10 +658,19 @@ func (ime *IME) Init(req *pime.Request) bool {
 		return true
 	}
 	userDir := filepath.Join(appData, APP, "Rime")
+	schemasChanged, err := refreshRimeSchemasOnInit(sharedDir, userDir)
+	if err != nil {
+		log.Printf("刷新 Rime 用户目录方案失败: %v", err)
+		schemasChanged = false
+	} else if schemasChanged {
+		log.Println("检测到安装方案更新，已刷新用户目录并请求 Rime 完整部署")
+	}
+	if event, err := runtimechange.Read(userDir); err == nil {
+		ime.recordRuntimeChange(event)
+	}
 
-
-	real := newNativeBackend()
-	if real != nil && real.Initialize(sharedDir, userDir, false) {
+	real := createRimeBackend()
+	if real != nil && real.Initialize(sharedDir, userDir, schemasChanged) {
 		ime.backend = real
 		if ps := readPageSizeFromCustomConfig(filepath.Join(userDir, "default.custom.yaml")); ps >= minCandidatePageSize && ps <= maxCandidatePageSize {
 			ime.candidatePageSize = ps
@@ -625,6 +679,40 @@ func (ime *IME) Init(req *pime.Request) bool {
 		ime.backend = nil
 	}
 	return true
+}
+
+func (ime *IME) pollRuntimeChange() {
+	userDir := ime.userDir()
+	if userDir == "" {
+		return
+	}
+	event, err := runtimechange.Read(userDir)
+	if err != nil || event.Revision <= ime.runtimeChangeRevision {
+		return
+	}
+	if event.SettingsRevision > ime.settingsChangeRevision {
+		ime.syncStandaloneUISettings()
+		ime.settingsChangeRevision = event.SettingsRevision
+	}
+	if event.LexiconRevision > ime.lexiconChangeRevision {
+		ime.reversePinyinLoaded = map[string]bool{}
+		ime.reversePinyinBySchema = map[string]map[string]string{}
+		ime.yimePinyinLoaded = map[string]bool{}
+		ime.yimePinyinBySchema = map[string]map[string]string{}
+		ime.lexiconChangeRevision = event.LexiconRevision
+	}
+	if event.RedeployRevision > ime.redeployChangeRevision && ime.backend != nil {
+		ime.pendingSchemaRedeploy = ime.currentSchemaID()
+	}
+	ime.redeployChangeRevision = event.RedeployRevision
+	ime.runtimeChangeRevision = event.Revision
+}
+
+func (ime *IME) recordRuntimeChange(event runtimechange.Event) {
+	ime.runtimeChangeRevision = event.Revision
+	ime.settingsChangeRevision = event.SettingsRevision
+	ime.lexiconChangeRevision = event.LexiconRevision
+	ime.redeployChangeRevision = event.RedeployRevision
 }
 
 func (ime *IME) Close() {
@@ -637,6 +725,8 @@ func (ime *IME) BackendAvailable() bool {
 }
 
 func (ime *IME) processKey(req *pime.Request, isUp bool) bool {
+	ime.entryMu.Lock()
+	defer ime.entryMu.Unlock()
 	ime.createSession(nil)
 	if ime.backend == nil {
 		ime.logShortcutTrace(req, isUp, 0, 0, false, false)
@@ -726,7 +816,6 @@ func (ime *IME) shouldPassThroughModifierOnKey(req *pime.Request, filterHandled 
 	return req.KeyStates.IsKeyDown(vkControl) || req.KeyStates.IsKeyDown(vkMenu)
 }
 
-
 func candidateSelectionIndex(req *pime.Request) (int, bool) {
 	switch req.KeyCode {
 	case vkSpace:
@@ -815,15 +904,11 @@ func (ime *IME) handleVisibleCandidateSelectionKey(req *pime.Request) bool {
 	if !ok {
 		return false
 	}
-	state := ime.backend.State()
-	globalIndex := index
-	if !ime.backendUsesCandidatePaging() {
-		globalIndex += ime.candidatePageStart
-	}
-	if globalIndex < 0 || globalIndex >= len(state.Candidates) {
+	backendIndex, ok := ime.mapCandidateSelectionIndex(index)
+	if !ok {
 		return false
 	}
-	if !ime.backend.SelectCandidate(globalIndex) {
+	if !ime.backend.SelectCandidate(backendIndex) {
 		return false
 	}
 	ime.candidatePageStart = 0
@@ -844,7 +929,7 @@ func (ime *IME) onKey(req *pime.Request, resp *pime.Response) bool {
 		ime.keyComposing = false
 		return true
 	}
-	ime.updateLangStatus(req, resp)
+	ime.updateWindowsModeIcon(req, resp)
 	state := ime.backend.State()
 	ime.applyStateToResponse(resp, state)
 	ime.keyComposing = state.Composition != "" || len(state.Candidates) > 0
@@ -880,11 +965,15 @@ func (ime *IME) applyStateToResponse(resp *pime.Response, state rimeState) {
 
 	if len(state.Candidates) > 0 {
 		displayCandidates := ime.reverseLookupDisplayCandidates(state.Candidates)
-		visibleCandidates, cursor := ime.visibleCandidates(displayCandidates, state.CandidateCursor)
+		filtered, indexMap := filterBlockedCandidates(displayCandidates, ime.blockedCandidateSet())
+		ime.candidateBackendIndexMap = indexMap
+		mappedCursor := remapCandidateCursor(state.CandidateCursor, indexMap)
+		visibleCandidates, cursor := ime.visibleCandidates(filtered, mappedCursor)
 		resp.CandidateList = ime.formatCandidates(visibleCandidates)
 		resp.CandidateCursor = cursor
-		resp.ShowCandidates = true
+		resp.ShowCandidates = len(visibleCandidates) > 0
 	} else {
+		ime.candidateBackendIndexMap = nil
 		ime.candidatePageStart = 0
 		resp.ShowCandidates = false
 	}
@@ -947,12 +1036,30 @@ func (ime *IME) createSession(resp *pime.Response) {
 	}
 	if resp != nil {
 		resp.CustomizeUI = map[string]interface{}{
-			"candFontName":  ime.style.FontFace,
+			"candFontName":  ime.candidateFontName(),
 			"candFontSize":  ime.style.FontPoint,
 			"candPerRow":    ime.style.CandidatePerRow,
 			"candUseCursor": ime.style.CandidateUseCursor,
 		}
 	}
+}
+
+func (ime *IME) candidateFontName() string {
+	if ime.reverseLookupDisplayMode == "yime_pinyin" {
+		return "YinYuan"
+	}
+	return ime.style.FontFace
+}
+
+func (ime *IME) applyCandidateFont(resp *pime.Response) {
+	if resp == nil {
+		return
+	}
+	if resp.CustomizeUI == nil {
+		resp.CustomizeUI = map[string]interface{}{}
+	}
+	resp.CustomizeUI["candFontName"] = ime.candidateFontName()
+	ime.pendingCandidateFont = false
 }
 
 func (ime *IME) destroySession(resp *pime.Response) {
@@ -1007,14 +1114,110 @@ func (ime *IME) setCandidateLayout(horizontal bool, resp *pime.Response) {
 			resp.CustomizeUI = map[string]interface{}{}
 		}
 		resp.CustomizeUI["candPerRow"] = ime.style.CandidatePerRow
-		change := pime.ButtonInfo{
-			ID:        "candidate-layout",
-			CommandID: ID_CANDIDATE_LAYOUT_TOGGLE,
-		}
-		if iconPath := ime.iconPath(candidateLayoutIconName(horizontal)); iconPath != "" {
-			change.Icon = iconPath
-		}
-		resp.ChangeButton = append(resp.ChangeButton, change)
+	}
+}
+
+const (
+	langBarToggleLangLabel   = "中西"
+	langBarToggleShapeLabel  = "全半"
+	langBarToggleLayoutLabel = "横竖"
+)
+
+func (ime *IME) appendLangBarToggleAddButtons(resp *pime.Response) {
+	if resp == nil || !ime.style.DisplayTrayIcon || ime.backend == nil {
+		return
+	}
+	asciiMode := ime.backend.GetOption("ascii_mode")
+	fullShape := ime.backend.GetOption("full_shape")
+	horizontal := ime.style.CandidatePerRow > verticalCandidatesPerRow
+
+	langButton := pime.ButtonInfo{
+		ID:        "switch-lang",
+		Text:      langBarToggleLangLabel,
+		Tooltip:   "中西文切换",
+		CommandID: ID_ASCII_MODE,
+		Type:      "button",
+	}
+	if iconPath := ime.iconPath(langIconName(asciiMode)); iconPath != "" {
+		langButton.Icon = iconPath
+	}
+	resp.AddButton = append(resp.AddButton, langButton)
+
+	shapeButton := pime.ButtonInfo{
+		ID:        "switch-shape",
+		Text:      langBarToggleShapeLabel,
+		Tooltip:   "全半宽切换",
+		CommandID: ID_FULL_SHAPE,
+		Type:      "button",
+	}
+	if iconPath := ime.iconPath(shapeIconName(fullShape)); iconPath != "" {
+		shapeButton.Icon = iconPath
+	}
+	resp.AddButton = append(resp.AddButton, shapeButton)
+
+	layoutButton := pime.ButtonInfo{
+		ID:        "candidate-layout",
+		Text:      langBarToggleLayoutLabel,
+		Tooltip:   "横竖排切换",
+		CommandID: ID_CANDIDATE_LAYOUT_TOGGLE,
+		Type:      "button",
+	}
+	if iconPath := ime.iconPath(candidateLayoutIconName(horizontal)); iconPath != "" {
+		layoutButton.Icon = iconPath
+	}
+	resp.AddButton = append(resp.AddButton, layoutButton)
+}
+
+func (ime *IME) appendLangBarButtonIconChange(resp *pime.Response, id, iconName string) {
+	if resp == nil || !ime.style.DisplayTrayIcon {
+		return
+	}
+	iconPath := ime.iconPath(iconName)
+	if iconPath == "" {
+		return
+	}
+	resp.ChangeButton = append(resp.ChangeButton, pime.ButtonInfo{
+		ID:   id,
+		Icon: iconPath,
+	})
+}
+
+func (ime *IME) changeLangBarAsciiButton(resp *pime.Response) {
+	if ime.backend == nil {
+		return
+	}
+	asciiMode := ime.backend.GetOption("ascii_mode")
+	ime.appendLangBarButtonIconChange(resp, "switch-lang", langIconName(asciiMode))
+}
+
+func (ime *IME) changeLangBarShapeButton(resp *pime.Response) {
+	if ime.backend == nil {
+		return
+	}
+	fullShape := ime.backend.GetOption("full_shape")
+	ime.appendLangBarButtonIconChange(resp, "switch-shape", shapeIconName(fullShape))
+}
+
+func (ime *IME) changeLangBarCandidateLayoutButton(resp *pime.Response) {
+	horizontal := ime.style.CandidatePerRow > verticalCandidatesPerRow
+	ime.appendLangBarButtonIconChange(resp, "candidate-layout", candidateLayoutIconName(horizontal))
+}
+
+func (ime *IME) updateWindowsModeIcon(req *pime.Request, resp *pime.Response) {
+	if !ime.style.DisplayTrayIcon || ime.backend == nil {
+		return
+	}
+	if ime.Client == nil || !ime.Client.IsWindows8Above {
+		return
+	}
+	asciiMode := ime.backend.GetOption("ascii_mode")
+	fullShape := ime.backend.GetOption("full_shape")
+	capsOn := req != nil && req.KeyStates.IsKeyToggled(vkCapital)
+	if iconPath := ime.iconPath(modeIconName(asciiMode, fullShape, capsOn)); iconPath != "" {
+		resp.ChangeButton = append(resp.ChangeButton, pime.ButtonInfo{
+			ID:   "windows-mode-icon",
+			Icon: iconPath,
+		})
 	}
 }
 
@@ -1030,36 +1233,6 @@ func (ime *IME) selectSchema(schemaID string) {
 	}
 	if ime.backend.SelectSchema(schemaID) {
 		ime.backend.ClearComposition()
-	}
-}
-
-func (ime *IME) updateLangStatus(req *pime.Request, resp *pime.Response) {
-	if !ime.style.DisplayTrayIcon || ime.backend == nil {
-		return
-	}
-	asciiMode := ime.backend.GetOption("ascii_mode")
-	fullShape := ime.backend.GetOption("full_shape")
-	capsOn := req != nil && req.KeyStates.IsKeyToggled(vkCapital)
-
-	if ime.Client != nil && ime.Client.IsWindows8Above {
-		if iconPath := ime.iconPath(modeIconName(asciiMode, fullShape, capsOn)); iconPath != "" {
-			resp.ChangeButton = append(resp.ChangeButton, pime.ButtonInfo{
-				ID:   "windows-mode-icon",
-				Icon: iconPath,
-			})
-		}
-	}
-	if iconPath := ime.iconPath(langIconName(asciiMode)); iconPath != "" {
-		resp.ChangeButton = append(resp.ChangeButton, pime.ButtonInfo{
-			ID:   "switch-lang",
-			Icon: iconPath,
-		})
-	}
-	if iconPath := ime.iconPath(shapeIconName(fullShape)); iconPath != "" {
-		resp.ChangeButton = append(resp.ChangeButton, pime.ButtonInfo{
-			ID:   "switch-shape",
-			Icon: iconPath,
-		})
 	}
 }
 
@@ -1079,35 +1252,7 @@ func (ime *IME) addButtons(resp *pime.Response) {
 			})
 		}
 	}
-	if iconPath := ime.iconPath(langIconName(asciiMode)); iconPath != "" {
-		resp.AddButton = append(resp.AddButton, pime.ButtonInfo{
-			ID:        "switch-lang",
-			Icon:      iconPath,
-			Text:      "中西文切换",
-			Tooltip:   "中西文切换",
-			CommandID: ID_ASCII_MODE,
-		})
-	}
-	if iconPath := ime.iconPath(shapeIconName(fullShape)); iconPath != "" {
-		resp.AddButton = append(resp.AddButton, pime.ButtonInfo{
-			ID:        "switch-shape",
-			Icon:      iconPath,
-			Text:      "全半宽切换",
-			Tooltip:   "全宽/半宽切换",
-			CommandID: ID_FULL_SHAPE,
-		})
-	}
-	layoutButton := pime.ButtonInfo{
-		ID:        "candidate-layout",
-		Text:      "横竖排切换",
-		Tooltip:   "排列方式",
-		CommandID: ID_CANDIDATE_LAYOUT_TOGGLE,
-		Type:      "button",
-	}
-	if iconPath := ime.iconPath(candidateLayoutIconName(ime.style.CandidatePerRow > verticalCandidatesPerRow)); iconPath != "" {
-		layoutButton.Icon = iconPath
-	}
-	resp.AddButton = append(resp.AddButton, layoutButton)
+	ime.appendLangBarToggleAddButtons(resp)
 	lexiconButton := pime.ButtonInfo{
 		ID:        "lexicon-manager",
 		Text:      "用户词库",
@@ -1119,6 +1264,17 @@ func (ime *IME) addButtons(resp *pime.Response) {
 		lexiconButton.Icon = iconPath
 	}
 	resp.AddButton = append(resp.AddButton, lexiconButton)
+	reverseLookupButton := pime.ButtonInfo{
+		ID:        "reverse-lookup",
+		Text:      "反查编码",
+		Tooltip:   "反查编码",
+		CommandID: ID_REVERSE_LOOKUP_TOOL,
+		Type:      "button",
+	}
+	if iconPath := ime.iconPath("reverse-lookup.ico"); iconPath != "" {
+		reverseLookupButton.Icon = iconPath
+	}
+	resp.AddButton = append(resp.AddButton, reverseLookupButton)
 	if iconPath := ime.iconPath("config.ico"); iconPath != "" {
 		resp.AddButton = append(resp.AddButton, pime.ButtonInfo{
 			ID:   "settings",
@@ -1193,7 +1349,7 @@ func (ime *IME) reverseLookupDisplayCandidates(candidates []candidateItem) []can
 	case "yime_pinyin":
 		display := append([]candidateItem(nil), candidates...)
 		for i := range display {
-			display[i].Comment = ime.lookupYimePinyin(display[i].Text)
+			display[i].Comment = ime.lookupYimePinyin(display[i].Text, display[i].Comment)
 		}
 		return display
 	default:
@@ -1278,15 +1434,78 @@ func (ime *IME) reversePinyinLookup() map[string]string {
 	return ime.reversePinyinBySchema[schemaID]
 }
 
-func (ime *IME) lookupYimePinyin(text string) string {
-	lookup := ime.yimePinyinLookup()
-	if len(lookup) == 0 {
+func (ime *IME) lookupYimePinyin(text, candidateCode string) string {
+	reverseLookup := ime.reversePinyinLookup()
+	puaLookup := ime.yimePUALookup()
+	if len(reverseLookup) == 0 || len(puaLookup) == 0 {
 		return ""
 	}
-	if value := lookup[strings.TrimSpace(text)]; value != "" {
-		return value
+	if pua, ok := yimeCodeToPUA(strings.TrimSpace(candidateCode), reverseLookup, puaLookup); ok {
+		return pua
 	}
-	return joinRuneLookup(text, lookup, "")
+
+	codeLookup := ime.yimePinyinLookup()
+	code := codeLookup[strings.TrimSpace(text)]
+	if code != "" {
+		if pua, ok := yimeCodeToPUA(code, reverseLookup, puaLookup); ok {
+			return pua
+		}
+	}
+
+	parts := make([]string, 0, utf8.RuneCountInString(text))
+	for _, r := range text {
+		pua, ok := yimeCodeToPUA(codeLookup[string(r)], reverseLookup, puaLookup)
+		if !ok {
+			parts = append(parts, "?")
+			continue
+		}
+		parts = append(parts, pua)
+	}
+	return strings.Join(parts, "")
+}
+
+func yimeCodeToPUA(code string, reverseLookup, puaLookup map[string]string) (string, bool) {
+	if code == "" {
+		return "", false
+	}
+	numericParts, ok := splitYimeCodeToNumericTonePinyin(code, reverseLookup)
+	if !ok {
+		return "", false
+	}
+	var converted strings.Builder
+	for _, numericPinyin := range numericParts {
+		pua := puaLookup[normalizeNumericTonePinyin(numericPinyin)]
+		if pua == "" {
+			return "", false
+		}
+		converted.WriteString(pua)
+	}
+	return converted.String(), true
+}
+
+func (ime *IME) yimePUALookup() map[string]string {
+	if ime.yimePUALoaded {
+		return ime.yimePUAByPinyin
+	}
+	ime.yimePUALoaded = true
+	ime.yimePUAByPinyin = map[string]string{}
+	data, err := os.ReadFile(filepath.Join(ime.sharedDir(), "yime_pua_pinyin.json"))
+	if err != nil {
+		return ime.yimePUAByPinyin
+	}
+	var pinyinByPUA map[string][]string
+	if err := json.Unmarshal(data, &pinyinByPUA); err != nil {
+		return ime.yimePUAByPinyin
+	}
+	for pua, pinyinValues := range pinyinByPUA {
+		for _, pinyin := range pinyinValues {
+			key := normalizeNumericTonePinyin(pinyin)
+			if key != "" {
+				ime.yimePUAByPinyin[key] = pua
+			}
+		}
+	}
+	return ime.yimePUAByPinyin
 }
 
 func (ime *IME) yimePinyinLookup() map[string]string {
@@ -1496,13 +1715,15 @@ func (ime *IME) buildMenu() []map[string]interface{} {
 		{"text": "候选项数", "submenu": ime.buildCandidatePageSizeMenu()},
 		{"text": "显示编码", "submenu": ime.buildReverseLookupMenu()},
 		{"text": ""},
-		{"id": ID_DEPLOY, "text": "重新部署 Rime(&D)"},
-		{"id": ID_SYNC, "text": "同步 Rime 用户数据(&S)"},
-		{"text": "打开数据与日志文件夹(&O)", "submenu": []map[string]interface{}{
-			{"id": ID_USER_DIR, "text": "用户 Rime 数据目录"},
-			{"id": ID_SHARED_DIR, "text": "内置共享数据目录"},
-			{"id": ID_SYNC_DIR, "text": "Rime 同步目录"},
-			{"id": ID_LOG_DIR, "text": "PIME 日志目录"},
+		{"text": "数据维护", "submenu": []map[string]interface{}{
+			{"id": ID_SYNC, "text": "同步数据…(&S)"},
+			{"id": ID_DEPLOY, "text": "重新部署…(&D)"},
+			{"text": "打开目录(&O)", "submenu": []map[string]interface{}{
+				{"id": ID_USER_DIR, "text": "用户 Rime 数据目录"},
+				{"id": ID_SHARED_DIR, "text": "内置共享数据目录"},
+				{"id": ID_SYNC_DIR, "text": "Rime 同步目录"},
+				{"id": ID_LOG_DIR, "text": "PIME 日志目录"},
+			}},
 		}},
 	}
 }
@@ -1572,14 +1793,6 @@ func (ime *IME) helpDocumentPath(name string) string {
 		return htmlPath
 	}
 	return filepath.Join(helpDir, name+".md")
-}
-
-func (ime *IME) toolLauncherPath() string {
-	exePath, err := os.Executable()
-	if err != nil {
-		return ""
-	}
-	return filepath.Join(filepath.Dir(exePath), "tool-launcher.exe")
 }
 
 func (ime *IME) userLexiconPath() string {
@@ -1665,6 +1878,14 @@ func (ime *IME) applyUserLexicon() error {
 			return fmt.Errorf("写入 %s 模式词库失败: %w", mode, err)
 		}
 	}
+	userDir := ime.userDir()
+	sharedDir := ime.sharedDir()
+	if err := userlexicon.SyncRimeSchemas(sharedDir, userDir); err != nil {
+		return err
+	}
+	if !runRimeExternalBuild(sharedDir, userDir) {
+		log.Printf("external rime_deployer build unavailable or failed for user lexicon update; sharedDir=%s userDir=%s", sharedDir, userDir)
+	}
 	if ime.backend == nil {
 		return nil
 	}
@@ -1672,7 +1893,8 @@ func (ime *IME) applyUserLexicon() error {
 	if schemaID == "" {
 		schemaID = "yime_variable"
 	}
-	ime.selectSchema(schemaID)
+	ime.pendingSchemaRedeploy = schemaID
+	ime.reloadBackendSessionForSchema(schemaID)
 	return nil
 }
 
@@ -1729,11 +1951,15 @@ func (ime *IME) loadPinyinCodeMap() (map[string]pinyinCodeRecord, error) {
 			continue
 		}
 		fields := strings.Split(line, "\t")
-		if len(fields) != 4 {
+		if len(fields) < 2 {
 			continue
 		}
 		key := normalizeNumericTonePinyin(fields[0])
-		record := pinyinCodeRecord{Full: fields[1], Variable: fields[2], Shorthand: fields[3]}
+		derived, err := codemode.BuildRecord(fields[1])
+		if err != nil {
+			return nil, fmt.Errorf("拼音编码表中的等长码无效（%s）: %w", fields[0], err)
+		}
+		record := pinyinCodeRecord{Full: derived.Full, Variable: derived.Variable, Shorthand: derived.Shorthand}
 		records[key] = record
 		if strings.Contains(key, "ü") {
 			records[strings.ReplaceAll(key, "ü", "v")] = record
@@ -2046,7 +2272,8 @@ func (ime *IME) setCandidatePageSize(size int) error {
 		// Do not call RimeRedeploy here. Full redeploy during a language-bar click
 		// invalidates librime inside the TSF callback and breaks subsequent menu
 		// clicks such as reverse-lookup "仅音元拼音". Use a lightweight session
-		// reload instead; full cache invalidation stays on the "重新部署" command.
+		// reload instead. Explicit maintenance also builds out of process and
+		// reloads only the session at a safe request boundary.
 		if !runRimeExternalBuild(ime.sharedDir(), userDir) {
 			log.Printf("external rime_deployer build unavailable; falling back to session reload for %s", schemaID)
 		}
@@ -2061,26 +2288,94 @@ func (ime *IME) setCandidatePageSize(size int) error {
 	return nil
 }
 
-// redeployBackend re-runs a full RIME deployment for the current schema. It is
-// used by the "重新部署" menu command to let users force configuration to be
-// recompiled and reloaded.
-func (ime *IME) redeployBackend() {
+// startSafeRimeRedeploy keeps the native maintenance command available without
+// finalizing librime inside PIME's language-bar callback. The external deployer
+// builds on a worker goroutine; a runtime marker then asks active IME sessions
+// to recreate only their own session at the next safe request boundary.
+func (ime *IME) startSafeRimeRedeploy() {
 	if ime.backend == nil {
 		ime.showUserMessage("重新部署", "Rime 后端不可用，无法重新部署。\n请尝试重启输入法或检查安装。", "Warning")
 		return
 	}
-	defer func() {
-		if r := recover(); r != nil {
-			log.Printf("重新部署期间发生异常: %v", r)
-			ime.showUserMessage("重新部署异常", "重新部署过程中发生异常，输入法可能不稳定。\n建议重启输入法（注销或重启 PIMELauncher）。\n异常: "+fmt.Sprintf("%v", r), "Error")
-		}
-	}()
+	if rimeMaintenanceRunning.Load() {
+		ime.showUserMessage("数据维护", "已有 Rime 维护任务正在运行，请等待其完成。", "Information")
+		return
+	}
+	if !confirmRimeRedeployAction() {
+		return
+	}
+	if !rimeMaintenanceRunning.CompareAndSwap(false, true) {
+		ime.showUserMessage("数据维护", "已有 Rime 维护任务正在运行，请等待其完成。", "Information")
+		return
+	}
 	schemaID := ime.backend.CurrentSchema()
 	if schemaID == "" {
 		schemaID = "yime_variable"
 	}
-	ime.reloadBackendForSchema(schemaID)
-	ime.showUserMessage("重新部署", "Rime 已完成重新部署。", "Information")
+	sharedDir, userDir := ime.sharedDir(), ime.userDir()
+	if sharedDir == "" || userDir == "" {
+		rimeMaintenanceRunning.Store(false)
+		ime.showUserMessage("重新部署失败", "无法确定 Rime 数据目录，未开始重新部署。", "Error")
+		return
+	}
+	scheduleRimeMaintenance(func() {
+		defer rimeMaintenanceRunning.Store(false)
+		defer func() {
+			if r := recover(); r != nil {
+				log.Printf("后台重新部署期间发生异常: %v", r)
+				ime.showUserMessage("重新部署失败", "后台重新部署发生异常。该流程不会恢复默认词库或清空用户词库源文件。\n异常: "+fmt.Sprintf("%v", r), "Error")
+			}
+		}()
+		if !runRimeExternalBuild(sharedDir, userDir) {
+			ime.showUserMessage("重新部署失败", "Rime 后台构建未成功。当前用户配置和词库源文件没有被恢复或清空。\n请检查 PIME 日志后再处理。", "Error")
+			return
+		}
+		if err := validateCompiledRimeSchema(userDir, schemaID); err != nil {
+			log.Printf("重新部署结果校验失败: %v", err)
+			ime.showUserMessage("重新部署失败", "后台构建结束，但当前方案未通过结果校验，因此不会切换会话。\n错误: "+err.Error(), "Error")
+			return
+		}
+		if _, err := runtimechange.Notify(userDir, runtimechange.ScopeRedeploy, true); err != nil {
+			log.Printf("写入重新部署通知失败: %v", err)
+			ime.showUserMessage("重新部署未完全完成", "Rime 数据已经构建，但无法通知当前输入会话刷新。\n重新切换输入法或重启 PIMELauncher 后即可载入。\n错误: "+err.Error(), "Warning")
+			return
+		}
+		ime.showUserMessage("重新部署完成", "Rime 运行数据已在后台重新构建。当前方案保持为“"+schemaID+"”，下一次输入时会安全地重建会话。", "Information")
+	})
+}
+
+func validateCompiledRimeSchema(userDir, schemaID string) error {
+	schemaID = strings.TrimSpace(schemaID)
+	if schemaID == "" || schemaID == "." || schemaID == ".." || filepath.Base(schemaID) != schemaID {
+		return fmt.Errorf("当前方案 ID 无效: %q", schemaID)
+	}
+	path := filepath.Join(userDir, "build", schemaID+".schema.yaml")
+	info, err := os.Stat(path)
+	if err != nil {
+		return fmt.Errorf("没有生成当前方案 %s: %w", schemaID, err)
+	}
+	if info.IsDir() || info.Size() == 0 {
+		return fmt.Errorf("当前方案编译结果为空: %s", path)
+	}
+	return nil
+}
+
+func (ime *IME) confirmAndSyncBackendUserData() {
+	if rimeMaintenanceRunning.Load() {
+		ime.showUserMessage("数据维护", "已有 Rime 维护任务正在运行，请等待其完成。", "Information")
+		return
+	}
+	if !confirmRimeSyncAction() {
+		return
+	}
+	if !rimeMaintenanceRunning.CompareAndSwap(false, true) {
+		ime.showUserMessage("数据维护", "已有 Rime 维护任务正在运行，请等待其完成。", "Information")
+		return
+	}
+	defer rimeMaintenanceRunning.Store(false)
+	if !ime.syncBackendUserData() {
+		log.Println("同步用户数据失败或后端未提供该能力")
+	}
 }
 
 func (ime *IME) syncBackendUserData() bool {
@@ -2105,44 +2400,31 @@ func (ime *IME) syncBackendUserData() bool {
 // reloadBackendSessionForSchema recreates the current Rime session without a
 // full redeploy. It is safe to call from language-bar commands such as page
 // size changes. It does not invalidate librime's compiled config cache.
-func (ime *IME) reloadBackendSessionForSchema(schemaID string) {
+func (ime *IME) reloadBackendSessionForSchema(schemaID string) bool {
 	if ime.backend == nil {
-		return
+		return false
 	}
 	var savedComposition string
 	if state := ime.backend.State(); state.Composition != "" {
 		savedComposition = state.Composition
 	}
 	ime.backend.DestroySession()
-	if ime.backend.EnsureSession() {
-		ime.backend.SelectSchema(schemaID)
-		ime.backend.ClearComposition()
-		if savedComposition != "" {
-			for _, ch := range savedComposition {
-				ime.backend.ProcessKey(&pime.Request{CharCode: int(ch)}, int(ch), 0)
-			}
+	if !ime.backend.EnsureSession() {
+		return false
+	}
+	if !ime.backend.SelectSchema(schemaID) {
+		// Do not silently leave the freshly created session on a different Rime
+		// schema. That can look like an unexpected fallback dictionary.
+		ime.backend.DestroySession()
+		return false
+	}
+	ime.backend.ClearComposition()
+	if savedComposition != "" {
+		for _, ch := range savedComposition {
+			ime.backend.ProcessKey(&pime.Request{CharCode: int(ch)}, int(ch), 0)
 		}
 	}
-}
-
-// reloadBackendForSchema makes freshly written RIME configuration take effect.
-// Native RIME caches compiled schema configs in memory, so per-file deploys are
-// not enough: a full redeploy is required to invalidate that cache. This path
-// is reserved for the explicit "重新部署" command, not language-bar clicks.
-func (ime *IME) reloadBackendForSchema(schemaID string) {
-	if ime.backend == nil {
-		return
-	}
-	if redeployer, ok := ime.backend.(backendRedeployer); ok {
-		if redeployer.Redeploy() {
-			if ime.backend.SelectSchema(schemaID) {
-				ime.backend.ClearComposition()
-			}
-			return
-		}
-		log.Println("Rime 重新部署失败，回退到重建会话")
-	}
-	ime.reloadBackendSessionForSchema(schemaID)
+	return true
 }
 
 func runRimeExternalBuildDefault(sharedDir, userDir string) bool {
@@ -2166,7 +2448,6 @@ func findRimeExternalDeployer(sharedDir string) string {
 	candidates := []string{
 		filepath.Join(filepath.Dir(sharedDir), "rime_deployer.exe"),
 		filepath.Join(filepath.Clean(filepath.Join(sharedDir, "..", "..", "..", "..", "..", "librime", "build", "bin", "Release")), "rime_deployer.exe"),
-
 	}
 	for _, candidate := range candidates {
 		if _, err := os.Stat(candidate); err == nil {
@@ -2382,7 +2663,10 @@ func (ime *IME) applyPendingSchemaRedeploy() {
 		return
 	}
 	ime.pendingSchemaRedeploy = ""
-	ime.reloadBackendForSchema(schemaID)
+	if !ime.reloadBackendSessionForSchema(schemaID) {
+		log.Printf("载入外部构建的 Rime 数据失败，未切换到其他方案: %s", schemaID)
+		ime.showUserMessage("Rime 会话刷新失败", "运行数据已经构建，但当前方案“"+schemaID+"”未能重新载入。\n为避免误用其他词库，会话已关闭；请重新切换输入法或检查诊断日志。", "Error")
+	}
 }
 
 func (ime *IME) shouldApplyPendingSchemaRedeploy(method string) bool {
@@ -2431,9 +2715,7 @@ func (ime *IME) copyTextToClipboard(text string) {
 	if text == "" {
 		return
 	}
-	cmd := exec.Command("powershell.exe", "-NoProfile", "-Command", "Set-Clipboard -Value ([Console]::In.ReadToEnd())")
-	cmd.Stdin = strings.NewReader(text)
-	if err := cmd.Start(); err != nil {
+	if err := win32CopyToClipboard(text); err != nil {
 		log.Printf("复制到剪贴板失败: %v", err)
 		ime.showUserMessage("复制失败", "无法复制到剪贴板。\n错误: "+err.Error(), "Error")
 	}
@@ -2479,6 +2761,27 @@ func modeIconName(asciiMode, fullShape, capsOn bool) string {
 		caps = "on"
 	}
 	return lang + "_" + shape + "_caps" + caps + ".ico"
+}
+
+func langButtonText(asciiMode bool) string {
+	if asciiMode {
+		return "西文"
+	}
+	return "中文"
+}
+
+func shapeButtonText(fullShape bool) string {
+	if fullShape {
+		return "全宽"
+	}
+	return "半宽"
+}
+
+func candidateLayoutButtonText(horizontal bool) string {
+	if horizontal {
+		return "横排"
+	}
+	return "竖排"
 }
 
 func langIconName(asciiMode bool) string {

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.11)
+cmake_minimum_required(VERSION 3.5...4.0)
 
 # override default c/c++ flags, add /MT to link VC++ runtime statically.
 # NOTE: these two lines should go before the project() command according to CMake FAQ:
@@ -26,6 +26,27 @@ add_definitions(
     -D_WIN32_WINNT=0x0600
 )
 
+enable_testing()
+
+# Generate PDB debug info for Release builds so the C++ TSF DLL/EXEs can be
+# debugged without switching to a slower Debug config. Default ON for dev
+# convenience; pass -DPIME_RELEASE_DEBUG_INFO=OFF for a lean release ship build.
+# Flags are appended (not replaced) and guarded against duplicates so repeated
+# reconfigures do not accumulate /Zi or /DEBUG.
+option(PIME_RELEASE_DEBUG_INFO "Generate PDB debug info for Release builds" ON)
+if(PIME_RELEASE_DEBUG_INFO AND MSVC)
+    foreach(_lang C CXX)
+        if(NOT CMAKE_${_lang}_FLAGS_RELEASE MATCHES "/Zi")
+            set(CMAKE_${_lang}_FLAGS_RELEASE "${CMAKE_${_lang}_FLAGS_RELEASE} /Zi" CACHE STRING "Release ${_lang} flags" FORCE)
+        endif()
+    endforeach()
+    foreach(_link SHARED_LINKER EXE_LINKER)
+        if(NOT CMAKE_${_link}_FLAGS_RELEASE MATCHES "/DEBUG")
+            set(CMAKE_${_link}_FLAGS_RELEASE "${CMAKE_${_link}_FLAGS_RELEASE} /DEBUG /OPT:REF /OPT:ICF" CACHE STRING "Release ${_link} flags" FORCE)
+        endif()
+    endforeach()
+endif()
+
 add_subdirectory(${PROJECT_SOURCE_DIR}/libIME2)
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/PIMETextService)
@@ -34,14 +55,25 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/PIMETextService)
 if("${CMAKE_SIZEOF_VOID_P}" EQUAL "4")
     include(FetchContent)
 
+    # Pin the Rust toolchain to the 32-bit (i686) host so that host == target ==
+    # i686-pc-windows-msvc (target set by PIMELauncher/.cargo/config.toml). This
+    # AVOIDS cross-compilation: with an x86_64 host, Corrosion (even v0.6.1) leaks
+    # the i686 target MSVC lib paths into the host-side build-scripts / proc-macros
+    # (serde, getrandom, proc-macro2, ...), producing LNK4272 machine-type conflicts
+    # and 145+ unresolved externals. With an i686 host there is no host/target split
+    # and build-scripts link correctly. Requires: rustup toolchain install
+    # stable-i686-pc-windows-msvc  (i686 binaries run on x64 Windows via WoW64).
+    set(Rust_TOOLCHAIN "stable-i686-pc-windows-msvc" CACHE STRING "Rust toolchain for 32-bit PIMELauncher build")
+
+    # Corrosion v0.6.1 (2026-01-17) fixes host linker detection for build-scripts
+    # and proc-macros and adds CORROSION_HOST_TARGET_LINKER. v0.6.1 is the latest
+    # release as of 2026-07.
     FetchContent_Declare(
         Corrosion
         GIT_REPOSITORY https://github.com/corrosion-rs/corrosion.git
-        GIT_TAG v0.6 # Optionally specify a commit hash, version tag or branch here
+        GIT_TAG v0.6.1
     )
     FetchContent_MakeAvailable(Corrosion)
 
     add_subdirectory(${PROJECT_SOURCE_DIR}/PIMELauncher)
 endif("${CMAKE_SIZEOF_VOID_P}" EQUAL "4")
-
-enable_testing()

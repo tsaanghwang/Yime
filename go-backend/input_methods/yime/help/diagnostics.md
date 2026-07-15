@@ -1,9 +1,10 @@
 # Diagnostics
 
-This is the placeholder diagnostics-side guide for the standalone Yime tools
-direction.
+Standalone diagnostics for Yime are provided by `diagnostics-tool.exe` (Chinese
+UI), launched from the tool hub or wired through the same manifest as other
+native tools.
 
-Use this page as the stable landing point for future work such as:
+Use this page as the stable landing point for troubleshooting flows such as:
 
 - log collection
 - runtime path checks

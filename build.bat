@@ -3,8 +3,9 @@ setlocal
 
 if /I not "%~1"=="--sanitized" (
 	powershell -NoProfile -ExecutionPolicy Bypass -Command ^
-		"$path = [System.Environment]::GetEnvironmentVariable('Path', 'Process'); $script = '%~f0'; Remove-Item Env:PATH -ErrorAction SilentlyContinue; $env:Path = $path; & $script --sanitized" 
-	exit /b %errorlevel%
+		"$path = [System.Environment]::GetEnvironmentVariable('Path', 'Process'); $script = '%~f0'; Remove-Item Env:PATH -ErrorAction SilentlyContinue; $env:Path = $path; & $script --sanitized; exit $LASTEXITCODE"
+	if errorlevel 1 exit /b 1
+	exit /b 0
 )
 
 set "ROOT_DIR=%~dp0"
@@ -33,7 +34,26 @@ if errorlevel 1 (
 :cmake_found
 
 call "%VS_DEV_CMD%" -arch=x86 -host_arch=x64 >nul || exit /b 1
-"%CMAKE_EXE%" . -Bbuild -G "Visual Studio 17 2022" -A Win32 -DCMAKE_POLICY_VERSION_MINIMUM=3.5 || exit /b 1
+rem Older build trees may have an empty generator-platform field. That field alone
+rem does not prove the tree is Win32: a host-default x64 tree looks identical in
+rem CMakeCache.txt. Reuse it only when the generated solution explicitly says
+rem Win32; otherwise stop before an x64 DLL can be packaged as x86.
+set "WIN32_CMAKE_PLATFORM=-A Win32"
+if exist "build\CMakeCache.txt" (
+	%SystemRoot%\System32\findstr.exe /x /c:"CMAKE_GENERATOR_PLATFORM:INTERNAL=" "build\CMakeCache.txt" >nul
+	if not errorlevel 1 (
+		%SystemRoot%\System32\findstr.exe /c:"|Win32" "build\PIME.sln" >nul 2>&1
+		if errorlevel 1 (
+			echo [ERROR] build uses an ambiguous legacy CMake cache and is not a Win32 solution.
+			echo [ERROR] Move or remove the build directory, then run Build.cmd again.
+			exit /b 1
+		) else (
+			echo Reusing verified legacy Win32 CMake cache with an empty generator-platform field.
+			set "WIN32_CMAKE_PLATFORM="
+		)
+	)
+)
+"%CMAKE_EXE%" . -Bbuild -G "Visual Studio 17 2022" %WIN32_CMAKE_PLATFORM% -DCMAKE_POLICY_VERSION_MINIMUM=3.5 || exit /b 1
 "%CMAKE_EXE%" --build build --config Release --target PIMETextService || exit /b 1
 call :build_pimelauncher || exit /b 1
 
@@ -49,21 +69,13 @@ if defined SKIP_ARM64 (
 	"%CMAKE_EXE%" --build build_arm64 --config Release --target PIMETextService || exit /b 1
 )
 
+echo "Verify native PE architectures"
+powershell -NoProfile -ExecutionPolicy Bypass -File "%ROOT_DIR%\tools\verify-pe-architectures.ps1" -RepoRoot "%ROOT_DIR%" || exit /b 1
+
 echo "Start building go-backend"
 pushd go-backend || exit /b 1
 cmd /C build.bat || exit /b 1
 popd
-
-echo "Start building McBopomofo"
-pushd McBopomofoWeb || exit /b 1
-cmd /C npm install || exit /b 1
-cmd /C npm run build:pime || exit /b 1
-popd
-
-echo "Copy McBopomofo to node\input_methods\McBopomofo"
-cmd /C rd /s /q node\input_methods\McBopomofo
-cmd /C mkdir node\input_methods\McBopomofo || exit /b 1
-cmd /C xcopy /s /q /y /f McBopomofoWeb\output\pime node\input_methods\McBopomofo\. || exit /b 1
 
 echo "Refresh test install command files"
 powershell -NoProfile -ExecutionPolicy Bypass -File "%ROOT_DIR%\tools\refresh-dev-test-cmds.ps1" -RepoRoot "%ROOT_DIR%" || exit /b 1
