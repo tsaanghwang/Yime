@@ -19,7 +19,6 @@
 
 #ifndef _PIME_CLIENT_H_
 #define _PIME_CLIENT_H_
-#define NDEBUG
 #include "PIMELangBarButton.h"
 #include <libIME2/src/EditSession.h>
 #include <libIME2/src/KeyEvent.h>

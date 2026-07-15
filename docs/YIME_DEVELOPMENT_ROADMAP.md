@@ -307,7 +307,7 @@ setCandidatePageSize(size)
 
 ### 子模块推送（CI 必做）
 
-Yime 的 `libIME2`、`McBopomofoWeb` 等子模块指向 `tsaanghwang/*` fork。主仓库引用新 SHA 之前，必须先把对应 commit 推到子模块 remote：
+Yime 的活动构建子模块 `libIME2` 指向 `tsaanghwang/libIME2` fork。主仓库引用新 SHA 之前，必须先把对应 commit 推到子模块 remote。McBopomofoWeb、libchewing 和 Python brise 已从仓库永久删除：
 
 ```powershell
 cd libIME2

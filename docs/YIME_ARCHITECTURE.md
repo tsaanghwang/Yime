@@ -601,12 +601,12 @@ NSIS 的必装主组件包含 PIMELauncher、`backends.json` 和完整 `go-backe
 `.github/workflows/ci.yaml`（触发分支：yime-stable）
 
 ```
-checkout(含子模块) → Rust test → cmake build + CTest → go build + vet + 全量测试 → McBopomofo → 标签签名 → NSIS → 签名验证 → artifact
+checkout（仅活动 `libIME2` 子模块）→ Rust test → cmake build + CTest → go build + vet + 全量测试 + race → 标签签名 → NSIS → 签名验证 → artifact
 ```
 
 关键步骤：
 - `windows-2022` 运行器
-- **子模块必须先推到 fork remote**（`libIME2`、`McBopomofoWeb` 等），否则 checkout 失败
+- **活动子模块必须先推到 fork remote**（当前为 `libIME2`），否则 checkout 失败；退役的 Python/Node/McBopomofo/libchewing 历史源码不参与产品构建和安装
 - 内联 vswhere + VsDevCmd 设置（非 ilammy/msvc-dev-cmd）
 - CMake 构建用 `shell: cmd` 确保 VsDevCmd 环境持久
 - rime-frost 数据获取步骤

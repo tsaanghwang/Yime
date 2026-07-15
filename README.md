@@ -28,12 +28,8 @@ go-backend/              Go backend: Yime IME logic, Rime integration, standalon
     help/                User-facing help documents
 PIMETextService/         TSF text service host (C++/COM)
 PIMELauncher/            Process launcher and monitor (Rust)
-python/                  Python-side support components
-node/                    Node-side support components
 installer/               NSIS installer assets
 libIME2/                 Upstream IME library
-libchewing/              Upstream chewing library
-McBopomofoWeb/           Upstream Bopomofo components
 docs/                    Development documentation
 ```
 
@@ -53,7 +49,6 @@ The encoding, lexicon, and experiment-heavy prototype work lives in the separate
 - [CMake](https://cmake.org/) 3.0+
 - [Rust](https://rustup.rs/) with the `stable-i686-pc-windows-msvc` host toolchain
 - [Go](https://go.dev/) 1.21+
-- [Node.js](https://nodejs.org/) 18+
 - [Git](https://git-scm.com/)
 
 ## Build
@@ -63,10 +58,10 @@ The encoding, lexicon, and experiment-heavy prototype work lives in the separate
 ```powershell
 git clone git@github.com:tsaanghwang/Yime.git
 cd Yime
-git submodule update --init
+git submodule update --init libIME2
 ```
 
-Submodules such as `libIME2` and `McBopomofoWeb` point at `tsaanghwang/*` forks.
+The active `libIME2` submodule points at the maintained `tsaanghwang/libIME2` fork.
 If you bump a submodule SHA in Yime, push that commit to the submodule remote
 **before** pushing the main repository, or CI checkout will fail.
 

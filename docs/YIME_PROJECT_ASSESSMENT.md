@@ -1,8 +1,8 @@
 # Yime 项目综合评估与收口报告
 
-> 评估日期：2026-07-14
+> 评估日期：2026-07-15
 >
-> 适用基线：`yime-stable` 分支、`196c326b` 安装态验证及本轮工程门禁收口修改
+> 适用基线：`yime-stable` 分支、`42a79389` 及其后本轮 CI/TSF 收口修改
 >
 > 相关文档：[架构](YIME_ARCHITECTURE.md) | [测试](YIME_TESTING_GUIDE.md) | [发布与签名](YIME_RELEASE_AND_SIGNING.md) | [原生 UI](YIME_NATIVE_UI_GUIDELINES.md)
 
@@ -21,7 +21,7 @@ Yime 已从“功能基本可用但工具链和安装态边界不稳定”进入
 | 活动会话刷新 | 已完成 | 设置、词库和 redeploy 使用独立累积修订号，不再互相覆盖 |
 | 语言栏 | 已清理 | 保留静态标签和稳定命令 ID；高风险点击路径有回归测试 |
 | 构建与打包 | 稳定 | 8 个 Go EXE 可复现、统一图标、包内不携带 Go 源码 |
-| CI 与测试 | 完整度较高 | Go、Rust、CTest 和发布守卫均进入流水线；关键测试名先枚举校验，避免重命名后静默少跑 |
+| CI 与测试 | 完整度较高 | Go、Go race、Rust、CTest 和发布守卫均进入流水线；MSYS2 UCRT64 GCC 由 CI 显式安装，构建守卫防止 race 步骤被静默删除 |
 | 正式签名发布 | 流程已具备 | 开发版本已改为 `1.4.0-dev`；尚需确定实际发布版本、更新 Changelog，并完成受信任签名产物验证 |
 | 安装态验证 | 清单已跑完 | 2026-07-12 完成逐项验证并留痕：干净全量重装、哈希全同步、重启自启动实测、7 工具入口、TIP 注册与真实组词日志、CodeIntegrity 审计核查、runtimechange 协议；详见[安装态验证留痕](YIME_INSTALL_VERIFICATION_2026-07-12.md) |
 
@@ -58,7 +58,7 @@ Yime 已从“功能基本可用但工具链和安装态边界不稳定”进入
 - CI 明确区分 `YIME-unsigned-test-installer` 和 `YIME-signed-installer`。
 - 修复 Win32 剪贴板写入失败路径中的 `HGLOBAL` 泄漏，以及 Rust 集成测试临时目录泄漏。
 - 修复开发卸载残留卸载项导致 `$INSTDIR` 变空、文件误写盘符根目录的问题；安装初始化保留默认路径并增加二次兜底。
-- Yime Go 后端进入 NSIS 必装主组件；标准安装不再默认选择旧 Python Chewing，旧输入法仅保留在完整安装中。
+- Yime Go 后端进入 NSIS 必装主组件；安装器、日常构建和 CI 均不再构建或交付旧 Python、Node、McBopomofo、libchewing 输入法。
 - 应用用户词库前同步三套共享 schema 到用户目录，升级遗留的 `custom_phrase` 引用不会再阻断 full/shorthand 用户词。
 - 修复反查加载测试 fixture：单一等长真源重构后 `full` 列需为 4 的倍数，旧 `b`/`zh` 短码改为 `~~dd`/`zzzz` 等合规等长码。
 - 配置本机 MSYS2 UCRT64 GCC 16.1.0（`go env CC` 持久化），`go test -race ./...` 全量通过，补齐此前缺失的竞态检测完成证明。
@@ -113,8 +113,12 @@ git diff --check
 
 未纳入本轮完成证明：
 
-- 最终发布版本：当前仍为 `1.4.0-dev`，创建公开标签前必须确定 beta/rc/正式版本并更新 Changelog。
-- 可信签名验证：本机没有用于本次构建的正式发布证书，尚未生成和验证公开受信任的完整签名安装包。
+- **待办——最终发布版本**：当前仍为 `1.4.0-dev`。历史仓库已经存在 `v1.0.0`、`v1.1.0` 和后续标签，不能把当前发行重新标记为同名 `v1.0.0`；创建公开标签前仍须确定未占用的 beta/rc/正式版本并更新 Changelog。
+- **待办——可信签名**：证书正在办理，尚未生成和验证公开受信任的完整签名安装包。
+- **待办——签名后验收**：受签名事项阻塞；签名完成后必须重建、重装并重新执行 TSF、工具入口、语言栏菜单和 CodeIntegrity 清单。
+- **待办——真实 x86 宿主烟雾测试**：`C:\Windows\SysWOW64\charmap.exe` 的 PE machine 为 `0x014C`，可作为真实 32 位 TSF 宿主；最终安装包需在该进程中完成激活、组字、候选和上屏验证。
+- **已完成——x64 charmap 宿主烟雾测试**：2026-07-15 已在 `C:\Windows\System32\charmap.exe` 的搜索框和复制框完成组词与上屏；当前进程路径表明这是 x64 宿主，不能替代上一项 x86 验证。
+- ~~**仓库物理裁剪**：~~ 2026-07-15 已获明确授权并完成；旧 Python、Node、McBopomofoWeb、libchewing 目录及对应子模块记录已永久删除。
 
 ## 5. 开发版与发行版边界
 
@@ -146,7 +150,7 @@ git diff --check
 ### 可接受的开发期限制
 
 - 未签名开发包可能被 Smart App Control 或企业 Application Control 阻止。
-- Go race detector 依赖本机 MSYS2 UCRT64 GCC；`go env CC` 已持久化指向 `C:\msys64\ucrt64\bin\gcc.exe`，CI 仍需在具备 C 工具链的 runner 上才能执行 `-race`。不得删除现有并发压力测试。
+- Go race detector 依赖 MSYS2 UCRT64 GCC；本机由 `tools/test-go-race.ps1` 固化环境，CI 通过 `msys2/setup-msys2` 安装 GCC 并执行同一脚本。`tools/test-build-guards.ps1` 会在 race 步骤或 GCC 安装被删除时失败。
 - 真实 Rime 集成测试继续显式启用，避免普通测试共享本机 librime 全局状态。
 - C++ 调试在 Cursor 里仅 launch 可用；cpptools 1.33.4 的 `pickProcess` 与 Cursor QuickPick 不兼容，attach 配置需在 VS Code 里运行。`ms-vscode.cpptools` 不在 Cursor 的 Open VSX 市场，需从 VS Code Marketplace 下载 win32-x64 VSIX 离线安装。
 - Win32 `build/` 树重建依赖 `rustup toolchain install stable-i686-pc-windows-msvc`（`CMakeLists.txt` 已固定 `Rust_TOOLCHAIN`）；命令行 configure 需要重新拉取 Corrosion 时须设 `HTTPS_PROXY=http://127.0.0.1:1081`（本机 git/cmake 不读 WinINET 系统代理）。

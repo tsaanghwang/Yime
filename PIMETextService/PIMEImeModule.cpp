@@ -97,6 +97,13 @@ Ime::TextService* ImeModule::createTextService() {
 }
 
 bool ImeModule::loadImeInfo(const std::string& guid, std::wstring& filePath, json& content) {
+	auto cached = imeInfoCache_.find(guid);
+	if (cached != imeInfoCache_.end()) {
+		filePath = cached->second.first;
+		content = cached->second.second;
+		return true;
+	}
+
 	bool found = false;
 	// find the input method module
 	for (const auto backendDir : backendDirs_) {
@@ -138,12 +145,14 @@ bool ImeModule::loadImeInfo(const std::string& guid, std::wstring& filePath, jso
 		if (found)
 			break;
 	}
+	if (found) {
+		imeInfoCache_[guid] = std::make_pair(filePath, content);
+	}
 	return found;
 }
 
 // virtual
 bool ImeModule::onConfigure(HWND hwndParent, LANGID langid, REFGUID rguidProfile) {
-	// FIXME: this is inefficient. Should we cache known modules?
 	LPOLESTR pGuidStr = NULL;
 	if (FAILED(::StringFromCLSID(rguidProfile, &pGuidStr)))
 		return false;
@@ -186,8 +195,9 @@ bool ImeModule::onConfigure(HWND hwndParent, LANGID langid, REFGUID rguidProfile
 			SW_SHOWNORMAL);
 	}
 	else {
-		// FIXME: this message should be localized.
-		::MessageBoxW(hwndParent, L"The input module does not have a config tool.", NULL, MB_OK);
+		::MessageBoxW(hwndParent,
+			L"\x6B64\x8F93\x5165\x6CD5\x6A21\x5757\x672A\x63D0\x4F9B\x914D\x7F6E\x5DE5\x5177\x3002",
+			L"YIME", MB_OK | MB_ICONINFORMATION);
 	}
 	return true;
 }

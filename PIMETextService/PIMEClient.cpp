@@ -178,7 +178,7 @@ void Client::updateCommitString(json& msg, Ime::EditSession* session) {
 				textService_->startComposition(session->context());
 			}
 			textService_->setCompositionString(session, commitString.c_str(), commitString.length());
-			// FIXME: update the position of candidate and message window when the composition string is changed.
+			// Keep transient UI anchored to the updated composition range.
 			if (textService_->candidateWindow_ != nullptr) {
 				textService_->updateCandidatesWindow(session);
 			}
@@ -213,7 +213,7 @@ void Client::updateComposition(json& msg, Ime::EditSession* session, bool& endCo
 			}
 			textService_->setCompositionString(session, compositionString.c_str(), compositionString.length());
 		}
-		// FIXME: update the position of candidate and message window when the composition string is changed.
+		// Keep transient UI anchored to the updated composition range.
 		if (textService_->candidateWindow_ != nullptr) {
 			textService_->updateCandidatesWindow(session);
 		}
@@ -287,10 +287,16 @@ void Client::updateLanguageButtons(json& msg) {
 	auto& addButtonVal = msg["addButton"];
 	if (addButtonVal.is_array()) {
 		for (auto& btn : addButtonVal) {
-			// FIXME: when to clear the id <=> button map??
 			auto langBtn = Ime::ComPtr<PIME::LangBarButton>::takeover(PIME::LangBarButton::fromJson(textService_, btn));
 			if (langBtn != nullptr) {
-				buttons_.emplace(langBtn->id(), langBtn); // insert into the map
+				// Re-adding an id replaces the previous COM button instead of leaving a
+				// stale service registration while emplace silently rejects the new map entry.
+				auto existing = buttons_.find(langBtn->id());
+				if (existing != buttons_.end()) {
+					textService_->removeButton(existing->second);
+					buttons_.erase(existing);
+				}
+				buttons_.emplace(langBtn->id(), langBtn);
 				textService_->addButton(langBtn);
 			}
 		}

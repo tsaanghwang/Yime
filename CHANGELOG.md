@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Restore `go test -race ./...` as a required GitHub Actions gate with an explicitly provisioned MSYS2 UCRT64 GCC toolchain and a guard that rejects silent removal
+- Add regression-tested UI policy for UI-less candidate ownership, bounded candidate font sizes, and monitor-work-area popup positioning
 - PE machine-type verification for Win32, x64, and ARM64 native build outputs, enforced by local builds, development installs, and CI
 - Repeatable `tools/test-go-race.ps1` entry point that pins CGO, MSYS2 UCRT64 GCC, PATH, and workspace-local Go caches
 - Embed Windows VERSIONINFO in server.exe and native tools via go-winres so Windows can identify file version and publisher metadata
@@ -40,6 +42,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Make the repository, installer, build, and CI product path YIME-only; permanently remove the retired Python, Node, McBopomofoWeb, libchewing backends and their submodule records
+- Reuse message windows within the same TSF owner, keep candidate/message UI anchored after composition changes, replace duplicate language-bar button registrations, cache IME configuration metadata, and localize the missing-config-tool prompt
 - Reject ambiguous legacy `build/` CMake caches unless the generated solution is demonstrably Win32; package only input-method directories that contain `ime.json`
 - Move development package identity from the historical `1.3.0-beta2` line to `1.4.0-dev`; release tags must replace the development suffix with the selected beta, RC, or final version
 - Treat the fixed-length dictionary as the only external system-lexicon source; variable and shorthand dictionaries are generated runtime artifacts

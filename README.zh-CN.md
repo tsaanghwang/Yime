@@ -27,12 +27,8 @@ go-backend/              Go 后端：Yime 输入法逻辑、Rime 集成、独立
     help/                用户帮助文档
 PIMETextService/         TSF 文本服务宿主（C++/COM）
 PIMELauncher/            进程启动器和监控（Rust）
-python/                  Python 侧支持组件
-node/                    Node 侧支持组件
 installer/               NSIS 安装程序资源
 libIME2/                 上游 IME 库
-libchewing/              上游注音库
-McBopomofoWeb/           上游注音组件
 docs/                    开发文档
 ```
 
@@ -52,7 +48,6 @@ docs/                    开发文档
 - [CMake](https://cmake.org/) 3.0+
 - [Rust](https://rustup.rs/)，含 `i686-pc-windows-msvc` 目标
 - [Go](https://go.dev/) 1.21+
-- [Node.js](https://nodejs.org/) 18+
 - [Git](https://git-scm.com/)
 
 ## 构建
@@ -62,10 +57,10 @@ docs/                    开发文档
 ```powershell
 git clone git@github.com:tsaanghwang/Yime.git
 cd Yime
-git submodule update --init
+git submodule update --init libIME2
 ```
 
-`libIME2`、`McBopomofoWeb` 等子模块指向 `tsaanghwang/*` fork。若在主仓库中更新了子模块指针，请**先**将对应 commit 推送到子模块 remote，再推送 Yime，否则 CI checkout 会失败。
+活动子模块 `libIME2` 指向 `tsaanghwang/libIME2` fork。若在主仓库中更新了子模块指针，请**先**将对应 commit 推送到子模块 remote，再推送 Yime，否则 CI checkout 会失败。
 
 ### 安装 Rust 目标
 

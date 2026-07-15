@@ -81,7 +81,7 @@
 
 ## 安装器尝试写入盘符根目录
 
-**症状**：安装时提示无法写入 `\python\input_methods\...`，安装进度页的输出目录也从反斜杠开始，没有 `C:\Program Files (x86)\YIME` 前缀。
+**症状**：安装时提示无法写入 `\go-backend\...`，安装进度页的输出目录也从反斜杠开始，没有 `C:\Program Files (x86)\YIME` 前缀。
 
 **原因**：旧开发卸载留下 Add/Remove Programs 卸载项、却删除了安装目录注册项；旧安装器直接把空注册表值写入 `$INSTDIR`。
 

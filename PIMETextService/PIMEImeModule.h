@@ -22,6 +22,7 @@
 
 #include <LibIME2/src/ImeModule.h>
 #include <string>
+#include <unordered_map>
 #include <vector>
 #include <nlohmann/json.hpp>
 
@@ -55,6 +56,8 @@ private:
 	std::wstring userDir_;
 	std::wstring programDir_;
 	std::vector<std::wstring> backendDirs_;
+	std::unordered_map<std::string,
+		std::pair<std::wstring, nlohmann::json>> imeInfoCache_;
 };
 
 }

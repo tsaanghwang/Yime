@@ -212,6 +212,8 @@ cmake --build build --config Release
 
 语言栏或 TSF 问题必须在安装态至少复现一次；不能用源码目录中的临时 EXE 代替。
 
+真实 32 位宿主使用 `C:\Windows\SysWOW64\charmap.exe`。在 64 位 Windows 上，`SysWOW64` 中该文件的 PE machine 应为 `0x014C`；不要用 `System32\charmap.exe` 代替 x86 验证。发布烟雾测试需在该进程中实际激活 YIME，并完成组字、候选和上屏。
+
 ### 8.3 已完成的验证记录
 
 - 2026-07-11：未签名开发包真实安装验证，输入响应正常，用户词“云笺试码”“笺砚验码”应用后活动会话直接出词。

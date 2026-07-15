@@ -28,6 +28,7 @@
 #include "PIMEImeModule.h"
 #include <sys/types.h>
 #include "PIMEClient.h"
+#include "PIMEUiPolicy.h"
 #include <memory>
 
 
@@ -115,7 +116,7 @@ public:
 	}
 
 	void setCandFontSize(int candFontSize) {
-		candFontSize_ = candFontSize;
+		candFontSize_ = normalizeCandidateFontSize(candFontSize);
 		updateFont_ = true;
 	}
 
@@ -141,6 +142,7 @@ private:
 
 	void onMessageTimeout();
 	static void CALLBACK onMessageTimeout(HWND hwnd, UINT msg, UINT_PTR id, DWORD time);
+	void destroyMessageWindow();
 
 	void updateLangButtons(); // update status of language bar buttons
 

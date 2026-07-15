@@ -14,7 +14,6 @@
 - Visual Studio 2022（CMake + C++ TSF）
 - Go 1.21+
 - Rust（PIMELauncher）
-- Node.js（McBopomofoWeb，可选）
 
 ## 代码风格
 
