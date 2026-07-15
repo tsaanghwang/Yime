@@ -116,7 +116,7 @@ cd ..
 
 - 安装包版本与 `version.txt` 一致
 - `go-backend/build/go-backend/` 中 8 个 Go EXE 全部存在
-- NSIS 必装主组件递归包含 `go-backend/build/go-backend/`，默认标准安装不依赖旧 Python 输入法
+- NSIS 必装主组件递归包含 `go-backend/build/go-backend/`，安装包中不存在旧 Python/Node 输入法及其组件选择逻辑
 - `input_methods/yime/data/`、`rime.dll`、`rime_deployer.exe` 已打包
 - 打包目录 `input_methods/` 下没有 `.go` 源码或测试文件
 - x86/x64 `PIMETextService.dll` 均存在，并通过 `tools/test-build-guards.ps1` 验证 PE machine type；仅检查文件名或存在性不算通过

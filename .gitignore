@@ -4,9 +4,7 @@ build
 build64
 build_arm64/
 build_clean/
-python/__pycache__/
 tools/downloads/
-node/input_methods/McBopomofo
 go-backend/input_methods/yime/data/**
 !go-backend/input_methods/yime/data/pinyin_normalized.json
 !go-backend/input_methods/yime/data/yime_pua_pinyin.json
@@ -19,4 +17,3 @@ go-backend/*.exe
 installer/*.exe
 .tmp/
 PIMELauncher/target/
-.arts/

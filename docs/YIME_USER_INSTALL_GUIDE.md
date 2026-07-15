@@ -11,7 +11,7 @@
 
 ### 1. 运行安装程序
 
-双击 `YIME-<版本>-setup.exe` 启动安装向导。一般用户选择“标准安装”，它包含 Yime Go 后端和全部原生工具；“完整安装”还包含上游 PIME 的旧 Python/Node 输入法组件。
+双击 `YIME-<版本>-setup.exe` 启动安装向导。安装包为 YIME-only，直接安装 Yime Go 后端、原生工具和所需 TSF 组件，不再提供旧 PIME Python/Node 输入法或组件选择页。
 
 ### 2. 切换到 Yime 输入法
 
