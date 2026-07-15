@@ -18,6 +18,7 @@
 //
 
 #include "PIMEClient.h"
+#include "PIMEProcessValidation.h"
 #include "PIMERpcResponse.h"
 #include "libIME2/src/Utils.h"
 #include <algorithm>
@@ -256,7 +257,6 @@ void Client::updateLanguageButtons(json& msg) {
 	// Remove stale buttons before applying updates or re-adding replacements.
 	const auto& removeButtonVal = msg["removeButton"];
 	if (removeButtonVal.is_array()) {
-		// FIXME: handle windows-mode-icon
 		for (const auto& btn : removeButtonVal) {
 			if (btn.is_string()) {
 				string id = btn.get<string>();
@@ -271,7 +271,6 @@ void Client::updateLanguageButtons(json& msg) {
 
 	auto& changeButtonVal = msg["changeButton"];
 	if (changeButtonVal.is_array()) {
-		// FIXME: handle windows-mode-icon
 		for (auto& btn : changeButtonVal) {
 			if (btn.is_object() && btn.contains("id") && btn["id"].is_string()) {
 				string id = btn["id"].get<string>();
@@ -396,14 +395,14 @@ void Client::updateCandidateList(json& msg, Ime::EditSession* session) {
 	const auto& candidateListVal = msg["candidateList"];
 	if (candidateListVal.is_array()) {
 		// handle candidates
-		// FIXME: directly access private member is dirty!!!
-		vector<wstring>& candidates = textService_->candidates_;
-		candidates.clear();
+		vector<wstring> candidates;
+		candidates.reserve(candidateListVal.size());
 		for (const auto& candidate : candidateListVal) {
 			if (candidate.is_string()) {
 				candidates.emplace_back(utf8ToUtf16(candidate.get<string>().c_str()));
 			}
 		}
+		textService_->replaceCandidates(std::move(candidates));
 		textService_->updateCandidates(session);
 		if (!(showCandidatesVal.is_boolean() && showCandidatesVal.get<bool>())) {
 			textService_->hideCandidates();
@@ -745,8 +744,6 @@ bool Client::init() {
 json Client::createRpcRequest(const char* methodName) {
 	json request;
 	request["method"] = methodName;
-
-	// TODO: add other environment info?
 	return request;
 }
 
@@ -850,14 +847,28 @@ bool Client::callRpcMethod(json& request, json & response) {
 }
 
 bool Client::isPipeCreatedByPIMEServer(HANDLE pipe) {
-	// security check: make sure that we're connecting to the correct server
-	ULONG serverPid;
-	if (GetNamedPipeServerProcessId(pipe, &serverPid)) {
-		// FIXME: check the command line of the server?
-		// See this: http://www.codeproject.com/Articles/19685/Get-Process-Info-with-NtQueryInformationProcess
-		// Too bad! Undocumented Windows internal API might be needed here. :-(
+	// Reject a pipe owned by an unexpected executable when Windows permits the
+	// client to inspect the server process. App-container clients may be denied
+	// PROCESS_QUERY_LIMITED_INFORMATION, so the launcher pipe ACL remains the
+	// compatibility fallback in that case.
+	ULONG serverPid = 0;
+	if (!GetNamedPipeServerProcessId(pipe, &serverPid) || serverPid == 0) {
+		return false;
 	}
-	return true;
+
+	HANDLE serverProcess = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, serverPid);
+	if (serverProcess == NULL) {
+		return true;
+	}
+
+	wchar_t imagePath[32768] = {};
+	DWORD imagePathLength = static_cast<DWORD>(_countof(imagePath));
+	const BOOL queried = QueryFullProcessImageNameW(serverProcess, 0, imagePath, &imagePathLength);
+	CloseHandle(serverProcess);
+	if (!queried) {
+		return true;
+	}
+	return isExpectedLauncherExecutablePath(std::wstring(imagePath, imagePathLength));
 }
 
 // establish a connection to the specified pipe and returns its handle

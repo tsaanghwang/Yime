@@ -1,6 +1,6 @@
 # PIMELauncher
 
-PIMELauncher is a high-performance, Rust-based background service for **PIME** (Platform for Input Method Editors). It serves as a robust proxy for communication between Text Services Framework (TSF) clients and various input method backend processes.
+PIMELauncher is the Rust background service used by **YIME**. It is derived from PIME's launcher architecture and proxies communication between Text Services Framework (TSF) clients and YIME's Go backend.
 
 ## Key Features
 
@@ -12,7 +12,7 @@ PIMELauncher is a high-performance, Rust-based background service for **PIME** (
 
 PIMELauncher is designed with modularity in mind:
 - **Pipe Server:** Handles incoming client connections via named pipes (`\\.\pipe\<user>\PIME\Launcher`).
-- **Backend Manager:** Manages the lifecycle of backend processes (Python, Node.js, etc.) and routes messages.
+- **Backend Manager:** Manages the lifecycle of the YIME Go backend and routes messages.
 - **Registry:** Dynamically loads backend configurations from `backends.json` and maps TSF GUIDs via `ime.json` discovery.
 - **Protocol:** Uses a line-based UTF-8 JSON protocol for easy integration and debugging.
 
@@ -22,14 +22,14 @@ PIMELauncher is designed with modularity in mind:
 
 - **Windows OS:** Required for named pipes and Windows API integrations.
 - **Rust Toolchain:** Install via [rustup.rs](https://rustup.rs/) (Stable channel recommended).
-- **32-bit Target:** Ensure you have the 32-bit MSVC target installed:
+- **32-bit Host Toolchain:** Install the pinned i686 host toolchain used by the root CMake build:
   ```powershell
-  rustup target add i686-pc-windows-msvc
+  rustup toolchain install stable-i686-pc-windows-msvc --profile minimal
   ```
 
 ### Integrated Build (Recommended)
 
-PIMELauncher is integrated into the main PIME build system via **CMake** and **Corrosion**. To build everything (including the launcher and installer), run the root build script:
+PIMELauncher is integrated into YIME's build through **CMake** and **Corrosion**. To build everything, including the launcher and installer, run the root build script:
 
 ```powershell
 # From the project root
@@ -44,7 +44,7 @@ You can still build the launcher independently for development purposes:
 
 ```powershell
 cd PIMELauncher
-cargo build --release --target i686-pc-windows-msvc
+rustup run stable-i686-pc-windows-msvc cargo build --release
 ```
 
 *Note: Manual cargo builds will place the binary in `PIMELauncher/target/i686-pc-windows-msvc/release/PIMELauncher.exe`.*
@@ -71,7 +71,7 @@ The project includes an extensive test suite, including integration tests that s
 
 ```powershell
 # From the PIMELauncher directory
-cargo test
+rustup run stable-i686-pc-windows-msvc cargo test
 ```
 
 ## AI Disclosure & Acknowledgments

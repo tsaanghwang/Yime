@@ -7,6 +7,10 @@ $launcher = Join-Path $root 'build\PIMELauncher\PIMELauncher.exe'
 $workflow = Join-Path $root '.github\workflows\ci.yaml'
 $rootBuild = Join-Path $root 'build.bat'
 $installer = Join-Path $root 'installer\installer.nsi'
+$devInstall = Join-Path $root 'tools\dev-install.ps1'
+$installerLocales = Get-ChildItem -LiteralPath (Join-Path $root 'installer\locale') -Filter '*.nsh'
+$launcherManifest = Join-Path $root 'PIMELauncher\Cargo.toml'
+$launcherBuild = Join-Path $root 'PIMELauncher\build.rs'
 $readme = Join-Path $root 'README.md'
 $textServiceResource = Join-Path $root 'PIMETextService\PIMETextService.rc.in'
 
@@ -52,6 +56,66 @@ if ($readmeText.Contains('[Node.js]')) {
 $installerText = Get-Content -LiteralPath $installer -Raw
 if ($installerText -match 'YIME_ENABLE_RETIRED_PIME_BACKENDS|\\python\\|\\node\\|McBopomofo|libchewing') {
     throw 'Retired PIME backend code or paths returned to the YIME installer.'
+}
+$releaseVersion = (Get-Content -LiteralPath (Join-Path $root 'version.txt') -Raw).Trim()
+$numericReleaseVersion = (($releaseVersion -split '-', 2)[0]) + '.0'
+foreach ($fragment in @(
+    "VIProductVersion `"$numericReleaseVersion`"",
+    'VIAddVersionKey /LANG=${LANG_ID} "FileVersion" "${PRODUCT_VERSION}"',
+    'VIAddVersionKey /LANG=${LANG_ID} "ProductVersion" "${PRODUCT_VERSION}"',
+    'VIAddVersionKey /LANG=${LANG_ID} "ProductName" "${PRODUCT_NAME_VALUE}"',
+    'VIAddVersionKey /LANG=${LANG_ID} "FileDescription" "${FILE_DESCRIPTION_VALUE}"',
+    'VIAddVersionKey /LANG=${LANG_ID} "LegalCopyright" "Copyright (C) 2026 YIME contributors"'
+)) {
+    if (-not $installerText.Contains($fragment)) {
+        throw "Installer/uninstaller VERSIONINFO guard is missing: $fragment"
+    }
+}
+$launcherManifestText = Get-Content -LiteralPath $launcherManifest -Raw
+$launcherBuildText = Get-Content -LiteralPath $launcherBuild -Raw
+if (-not $launcherManifestText.Contains('winresource = "0.1"')) {
+    throw 'PIMELauncher winresource build dependency is missing.'
+}
+foreach ($fragment in @(
+    'join("..").join("version.txt")',
+    '.set("FileVersion", version)',
+    '.set("ProductVersion", version)',
+    '.set("ProductName", "YIME")'
+)) {
+    if (-not $launcherBuildText.Contains($fragment)) {
+        throw "PIMELauncher VERSIONINFO guard is missing: $fragment"
+    }
+}
+$devInstallText = Get-Content -LiteralPath $devInstall -Raw
+if ($devInstallText -match 'pythonRoot|nodeRoot|Copying Python backend|Copying Node backend') {
+    throw 'Retired Python/Node payload handling returned to the developer installer.'
+}
+$localeText = ($installerLocales | ForEach-Object { Get-Content -LiteralPath $_.FullName -Raw }) -join "`n"
+if ($localeText -match 'PYTHON_SECTION_GROUP|NODE_SECTION_GROUP|MCBOPOMOFO|BRAILLE_CHEWING|SET_CHEWING') {
+    throw 'Retired PIME input-method strings returned to installer locales.'
+}
+foreach ($fragment in @(
+    '!macro InstallTextServiceDll ARCH SOURCE UPDATE_FLAG',
+    'File /oname=PIMETextService.dll.new "${SOURCE}"',
+    'Rename /REBOOTOK "$INSTDIR\${ARCH}\PIMETextService.dll.new" "$INSTDIR\${ARCH}\PIMETextService.dll"',
+    'Exec ''"$INSTDIR\PIMELauncher.exe"'''
+)) {
+    if (-not $installerText.Contains($fragment)) {
+        throw "Locked-DLL in-place upgrade guard is missing: $fragment"
+    }
+}
+$upgradeFunctionMatch = [regex]::Match($installerText, '(?s)Function uninstallOldVersion.*?FunctionEnd')
+if (-not $upgradeFunctionMatch.Success) {
+    throw 'Could not locate installer in-place upgrade function.'
+}
+foreach ($forbiddenUpgradeFragment in @(
+    'Delete /REBOOTOK "$INSTDIR\PIMELauncher.exe"',
+    'Delete "$INSTDIR\version.txt"',
+    'Delete "$INSTDIR\Uninstall.exe"'
+)) {
+    if ($upgradeFunctionMatch.Value.Contains($forbiddenUpgradeFragment)) {
+        throw "Destructive pre-install upgrade step returned: $forbiddenUpgradeFragment"
+    }
 }
 
 $requiredLegalFiles = @(

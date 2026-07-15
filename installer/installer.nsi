@@ -56,6 +56,10 @@ Name "$(PRODUCT_NAME)"
 BrandingText "$(PRODUCT_NAME)"
 
 OutFile "YIME-${PRODUCT_VERSION}-setup.exe" ; The generated installer file name
+; VIProductVersion is the numeric fixed-file version shared by the installer
+; and generated uninstaller. Keep it synchronized with version.txt; the build
+; guard rejects drift. String fields below are likewise embedded in both files.
+VIProductVersion "1.4.0.0"
 !finalize 'powershell.exe -NoProfile -ExecutionPolicy Bypass -File "..\tools\sign-file.ps1" -Path "%1"' = 0
 !uninstfinalize 'powershell.exe -NoProfile -ExecutionPolicy Bypass -File "..\tools\sign-file.ps1" -Path "%1"' = 0
 
@@ -100,6 +104,18 @@ RequestExecutionLevel admin
 !insertmacro LANG_LOAD "TradChinese" ; Traditional Chinese
 !insertmacro LANG_LOAD "SimpChinese" ; Simplified Chinese
 !insertmacro LANG_LOAD "English" ; English
+
+!macro VERSION_INFO LANG_ID PRODUCT_NAME_VALUE FILE_DESCRIPTION_VALUE
+	VIAddVersionKey /LANG=${LANG_ID} "FileVersion" "${PRODUCT_VERSION}"
+	VIAddVersionKey /LANG=${LANG_ID} "ProductVersion" "${PRODUCT_VERSION}"
+	VIAddVersionKey /LANG=${LANG_ID} "ProductName" "${PRODUCT_NAME_VALUE}"
+	VIAddVersionKey /LANG=${LANG_ID} "FileDescription" "${FILE_DESCRIPTION_VALUE}"
+	VIAddVersionKey /LANG=${LANG_ID} "CompanyName" "YIME Project"
+	VIAddVersionKey /LANG=${LANG_ID} "LegalCopyright" "Copyright (C) 2026 YIME contributors"
+!macroend
+!insertmacro VERSION_INFO ${LANG_TRADCHINESE} "YIME 輸入法" "YIME 安裝與解除安裝程式"
+!insertmacro VERSION_INFO ${LANG_SIMPCHINESE} "YIME 输入法" "YIME 安装与卸载程序"
+!insertmacro VERSION_INFO ${LANG_ENGLISH} "YIME Input Method" "YIME Installer and Uninstaller"
 
 var UPDATEX86DLL
 var UPDATEX64DLL
@@ -154,11 +170,9 @@ Function uninstallOldVersion
 			MessageBox MB_OKCANCEL|MB_ICONQUESTION $(UNINSTALL_OLD) /SD IDOK IDOK +2
 			Abort ; this is skipped if the user select OK
 
-			; Remove the launcher from auto-start
-			DeleteRegKey HKLM "${PRODUCT_UNINST_KEY}"
+			; Keep the active YIME install markers for an in-place upgrade. Only
+			; remove historical PIME keys; current values are overwritten below.
 			DeleteRegKey HKLM "${LEGACY_PRODUCT_UNINST_KEY}"
-			DeleteRegValue HKLM "Software\Microsoft\Windows\CurrentVersion\Run" "PIMELauncher"
-			DeleteRegKey HKLM "${PRODUCT_INSTALL_KEY}"
 			DeleteRegKey HKLM "${LEGACY_PRODUCT_INSTALL_KEY}"
 
 			; Unregister COM objects (NSIS UnRegDLL command is broken and cannot be used)
@@ -172,8 +186,6 @@ Function uninstallOldVersion
 			Pop $3
 			${If} $1 == $3
 				StrCpy $UPDATEX86DLL "False"
-			${Else}
-				RMDir /REBOOTOK /r "$INSTDIR\x86"
 			${EndIf}
 
 			${If} ${RunningX64}
@@ -188,8 +200,6 @@ Function uninstallOldVersion
 				Pop $3
 				${If} $1 == $3
 					StrCpy $UPDATEX64DLL "False"
-				${Else}
-					RMDir /REBOOTOK /r "$INSTDIR\x64"
 				${EndIf}
 			${EndIf}
 
@@ -207,8 +217,6 @@ Function uninstallOldVersion
 				Pop $3
 				${If} $1 == $3
 					StrCpy $UPDATEARM64DLL "False"
-				${Else}
-					RMDir /REBOOTOK /r "$INSTDIR\arm64"
 				${EndIf}
 			${EndIf}
 !endif
@@ -217,9 +225,9 @@ Function uninstallOldVersion
 			; Otherwise we cannot replace it.
 			ExecWait '"$INSTDIR\PIMELauncher.exe" /quit'
 			Sleep 1000
-			Delete /REBOOTOK "$INSTDIR\PIMELauncher.exe"
 
-            Delete "$INSTDIR\backends.json"
+			; Retired payloads are cleanup-only compatibility paths. Active YIME
+			; files remain in place until the new sections overwrite them.
 			RMDir /REBOOTOK /r "$INSTDIR\python"
 			RMDir /REBOOTOK /r "$INSTDIR\node"
 
@@ -228,22 +236,12 @@ Function uninstallOldVersion
 
 			; Delete shortcuts in Start Menu
 			RMDir /r "$SMPROGRAMS\$(PRODUCT_NAME)"
-
-			Delete "$INSTDIR\version.txt"
-			Delete "$INSTDIR\Uninstall.exe"
-			RMDir /REBOOTOK "$INSTDIR"
-
-			${If} ${RebootFlag}
-				MessageBox MB_YESNO "$(MB_REBOOT_REQUIRED)" /SD IDNO IDNO +3
-				Reboot
-				Quit
-				Abort
-			${EndIf}
 		${EndIf}
 	${EndIf}
 
-	ClearErrors
-	; Ensure that old files are all deleted
+	; Keep loaded TSF DLLs in place during initialization. The Register section
+	; writes each new DLL to a staging name and uses /REBOOTOK for an atomic
+	; in-place replacement when a host such as Explorer still holds the old DLL.
 	${If} ${RunningX64}
 		${If} ${FileExists} "$INSTDIR\x64\PIMETextService.dll"
 			; Verify the MD5/SHA1 checksum of 64-bit PIMETextService.dll
@@ -255,10 +253,6 @@ Function uninstallOldVersion
 			Pop $3
 			${If} $1 == $3
 				StrCpy $UPDATEX64DLL "False"
-			${Else}
-				Delete /REBOOTOK "$INSTDIR\x64\PIMETextService.dll"
-				IfErrors 0 +2
-					Call .onInstFailed
 			${EndIf}
 		${EndIf}
 	${EndIf}
@@ -275,10 +269,6 @@ Function uninstallOldVersion
 			Pop $3
 			${If} $1 == $3
 				StrCpy $UPDATEARM64DLL "False"
-			${Else}
-				Delete /REBOOTOK "$INSTDIR\arm64\PIMETextService.dll"
-				IfErrors 0 +2
-					Call .onInstFailed
 			${EndIf}
 		${EndIf}
 	${EndIf}
@@ -296,15 +286,7 @@ Function uninstallOldVersion
 		Pop $3
 		${If} $1 == $3
 			StrCpy $UPDATEX86DLL "False"
-		${Else}
-			Delete /REBOOTOK "$INSTDIR\x86\PIMETextService.dll"
-			IfErrors 0 +2
-				Call .onInstFailed
 		${EndIf}
-	${EndIf}
-
-	${If} ${RebootFlag}
-		Call .onInstFailed
 	${EndIf}
 FunctionEnd
 
@@ -478,10 +460,9 @@ Section $(SECTION_MAIN) SecMain
 	; Ensure that the native launcher and TSF components have the VC++ runtime.
 	Call ensureVCRedist
 
-	; TODO: may be we can automatically rebuild the dlls here.
-	; http://stackoverflow.com/questions/24580/how-do-you-automate-a-visual-studio-build
-	; For example, we can build the Visual Studio solution with the following command line.
-	; C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\devenv.com "..\build\PIME.sln" /build Release
+	; Native and Go payloads are built and architecture-checked before NSIS runs.
+	; The installer must only package those verified artifacts; it must never invoke
+	; a compiler on an end user's machine.
 
 	SetOverwrite on ; overwrite existing files
 	SetOutPath "$INSTDIR"
@@ -534,40 +515,46 @@ Section $(SECTION_MAIN) SecMain
 	SendMessage 0xffff 0x001D 0 0
 SectionEnd
 
+!macro InstallTextServiceDll ARCH SOURCE UPDATE_FLAG
+	SetOutPath "$INSTDIR\${ARCH}"
+	${If} ${UPDATE_FLAG} == "True"
+		; Never overwrite a DLL directly: TSF hosts commonly keep it mapped.
+		; Staging plus /REBOOTOK replaces it immediately when unlocked and
+		; schedules the same replacement for reboot when it is locked.
+		File /oname=PIMETextService.dll.new "${SOURCE}"
+		Delete /REBOOTOK "$INSTDIR\${ARCH}\PIMETextService.dll"
+		Rename /REBOOTOK "$INSTDIR\${ARCH}\PIMETextService.dll.new" "$INSTDIR\${ARCH}\PIMETextService.dll"
+	${EndIf}
+!macroend
+
 Section "" Register
 	SectionIn 1
 
 	; Install the text service dlls
 	${If} ${RunningX64} ; This is a 64-bit Windows system
-		SetOutPath "$INSTDIR\x64"
-		${If} $UPDATEX64DLL == "True"
-			File "..\build64\PIMETextService\Release\PIMETextService.dll" ; put 64-bit PIMETextService.dll in x64 folder
-		${EndIf}
+		!insertmacro InstallTextServiceDll "x64" "..\build64\PIMETextService\Release\PIMETextService.dll" $UPDATEX64DLL
 		; Register COM objects (NSIS RegDLL command is broken and cannot be used)
 		ExecWait '"$SYSDIR\regsvr32.exe" /s "$INSTDIR\x64\PIMETextService.dll"'
 	${EndIf}
 
 	!ifdef HAVE_ARM64_PIMETS
 	${If} ${IsNativeARM64} ; This is a native ARM64 Windows system
-		SetOutPath "$INSTDIR\arm64"
-		${If} $UPDATEARM64DLL == "True"
-			File "..\build_arm64\PIMETextService\Release\PIMETextService.dll" ; put ARM64 PIMETextService.dll in arm64 folder
-		${EndIf}
+		!insertmacro InstallTextServiceDll "arm64" "..\build_arm64\PIMETextService\Release\PIMETextService.dll" $UPDATEARM64DLL
 		; Register COM objects (NSIS RegDLL command is broken and cannot be used)
 		ExecWait '"$SYSDIR\regsvr32.exe" /s "$INSTDIR\arm64\PIMETextService.dll"'
 	${EndIf}
 	!endif
 
-	SetOutPath "$INSTDIR\x86"
-	${If} $UPDATEX86DLL == "True"
-		File "..\build\PIMETextService\Release\PIMETextService.dll" ; put 32-bit PIMETextService.dll in x86 folder
-	${EndIf}
+	!insertmacro InstallTextServiceDll "x86" "..\build\PIMETextService\Release\PIMETextService.dll" $UPDATEX86DLL
 	; Register COM objects (NSIS RegDLL command is broken and cannot be used)
 	ExecWait '"$SYSDIR\regsvr32.exe" /s "$INSTDIR\x86\PIMETextService.dll"'
 	Call enableYimeProfile
 
 	; Launch the active Go backend through PIMELauncher on startup.
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Run" "PIMELauncher" "$INSTDIR\PIMELauncher.exe"
+	; A fresh installation must work immediately without requiring sign-out or
+	; reboot merely to start the per-user launcher.
+	Exec '"$INSTDIR\PIMELauncher.exe"'
 
 	;Store installation folder in the registry
 	WriteRegStr HKLM "${PRODUCT_INSTALL_KEY}" "" $INSTDIR

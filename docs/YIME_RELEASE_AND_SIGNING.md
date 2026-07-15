@@ -4,12 +4,12 @@
 
 ## 1. 发布前条件
 
-- 工作区干净，目标提交已推送到 `yime-stable`
+- 工作区干净，发布目标提交已合入并推送到 `main`；`yime-stable` 仅作为保留的集成分支
 - 子模块提交已先推送到各自 remote，主仓库不引用远端不存在的提交
-- `version.txt` 已从开发标识（当前为 `1.4.0-dev`）更新为本次实际发布版本，例如 `1.4.0-beta1` 或 `1.4.0`
+- `version.txt` 与本次实际发布版本一致；YIME 1.4.0 的发布值为 `1.4.0`
 - 不得重新使用已经存在的历史标签。仓库已有 `v1.0.0`、`v1.1.0` 和 `v1.3.0-*`；即使 Yime 作为独立产品首次公开发布，也不能再次创建同名 `v1.0.0` 标签
 - `CHANGELOG.md` 的 `[Unreleased]` 已核对
-- Visual Studio、CMake、Rust、Go、Node.js、NSIS 和 `go-winres` 可用
+- Visual Studio、CMake、Rust、Go、NSIS 和 `go-winres` 可用
 - Rust 已安装 i686 host 工具链：`rustup toolchain install stable-i686-pc-windows-msvc`。Win32 `PIMELauncher` 构建由根 `CMakeLists.txt` 固定 `Rust_TOOLCHAIN` 指向它（Corrosion v0.6.1），x64 host 工具链会因跨编译 build-script 链接错误而失败
 - 发布签名机器已安装受信任提供商签发的 RSA 代码签名证书
 

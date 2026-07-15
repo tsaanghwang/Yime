@@ -1,3 +1,11 @@
+# Historical launcher specification
+
+This file records the original PIME launcher design input. YIME now ships only
+the Go backend declared in the repository's `backends.json`; references to a
+future multi-runtime backend system are historical context, not current product
+requirements. Current behavior and build instructions are documented in
+`README.md` and the repository's YIME architecture documents.
+
 Build a rust-based, constantly running background service.
 - run as current user, ensure single instance.
 - restart on crash, if possible.
@@ -30,12 +38,12 @@ Build a rust-based, constantly running background service.
     - Decode raw response from backend: "PIMG_MSG|<client_id>|<reply JSON string>\n"
     - Remove the "<client_id>|" prefix and send the rest to corresponding client.
 
-- Available backends:
+- Available backends (historical design):
   - Hard code in the code temporarily. We will implement discovery mechanism later.
   - Each backend has:
     - A name
     - A full command line with args to run
-    - The main program may be python.exe or node.js so make sure you know how to spawn them properly with UTF-8 encoding for stdio redirect.
+    - The original design anticipated Python or Node.js programs. YIME does not ship those runtimes; its active backend is the Go `server.exe`.
 
 Implementation details:
 - Use tokio for async i/o and pipes.

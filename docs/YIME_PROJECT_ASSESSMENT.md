@@ -2,7 +2,7 @@
 
 > 评估日期：2026-07-15
 >
-> 适用基线：`yime-stable` 分支、`42a79389` 及其后本轮 CI/TSF 收口修改
+> 适用基线：2026-07-15 的 `main` / `yime-stable` 发布收口修改
 >
 > 相关文档：[架构](YIME_ARCHITECTURE.md) | [测试](YIME_TESTING_GUIDE.md) | [发布与签名](YIME_RELEASE_AND_SIGNING.md) | [原生 UI](YIME_NATIVE_UI_GUIDELINES.md)
 
@@ -21,8 +21,8 @@ Yime 已从“功能基本可用但工具链和安装态边界不稳定”进入
 | 活动会话刷新 | 已完成 | 设置、词库和 redeploy 使用独立累积修订号，不再互相覆盖 |
 | 语言栏 | 已清理 | 保留静态标签和稳定命令 ID；高风险点击路径有回归测试 |
 | 构建与打包 | 稳定 | 8 个 Go EXE 可复现、统一图标、包内不携带 Go 源码 |
-| CI 与测试 | 完整度较高 | Go、Go race、Rust、CTest 和发布守卫均进入流水线；MSYS2 UCRT64 GCC 由 CI 显式安装，构建守卫防止 race 步骤被静默删除 |
-| 正式签名发布 | 流程已具备 | 开发版本已改为 `1.4.0-dev`；尚需确定实际发布版本、更新 Changelog，并完成受信任签名产物验证 |
+| CI 与测试 | 完整度较高 | Go、Go race、Rust、CTest 和发布守卫均进入流水线；`main` 与 `yime-stable` 的 PR 均触发构建；`main` 分支保护要求 `build` 成功且同样约束管理员 |
+| 正式签名发布 | 版本已定稿 | `version.txt` 与 Changelog 已定稿为 `1.4.0`；尚待受信任签名产物验证 |
 | 安装态验证 | 清单已跑完 | 2026-07-12 完成逐项验证并留痕：干净全量重装、哈希全同步、重启自启动实测、7 工具入口、TIP 注册与真实组词日志、CodeIntegrity 审计核查、runtimechange 协议；详见[安装态验证留痕](YIME_INSTALL_VERIFICATION_2026-07-12.md) |
 
 ## 2. 两轮评估已处理事项
@@ -65,6 +65,8 @@ Yime 已从“功能基本可用但工具链和安装态边界不稳定”进入
 - 修复 Win32 `PIMELauncher` 重建链路：Corrosion 升级到 v0.6.1 并在根 `CMakeLists.txt` 固定 `Rust_TOOLCHAIN=stable-i686-pc-windows-msvc`（host==target==i686，消除跨编译时 build-script 被链 i686 库导致的 LNK4272/145 个未解析符号）；前置为 `rustup toolchain install stable-i686-pc-windows-msvc`。
 - 2026-07-14 复评收口：Win32 回调地址改用显式结构体复制，`go vet ./...` 恢复绿色；CI 固定 Go 1.26.4，并在执行关键测试前逐项确认测试名存在；新增 `tools/test-go-race.ps1` 固化 CGO/GCC/PATH/缓存环境；开发包版本从历史 `1.3.0-beta2` 调整为 `1.4.0-dev`。
 - 2026-07-14 安装复核发现旧 `build/` 实为 x64，却因空的 `CMAKE_GENERATOR_PLATFORM` 被误判为 Win32。现已重建显式 Win32 树，并新增 `tools/test-build-guards.ps1`：本地构建、开发安装和 CI 均强制核对 x86/x64/ARM64 PE machine type。后续安装复核又确认旧版 `meow`/`simple_pinyin`/`fcitx5` 演示包已无 `ime.json` 且不可激活，现已删除源码、生产注册和默认回退；协议测试改用测试专用假服务，Go 打包只复制带 `ime.json` 的运行时目录，NSIS 升级以非递归方式清理三个旧空目录。
+- 2026-07-15 发布收口：版本定稿为 `1.4.0`；CI 的 PR 目标加入 `main`，GitHub `main` 分支保护启用严格 `build` required check 并约束管理员；32 位 `SysWOW64\\charmap.exe` 宿主人工烟雾测试完成，暂未发现问题。
+- 2026-07-15 未签名发布演练发现并修复标准安装器的锁定 DLL 升级缺陷：旧逻辑会递归删除后以退出码 2 中止，留下部分安装；新逻辑使用 `.new` 暂存和 `/REBOOTOK` 原位替换。修复后安装器返回 0，YIME-only 目录、版本、许可证、注册表和启动项均通过核对；当前 x64 DLL 已安排在下一次 Windows 重启时替换，重启后需补做最终哈希确认。详见[1.4.0 发布演练](YIME_RELEASE_REHEARSAL_2026-07-15.md)。
 
 ## 3. 固化的架构约束
 
@@ -113,10 +115,10 @@ git diff --check
 
 未纳入本轮完成证明：
 
-- **待办——最终发布版本**：当前仍为 `1.4.0-dev`。历史仓库已经存在 `v1.0.0`、`v1.1.0` 和后续标签，不能把当前发行重新标记为同名 `v1.0.0`；创建公开标签前仍须确定未占用的 beta/rc/正式版本并更新 Changelog。
+- **已完成——最终发布版本**：2026-07-15 已将版本和 Changelog 定稿为 `1.4.0`；历史标签仍不得复用。
 - **待办——可信签名**：证书正在办理，尚未生成和验证公开受信任的完整签名安装包。
 - **待办——签名后验收**：受签名事项阻塞；签名完成后必须重建、重装并重新执行 TSF、工具入口、语言栏菜单和 CodeIntegrity 清单。
-- **待办——真实 x86 宿主烟雾测试**：`C:\Windows\SysWOW64\charmap.exe` 的 PE machine 为 `0x014C`，可作为真实 32 位 TSF 宿主；最终安装包需在该进程中完成激活、组字、候选和上屏验证。
+- **已完成——真实 x86 宿主烟雾测试**：2026-07-15 已在 `C:\Windows\SysWOW64\charmap.exe` 中完成用户人工验证，暂未发现激活、组字、候选或上屏问题；签名产物仍须按同一清单复跑。
 - **已完成——x64 charmap 宿主烟雾测试**：2026-07-15 已在 `C:\Windows\System32\charmap.exe` 的搜索框和复制框完成组词与上屏；当前进程路径表明这是 x64 宿主，不能替代上一项 x86 验证。
 - ~~**仓库物理裁剪**：~~ 2026-07-15 已获明确授权并完成；旧 Python、Node、McBopomofoWeb、libchewing 目录及对应子模块记录已永久删除。
 
@@ -136,7 +138,8 @@ git diff --check
 
 ### 发布前必须完成
 
-- 将 `1.4.0-dev` 更新为实际发布版本，核对 `CHANGELOG.md`，在干净且已推送的目标提交上构建。
+- ~~将开发版本更新为实际发布版本并核对 `CHANGELOG.md`。~~ 2026-07-15 已定稿为 `1.4.0`。
+- ~~执行一次未签名标准安装器发布演练。~~ 2026-07-15 已完成构建、连续哈希、标准安装器和原位升级验证；锁定的 x64 DLL 已进入正常的重启替换队列，重启后只需确认最终哈希。
 - 使用可信签名服务或证书生成一次完整签名安装包，并运行 `tools/verify-release-signatures.ps1 -IncludeInstaller`。
 - 对最终版本和签名后的新二进制重新执行安装态 TSF、工具入口、语言栏菜单及 CodeIntegrity 清单。
 - ~~通过标准 `Reinstall-PIME-Test.cmd` 安装，核对构建与安装文件哈希。~~ 2026-07-12 完成：干净全量重装，三件哈希构建↔安装全一致。

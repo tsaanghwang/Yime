@@ -121,16 +121,12 @@ $x86Dll = Join-Path $buildRoot "PIMETextService\Release\PIMETextService.dll"
 $x64Dll = Join-Path $build64Root "PIMETextService\Release\PIMETextService.dll"
 $versionFile = Join-Path $repoRoot "version.txt"
 $backendsFile = Join-Path $repoRoot "backends.json"
-$pythonRoot = Join-Path $repoRoot "python"
-$nodeRoot = Join-Path $repoRoot "node"
 $goBackendRoot = Join-Path $repoRoot "go-backend\build\go-backend"
 
 Assert-PathExists -Path $x86Dll -Description "Win32 PIMETextService.dll"
 Assert-PathExists -Path $x64Dll -Description "x64 PIMETextService.dll"
 Assert-PathExists -Path $versionFile -Description "version.txt"
 Assert-PathExists -Path $backendsFile -Description "backends.json"
-Assert-PathExists -Path (Join-Path $pythonRoot "python3\python.exe") -Description "bundled Python runtime"
-Assert-PathExists -Path (Join-Path $nodeRoot "node.exe") -Description "bundled Node runtime"
 Assert-PathExists -Path (Join-Path $goBackendRoot "server.exe") -Description "go-backend server.exe"
 
 & (Join-Path $PSScriptRoot 'verify-pe-architectures.ps1') `
@@ -189,14 +185,31 @@ Copy-RequiredFile -Source $launcherExe -Destination (Join-Path $InstallRoot "PIM
 Copy-RequiredFile -Source $x86Dll -Destination (Join-Path $InstallRoot "x86\PIMETextService.dll") -Description "Win32 PIMETextService.dll" -AllowLocked
 Copy-RequiredFile -Source $x64Dll -Destination (Join-Path $InstallRoot "x64\PIMETextService.dll") -Description "x64 PIMETextService.dll" -AllowLocked
 
-Write-Host "Copying Python backend..."
-Copy-Tree -Source $pythonRoot -Destination (Join-Path $InstallRoot "python") -ExcludeDirs @("__pycache__")
-
-Write-Host "Copying Node backend..."
-Copy-Tree -Source $nodeRoot -Destination (Join-Path $InstallRoot "node") -ExcludeDirs @("node_modules\.cache")
-
 Write-Host "Copying Go backend..."
 Copy-Tree -Source $goBackendRoot -Destination (Join-Path $InstallRoot "go-backend")
+
+Write-Host "Copying legal notices..."
+$licensesRoot = Join-Path $InstallRoot "licenses"
+New-Item -ItemType Directory -Path $licensesRoot -Force | Out-Null
+foreach ($relativePath in @(
+    "LICENSE.txt",
+    "NOTICE.md",
+    "AUTHORS.txt",
+    "THIRD_PARTY_NOTICES.md",
+    "LGPL-2.0.txt",
+    "APACHE-2.0.txt",
+    "json\LICENSE.MIT",
+    "LICENSES\PIME-UPSTREAM-LICENSE.txt",
+    "LICENSES\RIME-BSD-3-Clause.txt",
+    "LICENSES\RIME-FROST-GPL-3.0.txt",
+    "LICENSES\SIL-OFL-1.1.txt",
+    "LICENSES\UNICODE-3.0.txt",
+    "LICENSES\RUST-DEPENDENCIES.md"
+)) {
+    $source = Join-Path $repoRoot $relativePath
+    Assert-PathExists -Path $source -Description "legal notice $relativePath"
+    Copy-RequiredFile -Source $source -Destination (Join-Path $licensesRoot ([IO.Path]::GetFileName($relativePath))) -Description "legal notice $relativePath"
+}
 
 Write-Host "Registering text service DLLs ..."
 Register-PIMETextServiceDlls -InstallRoot $InstallRoot
