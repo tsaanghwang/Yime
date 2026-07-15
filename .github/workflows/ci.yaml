@@ -8,8 +8,18 @@ on:
     branches: [main, yime-stable]
 
 jobs:
-  build:
+  build-contract:
+    uses: tsaanghwang/Yime-build-contract/.github/workflows/validate.yml@d93a3e835cae58988792814d300d3c7cc872cfbb
+
+  core-build:
+    name: core-build
     runs-on: windows-2022
+    outputs:
+      rust_i686_host: ${{ steps.rust_i686_host.outcome }}
+      native_build: ${{ steps.native_build.outcome }}
+      go_tests: ${{ steps.go_tests.outcome }}
+      go_race_msys2: ${{ steps.go_race_msys2.outcome }}
+      installer_package: ${{ steps.installer_package.outcome }}
     steps:
       - uses: actions/checkout@v6
       - name: Checkout active TSF submodule
@@ -67,6 +77,7 @@ jobs:
       - name: Install i686 host toolchain for Win32 PIMELauncher
         run: rustup toolchain install stable-i686-pc-windows-msvc --profile minimal
       - name: Run Rust tests
+        id: rust_i686_host
         run: |
           cd PIMELauncher
           cargo fmt --check
@@ -91,6 +102,7 @@ jobs:
           cmake --build build64 --config Release --target PIMETextService
 
       - name: Run native C++ regression tests
+        id: native_build
         shell: pwsh
         run: ctest --test-dir build -C Release --output-on-failure
 
@@ -113,6 +125,7 @@ jobs:
           popd
 
       - name: Run Go regression tests
+        id: go_tests
         shell: pwsh
         run: |
           Set-Location go-backend
@@ -143,6 +156,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'Required Yime regression tests failed.' }
 
       - name: Run Go race detector
+        id: go_race_msys2
         shell: pwsh
         run: |
           $gcc = Join-Path '${{ steps.msys2.outputs.msys2-location }}' 'ucrt64\bin\gcc.exe'
@@ -191,6 +205,7 @@ jobs:
         run: .\tools\sign-release.ps1 -RequireComplete
 
       - name: Build the installer
+        id: installer_package
         shell: pwsh
         run: |
           Set-Location installer
@@ -206,3 +221,68 @@ jobs:
           name: ${{ startsWith(github.ref, 'refs/tags/v') && 'YIME-signed-installer' || 'YIME-unsigned-test-installer' }}
           path: installer/YIME-*-setup.exe
           if-no-files-found: error
+
+  rust-i686-host:
+    name: rust-i686-host
+    if: ${{ always() }}
+    needs: [build-contract, core-build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require the protected Rust stage
+        env:
+          CONTRACT_RESULT: ${{ needs['build-contract'].result }}
+          CORE_RESULT: ${{ needs['core-build'].result }}
+          STAGE_RESULT: ${{ needs['core-build'].outputs.rust_i686_host }}
+        run: test "$CONTRACT_RESULT" = success && test "$CORE_RESULT" = success && test "$STAGE_RESULT" = success
+
+  native-build:
+    name: native-build
+    if: ${{ always() }}
+    needs: [build-contract, core-build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require the protected native stage
+        env:
+          CONTRACT_RESULT: ${{ needs['build-contract'].result }}
+          CORE_RESULT: ${{ needs['core-build'].result }}
+          STAGE_RESULT: ${{ needs['core-build'].outputs.native_build }}
+        run: test "$CONTRACT_RESULT" = success && test "$CORE_RESULT" = success && test "$STAGE_RESULT" = success
+
+  go-tests:
+    name: go-tests
+    if: ${{ always() }}
+    needs: [build-contract, core-build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require the protected Go regression stage
+        env:
+          CONTRACT_RESULT: ${{ needs['build-contract'].result }}
+          CORE_RESULT: ${{ needs['core-build'].result }}
+          STAGE_RESULT: ${{ needs['core-build'].outputs.go_tests }}
+        run: test "$CONTRACT_RESULT" = success && test "$CORE_RESULT" = success && test "$STAGE_RESULT" = success
+
+  go-race-msys2:
+    name: go-race-msys2
+    if: ${{ always() }}
+    needs: [build-contract, core-build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require the protected Go race stage
+        env:
+          CONTRACT_RESULT: ${{ needs['build-contract'].result }}
+          CORE_RESULT: ${{ needs['core-build'].result }}
+          STAGE_RESULT: ${{ needs['core-build'].outputs.go_race_msys2 }}
+        run: test "$CONTRACT_RESULT" = success && test "$CORE_RESULT" = success && test "$STAGE_RESULT" = success
+
+  installer-package:
+    name: installer-package
+    if: ${{ always() }}
+    needs: [build-contract, core-build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require the protected installer stage
+        env:
+          CONTRACT_RESULT: ${{ needs['build-contract'].result }}
+          CORE_RESULT: ${{ needs['core-build'].result }}
+          STAGE_RESULT: ${{ needs['core-build'].outputs.installer_package }}
+        run: test "$CONTRACT_RESULT" = success && test "$CORE_RESULT" = success && test "$STAGE_RESULT" = success
