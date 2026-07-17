@@ -18,8 +18,11 @@ Rime frontend.
 - Language bar quick buttons:
   - **用户词库** → `lexicon-manager.exe`
   - **反查编码** → `reverse-lookup.exe`
-  - **工具** → `tool-hub.exe`
+  - **工具中心** → `tool-hub.exe`
   - **中西 / 全半 / 横竖** — fixed two-character labels; state shown by icons
+- When Windows docks the language bar in the taskbar and hides those standalone
+  quick buttons, open the **设置** menu from the **中** button. Its root contains
+  the equivalent **用户词库**, **反查编码**, and **工具中心** commands.
 - Settings: Yime variable-length, fixed-length, and shorthand schemas,
   Chinese/English mode, shape, punctuation, and data/log folders. Guarded Rime
   maintenance commands live in the `数据维护` submenu. `重新部署…`
