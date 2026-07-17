@@ -1284,12 +1284,12 @@ func (ime *IME) addButtons(resp *pime.Response) {
 		})
 	}
 	// The former "帮助" menu only duplicated tool-hub entries, so it is now a
-	// single direct "工具" button that opens the aggregated tool hub. Help and
+	// single direct "工具中心" button that opens the aggregated tool hub. Help and
 	// trial-feedback documents live inside that hub.
 	toolsButton := pime.ButtonInfo{
 		ID:        "tools",
-		Text:      "工具",
-		Tooltip:   "工具",
+		Text:      "工具中心",
+		Tooltip:   "工具中心",
 		CommandID: ID_HELP_TOOL_HUB,
 		Type:      "button",
 	}
@@ -1714,6 +1714,10 @@ func (ime *IME) buildMenu() []map[string]interface{} {
 		{"id": ID_CANDIDATE_LAYOUT_TOGGLE, "text": candidateLayoutToggleText(ime.style.CandidatePerRow > verticalCandidatesPerRow)},
 		{"text": "候选项数", "submenu": ime.buildCandidatePageSizeMenu()},
 		{"text": "显示编码", "submenu": ime.buildReverseLookupMenu()},
+		{"text": ""},
+		{"id": ID_USER_LEXICON_MANAGER, "text": "用户词库"},
+		{"id": ID_REVERSE_LOOKUP_TOOL, "text": "反查编码"},
+		{"id": ID_HELP_TOOL_HUB, "text": "工具中心"},
 		{"text": ""},
 		{"text": "数据维护", "submenu": []map[string]interface{}{
 			{"id": ID_SYNC, "text": "同步数据…(&S)"},
