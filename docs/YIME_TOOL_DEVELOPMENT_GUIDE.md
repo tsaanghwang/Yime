@@ -6,7 +6,7 @@
 
 Yime 的工具以独立 Win32 GUI 进程运行，不在 TSF 回调中嵌入 UI。工具通过工具箱（tool-hub.exe）统一启动，工具箱读取 manifest JSON 决定显示哪些工具。
 
-启动链路：语言栏 → server.exe → tool-hub.exe → 具体工具.exe
+启动链路：桌面语言栏“工具中心”或任务栏“设置 → 工具中心” → server.exe → tool-hub.exe → 具体工具.exe
 
 ## 添加新工具的步骤
 

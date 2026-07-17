@@ -15,7 +15,8 @@ Please also include:
 2. What you did.
 3. What you saw.
 
-For installation, startup, or unexplained runtime problems, open **工具 → 诊断工具**,
+For installation, startup, or unexplained runtime problems, open **工具中心 → 诊断工具**
+(or **设置 → 工具中心 → 诊断工具** when the language bar is docked),
 run the relevant checks, and export the diagnostic report. Attach the report
 together with a screenshot when possible. Review the report before sharing if
 you enabled paths, process details, or log excerpts.
