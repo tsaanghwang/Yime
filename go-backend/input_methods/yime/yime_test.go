@@ -1396,6 +1396,15 @@ func TestOnMenuReturnsSettingsMenu(t *testing.T) {
 	if hasTopLevelMenuItemID(items, ID_DEPLOY) || hasTopLevelMenuItemID(items, ID_SYNC) {
 		t.Fatalf("maintenance commands must not remain directly in settings root: %#v", items)
 	}
+	if item := findTopLevelMenuItem(t, items, ID_USER_LEXICON_MANAGER); item["text"] != "用户词库" {
+		t.Fatalf("expected direct 用户词库 entry in settings menu, got %#v", item)
+	}
+	if item := findTopLevelMenuItem(t, items, ID_REVERSE_LOOKUP_TOOL); item["text"] != "反查编码" {
+		t.Fatalf("expected direct 反查编码 entry in settings menu, got %#v", item)
+	}
+	if item := findTopLevelMenuItem(t, items, ID_HELP_TOOL_HUB); item["text"] != "工具中心" {
+		t.Fatalf("expected direct 工具中心 entry in settings menu, got %#v", item)
+	}
 	openFolderMenu := findSubmenuItem(t, maintenanceMenu, "打开目录(&O)")
 	if len(openFolderMenu) != 4 {
 		t.Fatalf("expected four directory entries inside data maintenance, got %#v", openFolderMenu)
@@ -2826,8 +2835,8 @@ func TestAddButtonsIncludesTopLevelMenuButtons(t *testing.T) {
 			if button.CommandID != ID_HELP_TOOL_HUB {
 				t.Fatalf("expected tools button to carry ID_HELP_TOOL_HUB, got %#v", button)
 			}
-			if button.Text != "工具" {
-				t.Fatalf("expected tools button text 工具, got %#v", button)
+			if button.Text != "工具中心" || button.Tooltip != "工具中心" {
+				t.Fatalf("expected tools button text and tooltip 工具中心, got %#v", button)
 			}
 		default:
 			if button.Type != "menu" {
