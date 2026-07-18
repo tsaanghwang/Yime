@@ -5,7 +5,7 @@
 schema:
   schema_id: yime_shorthand
   name: "Yime 省键模式"
-  version: "2026-07-02"
+  version: "2026-07-18-layout-6d00e609f689"
 
 engine:
   processors:
@@ -34,6 +34,7 @@ speller:
 
 translator:
   dictionary: yime_shorthand
+  user_dict: yime_shorthand_layout_6d00e609f689
   enable_user_dict: true
   enable_sentence: false
   enable_completion: true

@@ -8,6 +8,7 @@ $patterns = @(
     'build64\PIMETextService\Release\PIMETextService.dll',
     'go-backend\build\go-backend\*.exe',
     'go-backend\build\go-backend\input_methods\yime\rime_deployer.exe',
+	'go-backend\build\go-backend\input_methods\yime\rime_dict_manager.exe',
     'go-backend\build\go-backend\input_methods\yime\rime.dll'
 )
 if (Test-Path -LiteralPath (Join-Path $root 'build_arm64\PIMETextService\Release\PIMETextService.dll')) {

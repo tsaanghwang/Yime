@@ -141,7 +141,7 @@ type backendUserDataSyncer interface {
 }
 
 var runRimeExternalBuild = runRimeExternalBuildDefault
-var refreshRimeSchemasOnInit = userlexicon.RefreshRimeSchemas
+var refreshRimeSchemasOnInit = userlexicon.RefreshRimeData
 var createRimeBackend = newNativeBackend
 var confirmRimeRedeployAction = requestRimeRedeployConfirmation
 var confirmRimeSyncAction = requestRimeSyncConfirmation
@@ -660,10 +660,10 @@ func (ime *IME) Init(req *pime.Request) bool {
 	userDir := filepath.Join(appData, APP, "Rime")
 	schemasChanged, err := refreshRimeSchemasOnInit(sharedDir, userDir)
 	if err != nil {
-		log.Printf("刷新 Rime 用户目录方案失败: %v", err)
+		log.Printf("刷新 Rime 用户目录运行数据失败: %v", err)
 		schemasChanged = false
 	} else if schemasChanged {
-		log.Println("检测到安装方案更新，已刷新用户目录并请求 Rime 完整部署")
+		log.Println("检测到安装方案或系统词典更新，已刷新用户目录并请求 Rime 完整部署")
 	}
 	if event, err := runtimechange.Read(userDir); err == nil {
 		ime.recordRuntimeChange(event)

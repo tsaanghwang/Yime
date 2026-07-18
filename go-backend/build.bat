@@ -381,6 +381,14 @@ if not exist "%PACKAGE_DIR%\input_methods\yime\rime_deployer.exe" if exist "%LIB
     copy /Y "%LIBRIME_BUILD_DIR%\rime_deployer.exe" "%PACKAGE_DIR%\input_methods\yime\rime_deployer.exe" >nul
     echo [INFO] Copied rime_deployer.exe from librime build output into package output
 )
+if exist "%RIME_DIR%\rime_dict_manager.exe" (
+    copy /Y "%RIME_DIR%\rime_dict_manager.exe" "%PACKAGE_DIR%\input_methods\yime\rime_dict_manager.exe" >nul
+    echo [INFO] Copied rime_dict_manager.exe into package output
+)
+if not exist "%PACKAGE_DIR%\input_methods\yime\rime_dict_manager.exe" if exist "%LIBRIME_BUILD_DIR%\rime_dict_manager.exe" (
+    copy /Y "%LIBRIME_BUILD_DIR%\rime_dict_manager.exe" "%PACKAGE_DIR%\input_methods\yime\rime_dict_manager.exe" >nul
+    echo [INFO] Copied rime_dict_manager.exe from librime build output into package output
+)
 
 echo.
 echo ============================================

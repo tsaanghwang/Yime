@@ -104,7 +104,7 @@ func TestReleasePipelineSignsPayloadInstallerAndUninstaller(t *testing.T) {
 			t.Fatalf("developer uninstall must remove stale uninstall registration %q", fragment)
 		}
 	}
-	for _, fragment := range []string{"PIMELauncher.exe", "PIMETextService.dll", "rime_deployer.exe", "rime.dll"} {
+	for _, fragment := range []string{"PIMELauncher.exe", "PIMETextService.dll", "rime_deployer.exe", "rime_dict_manager.exe", "rime.dll"} {
 		if !strings.Contains(signer, fragment) {
 			t.Fatalf("release payload signer is missing %q", fragment)
 		}
