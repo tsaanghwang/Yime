@@ -702,31 +702,30 @@ go-backend\run_admin_yime_tests.cmd
 
 | 声母 | 键 | 声母 | 键 | 声母 | 键 | 声母 | 键 |
 |------|-----|------|-----|------|-----|------|-----|
-| b | q | p | p | m | h | f | [ |
-| d | w | t | . | n | y | l | b |
-| g | ] | k | ' | h | n | | |
+| b | b | p | p | m | - | f | [ |
+| d | ] | t | t | n | n | l | \ |
+| g | g | k | q | h | h | | |
 | zh | 7 | ch | 8 | sh | 9 | r | 0 |
 | z | 6 | c | 5 | s | 4 | | |
 | j | 3 | q | 2 | x | 1 | | |
-| w | % | y | $ | | | | |
+| w | = | y | y | 零首音 | ' | | |
 
 ### 6.2 候选选择键
 
 | 键 | 选择 | 说明 |
 |----|------|------|
-| Space | 第1个 | 最常用 |
-| `` ` `` | 第2个 | 反引号 |
-| `-` | 第3个 | 减号 |
-| `=` | 第4个 | 等号 |
-| `\` | 第5个 | 反斜杠 |
-| 6-9 | 无快捷键 | 需鼠标点击（编码约束） |
+| Space / Enter / Shift+1 | 第1个 | 三种等价首选操作 |
+| Shift+2 | 第2个 | 候选序号与数字一致 |
+| … | … | … |
+| Shift+9 | 第9个 | 候选序号与数字一致 |
 
 ### 6.3 alphabet 字符集
 
 ```
-Variable: qufvkc;gxwlj$op[strhdm.aibe%8/,y]1'n564JKL7930z2SDMAN@!#
-Full:     qufvkc;gxwlj$op[strhdm.aibe%8/,y]1'n5HD64JKL7930z2SMAN@!#
-Shorthand:qufvkc;gxwlj$op[strhdm.aibe%8/,y]1'n564JKL7930z2SDMAN@!#
+Full:      1234567890-=qwertyuiop[]\asdfghjkl;'zxcvbnm,./JKLUIOM<>NG
+Variable:  1234567890-=qwertyuiop[]\asdfghjkl;'zxcvbnm,./JKLUIOM<>NG
+Shorthand: 1234567890-=qwertyuiop[]\asdfghjkl;'zxcvbnm,./JKLUIOM<>NG
 ```
 
-差异：Full 模式多了 `H` 和 `D`（零声母和 er 系需要大写字母）。
+三种 schema 使用同一套 57 字符白名单。码表导入器还会通过 `codemode.LayoutAlphabet`
+拒绝布局外字符，避免出现“导入成功但无法击键输入”的词典。

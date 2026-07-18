@@ -84,7 +84,7 @@ func TestRealRimeCanCommitText(t *testing.T) {
 	session := newRealRimeSession(t)
 	sessionID := session.sessionID
 
-	for _, input := range []string{"yonsx", "puta", "qu"} {
+	for _, input := range []string{"bj", "fds", "rew"} {
 		t.Run(input, func(t *testing.T) {
 			ClearComposition(sessionID)
 			for _, key := range []rune(input) {
@@ -138,10 +138,10 @@ func TestRealRimeCanSelectYimeShorthandSchema(t *testing.T) {
 		t.Fatalf("expected current schema yime_shorthand, got %q ok=%t", schemaID, ok)
 	}
 
-	typeASCII(t, sessionID, "qu")
+	typeASCII(t, sessionID, "bj")
 	menu, ok := GetMenu(sessionID)
 	if !ok || len(menu.Candidates) == 0 {
-		t.Fatalf("expected shorthand candidates after qu, got %#v", menu)
+		t.Fatalf("expected shorthand candidates after bj, got %#v", menu)
 	}
 }
 
@@ -225,7 +225,7 @@ func TestRealRimeBackspaceUpdatesComposition(t *testing.T) {
 	sessionID := session.sessionID
 	ClearComposition(sessionID)
 
-	typeASCII(t, sessionID, "ni")
+	typeASCII(t, sessionID, "bj")
 	before, ok := GetComposition(sessionID)
 	if !ok || before.Preedit == "" {
 		t.Fatalf("expected composition before backspace, got %#v", before)
@@ -252,7 +252,7 @@ func TestRealRimeEscapeClearsComposition(t *testing.T) {
 	sessionID := session.sessionID
 	ClearComposition(sessionID)
 
-	typeASCII(t, sessionID, "ni")
+	typeASCII(t, sessionID, "bj")
 	if composition, ok := GetComposition(sessionID); !ok || composition.Preedit == "" {
 		t.Fatalf("expected composition before escape, got %#v", composition)
 	}
@@ -329,6 +329,39 @@ func TestRealRimePunctuationKeys(t *testing.T) {
 	}
 }
 
+func TestRealRimeAcceptsNewLayoutPunctuationAndShiftCodes(t *testing.T) {
+	session := newRealRimeSession(t)
+	sessionID := session.sessionID
+	if !SelectSchema(sessionID, "yime_full") {
+		t.Fatal("expected yime_full schema to be selectable")
+	}
+
+	tests := []struct {
+		name string
+		keys []*pime.Request
+	}{
+		{"minus initial", []*pime.Request{{KeyCode: 0xBD, CharCode: '-'}, {KeyCode: 'J', CharCode: 'j'}, {KeyCode: 'J', CharCode: 'j'}, {KeyCode: 'J', CharCode: 'j'}}},
+		{"equals initial", []*pime.Request{{KeyCode: 0xBB, CharCode: '='}, {KeyCode: 'U', CharCode: 'u'}, {KeyCode: 'U', CharCode: 'u'}, {KeyCode: 'U', CharCode: 'u'}}},
+		{"backslash initial", []*pime.Request{{KeyCode: 0xDC, CharCode: '\\'}, {KeyCode: 'J', CharCode: 'j'}, {KeyCode: 'J', CharCode: 'j'}, {KeyCode: 'J', CharCode: 'j'}}},
+		{"shift comma musical", []*pime.Request{{KeyCode: 'H', CharCode: 'h'}, {KeyCode: 0xBC, CharCode: '<', KeyStates: keyStatesDown(vkShift)}, {KeyCode: 0xBC, CharCode: '<', KeyStates: keyStatesDown(vkShift)}, {KeyCode: 0xBC, CharCode: '<', KeyStates: keyStatesDown(vkShift)}}},
+		{"shift letter and punctuation musical", []*pime.Request{{KeyCode: 0xDE, CharCode: '\''}, {KeyCode: 'M', CharCode: 'M', KeyStates: keyStatesDown(vkShift)}, {KeyCode: 0xBC, CharCode: '<', KeyStates: keyStatesDown(vkShift)}, {KeyCode: 0xBE, CharCode: '>', KeyStates: keyStatesDown(vkShift)}}},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			ClearComposition(sessionID)
+			for _, req := range test.keys {
+				if !processRealKey(sessionID, req) {
+					t.Fatalf("expected key %q to be handled", rune(req.CharCode))
+				}
+			}
+			if menu, ok := GetMenu(sessionID); !ok || len(menu.Candidates) == 0 {
+				t.Fatalf("expected candidates, got %#v", menu)
+			}
+		})
+	}
+}
+
 func keyStatesDown(codes ...int) pime.KeyStates {
 	states := make(pime.KeyStates, 256)
 	for _, code := range codes {
@@ -361,7 +394,7 @@ func rimeMenuAfterASCII(t *testing.T, sessionID RimeSessionId, input string) (Ri
 
 func rimeProbeInputWithMinCandidates(t *testing.T, sessionID RimeSessionId, min int) (string, RimeMenu) {
 	t.Helper()
-	for _, input := range []string{"ni", "yonsx", "puta", "qu", "zhong", "zhongguo"} {
+	for _, input := range []string{"bj", "fds", "rew", "sdf", "jkl"} {
 		menu, ok := rimeMenuAfterASCII(t, sessionID, input)
 		if ok && len(menu.Candidates) >= min {
 			return input, menu
@@ -411,7 +444,7 @@ func TestRealRimeRedeployAppliesPageSize(t *testing.T) {
 		t.Fatal("expected yime_variable schema to be selectable")
 	}
 	SetOption(baseline, "ascii_mode", false)
-	const input = "qu"
+	const input = "bj"
 	typeASCII(t, baseline, input)
 	baselineMenu, gotBaselineMenu := GetMenu(baseline)
 	if !gotBaselineMenu {
@@ -474,7 +507,7 @@ func TestRealRimeExternalBuildAppliesPageSize(t *testing.T) {
 		t.Fatal("expected yime_variable schema to be selectable")
 	}
 	SetOption(baseline, "ascii_mode", false)
-	const input = "qu"
+	const input = "bj"
 	typeASCII(t, baseline, input)
 	baselineMenu, gotBaselineMenu := GetMenu(baseline)
 	if !gotBaselineMenu {

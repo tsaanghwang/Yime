@@ -55,9 +55,9 @@
 
 ### 遗留编码约束（暂不修改）
 
-- 候选选择键仅 5 个（Space/`/-/=/\），第 6-9 个候选需鼠标点击
-- 数字键在组字时作为编码输入，不选词
-- 57 音元占满 47 个可打印键位，改选字键需重建编码体系
+- 2026-07-18 的布局试验分支已经释放旧候选键，并改用 Shift+1—9；
+- Base 数字键仍属于编码，只有 Shift+数字键用于选择候选；
+- 57 个 Yinyuan ID 使用 47 个 Base 键和 11 个 Shift 键，反引号 Base 键暂留空。
 
 ---
 
@@ -174,7 +174,7 @@ setCandidatePageSize(size)
 |---|------|------|----------|
 | 1.1 | 修复回车键行为 | ef52fe2a | `TestReturnKeyCommitsRawInputDuringComposition`, `TestReturnKeyPassesThroughWhenNotComposing` |
 | 1.2 | 修复重复按键抑制 | edd6e0ab | `TestRapidSameKey*`, `TestDuplicateKeyDown*`, `TestKeyUpClears*` |
-| 1.3 | 候选选择键扩展 | 暂缓 | 编码约束：57 音元占满键位 |
+| 1.3 | 候选选择键扩展 | 布局试验分支已实现 | `TestCandidateSelectionUsesDefaultKeysAndShiftDigits` |
 | 1.4 | 候选项数变更保存组字状态 | 1bf5063f | `TestSetCandidatePageSizePreservesComposition` |
 
 ---

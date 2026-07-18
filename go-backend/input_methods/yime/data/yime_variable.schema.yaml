@@ -29,7 +29,7 @@ engine:
     - punct_translator
 
 speller:
-  alphabet: "qufvkc;gxwlj$op[strhdm.aibe%8/,y]1'n564JKL7930z2SDMAN@!#"
+  alphabet: "1234567890-=qwertyuiop[]\\asdfghjkl;'zxcvbnm,./JKLUIOM<>NG"
   delimiter: " "
 
 translator:

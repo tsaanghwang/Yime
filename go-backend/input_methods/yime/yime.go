@@ -78,7 +78,7 @@ const (
 	maxCandidatePageSize       = 9
 	horizontalCandidatesPerRow = 10
 	verticalCandidatesPerRow   = 1
-	yimeCandidateSelectKeys    = "1234567890"
+	yimeCandidateSelectKeys    = "123456789"
 	userLexiconSourceFileName  = "yime_user_phrases.txt"
 	defaultUserLexiconWeight   = "1000000"
 )
@@ -818,31 +818,21 @@ func (ime *IME) shouldPassThroughModifierOnKey(req *pime.Request, filterHandled 
 
 func candidateSelectionIndex(req *pime.Request) (int, bool) {
 	switch req.KeyCode {
-	case vkSpace:
+	case vkSpace, vkReturn:
 		return 0, true
-	case 0xC0: // VK_OEM_3: `
-		return 1, true
-	case 0xBD: // VK_OEM_MINUS: -
-		return 2, true
-	case 0xBB: // VK_OEM_PLUS: =
-		return 3, true
-	case 0xDC: // VK_OEM_5: backslash
-		return 4, true
 	}
-	switch req.CharCode {
-	case ' ':
+	if req.CharCode == ' ' || req.CharCode == '\r' {
 		return 0, true
-	case '`':
-		return 1, true
-	case '-':
-		return 2, true
-	case '=':
-		return 3, true
-	case '\\':
-		return 4, true
-	default:
+	}
+	if !req.KeyStates.IsKeyDown(vkShift) ||
+		req.KeyStates.IsKeyDown(vkControl) ||
+		req.KeyStates.IsKeyDown(vkMenu) {
 		return 0, false
 	}
+	if req.KeyCode >= '1' && req.KeyCode <= '9' {
+		return req.KeyCode - '1', true
+	}
+	return 0, false
 }
 
 func isCandidatePageKey(req *pime.Request) bool {

@@ -46,7 +46,7 @@ func TestShippedCodeMapContainsOnlyCanonicalFullCodes(t *testing.T) {
 
 func TestLoadCodeMapAcceptsFullOnlySource(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "codes.tsv")
-	if err := os.WriteFile(path, []byte("pinyin_tone\tfull\na2\tHsdf\n"), 0o644); err != nil {
+	if err := os.WriteFile(path, []byte("pinyin_tone\tfull\na2\t'sdf\n"), 0o644); err != nil {
 		t.Fatal(err)
 	}
 	got, err := loadCodeMap(path)

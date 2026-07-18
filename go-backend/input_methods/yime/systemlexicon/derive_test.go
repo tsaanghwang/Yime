@@ -9,7 +9,7 @@ import (
 
 func TestDeriveFromFullDictionaryGeneratesThreeModes(t *testing.T) {
 	input := filepath.Join(t.TempDir(), "source.yaml")
-	content := "# source\n---\nname: imported\nversion: \"1\"\nsort: by_weight\n...\n阿\tHsdf\t100\n吧\tqfff\t90\n阿吧\tHsdfqfff\t80\n"
+	content := "# source\n---\nname: imported\nversion: \"1\"\nsort: by_weight\n...\n阿\t'sdf\t100\n吧\tqfff\t90\n阿吧\t'sdfqfff\t80\n"
 	if err := os.WriteFile(input, []byte(content), 0o644); err != nil {
 		t.Fatal(err)
 	}
@@ -22,7 +22,7 @@ func TestDeriveFromFullDictionaryGeneratesThreeModes(t *testing.T) {
 		t.Fatalf("unexpected manifest: %#v", manifest)
 	}
 	checks := map[string][]string{
-		"yime_full.dict.yaml":      {"阿\tHsdf\t100", "阿吧\tHsdfqfff\t80"},
+		"yime_full.dict.yaml":      {"阿\t'sdf\t100", "阿吧\t'sdfqfff\t80"},
 		"yime_variable.dict.yaml":  {"阿\tsdf\t100", "阿吧\tsdfqf\t80"},
 		"yime_shorthand.dict.yaml": {"阿\tsf\t100", "阿吧\tsfqf\t80"},
 	}

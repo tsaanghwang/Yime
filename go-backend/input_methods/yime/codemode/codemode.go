@@ -9,7 +9,9 @@ import (
 
 const (
 	SyllableCodeLength = 4
-	VirtualInitial     = 'H'
+	VirtualInitial     = '\''
+	LayoutVersion      = "rime-layout-key-trial-v1-2026-07-18"
+	LayoutAlphabet     = "1234567890-=qwertyuiop[]\\asdfghjkl;'zxcvbnm,./JKLUIOM<>NG"
 )
 
 // Record contains all runtime representations derived from one canonical code.
@@ -27,10 +29,19 @@ type musicalMetadata struct {
 // Each triple is high, middle, low for one musical-quality group. These are
 // Rime layout-key projections of M01-M33, not a second lexicon source.
 var musicalGroups = []string{
-	"u;o", "vgx", "/z,", "fds", "jkl", "tre", "JKL", "ASD", "!@#", "aNm", "iMc",
+	"jkl", "uio", "m,.", "fds", "rew", "vcx", "JKL", "UIO", "M<>", "aNz", ";G/",
 }
 
 var musicalByKey = buildMusicalMetadata()
+var layoutKeySet = buildLayoutKeySet()
+
+func buildLayoutKeySet() map[rune]bool {
+	result := make(map[rune]bool, len([]rune(LayoutAlphabet)))
+	for _, key := range LayoutAlphabet {
+		result[key] = true
+	}
+	return result
+}
 
 func buildMusicalMetadata() map[rune]musicalMetadata {
 	result := make(map[rune]musicalMetadata, len(musicalGroups)*3)
@@ -53,6 +64,11 @@ func BuildRecord(full string) (Record, error) {
 	runes := []rune(full)
 	if len(runes)%SyllableCodeLength != 0 {
 		return Record{}, fmt.Errorf("等长码长度必须是 %d 的倍数，实际为 %d：%q", SyllableCodeLength, len(runes), full)
+	}
+	for _, key := range runes {
+		if !layoutKeySet[key] {
+			return Record{}, fmt.Errorf("等长码包含布局外字符 %q", key)
+		}
 	}
 	var variable strings.Builder
 	var shorthand strings.Builder

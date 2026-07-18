@@ -20,7 +20,7 @@ func TestParseUserPhraseFieldsAcceptsYimeCodeColumn(t *testing.T) {
 func TestResolveDictPathPrefersSharedDir(t *testing.T) {
 	sharedDir := t.TempDir()
 	userDir := t.TempDir()
-	dict := []byte("name: test\n...\n巴\t~d\n")
+	dict := []byte("name: test\n...\n巴\tsdf\n")
 	sharedPath := filepath.Join(sharedDir, "yime_variable.dict.yaml")
 	if err := os.WriteFile(sharedPath, dict, 0o644); err != nil {
 		t.Fatal(err)

@@ -671,7 +671,34 @@ func TestOnKeyDownNumberExtendsComposition(t *testing.T) {
 	}
 }
 
-func TestOnKeyDownBacktickSelectsSecondCandidate(t *testing.T) {
+func TestCandidateSelectionUsesDefaultKeysAndShiftDigits(t *testing.T) {
+	tests := []struct {
+		name  string
+		req   *pime.Request
+		index int
+		ok    bool
+	}{
+		{"space selects first", &pime.Request{KeyCode: vkSpace, CharCode: ' '}, 0, true},
+		{"enter selects first", &pime.Request{KeyCode: vkReturn, CharCode: '\r'}, 0, true},
+		{"shift 1 selects first", &pime.Request{KeyCode: '1', CharCode: '!', KeyStates: keyStatesDown(vkShift)}, 0, true},
+		{"shift 9 selects ninth", &pime.Request{KeyCode: '9', CharCode: '(', KeyStates: keyStatesDown(vkShift)}, 8, true},
+		{"plain number remains code", &pime.Request{KeyCode: '2', CharCode: '2'}, 0, false},
+		{"minus remains code", &pime.Request{KeyCode: 0xBD, CharCode: '-'}, 0, false},
+		{"equals remains code", &pime.Request{KeyCode: 0xBB, CharCode: '='}, 0, false},
+		{"backslash remains code", &pime.Request{KeyCode: 0xDC, CharCode: '\\'}, 0, false},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			index, ok := candidateSelectionIndex(test.req)
+			if index != test.index || ok != test.ok {
+				t.Fatalf("candidateSelectionIndex() = (%d, %t), want (%d, %t)", index, ok, test.index, test.ok)
+			}
+		})
+	}
+}
+
+func TestOnKeyDownShift2SelectsSecondCandidate(t *testing.T) {
 	ime := newTestIME()
 	backend := ime.backend.(*testBackend)
 	backend.composition = "ni"
@@ -679,18 +706,20 @@ func TestOnKeyDownBacktickSelectsSecondCandidate(t *testing.T) {
 	ime.keyComposing = true
 
 	filterResp := ime.filterKeyDown(&pime.Request{
-		SeqNum:   4,
-		KeyCode:  0xC0,
-		CharCode: '`',
+		SeqNum:    4,
+		KeyCode:   '2',
+		CharCode:  '@',
+		KeyStates: keyStatesDown(vkShift),
 	}, pime.NewResponse(4, true))
 	if filterResp.ReturnValue != 1 {
 		t.Fatalf("expected backtick selection to be handled, got %d", filterResp.ReturnValue)
 	}
 
 	resp := ime.onKeyDown(&pime.Request{
-		SeqNum:   5,
-		KeyCode:  0xC0,
-		CharCode: '`',
+		SeqNum:    5,
+		KeyCode:   '2',
+		CharCode:  '@',
+		KeyStates: keyStatesDown(vkShift),
 	}, pime.NewResponse(5, true))
 
 	if resp.ReturnValue != 1 {
@@ -704,7 +733,7 @@ func TestOnKeyDownBacktickSelectsSecondCandidate(t *testing.T) {
 	}
 }
 
-func TestOnKeyDownMinusSelectsThirdCandidate(t *testing.T) {
+func TestOnKeyDownShift3SelectsThirdCandidate(t *testing.T) {
 	ime := newTestIME()
 	backend := ime.backend.(*testBackend)
 	backend.composition = "ni"
@@ -712,18 +741,20 @@ func TestOnKeyDownMinusSelectsThirdCandidate(t *testing.T) {
 	ime.keyComposing = true
 
 	filterResp := ime.filterKeyDown(&pime.Request{
-		SeqNum:   4,
-		KeyCode:  0xBD,
-		CharCode: '-',
+		SeqNum:    4,
+		KeyCode:   '3',
+		CharCode:  '#',
+		KeyStates: keyStatesDown(vkShift),
 	}, pime.NewResponse(4, true))
 	if filterResp.ReturnValue != 1 {
 		t.Fatalf("expected minus selection to be handled, got %d", filterResp.ReturnValue)
 	}
 
 	resp := ime.onKeyDown(&pime.Request{
-		SeqNum:   5,
-		KeyCode:  0xBD,
-		CharCode: '-',
+		SeqNum:    5,
+		KeyCode:   '3',
+		CharCode:  '#',
+		KeyStates: keyStatesDown(vkShift),
 	}, pime.NewResponse(5, true))
 
 	if resp.ReturnValue != 1 {
@@ -1051,7 +1082,7 @@ func TestSetCandidatePageSizePreservesComposition(t *testing.T) {
 	}
 }
 
-func TestReturnKeyCommitsRawInputDuringComposition(t *testing.T) {
+func TestReturnKeySelectsFirstCandidateDuringComposition(t *testing.T) {
 	ime := newTestIME()
 	backend := ime.backend.(*testBackend)
 	backend.composition = "ni"
@@ -1076,11 +1107,11 @@ func TestReturnKeyCommitsRawInputDuringComposition(t *testing.T) {
 	if resp.ReturnValue != 1 {
 		t.Fatalf("expected onKeyDown to succeed, got %d", resp.ReturnValue)
 	}
-	if resp.CommitString != "ni" {
-		t.Fatalf("expected raw composition 'ni' committed, got %q", resp.CommitString)
+	if resp.CommitString != "你" {
+		t.Fatalf("expected first candidate 你 committed, got %q", resp.CommitString)
 	}
 	if ime.keyComposing {
-		t.Fatal("expected keyComposing to be false after return commits raw input")
+		t.Fatal("expected keyComposing to be false after return selects the first candidate")
 	}
 }
 
@@ -2064,7 +2095,7 @@ func TestCandidatePageSizeLimitsVisibleCandidates(t *testing.T) {
 
 	ime.applyStateToResponse(resp, state)
 
-	if resp.SetSelKeys != "1234567890" {
+	if resp.SetSelKeys != "123456789" {
 		t.Fatalf("expected numeric candidate labels, got %q", resp.SetSelKeys)
 	}
 	if len(resp.CandidateList) != 5 {
@@ -2135,17 +2166,19 @@ func TestOutOfRangeCandidateShortcutIsConsumedOnShortPage(t *testing.T) {
 	}
 
 	filterResp := ime.filterKeyDown(&pime.Request{
-		SeqNum:   23,
-		KeyCode:  0xDC,
-		CharCode: '\\',
+		SeqNum:    23,
+		KeyCode:   '9',
+		CharCode:  '(',
+		KeyStates: keyStatesDown(vkShift),
 	}, pime.NewResponse(23, true))
 	if filterResp.ReturnValue != 1 {
 		t.Fatalf("expected out-of-range shortcut to be consumed, got %d", filterResp.ReturnValue)
 	}
 	resp := ime.onKeyDown(&pime.Request{
-		SeqNum:   24,
-		KeyCode:  0xDC,
-		CharCode: '\\',
+		SeqNum:    24,
+		KeyCode:   '9',
+		CharCode:  '(',
+		KeyStates: keyStatesDown(vkShift),
 	}, pime.NewResponse(24, true))
 
 	if resp.CommitString != "" {
@@ -3394,7 +3427,7 @@ func TestApplyUserLexiconWritesAllThreeModes(t *testing.T) {
 	if err := os.MkdirAll(sharedDir, 0o755); err != nil {
 		t.Fatal(err)
 	}
-	tsvContent := "pinyin_tone\tfull\nzhong1\tqsdf\nguo2\tHsdf\n"
+	tsvContent := "pinyin_tone\tfull\nzhong1\tqsdf\nguo2\t'sdf\n"
 	if err := os.WriteFile(filepath.Join(sharedDir, "yime_pinyin_codes.tsv"), []byte(tsvContent), 0o644); err != nil {
 		t.Fatal(err)
 	}
@@ -3448,7 +3481,7 @@ func TestApplyUserLexiconRunsExternalBuildAndSchedulesReload(t *testing.T) {
 	if err := os.MkdirAll(sharedDir, 0o755); err != nil {
 		t.Fatal(err)
 	}
-	tsvContent := "pinyin_tone\tfull\nzhong1\tqsdf\nguo2\tHsdf\n"
+	tsvContent := "pinyin_tone\tfull\nzhong1\tqsdf\nguo2\t'sdf\n"
 	if err := os.WriteFile(filepath.Join(sharedDir, "yime_pinyin_codes.tsv"), []byte(tsvContent), 0o644); err != nil {
 		t.Fatal(err)
 	}
@@ -3658,7 +3691,7 @@ func TestLongUserPhraseLexiconBuild(t *testing.T) {
 	if err := os.MkdirAll(sharedDir, 0o755); err != nil {
 		t.Fatal(err)
 	}
-	tsvContent := "pinyin_tone\tfull\nzhong1\tqsdf\nguo2\tHsdf\n"
+	tsvContent := "pinyin_tone\tfull\nzhong1\tqsdf\nguo2\t'sdf\n"
 	if err := os.WriteFile(filepath.Join(sharedDir, "yime_pinyin_codes.tsv"), []byte(tsvContent), 0o644); err != nil {
 		t.Fatal(err)
 	}
