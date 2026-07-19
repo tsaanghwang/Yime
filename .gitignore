@@ -14,6 +14,7 @@ go-backend/input_methods/yime/data/**
 !go-backend/input_methods/yime/data/yime_variable.schema.yaml
 !go-backend/input_methods/yime/data/yime_shorthand.schema.yaml
 !go-backend/input_methods/yime/data/yime_pinyin_codes.tsv
+!go-backend/input_methods/yime/data/yime_syllable_decomposition.tsv
 !go-backend/input_methods/yime/data/pinyin_normalized.json
 !go-backend/input_methods/yime/data/yime_pua_pinyin.json
 !go-backend/input_methods/yime/data/yime_lexicon_manifest.json

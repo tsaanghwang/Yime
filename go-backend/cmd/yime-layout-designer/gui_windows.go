@@ -62,6 +62,7 @@ const (
 	idProfileSave   = 112
 	idProfileLoad   = 113
 	idProfileDelete = 114
+	idInspect       = 115
 	idKeyBase       = 1000
 
 	uiWindowTitle = "Yime \u97f3\u5143\u952e\u76d8\u5e03\u5c40\u8bbe\u8ba1\u5668"
@@ -263,7 +264,14 @@ func runGUIWindow(state *guiState) error {
 		if int32(ret) <= 0 {
 			break
 		}
-		if handled, _, _ := isDialogMessage.Call(hwnd, uintptr(unsafe.Pointer(&msg))); handled == 0 {
+		handled := uintptr(0)
+		if activeInspector != nil && activeInspector.hwnd != 0 {
+			handled, _, _ = isDialogMessage.Call(uintptr(activeInspector.hwnd), uintptr(unsafe.Pointer(&msg)))
+		}
+		if handled == 0 {
+			handled, _, _ = isDialogMessage.Call(hwnd, uintptr(unsafe.Pointer(&msg)))
+		}
+		if handled == 0 {
 			translateMessage.Call(uintptr(unsafe.Pointer(&msg)))
 			dispatchMessage.Call(uintptr(unsafe.Pointer(&msg)))
 		}
@@ -330,6 +338,7 @@ func (s *guiState) createControls() {
 	makeControl("BUTTON", uiReset, wsTabstop, 512, 315, 125, 32, idReset)
 	makeControl("BUTTON", uiPreview, wsTabstop, 647, 315, 130, 32, idPreview)
 	s.applyButton = makeControl("BUTTON", uiApply, wsTabstop, 787, 315, 140, 32, idApply)
+	makeControl("BUTTON", "查看音节分解", wsTabstop, 942, 315, 145, 32, idInspect)
 
 	makeControl("STATIC", uiTrialLabel, 0, 20, 370, 92, 24, 0)
 	s.trialEdit = makeControl("EDIT", "zhong1 guo2", wsTabstop|esAutoHScroll, 122, 365, 245, 28, idTrialEdit)
@@ -421,6 +430,10 @@ func (s *guiState) command(id, notify int) {
 		s.loadProfile()
 	case id == idProfileDelete:
 		s.deleteProfile()
+	case id == idInspect:
+		if err := showSyllableInspector(s.hwnd, s.dataDir, s.sharedDir, s.draft.Projection); err != nil {
+			showMessage(s.hwnd, err.Error(), mbIconError)
+		}
 	}
 }
 
