@@ -122,6 +122,26 @@ func TestRealRimeCanCommitText(t *testing.T) {
 	}
 }
 
+func TestRealRimePrintableLayoutKeysAreNeverPagingBindings(t *testing.T) {
+	session := newRealRimeSession(t)
+	for _, key := range []rune{'-', '=', ',', '.', '/'} {
+		t.Run(string(key), func(t *testing.T) {
+			ClearComposition(session.sessionID)
+			typeASCII(t, session.sessionID, "3")
+			// Put the menu on a later page when possible. The printable key must
+			// still go to the speller instead of becoming PageUp/PageDown.
+			_ = processRealKey(session.sessionID, &pime.Request{KeyCode: vkNext})
+			if !ProcessKey(session.sessionID, int(key), 0) {
+				t.Fatalf("printable layout key %q was not handled", key)
+			}
+			composition, ok := GetComposition(session.sessionID)
+			if !ok || !strings.HasSuffix(composition.Preedit, string(key)) {
+				t.Fatalf("printable layout key %q did not enter composition: %#v", key, composition)
+			}
+		})
+	}
+}
+
 func TestRealRimeCanSelectYimeShorthandSchema(t *testing.T) {
 	session := newRealRimeSession(t)
 	sessionID := session.sessionID

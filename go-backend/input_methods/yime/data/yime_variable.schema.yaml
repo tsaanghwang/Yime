@@ -54,5 +54,7 @@ punctuator:
   import_preset: default
 
 key_binder:
-  import_preset: default
+  # Every printable key in Yime's alphabet is encoding data. Paging uses the
+  # native PageUp/PageDown keys; do not import default printable-key bindings.
+  bindings: []
 
