@@ -35,8 +35,8 @@ func TestBuildScriptKeepsGoExecutableHashesStableAndSupportsSigning(t *testing.T
 	if strings.Contains(script, "git describe --tags --always --dirty") {
 		t.Fatal("build.bat must not inject each Git commit into every executable hash")
 	}
-	if count := strings.Count(script, "go build %GO_REPRO_FLAGS%"); count != 8 {
-		t.Fatalf("expected all 8 Go executables to use reproducible flags, got %d", count)
+	if count := strings.Count(script, "go build %GO_REPRO_FLAGS%"); count != 9 {
+		t.Fatalf("expected all 9 Go executables to use reproducible flags, got %d", count)
 	}
 }
 

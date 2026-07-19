@@ -2373,6 +2373,7 @@ func TestBuildToolHubManifestProvidesExtensibleToolEntries(t *testing.T) {
 		`C:\go-backend\blocklist-manager.exe`,
 		`C:\go-backend\settings-tool.exe`,
 		`C:\go-backend\diagnostics-tool.exe`,
+		`C:\go-backend\yime-layout-designer.exe`,
 		"variable",
 	)
 	if err := validateToolHubManifest(manifest); err != nil {
@@ -2385,16 +2386,17 @@ func TestBuildToolHubManifestProvidesExtensibleToolEntries(t *testing.T) {
 		t.Fatalf("expected framework-ready tool entries, got %#v", manifest.Tools)
 	}
 	required := map[string]bool{
-		"lexicon-manager":        false,
-		"reverse-lookup-tool":    false,
-		"system-lexicon-audit":   false,
-		"user-blocklist-manager": false,
-		"settings-tool":          false,
-		"settings-data":          false,
-		"shared-data":            false,
-		"diagnostics-tool":       false,
-		"help-readme":            false,
-		"help-trial-feedback":    false,
+		"advanced-layout-designer": false,
+		"lexicon-manager":          false,
+		"reverse-lookup-tool":      false,
+		"system-lexicon-audit":     false,
+		"user-blocklist-manager":   false,
+		"settings-tool":            false,
+		"settings-data":            false,
+		"shared-data":              false,
+		"diagnostics-tool":         false,
+		"help-readme":              false,
+		"help-trial-feedback":      false,
 	}
 	diagnosticsIndex := -1
 	settingsDataIndex := -1
@@ -2409,7 +2411,7 @@ func TestBuildToolHubManifestProvidesExtensibleToolEntries(t *testing.T) {
 			settingsDataIndex = index
 		}
 		switch tool.ID {
-		case "lexicon-manager", "reverse-lookup-tool", "system-lexicon-audit", "user-blocklist-manager", "settings-tool", "diagnostics-tool":
+		case "advanced-layout-designer", "lexicon-manager", "reverse-lookup-tool", "system-lexicon-audit", "user-blocklist-manager", "settings-tool", "diagnostics-tool":
 			if tool.ActionType != toolActionRunExecutable {
 				t.Fatalf("expected %s to launch native executable, got %#v", tool.ID, tool)
 			}
@@ -2417,6 +2419,13 @@ func TestBuildToolHubManifestProvidesExtensibleToolEntries(t *testing.T) {
 				t.Fatalf("expected %s to keep the tool hub open after launch, got %#v", tool.ID, tool)
 			}
 			switch tool.ID {
+			case "advanced-layout-designer":
+				if tool.TargetPath != `C:\go-backend\yime-layout-designer.exe` {
+					t.Fatalf("expected layout designer executable path, got %#v", tool)
+				}
+				if len(tool.Arguments) != 4 || tool.Arguments[0] != "-SharedDir" || tool.Arguments[2] != "-UserDir" {
+					t.Fatalf("expected user-layout arguments, got %#v", tool.Arguments)
+				}
 			case "lexicon-manager":
 				if tool.TargetPath != `C:\go-backend\lexicon-manager.exe` {
 					t.Fatalf("expected lexicon-manager executable path to be preserved, got %#v", tool)

@@ -30,6 +30,28 @@ func TestDetectTransitionsIgnoresStableCustomPhrase(t *testing.T) {
 	}
 }
 
+func TestDetectTransitionsBetweenUsesExplicitOldAndNewDataSets(t *testing.T) {
+	oldDir, newDir := t.TempDir(), t.TempDir()
+	oldSchema := "translator:\n  user_dict: yime_full_layout_old\n"
+	newSchema := "translator:\n  user_dict: yime_full_layout_new\n"
+	if err := os.WriteFile(filepath.Join(oldDir, "yime_full.schema.yaml"), []byte(oldSchema), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(newDir, "yime_full.schema.yaml"), []byte(newSchema), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	got, err := DetectTransitionsBetween(oldDir, newDir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(got) != 1 || got[0].SourceDB != "yime_full_layout_old" || got[0].TargetDB != "yime_full_layout_new" {
+		t.Fatalf("unexpected transitions: %#v", got)
+	}
+	if got[0].OldDictionary != filepath.Join(oldDir, "yime_full.dict.yaml") || got[0].Dictionary != filepath.Join(newDir, "yime_full.dict.yaml") {
+		t.Fatalf("unexpected dictionary paths: %#v", got[0])
+	}
+}
+
 func TestTransformReencodesAndPreservesLearningStats(t *testing.T) {
 	input := "# Rime user dictionary\n#@/db_name\tyime_full\n#@/db_type\tuserdb\n#@/tick\t300\n#@/user_id\ttest-user\nold1 \t知道\tc=10 d=4.60295 t=264\nold2 \t未知词\tc=2 d=1 t=9\n"
 	index := buildIndex([]systemlexicon.Entry{{Text: "知道", Code: "new7J", Weight: 100}})

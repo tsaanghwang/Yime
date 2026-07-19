@@ -35,6 +35,21 @@ func loadCodeMap(path string) (map[string]CodeRecord, error) {
 			continue
 		}
 		key := normalizeNumericTonePinyin(fields[0])
+		// Layout-designer output carries all three modes explicitly. This keeps
+		// runtime encoding independent of the keyboard layout compiled into the
+		// backward-compatible two-column codemode fallback below.
+		if len(fields) >= 4 {
+			record := CodeRecord{Full: strings.TrimSpace(fields[1]), Variable: strings.TrimSpace(fields[2]), Shorthand: strings.TrimSpace(fields[3])}
+			if record.Full == "" || record.Variable == "" || record.Shorthand == "" || len([]rune(record.Full))%codemode.SyllableCodeLength != 0 {
+				return nil, fmt.Errorf("拼音编码表第 %d 行的显式三模式编码无效", lineNumber)
+			}
+			codeMap[key] = record
+			if strings.Contains(key, "眉") {
+				codeMap[strings.ReplaceAll(key, "眉", "v")] = record
+				codeMap[strings.ReplaceAll(key, "眉", "u:")] = record
+			}
+			continue
+		}
 		derived, err := codemode.BuildRecord(fields[1])
 		if err != nil {
 			return nil, fmt.Errorf("拼音编码表第 %d 行等长码无效: %w", lineNumber, err)

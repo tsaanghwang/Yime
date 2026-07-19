@@ -60,6 +60,7 @@ func BuildStatusReport(ctx Context) string {
 		installFlavorCheck(installRootFromShared(ctx.SharedDir)),
 		fileCheck("server.exe", serverBinaryPath(ctx.SharedDir)),
 		fileCheck("tool-hub.exe", filepath.Join(installRootFromShared(ctx.SharedDir), "tool-hub.exe")),
+		fileCheck("yime-layout-designer.exe", filepath.Join(installRootFromShared(ctx.SharedDir), "yime-layout-designer.exe")),
 		fileCheck("lexicon-manager.exe", filepath.Join(installRootFromShared(ctx.SharedDir), "lexicon-manager.exe")),
 		fileCheck("reverse-lookup.exe", filepath.Join(installRootFromShared(ctx.SharedDir), "reverse-lookup.exe")),
 		fileCheck("settings-tool.exe", filepath.Join(installRootFromShared(ctx.SharedDir), "settings-tool.exe")),

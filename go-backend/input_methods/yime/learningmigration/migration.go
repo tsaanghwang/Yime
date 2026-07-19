@@ -45,14 +45,32 @@ type record struct {
 // Only the main, versioned Yime user database is eligible; stable custom-phrase
 // databases are deliberately excluded.
 func DetectTransitions(sharedDir, userDir string) ([]Transition, error) {
+	transitions, err := DetectTransitionsBetween(userDir, sharedDir)
+	if err != nil {
+		return nil, err
+	}
+	result := transitions[:0]
+	for _, transition := range transitions {
+		if migrationLogged(filepath.Join(userDir, reportFileName), transition.SourceDB, transition.TargetDB) {
+			continue
+		}
+		result = append(result, transition)
+	}
+	return result, nil
+}
+
+// DetectTransitionsBetween compares an explicitly selected old and new data
+// set. It is used by the user-layout designer, where the old effective layout
+// may come from either the installed shared data or an earlier user override.
+func DetectTransitionsBetween(oldDir, newDir string) ([]Transition, error) {
 	var result []Transition
 	for _, mode := range []string{"full", "variable", "shorthand"} {
 		name := "yime_" + mode + ".schema.yaml"
-		oldDB, err := schemaUserDB(filepath.Join(userDir, name))
+		oldDB, err := schemaUserDB(filepath.Join(oldDir, name))
 		if err != nil && !errors.Is(err, os.ErrNotExist) {
 			return nil, err
 		}
-		newDB, err := schemaUserDB(filepath.Join(sharedDir, name))
+		newDB, err := schemaUserDB(filepath.Join(newDir, name))
 		if errors.Is(err, os.ErrNotExist) {
 			continue
 		}
@@ -67,13 +85,10 @@ func DetectTransitions(sharedDir, userDir string) ([]Transition, error) {
 			// Upgrade installations that adopted versioned namespaces before the
 			// migration feature existed. The log makes this one-shot.
 			oldDB = prefix
-			if migrationLogged(filepath.Join(userDir, reportFileName), oldDB, newDB) {
-				continue
-			}
 		} else if !strings.HasPrefix(oldDB, prefix) {
 			continue
 		}
-		result = append(result, Transition{mode, oldDB, newDB, filepath.Join(userDir, "yime_"+mode+".dict.yaml"), filepath.Join(sharedDir, "yime_"+mode+".dict.yaml")})
+		result = append(result, Transition{mode, oldDB, newDB, filepath.Join(oldDir, "yime_"+mode+".dict.yaml"), filepath.Join(newDir, "yime_"+mode+".dict.yaml")})
 	}
 	return result, nil
 }

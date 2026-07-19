@@ -35,13 +35,24 @@ type toolHubManifest struct {
 // are kept here as comments only:
 //   - The hub launches standalone Win32 tools instead of running inside language-bar callbacks.
 //   - Opening a subtool keeps the hub window open for quick re-selection.
-func buildToolHubManifest(sharedDir, userDir, helpDir, logDir, lexiconManagerPath, reverseLookupToolPath, systemLexiconAuditPath, blocklistManagerPath, settingsToolPath, diagnosticsToolPath, mode string) toolHubManifest {
+func buildToolHubManifest(sharedDir, userDir, helpDir, logDir, lexiconManagerPath, reverseLookupToolPath, systemLexiconAuditPath, blocklistManagerPath, settingsToolPath, diagnosticsToolPath, layoutDesignerPath, mode string) toolHubManifest {
 
 	return toolHubManifest{
 		Title:   "Yime 工具箱",
 		Summary: "",
 		Note:    "",
 		Tools: []toolHubEntry{
+			{
+				ID:          "advanced-layout-designer",
+				Label:       "高级布局",
+				Description: "复制、试打、保存并安全应用个人音元键盘布局。",
+				ActionType:  toolActionRunExecutable,
+				TargetPath:  layoutDesignerPath,
+				Arguments: []string{
+					"-SharedDir", sharedDir,
+					"-UserDir", userDir,
+				},
+			},
 			{
 				ID:          "lexicon-manager",
 				Label:       "词库管理",

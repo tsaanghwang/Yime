@@ -109,6 +109,9 @@ func TestReleasePipelineSignsPayloadInstallerAndUninstaller(t *testing.T) {
 			t.Fatalf("release payload signer is missing %q", fragment)
 		}
 	}
+	if !strings.Contains(signer, "yime-layout-designer.exe") {
+		t.Fatal("release payload signer is missing yime-layout-designer.exe")
+	}
 	if !strings.Contains(verifier, "Get-AuthenticodeSignature") || !strings.Contains(verifier, "Valid") {
 		t.Fatal("release signature verifier must reject non-valid signatures")
 	}

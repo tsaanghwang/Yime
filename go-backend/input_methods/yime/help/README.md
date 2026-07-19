@@ -13,7 +13,7 @@ Rime frontend.
 ## Menus
 
 - Tool hub: opens `tool-hub.exe`, the standalone Yime tool window. It contains
-  lexicon management, reverse lookup, system-lexicon audit, blocklist,
+  advanced user layouts, lexicon management, reverse lookup, system-lexicon audit, blocklist,
   settings, diagnostics, data directories, help, and feedback guidance.
 - Language bar quick buttons:
   - **用户词库** → `lexicon-manager.exe`
@@ -51,6 +51,11 @@ Rime frontend.
 - Settings tool: applies schema and candidate-display settings. It can also
   create a verified portable backup under `Documents\YIME 备份` and restore the
   latest manual backup after first creating a safety snapshot.
+- Advanced layout: clones the active layout, lets an advanced user swap
+  Yinyuan IDs on a keyboard diagram, test all three code modes, and save named
+  profiles. Applying a profile writes only to `%APPDATA%\PIME\Rime`, migrates
+  layout-dependent learning databases, explicitly compiles all three Yime
+  schemas, and then asks active sessions to reload safely.
 - Help: view this help or the trial-feedback guidance.
 
 ## Standalone Tools Direction
@@ -87,3 +92,4 @@ and typing tone-marked pinyin is not.
   `PIME\go-backend\input_methods\yime\data`
 - PIME Go backend logs: `%LOCALAPPDATA%\PIME\Logs`
 - Portable user backups: `%USERPROFILE%\Documents\YIME 备份`
+- Saved personal layouts: `%APPDATA%\PIME\Rime\yime_layouts`

@@ -19,6 +19,7 @@ set "SYSTEM_LEXICON_AUDIT_EXE=%PACKAGE_DIR%\system-lexicon-audit.exe"
 set "BLOCKLIST_MANAGER_EXE=%PACKAGE_DIR%\blocklist-manager.exe"
 set "SETTINGS_TOOL_EXE=%PACKAGE_DIR%\settings-tool.exe"
 set "DIAGNOSTICS_TOOL_EXE=%PACKAGE_DIR%\diagnostics-tool.exe"
+set "LAYOUT_DESIGNER_EXE=%PACKAGE_DIR%\yime-layout-designer.exe"
 set "BACKEND_SNIPPET=%BUILD_ROOT%\backends.go-backend.json"
 set "RIME_DIR=%ROOT_DIR%\input_methods\yime"
 set "RIME_DATA_DIR=%RIME_DIR%\data"
@@ -277,6 +278,15 @@ if exist cmd\diagnostics-tool\rsrc_diagnostics_windows_amd64.syso del cmd\diagno
 
 echo [INFO] Built: "%DIAGNOSTICS_TOOL_EXE%"
 
+echo [INFO] Building yime-layout-designer.exe (graphical and console maintenance tool) ...
+go build %GO_REPRO_FLAGS% -ldflags "-s -w -X main.version=%APP_VERSION%" -o "%LAYOUT_DESIGNER_EXE%" .\cmd\yime-layout-designer
+if errorlevel 1 (
+    echo [ERROR] Failed to build yime-layout-designer.exe
+    popd
+    exit /b 1
+)
+echo [INFO] Built: "%LAYOUT_DESIGNER_EXE%"
+
 call :sign_go_binaries
 if errorlevel 1 (
     popd
@@ -522,6 +532,7 @@ for %%F in (
     "%BLOCKLIST_MANAGER_EXE%"
     "%SETTINGS_TOOL_EXE%"
     "%DIAGNOSTICS_TOOL_EXE%"
+    "%LAYOUT_DESIGNER_EXE%"
 ) do (
     echo [INFO] Signing %%~nxF ...
     "%YIME_SIGNTOOL_EXE%" sign /sha1 "%YIME_SIGN_CERT_SHA1%" /fd SHA256 /tr "%YIME_TIMESTAMP_URL%" /td SHA256 "%%~fF"

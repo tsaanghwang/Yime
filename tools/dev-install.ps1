@@ -142,6 +142,7 @@ foreach ($toolExe in @(
     "reverse-lookup.exe",
     "settings-tool.exe",
     "diagnostics-tool.exe"
+    "yime-layout-designer.exe"
 )) {
     Assert-PathExists -Path (Join-Path $goBackendRoot $toolExe) -Description "go-backend $toolExe"
 }

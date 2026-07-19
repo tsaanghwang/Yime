@@ -1949,6 +1949,18 @@ func (ime *IME) loadPinyinCodeMap() (map[string]pinyinCodeRecord, error) {
 			continue
 		}
 		key := normalizeNumericTonePinyin(fields[0])
+		if len(fields) >= 4 {
+			record := pinyinCodeRecord{Full: strings.TrimSpace(fields[1]), Variable: strings.TrimSpace(fields[2]), Shorthand: strings.TrimSpace(fields[3])}
+			if record.Full == "" || record.Variable == "" || record.Shorthand == "" || len([]rune(record.Full))%codemode.SyllableCodeLength != 0 {
+				return nil, fmt.Errorf("拼音编码表中的显式三模式编码无效：%s", fields[0])
+			}
+			records[key] = record
+			if strings.Contains(key, "眉") {
+				records[strings.ReplaceAll(key, "眉", "v")] = record
+				records[strings.ReplaceAll(key, "眉", "u:")] = record
+			}
+			continue
+		}
 		derived, err := codemode.BuildRecord(fields[1])
 		if err != nil {
 			return nil, fmt.Errorf("拼音编码表中的等长码无效（%s）: %w", fields[0], err)
