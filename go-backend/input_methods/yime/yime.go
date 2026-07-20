@@ -83,6 +83,8 @@ const (
 	defaultUserLexiconWeight   = "1000000"
 )
 
+var yimeCandidateSelectLabels = []string{"⇧1", "⇧2", "⇧3", "⇧4", "⇧5", "⇧6", "⇧7", "⇧8", "⇧9"}
+
 var yimeModes = []string{"variable", "full", "shorthand"}
 
 type Style struct {
@@ -954,6 +956,10 @@ func (ime *IME) applyStateToResponse(resp *pime.Response, state rimeState) {
 	resp.SelEnd = state.SelEnd
 
 	if len(state.Candidates) > 0 {
+		// Base-layer digits are composition keys. Give the host explicit
+		// multi-character labels so a bare 1..9 never suggests that typing a
+		// digit directly will select a candidate.
+		resp.SetSelLabels = append([]string(nil), yimeCandidateSelectLabels...)
 		displayCandidates := ime.reverseLookupDisplayCandidates(state.Candidates)
 		filtered, indexMap := filterBlockedCandidates(displayCandidates, ime.blockedCandidateSet())
 		ime.candidateBackendIndexMap = indexMap

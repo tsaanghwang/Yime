@@ -6,7 +6,10 @@ Rime frontend.
 ## Quick Start
 
 - Use the Yime schema from the PIME language bar settings menu.
-- Choose candidates with Space, Enter, or the displayed selection keys.
+- Choose candidates with Space, Enter, or Shift+1 through Shift+9. The candidate
+  window labels these combinations `⇧1`…`⇧9`; bare digits remain composition keys.
+- The Shift-layer keycaps are `! @ # $ % ^ & * (`. Help and the layout diagram
+  show those physical key faces, but candidate labels use the clearer arrow notation.
 - Use arrow keys, Page Up, Page Down, Home, and End to move around candidates.
 - Press Esc to cancel the current composition.
 

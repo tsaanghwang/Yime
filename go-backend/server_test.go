@@ -51,6 +51,20 @@ func TestConvertResponseUsesReturnDataWhenPresent(t *testing.T) {
 	}
 }
 
+func TestConvertResponseIncludesMultiCharacterSelectionLabels(t *testing.T) {
+	server := NewServer()
+	resp := pime.NewResponse(3, true)
+	resp.SetSelKeys = "123"
+	resp.SetSelLabels = []string{"⇧1", "⇧2", "⇧3"}
+
+	got := server.convertResponse(resp)
+
+	labels, ok := got["setSelLabels"].([]string)
+	if !ok || len(labels) != 3 || labels[0] != "⇧1" || labels[2] != "⇧3" {
+		t.Fatalf("expected Shift-aware selection labels, got %#v", got["setSelLabels"])
+	}
+}
+
 func TestServiceFactoryOnlySupportsYime(t *testing.T) {
 	if factory, ok := serviceFactoryForInputMethod("yime"); !ok || factory == nil {
 		t.Fatal("expected yime to have a production service factory")

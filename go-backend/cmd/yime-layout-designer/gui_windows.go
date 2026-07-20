@@ -66,7 +66,7 @@ const (
 	idKeyBase       = 1000
 
 	uiWindowTitle = "Yime \u97f3\u5143\u952e\u76d8\u5e03\u5c40\u8bbe\u8ba1\u5668"
-	uiInstruction = "\u64cd\u4f5c\uff1a\u5148\u70b9\u952e\u4f4d\uff0c\u518d\u9009\u62e9 Yinyuan ID\uff0c\u7136\u540e\u70b9\u51fb\u5206\u914d\uff1b\u5df2\u5360\u7528\u952e\u4f1a\u81ea\u52a8\u4ea4\u6362\u3002"
+	uiInstruction = "操作：先点键位，再选择 Yinyuan ID，然后点击分配；Shift 层 ! @ # $ % ^ & * ( 是 Shift+1…9 的物理键面，保留作候选键。"
 	uiAssign      = "\u5206\u914d / \u4ea4\u6362"
 	uiReset       = "\u6062\u590d\u6b63\u5f0f\u5e03\u5c40"
 	uiPreview     = "\u6821\u9a8c / \u9884\u89c8"

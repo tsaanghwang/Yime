@@ -152,6 +152,7 @@ type Response struct {
 	SelStart          int                    `json:"selStart"`
 	SelEnd            int                    `json:"selEnd"`
 	SetSelKeys        string                 `json:"setSelKeys,omitempty"`
+	SetSelLabels      []string               `json:"setSelLabels,omitempty"`
 	Message           string                 `json:"message,omitempty"`
 	CustomizeUI       map[string]interface{} `json:"customizeUI,omitempty"`
 	// 按钮相关

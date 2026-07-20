@@ -146,6 +146,22 @@ void Client::updateSelectionKeys(json& msg) {
 		std::wstring selKeys = utf8ToUtf16(setSelKeysVal.get<string>().c_str());
 		textService_->setSelKeys(selKeys);
 	}
+
+	auto& setSelLabelsVal = msg["setSelLabels"];
+	if (setSelLabelsVal.is_array()) {
+		std::vector<std::wstring> labels;
+		labels.reserve(setSelLabelsVal.size());
+		for (const auto& value : setSelLabelsVal) {
+			if (!value.is_string()) {
+				labels.clear();
+				break;
+			}
+			labels.push_back(utf8ToUtf16(value.get<string>().c_str()));
+		}
+		if (!labels.empty()) {
+			textService_->setSelLabels(std::move(labels));
+		}
+	}
 }
 
 void Client::updateMessageWindow(json& msg, Ime::EditSession* session, bool& endComposition) {

@@ -156,13 +156,13 @@ regsvr32 /u "C:\Program Files (x86)\YIME\x64\PIMETextService.dll"
 
 ### Candidate selection keys
 
-| Key | Selects |
-|-----|---------|
-| Space | 1st candidate |
-| `` ` `` | 2nd candidate |
-| `-` | 3rd candidate |
-| `=` | 4th candidate |
-| `\` | 5th candidate |
+| Key | Physical keycap | Candidate label | Selects |
+|-----|-----------------|-----------------|---------|
+| Space / Enter | Space / Enter | — | 1st candidate |
+| Shift+1 | `!` | `⇧1` | 1st candidate |
+| Shift+2…Shift+9 | `@ # $ % ^ & * (` | `⇧2`…`⇧9` | 2nd…9th candidates |
+
+The candidate window does not use punctuation keycaps as ordinal labels because they scan poorly. Bare digits `1`…`9` remain composition input and do not select candidates directly.
 
 ## Debugging
 

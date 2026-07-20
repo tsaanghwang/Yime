@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"reflect"
 	"strconv"
 	"strings"
 	"sync"
@@ -2096,7 +2097,11 @@ func TestCandidatePageSizeLimitsVisibleCandidates(t *testing.T) {
 	ime.applyStateToResponse(resp, state)
 
 	if resp.SetSelKeys != "123456789" {
-		t.Fatalf("expected numeric candidate labels, got %q", resp.SetSelKeys)
+		t.Fatalf("expected backward-compatible candidate selection keys, got %q", resp.SetSelKeys)
+	}
+	wantLabels := []string{"⇧1", "⇧2", "⇧3", "⇧4", "⇧5", "⇧6", "⇧7", "⇧8", "⇧9"}
+	if !reflect.DeepEqual(resp.SetSelLabels, wantLabels) {
+		t.Fatalf("expected Shift-aware candidate labels %q, got %q", wantLabels, resp.SetSelLabels)
 	}
 	if len(resp.CandidateList) != 5 {
 		t.Fatalf("expected 5 visible candidates, got %#v", resp.CandidateList)
