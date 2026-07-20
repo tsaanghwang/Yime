@@ -86,6 +86,17 @@ func TestReencodeUsesYinyuanIDsAndSemanticShorthand(t *testing.T) {
 	}
 }
 
+func TestReencodePreservesVirtualInitialAsSyllableBoundary(t *testing.T) {
+	source := defaultProfile(t)
+	record, err := ReencodeRecord("'sdf", source, source)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if record.Full != "'sdf" || record.Variable != "'sdf" || record.Shorthand != "'sf" {
+		t.Fatalf("unexpected: %#v", record)
+	}
+}
+
 func TestValidateRejectsReservedCandidateKey(t *testing.T) {
 	p := defaultProfile(t)
 	p.Projection = cloneProjection(p.Projection)

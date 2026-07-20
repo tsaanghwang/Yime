@@ -5,7 +5,7 @@
 > [单一等长真源码表阶段准备](project/SINGLE_CANONICAL_LEXICON_PREPARATION.md)。
 > 三套 Rime 字典继续保留为运行产物，但不再允许独立导入或人工维护。
 
-> 版本：2026-07-14
+> 版本：2026-07-20
 > 分支：yime-stable
 > 配套文档：[项目综合评估](YIME_PROJECT_ASSESSMENT.md) | [可用性评估](YIME_USABILITY_ASSESSMENT.md) | [架构文档](YIME_ARCHITECTURE.md)
 
@@ -52,6 +52,7 @@
 | 33 | 静态与 CI 门禁收口 | 本轮 | Win32 消息结构复制通过 `go vet`；关键测试名先枚举校验；race 入口可重复 |
 | 34 | 原生架构与打包门禁 | 本轮 | 拒绝伪 Win32 CMake 缓存；核对 x86/x64/ARM64 PE machine type；只打包带 `ime.json` 的运行时目录 |
 | 35 | Go 演示输入法退役 | 本轮 | 删除 meow/simple_pinyin/fcitx5 生产包与默认回退；协议测试改用专用 fixture；NSIS 安全清理旧空目录 |
+| 36 | 三模式连续输入与自动分词 | 本轮 | 三套方案启用 `enable_sentence` 和 `sentence_over_completion`；变长、省键派生保留虚首音作为零声母音节边界 |
 
 ### 遗留编码约束（暂不修改）
 
@@ -221,6 +222,7 @@ setCandidatePageSize(size)
 | 4.8 | 系统词库审查 | ✅ fd3edfc0 | 只读扫描已安装系统词库 |
 | 4.9 | 原生 Win32 工具链 | ✅ dd68a47a | 设置/诊断/词库/反查/工具箱等独立 `.exe` |
 | 4.10 | 语言栏切换稳定性 | ✅ 73b74e99 | 静态切换标签，切换时只更新图标 |
+| 4.11 | 三模式连续输入与自动分词 | ✅ 本轮 | 等长、变长、省键均优先给出整句组句；派生码不再删除虚首音；真实 librime 测试覆盖普通及零声母边界 |
 
 ---
 

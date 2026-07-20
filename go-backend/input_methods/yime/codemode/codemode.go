@@ -74,20 +74,14 @@ func BuildRecord(full string) (Record, error) {
 	var shorthand strings.Builder
 	for start := 0; start < len(runes); start += SyllableCodeLength {
 		syllable := runes[start : start+SyllableCodeLength]
-		merged := mergeAdjacent(syllable)
-		isVirtual := len(merged) > 0 && merged[0] == VirtualInitial
-		variablePart := merged
-		if isVirtual {
-			variablePart = variablePart[1:]
-		}
+		variablePart := mergeAdjacent(syllable)
 		variable.WriteString(string(variablePart))
 
-		initial := []rune(nil)
-		ganyin := variablePart
-		if !isVirtual && len(variablePart) > 0 {
-			initial = variablePart[:1]
-			ganyin = variablePart[1:]
-		}
+		// Keep the real or virtual initial as an explicit syllable boundary in
+		// every derived mode. In particular, zero-initial syllables retain '\'',
+		// allowing Rime's sentence translator to segment concatenated codes.
+		initial := variablePart[:1]
+		ganyin := variablePart[1:]
 		shorthand.WriteString(string(initial))
 		shorthand.WriteString(string(omitMiddleTone(ganyin)))
 	}

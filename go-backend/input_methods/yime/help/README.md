@@ -10,6 +10,8 @@ Rime frontend.
   window labels these combinations `⇧1`…`⇧9`; bare digits remain composition keys.
 - The Shift-layer keycaps are `! @ # $ % ^ & * (`. Help and the layout diagram
   show those physical key faces, but candidate labels use the clearer arrow notation.
+- All three schemas support continuous input and Rime sentence composition. Variable-length
+  and shorthand codes retain the virtual initial of zero-initial syllables as a word boundary.
 - Use arrow keys, Page Up, Page Down, Home, and End to move around candidates.
 - Press Esc to cancel the current composition.
 

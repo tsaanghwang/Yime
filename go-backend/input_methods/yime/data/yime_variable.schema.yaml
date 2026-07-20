@@ -36,7 +36,8 @@ translator:
   dictionary: yime_variable
   user_dict: yime_variable_layout_6d00e609f689
   enable_user_dict: true
-  enable_sentence: false
+  enable_sentence: true
+  sentence_over_completion: true
   enable_completion: true
 
 custom_phrase:
@@ -44,7 +45,8 @@ custom_phrase:
   user_dict: custom_phrase_variable
   db_class: stabledb
   enable_completion: true
-  enable_sentence: false
+  enable_sentence: true
+  sentence_over_completion: true
   initial_quality: 1
 
 menu:

@@ -6,12 +6,13 @@ func TestBuildRecordDerivesAllModes(t *testing.T) {
 	tests := []struct {
 		full, variable, shorthand string
 	}{
-		{"'fff", "f", "f"},
-		{"'sdf", "sdf", "sf"},
+		{"'fff", "'f", "'f"},
+		{"'sdf", "'sdf", "'sf"},
 		{"qfff", "qf", "qf"},
 		{"qsdf", "qsdf", "qsf"},
-		{"'ffj", "fj", "fj"},
+		{"'ffj", "'fj", "'fj"},
 		{"qffjqfds", "qfjqfds", "qfjqfs"},
+		{"qfff'sdf", "qf'sdf", "qf'sf"},
 	}
 	for _, test := range tests {
 		got, err := BuildRecord(test.full)

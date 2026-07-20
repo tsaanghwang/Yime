@@ -57,7 +57,7 @@ func TestLoadCodeMapAcceptsFullOnlySource(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if record := got["a2"]; record.Variable != "sdf" || record.Shorthand != "sf" {
+	if record := got["a2"]; record.Variable != "'sdf" || record.Shorthand != "'sf" {
 		t.Fatalf("unexpected derived record: %#v", record)
 	}
 }

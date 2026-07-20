@@ -81,7 +81,7 @@ func DeriveFromFullDictionary(sourcePath, outputDir string) (Manifest, error) {
 	manifest := Manifest{
 		FormatVersion: 1, GeneratedAt: time.Now().Format(time.RFC3339),
 		SourceFile: filepath.Base(sourcePath), SourceSHA256: sourceHash,
-		Transform: "full-derived-v1", Layout: codemode.LayoutVersion,
+		Transform: "full-derived-v2-keep-virtual-initial", Layout: codemode.LayoutVersion,
 		EntryCount: len(derived), OutputSHA256: map[string]string{},
 	}
 	for name, data := range outputs {

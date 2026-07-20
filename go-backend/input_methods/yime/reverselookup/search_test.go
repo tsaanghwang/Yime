@@ -10,12 +10,12 @@ func TestSearchResolvesUserPhraseAndDictEntry(t *testing.T) {
 	sharedDir := t.TempDir()
 	userDir := t.TempDir()
 
-	// 等长码（full）必须是 4 的倍数；'sdf 去除虚首音后推导出变长码 sdf。
-	codeMapTSV := "pinyin\tfull\tvariable\tshorthand\nba1\t'sdf\tsdf\tsf\n"
+	// 等长码（full）必须是 4 的倍数；派生模式保留虚首音作为音节边界。
+	codeMapTSV := "pinyin\tfull\tvariable\tshorthand\nba1\t'sdf\t'sdf\t'sf\n"
 	if err := os.WriteFile(filepath.Join(sharedDir, "yime_pinyin_codes.tsv"), []byte(codeMapTSV), 0o644); err != nil {
 		t.Fatalf("write code map: %v", err)
 	}
-	dictYAML := "name: test\n...\n巴\tsdf\n"
+	dictYAML := "name: test\n...\n巴\t'sdf\n"
 	if err := os.WriteFile(filepath.Join(sharedDir, "yime_variable.dict.yaml"), []byte(dictYAML), 0o644); err != nil {
 		t.Fatalf("write dict: %v", err)
 	}
@@ -30,7 +30,7 @@ func TestSearchResolvesUserPhraseAndDictEntry(t *testing.T) {
 	}
 
 	dictResults := index.Search("巴", false)
-	if len(dictResults) != 1 || dictResults[0].ActiveCode != "sdf" {
+	if len(dictResults) != 1 || dictResults[0].ActiveCode != "'sdf" {
 		t.Fatalf("expected dict lookup for 巴, got %#v", dictResults)
 	}
 
@@ -73,12 +73,12 @@ func TestCacheSpeedsUpSecondLoad(t *testing.T) {
 	cacheDir := t.TempDir()
 	t.Setenv("LOCALAPPDATA", cacheDir)
 
-	// 等长码 'sdf 去除虚首音后推导出变长码 sdf，与词典编码对应。
-	codeMapTSV := "pinyin\tfull\tvariable\tshorthand\nba1\t'sdf\tsdf\tsf\n"
+	// 等长码 'sdf 在派生模式中保留虚首音，与词典编码对应。
+	codeMapTSV := "pinyin\tfull\tvariable\tshorthand\nba1\t'sdf\t'sdf\t'sf\n"
 	if err := os.WriteFile(filepath.Join(sharedDir, "yime_pinyin_codes.tsv"), []byte(codeMapTSV), 0o644); err != nil {
 		t.Fatalf("write code map: %v", err)
 	}
-	dictYAML := "name: test\n...\n巴\tsdf\n"
+	dictYAML := "name: test\n...\n巴\t'sdf\n"
 	if err := os.WriteFile(filepath.Join(sharedDir, "yime_variable.dict.yaml"), []byte(dictYAML), 0o644); err != nil {
 		t.Fatalf("write dict: %v", err)
 	}

@@ -111,7 +111,7 @@
 | 独立声母 m/n 编码复杂 | 低 | 使用 `!`, `@`, `#`, `N` 等特殊键，但极罕见 |
 | Full 模式需大写字母 | 低 | `H`, `D`, `S` 等需 Shift+键，影响流畅度 |
 | 非标准音节 | 低 | `bong4`, `wong4` 为 Unihan 台版/方言读音遗留，权重极低不影响使用 |
-| 禁用语句模式 | 中 | `enable_sentence: false`，必须逐词输入 |
+| 整句输入 | 已处理 | 三种模式均启用 `enable_sentence` 和 `sentence_over_completion`；变长和省键保留虚首音作为自动分词边界 |
 
 ---
 

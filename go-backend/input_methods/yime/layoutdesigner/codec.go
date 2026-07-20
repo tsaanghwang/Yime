@@ -114,19 +114,12 @@ func (c *Codec) Reencode(full string) (codemode.Record, error) {
 	}
 	var variable, shorthand []string
 	for start := 0; start < len(ids); start += 4 {
-		merged := mergeIDs(ids[start : start+4])
-		virtual := len(merged) > 0 && merged[0] == "N12"
-		part := merged
-		if virtual {
-			part = part[1:]
-		}
+		part := mergeIDs(ids[start : start+4])
 		variable = append(variable, part...)
-		initial := []string{}
-		ganyin := part
-		if !virtual && len(part) > 0 {
-			initial = part[:1]
-			ganyin = part[1:]
-		}
+		// N12 is the virtual initial. Preserve it just like a real initial so
+		// zero-initial syllables retain an explicit boundary after projection.
+		initial := part[:1]
+		ganyin := part[1:]
 		shorthand = append(shorthand, initial...)
 		shorthand = append(shorthand, omitMiddleID(ganyin)...)
 	}

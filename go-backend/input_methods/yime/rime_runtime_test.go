@@ -122,6 +122,45 @@ func TestRealRimeCanCommitText(t *testing.T) {
 	}
 }
 
+func TestRealRimeAllSchemasComposeSentence(t *testing.T) {
+	session := newRealRimeSession(t)
+
+	tests := []struct {
+		schemaID string
+		input    string
+		want     string
+	}{
+		{schemaID: "yime_variable", input: "bjbj", want: "幅幅"},
+		{schemaID: "yime_full", input: "bjjjbjjj", want: "幅幅"},
+		{schemaID: "yime_shorthand", input: "bjbj", want: "幅幅"},
+		{schemaID: "yime_variable", input: "bj'f", want: "幅啊"},
+		{schemaID: "yime_full", input: "bjjj'fff", want: "幅啊"},
+		{schemaID: "yime_shorthand", input: "bj'f", want: "幅啊"},
+		// User-reported real layout sequence entered without a delimiter. It
+		// includes the uppercase J symbol from the layout's Shift layer.
+		{schemaID: "yime_variable", input: "]s8u\\e4fa7J9wo", want: "打出了三只手"},
+	}
+	for _, test := range tests {
+		t.Run(test.schemaID+"/"+test.want, func(t *testing.T) {
+			ClearComposition(session.sessionID)
+			if !SelectSchema(session.sessionID, test.schemaID) {
+				t.Fatalf("expected %s schema to be selectable", test.schemaID)
+			}
+			typeASCII(t, session.sessionID, test.input)
+			menu, ok := GetMenu(session.sessionID)
+			if !ok {
+				t.Fatalf("expected sentence candidates after %q", test.input)
+			}
+			for _, candidate := range menu.Candidates {
+				if candidate.Text == test.want {
+					return
+				}
+			}
+			t.Fatalf("expected generated sentence %s after %q, got %#v", test.want, test.input, menu.Candidates)
+		})
+	}
+}
+
 func TestRealRimePrintableLayoutKeysAreNeverPagingBindings(t *testing.T) {
 	session := newRealRimeSession(t)
 	for _, key := range []rune{'-', '=', ',', '.', '/'} {
@@ -414,7 +453,7 @@ func rimeMenuAfterASCII(t *testing.T, sessionID RimeSessionId, input string) (Ri
 
 func rimeProbeInputWithMinCandidates(t *testing.T, sessionID RimeSessionId, min int) (string, RimeMenu) {
 	t.Helper()
-	for _, input := range []string{"bj", "fds", "rew", "sdf", "jkl"} {
+	for _, input := range []string{"bj", "fds", "rew", "'sdf", "jkl"} {
 		menu, ok := rimeMenuAfterASCII(t, sessionID, input)
 		if ok && len(menu.Candidates) >= min {
 			return input, menu

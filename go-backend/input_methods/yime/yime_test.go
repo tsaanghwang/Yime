@@ -3441,7 +3441,7 @@ func TestApplyUserLexiconWritesAllThreeModes(t *testing.T) {
 	if err := os.MkdirAll(sharedDir, 0o755); err != nil {
 		t.Fatal(err)
 	}
-	tsvContent := "pinyin_tone\tfull\nzhong1\tqsdf\nguo2\t'sdf\n"
+	tsvContent := "pinyin_tone\tfull\nzhong1\tqfff\nguo2\t'sdf\n"
 	if err := os.WriteFile(filepath.Join(sharedDir, "yime_pinyin_codes.tsv"), []byte(tsvContent), 0o644); err != nil {
 		t.Fatal(err)
 	}
