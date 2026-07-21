@@ -8,14 +8,17 @@ ai1	'ffj
 ai2	'sdj
 ai3	'ssl
 ai4	'fdl
+ai5	'ddk
 an1	'ffa
 an2	'sda
 an3	'ssz
 an4	'fdz
+an5	'ddN
 ang1	'ff;
 ang2	'sd;
 ang3	'ss/
 ang4	'fd/
+ang5	'ddG
 ao1	'ffu
 ao2	'sdu
 ao3	'sso
@@ -37,10 +40,12 @@ ban5	bddN
 bang1	bff;
 bang3	bss/
 bang4	bfd/
+bang5	bddG
 bao1	bffu
 bao2	bsdu
 bao3	bsso
 bao4	bfdo
+bao5	bddi
 bei1	bvvj
 bei3	bxxl
 bei4	bvcl
@@ -48,6 +53,7 @@ bei5	bcck
 ben1	bvva
 ben3	bxxz
 ben4	bvcz
+ben5	bccN
 beng1	brr;
 beng2	bwe;
 beng3	bww/
@@ -57,6 +63,7 @@ bi1	bjjj
 bi2	blkj
 bi3	blll
 bi4	bjkl
+bi5	bkkk
 bian1	bjfa
 bian3	blsz
 bian4	bjdz
@@ -64,6 +71,7 @@ bian5	bkdN
 biang2	bld;
 biang4	bjd/
 biao1	bjfu
+biao2	bldu
 biao3	blso
 biao4	bjdo
 bie1	bjvv
@@ -83,7 +91,6 @@ bo2	bwer
 bo3	bwww
 bo4	brew
 bo5	beee
-bong4	bue/
 bu1	buuu
 bu2	boiu
 bu3	booo
@@ -105,10 +112,12 @@ cang1	5ff;
 cang2	5sd;
 cang3	5ss/
 cang4	5fd/
+cang5	5ddG
 cao1	5ffu
 cao2	5sdu
 cao3	5sso
 cao4	5fdo
+cao5	5ddi
 ce4	5rew
 cei4	5vcl
 cen1	5vva
@@ -116,10 +125,12 @@ cen2	5xca
 ceng1	5rr;
 ceng2	5we;
 ceng4	5re/
+ceng5	5eeG
 cha1	8fff
 cha2	8sdf
 cha3	8sss
 cha4	8fds
+cha5	8ddd
 chai1	8ffj
 chai2	8sdj
 chai3	8ssl
@@ -128,6 +139,7 @@ chan1	8ffa
 chan2	8sda
 chan3	8ssz
 chan4	8fdz
+chan5	8ddN
 chang1	8ff;
 chang2	8sd;
 chang3	8ss/
@@ -137,6 +149,7 @@ chao1	8ffu
 chao2	8sdu
 chao3	8sso
 chao4	8fdo
+chao5	8ddi
 che1	8rrr
 che2	8wer
 che3	8www
@@ -161,6 +174,7 @@ chong1	8ur;
 chong2	8oe;
 chong3	8ow/
 chong4	8ue/
+chong5	8ieG
 chou1	8rru
 chou2	8weu
 chou3	8wwo
@@ -182,6 +196,7 @@ chuan1	8ufa
 chuan2	8oda
 chuan3	8osz
 chuan4	8udz
+chuan5	8idN
 chuang1	8uf;
 chuang2	8od;
 chuang3	8os/
@@ -200,6 +215,7 @@ ci1	5JJJ
 ci2	5LKJ
 ci3	5LLL
 ci4	5JKL
+ci5	5KKK
 cong1	5ur;
 cong2	5oe;
 cong3	5ow/
@@ -228,6 +244,7 @@ cuo1	5urr
 cuo2	5oer
 cuo3	5oww
 cuo4	5uew
+cuo5	5iee
 da1	]fff
 da2	]sdf
 da3	]sss
@@ -259,6 +276,7 @@ den4	]vcz
 deng1	]rr;
 deng3	]ww/
 deng4	]re/
+deng5	]eeG
 di1	]jjj
 di2	]lkj
 di3	]lll
@@ -276,17 +294,22 @@ die1	]jvv
 die2	]lcv
 die3	]lxx
 die4	]jcx
+die5	]kcc
 din4	]jcz
 ding1	]jr;
 ding3	]lw/
 ding4	]je/
+ding5	]keG
 diu1	]jru
 dong1	]ur;
 dong3	]ow/
 dong4	]ue/
+dong5	]ieG
 dou1	]rru
+dou2	]weu
 dou3	]wwo
 dou4	]reo
+dou5	]eei
 du1	]uuu
 du2	]oiu
 du3	]ooo
@@ -295,6 +318,7 @@ du5	]iii
 duan1	]ufa
 duan3	]osz
 duan4	]udz
+duan5	]idN
 dui1	]uvj
 dui3	]oxl
 dui4	]ucl
@@ -343,6 +367,7 @@ fei1	[vvj
 fei2	[xcj
 fei3	[xxl
 fei4	[vcl
+fei5	[cck
 fen1	[vva
 fen2	[xca
 fen3	[xxz
@@ -352,6 +377,7 @@ feng1	[rr;
 feng2	[we;
 feng3	[ww/
 feng4	[re/
+feng5	[eeG
 fiao4	[jdo
 fo2	[wer
 fou1	[rru
@@ -366,6 +392,7 @@ ga1	gfff
 ga2	gsdf
 ga3	gsss
 ga4	gfds
+ga5	gddd
 gai1	gffj
 gai3	gssl
 gai4	gfdl
@@ -373,12 +400,15 @@ gai5	gddk
 gan1	gffa
 gan3	gssz
 gan4	gfdz
+gan5	gddN
 gang1	gff;
 gang3	gss/
 gang4	gfd/
+gang5	gddG
 gao1	gffu
 gao3	gsso
 gao4	gfdo
+gao5	gddi
 ge1	grrr
 ge2	gwer
 ge3	gwww
@@ -392,6 +422,7 @@ gen4	gvcz
 geng1	grr;
 geng3	gww/
 geng4	gre/
+geng5	geeG
 gong1	gur;
 gong3	gow/
 gong4	gue/
@@ -399,6 +430,7 @@ gong5	gieG
 gou1	grru
 gou3	gwwo
 gou4	greo
+gou5	geei
 gu1	guuu
 gu2	goiu
 gu3	gooo
@@ -408,12 +440,15 @@ gua1	guff
 gua2	godf
 gua3	goss
 gua4	guds
+gua5	gidd
 guai1	gufj
 guai3	gosl
 guai4	gudl
+guai5	gidk
 guan1	gufa
 guan3	gosz
 guan4	gudz
+guan5	gidN
 guang1	guf;
 guang3	gos/
 guang4	gud/
@@ -421,6 +456,7 @@ guang5	gidG
 gui1	guvj
 gui3	goxl
 gui4	gucl
+gui5	gick
 gun3	goxz
 gun4	gucz
 guo1	gurr
@@ -432,6 +468,7 @@ ha1	hfff
 ha2	hsdf
 ha3	hsss
 ha4	hfds
+ha5	hddd
 hai1	hffj
 hai2	hsdj
 hai3	hssl
@@ -464,12 +501,14 @@ hen4	hvcz
 heng1	hrr;
 heng2	hwe;
 heng4	hre/
+heng5	heeG
 hm5	h<<<
 hng5	hGGG
 hong1	hur;
 hong2	hoe;
 hong3	how/
 hong4	hue/
+hong5	hieG
 hou1	hrru
 hou2	hweu
 hou3	hwwo
@@ -542,6 +581,7 @@ jie5	3kcc
 jin1	3jva
 jin3	3lxz
 jin4	3jcz
+jin5	3kcN
 jing1	3jr;
 jing3	3lw/
 jing4	3je/
@@ -566,17 +606,21 @@ jue1	3mvv
 jue2	3.cv
 jue3	3.xx
 jue4	3mcx
+jue5	3,cc
 jun1	3mva
 jun3	3.xz
 jun4	3mcz
+jun5	3,cN
 ka1	qfff
 ka3	qsss
 kai1	qffj
 kai3	qssl
 kai4	qfdl
+kai5	qddk
 kan1	qffa
 kan3	qssz
 kan4	qfdz
+kan5	qddN
 kang1	qff;
 kang2	qsd;
 kang3	qss/
@@ -595,6 +639,7 @@ ken3	qxxz
 ken4	qvcz
 keng1	qrr;
 keng3	qww/
+keng5	qeeG
 kong1	qur;
 kong3	qow/
 kong4	que/
@@ -606,14 +651,17 @@ ku1	quuu
 ku2	qoiu
 ku3	qooo
 ku4	quio
+ku5	qiii
 kua1	quff
 kua3	qoss
 kua4	quds
+kuai1	qufj
 kuai3	qosl
 kuai4	qudl
 kuai5	qidk
 kuan1	qufa
 kuan3	qosz
+kuan4	qudz
 kuang1	quf;
 kuang2	qod;
 kuang3	qos/
@@ -635,6 +683,7 @@ la5	\ddd
 lai2	\sdj
 lai3	\ssl
 lai4	\fdl
+lai5	\ddk
 lan2	\sda
 lan3	\ssz
 lan4	\fdz
@@ -647,6 +696,7 @@ lao1	\ffu
 lao2	\sdu
 lao3	\sso
 lao4	\fdo
+lao5	\ddi
 le1	\rrr
 le4	\rew
 le5	\eee
@@ -660,6 +710,7 @@ leng1	\rr;
 leng2	\we;
 leng3	\ww/
 leng4	\re/
+leng5	\eeG
 li1	\jjj
 li2	\lkj
 li3	\lll
@@ -669,6 +720,8 @@ lia3	\lss
 lian2	\lda
 lian3	\lsz
 lian4	\jdz
+lian5	\kdN
+liang1	\jf;
 liang2	\ld;
 liang3	\ls/
 liang4	\jd/
@@ -677,6 +730,7 @@ liao1	\jfu
 liao2	\ldu
 liao3	\lso
 liao4	\jdo
+liao5	\kdi
 lie1	\jvv
 lie2	\lcv
 lie3	\lxx
@@ -695,6 +749,7 @@ liu1	\jru
 liu2	\leu
 liu3	\lwo
 liu4	\jeo
+liu5	\kei
 lo5	\eee
 long1	\ur;
 long2	\oe;
@@ -718,6 +773,7 @@ lun1	\uva
 lun2	\oca
 lun3	\oxz
 lun4	\ucz
+lun5	\icN
 luo1	\urr
 luo2	\oer
 luo3	\oww
@@ -744,16 +800,19 @@ man1	-ffa
 man2	-sda
 man3	-ssz
 man4	-fdz
+man5	-ddN
 mang1	-ff;
 mang2	-sd;
 mang3	-ss/
 mang4	-fd/
+mang5	-ddG
 mao1	-ffu
 mao2	-sdu
 mao3	-sso
 mao4	-fdo
 mao5	-ddi
 me1	-rrr
+me4	-rew
 me5	-eee
 mei2	-xcj
 mei3	-xxl
@@ -772,6 +831,7 @@ mi1	-jjj
 mi2	-lkj
 mi3	-lll
 mi4	-jkl
+mi5	-kkk
 mian2	-lda
 mian3	-lsz
 mian4	-jdz
@@ -841,7 +901,9 @@ ne5	neee
 nei2	nxcj
 nei3	nxxl
 nei4	nvcl
+nei5	ncck
 nen4	nvcz
+nen5	nccN
 neng2	nwe;
 neng3	nww/
 neng4	nre/
@@ -858,6 +920,7 @@ nian1	njfa
 nian2	nlda
 nian3	nlsz
 nian4	njdz
+nian5	nkdN
 niang2	nld;
 niang3	nls/
 niang4	njd/
@@ -869,6 +932,7 @@ nie1	njvv
 nie2	nlcv
 nie3	nlxx
 nie4	njcx
+nie5	nkcc
 nin2	nlca
 nin3	nlxz
 nin5	nkcN
@@ -883,12 +947,14 @@ niu5	nkei
 nong2	noe;
 nong3	now/
 nong4	nue/
+nong5	nieG
 nou2	nweu
 nou3	nwwo
 nou4	nreo
 nu2	noiu
 nu3	nooo
 nu4	nuio
+nu5	niii
 nuan2	noda
 nuan3	nosz
 nuan4	nudz
@@ -916,10 +982,12 @@ pa1	pfff
 pa2	psdf
 pa3	psss
 pa4	pfds
+pa5	pddd
 pai1	pffj
 pai2	psdj
 pai3	pssl
 pai4	pfdl
+pai5	pddk
 pan1	pffa
 pan2	psda
 pan3	pssz
@@ -933,6 +1001,7 @@ pao1	pffu
 pao2	psdu
 pao3	psso
 pao4	pfdo
+pao5	pddi
 pei1	pvvj
 pei2	pxcj
 pei3	pxxl
@@ -941,6 +1010,7 @@ pen1	pvva
 pen2	pxca
 pen3	pxxz
 pen4	pvcz
+pen5	pccN
 peng1	prr;
 peng2	pwe;
 peng3	pww/
@@ -950,6 +1020,7 @@ pi1	pjjj
 pi2	plkj
 pi3	plll
 pi4	pjkl
+pi5	pkkk
 pian1	pjfa
 pian2	plda
 pian3	plsz
@@ -1009,6 +1080,7 @@ qie1	2jvv
 qie2	2lcv
 qie3	2lxx
 qie4	2jcx
+qie5	2kcc
 qin1	2jva
 qin2	2lca
 qin3	2lxz
@@ -1026,6 +1098,7 @@ qiu1	2jru
 qiu2	2leu
 qiu3	2lwo
 qiu4	2jeo
+qiu5	2kei
 qu1	2mmm
 qu2	2.,m
 qu3	2...
@@ -1051,6 +1124,7 @@ rang1	0ff;
 rang2	0sd;
 rang3	0ss/
 rang4	0fd/
+rang5	0ddG
 rao2	0sdu
 rao3	0sso
 rao4	0fdo
@@ -1073,6 +1147,7 @@ rong5	0ieG
 rou2	0weu
 rou3	0wwo
 rou4	0reo
+ru1	0uuu
 ru2	0oiu
 ru3	0ooo
 ru4	0uio
@@ -1089,6 +1164,7 @@ run3	0oxz
 run4	0ucz
 ruo2	0oer
 ruo4	0uew
+ruo5	0iee
 sa1	4fff
 sa3	4sss
 sa4	4fds
@@ -1103,6 +1179,7 @@ san5	4ddN
 sang1	4ff;
 sang3	4ss/
 sang4	4fd/
+sang5	4ddG
 sao1	4ffu
 sao3	4sso
 sao4	4fdo
@@ -1125,6 +1202,7 @@ shan1	9ffa
 shan2	9sda
 shan3	9ssz
 shan4	9fdz
+shan5	9ddN
 shang1	9ff;
 shang3	9ss/
 shang4	9fd/
@@ -1138,6 +1216,7 @@ she1	9rrr
 she2	9wer
 she3	9www
 she4	9rew
+she5	9eee
 shei2	9xcj
 shen1	9vva
 shen2	9xca
@@ -1184,6 +1263,7 @@ shun4	9ucz
 shuo1	9urr
 shuo2	9oer
 shuo4	9uew
+shuo5	9iee
 si1	4JJJ
 si2	4LKJ
 si3	4LLL
@@ -1193,6 +1273,7 @@ song1	4ur;
 song2	4oe;
 song3	4ow/
 song4	4ue/
+song5	4ieG
 sou1	4rru
 sou3	4wwo
 sou4	4reo
@@ -1210,6 +1291,7 @@ sui1	4uvj
 sui2	4ocj
 sui3	4oxl
 sui4	4ucl
+sui5	4ick
 sun1	4uva
 sun3	4oxz
 sun4	4ucz
@@ -1242,6 +1324,7 @@ tao1	tffu
 tao2	tsdu
 tao3	tsso
 tao4	tfdo
+tao5	tddi
 te4	trew
 te5	teee
 tei1	tvvj
@@ -1296,10 +1379,12 @@ tui1	tuvj
 tui2	tocj
 tui3	toxl
 tui4	tucl
+tui5	tick
 tun1	tuva
 tun2	toca
 tun3	toxz
 tun4	tucz
+tun5	ticN
 tuo1	turr
 tuo2	toer
 tuo3	toww
@@ -1318,6 +1403,7 @@ wan1	=ufa
 wan2	=oda
 wan3	=osz
 wan4	=udz
+wan5	=idN
 wang1	=uf;
 wang2	=od;
 wang3	=os/
@@ -1339,7 +1425,7 @@ weng4	=ue/
 wo1	=urr
 wo3	=oww
 wo4	=uew
-wong4	=ue/
+wo5	=iee
 wu1	=uuu
 wu2	=oiu
 wu3	=ooo
@@ -1364,6 +1450,7 @@ xiang1	1jf;
 xiang2	1ld;
 xiang3	1ls/
 xiang4	1jd/
+xiang5	1kdG
 xiao1	1jfu
 xiao2	1ldu
 xiao3	1lso
@@ -1419,6 +1506,7 @@ yan1	yjfa
 yan2	ylda
 yan3	ylsz
 yan4	yjdz
+yan5	ykdN
 yang1	yjf;
 yang2	yld;
 yang3	yls/
@@ -1428,6 +1516,7 @@ yao1	yjfu
 yao2	yldu
 yao3	ylso
 yao4	yjdo
+yao5	ykdi
 ye1	yjvv
 ye2	ylcv
 ye3	ylxx
@@ -1484,9 +1573,11 @@ za1	6fff
 za2	6sdf
 za3	6sss
 za4	6fds
+za5	6ddd
 zai1	6ffj
 zai3	6ssl
 zai4	6fdl
+zai5	6ddk
 zan1	6ffa
 zan2	6sda
 zan3	6ssz
@@ -1499,6 +1590,7 @@ zao1	6ffu
 zao2	6sdu
 zao3	6sso
 zao4	6fdo
+zao5	6ddi
 ze2	6wer
 ze4	6rew
 ze5	6eee
@@ -1519,6 +1611,7 @@ zhai1	7ffj
 zhai2	7sdj
 zhai3	7ssl
 zhai4	7fdl
+zhai5	7ddk
 zhan1	7ffa
 zhan2	7sda
 zhan3	7ssz
@@ -1543,6 +1636,7 @@ zhen1	7vva
 zhen2	7xca
 zhen3	7xxz
 zhen4	7vcz
+zhen5	7ccN
 zheng1	7rr;
 zheng3	7ww/
 zheng4	7re/
@@ -1555,6 +1649,7 @@ zhi5	7KKK
 zhong1	7ur;
 zhong3	7ow/
 zhong4	7ue/
+zhong5	7ieG
 zhou1	7rru
 zhou2	7weu
 zhou3	7wwo
@@ -1564,6 +1659,7 @@ zhu1	7uuu
 zhu2	7oiu
 zhu3	7ooo
 zhu4	7uio
+zhu5	7iii
 zhua1	7uff
 zhua3	7oss
 zhuai1	7ufj
@@ -1572,9 +1668,11 @@ zhuai4	7udl
 zhuan1	7ufa
 zhuan3	7osz
 zhuan4	7udz
+zhuan5	7idN
 zhuang1	7uf;
 zhuang3	7os/
 zhuang4	7ud/
+zhuang5	7idG
 zhui1	7uvj
 zhui3	7oxl
 zhui4	7ucl
