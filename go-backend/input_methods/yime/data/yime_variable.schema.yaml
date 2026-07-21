@@ -25,7 +25,9 @@ engine:
     - fallback_segmentor
   translators:
     - table_translator@custom_phrase
-    - table_translator
+    # script_translator builds a syllable graph, so an unfinished final
+    # syllable can still complete after an already valid sentence prefix.
+    - script_translator
     - punct_translator
 
 speller:
@@ -34,7 +36,7 @@ speller:
 
 translator:
   dictionary: yime_variable
-  user_dict: yime_variable_layout_6d00e609f689
+  user_dict: yime_variable_layout_6d00e609f689_script_v1
   enable_user_dict: true
   enable_sentence: true
   sentence_over_completion: true

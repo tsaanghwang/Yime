@@ -202,9 +202,10 @@ func writeCodeMap(sourcePath, targetPath string, codec *Codec) error {
 }
 
 type generatedEntry struct {
-	text                      string
-	weight                    int
-	full, variable, shorthand string
+	text                                              string
+	weight                                            int
+	full, variable, shorthand                         string
+	fullSpelling, variableSpelling, shorthandSpelling string
 }
 
 func buildDictionaries(entries []systemlexicon.Entry, codec *Codec, version string) (map[string][]byte, error) {
@@ -214,18 +215,23 @@ func buildDictionaries(entries []systemlexicon.Entry, codec *Codec, version stri
 		if err != nil {
 			return nil, fmt.Errorf("词典第 %d 条 %q: %w", i+1, e.Text, err)
 		}
-		result = append(result, generatedEntry{e.Text, e.Weight, r.Full, r.Variable, r.Shorthand})
+		result = append(result, generatedEntry{
+			text: e.Text, weight: e.Weight,
+			full: r.Full, variable: r.Variable, shorthand: r.Shorthand,
+			fullSpelling: r.FullSpelling, variableSpelling: r.VariableSpelling,
+			shorthandSpelling: r.ShorthandSpelling,
+		})
 	}
 	outputs := map[string][]byte{}
 	for _, mode := range []string{"full", "variable", "shorthand"} {
 		var b bytes.Buffer
 		fmt.Fprintf(&b, "# Rime dictionary\n# GENERATED FILE - DO NOT EDIT\n# Rebuilt from Yinyuan IDs by layoutdesigner.\n---\nname: yime_%s\nversion: %q\nsort: by_weight\nuse_preset_vocabulary: false\n...\n", mode, version)
 		for _, e := range result {
-			code := e.full
+			code := e.fullSpelling
 			if mode == "variable" {
-				code = e.variable
+				code = e.variableSpelling
 			} else if mode == "shorthand" {
-				code = e.shorthand
+				code = e.shorthandSpelling
 			}
 			fmt.Fprintf(&b, "%s\t%s\t%d\n", e.text, code, e.weight)
 		}
@@ -251,7 +257,7 @@ func updateSchema(data []byte, mode, alphabet, digest string) ([]byte, error) {
 			lines[i] = "  alphabet: " + strconv.Quote(alphabet)
 			seenAlphabet = true
 		case section == "translator" && strings.HasPrefix(trim, "user_dict:") && !seenUser:
-			lines[i] = "  user_dict: yime_" + mode + "_layout_" + digest
+			lines[i] = "  user_dict: yime_" + mode + "_layout_" + digest + "_script_v1"
 			seenUser = true
 		}
 	}

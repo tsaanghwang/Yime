@@ -84,7 +84,11 @@ func TestRealRimeCanCommitText(t *testing.T) {
 	session := newRealRimeSession(t)
 	sessionID := session.sessionID
 
-	for _, input := range []string{"bj", "fds", "rew"} {
+	// Every current Yime syllable starts with a real or virtual initial.  The
+	// older fds/rew smoke inputs started in the musical portion of a syllable;
+	// table_translator used to offer arbitrary whole-table prefixes for them,
+	// but they are not valid continuous Yime input prefixes.
+	for _, input := range []string{"bj", "guew", `\lda`} {
 		t.Run(input, func(t *testing.T) {
 			ClearComposition(sessionID)
 			for _, key := range []rune(input) {
@@ -120,6 +124,55 @@ func TestRealRimeCanCommitText(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestRealRimeKeepsCandidatesWhileCompletingFinalSyllable(t *testing.T) {
+	session := newRealRimeSession(t)
+	prefixes := []string{
+		`\lda1m,.]e`,
+		`\lda1m,.]eg`,
+		`\lda1m,.]egu`,
+		`\lda1m,.]egue`,
+		`\lda1m,.]eguew`,
+		`\lda1m,.]eguew8`,
+		`\lda1m,.]eguew8w`,
+		`\lda1m,.]eguew8we`,
+		`\lda1m,.]eguew8we;`,
+	}
+	for _, input := range prefixes {
+		t.Run(input, func(t *testing.T) {
+			ClearComposition(session.sessionID)
+			typeASCII(t, session.sessionID, input)
+			menu, ok := GetMenu(session.sessionID)
+			if !ok || len(menu.Candidates) == 0 {
+				t.Fatalf("continuous tail completion disappeared after %q: %#v", input, menu)
+			}
+			t.Logf("candidates after %q: %#v", input, menu.Candidates)
+			keptSentencePrefix := false
+			for _, candidate := range menu.Candidates {
+				if strings.HasPrefix(candidate.Text, "\u8fde\u7eed\u7684") {
+					keptSentencePrefix = true
+					break
+				}
+			}
+			if !keptSentencePrefix {
+				t.Fatalf("tail completion lost the completed sentence prefix after %q: %#v", input, menu.Candidates)
+			}
+		})
+	}
+
+	ClearComposition(session.sessionID)
+	typeASCII(t, session.sessionID, `\lda1m,.]eguew8we;`)
+	menu, ok := GetMenu(session.sessionID)
+	if !ok {
+		t.Fatal("expected final sentence candidates")
+	}
+	for _, candidate := range menu.Candidates {
+		if candidate.Text == "\u8fde\u7eed\u7684\u8fc7\u7a0b" {
+			return
+		}
+	}
+	t.Fatalf("expected final sentence candidate, got %#v", menu.Candidates)
 }
 
 func TestRealRimeAllSchemasComposeSentence(t *testing.T) {

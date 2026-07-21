@@ -111,9 +111,12 @@ func TestRimeDictManagerRestoresTransformedSnapshot(t *testing.T) {
 	}
 	var snapshot bytes.Buffer
 	input := "# Rime user dictionary\n#@/db_name\told\n#@/db_type\tuserdb\n#@/rime_version\t1.16.1\n#@/tick\t12\nold \t词\tc=4 d=2.5 t=11\n"
-	index := buildIndex([]systemlexicon.Entry{{Text: "词", Code: "new", Weight: 1}})
+	index := buildIndex([]systemlexicon.Entry{{Text: "词", Code: "new code", Weight: 1}})
 	if _, err := transform(strings.NewReader(input), &snapshot, Transition{TargetDB: "new_layout"}, index); err != nil {
 		t.Fatal(err)
+	}
+	if !strings.Contains(snapshot.String(), "new code \t") {
+		t.Fatalf("script spelling boundary was not preserved in snapshot:\n%s", snapshot.String())
 	}
 	path := filepath.Join(userDir, "new_layout.userdb.txt")
 	if err := os.WriteFile(path, snapshot.Bytes(), 0644); err != nil {

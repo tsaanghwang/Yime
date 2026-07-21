@@ -19,6 +19,13 @@ type Record struct {
 	Full      string
 	Variable  string
 	Shorthand string
+	// *Spelling keeps the same codes split at syllable boundaries for
+	// script_translator.  Runtime keystrokes remain delimiter-free; spaces are
+	// dictionary syntax that let librime build a syllable graph and complete an
+	// unfinished final syllable after an already valid sentence prefix.
+	FullSpelling      string
+	VariableSpelling  string
+	ShorthandSpelling string
 }
 
 type musicalMetadata struct {
@@ -57,7 +64,11 @@ func buildMusicalMetadata() map[rune]musicalMetadata {
 // BuildRecord derives all modes from a canonical code containing one or more
 // complete four-code syllables.
 func BuildRecord(full string) (Record, error) {
-	full = strings.TrimSpace(full)
+	// Rime script dictionaries write spaces between syllables.  The canonical
+	// fixed-length value and older table dictionaries do not.  Accept both
+	// representations at this boundary and rebuild the authoritative split
+	// below from groups of four codes.
+	full = strings.ReplaceAll(strings.TrimSpace(full), " ", "")
 	if full == "" {
 		return Record{}, fmt.Errorf("等长码不能为空")
 	}
@@ -72,20 +83,32 @@ func BuildRecord(full string) (Record, error) {
 	}
 	var variable strings.Builder
 	var shorthand strings.Builder
+	fullParts := make([]string, 0, len(runes)/SyllableCodeLength)
+	variableParts := make([]string, 0, len(runes)/SyllableCodeLength)
+	shorthandParts := make([]string, 0, len(runes)/SyllableCodeLength)
 	for start := 0; start < len(runes); start += SyllableCodeLength {
 		syllable := runes[start : start+SyllableCodeLength]
+		fullParts = append(fullParts, string(syllable))
 		variablePart := mergeAdjacent(syllable)
-		variable.WriteString(string(variablePart))
+		variableText := string(variablePart)
+		variable.WriteString(variableText)
+		variableParts = append(variableParts, variableText)
 
 		// Keep the real or virtual initial as an explicit syllable boundary in
 		// every derived mode. In particular, zero-initial syllables retain '\'',
 		// allowing Rime's sentence translator to segment concatenated codes.
 		initial := variablePart[:1]
 		ganyin := variablePart[1:]
-		shorthand.WriteString(string(initial))
-		shorthand.WriteString(string(omitMiddleTone(ganyin)))
+		shorthandPart := string(initial) + string(omitMiddleTone(ganyin))
+		shorthand.WriteString(shorthandPart)
+		shorthandParts = append(shorthandParts, shorthandPart)
 	}
-	return Record{Full: full, Variable: variable.String(), Shorthand: shorthand.String()}, nil
+	return Record{
+		Full: full, Variable: variable.String(), Shorthand: shorthand.String(),
+		FullSpelling:      strings.Join(fullParts, " "),
+		VariableSpelling:  strings.Join(variableParts, " "),
+		ShorthandSpelling: strings.Join(shorthandParts, " "),
+	}, nil
 }
 
 func mergeAdjacent(input []rune) []rune {

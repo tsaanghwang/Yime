@@ -85,7 +85,7 @@ func ReencodeRecord(full string, source, target Profile) (codemode.Record, error
 }
 
 func (c *Codec) Reencode(full string) (codemode.Record, error) {
-	runes := []rune(strings.TrimSpace(full))
+	runes := []rune(strings.ReplaceAll(strings.TrimSpace(full), " ", ""))
 	if len(runes) == 0 || len(runes)%4 != 0 {
 		return codemode.Record{}, fmt.Errorf("等长码长度必须是 4 的倍数: %q", full)
 	}
@@ -113,7 +113,15 @@ func (c *Codec) Reencode(full string) (codemode.Record, error) {
 		return codemode.Record{}, err
 	}
 	var variable, shorthand []string
+	fullParts := make([]string, 0, len(ids)/4)
+	variableParts := make([]string, 0, len(ids)/4)
+	shorthandParts := make([]string, 0, len(ids)/4)
 	for start := 0; start < len(ids); start += 4 {
+		fullPart, err := project(ids[start : start+4])
+		if err != nil {
+			return codemode.Record{}, err
+		}
+		fullParts = append(fullParts, fullPart)
 		part := mergeIDs(ids[start : start+4])
 		variable = append(variable, part...)
 		// N12 is the virtual initial. Preserve it just like a real initial so
@@ -121,7 +129,18 @@ func (c *Codec) Reencode(full string) (codemode.Record, error) {
 		initial := part[:1]
 		ganyin := part[1:]
 		shorthand = append(shorthand, initial...)
-		shorthand = append(shorthand, omitMiddleID(ganyin)...)
+		shortPart := append(append([]string(nil), initial...), omitMiddleID(ganyin)...)
+		shorthand = append(shorthand, shortPart[1:]...)
+		variablePart, err := project(part)
+		if err != nil {
+			return codemode.Record{}, err
+		}
+		shorthandPart, err := project(shortPart)
+		if err != nil {
+			return codemode.Record{}, err
+		}
+		variableParts = append(variableParts, variablePart)
+		shorthandParts = append(shorthandParts, shorthandPart)
 	}
 	variableCode, err := project(variable)
 	if err != nil {
@@ -131,7 +150,12 @@ func (c *Codec) Reencode(full string) (codemode.Record, error) {
 	if err != nil {
 		return codemode.Record{}, err
 	}
-	return codemode.Record{Full: projected, Variable: variableCode, Shorthand: shortCode}, nil
+	return codemode.Record{
+		Full: projected, Variable: variableCode, Shorthand: shortCode,
+		FullSpelling:      strings.Join(fullParts, " "),
+		VariableSpelling:  strings.Join(variableParts, " "),
+		ShorthandSpelling: strings.Join(shorthandParts, " "),
+	}, nil
 }
 
 func mergeIDs(ids []string) []string {

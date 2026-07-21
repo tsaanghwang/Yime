@@ -25,7 +25,8 @@ engine:
     - fallback_segmentor
   translators:
     - table_translator@custom_phrase
-    - table_translator
+    # Keep tail completion alive after an already valid sentence prefix.
+    - script_translator
     - punct_translator
 
 speller:
@@ -34,7 +35,7 @@ speller:
 
 translator:
   dictionary: yime_shorthand
-  user_dict: yime_shorthand_layout_6d00e609f689
+  user_dict: yime_shorthand_layout_6d00e609f689_script_v1
   enable_user_dict: true
   enable_sentence: true
   sentence_over_completion: true

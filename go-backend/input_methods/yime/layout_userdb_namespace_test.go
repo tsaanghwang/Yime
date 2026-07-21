@@ -18,12 +18,15 @@ func TestSchemasIsolateLearnedCandidatesByLayoutProjection(t *testing.T) {
 			}
 			schema := string(payload)
 			wantVersion := `version: "2026-07-18-layout-` + layoutID + `"`
-			wantUserDict := "user_dict: yime_" + mode + "_layout_" + layoutID
+			wantUserDict := "user_dict: yime_" + mode + "_layout_" + layoutID + "_script_v1"
 			if !strings.Contains(schema, wantVersion) {
 				t.Fatalf("schema does not identify current layout: want %q", wantVersion)
 			}
 			if !strings.Contains(schema, wantUserDict) {
 				t.Fatalf("schema reuses another layout's learned candidates: want %q", wantUserDict)
+			}
+			if !strings.Contains(schema, "- script_translator") {
+				t.Fatal("schema must use syllable-aware translation for continuous tail completion")
 			}
 			stableCustomPhrase := "user_dict: custom_phrase_" + mode
 			if !strings.Contains(schema, stableCustomPhrase) {

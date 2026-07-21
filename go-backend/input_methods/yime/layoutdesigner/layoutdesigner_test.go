@@ -171,7 +171,7 @@ func TestApplyRegeneratesLockedArtifactSet(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !strings.Contains(string(schema), "user_dict: yime_full_layout_") {
+	if !strings.Contains(string(schema), "user_dict: yime_full_layout_") || !strings.Contains(string(schema), "_script_v1") {
 		t.Fatalf("schema:\n%s", schema)
 	}
 }

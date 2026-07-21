@@ -22,9 +22,9 @@ func TestDeriveFromFullDictionaryGeneratesThreeModes(t *testing.T) {
 		t.Fatalf("unexpected manifest: %#v", manifest)
 	}
 	checks := map[string][]string{
-		"yime_full.dict.yaml":      {"阿\t'sdf\t100", "阿吧\t'sdfqfff\t80"},
-		"yime_variable.dict.yaml":  {"阿\t'sdf\t100", "阿吧\t'sdfqf\t80"},
-		"yime_shorthand.dict.yaml": {"阿\t'sf\t100", "阿吧\t'sfqf\t80"},
+		"yime_full.dict.yaml":      {"阿\t'sdf\t100", "阿吧\t'sdf qfff\t80"},
+		"yime_variable.dict.yaml":  {"阿\t'sdf\t100", "阿吧\t'sdf qf\t80"},
+		"yime_shorthand.dict.yaml": {"阿\t'sf\t100", "阿吧\t'sf qf\t80"},
 	}
 	for name, fragments := range checks {
 		data, err := os.ReadFile(filepath.Join(out, name))
