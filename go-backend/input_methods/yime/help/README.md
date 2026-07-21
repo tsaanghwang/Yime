@@ -8,6 +8,8 @@ Rime frontend.
 - Use the Yime schema from the PIME language bar settings menu.
 - Choose candidates with Space, Enter, or Shift+1 through Shift+9. The candidate
   window labels these combinations `⇧1`…`⇧9`; bare digits remain composition keys.
+- Unlike mainstream Pinyin IMEs, Yime deliberately does not use bare digits for
+  candidate selection. Digits keep their composition meaning while candidates are visible.
 - The Shift-layer keycaps are `! @ # $ % ^ & * (`. Help and the layout diagram
   show those physical key faces, but candidate labels use the clearer arrow notation.
 - All three schemas support continuous input and Rime sentence composition. Variable-length
