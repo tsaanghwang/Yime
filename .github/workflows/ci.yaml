@@ -169,6 +169,9 @@ jobs:
         with:
           go-version: '1.26.4'
           cache-dependency-path: go-backend/go.sum
+      - name: Install pinned go-winres
+        shell: pwsh
+        run: go install github.com/tc-hib/go-winres@v0.3.3
       - name: Install NSIS
         uses: repolevedavaj/install-nsis@v1.2.0
         with:

@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Split GitHub Actions into independently rerunnable Rust, native, Go, real-Rime, race, and installer jobs; retain commit-addressed native and installer artifacts for rollback
 - Add machine-readable installed-runtime hash verification, unsigned installer smoke testing, and commit-addressed build manifests
+- Pin go-winres v0.3.3 in installer CI so test packages retain required Windows VERSIONINFO instead of silently degrading
 - Restore `go test -race ./...` as a required GitHub Actions gate with an explicitly provisioned MSYS2 UCRT64 GCC toolchain and a guard that rejects silent removal
 - Add regression-tested UI policy for UI-less candidate ownership, bounded candidate font sizes, and monitor-work-area popup positioning
 - PE machine-type verification for Win32, x64, and ARM64 native build outputs, enforced by local builds, development installs, and CI

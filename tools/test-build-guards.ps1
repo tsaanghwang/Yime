@@ -57,6 +57,7 @@ $requiredGovernanceGuards = @(
     '.\tools\test-real-rime.ps1',
     '.\tools\write-build-manifest.ps1',
     '.\tools\test-installer-smoke.ps1',
+    'go install github.com/tc-hib/go-winres@v0.3.3',
     'uses: actions/download-artifact@v7'
 )
 foreach ($guard in $requiredGovernanceGuards) {

@@ -15,8 +15,8 @@ $installer = (Resolve-Path -LiteralPath $InstallerPath).Path
 $verifyScript = Join-Path $PSScriptRoot 'verify-installed-runtime.ps1'
 $failure = $null
 try {
-    & $installer /S
-    if ($LASTEXITCODE -ne 0) { throw "Installer failed with exit code $LASTEXITCODE" }
+    $installProcess = Start-Process -FilePath $installer -ArgumentList '/S' -Wait -PassThru -WindowStyle Hidden
+    if ($installProcess.ExitCode -ne 0) { throw "Installer failed with exit code $($installProcess.ExitCode)" }
     Start-Sleep -Seconds 3
     & $verifyScript -RepoRoot $RepoRoot -InstallRoot $InstallRoot -RequireRunningLauncher
 } catch {
@@ -24,9 +24,9 @@ try {
 } finally {
     $uninstaller = Join-Path $InstallRoot 'Uninstall.exe'
     if (Test-Path -LiteralPath $uninstaller) {
-        & $uninstaller /S
-        if ($LASTEXITCODE -ne 0 -and -not $failure) {
-            $failure = [Runtime.Exception]::new("Uninstaller failed with exit code $LASTEXITCODE")
+        $uninstallProcess = Start-Process -FilePath $uninstaller -ArgumentList '/S' -Wait -PassThru -WindowStyle Hidden
+        if ($uninstallProcess.ExitCode -ne 0 -and -not $failure) {
+            $failure = [Runtime.Exception]::new("Uninstaller failed with exit code $($uninstallProcess.ExitCode)")
         }
     }
 }
