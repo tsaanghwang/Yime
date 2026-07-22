@@ -13,10 +13,27 @@ if (-not $env:CI -and -not $AllowLocalMachine) {
 
 $installer = (Resolve-Path -LiteralPath $InstallerPath).Path
 $verifyScript = Join-Path $PSScriptRoot 'verify-installed-runtime.ps1'
+
+function Invoke-SmokeProcess {
+    param(
+        [string]$FilePath,
+        [string]$Arguments,
+        [string]$Description
+    )
+
+    $process = Start-Process -FilePath $FilePath -ArgumentList $Arguments -PassThru -WindowStyle Hidden
+    if (-not $process.WaitForExit(300000)) {
+        Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue
+        throw "$Description timed out after 300 seconds."
+    }
+    if ($process.ExitCode -ne 0) {
+        throw "$Description failed with exit code $($process.ExitCode)"
+    }
+}
+
 $failure = $null
 try {
-    $installProcess = Start-Process -FilePath $installer -ArgumentList '/S' -Wait -PassThru -WindowStyle Hidden
-    if ($installProcess.ExitCode -ne 0) { throw "Installer failed with exit code $($installProcess.ExitCode)" }
+    Invoke-SmokeProcess -FilePath $installer -Arguments '/S' -Description 'Installer'
     Start-Sleep -Seconds 3
     & $verifyScript -RepoRoot $RepoRoot -InstallRoot $InstallRoot -RequireRunningLauncher
 } catch {
@@ -24,9 +41,10 @@ try {
 } finally {
     $uninstaller = Join-Path $InstallRoot 'Uninstall.exe'
     if (Test-Path -LiteralPath $uninstaller) {
-        $uninstallProcess = Start-Process -FilePath $uninstaller -ArgumentList '/S' -Wait -PassThru -WindowStyle Hidden
-        if ($uninstallProcess.ExitCode -ne 0 -and -not $failure) {
-            $failure = [Runtime.Exception]::new("Uninstaller failed with exit code $($uninstallProcess.ExitCode)")
+        try {
+            Invoke-SmokeProcess -FilePath $uninstaller -Arguments '/S' -Description 'Uninstaller'
+        } catch {
+            if (-not $failure) { $failure = $_ }
         }
     }
 }
