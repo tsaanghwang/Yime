@@ -3,8 +3,24 @@ package reverselookup
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 )
+
+func TestJoinCharCodeLookupMultiStopsAtSearchLimit(t *testing.T) {
+	lookup := map[string][]string{
+		"多": {"a", "b", "c"},
+	}
+	results := joinCharCodeLookupMulti(strings.Repeat("多", 10), lookup)
+	if len(results) != maxSearchResults {
+		t.Fatalf("expected %d bounded combinations, got %d", maxSearchResults, len(results))
+	}
+	for _, result := range results {
+		if len(result) != 10 {
+			t.Fatalf("unexpected combination %q", result)
+		}
+	}
+}
 
 func TestSearchResolvesUserPhraseAndDictEntry(t *testing.T) {
 	sharedDir := t.TempDir()

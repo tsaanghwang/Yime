@@ -207,11 +207,20 @@ func joinCharCodeLookupMulti(text string, lookup map[string][]string) []string {
 		return nil
 	}
 	result := append([]string(nil), charResults[0]...)
+	if len(result) > maxSearchResults {
+		result = result[:maxSearchResults]
+	}
 	for i := 1; i < len(charResults); i++ {
-		next := make([]string, 0, len(result)*len(charResults[i]))
+		next := make([]string, 0, min(maxSearchResults, len(result)*len(charResults[i])))
 		for _, prefix := range result {
 			for _, suffix := range charResults[i] {
 				next = append(next, prefix+suffix)
+				if len(next) == maxSearchResults {
+					break
+				}
+			}
+			if len(next) == maxSearchResults {
+				break
 			}
 		}
 		result = next

@@ -699,6 +699,15 @@ func TestCandidateSelectionUsesDefaultKeysAndShiftDigits(t *testing.T) {
 	}
 }
 
+func TestAllBareDigitsRemainCompositionKeys(t *testing.T) {
+	for key := '0'; key <= '9'; key++ {
+		index, selected := candidateSelectionIndex(&pime.Request{KeyCode: int(key), CharCode: int(key)})
+		if selected {
+			t.Fatalf("bare digit %q unexpectedly selects candidate %d", key, index)
+		}
+	}
+}
+
 func TestOnKeyDownShift2SelectsSecondCandidate(t *testing.T) {
 	ime := newTestIME()
 	backend := ime.backend.(*testBackend)
@@ -3107,6 +3116,8 @@ func TestHandleRequestOnDeactivateReturnsHandled(t *testing.T) {
 	backend := ime.backend.(*testBackend)
 	backend.composition = "ni"
 	backend.refreshCandidates()
+	ime.keysDown[0x4E] = true
+	ime.pendingRawCommit = "ni"
 
 	resp := ime.HandleRequest(&pime.Request{
 		SeqNum: 14,
@@ -3118,6 +3129,12 @@ func TestHandleRequestOnDeactivateReturnsHandled(t *testing.T) {
 	}
 	if backend.composition != "" || backend.candidates != nil {
 		t.Fatal("expected deactivate to clear composition state")
+	}
+	if len(ime.keysDown) != 0 {
+		t.Fatalf("expected deactivate to clear stale key-down state, got %#v", ime.keysDown)
+	}
+	if ime.pendingRawCommit != "" {
+		t.Fatalf("expected deactivate to discard deferred raw commit, got %q", ime.pendingRawCommit)
 	}
 }
 
@@ -3408,6 +3425,11 @@ func TestBundledYimePUAMapContainsExpectedPhonologicalMappings(t *testing.T) {
 	for pinyin, want := range expected {
 		if got := found[pinyin]; got != want {
 			t.Fatalf("expected bundled PUA mapping %s=%q, got %q", pinyin, want, got)
+		}
+	}
+	for _, retired := range []string{"bong4", "wong4"} {
+		if got := found[retired]; got != "" {
+			t.Fatalf("retired nonstandard syllable %s remains in bundled PUA mapping: %q", retired, got)
 		}
 	}
 }

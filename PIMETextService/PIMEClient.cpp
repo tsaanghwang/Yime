@@ -874,15 +874,16 @@ bool Client::isPipeCreatedByPIMEServer(HANDLE pipe) {
 
 	HANDLE serverProcess = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, serverPid);
 	if (serverProcess == NULL) {
-		return true;
+		return canFallbackToPipeAclAfterProcessQueryFailure(GetLastError());
 	}
 
 	wchar_t imagePath[32768] = {};
 	DWORD imagePathLength = static_cast<DWORD>(_countof(imagePath));
 	const BOOL queried = QueryFullProcessImageNameW(serverProcess, 0, imagePath, &imagePathLength);
+	const DWORD queryError = queried ? ERROR_SUCCESS : GetLastError();
 	CloseHandle(serverProcess);
 	if (!queried) {
-		return true;
+		return canFallbackToPipeAclAfterProcessQueryFailure(queryError);
 	}
 	return isExpectedLauncherExecutablePath(std::wstring(imagePath, imagePathLength));
 }

@@ -278,6 +278,11 @@ func (ime *IME) onActivate(req *pime.Request, resp *pime.Response) *pime.Respons
 
 func (ime *IME) onDeactivate(req *pime.Request, resp *pime.Response) *pime.Response {
 	log.Println("RIME 输入法已失活")
+	// Focus/profile transitions do not guarantee that every key-down is paired
+	// with a key-up.  Do not carry stale suppression or a deferred raw commit
+	// into the next activation.
+	clear(ime.keysDown)
+	ime.pendingRawCommit = ""
 	ime.destroySession(resp)
 	ime.removeButtons(resp)
 	resp.ReturnValue = 1
