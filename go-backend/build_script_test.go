@@ -63,20 +63,31 @@ func TestBuildScriptFindsGoWinresOutsidePATH(t *testing.T) {
 }
 
 func TestBuildScriptPropagatesSanitizedChildFailure(t *testing.T) {
-	script := readBuildScript(t, filepath.Join("..", "build.bat"))
+	buildScript := readBuildScript(t, filepath.Join("..", "build.bat"))
+	wrapperScript := readBuildScript(t, filepath.Join("..", "tools", "invoke-build-environment.ps1"))
 
-	required := []string{
-		`& $script --sanitized; exit $LASTEXITCODE`,
+	buildRequired := []string{
+		`invoke-build-environment.ps1" -BuildScript "%~f0"`,
 		`if errorlevel 1 exit /b 1`,
 		`exit /b 0`,
 	}
-	for _, fragment := range required {
-		if !strings.Contains(script, fragment) {
-			t.Fatalf("build.bat is missing sanitized child exit-code propagation %q", fragment)
+	for _, fragment := range buildRequired {
+		if !strings.Contains(buildScript, fragment) {
+			t.Fatalf("build.bat is missing sanitized wrapper propagation %q", fragment)
 		}
 	}
 
-	if strings.Contains(script, "& $script --sanitized\"") {
-		t.Fatal("sanitized wrapper must explicitly exit with the child script's exit code")
+	wrapperRequired := []string{
+		`& $BuildScript --sanitized`,
+		`exit $LASTEXITCODE`,
+	}
+	for _, fragment := range wrapperRequired {
+		if !strings.Contains(wrapperScript, fragment) {
+			t.Fatalf("invoke-build-environment.ps1 is missing child exit-code propagation %q", fragment)
+		}
+	}
+
+	if strings.Contains(wrapperScript, `& $BuildScript --sanitized"`) {
+		t.Fatal("sanitized wrapper must not discard the child script's exit code")
 	}
 }
