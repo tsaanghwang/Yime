@@ -59,6 +59,7 @@ $env:YIME_TIMESTAMP_URL = "http://timestamp.digicert.com"
 - `tool-hub.exe`
 - `settings-tool.exe`
 - `diagnostics-tool.exe`
+- `yime-layout-designer.exe`
 - `lexicon-manager.exe`
 - `reverse-lookup.exe`
 - `system-lexicon-audit.exe`
@@ -80,7 +81,7 @@ $env:YIME_TIMESTAMP_URL = "http://timestamp.digicert.com"
 
 `Status` 必须为 `Valid`；验证脚本还会要求签名者指纹等于 `YIME_SIGN_CERT_SHA1`，并确认每个文件都有时间戳证书。
 
-标签 `v*` 会触发正式发布签名门禁。仓库需配置 `YIME_SIGN_CERT_BASE64`（PFX 的 Base64）和 `YIME_SIGN_CERT_PASSWORD`；标签构建缺少密钥会直接失败，临时 PFX 在导入后立即删除。标签产物名为 `YIME-signed-installer`；PR 与普通分支产物名为 `YIME-unsigned-test-installer`，不得作为公开发布包。
+标签 `v*` 会触发正式发布签名门禁。仓库需配置 `YIME_SIGN_CERT_BASE64`（PFX 的 Base64）和 `YIME_SIGN_CERT_PASSWORD`；标签构建缺少密钥会直接失败，临时 PFX 在导入后立即删除。标签产物名为 `YIME-signed-installer`；PR 与普通分支产物名为 `YIME-unsigned-test-installer-{sha}`，不得作为公开发布包。
 
 ### 3.1 开发包与证书选择
 
@@ -98,15 +99,10 @@ $env:YIME_TIMESTAMP_URL = "http://timestamp.digicert.com"
 ## 4. 构建与测试
 
 ```powershell
-# 宿主、文本服务、启动器和安装包依赖
-cmd /c build.bat
-
-# Go 后端与原生工具
-cd go-backend
+# 根入口串联 Win32/x64、Go 后端和架构门禁
 cmd /c build.bat
 
 # 防止 x64 DLL 被误装进 x86 槽位
-cd ..
 .\tools\test-build-guards.ps1
 ```
 
@@ -115,7 +111,7 @@ cd ..
 ## 5. 安装包检查
 
 - 安装包版本与 `version.txt` 一致
-- `go-backend/build/go-backend/` 中 9 个 Go EXE 全部存在且带 VERSIONINFO
+- `go-backend/build/go-backend/` 中 9 个 Go EXE 全部存在且带 VERSIONINFO：`server.exe`、`tool-hub.exe`、`settings-tool.exe`、`diagnostics-tool.exe`、`yime-layout-designer.exe`、`lexicon-manager.exe`、`reverse-lookup.exe`、`system-lexicon-audit.exe`、`blocklist-manager.exe`
 - NSIS 必装主组件递归包含 `go-backend/build/go-backend/`，安装包中不存在旧 Python/Node 输入法及其组件选择逻辑
 - `input_methods/yime/data/`、`rime.dll`、`rime_deployer.exe` 已打包
 - 打包目录 `input_methods/` 下没有 `.go` 源码或测试文件
@@ -152,7 +148,7 @@ $built.Hash -eq $installed.Hash
 2. 音元输入法能激活、组字和选词
 3. 桌面语言栏三个双字切换按钮不消失、不换位，“用户词库”“反查编码”“工具中心”按钮可用
 4. 语言栏停靠在任务栏时，“中 → 设置”内的“用户词库”“反查编码”“工具中心”三个叶子命令均可打开对应窗口
-5. 工具箱、设置、反查和词库管理可以打开
+5. 工具箱、高级布局、设置、反查和词库管理可以打开
 6. 设置工具“应用”、备份和恢复流程不闪控制台
 7. 用户词库应用后在三种方案中可用
 8. CodeIntegrity 日志没有新产生的 3033、3077 或 3118 阻止事件

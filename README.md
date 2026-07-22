@@ -9,12 +9,12 @@ Yime maps pinyin syllables to a structured keyboard encoding where initials foll
 ## Features
 
 - **Three encoding modes** — variable-length, fixed-length, and shorthand, switchable from the language bar
-- **Rime-powered engine** — table translator with 468K+ entries per schema, weighted frequency sorting
+- **Rime-powered engine** — script translator with 2.45M+ entries per schema, weighted frequency sorting and continuous sentence composition
 - **Candidate window** — 5–9 candidates per page, vertical or horizontal layout, one-click toggle
 - **Reverse lookup** — display standard pinyin, Yime codes, or key sequences alongside candidates
 - **User lexicon** — add custom phrases with numeric-tone pinyin; auto-converts to Yime codes
 - **Portable user backup** — verified settings, lexicon, blocklist, and Rime sync snapshots with guarded restore
-- **Standalone tools** — settings, diagnostics, reverse-lookup, lexicon manager, system lexicon audit, and blocklist manager as native Win32 executables (not PowerShell in TSF callbacks)
+- **Standalone tools** — advanced layout design, settings, diagnostics, reverse lookup, lexicon management, system lexicon audit, and blocklist management as native Win32 executables
 - **Language bar** — IME list name「音元」; static two-character toggle labels (中西 / 全半 / 横竖) with icon state; dispatcher for schema, layout, page size, and maintenance commands
 
 ## Repository Layout
@@ -37,9 +37,9 @@ docs/                    Development documentation
 
 | Branch | Purpose |
 |--------|---------|
-| `main` | Stable baseline |
-| `yime-stable` | Active development (CI target) |
-| `yime-on-pime` | Windows integration branch |
+| `main` | Stable baseline and release target |
+| `yime-stable` | Maintained integration branch |
+| `codex/**` | Active task branches covered by push CI |
 
 The encoding, lexicon, and experiment-heavy prototype work lives in the separate `Yime-prototype` repository.
 
@@ -48,7 +48,7 @@ The encoding, lexicon, and experiment-heavy prototype work lives in the separate
 - [Visual Studio 2022](https://visualstudio.microsoft.com/vs/) with C++ desktop workload
 - [CMake](https://cmake.org/) 3.0+
 - [Rust](https://rustup.rs/) with the `stable-i686-pc-windows-msvc` host toolchain
-- [Go](https://go.dev/) 1.21+
+- [Go](https://go.dev/) 1.26.4 for reproducible/CI builds (`go.mod` keeps the 1.21 language compatibility floor)
 - [Git](https://git-scm.com/)
 
 ## Build
@@ -78,33 +78,21 @@ found but `%USERPROFILE%\.cargo\bin\cargo.exe` exists, restore that directory
 to the user `PATH` instead of changing the CMake, Corrosion, or Cargo target
 configuration.
 
-### Build the host (32-bit)
+### Build the complete product
 
 ```powershell
 cmd /c build.bat
 ```
 
-`build.bat` now verifies the pinned i686 host toolchain before configuring and
-uses `rustup run stable-i686-pc-windows-msvc` for the launcher build. On Windows
+The root `build.bat` verifies the pinned i686 host toolchain, builds Win32 and
+x64 native components, builds the Go backend and tools, and runs PE architecture
+guards. Do not repeat the Go build separately for a normal full build. On Windows
 machines with an enabled WinINET proxy, the build wrapper copies that proxy into
 `HTTP_PROXY`/`HTTPS_PROXY` for git and CMake FetchContent without changing the
 global git configuration.
 
-### Build the Go backend
-
-```powershell
-cd go-backend
-cmd /c build.bat
-```
-
-Go tool versions come from `version.txt`, and reproducible flags keep hashes stable across unrelated commits. Release builds should set `YIME_SIGN_CERT_SHA1` to use an RSA code-signing certificate from a trusted provider; VERSIONINFO alone does not guarantee Smart App Control acceptance.
-
-### Build the 64-bit text service
-
-```powershell
-cmake . -Bbuild64 -G "Visual Studio 17 2022" -A x64
-cmake --build build64 --config Release --target PIMETextService
-```
+`go-backend\build.bat` remains available for focused backend work. Go tool versions
+come from `version.txt`, and reproducible flags keep hashes stable across unrelated commits.
 
 ## Install
 
@@ -139,12 +127,11 @@ regsvr32 /u "C:\Program Files (x86)\YIME\x64\PIMETextService.dll"
 ## First-Run Checklist
 
 - [ ] Clone, initialize submodules, confirm toolchain installed
-- [ ] Run `cmd /c build.bat` from repository root
-- [ ] Run `cmd /c build.bat` from `go-backend`
 - [ ] If the fixed-length Rime lexicon changed, run `tools\deploy-yime-rime-data.ps1 -Input <full.dict.yaml>` (see [docs/YIME_RIME_INTEGRATION.md](docs/YIME_RIME_INTEGRATION.md))
-- [ ] Run `.\Reinstall-PIME-Test.cmd` from an elevated prompt
+- [ ] Run `.\tools\dev-build-install-verify.ps1` for the complete build → reinstall → installed-runtime verification loop
+- [ ] For a split workflow, run `cmd /c build.bat`, then `.\Reinstall-PIME-Test.cmd` from an elevated prompt, then `tools\verify-installed-runtime.ps1 -RequireRunningLauncher`
 - [ ] Switch to Yime in a text application and verify: activation, candidates, settings, reverse lookup
-- [ ] Run `go test ./input_methods/yime/...` from `go-backend` before shipping backend changes
+- [ ] Run `.\tools\test-go.ps1`; use `.\tools\test-real-rime.ps1` and `.\tools\test-go-race.ps1` when the affected layer requires them
 
 ## Encoding Reference
 

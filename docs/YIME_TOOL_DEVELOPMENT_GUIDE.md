@@ -129,6 +129,7 @@ PowerShell 仅保留在开发、测试、构建、安装和维护脚本中，不
 
 | ID | 标签 | 类型 | 可执行文件 |
 |----|------|------|-----------|
+| advanced-layout-designer | 高级布局 | run_executable | yime-layout-designer.exe |
 | lexicon-manager | 词库管理 | run_executable | lexicon-manager.exe |
 | reverse-lookup-tool | 反查编码 | run_executable | reverse-lookup.exe |
 | system-lexicon-audit | 系统词库审查 | run_executable | system-lexicon-audit.exe |

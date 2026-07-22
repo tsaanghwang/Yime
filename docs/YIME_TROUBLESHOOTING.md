@@ -75,7 +75,7 @@
 - 确保使用最新版本的 Yime 安装包
 - 检查被阻止 EXE 的“属性 → 详细信息”和“数字签名”；正式发布物应同时有稳定版本信息和可信签名
 - 在“事件查看器 → Microsoft → Windows → CodeIntegrity → Operational”中确认事件 3033/3077/3118 指向的具体文件
-- 区分开发包与发行包：`YIME-unsigned-test-installer` 只供开发测试，不能据此判断正式签名链是否有效
+- 区分开发包与发行包：`YIME-unsigned-test-installer-{sha}` 只供开发测试，不能据此判断正式签名链是否有效
 - 如果没有 CodeIntegrity 阻止事件，再检查安装日志、管理员提权、文件锁和杀毒软件隔离，不要把所有安装退出都归因于证书
 - 不建议为绕过单个工具而关闭 Smart App Control；开发构建应保持可复现，发布构建应配置 Trusted Signing 或受信任 CA 证书
 

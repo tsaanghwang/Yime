@@ -4,12 +4,33 @@ This branch prepares PIME to consume Yime through the upstream Go Rime backend.
 
 ## Data flow
 
-1. The importer accepts one fixed-length `yime_full.dict.yaml` as the only external lexicon source.
-2. Go derives the full, variable, and shorthand Rime dictionaries plus a generation manifest.
-3. PIME keeps those runtime artifacts under `go-backend\input_methods\yime\data` and copies them to `%AppData%\PIME\Rime` when deployed.
-4. The Go Rime backend loads `go-backend\input_methods\yime\rime.dll`, initializes librime with those directories, and uses the selected Yime schema.
+1. The prototype produces one versioned Windows handoff directory. It contains the fixed-length
+   `yime_full.dict.yaml`, four synchronized pinyin assets, and
+   `yime_handoff_manifest.json` with counts and SHA-256 values.
+2. The maintainer verifies the handoff manifest before accepting any file. The prototype command
+   also runs the Windows dictionary derivation into a staging subdirectory by default.
+3. The Go importer accepts the fixed-length dictionary as the only external lexicon source and
+   derives the full, variable, and shorthand Rime dictionaries plus
+   `yime_lexicon_manifest.json`.
+4. The verified auxiliary assets are vendored beside those generated dictionaries under
+   `go-backend\input_methods\yime\data`.
+5. Build/install copies the shared data into the installed runtime; Rime deployment then refreshes
+   `%AppData%\PIME\Rime` and its compiled cache.
 
 ## Prepare local data
+
+Generate the complete handoff in `C:\dev\Yime-python-prototype`:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass `
+  -File tools\prepare_windows_yime_lexicon.ps1
+```
+
+The default output is `.generated\windows_yime_import`. Treat that directory as one atomic
+handoff: verify every asset recorded by `yime_handoff_manifest.json` before copying or importing
+anything. Do not combine files from different handoff runs. The handoff producer prepares and
+checks staged output; it does not deploy to PIME/Rime, and this repository does not yet provide a
+single command that consumes all five handoff assets.
 
 From `C:\dev\Yime`:
 
@@ -87,16 +108,15 @@ Rime deployment caches remain local and must not be committed:
 The current Go Yime backend uses `pinyin_normalized.json` for the
 "标准拼音" reverse-lookup display mode.
 
-This file does not originate inside `C:\dev\Yime` itself. Its source chain is
+This file does not originate inside `C:\dev\Yime` itself. Its production source chain is
 kept in `C:\dev\Yime-python-prototype`:
 
-1. `internal_data\hanzi_pinyin\pinyin.txt` and
-   `internal_data\phrase_pinyin\phrase_pinyin.txt`
-2. `internal_data\pinyin_source_db\build_source_pinyin_db.py`
-3. `internal_data\pinyin_source_db\validate_source_pinyin_db.py`
-4. `internal_data\pinyin_source_db\rebuild_pinyin_assets.py`
-5. `internal_data\pinyin_source_db\lexicon_exports\pinyin_normalized.json`
-6. `yime\pinyin_normalized.json`
+1. Unihan, pypinyin, 万象 and BCC source data pass the first pinyin compliance gate.
+2. `.generated\lexicon_source_bundle\source_lexicon.sqlite3` becomes the source-of-truth database.
+3. The canonical syllable inventory drives `SyllableEncodingPipeline` / `YinjieEncoder`.
+4. Prototype tables and `runtime_candidates_materialized` are rebuilt.
+5. `tools\prepare_windows_yime_lexicon.ps1` exports the complete Windows handoff, including
+   `pinyin_normalized.json`.
 
 Upstream docs that describe this flow:
 
@@ -114,9 +134,9 @@ The backend then resolves standard-pinyin comments through this runtime path:
 2. Yime code -> numeric-tone pinyin via `yime_pinyin_codes.tsv`
 3. numeric-tone pinyin -> marked standard pinyin via `pinyin_normalized.json`
 
-This means "标准拼音" display is now tied to the same phase-1 lexicon rebuild
-used by the prototype project, without importing the prototype runtime DB or
-candidate-window implementation into PIME.
+This means "标准拼音" display is tied to the same audited source bundle and handoff run as the
+system dictionary, without importing the prototype runtime DB or candidate-window implementation
+into PIME.
 
 The `音元拼音` candidate annotation uses a separate display-only path:
 
@@ -131,30 +151,29 @@ comment unchanged.
 
 ## Maintainer checklist
 
-Use this checklist when pinyin display data changes in
-`C:\dev\Yime-python-prototype` and this repo needs an updated runtime asset.
+Use this checklist when prototype dictionary or pinyin data changes.
 
-1. Rebuild the upstream phase-1 pinyin assets in
-   `C:\dev\Yime-python-prototype`.
-2. Confirm the rebuilt export exists at
-   `internal_data\pinyin_source_db\lexicon_exports\pinyin_normalized.json`.
-3. Confirm the runtime copy exists at `yime\pinyin_normalized.json`.
-4. Copy that JSON into this repo as
-   `go-backend\input_methods\yime\data\pinyin_normalized.json`.
-5. Copy `yime\code_pinyin.json` into this repo as
-   `go-backend\input_methods\yime\data\yime_pua_pinyin.json` when the PUA
-   phonological mapping changes.
-6. Keep only `pinyin_tone` and canonical `full` in
-   `go-backend\input_methods\yime\data\yime_pinyin_codes.tsv`; derived columns
-   must not be restored.
-7. Import system lexicon changes only through
-   `tools\import-yime-full-lexicon.ps1 -Input <full.dict.yaml>` and confirm the
-   generated manifest and three output hashes.
-8. Rebuild the Go backend package with `cd go-backend` then `cmd /c build.bat`.
+1. Complete the prototype rebuild and its compliance/layout gates.
+2. Run `tools\prepare_windows_yime_lexicon.ps1` and use only its resulting
+   `.generated\windows_yime_import` directory.
+3. Verify `yime_handoff_manifest.json`: schema version, audited/runtime inventory counts, declared
+   source-only syllables, byte sizes, and every asset SHA-256.
+4. Import `yime_full.dict.yaml` only through
+   `tools\import-yime-full-lexicon.ps1`; never import variable or shorthand dictionaries.
+5. Copy the four verified auxiliary assets together:
+   `yime_pinyin_codes.tsv`, `yime_syllable_decomposition.tsv`,
+   `pinyin_normalized.json`, and `yime_pua_pinyin.json`.
+6. Confirm `yime_lexicon_manifest.json` and the three generated dictionary hashes, then run the
+   stable Go verification suite. The syllable inventory test must report no runtime-only syllable;
+   declared source-only syllables are allowed.
+7. Run root `Build.cmd` to produce the package. Build does not install it.
+8. Install/reinstall, restart `PIMELauncher` and `server.exe`, redeploy Rime, and compare source,
+   installed, and `%AppData%\PIME\Rime` hashes. A source-only check is not sufficient.
 9. Verify reverse lookup in the candidate window:
    `隐藏编码`, `标准拼音`, `音元拼音`, `键位序列`.
 10. Sanity-check that both pinyin modes change comments only and do not trigger a
-   schema reload or host exit during the language-bar click.
+    schema reload or host exit during the language-bar click; reproduce the dictionary defect that
+    motivated the rebuild once against the installed runtime.
 
 Minimum local verification:
 
