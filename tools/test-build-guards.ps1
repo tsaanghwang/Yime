@@ -178,6 +178,9 @@ $devInstallText = Get-Content -LiteralPath $devInstall -Raw
 if ($devInstallText -match 'pythonRoot|nodeRoot|Copying Python backend|Copying Node backend') {
     throw 'Retired Python/Node payload handling returned to the developer installer.'
 }
+if (-not $installerText.Contains('WriteRegStr HKLM "${PRODUCT_UNINST_KEY}" "InstallLocation" "$INSTDIR"')) {
+    throw 'Installer uninstall registration must publish InstallLocation.'
+}
 if (-not $devInstallText.Contains('RequireBuildArtifacts')) {
     throw 'Developer install must fail early with the shared build-artifact preflight.'
 }

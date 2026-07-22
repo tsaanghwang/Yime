@@ -74,39 +74,40 @@ Corrosion 将 x64 主机构建脚本和 i686 MSVC 库混用。如果命令行找
 但 `%USERPROFILE%\.cargo\bin\cargo.exe` 存在，应把该目录恢复到用户 `PATH`，
 不要修改 CMake、Corrosion 版本或 `PIMELauncher/.cargo/config.toml`。
 
-### 构建宿主（32 位）
+### 构建全部开发制品
 
 ```powershell
 cmd /c build.bat
 ```
 
-### 构建 Go 后端
-
-```powershell
-cd go-backend
-cmd /c build.bat
-```
-
-Go 工具版本取自 `version.txt`，构建使用稳定哈希参数。正式发布时应设置 `YIME_SIGN_CERT_SHA1`，使用受信任提供商签发的 RSA 代码签名证书；仅有 VERSIONINFO 不能保证通过 Smart App Control。
-
-### 构建 64 位文本服务
-
-```powershell
-cmake . -Bbuild64 -G "Visual Studio 17 2022" -A x64
-cmake --build build64 --config Release --target PIMETextService
-```
+根目录入口会依次生成 Win32 文本服务、Win32 `PIMELauncher`、x64 文本服务和
+Go 后端，并执行 PE 架构门禁。无需再单独进入 `go-backend` 重复构建。Go 工具
+版本取自 `version.txt`，构建使用稳定哈希参数。正式发布时应设置
+`YIME_SIGN_CERT_SHA1`，使用受信任提供商签发的 RSA 代码签名证书；仅有
+VERSIONINFO 不能保证通过 Smart App Control。
 
 ## 安装
 
 ### 开发重装
 
-在管理员提示符下运行：
+只安装已有构建物时，在管理员提示符下运行：
 
 ```powershell
 .\Reinstall-PIME-Test.cmd
 ```
 
-此脚本包含预检、DLL 锁检测和自动回退。请勿简化——参见 `AGENTS.md` 中的约束。
+此脚本包含预检、DLL 锁检测和自动原位安装回退，但不会替你重建缺失或过期的
+`build/`、`build64/` 和 Go 后端制品。需要“构建 → 重装 → 哈希/注册表/进程核验”
+完整闭环时，运行：
+
+```powershell
+.\tools\dev-build-install-verify.ps1
+```
+
+安装完成后也可单独运行 `tools\verify-installed-runtime.ps1`。结果为 `complete`
+才表示安装文件与当前构建物全部一致；`partial` 表示只有被宿主持有的 TSF DLL
+尚未替换，需要重启 Windows 后重装并复核。不要简化规范重装脚本——参见
+`AGENTS.md` 中的约束。
 
 ### 分发
 
@@ -130,9 +131,9 @@ regsvr32 /u "C:\Program Files (x86)\YIME\x64\PIMETextService.dll"
 
 - [ ] 克隆仓库，初始化子模块，确认工具链已安装
 - [ ] 从仓库根目录运行 `cmd /c build.bat`
-- [ ] 从 `go-backend` 目录运行 `cmd /c build.bat`
 - [ ] 若 Rime 数据有变更，运行 `tools\deploy-yime-rime-data.ps1`（参见 [docs/YIME_RIME_INTEGRATION.md](docs/YIME_RIME_INTEGRATION.md)）
 - [ ] 在管理员提示符下运行 `.\Reinstall-PIME-Test.cmd`
+- [ ] 运行 `tools\verify-installed-runtime.ps1 -RequireRunningLauncher`，确认结果为 `complete`
 - [ ] 在文本应用中切换到音元输入法，验证：激活、候选窗、设置、反查
 - [ ] 发布后端变更前，从 `go-backend` 运行 `go test ./input_methods/yime/...`
 

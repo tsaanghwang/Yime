@@ -72,6 +72,7 @@ func TestReleasePipelineSignsPayloadInstallerAndUninstaller(t *testing.T) {
 		`File "..\LICENSES\PIME-UPSTREAM-LICENSE.txt"`,
 		`File "..\LICENSES\RIME-FROST-GPL-3.0.txt"`,
 		`File "..\LICENSES\RUST-DEPENDENCIES.md"`,
+		`WriteRegStr HKLM "${PRODUCT_UNINST_KEY}" "InstallLocation" "$INSTDIR"`,
 		`RMDir /REBOOTOK /r "$INSTDIR\licenses"`,
 		`RMDir "$INSTDIR\go-backend\input_methods\fcitx5"`,
 		`RMDir "$INSTDIR\go-backend\input_methods\meow"`,
@@ -128,11 +129,11 @@ func TestReleasePipelineSignsPayloadInstallerAndUninstaller(t *testing.T) {
 			t.Fatalf("release signature verifier is missing %q", fragment)
 		}
 	}
-	if count := strings.Count(buildScript, "--icon input_methods\\yime\\icon.ico"); count != 8 {
-		t.Fatalf("expected all 8 Go executables to embed the Yime icon, got %d", count)
+	if count := strings.Count(buildScript, "--icon input_methods\\yime\\icon.ico"); count != 9 {
+		t.Fatalf("expected all 9 Go executables to embed the Yime icon, got %d", count)
 	}
-	if count := strings.Count(buildScript, `--copyright "Copyright (C) 2026 Yime contributors"`); count != 8 {
-		t.Fatalf("expected all 8 Go executables to embed Yime copyright metadata, got %d", count)
+	if count := strings.Count(buildScript, `--copyright "Copyright (C) 2026 Yime contributors"`); count != 9 {
+		t.Fatalf("expected all 9 Go executables to embed Yime copyright metadata, got %d", count)
 	}
 	for _, fragment := range []string{
 		`set "WIN32_CMAKE_PLATFORM=-A Win32"`,

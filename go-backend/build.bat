@@ -278,13 +278,22 @@ if exist cmd\diagnostics-tool\rsrc_diagnostics_windows_amd64.syso del cmd\diagno
 
 echo [INFO] Built: "%DIAGNOSTICS_TOOL_EXE%"
 
+echo [INFO] Generating Windows VERSIONINFO resources for yime-layout-designer ...
+"%GO_WINRES%" simply --arch amd64 --product-version "%APP_VERSION%" --file-version "%APP_VERSION%" --product-name "YIME" --copyright "Copyright (C) 2026 Yime contributors" --file-description "Yime Layout Designer" --original-filename "yime-layout-designer.exe" --icon input_methods\yime\icon.ico --manifest gui --out cmd\yime-layout-designer\rsrc_layout_designer
+if errorlevel 1 (
+    echo [WARN] go-winres failed for yime-layout-designer.exe, building without VERSIONINFO
+    if exist cmd\yime-layout-designer\rsrc_layout_designer_windows_amd64.syso del cmd\yime-layout-designer\rsrc_layout_designer_windows_amd64.syso
+)
+
 echo [INFO] Building yime-layout-designer.exe (graphical and console maintenance tool) ...
 go build %GO_REPRO_FLAGS% -ldflags "-s -w -X main.version=%APP_VERSION%" -o "%LAYOUT_DESIGNER_EXE%" .\cmd\yime-layout-designer
 if errorlevel 1 (
     echo [ERROR] Failed to build yime-layout-designer.exe
+    if exist cmd\yime-layout-designer\rsrc_layout_designer_windows_amd64.syso del cmd\yime-layout-designer\rsrc_layout_designer_windows_amd64.syso
     popd
     exit /b 1
 )
+if exist cmd\yime-layout-designer\rsrc_layout_designer_windows_amd64.syso del cmd\yime-layout-designer\rsrc_layout_designer_windows_amd64.syso
 echo [INFO] Built: "%LAYOUT_DESIGNER_EXE%"
 
 call :sign_go_binaries

@@ -80,6 +80,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Missing VERSIONINFO and Yime icon resources on `yime-layout-designer.exe`; all nine Go executables now share the same version-resource build path and regression guards
+- Missing `InstallLocation` in the Windows uninstall registration; NSIS now publishes the resolved YIME installation directory
 - Missing Windows FileVersion, ProductVersion, and ProductName metadata on PIMELauncher, the NSIS installer, and the generated uninstaller
 - Standard installer upgrades failing after partially deleting the installation: the old pre-install path tried to remove a still-nonempty install root and treated the resulting reboot flag as fatal, while loaded TSF DLLs were deleted recursively. Upgrades are now in-place and DLLs use staged immediate-or-reboot replacement
 - Standard fresh installations requiring sign-out or reboot before PIMELauncher first started; the installer now starts it immediately after registration

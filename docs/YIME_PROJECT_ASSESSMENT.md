@@ -20,7 +20,7 @@ Yime 已从“功能基本可用但工具链和安装态边界不稳定”进入
 | Win32 工具 UI | 完整度较高 | 设置、反查、词库、审查、屏蔽、诊断和工具箱均为原生窗口，主要列表与缩放布局已统一 |
 | 活动会话刷新 | 已完成 | 设置、词库和 redeploy 使用独立累积修订号，不再互相覆盖 |
 | 语言栏 | 已清理 | 保留静态标签和稳定命令 ID；高风险点击路径有回归测试 |
-| 构建与打包 | 稳定 | 8 个 Go EXE 可复现、统一图标、包内不携带 Go 源码 |
+| 构建与打包 | 稳定 | 9 个 Go EXE 可复现、统一图标和 VERSIONINFO、包内不携带 Go 源码 |
 | CI 与测试 | 完整度较高 | Go、Go race、Rust、CTest 和发布守卫均进入流水线；`main` 与 `yime-stable` 的 PR 均触发构建；`main` 分支保护要求 `build` 成功且同样约束管理员 |
 | 正式签名发布 | 版本已定稿 | `version.txt` 与 Changelog 已定稿为 `1.4.0`；尚待受信任签名产物验证 |
 | 安装态验证 | 清单已跑完 | 2026-07-12 完成逐项验证并留痕：干净全量重装、哈希全同步、重启自启动实测、7 工具入口、TIP 注册与真实组词日志、CodeIntegrity 审计核查、runtimechange 协议；详见[安装态验证留痕](YIME_INSTALL_VERIFICATION_2026-07-12.md) |
@@ -50,7 +50,7 @@ Yime 已从“功能基本可用但工具链和安装态边界不稳定”进入
 ### 2.3 构建、CI 与发布
 
 - Go 构建默认使用仓库内 `GOCACHE`/`GOTMPDIR`，降低临时目录被策略阻止或无权限的概率。
-- 8 个 Go EXE 使用稳定版本、`-trimpath -buildvcs=false` 和统一 Yime 图标；连续构建哈希一致。
+- 9 个 Go EXE 使用稳定版本、`-trimpath -buildvcs=false`、统一 Yime 图标和 VERSIONINFO；连续构建哈希一致。
 - 打包脚本递归清理复制目录中的 `.go` 文件，避免发布包泄露源码并防止 `go test ./...` 重复执行打包副本。
 - CI 增加反查测试、根包测试、Rust 格式检查和 CTest 实际执行。
 - 标签发布强制导入可信签名证书；临时 PFX 在导入后删除。
@@ -106,7 +106,7 @@ git diff --check
 - Go 竞态检测全量通过：本机 MSYS2 UCRT64 GCC 16.1.0 已配置（`go env CC`），`go test -race ./...` 全部通过；并发按键与命令测试 `TestConcurrentKeyAndCommandNoDataRace` 不再报告数据竞争。
 - Rust 11 个单元测试和 2 个集成测试通过。
 - CTest 3/3 通过。
-- 8 个 Go EXE 连续两次构建 SHA-256 一致。
+- 9 个 Go EXE 连续两次构建 SHA-256 一致。
 - NSIS 开发安装包构建成功，包内未发现 `.go` 源码。
 - 上一轮远端 GitHub Actions 构建成功。
 - 2026-07-11 使用未签名开发包完成真实安装；Go + Win32 输入路径响应流畅，新增“云笺试码”“笺砚验码”后可在活动会话直接出词。

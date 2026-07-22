@@ -54,8 +54,18 @@ func TestBuildScriptFindsGoWinresOutsidePATH(t *testing.T) {
 			t.Fatalf("build.bat is missing go-winres discovery fragment %q", fragment)
 		}
 	}
-	if count := strings.Count(script, `"%GO_WINRES%" simply`); count != 8 {
-		t.Fatalf("expected all 8 resource builds to use resolved go-winres, got %d", count)
+	if count := strings.Count(script, `"%GO_WINRES%" simply`); count != 9 {
+		t.Fatalf("expected all 9 resource builds to use resolved go-winres, got %d", count)
+	}
+	for _, fragment := range []string{
+		`--file-description "Yime Layout Designer"`,
+		`--original-filename "yime-layout-designer.exe"`,
+		`--out cmd\yime-layout-designer\rsrc_layout_designer`,
+		`if exist cmd\yime-layout-designer\rsrc_layout_designer_windows_amd64.syso del cmd\yime-layout-designer\rsrc_layout_designer_windows_amd64.syso`,
+	} {
+		if !strings.Contains(script, fragment) {
+			t.Fatalf("layout designer VERSIONINFO build guard is missing %q", fragment)
+		}
 	}
 	if strings.Contains(script, "\ngo-winres simply") || strings.Contains(script, "\r\ngo-winres simply") {
 		t.Fatal("resource generation must not rely on a bare go-winres command")

@@ -115,7 +115,7 @@ cd ..
 ## 5. 安装包检查
 
 - 安装包版本与 `version.txt` 一致
-- `go-backend/build/go-backend/` 中 8 个 Go EXE 全部存在
+- `go-backend/build/go-backend/` 中 9 个 Go EXE 全部存在且带 VERSIONINFO
 - NSIS 必装主组件递归包含 `go-backend/build/go-backend/`，安装包中不存在旧 Python/Node 输入法及其组件选择逻辑
 - `input_methods/yime/data/`、`rime.dll`、`rime_deployer.exe` 已打包
 - 打包目录 `input_methods/` 下没有 `.go` 源码或测试文件
