@@ -12,7 +12,7 @@
 详见 [README.zh-CN.md](README.zh-CN.md) 的"构建要求"章节。核心依赖：
 
 - Visual Studio 2022（CMake + C++ TSF）
-- Go 1.21+
+- Go 1.26.4（CI 和可复现构建版本；`go.mod` 的 1.21 是语言兼容下限）
 - Rust（PIMELauncher）
 
 ## 代码风格
@@ -58,16 +58,17 @@
 ## 分支策略
 
 - `main`：Yime 稳定主分支和发布基线
-- `yime-stable`：Yime 集成分支；变更经验证后通过 PR 合入 `main`
+- `yime-stable`：持续维护的集成分支
+- `codex/**`：任务分支命名空间，push 时同样触发 CI
 - `upstream` remote：EasyIME/PIME 上游历史，仅用于来源追踪和选择性同步
 
 ## Pull Request 流程
 
-1. 从 `yime-stable` 创建特性分支
+1. 从适用基线创建 `codex/**` 特性分支
 2. 按 [测试与验证指南](docs/YIME_TESTING_GUIDE.md) 运行统一验证入口；Go 稳定集必须覆盖 `go vet ./...` 和 `go test ./...`
-3. 确保通过构建：`build.bat`（在 `go-backend/` 目录）
+3. 从仓库根目录运行 `build.bat` 完成 Win32/x64、Go 和 PE 门禁；仅做 Go 层迭代时可先运行 `tools\test-go.ps1`
 4. 提交 PR，标题使用 Conventional Commits 格式
-5. 等待 review 后合并
+5. 等待 `core-build` 聚合门禁和 review 通过后合并
 
 ## 重要约束
 

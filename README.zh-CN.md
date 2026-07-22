@@ -9,11 +9,11 @@
 ## 功能特性
 
 - **三种编码模式** — 变长、等长、省键，可从语言栏切换
-- **Rime 引擎驱动** — 表格式翻译器，每方案 468K+ 词条，加权频率排序
+- **Rime 引擎驱动** — 脚本翻译器，每方案 245 万+词条，支持加权排序、连续输入和整句组句
 - **候选窗** — 每页 5–9 个候选，竖排或横排，一键切换
 - **反查功能** — 候选旁显示标准拼音、音元编码或键位序列
 - **用户词库** — 用数字标调拼音添加自定义词组，自动转换为音元编码
-- **独立工具** — 设置、诊断、反查、词库管理、系统词库审查、用户屏蔽词表均以原生 Win32 可执行文件运行
+- **独立工具** — 高级布局、设置、诊断、反查、词库管理、系统词库审查、用户屏蔽词表均以原生 Win32 可执行文件运行
 - **语言栏** — 输入法列表名「音元」；切换按钮固定显示「中西 / 全半 / 横竖」，当前状态由图标表示
 
 ## 仓库结构
@@ -37,8 +37,8 @@ docs/                    开发文档
 | 分支 | 用途 |
 |------|------|
 | `main` | 稳定基线 |
-| `yime-stable` | 活跃开发（CI 目标分支） |
-| `yime-on-pime` | Windows 集成分支 |
+| `yime-stable` | 持续维护的集成分支 |
+| `codex/**` | 受 push CI 覆盖的任务分支 |
 
 编码体系、词典和实验性原型工作在独立的 `Yime-prototype` 仓库中。
 
@@ -46,8 +46,8 @@ docs/                    开发文档
 
 - [Visual Studio 2022](https://visualstudio.microsoft.com/vs/)，含 C++ 桌面开发工作负载
 - [CMake](https://cmake.org/) 3.0+
-- [Rust](https://rustup.rs/)，含 `i686-pc-windows-msvc` 目标
-- [Go](https://go.dev/) 1.21+
+- [Rust](https://rustup.rs/)，安装完整的 `stable-i686-pc-windows-msvc` 主机工具链
+- [Go](https://go.dev/) 1.26.4（CI/可复现构建版本；`go.mod` 的 1.21 是语言兼容下限）
 - [Git](https://git-scm.com/)
 
 ## 构建
@@ -130,12 +130,11 @@ regsvr32 /u "C:\Program Files (x86)\YIME\x64\PIMETextService.dll"
 ## 首次运行检查清单
 
 - [ ] 克隆仓库，初始化子模块，确认工具链已安装
-- [ ] 从仓库根目录运行 `cmd /c build.bat`
-- [ ] 若 Rime 数据有变更，运行 `tools\deploy-yime-rime-data.ps1`（参见 [docs/YIME_RIME_INTEGRATION.md](docs/YIME_RIME_INTEGRATION.md)）
-- [ ] 在管理员提示符下运行 `.\Reinstall-PIME-Test.cmd`
-- [ ] 运行 `tools\verify-installed-runtime.ps1 -RequireRunningLauncher`，确认结果为 `complete`
+- [ ] 若等长 Rime 真源词典有变更，运行 `tools\deploy-yime-rime-data.ps1 -Input <full.dict.yaml>`（参见 [docs/YIME_RIME_INTEGRATION.md](docs/YIME_RIME_INTEGRATION.md)）
+- [ ] 运行 `.\tools\dev-build-install-verify.ps1`，一次完成“构建 → 重装 → 安装态核验”闭环
+- [ ] 如需分步执行，依次运行 `cmd /c build.bat`、管理员提示符下的 `.\Reinstall-PIME-Test.cmd`，再运行 `tools\verify-installed-runtime.ps1 -RequireRunningLauncher`
 - [ ] 在文本应用中切换到音元输入法，验证：激活、候选窗、设置、反查
-- [ ] 发布后端变更前，从 `go-backend` 运行 `go test ./input_methods/yime/...`
+- [ ] 发布后端变更前运行 `.\tools\test-go.ps1`；按影响层补跑 `.\tools\test-real-rime.ps1` 和 `.\tools\test-go-race.ps1`
 
 ## 编码参考
 

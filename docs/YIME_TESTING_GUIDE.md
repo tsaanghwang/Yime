@@ -65,7 +65,7 @@ go test -race ./... -timeout 300s
 
 若受限执行环境阻止 `cgo.exe` 拉起 GCC，可能会在 `runtime/cgo` 阶段以 exit status 2 结束；应在正常开发终端复跑上述脚本。只有进入项目包编译或测试后的失败才能归因到项目代码。
 
-`IME.processKey` 与 `onCommand` 通过 `entryMu` 串行化，`TestConcurrentKeyAndCommandNoDataRace` 必须在 `-race` 下保持绿色；不得为绕开竞争而删除该测试或放宽入口锁。CI runner 缺少 C 工具链时该门禁可跳过，但不得删除现有并发压力测试。
+`IME.processKey` 与 `onCommand` 通过 `entryMu` 串行化，`TestConcurrentKeyAndCommandNoDataRace` 必须在 `-race` 下保持绿色；不得为绕开竞争而删除该测试或放宽入口锁。CI 的 `go-race-msys2` 作业安装 MSYS2 UCRT64 GCC，并且是 `core-build` 的必需依赖；缺少 C 工具链只能视为本地环境未满足前置条件，不能在 CI 中跳过该门禁。
 
 ## 4. 真实 Rime 集成测试
 

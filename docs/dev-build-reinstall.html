@@ -177,8 +177,8 @@
 
       <h3>本机开发（当前文档描述的流程）</h3>
       <ul>
-        <li>前提：已 clone 仓库、有 VS / Rust / Go / NSIS 等工具链</li>
-        <li><code>Build.cmd</code> + <code>Reinstall-PIME-Test.cmd</code></li>
+        <li>前提：已 clone 仓库并具备 VS / Rust / Go 工具链；NSIS 仅在生成分发安装包时需要</li>
+        <li>完整闭环使用 <code>tools\dev-build-install-verify.ps1</code>；需要分步排查时再分别运行根 <code>build.bat</code>、<code>Reinstall-PIME-Test.cmd</code> 和安装态核验脚本</li>
         <li>安装到固定开发路径：<code>C:\Program Files (x86)\YIME</code></li>
         <li>从 <code>build\</code>、<code>go-backend\build\</code> 等<strong>构建树直接复制</strong>，含 <strong>go-backend</strong></li>
       </ul>
@@ -199,25 +199,21 @@
 
     <section>
       <h2>日常开发（推荐）</h2>
-      <p>在仓库根目录依次执行：</p>
+      <p>在仓库根目录执行完整闭环：</p>
       <pre>Set-Location C:\dev\Yime
-.\Build.cmd
-.\Reinstall-PIME-Test.cmd</pre>
+.\tools\dev-build-install-verify.ps1</pre>
       <table>
         <thead>
           <tr><th>命令</th><th>做什么</th></tr>
         </thead>
         <tbody>
           <tr>
-            <td><code>Build.cmd</code></td>
-            <td><code>Build.ps1</code> → <code>build.bat</code>（Win32 / x64 / 可选 ARM64 C++、go-backend）→ NSIS 安装包</td>
-          </tr>
-          <tr>
-            <td><code>Reinstall-PIME-Test.cmd</code></td>
-            <td><strong>强制版</strong>开发重装：自动预检、DLL 被锁时原地升级、成功不暂停；装到 <code>C:\Program Files (x86)\YIME</code>，<strong>含 go-backend</strong></td>
+            <td><code>tools\dev-build-install-verify.ps1</code></td>
+            <td>根 <code>build.bat</code>（Win32 / x64 / 可选 ARM64、go-backend）→ 规范重装（含 DLL 锁回退）→ 构建/安装哈希、注册表和启动器进程核验</td>
           </tr>
         </tbody>
       </table>
+      <p>需要生成 NSIS 分发安装包时再运行 <code>Build.cmd</code>。只想分步定位构建、安装或核验问题时，可分别运行 <code>build.bat</code>、<code>Reinstall-PIME-Test.cmd</code> 和 <code>tools\verify-installed-runtime.ps1 -RequireRunningLauncher</code>。</p>
       <div class="note ok">
         <strong>装完后：</strong>先切到别的输入法，再切回「音元拼音」，语言栏才会刷新。
       </div>
@@ -287,9 +283,9 @@ Set-Location C:\dev\Yime
     </section>
 
     <section>
-      <h2>为什么不用 NSIS 安装包做开发重装？</h2>
-      <p>音元拼音依赖 <strong>go-backend</strong>。<code>installer\YIME-*-setup.exe</code> <strong>不会</strong>打包 go-backend。</p>
-      <p>日常开发测试只用 <code>Reinstall-PIME-Test.cmd</code>。</p>
+      <h2>为什么日常开发优先使用规范重装脚本？</h2>
+      <p>当前 NSIS 安装包已经完整包含 <strong>go-backend</strong>、Yime 数据、Rime 运行库与全部原生工具，适合发布演练和目标机安装。</p>
+      <p>本机日常迭代优先使用 <code>Reinstall-PIME-Test.cmd</code>，可直接消费构建树，并保留进程预检、DLL 锁检测和自动原位安装回退。需要把构建、重装和安装态核验串成一次闭环时，运行 <code>tools\dev-build-install-verify.ps1</code>。</p>
     </section>
 
     <section>
@@ -330,7 +326,7 @@ Set-Location C:\dev\Yime
         <li>在 <code>C:\WINDOWS\system32</code> 里跑 <code>.\Reinstall-PIME-Test.cmd</code>（必须先 <code>cd C:\dev\Yime</code>）</li>
         <li>只改根目录 <code>Reinstall-PIME-Test.cmd</code> 而不改 <code>tools\templates\</code>（下次 Build 会被覆盖）</li>
         <li>把重装脚本改回「只 uninstall + install」简化版</li>
-        <li>用 <code>installer\*.exe</code> 做开发重装（缺 go-backend）</li>
+        <li>把发布安装包当成唯一的开发重装入口，因而跳过规范重装脚本的预检、DLL 锁回退和安装态核验</li>
         <li>全量 <code>Build.cmd</code> 时又单独跑 <code>go-backend\build.bat</code>（已包含）</li>
       </ul>
     </section>

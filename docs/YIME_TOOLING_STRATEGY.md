@@ -13,6 +13,7 @@ possible:
 - reverse code lookup
 - system lexicon audit (read-only)
 - user blocklist management
+- advanced personal keyboard layout design and safe application
 - product-specific help and trial guidance
 
 The language bar should stay a lightweight dispatcher for commands that open or
@@ -58,8 +59,8 @@ The current implementation uses a manifest-driven tool hub:
   help HTML).
 - Language-bar buttons for lexicon, reverse lookup, and the hub itself launch
   the same executables directly.
-- Settings, diagnostics, lexicon manager, reverse lookup, system lexicon audit,
-  and blocklist manager are all native Win32 apps with Chinese UI.
+- Layout designer, settings, diagnostics, lexicon manager, reverse lookup,
+  system lexicon audit, and blocklist manager are all native Win32 apps with Chinese UI.
 - Lexicon-manager notices use native custom dialogs with Chinese action labels;
   operational paths no longer expose system `OK` or `Yes/No` buttons.
 
@@ -68,6 +69,7 @@ Shipped executables (under `go-backend/` in the install tree):
 | Executable | Purpose |
 |------------|---------|
 | `tool-hub.exe` | Tool catalog launcher |
+| `yime-layout-designer.exe` | Copy, test, save, and atomically apply personal layouts |
 | `settings-tool.exe` | Schema, page size, reverse-lookup display, layout |
 | `diagnostics-tool.exe` | Paths, processes, logs, issue-ready report presets |
 | `lexicon-manager.exe` | User phrase source file CRUD and apply |

@@ -21,18 +21,34 @@ go-backend/
 
 ### 1. 编译
 
+完整产品构建应从仓库根目录执行：
+
+```powershell
+cmd /c build.bat
+```
+
+根脚本会串联 Win32/x64 原生组件、Go 后端和 PE 架构门禁。仅在专注开发 Go 后端时单独执行：
+
 ```bash
 cd go-backend
 build.bat
 ```
 
-`build.bat` 会生成可直接安装的运行目录：
+`go-backend\build.bat` 会生成供根构建和安装器消费的运行目录：
 
 ```text
 build/
 ├── backends.go-backend.json
 └── go-backend/
     ├── server.exe
+    ├── tool-hub.exe
+    ├── yime-layout-designer.exe
+    ├── settings-tool.exe
+    ├── diagnostics-tool.exe
+    ├── lexicon-manager.exe
+    ├── reverse-lookup.exe
+    ├── system-lexicon-audit.exe
+    ├── blocklist-manager.exe
     └── input_methods/
 ```
 

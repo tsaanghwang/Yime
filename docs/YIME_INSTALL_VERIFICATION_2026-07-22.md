@@ -18,7 +18,7 @@
 | 启动器 | 通过 | 两个 `PIMELauncher.exe` 进程均从安装根运行 |
 | Go 后端 | 通过 | `server.exe` 从 `go-backend` 运行 |
 | 自启动 | 通过 | `HKLM\...\Run\PIMELauncher` 指向已安装启动器 |
-| 文件同步 | 通过 | 启动器、x86/x64 TSF DLL、`server.exe`、8 个原生 Go 工具、`rime.dll` 和 `rime_deployer.exe` 全部为 `match` |
+| 文件同步 | 通过 | 启动器、x86/x64 TSF DLL、`server.exe`、8 个原生 Go 子工具（连同 `server.exe` 共 9 个 Go EXE）、`rime.dll` 和 `rime_deployer.exe` 全部为 `match` |
 | TSF 待重启替换 | 通过 | 安装树中 `.new` 文件数为 0 |
 | YIME-only 布局 | 通过 | `go-backend\input_methods` 下只有 `yime` |
 | 卸载入口 | 通过 | Windows 卸载项显示 `YIME 输入法 1.4.0-dev`，指向安装根中的 `uninstall.exe`，`InstallLocation` 为 `C:\Program Files (x86)\YIME` |

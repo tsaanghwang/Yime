@@ -1,6 +1,6 @@
 # 音元输入法架构文档
 
-> 版本：2026-07-10
+> 版本：2026-07-22
 > 配套文档：[项目综合评估](YIME_PROJECT_ASSESSMENT.md) | [可用性评估](YIME_USABILITY_ASSESSMENT.md) | [开发路线图](YIME_DEVELOPMENT_ROADMAP.md)
 
 ---
@@ -31,6 +31,7 @@
 │    ├── server.exe 同目录下的工具可执行文件                 │
 │    │     ├── settings-tool.exe      设置工具              │
 │    │     ├── diagnostics-tool.exe   诊断工具              │
+│    │     ├── yime-layout-designer.exe 高级布局            │
 │    │     ├── lexicon-manager.exe    词库管理              │
 │    │     ├── reverse-lookup.exe     反查编码              │
 │    │     ├── tool-hub.exe           工具箱                │
@@ -396,6 +397,7 @@ onCommand / 语言栏按钮或设置菜单叶子命令
 
 | ID | 标签 | 动作 |
 |----|------|------|
+| advanced-layout-designer | 高级布局 | `yime-layout-designer.exe` |
 | lexicon-manager | 词库管理 | `lexicon-manager.exe` |
 | reverse-lookup-tool | 反查编码 | `reverse-lookup.exe` |
 | system-lexicon-audit | 系统词库审查 | `system-lexicon-audit.exe` |
@@ -492,9 +494,14 @@ runtime_codes_refresh.py --apply
     ├── 重建 runtime_candidates_materialized
     └── JSON 导出 → .generated/runtime_candidates.json
 
-Go 后端
+Windows handoff
     │
-    └── runtime_candidates.json → dict.yaml (Rime 词典格式)
+    ├── prepare_windows_yime_lexicon.ps1
+    ├── yime_full.dict.yaml（唯一外部词典真源）
+    ├── 四份同步拼音资产
+    └── yime_handoff_manifest.json（数量、来源差异、SHA-256）
+          │
+          └── Go importer → full / variable / shorthand + yime_lexicon_manifest.json
 ```
 
 **频率策略**：
@@ -521,7 +528,12 @@ Go 后端
 - 单字：`tier_sort_weight + modern_common_boost + reading_phrase_prior_boost + char_frequency_abs + reading_weight`
 - 词语：`phrase_frequency`（无 BCC 频率时 = 1）
 
-**项目分离现状**：`Yime-python-prototype`（数据生成）与 `Yime`（运行时）分属不同仓库，管线为手动执行。当前编码体系已固定，词典更新频率低，分离可接受。若管线成为瓶颈可考虑合并。
+**项目分离现状**：`Yime-python-prototype`（数据生成）与 `Yime`（运行时）分属不同仓库。
+跨仓库触发与 handoff 消费仍由维护者执行，但交付物已经收敛为带版本和哈希清单的原子 handoff，
+不再逐个寻找或混搭来源资产。原型交付脚本默认还会试跑 Windows 派生；Windows 端正式导入
+只接受一份等长词典，并确定性派生三套运行词典。目前尚无一条 Windows 命令自动校验清单并
+复制全部四份辅助资产，因此消费阶段仍须按维护清单核验；
+构建、安装、Rime 部署后还必须核对源码、安装目录和用户目录三层哈希。
 
 ### 3.2 共享数据目录
 
@@ -533,14 +545,14 @@ Go 后端
 | `yime_variable.schema.yaml` | Rime 方案 | 变长模式，user_dict: custom_phrase_variable |
 | `yime_full.schema.yaml` | Rime 方案 | 等长模式，user_dict: custom_phrase_full |
 | `yime_shorthand.schema.yaml` | Rime 方案 | 省键模式，user_dict: custom_phrase_shorthand |
-| `yime_full.dict.yaml` | Rime 词典 | 唯一导入的等长真源及等长运行产物，468K 条 |
-| `yime_variable.dict.yaml` | Rime 词典 | 由等长真源生成的变长运行产物，468K 条 |
-| `yime_shorthand.dict.yaml` | Rime 词典 | 由等长真源生成的省键运行产物，468K 条 |
+| `yime_full.dict.yaml` | Rime 词典 | 唯一导入的等长真源及等长运行产物，当前 2,456,797 条 |
+| `yime_variable.dict.yaml` | Rime 词典 | 由等长真源生成的变长运行产物，当前 2,456,797 条 |
+| `yime_shorthand.dict.yaml` | Rime 词典 | 由等长真源生成的省键运行产物，当前 2,456,797 条 |
 | `yime_lexicon_manifest.json` | 生成清单 | 源哈希、规则版本、条目数和三套输出哈希 |
-| `yime_pinyin_codes.tsv` | 编码映射 | 数字标调拼音→等长码，两列共 1625 行；其余模式运行时推导 |
+| `yime_pinyin_codes.tsv` | 编码映射 | 数字标调拼音→等长码，当前 1729 条；其余模式运行时推导 |
 | `yime_pua_pinyin.json` | PUA 显示映射 | 候选注释的数字标调拼音→PUA 音元序列 |
 | `fonts/YinYuan-Regular.ttf` | 候选字体 | 音元拼音模式使用的 PUA 字形 |
-| `pinyin_normalized.json` | 拼音归一化 | 数字标调→带调拼音，1729 条 |
+| `pinyin_normalized.json` | 拼音归一化 | 数字标调→带调拼音，当前审计库存 1732 条 |
 | `essay.txt` | 词频表 | 八股文 |
 | `rime.dll` | 动态库 | librime 运行时 |
 | `rime_deployer.exe` | 可执行文件 | 外部部署工具 |
@@ -583,7 +595,7 @@ Go 后端
 cmd /c build.bat
 ```
 
-产物：`build/PIMELauncher.exe`, `build/PIMETextService.dll`
+产物：`build/PIMELauncher/PIMELauncher.exe`、`build/PIMETextService/Release/PIMETextService.dll`
 
 ### 4.2 Go 后端构建
 
@@ -602,10 +614,10 @@ NSIS 安装包只包含 PIMELauncher、`backends.json`、完整 `go-backend` 包
 
 ### 4.3 CI 流水线
 
-`.github/workflows/ci.yaml`（触发分支：yime-stable）
+`.github/workflows/ci.yaml`：push 触发 `main`、`yime-stable`、`codex/**` 和 `v*` 标签；PR 触发 `main`、`yime-stable`。
 
 ```
-checkout（仅活动 `libIME2` 子模块）→ Rust test → cmake build + CTest → go build + vet + 全量测试 + race → 标签签名 → NSIS → 签名验证 → artifact
+`build-contract`、`rust-i686-host`、`native-build`、`go-tests`、`real-rime-tests`、`go-race-msys2` 并行执行 → `installer-package` 消费已验证原生产物 → `core-build` 聚合全部结果
 ```
 
 关键步骤：
@@ -632,7 +644,7 @@ go test ./input_methods/yime -timeout 60s
 go test ./input_methods/yime -run 'Test(NativeBackendKeepsRimeOwnedCandidatePaging|LanguageBarToggleButtonsUseStableTwoCharacterLabels|DeployCommandQueuesConfirmedExternalBuildWithoutNativeRedeploy|ApplyUserLexiconWritesAllThreeModes|ApplyUserLexiconRunsExternalBuildAndSchedulesReload)$'
 ```
 
-CI 将稳定回归集、CTest、Rust、race、真实 Rime 和安装器拆为独立作业。定向回归在执行前必须逐项校验测试名，避免重命名后 `go test -run` 因仍有其它匹配项而静默少跑。真实 Rime 作业通过 `tools/test-real-rime.ps1` 显式设置 `YIME_RUN_REAL_RIME_TESTS=1`，仍与普通单元测试隔离，避免共享 librime 全局状态。
+分支保护应要求聚合作业 `core-build`，而不是已不存在的旧 `build` 作业。CI 将稳定回归集、CTest、Rust、race、真实 Rime 和安装器拆为独立作业。定向回归在执行前必须逐项校验测试名，避免重命名后 `go test -run` 因仍有其它匹配项而静默少跑。真实 Rime 作业通过 `tools/test-real-rime.ps1` 显式设置 `YIME_RUN_REAL_RIME_TESTS=1`，仍与普通单元测试隔离，避免共享 librime 全局状态。
 
 关键守卫测试：
 
