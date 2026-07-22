@@ -104,12 +104,12 @@ onKeyDown(VK_RETURN) during composition
           │
           └── 新行为: pendingRawCommit = compositionString
                       handled=true
-                      下次 onKeyUp 时 commit pendingRawCommit
+                      随后的 onKey 响应阶段 commit pendingRawCommit
 ```
 
 **设计要点**：
 - `pendingRawCommit string` 字段存储待上屏的原始编码
-- 在 `onKeyUp` 中检查并提交，避免在 key-down 回调中触发二次提交
+- `filterKeyDown` 只记录待提交内容；同一次请求随后进入 `onKey` 时检查并提交，避免在过滤阶段直接构造两次响应
 - 非组字状态下回车正常穿透（`handled=false`）
 
 ### 2.3 组字状态保存与重放
@@ -514,7 +514,7 @@ Go 后端
 | kHanyuPinlu | 4 | 汉语拼音频率 |
 | kXHC1983 | 3 | 《现代汉语词典》1983版 |
 | kHanyuPinyin | 2 | 汉语拼音 |
-| kMandarin | 1 | Mandarin 读音（含台版/方言遗留如 bong4/wong4） |
+| kMandarin | 1 | Mandarin 读音；已在运行时拼音资产中清理不受支持的非标准音节 |
 
 **sort_weight 计算公式**：
 
@@ -721,7 +721,9 @@ go-backend\run_admin_yime_tests.cmd
 
 候选窗通过扩展协议 `setSelLabels` 显示 `⇧1`…`⇧9`，避免旧的裸数字标签误导用户直接按 Base 数字键。`setSelKeys` 仍作为旧宿主的兼容字段，实际选词由 Yime 的 Shift+数字按键处理完成。物理键盘 Shift 层对应的键面为 `! @ # $ % ^ & * (`；帮助和布局图应标明这些键面，但不宜直接把标点作为候选窗序号，因为连续标点的可读性和序号感较差。
 
-与流行拼音输入法不同，Yime 不采用裸数字键选词：Base 数字键始终是音元编码的一部分，候选窗出现时也不改变含义。项目不规划“数字键在编码和选词之间切换”的可配置模式，以避免编码被候选状态截断；需要按序号选词时统一使用 Shift+1…Shift+9。
+与流行拼音输入法不同，Yime 不采用裸数字键选词：Base 层 `0`—`9` 十个数字键始终是音元编码的一部分，候选窗出现时也不改变含义。项目不规划“数字键在编码和选词之间切换”的可配置模式，以避免编码被候选状态截断；需要按序号选词时统一使用 Shift+1…Shift+9，Shift+0 不选词。
+
+候选窗可见时，四方向键和 Enter 由 PIME C++ 客户端先行处理，不进入普通 Go `onKeyDown` 分支。`CandidateWindow::filterKeyEvent` 用方向键维护 `currentSel`，Enter/Space 设置选择结果；`PIMEClient::onKeyDown` 随后读取 `currentSel` 并通过 `selectCandidate(index)` 通知 Go 后端。因此方向键移动后的 Enter 确认按当前高亮索引生效，与 Go 层用于直接首选的 Enter 路径不冲突。
 
 ### 6.3 alphabet 字符集
 

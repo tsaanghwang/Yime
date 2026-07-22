@@ -162,7 +162,7 @@ regsvr32 /u "C:\Program Files (x86)\YIME\x64\PIMETextService.dll"
 | Shift+1 | `!` | `⇧1` | 1st candidate |
 | Shift+2…Shift+9 | `@ # $ % ^ & * (` | `⇧2`…`⇧9` | 2nd…9th candidates |
 
-The candidate window does not use punctuation keycaps as ordinal labels because they scan poorly. Unlike mainstream Pinyin IMEs, Yime deliberately does not use bare digits for candidate selection: `1`…`9` always remain composition input, even while candidates are visible. Ordinal selection consistently uses Shift+digit.
+The candidate window does not use punctuation keycaps as ordinal labels because they scan poorly. Unlike mainstream Pinyin IMEs, Yime deliberately does not use bare digits for candidate selection: all ten Base-layer digits, `0`…`9`, always remain composition input even while candidates are visible. Ordinal selection uses Shift+1…Shift+9; Shift+0 does not select a candidate.
 
 ## Debugging
 
