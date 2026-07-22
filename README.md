@@ -84,6 +84,12 @@ configuration.
 cmd /c build.bat
 ```
 
+`build.bat` now verifies the pinned i686 host toolchain before configuring and
+uses `rustup run stable-i686-pc-windows-msvc` for the launcher build. On Windows
+machines with an enabled WinINET proxy, the build wrapper copies that proxy into
+`HTTP_PROXY`/`HTTPS_PROXY` for git and CMake FetchContent without changing the
+global git configuration.
+
 ### Build the Go backend
 
 ```powershell
@@ -156,13 +162,13 @@ regsvr32 /u "C:\Program Files (x86)\YIME\x64\PIMETextService.dll"
 
 ### Candidate selection keys
 
-| Key | Selects |
-|-----|---------|
-| Space | 1st candidate |
-| `` ` `` | 2nd candidate |
-| `-` | 3rd candidate |
-| `=` | 4th candidate |
-| `\` | 5th candidate |
+| Key | Physical keycap | Candidate label | Selects |
+|-----|-----------------|-----------------|---------|
+| Space / Enter | Space / Enter | — | 1st candidate |
+| Shift+1 | `!` | `⇧1` | 1st candidate |
+| Shift+2…Shift+9 | `@ # $ % ^ & * (` | `⇧2`…`⇧9` | 2nd…9th candidates |
+
+The candidate window does not use punctuation keycaps as ordinal labels because they scan poorly. Unlike mainstream Pinyin IMEs, Yime deliberately does not use bare digits for candidate selection: all ten Base-layer digits, `0`…`9`, always remain composition input even while candidates are visible. Ordinal selection uses Shift+1…Shift+9; Shift+0 does not select a candidate.
 
 ## Debugging
 

@@ -17,6 +17,7 @@ func TestReleasePipelineSignsPayloadInstallerAndUninstaller(t *testing.T) {
 	}
 	root := filepath.Clean(filepath.Join("..", "..", "..", ".."))
 	ci := read(filepath.Join(root, ".github", "workflows", "ci.yaml"))
+	goTestScript := read(filepath.Join(root, "tools", "test-go.ps1"))
 	rootBuildScript := read(filepath.Join(root, "build.bat"))
 	buildScript := read(filepath.Join(root, "go-backend", "build.bat"))
 	installer := read(filepath.Join(root, "installer", "installer.nsi"))
@@ -34,16 +35,23 @@ func TestReleasePipelineSignsPayloadInstallerAndUninstaller(t *testing.T) {
 	for _, fragment := range []string{
 		"actions/setup-go@v6",
 		"go-version: '1.26.4'",
+		`.\tools\test-go.ps1`,
+	} {
+		if !strings.Contains(ci, fragment) {
+			t.Fatalf("CI Go-test entry point is missing %q", fragment)
+		}
+	}
+	for _, fragment := range []string{
 		"$requiredYimeTests = @(",
 		"TestDeployCommandQueuesConfirmedExternalBuildWithoutNativeRedeploy",
 		"go test ./input_methods/yime -list '^Test'",
 		"$listedYimeTests -notcontains $testName",
 	} {
-		if !strings.Contains(ci, fragment) {
-			t.Fatalf("CI required-test guard is missing %q", fragment)
+		if !strings.Contains(goTestScript, fragment) {
+			t.Fatalf("Go required-test guard is missing %q", fragment)
 		}
 	}
-	if strings.Contains(ci, "TestDeployCommandRedeploysCurrentSchema") {
+	if strings.Contains(ci, "TestDeployCommandRedeploysCurrentSchema") || strings.Contains(goTestScript, "TestDeployCommandRedeploysCurrentSchema") {
 		t.Fatal("CI must not retain the removed synchronous native-redeploy test name")
 	}
 	for _, fragment := range []string{"!finalize", "!uninstfinalize", "sign-file.ps1"} {
@@ -64,6 +72,7 @@ func TestReleasePipelineSignsPayloadInstallerAndUninstaller(t *testing.T) {
 		`File "..\LICENSES\PIME-UPSTREAM-LICENSE.txt"`,
 		`File "..\LICENSES\RIME-FROST-GPL-3.0.txt"`,
 		`File "..\LICENSES\RUST-DEPENDENCIES.md"`,
+		`WriteRegStr HKLM "${PRODUCT_UNINST_KEY}" "InstallLocation" "$INSTDIR"`,
 		`RMDir /REBOOTOK /r "$INSTDIR\licenses"`,
 		`RMDir "$INSTDIR\go-backend\input_methods\fcitx5"`,
 		`RMDir "$INSTDIR\go-backend\input_methods\meow"`,
@@ -104,10 +113,13 @@ func TestReleasePipelineSignsPayloadInstallerAndUninstaller(t *testing.T) {
 			t.Fatalf("developer uninstall must remove stale uninstall registration %q", fragment)
 		}
 	}
-	for _, fragment := range []string{"PIMELauncher.exe", "PIMETextService.dll", "rime_deployer.exe", "rime.dll"} {
+	for _, fragment := range []string{"PIMELauncher.exe", "PIMETextService.dll", "rime_deployer.exe", "rime_dict_manager.exe", "rime.dll"} {
 		if !strings.Contains(signer, fragment) {
 			t.Fatalf("release payload signer is missing %q", fragment)
 		}
+	}
+	if !strings.Contains(signer, "yime-layout-designer.exe") {
+		t.Fatal("release payload signer is missing yime-layout-designer.exe")
 	}
 	if !strings.Contains(verifier, "Get-AuthenticodeSignature") || !strings.Contains(verifier, "Valid") {
 		t.Fatal("release signature verifier must reject non-valid signatures")
@@ -117,11 +129,11 @@ func TestReleasePipelineSignsPayloadInstallerAndUninstaller(t *testing.T) {
 			t.Fatalf("release signature verifier is missing %q", fragment)
 		}
 	}
-	if count := strings.Count(buildScript, "--icon input_methods\\yime\\icon.ico"); count != 8 {
-		t.Fatalf("expected all 8 Go executables to embed the Yime icon, got %d", count)
+	if count := strings.Count(buildScript, "--icon input_methods\\yime\\icon.ico"); count != 9 {
+		t.Fatalf("expected all 9 Go executables to embed the Yime icon, got %d", count)
 	}
-	if count := strings.Count(buildScript, `--copyright "Copyright (C) 2026 Yime contributors"`); count != 8 {
-		t.Fatalf("expected all 8 Go executables to embed Yime copyright metadata, got %d", count)
+	if count := strings.Count(buildScript, `--copyright "Copyright (C) 2026 Yime contributors"`); count != 9 {
+		t.Fatalf("expected all 9 Go executables to embed Yime copyright metadata, got %d", count)
 	}
 	for _, fragment := range []string{
 		`set "WIN32_CMAKE_PLATFORM=-A Win32"`,

@@ -78,10 +78,12 @@ const (
 	maxCandidatePageSize       = 9
 	horizontalCandidatesPerRow = 10
 	verticalCandidatesPerRow   = 1
-	yimeCandidateSelectKeys    = "1234567890"
+	yimeCandidateSelectKeys    = "123456789"
 	userLexiconSourceFileName  = "yime_user_phrases.txt"
 	defaultUserLexiconWeight   = "1000000"
 )
+
+var yimeCandidateSelectLabels = []string{"⇧1", "⇧2", "⇧3", "⇧4", "⇧5", "⇧6", "⇧7", "⇧8", "⇧9"}
 
 var yimeModes = []string{"variable", "full", "shorthand"}
 
@@ -141,7 +143,7 @@ type backendUserDataSyncer interface {
 }
 
 var runRimeExternalBuild = runRimeExternalBuildDefault
-var refreshRimeSchemasOnInit = userlexicon.RefreshRimeSchemas
+var refreshRimeSchemasOnInit = userlexicon.RefreshRimeData
 var createRimeBackend = newNativeBackend
 var confirmRimeRedeployAction = requestRimeRedeployConfirmation
 var confirmRimeSyncAction = requestRimeSyncConfirmation
@@ -175,6 +177,7 @@ type IME struct {
 	yimePUALoaded            bool
 	pendingCandidateFont     bool
 	candidatePageSize        int
+	pendingCandidatePageSize int
 	pendingSchemaRedeploy    string
 	runtimeChangeRevision    int64
 	settingsChangeRevision   int64
@@ -276,6 +279,11 @@ func (ime *IME) onActivate(req *pime.Request, resp *pime.Response) *pime.Respons
 
 func (ime *IME) onDeactivate(req *pime.Request, resp *pime.Response) *pime.Response {
 	log.Println("RIME 输入法已失活")
+	// Focus/profile transitions do not guarantee that every key-down is paired
+	// with a key-up.  Do not carry stale suppression or a deferred raw commit
+	// into the next activation.
+	clear(ime.keysDown)
+	ime.pendingRawCommit = ""
 	ime.destroySession(resp)
 	ime.removeButtons(resp)
 	resp.ReturnValue = 1
@@ -660,10 +668,10 @@ func (ime *IME) Init(req *pime.Request) bool {
 	userDir := filepath.Join(appData, APP, "Rime")
 	schemasChanged, err := refreshRimeSchemasOnInit(sharedDir, userDir)
 	if err != nil {
-		log.Printf("刷新 Rime 用户目录方案失败: %v", err)
+		log.Printf("刷新 Rime 用户目录运行数据失败: %v", err)
 		schemasChanged = false
 	} else if schemasChanged {
-		log.Println("检测到安装方案更新，已刷新用户目录并请求 Rime 完整部署")
+		log.Println("检测到安装方案或系统词典更新，已刷新用户目录并请求 Rime 完整部署")
 	}
 	if event, err := runtimechange.Read(userDir); err == nil {
 		ime.recordRuntimeChange(event)
@@ -818,31 +826,21 @@ func (ime *IME) shouldPassThroughModifierOnKey(req *pime.Request, filterHandled 
 
 func candidateSelectionIndex(req *pime.Request) (int, bool) {
 	switch req.KeyCode {
-	case vkSpace:
+	case vkSpace, vkReturn:
 		return 0, true
-	case 0xC0: // VK_OEM_3: `
-		return 1, true
-	case 0xBD: // VK_OEM_MINUS: -
-		return 2, true
-	case 0xBB: // VK_OEM_PLUS: =
-		return 3, true
-	case 0xDC: // VK_OEM_5: backslash
-		return 4, true
 	}
-	switch req.CharCode {
-	case ' ':
+	if req.CharCode == ' ' || req.CharCode == '\r' {
 		return 0, true
-	case '`':
-		return 1, true
-	case '-':
-		return 2, true
-	case '=':
-		return 3, true
-	case '\\':
-		return 4, true
-	default:
+	}
+	if !req.KeyStates.IsKeyDown(vkShift) ||
+		req.KeyStates.IsKeyDown(vkControl) ||
+		req.KeyStates.IsKeyDown(vkMenu) {
 		return 0, false
 	}
+	if req.KeyCode >= '1' && req.KeyCode <= '9' {
+		return req.KeyCode - '1', true
+	}
+	return 0, false
 }
 
 func isCandidatePageKey(req *pime.Request) bool {
@@ -938,7 +936,7 @@ func (ime *IME) onKey(req *pime.Request, resp *pime.Response) bool {
 
 func (ime *IME) applyStateToResponse(resp *pime.Response, state rimeState) {
 	if state.PageSize >= minCandidatePageSize && state.PageSize <= maxCandidatePageSize {
-		ime.candidatePageSize = state.PageSize
+		ime.confirmCandidatePageSize(state.PageSize)
 	}
 	if state.CommitString != "" {
 		resp.CommitString = state.CommitString
@@ -964,6 +962,10 @@ func (ime *IME) applyStateToResponse(resp *pime.Response, state rimeState) {
 	resp.SelEnd = state.SelEnd
 
 	if len(state.Candidates) > 0 {
+		// Base-layer digits are composition keys. Give the host explicit
+		// multi-character labels so a bare 1..9 never suggests that typing a
+		// digit directly will select a candidate.
+		resp.SetSelLabels = append([]string(nil), yimeCandidateSelectLabels...)
 		displayCandidates := ime.reverseLookupDisplayCandidates(state.Candidates)
 		filtered, indexMap := filterBlockedCandidates(displayCandidates, ime.blockedCandidateSet())
 		ime.candidateBackendIndexMap = indexMap
@@ -978,6 +980,30 @@ func (ime *IME) applyStateToResponse(resp *pime.Response, state rimeState) {
 		resp.ShowCandidates = false
 	}
 	ime.keyComposing = true
+}
+
+// confirmCandidatePageSize completes the readback chain only after librime
+// exposes a real menu. A freshly recreated session has no menu and reports
+// PageSize=0 until candidates exist; that is "not available", not a successful
+// confirmation. Keep the requested value pending across that gap so the first
+// candidate window cannot silently revert to Rime's old page size.
+func (ime *IME) confirmCandidatePageSize(actual int) {
+	requested := ime.pendingCandidatePageSize
+	ime.candidatePageSize = actual
+	if requested == 0 {
+		return
+	}
+	ime.pendingCandidatePageSize = 0
+	if actual == requested {
+		log.Printf("candidate page size confirmed by Rime: %d", actual)
+		return
+	}
+	log.Printf("candidate page size confirmation failed: requested=%d actual=%d", requested, actual)
+	ime.showUserMessage(
+		"候选项数未生效",
+		fmt.Sprintf("Rime 实际候选项数为 %d，与请求的 %d 不一致。\n已按 Rime 实际值同步；请执行“重新部署”后重试。", actual, requested),
+		"Warning",
+	)
 }
 
 func (ime *IME) normalizedCandidatePageSize() int {
@@ -1352,9 +1378,23 @@ func (ime *IME) reverseLookupDisplayCandidates(candidates []candidateItem) []can
 			display[i].Comment = ime.lookupYimePinyin(display[i].Text, display[i].Comment)
 		}
 		return display
+	case "key_sequence":
+		fallthrough
 	default:
-		return candidates
+		display := append([]candidateItem(nil), candidates...)
+		codeLookup := ime.yimePinyinLookup()
+		for i := range display {
+			display[i].Comment = normalizeDisplayCode(display[i].Comment)
+			if display[i].Comment == "" {
+				display[i].Comment = normalizeDisplayCode(codeLookup[strings.TrimSpace(display[i].Text)])
+			}
+		}
+		return display
 	}
+}
+
+func normalizeDisplayCode(code string) string {
+	return strings.ReplaceAll(strings.TrimSpace(code), " ", "")
 }
 
 func (ime *IME) lookupStandardPinyin(text string) string {
@@ -1465,6 +1505,7 @@ func (ime *IME) lookupYimePinyin(text, candidateCode string) string {
 }
 
 func yimeCodeToPUA(code string, reverseLookup, puaLookup map[string]string) (string, bool) {
+	code = normalizeDisplayCode(code)
 	if code == "" {
 		return "", false
 	}
@@ -1959,6 +2000,18 @@ func (ime *IME) loadPinyinCodeMap() (map[string]pinyinCodeRecord, error) {
 			continue
 		}
 		key := normalizeNumericTonePinyin(fields[0])
+		if len(fields) >= 4 {
+			record := pinyinCodeRecord{Full: strings.TrimSpace(fields[1]), Variable: strings.TrimSpace(fields[2]), Shorthand: strings.TrimSpace(fields[3])}
+			if record.Full == "" || record.Variable == "" || record.Shorthand == "" || len([]rune(record.Full))%codemode.SyllableCodeLength != 0 {
+				return nil, fmt.Errorf("拼音编码表中的显式三模式编码无效：%s", fields[0])
+			}
+			records[key] = record
+			if strings.Contains(key, "眉") {
+				records[strings.ReplaceAll(key, "眉", "v")] = record
+				records[strings.ReplaceAll(key, "眉", "u:")] = record
+			}
+			continue
+		}
 		derived, err := codemode.BuildRecord(fields[1])
 		if err != nil {
 			return nil, fmt.Errorf("拼音编码表中的等长码无效（%s）: %w", fields[0], err)
@@ -2080,7 +2133,10 @@ func loadYimeCodeLookup(path string) map[string]string {
 			continue
 		}
 		text := strings.TrimSpace(fields[0])
-		code := strings.TrimSpace(fields[1])
+		// script_translator dictionaries contain syntax-only spaces between
+		// syllables. Candidate annotations show the uninterrupted keystrokes the
+		// user actually types.
+		code := normalizeDisplayCode(fields[1])
 		if text == "" || code == "" {
 			continue
 		}
@@ -2255,6 +2311,7 @@ func (ime *IME) setCandidatePageSize(size int) error {
 		return err
 	}
 	ime.candidatePageSize = size
+	ime.pendingCandidatePageSize = size
 	ime.candidatePageStart = 0
 	if !deployDefaultCustomConfig(configPath) {
 		log.Printf("部署默认候选数量配置失败，继续更新当前方案: %s", configPath)
@@ -2283,10 +2340,8 @@ func (ime *IME) setCandidatePageSize(size int) error {
 		}
 		ime.pendingSchemaRedeploy = schemaID
 		ime.reloadBackendSessionForSchema(schemaID)
-		if newState := ime.backend.State(); newState.PageSize >= minCandidatePageSize && newState.PageSize <= maxCandidatePageSize && newState.PageSize == size {
-			ime.candidatePageSize = newState.PageSize
-		} else if newState.PageSize >= minCandidatePageSize && newState.PageSize <= maxCandidatePageSize {
-			log.Printf("candidate page size reload mismatch: requested=%d actual=%d; preserving requested size until a fresh Rime state arrives", size, newState.PageSize)
+		if newState := ime.backend.State(); newState.PageSize >= minCandidatePageSize && newState.PageSize <= maxCandidatePageSize {
+			ime.confirmCandidatePageSize(newState.PageSize)
 		}
 	}
 	return nil

@@ -19,6 +19,7 @@ set "SYSTEM_LEXICON_AUDIT_EXE=%PACKAGE_DIR%\system-lexicon-audit.exe"
 set "BLOCKLIST_MANAGER_EXE=%PACKAGE_DIR%\blocklist-manager.exe"
 set "SETTINGS_TOOL_EXE=%PACKAGE_DIR%\settings-tool.exe"
 set "DIAGNOSTICS_TOOL_EXE=%PACKAGE_DIR%\diagnostics-tool.exe"
+set "LAYOUT_DESIGNER_EXE=%PACKAGE_DIR%\yime-layout-designer.exe"
 set "BACKEND_SNIPPET=%BUILD_ROOT%\backends.go-backend.json"
 set "RIME_DIR=%ROOT_DIR%\input_methods\yime"
 set "RIME_DATA_DIR=%RIME_DIR%\data"
@@ -277,6 +278,24 @@ if exist cmd\diagnostics-tool\rsrc_diagnostics_windows_amd64.syso del cmd\diagno
 
 echo [INFO] Built: "%DIAGNOSTICS_TOOL_EXE%"
 
+echo [INFO] Generating Windows VERSIONINFO resources for yime-layout-designer ...
+"%GO_WINRES%" simply --arch amd64 --product-version "%APP_VERSION%" --file-version "%APP_VERSION%" --product-name "YIME" --copyright "Copyright (C) 2026 Yime contributors" --file-description "Yime Layout Designer" --original-filename "yime-layout-designer.exe" --icon input_methods\yime\icon.ico --manifest gui --out cmd\yime-layout-designer\rsrc_layout_designer
+if errorlevel 1 (
+    echo [WARN] go-winres failed for yime-layout-designer.exe, building without VERSIONINFO
+    if exist cmd\yime-layout-designer\rsrc_layout_designer_windows_amd64.syso del cmd\yime-layout-designer\rsrc_layout_designer_windows_amd64.syso
+)
+
+echo [INFO] Building yime-layout-designer.exe (graphical and console maintenance tool) ...
+go build %GO_REPRO_FLAGS% -ldflags "-s -w -X main.version=%APP_VERSION%" -o "%LAYOUT_DESIGNER_EXE%" .\cmd\yime-layout-designer
+if errorlevel 1 (
+    echo [ERROR] Failed to build yime-layout-designer.exe
+    if exist cmd\yime-layout-designer\rsrc_layout_designer_windows_amd64.syso del cmd\yime-layout-designer\rsrc_layout_designer_windows_amd64.syso
+    popd
+    exit /b 1
+)
+if exist cmd\yime-layout-designer\rsrc_layout_designer_windows_amd64.syso del cmd\yime-layout-designer\rsrc_layout_designer_windows_amd64.syso
+echo [INFO] Built: "%LAYOUT_DESIGNER_EXE%"
+
 call :sign_go_binaries
 if errorlevel 1 (
     popd
@@ -380,6 +399,14 @@ if exist "%RIME_DIR%\rime_deployer.exe" (
 if not exist "%PACKAGE_DIR%\input_methods\yime\rime_deployer.exe" if exist "%LIBRIME_BUILD_DIR%\rime_deployer.exe" (
     copy /Y "%LIBRIME_BUILD_DIR%\rime_deployer.exe" "%PACKAGE_DIR%\input_methods\yime\rime_deployer.exe" >nul
     echo [INFO] Copied rime_deployer.exe from librime build output into package output
+)
+if exist "%RIME_DIR%\rime_dict_manager.exe" (
+    copy /Y "%RIME_DIR%\rime_dict_manager.exe" "%PACKAGE_DIR%\input_methods\yime\rime_dict_manager.exe" >nul
+    echo [INFO] Copied rime_dict_manager.exe into package output
+)
+if not exist "%PACKAGE_DIR%\input_methods\yime\rime_dict_manager.exe" if exist "%LIBRIME_BUILD_DIR%\rime_dict_manager.exe" (
+    copy /Y "%LIBRIME_BUILD_DIR%\rime_dict_manager.exe" "%PACKAGE_DIR%\input_methods\yime\rime_dict_manager.exe" >nul
+    echo [INFO] Copied rime_dict_manager.exe from librime build output into package output
 )
 
 echo.
@@ -514,6 +541,7 @@ for %%F in (
     "%BLOCKLIST_MANAGER_EXE%"
     "%SETTINGS_TOOL_EXE%"
     "%DIAGNOSTICS_TOOL_EXE%"
+    "%LAYOUT_DESIGNER_EXE%"
 ) do (
     echo [INFO] Signing %%~nxF ...
     "%YIME_SIGNTOOL_EXE%" sign /sha1 "%YIME_SIGN_CERT_SHA1%" /fd SHA256 /tr "%YIME_TIMESTAMP_URL%" /td SHA256 "%%~fF"

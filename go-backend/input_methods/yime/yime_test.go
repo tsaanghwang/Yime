@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"reflect"
 	"strconv"
 	"strings"
 	"sync"
@@ -671,7 +672,43 @@ func TestOnKeyDownNumberExtendsComposition(t *testing.T) {
 	}
 }
 
-func TestOnKeyDownBacktickSelectsSecondCandidate(t *testing.T) {
+func TestCandidateSelectionUsesDefaultKeysAndShiftDigits(t *testing.T) {
+	tests := []struct {
+		name  string
+		req   *pime.Request
+		index int
+		ok    bool
+	}{
+		{"space selects first", &pime.Request{KeyCode: vkSpace, CharCode: ' '}, 0, true},
+		{"enter selects first", &pime.Request{KeyCode: vkReturn, CharCode: '\r'}, 0, true},
+		{"shift 1 selects first", &pime.Request{KeyCode: '1', CharCode: '!', KeyStates: keyStatesDown(vkShift)}, 0, true},
+		{"shift 9 selects ninth", &pime.Request{KeyCode: '9', CharCode: '(', KeyStates: keyStatesDown(vkShift)}, 8, true},
+		{"plain number remains code", &pime.Request{KeyCode: '2', CharCode: '2'}, 0, false},
+		{"minus remains code", &pime.Request{KeyCode: 0xBD, CharCode: '-'}, 0, false},
+		{"equals remains code", &pime.Request{KeyCode: 0xBB, CharCode: '='}, 0, false},
+		{"backslash remains code", &pime.Request{KeyCode: 0xDC, CharCode: '\\'}, 0, false},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			index, ok := candidateSelectionIndex(test.req)
+			if index != test.index || ok != test.ok {
+				t.Fatalf("candidateSelectionIndex() = (%d, %t), want (%d, %t)", index, ok, test.index, test.ok)
+			}
+		})
+	}
+}
+
+func TestAllBareDigitsRemainCompositionKeys(t *testing.T) {
+	for key := '0'; key <= '9'; key++ {
+		index, selected := candidateSelectionIndex(&pime.Request{KeyCode: int(key), CharCode: int(key)})
+		if selected {
+			t.Fatalf("bare digit %q unexpectedly selects candidate %d", key, index)
+		}
+	}
+}
+
+func TestOnKeyDownShift2SelectsSecondCandidate(t *testing.T) {
 	ime := newTestIME()
 	backend := ime.backend.(*testBackend)
 	backend.composition = "ni"
@@ -679,18 +716,20 @@ func TestOnKeyDownBacktickSelectsSecondCandidate(t *testing.T) {
 	ime.keyComposing = true
 
 	filterResp := ime.filterKeyDown(&pime.Request{
-		SeqNum:   4,
-		KeyCode:  0xC0,
-		CharCode: '`',
+		SeqNum:    4,
+		KeyCode:   '2',
+		CharCode:  '@',
+		KeyStates: keyStatesDown(vkShift),
 	}, pime.NewResponse(4, true))
 	if filterResp.ReturnValue != 1 {
 		t.Fatalf("expected backtick selection to be handled, got %d", filterResp.ReturnValue)
 	}
 
 	resp := ime.onKeyDown(&pime.Request{
-		SeqNum:   5,
-		KeyCode:  0xC0,
-		CharCode: '`',
+		SeqNum:    5,
+		KeyCode:   '2',
+		CharCode:  '@',
+		KeyStates: keyStatesDown(vkShift),
 	}, pime.NewResponse(5, true))
 
 	if resp.ReturnValue != 1 {
@@ -704,7 +743,7 @@ func TestOnKeyDownBacktickSelectsSecondCandidate(t *testing.T) {
 	}
 }
 
-func TestOnKeyDownMinusSelectsThirdCandidate(t *testing.T) {
+func TestOnKeyDownShift3SelectsThirdCandidate(t *testing.T) {
 	ime := newTestIME()
 	backend := ime.backend.(*testBackend)
 	backend.composition = "ni"
@@ -712,18 +751,20 @@ func TestOnKeyDownMinusSelectsThirdCandidate(t *testing.T) {
 	ime.keyComposing = true
 
 	filterResp := ime.filterKeyDown(&pime.Request{
-		SeqNum:   4,
-		KeyCode:  0xBD,
-		CharCode: '-',
+		SeqNum:    4,
+		KeyCode:   '3',
+		CharCode:  '#',
+		KeyStates: keyStatesDown(vkShift),
 	}, pime.NewResponse(4, true))
 	if filterResp.ReturnValue != 1 {
 		t.Fatalf("expected minus selection to be handled, got %d", filterResp.ReturnValue)
 	}
 
 	resp := ime.onKeyDown(&pime.Request{
-		SeqNum:   5,
-		KeyCode:  0xBD,
-		CharCode: '-',
+		SeqNum:    5,
+		KeyCode:   '3',
+		CharCode:  '#',
+		KeyStates: keyStatesDown(vkShift),
 	}, pime.NewResponse(5, true))
 
 	if resp.ReturnValue != 1 {
@@ -1051,7 +1092,33 @@ func TestSetCandidatePageSizePreservesComposition(t *testing.T) {
 	}
 }
 
-func TestReturnKeyCommitsRawInputDuringComposition(t *testing.T) {
+func TestCandidatePageSizeWaitsForRealRimeMenuBeforeConfirmation(t *testing.T) {
+	ime := newTestIME()
+	ime.candidatePageSize = 7
+	ime.pendingCandidatePageSize = 7
+
+	ime.applyStateToResponse(pime.NewResponse(1, true), rimeState{})
+	if ime.pendingCandidatePageSize != 7 || ime.candidatePageSize != 7 {
+		t.Fatalf("page_size=0 must remain pending, pending=%d current=%d", ime.pendingCandidatePageSize, ime.candidatePageSize)
+	}
+
+	ime.applyStateToResponse(pime.NewResponse(2, true), rimeState{PageSize: 7})
+	if ime.pendingCandidatePageSize != 0 || ime.candidatePageSize != 7 {
+		t.Fatalf("valid Rime page size must confirm the request, pending=%d current=%d", ime.pendingCandidatePageSize, ime.candidatePageSize)
+	}
+}
+
+func TestCandidatePageSizeMismatchSynchronizesToRimeInsteadOfSilentlyReverting(t *testing.T) {
+	ime := newTestIME()
+	ime.candidatePageSize = 7
+	ime.pendingCandidatePageSize = 7
+	ime.confirmCandidatePageSize(5)
+	if ime.pendingCandidatePageSize != 0 || ime.candidatePageSize != 5 {
+		t.Fatalf("Rime mismatch must be completed explicitly, pending=%d current=%d", ime.pendingCandidatePageSize, ime.candidatePageSize)
+	}
+}
+
+func TestReturnKeySelectsFirstCandidateDuringComposition(t *testing.T) {
 	ime := newTestIME()
 	backend := ime.backend.(*testBackend)
 	backend.composition = "ni"
@@ -1076,11 +1143,11 @@ func TestReturnKeyCommitsRawInputDuringComposition(t *testing.T) {
 	if resp.ReturnValue != 1 {
 		t.Fatalf("expected onKeyDown to succeed, got %d", resp.ReturnValue)
 	}
-	if resp.CommitString != "ni" {
-		t.Fatalf("expected raw composition 'ni' committed, got %q", resp.CommitString)
+	if resp.CommitString != "你" {
+		t.Fatalf("expected first candidate 你 committed, got %q", resp.CommitString)
 	}
 	if ime.keyComposing {
-		t.Fatal("expected keyComposing to be false after return commits raw input")
+		t.Fatal("expected keyComposing to be false after return selects the first candidate")
 	}
 }
 
@@ -2064,8 +2131,12 @@ func TestCandidatePageSizeLimitsVisibleCandidates(t *testing.T) {
 
 	ime.applyStateToResponse(resp, state)
 
-	if resp.SetSelKeys != "1234567890" {
-		t.Fatalf("expected numeric candidate labels, got %q", resp.SetSelKeys)
+	if resp.SetSelKeys != "123456789" {
+		t.Fatalf("expected backward-compatible candidate selection keys, got %q", resp.SetSelKeys)
+	}
+	wantLabels := []string{"⇧1", "⇧2", "⇧3", "⇧4", "⇧5", "⇧6", "⇧7", "⇧8", "⇧9"}
+	if !reflect.DeepEqual(resp.SetSelLabels, wantLabels) {
+		t.Fatalf("expected Shift-aware candidate labels %q, got %q", wantLabels, resp.SetSelLabels)
 	}
 	if len(resp.CandidateList) != 5 {
 		t.Fatalf("expected 5 visible candidates, got %#v", resp.CandidateList)
@@ -2135,17 +2206,19 @@ func TestOutOfRangeCandidateShortcutIsConsumedOnShortPage(t *testing.T) {
 	}
 
 	filterResp := ime.filterKeyDown(&pime.Request{
-		SeqNum:   23,
-		KeyCode:  0xDC,
-		CharCode: '\\',
+		SeqNum:    23,
+		KeyCode:   '9',
+		CharCode:  '(',
+		KeyStates: keyStatesDown(vkShift),
 	}, pime.NewResponse(23, true))
 	if filterResp.ReturnValue != 1 {
 		t.Fatalf("expected out-of-range shortcut to be consumed, got %d", filterResp.ReturnValue)
 	}
 	resp := ime.onKeyDown(&pime.Request{
-		SeqNum:   24,
-		KeyCode:  0xDC,
-		CharCode: '\\',
+		SeqNum:    24,
+		KeyCode:   '9',
+		CharCode:  '(',
+		KeyStates: keyStatesDown(vkShift),
 	}, pime.NewResponse(24, true))
 
 	if resp.CommitString != "" {
@@ -2340,6 +2413,7 @@ func TestBuildToolHubManifestProvidesExtensibleToolEntries(t *testing.T) {
 		`C:\go-backend\blocklist-manager.exe`,
 		`C:\go-backend\settings-tool.exe`,
 		`C:\go-backend\diagnostics-tool.exe`,
+		`C:\go-backend\yime-layout-designer.exe`,
 		"variable",
 	)
 	if err := validateToolHubManifest(manifest); err != nil {
@@ -2352,16 +2426,17 @@ func TestBuildToolHubManifestProvidesExtensibleToolEntries(t *testing.T) {
 		t.Fatalf("expected framework-ready tool entries, got %#v", manifest.Tools)
 	}
 	required := map[string]bool{
-		"lexicon-manager":        false,
-		"reverse-lookup-tool":    false,
-		"system-lexicon-audit":   false,
-		"user-blocklist-manager": false,
-		"settings-tool":          false,
-		"settings-data":          false,
-		"shared-data":            false,
-		"diagnostics-tool":       false,
-		"help-readme":            false,
-		"help-trial-feedback":    false,
+		"advanced-layout-designer": false,
+		"lexicon-manager":          false,
+		"reverse-lookup-tool":      false,
+		"system-lexicon-audit":     false,
+		"user-blocklist-manager":   false,
+		"settings-tool":            false,
+		"settings-data":            false,
+		"shared-data":              false,
+		"diagnostics-tool":         false,
+		"help-readme":              false,
+		"help-trial-feedback":      false,
 	}
 	diagnosticsIndex := -1
 	settingsDataIndex := -1
@@ -2376,7 +2451,7 @@ func TestBuildToolHubManifestProvidesExtensibleToolEntries(t *testing.T) {
 			settingsDataIndex = index
 		}
 		switch tool.ID {
-		case "lexicon-manager", "reverse-lookup-tool", "system-lexicon-audit", "user-blocklist-manager", "settings-tool", "diagnostics-tool":
+		case "advanced-layout-designer", "lexicon-manager", "reverse-lookup-tool", "system-lexicon-audit", "user-blocklist-manager", "settings-tool", "diagnostics-tool":
 			if tool.ActionType != toolActionRunExecutable {
 				t.Fatalf("expected %s to launch native executable, got %#v", tool.ID, tool)
 			}
@@ -2384,6 +2459,13 @@ func TestBuildToolHubManifestProvidesExtensibleToolEntries(t *testing.T) {
 				t.Fatalf("expected %s to keep the tool hub open after launch, got %#v", tool.ID, tool)
 			}
 			switch tool.ID {
+			case "advanced-layout-designer":
+				if tool.TargetPath != `C:\go-backend\yime-layout-designer.exe` {
+					t.Fatalf("expected layout designer executable path, got %#v", tool)
+				}
+				if len(tool.Arguments) != 4 || tool.Arguments[0] != "-SharedDir" || tool.Arguments[2] != "-UserDir" {
+					t.Fatalf("expected user-layout arguments, got %#v", tool.Arguments)
+				}
 			case "lexicon-manager":
 				if tool.TargetPath != `C:\go-backend\lexicon-manager.exe` {
 					t.Fatalf("expected lexicon-manager executable path to be preserved, got %#v", tool)
@@ -3060,6 +3142,8 @@ func TestHandleRequestOnDeactivateReturnsHandled(t *testing.T) {
 	backend := ime.backend.(*testBackend)
 	backend.composition = "ni"
 	backend.refreshCandidates()
+	ime.keysDown[0x4E] = true
+	ime.pendingRawCommit = "ni"
 
 	resp := ime.HandleRequest(&pime.Request{
 		SeqNum: 14,
@@ -3071,6 +3155,12 @@ func TestHandleRequestOnDeactivateReturnsHandled(t *testing.T) {
 	}
 	if backend.composition != "" || backend.candidates != nil {
 		t.Fatal("expected deactivate to clear composition state")
+	}
+	if len(ime.keysDown) != 0 {
+		t.Fatalf("expected deactivate to clear stale key-down state, got %#v", ime.keysDown)
+	}
+	if ime.pendingRawCommit != "" {
+		t.Fatalf("expected deactivate to discard deferred raw commit, got %q", ime.pendingRawCommit)
 	}
 }
 
@@ -3338,6 +3428,52 @@ func TestYimePinyinCandidateCommentUsesActualCodeAndLeavesKeySequenceUntouched(t
 	}
 }
 
+func TestCandidateAnnotationsFallBackToScriptDictionaryCodesInAllDisplayModes(t *testing.T) {
+	ime := newTestIME()
+	ime.yimePinyinLoaded = map[string]bool{"yime_variable": true}
+	ime.yimePinyinBySchema = map[string]map[string]string{
+		"yime_variable": {"过程": "guew 8we;"},
+	}
+	ime.standardPinyinLoaded = true
+	ime.standardPinyinByText = map[string]string{"过程": "guò chéng"}
+	ime.reversePinyinLoaded = map[string]bool{"yime_variable": true}
+	ime.reversePinyinBySchema = map[string]map[string]string{
+		"yime_variable": {"guew": "guo4", "8we;": "cheng2"},
+	}
+	ime.yimePUALoaded = true
+	ime.yimePUAByPinyin = map[string]string{"guo4": "甲", "cheng2": "乙"}
+	original := []candidateItem{{Text: "过程"}}
+
+	wants := map[string]string{
+		"hidden":          "",
+		"standard_pinyin": "guò chéng",
+		"yime_pinyin":     "甲乙",
+		"key_sequence":    "guew8we;",
+	}
+	for mode, want := range wants {
+		ime.reverseLookupDisplayMode = mode
+		display := ime.reverseLookupDisplayCandidates(original)
+		if got := display[0].Comment; got != want {
+			t.Fatalf("mode %s comment=%q, want %q", mode, got, want)
+		}
+		formatted := ime.formatCandidates(display)
+		if want != "" && !strings.Contains(formatted[0], want) {
+			t.Fatalf("mode %s candidate omitted annotation: %#v", mode, formatted)
+		}
+	}
+}
+
+func TestLoadYimeCodeLookupRemovesScriptDictionarySyllableSpaces(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "yime_variable.dict.yaml")
+	content := "---\nname: yime_variable\n...\n过程\tguew 8we;\t100\n"
+	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if got := loadYimeCodeLookup(path)["过程"]; got != "guew8we;" {
+		t.Fatalf("display code=%q, want uninterrupted runtime keystrokes", got)
+	}
+}
+
 func TestBundledYimePUAMapContainsExpectedPhonologicalMappings(t *testing.T) {
 	data, err := os.ReadFile(filepath.Join("data", "yime_pua_pinyin.json"))
 	if err != nil {
@@ -3361,6 +3497,11 @@ func TestBundledYimePUAMapContainsExpectedPhonologicalMappings(t *testing.T) {
 	for pinyin, want := range expected {
 		if got := found[pinyin]; got != want {
 			t.Fatalf("expected bundled PUA mapping %s=%q, got %q", pinyin, want, got)
+		}
+	}
+	for _, retired := range []string{"bong4", "wong4"} {
+		if got := found[retired]; got != "" {
+			t.Fatalf("retired nonstandard syllable %s remains in bundled PUA mapping: %q", retired, got)
 		}
 	}
 }
@@ -3394,7 +3535,7 @@ func TestApplyUserLexiconWritesAllThreeModes(t *testing.T) {
 	if err := os.MkdirAll(sharedDir, 0o755); err != nil {
 		t.Fatal(err)
 	}
-	tsvContent := "pinyin_tone\tfull\nzhong1\tqsdf\nguo2\tHsdf\n"
+	tsvContent := "pinyin_tone\tfull\nzhong1\tqfff\nguo2\t'sdf\n"
 	if err := os.WriteFile(filepath.Join(sharedDir, "yime_pinyin_codes.tsv"), []byte(tsvContent), 0o644); err != nil {
 		t.Fatal(err)
 	}
@@ -3448,7 +3589,7 @@ func TestApplyUserLexiconRunsExternalBuildAndSchedulesReload(t *testing.T) {
 	if err := os.MkdirAll(sharedDir, 0o755); err != nil {
 		t.Fatal(err)
 	}
-	tsvContent := "pinyin_tone\tfull\nzhong1\tqsdf\nguo2\tHsdf\n"
+	tsvContent := "pinyin_tone\tfull\nzhong1\tqsdf\nguo2\t'sdf\n"
 	if err := os.WriteFile(filepath.Join(sharedDir, "yime_pinyin_codes.tsv"), []byte(tsvContent), 0o644); err != nil {
 		t.Fatal(err)
 	}
@@ -3658,7 +3799,7 @@ func TestLongUserPhraseLexiconBuild(t *testing.T) {
 	if err := os.MkdirAll(sharedDir, 0o755); err != nil {
 		t.Fatal(err)
 	}
-	tsvContent := "pinyin_tone\tfull\nzhong1\tqsdf\nguo2\tHsdf\n"
+	tsvContent := "pinyin_tone\tfull\nzhong1\tqsdf\nguo2\t'sdf\n"
 	if err := os.WriteFile(filepath.Join(sharedDir, "yime_pinyin_codes.tsv"), []byte(tsvContent), 0o644); err != nil {
 		t.Fatal(err)
 	}

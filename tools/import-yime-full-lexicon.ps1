@@ -1,6 +1,7 @@
 param(
     [Parameter(Mandatory = $true)]
-    [string]$Input,
+    [Alias("Input")]
+    [string]$InputPath,
     [string]$OutputDir = "",
     [switch]$DeployToUserDir
 )
@@ -8,7 +9,7 @@ param(
 $ErrorActionPreference = "Stop"
 $root = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot "..")).Path
 $goBackend = Join-Path $root "go-backend"
-$inputPath = (Resolve-Path -LiteralPath $Input).Path
+$resolvedInputPath = (Resolve-Path -LiteralPath $InputPath).Path
 if (-not $OutputDir) {
     $OutputDir = Join-Path $goBackend "input_methods\yime\data"
 }
@@ -17,7 +18,7 @@ $outputPath = (Resolve-Path -LiteralPath $OutputDir).Path
 
 Push-Location $goBackend
 try {
-    go run ./cmd/yime-lexicon-derive -input $inputPath -output-dir $outputPath
+    go run ./cmd/yime-lexicon-derive -input $resolvedInputPath -output-dir $outputPath
     if ($LASTEXITCODE -ne 0) {
         throw "Yime lexicon derivation failed with exit code $LASTEXITCODE"
     }
@@ -26,7 +27,7 @@ finally {
     Pop-Location
 }
 
-Write-Host "Generated full, variable, and shorthand dictionaries from $inputPath"
+Write-Host "Generated full, variable, and shorthand dictionaries from $resolvedInputPath"
 Write-Host "Generation manifest: $(Join-Path $outputPath 'yime_lexicon_manifest.json')"
 
 if ($DeployToUserDir) {

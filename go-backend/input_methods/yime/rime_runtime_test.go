@@ -84,7 +84,11 @@ func TestRealRimeCanCommitText(t *testing.T) {
 	session := newRealRimeSession(t)
 	sessionID := session.sessionID
 
-	for _, input := range []string{"yonsx", "puta", "qu"} {
+	// Every current Yime syllable starts with a real or virtual initial.  The
+	// older fds/rew smoke inputs started in the musical portion of a syllable;
+	// table_translator used to offer arbitrary whole-table prefixes for them,
+	// but they are not valid continuous Yime input prefixes.
+	for _, input := range []string{"bj", "guew", `\lda`} {
 		t.Run(input, func(t *testing.T) {
 			ClearComposition(sessionID)
 			for _, key := range []rune(input) {
@@ -122,6 +126,114 @@ func TestRealRimeCanCommitText(t *testing.T) {
 	}
 }
 
+func TestRealRimeKeepsCandidatesWhileCompletingFinalSyllable(t *testing.T) {
+	session := newRealRimeSession(t)
+	prefixes := []string{
+		`\lda1m,.]e`,
+		`\lda1m,.]eg`,
+		`\lda1m,.]egu`,
+		`\lda1m,.]egue`,
+		`\lda1m,.]eguew`,
+		`\lda1m,.]eguew8`,
+		`\lda1m,.]eguew8w`,
+		`\lda1m,.]eguew8we`,
+		`\lda1m,.]eguew8we;`,
+	}
+	for _, input := range prefixes {
+		t.Run(input, func(t *testing.T) {
+			ClearComposition(session.sessionID)
+			typeASCII(t, session.sessionID, input)
+			menu, ok := GetMenu(session.sessionID)
+			if !ok || len(menu.Candidates) == 0 {
+				t.Fatalf("continuous tail completion disappeared after %q: %#v", input, menu)
+			}
+			t.Logf("candidates after %q: %#v", input, menu.Candidates)
+			keptSentencePrefix := false
+			for _, candidate := range menu.Candidates {
+				if strings.HasPrefix(candidate.Text, "\u8fde\u7eed\u7684") {
+					keptSentencePrefix = true
+					break
+				}
+			}
+			if !keptSentencePrefix {
+				t.Fatalf("tail completion lost the completed sentence prefix after %q: %#v", input, menu.Candidates)
+			}
+		})
+	}
+
+	ClearComposition(session.sessionID)
+	typeASCII(t, session.sessionID, `\lda1m,.]eguew8we;`)
+	menu, ok := GetMenu(session.sessionID)
+	if !ok {
+		t.Fatal("expected final sentence candidates")
+	}
+	for _, candidate := range menu.Candidates {
+		if candidate.Text == "\u8fde\u7eed\u7684\u8fc7\u7a0b" {
+			return
+		}
+	}
+	t.Fatalf("expected final sentence candidate, got %#v", menu.Candidates)
+}
+
+func TestRealRimeAllSchemasComposeSentence(t *testing.T) {
+	session := newRealRimeSession(t)
+
+	tests := []struct {
+		schemaID string
+		input    string
+		want     string
+	}{
+		{schemaID: "yime_variable", input: "bjbj", want: "幅幅"},
+		{schemaID: "yime_full", input: "bjjjbjjj", want: "幅幅"},
+		{schemaID: "yime_shorthand", input: "bjbj", want: "幅幅"},
+		{schemaID: "yime_variable", input: "bj'f", want: "幅啊"},
+		{schemaID: "yime_full", input: "bjjj'fff", want: "幅啊"},
+		{schemaID: "yime_shorthand", input: "bj'f", want: "幅啊"},
+		// User-reported real layout sequence entered without a delimiter. It
+		// includes the uppercase J symbol from the layout's Shift layer.
+		{schemaID: "yime_variable", input: "]s8u\\e4fa7J9wo", want: "打出了三只手"},
+	}
+	for _, test := range tests {
+		t.Run(test.schemaID+"/"+test.want, func(t *testing.T) {
+			ClearComposition(session.sessionID)
+			if !SelectSchema(session.sessionID, test.schemaID) {
+				t.Fatalf("expected %s schema to be selectable", test.schemaID)
+			}
+			typeASCII(t, session.sessionID, test.input)
+			menu, ok := GetMenu(session.sessionID)
+			if !ok {
+				t.Fatalf("expected sentence candidates after %q", test.input)
+			}
+			for _, candidate := range menu.Candidates {
+				if candidate.Text == test.want {
+					return
+				}
+			}
+			t.Fatalf("expected generated sentence %s after %q, got %#v", test.want, test.input, menu.Candidates)
+		})
+	}
+}
+
+func TestRealRimePrintableLayoutKeysAreNeverPagingBindings(t *testing.T) {
+	session := newRealRimeSession(t)
+	for _, key := range []rune{'-', '=', ',', '.', '/'} {
+		t.Run(string(key), func(t *testing.T) {
+			ClearComposition(session.sessionID)
+			typeASCII(t, session.sessionID, "3")
+			// Put the menu on a later page when possible. The printable key must
+			// still go to the speller instead of becoming PageUp/PageDown.
+			_ = processRealKey(session.sessionID, &pime.Request{KeyCode: vkNext})
+			if !ProcessKey(session.sessionID, int(key), 0) {
+				t.Fatalf("printable layout key %q was not handled", key)
+			}
+			composition, ok := GetComposition(session.sessionID)
+			if !ok || !strings.HasSuffix(composition.Preedit, string(key)) {
+				t.Fatalf("printable layout key %q did not enter composition: %#v", key, composition)
+			}
+		})
+	}
+}
+
 func TestRealRimeCanSelectYimeShorthandSchema(t *testing.T) {
 	session := newRealRimeSession(t)
 	sessionID := session.sessionID
@@ -138,10 +250,10 @@ func TestRealRimeCanSelectYimeShorthandSchema(t *testing.T) {
 		t.Fatalf("expected current schema yime_shorthand, got %q ok=%t", schemaID, ok)
 	}
 
-	typeASCII(t, sessionID, "qu")
+	typeASCII(t, sessionID, "bj")
 	menu, ok := GetMenu(sessionID)
 	if !ok || len(menu.Candidates) == 0 {
-		t.Fatalf("expected shorthand candidates after qu, got %#v", menu)
+		t.Fatalf("expected shorthand candidates after bj, got %#v", menu)
 	}
 }
 
@@ -225,7 +337,7 @@ func TestRealRimeBackspaceUpdatesComposition(t *testing.T) {
 	sessionID := session.sessionID
 	ClearComposition(sessionID)
 
-	typeASCII(t, sessionID, "ni")
+	typeASCII(t, sessionID, "bj")
 	before, ok := GetComposition(sessionID)
 	if !ok || before.Preedit == "" {
 		t.Fatalf("expected composition before backspace, got %#v", before)
@@ -252,7 +364,7 @@ func TestRealRimeEscapeClearsComposition(t *testing.T) {
 	sessionID := session.sessionID
 	ClearComposition(sessionID)
 
-	typeASCII(t, sessionID, "ni")
+	typeASCII(t, sessionID, "bj")
 	if composition, ok := GetComposition(sessionID); !ok || composition.Preedit == "" {
 		t.Fatalf("expected composition before escape, got %#v", composition)
 	}
@@ -329,6 +441,39 @@ func TestRealRimePunctuationKeys(t *testing.T) {
 	}
 }
 
+func TestRealRimeAcceptsNewLayoutPunctuationAndShiftCodes(t *testing.T) {
+	session := newRealRimeSession(t)
+	sessionID := session.sessionID
+	if !SelectSchema(sessionID, "yime_full") {
+		t.Fatal("expected yime_full schema to be selectable")
+	}
+
+	tests := []struct {
+		name string
+		keys []*pime.Request
+	}{
+		{"minus initial", []*pime.Request{{KeyCode: 0xBD, CharCode: '-'}, {KeyCode: 'J', CharCode: 'j'}, {KeyCode: 'J', CharCode: 'j'}, {KeyCode: 'J', CharCode: 'j'}}},
+		{"equals initial", []*pime.Request{{KeyCode: 0xBB, CharCode: '='}, {KeyCode: 'U', CharCode: 'u'}, {KeyCode: 'U', CharCode: 'u'}, {KeyCode: 'U', CharCode: 'u'}}},
+		{"backslash initial", []*pime.Request{{KeyCode: 0xDC, CharCode: '\\'}, {KeyCode: 'J', CharCode: 'j'}, {KeyCode: 'J', CharCode: 'j'}, {KeyCode: 'J', CharCode: 'j'}}},
+		{"shift comma musical", []*pime.Request{{KeyCode: 'H', CharCode: 'h'}, {KeyCode: 0xBC, CharCode: '<', KeyStates: keyStatesDown(vkShift)}, {KeyCode: 0xBC, CharCode: '<', KeyStates: keyStatesDown(vkShift)}, {KeyCode: 0xBC, CharCode: '<', KeyStates: keyStatesDown(vkShift)}}},
+		{"shift letter and punctuation musical", []*pime.Request{{KeyCode: 0xDE, CharCode: '\''}, {KeyCode: 'M', CharCode: 'M', KeyStates: keyStatesDown(vkShift)}, {KeyCode: 0xBC, CharCode: '<', KeyStates: keyStatesDown(vkShift)}, {KeyCode: 0xBE, CharCode: '>', KeyStates: keyStatesDown(vkShift)}}},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			ClearComposition(sessionID)
+			for _, req := range test.keys {
+				if !processRealKey(sessionID, req) {
+					t.Fatalf("expected key %q to be handled", rune(req.CharCode))
+				}
+			}
+			if menu, ok := GetMenu(sessionID); !ok || len(menu.Candidates) == 0 {
+				t.Fatalf("expected candidates, got %#v", menu)
+			}
+		})
+	}
+}
+
 func keyStatesDown(codes ...int) pime.KeyStates {
 	states := make(pime.KeyStates, 256)
 	for _, code := range codes {
@@ -361,7 +506,7 @@ func rimeMenuAfterASCII(t *testing.T, sessionID RimeSessionId, input string) (Ri
 
 func rimeProbeInputWithMinCandidates(t *testing.T, sessionID RimeSessionId, min int) (string, RimeMenu) {
 	t.Helper()
-	for _, input := range []string{"ni", "yonsx", "puta", "qu", "zhong", "zhongguo"} {
+	for _, input := range []string{"bj", "fds", "rew", "'sdf", "jkl"} {
 		menu, ok := rimeMenuAfterASCII(t, sessionID, input)
 		if ok && len(menu.Candidates) >= min {
 			return input, menu
@@ -411,7 +556,7 @@ func TestRealRimeRedeployAppliesPageSize(t *testing.T) {
 		t.Fatal("expected yime_variable schema to be selectable")
 	}
 	SetOption(baseline, "ascii_mode", false)
-	const input = "qu"
+	const input = "bj"
 	typeASCII(t, baseline, input)
 	baselineMenu, gotBaselineMenu := GetMenu(baseline)
 	if !gotBaselineMenu {
@@ -474,7 +619,7 @@ func TestRealRimeExternalBuildAppliesPageSize(t *testing.T) {
 		t.Fatal("expected yime_variable schema to be selectable")
 	}
 	SetOption(baseline, "ascii_mode", false)
-	const input = "qu"
+	const input = "bj"
 	typeASCII(t, baseline, input)
 	baselineMenu, gotBaselineMenu := GetMenu(baseline)
 	if !gotBaselineMenu {

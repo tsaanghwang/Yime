@@ -3,19 +3,35 @@ package reverselookup
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 )
+
+func TestJoinCharCodeLookupMultiStopsAtSearchLimit(t *testing.T) {
+	lookup := map[string][]string{
+		"多": {"a", "b", "c"},
+	}
+	results := joinCharCodeLookupMulti(strings.Repeat("多", 10), lookup)
+	if len(results) != maxSearchResults {
+		t.Fatalf("expected %d bounded combinations, got %d", maxSearchResults, len(results))
+	}
+	for _, result := range results {
+		if len(result) != 10 {
+			t.Fatalf("unexpected combination %q", result)
+		}
+	}
+}
 
 func TestSearchResolvesUserPhraseAndDictEntry(t *testing.T) {
 	sharedDir := t.TempDir()
 	userDir := t.TempDir()
 
-	// 等长码（full）必须是 4 的倍数；~~dd 经 mergeAdjacent 推导出变长码 ~d。
-	codeMapTSV := "pinyin\tfull\tvariable\tshorthand\nba1\t~~dd\t~d\t~d\n"
+	// 等长码（full）必须是 4 的倍数；派生模式保留虚首音作为音节边界。
+	codeMapTSV := "pinyin\tfull\tvariable\tshorthand\nba1\t'sdf\t'sdf\t'sf\n"
 	if err := os.WriteFile(filepath.Join(sharedDir, "yime_pinyin_codes.tsv"), []byte(codeMapTSV), 0o644); err != nil {
 		t.Fatalf("write code map: %v", err)
 	}
-	dictYAML := "name: test\n...\n巴\t~d\n"
+	dictYAML := "name: test\n...\n巴\t'sdf\n"
 	if err := os.WriteFile(filepath.Join(sharedDir, "yime_variable.dict.yaml"), []byte(dictYAML), 0o644); err != nil {
 		t.Fatalf("write dict: %v", err)
 	}
@@ -30,7 +46,7 @@ func TestSearchResolvesUserPhraseAndDictEntry(t *testing.T) {
 	}
 
 	dictResults := index.Search("巴", false)
-	if len(dictResults) != 1 || dictResults[0].ActiveCode != "~d" {
+	if len(dictResults) != 1 || dictResults[0].ActiveCode != "'sdf" {
 		t.Fatalf("expected dict lookup for 巴, got %#v", dictResults)
 	}
 
@@ -73,12 +89,12 @@ func TestCacheSpeedsUpSecondLoad(t *testing.T) {
 	cacheDir := t.TempDir()
 	t.Setenv("LOCALAPPDATA", cacheDir)
 
-	// 等长码 ~~dd 推导出变长码 ~d，与词典中 巴\t~d 的编码对应。
-	codeMapTSV := "pinyin\tfull\tvariable\tshorthand\nba1\t~~dd\t~d\t~d\n"
+	// 等长码 'sdf 在派生模式中保留虚首音，与词典编码对应。
+	codeMapTSV := "pinyin\tfull\tvariable\tshorthand\nba1\t'sdf\t'sdf\t'sf\n"
 	if err := os.WriteFile(filepath.Join(sharedDir, "yime_pinyin_codes.tsv"), []byte(codeMapTSV), 0o644); err != nil {
 		t.Fatalf("write code map: %v", err)
 	}
-	dictYAML := "name: test\n...\n巴\t~d\n"
+	dictYAML := "name: test\n...\n巴\t'sdf\n"
 	if err := os.WriteFile(filepath.Join(sharedDir, "yime_variable.dict.yaml"), []byte(dictYAML), 0o644); err != nil {
 		t.Fatalf("write dict: %v", err)
 	}

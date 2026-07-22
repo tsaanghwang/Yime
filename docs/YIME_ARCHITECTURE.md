@@ -104,12 +104,12 @@ onKeyDown(VK_RETURN) during composition
           │
           └── 新行为: pendingRawCommit = compositionString
                       handled=true
-                      下次 onKeyUp 时 commit pendingRawCommit
+                      随后的 onKey 响应阶段 commit pendingRawCommit
 ```
 
 **设计要点**：
 - `pendingRawCommit string` 字段存储待上屏的原始编码
-- 在 `onKeyUp` 中检查并提交，避免在 key-down 回调中触发二次提交
+- `filterKeyDown` 只记录待提交内容；同一次请求随后进入 `onKey` 时检查并提交，避免在过滤阶段直接构造两次响应
 - 非组字状态下回车正常穿透（`handled=false`）
 
 ### 2.3 组字状态保存与重放
@@ -514,7 +514,7 @@ Go 后端
 | kHanyuPinlu | 4 | 汉语拼音频率 |
 | kXHC1983 | 3 | 《现代汉语词典》1983版 |
 | kHanyuPinyin | 2 | 汉语拼音 |
-| kMandarin | 1 | Mandarin 读音（含台版/方言遗留如 bong4/wong4） |
+| kMandarin | 1 | Mandarin 读音；已在运行时拼音资产中清理不受支持的非标准音节 |
 
 **sort_weight 计算公式**：
 
@@ -596,7 +596,7 @@ cmd /c build.bat
 
 本地 ad-hoc 构建落在 `go-backend/*.exe` 时已被 `.gitignore` 忽略。
 
-Go 可执行文件版本取自仓库根目录 `version.txt`，并统一使用 `-trimpath -buildvcs=false`，避免无关提交改变未修改工具的文件哈希。8 个 Go EXE 统一嵌入 Yime 图标；打包脚本递归删除复制到输出目录的 `.go` 源码。发布流水线通过 `tools/sign-release.ps1`、NSIS `!finalize`/`!uninstfinalize` 和 `tools/verify-release-signatures.ps1` 覆盖内部二进制、安装器及卸载器；Smart App Control 的稳定发布必须使用受信任提供商签发的 RSA 证书，VERSIONINFO 不能替代签名。
+Go 可执行文件版本取自仓库根目录 `version.txt`，并统一使用 `-trimpath -buildvcs=false`，避免无关提交改变未修改工具的文件哈希。9 个 Go EXE 统一嵌入 Yime 图标和 VERSIONINFO；打包脚本递归删除复制到输出目录的 `.go` 源码。发布流水线通过 `tools/sign-release.ps1`、NSIS `!finalize`/`!uninstfinalize` 和 `tools/verify-release-signatures.ps1` 覆盖内部二进制、安装器及卸载器；Smart App Control 的稳定发布必须使用受信任提供商签发的 RSA 证书，VERSIONINFO 不能替代签名。
 
 NSIS 安装包只包含 PIMELauncher、`backends.json`、完整 `go-backend` 包和三架构 TSF DLL，不再提供组件选择页或旧 Python/Node 输入法。读取新旧安装注册表时先写入临时寄存器，不能用空值覆盖 `InstallDir "$PROGRAMFILES32\YIME"`。
 
@@ -632,7 +632,7 @@ go test ./input_methods/yime -timeout 60s
 go test ./input_methods/yime -run 'Test(NativeBackendKeepsRimeOwnedCandidatePaging|LanguageBarToggleButtonsUseStableTwoCharacterLabels|DeployCommandQueuesConfirmedExternalBuildWithoutNativeRedeploy|ApplyUserLexiconWritesAllThreeModes|ApplyUserLexiconRunsExternalBuildAndSchedulesReload)$'
 ```
 
-CI 使用上述稳定回归集并执行 CTest。定向回归在执行前必须逐项校验测试名，避免重命名后 `go test -run` 因仍有其它匹配项而静默少跑。真实 Rime 测试仍由 `YIME_RUN_REAL_RIME_TESTS=1` 显式启用，避免普通单元测试共享本机 librime 全局状态。
+CI 将稳定回归集、CTest、Rust、race、真实 Rime 和安装器拆为独立作业。定向回归在执行前必须逐项校验测试名，避免重命名后 `go test -run` 因仍有其它匹配项而静默少跑。真实 Rime 作业通过 `tools/test-real-rime.ps1` 显式设置 `YIME_RUN_REAL_RIME_TESTS=1`，仍与普通单元测试隔离，避免共享 librime 全局状态。
 
 关键守卫测试：
 
@@ -702,31 +702,36 @@ go-backend\run_admin_yime_tests.cmd
 
 | 声母 | 键 | 声母 | 键 | 声母 | 键 | 声母 | 键 |
 |------|-----|------|-----|------|-----|------|-----|
-| b | q | p | p | m | h | f | [ |
-| d | w | t | . | n | y | l | b |
-| g | ] | k | ' | h | n | | |
+| b | b | p | p | m | - | f | [ |
+| d | ] | t | t | n | n | l | \ |
+| g | g | k | q | h | h | | |
 | zh | 7 | ch | 8 | sh | 9 | r | 0 |
 | z | 6 | c | 5 | s | 4 | | |
 | j | 3 | q | 2 | x | 1 | | |
-| w | % | y | $ | | | | |
+| w | = | y | y | 零首音 | ' | | |
 
 ### 6.2 候选选择键
 
 | 键 | 选择 | 说明 |
 |----|------|------|
-| Space | 第1个 | 最常用 |
-| `` ` `` | 第2个 | 反引号 |
-| `-` | 第3个 | 减号 |
-| `=` | 第4个 | 等号 |
-| `\` | 第5个 | 反斜杠 |
-| 6-9 | 无快捷键 | 需鼠标点击（编码约束） |
+| Space / Enter / Shift+1 | 第1个 | 三种等价首选操作 |
+| Shift+2 | 第2个 | 候选窗标签显示为 `⇧2` |
+| … | … | … |
+| Shift+9 | 第9个 | 候选窗标签显示为 `⇧9` |
+
+候选窗通过扩展协议 `setSelLabels` 显示 `⇧1`…`⇧9`，避免旧的裸数字标签误导用户直接按 Base 数字键。`setSelKeys` 仍作为旧宿主的兼容字段，实际选词由 Yime 的 Shift+数字按键处理完成。物理键盘 Shift 层对应的键面为 `! @ # $ % ^ & * (`；帮助和布局图应标明这些键面，但不宜直接把标点作为候选窗序号，因为连续标点的可读性和序号感较差。
+
+与流行拼音输入法不同，Yime 不采用裸数字键选词：Base 层 `0`—`9` 十个数字键始终是音元编码的一部分，候选窗出现时也不改变含义。项目不规划“数字键在编码和选词之间切换”的可配置模式，以避免编码被候选状态截断；需要按序号选词时统一使用 Shift+1…Shift+9，Shift+0 不选词。
+
+候选窗可见时，四方向键和 Enter 由 PIME C++ 客户端先行处理，不进入普通 Go `onKeyDown` 分支。`CandidateWindow::filterKeyEvent` 用方向键维护 `currentSel`，Enter/Space 设置选择结果；`PIMEClient::onKeyDown` 随后读取 `currentSel` 并通过 `selectCandidate(index)` 通知 Go 后端。因此方向键移动后的 Enter 确认按当前高亮索引生效，与 Go 层用于直接首选的 Enter 路径不冲突。
 
 ### 6.3 alphabet 字符集
 
 ```
-Variable: qufvkc;gxwlj$op[strhdm.aibe%8/,y]1'n564JKL7930z2SDMAN@!#
-Full:     qufvkc;gxwlj$op[strhdm.aibe%8/,y]1'n5HD64JKL7930z2SMAN@!#
-Shorthand:qufvkc;gxwlj$op[strhdm.aibe%8/,y]1'n564JKL7930z2SDMAN@!#
+Full:      1234567890-=qwertyuiop[]\asdfghjkl;'zxcvbnm,./JKLUIOM<>NG
+Variable:  1234567890-=qwertyuiop[]\asdfghjkl;'zxcvbnm,./JKLUIOM<>NG
+Shorthand: 1234567890-=qwertyuiop[]\asdfghjkl;'zxcvbnm,./JKLUIOM<>NG
 ```
 
-差异：Full 模式多了 `H` 和 `D`（零声母和 er 系需要大写字母）。
+三种 schema 使用同一套 57 字符白名单。码表导入器还会通过 `codemode.LayoutAlphabet`
+拒绝布局外字符，避免出现“导入成功但无法击键输入”的词典。

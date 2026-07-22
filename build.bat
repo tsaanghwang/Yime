@@ -2,8 +2,7 @@
 setlocal
 
 if /I not "%~1"=="--sanitized" (
-	powershell -NoProfile -ExecutionPolicy Bypass -Command ^
-		"$path = [System.Environment]::GetEnvironmentVariable('Path', 'Process'); $script = '%~f0'; Remove-Item Env:PATH -ErrorAction SilentlyContinue; $env:Path = $path; & $script --sanitized; exit $LASTEXITCODE"
+	powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0tools\invoke-build-environment.ps1" -BuildScript "%~f0"
 	if errorlevel 1 exit /b 1
 	exit /b 0
 )
@@ -118,7 +117,7 @@ rem cargo build in PIMELauncher\target\ is not affected; stage the output for in
 echo "Start building PIMELauncher"
 set "CARGO_TARGET_DIR="
 pushd "%ROOT_DIR%\PIMELauncher" || exit /b 1
-cargo build --release --target i686-pc-windows-msvc || (
+rustup run stable-i686-pc-windows-msvc cargo build --release --target i686-pc-windows-msvc || (
 	popd
 	exit /b 1
 )

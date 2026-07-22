@@ -17,6 +17,15 @@
 
 /tools/test-build-guards.ps1 @tsaanghwang
 /tools/test-go-race.ps1 @tsaanghwang
+/tools/test-go.ps1 @tsaanghwang
+/tools/test-real-rime.ps1 @tsaanghwang
+/tools/test-installer-smoke.ps1 @tsaanghwang
+/tools/assert-win32-build-prerequisites.ps1 @tsaanghwang
+/tools/initialize-dev-environment.ps1 @tsaanghwang
+/tools/invoke-build-environment.ps1 @tsaanghwang
+/tools/invoke-cmake.ps1 @tsaanghwang
+/tools/verify-installed-runtime.ps1 @tsaanghwang
+/tools/write-build-manifest.ps1 @tsaanghwang
 /tools/verify-pe-architectures.ps1 @tsaanghwang
 /tools/dev-*.ps1 @tsaanghwang
 /tools/templates/** @tsaanghwang

@@ -319,6 +319,9 @@ func (s *Server) convertResponse(resp *pime.Response) map[string]interface{} {
 	if resp.SetSelKeys != "" {
 		m["setSelKeys"] = resp.SetSelKeys
 	}
+	if len(resp.SetSelLabels) > 0 {
+		m["setSelLabels"] = resp.SetSelLabels
+	}
 	if len(resp.CustomizeUI) > 0 {
 		m["customizeUI"] = resp.CustomizeUI
 	}

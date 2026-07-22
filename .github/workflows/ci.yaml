@@ -1,59 +1,80 @@
 name: Build
 
 on:
+  workflow_dispatch:
   push:
-    branches: [yime-stable]
+    branches: [main, yime-stable, 'codex/**']
     tags: ['v*']
   pull_request:
     branches: [main, yime-stable]
+
+permissions:
+  contents: read
 
 jobs:
   build-contract:
     uses: tsaanghwang/Yime-build-contract/.github/workflows/validate.yml@d93a3e835cae58988792814d300d3c7cc872cfbb
 
-  core-build:
-    name: core-build
+  rust-i686-host:
+    name: rust-i686-host
     runs-on: windows-2022
-    outputs:
-      rust_i686_host: ${{ steps.rust_i686_host.outcome }}
-      native_build: ${{ steps.native_build.outcome }}
-      go_tests: ${{ steps.go_tests.outcome }}
-      go_race_msys2: ${{ steps.go_race_msys2.outcome }}
-      installer_package: ${{ steps.installer_package.outcome }}
     steps:
       - uses: actions/checkout@v6
-      - name: Checkout active TSF submodule
-        shell: pwsh
-        run: git submodule update --init --depth 1 libIME2
-      - name: Set up MSVC developer environment
+      - name: Install pinned i686 host toolchain
+        run: rustup toolchain install stable-i686-pc-windows-msvc --profile minimal
+      - name: Run Rust checks
         shell: pwsh
         run: |
-          $vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio\Installer\vswhere.exe'
-          if (-not (Test-Path $vswhere)) {
-            throw "vswhere.exe was not found at $vswhere"
-          }
+          Set-Location PIMELauncher
+          cargo fmt --check
+          rustup run stable-i686-pc-windows-msvc cargo test --verbose
 
-          $installPath = & $vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
-          if (-not $installPath) {
-            throw "A Visual Studio installation with x86/x64 VC tools was not found."
-          }
+  go-tests:
+    name: go-tests
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v6
+      - name: Use Go 1.26.4
+        uses: actions/setup-go@v6
+        with:
+          go-version: '1.26.4'
+          cache-dependency-path: go-backend/go.sum
+      - name: Run Go regression tests
+        shell: pwsh
+        run: .\tools\test-go.ps1
 
-          $vsDevCmd = Join-Path $installPath 'Common7\Tools\VsDevCmd.bat'
-          if (-not (Test-Path $vsDevCmd)) {
-            throw "VsDevCmd.bat was not found at $vsDevCmd"
-          }
-
-          $envDump = Join-Path $env:RUNNER_TEMP 'vsdevcmd-env.txt'
-          cmd /c "`"$vsDevCmd`" -arch=x64 -host_arch=x64 >nul && set > `"$envDump`""
-          if ($LASTEXITCODE -ne 0) {
-            throw "VsDevCmd.bat failed."
-          }
-
-          Get-Content $envDump | ForEach-Object {
-            if ($_ -match '^(.*?)=(.*)$') {
-              "$($matches[1])=$($matches[2])" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+  real-rime-tests:
+    name: real-rime-tests
+    runs-on: windows-2022
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6
+      - name: Use Go 1.26.4
+        uses: actions/setup-go@v6
+        with:
+          go-version: '1.26.4'
+          cache-dependency-path: go-backend/go.sum
+      - name: Fetch Rime shared data for integration tests
+        shell: pwsh
+        run: |
+          $dataDir = 'go-backend\input_methods\yime\data'
+          if (-not (Test-Path "$dataDir\default.yaml")) {
+            git clone --depth=1 https://github.com/gaboolic/rime-frost.git $env:RUNNER_TEMP\rime-frost
+            Copy-Item -Force $env:RUNNER_TEMP\rime-frost\default.yaml $dataDir\
+            Get-ChildItem $env:RUNNER_TEMP\rime-frost\*.yaml | Where-Object { $_.Name -notlike '*.custom*' } | Copy-Item -Force -Destination $dataDir\
+            if (Test-Path $env:RUNNER_TEMP\rime-frost\opencc) {
+              Copy-Item -Recurse -Force $env:RUNNER_TEMP\rime-frost\opencc $dataDir\
             }
           }
+      - name: Run real Rime integration tests
+        shell: pwsh
+        run: .\tools\test-real-rime.ps1
+
+  go-race-msys2:
+    name: go-race-msys2
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v6
       - name: Use Go 1.26.4
         uses: actions/setup-go@v6
         with:
@@ -66,112 +87,117 @@ jobs:
           msystem: UCRT64
           update: true
           install: mingw-w64-ucrt-x86_64-gcc
-      - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: i686-pc-windows-msvc
-      # The root CMakeLists.txt pins Rust_TOOLCHAIN=stable-i686-pc-windows-msvc for
-      # the Win32 PIMELauncher build (host == target avoids Corrosion leaking i686
-      # libs into host-side build-scripts). That HOST toolchain is separate from the
-      # i686 TARGET above and must be installed explicitly or CMake configure fails.
-      - name: Install i686 host toolchain for Win32 PIMELauncher
-        run: rustup toolchain install stable-i686-pc-windows-msvc --profile minimal
-      - name: Run Rust tests
-        id: rust_i686_host
+      - name: Run Go race detector
+        shell: pwsh
         run: |
-          cd PIMELauncher
-          cargo fmt --check
-          rustup run stable-i686-pc-windows-msvc cargo test --verbose
-      - name: Use Install NSIS
-        uses: repolevedavaj/install-nsis@v1.2.0
-        with:
-          nsis-version: 3.08
+          $gcc = Join-Path '${{ steps.msys2.outputs.msys2-location }}' 'ucrt64\bin\gcc.exe'
+          .\tools\test-go-race.ps1 -GccPath $gcc -TimeoutSeconds 300
 
+  native-build:
+    name: native-build
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v6
+      - name: Checkout active TSF submodule
+        shell: pwsh
+        run: git submodule update --init --depth 1 libIME2
+      - name: Set up MSVC developer environment
+        shell: pwsh
+        run: |
+          $vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio\Installer\vswhere.exe'
+          if (-not (Test-Path $vswhere)) { throw "vswhere.exe was not found at $vswhere" }
+          $installPath = & $vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+          if (-not $installPath) { throw 'A Visual Studio installation with x86/x64 VC tools was not found.' }
+          $vsDevCmd = Join-Path $installPath 'Common7\Tools\VsDevCmd.bat'
+          if (-not (Test-Path $vsDevCmd)) { throw "VsDevCmd.bat was not found at $vsDevCmd" }
+          $envDump = Join-Path $env:RUNNER_TEMP 'vsdevcmd-env.txt'
+          cmd /c "`"$vsDevCmd`" -arch=x64 -host_arch=x64 >nul && set > `"$envDump`""
+          if ($LASTEXITCODE -ne 0) { throw 'VsDevCmd.bat failed.' }
+          Get-Content $envDump | ForEach-Object {
+            if ($_ -match '^(.*?)=(.*)$') {
+              "$($matches[1])=$($matches[2])" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+            }
+          }
+      - name: Install pinned i686 host toolchain
+        run: rustup toolchain install stable-i686-pc-windows-msvc --profile minimal
+      - name: Verify Win32 Rust and Corrosion pins
+        shell: pwsh
+        run: .\tools\assert-win32-build-prerequisites.ps1 -RequireToolchain
       - name: Build Win32 C++ components
         shell: cmd
         run: |
           call "%VSINSTALLDIR%Common7\Tools\VsDevCmd.bat" -arch=x86 -host_arch=x64 >nul
           cmake . -Bbuild -G "Visual Studio 17 2022" -A Win32 -DCMAKE_POLICY_VERSION_MINIMUM=3.5
           cmake --build build --config Release
-
       - name: Build x64 C++ components
         shell: cmd
         run: |
           call "%VSINSTALLDIR%Common7\Tools\VsDevCmd.bat" -arch=x64 -host_arch=x64 >nul
           cmake . -Bbuild64 -G "Visual Studio 17 2022" -A x64 -DCMAKE_POLICY_VERSION_MINIMUM=3.5
           cmake --build build64 --config Release --target PIMETextService
-
       - name: Run native C++ regression tests
-        id: native_build
         shell: pwsh
         run: ctest --test-dir build -C Release --output-on-failure
-
-      - name: Fetch Rime shared data
+      - name: Verify native build outputs
+        shell: pwsh
+        run: .\tools\test-build-guards.ps1
+      - name: Stage native installer inputs
         shell: pwsh
         run: |
-          $dataDir = "go-backend\input_methods\yime\data"
+          $stage = Join-Path $env:RUNNER_TEMP 'yime-native'
+          New-Item -ItemType Directory -Path "$stage\build\PIMELauncher", "$stage\build\PIMETextService\Release", "$stage\build64\PIMETextService\Release" -Force | Out-Null
+          Copy-Item build\PIMELauncher\PIMELauncher.exe "$stage\build\PIMELauncher\PIMELauncher.exe"
+          Copy-Item build\PIMETextService\Release\PIMETextService.dll "$stage\build\PIMETextService\Release\PIMETextService.dll"
+          Copy-Item build64\PIMETextService\Release\PIMETextService.dll "$stage\build64\PIMETextService\Release\PIMETextService.dll"
+      - uses: actions/upload-artifact@v6
+        with:
+          name: yime-native-${{ github.sha }}
+          path: ${{ runner.temp }}/yime-native
+          if-no-files-found: error
+          retention-days: 14
+
+  installer-package:
+    name: installer-package
+    runs-on: windows-2022
+    needs: [build-contract, rust-i686-host, native-build, go-tests, real-rime-tests, go-race-msys2]
+    steps:
+      - uses: actions/checkout@v6
+      - name: Restore native installer inputs
+        uses: actions/download-artifact@v7
+        with:
+          name: yime-native-${{ github.sha }}
+          path: .
+      - name: Use Go 1.26.4
+        uses: actions/setup-go@v6
+        with:
+          go-version: '1.26.4'
+          cache-dependency-path: go-backend/go.sum
+      - name: Install pinned go-winres
+        shell: pwsh
+        run: go install github.com/tc-hib/go-winres@v0.3.3
+      - name: Install NSIS
+        uses: repolevedavaj/install-nsis@v1.2.0
+        with:
+          nsis-version: 3.08
+      - name: Fetch Rime shared data when absent
+        shell: pwsh
+        run: |
+          $dataDir = 'go-backend\input_methods\yime\data'
           if (-not (Test-Path "$dataDir\default.yaml")) {
             git clone --depth=1 https://github.com/gaboolic/rime-frost.git $env:RUNNER_TEMP\rime-frost
             Copy-Item -Force $env:RUNNER_TEMP\rime-frost\default.yaml $dataDir\
-            Get-ChildItem $env:RUNNER_TEMP\rime-frost\*.yaml | Where-Object { $_.Name -notlike "*.custom*" } | Copy-Item -Force -Destination $dataDir\
-            if (Test-Path $env:RUNNER_TEMP\rime-frost\opencc) { Copy-Item -Recurse -Force $env:RUNNER_TEMP\rime-frost\opencc $dataDir\ }
-          }
-
-      - name: Build Go backend
-        shell: pwsh
-        run: |
-          pushd go-backend
-          cmd /C build.bat
-          popd
-
-      - name: Run Go regression tests
-        id: go_tests
-        shell: pwsh
-        run: |
-          Set-Location go-backend
-          go vet ./...
-          go test . ./cmd/lexicon-manager ./cmd/reverse-lookup-tool ./cmd/settings-tool ./input_methods/yime/reverselookup ./input_methods/yime/runtimechange ./input_methods/yime/settings ./input_methods/yime/systemlexicon ./input_methods/yime/toolhub ./input_methods/yime/userblocklist ./input_methods/yime/userlexicon
-          go test ./input_methods/yime -timeout 60s
-          $requiredYimeTests = @(
-            'TestNativeBackendKeepsRimeOwnedCandidatePaging'
-            'TestLanguageBarToggleButtonsUseStableTwoCharacterLabels'
-            'TestDeployCommandQueuesConfirmedExternalBuildWithoutNativeRedeploy'
-            'TestApplyUserLexiconWritesAllThreeModes'
-            'TestApplyUserLexiconRunsExternalBuildAndSchedulesReload'
-            'TestUserLexiconManagerLaunchesNativeExecutable'
-            'TestToolHubLaunchesNativeExecutable'
-            'TestReverseLookupToolLaunchesNativeExecutable'
-            'TestSettingsToolLaunchesNativeExecutable'
-            'TestDiagnosticsToolLaunchesNativeExecutable'
-          )
-          $listedYimeTests = @(go test ./input_methods/yime -list '^Test')
-          if ($LASTEXITCODE -ne 0) { throw 'Could not enumerate Yime regression tests.' }
-          foreach ($testName in $requiredYimeTests) {
-            if ($listedYimeTests -notcontains $testName) {
-              throw "Required Yime regression test is missing: $testName"
+            Get-ChildItem $env:RUNNER_TEMP\rime-frost\*.yaml | Where-Object { $_.Name -notlike '*.custom*' } | Copy-Item -Force -Destination $dataDir\
+            if (Test-Path $env:RUNNER_TEMP\rime-frost\opencc) {
+              Copy-Item -Recurse -Force $env:RUNNER_TEMP\rime-frost\opencc $dataDir\
             }
           }
-          $requiredPattern = '^(' + (($requiredYimeTests | ForEach-Object { [Regex]::Escape($_) }) -join '|') + ')$'
-          go test ./input_methods/yime -run $requiredPattern -count=1
-          if ($LASTEXITCODE -ne 0) { throw 'Required Yime regression tests failed.' }
-
-      - name: Run Go race detector
-        id: go_race_msys2
+      - name: Build Go backend package
         shell: pwsh
         run: |
-          $gcc = Join-Path '${{ steps.msys2.outputs.msys2-location }}' 'ucrt64\bin\gcc.exe'
-          .\tools\test-go-race.ps1 -GccPath $gcc -TimeoutSeconds 300
-
-      - name: Verify native build outputs
-        shell: pwsh
-        run: |
-          .\tools\test-build-guards.ps1
-          Write-Host "=== Listing all PIMETextService.dll ==="
-          Get-ChildItem -Recurse -Filter "PIMETextService.dll" | ForEach-Object { $_.FullName }
-          Write-Host "=== Listing build directory ==="
-          Get-ChildItem -Recurse -Path "build" -Filter "*.dll" | ForEach-Object { $_.FullName }
-          Get-ChildItem -Recurse -Path "build" -Filter "*.exe" | ForEach-Object { $_.FullName }
-
+          Push-Location go-backend
+          cmd /C build.bat
+          if ($LASTEXITCODE -ne 0) { throw "go-backend build failed with exit code $LASTEXITCODE" }
+          Pop-Location
       - name: Import release signing certificate
         if: startsWith(github.ref, 'refs/tags/v')
         shell: pwsh
@@ -197,92 +223,61 @@ jobs:
           if (-not $signTool) { throw 'signtool.exe was not found in the Windows SDK.' }
           "YIME_SIGN_CERT_SHA1=$($certificate.Thumbprint)" | Out-File $env:GITHUB_ENV -Encoding utf8 -Append
           "YIME_SIGNTOOL_EXE=$($signTool.FullName)" | Out-File $env:GITHUB_ENV -Encoding utf8 -Append
-          "YIME_RELEASE_SIGNING_REQUIRED=1" | Out-File $env:GITHUB_ENV -Encoding utf8 -Append
-
+          'YIME_RELEASE_SIGNING_REQUIRED=1' | Out-File $env:GITHUB_ENV -Encoding utf8 -Append
       - name: Sign release payload
         if: startsWith(github.ref, 'refs/tags/v')
         shell: pwsh
         run: .\tools\sign-release.ps1 -RequireComplete
-
       - name: Build the installer
-        id: installer_package
         shell: pwsh
         run: |
           Set-Location installer
-          & "C:\Program Files (x86)\NSIS\Bin\makensis.exe" "installer.nsi"
-
+          & 'C:\Program Files (x86)\NSIS\Bin\makensis.exe' installer.nsi
+          if ($LASTEXITCODE -ne 0) { throw "makensis failed with exit code $LASTEXITCODE" }
       - name: Verify tagged release signatures
         if: startsWith(github.ref, 'refs/tags/v')
         shell: pwsh
         run: .\tools\verify-release-signatures.ps1 -IncludeInstaller
-
+      - name: Write commit-addressed build manifest
+        shell: pwsh
+        run: .\tools\write-build-manifest.ps1
+      - name: Smoke-test unsigned installer on ephemeral runner
+        if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
+        shell: pwsh
+        run: |
+          $installer = Get-ChildItem installer\YIME-*-setup.exe | Select-Object -First 1
+          if (-not $installer) { throw 'Unsigned installer was not found.' }
+          .\tools\test-installer-smoke.ps1 -InstallerPath $installer.FullName
       - uses: actions/upload-artifact@v6
         with:
-          name: ${{ startsWith(github.ref, 'refs/tags/v') && 'YIME-signed-installer' || 'YIME-unsigned-test-installer' }}
-          path: installer/YIME-*-setup.exe
+          name: ${{ startsWith(github.ref, 'refs/tags/v') && 'YIME-signed-installer' || format('YIME-unsigned-test-installer-{0}', github.sha) }}
+          path: |
+            installer/YIME-*-setup.exe
+            installer/build-manifest.json
           if-no-files-found: error
+          retention-days: 30
 
-  rust-i686-host:
-    name: rust-i686-host
+  core-build:
+    name: core-build
     if: ${{ always() }}
-    needs: [build-contract, core-build]
     runs-on: ubuntu-latest
+    needs: [build-contract, rust-i686-host, native-build, go-tests, real-rime-tests, go-race-msys2, installer-package]
     steps:
-      - name: Require the protected Rust stage
+      - name: Preserve legacy aggregate build contract
+        shell: bash
         env:
           CONTRACT_RESULT: ${{ needs['build-contract'].result }}
-          CORE_RESULT: ${{ needs['core-build'].result }}
-          STAGE_RESULT: ${{ needs['core-build'].outputs.rust_i686_host }}
-        run: test "$CONTRACT_RESULT" = success && test "$CORE_RESULT" = success && test "$STAGE_RESULT" = success
-
-  native-build:
-    name: native-build
-    if: ${{ always() }}
-    needs: [build-contract, core-build]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Require the protected native stage
-        env:
-          CONTRACT_RESULT: ${{ needs['build-contract'].result }}
-          CORE_RESULT: ${{ needs['core-build'].result }}
-          STAGE_RESULT: ${{ needs['core-build'].outputs.native_build }}
-        run: test "$CONTRACT_RESULT" = success && test "$CORE_RESULT" = success && test "$STAGE_RESULT" = success
-
-  go-tests:
-    name: go-tests
-    if: ${{ always() }}
-    needs: [build-contract, core-build]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Require the protected Go regression stage
-        env:
-          CONTRACT_RESULT: ${{ needs['build-contract'].result }}
-          CORE_RESULT: ${{ needs['core-build'].result }}
-          STAGE_RESULT: ${{ needs['core-build'].outputs.go_tests }}
-        run: test "$CONTRACT_RESULT" = success && test "$CORE_RESULT" = success && test "$STAGE_RESULT" = success
-
-  go-race-msys2:
-    name: go-race-msys2
-    if: ${{ always() }}
-    needs: [build-contract, core-build]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Require the protected Go race stage
-        env:
-          CONTRACT_RESULT: ${{ needs['build-contract'].result }}
-          CORE_RESULT: ${{ needs['core-build'].result }}
-          STAGE_RESULT: ${{ needs['core-build'].outputs.go_race_msys2 }}
-        run: test "$CONTRACT_RESULT" = success && test "$CORE_RESULT" = success && test "$STAGE_RESULT" = success
-
-  installer-package:
-    name: installer-package
-    if: ${{ always() }}
-    needs: [build-contract, core-build]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Require the protected installer stage
-        env:
-          CONTRACT_RESULT: ${{ needs['build-contract'].result }}
-          CORE_RESULT: ${{ needs['core-build'].result }}
-          STAGE_RESULT: ${{ needs['core-build'].outputs.installer_package }}
-        run: test "$CONTRACT_RESULT" = success && test "$CORE_RESULT" = success && test "$STAGE_RESULT" = success
+          RUST_RESULT: ${{ needs['rust-i686-host'].result }}
+          NATIVE_RESULT: ${{ needs['native-build'].result }}
+          GO_RESULT: ${{ needs['go-tests'].result }}
+          REAL_RIME_RESULT: ${{ needs['real-rime-tests'].result }}
+          RACE_RESULT: ${{ needs['go-race-msys2'].result }}
+          INSTALLER_RESULT: ${{ needs['installer-package'].result }}
+        run: |
+          test "$CONTRACT_RESULT" = success
+          test "$RUST_RESULT" = success
+          test "$NATIVE_RESULT" = success
+          test "$GO_RESULT" = success
+          test "$REAL_RIME_RESULT" = success
+          test "$RACE_RESULT" = success
+          test "$INSTALLER_RESULT" = success

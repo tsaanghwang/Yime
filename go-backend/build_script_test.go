@@ -35,8 +35,8 @@ func TestBuildScriptKeepsGoExecutableHashesStableAndSupportsSigning(t *testing.T
 	if strings.Contains(script, "git describe --tags --always --dirty") {
 		t.Fatal("build.bat must not inject each Git commit into every executable hash")
 	}
-	if count := strings.Count(script, "go build %GO_REPRO_FLAGS%"); count != 8 {
-		t.Fatalf("expected all 8 Go executables to use reproducible flags, got %d", count)
+	if count := strings.Count(script, "go build %GO_REPRO_FLAGS%"); count != 9 {
+		t.Fatalf("expected all 9 Go executables to use reproducible flags, got %d", count)
 	}
 }
 
@@ -54,8 +54,18 @@ func TestBuildScriptFindsGoWinresOutsidePATH(t *testing.T) {
 			t.Fatalf("build.bat is missing go-winres discovery fragment %q", fragment)
 		}
 	}
-	if count := strings.Count(script, `"%GO_WINRES%" simply`); count != 8 {
-		t.Fatalf("expected all 8 resource builds to use resolved go-winres, got %d", count)
+	if count := strings.Count(script, `"%GO_WINRES%" simply`); count != 9 {
+		t.Fatalf("expected all 9 resource builds to use resolved go-winres, got %d", count)
+	}
+	for _, fragment := range []string{
+		`--file-description "Yime Layout Designer"`,
+		`--original-filename "yime-layout-designer.exe"`,
+		`--out cmd\yime-layout-designer\rsrc_layout_designer`,
+		`if exist cmd\yime-layout-designer\rsrc_layout_designer_windows_amd64.syso del cmd\yime-layout-designer\rsrc_layout_designer_windows_amd64.syso`,
+	} {
+		if !strings.Contains(script, fragment) {
+			t.Fatalf("layout designer VERSIONINFO build guard is missing %q", fragment)
+		}
 	}
 	if strings.Contains(script, "\ngo-winres simply") || strings.Contains(script, "\r\ngo-winres simply") {
 		t.Fatal("resource generation must not rely on a bare go-winres command")
@@ -63,20 +73,31 @@ func TestBuildScriptFindsGoWinresOutsidePATH(t *testing.T) {
 }
 
 func TestBuildScriptPropagatesSanitizedChildFailure(t *testing.T) {
-	script := readBuildScript(t, filepath.Join("..", "build.bat"))
+	buildScript := readBuildScript(t, filepath.Join("..", "build.bat"))
+	wrapperScript := readBuildScript(t, filepath.Join("..", "tools", "invoke-build-environment.ps1"))
 
-	required := []string{
-		`& $script --sanitized; exit $LASTEXITCODE`,
+	buildRequired := []string{
+		`invoke-build-environment.ps1" -BuildScript "%~f0"`,
 		`if errorlevel 1 exit /b 1`,
 		`exit /b 0`,
 	}
-	for _, fragment := range required {
-		if !strings.Contains(script, fragment) {
-			t.Fatalf("build.bat is missing sanitized child exit-code propagation %q", fragment)
+	for _, fragment := range buildRequired {
+		if !strings.Contains(buildScript, fragment) {
+			t.Fatalf("build.bat is missing sanitized wrapper propagation %q", fragment)
 		}
 	}
 
-	if strings.Contains(script, "& $script --sanitized\"") {
-		t.Fatal("sanitized wrapper must explicitly exit with the child script's exit code")
+	wrapperRequired := []string{
+		`& $BuildScript --sanitized`,
+		`exit $LASTEXITCODE`,
+	}
+	for _, fragment := range wrapperRequired {
+		if !strings.Contains(wrapperScript, fragment) {
+			t.Fatalf("invoke-build-environment.ps1 is missing child exit-code propagation %q", fragment)
+		}
+	}
+
+	if strings.Contains(wrapperScript, `& $BuildScript --sanitized"`) {
+		t.Fatal("sanitized wrapper must not discard the child script's exit code")
 	}
 }

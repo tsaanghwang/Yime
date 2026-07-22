@@ -28,11 +28,10 @@ type Manifest struct {
 }
 
 type derivedEntry struct {
-	text      string
-	weight    int
-	full      string
-	variable  string
-	shorthand string
+	text                                              string
+	weight                                            int
+	full, variable, shorthand                         string
+	fullSpelling, variableSpelling, shorthandSpelling string
 }
 
 // DeriveFromFullDictionary validates one fixed-length Rime dictionary and
@@ -58,6 +57,8 @@ func DeriveFromFullDictionary(sourcePath, outputDir string) (Manifest, error) {
 		derived = append(derived, derivedEntry{
 			text: entry.Text, weight: entry.Weight,
 			full: record.Full, variable: record.Variable, shorthand: record.Shorthand,
+			fullSpelling: record.FullSpelling, variableSpelling: record.VariableSpelling,
+			shorthandSpelling: record.ShorthandSpelling,
 		})
 	}
 	if err := os.MkdirAll(outputDir, 0o755); err != nil {
@@ -81,7 +82,7 @@ func DeriveFromFullDictionary(sourcePath, outputDir string) (Manifest, error) {
 	manifest := Manifest{
 		FormatVersion: 1, GeneratedAt: time.Now().Format(time.RFC3339),
 		SourceFile: filepath.Base(sourcePath), SourceSHA256: sourceHash,
-		Transform: "full-derived-v1", Layout: "rime-layout-key-2026-04-25",
+		Transform: "full-derived-v3-script-spelling", Layout: codemode.LayoutVersion,
 		EntryCount: len(derived), OutputSHA256: map[string]string{},
 	}
 	for name, data := range outputs {
@@ -117,11 +118,11 @@ func buildDictionary(name, mode, version string, entries []derivedEntry) []byte 
 	content.WriteString(version)
 	content.WriteString("\"\nsort: by_weight\nuse_preset_vocabulary: false\n...\n")
 	for _, entry := range entries {
-		code := entry.full
+		code := entry.fullSpelling
 		if mode == "variable" {
-			code = entry.variable
+			code = entry.variableSpelling
 		} else if mode == "shorthand" {
-			code = entry.shorthand
+			code = entry.shorthandSpelling
 		}
 		fmt.Fprintf(&content, "%s\t%s\t%d\n", entry.text, code, entry.weight)
 	}

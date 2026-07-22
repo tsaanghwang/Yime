@@ -5,6 +5,10 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+& (Join-Path $PSScriptRoot 'assert-win32-build-prerequisites.ps1') `
+    -RepoRoot $RepoRoot `
+    -RequireBuildArtifacts
+
 function Assert-Admin {
     $identity = [Security.Principal.WindowsIdentity]::GetCurrent()
     $principal = New-Object Security.Principal.WindowsPrincipal($identity)
@@ -142,6 +146,7 @@ foreach ($toolExe in @(
     "reverse-lookup.exe",
     "settings-tool.exe",
     "diagnostics-tool.exe"
+    "yime-layout-designer.exe"
 )) {
     Assert-PathExists -Path (Join-Path $goBackendRoot $toolExe) -Description "go-backend $toolExe"
 }
@@ -223,4 +228,12 @@ Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" -Na
 Write-Host "Starting PIMELauncher..."
 Start-Process -FilePath (Join-Path $InstallRoot "PIMELauncher.exe")
 
+$verificationReport = Join-Path $repoRoot '.tmp\last-dev-install-verification.json'
+& (Join-Path $PSScriptRoot 'verify-installed-runtime.ps1') `
+    -RepoRoot $repoRoot `
+    -InstallRoot $InstallRoot `
+    -JsonPath $verificationReport `
+    -AllowTextServiceMismatch
+
 Write-Host "Developer install completed: $InstallRoot"
+Write-Host "Verification report: $verificationReport"

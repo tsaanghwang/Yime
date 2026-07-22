@@ -146,6 +146,9 @@ static void testLauncherExecutableValidation() {
 	CHECK(PIME::isExpectedLauncherExecutablePath(LR"(C:\dev\Yime\build\PIMELauncher\pimelauncher.EXE)"));
 	CHECK(!PIME::isExpectedLauncherExecutablePath(LR"(C:\Windows\System32\cmd.exe)"));
 	CHECK(!PIME::isExpectedLauncherExecutablePath(L"PIMELauncher.exe.bak"));
+	CHECK(PIME::canFallbackToPipeAclAfterProcessQueryFailure(ERROR_ACCESS_DENIED));
+	CHECK(!PIME::canFallbackToPipeAclAfterProcessQueryFailure(ERROR_INVALID_HANDLE));
+	CHECK(!PIME::canFallbackToPipeAclAfterProcessQueryFailure(ERROR_INSUFFICIENT_BUFFER));
 }
 
 int main() {

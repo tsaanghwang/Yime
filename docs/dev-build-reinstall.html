@@ -187,8 +187,9 @@
       <ul>
         <li>产物：<code>installer\YIME-*-setup.exe</code>（<code>Build.cmd</code> 成功后生成）</li>
         <li>用户在目标机运行安装包，<strong>不需要</strong>仓库、不需要 <code>Reinstall-PIME-Test.cmd</code></li>
-        <li><strong>当前缺口（发版前必须处理）：</strong>NSIS 安装包<strong>尚未打包 go-backend</strong>。若直接拿现有 setup.exe 装到别的机器，音元拼音可能缺后端、语言栏/编码异常</li>
-        <li>发版前检查清单：安装包是否包含 go-backend（或等价部署步骤）、Rime 数据、版本号、卸载/升级路径是否与开发机硬编码路径脱钩</li>
+        <li>当前 NSIS 安装包为 <strong>YIME-only</strong>，已经包含 go-backend、Yime 输入法数据、Rime 运行库与部署器、原生工具和 x86/x64 TSF 组件，不再包含旧 Python/Node 输入法</li>
+        <li>2026-07-22 本机安装态已确认安装目录只有 <code>input_methods\yime</code>，且上述运行文件与构建树哈希一致；详见 <a href="YIME_INSTALL_VERIFICATION_2026-07-22.md">安装态核验记录</a></li>
+        <li>发版前仍须在干净目标机复核版本号、可信签名、卸载/升级路径、x86/x64 宿主激活和 Smart App Control/WDAC 行为</li>
       </ul>
 
       <div class="note warn">

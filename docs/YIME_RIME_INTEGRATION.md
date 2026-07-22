@@ -52,6 +52,28 @@ The three `yime_*.dict.yaml` files and `yime_lexicon_manifest.json` under
 are generated artifacts: regenerate them from one fixed-length dictionary and
 never edit the variable or shorthand dictionaries independently.
 
+### Continuous final-syllable completion
+
+Yime schemas use `script_translator`, not the generic main
+`table_translator`. Generated dictionary codes therefore contain spaces at
+syllable boundaries, for example `过程` is stored as `guew 8we;`. These spaces
+belong to Rime dictionary syntax; users still type the uninterrupted sequence
+`guew8we;`.
+
+This distinction is required for continuous input. A table translation can
+complete a prefix only when the whole current input is a dictionary prefix;
+its sentence builder otherwise joins complete codes and drops candidates while
+the final syllable is unfinished. The script translator builds a syllable graph
+and keeps the already valid sentence path connected to completion of the final
+syllable. Do not remove the generated spaces or change the main translator back
+to `table_translator`.
+
+The stable `table_translator@custom_phrase` remains separate for explicitly
+maintained custom phrases. The main script user dictionaries carry a
+`_script_v1` suffix so learning records from the former table representation
+are migrated by text into the new code representation rather than opened under
+an incompatible namespace.
+
 Rime deployment caches remain local and must not be committed:
 
 - `%AppData%\PIME\Rime\`

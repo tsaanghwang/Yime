@@ -13,11 +13,13 @@ $files = @(
     'go-backend\build\go-backend\tool-hub.exe',
     'go-backend\build\go-backend\settings-tool.exe',
     'go-backend\build\go-backend\diagnostics-tool.exe',
+	'go-backend\build\go-backend\yime-layout-designer.exe',
     'go-backend\build\go-backend\lexicon-manager.exe',
     'go-backend\build\go-backend\reverse-lookup.exe',
     'go-backend\build\go-backend\system-lexicon-audit.exe',
     'go-backend\build\go-backend\blocklist-manager.exe',
     'go-backend\build\go-backend\input_methods\yime\rime_deployer.exe',
+	'go-backend\build\go-backend\input_methods\yime\rime_dict_manager.exe',
     'go-backend\build\go-backend\input_methods\yime\rime.dll'
 )
 

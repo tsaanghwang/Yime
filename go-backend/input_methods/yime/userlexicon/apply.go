@@ -1,6 +1,7 @@
 package userlexicon
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -41,4 +42,40 @@ func RebuildRimeLexicon(sourcePath, targetPath string, codeMap map[string]revers
 		content.WriteByte('\n')
 	}
 	return os.WriteFile(targetPath, []byte(content.String()), 0o644)
+}
+
+// RebuildAllRimeLexicons regenerates the three derived Rime user lexicons
+// from the user-authored numeric-tone Pinyin source and the installed code
+// map. The source file is left untouched.
+func RebuildAllRimeLexicons(sharedDir, userDir string) error {
+	return RebuildAllRimeLexiconsTo(sharedDir, userDir, userDir)
+}
+
+// RebuildAllRimeLexiconsTo reads the stable numeric-tone source from
+// sourceUserDir and writes all three layout-dependent tables to targetDir.
+// This lets a layout switch build them in its staging transaction.
+func RebuildAllRimeLexiconsTo(codeMapDir, sourceUserDir, targetDir string) error {
+	sourcePath := filepath.Join(sourceUserDir, SourceFileName)
+	if _, err := os.Stat(sourcePath); errors.Is(err, os.ErrNotExist) {
+		return nil
+	} else if err != nil {
+		return err
+	}
+	if err := os.MkdirAll(targetDir, 0o755); err != nil {
+		return err
+	}
+	codeMap, err := reverselookup.LoadSharedCodeMap(codeMapDir)
+	if err != nil {
+		return err
+	}
+	for _, mode := range []reverselookup.Mode{
+		reverselookup.ModeVariable,
+		reverselookup.ModeFull,
+		reverselookup.ModeShorthand,
+	} {
+		if err := RebuildRimeLexicon(sourcePath, RimeLexiconPath(targetDir, string(mode)), codeMap, mode); err != nil {
+			return fmt.Errorf("rebuild %s user lexicon: %w", mode, err)
+		}
+	}
+	return nil
 }

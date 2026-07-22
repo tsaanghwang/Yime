@@ -1,6 +1,7 @@
 param(
     [Parameter(Mandatory = $true)]
-    [string]$Input,
+    [Alias("Input")]
+    [string]$InputPath,
     [string]$PimeRoot = "",
     [string]$RimeUserDir = ""
 )
@@ -19,7 +20,7 @@ $importer = Join-Path $PSScriptRoot "import-yime-full-lexicon.ps1"
 
 # The fixed-length dictionary is the only imported source. The importer derives
 # variable and shorthand dictionaries and writes the generation manifest.
-& $importer -Input $Input -OutputDir $sharedDir
+& $importer -InputPath $InputPath -OutputDir $sharedDir
 if ($LASTEXITCODE -ne 0) {
     throw "Yime lexicon import failed with exit code $LASTEXITCODE"
 }
@@ -31,10 +32,12 @@ foreach ($mode in @("full", "variable", "shorthand")) {
         Copy-Item -LiteralPath (Join-Path $sharedDir $name) -Destination (Join-Path $RimeUserDir $name) -Force
     }
 }
-Copy-Item -LiteralPath (Join-Path $sharedDir "yime_lexicon_manifest.json") -Destination (Join-Path $RimeUserDir "yime_lexicon_manifest.json") -Force
+# Do not copy the generation manifest here. On the next YIME startup, the
+# stale or absent user manifest makes RefreshRimeData atomically refresh the
+# dictionaries, re-encode custom_phrase_*.txt, and write the manifest last.
 
 Write-Host "Yime single-source data generated and deployed."
-Write-Host "  imported source: $((Resolve-Path -LiteralPath $Input).Path)"
+Write-Host "  imported source: $((Resolve-Path -LiteralPath $InputPath).Path)"
 Write-Host "  generated data:  $sharedDir"
 Write-Host "  PIME user dir:   $RimeUserDir"
 Write-Host "Redeploy Rime or restart the installed YIME runtime before verification."

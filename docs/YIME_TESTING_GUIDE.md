@@ -8,28 +8,21 @@
 |------|------|----------|
 | 纯逻辑单元测试 | 词库、设置、反查、布局、构建脚本 | 普通 Windows 开发环境 |
 | Go 根包关键回归 | 语言栏命令、分页权、工具启动、用户词库应用 | CI 与本地 |
-| 真实 Rime 集成测试 | librime 会话、方案、部署、候选页大小 | 本地显式启用 |
+| 真实 Rime 集成测试 | librime 会话、方案、部署、候选页大小 | CI 与本地独立作业 |
 | C++/Rust 测试与构建 | TSF 宿主、启动器、注册组件 | VS/Rust 工具链 |
 | 安装态测试 | Program Files 中的真实二进制、进程、注册表和 Code Integrity | 管理员测试环境 |
 
 ## 2. CI 稳定集
 
-在 `go-backend` 目录运行：
+从仓库根目录运行统一入口：
 
 ```powershell
-go vet ./...
-go test . ./cmd/lexicon-manager ./cmd/reverse-lookup-tool ./cmd/settings-tool `
-  ./input_methods/yime/reverselookup `
-  ./input_methods/yime/runtimechange `
-  ./input_methods/yime/settings `
-  ./input_methods/yime/systemlexicon `
-  ./input_methods/yime/toolhub `
-  ./input_methods/yime/userblocklist `
-  ./input_methods/yime/userlexicon
-go test ./input_methods/yime -timeout 60s
+.\tools\test-go.ps1
 ```
 
-根包使用与 `.github/workflows/ci.yaml` 一致的关键测试名单。CI 必须先通过 `go test -list` 逐项确认名单中的测试真实存在，再执行该名单；不得只依赖可部分匹配的正则。修改 CI 守卫时，应同步更新 [架构文档](YIME_ARCHITECTURE.md)。
+该入口执行 `go vet ./...`、`go test ./...`，并核对根包关键测试名单。CI 必须先通过 `go test -list` 逐项确认名单中的测试真实存在，再执行该名单；不得只依赖可部分匹配的正则。修改 CI 守卫时，应同步更新 [架构文档](YIME_ARCHITECTURE.md)。
+
+GitHub Actions 将 Rust、原生构建、Go 稳定集、真实 Rime、race 和安装器拆为独立作业。前五项可以并行、单独重跑；安装器只消费已通过的原生构建制品，并用提交 SHA 命名和保留制品，回退时可以明确选择上一提交的构建，而不是复用不明来源的本机目录。
 
 CI 当前重点保护：
 
@@ -76,19 +69,13 @@ go test -race ./... -timeout 300s
 
 ## 4. 真实 Rime 集成测试
 
-真实测试默认跳过，显式设置环境变量：
+真实测试默认不混入普通 Go 稳定集；使用独立入口显式运行：
 
 ```powershell
-cd go-backend
-$env:YIME_RUN_REAL_RIME_TESTS = "1"
-go test ./input_methods/yime -run TestReal -v -count=1
+.\tools\test-real-rime.ps1
 ```
 
-运行前确认 `input_methods/yime/data/` 完整，且没有其它测试或输入法进程同时操作相同 Rime 全局状态。测试结束后删除环境变量：
-
-```powershell
-Remove-Item Env:YIME_RUN_REAL_RIME_TESTS
-```
+脚本会临时设置并恢复 `YIME_RUN_REAL_RIME_TESTS`。运行前确认 `input_methods/yime/data/` 完整，且没有其它测试或输入法进程同时操作相同 Rime 全局状态。
 
 ## 5. 原生 UI 测试规则
 
@@ -131,6 +118,19 @@ NSIS 守卫还必须确认默认安装目录不会被空注册表值覆盖、必
 必须遵守 `AGENTS.md`：原生 Rime 会话保持 `UsesBackendCandidatePaging() == true`，不得用 Go 侧候选切片掩盖配置问题。
 
 ### 6.1 C++/TSF DLL 调试（Cursor / VS Code）
+
+Cursor 不兼容 `${command:pickProcess}` 时有两条不依赖 QuickPick 的路径：
+
+```powershell
+# 启动真实常驻 TSF 宿主并打印 PID；随后使用 launch.json 的 Cursor-safe PID 配置
+.\tools\start-tsf-debug-host.ps1 -Architecture x64
+
+# 或完全绕过 cpptools，直接启动 CDB 并附加到新建的 charmap
+.\tools\attach-tsf-cdb.ps1 -Architecture x64
+```
+
+x86 宿主把 `-Architecture` 改为 `x86`；脚本会使用
+`C:\Windows\SysWOW64\charmap.exe`，不能用 x64 宿主替代其安装态验证。
 
 C++ 侧（`PIMETextService.dll` 等组件）用 `cppvsdbg`（由 `ms-vscode.cpptools` 提供）调试。Release 默认产出 PDB，由 CMake 选项控制：
 
@@ -199,6 +199,17 @@ cmake --build build --config Release
 
 ### 8.2 重装行为与验证顺序
 
+需要完整闭环时，在管理员 PowerShell 中运行：
+
+```powershell
+.\tools\dev-build-install-verify.ps1
+```
+
+该入口依次执行现有 `build.bat`、规范的 `Reinstall-PIME-Test.cmd`（保留
+DLL 锁定时的就地安装路径），最后核对安装文件哈希、注册表和运行中的
+PIMELauncher。若 `build/` 或 Go backend 制品被清理，安装会在写系统目录前
+明确失败并要求重建。
+
 `PIMETextService.dll` 被 `explorer.exe` 等宿主加载时，脚本自动走就地安装（DLL 跳过、其余全部更新），这是设计行为不是失败；需要干净全量重装（含 DLL 替换、反注册重注册、删安装树）时先重启 Windows 再跑一次。
 
 验证顺序：
@@ -210,6 +221,16 @@ cmake --build build --config Release
 5. 检查 `%LOCALAPPDATA%\PIME\Logs\go_backend.log`
 6. 检查 CodeIntegrity Operational 日志（注意区分：本机 SAC 强制模式下，未签名 `server.exe` 的 3033/3077 为审计记录；Bonjour/Keyman 等第三方事件与 YIME 无关，先看事件消息中的文件路径再定性）
 
+可先运行机器可读核验，结果同时打印到终端并可写入 JSON：
+
+```powershell
+.\tools\verify-installed-runtime.ps1 `
+  -JsonPath .\.tmp\installed-runtime.json `
+  -AllowTextServiceMismatch
+```
+
+`complete` 表示全部哈希一致；`partial` 只允许被宿主锁定的 TSF DLL 暂未替换；其它缺失或不一致均为 `failed`。`dev-install.ps1` 会自动把最近一次报告写到 `.tmp\last-dev-install-verification.json`。
+
 语言栏或 TSF 问题必须在安装态至少复现一次；不能用源码目录中的临时 EXE 代替。
 
 真实 32 位宿主使用 `C:\Windows\SysWOW64\charmap.exe`。在 64 位 Windows 上，`SysWOW64` 中该文件的 PE machine 应为 `0x014C`；不要用 `System32\charmap.exe` 代替 x86 验证。发布烟雾测试需在该进程中实际激活 YIME，并完成组字、候选和上屏。
@@ -220,6 +241,7 @@ cmake --build build --config Release
 - 2026-07-12：完整安装态清单逐项跑完并留痕（[YIME_INSTALL_VERIFICATION_2026-07-12.md](YIME_INSTALL_VERIFICATION_2026-07-12.md)）——重启后干净全量重装、三件哈希构建↔安装全一致、重启自启动实测（开机 27 秒内自动拉起）、7 工具入口不崩、TIP 注册与真实组词日志、CodeIntegrity 核查、runtimechange 协议 `-race` 全绿。签名完成后须以该文档为模板复跑留新档。
 - 2026-07-15：真实 32 位宿主 `C:\Windows\SysWOW64\charmap.exe` 人工烟雾测试完成，暂未发现激活、组字、候选或上屏问题；签名产物仍须重复验证。
 - 2026-07-15：完成 [YIME 1.4.0 未签名发布演练](YIME_RELEASE_REHEARSAL_2026-07-15.md)；演练修复锁定 TSF DLL 时标准安装器部分卸载后失败的问题。x64 DLL 已安排重启替换，重启后补核最终哈希。
+- 2026-07-22：完成 [YIME 1.4.0-dev 安装态复核](YIME_INSTALL_VERIFICATION_2026-07-22.md)；启动器、x86/x64 TSF DLL、Go 后端、全部原生工具、Rime 运行库与部署器均和当前构建物哈希一致，注册表安装根、自启动项及运行进程正常，无待重启的 `.new` 文件；同轮补齐并实装验证布局设计器 VERSIONINFO 与卸载项 `InstallLocation`。该轮是安装完整性复核，不替代签名发行包的宿主输入烟雾测试。
 
 ## 9. 修改类型与最低验证
 

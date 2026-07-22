@@ -63,6 +63,20 @@ code {
   </article>
 
   <article>
+    <h2>输入方案与连续输入</h2>
+    <p>变长、等长、省键三种方案都启用连续输入和 Rime 整句组句。变长、省键派生码保留零声母音节的虚首音，作为自动分词边界。</p>
+  </article>
+
+  <article>
+    <h2>候选选择键</h2>
+    <ul>
+      <li><code>Space</code>、<code>Enter</code> 或 <code>Shift+1</code> 选择第一候选；<code>Shift+2</code> 至 <code>Shift+9</code> 选择其余候选。</li>
+      <li>候选窗显示 <code>⇧1</code>…<code>⇧9</code>，箭头表示必须按住 Shift。与流行拼音输入法不同，Yime 有意不采用裸数字键选词；Base 层 <code>0</code>—<code>9</code> 十个数字键始终用于编码，候选出现时也不切换含义，<code>Shift+0</code> 不选词。</li>
+      <li>物理键面是 <code>! @ # $ % ^ &amp; * (</code>，布局图会照实标出；候选窗不直接用连续标点作序号，以保持易读。</li>
+    </ul>
+  </article>
+
+  <article>
     <h2>语言栏里的维护项</h2>
     <ul>
       <li><strong>数据维护</strong>：集中放置“同步数据…”“重新部署…”和“打开目录”；两项执行型维护命令都会再次确认。</li>
@@ -110,6 +124,15 @@ code {
       <li>源文件为 <code>%APPDATA%\PIME\Rime\yime_blocklist.txt</code>。</li>
       <li>工具支持添加、搜索、多选删除、导入、导出，以及撤销最近一次成功改动。</li>
       <li>保存成功后立即影响后续候选过滤，无需重新部署。</li>
+    </ul>
+  </article>
+
+  <article>
+    <h2>高级布局</h2>
+    <ul>
+      <li>从“工具中心 → 高级布局”打开，可从当前布局新建副本、保存多个命名方案并即时试算三模式编码。</li>
+      <li>个人方案保存在 <code>%APPDATA%\PIME\Rime\yime_layouts</code>；官方共享布局保持只读。</li>
+      <li>确认应用后，等长、变长、省键三种模式同步重建系统词典和用户自建词表、迁移各自的学习库；全部编译成功后才通知输入会话统一刷新。</li>
     </ul>
   </article>
 

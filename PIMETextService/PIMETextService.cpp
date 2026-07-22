@@ -317,7 +317,8 @@ void TextService::updateCandidates(Ime::EditSession* session) {
 	// number of available keys used to select them.
 	assert(candidates_.size() <= selKeys_.size());
 	for (int i = 0; i < candidates_.size(); ++i) {
-		candidateWindow_->add(candidates_[i], selKeys_[i]);
+		const std::wstring label = i < selLabels_.size() ? selLabels_[i] : std::wstring();
+		candidateWindow_->add(candidates_[i], selKeys_[i], label);
 	}
 	candidateWindow_->recalculateSize();
 	candidateWindow_->refresh();

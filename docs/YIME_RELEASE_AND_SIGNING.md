@@ -6,7 +6,7 @@
 
 - 工作区干净，发布目标提交已合入并推送到 `main`；`yime-stable` 仅作为保留的集成分支
 - 子模块提交已先推送到各自 remote，主仓库不引用远端不存在的提交
-- `version.txt` 与本次实际发布版本一致；YIME 1.4.0 的发布值为 `1.4.0`
+- `version.txt` 与构建身份一致；当前未发布开发线使用 `1.4.0-dev`，只有创建正式 `v1.4.0` 标签前才改为 `1.4.0`
 - 不得重新使用已经存在的历史标签。仓库已有 `v1.0.0`、`v1.1.0` 和 `v1.3.0-*`；即使 Yime 作为独立产品首次公开发布，也不能再次创建同名 `v1.0.0` 标签
 - `CHANGELOG.md` 的 `[Unreleased]` 已核对
 - Visual Studio、CMake、Rust、Go、NSIS 和 `go-winres` 可用
@@ -115,7 +115,7 @@ cd ..
 ## 5. 安装包检查
 
 - 安装包版本与 `version.txt` 一致
-- `go-backend/build/go-backend/` 中 8 个 Go EXE 全部存在
+- `go-backend/build/go-backend/` 中 9 个 Go EXE 全部存在且带 VERSIONINFO
 - NSIS 必装主组件递归包含 `go-backend/build/go-backend/`，安装包中不存在旧 Python/Node 输入法及其组件选择逻辑
 - `input_methods/yime/data/`、`rime.dll`、`rime_deployer.exe` 已打包
 - 打包目录 `input_methods/` 下没有 `.go` 源码或测试文件
@@ -123,6 +123,7 @@ cd ..
 - `go-backend/build/go-backend/input_methods/` 只包含带 `ime.json` 的运行时输入法目录
 - 安装包和内部二进制签名有效
 - 安装包 SHA-256 已记录在发布说明中
+- `installer/build-manifest.json` 记录版本、提交、分支、签名状态及关键产物 SHA-256；回退时按该清单选择上一提交制品
 - 全新安装、开发卸载后安装和已有版本升级三种情况下，目标目录都保持为 `C:\Program Files (x86)\YIME`
 
 ```powershell
@@ -159,6 +160,7 @@ $built.Hash -eq $installed.Hash
 ## 7. 回滚
 
 - 保留上一版安装包及 SHA-256
+- CI 未签名测试包按提交 SHA 命名并保留 30 天；回退前先核对 `build-manifest.json` 的提交与文件哈希
 - 回滚优先使用独立提交或发布标签，不使用 `git reset --hard`
 - 若 DLL 被宿主锁定，标准重装流程会自动采用就地安装；只有确需替换被锁 DLL 时才重启 Windows
 - 回滚后重新核对安装文件哈希和运行进程时间，不要只检查源码分支

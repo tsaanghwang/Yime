@@ -95,6 +95,10 @@ public:
 		selKeys_ = selKeys;
 	}
 
+	void setSelLabels(std::vector<std::wstring> selLabels) {
+		selLabels_ = std::move(selLabels);
+	}
+
 	bool candUseCursor() const {
 		return candUseCursor_;
 	}
@@ -167,6 +171,7 @@ private:
 	bool updateFont_;
 	int candPerRow_;
 	std::wstring selKeys_;
+	std::vector<std::wstring> selLabels_;
 	bool candUseCursor_;
 	std::wstring candFontName_;
 	int candFontSize_;

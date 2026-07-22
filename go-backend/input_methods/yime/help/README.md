@@ -6,14 +6,23 @@ Rime frontend.
 ## Quick Start
 
 - Use the Yime schema from the PIME language bar settings menu.
-- Choose candidates with Space, Enter, or the displayed selection keys.
-- Use arrow keys, Page Up, Page Down, Home, and End to move around candidates.
+- Choose candidates with Space, Enter, or Shift+1 through Shift+9. The candidate
+  window labels these combinations `⇧1`…`⇧9`; bare digits remain composition keys.
+- Unlike mainstream Pinyin IMEs, Yime deliberately does not use bare digits for
+  candidate selection. All ten Base-layer digits (`0` through `9`) keep their
+  composition meaning while candidates are visible; Shift+0 does not select a candidate.
+- The Shift-layer keycaps are `! @ # $ % ^ & * (`. Help and the layout diagram
+  show those physical key faces, but candidate labels use the clearer arrow notation.
+- All three schemas support continuous input and Rime sentence composition. Variable-length
+  and shorthand codes retain the virtual initial of zero-initial syllables as a word boundary.
+- Use the four arrow keys to move the candidate cursor and Enter to confirm the
+  highlighted candidate. Page Up, Page Down, Home, and End provide paging navigation.
 - Press Esc to cancel the current composition.
 
 ## Menus
 
 - Tool hub: opens `tool-hub.exe`, the standalone Yime tool window. It contains
-  lexicon management, reverse lookup, system-lexicon audit, blocklist,
+  advanced user layouts, lexicon management, reverse lookup, system-lexicon audit, blocklist,
   settings, diagnostics, data directories, help, and feedback guidance.
 - Language bar quick buttons:
   - **用户词库** → `lexicon-manager.exe`
@@ -51,6 +60,11 @@ Rime frontend.
 - Settings tool: applies schema and candidate-display settings. It can also
   create a verified portable backup under `Documents\YIME 备份` and restore the
   latest manual backup after first creating a safety snapshot.
+- Advanced layout: clones the active layout, lets an advanced user swap
+  Yinyuan IDs on a keyboard diagram, test all three code modes, and save named
+  profiles. Applying a profile writes only to `%APPDATA%\PIME\Rime`, migrates
+  layout-dependent learning databases, explicitly compiles all three Yime
+  schemas, and then asks active sessions to reload safely.
 - Help: view this help or the trial-feedback guidance.
 
 ## Standalone Tools Direction
@@ -87,3 +101,4 @@ and typing tone-marked pinyin is not.
   `PIME\go-backend\input_methods\yime\data`
 - PIME Go backend logs: `%LOCALAPPDATA%\PIME\Logs`
 - Portable user backups: `%USERPROFILE%\Documents\YIME 备份`
+- Saved personal layouts: `%APPDATA%\PIME\Rime\yime_layouts`

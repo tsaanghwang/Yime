@@ -5,7 +5,7 @@
 schema:
   schema_id: yime_full
   name: "Yime 等长模式"
-  version: "2026-07-01"
+  version: "2026-07-18-layout-6d00e609f689"
 
 engine:
   processors:
@@ -25,17 +25,20 @@ engine:
     - fallback_segmentor
   translators:
     - table_translator@custom_phrase
-    - table_translator
+    # Keep tail completion alive after an already valid sentence prefix.
+    - script_translator
     - punct_translator
 
 speller:
-  alphabet: "qufvkc;gxwlj$op[strhdm.aibe%8/,y]1'n5HD64JKL7930z2SMAN@!#"
+  alphabet: "1234567890-=qwertyuiop[]\\asdfghjkl;'zxcvbnm,./JKLUIOM<>NG"
   delimiter: " "
 
 translator:
   dictionary: yime_full
+  user_dict: yime_full_layout_6d00e609f689_script_v1
   enable_user_dict: true
-  enable_sentence: false
+  enable_sentence: true
+  sentence_over_completion: true
   enable_completion: true
 
 custom_phrase:
@@ -43,7 +46,8 @@ custom_phrase:
   user_dict: custom_phrase_full
   db_class: stabledb
   enable_completion: true
-  enable_sentence: false
+  enable_sentence: true
+  sentence_over_completion: true
   initial_quality: 1
 
 menu:
@@ -53,5 +57,7 @@ punctuator:
   import_preset: default
 
 key_binder:
-  import_preset: default
+  # Every printable key in Yime's alphabet is encoding data. Paging uses the
+  # native PageUp/PageDown keys; do not import default printable-key bindings.
+  bindings: []
 

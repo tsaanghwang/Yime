@@ -9,7 +9,9 @@ import (
 
 const (
 	SyllableCodeLength = 4
-	VirtualInitial     = 'H'
+	VirtualInitial     = '\''
+	LayoutVersion      = "rime-layout-key-trial-v1-2026-07-18"
+	LayoutAlphabet     = "1234567890-=qwertyuiop[]\\asdfghjkl;'zxcvbnm,./JKLUIOM<>NG"
 )
 
 // Record contains all runtime representations derived from one canonical code.
@@ -17,6 +19,13 @@ type Record struct {
 	Full      string
 	Variable  string
 	Shorthand string
+	// *Spelling keeps the same codes split at syllable boundaries for
+	// script_translator.  Runtime keystrokes remain delimiter-free; spaces are
+	// dictionary syntax that let librime build a syllable graph and complete an
+	// unfinished final syllable after an already valid sentence prefix.
+	FullSpelling      string
+	VariableSpelling  string
+	ShorthandSpelling string
 }
 
 type musicalMetadata struct {
@@ -27,10 +36,19 @@ type musicalMetadata struct {
 // Each triple is high, middle, low for one musical-quality group. These are
 // Rime layout-key projections of M01-M33, not a second lexicon source.
 var musicalGroups = []string{
-	"u;o", "vgx", "/z,", "fds", "jkl", "tre", "JKL", "ASD", "!@#", "aNm", "iMc",
+	"jkl", "uio", "m,.", "fds", "rew", "vcx", "JKL", "UIO", "M<>", "aNz", ";G/",
 }
 
 var musicalByKey = buildMusicalMetadata()
+var layoutKeySet = buildLayoutKeySet()
+
+func buildLayoutKeySet() map[rune]bool {
+	result := make(map[rune]bool, len([]rune(LayoutAlphabet)))
+	for _, key := range LayoutAlphabet {
+		result[key] = true
+	}
+	return result
+}
 
 func buildMusicalMetadata() map[rune]musicalMetadata {
 	result := make(map[rune]musicalMetadata, len(musicalGroups)*3)
@@ -46,7 +64,11 @@ func buildMusicalMetadata() map[rune]musicalMetadata {
 // BuildRecord derives all modes from a canonical code containing one or more
 // complete four-code syllables.
 func BuildRecord(full string) (Record, error) {
-	full = strings.TrimSpace(full)
+	// Rime script dictionaries write spaces between syllables.  The canonical
+	// fixed-length value and older table dictionaries do not.  Accept both
+	// representations at this boundary and rebuild the authoritative split
+	// below from groups of four codes.
+	full = strings.ReplaceAll(strings.TrimSpace(full), " ", "")
 	if full == "" {
 		return Record{}, fmt.Errorf("等长码不能为空")
 	}
@@ -54,28 +76,81 @@ func BuildRecord(full string) (Record, error) {
 	if len(runes)%SyllableCodeLength != 0 {
 		return Record{}, fmt.Errorf("等长码长度必须是 %d 的倍数，实际为 %d：%q", SyllableCodeLength, len(runes), full)
 	}
+	for _, key := range runes {
+		if !layoutKeySet[key] {
+			return Record{}, fmt.Errorf("等长码包含布局外字符 %q", key)
+		}
+	}
 	var variable strings.Builder
 	var shorthand strings.Builder
+	fullParts := make([]string, 0, len(runes)/SyllableCodeLength)
+	variableParts := make([]string, 0, len(runes)/SyllableCodeLength)
+	shorthandParts := make([]string, 0, len(runes)/SyllableCodeLength)
 	for start := 0; start < len(runes); start += SyllableCodeLength {
 		syllable := runes[start : start+SyllableCodeLength]
-		merged := mergeAdjacent(syllable)
-		isVirtual := len(merged) > 0 && merged[0] == VirtualInitial
-		variablePart := merged
-		if isVirtual {
-			variablePart = variablePart[1:]
-		}
-		variable.WriteString(string(variablePart))
+		fullParts = append(fullParts, string(syllable))
+		variablePart := mergeAdjacent(syllable)
+		variableText := string(variablePart)
+		variable.WriteString(variableText)
+		variableParts = append(variableParts, variableText)
 
-		initial := []rune(nil)
-		ganyin := variablePart
-		if !isVirtual && len(variablePart) > 0 {
-			initial = variablePart[:1]
-			ganyin = variablePart[1:]
-		}
-		shorthand.WriteString(string(initial))
-		shorthand.WriteString(string(omitMiddleTone(ganyin)))
+		// Keep the real or virtual initial as an explicit syllable boundary in
+		// every derived mode. In particular, zero-initial syllables retain '\'',
+		// allowing Rime's sentence translator to segment concatenated codes.
+		initial := variablePart[:1]
+		ganyin := variablePart[1:]
+		shorthandPart := string(initial) + string(omitMiddleTone(ganyin))
+		shorthand.WriteString(shorthandPart)
+		shorthandParts = append(shorthandParts, shorthandPart)
 	}
-	return Record{Full: full, Variable: variable.String(), Shorthand: shorthand.String()}, nil
+	record := Record{
+		Full: full, Variable: variable.String(), Shorthand: shorthand.String(),
+		FullSpelling:      strings.Join(fullParts, " "),
+		VariableSpelling:  strings.Join(variableParts, " "),
+		ShorthandSpelling: strings.Join(shorthandParts, " "),
+	}
+	if err := ValidateContinuousInputRecord(record); err != nil {
+		return Record{}, err
+	}
+	return record, nil
+}
+
+// ValidateContinuousInputRecord protects the two dictionary invariants needed
+// by Rime sentence composition: every spelling has an explicit syllable split,
+// and every projected syllable retains its real or virtual initial. Without
+// both, completion can keep working while multi-syllable sentence paths vanish.
+func ValidateContinuousInputRecord(record Record) error {
+	full := []rune(record.Full)
+	if len(full) == 0 || len(full)%SyllableCodeLength != 0 {
+		return fmt.Errorf("continuous input requires a non-empty full code divisible by %d", SyllableCodeLength)
+	}
+	wantSyllables := len(full) / SyllableCodeLength
+	type spellingField struct {
+		name     string
+		code     string
+		spelling string
+	}
+	fields := []spellingField{
+		{"full", record.Full, record.FullSpelling},
+		{"variable", record.Variable, record.VariableSpelling},
+		{"shorthand", record.Shorthand, record.ShorthandSpelling},
+	}
+	for _, field := range fields {
+		parts := strings.Fields(field.spelling)
+		if len(parts) != wantSyllables {
+			return fmt.Errorf("%s spelling has %d syllables, want %d", field.name, len(parts), wantSyllables)
+		}
+		if strings.Join(parts, "") != field.code {
+			return fmt.Errorf("%s spelling does not reconstruct its runtime code", field.name)
+		}
+		for i, part := range parts {
+			runes := []rune(part)
+			if len(runes) == 0 || runes[0] != full[i*SyllableCodeLength] {
+				return fmt.Errorf("%s syllable %d lost its real or virtual initial", field.name, i+1)
+			}
+		}
+	}
+	return nil
 }
 
 func mergeAdjacent(input []rune) []rune {

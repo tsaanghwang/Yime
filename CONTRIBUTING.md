@@ -64,7 +64,7 @@
 ## Pull Request 流程
 
 1. 从 `yime-stable` 创建特性分支
-2. 按 [测试与验证指南](docs/YIME_TESTING_GUIDE.md) 运行 CI 稳定集；不要用当前尚未隔离完成的 `go test ./...` 作为唯一结论
+2. 按 [测试与验证指南](docs/YIME_TESTING_GUIDE.md) 运行统一验证入口；Go 稳定集必须覆盖 `go vet ./...` 和 `go test ./...`
 3. 确保通过构建：`build.bat`（在 `go-backend/` 目录）
 4. 提交 PR，标题使用 Conventional Commits 格式
 5. 等待 review 后合并

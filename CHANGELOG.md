@@ -7,10 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.4.0] - 2026-07-15
-
 ### Added
 
+- Split GitHub Actions into independently rerunnable Rust, native, Go, real-Rime, race, and installer jobs; retain commit-addressed native and installer artifacts for rollback
+- Add machine-readable installed-runtime hash verification, unsigned installer smoke testing, and commit-addressed build manifests
+- Pin go-winres v0.3.3 in installer CI so test packages retain required Windows VERSIONINFO instead of silently degrading
 - Restore `go test -race ./...` as a required GitHub Actions gate with an explicitly provisioned MSYS2 UCRT64 GCC toolchain and a guard that rejects silent removal
 - Add regression-tested UI policy for UI-less candidate ownership, bounded candidate font sizes, and monitor-work-area popup positioning
 - PE machine-type verification for Win32, x64, and ARM64 native build outputs, enforced by local builds, development installs, and CI
@@ -79,6 +80,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Missing VERSIONINFO and Yime icon resources on `yime-layout-designer.exe`; all nine Go executables now share the same version-resource build path and regression guards
+- Missing `InstallLocation` in the Windows uninstall registration; NSIS now publishes the resolved YIME installation directory
 - Missing Windows FileVersion, ProductVersion, and ProductName metadata on PIMELauncher, the NSIS installer, and the generated uninstaller
 - Standard installer upgrades failing after partially deleting the installation: the old pre-install path tried to remove a still-nonempty install root and treated the resulting reboot flag as fatal, while loaded TSF DLLs were deleted recursively. Upgrades are now in-place and DLLs use staged immediate-or-reboot replacement
 - Standard fresh installations requiring sign-out or reboot before PIMELauncher first started; the installer now starts it immediately after registration

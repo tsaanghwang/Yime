@@ -1,9 +1,14 @@
 #pragma once
 
+#include <windows.h>
 #include <cwchar>
 #include <string>
 
 namespace PIME {
+
+inline bool canFallbackToPipeAclAfterProcessQueryFailure(DWORD error) {
+	return error == ERROR_ACCESS_DENIED;
+}
 
 inline bool isExpectedLauncherExecutablePath(const std::wstring& imagePath) {
 	const std::wstring::size_type separator = imagePath.find_last_of(L"\\/");
