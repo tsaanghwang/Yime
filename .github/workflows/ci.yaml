@@ -39,7 +39,7 @@ jobs:
         with:
           go-version: '1.26.4'
           cache-dependency-path: go-backend/go.sum
-      - name: Run all Go regression tests
+      - name: Run Go regression tests
         shell: pwsh
         run: .\tools\test-go.ps1
 
@@ -54,6 +54,18 @@ jobs:
         with:
           go-version: '1.26.4'
           cache-dependency-path: go-backend/go.sum
+      - name: Fetch Rime shared data for integration tests
+        shell: pwsh
+        run: |
+          $dataDir = 'go-backend\input_methods\yime\data'
+          if (-not (Test-Path "$dataDir\default.yaml")) {
+            git clone --depth=1 https://github.com/gaboolic/rime-frost.git $env:RUNNER_TEMP\rime-frost
+            Copy-Item -Force $env:RUNNER_TEMP\rime-frost\default.yaml $dataDir\
+            Get-ChildItem $env:RUNNER_TEMP\rime-frost\*.yaml | Where-Object { $_.Name -notlike '*.custom*' } | Copy-Item -Force -Destination $dataDir\
+            if (Test-Path $env:RUNNER_TEMP\rime-frost\opencc) {
+              Copy-Item -Recurse -Force $env:RUNNER_TEMP\rime-frost\opencc $dataDir\
+            }
+          }
       - name: Run real Rime integration tests
         shell: pwsh
         run: .\tools\test-real-rime.ps1
@@ -68,7 +80,7 @@ jobs:
         with:
           go-version: '1.26.4'
           cache-dependency-path: go-backend/go.sum
-      - name: Install MSYS2 UCRT64 GCC
+      - name: Install MSYS2 UCRT64 GCC for Go race detector
         id: msys2
         uses: msys2/setup-msys2@v2
         with:
@@ -108,13 +120,13 @@ jobs:
           }
       - name: Install pinned i686 host toolchain
         run: rustup toolchain install stable-i686-pc-windows-msvc --profile minimal
-      - name: Build Win32 components
+      - name: Build Win32 C++ components
         shell: cmd
         run: |
           call "%VSINSTALLDIR%Common7\Tools\VsDevCmd.bat" -arch=x86 -host_arch=x64 >nul
           cmake . -Bbuild -G "Visual Studio 17 2022" -A Win32 -DCMAKE_POLICY_VERSION_MINIMUM=3.5
           cmake --build build --config Release
-      - name: Build x64 text service
+      - name: Build x64 C++ components
         shell: cmd
         run: |
           call "%VSINSTALLDIR%Common7\Tools\VsDevCmd.bat" -arch=x64 -host_arch=x64 >nul
@@ -210,7 +222,7 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v')
         shell: pwsh
         run: .\tools\sign-release.ps1 -RequireComplete
-      - name: Build installer
+      - name: Build the installer
         shell: pwsh
         run: |
           Set-Location installer
@@ -238,3 +250,28 @@ jobs:
             installer/build-manifest.json
           if-no-files-found: error
           retention-days: 30
+
+  core-build:
+    name: core-build
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    needs: [build-contract, rust-i686-host, native-build, go-tests, real-rime-tests, go-race-msys2, installer-package]
+    steps:
+      - name: Preserve legacy aggregate build contract
+        shell: bash
+        env:
+          CONTRACT_RESULT: ${{ needs['build-contract'].result }}
+          RUST_RESULT: ${{ needs['rust-i686-host'].result }}
+          NATIVE_RESULT: ${{ needs['native-build'].result }}
+          GO_RESULT: ${{ needs['go-tests'].result }}
+          REAL_RIME_RESULT: ${{ needs['real-rime-tests'].result }}
+          RACE_RESULT: ${{ needs['go-race-msys2'].result }}
+          INSTALLER_RESULT: ${{ needs['installer-package'].result }}
+        run: |
+          test "$CONTRACT_RESULT" = success
+          test "$RUST_RESULT" = success
+          test "$NATIVE_RESULT" = success
+          test "$GO_RESULT" = success
+          test "$REAL_RIME_RESULT" = success
+          test "$RACE_RESULT" = success
+          test "$INSTALLER_RESULT" = success

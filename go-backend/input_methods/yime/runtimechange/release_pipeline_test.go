@@ -17,6 +17,7 @@ func TestReleasePipelineSignsPayloadInstallerAndUninstaller(t *testing.T) {
 	}
 	root := filepath.Clean(filepath.Join("..", "..", "..", ".."))
 	ci := read(filepath.Join(root, ".github", "workflows", "ci.yaml"))
+	goTestScript := read(filepath.Join(root, "tools", "test-go.ps1"))
 	rootBuildScript := read(filepath.Join(root, "build.bat"))
 	buildScript := read(filepath.Join(root, "go-backend", "build.bat"))
 	installer := read(filepath.Join(root, "installer", "installer.nsi"))
@@ -34,16 +35,23 @@ func TestReleasePipelineSignsPayloadInstallerAndUninstaller(t *testing.T) {
 	for _, fragment := range []string{
 		"actions/setup-go@v6",
 		"go-version: '1.26.4'",
+		`.\tools\test-go.ps1`,
+	} {
+		if !strings.Contains(ci, fragment) {
+			t.Fatalf("CI Go-test entry point is missing %q", fragment)
+		}
+	}
+	for _, fragment := range []string{
 		"$requiredYimeTests = @(",
 		"TestDeployCommandQueuesConfirmedExternalBuildWithoutNativeRedeploy",
 		"go test ./input_methods/yime -list '^Test'",
 		"$listedYimeTests -notcontains $testName",
 	} {
-		if !strings.Contains(ci, fragment) {
-			t.Fatalf("CI required-test guard is missing %q", fragment)
+		if !strings.Contains(goTestScript, fragment) {
+			t.Fatalf("Go required-test guard is missing %q", fragment)
 		}
 	}
-	if strings.Contains(ci, "TestDeployCommandRedeploysCurrentSchema") {
+	if strings.Contains(ci, "TestDeployCommandRedeploysCurrentSchema") || strings.Contains(goTestScript, "TestDeployCommandRedeploysCurrentSchema") {
 		t.Fatal("CI must not retain the removed synchronous native-redeploy test name")
 	}
 	for _, fragment := range []string{"!finalize", "!uninstfinalize", "sign-file.ps1"} {

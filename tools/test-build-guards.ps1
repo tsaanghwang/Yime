@@ -50,6 +50,8 @@ $requiredGovernanceGuards = @(
     'name: real-rime-tests',
     'name: go-race-msys2',
     'name: installer-package',
+    'name: core-build',
+    'Preserve legacy aggregate build contract',
     'needs: [build-contract, rust-i686-host, native-build, go-tests, real-rime-tests, go-race-msys2]',
     '.\tools\test-go.ps1',
     '.\tools\test-real-rime.ps1',
@@ -86,8 +88,8 @@ foreach ($guard in @(
 }
 Write-Host 'External build contract and named CI governance guards passed.'
 
-if ($workflowText.Contains('core-build:') -or $workflowText.Contains('CORE_RESULT:')) {
-    throw 'Independent protected stages must not be folded back into a serial aggregate core-build job.'
+if ($workflowText.Contains('CORE_RESULT:')) {
+    throw 'Independent protected stages must not depend on an aggregate core-build result.'
 }
 
 if (-not $workflowText.Contains('git submodule update --init --depth 1 libIME2')) {
