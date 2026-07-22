@@ -269,6 +269,7 @@ dao4	dào	dao4	d	ao4	regular-initial					N05	M10	M11	M06	d	ᴀ́	ᴀ
 dao5	dao	dao5	d	ao5	regular-initial					N05	M11	M11	M05	d	ᴀ̄	ᴀ̄	ᴜ̄	]ddi	dao5	ok
 de1	dē	de1	d	e1	regular-initial					N05	M13	M13	M13	d	ó	ó	ó	]rrr	de1	ok
 de2	dé	de2	d	e2	regular-initial					N05	M15	M14	M13	d	ò	ō	ó	]wer	de2	ok
+de4	dè	de4	d	e4	regular-initial					N05	M13	M14	M15	d	ó	ō	ò	]rew	de4	ok
 de5	de	de5	d	e5	regular-initial					N05	M14	M14	M14	d	ō	ō	ō	]eee	de5	ok
 dei1	dēi	dei1	d	ei1	regular-initial					N05	M16	M16	M01	d	ᴇ́	ᴇ́	ɪ́	]vvj	dei1	ok
 dei3	děi	dei3	d	ei3	regular-initial					N05	M18	M18	M03	d	ᴇ̀	ᴇ̀	ɪ̀	]xxl	dei3	ok
@@ -657,6 +658,7 @@ kua1	kuā	kua1	k	ua1	regular-initial					N10	M04	M10	M10	k	ᴜ́	ᴀ
 kua3	kuǎ	kua3	k	ua3	regular-initial					N10	M06	M12	M12	k	ᴜ̀	ᴀ̀	ᴀ̀	qoss	kua3	ok
 kua4	kuà	kua4	k	ua4	regular-initial					N10	M04	M11	M12	k	ᴜ́	ᴀ̄	ᴀ̀	quds	kua4	ok
 kuai1	kuāi	kuai1	k	uai1	regular-initial					N10	M04	M10	M01	k	ᴜ́	ᴀ́	ɪ́	qufj	kuai1	ok
+kuai2	kuái	kuai2	k	uai2	regular-initial					N10	M06	M11	M01	k	ᴜ̀	ᴀ̄	ɪ́	qodj	kuai2	ok
 kuai3	kuǎi	kuai3	k	uai3	regular-initial					N10	M06	M12	M03	k	ᴜ̀	ᴀ̀	ɪ̀	qosl	kuai3	ok
 kuai4	kuài	kuai4	k	uai4	regular-initial					N10	M04	M11	M03	k	ᴜ́	ᴀ̄	ɪ̀	qudl	kuai4	ok
 kuai5	kuai	kuai5	k	uai5	regular-initial					N10	M05	M11	M02	k	ᴜ̄	ᴀ̄	ɪ̄	qidk	kuai5	ok
@@ -667,6 +669,7 @@ kuang1	kuāng	kuang1	k	uang1	regular-initial					N10	M04	M10	M31	k	�
 kuang2	kuáng	kuang2	k	uang2	regular-initial					N10	M06	M11	M31	k	ᴜ̀	ᴀ̄	ŋ́	qod;	kuang2	ok
 kuang3	kuǎng	kuang3	k	uang3	regular-initial					N10	M06	M12	M33	k	ᴜ̀	ᴀ̀	ŋ̀	qos/	kuang3	ok
 kuang4	kuàng	kuang4	k	uang4	regular-initial					N10	M04	M11	M33	k	ᴜ́	ᴀ̄	ŋ̀	qud/	kuang4	ok
+kuang5	kuang	kuang5	k	uang5	regular-initial					N10	M05	M11	M32	k	ᴜ̄	ᴀ̄	ŋ̄	qidG	kuang5	ok
 kui1	kuī	kui1	k	uei1	regular-initial					N10	M04	M16	M01	k	ᴜ́	ᴇ́	ɪ́	quvj	kui1	ok
 kui2	kuí	kui2	k	uei2	regular-initial					N10	M06	M17	M01	k	ᴜ̀	ᴇ̄	ɪ́	qocj	kui2	ok
 kui3	kuǐ	kui3	k	uei3	regular-initial					N10	M06	M18	M03	k	ᴜ̀	ᴇ̀	ɪ̀	qoxl	kui3	ok
@@ -688,6 +691,7 @@ lai5	lai	lai5	l	ai5	regular-initial					N07	M11	M11	M02	l	ᴀ̄	ᴀ�
 lan2	lán	lan2	l	an2	regular-initial					N07	M12	M11	M28	l	ᴀ̀	ᴀ̄	ń	\sda	lan2	ok
 lan3	lǎn	lan3	l	an3	regular-initial					N07	M12	M12	M30	l	ᴀ̀	ᴀ̀	ǹ	\ssz	lan3	ok
 lan4	làn	lan4	l	an4	regular-initial					N07	M10	M11	M30	l	ᴀ́	ᴀ̄	ǹ	\fdz	lan4	ok
+lan5	lan	lan5	l	an5	regular-initial					N07	M11	M11	M29	l	ᴀ̄	ᴀ̄	n̄	\ddN	lan5	ok
 lang1	lāng	lang1	l	ang1	regular-initial					N07	M10	M10	M31	l	ᴀ́	ᴀ́	ŋ́	\ff;	lang1	ok
 lang2	láng	lang2	l	ang2	regular-initial					N07	M12	M11	M31	l	ᴀ̀	ᴀ̄	ŋ́	\sd;	lang2	ok
 lang3	lǎng	lang3	l	ang3	regular-initial					N07	M12	M12	M33	l	ᴀ̀	ᴀ̀	ŋ̀	\ss/	lang3	ok
@@ -1077,6 +1081,7 @@ qiao1	qiāo	qiao1	q	iao1	regular-initial					N21	M01	M10	M04	q	ɪ́	
 qiao2	qiáo	qiao2	q	iao2	regular-initial					N21	M03	M11	M04	q	ɪ̀	ᴀ̄	ᴜ́	2ldu	qiao2	ok
 qiao3	qiǎo	qiao3	q	iao3	regular-initial					N21	M03	M12	M06	q	ɪ̀	ᴀ̀	ᴜ̀	2lso	qiao3	ok
 qiao4	qiào	qiao4	q	iao4	regular-initial					N21	M01	M11	M06	q	ɪ́	ᴀ̄	ᴜ̀	2jdo	qiao4	ok
+qiao5	qiao	qiao5	q	iao5	regular-initial					N21	M02	M11	M05	q	ɪ̄	ᴀ̄	ᴜ̄	2kdi	qiao5	ok
 qie1	qiē	qie1	q	ie1	regular-initial					N21	M01	M16	M16	q	ɪ́	ᴇ́	ᴇ́	2jvv	qie1	ok
 qie2	qié	qie2	q	ie2	regular-initial					N21	M03	M17	M16	q	ɪ̀	ᴇ̄	ᴇ́	2lcv	qie2	ok
 qie3	qiě	qie3	q	ie3	regular-initial					N21	M03	M18	M18	q	ɪ̀	ᴇ̀	ᴇ̀	2lxx	qie3	ok
@@ -1168,6 +1173,7 @@ ruo2	ruó	ruo2	r	uo2	regular-initial					N19	M06	M14	M13	r	ᴜ̀	ō
 ruo4	ruò	ruo4	r	uo4	regular-initial					N19	M04	M14	M15	r	ᴜ́	ō	ò	0uew	ruo4	ok
 ruo5	ruo	ruo5	r	uo5	regular-initial					N19	M05	M14	M14	r	ᴜ̄	ō	ō	0iee	ruo5	ok
 sa1	sā	sa1	s	a1	regular-initial					N15	M10	M10	M10	s	ᴀ́	ᴀ́	ᴀ́	4fff	sa1	ok
+sa2	sá	sa2	s	a2	regular-initial					N15	M12	M11	M10	s	ᴀ̀	ᴀ̄	ᴀ́	4sdf	sa2	ok
 sa3	sǎ	sa3	s	a3	regular-initial					N15	M12	M12	M12	s	ᴀ̀	ᴀ̀	ᴀ̀	4sss	sa3	ok
 sa4	sà	sa4	s	a4	regular-initial					N15	M10	M11	M12	s	ᴀ́	ᴀ̄	ᴀ̀	4fds	sa4	ok
 sa5	sa	sa5	s	a5	regular-initial					N15	M11	M11	M11	s	ᴀ̄	ᴀ̄	ᴀ̄	4ddd	sa5	ok
@@ -1188,6 +1194,7 @@ sao4	sào	sao4	s	ao4	regular-initial					N15	M10	M11	M06	s	ᴀ́	ᴀ
 sao5	sao	sao5	s	ao5	regular-initial					N15	M11	M11	M05	s	ᴀ̄	ᴀ̄	ᴜ̄	4ddi	sao5	ok
 se1	sē	se1	s	e1	regular-initial					N15	M13	M13	M13	s	ó	ó	ó	4rrr	se1	ok
 se4	sè	se4	s	e4	regular-initial					N15	M13	M14	M15	s	ó	ō	ò	4rew	se4	ok
+se5	se	se5	s	e5	regular-initial					N15	M14	M14	M14	s	ō	ō	ō	4eee	se5	ok
 sen1	sēn	sen1	s	en1	regular-initial					N15	M16	M16	M28	s	ᴇ́	ᴇ́	ń	4vva	sen1	ok
 sen3	sěn	sen3	s	en3	regular-initial					N15	M18	M18	M30	s	ᴇ̀	ᴇ̀	ǹ	4xxz	sen3	ok
 seng1	sēng	seng1	s	eng1	regular-initial					N15	M13	M13	M31	s	ó	ó	ŋ́	4rr;	seng1	ok
