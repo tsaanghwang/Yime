@@ -32,12 +32,26 @@ New-Item -ItemType Directory -Path $env:GOCACHE, $env:GOTMPDIR -Force | Out-Null
 
 $previousRealRime = $env:YIME_RUN_REAL_RIME_TESTS
 $env:YIME_RUN_REAL_RIME_TESTS = '1'
+$requiredRealRimeTests = @(
+    'TestRealRimeCanCommitText'
+    'TestRealRimeKeepsCandidatesWhileCompletingFinalSyllable'
+    'TestRealRimeRedeployAppliesPageSize'
+    'TestRealRimeExternalBuildAppliesPageSize'
+)
 Push-Location $goBackendRoot
 try {
-    & go test ./input_methods/yime -run '^TestRealRime' -count=1 -timeout "${TimeoutMinutes}m"
+    $listedTests = @(& go test ./input_methods/yime -list '^TestRealRime')
+    if ($LASTEXITCODE -ne 0) { throw 'Could not enumerate real Rime tests.' }
+    foreach ($testName in $requiredRealRimeTests) {
+        if ($listedTests -notcontains $testName) { throw "Required real Rime test is missing: $testName" }
+    }
+    Write-Host "Running real librime integration tests (verbose; timeout ${TimeoutMinutes}m)..."
+    $startedAt = Get-Date
+    & go test -v ./input_methods/yime -run '^TestRealRime' -count=1 -timeout "${TimeoutMinutes}m"
     if ($LASTEXITCODE -ne 0) {
         throw "Real Rime integration tests failed with exit code $LASTEXITCODE"
     }
+    Write-Host ("Real librime tests elapsed: {0:n1}s" -f ((Get-Date) - $startedAt).TotalSeconds)
 } finally {
     Pop-Location
     if ($null -eq $previousRealRime) {

@@ -60,6 +60,18 @@ func TestBuildRecordAcceptsScriptDictionarySyllableSpaces(t *testing.T) {
 	}
 }
 
+func TestValidateContinuousInputRecordRejectsLostVirtualInitial(t *testing.T) {
+	record, err := BuildRecord("'sdf qffj")
+	if err != nil {
+		t.Fatal(err)
+	}
+	record.Shorthand = strings.TrimPrefix(record.Shorthand, "'")
+	record.ShorthandSpelling = strings.TrimPrefix(record.ShorthandSpelling, "'")
+	if err := ValidateContinuousInputRecord(record); err == nil {
+		t.Fatal("expected continuous-input validation to reject a syllable without its initial")
+	}
+}
+
 func TestBuildRecordAcceptsEveryLayoutKeyAndRejectsUnknownCharacters(t *testing.T) {
 	for _, key := range LayoutAlphabet {
 		if _, err := BuildRecord(string([]rune{key, key, key, key})); err != nil {

@@ -1092,6 +1092,32 @@ func TestSetCandidatePageSizePreservesComposition(t *testing.T) {
 	}
 }
 
+func TestCandidatePageSizeWaitsForRealRimeMenuBeforeConfirmation(t *testing.T) {
+	ime := newTestIME()
+	ime.candidatePageSize = 7
+	ime.pendingCandidatePageSize = 7
+
+	ime.applyStateToResponse(pime.NewResponse(1, true), rimeState{})
+	if ime.pendingCandidatePageSize != 7 || ime.candidatePageSize != 7 {
+		t.Fatalf("page_size=0 must remain pending, pending=%d current=%d", ime.pendingCandidatePageSize, ime.candidatePageSize)
+	}
+
+	ime.applyStateToResponse(pime.NewResponse(2, true), rimeState{PageSize: 7})
+	if ime.pendingCandidatePageSize != 0 || ime.candidatePageSize != 7 {
+		t.Fatalf("valid Rime page size must confirm the request, pending=%d current=%d", ime.pendingCandidatePageSize, ime.candidatePageSize)
+	}
+}
+
+func TestCandidatePageSizeMismatchSynchronizesToRimeInsteadOfSilentlyReverting(t *testing.T) {
+	ime := newTestIME()
+	ime.candidatePageSize = 7
+	ime.pendingCandidatePageSize = 7
+	ime.confirmCandidatePageSize(5)
+	if ime.pendingCandidatePageSize != 0 || ime.candidatePageSize != 5 {
+		t.Fatalf("Rime mismatch must be completed explicitly, pending=%d current=%d", ime.pendingCandidatePageSize, ime.candidatePageSize)
+	}
+}
+
 func TestReturnKeySelectsFirstCandidateDuringComposition(t *testing.T) {
 	ime := newTestIME()
 	backend := ime.backend.(*testBackend)
@@ -3399,6 +3425,52 @@ func TestYimePinyinCandidateCommentUsesActualCodeAndLeavesKeySequenceUntouched(t
 	display = ime.reverseLookupDisplayCandidates(original)
 	if got := display[0].Comment; got != "2uji$udm$udm3udm" {
 		t.Fatalf("expected key-sequence mode to preserve ASCII input code, got %q", got)
+	}
+}
+
+func TestCandidateAnnotationsFallBackToScriptDictionaryCodesInAllDisplayModes(t *testing.T) {
+	ime := newTestIME()
+	ime.yimePinyinLoaded = map[string]bool{"yime_variable": true}
+	ime.yimePinyinBySchema = map[string]map[string]string{
+		"yime_variable": {"过程": "guew 8we;"},
+	}
+	ime.standardPinyinLoaded = true
+	ime.standardPinyinByText = map[string]string{"过程": "guò chéng"}
+	ime.reversePinyinLoaded = map[string]bool{"yime_variable": true}
+	ime.reversePinyinBySchema = map[string]map[string]string{
+		"yime_variable": {"guew": "guo4", "8we;": "cheng2"},
+	}
+	ime.yimePUALoaded = true
+	ime.yimePUAByPinyin = map[string]string{"guo4": "甲", "cheng2": "乙"}
+	original := []candidateItem{{Text: "过程"}}
+
+	wants := map[string]string{
+		"hidden":          "",
+		"standard_pinyin": "guò chéng",
+		"yime_pinyin":     "甲乙",
+		"key_sequence":    "guew8we;",
+	}
+	for mode, want := range wants {
+		ime.reverseLookupDisplayMode = mode
+		display := ime.reverseLookupDisplayCandidates(original)
+		if got := display[0].Comment; got != want {
+			t.Fatalf("mode %s comment=%q, want %q", mode, got, want)
+		}
+		formatted := ime.formatCandidates(display)
+		if want != "" && !strings.Contains(formatted[0], want) {
+			t.Fatalf("mode %s candidate omitted annotation: %#v", mode, formatted)
+		}
+	}
+}
+
+func TestLoadYimeCodeLookupRemovesScriptDictionarySyllableSpaces(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "yime_variable.dict.yaml")
+	content := "---\nname: yime_variable\n...\n过程\tguew 8we;\t100\n"
+	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if got := loadYimeCodeLookup(path)["过程"]; got != "guew8we;" {
+		t.Fatalf("display code=%q, want uninterrupted runtime keystrokes", got)
 	}
 }
 

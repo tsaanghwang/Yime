@@ -84,6 +84,12 @@ configuration.
 cmd /c build.bat
 ```
 
+`build.bat` now verifies the pinned i686 host toolchain before configuring and
+uses `rustup run stable-i686-pc-windows-msvc` for the launcher build. On Windows
+machines with an enabled WinINET proxy, the build wrapper copies that proxy into
+`HTTP_PROXY`/`HTTPS_PROXY` for git and CMake FetchContent without changing the
+global git configuration.
+
 ### Build the Go backend
 
 ```powershell

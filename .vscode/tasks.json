@@ -228,6 +228,36 @@
         "cwd": "${workspaceFolder}"
       },
       "problemMatcher": []
+    },
+    {
+      "label": "PIME: start x64 TSF debug host (print PID)",
+      "type": "process",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "${workspaceFolder}\\tools\\start-tsf-debug-host.ps1",
+        "-Architecture",
+        "x64"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "PIME: start x86 TSF debug host (print PID)",
+      "type": "process",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "${workspaceFolder}\\tools\\start-tsf-debug-host.ps1",
+        "-Architecture",
+        "x86"
+      ],
+      "problemMatcher": []
     }
   ]
 }

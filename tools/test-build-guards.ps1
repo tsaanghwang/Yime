@@ -9,6 +9,10 @@ $codeOwners = Join-Path $root '.github\CODEOWNERS'
 $rootBuild = Join-Path $root 'build.bat'
 $installer = Join-Path $root 'installer\installer.nsi'
 $devInstall = Join-Path $root 'tools\dev-install.ps1'
+$buildPrereqs = Join-Path $root 'tools\assert-win32-build-prerequisites.ps1'
+$buildEnvironment = Join-Path $root 'tools\invoke-build-environment.ps1'
+$cmakeEnvironment = Join-Path $root 'tools\invoke-cmake.ps1'
+$realRimeTest = Join-Path $root 'tools\test-real-rime.ps1'
 $installerLocales = Get-ChildItem -LiteralPath (Join-Path $root 'installer\locale') -Filter '*.nsh'
 $launcherManifest = Join-Path $root 'PIMELauncher\Cargo.toml'
 $launcherBuild = Join-Path $root 'PIMELauncher\build.rs'
@@ -55,6 +59,7 @@ $requiredGovernanceGuards = @(
     'needs: [build-contract, rust-i686-host, native-build, go-tests, real-rime-tests, go-race-msys2]',
     '.\tools\test-go.ps1',
     '.\tools\test-real-rime.ps1',
+    '.\tools\assert-win32-build-prerequisites.ps1 -RequireToolchain',
     '.\tools\write-build-manifest.ps1',
     '.\tools\test-installer-smoke.ps1',
     'go install github.com/tc-hib/go-winres@v0.3.3',
@@ -78,6 +83,10 @@ foreach ($guard in @(
     '/tools/test-go.ps1 @tsaanghwang',
     '/tools/test-real-rime.ps1 @tsaanghwang',
     '/tools/test-installer-smoke.ps1 @tsaanghwang',
+    '/tools/assert-win32-build-prerequisites.ps1 @tsaanghwang',
+    '/tools/initialize-dev-environment.ps1 @tsaanghwang',
+    '/tools/invoke-build-environment.ps1 @tsaanghwang',
+    '/tools/invoke-cmake.ps1 @tsaanghwang',
     '/tools/verify-installed-runtime.ps1 @tsaanghwang',
     '/tools/write-build-manifest.ps1 @tsaanghwang',
     '/tools/verify-pe-architectures.ps1 @tsaanghwang',
@@ -102,6 +111,31 @@ if ($workflowText.Contains('Build McBopomofo')) {
 $rootBuildText = Get-Content -LiteralPath $rootBuild -Raw
 if ($rootBuildText.Contains('npm run build:pime')) {
     throw 'Retired McBopomofo build step returned to build.bat.'
+}
+foreach ($guard in @(
+    'tools\invoke-build-environment.ps1',
+    'rustup run stable-i686-pc-windows-msvc cargo build --release --target i686-pc-windows-msvc'
+)) {
+    if (-not $rootBuildText.Contains($guard)) {
+        throw "Win32 pinned-host build guard is missing: $guard"
+    }
+}
+$prereqText = Get-Content -LiteralPath $buildPrereqs -Raw
+foreach ($guard in @('stable-i686-pc-windows-msvc', 'GIT_TAG\s+v0\.6\.1', 'RequireBuildArtifacts')) {
+    if (-not $prereqText.Contains($guard)) {
+        throw "Win32 prerequisite guard is missing: $guard"
+    }
+}
+$buildEnvironmentText = Get-Content -LiteralPath $buildEnvironment -Raw
+$cmakeEnvironmentText = Get-Content -LiteralPath $cmakeEnvironment -Raw
+if (-not $buildEnvironmentText.Contains('initialize-dev-environment.ps1') -or -not $cmakeEnvironmentText.Contains('initialize-dev-environment.ps1')) {
+    throw 'Build and VS Code CMake entry points must share proxy/PATH initialization.'
+}
+$realRimeText = Get-Content -LiteralPath $realRimeTest -Raw
+foreach ($guard in @('go test -v', 'TestRealRimeKeepsCandidatesWhileCompletingFinalSyllable', 'TestRealRimeExternalBuildAppliesPageSize')) {
+    if (-not $realRimeText.Contains($guard)) {
+        throw "Real librime CI guard is missing: $guard"
+    }
 }
 $readmeText = Get-Content -LiteralPath $readme -Raw
 if ($readmeText.Contains('[Node.js]')) {
@@ -143,6 +177,9 @@ foreach ($fragment in @(
 $devInstallText = Get-Content -LiteralPath $devInstall -Raw
 if ($devInstallText -match 'pythonRoot|nodeRoot|Copying Python backend|Copying Node backend') {
     throw 'Retired Python/Node payload handling returned to the developer installer.'
+}
+if (-not $devInstallText.Contains('RequireBuildArtifacts')) {
+    throw 'Developer install must fail early with the shared build-artifact preflight.'
 }
 $localeText = ($installerLocales | ForEach-Object { Get-Content -LiteralPath $_.FullName -Raw }) -join "`n"
 if ($localeText -match 'PYTHON_SECTION_GROUP|NODE_SECTION_GROUP|MCBOPOMOFO|BRAILLE_CHEWING|SET_CHEWING') {

@@ -120,6 +120,9 @@ jobs:
           }
       - name: Install pinned i686 host toolchain
         run: rustup toolchain install stable-i686-pc-windows-msvc --profile minimal
+      - name: Verify Win32 Rust and Corrosion pins
+        shell: pwsh
+        run: .\tools\assert-win32-build-prerequisites.ps1 -RequireToolchain
       - name: Build Win32 C++ components
         shell: cmd
         run: |

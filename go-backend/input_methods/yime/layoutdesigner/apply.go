@@ -125,6 +125,9 @@ func Apply(dataDir string, target Profile) (Plan, error) {
 		if err != nil {
 			return Plan{}, err
 		}
+		if err := validateContinuousInputSchema(updated, mode); err != nil {
+			return Plan{}, err
+		}
 		if err := os.WriteFile(filepath.Join(stage, name), updated, 0644); err != nil {
 			return Plan{}, err
 		}
@@ -265,6 +268,41 @@ func updateSchema(data []byte, mode, alphabet, digest string) ([]byte, error) {
 		return nil, fmt.Errorf("yime_%s.schema.yaml 缺少 version/alphabet/translator.user_dict", mode)
 	}
 	return []byte(strings.Join(lines, "\n")), nil
+}
+
+func validateContinuousInputSchema(data []byte, mode string) error {
+	sections := map[string]map[string]bool{}
+	section := ""
+	for _, line := range strings.Split(strings.ReplaceAll(string(data), "\r\n", "\n"), "\n") {
+		trimmed := strings.TrimSpace(line)
+		if trimmed == "" || strings.HasPrefix(trimmed, "#") {
+			continue
+		}
+		if line == strings.TrimLeft(line, " \t") && strings.HasSuffix(trimmed, ":") {
+			section = strings.TrimSuffix(trimmed, ":")
+			if sections[section] == nil {
+				sections[section] = map[string]bool{}
+			}
+			continue
+		}
+		if section != "" {
+			sections[section][trimmed] = true
+		}
+	}
+	required := map[string][]string{
+		"engine":        {"- script_translator"},
+		"speller":       {`delimiter: " "`},
+		"translator":    {"enable_completion: true", "enable_sentence: true", "sentence_over_completion: true"},
+		"custom_phrase": {"enable_completion: true", "enable_sentence: true", "sentence_over_completion: true"},
+	}
+	for section, lines := range required {
+		for _, line := range lines {
+			if !sections[section][line] {
+				return fmt.Errorf("yime_%s.schema.yaml would disable continuous sentence completion: missing %s/%s", mode, section, line)
+			}
+		}
+	}
+	return nil
 }
 
 func replaceSet(dir, stage string, names []string) error {

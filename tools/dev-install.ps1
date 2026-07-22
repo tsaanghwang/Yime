@@ -5,6 +5,10 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+& (Join-Path $PSScriptRoot 'assert-win32-build-prerequisites.ps1') `
+    -RepoRoot $RepoRoot `
+    -RequireBuildArtifacts
+
 function Assert-Admin {
     $identity = [Security.Principal.WindowsIdentity]::GetCurrent()
     $principal = New-Object Security.Principal.WindowsPrincipal($identity)

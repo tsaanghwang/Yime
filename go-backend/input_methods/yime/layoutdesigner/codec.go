@@ -150,12 +150,16 @@ func (c *Codec) Reencode(full string) (codemode.Record, error) {
 	if err != nil {
 		return codemode.Record{}, err
 	}
-	return codemode.Record{
+	record := codemode.Record{
 		Full: projected, Variable: variableCode, Shorthand: shortCode,
 		FullSpelling:      strings.Join(fullParts, " "),
 		VariableSpelling:  strings.Join(variableParts, " "),
 		ShorthandSpelling: strings.Join(shorthandParts, " "),
-	}, nil
+	}
+	if err := codemode.ValidateContinuousInputRecord(record); err != nil {
+		return codemode.Record{}, fmt.Errorf("continuous input invariant: %w", err)
+	}
+	return record, nil
 }
 
 func mergeIDs(ids []string) []string {

@@ -72,6 +72,22 @@
             "processId": "${command:pickProcess}",
             "preLaunchTask": "PIME: open charmap for IME debug",
             "symbolSearchPath": "${workspaceFolder}/build64/PIMETextService/Release;${workspaceFolder}/build/PIMETextService/Release"
+        },
+        {
+            // Cursor-safe attach: first run the matching "start TSF debug host" task,
+            // then paste the printed PID. This avoids cpptools pickProcess/QuickPick.
+            "name": "Attach to TSF host by PID (Cursor-safe)",
+            "type": "cppvsdbg",
+            "request": "attach",
+            "processId": "${input:tsfHostPid}",
+            "symbolSearchPath": "${workspaceFolder}/build64/PIMETextService/Release;${workspaceFolder}/build/PIMETextService/Release"
+        }
+    ],
+    "inputs": [
+        {
+            "id": "tsfHostPid",
+            "type": "promptString",
+            "description": "PID printed by PIME: start x64/x86 TSF debug host"
         }
     ]
 }

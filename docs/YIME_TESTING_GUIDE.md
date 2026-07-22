@@ -119,6 +119,19 @@ NSIS 守卫还必须确认默认安装目录不会被空注册表值覆盖、必
 
 ### 6.1 C++/TSF DLL 调试（Cursor / VS Code）
 
+Cursor 不兼容 `${command:pickProcess}` 时有两条不依赖 QuickPick 的路径：
+
+```powershell
+# 启动真实常驻 TSF 宿主并打印 PID；随后使用 launch.json 的 Cursor-safe PID 配置
+.\tools\start-tsf-debug-host.ps1 -Architecture x64
+
+# 或完全绕过 cpptools，直接启动 CDB 并附加到新建的 charmap
+.\tools\attach-tsf-cdb.ps1 -Architecture x64
+```
+
+x86 宿主把 `-Architecture` 改为 `x86`；脚本会使用
+`C:\Windows\SysWOW64\charmap.exe`，不能用 x64 宿主替代其安装态验证。
+
 C++ 侧（`PIMETextService.dll` 等组件）用 `cppvsdbg`（由 `ms-vscode.cpptools` 提供）调试。Release 默认产出 PDB，由 CMake 选项控制：
 
 - `PIME_RELEASE_DEBUG_INFO`（默认 `ON`）会给 Release 加 `/Zi` 和链接器 `/DEBUG`，生成 PDB。发布构建可 `-DPIME_RELEASE_DEBUG_INFO=OFF` 关掉以精简产物。标志在 `CMakeLists.txt` 中以去重方式追加，重复 configure 不会累积。
@@ -185,6 +198,17 @@ cmake --build build --config Release
 不得通过取消工具链固定、删除 `PIMELauncher/.cargo/config.toml` 的 `build.target` 或降级 Corrosion 来“修”链接错误：x64 host 跨编译 i686 时 Corrosion 会把 i686 目标库泄给 host 端 build-script，产生 LNK4272 与大量未解析符号（详见 `AGENTS.md`）。
 
 ### 8.2 重装行为与验证顺序
+
+需要完整闭环时，在管理员 PowerShell 中运行：
+
+```powershell
+.\tools\dev-build-install-verify.ps1
+```
+
+该入口依次执行现有 `build.bat`、规范的 `Reinstall-PIME-Test.cmd`（保留
+DLL 锁定时的就地安装路径），最后核对安装文件哈希、注册表和运行中的
+PIMELauncher。若 `build/` 或 Go backend 制品被清理，安装会在写系统目录前
+明确失败并要求重建。
 
 `PIMETextService.dll` 被 `explorer.exe` 等宿主加载时，脚本自动走就地安装（DLL 跳过、其余全部更新），这是设计行为不是失败；需要干净全量重装（含 DLL 替换、反注册重注册、删安装树）时先重启 Windows 再跑一次。
 

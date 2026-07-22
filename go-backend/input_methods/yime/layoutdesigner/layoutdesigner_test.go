@@ -144,7 +144,7 @@ func TestApplyRegeneratesLockedArtifactSet(t *testing.T) {
 	write("yime_pinyin_codes.tsv", "pinyin_tone\tfull\na1\t]vcx\n")
 	write("yime_full.dict.yaml", "---\nname: yime_full\n...\n词\t]vcx\t10\n")
 	for _, mode := range []string{"full", "variable", "shorthand"} {
-		write("yime_"+mode+".schema.yaml", "schema:\n  version: old\nspeller:\n  alphabet: old\ntranslator:\n  dictionary: yime_"+mode+"\n  user_dict: yime_"+mode+"\n")
+		write("yime_"+mode+".schema.yaml", "schema:\n  version: old\nengine:\n  translators:\n    - table_translator@custom_phrase\n    - script_translator\nspeller:\n  alphabet: old\n  delimiter: \" \"\ntranslator:\n  dictionary: yime_"+mode+"\n  user_dict: yime_"+mode+"\n  enable_completion: true\n  enable_sentence: true\n  sentence_over_completion: true\ncustom_phrase:\n  enable_completion: true\n  enable_sentence: true\n  sentence_over_completion: true\n")
 	}
 	target := source
 	target.Projection = cloneProjection(source.Projection)
@@ -173,6 +173,17 @@ func TestApplyRegeneratesLockedArtifactSet(t *testing.T) {
 	}
 	if !strings.Contains(string(schema), "user_dict: yime_full_layout_") || !strings.Contains(string(schema), "_script_v1") {
 		t.Fatalf("schema:\n%s", schema)
+	}
+}
+
+func TestValidateContinuousInputSchemaRejectsCompletionOnlyFallback(t *testing.T) {
+	schema := []byte("engine:\n  translators:\n    - script_translator\nspeller:\n  delimiter: \" \"\ntranslator:\n  enable_completion: true\n  enable_sentence: true\n  sentence_over_completion: true\ncustom_phrase:\n  enable_completion: true\n  enable_sentence: true\n  sentence_over_completion: true\n")
+	if err := validateContinuousInputSchema(schema, "variable"); err != nil {
+		t.Fatalf("valid continuous-input schema rejected: %v", err)
+	}
+	broken := []byte(strings.Replace(string(schema), "sentence_over_completion: true", "sentence_over_completion: false", 1))
+	if err := validateContinuousInputSchema(broken, "variable"); err == nil {
+		t.Fatal("expected schema without sentence_over_completion to be rejected")
 	}
 }
 

@@ -103,12 +103,54 @@ func BuildRecord(full string) (Record, error) {
 		shorthand.WriteString(shorthandPart)
 		shorthandParts = append(shorthandParts, shorthandPart)
 	}
-	return Record{
+	record := Record{
 		Full: full, Variable: variable.String(), Shorthand: shorthand.String(),
 		FullSpelling:      strings.Join(fullParts, " "),
 		VariableSpelling:  strings.Join(variableParts, " "),
 		ShorthandSpelling: strings.Join(shorthandParts, " "),
-	}, nil
+	}
+	if err := ValidateContinuousInputRecord(record); err != nil {
+		return Record{}, err
+	}
+	return record, nil
+}
+
+// ValidateContinuousInputRecord protects the two dictionary invariants needed
+// by Rime sentence composition: every spelling has an explicit syllable split,
+// and every projected syllable retains its real or virtual initial. Without
+// both, completion can keep working while multi-syllable sentence paths vanish.
+func ValidateContinuousInputRecord(record Record) error {
+	full := []rune(record.Full)
+	if len(full) == 0 || len(full)%SyllableCodeLength != 0 {
+		return fmt.Errorf("continuous input requires a non-empty full code divisible by %d", SyllableCodeLength)
+	}
+	wantSyllables := len(full) / SyllableCodeLength
+	type spellingField struct {
+		name     string
+		code     string
+		spelling string
+	}
+	fields := []spellingField{
+		{"full", record.Full, record.FullSpelling},
+		{"variable", record.Variable, record.VariableSpelling},
+		{"shorthand", record.Shorthand, record.ShorthandSpelling},
+	}
+	for _, field := range fields {
+		parts := strings.Fields(field.spelling)
+		if len(parts) != wantSyllables {
+			return fmt.Errorf("%s spelling has %d syllables, want %d", field.name, len(parts), wantSyllables)
+		}
+		if strings.Join(parts, "") != field.code {
+			return fmt.Errorf("%s spelling does not reconstruct its runtime code", field.name)
+		}
+		for i, part := range parts {
+			runes := []rune(part)
+			if len(runes) == 0 || runes[0] != full[i*SyllableCodeLength] {
+				return fmt.Errorf("%s syllable %d lost its real or virtual initial", field.name, i+1)
+			}
+		}
+	}
+	return nil
 }
 
 func mergeAdjacent(input []rune) []rune {
