@@ -7,8 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.4.0] - 2026-07-15
-
 ### Added
 
 - Restore `go test -race ./...` as a required GitHub Actions gate with an explicitly provisioned MSYS2 UCRT64 GCC toolchain and a guard that rejects silent removal

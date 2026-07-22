@@ -8,28 +8,19 @@
 |------|------|----------|
 | 纯逻辑单元测试 | 词库、设置、反查、布局、构建脚本 | 普通 Windows 开发环境 |
 | Go 根包关键回归 | 语言栏命令、分页权、工具启动、用户词库应用 | CI 与本地 |
-| 真实 Rime 集成测试 | librime 会话、方案、部署、候选页大小 | 本地显式启用 |
+| 真实 Rime 集成测试 | librime 会话、方案、部署、候选页大小 | CI 与本地独立作业 |
 | C++/Rust 测试与构建 | TSF 宿主、启动器、注册组件 | VS/Rust 工具链 |
 | 安装态测试 | Program Files 中的真实二进制、进程、注册表和 Code Integrity | 管理员测试环境 |
 
 ## 2. CI 稳定集
 
-在 `go-backend` 目录运行：
+从仓库根目录运行统一入口：
 
 ```powershell
-go vet ./...
-go test . ./cmd/lexicon-manager ./cmd/reverse-lookup-tool ./cmd/settings-tool `
-  ./input_methods/yime/reverselookup `
-  ./input_methods/yime/runtimechange `
-  ./input_methods/yime/settings `
-  ./input_methods/yime/systemlexicon `
-  ./input_methods/yime/toolhub `
-  ./input_methods/yime/userblocklist `
-  ./input_methods/yime/userlexicon
-go test ./input_methods/yime -timeout 60s
+.\tools\test-go.ps1
 ```
 
-根包使用与 `.github/workflows/ci.yaml` 一致的关键测试名单。CI 必须先通过 `go test -list` 逐项确认名单中的测试真实存在，再执行该名单；不得只依赖可部分匹配的正则。修改 CI 守卫时，应同步更新 [架构文档](YIME_ARCHITECTURE.md)。
+该入口执行 `go vet ./...`、`go test ./...`，并核对根包关键测试名单。CI 必须先通过 `go test -list` 逐项确认名单中的测试真实存在，再执行该名单；不得只依赖可部分匹配的正则。修改 CI 守卫时，应同步更新 [架构文档](YIME_ARCHITECTURE.md)。
 
 CI 当前重点保护：
 
@@ -76,19 +67,13 @@ go test -race ./... -timeout 300s
 
 ## 4. 真实 Rime 集成测试
 
-真实测试默认跳过，显式设置环境变量：
+真实测试默认不混入普通 Go 稳定集；使用独立入口显式运行：
 
 ```powershell
-cd go-backend
-$env:YIME_RUN_REAL_RIME_TESTS = "1"
-go test ./input_methods/yime -run TestReal -v -count=1
+.\tools\test-real-rime.ps1
 ```
 
-运行前确认 `input_methods/yime/data/` 完整，且没有其它测试或输入法进程同时操作相同 Rime 全局状态。测试结束后删除环境变量：
-
-```powershell
-Remove-Item Env:YIME_RUN_REAL_RIME_TESTS
-```
+脚本会临时设置并恢复 `YIME_RUN_REAL_RIME_TESTS`。运行前确认 `input_methods/yime/data/` 完整，且没有其它测试或输入法进程同时操作相同 Rime 全局状态。
 
 ## 5. 原生 UI 测试规则
 
