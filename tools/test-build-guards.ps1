@@ -76,6 +76,10 @@ foreach ($guard in @(
 }
 Write-Host 'External build contract and named CI governance guards passed.'
 
+if ($workflowText.Contains('CORE_RESULT:')) {
+    throw 'Protected stage checks must depend on their own stage output, not the aggregate core-build result.'
+}
+
 if (-not $workflowText.Contains('git submodule update --init --depth 1 libIME2')) {
     throw 'CI must checkout only the active libIME2 submodule.'
 }

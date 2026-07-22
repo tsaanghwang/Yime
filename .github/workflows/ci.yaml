@@ -231,9 +231,8 @@ jobs:
       - name: Require the protected Rust stage
         env:
           CONTRACT_RESULT: ${{ needs['build-contract'].result }}
-          CORE_RESULT: ${{ needs['core-build'].result }}
           STAGE_RESULT: ${{ needs['core-build'].outputs.rust_i686_host }}
-        run: test "$CONTRACT_RESULT" = success && test "$CORE_RESULT" = success && test "$STAGE_RESULT" = success
+        run: test "$CONTRACT_RESULT" = success && test "$STAGE_RESULT" = success
 
   native-build:
     name: native-build
@@ -244,9 +243,8 @@ jobs:
       - name: Require the protected native stage
         env:
           CONTRACT_RESULT: ${{ needs['build-contract'].result }}
-          CORE_RESULT: ${{ needs['core-build'].result }}
           STAGE_RESULT: ${{ needs['core-build'].outputs.native_build }}
-        run: test "$CONTRACT_RESULT" = success && test "$CORE_RESULT" = success && test "$STAGE_RESULT" = success
+        run: test "$CONTRACT_RESULT" = success && test "$STAGE_RESULT" = success
 
   go-tests:
     name: go-tests
@@ -257,9 +255,8 @@ jobs:
       - name: Require the protected Go regression stage
         env:
           CONTRACT_RESULT: ${{ needs['build-contract'].result }}
-          CORE_RESULT: ${{ needs['core-build'].result }}
           STAGE_RESULT: ${{ needs['core-build'].outputs.go_tests }}
-        run: test "$CONTRACT_RESULT" = success && test "$CORE_RESULT" = success && test "$STAGE_RESULT" = success
+        run: test "$CONTRACT_RESULT" = success && test "$STAGE_RESULT" = success
 
   go-race-msys2:
     name: go-race-msys2
@@ -270,9 +267,8 @@ jobs:
       - name: Require the protected Go race stage
         env:
           CONTRACT_RESULT: ${{ needs['build-contract'].result }}
-          CORE_RESULT: ${{ needs['core-build'].result }}
           STAGE_RESULT: ${{ needs['core-build'].outputs.go_race_msys2 }}
-        run: test "$CONTRACT_RESULT" = success && test "$CORE_RESULT" = success && test "$STAGE_RESULT" = success
+        run: test "$CONTRACT_RESULT" = success && test "$STAGE_RESULT" = success
 
   installer-package:
     name: installer-package
@@ -283,6 +279,5 @@ jobs:
       - name: Require the protected installer stage
         env:
           CONTRACT_RESULT: ${{ needs['build-contract'].result }}
-          CORE_RESULT: ${{ needs['core-build'].result }}
           STAGE_RESULT: ${{ needs['core-build'].outputs.installer_package }}
-        run: test "$CONTRACT_RESULT" = success && test "$CORE_RESULT" = success && test "$STAGE_RESULT" = success
+        run: test "$CONTRACT_RESULT" = success && test "$STAGE_RESULT" = success
