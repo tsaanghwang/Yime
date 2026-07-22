@@ -632,7 +632,7 @@ go test ./input_methods/yime -timeout 60s
 go test ./input_methods/yime -run 'Test(NativeBackendKeepsRimeOwnedCandidatePaging|LanguageBarToggleButtonsUseStableTwoCharacterLabels|DeployCommandQueuesConfirmedExternalBuildWithoutNativeRedeploy|ApplyUserLexiconWritesAllThreeModes|ApplyUserLexiconRunsExternalBuildAndSchedulesReload)$'
 ```
 
-CI 使用上述稳定回归集并执行 CTest。定向回归在执行前必须逐项校验测试名，避免重命名后 `go test -run` 因仍有其它匹配项而静默少跑。真实 Rime 测试仍由 `YIME_RUN_REAL_RIME_TESTS=1` 显式启用，避免普通单元测试共享本机 librime 全局状态。
+CI 将稳定回归集、CTest、Rust、race、真实 Rime 和安装器拆为独立作业。定向回归在执行前必须逐项校验测试名，避免重命名后 `go test -run` 因仍有其它匹配项而静默少跑。真实 Rime 作业通过 `tools/test-real-rime.ps1` 显式设置 `YIME_RUN_REAL_RIME_TESTS=1`，仍与普通单元测试隔离，避免共享 librime 全局状态。
 
 关键守卫测试：
 
