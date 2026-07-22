@@ -224,4 +224,12 @@ Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" -Na
 Write-Host "Starting PIMELauncher..."
 Start-Process -FilePath (Join-Path $InstallRoot "PIMELauncher.exe")
 
+$verificationReport = Join-Path $repoRoot '.tmp\last-dev-install-verification.json'
+& (Join-Path $PSScriptRoot 'verify-installed-runtime.ps1') `
+    -RepoRoot $repoRoot `
+    -InstallRoot $InstallRoot `
+    -JsonPath $verificationReport `
+    -AllowTextServiceMismatch
+
 Write-Host "Developer install completed: $InstallRoot"
+Write-Host "Verification report: $verificationReport"

@@ -123,6 +123,7 @@ cd ..
 - `go-backend/build/go-backend/input_methods/` 只包含带 `ime.json` 的运行时输入法目录
 - 安装包和内部二进制签名有效
 - 安装包 SHA-256 已记录在发布说明中
+- `installer/build-manifest.json` 记录版本、提交、分支、签名状态及关键产物 SHA-256；回退时按该清单选择上一提交制品
 - 全新安装、开发卸载后安装和已有版本升级三种情况下，目标目录都保持为 `C:\Program Files (x86)\YIME`
 
 ```powershell
@@ -159,6 +160,7 @@ $built.Hash -eq $installed.Hash
 ## 7. 回滚
 
 - 保留上一版安装包及 SHA-256
+- CI 未签名测试包按提交 SHA 命名并保留 30 天；回退前先核对 `build-manifest.json` 的提交与文件哈希
 - 回滚优先使用独立提交或发布标签，不使用 `git reset --hard`
 - 若 DLL 被宿主锁定，标准重装流程会自动采用就地安装；只有确需替换被锁 DLL 时才重启 Windows
 - 回滚后重新核对安装文件哈希和运行进程时间，不要只检查源码分支

@@ -197,6 +197,16 @@ cmake --build build --config Release
 5. 检查 `%LOCALAPPDATA%\PIME\Logs\go_backend.log`
 6. 检查 CodeIntegrity Operational 日志（注意区分：本机 SAC 强制模式下，未签名 `server.exe` 的 3033/3077 为审计记录；Bonjour/Keyman 等第三方事件与 YIME 无关，先看事件消息中的文件路径再定性）
 
+可先运行机器可读核验，结果同时打印到终端并可写入 JSON：
+
+```powershell
+.\tools\verify-installed-runtime.ps1 `
+  -JsonPath .\.tmp\installed-runtime.json `
+  -AllowTextServiceMismatch
+```
+
+`complete` 表示全部哈希一致；`partial` 只允许被宿主锁定的 TSF DLL 暂未替换；其它缺失或不一致均为 `failed`。`dev-install.ps1` 会自动把最近一次报告写到 `.tmp\last-dev-install-verification.json`。
+
 语言栏或 TSF 问题必须在安装态至少复现一次；不能用源码目录中的临时 EXE 代替。
 
 真实 32 位宿主使用 `C:\Windows\SysWOW64\charmap.exe`。在 64 位 Windows 上，`SysWOW64` 中该文件的 PE machine 应为 `0x014C`；不要用 `System32\charmap.exe` 代替 x86 验证。发布烟雾测试需在该进程中实际激活 YIME，并完成组字、候选和上屏。

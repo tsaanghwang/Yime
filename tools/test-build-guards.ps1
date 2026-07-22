@@ -53,6 +53,8 @@ $requiredGovernanceGuards = @(
     'needs: [build-contract, rust-i686-host, native-build, go-tests, real-rime-tests, go-race-msys2]',
     '.\tools\test-go.ps1',
     '.\tools\test-real-rime.ps1',
+    '.\tools\write-build-manifest.ps1',
+    '.\tools\test-installer-smoke.ps1',
     'uses: actions/download-artifact@v7'
 )
 foreach ($guard in $requiredGovernanceGuards) {
@@ -70,6 +72,11 @@ foreach ($guard in @(
     '/CMakeLists.txt @tsaanghwang',
     '/tools/test-build-guards.ps1 @tsaanghwang',
     '/tools/test-go-race.ps1 @tsaanghwang',
+    '/tools/test-go.ps1 @tsaanghwang',
+    '/tools/test-real-rime.ps1 @tsaanghwang',
+    '/tools/test-installer-smoke.ps1 @tsaanghwang',
+    '/tools/verify-installed-runtime.ps1 @tsaanghwang',
+    '/tools/write-build-manifest.ps1 @tsaanghwang',
     '/tools/verify-pe-architectures.ps1 @tsaanghwang',
     '/installer/** @tsaanghwang'
 )) {

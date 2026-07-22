@@ -220,9 +220,21 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v')
         shell: pwsh
         run: .\tools\verify-release-signatures.ps1 -IncludeInstaller
+      - name: Write commit-addressed build manifest
+        shell: pwsh
+        run: .\tools\write-build-manifest.ps1
+      - name: Smoke-test unsigned installer on ephemeral runner
+        if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
+        shell: pwsh
+        run: |
+          $installer = Get-ChildItem installer\YIME-*-setup.exe | Select-Object -First 1
+          if (-not $installer) { throw 'Unsigned installer was not found.' }
+          .\tools\test-installer-smoke.ps1 -InstallerPath $installer.FullName
       - uses: actions/upload-artifact@v6
         with:
           name: ${{ startsWith(github.ref, 'refs/tags/v') && 'YIME-signed-installer' || format('YIME-unsigned-test-installer-{0}', github.sha) }}
-          path: installer/YIME-*-setup.exe
+          path: |
+            installer/YIME-*-setup.exe
+            installer/build-manifest.json
           if-no-files-found: error
           retention-days: 30
