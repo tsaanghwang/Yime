@@ -489,6 +489,12 @@ func RimeInit(datadir, userdir, appname, appver string, fullcheck bool) bool {
 	if _, err := os.Stat(dllPath); err != nil {
 		dllPath = "rime.dll"
 	}
+	lock, err := verifyPinnedRimeRuntime(dllPath)
+	if err != nil {
+		log.Printf("RIME 运行时门禁失败: %v", err)
+		return false
+	}
+	log.Printf("已验证 librime %s (%s), %s", lock.LibrimeVersion, lock.LibrimeCommit, lock.Platform)
 	if err := loadRimeDLL(dllPath); err != nil {
 		log.Printf("加载 RIME DLL 失败: %v", err)
 		return false

@@ -54,18 +54,6 @@ jobs:
         with:
           go-version: '1.26.4'
           cache-dependency-path: go-backend/go.sum
-      - name: Fetch Rime shared data for integration tests
-        shell: pwsh
-        run: |
-          $dataDir = 'go-backend\input_methods\yime\data'
-          if (-not (Test-Path "$dataDir\default.yaml")) {
-            git clone --depth=1 https://github.com/gaboolic/rime-frost.git $env:RUNNER_TEMP\rime-frost
-            Copy-Item -Force $env:RUNNER_TEMP\rime-frost\default.yaml $dataDir\
-            Get-ChildItem $env:RUNNER_TEMP\rime-frost\*.yaml | Where-Object { $_.Name -notlike '*.custom*' } | Copy-Item -Force -Destination $dataDir\
-            if (Test-Path $env:RUNNER_TEMP\rime-frost\opencc) {
-              Copy-Item -Recurse -Force $env:RUNNER_TEMP\rime-frost\opencc $dataDir\
-            }
-          }
       - name: Run real Rime integration tests
         shell: pwsh
         run: .\tools\test-real-rime.ps1
@@ -179,18 +167,6 @@ jobs:
         uses: repolevedavaj/install-nsis@v1.2.0
         with:
           nsis-version: 3.08
-      - name: Fetch Rime shared data when absent
-        shell: pwsh
-        run: |
-          $dataDir = 'go-backend\input_methods\yime\data'
-          if (-not (Test-Path "$dataDir\default.yaml")) {
-            git clone --depth=1 https://github.com/gaboolic/rime-frost.git $env:RUNNER_TEMP\rime-frost
-            Copy-Item -Force $env:RUNNER_TEMP\rime-frost\default.yaml $dataDir\
-            Get-ChildItem $env:RUNNER_TEMP\rime-frost\*.yaml | Where-Object { $_.Name -notlike '*.custom*' } | Copy-Item -Force -Destination $dataDir\
-            if (Test-Path $env:RUNNER_TEMP\rime-frost\opencc) {
-              Copy-Item -Recurse -Force $env:RUNNER_TEMP\rime-frost\opencc $dataDir\
-            }
-          }
       - name: Build Go backend package
         shell: pwsh
         run: |

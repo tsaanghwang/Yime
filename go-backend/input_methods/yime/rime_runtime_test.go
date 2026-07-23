@@ -84,7 +84,7 @@ func TestRealRimeCanCommitText(t *testing.T) {
 	session := newRealRimeSession(t)
 	sessionID := session.sessionID
 
-	// Every current Yime syllable starts with a real or virtual initial.  The
+	// Every current Yime syllable starts with a real or virtual shouyin. The
 	// older fds/rew smoke inputs started in the musical portion of a syllable;
 	// table_translator used to offer arbitrary whole-table prefixes for them,
 	// but they are not valid continuous Yime input prefixes.
@@ -452,9 +452,9 @@ func TestRealRimeAcceptsNewLayoutPunctuationAndShiftCodes(t *testing.T) {
 		name string
 		keys []*pime.Request
 	}{
-		{"minus initial", []*pime.Request{{KeyCode: 0xBD, CharCode: '-'}, {KeyCode: 'J', CharCode: 'j'}, {KeyCode: 'J', CharCode: 'j'}, {KeyCode: 'J', CharCode: 'j'}}},
-		{"equals initial", []*pime.Request{{KeyCode: 0xBB, CharCode: '='}, {KeyCode: 'U', CharCode: 'u'}, {KeyCode: 'U', CharCode: 'u'}, {KeyCode: 'U', CharCode: 'u'}}},
-		{"backslash initial", []*pime.Request{{KeyCode: 0xDC, CharCode: '\\'}, {KeyCode: 'J', CharCode: 'j'}, {KeyCode: 'J', CharCode: 'j'}, {KeyCode: 'J', CharCode: 'j'}}},
+		{"minus shouyin", []*pime.Request{{KeyCode: 0xBD, CharCode: '-'}, {KeyCode: 'J', CharCode: 'j'}, {KeyCode: 'J', CharCode: 'j'}, {KeyCode: 'J', CharCode: 'j'}}},
+		{"equals shouyin", []*pime.Request{{KeyCode: 0xBB, CharCode: '='}, {KeyCode: 'U', CharCode: 'u'}, {KeyCode: 'U', CharCode: 'u'}, {KeyCode: 'U', CharCode: 'u'}}},
+		{"backslash shouyin", []*pime.Request{{KeyCode: 0xDC, CharCode: '\\'}, {KeyCode: 'J', CharCode: 'j'}, {KeyCode: 'J', CharCode: 'j'}, {KeyCode: 'J', CharCode: 'j'}}},
 		{"shift comma musical", []*pime.Request{{KeyCode: 'H', CharCode: 'h'}, {KeyCode: 0xBC, CharCode: '<', KeyStates: keyStatesDown(vkShift)}, {KeyCode: 0xBC, CharCode: '<', KeyStates: keyStatesDown(vkShift)}, {KeyCode: 0xBC, CharCode: '<', KeyStates: keyStatesDown(vkShift)}}},
 		{"shift letter and punctuation musical", []*pime.Request{{KeyCode: 0xDE, CharCode: '\''}, {KeyCode: 'M', CharCode: 'M', KeyStates: keyStatesDown(vkShift)}, {KeyCode: 0xBC, CharCode: '<', KeyStates: keyStatesDown(vkShift)}, {KeyCode: 0xBE, CharCode: '>', KeyStates: keyStatesDown(vkShift)}}},
 	}
@@ -634,9 +634,9 @@ func TestRealRimeExternalBuildAppliesPageSize(t *testing.T) {
 		t.Fatalf("expected user schema deploy to succeed: %s", userSchemaPath)
 	}
 
-	deployerPath := `C:\dev\librime\build\bin\Release\rime_deployer.exe`
-	if _, err := os.Stat(deployerPath); err != nil {
-		t.Skipf("external rime_deployer not available: %v", err)
+	deployerPath := findRimeExternalDeployer(dataDir)
+	if deployerPath == "" {
+		t.Skip("external rime_deployer not available")
 	}
 	cmd := exec.Command(deployerPath, "--build", userDir, dataDir, filepath.Join(userDir, "build"))
 	if out, err := cmd.CombinedOutput(); err != nil {

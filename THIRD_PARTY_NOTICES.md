@@ -34,17 +34,18 @@ upstream authors are not responsible for Yime-specific changes.
 
 Neither the RIME copyright holder nor its contributors endorse Yime.
 
-## rime-frost and Rime shared data
+## Pinned Rime shared data
 
 - Upstream: https://github.com/gaboolic/rime-frost
-- Role: preset Rime schemas, dictionaries, shared data, and data used as build
-  inputs for the packaged runtime
+- Role: preset Rime schemas, dictionaries, OpenCC data, and other shared data
+  committed as build inputs for the packaged runtime
 - License: GNU General Public License version 3
 - Full text: `LICENSES/RIME-FROST-GPL-3.0.txt`
 
-The Yime build may also merge shared data installed by Rime Plum or Weasel.
-Those files retain their own upstream notices. Release builders must not strip
-license files or represent third-party data as exclusively authored by Yime.
+The build uses this version-controlled snapshot directly. It does not merge
+machine-local Rime Plum or Weasel installations. These files retain their own
+upstream notices; release builders must not strip license files or represent
+third-party data as exclusively authored by Yime.
 
 ## YinYuan font / Source Han Sans
 

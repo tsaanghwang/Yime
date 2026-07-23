@@ -21,7 +21,7 @@ const (
 )
 
 var reservedKeys = map[rune]string{
-	'`': "隔音/零首音保留键", '~': "隔音/零首音保留键",
+	'`': "隔音/虚首音保留键", '~': "隔音/虚首音保留键",
 	'!': "Shift+数字候选键的物理键面", '@': "Shift+数字候选键的物理键面", '#': "Shift+数字候选键的物理键面", '$': "Shift+数字候选键的物理键面",
 	'%': "Shift+数字候选键的物理键面", '^': "Shift+数字候选键的物理键面", '&': "Shift+数字候选键的物理键面", '*': "Shift+数字候选键的物理键面", '(': "Shift+数字候选键的物理键面",
 }
@@ -49,10 +49,10 @@ func ExpectedIDs() []string {
 }
 
 func DescribeID(id string) string {
-	initials := []string{"b", "p", "f", "m", "d", "t", "l", "n", "g", "k", "h", "零首音", "z", "c", "s", "zh", "ch", "sh", "r", "j", "q", "x", "y", "w"}
+	shouyinLabels := []string{"b", "p", "f", "m", "d", "t", "l", "n", "g", "k", "h", "'（虚首音）", "z", "c", "s", "zh", "ch", "sh", "r", "j", "q", "x", "y（虚首音）", "w（虚首音）"}
 	if strings.HasPrefix(id, "N") {
-		if n, err := strconv.Atoi(strings.TrimPrefix(id, "N")); err == nil && n >= 1 && n <= len(initials) {
-			return initials[n-1]
+		if n, err := strconv.Atoi(strings.TrimPrefix(id, "N")); err == nil && n >= 1 && n <= len(shouyinLabels) {
+			return shouyinLabels[n-1]
 		}
 	}
 	groups := []string{"i", "u", "ü", "a", "o", "e/ê", "舌尖 i", "er", "m", "n", "ng"}

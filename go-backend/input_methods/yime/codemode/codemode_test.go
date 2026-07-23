@@ -10,6 +10,7 @@ func TestBuildRecordDerivesAllModes(t *testing.T) {
 		full, variable, shorthand string
 	}{
 		{"'fff", "'f", "'f"},
+		{"ffff", "ff", "ff"},
 		{"'sdf", "'sdf", "'sf"},
 		{"qfff", "qf", "qf"},
 		{"qsdf", "qsdf", "qsf"},
@@ -32,6 +33,28 @@ func TestBuildRecordDerivesAllModes(t *testing.T) {
 			got.FullSpelling != wantFullSpelling {
 			t.Fatalf("BuildRecord(%q) spelling fields = %#v", test.full, got)
 		}
+	}
+}
+
+func TestBuildRecordCoversFourThreeYinyuanGanyinStructures(t *testing.T) {
+	tests := []struct {
+		name, full, variable string
+	}{
+		{"all different", "qjkm", "qjkm"},
+		{"first two equal", "qjjm", "qjm"},
+		{"last two equal", "qjmm", "qjm"},
+		{"all equal", "qjjj", "qj"},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			got, err := BuildRecord(test.full)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if got.Variable != test.variable {
+				t.Fatalf("BuildRecord(%q).Variable = %q, want %q", test.full, got.Variable, test.variable)
+			}
+		})
 	}
 }
 
@@ -60,7 +83,7 @@ func TestBuildRecordAcceptsScriptDictionarySyllableSpaces(t *testing.T) {
 	}
 }
 
-func TestValidateContinuousInputRecordRejectsLostVirtualInitial(t *testing.T) {
+func TestValidateContinuousInputRecordRejectsLostApostropheVirtualShouyin(t *testing.T) {
 	record, err := BuildRecord("'sdf qffj")
 	if err != nil {
 		t.Fatal(err)
@@ -68,7 +91,7 @@ func TestValidateContinuousInputRecordRejectsLostVirtualInitial(t *testing.T) {
 	record.Shorthand = strings.TrimPrefix(record.Shorthand, "'")
 	record.ShorthandSpelling = strings.TrimPrefix(record.ShorthandSpelling, "'")
 	if err := ValidateContinuousInputRecord(record); err == nil {
-		t.Fatal("expected continuous-input validation to reject a syllable without its initial")
+		t.Fatal("expected continuous-input validation to reject a syllable without its shouyin")
 	}
 }
 

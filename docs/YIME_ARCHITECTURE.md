@@ -463,28 +463,31 @@ userblocklist.LoadSet(yime_blocklist.txt)
 
 ### 3.1 词典生成管线
 
-词典由 `Yime-python-prototype` 项目生成，经多步管线到达 Go 后端：
+词典由 `Yime-python-prototype` 项目生成，经统一来源、候选整理和编码管线到达 Go 后端：
 
 ```
-BCC 语料库 (6频道字频+词频)
-    │
-    ├── merge_char_freq.py → merged_char_freq.txt (同字取max)
-    └── merge_word_freq.py → merged_word_freq.txt (同词取max)
+真实本地上游
+    ├── Unihan 单字读音
+    ├── pypinyin 词语读音
+    ├── 万象字词读音及来源权重
+    └── BCC 各原始分域字频/词频
+          │
+          └── build_lexicon_source_bundle.py
+                └── source_lexicon.sqlite3
+                      ├── 合规读音与来源/拒绝证据
+                      ├── BCC 各分域原始计数及汇总频次
+                      └── 万象权重（与 BCC 频次分列，不互相替代）
 
-Unihan_Readings.txt (五列普通话字段)
+prototype_single_char_import.py / prototype_phrase_import.py
     │
-    └── build_all.py → unihan_readings.db (读音+合成频率)
+    └── pinyin_hanzi.db
+          ├── 单字频率：BCC 原始计数；未命中才使用 Unihan 合成阶梯
+          └── 词语频率：BCC 原始计数；未命中保持 0，不伪造语料计数
 
-source_pinyin.db (单字+词语拼音源)
-    │
-    ├── prototype_single_char_import.py → pinyin_hanzi.db
-    └── prototype_phrase_import.py → pinyin_hanzi.db
-          └── 词语无频率时默认 weight=1
-
-blcu_word_frequency_import.py
-    │
-    ├── BCC 字频 → char_frequency_abs (BCC优先，否则Unihan合成阶梯)
-    └── BCC 词频 → phrase_frequency (BCC优先，否则默认1)
+输入候选整理覆盖层
+    ├── BCC 频次只安排审查顺序
+    ├── 词汇性、候选价值和动态可恢复性另行判定
+    └── 不用万象权重或“已收录”反写 BCC 频次
 
 runtime_codes_refresh.py --apply
     │
@@ -511,7 +514,7 @@ Windows handoff
 | 单字有 BCC 频率 | 直接使用 BCC count | 最小正值 6 |
 | 单字无 BCC 频率 | Unihan 合成阶梯 (1-5) | 刻意低于 BCC 最低值 6，分层由 tier_sort_weight 保护 |
 | 词语有 BCC 频率 | 直接使用 BCC count | — |
-| 词语无 BCC 频率 | 默认 weight=1 | 排在候选列表底部，不影响正常使用 |
+| 词语无 BCC 频率 | 保持 `phrase_frequency=0` | 只表示没有 BCC 语料计数；词典收录、万象权重和候选审查结论均不伪装成 BCC 频次 |
 
 **合成阶梯**（BCC 无命中时取最高命中列）：
 
@@ -526,7 +529,7 @@ Windows handoff
 **sort_weight 计算公式**：
 
 - 单字：`tier_sort_weight + modern_common_boost + reading_phrase_prior_boost + char_frequency_abs + reading_weight`
-- 词语：`phrase_frequency`（无 BCC 频率时 = 1）
+- 词语：`phrase_frequency`（无 BCC 频率时为 `0`；其他来源证据与后续排序策略必须另列）
 
 **项目分离现状**：`Yime-python-prototype`（数据生成）与 `Yime`（运行时）分属不同仓库。
 跨仓库触发与 handoff 消费仍由维护者执行，但交付物已经收敛为带版本和哈希清单的原子 handoff，
@@ -538,6 +541,10 @@ Windows handoff
 ### 3.2 共享数据目录
 
 `go-backend/input_methods/yime/data/`
+
+Rime 共享数据（包括 `default.yaml`、基础方案、词典、`essay.txt` 和
+`opencc/`）是仓库内固定的发布资产。构建与 CI 只复制这份快照，不从
+Weasel、本机目录或 Plum 临时补齐；缺件时直接失败。
 
 | 文件 | 类型 | 说明 |
 |------|------|------|
@@ -556,6 +563,7 @@ Windows handoff
 | `essay.txt` | 词频表 | 八股文 |
 | `rime.dll` | 动态库 | librime 运行时 |
 | `rime_deployer.exe` | 可执行文件 | 外部部署工具 |
+| `rime_runtime.lock.json` | 运行时锁 | 固定 librime 版本、提交、插件版本及三个运行文件的 SHA-256 |
 
 ### 3.2 用户数据目录
 
@@ -625,7 +633,7 @@ NSIS 安装包只包含 PIMELauncher、`backends.json`、完整 `go-backend` 包
 - **活动子模块必须先推到 fork remote**（当前为 `libIME2`），否则 checkout 失败；退役的 Python/Node/McBopomofo/libchewing 历史源码不参与产品构建和安装
 - 内联 vswhere + VsDevCmd 设置（非 ilammy/msvc-dev-cmd）
 - CMake 构建用 `shell: cmd` 确保 VsDevCmd 环境持久
-- rime-frost 数据获取步骤
+- 仓库内固定 Rime 共享数据及 librime 版本、哈希门禁
 - Go 纯逻辑包、原生工具布局及关键语言栏/Rime 回归测试
 - NSIS 打包用 `pwsh` + `Set-Location`
 
@@ -710,9 +718,12 @@ go-backend\run_admin_yime_tests.cmd
 
 ## 6. 编码体系参考
 
-### 6.1 声母→键盘映射
+### 6.1 首音→键盘映射
 
-| 声母 | 键 | 声母 | 键 | 声母 | 键 | 声母 | 键 |
+首音分为实首音和虚首音：实首音对应非零声母，虚首音对应零声母。在《汉语拼音方案》的书写中，
+零声母包括隔音符号 `'` 以及 `y`、`w` 三类起首形式，因此下表把三者都列为虚首音。
+
+| 首音 | 键 | 首音 | 键 | 首音 | 键 | 首音 | 键 |
 |------|-----|------|-----|------|-----|------|-----|
 | b | b | p | p | m | - | f | [ |
 | d | ] | t | t | n | n | l | \ |
@@ -720,7 +731,7 @@ go-backend\run_admin_yime_tests.cmd
 | zh | 7 | ch | 8 | sh | 9 | r | 0 |
 | z | 6 | c | 5 | s | 4 | | |
 | j | 3 | q | 2 | x | 1 | | |
-| w | = | y | y | 零首音 | ' | | |
+| w（虚） | = | y（虚） | y | `'`（虚） | ' | | |
 
 ### 6.2 候选选择键
 

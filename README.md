@@ -4,7 +4,9 @@
 
 [中文文档](README.zh-CN.md)
 
-Yime maps pinyin syllables to a structured keyboard encoding where initials follow memorable patterns (zh/ch/sh → 7/8/9, j/q/x → 3/2/1, z/c/s → 6/5/4). Three encoding modes are available: variable-length (default), fixed-length (4 keys per syllable, unambiguous), and shorthand (shortest codes).
+Yime maps pinyin syllables to a structured keyboard encoding where shouyin units follow memorable patterns (zh/ch/sh → 7/8/9, j/q/x → 3/2/1, z/c/s → 6/5/4). Three encoding modes are available: variable-length (default), fixed-length (4 keys per syllable, unambiguous), and shorthand (shortest codes).
+
+In fixed-length mode, each syllable consists of one *shouyin* followed by a *ganyin*. The ganyin always contains three yinyuan: *huyin*, *zhuyin*, and *moyin*. Variable-length mode preserves the real or virtual shouyin and merges adjacent identical yinyuan that compose the ganyin: ABC stays ABC, AAC becomes AC, ABB becomes AB, and AAA becomes A. Shorthand mode then omits an eligible middle-tone yinyuan from the variable-length result. See the [data format reference](docs/YIME_DATA_FORMAT_REFERENCE.md#首音干音与三模式派生) for the structural rules.
 
 ## Features
 
@@ -135,17 +137,28 @@ regsvr32 /u "C:\Program Files (x86)\YIME\x64\PIMETextService.dll"
 
 ## Encoding Reference
 
-### Initial → key mapping
+### Shouyin → key mapping
 
-| Initial | Key | Initial | Key | Initial | Key |
-|---------|-----|---------|-----|---------|-----|
-| b | q | p | p | m | h | f | [ |
-| d | w | t | . | n | y | l | b |
-| g | ] | k | ' | h | n | | |
-| zh | 7 | ch | 8 | sh | 9 | r | 0 |
-| z | 6 | c | 5 | s | 4 | | |
-| j | 3 | q | 2 | x | 1 | | |
-| w | % | y | $ | | | | |
+In Yime, shouyin are divided into real and virtual classes. In phonetic terms, a real shouyin corresponds to a
+traditional non-zero initial, while a virtual shouyin corresponds to a zero initial; Yime's actual encoding differs
+from mainstream Pinyin input methods and is listed below. Under the Chinese-phonology convention used by this
+project, zero initials are represented in *Hanyu Pinyin* by the separator `'` and by initial `y` or `w`; all three
+are carried by virtual shouyin in Yime. A virtual shouyin also marks an explicit syllable boundary in continuous input.
+
+| Shouyin | Key | Shouyin | Key |
+|---------|-----|---------|-----|
+| b | `b` | p | `p` |
+| m | `-` | f | `[` |
+| d | `]` | t | `t` |
+| n | `n` | l | `\` |
+| g | `g` | k | `q` |
+| h | `h` | zh | `7` |
+| ch | `8` | sh | `9` |
+| r | `0` | z | `6` |
+| c | `5` | s | `4` |
+| j | `3` | q | `2` |
+| x | `1` | y (virtual shouyin) | `y` |
+| w (virtual shouyin) | `=` | `'` (virtual shouyin; separator) | `'` |
 
 ### Candidate selection keys
 
@@ -176,6 +189,7 @@ Check logs at `%LOCALAPPDATA%\PIME\Logs\go_backend.log`.
 | [Usability Assessment](docs/YIME_USABILITY_ASSESSMENT.md) | Current usability issues and priorities |
 | [Development Roadmap](docs/YIME_DEVELOPMENT_ROADMAP.md) | Phased roadmap, fix workflows, AGENTS.md constraints |
 | [Rime Integration](docs/YIME_RIME_INTEGRATION.md) | Rime data flow, pinyin_normalized.json chain, maintainer checklist |
+| [librime 1.17 Migration Evaluation](docs/LIBRIME_1_17_MIGRATION_EVALUATION.md) | Compatibility result, pinned runtime hashes, shared-data and upgrade gates |
 | [Tooling Strategy](docs/YIME_TOOLING_STRATEGY.md) | Standalone tools vs. language-bar UI design |
 | [Tool Development Guide](docs/YIME_TOOL_DEVELOPMENT_GUIDE.md) | How to add a new standalone tool |
 | [Native UI Guidelines](docs/YIME_NATIVE_UI_GUIDELINES.md) | Win32 layout, dialogs, wording, focus, and UI tests |

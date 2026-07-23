@@ -122,14 +122,16 @@ func (c *Codec) Reencode(full string) (codemode.Record, error) {
 			return codemode.Record{}, err
 		}
 		fullParts = append(fullParts, fullPart)
-		part := mergeIDs(ids[start : start+4])
+		shouyin := ids[start : start+1]
+		ganyin := mergeIDs(ids[start+1 : start+4])
+		part := append(append([]string(nil), shouyin...), ganyin...)
 		variable = append(variable, part...)
-		// N12 is the virtual initial. Preserve it just like a real initial so
-		// zero-initial syllables retain an explicit boundary after projection.
-		initial := part[:1]
-		ganyin := part[1:]
-		shorthand = append(shorthand, initial...)
-		shortPart := append(append([]string(nil), initial...), omitMiddleID(ganyin)...)
+		// The first ID is a real or virtual shouyin. Preserve every shouyin so
+		// each syllable retains an explicit boundary after projection.
+		shouyin = part[:1]
+		ganyin = part[1:]
+		shorthand = append(shorthand, shouyin...)
+		shortPart := append(append([]string(nil), shouyin...), omitMiddleID(ganyin)...)
 		shorthand = append(shorthand, shortPart[1:]...)
 		variablePart, err := project(part)
 		if err != nil {

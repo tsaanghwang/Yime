@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "source": "https://github.com/rime/librime/releases/tag/1.17.0",
+  "librime_version": "1.17.0",
+  "librime_commit": "33e7814",
+  "platform": "Windows-msvc-x64",
+  "plugins": {
+    "hchunhui/librime-lua": "ec52e48",
+    "lotem/librime-octagram": "dfcc151",
+    "rime/librime-predict": "920bd41"
+  },
+  "files": {
+    "rime.dll": "86b4c7357d4c6d293ce5589b234d8859ca2ac30923a03bedfa3926eeaf97fb0b",
+    "rime_deployer.exe": "3abb72b5bb56fcafcfe925d533ae5f832c68d5a0bc9952fd0eea0682fb1ab071",
+    "rime_dict_manager.exe": "1c1eb1f84f98704161efbf3315a16e3456f5989efa56f340d7e9e3e5f8bf9e1b"
+  }
+}

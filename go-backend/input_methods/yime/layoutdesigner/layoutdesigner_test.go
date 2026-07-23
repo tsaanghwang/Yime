@@ -86,7 +86,7 @@ func TestReencodeUsesYinyuanIDsAndSemanticShorthand(t *testing.T) {
 	}
 }
 
-func TestReencodePreservesVirtualInitialAsSyllableBoundary(t *testing.T) {
+func TestReencodePreservesVirtualShouyinAsSyllableBoundary(t *testing.T) {
 	source := defaultProfile(t)
 	record, err := ReencodeRecord("'sdf", source, source)
 	if err != nil {
@@ -94,6 +94,20 @@ func TestReencodePreservesVirtualInitialAsSyllableBoundary(t *testing.T) {
 	}
 	if record.Full != "'sdf" || record.Variable != "'sdf" || record.Shorthand != "'sf" {
 		t.Fatalf("unexpected: %#v", record)
+	}
+}
+
+func TestDescribeIDDistinguishesRealAndVirtualShouyin(t *testing.T) {
+	want := map[string]string{
+		"N01": "b",
+		"N12": "'（虚首音）",
+		"N23": "y（虚首音）",
+		"N24": "w（虚首音）",
+	}
+	for id, label := range want {
+		if got := DescribeID(id); got != label {
+			t.Errorf("DescribeID(%q) = %q, want %q", id, got, label)
+		}
 	}
 }
 

@@ -8,7 +8,7 @@ import (
 )
 
 const fixture = "pinyin_tone\tmarked_pinyin\tnormalized\tshouyin_label\tganyin_label\trule_id\tshouyin_symbol\thuyin_symbol\tzhuyin_symbol\tmoyin_symbol\tshouyin_id\thuyin_id\tzhuyin_id\tmoyin_id\tshouyin_name\thuyin_name\tzhuyin_name\tmoyin_name\tlayout_code\taliases\tstatus\n" +
-	"a1\tā\ta1\t'\ta1\tzero-initial\tA\tB\tB\tB\tN12\tM10\tM10\tM10\t零首音\ta高\ta高\ta高\t'fff\ta1\tok\n" +
+	"a1\tā\ta1\t'\ta1\tzero-initial\tA\tB\tB\tB\tN12\tM10\tM10\tM10\t'\ta高\ta高\ta高\t'fff\ta1\tok\n" +
 	"yu1\tyū\tyu1\ty\tü1\tvirtual-h-rounded\tY\tU\tU\tU\tN23\tM07\tM07\tM07\ty\tü高\tü高\tü高\tym..\tyu1\tok\n"
 
 func TestLoadFilterAndTrace(t *testing.T) {
