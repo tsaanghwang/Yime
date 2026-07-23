@@ -1164,6 +1164,30 @@ func TestReturnKeyPassesThroughWhenNotComposing(t *testing.T) {
 	}
 }
 
+func TestReturnKeyUpAfterHostCandidateSelectionDoesNotCommitRawComposition(t *testing.T) {
+	ime := newTestIME()
+	backend := ime.backend.(*testBackend)
+	backend.composition = "逼bjjj"
+	backend.candidates = []candidateItem{{Text: "幅"}, {Text: "逼"}}
+	backend.returnKeyHandled = false
+	ime.keyComposing = true
+
+	resp := ime.filterKeyUp(&pime.Request{
+		SeqNum:   1,
+		KeyCode:  vkReturn,
+		CharCode: '\r',
+	}, pime.NewResponse(1, true))
+	if resp.ReturnValue != 0 {
+		t.Fatalf("expected Enter key-up to pass through after host candidate selection, got %d", resp.ReturnValue)
+	}
+	if ime.pendingRawCommit != "" {
+		t.Fatalf("Enter key-up must not queue raw composition, got %q", ime.pendingRawCommit)
+	}
+	if backend.composition != "逼bjjj" {
+		t.Fatalf("Enter key-up must preserve the corrected composition, got %q", backend.composition)
+	}
+}
+
 func TestControlKeyPassesThroughWhenIdle(t *testing.T) {
 	ime := newTestIME()
 

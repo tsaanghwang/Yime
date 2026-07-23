@@ -30,6 +30,8 @@ New-Item -ItemType Directory -Path $env:GOCACHE, $env:GOTMPDIR -Force | Out-Null
 
 $requiredYimeTests = @(
     'TestNativeBackendKeepsRimeOwnedCandidatePaging'
+    'TestAllSchemasKeepNavigatorBeforeEditor'
+    'TestReturnKeyUpAfterHostCandidateSelectionDoesNotCommitRawComposition'
     'TestLanguageBarToggleButtonsUseStableTwoCharacterLabels'
     'TestDeployCommandQueuesConfirmedExternalBuildWithoutNativeRedeploy'
     'TestApplyUserLexiconWritesAllThreeModes'

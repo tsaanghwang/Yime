@@ -35,6 +35,8 @@ $env:YIME_RUN_REAL_RIME_TESTS = '1'
 $requiredRealRimeTests = @(
     'TestRealRimeCanCommitText'
     'TestRealRimeKeepsCandidatesWhileCompletingFinalSyllable'
+    'TestRealRimeNavigatorCanMoveWithinSentenceComposition'
+    'TestRealRimeNavigatorSelectionKeepsSentenceComposition'
     'TestRealRimeRedeployAppliesPageSize'
     'TestRealRimeExternalBuildAppliesPageSize'
 )

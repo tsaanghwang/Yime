@@ -18,6 +18,7 @@
 //
 
 #include "PIMEClient.h"
+#include "PIMEKeyRouting.h"
 #include "PIMEProcessValidation.h"
 #include "PIMERpcResponse.h"
 #include "libIME2/src/Utils.h"
@@ -57,17 +58,10 @@ bool uuidFromString(const char* uuidStr, UUID& result) {
 }
 
 static bool isCandidateWindowKey(Ime::KeyEvent& keyEvent) {
-	switch (keyEvent.keyCode()) {
-	case VK_UP:
-	case VK_DOWN:
-	case VK_LEFT:
-	case VK_RIGHT:
-	case VK_RETURN:
-	case VK_SPACE:
-		return true;
-	default:
-		return false;
-	}
+	const bool controlDown = keyEvent.isKeyDown(VK_CONTROL)
+		|| keyEvent.isKeyDown(VK_LCONTROL)
+		|| keyEvent.isKeyDown(VK_RCONTROL);
+	return shouldCandidateWindowHandleKey(keyEvent.keyCode(), controlDown);
 }
 
 Client::Client(TextService* service, REFIID langProfileGuid):

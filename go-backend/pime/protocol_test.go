@@ -32,6 +32,35 @@ func TestResponseJSONIncludesClearedCompositionState(t *testing.T) {
 	}
 }
 
+func TestResponseJSONPreservesCompositionNavigationMetadata(t *testing.T) {
+	resp := NewResponse(2, true)
+	resp.CompositionString = "音元输入法"
+	resp.CursorPos = 6
+	resp.CompositionCursor = 6
+	resp.SelStart = 0
+	resp.SelEnd = 6
+
+	payload, err := resp.ToJSON()
+	if err != nil {
+		t.Fatalf("ToJSON failed: %v", err)
+	}
+
+	var decoded map[string]interface{}
+	if err := json.Unmarshal(payload, &decoded); err != nil {
+		t.Fatalf("unmarshal response failed: %v", err)
+	}
+	for key, want := range map[string]float64{
+		"cursorPos":         6,
+		"compositionCursor": 6,
+		"selStart":          0,
+		"selEnd":            6,
+	} {
+		if got, ok := decoded[key].(float64); !ok || got != want {
+			t.Fatalf("expected %s=%v, got %#v", key, want, decoded[key])
+		}
+	}
+}
+
 func TestParseRequestAcceptsNumericKeyStates(t *testing.T) {
 	req, err := ParseRequest([]byte(`{
 		"method": "onKeyDown",

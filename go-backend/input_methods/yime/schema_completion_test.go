@@ -49,3 +49,26 @@ func TestAllSchemasEnableSentenceComposition(t *testing.T) {
 		})
 	}
 }
+
+func TestAllSchemasKeepNavigatorBeforeEditor(t *testing.T) {
+	for _, schemaID := range []string{"yime_variable", "yime_full", "yime_shorthand"} {
+		t.Run(schemaID, func(t *testing.T) {
+			path := filepath.Join("data", schemaID+".schema.yaml")
+			content, err := os.ReadFile(path)
+			if err != nil {
+				t.Fatalf("read schema %s: %v", path, err)
+			}
+
+			text := string(content)
+			selector := strings.Index(text, "    - selector")
+			navigator := strings.Index(text, "    - navigator")
+			editor := strings.Index(text, "    - express_editor")
+			if selector < 0 || navigator < 0 || editor < 0 {
+				t.Fatalf("schema %s must include selector, navigator, and express_editor", schemaID)
+			}
+			if !(selector < navigator && navigator < editor) {
+				t.Fatalf("schema %s processor order must remain selector -> navigator -> express_editor", schemaID)
+			}
+		})
+	}
+}
