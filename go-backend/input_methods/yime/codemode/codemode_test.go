@@ -36,6 +36,28 @@ func TestBuildRecordDerivesAllModes(t *testing.T) {
 	}
 }
 
+func TestBuildRecordCoversFourThreeYinyuanGanyinStructures(t *testing.T) {
+	tests := []struct {
+		name, full, variable string
+	}{
+		{"all different", "qjkm", "qjkm"},
+		{"first two equal", "qjjm", "qjm"},
+		{"last two equal", "qjmm", "qjm"},
+		{"all equal", "qjjj", "qj"},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			got, err := BuildRecord(test.full)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if got.Variable != test.variable {
+				t.Fatalf("BuildRecord(%q).Variable = %q, want %q", test.full, got.Variable, test.variable)
+			}
+		})
+	}
+}
+
 func splitEvery(value string, size int) []string {
 	runes := []rune(value)
 	parts := make([]string, 0, len(runes)/size)

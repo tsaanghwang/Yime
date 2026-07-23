@@ -90,8 +90,8 @@ func BuildRecord(full string) (Record, error) {
 		syllable := runes[start : start+SyllableCodeLength]
 		fullParts = append(fullParts, string(syllable))
 		// The first position is a real or virtual initial and must remain an
-		// explicit syllable boundary. Only the three-position ganyin is
-		// eligible for adjacent-equal merging.
+		// explicit syllable boundary. Only adjacent identical yinyuan that
+		// compose the three-position ganyin are merged.
 		initial := syllable[:1]
 		variableGanyin := mergeAdjacent(syllable[1:])
 		variablePart := append(append([]rune(nil), initial...), variableGanyin...)
