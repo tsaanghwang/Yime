@@ -16,6 +16,20 @@ if (-not $LockFile) {
 $lockPath = (Resolve-Path -LiteralPath $LockFile).Path
 $lock = Get-Content -LiteralPath $lockPath -Raw | ConvertFrom-Json
 
+function Get-Sha256Hex {
+    param([Parameter(Mandatory = $true)][string]$Path)
+
+    $stream = [IO.File]::OpenRead($Path)
+    $sha256 = [Security.Cryptography.SHA256]::Create()
+    try {
+        return ([BitConverter]::ToString($sha256.ComputeHash($stream))).Replace('-', '')
+    }
+    finally {
+        $sha256.Dispose()
+        $stream.Dispose()
+    }
+}
+
 if ($lock.schema_version -ne 1) {
     throw "Unsupported Rime runtime lock schema: $($lock.schema_version)"
 }
@@ -37,7 +51,7 @@ foreach ($name in $requiredFiles) {
         throw "Pinned Rime runtime file is missing: $path"
     }
     $expected = [string]$lock.files.$name
-    $actual = (Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash
+    $actual = Get-Sha256Hex -Path $path
     if (-not $actual.Equals($expected, [StringComparison]::OrdinalIgnoreCase)) {
         throw "Rime runtime hash mismatch for ${name}: expected $expected, got $actual"
     }
