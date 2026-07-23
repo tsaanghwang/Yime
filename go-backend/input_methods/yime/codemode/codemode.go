@@ -89,15 +89,19 @@ func BuildRecord(full string) (Record, error) {
 	for start := 0; start < len(runes); start += SyllableCodeLength {
 		syllable := runes[start : start+SyllableCodeLength]
 		fullParts = append(fullParts, string(syllable))
-		variablePart := mergeAdjacent(syllable)
+		// The first position is a real or virtual initial and must remain an
+		// explicit syllable boundary. Only the three-position ganyin is
+		// eligible for adjacent-equal merging.
+		initial := syllable[:1]
+		variableGanyin := mergeAdjacent(syllable[1:])
+		variablePart := append(append([]rune(nil), initial...), variableGanyin...)
 		variableText := string(variablePart)
 		variable.WriteString(variableText)
 		variableParts = append(variableParts, variableText)
 
-		// Keep the real or virtual initial as an explicit syllable boundary in
-		// every derived mode. In particular, zero-initial syllables retain '\'',
-		// allowing Rime's sentence translator to segment concatenated codes.
-		initial := variablePart[:1]
+		// Shorthand is derived from the variable result: retain its initial and
+		// apply only the middle-tone omission rule to its ganyin.
+		initial = variablePart[:1]
 		ganyin := variablePart[1:]
 		shorthandPart := string(initial) + string(omitMiddleTone(ganyin))
 		shorthand.WriteString(shorthandPart)

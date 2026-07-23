@@ -10,6 +10,7 @@ func TestBuildRecordDerivesAllModes(t *testing.T) {
 		full, variable, shorthand string
 	}{
 		{"'fff", "'f", "'f"},
+		{"ffff", "ff", "ff"},
 		{"'sdf", "'sdf", "'sf"},
 		{"qfff", "qf", "qf"},
 		{"qsdf", "qsdf", "qsf"},
