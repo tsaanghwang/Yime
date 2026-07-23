@@ -112,9 +112,6 @@ func readShouyinTable(t *testing.T, path, heading string) map[string]string {
 
 func normalizeDocumentedShouyin(value string) string {
 	value = strings.TrimSpace(value)
-	if strings.Contains(value, "虚首音") || strings.Contains(strings.ToLower(value), "virtual") {
-		return "'"
-	}
 	if index := strings.IndexAny(value, "（("); index >= 0 {
 		value = value[:index]
 	}

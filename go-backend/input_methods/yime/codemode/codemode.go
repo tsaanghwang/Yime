@@ -8,10 +8,10 @@ import (
 )
 
 const (
-	SyllableCodeLength = 4
-	VirtualInitial     = '\''
-	LayoutVersion      = "rime-layout-key-trial-v1-2026-07-18"
-	LayoutAlphabet     = "1234567890-=qwertyuiop[]\\asdfghjkl;'zxcvbnm,./JKLUIOM<>NG"
+	SyllableCodeLength       = 4
+	ApostropheVirtualShouyin = '\''
+	LayoutVersion            = "rime-layout-key-trial-v1-2026-07-18"
+	LayoutAlphabet           = "1234567890-=qwertyuiop[]\\asdfghjkl;'zxcvbnm,./JKLUIOM<>NG"
 )
 
 // Record contains all runtime representations derived from one canonical code.
@@ -89,21 +89,21 @@ func BuildRecord(full string) (Record, error) {
 	for start := 0; start < len(runes); start += SyllableCodeLength {
 		syllable := runes[start : start+SyllableCodeLength]
 		fullParts = append(fullParts, string(syllable))
-		// The first position is a real or virtual initial and must remain an
+		// The first position is a real or virtual shouyin and must remain an
 		// explicit syllable boundary. Only adjacent identical yinyuan that
 		// compose the three-position ganyin are merged.
-		initial := syllable[:1]
+		shouyin := syllable[:1]
 		variableGanyin := mergeAdjacent(syllable[1:])
-		variablePart := append(append([]rune(nil), initial...), variableGanyin...)
+		variablePart := append(append([]rune(nil), shouyin...), variableGanyin...)
 		variableText := string(variablePart)
 		variable.WriteString(variableText)
 		variableParts = append(variableParts, variableText)
 
-		// Shorthand is derived from the variable result: retain its initial and
+		// Shorthand is derived from the variable result: retain its shouyin and
 		// apply only the middle-tone omission rule to its ganyin.
-		initial = variablePart[:1]
+		shouyin = variablePart[:1]
 		ganyin := variablePart[1:]
-		shorthandPart := string(initial) + string(omitMiddleTone(ganyin))
+		shorthandPart := string(shouyin) + string(omitMiddleTone(ganyin))
 		shorthand.WriteString(shorthandPart)
 		shorthandParts = append(shorthandParts, shorthandPart)
 	}
@@ -121,7 +121,7 @@ func BuildRecord(full string) (Record, error) {
 
 // ValidateContinuousInputRecord protects the two dictionary invariants needed
 // by Rime sentence composition: every spelling has an explicit syllable split,
-// and every projected syllable retains its real or virtual initial. Without
+// and every projected syllable retains its real or virtual shouyin. Without
 // both, completion can keep working while multi-syllable sentence paths vanish.
 func ValidateContinuousInputRecord(record Record) error {
 	full := []rune(record.Full)
@@ -150,7 +150,7 @@ func ValidateContinuousInputRecord(record Record) error {
 		for i, part := range parts {
 			runes := []rune(part)
 			if len(runes) == 0 || runes[0] != full[i*SyllableCodeLength] {
-				return fmt.Errorf("%s syllable %d lost its real or virtual initial", field.name, i+1)
+				return fmt.Errorf("%s syllable %d lost its real or virtual shouyin", field.name, i+1)
 			}
 		}
 	}

@@ -139,10 +139,11 @@ regsvr32 /u "C:\Program Files (x86)\YIME\x64\PIMETextService.dll"
 
 ### Shouyin → key mapping
 
-In Yime, a *shouyin* corresponds in sound value to a traditional initial, but its encoding differs from
-mainstream Pinyin input methods; the actual codes are listed below. The table also includes the special
-shouyin used for spellings beginning with `y` and `w`, plus the virtual shouyin used when a syllable has no real
-shouyin. In continuous input, the virtual shouyin marks an explicit syllable boundary.
+In Yime, shouyin are divided into real and virtual classes. In phonetic terms, a real shouyin corresponds to a
+traditional non-zero initial, while a virtual shouyin corresponds to a zero initial; Yime's actual encoding differs
+from mainstream Pinyin input methods and is listed below. Under the Chinese-phonology convention used by this
+project, zero initials are represented in *Hanyu Pinyin* by the separator `'` and by initial `y` or `w`; all three
+are carried by virtual shouyin in Yime. A virtual shouyin also marks an explicit syllable boundary in continuous input.
 
 | Shouyin | Key | Shouyin | Key |
 |---------|-----|---------|-----|
@@ -156,8 +157,8 @@ shouyin. In continuous input, the virtual shouyin marks an explicit syllable bou
 | r | `0` | z | `6` |
 | c | `5` | s | `4` |
 | j | `3` | q | `2` |
-| x | `1` | y (special shouyin) | `y` |
-| w (special shouyin) | `=` | zero shouyin (virtual) | `'` |
+| x | `1` | y (virtual shouyin) | `y` |
+| w (virtual shouyin) | `=` | `'` (virtual shouyin; separator) | `'` |
 
 ### Candidate selection keys
 

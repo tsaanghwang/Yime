@@ -83,7 +83,7 @@ func TestBuildRecordAcceptsScriptDictionarySyllableSpaces(t *testing.T) {
 	}
 }
 
-func TestValidateContinuousInputRecordRejectsLostVirtualInitial(t *testing.T) {
+func TestValidateContinuousInputRecordRejectsLostApostropheVirtualShouyin(t *testing.T) {
 	record, err := BuildRecord("'sdf qffj")
 	if err != nil {
 		t.Fatal(err)
@@ -91,7 +91,7 @@ func TestValidateContinuousInputRecordRejectsLostVirtualInitial(t *testing.T) {
 	record.Shorthand = strings.TrimPrefix(record.Shorthand, "'")
 	record.ShorthandSpelling = strings.TrimPrefix(record.ShorthandSpelling, "'")
 	if err := ValidateContinuousInputRecord(record); err == nil {
-		t.Fatal("expected continuous-input validation to reject a syllable without its initial")
+		t.Fatal("expected continuous-input validation to reject a syllable without its shouyin")
 	}
 }
 

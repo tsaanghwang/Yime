@@ -68,7 +68,7 @@ Yime 的下一阶段恢复为“一个外部真源、三套内部运行产物”
 - 历史省键中调省略：`C:\dev\Yime-python-prototype\syllable\codec\input_shorthand\`
 - 干音音质组和调级元数据：`yinjie_runtime_key_symbol_mapping.json` 与 `key_to_symbol.json`
 
-变长规则当前为：保留首音，并合并组成干音的相邻相同音元；虚首音继续作为零声母音节的显式边界。省键规则在此基础上，还依据干音音质组和调级元数据省略同音质连续段的中调；不再额外删除虚首音。三种模式因此都可把首音位置用于连续输入时的自动分词。对应 schema 同时启用 `enable_sentence` 和 `sentence_over_completion`，避免词条补全候选阻止 Rime 生成整句候选。
+变长规则当前为：保留首音，并合并组成干音的相邻相同音元；虚首音对应零声母，包括隔音符号型、`y` 型和 `w` 型，继续作为显式音节边界。省键规则在此基础上，还依据干音音质组和调级元数据省略同音质连续段的中调；不再额外删除虚首音。三种模式因此都可把首音位置用于连续输入时的自动分词。对应 schema 同时启用 `enable_sentence` 和 `sentence_over_completion`，避免词条补全候选阻止 Rime 生成整句候选。
 
 `C:\dev\Yime-python-prototype\syllable\codec\yinjie_jianpin_draft.py` 明确是草稿兼容实现，不得作为正式省键规则真源。
 
