@@ -214,6 +214,122 @@ func TestRealRimeAllSchemasComposeSentence(t *testing.T) {
 	}
 }
 
+func TestRealRimeNavigatorCanMoveWithinSentenceComposition(t *testing.T) {
+	session := newRealRimeSession(t)
+	if !SelectSchema(session.sessionID, "yime_full") {
+		t.Fatal("expected yime_full schema to be selectable")
+	}
+
+	ClearComposition(session.sessionID)
+	typeASCII(t, session.sessionID, "bjjjbjjj")
+	before, ok := GetComposition(session.sessionID)
+	if !ok || before.Preedit == "" {
+		t.Fatalf("expected sentence composition before navigation, got %#v", before)
+	}
+
+	if !processRealKey(session.sessionID, &pime.Request{
+		KeyCode:   vkLeft,
+		KeyStates: keyStatesDown(vkControl),
+	}) {
+		t.Fatal("expected Ctrl+Left to be handled by Rime navigator")
+	}
+	after, ok := GetComposition(session.sessionID)
+	if !ok || after.Preedit == "" {
+		t.Fatalf("expected composition to survive navigation, got %#v", after)
+	}
+	if after.CursorPos >= before.CursorPos {
+		t.Fatalf("expected Ctrl+Left to move the preedit cursor left, before=%#v after=%#v", before, after)
+	}
+	if menu, ok := GetMenu(session.sessionID); !ok || len(menu.Candidates) == 0 {
+		t.Fatalf("expected candidates for the repositioned segment, got %#v", menu)
+	}
+}
+
+func TestRealRimeNavigatorSelectionKeepsSentenceComposition(t *testing.T) {
+	session := newRealRimeSession(t)
+	if !SelectSchema(session.sessionID, "yime_full") {
+		t.Fatal("expected yime_full schema to be selectable")
+	}
+
+	ClearComposition(session.sessionID)
+	typeASCII(t, session.sessionID, "bjjjbjjj")
+	initialMenu, ok := GetMenu(session.sessionID)
+	if !ok || len(initialMenu.Candidates) == 0 {
+		t.Fatalf("expected initial sentence candidates, got %#v", initialMenu)
+	}
+	if !processRealKey(session.sessionID, &pime.Request{
+		KeyCode:   vkLeft,
+		KeyStates: keyStatesDown(vkControl),
+	}) {
+		t.Fatal("expected Ctrl+Left to be handled by Rime navigator")
+	}
+
+	menu, ok := GetMenu(session.sessionID)
+	if !ok || len(menu.Candidates) < 2 {
+		t.Fatalf("expected at least two candidates for the repositioned segment, got %#v", menu)
+	}
+	t.Logf("repositioned candidates: %#v", menu.Candidates)
+	if !SelectCandidate(session.sessionID, 1) {
+		t.Fatal("expected second candidate selection to be handled")
+	}
+
+	composition, compositionOK := GetComposition(session.sessionID)
+	commit, committed := GetCommit(session.sessionID)
+	menuAfter, menuOK := GetMenu(session.sessionID)
+	t.Logf("after correction: composition=%#v menu=%#v commit=%#v committed=%t",
+		composition, menuAfter, commit, committed)
+	if !compositionOK || composition.Preedit == "" {
+		t.Fatal("expected sentence composition to remain after correcting the earlier segment")
+	}
+	if committed {
+		t.Fatalf("segment correction must not commit the whole sentence, got %#v", commit)
+	}
+	if !menuOK || len(menuAfter.Candidates) == 0 {
+		t.Fatalf("expected candidates for the preserved sentence tail, got %#v", menuAfter)
+	}
+
+	correctedPrefix := menu.Candidates[1].Text
+	selectedTail := menuAfter.Candidates[0].Text
+	if !SelectCandidate(session.sessionID, 0) {
+		t.Fatal("expected preserved tail candidate selection to be handled")
+	}
+	finalCommit, ok := GetCommit(session.sessionID)
+	if !ok {
+		t.Fatal("expected final segment selection to commit the corrected sentence")
+	}
+	if want := correctedPrefix + selectedTail; finalCommit.Text != want {
+		t.Fatalf("expected corrected sentence commit %q, got %#v", want, finalCommit)
+	}
+
+	typeASCII(t, session.sessionID, "bjjjbjjj")
+	learnedMenu, ok := GetMenu(session.sessionID)
+	if !ok {
+		t.Fatal("expected candidates after retyping the corrected sentence input")
+	}
+	initialRank := -1
+	for index, candidate := range initialMenu.Candidates {
+		if candidate.Text == finalCommit.Text {
+			initialRank = index
+			break
+		}
+	}
+	learnedRank := -1
+	for index, candidate := range learnedMenu.Candidates {
+		if candidate.Text == finalCommit.Text {
+			learnedRank = index
+			break
+		}
+	}
+	if learnedRank < 0 {
+		t.Fatalf("expected corrected sentence %q to remain available after learning, got %#v",
+			finalCommit.Text, learnedMenu.Candidates)
+	}
+	if initialRank >= 0 && learnedRank >= initialRank {
+		t.Fatalf("expected correction learning to improve %q from rank %d, got rank %d",
+			finalCommit.Text, initialRank, learnedRank)
+	}
+}
+
 func TestRealRimePrintableLayoutKeysAreNeverPagingBindings(t *testing.T) {
 	session := newRealRimeSession(t)
 	for _, key := range []rune{'-', '=', ',', '.', '/'} {

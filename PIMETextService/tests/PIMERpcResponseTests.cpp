@@ -10,6 +10,7 @@
 // PIMEClient.cpp now uses for every RPC response and menu item.
 
 #include "../PIMERpcResponse.h"
+#include "../PIMEKeyRouting.h"
 #include "../PIMEProcessValidation.h"
 #include "../PIMEUiPolicy.h"
 
@@ -121,6 +122,27 @@ static void testUiLessCandidateWindowPolicy() {
 	CHECK(PIME::shouldShowOwnedCandidateWindow(true, TRUE));
 }
 
+static void testCandidateWindowKeyRoutingPreservesModifiedNavigation() {
+	const UINT localCandidateKeys[] = {
+		VK_UP, VK_DOWN, VK_LEFT, VK_RIGHT, VK_RETURN, VK_SPACE,
+	};
+	for (const UINT keyCode : localCandidateKeys) {
+		CHECK(PIME::shouldCandidateWindowHandleKey(keyCode, false));
+	}
+
+	CHECK(!PIME::shouldCandidateWindowHandleKey(VK_LEFT, true));
+	CHECK(!PIME::shouldCandidateWindowHandleKey(VK_RIGHT, true));
+	CHECK(PIME::shouldCandidateWindowHandleKey(VK_UP, true));
+	CHECK(PIME::shouldCandidateWindowHandleKey(VK_DOWN, true));
+	CHECK(PIME::shouldCandidateWindowHandleKey(VK_RETURN, true));
+	CHECK(PIME::shouldCandidateWindowHandleKey(VK_SPACE, true));
+
+	for (UINT keyCode = '0'; keyCode <= '9'; ++keyCode) {
+		CHECK(!PIME::shouldCandidateWindowHandleKey(keyCode, false));
+		CHECK(!PIME::shouldCandidateWindowHandleKey(keyCode, true));
+	}
+}
+
 static void testCandidateFontSizeIsBounded() {
 	CHECK(PIME::normalizeCandidateFontSize(-1) == PIME::kMinimumCandidateFontSize);
 	CHECK(PIME::normalizeCandidateFontSize(12) == 12);
@@ -157,6 +179,7 @@ int main() {
 	testMenuItemsWithMixedIdTypesDoNotThrow();
 	testJsonStringOr();
 	testUiLessCandidateWindowPolicy();
+	testCandidateWindowKeyRoutingPreservesModifiedNavigation();
 	testCandidateFontSizeIsBounded();
 	testPopupAnchorStaysInsideWorkArea();
 	testLauncherExecutableValidation();

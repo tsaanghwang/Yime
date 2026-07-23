@@ -763,7 +763,7 @@ func (ime *IME) processKey(req *pime.Request, isUp bool) bool {
 		ime.logShortcutTrace(req, isUp, translatedKeyCode, modifiers, backendRet, true)
 		return true
 	}
-	if ime.keyComposing && req.KeyCode == vkReturn {
+	if !isUp && ime.keyComposing && req.KeyCode == vkReturn {
 		composition := ime.backend.State().Composition
 		if composition != "" {
 			ime.pendingRawCommit = composition
