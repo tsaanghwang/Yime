@@ -634,9 +634,9 @@ func TestRealRimeExternalBuildAppliesPageSize(t *testing.T) {
 		t.Fatalf("expected user schema deploy to succeed: %s", userSchemaPath)
 	}
 
-	deployerPath := `C:\dev\librime\build\bin\Release\rime_deployer.exe`
-	if _, err := os.Stat(deployerPath); err != nil {
-		t.Skipf("external rime_deployer not available: %v", err)
+	deployerPath := findRimeExternalDeployer(dataDir)
+	if deployerPath == "" {
+		t.Skip("external rime_deployer not available")
 	}
 	cmd := exec.Command(deployerPath, "--build", userDir, dataDir, filepath.Join(userDir, "build"))
 	if out, err := cmd.CombinedOutput(); err != nil {

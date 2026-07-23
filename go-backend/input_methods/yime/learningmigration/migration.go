@@ -392,10 +392,9 @@ func runManager(manager, userDir string, args ...string) error {
 }
 
 func findManager(sharedDir string) string {
-	for _, p := range []string{filepath.Join(filepath.Dir(sharedDir), "rime_dict_manager.exe"), filepath.Join(filepath.Clean(filepath.Join(sharedDir, "..", "..", "..", "..", "..", "librime", "build", "bin", "Release")), "rime_dict_manager.exe"), `C:\dev\librime\build\bin\Release\rime_dict_manager.exe`} {
-		if i, e := os.Stat(p); e == nil && !i.IsDir() {
-			return p
-		}
+	p := filepath.Join(filepath.Dir(sharedDir), "rime_dict_manager.exe")
+	if i, e := os.Stat(p); e == nil && !i.IsDir() {
+		return p
 	}
 	return ""
 }

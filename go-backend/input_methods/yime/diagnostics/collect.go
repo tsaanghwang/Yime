@@ -375,7 +375,6 @@ func deployerCheck(sharedDir string) string {
 	for _, candidate := range []string{
 		filepath.Join(installRootFromShared(sharedDir), "rime_deployer.exe"),
 		filepath.Join(filepath.Dir(sharedDir), "rime_deployer.exe"),
-		`C:\dev\librime\build\bin\Release\rime_deployer.exe`,
 	} {
 		if fileExists(candidate) {
 			return fileCheck("rime_deployer.exe", candidate)

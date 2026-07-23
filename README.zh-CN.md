@@ -191,6 +191,7 @@ PIMELauncher.exe /console
 | [可用性评估](docs/YIME_USABILITY_ASSESSMENT.md) | 当前可用性问题及优先级 |
 | [开发路线图](docs/YIME_DEVELOPMENT_ROADMAP.md) | 分阶段路线图、修复流程、AGENTS.md 约束 |
 | [Rime 集成](docs/YIME_RIME_INTEGRATION.md) | Rime 数据流、pinyin_normalized.json 链、维护检查清单 |
+| [librime 1.17 迁移评估](docs/LIBRIME_1_17_MIGRATION_EVALUATION.md) | 兼容性结论、固定运行时哈希、共享数据与升级门禁 |
 | [工具策略](docs/YIME_TOOLING_STRATEGY.md) | 独立工具 vs. 语言栏 UI 设计 |
 | [独立工具开发指南](docs/YIME_TOOL_DEVELOPMENT_GUIDE.md) | 如何添加新的独立工具 |
 | [原生 UI 规范](docs/YIME_NATIVE_UI_GUIDELINES.md) | Win32 布局、对话框、用词、焦点与 UI 测试规范 |

@@ -20,6 +20,12 @@ func TestReleasePipelineSignsPayloadInstallerAndUninstaller(t *testing.T) {
 	goTestScript := read(filepath.Join(root, "tools", "test-go.ps1"))
 	rootBuildScript := read(filepath.Join(root, "build.bat"))
 	buildScript := read(filepath.Join(root, "go-backend", "build.bat"))
+	runtimeSources := []string{
+		read(filepath.Join(root, "go-backend", "input_methods", "yime", "yime.go")),
+		read(filepath.Join(root, "go-backend", "input_methods", "yime", "settings", "rime.go")),
+		read(filepath.Join(root, "go-backend", "input_methods", "yime", "diagnostics", "collect.go")),
+		read(filepath.Join(root, "go-backend", "input_methods", "yime", "learningmigration", "migration.go")),
+	}
 	installer := read(filepath.Join(root, "installer", "installer.nsi"))
 	installer = strings.ReplaceAll(installer, "\r\n", "\n")
 	devUninstaller := read(filepath.Join(root, "tools", "dev-uninstall.ps1"))
@@ -94,9 +100,17 @@ func TestReleasePipelineSignsPayloadInstallerAndUninstaller(t *testing.T) {
 	for _, path := range []string{
 		filepath.Join(root, "go-backend", "input_methods", "yime", "data", "yime_pua_pinyin.json"),
 		filepath.Join(root, "go-backend", "input_methods", "yime", "data", "fonts", "YinYuan-Regular.ttf"),
+		filepath.Join(root, "go-backend", "input_methods", "yime", "data", "default.yaml"),
+		filepath.Join(root, "go-backend", "input_methods", "yime", "data", "symbols.yaml"),
+		filepath.Join(root, "go-backend", "input_methods", "yime", "data", "essay.txt"),
+		filepath.Join(root, "go-backend", "input_methods", "yime", "data", "opencc", "t2s.json"),
+		filepath.Join(root, "go-backend", "input_methods", "yime", "data", "opencc", "TSCharacters.ocd2"),
+		filepath.Join(root, "go-backend", "input_methods", "yime", "rime_runtime.lock.json"),
+		filepath.Join(root, "go-backend", "input_methods", "yime", "rime_deployer.exe"),
+		filepath.Join(root, "go-backend", "input_methods", "yime", "rime_dict_manager.exe"),
 	} {
 		if info, err := os.Stat(path); err != nil || info.Size() == 0 {
-			t.Fatalf("PUA annotation release asset is missing or empty: %s (%v)", path, err)
+			t.Fatalf("required release asset is missing or empty: %s (%v)", path, err)
 		}
 	}
 	if strings.Contains(installer, `ReadRegStr $INSTDIR`) {
@@ -148,11 +162,31 @@ func TestReleasePipelineSignsPayloadInstallerAndUninstaller(t *testing.T) {
 		t.Fatal("package build must recursively remove copied Go source files")
 	}
 	for _, fragment := range []string{
-		`if exist "%PACKAGE_RIME_DATA_DIR%\preview" rmdir /s /q "%PACKAGE_RIME_DATA_DIR%\preview"`,
-		`if exist "%PACKAGE_RIME_DATA_DIR%\weasel.yaml" del /q "%PACKAGE_RIME_DATA_DIR%\weasel.yaml"`,
+		`verify-rime-runtime.ps1`,
+		`rime_runtime.lock.json`,
+		`Missing pinned Rime shared data`,
+		`Missing pinned OpenCC shared data`,
+		`Copying pinned bundled Rime shared data`,
 	} {
 		if !strings.Contains(buildScript, fragment) {
-			t.Fatalf("package build must remove Weasel-only runtime asset: %q", fragment)
+			t.Fatalf("package build is missing pinned Rime runtime/data guard: %q", fragment)
+		}
+	}
+	for _, fragment := range []string{`LIBRIME_BUILD_DIR`, `merge_weasel_shared_data`, `find_weasel_data_dir`, `run_plum_install`, `C:\dev\librime`} {
+		if strings.Contains(buildScript, fragment) {
+			t.Fatalf("package build must not use a machine-local Rime fallback: %q", fragment)
+		}
+	}
+	for _, source := range runtimeSources {
+		for _, fragment := range []string{`C:\dev\librime`, `librime\build\bin\Release`} {
+			if strings.Contains(source, fragment) {
+				t.Fatalf("runtime source must not use a machine-local Rime fallback: %q", fragment)
+			}
+		}
+	}
+	for _, fragment := range []string{`rime-frost`, `Fetch Rime shared data`} {
+		if strings.Contains(ci, fragment) {
+			t.Fatalf("CI must use the committed pinned Rime shared data, not fetch %q", fragment)
 		}
 	}
 	for _, fragment := range []string{`if not defined GOCACHE set "GOCACHE=%PIME_ROOT%\.tmp\go-cache"`, `if not defined GOTMPDIR set "GOTMPDIR=%PIME_ROOT%\.tmp\go-tmp"`} {

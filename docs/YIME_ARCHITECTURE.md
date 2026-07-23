@@ -539,6 +539,10 @@ Windows handoff
 
 `go-backend/input_methods/yime/data/`
 
+Rime 共享数据（包括 `default.yaml`、基础方案、词典、`essay.txt` 和
+`opencc/`）是仓库内固定的发布资产。构建与 CI 只复制这份快照，不从
+Weasel、本机目录或 Plum 临时补齐；缺件时直接失败。
+
 | 文件 | 类型 | 说明 |
 |------|------|------|
 | `default.yaml` | Rime 配置 | 基础 schema_list、page_size、按键绑定、标点 |
@@ -556,6 +560,7 @@ Windows handoff
 | `essay.txt` | 词频表 | 八股文 |
 | `rime.dll` | 动态库 | librime 运行时 |
 | `rime_deployer.exe` | 可执行文件 | 外部部署工具 |
+| `rime_runtime.lock.json` | 运行时锁 | 固定 librime 版本、提交、插件版本及三个运行文件的 SHA-256 |
 
 ### 3.2 用户数据目录
 
@@ -625,7 +630,7 @@ NSIS 安装包只包含 PIMELauncher、`backends.json`、完整 `go-backend` 包
 - **活动子模块必须先推到 fork remote**（当前为 `libIME2`），否则 checkout 失败；退役的 Python/Node/McBopomofo/libchewing 历史源码不参与产品构建和安装
 - 内联 vswhere + VsDevCmd 设置（非 ilammy/msvc-dev-cmd）
 - CMake 构建用 `shell: cmd` 确保 VsDevCmd 环境持久
-- rime-frost 数据获取步骤
+- 仓库内固定 Rime 共享数据及 librime 版本、哈希门禁
 - Go 纯逻辑包、原生工具布局及关键语言栏/Rime 回归测试
 - NSIS 打包用 `pwsh` + `Set-Location`
 

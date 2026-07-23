@@ -23,15 +23,9 @@ set "LAYOUT_DESIGNER_EXE=%PACKAGE_DIR%\yime-layout-designer.exe"
 set "BACKEND_SNIPPET=%BUILD_ROOT%\backends.go-backend.json"
 set "RIME_DIR=%ROOT_DIR%\input_methods\yime"
 set "RIME_DATA_DIR=%RIME_DIR%\data"
-set "LIBRIME_BUILD_DIR=%PIME_ROOT%\..\librime\build\bin\Release"
+set "RIME_RUNTIME_LOCK=%RIME_DIR%\rime_runtime.lock.json"
 set "PACKAGE_RIME_DIR=%PACKAGE_DIR%\input_methods\yime"
 set "PACKAGE_RIME_DATA_DIR=%PACKAGE_RIME_DIR%\data"
-set "PLUM_DIR=%PIME_ROOT%\plum"
-set "PLUM_INSTALL=%PLUM_DIR%\rime-install"
-set "PLUM_INSTALL_BAT=%PLUM_DIR%\rime-install.bat"
-set "PLUM_PRESET_TARGET=:preset"
-set "WEASEL_ROOT="
-set "WEASEL_DATA_DIR="
 
 if not defined GOCACHE set "GOCACHE=%PIME_ROOT%\.tmp\go-cache"
 if not defined GOTMPDIR set "GOTMPDIR=%PIME_ROOT%\.tmp\go-tmp"
@@ -71,9 +65,28 @@ if errorlevel 1 (
 
 echo [INFO] Output directory: "%PACKAGE_DIR%"
 
-if not exist "%RIME_DATA_DIR%\default.yaml" (
-    echo [ERROR] Missing Go Rime shared data: "%RIME_DATA_DIR%"
-    echo [ERROR] Initialize the submodule from https://github.com/gaboolic/rime-frost
+for %%F in (
+    default.yaml
+    symbols.yaml
+    essay.txt
+    luna_pinyin.dict.yaml
+    luna_pinyin.schema.yaml
+    cangjie5.dict.yaml
+    cangjie5.schema.yaml
+) do (
+    if not exist "%RIME_DATA_DIR%\%%F" (
+        echo [ERROR] Missing pinned Rime shared data: "%RIME_DATA_DIR%\%%F"
+        exit /b 1
+    )
+)
+if not exist "%RIME_DATA_DIR%\opencc\t2s.json" (
+    echo [ERROR] Missing pinned OpenCC shared data: "%RIME_DATA_DIR%\opencc"
+    exit /b 1
+)
+
+powershell -NoProfile -ExecutionPolicy Bypass -File "%PIME_ROOT%\tools\verify-rime-runtime.ps1" -RuntimeDir "%RIME_DIR%" -LockFile "%RIME_RUNTIME_LOCK%"
+if errorlevel 1 (
+    echo [ERROR] Pinned Rime runtime verification failed.
     exit /b 1
 )
 
@@ -396,17 +409,9 @@ if exist "%RIME_DIR%\rime_deployer.exe" (
     copy /Y "%RIME_DIR%\rime_deployer.exe" "%PACKAGE_DIR%\input_methods\yime\rime_deployer.exe" >nul
     echo [INFO] Copied rime_deployer.exe into package output
 )
-if not exist "%PACKAGE_DIR%\input_methods\yime\rime_deployer.exe" if exist "%LIBRIME_BUILD_DIR%\rime_deployer.exe" (
-    copy /Y "%LIBRIME_BUILD_DIR%\rime_deployer.exe" "%PACKAGE_DIR%\input_methods\yime\rime_deployer.exe" >nul
-    echo [INFO] Copied rime_deployer.exe from librime build output into package output
-)
 if exist "%RIME_DIR%\rime_dict_manager.exe" (
     copy /Y "%RIME_DIR%\rime_dict_manager.exe" "%PACKAGE_DIR%\input_methods\yime\rime_dict_manager.exe" >nul
     echo [INFO] Copied rime_dict_manager.exe into package output
-)
-if not exist "%PACKAGE_DIR%\input_methods\yime\rime_dict_manager.exe" if exist "%LIBRIME_BUILD_DIR%\rime_dict_manager.exe" (
-    copy /Y "%LIBRIME_BUILD_DIR%\rime_dict_manager.exe" "%PACKAGE_DIR%\input_methods\yime\rime_dict_manager.exe" >nul
-    echo [INFO] Copied rime_dict_manager.exe from librime build output into package output
 )
 
 echo.
@@ -465,55 +470,27 @@ if not exist "%PACKAGE_RIME_DATA_DIR%" (
     exit /b 1
 )
 
-echo [INFO] Copying bundled rime-frost submodule data ...
+echo [INFO] Copying pinned bundled Rime shared data ...
 xcopy "%RIME_DATA_DIR%" "%PACKAGE_RIME_DATA_DIR%\" /E /I /Y >nul
 if errorlevel 1 (
     echo [ERROR] Failed to copy bundled Rime data from "%RIME_DATA_DIR%"
     exit /b 1
 )
 
-set "PLUM_DATA_PREPARED=0"
-
-call :run_plum_install
-if errorlevel 1 exit /b 1
-
-if "%PLUM_DATA_PREPARED%"=="0" (
-    echo [WARN] plum did not add preset shared data; falling back to Weasel shared data merge.
-    call :merge_weasel_shared_data
-    if errorlevel 1 (
-        echo [ERROR] Failed to merge fallback Weasel shared data.
+for %%F in (default.yaml symbols.yaml essay.txt luna_pinyin.dict.yaml luna_pinyin.schema.yaml cangjie5.dict.yaml cangjie5.schema.yaml) do (
+    if not exist "%PACKAGE_RIME_DATA_DIR%\%%F" (
+        echo [ERROR] Packaged Rime shared data is incomplete: %%F
+        exit /b 1
+    )
+)
+for %%F in (t2s.json s2t.json TSCharacters.ocd2 STCharacters.ocd2) do (
+    if not exist "%PACKAGE_RIME_DATA_DIR%\opencc\%%F" (
+        echo [ERROR] Packaged OpenCC data is incomplete: opencc\%%F
         exit /b 1
     )
 )
 
-call :copy_opencc_data
-if errorlevel 1 exit /b 1
-
-REM YIME renders its own candidate/message windows. Weasel theme previews and
-REM weasel.yaml are frontend-only assets and must not enter the YIME runtime.
-if exist "%PACKAGE_RIME_DATA_DIR%\preview" rmdir /s /q "%PACKAGE_RIME_DATA_DIR%\preview"
-if exist "%PACKAGE_RIME_DATA_DIR%\weasel.yaml" del /q "%PACKAGE_RIME_DATA_DIR%\weasel.yaml"
-
-if exist "%RIME_DATA_DIR%\PIME.yaml" (
-    copy /Y "%RIME_DATA_DIR%\PIME.yaml" "%PACKAGE_RIME_DATA_DIR%\PIME.yaml" >nul
-)
-
 echo [INFO] Packaged Rime shared data prepared at "%PACKAGE_RIME_DATA_DIR%"
-exit /b 0
-
-:merge_weasel_shared_data
-call :find_weasel_data_dir
-if not defined WEASEL_DATA_DIR (
-    echo [WARN] Weasel shared data directory was not found; skip shared data merge.
-    exit /b 0
-)
-
-echo [INFO] Merging Weasel shared data from "%WEASEL_DATA_DIR%"
-xcopy "%WEASEL_DATA_DIR%\*.*" "%PACKAGE_RIME_DATA_DIR%\" /E /I /Y /D >nul
-if errorlevel 1 (
-    echo [ERROR] Failed to merge Weasel shared data from "%WEASEL_DATA_DIR%"
-    exit /b 1
-)
 exit /b 0
 
 :sign_go_binaries
@@ -550,105 +527,4 @@ for %%F in (
         exit /b 1
     )
 )
-exit /b 0
-
-:find_weasel_data_dir
-if defined WEASEL_DATA_DIR (
-    if exist "%WEASEL_DATA_DIR%\default.yaml" exit /b 0
-    set "WEASEL_DATA_DIR="
-)
-
-if defined WEASEL_ROOT (
-    if exist "%WEASEL_ROOT%\data\default.yaml" (
-        set "WEASEL_DATA_DIR=%WEASEL_ROOT%\data"
-        exit /b 0
-    )
-)
-
-for %%K in ("HKLM\SOFTWARE\WOW6432Node\Rime\Weasel" "HKLM\SOFTWARE\Rime\Weasel" "HKCU\SOFTWARE\Rime\Weasel") do (
-    for /f "tokens=2,*" %%A in ('reg query %%~K /v WeaselRoot 2^>nul ^| find "WeaselRoot"') do (
-        set "WEASEL_ROOT=%%B"
-        if exist "%%B\data\default.yaml" (
-            set "WEASEL_DATA_DIR=%%B\data"
-            exit /b 0
-        )
-    )
-)
-
-for %%D in ("%ProgramFiles%\Rime\weasel-*") do (
-    if exist "%%~fD\data\default.yaml" set "WEASEL_DATA_DIR=%%~fD\data"
-)
-if defined WEASEL_DATA_DIR exit /b 0
-
-if defined ProgramFiles(x86) (
-    for %%D in ("%ProgramFiles(x86)%\Rime\weasel-*") do (
-        if exist "%%~fD\data\default.yaml" set "WEASEL_DATA_DIR=%%~fD\data"
-    )
-)
-exit /b 0
-
-:run_plum_install
-where bash >nul 2>nul
-if errorlevel 1 (
-    echo [WARN] bash was not found in PATH; skip plum/rime-install.
-    exit /b 0
-)
-
-if exist "%PLUM_INSTALL%" (
-    echo [INFO] Running plum/rime-install %PLUM_PRESET_TARGET% ...
-    set "plum_dir=%PLUM_DIR%"
-    set "rime_dir=%PACKAGE_RIME_DATA_DIR%"
-    set "WSLENV=plum_dir:rime_dir"
-    pushd "%PLUM_DIR%"
-    bash rime-install %PLUM_PRESET_TARGET%
-    set "PLUM_EXIT=%ERRORLEVEL%"
-    popd
-    if not "%PLUM_EXIT%"=="0" (
-        echo [WARN] plum/rime-install failed; will fall back to Weasel shared data merge.
-        exit /b 0
-    )
-    if exist "%PACKAGE_RIME_DATA_DIR%\essay.txt" (
-        set "PLUM_DATA_PREPARED=1"
-        exit /b 0
-    )
-    echo [WARN] plum/rime-install completed but did not install preset shared data into "%PACKAGE_RIME_DATA_DIR%"
-)
-
-if exist "%PLUM_INSTALL_BAT%" (
-    echo [INFO] Running plum/rime-install.bat %PLUM_PRESET_TARGET% ...
-    set "rime_dir=%PACKAGE_RIME_DATA_DIR%"
-    pushd "%PLUM_DIR%"
-    call "%PLUM_INSTALL_BAT%" %PLUM_PRESET_TARGET%
-    set "PLUM_EXIT=%ERRORLEVEL%"
-    popd
-    if not "%PLUM_EXIT%"=="0" (
-        echo [WARN] plum/rime-install.bat failed; will fall back to Weasel shared data merge.
-        exit /b 0
-    )
-    if exist "%PACKAGE_RIME_DATA_DIR%\essay.txt" (
-        set "PLUM_DATA_PREPARED=1"
-    ) else (
-        echo [WARN] plum/rime-install.bat completed but did not install preset shared data into "%PACKAGE_RIME_DATA_DIR%"
-    )
-)
-exit /b 0
-
-:copy_opencc_data
-set "OPENCC_SOURCE="
-call :find_weasel_data_dir
-if defined WEASEL_DATA_DIR if exist "%WEASEL_DATA_DIR%\opencc\*.ocd*" set "OPENCC_SOURCE=%WEASEL_DATA_DIR%\opencc"
-if not defined OPENCC_SOURCE if exist "%RIME_DATA_DIR%\opencc\*.ocd*" set "OPENCC_SOURCE=%RIME_DATA_DIR%\opencc"
-
-if not defined OPENCC_SOURCE (
-    echo [WARN] No OpenCC compiled data was found; packaged opencc directory remains unchanged.
-    exit /b 0
-)
-
-if not exist "%PACKAGE_RIME_DATA_DIR%\opencc" mkdir "%PACKAGE_RIME_DATA_DIR%\opencc"
-xcopy "%OPENCC_SOURCE%\*.*" "%PACKAGE_RIME_DATA_DIR%\opencc\" /E /I /Y >nul
-if errorlevel 1 (
-    echo [ERROR] Failed to copy OpenCC data from "%OPENCC_SOURCE%"
-    exit /b 1
-)
-echo [INFO] Copied OpenCC data from "%OPENCC_SOURCE%"
 exit /b 0

@@ -45,7 +45,6 @@ func deployerCandidates(sharedDir string) []string {
 		candidates = append(candidates, filepath.Join(installRootFromShared(sharedDir), "rime_deployer.exe"))
 		candidates = append(candidates, filepath.Join(filepath.Dir(sharedDir), "rime_deployer.exe"))
 	}
-	candidates = append(candidates, `C:\dev\librime\build\bin\Release\rime_deployer.exe`)
 	return candidates
 }
 

@@ -2504,14 +2504,9 @@ func runRimeExternalBuildDefault(sharedDir, userDir string) bool {
 }
 
 func findRimeExternalDeployer(sharedDir string) string {
-	candidates := []string{
-		filepath.Join(filepath.Dir(sharedDir), "rime_deployer.exe"),
-		filepath.Join(filepath.Clean(filepath.Join(sharedDir, "..", "..", "..", "..", "..", "librime", "build", "bin", "Release")), "rime_deployer.exe"),
-	}
-	for _, candidate := range candidates {
-		if _, err := os.Stat(candidate); err == nil {
-			return candidate
-		}
+	candidate := filepath.Join(filepath.Dir(sharedDir), "rime_deployer.exe")
+	if _, err := os.Stat(candidate); err == nil {
+		return candidate
 	}
 	return ""
 }

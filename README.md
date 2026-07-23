@@ -189,6 +189,7 @@ Check logs at `%LOCALAPPDATA%\PIME\Logs\go_backend.log`.
 | [Usability Assessment](docs/YIME_USABILITY_ASSESSMENT.md) | Current usability issues and priorities |
 | [Development Roadmap](docs/YIME_DEVELOPMENT_ROADMAP.md) | Phased roadmap, fix workflows, AGENTS.md constraints |
 | [Rime Integration](docs/YIME_RIME_INTEGRATION.md) | Rime data flow, pinyin_normalized.json chain, maintainer checklist |
+| [librime 1.17 Migration Evaluation](docs/LIBRIME_1_17_MIGRATION_EVALUATION.md) | Compatibility result, pinned runtime hashes, shared-data and upgrade gates |
 | [Tooling Strategy](docs/YIME_TOOLING_STRATEGY.md) | Standalone tools vs. language-bar UI design |
 | [Tool Development Guide](docs/YIME_TOOL_DEVELOPMENT_GUIDE.md) | How to add a new standalone tool |
 | [Native UI Guidelines](docs/YIME_NATIVE_UI_GUIDELINES.md) | Win32 layout, dialogs, wording, focus, and UI tests |

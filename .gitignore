@@ -21,6 +21,15 @@ go-backend/input_methods/yime/data/**
 !go-backend/input_methods/yime/data/yime_yinyuan_layout.json
 !go-backend/input_methods/yime/data/fonts/
 !go-backend/input_methods/yime/data/fonts/YinYuan-Regular.ttf
+!go-backend/input_methods/yime/data/default.yaml
+!go-backend/input_methods/yime/data/symbols.yaml
+!go-backend/input_methods/yime/data/essay.txt
+!go-backend/input_methods/yime/data/luna_pinyin.dict.yaml
+!go-backend/input_methods/yime/data/luna_pinyin.schema.yaml
+!go-backend/input_methods/yime/data/cangjie5.dict.yaml
+!go-backend/input_methods/yime/data/cangjie5.schema.yaml
+!go-backend/input_methods/yime/data/opencc/
+!go-backend/input_methods/yime/data/opencc/**
 go-backend/build/
 go-backend/.gotmp/
 go-backend/*.exe
