@@ -4,7 +4,7 @@
 
 [中文文档](README.zh-CN.md)
 
-Yime maps pinyin syllables to a structured keyboard encoding where initials follow memorable patterns (zh/ch/sh → 7/8/9, j/q/x → 3/2/1, z/c/s → 6/5/4). Three encoding modes are available: variable-length (default), fixed-length (4 keys per syllable, unambiguous), and shorthand (shortest codes).
+Yime maps pinyin syllables to a structured keyboard encoding where shouyin units follow memorable patterns (zh/ch/sh → 7/8/9, j/q/x → 3/2/1, z/c/s → 6/5/4). Three encoding modes are available: variable-length (default), fixed-length (4 keys per syllable, unambiguous), and shorthand (shortest codes).
 
 In fixed-length mode, each syllable consists of one *shouyin* followed by a *ganyin*. The ganyin always contains three yinyuan: *huyin*, *zhuyin*, and *moyin*. Variable-length mode preserves the real or virtual shouyin and merges adjacent identical yinyuan that compose the ganyin: ABC stays ABC, AAC becomes AC, ABB becomes AB, and AAA becomes A. Shorthand mode then omits an eligible middle-tone yinyuan from the variable-length result. See the [data format reference](docs/YIME_DATA_FORMAT_REFERENCE.md#首音干音与三模式派生) for the structural rules.
 
@@ -137,17 +137,27 @@ regsvr32 /u "C:\Program Files (x86)\YIME\x64\PIMETextService.dll"
 
 ## Encoding Reference
 
-### Initial → key mapping
+### Shouyin → key mapping
 
-| Initial | Key | Initial | Key | Initial | Key |
-|---------|-----|---------|-----|---------|-----|
-| b | q | p | p | m | h | f | [ |
-| d | w | t | . | n | y | l | b |
-| g | ] | k | ' | h | n | | |
-| zh | 7 | ch | 8 | sh | 9 | r | 0 |
-| z | 6 | c | 5 | s | 4 | | |
-| j | 3 | q | 2 | x | 1 | | |
-| w | % | y | $ | | | | |
+In Yime, a *shouyin* corresponds in sound value to a traditional initial, but its encoding differs from
+mainstream Pinyin input methods; the actual codes are listed below. The table also includes the special
+shouyin used for spellings beginning with `y` and `w`, plus the virtual shouyin used when a syllable has no real
+shouyin. In continuous input, the virtual shouyin marks an explicit syllable boundary.
+
+| Shouyin | Key | Shouyin | Key |
+|---------|-----|---------|-----|
+| b | `b` | p | `p` |
+| m | `-` | f | `[` |
+| d | `]` | t | `t` |
+| n | `n` | l | `\` |
+| g | `g` | k | `q` |
+| h | `h` | zh | `7` |
+| ch | `8` | sh | `9` |
+| r | `0` | z | `6` |
+| c | `5` | s | `4` |
+| j | `3` | q | `2` |
+| x | `1` | y (special shouyin) | `y` |
+| w (special shouyin) | `=` | zero shouyin (virtual) | `'` |
 
 ### Candidate selection keys
 
