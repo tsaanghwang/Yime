@@ -129,6 +129,9 @@ jobs:
       - name: Verify native build outputs
         shell: pwsh
         run: .\tools\test-build-guards.ps1
+      - name: Test installed-runtime evidence capture
+        shell: pwsh
+        run: .\tools\test-sentence-segment-evidence.ps1
       - name: Stage native installer inputs
         shell: pwsh
         run: |
