@@ -120,6 +120,7 @@ const (
 	rimeAPIGetCaretPosIndex = 70
 	rimeAPISetCaretPosIndex = 73
 	rimeAPIFunctionCount    = rimeAPISetCaretPosIndex + 1
+	maxRimeRawInputBytes    = 64 * 1024
 )
 
 type rimeAPIC struct {
@@ -128,9 +129,10 @@ type rimeAPIC struct {
 }
 
 var (
-	rimeDLLMu sync.Mutex
-	rimeDLL   *syscall.LazyDLL
-	rimeProcs struct {
+	rimeMoveMemory = syscall.NewLazyDLL("kernel32.dll").NewProc("RtlMoveMemory")
+	rimeDLLMu      sync.Mutex
+	rimeDLL        *syscall.LazyDLL
+	rimeProcs      struct {
 		setup                 *syscall.LazyProc
 		initialize            *syscall.LazyProc
 		finalize              *syscall.LazyProc
@@ -246,6 +248,55 @@ func loadRimeDLL(dllPath string) error {
 	return nil
 }
 
+func readRimeMemory[T any](address uintptr) (T, bool) {
+	var value T
+	if address == 0 {
+		return value, false
+	}
+	rimeMoveMemory.Call(
+		uintptr(unsafe.Pointer(&value)),
+		address,
+		unsafe.Sizeof(value),
+	)
+	runtime.KeepAlive(&value)
+	return value, true
+}
+
+func copyRimeMemory(destination unsafe.Pointer, source, size uintptr) bool {
+	if destination == nil || source == 0 || size == 0 {
+		return false
+	}
+	rimeMoveMemory.Call(uintptr(destination), source, size)
+	runtime.KeepAlive(destination)
+	return true
+}
+
+func rimeAPIFunctionAt(apiAddress uintptr, index int) uintptr {
+	if apiAddress == 0 || index < 0 || index >= rimeAPIFunctionCount {
+		return 0
+	}
+	dataSize, ok := readRimeMemory[int32](apiAddress)
+	if !ok || dataSize <= 0 {
+		return 0
+	}
+	availableSize := uintptr(dataSize) + unsafe.Sizeof(dataSize)
+	memberEnd := unsafe.Offsetof(rimeAPIC{}.Functions) +
+		uintptr(index+1)*unsafe.Sizeof(rimeAPIC{}.Functions[0])
+	if memberEnd > availableSize {
+		return 0
+	}
+
+	var api rimeAPIC
+	copySize := availableSize
+	if structSize := unsafe.Sizeof(api); copySize > structSize {
+		copySize = structSize
+	}
+	if !copyRimeMemory(unsafe.Pointer(&api), apiAddress, copySize) {
+		return 0
+	}
+	return api.Functions[index]
+}
+
 func rimeAPIFunction(index int) uintptr {
 	if rimeProcs.getAPI == nil || index < 0 || index >= rimeAPIFunctionCount {
 		return 0
@@ -254,13 +305,29 @@ func rimeAPIFunction(index int) uintptr {
 	if apiAddress == 0 {
 		return 0
 	}
-	api := (*rimeAPIC)(unsafe.Pointer(apiAddress))
-	memberEnd := unsafe.Offsetof(api.Functions) +
-		uintptr(index+1)*unsafe.Sizeof(api.Functions[0])
-	if memberEnd > uintptr(api.DataSize)+unsafe.Sizeof(api.DataSize) {
-		return 0
+	return rimeAPIFunctionAt(apiAddress, index)
+}
+
+func cStringAt(address uintptr, maxBytes int) (string, bool) {
+	if address == 0 || maxBytes <= 0 {
+		return "", false
 	}
-	return api.Functions[index]
+	value := make([]byte, 0, 64)
+	for offset := 0; offset < maxBytes; offset++ {
+		current := address + uintptr(offset)
+		if current < address {
+			return "", false
+		}
+		ch, ok := readRimeMemory[byte](current)
+		if !ok {
+			return "", false
+		}
+		if ch == 0 {
+			return string(value), true
+		}
+		value = append(value, ch)
+	}
+	return "", false
 }
 
 func GetRawInput(sessionID RimeSessionId) (string, bool) {
@@ -272,7 +339,7 @@ func GetRawInput(sessionID RimeSessionId) (string, bool) {
 	if value == 0 {
 		return "", false
 	}
-	return cString((*byte)(unsafe.Pointer(value))), true
+	return cStringAt(value, maxRimeRawInputBytes)
 }
 
 func GetRawCaretPos(sessionID RimeSessionId) (int, bool) {
