@@ -9,6 +9,23 @@ import (
 	"github.com/tsaanghwang/Yime/go-backend/pime"
 )
 
+func utf8ByteOffsetToRuneIndex(text string, byteOffset int) int {
+	if byteOffset <= 0 {
+		return 0
+	}
+	if byteOffset >= len(text) {
+		return len([]rune(text))
+	}
+	runeIndex := 0
+	for offset := range text {
+		if offset >= byteOffset {
+			return runeIndex
+		}
+		runeIndex++
+	}
+	return runeIndex
+}
+
 type nativeBackend struct {
 	sessionID RimeSessionId
 }
@@ -78,6 +95,13 @@ func (b *nativeBackend) SelectCandidate(index int) bool {
 	return SelectCandidate(b.sessionID, index)
 }
 
+func (b *nativeBackend) SetCompositionCaret(rawPosition int) bool {
+	if !b.EnsureSession() {
+		return false
+	}
+	return SetRawCaretPos(b.sessionID, rawPosition)
+}
+
 func (b *nativeBackend) UsesBackendCandidatePaging() bool {
 	// Native Rime owns paging for real sessions. Do not switch this to Go-side
 	// paging to force candidate counts; doing so can destabilize activation and
@@ -95,9 +119,12 @@ func (b *nativeBackend) State() rimeState {
 	}
 	if composition, ok := GetComposition(b.sessionID); ok {
 		state.Composition = composition.Preedit
-		state.CursorPos = composition.CursorPos
-		state.SelStart = composition.SelStart
-		state.SelEnd = composition.SelEnd
+		state.CompositionPreview = composition.CommitTextPreview
+		// librime reports UTF-8 byte offsets. The PIME protocol and the owned
+		// segment strip use Unicode code-point offsets.
+		state.CursorPos = utf8ByteOffsetToRuneIndex(composition.Preedit, composition.CursorPos)
+		state.SelStart = utf8ByteOffsetToRuneIndex(composition.Preedit, composition.SelStart)
+		state.SelEnd = utf8ByteOffsetToRuneIndex(composition.Preedit, composition.SelEnd)
 	}
 	if menu, ok := GetMenu(b.sessionID); ok {
 		candidates := make([]candidateItem, 0, len(menu.Candidates))

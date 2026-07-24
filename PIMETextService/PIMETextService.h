@@ -55,6 +55,7 @@ public:
 
 	virtual bool onCommand(UINT id, CommandType type);
 	virtual bool onCandidateSelected(int index);
+	virtual bool onCompositionSegmentSelected(int start, int end);
 
 	// called when a language bar button needs a menu
 	virtual bool onMenu(LangBarButton* btn, ITfMenu* pMenu);
@@ -133,6 +134,8 @@ public:
 	void replaceCandidates(std::vector<std::wstring> candidates) {
 		candidates_ = std::move(candidates);
 	}
+	void replaceCompositionSegments(
+		std::vector<Ime::CompositionSegmentItem> segments);
 	void showCandidates(Ime::EditSession* session);
 	void updateCandidates(Ime::EditSession* session);
     void updateCandidatesWindow(Ime::EditSession* session);
@@ -165,6 +168,7 @@ private:
 	Ime::ComPtr<Ime::CandidateWindow> candidateWindow_; // this is a ref-counted COM object and should not be managed with std::unique_ptr
 	bool showingCandidates_;
 	std::vector<std::wstring> candidates_; // current candidate list
+	std::vector<Ime::CompositionSegmentItem> compositionSegments_;
 	std::unique_ptr<Ime::MessageWindow> messageWindow_;
 	UINT messageTimerId_;
 	HFONT font_;

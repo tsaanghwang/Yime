@@ -38,6 +38,255 @@ type testBackend struct {
 	returnKeyHandled bool
 }
 
+type segmentNavigationTestBackend struct {
+	states       []rimeState
+	stateIndex   int
+	processCount int
+}
+
+type directSegmentNavigationTestBackend struct {
+	*segmentNavigationTestBackend
+	caretPositions []int
+}
+
+func (b *directSegmentNavigationTestBackend) SetCompositionCaret(rawPosition int) bool {
+	b.caretPositions = append(b.caretPositions, rawPosition)
+	if b.stateIndex+1 >= len(b.states) {
+		return false
+	}
+	b.stateIndex++
+	return true
+}
+
+func (b *segmentNavigationTestBackend) Initialize(string, string, bool) bool { return true }
+func (b *segmentNavigationTestBackend) EnsureSession() bool                  { return true }
+func (b *segmentNavigationTestBackend) DestroySession()                      {}
+func (b *segmentNavigationTestBackend) ClearComposition()                    {}
+func (b *segmentNavigationTestBackend) SelectCandidate(int) bool             { return false }
+func (b *segmentNavigationTestBackend) SetOption(string, bool)               {}
+func (b *segmentNavigationTestBackend) GetOption(string) bool                { return false }
+func (b *segmentNavigationTestBackend) SelectSchema(string) bool             { return false }
+func (b *segmentNavigationTestBackend) CurrentSchema() string                { return "" }
+func (b *segmentNavigationTestBackend) ProcessKey(
+	req *pime.Request, translatedKeyCode, modifiers int) bool {
+	b.processCount++
+	if b.stateIndex+1 >= len(b.states) {
+		return false
+	}
+	b.stateIndex++
+	return true
+}
+func (b *segmentNavigationTestBackend) State() rimeState {
+	return b.states[b.stateIndex]
+}
+
+func newSegmentNavigationIME(backend rimeBackend) *IME {
+	return &IME{
+		TextServiceBase:       pime.NewTextServiceBase(nil),
+		backend:               backend,
+		keysDown:              map[int]bool{},
+		reversePinyinBySchema: map[string]map[string]string{},
+		reversePinyinLoaded:   map[string]bool{},
+		yimePinyinBySchema:    map[string]map[string]string{},
+		yimePinyinLoaded:      map[string]bool{},
+		yimePUAByPinyin:       map[string]string{},
+	}
+}
+
+func TestSelectCompositionSegmentUsesOwnedUIRPCPath(t *testing.T) {
+	backend := &segmentNavigationTestBackend{states: []rimeState{
+		{Composition: "abcd", CursorPos: 4, SelStart: 0, SelEnd: 4, CommitString: "stale"},
+		{Composition: "abcd", CursorPos: 2, SelStart: 0, SelEnd: 2},
+	}}
+	ime := newSegmentNavigationIME(backend)
+	resp := ime.HandleRequest(&pime.Request{
+		SeqNum: 1, Method: "selectCompositionSegment", CursorPos: 0, SelEnd: 2,
+	})
+	if resp.ReturnValue != 1 {
+		t.Fatalf("expected owned segment click to be handled, got %#v", resp)
+	}
+	if backend.processCount != 1 {
+		t.Fatalf("expected one bounded Ctrl+Left navigation step, got %d", backend.processCount)
+	}
+	if resp.SelStart != 0 || resp.SelEnd != 2 {
+		t.Fatalf("expected crossed segment [0,2) to be highlighted, got [%d,%d)",
+			resp.SelStart, resp.SelEnd)
+	}
+	if resp.CommitString != "" {
+		t.Fatalf("navigation-only RPC must suppress stale commit %q", resp.CommitString)
+	}
+}
+
+func TestSelectCompositionSegmentRejectsOutOfRangeAndReentrantUpdates(t *testing.T) {
+	backend := &segmentNavigationTestBackend{states: []rimeState{{
+		Composition: "ab", CursorPos: 2, SelStart: 0, SelEnd: 2,
+	}}}
+	ime := newSegmentNavigationIME(backend)
+	for _, target := range []int{-1, 2} {
+		resp := ime.HandleRequest(&pime.Request{
+			SeqNum: 1, Method: "selectCompositionSegment", CursorPos: target,
+		})
+		if resp.ReturnValue != 0 {
+			t.Fatalf("expected out-of-range target %d to be rejected", target)
+		}
+	}
+	ime.selectingCompositionSegment = true
+	resp := ime.HandleRequest(&pime.Request{
+		SeqNum: 2, Method: "selectCompositionSegment", CursorPos: 0,
+	})
+	if resp.ReturnValue != 0 {
+		t.Fatal("expected re-entrant segment update to be rejected")
+	}
+	if backend.processCount != 0 {
+		t.Fatalf("rejected updates must not reach Rime, got %d calls", backend.processCount)
+	}
+}
+
+func TestSelectCompositionSegmentDoesNotRenavigateActiveSegment(t *testing.T) {
+	backend := &segmentNavigationTestBackend{states: []rimeState{{
+		Composition: "abcd", CursorPos: 4, SelStart: 2, SelEnd: 4,
+	}}}
+	ime := newSegmentNavigationIME(backend)
+	resp := ime.HandleRequest(&pime.Request{
+		SeqNum: 1, Method: "selectCompositionSegment", CursorPos: 2, SelEnd: 4,
+	})
+	if resp.ReturnValue != 1 || backend.processCount != 0 {
+		t.Fatalf("active segment should be a handled no-op, resp=%#v calls=%d",
+			resp, backend.processCount)
+	}
+}
+
+func TestSelectCompositionSegmentFailurePreservesLiveHostState(t *testing.T) {
+	backend := &segmentNavigationTestBackend{states: []rimeState{{
+		Composition: "abcd",
+		CursorPos:   4,
+		SelStart:    0,
+		SelEnd:      4,
+		Candidates:  []candidateItem{{Text: "甲"}, {Text: "乙"}},
+	}}}
+	ime := newSegmentNavigationIME(backend)
+	resp := ime.HandleRequest(&pime.Request{
+		SeqNum: 1, Method: "selectCompositionSegment", CursorPos: 2, SelEnd: 4,
+	})
+	if resp.ReturnValue != 0 {
+		t.Fatalf("failed navigation should remain a no-op, got %#v", resp)
+	}
+	if resp.CompositionString != "abcd" || resp.CompositionCursor != 4 {
+		t.Fatalf("failed host callback must preserve composition, got %#v", resp)
+	}
+	if !resp.ShowCandidates || len(resp.CandidateList) != 2 {
+		t.Fatalf("failed host callback must preserve candidates, got %#v", resp)
+	}
+	if resp.CommitString != "" {
+		t.Fatalf("failed navigation must not surface a commit, got %q", resp.CommitString)
+	}
+}
+
+func TestSelectCompositionSegmentUsesRawCaretForLaterSegment(t *testing.T) {
+	backend := &directSegmentNavigationTestBackend{
+		segmentNavigationTestBackend: &segmentNavigationTestBackend{states: []rimeState{
+			{
+				Composition:        "bjjj bjjj",
+				CompositionPreview: "幅幅",
+				CursorPos:          9,
+				SelStart:           0,
+				SelEnd:             9,
+			},
+			{
+				Composition:        "bjjj bjjj",
+				CompositionPreview: "幅幅",
+				CursorPos:          9,
+				SelStart:           0,
+				SelEnd:             9,
+				Candidates: []candidateItem{
+					{Text: "幅幅"},
+					{Text: "幅"},
+				},
+			},
+		}},
+	}
+	ime := newSegmentNavigationIME(backend)
+	ime.compositionSegmentsForState(backend.State())
+	resp := ime.HandleRequest(&pime.Request{
+		SeqNum: 1, Method: "selectCompositionSegment", CursorPos: 5, SelEnd: 9,
+	})
+	if resp.ReturnValue != 1 {
+		t.Fatalf("expected later segment click to be handled, got %#v", resp)
+	}
+	if !reflect.DeepEqual(backend.caretPositions, []int{8}) {
+		t.Fatalf("expected raw code caret 8, got %#v", backend.caretPositions)
+	}
+	if backend.processCount != 0 {
+		t.Fatalf("direct caret must not synthesize cursor keys, got %d", backend.processCount)
+	}
+	if len(resp.CandidateList) != 2 {
+		t.Fatalf("expected backend candidates to remain unchanged, got %#v",
+			resp.CandidateList)
+	}
+	if len(resp.CompositionSegments) != 2 || !resp.CompositionSegments[1].Active {
+		t.Fatalf("clicked later segment should remain highlighted, got %#v",
+			resp.CompositionSegments)
+	}
+}
+
+func TestCompositionSegmentsBindPreviewTextToStableCodes(t *testing.T) {
+	ime := newSegmentNavigationIME(nil)
+	initial := ime.compositionSegmentsForState(rimeState{
+		Composition:        "bjjj bjjj",
+		CompositionPreview: "幅幅",
+		CursorPos:          9,
+		SelStart:           0,
+		SelEnd:             9,
+	})
+	if len(initial) != 2 {
+		t.Fatalf("expected two preview/code segments, got %#v", initial)
+	}
+	if initial[0].Text != "幅" || initial[0].Code != "bjjj" ||
+		initial[0].Start != 0 || initial[0].End != 4 {
+		t.Fatalf("unexpected first segment: %#v", initial[0])
+	}
+	if initial[1].Text != "幅" || initial[1].Code != "bjjj" ||
+		initial[1].Start != 5 || initial[1].End != 9 {
+		t.Fatalf("unexpected second segment: %#v", initial[1])
+	}
+
+	afterSelection := ime.compositionSegmentsForState(rimeState{
+		Composition:        "逼bjjj",
+		CompositionPreview: "逼幅",
+		CursorPos:          5,
+		SelStart:           1,
+		SelEnd:             5,
+	})
+	if len(afterSelection) != 2 {
+		t.Fatalf("expected cached two-segment mapping, got %#v", afterSelection)
+	}
+	if afterSelection[0].Text != "逼" || afterSelection[0].Code != "bjjj" ||
+		afterSelection[0].Start != 0 || afterSelection[0].End != 1 {
+		t.Fatalf("unexpected selected prefix segment: %#v", afterSelection[0])
+	}
+	if afterSelection[1].Text != "幅" || afterSelection[1].Code != "bjjj" ||
+		afterSelection[1].Start != 1 || afterSelection[1].End != 5 ||
+		!afterSelection[1].Active {
+		t.Fatalf("unexpected active tail segment: %#v", afterSelection[1])
+	}
+
+	afterUnspacedPreview := ime.compositionSegmentsForState(rimeState{
+		Composition:        "bjjjbjjj",
+		CompositionPreview: "幅",
+		CursorPos:          4,
+		SelStart:           0,
+		SelEnd:             4,
+	})
+	if len(afterUnspacedPreview) != 2 {
+		t.Fatalf("one preview glyph must not collapse a cached sentence, got %#v",
+			afterUnspacedPreview)
+	}
+	if afterUnspacedPreview[0].Start != 0 || afterUnspacedPreview[0].End != 4 ||
+		afterUnspacedPreview[1].Start != 4 || afterUnspacedPreview[1].End != 8 {
+		t.Fatalf("unexpected unspaced cached segments: %#v", afterUnspacedPreview)
+	}
+}
+
 type configurableInitBackend struct {
 	*testBackend
 	initializeResult bool

@@ -24,6 +24,7 @@ add_library(PIMETextService SHARED
     PIMETextService.h
     PIMEClient.cpp
     PIMEClient.h
+    PIMECompositionSegmentRpc.h
     PIMEKeyRouting.h
     PIMELangBarButton.cpp
     PIMELangBarButton.h
@@ -42,6 +43,7 @@ target_link_libraries(PIMETextService
 add_executable(PIMERpcResponseTests
     tests/PIMERpcResponseTests.cpp
 	PIMEKeyRouting.h
+	PIMECompositionSegmentRpc.h
 	PIMEProcessValidation.h
     PIMERpcResponse.h
 )

@@ -106,11 +106,54 @@ caret 请求。
 4. 用“姻缘输入法 → 音元输入法”作为产品验收场景；测试数据不得假定该完整短语
    已存在于系统词典，应允许由单字/词语动态组句产生。
 
-### 阶段 C：直接 caret 与高级交互
+### 阶段 C：独立候选/分段 UI（已安装，观察期）
 
-只有键盘路径不足时，再通过 `RimeGetApi` 安全取得 `get_input`、`get_caret_pos`
-和 `set_caret_pos`，并增加 ABI 大小、版本与空指针守卫。鼠标定位或跨多个已确认
-分段的任意跳转属于该阶段。
+人工使用方法、x86/x64 宿主矩阵和失败判据见
+[独立分段条使用与安装态验收计划](SENTENCE_SEGMENT_CORRECTION_TEST_PLAN.md)。
+
+鼠标操作不得依赖宿主编辑区中的 composition 文本点击。当前实现采用输入法自有的
+可点击分段条，并遵守以下约束：
+
+1. 由 Rime 当前 composition、活动分段、`sel_start` / `sel_end` 和候选状态生成
+   分段视图，不在 Go 侧复制候选分页或句子分段器。
+2. UI 归输入法所有，点击分段控件时不得把焦点或宿主插入点移出当前 composition；
+   点击后复用已经验证的 navigator 分段导航和改选路径。
+3. 先定义分段身份、显示文本与原始输入位置之间的稳定映射；当前通过
+   `RimeGetApi` 取得 `get_input`、`get_caret_pos` 和 `set_caret_pos`，并以
+   `data_size`、函数指针、会话、原始输入长度和回读位置共同守卫 ABI 与范围。
+4. 设计必须覆盖 DPI、多显示器、横竖候选布局、键盘/无障碍等价操作，以及
+   UI-less 宿主无法显示自有窗口时的明确降级行为。
+5. 安装态验收至少覆盖 x86/x64 宿主、Notepad 和 Codex IDE；任何宿主不得因点击
+   分段 UI 提前提交或终止 composition。
+
+2026-07-24 的实现把分段条嵌入现有候选窗，并使用 `WS_EX_NOACTIVATE` 保持
+宿主焦点。后端结合 librime `commit_text_preview` 和带空格 preedit 生成
+`{start,end,code,text,active}`；候选窗显示“预览汉字 + 对应编码”，进入局部
+改选后继续使用缓存映射更新已选汉字和活动尾段。点击以原始编码范围经
+`selectCompositionSegment(cursorPos, selEnd)` 直接送往 Go，不经过宿主编辑区回调，
+也不把显示汉字下标误当成 Rime cursor。
+后端优先使用 librime 原始输入 caret 直接定位任意缓存分段，有界
+Ctrl+Left/Right navigator 只作为旧运行库兼容回退；请求拒绝越界、重入、重复状态
+和无进展更新，并明确清除导航响应中的陈旧 commit。定位失败时仍回送当前
+composition 与候选，不能把空响应送给宿主。UI-less 宿主继续沿用既有键盘降级路径。
+源码回归、真实 librime 用例和多架构构建已通过；安装文件与构建物哈希一致，
+Notepad、Codex IDE 已完成初步试用，长期稳定性和真实 x86 宿主仍在验收。
+
+#### 已否决并回退的宿主编辑区点击试验
+
+2026-07-24 曾试验在 TSF composition range 上注册
+`ITfMouseTracker` / `ITfMouseSink`，把字符位置通过新增的
+`onCompositionClick` RPC 送往 Go/Rime。安装并完整重启 Windows 后的真实宿主
+日志证明该方案不能作为产品路径：
+
+- Notepad 能发送 `onCompositionClick`，后端也返回已处理和新的 composition
+  cursor，但宿主紧接着仍发送 `onCompositionTerminated`。
+- Codex IDE 不发送 `onCompositionClick`，点击直接按宿主默认行为结束 composition。
+- 刷新鼠标监听范围只能让 Notepad 回调到达，不能提供跨宿主的焦点和 composition
+  生命周期保证。
+
+因此该 TSF 鼠标监听、旧 RPC、Go 导航及回归试验已整体回退。后续不得再次把宿主编辑区
+点击包装成可移植的鼠标组句功能；新的鼠标方案必须采用上述输入法自有 UI。
 
 ### 阶段 D：学习验证
 
@@ -137,5 +180,7 @@ caret 请求。
 
 阶段 A 的源码、阶段 B 的 librime 行为、隔离用户学习和安装态 TSF 交互均已验证。
 x86/x64 DLL、后端、librime 与部署器的安装哈希一致；真实短句“音元输入法”已经
-完成局部改选和整句提交。键盘驱动的最小端到端功能可以进入合入阶段。鼠标定位、
-跨多个已确认分段的任意跳转和更细粒度学习观测仍属于后续增强，不在本次范围内。
+完成局部改选和整句提交。键盘驱动的最小端到端功能可以进入合入阶段。独立候选窗
+分段条已经完成源码、真实 librime、构建产物和安装哈希验证，并在 Notepad、
+Codex IDE 中开始观察期试用；仍需持续验证第一段、中间段、末段的重复切换以及真实
+x86 宿主。不得恢复已否决的宿主编辑区点击方案。

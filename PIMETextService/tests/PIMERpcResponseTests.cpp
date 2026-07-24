@@ -11,8 +11,11 @@
 
 #include "../PIMERpcResponse.h"
 #include "../PIMEKeyRouting.h"
+#include "../PIMECompositionSegmentRpc.h"
 #include "../PIMEProcessValidation.h"
 #include "../PIMEUiPolicy.h"
+#include "../../libIME2/src/CandidateWindowClickPolicy.h"
+#include "../../libIME2/src/CompositionSegmentStrip.h"
 
 #include <cstdio>
 #include <nlohmann/json.hpp>
@@ -143,6 +146,59 @@ static void testCandidateWindowKeyRoutingPreservesModifiedNavigation() {
 	}
 }
 
+static void testOwnedSegmentStripHostCallbackPath() {
+	const auto segment = Ime::candidateWindowClickTarget(2, -1);
+	CHECK(segment.kind == Ime::CandidateWindowClickKind::CompositionSegment);
+	CHECK(segment.index == 2);
+
+	// The strip must win even if future layout changes accidentally overlap a
+	// candidate rectangle; this prevents committing a candidate on segment click.
+	const auto overlap = Ime::candidateWindowClickTarget(1, 4);
+	CHECK(overlap.kind == Ime::CandidateWindowClickKind::CompositionSegment);
+	CHECK(overlap.index == 1);
+
+	json request = {{"method", "selectCompositionSegment"}};
+	PIME::setCompositionSegmentRequestPosition(request, segment.index, 4);
+	CHECK(request["method"] == "selectCompositionSegment");
+	CHECK(request["cursorPos"] == 2);
+	CHECK(request["selEnd"] == 4);
+}
+
+static void testStructuredCompositionSegmentsAreValidated() {
+	const json response = json::parse(R"({
+		"compositionSegments": [
+			{"start": 0, "end": 4, "code": "bjjj", "text": "幅", "active": false},
+			{"start": 5, "end": 9, "code": "bjjj", "text": "幅", "active": true},
+			{"start": -1, "end": 2, "code": "bad", "text": "坏", "active": false},
+			{"start": "x", "end": 3, "code": "bad", "text": "坏", "active": false}
+		]
+	})");
+	const auto segments = PIME::compositionSegmentsFromResponse(response);
+	CHECK(segments.size() == 2);
+	CHECK(segments[0].start == 0);
+	CHECK(segments[0].end == 4);
+	CHECK(segments[0].code == "bjjj");
+	CHECK(segments[0].text == u8"幅");
+	CHECK(!segments[0].active);
+	CHECK(segments[1].active);
+	CHECK(PIME::compositionSegmentsFromResponse(json()).empty());
+}
+
+static void testCompositionStripUsesCodePointOffsets() {
+	const std::wstring text = L"A\U0001F600B";
+	const auto spans = Ime::compositionCodePointSpans(text);
+	CHECK(spans.size() == 3);
+	CHECK(spans[0].utf16Length == 1);
+	CHECK(spans[1].utf16Length == 2);
+	CHECK(spans[2].utf16Length == 1);
+
+	int start = -3;
+	int end = 99;
+	Ime::normalizeCompositionSegmentRange(3, start, end);
+	CHECK(start == 0);
+	CHECK(end == 3);
+}
+
 static void testCandidateFontSizeIsBounded() {
 	CHECK(PIME::normalizeCandidateFontSize(-1) == PIME::kMinimumCandidateFontSize);
 	CHECK(PIME::normalizeCandidateFontSize(12) == 12);
@@ -180,6 +236,9 @@ int main() {
 	testJsonStringOr();
 	testUiLessCandidateWindowPolicy();
 	testCandidateWindowKeyRoutingPreservesModifiedNavigation();
+	testOwnedSegmentStripHostCallbackPath();
+	testStructuredCompositionSegmentsAreValidated();
+	testCompositionStripUsesCodePointOffsets();
 	testCandidateFontSizeIsBounded();
 	testPopupAnchorStaysInsideWorkArea();
 	testLauncherExecutableValidation();

@@ -65,6 +65,24 @@ func TestConvertResponseIncludesMultiCharacterSelectionLabels(t *testing.T) {
 	}
 }
 
+func TestConvertResponseIncludesStructuredCompositionSegments(t *testing.T) {
+	server := NewServer()
+	resp := pime.NewResponse(4, true)
+	resp.CompositionSegments = []pime.CompositionSegment{{
+		Start: 0, End: 4, Code: "bjjj", Text: "幅", Active: true,
+	}}
+	got := server.convertResponse(resp)
+	segments, ok := got["compositionSegments"].([]pime.CompositionSegment)
+	if !ok || len(segments) != 1 {
+		t.Fatalf("expected structured composition segments, got %#v", got["compositionSegments"])
+	}
+	if segments[0].Start != 0 || segments[0].End != 4 ||
+		segments[0].Code != "bjjj" || segments[0].Text != "幅" ||
+		!segments[0].Active {
+		t.Fatalf("unexpected composition segment: %#v", segments[0])
+	}
+}
+
 func TestServiceFactoryOnlySupportsYime(t *testing.T) {
 	if factory, ok := serviceFactoryForInputMethod("yime"); !ok || factory == nil {
 		t.Fatal("expected yime to have a production service factory")

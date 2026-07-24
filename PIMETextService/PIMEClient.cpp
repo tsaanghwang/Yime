@@ -19,6 +19,7 @@
 
 #include "PIMEClient.h"
 #include "PIMEKeyRouting.h"
+#include "PIMECompositionSegmentRpc.h"
 #include "PIMEProcessValidation.h"
 #include "PIMERpcResponse.h"
 #include "libIME2/src/Utils.h"
@@ -231,6 +232,18 @@ void Client::updateComposition(json& msg, Ime::EditSession* session, bool& endCo
 		if (textService_->messageWindow_ != nullptr) {
 			textService_->updateMessageWindow(session);
 		}
+
+		std::vector<Ime::CompositionSegmentItem> segments;
+		for(const auto& value : compositionSegmentsFromResponse(msg)) {
+			segments.push_back({
+				value.start,
+				value.end,
+				utf8ToUtf16(value.code.c_str()),
+				utf8ToUtf16(value.text.c_str()),
+				value.active,
+			});
+		}
+		textService_->replaceCompositionSegments(std::move(segments));
 	}
 
 	auto& compositionCursorVal = msg["compositionCursor"];
@@ -586,6 +599,22 @@ bool Client::selectCandidate(int index, Ime::EditSession* session) {
 		}
 	}
 	catch (...) {
+	}
+	return false;
+}
+
+bool Client::selectCompositionSegment(int start, int end, Ime::EditSession* session) {
+	try {
+		json req = createRpcRequest("selectCompositionSegment");
+		setCompositionSegmentRequestPosition(req, start, end);
+
+		json ret;
+		callRpcMethod(req, ret);
+		if (handleRpcResponse(ret, session))
+			return rpcReturnBool(ret);
+	}
+	catch (...) {
+		// Never let a popup mouse callback escape into the host process.
 	}
 	return false;
 }
