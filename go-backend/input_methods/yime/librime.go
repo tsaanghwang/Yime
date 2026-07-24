@@ -32,11 +32,12 @@ type RimeTraits struct {
 }
 
 type RimeComposition struct {
-	Length    int
-	CursorPos int
-	SelStart  int
-	SelEnd    int
-	Preedit   string
+	Length            int
+	CursorPos         int
+	SelStart          int
+	SelEnd            int
+	Preedit           string
+	CommitTextPreview string
 }
 
 type RimeCandidate struct {
@@ -114,6 +115,18 @@ type rimeContextC struct {
 	SelectLabels      **byte
 }
 
+const (
+	rimeAPIGetInputIndex    = 69
+	rimeAPIGetCaretPosIndex = 70
+	rimeAPISetCaretPosIndex = 73
+	rimeAPIFunctionCount    = rimeAPISetCaretPosIndex + 1
+)
+
+type rimeAPIC struct {
+	DataSize  int32
+	Functions [rimeAPIFunctionCount]uintptr
+}
+
 var (
 	rimeDLLMu sync.Mutex
 	rimeDLL   *syscall.LazyDLL
@@ -143,6 +156,7 @@ var (
 		candidateListNext     *syscall.LazyProc
 		candidateListEnd      *syscall.LazyProc
 		getVersion            *syscall.LazyProc
+		getAPI                *syscall.LazyProc
 	}
 )
 
@@ -184,6 +198,7 @@ func loadRimeDLL(dllPath string) error {
 		candidateListNext     *syscall.LazyProc
 		candidateListEnd      *syscall.LazyProc
 		getVersion            *syscall.LazyProc
+		getAPI                *syscall.LazyProc
 	}{
 		setup:                 dll.NewProc("RimeSetup"),
 		initialize:            dll.NewProc("RimeInitialize"),
@@ -210,6 +225,7 @@ func loadRimeDLL(dllPath string) error {
 		candidateListNext:     dll.NewProc("RimeCandidateListNext"),
 		candidateListEnd:      dll.NewProc("RimeCandidateListEnd"),
 		getVersion:            dll.NewProc("RimeGetVersion"),
+		getAPI:                dll.NewProc("rime_get_api"),
 	}
 
 	for _, proc := range []*syscall.LazyProc{
@@ -218,6 +234,7 @@ func loadRimeDLL(dllPath string) error {
 		procs.clearComposition, procs.getCommit, procs.freeCommit, procs.getContext, procs.freeContext,
 		procs.setOption, procs.getOption, procs.getCurrentSchema, procs.selectSchema, procs.selectCandidate,
 		procs.candidateListBegin, procs.candidateListNext, procs.candidateListEnd,
+		procs.getAPI,
 	} {
 		if err := proc.Find(); err != nil {
 			return err
@@ -227,6 +244,61 @@ func loadRimeDLL(dllPath string) error {
 	rimeDLL = dll
 	rimeProcs = procs
 	return nil
+}
+
+func rimeAPIFunction(index int) uintptr {
+	if rimeProcs.getAPI == nil || index < 0 || index >= rimeAPIFunctionCount {
+		return 0
+	}
+	apiAddress, _, _ := rimeProcs.getAPI.Call()
+	if apiAddress == 0 {
+		return 0
+	}
+	api := (*rimeAPIC)(unsafe.Pointer(apiAddress))
+	memberEnd := unsafe.Offsetof(api.Functions) +
+		uintptr(index+1)*unsafe.Sizeof(api.Functions[0])
+	if memberEnd > uintptr(api.DataSize)+unsafe.Sizeof(api.DataSize) {
+		return 0
+	}
+	return api.Functions[index]
+}
+
+func GetRawInput(sessionID RimeSessionId) (string, bool) {
+	function := rimeAPIFunction(rimeAPIGetInputIndex)
+	if function == 0 {
+		return "", false
+	}
+	value, _, _ := syscall.SyscallN(function, uintptr(sessionID))
+	if value == 0 {
+		return "", false
+	}
+	return cString((*byte)(unsafe.Pointer(value))), true
+}
+
+func GetRawCaretPos(sessionID RimeSessionId) (int, bool) {
+	if _, ok := GetRawInput(sessionID); !ok {
+		return 0, false
+	}
+	function := rimeAPIFunction(rimeAPIGetCaretPosIndex)
+	if function == 0 {
+		return 0, false
+	}
+	value, _, _ := syscall.SyscallN(function, uintptr(sessionID))
+	return int(value), true
+}
+
+func SetRawCaretPos(sessionID RimeSessionId, caretPos int) bool {
+	input, ok := GetRawInput(sessionID)
+	if !ok || caretPos < 0 || caretPos > len(input) {
+		return false
+	}
+	function := rimeAPIFunction(rimeAPISetCaretPosIndex)
+	if function == 0 {
+		return false
+	}
+	syscall.SyscallN(function, uintptr(sessionID), uintptr(caretPos))
+	actual, ok := GetRawCaretPos(sessionID)
+	return ok && actual == caretPos
 }
 
 func utf8Ptr(s string) *byte {
@@ -317,11 +389,12 @@ func GetComposition(sessionId RimeSessionId) (RimeComposition, bool) {
 	defer freeContext(&context)
 
 	return RimeComposition{
-		Length:    int(context.Composition.Length),
-		CursorPos: int(context.Composition.CursorPos),
-		SelStart:  int(context.Composition.SelStart),
-		SelEnd:    int(context.Composition.SelEnd),
-		Preedit:   cString(context.Composition.Preedit),
+		Length:            int(context.Composition.Length),
+		CursorPos:         int(context.Composition.CursorPos),
+		SelStart:          int(context.Composition.SelStart),
+		SelEnd:            int(context.Composition.SelEnd),
+		Preedit:           cString(context.Composition.Preedit),
+		CommitTextPreview: cString(context.CommitTextPreview),
 	}, true
 }
 

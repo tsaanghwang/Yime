@@ -94,6 +94,14 @@ type Request struct {
 	Data map[string]interface{} `json:"data,omitempty"`
 }
 
+type CompositionSegment struct {
+	Start  int    `json:"start"`
+	End    int    `json:"end"`
+	Code   string `json:"code"`
+	Text   string `json:"text"`
+	Active bool   `json:"active"`
+}
+
 func (r *Request) UnmarshalJSON(data []byte) error {
 	type Alias Request
 	aux := &struct {
@@ -138,23 +146,24 @@ type ButtonInfo struct {
 
 // Response PIME响应结构
 type Response struct {
-	SeqNum            int                    `json:"seqNum"`
-	Success           bool                   `json:"success"`
-	ReturnValue       int                    `json:"returnValue,omitempty"`
-	ReturnData        interface{}            `json:"-"`
-	CompositionString string                 `json:"compositionString"`
-	CommitString      string                 `json:"commitString,omitempty"`
-	CandidateList     []string               `json:"candidateList"`
-	ShowCandidates    bool                   `json:"showCandidates"`
-	CursorPos         int                    `json:"cursorPos"`
-	CompositionCursor int                    `json:"compositionCursor"`
-	CandidateCursor   int                    `json:"candidateCursor"`
-	SelStart          int                    `json:"selStart"`
-	SelEnd            int                    `json:"selEnd"`
-	SetSelKeys        string                 `json:"setSelKeys,omitempty"`
-	SetSelLabels      []string               `json:"setSelLabels,omitempty"`
-	Message           string                 `json:"message,omitempty"`
-	CustomizeUI       map[string]interface{} `json:"customizeUI,omitempty"`
+	SeqNum              int                    `json:"seqNum"`
+	Success             bool                   `json:"success"`
+	ReturnValue         int                    `json:"returnValue,omitempty"`
+	ReturnData          interface{}            `json:"-"`
+	CompositionString   string                 `json:"compositionString"`
+	CommitString        string                 `json:"commitString,omitempty"`
+	CandidateList       []string               `json:"candidateList"`
+	ShowCandidates      bool                   `json:"showCandidates"`
+	CursorPos           int                    `json:"cursorPos"`
+	CompositionCursor   int                    `json:"compositionCursor"`
+	CandidateCursor     int                    `json:"candidateCursor"`
+	SelStart            int                    `json:"selStart"`
+	SelEnd              int                    `json:"selEnd"`
+	CompositionSegments []CompositionSegment   `json:"compositionSegments,omitempty"`
+	SetSelKeys          string                 `json:"setSelKeys,omitempty"`
+	SetSelLabels        []string               `json:"setSelLabels,omitempty"`
+	Message             string                 `json:"message,omitempty"`
+	CustomizeUI         map[string]interface{} `json:"customizeUI,omitempty"`
 	// 按钮相关
 	AddButton    []ButtonInfo `json:"addButton,omitempty"`
 	RemoveButton []string     `json:"removeButton,omitempty"`

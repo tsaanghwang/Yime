@@ -43,6 +43,8 @@ func (s *TextServiceBase) HandleRequest(req *Request) *Response {
 		s.onCommand(req, resp)
 	case "onMenu":
 		s.onMenu(req, resp)
+	case "selectCompositionSegment":
+		resp.ReturnValue = 0
 	}
 
 	return resp

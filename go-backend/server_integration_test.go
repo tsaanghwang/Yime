@@ -6,6 +6,7 @@ import (
 	"os"
 	"strings"
 	"testing"
+	"unicode/utf8"
 
 	yimeime "github.com/tsaanghwang/Yime/go-backend/input_methods/yime"
 	"github.com/tsaanghwang/Yime/go-backend/pime"
@@ -64,6 +65,15 @@ func (ime *protocolFixtureIME) HandleRequest(req *pime.Request) *pime.Response {
 	case "onCompositionTerminated":
 		ime.composition = ""
 		ime.candidates = nil
+	case "selectCompositionSegment":
+		if req.CursorPos >= 0 && req.CursorPos < utf8.RuneCountInString(ime.composition) {
+			resp.CompositionString = ime.composition
+			resp.CursorPos = req.CursorPos
+			resp.CompositionCursor = req.CursorPos
+			resp.SelStart = req.CursorPos
+			resp.SelEnd = req.CursorPos + 1
+			resp.ReturnValue = 1
+		}
 	}
 	return resp
 }
@@ -280,6 +290,34 @@ func TestServerHandleMessageUninitializedClientReturnsProtocolError(t *testing.T
 	}
 	if response["error"] != "客户端未初始化" {
 		t.Fatalf("expected protocol error for uninitialized client, got %#v", response["error"])
+	}
+}
+
+func TestServerRoutesOwnedCompositionSegmentCallback(t *testing.T) {
+	server := newTestServerWithFixture()
+	sendProtocolMessage(t, server, "segment-client", map[string]interface{}{
+		"method":          "init",
+		"seqNum":          1,
+		"id":              testFixtureGUID,
+		"isWindows8Above": true,
+	})
+	client := server.clients["segment-client"]
+	fixture, ok := client.Service.(*protocolFixtureIME)
+	if !ok {
+		t.Fatal("expected protocol fixture service")
+	}
+	fixture.composition = "abcd"
+
+	_, response := sendProtocolMessage(t, server, "segment-client", map[string]interface{}{
+		"method":    "selectCompositionSegment",
+		"seqNum":    2,
+		"cursorPos": 1,
+	})
+	if response["success"] != true || response["return"] != true {
+		t.Fatalf("expected owned segment callback to be routed, got %#v", response)
+	}
+	if response["compositionCursor"] != float64(1) && response["compositionCursor"] != 1 {
+		t.Fatalf("expected cursor position 1, got %#v", response["compositionCursor"])
 	}
 }
 

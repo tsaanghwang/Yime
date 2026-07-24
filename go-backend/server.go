@@ -250,7 +250,8 @@ func (s *Server) handleRequest(clientID string, req *pime.Request) map[string]in
 		}
 
 	case "onActivate", "onDeactivate", "filterKeyDown", "onKeyDown",
-		"filterKeyUp", "onKeyUp", "onCommand", "onMenu", "selectCandidate", "onCompositionTerminated",
+		"filterKeyUp", "onKeyUp", "onCommand", "onMenu", "selectCandidate",
+		"selectCompositionSegment", "onCompositionTerminated",
 		"onPreservedKey", "onLangProfileActivated":
 		// 转发到输入法服务
 		client, ok := s.clients[clientID]
@@ -296,16 +297,17 @@ func (s *Server) convertResponse(resp *pime.Response) map[string]interface{} {
 		candidateList = []string{}
 	}
 	m := map[string]interface{}{
-		"success":           resp.Success,
-		"seqNum":            resp.SeqNum,
-		"cursorPos":         resp.CursorPos,
-		"compositionCursor": resp.CompositionCursor,
-		"candidateCursor":   resp.CandidateCursor,
-		"showCandidates":    resp.ShowCandidates,
-		"compositionString": resp.CompositionString,
-		"candidateList":     candidateList,
-		"selStart":          resp.SelStart,
-		"selEnd":            resp.SelEnd,
+		"success":             resp.Success,
+		"seqNum":              resp.SeqNum,
+		"cursorPos":           resp.CursorPos,
+		"compositionCursor":   resp.CompositionCursor,
+		"candidateCursor":     resp.CandidateCursor,
+		"showCandidates":      resp.ShowCandidates,
+		"compositionString":   resp.CompositionString,
+		"candidateList":       candidateList,
+		"selStart":            resp.SelStart,
+		"selEnd":              resp.SelEnd,
+		"compositionSegments": resp.CompositionSegments,
 	}
 	if resp.ReturnData != nil {
 		m["return"] = resp.ReturnData

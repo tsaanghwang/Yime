@@ -73,6 +73,7 @@ public:
 
 	// called just before current composition is terminated for doing cleanup.
 	void onCompositionTerminated(bool forced);
+	bool selectCompositionSegment(int start, int end, Ime::EditSession* session);
 
 private:
 	static std::wstring getPipeName(const wchar_t* base_name);

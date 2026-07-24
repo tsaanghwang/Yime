@@ -186,6 +186,27 @@ bool TextService::onCandidateSelected(int index) {
 	return handled;
 }
 
+// The owned candidate window never asks the host editor to reposition its
+// composition. It sends the clicked code-point index directly to the backend.
+bool TextService::onCompositionSegmentSelected(int start, int end) {
+	if(!client_ || start < 0 || end <= start)
+		return false;
+	auto context = currentContext();
+	if(!context)
+		return false;
+
+	bool handled = false;
+	HRESULT sessionResult;
+	auto session = Ime::ComPtr<Ime::EditSession>::make(
+		context,
+		[&](Ime::EditSession* session, TfEditCookie cookie) {
+			handled = client_->selectCompositionSegment(start, end, session);
+		}
+	);
+	context->RequestEditSession(clientId(), session, TF_ES_SYNC|TF_ES_READWRITE, &sessionResult);
+	return handled;
+}
+
 
 // called when a language bar button needs a menu
 // virtual
@@ -240,6 +261,7 @@ void TextService::onKeyboardStatusChanged(bool opened) {
 // if forced is false, the composition is terminated gracefully by endComposition().
 // virtual
 void TextService::onCompositionTerminated(bool forced) {
+	replaceCompositionSegments({});
 	// we do special handling here for forced composition termination.
 	if(forced) {
 		// we're still editing our composition and have something in the preedit buffer.
@@ -276,6 +298,8 @@ void TextService::createCandidateWindow(Ime::EditSession* session) {
 		candidateWindow_->Release();  // decrease ref count caused by new
 
 		candidateWindow_->setFont(font_);
+		candidateWindow_->setCompositionSegments(
+			compositionSegments_);
 		BOOL hostRequestsOwnedWindow = TRUE;
 		auto elementMgr = Ime::ComPtr<ITfUIElementMgr>::queryFrom(threadMgr());
 		if (elementMgr) {
@@ -285,6 +309,13 @@ void TextService::createCandidateWindow(Ime::EditSession* session) {
 		candidateWindow_->Show(shouldShowOwnedCandidateWindow(
 			validCandidateListElementId_, hostRequestsOwnedWindow));
 	}
+}
+
+void TextService::replaceCompositionSegments(
+	std::vector<Ime::CompositionSegmentItem> segments) {
+	compositionSegments_ = std::move(segments);
+	if(candidateWindow_)
+		candidateWindow_->setCompositionSegments(compositionSegments_);
 }
 
 void TextService::updateCandidates(Ime::EditSession* session) {
@@ -320,6 +351,8 @@ void TextService::updateCandidates(Ime::EditSession* session) {
 		const std::wstring label = i < selLabels_.size() ? selLabels_[i] : std::wstring();
 		candidateWindow_->add(candidates_[i], selKeys_[i], label);
 	}
+	candidateWindow_->setCompositionSegments(
+		compositionSegments_);
 	candidateWindow_->recalculateSize();
 	candidateWindow_->refresh();
 

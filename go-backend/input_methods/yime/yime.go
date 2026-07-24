@@ -15,6 +15,7 @@ import (
 	"sync"
 	"sync/atomic"
 	"time"
+	"unicode"
 	"unicode/utf8"
 
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/codemode"
@@ -104,17 +105,25 @@ type candidateItem struct {
 }
 
 type rimeState struct {
-	CommitString    string
-	Composition     string
-	CursorPos       int
-	SelStart        int
-	SelEnd          int
-	Candidates      []candidateItem
-	CandidateCursor int
-	SelectKeys      string
-	PageSize        int
-	AsciiMode       bool
-	FullShape       bool
+	CommitString       string
+	Composition        string
+	CompositionPreview string
+	CursorPos          int
+	SelStart           int
+	SelEnd             int
+	Candidates         []candidateItem
+	CandidateCursor    int
+	SelectKeys         string
+	PageSize           int
+	AsciiMode          bool
+	FullShape          bool
+}
+
+type cachedCompositionSegment struct {
+	Code     string
+	Text     string
+	RawStart int
+	RawEnd   int
 }
 
 type rimeBackend interface {
@@ -133,6 +142,10 @@ type rimeBackend interface {
 
 type backendCandidatePager interface {
 	UsesBackendCandidatePaging() bool
+}
+
+type backendCompositionCaret interface {
+	SetCompositionCaret(rawPosition int) bool
 }
 
 // backendUserDataSyncer is implemented by backends that expose Rime's native
@@ -160,37 +173,39 @@ var scheduleStandaloneToolLaunch = func(run func() error, onError func(error)) {
 
 type IME struct {
 	*pime.TextServiceBase
-	entryMu                  sync.Mutex
-	iconDir                  string
-	style                    Style
-	selectKeys               string
-	reverseLookupDisplayMode string
-	standardPinyinByText     map[string]string
-	standardPinyinLoaded     bool
-	numericToMarkedPinyin    map[string]string
-	numericToMarkedLoaded    bool
-	reversePinyinBySchema    map[string]map[string]string
-	reversePinyinLoaded      map[string]bool
-	yimePinyinBySchema       map[string]map[string]string
-	yimePinyinLoaded         map[string]bool
-	yimePUAByPinyin          map[string]string
-	yimePUALoaded            bool
-	pendingCandidateFont     bool
-	candidatePageSize        int
-	pendingCandidatePageSize int
-	pendingSchemaRedeploy    string
-	runtimeChangeRevision    int64
-	settingsChangeRevision   int64
-	lexiconChangeRevision    int64
-	redeployChangeRevision   int64
-	candidatePageStart       int
-	candidateBackendIndexMap []int
-	keysDown                 map[int]bool
-	lastKeyDownRet           bool
-	lastKeyUpRet             bool
-	keyComposing             bool
-	pendingRawCommit         string
-	backend                  rimeBackend
+	entryMu                     sync.Mutex
+	iconDir                     string
+	style                       Style
+	selectKeys                  string
+	reverseLookupDisplayMode    string
+	standardPinyinByText        map[string]string
+	standardPinyinLoaded        bool
+	numericToMarkedPinyin       map[string]string
+	numericToMarkedLoaded       bool
+	reversePinyinBySchema       map[string]map[string]string
+	reversePinyinLoaded         map[string]bool
+	yimePinyinBySchema          map[string]map[string]string
+	yimePinyinLoaded            map[string]bool
+	yimePUAByPinyin             map[string]string
+	yimePUALoaded               bool
+	pendingCandidateFont        bool
+	candidatePageSize           int
+	pendingCandidatePageSize    int
+	pendingSchemaRedeploy       string
+	runtimeChangeRevision       int64
+	settingsChangeRevision      int64
+	lexiconChangeRevision       int64
+	redeployChangeRevision      int64
+	candidatePageStart          int
+	candidateBackendIndexMap    []int
+	keysDown                    map[int]bool
+	lastKeyDownRet              bool
+	lastKeyUpRet                bool
+	keyComposing                bool
+	pendingRawCommit            string
+	selectingCompositionSegment bool
+	compositionSegmentCache     []cachedCompositionSegment
+	backend                     rimeBackend
 }
 
 func New(client *pime.Client) pime.TextService {
@@ -252,6 +267,8 @@ func (ime *IME) HandleRequest(req *pime.Request) *pime.Response {
 		return ime.onMenu(req, resp)
 	case "selectCandidate":
 		return ime.onSelectCandidate(req, resp)
+	case "selectCompositionSegment":
+		return ime.onSelectCompositionSegment(req, resp)
 	default:
 		resp.ReturnValue = 0
 		return resp
@@ -362,6 +379,134 @@ func (ime *IME) onSelectCandidate(req *pime.Request, resp *pime.Response) *pime.
 	resp.ReturnValue = 1
 	ime.applyStateToResponse(resp, ime.backend.State())
 	return resp
+}
+
+func compositionSegmentAlreadyActive(state rimeState, targetStart, targetEnd int) bool {
+	return state.CursorPos == state.SelEnd &&
+		state.SelStart == targetStart && state.SelEnd == targetEnd
+}
+
+func (ime *IME) applyCompositionSegmentState(resp *pime.Response, state rimeState) {
+	// A navigation-only mouse action must never surface a stale librime commit
+	// left by the preceding key. Only candidate selection may commit text.
+	state.CommitString = ""
+	ime.applyStateToResponse(resp, state)
+}
+
+func (ime *IME) rejectCompositionSegment(
+	resp *pime.Response, state rimeState) *pime.Response {
+	// An owned-window click is advisory. If Rime cannot move to the requested
+	// segment, keep the live composition in the response. Returning a freshly
+	// allocated empty response makes the TSF client replace the composition
+	// with an empty string and immediately terminate it.
+	resp.ReturnValue = 0
+	if state.Composition != "" {
+		ime.applyCompositionSegmentState(resp, state)
+	}
+	return resp
+}
+
+func (ime *IME) rawCaretForCompositionSegment(
+	state rimeState, targetStart, targetEnd int) (int, int, bool) {
+	segments := ime.compositionSegmentsForState(state)
+	for index, segment := range segments {
+		if segment.Start == targetStart && segment.End == targetEnd &&
+			index < len(ime.compositionSegmentCache) {
+			return ime.compositionSegmentCache[index].RawEnd, index, true
+		}
+	}
+	return 0, -1, false
+}
+
+func markCompositionSegmentActive(resp *pime.Response, activeIndex int) {
+	for index := range resp.CompositionSegments {
+		resp.CompositionSegments[index].Active = index == activeIndex
+	}
+}
+
+func (ime *IME) onSelectCompositionSegment(
+	req *pime.Request, resp *pime.Response) *pime.Response {
+	if ime.backend == nil {
+		resp.ReturnValue = 0
+		return resp
+	}
+	initial := ime.backend.State()
+	if ime.selectingCompositionSegment {
+		return ime.rejectCompositionSegment(resp, initial)
+	}
+	codePointCount := utf8.RuneCountInString(initial.Composition)
+	target := req.CursorPos
+	targetEnd := req.SelEnd
+	if targetEnd <= target {
+		targetEnd = target + 1
+	}
+	if codePointCount == 0 || target < 0 || target >= codePointCount ||
+		targetEnd > codePointCount {
+		return ime.rejectCompositionSegment(resp, initial)
+	}
+	if compositionSegmentAlreadyActive(initial, target, targetEnd) {
+		resp.ReturnValue = 1
+		ime.applyCompositionSegmentState(resp, initial)
+		return resp
+	}
+	rawCaret, activeIndex, hasRawCaret := ime.rawCaretForCompositionSegment(
+		initial, target, targetEnd)
+
+	ime.selectingCompositionSegment = true
+	defer func() { ime.selectingCompositionSegment = false }()
+	if !ime.backend.EnsureSession() {
+		return ime.rejectCompositionSegment(resp, initial)
+	}
+	if navigator, ok := ime.backend.(backendCompositionCaret); ok && hasRawCaret {
+		if navigator.SetCompositionCaret(rawCaret) {
+			state := ime.backend.State()
+			if state.Composition != "" {
+				resp.ReturnValue = 1
+				ime.applyCompositionSegmentState(resp, state)
+				markCompositionSegmentActive(resp, activeIndex)
+				return resp
+			}
+		}
+	}
+
+	state := initial
+	lastLiveState := initial
+	seen := make(map[[3]int]bool)
+	for step := 0; step < codePointCount+2; step++ {
+		signature := [3]int{state.CursorPos, state.SelStart, state.SelEnd}
+		if seen[signature] {
+			break
+		}
+		seen[signature] = true
+
+		previousCursor := state.CursorPos
+		keyCode := vkRight
+		if target < previousCursor {
+			keyCode = vkLeft
+		}
+		keyStates := make(pime.KeyStates, 256)
+		keyStates[vkControl] = 0x80
+		keyRequest := &pime.Request{KeyCode: keyCode, KeyStates: keyStates}
+		if !ime.backend.ProcessKey(
+			keyRequest, translateKeyCode(keyRequest), translateModifiers(keyRequest, false)) {
+			break
+		}
+		state = ime.backend.State()
+		if state.Composition == "" {
+			break
+		}
+		lastLiveState = state
+		if state.CursorPos == previousCursor {
+			break
+		}
+		if compositionSegmentAlreadyActive(state, target, targetEnd) {
+			resp.ReturnValue = 1
+			ime.applyCompositionSegmentState(resp, state)
+			return resp
+		}
+	}
+
+	return ime.rejectCompositionSegment(resp, lastLiveState)
 }
 
 func (ime *IME) onCompositionTerminated(req *pime.Request, resp *pime.Response) *pime.Response {
@@ -942,6 +1087,7 @@ func (ime *IME) applyStateToResponse(resp *pime.Response, state rimeState) {
 		resp.CommitString = state.CommitString
 	}
 	if state.Composition == "" {
+		ime.compositionSegmentCache = nil
 		ime.clearResponse(resp)
 		ime.keyComposing = false
 		return
@@ -960,6 +1106,7 @@ func (ime *IME) applyStateToResponse(resp *pime.Response, state rimeState) {
 	resp.CompositionCursor = state.CursorPos
 	resp.SelStart = state.SelStart
 	resp.SelEnd = state.SelEnd
+	resp.CompositionSegments = ime.compositionSegmentsForState(state)
 
 	if len(state.Candidates) > 0 {
 		// Base-layer digits are composition keys. Give the host explicit
@@ -980,6 +1127,101 @@ func (ime *IME) applyStateToResponse(resp *pime.Response, state rimeState) {
 		resp.ShowCandidates = false
 	}
 	ime.keyComposing = true
+}
+
+func spacedCompositionCodes(composition string) []string {
+	var codes []string
+	var current []rune
+	for _, ch := range []rune(composition) {
+		if unicode.IsSpace(ch) {
+			if len(current) > 0 {
+				codes = append(codes, string(current))
+				current = nil
+			}
+			continue
+		}
+		current = append(current, ch)
+	}
+	if len(current) > 0 {
+		codes = append(codes, string(current))
+	}
+	return codes
+}
+
+func hasCompositionSeparator(composition string) bool {
+	return strings.IndexFunc(composition, unicode.IsSpace) >= 0
+}
+
+func matchSegmentSpan(composition []rune, offset int, text, code string) (int, bool) {
+	for _, candidate := range []string{text, code} {
+		runes := []rune(candidate)
+		if len(runes) == 0 || offset+len(runes) > len(composition) {
+			continue
+		}
+		matched := true
+		for i := range runes {
+			if composition[offset+i] != runes[i] {
+				matched = false
+				break
+			}
+		}
+		if matched {
+			return offset + len(runes), true
+		}
+	}
+	return offset, false
+}
+
+func (ime *IME) compositionSegmentsForState(state rimeState) []pime.CompositionSegment {
+	preview := []rune(state.CompositionPreview)
+	codes := spacedCompositionCodes(state.Composition)
+	canReplaceSingleSegmentCache := len(codes) != 1 ||
+		len(ime.compositionSegmentCache) <= 1
+	if len(preview) > 0 && len(codes) == len(preview) &&
+		(hasCompositionSeparator(state.Composition) || canReplaceSingleSegmentCache) {
+		ime.compositionSegmentCache = make([]cachedCompositionSegment, len(codes))
+		rawOffset := 0
+		for i := range codes {
+			rawEnd := rawOffset + len(codes[i])
+			ime.compositionSegmentCache[i] = cachedCompositionSegment{
+				Code:     codes[i],
+				Text:     string(preview[i]),
+				RawStart: rawOffset,
+				RawEnd:   rawEnd,
+			}
+			rawOffset = rawEnd
+		}
+	} else if len(preview) == len(ime.compositionSegmentCache) {
+		for i := range preview {
+			ime.compositionSegmentCache[i].Text = string(preview[i])
+		}
+	}
+	if len(ime.compositionSegmentCache) == 0 {
+		return nil
+	}
+
+	composition := []rune(state.Composition)
+	segments := make([]pime.CompositionSegment, 0, len(ime.compositionSegmentCache))
+	offset := 0
+	for _, cached := range ime.compositionSegmentCache {
+		for offset < len(composition) && unicode.IsSpace(composition[offset]) {
+			offset++
+		}
+		start := offset
+		end, ok := matchSegmentSpan(composition, start, cached.Text, cached.Code)
+		if !ok {
+			return nil
+		}
+		offset = end
+		segments = append(segments, pime.CompositionSegment{
+			Start:  start,
+			End:    end,
+			Code:   cached.Code,
+			Text:   cached.Text,
+			Active: start == state.SelStart && end == state.SelEnd,
+		})
+	}
+	return segments
 }
 
 // confirmCandidatePageSize completes the readback chain only after librime
@@ -2725,7 +2967,8 @@ func (ime *IME) applyPendingSchemaRedeploy() {
 
 func (ime *IME) shouldApplyPendingSchemaRedeploy(method string) bool {
 	switch method {
-	case "onActivate", "filterKeyDown", "filterKeyUp", "onKeyDown", "onKeyUp", "selectCandidate":
+	case "onActivate", "filterKeyDown", "filterKeyUp", "onKeyDown", "onKeyUp",
+		"selectCandidate", "selectCompositionSegment":
 		return true
 	default:
 		return false

@@ -18,6 +18,47 @@ type realRimeTestSession struct {
 	userDir   string
 }
 
+// rawCompositionRuntimeBackend keeps the direct typeASCII test fixture from
+// consuming a delayed commit before the click. Production consumes commits
+// after every key response; the fixture types the whole probe before asking
+// for state.
+type rawCompositionRuntimeBackend struct {
+	*nativeBackend
+	caretCalls  []int
+	caretResult bool
+}
+
+func (b *rawCompositionRuntimeBackend) SetCompositionCaret(rawPosition int) bool {
+	b.caretCalls = append(b.caretCalls, rawPosition)
+	b.caretResult = SetRawCaretPos(b.sessionID, rawPosition)
+	return b.caretResult
+}
+
+func (b *rawCompositionRuntimeBackend) State() rimeState {
+	state := rimeState{}
+	if composition, ok := GetComposition(b.sessionID); ok {
+		state.Composition = composition.Preedit
+		state.CompositionPreview = composition.CommitTextPreview
+		state.CursorPos = utf8ByteOffsetToRuneIndex(
+			composition.Preedit, composition.CursorPos)
+		state.SelStart = utf8ByteOffsetToRuneIndex(
+			composition.Preedit, composition.SelStart)
+		state.SelEnd = utf8ByteOffsetToRuneIndex(
+			composition.Preedit, composition.SelEnd)
+	}
+	if menu, ok := GetMenu(b.sessionID); ok {
+		for _, candidate := range menu.Candidates {
+			state.Candidates = append(state.Candidates, candidateItem{
+				Text: candidate.Text, Comment: candidate.Comment,
+			})
+		}
+		state.CandidateCursor = menu.HighlightedCandidateIndex
+		state.SelectKeys = menu.SelectKeys
+		state.PageSize = menu.PageSize
+	}
+	return state
+}
+
 func newRealRimeSession(t *testing.T) realRimeTestSession {
 	t.Helper()
 
@@ -242,6 +283,176 @@ func TestRealRimeNavigatorCanMoveWithinSentenceComposition(t *testing.T) {
 	}
 	if menu, ok := GetMenu(session.sessionID); !ok || len(menu.Candidates) == 0 {
 		t.Fatalf("expected candidates for the repositioned segment, got %#v", menu)
+	}
+}
+
+func TestRealRimeOwnedSegmentRPCMovesWithoutCommittingSentence(t *testing.T) {
+	session := newRealRimeSession(t)
+	if !SelectSchema(session.sessionID, "yime_full") {
+		t.Fatal("expected yime_full schema to be selectable")
+	}
+
+	ClearComposition(session.sessionID)
+	typeASCII(t, session.sessionID, "bjjjbjjj")
+	// The real PIME key path consumes each pending commit in the key response.
+	// typeASCII talks to librime directly, so drain any earlier auto-commit
+	// before isolating the click RPC.
+	_, _ = GetCommit(session.sessionID)
+	backend := &nativeBackend{sessionID: session.sessionID}
+	ime := newSegmentNavigationIME(backend)
+	resp := ime.HandleRequest(&pime.Request{
+		SeqNum: 1, Method: "selectCompositionSegment", CursorPos: 0, SelEnd: 4,
+	})
+	if resp.ReturnValue != 1 {
+		t.Fatalf("expected owned segment RPC to be handled, got %#v", resp)
+	}
+	if resp.CompositionString == "" {
+		t.Fatal("segment navigation must preserve the sentence composition")
+	}
+	if resp.CommitString != "" {
+		t.Fatalf("segment navigation must not commit the sentence, got %q", resp.CommitString)
+	}
+	if resp.SelStart != 0 {
+		t.Fatalf("expected the first segment to become active, got [%d,%d)",
+			resp.SelStart, resp.SelEnd)
+	}
+}
+
+func TestRealRimeOwnedSegmentRPCReachesLaterSegment(t *testing.T) {
+	session := newRealRimeSession(t)
+	if !SelectSchema(session.sessionID, "yime_full") {
+		t.Fatal("expected yime_full schema to be selectable")
+	}
+
+	ClearComposition(session.sessionID)
+	typeASCII(t, session.sessionID, "bjjjbjjj")
+	backend := &rawCompositionRuntimeBackend{
+		nativeBackend: &nativeBackend{sessionID: session.sessionID},
+	}
+	ime := newSegmentNavigationIME(backend)
+	segments := ime.compositionSegmentsForState(backend.State())
+	if len(segments) != 2 {
+		t.Fatalf("expected two clickable sentence segments, got %#v", segments)
+	}
+	if input, ok := GetRawInput(session.sessionID); !ok || input != "bjjjbjjj" {
+		t.Fatalf("expected full raw input before callback, got %q ok=%v", input, ok)
+	}
+	if _, ok := interface{}(backend).(backendCompositionCaret); !ok {
+		t.Fatal("runtime backend must expose direct composition caret navigation")
+	}
+	if rawCaret, activeIndex, ok := ime.rawCaretForCompositionSegment(
+		backend.State(), segments[1].Start, segments[1].End,
+	); !ok || rawCaret != 8 || activeIndex != 1 {
+		t.Fatalf("expected second segment to map to raw caret 8, got %d index=%d ok=%v",
+			rawCaret, activeIndex, ok)
+	}
+
+	req := &pime.Request{
+		SeqNum:    1,
+		Method:    "selectCompositionSegment",
+		CursorPos: segments[1].Start,
+		SelEnd:    segments[1].End,
+	}
+	// Initialization and runtime-change polling are covered separately. Call
+	// the RPC handler directly so this test isolates the live librime click.
+	resp := ime.onSelectCompositionSegment(req, pime.NewResponse(req.SeqNum, true))
+	if resp.ReturnValue != 1 || resp.CompositionString == "" {
+		t.Fatalf("later segment callback must preserve composition, calls=%#v result=%v resp=%#v",
+			backend.caretCalls, backend.caretResult, resp)
+	}
+	if resp.CommitString != "" {
+		t.Fatalf("later segment callback must not commit, got %q", resp.CommitString)
+	}
+	if len(resp.CompositionSegments) != 2 || !resp.CompositionSegments[1].Active {
+		t.Fatalf("later segment should be highlighted, got %#v", resp.CompositionSegments)
+	}
+	if len(resp.CandidateList) == 0 {
+		t.Fatalf("expected candidates for the clicked segment, got %#v", resp.CandidateList)
+	}
+}
+
+func TestRealRimeRawCaretCanReachSentenceSegments(t *testing.T) {
+	session := newRealRimeSession(t)
+	if !SelectSchema(session.sessionID, "yime_full") {
+		t.Fatal("expected yime_full schema to be selectable")
+	}
+
+	ClearComposition(session.sessionID)
+	typeASCII(t, session.sessionID, "bjjjbjjj")
+	input, ok := GetRawInput(session.sessionID)
+	if !ok || input != "bjjjbjjj" {
+		t.Fatalf("expected raw sentence input, got %q ok=%v", input, ok)
+	}
+	for _, caret := range []int{4, 8} {
+		if !SetRawCaretPos(session.sessionID, caret) {
+			t.Fatalf("expected raw caret %d to be accepted", caret)
+		}
+		composition, compositionOK := GetComposition(session.sessionID)
+		menu, menuOK := GetMenu(session.sessionID)
+		t.Logf("caret=%d preedit=%q preview=%q selection=[%d,%d) candidates=%#v",
+			caret, composition.Preedit, composition.CommitTextPreview,
+			composition.SelStart, composition.SelEnd, menu.Candidates)
+		if !compositionOK || composition.Preedit == "" {
+			t.Fatalf("caret %d cleared composition: %#v", caret, composition)
+		}
+		if !menuOK || len(menu.Candidates) == 0 {
+			t.Fatalf("caret %d produced no candidates: %#v", caret, menu)
+		}
+	}
+}
+
+func TestRealRimeReportsSentencePreviewAcrossNavigatorSegments(t *testing.T) {
+	session := newRealRimeSession(t)
+	if !SelectSchema(session.sessionID, "yime_full") {
+		t.Fatal("expected yime_full schema to be selectable")
+	}
+	ClearComposition(session.sessionID)
+	typeASCII(t, session.sessionID, "bjjjbjjj")
+	native := &nativeBackend{sessionID: session.sessionID}
+	mapper := newSegmentNavigationIME(native)
+	initialSegments := mapper.compositionSegmentsForState(native.State())
+	if len(initialSegments) != 2 ||
+		initialSegments[0].Text != "幅" || initialSegments[0].Code != "bjjj" ||
+		initialSegments[1].Text != "幅" || initialSegments[1].Code != "bjjj" {
+		t.Fatalf("expected [幅 bjjj] [幅 bjjj], got %#v", initialSegments)
+	}
+
+	for step := 0; step < 4; step++ {
+		composition, ok := GetComposition(session.sessionID)
+		if !ok || composition.Preedit == "" {
+			t.Fatalf("step %d: expected composition, got %#v", step, composition)
+		}
+		menu, _ := GetMenu(session.sessionID)
+		t.Logf("step=%d preedit=%q preview=%q cursor=%d selection=[%d,%d) highlighted=%d candidates=%#v",
+			step, composition.Preedit, composition.CommitTextPreview,
+			composition.CursorPos, composition.SelStart, composition.SelEnd,
+			menu.HighlightedCandidateIndex, menu.Candidates)
+		if step == 3 {
+			break
+		}
+		if !processRealKey(session.sessionID, &pime.Request{
+			KeyCode: vkLeft, KeyStates: keyStatesDown(vkControl),
+		}) {
+			break
+		}
+	}
+
+	if !SelectCandidate(session.sessionID, 1) {
+		t.Fatal("expected alternate first-segment candidate selection")
+	}
+	composition, _ := GetComposition(session.sessionID)
+	menu, _ := GetMenu(session.sessionID)
+	t.Logf("after-selection preedit=%q preview=%q cursor=%d selection=[%d,%d) highlighted=%d candidates=%#v",
+		composition.Preedit, composition.CommitTextPreview,
+		composition.CursorPos, composition.SelStart, composition.SelEnd,
+		menu.HighlightedCandidateIndex, menu.Candidates)
+	updatedSegments := mapper.compositionSegmentsForState(native.State())
+	if len(updatedSegments) != 2 ||
+		updatedSegments[0].Text != "逼" || updatedSegments[0].Code != "bjjj" ||
+		updatedSegments[1].Text != "幅" || updatedSegments[1].Code != "bjjj" ||
+		!updatedSegments[1].Active {
+		t.Fatalf("expected [逼 bjjj] [幅 bjjj] with active tail, got %#v",
+			updatedSegments)
 	}
 }
 
