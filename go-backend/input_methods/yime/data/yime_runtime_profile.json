@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "profile_id": "compact-dynamic-default-v1",
+  "default_schema": "yime_core_trial",
+  "runtime_dictionary": "yime_core_trial.dict.yaml",
+  "runtime_manifest": "yime_core_trial_manifest.json",
+  "offline_only_files": [
+    "yime_full.dict.yaml",
+    "yime_variable.dict.yaml",
+    "yime_shorthand.dict.yaml",
+    "yime_full.schema.yaml",
+    "yime_variable.schema.yaml",
+    "yime_shorthand.schema.yaml",
+    "yime_lexicon_manifest.json"
+  ],
+  "offline_roles": [
+    "source_of_truth",
+    "candidate_screening_pool",
+    "regression_test_resource"
+  ],
+  "acceptance": {
+    "target_dynamic_sentence_rate": 0.99,
+    "scoped_replay_top1": {
+      "passed": 2440,
+      "total": 2449,
+      "rate": 0.9963250306247448,
+      "wilson_95_lower_bound": 0.9930300811292823
+    },
+    "manual_development_cases": {
+      "passed": 2449,
+      "total": 2449,
+      "rate": 1.0
+    },
+    "accelerated_learning_events": 540000,
+    "accelerated_learning_acceptance": "passed"
+  },
+  "prototype_policy": "internal_data/runtime_lexicon_filter_policy.json",
+  "prototype_builder": "tools/build_two_level_runtime_trial.py"
+}
