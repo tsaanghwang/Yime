@@ -497,14 +497,15 @@ runtime_codes_refresh.py --apply
     ├── 重建 runtime_candidates_materialized
     └── JSON 导出 → .generated/runtime_candidates.json
 
-Windows handoff
+Windows 默认运行交接
     │
-    ├── prepare_windows_yime_lexicon.ps1
-    ├── yime_full.dict.yaml（唯一外部词典真源）
-    ├── 四份同步拼音资产
-    └── yime_handoff_manifest.json（数量、来源差异、SHA-256）
+    ├── build_two_level_runtime_trial.py
+    ├── runtime_lexicon_filter_policy.json
+    ├── yime_core_trial.dict.yaml（1,124,631 条已编码组件）
+    ├── yime_core_trial_manifest.json（来源与输出 SHA-256）
+    └── yime_runtime_profile.json（默认方案、离线边界、验收摘要）
           │
-          └── Go importer → full / variable / shorthand + yime_lexicon_manifest.json
+          └── build.bat → 只打包核心词库；旧大词库泄漏即失败
 ```
 
 **频率策略**：
@@ -531,12 +532,10 @@ Windows handoff
 - 单字：`tier_sort_weight + modern_common_boost + reading_phrase_prior_boost + char_frequency_abs + reading_weight`
 - 词语：`phrase_frequency`（无 BCC 频率时为 `0`；其他来源证据与后续排序策略必须另列）
 
-**项目分离现状**：`Yime-python-prototype`（数据生成）与 `Yime`（运行时）分属不同仓库。
-跨仓库触发与 handoff 消费仍由维护者执行，但交付物已经收敛为带版本和哈希清单的原子 handoff，
-不再逐个寻找或混搭来源资产。原型交付脚本默认还会试跑 Windows 派生；Windows 端正式导入
-只接受一份等长词典，并确定性派生三套运行词典。目前尚无一条 Windows 命令自动校验清单并
-复制全部四份辅助资产，因此消费阶段仍须按维护清单核验；
-构建、安装、Rime 部署后还必须核对源码、安装目录和用户目录三层哈希。
+**项目分离现状**：`Yime-python-prototype` 负责完整来源、编码证据、两级筛选策略和候选评测；
+`Yime` 负责 Windows 运行、打包和用户学习。旧大词库仍可由离线真源确定性重建，但不再是安装
+运行产物。`verify_default_runtime_handoff.py` 核对策略、核心词典 SHA-256 和99%置信下界；
+`verify-installed-runtime.ps1` 核对安装哈希、启动器身份，并拒绝任何旧大词库运行泄漏。
 
 ### 3.2 共享数据目录
 
@@ -549,13 +548,10 @@ Weasel、本机目录或 Plum 临时补齐；缺件时直接失败。
 | 文件 | 类型 | 说明 |
 |------|------|------|
 | `default.yaml` | Rime 配置 | 基础 schema_list、page_size、按键绑定、标点 |
-| `yime_variable.schema.yaml` | Rime 方案 | 变长模式，user_dict: custom_phrase_variable |
-| `yime_full.schema.yaml` | Rime 方案 | 等长模式，user_dict: custom_phrase_full |
-| `yime_shorthand.schema.yaml` | Rime 方案 | 省键模式，user_dict: custom_phrase_shorthand |
-| `yime_full.dict.yaml` | Rime 词典 | 唯一导入的等长真源及等长运行产物，当前 2,456,797 条 |
-| `yime_variable.dict.yaml` | Rime 词典 | 由等长真源生成的变长运行产物，当前 2,456,797 条 |
-| `yime_shorthand.dict.yaml` | Rime 词典 | 由等长真源生成的省键运行产物，当前 2,456,797 条 |
-| `yime_lexicon_manifest.json` | 生成清单 | 源哈希、规则版本、条目数和三套输出哈希 |
+| `yime_core_trial.schema.yaml` | 默认 Rime 方案 | 沿用变长编码，启用动态组句、整句学习和独立 userdb |
+| `yime_core_trial.dict.yaml` | 默认运行词典 | 1,124,631 条已通过正式编码门禁的单字和预组合部件 |
+| `yime_core_trial_manifest.json` | 运行清单 | 筛选输入哈希、派生规则版本、条目数和输出哈希 |
+| `yime_runtime_profile.json` | 发布配置 | 默认 schema、离线文件清单、99%验收摘要和原型策略入口 |
 | `yime_pinyin_codes.tsv` | 编码映射 | 数字标调拼音→等长码，当前 1729 条；其余模式运行时推导 |
 | `yime_pua_pinyin.json` | PUA 显示映射 | 候选注释的数字标调拼音→PUA 音元序列 |
 | `fonts/YinYuan-Regular.ttf` | 候选字体 | 音元拼音模式使用的 PUA 字形 |
@@ -565,13 +561,18 @@ Weasel、本机目录或 Plum 临时补齐；缺件时直接失败。
 | `rime_deployer.exe` | 可执行文件 | 外部部署工具 |
 | `rime_runtime.lock.json` | 运行时锁 | 固定 librime 版本、提交、插件版本及三个运行文件的 SHA-256 |
 
-### 3.2 用户数据目录
+`yime_full`、`yime_variable`、`yime_shorthand` 的 dict、schema 和旧 manifest 可以存在于源码开发目录，
+但 `build.bat` 在形成安装包后必须删除它们。反查和系统词库审计在旧变长共享词典不存在时优先使用
+共享核心词典，不能被用户目录中的遗留大词典重新劫持。
+
+### 3.3 用户数据目录
 
 `%APPDATA%\PIME\Rime\`
 
 | 文件 | 格式 | 说明 |
 |------|------|------|
 | `default.custom.yaml` | YAML | 用户方案选择 + page_size 覆盖 |
+| `yime_core_trial_two_level_1124631_layout_6d00e609f689_script_v1.userdb/` | LevelDB | 默认动态组句方案的排序学习和整句学习数据 |
 | `yime_variable.custom.yaml` | YAML | 变长方案自定义（如 page_size） |
 | `yime_full.custom.yaml` | YAML | 等长方案自定义 |
 | `yime_shorthand.custom.yaml` | YAML | 省键方案自定义 |
@@ -584,7 +585,11 @@ Weasel、本机目录或 Plum 临时补齐；缺件时直接失败。
 | `yime_blocklist.txt` | 文本 | 用户屏蔽词表源文件 |
 | `build/` | 目录 | Rime 编译缓存 |
 
-### 3.3 日志
+升级后旧 schema 的自定义文件和 userdb 可能继续留在用户目录中；只要当前 schema 是
+`yime_core_trial`，它们就不参与默认候选排序。冷启动测试需要备份并清空整个用户数据目录，
+不能只删除其中一份词典文件。
+
+### 3.4 日志
 
 `%LOCALAPPDATA%\PIME\Logs\`
 
@@ -616,7 +621,7 @@ cmd /c build.bat
 
 本地 ad-hoc 构建落在 `go-backend/*.exe` 时已被 `.gitignore` 忽略。
 
-Go 可执行文件版本取自仓库根目录 `version.txt`，并统一使用 `-trimpath -buildvcs=false`，避免无关提交改变未修改工具的文件哈希。9 个 Go EXE 统一嵌入 Yime 图标和 VERSIONINFO；打包脚本递归删除复制到输出目录的 `.go` 源码。发布流水线通过 `tools/sign-release.ps1`、NSIS `!finalize`/`!uninstfinalize` 和 `tools/verify-release-signatures.ps1` 覆盖内部二进制、安装器及卸载器；Smart App Control 的稳定发布必须使用受信任提供商签发的 RSA 证书，VERSIONINFO 不能替代签名。
+Go 可执行文件版本取自仓库根目录 `version.txt`，并统一使用 `-trimpath -buildvcs=false`，避免无关提交改变未修改工具的文件哈希。10 个 Go EXE 统一嵌入 Yime 图标和 VERSIONINFO；打包脚本递归删除复制到输出目录的 `.go` 源码。发布流水线通过 `tools/sign-release.ps1`、NSIS `!finalize`/`!uninstfinalize` 和 `tools/verify-release-signatures.ps1` 覆盖内部二进制、安装器及卸载器；Smart App Control 的稳定发布必须使用受信任提供商签发的 RSA 证书，VERSIONINFO 不能替代签名。
 
 NSIS 安装包只包含 PIMELauncher、`backends.json`、完整 `go-backend` 包和三架构 TSF DLL，不再提供组件选择页或旧 Python/Node 输入法。读取新旧安装注册表时先写入临时寄存器，不能用空值覆盖 `InstallDir "$PROGRAMFILES32\YIME"`。
 
@@ -707,6 +712,32 @@ go test ./input_methods/yime/ -run TestReal -v -count=1
 |------|----------|
 | `TestRealRimeRedeployAppliesPageSize` | redeploy 使 page_size 生效 |
 | `TestRealRimeExternalBuildAppliesPageSize` | 外部构建路径验证 |
+
+`rime_core_trial_replay_test.go` 提供完整库和 core-trial 的分层同输入回放。普通测试只检查抽样语料
+至少 1,000 条且覆盖全部 14 个桶；真实回放需显式启用，并可把汇总和逐例结果写成 JSON：
+
+```powershell
+$env:YIME_RUN_REAL_RIME_TESTS = "1"
+$env:YIME_RUN_CORE_TRIAL_COVERAGE = "1"
+$env:YIME_CORE_TRIAL_REPLAY_REPORT = Join-Path (Split-Path $PWD) ".tmp\core_trial_replay_coverage.json"
+go test ./input_methods/yime -run TestCoreTrialReplayCoverage -v -count=1 -timeout 120s
+```
+
+若要在词典变化后严格重放上一份报告中的同一批输入，另设
+`YIME_CORE_TRIAL_REPLAY_CORPUS` 为旧报告路径。新报告仍会重新记录当前候选和耗时。
+
+早期 202,290、全量 pypinyin、A/B 和 B-lite 容量档仍保留为离线研究记录，但已经退出默认运行
+基线。当前发布档为两级筛选后的 1,124,631 条读音记录。验收必须区分三类证据：
+
+| 证据 | 当前结果 | 能证明什么 |
+|------|----------|------------|
+| 固定生产范围回放 | 2,440/2,449 冷启动首选，99.6325%；95% Wilson 下界 99.3030% | 在既定语料范围内超过99%目标 |
+| 加速学习漂移 | 540,000 次事件；重复输入首选率均高于99.97%；全部验收项通过 | 学习、重启、同码干扰和用户库收敛机制 |
+| 纯净用户态人工闭环 | 5/5 压力句可构造；3/3 一次纠正后首选；重启后3/3保持 | 安装态冷启动、人工选择和持久学习链真实可用 |
+
+五条人工压力句是机制验证，不是总体首选率估计；总体99%结论仍以固定回放与加速模拟为依据。
+“逼尿肌反射亢进”不在核心系统词库，却由已编码部件直接首选，证明未预装完整词条不再等同于
+未编码或不可输入。只有组成材料中的字符或实际读音本身未通过正式编码门禁，才属于编码缺口。
 
 ### 5.4 本地管理员测试
 

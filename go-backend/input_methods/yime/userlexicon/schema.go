@@ -11,11 +11,21 @@ import (
 )
 
 var schemaModes = []string{"variable", "full", "shorthand"}
+var generatedSchemaFiles = []string{
+	"yime_variable.schema.yaml",
+	"yime_full.schema.yaml",
+	"yime_shorthand.schema.yaml",
+	"yime_core_trial.schema.yaml",
+}
 var generatedLexiconFiles = []string{
 	"yime_full.dict.yaml",
 	"yime_variable.dict.yaml",
 	"yime_shorthand.dict.yaml",
 	"yime_lexicon_manifest.json",
+}
+var coreTrialLexiconFiles = []string{
+	"yime_core_trial.dict.yaml",
+	"yime_core_trial_manifest.json",
 }
 
 // SyncRimeSchemas refreshes generated user-directory schema copies from the
@@ -52,11 +62,57 @@ func RefreshRimeData(sharedDir, userDir string) (bool, error) {
 			return false, err
 		}
 	}
+	coreTrialChanged, err := refreshCoreTrialLexicon(sharedDir, userDir)
+	if err != nil {
+		return false, err
+	}
 	schemasChanged, err := RefreshRimeSchemas(sharedDir, userDir)
 	if err != nil {
 		return false, err
 	}
-	return schemasChanged || lexiconChanged, nil
+	return schemasChanged || lexiconChanged || coreTrialChanged, nil
+}
+
+func refreshCoreTrialLexicon(sharedDir, userDir string) (bool, error) {
+	sharedManifestPath := filepath.Join(sharedDir, coreTrialLexiconFiles[1])
+	sharedManifest, err := os.ReadFile(sharedManifestPath)
+	if errors.Is(err, os.ErrNotExist) {
+		return false, nil
+	}
+	if err != nil {
+		return false, fmt.Errorf("读取基础部件试验清单失败: %w", err)
+	}
+	userManifest, manifestErr := os.ReadFile(
+		filepath.Join(userDir, coreTrialLexiconFiles[1]),
+	)
+	needsRefresh := manifestErr != nil || !bytes.Equal(
+		userManifest,
+		sharedManifest,
+	)
+	if !needsRefresh {
+		if _, statErr := os.Stat(
+			filepath.Join(userDir, coreTrialLexiconFiles[0]),
+		); statErr != nil {
+			needsRefresh = true
+		}
+	}
+	if !needsRefresh {
+		return false, nil
+	}
+	for _, name := range coreTrialLexiconFiles {
+		content, readErr := os.ReadFile(filepath.Join(sharedDir, name))
+		if readErr != nil {
+			return false, fmt.Errorf("读取基础部件试验文件 %s 失败: %w", name, readErr)
+		}
+		if writeErr := os.WriteFile(
+			filepath.Join(userDir, name),
+			content,
+			0o644,
+		); writeErr != nil {
+			return false, fmt.Errorf("更新基础部件试验文件 %s 失败: %w", name, writeErr)
+		}
+	}
+	return true, nil
 }
 
 func refreshGeneratedLexicon(sharedDir, userDir string) (bool, error) {
@@ -119,8 +175,7 @@ func RefreshRimeSchemas(sharedDir, userDir string) (bool, error) {
 		return false, err
 	}
 	changed := false
-	for _, mode := range schemaModes {
-		name := "yime_" + mode + ".schema.yaml"
+	for _, name := range generatedSchemaFiles {
 		content, err := os.ReadFile(filepath.Join(sharedDir, name))
 		if errors.Is(err, os.ErrNotExist) {
 			continue

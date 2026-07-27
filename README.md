@@ -4,14 +4,15 @@
 
 [中文文档](README.zh-CN.md)
 
-Yime maps pinyin syllables to a structured keyboard encoding where shouyin units follow memorable patterns (zh/ch/sh → 7/8/9, j/q/x → 3/2/1, z/c/s → 6/5/4). Three encoding modes are available: variable-length (default), fixed-length (4 keys per syllable, unambiguous), and shorthand (shortest codes).
+Yime maps pinyin syllables to a structured keyboard encoding where shouyin units follow memorable patterns (zh/ch/sh → 7/8/9, j/q/x → 3/2/1, z/c/s → 6/5/4). The installed runtime uses variable-length encoding. Fixed-length and shorthand derivations remain available to the offline toolchain and regression suite.
 
 In fixed-length mode, each syllable consists of one *shouyin* followed by a *ganyin*. The ganyin always contains three yinyuan: *huyin*, *zhuyin*, and *moyin*. Variable-length mode preserves the real or virtual shouyin and merges adjacent identical yinyuan that compose the ganyin: ABC stays ABC, AAC becomes AC, ABB becomes AB, and AAA becomes A. Shorthand mode then omits an eligible middle-tone yinyuan from the variable-length result. See the [data format reference](docs/YIME_DATA_FORMAT_REFERENCE.md#首音干音与三模式派生) for the structural rules.
 
 ## Features
 
-- **Three encoding modes** — variable-length, fixed-length, and shorthand, switchable from the language bar
-- **Rime-powered engine** — script translator with 2.45M+ entries per schema, weighted frequency sorting and continuous sentence composition
+- **Dynamic sentence composition** — a 1,124,631-entry encoded core supplies characters and short components; Rime composes missing longer phrases and learns corrections
+- **Noise-isolated runtime** — legacy 2.45M-entry dictionaries remain offline sources and regression pools, not installed fallbacks
+- **Three encoding derivations** — variable-length is shipped; fixed-length and shorthand remain reproducible offline
 - **Candidate window** — 5–9 candidates per page, vertical or horizontal layout, one-click toggle
 - **Reverse lookup** — display standard pinyin, Yime codes, or key sequences alongside candidates
 - **User lexicon** — add custom phrases with numeric-tone pinyin; auto-converts to Yime codes
@@ -44,6 +45,9 @@ docs/                    Development documentation
 | `codex/**` | Active task branches covered by push CI |
 
 The encoding, lexicon, and experiment-heavy prototype work lives in the separate `Yime-prototype` repository.
+
+The current runtime architecture and its qualification evidence are documented in
+[Default Dynamic Lexicon Runtime](docs/DEFAULT_DYNAMIC_LEXICON_RUNTIME.md).
 
 ## Build Requirements
 

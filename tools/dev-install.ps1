@@ -142,6 +142,7 @@ foreach ($toolExe in @(
     "tool-hub.exe",
     "lexicon-manager.exe",
     "system-lexicon-audit.exe",
+    "lexicon-promotion-scan.exe",
     "blocklist-manager.exe",
     "reverse-lookup.exe",
     "settings-tool.exe",

@@ -167,6 +167,44 @@ func TestRefreshRimeDataReencodesDerivedUserLexicons(t *testing.T) {
 	}
 }
 
+func TestRefreshRimeDataCopiesIsolatedCoreTrialArtifacts(t *testing.T) {
+	sharedDir := t.TempDir()
+	userDir := t.TempDir()
+	files := map[string]string{
+		"yime_core_trial.dict.yaml":     "trial dictionary\n",
+		"yime_core_trial_manifest.json": `{"source_sha256":"trial"}` + "\n",
+		"yime_core_trial.schema.yaml":   "schema: trial\n",
+	}
+	for name, content := range files {
+		if err := os.WriteFile(filepath.Join(sharedDir, name), []byte(content), 0o644); err != nil {
+			t.Fatal(err)
+		}
+	}
+	changed, err := RefreshRimeData(sharedDir, userDir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !changed {
+		t.Fatal("first core-trial refresh must report changed data")
+	}
+	for name, want := range files {
+		got, err := os.ReadFile(filepath.Join(userDir, name))
+		if err != nil {
+			t.Fatal(err)
+		}
+		if string(got) != want {
+			t.Fatalf("%s was not refreshed: got %q want %q", name, got, want)
+		}
+	}
+	changed, err = RefreshRimeData(sharedDir, userDir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if changed {
+		t.Fatal("identical core-trial data must not force another rebuild")
+	}
+}
+
 func TestRefreshRimeDataKeepsStaleManifestWhenUserReencodingFails(t *testing.T) {
 	sharedDir := t.TempDir()
 	userDir := t.TempDir()

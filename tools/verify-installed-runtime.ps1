@@ -65,6 +65,7 @@ foreach ($relativePath in @(
     'tool-hub.exe',
     'lexicon-manager.exe',
     'system-lexicon-audit.exe',
+    'lexicon-promotion-scan.exe',
     'blocklist-manager.exe',
     'reverse-lookup.exe',
     'settings-tool.exe',
@@ -75,6 +76,28 @@ foreach ($relativePath in @(
     $files.Add((Get-FileRecord "go-backend/$($relativePath.Replace('\', '/'))" (Join-Path $goSourceRoot $relativePath) (Join-Path $goInstallRoot $relativePath)))
 }
 $files.Add((Get-FileRecord 'go-backend/input_methods/yime/rime_deployer.exe' (Join-Path $goSourceRoot 'input_methods\yime\rime_deployer.exe') (Join-Path $goInstallRoot 'input_methods\yime\rime_deployer.exe') $false))
+foreach ($relativePath in @(
+    'input_methods\yime\data\yime_core_trial.dict.yaml',
+    'input_methods\yime\data\yime_core_trial.schema.yaml',
+    'input_methods\yime\data\yime_core_trial_manifest.json',
+    'input_methods\yime\data\yime_runtime_profile.json'
+)) {
+    $files.Add((Get-FileRecord "go-backend/$($relativePath.Replace('\', '/'))" (Join-Path $goSourceRoot $relativePath) (Join-Path $goInstallRoot $relativePath)))
+}
+
+$forbiddenRuntimeFiles = @(
+    'yime_full.dict.yaml',
+    'yime_variable.dict.yaml',
+    'yime_shorthand.dict.yaml',
+    'yime_full.schema.yaml',
+    'yime_variable.schema.yaml',
+    'yime_shorthand.schema.yaml',
+    'yime_lexicon_manifest.json'
+)
+$runtimeDataDir = Join-Path $goInstallRoot 'input_methods\yime\data'
+$offlineLeakage = @($forbiddenRuntimeFiles | Where-Object {
+    Test-Path -LiteralPath (Join-Path $runtimeDataDir $_)
+})
 
 $registryRoot = $null
 try {
@@ -84,13 +107,27 @@ try {
 $registryMatches = $registryRoot -and ([IO.Path]::GetFullPath($registryRoot).TrimEnd('\') -eq $installRoot.TrimEnd('\'))
 
 $launcherRunning = $false
+$launcherPathUnavailable = $false
 foreach ($process in @(Get-Process -Name PIMELauncher -ErrorAction SilentlyContinue)) {
     try {
         if ($process.Path -and $process.Path.StartsWith($installRoot, [StringComparison]::OrdinalIgnoreCase)) {
             $launcherRunning = $true
             break
         }
+        if (-not $process.Path) {
+            $launcherPathUnavailable = $true
+        }
     } catch {
+        $launcherPathUnavailable = $true
+    }
+}
+if (-not $launcherRunning -and $launcherPathUnavailable -and $registryMatches) {
+    $launcherFile = $files | Where-Object { $_.name -eq 'PIMELauncher.exe' } | Select-Object -First 1
+    if ($launcherFile -and $launcherFile.status -eq 'match') {
+        # Some Windows security contexts expose the process but redact Path and
+        # ExecutablePath. The matching installed binary plus matching registry
+        # root still identifies the expected development installation.
+        $launcherRunning = $true
     }
 }
 
@@ -103,6 +140,9 @@ if (-not $registryMatches) {
 }
 if ($RequireRunningLauncher -and -not $launcherRunning) {
     $hardFailures += [pscustomobject]@{ name = 'PIMELauncher process'; status = 'not-running' }
+}
+foreach ($fileName in $offlineLeakage) {
+    $hardFailures += [pscustomobject]@{ name = "offline-only/$fileName"; status = 'runtime-leak' }
 }
 
 $overall = if ($hardFailures.Count -gt 0) {
@@ -121,6 +161,8 @@ $report = [ordered]@{
     registryRoot = $registryRoot
     registryMatches = [bool]$registryMatches
     launcherRunning = $launcherRunning
+    launcherPathUnavailable = $launcherPathUnavailable
+    offlineOnlyLeakage = @($offlineLeakage)
     files = @($files)
 }
 

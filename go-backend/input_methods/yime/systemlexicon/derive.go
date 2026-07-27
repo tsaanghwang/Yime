@@ -14,6 +14,8 @@ import (
 )
 
 const ManifestFileName = "yime_lexicon_manifest.json"
+const CoreTrialManifestFileName = "yime_core_trial_manifest.json"
+const CoreTrialDictionaryName = "yime_core_trial"
 
 // Manifest proves that all runtime dictionaries came from one canonical file.
 type Manifest struct {
@@ -34,25 +36,23 @@ type derivedEntry struct {
 	fullSpelling, variableSpelling, shorthandSpelling string
 }
 
-// DeriveFromFullDictionary validates one fixed-length Rime dictionary and
-// atomically replaces the three internal runtime dictionaries.
-func DeriveFromFullDictionary(sourcePath, outputDir string) (Manifest, error) {
+func loadDerivedEntries(sourcePath string) ([]byte, []derivedEntry, error) {
 	sourceData, err := os.ReadFile(sourcePath)
 	if err != nil {
-		return Manifest{}, err
+		return nil, nil, err
 	}
 	entries, err := LoadDictFile(sourcePath)
 	if err != nil {
-		return Manifest{}, err
+		return nil, nil, err
 	}
 	if len(entries) == 0 {
-		return Manifest{}, fmt.Errorf("等长码表没有有效词条")
+		return nil, nil, fmt.Errorf("等长码表没有有效词条")
 	}
 	derived := make([]derivedEntry, 0, len(entries))
 	for index, entry := range entries {
 		record, err := codemode.BuildRecord(entry.Code)
 		if err != nil {
-			return Manifest{}, fmt.Errorf("第 %d 个词条 %q 的等长码无效: %w", index+1, entry.Text, err)
+			return nil, nil, fmt.Errorf("第 %d 个词条 %q 的等长码无效: %w", index+1, entry.Text, err)
 		}
 		derived = append(derived, derivedEntry{
 			text: entry.Text, weight: entry.Weight,
@@ -60,6 +60,16 @@ func DeriveFromFullDictionary(sourcePath, outputDir string) (Manifest, error) {
 			fullSpelling: record.FullSpelling, variableSpelling: record.VariableSpelling,
 			shorthandSpelling: record.ShorthandSpelling,
 		})
+	}
+	return sourceData, derived, nil
+}
+
+// DeriveFromFullDictionary validates one fixed-length Rime dictionary and
+// atomically replaces the three internal runtime dictionaries.
+func DeriveFromFullDictionary(sourcePath, outputDir string) (Manifest, error) {
+	sourceData, derived, err := loadDerivedEntries(sourcePath)
+	if err != nil {
+		return Manifest{}, err
 	}
 	if err := os.MkdirAll(outputDir, 0o755); err != nil {
 		return Manifest{}, err
@@ -101,6 +111,62 @@ func DeriveFromFullDictionary(sourcePath, outputDir string) (Manifest, error) {
 	}
 	if err := replaceGeneratedSet(stage, outputDir, []string{
 		"yime_full.dict.yaml", "yime_variable.dict.yaml", "yime_shorthand.dict.yaml", ManifestFileName,
+	}); err != nil {
+		return Manifest{}, err
+	}
+	return manifest, nil
+}
+
+// DeriveCoreTrialFromFullDictionary validates one fixed-length compact
+// dictionary and atomically replaces only the isolated variable-code trial
+// dictionary and its manifest. Production dictionaries are never touched.
+func DeriveCoreTrialFromFullDictionary(sourcePath, outputDir string) (Manifest, error) {
+	sourceData, derived, err := loadDerivedEntries(sourcePath)
+	if err != nil {
+		return Manifest{}, err
+	}
+	if err := os.MkdirAll(outputDir, 0o755); err != nil {
+		return Manifest{}, err
+	}
+	stage, err := os.MkdirTemp(outputDir, ".yime-core-trial-stage-")
+	if err != nil {
+		return Manifest{}, err
+	}
+	defer os.RemoveAll(stage)
+
+	dictionaryName := CoreTrialDictionaryName + ".dict.yaml"
+	dictionaryVersion := hashBytes(
+		buildDictionary(CoreTrialDictionaryName, "variable", "canonical", derived),
+	)[:12]
+	dictionaryData := buildDictionary(
+		CoreTrialDictionaryName,
+		"variable",
+		dictionaryVersion,
+		derived,
+	)
+	manifest := Manifest{
+		FormatVersion: 1, GeneratedAt: time.Now().Format(time.RFC3339),
+		SourceFile: filepath.Base(sourcePath), SourceSHA256: hashBytes(sourceData),
+		Transform: "core-trial-full-to-variable-v1", Layout: codemode.LayoutVersion,
+		EntryCount: len(derived),
+		OutputSHA256: map[string]string{
+			dictionaryName: hashBytes(dictionaryData),
+		},
+	}
+	if err := os.WriteFile(filepath.Join(stage, dictionaryName), dictionaryData, 0o644); err != nil {
+		return Manifest{}, err
+	}
+	manifestData, err := json.MarshalIndent(manifest, "", "  ")
+	if err != nil {
+		return Manifest{}, err
+	}
+	manifestData = append(manifestData, '\n')
+	if err := os.WriteFile(filepath.Join(stage, CoreTrialManifestFileName), manifestData, 0o644); err != nil {
+		return Manifest{}, err
+	}
+	if err := replaceGeneratedSet(stage, outputDir, []string{
+		dictionaryName,
+		CoreTrialManifestFileName,
 	}); err != nil {
 		return Manifest{}, err
 	}

@@ -1,0 +1,61 @@
+# Rime schema
+# encoding: utf-8
+# Default compact component lexicon for dynamic sentence composition.
+
+schema:
+  schema_id: yime_core_trial
+  name: "Yime 默认动态组句"
+  version: "2026-07-26-layout-6d00e609f689-two-level-1124631"
+
+engine:
+  processors:
+    - ascii_composer
+    - recognizer
+    - key_binder
+    - speller
+    - punctuator
+    - selector
+    - navigator
+    - express_editor
+  segmentors:
+    - ascii_segmentor
+    - matcher
+    - abc_segmentor
+    - punct_segmentor
+    - fallback_segmentor
+  translators:
+    - table_translator@custom_phrase
+    - script_translator
+    - punct_translator
+
+speller:
+  alphabet: "1234567890-=qwertyuiop[]\\asdfghjkl;'zxcvbnm,./JKLUIOM<>NG"
+  delimiter: " "
+
+translator:
+  dictionary: yime_core_trial
+  user_dict: yime_core_trial_two_level_1124631_layout_6d00e609f689_script_v1
+  enable_user_dict: true
+  enable_sentence: true
+  sentence_over_completion: true
+  enable_completion: true
+
+custom_phrase:
+  dictionary: ""
+  user_dict: custom_phrase_variable
+  db_class: stabledb
+  enable_completion: true
+  enable_sentence: true
+  sentence_over_completion: true
+  initial_quality: 1
+
+menu:
+  page_size: 5
+
+punctuator:
+  import_preset: default
+
+key_binder:
+  # Every printable key in Yime's alphabet is encoding data. Paging uses the
+  # native PageUp/PageDown keys; do not import default printable-key bindings.
+  bindings: []

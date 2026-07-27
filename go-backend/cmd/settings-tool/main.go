@@ -565,7 +565,7 @@ func selectedSchemaID(hwnd syscall.Handle, options []settings.SchemaOption) stri
 		}
 		pos++
 	}
-	return settings.SchemaVariable
+	return settings.DefaultSchema
 }
 
 func selectedComboValue(hwnd syscall.Handle, options []settings.ComboOption) string {
