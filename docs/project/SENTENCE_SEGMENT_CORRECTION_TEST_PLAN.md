@@ -101,6 +101,30 @@ composition 点击回调；候选窗分段条应独立工作。
 不得把 Smart App Control 针对未签名开发版 `server.exe` 的审计记录直接当作
 Yime 崩溃；必须先核对事件中的实际文件路径。
 
+### 安装态证据报告
+
+完成 Notepad、Codex IDE 或 SysWOW64 charmap 的人工操作后，在仓库根目录运行：
+
+```powershell
+.\tools\capture-sentence-segment-evidence.ps1 -RequireComplete
+```
+
+脚本只读取安装目录、进程列表和
+`%LOCALAPPDATA%\PIME\Logs\go_backend.log`；不会安装、停止、启动或重载 PIME。
+唯一写入内容是 `.tmp\sentence-segment-evidence` 下带时间戳的 Markdown 报告。
+报告包括：
+
+- 已安装 `server.exe`、x86/x64 `PIMETextService.dll` 的时间、大小和 SHA-256，
+  以及它们与当前仓库构建产物的哈希比对；
+- `PIMELauncher` 和 `server` 的 PID、可执行文件路径及启动时间快照；
+- 日志末尾的 `selectCompositionSegment` 请求，以及按 `client` 和 `seqNum`
+  关联的响应。
+
+`-RequireComplete` 会在安装文件缺失、构建产物缺失或哈希不一致时返回失败，但仍会
+先保存报告。若日志很长，可通过 `-LogTailLines` 增大扫描范围；报告默认最多保留最近
+50 组 RPC，可通过 `-MaxRpcTransactions` 调整。SysWOW64 charmap 验收完成后应立即
+运行一次并把报告路径记入本节验收记录。
+
 ## 8. 2026-07-24 当前验收记录
 
 本轮已完成标准安装、Windows 重启和安装产物核对：
