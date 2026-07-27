@@ -16,6 +16,7 @@ set "REVERSE_LOOKUP_EXE=%PACKAGE_DIR%\reverse-lookup.exe"
 set "TOOL_HUB_EXE=%PACKAGE_DIR%\tool-hub.exe"
 set "LEXICON_MANAGER_EXE=%PACKAGE_DIR%\lexicon-manager.exe"
 set "SYSTEM_LEXICON_AUDIT_EXE=%PACKAGE_DIR%\system-lexicon-audit.exe"
+set "LEXICON_PROMOTION_SCAN_EXE=%PACKAGE_DIR%\lexicon-promotion-scan.exe"
 set "BLOCKLIST_MANAGER_EXE=%PACKAGE_DIR%\blocklist-manager.exe"
 set "SETTINGS_TOOL_EXE=%PACKAGE_DIR%\settings-tool.exe"
 set "DIAGNOSTICS_TOOL_EXE=%PACKAGE_DIR%\diagnostics-tool.exe"
@@ -73,6 +74,10 @@ for %%F in (
     luna_pinyin.schema.yaml
     cangjie5.dict.yaml
     cangjie5.schema.yaml
+    yime_core_trial.dict.yaml
+    yime_core_trial.schema.yaml
+    yime_core_trial_manifest.json
+    yime_runtime_profile.json
 ) do (
     if not exist "%RIME_DATA_DIR%\%%F" (
         echo [ERROR] Missing pinned Rime shared data: "%RIME_DATA_DIR%\%%F"
@@ -230,6 +235,15 @@ if errorlevel 1 (
 if exist cmd\system-lexicon-audit\rsrc_audit_windows_amd64.syso del cmd\system-lexicon-audit\rsrc_audit_windows_amd64.syso
 
 echo [INFO] Built: "%SYSTEM_LEXICON_AUDIT_EXE%"
+
+echo [INFO] Building lexicon-promotion-scan.exe ...
+go build %GO_REPRO_FLAGS% -ldflags "-s -w -X main.version=%APP_VERSION%" -o "%LEXICON_PROMOTION_SCAN_EXE%" .\cmd\lexicon-promotion-scan
+if errorlevel 1 (
+    echo [ERROR] Failed to build lexicon-promotion-scan.exe
+    popd
+    exit /b 1
+)
+echo [INFO] Built: "%LEXICON_PROMOTION_SCAN_EXE%"
 
 echo [INFO] Generating Windows VERSIONINFO resources for blocklist-manager ...
 "%GO_WINRES%" simply --arch amd64 --product-version "%APP_VERSION%" --file-version "%APP_VERSION%" --product-name "YIME" --copyright "Copyright (C) 2026 Yime contributors" --file-description "Yime User Blocklist Manager" --original-filename "blocklist-manager.exe" --icon input_methods\yime\icon.ico --manifest gui --out cmd\blocklist-manager\rsrc_blocklist
@@ -477,7 +491,24 @@ if errorlevel 1 (
     exit /b 1
 )
 
-for %%F in (default.yaml symbols.yaml essay.txt luna_pinyin.dict.yaml luna_pinyin.schema.yaml cangjie5.dict.yaml cangjie5.schema.yaml) do (
+echo [INFO] Removing offline-only legacy Yime lexicons from the runtime package ...
+for %%F in (
+    yime_full.dict.yaml
+    yime_variable.dict.yaml
+    yime_shorthand.dict.yaml
+    yime_full.schema.yaml
+    yime_variable.schema.yaml
+    yime_shorthand.schema.yaml
+    yime_lexicon_manifest.json
+) do (
+    if exist "%PACKAGE_RIME_DATA_DIR%\%%F" del /q "%PACKAGE_RIME_DATA_DIR%\%%F"
+    if exist "%PACKAGE_RIME_DATA_DIR%\%%F" (
+        echo [ERROR] Offline-only lexicon leaked into runtime package: %%F
+        exit /b 1
+    )
+)
+
+for %%F in (default.yaml symbols.yaml essay.txt luna_pinyin.dict.yaml luna_pinyin.schema.yaml cangjie5.dict.yaml cangjie5.schema.yaml yime_core_trial.dict.yaml yime_core_trial.schema.yaml yime_core_trial_manifest.json yime_runtime_profile.json) do (
     if not exist "%PACKAGE_RIME_DATA_DIR%\%%F" (
         echo [ERROR] Packaged Rime shared data is incomplete: %%F
         exit /b 1
@@ -515,6 +546,7 @@ for %%F in (
     "%TOOL_HUB_EXE%"
     "%LEXICON_MANAGER_EXE%"
     "%SYSTEM_LEXICON_AUDIT_EXE%"
+    "%LEXICON_PROMOTION_SCAN_EXE%"
     "%BLOCKLIST_MANAGER_EXE%"
     "%SETTINGS_TOOL_EXE%"
     "%DIAGNOSTICS_TOOL_EXE%"

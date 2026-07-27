@@ -30,3 +30,22 @@ func TestResolveDictPathPrefersSharedDir(t *testing.T) {
 		t.Fatalf("expected shared dict path %q, got %q", sharedPath, got)
 	}
 }
+
+func TestResolveVariableDictFallsBackToCompactRuntime(t *testing.T) {
+	sharedDir := t.TempDir()
+	userDir := t.TempDir()
+	corePath := filepath.Join(sharedDir, "yime_core_trial.dict.yaml")
+	if err := os.WriteFile(corePath, []byte("compact"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(
+		filepath.Join(userDir, "yime_variable.dict.yaml"),
+		[]byte("retired-large-user-copy"),
+		0o644,
+	); err != nil {
+		t.Fatal(err)
+	}
+	if got := resolveDictPath(sharedDir, userDir, "yime_variable"); got != corePath {
+		t.Fatalf("expected compact fallback %q, got %q", corePath, got)
+	}
+}

@@ -1,5 +1,10 @@
 # Yime Rime data in PIME
 
+> Status (2026-07-27): this document preserves the full-dictionary import and three-mode derivation
+> workflow as an offline source/regression procedure. It is no longer the installed default.
+> Production packages run `yime_core_trial` and must exclude the legacy full, variable-length, and
+> shorthand dictionaries. See [Default Dynamic Lexicon Runtime](DEFAULT_DYNAMIC_LEXICON_RUNTIME.md).
+
 This branch prepares PIME to consume Yime through the upstream Go Rime backend.
 
 ## Data flow

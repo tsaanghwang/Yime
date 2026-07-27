@@ -73,3 +73,22 @@ func TestDictPathPrefersSharedDir(t *testing.T) {
 		t.Fatalf("expected shared dict path %q, got %q", sharedFile, got)
 	}
 }
+
+func TestDictPathFallsBackToCompactRuntime(t *testing.T) {
+	shared := t.TempDir()
+	user := t.TempDir()
+	coreFile := filepath.Join(shared, "yime_core_trial.dict.yaml")
+	if err := os.WriteFile(coreFile, []byte("compact"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(
+		filepath.Join(user, "yime_variable.dict.yaml"),
+		[]byte("retired-large-user-copy"),
+		0o644,
+	); err != nil {
+		t.Fatal(err)
+	}
+	if got := DictPath(shared, user, reverselookup.ModeVariable); got != coreFile {
+		t.Fatalf("expected compact runtime dictionary %q, got %q", coreFile, got)
+	}
+}

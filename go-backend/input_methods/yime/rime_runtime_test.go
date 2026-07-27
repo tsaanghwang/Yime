@@ -10,6 +10,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/settings"
 	"github.com/tsaanghwang/Yime/go-backend/pime"
 )
 
@@ -101,6 +102,7 @@ func writeRuntimeTestDefaultCustom(t *testing.T, userDir string) {
 		"    - schema: yime_variable",
 		"    - schema: yime_full",
 		"    - schema: yime_shorthand",
+		"    - schema: yime_core_trial",
 		"    - schema: luna_pinyin",
 		"",
 	}, "\n")
@@ -581,6 +583,71 @@ func TestRealRimeCanSelectYimeShorthandSchema(t *testing.T) {
 	menu, ok := GetMenu(sessionID)
 	if !ok || len(menu.Candidates) == 0 {
 		t.Fatalf("expected shorthand candidates after bj, got %#v", menu)
+	}
+}
+
+func TestRealRimeBuildsCoreTrialFromProductionSingleSchemaList(t *testing.T) {
+	dataDir := rimeRuntimeTestDataDir(t)
+	userDir := filepath.Join(t.TempDir(), "Rime")
+	if err := os.MkdirAll(userDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(
+		filepath.Join(userDir, "default.custom.yaml"),
+		[]byte("patch:\n  schema_list:\n    - schema: yime_variable\n  \"menu/page_size\": 5\n"),
+		0o644,
+	); err != nil {
+		t.Fatal(err)
+	}
+	if !RimeInit(dataDir, userDir, APP, APP_VERSION, false) {
+		t.Fatal("RimeInit failed")
+	}
+	sessionID, ok := StartSession()
+	if !ok || sessionID == 0 {
+		Finalize()
+		t.Fatal("StartSession failed")
+	}
+	if !SelectSchema(sessionID, "yime_variable") {
+		EndSession(sessionID)
+		Finalize()
+		t.Fatal("expected initial yime_variable schema")
+	}
+	EndSession(sessionID)
+
+	if err := settings.Apply(
+		userDir,
+		dataDir,
+		settings.SchemaCoreTrial,
+		5,
+		"hidden",
+		"vertical",
+		true,
+	); err != nil {
+		Finalize()
+		t.Fatalf("building yime_core_trial from the production schema list failed: %v", err)
+	}
+	if err := validateCompiledRimeSchema(userDir, settings.SchemaCoreTrial); err != nil {
+		Finalize()
+		t.Fatal(err)
+	}
+
+	sessionID, ok = StartSession()
+	if !ok || sessionID == 0 {
+		Finalize()
+		t.Fatal("StartSession after external core-trial build failed")
+	}
+	defer func() {
+		EndSession(sessionID)
+		Finalize()
+	}()
+	if !SelectSchema(sessionID, settings.SchemaCoreTrial) {
+		t.Fatal("expected externally built yime_core_trial schema to be selectable")
+	}
+	SetOption(sessionID, "ascii_mode", false)
+	typeASCII(t, sessionID, "bj")
+	menu, ok := GetMenu(sessionID)
+	if !ok || len(menu.Candidates) == 0 {
+		t.Fatalf("expected core-trial candidates after bj, got %#v", menu)
 	}
 }
 

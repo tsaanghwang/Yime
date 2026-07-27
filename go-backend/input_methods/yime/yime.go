@@ -20,6 +20,7 @@ import (
 
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/codemode"
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/runtimechange"
+	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/settings"
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/userlexicon"
 	"github.com/tsaanghwang/Yime/go-backend/pime"
 )
@@ -47,6 +48,7 @@ const (
 	ID_YIME_VARIABLE                  = yimeCommandBase + 20
 	ID_YIME_FULL                      = yimeCommandBase + 21
 	ID_YIME_SHORTHAND                 = yimeCommandBase + 22
+	ID_YIME_CORE_TRIAL                = yimeCommandBase + 23
 	ID_USER_LEXICON_ADD               = yimeCommandBase + 30
 	ID_USER_LEXICON_DELETE            = yimeCommandBase + 31
 	ID_USER_LEXICON_EDIT              = yimeCommandBase + 32
@@ -160,6 +162,7 @@ var refreshRimeSchemasOnInit = userlexicon.RefreshRimeData
 var createRimeBackend = newNativeBackend
 var confirmRimeRedeployAction = requestRimeRedeployConfirmation
 var confirmRimeSyncAction = requestRimeSyncConfirmation
+var applyRimeSettings = settings.Apply
 var rimeMaintenanceRunning atomic.Bool
 var scheduleRimeMaintenance = func(run func()) { go run() }
 var scheduleStandaloneToolLaunch = func(run func() error, onError func(error)) {
@@ -550,6 +553,8 @@ func (ime *IME) onCommand(req *pime.Request, resp *pime.Response) *pime.Response
 		ime.selectSchema("yime_full")
 	case ID_YIME_SHORTHAND:
 		ime.selectSchema("yime_shorthand")
+	case ID_YIME_CORE_TRIAL:
+		ime.selectSchema("yime_core_trial")
 	case ID_DEPLOY:
 		ime.startSafeRimeRedeploy()
 	case ID_SYNC:
@@ -649,6 +654,7 @@ func (ime *IME) commandShouldRefreshState(commandID int) bool {
 	switch commandID {
 	case ID_ASCII_MODE, ID_MODE_ICON, ID_FULL_SHAPE, ID_ASCII_PUNCT,
 		ID_TRADITIONALIZATION, ID_YIME_VARIABLE, ID_YIME_FULL, ID_YIME_SHORTHAND,
+		ID_YIME_CORE_TRIAL,
 		ID_USER_LEXICON_APPLY, ID_CANDIDATE_LAYOUT_TOGGLE:
 		return true
 	default:
@@ -818,6 +824,13 @@ func (ime *IME) Init(req *pime.Request) bool {
 	} else if schemasChanged {
 		log.Println("检测到安装方案或系统词典更新，已刷新用户目录并请求 Rime 完整部署")
 	}
+	defaultSelectionChanged, err := ensureDefaultRuntimeSelection(sharedDir, userDir)
+	if err != nil {
+		log.Printf("设置默认动态组句方案失败: %v", err)
+	} else if defaultSelectionChanged {
+		schemasChanged = true
+		log.Println("已把默认方案切换到 yime_core_trial；旧大词库不再参与运行")
+	}
 	if event, err := runtimechange.Read(userDir); err == nil {
 		ime.recordRuntimeChange(event)
 	}
@@ -832,6 +845,30 @@ func (ime *IME) Init(req *pime.Request) bool {
 		ime.backend = nil
 	}
 	return true
+}
+
+func ensureDefaultRuntimeSelection(sharedDir, userDir string) (bool, error) {
+	coreSchemaPath := filepath.Join(sharedDir, settings.SchemaCoreTrial+".schema.yaml")
+	if info, err := os.Stat(coreSchemaPath); err != nil || info.IsDir() {
+		return false, nil
+	}
+	selected := readSelectedSchemaFromUserConfig(userDir)
+	if selected != "" {
+		selectedPath := filepath.Join(sharedDir, selected+".schema.yaml")
+		if info, err := os.Stat(selectedPath); err == nil && !info.IsDir() {
+			return false, nil
+		}
+	}
+	snapshot := settings.LoadSnapshot(userDir, sharedDir)
+	return true, applyRimeSettings(
+		userDir,
+		sharedDir,
+		settings.DefaultSchema,
+		snapshot.PageSize,
+		snapshot.ReverseLookupMode,
+		snapshot.CandidateLayout,
+		false,
+	)
 }
 
 func (ime *IME) pollRuntimeChange() {
@@ -855,7 +892,11 @@ func (ime *IME) pollRuntimeChange() {
 		ime.lexiconChangeRevision = event.LexiconRevision
 	}
 	if event.RedeployRevision > ime.redeployChangeRevision && ime.backend != nil {
-		ime.pendingSchemaRedeploy = ime.currentSchemaID()
+		targetSchema := readSelectedSchemaFromUserConfig(userDir)
+		if targetSchema == "" {
+			targetSchema = ime.currentSchemaID()
+		}
+		ime.pendingSchemaRedeploy = targetSchema
 	}
 	ime.redeployChangeRevision = event.RedeployRevision
 	ime.runtimeChangeRevision = event.Revision
@@ -1493,6 +1534,13 @@ func (ime *IME) selectSchema(schemaID string) {
 	if ime.backend == nil || schemaID == "" {
 		return
 	}
+	if schemaID == settings.SchemaCoreTrial {
+		if err := validateCompiledRimeSchema(ime.userDir(), schemaID); err != nil {
+			log.Printf("trial schema requires an external build before selection: %v", err)
+			ime.startSchemaBuildAndSwitch(schemaID)
+			return
+		}
+	}
 	if schemaPath := ime.prepareUserSchema(schemaID); schemaPath != "" {
 		if !deploySchemaConfig(schemaPath) {
 			log.Printf("部署方案失败: %s", schemaPath)
@@ -1502,6 +1550,64 @@ func (ime *IME) selectSchema(schemaID string) {
 	if ime.backend.SelectSchema(schemaID) {
 		ime.backend.ClearComposition()
 	}
+}
+
+// startSchemaBuildAndSwitch handles the first selection of an optional schema.
+// RimeDeployConfigFile can refresh a schema that is already part of the
+// compiled workspace, but it does not add a never-built dictionary that is
+// absent from default.custom.yaml's schema_list. Persist the requested schema,
+// build it with the external deployer, then notify active sessions to reload at
+// a safe request boundary.
+func (ime *IME) startSchemaBuildAndSwitch(schemaID string) {
+	if rimeMaintenanceRunning.Load() {
+		ime.showUserMessage("方案构建", "已有 Rime 维护任务正在运行，请等待完成。", "Information")
+		return
+	}
+	sharedDir, userDir := ime.sharedDir(), ime.userDir()
+	if sharedDir == "" || userDir == "" {
+		ime.showUserMessage("方案构建失败", "无法确定 Rime 数据目录。", "Error")
+		return
+	}
+	if !rimeMaintenanceRunning.CompareAndSwap(false, true) {
+		ime.showUserMessage("方案构建", "已有 Rime 维护任务正在运行，请等待完成。", "Information")
+		return
+	}
+	pageSize := ime.normalizedCandidatePageSize()
+	reverseMode := ime.reverseLookupDisplayMode
+	if reverseMode == "" {
+		reverseMode = "hidden"
+	}
+	candidateLayout := "vertical"
+	if ime.style.CandidatePerRow > verticalCandidatesPerRow {
+		candidateLayout = "horizontal"
+	}
+	scheduleRimeMaintenance(func() {
+		defer rimeMaintenanceRunning.Store(false)
+		if err := applyRimeSettings(
+			userDir,
+			sharedDir,
+			schemaID,
+			pageSize,
+			reverseMode,
+			candidateLayout,
+			true,
+		); err != nil {
+			log.Printf("build optional Rime schema %s failed: %v", schemaID, err)
+			ime.showUserMessage("方案构建失败", "无法编译方案 "+schemaID+"。\n错误: "+err.Error(), "Error")
+			return
+		}
+		if err := validateCompiledRimeSchema(userDir, schemaID); err != nil {
+			log.Printf("optional Rime schema validation failed: %v", err)
+			ime.showUserMessage("方案构建失败", "方案编译结果未通过校验。\n错误: "+err.Error(), "Error")
+			return
+		}
+		if _, err := runtimechange.Notify(userDir, runtimechange.ScopeSettings, true); err != nil {
+			log.Printf("notify optional Rime schema build failed: %v", err)
+			ime.showUserMessage("方案构建未完全完成", "方案已经编译，但当前输入会话尚未收到刷新通知。\n重新切换输入法即可载入。", "Warning")
+			return
+		}
+		ime.showUserMessage("方案构建完成", "方案 "+schemaID+" 已编译；下一次输入时会切换到该方案。", "Information")
+	})
 }
 
 func (ime *IME) addButtons(resp *pime.Response) {
@@ -1804,14 +1910,14 @@ func (ime *IME) yimePinyinLookup() map[string]string {
 
 func (ime *IME) currentSchemaID() string {
 	if ime.backend == nil {
-		return "yime_variable"
+		return settings.DefaultSchema
 	}
 	schemaID := strings.TrimSpace(ime.backend.CurrentSchema())
 	switch schemaID {
-	case "yime_full", "yime_variable", "yime_shorthand":
+	case "yime_full", "yime_variable", "yime_shorthand", "yime_core_trial":
 		return schemaID
 	default:
-		return "yime_variable"
+		return settings.DefaultSchema
 	}
 }
 
@@ -1984,8 +2090,9 @@ func (ime *IME) buildMenu() []map[string]interface{} {
 
 	return []map[string]interface{}{
 		{"text": "模式", "submenu": []map[string]interface{}{
-			{"id": ID_YIME_FULL, "text": "等长", "checked": currentSchema == "yime_full"},
-			{"id": ID_YIME_VARIABLE, "text": "变长", "checked": currentSchema == "" || currentSchema == "yime_variable"},
+			{"id": ID_YIME_CORE_TRIAL, "text": "默认动态组句", "checked": currentSchema == "" || currentSchema == "yime_core_trial", "enabled": ime.schemaAvailable("yime_core_trial")},
+			{"id": ID_YIME_FULL, "text": "离线兼容：等长", "checked": currentSchema == "yime_full", "enabled": ime.schemaAvailable("yime_full")},
+			{"id": ID_YIME_VARIABLE, "text": "离线兼容：变长", "checked": currentSchema == "yime_variable", "enabled": ime.schemaAvailable("yime_variable")},
 			{"id": ID_YIME_SHORTHAND, "text": "省键", "checked": currentSchema == "yime_shorthand", "enabled": ime.schemaAvailable("yime_shorthand")},
 		}},
 		{"text": ""},
@@ -2178,7 +2285,7 @@ func (ime *IME) applyUserLexicon() error {
 	}
 	schemaID := ime.backend.CurrentSchema()
 	if schemaID == "" {
-		schemaID = "yime_variable"
+		schemaID = settings.DefaultSchema
 	}
 	ime.pendingSchemaRedeploy = schemaID
 	ime.reloadBackendSessionForSchema(schemaID)
@@ -2562,7 +2669,7 @@ func (ime *IME) setCandidatePageSize(size int) error {
 	if ime.backend != nil {
 		schemaID := ime.backend.CurrentSchema()
 		if schemaID == "" {
-			schemaID = "yime_variable"
+			schemaID = settings.DefaultSchema
 		}
 		if customPath, err := ime.writeSchemaCustomPageSize(schemaID, size); err != nil {
 			log.Printf("写入候选数量方案自定义配置失败: %v", err)
@@ -2611,7 +2718,7 @@ func (ime *IME) startSafeRimeRedeploy() {
 	}
 	schemaID := ime.backend.CurrentSchema()
 	if schemaID == "" {
-		schemaID = "yime_variable"
+		schemaID = settings.DefaultSchema
 	}
 	sharedDir, userDir := ime.sharedDir(), ime.userDir()
 	if sharedDir == "" || userDir == "" {
@@ -2945,7 +3052,7 @@ func readSchemaListSelection(path string) string {
 
 func normalizeSelectedSchemaID(schemaID string) string {
 	schemaID = strings.TrimSpace(schemaID)
-	for _, id := range []string{"yime_full", "yime_variable", "yime_shorthand"} {
+	for _, id := range []string{"yime_full", "yime_variable", "yime_shorthand", "yime_core_trial"} {
 		if schemaID == id || strings.HasPrefix(schemaID, id) {
 			return id
 		}

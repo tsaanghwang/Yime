@@ -1,0 +1,12 @@
+{
+  "format_version": 1,
+  "generated_at": "2026-07-26T21:31:13+08:00",
+  "source_file": "two_level_full.dict.yaml",
+  "source_sha256": "a22e6968c3f52bb50a130799e62e7fa804ebd946582f6c588a74437687ba947a",
+  "transform_version": "core-trial-full-to-variable-v1",
+  "layout_version": "rime-layout-key-trial-v1-2026-07-18",
+  "entry_count": 1124631,
+  "output_sha256": {
+    "yime_core_trial.dict.yaml": "d84312a3327bd115fd035f690d9510a8ca0a280875357589eecdcb20c22b354d"
+  }
+}

@@ -196,8 +196,18 @@ func resolveDictPath(sharedDir, userDir, schemaID string) string {
 	candidates := []string{
 		filepath.Join(sharedDir, schemaID+".dict.yaml"),
 	}
+	// The default compact schema uses variable-length codes. Older tools still
+	// express that code mode as yime_variable, so fall back to the compact
+	// runtime dictionary before considering stale user-directory copies of the
+	// retired large dictionary.
+	if schemaID == "yime_variable" {
+		candidates = append(candidates, filepath.Join(sharedDir, "yime_core_trial.dict.yaml"))
+	}
 	if userDir != "" {
 		candidates = append(candidates, filepath.Join(userDir, schemaID+".dict.yaml"))
+		if schemaID == "yime_variable" {
+			candidates = append(candidates, filepath.Join(userDir, "yime_core_trial.dict.yaml"))
+		}
 	}
 	for _, candidate := range candidates {
 		if info, err := os.Stat(candidate); err == nil && info.Size() > 0 {

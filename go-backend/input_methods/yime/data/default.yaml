@@ -4,6 +4,7 @@
 config_version: "0.16.minimal"
 
 schema_list:
+  - schema: yime_core_trial
   - schema: luna_pinyin
   - schema: cangjie5
 

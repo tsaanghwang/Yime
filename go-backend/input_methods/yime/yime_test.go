@@ -690,6 +690,33 @@ func TestRuntimeSettingsChangeSynchronizesActiveIME(t *testing.T) {
 	}
 }
 
+func TestRuntimeSettingsBuildReloadsConfiguredSchema(t *testing.T) {
+	root := t.TempDir()
+	t.Setenv("APPDATA", root)
+	userDir := filepath.Join(root, APP, "Rime")
+	if err := os.MkdirAll(userDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(
+		filepath.Join(userDir, "user.yaml"),
+		[]byte("var:\n  previously_selected_schema: yime_core_trial\n"),
+		0o644,
+	); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := runtimechange.Notify(userDir, runtimechange.ScopeSettings, true); err != nil {
+		t.Fatal(err)
+	}
+	ime := newRuntimeChangeTestIME()
+	ime.pollRuntimeChange()
+	if ime.pendingSchemaRedeploy != "yime_core_trial" {
+		t.Fatalf(
+			"expected configured yime_core_trial redeploy, got %q",
+			ime.pendingSchemaRedeploy,
+		)
+	}
+}
+
 func TestRuntimeLexiconChangeClearsCachesAndSchedulesRedeploy(t *testing.T) {
 	root := t.TempDir()
 	t.Setenv("APPDATA", root)
@@ -1556,6 +1583,7 @@ func TestYimeCommandIDsStayOutOfLowHostCollisionRange(t *testing.T) {
 		ID_YIME_VARIABLE,
 		ID_YIME_FULL,
 		ID_YIME_SHORTHAND,
+		ID_YIME_CORE_TRIAL,
 		ID_USER_LEXICON_ADD,
 		ID_USER_LEXICON_DELETE,
 		ID_USER_LEXICON_EDIT,
@@ -1614,6 +1642,19 @@ func TestOnCommandIgnoresLegacyLowIDCollisionForReverseLookupYimePinyin(t *testi
 }
 
 func TestOnCommandSwitchesYimeSchema(t *testing.T) {
+	root := t.TempDir()
+	t.Setenv("APPDATA", root)
+	coreBuildDir := filepath.Join(root, APP, "Rime", "build")
+	if err := os.MkdirAll(coreBuildDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(
+		filepath.Join(coreBuildDir, "yime_core_trial.schema.yaml"),
+		[]byte("schema:\n  schema_id: yime_core_trial\n"),
+		0o644,
+	); err != nil {
+		t.Fatal(err)
+	}
 	ime := newTestIME()
 	backend := ime.backend.(*testBackend)
 	backend.composition = "ni"
@@ -1651,6 +1692,22 @@ func TestOnCommandSwitchesYimeSchema(t *testing.T) {
 	if backend.composition != "" || backend.candidates != nil {
 		t.Fatal("expected shorthand schema switch to clear active composition")
 	}
+
+	backend.composition = "ni"
+	backend.refreshCandidates()
+	resp = ime.onCommand(&pime.Request{
+		SeqNum: 16,
+		ID:     pime.FlexibleID{Int: ID_YIME_CORE_TRIAL, IsInt: true},
+	}, pime.NewResponse(16, true))
+	if resp.ReturnValue != 1 {
+		t.Fatalf("expected core-trial schema switch command to be handled, got %d", resp.ReturnValue)
+	}
+	if backend.CurrentSchema() != "yime_core_trial" {
+		t.Fatalf("expected yime_core_trial schema, got %q", backend.CurrentSchema())
+	}
+	if backend.composition != "" || backend.candidates != nil {
+		t.Fatal("expected core-trial schema switch to clear active composition")
+	}
 }
 
 func TestOnMenuReturnsSettingsMenu(t *testing.T) {
@@ -1669,26 +1726,26 @@ func TestOnMenuReturnsSettingsMenu(t *testing.T) {
 		t.Fatalf("expected first menu item text, got %#v", items[0])
 	}
 	modeMenu := findSubmenuItem(t, items, "模式")
-	if len(modeMenu) != 3 {
-		t.Fatalf("expected mode submenu with full/variable/shorthand items, got %#v", modeMenu)
+	if len(modeMenu) != 4 {
+		t.Fatalf("expected mode submenu with default and offline compatibility items, got %#v", modeMenu)
 	}
-	if text, ok := modeMenu[0]["text"].(string); !ok || text != "等长" {
-		t.Fatalf("expected full mode menu item first, got %#v", modeMenu[0])
+	if text, ok := modeMenu[0]["text"].(string); !ok || text != "默认动态组句" {
+		t.Fatalf("expected compact dynamic mode menu item first, got %#v", modeMenu[0])
 	}
-	if text, ok := modeMenu[1]["text"].(string); !ok || text != "变长" {
-		t.Fatalf("expected variable mode menu item second, got %#v", modeMenu[1])
+	if text, ok := modeMenu[2]["text"].(string); !ok || text != "离线兼容：变长" {
+		t.Fatalf("expected variable compatibility mode menu item third, got %#v", modeMenu[2])
 	}
-	if checked, ok := modeMenu[1]["checked"].(bool); !ok || !checked {
-		t.Fatalf("expected variable mode checked by default, got %#v", modeMenu[1])
+	if checked, ok := modeMenu[2]["checked"].(bool); !ok || !checked {
+		t.Fatalf("expected active variable compatibility mode checked, got %#v", modeMenu[2])
 	}
-	if text, ok := modeMenu[2]["text"].(string); !ok || text != "省键" {
-		t.Fatalf("expected shorthand mode menu item third, got %#v", modeMenu[2])
+	if text, ok := modeMenu[3]["text"].(string); !ok || text != "省键" {
+		t.Fatalf("expected shorthand mode menu item fourth, got %#v", modeMenu[3])
 	}
-	if checked, ok := modeMenu[2]["checked"].(bool); !ok || checked {
-		t.Fatalf("expected shorthand mode unchecked by default, got %#v", modeMenu[2])
+	if checked, ok := modeMenu[3]["checked"].(bool); !ok || checked {
+		t.Fatalf("expected shorthand mode unchecked by default, got %#v", modeMenu[3])
 	}
-	if enabled, ok := modeMenu[2]["enabled"].(bool); !ok || enabled {
-		t.Fatalf("expected shorthand mode disabled without bundled schema, got %#v", modeMenu[2])
+	if enabled, ok := modeMenu[3]["enabled"].(bool); !ok || enabled {
+		t.Fatalf("expected shorthand mode disabled without bundled schema, got %#v", modeMenu[3])
 	}
 	item := findTopLevelMenuItem(t, items, ID_CANDIDATE_LAYOUT_TOGGLE)
 	if text, ok := item["text"].(string); !ok || text != "竖排 → 横排" {
@@ -1760,6 +1817,36 @@ func TestOnMenuReturnsSettingsMenu(t *testing.T) {
 	}
 	if item := findTopLevelMenuItem(t, openFolderMenu, ID_LOG_DIR); item["text"] != "PIME 日志目录" {
 		t.Fatalf("expected log directory label, got %#v", item)
+	}
+}
+
+func TestEnsureDefaultRuntimeSelectionMigratesMissingLegacySchema(t *testing.T) {
+	sharedDir := t.TempDir()
+	userDir := t.TempDir()
+	if err := os.WriteFile(
+		filepath.Join(sharedDir, "yime_core_trial.schema.yaml"),
+		[]byte("schema:\n  schema_id: yime_core_trial\n"),
+		0o644,
+	); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(
+		filepath.Join(userDir, "user.yaml"),
+		[]byte("var:\n  previously_selected_schema: yime_variable\n"),
+		0o644,
+	); err != nil {
+		t.Fatal(err)
+	}
+
+	changed, err := ensureDefaultRuntimeSelection(sharedDir, userDir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !changed {
+		t.Fatal("missing legacy shared schema should migrate to compact default")
+	}
+	if got := readSelectedSchemaFromUserConfig(userDir); got != settings.SchemaCoreTrial {
+		t.Fatalf("expected compact default selection, got %q", got)
 	}
 }
 
@@ -2683,11 +2770,13 @@ func TestBuildToolHubManifestProvidesExtensibleToolEntries(t *testing.T) {
 		`C:\go-backend\lexicon-manager.exe`,
 		`C:\go-backend\reverse-lookup.exe`,
 		`C:\go-backend\system-lexicon-audit.exe`,
+		`C:\go-backend\lexicon-promotion-scan.exe`,
 		`C:\go-backend\blocklist-manager.exe`,
 		`C:\go-backend\settings-tool.exe`,
 		`C:\go-backend\diagnostics-tool.exe`,
 		`C:\go-backend\yime-layout-designer.exe`,
 		"variable",
+		"yime_core_trial",
 	)
 	if err := validateToolHubManifest(manifest); err != nil {
 		t.Fatalf("expected valid tool hub manifest, got %v", err)
@@ -2703,6 +2792,7 @@ func TestBuildToolHubManifestProvidesExtensibleToolEntries(t *testing.T) {
 		"lexicon-manager":          false,
 		"reverse-lookup-tool":      false,
 		"system-lexicon-audit":     false,
+		"lexicon-promotion-scan":   false,
 		"user-blocklist-manager":   false,
 		"settings-tool":            false,
 		"settings-data":            false,
@@ -2724,7 +2814,7 @@ func TestBuildToolHubManifestProvidesExtensibleToolEntries(t *testing.T) {
 			settingsDataIndex = index
 		}
 		switch tool.ID {
-		case "advanced-layout-designer", "lexicon-manager", "reverse-lookup-tool", "system-lexicon-audit", "user-blocklist-manager", "settings-tool", "diagnostics-tool":
+		case "advanced-layout-designer", "lexicon-manager", "reverse-lookup-tool", "system-lexicon-audit", "lexicon-promotion-scan", "user-blocklist-manager", "settings-tool", "diagnostics-tool":
 			if tool.ActionType != toolActionRunExecutable {
 				t.Fatalf("expected %s to launch native executable, got %#v", tool.ID, tool)
 			}
@@ -2759,6 +2849,13 @@ func TestBuildToolHubManifestProvidesExtensibleToolEntries(t *testing.T) {
 				}
 				if len(tool.Arguments) < 6 || tool.Arguments[0] != "-SharedDir" || tool.Arguments[2] != "-UserDir" || tool.Arguments[4] != "-Mode" {
 					t.Fatalf("expected system-lexicon-audit executable arguments, got %#v", tool.Arguments)
+				}
+			case "lexicon-promotion-scan":
+				if tool.TargetPath != `C:\go-backend\lexicon-promotion-scan.exe` {
+					t.Fatalf("expected promotion scanner executable path, got %#v", tool)
+				}
+				if len(tool.Arguments) != 6 || tool.Arguments[0] != "-SharedDir" || tool.Arguments[2] != "-UserDir" || tool.Arguments[4] != "-SchemaID" || tool.Arguments[5] != "yime_core_trial" {
+					t.Fatalf("expected promotion scanner schema arguments, got %#v", tool.Arguments)
 				}
 			case "user-blocklist-manager":
 				if tool.TargetPath != `C:\go-backend\blocklist-manager.exe` {

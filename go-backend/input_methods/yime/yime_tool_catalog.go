@@ -35,7 +35,7 @@ type toolHubManifest struct {
 // are kept here as comments only:
 //   - The hub launches standalone Win32 tools instead of running inside language-bar callbacks.
 //   - Opening a subtool keeps the hub window open for quick re-selection.
-func buildToolHubManifest(sharedDir, userDir, helpDir, logDir, lexiconManagerPath, reverseLookupToolPath, systemLexiconAuditPath, blocklistManagerPath, settingsToolPath, diagnosticsToolPath, layoutDesignerPath, mode string) toolHubManifest {
+func buildToolHubManifest(sharedDir, userDir, helpDir, logDir, lexiconManagerPath, reverseLookupToolPath, systemLexiconAuditPath, lexiconPromotionScanPath, blocklistManagerPath, settingsToolPath, diagnosticsToolPath, layoutDesignerPath, mode, schemaID string) toolHubManifest {
 
 	return toolHubManifest{
 		Title:   "Yime 工具箱",
@@ -87,6 +87,18 @@ func buildToolHubManifest(sharedDir, userDir, helpDir, logDir, lexiconManagerPat
 					"-SharedDir", sharedDir,
 					"-UserDir", userDir,
 					"-Mode", mode,
+				},
+			},
+			{
+				ID:          "lexicon-promotion-scan",
+				Label:       "高频新词扫描",
+				Description: "先执行“同步数据”，再扫描学习快照，生成系统库未收录词条的离线 JSON/TSV 报告；不会上传。",
+				ActionType:  toolActionRunExecutable,
+				TargetPath:  lexiconPromotionScanPath,
+				Arguments: []string{
+					"-SharedDir", sharedDir,
+					"-UserDir", userDir,
+					"-SchemaID", schemaID,
 				},
 			},
 			{

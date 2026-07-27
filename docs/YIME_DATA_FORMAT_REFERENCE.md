@@ -92,17 +92,19 @@ ai1	Hffu
 
 该文件不参与 Rime 按键解析和词库编码；Rime 内部仍使用 `yime_pinyin_codes.tsv` 中的 ASCII 编码。`fonts/YinYuan-Regular.ttf` 提供 PUA 字形，由安装包注册到 Windows 字体目录。
 
-### yime_variable.dict.yaml / yime_full.dict.yaml / yime_shorthand.dict.yaml
+### yime_core_trial.dict.yaml
 
-Rime 系统词库，每种编码方案一个文件。三者是由唯一导入的
-`yime_full.dict.yaml` 生成的内部运行产物，不是三份独立数据源；请勿手工修改。
+Windows 默认运行词库。它由原型两级筛选策略生成，只包含已经通过正式拼音、音节编码和布局门禁的
+单字及预组合部件。安装包不携带 `yime_variable.dict.yaml`、`yime_full.dict.yaml`、
+`yime_shorthand.dict.yaml` 或旧 `yime_lexicon_manifest.json`；这些文件仅在开发仓库中作为离线
+真源、筛选池和回归资源存在。
 
 **格式**：Rime dict.yaml 格式。`---` 到 `...` 之间为头部元数据，`...` 之后为词条数据。
 
 ```
 # Rime dictionary
 ---
-name: yime_variable
+name: yime_core_trial
 version: "<normalized-source-hash-prefix>"
 sort: by_weight
 ...
@@ -117,12 +119,12 @@ sort: by_weight
 | 编码 | Yime 编码 | `qu`、`7dgo` |
 | 权重 | 整数，越大越优先 | `240230122` |
 
-**规模**：当前每种方案 2,456,797 条；实际数量以
-`yime_lexicon_manifest.json` 的 `entry_count` 为准，不应在导入脚本之外手工调整。
+**规模**：当前 1,124,631 条；实际数量以
+`yime_core_trial_manifest.json` 的 `entry_count` 为准，不应在导入脚本之外手工调整。
 
-同目录的 `yime_lexicon_manifest.json` 记录唯一导入文件的 SHA-256、
-转换和布局版本、词条数，以及三套生成词典的 SHA-256。发布或安装前应以该清单
-检查三套文件是否来自同一次生成。
+同目录的 `yime_core_trial_manifest.json` 记录来源 SHA-256、转换和布局版本、词条数及输出
+SHA-256；`yime_runtime_profile.json` 记录默认 schema、离线文件边界和99%验收摘要。构建脚本会在
+复制共享数据后主动移除旧大词库，发现泄漏即失败。
 
 **注意**：同一文本可以有多个编码（多音字）。相关数量和占比必须从当前
 handoff/生成词典重新统计，不得沿用旧 468K 词典的历史指标。

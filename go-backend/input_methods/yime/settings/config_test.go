@@ -6,6 +6,33 @@ import (
 	"testing"
 )
 
+func TestDefaultSchemaIsCompactDynamicComposition(t *testing.T) {
+	if got := ReadConfiguredSchema(""); got != SchemaCoreTrial {
+		t.Fatalf("empty configuration must default to %q, got %q", SchemaCoreTrial, got)
+	}
+	if got := normalizeSchemaID("unknown"); got != SchemaCoreTrial {
+		t.Fatalf("unknown schema must normalize to %q, got %q", SchemaCoreTrial, got)
+	}
+}
+
+func TestAvailableSchemaOptionsFollowPackagedFiles(t *testing.T) {
+	sharedDir := t.TempDir()
+	for _, name := range []string{"yime_core_trial.schema.yaml", "yime_core_trial.dict.yaml"} {
+		if err := os.WriteFile(filepath.Join(sharedDir, name), []byte("test"), 0o644); err != nil {
+			t.Fatal(err)
+		}
+	}
+	options := AvailableSchemaOptions(sharedDir)
+	if len(options) == 0 || options[0].ID != SchemaCoreTrial || !options[0].Enabled {
+		t.Fatalf("core runtime should be the first enabled option: %#v", options)
+	}
+	for _, option := range options {
+		if option.ID != SchemaCoreTrial && option.Enabled {
+			t.Fatalf("offline-only schema unexpectedly enabled: %#v", option)
+		}
+	}
+}
+
 func TestReadConfiguredPageSizePrefersDefaultCustom(t *testing.T) {
 	userDir := t.TempDir()
 	if err := os.WriteFile(filepath.Join(userDir, "default.custom.yaml"), []byte("patch:\n  \"menu/page_size\": 8\n"), 0o644); err != nil {
