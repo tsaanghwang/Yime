@@ -28,7 +28,7 @@ Rime frontend.
   - **用户词库** → `lexicon-manager.exe`
   - **反查编码** → `reverse-lookup.exe`
   - **工具中心** → `tool-hub.exe`
-  - **中西 / 全半 / 横竖** — fixed two-character labels; state shown by icons
+  - **中西 / 全半 / 标点 / 横竖** — fixed two-character labels; state shown by icons
 - When Windows docks the language bar in the taskbar and hides those standalone
   quick buttons, open the **设置** menu from the **中** button. Its root contains
   the equivalent **用户词库**, **反查编码**, and **工具中心** commands.

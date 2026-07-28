@@ -545,6 +545,7 @@ func (ime *IME) onCommand(req *pime.Request, resp *pime.Response) *pime.Response
 		ime.updateWindowsModeIcon(req, resp)
 	case ID_ASCII_PUNCT:
 		ime.toggleOption("ascii_punct")
+		ime.changeLangBarPunctuationButton(resp)
 	case ID_TRADITIONALIZATION:
 		ime.toggleOption("traditionalization")
 	case ID_YIME_VARIABLE:
@@ -625,7 +626,8 @@ func (ime *IME) onCommand(req *pime.Request, resp *pime.Response) *pime.Response
 		return resp
 	}
 
-	if commandID == ID_ASCII_MODE || commandID == ID_MODE_ICON || commandID == ID_FULL_SHAPE || commandID == ID_CANDIDATE_LAYOUT_TOGGLE {
+	if commandID == ID_ASCII_MODE || commandID == ID_MODE_ICON || commandID == ID_FULL_SHAPE ||
+		commandID == ID_ASCII_PUNCT || commandID == ID_CANDIDATE_LAYOUT_TOGGLE {
 		// Toggle buttons were updated above; avoid refreshing unrelated buttons.
 	} else {
 		ime.updateWindowsModeIcon(req, resp)
@@ -1429,6 +1431,7 @@ func (ime *IME) setCandidateLayout(horizontal bool, resp *pime.Response) {
 const (
 	langBarToggleLangLabel   = "中西"
 	langBarToggleShapeLabel  = "全半"
+	langBarTogglePunctLabel  = "标点"
 	langBarToggleLayoutLabel = "横竖"
 )
 
@@ -1438,6 +1441,7 @@ func (ime *IME) appendLangBarToggleAddButtons(resp *pime.Response) {
 	}
 	asciiMode := ime.backend.GetOption("ascii_mode")
 	fullShape := ime.backend.GetOption("full_shape")
+	asciiPunct := ime.backend.GetOption("ascii_punct")
 	horizontal := ime.style.CandidatePerRow > verticalCandidatesPerRow
 
 	langButton := pime.ButtonInfo{
@@ -1463,6 +1467,18 @@ func (ime *IME) appendLangBarToggleAddButtons(resp *pime.Response) {
 		shapeButton.Icon = iconPath
 	}
 	resp.AddButton = append(resp.AddButton, shapeButton)
+
+	punctButton := pime.ButtonInfo{
+		ID:        "switch-punct",
+		Text:      langBarTogglePunctLabel,
+		Tooltip:   "中英文标点切换",
+		CommandID: ID_ASCII_PUNCT,
+		Type:      "button",
+	}
+	if iconPath := ime.iconPath(punctuationIconName(asciiPunct)); iconPath != "" {
+		punctButton.Icon = iconPath
+	}
+	resp.AddButton = append(resp.AddButton, punctButton)
 
 	layoutButton := pime.ButtonInfo{
 		ID:        "candidate-layout",
@@ -1505,6 +1521,14 @@ func (ime *IME) changeLangBarShapeButton(resp *pime.Response) {
 	}
 	fullShape := ime.backend.GetOption("full_shape")
 	ime.appendLangBarButtonIconChange(resp, "switch-shape", shapeIconName(fullShape))
+}
+
+func (ime *IME) changeLangBarPunctuationButton(resp *pime.Response) {
+	if ime.backend == nil {
+		return
+	}
+	asciiPunct := ime.backend.GetOption("ascii_punct")
+	ime.appendLangBarButtonIconChange(resp, "switch-punct", punctuationIconName(asciiPunct))
 }
 
 func (ime *IME) changeLangBarCandidateLayoutButton(resp *pime.Response) {
@@ -1679,7 +1703,7 @@ func (ime *IME) removeButtons(resp *pime.Response) {
 	}
 	// "reverse-lookup" and "help" are legacy button ids kept here so an upgrade
 	// from an older build still clears them from the language bar.
-	resp.RemoveButton = append(resp.RemoveButton, "switch-lang", "switch-shape", "candidate-layout", "reverse-lookup", "user-lexicon", "lexicon-manager", "settings", "tools", "help")
+	resp.RemoveButton = append(resp.RemoveButton, "switch-lang", "switch-shape", "switch-punct", "candidate-layout", "reverse-lookup", "user-lexicon", "lexicon-manager", "settings", "tools", "help")
 	if ime.Client != nil && ime.Client.IsWindows8Above {
 		resp.RemoveButton = append(resp.RemoveButton, "windows-mode-icon")
 	}
@@ -3200,6 +3224,13 @@ func shapeIconName(fullShape bool) string {
 		return "full.ico"
 	}
 	return "half.ico"
+}
+
+func punctuationIconName(asciiPunct bool) string {
+	if asciiPunct {
+		return "punct_eng.ico"
+	}
+	return "punct_chi.ico"
 }
 
 func candidateLayoutIconName(horizontal bool) string {
