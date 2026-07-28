@@ -272,7 +272,7 @@ Phase 5 原则上不属于 1.4.0 发布收口范围。候选页默认是 5 项�
 | 5.2 | 方向键移动候选光标 | ✅ 已完成 | PIME 候选窗接管四方向键并维护 `currentSel`，Enter 通过 `selectCandidate(index)` 确认高亮候选；2026-07-22 实测“他日”通过 |
 | 5.4 | 非 BCC 词语的独立排序证据 | 无 BCC 命中的词语继续保持 `bcc_frequency/phrase_frequency=0`；候选清理和分类稳定后，可用单列的来源可靠性、组件频率或动态组合证据改善同频排序，但不得反写或冒充 BCC 计数 | Yime-python-prototype 候选整理与动态组合管线 |
 | 5.5 | 分段选词、句中改选与动态组句纠错 | ✅ 键盘路径已完成 | [可行性调查与实现记录](project/SENTENCE_SEGMENT_CORRECTION_FEASIBILITY.md)确认复用 librime navigator；Ctrl+Left/Right 宿主路由、“改选前段、保留后段、最终整句提交”、隔离用户学习与 Enter 抬键保护测试已通过。2026-07-23 安装态实测“逼逼”“音元输入法”通过，x86/x64 DLL 与运行时哈希一致 |
-| 5.6 | 鼠标组句纠错的独立候选/分段 UI | 🧪 已安装，观察期 | 2026-07-24 已在 YIME 自有候选窗中加入无激活分段条，通过 librime `commit_text_preview` 与带空格 preedit 建立 `{start,end,code,text,active}` 映射，显示为“汉字 + 对应编码”，并在改选后缓存稳定映射；点击以原始编码范围调用 `selectCompositionSegment`，通过 `RimeGetApi` 的 `set_caret_pos` 直接定位，键盘 navigator 仅作兼容回退，不使用显示文字下标，也不注册宿主 composition 鼠标监听。RPC 拒绝重入、越界、循环和无进展更新；即使定位失败也回送当前组句与候选，避免宿主把空响应解释为结束 composition。Go 全套、原生宿主命中/RPC、真实 librime 回归及多架构构建已通过；安装产物哈希已与构建物核对，Notepad、Codex IDE 初步试用有效，仍按[安装态验收计划](project/SENTENCE_SEGMENT_CORRECTION_TEST_PLAN.md)观察长期稳定性并补真实 x86 宿主验证 |
+| 5.6 | 鼠标组句纠错的独立候选/分段 UI | 🧪 已安装，观察期 | 2026-07-24 已在 YIME 自有候选窗中加入无激活分段条，通过 librime `commit_text_preview` 与带空格 preedit 建立 `{start,end,code,text,active}` 映射，显示为“汉字 + 对应编码”，并在改选后缓存稳定映射；点击以原始编码范围调用 `selectCompositionSegment`，通过 `RimeGetApi` 的 `set_caret_pos` 直接定位，键盘 navigator 仅作兼容回退，不使用显示文字下标，也不注册宿主 composition 鼠标监听。RPC 拒绝重入、越界、循环和无进展更新；即使定位失败也回送当前组句与候选，避免宿主把空响应解释为结束 composition。Go 全套、原生宿主命中/RPC、真实 librime 回归及多架构构建已通过；安装产物哈希已与构建物核对，Notepad、Codex IDE 初步试用有效。真实 x86 宿主基础链路曾于 2026-07-15 初步测试通过；Phase 5.6 的 x86 复测安排在取得代码签名后，随签名产物发行验收执行，当前继续按[安装态验收计划](project/SENTENCE_SEGMENT_CORRECTION_TEST_PLAN.md)观察长期稳定性 |
 
 ---
 
