@@ -350,6 +350,7 @@ $requiredYimeIcons = @(
     'eng_half_capsoff.ico', 'eng_half_capson.ico',
     'eng_full_capsoff.ico', 'eng_full_capson.ico',
     'half.ico', 'full.ico',
+    'punct_chi.ico', 'punct_eng.ico',
     'layout_horizontal.ico', 'layout_vertical.ico',
     'config.ico', 'lexicon.ico', 'reverse-lookup.ico', 'tools.ico'
 )

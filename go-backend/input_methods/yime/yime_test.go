@@ -32,6 +32,7 @@ type testBackend struct {
 	candidates       []candidateItem
 	commitString     string
 	asciiMode        bool
+	asciiPunct       bool
 	fullShape        bool
 	horizontal       bool
 	schemaID         string
@@ -497,6 +498,8 @@ func (b *testBackend) SetOption(name string, value bool) {
 	switch name {
 	case "ascii_mode":
 		b.asciiMode = value
+	case "ascii_punct":
+		b.asciiPunct = value
 	case "full_shape":
 		b.fullShape = value
 	case "_horizontal":
@@ -510,6 +513,8 @@ func (b *testBackend) GetOption(name string) bool {
 	switch name {
 	case "ascii_mode":
 		return b.asciiMode
+	case "ascii_punct":
+		return b.asciiPunct
 	case "full_shape":
 		return b.fullShape
 	case "_horizontal":
@@ -1980,10 +1985,13 @@ func TestLanguageBarToggleButtonsUseStableTwoCharacterLabels(t *testing.T) {
 	if button := findLangBarButton(resp.AddButton, "switch-shape"); button == nil || button.Text != "全半" {
 		t.Fatalf("expected switch-shape button to show 全半, got %#v", button)
 	}
+	if button := findLangBarButton(resp.AddButton, "switch-punct"); button == nil || button.Text != "标点" {
+		t.Fatalf("expected switch-punct button to show 标点, got %#v", button)
+	}
 	if button := findLangBarButton(resp.AddButton, "candidate-layout"); button == nil || button.Text != "横竖" {
 		t.Fatalf("expected candidate-layout button to show 横竖, got %#v", button)
 	}
-	for _, id := range []string{"switch-lang", "switch-shape", "candidate-layout"} {
+	for _, id := range []string{"switch-lang", "switch-shape", "switch-punct", "candidate-layout"} {
 		if button := findLangBarButton(resp.AddButton, id); button == nil || button.Icon == "" {
 			t.Fatalf("expected %s to carry its state icon, got %#v", id, button)
 		}
@@ -2005,12 +2013,87 @@ func TestLanguageBarToggleButtonsUseStableTwoCharacterLabels(t *testing.T) {
 		t.Fatalf("expected switch-shape update to be icon-only, got %#v", shapeResp.ChangeButton)
 	}
 
-	layoutResp := ime.onCommand(&pime.Request{
+	punctResp := ime.onCommand(&pime.Request{
 		SeqNum: 4,
-		ID:     pime.FlexibleID{Int: ID_CANDIDATE_LAYOUT_TOGGLE, IsInt: true},
+		ID:     pime.FlexibleID{Int: ID_ASCII_PUNCT, IsInt: true},
 	}, pime.NewResponse(4, true))
+	if change := findLangBarChangeButton(punctResp.ChangeButton, "switch-punct"); change == nil || change.Icon == "" || change.Text != "" {
+		t.Fatalf("expected switch-punct update to be icon-only, got %#v", punctResp.ChangeButton)
+	}
+
+	layoutResp := ime.onCommand(&pime.Request{
+		SeqNum: 5,
+		ID:     pime.FlexibleID{Int: ID_CANDIDATE_LAYOUT_TOGGLE, IsInt: true},
+	}, pime.NewResponse(5, true))
 	if change := findLangBarChangeButton(layoutResp.ChangeButton, "candidate-layout"); change == nil || change.Icon == "" || change.Text != "" {
 		t.Fatalf("expected candidate-layout update to be icon-only, got %#v", layoutResp.ChangeButton)
+	}
+}
+
+func TestLanguageBarPunctuationButtonDirectClickTogglesOptionAndIcon(t *testing.T) {
+	ime := newTestIME()
+	seedLangBarToggleIcons(t, ime)
+	backend := ime.backend.(*testBackend)
+
+	addResp := pime.NewResponse(6, true)
+	ime.addButtons(addResp)
+	button := findLangBarButton(addResp.AddButton, "switch-punct")
+	if button == nil {
+		t.Fatalf("expected direct punctuation button in %#v", addResp.AddButton)
+	}
+	if button.Type != "button" || button.CommandID != ID_ASCII_PUNCT {
+		t.Fatalf("expected switch-punct to deliver ID_ASCII_PUNCT directly, got %#v", button)
+	}
+	if button.Tooltip != "中英文标点切换" {
+		t.Fatalf("expected punctuation toggle tooltip, got %#v", button)
+	}
+	if filepath.Base(button.Icon) != "punct_chi.ico" {
+		t.Fatalf("expected initial Chinese punctuation icon, got %#v", button)
+	}
+
+	clickResp := ime.onCommand(&pime.Request{
+		SeqNum: 7,
+		ID:     pime.FlexibleID{Int: button.CommandID, IsInt: true},
+	}, pime.NewResponse(7, true))
+	if !backend.asciiPunct {
+		t.Fatal("expected direct language-bar click to enable English punctuation")
+	}
+	change := findLangBarChangeButton(clickResp.ChangeButton, "switch-punct")
+	if change == nil || change.Icon == "" || change.Text != "" {
+		t.Fatalf("expected direct click to update only the punctuation state icon, got %#v", clickResp.ChangeButton)
+	}
+	if filepath.Base(change.Icon) != "punct_eng.ico" {
+		t.Fatalf("expected English punctuation icon after first click, got %#v", change)
+	}
+	for _, unrelated := range []string{"switch-lang", "switch-shape", "candidate-layout"} {
+		if got := findLangBarChangeButton(clickResp.ChangeButton, unrelated); got != nil {
+			t.Fatalf("expected punctuation click not to refresh %s, got %#v", unrelated, clickResp.ChangeButton)
+		}
+	}
+
+	secondResp := ime.onCommand(&pime.Request{
+		SeqNum: 8,
+		ID:     pime.FlexibleID{Int: button.CommandID, IsInt: true},
+	}, pime.NewResponse(8, true))
+	if backend.asciiPunct {
+		t.Fatal("expected second direct language-bar click to restore Chinese punctuation")
+	}
+	secondChange := findLangBarChangeButton(secondResp.ChangeButton, "switch-punct")
+	if secondChange == nil || filepath.Base(secondChange.Icon) != "punct_chi.ico" {
+		t.Fatalf("expected Chinese punctuation icon after second click, got %#v", secondResp.ChangeButton)
+	}
+
+	removeResp := pime.NewResponse(9, true)
+	ime.removeButtons(removeResp)
+	foundRemoval := false
+	for _, id := range removeResp.RemoveButton {
+		if id == "switch-punct" {
+			foundRemoval = true
+			break
+		}
+	}
+	if !foundRemoval {
+		t.Fatalf("expected session teardown to remove switch-punct, got %#v", removeResp.RemoveButton)
 	}
 }
 
@@ -2058,6 +2141,8 @@ func seedLangBarToggleIcons(t *testing.T, ime *IME) {
 		"eng.ico",
 		"half.ico",
 		"full.ico",
+		"punct_chi.ico",
+		"punct_eng.ico",
 		"layout_vertical.ico",
 		"layout_horizontal.ico",
 	} {
@@ -2080,7 +2165,7 @@ func TestOnKeyDoesNotRefreshUnrelatedLangBarToggleButtons(t *testing.T) {
 	}
 	for _, change := range resp.ChangeButton {
 		switch change.ID {
-		case "switch-lang", "switch-shape", "candidate-layout":
+		case "switch-lang", "switch-shape", "switch-punct", "candidate-layout":
 			t.Fatalf("expected onKey not to refresh toggle button %q, got %#v", change.ID, resp.ChangeButton)
 		}
 	}
@@ -2106,7 +2191,7 @@ func TestOnCommandAsciiModeUpdatesOnlyStableLangButtonIcon(t *testing.T) {
 			if change.Text != "" || change.Icon == "" {
 				t.Fatalf("expected switch-lang icon-only change, got %#v", change)
 			}
-		case "switch-shape", "candidate-layout":
+		case "switch-shape", "switch-punct", "candidate-layout":
 			t.Fatalf("expected ascii toggle not to refresh %q, got %#v", change.ID, resp.ChangeButton)
 		}
 	}
