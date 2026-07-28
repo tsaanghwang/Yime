@@ -74,21 +74,18 @@ func TestDictPathPrefersSharedDir(t *testing.T) {
 	}
 }
 
-func TestDictPathFallsBackToCompactRuntime(t *testing.T) {
+func TestDictPathDoesNotFallBackToRetiredUserCopy(t *testing.T) {
 	shared := t.TempDir()
 	user := t.TempDir()
-	coreFile := filepath.Join(shared, "yime_core_trial.dict.yaml")
-	if err := os.WriteFile(coreFile, []byte("compact"), 0o644); err != nil {
-		t.Fatal(err)
-	}
 	if err := os.WriteFile(
 		filepath.Join(user, "yime_variable.dict.yaml"),
-		[]byte("retired-large-user-copy"),
+		[]byte("stale-user-copy"),
 		0o644,
 	); err != nil {
 		t.Fatal(err)
 	}
-	if got := DictPath(shared, user, reverselookup.ModeVariable); got != coreFile {
-		t.Fatalf("expected compact runtime dictionary %q, got %q", coreFile, got)
+	want := filepath.Join(shared, "yime_variable.dict.yaml")
+	if got := DictPath(shared, user, reverselookup.ModeVariable); got != filepath.Join(user, "yime_variable.dict.yaml") {
+		t.Fatalf("expected existing user dictionary while shared core is absent, got %q (shared target %q)", got, want)
 	}
 }

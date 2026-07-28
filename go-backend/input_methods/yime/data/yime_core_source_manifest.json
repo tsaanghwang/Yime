@@ -1,0 +1,26 @@
+{
+    "schema_version":  1,
+    "source_project":  "Yime-python-prototype",
+    "source_revision":  "7899db12",
+    "source_dictionary":  "two_level_full.dict.yaml",
+    "source_dictionary_sha256":  "0c55a35338c12cbb7cf6d84d58f98cb0ea02a599ea9c59d9f8666fba60e577f7",
+    "source_selection_sha256":  "cff66cd84a3aa9990a1c0d69fa37e23c5dd0adc646525ada87703fa0c6f98a50",
+    "entry_count":  1124631,
+    "distinct_texts":  1116892,
+    "ranking_evidence":  {
+                             "policy_id":  "bcc-primary-lmdg-fallback-structural-floor-v1",
+                             "policy_sha256":  "e592c23018354f22d0aadf3e18fa3068797d950603fdc38d4ef540178f855074",
+                             "direct_bcc":  372119,
+                             "provisional_rime_lmdg":  564200,
+                             "provisional_structural_floor":  180573,
+                             "missing_selected_source_texts":  0,
+                             "raw_bcc_and_lmdg_values_added":  false,
+                             "source_priority_separation_passed":  true
+                         },
+    "runtime_scope":  "curated_core_only",
+    "prototype_scope":  [
+                            "candidate_pool",
+                            "source_evidence",
+                            "regression_cases"
+                        ]
+}

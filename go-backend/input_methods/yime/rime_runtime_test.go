@@ -102,7 +102,6 @@ func writeRuntimeTestDefaultCustom(t *testing.T, userDir string) {
 		"    - schema: yime_variable",
 		"    - schema: yime_full",
 		"    - schema: yime_shorthand",
-		"    - schema: yime_core_trial",
 		"    - schema: luna_pinyin",
 		"",
 	}, "\n")
@@ -586,7 +585,7 @@ func TestRealRimeCanSelectYimeShorthandSchema(t *testing.T) {
 	}
 }
 
-func TestRealRimeBuildsCoreTrialFromProductionSingleSchemaList(t *testing.T) {
+func TestRealRimeBuildsCoreModesFromSingleSchemaList(t *testing.T) {
 	dataDir := rimeRuntimeTestDataDir(t)
 	userDir := filepath.Join(t.TempDir(), "Rime")
 	if err := os.MkdirAll(userDir, 0o755); err != nil {
@@ -614,40 +613,46 @@ func TestRealRimeBuildsCoreTrialFromProductionSingleSchemaList(t *testing.T) {
 	}
 	EndSession(sessionID)
 
-	if err := settings.Apply(
-		userDir,
-		dataDir,
-		settings.SchemaCoreTrial,
-		5,
-		"hidden",
-		"vertical",
-		true,
-	); err != nil {
-		Finalize()
-		t.Fatalf("building yime_core_trial from the production schema list failed: %v", err)
-	}
-	if err := validateCompiledRimeSchema(userDir, settings.SchemaCoreTrial); err != nil {
-		Finalize()
-		t.Fatal(err)
+	for _, schemaID := range []string{
+		settings.SchemaVariable,
+		settings.SchemaFull,
+		settings.SchemaShorthand,
+	} {
+		if err := settings.Apply(
+			userDir,
+			dataDir,
+			schemaID,
+			5,
+			"hidden",
+			"vertical",
+			true,
+		); err != nil {
+			Finalize()
+			t.Fatalf("building curated core schema %s failed: %v", schemaID, err)
+		}
+		if err := validateCompiledRimeSchema(userDir, schemaID); err != nil {
+			Finalize()
+			t.Fatal(err)
+		}
 	}
 
 	sessionID, ok = StartSession()
 	if !ok || sessionID == 0 {
 		Finalize()
-		t.Fatal("StartSession after external core-trial build failed")
+		t.Fatal("StartSession after external core schema build failed")
 	}
 	defer func() {
 		EndSession(sessionID)
 		Finalize()
 	}()
-	if !SelectSchema(sessionID, settings.SchemaCoreTrial) {
-		t.Fatal("expected externally built yime_core_trial schema to be selectable")
+	if !SelectSchema(sessionID, settings.SchemaVariable) {
+		t.Fatal("expected externally built yime_variable schema to be selectable")
 	}
 	SetOption(sessionID, "ascii_mode", false)
 	typeASCII(t, sessionID, "bj")
 	menu, ok := GetMenu(sessionID)
 	if !ok || len(menu.Candidates) == 0 {
-		t.Fatalf("expected core-trial candidates after bj, got %#v", menu)
+		t.Fatalf("expected curated core candidates after bj, got %#v", menu)
 	}
 }
 

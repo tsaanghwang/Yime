@@ -4,15 +4,15 @@
 
 [中文文档](README.zh-CN.md)
 
-Yime maps pinyin syllables to a structured keyboard encoding where shouyin units follow memorable patterns (zh/ch/sh → 7/8/9, j/q/x → 3/2/1, z/c/s → 6/5/4). The installed runtime uses variable-length encoding. Fixed-length and shorthand derivations remain available to the offline toolchain and regression suite.
+Yime maps pinyin syllables to a structured keyboard encoding where shouyin units follow memorable patterns (zh/ch/sh → 7/8/9, j/q/x → 3/2/1, z/c/s → 6/5/4). The installed runtime provides variable-length, fixed-length, and shorthand modes, all deterministically derived from one curated core candidate set.
 
 In fixed-length mode, each syllable consists of one *shouyin* followed by a *ganyin*. The ganyin always contains three yinyuan: *huyin*, *zhuyin*, and *moyin*. Variable-length mode preserves the real or virtual shouyin and merges adjacent identical yinyuan that compose the ganyin: ABC stays ABC, AAC becomes AC, ABB becomes AB, and AAA becomes A. Shorthand mode then omits an eligible middle-tone yinyuan from the variable-length result. See the [data format reference](docs/YIME_DATA_FORMAT_REFERENCE.md#首音干音与三模式派生) for the structural rules.
 
 ## Features
 
 - **Dynamic sentence composition** — a 1,124,631-entry encoded core supplies characters and short components; Rime composes missing longer phrases and learns corrections
-- **Noise-isolated runtime** — legacy 2.45M-entry dictionaries remain offline sources and regression pools, not installed fallbacks
-- **Three encoding derivations** — variable-length is shipped; fixed-length and shorthand remain reproducible offline
+- **Evidence-locked core** — ranking uses BCC first, RIME-LMDG as fallback, and a separate structural floor
+- **Single-source modes** — variable-length, fixed-length, and shorthand all run from the same curated candidate set
 - **Candidate window** — 5–9 candidates per page, vertical or horizontal layout, one-click toggle
 - **Reverse lookup** — display standard pinyin, Yime codes, or key sequences alongside candidates
 - **User lexicon** — add custom phrases with numeric-tone pinyin; auto-converts to Yime codes
@@ -133,7 +133,7 @@ regsvr32 /u "C:\Program Files (x86)\YIME\x64\PIMETextService.dll"
 ## First-Run Checklist
 
 - [ ] Clone, initialize submodules, confirm toolchain installed
-- [ ] If the fixed-length Rime lexicon changed, run `tools\deploy-yime-rime-data.ps1 -Input <full.dict.yaml>` (see [docs/YIME_RIME_INTEGRATION.md](docs/YIME_RIME_INTEGRATION.md))
+- [ ] If the curated core changed, run `tools\deploy-yime-rime-data.ps1 -InputPath <two_level_full.dict.yaml> -EvidenceManifest <dictionary.manifest.json> -SourceRevision <commit>` (see [docs/YIME_RIME_INTEGRATION.md](docs/YIME_RIME_INTEGRATION.md))
 - [ ] Run `.\tools\dev-build-install-verify.ps1` for the complete build → reinstall → installed-runtime verification loop
 - [ ] For a split workflow, run `cmd /c build.bat`, then `.\Reinstall-PIME-Test.cmd` from an elevated prompt, then `tools\verify-installed-runtime.ps1 -RequireRunningLauncher`
 - [ ] Switch to Yime in a text application and verify: activation, candidates, settings, reverse lookup

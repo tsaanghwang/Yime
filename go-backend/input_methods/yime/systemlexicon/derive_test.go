@@ -71,38 +71,3 @@ func TestDeriveFromFullDictionaryDoesNotReplaceOutputsOnInvalidCode(t *testing.T
 		t.Fatalf("existing output changed: %q, %v", data, err)
 	}
 }
-
-func TestDeriveCoreTrialDoesNotTouchProductionDictionaries(t *testing.T) {
-	input := filepath.Join(t.TempDir(), "core.yaml")
-	content := "---\nname: compact\n...\n阿\t'sdf\t100\n阿吧\t'sdfqfff\t80\n"
-	if err := os.WriteFile(input, []byte(content), 0o644); err != nil {
-		t.Fatal(err)
-	}
-	out := t.TempDir()
-	productionPath := filepath.Join(out, "yime_variable.dict.yaml")
-	if err := os.WriteFile(productionPath, []byte("production"), 0o644); err != nil {
-		t.Fatal(err)
-	}
-
-	manifest, err := DeriveCoreTrialFromFullDictionary(input, out)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if manifest.EntryCount != 2 || manifest.Transform != "core-trial-full-to-variable-v1" {
-		t.Fatalf("unexpected manifest: %#v", manifest)
-	}
-	trial, err := os.ReadFile(filepath.Join(out, "yime_core_trial.dict.yaml"))
-	if err != nil {
-		t.Fatal(err)
-	}
-	if !strings.Contains(string(trial), "阿吧\t'sdf qf\t80") {
-		t.Fatalf("trial dictionary did not use variable spelling: %s", trial)
-	}
-	production, err := os.ReadFile(productionPath)
-	if err != nil || string(production) != "production" {
-		t.Fatalf("production dictionary changed: %q, %v", production, err)
-	}
-	if _, err := os.Stat(filepath.Join(out, CoreTrialManifestFileName)); err != nil {
-		t.Fatalf("trial manifest missing: %v", err)
-	}
-}

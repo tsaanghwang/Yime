@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -167,41 +168,59 @@ func TestRefreshRimeDataReencodesDerivedUserLexicons(t *testing.T) {
 	}
 }
 
-func TestRefreshRimeDataCopiesIsolatedCoreTrialArtifacts(t *testing.T) {
+func TestRefreshRimeDataRetiresTrialArtifactsAndMigratesSelection(t *testing.T) {
 	sharedDir := t.TempDir()
 	userDir := t.TempDir()
-	files := map[string]string{
-		"yime_core_trial.dict.yaml":     "trial dictionary\n",
-		"yime_core_trial_manifest.json": `{"source_sha256":"trial"}` + "\n",
-		"yime_core_trial.schema.yaml":   "schema: trial\n",
+	files := []string{
+		"yime_core_trial.dict.yaml",
+		"yime_core_trial_manifest.json",
+		"yime_core_trial.schema.yaml",
+		filepath.Join("build", "yime_core_trial.prism.bin"),
 	}
-	for name, content := range files {
-		if err := os.WriteFile(filepath.Join(sharedDir, name), []byte(content), 0o644); err != nil {
+	for _, name := range files {
+		path := filepath.Join(userDir, name)
+		if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
 			t.Fatal(err)
 		}
+		if err := os.WriteFile(path, []byte("retired\n"), 0o644); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err := os.WriteFile(
+		filepath.Join(userDir, "user.yaml"),
+		[]byte("var:\n  previously_selected_schema: yime_core_trial\n"),
+		0o644,
+	); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(
+		filepath.Join(userDir, "default.custom.yaml"),
+		[]byte("patch:\n  schema_list:\n    - schema: yime_core_trial\n"),
+		0o644,
+	); err != nil {
+		t.Fatal(err)
 	}
 	changed, err := RefreshRimeData(sharedDir, userDir)
 	if err != nil {
 		t.Fatal(err)
 	}
 	if !changed {
-		t.Fatal("first core-trial refresh must report changed data")
+		t.Fatal("retiring trial data must report changed data")
 	}
-	for name, want := range files {
-		got, err := os.ReadFile(filepath.Join(userDir, name))
+	for _, name := range files {
+		if _, err := os.Stat(filepath.Join(userDir, name)); !os.IsNotExist(err) {
+			t.Fatalf("retired artifact still exists: %s", name)
+		}
+	}
+	for _, name := range []string{"user.yaml", "default.custom.yaml"} {
+		data, err := os.ReadFile(filepath.Join(userDir, name))
 		if err != nil {
 			t.Fatal(err)
 		}
-		if string(got) != want {
-			t.Fatalf("%s was not refreshed: got %q want %q", name, got, want)
+		if strings.Contains(string(data), "yime_core_trial") ||
+			!strings.Contains(string(data), "yime_variable") {
+			t.Fatalf("selection was not migrated in %s: %s", name, data)
 		}
-	}
-	changed, err = RefreshRimeData(sharedDir, userDir)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if changed {
-		t.Fatal("identical core-trial data must not force another rebuild")
 	}
 }
 

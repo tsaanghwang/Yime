@@ -1,11 +1,11 @@
 # Rime schema
 # encoding: utf-8
-# Generated from Yime runtime_candidates_materialized.
+# Variable-length projection of the curated Yime core.
 
 schema:
   schema_id: yime_variable
   name: "Yime 变长模式"
-  version: "2026-07-18-layout-6d00e609f689"
+  version: "2026-07-28-core-1124631-layout-6d00e609f689-rank-v1"
 
 engine:
   processors:
@@ -36,7 +36,7 @@ speller:
 
 translator:
   dictionary: yime_variable
-  user_dict: yime_variable_layout_6d00e609f689_script_v1
+  user_dict: yime_variable_core_1124631_layout_6d00e609f689_rank_v1
   enable_user_dict: true
   enable_sentence: true
   sentence_over_completion: true
@@ -61,4 +61,3 @@ key_binder:
   # Every printable key in Yime's alphabet is encoding data. Paging uses the
   # native PageUp/PageDown keys; do not import default printable-key bindings.
   bindings: []
-

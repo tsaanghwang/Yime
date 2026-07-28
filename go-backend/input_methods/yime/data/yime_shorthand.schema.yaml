@@ -1,11 +1,11 @@
 # Rime schema
 # encoding: utf-8
-# Generated from Yime runtime_candidates_materialized.
+# Shorthand projection of the curated Yime core.
 
 schema:
   schema_id: yime_shorthand
   name: "Yime 省键模式"
-  version: "2026-07-18-layout-6d00e609f689"
+  version: "2026-07-28-core-1124631-layout-6d00e609f689-rank-v1"
 
 engine:
   processors:
@@ -35,7 +35,7 @@ speller:
 
 translator:
   dictionary: yime_shorthand
-  user_dict: yime_shorthand_layout_6d00e609f689_script_v1
+  user_dict: yime_shorthand_core_1124631_layout_6d00e609f689_rank_v1
   enable_user_dict: true
   enable_sentence: true
   sentence_over_completion: true

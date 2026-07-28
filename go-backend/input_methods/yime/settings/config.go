@@ -13,8 +13,7 @@ const (
 	SchemaVariable  = "yime_variable"
 	SchemaFull      = "yime_full"
 	SchemaShorthand = "yime_shorthand"
-	SchemaCoreTrial = "yime_core_trial"
-	DefaultSchema   = SchemaCoreTrial
+	DefaultSchema   = SchemaVariable
 )
 
 // Snapshot is the current settings view shown in the settings tool.
@@ -49,7 +48,6 @@ func AvailableSchemaOptions(sharedDir string) []SchemaOption {
 	variableEnabled := false
 	fullEnabled := false
 	shorthandEnabled := false
-	coreTrialEnabled := false
 	if sharedDir != "" {
 		_, err := os.Stat(filepath.Join(sharedDir, "yime_variable.schema.yaml"))
 		variableEnabled = err == nil
@@ -57,14 +55,11 @@ func AvailableSchemaOptions(sharedDir string) []SchemaOption {
 		fullEnabled = err == nil
 		_, err = os.Stat(filepath.Join(sharedDir, "yime_shorthand.schema.yaml"))
 		shorthandEnabled = err == nil
-		_, err = os.Stat(filepath.Join(sharedDir, "yime_core_trial.schema.yaml"))
-		coreTrialEnabled = err == nil
 	}
 	return []SchemaOption{
-		{ID: SchemaCoreTrial, Label: "默认动态组句", Enabled: coreTrialEnabled},
-		{ID: SchemaVariable, Label: "离线兼容：变长", Enabled: variableEnabled},
-		{ID: SchemaFull, Label: "离线兼容：等长", Enabled: fullEnabled},
-		{ID: SchemaShorthand, Label: "省键", Enabled: shorthandEnabled},
+		{ID: SchemaVariable, Label: "变长模式", Enabled: variableEnabled},
+		{ID: SchemaFull, Label: "等长模式", Enabled: fullEnabled},
+		{ID: SchemaShorthand, Label: "省键模式", Enabled: shorthandEnabled},
 	}
 }
 
@@ -96,16 +91,14 @@ func LoadSnapshot(userDir, sharedDir string) Snapshot {
 }
 
 func SummaryText(snapshot Snapshot) string {
-	schemaLabel := "默认动态组句"
+	schemaLabel := "变长模式"
 	switch snapshot.SchemaID {
 	case SchemaVariable:
-		schemaLabel = "离线兼容：变长"
+		schemaLabel = "变长模式"
 	case SchemaFull:
-		schemaLabel = "离线兼容：等长"
+		schemaLabel = "等长模式"
 	case SchemaShorthand:
-		schemaLabel = "省键"
-	case SchemaCoreTrial:
-		schemaLabel = "默认动态组句"
+		schemaLabel = "省键模式"
 	}
 	reverseLabel := "键位序列"
 	for _, option := range ReverseLookupOptions() {
@@ -170,11 +163,6 @@ func Apply(userDir, sharedDir, schemaID string, pageSize int, reverseLookupMode,
 	if schemaID == SchemaShorthand {
 		if _, err := os.Stat(filepath.Join(sharedDir, "yime_shorthand.schema.yaml")); err != nil {
 			return fmt.Errorf("当前共享数据目录未包含省键方案文件")
-		}
-	}
-	if schemaID == SchemaCoreTrial {
-		if _, err := os.Stat(filepath.Join(sharedDir, "yime_core_trial.schema.yaml")); err != nil {
-			return fmt.Errorf("当前共享数据目录未包含基础部件试验方案文件")
 		}
 	}
 	pageSize = normalizePageSize(pageSize)
@@ -297,8 +285,8 @@ func normalizeSchemaID(schemaID string) string {
 		return SchemaFull
 	case SchemaShorthand:
 		return SchemaShorthand
-	case SchemaCoreTrial:
-		return SchemaCoreTrial
+	case "yime_core_trial":
+		return SchemaVariable
 	default:
 		return DefaultSchema
 	}

@@ -554,7 +554,8 @@ func (ime *IME) onCommand(req *pime.Request, resp *pime.Response) *pime.Response
 	case ID_YIME_SHORTHAND:
 		ime.selectSchema("yime_shorthand")
 	case ID_YIME_CORE_TRIAL:
-		ime.selectSchema("yime_core_trial")
+		// Compatibility for stale host menus from the retired trial schema.
+		ime.selectSchema("yime_variable")
 	case ID_DEPLOY:
 		ime.startSafeRimeRedeploy()
 	case ID_SYNC:
@@ -826,10 +827,10 @@ func (ime *IME) Init(req *pime.Request) bool {
 	}
 	defaultSelectionChanged, err := ensureDefaultRuntimeSelection(sharedDir, userDir)
 	if err != nil {
-		log.Printf("设置默认动态组句方案失败: %v", err)
+		log.Printf("设置默认核心变长方案失败: %v", err)
 	} else if defaultSelectionChanged {
 		schemasChanged = true
-		log.Println("已把默认方案切换到 yime_core_trial；旧大词库不再参与运行")
+		log.Println("已把默认方案切换到核心变长模式")
 	}
 	if event, err := runtimechange.Read(userDir); err == nil {
 		ime.recordRuntimeChange(event)
@@ -848,8 +849,8 @@ func (ime *IME) Init(req *pime.Request) bool {
 }
 
 func ensureDefaultRuntimeSelection(sharedDir, userDir string) (bool, error) {
-	coreSchemaPath := filepath.Join(sharedDir, settings.SchemaCoreTrial+".schema.yaml")
-	if info, err := os.Stat(coreSchemaPath); err != nil || info.IsDir() {
+	defaultSchemaPath := filepath.Join(sharedDir, settings.DefaultSchema+".schema.yaml")
+	if info, err := os.Stat(defaultSchemaPath); err != nil || info.IsDir() {
 		return false, nil
 	}
 	selected := readSelectedSchemaFromUserConfig(userDir)
@@ -1534,13 +1535,6 @@ func (ime *IME) selectSchema(schemaID string) {
 	if ime.backend == nil || schemaID == "" {
 		return
 	}
-	if schemaID == settings.SchemaCoreTrial {
-		if err := validateCompiledRimeSchema(ime.userDir(), schemaID); err != nil {
-			log.Printf("trial schema requires an external build before selection: %v", err)
-			ime.startSchemaBuildAndSwitch(schemaID)
-			return
-		}
-	}
 	if schemaPath := ime.prepareUserSchema(schemaID); schemaPath != "" {
 		if !deploySchemaConfig(schemaPath) {
 			log.Printf("部署方案失败: %s", schemaPath)
@@ -1914,7 +1908,7 @@ func (ime *IME) currentSchemaID() string {
 	}
 	schemaID := strings.TrimSpace(ime.backend.CurrentSchema())
 	switch schemaID {
-	case "yime_full", "yime_variable", "yime_shorthand", "yime_core_trial":
+	case "yime_full", "yime_variable", "yime_shorthand":
 		return schemaID
 	default:
 		return settings.DefaultSchema
@@ -2090,10 +2084,9 @@ func (ime *IME) buildMenu() []map[string]interface{} {
 
 	return []map[string]interface{}{
 		{"text": "模式", "submenu": []map[string]interface{}{
-			{"id": ID_YIME_CORE_TRIAL, "text": "默认动态组句", "checked": currentSchema == "" || currentSchema == "yime_core_trial", "enabled": ime.schemaAvailable("yime_core_trial")},
-			{"id": ID_YIME_FULL, "text": "离线兼容：等长", "checked": currentSchema == "yime_full", "enabled": ime.schemaAvailable("yime_full")},
-			{"id": ID_YIME_VARIABLE, "text": "离线兼容：变长", "checked": currentSchema == "yime_variable", "enabled": ime.schemaAvailable("yime_variable")},
-			{"id": ID_YIME_SHORTHAND, "text": "省键", "checked": currentSchema == "yime_shorthand", "enabled": ime.schemaAvailable("yime_shorthand")},
+			{"id": ID_YIME_VARIABLE, "text": "变长模式", "checked": currentSchema == "" || currentSchema == "yime_variable", "enabled": ime.schemaAvailable("yime_variable")},
+			{"id": ID_YIME_FULL, "text": "等长模式", "checked": currentSchema == "yime_full", "enabled": ime.schemaAvailable("yime_full")},
+			{"id": ID_YIME_SHORTHAND, "text": "省键模式", "checked": currentSchema == "yime_shorthand", "enabled": ime.schemaAvailable("yime_shorthand")},
 		}},
 		{"text": ""},
 		{"id": ID_ASCII_MODE, "text": asciiText},
@@ -3052,7 +3045,10 @@ func readSchemaListSelection(path string) string {
 
 func normalizeSelectedSchemaID(schemaID string) string {
 	schemaID = strings.TrimSpace(schemaID)
-	for _, id := range []string{"yime_full", "yime_variable", "yime_shorthand", "yime_core_trial"} {
+	if schemaID == "yime_core_trial" {
+		return "yime_variable"
+	}
+	for _, id := range []string{"yime_full", "yime_variable", "yime_shorthand"} {
 		if schemaID == id || strings.HasPrefix(schemaID, id) {
 			return id
 		}
