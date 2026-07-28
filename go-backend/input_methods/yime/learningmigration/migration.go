@@ -22,6 +22,7 @@ const reportFileName = "yime_layout_learning_migration.log"
 
 type Transition struct {
 	Mode, SourceDB, TargetDB, OldDictionary, Dictionary string
+	AllowUnmatched                                      bool
 }
 
 type Report struct {
@@ -78,7 +79,7 @@ func DetectTransitionsBetween(oldDir, newDir string) ([]Transition, error) {
 			return nil, err
 		}
 		prefix := "yime_" + mode
-		if oldDB == "" || newDB == "" || !strings.HasPrefix(newDB, prefix+"_layout_") {
+		if oldDB == "" || newDB == "" || !isVersionedUserDB(newDB, prefix) {
 			continue
 		}
 		if oldDB == newDB {
@@ -88,9 +89,42 @@ func DetectTransitionsBetween(oldDir, newDir string) ([]Transition, error) {
 		} else if !strings.HasPrefix(oldDB, prefix) {
 			continue
 		}
-		result = append(result, Transition{mode, oldDB, newDB, filepath.Join(oldDir, "yime_"+mode+".dict.yaml"), filepath.Join(newDir, "yime_"+mode+".dict.yaml")})
+		result = append(result, Transition{
+			Mode: mode, SourceDB: oldDB, TargetDB: newDB,
+			OldDictionary:  filepath.Join(oldDir, "yime_"+mode+".dict.yaml"),
+			Dictionary:     filepath.Join(newDir, "yime_"+mode+".dict.yaml"),
+			AllowUnmatched: strings.Contains(newDB, "_core_"),
+		})
+	}
+	oldCoreDB, coreErr := schemaUserDB(
+		filepath.Join(oldDir, "yime_core_trial.schema.yaml"),
+	)
+	newVariableDB, variableErr := schemaUserDB(
+		filepath.Join(newDir, "yime_variable.schema.yaml"),
+	)
+	if coreErr == nil && variableErr == nil &&
+		oldCoreDB != "" && newVariableDB != "" &&
+		oldCoreDB != newVariableDB {
+		result = append(result, Transition{
+			Mode: "variable", SourceDB: oldCoreDB,
+			TargetDB: newVariableDB,
+			OldDictionary: filepath.Join(
+				oldDir,
+				"yime_core_trial.dict.yaml",
+			),
+			Dictionary: filepath.Join(
+				newDir,
+				"yime_variable.dict.yaml",
+			),
+			AllowUnmatched: true,
+		})
 	}
 	return result, nil
+}
+
+func isVersionedUserDB(name, prefix string) bool {
+	return strings.HasPrefix(name, prefix+"_layout_") ||
+		strings.HasPrefix(name, prefix+"_core_")
 }
 
 func migrationLogged(path, source, target string) bool {
@@ -215,10 +249,13 @@ func migrateOne(manager, userDir string, tr Transition) (Report, error) {
 	if report.Total == 0 {
 		return report, nil
 	}
-	if report.Unmatched != 0 {
+	if report.Unmatched != 0 && !tr.AllowUnmatched {
 		return report, fmt.Errorf("%d/%d 条学习记录无法在新词典中找到；已保留旧库并取消切换", report.Unmatched, report.Total)
 	}
 	if report.Migrated == 0 {
+		if tr.AllowUnmatched {
+			return report, nil
+		}
 		return report, fmt.Errorf("旧学习库的 %d 条记录均未迁移；已保留旧库并取消切换", report.Total)
 	}
 	if err := runManager(manager, userDir, "--restore", target); err != nil {

@@ -74,9 +74,14 @@ for %%F in (
     luna_pinyin.schema.yaml
     cangjie5.dict.yaml
     cangjie5.schema.yaml
-    yime_core_trial.dict.yaml
-    yime_core_trial.schema.yaml
-    yime_core_trial_manifest.json
+    yime_full.dict.yaml
+    yime_variable.dict.yaml
+    yime_shorthand.dict.yaml
+    yime_full.schema.yaml
+    yime_variable.schema.yaml
+    yime_shorthand.schema.yaml
+    yime_lexicon_manifest.json
+    yime_core_source_manifest.json
     yime_runtime_profile.json
 ) do (
     if not exist "%RIME_DATA_DIR%\%%F" (
@@ -491,24 +496,20 @@ if errorlevel 1 (
     exit /b 1
 )
 
-echo [INFO] Removing offline-only legacy Yime lexicons from the runtime package ...
+echo [INFO] Removing retired single-mode trial artifacts from the runtime package ...
 for %%F in (
-    yime_full.dict.yaml
-    yime_variable.dict.yaml
-    yime_shorthand.dict.yaml
-    yime_full.schema.yaml
-    yime_variable.schema.yaml
-    yime_shorthand.schema.yaml
-    yime_lexicon_manifest.json
+    yime_core_trial.dict.yaml
+    yime_core_trial.schema.yaml
+    yime_core_trial_manifest.json
 ) do (
     if exist "%PACKAGE_RIME_DATA_DIR%\%%F" del /q "%PACKAGE_RIME_DATA_DIR%\%%F"
     if exist "%PACKAGE_RIME_DATA_DIR%\%%F" (
-        echo [ERROR] Offline-only lexicon leaked into runtime package: %%F
+        echo [ERROR] Retired trial artifact leaked into runtime package: %%F
         exit /b 1
     )
 )
 
-for %%F in (default.yaml symbols.yaml essay.txt luna_pinyin.dict.yaml luna_pinyin.schema.yaml cangjie5.dict.yaml cangjie5.schema.yaml yime_core_trial.dict.yaml yime_core_trial.schema.yaml yime_core_trial_manifest.json yime_runtime_profile.json) do (
+for %%F in (default.yaml symbols.yaml essay.txt luna_pinyin.dict.yaml luna_pinyin.schema.yaml cangjie5.dict.yaml cangjie5.schema.yaml yime_full.dict.yaml yime_variable.dict.yaml yime_shorthand.dict.yaml yime_full.schema.yaml yime_variable.schema.yaml yime_shorthand.schema.yaml yime_lexicon_manifest.json yime_core_source_manifest.json yime_runtime_profile.json) do (
     if not exist "%PACKAGE_RIME_DATA_DIR%\%%F" (
         echo [ERROR] Packaged Rime shared data is incomplete: %%F
         exit /b 1

@@ -7,6 +7,8 @@ $launcher = Join-Path $root 'build\PIMELauncher\PIMELauncher.exe'
 $workflow = Join-Path $root '.github\workflows\ci.yaml'
 $codeOwners = Join-Path $root '.github\CODEOWNERS'
 $rootBuild = Join-Path $root 'build.bat'
+$goBuild = Join-Path $root 'go-backend\build.bat'
+$coreImporter = Join-Path $root 'tools\import-yime-core-lexicon.ps1'
 $installer = Join-Path $root 'installer\installer.nsi'
 $devInstall = Join-Path $root 'tools\dev-install.ps1'
 $buildPrereqs = Join-Path $root 'tools\assert-win32-build-prerequisites.ps1'
@@ -120,6 +122,37 @@ foreach ($guard in @(
         throw "Win32 pinned-host build guard is missing: $guard"
     }
 }
+$goBuildText = Get-Content -LiteralPath $goBuild -Raw
+foreach ($guard in @(
+    'yime_full.dict.yaml',
+    'yime_variable.dict.yaml',
+    'yime_shorthand.dict.yaml',
+    'yime_full.schema.yaml',
+    'yime_variable.schema.yaml',
+    'yime_shorthand.schema.yaml',
+    'yime_lexicon_manifest.json',
+    'yime_core_source_manifest.json',
+    'yime_runtime_profile.json',
+    'Removing retired single-mode trial artifacts'
+)) {
+    if (-not $goBuildText.Contains($guard)) {
+        throw "Curated core three-mode package guard is missing: $guard"
+    }
+}
+$coreImporterText = Get-Content -LiteralPath $coreImporter -Raw
+foreach ($guard in @(
+    'Get-FileHash -LiteralPath $resolvedInputPath -Algorithm SHA256',
+    '$sourceHash -ne [string]$evidence.output_sha256',
+    '$evidence.ranking_evidence.policy_id',
+    '$evidence.ranking_evidence.distinct_texts_by_source',
+    '[string]$SourceRevision',
+    'go run ./cmd/yime-lexicon-derive'
+)) {
+    if (-not $coreImporterText.Contains($guard)) {
+        throw "Curated core evidence import guard is missing: $guard"
+    }
+}
+Write-Host 'Curated core evidence and three-mode package guards passed.'
 $prereqText = Get-Content -LiteralPath $buildPrereqs -Raw
 foreach ($guard in @('stable-i686-pc-windows-msvc', 'GIT_TAG\s+v0\.6\.1', 'RequireBuildArtifacts')) {
     if (-not $prereqText.Contains($guard)) {

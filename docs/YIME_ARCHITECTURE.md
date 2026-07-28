@@ -512,41 +512,30 @@ Windows 默认运行交接
     ├── build_two_level_runtime_trial.py
     ├── runtime_lexicon_filter_policy.json
     ├── dynamic_candidate_coverage_policy.json（构建时强制 R0–R5 完成门禁）
-    ├── yime_core_trial.dict.yaml（1,124,631 条已编码组件）
-    ├── yime_core_trial_manifest.json（来源与输出 SHA-256）
-    └── yime_runtime_profile.json（默认方案、离线边界、验收摘要）
+    ├── two_level_full.dict.yaml（1,124,631 条核心读音记录）
+    └── dictionary.manifest.json（来源、筛选、排序证据与输出 SHA-256）
           │
-          └── build.bat → 只打包核心词库；旧大词库泄漏即失败
+          └── import-yime-core-lexicon.ps1
+                ├── yime_full.dict.yaml
+                ├── yime_variable.dict.yaml
+                └── yime_shorthand.dict.yaml
 ```
 
-**频率策略**：
+**核心排序证据策略**：
 
 | 场景 | 策略 | 说明 |
 |------|------|------|
-| 单字有 BCC 频率 | 直接使用 BCC count | 最小正值 6 |
-| 单字无 BCC 频率 | Unihan 合成阶梯 (1-5) | 刻意低于 BCC 最低值 6，分层由 tier_sort_weight 保护 |
-| 词语有 BCC 频率 | 直接使用 BCC count | — |
-| 词语无 BCC 频率 | 保持 `phrase_frequency=0` | 只表示没有 BCC 语料计数；词典收录、万象权重和候选审查结论均不伪装成 BCC 频次 |
+| 核心文本有 BCC 证据 | `2000 + bcc_frequency` | 第一优先级，保留 BCC 内部顺序 |
+| BCC 无命中、RIME-LMDG 有证据 | 归一化到 `1000..1999` | 第二优先级，不与 BCC 原始计数相加 |
+| 两者均无命中、结构判定通过 | 归一化到 `1..999` | 第三优先级，保留待补语料标记 |
 
-**合成阶梯**（BCC 无命中时取最高命中列）：
+原型证据清单记录三类不同文本数、策略哈希和 `raw_bcc_and_lmdg_values_added=false`。Yime 不重新
+计算频率，只验证证据与核心真源哈希一致并原样派生三种编码。
 
-| Unihan 列 | 合成值 | 来源 |
-|-----------|--------|------|
-| kTGHZ2013 | 5 | 《通用规范汉字表》2013版 |
-| kHanyuPinlu | 4 | 汉语拼音频率 |
-| kXHC1983 | 3 | 《现代汉语词典》1983版 |
-| kHanyuPinyin | 2 | 汉语拼音 |
-| kMandarin | 1 | Mandarin 读音；已在运行时拼音资产中清理不受支持的非标准音节 |
-
-**sort_weight 计算公式**：
-
-- 单字：`tier_sort_weight + modern_common_boost + reading_phrase_prior_boost + char_frequency_abs + reading_weight`
-- 词语：`phrase_frequency`（无 BCC 频率时为 `0`；其他来源证据与后续排序策略必须另列）
-
-**项目分离现状**：`Yime-python-prototype` 负责完整来源、编码证据、两级筛选策略和候选评测；
-`Yime` 负责 Windows 运行、打包和用户学习。旧大词库仍可由离线真源确定性重建，但不再是安装
-运行产物。`verify_default_runtime_handoff.py` 核对策略、核心词典 SHA-256 和99%置信下界；
-`verify-installed-runtime.ps1` 核对安装哈希、启动器身份，并拒绝任何旧大词库运行泄漏。
+**项目分离现状**：`Yime-python-prototype` 负责候选池、编码证据、两级筛选策略、排序证据和候选
+评测；`Yime` 只接收已通过门禁的核心真源，负责三模式派生、Windows 运行、打包和用户数据。
+`import-yime-core-lexicon.ps1` 在导入前核对证据清单与核心词典 SHA-256；
+`verify-installed-runtime.ps1` 核对三模式安装文件、哈希、启动器身份及已退役方案泄漏。
 
 ### 3.2 共享数据目录
 
@@ -559,10 +548,11 @@ Weasel、本机目录或 Plum 临时补齐；缺件时直接失败。
 | 文件 | 类型 | 说明 |
 |------|------|------|
 | `default.yaml` | Rime 配置 | 基础 schema_list、page_size、按键绑定、标点 |
-| `yime_core_trial.schema.yaml` | 默认 Rime 方案 | 沿用变长编码，启用动态组句、整句学习和独立 userdb |
-| `yime_core_trial.dict.yaml` | 默认运行词典 | 1,124,631 条已通过正式编码门禁的单字和预组合部件 |
-| `yime_core_trial_manifest.json` | 运行清单 | 筛选输入哈希、派生规则版本、条目数和输出哈希 |
-| `yime_runtime_profile.json` | 发布配置 | 默认 schema、离线文件清单、99%验收摘要和原型策略入口 |
+| `yime_variable/full/shorthand.schema.yaml` | 三模式 Rime 方案 | 动态组句、整句学习、模式专属 userdb 和自定义词 |
+| `yime_variable/full/shorthand.dict.yaml` | 三模式系统词典 | 同一 1,124,631 条核心读音记录的三种编码投影 |
+| `yime_core_source_manifest.json` | 来源证据 | 原型修订、输入/筛选哈希和三类排序证据计数 |
+| `yime_lexicon_manifest.json` | 派生清单 | 转换规则、条目数和三模式输出哈希 |
+| `yime_runtime_profile.json` | 发布配置 | 默认方案、三模式文件和四层候选链 |
 | `yime_pinyin_codes.tsv` | 编码映射 | 数字标调拼音→等长码，当前 1729 条；其余模式运行时推导 |
 | `yime_pua_pinyin.json` | PUA 显示映射 | 候选注释的数字标调拼音→PUA 音元序列 |
 | `fonts/YinYuan-Regular.ttf` | 候选字体 | 音元拼音模式使用的 PUA 字形 |
@@ -572,9 +562,8 @@ Weasel、本机目录或 Plum 临时补齐；缺件时直接失败。
 | `rime_deployer.exe` | 可执行文件 | 外部部署工具 |
 | `rime_runtime.lock.json` | 运行时锁 | 固定 librime 版本、提交、插件版本及三个运行文件的 SHA-256 |
 
-`yime_full`、`yime_variable`、`yime_shorthand` 的 dict、schema 和旧 manifest 可以存在于源码开发目录，
-但 `build.bat` 在形成安装包后必须删除它们。反查和系统词库审计在旧变长共享词典不存在时优先使用
-共享核心词典，不能被用户目录中的遗留大词典重新劫持。
+`build.bat` 要求三模式 dict、schema 和两个 manifest 同时存在，缺一即失败。反查和系统词库审计
+按当前模式读取共享核心词典，不能被用户目录中的过期副本覆盖。
 
 ### 3.3 用户数据目录
 
@@ -583,7 +572,9 @@ Weasel、本机目录或 Plum 临时补齐；缺件时直接失败。
 | 文件 | 格式 | 说明 |
 |------|------|------|
 | `default.custom.yaml` | YAML | 用户方案选择 + page_size 覆盖 |
-| `yime_core_trial_two_level_1124631_layout_6d00e609f689_script_v1.userdb/` | LevelDB | 默认动态组句方案的排序学习和整句学习数据 |
+| `yime_variable_core_1124631_layout_6d00e609f689_rank_v1.userdb/` | LevelDB | 变长模式排序和整句学习数据 |
+| `yime_full_core_1124631_layout_6d00e609f689_rank_v1.userdb/` | LevelDB | 等长模式排序和整句学习数据 |
+| `yime_shorthand_core_1124631_layout_6d00e609f689_rank_v1.userdb/` | LevelDB | 省键模式排序和整句学习数据 |
 | `yime_variable.custom.yaml` | YAML | 变长方案自定义（如 page_size） |
 | `yime_full.custom.yaml` | YAML | 等长方案自定义 |
 | `yime_shorthand.custom.yaml` | YAML | 省键方案自定义 |
@@ -596,9 +587,9 @@ Weasel、本机目录或 Plum 临时补齐；缺件时直接失败。
 | `yime_blocklist.txt` | 文本 | 用户屏蔽词表源文件 |
 | `build/` | 目录 | Rime 编译缓存 |
 
-升级后旧 schema 的自定义文件和 userdb 可能继续留在用户目录中；只要当前 schema 是
-`yime_core_trial`，它们就不参与默认候选排序。冷启动测试需要备份并清空整个用户数据目录，
-不能只删除其中一份词典文件。
+升级时会把可映射的历史学习记录迁移到新的核心命名空间；核心中不存在的历史候选会被过滤。旧的
+过渡方案选择改写为 `yime_variable`，对应生成文件和编译缓存随后删除。冷启动测试仍需备份并
+清空整个用户数据目录，不能只删除其中一份词典文件。
 
 ### 3.4 日志
 
@@ -724,18 +715,8 @@ go test ./input_methods/yime/ -run TestReal -v -count=1
 | `TestRealRimeRedeployAppliesPageSize` | redeploy 使 page_size 生效 |
 | `TestRealRimeExternalBuildAppliesPageSize` | 外部构建路径验证 |
 
-`rime_core_trial_replay_test.go` 提供完整库和 core-trial 的分层同输入回放。普通测试只检查抽样语料
-至少 1,000 条且覆盖全部 14 个桶；真实回放需显式启用，并可把汇总和逐例结果写成 JSON：
-
-```powershell
-$env:YIME_RUN_REAL_RIME_TESTS = "1"
-$env:YIME_RUN_CORE_TRIAL_COVERAGE = "1"
-$env:YIME_CORE_TRIAL_REPLAY_REPORT = Join-Path (Split-Path $PWD) ".tmp\core_trial_replay_coverage.json"
-go test ./input_methods/yime -run TestCoreTrialReplayCoverage -v -count=1 -timeout 120s
-```
-
-若要在词典变化后严格重放上一份报告中的同一批输入，另设
-`YIME_CORE_TRIAL_REPLAY_CORPUS` 为旧报告路径。新报告仍会重新记录当前候选和耗时。
+`core_runtime_data_test.go` 锁定核心来源、排序证据、三模式派生哈希和四层候选链；
+`TestRealRimeAllSchemasComposeSentence` 对三种模式执行同一条真实 librime 组句验收。
 
 早期 202,290、全量 pypinyin、A/B 和 B-lite 容量档仍保留为离线研究记录，但已经退出默认运行
 基线。当前发布档为两级筛选后的 1,124,631 条读音记录。验收必须区分三类证据：

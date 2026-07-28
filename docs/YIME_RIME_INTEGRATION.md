@@ -1,52 +1,53 @@
 # Yime Rime data in PIME
 
-> Status (2026-07-27): this document preserves the full-dictionary import and three-mode derivation
-> workflow as an offline source/regression procedure. It is no longer the installed default.
-> Production packages run `yime_core_trial` and must exclude the legacy full, variable-length, and
-> shorthand dictionaries. See [Default Dynamic Lexicon Runtime](DEFAULT_DYNAMIC_LEXICON_RUNTIME.md).
+> Status (2026-07-28): production imports one curated, evidence-locked fixed-length core and
+> deterministically derives the full, variable-length, and shorthand runtime dictionaries. All
+> three modes are packaged and share the same user-learning, custom-phrase, and blocklist layers.
+> See [Core Candidate Three-Mode Runtime](DEFAULT_DYNAMIC_LEXICON_RUNTIME.md).
 
 This branch prepares PIME to consume Yime through the upstream Go Rime backend.
 
 ## Data flow
 
-1. The prototype produces one versioned Windows handoff directory. It contains the fixed-length
-   `yime_full.dict.yaml`, four synchronized pinyin assets, and
-   `yime_handoff_manifest.json` with counts and SHA-256 values.
-2. The maintainer verifies the handoff manifest before accepting any file. The prototype command
-   also runs the Windows dictionary derivation into a staging subdirectory by default.
-3. The Go importer accepts the fixed-length dictionary as the only external lexicon source and
-   derives the full, variable, and shorthand Rime dictionaries plus
-   `yime_lexicon_manifest.json`.
-4. The verified auxiliary assets are vendored beside those generated dictionaries under
+1. The prototype builds `.generated\two_level_runtime_trial\two_level_full.dict.yaml` and its
+   `dictionary.manifest.json`. The manifest includes source, selection, ranking-policy, and output
+   hashes.
+2. The Yime importer rejects a dictionary whose SHA-256 or ranking evidence does not match that
+   manifest.
+3. The Go derivation accepts this curated fixed-length core as the only runtime candidate source
+   and writes the full, variable, and shorthand dictionaries plus `yime_lexicon_manifest.json`.
+4. Verified pinyin and display assets are vendored beside those generated dictionaries under
    `go-backend\input_methods\yime\data`.
 5. Build/install copies the shared data into the installed runtime; Rime deployment then refreshes
    `%AppData%\PIME\Rime` and its compiled cache.
 
 ## Prepare local data
 
-Generate the complete handoff in `C:\dev\Yime-python-prototype`:
+Generate the curated core in `C:\dev\Yime-python-prototype`:
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass `
-  -File tools\prepare_windows_yime_lexicon.ps1
+.\venv312\Scripts\python.exe tools\build_two_level_runtime_trial.py
 ```
 
-The default output is `.generated\windows_yime_import`. Treat that directory as one atomic
-handoff: verify every asset recorded by `yime_handoff_manifest.json` before copying or importing
-anything. Do not combine files from different handoff runs. The handoff producer prepares and
-checks staged output; it does not deploy to PIME/Rime, and this repository does not yet provide a
-single command that consumes all five handoff assets.
+Treat `two_level_full.dict.yaml` and `dictionary.manifest.json` as an atomic pair. Do not combine
+files from different builds.
 
 From `C:\dev\Yime`:
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File tools\deploy-yime-rime-data.ps1 -Input C:\path\to\yime_full.dict.yaml
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\deploy-yime-rime-data.ps1 `
+  -InputPath C:\path\to\two_level_full.dict.yaml `
+  -EvidenceManifest C:\path\to\dictionary.manifest.json `
+  -SourceRevision <prototype-commit>
 ```
 
 To generate the three dictionaries without deploying them:
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File tools\import-yime-full-lexicon.ps1 -Input C:\path\to\yime_full.dict.yaml
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\import-yime-core-lexicon.ps1 `
+  -InputPath C:\path\to\two_level_full.dict.yaml `
+  -EvidenceManifest C:\path\to\dictionary.manifest.json `
+  -SourceRevision <prototype-commit>
 ```
 
 There is no variable-mode or shorthand-mode import switch. Those files are
@@ -158,13 +159,13 @@ comment unchanged.
 
 Use this checklist when prototype dictionary or pinyin data changes.
 
-1. Complete the prototype rebuild and its compliance/layout gates.
-2. Run `tools\prepare_windows_yime_lexicon.ps1` and use only its resulting
-   `.generated\windows_yime_import` directory.
-3. Verify `yime_handoff_manifest.json`: schema version, audited/runtime inventory counts, declared
-   source-only syllables, byte sizes, and every asset SHA-256.
-4. Import `yime_full.dict.yaml` only through
-   `tools\import-yime-full-lexicon.ps1`; never import variable or shorthand dictionaries.
+1. Complete the prototype core rebuild and its compliance, coverage, layout, and ranking gates.
+2. Use the paired files in `.generated\two_level_runtime_trial`.
+3. Verify `dictionary.manifest.json`: selection and policy hashes, source-separated ranking counts,
+   zero missing selected texts, and output SHA-256.
+4. Import `two_level_full.dict.yaml` only through
+   `tools\import-yime-core-lexicon.ps1`, together with its `dictionary.manifest.json`;
+   never import variable or shorthand dictionaries independently.
 5. Copy the four verified auxiliary assets together:
    `yime_pinyin_codes.tsv`, `yime_syllable_decomposition.tsv`,
    `pinyin_normalized.json`, and `yime_pua_pinyin.json`.

@@ -6,29 +6,36 @@ import (
 	"testing"
 )
 
-func TestDefaultSchemaIsCompactDynamicComposition(t *testing.T) {
-	if got := ReadConfiguredSchema(""); got != SchemaCoreTrial {
-		t.Fatalf("empty configuration must default to %q, got %q", SchemaCoreTrial, got)
+func TestDefaultSchemaIsCoreBackedVariableMode(t *testing.T) {
+	if got := ReadConfiguredSchema(""); got != SchemaVariable {
+		t.Fatalf("empty configuration must default to %q, got %q", SchemaVariable, got)
 	}
-	if got := normalizeSchemaID("unknown"); got != SchemaCoreTrial {
-		t.Fatalf("unknown schema must normalize to %q, got %q", SchemaCoreTrial, got)
+	if got := normalizeSchemaID("unknown"); got != SchemaVariable {
+		t.Fatalf("unknown schema must normalize to %q, got %q", SchemaVariable, got)
+	}
+	if got := normalizeSchemaID("yime_core_trial"); got != SchemaVariable {
+		t.Fatalf("retired trial selection must migrate to %q, got %q", SchemaVariable, got)
 	}
 }
 
 func TestAvailableSchemaOptionsFollowPackagedFiles(t *testing.T) {
 	sharedDir := t.TempDir()
-	for _, name := range []string{"yime_core_trial.schema.yaml", "yime_core_trial.dict.yaml"} {
+	for _, name := range []string{
+		"yime_variable.schema.yaml",
+		"yime_full.schema.yaml",
+		"yime_shorthand.schema.yaml",
+	} {
 		if err := os.WriteFile(filepath.Join(sharedDir, name), []byte("test"), 0o644); err != nil {
 			t.Fatal(err)
 		}
 	}
 	options := AvailableSchemaOptions(sharedDir)
-	if len(options) == 0 || options[0].ID != SchemaCoreTrial || !options[0].Enabled {
-		t.Fatalf("core runtime should be the first enabled option: %#v", options)
+	if len(options) != 3 || options[0].ID != SchemaVariable {
+		t.Fatalf("three-mode runtime options are incomplete: %#v", options)
 	}
 	for _, option := range options {
-		if option.ID != SchemaCoreTrial && option.Enabled {
-			t.Fatalf("offline-only schema unexpectedly enabled: %#v", option)
+		if !option.Enabled {
+			t.Fatalf("core-backed mode unexpectedly disabled: %#v", option)
 		}
 	}
 }

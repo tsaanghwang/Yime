@@ -23,14 +23,8 @@ func DictPath(sharedDir, userDir string, mode reverselookup.Mode) string {
 	candidates := []string{
 		filepath.Join(sharedDir, schemaID+".dict.yaml"),
 	}
-	if schemaID == "yime_variable" {
-		candidates = append(candidates, filepath.Join(sharedDir, "yime_core_trial.dict.yaml"))
-	}
 	if userDir != "" {
 		candidates = append(candidates, filepath.Join(userDir, schemaID+".dict.yaml"))
-		if schemaID == "yime_variable" {
-			candidates = append(candidates, filepath.Join(userDir, "yime_core_trial.dict.yaml"))
-		}
 	}
 	for _, candidate := range candidates {
 		if info, err := os.Stat(candidate); err == nil && info.Size() > 0 {

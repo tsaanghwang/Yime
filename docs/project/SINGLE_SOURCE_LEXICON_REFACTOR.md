@@ -59,8 +59,10 @@ SHA-256，使安装包中的三套运行数据可以追溯到同一个来源。
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass `
-  -File tools\import-yime-full-lexicon.ps1 `
-  -Input C:\path\to\yime_full.dict.yaml
+  -File tools\import-yime-core-lexicon.ps1 `
+  -InputPath C:\path\to\two_level_full.dict.yaml `
+  -EvidenceManifest C:\path\to\dictionary.manifest.json `
+  -SourceRevision <prototype-commit>
 ```
 
 生成并部署到当前用户的 PIME/Rime 数据目录：
@@ -68,11 +70,13 @@ powershell -NoProfile -ExecutionPolicy Bypass `
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass `
   -File tools\deploy-yime-rime-data.ps1 `
-  -Input C:\path\to\yime_full.dict.yaml
+  -InputPath C:\path\to\two_level_full.dict.yaml `
+  -EvidenceManifest C:\path\to\dictionary.manifest.json `
+  -SourceRevision <prototype-commit>
 ```
 
-导入脚本没有 `variable` 或 `shorthand` 模式开关。这是有意的：任何模式都不能再绕过
-等长真源单独进入工程。
+导入脚本没有 `variable` 或 `shorthand` 模式开关。任何模式都不能绕过带证据的核心等长真源
+单独进入工程。
 
 ## 对键位调整意味着什么
 

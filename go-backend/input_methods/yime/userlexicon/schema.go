@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/learningmigration"
 )
@@ -15,7 +16,6 @@ var generatedSchemaFiles = []string{
 	"yime_variable.schema.yaml",
 	"yime_full.schema.yaml",
 	"yime_shorthand.schema.yaml",
-	"yime_core_trial.schema.yaml",
 }
 var generatedLexiconFiles = []string{
 	"yime_full.dict.yaml",
@@ -23,9 +23,14 @@ var generatedLexiconFiles = []string{
 	"yime_shorthand.dict.yaml",
 	"yime_lexicon_manifest.json",
 }
-var coreTrialLexiconFiles = []string{
+var retiredCoreTrialFiles = []string{
 	"yime_core_trial.dict.yaml",
+	"yime_core_trial.schema.yaml",
 	"yime_core_trial_manifest.json",
+	filepath.Join("build", "yime_core_trial.schema.yaml"),
+	filepath.Join("build", "yime_core_trial.prism.bin"),
+	filepath.Join("build", "yime_core_trial.table.bin"),
+	filepath.Join("build", "yime_core_trial.reverse.bin"),
 }
 
 // SyncRimeSchemas refreshes generated user-directory schema copies from the
@@ -40,6 +45,10 @@ func SyncRimeSchemas(sharedDir, userDir string) error {
 // the Rime user directory. User-authored *.custom.yaml and user lexicon files
 // are deliberately outside this set.
 func RefreshRimeData(sharedDir, userDir string) (bool, error) {
+	selectionChanged, err := migrateCoreTrialSelection(userDir)
+	if err != nil {
+		return false, err
+	}
 	transitions, err := learningmigration.DetectTransitions(sharedDir, userDir)
 	if err != nil {
 		return false, err
@@ -62,57 +71,55 @@ func RefreshRimeData(sharedDir, userDir string) (bool, error) {
 			return false, err
 		}
 	}
-	coreTrialChanged, err := refreshCoreTrialLexicon(sharedDir, userDir)
-	if err != nil {
-		return false, err
-	}
 	schemasChanged, err := RefreshRimeSchemas(sharedDir, userDir)
 	if err != nil {
 		return false, err
 	}
-	return schemasChanged || lexiconChanged || coreTrialChanged, nil
+	retiredChanged, err := removeRetiredCoreTrialFiles(userDir)
+	if err != nil {
+		return false, err
+	}
+	return selectionChanged || schemasChanged || lexiconChanged || retiredChanged, nil
 }
 
-func refreshCoreTrialLexicon(sharedDir, userDir string) (bool, error) {
-	sharedManifestPath := filepath.Join(sharedDir, coreTrialLexiconFiles[1])
-	sharedManifest, err := os.ReadFile(sharedManifestPath)
-	if errors.Is(err, os.ErrNotExist) {
-		return false, nil
+func migrateCoreTrialSelection(userDir string) (bool, error) {
+	changed := false
+	for _, name := range []string{"user.yaml", "default.custom.yaml"} {
+		path := filepath.Join(userDir, name)
+		content, err := os.ReadFile(path)
+		if errors.Is(err, os.ErrNotExist) {
+			continue
+		}
+		if err != nil {
+			return false, err
+		}
+		updated := strings.ReplaceAll(
+			string(content),
+			"yime_core_trial",
+			"yime_variable",
+		)
+		if updated == string(content) {
+			continue
+		}
+		if err := os.WriteFile(path, []byte(updated), 0o644); err != nil {
+			return false, err
+		}
+		changed = true
 	}
-	if err != nil {
-		return false, fmt.Errorf("读取基础部件试验清单失败: %w", err)
-	}
-	userManifest, manifestErr := os.ReadFile(
-		filepath.Join(userDir, coreTrialLexiconFiles[1]),
-	)
-	needsRefresh := manifestErr != nil || !bytes.Equal(
-		userManifest,
-		sharedManifest,
-	)
-	if !needsRefresh {
-		if _, statErr := os.Stat(
-			filepath.Join(userDir, coreTrialLexiconFiles[0]),
-		); statErr != nil {
-			needsRefresh = true
+	return changed, nil
+}
+
+func removeRetiredCoreTrialFiles(userDir string) (bool, error) {
+	changed := false
+	for _, name := range retiredCoreTrialFiles {
+		path := filepath.Join(userDir, name)
+		if err := os.Remove(path); err == nil {
+			changed = true
+		} else if !errors.Is(err, os.ErrNotExist) {
+			return false, fmt.Errorf("remove retired runtime artifact %s: %w", name, err)
 		}
 	}
-	if !needsRefresh {
-		return false, nil
-	}
-	for _, name := range coreTrialLexiconFiles {
-		content, readErr := os.ReadFile(filepath.Join(sharedDir, name))
-		if readErr != nil {
-			return false, fmt.Errorf("读取基础部件试验文件 %s 失败: %w", name, readErr)
-		}
-		if writeErr := os.WriteFile(
-			filepath.Join(userDir, name),
-			content,
-			0o644,
-		); writeErr != nil {
-			return false, fmt.Errorf("更新基础部件试验文件 %s 失败: %w", name, writeErr)
-		}
-	}
-	return true, nil
+	return changed, nil
 }
 
 func refreshGeneratedLexicon(sharedDir, userDir string) (bool, error) {

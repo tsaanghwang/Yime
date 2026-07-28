@@ -4,15 +4,15 @@
 
 [English](README.md)
 
-音元输入法将拼音音节映射到结构化的键盘编码，首音遵循易记的规律（zh/ch/sh → 7/8/9，j/q/x → 3/2/1，z/c/s → 6/5/4）。正式安装运行变长编码；等长和省键派生继续保留在离线工具链与回归测试中。
+音元输入法将拼音音节映射到结构化的键盘编码，首音遵循易记的规律（zh/ch/sh → 7/8/9，j/q/x → 3/2/1，z/c/s → 6/5/4）。正式安装提供变长、等长和省键三种模式，三者都从同一份整理后的核心候选集确定性派生。
 
 等长模式的每个音节由一个首音和位于其后的干音构成；干音固定包含呼音、主音、末音三个音元。变长模式保留实首音或虚首音，只合并组成干音的相邻相同音元：三者不同时保持不变，只有前两者相同时合并前两者，只有后两者相同时合并后两者，三者相同时合并为一个音元。省键模式再从变长结果省略符合条件的干音中调音元。详细结构见[数据文件格式参考](docs/YIME_DATA_FORMAT_REFERENCE.md#首音干音与三模式派生)。
 
 ## 功能特性
 
 - **动态组句** — 1124631 条已编码单字和短部件负责组句，Rime 可组合未预装长词并学习人工纠正
-- **运行噪声隔离** — 旧 245 万条大词库只保留为离线真源和回归池，不作为安装回退
-- **三模式可重建** — 正式安装使用变长编码，等长和省键继续可由离线工具链派生
+- **证据化核心** — 候选按 BCC 优先、RIME-LMDG 补充、结构保底策略排序，来源和哈希写入清单
+- **三模式同源** — 变长、等长、省键都从同一份核心候选集派生并进入正式运行链
 - **候选窗** — 每页 5–9 个候选，竖排或横排，一键切换
 - **反查功能** — 候选旁显示标准拼音、音元编码或键位序列
 - **用户词库** — 用数字标调拼音添加自定义词组，自动转换为音元编码
@@ -135,7 +135,7 @@ regsvr32 /u "C:\Program Files (x86)\YIME\x64\PIMETextService.dll"
 ## 首次运行检查清单
 
 - [ ] 克隆仓库，初始化子模块，确认工具链已安装
-- [ ] 若等长 Rime 真源词典有变更，运行 `tools\deploy-yime-rime-data.ps1 -Input <full.dict.yaml>`（参见 [docs/YIME_RIME_INTEGRATION.md](docs/YIME_RIME_INTEGRATION.md)）
+- [ ] 若整理后的核心真源有变更，运行 `tools\deploy-yime-rime-data.ps1 -InputPath <two_level_full.dict.yaml> -EvidenceManifest <dictionary.manifest.json> -SourceRevision <提交>`（参见 [docs/YIME_RIME_INTEGRATION.md](docs/YIME_RIME_INTEGRATION.md)）
 - [ ] 运行 `.\tools\dev-build-install-verify.ps1`，一次完成“构建 → 重装 → 安装态核验”闭环
 - [ ] 如需分步执行，依次运行 `cmd /c build.bat`、管理员提示符下的 `.\Reinstall-PIME-Test.cmd`，再运行 `tools\verify-installed-runtime.ps1 -RequireRunningLauncher`
 - [ ] 在文本应用中切换到音元输入法，验证：激活、候选窗、设置、反查

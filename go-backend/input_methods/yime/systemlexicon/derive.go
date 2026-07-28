@@ -14,10 +14,8 @@ import (
 )
 
 const ManifestFileName = "yime_lexicon_manifest.json"
-const CoreTrialManifestFileName = "yime_core_trial_manifest.json"
-const CoreTrialDictionaryName = "yime_core_trial"
 
-// Manifest proves that all runtime dictionaries came from one canonical file.
+// Manifest proves that all three runtime modes came from one curated core.
 type Manifest struct {
 	FormatVersion int               `json:"format_version"`
 	GeneratedAt   string            `json:"generated_at"`
@@ -64,8 +62,8 @@ func loadDerivedEntries(sourcePath string) ([]byte, []derivedEntry, error) {
 	return sourceData, derived, nil
 }
 
-// DeriveFromFullDictionary validates one fixed-length Rime dictionary and
-// atomically replaces the three internal runtime dictionaries.
+// DeriveFromFullDictionary validates the fixed-length projection of the
+// curated core and atomically replaces all three runtime-mode dictionaries.
 func DeriveFromFullDictionary(sourcePath, outputDir string) (Manifest, error) {
 	sourceData, derived, err := loadDerivedEntries(sourcePath)
 	if err != nil {
@@ -117,67 +115,11 @@ func DeriveFromFullDictionary(sourcePath, outputDir string) (Manifest, error) {
 	return manifest, nil
 }
 
-// DeriveCoreTrialFromFullDictionary validates one fixed-length compact
-// dictionary and atomically replaces only the isolated variable-code trial
-// dictionary and its manifest. Production dictionaries are never touched.
-func DeriveCoreTrialFromFullDictionary(sourcePath, outputDir string) (Manifest, error) {
-	sourceData, derived, err := loadDerivedEntries(sourcePath)
-	if err != nil {
-		return Manifest{}, err
-	}
-	if err := os.MkdirAll(outputDir, 0o755); err != nil {
-		return Manifest{}, err
-	}
-	stage, err := os.MkdirTemp(outputDir, ".yime-core-trial-stage-")
-	if err != nil {
-		return Manifest{}, err
-	}
-	defer os.RemoveAll(stage)
-
-	dictionaryName := CoreTrialDictionaryName + ".dict.yaml"
-	dictionaryVersion := hashBytes(
-		buildDictionary(CoreTrialDictionaryName, "variable", "canonical", derived),
-	)[:12]
-	dictionaryData := buildDictionary(
-		CoreTrialDictionaryName,
-		"variable",
-		dictionaryVersion,
-		derived,
-	)
-	manifest := Manifest{
-		FormatVersion: 1, GeneratedAt: time.Now().Format(time.RFC3339),
-		SourceFile: filepath.Base(sourcePath), SourceSHA256: hashBytes(sourceData),
-		Transform: "core-trial-full-to-variable-v1", Layout: codemode.LayoutVersion,
-		EntryCount: len(derived),
-		OutputSHA256: map[string]string{
-			dictionaryName: hashBytes(dictionaryData),
-		},
-	}
-	if err := os.WriteFile(filepath.Join(stage, dictionaryName), dictionaryData, 0o644); err != nil {
-		return Manifest{}, err
-	}
-	manifestData, err := json.MarshalIndent(manifest, "", "  ")
-	if err != nil {
-		return Manifest{}, err
-	}
-	manifestData = append(manifestData, '\n')
-	if err := os.WriteFile(filepath.Join(stage, CoreTrialManifestFileName), manifestData, 0o644); err != nil {
-		return Manifest{}, err
-	}
-	if err := replaceGeneratedSet(stage, outputDir, []string{
-		dictionaryName,
-		CoreTrialManifestFileName,
-	}); err != nil {
-		return Manifest{}, err
-	}
-	return manifest, nil
-}
-
 func buildDictionary(name, mode, version string, entries []derivedEntry) []byte {
 	var content strings.Builder
 	content.WriteString("# Rime dictionary\n")
 	content.WriteString("# GENERATED FILE - DO NOT EDIT\n")
-	content.WriteString("# Derived from one canonical fixed-length Yime dictionary.\n")
+	content.WriteString("# Derived from the curated Yime core candidate set.\n")
 	content.WriteString("---\nname: ")
 	content.WriteString(name)
 	content.WriteString("\nversion: \"")

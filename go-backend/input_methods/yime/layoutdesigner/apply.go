@@ -27,6 +27,8 @@ type Plan struct {
 
 var generatedFiles = []string{ProfileFileName, "yime_pinyin_codes.tsv", "yime_full.dict.yaml", "yime_variable.dict.yaml", "yime_shorthand.dict.yaml", "yime_lexicon_manifest.json", "yime_full.schema.yaml", "yime_variable.schema.yaml", "yime_shorthand.schema.yaml"}
 
+const runtimeCoreUserDBNamespace = "core_1124631"
+
 func Preview(dataDir string, target Profile) (Plan, error) {
 	source, err := LoadProfile(filepath.Join(dataDir, ProfileFileName))
 	if err != nil {
@@ -260,7 +262,8 @@ func updateSchema(data []byte, mode, alphabet, digest string) ([]byte, error) {
 			lines[i] = "  alphabet: " + strconv.Quote(alphabet)
 			seenAlphabet = true
 		case section == "translator" && strings.HasPrefix(trim, "user_dict:") && !seenUser:
-			lines[i] = "  user_dict: yime_" + mode + "_layout_" + digest + "_script_v1"
+			lines[i] = "  user_dict: yime_" + mode + "_" +
+				runtimeCoreUserDBNamespace + "_layout_" + digest + "_rank_v1"
 			seenUser = true
 		}
 	}

@@ -709,9 +709,9 @@ func TestRuntimeSettingsBuildReloadsConfiguredSchema(t *testing.T) {
 	}
 	ime := newRuntimeChangeTestIME()
 	ime.pollRuntimeChange()
-	if ime.pendingSchemaRedeploy != "yime_core_trial" {
+	if ime.pendingSchemaRedeploy != "yime_variable" {
 		t.Fatalf(
-			"expected configured yime_core_trial redeploy, got %q",
+			"expected retired trial selection to redeploy variable mode, got %q",
 			ime.pendingSchemaRedeploy,
 		)
 	}
@@ -1644,17 +1644,6 @@ func TestOnCommandIgnoresLegacyLowIDCollisionForReverseLookupYimePinyin(t *testi
 func TestOnCommandSwitchesYimeSchema(t *testing.T) {
 	root := t.TempDir()
 	t.Setenv("APPDATA", root)
-	coreBuildDir := filepath.Join(root, APP, "Rime", "build")
-	if err := os.MkdirAll(coreBuildDir, 0o755); err != nil {
-		t.Fatal(err)
-	}
-	if err := os.WriteFile(
-		filepath.Join(coreBuildDir, "yime_core_trial.schema.yaml"),
-		[]byte("schema:\n  schema_id: yime_core_trial\n"),
-		0o644,
-	); err != nil {
-		t.Fatal(err)
-	}
 	ime := newTestIME()
 	backend := ime.backend.(*testBackend)
 	backend.composition = "ni"
@@ -1700,13 +1689,13 @@ func TestOnCommandSwitchesYimeSchema(t *testing.T) {
 		ID:     pime.FlexibleID{Int: ID_YIME_CORE_TRIAL, IsInt: true},
 	}, pime.NewResponse(16, true))
 	if resp.ReturnValue != 1 {
-		t.Fatalf("expected core-trial schema switch command to be handled, got %d", resp.ReturnValue)
+		t.Fatalf("expected retired command id to select variable mode, got %d", resp.ReturnValue)
 	}
-	if backend.CurrentSchema() != "yime_core_trial" {
-		t.Fatalf("expected yime_core_trial schema, got %q", backend.CurrentSchema())
+	if backend.CurrentSchema() != "yime_variable" {
+		t.Fatalf("expected yime_variable schema, got %q", backend.CurrentSchema())
 	}
 	if backend.composition != "" || backend.candidates != nil {
-		t.Fatal("expected core-trial schema switch to clear active composition")
+		t.Fatal("expected retired command compatibility switch to clear active composition")
 	}
 }
 
@@ -1726,26 +1715,26 @@ func TestOnMenuReturnsSettingsMenu(t *testing.T) {
 		t.Fatalf("expected first menu item text, got %#v", items[0])
 	}
 	modeMenu := findSubmenuItem(t, items, "模式")
-	if len(modeMenu) != 4 {
-		t.Fatalf("expected mode submenu with default and offline compatibility items, got %#v", modeMenu)
+	if len(modeMenu) != 3 {
+		t.Fatalf("expected the three curated core modes, got %#v", modeMenu)
 	}
-	if text, ok := modeMenu[0]["text"].(string); !ok || text != "默认动态组句" {
-		t.Fatalf("expected compact dynamic mode menu item first, got %#v", modeMenu[0])
+	if text, ok := modeMenu[0]["text"].(string); !ok || text != "变长模式" {
+		t.Fatalf("expected variable mode first, got %#v", modeMenu[0])
 	}
-	if text, ok := modeMenu[2]["text"].(string); !ok || text != "离线兼容：变长" {
-		t.Fatalf("expected variable compatibility mode menu item third, got %#v", modeMenu[2])
+	if text, ok := modeMenu[1]["text"].(string); !ok || text != "等长模式" {
+		t.Fatalf("expected full mode second, got %#v", modeMenu[1])
 	}
-	if checked, ok := modeMenu[2]["checked"].(bool); !ok || !checked {
-		t.Fatalf("expected active variable compatibility mode checked, got %#v", modeMenu[2])
+	if checked, ok := modeMenu[0]["checked"].(bool); !ok || !checked {
+		t.Fatalf("expected active variable mode checked, got %#v", modeMenu[0])
 	}
-	if text, ok := modeMenu[3]["text"].(string); !ok || text != "省键" {
-		t.Fatalf("expected shorthand mode menu item fourth, got %#v", modeMenu[3])
+	if text, ok := modeMenu[2]["text"].(string); !ok || text != "省键模式" {
+		t.Fatalf("expected shorthand mode third, got %#v", modeMenu[2])
 	}
-	if checked, ok := modeMenu[3]["checked"].(bool); !ok || checked {
-		t.Fatalf("expected shorthand mode unchecked by default, got %#v", modeMenu[3])
+	if checked, ok := modeMenu[2]["checked"].(bool); !ok || checked {
+		t.Fatalf("expected shorthand mode unchecked by default, got %#v", modeMenu[2])
 	}
-	if enabled, ok := modeMenu[3]["enabled"].(bool); !ok || enabled {
-		t.Fatalf("expected shorthand mode disabled without bundled schema, got %#v", modeMenu[3])
+	if enabled, ok := modeMenu[2]["enabled"].(bool); !ok || enabled {
+		t.Fatalf("expected test fixture without a shared directory to disable shorthand, got %#v", modeMenu[2])
 	}
 	item := findTopLevelMenuItem(t, items, ID_CANDIDATE_LAYOUT_TOGGLE)
 	if text, ok := item["text"].(string); !ok || text != "竖排 → 横排" {
@@ -1820,19 +1809,19 @@ func TestOnMenuReturnsSettingsMenu(t *testing.T) {
 	}
 }
 
-func TestEnsureDefaultRuntimeSelectionMigratesMissingLegacySchema(t *testing.T) {
+func TestEnsureDefaultRuntimeSelectionMigratesMissingSchema(t *testing.T) {
 	sharedDir := t.TempDir()
 	userDir := t.TempDir()
 	if err := os.WriteFile(
-		filepath.Join(sharedDir, "yime_core_trial.schema.yaml"),
-		[]byte("schema:\n  schema_id: yime_core_trial\n"),
+		filepath.Join(sharedDir, "yime_variable.schema.yaml"),
+		[]byte("schema:\n  schema_id: yime_variable\n"),
 		0o644,
 	); err != nil {
 		t.Fatal(err)
 	}
 	if err := os.WriteFile(
 		filepath.Join(userDir, "user.yaml"),
-		[]byte("var:\n  previously_selected_schema: yime_variable\n"),
+		[]byte("var:\n  previously_selected_schema: removed_schema\n"),
 		0o644,
 	); err != nil {
 		t.Fatal(err)
@@ -1843,10 +1832,10 @@ func TestEnsureDefaultRuntimeSelectionMigratesMissingLegacySchema(t *testing.T) 
 		t.Fatal(err)
 	}
 	if !changed {
-		t.Fatal("missing legacy shared schema should migrate to compact default")
+		t.Fatal("missing selected schema should migrate to variable default")
 	}
-	if got := readSelectedSchemaFromUserConfig(userDir); got != settings.SchemaCoreTrial {
-		t.Fatalf("expected compact default selection, got %q", got)
+	if got := readSelectedSchemaFromUserConfig(userDir); got != settings.SchemaVariable {
+		t.Fatalf("expected variable default selection, got %q", got)
 	}
 }
 
@@ -2776,7 +2765,7 @@ func TestBuildToolHubManifestProvidesExtensibleToolEntries(t *testing.T) {
 		`C:\go-backend\diagnostics-tool.exe`,
 		`C:\go-backend\yime-layout-designer.exe`,
 		"variable",
-		"yime_core_trial",
+		"yime_variable",
 	)
 	if err := validateToolHubManifest(manifest); err != nil {
 		t.Fatalf("expected valid tool hub manifest, got %v", err)
@@ -2854,7 +2843,7 @@ func TestBuildToolHubManifestProvidesExtensibleToolEntries(t *testing.T) {
 				if tool.TargetPath != `C:\go-backend\lexicon-promotion-scan.exe` {
 					t.Fatalf("expected promotion scanner executable path, got %#v", tool)
 				}
-				if len(tool.Arguments) != 6 || tool.Arguments[0] != "-SharedDir" || tool.Arguments[2] != "-UserDir" || tool.Arguments[4] != "-SchemaID" || tool.Arguments[5] != "yime_core_trial" {
+				if len(tool.Arguments) != 6 || tool.Arguments[0] != "-SharedDir" || tool.Arguments[2] != "-UserDir" || tool.Arguments[4] != "-SchemaID" || tool.Arguments[5] != "yime_variable" {
 					t.Fatalf("expected promotion scanner schema arguments, got %#v", tool.Arguments)
 				}
 			case "user-blocklist-manager":

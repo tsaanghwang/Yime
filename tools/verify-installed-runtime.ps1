@@ -77,25 +77,26 @@ foreach ($relativePath in @(
 }
 $files.Add((Get-FileRecord 'go-backend/input_methods/yime/rime_deployer.exe' (Join-Path $goSourceRoot 'input_methods\yime\rime_deployer.exe') (Join-Path $goInstallRoot 'input_methods\yime\rime_deployer.exe') $false))
 foreach ($relativePath in @(
-    'input_methods\yime\data\yime_core_trial.dict.yaml',
-    'input_methods\yime\data\yime_core_trial.schema.yaml',
-    'input_methods\yime\data\yime_core_trial_manifest.json',
+    'input_methods\yime\data\yime_full.dict.yaml',
+    'input_methods\yime\data\yime_variable.dict.yaml',
+    'input_methods\yime\data\yime_shorthand.dict.yaml',
+    'input_methods\yime\data\yime_full.schema.yaml',
+    'input_methods\yime\data\yime_variable.schema.yaml',
+    'input_methods\yime\data\yime_shorthand.schema.yaml',
+    'input_methods\yime\data\yime_lexicon_manifest.json',
+    'input_methods\yime\data\yime_core_source_manifest.json',
     'input_methods\yime\data\yime_runtime_profile.json'
 )) {
     $files.Add((Get-FileRecord "go-backend/$($relativePath.Replace('\', '/'))" (Join-Path $goSourceRoot $relativePath) (Join-Path $goInstallRoot $relativePath)))
 }
 
-$forbiddenRuntimeFiles = @(
-    'yime_full.dict.yaml',
-    'yime_variable.dict.yaml',
-    'yime_shorthand.dict.yaml',
-    'yime_full.schema.yaml',
-    'yime_variable.schema.yaml',
-    'yime_shorthand.schema.yaml',
-    'yime_lexicon_manifest.json'
+$retiredRuntimeFiles = @(
+    'yime_core_trial.dict.yaml',
+    'yime_core_trial.schema.yaml',
+    'yime_core_trial_manifest.json'
 )
 $runtimeDataDir = Join-Path $goInstallRoot 'input_methods\yime\data'
-$offlineLeakage = @($forbiddenRuntimeFiles | Where-Object {
+$retiredLeakage = @($retiredRuntimeFiles | Where-Object {
     Test-Path -LiteralPath (Join-Path $runtimeDataDir $_)
 })
 
@@ -141,8 +142,8 @@ if (-not $registryMatches) {
 if ($RequireRunningLauncher -and -not $launcherRunning) {
     $hardFailures += [pscustomobject]@{ name = 'PIMELauncher process'; status = 'not-running' }
 }
-foreach ($fileName in $offlineLeakage) {
-    $hardFailures += [pscustomobject]@{ name = "offline-only/$fileName"; status = 'runtime-leak' }
+foreach ($fileName in $retiredLeakage) {
+    $hardFailures += [pscustomobject]@{ name = "retired/$fileName"; status = 'runtime-leak' }
 }
 
 $overall = if ($hardFailures.Count -gt 0) {
@@ -162,7 +163,7 @@ $report = [ordered]@{
     registryMatches = [bool]$registryMatches
     launcherRunning = $launcherRunning
     launcherPathUnavailable = $launcherPathUnavailable
-    offlineOnlyLeakage = @($offlineLeakage)
+    retiredRuntimeLeakage = @($retiredLeakage)
     files = @($files)
 }
 

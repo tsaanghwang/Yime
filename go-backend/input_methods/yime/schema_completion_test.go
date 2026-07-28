@@ -8,7 +8,7 @@ import (
 )
 
 func TestSystemAndUserDictionariesEnableCompletion(t *testing.T) {
-	for _, schemaID := range []string{"yime_variable", "yime_full", "yime_shorthand", "yime_core_trial"} {
+	for _, schemaID := range []string{"yime_variable", "yime_full", "yime_shorthand"} {
 		t.Run(schemaID, func(t *testing.T) {
 			path := filepath.Join("data", schemaID+".schema.yaml")
 			content, err := os.ReadFile(path)
@@ -28,7 +28,7 @@ func TestSystemAndUserDictionariesEnableCompletion(t *testing.T) {
 }
 
 func TestAllSchemasEnableSentenceComposition(t *testing.T) {
-	for _, schemaID := range []string{"yime_variable", "yime_full", "yime_shorthand", "yime_core_trial"} {
+	for _, schemaID := range []string{"yime_variable", "yime_full", "yime_shorthand"} {
 		t.Run(schemaID, func(t *testing.T) {
 			path := filepath.Join("data", schemaID+".schema.yaml")
 			content, err := os.ReadFile(path)
@@ -51,7 +51,7 @@ func TestAllSchemasEnableSentenceComposition(t *testing.T) {
 }
 
 func TestAllSchemasKeepNavigatorBeforeEditor(t *testing.T) {
-	for _, schemaID := range []string{"yime_variable", "yime_full", "yime_shorthand", "yime_core_trial"} {
+	for _, schemaID := range []string{"yime_variable", "yime_full", "yime_shorthand"} {
 		t.Run(schemaID, func(t *testing.T) {
 			path := filepath.Join("data", schemaID+".schema.yaml")
 			content, err := os.ReadFile(path)

@@ -1,39 +1,39 @@
 {
-  "schema_version": 1,
-  "profile_id": "compact-dynamic-default-v1",
-  "default_schema": "yime_core_trial",
-  "runtime_dictionary": "yime_core_trial.dict.yaml",
-  "runtime_manifest": "yime_core_trial_manifest.json",
-  "offline_only_files": [
-    "yime_full.dict.yaml",
+  "schema_version": 2,
+  "profile_id": "curated-core-three-mode-v1",
+  "default_schema": "yime_variable",
+  "runtime_schemas": [
+    "yime_variable",
+    "yime_full",
+    "yime_shorthand"
+  ],
+  "runtime_dictionaries": [
     "yime_variable.dict.yaml",
-    "yime_shorthand.dict.yaml",
-    "yime_full.schema.yaml",
-    "yime_variable.schema.yaml",
-    "yime_shorthand.schema.yaml",
-    "yime_lexicon_manifest.json"
+    "yime_full.dict.yaml",
+    "yime_shorthand.dict.yaml"
   ],
-  "offline_roles": [
-    "source_of_truth",
-    "candidate_screening_pool",
-    "regression_test_resource"
+  "runtime_manifest": "yime_lexicon_manifest.json",
+  "source_evidence_manifest": "yime_core_source_manifest.json",
+  "entry_count_per_mode": 1124631,
+  "distinct_core_texts": 1116892,
+  "candidate_layers": [
+    "curated_system_core",
+    "rime_user_learning",
+    "user_custom_phrases",
+    "user_blocklist_filter"
   ],
-  "acceptance": {
-    "target_dynamic_sentence_rate": 0.99,
-    "scoped_replay_top1": {
-      "passed": 2440,
-      "total": 2449,
-      "rate": 0.9963250306247448,
-      "wilson_95_lower_bound": 0.9930300811292823
-    },
-    "manual_development_cases": {
-      "passed": 2449,
-      "total": 2449,
-      "rate": 1.0
-    },
-    "accelerated_learning_events": 540000,
-    "accelerated_learning_acceptance": "passed"
+  "ranking_evidence": {
+    "policy_id": "bcc-primary-lmdg-fallback-structural-floor-v1",
+    "direct_bcc": 372119,
+    "provisional_rime_lmdg": 564200,
+    "provisional_structural_floor": 180573,
+    "raw_bcc_and_lmdg_values_added": false
   },
+  "prototype_roles": [
+    "candidate_pool",
+    "source_evidence",
+    "regression_cases"
+  ],
   "prototype_policy": "internal_data/runtime_lexicon_filter_policy.json",
   "prototype_builder": "tools/build_two_level_runtime_trial.py"
 }

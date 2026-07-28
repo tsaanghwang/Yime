@@ -2,6 +2,10 @@ param(
     [Parameter(Mandatory = $true)]
     [Alias("Input")]
     [string]$InputPath,
+    [Parameter(Mandatory = $true)]
+    [string]$EvidenceManifest,
+    [Parameter(Mandatory = $true)]
+    [string]$SourceRevision,
     [string]$PimeRoot = "",
     [string]$RimeUserDir = ""
 )
@@ -16,11 +20,13 @@ if (-not $RimeUserDir) {
 }
 
 $sharedDir = Join-Path $PimeRoot "go-backend\input_methods\yime\data"
-$importer = Join-Path $PSScriptRoot "import-yime-full-lexicon.ps1"
+$importer = Join-Path $PSScriptRoot "import-yime-core-lexicon.ps1"
 
-# The fixed-length dictionary is the only imported source. The importer derives
-# variable and shorthand dictionaries and writes the generation manifest.
-& $importer -InputPath $InputPath -OutputDir $sharedDir
+# The curated fixed-length core is the only imported runtime candidate set.
+# Its evidence manifest proves ranking provenance before all modes are derived.
+& $importer -InputPath $InputPath -EvidenceManifest $EvidenceManifest `
+    -SourceRevision $SourceRevision `
+    -OutputDir $sharedDir
 if ($LASTEXITCODE -ne 0) {
     throw "Yime lexicon import failed with exit code $LASTEXITCODE"
 }
