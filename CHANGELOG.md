@@ -80,6 +80,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Documentation drift in command IDs, log locations, CMake requirements, reverse-lookup scale, candidate-window troubleshooting, release-state history, single-source lexicon status, and installer authenticity guidance
 - Missing VERSIONINFO and Yime icon resources on `yime-layout-designer.exe`; all nine Go executables now share the same version-resource build path and regression guards
 - Missing `InstallLocation` in the Windows uninstall registration; NSIS now publishes the resolved YIME installation directory
 - Missing Windows FileVersion, ProductVersion, and ProductName metadata on PIMELauncher, the NSIS installer, and the generated uninstaller

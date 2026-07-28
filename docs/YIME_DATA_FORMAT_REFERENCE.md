@@ -243,8 +243,12 @@ patch:
 
 | 文件 | 路径 | 说明 |
 |------|------|------|
-| go_backend.log | `%APPDATA%\PIME\Rime\go_backend.log` | Go 后端主日志 |
-| rime_deployer.log | `%APPDATA%\PIME\Rime\rime_deployer.log` | Rime 部署日志 |
+| `go_backend.log` | `%LOCALAPPDATA%\PIME\Logs\go_backend.log` | Go 后端当前主日志 |
+| `go_backend.log.1` 至 `.5` | `%LOCALAPPDATA%\PIME\Logs\` | 达到 10 MiB 后轮转的历史日志，最多保留 5 份 |
+
+外部 `rime_deployer.exe` 的标准输出和错误输出由调用方捕获并写入
+`go_backend.log` 或显示在工具错误摘要中；当前程序不约定
+`%APPDATA%\PIME\Rime\rime_deployer.log` 这一独立日志文件。
 
 ## 目录结构
 
@@ -260,6 +264,8 @@ patch:
 ├── custom_phrase_full.txt         # 用户词库生成（等长）
 ├── custom_phrase_shorthand.txt    # 用户词库生成（省键）
 ├── build/                         # Rime 编译缓存
-├── go_backend.log                 # 后端日志
 └── pime_yime_tool_hub.json        # 工具箱 manifest（自动生成）
 ```
+
+Go 后端日志不在这棵用户数据目录中，而在
+`%LOCALAPPDATA%\PIME\Logs\`。

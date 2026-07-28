@@ -270,14 +270,20 @@ commandShouldRefreshState(ID)?
 
 **命令 ID 分配**：
 
-| 范围 | 用途 | 示例 |
-|------|------|------|
-| 3200 | 方案切换 | ID_YIME_VARIABLE=3220, ID_YIME_FULL=3221, ID_YIME_SHORTHAND=3222 |
-| 70-74 | 反查显示 | ID_REVERSE_LOOKUP_KEY_SEQUENCE=70 |
-| 75 | 候选排列 | ID_CANDIDATE_LAYOUT_TOGGLE=75 |
-| 76-80 | 候选项数 | ID_CANDIDATE_PAGE_SIZE_5=76 ~ ID_CANDIDATE_PAGE_SIZE_9=80 |
-| 81-89 | 宿主集成 | 中西文/简繁/标点/全半角 |
-| 90+ | 维护 | 重新部署/同步/打开目录/帮助/词库 |
+Yime 命令统一以 `yimeCommandBase=3200` 为基数。下表记录当前绝对 ID；
+新增或排查命令时仍以 `go-backend/input_methods/yime/yime.go` 中的常量定义为权威来源，
+不得把偏移量误当成宿主实际收到的命令 ID。
+
+| 绝对范围 | 用途 | 示例 |
+|---------|------|------|
+| 3201-3205 | 宿主状态 | `ID_MODE_ICON=3201`、`ID_ASCII_MODE=3202`、`ID_FULL_SHAPE=3203`、`ID_ASCII_PUNCT=3204`、`ID_TRADITIONALIZATION=3205` |
+| 3210-3214、3216 | 数据维护与目录 | `ID_DEPLOY=3210`、`ID_SYNC=3211`、`ID_LOG_DIR=3216`；3215 当前未分配 |
+| 3220-3223 | 方案切换 | `ID_YIME_VARIABLE=3220`、`ID_YIME_FULL=3221`、`ID_YIME_SHORTHAND=3222`、`ID_YIME_CORE_TRIAL=3223` |
+| 3230-3236 | 用户词库 | `ID_USER_LEXICON_ADD=3230` 至 `ID_USER_LEXICON_MANAGER=3236` |
+| 3240-3245 | 反查显示 | `ID_REVERSE_LOOKUP_DEFAULT=3240` 至 `ID_REVERSE_LOOKUP_KEY_SEQUENCE=3245` |
+| 3260-3264 | 帮助与工具入口 | `ID_HELP_VIEW=3260` 至 `ID_REVERSE_LOOKUP_TOOL=3264` |
+| 3270-3274 | 候选项数 | `ID_CANDIDATE_PAGE_SIZE_5=3270` 至 `ID_CANDIDATE_PAGE_SIZE_9=3274` |
+| 3275 | 候选排列 | `ID_CANDIDATE_LAYOUT_TOGGLE=3275` |
 
 **黑名单设计**：
 - 旧方案使用白名单（列出所有不需要刷新的命令），维护负担大

@@ -7,6 +7,28 @@
 - Windows 10 1903 或更高版本
 - 管理员权限（安装时需要）
 
+## 获取并核验安装包
+
+仅从项目的 [GitHub Releases](https://github.com/tsaanghwang/Yime/releases)
+获取公开发行安装包，并将文件名、版本和 SHA-256 与对应发布说明逐项核对：
+
+```powershell
+Get-FileHash .\YIME-<版本>-setup.exe -Algorithm SHA256
+```
+
+公开发行包还应具有有效的 Authenticode 签名。可在文件“属性 → 数字签名”中检查，
+或在 PowerShell 中运行：
+
+```powershell
+Get-AuthenticodeSignature .\YIME-<版本>-setup.exe |
+    Format-List Status,SignerCertificate,TimeStamperCertificate
+```
+
+`Status` 应为 `Valid`，签名者证书指纹应与对应发布说明一致。分支或 PR 产生的
+`YIME-unsigned-test-installer-{sha}` 是未签名开发测试包，只能用于受控测试，
+不得当作面向普通用户的正式发行包。如果 Releases 尚未提供同时满足哈希与可信签名
+要求的产物，表示公开发行验收尚未完成。
+
 ## 安装步骤
 
 ### 1. 运行安装程序
