@@ -587,18 +587,18 @@ func TestRealRimeCanSelectYimeShorthandSchema(t *testing.T) {
 
 func TestRealRimeBuildsCoreModesFromSingleSchemaList(t *testing.T) {
 	dataDir := rimeRuntimeTestDataDir(t)
-	userDir := filepath.Join(t.TempDir(), "Rime")
-	if err := os.MkdirAll(userDir, 0o755); err != nil {
+	initialUserDir := filepath.Join(t.TempDir(), "Rime")
+	if err := os.MkdirAll(initialUserDir, 0o755); err != nil {
 		t.Fatal(err)
 	}
 	if err := os.WriteFile(
-		filepath.Join(userDir, "default.custom.yaml"),
+		filepath.Join(initialUserDir, "default.custom.yaml"),
 		[]byte("patch:\n  schema_list:\n    - schema: yime_variable\n  \"menu/page_size\": 5\n"),
 		0o644,
 	); err != nil {
 		t.Fatal(err)
 	}
-	if !RimeInit(dataDir, userDir, APP, APP_VERSION, false) {
+	if !RimeInit(dataDir, initialUserDir, APP, APP_VERSION, false) {
 		t.Fatal("RimeInit failed")
 	}
 	sessionID, ok := StartSession()
@@ -612,30 +612,52 @@ func TestRealRimeBuildsCoreModesFromSingleSchemaList(t *testing.T) {
 		t.Fatal("expected initial yime_variable schema")
 	}
 	EndSession(sessionID)
+	Finalize()
 
+	var variableUserDir string
 	for _, schemaID := range []string{
 		settings.SchemaVariable,
 		settings.SchemaFull,
 		settings.SchemaShorthand,
 	} {
-		if err := settings.Apply(
-			userDir,
-			dataDir,
-			schemaID,
-			5,
-			"hidden",
-			"vertical",
-			true,
-		); err != nil {
-			Finalize()
-			t.Fatalf("building curated core schema %s failed: %v", schemaID, err)
-		}
-		if err := validateCompiledRimeSchema(userDir, schemaID); err != nil {
-			Finalize()
-			t.Fatal(err)
-		}
+		t.Run(schemaID, func(t *testing.T) {
+			userDir := filepath.Join(t.TempDir(), "Rime")
+			if err := os.MkdirAll(userDir, 0o755); err != nil {
+				t.Fatal(err)
+			}
+			if err := os.WriteFile(
+				filepath.Join(userDir, "default.custom.yaml"),
+				[]byte("patch:\n  schema_list:\n    - schema: yime_variable\n  \"menu/page_size\": 5\n"),
+				0o644,
+			); err != nil {
+				t.Fatal(err)
+			}
+			if err := settings.Apply(
+				userDir,
+				dataDir,
+				schemaID,
+				5,
+				"hidden",
+				"vertical",
+				true,
+			); err != nil {
+				t.Fatalf("building curated core schema %s failed: %v", schemaID, err)
+			}
+			if err := validateCompiledRimeSchema(userDir, schemaID); err != nil {
+				t.Fatal(err)
+			}
+			if schemaID == settings.SchemaVariable {
+				variableUserDir = userDir
+			}
+		})
 	}
 
+	if variableUserDir == "" {
+		t.Fatal("variable schema build directory was not captured")
+	}
+	if !RimeInit(dataDir, variableUserDir, APP, APP_VERSION, false) {
+		t.Fatal("RimeInit after external core schema build failed")
+	}
 	sessionID, ok = StartSession()
 	if !ok || sessionID == 0 {
 		Finalize()
