@@ -50,7 +50,7 @@ docs/                    开发文档
 ## 构建要求
 
 - [Visual Studio 2022](https://visualstudio.microsoft.com/vs/)，含 C++ 桌面开发工作负载
-- [CMake](https://cmake.org/) 3.0+
+- [CMake](https://cmake.org/) 3.5+
 - [Rust](https://rustup.rs/)，安装完整的 `stable-i686-pc-windows-msvc` 主机工具链
 - [Go](https://go.dev/) 1.26.4（CI/可复现构建版本；`go.mod` 的 1.21 是语言兼容下限）
 - [Git](https://git-scm.com/)

@@ -52,7 +52,7 @@ The current runtime architecture and its qualification evidence are documented i
 ## Build Requirements
 
 - [Visual Studio 2022](https://visualstudio.microsoft.com/vs/) with C++ desktop workload
-- [CMake](https://cmake.org/) 3.0+
+- [CMake](https://cmake.org/) 3.5+
 - [Rust](https://rustup.rs/) with the `stable-i686-pc-windows-msvc` host toolchain
 - [Go](https://go.dev/) 1.26.4 for reproducible/CI builds (`go.mod` keeps the 1.21 language compatibility floor)
 - [Git](https://git-scm.com/)
