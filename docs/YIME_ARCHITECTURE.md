@@ -487,7 +487,17 @@ prototype_single_char_import.py / prototype_phrase_import.py
 输入候选整理覆盖层
     ├── BCC 频次只安排审查顺序
     ├── 词汇性、候选价值和动态可恢复性另行判定
-    └── 不用万象权重或“已收录”反写 BCC 频次
+    ├── 助词及所字/的字等构式先取得有类型的组件证据
+    ├── 全部已编码字串进入 R0–R5 动态覆盖分层
+    │     ├── R0：确定性无效或来源对齐错误，修复/隔离
+    │     ├── R1–R3：不可达、部分可达或搜索风险，反向提升最小动态核心
+    │     ├── R4：可靠动态恢复
+    │     └── R5：基础字符、受保护类别或有证据静态缓存
+    └── 不用万象权重、“已收录”或 R 分层反写 BCC 频次
+
+2026-07-28 原型侧已对 2,441,908 个已编码字串完成全量分层，R0 为 0，覆盖门禁通过。R1–R3
+保留为动态核心的持续改进队列，不再作为待完成的删除式整理任务；低频、古旧、构式部件和暂时
+不能动态恢复都不能单独构成删除依据。
 
 runtime_codes_refresh.py --apply
     │
@@ -501,6 +511,7 @@ Windows 默认运行交接
     │
     ├── build_two_level_runtime_trial.py
     ├── runtime_lexicon_filter_policy.json
+    ├── dynamic_candidate_coverage_policy.json（构建时强制 R0–R5 完成门禁）
     ├── yime_core_trial.dict.yaml（1,124,631 条已编码组件）
     ├── yime_core_trial_manifest.json（来源与输出 SHA-256）
     └── yime_runtime_profile.json（默认方案、离线边界、验收摘要）
@@ -739,7 +750,18 @@ go test ./input_methods/yime -run TestCoreTrialReplayCoverage -v -count=1 -timeo
 “逼尿肌反射亢进”不在核心系统词库，却由已编码部件直接首选，证明未预装完整词条不再等同于
 未编码或不可输入。只有组成材料中的字符或实际读音本身未通过正式编码门禁，才属于编码缺口。
 
-### 5.4 本地管理员测试
+### 5.4 候选排序证据与长尾保底
+
+原型构建已经把候选排序分成互不混算的四层：有 BCC 时使用 `2000 + bcc_frequency`；
+无 BCC 而有 RIME-LMDG（万象）权重时，按相同字长桶的百分位映射到 1000–1999；两者都没有时，
+仅用静态容量模型的 `utility_score` 百分位映射到 1–999；连结构证据也没有才保持 0。
+
+结构保底不是频次，只用于消除无语料长尾全部同权的坍缩。导出同时保存 BCC 原值、万象原值、
+两种百分位、证据来源、临时状态和 `requires_independent_corpus`；不相加不同量纲的原值，也不把
+万象或结构分反写为 BCC。全量两级词库构建执行 `structural < RIME-LMDG < BCC` 门禁，未来新的
+独立语料可以替换临时层而不改动接口。
+
+### 5.5 本地管理员测试
 
 ```powershell
 go-backend\run_admin_yime_tests.cmd
