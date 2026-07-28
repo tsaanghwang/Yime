@@ -38,16 +38,39 @@ try {
         '2026/07/24 15:00:01 request client=client-b method=onKeyDown seq=43 cursor=0 data='
     ) | Set-Content -LiteralPath $logPath -Encoding UTF8
 
+    $readOnlyInputPaths = @(
+        (Join-Path $installRoot 'go-backend\server.exe'),
+        (Join-Path $installRoot 'x86\PIMETextService.dll'),
+        (Join-Path $installRoot 'x64\PIMETextService.dll'),
+        $logPath
+    )
+    $readOnlyInputBefore = @($readOnlyInputPaths | ForEach-Object {
+        $item = Get-Item -LiteralPath $_
+        [pscustomobject]@{
+            Path = $item.FullName
+            Sha256 = (Get-FileHash -LiteralPath $item.FullName -Algorithm SHA256).Hash
+            ModifiedUtc = $item.LastWriteTimeUtc
+        }
+    })
+
     $result = & $captureScript `
         -RepoRoot $repoRoot `
         -InstallRoot $installRoot `
         -LogPath $logPath `
         -OutputDirectory $outputDirectory `
         -ProcessNames '__yime_evidence_fixture_process__' `
+        -NotepadOutcome pass `
+        -NotepadNotes 'first, middle, and final segments passed' `
+        -CodexIdeOutcome pass `
+        -CodexIdeNotes 'composition remained active' `
+        -SysWow64CharmapOutcome pass `
+        -SysWow64CharmapNotes 'x86 installed DLL exercised' `
         -RequireComplete
 
     if ($result.Status -ne 'complete') { throw "Expected complete evidence, got $($result.Status)." }
     if ($result.RpcTransactionCount -ne 1) { throw "Expected one RPC transaction, got $($result.RpcTransactionCount)." }
+    if ($result.RpcCompleteTransactionCount -ne 1) { throw "Expected one correlated RPC transaction, got $($result.RpcCompleteTransactionCount)." }
+    if ($result.HostOutcomeRecords.Count -ne 3) { throw "Expected three host outcomes, got $($result.HostOutcomeRecords.Count)." }
     if (-not (Test-Path -LiteralPath $result.ReportPath -PathType Leaf)) { throw 'Evidence report was not created.' }
     $report = Get-Content -LiteralPath $result.ReportPath -Raw -Encoding UTF8
     foreach ($fragment in @(
@@ -55,12 +78,74 @@ try {
         'server.exe | match',
         'x86/PIMETextService.dll | match',
         'x64/PIMETextService.dll | match',
+        'x64 Notepad | x64 | Notepad | pass | first, middle, and final segments passed',
+        'Codex IDE | x64 | Codex IDE | pass | composition remained active',
+        'x86 SysWOW64 charmap | x86 | C:\Windows\SysWOW64\charmap.exe | pass | x86 installed DLL exercised',
+        'Transactions with correlated responses: 1',
         'client=client-a, seq=42',
         'response client=client-a payload={"seqNum":42,"success":true}'
     )) {
         if (-not $report.Contains($fragment)) { throw "Evidence report is missing: $fragment" }
     }
     if ($report.Contains('response client=other')) { throw 'RPC correlation included a response from the wrong client.' }
+    foreach ($before in $readOnlyInputBefore) {
+        $after = Get-Item -LiteralPath $before.Path
+        $afterHash = (Get-FileHash -LiteralPath $after.FullName -Algorithm SHA256).Hash
+        if ($afterHash -ne $before.Sha256 -or $after.LastWriteTimeUtc -ne $before.ModifiedUtc) {
+            throw "Capture modified a read-only PIME evidence input: $($before.Path)"
+        }
+    }
+
+    $partialResult = & $captureScript `
+        -RepoRoot $repoRoot `
+        -InstallRoot $installRoot `
+        -LogPath $logPath `
+        -OutputDirectory $outputDirectory `
+        -ProcessNames '__yime_evidence_fixture_process__'
+    if ($partialResult.Status -ne 'partial') {
+        throw "Missing host outcomes should produce partial evidence, got $($partialResult.Status)."
+    }
+    $partialReport = Get-Content -LiteralPath $partialResult.ReportPath -Raw -Encoding UTF8
+    foreach ($hostLabel in @('x64 Notepad', 'Codex IDE', 'x86 SysWOW64 charmap')) {
+        if (-not $partialReport.Contains("$hostLabel |")) {
+            throw "Partial report omitted the host label: $hostLabel"
+        }
+    }
+    if (([regex]::Matches($partialReport, [regex]::Escape('| not-recorded |'))).Count -ne 3) {
+        throw 'Partial report did not explicitly record all three missing host outcomes.'
+    }
+    try {
+        & $captureScript `
+            -RepoRoot $repoRoot `
+            -InstallRoot $installRoot `
+            -LogPath $logPath `
+            -OutputDirectory $outputDirectory `
+            -ProcessNames '__yime_evidence_fixture_process__' `
+            -RequireComplete | Out-Null
+        throw 'RequireComplete accepted missing host outcomes.'
+    } catch {
+        if ($_.Exception.Message -notmatch 'evidence is partial') { throw }
+    }
+
+    $noRpcLogPath = Join-Path $fixtureRoot 'go_backend_without_segment_rpc.log'
+    '2026/07/24 15:00:01 request client=client-b method=onKeyDown seq=43 cursor=0 data=' |
+        Set-Content -LiteralPath $noRpcLogPath -Encoding UTF8
+    $noRpcResult = & $captureScript `
+        -RepoRoot $repoRoot `
+        -InstallRoot $installRoot `
+        -LogPath $noRpcLogPath `
+        -OutputDirectory $outputDirectory `
+        -ProcessNames '__yime_evidence_fixture_process__' `
+        -NotepadOutcome pass `
+        -CodexIdeOutcome pass `
+        -SysWow64CharmapOutcome pass
+    if ($noRpcResult.Status -ne 'partial') {
+        throw "Missing correlated RPC evidence should produce partial evidence, got $($noRpcResult.Status)."
+    }
+    $noRpcReport = Get-Content -LiteralPath $noRpcResult.ReportPath -Raw -Encoding UTF8
+    if (-not $noRpcReport.Contains('Transactions with correlated responses: 0')) {
+        throw 'Partial report did not record the missing correlated RPC evidence.'
+    }
 
     Set-Content -LiteralPath (Join-Path $installRoot 'x86\PIMETextService.dll') -Value 'mismatch fixture' -Encoding UTF8
     $beforeFailureReports = @(Get-ChildItem -LiteralPath $outputDirectory -Filter '*.md').Count
@@ -71,6 +156,9 @@ try {
             -LogPath $logPath `
             -OutputDirectory $outputDirectory `
             -ProcessNames '__yime_evidence_fixture_process__' `
+            -NotepadOutcome pass `
+            -CodexIdeOutcome pass `
+            -SysWow64CharmapOutcome pass `
             -RequireComplete | Out-Null
         throw 'RequireComplete accepted a mismatched installed DLL.'
     } catch {

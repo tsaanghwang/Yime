@@ -110,7 +110,14 @@ Yime 崩溃；必须先核对事件中的实际文件路径。
 完成 Notepad、Codex IDE 或 SysWOW64 charmap 的人工操作后，在仓库根目录运行：
 
 ```powershell
-.\tools\capture-sentence-segment-evidence.ps1 -RequireComplete
+.\tools\capture-sentence-segment-evidence.ps1 `
+  -NotepadOutcome pass `
+  -NotepadNotes 'first, middle, and final segment switching passed' `
+  -CodexIdeOutcome pass `
+  -CodexIdeNotes 'composition remained active until explicit commit' `
+  -SysWow64CharmapOutcome pass `
+  -SysWow64CharmapNotes 'x86 installed DLL exercised' `
+  -RequireComplete
 ```
 
 脚本只读取安装目录、进程列表和
@@ -120,12 +127,16 @@ Yime 崩溃；必须先核对事件中的实际文件路径。
 
 - 已安装 `server.exe`、x86/x64 `PIMETextService.dll` 的时间、大小和 SHA-256，
   以及它们与当前仓库构建产物的哈希比对；
+- 明确标注的 x64 Notepad、Codex IDE 和 x86 SysWOW64 charmap 人工结果及备注；
 - `PIMELauncher` 和 `server` 的 PID、可执行文件路径及启动时间快照；
 - 日志末尾的 `selectCompositionSegment` 请求，以及按 `client` 和 `seqNum`
   关联的响应。
 
-`-RequireComplete` 会在安装文件缺失、构建产物缺失或哈希不一致时返回失败，但仍会
-先保存报告。若日志很长，可通过 `-LogTailLines` 增大扫描范围；报告默认最多保留最近
+人工结果允许 `pass`、`fail`、`blocked`、`not-run` 和 `not-recorded`；省略时为
+`not-recorded`。`-RequireComplete` 要求三项安装哈希匹配、三个宿主均明确为 `pass`，
+且至少存在一组按 `client` 和 `seqNum` 关联到响应的 `selectCompositionSegment` RPC；
+未满足时仍会先保存报告再返回失败。若日志很长，可通过 `-LogTailLines` 增大扫描范围；
+报告默认最多保留最近
 50 组 RPC，可通过 `-MaxRpcTransactions` 调整。SysWOW64 charmap 验收完成后应立即
 运行一次并把报告路径记入本节验收记录。
 
