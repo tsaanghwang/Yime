@@ -154,6 +154,7 @@ var (
 		getCurrentSchema      *syscall.LazyProc
 		selectSchema          *syscall.LazyProc
 		selectCandidate       *syscall.LazyProc
+		deleteCandidate       *syscall.LazyProc
 		candidateListBegin    *syscall.LazyProc
 		candidateListNext     *syscall.LazyProc
 		candidateListEnd      *syscall.LazyProc
@@ -196,6 +197,7 @@ func loadRimeDLL(dllPath string) error {
 		getCurrentSchema      *syscall.LazyProc
 		selectSchema          *syscall.LazyProc
 		selectCandidate       *syscall.LazyProc
+		deleteCandidate       *syscall.LazyProc
 		candidateListBegin    *syscall.LazyProc
 		candidateListNext     *syscall.LazyProc
 		candidateListEnd      *syscall.LazyProc
@@ -223,6 +225,7 @@ func loadRimeDLL(dllPath string) error {
 		getCurrentSchema:      dll.NewProc("RimeGetCurrentSchema"),
 		selectSchema:          dll.NewProc("RimeSelectSchema"),
 		selectCandidate:       dll.NewProc("RimeSelectCandidateOnCurrentPage"),
+		deleteCandidate:       dll.NewProc("RimeDeleteCandidateOnCurrentPage"),
 		candidateListBegin:    dll.NewProc("RimeCandidateListBegin"),
 		candidateListNext:     dll.NewProc("RimeCandidateListNext"),
 		candidateListEnd:      dll.NewProc("RimeCandidateListEnd"),
@@ -572,6 +575,19 @@ func SelectSchema(sessionId RimeSessionId, schemaID string) bool {
 
 func SelectCandidate(sessionId RimeSessionId, index int) bool {
 	r1, _, _ := rimeProcs.selectCandidate.Call(uintptr(sessionId), uintptr(index))
+	return boolResult(r1)
+}
+
+func DeleteCandidate(sessionId RimeSessionId, index int) bool {
+	if sessionId == 0 || index < 0 || rimeProcs.deleteCandidate == nil {
+		return false
+	}
+	// Older librime builds may not export the helper. Callers retain a
+	// Ctrl+Delete fallback for that compatibility case.
+	if err := rimeProcs.deleteCandidate.Find(); err != nil {
+		return false
+	}
+	r1, _, _ := rimeProcs.deleteCandidate.Call(uintptr(sessionId), uintptr(index))
 	return boolResult(r1)
 }
 
