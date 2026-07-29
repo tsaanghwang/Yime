@@ -1,409 +1,354 @@
 # 音元输入法开发路线图
 
-> 原型交付一份带来源和排序证据的核心等长真源；Windows 发布层由它派生并运行三种输入模式。实施结果见
-> [从三套码表回到一个真源](project/SINGLE_SOURCE_LEXICON_REFACTOR.md)，原阶段设计见
-> [单一等长真源码表阶段准备](project/SINGLE_CANONICAL_LEXICON_PREPARATION.md)。
+> 更新日期：2026-07-29
+> 当前版本：`1.4.0-dev`
+> 当前阶段：开发版收口与签名发行准备
 
-> 版本：2026-07-28（证据化核心候选与三模式用户链）
-> 实施分支：`codex/core-three-mode-runtime`
-> 基线提交：`9dc88d37`（Shift 候选标签）、`30041975`（三模式连续输入）
-> 配套文档：[项目综合评估](YIME_PROJECT_ASSESSMENT.md) | [可用性评估](YIME_USABILITY_ASSESSMENT.md) | [架构文档](YIME_ARCHITECTURE.md)
+本路线图只回答三件事：
 
----
+1. 当前产品已经具备什么能力；
+2. 下一步按什么顺序推进；
+3. 每个阶段满足什么条件才算完成。
 
-## 1. 当前状态
-
-### 已完成里程碑
-
-| # | 里程碑 | 提交 | 说明 |
-|---|--------|------|------|
-| 1 | 候选项数同步机制 | 1343632 | rimeState.PageSize 回读链 |
-| 2 | 重复按键抑制吞键修复 | edd6e0ab | keysDown map 替代计数器 |
-| 3 | 回车键组字时被吞修复 | ef52fe2a | pendingRawCommit 原始编码上屏 |
-| 4 | 候选项数变更保存组字状态 | 1bf5063f | reloadBackendSessionForSchema 重放 |
-| 5 | Rime 初始化失败可重试 | 3e24351d | sync.Mutex + 双标志替代 sync.Once |
-| 6 | rimeDeploy schema custom 部署 | 423658c5 | *.custom.yaml glob 部署 |
-| 7 | 语言栏排列方式简化 | a2b6923 | 一次点击切换横竖排 |
-| 8 | CI 构建流水线修复 | d9d8a0ca | windows-2022 + vswhere |
-| 9 | 部署/打开/剪贴板操作用户反馈 | e2353639 | showUserMessage + panic recover |
-| 10 | 反查注释遇生僻字占位符 | 7800d552 | joinRuneLookup 用 ? 占位 |
-| 11 | 用户词库跨方案同步 | fec6b129 | 三模式独立 custom_phrase + user_dict |
-| 12 | 反查工具重设计 | e7a3a461 | 多音字、即时搜索、加载进度、截断提示 |
-| 13 | 低优先级问题 #6-#10 全部修复 | dce1295b | 硬编码路径、死代码、YAML 注释、翻页重置、命令黑名单 |
-| 14 | 未覆盖场景测试 | 526c5a2c | 并发、分页、Unicode、方案切换、超长词组、终止 |
-| 15 | 工具链补充 | 63ef77c5 | DELETE/IMPORT 词库、即时搜索 debounce、工具箱中文化 |
-| 16 | cSpell 词表扩展 | 16eda9b | 60+ 项目专有词 |
-| 17 | 子模块推送 | 32eaf662 | libIME2 + McBopomofoWeb 指向 fork 且先推送子模块再推主仓库 |
-| 18 | 原生 Win32 工具链 | dd68a47a | settings/diagnostics/lexicon/reverse-lookup/tool-hub 等 `.exe` |
-| 19 | 移除 PowerShell 启动器 | 2f7c9b44 | 工具箱改 `run_executable`，删除 PS 独立脚本 |
-| 20 | 系统词库审查工具 | fd3edfc0 | `system-lexicon-audit.exe` 只读扫描与导出 |
-| 21 | 用户屏蔽词表 | 0518d6fd | `blocklist-manager.exe` + 运行时候选过滤 |
-| 22 | 语言栏切换稳定性 | f2b3b04c | 静态双字标签（中西/全半/横竖）+ 仅图标更新 |
-| 23 | libIME2 语言栏/注册表 | 2f4f5659 | `refreshAppearance`、profile 重注册、按钮更新顺序 |
-| 24 | 注册表清理脚本 | eacb769a | `pime-registry-cleanup.ps1`、`Refresh-IME-Profiles.cmd` |
-| 25 | IME 列表名与开发环境 | fc507057 | 列表显示名「音元」；`.gitignore` 忽略 `go-backend/*.exe` |
-| 26 | 反查工具布局统一 | ac6d88bf | 顶部控件单排、各内容排等宽、窗体按内容定尺寸 |
-| 27 | 词库管理对话框统一 | e98704c8 | 标签自适应、按钮组居中、所有系统 `OK/Yes/No` 改为中文选择 |
-| 28 | Smart App Control 构建稳定性 | ee2c51d7 | 稳定版本、`-trimpath -buildvcs=false`、可选可信签名 |
-| 29 | Go 回归测试进入 CI | 847bc40a | 原生工具、词库逻辑、语言栏与 Rime 分页守卫 |
-| 30 | 竞态检测纳入验证基线 | ab243ae7 | 配置 MSYS2 GCC；`IME` 入口互斥锁；`TestConcurrentKeyAndCommandNoDataRace` 在 `-race` 下绿色 |
-| 31 | 反查测试 fixture 跟上真源重构 | ab243ae7 | `full` 列改为 4 倍数等长码，恢复 reverselookup 包测试 |
-| 32 | 安全数据维护与真实宿主验证 | 196c326b | 后台重新部署、独立修订号、嵌套 `data.id`；2026-07-14 安装态逐项点击通过 |
-| 33 | 静态与 CI 门禁收口 | 本轮 | Win32 消息结构复制通过 `go vet`；关键测试名先枚举校验；race 入口可重复 |
-| 34 | 原生架构与打包门禁 | 本轮 | 拒绝伪 Win32 CMake 缓存；核对 x86/x64/ARM64 PE machine type；只打包带 `ime.json` 的运行时目录 |
-| 35 | Go 演示输入法退役 | 本轮 | 删除 meow/simple_pinyin/fcitx5 生产包与默认回退；协议测试改用专用 fixture；NSIS 安全清理旧空目录 |
-| 36 | Shift 感知候选标签 | 9dc88d37 | 候选窗显示 `⇧1`—`⇧9`；选择键仍为 Shift+1—9；物理标点键面只用于帮助和布局图 |
-| 37 | 三模式连续输入与自动分词 | 30041975 | 三套方案启用 `enable_sentence` 和 `sentence_over_completion`；变长、省键派生保留虚首音作为零声母音节边界 |
-| 38 | 拆分 CI 与聚合门禁 | 当前实现 | 构建契约、Rust、原生、Go、真实 Rime、MSYS2 race、安装器独立作业；`core-build` 聚合 |
-| 39 | 高级布局设计器 | 当前实现 | `yime-layout-designer.exe` 复制、试打、保存并原子应用布局，重建三模式数据并迁移学习记录 |
-| 40 | 核心候选证据交接 | 当前实现 | 原型交付 1,124,631 条核心读音记录及来源、筛选、排序哈希 |
-| 41 | 核心三模式发布 | 当前实现 | 同一核心真源派生变长、等长、省键；三者都进入正式运行链 |
-| 42 | 动态组句与学习闭环 | 当前实现 | 未预装长词可由组件生成；一次纠正后成为首选，重启后保持 |
-| 43 | 运行包边界门禁 | 当前实现 | 构建只接受核心三模式 dict/schema/manifest；已退役过渡方案泄漏即失败 |
-| 44 | 高频新词晋升扫描 | 当前实现 | `lexicon-promotion-scan.exe` 汇总开发期真实不足，候选须审核后进入系统库 |
-
-### 已确立的编码与交互基线（不得随意回退）
-
-- 2026-07-18 的布局试验已经释放旧候选键，并改用 Shift+1—9；这不是待清理的临时代码；
-- Base 数字键仍属于编码，只有 Shift+数字键用于选择候选；
-- 与流行拼音输入法不同，Yime 明确不采用裸数字键选词。Base 层 `0`—`9` 十个数字键全部用于编码，Shift+0 也不选词；这是编码体系和产品交互原则，不是尚待解决的兼容问题，也不提供“数字键在编码/选词间切换”的模式；
-- 候选窗显示 `⇧1`—`⇧9`，不再用裸数字暗示 Base 数字可选词；帮助/布局图另列物理键面 `! @ # $ % ^ & * (`，但不把标点用作候选窗序号；
-- `setSelLabels` 只负责候选窗显示，`SetSelKeys` 只为旧宿主兼容；不得把标签文本误当成真实按键绑定，也不得改回裸 `1`—`9`；
-- 候选项数继续支持 5—9；九个 Shift+数字选择键与九个标签已经覆盖上限，不再规划把默认值或上限强制缩到 5；
-- 57 个 Yinyuan ID 使用 47 个 Base 键和 11 个 Shift 键，反引号 Base 键暂留空。
-- 整理后的核心等长词典是唯一可导入真源；变长、等长、省键运行词典只能由它确定性生成；
-- 首音分为实首音和虚首音：实首音对应非零声母；虚首音对应零声母，包括 `'` / `N12`、`y` / `N23` 和 `w` / `N24`。从等长码派生变长、省键码时必须保留全部首音，尤其不得把隔音符号型虚首音 `'` 当作冗余字符删除；
-- 所有参与构建或回归的 Yime schema 必须同时保留 `enable_sentence: true` 与
-  `sentence_over_completion: true`。只启用前者会被词条补全候选压住，实际仍不能稳定生成整句候选；
-- 真实 librime 验收序列 `]s8u\e4fa7J9wo` 必须能产生“打出了三只手”。
-- 默认方案保持 `yime_variable`；已退役过渡方案配置迁移到核心变长模式。
-- 未预装完整词条不构成编码缺口；只有组成它的字符或实际读音本身未通过正式编码门禁，才算运行缺口。
-
-### 当前最高优先级
-
-1. 保持纯净用户态长期开发测试，按周记录冷启动纠正次数、第二次首选率、重启保持率和用户库增长；
-2. 用高频晋升扫描聚合多个开发周期的真实缺词，只提升跨用户、高频、可解释且已编码的词条；
-3. 扩充专业文本、专名、古诗和罕见字入口的回归样本，避免99%总体指标遮蔽低频硬失败；
-4. 对安装包持续执行核心三模式完整性、已退役方案泄漏、反查词典优先级和全新用户目录部署测试；
-5. 在获得真实用户数据前，不把产前模拟称为生产遥测，也不因少量人工压力样本改写总体首选率。
-
-### 两次大改的验收边界
-
-| 改动 | 正确职责划分 | 必须保留的验证 |
-|------|--------------|----------------|
-| Shift 候选标签 | Go 后端发送多字符 `setSelLabels`；PIMETextService 解析；libIME2 绘制完整标签；Yime 按键逻辑处理 Shift+数字 | `TestCandidateSelectionUsesDefaultKeysAndShiftDigits`、协议序列化测试、libIME2 多字符标签构建验证 |
-| 连续输入与自动分词 | `codemode` 和布局重编码器保留虚首音；生成器重建两套派生词典；schema 让整句候选排在补全前 | `TestAllSchemasEnableSentenceComposition`、`TestReencodePreservesVirtualShouyinAsSyllableBoundary`、`TestRealRimeAllSchemasComposeSentence`、`go test ./...` |
-
-上述两项横跨协议、原生候选窗、码表生成和 Rime 配置。后续修改不能只改其中一层，也不能因单元测试通过就删除真实 librime 验收。
+历史修复、提交清单和专项实现不在本文重复维护。详细证据分别见
+[项目综合评估](YIME_PROJECT_ASSESSMENT.md)、
+[测试与验证指南](YIME_TESTING_GUIDE.md)、
+[发布与签名指南](YIME_RELEASE_AND_SIGNING.md)及各专项文档。
 
 ---
 
-## 2. 开发流程图
+## 1. 总体判断
 
-### 2.1 问题修复流程
+Yime 已经越过“功能原型”阶段，进入“可持续验证的 Windows 输入法产品”阶段：
 
-```
-发现问题
-    │
-    ▼
-确认复现路径 ──── 无法复现 ──→ 关闭或标记"待观察"
-    │
-    ▼ 可复现
-    │
-编写失败测试 ──── 测试通过 ──→ 测试有误，修正测试
-    │
-    ▼ 测试失败
-    │
-实现修复
-    │
-    ▼
-测试通过？ ──── 否 ──→ 返回实现修复
-    │
-    ▼ 是
-    │
-go vet / go build ──→ 失败 ──→ 修正代码
-    │
-    ▼ 通过
-    │
-AGENTS.md 约束检查 ──→ 违反 ──→ 重新设计
-    │                (候选分页权/YAML key/
-    ▼                page_size 同步链/子菜单命令)
-提交（不推送）
-    │
-    ▼
-本地安装验证 ──── 验证项：
-    │              1. server.exe 时间戳已更新
-    │              2. rime_deployer.exe 时间戳已更新
-    │              3. PIMELauncher + server 进程已重启
-    │              4. 在宿主应用中实际操作复现
-    ▼
-验证通过？ ──→ 否 ──→ 返回实现修复
-    │
-    ▼ 是
-    │
-推送到 origin/<当前工作分支>
-```
+- 三种运行模式由同一份证据锁定的核心真源确定性派生；
+- Rime 负责组句、候选、学习和原生分页，Go 层负责产品逻辑和工具；
+- PIME/TSF 宿主、Rust 启动器、Go 后端、原生工具和 NSIS 安装器均已进入正式构建链；
+- 候选选择、语言栏、用户词库、反查、屏蔽词、备份恢复和诊断已有回归保护；
+- 开发版已经完成多轮真实安装验证，正式公开发行仍受可信代码签名及签名后复验约束。
 
-### 2.2 功能开发流程
+当前工作的重点不是继续扩张功能数量，而是完成以下闭环：
 
-```
-需求提出
-    │
-    ▼
-设计评审 ──── 涉及语言栏/候选窗/TSF 回调？
-    │              │
-    │              ▼ 是
-    │           新增回归测试保护
-    │              │
-    ▼              ▼
-选择实现路径
-    │
-    ├── 轻量命令（语言栏分发）──→ onCommand + commandShouldRefreshState
-    │
-    ├── 独立工具窗口 ──→ Go 编译的 Win32 `.exe` + 工具箱 manifest 注册
-    │
-    └── Rime 配置变更 ──→ YAML 读写 + DeployConfigFile + 会话重建
-    │
-    ▼
-实现 + 测试
-    │
-    ▼
-AGENTS.md 约束检查
-    │
-    ▼
-提交 → 本地安装验证 → 推送
-```
-
-### 2.3 候选项数变更流程（当前实现）
-
-```
-用户点击候选项数菜单项
-    │
-    ▼
-onCommand(ID_CANDIDATE_PAGE_SIZE_5 + offset)
-    │
-    ▼
-setCandidatePageSize(size)
-    │
-    ├── 1. 写入 default.custom.yaml (updateDefaultCustomPageSize)
-    ├── 2. 部署 default.custom.yaml (deployDefaultCustomConfig)
-    ├── 3. 写入 schema.custom.yaml (writeSchemaCustomPageSize)
-    ├── 4. 部署 schema.custom.yaml (deploySchemaCustomConfig)
-    ├── 5. 部署 schema.yaml (deploySchemaConfig)
-    ├── 6. 运行 rime_deployer.exe (runRimeExternalBuild)
-    ├── 7. 设置 pendingSchemaRedeploy
-    ├── 8. 重建会话 (reloadBackendSessionForSchema)
-    │       └── 保存并重放组字状态 ✅
-    └── 9. 读回 PageSize (backend.State().PageSize)
-            └── 无候选时 PageSize=0，读回失败（仅记录日志）
-    │
-    ▼
-下次按键时执行 pendingSchemaRedeploy
-```
+1. 收口候选窗句中改选交互；
+2. 用真实宿主证据证明 x64/x86 安装态一致；
+3. 完成可信签名构建；
+4. 对最终签名产物重新执行发行验收。
 
 ---
 
-## 3. 路线图
+## 2. 不可回退的产品基线
 
-### Phase 1：关键可用性修复 ✅ 已完成
+以下约束已经成为产品定义，后续不再作为“待讨论方案”反复打开。
 
-| # | 任务 | 提交 | 回归测试 |
-|---|------|------|----------|
-| 1.1 | 修复回车键行为 | ef52fe2a | `TestReturnKeyCommitsRawInputDuringComposition`, `TestReturnKeyPassesThroughWhenNotComposing` |
-| 1.2 | 修复重复按键抑制 | edd6e0ab | `TestRapidSameKey*`, `TestDuplicateKeyDown*`, `TestKeyUpClears*` |
-| 1.3 | 候选选择键扩展 | 9dc88d37 | `TestCandidateSelectionUsesDefaultKeysAndShiftDigits`；Base 数字输入与 Shift+数字选词并存 |
-| 1.4 | 候选项数变更保存组字状态 | 1bf5063f | `TestSetCandidatePageSizePreservesComposition` |
+### 2.1 编码与候选选择
 
----
+- Base 层数字键始终用于输入编码，不采用裸数字键选词；
+- 候选直选使用 `Shift+1`—`Shift+9`；
+- 候选窗序号必须显示 `⇧1`—`⇧9`；
+- `setSelLabels` 负责显示，`SetSelKeys` 仅保留旧宿主兼容；
+- 候选页支持 5—9 项，九个 Shift 直选键覆盖可见上限；
+- 不新增“数字键在编码/选词间切换”的模式或设置。
 
-### Phase 2：用户体验改善 ✅ 已完成
+### 2.2 Rime 所有权
 
-| # | 任务 | 提交 | 回归测试 |
-|---|------|------|----------|
-| 2.1 | 关键操作失败用户提示 | e2353639 | 手动验证 |
-| 2.2 | 反查缺失字符占位符 | 7800d552 | `TestJoinRuneLookupPartialMissing`, `TestLookupStandardPinyinPartialMissing` |
-| 2.3 | 用户词库跨方案同步 | fec6b129 | `TestApplyUserLexiconWritesAllThreeModes`, `TestRimeUserLexiconPathPerMode` |
-| 2.4 | 反查工具加载进度提示 | e7a3a461 | 手动验证 |
-| 2.5 | 反查搜索结果截断提示 | e7a3a461 | 手动验证 |
-| 2.6 | 词库删除/导入功能 | 63ef77c5 | 手动验证 |
+- 原生 Rime 会话继续拥有候选分页；
+- `nativeBackend.UsesBackendCandidatePaging()` 必须保持 `true`；
+- 不用 Go 侧候选切片伪造可见候选数量；
+- `candidatePageSize` 必须通过 `rimeState.PageSize` 与 Rime `menu.page_size`
+  保持读回同步；
+- 页面大小配置必须兼容带引号和不带引号的 `menu/page_size` YAML key。
 
----
+### 2.3 词典与三模式
 
-### Phase 3：代码质量与健壮性 ✅ 已完成
+- 整理后的核心等长词典是唯一系统词典真源；
+- 变长、等长、省键运行词典只能由核心真源确定性生成；
+- 三种 schema 必须保留 `enable_sentence: true` 和
+  `sentence_over_completion: true`；
+- 变长、省键派生必须保留实首音与虚首音边界；
+- 未预装完整长词不等于编码缺失：只要组成字符和读音已编码，Rime 可以动态组句并学习。
 
-| # | 任务 | 提交 | 说明 |
-|---|------|------|------|
-| 3.1 | 移除硬编码开发路径 | dce1295b | 删除 `C:\dev\librime\` 路径 |
-| 3.2 | 移除死代码 | dce1295b | 删除未调用的 `remapYimeCandidateSelectionKey` |
-| 3.3 | 命令刷新改为黑名单 | dce1295b | 只列出需刷新的 11 个命令 |
-| 3.4 | 并发安全测试 | 526c5a2c | `TestConcurrentKeyAndCommandNoDataRace` |
-| 3.5 | Unicode 边界测试 | 526c5a2c | emoji、扩展汉字、代理对 |
-| 3.6 | YAML 行内注释支持 | dce1295b | `parseMenuPageSizeValue` 剥离 `#` 注释 |
-| 3.7 | candidatePageStart 仅按键生效时重置 | dce1295b | `backendRet==true` 时才重置 |
+### 2.4 宿主交互
 
----
+- 句中改选发生在 Yime 自有候选窗，不监听宿主编辑区的预编辑文字点击；
+- 候选窗分段条不抢宿主焦点；
+- 点击使用后端保存的原始 `{start,end}` 范围，不用显示文字下标推算 Rime caret；
+- 语言栏子菜单必须保留 `data.id` 命令回退；
+- 修改语言栏、候选窗或原生激活路径前，先增加具体宿主回归测试。
 
-### Phase 4：功能增强 — 部分完成
+### 2.5 开发与发行边界
 
-| # | 任务 | 状态 | 说明 |
-|---|------|------|------|
-| 4.2 | Rime 初始化失败可重试 | ✅ 3e24351d | sync.Mutex + 双标志 |
-| 4.3 | 候选池动态覆盖闭环 | ✅ 2026-07-28 | 原型已对 2,441,908 个已编码字串完成 R0–R5 分层：R0=0、R1=4,798、R2=1,397、R3=60,312、R4=2,054,255、R5=321,146；低频、古旧和构式部件不再作为删除理由，R1–R3 转为动态核心持续改进队列 |
-| 4.4 | 非标准音节清理 | ✅ 2a3f51d4 + 后续显示映射清理 | `bong4`/`wong4` 已从规范化拼音、编码表、音节分解和 PUA 显示映射移除 |
-| 4.5 | 词库导入功能 | ✅ 63ef77c5 | DELETE/IMPORT 接入词库管理器 |
-| 4.6 | 反查工具即时搜索 | ✅ e7a3a461 | 500ms debounce 即时搜索 |
-| 4.7 | 用户屏蔽词表 | ✅ 0518d6fd | 运行时过滤 + `blocklist-manager.exe` |
-| 4.8 | 系统词库审查 | ✅ fd3edfc0 | 只读扫描已安装系统词库 |
-| 4.9 | 原生 Win32 工具链 | ✅ dd68a47a | 设置/诊断/词库/反查/工具箱等独立 `.exe` |
-| 4.10 | 语言栏切换稳定性 | ✅ 73b74e99 | 静态切换标签，切换时只更新图标 |
-| 4.11 | 三模式连续输入与自动分词 | ✅ 30041975 | 等长、变长、省键均优先给出整句组句；派生码不再删除虚首音；真实 librime 测试覆盖普通、零声母及“打出了三只手”连续输入 |
-| 4.12 | Shift 感知候选标签 | ✅ 9dc88d37 | `setSelLabels` 显示 `⇧1`—`⇧9`；真实选择键保持 Shift+数字；标点键面只写入帮助和布局图 |
+- 未签名包只用于开发和受控测试；
+- GitHub 正式标签必须使用可信 Authenticode 签名；
+- “CI 绿色”不能替代安装态 TSF 验收；
+- 源码修复只有在重建、打包、安装并重启相关进程后，才算进入真实运行态。
 
 ---
 
-### Phase 5：后续改进（待规划）
+## 3. 当前能力地图
 
-Phase 5 原则上不属于 1.4.0 发布收口范围。候选页默认是 5 项、可设置为 5—9 项，Shift+1—9 已为所有可见候选提供直选键，因此“候选大于 5 不好选”已经解决，不再保留“强制限制为 5”的旧提案。Base 层 `0`—`9` 十个数字键全部用于编码，裸数字键选词已经确定不采用，也不是未来任务。候选排序微调等事项需要先形成数据口径和验收基线；在专项规划获批前不得顺手修改实现或词典数据。
-
-| # | 任务 | 说明 | 前置条件 |
-|---|------|------|----------|
-| 5.2 | 方向键移动候选光标 | ✅ 已完成 | PIME 候选窗接管四方向键并维护 `currentSel`，Enter 通过 `selectCandidate(index)` 确认高亮候选；2026-07-22 实测“他日”通过 |
-| 5.4 | 非 BCC 词语的独立排序证据 | ✅ 2026-07-28 | 原型已实现 BCC 主证据、RIME-LMDG 缺失补充、静态效用非频次保底的四层排序；1,116,892 个运行候选全部分类，180,573 个双语料缺失长尾获得非频次结构保底，原始值不相加 |
-| 5.5 | 分段选词、句中改选与动态组句纠错 | ✅ 键盘路径已完成 | [可行性调查与实现记录](project/SENTENCE_SEGMENT_CORRECTION_FEASIBILITY.md)确认复用 librime navigator；Ctrl+Left/Right 宿主路由、“改选前段、保留后段、最终整句提交”、隔离用户学习与 Enter 抬键保护测试已通过。2026-07-23 安装态实测“逼逼”“音元输入法”通过，x86/x64 DLL 与运行时哈希一致 |
-| 5.6 | 鼠标组句纠错的独立候选/分段 UI | 🧪 已安装，观察期 | 2026-07-24 已在 YIME 自有候选窗中加入无激活分段条，通过 librime `commit_text_preview` 与带空格 preedit 建立 `{start,end,code,text,active}` 映射，显示为“汉字 + 对应编码”，并在改选后缓存稳定映射；点击以原始编码范围调用 `selectCompositionSegment`，通过 `RimeGetApi` 的 `set_caret_pos` 直接定位，键盘 navigator 仅作兼容回退，不使用显示文字下标，也不注册宿主 composition 鼠标监听。RPC 拒绝重入、越界、循环和无进展更新；即使定位失败也回送当前组句与候选，避免宿主把空响应解释为结束 composition。Go 全套、原生宿主命中/RPC、真实 librime 回归及多架构构建已通过；安装产物哈希已与构建物核对，Notepad、Codex IDE 初步试用有效。真实 x86 宿主基础链路曾于 2026-07-15 初步测试通过；Phase 5.6 的 x86 复测安排在取得代码签名后，随签名产物发行验收执行，当前继续按[安装态验收计划](project/SENTENCE_SEGMENT_CORRECTION_TEST_PLAN.md)观察长期稳定性 |
-
----
-
-## 4. 里程碑时间线
-
-```
-2026-07 W1-W2
-├── Phase 1 ✅ 关键可用性修复
-│   ├── 1.1 回车键行为 ✅
-│   ├── 1.2 重复按键抑制 ✅
-│   ├── 1.3 候选选择键扩展 ✅
-│   └── 1.4 组字状态保存 ✅
-│
-2026-07 W3-W4
-├── Phase 2 ✅ 用户体验改善
-│   ├── 2.1 失败提示 ✅
-│   ├── 2.2 反查占位符 ✅
-│   ├── 2.3 词库跨方案同步 ✅
-│   ├── 2.4-2.5 反查工具改进 ✅
-│   └── 2.6 词库删除/导入 ✅
-│
-2026-07 W5-W6
-├── Phase 3 ✅ 代码质量与健壮性
-│   ├── 3.1-3.2 代码清理 ✅
-│   ├── 3.3 命令黑名单 ✅
-│   ├── 3.4-3.5 测试增强 ✅
-│   └── 3.6-3.7 边界修复 ✅
-│
-2026-07 W7-W8
-├── Phase 4 延续
-│   ├── 4.7-4.10 工具链与语言栏 ✅
-│   ├── 4.11 三模式连续输入与自动分词（30041975）✅
-│   ├── 4.12 Shift 感知候选标签（9dc88d37）✅
-│   ├── 4.3 候选池动态覆盖闭环（2026-07-28）✅
-│   └── 4.4 非标准音节清理 ✅
-│
-├── 基础设施
-│   ├── 子模块 fork 推送流程 ✅
-│   ├── 注册表/profile 清理脚本 ✅
-│   ├── CI checkout 子模块修复 ✅
-│   ├── Win32 PIMELauncher 重建链路修复（Corrosion v0.6.1 + i686 工具链锁定）✅
-│   ├── 安装态全量验证留痕（2026-07-12，当日结论）✅
-│   └── 1.4.0-dev、10 个 Go EXE 与布局设计器安装态复核（2026-07-22）✅
-│
-待规划
-└── Phase 5 后续改进
-    ├── 5.2 候选窗方向键导航 ✅
-    ├── 5.4 非 BCC 词语的独立排序证据 ✅
-    └── 5.5 分段选词、句中改选与动态组句纠错
-```
+| 能力域 | 当前状态 | 结论 |
+|---|---|---|
+| 三模式编码与词典 | ✅ 稳定 | 一个核心真源派生变长、等长、省键，运行包有泄漏与哈希门禁 |
+| 连续输入与动态组句 | ✅ 稳定 | 三模式均启用整句优先，真实 librime 回归覆盖零声母与长句 |
+| 候选交互 | ✅ 稳定 | 5—9 项、横竖排、方向键、Enter、Shift+数字直选 |
+| 用户学习与自定义词 | ✅ 稳定 | 三模式用户链、即时生效、备份恢复和屏蔽词过滤已接通 |
+| 反查与独立工具 | ✅ 稳定 | 设置、诊断、反查、词库、审查、屏蔽词、布局设计器均为原生工具 |
+| 语言栏 | ✅ 稳定 | 静态双字标签、稳定命令 ID、受保护的数据维护入口 |
+| 句中改选键盘路径 | ✅ 完成 | `Ctrl+Left/Right` 可定位分段，改选前段并保留后段 |
+| 候选窗鼠标分段条 | 🧪 收口中 | 功能已安装验证；紧凑显示与真实宿主证据仍需本轮复验 |
+| 构建与 CI | ✅ 可用 | Rust、原生、Go、真实 Rime、race、安装器分作业，`core-build` 聚合 |
+| 开发版安装 | ✅ 已复核 | 2026-07-22 已完成安装树、注册表、进程和工具入口复核 |
+| 正式签名发行 | ⛔ 外部阻塞 | 等待可信签名凭据及签名后全量安装验收 |
 
 ---
 
-## 5. AGENTS.md 约束速查
+## 4. 路线阶段
 
-开发时必须遵守的约束（详见 `AGENTS.md`）：
+### 阶段 A：开发版收口
 
-| 约束 | 说明 | 违反后果 |
-|------|------|----------|
-| 候选分页权不可更改 | `UsesBackendCandidatePaging()` 必须返回 `true` | 候选窗行为异常 |
-| 禁止 Go 侧候选切片 | 不能通过 Go 切片强制控制可见候选数 | 与 Rime 状态不一致 |
-| page_size 三层同步 | Rime 状态 → Go 字段 → 配置文件，不可断开 | 候选数"卡住" |
-| YAML key 引号兼容 | 必须同时支持 `menu/page_size` 和 `"menu/page_size"` | 设置"不生效" |
-| 子菜单命令解析 | `commandIDFromRequest` 必须保留 `data.id` 回退 | 反查点击宿主崩溃 |
-| 安装验证 | 必须确认 server.exe 时间戳已更新并重启进程 | 源码修复"不生效" |
-| 重新安装脚本 | `Reinstall-PIME-Test.cmd` 不可简化 | DLL 锁检测失效 |
-| 子模块推送顺序 | bump 子模块指针前，先把 commit 推到 fork remote | CI checkout 失败 |
-| Win32 Rust 工具链 | `Rust_TOOLCHAIN=stable-i686-pc-windows-msvc` 固定不可取消 | build-script 链接错，PIMELauncher 无法重建 |
-| 候选标签与按键分层 | `setSelLabels` 显示 `⇧1`—`⇧9`；真实选择键仍由 Shift+数字处理；标点只作物理键面说明 | 裸数字误导用户，或标签与实际按键不一致 |
-| 不采用裸数字键选词 | Base 数字键始终参与编码；不得新增数字键选词开关或按候选窗状态抢占数字键 | 编码被截断，同一按键含义随状态漂移 |
-| 派生码保留虚首音 | 变长、省键生成规则和布局重编码器必须保留 `'` / `N12`、`y` / `N23`、`w` / `N24` 三类虚首音 | 零声母边界丢失，连续输入无法稳定自动分词 |
-| 整句优先于补全 | 所有在建或回归 schema 同时保留 `enable_sentence` 与 `sentence_over_completion` | 配置看似启用整句，实际只返回词条补全 |
-| github 拉取走代理 | git/cmake 不读系统代理，需设 `HTTPS_PROXY=http://127.0.0.1:1081` | FetchContent 克隆 Corrosion 超时 |
-| DLL 被锁走就地安装 | explorer 加载 DLL 时就地安装是设计行为；干净重装先重启 | 误判重装失败、强杀 explorer |
-| CI 日志先看路径 | 3033/3077 事件先核对文件路径；SAC 审计未签名 `server.exe` 不是崩溃 | 把第三方噪声或审计记录误判为 YIME 故障 |
+目标：冻结当前用户交互，证明源码、构建物、安装物和真实宿主行为一致。
 
-### 子模块推送（CI 必做）
+#### A1. 候选窗句中改选收口
 
-Yime 的活动构建子模块 `libIME2` 指向 `tsaanghwang/libIME2` fork。主仓库引用新 SHA 之前，必须先把对应 commit 推到子模块 remote。McBopomofoWeb、libchewing 和 Python brise 已从仓库永久删除：
+当前设计：
 
-```powershell
-cd libIME2
-git push git@github.com:tsaanghwang/libIME2.git master
+- 顶行标题使用紧凑的“句：”；
+- 每栏只显示候选项汉字，不显示编码注释；
+- 候选窗按后端提供的 `CompositionSegmentItem` 分栏，不在 UI 层按汉字重新拆分；
+- 编码仍作为内部元数据保留，用于稳定映射到原始 `{start,end}`；
+- 当前活动项使用候选窗高亮色；
+- 点击失败时保留 composition 和候选，不允许宿主把空响应解释为结束组句。
 
-cd ..\Yime
-git push origin <当前工作分支>
-```
+退出条件：
+
+- [ ] x86/x64 `PIMERpcResponseTests` 通过；
+- [ ] Go 全量测试和真实 librime 分段回归通过；
+- [ ] Win32/x64 构建与 PE 架构检查通过；
+- [ ] 安装后的 `server.exe`、x86 DLL、x64 DLL 与构建物哈希一致；
+- [ ] x64 Notepad、Codex IDE、x86 SysWOW64 charmap 均有明确宿主结果；
+- [ ] 报告中至少有一组按 `client`、`seqNum` 关联的
+  `selectCompositionSegment` 请求和响应；
+- [ ] 第一段、中间段、末段反复切换不提前提交、不丢后段。
+
+专项依据：
+[可行性与实现记录](project/SENTENCE_SEGMENT_CORRECTION_FEASIBILITY.md)、
+[安装态验收计划](project/SENTENCE_SEGMENT_CORRECTION_TEST_PLAN.md)。
+
+#### A2. 安装态证据标准化
+
+保留并继续使用只读证据脚本：
+
+- 核对已安装 `server.exe`、x86/x64 `PIMETextService.dll` 的 SHA-256；
+- 记录 x64 Notepad、Codex IDE、x86 SysWOW64 charmap 的人工结果；
+- 保存 `selectCompositionSegment` RPC 证据；
+- 只向 `.tmp` 报告目录写入 Markdown，不修改 PIME 安装目录、日志或进程。
+
+退出条件：
+
+- [ ] 完整报告的三项宿主结果均为 `pass`；
+- [ ] 缺失宿主结果或 RPC 时报告必须为 `partial`；
+- [ ] 二进制不匹配或宿主明确失败时报告必须为 `failed`；
+- [ ] 测试证明输入文件哈希和修改时间在采集前后不变。
+
+#### A3. 观察期稳定性
+
+至少覆盖：
+
+- 冷启动后的首次组句和首次改选；
+- 长 composition 中反复切换分段；
+- 切换横竖排、候选项数和 schema 后继续输入；
+- Notepad、Codex IDE 和 x86 宿主长时间运行；
+- 定位失败、无候选、分页边界和 composition 终止。
+
+退出条件：
+
+- [ ] 无宿主退出、输入法失活或意外提前上屏；
+- [ ] 无 page size 与 Rime 实际状态分叉；
+- [ ] 无新的高频可复现阻断问题；
+- [ ] 所有异常均能由日志、事件或报告定位。
 
 ---
 
-## 6. 开发环境检查清单
+### 阶段 B：可信签名发行
 
-### 构建验证
+目标：生成可公开分发、可验证、可回滚的 Windows 安装包。
 
-```powershell
-# Go 后端
-cd go-backend
-cmd /c build.bat
+#### B1. 发行候选冻结
 
-# C++/Rust 宿主
-cmd /c build.bat
-```
+- 冻结交互、码表格式、运行包边界和安装器结构；
+- 核对实际发布版本与 `CHANGELOG.md`；
+- 只有准备创建正式标签时，才把 `version.txt` 从开发后缀切为正式版本；
+- 子模块 commit 必须先推送到可访问的 fork，再更新主仓库指针；
+- 连续构建必须通过哈希与清单验证。
 
-### 测试验证
+#### B2. 签名构建
 
-```powershell
-cd go-backend
-go vet ./...
-go test ./...
+- 使用可信 CA、Microsoft Artifact Signing 或符合条件的开源签名服务；
+- 校验证书私钥、有效期、RSA、代码签名 EKU 和签名者指纹；
+- 对安装器及所有要求签名的 PE 文件执行 Authenticode 签名和时间戳；
+- 运行 `tools/verify-release-signatures.ps1 -IncludeInstaller`；
+- CI 在正式标签缺少签名条件时必须失败，不得静默发布未签名正式包。
 
-# 真实 librime 连续输入验收（需要本机 Rime 运行库）
-$env:YIME_RUN_REAL_RIME_TESTS = "1"
-go test ./input_methods/yime -run TestRealRimeAllSchemasComposeSentence -count=1 -v
-```
+#### B3. 签名后全量复验
 
-### 安装验证
+签名会改变二进制哈希与信誉状态，因此不能沿用未签名开发包结论。
 
-```powershell
-# 1. 确认构建产物时间戳
-Get-Item "build\go-backend\server.exe" | Select-Object LastWriteTime
-Get-Item "build\go-backend\input_methods\yime\data\rime_deployer.exe" | Select-Object LastWriteTime
+退出条件：
 
-# 2. 停止运行中的 PIME
-.\dev-stop-pime.ps1 -Auto
+- [ ] 标准安装、原位升级、卸载和重启替换均通过；
+- [ ] 安装树、注册表、自启动和 TIP 注册正确；
+- [ ] x86/x64 真实宿主完成组字、候选、分段改选和上屏；
+- [ ] 所有原生工具入口可启动且无控制台闪烁；
+- [ ] 语言栏所有高风险菜单逐项点击通过；
+- [ ] CodeIntegrity 无针对 YIME 签名产物的阻止事件；
+- [ ] 生成新的安装态验证留痕，不复用 2026-07-12/07-22 的旧哈希。
 
-# 3. 重新安装
-.\Reinstall-PIME-Test.cmd
+阶段 B 的唯一外部阻塞项是可信签名凭据；其余准备工作应在等待期间完成。
 
-# 4. 验证安装目录时间戳
-Get-Item "C:\Program Files (x86)\YIME\go-backend\server.exe" | Select-Object LastWriteTime
+---
 
-# 5. 在记事本中测试
-#    - 切换到音元输入法
-#    - 输入编码，确认候选窗出现
-#    - 测试语言栏菜单
-```
+### 阶段 C：发布后质量循环
+
+目标：用真实使用数据改善候选质量与可维护性，而不是凭少量人工样本重写词典。
+
+#### C1. 用户态长期指标
+
+按周记录：
+
+- 冷启动纠正次数；
+- 同一输入第二次成为首选的比例；
+- 重启后的学习保持率；
+- 用户词库、屏蔽词和同步数据增长；
+- 候选分页、分段改选和工具入口异常。
+
+数据要求：
+
+- 区分产前模拟、开发者试用和真实用户数据；
+- 不把小样本压力测试描述为生产遥测；
+- 不采集不必要的用户文本；
+- 每项指标必须能解释其采集方式和局限。
+
+#### C2. 核心词典晋升
+
+使用 `lexicon-promotion-scan.exe` 聚合多个周期的真实不足。
+
+只有同时满足下列条件才进入系统核心：
+
+- 多用户或多周期重复出现；
+- 高频、可解释、读音明确；
+- 已通过正式编码门禁；
+- 不应只由个别用户词库解决；
+- 来源、选择和排序证据可复现。
+
+低频、古旧、专业或构式部件不能仅因频率低而删除；应通过分层和专项回归管理。
+
+#### C3. 回归语料扩展
+
+优先扩展：
+
+- 专业文本与专名；
+- 古诗、成语和罕见字入口；
+- 零声母与连续虚首音边界；
+- 多字候选与长 composition；
+- x86/x64 宿主差异；
+- Unicode 扩展字符和代理对。
+
+---
+
+### 阶段 D：长期演进
+
+以下方向只有在前一阶段数据证明有价值时才进入实现。
+
+| 方向 | 进入条件 | 原则 |
+|---|---|---|
+| 分段条信息架构继续优化 | 真实用户能稳定理解和使用现有“句：”分段条 | 不牺牲点击映射，不按显示文本猜 Rime 边界 |
+| 候选排序微调 | 有跨周期排序证据与离线回归集 | BCC、RIME-LMDG 和结构保底继续分层，不直接相加原始频次 |
+| 布局设计器增强 | 当前布局迁移和学习数据迁移稳定 | 所有派生模式仍来自同一真源和同一编码规则 |
+| 工具可访问性改善 | 有 DPI、键盘导航或屏幕阅读器复现 | 重工具继续使用独立原生窗口，不膨胀语言栏 |
+| 自动化发行验收 | 手工签名发行清单稳定并完成至少一次 | 自动化只能减少重复操作，不能删除真实宿主烟雾测试 |
+
+当前明确不规划：
+
+- 裸数字键选词或数字键双重语义；
+- Go 侧接管原生 Rime 候选分页；
+- 在宿主编辑区监听 composition 鼠标点击；
+- 根据显示汉字长度猜测分段或 caret；
+- 为输入法核心引入 LLM 依赖；
+- 恢复运行时 PowerShell 工具链；
+- 在没有真实数据时扩大所谓“智能排序”范围。
+
+---
+
+## 5. 发布门禁
+
+| 门禁 | 最低要求 | 失败处理 |
+|---|---|---|
+| 源码 | `git diff --check`，子模块状态明确，无意外生成文件 | 停止构建，先清理变更范围 |
+| Go | `go vet ./...`、`go test ./...`、race 稳定集 | 不得通过删减测试绕过 |
+| Rime | 真实 librime 三模式与句中改选回归 | 检查 schema、部署和运行库，不做 Go 候选切片 |
+| C++/TSF | x86/x64 构建和 `PIMERpcResponseTests` | 先确认 MSVC 环境与真实架构 |
+| Rust | pinned i686 host toolchain 构建和测试 | 不改成 x64 host，不取消工具链固定 |
+| 构建物 | PE machine、版本资源、清单和连续哈希 | 不打包缺失或旧构建物 |
+| 安装器 | 标准安装、原位升级、卸载、重启替换 | 不强杀 Explorer，不绕过 DLL 锁检查 |
+| 安装态 | 构建↔安装哈希、进程重启、真实宿主操作 | 源码验证不能代替 |
+| 签名 | 可信签名、时间戳、签名者校验 | 正式标签直接失败 |
+| 证据 | 报告、日志和验收记录可定位到具体构建 | 不接受口头“看起来正常” |
+
+修改类型与最低测试强度，以
+[测试与验证指南](YIME_TESTING_GUIDE.md#9-修改类型与最低验证)为准。
+
+---
+
+## 6. 当前执行顺序
+
+当前只按以下顺序推进：
+
+1. 完成“句：”紧凑分段条的 x86/x64 构建和 C++ 回归；
+2. 生成新开发安装包，不改动已固化的构建配置；
+3. 重装并确认安装二进制哈希与本轮构建物一致；
+4. 在 x64 Notepad、Codex IDE、x86 SysWOW64 charmap 完成人工验收；
+5. 立即采集带宿主标签、二进制哈希和 RPC 的完整证据报告；
+6. 更新观察期结论及相关帮助文档；
+7. 等待可信签名条件，期间只处理阻断性缺陷和证据缺口；
+8. 签名后执行阶段 B 全量发行验收。
+
+任何新功能若会延迟上述顺序，应进入阶段 C/D 待办，而不是插入当前发行收口。
+
+---
+
+## 7. 风险与应对
+
+| 风险 | 表现 | 应对 |
+|---|---|---|
+| 旧安装二进制掩盖源码修复 | 源码测试通过，宿主行为不变 | 核对安装时间戳/哈希并重启 PIMELauncher、server |
+| x86/x64 结果混淆 | System32 charmap 结果被当成 x86 | x86 只认 `C:\Windows\SysWOW64\charmap.exe` |
+| 子模块提交不可获取 | 主仓库指针已更新，CI checkout 失败 | 先推 `libIME2` commit，再更新并推主仓库 |
+| 锁定 DLL 升级误判 | 重装提示 DLL 仍被 Explorer 加载 | 使用既定就地安装路径；干净替换等待重启 |
+| Smart App Control 噪声 | 3033/3077 被误判为崩溃 | 先核对事件中的真实文件路径和签名状态 |
+| 构建缓存架构错误 | x64 缓存被用于 Win32 或反之 | 保留 `build`=Win32、`build64`=x64 的架构门禁 |
+| 代理导致 FetchContent 失败 | Git/CMake 无法连接 GitHub | 显式设置 `HTTP_PROXY`/`HTTPS_PROXY` 到本机代理 |
+| 候选边界推断错误 | 多字项被拆栏或点击错位 | UI 只消费后端分段，不按汉字个数推断 |
+| 文档漂移 | 路线图写“完成”，实际仍在观察期 | 状态变更必须附测试、构建或安装证据链接 |
+
+---
+
+## 8. 文档职责
+
+| 文档 | 职责 |
+|---|---|
+| 本路线图 | 当前优先级、阶段、退出条件和长期方向 |
+| [项目综合评估](YIME_PROJECT_ASSESSMENT.md) | 项目结论、已处理风险和剩余发行风险 |
+| [可用性评估](YIME_USABILITY_ASSESSMENT.md) | 产品交互、编码体系和用户体验评估 |
+| [架构文档](YIME_ARCHITECTURE.md) | 组件边界、协议和运行时职责 |
+| [测试指南](YIME_TESTING_GUIDE.md) | 测试命令、分层、真实宿主与安装验证方法 |
+| [发布与签名指南](YIME_RELEASE_AND_SIGNING.md) | 构建、签名、验证和正式发布流程 |
+| [单一真源重构记录](project/SINGLE_SOURCE_LEXICON_REFACTOR.md) | 核心词典与三模式生成的实施证据 |
+| [句中改选验收计划](project/SENTENCE_SEGMENT_CORRECTION_TEST_PLAN.md) | 分段条具体场景、失败判据和证据采集 |
+
+维护规则：
+
+- 只在阶段、优先级或退出条件变化时更新本路线图；
+- 已完成任务移入专项记录，不在路线图累积提交清单；
+- 每个“完成”必须能链接到测试、构建、安装或签名证据；
+- 历史验证保留日期和构建身份，不用旧哈希证明新版本；
+- `AGENTS.md` 是工程约束源，本路线图不得与其冲突。
