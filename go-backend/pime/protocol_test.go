@@ -61,6 +61,34 @@ func TestResponseJSONPreservesCompositionNavigationMetadata(t *testing.T) {
 	}
 }
 
+func TestResponseJSONIncludesHostMessageWindowPayload(t *testing.T) {
+	resp := NewResponse(3, true)
+	resp.ShowMessage = &ShowMessageInfo{
+		Message:  "已遗忘：边做边是",
+		Duration: 3,
+	}
+
+	payload, err := resp.ToJSON()
+	if err != nil {
+		t.Fatalf("ToJSON failed: %v", err)
+	}
+
+	var decoded map[string]interface{}
+	if err := json.Unmarshal(payload, &decoded); err != nil {
+		t.Fatalf("unmarshal response failed: %v", err)
+	}
+	showMessage, ok := decoded["showMessage"].(map[string]interface{})
+	if !ok {
+		t.Fatalf("expected showMessage object, got %#v", decoded["showMessage"])
+	}
+	if got := showMessage["message"]; got != "已遗忘：边做边是" {
+		t.Fatalf("expected quick-forget message, got %#v", got)
+	}
+	if got := showMessage["duration"]; got != float64(3) {
+		t.Fatalf("expected three-second message, got %#v", got)
+	}
+}
+
 func TestParseRequestAcceptsNumericKeyStates(t *testing.T) {
 	req, err := ParseRequest([]byte(`{
 		"method": "onKeyDown",

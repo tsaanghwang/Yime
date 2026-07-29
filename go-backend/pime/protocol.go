@@ -144,6 +144,13 @@ type ButtonInfo struct {
 	Toggled   bool   `json:"toggled,omitempty"`
 }
 
+// ShowMessageInfo asks the PIME host to display short-lived feedback beside
+// the active composition.
+type ShowMessageInfo struct {
+	Message  string `json:"message"`
+	Duration int    `json:"duration"`
+}
+
 // Response PIME响应结构
 type Response struct {
 	SeqNum              int                    `json:"seqNum"`
@@ -163,6 +170,7 @@ type Response struct {
 	SetSelKeys          string                 `json:"setSelKeys,omitempty"`
 	SetSelLabels        []string               `json:"setSelLabels,omitempty"`
 	Message             string                 `json:"message,omitempty"`
+	ShowMessage         *ShowMessageInfo       `json:"showMessage,omitempty"`
 	CustomizeUI         map[string]interface{} `json:"customizeUI,omitempty"`
 	// 按钮相关
 	AddButton    []ButtonInfo `json:"addButton,omitempty"`

@@ -692,6 +692,108 @@ func TestRealRimeNavigatorSelectionKeepsSentenceComposition(t *testing.T) {
 		t.Fatalf("expected correction learning to improve %q from rank %d, got rank %d",
 			finalCommit.Text, initialRank, learnedRank)
 	}
+
+	for index := 0; index < learnedRank; index++ {
+		if !ProcessKey(session.sessionID, rimeDown, 0) {
+			t.Fatalf("expected Down to highlight learned candidate at rank %d", learnedRank)
+		}
+	}
+	highlightedMenu, ok := GetMenu(session.sessionID)
+	if !ok || highlightedMenu.HighlightedCandidateIndex != learnedRank {
+		t.Fatalf("expected learned candidate highlighted at %d, got %#v",
+			learnedRank, highlightedMenu)
+	}
+
+	ime := newSegmentNavigationIME(&nativeBackend{sessionID: session.sessionID})
+	forgetReq := &pime.Request{
+		SeqNum:    100,
+		KeyCode:   vkDelete,
+		KeyStates: keyStatesDown(vkControl),
+	}
+	filterResp := ime.filterKeyDown(forgetReq, pime.NewResponse(forgetReq.SeqNum, true))
+	if filterResp.ReturnValue != 1 {
+		t.Fatalf("expected Ctrl+Delete quick forget to be handled, got %#v", filterResp)
+	}
+	onResp := ime.onKeyDown(forgetReq, pime.NewResponse(forgetReq.SeqNum+1, true))
+	if onResp.ShowMessage == nil ||
+		onResp.ShowMessage.Message != "已遗忘："+finalCommit.Text {
+		t.Fatalf("expected quick-forget feedback for %q, got %#v",
+			finalCommit.Text, onResp.ShowMessage)
+	}
+	if onResp.CommitString != "" || onResp.CompositionString == "" {
+		t.Fatalf("quick forget must refresh candidates without committing, got %#v", onResp)
+	}
+
+	afterMenu, ok := GetMenu(session.sessionID)
+	if !ok {
+		t.Fatal("expected candidate menu to remain after quick forget")
+	}
+	afterRank := -1
+	for index, candidate := range afterMenu.Candidates {
+		if candidate.Text == finalCommit.Text {
+			afterRank = index
+			break
+		}
+	}
+	if afterRank >= 0 && afterRank <= learnedRank {
+		t.Fatalf("expected forgotten candidate %q to disappear or lose its learned rank %d, got %d in %#v",
+			finalCommit.Text, learnedRank, afterRank, afterMenu.Candidates)
+	}
+}
+
+func TestRealRimeQuickForgetAvailableInAllSchemas(t *testing.T) {
+	session := newRealRimeSession(t)
+	for _, schemaID := range []string{
+		settings.SchemaVariable,
+		settings.SchemaFull,
+		settings.SchemaShorthand,
+	} {
+		t.Run(schemaID, func(t *testing.T) {
+			ClearComposition(session.sessionID)
+			if !SelectSchema(session.sessionID, schemaID) {
+				t.Fatalf("expected schema %q to be selectable", schemaID)
+			}
+			typeASCII(t, session.sessionID, "bj")
+			before, ok := GetMenu(session.sessionID)
+			if !ok || len(before.Candidates) < 2 {
+				t.Fatalf("expected candidates before quick forget in %q, got %#v",
+					schemaID, before)
+			}
+			target := before.Candidates[0].Text
+
+			ime := newSegmentNavigationIME(&nativeBackend{sessionID: session.sessionID})
+			req := &pime.Request{
+				SeqNum:    200,
+				KeyCode:   vkDelete,
+				KeyStates: keyStatesDown(vkControl),
+			}
+			filterResp := ime.filterKeyDown(req, pime.NewResponse(req.SeqNum, true))
+			if filterResp.ReturnValue != 1 {
+				t.Fatalf("expected Ctrl+Delete to be handled in %q, got %#v",
+					schemaID, filterResp)
+			}
+			onResp := ime.onKeyDown(req, pime.NewResponse(req.SeqNum+1, true))
+			if onResp.ShowMessage == nil ||
+				onResp.ShowMessage.Message != "已遗忘："+target {
+				t.Fatalf("expected quick-forget feedback in %q, got %#v",
+					schemaID, onResp.ShowMessage)
+			}
+			if onResp.CommitString != "" || onResp.CompositionString == "" {
+				t.Fatalf("quick forget must preserve composition in %q, got %#v",
+					schemaID, onResp)
+			}
+
+			after, ok := GetMenu(session.sessionID)
+			if !ok || len(after.Candidates) == 0 {
+				t.Fatalf("expected refreshed candidates in %q, got %#v",
+					schemaID, after)
+			}
+			if after.Candidates[0].Text != target {
+				t.Fatalf("quick forget must not remove the system dictionary candidate %q in %q, got %#v",
+					target, schemaID, after.Candidates)
+			}
+		})
+	}
 }
 
 func TestRealRimePrintableLayoutKeysAreNeverPagingBindings(t *testing.T) {

@@ -38,6 +38,7 @@ type testBackend struct {
 	horizontal       bool
 	schemaID         string
 	returnKeyHandled bool
+	forgottenIndexes []int
 }
 
 type segmentNavigationTestBackend struct {
@@ -513,6 +514,17 @@ func (b *testBackend) SelectCandidate(index int) bool {
 	b.commitString = b.candidates[index].Text
 	b.composition = ""
 	b.candidates = nil
+	return true
+}
+
+func (b *testBackend) ForgetCandidate(index int) bool {
+	b.mu.Lock()
+	defer b.mu.Unlock()
+	if index < 0 || index >= len(b.candidates) {
+		return false
+	}
+	b.forgottenIndexes = append(b.forgottenIndexes, index)
+	b.candidates = append(b.candidates[:index], b.candidates[index+1:]...)
 	return true
 }
 
@@ -1575,6 +1587,68 @@ func TestControlKeyPassesThroughWhenIdle(t *testing.T) {
 
 	if resp.ReturnValue != 0 {
 		t.Fatalf("expected bare ctrl to pass through, got %d", resp.ReturnValue)
+	}
+}
+
+func TestQuickForgetDeletesVisibleCandidateAndShowsHostFeedback(t *testing.T) {
+	ime := newTestIME()
+	backend := ime.backend.(*testBackend)
+	backend.composition = "bjjj"
+	backend.candidates = []candidateItem{
+		{Text: "边做边是"},
+		{Text: "边做边试"},
+	}
+	// Model a blocked first backend candidate. The candidate window exposes
+	// backend index 1 as its highlighted visible candidate.
+	ime.candidateBackendIndexMap = []int{1}
+	req := &pime.Request{
+		SeqNum:    11,
+		KeyCode:   vkDelete,
+		KeyStates: keyStatesDown(vkControl),
+	}
+
+	filterResp := ime.filterKeyDown(req, pime.NewResponse(req.SeqNum, true))
+	if filterResp.ReturnValue != 1 {
+		t.Fatalf("expected Ctrl+Delete to be handled, got %#v", filterResp)
+	}
+	if !reflect.DeepEqual(backend.forgottenIndexes, []int{1}) {
+		t.Fatalf("expected visible backend candidate 1 to be forgotten, got %#v",
+			backend.forgottenIndexes)
+	}
+
+	onResp := ime.onKeyDown(req, pime.NewResponse(req.SeqNum+1, true))
+	if onResp.ShowMessage == nil ||
+		onResp.ShowMessage.Message != "已遗忘：边做边试" ||
+		onResp.ShowMessage.Duration != 3 {
+		t.Fatalf("expected quick-forget host feedback, got %#v", onResp.ShowMessage)
+	}
+	if onResp.CommitString != "" {
+		t.Fatalf("quick forget must not commit text, got %q", onResp.CommitString)
+	}
+	if backend.composition != "bjjj" {
+		t.Fatalf("quick forget must preserve composition, got %q", backend.composition)
+	}
+	if len(backend.candidates) != 1 || backend.candidates[0].Text != "边做边是" {
+		t.Fatalf("expected only the selected visible candidate to be removed, got %#v",
+			backend.candidates)
+	}
+}
+
+func TestQuickForgetPassesThroughWithoutCandidateMenu(t *testing.T) {
+	ime := newTestIME()
+	req := &pime.Request{
+		SeqNum:    12,
+		KeyCode:   vkDelete,
+		KeyStates: keyStatesDown(vkControl),
+	}
+
+	resp := ime.filterKeyDown(req, pime.NewResponse(req.SeqNum, true))
+	if resp.ReturnValue != 0 {
+		t.Fatalf("idle Ctrl+Delete must pass through to the host, got %#v", resp)
+	}
+	if ime.pendingQuickForgetMessage != "" {
+		t.Fatalf("idle Ctrl+Delete must not queue feedback, got %q",
+			ime.pendingQuickForgetMessage)
 	}
 }
 

@@ -95,6 +95,13 @@ func (b *nativeBackend) SelectCandidate(index int) bool {
 	return SelectCandidate(b.sessionID, index)
 }
 
+func (b *nativeBackend) ForgetCandidate(index int) bool {
+	if !b.EnsureSession() {
+		return false
+	}
+	return DeleteCandidate(b.sessionID, index)
+}
+
 func (b *nativeBackend) SetCompositionCaret(rawPosition int) bool {
 	if !b.EnsureSession() {
 		return false

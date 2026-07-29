@@ -150,6 +150,10 @@ type backendCompositionCaret interface {
 	SetCompositionCaret(rawPosition int) bool
 }
 
+type backendCandidateForgetter interface {
+	ForgetCandidate(index int) bool
+}
+
 // backendUserDataSyncer is implemented by backends that expose Rime's native
 // user-data sync capability. This is intentionally limited to Rime-managed
 // user data and must not be extended to Yime-only standalone state.
@@ -208,6 +212,7 @@ type IME struct {
 	lastKeyUpRet                bool
 	keyComposing                bool
 	pendingRawCommit            string
+	pendingQuickForgetMessage   string
 	selectingCompositionSegment bool
 	compositionSegmentCache     []cachedCompositionSegment
 	backend                     rimeBackend
@@ -307,6 +312,7 @@ func (ime *IME) onDeactivate(req *pime.Request, resp *pime.Response) *pime.Respo
 	// into the next activation.
 	clear(ime.keysDown)
 	ime.pendingRawCommit = ""
+	ime.pendingQuickForgetMessage = ""
 	ime.destroySession(resp)
 	ime.removeButtons(resp)
 	resp.ReturnValue = 1
@@ -1023,8 +1029,14 @@ func (ime *IME) processKey(req *pime.Request, isUp bool) bool {
 		ime.logShortcutTrace(req, isUp, 0, 0, false, false)
 		return false
 	}
+	quickForgetIndex := -1
+	quickForgetText := ""
 	if !isUp {
-		ime.keyComposing = ime.isComposing()
+		state := ime.backend.State()
+		ime.keyComposing = state.Composition != "" || len(state.Candidates) > 0
+		if isQuickForgetRequest(req) {
+			quickForgetIndex, quickForgetText = ime.quickForgetTarget(state)
+		}
 	}
 	if !isUp && ime.keyComposing {
 		if !ime.backendUsesCandidatePaging() && ime.handleCandidatePageKey(req) {
@@ -1039,9 +1051,25 @@ func (ime *IME) processKey(req *pime.Request, isUp bool) bool {
 	}
 	translatedKeyCode := translateKeyCode(req)
 	modifiers := translateModifiers(req, isUp)
+	if quickForgetIndex >= 0 {
+		if forgetter, ok := ime.backend.(backendCandidateForgetter); ok &&
+			forgetter.ForgetCandidate(quickForgetIndex) {
+			ime.pendingQuickForgetMessage = quickForgetText
+			ime.candidatePageStart = 0
+			log.Printf("RIME 快速遗忘候选: schema=%s index=%d text=%q",
+				ime.currentSchemaID(), quickForgetIndex, quickForgetText)
+			ime.logShortcutTrace(req, isUp, translatedKeyCode, modifiers, true, true)
+			return true
+		}
+	}
 	backendRet := ime.backend.ProcessKey(req, translatedKeyCode, modifiers)
 	handled := backendRet
 	if backendRet {
+		if quickForgetText != "" {
+			ime.pendingQuickForgetMessage = quickForgetText
+			log.Printf("RIME 快速遗忘候选（按键回退）: schema=%s text=%q",
+				ime.currentSchemaID(), quickForgetText)
+		}
 		ime.candidatePageStart = 0
 		ime.logShortcutTrace(req, isUp, translatedKeyCode, modifiers, backendRet, true)
 		return true
@@ -1065,6 +1093,33 @@ func (ime *IME) processKey(req *pime.Request, isUp bool) bool {
 	}
 	ime.logShortcutTrace(req, isUp, translatedKeyCode, modifiers, backendRet, handled)
 	return false
+}
+
+func isQuickForgetRequest(req *pime.Request) bool {
+	return req != nil &&
+		req.KeyCode == vkDelete &&
+		req.KeyStates.IsKeyDown(vkControl) &&
+		!req.KeyStates.IsKeyDown(vkMenu)
+}
+
+func (ime *IME) quickForgetTarget(state rimeState) (int, string) {
+	if len(state.Candidates) == 0 {
+		return -1, ""
+	}
+	index := state.CandidateCursor
+	if index < 0 || index >= len(state.Candidates) {
+		index = 0
+	}
+	if len(ime.candidateBackendIndexMap) > 0 {
+		visibleCursor := remapCandidateCursor(index, ime.candidateBackendIndexMap)
+		if visibleCursor >= 0 && visibleCursor < len(ime.candidateBackendIndexMap) {
+			index = ime.candidateBackendIndexMap[visibleCursor]
+		}
+	}
+	if index < 0 || index >= len(state.Candidates) {
+		return -1, ""
+	}
+	return index, state.Candidates[index].Text
 }
 
 func (ime *IME) logShortcutTrace(req *pime.Request, isUp bool, translatedKeyCode, modifiers int, backendRet, handled bool) {
@@ -1213,6 +1268,13 @@ func (ime *IME) onKey(req *pime.Request, resp *pime.Response) bool {
 	ime.updateWindowsModeIcon(req, resp)
 	state := ime.backend.State()
 	ime.applyStateToResponse(resp, state)
+	if ime.pendingQuickForgetMessage != "" {
+		resp.ShowMessage = &pime.ShowMessageInfo{
+			Message:  "已遗忘：" + ime.pendingQuickForgetMessage,
+			Duration: 3,
+		}
+		ime.pendingQuickForgetMessage = ""
+	}
 	ime.keyComposing = state.Composition != "" || len(state.Candidates) > 0
 	return true
 }
