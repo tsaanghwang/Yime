@@ -199,6 +199,18 @@ static void testCompositionStripUsesCodePointOffsets() {
 	CHECK(end == 3);
 }
 
+static void testCompositionStripUsesCandidateTextOnly() {
+	const Ime::CompositionSegmentItem segment = {
+		0, 4, L"bjjj", L"\x97f3\x5143", false,
+	};
+	CHECK(std::wstring(Ime::compositionSegmentStripLabel()) == L"\x53e5\xff1a");
+	// A cell stays bound to one backend-defined item, even when that item's
+	// display text spans multiple Han characters. Its code remains metadata for
+	// click mapping and must not widen the strip.
+	CHECK(Ime::compositionSegmentDisplayText(segment) == L"\x97f3\x5143");
+	CHECK(Ime::compositionSegmentDisplayText(segment).find(segment.code) == std::wstring::npos);
+}
+
 static void testCandidateFontSizeIsBounded() {
 	CHECK(PIME::normalizeCandidateFontSize(-1) == PIME::kMinimumCandidateFontSize);
 	CHECK(PIME::normalizeCandidateFontSize(12) == 12);
@@ -239,6 +251,7 @@ int main() {
 	testOwnedSegmentStripHostCallbackPath();
 	testStructuredCompositionSegmentsAreValidated();
 	testCompositionStripUsesCodePointOffsets();
+	testCompositionStripUsesCandidateTextOnly();
 	testCandidateFontSizeIsBounded();
 	testPopupAnchorStaysInsideWorkArea();
 	testLauncherExecutableValidation();

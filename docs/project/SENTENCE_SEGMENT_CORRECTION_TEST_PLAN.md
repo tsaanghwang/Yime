@@ -1,7 +1,7 @@
 # 独立分段条使用与安装态验收计划
 
 本文用于验收 Yime 自有候选窗中的鼠标组句纠错功能。该功能不监听、不修改宿主
-编辑区的鼠标事件；所有点击都发生在 Yime 候选窗的“组句”分段条中。
+编辑区的鼠标事件；所有点击都发生在 Yime 候选窗顶行标为“句：”的分段条中。
 
 ## 1. 功能目的
 
@@ -18,19 +18,19 @@
 
 ## 2. 界面语义
 
-每个可点击单元必须同时显示预览汉字和对应编码，例如：
+每个可点击单元只显示候选项的预览汉字，不显示编码注释，例如：
 
 ```text
-组句  [幅  bjjj] [幅  bjjj]
+句： [幅] [幅]
 ```
 
 实际预览汉字受候选排序和用户学习影响，不要求固定为“幅”；验收重点是两个
-`bjjj` 分段各自都有对应汉字，而不是显示一条连续的 `bjjjbjjj`。
+候选项各自占一栏，而不是把候选项重新按汉字拆栏，或显示一条连续编码。
 
 把第一段改选为“逼”后，分段条应保持稳定映射并更新为类似：
 
 ```text
-组句  [逼  bjjj] [幅  bjjj]
+句： [逼] [幅]
 ```
 
 当前活动段使用候选窗高亮色。显示文字不是 Rime cursor；点击请求使用该段保存的
@@ -55,11 +55,11 @@
 
 1. 切换到音元输入法。
 2. 输入 `bjjjbjjj`，不要提交。
-3. 确认候选窗顶部出现两个“汉字 + `bjjj`”分段单元。
+3. 确认候选窗顶部出现标为“句：”的分段条，且两个候选项各占一栏，只显示汉字。
 4. 点击第一段。
 5. 确认候选列表切换为第一段候选，宿主 composition 仍存在，没有文字提前上屏。
 6. 用鼠标点击候选或按对应的 `Shift+1` 至 `Shift+9`，把第一段改为另一个候选。
-7. 确认第一段汉字更新、第一段编码仍为 `bjjj`，第二段没有丢失。
+7. 确认第一段汉字更新、第二段没有丢失；编码不应作为分段条文字显示。
 8. 点击第二段，再点击第一段，确认可以在未提交整句时切换目标段。
 9. 最后按正常流程提交整句，只允许此时整体上屏。
 
@@ -82,7 +82,7 @@ composition 点击回调；候选窗分段条应独立工作。
 
 出现下列任一情况即判定安装态验收失败：
 
-- “组句”后只有连续编码，没有每段对应汉字。
+- “句：”分段条中出现编码注释、连续编码，或把一个候选项按汉字拆成多栏。
 - 汉字存在，但点击使用汉字下标导致候选段错位。
 - 点击第一段后有文字立即上屏，或 composition 下划线消失。
 - 第二次点击结束 composition。
@@ -110,7 +110,14 @@ Yime 崩溃；必须先核对事件中的实际文件路径。
 完成 Notepad、Codex IDE 或 SysWOW64 charmap 的人工操作后，在仓库根目录运行：
 
 ```powershell
-.\tools\capture-sentence-segment-evidence.ps1 -RequireComplete
+.\tools\capture-sentence-segment-evidence.ps1 `
+  -NotepadOutcome pass `
+  -NotepadNotes 'first, middle, and final segment switching passed' `
+  -CodexIdeOutcome pass `
+  -CodexIdeNotes 'composition remained active until explicit commit' `
+  -SysWow64CharmapOutcome pass `
+  -SysWow64CharmapNotes 'x86 installed DLL exercised' `
+  -RequireComplete
 ```
 
 脚本只读取安装目录、进程列表和
@@ -120,12 +127,16 @@ Yime 崩溃；必须先核对事件中的实际文件路径。
 
 - 已安装 `server.exe`、x86/x64 `PIMETextService.dll` 的时间、大小和 SHA-256，
   以及它们与当前仓库构建产物的哈希比对；
+- 明确标注的 x64 Notepad、Codex IDE 和 x86 SysWOW64 charmap 人工结果及备注；
 - `PIMELauncher` 和 `server` 的 PID、可执行文件路径及启动时间快照；
 - 日志末尾的 `selectCompositionSegment` 请求，以及按 `client` 和 `seqNum`
   关联的响应。
 
-`-RequireComplete` 会在安装文件缺失、构建产物缺失或哈希不一致时返回失败，但仍会
-先保存报告。若日志很长，可通过 `-LogTailLines` 增大扫描范围；报告默认最多保留最近
+人工结果允许 `pass`、`fail`、`blocked`、`not-run` 和 `not-recorded`；省略时为
+`not-recorded`。`-RequireComplete` 要求三项安装哈希匹配、三个宿主均明确为 `pass`，
+且至少存在一组按 `client` 和 `seqNum` 关联到响应的 `selectCompositionSegment` RPC；
+未满足时仍会先保存报告再返回失败。若日志很长，可通过 `-LogTailLines` 增大扫描范围；
+报告默认最多保留最近
 50 组 RPC，可通过 `-MaxRpcTransactions` 调整。SysWOW64 charmap 验收完成后应立即
 运行一次并把报告路径记入本节验收记录。
 

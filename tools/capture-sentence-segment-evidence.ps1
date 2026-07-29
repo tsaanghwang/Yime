@@ -6,6 +6,15 @@ param(
     [int]$LogTailLines = 5000,
     [int]$MaxRpcTransactions = 50,
     [string[]]$ProcessNames = @('PIMELauncher', 'server'),
+    [ValidateSet('pass', 'fail', 'blocked', 'not-run', 'not-recorded')]
+    [string]$NotepadOutcome = 'not-recorded',
+    [string]$NotepadNotes = '',
+    [ValidateSet('pass', 'fail', 'blocked', 'not-run', 'not-recorded')]
+    [string]$CodexIdeOutcome = 'not-recorded',
+    [string]$CodexIdeNotes = '',
+    [ValidateSet('pass', 'fail', 'blocked', 'not-run', 'not-recorded')]
+    [string]$SysWow64CharmapOutcome = 'not-recorded',
+    [string]$SysWow64CharmapNotes = '',
     [switch]$RequireComplete
 )
 
@@ -206,12 +215,40 @@ $files = @(
 )
 $processes = @(Get-EvidenceProcessSnapshot -Names $ProcessNames)
 $rpc = Get-CompositionSegmentRpcEvidence -Path $LogPath -TailLines $LogTailLines -MaxTransactions $MaxRpcTransactions
+$hostOutcomes = @(
+    [pscustomobject][ordered]@{
+        Host = 'x64 Notepad'
+        Architecture = 'x64'
+        Executable = 'Notepad'
+        Outcome = $NotepadOutcome
+        Notes = $NotepadNotes
+    }
+    [pscustomobject][ordered]@{
+        Host = 'Codex IDE'
+        Architecture = 'x64'
+        Executable = 'Codex IDE'
+        Outcome = $CodexIdeOutcome
+        Notes = $CodexIdeNotes
+    }
+    [pscustomobject][ordered]@{
+        Host = 'x86 SysWOW64 charmap'
+        Architecture = 'x86'
+        Executable = 'C:\Windows\SysWOW64\charmap.exe'
+        Outcome = $SysWow64CharmapOutcome
+        Notes = $SysWow64CharmapNotes
+    }
+)
 
 $failedFiles = @($files | Where-Object { $_.Status -in @('installed-missing', 'mismatch') })
 $unverifiedFiles = @($files | Where-Object { $_.Status -eq 'reference-missing' })
-$overall = if ($failedFiles.Count -gt 0) {
+$failedHosts = @($hostOutcomes | Where-Object { $_.Outcome -eq 'fail' })
+$incompleteHosts = @($hostOutcomes | Where-Object { $_.Outcome -ne 'pass' })
+$completeRpcTransactions = @($rpc.Transactions | Where-Object { $_.ResponseFound })
+$overall = if ($failedFiles.Count -gt 0 -or $failedHosts.Count -gt 0) {
     'failed'
-} elseif ($unverifiedFiles.Count -gt 0) {
+} elseif ($unverifiedFiles.Count -gt 0 -or
+    $incompleteHosts.Count -gt 0 -or
+    $completeRpcTransactions.Count -eq 0) {
     'partial'
 } else {
     'complete'
@@ -242,6 +279,16 @@ foreach ($file in $files) {
     $markdown.Add("- $($file.Name) reference: $([char]96)$(ConvertTo-MarkdownCell $file.ReferencePath)$([char]96)")
 }
 $markdown.Add('')
+$markdown.Add('## Host outcomes')
+$markdown.Add('')
+$markdown.Add('| Host | Architecture | Executable | Outcome | Notes |')
+$markdown.Add('| --- | --- | --- | --- | --- |')
+foreach ($hostOutcome in $hostOutcomes) {
+    $markdown.Add("| $(ConvertTo-MarkdownCell $hostOutcome.Host) | $(ConvertTo-MarkdownCell $hostOutcome.Architecture) | $(ConvertTo-MarkdownCell $hostOutcome.Executable) | $(ConvertTo-MarkdownCell $hostOutcome.Outcome) | $(ConvertTo-MarkdownCell $hostOutcome.Notes) |")
+}
+$markdown.Add('')
+$markdown.Add('A complete report requires an explicit `pass` for every host. `fail` makes the report failed; `blocked`, `not-run`, and `not-recorded` keep it partial.')
+$markdown.Add('')
 $markdown.Add('## Process snapshot')
 $markdown.Add('')
 $markdown.Add('| Process | State | PID | Executable path | Started (UTC) |')
@@ -257,6 +304,7 @@ $markdown.Add("- Log exists: $($rpc.LogExists)")
 $markdown.Add("- Log modified (UTC): $(ConvertTo-MarkdownCell $rpc.LogModifiedUtc)")
 $markdown.Add("- Tail lines scanned: $($rpc.LinesScanned)")
 $markdown.Add("- Transactions found: $($rpc.Transactions.Count)")
+$markdown.Add("- Transactions with correlated responses: $($completeRpcTransactions.Count)")
 $markdown.Add('')
 if ($rpc.Transactions.Count -eq 0) {
     $markdown.Add('_No selectCompositionSegment transactions were found in the scanned log tail._')
@@ -285,7 +333,9 @@ $summary = [pscustomobject][ordered]@{
     ReportPath = $reportPath
     FileRecords = $files
     ProcessRecords = $processes
+    HostOutcomeRecords = $hostOutcomes
     RpcTransactionCount = $rpc.Transactions.Count
+    RpcCompleteTransactionCount = $completeRpcTransactions.Count
 }
 Write-Host "Sentence segment evidence report: $reportPath"
 Write-Host "Installed runtime evidence status: $overall"

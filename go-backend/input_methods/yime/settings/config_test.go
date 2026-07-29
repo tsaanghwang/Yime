@@ -40,6 +40,43 @@ func TestAvailableSchemaOptionsFollowPackagedFiles(t *testing.T) {
 	}
 }
 
+func TestApplyConnectsBothCandidateCodeDisplaysToEverySchema(t *testing.T) {
+	sharedDir := t.TempDir()
+	for _, schemaID := range []string{SchemaVariable, SchemaFull, SchemaShorthand} {
+		if err := os.WriteFile(filepath.Join(sharedDir, schemaID+".schema.yaml"), []byte("schema:\n  schema_id: "+schemaID+"\n"), 0o644); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	for _, schemaID := range []string{SchemaVariable, SchemaFull, SchemaShorthand} {
+		for _, reverseMode := range []string{"yime_pinyin", "key_sequence"} {
+			t.Run(schemaID+"/"+reverseMode, func(t *testing.T) {
+				userDir := t.TempDir()
+				if err := Apply(userDir, sharedDir, schemaID, 7, reverseMode, "vertical", false); err != nil {
+					t.Fatalf("Apply failed: %v", err)
+				}
+				snapshot := LoadSnapshot(userDir, sharedDir)
+				if snapshot.SchemaID != schemaID {
+					t.Fatalf("configured schema=%q, want %q", snapshot.SchemaID, schemaID)
+				}
+				if snapshot.ReverseLookupMode != reverseMode {
+					t.Fatalf("display mode=%q, want %q", snapshot.ReverseLookupMode, reverseMode)
+				}
+			})
+		}
+	}
+}
+
+func TestApplyRejectsEveryUnavailableSchemaUniformly(t *testing.T) {
+	for _, schemaID := range []string{SchemaVariable, SchemaFull, SchemaShorthand} {
+		t.Run(schemaID, func(t *testing.T) {
+			if err := Apply(t.TempDir(), t.TempDir(), schemaID, 5, "key_sequence", "vertical", false); err == nil {
+				t.Fatalf("Apply accepted unavailable schema %q", schemaID)
+			}
+		})
+	}
+}
+
 func TestReadConfiguredPageSizePrefersDefaultCustom(t *testing.T) {
 	userDir := t.TempDir()
 	if err := os.WriteFile(filepath.Join(userDir, "default.custom.yaml"), []byte("patch:\n  \"menu/page_size\": 8\n"), 0o644); err != nil {

@@ -96,6 +96,37 @@ func TestExecuteApplyNotifiesActiveSession(t *testing.T) {
 	}
 }
 
+func TestExecuteApplyForwardsBothCodeDisplaysForEveryInputSchema(t *testing.T) {
+	oldApply := applySettings
+	oldNotify := notifyRuntimeChange
+	defer func() {
+		applySettings = oldApply
+		notifyRuntimeChange = oldNotify
+	}()
+
+	var gotSchema, gotReverse string
+	applySettings = func(_, _ string, schemaID string, _ int, reverseMode, _ string, _ bool) error {
+		gotSchema, gotReverse = schemaID, reverseMode
+		return nil
+	}
+	notifyRuntimeChange = func(string, string, bool) (runtimechange.Event, error) {
+		return runtimechange.Event{}, nil
+	}
+
+	for _, schemaID := range []string{"yime_variable", "yime_full", "yime_shorthand"} {
+		for _, reverseMode := range []string{"yime_pinyin", "key_sequence"} {
+			if err := executeApply("user", "shared", applyRequest{
+				schemaID: schemaID, pageSize: 5, reverseMode: reverseMode, layout: "vertical",
+			}); err != nil {
+				t.Fatal(err)
+			}
+			if gotSchema != schemaID || gotReverse != reverseMode {
+				t.Fatalf("settings tool forwarded schema=%q display=%q, want %q/%q", gotSchema, gotReverse, schemaID, reverseMode)
+			}
+		}
+	}
+}
+
 func TestExecuteApplyDoesNotNotifyAfterApplyFailure(t *testing.T) {
 	oldApply := applySettings
 	oldNotify := notifyRuntimeChange
