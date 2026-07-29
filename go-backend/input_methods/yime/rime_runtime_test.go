@@ -343,8 +343,8 @@ func TestRealRimeOwnedSegmentRPCReachesLaterSegment(t *testing.T) {
 	}
 	if rawCaret, activeIndex, ok := ime.rawCaretForCompositionSegment(
 		backend.State(), segments[1].Start, segments[1].End,
-	); !ok || rawCaret != 8 || activeIndex != 1 {
-		t.Fatalf("expected second segment to map to raw caret 8, got %d index=%d ok=%v",
+	); !ok || rawCaret != 4 || activeIndex != 1 {
+		t.Fatalf("expected second segment to map to entry caret 4, got %d index=%d ok=%v",
 			rawCaret, activeIndex, ok)
 	}
 
@@ -369,6 +369,158 @@ func TestRealRimeOwnedSegmentRPCReachesLaterSegment(t *testing.T) {
 	}
 	if len(resp.CandidateList) == 0 {
 		t.Fatalf("expected candidates for the clicked segment, got %#v", resp.CandidateList)
+	}
+	if strings.Contains(resp.CandidateList[0], "幅幅") {
+		t.Fatalf("later segment must show local candidates, not a sentence prefix: %#v",
+			resp.CandidateList)
+	}
+	if len(backend.caretCalls) != 2 ||
+		backend.caretCalls[0] != 4 || backend.caretCalls[1] != 8 {
+		t.Fatalf("expected second-segment bounds [4,8], got %#v",
+			backend.caretCalls)
+	}
+}
+
+func TestRealRimeLaterSegmentCorrectionCommitsPreservedPrefix(t *testing.T) {
+	session := newRealRimeSession(t)
+	if !SelectSchema(session.sessionID, "yime_full") {
+		t.Fatal("expected yime_full schema to be selectable")
+	}
+
+	ClearComposition(session.sessionID)
+	typeASCII(t, session.sessionID, "bjjjbjjj")
+	_, _ = GetCommit(session.sessionID)
+	backend := &nativeBackend{sessionID: session.sessionID}
+	ime := newSegmentNavigationIME(backend)
+	segments := ime.compositionSegmentsForState(backend.State())
+	if len(segments) != 2 {
+		t.Fatalf("expected two correction segments, got %#v", segments)
+	}
+
+	clickRequest := &pime.Request{
+		SeqNum:    1,
+		Method:    "selectCompositionSegment",
+		CursorPos: segments[1].Start,
+		SelEnd:    segments[1].End,
+	}
+	clickResponse := ime.onSelectCompositionSegment(
+		clickRequest, pime.NewResponse(clickRequest.SeqNum, true))
+	if clickResponse.ReturnValue != 1 ||
+		len(clickResponse.CompositionSegments) != 2 ||
+		!clickResponse.CompositionSegments[1].Active {
+		t.Fatalf("second segment should be ready for correction, got %#v",
+			clickResponse)
+	}
+
+	targetCandidate := -1
+	for index, candidate := range backend.State().Candidates {
+		if candidate.Text == "逼" {
+			targetCandidate = index
+			break
+		}
+	}
+	if targetCandidate < 0 {
+		t.Fatal("expected a second-segment alternative candidate 逼")
+	}
+	selectRequest := &pime.Request{
+		SeqNum: 2,
+		Method: "selectCandidate",
+		Data: map[string]interface{}{
+			"candidateIndex": float64(targetCandidate),
+		},
+	}
+	selectResponse := ime.onSelectCandidate(
+		selectRequest, pime.NewResponse(selectRequest.SeqNum, true))
+	if selectResponse.CommitString != "幅逼" {
+		t.Fatalf("expected preserved prefix and corrected tail to commit together, got %#v",
+			selectResponse)
+	}
+	if selectResponse.CompositionString != "" {
+		t.Fatalf("final-segment correction should finish the sentence, got %#v",
+			selectResponse)
+	}
+}
+
+func TestRealRimeMiddleSegmentCorrectionRestoresFullSentence(t *testing.T) {
+	session := newRealRimeSession(t)
+	if !SelectSchema(session.sessionID, "yime_full") {
+		t.Fatal("expected yime_full schema to be selectable")
+	}
+
+	ClearComposition(session.sessionID)
+	typeASCII(t, session.sessionID,
+		"bjfa3lkj2mmmnvcl]fdl1jdshuds1jdz]eeeym,.bjfa2lkj=oca6JKL")
+	_, _ = GetCommit(session.sessionID)
+	backend := &nativeBackend{sessionID: session.sessionID}
+	ime := newSegmentNavigationIME(backend)
+	segments := ime.compositionSegmentsForState(backend.State())
+	if len(segments) != 14 {
+		t.Fatalf("expected complete 14-character sentence preview, got %#v", segments)
+	}
+	targetIndex := -1
+	for index, segment := range segments {
+		if segment.Text == "袋" {
+			targetIndex = index
+			break
+		}
+	}
+	if targetIndex != 4 {
+		t.Fatalf("expected 袋 at segment 4, got index=%d segments=%#v",
+			targetIndex, segments)
+	}
+
+	clickRequest := &pime.Request{
+		SeqNum:    1,
+		Method:    "selectCompositionSegment",
+		CursorPos: segments[targetIndex].Start,
+		SelEnd:    segments[targetIndex].End,
+	}
+	clickResponse := ime.onSelectCompositionSegment(
+		clickRequest, pime.NewResponse(clickRequest.SeqNum, true))
+	if clickResponse.ReturnValue != 1 ||
+		len(clickResponse.CompositionSegments) != len(segments) ||
+		!clickResponse.CompositionSegments[targetIndex].Active {
+		t.Fatalf("middle segment should be ready for local correction, got %#v",
+			clickResponse)
+	}
+
+	targetCandidate := -1
+	targetState := backend.State()
+	for index, candidate := range targetState.Candidates {
+		if candidate.Text == "带" {
+			targetCandidate = index
+			break
+		}
+	}
+	if targetCandidate < 0 {
+		t.Fatalf("expected local same-syllable candidate 带, got %#v",
+			targetState.Candidates)
+	}
+	selectRequest := &pime.Request{
+		SeqNum: 2,
+		Method: "selectCandidate",
+		Data: map[string]interface{}{
+			"candidateIndex": float64(targetCandidate),
+		},
+	}
+	selectResponse := ime.onSelectCandidate(
+		selectRequest, pime.NewResponse(selectRequest.SeqNum, true))
+	if selectResponse.CommitString != "" {
+		t.Fatalf("middle correction must not commit before remaining review, got %#v",
+			selectResponse)
+	}
+	if len(selectResponse.CompositionSegments) != len(segments) {
+		t.Fatalf("middle correction must restore the full sentence row, got %#v",
+			selectResponse.CompositionSegments)
+	}
+	if selectResponse.CompositionSegments[targetIndex].Text != "带" {
+		t.Fatalf("expected corrected segment 带, got %#v",
+			selectResponse.CompositionSegments[targetIndex])
+	}
+	if selectResponse.CompositionSegments[targetIndex+1].Text != "下" ||
+		selectResponse.CompositionSegments[len(segments)-1].Text != "字" {
+		t.Fatalf("middle correction lost the suffix, got %#v",
+			selectResponse.CompositionSegments)
 	}
 }
 

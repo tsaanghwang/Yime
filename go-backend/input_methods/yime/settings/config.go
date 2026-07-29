@@ -348,6 +348,11 @@ func readSchemaListSelection(path string) string {
 		if strings.HasPrefix(trimmed, "- schema:") {
 			return normalizeSchemaID(strings.TrimSpace(strings.TrimPrefix(trimmed, "- schema:")))
 		}
+		if strings.HasPrefix(trimmed, "- {schema:") {
+			value := strings.TrimSpace(strings.TrimPrefix(trimmed, "- {schema:"))
+			value = strings.TrimSpace(strings.TrimSuffix(value, "}"))
+			return normalizeSchemaID(value)
+		}
 	}
 	return ""
 }

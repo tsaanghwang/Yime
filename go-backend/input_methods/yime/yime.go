@@ -418,10 +418,34 @@ func (ime *IME) rawCaretForCompositionSegment(
 	for index, segment := range segments {
 		if segment.Start == targetStart && segment.End == targetEnd &&
 			index < len(ime.compositionSegmentCache) {
-			return ime.compositionSegmentCache[index].RawEnd, index, true
+			cached := ime.compositionSegmentCache[index]
+			if index == 0 {
+				return cached.RawEnd, index, true
+			}
+			return cached.RawStart, index, true
 		}
 	}
 	return 0, -1, false
+}
+
+func (ime *IME) compositionPrefixText(segmentCount int) string {
+	if segmentCount <= 0 || segmentCount > len(ime.compositionSegmentCache) {
+		return ""
+	}
+	var prefix strings.Builder
+	for index := 0; index < segmentCount; index++ {
+		prefix.WriteString(ime.compositionSegmentCache[index].Text)
+	}
+	return prefix.String()
+}
+
+func candidateIndexForExactText(candidates []candidateItem, text string) int {
+	for index, candidate := range candidates {
+		if candidate.Text == text {
+			return index
+		}
+	}
+	return -1
 }
 
 func markCompositionSegmentActive(resp *pime.Response, activeIndex int) {
@@ -466,6 +490,22 @@ func (ime *IME) onSelectCompositionSegment(
 	if navigator, ok := ime.backend.(backendCompositionCaret); ok && hasRawCaret {
 		if navigator.SetCompositionCaret(rawCaret) {
 			state := ime.backend.State()
+			if activeIndex > 0 && state.Composition != "" {
+				prefixText := ime.compositionPrefixText(activeIndex)
+				prefixCandidate := candidateIndexForExactText(
+					state.Candidates, prefixText)
+				if prefixCandidate < 0 ||
+					!ime.backend.SelectCandidate(prefixCandidate) {
+					return ime.rejectCompositionSegment(resp, state)
+				}
+				state = ime.backend.State()
+				targetRawEnd := ime.compositionSegmentCache[activeIndex].RawEnd
+				if state.Composition == "" ||
+					!navigator.SetCompositionCaret(targetRawEnd) {
+					return ime.rejectCompositionSegment(resp, state)
+				}
+				state = ime.backend.State()
+			}
 			if state.Composition != "" {
 				resp.ReturnValue = 1
 				ime.applyCompositionSegmentState(resp, state)
@@ -893,7 +933,20 @@ func ensureDefaultRuntimeSelection(sharedDir, userDir string) (bool, error) {
 	if selected != "" {
 		selectedPath := filepath.Join(sharedDir, selected+".schema.yaml")
 		if info, err := os.Stat(selectedPath); err == nil && !info.IsDir() {
-			return false, nil
+			if readSchemaListSelection(
+				filepath.Join(userDir, "default.custom.yaml")) == selected {
+				return false, nil
+			}
+			snapshot := settings.LoadSnapshot(userDir, sharedDir)
+			return true, applyRimeSettings(
+				userDir,
+				sharedDir,
+				selected,
+				snapshot.PageSize,
+				snapshot.ReverseLookupMode,
+				snapshot.CandidateLayout,
+				false,
+			)
 		}
 	}
 	snapshot := settings.LoadSnapshot(userDir, sharedDir)
@@ -919,6 +972,11 @@ func (ime *IME) pollRuntimeChange() {
 	}
 	if event.SettingsRevision > ime.settingsChangeRevision {
 		ime.syncStandaloneUISettings()
+		targetSchema := readSelectedSchemaFromUserConfig(userDir)
+		if targetSchema != "" && ime.backend != nil &&
+			targetSchema != ime.currentSchemaID() {
+			ime.pendingSchemaRedeploy = targetSchema
+		}
 		ime.settingsChangeRevision = event.SettingsRevision
 	}
 	if event.LexiconRevision > ime.lexiconChangeRevision {
@@ -1610,7 +1668,61 @@ func (ime *IME) selectSchema(schemaID string) {
 	}
 	if ime.backend.SelectSchema(schemaID) {
 		ime.backend.ClearComposition()
+		ime.persistSchemaSelection(schemaID)
 	}
+}
+
+func (ime *IME) persistSchemaSelection(schemaID string) {
+	userDir, sharedDir := ime.userDir(), ime.sharedDir()
+	if userDir == "" || sharedDir == "" {
+		return
+	}
+	reverseMode := ime.reverseLookupDisplayMode
+	if reverseMode == "" {
+		reverseMode = "hidden"
+	}
+	candidateLayout := "vertical"
+	if ime.style.CandidatePerRow > verticalCandidatesPerRow {
+		candidateLayout = "horizontal"
+	}
+	event, err := writePersistedSchemaSelection(
+		userDir,
+		sharedDir,
+		schemaID,
+		ime.normalizedCandidatePageSize(),
+		reverseMode,
+		candidateLayout,
+	)
+	if err != nil {
+		log.Printf("保存输入方案选择失败 %s: %v", schemaID, err)
+		ime.showUserMessage(
+			"保存输入方案失败",
+			"当前编辑器已切换，但无法保存为其他编辑器使用的输入方案。\n错误: "+err.Error(),
+			"Warning",
+		)
+		return
+	}
+	ime.recordRuntimeChange(event)
+}
+
+func writePersistedSchemaSelection(
+	userDir, sharedDir, schemaID string,
+	pageSize int,
+	reverseMode, candidateLayout string,
+) (runtimechange.Event, error) {
+	if err := applyRimeSettings(
+		userDir,
+		sharedDir,
+		schemaID,
+		pageSize,
+		reverseMode,
+		candidateLayout,
+		false,
+	); err != nil {
+		return runtimechange.Event{}, err
+	}
+	return runtimechange.Notify(
+		userDir, runtimechange.ScopeSettings, false)
 }
 
 // startSchemaBuildAndSwitch handles the first selection of an optional schema.
@@ -3150,6 +3262,11 @@ func readSchemaListSelection(path string) string {
 		trimmed := strings.TrimSpace(line)
 		if strings.HasPrefix(trimmed, "- schema:") {
 			return normalizeSelectedSchemaID(strings.TrimSpace(strings.TrimPrefix(trimmed, "- schema:")))
+		}
+		if strings.HasPrefix(trimmed, "- {schema:") {
+			value := strings.TrimSpace(strings.TrimPrefix(trimmed, "- {schema:"))
+			value = strings.TrimSpace(strings.TrimSuffix(value, "}"))
+			return normalizeSelectedSchemaID(value)
 		}
 	}
 	return ""

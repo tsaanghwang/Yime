@@ -18,6 +18,20 @@ func TestDefaultSchemaIsCoreBackedVariableMode(t *testing.T) {
 	}
 }
 
+func TestReadConfiguredSchemaAcceptsInlineSchemaListEntry(t *testing.T) {
+	userDir := t.TempDir()
+	if err := os.WriteFile(
+		filepath.Join(userDir, "default.custom.yaml"),
+		[]byte("patch:\n  schema_list:\n    - {schema: yime_full}\n"),
+		0o644,
+	); err != nil {
+		t.Fatal(err)
+	}
+	if got := ReadConfiguredSchema(userDir); got != SchemaFull {
+		t.Fatalf("inline schema list should select %q, got %q", SchemaFull, got)
+	}
+}
+
 func TestAvailableSchemaOptionsFollowPackagedFiles(t *testing.T) {
 	sharedDir := t.TempDir()
 	for _, name := range []string{

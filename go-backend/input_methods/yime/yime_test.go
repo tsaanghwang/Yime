@@ -41,9 +41,10 @@ type testBackend struct {
 }
 
 type segmentNavigationTestBackend struct {
-	states       []rimeState
-	stateIndex   int
-	processCount int
+	states             []rimeState
+	stateIndex         int
+	processCount       int
+	selectedCandidates []int
 }
 
 type directSegmentNavigationTestBackend struct {
@@ -64,11 +65,18 @@ func (b *segmentNavigationTestBackend) Initialize(string, string, bool) bool { r
 func (b *segmentNavigationTestBackend) EnsureSession() bool                  { return true }
 func (b *segmentNavigationTestBackend) DestroySession()                      {}
 func (b *segmentNavigationTestBackend) ClearComposition()                    {}
-func (b *segmentNavigationTestBackend) SelectCandidate(int) bool             { return false }
-func (b *segmentNavigationTestBackend) SetOption(string, bool)               {}
-func (b *segmentNavigationTestBackend) GetOption(string) bool                { return false }
-func (b *segmentNavigationTestBackend) SelectSchema(string) bool             { return false }
-func (b *segmentNavigationTestBackend) CurrentSchema() string                { return "" }
+func (b *segmentNavigationTestBackend) SelectCandidate(index int) bool {
+	if b.stateIndex+1 >= len(b.states) {
+		return false
+	}
+	b.selectedCandidates = append(b.selectedCandidates, index)
+	b.stateIndex++
+	return true
+}
+func (b *segmentNavigationTestBackend) SetOption(string, bool)   {}
+func (b *segmentNavigationTestBackend) GetOption(string) bool    { return false }
+func (b *segmentNavigationTestBackend) SelectSchema(string) bool { return false }
+func (b *segmentNavigationTestBackend) CurrentSchema() string    { return "" }
 func (b *segmentNavigationTestBackend) ProcessKey(
 	req *pime.Request, translatedKeyCode, modifiers int) bool {
 	b.processCount++
@@ -83,7 +91,7 @@ func (b *segmentNavigationTestBackend) State() rimeState {
 }
 
 func newSegmentNavigationIME(backend rimeBackend) *IME {
-	return &IME{
+	ime := &IME{
 		TextServiceBase:       pime.NewTextServiceBase(nil),
 		backend:               backend,
 		keysDown:              map[int]bool{},
@@ -93,6 +101,11 @@ func newSegmentNavigationIME(backend rimeBackend) *IME {
 		yimePinyinLoaded:      map[string]bool{},
 		yimePUAByPinyin:       map[string]string{},
 	}
+	userDir := filepath.Join(os.Getenv("APPDATA"), APP, "Rime")
+	if event, err := runtimechange.Read(userDir); err == nil {
+		ime.recordRuntimeChange(event)
+	}
+	return ime
 }
 
 func TestSelectCompositionSegmentUsesOwnedUIRPCPath(t *testing.T) {
@@ -195,14 +208,36 @@ func TestSelectCompositionSegmentUsesRawCaretForLaterSegment(t *testing.T) {
 				SelEnd:             9,
 			},
 			{
-				Composition:        "bjjj bjjj",
-				CompositionPreview: "幅幅",
-				CursorPos:          9,
+				Composition:        "bjjjbjjj",
+				CompositionPreview: "幅",
+				CursorPos:          4,
 				SelStart:           0,
-				SelEnd:             9,
+				SelEnd:             4,
 				Candidates: []candidateItem{
-					{Text: "幅幅"},
 					{Text: "幅"},
+					{Text: "逼"},
+				},
+			},
+			{
+				Composition:        "幅bjjj",
+				CompositionPreview: "幅幅",
+				CursorPos:          5,
+				SelStart:           1,
+				SelEnd:             5,
+				Candidates: []candidateItem{
+					{Text: "幅"},
+					{Text: "逼"},
+				},
+			},
+			{
+				Composition:        "幅bjjj",
+				CompositionPreview: "幅幅",
+				CursorPos:          5,
+				SelStart:           1,
+				SelEnd:             5,
+				Candidates: []candidateItem{
+					{Text: "幅"},
+					{Text: "逼"},
 				},
 			},
 		}},
@@ -215,8 +250,13 @@ func TestSelectCompositionSegmentUsesRawCaretForLaterSegment(t *testing.T) {
 	if resp.ReturnValue != 1 {
 		t.Fatalf("expected later segment click to be handled, got %#v", resp)
 	}
-	if !reflect.DeepEqual(backend.caretPositions, []int{8}) {
-		t.Fatalf("expected raw code caret 8, got %#v", backend.caretPositions)
+	if !reflect.DeepEqual(backend.caretPositions, []int{4, 8}) {
+		t.Fatalf("expected second segment bounds [4,8], got %#v",
+			backend.caretPositions)
+	}
+	if !reflect.DeepEqual(backend.selectedCandidates, []int{0}) {
+		t.Fatalf("expected unchanged prefix candidate 0 to be confirmed, got %#v",
+			backend.selectedCandidates)
 	}
 	if backend.processCount != 0 {
 		t.Fatalf("direct caret must not synthesize cursor keys, got %d", backend.processCount)
@@ -2002,6 +2042,129 @@ func TestEnsureDefaultRuntimeSelectionMigratesMissingSchema(t *testing.T) {
 	}
 	if got := readSelectedSchemaFromUserConfig(userDir); got != settings.SchemaVariable {
 		t.Fatalf("expected variable default selection, got %q", got)
+	}
+}
+
+func TestEnsureDefaultRuntimeSelectionRepairsSchemaListToRememberedMode(t *testing.T) {
+	sharedDir := t.TempDir()
+	userDir := t.TempDir()
+	for _, schemaID := range []string{
+		settings.SchemaVariable,
+		settings.SchemaFull,
+		settings.SchemaShorthand,
+	} {
+		if err := os.WriteFile(
+			filepath.Join(sharedDir, schemaID+".schema.yaml"),
+			[]byte("schema:\n  schema_id: "+schemaID+"\n"),
+			0o644,
+		); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err := os.WriteFile(
+		filepath.Join(userDir, "user.yaml"),
+		[]byte("var:\n  previously_selected_schema: yime_variable\n"),
+		0o644,
+	); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(
+		filepath.Join(userDir, "default.custom.yaml"),
+		[]byte("patch:\n  schema_list:\n    - {schema: yime_shorthand}\n"),
+		0o644,
+	); err != nil {
+		t.Fatal(err)
+	}
+
+	changed, err := ensureDefaultRuntimeSelection(sharedDir, userDir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !changed {
+		t.Fatal("mismatched schema list should be repaired")
+	}
+	if got := readSchemaListSelection(
+		filepath.Join(userDir, "default.custom.yaml")); got != settings.SchemaVariable {
+		t.Fatalf("expected remembered variable mode in schema list, got %q", got)
+	}
+	if got := readSelectedSchemaFromUserConfig(userDir); got != settings.SchemaVariable {
+		t.Fatalf("expected variable mode to remain selected, got %q", got)
+	}
+}
+
+func TestWritePersistedSchemaSelectionIsSharedByNewEditors(t *testing.T) {
+	sharedDir := t.TempDir()
+	userDir := t.TempDir()
+	for _, schemaID := range []string{
+		settings.SchemaVariable,
+		settings.SchemaFull,
+		settings.SchemaShorthand,
+	} {
+		if err := os.WriteFile(
+			filepath.Join(sharedDir, schemaID+".schema.yaml"),
+			[]byte("schema:\n  schema_id: "+schemaID+"\n"),
+			0o644,
+		); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	event, err := writePersistedSchemaSelection(
+		userDir,
+		sharedDir,
+		settings.SchemaFull,
+		7,
+		"key_sequence",
+		"vertical",
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if event.SettingsRevision == 0 || event.RequiresRedeploy {
+		t.Fatalf("expected a settings-only runtime notification, got %#v", event)
+	}
+	if got := readPreviouslySelectedSchema(
+		filepath.Join(userDir, "user.yaml")); got != settings.SchemaFull {
+		t.Fatalf("new editor should read full mode from user.yaml, got %q", got)
+	}
+	if got := readSchemaListSelection(
+		filepath.Join(userDir, "default.custom.yaml")); got != settings.SchemaFull {
+		t.Fatalf("new editor should read full mode from schema list, got %q", got)
+	}
+}
+
+func TestRuntimeSettingsNotificationQueuesModeForOtherEditor(t *testing.T) {
+	appData := t.TempDir()
+	t.Setenv("APPDATA", appData)
+	ime := newTestIME()
+	if got := ime.currentSchemaID(); got != settings.SchemaVariable {
+		t.Fatalf("test editor should start in variable mode, got %q", got)
+	}
+
+	sharedDir := t.TempDir()
+	if err := os.WriteFile(
+		filepath.Join(sharedDir, settings.SchemaFull+".schema.yaml"),
+		[]byte("schema:\n  schema_id: yime_full\n"),
+		0o644,
+	); err != nil {
+		t.Fatal(err)
+	}
+	userDir := filepath.Join(appData, APP, "Rime")
+	if _, err := writePersistedSchemaSelection(
+		userDir,
+		sharedDir,
+		settings.SchemaFull,
+		5,
+		"key_sequence",
+		"vertical",
+	); err != nil {
+		t.Fatal(err)
+	}
+
+	ime.pollRuntimeChange()
+	if ime.pendingSchemaRedeploy != settings.SchemaFull {
+		t.Fatalf("other editor should queue full mode, got %q",
+			ime.pendingSchemaRedeploy)
 	}
 }
 
