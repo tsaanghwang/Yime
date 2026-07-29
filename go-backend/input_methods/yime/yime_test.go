@@ -4084,6 +4084,76 @@ func TestCandidateAnnotationsFallBackToScriptDictionaryCodesInAllDisplayModes(t 
 	}
 }
 
+func TestCandidateAnnotationMatrixCoversThreeSchemasAndFourDisplayModes(t *testing.T) {
+	ime := newTestIME()
+	backend := ime.backend.(*testBackend)
+	ime.standardPinyinLoaded = true
+	ime.standardPinyinByText = map[string]string{"青": "qīng"}
+	ime.yimePinyinLoaded = map[string]bool{
+		"yime_variable": true, "yime_full": true, "yime_shorthand": true,
+	}
+	ime.yimePinyinBySchema = map[string]map[string]string{
+		"yime_variable":  {"青": "var"},
+		"yime_full":      {"青": "full"},
+		"yime_shorthand": {"青": "short"},
+	}
+	ime.reversePinyinLoaded = map[string]bool{
+		"yime_variable": true, "yime_full": true, "yime_shorthand": true,
+	}
+	ime.reversePinyinBySchema = map[string]map[string]string{
+		"yime_variable":  {"var": "qing1"},
+		"yime_full":      {"full": "qing1"},
+		"yime_shorthand": {"short": "qing1"},
+	}
+	ime.yimePUALoaded = true
+	ime.yimePUAByPinyin = map[string]string{"qing1": "\ue4fd\ue509\ue515\ue527"}
+
+	type annotationSchema struct {
+		id      string
+		keyCode string
+	}
+	schemas := []annotationSchema{
+		{id: "yime_variable", keyCode: "var"},
+		{id: "yime_full", keyCode: "full"},
+		{id: "yime_shorthand", keyCode: "short"},
+	}
+	displays := []struct {
+		mode string
+		want func(schema annotationSchema) string
+	}{
+		{mode: "hidden", want: func(_ annotationSchema) string {
+			return ""
+		}},
+		{mode: "standard_pinyin", want: func(_ annotationSchema) string {
+			return "qīng"
+		}},
+		{mode: "yime_pinyin", want: func(_ annotationSchema) string {
+			return "\ue4fd\ue509\ue515\ue527"
+		}},
+		{mode: "key_sequence", want: func(schema annotationSchema) string {
+			return schema.keyCode
+		}},
+	}
+
+	covered := 0
+	for _, schema := range schemas {
+		for _, display := range displays {
+			t.Run(schema.id+"/"+display.mode, func(t *testing.T) {
+				backend.schemaID = schema.id
+				ime.reverseLookupDisplayMode = display.mode
+				candidates := ime.reverseLookupDisplayCandidates([]candidateItem{{Text: "青"}})
+				if got, want := candidates[0].Comment, display.want(schema); got != want {
+					t.Fatalf("annotation=%q, want %q", got, want)
+				}
+			})
+			covered++
+		}
+	}
+	if covered != 12 {
+		t.Fatalf("candidate annotation matrix covered %d combinations, want 12", covered)
+	}
+}
+
 func TestLoadYimeCodeLookupRemovesScriptDictionarySyllableSpaces(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "yime_variable.dict.yaml")
 	content := "---\nname: yime_variable\n...\n过程\tguew 8we;\t100\n"
