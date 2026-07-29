@@ -148,8 +148,12 @@ The `音元拼音` candidate annotation uses a separate display-only path:
 
 1. Prefer the actual ASCII code returned in the Rime candidate comment.
 2. Decode that code to numeric-tone pinyin through `yime_pinyin_codes.tsv`.
-3. Map each syllable to its BMP PUA sequence through `yime_pua_pinyin.json`.
-4. Render the copied candidate comment with the bundled `YinYuan` font.
+3. Map each syllable to its canonical four-position BMP PUA sequence through
+   `yime_pua_pinyin.json`.
+4. Apply the same position mask used by the active input schema: adjacent
+   yinyuan merging for variable mode and middle-tone omission for shorthand
+   mode. Fixed-length mode retains all four positions.
+5. Render the copied candidate comment with the bundled `YinYuan` font.
 
 This conversion never changes Rime composition, key input, schema dictionaries,
 or user-lexicon codes. `键位序列` continues to expose Rime's original ASCII

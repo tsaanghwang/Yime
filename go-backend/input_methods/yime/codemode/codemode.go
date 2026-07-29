@@ -28,6 +28,15 @@ type Record struct {
 	ShorthandSpelling string
 }
 
+// AlignedProjection applies the same position deletions as a Yime code mode to
+// another four-rune-per-syllable representation, such as the PUA yinyuan
+// glyphs shown in candidate annotations.
+type AlignedProjection struct {
+	Full      string
+	Variable  string
+	Shorthand string
+}
+
 type musicalMetadata struct {
 	quality int
 	tone    int
@@ -89,21 +98,13 @@ func BuildRecord(full string) (Record, error) {
 	for start := 0; start < len(runes); start += SyllableCodeLength {
 		syllable := runes[start : start+SyllableCodeLength]
 		fullParts = append(fullParts, string(syllable))
-		// The first position is a real or virtual shouyin and must remain an
-		// explicit syllable boundary. Only adjacent identical yinyuan that
-		// compose the three-position ganyin are merged.
-		shouyin := syllable[:1]
-		variableGanyin := mergeAdjacent(syllable[1:])
-		variablePart := append(append([]rune(nil), shouyin...), variableGanyin...)
+		variableIndices, shorthandIndices := syllableProjectionIndices(syllable)
+		variablePart := selectRunes(syllable, variableIndices)
 		variableText := string(variablePart)
 		variable.WriteString(variableText)
 		variableParts = append(variableParts, variableText)
 
-		// Shorthand is derived from the variable result: retain its shouyin and
-		// apply only the middle-tone omission rule to its ganyin.
-		shouyin = variablePart[:1]
-		ganyin := variablePart[1:]
-		shorthandPart := string(shouyin) + string(omitMiddleTone(ganyin))
+		shorthandPart := string(selectRunes(syllable, shorthandIndices))
 		shorthand.WriteString(shorthandPart)
 		shorthandParts = append(shorthandParts, shorthandPart)
 	}
@@ -117,6 +118,39 @@ func BuildRecord(full string) (Record, error) {
 		return Record{}, err
 	}
 	return record, nil
+}
+
+// ProjectAligned projects an aligned representation with the exact position
+// mask used to derive variable and shorthand codes from fullCode.
+func ProjectAligned(fullCode, fullValue string) (AlignedProjection, error) {
+	fullCode = strings.ReplaceAll(strings.TrimSpace(fullCode), " ", "")
+	if _, err := BuildRecord(fullCode); err != nil {
+		return AlignedProjection{}, err
+	}
+	codeRunes := []rune(fullCode)
+	valueRunes := []rune(fullValue)
+	if len(valueRunes) != len(codeRunes) {
+		return AlignedProjection{}, fmt.Errorf(
+			"aligned value length %d does not match full code length %d",
+			len(valueRunes),
+			len(codeRunes),
+		)
+	}
+
+	var variable strings.Builder
+	var shorthand strings.Builder
+	for start := 0; start < len(codeRunes); start += SyllableCodeLength {
+		codeSyllable := codeRunes[start : start+SyllableCodeLength]
+		valueSyllable := valueRunes[start : start+SyllableCodeLength]
+		variableIndices, shorthandIndices := syllableProjectionIndices(codeSyllable)
+		variable.WriteString(string(selectRunes(valueSyllable, variableIndices)))
+		shorthand.WriteString(string(selectRunes(valueSyllable, shorthandIndices)))
+	}
+	return AlignedProjection{
+		Full:      fullValue,
+		Variable:  variable.String(),
+		Shorthand: shorthand.String(),
+	}, nil
 }
 
 // ValidateContinuousInputRecord protects the two dictionary invariants needed
@@ -157,14 +191,33 @@ func ValidateContinuousInputRecord(record Record) error {
 	return nil
 }
 
-func mergeAdjacent(input []rune) []rune {
-	merged := make([]rune, 0, len(input))
-	for _, item := range input {
-		if len(merged) == 0 || merged[len(merged)-1] != item {
-			merged = append(merged, item)
+func syllableProjectionIndices(syllable []rune) ([]int, []int) {
+	variable := []int{0}
+	for index := 1; index < len(syllable); index++ {
+		if index == 1 || syllable[index] != syllable[index-1] {
+			variable = append(variable, index)
 		}
 	}
-	return merged
+	shorthand := append([]int(nil), variable...)
+	if len(variable) == SyllableCodeLength {
+		ganyin := []rune{
+			syllable[variable[1]],
+			syllable[variable[2]],
+			syllable[variable[3]],
+		}
+		if len(omitMiddleTone(ganyin)) == 2 {
+			shorthand = []int{variable[0], variable[1], variable[3]}
+		}
+	}
+	return variable, shorthand
+}
+
+func selectRunes(values []rune, indices []int) []rune {
+	selected := make([]rune, 0, len(indices))
+	for _, index := range indices {
+		selected = append(selected, values[index])
+	}
+	return selected
 }
 
 func omitMiddleTone(ganyin []rune) []rune {

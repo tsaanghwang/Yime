@@ -11,6 +11,7 @@ import (
 	"testing"
 	"unicode/utf8"
 
+	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/codemode"
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/diagnostics"
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/runtimechange"
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/settings"
@@ -638,6 +639,61 @@ func newTestIME() *IME {
 		ime.recordRuntimeChange(event)
 	}
 	return ime
+}
+
+type modeAnnotationFixture struct {
+	schemaID string
+	code     string
+	pua      string
+}
+
+func configureModeSpecificAnnotationFixture(ime *IME) []modeAnnotationFixture {
+	const (
+		firstFullPUA  = "\ue401\ue402\ue403\ue404"
+		secondFullPUA = "\ue405\ue406\ue407\ue408"
+	)
+	ime.reversePinyinLoaded = map[string]bool{
+		"yime_variable": true, "yime_full": true, "yime_shorthand": true,
+	}
+	ime.reversePinyinBySchema = map[string]map[string]string{
+		"yime_variable":  {"'f": "first1", "'sdf": "second2"},
+		"yime_full":      {"'fff": "first1", "'sdf": "second2"},
+		"yime_shorthand": {"'f": "first1", "'sf": "second2"},
+	}
+	ime.yimePinyinLoaded = map[string]bool{
+		"yime_variable": true, "yime_full": true, "yime_shorthand": true,
+	}
+	ime.yimePinyinBySchema = map[string]map[string]string{
+		"yime_variable":  {"甲乙": "'f'sdf"},
+		"yime_full":      {"甲乙": "'fff'sdf"},
+		"yime_shorthand": {"甲乙": "'f'sf"},
+	}
+	ime.pinyinCodeLoaded = true
+	ime.pinyinCodeByNumeric = map[string]pinyinCodeRecord{
+		"first1":  {Full: "'fff", Variable: "'f", Shorthand: "'f"},
+		"second2": {Full: "'sdf", Variable: "'sdf", Shorthand: "'sf"},
+	}
+	ime.yimePUALoaded = true
+	ime.yimePUAByPinyin = map[string]string{
+		"first1": firstFullPUA, "second2": secondFullPUA,
+	}
+	return []modeAnnotationFixture{
+		{
+			schemaID: "yime_variable",
+			code:     "'f'sdf",
+			pua:      "\ue401\ue402\ue405\ue406\ue407\ue408",
+		},
+		{
+			schemaID: "yime_full",
+			code:     "'fff'sdf",
+			pua:      firstFullPUA + secondFullPUA,
+		},
+		{
+			schemaID: "yime_shorthand",
+			code:     "'f'sf",
+			pua:      "\ue401\ue402\ue405\ue406\ue408",
+		},
+	}
 }
 
 func newRuntimeChangeTestIME() *IME {
@@ -1753,6 +1809,62 @@ func TestOnCommandAcceptsHostSubmenuItemIDForEveryInputSchema(t *testing.T) {
 	}
 }
 
+func TestHostShorthandSelectionQueuesBuildWhenRuntimeArtifactsAreMissing(t *testing.T) {
+	t.Setenv("APPDATA", t.TempDir())
+	ime := newTestIME()
+	backend := ime.backend.(*testBackend)
+	backend.schemaID = "yime_variable"
+	backend.composition = "bj"
+	backend.refreshCandidates()
+
+	sharedDir := ime.sharedDir()
+	if err := os.MkdirAll(sharedDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	sharedSchemaPath := filepath.Join(sharedDir, "yime_shorthand.schema.yaml")
+	if err := os.WriteFile(
+		sharedSchemaPath,
+		[]byte("schema:\n  schema_id: yime_shorthand\n"),
+		0o644,
+	); err != nil {
+		t.Fatal(err)
+	}
+
+	oldSchedule := scheduleRimeMaintenance
+	var queued func()
+	scheduleRimeMaintenance = func(run func()) { queued = run }
+	rimeMaintenanceRunning.Store(false)
+	t.Cleanup(func() {
+		scheduleRimeMaintenance = oldSchedule
+		rimeMaintenanceRunning.Store(false)
+		_ = os.Remove(sharedSchemaPath)
+	})
+
+	resp := ime.onCommand(&pime.Request{
+		SeqNum: 38,
+		ID:     pime.FlexibleID{String: "settings"},
+		Data: map[string]interface{}{
+			"id": float64(ID_YIME_SHORTHAND),
+		},
+	}, pime.NewResponse(38, true))
+
+	if resp.ReturnValue != 1 {
+		t.Fatalf("expected host shorthand command to be handled, got %d", resp.ReturnValue)
+	}
+	if queued == nil {
+		t.Fatal("expected missing shorthand runtime artifacts to queue an external build")
+	}
+	if got := backend.CurrentSchema(); got != "yime_variable" {
+		t.Fatalf("must keep the working schema until shorthand is compiled, got %q", got)
+	}
+	if backend.composition != "bj" {
+		t.Fatalf("must preserve composition while the shorthand build is queued, got %q", backend.composition)
+	}
+	if err := validateCompiledRimeSchema(ime.userDir(), "yime_shorthand"); err == nil {
+		t.Fatal("test precondition failed: shorthand runtime artifacts unexpectedly exist")
+	}
+}
+
 func TestOnMenuReturnsSettingsMenu(t *testing.T) {
 	ime := newTestIME()
 
@@ -1969,39 +2081,20 @@ func TestLanguageBarCodeDisplayCommandsAnnotateCandidatesInEveryInputSchema(t *t
 	ime := newTestIME()
 	ime.style.CandidatePerRow = horizontalCandidatesPerRow
 	backend := ime.backend.(*testBackend)
-	ime.reversePinyinLoaded = map[string]bool{
-		"yime_variable": true, "yime_full": true, "yime_shorthand": true,
-	}
-	ime.reversePinyinBySchema = map[string]map[string]string{
-		"yime_variable":  {"var": "qing1"},
-		"yime_full":      {"full": "qing1"},
-		"yime_shorthand": {"short": "qing1"},
-	}
-	ime.yimePUALoaded = true
-	ime.yimePUAByPinyin = map[string]string{"qing1": "\ue4fd\ue509\ue515\ue527"}
-
-	schemas := []struct {
-		id   string
-		code string
-	}{
-		{id: "yime_variable", code: "var"},
-		{id: "yime_full", code: "full"},
-		{id: "yime_shorthand", code: "short"},
-	}
+	schemas := configureModeSpecificAnnotationFixture(ime)
 	displays := []struct {
 		command int
 		mode    string
-		want    string
 	}{
-		{command: ID_REVERSE_LOOKUP_YIME_PINYIN, mode: "yime_pinyin", want: "\ue4fd\ue509\ue515\ue527"},
+		{command: ID_REVERSE_LOOKUP_YIME_PINYIN, mode: "yime_pinyin"},
 		{command: ID_REVERSE_LOOKUP_KEY_SEQUENCE, mode: "key_sequence"},
 	}
 	for _, schema := range schemas {
 		for _, display := range displays {
-			t.Run(schema.id+"/"+display.mode, func(t *testing.T) {
-				backend.schemaID = schema.id
+			t.Run(schema.schemaID+"/"+display.mode, func(t *testing.T) {
+				backend.schemaID = schema.schemaID
 				backend.composition = schema.code
-				backend.candidates = []candidateItem{{Text: "青", Comment: schema.code}}
+				backend.candidates = []candidateItem{{Text: "甲乙", Comment: schema.code}}
 				resp := ime.onCommand(&pime.Request{
 					SeqNum: 40,
 					ID:     pime.FlexibleID{String: "settings"},
@@ -2020,9 +2113,9 @@ func TestLanguageBarCodeDisplayCommandsAnnotateCandidatesInEveryInputSchema(t *t
 
 				stateResp := pime.NewResponse(41, true)
 				ime.applyStateToResponse(stateResp, backend.State())
-				want := display.want
-				if want == "" {
-					want = schema.code
+				want := schema.code
+				if display.mode == "yime_pinyin" {
+					want = schema.pua
 				}
 				if len(stateResp.CandidateList) != 1 || !strings.Contains(stateResp.CandidateList[0], want) {
 					t.Fatalf("candidate annotation=%#v, want %q", stateResp.CandidateList, want)
@@ -2459,8 +2552,15 @@ func TestDeployCommandQueuesConfirmedExternalBuildWithoutNativeRedeploy(t *testi
 		if err := os.MkdirAll(buildDir, 0o755); err != nil {
 			t.Fatal(err)
 		}
-		if err := os.WriteFile(filepath.Join(buildDir, "yime_full.schema.yaml"), []byte("schema"), 0o644); err != nil {
-			t.Fatal(err)
+		for _, name := range []string{
+			"yime_full.schema.yaml",
+			"yime_full.prism.bin",
+			"yime_full.reverse.bin",
+			"yime_full.table.bin",
+		} {
+			if err := os.WriteFile(filepath.Join(buildDir, name), []byte(name), 0o644); err != nil {
+				t.Fatal(err)
+			}
 		}
 		return true
 	}
@@ -3999,37 +4099,15 @@ func TestLookupStandardPinyinPartialMissing(t *testing.T) {
 func TestYimePinyinAndKeySequenceCandidateCommentsFollowEveryInputSchema(t *testing.T) {
 	ime := newTestIME()
 	backend := ime.backend.(*testBackend)
-	ime.reversePinyinLoaded = map[string]bool{
-		"yime_variable":  true,
-		"yime_full":      true,
-		"yime_shorthand": true,
-	}
-	ime.reversePinyinBySchema = map[string]map[string]string{
-		"yime_variable":  {"var": "qing1"},
-		"yime_full":      {"full": "qing1"},
-		"yime_shorthand": {"short": "qing1"},
-	}
-	ime.yimePUALoaded = true
-	ime.yimePUAByPinyin = map[string]string{
-		"qing1": "\ue4fd\ue509\ue515\ue527",
-	}
-
-	tests := []struct {
-		schemaID string
-		code     string
-	}{
-		{schemaID: "yime_variable", code: "var"},
-		{schemaID: "yime_full", code: "full"},
-		{schemaID: "yime_shorthand", code: "short"},
-	}
+	tests := configureModeSpecificAnnotationFixture(ime)
 	for _, test := range tests {
 		t.Run(test.schemaID, func(t *testing.T) {
 			backend.schemaID = test.schemaID
-			original := []candidateItem{{Text: "青", Comment: test.code}}
+			original := []candidateItem{{Text: "甲乙", Comment: test.code}}
 
 			ime.reverseLookupDisplayMode = "yime_pinyin"
 			display := ime.reverseLookupDisplayCandidates(original)
-			if got, want := display[0].Comment, "\ue4fd\ue509\ue515\ue527"; got != want {
+			if got, want := display[0].Comment, test.pua; got != want {
 				t.Fatalf("expected %s PUA annotation decoded from actual candidate code, got %q want %q", test.schemaID, got, want)
 			}
 			if original[0].Comment != test.code {
@@ -4061,14 +4139,19 @@ func TestCandidateAnnotationsFallBackToScriptDictionaryCodesInAllDisplayModes(t 
 	ime.reversePinyinBySchema = map[string]map[string]string{
 		"yime_variable": {"guew": "guo4", "8we;": "cheng2"},
 	}
+	ime.pinyinCodeLoaded = true
+	ime.pinyinCodeByNumeric = map[string]pinyinCodeRecord{
+		"guo4":   {Full: "guew", Variable: "guew", Shorthand: "guew"},
+		"cheng2": {Full: "8we;", Variable: "8we;", Shorthand: "8we;"},
+	}
 	ime.yimePUALoaded = true
-	ime.yimePUAByPinyin = map[string]string{"guo4": "甲", "cheng2": "乙"}
+	ime.yimePUAByPinyin = map[string]string{"guo4": "ABCD", "cheng2": "EFGH"}
 	original := []candidateItem{{Text: "过程"}}
 
 	wants := map[string]string{
 		"hidden":          "",
 		"standard_pinyin": "guò chéng",
-		"yime_pinyin":     "甲乙",
+		"yime_pinyin":     "ABCDEFGH",
 		"key_sequence":    "guew8we;",
 	}
 	for mode, want := range wants {
@@ -4088,60 +4171,33 @@ func TestCandidateAnnotationMatrixCoversThreeSchemasAndFourDisplayModes(t *testi
 	ime := newTestIME()
 	backend := ime.backend.(*testBackend)
 	ime.standardPinyinLoaded = true
-	ime.standardPinyinByText = map[string]string{"青": "qīng"}
-	ime.yimePinyinLoaded = map[string]bool{
-		"yime_variable": true, "yime_full": true, "yime_shorthand": true,
-	}
-	ime.yimePinyinBySchema = map[string]map[string]string{
-		"yime_variable":  {"青": "var"},
-		"yime_full":      {"青": "full"},
-		"yime_shorthand": {"青": "short"},
-	}
-	ime.reversePinyinLoaded = map[string]bool{
-		"yime_variable": true, "yime_full": true, "yime_shorthand": true,
-	}
-	ime.reversePinyinBySchema = map[string]map[string]string{
-		"yime_variable":  {"var": "qing1"},
-		"yime_full":      {"full": "qing1"},
-		"yime_shorthand": {"short": "qing1"},
-	}
-	ime.yimePUALoaded = true
-	ime.yimePUAByPinyin = map[string]string{"qing1": "\ue4fd\ue509\ue515\ue527"}
-
-	type annotationSchema struct {
-		id      string
-		keyCode string
-	}
-	schemas := []annotationSchema{
-		{id: "yime_variable", keyCode: "var"},
-		{id: "yime_full", keyCode: "full"},
-		{id: "yime_shorthand", keyCode: "short"},
-	}
+	ime.standardPinyinByText = map[string]string{"甲乙": "jiǎ yǐ"}
+	schemas := configureModeSpecificAnnotationFixture(ime)
 	displays := []struct {
 		mode string
-		want func(schema annotationSchema) string
+		want func(schema modeAnnotationFixture) string
 	}{
-		{mode: "hidden", want: func(_ annotationSchema) string {
+		{mode: "hidden", want: func(_ modeAnnotationFixture) string {
 			return ""
 		}},
-		{mode: "standard_pinyin", want: func(_ annotationSchema) string {
-			return "qīng"
+		{mode: "standard_pinyin", want: func(_ modeAnnotationFixture) string {
+			return "jiǎ yǐ"
 		}},
-		{mode: "yime_pinyin", want: func(_ annotationSchema) string {
-			return "\ue4fd\ue509\ue515\ue527"
+		{mode: "yime_pinyin", want: func(schema modeAnnotationFixture) string {
+			return schema.pua
 		}},
-		{mode: "key_sequence", want: func(schema annotationSchema) string {
-			return schema.keyCode
+		{mode: "key_sequence", want: func(schema modeAnnotationFixture) string {
+			return schema.code
 		}},
 	}
 
 	covered := 0
 	for _, schema := range schemas {
 		for _, display := range displays {
-			t.Run(schema.id+"/"+display.mode, func(t *testing.T) {
-				backend.schemaID = schema.id
+			t.Run(schema.schemaID+"/"+display.mode, func(t *testing.T) {
+				backend.schemaID = schema.schemaID
 				ime.reverseLookupDisplayMode = display.mode
-				candidates := ime.reverseLookupDisplayCandidates([]candidateItem{{Text: "青"}})
+				candidates := ime.reverseLookupDisplayCandidates([]candidateItem{{Text: "甲乙"}})
 				if got, want := candidates[0].Comment, display.want(schema); got != want {
 					t.Fatalf("annotation=%q, want %q", got, want)
 				}
@@ -4181,6 +4237,9 @@ func TestBundledYimePUAMapContainsExpectedPhonologicalMappings(t *testing.T) {
 	}
 	found := map[string]string{}
 	for pua, values := range pinyinByPUA {
+		if got := utf8.RuneCountInString(pua); got != codemode.SyllableCodeLength {
+			t.Fatalf("bundled full PUA spelling %q has %d runes, want %d", pua, got, codemode.SyllableCodeLength)
+		}
 		for _, value := range values {
 			found[normalizeNumericTonePinyin(value)] = pua
 		}

@@ -189,6 +189,8 @@ type IME struct {
 	reversePinyinLoaded         map[string]bool
 	yimePinyinBySchema          map[string]map[string]string
 	yimePinyinLoaded            map[string]bool
+	pinyinCodeByNumeric         map[string]pinyinCodeRecord
+	pinyinCodeLoaded            bool
 	yimePUAByPinyin             map[string]string
 	yimePUALoaded               bool
 	pendingCandidateFont        bool
@@ -229,6 +231,7 @@ func New(client *pime.Client) pime.TextService {
 		reversePinyinLoaded:      map[string]bool{},
 		yimePinyinBySchema:       map[string]map[string]string{},
 		yimePinyinLoaded:         map[string]bool{},
+		pinyinCodeByNumeric:      map[string]pinyinCodeRecord{},
 		yimePUAByPinyin:          map[string]string{},
 		candidatePageSize:        defaultCandidatePageSize,
 		keysDown:                 map[int]bool{},
@@ -923,6 +926,8 @@ func (ime *IME) pollRuntimeChange() {
 		ime.reversePinyinBySchema = map[string]map[string]string{}
 		ime.yimePinyinLoaded = map[string]bool{}
 		ime.yimePinyinBySchema = map[string]map[string]string{}
+		ime.pinyinCodeLoaded = false
+		ime.pinyinCodeByNumeric = map[string]pinyinCodeRecord{}
 		ime.lexiconChangeRevision = event.LexiconRevision
 	}
 	if event.RedeployRevision > ime.redeployChangeRevision && ime.backend != nil {
@@ -1590,6 +1595,13 @@ func (ime *IME) selectSchema(schemaID string) {
 	if ime.backend == nil || schemaID == "" {
 		return
 	}
+	if ime.schemaPath(schemaID) != "" {
+		if err := validateCompiledRimeSchema(ime.userDir(), schemaID); err != nil {
+			log.Printf("schema %s is not fully compiled; queueing an external build: %v", schemaID, err)
+			ime.startSchemaBuildAndSwitch(schemaID)
+			return
+		}
+	}
 	if schemaPath := ime.prepareUserSchema(schemaID); schemaPath != "" {
 		if !deploySchemaConfig(schemaPath) {
 			log.Printf("部署方案失败: %s", schemaPath)
@@ -1845,8 +1857,8 @@ func (ime *IME) reversePinyinLookup() map[string]string {
 		return ime.reversePinyinBySchema[schemaID]
 	}
 	ime.reversePinyinLoaded[schemaID] = true
-	codes, err := ime.loadPinyinCodeMap()
-	if err != nil {
+	codes := ime.pinyinCodeLookup()
+	if len(codes) == 0 {
 		ime.reversePinyinBySchema[schemaID] = map[string]string{}
 		return ime.reversePinyinBySchema[schemaID]
 	}
@@ -1874,24 +1886,26 @@ func (ime *IME) reversePinyinLookup() map[string]string {
 func (ime *IME) lookupYimePinyin(text, candidateCode string) string {
 	reverseLookup := ime.reversePinyinLookup()
 	puaLookup := ime.yimePUALookup()
-	if len(reverseLookup) == 0 || len(puaLookup) == 0 {
+	codeRecords := ime.pinyinCodeLookup()
+	schemaID := ime.currentSchemaID()
+	if len(reverseLookup) == 0 || len(puaLookup) == 0 || len(codeRecords) == 0 {
 		return ""
 	}
-	if pua, ok := yimeCodeToPUA(strings.TrimSpace(candidateCode), reverseLookup, puaLookup); ok {
+	if pua, ok := yimeCodeToPUA(strings.TrimSpace(candidateCode), reverseLookup, puaLookup, codeRecords, schemaID); ok {
 		return pua
 	}
 
 	codeLookup := ime.yimePinyinLookup()
 	code := codeLookup[strings.TrimSpace(text)]
 	if code != "" {
-		if pua, ok := yimeCodeToPUA(code, reverseLookup, puaLookup); ok {
+		if pua, ok := yimeCodeToPUA(code, reverseLookup, puaLookup, codeRecords, schemaID); ok {
 			return pua
 		}
 	}
 
 	parts := make([]string, 0, utf8.RuneCountInString(text))
 	for _, r := range text {
-		pua, ok := yimeCodeToPUA(codeLookup[string(r)], reverseLookup, puaLookup)
+		pua, ok := yimeCodeToPUA(codeLookup[string(r)], reverseLookup, puaLookup, codeRecords, schemaID)
 		if !ok {
 			parts = append(parts, "?")
 			continue
@@ -1901,7 +1915,13 @@ func (ime *IME) lookupYimePinyin(text, candidateCode string) string {
 	return strings.Join(parts, "")
 }
 
-func yimeCodeToPUA(code string, reverseLookup, puaLookup map[string]string) (string, bool) {
+func yimeCodeToPUA(
+	code string,
+	reverseLookup map[string]string,
+	puaLookup map[string]string,
+	codeRecords map[string]pinyinCodeRecord,
+	schemaID string,
+) (string, bool) {
 	code = normalizeDisplayCode(code)
 	if code == "" {
 		return "", false
@@ -1912,11 +1932,24 @@ func yimeCodeToPUA(code string, reverseLookup, puaLookup map[string]string) (str
 	}
 	var converted strings.Builder
 	for _, numericPinyin := range numericParts {
-		pua := puaLookup[normalizeNumericTonePinyin(numericPinyin)]
-		if pua == "" {
+		key := normalizeNumericTonePinyin(numericPinyin)
+		fullPUA := puaLookup[key]
+		record, exists := codeRecords[key]
+		if fullPUA == "" || !exists {
 			return "", false
 		}
-		converted.WriteString(pua)
+		projected, err := codemode.ProjectAligned(record.Full, fullPUA)
+		if err != nil {
+			return "", false
+		}
+		switch schemaID {
+		case "yime_full":
+			converted.WriteString(projected.Full)
+		case "yime_shorthand":
+			converted.WriteString(projected.Shorthand)
+		default:
+			converted.WriteString(projected.Variable)
+		}
 	}
 	return converted.String(), true
 }
@@ -2375,6 +2408,20 @@ type pinyinCodeRecord struct {
 	Shorthand string
 }
 
+func (ime *IME) pinyinCodeLookup() map[string]pinyinCodeRecord {
+	if ime.pinyinCodeLoaded {
+		return ime.pinyinCodeByNumeric
+	}
+	ime.pinyinCodeLoaded = true
+	records, err := ime.loadPinyinCodeMap()
+	if err != nil {
+		ime.pinyinCodeByNumeric = map[string]pinyinCodeRecord{}
+		return ime.pinyinCodeByNumeric
+	}
+	ime.pinyinCodeByNumeric = records
+	return ime.pinyinCodeByNumeric
+}
+
 func (ime *IME) loadPinyinCodeMap() (map[string]pinyinCodeRecord, error) {
 	path := filepath.Join(ime.sharedDir(), "yime_pinyin_codes.tsv")
 	file, err := os.Open(path)
@@ -2805,13 +2852,23 @@ func validateCompiledRimeSchema(userDir, schemaID string) error {
 	if schemaID == "" || schemaID == "." || schemaID == ".." || filepath.Base(schemaID) != schemaID {
 		return fmt.Errorf("当前方案 ID 无效: %q", schemaID)
 	}
-	path := filepath.Join(userDir, "build", schemaID+".schema.yaml")
-	info, err := os.Stat(path)
-	if err != nil {
-		return fmt.Errorf("没有生成当前方案 %s: %w", schemaID, err)
+	required := []string{schemaID + ".schema.yaml"}
+	if strings.HasPrefix(schemaID, "yime_") {
+		required = append(required,
+			schemaID+".prism.bin",
+			schemaID+".reverse.bin",
+			schemaID+".table.bin",
+		)
 	}
-	if info.IsDir() || info.Size() == 0 {
-		return fmt.Errorf("当前方案编译结果为空: %s", path)
+	for _, name := range required {
+		path := filepath.Join(userDir, "build", name)
+		info, err := os.Stat(path)
+		if err != nil {
+			return fmt.Errorf("当前方案 %s 缺少编译产物 %s: %w", schemaID, name, err)
+		}
+		if info.IsDir() || info.Size() == 0 {
+			return fmt.Errorf("当前方案编译产物为空: %s", path)
+		}
 	}
 	return nil
 }

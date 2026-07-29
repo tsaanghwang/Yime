@@ -36,6 +36,28 @@ func TestBuildRecordDerivesAllModes(t *testing.T) {
 	}
 }
 
+func TestProjectAlignedUsesTheSameModeSpecificPositionMasks(t *testing.T) {
+	got, err := ProjectAligned("'fff qsdf", "ABCDWXYZ")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got.Full != "ABCDWXYZ" {
+		t.Fatalf("full projection=%q, want %q", got.Full, "ABCDWXYZ")
+	}
+	if got.Variable != "ABWXYZ" {
+		t.Fatalf("variable projection=%q, want %q", got.Variable, "ABWXYZ")
+	}
+	if got.Shorthand != "ABWXZ" {
+		t.Fatalf("shorthand projection=%q, want %q", got.Shorthand, "ABWXZ")
+	}
+}
+
+func TestProjectAlignedRejectsMismatchedValueLength(t *testing.T) {
+	if _, err := ProjectAligned("'fff", "ABC"); err == nil {
+		t.Fatal("expected an aligned value with the wrong length to fail")
+	}
+}
+
 func TestBuildRecordCoversFourThreeYinyuanGanyinStructures(t *testing.T) {
 	tests := []struct {
 		name, full, variable string
