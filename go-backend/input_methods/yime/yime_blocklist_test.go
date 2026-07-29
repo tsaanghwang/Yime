@@ -35,7 +35,7 @@ func TestMapCandidateSelectionIndexUsesBackendMapping(t *testing.T) {
 	}
 }
 
-func TestBlockedCandidatesHiddenFromResponse(t *testing.T) {
+func TestBlockedCandidatesHiddenFromResponseInEveryInputSchema(t *testing.T) {
 	userRoot := t.TempDir()
 	t.Setenv("APPDATA", userRoot)
 	userDir := filepath.Join(userRoot, APP, "Rime")
@@ -48,20 +48,26 @@ func TestBlockedCandidatesHiddenFromResponse(t *testing.T) {
 
 	ime := newTestIME()
 	backend := ime.backend.(*testBackend)
-	backend.composition = "n"
-	backend.candidates = []candidateItem{{Text: "你"}, {Text: "呢"}, {Text: "泥"}}
 
-	resp := &pime.Response{}
-	ime.applyStateToResponse(resp, backend.State())
-	if len(resp.CandidateList) != 2 {
-		t.Fatalf("expected 2 visible candidates, got %#v", resp.CandidateList)
-	}
-	if resp.CandidateList[0] != "你" || resp.CandidateList[1] != "泥" {
-		t.Fatalf("unexpected candidate list %#v", resp.CandidateList)
-	}
+	for _, schemaID := range []string{"yime_variable", "yime_full", "yime_shorthand"} {
+		t.Run(schemaID, func(t *testing.T) {
+			backend.schemaID = schemaID
+			backend.composition = "n"
+			backend.candidates = []candidateItem{{Text: "你"}, {Text: "呢"}, {Text: "泥"}}
 
-	backendIndex, ok := ime.mapCandidateSelectionIndex(1)
-	if !ok || backendIndex != 2 {
-		t.Fatalf("expected visible index 1 to map to backend 2, got %d ok=%v", backendIndex, ok)
+			resp := &pime.Response{}
+			ime.applyStateToResponse(resp, backend.State())
+			if len(resp.CandidateList) != 2 {
+				t.Fatalf("expected 2 visible candidates, got %#v", resp.CandidateList)
+			}
+			if resp.CandidateList[0] != "你" || resp.CandidateList[1] != "泥" {
+				t.Fatalf("unexpected candidate list %#v", resp.CandidateList)
+			}
+
+			backendIndex, ok := ime.mapCandidateSelectionIndex(1)
+			if !ok || backendIndex != 2 {
+				t.Fatalf("expected visible index 1 to map to backend 2, got %d ok=%v", backendIndex, ok)
+			}
+		})
 	}
 }

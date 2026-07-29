@@ -627,6 +627,9 @@ func (ime *IME) onCommand(req *pime.Request, resp *pime.Response) *pime.Response
 		return resp
 	}
 
+	if isReverseLookupDisplayCommand(commandID) {
+		ime.persistReverseLookupDisplayMode()
+	}
 	if commandID == ID_ASCII_MODE || commandID == ID_MODE_ICON || commandID == ID_FULL_SHAPE ||
 		commandID == ID_ASCII_PUNCT || commandID == ID_CANDIDATE_LAYOUT_TOGGLE {
 		// Toggle buttons were updated above; avoid refreshing unrelated buttons.
@@ -638,6 +641,34 @@ func (ime *IME) onCommand(req *pime.Request, resp *pime.Response) *pime.Response
 	}
 	resp.ReturnValue = 1
 	return resp
+}
+
+func isReverseLookupDisplayCommand(commandID int) bool {
+	switch commandID {
+	case ID_REVERSE_LOOKUP_DEFAULT, ID_REVERSE_LOOKUP_FULL,
+		ID_REVERSE_LOOKUP_HIDDEN, ID_REVERSE_LOOKUP_STANDARD_PINYIN,
+		ID_REVERSE_LOOKUP_YIME_PINYIN, ID_REVERSE_LOOKUP_KEY_SEQUENCE:
+		return true
+	default:
+		return false
+	}
+}
+
+func (ime *IME) persistReverseLookupDisplayMode() {
+	userDir := ime.userDir()
+	if userDir == "" {
+		return
+	}
+	state := settings.ReadState(userDir)
+	state.ReverseLookupDisplayMode = ime.reverseLookupDisplayMode
+	if ime.style.CandidatePerRow > verticalCandidatesPerRow {
+		state.CandidateLayout = "horizontal"
+	} else {
+		state.CandidateLayout = "vertical"
+	}
+	if err := settings.WriteState(userDir, state); err != nil {
+		log.Printf("保存候选编码显示设置失败: %v", err)
+	}
 }
 
 func (ime *IME) launchStandaloneToolAsync(run func() error, failureTitle string) {
@@ -2107,7 +2138,7 @@ func (ime *IME) buildMenu() []map[string]interface{} {
 	}
 
 	return []map[string]interface{}{
-		{"text": "模式", "submenu": []map[string]interface{}{
+		{"text": "输入方案", "submenu": []map[string]interface{}{
 			{"id": ID_YIME_VARIABLE, "text": "变长模式", "checked": currentSchema == "" || currentSchema == "yime_variable", "enabled": ime.schemaAvailable("yime_variable")},
 			{"id": ID_YIME_FULL, "text": "等长模式", "checked": currentSchema == "yime_full", "enabled": ime.schemaAvailable("yime_full")},
 			{"id": ID_YIME_SHORTHAND, "text": "省键模式", "checked": currentSchema == "yime_shorthand", "enabled": ime.schemaAvailable("yime_shorthand")},

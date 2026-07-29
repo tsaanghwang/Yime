@@ -56,6 +56,57 @@ func TestSearchResolvesUserPhraseAndDictEntry(t *testing.T) {
 	}
 }
 
+func TestSearchLoadsSystemAndUserLexiconsForEveryInputMode(t *testing.T) {
+	sharedDir := t.TempDir()
+	userDir := t.TempDir()
+	t.Setenv("LOCALAPPDATA", t.TempDir())
+
+	codeMapTSV := "pinyin\tfull\tvariable\tshorthand\nba1\tabcd\tab\ta\n"
+	if err := os.WriteFile(filepath.Join(sharedDir, "yime_pinyin_codes.tsv"), []byte(codeMapTSV), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(userDir, "yime_user_phrases.txt"), []byte("用户词\tba1\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	tests := []struct {
+		mode     Mode
+		schemaID string
+		code     string
+	}{
+		{mode: ModeVariable, schemaID: "yime_variable", code: "ab"},
+		{mode: ModeFull, schemaID: "yime_full", code: "abcd"},
+		{mode: ModeShorthand, schemaID: "yime_shorthand", code: "a"},
+	}
+	for _, test := range tests {
+		if err := os.WriteFile(
+			filepath.Join(sharedDir, test.schemaID+".dict.yaml"),
+			[]byte("name: test\n...\n系统词\t"+test.code+"\n"),
+			0o644,
+		); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	for _, test := range tests {
+		t.Run(string(test.mode), func(t *testing.T) {
+			index, err := Load(sharedDir, userDir, test.mode)
+			if err != nil {
+				t.Fatalf("Load failed: %v", err)
+			}
+			if index.SchemaID != test.schemaID {
+				t.Fatalf("schema=%q, want %q", index.SchemaID, test.schemaID)
+			}
+			for _, phrase := range []string{"系统词", "用户词"} {
+				results := index.Search(phrase, false)
+				if len(results) != 1 || results[0].ActiveCode != test.code {
+					t.Fatalf("%s lookup for %q=%#v, want active code %q", test.mode, phrase, results, test.code)
+				}
+			}
+		})
+	}
+}
+
 func TestSearchContainsMatchFindsPartialPhrase(t *testing.T) {
 	sharedDir := t.TempDir()
 	userDir := t.TempDir()

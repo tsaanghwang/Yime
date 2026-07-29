@@ -160,10 +160,9 @@ func Apply(userDir, sharedDir, schemaID string, pageSize int, reverseLookupMode,
 		return fmt.Errorf("用户目录或共享数据目录为空")
 	}
 	schemaID = normalizeSchemaID(schemaID)
-	if schemaID == SchemaShorthand {
-		if _, err := os.Stat(filepath.Join(sharedDir, "yime_shorthand.schema.yaml")); err != nil {
-			return fmt.Errorf("当前共享数据目录未包含省键方案文件")
-		}
+	schemaPath := filepath.Join(sharedDir, schemaID+".schema.yaml")
+	if info, err := os.Stat(schemaPath); err != nil || info.IsDir() {
+		return fmt.Errorf("当前共享数据目录未包含输入方案文件 %s", schemaID+".schema.yaml")
 	}
 	pageSize = normalizePageSize(pageSize)
 	reverseLookupMode = normalizeReverseLookupMode(reverseLookupMode)

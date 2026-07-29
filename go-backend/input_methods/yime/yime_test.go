@@ -1704,6 +1704,55 @@ func TestOnCommandSwitchesYimeSchema(t *testing.T) {
 	}
 }
 
+func TestOnCommandAcceptsHostSubmenuItemIDForEveryInputSchema(t *testing.T) {
+	root := t.TempDir()
+	t.Setenv("APPDATA", root)
+	ime := newTestIME()
+	backend := ime.backend.(*testBackend)
+
+	tests := []struct {
+		name     string
+		command  int
+		schemaID string
+	}{
+		{name: "variable", command: ID_YIME_VARIABLE, schemaID: "yime_variable"},
+		{name: "full", command: ID_YIME_FULL, schemaID: "yime_full"},
+		{name: "shorthand", command: ID_YIME_SHORTHAND, schemaID: "yime_shorthand"},
+	}
+	for index, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			backend.composition = "ni"
+			backend.refreshCandidates()
+
+			resp := ime.onCommand(&pime.Request{
+				SeqNum: 30 + index,
+				ID:     pime.FlexibleID{String: "settings"},
+				Data: map[string]interface{}{
+					"id": float64(test.command),
+				},
+			}, pime.NewResponse(30+index, true))
+
+			if resp.ReturnValue != 1 {
+				t.Fatalf("expected host submenu command %d to be handled, got %d", test.command, resp.ReturnValue)
+			}
+			if got := backend.CurrentSchema(); got != test.schemaID {
+				t.Fatalf("host submenu selected %q, want %q", got, test.schemaID)
+			}
+			if backend.composition != "" || backend.candidates != nil {
+				t.Fatal("schema switch must clear the active composition")
+			}
+			schemaMenu := findSubmenuItem(t, ime.buildMenu(), "输入方案")
+			for _, item := range schemaMenu {
+				checked, _ := item["checked"].(bool)
+				command, _ := item["id"].(int)
+				if checked != (command == test.command) {
+					t.Fatalf("checked state for command %d=%v after selecting %d", command, checked, test.command)
+				}
+			}
+		})
+	}
+}
+
 func TestOnMenuReturnsSettingsMenu(t *testing.T) {
 	ime := newTestIME()
 
@@ -1719,7 +1768,7 @@ func TestOnMenuReturnsSettingsMenu(t *testing.T) {
 	if text, ok := items[0]["text"].(string); !ok || text == "" {
 		t.Fatalf("expected first menu item text, got %#v", items[0])
 	}
-	modeMenu := findSubmenuItem(t, items, "模式")
+	modeMenu := findSubmenuItem(t, items, "输入方案")
 	if len(modeMenu) != 3 {
 		t.Fatalf("expected the three curated core modes, got %#v", modeMenu)
 	}
@@ -1912,6 +1961,74 @@ func TestOnCommandAcceptsSubmenuItemIDForReverseLookupYimePinyin(t *testing.T) {
 	}
 	if backend.composition != "ni" {
 		t.Fatalf("expected composition preserved, got %q", backend.composition)
+	}
+}
+
+func TestLanguageBarCodeDisplayCommandsAnnotateCandidatesInEveryInputSchema(t *testing.T) {
+	t.Setenv("APPDATA", t.TempDir())
+	ime := newTestIME()
+	ime.style.CandidatePerRow = horizontalCandidatesPerRow
+	backend := ime.backend.(*testBackend)
+	ime.reversePinyinLoaded = map[string]bool{
+		"yime_variable": true, "yime_full": true, "yime_shorthand": true,
+	}
+	ime.reversePinyinBySchema = map[string]map[string]string{
+		"yime_variable":  {"var": "qing1"},
+		"yime_full":      {"full": "qing1"},
+		"yime_shorthand": {"short": "qing1"},
+	}
+	ime.yimePUALoaded = true
+	ime.yimePUAByPinyin = map[string]string{"qing1": "\ue4fd\ue509\ue515\ue527"}
+
+	schemas := []struct {
+		id   string
+		code string
+	}{
+		{id: "yime_variable", code: "var"},
+		{id: "yime_full", code: "full"},
+		{id: "yime_shorthand", code: "short"},
+	}
+	displays := []struct {
+		command int
+		mode    string
+		want    string
+	}{
+		{command: ID_REVERSE_LOOKUP_YIME_PINYIN, mode: "yime_pinyin", want: "\ue4fd\ue509\ue515\ue527"},
+		{command: ID_REVERSE_LOOKUP_KEY_SEQUENCE, mode: "key_sequence"},
+	}
+	for _, schema := range schemas {
+		for _, display := range displays {
+			t.Run(schema.id+"/"+display.mode, func(t *testing.T) {
+				backend.schemaID = schema.id
+				backend.composition = schema.code
+				backend.candidates = []candidateItem{{Text: "青", Comment: schema.code}}
+				resp := ime.onCommand(&pime.Request{
+					SeqNum: 40,
+					ID:     pime.FlexibleID{String: "settings"},
+					Data:   map[string]interface{}{"id": float64(display.command)},
+				}, pime.NewResponse(40, true))
+				if resp.ReturnValue != 1 || ime.reverseLookupDisplayMode != display.mode {
+					t.Fatalf("display command was not applied: response=%d mode=%q", resp.ReturnValue, ime.reverseLookupDisplayMode)
+				}
+				persisted := settings.ReadState(ime.userDir())
+				if persisted.ReverseLookupDisplayMode != display.mode {
+					t.Fatalf("language-bar display mode was not synchronized to settings tool state: got %q want %q", persisted.ReverseLookupDisplayMode, display.mode)
+				}
+				if persisted.CandidateLayout != "horizontal" {
+					t.Fatalf("persisting display mode lost the current candidate layout: %#v", persisted)
+				}
+
+				stateResp := pime.NewResponse(41, true)
+				ime.applyStateToResponse(stateResp, backend.State())
+				want := display.want
+				if want == "" {
+					want = schema.code
+				}
+				if len(stateResp.CandidateList) != 1 || !strings.Contains(stateResp.CandidateList[0], want) {
+					t.Fatalf("candidate annotation=%#v, want %q", stateResp.CandidateList, want)
+				}
+			})
+		}
 	}
 }
 
@@ -2975,6 +3092,47 @@ func TestBuildToolHubManifestProvidesExtensibleToolEntries(t *testing.T) {
 	}
 }
 
+func TestToolHubPassesEveryInputModeToModeAwareDataTools(t *testing.T) {
+	tests := []struct {
+		mode     string
+		schemaID string
+	}{
+		{mode: "variable", schemaID: "yime_variable"},
+		{mode: "full", schemaID: "yime_full"},
+		{mode: "shorthand", schemaID: "yime_shorthand"},
+	}
+	for _, test := range tests {
+		t.Run(test.mode, func(t *testing.T) {
+			manifest := buildToolHubManifest(
+				`C:\shared`, `C:\user`, `C:\help`, `C:\logs`,
+				`C:\lexicon-manager.exe`, `C:\reverse-lookup.exe`,
+				`C:\system-lexicon-audit.exe`, `C:\lexicon-promotion-scan.exe`,
+				`C:\blocklist-manager.exe`, `C:\settings-tool.exe`,
+				`C:\diagnostics-tool.exe`, `C:\layout-designer.exe`,
+				test.mode, test.schemaID,
+			)
+			argumentsByID := map[string][]string{}
+			for _, tool := range manifest.Tools {
+				argumentsByID[tool.ID] = tool.Arguments
+			}
+			for _, toolID := range []string{"lexicon-manager", "reverse-lookup-tool", "system-lexicon-audit"} {
+				arguments := argumentsByID[toolID]
+				if len(arguments) < 6 || arguments[4] != "-Mode" || arguments[5] != test.mode {
+					t.Fatalf("%s mode arguments=%#v, want %q", toolID, arguments, test.mode)
+				}
+			}
+			arguments := argumentsByID["lexicon-promotion-scan"]
+			if len(arguments) != 6 || arguments[4] != "-SchemaID" || arguments[5] != test.schemaID {
+				t.Fatalf("learning scan arguments=%#v, want schema %q", arguments, test.schemaID)
+			}
+			arguments = argumentsByID["user-blocklist-manager"]
+			if len(arguments) != 2 || arguments[0] != "-UserDir" {
+				t.Fatalf("blocklist must remain shared by all modes, got %#v", arguments)
+			}
+		})
+	}
+}
+
 func TestToolHubPackageSupportsExecutableChildren(t *testing.T) {
 	if toolhub.ActionRunExecutable != "run_executable" {
 		t.Fatalf("expected executable action type constant for native tool children")
@@ -3838,37 +3996,56 @@ func TestLookupStandardPinyinPartialMissing(t *testing.T) {
 	}
 }
 
-func TestYimePinyinCandidateCommentUsesActualCodeAndLeavesKeySequenceUntouched(t *testing.T) {
+func TestYimePinyinAndKeySequenceCandidateCommentsFollowEveryInputSchema(t *testing.T) {
 	ime := newTestIME()
-	ime.reversePinyinLoaded = map[string]bool{"yime_variable": true}
+	backend := ime.backend.(*testBackend)
+	ime.reversePinyinLoaded = map[string]bool{
+		"yime_variable":  true,
+		"yime_full":      true,
+		"yime_shorthand": true,
+	}
 	ime.reversePinyinBySchema = map[string]map[string]string{
-		"yime_variable": {
-			"2uji": "qing1",
-			"$udm": "yan4",
-			"3udm": "jian4",
-		},
+		"yime_variable":  {"var": "qing1"},
+		"yime_full":      {"full": "qing1"},
+		"yime_shorthand": {"short": "qing1"},
 	}
 	ime.yimePUALoaded = true
 	ime.yimePUAByPinyin = map[string]string{
 		"qing1": "\ue4fd\ue509\ue515\ue527",
-		"yan4":  "\ue500\ue509\ue513\ue526",
-		"jian4": "\ue4fc\ue509\ue513\ue526",
 	}
 
-	original := []candidateItem{{Text: "青砚验键", Comment: "2uji$udm$udm3udm"}}
-	ime.reverseLookupDisplayMode = "yime_pinyin"
-	display := ime.reverseLookupDisplayCandidates(original)
-	if got, want := display[0].Comment, "\ue4fd\ue509\ue515\ue527\ue500\ue509\ue513\ue526\ue500\ue509\ue513\ue526\ue4fc\ue509\ue513\ue526"; got != want {
-		t.Fatalf("expected PUA annotation decoded from actual candidate code, got %q want %q", got, want)
+	tests := []struct {
+		schemaID string
+		code     string
+	}{
+		{schemaID: "yime_variable", code: "var"},
+		{schemaID: "yime_full", code: "full"},
+		{schemaID: "yime_shorthand", code: "short"},
 	}
-	if original[0].Comment != "2uji$udm$udm3udm" {
-		t.Fatalf("expected source candidate comment to remain unchanged, got %q", original[0].Comment)
-	}
+	for _, test := range tests {
+		t.Run(test.schemaID, func(t *testing.T) {
+			backend.schemaID = test.schemaID
+			original := []candidateItem{{Text: "青", Comment: test.code}}
 
-	ime.reverseLookupDisplayMode = "key_sequence"
-	display = ime.reverseLookupDisplayCandidates(original)
-	if got := display[0].Comment; got != "2uji$udm$udm3udm" {
-		t.Fatalf("expected key-sequence mode to preserve ASCII input code, got %q", got)
+			ime.reverseLookupDisplayMode = "yime_pinyin"
+			display := ime.reverseLookupDisplayCandidates(original)
+			if got, want := display[0].Comment, "\ue4fd\ue509\ue515\ue527"; got != want {
+				t.Fatalf("expected %s PUA annotation decoded from actual candidate code, got %q want %q", test.schemaID, got, want)
+			}
+			if original[0].Comment != test.code {
+				t.Fatalf("expected source candidate comment to remain unchanged, got %q", original[0].Comment)
+			}
+
+			ime.reverseLookupDisplayMode = "key_sequence"
+			display = ime.reverseLookupDisplayCandidates(original)
+			if got := display[0].Comment; got != test.code {
+				t.Fatalf("expected %s key-sequence annotation %q, got %q", test.schemaID, test.code, got)
+			}
+			formatted := ime.formatCandidates(display)
+			if len(formatted) != 1 || !strings.Contains(formatted[0], test.code) {
+				t.Fatalf("expected candidate window item to include %s annotation, got %#v", test.schemaID, formatted)
+			}
+		})
 	}
 }
 
