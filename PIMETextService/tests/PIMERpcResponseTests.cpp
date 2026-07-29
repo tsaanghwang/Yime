@@ -203,7 +203,7 @@ static void testCompositionStripUsesCandidateTextOnly() {
 	const Ime::CompositionSegmentItem segment = {
 		0, 4, L"bjjj", L"\x97f3\x5143", false,
 	};
-	CHECK(std::wstring(Ime::compositionSegmentStripLabel()) == L"\x53e5");
+	CHECK(std::wstring(Ime::compositionSegmentStripLabel()) == L"\x53e5\xff1a");
 	// A cell stays bound to one backend-defined item, even when that item's
 	// display text spans multiple Han characters. Its code remains metadata for
 	// click mapping and must not widen the strip.
