@@ -55,6 +55,8 @@ public:
 
 	virtual bool onCommand(UINT id, CommandType type);
 	virtual bool onCandidateSelected(int index);
+	virtual bool canForgetCandidate() const;
+	virtual bool onCandidateForgetRequested(int index);
 	virtual bool onCompositionSegmentSelected(int start, int end);
 
 	// called when a language bar button needs a menu

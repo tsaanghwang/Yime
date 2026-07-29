@@ -11,6 +11,7 @@
 
 #include "../PIMERpcResponse.h"
 #include "../PIMEKeyRouting.h"
+#include "../PIMECandidateForgetRpc.h"
 #include "../PIMECompositionSegmentRpc.h"
 #include "../PIMEProcessValidation.h"
 #include "../PIMEUiPolicy.h"
@@ -199,6 +200,25 @@ static void testCompositionStripUsesCodePointOffsets() {
 	CHECK(end == 3);
 }
 
+static void testCandidateForgetUsesExplicitOwnedWindowIndex() {
+	CHECK(PIME::isCandidateForgetShortcut(VK_DELETE, true, false));
+	CHECK(!PIME::isCandidateForgetShortcut(VK_DELETE, false, false));
+	CHECK(!PIME::isCandidateForgetShortcut(VK_DELETE, true, true));
+
+	json keyboardRequest = {{"method", "filterKeyDown"}};
+	PIME::setCandidateForgetRequestIndex(keyboardRequest, 1);
+	CHECK(keyboardRequest["data"]["candidateIndex"] == 1);
+
+	const int candidate = Ime::candidateWindowForgetTarget(-1, 1);
+	CHECK(candidate == 1);
+	CHECK(Ime::candidateWindowForgetTarget(0, 1) == -1);
+
+	json mouseRequest = {{"method", "forgetCandidate"}};
+	PIME::setCandidateForgetRequestIndex(mouseRequest, candidate);
+	CHECK(mouseRequest["method"] == "forgetCandidate");
+	CHECK(mouseRequest["data"]["candidateIndex"] == 1);
+}
+
 static void testCompositionStripUsesCandidateTextOnly() {
 	const Ime::CompositionSegmentItem segment = {
 		0, 4, L"bjjj", L"\x97f3\x5143", false,
@@ -248,6 +268,7 @@ int main() {
 	testJsonStringOr();
 	testUiLessCandidateWindowPolicy();
 	testCandidateWindowKeyRoutingPreservesModifiedNavigation();
+	testCandidateForgetUsesExplicitOwnedWindowIndex();
 	testOwnedSegmentStripHostCallbackPath();
 	testStructuredCompositionSegmentsAreValidated();
 	testCompositionStripUsesCodePointOffsets();

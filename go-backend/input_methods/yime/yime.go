@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"math"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -278,6 +279,8 @@ func (ime *IME) HandleRequest(req *pime.Request) *pime.Response {
 		return ime.onMenu(req, resp)
 	case "selectCandidate":
 		return ime.onSelectCandidate(req, resp)
+	case "forgetCandidate":
+		return ime.onForgetCandidate(req, resp)
 	case "selectCompositionSegment":
 		return ime.onSelectCompositionSegment(req, resp)
 	default:
@@ -366,12 +369,7 @@ func (ime *IME) onKeyUp(req *pime.Request, resp *pime.Response) *pime.Response {
 }
 
 func (ime *IME) onSelectCandidate(req *pime.Request, resp *pime.Response) *pime.Response {
-	index := -1
-	if req.Data != nil {
-		if raw, ok := req.Data["candidateIndex"].(float64); ok {
-			index = int(raw)
-		}
-	}
+	index, _ := candidateIndexFromRequest(req)
 	if index < 0 || ime.backend == nil {
 		resp.ReturnValue = 0
 		return resp
@@ -390,6 +388,54 @@ func (ime *IME) onSelectCandidate(req *pime.Request, resp *pime.Response) *pime.
 
 	resp.ReturnValue = 1
 	ime.applyStateToResponse(resp, ime.backend.State())
+	return resp
+}
+
+func candidateIndexFromRequest(req *pime.Request) (int, bool) {
+	if req == nil || req.Data == nil {
+		return -1, false
+	}
+	raw, ok := req.Data["candidateIndex"].(float64)
+	if !ok || raw < 0 || raw != math.Trunc(raw) {
+		return -1, false
+	}
+	return int(raw), true
+}
+
+func (ime *IME) onForgetCandidate(
+	req *pime.Request, resp *pime.Response) *pime.Response {
+	visibleIndex, ok := candidateIndexFromRequest(req)
+	if !ok || ime.backend == nil {
+		resp.ReturnValue = 0
+		return resp
+	}
+	ime.createSession(resp)
+	state := ime.backend.State()
+	backendIndex, ok := ime.mapCandidateSelectionIndex(visibleIndex)
+	if !ok || backendIndex < 0 || backendIndex >= len(state.Candidates) {
+		resp.ReturnValue = 0
+		return resp
+	}
+	forgetter, ok := ime.backend.(backendCandidateForgetter)
+	if !ok {
+		resp.ReturnValue = 0
+		return resp
+	}
+	text := state.Candidates[backendIndex].Text
+	if !forgetter.ForgetCandidate(backendIndex) {
+		resp.ReturnValue = 0
+		return resp
+	}
+
+	ime.candidatePageStart = 0
+	ime.applyStateToResponse(resp, ime.backend.State())
+	resp.ShowMessage = &pime.ShowMessageInfo{
+		Message:  "已遗忘：" + text,
+		Duration: 3,
+	}
+	resp.ReturnValue = 1
+	log.Printf("RIME 快速遗忘候选（显式索引）: schema=%s visibleIndex=%d backendIndex=%d text=%q",
+		ime.currentSchemaID(), visibleIndex, backendIndex, text)
 	return resp
 }
 
@@ -1035,7 +1081,7 @@ func (ime *IME) processKey(req *pime.Request, isUp bool) bool {
 		state := ime.backend.State()
 		ime.keyComposing = state.Composition != "" || len(state.Candidates) > 0
 		if isQuickForgetRequest(req) {
-			quickForgetIndex, quickForgetText = ime.quickForgetTarget(state)
+			quickForgetIndex, quickForgetText = ime.quickForgetTarget(req, state)
 		}
 	}
 	if !isUp && ime.keyComposing {
@@ -1102,9 +1148,17 @@ func isQuickForgetRequest(req *pime.Request) bool {
 		!req.KeyStates.IsKeyDown(vkMenu)
 }
 
-func (ime *IME) quickForgetTarget(state rimeState) (int, string) {
+func (ime *IME) quickForgetTarget(
+	req *pime.Request, state rimeState) (int, string) {
 	if len(state.Candidates) == 0 {
 		return -1, ""
+	}
+	if visibleIndex, ok := candidateIndexFromRequest(req); ok {
+		index, mapped := ime.mapCandidateSelectionIndex(visibleIndex)
+		if !mapped || index < 0 || index >= len(state.Candidates) {
+			return -1, ""
+		}
+		return index, state.Candidates[index].Text
 	}
 	index := state.CandidateCursor
 	if index < 0 || index >= len(state.Candidates) {
@@ -3362,7 +3416,7 @@ func (ime *IME) applyPendingSchemaRedeploy() {
 func (ime *IME) shouldApplyPendingSchemaRedeploy(method string) bool {
 	switch method {
 	case "onActivate", "filterKeyDown", "filterKeyUp", "onKeyDown", "onKeyUp",
-		"selectCandidate", "selectCompositionSegment":
+		"selectCandidate", "forgetCandidate", "selectCompositionSegment":
 		return true
 	default:
 		return false

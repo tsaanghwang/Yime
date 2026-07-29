@@ -796,6 +796,71 @@ func TestRealRimeQuickForgetAvailableInAllSchemas(t *testing.T) {
 	}
 }
 
+func TestRealRimeExplicitCandidateForgetAvailableInAllSchemas(t *testing.T) {
+	session := newRealRimeSession(t)
+	for _, schemaID := range []string{
+		settings.SchemaVariable,
+		settings.SchemaFull,
+		settings.SchemaShorthand,
+	} {
+		t.Run(schemaID, func(t *testing.T) {
+			ClearComposition(session.sessionID)
+			if !SelectSchema(session.sessionID, schemaID) {
+				t.Fatalf("expected schema %q to be selectable", schemaID)
+			}
+			typeASCII(t, session.sessionID, "bj")
+			before, ok := GetMenu(session.sessionID)
+			if !ok || len(before.Candidates) < 2 {
+				t.Fatalf("expected two candidates before explicit quick forget in %q, got %#v",
+					schemaID, before)
+			}
+			target := before.Candidates[1].Text
+
+			ime := newSegmentNavigationIME(&nativeBackend{sessionID: session.sessionID})
+			stateResp := pime.NewResponse(300, true)
+			ime.applyStateToResponse(stateResp, ime.backend.State())
+			req := &pime.Request{
+				SeqNum: 301,
+				Method: "forgetCandidate",
+				Data: map[string]interface{}{
+					"candidateIndex": float64(1),
+				},
+			}
+			resp := ime.HandleRequest(req)
+			if resp.ReturnValue != 1 {
+				t.Fatalf("expected explicit candidate forget to be handled in %q, got %#v",
+					schemaID, resp)
+			}
+			if resp.ShowMessage == nil ||
+				resp.ShowMessage.Message != "已遗忘："+target {
+				t.Fatalf("expected explicit quick-forget feedback for %q in %q, got %#v",
+					target, schemaID, resp.ShowMessage)
+			}
+			if resp.CommitString != "" || resp.CompositionString == "" {
+				t.Fatalf("explicit quick forget must preserve composition in %q, got %#v",
+					schemaID, resp)
+			}
+
+			after, ok := GetMenu(session.sessionID)
+			if !ok || len(after.Candidates) == 0 {
+				t.Fatalf("expected candidates after explicit quick forget in %q, got %#v",
+					schemaID, after)
+			}
+			found := false
+			for _, candidate := range after.Candidates {
+				if candidate.Text == target {
+					found = true
+					break
+				}
+			}
+			if !found {
+				t.Fatalf("explicit quick forget must not remove system candidate %q in %q, got %#v",
+					target, schemaID, after.Candidates)
+			}
+		})
+	}
+}
+
 func TestRealRimePrintableLayoutKeysAreNeverPagingBindings(t *testing.T) {
 	session := newRealRimeSession(t)
 	for _, key := range []rune{'-', '=', ',', '.', '/'} {

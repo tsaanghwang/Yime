@@ -1634,6 +1634,78 @@ func TestQuickForgetDeletesVisibleCandidateAndShowsHostFeedback(t *testing.T) {
 	}
 }
 
+func TestQuickForgetUsesOwnedWindowHighlightedCandidate(t *testing.T) {
+	ime := newTestIME()
+	backend := ime.backend.(*testBackend)
+	backend.composition = "bjjj bkkk"
+	backend.candidates = []candidateItem{
+		{Text: "逼逼"},
+		{Text: "屄屄"},
+	}
+	// The owned candidate window moves its cursor locally. Rime still reports
+	// candidate 0, so the host must attach its explicit visible index.
+	ime.candidateBackendIndexMap = []int{0, 1}
+	req := &pime.Request{
+		SeqNum:    12,
+		KeyCode:   vkDelete,
+		KeyStates: keyStatesDown(vkControl),
+		Data: map[string]interface{}{
+			"candidateIndex": float64(1),
+		},
+	}
+
+	filterResp := ime.filterKeyDown(req, pime.NewResponse(req.SeqNum, true))
+	if filterResp.ReturnValue != 1 {
+		t.Fatalf("expected highlighted Ctrl+Delete to be handled, got %#v", filterResp)
+	}
+	if !reflect.DeepEqual(backend.forgottenIndexes, []int{1}) {
+		t.Fatalf("expected host-highlighted candidate 1 to be forgotten, got %#v",
+			backend.forgottenIndexes)
+	}
+	onResp := ime.onKeyDown(req, pime.NewResponse(req.SeqNum+1, true))
+	if onResp.ShowMessage == nil ||
+		onResp.ShowMessage.Message != "已遗忘：屄屄" {
+		t.Fatalf("expected feedback for the highlighted second candidate, got %#v",
+			onResp.ShowMessage)
+	}
+}
+
+func TestForgetCandidateRpcUsesClickedVisibleCandidate(t *testing.T) {
+	ime := newTestIME()
+	backend := ime.backend.(*testBackend)
+	backend.composition = "bjjj bkkk"
+	backend.candidates = []candidateItem{
+		{Text: "逼逼"},
+		{Text: "屄屄"},
+	}
+	ime.candidateBackendIndexMap = []int{0, 1}
+	req := &pime.Request{
+		SeqNum: 13,
+		Method: "forgetCandidate",
+		Data: map[string]interface{}{
+			"candidateIndex": float64(1),
+		},
+	}
+
+	resp := ime.HandleRequest(req)
+	if resp.ReturnValue != 1 {
+		t.Fatalf("expected right-click forget RPC to be handled, got %#v", resp)
+	}
+	if !reflect.DeepEqual(backend.forgottenIndexes, []int{1}) {
+		t.Fatalf("expected clicked candidate 1 to be forgotten, got %#v",
+			backend.forgottenIndexes)
+	}
+	if resp.ShowMessage == nil ||
+		resp.ShowMessage.Message != "已遗忘：屄屄" ||
+		resp.ShowMessage.Duration != 3 {
+		t.Fatalf("expected right-click feedback, got %#v", resp.ShowMessage)
+	}
+	if resp.CommitString != "" || resp.CompositionString == "" {
+		t.Fatalf("right-click forget must preserve composition without committing, got %#v",
+			resp)
+	}
+}
+
 func TestQuickForgetPassesThroughWithoutCandidateMenu(t *testing.T) {
 	ime := newTestIME()
 	req := &pime.Request{

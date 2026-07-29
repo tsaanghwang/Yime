@@ -18,6 +18,7 @@
 //
 
 #include "PIMEClient.h"
+#include "PIMECandidateForgetRpc.h"
 #include "PIMEKeyRouting.h"
 #include "PIMECompositionSegmentRpc.h"
 #include "PIMEProcessValidation.h"
@@ -478,6 +479,18 @@ bool Client::filterKeyDown(Ime::KeyEvent& keyEvent) {
 
 		json req = createRpcRequest("filterKeyDown");
 		addKeyEventToRpcRequest(req, keyEvent);
+		const bool controlDown = keyEvent.isKeyDown(VK_CONTROL)
+			|| keyEvent.isKeyDown(VK_LCONTROL)
+			|| keyEvent.isKeyDown(VK_RCONTROL);
+		const bool altDown = keyEvent.isKeyDown(VK_MENU)
+			|| keyEvent.isKeyDown(VK_LMENU)
+			|| keyEvent.isKeyDown(VK_RMENU);
+		if (textService_->candidateWindow_ != nullptr &&
+			textService_->showingCandidates() &&
+			isCandidateForgetShortcut(keyEvent.keyCode(), controlDown, altDown)) {
+			setCandidateForgetRequestIndex(
+				req, textService_->candidateWindow_->currentSel());
+		}
 
 		json ret;
 		callRpcMethod(req, ret);
@@ -591,6 +604,22 @@ bool Client::selectCandidate(int index, Ime::EditSession* session) {
 		req["data"] = {
 			{"candidateIndex", index},
 		};
+
+		json ret;
+		callRpcMethod(req, ret);
+		if (handleRpcResponse(ret, session)) {
+			return rpcReturnBool(ret);
+		}
+	}
+	catch (...) {
+	}
+	return false;
+}
+
+bool Client::forgetCandidate(int index, Ime::EditSession* session) {
+	try {
+		json req = createRpcRequest("forgetCandidate");
+		setCandidateForgetRequestIndex(req, index);
 
 		json ret;
 		callRpcMethod(req, ret);

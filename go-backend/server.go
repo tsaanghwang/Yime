@@ -251,7 +251,7 @@ func (s *Server) handleRequest(clientID string, req *pime.Request) map[string]in
 
 	case "onActivate", "onDeactivate", "filterKeyDown", "onKeyDown",
 		"filterKeyUp", "onKeyUp", "onCommand", "onMenu", "selectCandidate",
-		"selectCompositionSegment", "onCompositionTerminated",
+		"forgetCandidate", "selectCompositionSegment", "onCompositionTerminated",
 		"onPreservedKey", "onLangProfileActivated":
 		// 转发到输入法服务
 		client, ok := s.clients[clientID]
@@ -317,6 +317,9 @@ func (s *Server) convertResponse(resp *pime.Response) map[string]interface{} {
 
 	if resp.CommitString != "" {
 		m["commitString"] = resp.CommitString
+	}
+	if resp.ShowMessage != nil {
+		m["showMessage"] = resp.ShowMessage
 	}
 	if resp.SetSelKeys != "" {
 		m["setSelKeys"] = resp.SetSelKeys

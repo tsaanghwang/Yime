@@ -38,6 +38,7 @@ $requiredRealRimeTests = @(
     'TestRealRimeNavigatorCanMoveWithinSentenceComposition'
     'TestRealRimeNavigatorSelectionKeepsSentenceComposition'
     'TestRealRimeQuickForgetAvailableInAllSchemas'
+    'TestRealRimeExplicitCandidateForgetAvailableInAllSchemas'
     'TestRealRimeRedeployAppliesPageSize'
     'TestRealRimeExternalBuildAppliesPageSize'
 )

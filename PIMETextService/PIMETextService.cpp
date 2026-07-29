@@ -186,6 +186,30 @@ bool TextService::onCandidateSelected(int index) {
 	return handled;
 }
 
+bool TextService::canForgetCandidate() const {
+	return client_ != nullptr;
+}
+
+bool TextService::onCandidateForgetRequested(int index) {
+	if(!client_ || index < 0)
+		return false;
+	auto context = currentContext();
+	if(!context)
+		return false;
+
+	bool handled = false;
+	HRESULT sessionResult;
+	auto session = Ime::ComPtr<Ime::EditSession>::make(
+		context,
+		[&](Ime::EditSession* session, TfEditCookie cookie) {
+			handled = client_->forgetCandidate(index, session);
+		}
+	);
+	context->RequestEditSession(
+		clientId(), session, TF_ES_SYNC|TF_ES_READWRITE, &sessionResult);
+	return handled;
+}
+
 // The owned candidate window never asks the host editor to reposition its
 // composition. It sends the clicked code-point index directly to the backend.
 bool TextService::onCompositionSegmentSelected(int start, int end) {

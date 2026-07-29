@@ -83,6 +83,24 @@ func TestConvertResponseIncludesStructuredCompositionSegments(t *testing.T) {
 	}
 }
 
+func TestConvertResponseIncludesQuickForgetFeedback(t *testing.T) {
+	server := NewServer()
+	resp := pime.NewResponse(5, true)
+	resp.ShowMessage = &pime.ShowMessageInfo{
+		Message:  "已遗忘：屄屄",
+		Duration: 3,
+	}
+
+	got := server.convertResponse(resp)
+	message, ok := got["showMessage"].(*pime.ShowMessageInfo)
+	if !ok {
+		t.Fatalf("expected showMessage in wire response, got %#v", got)
+	}
+	if message.Message != "已遗忘：屄屄" || message.Duration != 3 {
+		t.Fatalf("unexpected showMessage payload: %#v", message)
+	}
+}
+
 func TestServiceFactoryOnlySupportsYime(t *testing.T) {
 	if factory, ok := serviceFactoryForInputMethod("yime"); !ok || factory == nil {
 		t.Fatal("expected yime to have a production service factory")
