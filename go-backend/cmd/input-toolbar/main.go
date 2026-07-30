@@ -39,28 +39,34 @@ const (
 	idUnicode  = 104
 	idSettings = 105
 	timerID    = 1
+
+	toolbarClientWidth  = int32(394)
+	toolbarClientHeight = int32(52)
+	toolbarButtonTop    = int32(10)
+	toolbarButtonHeight = int32(32)
 )
 
 var (
 	user32   = syscall.NewLazyDLL("user32.dll")
 	kernel32 = syscall.NewLazyDLL("kernel32.dll")
 
-	createWindowExW   = user32.NewProc("CreateWindowExW")
-	defWindowProcW    = user32.NewProc("DefWindowProcW")
-	dispatchMessageW  = user32.NewProc("DispatchMessageW")
-	getMessageW       = user32.NewProc("GetMessageW")
-	translateMessageW = user32.NewProc("TranslateMessage")
-	postQuitMessage   = user32.NewProc("PostQuitMessage")
-	registerClassExW  = user32.NewProc("RegisterClassExW")
-	loadCursorW       = user32.NewProc("LoadCursorW")
-	showWindow        = user32.NewProc("ShowWindow")
-	updateWindow      = user32.NewProc("UpdateWindow")
-	setTimer          = user32.NewProc("SetTimer")
-	killTimer         = user32.NewProc("KillTimer")
-	setWindowTextW    = user32.NewProc("SetWindowTextW")
-	messageBoxW       = user32.NewProc("MessageBoxW")
-	getSystemMetrics  = user32.NewProc("GetSystemMetrics")
-	getModuleHandleW  = kernel32.NewProc("GetModuleHandleW")
+	createWindowExW    = user32.NewProc("CreateWindowExW")
+	defWindowProcW     = user32.NewProc("DefWindowProcW")
+	dispatchMessageW   = user32.NewProc("DispatchMessageW")
+	getMessageW        = user32.NewProc("GetMessageW")
+	translateMessageW  = user32.NewProc("TranslateMessage")
+	postQuitMessage    = user32.NewProc("PostQuitMessage")
+	registerClassExW   = user32.NewProc("RegisterClassExW")
+	loadCursorW        = user32.NewProc("LoadCursorW")
+	showWindow         = user32.NewProc("ShowWindow")
+	updateWindow       = user32.NewProc("UpdateWindow")
+	setTimer           = user32.NewProc("SetTimer")
+	killTimer          = user32.NewProc("KillTimer")
+	setWindowTextW     = user32.NewProc("SetWindowTextW")
+	messageBoxW        = user32.NewProc("MessageBoxW")
+	getSystemMetrics   = user32.NewProc("GetSystemMetrics")
+	adjustWindowRectEx = user32.NewProc("AdjustWindowRectEx")
+	getModuleHandleW   = kernel32.NewProc("GetModuleHandleW")
 
 	windowProc uintptr
 )
@@ -87,6 +93,16 @@ type winMsg struct {
 	LParam  uintptr
 	Time    uint32
 	Pt      struct{ X, Y int32 }
+}
+
+type rect struct {
+	Left, Top, Right, Bottom int32
+}
+
+type toolbarButton struct {
+	id   int
+	text string
+	w    int32
 }
 
 type app struct {
@@ -156,17 +172,19 @@ func (a *app) run() error {
 	}
 
 	title, _ := syscall.UTF16PtrFromString("Yime 输入法工具栏")
-	const width, height = int32(394), int32(72)
+	windowStyle := uintptr(wsPopup | wsCaption | wsSysMenu)
+	windowExStyle := uintptr(wsExToolWindow | wsExTopmost)
+	width, height := windowSizeForClient(toolbarClientWidth, toolbarClientHeight)
 	screenW, _, _ := getSystemMetrics.Call(0)
 	x := int32(screenW) - width - 24
 	if x < 0 {
 		x = 0
 	}
 	hwnd, _, _ := createWindowExW.Call(
-		wsExToolWindow|wsExTopmost,
+		windowExStyle,
 		uintptr(unsafe.Pointer(className)),
 		uintptr(unsafe.Pointer(title)),
-		wsPopup|wsCaption|wsSysMenu,
+		windowStyle,
 		uintptr(x), 48, uintptr(width), uintptr(height),
 		0, 0, instance, 0,
 	)
@@ -193,11 +211,7 @@ func (a *app) run() error {
 }
 
 func (a *app) createButtons() {
-	labels := []struct {
-		id   int
-		text string
-		w    int32
-	}{
+	labels := []toolbarButton{
 		{idLanguage, "中", 44},
 		{idShape, "半", 44},
 		{idPunct, "中标", 54},
@@ -207,9 +221,28 @@ func (a *app) createButtons() {
 	}
 	left := int32(8)
 	for _, item := range labels {
-		a.buttons[item.id] = createButton(a.hwnd, item.id, item.text, left, 8, item.w, 28)
+		a.buttons[item.id] = createButton(
+			a.hwnd, item.id, item.text,
+			left, toolbarButtonTop, item.w, toolbarButtonHeight,
+		)
 		left += item.w + 6
 	}
+}
+
+func windowSizeForClient(clientWidth, clientHeight int32) (int32, int32) {
+	box := rect{Right: clientWidth, Bottom: clientHeight}
+	ret, _, _ := adjustWindowRectEx.Call(
+		uintptr(unsafe.Pointer(&box)),
+		uintptr(wsPopup|wsCaption|wsSysMenu),
+		0,
+		uintptr(wsExToolWindow|wsExTopmost),
+	)
+	if ret == 0 {
+		// Conservative fallback: never let a non-client title bar consume the
+		// button row if Windows cannot calculate the frame for some reason.
+		return clientWidth + 16, clientHeight + 48
+	}
+	return box.Right - box.Left, box.Bottom - box.Top
 }
 
 func createButton(parent syscall.Handle, id int, text string, x, y, width, height int32) syscall.Handle {
