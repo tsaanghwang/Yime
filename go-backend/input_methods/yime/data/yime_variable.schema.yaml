@@ -5,7 +5,7 @@
 schema:
   schema_id: yime_variable
   name: "Yime 变长模式"
-  version: "2026-07-28-core-1124631-layout-6d00e609f689-rank-v1"
+  version: "2026-07-28-core-1167057-layout-6d00e609f689-rank-v1"
 
 engine:
   processors:
@@ -36,7 +36,7 @@ speller:
 
 translator:
   dictionary: yime_variable
-  user_dict: yime_variable_core_1124631_layout_6d00e609f689_rank_v1
+  user_dict: yime_variable_core_1167057_layout_6d00e609f689_rank_v1
   enable_user_dict: true
   enable_sentence: true
   sentence_over_completion: true

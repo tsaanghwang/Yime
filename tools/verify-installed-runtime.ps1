@@ -63,6 +63,7 @@ $files.Add((Get-FileRecord 'x64/PIMETextService.dll' (Join-Path $repoRoot 'build
 foreach ($relativePath in @(
     'server.exe',
     'tool-hub.exe',
+    'input-toolbar.exe',
     'lexicon-manager.exe',
     'system-lexicon-audit.exe',
     'lexicon-promotion-scan.exe',

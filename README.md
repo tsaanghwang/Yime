@@ -10,7 +10,7 @@ In fixed-length mode, each syllable consists of one *shouyin* followed by a *gan
 
 ## Features
 
-- **Dynamic sentence composition** — a 1,124,631-entry encoded core supplies characters and short components; Rime composes missing longer phrases and learns corrections
+- **Dynamic sentence composition** — a 1,167,057-entry encoded runtime dictionary includes all 46,095 encoded characters plus short components; Rime composes missing longer phrases and learns corrections
 - **Evidence-locked core** — ranking uses BCC first, RIME-LMDG as fallback, and a separate structural floor
 - **Single-source modes** — variable-length, fixed-length, and shorthand all run from the same curated candidate set
 - **Candidate window** — 5–9 candidates per page, vertical or horizontal layout, one-click toggle

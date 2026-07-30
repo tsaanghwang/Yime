@@ -27,7 +27,7 @@ type Plan struct {
 
 var generatedFiles = []string{ProfileFileName, "yime_pinyin_codes.tsv", "yime_full.dict.yaml", "yime_variable.dict.yaml", "yime_shorthand.dict.yaml", "yime_lexicon_manifest.json", "yime_full.schema.yaml", "yime_variable.schema.yaml", "yime_shorthand.schema.yaml"}
 
-const runtimeCoreUserDBNamespace = "core_1124631"
+const runtimeCoreUserDBNamespace = "core_1167057"
 
 func Preview(dataDir string, target Profile) (Plan, error) {
 	source, err := LoadProfile(filepath.Join(dataDir, ProfileFileName))

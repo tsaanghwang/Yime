@@ -60,7 +60,7 @@ func TestDetectTransitionsAllowsFilteringWhenRuntimeMovesToCuratedCore(
 		oldSchema := "translator:\n  user_dict: yime_" + mode +
 			"_layout_old\n"
 		newSchema := "translator:\n  user_dict: yime_" + mode +
-			"_core_1124631_layout_new_rank_v1\n"
+			"_core_1167057_layout_new_rank_v1\n"
 		if err := os.WriteFile(
 			filepath.Join(oldDir, "yime_"+mode+".schema.yaml"),
 			[]byte(oldSchema),
@@ -103,7 +103,7 @@ func TestDetectTransitionsMigratesRetiredCoreTrialLearningToVariable(
 	}
 	if err := os.WriteFile(
 		filepath.Join(newDir, "yime_variable.schema.yaml"),
-		[]byte("translator:\n  user_dict: yime_variable_core_1124631_layout_new_rank_v1\n"),
+		[]byte("translator:\n  user_dict: yime_variable_core_1167057_layout_new_rank_v1\n"),
 		0o644,
 	); err != nil {
 		t.Fatal(err)
@@ -115,7 +115,7 @@ func TestDetectTransitionsMigratesRetiredCoreTrialLearningToVariable(
 	if len(got) != 1 ||
 		got[0].SourceDB != "yime_core_trial_learning" ||
 		got[0].TargetDB !=
-			"yime_variable_core_1124631_layout_new_rank_v1" ||
+			"yime_variable_core_1167057_layout_new_rank_v1" ||
 		!got[0].AllowUnmatched {
 		t.Fatalf("unexpected core-trial migration: %#v", got)
 	}

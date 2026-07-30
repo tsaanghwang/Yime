@@ -29,6 +29,7 @@ func TestReleasePipelineSignsPayloadInstallerAndUninstaller(t *testing.T) {
 	installer := read(filepath.Join(root, "installer", "installer.nsi"))
 	installer = strings.ReplaceAll(installer, "\r\n", "\n")
 	devUninstaller := read(filepath.Join(root, "tools", "dev-uninstall.ps1"))
+	devStop := read(filepath.Join(root, "tools", "dev-stop-pime.ps1"))
 	signer := read(filepath.Join(root, "tools", "sign-release.ps1"))
 	verifier := read(filepath.Join(root, "tools", "verify-release-signatures.ps1"))
 	signFile := read(filepath.Join(root, "tools", "sign-file.ps1"))
@@ -132,8 +133,18 @@ func TestReleasePipelineSignsPayloadInstallerAndUninstaller(t *testing.T) {
 			t.Fatalf("release payload signer is missing %q", fragment)
 		}
 	}
-	if !strings.Contains(signer, "yime-layout-designer.exe") {
-		t.Fatal("release payload signer is missing yime-layout-designer.exe")
+	for _, fragment := range []string{
+		`Stop-ProcessByPathPrefix -Name "input-toolbar"`,
+		`Stop-ProcessByName -Name "input-toolbar"`,
+	} {
+		if !strings.Contains(devStop, fragment) {
+			t.Fatalf("developer stop flow must release the persistent toolbar executable: missing %q", fragment)
+		}
+	}
+	for _, tool := range []string{"input-toolbar.exe", "yime-layout-designer.exe"} {
+		if !strings.Contains(signer, tool) {
+			t.Fatalf("release payload signer is missing %s", tool)
+		}
 	}
 	if !strings.Contains(verifier, "Get-AuthenticodeSignature") || !strings.Contains(verifier, "Valid") {
 		t.Fatal("release signature verifier must reject non-valid signatures")
@@ -143,11 +154,11 @@ func TestReleasePipelineSignsPayloadInstallerAndUninstaller(t *testing.T) {
 			t.Fatalf("release signature verifier is missing %q", fragment)
 		}
 	}
-	if count := strings.Count(buildScript, "--icon input_methods\\yime\\icon.ico"); count != 9 {
-		t.Fatalf("expected all 9 Go executables to embed the Yime icon, got %d", count)
+	if count := strings.Count(buildScript, "--icon input_methods\\yime\\icon.ico"); count != 10 {
+		t.Fatalf("expected all 10 Go executables to embed the Yime icon, got %d", count)
 	}
-	if count := strings.Count(buildScript, `--copyright "Copyright (C) 2026 Yime contributors"`); count != 9 {
-		t.Fatalf("expected all 9 Go executables to embed Yime copyright metadata, got %d", count)
+	if count := strings.Count(buildScript, `--copyright "Copyright (C) 2026 Yime contributors"`); count != 10 {
+		t.Fatalf("expected all 10 Go executables to embed Yime copyright metadata, got %d", count)
 	}
 	for _, fragment := range []string{
 		`set "WIN32_CMAKE_PLATFORM=-A Win32"`,

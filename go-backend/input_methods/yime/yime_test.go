@@ -15,6 +15,7 @@ import (
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/diagnostics"
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/runtimechange"
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/settings"
+	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/toolbarstate"
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/toolhub"
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/userlexicon"
 	"github.com/tsaanghwang/Yime/go-backend/pime"
@@ -36,6 +37,7 @@ type testBackend struct {
 	asciiPunct       bool
 	fullShape        bool
 	horizontal       bool
+	traditional      bool
 	schemaID         string
 	returnKeyHandled bool
 	forgottenIndexes []int
@@ -557,6 +559,8 @@ func (b *testBackend) SetOption(name string, value bool) {
 		b.fullShape = value
 	case "_horizontal":
 		b.horizontal = value
+	case "traditionalization":
+		b.traditional = value
 	}
 }
 
@@ -572,6 +576,8 @@ func (b *testBackend) GetOption(name string) bool {
 		return b.fullShape
 	case "_horizontal":
 		return b.horizontal
+	case "traditionalization":
+		return b.traditional
 	default:
 		return false
 	}
@@ -1814,6 +1820,95 @@ func TestOnCommandHandlesKnownAndMissingCommand(t *testing.T) {
 	}
 }
 
+func TestInputToolbarMenuReflectsIndependentWindowAndDispatchesToggle(t *testing.T) {
+	originalQuery := queryInputToolbarVisible
+	originalToggle := toggleInputToolbarWindow
+	originalSchedule := scheduleStandaloneToolLaunch
+	t.Cleanup(func() {
+		queryInputToolbarVisible = originalQuery
+		toggleInputToolbarWindow = originalToggle
+		scheduleStandaloneToolLaunch = originalSchedule
+	})
+
+	ime := newTestIME()
+	queryInputToolbarVisible = func() bool { return false }
+	item := findTopLevelMenuItem(t, ime.buildMenu(), ID_INPUT_TOOLBAR)
+	if item["text"] != "输入法工具栏（关）" {
+		t.Fatalf("expected closed toolbar menu state, got %#v", item)
+	}
+	queryInputToolbarVisible = func() bool { return true }
+	item = findTopLevelMenuItem(t, ime.buildMenu(), ID_INPUT_TOOLBAR)
+	if item["text"] != "输入法工具栏（开）" {
+		t.Fatalf("expected open toolbar menu state, got %#v", item)
+	}
+
+	toggled := false
+	toggleInputToolbarWindow = func(*IME) error {
+		toggled = true
+		return nil
+	}
+	scheduleStandaloneToolLaunch = func(run func() error, onError func(error)) {
+		if err := run(); err != nil && onError != nil {
+			onError(err)
+		}
+	}
+	resp := ime.onCommand(&pime.Request{
+		SeqNum: 13,
+		ID:     pime.FlexibleID{Int: ID_INPUT_TOOLBAR, IsInt: true},
+	}, pime.NewResponse(13, true))
+	if resp.ReturnValue != 1 || !toggled {
+		t.Fatalf("expected toolbar toggle command to be handled, response=%#v toggled=%t", resp, toggled)
+	}
+}
+
+func TestInputToolbarStateConvergesBackendAndStandaloneControls(t *testing.T) {
+	appData := t.TempDir()
+	t.Setenv("APPDATA", appData)
+	ime := newTestIME()
+	path := toolbarstate.Path(ime.userDir())
+
+	written, err := toolbarstate.Update(path, "toolbar", func(state *toolbarstate.State) bool {
+		state.ASCII = true
+		state.FullShape = true
+		state.ASCIIPunctuation = true
+		state.Traditionalization = true
+		state.Vertical = true
+		state.HiddenButtons = []string{"unicode"}
+		return true
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	ime.applyInputToolbarState()
+	for _, option := range []string{
+		"ascii_mode", "full_shape", "ascii_punct", "traditionalization",
+	} {
+		if !ime.backend.GetOption(option) {
+			t.Fatalf("toolbar target did not reach backend option %q", option)
+		}
+	}
+	if ime.inputToolbarStateRevision != written.Revision {
+		t.Fatalf("backend did not record applied toolbar revision: got %d want %d",
+			ime.inputToolbarStateRevision, written.Revision)
+	}
+
+	ime.backend.SetOption("ascii_mode", false)
+	ime.publishInputToolbarState()
+	got, err := toolbarstate.Read(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got.ASCII || !got.FullShape || !got.ASCIIPunctuation || !got.Traditionalization {
+		t.Fatalf("backend publication lost toolbar state fields: %#v", got)
+	}
+	if !got.Vertical || len(got.HiddenButtons) != 1 || got.HiddenButtons[0] != "unicode" {
+		t.Fatalf("backend publication lost toolbar layout preferences: %#v", got)
+	}
+	if got.Source != "backend" || got.Revision <= written.Revision {
+		t.Fatalf("backend publication metadata is stale: %#v", got)
+	}
+}
+
 func TestYimeCommandIDsStayOutOfLowHostCollisionRange(t *testing.T) {
 	commandIDs := []int{
 		ID_MODE_ICON,
@@ -1855,6 +1950,7 @@ func TestYimeCommandIDsStayOutOfLowHostCollisionRange(t *testing.T) {
 		ID_CANDIDATE_PAGE_SIZE_8,
 		ID_CANDIDATE_PAGE_SIZE_9,
 		ID_CANDIDATE_LAYOUT_TOGGLE,
+		ID_INPUT_TOOLBAR,
 	}
 
 	for _, commandID := range commandIDs {
@@ -4172,6 +4268,9 @@ func TestHandleRequestOnDeactivateReturnsHandled(t *testing.T) {
 	}
 	if ime.pendingRawCommit != "" {
 		t.Fatalf("expected deactivate to discard deferred raw commit, got %q", ime.pendingRawCommit)
+	}
+	if backend.session {
+		t.Fatal("toolbar state publication must not recreate a Rime session after deactivation")
 	}
 }
 

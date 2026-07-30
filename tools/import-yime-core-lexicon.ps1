@@ -24,6 +24,20 @@ if (-not $evidence.ranking_evidence.policy_id) {
 if (-not $evidence.ranking_evidence.distinct_texts_by_source) {
     throw "Core evidence manifest has no source-separated ranking counts."
 }
+$characterRanking = $evidence.single_character_ranking
+if (-not $characterRanking) {
+    throw "Core evidence manifest has no single-character ranking evidence."
+}
+$singleCharacters = [int64]$evidence.distinct_texts_by_length.'1'
+$singleMappings = [int64]$evidence.reading_entries_by_length.'1'
+$coreCharacters = [int64]$characterRanking.core_distinct_characters
+$peripheralCharacters = [int64]$characterRanking.peripheral_distinct_characters
+if ($singleCharacters -ne ($coreCharacters + $peripheralCharacters)) {
+    throw "Core and peripheral character counts do not cover the runtime single-character inventory."
+}
+if (-not [bool]$characterRanking.core_above_peripheral) {
+    throw "Core and peripheral single-character weight ranges overlap."
+}
 $sourceHash = (Get-FileHash -LiteralPath $resolvedInputPath -Algorithm SHA256).Hash.ToLowerInvariant()
 if ($sourceHash -ne [string]$evidence.output_sha256) {
     throw "Core dictionary hash does not match the evidence manifest."
@@ -75,7 +89,18 @@ $sourceRecord = [ordered]@{
         raw_bcc_and_lmdg_values_added = [bool]$evidence.ranking_evidence.raw_bcc_and_lmdg_values_added
         source_priority_separation_passed = $true
     }
-    runtime_scope = "curated_core_only"
+    character_coverage = [ordered]@{
+        distinct_characters = $singleCharacters
+        runtime_mapping_entries = $singleMappings
+        core_distinct_characters = $coreCharacters
+        core_reading_entries = [int64]$characterRanking.core_reading_entries
+        peripheral_distinct_characters = $peripheralCharacters
+        peripheral_reading_entries = [int64]$characterRanking.peripheral_reading_entries
+        minimum_core_weight = [int64]$characterRanking.minimum_core_weight
+        maximum_peripheral_weight = [int64]$characterRanking.maximum_peripheral_weight
+        core_above_peripheral = [bool]$characterRanking.core_above_peripheral
+    }
+    runtime_scope = "curated_phrases_with_all_encoded_character_periphery"
     prototype_scope = @("candidate_pool", "source_evidence", "regression_cases")
 }
 $sourceManifestPath = Join-Path $outputPath "yime_core_source_manifest.json"

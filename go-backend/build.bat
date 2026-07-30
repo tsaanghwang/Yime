@@ -14,6 +14,7 @@ set "PACKAGE_DIR=%BUILD_ROOT%\go-backend"
 set "SERVER_EXE=%PACKAGE_DIR%\server.exe"
 set "REVERSE_LOOKUP_EXE=%PACKAGE_DIR%\reverse-lookup.exe"
 set "TOOL_HUB_EXE=%PACKAGE_DIR%\tool-hub.exe"
+set "INPUT_TOOLBAR_EXE=%PACKAGE_DIR%\input-toolbar.exe"
 set "LEXICON_MANAGER_EXE=%PACKAGE_DIR%\lexicon-manager.exe"
 set "SYSTEM_LEXICON_AUDIT_EXE=%PACKAGE_DIR%\system-lexicon-audit.exe"
 set "LEXICON_PROMOTION_SCAN_EXE=%PACKAGE_DIR%\lexicon-promotion-scan.exe"
@@ -200,6 +201,25 @@ if errorlevel 1 (
 if exist cmd\tool-hub\rsrc_hub_windows_amd64.syso del cmd\tool-hub\rsrc_hub_windows_amd64.syso
 
 echo [INFO] Built: "%TOOL_HUB_EXE%"
+
+echo [INFO] Generating Windows VERSIONINFO resources for input-toolbar ...
+"%GO_WINRES%" simply --arch amd64 --product-version "%APP_VERSION%" --file-version "%APP_VERSION%" --product-name "YIME" --copyright "Copyright (C) 2026 Yime contributors" --file-description "Yime Input Method Toolbar" --original-filename "input-toolbar.exe" --icon input_methods\yime\icon.ico --manifest gui --out cmd\input-toolbar\rsrc_input_toolbar
+if errorlevel 1 (
+    echo [WARN] go-winres failed for input-toolbar.exe, building without VERSIONINFO
+    if exist cmd\input-toolbar\rsrc_input_toolbar_windows_amd64.syso del cmd\input-toolbar\rsrc_input_toolbar_windows_amd64.syso
+)
+
+echo [INFO] Building input-toolbar.exe ...
+go build %GO_REPRO_FLAGS% -ldflags "-s -w -H=windowsgui -X main.version=%APP_VERSION%" -o "%INPUT_TOOLBAR_EXE%" .\cmd\input-toolbar
+if errorlevel 1 (
+    echo [ERROR] Failed to build input-toolbar.exe
+    if exist cmd\input-toolbar\rsrc_input_toolbar_windows_amd64.syso del cmd\input-toolbar\rsrc_input_toolbar_windows_amd64.syso
+    popd
+    exit /b 1
+)
+
+if exist cmd\input-toolbar\rsrc_input_toolbar_windows_amd64.syso del cmd\input-toolbar\rsrc_input_toolbar_windows_amd64.syso
+echo [INFO] Built: "%INPUT_TOOLBAR_EXE%"
 
 echo [INFO] Generating Windows VERSIONINFO resources for lexicon-manager ...
 "%GO_WINRES%" simply --arch amd64 --product-version "%APP_VERSION%" --file-version "%APP_VERSION%" --product-name "YIME" --copyright "Copyright (C) 2026 Yime contributors" --file-description "Yime Lexicon Manager" --original-filename "lexicon-manager.exe" --icon input_methods\yime\icon.ico --manifest gui --out cmd\lexicon-manager\rsrc_lexicon
@@ -545,6 +565,7 @@ for %%F in (
     "%SERVER_EXE%"
     "%REVERSE_LOOKUP_EXE%"
     "%TOOL_HUB_EXE%"
+    "%INPUT_TOOLBAR_EXE%"
     "%LEXICON_MANAGER_EXE%"
     "%SYSTEM_LEXICON_AUDIT_EXE%"
     "%LEXICON_PROMOTION_SCAN_EXE%"
