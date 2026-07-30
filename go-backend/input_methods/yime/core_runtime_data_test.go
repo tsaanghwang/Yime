@@ -1,6 +1,7 @@
 package yime
 
 import (
+	"bufio"
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
@@ -8,9 +9,14 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+	"unicode/utf8"
 )
 
-const curatedCoreEntryCount = 1124631
+const (
+	curatedCoreEntryCount = 1167057
+	curatedCoreTextCount  = 1152157
+	encodedCharacterCount = 46095
+)
 
 type coreRuntimeManifest struct {
 	EntryCount   int               `json:"entry_count"`
@@ -32,6 +38,17 @@ type coreSourceManifest struct {
 		RawBCCAndLMDGValuesAdded       bool   `json:"raw_bcc_and_lmdg_values_added"`
 		SourcePrioritySeparationPassed bool   `json:"source_priority_separation_passed"`
 	} `json:"ranking_evidence"`
+	CharacterCoverage struct {
+		DistinctCharacters           int  `json:"distinct_characters"`
+		RuntimeMappingEntries        int  `json:"runtime_mapping_entries"`
+		CoreDistinctCharacters       int  `json:"core_distinct_characters"`
+		CoreReadingEntries           int  `json:"core_reading_entries"`
+		PeripheralDistinctCharacters int  `json:"peripheral_distinct_characters"`
+		PeripheralReadingEntries     int  `json:"peripheral_reading_entries"`
+		MinimumCoreWeight            int  `json:"minimum_core_weight"`
+		MaximumPeripheralWeight      int  `json:"maximum_peripheral_weight"`
+		CoreAbovePeripheral          bool `json:"core_above_peripheral"`
+	} `json:"character_coverage"`
 }
 
 type coreRuntimeProfile struct {
@@ -80,13 +97,25 @@ func TestCuratedCoreEvidenceAndThreeModeDerivationAreLocked(t *testing.T) {
 	if generated.SourceSHA256 != source.SourceDictionarySHA256 {
 		t.Fatal("generated dictionaries and ranking evidence use different sources")
 	}
-	if source.DistinctTexts != 1116892 ||
+	if source.DistinctTexts != curatedCoreTextCount ||
 		source.RankingEvidence.PolicyID !=
 			"bcc-primary-lmdg-fallback-structural-floor-v1" ||
 		source.RankingEvidence.MissingSelectedSourceTexts != 0 ||
 		source.RankingEvidence.RawBCCAndLMDGValuesAdded ||
 		!source.RankingEvidence.SourcePrioritySeparationPassed {
 		t.Fatalf("invalid ranking evidence: %#v", source)
+	}
+	if source.CharacterCoverage.DistinctCharacters != encodedCharacterCount ||
+		source.CharacterCoverage.RuntimeMappingEntries != 60995 ||
+		source.CharacterCoverage.CoreDistinctCharacters != 14000 ||
+		source.CharacterCoverage.CoreReadingEntries != 21740 ||
+		source.CharacterCoverage.PeripheralDistinctCharacters != 32095 ||
+		source.CharacterCoverage.PeripheralReadingEntries != 39255 ||
+		source.CharacterCoverage.MinimumCoreWeight <=
+			source.CharacterCoverage.MaximumPeripheralWeight ||
+		!source.CharacterCoverage.CoreAbovePeripheral {
+		t.Fatalf("invalid encoded-character coverage: %#v",
+			source.CharacterCoverage)
 	}
 	if source.RankingEvidence.DirectBCC+
 		source.RankingEvidence.ProvisionalRimeLMDG+
@@ -110,6 +139,64 @@ func TestCuratedCoreEvidenceAndThreeModeDerivationAreLocked(t *testing.T) {
 	}
 }
 
+func TestAllModeDictionariesMaterializeEveryEncodedSingleCharacter(
+	t *testing.T,
+) {
+	for _, mode := range []string{"variable", "full", "shorthand"} {
+		file, err := os.Open(
+			filepath.Join("data", "yime_"+mode+".dict.yaml"),
+		)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		singleCharacters := make(
+			map[string]struct{},
+			encodedCharacterCount,
+		)
+		entryCount := 0
+		singleMappings := 0
+		inData := false
+		scanner := bufio.NewScanner(file)
+		scanner.Buffer(make([]byte, 0, 64*1024), 1024*1024)
+		for scanner.Scan() {
+			line := scanner.Text()
+			if !inData {
+				inData = strings.TrimSpace(line) == "..."
+				continue
+			}
+			fields := strings.Split(line, "\t")
+			if len(fields) < 2 {
+				continue
+			}
+			entryCount++
+			if utf8.RuneCountInString(fields[0]) != 1 {
+				continue
+			}
+			singleCharacters[fields[0]] = struct{}{}
+			singleMappings++
+		}
+		closeErr := file.Close()
+		if err := scanner.Err(); err != nil {
+			t.Fatal(err)
+		}
+		if closeErr != nil {
+			t.Fatal(closeErr)
+		}
+		if entryCount != curatedCoreEntryCount ||
+			len(singleCharacters) != encodedCharacterCount ||
+			singleMappings != 60995 {
+			t.Fatalf(
+				"%s encoded-character runtime incomplete: entries=%d characters=%d mappings=%d",
+				mode,
+				entryCount,
+				len(singleCharacters),
+				singleMappings,
+			)
+		}
+	}
+}
+
 func TestAllCoreModesConnectLearningCustomPhrasesAndSentenceComposition(
 	t *testing.T,
 ) {
@@ -123,7 +210,7 @@ func TestAllCoreModesConnectLearningCustomPhrasesAndSentenceComposition(
 		content := string(data)
 		checks := []string{
 			"dictionary: yime_" + mode,
-			"user_dict: yime_" + mode + "_core_1124631_",
+			"user_dict: yime_" + mode + "_core_1167057_",
 			"user_dict: custom_phrase_" + mode,
 			"enable_user_dict: true",
 			"enable_sentence: true",
@@ -137,7 +224,9 @@ func TestAllCoreModesConnectLearningCustomPhrasesAndSentenceComposition(
 	}
 }
 
-func TestRuntimeProfileContainsOnlyCoreBackedThreeModeChain(t *testing.T) {
+func TestRuntimeProfileContainsCoreAndEncodedPeripheryThreeModeChain(
+	t *testing.T,
+) {
 	var profile coreRuntimeProfile
 	readJSONFile(t, "yime_runtime_profile.json", &profile)
 	if profile.DefaultSchema != "yime_variable" ||
@@ -159,6 +248,7 @@ func TestRuntimeProfileContainsOnlyCoreBackedThreeModeChain(t *testing.T) {
 	}
 	for _, layer := range []string{
 		"curated_system_core",
+		"encoded_single_character_periphery",
 		"rime_user_learning",
 		"user_custom_phrases",
 		"user_blocklist_filter",
