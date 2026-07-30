@@ -22,6 +22,7 @@ import (
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/codemode"
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/runtimechange"
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/settings"
+	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/toolbarstate"
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/userlexicon"
 	"github.com/tsaanghwang/Yime/go-backend/pime"
 )
@@ -74,6 +75,7 @@ const (
 	ID_CANDIDATE_PAGE_SIZE_8          = yimeCommandBase + 73
 	ID_CANDIDATE_PAGE_SIZE_9          = yimeCommandBase + 74
 	ID_CANDIDATE_LAYOUT_TOGGLE        = yimeCommandBase + 75
+	ID_INPUT_TOOLBAR                  = yimeCommandBase + 76
 )
 
 const (
@@ -178,6 +180,8 @@ var scheduleStandaloneToolLaunch = func(run func() error, onError func(error)) {
 		}
 	}()
 }
+var queryInputToolbarVisible = platformInputToolbarVisible
+var toggleInputToolbarWindow = platformToggleInputToolbar
 
 type IME struct {
 	*pime.TextServiceBase
@@ -206,6 +210,8 @@ type IME struct {
 	settingsChangeRevision      int64
 	lexiconChangeRevision       int64
 	redeployChangeRevision      int64
+	inputToolbarStateRevision   int64
+	inputToolbarSnapshot        toolbarstate.State
 	candidatePageStart          int
 	candidateBackendIndexMap    []int
 	keysDown                    map[int]bool
@@ -246,6 +252,10 @@ func New(client *pime.Client) pime.TextService {
 
 func (ime *IME) HandleRequest(req *pime.Request) *pime.Response {
 	ime.pollRuntimeChange()
+	if shouldSyncInputToolbar(req) {
+		ime.applyInputToolbarState()
+		defer ime.publishInputToolbarState()
+	}
 	if req != nil && ime.shouldApplyPendingSchemaRedeploy(req.Method) {
 		ime.applyPendingSchemaRedeploy()
 	}
@@ -286,6 +296,19 @@ func (ime *IME) HandleRequest(req *pime.Request) *pime.Response {
 	default:
 		resp.ReturnValue = 0
 		return resp
+	}
+}
+
+func shouldSyncInputToolbar(req *pime.Request) bool {
+	if req == nil {
+		return false
+	}
+	switch req.Method {
+	case "onActivate", "filterKeyDown", "onCommand",
+		"onKeyboardStatusChanged", "onCompartmentChanged":
+		return true
+	default:
+		return false
 	}
 }
 
@@ -707,6 +730,10 @@ func (ime *IME) onCommand(req *pime.Request, resp *pime.Response) *pime.Response
 		ime.copyTextToClipboard(ime.trialFeedbackTemplate())
 	case ID_HELP_TOOL_HUB:
 		ime.launchStandaloneToolAsync(ime.openToolHub, "打开工具箱失败")
+	case ID_INPUT_TOOLBAR:
+		ime.launchStandaloneToolAsync(func() error {
+			return toggleInputToolbarWindow(ime)
+		}, "切换输入法工具栏失败")
 	case ID_REVERSE_LOOKUP_TOOL:
 		ime.launchStandaloneToolAsync(ime.openReverseLookupTool, "打开反查编码失败")
 	case ID_CANDIDATE_PAGE_SIZE_5, ID_CANDIDATE_PAGE_SIZE_6, ID_CANDIDATE_PAGE_SIZE_7, ID_CANDIDATE_PAGE_SIZE_8, ID_CANDIDATE_PAGE_SIZE_9:
@@ -1622,6 +1649,75 @@ func (ime *IME) toggleOption(name string) {
 	ime.backend.SetOption(name, !ime.backend.GetOption(name))
 }
 
+func (ime *IME) inputToolbarStatePath() string {
+	return toolbarstate.Path(ime.userDir())
+}
+
+// applyInputToolbarState imports explicit target values written by the
+// standalone toolbar. It runs before a PIME request is handled, so the first
+// key after a toolbar click uses the requested mode.
+func (ime *IME) applyInputToolbarState() {
+	if ime.backend == nil {
+		return
+	}
+	state, err := toolbarstate.Read(ime.inputToolbarStatePath())
+	if err != nil || state.Revision <= ime.inputToolbarStateRevision {
+		return
+	}
+	ime.backend.SetOption("ascii_mode", state.ASCII)
+	ime.backend.SetOption("full_shape", state.FullShape)
+	ime.backend.SetOption("ascii_punct", state.ASCIIPunctuation)
+	ime.backend.SetOption("traditionalization", state.Traditionalization)
+	ime.inputToolbarStateRevision = state.Revision
+	ime.inputToolbarSnapshot = state
+}
+
+// publishInputToolbarState mirrors the backend's authoritative state for the
+// independent toolbar. Update only advances the revision when a value changed,
+// avoiding a disk write for every key event.
+func (ime *IME) publishInputToolbarState() {
+	if ime.backend == nil {
+		return
+	}
+	current := toolbarstate.State{
+		Version:            toolbarstate.FormatVersion,
+		ASCII:              ime.backend.GetOption("ascii_mode"),
+		FullShape:          ime.backend.GetOption("full_shape"),
+		ASCIIPunctuation:   ime.backend.GetOption("ascii_punct"),
+		Traditionalization: ime.backend.GetOption("traditionalization"),
+		SchemaID:           ime.currentSchemaID(),
+	}
+	snapshot := ime.inputToolbarSnapshot
+	if snapshot.Version == toolbarstate.FormatVersion &&
+		snapshot.ASCII == current.ASCII &&
+		snapshot.FullShape == current.FullShape &&
+		snapshot.ASCIIPunctuation == current.ASCIIPunctuation &&
+		snapshot.Traditionalization == current.Traditionalization &&
+		snapshot.SchemaID == current.SchemaID {
+		return
+	}
+	state, err := toolbarstate.Update(ime.inputToolbarStatePath(), "backend", func(existing *toolbarstate.State) bool {
+		changed := existing.Version != toolbarstate.FormatVersion ||
+			existing.ASCII != current.ASCII ||
+			existing.FullShape != current.FullShape ||
+			existing.ASCIIPunctuation != current.ASCIIPunctuation ||
+			existing.Traditionalization != current.Traditionalization ||
+			existing.SchemaID != current.SchemaID
+		existing.ASCII = current.ASCII
+		existing.FullShape = current.FullShape
+		existing.ASCIIPunctuation = current.ASCIIPunctuation
+		existing.Traditionalization = current.Traditionalization
+		existing.SchemaID = current.SchemaID
+		return changed
+	})
+	if err != nil {
+		log.Printf("同步输入法工具栏状态失败: %v", err)
+		return
+	}
+	ime.inputToolbarStateRevision = state.Revision
+	ime.inputToolbarSnapshot = state
+}
+
 func (ime *IME) setCandidateLayout(horizontal bool, resp *pime.Response) {
 	if horizontal {
 		ime.style.CandidatePerRow = horizontalCandidatesPerRow
@@ -2397,6 +2493,10 @@ func (ime *IME) buildMenu() []map[string]interface{} {
 	if traditionalization {
 		traditionalizationText = "繁体 → 简体"
 	}
+	inputToolbarText := "输入法工具栏（关）"
+	if queryInputToolbarVisible() {
+		inputToolbarText = "输入法工具栏（开）"
+	}
 
 	return []map[string]interface{}{
 		{"text": "输入方案", "submenu": []map[string]interface{}{
@@ -2409,6 +2509,7 @@ func (ime *IME) buildMenu() []map[string]interface{} {
 		{"id": ID_TRADITIONALIZATION, "text": traditionalizationText},
 		{"id": ID_ASCII_PUNCT, "text": punctText},
 		{"id": ID_FULL_SHAPE, "text": shapeText},
+		{"id": ID_INPUT_TOOLBAR, "text": inputToolbarText},
 		{"text": ""},
 		{"id": ID_CANDIDATE_LAYOUT_TOGGLE, "text": candidateLayoutToggleText(ime.style.CandidatePerRow > verticalCandidatesPerRow)},
 		{"text": "候选项数", "submenu": ime.buildCandidatePageSizeMenu()},

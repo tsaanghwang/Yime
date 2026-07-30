@@ -42,6 +42,7 @@ build/
 └── go-backend/
     ├── server.exe
     ├── tool-hub.exe
+    ├── input-toolbar.exe
     ├── yime-layout-designer.exe
     ├── settings-tool.exe
     ├── diagnostics-tool.exe

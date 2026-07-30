@@ -35,8 +35,8 @@ func TestBuildScriptKeepsGoExecutableHashesStableAndSupportsSigning(t *testing.T
 	if strings.Contains(script, "git describe --tags --always --dirty") {
 		t.Fatal("build.bat must not inject each Git commit into every executable hash")
 	}
-	if count := strings.Count(script, "go build %GO_REPRO_FLAGS%"); count != 10 {
-		t.Fatalf("expected all 10 Go executables to use reproducible flags, got %d", count)
+	if count := strings.Count(script, "go build %GO_REPRO_FLAGS%"); count != 11 {
+		t.Fatalf("expected all 11 Go executables to use reproducible flags, got %d", count)
 	}
 }
 
@@ -54,8 +54,8 @@ func TestBuildScriptFindsGoWinresOutsidePATH(t *testing.T) {
 			t.Fatalf("build.bat is missing go-winres discovery fragment %q", fragment)
 		}
 	}
-	if count := strings.Count(script, `"%GO_WINRES%" simply`); count != 9 {
-		t.Fatalf("expected all 9 resource builds to use resolved go-winres, got %d", count)
+	if count := strings.Count(script, `"%GO_WINRES%" simply`); count != 10 {
+		t.Fatalf("expected all 10 resource builds to use resolved go-winres, got %d", count)
 	}
 	for _, fragment := range []string{
 		`--file-description "Yime Layout Designer"`,
