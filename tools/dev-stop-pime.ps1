@@ -79,10 +79,12 @@ Start-Sleep -Seconds 2
 foreach ($root in $InstallRoots) {
     Stop-ProcessByPathPrefix -Name "PIMELauncher" -PathPrefix $root | Out-Null
     Stop-ProcessByPathPrefix -Name "server" -PathPrefix (Join-Path $root "go-backend") | Out-Null
+    Stop-ProcessByPathPrefix -Name "input-toolbar" -PathPrefix (Join-Path $root "go-backend") | Out-Null
 }
 
 Stop-ProcessByName -Name "PIMELauncher" | Out-Null
 Stop-ProcessByName -Name "server" | Out-Null
+Stop-ProcessByName -Name "input-toolbar" | Out-Null
 
 Start-Sleep -Seconds 2
 

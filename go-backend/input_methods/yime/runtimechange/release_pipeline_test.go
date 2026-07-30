@@ -29,6 +29,7 @@ func TestReleasePipelineSignsPayloadInstallerAndUninstaller(t *testing.T) {
 	installer := read(filepath.Join(root, "installer", "installer.nsi"))
 	installer = strings.ReplaceAll(installer, "\r\n", "\n")
 	devUninstaller := read(filepath.Join(root, "tools", "dev-uninstall.ps1"))
+	devStop := read(filepath.Join(root, "tools", "dev-stop-pime.ps1"))
 	signer := read(filepath.Join(root, "tools", "sign-release.ps1"))
 	verifier := read(filepath.Join(root, "tools", "verify-release-signatures.ps1"))
 	signFile := read(filepath.Join(root, "tools", "sign-file.ps1"))
@@ -130,6 +131,14 @@ func TestReleasePipelineSignsPayloadInstallerAndUninstaller(t *testing.T) {
 	for _, fragment := range []string{"PIMELauncher.exe", "PIMETextService.dll", "rime_deployer.exe", "rime_dict_manager.exe", "rime.dll"} {
 		if !strings.Contains(signer, fragment) {
 			t.Fatalf("release payload signer is missing %q", fragment)
+		}
+	}
+	for _, fragment := range []string{
+		`Stop-ProcessByPathPrefix -Name "input-toolbar"`,
+		`Stop-ProcessByName -Name "input-toolbar"`,
+	} {
+		if !strings.Contains(devStop, fragment) {
+			t.Fatalf("developer stop flow must release the persistent toolbar executable: missing %q", fragment)
 		}
 	}
 	for _, tool := range []string{"input-toolbar.exe", "yime-layout-designer.exe"} {
