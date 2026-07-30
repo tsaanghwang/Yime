@@ -30,7 +30,9 @@ const (
 
 	wmCommand = 0x0111
 	wmTimer   = 0x0113
+	wmClose   = 0x0010
 	wmDestroy = 0x0002
+	wmNull    = 0x0000
 
 	idLanguage = 100
 	idShape    = 101
@@ -40,33 +42,55 @@ const (
 	idSettings = 105
 	timerID    = 1
 
-	toolbarClientWidth  = int32(394)
-	toolbarClientHeight = int32(52)
-	toolbarButtonTop    = int32(10)
+	idMenuOrientation = 200
+	idMenuCandidate   = 201
+	idMenuSystem      = 202
+	idMenuButtonBase  = 300
+
+	toolbarMargin       = int32(8)
+	toolbarButtonGap    = int32(6)
 	toolbarButtonHeight = int32(32)
+
+	mfString    = 0x0000
+	mfChecked   = 0x0008
+	mfPopup     = 0x0010
+	mfSeparator = 0x0800
+
+	tpmRightButton = 0x0002
+	tpmReturnCmd   = 0x0100
 )
 
 var (
 	user32   = syscall.NewLazyDLL("user32.dll")
 	kernel32 = syscall.NewLazyDLL("kernel32.dll")
 
-	createWindowExW    = user32.NewProc("CreateWindowExW")
-	defWindowProcW     = user32.NewProc("DefWindowProcW")
-	dispatchMessageW   = user32.NewProc("DispatchMessageW")
-	getMessageW        = user32.NewProc("GetMessageW")
-	translateMessageW  = user32.NewProc("TranslateMessage")
-	postQuitMessage    = user32.NewProc("PostQuitMessage")
-	registerClassExW   = user32.NewProc("RegisterClassExW")
-	loadCursorW        = user32.NewProc("LoadCursorW")
-	showWindow         = user32.NewProc("ShowWindow")
-	updateWindow       = user32.NewProc("UpdateWindow")
-	setTimer           = user32.NewProc("SetTimer")
-	killTimer          = user32.NewProc("KillTimer")
-	setWindowTextW     = user32.NewProc("SetWindowTextW")
-	messageBoxW        = user32.NewProc("MessageBoxW")
-	getSystemMetrics   = user32.NewProc("GetSystemMetrics")
-	adjustWindowRectEx = user32.NewProc("AdjustWindowRectEx")
-	getModuleHandleW   = kernel32.NewProc("GetModuleHandleW")
+	createWindowExW     = user32.NewProc("CreateWindowExW")
+	defWindowProcW      = user32.NewProc("DefWindowProcW")
+	dispatchMessageW    = user32.NewProc("DispatchMessageW")
+	getMessageW         = user32.NewProc("GetMessageW")
+	translateMessageW   = user32.NewProc("TranslateMessage")
+	postQuitMessage     = user32.NewProc("PostQuitMessage")
+	registerClassExW    = user32.NewProc("RegisterClassExW")
+	loadCursorW         = user32.NewProc("LoadCursorW")
+	showWindow          = user32.NewProc("ShowWindow")
+	isWindowVisible     = user32.NewProc("IsWindowVisible")
+	updateWindow        = user32.NewProc("UpdateWindow")
+	moveWindow          = user32.NewProc("MoveWindow")
+	setWindowPos        = user32.NewProc("SetWindowPos")
+	setTimer            = user32.NewProc("SetTimer")
+	killTimer           = user32.NewProc("KillTimer")
+	setWindowTextW      = user32.NewProc("SetWindowTextW")
+	messageBoxW         = user32.NewProc("MessageBoxW")
+	getSystemMetrics    = user32.NewProc("GetSystemMetrics")
+	adjustWindowRectEx  = user32.NewProc("AdjustWindowRectEx")
+	createPopupMenu     = user32.NewProc("CreatePopupMenu")
+	appendMenuW         = user32.NewProc("AppendMenuW")
+	trackPopupMenu      = user32.NewProc("TrackPopupMenu")
+	destroyMenu         = user32.NewProc("DestroyMenu")
+	getCursorPos        = user32.NewProc("GetCursorPos")
+	setForegroundWindow = user32.NewProc("SetForegroundWindow")
+	postMessageW        = user32.NewProc("PostMessageW")
+	getModuleHandleW    = kernel32.NewProc("GetModuleHandleW")
 
 	windowProc uintptr
 )
@@ -100,9 +124,30 @@ type rect struct {
 }
 
 type toolbarButton struct {
-	id   int
-	text string
-	w    int32
+	id           int
+	key          string
+	text         string
+	width        int32
+	customizable bool
+}
+
+type buttonPlacement struct {
+	id      int
+	x       int32
+	y       int32
+	width   int32
+	height  int32
+	visible bool
+}
+
+type toolbarLayout struct {
+	clientWidth  int32
+	clientHeight int32
+	placements   []buttonPlacement
+}
+
+type point struct {
+	X, Y int32
 }
 
 type app struct {
@@ -151,6 +196,9 @@ func (a *app) run() error {
 	if win32ui.ActivateExistingWindow(windowClass) {
 		return nil
 	}
+	if state, err := toolbarstate.Read(a.statePath); err == nil {
+		a.state = state
+	}
 	instance, _, _ := getModuleHandleW.Call(0)
 	className, _ := syscall.UTF16PtrFromString(windowClass)
 	cursor, _, _ := loadCursorW.Call(0, uintptr(32512))
@@ -174,7 +222,8 @@ func (a *app) run() error {
 	title, _ := syscall.UTF16PtrFromString("Yime 输入法工具栏")
 	windowStyle := uintptr(wsPopup | wsCaption | wsSysMenu)
 	windowExStyle := uintptr(wsExToolWindow | wsExTopmost)
-	width, height := windowSizeForClient(toolbarClientWidth, toolbarClientHeight)
+	layout := calculateToolbarLayout(a.state)
+	width, height := windowSizeForClient(layout.clientWidth, layout.clientHeight)
 	screenW, _, _ := getSystemMetrics.Call(0)
 	x := int32(screenW) - width - 24
 	if x < 0 {
@@ -193,7 +242,8 @@ func (a *app) run() error {
 	}
 	a.hwnd = syscall.Handle(hwnd)
 	a.createButtons()
-	a.refresh()
+	a.updateLabels()
+	a.applyLayout()
 	setTimer.Call(hwnd, timerID, 200, 0)
 	showWindow.Call(hwnd, 5)
 	updateWindow.Call(hwnd)
@@ -211,22 +261,114 @@ func (a *app) run() error {
 }
 
 func (a *app) createButtons() {
-	labels := []toolbarButton{
-		{idLanguage, "中", 44},
-		{idShape, "半", 44},
-		{idPunct, "中标", 54},
-		{idScript, "简", 44},
-		{idUnicode, "字符", 64},
-		{idSettings, "设置", 64},
-	}
-	left := int32(8)
-	for _, item := range labels {
+	for _, item := range toolbarButtons() {
 		a.buttons[item.id] = createButton(
 			a.hwnd, item.id, item.text,
-			left, toolbarButtonTop, item.w, toolbarButtonHeight,
+			0, 0, item.width, toolbarButtonHeight,
 		)
-		left += item.w + 6
 	}
+}
+
+func toolbarButtons() []toolbarButton {
+	return []toolbarButton{
+		{idLanguage, "language", "中文", 54, true},
+		{idShape, "shape", "半宽", 54, true},
+		{idPunct, "punctuation", "中标", 54, true},
+		{idScript, "script", "简体", 54, true},
+		{idUnicode, "unicode", "字符", 64, true},
+		{idSettings, "settings", "设置", 64, false},
+	}
+}
+
+func calculateToolbarLayout(state toolbarstate.State) toolbarLayout {
+	hidden := make(map[string]bool, len(state.HiddenButtons))
+	for _, key := range state.HiddenButtons {
+		hidden[key] = true
+	}
+	definitions := toolbarButtons()
+	visible := make([]toolbarButton, 0, len(definitions))
+	for _, button := range definitions {
+		if !button.customizable || !hidden[button.key] {
+			visible = append(visible, button)
+		}
+	}
+	layout := toolbarLayout{placements: make([]buttonPlacement, 0, len(definitions))}
+	if state.Vertical {
+		maxWidth := int32(0)
+		for _, button := range visible {
+			if button.width > maxWidth {
+				maxWidth = button.width
+			}
+		}
+		layout.clientWidth = toolbarMargin*2 + maxWidth
+		layout.clientHeight = toolbarMargin*2 +
+			int32(len(visible))*toolbarButtonHeight +
+			int32(len(visible)-1)*toolbarButtonGap
+		y := toolbarMargin
+		for _, button := range definitions {
+			isVisible := !button.customizable || !hidden[button.key]
+			placement := buttonPlacement{id: button.id, visible: isVisible}
+			if isVisible {
+				placement.x = toolbarMargin
+				placement.y = y
+				placement.width = maxWidth
+				placement.height = toolbarButtonHeight
+				y += toolbarButtonHeight + toolbarButtonGap
+			}
+			layout.placements = append(layout.placements, placement)
+		}
+		return layout
+	}
+
+	totalWidth := int32(0)
+	for index, button := range visible {
+		totalWidth += button.width
+		if index > 0 {
+			totalWidth += toolbarButtonGap
+		}
+	}
+	layout.clientWidth = toolbarMargin*2 + totalWidth
+	layout.clientHeight = toolbarMargin*2 + toolbarButtonHeight
+	x := toolbarMargin
+	for _, button := range definitions {
+		isVisible := !button.customizable || !hidden[button.key]
+		placement := buttonPlacement{id: button.id, visible: isVisible}
+		if isVisible {
+			placement.x = x
+			placement.y = toolbarMargin
+			placement.width = button.width
+			placement.height = toolbarButtonHeight
+			x += button.width + toolbarButtonGap
+		}
+		layout.placements = append(layout.placements, placement)
+	}
+	return layout
+}
+
+func (a *app) applyLayout() {
+	layout := calculateToolbarLayout(a.state)
+	for _, placement := range layout.placements {
+		button := a.buttons[placement.id]
+		if placement.visible {
+			showWindow.Call(uintptr(button), 5)
+			moveWindow.Call(
+				uintptr(button),
+				uintptr(placement.x), uintptr(placement.y),
+				uintptr(placement.width), uintptr(placement.height),
+				1,
+			)
+		} else {
+			showWindow.Call(uintptr(button), 0)
+		}
+	}
+	width, height := windowSizeForClient(layout.clientWidth, layout.clientHeight)
+	const swpNoMove = 0x0002
+	const swpNoZOrder = 0x0004
+	const swpNoActivate = 0x0010
+	setWindowPos.Call(
+		uintptr(a.hwnd), 0, 0, 0, uintptr(width), uintptr(height),
+		swpNoMove|swpNoZOrder|swpNoActivate,
+	)
 }
 
 func windowSizeForClient(clientWidth, clientHeight int32) (int32, int32) {
@@ -263,6 +405,12 @@ func createButton(parent syscall.Handle, id int, text string, x, y, width, heigh
 
 func (a *app) wndProc(hwnd syscall.Handle, message uint32, wParam, lParam uintptr) uintptr {
 	switch message {
+	case wmClose:
+		// The title-bar X is the toolbar's "hide" action. Keep this small
+		// process and its state alive so the language-bar menu can show it
+		// again without touching PIME or the candidate window.
+		showWindow.Call(uintptr(hwnd), 0)
+		return 0
 	case wmCommand:
 		if int((wParam>>16)&0xffff) == 0 {
 			a.handleCommand(int(wParam & 0xffff))
@@ -270,7 +418,10 @@ func (a *app) wndProc(hwnd syscall.Handle, message uint32, wParam, lParam uintpt
 		return 0
 	case wmTimer:
 		if wParam == timerID {
-			a.refresh()
+			visible, _, _ := isWindowVisible.Call(uintptr(hwnd))
+			if visible != 0 {
+				a.refresh()
+			}
 		}
 		return 0
 	case wmDestroy:
@@ -297,20 +448,156 @@ func (a *app) handleCommand(id int) {
 	case idUnicode:
 		showInformation("Unicode 字符面板将在下一阶段作为独立窗口接通。")
 	case idSettings:
-		if a.settingsTool == "" {
-			showError("没有找到设置工具。")
+		a.showSettingsMenu()
+	}
+}
+
+func (a *app) showSettingsMenu() {
+	menu, _, _ := createPopupMenu.Call()
+	customize, _, _ := createPopupMenu.Call()
+	if menu == 0 || customize == 0 {
+		if menu != 0 {
+			destroyMenu.Call(menu)
+		}
+		if customize != 0 {
+			destroyMenu.Call(customize)
+		}
+		showError("无法创建工具栏设置菜单。")
+		return
+	}
+	defer destroyMenu.Call(menu)
+
+	for index, button := range toolbarButtons() {
+		if !button.customizable {
+			continue
+		}
+		flags := uintptr(mfString)
+		if !a.buttonHidden(button.key) {
+			flags |= mfChecked
+		}
+		appendPopupMenuItem(customize, flags, uintptr(idMenuButtonBase+index), buttonMenuName(button.key))
+	}
+	appendPopupMenuItem(menu, mfPopup, customize, "定制")
+	orientation := "水平/垂直（当前：水平）"
+	if a.state.Vertical {
+		orientation = "水平/垂直（当前：垂直）"
+	}
+	appendPopupMenuItem(menu, mfString, idMenuOrientation, orientation)
+	appendPopupMenuItem(menu, mfSeparator, 0, "")
+	appendPopupMenuItem(menu, mfString, idMenuCandidate, "候选")
+	appendPopupMenuItem(menu, mfString, idMenuSystem, "系统")
+
+	var cursor point
+	getCursorPos.Call(uintptr(unsafe.Pointer(&cursor)))
+	setForegroundWindow.Call(uintptr(a.hwnd))
+	command, _, _ := trackPopupMenu.Call(
+		menu,
+		tpmRightButton|tpmReturnCmd,
+		uintptr(cursor.X), uintptr(cursor.Y),
+		0,
+		uintptr(a.hwnd),
+		0,
+	)
+	postMessageW.Call(uintptr(a.hwnd), wmNull, 0, 0)
+	a.handleSettingsMenuCommand(int(command))
+}
+
+func appendPopupMenuItem(menu uintptr, flags uintptr, id uintptr, text string) {
+	var label *uint16
+	if text != "" {
+		label, _ = syscall.UTF16PtrFromString(text)
+	}
+	appendMenuW.Call(
+		menu,
+		flags,
+		id,
+		uintptr(unsafe.Pointer(label)),
+	)
+}
+
+func buttonMenuName(key string) string {
+	switch key {
+	case "language":
+		return "中文/英文"
+	case "shape":
+		return "半宽/全宽"
+	case "punctuation":
+		return "中标/英标"
+	case "script":
+		return "简体/繁体"
+	case "unicode":
+		return "字符"
+	default:
+		return key
+	}
+}
+
+func (a *app) handleSettingsMenuCommand(command int) {
+	switch command {
+	case 0:
+		return
+	case idMenuOrientation:
+		a.updateState(func(state *toolbarstate.State) {
+			state.Vertical = !state.Vertical
+		})
+	case idMenuCandidate:
+		a.openCandidateSettings()
+	case idMenuSystem:
+		if err := exec.Command("explorer.exe", "ms-settings:regionlanguage").Start(); err != nil {
+			showError("无法打开 Windows 输入法设置：" + err.Error())
+		}
+	default:
+		index := command - idMenuButtonBase
+		buttons := toolbarButtons()
+		if index < 0 || index >= len(buttons) || !buttons[index].customizable {
 			return
 		}
-		if err := exec.Command(
-			a.settingsTool,
-			"-UserDir", a.userDir,
-			"-SharedDir", a.sharedDir,
-			"-HelpDir", a.helpDir,
-			"-LogDir", a.logDir,
-		).Start(); err != nil {
-			showError("无法打开设置工具：" + err.Error())
+		key := buttons[index].key
+		a.updateState(func(state *toolbarstate.State) {
+			state.HiddenButtons = toggleHiddenButton(state.HiddenButtons, key)
+		})
+	}
+}
+
+func (a *app) openCandidateSettings() {
+	if a.settingsTool == "" {
+		showError("没有找到设置工具。")
+		return
+	}
+	if err := exec.Command(
+		a.settingsTool,
+		"-UserDir", a.userDir,
+		"-SharedDir", a.sharedDir,
+		"-HelpDir", a.helpDir,
+		"-LogDir", a.logDir,
+	).Start(); err != nil {
+		showError("无法打开设置工具：" + err.Error())
+	}
+}
+
+func (a *app) buttonHidden(key string) bool {
+	for _, hidden := range a.state.HiddenButtons {
+		if hidden == key {
+			return true
 		}
 	}
+	return false
+}
+
+func toggleHiddenButton(hidden []string, key string) []string {
+	next := make([]string, 0, len(hidden)+1)
+	found := false
+	for _, existing := range hidden {
+		if existing == key {
+			found = true
+			continue
+		}
+		next = append(next, existing)
+	}
+	if !found {
+		next = append(next, key)
+	}
+	return next
 }
 
 func (a *app) updateState(change func(*toolbarstate.State)) {
@@ -324,6 +611,7 @@ func (a *app) updateState(change func(*toolbarstate.State)) {
 	}
 	a.state = state
 	a.updateLabels()
+	a.applyLayout()
 }
 
 func (a *app) refresh() {
@@ -333,13 +621,14 @@ func (a *app) refresh() {
 	}
 	a.state = state
 	a.updateLabels()
+	a.applyLayout()
 }
 
 func (a *app) updateLabels() {
-	setButtonText(a.buttons[idLanguage], choose(a.state.ASCII, "英", "中"))
-	setButtonText(a.buttons[idShape], choose(a.state.FullShape, "全", "半"))
+	setButtonText(a.buttons[idLanguage], choose(a.state.ASCII, "英文", "中文"))
+	setButtonText(a.buttons[idShape], choose(a.state.FullShape, "全宽", "半宽"))
 	setButtonText(a.buttons[idPunct], choose(a.state.ASCIIPunctuation, "英标", "中标"))
-	setButtonText(a.buttons[idScript], choose(a.state.Traditionalization, "繁", "简"))
+	setButtonText(a.buttons[idScript], choose(a.state.Traditionalization, "繁体", "简体"))
 }
 
 func choose(value bool, whenTrue, whenFalse string) string {

@@ -14,6 +14,9 @@ const inputToolbarWindowClass = "YimeInputToolbar"
 var (
 	inputToolbarUser32       = syscall.NewLazyDLL("user32.dll")
 	inputToolbarFindWindowW  = inputToolbarUser32.NewProc("FindWindowW")
+	inputToolbarIsVisible    = inputToolbarUser32.NewProc("IsWindowVisible")
+	inputToolbarShowWindow   = inputToolbarUser32.NewProc("ShowWindow")
+	inputToolbarForeground   = inputToolbarUser32.NewProc("SetForegroundWindow")
 	inputToolbarPostMessageW = inputToolbarUser32.NewProc("PostMessageW")
 )
 
@@ -23,7 +26,11 @@ func platformInputToolbarVisible() bool {
 		uintptr(unsafe.Pointer(className)),
 		0,
 	)
-	return hwnd != 0
+	if hwnd == 0 {
+		return false
+	}
+	visible, _, _ := inputToolbarIsVisible.Call(hwnd)
+	return visible != 0
 }
 
 func platformToggleInputToolbar(ime *IME) error {
@@ -33,8 +40,15 @@ func platformToggleInputToolbar(ime *IME) error {
 		0,
 	)
 	if hwnd != 0 {
-		const wmClose = 0x0010
-		inputToolbarPostMessageW.Call(hwnd, wmClose, 0, 0)
+		visible, _, _ := inputToolbarIsVisible.Call(hwnd)
+		if visible != 0 {
+			const wmClose = 0x0010
+			inputToolbarPostMessageW.Call(hwnd, wmClose, 0, 0)
+		} else {
+			const swShow = 5
+			inputToolbarShowWindow.Call(hwnd, swShow)
+			inputToolbarForeground.Call(hwnd)
+		}
 		return nil
 	}
 	toolPath := ime.inputToolbarPath()

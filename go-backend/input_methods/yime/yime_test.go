@@ -1872,6 +1872,8 @@ func TestInputToolbarStateConvergesBackendAndStandaloneControls(t *testing.T) {
 		state.FullShape = true
 		state.ASCIIPunctuation = true
 		state.Traditionalization = true
+		state.Vertical = true
+		state.HiddenButtons = []string{"unicode"}
 		return true
 	})
 	if err != nil {
@@ -1898,6 +1900,9 @@ func TestInputToolbarStateConvergesBackendAndStandaloneControls(t *testing.T) {
 	}
 	if got.ASCII || !got.FullShape || !got.ASCIIPunctuation || !got.Traditionalization {
 		t.Fatalf("backend publication lost toolbar state fields: %#v", got)
+	}
+	if !got.Vertical || len(got.HiddenButtons) != 1 || got.HiddenButtons[0] != "unicode" {
+		t.Fatalf("backend publication lost toolbar layout preferences: %#v", got)
 	}
 	if got.Source != "backend" || got.Revision <= written.Revision {
 		t.Fatalf("backend publication metadata is stale: %#v", got)
