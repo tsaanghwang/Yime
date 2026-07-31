@@ -99,6 +99,10 @@ if not exist "%RIME_DATA_DIR%\trainer\foundation.json" (
     echo [ERROR] Missing Yime trainer foundation lesson: "%RIME_DATA_DIR%\trainer\foundation.json"
     exit /b 1
 )
+if not exist "%RIME_DATA_DIR%\trainer\yinyuan_catalog.json" (
+    echo [ERROR] Missing Yime trainer Yinyuan catalog: "%RIME_DATA_DIR%\trainer\yinyuan_catalog.json"
+    exit /b 1
+)
 
 powershell -NoProfile -ExecutionPolicy Bypass -File "%PIME_ROOT%\tools\verify-rime-runtime.ps1" -RuntimeDir "%RIME_DIR%" -LockFile "%RIME_RUNTIME_LOCK%"
 if errorlevel 1 (
@@ -567,6 +571,10 @@ for %%F in (t2s.json s2t.json TSCharacters.ocd2 STCharacters.ocd2) do (
 )
 if not exist "%PACKAGE_RIME_DATA_DIR%\trainer\foundation.json" (
     echo [ERROR] Packaged Yime trainer lesson is missing: trainer\foundation.json
+    exit /b 1
+)
+if not exist "%PACKAGE_RIME_DATA_DIR%\trainer\yinyuan_catalog.json" (
+    echo [ERROR] Packaged Yime trainer Yinyuan catalog is missing: trainer\yinyuan_catalog.json
     exit /b 1
 )
 
