@@ -1,0 +1,3 @@
+#!/bin/sh
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File tools/check-libime2-change-boundary.ps1 -Staged -CommitMessagePath "$1"
+exit $?

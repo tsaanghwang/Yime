@@ -1,0 +1,3 @@
+#!/bin/sh
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File tools/invoke-libime2-pre-push.ps1
+exit $?

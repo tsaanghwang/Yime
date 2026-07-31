@@ -6,6 +6,7 @@
 /build.bat @tsaanghwang
 /CMakeLists.txt @tsaanghwang
 /.gitmodules @tsaanghwang
+/.githooks/** @tsaanghwang
 /version.txt @tsaanghwang
 
 /PIMELauncher/.cargo/** @tsaanghwang
@@ -16,6 +17,10 @@
 /go-backend/build.bat @tsaanghwang
 
 /tools/test-build-guards.ps1 @tsaanghwang
+/tools/check-libime2-change-boundary.ps1 @tsaanghwang
+/tools/invoke-libime2-pre-push.ps1 @tsaanghwang
+/tools/enable-repository-hooks.ps1 @tsaanghwang
+/tools/test-libime2-change-boundary.ps1 @tsaanghwang
 /tools/test-go-race.ps1 @tsaanghwang
 /tools/test-go.ps1 @tsaanghwang
 /tools/test-real-rime.ps1 @tsaanghwang
