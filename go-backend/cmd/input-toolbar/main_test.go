@@ -4,6 +4,7 @@ package main
 
 import (
 	"path/filepath"
+	"syscall"
 	"testing"
 
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/toolbarstate"
@@ -138,6 +139,23 @@ func TestTrainerButtonPrecedesSettingsAndUsesCurrentSchemaMode(t *testing.T) {
 		if got := trainerModeFromSchema(schemaID); got != want {
 			t.Fatalf("trainer mode for %s=%q want %q", schemaID, got, want)
 		}
+	}
+}
+
+func TestHideCommandDestroysToolbarProcessWindow(t *testing.T) {
+	original := closeToolbarWindow
+	defer func() { closeToolbarWindow = original }()
+
+	want := syscall.Handle(123)
+	called := make([]syscall.Handle, 0, 2)
+	closeToolbarWindow = func(hwnd syscall.Handle) {
+		called = append(called, hwnd)
+	}
+	instance := &app{hwnd: want}
+	instance.handleSettingsMenuCommand(idMenuHide)
+	instance.wndProc(syscall.Handle(456), wmClose, 0, 0)
+	if len(called) != 2 || called[0] != want || called[1] != syscall.Handle(456) {
+		t.Fatalf("hide paths destroyed windows %#v", called)
 	}
 }
 

@@ -73,6 +73,7 @@ var (
 	getMessageW         = user32.NewProc("GetMessageW")
 	translateMessageW   = user32.NewProc("TranslateMessage")
 	postQuitMessage     = user32.NewProc("PostQuitMessage")
+	destroyWindow       = user32.NewProc("DestroyWindow")
 	registerClassExW    = user32.NewProc("RegisterClassExW")
 	loadCursorW         = user32.NewProc("LoadCursorW")
 	showWindow          = user32.NewProc("ShowWindow")
@@ -97,6 +98,10 @@ var (
 	getModuleHandleW    = kernel32.NewProc("GetModuleHandleW")
 
 	windowProc uintptr
+
+	closeToolbarWindow = func(hwnd syscall.Handle) {
+		destroyWindow.Call(uintptr(hwnd))
+	}
 )
 
 type wndClassEx struct {
@@ -472,10 +477,10 @@ func createButton(parent syscall.Handle, id int, text string, x, y, width, heigh
 func (a *app) wndProc(hwnd syscall.Handle, message uint32, wParam, lParam uintptr) uintptr {
 	switch message {
 	case wmClose:
-		// The title-bar X is the toolbar's "hide" action. Keep this small
-		// process and its state alive so the language-bar menu can show it
-		// again without touching PIME or the candidate window.
-		showWindow.Call(uintptr(hwnd), 0)
+		// Closing the independent toolbar must also release input-toolbar.exe
+		// so upgrades can replace it. The language-bar command starts a fresh
+		// process when the user asks to show the toolbar again.
+		closeToolbarWindow(hwnd)
 		return 0
 	case wmCommand:
 		if int((wParam>>16)&0xffff) == 0 {
@@ -616,7 +621,7 @@ func (a *app) handleSettingsMenuCommand(command int) {
 			state.OrientationSet = true
 		})
 	case idMenuHide:
-		showWindow.Call(uintptr(a.hwnd), 0)
+		closeToolbarWindow(a.hwnd)
 	case idMenuCandidate:
 		a.openCandidateSettings()
 	case idMenuSystem:
