@@ -52,6 +52,10 @@ $requiredGovernanceGuards = @(
     "branches: [main, yime-stable, 'codex/**']",
     'name: rust-i686-host',
     'name: native-build',
+    'Guard and track libIME2 component commits',
+    '.\tools\check-libime2-change-boundary.ps1',
+    '.\tools\test-libime2-change-boundary.ps1',
+    'libime2-change-report-${{ github.sha }}',
     'name: go-tests',
     'name: real-rime-tests',
     'name: go-race-msys2',
@@ -77,10 +81,15 @@ $codeOwnersText = Get-Content -LiteralPath $codeOwners -Raw
 foreach ($guard in @(
     '/AGENTS.md @tsaanghwang',
     '/.github/** @tsaanghwang',
+    '/.githooks/** @tsaanghwang',
     '/Build.ps1 @tsaanghwang',
     '/build.bat @tsaanghwang',
     '/CMakeLists.txt @tsaanghwang',
     '/tools/test-build-guards.ps1 @tsaanghwang',
+    '/tools/check-libime2-change-boundary.ps1 @tsaanghwang',
+    '/tools/invoke-libime2-pre-push.ps1 @tsaanghwang',
+    '/tools/enable-repository-hooks.ps1 @tsaanghwang',
+    '/tools/test-libime2-change-boundary.ps1 @tsaanghwang',
     '/tools/test-go-race.ps1 @tsaanghwang',
     '/tools/test-go.ps1 @tsaanghwang',
     '/tools/test-real-rime.ps1 @tsaanghwang',
@@ -104,8 +113,20 @@ if ($workflowText.Contains('CORE_RESULT:')) {
     throw 'Independent protected stages must not depend on an aggregate core-build result.'
 }
 
-if (-not $workflowText.Contains('git submodule update --init --depth 1 libIME2')) {
-    throw 'CI must checkout only the active libIME2 submodule.'
+if ($workflowText.Contains('git submodule update --init --depth 1 libIME2')) {
+    throw 'CI must use the in-tree libIME2 component without a submodule checkout.'
+}
+$libIME2Index = @(& git -C $root ls-files -s -- libIME2)
+if ($libIME2Index.Count -eq 0) {
+    throw 'The in-tree libIME2 component is not tracked.'
+}
+if ($libIME2Index[0] -match '^160000\s') {
+    throw 'libIME2 unexpectedly remains a gitlink instead of tracked source.'
+}
+foreach ($requiredLibIME2File in @('libIME2/CMakeLists.txt', 'libIME2/src/libIME.h')) {
+    if (-not (Test-Path -LiteralPath (Join-Path $root $requiredLibIME2File) -PathType Leaf)) {
+        throw "The in-tree libIME2 component is incomplete: $requiredLibIME2File"
+    }
 }
 if ($workflowText.Contains('Build McBopomofo')) {
     throw 'Retired McBopomofo build step returned to CI.'
@@ -379,9 +400,8 @@ $trackedRootData = @(
 if ($trackedRootData.Count -gt 0) {
     throw "Retired root Rime/OpenCC data returned: $($trackedRootData -join ', ')"
 }
-$gitmodulesText = Get-Content -LiteralPath (Join-Path $root '.gitmodules') -Raw
-if ($gitmodulesText -match 'McBopomofoWeb|libchewing|python/input_methods/rime/brise') {
-    throw 'Retired submodule metadata is still present.'
+if (Test-Path -LiteralPath (Join-Path $root '.gitmodules')) {
+    throw 'Yime must not reintroduce submodule metadata after vendoring libIME2.'
 }
 Write-Host 'YIME-only build and installer guard test passed.'
 Write-Host 'YIME provenance, metadata, and legal packaging guard test passed.'

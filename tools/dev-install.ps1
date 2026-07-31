@@ -140,6 +140,7 @@ Assert-PathExists -Path (Join-Path $goBackendRoot "server.exe") -Description "go
     -X86Launcher $launcherExe
 foreach ($toolExe in @(
     "tool-hub.exe",
+    "yime-trainer.exe",
     "input-toolbar.exe",
     "lexicon-manager.exe",
     "system-lexicon-audit.exe",

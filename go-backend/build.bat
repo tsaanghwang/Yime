@@ -14,6 +14,7 @@ set "PACKAGE_DIR=%BUILD_ROOT%\go-backend"
 set "SERVER_EXE=%PACKAGE_DIR%\server.exe"
 set "REVERSE_LOOKUP_EXE=%PACKAGE_DIR%\reverse-lookup.exe"
 set "TOOL_HUB_EXE=%PACKAGE_DIR%\tool-hub.exe"
+set "YIME_TRAINER_EXE=%PACKAGE_DIR%\yime-trainer.exe"
 set "INPUT_TOOLBAR_EXE=%PACKAGE_DIR%\input-toolbar.exe"
 set "LEXICON_MANAGER_EXE=%PACKAGE_DIR%\lexicon-manager.exe"
 set "SYSTEM_LEXICON_AUDIT_EXE=%PACKAGE_DIR%\system-lexicon-audit.exe"
@@ -92,6 +93,10 @@ for %%F in (
 )
 if not exist "%RIME_DATA_DIR%\opencc\t2s.json" (
     echo [ERROR] Missing pinned OpenCC shared data: "%RIME_DATA_DIR%\opencc"
+    exit /b 1
+)
+if not exist "%RIME_DATA_DIR%\trainer\foundation.json" (
+    echo [ERROR] Missing Yime trainer foundation lesson: "%RIME_DATA_DIR%\trainer\foundation.json"
     exit /b 1
 )
 
@@ -201,6 +206,25 @@ if errorlevel 1 (
 if exist cmd\tool-hub\rsrc_hub_windows_amd64.syso del cmd\tool-hub\rsrc_hub_windows_amd64.syso
 
 echo [INFO] Built: "%TOOL_HUB_EXE%"
+
+echo [INFO] Generating Windows VERSIONINFO resources for yime-trainer ...
+"%GO_WINRES%" simply --arch amd64 --product-version "%APP_VERSION%" --file-version "%APP_VERSION%" --product-name "YIME" --copyright "Copyright (C) 2026 Yime contributors" --file-description "Yime Typing Trainer" --original-filename "yime-trainer.exe" --icon input_methods\yime\icon.ico --manifest gui --out cmd\yime-trainer\rsrc_trainer
+if errorlevel 1 (
+    echo [WARN] go-winres failed for yime-trainer.exe, building without VERSIONINFO
+    if exist cmd\yime-trainer\rsrc_trainer_windows_amd64.syso del cmd\yime-trainer\rsrc_trainer_windows_amd64.syso
+)
+
+echo [INFO] Building yime-trainer.exe ...
+go build %GO_REPRO_FLAGS% -ldflags "-s -w -H=windowsgui -X main.version=%APP_VERSION%" -o "%YIME_TRAINER_EXE%" .\cmd\yime-trainer
+if errorlevel 1 (
+    echo [ERROR] Failed to build yime-trainer.exe
+    if exist cmd\yime-trainer\rsrc_trainer_windows_amd64.syso del cmd\yime-trainer\rsrc_trainer_windows_amd64.syso
+    popd
+    exit /b 1
+)
+
+if exist cmd\yime-trainer\rsrc_trainer_windows_amd64.syso del cmd\yime-trainer\rsrc_trainer_windows_amd64.syso
+echo [INFO] Built: "%YIME_TRAINER_EXE%"
 
 echo [INFO] Generating Windows VERSIONINFO resources for input-toolbar ...
 "%GO_WINRES%" simply --arch amd64 --product-version "%APP_VERSION%" --file-version "%APP_VERSION%" --product-name "YIME" --copyright "Copyright (C) 2026 Yime contributors" --file-description "Yime Input Method Toolbar" --original-filename "input-toolbar.exe" --icon input_methods\yime\icon.ico --manifest gui --out cmd\input-toolbar\rsrc_input_toolbar
@@ -541,6 +565,10 @@ for %%F in (t2s.json s2t.json TSCharacters.ocd2 STCharacters.ocd2) do (
         exit /b 1
     )
 )
+if not exist "%PACKAGE_RIME_DATA_DIR%\trainer\foundation.json" (
+    echo [ERROR] Packaged Yime trainer lesson is missing: trainer\foundation.json
+    exit /b 1
+)
 
 echo [INFO] Packaged Rime shared data prepared at "%PACKAGE_RIME_DATA_DIR%"
 exit /b 0
@@ -565,6 +593,7 @@ for %%F in (
     "%SERVER_EXE%"
     "%REVERSE_LOOKUP_EXE%"
     "%TOOL_HUB_EXE%"
+    "%YIME_TRAINER_EXE%"
     "%INPUT_TOOLBAR_EXE%"
     "%LEXICON_MANAGER_EXE%"
     "%SYSTEM_LEXICON_AUDIT_EXE%"

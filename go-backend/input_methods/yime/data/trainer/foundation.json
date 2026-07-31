@@ -1,0 +1,82 @@
+{
+  "schema_version": "1.1",
+  "id": "foundation",
+  "title": "Yime 基础过渡练习",
+  "description": "覆盖音元键位、带调音节和常用字词三个起步题型。",
+  "tags": ["foundation", "trial", "three-mode"],
+  "sections": [
+    {
+      "id": "keymap-basics",
+      "type": "keymap",
+      "title": "音元键位",
+      "instruction": "根据音元提示敲击当前布局中的物理键。",
+      "items": [
+        {
+          "prompt": "实首音 N01",
+          "yinyuan_id": "N01"
+        },
+        {
+          "prompt": "实首音 N06",
+          "yinyuan_id": "N06"
+        },
+        {
+          "prompt": "感音 M01",
+          "yinyuan_id": "M01"
+        }
+      ]
+    },
+    {
+      "id": "syllable-contrast-basics",
+      "type": "syllable_contrast",
+      "title": "音节与声调对照",
+      "instruction": "看带调音节和例字，敲出当前输入方案的音元编码。",
+      "items": [
+        {
+          "prompt": "mā（妈）",
+          "syllable": "ma1",
+          "hanzi": "妈",
+          "contrast": ["ma2", "ma3", "ma4", "ma5"]
+        },
+        {
+          "prompt": "de（的）",
+          "syllable": "de5",
+          "hanzi": "的",
+          "contrast": ["de1", "de2", "de4"]
+        },
+        {
+          "prompt": "à（啊）",
+          "syllable": "a4",
+          "hanzi": "啊",
+          "contrast": ["a1", "a2", "a3", "a5"]
+        }
+      ]
+    },
+    {
+      "id": "common-words-basics",
+      "type": "common_words",
+      "title": "常用字词",
+      "instruction": "把音节、声调和连续整词输入连接起来。",
+      "items": [
+        {
+          "prompt": "我们",
+          "text": "我们",
+          "syllables": ["wo3", "men5"],
+          "frequency_tier": "high"
+        },
+        {
+          "prompt": "你的",
+          "text": "你的",
+          "syllables": ["ni3", "de5"],
+          "frequency_tier": "high",
+          "notes": "包含词汇轻声"
+        },
+        {
+          "prompt": "中国",
+          "text": "中国",
+          "syllables": ["zhong1", "guo2"],
+          "frequency_tier": "high"
+        }
+      ]
+    }
+  ]
+}

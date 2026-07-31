@@ -3427,6 +3427,14 @@ func TestDiagnosticsToolLaunchesNativeExecutable(t *testing.T) {
 	}
 }
 
+func TestTrainerLaunchesNativeExecutable(t *testing.T) {
+	ime := newTestIME()
+	path := ime.trainerToolPath()
+	if !strings.HasSuffix(strings.ToLower(path), `\yime-trainer.exe`) {
+		t.Fatalf("expected trainer native executable path, got %q", path)
+	}
+}
+
 func TestSettingsPackageSupportsStandaloneToolWorkflow(t *testing.T) {
 	options := settings.ReverseLookupOptions()
 	if len(options) == 0 {
@@ -3463,6 +3471,7 @@ func TestBuildToolHubManifestProvidesExtensibleToolEntries(t *testing.T) {
 		`C:\user`,
 		`C:\help`,
 		`C:\logs`,
+		`C:\go-backend\yime-trainer.exe`,
 		`C:\go-backend\lexicon-manager.exe`,
 		`C:\go-backend\reverse-lookup.exe`,
 		`C:\go-backend\system-lexicon-audit.exe`,
@@ -3484,6 +3493,7 @@ func TestBuildToolHubManifestProvidesExtensibleToolEntries(t *testing.T) {
 		t.Fatalf("expected framework-ready tool entries, got %#v", manifest.Tools)
 	}
 	required := map[string]bool{
+		"typing-trainer":           false,
 		"advanced-layout-designer": false,
 		"lexicon-manager":          false,
 		"reverse-lookup-tool":      false,
@@ -3510,7 +3520,7 @@ func TestBuildToolHubManifestProvidesExtensibleToolEntries(t *testing.T) {
 			settingsDataIndex = index
 		}
 		switch tool.ID {
-		case "advanced-layout-designer", "lexicon-manager", "reverse-lookup-tool", "system-lexicon-audit", "lexicon-promotion-scan", "user-blocklist-manager", "settings-tool", "diagnostics-tool":
+		case "typing-trainer", "advanced-layout-designer", "lexicon-manager", "reverse-lookup-tool", "system-lexicon-audit", "lexicon-promotion-scan", "user-blocklist-manager", "settings-tool", "diagnostics-tool":
 			if tool.ActionType != toolActionRunExecutable {
 				t.Fatalf("expected %s to launch native executable, got %#v", tool.ID, tool)
 			}
@@ -3518,6 +3528,13 @@ func TestBuildToolHubManifestProvidesExtensibleToolEntries(t *testing.T) {
 				t.Fatalf("expected %s to keep the tool hub open after launch, got %#v", tool.ID, tool)
 			}
 			switch tool.ID {
+			case "typing-trainer":
+				if tool.TargetPath != `C:\go-backend\yime-trainer.exe` {
+					t.Fatalf("expected trainer executable path, got %#v", tool)
+				}
+				if len(tool.Arguments) != 6 || tool.Arguments[0] != "-SharedDir" || tool.Arguments[2] != "-UserDir" || tool.Arguments[4] != "-Mode" {
+					t.Fatalf("expected trainer data and mode arguments, got %#v", tool.Arguments)
+				}
 			case "advanced-layout-designer":
 				if tool.TargetPath != `C:\go-backend\yime-layout-designer.exe` {
 					t.Fatalf("expected layout designer executable path, got %#v", tool)
@@ -3610,6 +3627,7 @@ func TestToolHubPassesEveryInputModeToModeAwareDataTools(t *testing.T) {
 		t.Run(test.mode, func(t *testing.T) {
 			manifest := buildToolHubManifest(
 				`C:\shared`, `C:\user`, `C:\help`, `C:\logs`,
+				`C:\yime-trainer.exe`,
 				`C:\lexicon-manager.exe`, `C:\reverse-lookup.exe`,
 				`C:\system-lexicon-audit.exe`, `C:\lexicon-promotion-scan.exe`,
 				`C:\blocklist-manager.exe`, `C:\settings-tool.exe`,
@@ -3620,7 +3638,7 @@ func TestToolHubPassesEveryInputModeToModeAwareDataTools(t *testing.T) {
 			for _, tool := range manifest.Tools {
 				argumentsByID[tool.ID] = tool.Arguments
 			}
-			for _, toolID := range []string{"lexicon-manager", "reverse-lookup-tool", "system-lexicon-audit"} {
+			for _, toolID := range []string{"typing-trainer", "lexicon-manager", "reverse-lookup-tool", "system-lexicon-audit"} {
 				arguments := argumentsByID[toolID]
 				if len(arguments) < 6 || arguments[4] != "-Mode" || arguments[5] != test.mode {
 					t.Fatalf("%s mode arguments=%#v, want %q", toolID, arguments, test.mode)
