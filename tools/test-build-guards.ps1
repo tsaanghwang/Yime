@@ -66,6 +66,8 @@ $requiredGovernanceGuards = @(
     '.\tools\test-go.ps1',
     '.\tools\test-real-rime.ps1',
     '.\tools\assert-win32-build-prerequisites.ps1 -RequireToolchain',
+    'cmake --build build64 --config Release --target PIMETextService PIMERpcResponseTests',
+    'ctest --test-dir build64 -C Release -R "^PIMERpcResponseTests$" --output-on-failure',
     '.\tools\write-build-manifest.ps1',
     '.\tools\test-installer-smoke.ps1',
     'go install github.com/tc-hib/go-winres@v0.3.3',

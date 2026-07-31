@@ -128,18 +128,19 @@ caret 请求。
 
 2026-07-24 的实现把分段条嵌入现有候选窗，并使用 `WS_EX_NOACTIVATE` 保持
 宿主焦点。后端结合 librime `commit_text_preview` 和带空格 preedit 生成
-`{start,end,code,text,active}`；候选窗显示“预览汉字 + 对应编码”，进入局部
-改选后继续使用缓存映射更新已选汉字和活动尾段。点击以原始编码范围经
+`{start,end,code,text,active}`；候选窗顶行以紧凑的“句：”开头，每栏只显示
+后端定义的预览汉字，`code` 只作为稳定点击映射的内部元数据，不显示为顶行注释。
+进入局部改选后继续使用缓存映射更新已选汉字和活动尾段。点击以原始编码范围经
 `selectCompositionSegment(cursorPos, selEnd)` 直接送往 Go，不经过宿主编辑区回调，
 也不把显示汉字下标误当成 Rime cursor。
 后端优先使用 librime 原始输入 caret 直接定位任意缓存分段，有界
 Ctrl+Left/Right navigator 只作为旧运行库兼容回退；请求拒绝越界、重入、重复状态
 和无进展更新，并明确清除导航响应中的陈旧 commit。定位失败时仍回送当前
 composition 与候选，不能把空响应送给宿主。UI-less 宿主继续沿用既有键盘降级路径。
-源码回归、真实 librime 用例和多架构构建已通过；安装文件与构建物哈希一致，
-Notepad、Codex IDE 已完成初步试用。真实 x86 宿主基础链路曾于 2026-07-15 初步
-测试通过；Phase 5.6 的 x86 复测安排在取得代码签名后随签名产物执行，当前继续
-评价长期稳定性。
+源码回归、真实 librime 用例和多架构构建已通过。2026-07-31 当前 `main` 的安装
+文件与构建物哈希一致，x64 Notepad、Codex IDE 和 x86 SysWOW64 charmap 均完成
+开发版复测，并生成三宿主 `pass`、6 组 RPC 完整关联的 `complete` 报告。签名
+产物仍须按同一清单重新验收，当前继续评价长期稳定性。
 
 #### 已否决并回退的宿主编辑区点击试验
 
