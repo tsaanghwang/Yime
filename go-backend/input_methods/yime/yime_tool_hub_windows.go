@@ -31,6 +31,7 @@ func (ime *IME) ensureToolHubManifest() (string, error) {
 	if userDir == "" || sharedDir == "" || helpDir == "" {
 		return "", os.ErrNotExist
 	}
+	trainerPath := ime.trainerToolPath()
 	lexiconManagerPath := ime.lexiconManagerToolPath()
 	reverseLookupToolPath := ime.reverseLookupToolPath()
 	systemLexiconAuditPath := ime.systemLexiconAuditToolPath()
@@ -39,10 +40,10 @@ func (ime *IME) ensureToolHubManifest() (string, error) {
 	settingsToolPath := ime.settingsToolPath()
 	diagnosticsToolPath := ime.diagnosticsToolPath()
 	layoutDesignerPath := ime.layoutDesignerToolPath()
-	if lexiconManagerPath == "" || reverseLookupToolPath == "" || systemLexiconAuditPath == "" || lexiconPromotionScanPath == "" || blocklistManagerPath == "" || settingsToolPath == "" || diagnosticsToolPath == "" || layoutDesignerPath == "" {
+	if trainerPath == "" || lexiconManagerPath == "" || reverseLookupToolPath == "" || systemLexiconAuditPath == "" || lexiconPromotionScanPath == "" || blocklistManagerPath == "" || settingsToolPath == "" || diagnosticsToolPath == "" || layoutDesignerPath == "" {
 		return "", os.ErrNotExist
 	}
-	for _, toolPath := range []string{lexiconManagerPath, reverseLookupToolPath, systemLexiconAuditPath, lexiconPromotionScanPath, blocklistManagerPath, settingsToolPath, diagnosticsToolPath, layoutDesignerPath} {
+	for _, toolPath := range []string{trainerPath, lexiconManagerPath, reverseLookupToolPath, systemLexiconAuditPath, lexiconPromotionScanPath, blocklistManagerPath, settingsToolPath, diagnosticsToolPath, layoutDesignerPath} {
 		if _, err := os.Stat(toolPath); err != nil {
 			return "", fmt.Errorf("missing native tool executable: %s", toolPath)
 		}
@@ -52,6 +53,7 @@ func (ime *IME) ensureToolHubManifest() (string, error) {
 		userDir,
 		helpDir,
 		filepath.Join(os.Getenv("LOCALAPPDATA"), "PIME", "Logs"),
+		trainerPath,
 		lexiconManagerPath,
 		reverseLookupToolPath,
 		systemLexiconAuditPath,

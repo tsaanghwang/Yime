@@ -63,6 +63,7 @@ $files.Add((Get-FileRecord 'x64/PIMETextService.dll' (Join-Path $repoRoot 'build
 foreach ($relativePath in @(
     'server.exe',
     'tool-hub.exe',
+    'yime-trainer.exe',
     'input-toolbar.exe',
     'lexicon-manager.exe',
     'system-lexicon-audit.exe',
@@ -86,7 +87,8 @@ foreach ($relativePath in @(
     'input_methods\yime\data\yime_shorthand.schema.yaml',
     'input_methods\yime\data\yime_lexicon_manifest.json',
     'input_methods\yime\data\yime_core_source_manifest.json',
-    'input_methods\yime\data\yime_runtime_profile.json'
+    'input_methods\yime\data\yime_runtime_profile.json',
+    'input_methods\yime\data\trainer\foundation.json'
 )) {
     $files.Add((Get-FileRecord "go-backend/$($relativePath.Replace('\', '/'))" (Join-Path $goSourceRoot $relativePath) (Join-Path $goInstallRoot $relativePath)))
 }

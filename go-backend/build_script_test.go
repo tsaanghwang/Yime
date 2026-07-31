@@ -23,6 +23,8 @@ func TestBuildScriptKeepsGoExecutableHashesStableAndSupportsSigning(t *testing.T
 		`if exist "%PIME_ROOT%\version.txt" set /p APP_VERSION=<"%PIME_ROOT%\version.txt"`,
 		`set "GO_REPRO_FLAGS=-trimpath -buildvcs=false"`,
 		`go build %GO_REPRO_FLAGS%`,
+		`%RIME_DATA_DIR%\trainer\foundation.json`,
+		`%PACKAGE_RIME_DATA_DIR%\trainer\foundation.json`,
 		`YIME_SIGN_CERT_SHA1`,
 		`:sign_go_binaries`,
 	}
@@ -35,8 +37,8 @@ func TestBuildScriptKeepsGoExecutableHashesStableAndSupportsSigning(t *testing.T
 	if strings.Contains(script, "git describe --tags --always --dirty") {
 		t.Fatal("build.bat must not inject each Git commit into every executable hash")
 	}
-	if count := strings.Count(script, "go build %GO_REPRO_FLAGS%"); count != 11 {
-		t.Fatalf("expected all 11 Go executables to use reproducible flags, got %d", count)
+	if count := strings.Count(script, "go build %GO_REPRO_FLAGS%"); count != 12 {
+		t.Fatalf("expected all 12 Go executables to use reproducible flags, got %d", count)
 	}
 }
 
@@ -54,10 +56,14 @@ func TestBuildScriptFindsGoWinresOutsidePATH(t *testing.T) {
 			t.Fatalf("build.bat is missing go-winres discovery fragment %q", fragment)
 		}
 	}
-	if count := strings.Count(script, `"%GO_WINRES%" simply`); count != 10 {
-		t.Fatalf("expected all 10 resource builds to use resolved go-winres, got %d", count)
+	if count := strings.Count(script, `"%GO_WINRES%" simply`); count != 11 {
+		t.Fatalf("expected all 11 resource builds to use resolved go-winres, got %d", count)
 	}
 	for _, fragment := range []string{
+		`--file-description "Yime Typing Trainer"`,
+		`--original-filename "yime-trainer.exe"`,
+		`--out cmd\yime-trainer\rsrc_trainer`,
+		`if exist cmd\yime-trainer\rsrc_trainer_windows_amd64.syso del cmd\yime-trainer\rsrc_trainer_windows_amd64.syso`,
 		`--file-description "Yime Layout Designer"`,
 		`--original-filename "yime-layout-designer.exe"`,
 		`--out cmd\yime-layout-designer\rsrc_layout_designer`,

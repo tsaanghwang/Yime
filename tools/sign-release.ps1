@@ -11,6 +11,7 @@ $files = @(
     'build64\PIMETextService\Release\PIMETextService.dll',
     'go-backend\build\go-backend\server.exe',
     'go-backend\build\go-backend\tool-hub.exe',
+    'go-backend\build\go-backend\yime-trainer.exe',
     'go-backend\build\go-backend\input-toolbar.exe',
     'go-backend\build\go-backend\settings-tool.exe',
     'go-backend\build\go-backend\diagnostics-tool.exe',

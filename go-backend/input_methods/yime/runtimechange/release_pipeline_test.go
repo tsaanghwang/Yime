@@ -141,7 +141,7 @@ func TestReleasePipelineSignsPayloadInstallerAndUninstaller(t *testing.T) {
 			t.Fatalf("developer stop flow must release the persistent toolbar executable: missing %q", fragment)
 		}
 	}
-	for _, tool := range []string{"input-toolbar.exe", "yime-layout-designer.exe"} {
+	for _, tool := range []string{"input-toolbar.exe", "yime-trainer.exe", "yime-layout-designer.exe"} {
 		if !strings.Contains(signer, tool) {
 			t.Fatalf("release payload signer is missing %s", tool)
 		}
@@ -154,11 +154,11 @@ func TestReleasePipelineSignsPayloadInstallerAndUninstaller(t *testing.T) {
 			t.Fatalf("release signature verifier is missing %q", fragment)
 		}
 	}
-	if count := strings.Count(buildScript, "--icon input_methods\\yime\\icon.ico"); count != 10 {
-		t.Fatalf("expected all 10 Go executables to embed the Yime icon, got %d", count)
+	if count := strings.Count(buildScript, "--icon input_methods\\yime\\icon.ico"); count != 11 {
+		t.Fatalf("expected all 11 Go executables to embed the Yime icon, got %d", count)
 	}
-	if count := strings.Count(buildScript, `--copyright "Copyright (C) 2026 Yime contributors"`); count != 10 {
-		t.Fatalf("expected all 10 Go executables to embed Yime copyright metadata, got %d", count)
+	if count := strings.Count(buildScript, `--copyright "Copyright (C) 2026 Yime contributors"`); count != 11 {
+		t.Fatalf("expected all 11 Go executables to embed Yime copyright metadata, got %d", count)
 	}
 	for _, fragment := range []string{
 		`set "WIN32_CMAKE_PLATFORM=-A Win32"`,
