@@ -1,10 +1,22 @@
 {
-  "schema_version": "1.1",
+  "schema_version": "1.2",
   "id": "foundation",
   "title": "Yime 基础过渡练习",
-  "description": "覆盖音元键位、带调音节和常用字词三个起步题型。",
+  "description": "从标准拼音音节出发，建立音元序列、当前键位和三种输入方案之间的联想。",
   "tags": ["foundation", "trial", "three-mode"],
   "sections": [
+    {
+      "id": "syllable-association-i-tones",
+      "type": "syllable_association",
+      "title": "标准拼音与音元联想",
+      "instruction": "从标准拼音整体音节出发，观察首音、呼音、主音、末音的四音元分解，再回忆当前方案编码。",
+      "items": [
+        {"syllable": "yi1", "hanzi": "一"},
+        {"syllable": "yi2", "hanzi": "移"},
+        {"syllable": "yi3", "hanzi": "以"},
+        {"syllable": "yi4", "hanzi": "意"}
+      ]
+    },
     {
       "id": "keymap-basics",
       "type": "keymap",
@@ -20,7 +32,7 @@
           "yinyuan_id": "N06"
         },
         {
-          "prompt": "感音 M01",
+          "prompt": "高调[i]乐音 M01",
           "yinyuan_id": "M01"
         }
       ]
