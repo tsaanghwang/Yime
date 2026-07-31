@@ -27,6 +27,7 @@ type State struct {
 	Traditionalization bool     `json:"traditionalization"`
 	SchemaID           string   `json:"schema_id,omitempty"`
 	Vertical           bool     `json:"toolbar_vertical,omitempty"`
+	OrientationSet     bool     `json:"toolbar_orientation_set,omitempty"`
 	HiddenButtons      []string `json:"toolbar_hidden_buttons,omitempty"`
 }
 

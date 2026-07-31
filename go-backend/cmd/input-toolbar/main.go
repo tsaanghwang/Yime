@@ -17,6 +17,7 @@ import (
 
 const (
 	windowClass = "YimeInputToolbar"
+	windowTitle = "音元"
 
 	wsExToolWindow = 0x00000080
 	wsExTopmost    = 0x00000008
@@ -40,11 +41,13 @@ const (
 	idScript   = 103
 	idUnicode  = 104
 	idSettings = 105
+	idTrainer  = 106
 	timerID    = 1
 
 	idMenuOrientation = 200
 	idMenuCandidate   = 201
 	idMenuSystem      = 202
+	idMenuHide        = 203
 	idMenuButtonBase  = 300
 
 	toolbarMargin       = int32(8)
@@ -76,6 +79,7 @@ var (
 	isWindowVisible     = user32.NewProc("IsWindowVisible")
 	updateWindow        = user32.NewProc("UpdateWindow")
 	moveWindow          = user32.NewProc("MoveWindow")
+	getWindowRect       = user32.NewProc("GetWindowRect")
 	setWindowPos        = user32.NewProc("SetWindowPos")
 	setTimer            = user32.NewProc("SetTimer")
 	killTimer           = user32.NewProc("KillTimer")
@@ -153,6 +157,7 @@ type point struct {
 type app struct {
 	statePath    string
 	settingsTool string
+	trainerTool  string
 	userDir      string
 	sharedDir    string
 	helpDir      string
@@ -165,6 +170,7 @@ type app struct {
 func main() {
 	statePath := flag.String("StatePath", "", "Path to yime_input_toolbar_state.json")
 	settingsTool := flag.String("SettingsTool", "", "Path to settings-tool.exe")
+	trainerTool := flag.String("TrainerTool", "", "Path to yime-trainer.exe")
 	userDir := flag.String("UserDir", "", "Yime user data directory")
 	sharedDir := flag.String("SharedDir", "", "Yime shared data directory")
 	helpDir := flag.String("HelpDir", "", "Yime help directory")
@@ -177,6 +183,7 @@ func main() {
 	instance := &app{
 		statePath:    *statePath,
 		settingsTool: *settingsTool,
+		trainerTool:  *trainerTool,
 		userDir:      *userDir,
 		sharedDir:    *sharedDir,
 		helpDir:      *helpDir,
@@ -196,9 +203,7 @@ func (a *app) run() error {
 	if win32ui.ActivateExistingWindow(windowClass) {
 		return nil
 	}
-	if state, err := toolbarstate.Read(a.statePath); err == nil {
-		a.state = state
-	}
+	a.state = loadToolbarState(a.statePath)
 	instance, _, _ := getModuleHandleW.Call(0)
 	className, _ := syscall.UTF16PtrFromString(windowClass)
 	cursor, _, _ := loadCursorW.Call(0, uintptr(32512))
@@ -219,22 +224,20 @@ func (a *app) run() error {
 		return errors.New("无法注册输入法工具栏窗口")
 	}
 
-	title, _ := syscall.UTF16PtrFromString("Yime 输入法工具栏")
-	windowStyle := uintptr(wsPopup | wsCaption | wsSysMenu)
+	title, _ := syscall.UTF16PtrFromString(windowTitle)
+	windowStyle := uintptr(toolbarWindowStyle())
 	windowExStyle := uintptr(wsExToolWindow | wsExTopmost)
 	layout := calculateToolbarLayout(a.state)
 	width, height := windowSizeForClient(layout.clientWidth, layout.clientHeight)
 	screenW, _, _ := getSystemMetrics.Call(0)
-	x := int32(screenW) - width - 24
-	if x < 0 {
-		x = 0
-	}
+	screenH, _, _ := getSystemMetrics.Call(1)
+	x, y := defaultToolbarPosition(int32(screenW), int32(screenH), width, height)
 	hwnd, _, _ := createWindowExW.Call(
 		windowExStyle,
 		uintptr(unsafe.Pointer(className)),
 		uintptr(unsafe.Pointer(title)),
 		windowStyle,
-		uintptr(x), 48, uintptr(width), uintptr(height),
+		uintptr(x), uintptr(y), uintptr(width), uintptr(height),
 		0, 0, instance, 0,
 	)
 	if hwnd == 0 {
@@ -260,6 +263,61 @@ func (a *app) run() error {
 	return nil
 }
 
+func loadToolbarState(path string) toolbarstate.State {
+	state, err := toolbarstate.Update(path, "toolbar", func(state *toolbarstate.State) bool {
+		if state.OrientationSet {
+			return false
+		}
+		state.Vertical = true
+		state.OrientationSet = true
+		return true
+	})
+	if err == nil {
+		return state
+	}
+	return toolbarstate.State{
+		Version:        toolbarstate.FormatVersion,
+		Vertical:       true,
+		OrientationSet: true,
+	}
+}
+
+func toolbarWindowStyle() uintptr {
+	// Deliberately omit WS_SYSMENU: the toolbar is hidden through its settings
+	// menu, so the title bar must not expose a focus-red close button.
+	return wsPopup | wsCaption
+}
+
+func defaultToolbarPosition(screenWidth, screenHeight, width, height int32) (int32, int32) {
+	const rightInset = int32(32)
+	x := screenWidth - width - rightInset
+	y := (screenHeight - height) / 2
+	if x < 0 {
+		x = 0
+	}
+	if y < 0 {
+		y = 0
+	}
+	return x, y
+}
+
+func fitToolbarPosition(x, y, screenWidth, screenHeight, width, height int32) (int32, int32) {
+	const edgeInset = int32(32)
+	if x+width > screenWidth-edgeInset {
+		x = screenWidth - width - edgeInset
+	}
+	if y+height > screenHeight {
+		y = screenHeight - height
+	}
+	if x < 0 {
+		x = 0
+	}
+	if y < 0 {
+		y = 0
+	}
+	return x, y
+}
+
 func (a *app) createButtons() {
 	for _, item := range toolbarButtons() {
 		a.buttons[item.id] = createButton(
@@ -276,6 +334,7 @@ func toolbarButtons() []toolbarButton {
 		{idPunct, "punctuation", "中标", 54, true},
 		{idScript, "script", "简体", 54, true},
 		{idUnicode, "unicode", "字符", 64, true},
+		{idTrainer, "trainer", "练习", 64, true},
 		{idSettings, "settings", "设置", 64, false},
 	}
 }
@@ -362,12 +421,19 @@ func (a *app) applyLayout() {
 		}
 	}
 	width, height := windowSizeForClient(layout.clientWidth, layout.clientHeight)
-	const swpNoMove = 0x0002
 	const swpNoZOrder = 0x0004
 	const swpNoActivate = 0x0010
+	position := rect{}
+	getWindowRect.Call(uintptr(a.hwnd), uintptr(unsafe.Pointer(&position)))
+	screenW, _, _ := getSystemMetrics.Call(0)
+	screenH, _, _ := getSystemMetrics.Call(1)
+	x, y := fitToolbarPosition(
+		position.Left, position.Top,
+		int32(screenW), int32(screenH), width, height,
+	)
 	setWindowPos.Call(
-		uintptr(a.hwnd), 0, 0, 0, uintptr(width), uintptr(height),
-		swpNoMove|swpNoZOrder|swpNoActivate,
+		uintptr(a.hwnd), 0, uintptr(x), uintptr(y), uintptr(width), uintptr(height),
+		swpNoZOrder|swpNoActivate,
 	)
 }
 
@@ -375,7 +441,7 @@ func windowSizeForClient(clientWidth, clientHeight int32) (int32, int32) {
 	box := rect{Right: clientWidth, Bottom: clientHeight}
 	ret, _, _ := adjustWindowRectEx.Call(
 		uintptr(unsafe.Pointer(&box)),
-		uintptr(wsPopup|wsCaption|wsSysMenu),
+		toolbarWindowStyle(),
 		0,
 		uintptr(wsExToolWindow|wsExTopmost),
 	)
@@ -447,6 +513,8 @@ func (a *app) handleCommand(id int) {
 		})
 	case idUnicode:
 		showInformation("Unicode 字符面板将在下一阶段作为独立窗口接通。")
+	case idTrainer:
+		a.openTrainer()
 	case idSettings:
 		a.showSettingsMenu()
 	}
@@ -478,11 +546,8 @@ func (a *app) showSettingsMenu() {
 		appendPopupMenuItem(customize, flags, uintptr(idMenuButtonBase+index), buttonMenuName(button.key))
 	}
 	appendPopupMenuItem(menu, mfPopup, customize, "定制")
-	orientation := "水平/垂直（当前：水平）"
-	if a.state.Vertical {
-		orientation = "水平/垂直（当前：垂直）"
-	}
-	appendPopupMenuItem(menu, mfString, idMenuOrientation, orientation)
+	appendPopupMenuItem(menu, mfString, idMenuOrientation, orientationMenuLabel(a.state))
+	appendPopupMenuItem(menu, mfString, idMenuHide, "隐藏")
 	appendPopupMenuItem(menu, mfSeparator, 0, "")
 	appendPopupMenuItem(menu, mfString, idMenuCandidate, "候选")
 	appendPopupMenuItem(menu, mfString, idMenuSystem, "系统")
@@ -500,6 +565,13 @@ func (a *app) showSettingsMenu() {
 	)
 	postMessageW.Call(uintptr(a.hwnd), wmNull, 0, 0)
 	a.handleSettingsMenuCommand(int(command))
+}
+
+func orientationMenuLabel(state toolbarstate.State) string {
+	if state.Vertical {
+		return "垂直"
+	}
+	return "水平"
 }
 
 func appendPopupMenuItem(menu uintptr, flags uintptr, id uintptr, text string) {
@@ -527,6 +599,8 @@ func buttonMenuName(key string) string {
 		return "简体/繁体"
 	case "unicode":
 		return "字符"
+	case "trainer":
+		return "练习"
 	default:
 		return key
 	}
@@ -539,7 +613,10 @@ func (a *app) handleSettingsMenuCommand(command int) {
 	case idMenuOrientation:
 		a.updateState(func(state *toolbarstate.State) {
 			state.Vertical = !state.Vertical
+			state.OrientationSet = true
 		})
+	case idMenuHide:
+		showWindow.Call(uintptr(a.hwnd), 0)
 	case idMenuCandidate:
 		a.openCandidateSettings()
 	case idMenuSystem:
@@ -556,6 +633,32 @@ func (a *app) handleSettingsMenuCommand(command int) {
 		a.updateState(func(state *toolbarstate.State) {
 			state.HiddenButtons = toggleHiddenButton(state.HiddenButtons, key)
 		})
+	}
+}
+
+func (a *app) openTrainer() {
+	if a.trainerTool == "" {
+		showError("没有找到指法练习工具。")
+		return
+	}
+	if err := exec.Command(
+		a.trainerTool,
+		"-SharedDir", a.sharedDir,
+		"-UserDir", a.userDir,
+		"-Mode", trainerModeFromSchema(a.state.SchemaID),
+	).Start(); err != nil {
+		showError("无法打开指法练习：" + err.Error())
+	}
+}
+
+func trainerModeFromSchema(schemaID string) string {
+	switch schemaID {
+	case "yime_full":
+		return "full"
+	case "yime_shorthand":
+		return "shorthand"
+	default:
+		return "variable"
 	}
 }
 
@@ -647,11 +750,11 @@ func setButtonText(hwnd syscall.Handle, text string) {
 }
 
 func showInformation(message string) {
-	showMessage(message, "Yime 输入法工具栏", 0x40)
+	showMessage(message, windowTitle, 0x40)
 }
 
 func showError(message string) {
-	showMessage(message, "Yime 输入法工具栏", 0x10)
+	showMessage(message, windowTitle, 0x10)
 }
 
 func showMessage(message, title string, flags uintptr) {

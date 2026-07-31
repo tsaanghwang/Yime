@@ -69,6 +69,7 @@ const (
 	ID_HELP_COPY_TRIAL_TEMPLATE       = yimeCommandBase + 62
 	ID_HELP_TOOL_HUB                  = yimeCommandBase + 63
 	ID_REVERSE_LOOKUP_TOOL            = yimeCommandBase + 64
+	ID_TRAINER_TOOL                   = yimeCommandBase + 65
 	ID_CANDIDATE_PAGE_SIZE_5          = yimeCommandBase + 70
 	ID_CANDIDATE_PAGE_SIZE_6          = yimeCommandBase + 71
 	ID_CANDIDATE_PAGE_SIZE_7          = yimeCommandBase + 72
@@ -736,6 +737,8 @@ func (ime *IME) onCommand(req *pime.Request, resp *pime.Response) *pime.Response
 		}, "切换输入法工具栏失败")
 	case ID_REVERSE_LOOKUP_TOOL:
 		ime.launchStandaloneToolAsync(ime.openReverseLookupTool, "打开反查编码失败")
+	case ID_TRAINER_TOOL:
+		ime.launchStandaloneToolAsync(ime.openTrainerTool, "打开指法练习失败")
 	case ID_CANDIDATE_PAGE_SIZE_5, ID_CANDIDATE_PAGE_SIZE_6, ID_CANDIDATE_PAGE_SIZE_7, ID_CANDIDATE_PAGE_SIZE_8, ID_CANDIDATE_PAGE_SIZE_9:
 		if err := ime.setCandidatePageSize(minCandidatePageSize + commandID - ID_CANDIDATE_PAGE_SIZE_5); err != nil {
 			log.Printf("设置候选页大小失败: %v", err)
@@ -2517,6 +2520,7 @@ func (ime *IME) buildMenu() []map[string]interface{} {
 		{"text": ""},
 		{"id": ID_USER_LEXICON_MANAGER, "text": "用户词库"},
 		{"id": ID_REVERSE_LOOKUP_TOOL, "text": "反查编码"},
+		{"id": ID_TRAINER_TOOL, "text": "指法练习"},
 		{"id": ID_HELP_TOOL_HUB, "text": "工具中心"},
 		{"text": ""},
 		{"text": "数据维护", "submenu": []map[string]interface{}{

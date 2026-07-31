@@ -59,6 +59,7 @@ func platformToggleInputToolbar(ime *IME) error {
 		toolPath,
 		"-StatePath", ime.inputToolbarStatePath(),
 		"-SettingsTool", ime.settingsToolPath(),
+		"-TrainerTool", ime.trainerToolPath(),
 		"-UserDir", ime.userDir(),
 		"-SharedDir", ime.sharedDir(),
 		"-HelpDir", ime.helpDir(),
