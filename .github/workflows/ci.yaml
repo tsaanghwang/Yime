@@ -142,10 +142,13 @@ jobs:
         run: |
           call "%VSINSTALLDIR%Common7\Tools\VsDevCmd.bat" -arch=x64 -host_arch=x64 >nul
           cmake . -Bbuild64 -G "Visual Studio 17 2022" -A x64 -DCMAKE_POLICY_VERSION_MINIMUM=3.5
-          cmake --build build64 --config Release --target PIMETextService
-      - name: Run native C++ regression tests
+          cmake --build build64 --config Release --target PIMETextService PIMERpcResponseTests
+      - name: Run native C++ regression tests (Win32)
         shell: pwsh
         run: ctest --test-dir build -C Release --output-on-failure
+      - name: Run x64 PIME RPC regression tests
+        shell: pwsh
+        run: ctest --test-dir build64 -C Release -R "^PIMERpcResponseTests$" --output-on-failure
       - name: Verify native build outputs
         shell: pwsh
         run: .\tools\test-build-guards.ps1

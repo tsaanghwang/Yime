@@ -40,6 +40,8 @@ const (
 	idCheckButton  = 104
 	idNextButton   = 105
 	idRestart      = 106
+	idRevealButton = 107
+	idPlayButton   = 108
 
 	bnClicked = 0
 )
@@ -49,6 +51,7 @@ var (
 	modkernel = syscall.NewLazyDLL("kernel32.dll")
 	modcomctl = syscall.NewLazyDLL("comctl32.dll")
 	modimm32  = syscall.NewLazyDLL("imm32.dll")
+	modwinmm  = syscall.NewLazyDLL("winmm.dll")
 
 	procCreateWindowExW      = moduser32.NewProc("CreateWindowExW")
 	procDefWindowProcW       = moduser32.NewProc("DefWindowProcW")
@@ -68,9 +71,11 @@ var (
 	procSetFocus             = moduser32.NewProc("SetFocus")
 	procLoadCursorW          = moduser32.NewProc("LoadCursorW")
 	procAdjustWindowRectEx   = moduser32.NewProc("AdjustWindowRectEx")
+	procEnableWindow         = moduser32.NewProc("EnableWindow")
 	procGetModuleHandleW     = modkernel.NewProc("GetModuleHandleW")
 	procInitCommonControlsEx = modcomctl.NewProc("InitCommonControlsEx")
 	procImmAssociateContext  = modimm32.NewProc("ImmAssociateContext")
+	procPlaySoundW           = modwinmm.NewProc("PlaySoundW")
 
 	wndProcCallback uintptr
 )
@@ -118,6 +123,7 @@ type controls struct {
 	prompt, detail, target     syscall.Handle
 	inputLabel, input          syscall.Handle
 	check, next, restart       syscall.Handle
+	reveal, play               syscall.Handle
 	feedback, score            syscall.Handle
 }
 
@@ -133,6 +139,7 @@ type appState struct {
 	correct          int
 	mainHWND         syscall.Handle
 	ui               controls
+	answerRevealed   bool
 }
 
 func main() {
@@ -246,7 +253,7 @@ func runApp(state *appState) error {
 		return fmt.Errorf("RegisterClassEx failed")
 	}
 
-	const clientW, clientH = int32(760), int32(470)
+	const clientW, clientH = int32(900), int32(560)
 	winW, winH := windowSizeForClient(clientW, clientH)
 	screenW, _, _ := procGetSystemMetrics.Call(0)
 	screenH, _, _ := procGetSystemMetrics.Call(1)
@@ -301,6 +308,8 @@ func (state *appState) createControls() {
 	state.ui.check = createControl("BUTTON", "检查", wsChild|wsVisible|wsTabstop|0x00000001, 0, state.mainHWND, idCheckButton)
 	state.ui.next = createControl("BUTTON", "下一题", wsChild|wsVisible|wsTabstop, 0, state.mainHWND, idNextButton)
 	state.ui.restart = createControl("BUTTON", "重新开始", wsChild|wsVisible|wsTabstop, 0, state.mainHWND, idRestart)
+	state.ui.reveal = createControl("BUTTON", "显示答案", wsChild|wsVisible|wsTabstop, 0, state.mainHWND, idRevealButton)
+	state.ui.play = createControl("BUTTON", "暂无音频", wsChild|wsVisible|wsTabstop, 0, state.mainHWND, idPlayButton)
 	state.ui.feedback = createControl("STATIC", "", wsChild|wsVisible|0x00000001, 0, state.mainHWND, 0)
 	state.ui.score = createControl("STATIC", "", wsChild|wsVisible, 0, state.mainHWND, 0)
 	procSendMessageW.Call(uintptr(state.ui.input), emSetlimittext, 256, 0)
@@ -345,7 +354,16 @@ func (state *appState) refreshExercise() {
 	setText(state.ui.instruction, exercise.Instruction)
 	setText(state.ui.prompt, exercise.Prompt)
 	setText(state.ui.detail, exercise.Detail)
-	setText(state.ui.target, "目标键位："+exercise.Expected)
+	state.answerRevealed = false
+	setText(state.ui.target, exercise.AnswerLabel+"：尚未显示")
+	setText(state.ui.reveal, "显示答案")
+	if exercise.AudioPath != "" {
+		setText(state.ui.play, "播放音频")
+		procEnableWindow.Call(uintptr(state.ui.play), 1)
+	} else {
+		setText(state.ui.play, "暂无音频")
+		procEnableWindow.Call(uintptr(state.ui.play), 0)
+	}
 	setText(state.ui.input, "")
 	setText(state.ui.feedback, "")
 	state.refreshScore()
@@ -375,10 +393,51 @@ func (state *appState) checkAnswer() {
 	if trainer.Evaluate(input, exercise.Expected) {
 		state.correct++
 		setText(state.ui.feedback, "正确。可以继续下一题。")
+		state.showAnswer()
 	} else {
-		setText(state.ui.feedback, "还不对。正确编码："+exercise.Expected)
+		setText(state.ui.feedback, "还不对。答案已经显示，可以对照后重试。")
+		state.showAnswer()
 	}
 	state.refreshScore()
+}
+
+func (state *appState) showAnswer() {
+	exercise, ok := state.currentExercise()
+	if !ok {
+		return
+	}
+	state.answerRevealed = true
+	setText(state.ui.target, exercise.AnswerLabel+"："+exercise.Expected)
+	setText(state.ui.reveal, "隐藏答案")
+}
+
+func (state *appState) toggleAnswer() {
+	if !state.answerRevealed {
+		state.showAnswer()
+		return
+	}
+	exercise, ok := state.currentExercise()
+	if !ok {
+		return
+	}
+	state.answerRevealed = false
+	setText(state.ui.target, exercise.AnswerLabel+"：尚未显示")
+	setText(state.ui.reveal, "显示答案")
+}
+
+func (state *appState) playAudio() {
+	exercise, ok := state.currentExercise()
+	if !ok || exercise.AudioPath == "" {
+		return
+	}
+	path, _ := syscall.UTF16PtrFromString(exercise.AudioPath)
+	const sndAsync = 0x0001
+	const sndNodefault = 0x0002
+	const sndFilename = 0x00020000
+	ret, _, _ := procPlaySoundW.Call(uintptr(unsafe.Pointer(path)), 0, sndAsync|sndNodefault|sndFilename)
+	if ret == 0 {
+		setText(state.ui.feedback, "音频播放失败，请检查课程音频文件。")
+	}
 }
 
 func (state *appState) nextExercise() {
@@ -438,6 +497,10 @@ func (state *appState) wndProc(hwnd syscall.Handle, message uint32, wParam, lPar
 			state.nextExercise()
 		case id == idRestart && notify == bnClicked:
 			state.restartRound()
+		case id == idRevealButton && notify == bnClicked:
+			state.toggleAnswer()
+		case id == idPlayButton && notify == bnClicked:
+			state.playAudio()
 		}
 		return 0
 	case win32ui.WmDeferredPresent:
@@ -464,7 +527,7 @@ func (state *appState) wndProc(hwnd syscall.Handle, message uint32, wParam, lPar
 }
 
 func (state *appState) layout(clientW, clientH int32) {
-	if state.ui.modeLabel == 0 || clientW < 520 || clientH < 380 {
+	if state.ui.modeLabel == 0 || clientW < 620 || clientH < 500 {
 		return
 	}
 	const margin, gap = int32(18), int32(10)
@@ -474,17 +537,19 @@ func (state *appState) layout(clientW, clientH int32) {
 	move(state.ui.sectionCombo, rect{margin + 304, 14, clientW - margin, 180})
 	move(state.ui.progress, rect{margin, 58, clientW - margin, 82})
 	move(state.ui.instruction, rect{margin, 86, clientW - margin, 112})
-	move(state.ui.prompt, rect{margin, 126, clientW - margin, 164})
-	move(state.ui.detail, rect{margin, 170, clientW - margin, 198})
-	move(state.ui.target, rect{margin, 206, clientW - margin, 238})
-	move(state.ui.inputLabel, rect{margin, 252, clientW - margin, 276})
+	move(state.ui.prompt, rect{margin, 122, clientW - margin, 156})
+	move(state.ui.detail, rect{margin, 164, clientW - margin, 278})
+	move(state.ui.target, rect{margin, 286, clientW - margin, 316})
+	move(state.ui.inputLabel, rect{margin, 326, clientW - margin, 350})
 	buttonW := int32(88)
 	inputRight := clientW - margin - buttonW*3 - gap*3
-	move(state.ui.input, rect{margin, 280, inputRight, 312})
-	move(state.ui.check, rect{inputRight + gap, 280, inputRight + gap + buttonW, 312})
-	move(state.ui.next, rect{inputRight + gap*2 + buttonW, 280, inputRight + gap*2 + buttonW*2, 312})
-	move(state.ui.restart, rect{inputRight + gap*3 + buttonW*2, 280, clientW - margin, 312})
-	move(state.ui.feedback, rect{margin, 330, clientW - margin, 360})
+	move(state.ui.input, rect{margin, 354, inputRight, 388})
+	move(state.ui.check, rect{inputRight + gap, 354, inputRight + gap + buttonW, 388})
+	move(state.ui.next, rect{inputRight + gap*2 + buttonW, 354, inputRight + gap*2 + buttonW*2, 388})
+	move(state.ui.restart, rect{inputRight + gap*3 + buttonW*2, 354, clientW - margin, 388})
+	move(state.ui.play, rect{margin, 400, margin + 112, 434})
+	move(state.ui.reveal, rect{margin + 122, 400, margin + 234, 434})
+	move(state.ui.feedback, rect{margin, 446, clientW - margin, 478})
 	move(state.ui.score, rect{margin, clientH - 42, clientW - margin, clientH - 18})
 }
 

@@ -99,7 +99,11 @@ Win32 UI 应把可计算布局抽成纯函数并测试：
 - `TestExecuteApplyNotifiesActiveSession`
 - `TestNativeLanguageBarLeavesToggleIdentityAndSortToHost`
 
-C++ RPC 回归测试通过 `ctest --test-dir build -C Release --output-on-failure` 执行，CI 不得只编译测试程序。
+C++ RPC 回归测试必须覆盖两个架构：Win32 使用
+`ctest --test-dir build -C Release --output-on-failure`，x64 使用
+`ctest --test-dir build64 -C Release -R "^PIMERpcResponseTests$" --output-on-failure`。
+CI 必须先构建 x64 `PIMERpcResponseTests` 目标并实际运行，不能只构建
+`PIMETextService.dll` 或只执行 Win32 测试。
 
 UI 修改还必须构建对应 EXE，并在安装目录中实际打开一次；源码测试通过不代表 Smart App Control、焦点和模态行为正常。
 

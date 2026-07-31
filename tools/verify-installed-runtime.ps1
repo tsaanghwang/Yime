@@ -88,7 +88,8 @@ foreach ($relativePath in @(
     'input_methods\yime\data\yime_lexicon_manifest.json',
     'input_methods\yime\data\yime_core_source_manifest.json',
     'input_methods\yime\data\yime_runtime_profile.json',
-    'input_methods\yime\data\trainer\foundation.json'
+    'input_methods\yime\data\trainer\foundation.json',
+    'input_methods\yime\data\trainer\yinyuan_catalog.json'
 )) {
     $files.Add((Get-FileRecord "go-backend/$($relativePath.Replace('\', '/'))" (Join-Path $goSourceRoot $relativePath) (Join-Path $goInstallRoot $relativePath)))
 }

@@ -227,3 +227,38 @@ sentence-segment-evidence-20260729-172330-812.md
 通过，但尚未重建、安装和重启 PIME，因此三宿主安装态结果仍为 `fail`。只有新构建
 安装后重新完成本 Plan 第 4、第 5 和第 7 节，并生成状态为 `complete` 的新报告，
 才能关闭本轮故障。
+
+## 10. 2026-07-31 当前 main 完整复验
+
+本轮针对 `58b3fd7d60cead365d7939957c76be43bde61202` 完成 Windows 重启、重新
+安装、安装运行库验证和三宿主人工复验，已关闭第 9 节记录的安装态失败。
+
+完整证据报告：
+
+```text
+C:\dev\Yime\.tmp\sentence-segment-evidence\
+sentence-segment-evidence-20260731-164909-557.md
+```
+
+证据摘要：
+
+- 报告状态：`complete`；
+- 已安装 `server.exe`：
+  `F617E3AAB277E27784FACC7FF71851D96AA0F1EC8C8339342638DC98256466E3`；
+- 已安装 x86 `PIMETextService.dll`：
+  `247AC163A3306B89FB9259A0D621CFDF3DFAFA1D06513608FD5A7A12DA8490DF`；
+- 已安装 x64 `PIMETextService.dll`：
+  `D89DD33ADDC290307EB66BB2159E5D46C94B77D83C7D08701A848BECB6F7C3E6`；
+- 三项均与当前 `C:\dev\Yime` 构建参照文件匹配；
+- x64 Notepad、Codex IDE 和 x86
+  `C:\Windows\SysWOW64\charmap.exe` 均明确记录为 `pass`；
+- 日志中找到 6 组 `selectCompositionSegment` 事务，6 组均按 `client` 和
+  `seqNum` 关联到响应。
+
+本轮人工例句为“正在炖肉”和“火上浇油”。为确认句中目标确实可重选，分别把正确
+候选改成“正在沌肉”和“火上焦油”；三个宿主均能保持前后分段和 composition，
+未发生提前上屏。
+
+本轮证明开发版的中间分段改选、三宿主链路、安装哈希和 RPC 关联完整通过。第一段、
+中间段、末段反复切换及长时间宿主运行仍属于观察期；取得可信代码签名后，必须对
+签名产物重新执行相同验收，不能复用本轮未签名开发包的哈希。
