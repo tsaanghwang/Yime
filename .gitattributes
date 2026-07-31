@@ -11,3 +11,8 @@
 *.ps1 text eol=crlf
 *.bat text eol=crlf
 *.cmd text eol=crlf
+
+# Preserve the imported libIME2 base snapshot byte-for-byte. Its historical
+# whitespace is upstream provenance, while new component changes remain
+# reviewable through the libIME2 commit boundary gate.
+libIME2/** -text -whitespace
