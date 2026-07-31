@@ -5,7 +5,6 @@
 /Build.ps1 @tsaanghwang
 /build.bat @tsaanghwang
 /CMakeLists.txt @tsaanghwang
-/.gitmodules @tsaanghwang
 /.githooks/** @tsaanghwang
 /version.txt @tsaanghwang
 
@@ -14,6 +13,7 @@
 /PIMELauncher/Cargo.lock @tsaanghwang
 /PIMELauncher/build.rs @tsaanghwang
 /PIMETextService/CMakeLists.txt @tsaanghwang
+/libIME2/** @tsaanghwang
 /go-backend/build.bat @tsaanghwang
 
 /tools/test-build-guards.ps1 @tsaanghwang

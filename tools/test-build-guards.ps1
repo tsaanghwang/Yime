@@ -113,8 +113,20 @@ if ($workflowText.Contains('CORE_RESULT:')) {
     throw 'Independent protected stages must not depend on an aggregate core-build result.'
 }
 
-if (-not $workflowText.Contains('git submodule update --init --depth 1 libIME2')) {
-    throw 'CI must checkout only the active libIME2 submodule.'
+if ($workflowText.Contains('git submodule update --init --depth 1 libIME2')) {
+    throw 'CI must use the in-tree libIME2 component without a submodule checkout.'
+}
+$libIME2Index = @(& git -C $root ls-files -s -- libIME2)
+if ($libIME2Index.Count -eq 0) {
+    throw 'The in-tree libIME2 component is not tracked.'
+}
+if ($libIME2Index[0] -match '^160000\s') {
+    throw 'libIME2 unexpectedly remains a gitlink instead of tracked source.'
+}
+foreach ($requiredLibIME2File in @('libIME2/CMakeLists.txt', 'libIME2/src/libIME.h')) {
+    if (-not (Test-Path -LiteralPath (Join-Path $root $requiredLibIME2File) -PathType Leaf)) {
+        throw "The in-tree libIME2 component is incomplete: $requiredLibIME2File"
+    }
 }
 if ($workflowText.Contains('Build McBopomofo')) {
     throw 'Retired McBopomofo build step returned to CI.'
@@ -388,9 +400,8 @@ $trackedRootData = @(
 if ($trackedRootData.Count -gt 0) {
     throw "Retired root Rime/OpenCC data returned: $($trackedRootData -join ', ')"
 }
-$gitmodulesText = Get-Content -LiteralPath (Join-Path $root '.gitmodules') -Raw
-if ($gitmodulesText -match 'McBopomofoWeb|libchewing|python/input_methods/rime/brise') {
-    throw 'Retired submodule metadata is still present.'
+if (Test-Path -LiteralPath (Join-Path $root '.gitmodules')) {
+    throw 'Yime must not reintroduce submodule metadata after vendoring libIME2.'
 }
 Write-Host 'YIME-only build and installer guard test passed.'
 Write-Host 'YIME provenance, metadata, and legal packaging guard test passed.'

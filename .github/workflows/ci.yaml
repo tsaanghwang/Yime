@@ -109,9 +109,6 @@ jobs:
       - name: Test libIME2 gate rejection paths
         shell: pwsh
         run: .\tools\test-libime2-change-boundary.ps1
-      - name: Checkout active TSF submodule
-        shell: pwsh
-        run: git submodule update --init --depth 1 libIME2
       - name: Set up MSVC developer environment
         shell: pwsh
         run: |

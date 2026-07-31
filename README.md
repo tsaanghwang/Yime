@@ -32,7 +32,7 @@ go-backend/              Go backend: Yime IME logic, Rime integration, standalon
 PIMETextService/         TSF text service host (C++/COM)
 PIMELauncher/            Process launcher and monitor (Rust)
 installer/               NSIS installer assets
-libIME2/                 Upstream IME library
+libIME2/                 In-tree TSF integration component
 docs/                    Development documentation
 ```
 
@@ -59,17 +59,18 @@ The current runtime architecture and its qualification evidence are documented i
 
 ## Build
 
-### Clone and initialize
+### Clone
 
 ```powershell
 git clone git@github.com:tsaanghwang/Yime.git
 cd Yime
-git submodule update --init libIME2
 ```
 
-The active `libIME2` submodule points at the maintained `tsaanghwang/libIME2` fork.
-If you bump a submodule SHA in Yime, push that commit to the submodule remote
-**before** pushing the main repository, or CI checkout will fail.
+`libIME2` is tracked directly in this repository so worktrees, local builds and
+CI all use the same source snapshot. Its imported history base is
+`tsaanghwang/libIME2@e7e11888343a4fd72b8610bc067109ed16d57def`; subsequent
+component commits are kept path-pure by the libIME2 commit boundary gate so the
+component can be extracted again later.
 
 ### Install the pinned Rust host toolchain
 
@@ -132,7 +133,7 @@ regsvr32 /u "C:\Program Files (x86)\YIME\x64\PIMETextService.dll"
 
 ## First-Run Checklist
 
-- [ ] Clone, initialize submodules, confirm toolchain installed
+- [ ] Clone the repository and confirm the toolchain is installed
 - [ ] If the curated core changed, run `tools\deploy-yime-rime-data.ps1 -InputPath <two_level_full.dict.yaml> -EvidenceManifest <dictionary.manifest.json> -SourceRevision <commit>` (see [docs/YIME_RIME_INTEGRATION.md](docs/YIME_RIME_INTEGRATION.md))
 - [ ] Run `.\tools\dev-build-install-verify.ps1` for the complete build → reinstall → installed-runtime verification loop
 - [ ] For a split workflow, run `cmd /c build.bat`, then `.\Reinstall-PIME-Test.cmd` from an elevated prompt, then `tools\verify-installed-runtime.ps1 -RequireRunningLauncher`
