@@ -17,8 +17,8 @@ func TestWindowSizeReservesARealClientAreaForButtons(t *testing.T) {
 		t.Fatalf("outer width %d is smaller than requested client width %d",
 			width, layout.clientWidth)
 	}
-	if height <= layout.clientHeight {
-		t.Fatalf("outer height %d did not reserve space for the title bar above client height %d",
+	if height < layout.clientHeight {
+		t.Fatalf("outer height %d is smaller than borderless client height %d",
 			height, layout.clientHeight)
 	}
 	for _, placement := range layout.placements {
@@ -38,8 +38,8 @@ func TestToolbarLayoutShrinksForHiddenButtonsAndSupportsVerticalStack(t *testing
 		t.Fatalf("hidden buttons did not shrink horizontal toolbar: default=%d hidden=%d",
 			defaultLayout.clientWidth, hiddenLayout.clientWidth)
 	}
-	if countVisible(hiddenLayout) != 5 {
-		t.Fatalf("expected five visible horizontal buttons, got %d", countVisible(hiddenLayout))
+	if countVisible(hiddenLayout) != 6 {
+		t.Fatalf("expected six visible horizontal controls, got %d", countVisible(hiddenLayout))
 	}
 
 	vertical := calculateToolbarLayout(toolbarstate.State{Vertical: true})
@@ -57,8 +57,8 @@ func TestSettingsButtonCannotBeHiddenAndCustomizationToggleIsReversible(t *testi
 	layout := calculateToolbarLayout(toolbarstate.State{
 		HiddenButtons: []string{"language", "shape", "punctuation", "script", "unicode", "trainer", "settings"},
 	})
-	if countVisible(layout) != 1 {
-		t.Fatalf("settings anchor must remain visible, got %d visible buttons", countVisible(layout))
+	if countVisible(layout) != 2 {
+		t.Fatalf("drag handle and settings anchor must remain visible, got %d visible controls", countVisible(layout))
 	}
 	for _, placement := range layout.placements {
 		if placement.id == idSettings && !placement.visible {
@@ -76,12 +76,40 @@ func TestSettingsButtonCannotBeHiddenAndCustomizationToggleIsReversible(t *testi
 	}
 }
 
-func TestToolbarUsesCompactTitleWithoutCloseButton(t *testing.T) {
-	if windowTitle != "音元" {
-		t.Fatalf("window title=%q want 音元", windowTitle)
+func TestToolbarUsesClientDragHandleWithoutNativeCaption(t *testing.T) {
+	if got := dragHandleLabel(toolbarstate.State{}); got != "│" {
+		t.Fatalf("horizontal drag handle=%q want │", got)
 	}
-	if toolbarWindowStyle()&wsSysMenu != 0 {
-		t.Fatalf("toolbar style %#x must not expose the title-bar close button", toolbarWindowStyle())
+	if got := dragHandleLabel(toolbarstate.State{Vertical: true}); got != "— —" {
+		t.Fatalf("vertical drag handle=%q want — —", got)
+	}
+	if toolbarWindowStyle()&(wsDlgFrame|wsSysMenu) != 0 {
+		t.Fatalf("toolbar style %#x must not expose a native caption", toolbarWindowStyle())
+	}
+	if dragHandleStyle()&ssNotify == 0 {
+		t.Fatalf("drag handle style %#x must receive mouse notifications", dragHandleStyle())
+	}
+	horizontal := calculateToolbarLayout(toolbarstate.State{})
+	vertical := calculateToolbarLayout(toolbarstate.State{Vertical: true})
+	if horizontal.placements[0].id != idHandle || horizontal.placements[0].width != toolbarHandleWidth {
+		t.Fatalf("horizontal drag handle placement=%#v", horizontal.placements[0])
+	}
+	if vertical.placements[0].id != idHandle || vertical.placements[0].height != toolbarHandleHeight {
+		t.Fatalf("vertical drag handle placement=%#v", vertical.placements[0])
+	}
+}
+
+func TestDragHandleStartsNativeWindowMove(t *testing.T) {
+	original := beginToolbarDrag
+	defer func() { beginToolbarDrag = original }()
+
+	want := syscall.Handle(321)
+	called := syscall.Handle(0)
+	beginToolbarDrag = func(hwnd syscall.Handle) {
+		called = hwnd
+	}
+	if ret := dragHandleWndProc(want, wmLButtonDown, 0, 0); ret != 0 || called != want {
+		t.Fatalf("drag callback ret=%d hwnd=%v want %v", ret, called, want)
 	}
 }
 
@@ -90,6 +118,9 @@ func TestToolbarDefaultsToVerticalAndRemembersExplicitHorizontal(t *testing.T) {
 	initial := loadToolbarState(path)
 	if !initial.Vertical || !initial.OrientationSet {
 		t.Fatalf("new toolbar state must default to vertical: %#v", initial)
+	}
+	if initial.ToolbarLayoutVersion != toolbarstate.LayoutVersion {
+		t.Fatalf("new toolbar layout version=%d want %d", initial.ToolbarLayoutVersion, toolbarstate.LayoutVersion)
 	}
 
 	horizontal, err := toolbarstate.Update(path, "toolbar", func(state *toolbarstate.State) bool {
@@ -109,6 +140,22 @@ func TestToolbarDefaultsToVerticalAndRemembersExplicitHorizontal(t *testing.T) {
 	}
 	if got := orientationMenuLabel(loaded); got != "水平" {
 		t.Fatalf("horizontal menu label=%q", got)
+	}
+}
+
+func TestToolbarMigratesLegacyHorizontalStateToNewVerticalDefaultOnce(t *testing.T) {
+	path := filepath.Join(t.TempDir(), toolbarstate.FileName)
+	legacy, err := toolbarstate.Update(path, "toolbar", func(state *toolbarstate.State) bool {
+		state.Vertical = false
+		state.OrientationSet = true
+		return true
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	migrated := loadToolbarState(path)
+	if !migrated.Vertical || migrated.ToolbarLayoutVersion != toolbarstate.LayoutVersion || migrated.Revision <= legacy.Revision {
+		t.Fatalf("legacy horizontal state was not migrated to the new vertical default: %#v", migrated)
 	}
 }
 
