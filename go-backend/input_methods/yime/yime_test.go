@@ -1873,6 +1873,7 @@ func TestInputToolbarStateConvergesBackendAndStandaloneControls(t *testing.T) {
 		state.ASCIIPunctuation = true
 		state.Traditionalization = true
 		state.Vertical = true
+		state.OrientationSet = true
 		state.HiddenButtons = []string{"unicode"}
 		return true
 	})
@@ -1901,7 +1902,7 @@ func TestInputToolbarStateConvergesBackendAndStandaloneControls(t *testing.T) {
 	if got.ASCII || !got.FullShape || !got.ASCIIPunctuation || !got.Traditionalization {
 		t.Fatalf("backend publication lost toolbar state fields: %#v", got)
 	}
-	if !got.Vertical || len(got.HiddenButtons) != 1 || got.HiddenButtons[0] != "unicode" {
+	if !got.Vertical || !got.OrientationSet || len(got.HiddenButtons) != 1 || got.HiddenButtons[0] != "unicode" {
 		t.Fatalf("backend publication lost toolbar layout preferences: %#v", got)
 	}
 	if got.Source != "backend" || got.Revision <= written.Revision {
@@ -1944,6 +1945,7 @@ func TestYimeCommandIDsStayOutOfLowHostCollisionRange(t *testing.T) {
 		ID_HELP_COPY_TRIAL_TEMPLATE,
 		ID_HELP_TOOL_HUB,
 		ID_REVERSE_LOOKUP_TOOL,
+		ID_TRAINER_TOOL,
 		ID_CANDIDATE_PAGE_SIZE_5,
 		ID_CANDIDATE_PAGE_SIZE_6,
 		ID_CANDIDATE_PAGE_SIZE_7,
@@ -2236,8 +2238,26 @@ func TestOnMenuReturnsSettingsMenu(t *testing.T) {
 	if item := findTopLevelMenuItem(t, items, ID_REVERSE_LOOKUP_TOOL); item["text"] != "反查编码" {
 		t.Fatalf("expected direct 反查编码 entry in settings menu, got %#v", item)
 	}
+	if item := findTopLevelMenuItem(t, items, ID_TRAINER_TOOL); item["text"] != "指法练习" {
+		t.Fatalf("expected direct 指法练习 entry in settings menu, got %#v", item)
+	}
 	if item := findTopLevelMenuItem(t, items, ID_HELP_TOOL_HUB); item["text"] != "工具中心" {
 		t.Fatalf("expected direct 工具中心 entry in settings menu, got %#v", item)
+	}
+	reverseIndex, trainerIndex, hubIndex := -1, -1, -1
+	for index, menuItem := range items {
+		id, _ := menuItem["id"].(int)
+		switch id {
+		case ID_REVERSE_LOOKUP_TOOL:
+			reverseIndex = index
+		case ID_TRAINER_TOOL:
+			trainerIndex = index
+		case ID_HELP_TOOL_HUB:
+			hubIndex = index
+		}
+	}
+	if trainerIndex != reverseIndex+1 || hubIndex != trainerIndex+1 {
+		t.Fatalf("expected 反查编码, 指法练习, 工具中心 to be adjacent in that order: reverse=%d trainer=%d hub=%d", reverseIndex, trainerIndex, hubIndex)
 	}
 	openFolderMenu := findSubmenuItem(t, maintenanceMenu, "打开目录(&O)")
 	if len(openFolderMenu) != 4 {
@@ -3749,13 +3769,24 @@ func TestOnCommandSchedulesStandaloneToolsOutsideTSFCallback(t *testing.T) {
 		t.Fatalf("expected reverse-lookup command to be handled, got %d", respReverseLookup.ReturnValue)
 	}
 
-	if scheduled != 3 {
+	respTrainer := ime.onCommand(&pime.Request{
+		SeqNum: 91,
+		ID:     pime.FlexibleID{String: "settings"},
+		Data: map[string]interface{}{
+			"id": float64(ID_TRAINER_TOOL),
+		},
+	}, pime.NewResponse(91, true))
+	if respTrainer.ReturnValue != 1 {
+		t.Fatalf("expected trainer command to be handled, got %d", respTrainer.ReturnValue)
+	}
+
+	if scheduled != 4 {
 		t.Fatalf("expected all standalone-tool commands to be scheduled asynchronously, got %d", scheduled)
 	}
 	if runs != 0 {
 		t.Fatalf("expected no standalone tool to launch synchronously inside onCommand, got %d immediate runs", runs)
 	}
-	if respLexicon.ShowCandidates || respToolHub.ShowCandidates || respReverseLookup.ShowCandidates {
+	if respLexicon.ShowCandidates || respToolHub.ShowCandidates || respReverseLookup.ShowCandidates || respTrainer.ShowCandidates {
 		t.Fatalf("expected standalone-tool commands not to refresh candidate UI during TSF callback")
 	}
 }

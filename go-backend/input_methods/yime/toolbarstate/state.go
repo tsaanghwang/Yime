@@ -11,23 +11,26 @@ import (
 const (
 	FileName      = "yime_input_toolbar_state.json"
 	FormatVersion = 1
+	LayoutVersion = 1
 )
 
 // State is the small, process-independent contract shared by the Yime backend
 // and input-toolbar.exe. Boolean fields are explicit target values, never
 // context-dependent "toggle" commands, so all active editor sessions converge.
 type State struct {
-	Version            int      `json:"version"`
-	Revision           int64    `json:"revision"`
-	UpdatedAt          string   `json:"updated_at,omitempty"`
-	Source             string   `json:"source,omitempty"`
-	ASCII              bool     `json:"ascii_mode"`
-	FullShape          bool     `json:"full_shape"`
-	ASCIIPunctuation   bool     `json:"ascii_punctuation"`
-	Traditionalization bool     `json:"traditionalization"`
-	SchemaID           string   `json:"schema_id,omitempty"`
-	Vertical           bool     `json:"toolbar_vertical,omitempty"`
-	HiddenButtons      []string `json:"toolbar_hidden_buttons,omitempty"`
+	Version              int      `json:"version"`
+	Revision             int64    `json:"revision"`
+	UpdatedAt            string   `json:"updated_at,omitempty"`
+	Source               string   `json:"source,omitempty"`
+	ASCII                bool     `json:"ascii_mode"`
+	FullShape            bool     `json:"full_shape"`
+	ASCIIPunctuation     bool     `json:"ascii_punctuation"`
+	Traditionalization   bool     `json:"traditionalization"`
+	SchemaID             string   `json:"schema_id,omitempty"`
+	Vertical             bool     `json:"toolbar_vertical,omitempty"`
+	OrientationSet       bool     `json:"toolbar_orientation_set,omitempty"`
+	ToolbarLayoutVersion int      `json:"toolbar_layout_version,omitempty"`
+	HiddenButtons        []string `json:"toolbar_hidden_buttons,omitempty"`
 }
 
 func Path(userDir string) string {

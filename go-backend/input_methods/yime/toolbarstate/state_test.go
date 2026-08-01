@@ -14,6 +14,8 @@ func TestUpdateWritesCompleteVersionedStateAndSkipsUnchangedRevision(t *testing.
 		state.Traditionalization = true
 		state.SchemaID = "yime_full"
 		state.Vertical = true
+		state.OrientationSet = true
+		state.ToolbarLayoutVersion = LayoutVersion
 		state.HiddenButtons = []string{"punctuation", "unicode"}
 		return true
 	})
@@ -41,7 +43,7 @@ func TestUpdateWritesCompleteVersionedStateAndSkipsUnchangedRevision(t *testing.
 	}
 	if !got.ASCII || !got.FullShape || !got.ASCIIPunctuation ||
 		!got.Traditionalization || got.SchemaID != "yime_full" ||
-		!got.Vertical || len(got.HiddenButtons) != 2 {
+		!got.Vertical || !got.OrientationSet || got.ToolbarLayoutVersion != LayoutVersion || len(got.HiddenButtons) != 2 {
 		t.Fatalf("state file is incomplete: %#v", got)
 	}
 }

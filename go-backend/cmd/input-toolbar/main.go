@@ -16,40 +16,54 @@ import (
 )
 
 const (
-	windowClass = "YimeInputToolbar"
+	windowClass  = "YimeInputToolbar"
+	messageTitle = "音元"
 
 	wsExToolWindow = 0x00000080
 	wsExTopmost    = 0x00000008
 	wsCaption      = 0x00C00000
 	wsSysMenu      = 0x00080000
+	wsBorder       = 0x00800000
+	wsDlgFrame     = 0x00400000
 	wsPopup        = 0x80000000
 	wsChild        = 0x40000000
 	wsVisible      = 0x10000000
 	wsTabStop      = 0x00010000
 	bsPushButton   = 0x00000000
+	ssCenter       = 0x00000001
+	ssCenterImage  = 0x00000200
+	ssNotify       = 0x00000100
 
-	wmCommand = 0x0111
-	wmTimer   = 0x0113
-	wmClose   = 0x0010
-	wmDestroy = 0x0002
-	wmNull    = 0x0000
+	wmCommand       = 0x0111
+	wmTimer         = 0x0113
+	wmClose         = 0x0010
+	wmDestroy       = 0x0002
+	wmNull          = 0x0000
+	wmLButtonDown   = 0x0201
+	wmNcLButtonDown = 0x00A1
+	htCaption       = 2
 
+	idHandle   = 99
 	idLanguage = 100
 	idShape    = 101
 	idPunct    = 102
 	idScript   = 103
 	idUnicode  = 104
 	idSettings = 105
+	idTrainer  = 106
 	timerID    = 1
 
 	idMenuOrientation = 200
 	idMenuCandidate   = 201
 	idMenuSystem      = 202
+	idMenuHide        = 203
 	idMenuButtonBase  = 300
 
 	toolbarMargin       = int32(8)
 	toolbarButtonGap    = int32(6)
 	toolbarButtonHeight = int32(32)
+	toolbarHandleWidth  = int32(18)
+	toolbarHandleHeight = int32(18)
 
 	mfString    = 0x0000
 	mfChecked   = 0x0008
@@ -70,12 +84,14 @@ var (
 	getMessageW         = user32.NewProc("GetMessageW")
 	translateMessageW   = user32.NewProc("TranslateMessage")
 	postQuitMessage     = user32.NewProc("PostQuitMessage")
+	destroyWindow       = user32.NewProc("DestroyWindow")
 	registerClassExW    = user32.NewProc("RegisterClassExW")
 	loadCursorW         = user32.NewProc("LoadCursorW")
 	showWindow          = user32.NewProc("ShowWindow")
 	isWindowVisible     = user32.NewProc("IsWindowVisible")
 	updateWindow        = user32.NewProc("UpdateWindow")
 	moveWindow          = user32.NewProc("MoveWindow")
+	getWindowRect       = user32.NewProc("GetWindowRect")
 	setWindowPos        = user32.NewProc("SetWindowPos")
 	setTimer            = user32.NewProc("SetTimer")
 	killTimer           = user32.NewProc("KillTimer")
@@ -90,9 +106,28 @@ var (
 	getCursorPos        = user32.NewProc("GetCursorPos")
 	setForegroundWindow = user32.NewProc("SetForegroundWindow")
 	postMessageW        = user32.NewProc("PostMessageW")
+	getParent           = user32.NewProc("GetParent")
+	releaseCapture      = user32.NewProc("ReleaseCapture")
+	sendMessageW        = user32.NewProc("SendMessageW")
+	callWindowProcW     = user32.NewProc("CallWindowProcW")
+	setWindowLongPtrW   = user32.NewProc("SetWindowLongPtrW")
 	getModuleHandleW    = kernel32.NewProc("GetModuleHandleW")
 
-	windowProc uintptr
+	windowProc         uintptr
+	handleWindowProc   uintptr
+	originalHandleProc uintptr
+
+	closeToolbarWindow = func(hwnd syscall.Handle) {
+		destroyWindow.Call(uintptr(hwnd))
+	}
+	beginToolbarDrag = func(hwnd syscall.Handle) {
+		parent, _, _ := getParent.Call(uintptr(hwnd))
+		if parent == 0 {
+			return
+		}
+		releaseCapture.Call()
+		sendMessageW.Call(parent, wmNcLButtonDown, htCaption, 0)
+	}
 )
 
 type wndClassEx struct {
@@ -153,6 +188,7 @@ type point struct {
 type app struct {
 	statePath    string
 	settingsTool string
+	trainerTool  string
 	userDir      string
 	sharedDir    string
 	helpDir      string
@@ -165,6 +201,7 @@ type app struct {
 func main() {
 	statePath := flag.String("StatePath", "", "Path to yime_input_toolbar_state.json")
 	settingsTool := flag.String("SettingsTool", "", "Path to settings-tool.exe")
+	trainerTool := flag.String("TrainerTool", "", "Path to yime-trainer.exe")
 	userDir := flag.String("UserDir", "", "Yime user data directory")
 	sharedDir := flag.String("SharedDir", "", "Yime shared data directory")
 	helpDir := flag.String("HelpDir", "", "Yime help directory")
@@ -177,6 +214,7 @@ func main() {
 	instance := &app{
 		statePath:    *statePath,
 		settingsTool: *settingsTool,
+		trainerTool:  *trainerTool,
 		userDir:      *userDir,
 		sharedDir:    *sharedDir,
 		helpDir:      *helpDir,
@@ -196,9 +234,7 @@ func (a *app) run() error {
 	if win32ui.ActivateExistingWindow(windowClass) {
 		return nil
 	}
-	if state, err := toolbarstate.Read(a.statePath); err == nil {
-		a.state = state
-	}
+	a.state = loadToolbarState(a.statePath)
 	instance, _, _ := getModuleHandleW.Call(0)
 	className, _ := syscall.UTF16PtrFromString(windowClass)
 	cursor, _, _ := loadCursorW.Call(0, uintptr(32512))
@@ -219,22 +255,20 @@ func (a *app) run() error {
 		return errors.New("无法注册输入法工具栏窗口")
 	}
 
-	title, _ := syscall.UTF16PtrFromString("Yime 输入法工具栏")
-	windowStyle := uintptr(wsPopup | wsCaption | wsSysMenu)
+	title, _ := syscall.UTF16PtrFromString(messageTitle)
+	windowStyle := uintptr(toolbarWindowStyle())
 	windowExStyle := uintptr(wsExToolWindow | wsExTopmost)
 	layout := calculateToolbarLayout(a.state)
 	width, height := windowSizeForClient(layout.clientWidth, layout.clientHeight)
 	screenW, _, _ := getSystemMetrics.Call(0)
-	x := int32(screenW) - width - 24
-	if x < 0 {
-		x = 0
-	}
+	screenH, _, _ := getSystemMetrics.Call(1)
+	x, y := defaultToolbarPosition(int32(screenW), int32(screenH), width, height)
 	hwnd, _, _ := createWindowExW.Call(
 		windowExStyle,
 		uintptr(unsafe.Pointer(className)),
 		uintptr(unsafe.Pointer(title)),
 		windowStyle,
-		uintptr(x), 48, uintptr(width), uintptr(height),
+		uintptr(x), uintptr(y), uintptr(width), uintptr(height),
 		0, 0, instance, 0,
 	)
 	if hwnd == 0 {
@@ -260,8 +294,68 @@ func (a *app) run() error {
 	return nil
 }
 
+func loadToolbarState(path string) toolbarstate.State {
+	state, err := toolbarstate.Update(path, "toolbar", func(state *toolbarstate.State) bool {
+		if state.OrientationSet && state.ToolbarLayoutVersion >= toolbarstate.LayoutVersion {
+			return false
+		}
+		state.Vertical = true
+		state.OrientationSet = true
+		state.ToolbarLayoutVersion = toolbarstate.LayoutVersion
+		return true
+	})
+	if err == nil {
+		return state
+	}
+	return toolbarstate.State{
+		Version:              toolbarstate.FormatVersion,
+		Vertical:             true,
+		OrientationSet:       true,
+		ToolbarLayoutVersion: toolbarstate.LayoutVersion,
+	}
+}
+
+func toolbarWindowStyle() uintptr {
+	// The client-area drag handle replaces the native caption completely.
+	return wsPopup | wsBorder
+}
+
+func defaultToolbarPosition(screenWidth, screenHeight, width, height int32) (int32, int32) {
+	const rightInset = int32(32)
+	x := screenWidth - width - rightInset
+	y := (screenHeight - height) / 2
+	if x < 0 {
+		x = 0
+	}
+	if y < 0 {
+		y = 0
+	}
+	return x, y
+}
+
+func fitToolbarPosition(x, y, screenWidth, screenHeight, width, height int32) (int32, int32) {
+	const edgeInset = int32(32)
+	if x+width > screenWidth-edgeInset {
+		x = screenWidth - width - edgeInset
+	}
+	if y+height > screenHeight {
+		y = screenHeight - height
+	}
+	if x < 0 {
+		x = 0
+	}
+	if y < 0 {
+		y = 0
+	}
+	return x, y
+}
+
 func (a *app) createButtons() {
 	for _, item := range toolbarButtons() {
+		if item.id == idHandle {
+			a.buttons[item.id] = createDragHandle(a.hwnd, item.id, item.text)
+			continue
+		}
 		a.buttons[item.id] = createButton(
 			a.hwnd, item.id, item.text,
 			0, 0, item.width, toolbarButtonHeight,
@@ -271,13 +365,29 @@ func (a *app) createButtons() {
 
 func toolbarButtons() []toolbarButton {
 	return []toolbarButton{
+		{idHandle, "handle", "│", 64, false},
 		{idLanguage, "language", "中文", 54, true},
 		{idShape, "shape", "半宽", 54, true},
 		{idPunct, "punctuation", "中标", 54, true},
 		{idScript, "script", "简体", 54, true},
 		{idUnicode, "unicode", "字符", 64, true},
+		{idTrainer, "trainer", "练习", 64, true},
 		{idSettings, "settings", "设置", 64, false},
 	}
+}
+
+func buttonWidthForLayout(button toolbarButton, vertical bool) int32 {
+	if button.id == idHandle && !vertical {
+		return toolbarHandleWidth
+	}
+	return button.width
+}
+
+func buttonHeightForLayout(button toolbarButton, vertical bool) int32 {
+	if button.id == idHandle && vertical {
+		return toolbarHandleHeight
+	}
+	return toolbarButtonHeight
 }
 
 func calculateToolbarLayout(state toolbarstate.State) toolbarLayout {
@@ -296,24 +406,31 @@ func calculateToolbarLayout(state toolbarstate.State) toolbarLayout {
 	if state.Vertical {
 		maxWidth := int32(0)
 		for _, button := range visible {
-			if button.width > maxWidth {
-				maxWidth = button.width
+			width := buttonWidthForLayout(button, true)
+			if width > maxWidth {
+				maxWidth = width
+			}
+		}
+		contentHeight := int32(0)
+		for index, button := range visible {
+			contentHeight += buttonHeightForLayout(button, true)
+			if index > 0 {
+				contentHeight += toolbarButtonGap
 			}
 		}
 		layout.clientWidth = toolbarMargin*2 + maxWidth
-		layout.clientHeight = toolbarMargin*2 +
-			int32(len(visible))*toolbarButtonHeight +
-			int32(len(visible)-1)*toolbarButtonGap
+		layout.clientHeight = toolbarMargin*2 + contentHeight
 		y := toolbarMargin
 		for _, button := range definitions {
 			isVisible := !button.customizable || !hidden[button.key]
 			placement := buttonPlacement{id: button.id, visible: isVisible}
 			if isVisible {
+				height := buttonHeightForLayout(button, true)
 				placement.x = toolbarMargin
 				placement.y = y
 				placement.width = maxWidth
-				placement.height = toolbarButtonHeight
-				y += toolbarButtonHeight + toolbarButtonGap
+				placement.height = height
+				y += height + toolbarButtonGap
 			}
 			layout.placements = append(layout.placements, placement)
 		}
@@ -321,24 +438,31 @@ func calculateToolbarLayout(state toolbarstate.State) toolbarLayout {
 	}
 
 	totalWidth := int32(0)
+	maxHeight := int32(0)
 	for index, button := range visible {
-		totalWidth += button.width
+		totalWidth += buttonWidthForLayout(button, false)
+		height := buttonHeightForLayout(button, false)
+		if height > maxHeight {
+			maxHeight = height
+		}
 		if index > 0 {
 			totalWidth += toolbarButtonGap
 		}
 	}
 	layout.clientWidth = toolbarMargin*2 + totalWidth
-	layout.clientHeight = toolbarMargin*2 + toolbarButtonHeight
+	layout.clientHeight = toolbarMargin*2 + maxHeight
 	x := toolbarMargin
 	for _, button := range definitions {
 		isVisible := !button.customizable || !hidden[button.key]
 		placement := buttonPlacement{id: button.id, visible: isVisible}
 		if isVisible {
+			width := buttonWidthForLayout(button, false)
+			height := buttonHeightForLayout(button, false)
 			placement.x = x
-			placement.y = toolbarMargin
-			placement.width = button.width
-			placement.height = toolbarButtonHeight
-			x += button.width + toolbarButtonGap
+			placement.y = toolbarMargin + (maxHeight-height)/2
+			placement.width = width
+			placement.height = height
+			x += width + toolbarButtonGap
 		}
 		layout.placements = append(layout.placements, placement)
 	}
@@ -362,12 +486,19 @@ func (a *app) applyLayout() {
 		}
 	}
 	width, height := windowSizeForClient(layout.clientWidth, layout.clientHeight)
-	const swpNoMove = 0x0002
 	const swpNoZOrder = 0x0004
 	const swpNoActivate = 0x0010
+	position := rect{}
+	getWindowRect.Call(uintptr(a.hwnd), uintptr(unsafe.Pointer(&position)))
+	screenW, _, _ := getSystemMetrics.Call(0)
+	screenH, _, _ := getSystemMetrics.Call(1)
+	x, y := fitToolbarPosition(
+		position.Left, position.Top,
+		int32(screenW), int32(screenH), width, height,
+	)
 	setWindowPos.Call(
-		uintptr(a.hwnd), 0, 0, 0, uintptr(width), uintptr(height),
-		swpNoMove|swpNoZOrder|swpNoActivate,
+		uintptr(a.hwnd), 0, uintptr(x), uintptr(y), uintptr(width), uintptr(height),
+		swpNoZOrder|swpNoActivate,
 	)
 }
 
@@ -375,14 +506,13 @@ func windowSizeForClient(clientWidth, clientHeight int32) (int32, int32) {
 	box := rect{Right: clientWidth, Bottom: clientHeight}
 	ret, _, _ := adjustWindowRectEx.Call(
 		uintptr(unsafe.Pointer(&box)),
-		uintptr(wsPopup|wsCaption|wsSysMenu),
+		toolbarWindowStyle(),
 		0,
 		uintptr(wsExToolWindow|wsExTopmost),
 	)
 	if ret == 0 {
-		// Conservative fallback: never let a non-client title bar consume the
-		// button row if Windows cannot calculate the frame for some reason.
-		return clientWidth + 16, clientHeight + 48
+		// The toolbar has no caption; reserve only a small border fallback.
+		return clientWidth + 4, clientHeight + 4
 	}
 	return box.Right - box.Left, box.Bottom - box.Top
 }
@@ -403,13 +533,54 @@ func createButton(parent syscall.Handle, id int, text string, x, y, width, heigh
 	return button
 }
 
+func createDragHandle(parent syscall.Handle, id int, text string) syscall.Handle {
+	className, _ := syscall.UTF16PtrFromString("STATIC")
+	label, _ := syscall.UTF16PtrFromString(text)
+	hwnd, _, _ := createWindowExW.Call(
+		0,
+		uintptr(unsafe.Pointer(className)),
+		uintptr(unsafe.Pointer(label)),
+		dragHandleStyle(),
+		0, 0, uintptr(toolbarHandleWidth), uintptr(toolbarButtonHeight),
+		uintptr(parent), uintptr(id), 0, 0,
+	)
+	handle := syscall.Handle(hwnd)
+	win32ui.ApplyDefaultGUIFont(handle)
+	if handle != 0 {
+		handleWindowProc = syscall.NewCallback(dragHandleWndProc)
+		previous, _, _ := setWindowLongPtrW.Call(
+			uintptr(handle), ^uintptr(3), handleWindowProc,
+		)
+		originalHandleProc = previous
+	}
+	return handle
+}
+
+func dragHandleStyle() uintptr {
+	// SS_NOTIFY prevents the stock STATIC control from treating the handle as
+	// mouse-transparent, so its subclass receives WM_LBUTTONDOWN and starts the
+	// native caption-drag loop for the borderless parent window.
+	return wsChild | wsVisible | ssCenter | ssCenterImage | ssNotify
+}
+
+func dragHandleWndProc(hwnd syscall.Handle, message uint32, wParam, lParam uintptr) uintptr {
+	if message == wmLButtonDown {
+		beginToolbarDrag(hwnd)
+		return 0
+	}
+	ret, _, _ := callWindowProcW.Call(
+		originalHandleProc, uintptr(hwnd), uintptr(message), wParam, lParam,
+	)
+	return ret
+}
+
 func (a *app) wndProc(hwnd syscall.Handle, message uint32, wParam, lParam uintptr) uintptr {
 	switch message {
 	case wmClose:
-		// The title-bar X is the toolbar's "hide" action. Keep this small
-		// process and its state alive so the language-bar menu can show it
-		// again without touching PIME or the candidate window.
-		showWindow.Call(uintptr(hwnd), 0)
+		// Closing the independent toolbar must also release input-toolbar.exe
+		// so upgrades can replace it. The language-bar command starts a fresh
+		// process when the user asks to show the toolbar again.
+		closeToolbarWindow(hwnd)
 		return 0
 	case wmCommand:
 		if int((wParam>>16)&0xffff) == 0 {
@@ -447,6 +618,8 @@ func (a *app) handleCommand(id int) {
 		})
 	case idUnicode:
 		showInformation("Unicode 字符面板将在下一阶段作为独立窗口接通。")
+	case idTrainer:
+		a.openTrainer()
 	case idSettings:
 		a.showSettingsMenu()
 	}
@@ -478,11 +651,8 @@ func (a *app) showSettingsMenu() {
 		appendPopupMenuItem(customize, flags, uintptr(idMenuButtonBase+index), buttonMenuName(button.key))
 	}
 	appendPopupMenuItem(menu, mfPopup, customize, "定制")
-	orientation := "水平/垂直（当前：水平）"
-	if a.state.Vertical {
-		orientation = "水平/垂直（当前：垂直）"
-	}
-	appendPopupMenuItem(menu, mfString, idMenuOrientation, orientation)
+	appendPopupMenuItem(menu, mfString, idMenuOrientation, orientationMenuLabel(a.state))
+	appendPopupMenuItem(menu, mfString, idMenuHide, "隐藏")
 	appendPopupMenuItem(menu, mfSeparator, 0, "")
 	appendPopupMenuItem(menu, mfString, idMenuCandidate, "候选")
 	appendPopupMenuItem(menu, mfString, idMenuSystem, "系统")
@@ -500,6 +670,20 @@ func (a *app) showSettingsMenu() {
 	)
 	postMessageW.Call(uintptr(a.hwnd), wmNull, 0, 0)
 	a.handleSettingsMenuCommand(int(command))
+}
+
+func orientationMenuLabel(state toolbarstate.State) string {
+	if state.Vertical {
+		return "垂直"
+	}
+	return "水平"
+}
+
+func dragHandleLabel(state toolbarstate.State) string {
+	if state.Vertical {
+		return "— —"
+	}
+	return "│"
 }
 
 func appendPopupMenuItem(menu uintptr, flags uintptr, id uintptr, text string) {
@@ -527,6 +711,8 @@ func buttonMenuName(key string) string {
 		return "简体/繁体"
 	case "unicode":
 		return "字符"
+	case "trainer":
+		return "练习"
 	default:
 		return key
 	}
@@ -539,7 +725,10 @@ func (a *app) handleSettingsMenuCommand(command int) {
 	case idMenuOrientation:
 		a.updateState(func(state *toolbarstate.State) {
 			state.Vertical = !state.Vertical
+			state.OrientationSet = true
 		})
+	case idMenuHide:
+		closeToolbarWindow(a.hwnd)
 	case idMenuCandidate:
 		a.openCandidateSettings()
 	case idMenuSystem:
@@ -556,6 +745,32 @@ func (a *app) handleSettingsMenuCommand(command int) {
 		a.updateState(func(state *toolbarstate.State) {
 			state.HiddenButtons = toggleHiddenButton(state.HiddenButtons, key)
 		})
+	}
+}
+
+func (a *app) openTrainer() {
+	if a.trainerTool == "" {
+		showError("没有找到指法练习工具。")
+		return
+	}
+	if err := exec.Command(
+		a.trainerTool,
+		"-SharedDir", a.sharedDir,
+		"-UserDir", a.userDir,
+		"-Mode", trainerModeFromSchema(a.state.SchemaID),
+	).Start(); err != nil {
+		showError("无法打开指法练习：" + err.Error())
+	}
+}
+
+func trainerModeFromSchema(schemaID string) string {
+	switch schemaID {
+	case "yime_full":
+		return "full"
+	case "yime_shorthand":
+		return "shorthand"
+	default:
+		return "variable"
 	}
 }
 
@@ -625,6 +840,7 @@ func (a *app) refresh() {
 }
 
 func (a *app) updateLabels() {
+	setWindowLabel(a.buttons[idHandle], dragHandleLabel(a.state))
 	setButtonText(a.buttons[idLanguage], choose(a.state.ASCII, "英文", "中文"))
 	setButtonText(a.buttons[idShape], choose(a.state.FullShape, "全宽", "半宽"))
 	setButtonText(a.buttons[idPunct], choose(a.state.ASCIIPunctuation, "英标", "中标"))
@@ -639,6 +855,10 @@ func choose(value bool, whenTrue, whenFalse string) string {
 }
 
 func setButtonText(hwnd syscall.Handle, text string) {
+	setWindowLabel(hwnd, text)
+}
+
+func setWindowLabel(hwnd syscall.Handle, text string) {
 	if hwnd == 0 {
 		return
 	}
@@ -647,11 +867,11 @@ func setButtonText(hwnd syscall.Handle, text string) {
 }
 
 func showInformation(message string) {
-	showMessage(message, "Yime 输入法工具栏", 0x40)
+	showMessage(message, messageTitle, 0x40)
 }
 
 func showError(message string) {
-	showMessage(message, "Yime 输入法工具栏", 0x10)
+	showMessage(message, messageTitle, 0x10)
 }
 
 func showMessage(message, title string, flags uintptr) {

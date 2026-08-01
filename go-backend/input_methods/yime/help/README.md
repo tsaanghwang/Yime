@@ -31,7 +31,7 @@ Rime frontend.
   - **中西 / 全半 / 标点 / 横竖** — fixed two-character labels; state shown by icons
 - When Windows docks the language bar in the taskbar and hides those standalone
   quick buttons, open the **设置** menu from the **中** button. Its root contains
-  the equivalent **用户词库**, **反查编码**, and **工具中心** commands.
+  the **用户词库**, **反查编码**, **指法练习**, and **工具中心** commands.
 - Settings: Yime variable-length, fixed-length, and shorthand schemas,
   Chinese/English mode, shape, punctuation, and data/log folders. Guarded Rime
   maintenance commands live in the `数据维护` submenu. `重新部署…`
