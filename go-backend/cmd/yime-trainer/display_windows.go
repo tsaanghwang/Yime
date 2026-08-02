@@ -91,6 +91,7 @@ type layoutMetrics struct {
 	section          selectorMetrics
 	font             selectorMetrics
 	background       selectorMetrics
+	review           selectorMetrics
 	segment          selectorMetrics
 	category         selectorMetrics
 	group            selectorMetrics
@@ -101,6 +102,8 @@ type layoutMetrics struct {
 	restartWidth     int32
 	revealWidth      int32
 	playWidth        int32
+	reportWidth      int32
+	clearWidth       int32
 }
 
 type trainerLayout struct {
@@ -110,12 +113,13 @@ type trainerLayout struct {
 	sectionLabel, sectionCombo                    rect
 	fontLabel, fontCombo                          rect
 	backgroundLabel, backgroundCombo              rect
+	reviewLabel, reviewCombo                      rect
 	segmentLabel, segmentCombo                    rect
 	categoryLabel, categoryCombo                  rect
 	groupLabel, groupCombo                        rect
 	progress, instruction, prompt, detail, target rect
 	inputLabel, input, next, restart              rect
-	play, reveal, feedback, score                 rect
+	play, reveal, report, clear, feedback, score  rect
 	showSegment, showCategory, showGroup          bool
 }
 
@@ -161,10 +165,11 @@ func calculateTrainerLayout(metrics layoutMetrics) trainerLayout {
 		filterWidth += selector.labelWidth + gap + selector.comboWidth
 	}
 	addFilterWidth(metrics.showSegment, metrics.segment)
+	addFilterWidth(true, metrics.review)
 	addFilterWidth(metrics.showCategory, metrics.category)
 	addFilterWidth(metrics.showGroup, metrics.group)
 	inputRowWidth := metrics.inputWidth + gap + metrics.nextWidth + gap + metrics.restartWidth
-	secondaryWidth := metrics.playWidth + gap + metrics.revealWidth
+	secondaryWidth := metrics.playWidth + gap + metrics.revealWidth + gap + metrics.reportWidth + gap + metrics.clearWidth
 	contentWidth := max32(topWidth, filterWidth, metrics.contentTextWidth, metrics.inputLabelWidth,
 		inputRowWidth, secondaryWidth, 720)
 
@@ -191,21 +196,20 @@ func calculateTrainerLayout(metrics layoutMetrics) trainerLayout {
 	placeSelector(metrics.background, &layout.backgroundLabel, &layout.backgroundCombo)
 
 	row := top + controlHeight + gap
-	if metrics.showSegment || metrics.showCategory || metrics.showGroup {
-		top = row
-		x = margin
-		labelTop = top + (controlHeight-lineHeight)/2
-		if metrics.showSegment {
-			placeSelector(metrics.segment, &layout.segmentLabel, &layout.segmentCombo)
-		}
-		if metrics.showCategory {
-			placeSelector(metrics.category, &layout.categoryLabel, &layout.categoryCombo)
-		}
-		if metrics.showGroup {
-			placeSelector(metrics.group, &layout.groupLabel, &layout.groupCombo)
-		}
-		row += controlHeight + gap
+	top = row
+	x = margin
+	labelTop = top + (controlHeight-lineHeight)/2
+	placeSelector(metrics.review, &layout.reviewLabel, &layout.reviewCombo)
+	if metrics.showSegment {
+		placeSelector(metrics.segment, &layout.segmentLabel, &layout.segmentCombo)
 	}
+	if metrics.showCategory {
+		placeSelector(metrics.category, &layout.categoryLabel, &layout.categoryCombo)
+	}
+	if metrics.showGroup {
+		placeSelector(metrics.group, &layout.groupLabel, &layout.groupCombo)
+	}
+	row += controlHeight + gap
 	fullRow := func(height int32) rect {
 		box := rect{margin, row, margin + contentWidth, row + height}
 		row += height + gap
@@ -228,6 +232,8 @@ func calculateTrainerLayout(metrics layoutMetrics) trainerLayout {
 
 	layout.play = rect{margin, row, margin + metrics.playWidth, row + controlHeight}
 	layout.reveal = rect{layout.play.Right + gap, row, layout.play.Right + gap + metrics.revealWidth, row + controlHeight}
+	layout.report = rect{layout.reveal.Right + gap, row, layout.reveal.Right + gap + metrics.reportWidth, row + controlHeight}
+	layout.clear = rect{layout.report.Right + gap, row, layout.report.Right + gap + metrics.clearWidth, row + controlHeight}
 	row += controlHeight + gap
 	layout.feedback = fullRow(lineHeight + 8)
 	layout.score = fullRow(lineHeight)
@@ -390,6 +396,8 @@ func (state *appState) measureLayout() layoutMetrics {
 		"音频播放失败，请检查课程音频文件。",
 		"本轮：已答 9999，正确 9999，正确率 100.0%",
 		"无法保存显示设置；本次显示仍然有效。",
+		"上一题提示：错误音元：主音 M01 高调[i]乐音，目标键 J。",
+		"练习记录已清空；PIME/Rime 正式数据未改动。",
 	}
 	detailLines := int32(1)
 	longestExpected := int32(minimumInputWidth)
@@ -428,7 +436,7 @@ func (state *appState) measureLayout() layoutMetrics {
 			}
 		}
 	}
-	if state.selectedSectionIsSyllablePractice() || state.selectedSectionIsWordPractice() || state.selectedSectionIsSentencePractice() {
+	if state.selectedSectionIsSyllablePractice() || state.selectedSectionIsWordPractice() || state.selectedSectionIsSentencePractice() || state.selectedSectionIsCandidatePractice() {
 		for _, exercise := range state.currentExercises() {
 			stringsToMeasure = append(stringsToMeasure,
 				exercise.Instruction, exercise.Prompt, exercise.Detail,
@@ -456,6 +464,7 @@ func (state *appState) measureLayout() layoutMetrics {
 		section:          measureOption("练习类型：", sectionLabels, 150),
 		font:             measureOption("字号：", fontLabels, 96),
 		background:       measureOption("背景：", backgroundLabels, 112),
+		review:           measureOption("练习范围：", []string{"全部题目", "只练错题", "今日复习"}, 120),
 		segment:          measureOption("音节分段：", []string{"首音", "干音"}, 112),
 		category:         measureOption("韵音类别：", categoryLabels, 128),
 		group:            measureOption("干音调型：", groupLabels, 150),
@@ -466,6 +475,8 @@ func (state *appState) measureLayout() layoutMetrics {
 		restartWidth:     buttonWidth("重新开始"),
 		revealWidth:      buttonWidth("显示答案"),
 		playWidth:        max32(buttonWidth("播放音频"), buttonWidth("暂无音频")),
+		reportWidth:      buttonWidth("学习报告"),
+		clearWidth:       buttonWidth("清空记录"),
 	}
 }
 
@@ -518,6 +529,8 @@ func (state *appState) layoutControls(clientWidth, clientHeight int32) {
 	move(state.ui.fontCombo, layout.fontCombo)
 	move(state.ui.backgroundLabel, layout.backgroundLabel)
 	move(state.ui.backgroundCombo, layout.backgroundCombo)
+	move(state.ui.reviewLabel, layout.reviewLabel)
+	move(state.ui.reviewCombo, layout.reviewCombo)
 	move(state.ui.segmentLabel, layout.segmentLabel)
 	move(state.ui.segmentCombo, layout.segmentCombo)
 	move(state.ui.categoryLabel, layout.categoryLabel)
@@ -547,6 +560,8 @@ func (state *appState) layoutControls(clientWidth, clientHeight int32) {
 	move(state.ui.restart, shiftHorizontal(layout.restart, deltaWidth))
 	move(state.ui.play, layout.play)
 	move(state.ui.reveal, layout.reveal)
+	move(state.ui.report, layout.report)
+	move(state.ui.clear, layout.clear)
 	move(state.ui.feedback, offsetRight(layout.feedback, deltaWidth))
 	score := offsetRight(layout.score, deltaWidth)
 	score.Top += deltaHeight

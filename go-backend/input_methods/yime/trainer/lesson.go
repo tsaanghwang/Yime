@@ -14,7 +14,10 @@ import (
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/syllableinspector"
 )
 
-const SchemaVersion = "1.2"
+const (
+	SchemaVersion       = "1.3"
+	LegacySchemaVersion = "1.2"
+)
 
 const (
 	SectionKeymap              = "keymap"
@@ -25,6 +28,7 @@ const (
 	SectionCommonWords         = "common_words"
 	SectionWordPractice        = "word_practice"
 	SectionSentencePractice    = "sentence_practice"
+	SectionCandidatePractice   = "candidate_practice"
 )
 
 // Lesson is the stable, data-only course contract migrated from the original
@@ -67,6 +71,7 @@ type Item struct {
 // layout/code table, except for a keymap item whose key is itself read from the
 // active layout profile.
 type Exercise struct {
+	ID            string
 	SectionType   string
 	SectionTitle  string
 	Instruction   string
@@ -77,6 +82,8 @@ type Exercise struct {
 	MarkedPinyin  string
 	NumericPinyin string
 	Segments      []Segment
+	AnswerUnits   []AnswerUnit
+	LearningTags  []string
 	AudioPath     string
 	AudioDeclared bool
 }
@@ -90,22 +97,38 @@ type Segment struct {
 	DisplayName       string
 	RepresentativeIPA string
 	Key               string
+	Hand              string
+	Finger            string
+	HomeKey           string
 	AudioPath         string
 }
 
+// AnswerUnit links one physical answer key to its canonical syllable and
+// Yinyuan position. Variable and shorthand modes may omit or merge canonical
+// positions; only keys actually present in the selected mode become units.
+type AnswerUnit struct {
+	ExpectedKey string
+	Syllable    int
+	Position    string
+	YinyuanID   string
+	DisplayName string
+}
+
 type Resolver struct {
-	runtimeDataDir string
-	codeMap        map[string]reverselookup.CodeRecord
-	fullCodeMap    map[string]reverselookup.CodeRecord
-	layout         layoutdesigner.Profile
-	catalog        Catalog
-	groups         GroupCatalog
-	decomposition  map[string]syllableinspector.Row
+	runtimeDataDir         string
+	codeMap                map[string]reverselookup.CodeRecord
+	fullCodeMap            map[string]reverselookup.CodeRecord
+	fullCodePronunciations map[string][]runtimeSyllablePronunciation
+	layout                 layoutdesigner.Profile
+	catalog                Catalog
+	groups                 GroupCatalog
+	curriculum             []CurriculumStage
+	decomposition          map[string]syllableinspector.Row
 }
 
 func dynamicSectionType(sectionType string) bool {
 	switch sectionType {
-	case SectionSyllableComposition, SectionSyllablePractice, SectionWordPractice, SectionSentencePractice:
+	case SectionSyllableComposition, SectionSyllablePractice, SectionWordPractice, SectionSentencePractice, SectionCandidatePractice:
 		return true
 	default:
 		return false
@@ -129,8 +152,8 @@ func Load(path string) (Lesson, error) {
 }
 
 func (lesson Lesson) Validate() error {
-	if lesson.SchemaVersion != SchemaVersion {
-		return fmt.Errorf("不支持课程格式 %q，当前需要 %s", lesson.SchemaVersion, SchemaVersion)
+	if lesson.SchemaVersion != SchemaVersion && lesson.SchemaVersion != LegacySchemaVersion {
+		return fmt.Errorf("不支持课程格式 %q，当前支持 %s 和 %s", lesson.SchemaVersion, LegacySchemaVersion, SchemaVersion)
 	}
 	if strings.TrimSpace(lesson.ID) == "" || strings.TrimSpace(lesson.Title) == "" {
 		return fmt.Errorf("课程必须包含 id 和 title")
@@ -188,6 +211,8 @@ func (lesson Lesson) Validate() error {
 				return fmt.Errorf("%s 的字词练习题目由系统运行库高频部分动态抽取，不应静态填写 items", itemContext)
 			case SectionSentencePractice:
 				return fmt.Errorf("%s 的短句练习题目由系统运行库动态组句数据生成，不应静态填写 items", itemContext)
+			case SectionCandidatePractice:
+				return fmt.Errorf("%s 的候选实战题目由隔离模拟器生成，不应静态填写 items", itemContext)
 			default:
 				return fmt.Errorf("%s 使用未知题型：%s", context, section.Type)
 			}
@@ -220,12 +245,19 @@ func NewResolverWithTrainingData(dataDir, trainingDataDir string) (*Resolver, er
 	if err != nil {
 		return nil, fmt.Errorf("读取音元练习分组: %w", err)
 	}
+	curriculum, err := LoadCurriculum(filepath.Join(trainingDataDir, "trainer", CurriculumFileName))
+	if os.IsNotExist(err) {
+		curriculum = DefaultCurriculum()
+	} else if err != nil {
+		return nil, fmt.Errorf("读取阶段课程配置: %w", err)
+	}
 	inventory, err := syllableinspector.Load(dataDir)
 	if err != nil {
 		return nil, fmt.Errorf("读取标准拼音音节分解: %w", err)
 	}
 	decomposition := make(map[string]syllableinspector.Row, len(inventory.Rows))
 	fullCodeMap := make(map[string]reverselookup.CodeRecord, len(inventory.Rows))
+	fullCodePronunciations := make(map[string][]runtimeSyllablePronunciation, len(inventory.Rows))
 	for _, row := range inventory.Rows {
 		decomposition[row.PinyinTone] = row
 		if row.Status != "ok" {
@@ -239,10 +271,18 @@ func NewResolverWithTrainingData(dataDir, trainingDataDir string) (*Resolver, er
 			return nil, fmt.Errorf("等长音节码 %q 对应不一致的三模式编码", record.Full)
 		}
 		fullCodeMap[record.Full] = record
+		fullCodePronunciations[record.Full] = appendUniqueRuntimePronunciation(
+			fullCodePronunciations[record.Full],
+			runtimeSyllablePronunciation{Numeric: row.PinyinTone, Marked: row.MarkedPinyin},
+		)
+	}
+	for code := range fullCodePronunciations {
+		sortRuntimePronunciations(fullCodePronunciations[code])
 	}
 	return &Resolver{
 		runtimeDataDir: trainingDataDir, codeMap: codeMap, fullCodeMap: fullCodeMap,
-		layout: layout, catalog: catalog, groups: groups, decomposition: decomposition,
+		fullCodePronunciations: fullCodePronunciations,
+		layout:                 layout, catalog: catalog, groups: groups, curriculum: curriculum, decomposition: decomposition,
 	}, nil
 }
 
@@ -265,6 +305,7 @@ func (resolver *Resolver) Resolve(lesson Lesson, mode reverselookup.Mode) ([]Exe
 
 func (resolver *Resolver) resolveItem(lesson Lesson, section Section, item Item, mode reverselookup.Mode) (Exercise, error) {
 	exercise := Exercise{
+		ID:            section.Type + ":" + strings.TrimSpace(item.Prompt),
 		SectionType:   section.Type,
 		SectionTitle:  section.Title,
 		Instruction:   section.Instruction,
@@ -290,7 +331,14 @@ func (resolver *Resolver) resolveItem(lesson Lesson, section Section, item Item,
 		if entry.RepresentativeIPA != "" {
 			exercise.Detail += " · 代表音值 [" + entry.RepresentativeIPA + "]"
 		}
+		finger := fingerForKey(key)
+		exercise.Detail += fmt.Sprintf(" · 指法：%s%s（基准键 %s）", finger.Hand, finger.Finger, finger.HomeKey)
 		exercise.Expected = key
+		exercise.ID = "yinyuan:" + item.YinyuanID
+		exercise.AnswerUnits = []AnswerUnit{{
+			ExpectedKey: key, Position: "音元", YinyuanID: item.YinyuanID, DisplayName: entry.DisplayName,
+		}}
+		exercise.LearningTags = []string{"yinyuan:" + item.YinyuanID}
 		exercise.AnswerLabel = "目标键位"
 		if exercise.AudioPath == "" {
 			exercise.AudioDeclared = exercise.AudioDeclared || strings.TrimSpace(entry.Audio) != ""
@@ -331,6 +379,13 @@ func (resolver *Resolver) resolveItem(lesson Lesson, section Section, item Item,
 			exercise.Detail += "    提示：" + item.Notes
 		}
 		exercise.Expected = code
+		exercise.ID = "word:" + item.Text + ":" + pinyin
+		units, unitErr := resolver.answerUnitsForPinyin(item.Syllables, mode)
+		if unitErr != nil {
+			return Exercise{}, unitErr
+		}
+		exercise.AnswerUnits = units
+		exercise.LearningTags = []string{"word:" + item.Text}
 	}
 	return exercise, nil
 }
@@ -345,6 +400,8 @@ func (resolver *Resolver) resolveSyllableAssociation(exercise *Exercise, item It
 		return err
 	}
 	exercise.MarkedPinyin = row.MarkedPinyin
+	exercise.NumericPinyin = row.PinyinTone
+	exercise.ID = "syllable:" + row.PinyinTone
 	if exercise.Prompt == "" {
 		exercise.Prompt = row.MarkedPinyin
 		if item.Hanzi != "" {
@@ -356,6 +413,11 @@ func (resolver *Resolver) resolveSyllableAssociation(exercise *Exercise, item It
 		return err
 	}
 	exercise.Segments = segments
+	exercise.AnswerUnits, err = resolver.answerUnitsForRow(row, mode, 1)
+	if err != nil {
+		return err
+	}
+	exercise.LearningTags = []string{"syllable:" + row.PinyinTone, "shouyin:" + row.IDs[0]}
 	parts := make([]string, 0, len(segments))
 	notations := make([]string, 0, len(row.IDs))
 	for _, segment := range segments {
@@ -395,6 +457,9 @@ func (resolver *Resolver) segmentsForRow(row syllableinspector.Row) ([]Segment, 
 			DisplayName:       entry.DisplayName,
 			RepresentativeIPA: entry.RepresentativeIPA,
 			Key:               key,
+			Hand:              fingerForKey(key).Hand,
+			Finger:            fingerForKey(key).Finger,
+			HomeKey:           fingerForKey(key).HomeKey,
 			AudioPath:         resolver.catalog.AudioPath(entry),
 		})
 	}

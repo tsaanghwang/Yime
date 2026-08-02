@@ -170,15 +170,17 @@ Use this checklist when prototype dictionary or pinyin data changes.
 4. Import `two_level_full.dict.yaml` only through
    `tools\import-yime-core-lexicon.ps1`, together with its `dictionary.manifest.json`;
    never import variable or shorthand dictionaries independently.
-5. Copy the four verified auxiliary assets together:
+5. Copy the five verified auxiliary assets together:
    `yime_pinyin_codes.tsv`, `yime_syllable_decomposition.tsv`,
-   `pinyin_normalized.json`, and `yime_pua_pinyin.json`.
+   `pinyin_normalized.json`, `yime_pua_pinyin.json`, and
+   `yime_syllable_inventory_manifest.json`.
 6. Confirm `yime_lexicon_manifest.json` and the three generated dictionary hashes, then run the
-   stable Go verification suite. The syllable inventory test must report no runtime-only syllable;
-   declared source-only syllables are allowed.
+   stable Go verification suite. The runtime syllable-set count and SHA-256 must equal the
+   prototype materialization manifest, with no runtime-only syllable; declared canonical-only
+   audit records are allowed.
 7. Run root `Build.cmd` to produce the package. Build does not install it.
 8. Install/reinstall, restart `PIMELauncher` and `server.exe`, redeploy Rime, and compare source,
-   installed, and `%AppData%\PIME\Rime` hashes. A source-only check is not sufficient.
+   installed, and `%AppData%\PIME\Rime` hashes. Checking the source tree alone is not sufficient.
 9. Verify reverse lookup in the candidate window:
    `隐藏编码`, `标准拼音`, `音元拼音`, `键位序列`.
 10. Sanity-check that both pinyin modes change comments only and do not trigger a

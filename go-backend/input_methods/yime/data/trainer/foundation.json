@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.2",
+  "schema_version": "1.3",
   "id": "foundation",
   "title": "Yime 基础过渡练习",
   "description": "从标准拼音音节出发，建立音元序列、当前键位和三种输入方案之间的联想。",
@@ -51,6 +51,13 @@
       "type": "sentence_practice",
       "title": "短句练习",
       "instruction": "每次打开从系统运行库高频部分随机抽取五个可动态组句的短句。",
+      "items": []
+    },
+    {
+      "id": "candidate-practice",
+      "type": "candidate_practice",
+      "title": "候选实战",
+      "instruction": "在完全隔离的模拟状态机中练习连续编码、⇧1 至 ⇧9 选词、翻页和句中分段改选。",
       "items": []
     }
   ]

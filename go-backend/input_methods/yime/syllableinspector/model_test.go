@@ -26,7 +26,7 @@ func TestLoadFilterAndTrace(t *testing.T) {
 	if len(inventory.Rows) != 2 || len(inventory.Categories) != 2 {
 		t.Fatalf("unexpected inventory: %#v", inventory)
 	}
-	if inventory.RuntimeEntries != 1 || inventory.SourceOnly != 1 || inventory.RuntimeOnly != 0 || inventory.Mismatches != 0 {
+	if inventory.RuntimeEntries != 1 || inventory.CanonicalOnly != 1 || inventory.RuntimeOnly != 0 || inventory.Mismatches != 0 {
 		t.Fatalf("unexpected runtime comparison: %#v", inventory)
 	}
 	filtered := inventory.Filter("N12", "zero-initial")
@@ -49,7 +49,7 @@ func TestBundledInventoryIsExhaustiveAndContainsSpecialRules(t *testing.T) {
 	if len(inventory.Rows) < 1700 {
 		t.Fatalf("expected full canonical inventory, got %d rows", len(inventory.Rows))
 	}
-	if inventory.RuntimeEntries+inventory.SourceOnly != len(inventory.Rows) || inventory.RuntimeOnly != 0 || inventory.Mismatches != 0 {
+	if inventory.RuntimeEntries+inventory.CanonicalOnly != len(inventory.Rows) || inventory.RuntimeOnly != 0 || inventory.Mismatches != 0 {
 		t.Fatalf("runtime coverage was hidden or inconsistent: %#v", inventory)
 	}
 	categories := strings.Join(inventory.Categories, " ")

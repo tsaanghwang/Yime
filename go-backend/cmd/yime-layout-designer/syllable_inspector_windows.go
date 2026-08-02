@@ -154,7 +154,7 @@ func (state *inspectorState) refresh() {
 		text, _ := syscall.UTF16PtrFromString(state.inventory.Rows[rowIndex].Summary())
 		sendMessage.Call(uintptr(state.list), lbAddString, 0, uintptr(unsafe.Pointer(text)))
 	}
-	setText(state.count, fmt.Sprintf("显示 %d / 全部 %d\r\n运行时 %d｜仅源侧 %d｜不一致 %d", len(state.filtered), len(state.inventory.Rows), state.inventory.RuntimeEntries, state.inventory.SourceOnly, state.inventory.Mismatches))
+	setText(state.count, fmt.Sprintf("显示 %d / 全部 %d\r\n运行时 %d｜仅 canonical %d｜不一致 %d", len(state.filtered), len(state.inventory.Rows), state.inventory.RuntimeEntries, state.inventory.CanonicalOnly, state.inventory.Mismatches))
 	if len(state.filtered) == 0 {
 		setText(state.trace, "没有符合当前筛选条件的音节。")
 		return

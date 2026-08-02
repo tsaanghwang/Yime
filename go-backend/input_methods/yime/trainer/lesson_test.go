@@ -110,7 +110,7 @@ func TestFoundationUsesOneDynamicEncodingPracticeInsteadOfFourStaticAssociationE
 	}
 }
 
-func TestFoundationDeclaresFivePracticeTypesInRequiredOrder(t *testing.T) {
+func TestFoundationDeclaresSixPracticeTypesInRequiredOrder(t *testing.T) {
 	lesson, err := Load(filepath.Join(repositoryDataDir(t), "trainer", "foundation.json"))
 	if err != nil {
 		t.Fatal(err)
@@ -121,8 +121,9 @@ func TestFoundationDeclaresFivePracticeTypesInRequiredOrder(t *testing.T) {
 		SectionSyllablePractice,
 		SectionWordPractice,
 		SectionSentencePractice,
+		SectionCandidatePractice,
 	}
-	wantTitles := []string{"音元练习", "分段练习", "编码练习", "字词练习", "短句练习"}
+	wantTitles := []string{"音元练习", "分段练习", "编码练习", "字词练习", "短句练习", "候选实战"}
 	if len(lesson.Sections) != len(wantTypes) {
 		t.Fatalf("foundation sections=%d want %d", len(lesson.Sections), len(wantTypes))
 	}
@@ -136,7 +137,7 @@ func TestFoundationDeclaresFivePracticeTypesInRequiredOrder(t *testing.T) {
 	}
 }
 
-func TestSyllablePracticeUsesAll1729EncodedSyllablesGroupedBy24Shouyin(t *testing.T) {
+func TestSyllablePracticeUsesAll1728EncodedSyllablesGroupedBy24Shouyin(t *testing.T) {
 	resolver, err := NewResolver(repositoryDataDir(t))
 	if err != nil {
 		t.Fatal(err)
@@ -203,15 +204,15 @@ func TestSyllablePracticeUsesAll1729EncodedSyllablesGroupedBy24Shouyin(t *testin
 				}
 			}
 		}
-		if total != 1729 || len(seen) != 1729 || len(seenGroups) != 24 {
-			t.Fatalf("mode %s exercises=%d identified=%d want exactly 1729 encoded syllables", mode, total, len(seen))
+		if total != 1728 || len(seen) != 1728 || len(seenGroups) != 24 {
+			t.Fatalf("mode %s exercises=%d identified=%d want exactly 1728 encoded syllables", mode, total, len(seen))
 		}
 		if !n23HasY || !n23HasHui {
 			t.Fatalf("mode %s N23 did not combine y and ɥ surface forms", mode)
 		}
-		for _, sourceOnly := range []string{"guai2", "ra4", "tin4"} {
-			if seen[sourceOnly] {
-				t.Fatalf("mode %s includes source-only syllable %s", mode, sourceOnly)
+		for _, canonicalOnly := range []string{"guai2", "kuai1", "ra4", "tin4"} {
+			if seen[canonicalOnly] {
+				t.Fatalf("mode %s includes canonical-only syllable %s", mode, canonicalOnly)
 			}
 		}
 	}

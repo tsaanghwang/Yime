@@ -1,0 +1,11 @@
+{
+  "format_version": 1,
+  "stages": [
+    {"id":"yinyuan","title":"音元认键","section_types":["keymap"],"required_answers":20,"required_accuracy":0.90,"answer_visible":true},
+    {"id":"segments","title":"首音／干音分段","section_types":["syllable_composition"],"required_answers":20,"required_accuracy":0.90,"answer_visible":true},
+    {"id":"syllables","title":"单音节编码","section_types":["syllable_practice"],"required_answers":30,"required_accuracy":0.90,"answer_visible":false},
+    {"id":"words","title":"连续字词","section_types":["word_practice","common_words"],"required_answers":20,"required_accuracy":0.90,"answer_visible":false},
+    {"id":"sentences","title":"短句连续输入","section_types":["sentence_practice"],"required_answers":15,"required_accuracy":0.90,"answer_visible":false},
+    {"id":"candidates","title":"隔离候选实战","section_types":["candidate_practice"],"required_answers":10,"required_accuracy":0.90,"answer_visible":false}
+  ]
+}

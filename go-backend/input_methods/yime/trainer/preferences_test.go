@@ -31,7 +31,7 @@ func TestTrainerPreferencesDefaultToMediumSoftGray(t *testing.T) {
 
 func TestTrainerPreferencesRoundTripAndNormalizeUnknownValues(t *testing.T) {
 	dir := t.TempDir()
-	want := Preferences{FontSize: FontSizeXLarge, Background: BackgroundWarmBeige}
+	want := Preferences{FontSize: FontSizeXLarge, Background: BackgroundWarmBeige, LastMode: "full", LastSectionID: "encoding-practice", ReviewFilter: ReviewWrong}
 	if err := SavePreferences(dir, want); err != nil {
 		t.Fatal(err)
 	}
@@ -39,7 +39,7 @@ func TestTrainerPreferencesRoundTripAndNormalizeUnknownValues(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if got.Version != PreferencesVersion || got.FontSize != want.FontSize || got.Background != want.Background {
+	if got.Version != PreferencesVersion || got.FontSize != want.FontSize || got.Background != want.Background || got.LastMode != want.LastMode || got.LastSectionID != want.LastSectionID || got.ReviewFilter != want.ReviewFilter {
 		t.Fatalf("round trip=%#v want=%#v", got, want)
 	}
 	updated := Preferences{FontSize: FontSizeLarge, Background: BackgroundGrayBlue}
