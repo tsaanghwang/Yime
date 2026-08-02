@@ -21,9 +21,9 @@ type Row struct {
 }
 
 type Inventory struct {
-	Rows                                                []Row
-	Categories                                          []string
-	RuntimeEntries, SourceOnly, RuntimeOnly, Mismatches int
+	Rows                                                   []Row
+	Categories                                             []string
+	RuntimeEntries, CanonicalOnly, RuntimeOnly, Mismatches int
 }
 
 var fields = []string{
@@ -146,8 +146,8 @@ func (inventory *Inventory) compareRuntime(path string) error {
 		code, exists := runtimeCodes[row.PinyinTone]
 		switch {
 		case !exists:
-			row.Status = "source-only"
-			inventory.SourceOnly++
+			row.Status = "canonical-only"
+			inventory.CanonicalOnly++
 		case code != row.LayoutCode:
 			row.Status = "runtime-code-mismatch: " + code
 			inventory.Mismatches++

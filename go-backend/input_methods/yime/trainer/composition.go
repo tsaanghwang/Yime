@@ -181,22 +181,31 @@ func (resolver *Resolver) ResolveGanyinCompositionGroups() ([]GanyinRhymeGroup, 
 					formCondition = " · 形式条件：与首音相拼用 ong；独立成音节用 ueng，音节拼写为 weng"
 				}
 				var expected strings.Builder
-				for _, id := range candidate.ids {
+				answerUnits := make([]AnswerUnit, 0, len(candidate.ids))
+				positions := []string{"呼音", "主音", "末音"}
+				for positionIndex, id := range candidate.ids {
 					key := resolver.layout.Projection[id]
 					if key == "" {
 						return nil, fmt.Errorf("当前布局中找不到干音音元 %s", id)
 					}
 					expected.WriteString(key)
+					entry, _ := resolver.catalog.Lookup(id)
+					answerUnits = append(answerUnits, AnswerUnit{
+						ExpectedKey: key, Syllable: 1, Position: positions[positionIndex], YinyuanID: id, DisplayName: entry.DisplayName,
+					})
 				}
 				toneGroup.Exercises = append(toneGroup.Exercises, Exercise{
+					ID:           fmt.Sprintf("ganyin:%s:%d:%s", group.ID, tone, key),
 					SectionType:  SectionSyllableComposition,
 					SectionTitle: "分段练习",
 					Instruction:  "根据干音提示，敲入呼音、主音、末音三个音元在当前布局中的物理键。",
 					Prompt:       prompt,
 					Detail: fmt.Sprintf("韵音音质：[%s+%s] · 调型：%s · 音元：%s",
 						pair.main, pair.final, ganyinTonePatterns[tone], strings.Join(candidate.ids[:], " ")) + formCondition,
-					Expected:    expected.String(),
-					AnswerLabel: "目标键位",
+					Expected:     expected.String(),
+					AnswerLabel:  "目标键位",
+					AnswerUnits:  answerUnits,
+					LearningTags: []string{"ganyin:" + group.ID, fmt.Sprintf("tone-pattern:%d", tone)},
 				})
 			}
 			group.ToneGroups = append(group.ToneGroups, toneGroup)

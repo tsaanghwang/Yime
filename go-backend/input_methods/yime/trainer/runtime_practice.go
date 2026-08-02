@@ -21,15 +21,44 @@ const (
 )
 
 type RuntimePracticeItem struct {
+	Text                  string
+	FullCode              string
+	Weight                int
+	Parts                 []RuntimePracticePart
+	NumericPinyin         string
+	MarkedPinyin          string
+	HasSharedCodeReadings bool
+}
+
+type RuntimePracticePart struct {
 	Text     string
 	FullCode string
 	Weight   int
-	Parts    []string
 }
 
 type RuntimePracticeSet struct {
 	WordsBySyllableCount map[int][]RuntimePracticeItem
 	Sentences            []RuntimePracticeItem
+}
+
+type runtimeSyllablePronunciation struct {
+	Numeric string
+	Marked  string
+}
+
+func appendUniqueRuntimePronunciation(values []runtimeSyllablePronunciation, value runtimeSyllablePronunciation) []runtimeSyllablePronunciation {
+	for _, existing := range values {
+		if existing == value {
+			return values
+		}
+	}
+	return append(values, value)
+}
+
+func sortRuntimePronunciations(values []runtimeSyllablePronunciation) {
+	sort.Slice(values, func(i, j int) bool {
+		return values[i].Numeric < values[j].Numeric
+	})
 }
 
 type weightedEntryHeap []systemlexicon.Entry
@@ -128,16 +157,23 @@ func (resolver *Resolver) SelectRuntimePracticeSet(rng *rand.Rand) (RuntimePract
 			return RuntimePracticeSet{}, fmt.Errorf("运行库高频部分只有 %d 个可用的%d音节字词", len(selected), count)
 		}
 		for _, entry := range selected {
-			result.WordsBySyllableCount[count] = append(result.WordsBySyllableCount[count], RuntimePracticeItem{
-				Text: entry.Text, FullCode: entry.Code, Weight: entry.Weight,
-			})
+			item, itemErr := resolver.runtimePracticeItem(entry, nil)
+			if itemErr != nil {
+				return RuntimePracticeSet{}, itemErr
+			}
+			result.WordsBySyllableCount[count] = append(result.WordsBySyllableCount[count], item)
 		}
 	}
 
-	components := map[string]bool{}
+	components := map[string]RuntimePracticePart{}
 	for count := 1; count <= 4; count++ {
 		for _, entry := range entriesDescending(*componentPools[count]) {
-			components[componentKey(entry.Text, entry.Code)] = true
+			key := componentKey(entry.Text, entry.Code)
+			if _, exists := components[key]; !exists {
+				components[key] = RuntimePracticePart{
+					Text: entry.Text, FullCode: strings.Join(strings.Fields(entry.Code), " "), Weight: entry.Weight,
+				}
+			}
 		}
 	}
 	composable := make([]RuntimePracticeItem, 0, 256)
@@ -151,9 +187,11 @@ func (resolver *Resolver) SelectRuntimePracticeSet(rng *rand.Rand) (RuntimePract
 			continue
 		}
 		seenSentence[entry.Text] = true
-		composable = append(composable, RuntimePracticeItem{
-			Text: entry.Text, FullCode: entry.Code, Weight: entry.Weight, Parts: parts,
-		})
+		item, itemErr := resolver.runtimePracticeItem(entry, parts)
+		if itemErr != nil {
+			return RuntimePracticeSet{}, itemErr
+		}
+		composable = append(composable, item)
 	}
 	if len(composable) < practiceItemsPerGroup {
 		return RuntimePracticeSet{}, fmt.Errorf("运行库高频部分只有 %d 个可动态组句的短句", len(composable))
@@ -161,6 +199,43 @@ func (resolver *Resolver) SelectRuntimePracticeSet(rng *rand.Rand) (RuntimePract
 	rng.Shuffle(len(composable), func(i, j int) { composable[i], composable[j] = composable[j], composable[i] })
 	result.Sentences = append(result.Sentences, composable[:practiceItemsPerGroup]...)
 	return result, nil
+}
+
+func (resolver *Resolver) runtimePracticeItem(entry systemlexicon.Entry, parts []RuntimePracticePart) (RuntimePracticeItem, error) {
+	numeric, marked, shared, err := resolver.runtimePronunciation(entry.Code)
+	if err != nil {
+		return RuntimePracticeItem{}, fmt.Errorf("运行库条目 %s: %w", entry.Text, err)
+	}
+	return RuntimePracticeItem{
+		Text: entry.Text, FullCode: strings.Join(strings.Fields(entry.Code), " "), Weight: entry.Weight,
+		Parts: append([]RuntimePracticePart(nil), parts...), NumericPinyin: numeric, MarkedPinyin: marked,
+		HasSharedCodeReadings: shared,
+	}, nil
+}
+
+func (resolver *Resolver) runtimePronunciation(fullCode string) (numeric string, marked string, shared bool, err error) {
+	var numericParts, markedParts []string
+	for _, token := range strings.Fields(fullCode) {
+		readings := resolver.fullCodePronunciations[token]
+		if len(readings) == 0 {
+			return "", "", false, fmt.Errorf("正式音节编码表中找不到等长码 %q 的规范读音", token)
+		}
+		numericOptions := make([]string, 0, len(readings))
+		markedOptions := make([]string, 0, len(readings))
+		for _, reading := range readings {
+			numericOptions = append(numericOptions, reading.Numeric)
+			markedOptions = append(markedOptions, reading.Marked)
+		}
+		if len(readings) > 1 {
+			shared = true
+		}
+		numericParts = append(numericParts, strings.Join(numericOptions, "/"))
+		markedParts = append(markedParts, strings.Join(markedOptions, "/"))
+	}
+	if len(numericParts) == 0 {
+		return "", "", false, fmt.Errorf("正式音节码序列为空")
+	}
+	return strings.Join(numericParts, " "), strings.Join(markedParts, " "), shared, nil
 }
 
 func (resolver *Resolver) runtimeCodeSupported(code string) bool {
@@ -210,14 +285,14 @@ func componentKey(text, code string) string {
 	return text + "\x00" + strings.Join(strings.Fields(code), " ")
 }
 
-func compositionParts(entry systemlexicon.Entry, components map[string]bool) ([]string, bool) {
+func compositionParts(entry systemlexicon.Entry, components map[string]RuntimePracticePart) ([]RuntimePracticePart, bool) {
 	runes := []rune(entry.Text)
 	tokens := strings.Fields(entry.Code)
 	if len(runes) != len(tokens) || len(runes) < 5 {
 		return nil, false
 	}
-	dp := make([][]string, len(runes)+1)
-	dp[0] = []string{}
+	dp := make([][]RuntimePracticePart, len(runes)+1)
+	dp[0] = []RuntimePracticePart{}
 	for end := 1; end <= len(runes); end++ {
 		startAt := end - 4
 		if startAt < 0 {
@@ -229,14 +304,47 @@ func compositionParts(entry systemlexicon.Entry, components map[string]bool) ([]
 			}
 			text := string(runes[start:end])
 			code := strings.Join(tokens[start:end], " ")
-			if !components[componentKey(text, code)] {
+			part, exists := components[componentKey(text, code)]
+			if !exists || part.Weight <= 0 {
 				continue
 			}
-			dp[end] = append(append([]string(nil), dp[start]...), text)
+			dp[end] = append(append([]RuntimePracticePart(nil), dp[start]...), part)
 			break
 		}
 	}
-	return dp[len(runes)], len(dp[len(runes)]) >= 2
+	parts := dp[len(runes)]
+	if len(parts) < 2 || len(parts) > 6 {
+		return nil, false
+	}
+	singleCharacterParts := 0
+	hasMultiSyllablePart := false
+	for _, part := range parts {
+		if len([]rune(part.Text)) >= 2 {
+			hasMultiSyllablePart = true
+		} else {
+			singleCharacterParts++
+		}
+	}
+	if !hasMultiSyllablePart || singleCharacterParts > 2 {
+		return nil, false
+	}
+	return parts, true
+}
+
+func runtimePronunciationDetail(item RuntimePracticeItem) string {
+	detail := "标准拼音：" + item.MarkedPinyin + "（" + item.NumericPinyin + "）"
+	if item.HasSharedCodeReadings {
+		detail += "；斜线两侧为共用同一音节码的规范读音"
+	}
+	return detail
+}
+
+func runtimePartLabels(parts []RuntimePracticePart) []string {
+	labels := make([]string, 0, len(parts))
+	for _, part := range parts {
+		labels = append(labels, part.Text)
+	}
+	return labels
 }
 
 func (resolver *Resolver) ResolveWordPracticeGroups(set RuntimePracticeSet, mode reverselookup.Mode) ([]ExerciseGroup, error) {
@@ -262,11 +370,21 @@ func (resolver *Resolver) ResolveWordPracticeGroups(set RuntimePracticeSet, mode
 			if err != nil {
 				return nil, fmt.Errorf("字词 %s: %w", item.Text, err)
 			}
+			answerUnits, err := resolver.answerUnitsForFullCode(item.FullCode, mode)
+			if err != nil {
+				return nil, fmt.Errorf("字词 %s: %w", item.Text, err)
+			}
 			group.Exercises = append(group.Exercises, Exercise{
+				ID:          "word:" + item.Text + ":" + item.FullCode + ":" + string(mode),
 				SectionType: SectionWordPractice, SectionTitle: "字词练习",
 				Instruction: "根据字词读音连续敲入完整编码，按 Enter 确认。",
-				Prompt:      item.Text, Detail: fmt.Sprintf("%s · %d 个音节 · 本次从系统运行库高频部分随机抽取", definition.title, definition.count),
+				Prompt:      item.Text,
+				Detail: fmt.Sprintf("%s；%s · %d 个音节 · 本次从系统运行库高频部分随机抽取",
+					runtimePronunciationDetail(item), definition.title, definition.count),
 				Expected: expected, AnswerLabel: "完整编码",
+				MarkedPinyin: item.MarkedPinyin, NumericPinyin: item.NumericPinyin,
+				AnswerUnits:  answerUnits,
+				LearningTags: []string{"word:" + item.Text, fmt.Sprintf("word-length:%d", definition.count), "mode:" + string(mode)},
 			})
 		}
 		groups = append(groups, group)
@@ -284,14 +402,49 @@ func (resolver *Resolver) ResolveSentencePractice(set RuntimePracticeSet, mode r
 		if err != nil {
 			return nil, fmt.Errorf("短句 %s: %w", item.Text, err)
 		}
+		answerUnits, err := resolver.answerUnitsForFullCode(item.FullCode, mode)
+		if err != nil {
+			return nil, fmt.Errorf("短句 %s: %w", item.Text, err)
+		}
 		exercises = append(exercises, Exercise{
+			ID:          "sentence:" + item.Text + ":" + item.FullCode + ":" + string(mode),
 			SectionType: SectionSentencePractice, SectionTitle: "短句练习",
 			Instruction: "输入由系统运行库高频部件动态组成的短句完整编码，按 Enter 确认。",
-			Prompt:      item.Text, Detail: "动态组句：" + strings.Join(item.Parts, " + "),
-			Expected: expected, AnswerLabel: "完整编码",
+			Prompt:      item.Text,
+			Detail:      runtimePronunciationDetail(item) + "；动态组句：" + strings.Join(runtimePartLabels(item.Parts), " + "),
+			Expected:    expected, AnswerLabel: "完整编码",
+			MarkedPinyin: item.MarkedPinyin, NumericPinyin: item.NumericPinyin,
+			AnswerUnits:  answerUnits,
+			LearningTags: []string{"sentence", fmt.Sprintf("sentence-length:%d", len(strings.Fields(item.FullCode))), "mode:" + string(mode)},
 		})
 	}
 	return exercises, nil
+}
+
+func (resolver *Resolver) answerUnitsForFullCode(fullCode string, mode reverselookup.Mode) ([]AnswerUnit, error) {
+	var units []AnswerUnit
+	for index, token := range strings.Fields(fullCode) {
+		readings := resolver.fullCodePronunciations[token]
+		if len(readings) == 0 {
+			return nil, fmt.Errorf("正式音节编码表中找不到等长码 %q", token)
+		}
+		row, exists := resolver.decomposition[readings[0].Numeric]
+		if !exists || row.Status != "ok" {
+			return nil, fmt.Errorf("找不到等长码 %q 的正式音节分解", token)
+		}
+		for _, reading := range readings[1:] {
+			aliasRow, aliasExists := resolver.decomposition[reading.Numeric]
+			if !aliasExists || aliasRow.IDs != row.IDs {
+				return nil, fmt.Errorf("共码读音 %s 与 %s 的四音元分解不一致", readings[0].Numeric, reading.Numeric)
+			}
+		}
+		rowUnits, err := resolver.answerUnitsForRow(row, mode, index+1)
+		if err != nil {
+			return nil, err
+		}
+		units = append(units, rowUnits...)
+	}
+	return units, nil
 }
 
 func (resolver *Resolver) convertFullRuntimeCode(fullCode string, mode reverselookup.Mode) (string, error) {

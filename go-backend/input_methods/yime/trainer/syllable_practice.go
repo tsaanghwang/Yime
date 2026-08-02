@@ -7,6 +7,7 @@ import (
 
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/layoutdesigner"
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/reverselookup"
+	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/syllableinspector"
 )
 
 func (resolver *Resolver) ResolveSyllablePracticeGroups(mode reverselookup.Mode) ([]ExerciseGroup, error) {
@@ -15,7 +16,7 @@ func (resolver *Resolver) ResolveSyllablePracticeGroups(mode reverselookup.Mode)
 	}
 	byShouyin := map[string][]Exercise{}
 	for _, row := range resolver.decomposition {
-		if row.Status == "source-only" {
+		if row.Status == "canonical-only" {
 			continue
 		}
 		if row.Status != "ok" {
@@ -45,7 +46,12 @@ func (resolver *Resolver) ResolveSyllablePracticeGroups(mode reverselookup.Mode)
 			row.ShouyinLabel, parts[0],
 			row.GanyinLabel, parts[1], parts[2], parts[3],
 			row.Names[0], row.Names[1], row.Names[2], row.Names[3])
+		answerUnits, err := resolver.answerUnitsForRow(row, mode, 1)
+		if err != nil {
+			return nil, fmt.Errorf("音节 %s: %w", row.PinyinTone, err)
+		}
 		byShouyin[row.IDs[0]] = append(byShouyin[row.IDs[0]], Exercise{
+			ID:            "syllable:" + row.PinyinTone + ":" + string(mode),
 			SectionType:   SectionSyllablePractice,
 			SectionTitle:  "编码练习",
 			Instruction:   "先看首音与干音的两段分析，再敲入所选输入方案的完整音元拼音编码。",
@@ -56,6 +62,8 @@ func (resolver *Resolver) ResolveSyllablePracticeGroups(mode reverselookup.Mode)
 			MarkedPinyin:  row.MarkedPinyin,
 			NumericPinyin: row.PinyinTone,
 			Segments:      segments,
+			AnswerUnits:   answerUnits,
+			LearningTags:  []string{"syllable:" + row.PinyinTone, "shouyin:" + row.IDs[0], "mode:" + string(mode)},
 		})
 	}
 
@@ -91,28 +99,9 @@ func (resolver *Resolver) ResolveSyllablePracticeGroups(mode reverselookup.Mode)
 }
 
 func (resolver *Resolver) projectSyllableIDs(ids [4]string, mode reverselookup.Mode) (string, error) {
-	indices := []int{0}
-	for index := 1; index < len(ids); index++ {
-		if index == 1 || ids[index] != ids[index-1] {
-			indices = append(indices, index)
-		}
-	}
-	if mode == reverselookup.ModeFull {
-		indices = []int{0, 1, 2, 3}
-	} else if mode == reverselookup.ModeShorthand && len(indices) == 4 {
-		entries := make([]Yinyuan, 0, 3)
-		for _, id := range ids[1:] {
-			entry, ok := resolver.catalog.Lookup(id)
-			if !ok {
-				return "", fmt.Errorf("找不到音元 %s", id)
-			}
-			entries = append(entries, entry)
-		}
-		if entries[0].QualityGroup == entries[1].QualityGroup && entries[1].QualityGroup == entries[2].QualityGroup &&
-			((entries[0].ToneGrade == "high" && entries[1].ToneGrade == "mid" && entries[2].ToneGrade == "low") ||
-				(entries[0].ToneGrade == "low" && entries[1].ToneGrade == "mid" && entries[2].ToneGrade == "high")) {
-			indices = []int{0, 1, 3}
-		}
+	indices, err := resolver.projectedSyllableIndices(ids, mode)
+	if err != nil {
+		return "", err
 	}
 	var result strings.Builder
 	for _, index := range indices {
@@ -123,6 +112,70 @@ func (resolver *Resolver) projectSyllableIDs(ids [4]string, mode reverselookup.M
 		result.WriteString(key)
 	}
 	return result.String(), nil
+}
+
+func (resolver *Resolver) projectedSyllableIndices(ids [4]string, mode reverselookup.Mode) ([]int, error) {
+	indices := []int{0}
+	for index := 1; index < len(ids); index++ {
+		if index == 1 || ids[index] != ids[index-1] {
+			indices = append(indices, index)
+		}
+	}
+	if mode == reverselookup.ModeFull {
+		return []int{0, 1, 2, 3}, nil
+	}
+	if mode == reverselookup.ModeShorthand && len(indices) == 4 {
+		entries := make([]Yinyuan, 0, 3)
+		for _, id := range ids[1:] {
+			entry, ok := resolver.catalog.Lookup(id)
+			if !ok {
+				return nil, fmt.Errorf("找不到音元 %s", id)
+			}
+			entries = append(entries, entry)
+		}
+		if entries[0].QualityGroup == entries[1].QualityGroup && entries[1].QualityGroup == entries[2].QualityGroup &&
+			((entries[0].ToneGrade == "high" && entries[1].ToneGrade == "mid" && entries[2].ToneGrade == "low") ||
+				(entries[0].ToneGrade == "low" && entries[1].ToneGrade == "mid" && entries[2].ToneGrade == "high")) {
+			return []int{0, 1, 3}, nil
+		}
+	}
+	return indices, nil
+}
+
+func (resolver *Resolver) answerUnitsForRow(row syllableinspector.Row, mode reverselookup.Mode, syllable int) ([]AnswerUnit, error) {
+	segments, err := resolver.segmentsForRow(row)
+	if err != nil {
+		return nil, err
+	}
+	indices, err := resolver.projectedSyllableIndices(row.IDs, mode)
+	if err != nil {
+		return nil, err
+	}
+	units := make([]AnswerUnit, 0, len(indices))
+	for _, index := range indices {
+		segment := segments[index]
+		units = append(units, AnswerUnit{
+			ExpectedKey: segment.Key, Syllable: syllable, Position: segment.Position,
+			YinyuanID: segment.ID, DisplayName: segment.DisplayName,
+		})
+	}
+	return units, nil
+}
+
+func (resolver *Resolver) answerUnitsForPinyin(syllables []string, mode reverselookup.Mode) ([]AnswerUnit, error) {
+	var units []AnswerUnit
+	for index, pinyin := range syllables {
+		row, exists := resolver.decomposition[strings.TrimSpace(pinyin)]
+		if !exists || row.Status != "ok" {
+			return nil, fmt.Errorf("标准拼音分解表中找不到正式音节 %s", pinyin)
+		}
+		rowUnits, err := resolver.answerUnitsForRow(row, mode, index+1)
+		if err != nil {
+			return nil, err
+		}
+		units = append(units, rowUnits...)
+	}
+	return units, nil
 }
 
 func codeRecordForMode(record reverselookup.CodeRecord, mode reverselookup.Mode) string {

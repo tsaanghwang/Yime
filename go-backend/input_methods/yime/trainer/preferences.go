@@ -41,16 +41,20 @@ func PreferencesDirectoryFromRimeUserDir(rimeUserDir string) string {
 // Preferences contains display-only trainer settings. It is deliberately
 // separate from Rime and PIME learning data.
 type Preferences struct {
-	Version    int    `json:"version"`
-	FontSize   string `json:"font_size"`
-	Background string `json:"background"`
+	Version       int    `json:"version"`
+	FontSize      string `json:"font_size"`
+	Background    string `json:"background"`
+	LastMode      string `json:"last_mode,omitempty"`
+	LastSectionID string `json:"last_section_id,omitempty"`
+	ReviewFilter  string `json:"review_filter,omitempty"`
 }
 
 func DefaultPreferences() Preferences {
 	return Preferences{
-		Version:    PreferencesVersion,
-		FontSize:   FontSizeMedium,
-		Background: BackgroundSoftGray,
+		Version:      PreferencesVersion,
+		FontSize:     FontSizeMedium,
+		Background:   BackgroundSoftGray,
+		ReviewFilter: ReviewAll,
 	}
 }
 
@@ -63,6 +67,17 @@ func NormalizePreferences(value Preferences) Preferences {
 	switch strings.TrimSpace(value.Background) {
 	case BackgroundSoftGray, BackgroundWarmBeige, BackgroundGrayBlue:
 		defaults.Background = strings.TrimSpace(value.Background)
+	}
+	switch strings.TrimSpace(value.LastMode) {
+	case "variable", "full", "shorthand":
+		defaults.LastMode = strings.TrimSpace(value.LastMode)
+	}
+	defaults.LastSectionID = strings.TrimSpace(value.LastSectionID)
+	switch strings.TrimSpace(value.ReviewFilter) {
+	case ReviewWrong, ReviewToday:
+		defaults.ReviewFilter = strings.TrimSpace(value.ReviewFilter)
+	default:
+		defaults.ReviewFilter = ReviewAll
 	}
 	return defaults
 }
