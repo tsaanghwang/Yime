@@ -27,6 +27,8 @@ func TestBuildScriptKeepsGoExecutableHashesStableAndSupportsSigning(t *testing.T
 		`%PACKAGE_RIME_DATA_DIR%\trainer\foundation.json`,
 		`%RIME_DATA_DIR%\trainer\yinyuan_catalog.json`,
 		`%PACKAGE_RIME_DATA_DIR%\trainer\yinyuan_catalog.json`,
+		`%RIME_DATA_DIR%\trainer\yinyuan_groups.json`,
+		`%PACKAGE_RIME_DATA_DIR%\trainer\yinyuan_groups.json`,
 		`YIME_SIGN_CERT_SHA1`,
 		`:sign_go_binaries`,
 	}

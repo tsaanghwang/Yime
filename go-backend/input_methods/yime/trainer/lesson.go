@@ -17,10 +17,14 @@ import (
 const SchemaVersion = "1.2"
 
 const (
-	SectionKeymap            = "keymap"
-	SectionSyllableAssociate = "syllable_association"
-	SectionSyllableContrast  = "syllable_contrast"
-	SectionCommonWords       = "common_words"
+	SectionKeymap              = "keymap"
+	SectionSyllableComposition = "syllable_composition"
+	SectionSyllablePractice    = "syllable_practice"
+	SectionSyllableAssociate   = "syllable_association"
+	SectionSyllableContrast    = "syllable_contrast"
+	SectionCommonWords         = "common_words"
+	SectionWordPractice        = "word_practice"
+	SectionSentencePractice    = "sentence_practice"
 )
 
 // Lesson is the stable, data-only course contract migrated from the original
@@ -71,6 +75,7 @@ type Exercise struct {
 	Expected      string
 	AnswerLabel   string
 	MarkedPinyin  string
+	NumericPinyin string
 	Segments      []Segment
 	AudioPath     string
 	AudioDeclared bool
@@ -89,10 +94,22 @@ type Segment struct {
 }
 
 type Resolver struct {
-	codeMap       map[string]reverselookup.CodeRecord
-	layout        layoutdesigner.Profile
-	catalog       Catalog
-	decomposition map[string]syllableinspector.Row
+	runtimeDataDir string
+	codeMap        map[string]reverselookup.CodeRecord
+	fullCodeMap    map[string]reverselookup.CodeRecord
+	layout         layoutdesigner.Profile
+	catalog        Catalog
+	groups         GroupCatalog
+	decomposition  map[string]syllableinspector.Row
+}
+
+func dynamicSectionType(sectionType string) bool {
+	switch sectionType {
+	case SectionSyllableComposition, SectionSyllablePractice, SectionWordPractice, SectionSentencePractice:
+		return true
+	default:
+		return false
+	}
 }
 
 func Load(path string) (Lesson, error) {
@@ -131,8 +148,11 @@ func (lesson Lesson) Validate() error {
 			return fmt.Errorf("分段 id 重复：%s", section.ID)
 		}
 		sectionIDs[section.ID] = true
-		if len(section.Items) == 0 {
+		if len(section.Items) == 0 && !dynamicSectionType(section.Type) {
 			return fmt.Errorf("%s 必须至少包含一道题", context)
+		}
+		if dynamicSectionType(section.Type) && len(section.Items) == 0 {
+			continue
 		}
 		for itemIndex, item := range section.Items {
 			itemContext := fmt.Sprintf("%s第 %d 题", context, itemIndex+1)
@@ -160,6 +180,14 @@ func (lesson Lesson) Validate() error {
 						return fmt.Errorf("%s 包含无效数字标调拼音：%s", itemContext, syllable)
 					}
 				}
+			case SectionSyllableComposition:
+				return fmt.Errorf("%s 的音节构成题目由当前音节分解表动态生成，不应静态填写 items", itemContext)
+			case SectionSyllablePractice:
+				return fmt.Errorf("%s 的编码练习题目由当前音节编码对照表动态生成，不应静态填写 items", itemContext)
+			case SectionWordPractice:
+				return fmt.Errorf("%s 的字词练习题目由系统运行库高频部分动态抽取，不应静态填写 items", itemContext)
+			case SectionSentencePractice:
+				return fmt.Errorf("%s 的短句练习题目由系统运行库动态组句数据生成，不应静态填写 items", itemContext)
 			default:
 				return fmt.Errorf("%s 使用未知题型：%s", context, section.Type)
 			}
@@ -169,6 +197,13 @@ func (lesson Lesson) Validate() error {
 }
 
 func NewResolver(dataDir string) (*Resolver, error) {
+	return NewResolverWithTrainingData(dataDir, dataDir)
+}
+
+// NewResolverWithTrainingData keeps active generated layout/code data separate
+// from read-only teaching metadata. A user layout override contains the former
+// but intentionally does not need to duplicate trainer catalogs and groups.
+func NewResolverWithTrainingData(dataDir, trainingDataDir string) (*Resolver, error) {
 	codeMap, err := reverselookup.LoadSharedCodeMap(dataDir)
 	if err != nil {
 		return nil, err
@@ -177,19 +212,38 @@ func NewResolver(dataDir string) (*Resolver, error) {
 	if err != nil {
 		return nil, fmt.Errorf("读取当前音元布局: %w", err)
 	}
-	catalog, err := LoadCatalog(filepath.Join(dataDir, "trainer", CatalogFileName))
+	catalog, err := LoadCatalog(filepath.Join(trainingDataDir, "trainer", CatalogFileName))
 	if err != nil {
 		return nil, fmt.Errorf("读取音元教学语义目录: %w", err)
+	}
+	groups, err := LoadGroupCatalog(filepath.Join(trainingDataDir, "trainer", GroupCatalogFileName), catalog)
+	if err != nil {
+		return nil, fmt.Errorf("读取音元练习分组: %w", err)
 	}
 	inventory, err := syllableinspector.Load(dataDir)
 	if err != nil {
 		return nil, fmt.Errorf("读取标准拼音音节分解: %w", err)
 	}
 	decomposition := make(map[string]syllableinspector.Row, len(inventory.Rows))
+	fullCodeMap := make(map[string]reverselookup.CodeRecord, len(inventory.Rows))
 	for _, row := range inventory.Rows {
 		decomposition[row.PinyinTone] = row
+		if row.Status != "ok" {
+			continue
+		}
+		record, exists := codeMap[row.PinyinTone]
+		if !exists {
+			return nil, fmt.Errorf("标准拼音编码表中找不到 %s", row.PinyinTone)
+		}
+		if previous, exists := fullCodeMap[record.Full]; exists && previous != record {
+			return nil, fmt.Errorf("等长音节码 %q 对应不一致的三模式编码", record.Full)
+		}
+		fullCodeMap[record.Full] = record
 	}
-	return &Resolver{codeMap: codeMap, layout: layout, catalog: catalog, decomposition: decomposition}, nil
+	return &Resolver{
+		runtimeDataDir: trainingDataDir, codeMap: codeMap, fullCodeMap: fullCodeMap,
+		layout: layout, catalog: catalog, groups: groups, decomposition: decomposition,
+	}, nil
 }
 
 func (resolver *Resolver) Resolve(lesson Lesson, mode reverselookup.Mode) ([]Exercise, error) {
@@ -297,32 +351,18 @@ func (resolver *Resolver) resolveSyllableAssociation(exercise *Exercise, item It
 			exercise.Prompt += "（" + item.Hanzi + "）"
 		}
 	}
-	positions := []string{"首音", "呼音", "主音", "末音"}
-	parts := make([]string, 0, len(row.IDs))
+	segments, err := resolver.segmentsForRow(row)
+	if err != nil {
+		return err
+	}
+	exercise.Segments = segments
+	parts := make([]string, 0, len(segments))
 	notations := make([]string, 0, len(row.IDs))
-	for index, id := range row.IDs {
-		entry, exists := resolver.catalog.Lookup(id)
-		if !exists {
-			return fmt.Errorf("音元语义目录中找不到 %s", id)
-		}
-		key := resolver.layout.Projection[id]
-		if key == "" {
-			return fmt.Errorf("当前布局中找不到音元 %s", id)
-		}
-		segment := Segment{
-			Position:          positions[index],
-			ID:                id,
-			Notation:          row.Names[index],
-			DisplayName:       entry.DisplayName,
-			RepresentativeIPA: entry.RepresentativeIPA,
-			Key:               key,
-			AudioPath:         resolver.catalog.AudioPath(entry),
-		}
-		exercise.Segments = append(exercise.Segments, segment)
-		notations = append(notations, row.Names[index])
-		label := positions[index] + " " + id + " " + entry.DisplayName
-		if entry.RepresentativeIPA != "" {
-			label += " [" + entry.RepresentativeIPA + "]"
+	for _, segment := range segments {
+		notations = append(notations, segment.Notation)
+		label := segment.Position + " " + segment.ID + " " + segment.DisplayName
+		if segment.RepresentativeIPA != "" {
+			label += " [" + segment.RepresentativeIPA + "]"
 		}
 		parts = append(parts, label)
 	}
@@ -334,6 +374,31 @@ func (resolver *Resolver) resolveSyllableAssociation(exercise *Exercise, item It
 	exercise.Detail += "\r\n结构分解：" + strings.Join(parts, "  →  ")
 	exercise.Expected = code
 	return nil
+}
+
+func (resolver *Resolver) segmentsForRow(row syllableinspector.Row) ([]Segment, error) {
+	positions := []string{"首音", "呼音", "主音", "末音"}
+	segments := make([]Segment, 0, len(row.IDs))
+	for index, id := range row.IDs {
+		entry, exists := resolver.catalog.Lookup(id)
+		if !exists {
+			return nil, fmt.Errorf("音元语义目录中找不到 %s", id)
+		}
+		key := resolver.layout.Projection[id]
+		if key == "" {
+			return nil, fmt.Errorf("当前布局中找不到音元 %s", id)
+		}
+		segments = append(segments, Segment{
+			Position:          positions[index],
+			ID:                id,
+			Notation:          row.Names[index],
+			DisplayName:       entry.DisplayName,
+			RepresentativeIPA: entry.RepresentativeIPA,
+			Key:               key,
+			AudioPath:         resolver.catalog.AudioPath(entry),
+		})
+	}
+	return segments, nil
 }
 
 func Evaluate(input, expected string) bool {

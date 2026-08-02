@@ -103,6 +103,10 @@ if not exist "%RIME_DATA_DIR%\trainer\yinyuan_catalog.json" (
     echo [ERROR] Missing Yime trainer Yinyuan catalog: "%RIME_DATA_DIR%\trainer\yinyuan_catalog.json"
     exit /b 1
 )
+if not exist "%RIME_DATA_DIR%\trainer\yinyuan_groups.json" (
+    echo [ERROR] Missing Yime trainer group catalog: "%RIME_DATA_DIR%\trainer\yinyuan_groups.json"
+    exit /b 1
+)
 
 powershell -NoProfile -ExecutionPolicy Bypass -File "%PIME_ROOT%\tools\verify-rime-runtime.ps1" -RuntimeDir "%RIME_DIR%" -LockFile "%RIME_RUNTIME_LOCK%"
 if errorlevel 1 (
@@ -575,6 +579,10 @@ if not exist "%PACKAGE_RIME_DATA_DIR%\trainer\foundation.json" (
 )
 if not exist "%PACKAGE_RIME_DATA_DIR%\trainer\yinyuan_catalog.json" (
     echo [ERROR] Packaged Yime trainer Yinyuan catalog is missing: trainer\yinyuan_catalog.json
+    exit /b 1
+)
+if not exist "%PACKAGE_RIME_DATA_DIR%\trainer\yinyuan_groups.json" (
+    echo [ERROR] Packaged Yime trainer group catalog is missing: trainer\yinyuan_groups.json
     exit /b 1
 )
 

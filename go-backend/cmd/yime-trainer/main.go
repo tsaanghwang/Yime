@@ -5,11 +5,13 @@ package main
 import (
 	"flag"
 	"fmt"
+	"math/rand"
 	"os"
 	"path/filepath"
 	"runtime"
 	"strings"
 	"syscall"
+	"time"
 	"unsafe"
 
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/layoutdesigner"
@@ -29,19 +31,26 @@ const (
 
 	cbsDropdownlist = 0x0003
 	cbAddstring     = 0x0143
+	cbResetcontent  = 0x014B
 	cbSetcursel     = 0x014E
 	cbGetcursel     = 0x0147
 	cbSelchange     = 1
 	emSetlimittext  = 0x00C5
+	wmKeyDown       = 0x0100
+	vkReturn        = 0x0D
 
-	idModeCombo    = 101
-	idSectionCombo = 102
-	idInputEdit    = 103
-	idCheckButton  = 104
-	idNextButton   = 105
-	idRestart      = 106
-	idRevealButton = 107
-	idPlayButton   = 108
+	idModeCombo       = 101
+	idSectionCombo    = 102
+	idInputEdit       = 103
+	idNextButton      = 105
+	idRestart         = 106
+	idRevealButton    = 107
+	idPlayButton      = 108
+	idFontCombo       = 109
+	idBackgroundCombo = 110
+	idCategoryCombo   = 111
+	idGroupCombo      = 112
+	idSegmentCombo    = 113
 
 	bnClicked = 0
 )
@@ -117,29 +126,71 @@ type modeOption struct {
 }
 
 type controls struct {
-	modeLabel, modeCombo       syscall.Handle
-	sectionLabel, sectionCombo syscall.Handle
-	progress, instruction      syscall.Handle
-	prompt, detail, target     syscall.Handle
-	inputLabel, input          syscall.Handle
-	check, next, restart       syscall.Handle
-	reveal, play               syscall.Handle
-	feedback, score            syscall.Handle
+	modeLabel, modeCombo             syscall.Handle
+	sectionLabel, sectionCombo       syscall.Handle
+	fontLabel, fontCombo             syscall.Handle
+	backgroundLabel, backgroundCombo syscall.Handle
+	segmentLabel, segmentCombo       syscall.Handle
+	categoryLabel, categoryCombo     syscall.Handle
+	groupLabel, groupCombo           syscall.Handle
+	progress, instruction            syscall.Handle
+	prompt, detail, target           syscall.Handle
+	inputLabel, input                syscall.Handle
+	next, restart                    syscall.Handle
+	reveal, play                     syscall.Handle
+	feedback, score                  syscall.Handle
+}
+
+func (value controls) all() []syscall.Handle {
+	return []syscall.Handle{
+		value.modeLabel, value.modeCombo, value.sectionLabel, value.sectionCombo,
+		value.fontLabel, value.fontCombo, value.backgroundLabel, value.backgroundCombo,
+		value.segmentLabel, value.segmentCombo,
+		value.categoryLabel, value.categoryCombo, value.groupLabel, value.groupCombo,
+		value.progress, value.instruction, value.prompt, value.detail, value.target,
+		value.inputLabel, value.input, value.next, value.restart,
+		value.reveal, value.play, value.feedback, value.score,
+	}
 }
 
 type appState struct {
-	lesson           trainer.Lesson
-	resolver         *trainer.Resolver
-	mode             reverselookup.Mode
-	modeOptions      []modeOption
-	sectionExercises [][]trainer.Exercise
-	sectionIndex     int
-	itemIndex        int
-	attempted        int
-	correct          int
-	mainHWND         syscall.Handle
-	ui               controls
-	answerRevealed   bool
+	lesson                       trainer.Lesson
+	resolver                     *trainer.Resolver
+	mode                         reverselookup.Mode
+	modeOptions                  []modeOption
+	sectionExercises             [][]trainer.Exercise
+	keymapGroups                 []trainer.ExerciseGroup
+	shouyinGroups                []trainer.ExerciseGroup
+	ganyinGroups                 []trainer.GanyinRhymeGroup
+	syllableGroups               []trainer.ExerciseGroup
+	runtimePractice              trainer.RuntimePracticeSet
+	runtimePracticeReady         bool
+	wordGroups                   []trainer.ExerciseGroup
+	wordGroupIndex               int
+	sentenceExercises            []trainer.Exercise
+	groupCategories              []trainer.GroupCategory
+	visibleGroupIDs              []int
+	categoryIndex                int
+	groupIndex                   int
+	compositionSegmentIndex      int
+	compositionShouyinGroupIndex int
+	compositionRhymeIndex        int
+	compositionToneIndex         int
+	syllableGroupIndex           int
+	sectionIndex                 int
+	itemIndex                    int
+	attempted                    int
+	correct                      int
+	mainHWND                     syscall.Handle
+	ui                           controls
+	answerRevealed               bool
+	preferencesDir               string
+	preferences                  trainer.Preferences
+	displayFont                  syscall.Handle
+	lineHeight                   int32
+	backgroundBrush              syscall.Handle
+	backgroundColor              uint32
+	minimumLayout                trainerLayout
 }
 
 func main() {
@@ -167,20 +218,36 @@ func main() {
 		showError("无法加载练习课程：" + err.Error())
 		os.Exit(1)
 	}
-	resolver, err := trainer.NewResolver(effectiveDir)
+	resolver, err := trainer.NewResolverWithTrainingData(effectiveDir, strings.TrimSpace(*sharedDir))
 	if err != nil {
 		showError("无法读取当前 Yime 编码：" + err.Error())
 		os.Exit(1)
 	}
+	preferencesDir := trainer.PreferencesDirectoryFromRimeUserDir(strings.TrimSpace(*userDir))
+	preferences, err := trainer.LoadPreferences(preferencesDir)
+	if err != nil {
+		preferences = trainer.DefaultPreferences()
+	}
 	state := &appState{
-		lesson:   lesson,
-		resolver: resolver,
-		mode:     normalizedMode(*mode),
+		lesson:         lesson,
+		resolver:       resolver,
+		mode:           normalizedMode(*mode),
+		preferencesDir: preferencesDir,
+		preferences:    preferences,
 		modeOptions: []modeOption{
 			{label: "变长", value: reverselookup.ModeVariable},
 			{label: "等长", value: reverselookup.ModeFull},
 			{label: "省键", value: reverselookup.ModeShorthand},
 		},
+	}
+	if lessonNeedsRuntimePractice(lesson) {
+		practice, err := resolver.SelectRuntimePracticeSet(rand.New(rand.NewSource(time.Now().UnixNano())))
+		if err != nil {
+			showError("无法从系统运行库准备随机练习：" + err.Error())
+			os.Exit(1)
+		}
+		state.runtimePractice = practice
+		state.runtimePracticeReady = true
 	}
 	if err := state.resolveExercises(); err != nil {
 		showError(err.Error())
@@ -190,6 +257,15 @@ func main() {
 		showError(err.Error())
 		os.Exit(1)
 	}
+}
+
+func lessonNeedsRuntimePractice(lesson trainer.Lesson) bool {
+	for _, section := range lesson.Sections {
+		if section.Type == trainer.SectionWordPractice || section.Type == trainer.SectionSentencePractice {
+			return true
+		}
+	}
+	return false
 }
 
 func normalizedMode(value string) reverselookup.Mode {
@@ -217,6 +293,48 @@ func (state *appState) resolveExercises() error {
 		}
 		state.sectionExercises[index] = append([]trainer.Exercise(nil), all[offset:offset+count]...)
 		offset += count
+	}
+	groups, err := state.resolver.ResolveKeymapGroups()
+	if err != nil {
+		return err
+	}
+	state.keymapGroups = groups
+	shouyinGroups, err := state.resolver.ResolveShouyinCompositionGroups()
+	if err != nil {
+		return err
+	}
+	state.shouyinGroups = shouyinGroups
+	ganyinGroups, err := state.resolver.ResolveGanyinCompositionGroups()
+	if err != nil {
+		return err
+	}
+	state.ganyinGroups = ganyinGroups
+	syllableGroups, err := state.resolver.ResolveSyllablePracticeGroups(state.mode)
+	if err != nil {
+		return err
+	}
+	state.syllableGroups = syllableGroups
+	if state.runtimePracticeReady {
+		wordGroups, err := state.resolver.ResolveWordPracticeGroups(state.runtimePractice, state.mode)
+		if err != nil {
+			return err
+		}
+		state.wordGroups = wordGroups
+		sentenceExercises, err := state.resolver.ResolveSentencePractice(state.runtimePractice, state.mode)
+		if err != nil {
+			return err
+		}
+		state.sentenceExercises = sentenceExercises
+	}
+	state.groupCategories = state.resolver.KeymapGroupCategories()
+	if state.groupIndex < 0 || state.groupIndex >= len(state.keymapGroups) {
+		state.groupIndex = 0
+	}
+	if state.syllableGroupIndex < 0 || state.syllableGroupIndex >= len(state.syllableGroups) {
+		state.syllableGroupIndex = 0
+	}
+	if state.wordGroupIndex < 0 || state.wordGroupIndex >= len(state.wordGroups) {
+		state.wordGroupIndex = 0
 	}
 	return nil
 }
@@ -272,9 +390,11 @@ func runApp(state *appState) error {
 	}
 	state.mainHWND = syscall.Handle(hwnd)
 	state.createControls()
-	state.layout(clientW, clientH)
+	state.applySelectedFont()
+	state.applySelectedBackground()
 	state.populateCombos()
 	state.refreshExercise()
+	state.resizeToContent()
 	win32ui.PresentMainWindowAfterLaunch(state.mainHWND)
 
 	var message winMsg
@@ -282,6 +402,10 @@ func runApp(state *appState) error {
 		ret, _, _ := procGetMessageW.Call(uintptr(unsafe.Pointer(&message)), 0, 0, 0)
 		if int32(ret) <= 0 {
 			break
+		}
+		if message.Hwnd == state.ui.input && message.Message == wmKeyDown && message.WParam == vkReturn {
+			state.submitAndAdvance()
+			continue
 		}
 		isDialog, _, _ := procIsDialogMessageW.Call(uintptr(state.mainHWND), uintptr(unsafe.Pointer(&message)))
 		if isDialog != 0 {
@@ -294,24 +418,35 @@ func runApp(state *appState) error {
 }
 
 func (state *appState) createControls() {
-	state.ui.modeLabel = createControl("STATIC", "输入方案：", wsChild|wsVisible, 0, state.mainHWND, 0)
+	leftLabelStyle := int32(wsChild | wsVisible | ssLeftNoWordWrap | ssNoPrefix)
+	centerLabelStyle := int32(wsChild | wsVisible | ssCenter | ssCenterImage | ssNoPrefix)
+	state.ui.modeLabel = createControl("STATIC", "输入方案：", leftLabelStyle, 0, state.mainHWND, 0)
 	state.ui.modeCombo = createControl("COMBOBOX", "", wsChild|wsVisible|wsTabstop|cbsDropdownlist, 0, state.mainHWND, idModeCombo)
-	state.ui.sectionLabel = createControl("STATIC", "练习类型：", wsChild|wsVisible, 0, state.mainHWND, 0)
+	state.ui.sectionLabel = createControl("STATIC", "练习类型：", leftLabelStyle, 0, state.mainHWND, 0)
 	state.ui.sectionCombo = createControl("COMBOBOX", "", wsChild|wsVisible|wsTabstop|cbsDropdownlist, 0, state.mainHWND, idSectionCombo)
-	state.ui.progress = createControl("STATIC", "", wsChild|wsVisible, 0, state.mainHWND, 0)
-	state.ui.instruction = createControl("STATIC", "", wsChild|wsVisible, 0, state.mainHWND, 0)
-	state.ui.prompt = createControl("STATIC", "", wsChild|wsVisible|0x00000001, 0, state.mainHWND, 0)
-	state.ui.detail = createControl("STATIC", "", wsChild|wsVisible|0x00000001, 0, state.mainHWND, 0)
-	state.ui.target = createControl("STATIC", "", wsChild|wsVisible|0x00000001, 0, state.mainHWND, 0)
-	state.ui.inputLabel = createControl("STATIC", "请按目标键位输入（此框已关闭输入法）：", wsChild|wsVisible, 0, state.mainHWND, 0)
+	state.ui.fontLabel = createControl("STATIC", "字号：", leftLabelStyle, 0, state.mainHWND, 0)
+	state.ui.fontCombo = createControl("COMBOBOX", "", wsChild|wsVisible|wsTabstop|cbsDropdownlist, 0, state.mainHWND, idFontCombo)
+	state.ui.backgroundLabel = createControl("STATIC", "背景：", leftLabelStyle, 0, state.mainHWND, 0)
+	state.ui.backgroundCombo = createControl("COMBOBOX", "", wsChild|wsVisible|wsTabstop|cbsDropdownlist, 0, state.mainHWND, idBackgroundCombo)
+	state.ui.segmentLabel = createControl("STATIC", "音节分段：", leftLabelStyle, 0, state.mainHWND, 0)
+	state.ui.segmentCombo = createControl("COMBOBOX", "", wsChild|wsVisible|wsTabstop|cbsDropdownlist, 0, state.mainHWND, idSegmentCombo)
+	state.ui.categoryLabel = createControl("STATIC", "音元类别：", leftLabelStyle, 0, state.mainHWND, 0)
+	state.ui.categoryCombo = createControl("COMBOBOX", "", wsChild|wsVisible|wsTabstop|cbsDropdownlist, 0, state.mainHWND, idCategoryCombo)
+	state.ui.groupLabel = createControl("STATIC", "分组：", leftLabelStyle, 0, state.mainHWND, 0)
+	state.ui.groupCombo = createControl("COMBOBOX", "", wsChild|wsVisible|wsTabstop|cbsDropdownlist, 0, state.mainHWND, idGroupCombo)
+	state.ui.progress = createControl("STATIC", "", leftLabelStyle, 0, state.mainHWND, 0)
+	state.ui.instruction = createControl("STATIC", "", leftLabelStyle, 0, state.mainHWND, 0)
+	state.ui.prompt = createControl("STATIC", "", centerLabelStyle, 0, state.mainHWND, 0)
+	state.ui.detail = createControl("STATIC", "", wsChild|wsVisible|ssCenter|ssNoPrefix, 0, state.mainHWND, 0)
+	state.ui.target = createControl("STATIC", "", centerLabelStyle, 0, state.mainHWND, 0)
+	state.ui.inputLabel = createControl("STATIC", "请按目标键位输入，按 Enter 确认（此框已关闭输入法）：", leftLabelStyle, 0, state.mainHWND, 0)
 	state.ui.input = createControl("EDIT", "", wsChild|wsVisible|wsTabstop|0x0080, wsExClientedge, state.mainHWND, idInputEdit)
-	state.ui.check = createControl("BUTTON", "检查", wsChild|wsVisible|wsTabstop|0x00000001, 0, state.mainHWND, idCheckButton)
-	state.ui.next = createControl("BUTTON", "下一题", wsChild|wsVisible|wsTabstop, 0, state.mainHWND, idNextButton)
+	state.ui.next = createControl("BUTTON", "跳过", wsChild|wsVisible|wsTabstop, 0, state.mainHWND, idNextButton)
 	state.ui.restart = createControl("BUTTON", "重新开始", wsChild|wsVisible|wsTabstop, 0, state.mainHWND, idRestart)
 	state.ui.reveal = createControl("BUTTON", "显示答案", wsChild|wsVisible|wsTabstop, 0, state.mainHWND, idRevealButton)
 	state.ui.play = createControl("BUTTON", "暂无音频", wsChild|wsVisible|wsTabstop, 0, state.mainHWND, idPlayButton)
-	state.ui.feedback = createControl("STATIC", "", wsChild|wsVisible|0x00000001, 0, state.mainHWND, 0)
-	state.ui.score = createControl("STATIC", "", wsChild|wsVisible, 0, state.mainHWND, 0)
+	state.ui.feedback = createControl("STATIC", "", centerLabelStyle, 0, state.mainHWND, 0)
+	state.ui.score = createControl("STATIC", "", leftLabelStyle, 0, state.mainHWND, 0)
 	procSendMessageW.Call(uintptr(state.ui.input), emSetlimittext, 256, 0)
 	// The exercise field must receive physical key text instead of starting a
 	// PIME composition. This affects only this child control and never changes
@@ -330,13 +465,92 @@ func (state *appState) populateCombos() {
 		addComboString(state.ui.sectionCombo, section.Title)
 	}
 	procSendMessageW.Call(uintptr(state.ui.sectionCombo), cbSetcursel, 0, 0)
+	for index, option := range trainerFontOptions {
+		addComboString(state.ui.fontCombo, option.label)
+		if option.value == state.preferences.FontSize {
+			procSendMessageW.Call(uintptr(state.ui.fontCombo), cbSetcursel, uintptr(index), 0)
+		}
+	}
+	for index, option := range trainerBackgroundOptions {
+		addComboString(state.ui.backgroundCombo, option.label)
+		if option.value == state.preferences.Background {
+			procSendMessageW.Call(uintptr(state.ui.backgroundCombo), cbSetcursel, uintptr(index), 0)
+		}
+	}
+	state.rebuildExerciseFilters()
+}
+
+func (state *appState) selectedSectionIsKeymap() bool {
+	return state.sectionIndex >= 0 && state.sectionIndex < len(state.lesson.Sections) &&
+		state.lesson.Sections[state.sectionIndex].Type == trainer.SectionKeymap
+}
+
+func (state *appState) selectedSectionIsComposition() bool {
+	return state.sectionIndex >= 0 && state.sectionIndex < len(state.lesson.Sections) &&
+		state.lesson.Sections[state.sectionIndex].Type == trainer.SectionSyllableComposition
+}
+
+func (state *appState) selectedSectionIsSyllablePractice() bool {
+	return state.sectionIndex >= 0 && state.sectionIndex < len(state.lesson.Sections) &&
+		state.lesson.Sections[state.sectionIndex].Type == trainer.SectionSyllablePractice
+}
+
+func (state *appState) selectedSectionIsWordPractice() bool {
+	return state.sectionIndex >= 0 && state.sectionIndex < len(state.lesson.Sections) &&
+		state.lesson.Sections[state.sectionIndex].Type == trainer.SectionWordPractice
+}
+
+func (state *appState) selectedSectionIsSentencePractice() bool {
+	return state.sectionIndex >= 0 && state.sectionIndex < len(state.lesson.Sections) &&
+		state.lesson.Sections[state.sectionIndex].Type == trainer.SectionSentencePractice
+}
+
+func (state *appState) currentExercises() []trainer.Exercise {
+	if state.selectedSectionIsWordPractice() {
+		if state.wordGroupIndex < 0 || state.wordGroupIndex >= len(state.wordGroups) {
+			return nil
+		}
+		return state.wordGroups[state.wordGroupIndex].Exercises
+	}
+	if state.selectedSectionIsSentencePractice() {
+		return state.sentenceExercises
+	}
+	if state.selectedSectionIsSyllablePractice() {
+		if state.syllableGroupIndex < 0 || state.syllableGroupIndex >= len(state.syllableGroups) {
+			return nil
+		}
+		return state.syllableGroups[state.syllableGroupIndex].Exercises
+	}
+	if state.selectedSectionIsKeymap() {
+		if state.groupIndex < 0 || state.groupIndex >= len(state.keymapGroups) {
+			return nil
+		}
+		return state.keymapGroups[state.groupIndex].Exercises
+	}
+	if state.selectedSectionIsComposition() {
+		if state.compositionSegmentIndex == 0 {
+			if state.compositionShouyinGroupIndex < 0 || state.compositionShouyinGroupIndex >= len(state.shouyinGroups) {
+				return nil
+			}
+			return state.shouyinGroups[state.compositionShouyinGroupIndex].Exercises
+		}
+		if state.compositionRhymeIndex < 0 || state.compositionRhymeIndex >= len(state.ganyinGroups) {
+			return nil
+		}
+		toneGroups := state.ganyinGroups[state.compositionRhymeIndex].ToneGroups
+		if state.compositionToneIndex < 0 || state.compositionToneIndex >= len(toneGroups) {
+			return nil
+		}
+		return toneGroups[state.compositionToneIndex].Exercises
+	}
+	if state.sectionIndex < 0 || state.sectionIndex >= len(state.sectionExercises) {
+		return nil
+	}
+	return state.sectionExercises[state.sectionIndex]
 }
 
 func (state *appState) currentExercise() (trainer.Exercise, bool) {
-	if state.sectionIndex < 0 || state.sectionIndex >= len(state.sectionExercises) {
-		return trainer.Exercise{}, false
-	}
-	items := state.sectionExercises[state.sectionIndex]
+	items := state.currentExercises()
 	if state.itemIndex < 0 || state.itemIndex >= len(items) {
 		return trainer.Exercise{}, false
 	}
@@ -349,14 +563,44 @@ func (state *appState) refreshExercise() {
 		setText(state.ui.prompt, "课程中没有可用题目")
 		return
 	}
-	total := len(state.sectionExercises[state.sectionIndex])
-	setText(state.ui.progress, fmt.Sprintf("%s    第 %d / %d 题", state.lesson.Title, state.itemIndex+1, total))
+	total := len(state.currentExercises())
+	if state.selectedSectionIsKeymap() && state.groupIndex >= 0 && state.groupIndex < len(state.keymapGroups) {
+		group := state.keymapGroups[state.groupIndex]
+		setText(state.ui.progress, fmt.Sprintf("音元练习 · %s · %s    第 %d / %d 音",
+			state.categoryTitle(group.Category), group.Title, state.itemIndex+1, total))
+	} else if state.selectedSectionIsSyllablePractice() && state.syllableGroupIndex < len(state.syllableGroups) {
+		group := state.syllableGroups[state.syllableGroupIndex]
+		setText(state.ui.progress, fmt.Sprintf("编码练习 · %s    第 %d / %d 个音节",
+			group.Title, state.itemIndex+1, total))
+	} else if state.selectedSectionIsWordPractice() && state.wordGroupIndex < len(state.wordGroups) {
+		group := state.wordGroups[state.wordGroupIndex]
+		setText(state.ui.progress, fmt.Sprintf("字词练习 · %s    第 %d / %d 题", group.Title, state.itemIndex+1, total))
+	} else if state.selectedSectionIsSentencePractice() {
+		setText(state.ui.progress, fmt.Sprintf("短句练习    第 %d / %d 句", state.itemIndex+1, total))
+	} else if state.selectedSectionIsComposition() {
+		if state.compositionSegmentIndex == 0 && state.compositionShouyinGroupIndex < len(state.shouyinGroups) {
+			group := state.shouyinGroups[state.compositionShouyinGroupIndex]
+			setText(state.ui.progress, fmt.Sprintf("分段练习 · 首音 · %s    第 %d / %d 音", group.Title, state.itemIndex+1, total))
+		} else if state.compositionRhymeIndex < len(state.ganyinGroups) {
+			rhyme := state.ganyinGroups[state.compositionRhymeIndex]
+			tone := rhyme.ToneGroups[state.compositionToneIndex]
+			setText(state.ui.progress, fmt.Sprintf("分段练习 · 干音 · %s · %s    第 %d / %d 个",
+				rhyme.Title, tone.Title, state.itemIndex+1, total))
+		}
+	} else {
+		setText(state.ui.progress, fmt.Sprintf("%s    第 %d / %d 题", state.lesson.Title, state.itemIndex+1, total))
+	}
 	setText(state.ui.instruction, exercise.Instruction)
 	setText(state.ui.prompt, exercise.Prompt)
 	setText(state.ui.detail, exercise.Detail)
-	state.answerRevealed = false
-	setText(state.ui.target, exercise.AnswerLabel+"：尚未显示")
-	setText(state.ui.reveal, "显示答案")
+	state.answerRevealed = defaultAnswerVisible(exercise.SectionType)
+	if state.answerRevealed {
+		setText(state.ui.target, exercise.AnswerLabel+"："+exercise.Expected)
+		setText(state.ui.reveal, "隐藏答案")
+	} else {
+		setText(state.ui.target, exercise.AnswerLabel+"：尚未显示")
+		setText(state.ui.reveal, "显示答案")
+	}
 	if exercise.AudioPath != "" {
 		setText(state.ui.play, "播放音频")
 		procEnableWindow.Call(uintptr(state.ui.play), 1)
@@ -378,27 +622,42 @@ func (state *appState) refreshScore() {
 	setText(state.ui.score, fmt.Sprintf("本轮：已答 %d，正确 %d，正确率 %.1f%%", state.attempted, state.correct, accuracy))
 }
 
-func (state *appState) checkAnswer() {
+func defaultAnswerVisible(sectionType string) bool {
+	return sectionType == trainer.SectionKeymap || sectionType == trainer.SectionSyllableComposition
+}
+
+func submissionTransition(input, expected string, index, total int) (accepted, correct bool, next int, wrapped bool) {
+	if strings.TrimSpace(input) == "" || total <= 0 {
+		return false, false, index, false
+	}
+	next = (index + 1) % total
+	return true, trainer.Evaluate(input, expected), next, next == 0
+}
+
+func (state *appState) submitAndAdvance() {
 	exercise, ok := state.currentExercise()
 	if !ok {
 		return
 	}
 	input := getText(state.ui.input)
-	if strings.TrimSpace(input) == "" {
+	accepted, correct, next, wrapped := submissionTransition(input, exercise.Expected, state.itemIndex, len(state.currentExercises()))
+	if !accepted {
 		setText(state.ui.feedback, "请先输入目标键位。")
 		procSetFocus.Call(uintptr(state.ui.input))
 		return
 	}
 	state.attempted++
-	if trainer.Evaluate(input, exercise.Expected) {
+	message := "上一音：不对，目标键位是 " + exercise.Expected + "。"
+	if correct {
 		state.correct++
-		setText(state.ui.feedback, "正确。可以继续下一题。")
-		state.showAnswer()
-	} else {
-		setText(state.ui.feedback, "还不对。答案已经显示，可以对照后重试。")
-		state.showAnswer()
+		message = "上一音：正确。"
 	}
-	state.refreshScore()
+	if wrapped {
+		message = "本组完成一轮；" + message
+	}
+	state.itemIndex = next
+	state.refreshExercise()
+	setText(state.ui.feedback, message)
 }
 
 func (state *appState) showAnswer() {
@@ -441,7 +700,7 @@ func (state *appState) playAudio() {
 }
 
 func (state *appState) nextExercise() {
-	items := state.sectionExercises[state.sectionIndex]
+	items := state.currentExercises()
 	if len(items) == 0 {
 		return
 	}
@@ -467,6 +726,7 @@ func (state *appState) selectMode() {
 		return
 	}
 	state.restartRound()
+	state.resizeToContent()
 }
 
 func (state *appState) selectSection() {
@@ -475,13 +735,184 @@ func (state *appState) selectSection() {
 		return
 	}
 	state.sectionIndex = int(index)
+	state.rebuildExerciseFilters()
 	state.restartRound()
+	state.resizeToContent()
+}
+
+func (state *appState) categoryTitle(id string) string {
+	for _, category := range state.groupCategories {
+		if category.ID == id {
+			return category.Title
+		}
+	}
+	return id
+}
+
+func resetCombo(hwnd syscall.Handle) {
+	procSendMessageW.Call(uintptr(hwnd), cbResetcontent, 0, 0)
+}
+
+func (state *appState) rebuildExerciseFilters() {
+	resetCombo(state.ui.segmentCombo)
+	resetCombo(state.ui.categoryCombo)
+	resetCombo(state.ui.groupCombo)
+	if state.selectedSectionIsKeymap() {
+		setText(state.ui.categoryLabel, "音元类别：")
+		setText(state.ui.groupLabel, "分组：")
+		for _, category := range state.groupCategories {
+			addComboString(state.ui.categoryCombo, category.Title)
+		}
+		procSendMessageW.Call(uintptr(state.ui.categoryCombo), cbSetcursel, uintptr(state.categoryIndex), 0)
+		state.rebuildKeymapGroupCombo()
+		return
+	}
+	if state.selectedSectionIsSyllablePractice() {
+		setText(state.ui.categoryLabel, "首音：")
+		for _, group := range state.syllableGroups {
+			addComboString(state.ui.categoryCombo, group.Title)
+		}
+		procSendMessageW.Call(uintptr(state.ui.categoryCombo), cbSetcursel, uintptr(state.syllableGroupIndex), 0)
+		return
+	}
+	if state.selectedSectionIsWordPractice() {
+		setText(state.ui.categoryLabel, "音节数：")
+		for _, group := range state.wordGroups {
+			addComboString(state.ui.categoryCombo, group.Title)
+		}
+		procSendMessageW.Call(uintptr(state.ui.categoryCombo), cbSetcursel, uintptr(state.wordGroupIndex), 0)
+		return
+	}
+	if !state.selectedSectionIsComposition() {
+		return
+	}
+	for _, title := range []string{"首音", "干音"} {
+		addComboString(state.ui.segmentCombo, title)
+	}
+	procSendMessageW.Call(uintptr(state.ui.segmentCombo), cbSetcursel, uintptr(state.compositionSegmentIndex), 0)
+	if state.compositionSegmentIndex == 0 {
+		setText(state.ui.groupLabel, "首音分组：")
+		for _, group := range state.shouyinGroups {
+			addComboString(state.ui.groupCombo, group.Title)
+		}
+		procSendMessageW.Call(uintptr(state.ui.groupCombo), cbSetcursel, uintptr(state.compositionShouyinGroupIndex), 0)
+		return
+	}
+	setText(state.ui.categoryLabel, "韵音类别：")
+	setText(state.ui.groupLabel, "干音调型：")
+	for _, group := range state.ganyinGroups {
+		addComboString(state.ui.categoryCombo, group.Title)
+	}
+	procSendMessageW.Call(uintptr(state.ui.categoryCombo), cbSetcursel, uintptr(state.compositionRhymeIndex), 0)
+	state.rebuildGanyinToneCombo()
+}
+
+func (state *appState) rebuildKeymapGroupCombo() {
+	procSendMessageW.Call(uintptr(state.ui.groupCombo), cbResetcontent, 0, 0)
+	state.visibleGroupIDs = state.visibleGroupIDs[:0]
+	if state.categoryIndex < 0 || state.categoryIndex >= len(state.groupCategories) {
+		state.groupIndex = -1
+		return
+	}
+	categoryID := state.groupCategories[state.categoryIndex].ID
+	for index, group := range state.keymapGroups {
+		if group.Category != categoryID {
+			continue
+		}
+		state.visibleGroupIDs = append(state.visibleGroupIDs, index)
+		addComboString(state.ui.groupCombo, group.Title)
+	}
+	if len(state.visibleGroupIDs) > 0 {
+		state.groupIndex = state.visibleGroupIDs[0]
+		procSendMessageW.Call(uintptr(state.ui.groupCombo), cbSetcursel, 0, 0)
+	}
+}
+
+func (state *appState) rebuildGanyinToneCombo() {
+	resetCombo(state.ui.groupCombo)
+	if state.compositionRhymeIndex < 0 || state.compositionRhymeIndex >= len(state.ganyinGroups) {
+		state.compositionToneIndex = -1
+		return
+	}
+	toneGroups := state.ganyinGroups[state.compositionRhymeIndex].ToneGroups
+	for _, tone := range toneGroups {
+		addComboString(state.ui.groupCombo, tone.Title)
+	}
+	if len(toneGroups) > 0 {
+		state.compositionToneIndex = 0
+		procSendMessageW.Call(uintptr(state.ui.groupCombo), cbSetcursel, 0, 0)
+	}
+}
+
+func (state *appState) selectCategory() {
+	index, _, _ := procSendMessageW.Call(uintptr(state.ui.categoryCombo), cbGetcursel, 0, 0)
+	if state.selectedSectionIsSyllablePractice() {
+		if int(index) < 0 || int(index) >= len(state.syllableGroups) {
+			return
+		}
+		state.syllableGroupIndex = int(index)
+	} else if state.selectedSectionIsWordPractice() {
+		if int(index) < 0 || int(index) >= len(state.wordGroups) {
+			return
+		}
+		state.wordGroupIndex = int(index)
+	} else if state.selectedSectionIsComposition() && state.compositionSegmentIndex == 1 {
+		if int(index) < 0 || int(index) >= len(state.ganyinGroups) {
+			return
+		}
+		state.compositionRhymeIndex = int(index)
+		state.rebuildGanyinToneCombo()
+	} else {
+		if int(index) < 0 || int(index) >= len(state.groupCategories) {
+			return
+		}
+		state.categoryIndex = int(index)
+		state.rebuildKeymapGroupCombo()
+	}
+	state.restartRound()
+	state.resizeToContent()
+}
+
+func (state *appState) selectGroup() {
+	index, _, _ := procSendMessageW.Call(uintptr(state.ui.groupCombo), cbGetcursel, 0, 0)
+	if state.selectedSectionIsComposition() {
+		if state.compositionSegmentIndex == 0 {
+			if int(index) < 0 || int(index) >= len(state.shouyinGroups) {
+				return
+			}
+			state.compositionShouyinGroupIndex = int(index)
+		} else {
+			toneGroups := state.ganyinGroups[state.compositionRhymeIndex].ToneGroups
+			if int(index) < 0 || int(index) >= len(toneGroups) {
+				return
+			}
+			state.compositionToneIndex = int(index)
+		}
+	} else {
+		if int(index) < 0 || int(index) >= len(state.visibleGroupIDs) {
+			return
+		}
+		state.groupIndex = state.visibleGroupIDs[index]
+	}
+	state.restartRound()
+	state.resizeToContent()
+}
+
+func (state *appState) selectSegment() {
+	index, _, _ := procSendMessageW.Call(uintptr(state.ui.segmentCombo), cbGetcursel, 0, 0)
+	if int(index) < 0 || int(index) > 1 {
+		return
+	}
+	state.compositionSegmentIndex = int(index)
+	state.rebuildExerciseFilters()
+	state.restartRound()
+	state.resizeToContent()
 }
 
 func (state *appState) wndProc(hwnd syscall.Handle, message uint32, wParam, lParam uintptr) uintptr {
 	switch message {
 	case 0x0005: // WM_SIZE
-		state.layout(int32(lParam&0xffff), int32((lParam>>16)&0xffff))
+		state.layoutControls(int32(lParam&0xffff), int32((lParam>>16)&0xffff))
 		return 0
 	case 0x0111: // WM_COMMAND
 		id := int(wParam & 0xffff)
@@ -491,8 +922,16 @@ func (state *appState) wndProc(hwnd syscall.Handle, message uint32, wParam, lPar
 			state.selectMode()
 		case id == idSectionCombo && notify == cbSelchange:
 			state.selectSection()
-		case id == idCheckButton && notify == bnClicked:
-			state.checkAnswer()
+		case id == idFontCombo && notify == cbSelchange:
+			state.selectFontSize()
+		case id == idBackgroundCombo && notify == cbSelchange:
+			state.selectBackground()
+		case id == idSegmentCombo && notify == cbSelchange:
+			state.selectSegment()
+		case id == idCategoryCombo && notify == cbSelchange:
+			state.selectCategory()
+		case id == idGroupCombo && notify == cbSelchange:
+			state.selectGroup()
 		case id == idNextButton && notify == bnClicked:
 			state.nextExercise()
 		case id == idRestart && notify == bnClicked:
@@ -503,6 +942,14 @@ func (state *appState) wndProc(hwnd syscall.Handle, message uint32, wParam, lPar
 			state.playAudio()
 		}
 		return 0
+	case wmEraseBkgnd:
+		if result := state.paintBackground(wParam); result != 0 {
+			return result
+		}
+	case wmCtlColorStatic, wmCtlColorBtn, wmCtlColorEdit:
+		if result := state.colorControl(wParam); result != 0 {
+			return result
+		}
 	case win32ui.WmDeferredPresent:
 		win32ui.PresentMainWindow(state.mainHWND)
 		return 0
@@ -519,38 +966,12 @@ func (state *appState) wndProc(hwnd syscall.Handle, message uint32, wParam, lPar
 		ret, _, _ := procDefWindowProcW.Call(uintptr(hwnd), uintptr(message), wParam, lParam)
 		return ret
 	case 0x0002: // WM_DESTROY
+		state.releaseDisplayResources()
 		procPostQuitMessage.Call(0)
 		return 0
 	}
 	ret, _, _ := procDefWindowProcW.Call(uintptr(hwnd), uintptr(message), wParam, lParam)
 	return ret
-}
-
-func (state *appState) layout(clientW, clientH int32) {
-	if state.ui.modeLabel == 0 || clientW < 620 || clientH < 500 {
-		return
-	}
-	const margin, gap = int32(18), int32(10)
-	move(state.ui.modeLabel, rect{margin, 18, margin + 76, 42})
-	move(state.ui.modeCombo, rect{margin + 78, 14, margin + 190, 180})
-	move(state.ui.sectionLabel, rect{margin + 220, 18, margin + 300, 42})
-	move(state.ui.sectionCombo, rect{margin + 304, 14, clientW - margin, 180})
-	move(state.ui.progress, rect{margin, 58, clientW - margin, 82})
-	move(state.ui.instruction, rect{margin, 86, clientW - margin, 112})
-	move(state.ui.prompt, rect{margin, 122, clientW - margin, 156})
-	move(state.ui.detail, rect{margin, 164, clientW - margin, 278})
-	move(state.ui.target, rect{margin, 286, clientW - margin, 316})
-	move(state.ui.inputLabel, rect{margin, 326, clientW - margin, 350})
-	buttonW := int32(88)
-	inputRight := clientW - margin - buttonW*3 - gap*3
-	move(state.ui.input, rect{margin, 354, inputRight, 388})
-	move(state.ui.check, rect{inputRight + gap, 354, inputRight + gap + buttonW, 388})
-	move(state.ui.next, rect{inputRight + gap*2 + buttonW, 354, inputRight + gap*2 + buttonW*2, 388})
-	move(state.ui.restart, rect{inputRight + gap*3 + buttonW*2, 354, clientW - margin, 388})
-	move(state.ui.play, rect{margin, 400, margin + 112, 434})
-	move(state.ui.reveal, rect{margin + 122, 400, margin + 234, 434})
-	move(state.ui.feedback, rect{margin, 446, clientW - margin, 478})
-	move(state.ui.score, rect{margin, clientH - 42, clientW - margin, clientH - 18})
 }
 
 func createControl(className, text string, style, exStyle int32, parent syscall.Handle, id int) syscall.Handle {
