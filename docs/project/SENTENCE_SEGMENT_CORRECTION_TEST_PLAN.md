@@ -293,3 +293,36 @@ sentence-segment-evidence-20260801-082432-877.md
 “在来一次／再来一次”作为实际输入与同音改选记录。三个宿主中的句中改选和整句
 提交均通过。本轮继续证明当前未签名开发版在三宿主中的分段改选链路可用；该结论
 仍属于观察期，取得可信代码签名后应对签名产物重新执行相同验收。
+
+## 12. 2026-08-02 三宿主观察期复测
+
+本轮继续针对当前安装的 `1.4.0-dev` 开发版，在 x64 Notepad、Codex IDE 和
+x86 `C:\Windows\SysWOW64\charmap.exe` 完成人工复测。
+
+完整证据报告：
+
+```text
+C:\Users\tsaan\.codex\worktrees\3718\Yime\.tmp\sentence-segment-evidence\
+sentence-segment-evidence-20260802-082215-317.md
+```
+
+证据摘要：
+
+- 报告状态：`complete`；
+- 已安装 `server.exe`：
+  `E189DD5D82FFD2D246093505CDCF9E1B81D056031A4E40A9A16BDAA88557BACA`；
+- 已安装 x86 `PIMETextService.dll`：
+  `974F34589A86AAADA96D50BFCD9263DD347180590A4B512F31E42F64E1DAB032`；
+- 已安装 x64 `PIMETextService.dll`：
+  `8F90D9385695F01E2D9CFEA60E428401E3C24532353596F2E7E5198E68F0FF88`；
+- 三项均与当前工作树构建参照文件匹配；
+- 三个宿主均明确记录为 `pass`；
+- 日志中找到 9 组 `selectCompositionSegment` 事务，9 组均按 `client` 和
+  `seqNum` 关联到响应。
+
+本轮人工内容为“他说的却是事实／他说的确是事实”和“他以为我会放气／他以为
+我会放弃”。三宿主均完成“却是→确是”和“放气→放弃”的句中或末段改选，并在
+保留其余分段的情况下提交完整句子，暂未发现新的宿主差异或提前上屏问题。
+
+本轮结果继续归入未签名开发版观察期；取得可信代码签名后，仍须以签名安装包的
+新哈希重复同一三宿主验收。
