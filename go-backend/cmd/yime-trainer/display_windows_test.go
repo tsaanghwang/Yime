@@ -14,10 +14,11 @@ func sampleLayoutMetrics() layoutMetrics {
 		inputLabelWidth: 400, inputWidth: 280,
 		mode: selectorMetrics{80, 110}, section: selectorMetrics{90, 180},
 		font: selectorMetrics{55, 100}, background: selectorMetrics{55, 120},
+		review:   selectorMetrics{90, 120},
 		segment:  selectorMetrics{90, 120},
 		category: selectorMetrics{90, 120}, group: selectorMetrics{55, 180},
 		nextWidth: 96, restartWidth: 112,
-		revealWidth: 112, playWidth: 112,
+		revealWidth: 112, playWidth: 112, reportWidth: 112, clearWidth: 112,
 	}
 }
 
@@ -83,6 +84,14 @@ func TestTrainerLayoutKeepsRowsInsideContentSizedWindow(t *testing.T) {
 	if layout.progress.Top <= layout.modeLabel.Top || layout.score.Bottom > layout.clientHeight {
 		t.Fatalf("vertical rows exceed client: progress=%#v score=%#v height=%d", layout.progress, layout.score, layout.clientHeight)
 	}
+	secondary := []rect{layout.play, layout.reveal, layout.report, layout.clear}
+	lastRight = 0
+	for index, box := range secondary {
+		if box.Left < lastRight || box.Right > layout.clientWidth {
+			t.Fatalf("secondary control %d overlaps or exceeds client: %#v", index, box)
+		}
+		lastRight = box.Right
+	}
 }
 
 func TestTrainerLayoutAddsLinkedExerciseFilterRow(t *testing.T) {
@@ -98,8 +107,8 @@ func TestTrainerLayoutAddsLinkedExerciseFilterRow(t *testing.T) {
 		withFilters.groupCombo.Right <= withFilters.groupCombo.Left {
 		t.Fatalf("exercise filters were not placed: %#v", withFilters)
 	}
-	if withFilters.clientHeight <= withoutFilters.clientHeight {
-		t.Fatalf("group selector row did not grow the client: without=%d with=%d", withoutFilters.clientHeight, withFilters.clientHeight)
+	if withFilters.clientWidth <= withoutFilters.clientWidth {
+		t.Fatalf("linked selectors did not grow the filter row width: without=%d with=%d", withoutFilters.clientWidth, withFilters.clientWidth)
 	}
 	if withoutFilters.showSegment || withoutFilters.showCategory || withoutFilters.showGroup {
 		t.Fatal("ordinary exercise layout unexpectedly shows linked filters")
@@ -170,6 +179,26 @@ func TestWordAndSentencePracticeUseLaunchSamples(t *testing.T) {
 	state.sectionIndex = 1
 	if got := state.currentExercises(); len(got) != 1 || got[0].Prompt != sentence.Prompt {
 		t.Fatalf("sentence current exercises=%#v", got)
+	}
+}
+
+func TestCandidatePracticeAndAdaptiveWrongRoundUseIsolatedExercises(t *testing.T) {
+	candidateA := trainer.Exercise{ID: "candidate-a", Prompt: "边做边试"}
+	candidateB := trainer.Exercise{ID: "candidate-b", Prompt: "修改以后再测试"}
+	state := appState{
+		lesson:             trainer.Lesson{Sections: []trainer.Section{{Type: trainer.SectionCandidatePractice}}},
+		candidateExercises: []trainer.Exercise{candidateA, candidateB},
+		progressData: trainer.Progress{Version: trainer.ProgressVersion, Items: map[string]*trainer.ItemProgress{
+			"candidate-b": {ID: "candidate-b", Incorrect: 1, State: trainer.LearningActive},
+		}},
+		reviewFilter: trainer.ReviewWrong,
+	}
+	if !state.selectedSectionIsCandidatePractice() {
+		t.Fatal("candidate practice section was not recognized")
+	}
+	state.prepareRound()
+	if got := state.currentExercises(); len(got) != 1 || got[0].ID != "candidate-b" {
+		t.Fatalf("wrong-only candidate round=%#v", got)
 	}
 }
 

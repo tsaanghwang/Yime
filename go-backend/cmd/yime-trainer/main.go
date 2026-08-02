@@ -51,6 +51,9 @@ const (
 	idCategoryCombo   = 111
 	idGroupCombo      = 112
 	idSegmentCombo    = 113
+	idReviewCombo     = 114
+	idReportButton    = 115
+	idClearButton     = 116
 
 	bnClicked = 0
 )
@@ -131,13 +134,14 @@ type controls struct {
 	fontLabel, fontCombo             syscall.Handle
 	backgroundLabel, backgroundCombo syscall.Handle
 	segmentLabel, segmentCombo       syscall.Handle
+	reviewLabel, reviewCombo         syscall.Handle
 	categoryLabel, categoryCombo     syscall.Handle
 	groupLabel, groupCombo           syscall.Handle
 	progress, instruction            syscall.Handle
 	prompt, detail, target           syscall.Handle
 	inputLabel, input                syscall.Handle
 	next, restart                    syscall.Handle
-	reveal, play                     syscall.Handle
+	reveal, play, report, clear      syscall.Handle
 	feedback, score                  syscall.Handle
 }
 
@@ -146,10 +150,11 @@ func (value controls) all() []syscall.Handle {
 		value.modeLabel, value.modeCombo, value.sectionLabel, value.sectionCombo,
 		value.fontLabel, value.fontCombo, value.backgroundLabel, value.backgroundCombo,
 		value.segmentLabel, value.segmentCombo,
+		value.reviewLabel, value.reviewCombo,
 		value.categoryLabel, value.categoryCombo, value.groupLabel, value.groupCombo,
 		value.progress, value.instruction, value.prompt, value.detail, value.target,
 		value.inputLabel, value.input, value.next, value.restart,
-		value.reveal, value.play, value.feedback, value.score,
+		value.reveal, value.play, value.report, value.clear, value.feedback, value.score,
 	}
 }
 
@@ -168,6 +173,7 @@ type appState struct {
 	wordGroups                   []trainer.ExerciseGroup
 	wordGroupIndex               int
 	sentenceExercises            []trainer.Exercise
+	candidateExercises           []trainer.Exercise
 	groupCategories              []trainer.GroupCategory
 	visibleGroupIDs              []int
 	categoryIndex                int
@@ -191,6 +197,12 @@ type appState struct {
 	backgroundBrush              syscall.Handle
 	backgroundColor              uint32
 	minimumLayout                trainerLayout
+	progressData                 trainer.Progress
+	reviewFilter                 string
+	roundExercises               []trainer.Exercise
+	itemStarted                  time.Time
+	lastDiagnosis                trainer.Diagnosis
+	hintLevel                    int
 }
 
 func main() {
@@ -228,12 +240,22 @@ func main() {
 	if err != nil {
 		preferences = trainer.DefaultPreferences()
 	}
+	progressData, err := trainer.LoadProgress(preferencesDir)
+	if err != nil {
+		progressData = trainer.NewProgress()
+	}
+	initialMode := normalizedMode(*mode)
+	if preferences.LastMode != "" {
+		initialMode = normalizedMode(preferences.LastMode)
+	}
 	state := &appState{
 		lesson:         lesson,
 		resolver:       resolver,
-		mode:           normalizedMode(*mode),
+		mode:           initialMode,
 		preferencesDir: preferencesDir,
 		preferences:    preferences,
+		progressData:   progressData,
+		reviewFilter:   preferences.ReviewFilter,
 		modeOptions: []modeOption{
 			{label: "变长", value: reverselookup.ModeVariable},
 			{label: "等长", value: reverselookup.ModeFull},
@@ -261,7 +283,7 @@ func main() {
 
 func lessonNeedsRuntimePractice(lesson trainer.Lesson) bool {
 	for _, section := range lesson.Sections {
-		if section.Type == trainer.SectionWordPractice || section.Type == trainer.SectionSentencePractice {
+		if section.Type == trainer.SectionWordPractice || section.Type == trainer.SectionSentencePractice || section.Type == trainer.SectionCandidatePractice {
 			return true
 		}
 	}
@@ -299,6 +321,11 @@ func (state *appState) resolveExercises() error {
 		return err
 	}
 	state.keymapGroups = groups
+	fingeringGroups, err := state.resolver.ResolveFingeringDrills()
+	if err != nil {
+		return err
+	}
+	state.keymapGroups = append(state.keymapGroups, fingeringGroups...)
 	shouyinGroups, err := state.resolver.ResolveShouyinCompositionGroups()
 	if err != nil {
 		return err
@@ -325,8 +352,14 @@ func (state *appState) resolveExercises() error {
 			return err
 		}
 		state.sentenceExercises = sentenceExercises
+		candidateExercises, err := state.resolver.ResolveCandidatePractice(state.runtimePractice, state.mode)
+		if err != nil {
+			return err
+		}
+		state.candidateExercises = candidateExercises
 	}
 	state.groupCategories = state.resolver.KeymapGroupCategories()
+	state.groupCategories = append(state.groupCategories, trainer.GroupCategory{ID: trainer.GroupCategoryFingering, Title: "指法专项"})
 	if state.groupIndex < 0 || state.groupIndex >= len(state.keymapGroups) {
 		state.groupIndex = 0
 	}
@@ -430,6 +463,8 @@ func (state *appState) createControls() {
 	state.ui.backgroundCombo = createControl("COMBOBOX", "", wsChild|wsVisible|wsTabstop|cbsDropdownlist, 0, state.mainHWND, idBackgroundCombo)
 	state.ui.segmentLabel = createControl("STATIC", "音节分段：", leftLabelStyle, 0, state.mainHWND, 0)
 	state.ui.segmentCombo = createControl("COMBOBOX", "", wsChild|wsVisible|wsTabstop|cbsDropdownlist, 0, state.mainHWND, idSegmentCombo)
+	state.ui.reviewLabel = createControl("STATIC", "练习范围：", leftLabelStyle, 0, state.mainHWND, 0)
+	state.ui.reviewCombo = createControl("COMBOBOX", "", wsChild|wsVisible|wsTabstop|cbsDropdownlist, 0, state.mainHWND, idReviewCombo)
 	state.ui.categoryLabel = createControl("STATIC", "音元类别：", leftLabelStyle, 0, state.mainHWND, 0)
 	state.ui.categoryCombo = createControl("COMBOBOX", "", wsChild|wsVisible|wsTabstop|cbsDropdownlist, 0, state.mainHWND, idCategoryCombo)
 	state.ui.groupLabel = createControl("STATIC", "分组：", leftLabelStyle, 0, state.mainHWND, 0)
@@ -445,6 +480,8 @@ func (state *appState) createControls() {
 	state.ui.restart = createControl("BUTTON", "重新开始", wsChild|wsVisible|wsTabstop, 0, state.mainHWND, idRestart)
 	state.ui.reveal = createControl("BUTTON", "显示答案", wsChild|wsVisible|wsTabstop, 0, state.mainHWND, idRevealButton)
 	state.ui.play = createControl("BUTTON", "暂无音频", wsChild|wsVisible|wsTabstop, 0, state.mainHWND, idPlayButton)
+	state.ui.report = createControl("BUTTON", "学习报告", wsChild|wsVisible|wsTabstop, 0, state.mainHWND, idReportButton)
+	state.ui.clear = createControl("BUTTON", "清空记录", wsChild|wsVisible|wsTabstop, 0, state.mainHWND, idClearButton)
 	state.ui.feedback = createControl("STATIC", "", centerLabelStyle, 0, state.mainHWND, 0)
 	state.ui.score = createControl("STATIC", "", leftLabelStyle, 0, state.mainHWND, 0)
 	procSendMessageW.Call(uintptr(state.ui.input), emSetlimittext, 256, 0)
@@ -461,10 +498,24 @@ func (state *appState) populateCombos() {
 			procSendMessageW.Call(uintptr(state.ui.modeCombo), cbSetcursel, uintptr(index), 0)
 		}
 	}
-	for _, section := range state.lesson.Sections {
+	selectedSection := 0
+	for index, section := range state.lesson.Sections {
 		addComboString(state.ui.sectionCombo, section.Title)
+		if section.ID == state.preferences.LastSectionID {
+			selectedSection = index
+		}
 	}
-	procSendMessageW.Call(uintptr(state.ui.sectionCombo), cbSetcursel, 0, 0)
+	state.sectionIndex = selectedSection
+	procSendMessageW.Call(uintptr(state.ui.sectionCombo), cbSetcursel, uintptr(selectedSection), 0)
+	for _, option := range []struct{ label, value string }{
+		{"全部题目", trainer.ReviewAll}, {"只练错题", trainer.ReviewWrong}, {"今日复习", trainer.ReviewToday},
+	} {
+		addComboString(state.ui.reviewCombo, option.label)
+		if option.value == state.reviewFilter {
+			index := map[string]int{trainer.ReviewAll: 0, trainer.ReviewWrong: 1, trainer.ReviewToday: 2}[option.value]
+			procSendMessageW.Call(uintptr(state.ui.reviewCombo), cbSetcursel, uintptr(index), 0)
+		}
+	}
 	for index, option := range trainerFontOptions {
 		addComboString(state.ui.fontCombo, option.label)
 		if option.value == state.preferences.FontSize {
@@ -478,6 +529,7 @@ func (state *appState) populateCombos() {
 		}
 	}
 	state.rebuildExerciseFilters()
+	state.prepareRound()
 }
 
 func (state *appState) selectedSectionIsKeymap() bool {
@@ -505,7 +557,12 @@ func (state *appState) selectedSectionIsSentencePractice() bool {
 		state.lesson.Sections[state.sectionIndex].Type == trainer.SectionSentencePractice
 }
 
-func (state *appState) currentExercises() []trainer.Exercise {
+func (state *appState) selectedSectionIsCandidatePractice() bool {
+	return state.sectionIndex >= 0 && state.sectionIndex < len(state.lesson.Sections) &&
+		state.lesson.Sections[state.sectionIndex].Type == trainer.SectionCandidatePractice
+}
+
+func (state *appState) currentBaseExercises() []trainer.Exercise {
 	if state.selectedSectionIsWordPractice() {
 		if state.wordGroupIndex < 0 || state.wordGroupIndex >= len(state.wordGroups) {
 			return nil
@@ -514,6 +571,9 @@ func (state *appState) currentExercises() []trainer.Exercise {
 	}
 	if state.selectedSectionIsSentencePractice() {
 		return state.sentenceExercises
+	}
+	if state.selectedSectionIsCandidatePractice() {
+		return state.candidateExercises
 	}
 	if state.selectedSectionIsSyllablePractice() {
 		if state.syllableGroupIndex < 0 || state.syllableGroupIndex >= len(state.syllableGroups) {
@@ -549,6 +609,17 @@ func (state *appState) currentExercises() []trainer.Exercise {
 	return state.sectionExercises[state.sectionIndex]
 }
 
+func (state *appState) currentExercises() []trainer.Exercise {
+	if state.roundExercises != nil {
+		return state.roundExercises
+	}
+	return state.currentBaseExercises()
+}
+
+func (state *appState) prepareRound() {
+	state.roundExercises = trainer.ScheduleExercises(state.currentBaseExercises(), state.progressData, state.reviewFilter, time.Now())
+}
+
 func (state *appState) currentExercise() (trainer.Exercise, bool) {
 	items := state.currentExercises()
 	if state.itemIndex < 0 || state.itemIndex >= len(items) {
@@ -560,7 +631,14 @@ func (state *appState) currentExercise() (trainer.Exercise, bool) {
 func (state *appState) refreshExercise() {
 	exercise, ok := state.currentExercise()
 	if !ok {
-		setText(state.ui.prompt, "课程中没有可用题目")
+		setText(state.ui.progress, "当前练习范围：0 题")
+		setText(state.ui.instruction, "")
+		setText(state.ui.prompt, "当前范围没有可用题目")
+		setText(state.ui.detail, "可切换到“全部题目”，或先完成一些练习后再选择错题／今日复习。")
+		setText(state.ui.target, "目标编码：尚无题目")
+		setText(state.ui.input, "")
+		setText(state.ui.feedback, "")
+		state.refreshScore()
 		return
 	}
 	total := len(state.currentExercises())
@@ -577,6 +655,8 @@ func (state *appState) refreshExercise() {
 		setText(state.ui.progress, fmt.Sprintf("字词练习 · %s    第 %d / %d 题", group.Title, state.itemIndex+1, total))
 	} else if state.selectedSectionIsSentencePractice() {
 		setText(state.ui.progress, fmt.Sprintf("短句练习    第 %d / %d 句", state.itemIndex+1, total))
+	} else if state.selectedSectionIsCandidatePractice() {
+		setText(state.ui.progress, fmt.Sprintf("候选实战 · 隔离模拟    第 %d / %d 题", state.itemIndex+1, total))
 	} else if state.selectedSectionIsComposition() {
 		if state.compositionSegmentIndex == 0 && state.compositionShouyinGroupIndex < len(state.shouyinGroups) {
 			group := state.shouyinGroups[state.compositionShouyinGroupIndex]
@@ -593,7 +673,7 @@ func (state *appState) refreshExercise() {
 	setText(state.ui.instruction, exercise.Instruction)
 	setText(state.ui.prompt, exercise.Prompt)
 	setText(state.ui.detail, exercise.Detail)
-	state.answerRevealed = defaultAnswerVisible(exercise.SectionType)
+	state.answerRevealed = state.defaultAnswerVisible(exercise.SectionType)
 	if state.answerRevealed {
 		setText(state.ui.target, exercise.AnswerLabel+"："+exercise.Expected)
 		setText(state.ui.reveal, "隐藏答案")
@@ -610,6 +690,7 @@ func (state *appState) refreshExercise() {
 	}
 	setText(state.ui.input, "")
 	setText(state.ui.feedback, "")
+	state.itemStarted = time.Now()
 	state.refreshScore()
 	procSetFocus.Call(uintptr(state.ui.input))
 }
@@ -619,11 +700,24 @@ func (state *appState) refreshScore() {
 	if state.attempted > 0 {
 		accuracy = float64(state.correct) / float64(state.attempted) * 100
 	}
-	setText(state.ui.score, fmt.Sprintf("本轮：已答 %d，正确 %d，正确率 %.1f%%", state.attempted, state.correct, accuracy))
+	status := trainer.RecommendedStage(trainer.EvaluateCurriculum(state.progressData, state.resolver.Curriculum()))
+	setText(state.ui.score, fmt.Sprintf("本轮：已答 %d，正确 %d，正确率 %.1f%%    建议阶段：%s（%d/%d）",
+		state.attempted, state.correct, accuracy, status.Stage.Title, status.Attempts, status.Stage.RequiredAnswers))
 }
 
 func defaultAnswerVisible(sectionType string) bool {
 	return sectionType == trainer.SectionKeymap || sectionType == trainer.SectionSyllableComposition
+}
+
+func (state *appState) defaultAnswerVisible(sectionType string) bool {
+	for _, stage := range state.resolver.Curriculum() {
+		for _, declared := range stage.SectionTypes {
+			if declared == sectionType {
+				return stage.AnswerVisible
+			}
+		}
+	}
+	return defaultAnswerVisible(sectionType)
 }
 
 func submissionTransition(input, expected string, index, total int) (accepted, correct bool, next int, wrapped bool) {
@@ -647,16 +741,30 @@ func (state *appState) submitAndAdvance() {
 		return
 	}
 	state.attempted++
-	message := "上一音：不对，目标键位是 " + exercise.Expected + "。"
+	diagnosis := trainer.Diagnose(exercise, input)
+	state.progressData.Record(exercise, diagnosis, time.Since(state.itemStarted), time.Now())
+	saveErr := trainer.SaveProgress(state.preferencesDir, state.progressData)
+	message := "上一题：" + diagnosis.Summary()
 	if correct {
 		state.correct++
-		message = "上一音：正确。"
+		message = "上一题：正确。"
+		state.lastDiagnosis = trainer.Diagnosis{}
+		state.hintLevel = 0
+	} else {
+		state.lastDiagnosis = diagnosis
+		state.hintLevel = 0
 	}
 	if wrapped {
 		message = "本组完成一轮；" + message
 	}
 	state.itemIndex = next
 	state.refreshExercise()
+	if !correct {
+		setText(state.ui.reveal, "错误提示 1/3")
+	}
+	if saveErr != nil {
+		message += fmt.Sprintf(" 练习记录保存失败：%v。", saveErr)
+	}
 	setText(state.ui.feedback, message)
 }
 
@@ -671,6 +779,16 @@ func (state *appState) showAnswer() {
 }
 
 func (state *appState) toggleAnswer() {
+	if !state.lastDiagnosis.Correct && state.lastDiagnosis.ErrorCount > 0 && state.hintLevel < 3 {
+		state.hintLevel++
+		setText(state.ui.feedback, "上一题提示："+state.lastDiagnosis.Hint(state.hintLevel))
+		if state.hintLevel < 3 {
+			setText(state.ui.reveal, "继续提示")
+		} else {
+			setText(state.ui.reveal, "显示本题答案")
+		}
+		return
+	}
 	if !state.answerRevealed {
 		state.showAnswer()
 		return
@@ -705,13 +823,18 @@ func (state *appState) nextExercise() {
 		return
 	}
 	state.itemIndex = (state.itemIndex + 1) % len(items)
+	state.lastDiagnosis = trainer.Diagnosis{}
+	state.hintLevel = 0
 	state.refreshExercise()
 }
 
 func (state *appState) restartRound() {
+	state.prepareRound()
 	state.itemIndex = 0
 	state.attempted = 0
 	state.correct = 0
+	state.lastDiagnosis = trainer.Diagnosis{}
+	state.hintLevel = 0
 	state.refreshExercise()
 }
 
@@ -721,6 +844,8 @@ func (state *appState) selectMode() {
 		return
 	}
 	state.mode = state.modeOptions[index].value
+	state.preferences.LastMode = string(state.mode)
+	state.savePreferences()
 	if err := state.resolveExercises(); err != nil {
 		showError(err.Error())
 		return
@@ -735,9 +860,69 @@ func (state *appState) selectSection() {
 		return
 	}
 	state.sectionIndex = int(index)
+	state.preferences.LastSectionID = state.lesson.Sections[state.sectionIndex].ID
+	state.savePreferences()
 	state.rebuildExerciseFilters()
 	state.restartRound()
 	state.resizeToContent()
+}
+
+func (state *appState) selectReviewFilter() {
+	index, _, _ := procSendMessageW.Call(uintptr(state.ui.reviewCombo), cbGetcursel, 0, 0)
+	filters := []string{trainer.ReviewAll, trainer.ReviewWrong, trainer.ReviewToday}
+	if int(index) < 0 || int(index) >= len(filters) {
+		return
+	}
+	state.reviewFilter = filters[index]
+	state.preferences.ReviewFilter = state.reviewFilter
+	state.savePreferences()
+	state.restartRound()
+	state.resizeToContent()
+}
+
+func (state *appState) showLearningReport() {
+	report := trainer.BuildLearningReport(state.progressData)
+	readiness := state.resolver.ContentReadiness()
+	statuses := trainer.EvaluateCurriculum(state.progressData, state.resolver.Curriculum())
+	lines := []string{report.Text(), fmt.Sprintf("内容：%d 个音元指法已覆盖 %d；正式音节 %d；可用音频 %d/%d（音频仍为可选资源）。",
+		readiness.YinyuanTotal, readiness.FingeringCovered, readiness.EncodedSyllables, readiness.AudioAvailable, readiness.YinyuanTotal), "", "阶段进度："}
+	for _, status := range statuses {
+		mark := "未解锁"
+		if status.Completed {
+			mark = "已完成"
+		} else if status.Unlocked {
+			mark = "进行中"
+		}
+		lines = append(lines, fmt.Sprintf("%s：%s，%d/%d，正确率 %.1f%%", status.Stage.Title, mark, status.Attempts, status.Stage.RequiredAnswers, status.Accuracy*100))
+	}
+	if details := report.DetailLines(); len(details) > 0 {
+		lines = append(lines, "", "分项统计：")
+		lines = append(lines, details...)
+	}
+	if path, err := trainer.ExportLearningReport(state.preferencesDir, state.progressData); err != nil {
+		lines = append(lines, "", "报告导出失败："+err.Error())
+	} else if path != "" {
+		lines = append(lines, "", "本地报告已导出："+path)
+	}
+	message, _ := syscall.UTF16PtrFromString(strings.Join(lines, "\r\n"))
+	title, _ := syscall.UTF16PtrFromString("Yime 学习报告")
+	procMessageBoxW.Call(uintptr(state.mainHWND), uintptr(unsafe.Pointer(message)), uintptr(unsafe.Pointer(title)), 0x00000040)
+}
+
+func (state *appState) clearLearningProgress() {
+	message, _ := syscall.UTF16PtrFromString("只删除练习器自己的学习记录，不会触碰 Rime 用户词典、正式学习记录或屏蔽词表。确定清空吗？")
+	title, _ := syscall.UTF16PtrFromString("清空练习记录")
+	result, _, _ := procMessageBoxW.Call(uintptr(state.mainHWND), uintptr(unsafe.Pointer(message)), uintptr(unsafe.Pointer(title)), 0x00000004|0x00000030)
+	if result != 6 { // IDYES
+		return
+	}
+	if err := trainer.ClearProgress(state.preferencesDir); err != nil {
+		setText(state.ui.feedback, "清空练习记录失败："+err.Error())
+		return
+	}
+	state.progressData = trainer.NewProgress()
+	state.restartRound()
+	setText(state.ui.feedback, "练习记录已清空；PIME/Rime 正式数据未改动。")
 }
 
 func (state *appState) categoryTitle(id string) string {
@@ -928,6 +1113,8 @@ func (state *appState) wndProc(hwnd syscall.Handle, message uint32, wParam, lPar
 			state.selectBackground()
 		case id == idSegmentCombo && notify == cbSelchange:
 			state.selectSegment()
+		case id == idReviewCombo && notify == cbSelchange:
+			state.selectReviewFilter()
 		case id == idCategoryCombo && notify == cbSelchange:
 			state.selectCategory()
 		case id == idGroupCombo && notify == cbSelchange:
@@ -940,6 +1127,10 @@ func (state *appState) wndProc(hwnd syscall.Handle, message uint32, wParam, lPar
 			state.toggleAnswer()
 		case id == idPlayButton && notify == bnClicked:
 			state.playAudio()
+		case id == idReportButton && notify == bnClicked:
+			state.showLearningReport()
+		case id == idClearButton && notify == bnClicked:
+			state.clearLearningProgress()
 		}
 		return 0
 	case wmEraseBkgnd:
