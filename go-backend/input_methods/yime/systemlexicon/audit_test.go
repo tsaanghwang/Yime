@@ -58,6 +58,32 @@ func TestLoadDictFileParsesDataSection(t *testing.T) {
 	}
 }
 
+func TestVisitDictFileStreamsEntriesWithoutChangingSource(t *testing.T) {
+	dir := t.TempDir()
+	path := filepath.Join(dir, "yime_full.dict.yaml")
+	content := []byte("name: test\n...\n我们\ta b\t20\n中国\tc d\t10\n")
+	if err := os.WriteFile(path, content, 0o644); err != nil {
+		t.Fatal(err)
+	}
+	var texts []string
+	if err := VisitDictFile(path, func(entry Entry) error {
+		texts = append(texts, entry.Text)
+		return nil
+	}); err != nil {
+		t.Fatal(err)
+	}
+	if len(texts) != 2 || texts[0] != "我们" || texts[1] != "中国" {
+		t.Fatalf("visited=%#v", texts)
+	}
+	after, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(after) != string(content) {
+		t.Fatal("streaming visitor changed the runtime dictionary")
+	}
+}
+
 func TestDictPathPrefersSharedDir(t *testing.T) {
 	shared := t.TempDir()
 	user := t.TempDir()

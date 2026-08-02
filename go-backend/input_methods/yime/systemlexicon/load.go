@@ -38,16 +38,26 @@ func DictPath(sharedDir, userDir string, mode reverselookup.Mode) string {
 }
 
 func LoadDictFile(path string) ([]Entry, error) {
+	entries := make([]Entry, 0, 4096)
+	err := VisitDictFile(path, func(entry Entry) error {
+		entries = append(entries, entry)
+		return nil
+	})
+	return entries, err
+}
+
+// VisitDictFile streams the data section of a Rime dictionary without
+// retaining the full runtime lexicon in memory. The visitor is read-only.
+func VisitDictFile(path string, visit func(Entry) error) error {
 	file, err := os.Open(path)
 	if err != nil {
 		if os.IsNotExist(err) {
-			return nil, fmt.Errorf("找不到系统词库文件：%s", path)
+			return fmt.Errorf("找不到系统词库文件：%s", path)
 		}
-		return nil, err
+		return err
 	}
 	defer file.Close()
 
-	entries := make([]Entry, 0, 4096)
 	scanner := bufio.NewScanner(file)
 	scanner.Buffer(make([]byte, 0, 64*1024), 1024*1024)
 	inData := false
@@ -77,14 +87,19 @@ func LoadDictFile(path string) ([]Entry, error) {
 				weight = parsed
 			}
 		}
-		entries = append(entries, Entry{
+		entry := Entry{
 			Text:   text,
 			Code:   code,
 			Weight: weight,
-		})
+		}
+		if visit != nil {
+			if err := visit(entry); err != nil {
+				return err
+			}
+		}
 	}
 	if err := scanner.Err(); err != nil {
-		return nil, err
+		return err
 	}
-	return entries, nil
+	return nil
 }
