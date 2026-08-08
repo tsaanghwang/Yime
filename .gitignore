@@ -39,4 +39,7 @@ go-backend/.gotmp/
 go-backend/*.exe
 installer/*.exe
 .tmp/
+/tmp/
+**/__pycache__/
+*.py[cod]
 PIMELauncher/target/
