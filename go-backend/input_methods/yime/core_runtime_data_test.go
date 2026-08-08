@@ -13,8 +13,8 @@ import (
 )
 
 const (
-	curatedCoreEntryCount = 1167057
-	curatedCoreTextCount  = 1152157
+	curatedCoreEntryCount = 1166300
+	curatedCoreTextCount  = 1151400
 	encodedCharacterCount = 46095
 )
 
@@ -210,7 +210,7 @@ func TestAllCoreModesConnectLearningCustomPhrasesAndSentenceComposition(
 		content := string(data)
 		checks := []string{
 			"dictionary: yime_" + mode,
-			"user_dict: yime_" + mode + "_core_1167057_",
+			"user_dict: yime_" + mode + "_core_1166300_",
 			"user_dict: custom_phrase_" + mode,
 			"enable_user_dict: true",
 			"enable_sentence: true",

@@ -14,8 +14,8 @@
   ],
   "runtime_manifest": "yime_lexicon_manifest.json",
   "source_evidence_manifest": "yime_core_source_manifest.json",
-  "entry_count_per_mode": 1167057,
-  "distinct_core_texts": 1152157,
+  "entry_count_per_mode": 1166300,
+  "distinct_core_texts": 1151400,
   "candidate_layers": [
     "curated_system_core",
     "encoded_single_character_periphery",
@@ -25,9 +25,9 @@
   ],
   "ranking_evidence": {
     "policy_id": "bcc-primary-lmdg-fallback-structural-floor-v1",
-    "direct_bcc": 372119,
-    "provisional_rime_lmdg": 564200,
-    "provisional_structural_floor": 180573,
+    "direct_bcc": 379512,
+    "provisional_rime_lmdg": 586954,
+    "provisional_structural_floor": 184934,
     "raw_bcc_and_lmdg_values_added": false
   },
   "prototype_roles": [

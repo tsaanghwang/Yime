@@ -17,10 +17,10 @@ func TestSchemasIsolateLearnedCandidatesByLayoutProjection(t *testing.T) {
 				t.Fatal(err)
 			}
 			schema := string(payload)
-			wantVersion := `version: "2026-07-28-core-1167057-layout-` +
+			wantVersion := `version: "2026-08-06-core-1166300-layout-` +
 				layoutID + `-rank-v1"`
 			wantUserDict := "user_dict: yime_" + mode +
-				"_core_1167057_layout_" + layoutID + "_rank_v1"
+				"_core_1166300_layout_" + layoutID + "_rank_v1"
 			if !strings.Contains(schema, wantVersion) {
 				t.Fatalf("schema does not identify current layout: want %q", wantVersion)
 			}
