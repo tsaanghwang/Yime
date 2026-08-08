@@ -1,0 +1,173 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/tsaanghwang/Yime/schemas/connected-speech-record-v1.json",
+  "title": "Yime connected-speech adjudication record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "ruleset_version",
+    "record_id",
+    "record_revision",
+    "text",
+    "canonical_pinyin",
+    "phenomenon",
+    "scope",
+    "candidate_text_policy",
+    "adjudication_status",
+    "runtime_enabled",
+    "source_observations",
+    "canonical_yinyuan_ids"
+  ],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "ruleset_version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "record_id": { "type": "string", "pattern": "^cs-[a-z0-9][a-z0-9._-]+$" },
+    "record_revision": { "type": "integer", "minimum": 1 },
+    "text": { "type": "string", "minLength": 1 },
+    "canonical_pinyin": { "type": "string", "minLength": 1 },
+    "phenomenon": {
+      "enum": [
+        "tone_sandhi",
+        "neutral_tone",
+        "erhua",
+        "particle_allomorphy",
+        "assimilation",
+        "dissimilation"
+      ]
+    },
+    "scope": { "enum": ["lexical", "construction", "phrase", "prosodic"] },
+    "candidate_text_policy": {
+      "enum": ["preserve", "explicit_source_variant", "defer_text_mismatch"]
+    },
+    "transcription_status": {
+      "enum": ["raw_unchecked", "machine_matched", "corrected", "needs_review"]
+    },
+    "adjudication_status": {
+      "enum": [
+        "approved_compatibility",
+        "approved_surface",
+        "experimental",
+        "research_only",
+        "deferred",
+        "rejected"
+      ]
+    },
+    "runtime_enabled": { "type": "boolean" },
+    "rule_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]+$" },
+    "underlying_tone": { "type": ["integer", "null"], "minimum": 1, "maximum": 4 },
+    "erhua_status": {
+      "enum": ["none", "independent_er", "suffix_compatibility", "fused", "oral_hint", "undetermined"]
+    },
+    "attachment_syllable_index": { "type": ["integer", "null"], "minimum": 0 },
+    "er_character_index": { "type": ["integer", "null"], "minimum": 0 },
+    "erhua_class": { "type": ["string", "null"] },
+    "source_observations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "observation_id",
+          "source_policy",
+          "source_locator",
+          "source_sha256",
+          "text_raw",
+          "reading_raw",
+          "transcription_status"
+        ],
+        "properties": {
+          "observation_id": { "type": "string", "minLength": 1 },
+          "source_policy": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]+$" },
+          "source_locator": { "type": "string", "minLength": 1 },
+          "source_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+          "text_raw": { "type": "string" },
+          "reading_raw": { "type": "string" },
+          "text_corrected": { "type": ["string", "null"] },
+          "reading_corrected": { "type": ["string", "null"] },
+          "transcription_status": {
+            "enum": ["raw_unchecked", "machine_matched", "corrected", "needs_review"]
+          },
+          "note": { "type": "string" }
+        }
+      }
+    },
+    "compatibility_reading": { "type": ["string", "null"] },
+    "surface_reading": { "type": ["string", "null"] },
+    "canonical_yinyuan_ids": { "$ref": "#/$defs/syllableSequence" },
+    "compatibility_yinyuan_ids": {
+      "oneOf": [{ "$ref": "#/$defs/syllableSequence" }, { "type": "null" }]
+    },
+    "surface_yinyuan_ids": {
+      "oneOf": [{ "$ref": "#/$defs/syllableSequence" }, { "type": "null" }]
+    },
+    "rewrites": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["syllable_index", "position", "from_id", "to_id", "attributes"],
+        "properties": {
+          "syllable_index": { "type": "integer", "minimum": 0 },
+          "position": { "enum": ["shouyin", "huyin", "zhuyin", "moyin"] },
+          "from_id": { "type": "string", "pattern": "^[NM][0-9]{2}$" },
+          "to_id": { "type": "string", "pattern": "^[NM][0-9]{2}$" },
+          "attributes": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "enum": ["tone_grade", "quality", "place", "manner", "rhoticity", "nasality"] }
+          }
+        }
+      }
+    },
+    "note": { "type": "string" }
+  },
+  "$defs": {
+    "syllableSequence": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "array",
+        "prefixItems": [
+          { "type": "string", "pattern": "^N[0-9]{2}$" },
+          { "type": "string", "pattern": "^M[0-9]{2}$" },
+          { "type": "string", "pattern": "^M[0-9]{2}$" },
+          { "type": "string", "pattern": "^M[0-9]{2}$" }
+        ],
+        "items": false,
+        "minItems": 4,
+        "maxItems": 4
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "adjudication_status": { "enum": ["research_only", "deferred", "rejected"] }
+        }
+      },
+      "then": { "properties": { "runtime_enabled": { "const": false } } }
+    },
+    {
+      "if": { "properties": { "adjudication_status": { "const": "approved_surface" } } },
+      "then": {
+        "required": ["surface_reading", "surface_yinyuan_ids", "rewrites"],
+        "properties": {
+          "surface_reading": { "type": "string", "minLength": 1 },
+          "surface_yinyuan_ids": { "$ref": "#/$defs/syllableSequence" },
+          "rewrites": { "minItems": 1 }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": ["erhua_status"],
+        "properties": { "erhua_status": { "const": "fused" } }
+      },
+      "then": { "required": ["attachment_syllable_index", "erhua_class"] }
+    }
+  ]
+}

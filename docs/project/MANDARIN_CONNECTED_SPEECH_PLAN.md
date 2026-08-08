@@ -1,9 +1,9 @@
 # 普通话语流音变的编码输入实现
 
 > 文档性质：实施前准备方案
-> 当前状态：已决定着手准备；尚未开始程序实现，尚未接入运行时
+> 当前状态：准备阶段 P 已完成设计收口；阶段 0 尚未开始，尚未接入运行时
 > 初始记录：2026-07-29；转入准备阶段：2026-08-02
-> 当前阶段：利用代码签名条件尚未具备的等待期，完成实施所需的方案、数据、证据、接口、测试与回退准备
+> 当前阶段：准备进入阶段 0 离线数据格式、校验器和报告器实施
 > 总原则：规范读音是真源；语流读音只形成有来源、可撤销的附加输入路径
 
 ## 1. 目的
@@ -62,18 +62,24 @@
 
 ### 1.2 准备阶段退出条件
 
-下列条件全部满足并经过一次专门评审后，才可以把状态改为“开始第一批实现”：
+下列条件已于 2026-08-08 完成专门评审；评审只批准开始阶段 0 离线基础设施，不批准生成运行别名：
 
-- [ ] 统一记录格式、字段语义、版本策略和 `research_only` 隔离规则已经定稿；
-- [ ] 第一批现象的范围、来源、审定样例和排除清单已经定稿；
-- [ ] 规范四音元与语流四音元之间的逐位置替换能够人工复核；
-- [ ] 三模式离线试算方案能够检查一一对应、码长不增长、碰撞和排序影响；
-- [ ] 正例、反例、边界例和模块禁用后的回归基线已经列全；
-- [ ] 模块开关、删除别名和恢复规范构建哈希的回退流程已经写清；
-- [ ] 首批实现不会修改规范真源、候选文本或用户数据的结论已经评审确认；
-- [ ] 已形成独立的首批实现任务单，明确文件范围、测试范围和验收方式。
+- [x] 统一记录格式、字段语义、版本策略和 `research_only` 隔离规则已经定稿；见
+  [收口包](connected_speech/README.md)和[记录 Schema](connected_speech/connected_speech_record.schema.json)。
+- [x] 第一批范围、来源、审定样例和排除清单已经定稿；见
+  [第一批任务单](connected_speech/FIRST_BATCH_SCOPE.md)、[来源政策](connected_speech/SOURCE_POLICIES.md)和
+  [复核样例](connected_speech/first_batch_review_cases.tsv)。
+- [x] 规范四音元与语流四音元之间的逐位置替换能够人工复核；见第一批任务单中的 ID 级改写表。
+- [x] 三模式离线试算方案能够检查一一对应、码长不增长、碰撞和排序影响；见
+  [离线验收与回退](connected_speech/OFFLINE_ACCEPTANCE_AND_ROLLBACK.md)。
+- [x] 正例、反例、边界例和模块禁用后的回归基线已经列全；见复核样例和离线验收文档。
+- [x] 模块开关、删除别名和恢复规范构建哈希的回退流程已经写清；见离线验收与回退文档。
+- [x] 第一批不会修改规范真源、候选文本或用户数据的结论已经评审确认；阶段 0 只写
+  `.tmp/connected-speech-audit/`，规范数据哈希变化即失败。
+- [x] 已形成独立的第一批实施任务单，明确文件范围、测试范围和验收方式。
 
-准备阶段未退出时，只能补充方案、证据、样例和审计设计，不能开始运行链接入。
+准备阶段 P 至此退出。进入阶段 0 仍须使用独立任务和提交；融合儿化、表层轻声和派生首音尚未
+审定时只能保存为 `research_only` 或 `deferred`，不能借阶段 0 接入运行链。
 
 ## 2. 三层数据模型
 
@@ -456,15 +462,22 @@
 
 ## 9. 统一数据格式
 
-建议新增人工维护的源文件：
+版本 1 的格式真源为
+[connected_speech_record.schema.json](connected_speech/connected_speech_record.schema.json)。阶段 0 可以
+使用 JSON 记录，也可以使用以下 TSV 作为单来源观察的人工维护投影；数组和逐位置改写字段使用 JSON
+文本保存，载入后必须通过同一 Schema 语义校验。
 
 ```text
 yime_connected_speech_aliases.tsv
 ```
 
-建议字段：
+TSV 投影字段：
 
 ```text
+schema_version
+ruleset_version
+record_id
+record_revision
 text
 canonical_pinyin
 source_observation_id
@@ -489,17 +502,18 @@ candidate_text_policy
 phenomenon
 rule_id
 scope
-status
-source
+runtime_enabled
 ```
 
 其中：
 
+- `schema_version`、`ruleset_version`、`record_id`、`record_revision`：按收口包版本策略维护；
 - `source_observation_id`：稳定指向不可变的原始来源记录和页码、条号或文件定位；
 - `source_text_raw`、`source_reading_raw`：忠实保存来源词形和注音，不因工程判断而覆盖；
 - `source_policy`：标识 pypinyin、万象、BCC、PSC、审音表等来源各自的符号和标调解释制度；
 - `transcription_status`：区分原样转录、已校正转录、疑似错误和待复核；
-- `adjudication_status`：区分已批准、暂缓、冲突、例外和只作研究，不与原始转录状态混用；
+- `adjudication_status`：使用 `approved_compatibility`、`approved_surface`、`experimental`、
+  `research_only`、`deferred`、`rejected`，不与原始转录状态混用；
 - `compatibility_reading`、`compatibility_yinyuan_ids`：保存轻声 `5`、儿缀 `er5` 等稳定兼容路径；
 - `underlying_tone`：轻声可空的深层本调属性；未知时留空，不得为完成编码而猜造；
 - `erhua_status`：区分非儿化、独立 `ér`、儿缀兼容、融合儿化、口语提示和待定；
@@ -513,18 +527,13 @@ source
 - `phenomenon`：`tone_sandhi`、`neutral_tone`、`erhua`、
   `particle_allomorphy`、`assimilation`、`dissimilation` 等；
 - `scope`：`lexical`、`construction`、`phrase`、`prosodic`；
-- `status`：`canonical`、`enabled_alias`、`experimental`、`research_only`；
-- `source`：规范、词典、语料、人工审定记录或专项研究编号。
+- `runtime_enabled`：只有获批准且模块启用的记录才可能为真；隔离状态必须为假。
 
-任何 `research_only` 记录不得进入运行词典。
+任何 `research_only`、`deferred` 或 `rejected` 记录不得进入运行词典。
 
-建议生成：
-
-- `yime_connected_speech_manifest.json`；
-- 三模式逐项覆盖报告；
-- 新增编码碰撞和候选排序报告；
-- 未知音节、规则冲突和边界不明报告；
-- 各现象模块的启用状态与规则版本。
+阶段 0 的精确输出文件、字段和哈希约束以
+[离线验收与回退](connected_speech/OFFLINE_ACCEPTANCE_AND_ROLLBACK.md)为准；清单、三模式覆盖、码长、
+碰撞、排序影响、拒绝记录和前后基线哈希缺一不可。
 
 ## 10. 建议的构建链
 
@@ -577,18 +586,18 @@ source
 
 ## 12. 从准备到实施的阶段顺序
 
-当前只推进“准备阶段 P”。阶段 0 及其后的工作均未开始；完成 1.2 节的退出条件并单独确认后，
-才进入下一阶段。
+准备阶段 P 已完成设计收口。阶段 0 及其后的程序工作尚未开始；下一步只实施第一批离线数据格式、
+校验器和报告器，仍不得改变运行词典、安装产物或用户数据。
 
-### 准备阶段 P：方案与门禁收口
+### 准备阶段 P：方案与门禁收口（已完成）
 
 完成本方案的术语、数据模型、证据要求、排除边界、接口边界、试算指标、测试基线和回退设计。
 本阶段只形成可评审材料，不新增程序包、生成脚本或运行产物。
 
 ### 阶段 0：数据格式与离线审计
 
-准备阶段 P 评审通过后，才开始建立统一 TSV、现象分类、来源字段、冲突检测和报告。阶段 0 可以
-编写离线工具，但仍不得改变运行词典、安装产物或用户数据。
+准备阶段 P 已评审通过。阶段 0 按版本 1 Schema 建立结构化记录、可选 TSV 投影、现象分类、来源
+观察、冲突检测和报告。阶段 0 可以编写离线工具，但仍不得改变运行词典、安装产物或用户数据。
 
 ### 阶段 1：既有轻声链审计
 
