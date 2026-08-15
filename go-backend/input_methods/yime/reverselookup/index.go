@@ -37,6 +37,10 @@ func Load(sharedDir, userDir string, mode Mode) (*Index, error) {
 	if err != nil {
 		return nil, err
 	}
+	sourceTruth, err := loadSourceTruth(filepath.Join(sharedDir, SourceTruthFileName), codeMap, mode)
+	if err != nil {
+		return nil, err
+	}
 
 	index := &Index{
 		SchemaID:     schemaID,
@@ -45,6 +49,7 @@ func Load(sharedDir, userDir string, mode Mode) (*Index, error) {
 		DictLookup:   dictLookup,
 		UserEntries:  userEntries,
 		MarkedLookup: markedLookup,
+		SourceTruth:  sourceTruth,
 	}
 	index.SetMode(mode)
 	_ = saveCachedIndex(sharedDir, userDir, index)

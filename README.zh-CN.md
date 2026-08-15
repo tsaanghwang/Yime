@@ -135,7 +135,7 @@ regsvr32 /u "C:\Program Files (x86)\YIME\x64\PIMETextService.dll"
 ## 首次运行检查清单
 
 - [ ] 克隆仓库，初始化子模块，确认工具链已安装
-- [ ] 若整理后的核心真源有变更，运行 `tools\deploy-yime-rime-data.ps1 -InputPath <two_level_full.dict.yaml> -EvidenceManifest <dictionary.manifest.json> -SourceRevision <提交>`（参见 [docs/YIME_RIME_INTEGRATION.md](docs/YIME_RIME_INTEGRATION.md)）
+- [ ] 若整理后的核心真源有变更，运行 `tools\deploy-yime-rime-data.ps1 -InputPath <two_level_full.dict.yaml> -EvidenceManifest <dictionary.manifest.json> -PronunciationEntries <entries.tsv> -SourceRevision <提交>`（参见 [docs/YIME_RIME_INTEGRATION.md](docs/YIME_RIME_INTEGRATION.md)）
 - [ ] 运行 `.\tools\dev-build-install-verify.ps1`，一次完成“构建 → 重装 → 安装态核验”闭环
 - [ ] 如需分步执行，依次运行 `cmd /c build.bat`、管理员提示符下的 `.\Reinstall-PIME-Test.cmd`，再运行 `tools\verify-installed-runtime.ps1 -RequireRunningLauncher`
 - [ ] 在文本应用中切换到音元输入法，验证：激活、候选窗、设置、反查

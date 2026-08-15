@@ -14,6 +14,7 @@ type Index struct {
 	UserEntries   []UserPhraseEntry
 	MarkedLookup  map[string]string
 	ReverseLookup map[string]string
+	SourceTruth   map[string][]string
 	ActiveColumn  string
 }
 
@@ -90,6 +91,7 @@ func resolvePhraseLookupMulti(
 	codeMap map[string]CodeRecord,
 	reverseLookup map[string]string,
 	markedLookup map[string]string,
+	sourceTruth map[string][]string,
 	activeColumn string,
 ) []Result {
 	text := strings.TrimSpace(phrase)
@@ -106,7 +108,14 @@ func resolvePhraseLookupMulti(
 
 	if codes, ok := dictLookup[text]; ok {
 		for _, yimeCode := range codes {
-			results = append(results, buildLookupResult(text, "系统词库", "", yimeCode, codeMap, reverseLookup, markedLookup, activeColumn))
+			truth := sourceTruth[SourceTruthLookupKey(text, yimeCode)]
+			if len(truth) == 0 {
+				results = append(results, buildLookupResult(text, "系统词库", "", yimeCode, codeMap, reverseLookup, markedLookup, activeColumn))
+				continue
+			}
+			for _, numeric := range truth {
+				results = append(results, buildLookupResult(text, "系统词库", numeric, yimeCode, codeMap, reverseLookup, markedLookup, activeColumn))
+			}
 		}
 	} else if joinedCodes := joinCharCodeLookupMulti(text, dictLookup); joinedCodes != nil {
 		for _, yimeCode := range joinedCodes {
@@ -128,7 +137,7 @@ func (index *Index) Search(term string, containsMatch bool) []Result {
 	results := []Result{}
 	seen := map[string]struct{}{}
 	addResult := func(item Result) {
-		key := item.Phrase + "|" + item.ActiveCode
+		key := item.Phrase + "|" + item.ActiveCode + "|" + item.NumericPinyin
 		if _, ok := seen[key]; ok {
 			return
 		}
@@ -136,7 +145,7 @@ func (index *Index) Search(term string, containsMatch bool) []Result {
 		results = append(results, item)
 	}
 
-	for _, item := range resolvePhraseLookupMulti(text, index.UserEntries, index.DictLookup, index.CodeMap, index.ReverseLookup, index.MarkedLookup, index.ActiveColumn) {
+	for _, item := range resolvePhraseLookupMulti(text, index.UserEntries, index.DictLookup, index.CodeMap, index.ReverseLookup, index.MarkedLookup, index.SourceTruth, index.ActiveColumn) {
 		addResult(item)
 	}
 	if len(results) > 0 && !containsMatch {
@@ -153,7 +162,7 @@ func (index *Index) Search(term string, containsMatch bool) []Result {
 		if !containsMatch || !strings.Contains(entry.Phrase, text) {
 			continue
 		}
-		for _, item := range resolvePhraseLookupMulti(entry.Phrase, index.UserEntries, index.DictLookup, index.CodeMap, index.ReverseLookup, index.MarkedLookup, index.ActiveColumn) {
+		for _, item := range resolvePhraseLookupMulti(entry.Phrase, index.UserEntries, index.DictLookup, index.CodeMap, index.ReverseLookup, index.MarkedLookup, index.SourceTruth, index.ActiveColumn) {
 			addResult(item)
 			if len(results) >= maxSearchResults {
 				break
@@ -169,7 +178,7 @@ func (index *Index) Search(term string, containsMatch bool) []Result {
 			if !strings.Contains(phrase, text) {
 				continue
 			}
-			for _, item := range resolvePhraseLookupMulti(phrase, index.UserEntries, index.DictLookup, index.CodeMap, index.ReverseLookup, index.MarkedLookup, index.ActiveColumn) {
+			for _, item := range resolvePhraseLookupMulti(phrase, index.UserEntries, index.DictLookup, index.CodeMap, index.ReverseLookup, index.MarkedLookup, index.SourceTruth, index.ActiveColumn) {
 				addResult(item)
 				if len(results) >= maxSearchResults {
 					break

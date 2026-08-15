@@ -33,6 +33,7 @@ BCC 频次，也不把两个语料库的原始计数直接相加。
 powershell -ExecutionPolicy Bypass -File tools/import-yime-core-lexicon.ps1 `
   -InputPath <prototype>\two_level_full.dict.yaml `
   -EvidenceManifest <prototype>\dictionary.manifest.json `
+  -PronunciationEntries <prototype>\lexicon_source_bundle\entries.tsv `
   -SourceRevision <prototype-commit>
 
 cd go-backend

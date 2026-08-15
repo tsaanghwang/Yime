@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/codemode"
@@ -171,7 +172,20 @@ func loadNumericToMarkedLookup(path string) (map[string]string, error) {
 
 func buildReverseCodeLookup(codeMap map[string]CodeRecord, column string) map[string]string {
 	lookup := map[string]string{}
-	for numeric, record := range codeMap {
+	keys := make([]string, 0, len(codeMap))
+	for numeric := range codeMap {
+		keys = append(keys, numeric)
+	}
+	sort.Slice(keys, func(i, j int) bool {
+		leftAlias := strings.Contains(keys[i], ":") || strings.Contains(keys[i], "v")
+		rightAlias := strings.Contains(keys[j], ":") || strings.Contains(keys[j], "v")
+		if leftAlias != rightAlias {
+			return !leftAlias
+		}
+		return keys[i] < keys[j]
+	})
+	for _, numeric := range keys {
+		record := codeMap[numeric]
 		code := codeValue(record, column)
 		if code == "" {
 			continue
