@@ -124,6 +124,52 @@ func TestRefreshRimeDataReplacesStaleGeneratedLexicon(t *testing.T) {
 	}
 }
 
+func TestRefreshRimeDataCopiesAndTracksExplicitErhuaOverlay(t *testing.T) {
+	sharedDir := t.TempDir()
+	userDir := t.TempDir()
+	for _, name := range generatedErhuaOverlayFiles[:3] {
+		if err := os.WriteFile(filepath.Join(sharedDir, name), []byte("overlay "+name+"\n"), 0o644); err != nil {
+			t.Fatal(err)
+		}
+	}
+	manifest := []byte(`{"tool_version":"explicit-erhua-mixed-runtime-v1"}` + "\n")
+	if err := os.WriteFile(filepath.Join(sharedDir, generatedErhuaOverlayFiles[3]), manifest, 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	changed, err := RefreshRimeData(sharedDir, userDir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !changed {
+		t.Fatal("first explicit-erhua overlay refresh must request a Rime rebuild")
+	}
+	for _, name := range generatedErhuaOverlayFiles {
+		if _, err := os.Stat(filepath.Join(userDir, name)); err != nil {
+			t.Fatalf("expected copied overlay artifact %s: %v", name, err)
+		}
+	}
+	changed, err = RefreshRimeData(sharedDir, userDir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if changed {
+		t.Fatal("identical explicit-erhua overlay must not force another rebuild")
+	}
+
+	updated := []byte(`{"tool_version":"explicit-erhua-mixed-runtime-v2"}` + "\n")
+	if err := os.WriteFile(filepath.Join(sharedDir, generatedErhuaOverlayFiles[3]), updated, 0o644); err != nil {
+		t.Fatal(err)
+	}
+	changed, err = RefreshRimeData(sharedDir, userDir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !changed {
+		t.Fatal("updated explicit-erhua overlay manifest must request a Rime rebuild")
+	}
+}
+
 func TestRefreshRimeDataReencodesDerivedUserLexicons(t *testing.T) {
 	sharedDir := t.TempDir()
 	userDir := t.TempDir()

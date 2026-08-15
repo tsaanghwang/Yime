@@ -1,0 +1,5 @@
+class_id	conditioning_surface_tone	surface_pitch_level	expected_projected_grade	conditioning_stage	adjudication_status	note
+after_t1_level2	1	2	low	post_tone_sandhi_surface	research_only	阴平语境后的轻声暂记五度值2
+after_t2_level3	2	3	low	post_tone_sandhi_surface	research_only	阳平语境后的轻声暂记五度值3
+after_t3_level4	3	4	mid	post_tone_sandhi_surface	research_only	上声语境后的轻声暂记五度值4
+after_t4_level1	4	1	low	post_tone_sandhi_surface	research_only	去声语境后的轻声暂记五度值1

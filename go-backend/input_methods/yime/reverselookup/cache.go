@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 )
 
-const cacheVersion = 1
+const cacheVersion = 2
 
 type cacheHeader struct {
 	Version     int
@@ -21,6 +21,7 @@ type cachePayload struct {
 	DictLookup   map[string][]string
 	UserEntries  []UserPhraseEntry
 	MarkedLookup map[string]string
+	SourceTruth  map[string][]string
 }
 
 func cachePath(schemaID string) string {
@@ -36,7 +37,8 @@ func sourceTimes(sharedDir, userDir, schemaID string) (map[string]int64, error) 
 	markedPath := filepath.Join(sharedDir, "pinyin_normalized.json")
 	userPhrasePath := filepath.Join(userDir, "yime_user_phrases.txt")
 	dictPath := resolveDictPath(sharedDir, userDir, schemaID)
-	paths := []string{codeMapPath, markedPath, userPhrasePath, dictPath}
+	sourceTruthPath := filepath.Join(sharedDir, SourceTruthFileName)
+	paths := []string{codeMapPath, markedPath, userPhrasePath, dictPath, sourceTruthPath}
 	times := make(map[string]int64, len(paths))
 	for _, path := range paths {
 		info, err := os.Stat(path)
@@ -92,6 +94,7 @@ func loadCachedIndex(sharedDir, userDir, schemaID string) (*Index, bool) {
 		DictLookup:   payload.DictLookup,
 		UserEntries:  payload.UserEntries,
 		MarkedLookup: payload.MarkedLookup,
+		SourceTruth:  payload.SourceTruth,
 	}
 	return index, true
 }
@@ -127,6 +130,7 @@ func saveCachedIndex(sharedDir, userDir string, index *Index) error {
 		DictLookup:   index.DictLookup,
 		UserEntries:  index.UserEntries,
 		MarkedLookup: index.MarkedLookup,
+		SourceTruth:  index.SourceTruth,
 	}
 	return gob.NewEncoder(file).Encode(payload)
 }

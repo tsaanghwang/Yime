@@ -4584,6 +4584,39 @@ func TestYimePinyinAndKeySequenceCandidateCommentsFollowEveryInputSchema(t *test
 	}
 }
 
+func TestStandardPinyinCandidateCommentsUseSourceTruthAcrossSchemas(t *testing.T) {
+	ime := newTestIME()
+	backend := ime.backend.(*testBackend)
+	ime.reverseLookupDisplayMode = "standard_pinyin"
+	ime.numericToMarkedLoaded = true
+	ime.numericToMarkedPinyin = map[string]string{"e2": "é", "o2": "ó"}
+	ime.sourcePinyinLoaded = map[string]bool{
+		"yime_full":      true,
+		"yime_variable":  true,
+		"yime_shorthand": true,
+	}
+	ime.sourcePinyinBySchema = map[string]map[string][]string{
+		"yime_full":      {"哦\x00abcd": {"e2", "o2"}},
+		"yime_variable":  {"哦\x00ab": {"e2", "o2"}},
+		"yime_shorthand": {"哦\x00a": {"e2", "o2"}},
+	}
+
+	for _, test := range []struct {
+		schemaID string
+		code     string
+	}{
+		{"yime_full", "ab cd"},
+		{"yime_variable", "ab"},
+		{"yime_shorthand", "a"},
+	} {
+		backend.schemaID = test.schemaID
+		display := ime.reverseLookupDisplayCandidates([]candidateItem{{Text: "哦", Comment: test.code}})
+		if got := display[0].Comment; got != "é / ó" {
+			t.Fatalf("%s source annotation = %q", test.schemaID, got)
+		}
+	}
+}
+
 func TestCandidateAnnotationsFallBackToScriptDictionaryCodesInAllDisplayModes(t *testing.T) {
 	ime := newTestIME()
 	ime.yimePinyinLoaded = map[string]bool{"yime_variable": true}

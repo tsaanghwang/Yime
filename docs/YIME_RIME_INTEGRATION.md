@@ -38,6 +38,7 @@ From `C:\dev\Yime`:
 powershell -NoProfile -ExecutionPolicy Bypass -File tools\deploy-yime-rime-data.ps1 `
   -InputPath C:\path\to\two_level_full.dict.yaml `
   -EvidenceManifest C:\path\to\dictionary.manifest.json `
+  -PronunciationEntries C:\path\to\lexicon_source_bundle\entries.tsv `
   -SourceRevision <prototype-commit>
 ```
 
@@ -47,12 +48,18 @@ To generate the three dictionaries without deploying them:
 powershell -NoProfile -ExecutionPolicy Bypass -File tools\import-yime-core-lexicon.ps1 `
   -InputPath C:\path\to\two_level_full.dict.yaml `
   -EvidenceManifest C:\path\to\dictionary.manifest.json `
+  -PronunciationEntries C:\path\to\lexicon_source_bundle\entries.tsv `
   -SourceRevision <prototype-commit>
 ```
 
 There is no variable-mode or shorthand-mode import switch. Those files are
 reproducible runtime products and carry the source SHA-256 in
 `yime_lexicon_manifest.json`.
+
+The same import also derives `yime_pinyin_reverse_source.tsv`. This partial
+sidecar preserves canonical Pinyin only where different Pinyin readings share
+the same Yime code; see
+[同编码不同拼音反向映射](project/REVERSE_PINYIN_SOURCE_MAPPING.md).
 
 ## Build notes
 

@@ -5,6 +5,12 @@
     "source_dictionary":  "two_level_full.dict.yaml",
     "source_dictionary_sha256":  "5527540dd10290c7b66e82f8722a51b53fc55ccc269ef81bbe5736b42c872b57",
     "source_selection_sha256":  "2d5d35d43f5277cf3a504832ba20097b86d0934adeafa203c5beabbb7b5873ac",
+    "pronunciation_entries":  "entries.tsv",
+    "pronunciation_entries_sha256":  "4a99189378a1fbaab3362399f744d81be3c55e9bb7dea057a219666a930f4069",
+    "reverse_pinyin_source":  "yime_pinyin_reverse_source.tsv",
+    "reverse_pinyin_source_sha256":  "36279eec3db72bec8b3a6da4f4d497eec7e3e19c8f0be5cda991b8909383f218",
+    "reverse_pinyin_source_rows":  41850,
+    "reverse_pinyin_code_map_sha256":  "fc2f4e6f2edfb8e16f63fe79202bb9ca3c67b0d6284bdd24487dc85dacd05fe7",
     "entry_count":  1166300,
     "distinct_texts":  1151400,
     "ranking_evidence":  {

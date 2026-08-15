@@ -12,6 +12,10 @@
 *.bat text eol=crlf
 *.cmd text eol=crlf
 
+# This generated sidecar is hashed byte-for-byte in
+# yime_core_source_manifest.json. Keep CI and Windows worktrees identical.
+go-backend/input_methods/yime/data/yime_pinyin_reverse_source.tsv text eol=lf
+
 # Preserve the imported libIME2 base snapshot byte-for-byte. Its historical
 # whitespace is upstream provenance, while new component changes remain
 # reviewable through the libIME2 commit boundary gate.

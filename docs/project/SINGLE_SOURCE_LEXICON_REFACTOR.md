@@ -62,6 +62,7 @@ powershell -NoProfile -ExecutionPolicy Bypass `
   -File tools\import-yime-core-lexicon.ps1 `
   -InputPath C:\path\to\two_level_full.dict.yaml `
   -EvidenceManifest C:\path\to\dictionary.manifest.json `
+  -PronunciationEntries C:\path\to\lexicon_source_bundle\entries.tsv `
   -SourceRevision <prototype-commit>
 ```
 
@@ -72,6 +73,7 @@ powershell -NoProfile -ExecutionPolicy Bypass `
   -File tools\deploy-yime-rime-data.ps1 `
   -InputPath C:\path\to\two_level_full.dict.yaml `
   -EvidenceManifest C:\path\to\dictionary.manifest.json `
+  -PronunciationEntries C:\path\to\lexicon_source_bundle\entries.tsv `
   -SourceRevision <prototype-commit>
 ```
 

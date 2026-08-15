@@ -1,0 +1,39 @@
+# Rime dictionary
+# GENERATED FILE - explicit source-backed erhua mixed routes
+# Contains only inherited-weight aliases; no productive erhua inference.
+---
+name: yime_erhua_mixed_full
+version: "explicit-erhua-mixed-v1"
+sort: by_weight
+use_preset_vocabulary: false
+...
+纳闷儿	nfds-vcz'III	2162
+纳闷儿	nfds-UIO	2162
+光棍儿	guf;gucz'III	2057
+光棍儿	guf;guIO	2057
+一阵儿	yjjj7vcz'III	2300
+一阵儿	yjjj7UIO	2300
+小曲儿	1lso2...'III	2016
+小曲儿	1lso2.OO	2016
+没词儿	-xcj5LKJ'III	1166
+没词儿	-xcj5OIU	1166
+围嘴儿	=ocj6oxl'III	2026
+围嘴儿	=ocj6oOO	2026
+压根儿	yjdsgvva'III	3801
+压根儿	yjdsgUUU	3801
+跑腿儿	pssotoxl'III	2008
+跑腿儿	pssotoOO	2008
+把门儿	bsss-xca'III	2006
+把门儿	bsss-OIU	2006
+送信儿	4ue/1jcz'III	1036
+送信儿	4ue/1jIO	1036
+大婶儿	]fds9xxz'III	2068
+大婶儿	]fds9OOO	2068
+针鼻儿	7vvablkj'III	1036
+针鼻儿	7vvablIU	1036
+瓜子儿	guff6LLL'III	2042
+瓜子儿	guff6OOO	2042
+冰棍儿	bjr;gucz'III	2186
+冰棍儿	bjr;guIO	2186
+垫底儿	]jdz]lll'III	2013
+垫底儿	]jdz]lOO	2013

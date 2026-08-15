@@ -6,6 +6,8 @@ param(
     [string]$EvidenceManifest,
     [Parameter(Mandatory = $true)]
     [string]$SourceRevision,
+    [Parameter(Mandatory = $true)]
+    [string]$PronunciationEntries,
     [string]$PimeRoot = "",
     [string]$RimeUserDir = ""
 )
@@ -26,6 +28,7 @@ $importer = Join-Path $PSScriptRoot "import-yime-core-lexicon.ps1"
 # Its evidence manifest proves ranking provenance before all modes are derived.
 & $importer -InputPath $InputPath -EvidenceManifest $EvidenceManifest `
     -SourceRevision $SourceRevision `
+    -PronunciationEntries $PronunciationEntries `
     -OutputDir $sharedDir
 if ($LASTEXITCODE -ne 0) {
     throw "Yime lexicon import failed with exit code $LASTEXITCODE"
@@ -37,6 +40,12 @@ foreach ($mode in @("full", "variable", "shorthand")) {
         $name = "yime_${mode}.${suffix}"
         Copy-Item -LiteralPath (Join-Path $sharedDir $name) -Destination (Join-Path $RimeUserDir $name) -Force
     }
+    $overlayName = "yime_erhua_mixed_${mode}.dict.yaml"
+    Copy-Item -LiteralPath (Join-Path $sharedDir $overlayName) `
+        -Destination (Join-Path $RimeUserDir $overlayName) -Force
+    $overlaySchemaName = "yime_erhua_mixed_${mode}.schema.yaml"
+    Copy-Item -LiteralPath (Join-Path $sharedDir $overlaySchemaName) `
+        -Destination (Join-Path $RimeUserDir $overlaySchemaName) -Force
 }
 # Do not copy the generation manifest here. On the next YIME startup, the
 # stale or absent user manifest makes RefreshRimeData atomically refresh the

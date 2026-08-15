@@ -3,14 +3,20 @@
 package yime
 
 import (
+	"encoding/csv"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"sort"
+	"strconv"
 	"strings"
 	"testing"
 
+	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/connectedspeech"
+	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/reverselookup"
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/settings"
+	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/userlexicon"
 	"github.com/tsaanghwang/Yime/go-backend/pime"
 )
 
@@ -61,13 +67,22 @@ func (b *rawCompositionRuntimeBackend) State() rimeState {
 }
 
 func newRealRimeSession(t *testing.T) realRimeTestSession {
+	return newRealRimeSessionWithManagedRefresh(t, false)
+}
+
+func newRealRimeSessionWithManagedRefresh(t *testing.T, refresh bool) realRimeTestSession {
 	t.Helper()
 
 	dataDir := rimeRuntimeTestDataDir(t)
 	userDir := filepath.Join(t.TempDir(), "Rime")
 	writeRuntimeTestDefaultCustom(t, userDir)
+	if refresh {
+		if _, err := userlexicon.RefreshRimeData(dataDir, userDir); err != nil {
+			t.Fatalf("refresh managed Rime data: %v", err)
+		}
+	}
 
-	if !RimeInit(dataDir, userDir, APP, APP_VERSION, false) {
+	if !RimeInit(dataDir, userDir, APP, APP_VERSION, refresh) {
 		t.Fatal("RimeInit failed")
 	}
 
@@ -166,6 +181,690 @@ func TestRealRimeCanCommitText(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestRealRimeNeutralToneEntryAcrossAllThreeSchemas(t *testing.T) {
+	dataDir := rimeRuntimeTestDataDir(t)
+	codeMap, err := reverselookup.LoadSharedCodeMap(dataDir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	session := newRealRimeSession(t)
+	for _, test := range []struct {
+		schema string
+		mode   reverselookup.Mode
+	}{
+		{"yime_variable", reverselookup.ModeVariable},
+		{"yime_full", reverselookup.ModeFull},
+		{"yime_shorthand", reverselookup.ModeShorthand},
+	} {
+		t.Run(test.schema, func(t *testing.T) {
+			if !SelectSchema(session.sessionID, test.schema) {
+				t.Fatalf("expected %s to be selectable", test.schema)
+			}
+			ClearComposition(session.sessionID)
+			code, _, err := reverselookup.EncodeNumericTonePinyin(codeMap, "zhuo1 zi5", test.mode)
+			if err != nil {
+				t.Fatal(err)
+			}
+			for _, key := range code {
+				if !ProcessKey(session.sessionID, int(key), 0) {
+					t.Fatalf("ProcessKey failed for %q in %s", key, test.schema)
+				}
+			}
+			menu, ok := GetMenu(session.sessionID)
+			if !ok {
+				t.Fatalf("expected menu for %s after %q", test.schema, code)
+			}
+			found := false
+			for _, candidate := range menu.Candidates {
+				if candidate.Text == "桌子" {
+					found = true
+					break
+				}
+			}
+			if !found {
+				t.Fatalf("neutral-tone candidate 桌子 missing in %s after %q: %#v", test.schema, code, menu.Candidates)
+			}
+		})
+	}
+}
+
+func TestRealRimeExplicitErhuaMixedRoutesAcrossAllThreeSchemas(t *testing.T) {
+	dataDir := rimeRuntimeTestDataDir(t)
+	session := newRealRimeSessionWithManagedRefresh(t, true)
+	for _, mode := range []string{"variable", "full", "shorthand"} {
+		t.Run(mode, func(t *testing.T) {
+			schema := "yime_" + mode
+			if !SelectSchema(session.sessionID, schema) {
+				t.Fatalf("expected %s to be selectable", schema)
+			}
+			entries := readBundledErhuaDictionary(t, filepath.Join(dataDir, "yime_erhua_mixed_"+mode+".dict.yaml"))
+			codes := []string{}
+			for _, entry := range entries {
+				if entry.Text == "一阵儿" {
+					codes = append(codes, entry.Code)
+				}
+			}
+			if len(codes) != 2 || codes[0] == codes[1] {
+				t.Fatalf("%s must expose distinct suffix and fused routes for 一阵儿: %v", mode, codes)
+			}
+			for _, code := range codes {
+				if _, found := findRealRimeCandidate(t, session.sessionID, code, "一阵儿"); !found {
+					t.Fatalf("explicit-erhua candidate 一阵儿 missing in %s after %q", schema, code)
+				}
+			}
+		})
+	}
+}
+
+func TestRealRimeStage2BYiBuAliasesAndRollbackAcrossAllSchemas(t *testing.T) {
+	dataDir := rimeRuntimeTestDataDir(t)
+	repoRoot := filepath.Clean(filepath.Join(dataDir, "..", "..", "..", ".."))
+	trial, err := connectedspeech.RunStage2BRimeTrial(connectedspeech.DefaultStage2BTrialConfig(repoRoot))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !trial.Summary.Passed || trial.Summary.TrialAliasCount != 2 || trial.Summary.ThreeModeEntryCount != 6 {
+		t.Fatalf("unexpected Stage 2B package summary: %#v", trial.Summary)
+	}
+	codeMap, err := reverselookup.LoadSharedCodeMap(dataDir)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	tests := []struct {
+		text            string
+		canonical       string
+		alias           string
+		baseDynamicPath bool
+	}{
+		{text: "不至于", canonical: "bu4 zhi4 yu2", alias: "bu2 zhi4 yu2", baseDynamicPath: true},
+		{text: "一本", canonical: "yi1 ben3", alias: "yi4 ben3", baseDynamicPath: false},
+	}
+	modes := []struct {
+		schema string
+		mode   reverselookup.Mode
+	}{
+		{"yime_variable", reverselookup.ModeVariable},
+		{"yime_full", reverselookup.ModeFull},
+		{"yime_shorthand", reverselookup.ModeShorthand},
+	}
+
+	runPhase := func(name string, installTrial bool) {
+		t.Run(name, func(t *testing.T) {
+			userDir := filepath.Join(t.TempDir(), "Rime")
+			writeRuntimeTestDefaultCustom(t, userDir)
+			if installTrial {
+				copyStage2BTrialFiles(t, connectedspeech.DefaultStage2BTrialConfig(repoRoot).OutputDir, userDir)
+			} else {
+				writeStage2BDisabledPatches(t, connectedspeech.DefaultStage2BTrialConfig(repoRoot).OutputDir, userDir)
+			}
+			if !RimeInit(dataDir, userDir, APP, APP_VERSION, true) {
+				t.Fatal("RimeInit failed")
+			}
+			sessionID, ok := StartSession()
+			if !ok || sessionID == 0 {
+				Finalize()
+				t.Fatal("StartSession failed")
+			}
+			defer func() {
+				EndSession(sessionID)
+				Finalize()
+			}()
+			SetOption(sessionID, "ascii_mode", false)
+
+			for _, mode := range modes {
+				if !SelectSchema(sessionID, mode.schema) {
+					t.Fatalf("expected %s to be selectable", mode.schema)
+				}
+				for _, item := range tests {
+					canonicalCode, _, encodeErr := reverselookup.EncodeNumericTonePinyin(codeMap, item.canonical, mode.mode)
+					if encodeErr != nil {
+						t.Fatal(encodeErr)
+					}
+					if _, found := findRealRimeCandidate(t, sessionID, canonicalCode, item.text); !found {
+						t.Fatalf("canonical path %s/%s missing after %q", mode.schema, item.text, canonicalCode)
+					}
+
+					aliasCode, _, encodeErr := reverselookup.EncodeNumericTonePinyin(codeMap, item.alias, mode.mode)
+					if encodeErr != nil {
+						t.Fatal(encodeErr)
+					}
+					index, found := findRealRimeCandidate(t, sessionID, aliasCode, item.text)
+					if found != installTrial {
+						t.Fatalf("trial path %s/%s after %q found=%t want=%t", mode.schema, item.text, aliasCode, found, installTrial)
+					}
+					if installTrial {
+						if !SelectCandidate(sessionID, index) {
+							t.Fatalf("failed to select trial candidate %s/%s at %d", mode.schema, item.text, index)
+						}
+						commit, committed := GetCommit(sessionID)
+						if !committed || commit.Text != item.text {
+							t.Fatalf("trial commit %s/%s = %#v committed=%t", mode.schema, item.text, commit, committed)
+						}
+					}
+				}
+			}
+		})
+	}
+
+	runPhase("module-enabled", true)
+	runPhase("module-disabled-rollback", false)
+	t.Run("base-dynamic-sentence-observation", func(t *testing.T) {
+		userDir := filepath.Join(t.TempDir(), "Rime")
+		writeRuntimeTestDefaultCustom(t, userDir)
+		writeStage2BDynamicBasePatches(t, userDir)
+		if !RimeInit(dataDir, userDir, APP, APP_VERSION, true) {
+			t.Fatal("RimeInit failed")
+		}
+		sessionID, ok := StartSession()
+		if !ok || sessionID == 0 {
+			Finalize()
+			t.Fatal("StartSession failed")
+		}
+		defer func() {
+			EndSession(sessionID)
+			Finalize()
+		}()
+		SetOption(sessionID, "ascii_mode", false)
+		for _, mode := range modes {
+			if !SelectSchema(sessionID, mode.schema) {
+				t.Fatalf("expected %s to be selectable", mode.schema)
+			}
+			for _, item := range tests {
+				aliasCode, _, encodeErr := reverselookup.EncodeNumericTonePinyin(codeMap, item.alias, mode.mode)
+				if encodeErr != nil {
+					t.Fatal(encodeErr)
+				}
+				if _, found := findRealRimeCandidate(t, sessionID, aliasCode, item.text); found != item.baseDynamicPath {
+					t.Fatalf("base dynamic sentence path %s/%s after %q found=%t want=%t", mode.schema, item.text, aliasCode, found, item.baseDynamicPath)
+				}
+			}
+		}
+	})
+}
+
+func copyStage2BTrialFiles(t *testing.T, sourceDir, userDir string) {
+	t.Helper()
+	for _, name := range []string{
+		"yime_connected_speech_stage2b_full.dict.yaml",
+		"yime_connected_speech_stage2b_variable.dict.yaml",
+		"yime_connected_speech_stage2b_shorthand.dict.yaml",
+		"yime_full.custom.yaml",
+		"yime_variable.custom.yaml",
+		"yime_shorthand.custom.yaml",
+	} {
+		payload, err := os.ReadFile(filepath.Join(sourceDir, name))
+		if err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(filepath.Join(userDir, name), payload, 0o644); err != nil {
+			t.Fatal(err)
+		}
+	}
+}
+
+func writeStage2BDisabledPatches(t *testing.T, sourceDir, userDir string) {
+	t.Helper()
+	for _, schema := range []string{"full", "variable", "shorthand"} {
+		name := "yime_connected_speech_stage2b_baseline_" + schema
+		payload, err := os.ReadFile(filepath.Join(sourceDir, name+".dict.yaml"))
+		if err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(filepath.Join(userDir, name+".dict.yaml"), payload, 0o644); err != nil {
+			t.Fatal(err)
+		}
+		content := "patch:\n  translator/dictionary: " + name + "\n  translator/enable_sentence: false\n"
+		if err := os.WriteFile(filepath.Join(userDir, "yime_"+schema+".custom.yaml"), []byte(content), 0o644); err != nil {
+			t.Fatal(err)
+		}
+	}
+}
+
+func writeStage2BDynamicBasePatches(t *testing.T, userDir string) {
+	t.Helper()
+	for _, schema := range []string{"full", "variable", "shorthand"} {
+		content := "patch:\n  translator/dictionary: yime_" + schema + "\n  translator/enable_sentence: true\n"
+		if err := os.WriteFile(filepath.Join(userDir, "yime_"+schema+".custom.yaml"), []byte(content), 0o644); err != nil {
+			t.Fatal(err)
+		}
+	}
+}
+
+func TestRealRimeStage3NeutralSamplesAndRollbackAcrossAllSchemas(t *testing.T) {
+	dataDir := rimeRuntimeTestDataDir(t)
+	repoRoot := filepath.Clean(filepath.Join(dataDir, "..", "..", "..", ".."))
+	impact, err := connectedspeech.RunNeutralLexiconImpactAudit(connectedspeech.DefaultNeutralLexiconImpactConfig(repoRoot))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !impact.Summary.Passed {
+		t.Fatalf("unexpected Stage 3-0 impact summary: %#v", impact.Summary)
+	}
+	trial, err := connectedspeech.RunNeutralStage3RimeTrial(connectedspeech.DefaultNeutralStage3TrialConfig(repoRoot))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !trial.Summary.Passed || len(trial.Cases) == 0 || trial.Summary.ThreeModeEntryCount != len(trial.Cases)*3 {
+		t.Fatalf("unexpected Stage 3-1 package: summary=%#v cases=%d", trial.Summary, len(trial.Cases))
+	}
+
+	modes := []struct {
+		schema string
+		mode   string
+	}{
+		{"yime_variable", "variable"},
+		{"yime_full", "full"},
+		{"yime_shorthand", "shorthand"},
+	}
+	runPhase := func(name string, enabled bool) {
+		t.Run(name, func(t *testing.T) {
+			userDir := filepath.Join(t.TempDir(), "Rime")
+			writeRuntimeTestDefaultCustom(t, userDir)
+			if enabled {
+				copyStage3NeutralTrialFiles(t, connectedspeech.DefaultNeutralStage3TrialConfig(repoRoot).OutputDir, userDir)
+			} else {
+				writeStage3NeutralDisabledPatches(t, connectedspeech.DefaultNeutralStage3TrialConfig(repoRoot).OutputDir, userDir)
+			}
+			if !RimeInit(dataDir, userDir, APP, APP_VERSION, true) {
+				t.Fatal("RimeInit failed")
+			}
+			sessionID, ok := StartSession()
+			if !ok || sessionID == 0 {
+				Finalize()
+				t.Fatal("StartSession failed")
+			}
+			defer func() {
+				EndSession(sessionID)
+				Finalize()
+			}()
+			SetOption(sessionID, "ascii_mode", false)
+			for _, mode := range modes {
+				if !SelectSchema(sessionID, mode.schema) {
+					t.Fatalf("expected %s to be selectable", mode.schema)
+				}
+				for _, item := range trial.Cases {
+					canonicalInput := strings.ReplaceAll(item.CanonicalCodes[mode.mode], " ", "")
+					if _, found := findRealRimeCandidate(t, sessionID, canonicalInput, item.Text); !found {
+						t.Fatalf("canonical path %s/%s missing", mode.schema, item.Text)
+					}
+					surfaceInput := strings.ReplaceAll(item.SurfaceCodes[mode.mode], " ", "")
+					index, found := findRealRimeCandidate(t, sessionID, surfaceInput, item.Text)
+					if found != enabled {
+						t.Fatalf("Stage 3-1 alias %s/%s found=%t want=%t", mode.schema, item.Text, found, enabled)
+					}
+					if !enabled {
+						continue
+					}
+					switch item.ExpectedRankEffects[mode.mode] {
+					case "no_competitor", "would_become_top":
+						if index != 0 {
+							t.Fatalf("%s/%s expected at bucket top, got index %d", mode.schema, item.Text, index)
+						}
+					case "below_existing_top":
+						if index == 0 {
+							t.Fatalf("%s/%s expected below an existing candidate", mode.schema, item.Text)
+						}
+					}
+				}
+			}
+		})
+	}
+	runPhase("module-enabled", true)
+	runPhase("module-disabled-rollback", false)
+}
+
+func copyStage3NeutralTrialFiles(t *testing.T, sourceDir, userDir string) {
+	t.Helper()
+	for _, name := range []string{
+		"yime_connected_speech_stage3_full.dict.yaml",
+		"yime_connected_speech_stage3_variable.dict.yaml",
+		"yime_connected_speech_stage3_shorthand.dict.yaml",
+		"yime_full.custom.yaml",
+		"yime_variable.custom.yaml",
+		"yime_shorthand.custom.yaml",
+	} {
+		payload, err := os.ReadFile(filepath.Join(sourceDir, name))
+		if err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(filepath.Join(userDir, name), payload, 0o644); err != nil {
+			t.Fatal(err)
+		}
+	}
+}
+
+func writeStage3NeutralDisabledPatches(t *testing.T, sourceDir, userDir string) {
+	t.Helper()
+	for _, schema := range []string{"full", "variable", "shorthand"} {
+		name := "yime_connected_speech_stage3_baseline_" + schema
+		payload, err := os.ReadFile(filepath.Join(sourceDir, name+".dict.yaml"))
+		if err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(filepath.Join(userDir, name+".dict.yaml"), payload, 0o644); err != nil {
+			t.Fatal(err)
+		}
+		content := "patch:\n  translator/dictionary: " + name + "\n  translator/enable_sentence: false\n"
+		if err := os.WriteFile(filepath.Join(userDir, "yime_"+schema+".custom.yaml"), []byte(content), 0o644); err != nil {
+			t.Fatal(err)
+		}
+	}
+}
+
+func TestRealRimeStage3FullBatchSmokeAndBaseObservationAcrossAllSchemas(t *testing.T) {
+	dataDir := rimeRuntimeTestDataDir(t)
+	repoRoot := filepath.Clean(filepath.Join(dataDir, "..", "..", "..", ".."))
+	if _, err := connectedspeech.RunNeutralLexiconImpactAudit(connectedspeech.DefaultNeutralLexiconImpactConfig(repoRoot)); err != nil {
+		t.Fatal(err)
+	}
+	batch, err := connectedspeech.RunNeutralStage3FullBatchAudit(connectedspeech.DefaultNeutralStage3FullBatchConfig(repoRoot))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !batch.Summary.Passed || len(batch.SmokeCases) == 0 {
+		t.Fatalf("unexpected Stage 3-2 full-batch result: %#v", batch.Summary)
+	}
+	modes := []struct {
+		schema string
+		mode   string
+	}{
+		{"yime_variable", "variable"},
+		{"yime_full", "full"},
+		{"yime_shorthand", "shorthand"},
+	}
+	baselineFound := map[string]bool{}
+	runPhase := func(name string, enabled bool) {
+		t.Run(name, func(t *testing.T) {
+			userDir := filepath.Join(t.TempDir(), "Rime")
+			writeRuntimeTestDefaultCustom(t, userDir)
+			if enabled {
+				copyStage3FullBatchFiles(t, connectedspeech.DefaultNeutralStage3FullBatchConfig(repoRoot).OutputDir, userDir)
+			} else {
+				writeStage3FullBatchDisabledPatches(t, userDir)
+			}
+			if !RimeInit(dataDir, userDir, APP, APP_VERSION, true) {
+				t.Fatal("RimeInit failed")
+			}
+			sessionID, ok := StartSession()
+			if !ok || sessionID == 0 {
+				Finalize()
+				t.Fatal("StartSession failed")
+			}
+			defer func() {
+				EndSession(sessionID)
+				Finalize()
+			}()
+			SetOption(sessionID, "ascii_mode", false)
+			for _, mode := range modes {
+				if !SelectSchema(sessionID, mode.schema) {
+					t.Fatalf("expected %s to be selectable", mode.schema)
+				}
+				for _, item := range batch.SmokeCases {
+					input := strings.ReplaceAll(item.SurfaceCodes[mode.mode], " ", "")
+					_, found := findRealRimeCandidate(t, sessionID, input, item.Text)
+					key := mode.mode + "\x00" + item.Text
+					if !enabled {
+						baselineFound[key] = found
+						continue
+					}
+					if !found {
+						t.Fatalf("Stage 3-2 full-batch alias %s/%s missing after module enable", mode.schema, item.Text)
+					}
+				}
+			}
+		})
+	}
+	runPhase("base-dynamic-observation", false)
+	runPhase("module-enabled", true)
+	missingFromBase := 0
+	for _, found := range baselineFound {
+		if !found {
+			missingFromBase++
+		}
+	}
+	if missingFromBase == 0 {
+		t.Fatal("all smoke aliases were already available through the base dictionary; trial did not exercise a new path")
+	}
+}
+
+func TestRealRimeStage3FullBatchHighRiskPrefixOrdering(t *testing.T) {
+	dataDir := rimeRuntimeTestDataDir(t)
+	repoRoot := filepath.Clean(filepath.Join(dataDir, "..", "..", "..", ".."))
+	if _, err := connectedspeech.RunNeutralLexiconImpactAudit(connectedspeech.DefaultNeutralLexiconImpactConfig(repoRoot)); err != nil {
+		t.Fatal(err)
+	}
+	config := connectedspeech.DefaultNeutralStage3FullBatchConfig(repoRoot)
+	if _, err := connectedspeech.RunNeutralStage3FullBatchAudit(config); err != nil {
+		t.Fatal(err)
+	}
+	probes := loadStage3HighRiskPrefixProbes(t, filepath.Join(config.OutputDir, "prefix_impact.tsv"), 0)
+	if len(probes) == 0 {
+		t.Fatal("expected pure-completion prefix probes")
+	}
+	type snapshot struct {
+		first      string
+		candidates []string
+	}
+	baseline := map[string]snapshot{}
+	firstChangedByMode := map[string]int{}
+	pageChangedByMode := map[string]int{}
+	pageWithNewTextByMode := map[string]int{}
+	runPhase := func(name string, enabled bool) {
+		t.Run(name, func(t *testing.T) {
+			userDir := filepath.Join(t.TempDir(), "Rime")
+			writeRuntimeTestDefaultCustom(t, userDir)
+			if enabled {
+				writeStage3CombinedDictionaryPatches(t, config.OutputDir, userDir)
+			}
+			if !RimeInit(dataDir, userDir, APP, APP_VERSION, true) {
+				t.Fatal("RimeInit failed")
+			}
+			sessionID, ok := StartSession()
+			if !ok || sessionID == 0 {
+				Finalize()
+				t.Fatal("StartSession failed")
+			}
+			defer func() {
+				EndSession(sessionID)
+				Finalize()
+			}()
+			SetOption(sessionID, "ascii_mode", false)
+			for _, probe := range probes {
+				if !SelectSchema(sessionID, "yime_"+probe.mode) {
+					t.Fatalf("expected yime_%s to be selectable", probe.mode)
+				}
+				ClearComposition(sessionID)
+				typeASCII(t, sessionID, probe.code)
+				menu, ok := GetMenu(sessionID)
+				if !ok || len(menu.Candidates) == 0 {
+					t.Fatalf("%s/%q has no candidates", probe.mode, probe.code)
+				}
+				texts := make([]string, 0, len(menu.Candidates))
+				for _, candidate := range menu.Candidates {
+					texts = append(texts, candidate.Text)
+				}
+				key := probe.mode + "\x00" + probe.code
+				if !enabled {
+					baseline[key] = snapshot{first: texts[0], candidates: texts}
+					continue
+				}
+				before := baseline[key]
+				if texts[0] != before.first {
+					firstChangedByMode[probe.mode]++
+					t.Logf("first candidate changed mode=%s code=%q net_new=%d: %q -> %q", probe.mode, probe.code, probe.netNew, before.first, texts[0])
+				}
+				if strings.Join(texts, "\x00") != strings.Join(before.candidates, "\x00") {
+					pageChangedByMode[probe.mode]++
+					t.Logf("candidate page changed mode=%s code=%q net_new=%d: %q -> %q", probe.mode, probe.code, probe.netNew, before.candidates, texts)
+				}
+				if stage3CandidatePageHasNewText(before.candidates, texts) {
+					pageWithNewTextByMode[probe.mode]++
+				}
+			}
+		})
+	}
+	runPhase("baseline", false)
+	runPhase("combined-base-and-alias", true)
+	t.Logf("pure-completion prefix probes=%d first_changed=%v page_changed=%v page_with_new_text=%v", len(probes), firstChangedByMode, pageChangedByMode, pageWithNewTextByMode)
+	if len(baseline) != len(probes) {
+		t.Fatalf("captured %d baseline snapshots for %d probes", len(baseline), len(probes))
+	}
+	if len(firstChangedByMode) != 0 {
+		t.Fatalf("pure-completion aliases changed first candidates: %v", firstChangedByMode)
+	}
+}
+
+func stage3CandidatePageHasNewText(before, after []string) bool {
+	old := map[string]bool{}
+	for _, text := range before {
+		old[text] = true
+	}
+	for _, text := range after {
+		if !old[text] {
+			return true
+		}
+	}
+	return false
+}
+
+type stage3PrefixProbe struct {
+	mode   string
+	code   string
+	netNew int
+}
+
+func loadStage3HighRiskPrefixProbes(t *testing.T, path string, perMode int) []stage3PrefixProbe {
+	t.Helper()
+	file, err := os.Open(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer file.Close()
+	reader := csv.NewReader(file)
+	reader.Comma = '\t'
+	rows, err := reader.ReadAll()
+	if err != nil {
+		t.Fatal(err)
+	}
+	header := map[string]int{}
+	for index, name := range rows[0] {
+		header[name] = index
+	}
+	probesByMode := map[string][]stage3PrefixProbe{}
+	for _, row := range rows[1:] {
+		if len(row) != len(rows[0]) || row[header["relation"]] != "old_exact_prefix_of_new" {
+			continue
+		}
+		netNew, _ := strconv.Atoi(row[header["net_new_visible_text_count"]])
+		newExact, _ := strconv.Atoi(row[header["new_exact_text_count_at_trigger"]])
+		if netNew == 0 || newExact != 0 {
+			continue
+		}
+		mode := row[header["mode"]]
+		probesByMode[mode] = append(probesByMode[mode], stage3PrefixProbe{mode: mode, code: row[header["trigger_code"]], netNew: netNew})
+	}
+	result := []stage3PrefixProbe{}
+	for _, mode := range []string{"variable", "full", "shorthand"} {
+		probes := probesByMode[mode]
+		sort.Slice(probes, func(i, j int) bool {
+			if probes[i].netNew != probes[j].netNew {
+				return probes[i].netNew > probes[j].netNew
+			}
+			return probes[i].code < probes[j].code
+		})
+		if perMode == 0 {
+			result = append(result, probes...)
+			continue
+		}
+		if len(probes) < perMode {
+			t.Fatalf("%s has only %d high-risk prefix probes", mode, len(probes))
+		}
+		result = append(result, probes[:perMode]...)
+	}
+	return result
+}
+
+func writeStage3CombinedDictionaryPatches(t *testing.T, sourceDir, userDir string) {
+	t.Helper()
+	for _, mode := range []string{"variable", "full", "shorthand"} {
+		aliasName := "yime_connected_speech_stage3_2_" + mode
+		payload, err := os.ReadFile(filepath.Join(sourceDir, aliasName+".dict.yaml"))
+		if err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(filepath.Join(userDir, aliasName+".dict.yaml"), payload, 0o644); err != nil {
+			t.Fatal(err)
+		}
+		combinedName := "yime_connected_speech_stage3_2_combined_" + mode
+		combined := strings.Join([]string{
+			"---",
+			"name: " + combinedName,
+			"version: \"stage3-2-prefix-probe-v1\"",
+			"sort: by_weight",
+			"use_preset_vocabulary: false",
+			"import_tables:",
+			"  - yime_" + mode,
+			"  - " + aliasName,
+			"...",
+			"",
+		}, "\n")
+		if err := os.WriteFile(filepath.Join(userDir, combinedName+".dict.yaml"), []byte(combined), 0o644); err != nil {
+			t.Fatal(err)
+		}
+		patch := "patch:\n  translator/dictionary: " + combinedName + "\n"
+		if err := os.WriteFile(filepath.Join(userDir, "yime_"+mode+".custom.yaml"), []byte(patch), 0o644); err != nil {
+			t.Fatal(err)
+		}
+	}
+}
+
+func copyStage3FullBatchFiles(t *testing.T, sourceDir, userDir string) {
+	t.Helper()
+	for _, name := range []string{
+		"yime_connected_speech_stage3_2_full.dict.yaml",
+		"yime_connected_speech_stage3_2_variable.dict.yaml",
+		"yime_connected_speech_stage3_2_shorthand.dict.yaml",
+		"yime_full.custom.yaml",
+		"yime_variable.custom.yaml",
+		"yime_shorthand.custom.yaml",
+	} {
+		payload, err := os.ReadFile(filepath.Join(sourceDir, name))
+		if err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(filepath.Join(userDir, name), payload, 0o644); err != nil {
+			t.Fatal(err)
+		}
+	}
+}
+
+func writeStage3FullBatchDisabledPatches(t *testing.T, userDir string) {
+	t.Helper()
+	for _, schema := range []string{"full", "variable", "shorthand"} {
+		content := "patch:\n  translator/dictionary: yime_" + schema + "\n  translator/enable_sentence: false\n"
+		if err := os.WriteFile(filepath.Join(userDir, "yime_"+schema+".custom.yaml"), []byte(content), 0o644); err != nil {
+			t.Fatal(err)
+		}
+	}
+}
+
+func findRealRimeCandidate(t *testing.T, sessionID RimeSessionId, input, text string) (int, bool) {
+	t.Helper()
+	ClearComposition(sessionID)
+	typeASCII(t, sessionID, input)
+	menu, ok := GetMenu(sessionID)
+	if !ok {
+		return -1, false
+	}
+	for index, candidate := range menu.Candidates {
+		if candidate.Text == text {
+			return index, true
+		}
+	}
+	return -1, false
 }
 
 func TestRealRimeKeepsCandidatesWhileCompletingFinalSyllable(t *testing.T) {

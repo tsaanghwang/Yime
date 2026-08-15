@@ -1,0 +1,72 @@
+# 语流音变准备阶段 P 收口包
+
+本目录把《普通话语流音变的编码输入实现》准备阶段后半程收敛为可评审、可实施、可回退的工程材料。
+它不包含运行时音变规则，不生成 Rime 词典，不修改规范拼音、基础码表、候选文字或用户数据。
+
+## 决策
+
+准备阶段 P 的第一批实施对象“阶段 0：离线数据格式、校验器和报告器”已于 2026-08-09 完成，
+没有实现任何运行时输入别名。阶段 0 只读取人工维护的审定记录，在临时目录产生报告；所有模块
+默认关闭，所有
+`research_only`、`deferred` 和 `rejected` 记录的运行输出数量必须为零。
+
+阶段 1 既有轻声链审计以及阶段 2A/2B“一、不”既有链路盘点、离线试算和临时 Rime 回退也已完成。
+阶段 3-0 已完成轻声四种语境调值、全词典三模式竞争审计和去重复核队列；阶段 3-1 已用 10 条分层
+样本通过真实 Rime 三模式输入、排序和整批回退。全部类别仍为 `research_only`。两条“一、不”试验
+读音及轻声投影报告都只存在于 `.tmp`；报告中的正式运行别名生成数为零。
+
+阶段 3-3 已建立第一版“统一语境调层—质层假设模型”：把韵律域、上声、“一、不”、轻声、儿化、
+虚首音、“啊”、音节边界同化/异化、音质弱化与时域延展和三模式投影组成有界、非递归的偏序规则图，并用
+独立冲突表记录当前无法由语言事实唯一裁决的交叠。它是可证伪、可替换的离线工程模型，不是语言学
+定论，也没有接入运行时候选。
+
+稳定兼容路径和可选语流路径继续分层：
+
+- 轻声 `5` 和儿缀 `er5` 是始终保留的兼容表示；
+- 表层轻声、融合儿化和语气词同化只能作为有来源、可删除的并行实现；
+- 原始来源观察不可变，转录校正和工程判决分开保存；
+- 同一规范候选的三种输入模式必须由同一四音元记录确定性派生。
+
+## 文件
+
+- [来源解释政策](SOURCE_POLICIES.md)：pypinyin、万象、BCC、PSC 和审音表的职责边界；
+- [统一记录 JSON Schema](connected_speech_record.schema.json)：版本 1 的字段和状态门禁；
+- [第一批范围与任务单](FIRST_BATCH_SCOPE.md)：阶段 0 文件范围、顺序、验收和明确排除项；
+- [审定样例与长期反例](first_batch_review_cases.tsv)：正例、反例和边界例；
+- [离线验收与回退](OFFLINE_ACCEPTANCE_AND_ROLLBACK.md)：报告格式、哈希基线、模块开关和回退演练。
+- [离线实现](../../../go-backend/input_methods/yime/connectedspeech/)：记录模型、校验器、三模式试算和报告器；
+- [审计入口](../../../tools/audit-connected-speech.ps1)：只写 `.tmp/connected-speech-audit/` 的执行脚本。
+- [阶段 2：“一、不”离线审定与临时 Rime 试验](STAGE2_YI_BU_ADJUDICATION.md)：核对当前三模式
+  真值，并验证允许码长自然变化的两条短语读音、直接词典输入和整批回退；
+- [阶段 2 审计入口](../../../tools/audit-stage2-yi-bu.ps1)：只写 `.tmp` 报告和试验词典，不生成正式运行词典。
+- [阶段 3-0：轻声四种语境调值离线投影](STAGE3_NEUTRAL_TONE_CONTEXT_PROJECTION.md)：保存四类语境事实，
+  审计三调级撞桶、全词典三模式候选竞争和排序，并生成去重复核队列；不生成运行时别名；
+- [阶段 3-0 审计入口](../../../tools/audit-neutral-tone-context.ps1)：只写
+  `.tmp/neutral-tone-context-audit/` 和 `.tmp/neutral-tone-lexicon-impact-audit/`。
+- [阶段 3-1：轻声表层编码临时 Rime 试验](STAGE3_NEUTRAL_TONE_RIME_TRIAL.md)：用 10 条分层样本验证
+  三模式输入、候选排序和整批回退；临时包只写 `.tmp/neutral-tone-stage3-1-rime/`。
+- [阶段 3-2：简单轻声全量离线候选包](STAGE3_NEUTRAL_TONE_FULL_BATCH.md)：排除先行规则依赖后，
+  生成 74,535 条记录的三模式临时词典，审计新别名彼此重码并完成真实 Rime 抽样；
+- [轻声表层重码政策](neutral_tone_collision_policy.tsv)：实际表层同音允许同码并进入同一候选列，
+  各候选继承自己的规范词条权重；该政策不自动批准尚未审定的表层规则。
+- [统一语境调层假设模型](CONTEXTUAL_TONE_RULE_MODEL.md)：说明第一版偏序规则图、停止条件、冲突关系
+  和离线门禁；对应机器文件为 `contextual_tone_rule_model.json` 与
+  `contextual_tone_rule_conflicts.tsv`。
+- [统一模型审计入口](../../../tools/audit-contextual-tone-model.ps1)：只写
+  `.tmp/contextual-tone-model-audit/`，不生成或接入运行时候选。
+
+## 版本策略
+
+- `schema_version`：记录结构不兼容时递增整数；版本 1 在阶段 0 内冻结。
+- `ruleset_version`：规则语义采用 `MAJOR.MINOR.PATCH`；新增兼容规则递增 MINOR，修正文案或来源定位
+  递增 PATCH，改变既有规则含义递增 MAJOR。
+- `record_revision`：单条工程判决的递增整数；不得覆盖其所引用的原始来源观察。
+- 清单必须记录 schema、ruleset、布局、模式转换、规范词典和输入源 SHA-256。
+
+## 准备阶段评审结论
+
+第一批只建立离线基础设施，因此不要求先解决融合儿化韵、轻声具体表层调值或 `[ŋ]`、`[z]`、
+卷舌类派生首音的正式音元 ID。上述项目可以进入阶段 0 数据库，但状态只能为 `research_only` 或
+`deferred`，不得进入任何运行词典。
+
+阶段 0 门禁已经通过，只表示离线基础设施完成；不意味着轻声、儿化或语气词音变已经接入运行时。

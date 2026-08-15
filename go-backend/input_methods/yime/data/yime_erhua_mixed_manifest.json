@@ -1,0 +1,51 @@
+{
+  "tool_version": "explicit-erhua-mixed-runtime-v1",
+  "input_sha256": {
+    "aliases": "08d0b64e0200cd64500a48c28d6d6aff744f5352f46a3726e1c7c29af4cd617a",
+    "annotations": "3089a58d83fc3de43b3d76c2ac436ed42009430bb37a13e472f107ef8897c463",
+    "full_dictionary": "f4e818a9c7fc15b09626351008d8dbf22c692d50158048a060523bdf2e18ebc4",
+    "shorthand_dictionary": "813cb3f3f8855563b1c3bdc34860fedcb02ad8d828cbde93c8e45b12c5800f85",
+    "variable_dictionary": "adc963c4d4ffb2444f576d0c5d729e83fd0a57e3eed35ed9a5e66bb8891039ed"
+  },
+  "output_sha256": {
+    "yime_erhua_mixed_full.dict.yaml": "6c1801657f0d9fa0d89b2f71be94a0d2e26ac4d26253e2a1603794f093a8a12a",
+    "yime_erhua_mixed_shorthand.dict.yaml": "28a324ea0e3eb7d329103c3c1c62967166f26bd0eac16c279aee60582b1af7d9",
+    "yime_erhua_mixed_variable.dict.yaml": "bdda60b817053719dd29c75c35720baac7bfb7fe52910ba476402c98ce4e756a"
+  },
+  "summary": {
+    "tool_version": "explicit-erhua-mixed-runtime-v1",
+    "explicit_record_count": 131,
+    "dual_route_ready_count": 29,
+    "pending_fusion_count": 102,
+    "inherited_weight_record_count": 15,
+    "deferred_missing_weight_count": 14,
+    "routes_per_mode": 30,
+    "runtime_alias_rows": 90,
+    "gates": {
+      "all_runtime_weights_inherited": true,
+      "candidate_text_unchanged": true,
+      "explicit_authorization_complete": true,
+      "pending_fusions_not_exported": true,
+      "productive_inference_forbidden": true,
+      "source_bundles_are_offline_only": true,
+      "three_mode_routes_complete": true
+    },
+    "passed": true
+  },
+  "deferred_missing_weight": [
+    "刀刃儿",
+    "刀背儿",
+    "别针儿",
+    "合群儿",
+    "后跟儿",
+    "墨汁儿",
+    "开春儿",
+    "毛驴儿",
+    "砂轮儿",
+    "耳垂儿",
+    "肚脐儿",
+    "脚印儿",
+    "花盆儿",
+    "锯齿儿"
+  ]
+}

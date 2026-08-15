@@ -20,6 +20,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/codemode"
+	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/reverselookup"
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/runtimechange"
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/settings"
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/toolbarstate"
@@ -197,6 +198,8 @@ type IME struct {
 	numericToMarkedLoaded       bool
 	reversePinyinBySchema       map[string]map[string]string
 	reversePinyinLoaded         map[string]bool
+	sourcePinyinBySchema        map[string]map[string][]string
+	sourcePinyinLoaded          map[string]bool
 	yimePinyinBySchema          map[string]map[string]string
 	yimePinyinLoaded            map[string]bool
 	pinyinCodeByNumeric         map[string]pinyinCodeRecord
@@ -242,6 +245,8 @@ func New(client *pime.Client) pime.TextService {
 		reverseLookupDisplayMode: "key_sequence",
 		reversePinyinBySchema:    map[string]map[string]string{},
 		reversePinyinLoaded:      map[string]bool{},
+		sourcePinyinBySchema:     map[string]map[string][]string{},
+		sourcePinyinLoaded:       map[string]bool{},
 		yimePinyinBySchema:       map[string]map[string]string{},
 		yimePinyinLoaded:         map[string]bool{},
 		pinyinCodeByNumeric:      map[string]pinyinCodeRecord{},
@@ -2105,7 +2110,7 @@ func (ime *IME) reverseLookupDisplayCandidates(candidates []candidateItem) []can
 	case "standard_pinyin":
 		display := append([]candidateItem(nil), candidates...)
 		for i := range display {
-			display[i].Comment = ime.lookupStandardPinyin(display[i].Text)
+			display[i].Comment = ime.lookupStandardPinyin(display[i].Text, display[i].Comment)
 		}
 		return display
 	case "yime_pinyin":
@@ -2133,9 +2138,27 @@ func normalizeDisplayCode(code string) string {
 	return strings.ReplaceAll(strings.TrimSpace(code), " ", "")
 }
 
-func (ime *IME) lookupStandardPinyin(text string) string {
+func (ime *IME) lookupStandardPinyin(text string, candidateCodes ...string) string {
+	trimmedText := strings.TrimSpace(text)
+	code := ""
+	if len(candidateCodes) > 0 {
+		code = normalizeDisplayCode(candidateCodes[0])
+	}
+	if code == "" {
+		codeLookup := ime.yimePinyinLookup()
+		code = normalizeDisplayCode(codeLookup[trimmedText])
+	}
+	if code != "" {
+		if truth := ime.sourcePinyinLookup()[reverselookup.SourceTruthLookupKey(trimmedText, code)]; len(truth) > 0 {
+			marked := make([]string, 0, len(truth))
+			for _, numeric := range truth {
+				marked = append(marked, ime.markNumericTonePinyin(numeric))
+			}
+			return strings.Join(marked, " / ")
+		}
+	}
 	if ime.standardPinyinLoaded && len(ime.standardPinyinByText) > 0 {
-		if value := ime.standardPinyinByText[strings.TrimSpace(text)]; value != "" {
+		if value := ime.standardPinyinByText[trimmedText]; value != "" {
 			return value
 		}
 		return joinRuneLookup(text, ime.standardPinyinByText, " ")
@@ -2144,7 +2167,7 @@ func (ime *IME) lookupStandardPinyin(text string) string {
 	if len(codeLookup) == 0 {
 		return ""
 	}
-	code := codeLookup[strings.TrimSpace(text)]
+	code = codeLookup[trimmedText]
 	if code == "" {
 		code = joinRuneLookup(text, codeLookup, "")
 	}
@@ -2176,6 +2199,34 @@ func (ime *IME) lookupStandardPinyin(text string) string {
 		parts = append(parts, ime.markNumericTonePinyin(strings.Join(numericParts, " ")))
 	}
 	return strings.Join(parts, " ")
+}
+
+func (ime *IME) sourcePinyinLookup() map[string][]string {
+	schemaID := ime.currentSchemaID()
+	if ime.sourcePinyinBySchema == nil {
+		ime.sourcePinyinBySchema = map[string]map[string][]string{}
+	}
+	if ime.sourcePinyinLoaded == nil {
+		ime.sourcePinyinLoaded = map[string]bool{}
+	}
+	if ime.sourcePinyinLoaded[schemaID] {
+		return ime.sourcePinyinBySchema[schemaID]
+	}
+	ime.sourcePinyinLoaded[schemaID] = true
+	mode := reverselookup.ModeVariable
+	switch schemaID {
+	case "yime_full":
+		mode = reverselookup.ModeFull
+	case "yime_shorthand":
+		mode = reverselookup.ModeShorthand
+	}
+	lookup, err := reverselookup.LoadSourceTruth(ime.sharedDir(), mode)
+	if err != nil {
+		log.Printf("load reverse-Pinyin source truth for %s failed: %v", schemaID, err)
+		lookup = map[string][]string{}
+	}
+	ime.sourcePinyinBySchema[schemaID] = lookup
+	return lookup
 }
 
 func (ime *IME) reversePinyinLookup() map[string]string {

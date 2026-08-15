@@ -1,0 +1,13 @@
+case_id	class	phenomenon	text	canonical_pinyin	compatibility_reading	surface_reading	adjudication_status	candidate_text_policy	expected
+CS-POS-001	positive	tone_sandhi	不至于	bu4 zhi4 yu2		bu2 zhi4 yu2	experimental	preserve	现行运行库缺少该次读；三模式均不增码，仅进入阶段2A离线试算
+CS-POS-002	boundary	tone_sandhi	一本	yi1 ben3		yi4 ben3	deferred	preserve	读音有来源，但变长和省键投影增码，不具备运行时准入资格
+CS-POS-003	positive	neutral_tone	桌子	zhuo1 zi5	zhuo1 zi5		approved_compatibility	preserve	保留5兼容身份；不生成表层调值
+CS-POS-004	positive	erhua	花儿	hua1 er2	hua1 er5		research_only	explicit_source_variant	必须先绑定明确儿化来源；阶段0不得生成运行别名
+CS-NEG-001	negative	tone_sandhi	第一	di4 yi1			rejected	preserve	序数词中的一不按相邻去声自动变调
+CS-NEG-002	negative	erhua	影儿	ying3 er2	ying3 er2		rejected	preserve	独立ér不得自动改成儿缀或融合儿化
+CS-NEG-003	negative	erhua	蒜瓣	suan4 ban4			deferred	defer_text_mismatch	文字未写儿而来源提示r；保持原文并暂缓
+CS-NEG-004	negative	neutral_tone	上头	shang4 tou2			deferred	preserve	本调与轻声可能分义；必须绑定词义和来源，不能全局弱化词尾
+CS-BND-001	boundary	particle_allomorphy	好啊	hao3 a5		wa	research_only	preserve	ao末音按u分析；不得自动把啊改成哇
+CS-BND-002	boundary	particle_allomorphy	天啊	tian1 a5		na	research_only	preserve	n后派生首音只作研究记录
+CS-BND-003	boundary	particle_allomorphy	行啊	xing2 a5		nga	research_only	preserve	ng后派生首音尚无正式音元ID
+CS-BND-004	boundary	particle_allomorphy	是啊	shi4 a5		ra	research_only	preserve	卷舌类派生首音归并关系待审

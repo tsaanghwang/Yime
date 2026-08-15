@@ -17,6 +17,14 @@ go-backend/input_methods/yime/data/**
 !go-backend/input_methods/yime/data/yime_lexicon_manifest.json
 !go-backend/input_methods/yime/data/yime_runtime_profile.json
 !go-backend/input_methods/yime/data/yime_pinyin_codes.tsv
+!go-backend/input_methods/yime/data/yime_pinyin_reverse_source.tsv
+!go-backend/input_methods/yime/data/yime_erhua_mixed_full.dict.yaml
+!go-backend/input_methods/yime/data/yime_erhua_mixed_variable.dict.yaml
+!go-backend/input_methods/yime/data/yime_erhua_mixed_shorthand.dict.yaml
+!go-backend/input_methods/yime/data/yime_erhua_mixed_full.schema.yaml
+!go-backend/input_methods/yime/data/yime_erhua_mixed_variable.schema.yaml
+!go-backend/input_methods/yime/data/yime_erhua_mixed_shorthand.schema.yaml
+!go-backend/input_methods/yime/data/yime_erhua_mixed_manifest.json
 !go-backend/input_methods/yime/data/yime_syllable_decomposition.tsv
 !go-backend/input_methods/yime/data/pinyin_normalized.json
 !go-backend/input_methods/yime/data/yime_pua_pinyin.json
