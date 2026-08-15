@@ -1,0 +1,183 @@
+[
+  {
+    "schema_version": 1,
+    "ruleset_version": "0.2.0",
+    "record_id": "cs-stage2-bu-zhi-yu-trial",
+    "record_revision": 1,
+    "text": "不至于",
+    "canonical_pinyin": "bu4 zhi4 yu2",
+    "phenomenon": "tone_sandhi",
+    "scope": "phrase",
+    "candidate_text_policy": "preserve",
+    "transcription_status": "machine_matched",
+    "adjudication_status": "experimental",
+    "runtime_enabled": true,
+    "rule_id": "tone-sandhi.bu.before-fourth.stage2a",
+    "underlying_tone": 4,
+    "source_observations": [{
+      "observation_id": "obs-stage2-bu-zhi-yu-trial",
+      "source_policy": "project_manual_v1",
+      "source_locator": "docs/project/connected_speech/stage2_yi_bu_cases.tsv#CS-S2-YB-006",
+      "source_sha256": "1197f03ae0418053d3c1f16aac8efd62fb5348377ade332591829f7b536f8004",
+      "text_raw": "不至于",
+      "reading_raw": "runtime=bu4 zhi4 yu2; prototype_secondary=bu2 zhi4 yu2",
+      "transcription_status": "machine_matched",
+      "note": "本记录只允许离线试算；不写入运行词典。"
+    }],
+    "surface_reading": "bu2 zhi4 yu2",
+    "canonical_yinyuan_ids": [
+      ["N01", "M04", "M05", "M06"],
+      ["N16", "M19", "M20", "M21"],
+      ["N23", "M09", "M08", "M07"]
+    ],
+    "surface_yinyuan_ids": [
+      ["N01", "M06", "M05", "M04"],
+      ["N16", "M19", "M20", "M21"],
+      ["N23", "M09", "M08", "M07"]
+    ],
+    "rewrites": [
+      {"syllable_index": 0, "position": "huyin", "from_id": "M04", "to_id": "M06", "attributes": ["tone_grade"]},
+      {"syllable_index": 0, "position": "moyin", "from_id": "M06", "to_id": "M04", "attributes": ["tone_grade"]}
+    ],
+    "note": "阶段 2A 唯一缺失别名试算；三模式均不增码，只验证离线链路。"
+  },
+  {
+    "schema_version": 1,
+    "ruleset_version": "0.2.0",
+    "record_id": "cs-stage2-yi-ben3-trial",
+    "record_revision": 1,
+    "text": "一本",
+    "canonical_pinyin": "yi1 ben3",
+    "phenomenon": "tone_sandhi",
+    "scope": "phrase",
+    "candidate_text_policy": "preserve",
+    "transcription_status": "machine_matched",
+    "adjudication_status": "experimental",
+    "runtime_enabled": true,
+    "rule_id": "tone-sandhi.yi.before-non-fourth.stage2b",
+    "underlying_tone": 1,
+    "source_observations": [{
+      "observation_id": "obs-stage2-yi-ben3-trial",
+      "source_policy": "project_manual_v1",
+      "source_locator": "docs/project/connected_speech/stage2_yi_bu_cases.tsv#CS-S2-YB-005",
+      "source_sha256": "1197f03ae0418053d3c1f16aac8efd62fb5348377ade332591829f7b536f8004",
+      "text_raw": "一本",
+      "reading_raw": "runtime=yi1 ben3; prototype_secondary=yi4 ben3",
+      "transcription_status": "machine_matched"
+    }],
+    "surface_reading": "yi4 ben3",
+    "canonical_yinyuan_ids": [
+      ["N23", "M01", "M01", "M01"],
+      ["N01", "M18", "M18", "M30"]
+    ],
+    "surface_yinyuan_ids": [
+      ["N23", "M01", "M02", "M03"],
+      ["N01", "M18", "M18", "M30"]
+    ],
+    "rewrites": [
+      {"syllable_index": 0, "position": "zhuyin", "from_id": "M01", "to_id": "M02", "attributes": ["tone_grade"]},
+      {"syllable_index": 0, "position": "moyin", "from_id": "M01", "to_id": "M03", "attributes": ["tone_grade"]}
+    ],
+    "note": "变长码由2增至4、省键码由2增至3；均满足每音节2至4码，进入阶段2B临时Rime试验。"
+  },
+  {
+    "schema_version": 1,
+    "ruleset_version": "0.2.0",
+    "record_id": "cs-stage2-di-yi-exclusion",
+    "record_revision": 1,
+    "text": "第一",
+    "canonical_pinyin": "di4 yi1",
+    "phenomenon": "tone_sandhi",
+    "scope": "construction",
+    "candidate_text_policy": "preserve",
+    "transcription_status": "machine_matched",
+    "adjudication_status": "rejected",
+    "runtime_enabled": false,
+    "source_observations": [{
+      "observation_id": "obs-stage2-di-yi-exclusion",
+      "source_policy": "project_manual_v1",
+      "source_locator": "docs/project/connected_speech/stage2_yi_bu_cases.tsv#CS-S2-YB-007",
+      "source_sha256": "1197f03ae0418053d3c1f16aac8efd62fb5348377ade332591829f7b536f8004",
+      "text_raw": "第一",
+      "reading_raw": "di4 yi1",
+      "transcription_status": "machine_matched"
+    }],
+    "canonical_yinyuan_ids": [["N05", "M01", "M02", "M03"], ["N23", "M01", "M01", "M01"]],
+    "note": "序数结构是明确排除项。"
+  },
+  {
+    "schema_version": 1,
+    "ruleset_version": "0.2.0",
+    "record_id": "cs-stage2-hao-bu-hao-exclusion",
+    "record_revision": 1,
+    "text": "好不好",
+    "canonical_pinyin": "hao3 bu4 hao3",
+    "phenomenon": "tone_sandhi",
+    "scope": "construction",
+    "candidate_text_policy": "preserve",
+    "transcription_status": "machine_matched",
+    "adjudication_status": "rejected",
+    "runtime_enabled": false,
+    "source_observations": [{
+      "observation_id": "obs-stage2-hao-bu-hao-exclusion",
+      "source_policy": "project_manual_v1",
+      "source_locator": "docs/project/connected_speech/stage2_yi_bu_cases.tsv#CS-S2-YB-008",
+      "source_sha256": "1197f03ae0418053d3c1f16aac8efd62fb5348377ade332591829f7b536f8004",
+      "text_raw": "好不好",
+      "reading_raw": "hao3 bu4 hao3",
+      "transcription_status": "machine_matched"
+    }],
+    "canonical_yinyuan_ids": [["N11", "M12", "M12", "M06"], ["N01", "M04", "M05", "M06"], ["N11", "M12", "M12", "M06"]],
+    "note": "A不A 构式留待语境轻声专题。"
+  },
+  {
+    "schema_version": 1,
+    "ruleset_version": "0.2.0",
+    "record_id": "cs-stage2-kan-yi-kan-exclusion",
+    "record_revision": 1,
+    "text": "看一看",
+    "canonical_pinyin": "kan4 yi1 kan4",
+    "phenomenon": "tone_sandhi",
+    "scope": "construction",
+    "candidate_text_policy": "preserve",
+    "transcription_status": "machine_matched",
+    "adjudication_status": "rejected",
+    "runtime_enabled": false,
+    "source_observations": [{
+      "observation_id": "obs-stage2-kan-yi-kan-exclusion",
+      "source_policy": "project_manual_v1",
+      "source_locator": "docs/project/connected_speech/stage2_yi_bu_cases.tsv#CS-S2-YB-009",
+      "source_sha256": "1197f03ae0418053d3c1f16aac8efd62fb5348377ade332591829f7b536f8004",
+      "text_raw": "看一看",
+      "reading_raw": "kan4 yi1 kan4",
+      "transcription_status": "machine_matched"
+    }],
+    "canonical_yinyuan_ids": [["N10", "M10", "M11", "M30"], ["N23", "M01", "M01", "M01"], ["N10", "M10", "M11", "M30"]],
+    "note": "V一V 构式留待语境轻声专题。"
+  },
+  {
+    "schema_version": 1,
+    "ruleset_version": "0.2.0",
+    "record_id": "cs-stage2-qi-wan-deferred",
+    "record_revision": 1,
+    "text": "七万",
+    "canonical_pinyin": "qi1 wan4",
+    "phenomenon": "tone_sandhi",
+    "scope": "phrase",
+    "candidate_text_policy": "preserve",
+    "transcription_status": "machine_matched",
+    "adjudication_status": "deferred",
+    "runtime_enabled": false,
+    "source_observations": [{
+      "observation_id": "obs-stage2-qi-wan-deferred",
+      "source_policy": "project_manual_v1",
+      "source_locator": "docs/project/connected_speech/stage2_yi_bu_cases.tsv#CS-S2-YB-010",
+      "source_sha256": "1197f03ae0418053d3c1f16aac8efd62fb5348377ade332591829f7b536f8004",
+      "text_raw": "七万",
+      "reading_raw": "qi1 wan4",
+      "transcription_status": "machine_matched"
+    }],
+    "canonical_yinyuan_ids": [["N21", "M01", "M01", "M01"], ["N24", "M04", "M11", "M30"]],
+    "note": "七、八不在阶段 2A 实施范围。"
+  }
+]

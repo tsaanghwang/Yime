@@ -1,0 +1,11 @@
+case_id	text	classification	runtime_pinyin	trial_pinyin	trial_runtime_expected	decision	reason
+CS-S2-YB-001	一定	existing_surface	yi2 ding4		false	covered	现行三模式词典已经保存“一”在去声前读阳平的短语读音，不重复生成别名
+CS-S2-YB-002	不对	existing_surface	bu2 dui4		false	covered	现行三模式词典已经保存“不”在去声前读阳平的短语读音，不重复生成别名
+CS-S2-YB-003	一天	existing_surface	yi4 tian1		false	covered	现行三模式词典已经保存“一”在非去声前读去声的短语读音，不重复生成别名
+CS-S2-YB-004	一年	existing_surface	yi4 nian2		false	covered	现行三模式词典已经保存“一”在非去声前读去声的短语读音，不重复生成别名
+CS-S2-YB-005	一本	missing_alias	yi1 ben3	yi4 ben3	false	offline_trial	原型另有 yi4 ben3 次读；变长码由2增至4、省键码由2增至3，均处于每音节2至4码的有效范围
+CS-S2-YB-006	不至于	missing_alias	bu4 zhi4 yu2	bu2 zhi4 yu2	false	offline_trial	现行三模式词典只导出 bu4 zhi4 yu2；原型另有 bu2 zhi4 yu2 次读，三模式均不增码，作为阶段2A唯一离线试验别名
+CS-S2-YB-007	第一	excluded	di4 yi1		false	excluded	序数结构保持现行读音，不套用相邻声调规则
+CS-S2-YB-008	好不好	excluded	hao3 bu4 hao3		false	excluded	A不A 构式的读法不能由“不+后接音节”规则擅自决定
+CS-S2-YB-009	看一看	excluded	kan4 yi1 kan4		false	excluded	V一V 构式可能涉及轻读，不能由普通“一”变调规则擅自决定
+CS-S2-YB-010	七万	deferred	qi1 wan4		false	deferred	七、八的可选变调不与一、不合并实施，留待独立收益和来源评审
