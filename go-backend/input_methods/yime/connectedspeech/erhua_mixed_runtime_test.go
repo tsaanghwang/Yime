@@ -30,8 +30,8 @@ func TestErhuaMixedRuntimeExportsOnlyExplicitReadyRecordsWithInheritedWeights(t 
 			"suffix_only_encoding_pending": 1,
 		},
 		Records: []erhuaAliasRecord{
-			testReadyErhuaAlias("A", "明白儿", "abcd", "abc"),
-			testReadyErhuaAlias("B", "缺权重儿", "efgh", "efg"),
+			testProjectedReadyErhuaAlias("A", "明白儿"),
+			testProjectedReadyErhuaAlias("B", "缺权重儿"),
 			{RecordID: "C", Text: "待决儿", Status: "suffix_only_encoding_pending"},
 		},
 	}
@@ -45,11 +45,15 @@ func TestErhuaMixedRuntimeExportsOnlyExplicitReadyRecordsWithInheritedWeights(t 
 	}
 	aliasesPath := filepath.Join(root, "aliases.json")
 	annotationsPath := filepath.Join(root, "annotations.json")
+	projectionPath := filepath.Join(root, "projection.json")
+	layoutPath := filepath.Join(root, "layout.json")
 	writeTestJSON(t, aliasesPath, aliases)
 	writeTestJSON(t, annotationsPath, annotations)
+	writeTestErhuaProjection(t, projectionPath, layoutPath)
 
 	manifest, err := RunErhuaMixedRuntime(ErhuaMixedRuntimeConfig{
-		DataDir: dataDir, AliasesPath: aliasesPath, AnnotationsPath: annotationsPath, OutputDir: outputDir,
+		DataDir: dataDir, AliasesPath: aliasesPath, AnnotationsPath: annotationsPath,
+		SoundProjectionPath: projectionPath, LayoutPath: layoutPath, OutputDir: outputDir,
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -66,7 +70,7 @@ func TestErhuaMixedRuntimeExportsOnlyExplicitReadyRecordsWithInheritedWeights(t 
 			t.Fatal(readErr)
 		}
 		text := string(content)
-		for _, want := range []string{"明白儿\tabcd\t1200", "明白儿\tabc\t1200"} {
+		for _, want := range []string{"明白儿\tabcde\t1200", "明白儿\tabcd\t1200"} {
 			if !strings.Contains(text, want) {
 				t.Fatalf("%s dictionary lacks %q", mode, want)
 			}
@@ -90,17 +94,21 @@ func TestErhuaMixedRuntimeRejectsUnmatchedAuthorization(t *testing.T) {
 	}
 	aliasesPath := filepath.Join(root, "aliases.json")
 	annotationsPath := filepath.Join(root, "annotations.json")
+	projectionPath := filepath.Join(root, "projection.json")
+	layoutPath := filepath.Join(root, "layout.json")
 	writeTestJSON(t, aliasesPath, erhuaAliasBundle{
 		SchemaVersion: 1,
 		Counts:        map[string]int{"dual_route_ready": 1},
-		Records:       []erhuaAliasRecord{testReadyErhuaAlias("A", "明白儿", "abcd", "abc")},
+		Records:       []erhuaAliasRecord{testProjectedReadyErhuaAlias("A", "明白儿")},
 	})
 	writeTestJSON(t, annotationsPath, erhuaAnnotationBundle{
 		SchemaVersion: 1,
 		Records:       []erhuaAnnotationRecord{testErhuaAnnotation("OTHER", "明白儿")},
 	})
+	writeTestErhuaProjection(t, projectionPath, layoutPath)
 	_, err := RunErhuaMixedRuntime(ErhuaMixedRuntimeConfig{
-		DataDir: dataDir, AliasesPath: aliasesPath, AnnotationsPath: annotationsPath, OutputDir: filepath.Join(root, "out"),
+		DataDir: dataDir, AliasesPath: aliasesPath, AnnotationsPath: annotationsPath,
+		SoundProjectionPath: projectionPath, LayoutPath: layoutPath, OutputDir: filepath.Join(root, "out"),
 	})
 	if err == nil || !strings.Contains(err.Error(), "lacks matching explicit erhua authorization") {
 		t.Fatalf("expected explicit authorization failure, got %v", err)
@@ -111,6 +119,52 @@ func TestErhuaMixedRuntimeRejectsFusedCodeLongerThanCompatibilityCode(t *testing
 	record := testReadyErhuaAlias("A", "明白儿", "abc", "abcd")
 	if err := validateErhuaRouteCodes(record); err == nil || !strings.Contains(err.Error(), "longer") {
 		t.Fatalf("expected code-length failure, got %v", err)
+	}
+}
+
+func TestErhuaSoundProjectionRejectsOneSoundPerKeyDisguise(t *testing.T) {
+	_, err := indexErhuaSoundProjection(erhuaSoundProjectionBundle{
+		SchemaVersion: 1,
+		KeyClasses: []erhuaSoundKeyClass{
+			{KeyClassID: "KEY-H", ToneGrade: "high", CarrierYinyuanID: "M01"},
+		},
+		SoundUnits: []erhuaSoundUnit{
+			{SoundUnitID: "R01", QualityFamily: "pilot", ToneGrade: "high", RepresentativeIPA: "a", KeyClassID: "KEY-H", AdmissionStatus: "runtime_pilot"},
+		},
+		SurfaceClasses: []erhuaSurfaceProjection{
+			{SurfaceClass: "TEST", RuntimeStatus: "pilot", RhoticFinalPositions: []int{1}, SoundFamily: "pilot"},
+		},
+	}, erhuaYinyuanLayout{FormatVersion: 1, YinyuanIDToKey: map[string]string{"M01": "a"}})
+	if err == nil || !strings.Contains(err.Error(), "does not demonstrate many-to-one") {
+		t.Fatalf("expected many-to-one projection failure, got %v", err)
+	}
+}
+
+func TestErhuaMixedRuntimeRejectsHandWrittenLayoutCodeMismatch(t *testing.T) {
+	root := t.TempDir()
+	projectionPath := filepath.Join(root, "projection.json")
+	layoutPath := filepath.Join(root, "layout.json")
+	writeTestErhuaProjection(t, projectionPath, layoutPath)
+	projection, err := loadErhuaSoundProjection(projectionPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	layout, err := loadErhuaYinyuanLayout(layoutPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	index, err := indexErhuaSoundProjection(projection, layout)
+	if err != nil {
+		t.Fatal(err)
+	}
+	record := testProjectedReadyErhuaAlias("A", "明白儿")
+	route := record.Routes["fused_erhua"]
+	code := route.Codes["full"]
+	code.LayoutKeyCode = "abce"
+	route.Codes["full"] = code
+	record.Routes["fused_erhua"] = route
+	if err := index.validateRouteLayout(record); err == nil || !strings.Contains(err.Error(), "does not match ID projection") {
+		t.Fatalf("expected layout projection mismatch, got %v", err)
 	}
 }
 
@@ -133,6 +187,33 @@ func testReadyErhuaAlias(id, text, suffixCode, fusedCode string) erhuaAliasRecor
 		Routes: map[string]erhuaRoute{
 			"suffix_compatibility": {Status: "available", Codes: makeCodes(suffixCode)},
 			"fused_erhua":          {Status: "available", Codes: makeCodes(fusedCode)},
+		},
+	}
+}
+
+func testProjectedReadyErhuaAlias(id, text string) erhuaAliasRecord {
+	makeCode := func(value string, ids []string) map[string]erhuaModeCode {
+		result := map[string]erhuaModeCode{}
+		for _, mode := range erhuaMixedModes {
+			result[mode] = erhuaModeCode{LayoutKeyCode: value, YinyuanIDs: append([]string(nil), ids...), Length: len(ids)}
+		}
+		return result
+	}
+	return erhuaAliasRecord{
+		RecordID: id,
+		Text:     text,
+		Status:   "dual_route_ready",
+		Routes: map[string]erhuaRoute{
+			"suffix_compatibility": {
+				Status: "available",
+				Codes:  makeCode("abcde", []string{"N01", "M01", "M02", "M03", "M04"}),
+			},
+			"fused_erhua": {
+				Status:                     "available",
+				SurfaceClass:               "TEST-ERHUA-ORAL",
+				AttachedSyllableYinyuanIDs: []string{"N01", "M01", "M02", "M03"},
+				Codes:                      makeCode("abcd", []string{"N01", "M01", "M02", "M03"}),
+			},
 		},
 	}
 }
@@ -164,4 +245,33 @@ func writeTestJSON(t *testing.T, path string, payload any) {
 	if err := os.WriteFile(path, content, 0o644); err != nil {
 		t.Fatal(err)
 	}
+}
+
+func writeTestErhuaProjection(t *testing.T, projectionPath, layoutPath string) {
+	t.Helper()
+	writeTestJSON(t, layoutPath, erhuaYinyuanLayout{
+		FormatVersion: 1,
+		YinyuanIDToKey: map[string]string{
+			"N01": "a", "M01": "b", "M02": "c", "M03": "d", "M04": "e",
+		},
+	})
+	writeTestJSON(t, projectionPath, erhuaSoundProjectionBundle{
+		SchemaVersion: 1,
+		KeyClasses: []erhuaSoundKeyClass{
+			{KeyClassID: "KEY-H", ToneGrade: "high", CarrierYinyuanID: "M01"},
+			{KeyClassID: "KEY-M", ToneGrade: "mid", CarrierYinyuanID: "M02"},
+			{KeyClassID: "KEY-L", ToneGrade: "low", CarrierYinyuanID: "M03"},
+		},
+		SoundUnits: []erhuaSoundUnit{
+			{SoundUnitID: "R01", QualityFamily: "pilot", ToneGrade: "high", RepresentativeIPA: "a", KeyClassID: "KEY-H", AdmissionStatus: "runtime_pilot"},
+			{SoundUnitID: "R02", QualityFamily: "pilot", ToneGrade: "mid", RepresentativeIPA: "b", KeyClassID: "KEY-M", AdmissionStatus: "runtime_pilot"},
+			{SoundUnitID: "R03", QualityFamily: "pilot", ToneGrade: "low", RepresentativeIPA: "c", KeyClassID: "KEY-L", AdmissionStatus: "runtime_pilot"},
+			{SoundUnitID: "R04", QualityFamily: "research", ToneGrade: "high", RepresentativeIPA: "d", KeyClassID: "KEY-H", AdmissionStatus: "research_only"},
+			{SoundUnitID: "R05", QualityFamily: "research", ToneGrade: "mid", RepresentativeIPA: "e", KeyClassID: "KEY-M", AdmissionStatus: "research_only"},
+			{SoundUnitID: "R06", QualityFamily: "research", ToneGrade: "low", RepresentativeIPA: "f", KeyClassID: "KEY-L", AdmissionStatus: "research_only"},
+		},
+		SurfaceClasses: []erhuaSurfaceProjection{
+			{SurfaceClass: "TEST-ERHUA-ORAL", RuntimeStatus: "pilot", RhoticFinalPositions: []int{1, 2, 3}, RetainedPositionYinyuanIDs: map[string][]string{}, SoundFamily: "pilot"},
+		},
+	})
 }

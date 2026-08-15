@@ -11,24 +11,28 @@ import (
 	"strings"
 )
 
-const ErhuaMixedRuntimeToolVersion = "explicit-erhua-mixed-runtime-v1"
+const ErhuaMixedRuntimeToolVersion = "explicit-erhua-mixed-runtime-v2"
 
 var erhuaMixedModes = []string{"full", "variable", "shorthand"}
 
 type ErhuaMixedRuntimeConfig struct {
-	DataDir         string
-	AliasesPath     string
-	AnnotationsPath string
-	OutputDir       string
+	DataDir             string
+	AliasesPath         string
+	AnnotationsPath     string
+	SoundProjectionPath string
+	LayoutPath          string
+	OutputDir           string
 }
 
 func DefaultErhuaMixedRuntimeConfig(repoRoot string) ErhuaMixedRuntimeConfig {
 	sourceDir := filepath.Join(repoRoot, "docs", "project", "connected_speech")
 	return ErhuaMixedRuntimeConfig{
-		DataDir:         filepath.Join(repoRoot, "go-backend", "input_methods", "yime", "data"),
-		AliasesPath:     filepath.Join(sourceDir, "erhua_input_aliases.json"),
-		AnnotationsPath: filepath.Join(sourceDir, "erhua_lexical_annotations.json"),
-		OutputDir:       filepath.Join(repoRoot, "go-backend", "input_methods", "yime", "data"),
+		DataDir:             filepath.Join(repoRoot, "go-backend", "input_methods", "yime", "data"),
+		AliasesPath:         filepath.Join(sourceDir, "erhua_input_aliases.json"),
+		AnnotationsPath:     filepath.Join(sourceDir, "erhua_lexical_annotations.json"),
+		SoundProjectionPath: filepath.Join(sourceDir, "erhua_sound_key_projection.json"),
+		LayoutPath:          filepath.Join(repoRoot, "go-backend", "input_methods", "yime", "data", "yime_yinyuan_layout.json"),
+		OutputDir:           filepath.Join(repoRoot, "go-backend", "input_methods", "yime", "data"),
 	}
 }
 
@@ -39,8 +43,10 @@ type erhuaModeCode struct {
 }
 
 type erhuaRoute struct {
-	Status string                   `json:"status"`
-	Codes  map[string]erhuaModeCode `json:"codes"`
+	Status                     string                   `json:"status"`
+	SurfaceClass               string                   `json:"surface_class"`
+	AttachedSyllableYinyuanIDs []string                 `json:"attached_syllable_yinyuan_ids"`
+	Codes                      map[string]erhuaModeCode `json:"codes"`
 }
 
 type erhuaAliasRecord struct {
@@ -84,6 +90,12 @@ type ErhuaMixedRuntimeSummary struct {
 	DeferredMissingWeightCount int             `json:"deferred_missing_weight_count"`
 	RoutesPerMode              int             `json:"routes_per_mode"`
 	RuntimeAliasRows           int             `json:"runtime_alias_rows"`
+	DeclaredSoundUnitCount     int             `json:"declared_sound_unit_count"`
+	PilotSoundUnitCount        int             `json:"pilot_sound_unit_count"`
+	ResearchSoundUnitCount     int             `json:"research_sound_unit_count"`
+	SharedKeyClassCount        int             `json:"shared_key_class_count"`
+	PilotSurfaceClassCount     int             `json:"pilot_surface_class_count"`
+	ProjectedReadyRecordCount  int             `json:"projected_ready_record_count"`
 	Gates                      map[string]bool `json:"gates"`
 	Passed                     bool            `json:"passed"`
 }
@@ -105,7 +117,8 @@ type erhuaRuntimeEntry struct {
 }
 
 func RunErhuaMixedRuntime(config ErhuaMixedRuntimeConfig) (ErhuaMixedRuntimeManifest, error) {
-	if config.DataDir == "" || config.AliasesPath == "" || config.AnnotationsPath == "" || config.OutputDir == "" {
+	if config.DataDir == "" || config.AliasesPath == "" || config.AnnotationsPath == "" ||
+		config.SoundProjectionPath == "" || config.LayoutPath == "" || config.OutputDir == "" {
 		return ErhuaMixedRuntimeManifest{}, errors.New("all explicit-erhua runtime paths are required")
 	}
 	aliases, err := loadErhuaAliasBundle(config.AliasesPath)
@@ -113,6 +126,18 @@ func RunErhuaMixedRuntime(config ErhuaMixedRuntimeConfig) (ErhuaMixedRuntimeMani
 		return ErhuaMixedRuntimeManifest{}, err
 	}
 	annotations, err := loadErhuaAnnotationBundle(config.AnnotationsPath)
+	if err != nil {
+		return ErhuaMixedRuntimeManifest{}, err
+	}
+	soundProjection, err := loadErhuaSoundProjection(config.SoundProjectionPath)
+	if err != nil {
+		return ErhuaMixedRuntimeManifest{}, err
+	}
+	layout, err := loadErhuaYinyuanLayout(config.LayoutPath)
+	if err != nil {
+		return ErhuaMixedRuntimeManifest{}, err
+	}
+	projectionIndex, err := indexErhuaSoundProjection(soundProjection, layout)
 	if err != nil {
 		return ErhuaMixedRuntimeManifest{}, err
 	}
@@ -128,6 +153,9 @@ func RunErhuaMixedRuntime(config ErhuaMixedRuntimeConfig) (ErhuaMixedRuntimeMani
 	}
 
 	ready := make([]erhuaAliasRecord, 0)
+	projectedSoundUnits := map[string]struct{}{}
+	researchSoundProjected := false
+	projectedReadyRecords := 0
 	pending := 0
 	aliasIDs := make(map[string]struct{}, len(aliases.Records))
 	aliasTexts := make(map[string]struct{}, len(aliases.Records))
@@ -153,6 +181,24 @@ func RunErhuaMixedRuntime(config ErhuaMixedRuntimeConfig) (ErhuaMixedRuntimeMani
 			if err := validateErhuaRouteCodes(item); err != nil {
 				return ErhuaMixedRuntimeManifest{}, err
 			}
+			if err := projectionIndex.validateRouteLayout(item); err != nil {
+				return ErhuaMixedRuntimeManifest{}, err
+			}
+			projected, err := projectionIndex.projectFusedRoute(item)
+			if err != nil {
+				return ErhuaMixedRuntimeManifest{}, err
+			}
+			for _, id := range projected.SoundUnitIDs[1:] {
+				sound, isDerivedSound := projectionIndex.soundByID[id]
+				if !isDerivedSound {
+					continue
+				}
+				projectedSoundUnits[id] = struct{}{}
+				if sound.AdmissionStatus == "research_only" {
+					researchSoundProjected = true
+				}
+			}
+			projectedReadyRecords++
 			ready = append(ready, item)
 		case "suffix_only_encoding_pending":
 			pending++
@@ -223,13 +269,24 @@ func RunErhuaMixedRuntime(config ErhuaMixedRuntimeConfig) (ErhuaMixedRuntimeMani
 	}
 
 	gates := map[string]bool{
-		"source_bundles_are_offline_only": !aliases.RuntimeEnabled && !annotations.RuntimeEnabled,
-		"explicit_authorization_complete": len(annotationByID) == len(aliases.Records),
-		"productive_inference_forbidden":  true,
-		"pending_fusions_not_exported":    pending == aliases.Counts["suffix_only_encoding_pending"],
-		"all_runtime_weights_inherited":   len(entries)+len(deferred) == len(ready),
-		"three_mode_routes_complete":      true,
-		"candidate_text_unchanged":        true,
+		"source_bundles_are_offline_only":    !aliases.RuntimeEnabled && !annotations.RuntimeEnabled,
+		"explicit_authorization_complete":    len(annotationByID) == len(aliases.Records),
+		"productive_inference_forbidden":     true,
+		"pending_fusions_not_exported":       pending == aliases.Counts["suffix_only_encoding_pending"],
+		"all_runtime_weights_inherited":      len(entries)+len(deferred) == len(ready),
+		"three_mode_routes_complete":         true,
+		"candidate_text_unchanged":           true,
+		"sound_units_separate_from_keys":     true,
+		"many_to_one_sound_key_projection":   true,
+		"layout_codes_recomputed_from_ids":   true,
+		"ready_fused_routes_sound_projected": projectedReadyRecords == len(ready),
+		"research_only_sounds_not_exported":  !researchSoundProjected && len(projectedSoundUnits) == projectionIndex.pilotSoundUnits,
+	}
+	pilotSurfaceClassCount := 0
+	for _, item := range soundProjection.SurfaceClasses {
+		if item.RuntimeStatus == "pilot" {
+			pilotSurfaceClassCount++
+		}
 	}
 	summary := ErhuaMixedRuntimeSummary{
 		ToolVersion:                ErhuaMixedRuntimeToolVersion,
@@ -240,12 +297,20 @@ func RunErhuaMixedRuntime(config ErhuaMixedRuntimeConfig) (ErhuaMixedRuntimeMani
 		DeferredMissingWeightCount: len(deferred),
 		RoutesPerMode:              len(entries) * 2,
 		RuntimeAliasRows:           len(entries) * 2 * len(erhuaMixedModes),
+		DeclaredSoundUnitCount:     len(soundProjection.SoundUnits),
+		PilotSoundUnitCount:        projectionIndex.pilotSoundUnits,
+		ResearchSoundUnitCount:     projectionIndex.researchSoundUnits,
+		SharedKeyClassCount:        len(soundProjection.KeyClasses),
+		PilotSurfaceClassCount:     pilotSurfaceClassCount,
+		ProjectedReadyRecordCount:  projectedReadyRecords,
 		Gates:                      gates,
 	}
 	summary.Passed = allGatesPass(gates) && len(entries) > 0
 	inputHashes, err := hashNamedFiles(map[string]string{
 		"aliases":              config.AliasesPath,
 		"annotations":          config.AnnotationsPath,
+		"sound_key_projection": config.SoundProjectionPath,
+		"yinyuan_layout":       config.LayoutPath,
 		"full_dictionary":      filepath.Join(config.DataDir, "yime_full.dict.yaml"),
 		"variable_dictionary":  filepath.Join(config.DataDir, "yime_variable.dict.yaml"),
 		"shorthand_dictionary": filepath.Join(config.DataDir, "yime_shorthand.dict.yaml"),

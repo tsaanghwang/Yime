@@ -20,6 +20,12 @@ type bundledErhuaMixedManifest struct {
 		DeferredMissingWeightCount int             `json:"deferred_missing_weight_count"`
 		RoutesPerMode              int             `json:"routes_per_mode"`
 		RuntimeAliasRows           int             `json:"runtime_alias_rows"`
+		DeclaredSoundUnitCount     int             `json:"declared_sound_unit_count"`
+		PilotSoundUnitCount        int             `json:"pilot_sound_unit_count"`
+		ResearchSoundUnitCount     int             `json:"research_sound_unit_count"`
+		SharedKeyClassCount        int             `json:"shared_key_class_count"`
+		PilotSurfaceClassCount     int             `json:"pilot_surface_class_count"`
+		ProjectedReadyRecordCount  int             `json:"projected_ready_record_count"`
 		Gates                      map[string]bool `json:"gates"`
 		Passed                     bool            `json:"passed"`
 	} `json:"summary"`
@@ -35,7 +41,7 @@ type bundledErhuaEntry struct {
 func TestBundledExplicitErhuaMixedOverlayIsCompleteAndReversible(t *testing.T) {
 	var manifest bundledErhuaMixedManifest
 	readJSONFile(t, "yime_erhua_mixed_manifest.json", &manifest)
-	if manifest.ToolVersion != "explicit-erhua-mixed-runtime-v1" ||
+	if manifest.ToolVersion != "explicit-erhua-mixed-runtime-v2" ||
 		manifest.Summary.ExplicitRecordCount != 131 ||
 		manifest.Summary.DualRouteReadyCount != 29 ||
 		manifest.Summary.PendingFusionCount != 102 ||
@@ -43,6 +49,12 @@ func TestBundledExplicitErhuaMixedOverlayIsCompleteAndReversible(t *testing.T) {
 		manifest.Summary.DeferredMissingWeightCount != 14 ||
 		manifest.Summary.RoutesPerMode != 30 ||
 		manifest.Summary.RuntimeAliasRows != 90 ||
+		manifest.Summary.DeclaredSoundUnitCount != 9 ||
+		manifest.Summary.PilotSoundUnitCount != 3 ||
+		manifest.Summary.ResearchSoundUnitCount != 6 ||
+		manifest.Summary.SharedKeyClassCount != 3 ||
+		manifest.Summary.PilotSurfaceClassCount != 4 ||
+		manifest.Summary.ProjectedReadyRecordCount != 29 ||
 		!manifest.Summary.Passed {
 		t.Fatalf("unexpected explicit-erhua mixed manifest: %#v", manifest)
 	}
