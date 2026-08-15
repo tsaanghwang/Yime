@@ -93,6 +93,7 @@ foreach ($relativePath in @(
     'input_methods\yime\data\yime_erhua_mixed_variable.dict.yaml',
     'input_methods\yime\data\yime_erhua_mixed_shorthand.dict.yaml',
     'input_methods\yime\data\yime_erhua_mixed_manifest.json',
+    'input_methods\yime\data\yime_erhua_reverse_source.tsv',
     'input_methods\yime\data\yime_erhua_mixed_full.schema.yaml',
     'input_methods\yime\data\yime_erhua_mixed_variable.schema.yaml',
     'input_methods\yime\data\yime_erhua_mixed_shorthand.schema.yaml',

@@ -15,6 +15,7 @@ type Index struct {
 	MarkedLookup  map[string]string
 	ReverseLookup map[string]string
 	SourceTruth   map[string][]string
+	ErhuaLookup   map[string][]ErhuaLookupRecord
 	ActiveColumn  string
 }
 
@@ -137,7 +138,7 @@ func (index *Index) Search(term string, containsMatch bool) []Result {
 	results := []Result{}
 	seen := map[string]struct{}{}
 	addResult := func(item Result) {
-		key := item.Phrase + "|" + item.ActiveCode + "|" + item.NumericPinyin
+		key := item.Phrase + "|" + item.ActiveCode + "|" + item.NumericPinyin + "|" + item.ErhuaRecordID
 		if _, ok := seen[key]; ok {
 			return
 		}
@@ -147,6 +148,9 @@ func (index *Index) Search(term string, containsMatch bool) []Result {
 
 	for _, item := range resolvePhraseLookupMulti(text, index.UserEntries, index.DictLookup, index.CodeMap, index.ReverseLookup, index.MarkedLookup, index.SourceTruth, index.ActiveColumn) {
 		addResult(item)
+	}
+	for _, record := range index.ErhuaLookup[text] {
+		addResult(buildErhuaLookupResult(record, index.Mode, index.MarkedLookup))
 	}
 	if len(results) > 0 && !containsMatch {
 		return results
@@ -180,6 +184,20 @@ func (index *Index) Search(term string, containsMatch bool) []Result {
 			}
 			for _, item := range resolvePhraseLookupMulti(phrase, index.UserEntries, index.DictLookup, index.CodeMap, index.ReverseLookup, index.MarkedLookup, index.SourceTruth, index.ActiveColumn) {
 				addResult(item)
+				if len(results) >= maxSearchResults {
+					break
+				}
+			}
+		}
+		for phrase, records := range index.ErhuaLookup {
+			if len(results) >= maxSearchResults {
+				break
+			}
+			if !strings.Contains(phrase, text) {
+				continue
+			}
+			for _, record := range records {
+				addResult(buildErhuaLookupResult(record, index.Mode, index.MarkedLookup))
 				if len(results) >= maxSearchResults {
 					break
 				}

@@ -57,7 +57,8 @@ type erhuaSoundProjectionIndex struct {
 }
 
 type erhuaProjectedRoute struct {
-	SoundUnitIDs []string
+	SoundUnitIDs  []string
+	KeyProjection string
 }
 
 func loadErhuaSoundProjection(path string) (erhuaSoundProjectionBundle, error) {
@@ -268,7 +269,33 @@ func (index erhuaSoundProjectionIndex) projectFusedRoute(record erhuaAliasRecord
 			return erhuaProjectedRoute{}, fmt.Errorf("%s fused retained position %d has unexpected Yinyuan ID %s", record.RecordID, position, route.AttachedSyllableYinyuanIDs[position])
 		}
 	}
+	projection, err := index.describeSoundKeyProjection(result.SoundUnitIDs)
+	if err != nil {
+		return erhuaProjectedRoute{}, fmt.Errorf("%s: %w", record.RecordID, err)
+	}
+	result.KeyProjection = projection
 	return result, nil
+}
+
+func (index erhuaSoundProjectionIndex) describeSoundKeyProjection(ids []string) (string, error) {
+	parts := make([]string, 0, len(ids))
+	for _, id := range ids {
+		if sound, ok := index.soundByID[id]; ok {
+			keyClass := index.keyClassByID[sound.KeyClassID]
+			key := index.layoutKeyByYinyuan[keyClass.CarrierYinyuanID]
+			if key == "" {
+				return "", fmt.Errorf("sound unit %s has no physical-key projection", id)
+			}
+			parts = append(parts, fmt.Sprintf("%s→%s→%s(%s)", id, keyClass.KeyClassID, keyClass.CarrierYinyuanID, key))
+			continue
+		}
+		key := index.layoutKeyByYinyuan[id]
+		if key == "" {
+			return "", fmt.Errorf("retained Yinyuan ID %s has no physical-key projection", id)
+		}
+		parts = append(parts, fmt.Sprintf("%s→%s", id, key))
+	}
+	return strings.Join(parts, "；"), nil
 }
 
 func validToneGrade(value string) bool {

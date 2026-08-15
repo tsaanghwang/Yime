@@ -127,13 +127,14 @@ func TestRefreshRimeDataReplacesStaleGeneratedLexicon(t *testing.T) {
 func TestRefreshRimeDataCopiesAndTracksExplicitErhuaOverlay(t *testing.T) {
 	sharedDir := t.TempDir()
 	userDir := t.TempDir()
-	for _, name := range generatedErhuaOverlayFiles[:3] {
+	manifestName := generatedErhuaOverlayFiles[len(generatedErhuaOverlayFiles)-1]
+	for _, name := range generatedErhuaOverlayFiles[:len(generatedErhuaOverlayFiles)-1] {
 		if err := os.WriteFile(filepath.Join(sharedDir, name), []byte("overlay "+name+"\n"), 0o644); err != nil {
 			t.Fatal(err)
 		}
 	}
 	manifest := []byte(`{"tool_version":"explicit-erhua-mixed-runtime-v1"}` + "\n")
-	if err := os.WriteFile(filepath.Join(sharedDir, generatedErhuaOverlayFiles[3]), manifest, 0o644); err != nil {
+	if err := os.WriteFile(filepath.Join(sharedDir, manifestName), manifest, 0o644); err != nil {
 		t.Fatal(err)
 	}
 
@@ -158,7 +159,7 @@ func TestRefreshRimeDataCopiesAndTracksExplicitErhuaOverlay(t *testing.T) {
 	}
 
 	updated := []byte(`{"tool_version":"explicit-erhua-mixed-runtime-v2"}` + "\n")
-	if err := os.WriteFile(filepath.Join(sharedDir, generatedErhuaOverlayFiles[3]), updated, 0o644); err != nil {
+	if err := os.WriteFile(filepath.Join(sharedDir, manifestName), updated, 0o644); err != nil {
 		t.Fatal(err)
 	}
 	changed, err = RefreshRimeData(sharedDir, userDir)

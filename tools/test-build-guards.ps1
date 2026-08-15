@@ -13,6 +13,7 @@ $coreSourceManifest = Join-Path $root 'go-backend\input_methods\yime\data\yime_c
 $reversePinyinSource = Join-Path $root 'go-backend\input_methods\yime\data\yime_pinyin_reverse_source.tsv'
 $pinyinCodeMap = Join-Path $root 'go-backend\input_methods\yime\data\yime_pinyin_codes.tsv'
 $erhuaMixedManifest = Join-Path $root 'go-backend\input_methods\yime\data\yime_erhua_mixed_manifest.json'
+$erhuaReverseSource = Join-Path $root 'go-backend\input_methods\yime\data\yime_erhua_reverse_source.tsv'
 $installer = Join-Path $root 'installer\installer.nsi'
 $devInstall = Join-Path $root 'tools\dev-install.ps1'
 $buildPrereqs = Join-Path $root 'tools\assert-win32-build-prerequisites.ps1'
@@ -165,6 +166,7 @@ foreach ($guard in @(
     'yime_erhua_mixed_variable.dict.yaml',
     'yime_erhua_mixed_shorthand.dict.yaml',
     'yime_erhua_mixed_manifest.json',
+    'yime_erhua_reverse_source.tsv',
     'yime_erhua_mixed_full.schema.yaml',
     'yime_erhua_mixed_variable.schema.yaml',
     'yime_erhua_mixed_shorthand.schema.yaml',
@@ -202,7 +204,8 @@ if ([string]$sourceEvidence.reverse_pinyin_source -ne 'yime_pinyin_reverse_sourc
 $erhuaMixed = Get-Content -LiteralPath $erhuaMixedManifest -Raw -Encoding UTF8 | ConvertFrom-Json
 if (-not [bool]$erhuaMixed.summary.passed -or
     [int64]$erhuaMixed.summary.inherited_weight_record_count -ne 15 -or
-    [int64]$erhuaMixed.summary.runtime_alias_rows -ne 90) {
+    [int64]$erhuaMixed.summary.runtime_alias_rows -ne 90 -or
+    [int64]$erhuaMixed.summary.reverse_lookup_row_count -ne 15) {
     throw 'Explicit-erhua mixed runtime manifest did not pass its completeness gates.'
 }
 foreach ($mode in @('full', 'variable', 'shorthand')) {
@@ -212,6 +215,12 @@ foreach ($mode in @('full', 'variable', 'shorthand')) {
     if ([string]$erhuaMixed.output_sha256.$name -ne $hash) {
         throw "Explicit-erhua mixed dictionary hash mismatch: $name"
     }
+}
+$erhuaReverseHash = (Get-FileHash -LiteralPath $erhuaReverseSource -Algorithm SHA256).Hash.ToLowerInvariant()
+$erhuaReverseRows = [Math]::Max(0, (Get-Content -LiteralPath $erhuaReverseSource -Encoding UTF8).Count - 1)
+if ([string]$erhuaMixed.output_sha256.'yime_erhua_reverse_source.tsv' -ne $erhuaReverseHash -or
+    $erhuaReverseRows -ne 15) {
+    throw 'Explicit-erhua reverse sidecar does not match its manifest or expected row count.'
 }
 Write-Host 'Curated core evidence and three-mode package guards passed.'
 $prereqText = Get-Content -LiteralPath $buildPrereqs -Raw

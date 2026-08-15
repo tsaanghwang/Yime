@@ -24,6 +24,7 @@
   "source_evidence_manifest": "yime_core_source_manifest.json",
   "reverse_pinyin_source": "yime_pinyin_reverse_source.tsv",
   "explicit_erhua_mixed_manifest": "yime_erhua_mixed_manifest.json",
+  "explicit_erhua_reverse_source": "yime_erhua_reverse_source.tsv",
   "entry_count_per_mode": 1166300,
   "distinct_core_texts": 1151400,
   "candidate_layers": [

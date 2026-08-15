@@ -44,7 +44,9 @@ type erhuaModeCode struct {
 
 type erhuaRoute struct {
 	Status                     string                   `json:"status"`
+	NumericPinyin              string                   `json:"numeric_pinyin"`
 	SurfaceClass               string                   `json:"surface_class"`
+	AttachedSyllableSource     string                   `json:"attached_syllable_source"`
 	AttachedSyllableYinyuanIDs []string                 `json:"attached_syllable_yinyuan_ids"`
 	Codes                      map[string]erhuaModeCode `json:"codes"`
 }
@@ -96,6 +98,7 @@ type ErhuaMixedRuntimeSummary struct {
 	SharedKeyClassCount        int             `json:"shared_key_class_count"`
 	PilotSurfaceClassCount     int             `json:"pilot_surface_class_count"`
 	ProjectedReadyRecordCount  int             `json:"projected_ready_record_count"`
+	ReverseLookupRowCount      int             `json:"reverse_lookup_row_count"`
 	Gates                      map[string]bool `json:"gates"`
 	Passed                     bool            `json:"passed"`
 }
@@ -114,6 +117,7 @@ type erhuaRuntimeEntry struct {
 	Weight   string
 	Suffix   map[string]string
 	Fused    map[string]string
+	Reverse  erhuaReverseSourceRow
 }
 
 func RunErhuaMixedRuntime(config ErhuaMixedRuntimeConfig) (ErhuaMixedRuntimeManifest, error) {
@@ -154,6 +158,7 @@ func RunErhuaMixedRuntime(config ErhuaMixedRuntimeConfig) (ErhuaMixedRuntimeMani
 
 	ready := make([]erhuaAliasRecord, 0)
 	projectedSoundUnits := map[string]struct{}{}
+	projectedByRecordID := map[string]erhuaProjectedRoute{}
 	researchSoundProjected := false
 	projectedReadyRecords := 0
 	pending := 0
@@ -199,6 +204,7 @@ func RunErhuaMixedRuntime(config ErhuaMixedRuntimeConfig) (ErhuaMixedRuntimeMani
 				}
 			}
 			projectedReadyRecords++
+			projectedByRecordID[item.RecordID] = projected
 			ready = append(ready, item)
 		case "suffix_only_encoding_pending":
 			pending++
@@ -251,6 +257,22 @@ func RunErhuaMixedRuntime(config ErhuaMixedRuntimeConfig) (ErhuaMixedRuntimeMani
 			entry.Suffix[mode] = item.Routes["suffix_compatibility"].Codes[mode].LayoutKeyCode
 			entry.Fused[mode] = item.Routes["fused_erhua"].Codes[mode].LayoutKeyCode
 		}
+		projected := projectedByRecordID[item.RecordID]
+		fusedRoute := item.Routes["fused_erhua"]
+		entry.Reverse = erhuaReverseSourceRow{
+			RecordID:                   item.RecordID,
+			Text:                       item.Text,
+			SourceKind:                 annotationByID[item.RecordID].Authorization.SourceKind,
+			CompatibilityNumericPinyin: item.Routes["suffix_compatibility"].NumericPinyin,
+			SurfaceClass:               fusedRoute.SurfaceClass,
+			AttachedSyllableSource:     fusedRoute.AttachedSyllableSource,
+			CarrierYinyuanIDs:          append([]string(nil), fusedRoute.AttachedSyllableYinyuanIDs...),
+			SurfaceSoundUnitIDs:        append([]string(nil), projected.SoundUnitIDs...),
+			KeyProjection:              projected.KeyProjection,
+			FullCode:                   entry.Fused["full"],
+			VariableCode:               entry.Fused["variable"],
+			ShorthandCode:              entry.Fused["shorthand"],
+		}
 		entries = append(entries, entry)
 	}
 	sort.Slice(entries, func(i, j int) bool { return entries[i].RecordID < entries[j].RecordID })
@@ -267,20 +289,30 @@ func RunErhuaMixedRuntime(config ErhuaMixedRuntimeConfig) (ErhuaMixedRuntimeMani
 		}
 		outputPaths[name] = path
 	}
+	reverseRows := make([]erhuaReverseSourceRow, 0, len(entries))
+	for _, entry := range entries {
+		reverseRows = append(reverseRows, entry.Reverse)
+	}
+	reverseSourcePath := filepath.Join(config.OutputDir, ErhuaReverseSourceFileName)
+	if err := writeErhuaReverseSource(reverseSourcePath, reverseRows); err != nil {
+		return ErhuaMixedRuntimeManifest{}, err
+	}
+	outputPaths[ErhuaReverseSourceFileName] = reverseSourcePath
 
 	gates := map[string]bool{
-		"source_bundles_are_offline_only":    !aliases.RuntimeEnabled && !annotations.RuntimeEnabled,
-		"explicit_authorization_complete":    len(annotationByID) == len(aliases.Records),
-		"productive_inference_forbidden":     true,
-		"pending_fusions_not_exported":       pending == aliases.Counts["suffix_only_encoding_pending"],
-		"all_runtime_weights_inherited":      len(entries)+len(deferred) == len(ready),
-		"three_mode_routes_complete":         true,
-		"candidate_text_unchanged":           true,
-		"sound_units_separate_from_keys":     true,
-		"many_to_one_sound_key_projection":   true,
-		"layout_codes_recomputed_from_ids":   true,
-		"ready_fused_routes_sound_projected": projectedReadyRecords == len(ready),
-		"research_only_sounds_not_exported":  !researchSoundProjected && len(projectedSoundUnits) == projectionIndex.pilotSoundUnits,
+		"source_bundles_are_offline_only":      !aliases.RuntimeEnabled && !annotations.RuntimeEnabled,
+		"explicit_authorization_complete":      len(annotationByID) == len(aliases.Records),
+		"productive_inference_forbidden":       true,
+		"pending_fusions_not_exported":         pending == aliases.Counts["suffix_only_encoding_pending"],
+		"all_runtime_weights_inherited":        len(entries)+len(deferred) == len(ready),
+		"three_mode_routes_complete":           true,
+		"candidate_text_unchanged":             true,
+		"sound_units_separate_from_keys":       true,
+		"many_to_one_sound_key_projection":     true,
+		"layout_codes_recomputed_from_ids":     true,
+		"ready_fused_routes_sound_projected":   projectedReadyRecords == len(ready),
+		"research_only_sounds_not_exported":    !researchSoundProjected && len(projectedSoundUnits) == projectionIndex.pilotSoundUnits,
+		"reverse_lookup_explanations_complete": len(reverseRows) == len(entries),
 	}
 	pilotSurfaceClassCount := 0
 	for _, item := range soundProjection.SurfaceClasses {
@@ -303,6 +335,7 @@ func RunErhuaMixedRuntime(config ErhuaMixedRuntimeConfig) (ErhuaMixedRuntimeMani
 		SharedKeyClassCount:        len(soundProjection.KeyClasses),
 		PilotSurfaceClassCount:     pilotSurfaceClassCount,
 		ProjectedReadyRecordCount:  projectedReadyRecords,
+		ReverseLookupRowCount:      len(reverseRows),
 		Gates:                      gates,
 	}
 	summary.Passed = allGatesPass(gates) && len(entries) > 0
@@ -382,6 +415,12 @@ func validateErhuaRouteCodes(record erhuaAliasRecord) error {
 				return fmt.Errorf("%s has invalid %s/%s code", record.RecordID, routeName, mode)
 			}
 		}
+	}
+	if strings.TrimSpace(record.Routes["suffix_compatibility"].NumericPinyin) == "" {
+		return fmt.Errorf("%s lacks compatibility numeric Pinyin for reverse lookup", record.RecordID)
+	}
+	if strings.TrimSpace(record.Routes["fused_erhua"].AttachedSyllableSource) == "" {
+		return fmt.Errorf("%s lacks attached-syllable source for fused reverse lookup", record.RecordID)
 	}
 	for _, mode := range erhuaMixedModes {
 		suffixLength := record.Routes["suffix_compatibility"].Codes[mode].Length

@@ -52,11 +52,12 @@ type coreSourceManifest struct {
 }
 
 type coreRuntimeProfile struct {
-	DefaultSchema       string   `json:"default_schema"`
-	RuntimeSchemas      []string `json:"runtime_schemas"`
-	RuntimeDictionaries []string `json:"runtime_dictionaries"`
-	CandidateLayers     []string `json:"candidate_layers"`
-	EntryCountPerMode   int      `json:"entry_count_per_mode"`
+	DefaultSchema              string   `json:"default_schema"`
+	RuntimeSchemas             []string `json:"runtime_schemas"`
+	RuntimeDictionaries        []string `json:"runtime_dictionaries"`
+	CandidateLayers            []string `json:"candidate_layers"`
+	ExplicitErhuaReverseSource string   `json:"explicit_erhua_reverse_source"`
+	EntryCountPerMode          int      `json:"entry_count_per_mode"`
 }
 
 func readJSONFile(t *testing.T, name string, target any) {

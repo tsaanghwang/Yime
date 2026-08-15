@@ -12,7 +12,8 @@
   "output_sha256": {
     "yime_erhua_mixed_full.dict.yaml": "6c1801657f0d9fa0d89b2f71be94a0d2e26ac4d26253e2a1603794f093a8a12a",
     "yime_erhua_mixed_shorthand.dict.yaml": "28a324ea0e3eb7d329103c3c1c62967166f26bd0eac16c279aee60582b1af7d9",
-    "yime_erhua_mixed_variable.dict.yaml": "bdda60b817053719dd29c75c35720baac7bfb7fe52910ba476402c98ce4e756a"
+    "yime_erhua_mixed_variable.dict.yaml": "bdda60b817053719dd29c75c35720baac7bfb7fe52910ba476402c98ce4e756a",
+    "yime_erhua_reverse_source.tsv": "f268b5f7e2d98a48555dbae88e7aca8e23dbefe22a262db2ac14d8f40149e9ff"
   },
   "summary": {
     "tool_version": "explicit-erhua-mixed-runtime-v2",
@@ -29,6 +30,7 @@
     "shared_key_class_count": 3,
     "pilot_surface_class_count": 4,
     "projected_ready_record_count": 29,
+    "reverse_lookup_row_count": 15,
     "gates": {
       "all_runtime_weights_inherited": true,
       "candidate_text_unchanged": true,
@@ -39,6 +41,7 @@
       "productive_inference_forbidden": true,
       "ready_fused_routes_sound_projected": true,
       "research_only_sounds_not_exported": true,
+      "reverse_lookup_explanations_complete": true,
       "sound_units_separate_from_keys": true,
       "source_bundles_are_offline_only": true,
       "three_mode_routes_complete": true

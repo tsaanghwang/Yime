@@ -62,6 +62,31 @@ ai1	Hffu
 
 **特殊规则**：含 `ü` 的键会自动生成 `v` 和 `u:` 别名（如 `lü3` → `lv3`、`lu:3`）。
 
+### yime_erhua_reverse_source.tsv
+
+已进入三模式运行附加词典的显式融合儿化路线反查旁表。该文件由儿化混合派生器生成，只负责
+恢复“派生表层音元如何共用现有键位”的解释信息，不参与 Rime 候选生成。
+
+**格式**：TSV，首行为固定标题行，共 12 列：
+
+| 列 | 说明 |
+|---|---|
+| record_id | 显式儿化来源记录 ID |
+| text | 候选文字 |
+| source_kind | 授权来源类型 |
+| compatibility_numeric_pinyin | 未改写规范词典的儿缀兼容数字拼音 |
+| surface_class | 融合儿化表层类 |
+| attached_syllable_source | 被儿化附着的原音节 |
+| carrier_yinyuan_ids | 现有布局载体音元元组 |
+| surface_sound_unit_ids | 派生儿化表层音元元组 |
+| key_projection | 表层音元经共享键位类到物理键的投影说明 |
+| full_code | 等长融合码 |
+| variable_code | 变长融合码 |
+| shorthand_code | 省键融合码 |
+
+当前为 15 行记录；实际行数及文件 SHA-256 必须与 `yime_erhua_mixed_manifest.json` 一致。旁表
+缺失时普通反查保持可用，但不显示融合儿化解释。不得据此旁表从词尾“儿”类推未审定词条。
+
 ### pinyin_normalized.json
 
 数字标调拼音→Unicode 标调拼音映射，被反查工具使用。

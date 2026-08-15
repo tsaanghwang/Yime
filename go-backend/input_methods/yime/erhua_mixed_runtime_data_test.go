@@ -26,6 +26,7 @@ type bundledErhuaMixedManifest struct {
 		SharedKeyClassCount        int             `json:"shared_key_class_count"`
 		PilotSurfaceClassCount     int             `json:"pilot_surface_class_count"`
 		ProjectedReadyRecordCount  int             `json:"projected_ready_record_count"`
+		ReverseLookupRowCount      int             `json:"reverse_lookup_row_count"`
 		Gates                      map[string]bool `json:"gates"`
 		Passed                     bool            `json:"passed"`
 	} `json:"summary"`
@@ -55,6 +56,7 @@ func TestBundledExplicitErhuaMixedOverlayIsCompleteAndReversible(t *testing.T) {
 		manifest.Summary.SharedKeyClassCount != 3 ||
 		manifest.Summary.PilotSurfaceClassCount != 4 ||
 		manifest.Summary.ProjectedReadyRecordCount != 29 ||
+		manifest.Summary.ReverseLookupRowCount != 15 ||
 		!manifest.Summary.Passed {
 		t.Fatalf("unexpected explicit-erhua mixed manifest: %#v", manifest)
 	}
@@ -123,6 +125,27 @@ func TestBundledExplicitErhuaMixedOverlayIsCompleteAndReversible(t *testing.T) {
 			t.Fatalf("%s dependency schema does not compile its overlay dictionary", mode)
 		}
 	}
+	reverseSourcePath := filepath.Join("data", "yime_erhua_reverse_source.tsv")
+	if got := fileSHA256(t, reverseSourcePath); got != manifest.OutputSHA256["yime_erhua_reverse_source.tsv"] {
+		t.Fatalf("explicit-erhua reverse source hash mismatch: got=%s want=%s", got, manifest.OutputSHA256["yime_erhua_reverse_source.tsv"])
+	}
+	reverseSource, err := os.ReadFile(reverseSourcePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	lines := strings.Split(strings.TrimSpace(string(reverseSource)), "\n")
+	if len(lines) != 16 {
+		t.Fatalf("explicit-erhua reverse source rows=%d, want header + 15", len(lines))
+	}
+	for _, want := range []string{
+		"一阵儿\tpsc_erhua\tyi1 zhen4 er5\tERHUA-ORAL-ER\tzhen4\tN16 M22 M23 M24\tN16 R01 R02 R03",
+		"R01→ERHUA-KEY-HIGH→M22(U)",
+		"yjjj7UIO\tyj7UIO\tyj7UO",
+	} {
+		if !strings.Contains(string(reverseSource), want) {
+			t.Fatalf("explicit-erhua reverse source lacks %q", want)
+		}
+	}
 }
 
 func TestRuntimeProfileDeclaresExplicitErhuaMixedOverlay(t *testing.T) {
@@ -130,6 +153,9 @@ func TestRuntimeProfileDeclaresExplicitErhuaMixedOverlay(t *testing.T) {
 	readJSONFile(t, "yime_runtime_profile.json", &profile)
 	if !containsString(profile.CandidateLayers, "explicit_source_backed_erhua_mixed_overlay") {
 		t.Fatal("runtime profile does not declare the explicit-erhua mixed candidate layer")
+	}
+	if profile.ExplicitErhuaReverseSource != "yime_erhua_reverse_source.tsv" {
+		t.Fatalf("runtime profile lacks explicit-erhua reverse source: %q", profile.ExplicitErhuaReverseSource)
 	}
 	for _, mode := range []string{"full", "variable", "shorthand"} {
 		name := "yime_erhua_mixed_" + mode + ".dict.yaml"

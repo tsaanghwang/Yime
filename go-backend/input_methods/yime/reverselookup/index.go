@@ -41,6 +41,10 @@ func Load(sharedDir, userDir string, mode Mode) (*Index, error) {
 	if err != nil {
 		return nil, err
 	}
+	erhuaLookup, err := loadErhuaSource(filepath.Join(sharedDir, ErhuaSourceFileName))
+	if err != nil {
+		return nil, err
+	}
 
 	index := &Index{
 		SchemaID:     schemaID,
@@ -50,6 +54,7 @@ func Load(sharedDir, userDir string, mode Mode) (*Index, error) {
 		UserEntries:  userEntries,
 		MarkedLookup: markedLookup,
 		SourceTruth:  sourceTruth,
+		ErhuaLookup:  erhuaLookup,
 	}
 	index.SetMode(mode)
 	_ = saveCachedIndex(sharedDir, userDir, index)

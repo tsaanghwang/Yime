@@ -61,6 +61,9 @@ func TestErhuaMixedRuntimeExportsOnlyExplicitReadyRecordsWithInheritedWeights(t 
 	if manifest.Summary.InheritedWeightRecordCount != 1 || manifest.Summary.DeferredMissingWeightCount != 1 {
 		t.Fatalf("unexpected summary: %+v", manifest.Summary)
 	}
+	if manifest.Summary.ReverseLookupRowCount != 1 {
+		t.Fatalf("reverse lookup rows=%d, want 1", manifest.Summary.ReverseLookupRowCount)
+	}
 	if len(manifest.Deferred) != 1 || manifest.Deferred[0] != "缺权重儿" {
 		t.Fatalf("unexpected deferred records: %v", manifest.Deferred)
 	}
@@ -79,6 +82,15 @@ func TestErhuaMixedRuntimeExportsOnlyExplicitReadyRecordsWithInheritedWeights(t 
 			if strings.Contains(text, forbidden) {
 				t.Fatalf("%s dictionary unexpectedly contains %s", mode, forbidden)
 			}
+		}
+	}
+	reverseSource, err := os.ReadFile(filepath.Join(outputDir, ErhuaReverseSourceFileName))
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, want := range []string{"A\t明白儿\tpsc_erhua\tming2 bai2 er5", "TEST-ERHUA-ORAL", "N01 R01 R02 R03", "R01→KEY-H→M01(b)"} {
+		if !strings.Contains(string(reverseSource), want) {
+			t.Fatalf("reverse source lacks %q:\n%s", want, reverseSource)
 		}
 	}
 }
@@ -185,8 +197,8 @@ func testReadyErhuaAlias(id, text, suffixCode, fusedCode string) erhuaAliasRecor
 		Text:     text,
 		Status:   "dual_route_ready",
 		Routes: map[string]erhuaRoute{
-			"suffix_compatibility": {Status: "available", Codes: makeCodes(suffixCode)},
-			"fused_erhua":          {Status: "available", Codes: makeCodes(fusedCode)},
+			"suffix_compatibility": {Status: "available", NumericPinyin: "ming2 bai2 er5", Codes: makeCodes(suffixCode)},
+			"fused_erhua":          {Status: "available", AttachedSyllableSource: "bai2", Codes: makeCodes(fusedCode)},
 		},
 	}
 }
@@ -205,12 +217,14 @@ func testProjectedReadyErhuaAlias(id, text string) erhuaAliasRecord {
 		Status:   "dual_route_ready",
 		Routes: map[string]erhuaRoute{
 			"suffix_compatibility": {
-				Status: "available",
-				Codes:  makeCode("abcde", []string{"N01", "M01", "M02", "M03", "M04"}),
+				Status:        "available",
+				NumericPinyin: "ming2 bai2 er5",
+				Codes:         makeCode("abcde", []string{"N01", "M01", "M02", "M03", "M04"}),
 			},
 			"fused_erhua": {
 				Status:                     "available",
 				SurfaceClass:               "TEST-ERHUA-ORAL",
+				AttachedSyllableSource:     "bai2",
 				AttachedSyllableYinyuanIDs: []string{"N01", "M01", "M02", "M03"},
 				Codes:                      makeCode("abcd", []string{"N01", "M01", "M02", "M03"}),
 			},

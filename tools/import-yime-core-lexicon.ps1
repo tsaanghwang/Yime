@@ -159,6 +159,7 @@ if ($DeployToUserDir) {
         "yime_erhua_mixed_variable.dict.yaml",
         "yime_erhua_mixed_shorthand.dict.yaml",
         "yime_erhua_mixed_manifest.json",
+        "yime_erhua_reverse_source.tsv",
         "yime_pinyin_reverse_source.tsv",
         "yime_lexicon_manifest.json",
         "yime_core_source_manifest.json"

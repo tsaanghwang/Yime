@@ -9,9 +9,9 @@ const (
 )
 
 type CodeRecord struct {
-	Full       string
-	Variable   string
-	Shorthand  string
+	Full      string
+	Variable  string
+	Shorthand string
 }
 
 type UserPhraseEntry struct {
@@ -20,14 +20,22 @@ type UserPhraseEntry struct {
 }
 
 type Result struct {
-	Phrase         string
-	Source         string
-	NumericPinyin  string
-	StandardPinyin string
-	ActiveCode     string
-	FullCode       string
-	VariableCode   string
-	ShorthandCode  string
+	Phrase               string
+	Source               string
+	NumericPinyin        string
+	StandardPinyin       string
+	ActiveCode           string
+	FullCode             string
+	VariableCode         string
+	ShorthandCode        string
+	ErhuaRecordID        string
+	ReadingIdentity      string
+	EvidenceSource       string
+	SurfaceClass         string
+	AttachedSyllable     string
+	CarrierYinyuanIDs    string
+	SurfaceSoundUnitIDs  string
+	SoundToKeyProjection string
 }
 
 func SchemaIDFromMode(mode Mode) string {
