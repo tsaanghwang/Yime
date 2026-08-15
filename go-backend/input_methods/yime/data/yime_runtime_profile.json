@@ -7,16 +7,27 @@
     "yime_full",
     "yime_shorthand"
   ],
+  "runtime_schema_dependencies": [
+    "yime_erhua_mixed_variable",
+    "yime_erhua_mixed_full",
+    "yime_erhua_mixed_shorthand"
+  ],
   "runtime_dictionaries": [
     "yime_variable.dict.yaml",
     "yime_full.dict.yaml",
-    "yime_shorthand.dict.yaml"
+    "yime_shorthand.dict.yaml",
+    "yime_erhua_mixed_variable.dict.yaml",
+    "yime_erhua_mixed_full.dict.yaml",
+    "yime_erhua_mixed_shorthand.dict.yaml"
   ],
   "runtime_manifest": "yime_lexicon_manifest.json",
   "source_evidence_manifest": "yime_core_source_manifest.json",
+  "reverse_pinyin_source": "yime_pinyin_reverse_source.tsv",
+  "explicit_erhua_mixed_manifest": "yime_erhua_mixed_manifest.json",
   "entry_count_per_mode": 1166300,
   "distinct_core_texts": 1151400,
   "candidate_layers": [
+    "explicit_source_backed_erhua_mixed_overlay",
     "curated_system_core",
     "encoded_single_character_periphery",
     "rime_user_learning",

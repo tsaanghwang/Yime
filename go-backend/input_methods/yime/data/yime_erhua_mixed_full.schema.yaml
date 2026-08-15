@@ -1,0 +1,13 @@
+# Rime dependency schema
+# Compiles the explicit, source-backed full-mode erhua mixed overlay.
+
+schema:
+  schema_id: yime_erhua_mixed_full
+  name: "Yime 显式儿化混合表（等长依赖）"
+  version: "explicit-erhua-mixed-v1"
+
+translator:
+  dictionary: yime_erhua_mixed_full
+  enable_user_dict: false
+  enable_sentence: false
+  enable_completion: true

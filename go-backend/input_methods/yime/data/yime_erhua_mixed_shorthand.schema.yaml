@@ -1,0 +1,13 @@
+# Rime dependency schema
+# Compiles the explicit, source-backed shorthand-mode erhua mixed overlay.
+
+schema:
+  schema_id: yime_erhua_mixed_shorthand
+  name: "Yime 显式儿化混合表（省键依赖）"
+  version: "explicit-erhua-mixed-v1"
+
+translator:
+  dictionary: yime_erhua_mixed_shorthand
+  enable_user_dict: false
+  enable_sentence: false
+  enable_completion: true

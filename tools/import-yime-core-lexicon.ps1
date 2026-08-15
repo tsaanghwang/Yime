@@ -6,6 +6,8 @@ param(
     [string]$EvidenceManifest,
     [Parameter(Mandatory = $true)]
     [string]$SourceRevision,
+    [Parameter(Mandatory = $true)]
+    [string]$PronunciationEntries,
     [string]$OutputDir = "",
     [switch]$DeployToUserDir
 )
@@ -15,6 +17,7 @@ $root = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot "..")).Path
 $goBackend = Join-Path $root "go-backend"
 $resolvedInputPath = (Resolve-Path -LiteralPath $InputPath).Path
 $resolvedEvidencePath = (Resolve-Path -LiteralPath $EvidenceManifest).Path
+$resolvedPronunciationEntries = (Resolve-Path -LiteralPath $PronunciationEntries).Path
 $evidence = Get-Content -LiteralPath $resolvedEvidencePath -Raw -Encoding UTF8 |
     ConvertFrom-Json
 
@@ -39,6 +42,7 @@ if (-not [bool]$characterRanking.core_above_peripheral) {
     throw "Core and peripheral single-character weight ranges overlap."
 }
 $sourceHash = (Get-FileHash -LiteralPath $resolvedInputPath -Algorithm SHA256).Hash.ToLowerInvariant()
+$pronunciationEntriesHash = (Get-FileHash -LiteralPath $resolvedPronunciationEntries -Algorithm SHA256).Hash.ToLowerInvariant()
 if ($sourceHash -ne [string]$evidence.output_sha256) {
     throw "Core dictionary hash does not match the evidence manifest."
 }
@@ -48,6 +52,11 @@ if (-not $OutputDir) {
 }
 New-Item -ItemType Directory -Force -Path $OutputDir | Out-Null
 $outputPath = (Resolve-Path -LiteralPath $OutputDir).Path
+$reverseCodeMapPath = Join-Path $outputPath "yime_pinyin_codes.tsv"
+if (-not (Test-Path -LiteralPath $reverseCodeMapPath)) {
+    $reverseCodeMapPath = Join-Path $goBackend "input_methods\yime\data\yime_pinyin_codes.tsv"
+}
+$reverseCodeMapHash = (Get-FileHash -LiteralPath $reverseCodeMapPath -Algorithm SHA256).Hash.ToLowerInvariant()
 
 Push-Location $goBackend
 try {
@@ -56,6 +65,21 @@ try {
         -output-dir $outputPath
     if ($LASTEXITCODE -ne 0) {
         throw "Yime core derivation failed with exit code $LASTEXITCODE"
+    }
+    go run ./cmd/yime-reverse-pinyin-derive `
+        -codes $reverseCodeMapPath `
+        -dictionary (Join-Path $outputPath "yime_full.dict.yaml") `
+        -pronunciations $resolvedPronunciationEntries `
+        -output (Join-Path $outputPath "yime_pinyin_reverse_source.tsv")
+    if ($LASTEXITCODE -ne 0) {
+        throw "Yime reverse-Pinyin source derivation failed with exit code $LASTEXITCODE"
+    }
+    go run ./cmd/yime-erhua-mixed-derive `
+        -repo-root $root `
+        -data-dir $outputPath `
+        -output-dir $outputPath
+    if ($LASTEXITCODE -ne 0) {
+        throw "Yime explicit-erhua mixed overlay derivation failed with exit code $LASTEXITCODE"
     }
 }
 finally {
@@ -70,6 +94,9 @@ if ([int64]$generated.entry_count -ne [int64]$evidence.total_reading_entries) {
 }
 
 $counts = $evidence.ranking_evidence.distinct_texts_by_source
+$reverseSourcePath = Join-Path $outputPath "yime_pinyin_reverse_source.tsv"
+$reverseSourceHash = (Get-FileHash -LiteralPath $reverseSourcePath -Algorithm SHA256).Hash.ToLowerInvariant()
+$reverseSourceRows = [Math]::Max(0, (Get-Content -LiteralPath $reverseSourcePath -Encoding UTF8).Count - 1)
 $sourceRecord = [ordered]@{
     schema_version = 1
     source_project = "Yime-python-prototype"
@@ -77,6 +104,12 @@ $sourceRecord = [ordered]@{
     source_dictionary = [IO.Path]::GetFileName($resolvedInputPath)
     source_dictionary_sha256 = $sourceHash
     source_selection_sha256 = [string]$evidence.selection_tsv_sha256
+    pronunciation_entries = [IO.Path]::GetFileName($resolvedPronunciationEntries)
+    pronunciation_entries_sha256 = $pronunciationEntriesHash
+    reverse_pinyin_source = "yime_pinyin_reverse_source.tsv"
+    reverse_pinyin_source_sha256 = $reverseSourceHash
+    reverse_pinyin_source_rows = $reverseSourceRows
+    reverse_pinyin_code_map_sha256 = $reverseCodeMapHash
     entry_count = [int64]$evidence.total_reading_entries
     distinct_texts = [int64]$evidence.total_distinct_texts
     ranking_evidence = [ordered]@{
@@ -122,6 +155,11 @@ if ($DeployToUserDir) {
         "yime_full.dict.yaml",
         "yime_variable.dict.yaml",
         "yime_shorthand.dict.yaml",
+        "yime_erhua_mixed_full.dict.yaml",
+        "yime_erhua_mixed_variable.dict.yaml",
+        "yime_erhua_mixed_shorthand.dict.yaml",
+        "yime_erhua_mixed_manifest.json",
+        "yime_pinyin_reverse_source.tsv",
         "yime_lexicon_manifest.json",
         "yime_core_source_manifest.json"
     )) {

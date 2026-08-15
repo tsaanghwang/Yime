@@ -16,12 +16,21 @@ var generatedSchemaFiles = []string{
 	"yime_variable.schema.yaml",
 	"yime_full.schema.yaml",
 	"yime_shorthand.schema.yaml",
+	"yime_erhua_mixed_variable.schema.yaml",
+	"yime_erhua_mixed_full.schema.yaml",
+	"yime_erhua_mixed_shorthand.schema.yaml",
 }
 var generatedLexiconFiles = []string{
 	"yime_full.dict.yaml",
 	"yime_variable.dict.yaml",
 	"yime_shorthand.dict.yaml",
 	"yime_lexicon_manifest.json",
+}
+var generatedErhuaOverlayFiles = []string{
+	"yime_erhua_mixed_full.dict.yaml",
+	"yime_erhua_mixed_variable.dict.yaml",
+	"yime_erhua_mixed_shorthand.dict.yaml",
+	"yime_erhua_mixed_manifest.json",
 }
 var retiredCoreTrialFiles = []string{
 	"yime_core_trial.dict.yaml",
@@ -71,6 +80,10 @@ func RefreshRimeData(sharedDir, userDir string) (bool, error) {
 			return false, err
 		}
 	}
+	erhuaOverlayChanged, err := refreshGeneratedErhuaOverlay(sharedDir, userDir)
+	if err != nil {
+		return false, err
+	}
 	schemasChanged, err := RefreshRimeSchemas(sharedDir, userDir)
 	if err != nil {
 		return false, err
@@ -79,7 +92,44 @@ func RefreshRimeData(sharedDir, userDir string) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	return selectionChanged || schemasChanged || lexiconChanged || retiredChanged, nil
+	return selectionChanged || schemasChanged || lexiconChanged || erhuaOverlayChanged || retiredChanged, nil
+}
+
+func refreshGeneratedErhuaOverlay(sharedDir, userDir string) (bool, error) {
+	sharedManifestPath := filepath.Join(sharedDir, generatedErhuaOverlayFiles[3])
+	sharedManifest, err := os.ReadFile(sharedManifestPath)
+	if errors.Is(err, os.ErrNotExist) {
+		return false, nil
+	}
+	if err != nil {
+		return false, fmt.Errorf("读取共享儿化混合清单失败: %w", err)
+	}
+	userManifest, manifestErr := os.ReadFile(filepath.Join(userDir, generatedErhuaOverlayFiles[3]))
+	needsRefresh := manifestErr != nil || !bytes.Equal(userManifest, sharedManifest)
+	if !needsRefresh {
+		for _, name := range generatedErhuaOverlayFiles[:3] {
+			if _, statErr := os.Stat(filepath.Join(userDir, name)); statErr != nil {
+				needsRefresh = true
+				break
+			}
+		}
+	}
+	if !needsRefresh {
+		return false, nil
+	}
+	for _, name := range generatedErhuaOverlayFiles[:3] {
+		content, readErr := os.ReadFile(filepath.Join(sharedDir, name))
+		if readErr != nil {
+			return false, fmt.Errorf("读取共享儿化混合词典 %s 失败: %w", name, readErr)
+		}
+		if writeErr := os.WriteFile(filepath.Join(userDir, name), content, 0o644); writeErr != nil {
+			return false, fmt.Errorf("更新用户目录儿化混合词典 %s 失败: %w", name, writeErr)
+		}
+	}
+	if err := os.WriteFile(filepath.Join(userDir, generatedErhuaOverlayFiles[3]), sharedManifest, 0o644); err != nil {
+		return false, fmt.Errorf("更新用户目录儿化混合清单失败: %w", err)
+	}
+	return true, nil
 }
 
 func migrateCoreTrialSelection(userDir string) (bool, error) {

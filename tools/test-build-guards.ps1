@@ -9,6 +9,10 @@ $codeOwners = Join-Path $root '.github\CODEOWNERS'
 $rootBuild = Join-Path $root 'build.bat'
 $goBuild = Join-Path $root 'go-backend\build.bat'
 $coreImporter = Join-Path $root 'tools\import-yime-core-lexicon.ps1'
+$coreSourceManifest = Join-Path $root 'go-backend\input_methods\yime\data\yime_core_source_manifest.json'
+$reversePinyinSource = Join-Path $root 'go-backend\input_methods\yime\data\yime_pinyin_reverse_source.tsv'
+$pinyinCodeMap = Join-Path $root 'go-backend\input_methods\yime\data\yime_pinyin_codes.tsv'
+$erhuaMixedManifest = Join-Path $root 'go-backend\input_methods\yime\data\yime_erhua_mixed_manifest.json'
 $installer = Join-Path $root 'installer\installer.nsi'
 $devInstall = Join-Path $root 'tools\dev-install.ps1'
 $buildPrereqs = Join-Path $root 'tools\assert-win32-build-prerequisites.ps1'
@@ -156,6 +160,14 @@ foreach ($guard in @(
     'yime_lexicon_manifest.json',
     'yime_core_source_manifest.json',
     'yime_runtime_profile.json',
+    'yime_pinyin_reverse_source.tsv',
+    'yime_erhua_mixed_full.dict.yaml',
+    'yime_erhua_mixed_variable.dict.yaml',
+    'yime_erhua_mixed_shorthand.dict.yaml',
+    'yime_erhua_mixed_manifest.json',
+    'yime_erhua_mixed_full.schema.yaml',
+    'yime_erhua_mixed_variable.schema.yaml',
+    'yime_erhua_mixed_shorthand.schema.yaml',
     'Removing retired single-mode trial artifacts'
 )) {
     if (-not $goBuildText.Contains($guard)) {
@@ -169,10 +181,36 @@ foreach ($guard in @(
     '$evidence.ranking_evidence.policy_id',
     '$evidence.ranking_evidence.distinct_texts_by_source',
     '[string]$SourceRevision',
-    'go run ./cmd/yime-lexicon-derive'
+    'go run ./cmd/yime-lexicon-derive',
+    '[string]$PronunciationEntries',
+    'go run ./cmd/yime-reverse-pinyin-derive'
 )) {
     if (-not $coreImporterText.Contains($guard)) {
         throw "Curated core evidence import guard is missing: $guard"
+    }
+}
+$sourceEvidence = Get-Content -LiteralPath $coreSourceManifest -Raw -Encoding UTF8 | ConvertFrom-Json
+$reversePinyinHash = (Get-FileHash -LiteralPath $reversePinyinSource -Algorithm SHA256).Hash.ToLowerInvariant()
+$pinyinCodeMapHash = (Get-FileHash -LiteralPath $pinyinCodeMap -Algorithm SHA256).Hash.ToLowerInvariant()
+$reversePinyinRows = [Math]::Max(0, (Get-Content -LiteralPath $reversePinyinSource -Encoding UTF8).Count - 1)
+if ([string]$sourceEvidence.reverse_pinyin_source -ne 'yime_pinyin_reverse_source.tsv' -or
+    [string]$sourceEvidence.reverse_pinyin_source_sha256 -ne $reversePinyinHash -or
+    [int64]$sourceEvidence.reverse_pinyin_source_rows -ne $reversePinyinRows -or
+    [string]$sourceEvidence.reverse_pinyin_code_map_sha256 -ne $pinyinCodeMapHash) {
+    throw 'Reverse-Pinyin source sidecar does not match yime_core_source_manifest.json.'
+}
+$erhuaMixed = Get-Content -LiteralPath $erhuaMixedManifest -Raw -Encoding UTF8 | ConvertFrom-Json
+if (-not [bool]$erhuaMixed.summary.passed -or
+    [int64]$erhuaMixed.summary.inherited_weight_record_count -ne 15 -or
+    [int64]$erhuaMixed.summary.runtime_alias_rows -ne 90) {
+    throw 'Explicit-erhua mixed runtime manifest did not pass its completeness gates.'
+}
+foreach ($mode in @('full', 'variable', 'shorthand')) {
+    $name = "yime_erhua_mixed_${mode}.dict.yaml"
+    $path = Join-Path $root "go-backend\input_methods\yime\data\$name"
+    $hash = (Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash.ToLowerInvariant()
+    if ([string]$erhuaMixed.output_sha256.$name -ne $hash) {
+        throw "Explicit-erhua mixed dictionary hash mismatch: $name"
     }
 }
 Write-Host 'Curated core evidence and three-mode package guards passed.'
