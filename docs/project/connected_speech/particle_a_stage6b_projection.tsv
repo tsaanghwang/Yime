@@ -1,0 +1,7 @@
+class_id	surface_pinyin	tuple_strategy	target_shouyin_id	source_scope	adjudication_status	runtime_eligible	note
+PA-U	wa5	replace_a5_shouyin	N24	explicit_core_lexicon_a5_suffix	research_only	false	只把 a5 虚首音替换为 w 对应的 N24，不增加呼音位置
+PA-N	na5	replace_a5_shouyin	N08	explicit_core_lexicon_a5_suffix	research_only	false	只把 a5 虚首音替换为 n 对应的 N08
+PA-NG	nga5	replace_a5_shouyin	N26	explicit_core_lexicon_a5_suffix	research_only	false	只把 a5 首音替换为语流派生 N26
+PA-APICAL-FRONT	za5	replace_a5_shouyin	N27	explicit_core_lexicon_a5_suffix	research_only	false	只把 a5 首音替换为语流派生 N27，不与规范 z 声母 N13 混同
+PA-RETROFLEX	ra5	replace_a5_shouyin	N19	explicit_core_lexicon_a5_suffix	research_only	false	只把 a5 首音替换为既有卷舌首音 N19
+PA-VOWEL-IY	ya5	replace_a5_shouyin	N23	explicit_core_lexicon_a5_suffix	research_only	false	只把 a5 虚首音替换为 y 对应的 N23，不增加呼音位置
