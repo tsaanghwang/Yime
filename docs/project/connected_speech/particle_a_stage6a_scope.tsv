@@ -1,0 +1,7 @@
+class_id	priority	previous_final_condition	surface_reading	common_writing	adjudication_status	runtime_eligible	note
+PA-U	10	u及以u收尾的ao/iao/ou/iou	wa	哇	research_only	false	只登记语流读音；候选文字保持原样
+PA-N	20	n	na	哪	research_only	false	派生首音尚未进入运行时投影
+PA-NG	30	ng	nga	啊	research_only	false	派生首音ŋ尚未审定正式音元ID
+PA-APICAL-FRONT	40	舌尖前-i[ɿ]	za	啊	research_only	false	派生首音z只作离线记录
+PA-RETROFLEX	50	舌尖后-i[ʅ]或er	ra	啊	research_only	false	卷舌类实现及工程归并关系待审
+PA-VOWEL-IY	60	a/o/e/ê/i/ü及其它元音尾	ya	呀	research_only	false	仅在前五类均不匹配后使用
