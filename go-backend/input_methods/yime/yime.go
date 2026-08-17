@@ -3254,7 +3254,38 @@ func validateCompiledRimeSchema(userDir, schemaID string) error {
 			return fmt.Errorf("当前方案编译产物为空: %s", path)
 		}
 	}
+	sourceSchemaPath := filepath.Join(userDir, schemaID+".schema.yaml")
+	sourceSchema, sourceErr := os.ReadFile(sourceSchemaPath)
+	if sourceErr != nil {
+		if os.IsNotExist(sourceErr) {
+			return nil
+		}
+		return fmt.Errorf("读取当前方案源配置失败 %s: %w", sourceSchemaPath, sourceErr)
+	}
+	compiledSchemaPath := filepath.Join(userDir, "build", schemaID+".schema.yaml")
+	compiledSchema, err := os.ReadFile(compiledSchemaPath)
+	if err != nil {
+		return fmt.Errorf("读取当前方案编译配置失败 %s: %w", compiledSchemaPath, err)
+	}
+	for _, field := range []string{"version", "alphabet"} {
+		sourceValue := rimeSchemaScalar(sourceSchema, field)
+		compiledValue := rimeSchemaScalar(compiledSchema, field)
+		if sourceValue != "" && sourceValue != compiledValue {
+			return fmt.Errorf("当前方案 %s 编译产物已过期: %s 源值=%q 编译值=%q", schemaID, field, sourceValue, compiledValue)
+		}
+	}
 	return nil
+}
+
+func rimeSchemaScalar(data []byte, field string) string {
+	prefix := field + ":"
+	for _, line := range strings.Split(string(data), "\n") {
+		trimmed := strings.TrimSpace(line)
+		if strings.HasPrefix(trimmed, prefix) {
+			return strings.TrimSpace(strings.TrimPrefix(trimmed, prefix))
+		}
+	}
+	return ""
 }
 
 func (ime *IME) confirmAndSyncBackendUserData() {

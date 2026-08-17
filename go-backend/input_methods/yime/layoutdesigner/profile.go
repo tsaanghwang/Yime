@@ -21,9 +21,18 @@ const (
 )
 
 var reservedKeys = map[rune]string{
-	'`': "隔音/虚首音保留键", '~': "隔音/虚首音保留键",
+	'~': "Shift+反引号保留键",
 	'!': "Shift+数字候选键的物理键面", '@': "Shift+数字候选键的物理键面", '#': "Shift+数字候选键的物理键面", '$': "Shift+数字候选键的物理键面",
 	'%': "Shift+数字候选键的物理键面", '^': "Shift+数字候选键的物理键面", '&': "Shift+数字候选键的物理键面", '*': "Shift+数字候选键的物理键面", '(': "Shift+数字候选键的物理键面",
+}
+
+// sharedIdentityGroups are deliberate many-to-one physical projections.  The
+// IDs remain distinct in the semantic layer and may have different contextual
+// realizations, but users type the same key because their distributions are
+// mutually exclusive at the shouyin position.
+var sharedIdentityGroups = [][]string{
+	{"N12", "N26"}, // ordinary zero/virtual onset and particle-a [ŋ]
+	{"N25", "N27"}, // yu-family [ɥ] and particle-a apical [z]/[ɹ]
 }
 
 // Profile is the sole editable projection. Yinyuan identity and codec
@@ -38,8 +47,8 @@ type Profile struct {
 }
 
 func ExpectedIDs() []string {
-	ids := make([]string, 0, 57)
-	for i := 1; i <= 24; i++ {
+	ids := make([]string, 0, 60)
+	for i := 1; i <= 27; i++ {
 		ids = append(ids, fmt.Sprintf("N%02d", i))
 	}
 	for i := 1; i <= 33; i++ {
@@ -49,7 +58,7 @@ func ExpectedIDs() []string {
 }
 
 func DescribeID(id string) string {
-	shouyinLabels := []string{"b", "p", "f", "m", "d", "t", "l", "n", "g", "k", "h", "'（虚首音）", "z", "c", "s", "zh", "ch", "sh", "r", "j", "q", "x", "y（虚首音）", "w（虚首音）"}
+	shouyinLabels := []string{"b", "p", "f", "m", "d", "t", "l", "n", "g", "k", "h", "'（非高呼音前虚首音）", "z", "c", "s", "zh", "ch", "sh", "r [ʐ]/[ɻ]", "j", "q", "x", "y [j]（虚首音）", "w（虚首音）", "ɥ（ü 前虚首音）", "ŋ（啊的同化首音）", "z/ɹ（啊的舌尖同化首音）"}
 	if strings.HasPrefix(id, "N") {
 		if n, err := strconv.Atoi(strings.TrimPrefix(id, "N")); err == nil && n >= 1 && n <= len(shouyinLabels) {
 			return shouyinLabels[n-1]
@@ -74,6 +83,7 @@ func LoadProfile(path string) (Profile, error) {
 	if err := json.Unmarshal(data, &p); err != nil {
 		return Profile{}, fmt.Errorf("解析布局 %s: %w", path, err)
 	}
+	upgradeLegacyProjection(&p)
 	if err := p.Validate(); err != nil {
 		return Profile{}, err
 	}
@@ -107,12 +117,20 @@ func (p Profile) Validate() error {
 		if reason := reservedKeys[r[0]]; reason != "" {
 			issues = append(issues, fmt.Sprintf("%s 占用了%s %q", id, reason, key))
 		}
-		if old := occupied[r[0]]; old != "" {
-			issues = append(issues, fmt.Sprintf("键 %q 同时分配给 %s 和 %s", key, old, id))
+		if old := occupied[r[0]]; old != "" && !sameSharedIdentityGroup(old, id) {
+			issues = append(issues, fmt.Sprintf("键 %q 非法地同时分配给 %s 和 %s", key, old, id))
 		} else {
 			occupied[r[0]] = id
 		}
 		delete(expected, id)
+	}
+	for _, group := range sharedIdentityGroups {
+		key := p.Projection[group[0]]
+		for _, id := range group[1:] {
+			if p.Projection[id] != key {
+				issues = append(issues, fmt.Sprintf("受控共享组 %s 必须共用一键", strings.Join(group, "/")))
+			}
+		}
 	}
 	if len(expected) > 0 {
 		missing := make([]string, 0, len(expected))
@@ -150,7 +168,7 @@ func (p Profile) Digest() (string, error) {
 }
 
 func (p Profile) Alphabet() string {
-	const order = "1234567890-=qwertyuiop[]\\asdfghjkl;'zxcvbnm,./QWERTYUIOP{}|ASDFGHJKL:\"ZXCVBNM<>?"
+	const order = "`1234567890-=qwertyuiop[]\\asdfghjkl;'zxcvbnm,./QWERTYUIOP{}|ASDFGHJKL:\"ZXCVBNM<>?"
 	used := map[rune]bool{}
 	for _, key := range p.Projection {
 		r := []rune(key)
@@ -190,13 +208,67 @@ func (p *Profile) Assign(id, key string) error {
 		return fmt.Errorf("键必须是单个字符")
 	}
 	old := p.Projection[id]
+	moving := sharedGroupMembers(id)
+	occupants := []string{}
 	for other, current := range p.Projection {
-		if current == key && other != id {
-			p.Projection[other] = old
+		if current == key && !containsString(moving, other) {
+			occupants = append(occupants, other)
 		}
 	}
-	p.Projection[id] = key
+	for _, occupant := range occupants {
+		for _, member := range sharedGroupMembers(occupant) {
+			p.Projection[member] = old
+		}
+	}
+	for _, member := range moving {
+		p.Projection[member] = key
+	}
 	return p.Validate()
+}
+
+func sharedGroupMembers(id string) []string {
+	for _, group := range sharedIdentityGroups {
+		if containsString(group, id) {
+			return append([]string(nil), group...)
+		}
+	}
+	return []string{id}
+}
+
+func sameSharedIdentityGroup(left, right string) bool {
+	for _, group := range sharedIdentityGroups {
+		if containsString(group, left) && containsString(group, right) {
+			return true
+		}
+	}
+	return false
+}
+
+func containsString(values []string, wanted string) bool {
+	for _, value := range values {
+		if value == wanted {
+			return true
+		}
+	}
+	return false
+}
+
+// upgradeLegacyProjection keeps stored 57-yinyuan user layouts loadable.  The
+// newly stable identities inherit their mandated shared keys; no old key is
+// moved, and the formerly reserved backtick becomes the new [ɥ]/[z]/[ɹ] key.
+func upgradeLegacyProjection(p *Profile) {
+	if p == nil || p.Projection == nil || p.Projection["N25"] != "" || p.Projection["N26"] != "" || p.Projection["N27"] != "" {
+		return
+	}
+	if p.Projection["N12"] == "" || p.Projection["N24"] == "" {
+		return
+	}
+	p.Projection["N25"] = "`"
+	p.Projection["N26"] = p.Projection["N12"]
+	p.Projection["N27"] = "`"
+	// A legacy based-on digest describes a 57-ID projection and cannot be
+	// compared meaningfully with the promoted 60-ID canonical profile.
+	p.BasedOnDigest = ""
 }
 
 func WriteProfileAtomic(path string, p Profile) error {

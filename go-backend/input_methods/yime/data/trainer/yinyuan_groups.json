@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "description": "按原型发音部位与乐音音质组织的 57 音元练习分组；成员只使用稳定 Yinyuan ID，目标键位运行时从当前导入布局解析。",
+  "description": "按原型发音部位与乐音音质组织的 60 音元练习分组；成员只使用稳定 Yinyuan ID，目标键位运行时从当前导入布局解析。",
   "categories": [
     {"id": "zaoyin", "title": "噪音"},
     {"id": "yueyin", "title": "乐音"}
@@ -47,6 +47,13 @@
       "title": "软腭音",
       "description": "软腭舌面后部音；按原型辅助成员方法纳入零首音占位",
       "yinyuan_ids": ["N09", "N10", "N11", "N12"]
+    },
+    {
+      "id": "zaoyin-contextual",
+      "category": "zaoyin",
+      "title": "语流派生首音",
+      "description": "ü 前虚首音 [ɥ] 及语气词‘啊’的 [ŋ]、[z]/[ɹ] 条件实现；其中 [ʐ]/[ɻ] 仍归 N19",
+      "yinyuan_ids": ["N25", "N26", "N27"]
     },
 
     {"id": "yueyin-i", "category": "yueyin", "title": "[i]组", "yinyuan_ids": ["M01", "M02", "M03"]},

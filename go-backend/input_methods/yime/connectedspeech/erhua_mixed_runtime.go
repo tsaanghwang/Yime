@@ -118,6 +118,7 @@ type ErhuaMixedRuntimeSummary struct {
 	DedicatedKeyClassCount     int             `json:"dedicated_key_class_count"`
 	FeatureRuleCount           int             `json:"feature_rule_count"`
 	ProjectedReadyRecordCount  int             `json:"projected_ready_record_count"`
+	CanonicalRouteRefreshCount int             `json:"canonical_route_refresh_count"`
 	ReverseLookupRowCount      int             `json:"reverse_lookup_row_count"`
 	Gates                      map[string]bool `json:"gates"`
 	Passed                     bool            `json:"passed"`
@@ -167,6 +168,10 @@ func RunErhuaMixedRuntime(config ErhuaMixedRuntimeConfig) (ErhuaMixedRuntimeMani
 	if err != nil {
 		return ErhuaMixedRuntimeManifest{}, err
 	}
+	inventory, err := LoadInventory(filepath.Join(config.DataDir, "yime_syllable_decomposition.tsv"))
+	if err != nil {
+		return ErhuaMixedRuntimeManifest{}, err
+	}
 	annotationByID := make(map[string]erhuaAnnotationRecord, len(annotations.Records))
 	for _, item := range annotations.Records {
 		if item.RecordID == "" || item.Text == "" {
@@ -185,6 +190,7 @@ func RunErhuaMixedRuntime(config ErhuaMixedRuntimeConfig) (ErhuaMixedRuntimeMani
 	projectedReadyRecords := 0
 	pending := 0
 	featureProjected := 0
+	canonicalRouteRefreshes := 0
 	aliasIDs := make(map[string]struct{}, len(aliases.Records))
 	aliasTexts := make(map[string]struct{}, len(aliases.Records))
 	for _, item := range aliases.Records {
@@ -196,6 +202,14 @@ func RunErhuaMixedRuntime(config ErhuaMixedRuntimeConfig) (ErhuaMixedRuntimeMani
 		}
 		aliasIDs[item.RecordID] = struct{}{}
 		aliasTexts[item.Text] = struct{}{}
+		if _, hasCompatibilityRoute := item.Routes["suffix_compatibility"]; hasCompatibilityRoute {
+			refreshed, refreshErr := refreshErhuaCanonicalRoutes(item, inventory, projectionIndex)
+			if refreshErr != nil {
+				return ErhuaMixedRuntimeManifest{}, refreshErr
+			}
+			item = refreshed
+			canonicalRouteRefreshes++
+		}
 		annotation, ok := annotationByID[item.RecordID]
 		if !ok || annotation.Text != item.Text || annotation.RecordType != "explicit_word_final_erhua" ||
 			annotation.ProductiveInference != "forbidden" || annotation.Authorization.SourceKind != "psc_erhua" {
@@ -409,6 +423,7 @@ func RunErhuaMixedRuntime(config ErhuaMixedRuntimeConfig) (ErhuaMixedRuntimeMani
 		"sound_units_separate_from_keys":        true,
 		"many_to_one_shared_key_projection":     true,
 		"layout_codes_recomputed_from_ids":      true,
+		"canonical_routes_refreshed":            canonicalRouteRefreshes+pending == len(aliases.Records),
 		"ready_fused_routes_sound_projected":    projectedReadyRecords == len(ready),
 		"research_only_sounds_not_exported":     !researchSoundProjected,
 		"reverse_lookup_explanations_complete":  len(reverseRows) == len(entries),
@@ -437,6 +452,7 @@ func RunErhuaMixedRuntime(config ErhuaMixedRuntimeConfig) (ErhuaMixedRuntimeMani
 		DedicatedKeyClassCount:     projectionIndex.dedicatedKeyClasses,
 		FeatureRuleCount:           countErhuaFeatureRules(ready),
 		ProjectedReadyRecordCount:  projectedReadyRecords,
+		CanonicalRouteRefreshCount: canonicalRouteRefreshes,
 		ReverseLookupRowCount:      len(reverseRows),
 		Gates:                      gates,
 	}
@@ -505,6 +521,47 @@ func loadErhuaAnnotationBundle(path string) (erhuaAnnotationBundle, error) {
 		return payload, errors.New("explicit erhua annotation bundle has an invalid schema or no records")
 	}
 	return payload, nil
+}
+
+// refreshErhuaCanonicalRoutes keeps the explicit lexical authorization from
+// the offline bundle, but rebuilds its canonical Yinyuan route from the active
+// syllable inventory.  Layout migrations therefore cannot leave an authorized
+// word pinned to stale IDs or keys (for example yu* remaining on N23 after the
+// dedicated N25 [ɥ] initial is admitted).
+func refreshErhuaCanonicalRoutes(record erhuaAliasRecord, inventory Inventory, index erhuaSoundProjectionIndex) (erhuaAliasRecord, error) {
+	suffixRoute, ok := record.Routes["suffix_compatibility"]
+	if !ok || suffixRoute.Status != "available" {
+		return record, fmt.Errorf("%s lacks an available suffix-compatible route", record.RecordID)
+	}
+	pinyinSyllables := strings.Fields(suffixRoute.NumericPinyin)
+	if len(pinyinSyllables) < 2 || pinyinSyllables[len(pinyinSyllables)-1] != "er5" {
+		return record, fmt.Errorf("%s has an invalid suffix-compatible Pinyin chain", record.RecordID)
+	}
+	fullIDs := make([]string, 0, len(pinyinSyllables)*4)
+	for _, syllable := range pinyinSyllables {
+		tuple, exists := inventory.Syllables[canonicalNumericPinyin(syllable)]
+		if !exists {
+			return record, fmt.Errorf("%s references syllable %s absent from the active inventory", record.RecordID, syllable)
+		}
+		fullIDs = append(fullIDs, tuple[:]...)
+	}
+	codes, err := index.deriveModeCodes(fullIDs)
+	if err != nil {
+		return record, fmt.Errorf("refresh %s suffix-compatible route: %w", record.RecordID, err)
+	}
+	suffixRoute.Codes = codes
+	record.Routes["suffix_compatibility"] = suffixRoute
+
+	attachedPinyin := pinyinSyllables[len(pinyinSyllables)-2]
+	attachedTuple := inventory.Syllables[canonicalNumericPinyin(attachedPinyin)]
+	fusedRoute, ok := record.Routes["fused_erhua"]
+	if !ok {
+		return record, fmt.Errorf("%s lacks a fused-erhua route", record.RecordID)
+	}
+	fusedRoute.AttachedSyllableSource = attachedPinyin
+	fusedRoute.AttachedSyllableSourceYinyuanIDs = append([]string(nil), attachedTuple[:]...)
+	record.Routes["fused_erhua"] = fusedRoute
+	return record, nil
 }
 
 func validateErhuaRouteCodes(record erhuaAliasRecord) error {

@@ -164,6 +164,8 @@ are carried by virtual shouyin in Yime. A virtual shouyin also marks an explicit
 | j | `3` | q | `2` |
 | x | `1` | y (virtual shouyin) | `y` |
 | w (virtual shouyin) | `=` | `'` (virtual shouyin; separator) | `'` |
+| ɥ (virtual shouyin before ü) | `` ` `` | ŋ (contextual shouyin of 啊) | `'` |
+| z/ɹ (contextual shouyin of 啊) | `` ` `` |  |  |
 
 ### Candidate selection keys
 

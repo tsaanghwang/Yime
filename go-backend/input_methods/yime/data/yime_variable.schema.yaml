@@ -5,7 +5,7 @@
 schema:
   schema_id: yime_variable
   name: "Yime 变长模式"
-  version: "2026-08-17-core-1166300-layout-6d00e609f689-rank-v1-erhua-mixed-v4-psc-peripheral-v1-sentence-v1-third-tone-v1"
+  version: "2026-08-17-core-1166300-layout-58f69f370aea-rank-v1-erhua-mixed-v4-psc-peripheral-v1-sentence-v1-third-tone-v1-alphabet-v2"
   dependencies:
     - yime_erhua_mixed_variable
     - yime_psc_peripheral_variable
@@ -36,12 +36,12 @@ engine:
     - punct_translator
 
 speller:
-  alphabet: "1234567890-=qwertyuiop[]\\asdfghjkl;'zxcvbnm,./JKLUIOM<>NGFDSREWQTYVCXPAZ"
+  alphabet: "`1234567890-=qwertyuiop[]\\asdfghjkl;'zxcvbnm,./JKLUIOM<>NGFDSREWQTYVCXPAZ"
   delimiter: " "
 
 translator:
   dictionary: yime_sentence_variable
-  user_dict: yime_variable_core_1166300_layout_6d00e609f689_rank_v1
+  user_dict: yime_variable_core_1166300_layout_58f69f370aea_rank_v1
   enable_user_dict: true
   enable_sentence: true
   sentence_over_completion: true

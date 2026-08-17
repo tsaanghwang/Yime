@@ -230,6 +230,39 @@ func TestRealRimeNeutralToneEntryAcrossAllThreeSchemas(t *testing.T) {
 	}
 }
 
+func TestRealRimeDedicatedHRenderedInitialAcrossAllThreeSchemas(t *testing.T) {
+	dataDir := rimeRuntimeTestDataDir(t)
+	codeMap, err := reverselookup.LoadSharedCodeMap(dataDir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	session := newRealRimeSession(t)
+	for _, test := range []struct {
+		schema string
+		mode   reverselookup.Mode
+	}{
+		{"yime_variable", reverselookup.ModeVariable},
+		{"yime_full", reverselookup.ModeFull},
+		{"yime_shorthand", reverselookup.ModeShorthand},
+	} {
+		t.Run(test.schema, func(t *testing.T) {
+			if !SelectSchema(session.sessionID, test.schema) {
+				t.Fatalf("expected %s to be selectable", test.schema)
+			}
+			code, _, encodeErr := reverselookup.EncodeNumericTonePinyin(codeMap, "yu3 yan2", test.mode)
+			if encodeErr != nil {
+				t.Fatal(encodeErr)
+			}
+			if !strings.HasPrefix(code, "`") {
+				t.Fatalf("yu3 must retain N25 backtick in %s, got %q", test.schema, code)
+			}
+			if _, found := findRealRimeCandidateAcrossPages(t, session.sessionID, code, "语言"); !found {
+				t.Fatalf("candidate 语言 missing in %s after %q", test.schema, code)
+			}
+		})
+	}
+}
+
 func TestRealRimeExplicitErhuaMixedRoutesAcrossAllThreeSchemas(t *testing.T) {
 	dataDir := rimeRuntimeTestDataDir(t)
 	session := newRealRimeSessionWithManagedRefresh(t, true)
@@ -1758,7 +1791,7 @@ func TestRealRimeExplicitCandidateForgetAvailableInAllSchemas(t *testing.T) {
 
 func TestRealRimePrintableLayoutKeysAreNeverPagingBindings(t *testing.T) {
 	session := newRealRimeSession(t)
-	for _, key := range []rune{'-', '=', ',', '.', '/'} {
+	for _, key := range []rune{'`', '-', '=', ',', '.', '/'} {
 		t.Run(string(key), func(t *testing.T) {
 			ClearComposition(session.sessionID)
 			typeASCII(t, session.sessionID, "3")

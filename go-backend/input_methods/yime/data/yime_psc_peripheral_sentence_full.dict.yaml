@@ -29,7 +29,7 @@ use_preset_vocabulary: false
 关系	gufa 1kkk	1
 冒失	-fdo 9KKK	1
 冒尖儿	-fdo 3jfa 'III	1
-冤家	ymfa 3kdd	1
+冤家	`mfa 3kdd	1
 冰棍儿	bjr; gucz 'III	1
 凉快	\ld; qidk	1
 出圈儿	8uuu 2mfa 'III	1
@@ -69,7 +69,7 @@ use_preset_vocabulary: false
 哈欠	hfff 2kdN	1
 唠叨	\sdu ]ddi	1
 商量	9ff; \kdG	1
-园子	y.da 6KKK	1
+园子	`.da 6KKK	1
 围嘴儿	=ocj 6oxl 'III	1
 图钉儿	toiu ]jr; 'III	1
 地方	]jkl [ddG	1
@@ -167,7 +167,7 @@ use_preset_vocabulary: false
 故事	guio 9KKK	1
 旦角儿	]fdz 3.cv 'III	1
 早上	6sso 9ddG	1
-月饼	ymcx bkeG	1
+月饼	`mcx bkeG	1
 有数儿	ylwo 9uio 'III	1
 木匠	-uio 3kdG	1
 本事	bxxz 9KKK	1
@@ -199,7 +199,7 @@ use_preset_vocabulary: false
 烟筒	yjfa tieG	1
 牙刷儿	yldf 9uff 'III	1
 牙签儿	yldf 2jfa 'III	1
-状元	7ud/ y,dN	1
+状元	7ud/ `,dN	1
 琢磨	6oer -eee	1
 瓜子儿	guff 6LLL 'III	1
 瓜瓤儿	guff 0sd; 'III	1
@@ -235,7 +235,7 @@ use_preset_vocabulary: false
 纽扣儿	nlwo qreo 'III	1
 线轴儿	1jdz 7weu 'III	1
 结实	3jvv 9KKK	1
-绕远儿	0fdo y.sz 'III	1
+绕远儿	0fdo `.sz 'III	1
 绝着儿	3.cv 7ffu 'III	1
 老头儿	\sso tweu 'III	1
 老婆	\sso peee	1
@@ -310,7 +310,7 @@ use_preset_vocabulary: false
 闺女	guvj n,,,	1
 队伍	]ucl =iii	1
 难为	nsda =ick	1
-雨点儿	y... ]lsz 'III	1
+雨点儿	`... ]lsz 'III	1
 露馅儿	\reo 1jdz 'III	1
 鞋带儿	1lcv ]fdl 'III	1
 风筝	[rr; 7eeG	1
@@ -320,5 +320,5 @@ use_preset_vocabulary: false
 马褂儿	-sss guds 'III	1
 高粱	gffu \kdG	1
 高跟儿鞋	gffu gvva 'III 1lcv	1
-鱼漂儿	y.,m pjfu 'III	1
+鱼漂儿	`.,m pjfu 'III	1
 鼻梁儿	blkj \ld; 'III	1

@@ -2149,6 +2149,43 @@ func TestHostShorthandSelectionQueuesBuildWhenRuntimeArtifactsAreMissing(t *test
 	}
 }
 
+func TestCompiledSchemaValidationRejectsStaleVersionAndAlphabet(t *testing.T) {
+	userDir := t.TempDir()
+	buildDir := filepath.Join(userDir, "build")
+	if err := os.MkdirAll(buildDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	schemaID := "yime_shorthand"
+	source := "schema:\n  version: new\nspeller:\n  alphabet: \"`abc\"\n"
+	compiled := "schema:\n  version: old\nspeller:\n  alphabet: \"abc\"\n"
+	if err := os.WriteFile(filepath.Join(userDir, schemaID+".schema.yaml"), []byte(source), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	for _, name := range []string{
+		schemaID + ".schema.yaml",
+		schemaID + ".prism.bin",
+		schemaID + ".reverse.bin",
+		schemaID + ".table.bin",
+	} {
+		content := []byte(name)
+		if name == schemaID+".schema.yaml" {
+			content = []byte(compiled)
+		}
+		if err := os.WriteFile(filepath.Join(buildDir, name), content, 0o644); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err := validateCompiledRimeSchema(userDir, schemaID); err == nil || !strings.Contains(err.Error(), "编译产物已过期") {
+		t.Fatalf("expected stale compiled schema rejection, got %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(buildDir, schemaID+".schema.yaml"), []byte(source), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := validateCompiledRimeSchema(userDir, schemaID); err != nil {
+		t.Fatalf("matching source and compiled schemas must pass: %v", err)
+	}
+}
+
 func TestOnMenuReturnsSettingsMenu(t *testing.T) {
 	ime := newTestIME()
 

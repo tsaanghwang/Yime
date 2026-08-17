@@ -232,6 +232,8 @@ func testProfile(t *testing.T) layoutdesigner.Profile {
 	for index, id := range ids {
 		projection[id] = string(keys[index])
 	}
+	projection["N26"] = projection["N12"]
+	projection["N27"] = projection["N25"]
 	profile := layoutdesigner.Profile{FormatVersion: layoutdesigner.ProfileFormatVersion, Name: "test", Projection: projection}
 	if err := profile.Validate(); err != nil {
 		t.Fatal(err)

@@ -3,12 +3,15 @@ package yime
 import (
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"testing"
+
+	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/codemode"
 )
 
 func TestSchemasIsolateLearnedCandidatesByLayoutProjection(t *testing.T) {
-	const layoutID = "6d00e609f689"
+	const layoutID = "58f69f370aea"
 	for _, mode := range []string{"full", "variable", "shorthand"} {
 		mode := mode
 		t.Run(mode, func(t *testing.T) {
@@ -18,11 +21,15 @@ func TestSchemasIsolateLearnedCandidatesByLayoutProjection(t *testing.T) {
 			}
 			schema := string(payload)
 			wantVersion := `version: "2026-08-17-core-1166300-layout-` +
-				layoutID + `-rank-v1-erhua-mixed-v4-psc-peripheral-v1-sentence-v1-third-tone-v1"`
+				layoutID + `-rank-v1-erhua-mixed-v4-psc-peripheral-v1-sentence-v1-third-tone-v1-alphabet-v2"`
 			wantUserDict := "user_dict: yime_" + mode +
 				"_core_1166300_layout_" + layoutID + "_rank_v1"
 			if !strings.Contains(schema, wantVersion) {
 				t.Fatalf("schema does not identify current layout: want %q", wantVersion)
+			}
+			wantAlphabet := "alphabet: " + strconv.Quote(codemode.LayoutAlphabet)
+			if !strings.Contains(schema, wantAlphabet) {
+				t.Fatalf("schema alphabet diverges from runtime layout keys: want %q", wantAlphabet)
 			}
 			if !strings.Contains(schema, wantUserDict) {
 				t.Fatalf("schema reuses another layout's learned candidates: want %q", wantUserDict)

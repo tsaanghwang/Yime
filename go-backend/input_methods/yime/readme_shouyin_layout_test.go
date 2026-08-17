@@ -1,7 +1,6 @@
 package yime
 
 import (
-	"encoding/csv"
 	"encoding/json"
 	"os"
 	"path/filepath"
@@ -46,31 +45,27 @@ func runtimeShouyinLayout(t *testing.T) map[string]string {
 		t.Fatal(err)
 	}
 
-	decomposition, err := os.Open(filepath.Join("data", "yime_syllable_decomposition.tsv"))
+	catalogPayload, err := os.ReadFile(filepath.Join("data", "trainer", "yinyuan_catalog.json"))
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer decomposition.Close()
-	reader := csv.NewReader(decomposition)
-	reader.Comma = '\t'
-	reader.FieldsPerRecord = -1
-	rows, err := reader.ReadAll()
-	if err != nil {
-		t.Fatal(err)
+	var catalog struct {
+		Entries []struct {
+			ID             string `json:"id"`
+			Category       string `json:"category"`
+			ReferenceLabel string `json:"reference_label"`
+		} `json:"entries"`
 	}
-	header := make(map[string]int)
-	for index, name := range rows[0] {
-		header[name] = index
+	if err := json.Unmarshal(catalogPayload, &catalog); err != nil {
+		t.Fatal(err)
 	}
 	expected := make(map[string]string)
-	for _, row := range rows[1:] {
-		id := row[header["shouyin_id"]]
-		label := row[header["shouyin_label"]]
-		if label == "ɥ" {
-			label = "y"
+	for _, entry := range catalog.Entries {
+		if entry.Category != "shouyin" {
+			continue
 		}
-		if key, ok := layout.YinyuanIDToKey[id]; ok {
-			expected[label] = key
+		if key, ok := layout.YinyuanIDToKey[entry.ID]; ok {
+			expected[entry.ReferenceLabel] = key
 		}
 	}
 	return expected
@@ -103,7 +98,10 @@ func readShouyinTable(t *testing.T, path, heading string) map[string]string {
 		}
 		for index := 0; index < len(cells); index += 2 {
 			label := normalizeDocumentedShouyin(cells[index])
-			key := strings.Trim(strings.TrimSpace(cells[index+1]), "`")
+			if label == "" {
+				continue
+			}
+			key := strings.TrimSpace(strings.Trim(strings.TrimSpace(cells[index+1]), "`"))
 			result[label] = key
 		}
 	}

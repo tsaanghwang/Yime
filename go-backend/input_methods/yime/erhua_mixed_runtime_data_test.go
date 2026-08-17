@@ -205,8 +205,8 @@ func TestBundledExplicitErhuaMixedOverlayIsCompleteAndReversible(t *testing.T) {
 			t.Fatal(err)
 		}
 		for _, fragment := range []string{
-			"version: \"2026-08-17-core-1166300-layout-6d00e609f689-rank-v1-erhua-mixed-v4-psc-peripheral-v1-sentence-v1-third-tone-v1\"",
-			"alphabet: \"1234567890-=qwertyuiop[]\\\\asdfghjkl;'zxcvbnm,./JKLUIOM<>NGFDSREWQTYVCXPAZ\"",
+			"version: \"2026-08-17-core-1166300-layout-58f69f370aea-rank-v1-erhua-mixed-v4-psc-peripheral-v1-sentence-v1-third-tone-v1-alphabet-v2\"",
+			"alphabet: \"`1234567890-=qwertyuiop[]\\\\asdfghjkl;'zxcvbnm,./JKLUIOM<>NGFDSREWQTYVCXPAZ\"",
 			"- yime_erhua_mixed_" + mode,
 			"- table_translator@erhua_mixed",
 			"dictionary: yime_erhua_mixed_" + mode,

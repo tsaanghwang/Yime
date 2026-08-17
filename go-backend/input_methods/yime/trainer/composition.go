@@ -74,14 +74,14 @@ func (resolver *Resolver) ResolveShouyinCompositionGroups() ([]ExerciseGroup, er
 	if err != nil {
 		return nil, err
 	}
-	result := make([]ExerciseGroup, 0, 6)
+	result := make([]ExerciseGroup, 0, 7)
 	for _, group := range groups {
 		if group.Category == GroupCategoryZaoyin {
 			result = append(result, group)
 		}
 	}
-	if len(result) != 6 {
-		return nil, fmt.Errorf("音节构成的首音练习需要六组，当前得到 %d 组", len(result))
+	if len(result) != 7 {
+		return nil, fmt.Errorf("音节构成的首音练习需要七组，当前得到 %d 组", len(result))
 	}
 	return result, nil
 }

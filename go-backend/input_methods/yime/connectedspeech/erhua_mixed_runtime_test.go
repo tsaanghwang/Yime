@@ -15,6 +15,7 @@ func TestErhuaMixedRuntimeInheritsCoreAndPSCPeripheralWeights(t *testing.T) {
 	if err := os.MkdirAll(dataDir, 0o755); err != nil {
 		t.Fatal(err)
 	}
+	writeTestErhuaDecomposition(t, dataDir)
 	if err := os.WriteFile(filepath.Join(dataDir, "yime_pinyin_codes.tsv"), []byte("pinyin_tone\tcode\nming2\tabcd\nbai2\tabcd\n"), 0o644); err != nil {
 		t.Fatal(err)
 	}
@@ -125,6 +126,7 @@ func TestErhuaMixedRuntimeRejectsUnmatchedAuthorization(t *testing.T) {
 	if err := os.MkdirAll(dataDir, 0o755); err != nil {
 		t.Fatal(err)
 	}
+	writeTestErhuaDecomposition(t, dataDir)
 	for _, mode := range erhuaMixedModes {
 		writeTestDictionary(t, filepath.Join(dataDir, "yime_"+mode+".dict.yaml"), []string{"明白儿\tabcd\t1200"})
 	}
@@ -362,6 +364,17 @@ func writeTestDictionary(t *testing.T, path string, rows []string) {
 	t.Helper()
 	content := "# Rime dictionary\n---\nname: test\nversion: \"1\"\nsort: by_weight\n...\n" + strings.Join(rows, "\n") + "\n"
 	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func writeTestErhuaDecomposition(t *testing.T, dataDir string) {
+	t.Helper()
+	content := "pinyin_tone\tshouyin_id\thuyin_id\tzhuyin_id\tmoyin_id\n" +
+		"ming2\tN01\tM01\tM02\tM03\n" +
+		"bai2\tN01\tM01\tM02\tM03\n" +
+		"er5\tN12\tM23\tM23\tM23\n"
+	if err := os.WriteFile(filepath.Join(dataDir, "yime_syllable_decomposition.tsv"), []byte(content), 0o644); err != nil {
 		t.Fatal(err)
 	}
 }
