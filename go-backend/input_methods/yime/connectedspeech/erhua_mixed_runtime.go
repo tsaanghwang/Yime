@@ -11,7 +11,10 @@ import (
 	"strings"
 )
 
-const ErhuaMixedRuntimeToolVersion = "explicit-erhua-yinyuan-feature-runtime-v6"
+const (
+	ErhuaMixedRuntimeToolVersion = "explicit-erhua-yinyuan-feature-runtime-v8"
+	erhuaMixedRuntimeWeight      = "1"
+)
 
 var erhuaMixedModes = []string{"full", "variable", "shorthand"}
 
@@ -100,11 +103,14 @@ type ErhuaMixedRuntimeSummary struct {
 	FeatureProjectedCount      int             `json:"feature_projected_count"`
 	PendingFusionCount         int             `json:"pending_fusion_count"`
 	InheritedWeightRecordCount int             `json:"inherited_weight_record_count"`
+	FixedRuntimeWeight         int             `json:"fixed_runtime_weight"`
 	CoreWeightRecordCount      int             `json:"core_weight_record_count"`
 	PSCPeripheralWeightCount   int             `json:"psc_peripheral_weight_record_count"`
 	DeferredMissingWeightCount int             `json:"deferred_missing_weight_count"`
 	RoutesPerMode              int             `json:"routes_per_mode"`
 	RuntimeAliasRows           int             `json:"runtime_alias_rows"`
+	SentenceAliasRows          int             `json:"sentence_alias_rows"`
+	SentenceDictionaryCount    int             `json:"sentence_dictionary_count"`
 	DeclaredSoundUnitCount     int             `json:"declared_sound_unit_count"`
 	PilotSoundUnitCount        int             `json:"pilot_sound_unit_count"`
 	ResearchSoundUnitCount     int             `json:"research_sound_unit_count"`
@@ -132,6 +138,7 @@ type erhuaRuntimeEntry struct {
 	IncludeSuffix bool
 	Suffix        map[string]string
 	Fused         map[string]string
+	FusedSpelling map[string]string
 	Reverse       erhuaReverseSourceRow
 }
 
@@ -238,7 +245,6 @@ func RunErhuaMixedRuntime(config ErhuaMixedRuntimeConfig) (ErhuaMixedRuntimeMani
 			return ErhuaMixedRuntimeManifest{}, fmt.Errorf("%s has unsupported status %q", item.RecordID, item.Status)
 		}
 	}
-
 	weightByMode := map[string]map[string]string{}
 	pscWeightByMode := map[string]map[string]string{}
 	for _, mode := range erhuaMixedModes {
@@ -304,17 +310,27 @@ func RunErhuaMixedRuntime(config ErhuaMixedRuntimeConfig) (ErhuaMixedRuntimeMani
 			coreWeightRecords++
 		}
 		entry := erhuaRuntimeEntry{
-			RecordID:      item.RecordID,
-			Text:          item.Text,
-			Weight:        weight,
+			RecordID: item.RecordID,
+			Text:     item.Text,
+			// The source weight proves that this alias is tied to an existing
+			// candidate, but it is not a safe first-use prior in a sparse alias
+			// bucket. Start every new pronunciation alias at the low-frequency
+			// edge and let user learning promote it through actual use.
+			Weight:        erhuaMixedRuntimeWeight,
 			IncludeSuffix: includeSuffix,
 			Suffix:        map[string]string{},
 			Fused:         map[string]string{},
+			FusedSpelling: map[string]string{},
 		}
 		for _, mode := range erhuaMixedModes {
 			entry.Suffix[mode] = item.Routes["suffix_compatibility"].Codes[mode].LayoutKeyCode
 			entry.Fused[mode] = item.Routes["fused_erhua"].Codes[mode].LayoutKeyCode
 		}
+		spellings, spellingErr := deriveErhuaFusedSpellings(item, projectionIndex)
+		if spellingErr != nil {
+			return ErhuaMixedRuntimeManifest{}, spellingErr
+		}
+		entry.FusedSpelling = spellings
 		projected := projectedByRecordID[item.RecordID]
 		fusedRoute := item.Routes["fused_erhua"]
 		entry.Reverse = erhuaReverseSourceRow{
@@ -346,6 +362,20 @@ func RunErhuaMixedRuntime(config ErhuaMixedRuntimeConfig) (ErhuaMixedRuntimeMani
 			return ErhuaMixedRuntimeManifest{}, err
 		}
 		outputPaths[name] = path
+
+		sentenceAliasName := "yime_erhua_mixed_sentence_" + mode + ".dict.yaml"
+		sentenceAliasPath := filepath.Join(config.OutputDir, sentenceAliasName)
+		if err := writeErhuaSentenceDictionary(sentenceAliasPath, mode, entries); err != nil {
+			return ErhuaMixedRuntimeManifest{}, err
+		}
+		outputPaths[sentenceAliasName] = sentenceAliasPath
+
+		sentenceName := "yime_sentence_" + mode + ".dict.yaml"
+		sentencePath := filepath.Join(config.OutputDir, sentenceName)
+		if err := writeCombinedSentenceDictionary(sentencePath, mode); err != nil {
+			return ErhuaMixedRuntimeManifest{}, err
+		}
+		outputPaths[sentenceName] = sentencePath
 	}
 	reverseRows := make([]erhuaReverseSourceRow, 0, len(entries))
 	for _, entry := range entries {
@@ -365,22 +395,25 @@ func RunErhuaMixedRuntime(config ErhuaMixedRuntimeConfig) (ErhuaMixedRuntimeMani
 		}
 	}
 	gates := map[string]bool{
-		"source_bundles_are_offline_only":      !aliases.RuntimeEnabled && !annotations.RuntimeEnabled,
-		"explicit_authorization_complete":      len(annotationByID) == len(aliases.Records),
-		"productive_inference_forbidden":       true,
-		"unresolved_pending_not_exported":      pending == aliases.Counts["suffix_only_encoding_pending"],
-		"feature_projection_complete":          featureProjected == aliases.Counts["feature_projection_ready"],
-		"all_runtime_weights_inherited":        len(entries)+len(deferred) == len(ready),
-		"psc_weights_match_existing_suffixes":  pscPeripheralWeightRecords == 0 || len(deferred) == 0,
-		"psc_suffix_routes_not_duplicated":     true,
-		"three_mode_routes_complete":           true,
-		"candidate_text_unchanged":             true,
-		"sound_units_separate_from_keys":       true,
-		"many_to_one_shared_key_projection":    true,
-		"layout_codes_recomputed_from_ids":     true,
-		"ready_fused_routes_sound_projected":   projectedReadyRecords == len(ready),
-		"research_only_sounds_not_exported":    !researchSoundProjected,
-		"reverse_lookup_explanations_complete": len(reverseRows) == len(entries),
+		"source_bundles_are_offline_only":       !aliases.RuntimeEnabled && !annotations.RuntimeEnabled,
+		"explicit_authorization_complete":       len(annotationByID) == len(aliases.Records),
+		"productive_inference_forbidden":        true,
+		"unresolved_pending_not_exported":       pending == aliases.Counts["suffix_only_encoding_pending"],
+		"feature_projection_complete":           featureProjected == aliases.Counts["feature_projection_ready"],
+		"all_source_weights_resolved":           len(entries)+len(deferred) == len(ready),
+		"runtime_alias_weight_fixed_low":        erhuaMixedRuntimeWeight == "1",
+		"psc_weights_match_existing_suffixes":   pscPeripheralWeightRecords == 0 || len(deferred) == 0,
+		"psc_suffix_routes_not_duplicated":      true,
+		"three_mode_routes_complete":            true,
+		"candidate_text_unchanged":              true,
+		"sound_units_separate_from_keys":        true,
+		"many_to_one_shared_key_projection":     true,
+		"layout_codes_recomputed_from_ids":      true,
+		"ready_fused_routes_sound_projected":    projectedReadyRecords == len(ready),
+		"research_only_sounds_not_exported":     !researchSoundProjected,
+		"reverse_lookup_explanations_complete":  len(reverseRows) == len(entries),
+		"sentence_spelling_boundaries_complete": len(entries) == len(ready),
+		"sentence_dictionary_imports_complete":  true,
 	}
 	summary := ErhuaMixedRuntimeSummary{
 		ToolVersion:                ErhuaMixedRuntimeToolVersion,
@@ -389,11 +422,14 @@ func RunErhuaMixedRuntime(config ErhuaMixedRuntimeConfig) (ErhuaMixedRuntimeMani
 		FeatureProjectedCount:      featureProjected,
 		PendingFusionCount:         pending,
 		InheritedWeightRecordCount: len(entries),
+		FixedRuntimeWeight:         1,
 		CoreWeightRecordCount:      coreWeightRecords,
 		PSCPeripheralWeightCount:   pscPeripheralWeightRecords,
 		DeferredMissingWeightCount: len(deferred),
 		RoutesPerMode:              routesPerMode,
 		RuntimeAliasRows:           routesPerMode * len(erhuaMixedModes),
+		SentenceAliasRows:          len(entries) * len(erhuaMixedModes),
+		SentenceDictionaryCount:    len(erhuaMixedModes),
 		DeclaredSoundUnitCount:     len(soundProjection.SoundUnits),
 		PilotSoundUnitCount:        projectionIndex.pilotSoundUnits,
 		ResearchSoundUnitCount:     projectionIndex.researchSoundUnits,
@@ -562,4 +598,109 @@ func writeErhuaMixedDictionary(path, mode string, entries []erhuaRuntimeEntry) e
 		lines = append(lines, rimeDictionaryLine(entry.Text, entry.Fused[mode], entry.Weight))
 	}
 	return os.WriteFile(path, []byte(strings.Join(lines, "\n")+"\n"), 0o644)
+}
+
+func writeErhuaSentenceDictionary(path, mode string, entries []erhuaRuntimeEntry) error {
+	name := "yime_erhua_mixed_sentence_" + mode
+	lines := []string{
+		"# Rime dictionary",
+		"# GENERATED FILE - explicit source-backed fused erhua routes with syllable boundaries",
+		"# Imported only by the main script_translator sentence dictionary.",
+		"---",
+		"name: " + name,
+		"version: \"explicit-erhua-sentence-v1\"",
+		"sort: by_weight",
+		"use_preset_vocabulary: false",
+		"...",
+	}
+	for _, entry := range entries {
+		spelling := entry.FusedSpelling[mode]
+		if spelling == "" {
+			return fmt.Errorf("%s has no %s fused sentence spelling", entry.Text, mode)
+		}
+		lines = append(lines, rimeDictionaryLine(entry.Text, spelling, entry.Weight))
+	}
+	return os.WriteFile(path, []byte(strings.Join(lines, "\n")+"\n"), 0o644)
+}
+
+func writeCombinedSentenceDictionary(path, mode string) error {
+	name := "yime_sentence_" + mode
+	lines := []string{
+		"# Rime dictionary",
+		"# GENERATED FILE - core plus reviewed sentence-capable extensions",
+		"---",
+		"name: " + name,
+		"version: \"yime-sentence-extension-v1\"",
+		"sort: by_weight",
+		"use_preset_vocabulary: false",
+		"import_tables:",
+		"  - yime_" + mode,
+		"  - yime_psc_peripheral_sentence_" + mode,
+		"  - yime_erhua_mixed_sentence_" + mode,
+		"  - yime_third_tone_stage5c_" + mode,
+		"...",
+	}
+	return os.WriteFile(path, []byte(strings.Join(lines, "\n")+"\n"), 0o644)
+}
+
+func deriveErhuaFusedSpellings(record erhuaAliasRecord, index erhuaSoundProjectionIndex) (map[string]string, error) {
+	suffixFields := strings.Fields(record.Routes["suffix_compatibility"].NumericPinyin)
+	if len(suffixFields) < 2 || suffixFields[len(suffixFields)-1] != "er5" {
+		return nil, fmt.Errorf("%s has an invalid suffix-compatible Pinyin chain", record.RecordID)
+	}
+	prefixSyllables := len(suffixFields) - 2
+	fullIDs := record.Routes["suffix_compatibility"].Codes["full"].YinyuanIDs
+	if len(fullIDs) != len(suffixFields)*4 {
+		return nil, fmt.Errorf("%s suffix-compatible IDs do not align with Pinyin syllables", record.RecordID)
+	}
+	prefixParts := map[string][]string{"full": {}, "variable": {}, "shorthand": {}}
+	if prefixSyllables > 0 {
+		prefixModes, err := index.deriveModeCodes(fullIDs[:prefixSyllables*4])
+		if err != nil {
+			return nil, fmt.Errorf("derive %s sentence prefix: %w", record.RecordID, err)
+		}
+		for _, mode := range erhuaMixedModes {
+			ids := prefixModes[mode].YinyuanIDs
+			position := 0
+			for syllable := 0; syllable < prefixSyllables; syllable++ {
+				start := position
+				position++
+				for position < len(ids) {
+					candidate := ids[position]
+					if strings.HasPrefix(candidate, "N") {
+						break
+					}
+					position++
+				}
+				var keys strings.Builder
+				for _, id := range ids[start:position] {
+					key, ok := index.layoutKeyForID(id)
+					if !ok {
+						return nil, fmt.Errorf("%s prefix has unmapped Yinyuan ID %s", record.RecordID, id)
+					}
+					keys.WriteString(key)
+				}
+				prefixParts[mode] = append(prefixParts[mode], keys.String())
+			}
+		}
+	}
+
+	result := map[string]string{}
+	for _, mode := range erhuaMixedModes {
+		fusedCode := record.Routes["fused_erhua"].Codes[mode].LayoutKeyCode
+		prefixCode := strings.Join(prefixParts[mode], "")
+		if !strings.HasPrefix(fusedCode, prefixCode) {
+			return nil, fmt.Errorf("%s %s fused code %q does not preserve prefix %q", record.RecordID, mode, fusedCode, prefixCode)
+		}
+		attachedCode := strings.TrimPrefix(fusedCode, prefixCode)
+		if attachedCode == "" {
+			return nil, fmt.Errorf("%s %s fused code has no attached syllable", record.RecordID, mode)
+		}
+		parts := append(append([]string(nil), prefixParts[mode]...), attachedCode)
+		if len(parts) != len(suffixFields)-1 || strings.Join(parts, "") != fusedCode {
+			return nil, fmt.Errorf("%s %s fused sentence spelling does not preserve syllable count", record.RecordID, mode)
+		}
+		result[mode] = strings.Join(parts, " ")
+	}
+	return result, nil
 }

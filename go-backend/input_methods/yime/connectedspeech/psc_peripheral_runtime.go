@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	PSCPeripheralRuntimeToolVersion = "psc-pronunciation-peripheral-runtime-v1"
+	PSCPeripheralRuntimeToolVersion = "psc-pronunciation-peripheral-runtime-v2"
 	PSCPeripheralSourceSchema       = "yime-psc-pronunciation-peripheral-source-v1"
 	pscPeripheralSourceCategory     = "reviewed_psc_neutral_erhua_peripheral"
 	pscPeripheralCandidateLayer     = "psc_normative_low_frequency_periphery"
@@ -104,6 +104,7 @@ type PSCPeripheralRuntimeSummary struct {
 	EncodedRecordCount       int             `json:"encoded_record_count"`
 	AlreadyInCoreRecordCount int             `json:"already_in_core_record_count"`
 	RuntimeRowsPerMode       int             `json:"runtime_rows_per_mode"`
+	SentenceRowsPerMode      int             `json:"sentence_rows_per_mode"`
 	FixedPeripheralWeight    int             `json:"fixed_peripheral_weight"`
 	Gates                    map[string]bool `json:"gates"`
 	Passed                   bool            `json:"passed"`
@@ -197,6 +198,13 @@ func RunPSCPeripheralRuntime(config PSCPeripheralRuntimeConfig) (PSCPeripheralRu
 			return PSCPeripheralRuntimeManifest{}, err
 		}
 		outputs[name] = path
+
+		sentenceName := "yime_psc_peripheral_sentence_" + mode + ".dict.yaml"
+		sentencePath := filepath.Join(config.OutputDir, sentenceName)
+		if err := writePSCPeripheralSentenceDictionary(sentencePath, mode, entries); err != nil {
+			return PSCPeripheralRuntimeManifest{}, err
+		}
+		outputs[sentenceName] = sentencePath
 	}
 
 	neutralCount, erhuaCount := 0, 0
@@ -212,20 +220,21 @@ func RunPSCPeripheralRuntime(config PSCPeripheralRuntimeConfig) (PSCPeripheralRu
 		}
 	}
 	gates := map[string]bool{
-		"reviewed_source_only":                true,
-		"source_primary_forbidden":            true,
-		"only_neutral_tone_or_erhua_selected": neutralCount+erhuaCount == len(source.Records),
-		"candidate_text_unchanged":            true,
-		"formal_syllable_chain_complete":      len(entries)+alreadyInCore == len(source.Records),
-		"three_mode_derivation_complete":      true,
-		"core_dictionary_files_unchanged":     true,
-		"fixed_low_frequency_weight":          pscPeripheralWeight == 1,
+		"reviewed_source_only":                  true,
+		"source_primary_forbidden":              true,
+		"only_neutral_tone_or_erhua_selected":   neutralCount+erhuaCount == len(source.Records),
+		"candidate_text_unchanged":              true,
+		"formal_syllable_chain_complete":        len(entries)+alreadyInCore == len(source.Records),
+		"three_mode_derivation_complete":        true,
+		"sentence_spelling_boundaries_complete": true,
+		"core_dictionary_files_unchanged":       true,
+		"fixed_low_frequency_weight":            pscPeripheralWeight == 1,
 	}
 	summary := PSCPeripheralRuntimeSummary{
 		ToolVersion:       PSCPeripheralRuntimeToolVersion,
 		SourceRecordCount: len(source.Records), NeutralToneRecordCount: neutralCount, ErhuaRecordCount: erhuaCount,
 		EncodedRecordCount: len(entries), AlreadyInCoreRecordCount: alreadyInCore,
-		RuntimeRowsPerMode: len(entries), FixedPeripheralWeight: pscPeripheralWeight,
+		RuntimeRowsPerMode: len(entries), SentenceRowsPerMode: len(entries), FixedPeripheralWeight: pscPeripheralWeight,
 		Gates: gates,
 	}
 	summary.Passed = allGatesPass(gates) && len(source.Records) > 0
@@ -437,6 +446,35 @@ func writePSCPeripheralDictionary(path, mode string, entries []pscPeripheralEntr
 			code = entry.Shorthand
 		}
 		fmt.Fprintf(&content, "%s\t%s\t%d\n", entry.Text, code, pscPeripheralWeight)
+	}
+	return os.WriteFile(path, []byte(content.String()), 0o644)
+}
+
+func writePSCPeripheralSentenceDictionary(path, mode string, entries []pscPeripheralEntry) error {
+	var content strings.Builder
+	content.WriteString("# Rime dictionary\n# GENERATED FILE - reviewed PSC entries with explicit syllable boundaries\n")
+	content.WriteString("# Imported only by the main script_translator sentence dictionary.\n")
+	content.WriteString("---\nname: yime_psc_peripheral_sentence_")
+	content.WriteString(mode)
+	content.WriteString("\nversion: \"")
+	content.WriteString(PSCPeripheralRuntimeToolVersion)
+	content.WriteString("\"\nsort: by_weight\nuse_preset_vocabulary: false\n...\n")
+	for _, entry := range entries {
+		spelling := entry.FullSpelling
+		code := entry.Full
+		if mode == "variable" {
+			spelling = entry.VariableSpelling
+			code = entry.Variable
+		}
+		if mode == "shorthand" {
+			spelling = entry.ShorthandSpelling
+			code = entry.Shorthand
+		}
+		parts := strings.Fields(spelling)
+		if len(parts) != len(strings.Fields(entry.NumericPinyin)) || strings.Join(parts, "") != code {
+			return fmt.Errorf("%s has an invalid %s sentence spelling %q", entry.Text, mode, spelling)
+		}
+		fmt.Fprintf(&content, "%s\t%s\t%d\n", entry.Text, spelling, pscPeripheralWeight)
 	}
 	return os.WriteFile(path, []byte(content.String()), 0o644)
 }

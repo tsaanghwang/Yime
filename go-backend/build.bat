@@ -90,6 +90,16 @@ for %%F in (
     yime_erhua_mixed_full.dict.yaml
     yime_erhua_mixed_variable.dict.yaml
     yime_erhua_mixed_shorthand.dict.yaml
+	yime_erhua_mixed_sentence_full.dict.yaml
+	yime_erhua_mixed_sentence_variable.dict.yaml
+	yime_erhua_mixed_sentence_shorthand.dict.yaml
+	yime_sentence_full.dict.yaml
+	yime_sentence_variable.dict.yaml
+	yime_sentence_shorthand.dict.yaml
+	yime_third_tone_stage5c_full.dict.yaml
+	yime_third_tone_stage5c_variable.dict.yaml
+	yime_third_tone_stage5c_shorthand.dict.yaml
+	yime_third_tone_stage5c_manifest.json
     yime_erhua_mixed_manifest.json
     yime_erhua_reverse_source.tsv
     yime_erhua_mixed_full.schema.yaml
@@ -98,6 +108,9 @@ for %%F in (
     yime_psc_peripheral_full.dict.yaml
     yime_psc_peripheral_variable.dict.yaml
     yime_psc_peripheral_shorthand.dict.yaml
+	yime_psc_peripheral_sentence_full.dict.yaml
+	yime_psc_peripheral_sentence_variable.dict.yaml
+	yime_psc_peripheral_sentence_shorthand.dict.yaml
     yime_psc_peripheral_manifest.json
     yime_psc_peripheral_full.schema.yaml
     yime_psc_peripheral_variable.schema.yaml
@@ -578,7 +591,7 @@ for %%F in (
     )
 )
 
-for %%F in (default.yaml symbols.yaml essay.txt luna_pinyin.dict.yaml luna_pinyin.schema.yaml cangjie5.dict.yaml cangjie5.schema.yaml yime_full.dict.yaml yime_variable.dict.yaml yime_shorthand.dict.yaml yime_erhua_mixed_full.dict.yaml yime_erhua_mixed_variable.dict.yaml yime_erhua_mixed_shorthand.dict.yaml yime_psc_peripheral_full.dict.yaml yime_psc_peripheral_variable.dict.yaml yime_psc_peripheral_shorthand.dict.yaml yime_full.schema.yaml yime_variable.schema.yaml yime_shorthand.schema.yaml yime_erhua_mixed_full.schema.yaml yime_erhua_mixed_variable.schema.yaml yime_erhua_mixed_shorthand.schema.yaml yime_psc_peripheral_full.schema.yaml yime_psc_peripheral_variable.schema.yaml yime_psc_peripheral_shorthand.schema.yaml yime_lexicon_manifest.json yime_core_source_manifest.json yime_runtime_profile.json yime_pinyin_reverse_source.tsv yime_pinyin_codes.tsv yime_erhua_mixed_manifest.json yime_erhua_reverse_source.tsv yime_psc_peripheral_manifest.json) do (
+for %%F in (default.yaml symbols.yaml essay.txt luna_pinyin.dict.yaml luna_pinyin.schema.yaml cangjie5.dict.yaml cangjie5.schema.yaml yime_full.dict.yaml yime_variable.dict.yaml yime_shorthand.dict.yaml yime_erhua_mixed_full.dict.yaml yime_erhua_mixed_variable.dict.yaml yime_erhua_mixed_shorthand.dict.yaml yime_erhua_mixed_sentence_full.dict.yaml yime_erhua_mixed_sentence_variable.dict.yaml yime_erhua_mixed_sentence_shorthand.dict.yaml yime_sentence_full.dict.yaml yime_sentence_variable.dict.yaml yime_sentence_shorthand.dict.yaml yime_third_tone_stage5c_full.dict.yaml yime_third_tone_stage5c_variable.dict.yaml yime_third_tone_stage5c_shorthand.dict.yaml yime_third_tone_stage5c_manifest.json yime_psc_peripheral_full.dict.yaml yime_psc_peripheral_variable.dict.yaml yime_psc_peripheral_shorthand.dict.yaml yime_psc_peripheral_sentence_full.dict.yaml yime_psc_peripheral_sentence_variable.dict.yaml yime_psc_peripheral_sentence_shorthand.dict.yaml yime_full.schema.yaml yime_variable.schema.yaml yime_shorthand.schema.yaml yime_erhua_mixed_full.schema.yaml yime_erhua_mixed_variable.schema.yaml yime_erhua_mixed_shorthand.schema.yaml yime_psc_peripheral_full.schema.yaml yime_psc_peripheral_variable.schema.yaml yime_psc_peripheral_shorthand.schema.yaml yime_lexicon_manifest.json yime_core_source_manifest.json yime_runtime_profile.json yime_pinyin_reverse_source.tsv yime_pinyin_codes.tsv yime_erhua_mixed_manifest.json yime_erhua_reverse_source.tsv yime_psc_peripheral_manifest.json) do (
     if not exist "%PACKAGE_RIME_DATA_DIR%\%%F" (
         echo [ERROR] Packaged Rime shared data is incomplete: %%F
         exit /b 1

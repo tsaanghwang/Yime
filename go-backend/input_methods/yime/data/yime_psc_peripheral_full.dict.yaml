@@ -3,7 +3,7 @@
 # Separate overlay: the curated core dictionary and its ranking remain unchanged.
 ---
 name: yime_psc_peripheral_full
-version: "psc-pronunciation-peripheral-runtime-v1"
+version: "psc-pronunciation-peripheral-runtime-v2"
 sort: by_weight
 use_preset_vocabulary: false
 ...

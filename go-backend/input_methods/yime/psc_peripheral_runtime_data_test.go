@@ -19,6 +19,7 @@ type bundledPSCPeripheralManifest struct {
 		EncodedRecordCount       int             `json:"encoded_record_count"`
 		AlreadyInCoreRecordCount int             `json:"already_in_core_record_count"`
 		RuntimeRowsPerMode       int             `json:"runtime_rows_per_mode"`
+		SentenceRowsPerMode      int             `json:"sentence_rows_per_mode"`
 		FixedPeripheralWeight    int             `json:"fixed_peripheral_weight"`
 		Gates                    map[string]bool `json:"gates"`
 		Passed                   bool            `json:"passed"`
@@ -28,13 +29,14 @@ type bundledPSCPeripheralManifest struct {
 func TestBundledPSCPeripheralIsCompleteLowFrequencyAndThreeMode(t *testing.T) {
 	var manifest bundledPSCPeripheralManifest
 	readJSONFile(t, "yime_psc_peripheral_manifest.json", &manifest)
-	if manifest.ToolVersion != "psc-pronunciation-peripheral-runtime-v1" ||
+	if manifest.ToolVersion != "psc-pronunciation-peripheral-runtime-v2" ||
 		manifest.Summary.SourceRecordCount != 315 ||
 		manifest.Summary.NeutralToneRecordCount != 183 ||
 		manifest.Summary.ErhuaRecordCount != 132 ||
 		manifest.Summary.EncodedRecordCount != 315 ||
 		manifest.Summary.AlreadyInCoreRecordCount != 0 ||
 		manifest.Summary.RuntimeRowsPerMode != 315 ||
+		manifest.Summary.SentenceRowsPerMode != 315 ||
 		manifest.Summary.FixedPeripheralWeight != 1 ||
 		!manifest.Summary.Passed {
 		t.Fatalf("unexpected PSC peripheral manifest: %#v", manifest)
@@ -84,6 +86,19 @@ func TestBundledPSCPeripheralIsCompleteLowFrequencyAndThreeMode(t *testing.T) {
 			t.Fatalf("%s rows=%d, want 315", name, rows)
 		}
 
+		sentenceName := "yime_psc_peripheral_sentence_" + mode + ".dict.yaml"
+		sentencePath := filepath.Join("data", sentenceName)
+		if got := fileSHA256(t, sentencePath); got != manifest.OutputSHA256[sentenceName] {
+			t.Fatalf("%s hash mismatch: got=%s want=%s", sentenceName, got, manifest.OutputSHA256[sentenceName])
+		}
+		sentenceData, err := os.ReadFile(sentencePath)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !strings.Contains(string(sentenceData), "大婶儿\t]fds 9xz 'I\t1") && mode == "variable" {
+			t.Fatalf("%s does not retain PSC syllable boundaries", sentenceName)
+		}
+
 		schemaData, err := os.ReadFile(filepath.Join("data", "yime_"+mode+".schema.yaml"))
 		if err != nil {
 			t.Fatal(err)
@@ -123,12 +138,23 @@ func TestRuntimeProfileDeclaresPSCPeripheralWithoutChangingCoreCount(t *testing.
 	if !containsString(profile.CandidateLayers, "reviewed_psc_neutral_erhua_low_frequency_periphery") {
 		t.Fatal("runtime profile lacks PSC peripheral candidate layer")
 	}
+	if profile.ThirdToneStage5CManifest != "yime_third_tone_stage5c_manifest.json" ||
+		profile.ThirdToneStage5CEntries != 24 || profile.ThirdToneStage5CWeight != 1 ||
+		!containsString(profile.CandidateLayers, "reviewed_third_tone_low_frequency_alias") {
+		t.Fatalf("runtime profile lacks the reviewed Stage 5C layer: %#v", profile)
+	}
 	for _, mode := range []string{"full", "variable", "shorthand"} {
 		if !containsString(profile.RuntimeSchemaDependencies, "yime_psc_peripheral_"+mode) {
 			t.Fatalf("runtime profile lacks PSC peripheral dependency for %s", mode)
 		}
 		if !containsString(profile.RuntimeDictionaries, "yime_psc_peripheral_"+mode+".dict.yaml") {
 			t.Fatalf("runtime profile lacks PSC peripheral dictionary for %s", mode)
+		}
+		if !containsString(profile.RuntimeDictionaries, "yime_psc_peripheral_sentence_"+mode+".dict.yaml") {
+			t.Fatalf("runtime profile lacks PSC sentence dictionary for %s", mode)
+		}
+		if !containsString(profile.RuntimeDictionaries, "yime_third_tone_stage5c_"+mode+".dict.yaml") {
+			t.Fatalf("runtime profile lacks Stage 5C dictionary for %s", mode)
 		}
 	}
 }

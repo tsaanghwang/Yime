@@ -559,11 +559,11 @@ Weasel、本机目录或 Plum 临时补齐；缺件时直接失败。
 | `yime_core_source_manifest.json` | 来源证据 | 原型修订、输入/筛选哈希和三类排序证据计数 |
 | `yime_lexicon_manifest.json` | 派生清单 | 转换规则、条目数和三模式输出哈希 |
 | `yime_runtime_profile.json` | 发布配置 | 默认方案、三模式文件和四层候选链 |
-| `yime_pinyin_codes.tsv` | 编码映射 | 数字标调拼音→等长码，当前 1728 条；其余模式运行时推导 |
+| `yime_pinyin_codes.tsv` | 编码映射 | 数字标调拼音→等长码，当前 1733 条；其余模式运行时推导 |
 | `yime_syllable_inventory_manifest.json` | 音节集合门禁 | 固定原型物化音节数、集合哈希、来源修订和 canonical-only 清单 |
 | `yime_pua_pinyin.json` | PUA 显示映射 | 候选注释的数字标调拼音→PUA 音元序列 |
 | `fonts/YinYuan-Regular.ttf` | 候选字体 | 音元拼音模式使用的 PUA 字形 |
-| `pinyin_normalized.json` | 拼音归一化 | 数字标调→带调拼音，当前审计库存 1732 条 |
+| `pinyin_normalized.json` | 拼音归一化 | 数字标调→带调拼音，当前审计库存 1737 条 |
 | `essay.txt` | 词频表 | 八股文 |
 | `rime.dll` | 动态库 | librime 运行时 |
 | `rime_deployer.exe` | 可执行文件 | 外部部署工具 |

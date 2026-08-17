@@ -56,11 +56,14 @@ type bundledErhuaMixedManifest struct {
 		FeatureProjectedCount      int             `json:"feature_projected_count"`
 		PendingFusionCount         int             `json:"pending_fusion_count"`
 		InheritedWeightRecordCount int             `json:"inherited_weight_record_count"`
+		FixedRuntimeWeight         int             `json:"fixed_runtime_weight"`
 		CoreWeightRecordCount      int             `json:"core_weight_record_count"`
 		PSCPeripheralWeightCount   int             `json:"psc_peripheral_weight_record_count"`
 		DeferredMissingWeightCount int             `json:"deferred_missing_weight_count"`
 		RoutesPerMode              int             `json:"routes_per_mode"`
 		RuntimeAliasRows           int             `json:"runtime_alias_rows"`
+		SentenceAliasRows          int             `json:"sentence_alias_rows"`
+		SentenceDictionaryCount    int             `json:"sentence_dictionary_count"`
 		DeclaredSoundUnitCount     int             `json:"declared_sound_unit_count"`
 		PilotSoundUnitCount        int             `json:"pilot_sound_unit_count"`
 		ResearchSoundUnitCount     int             `json:"research_sound_unit_count"`
@@ -84,17 +87,20 @@ type bundledErhuaEntry struct {
 func TestBundledExplicitErhuaMixedOverlayIsCompleteAndReversible(t *testing.T) {
 	var manifest bundledErhuaMixedManifest
 	readJSONFile(t, "yime_erhua_mixed_manifest.json", &manifest)
-	if manifest.ToolVersion != "explicit-erhua-yinyuan-feature-runtime-v6" ||
+	if manifest.ToolVersion != "explicit-erhua-yinyuan-feature-runtime-v8" ||
 		manifest.Summary.ExplicitRecordCount != 131 ||
 		manifest.Summary.DualRouteReadyCount != 131 ||
 		manifest.Summary.FeatureProjectedCount != 131 ||
 		manifest.Summary.PendingFusionCount != 0 ||
 		manifest.Summary.InheritedWeightRecordCount != 131 ||
+		manifest.Summary.FixedRuntimeWeight != 1 ||
 		manifest.Summary.CoreWeightRecordCount != 65 ||
 		manifest.Summary.PSCPeripheralWeightCount != 66 ||
 		manifest.Summary.DeferredMissingWeightCount != 0 ||
 		manifest.Summary.RoutesPerMode != 196 ||
 		manifest.Summary.RuntimeAliasRows != 588 ||
+		manifest.Summary.SentenceAliasRows != 393 ||
+		manifest.Summary.SentenceDictionaryCount != 3 ||
 		manifest.Summary.DeclaredSoundUnitCount != 18 ||
 		manifest.Summary.PilotSoundUnitCount != 18 ||
 		manifest.Summary.ResearchSoundUnitCount != 0 ||
@@ -121,6 +127,29 @@ func TestBundledExplicitErhuaMixedOverlayIsCompleteAndReversible(t *testing.T) {
 		overlayName := "yime_erhua_mixed_" + mode + ".dict.yaml"
 		if got := fileSHA256(t, filepath.Join("data", overlayName)); got != manifest.OutputSHA256[overlayName] {
 			t.Fatalf("%s hash mismatch: got=%s want=%s", overlayName, got, manifest.OutputSHA256[overlayName])
+		}
+		sentenceAliasName := "yime_erhua_mixed_sentence_" + mode + ".dict.yaml"
+		sentenceAliasPath := filepath.Join("data", sentenceAliasName)
+		if got := fileSHA256(t, sentenceAliasPath); got != manifest.OutputSHA256[sentenceAliasName] {
+			t.Fatalf("%s hash mismatch: got=%s want=%s", sentenceAliasName, got, manifest.OutputSHA256[sentenceAliasName])
+		}
+		sentenceAliases := readBundledErhuaDictionary(t, sentenceAliasPath)
+		if len(sentenceAliases) != 131 {
+			t.Fatalf("%s must contain 131 fused sentence routes, got %d", sentenceAliasName, len(sentenceAliases))
+		}
+		sentenceName := "yime_sentence_" + mode + ".dict.yaml"
+		sentencePath := filepath.Join("data", sentenceName)
+		if got := fileSHA256(t, sentencePath); got != manifest.OutputSHA256[sentenceName] {
+			t.Fatalf("%s hash mismatch: got=%s want=%s", sentenceName, got, manifest.OutputSHA256[sentenceName])
+		}
+		sentenceData, err := os.ReadFile(sentencePath)
+		if err != nil {
+			t.Fatal(err)
+		}
+		for _, imported := range []string{"  - yime_" + mode, "  - yime_psc_peripheral_sentence_" + mode, "  - yime_erhua_mixed_sentence_" + mode} {
+			if !strings.Contains(string(sentenceData), imported) {
+				t.Fatalf("%s lacks import %q", sentenceName, imported)
+			}
 		}
 		overlay := readBundledErhuaDictionary(t, filepath.Join("data", overlayName))
 		if len(overlay) != 196 {
@@ -149,12 +178,11 @@ func TestBundledExplicitErhuaMixedOverlayIsCompleteAndReversible(t *testing.T) {
 			if _, blocked := deferred[entry.Text]; blocked {
 				t.Fatalf("deferred missing-weight record entered runtime: %s", entry.Text)
 			}
-			if coreWeight := coreWeights[entry.Text]; coreWeight != 0 {
-				if coreWeight != entry.Weight {
-					t.Fatalf("%s/%s weight=%d does not inherit core weight=%d", mode, entry.Text, entry.Weight, coreWeight)
-				}
-			} else if pscWeight := pscWeights[entry.Text]; pscWeight != entry.Weight || entry.Weight != 1 {
-				t.Fatalf("%s/%s weight=%d does not inherit PSC low weight=%d", mode, entry.Text, entry.Weight, pscWeight)
+			if coreWeights[entry.Text] == 0 && pscWeights[entry.Text] == 0 {
+				t.Fatalf("%s/%s has no canonical or PSC source weight", mode, entry.Text)
+			}
+			if entry.Weight != 1 {
+				t.Fatalf("%s/%s alias weight=%d, want fixed low-frequency weight 1", mode, entry.Text, entry.Weight)
 			}
 		}
 		if len(routesByText) != 131 {
@@ -177,11 +205,12 @@ func TestBundledExplicitErhuaMixedOverlayIsCompleteAndReversible(t *testing.T) {
 			t.Fatal(err)
 		}
 		for _, fragment := range []string{
-			"version: \"2026-08-15-core-1166300-layout-6d00e609f689-rank-v1-erhua-mixed-v4-psc-peripheral-v1\"",
+			"version: \"2026-08-17-core-1166300-layout-6d00e609f689-rank-v1-erhua-mixed-v4-psc-peripheral-v1-sentence-v1-third-tone-v1\"",
 			"alphabet: \"1234567890-=qwertyuiop[]\\\\asdfghjkl;'zxcvbnm,./JKLUIOM<>NGFDSREWQTYVCXPAZ\"",
 			"- yime_erhua_mixed_" + mode,
 			"- table_translator@erhua_mixed",
 			"dictionary: yime_erhua_mixed_" + mode,
+			"dictionary: yime_sentence_" + mode,
 			"enable_user_dict: false",
 			"enable_sentence: false",
 		} {
@@ -252,6 +281,14 @@ func TestRuntimeProfileDeclaresExplicitErhuaMixedOverlay(t *testing.T) {
 		if !containsString(profile.RuntimeDictionaries, name) {
 			t.Fatalf("runtime profile lacks %s", name)
 		}
+		for _, sentenceName := range []string{"yime_erhua_mixed_sentence_" + mode + ".dict.yaml", "yime_sentence_" + mode + ".dict.yaml"} {
+			if !containsString(profile.RuntimeDictionaries, sentenceName) {
+				t.Fatalf("runtime profile lacks %s", sentenceName)
+			}
+		}
+	}
+	if !containsString(profile.CandidateLayers, "reviewed_sentence_composition_extension") {
+		t.Fatal("runtime profile does not declare the reviewed sentence-composition extension")
 	}
 }
 

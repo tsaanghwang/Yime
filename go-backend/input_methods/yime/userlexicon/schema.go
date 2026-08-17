@@ -33,6 +33,16 @@ var generatedErhuaOverlayFiles = []string{
 	"yime_erhua_mixed_full.dict.yaml",
 	"yime_erhua_mixed_variable.dict.yaml",
 	"yime_erhua_mixed_shorthand.dict.yaml",
+	"yime_erhua_mixed_sentence_full.dict.yaml",
+	"yime_erhua_mixed_sentence_variable.dict.yaml",
+	"yime_erhua_mixed_sentence_shorthand.dict.yaml",
+	"yime_sentence_full.dict.yaml",
+	"yime_sentence_variable.dict.yaml",
+	"yime_sentence_shorthand.dict.yaml",
+	"yime_third_tone_stage5c_full.dict.yaml",
+	"yime_third_tone_stage5c_variable.dict.yaml",
+	"yime_third_tone_stage5c_shorthand.dict.yaml",
+	"yime_third_tone_stage5c_manifest.json",
 	"yime_erhua_reverse_source.tsv",
 	"yime_erhua_mixed_manifest.json",
 }
@@ -40,6 +50,9 @@ var generatedPSCPeripheralFiles = []string{
 	"yime_psc_peripheral_full.dict.yaml",
 	"yime_psc_peripheral_variable.dict.yaml",
 	"yime_psc_peripheral_shorthand.dict.yaml",
+	"yime_psc_peripheral_sentence_full.dict.yaml",
+	"yime_psc_peripheral_sentence_variable.dict.yaml",
+	"yime_psc_peripheral_sentence_shorthand.dict.yaml",
 	"yime_psc_peripheral_manifest.json",
 }
 var retiredCoreTrialFiles = []string{

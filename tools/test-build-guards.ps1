@@ -15,6 +15,7 @@ $pinyinCodeMap = Join-Path $root 'go-backend\input_methods\yime\data\yime_pinyin
 $erhuaMixedManifest = Join-Path $root 'go-backend\input_methods\yime\data\yime_erhua_mixed_manifest.json'
 $erhuaReverseSource = Join-Path $root 'go-backend\input_methods\yime\data\yime_erhua_reverse_source.tsv'
 $pscPeripheralManifest = Join-Path $root 'go-backend\input_methods\yime\data\yime_psc_peripheral_manifest.json'
+$thirdToneStage5CManifest = Join-Path $root 'go-backend\input_methods\yime\data\yime_third_tone_stage5c_manifest.json'
 $installer = Join-Path $root 'installer\installer.nsi'
 $devInstall = Join-Path $root 'tools\dev-install.ps1'
 $buildPrereqs = Join-Path $root 'tools\assert-win32-build-prerequisites.ps1'
@@ -167,6 +168,16 @@ foreach ($guard in @(
     'yime_erhua_mixed_full.dict.yaml',
     'yime_erhua_mixed_variable.dict.yaml',
     'yime_erhua_mixed_shorthand.dict.yaml',
+	'yime_erhua_mixed_sentence_full.dict.yaml',
+	'yime_erhua_mixed_sentence_variable.dict.yaml',
+	'yime_erhua_mixed_sentence_shorthand.dict.yaml',
+	'yime_sentence_full.dict.yaml',
+	'yime_sentence_variable.dict.yaml',
+	'yime_sentence_shorthand.dict.yaml',
+	'yime_third_tone_stage5c_full.dict.yaml',
+	'yime_third_tone_stage5c_variable.dict.yaml',
+	'yime_third_tone_stage5c_shorthand.dict.yaml',
+	'yime_third_tone_stage5c_manifest.json',
     'yime_erhua_mixed_manifest.json',
     'yime_erhua_reverse_source.tsv',
     'yime_erhua_mixed_full.schema.yaml',
@@ -175,6 +186,9 @@ foreach ($guard in @(
     'yime_psc_peripheral_full.dict.yaml',
     'yime_psc_peripheral_variable.dict.yaml',
     'yime_psc_peripheral_shorthand.dict.yaml',
+	'yime_psc_peripheral_sentence_full.dict.yaml',
+	'yime_psc_peripheral_sentence_variable.dict.yaml',
+	'yime_psc_peripheral_sentence_shorthand.dict.yaml',
     'yime_psc_peripheral_manifest.json',
     'yime_psc_peripheral_full.schema.yaml',
     'yime_psc_peripheral_variable.schema.yaml',
@@ -219,12 +233,15 @@ if ([string]$sourceEvidence.reverse_pinyin_source -ne 'yime_pinyin_reverse_sourc
 $erhuaMixed = Get-Content -LiteralPath $erhuaMixedManifest -Raw -Encoding UTF8 | ConvertFrom-Json
 if (-not [bool]$erhuaMixed.summary.passed -or
     [int64]$erhuaMixed.summary.inherited_weight_record_count -ne 131 -or
+    [int64]$erhuaMixed.summary.fixed_runtime_weight -ne 1 -or
     [int64]$erhuaMixed.summary.feature_projected_count -ne 131 -or
     [int64]$erhuaMixed.summary.pending_fusion_count -ne 0 -or
     [int64]$erhuaMixed.summary.core_weight_record_count -ne 65 -or
     [int64]$erhuaMixed.summary.psc_peripheral_weight_record_count -ne 66 -or
     [int64]$erhuaMixed.summary.deferred_missing_weight_count -ne 0 -or
     [int64]$erhuaMixed.summary.runtime_alias_rows -ne 588 -or
+    [int64]$erhuaMixed.summary.sentence_alias_rows -ne 393 -or
+    [int64]$erhuaMixed.summary.sentence_dictionary_count -ne 3 -or
     [int64]$erhuaMixed.summary.declared_sound_unit_count -ne 18 -or
     [int64]$erhuaMixed.summary.dedicated_key_class_count -ne 15 -or
     [int64]$erhuaMixed.summary.feature_rule_count -ne 15 -or
@@ -232,11 +249,12 @@ if (-not [bool]$erhuaMixed.summary.passed -or
     throw 'Explicit-erhua mixed runtime manifest did not pass its completeness gates.'
 }
 foreach ($mode in @('full', 'variable', 'shorthand')) {
-    $name = "yime_erhua_mixed_${mode}.dict.yaml"
-    $path = Join-Path $root "go-backend\input_methods\yime\data\$name"
-    $hash = (Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash.ToLowerInvariant()
-    if ([string]$erhuaMixed.output_sha256.$name -ne $hash) {
-        throw "Explicit-erhua mixed dictionary hash mismatch: $name"
+    foreach ($name in @("yime_erhua_mixed_${mode}.dict.yaml", "yime_erhua_mixed_sentence_${mode}.dict.yaml", "yime_sentence_${mode}.dict.yaml")) {
+        $path = Join-Path $root "go-backend\input_methods\yime\data\$name"
+        $hash = (Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash.ToLowerInvariant()
+        if ([string]$erhuaMixed.output_sha256.$name -ne $hash) {
+            throw "Explicit-erhua mixed dictionary hash mismatch: $name"
+        }
     }
 }
 $erhuaReverseHash = (Get-FileHash -LiteralPath $erhuaReverseSource -Algorithm SHA256).Hash.ToLowerInvariant()
@@ -251,15 +269,33 @@ if (-not [bool]$pscPeripheral.summary.passed -or
     [int64]$pscPeripheral.summary.neutral_tone_record_count -ne 183 -or
     [int64]$pscPeripheral.summary.erhua_record_count -ne 132 -or
     [int64]$pscPeripheral.summary.runtime_rows_per_mode -ne 315 -or
+    [int64]$pscPeripheral.summary.sentence_rows_per_mode -ne 315 -or
     [int64]$pscPeripheral.summary.fixed_peripheral_weight -ne 1) {
     throw 'PSC pronunciation peripheral manifest did not pass its completeness gates.'
 }
 foreach ($mode in @('full', 'variable', 'shorthand')) {
-    $name = "yime_psc_peripheral_${mode}.dict.yaml"
+    foreach ($name in @("yime_psc_peripheral_${mode}.dict.yaml", "yime_psc_peripheral_sentence_${mode}.dict.yaml")) {
+        $path = Join-Path $root "go-backend\input_methods\yime\data\$name"
+        $hash = (Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash.ToLowerInvariant()
+        if ([string]$pscPeripheral.output_sha256.$name -ne $hash) {
+            throw "PSC pronunciation peripheral dictionary hash mismatch: $name"
+        }
+    }
+}
+$thirdToneStage5C = Get-Content -LiteralPath $thirdToneStage5CManifest -Raw -Encoding UTF8 | ConvertFrom-Json
+if (-not [bool]$thirdToneStage5C.summary.passed -or
+    [int64]$thirdToneStage5C.summary.approved_alias_count -ne 24 -or
+    [int64]$thirdToneStage5C.summary.three_mode_row_count -ne 72 -or
+    [int64]$thirdToneStage5C.summary.fixed_runtime_weight -ne 1 -or
+    -not [bool]$thirdToneStage5C.summary.canonical_routes_preserved) {
+    throw 'Third-tone Stage 5C runtime manifest did not pass its completeness gates.'
+}
+foreach ($mode in @('full', 'variable', 'shorthand')) {
+    $name = "yime_third_tone_stage5c_${mode}.dict.yaml"
     $path = Join-Path $root "go-backend\input_methods\yime\data\$name"
     $hash = (Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash.ToLowerInvariant()
-    if ([string]$pscPeripheral.output_sha256.$name -ne $hash) {
-        throw "PSC pronunciation peripheral dictionary hash mismatch: $name"
+    if ([string]$thirdToneStage5C.output_sha256.$name -ne $hash) {
+        throw "Third-tone Stage 5C dictionary hash mismatch: $name"
     }
 }
 Write-Host 'Curated core evidence and three-mode package guards passed.'

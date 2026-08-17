@@ -1,0 +1,4 @@
+class_id	canonical_pattern	surface_pattern	boundary_evidence	adjudication_status	runtime_eligible	note
+T3-DISYLLABLE-LEXICON	3 3	2 3	direct_two_syllable_lexicon_entry	research_only	false	仅形成带完整词条边界的离线候选；词典收录不自动等同韵律域审定
+T3-PAIR-IN-LONGER	contains 3 3	unresolved	explicit_prosodic_grouping_required	deferred	false	三音节及以上条目中的局部双上声必须先给出人工或来源韵律分组
+T3-CHAIN-THREE-PLUS	3 3 3+	unresolved	explicit_prosodic_grouping_required	deferred	false	不得按相邻音节递归改写；不同韵律切分可能产生不同表层调值

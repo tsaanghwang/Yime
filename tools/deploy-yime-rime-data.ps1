@@ -46,12 +46,24 @@ foreach ($mode in @("full", "variable", "shorthand")) {
     $overlaySchemaName = "yime_erhua_mixed_${mode}.schema.yaml"
     Copy-Item -LiteralPath (Join-Path $sharedDir $overlaySchemaName) `
         -Destination (Join-Path $RimeUserDir $overlaySchemaName) -Force
+	$erhuaSentenceName = "yime_erhua_mixed_sentence_${mode}.dict.yaml"
+	Copy-Item -LiteralPath (Join-Path $sharedDir $erhuaSentenceName) `
+		-Destination (Join-Path $RimeUserDir $erhuaSentenceName) -Force
+	$sentenceName = "yime_sentence_${mode}.dict.yaml"
+	Copy-Item -LiteralPath (Join-Path $sharedDir $sentenceName) `
+		-Destination (Join-Path $RimeUserDir $sentenceName) -Force
+	$thirdToneName = "yime_third_tone_stage5c_${mode}.dict.yaml"
+	Copy-Item -LiteralPath (Join-Path $sharedDir $thirdToneName) `
+		-Destination (Join-Path $RimeUserDir $thirdToneName) -Force
     $pscOverlayName = "yime_psc_peripheral_${mode}.dict.yaml"
     Copy-Item -LiteralPath (Join-Path $sharedDir $pscOverlayName) `
         -Destination (Join-Path $RimeUserDir $pscOverlayName) -Force
     $pscOverlaySchemaName = "yime_psc_peripheral_${mode}.schema.yaml"
     Copy-Item -LiteralPath (Join-Path $sharedDir $pscOverlaySchemaName) `
         -Destination (Join-Path $RimeUserDir $pscOverlaySchemaName) -Force
+	$pscSentenceName = "yime_psc_peripheral_sentence_${mode}.dict.yaml"
+	Copy-Item -LiteralPath (Join-Path $sharedDir $pscSentenceName) `
+		-Destination (Join-Path $RimeUserDir $pscSentenceName) -Force
 }
 # Do not copy the generation manifest here. On the next YIME startup, the
 # stale or absent user manifest makes RefreshRimeData atomically refresh the

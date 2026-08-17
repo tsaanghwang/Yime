@@ -255,6 +255,92 @@ func TestRealRimeExplicitErhuaMixedRoutesAcrossAllThreeSchemas(t *testing.T) {
 				}
 			}
 
+			sentenceEntries := readBundledErhuaDictionary(t, filepath.Join(dataDir, "yime_erhua_mixed_sentence_"+mode+".dict.yaml"))
+			fusedSentenceCodes := map[string]string{}
+			for _, entry := range sentenceEntries {
+				if entry.Text == "大婶儿" || entry.Text == "打转儿" {
+					fusedSentenceCodes[entry.Text] = strings.ReplaceAll(entry.Code, " ", "")
+				}
+			}
+			if fusedSentenceCodes["大婶儿"] == "" || fusedSentenceCodes["打转儿"] == "" {
+				t.Fatalf("%s lacks sentence spellings for 大婶儿/打转儿: %v", mode, fusedSentenceCodes)
+			}
+			continuousCode := fusedSentenceCodes["大婶儿"] + fusedSentenceCodes["打转儿"]
+			if _, found := findRealRimeCandidateAcrossPages(t, session.sessionID, continuousCode, "大婶儿打转儿"); !found {
+				t.Fatalf("explicit-erhua sentence 大婶儿打转儿 missing in %s after %q", schema, continuousCode)
+			}
+			coreEntriesForSentence := readBundledErhuaDictionary(t, filepath.Join(dataDir, "yime_"+mode+".dict.yaml"))
+			workCode := ""
+			for _, entry := range coreEntriesForSentence {
+				if entry.Text == "工作" {
+					workCode = strings.ReplaceAll(entry.Code, " ", "")
+					break
+				}
+			}
+			if workCode == "" {
+				t.Fatalf("%s lacks core code for 工作", mode)
+			}
+			mixedCode := fusedSentenceCodes["大婶儿"] + workCode
+			if _, found := findRealRimeCandidateAcrossPages(t, session.sessionID, mixedCode, "大婶儿工作"); !found {
+				t.Fatalf("mixed sentence 大婶儿工作 missing in %s after %q", schema, mixedCode)
+			}
+
+			coreSentenceCodes := map[string]string{}
+			for _, entry := range coreEntriesForSentence {
+				if entry.Text == "石头" || entry.Text == "滚动" || entry.Text == "表演" || entry.Text == "选手" {
+					coreSentenceCodes[entry.Text] = strings.ReplaceAll(entry.Code, " ", "")
+				}
+			}
+			if coreSentenceCodes["石头"] == "" || coreSentenceCodes["滚动"] == "" {
+				t.Fatalf("%s lacks core lexical-neutral sentence inputs: %v", mode, coreSentenceCodes)
+			}
+			neutralContinuousCode := coreSentenceCodes["石头"] + coreSentenceCodes["滚动"]
+			if _, found := findRealRimeCandidateAcrossPages(t, session.sessionID, neutralContinuousCode, "石头滚动"); !found {
+				t.Fatalf("lexical-neutral sentence 石头滚动 missing in %s after %q", schema, neutralContinuousCode)
+			}
+
+			pscSentenceEntries := readBundledErhuaDictionary(t, filepath.Join(dataDir, "yime_psc_peripheral_sentence_"+mode+".dict.yaml"))
+			pscNeutralCode := ""
+			for _, entry := range pscSentenceEntries {
+				if entry.Text == "商量" {
+					pscNeutralCode = strings.ReplaceAll(entry.Code, " ", "")
+					break
+				}
+			}
+			if pscNeutralCode == "" {
+				t.Fatalf("%s lacks reviewed PSC neutral-tone sentence spelling for 商量", mode)
+			}
+			pscNeutralContinuousCode := pscNeutralCode + workCode
+			if _, found := findRealRimeCandidateAcrossPages(t, session.sessionID, pscNeutralContinuousCode, "商量工作"); !found {
+				t.Fatalf("reviewed PSC neutral-tone sentence 商量工作 missing in %s after %q", schema, pscNeutralContinuousCode)
+			}
+
+			thirdToneEntries := readBundledErhuaDictionary(t, filepath.Join(dataDir, "yime_third_tone_stage5c_"+mode+".dict.yaml"))
+			thirdToneCodes := map[string]string{}
+			for _, entry := range thirdToneEntries {
+				if entry.Text == "表演" || entry.Text == "选手" {
+					thirdToneCodes[entry.Text] = strings.ReplaceAll(entry.Code, " ", "")
+				}
+			}
+			for _, text := range []string{"表演", "选手"} {
+				if thirdToneCodes[text] == "" {
+					t.Fatalf("%s lacks reviewed third-tone surface code for %s", mode, text)
+				}
+				if _, found := findRealRimeCandidateAcrossPages(t, session.sessionID, thirdToneCodes[text], text); !found {
+					t.Fatalf("reviewed third-tone candidate %s missing in %s after %q", text, schema, thirdToneCodes[text])
+				}
+				if coreSentenceCodes[text] == "" || coreSentenceCodes[text] == thirdToneCodes[text] {
+					t.Fatalf("%s must preserve a distinct canonical code for %s", mode, text)
+				}
+				if _, found := findRealRimeCandidateAcrossPages(t, session.sessionID, coreSentenceCodes[text], text); !found {
+					t.Fatalf("canonical third-tone candidate %s missing in %s after %q", text, schema, coreSentenceCodes[text])
+				}
+			}
+			thirdToneContinuousCode := thirdToneCodes["表演"] + workCode
+			if _, found := findRealRimeCandidateAcrossPages(t, session.sessionID, thirdToneContinuousCode, "表演工作"); !found {
+				t.Fatalf("reviewed third-tone sentence 表演工作 missing in %s after %q", schema, thirdToneContinuousCode)
+			}
+
 			// 刀刃儿 is absent from the curated core: its suffix-compatible
 			// route stays in the PSC low-frequency layer while the explicit
 			// erhua overlay contributes only the fused route.

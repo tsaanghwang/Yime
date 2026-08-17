@@ -17,6 +17,10 @@ func TestSystemAndUserDictionariesEnableCompletion(t *testing.T) {
 			}
 
 			text := string(content)
+			mode := strings.TrimPrefix(schemaID, "yime_")
+			if !strings.Contains(text, "dictionary: yime_sentence_"+mode) {
+				t.Fatalf("schema %s does not use its sentence-capable aggregate dictionary", schemaID)
+			}
 			if strings.Contains(text, "enable_completion: false") {
 				t.Fatalf("schema %s disables completion for one of its dictionaries", schemaID)
 			}

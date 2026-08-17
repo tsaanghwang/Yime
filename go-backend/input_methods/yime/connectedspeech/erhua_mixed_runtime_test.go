@@ -15,6 +15,9 @@ func TestErhuaMixedRuntimeInheritsCoreAndPSCPeripheralWeights(t *testing.T) {
 	if err := os.MkdirAll(dataDir, 0o755); err != nil {
 		t.Fatal(err)
 	}
+	if err := os.WriteFile(filepath.Join(dataDir, "yime_pinyin_codes.tsv"), []byte("pinyin_tone\tcode\nming2\tabcd\nbai2\tabcd\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
 	for _, mode := range erhuaMixedModes {
 		writeTestDictionary(t, filepath.Join(dataDir, "yime_"+mode+".dict.yaml"), []string{
 			"明白儿\tabcd\t1200",
@@ -68,7 +71,7 @@ func TestErhuaMixedRuntimeInheritsCoreAndPSCPeripheralWeights(t *testing.T) {
 		manifest.Summary.PSCPeripheralWeightCount != 1 || manifest.Summary.DeferredMissingWeightCount != 0 {
 		t.Fatalf("unexpected summary: %+v", manifest.Summary)
 	}
-	if manifest.Summary.RoutesPerMode != 3 || manifest.Summary.ReverseLookupRowCount != 2 {
+	if manifest.Summary.FixedRuntimeWeight != 1 || manifest.Summary.RoutesPerMode != 3 || manifest.Summary.ReverseLookupRowCount != 2 {
 		t.Fatalf("routes/reverse summary=%+v", manifest.Summary)
 	}
 	if len(manifest.Deferred) != 0 {
@@ -81,9 +84,9 @@ func TestErhuaMixedRuntimeInheritsCoreAndPSCPeripheralWeights(t *testing.T) {
 		}
 		text := string(content)
 		wantByMode := map[string][]string{
-			"full":      {"明白儿\tabcdabcd'III\t1200", "明白儿\tabcdabcd\t1200"},
-			"variable":  {"明白儿\tabcdabcd'I\t1200", "明白儿\tabcdabcd\t1200"},
-			"shorthand": {"明白儿\tabdabd'I\t1200", "明白儿\tabdabd\t1200"},
+			"full":      {"明白儿\tabcdabcd'III\t1", "明白儿\tabcdabcd\t1"},
+			"variable":  {"明白儿\tabcdabcd'I\t1", "明白儿\tabcdabcd\t1"},
+			"shorthand": {"明白儿\tabdabd'I\t1", "明白儿\tabdabd\t1"},
 		}
 		for _, want := range wantByMode[mode] {
 			if !strings.Contains(text, want) {

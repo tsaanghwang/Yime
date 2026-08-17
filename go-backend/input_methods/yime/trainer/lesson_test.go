@@ -137,7 +137,7 @@ func TestFoundationDeclaresSixPracticeTypesInRequiredOrder(t *testing.T) {
 	}
 }
 
-func TestSyllablePracticeUsesAll1728EncodedSyllablesGroupedBy24Shouyin(t *testing.T) {
+func TestSyllablePracticeUsesAll1733EncodedSyllablesGroupedBy24Shouyin(t *testing.T) {
 	resolver, err := NewResolver(repositoryDataDir(t))
 	if err != nil {
 		t.Fatal(err)
@@ -204,8 +204,8 @@ func TestSyllablePracticeUsesAll1728EncodedSyllablesGroupedBy24Shouyin(t *testin
 				}
 			}
 		}
-		if total != 1728 || len(seen) != 1728 || len(seenGroups) != 24 {
-			t.Fatalf("mode %s exercises=%d identified=%d want exactly 1728 encoded syllables", mode, total, len(seen))
+		if total != 1733 || len(seen) != 1733 || len(seenGroups) != 24 {
+			t.Fatalf("mode %s exercises=%d identified=%d want exactly 1733 encoded syllables", mode, total, len(seen))
 		}
 		if !n23HasY || !n23HasHui {
 			t.Fatalf("mode %s N23 did not combine y and ɥ surface forms", mode)

@@ -1,0 +1,33 @@
+{
+  "tool_version": "connected-speech-third-tone-stage5c-runtime-v1",
+  "input_sha256": {
+    "decisions": "f20b9700259ae00cad0c32a312c33ebdaf9346e72e3e6bba815d4d2f9f8f504b",
+    "full": "f4e818a9c7fc15b09626351008d8dbf22c692d50158048a060523bdf2e18ebc4",
+    "pinyin_codes": "71039436a8f61cd2a6775767869aa7bd136e935aace0b40ee5cadd6fd7e5a8f9",
+    "review": "41158ab014693c3232ac3741f5ac9337935f7ef98d2f9c0cb0c53bb32b249386",
+    "shorthand": "813cb3f3f8855563b1c3bdc34860fedcb02ad8d828cbde93c8e45b12c5800f85",
+    "sources": "f1144dc734309320bc4c1d1e6e9920f9c2ee40bc5e7ef30e1d3c393bc6c56cd2",
+    "variable": "adc963c4d4ffb2444f576d0c5d729e83fd0a57e3eed35ed9a5e66bb8891039ed"
+  },
+  "output_sha256": {
+    "yime_third_tone_stage5c_full.dict.yaml": "35055e44fd3436ce970ceb951b97ce58bfa01bbaefee7bddbf8b4a0a63aecfe3",
+    "yime_third_tone_stage5c_shorthand.dict.yaml": "b95e622f4f10d3b63966e3f6470de21c33aebc87cd72f590fb07bcc52c60731b",
+    "yime_third_tone_stage5c_variable.dict.yaml": "706fe8b41aacb191b542a38f1bb5fa05a86572c78f568f5b7b67b82536d06643"
+  },
+  "summary": {
+    "tool_version": "connected-speech-third-tone-stage5c-runtime-v1",
+    "approved_alias_count": 24,
+    "three_mode_row_count": 72,
+    "fixed_runtime_weight": 1,
+    "canonical_routes_preserved": true,
+    "gates": {
+      "approved_scope_exact": true,
+      "candidate_text_unchanged": true,
+      "canonical_routes_preserved": true,
+      "fixed_low_initial_weight": true,
+      "stage5b_gate_passed": true,
+      "three_mode_complete": true
+    },
+    "passed": true
+  }
+}

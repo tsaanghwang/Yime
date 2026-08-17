@@ -63,6 +63,9 @@ type coreRuntimeProfile struct {
 	PSCPeripheralNeutralTone   int      `json:"psc_pronunciation_peripheral_neutral_tone"`
 	PSCPeripheralErhua         int      `json:"psc_pronunciation_peripheral_erhua"`
 	PSCPeripheralWeight        int      `json:"psc_pronunciation_peripheral_weight"`
+	ThirdToneStage5CManifest   string   `json:"third_tone_stage5c_manifest"`
+	ThirdToneStage5CEntries    int      `json:"third_tone_stage5c_entries"`
+	ThirdToneStage5CWeight     int      `json:"third_tone_stage5c_weight"`
 	EntryCountPerMode          int      `json:"entry_count_per_mode"`
 }
 
@@ -216,7 +219,7 @@ func TestAllCoreModesConnectLearningCustomPhrasesAndSentenceComposition(
 		}
 		content := string(data)
 		checks := []string{
-			"dictionary: yime_" + mode,
+			"dictionary: yime_sentence_" + mode,
 			"user_dict: yime_" + mode + "_core_1166300_",
 			"user_dict: custom_phrase_" + mode,
 			"enable_user_dict: true",
