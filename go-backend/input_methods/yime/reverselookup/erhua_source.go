@@ -14,10 +14,10 @@ type ErhuaLookupRecord struct {
 	Text                       string
 	SourceKind                 string
 	CompatibilityNumericPinyin string
-	SurfaceClass               string
+	FeatureRuleID              string
 	AttachedSyllableSource     string
-	CarrierYinyuanIDs          string
-	SurfaceSoundUnitIDs        string
+	SourceYinyuanIDs           string
+	DerivedYinyuanIDs          string
 	KeyProjection              string
 	FullCode                   string
 	VariableCode               string
@@ -47,8 +47,8 @@ func loadErhuaSource(path string) (map[string][]ErhuaLookupRecord, error) {
 	defer file.Close()
 
 	expectedHeader := []string{
-		"record_id", "text", "source_kind", "compatibility_numeric_pinyin", "surface_class",
-		"attached_syllable_source", "carrier_yinyuan_ids", "surface_sound_unit_ids", "key_projection",
+		"record_id", "text", "source_kind", "compatibility_numeric_pinyin", "feature_rule_id",
+		"attached_syllable_source", "source_yinyuan_ids", "derived_yinyuan_ids", "key_projection",
 		"full_code", "variable_code", "shorthand_code",
 	}
 	scanner := bufio.NewScanner(file)
@@ -77,18 +77,18 @@ func loadErhuaSource(path string) (map[string][]ErhuaLookupRecord, error) {
 			Text:                       strings.TrimSpace(fields[1]),
 			SourceKind:                 strings.TrimSpace(fields[2]),
 			CompatibilityNumericPinyin: normalizeNumericTonePinyinSpacing(fields[3]),
-			SurfaceClass:               strings.TrimSpace(fields[4]),
+			FeatureRuleID:              strings.TrimSpace(fields[4]),
 			AttachedSyllableSource:     strings.TrimSpace(fields[5]),
-			CarrierYinyuanIDs:          strings.TrimSpace(fields[6]),
-			SurfaceSoundUnitIDs:        strings.TrimSpace(fields[7]),
+			SourceYinyuanIDs:           strings.TrimSpace(fields[6]),
+			DerivedYinyuanIDs:          strings.TrimSpace(fields[7]),
 			KeyProjection:              strings.TrimSpace(fields[8]),
 			FullCode:                   strings.TrimSpace(fields[9]),
 			VariableCode:               strings.TrimSpace(fields[10]),
 			ShorthandCode:              strings.TrimSpace(fields[11]),
 		}
 		if record.RecordID == "" || record.Text == "" || record.SourceKind == "" ||
-			record.CompatibilityNumericPinyin == "" || record.SurfaceClass == "" || record.AttachedSyllableSource == "" ||
-			record.CarrierYinyuanIDs == "" || record.SurfaceSoundUnitIDs == "" || record.KeyProjection == "" ||
+			record.CompatibilityNumericPinyin == "" || record.FeatureRuleID == "" || record.AttachedSyllableSource == "" ||
+			record.SourceYinyuanIDs == "" || record.DerivedYinyuanIDs == "" || record.KeyProjection == "" ||
 			record.FullCode == "" || record.VariableCode == "" || record.ShorthandCode == "" {
 			return nil, fmt.Errorf("explicit-erhua reverse line %d has an empty required field", lineNumber)
 		}
@@ -120,10 +120,10 @@ func buildErhuaLookupResult(record ErhuaLookupRecord, mode Mode, markedLookup ma
 		ErhuaRecordID:        record.RecordID,
 		ReadingIdentity:      "显式词汇化儿化（融合输入别名；规范拼音不改写）",
 		EvidenceSource:       record.SourceKind,
-		SurfaceClass:         record.SurfaceClass,
+		ErhuaFeatureRuleID:   record.FeatureRuleID,
 		AttachedSyllable:     record.AttachedSyllableSource,
-		CarrierYinyuanIDs:    record.CarrierYinyuanIDs,
-		SurfaceSoundUnitIDs:  record.SurfaceSoundUnitIDs,
+		SourceYinyuanIDs:     record.SourceYinyuanIDs,
+		DerivedYinyuanIDs:    record.DerivedYinyuanIDs,
 		SoundToKeyProjection: record.KeyProjection,
 	}
 }

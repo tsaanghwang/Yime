@@ -1,8 +1,8 @@
 {
-  "schema_version": 1,
-  "generated_utc": "2026-08-15T00:49:06.638801Z",
+  "schema_version": 2,
+  "generated_utc": "2026-08-17T01:56:13.447190Z",
   "source_catalog": "internal_data/pinyin_source_db/psc_candidate_readings.json",
-  "erhua_surface_source": "external_data/tmp/final_styles_erhua_draft.json",
+  "erhua_yinyuan_feature_source": "external_data/erhua_yinyuan_feature_rules.json",
   "admission_policy": {
     "required_text_shape": "at_least_one_han_plus_word_final_er",
     "required_evidence": "confirmed psc_erhua",

@@ -18,7 +18,7 @@ func TestSchemasIsolateLearnedCandidatesByLayoutProjection(t *testing.T) {
 			}
 			schema := string(payload)
 			wantVersion := `version: "2026-08-15-core-1166300-layout-` +
-				layoutID + `-rank-v1-erhua-mixed-v1"`
+				layoutID + `-rank-v1-erhua-mixed-v4-psc-peripheral-v1"`
 			wantUserDict := "user_dict: yime_" + mode +
 				"_core_1166300_layout_" + layoutID + "_rank_v1"
 			if !strings.Contains(schema, wantVersion) {

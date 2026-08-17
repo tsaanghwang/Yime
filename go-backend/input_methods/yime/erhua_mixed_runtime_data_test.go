@@ -2,6 +2,7 @@ package yime
 
 import (
 	"bufio"
+	"encoding/json"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -9,14 +10,54 @@ import (
 	"testing"
 )
 
+func TestTrialErhuaDedicatedKeyProjectionIsPinned(t *testing.T) {
+	projectionPath := filepath.Join("..", "..", "..", "docs", "project", "connected_speech", "erhua_sound_key_projection.json")
+	payload, err := os.ReadFile(projectionPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var projection struct {
+		KeyClasses []struct {
+			ID  string `json:"key_class_id"`
+			Key string `json:"layout_key"`
+		} `json:"key_classes"`
+	}
+	if err := json.Unmarshal(payload, &projection); err != nil {
+		t.Fatal(err)
+	}
+	got := map[string]string{}
+	for _, keyClass := range projection.KeyClasses {
+		got[keyClass.ID] = keyClass.Key
+	}
+	want := map[string]string{
+		"ERHUA-KEY-NASAL-A-RHOTIC-LOW":         "Q",
+		"ERHUA-KEY-NASAL-A-RHOTIC-MID":         "T",
+		"ERHUA-KEY-NASAL-A-RHOTIC-HIGH":        "Y",
+		"ERHUA-KEY-NASAL-BACK-MID-RHOTIC-HIGH": "V",
+		"ERHUA-KEY-NASAL-BACK-MID-RHOTIC-MID":  "C",
+		"ERHUA-KEY-NASAL-BACK-MID-RHOTIC-LOW":  "X",
+		"ERHUA-KEY-U-RHOTIC-HIGH":              "P",
+		"ERHUA-KEY-U-RHOTIC-MID":               "A",
+		"ERHUA-KEY-U-RHOTIC-LOW":               "Z",
+	}
+	for id, key := range want {
+		if got[id] != key {
+			t.Fatalf("%s layout key=%q, want %q", id, got[id], key)
+		}
+	}
+}
+
 type bundledErhuaMixedManifest struct {
 	ToolVersion  string            `json:"tool_version"`
 	OutputSHA256 map[string]string `json:"output_sha256"`
 	Summary      struct {
 		ExplicitRecordCount        int             `json:"explicit_record_count"`
 		DualRouteReadyCount        int             `json:"dual_route_ready_count"`
+		FeatureProjectedCount      int             `json:"feature_projected_count"`
 		PendingFusionCount         int             `json:"pending_fusion_count"`
 		InheritedWeightRecordCount int             `json:"inherited_weight_record_count"`
+		CoreWeightRecordCount      int             `json:"core_weight_record_count"`
+		PSCPeripheralWeightCount   int             `json:"psc_peripheral_weight_record_count"`
 		DeferredMissingWeightCount int             `json:"deferred_missing_weight_count"`
 		RoutesPerMode              int             `json:"routes_per_mode"`
 		RuntimeAliasRows           int             `json:"runtime_alias_rows"`
@@ -24,7 +65,8 @@ type bundledErhuaMixedManifest struct {
 		PilotSoundUnitCount        int             `json:"pilot_sound_unit_count"`
 		ResearchSoundUnitCount     int             `json:"research_sound_unit_count"`
 		SharedKeyClassCount        int             `json:"shared_key_class_count"`
-		PilotSurfaceClassCount     int             `json:"pilot_surface_class_count"`
+		DedicatedKeyClassCount     int             `json:"dedicated_key_class_count"`
+		FeatureRuleCount           int             `json:"feature_rule_count"`
 		ProjectedReadyRecordCount  int             `json:"projected_ready_record_count"`
 		ReverseLookupRowCount      int             `json:"reverse_lookup_row_count"`
 		Gates                      map[string]bool `json:"gates"`
@@ -42,21 +84,26 @@ type bundledErhuaEntry struct {
 func TestBundledExplicitErhuaMixedOverlayIsCompleteAndReversible(t *testing.T) {
 	var manifest bundledErhuaMixedManifest
 	readJSONFile(t, "yime_erhua_mixed_manifest.json", &manifest)
-	if manifest.ToolVersion != "explicit-erhua-mixed-runtime-v2" ||
+	if manifest.ToolVersion != "explicit-erhua-yinyuan-feature-runtime-v6" ||
 		manifest.Summary.ExplicitRecordCount != 131 ||
-		manifest.Summary.DualRouteReadyCount != 29 ||
-		manifest.Summary.PendingFusionCount != 102 ||
-		manifest.Summary.InheritedWeightRecordCount != 15 ||
-		manifest.Summary.DeferredMissingWeightCount != 14 ||
-		manifest.Summary.RoutesPerMode != 30 ||
-		manifest.Summary.RuntimeAliasRows != 90 ||
-		manifest.Summary.DeclaredSoundUnitCount != 9 ||
-		manifest.Summary.PilotSoundUnitCount != 3 ||
-		manifest.Summary.ResearchSoundUnitCount != 6 ||
+		manifest.Summary.DualRouteReadyCount != 131 ||
+		manifest.Summary.FeatureProjectedCount != 131 ||
+		manifest.Summary.PendingFusionCount != 0 ||
+		manifest.Summary.InheritedWeightRecordCount != 131 ||
+		manifest.Summary.CoreWeightRecordCount != 65 ||
+		manifest.Summary.PSCPeripheralWeightCount != 66 ||
+		manifest.Summary.DeferredMissingWeightCount != 0 ||
+		manifest.Summary.RoutesPerMode != 196 ||
+		manifest.Summary.RuntimeAliasRows != 588 ||
+		manifest.Summary.DeclaredSoundUnitCount != 18 ||
+		manifest.Summary.PilotSoundUnitCount != 18 ||
+		manifest.Summary.ResearchSoundUnitCount != 0 ||
 		manifest.Summary.SharedKeyClassCount != 3 ||
-		manifest.Summary.PilotSurfaceClassCount != 4 ||
-		manifest.Summary.ProjectedReadyRecordCount != 29 ||
-		manifest.Summary.ReverseLookupRowCount != 15 ||
+		manifest.Summary.DedicatedKeyClassCount != 15 ||
+		manifest.Summary.FeatureRuleCount == 0 ||
+		manifest.Summary.FeatureRuleCount != 15 ||
+		manifest.Summary.ProjectedReadyRecordCount != 131 ||
+		manifest.Summary.ReverseLookupRowCount != 131 ||
 		!manifest.Summary.Passed {
 		t.Fatalf("unexpected explicit-erhua mixed manifest: %#v", manifest)
 	}
@@ -76,29 +123,53 @@ func TestBundledExplicitErhuaMixedOverlayIsCompleteAndReversible(t *testing.T) {
 			t.Fatalf("%s hash mismatch: got=%s want=%s", overlayName, got, manifest.OutputSHA256[overlayName])
 		}
 		overlay := readBundledErhuaDictionary(t, filepath.Join("data", overlayName))
-		if len(overlay) != 30 {
-			t.Fatalf("%s must contain exactly 30 routes, got %d", overlayName, len(overlay))
+		if len(overlay) != 196 {
+			t.Fatalf("%s must contain exactly 196 routes, got %d", overlayName, len(overlay))
 		}
-		coreWeights := readMaximumWeights(t, filepath.Join("data", "yime_"+mode+".dict.yaml"))
+		coreEntries := readBundledErhuaDictionary(t, filepath.Join("data", "yime_"+mode+".dict.yaml"))
+		coreWeights := maximumWeights(coreEntries)
+		for _, entry := range coreEntries {
+			if strings.ContainsAny(entry.Code, "QTYVCXPAZ") {
+				t.Fatalf("%s canonical core unexpectedly uses trial erhua key in %q", mode, entry.Code)
+			}
+		}
+		pscWeights := readMaximumWeights(t, filepath.Join("data", "yime_psc_peripheral_"+mode+".dict.yaml"))
 		routesByText := map[string]int{}
+		shiftCodes := map[string]struct{}{}
+		shiftRows := 0
 		for _, entry := range overlay {
 			routesByText[entry.Text]++
+			if strings.ContainsAny(entry.Code, "FDSREWQTYVCXPAZ") {
+				shiftRows++
+				shiftCodes[entry.Code] = struct{}{}
+			}
 			if entry.Text == "鸟儿" {
 				t.Fatal("unannotated lookalike 鸟儿 must not be inferred into the mixed overlay")
 			}
 			if _, blocked := deferred[entry.Text]; blocked {
 				t.Fatalf("deferred missing-weight record entered runtime: %s", entry.Text)
 			}
-			if coreWeights[entry.Text] != entry.Weight {
-				t.Fatalf("%s/%s weight=%d does not inherit core weight=%d", mode, entry.Text, entry.Weight, coreWeights[entry.Text])
+			if coreWeight := coreWeights[entry.Text]; coreWeight != 0 {
+				if coreWeight != entry.Weight {
+					t.Fatalf("%s/%s weight=%d does not inherit core weight=%d", mode, entry.Text, entry.Weight, coreWeight)
+				}
+			} else if pscWeight := pscWeights[entry.Text]; pscWeight != entry.Weight || entry.Weight != 1 {
+				t.Fatalf("%s/%s weight=%d does not inherit PSC low weight=%d", mode, entry.Text, entry.Weight, pscWeight)
 			}
 		}
-		if len(routesByText) != 15 {
-			t.Fatalf("%s must contain 15 explicit texts, got %d", overlayName, len(routesByText))
+		if len(routesByText) != 131 {
+			t.Fatalf("%s must contain 131 explicit texts, got %d", overlayName, len(routesByText))
+		}
+		if shiftRows != 98 || len(shiftCodes) != 98 {
+			t.Fatalf("%s dedicated Shift routes=%d distinct=%d, want 98/98", overlayName, shiftRows, len(shiftCodes))
 		}
 		for text, count := range routesByText {
-			if count != 2 {
-				t.Fatalf("%s/%s must have suffix and fused routes, got %d", mode, text, count)
+			want := 2
+			if coreWeights[text] == 0 {
+				want = 1 // The suffix-compatible route already lives in the PSC peripheral overlay.
+			}
+			if count != want {
+				t.Fatalf("%s/%s routes=%d, want %d", mode, text, count, want)
 			}
 		}
 		schema, err := os.ReadFile(filepath.Join("data", "yime_"+mode+".schema.yaml"))
@@ -106,7 +177,8 @@ func TestBundledExplicitErhuaMixedOverlayIsCompleteAndReversible(t *testing.T) {
 			t.Fatal(err)
 		}
 		for _, fragment := range []string{
-			"version: \"2026-08-15-core-1166300-layout-6d00e609f689-rank-v1-erhua-mixed-v1\"",
+			"version: \"2026-08-15-core-1166300-layout-6d00e609f689-rank-v1-erhua-mixed-v4-psc-peripheral-v1\"",
+			"alphabet: \"1234567890-=qwertyuiop[]\\\\asdfghjkl;'zxcvbnm,./JKLUIOM<>NGFDSREWQTYVCXPAZ\"",
 			"- yime_erhua_mixed_" + mode,
 			"- table_translator@erhua_mixed",
 			"dictionary: yime_erhua_mixed_" + mode,
@@ -134,13 +206,31 @@ func TestBundledExplicitErhuaMixedOverlayIsCompleteAndReversible(t *testing.T) {
 		t.Fatal(err)
 	}
 	lines := strings.Split(strings.TrimSpace(string(reverseSource)), "\n")
-	if len(lines) != 16 {
-		t.Fatalf("explicit-erhua reverse source rows=%d, want header + 15", len(lines))
+	if len(lines) != 132 {
+		t.Fatalf("explicit-erhua reverse source rows=%d, want header + 131", len(lines))
 	}
 	for _, want := range []string{
-		"一阵儿\tpsc_erhua\tyi1 zhen4 er5\tERHUA-ORAL-ER\tzhen4\tN16 M22 M23 M24\tN16 R01 R02 R03",
-		"R01→ERHUA-KEY-HIGH→M22(U)",
+		"一阵儿\tpsc_erhua\tyi1 zhen4 er5\tERHUA-YINYUAN-CENTRAL-ALL\tzhen4\tN16 M16 M17 M30\tN16 M22 M23 M24",
+		"M22+rhotic=true+nasalized=false→M22→ERHUA-KEY-HIGH(U)",
 		"yjjj7UIO\tyj7UIO\tyj7UO",
+		"刀刃儿\tpsc_erhua\tdao1 ren4 er5\tERHUA-YINYUAN-CENTRAL-ALL\tren4",
+		"]ffu0UIO\t]fu0UIO\t]fu0UO",
+		"号码儿\tpsc_erhua\thao4 ma3 er5\tERHUA-YINYUAN-A-RHOTIC\tma3\tN04 M12 M12 M12\tN04 M12 R12 R12",
+		"M12+rhotic=true+nasalized=false→R12→ERHUA-KEY-A-RHOTIC-LOW(S)",
+		"单个儿\tpsc_erhua\tdan1 ge4 er5\tERHUA-YINYUAN-BACK-MID-RHOTIC\tge4\tN09 M13 M14 M15\tN09 M13 R14 R15",
+		"M14+rhotic=true+nasalized=false→R14→ERHUA-KEY-BACK-MID-RHOTIC-MID(E)",
+		"香肠儿\tpsc_erhua\txiang1 chang2 er5\tERHUA-YINYUAN-NASAL-A\tchang2\tN17 M12 M11 M31\tN17 M12 R05 R04",
+		"M11+rhotic=true+nasalized=true→R05→ERHUA-KEY-NASAL-A-RHOTIC-MID(T)",
+		"人影儿\tpsc_erhua\tren2 ying3 er5\tERHUA-YINYUAN-NASAL-BACK-MID\tying3\tN23 M03 M15 M33\tN23 M03 R09 R09",
+		"M15+rhotic=true+nasalized=true→R09→ERHUA-KEY-NASAL-BACK-MID-RHOTIC-LOW(X)",
+		"加油儿\tpsc_erhua\tjia1 you2 er5\tERHUA-YINYUAN-IOU\tyou2\tN23 M03 M14 M04\tN23 M03 R14 R16",
+		"M04+rhotic=true+nasalized=false→R16→ERHUA-KEY-U-RHOTIC-HIGH(P)",
+		"小鞋儿\tpsc_erhua\txiao3 xie2 er5\tERHUA-YINYUAN-FRONT-MID-CENTRAL\txie2\tN22 M03 M17 M16\tN22 M03 M23 M22",
+		"雨点儿\tpsc_erhua\tyu3 dian3 er5\tERHUA-YINYUAN-MEDIAL-A-RHOTIC\tdian3\tN05 M03 M12 M30\tN05 M03 R12 R12",
+		"火锅儿\tpsc_erhua\thuo3 guo1 er5\tERHUA-YINYUAN-BACK-MID-RHOTIC\tguo1\tN09 M04 M13 M13\tN09 M04 R13 R13",
+		"红包儿\tpsc_erhua\thong2 bao1 er5\tERHUA-YINYUAN-IAO\tbao1\tN01 M10 M10 M04\tN01 M10 R10 R16",
+		"衣兜儿\tpsc_erhua\tyi1 dou1 er5\tERHUA-YINYUAN-IOU\tdou1\tN05 M13 M13 M04\tN05 M13 R13 R16",
+		"泪珠儿\tpsc_erhua\tlei4 zhu1 er5\tERHUA-YINYUAN-U-RHOTIC\tzhu1\tN16 M04 M04 M04\tN16 M04 R16 R16",
 	} {
 		if !strings.Contains(string(reverseSource), want) {
 			t.Fatalf("explicit-erhua reverse source lacks %q", want)
@@ -199,7 +289,10 @@ func readBundledErhuaDictionary(t *testing.T, path string) []bundledErhuaEntry {
 
 func readMaximumWeights(t *testing.T, path string) map[string]int {
 	t.Helper()
-	entries := readBundledErhuaDictionary(t, path)
+	return maximumWeights(readBundledErhuaDictionary(t, path))
+}
+
+func maximumWeights(entries []bundledErhuaEntry) map[string]int {
 	weights := map[string]int{}
 	for _, entry := range entries {
 		if entry.Weight > weights[entry.Text] {

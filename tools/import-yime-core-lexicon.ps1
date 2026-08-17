@@ -74,6 +74,17 @@ try {
     if ($LASTEXITCODE -ne 0) {
         throw "Yime reverse-Pinyin source derivation failed with exit code $LASTEXITCODE"
     }
+    go run ./cmd/yime-psc-peripheral-derive `
+        -repo-root $root `
+        -codes $reverseCodeMapPath `
+        -data-dir $outputPath `
+        -output-dir $outputPath
+    if ($LASTEXITCODE -ne 0) {
+        throw "Yime PSC pronunciation peripheral derivation failed with exit code $LASTEXITCODE"
+    }
+    # The explicit-erhua generator may inherit the reviewed low-frequency
+    # weight from an exact PSC suffix-compatible entry, so the PSC overlay is
+    # a declared upstream artifact and must be generated first.
     go run ./cmd/yime-erhua-mixed-derive `
         -repo-root $root `
         -data-dir $outputPath `
@@ -160,6 +171,10 @@ if ($DeployToUserDir) {
         "yime_erhua_mixed_shorthand.dict.yaml",
         "yime_erhua_mixed_manifest.json",
         "yime_erhua_reverse_source.tsv",
+        "yime_psc_peripheral_full.dict.yaml",
+        "yime_psc_peripheral_variable.dict.yaml",
+        "yime_psc_peripheral_shorthand.dict.yaml",
+        "yime_psc_peripheral_manifest.json",
         "yime_pinyin_reverse_source.tsv",
         "yime_lexicon_manifest.json",
         "yime_core_source_manifest.json"

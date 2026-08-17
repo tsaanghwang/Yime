@@ -915,9 +915,9 @@ func formatResultDetail(item reverselookup.Result) string {
 		return detail
 	}
 	return detail + fmt.Sprintf(
-		"\r\n\r\n读音身份：%s\r\n证据来源：%s\r\n记录 ID：%s\r\n儿化表层类：%s\r\n附着音节：%s\r\n布局载体音元：%s\r\n派生表层音元：%s\r\n音元—键位投影：%s",
-		item.ReadingIdentity, item.EvidenceSource, item.ErhuaRecordID, item.SurfaceClass, item.AttachedSyllable,
-		item.CarrierYinyuanIDs, item.SurfaceSoundUnitIDs, item.SoundToKeyProjection,
+		"\r\n\r\n读音身份：%s\r\n证据来源：%s\r\n记录 ID：%s\r\n儿化特征规则：%s\r\n附着音节：%s\r\n基础音元元组：%s\r\n派生儿化音元：%s\r\n音元—键位投影：%s",
+		item.ReadingIdentity, item.EvidenceSource, item.ErhuaRecordID, item.ErhuaFeatureRuleID, item.AttachedSyllable,
+		item.SourceYinyuanIDs, item.DerivedYinyuanIDs, item.SoundToKeyProjection,
 	)
 }
 

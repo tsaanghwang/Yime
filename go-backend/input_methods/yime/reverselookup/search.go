@@ -146,10 +146,18 @@ func (index *Index) Search(term string, containsMatch bool) []Result {
 		results = append(results, item)
 	}
 
+	explicitErhua := index.ErhuaLookup[text]
 	for _, item := range resolvePhraseLookupMulti(text, index.UserEntries, index.DictLookup, index.CodeMap, index.ReverseLookup, index.MarkedLookup, index.SourceTruth, index.ActiveColumn) {
+		// A reviewed explicit-erhua record is a complete phrase-level source.
+		// Do not show the character-by-character fallback beside it: shared
+		// syllable codes can make that fallback display a false pronunciation
+		// (for example 儿 being decoded as ren2).
+		if len(explicitErhua) > 0 && item.Source == "逐字拼接" {
+			continue
+		}
 		addResult(item)
 	}
-	for _, record := range index.ErhuaLookup[text] {
+	for _, record := range explicitErhua {
 		addResult(buildErhuaLookupResult(record, index.Mode, index.MarkedLookup))
 	}
 	if len(results) > 0 && !containsMatch {

@@ -89,6 +89,7 @@ foreach ($relativePath in @(
     'input_methods\yime\data\yime_core_source_manifest.json',
     'input_methods\yime\data\yime_runtime_profile.json',
     'input_methods\yime\data\yime_pinyin_reverse_source.tsv',
+    'input_methods\yime\data\yime_pinyin_codes.tsv',
     'input_methods\yime\data\yime_erhua_mixed_full.dict.yaml',
     'input_methods\yime\data\yime_erhua_mixed_variable.dict.yaml',
     'input_methods\yime\data\yime_erhua_mixed_shorthand.dict.yaml',
@@ -97,6 +98,13 @@ foreach ($relativePath in @(
     'input_methods\yime\data\yime_erhua_mixed_full.schema.yaml',
     'input_methods\yime\data\yime_erhua_mixed_variable.schema.yaml',
     'input_methods\yime\data\yime_erhua_mixed_shorthand.schema.yaml',
+    'input_methods\yime\data\yime_psc_peripheral_full.dict.yaml',
+    'input_methods\yime\data\yime_psc_peripheral_variable.dict.yaml',
+    'input_methods\yime\data\yime_psc_peripheral_shorthand.dict.yaml',
+    'input_methods\yime\data\yime_psc_peripheral_manifest.json',
+    'input_methods\yime\data\yime_psc_peripheral_full.schema.yaml',
+    'input_methods\yime\data\yime_psc_peripheral_variable.schema.yaml',
+    'input_methods\yime\data\yime_psc_peripheral_shorthand.schema.yaml',
     'input_methods\yime\data\trainer\foundation.json',
     'input_methods\yime\data\trainer\yinyuan_catalog.json'
 )) {

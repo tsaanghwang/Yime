@@ -14,6 +14,7 @@ $reversePinyinSource = Join-Path $root 'go-backend\input_methods\yime\data\yime_
 $pinyinCodeMap = Join-Path $root 'go-backend\input_methods\yime\data\yime_pinyin_codes.tsv'
 $erhuaMixedManifest = Join-Path $root 'go-backend\input_methods\yime\data\yime_erhua_mixed_manifest.json'
 $erhuaReverseSource = Join-Path $root 'go-backend\input_methods\yime\data\yime_erhua_reverse_source.tsv'
+$pscPeripheralManifest = Join-Path $root 'go-backend\input_methods\yime\data\yime_psc_peripheral_manifest.json'
 $installer = Join-Path $root 'installer\installer.nsi'
 $devInstall = Join-Path $root 'tools\dev-install.ps1'
 $buildPrereqs = Join-Path $root 'tools\assert-win32-build-prerequisites.ps1'
@@ -162,6 +163,7 @@ foreach ($guard in @(
     'yime_core_source_manifest.json',
     'yime_runtime_profile.json',
     'yime_pinyin_reverse_source.tsv',
+    'yime_pinyin_codes.tsv',
     'yime_erhua_mixed_full.dict.yaml',
     'yime_erhua_mixed_variable.dict.yaml',
     'yime_erhua_mixed_shorthand.dict.yaml',
@@ -170,6 +172,13 @@ foreach ($guard in @(
     'yime_erhua_mixed_full.schema.yaml',
     'yime_erhua_mixed_variable.schema.yaml',
     'yime_erhua_mixed_shorthand.schema.yaml',
+    'yime_psc_peripheral_full.dict.yaml',
+    'yime_psc_peripheral_variable.dict.yaml',
+    'yime_psc_peripheral_shorthand.dict.yaml',
+    'yime_psc_peripheral_manifest.json',
+    'yime_psc_peripheral_full.schema.yaml',
+    'yime_psc_peripheral_variable.schema.yaml',
+    'yime_psc_peripheral_shorthand.schema.yaml',
     'Removing retired single-mode trial artifacts'
 )) {
     if (-not $goBuildText.Contains($guard)) {
@@ -185,13 +194,19 @@ foreach ($guard in @(
     '[string]$SourceRevision',
     'go run ./cmd/yime-lexicon-derive',
     '[string]$PronunciationEntries',
-    'go run ./cmd/yime-reverse-pinyin-derive'
+    'go run ./cmd/yime-reverse-pinyin-derive',
+    'go run ./cmd/yime-psc-peripheral-derive'
 )) {
     if (-not $coreImporterText.Contains($guard)) {
         throw "Curated core evidence import guard is missing: $guard"
     }
 }
 $sourceEvidence = Get-Content -LiteralPath $coreSourceManifest -Raw -Encoding UTF8 | ConvertFrom-Json
+$pscDeriveIndex = $coreImporterText.IndexOf('go run ./cmd/yime-psc-peripheral-derive')
+$erhuaDeriveIndex = $coreImporterText.IndexOf('go run ./cmd/yime-erhua-mixed-derive')
+if ($pscDeriveIndex -lt 0 -or $erhuaDeriveIndex -lt 0 -or $pscDeriveIndex -gt $erhuaDeriveIndex) {
+    throw 'PSC peripheral derivation must precede explicit-erhua derivation so low-frequency weights are reproducible.'
+}
 $reversePinyinHash = (Get-FileHash -LiteralPath $reversePinyinSource -Algorithm SHA256).Hash.ToLowerInvariant()
 $pinyinCodeMapHash = (Get-FileHash -LiteralPath $pinyinCodeMap -Algorithm SHA256).Hash.ToLowerInvariant()
 $reversePinyinRows = [Math]::Max(0, (Get-Content -LiteralPath $reversePinyinSource -Encoding UTF8).Count - 1)
@@ -203,9 +218,17 @@ if ([string]$sourceEvidence.reverse_pinyin_source -ne 'yime_pinyin_reverse_sourc
 }
 $erhuaMixed = Get-Content -LiteralPath $erhuaMixedManifest -Raw -Encoding UTF8 | ConvertFrom-Json
 if (-not [bool]$erhuaMixed.summary.passed -or
-    [int64]$erhuaMixed.summary.inherited_weight_record_count -ne 15 -or
-    [int64]$erhuaMixed.summary.runtime_alias_rows -ne 90 -or
-    [int64]$erhuaMixed.summary.reverse_lookup_row_count -ne 15) {
+    [int64]$erhuaMixed.summary.inherited_weight_record_count -ne 131 -or
+    [int64]$erhuaMixed.summary.feature_projected_count -ne 131 -or
+    [int64]$erhuaMixed.summary.pending_fusion_count -ne 0 -or
+    [int64]$erhuaMixed.summary.core_weight_record_count -ne 65 -or
+    [int64]$erhuaMixed.summary.psc_peripheral_weight_record_count -ne 66 -or
+    [int64]$erhuaMixed.summary.deferred_missing_weight_count -ne 0 -or
+    [int64]$erhuaMixed.summary.runtime_alias_rows -ne 588 -or
+    [int64]$erhuaMixed.summary.declared_sound_unit_count -ne 18 -or
+    [int64]$erhuaMixed.summary.dedicated_key_class_count -ne 15 -or
+    [int64]$erhuaMixed.summary.feature_rule_count -ne 15 -or
+    [int64]$erhuaMixed.summary.reverse_lookup_row_count -ne 131) {
     throw 'Explicit-erhua mixed runtime manifest did not pass its completeness gates.'
 }
 foreach ($mode in @('full', 'variable', 'shorthand')) {
@@ -219,8 +242,25 @@ foreach ($mode in @('full', 'variable', 'shorthand')) {
 $erhuaReverseHash = (Get-FileHash -LiteralPath $erhuaReverseSource -Algorithm SHA256).Hash.ToLowerInvariant()
 $erhuaReverseRows = [Math]::Max(0, (Get-Content -LiteralPath $erhuaReverseSource -Encoding UTF8).Count - 1)
 if ([string]$erhuaMixed.output_sha256.'yime_erhua_reverse_source.tsv' -ne $erhuaReverseHash -or
-    $erhuaReverseRows -ne 15) {
+    $erhuaReverseRows -ne 131) {
     throw 'Explicit-erhua reverse sidecar does not match its manifest or expected row count.'
+}
+$pscPeripheral = Get-Content -LiteralPath $pscPeripheralManifest -Raw -Encoding UTF8 | ConvertFrom-Json
+if (-not [bool]$pscPeripheral.summary.passed -or
+    [int64]$pscPeripheral.summary.source_record_count -ne 315 -or
+    [int64]$pscPeripheral.summary.neutral_tone_record_count -ne 183 -or
+    [int64]$pscPeripheral.summary.erhua_record_count -ne 132 -or
+    [int64]$pscPeripheral.summary.runtime_rows_per_mode -ne 315 -or
+    [int64]$pscPeripheral.summary.fixed_peripheral_weight -ne 1) {
+    throw 'PSC pronunciation peripheral manifest did not pass its completeness gates.'
+}
+foreach ($mode in @('full', 'variable', 'shorthand')) {
+    $name = "yime_psc_peripheral_${mode}.dict.yaml"
+    $path = Join-Path $root "go-backend\input_methods\yime\data\$name"
+    $hash = (Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash.ToLowerInvariant()
+    if ([string]$pscPeripheral.output_sha256.$name -ne $hash) {
+        throw "PSC pronunciation peripheral dictionary hash mismatch: $name"
+    }
 }
 Write-Host 'Curated core evidence and three-mode package guards passed.'
 $prereqText = Get-Content -LiteralPath $buildPrereqs -Raw

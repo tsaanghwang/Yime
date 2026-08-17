@@ -254,6 +254,94 @@ func TestRealRimeExplicitErhuaMixedRoutesAcrossAllThreeSchemas(t *testing.T) {
 					t.Fatalf("explicit-erhua candidate 一阵儿 missing in %s after %q", schema, code)
 				}
 			}
+
+			// 刀刃儿 is absent from the curated core: its suffix-compatible
+			// route stays in the PSC low-frequency layer while the explicit
+			// erhua overlay contributes only the fused route.
+			fusedCode := ""
+			for _, entry := range entries {
+				if entry.Text == "刀刃儿" {
+					fusedCode = entry.Code
+					break
+				}
+			}
+			pscEntries := readBundledErhuaDictionary(t, filepath.Join(dataDir, "yime_psc_peripheral_"+mode+".dict.yaml"))
+			suffixCode := ""
+			for _, entry := range pscEntries {
+				if entry.Text == "刀刃儿" {
+					suffixCode = entry.Code
+					break
+				}
+			}
+			if fusedCode == "" || suffixCode == "" || fusedCode == suffixCode {
+				t.Fatalf("%s must expose split low-frequency suffix/fused routes for 刀刃儿: suffix=%q fused=%q", mode, suffixCode, fusedCode)
+			}
+			for _, code := range []string{suffixCode, fusedCode} {
+				if _, found := findRealRimeCandidateAcrossPages(t, session.sessionID, code, "刀刃儿"); !found {
+					t.Fatalf("explicit low-frequency erhua candidate 刀刃儿 missing in %s after %q", schema, code)
+				}
+			}
+
+			// 所有专用派生音元均使用明确登记的 Shift 层键；Rime
+			// 必须保留大写键，不能折叠为基础音元。
+			for _, trial := range []struct {
+				text      string
+				shiftKeys string
+			}{
+				{text: "好玩儿", shiftKeys: "FD"},
+				{text: "单个儿", shiftKeys: "EW"},
+				{text: "香肠儿", shiftKeys: "TY"},
+				{text: "人影儿", shiftKeys: "X"},
+				{text: "加油儿", shiftKeys: "P"},
+				{text: "小鞋儿", shiftKeys: "UI"},
+				{text: "雨点儿", shiftKeys: "S"},
+				{text: "火锅儿", shiftKeys: "R"},
+				{text: "红包儿", shiftKeys: "FP"},
+				{text: "衣兜儿", shiftKeys: "RP"},
+				{text: "泪珠儿", shiftKeys: "P"},
+			} {
+				shiftCode := ""
+				for _, entry := range entries {
+					if entry.Text == trial.text && strings.ContainsAny(entry.Code, trial.shiftKeys) {
+						shiftCode = entry.Code
+						break
+					}
+				}
+				if shiftCode == "" {
+					t.Fatalf("%s overlay lacks dedicated Shift-layer fused code for %s", mode, trial.text)
+				}
+				if _, found := findRealRimeCandidateAcrossPages(t, session.sessionID, shiftCode, trial.text); !found {
+					t.Fatalf("Shift-layer erhua candidate %s missing in %s after %q", trial.text, schema, shiftCode)
+				}
+			}
+		})
+	}
+}
+
+func TestRealRimePSCPeripheralAcrossAllThreeSchemas(t *testing.T) {
+	dataDir := rimeRuntimeTestDataDir(t)
+	session := newRealRimeSessionWithManagedRefresh(t, true)
+	for _, mode := range []string{"variable", "full", "shorthand"} {
+		t.Run(mode, func(t *testing.T) {
+			schema := "yime_" + mode
+			if !SelectSchema(session.sessionID, schema) {
+				t.Fatalf("expected %s to be selectable", schema)
+			}
+			entries := readBundledErhuaDictionary(t, filepath.Join(dataDir, "yime_psc_peripheral_"+mode+".dict.yaml"))
+			code := ""
+			for _, entry := range entries {
+				if entry.Text == "打点" {
+					code = entry.Code
+					break
+				}
+			}
+			if code == "" {
+				t.Fatalf("%s PSC peripheral dictionary lacks 打点", mode)
+			}
+			input := strings.ReplaceAll(code, " ", "")
+			if _, found := findRealRimeCandidateAcrossPages(t, session.sessionID, input, "打点"); !found {
+				t.Fatalf("PSC peripheral candidate 打点 missing in %s after %q", schema, input)
+			}
 		})
 	}
 }
@@ -864,6 +952,28 @@ func findRealRimeCandidate(t *testing.T, sessionID RimeSessionId, input, text st
 			return index, true
 		}
 	}
+	return -1, false
+}
+
+func findRealRimeCandidateAcrossPages(t *testing.T, sessionID RimeSessionId, input, text string) (int, bool) {
+	t.Helper()
+	ClearComposition(sessionID)
+	typeASCII(t, sessionID, input)
+	for page := 0; page < 100; page++ {
+		menu, ok := GetMenu(sessionID)
+		if !ok {
+			return -1, false
+		}
+		for index, candidate := range menu.Candidates {
+			if candidate.Text == text {
+				return menu.PageNo*menu.PageSize + index, true
+			}
+		}
+		if menu.IsLastPage || !ProcessKey(sessionID, rimeNext, 0) {
+			return -1, false
+		}
+	}
+	t.Fatalf("candidate paging exceeded 100 pages for %q after %q", text, input)
 	return -1, false
 }
 
@@ -1896,6 +2006,11 @@ func TestRealRimeAcceptsNewLayoutPunctuationAndShiftCodes(t *testing.T) {
 		{"backslash shouyin", []*pime.Request{{KeyCode: 0xDC, CharCode: '\\'}, {KeyCode: 'J', CharCode: 'j'}, {KeyCode: 'J', CharCode: 'j'}, {KeyCode: 'J', CharCode: 'j'}}},
 		{"shift comma musical", []*pime.Request{{KeyCode: 'H', CharCode: 'h'}, {KeyCode: 0xBC, CharCode: '<', KeyStates: keyStatesDown(vkShift)}, {KeyCode: 0xBC, CharCode: '<', KeyStates: keyStatesDown(vkShift)}, {KeyCode: 0xBC, CharCode: '<', KeyStates: keyStatesDown(vkShift)}}},
 		{"shift letter and punctuation musical", []*pime.Request{{KeyCode: 0xDE, CharCode: '\''}, {KeyCode: 'M', CharCode: 'M', KeyStates: keyStatesDown(vkShift)}, {KeyCode: 0xBC, CharCode: '<', KeyStates: keyStatesDown(vkShift)}, {KeyCode: 0xBE, CharCode: '>', KeyStates: keyStatesDown(vkShift)}}},
+		{"shift FDS a-rhotic", []*pime.Request{{KeyCode: 'H', CharCode: 'h'}, {KeyCode: 'F', CharCode: 'f'}, {KeyCode: 'D', CharCode: 'd'}, {KeyCode: 'O', CharCode: 'o'}, {KeyCode: 0xBD, CharCode: '-'}, {KeyCode: 'S', CharCode: 's'}, {KeyCode: 'S', CharCode: 'S', KeyStates: keyStatesDown(vkShift)}, {KeyCode: 'S', CharCode: 'S', KeyStates: keyStatesDown(vkShift)}}},
+		{"shift REW back-mid-rhotic", []*pime.Request{{KeyCode: 0xDD, CharCode: ']'}, {KeyCode: 'F', CharCode: 'f'}, {KeyCode: 'F', CharCode: 'f'}, {KeyCode: 'A', CharCode: 'a'}, {KeyCode: 'G', CharCode: 'g'}, {KeyCode: 'R', CharCode: 'r'}, {KeyCode: 'E', CharCode: 'E', KeyStates: keyStatesDown(vkShift)}, {KeyCode: 'W', CharCode: 'W', KeyStates: keyStatesDown(vkShift)}}},
+		{"shift QTY nasal-a-rhotic", []*pime.Request{{KeyCode: '1', CharCode: '1'}, {KeyCode: 'J', CharCode: 'j'}, {KeyCode: 'F', CharCode: 'f'}, {KeyCode: 0xBA, CharCode: ';'}, {KeyCode: '8', CharCode: '8'}, {KeyCode: 'S', CharCode: 's'}, {KeyCode: 'T', CharCode: 'T', KeyStates: keyStatesDown(vkShift)}, {KeyCode: 'Y', CharCode: 'Y', KeyStates: keyStatesDown(vkShift)}}},
+		{"shift VCX nasal-back-mid-rhotic", []*pime.Request{{KeyCode: '0', CharCode: '0'}, {KeyCode: 'X', CharCode: 'x'}, {KeyCode: 'C', CharCode: 'c'}, {KeyCode: 'A', CharCode: 'a'}, {KeyCode: 'Y', CharCode: 'y'}, {KeyCode: 'L', CharCode: 'l'}, {KeyCode: 'X', CharCode: 'X', KeyStates: keyStatesDown(vkShift)}, {KeyCode: 'X', CharCode: 'X', KeyStates: keyStatesDown(vkShift)}}},
+		{"shift PAZ u-rhotic", []*pime.Request{{KeyCode: '3', CharCode: '3'}, {KeyCode: 'J', CharCode: 'j'}, {KeyCode: 'F', CharCode: 'f'}, {KeyCode: 'F', CharCode: 'f'}, {KeyCode: 'Y', CharCode: 'y'}, {KeyCode: 'L', CharCode: 'l'}, {KeyCode: 'E', CharCode: 'e'}, {KeyCode: 'P', CharCode: 'P', KeyStates: keyStatesDown(vkShift)}}},
 	}
 
 	for _, test := range tests {

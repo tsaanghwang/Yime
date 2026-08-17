@@ -10,7 +10,7 @@
     "reverse_pinyin_source":  "yime_pinyin_reverse_source.tsv",
     "reverse_pinyin_source_sha256":  "36279eec3db72bec8b3a6da4f4d497eec7e3e19c8f0be5cda991b8909383f218",
     "reverse_pinyin_source_rows":  41850,
-    "reverse_pinyin_code_map_sha256":  "fc2f4e6f2edfb8e16f63fe79202bb9ca3c67b0d6284bdd24487dc85dacd05fe7",
+    "reverse_pinyin_code_map_sha256":  "71039436a8f61cd2a6775767869aa7bd136e935aace0b40ee5cadd6fd7e5a8f9",
     "entry_count":  1166300,
     "distinct_texts":  1151400,
     "ranking_evidence":  {

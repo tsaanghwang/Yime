@@ -792,10 +792,11 @@ go-backend\run_admin_yime_tests.cmd
 ### 6.3 alphabet 字符集
 
 ```
-Full:      1234567890-=qwertyuiop[]\asdfghjkl;'zxcvbnm,./JKLUIOM<>NG
-Variable:  1234567890-=qwertyuiop[]\asdfghjkl;'zxcvbnm,./JKLUIOM<>NG
-Shorthand: 1234567890-=qwertyuiop[]\asdfghjkl;'zxcvbnm,./JKLUIOM<>NG
+Full:      1234567890-=qwertyuiop[]\asdfghjkl;'zxcvbnm,./JKLUIOM<>NGFDSREWQTYVCXPAZ
+Variable:  1234567890-=qwertyuiop[]\asdfghjkl;'zxcvbnm,./JKLUIOM<>NGFDSREWQTYVCXPAZ
+Shorthand: 1234567890-=qwertyuiop[]\asdfghjkl;'zxcvbnm,./JKLUIOM<>NGFDSREWQTYVCXPAZ
 ```
 
-三种 schema 使用同一套 57 字符白名单。码表导入器还会通过 `codemode.LayoutAlphabet`
+三种 schema 使用同一套 72 字符白名单；其中新增的大写字符是显式儿化试点的 Shift 层输入动作，
+不改变基础 57 音元。码表导入器还会通过 `codemode.LayoutAlphabet`
 拒绝布局外字符，避免出现“导入成功但无法击键输入”的词典。

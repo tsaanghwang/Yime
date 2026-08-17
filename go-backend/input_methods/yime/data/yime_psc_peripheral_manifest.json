@@ -1,0 +1,36 @@
+{
+  "tool_version": "psc-pronunciation-peripheral-runtime-v1",
+  "input_sha256": {
+    "catalog": "6d485cad6ea05cb91fa2282f3d0e8b2b57b1dc27a2f583ea8778836905c6936b",
+    "full_dictionary": "f4e818a9c7fc15b09626351008d8dbf22c692d50158048a060523bdf2e18ebc4",
+    "pinyin_codes": "71039436a8f61cd2a6775767869aa7bd136e935aace0b40ee5cadd6fd7e5a8f9",
+    "shorthand_dictionary": "813cb3f3f8855563b1c3bdc34860fedcb02ad8d828cbde93c8e45b12c5800f85",
+    "variable_dictionary": "adc963c4d4ffb2444f576d0c5d729e83fd0a57e3eed35ed9a5e66bb8891039ed"
+  },
+  "output_sha256": {
+    "yime_psc_peripheral_full.dict.yaml": "4dd389863c9fc44a9dbb9bb7d58795c84850070a0f95a088410954f15cdd1767",
+    "yime_psc_peripheral_shorthand.dict.yaml": "10d347e5be2409d18ed3fda2d38c7b0816ca30d60d2817d3d6165520d445d09a",
+    "yime_psc_peripheral_variable.dict.yaml": "6d070388d61c68673aff7757b55d3b93f23a1a49c7dab997eb517c2fb4fa9d70"
+  },
+  "summary": {
+    "tool_version": "psc-pronunciation-peripheral-runtime-v1",
+    "source_record_count": 315,
+    "neutral_tone_record_count": 183,
+    "erhua_record_count": 132,
+    "encoded_record_count": 315,
+    "already_in_core_record_count": 0,
+    "runtime_rows_per_mode": 315,
+    "fixed_peripheral_weight": 1,
+    "gates": {
+      "candidate_text_unchanged": true,
+      "core_dictionary_files_unchanged": true,
+      "fixed_low_frequency_weight": true,
+      "formal_syllable_chain_complete": true,
+      "only_neutral_tone_or_erhua_selected": true,
+      "reviewed_source_only": true,
+      "source_primary_forbidden": true,
+      "three_mode_derivation_complete": true
+    },
+    "passed": true
+  }
+}

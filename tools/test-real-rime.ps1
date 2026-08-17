@@ -39,6 +39,9 @@ $requiredRealRimeTests = @(
     'TestRealRimeNavigatorSelectionKeepsSentenceComposition'
     'TestRealRimeQuickForgetAvailableInAllSchemas'
     'TestRealRimeExplicitCandidateForgetAvailableInAllSchemas'
+    'TestRealRimePSCPeripheralAcrossAllThreeSchemas'
+    'TestRealRimeExplicitErhuaMixedRoutesAcrossAllThreeSchemas'
+    'TestRealRimeAcceptsNewLayoutPunctuationAndShiftCodes'
     'TestRealRimeRedeployAppliesPageSize'
     'TestRealRimeExternalBuildAppliesPageSize'
 )

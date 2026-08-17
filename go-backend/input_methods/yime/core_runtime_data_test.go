@@ -54,9 +54,15 @@ type coreSourceManifest struct {
 type coreRuntimeProfile struct {
 	DefaultSchema              string   `json:"default_schema"`
 	RuntimeSchemas             []string `json:"runtime_schemas"`
+	RuntimeSchemaDependencies  []string `json:"runtime_schema_dependencies"`
 	RuntimeDictionaries        []string `json:"runtime_dictionaries"`
 	CandidateLayers            []string `json:"candidate_layers"`
 	ExplicitErhuaReverseSource string   `json:"explicit_erhua_reverse_source"`
+	PSCPeripheralManifest      string   `json:"psc_pronunciation_peripheral_manifest"`
+	PSCPeripheralEntries       int      `json:"psc_pronunciation_peripheral_entries"`
+	PSCPeripheralNeutralTone   int      `json:"psc_pronunciation_peripheral_neutral_tone"`
+	PSCPeripheralErhua         int      `json:"psc_pronunciation_peripheral_erhua"`
+	PSCPeripheralWeight        int      `json:"psc_pronunciation_peripheral_weight"`
 	EntryCountPerMode          int      `json:"entry_count_per_mode"`
 }
 

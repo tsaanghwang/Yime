@@ -35,8 +35,8 @@ func TestExplicitErhuaReverseSourceExplainsFusedRouteAcrossModes(t *testing.T) {
 			if result.Source != "融合儿化" || result.ActiveCode != test.code || result.NumericPinyin != "yi1 zhen4 er5" {
 				t.Fatalf("unexpected result: %#v", result)
 			}
-			if result.ErhuaRecordID != "ERHUA-TEST" || result.SurfaceSoundUnitIDs != "N16 R01 R02 R03" ||
-				result.SoundToKeyProjection != "N16→7；R01→ERHUA-KEY-HIGH→M22(U)" {
+			if result.ErhuaRecordID != "ERHUA-TEST" || result.DerivedYinyuanIDs != "N16 M22 M23 M24" ||
+				result.SoundToKeyProjection != "N16→7；M22+rhotic=true+nasalized=false→M22→ERHUA-KEY-HIGH(U)" {
 				t.Fatalf("missing explanation: %#v", result)
 			}
 			contains := index.Search("阵", true)
@@ -77,7 +77,33 @@ func TestExplicitErhuaReverseSourceChangeInvalidatesCache(t *testing.T) {
 	}
 }
 
+func TestExplicitErhuaReverseSourceSuppressesMisleadingCharacterFallback(t *testing.T) {
+	sharedDir := t.TempDir()
+	userDir := t.TempDir()
+	t.Setenv("LOCALAPPDATA", t.TempDir())
+	writeTestFile(t, filepath.Join(sharedDir, "yime_pinyin_codes.tsv"),
+		"pinyin\tfull\tvariable\tshorthand\n"+
+			"dao1\tdddd\td\td\nren4\trrrr\tr\tr\nren2\teeee\te\te\n")
+	writeTestFile(t, filepath.Join(sharedDir, "yime_variable.dict.yaml"),
+		"name: test\n...\n刀\td\n刃\tr\n儿\te\n")
+	writeTestFile(t, filepath.Join(sharedDir, ErhuaSourceFileName),
+		testErhuaSourceContentFor("ERHUA-KNIFE", "刀刃儿", "dao1 ren4 er5"))
+
+	index, err := Load(sharedDir, userDir, ModeVariable)
+	if err != nil {
+		t.Fatal(err)
+	}
+	results := index.Search("刀刃儿", false)
+	if len(results) != 1 || results[0].Source != "融合儿化" || results[0].NumericPinyin != "dao1 ren4 er5" {
+		t.Fatalf("explicit erhua must replace the misleading character fallback: %#v", results)
+	}
+}
+
 func testErhuaSourceContent(recordID string) string {
-	return "record_id\ttext\tsource_kind\tcompatibility_numeric_pinyin\tsurface_class\tattached_syllable_source\tcarrier_yinyuan_ids\tsurface_sound_unit_ids\tkey_projection\tfull_code\tvariable_code\tshorthand_code\n" +
-		recordID + "\t一阵儿\tpsc_erhua\tyi1 zhen4 er5\tERHUA-ORAL-ER\tzhen4\tN16 M22 M23 M24\tN16 R01 R02 R03\tN16→7；R01→ERHUA-KEY-HIGH→M22(U)\tyjjj7UIO\tyj7UIO\tyj7UO\n"
+	return testErhuaSourceContentFor(recordID, "一阵儿", "yi1 zhen4 er5")
+}
+
+func testErhuaSourceContentFor(recordID, text, numericPinyin string) string {
+	return "record_id\ttext\tsource_kind\tcompatibility_numeric_pinyin\tfeature_rule_id\tattached_syllable_source\tsource_yinyuan_ids\tderived_yinyuan_ids\tkey_projection\tfull_code\tvariable_code\tshorthand_code\n" +
+		recordID + "\t" + text + "\tpsc_erhua\t" + numericPinyin + "\tERHUA-YINYUAN-CENTRAL-ALL\tzhen4\tN16 M22 M23 M24\tN16 M22 M23 M24\tN16→7；M22+rhotic=true+nasalized=false→M22→ERHUA-KEY-HIGH(U)\tyjjj7UIO\tyj7UIO\tyj7UO\n"
 }

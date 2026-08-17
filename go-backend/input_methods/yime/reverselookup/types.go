@@ -31,10 +31,10 @@ type Result struct {
 	ErhuaRecordID        string
 	ReadingIdentity      string
 	EvidenceSource       string
-	SurfaceClass         string
+	ErhuaFeatureRuleID   string
 	AttachedSyllable     string
-	CarrierYinyuanIDs    string
-	SurfaceSoundUnitIDs  string
+	SourceYinyuanIDs     string
+	DerivedYinyuanIDs    string
 	SoundToKeyProjection string
 }
 

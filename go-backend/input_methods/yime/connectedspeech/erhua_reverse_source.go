@@ -13,10 +13,10 @@ type erhuaReverseSourceRow struct {
 	Text                       string
 	SourceKind                 string
 	CompatibilityNumericPinyin string
-	SurfaceClass               string
+	FeatureRuleID              string
 	AttachedSyllableSource     string
-	CarrierYinyuanIDs          []string
-	SurfaceSoundUnitIDs        []string
+	SourceYinyuanIDs           []string
+	DerivedYinyuanIDs          []string
 	KeyProjection              string
 	FullCode                   string
 	VariableCode               string
@@ -25,7 +25,7 @@ type erhuaReverseSourceRow struct {
 
 func writeErhuaReverseSource(path string, rows []erhuaReverseSourceRow) error {
 	lines := []string{
-		"record_id\ttext\tsource_kind\tcompatibility_numeric_pinyin\tsurface_class\tattached_syllable_source\tcarrier_yinyuan_ids\tsurface_sound_unit_ids\tkey_projection\tfull_code\tvariable_code\tshorthand_code",
+		"record_id\ttext\tsource_kind\tcompatibility_numeric_pinyin\tfeature_rule_id\tattached_syllable_source\tsource_yinyuan_ids\tderived_yinyuan_ids\tkey_projection\tfull_code\tvariable_code\tshorthand_code",
 	}
 	for _, row := range rows {
 		fields := []string{
@@ -33,10 +33,10 @@ func writeErhuaReverseSource(path string, rows []erhuaReverseSourceRow) error {
 			row.Text,
 			row.SourceKind,
 			row.CompatibilityNumericPinyin,
-			row.SurfaceClass,
+			row.FeatureRuleID,
 			row.AttachedSyllableSource,
-			strings.Join(row.CarrierYinyuanIDs, " "),
-			strings.Join(row.SurfaceSoundUnitIDs, " "),
+			strings.Join(row.SourceYinyuanIDs, " "),
+			strings.Join(row.DerivedYinyuanIDs, " "),
 			row.KeyProjection,
 			row.FullCode,
 			row.VariableCode,

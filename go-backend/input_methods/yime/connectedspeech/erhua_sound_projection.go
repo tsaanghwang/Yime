@@ -13,31 +13,30 @@ type erhuaSoundKeyClass struct {
 	KeyClassID       string `json:"key_class_id"`
 	ToneGrade        string `json:"tone_grade"`
 	CarrierYinyuanID string `json:"carrier_yinyuan_id"`
+	LayoutKey        string `json:"layout_key"`
+}
+
+type erhuaFeatures struct {
+	Rhotic    bool `json:"rhotic"`
+	Nasalized bool `json:"nasalized"`
 }
 
 type erhuaSoundUnit struct {
-	SoundUnitID       string `json:"sound_unit_id"`
-	QualityFamily     string `json:"quality_family"`
-	ToneGrade         string `json:"tone_grade"`
-	RepresentativeIPA string `json:"representative_ipa"`
-	KeyClassID        string `json:"key_class_id"`
-	AdmissionStatus   string `json:"admission_status"`
-}
-
-type erhuaSurfaceProjection struct {
-	SurfaceClass               string              `json:"surface_class"`
-	RuntimeStatus              string              `json:"runtime_status"`
-	RhoticFinalPositions       []int               `json:"rhotic_final_positions"`
-	RetainedPositionYinyuanIDs map[string][]string `json:"retained_position_yinyuan_ids"`
-	SoundFamily                string              `json:"sound_family"`
+	SoundUnitID       string        `json:"sound_unit_id"`
+	BaseYinyuanID     string        `json:"base_yinyuan_id"`
+	Features          erhuaFeatures `json:"features"`
+	QualityFamily     string        `json:"quality_family"`
+	ToneGrade         string        `json:"tone_grade"`
+	RepresentativeIPA string        `json:"representative_ipa"`
+	KeyClassID        string        `json:"key_class_id"`
+	AdmissionStatus   string        `json:"admission_status"`
 }
 
 type erhuaSoundProjectionBundle struct {
-	SchemaVersion  int                      `json:"schema_version"`
-	RuntimeEnabled bool                     `json:"runtime_enabled"`
-	KeyClasses     []erhuaSoundKeyClass     `json:"key_classes"`
-	SoundUnits     []erhuaSoundUnit         `json:"sound_units"`
-	SurfaceClasses []erhuaSurfaceProjection `json:"surface_classes"`
+	SchemaVersion  int                  `json:"schema_version"`
+	RuntimeEnabled bool                 `json:"runtime_enabled"`
+	KeyClasses     []erhuaSoundKeyClass `json:"key_classes"`
+	SoundUnits     []erhuaSoundUnit     `json:"sound_units"`
 }
 
 type erhuaYinyuanLayout struct {
@@ -46,14 +45,15 @@ type erhuaYinyuanLayout struct {
 }
 
 type erhuaSoundProjectionIndex struct {
-	keyClassByID       map[string]erhuaSoundKeyClass
-	keyClassByCarrier  map[string]erhuaSoundKeyClass
-	soundByID          map[string]erhuaSoundUnit
-	soundByFamilyTone  map[string]erhuaSoundUnit
-	surfaceClassByID   map[string]erhuaSurfaceProjection
-	layoutKeyByYinyuan map[string]string
-	pilotSoundUnits    int
-	researchSoundUnits int
+	keyClassByID        map[string]erhuaSoundKeyClass
+	soundByID           map[string]erhuaSoundUnit
+	soundByFeature      map[string]erhuaSoundUnit
+	layoutKeyByYinyuan  map[string]string
+	layoutKeyByKeyClass map[string]string
+	pilotSoundUnits     int
+	researchSoundUnits  int
+	sharedKeyClasses    int
+	dedicatedKeyClasses int
 }
 
 type erhuaProjectedRoute struct {
@@ -70,11 +70,11 @@ func loadErhuaSoundProjection(path string) (erhuaSoundProjectionBundle, error) {
 	if err := json.Unmarshal(data, &payload); err != nil {
 		return payload, err
 	}
-	if payload.SchemaVersion != 1 || len(payload.KeyClasses) == 0 || len(payload.SoundUnits) == 0 || len(payload.SurfaceClasses) == 0 {
-		return payload, errors.New("erhua sound-key projection has an invalid schema or no records")
+	if payload.SchemaVersion != 2 || len(payload.KeyClasses) == 0 || len(payload.SoundUnits) == 0 {
+		return payload, errors.New("erhua Yinyuan-feature projection has an invalid schema or no records")
 	}
 	if payload.RuntimeEnabled {
-		return payload, errors.New("erhua sound-key projection is a derivation source and must remain runtime-disabled")
+		return payload, errors.New("erhua Yinyuan-feature projection is a derivation source and must remain runtime-disabled")
 	}
 	return payload, nil
 }
@@ -94,50 +94,68 @@ func loadErhuaYinyuanLayout(path string) (erhuaYinyuanLayout, error) {
 	return payload, nil
 }
 
+func featureProjectionKey(base string, features erhuaFeatures) string {
+	return fmt.Sprintf("%s\x00rhotic=%t\x00nasalized=%t", base, features.Rhotic, features.Nasalized)
+}
+
 func indexErhuaSoundProjection(bundle erhuaSoundProjectionBundle, layout erhuaYinyuanLayout) (erhuaSoundProjectionIndex, error) {
 	index := erhuaSoundProjectionIndex{
-		keyClassByID:       map[string]erhuaSoundKeyClass{},
-		keyClassByCarrier:  map[string]erhuaSoundKeyClass{},
-		soundByID:          map[string]erhuaSoundUnit{},
-		soundByFamilyTone:  map[string]erhuaSoundUnit{},
-		surfaceClassByID:   map[string]erhuaSurfaceProjection{},
-		layoutKeyByYinyuan: layout.YinyuanIDToKey,
+		keyClassByID: map[string]erhuaSoundKeyClass{}, soundByID: map[string]erhuaSoundUnit{}, soundByFeature: map[string]erhuaSoundUnit{},
+		layoutKeyByYinyuan: layout.YinyuanIDToKey, layoutKeyByKeyClass: map[string]string{},
 	}
+	baseLayoutKeys := map[string]struct{}{}
+	for _, key := range layout.YinyuanIDToKey {
+		baseLayoutKeys[key] = struct{}{}
+	}
+	dedicatedLayoutKeys := map[string]struct{}{}
 	for _, item := range bundle.KeyClasses {
-		if item.KeyClassID == "" || item.CarrierYinyuanID == "" || !validToneGrade(item.ToneGrade) {
+		if item.KeyClassID == "" || !validToneGrade(item.ToneGrade) {
 			return index, errors.New("erhua key class has an empty or invalid field")
+		}
+		hasCarrier, hasDedicatedKey := item.CarrierYinyuanID != "", item.LayoutKey != ""
+		if hasCarrier == hasDedicatedKey {
+			return index, fmt.Errorf("erhua key class %s must declare exactly one carrier or dedicated layout key", item.KeyClassID)
 		}
 		if _, ok := index.keyClassByID[item.KeyClassID]; ok {
 			return index, fmt.Errorf("duplicate erhua key class %s", item.KeyClassID)
 		}
-		if _, ok := index.keyClassByCarrier[item.CarrierYinyuanID]; ok {
-			return index, fmt.Errorf("duplicate erhua carrier Yinyuan ID %s", item.CarrierYinyuanID)
-		}
-		if key := layout.YinyuanIDToKey[item.CarrierYinyuanID]; len([]rune(key)) != 1 {
-			return index, fmt.Errorf("erhua key class %s references unmapped carrier %s", item.KeyClassID, item.CarrierYinyuanID)
+		key := item.LayoutKey
+		if hasCarrier {
+			key = layout.YinyuanIDToKey[item.CarrierYinyuanID]
+			if len([]rune(key)) != 1 {
+				return index, fmt.Errorf("erhua key class %s references unmapped carrier %s", item.KeyClassID, item.CarrierYinyuanID)
+			}
+			index.sharedKeyClasses++
+		} else {
+			if len([]rune(key)) != 1 {
+				return index, fmt.Errorf("erhua key class %s has an invalid dedicated layout key", item.KeyClassID)
+			}
+			if _, exists := baseLayoutKeys[key]; exists {
+				return index, fmt.Errorf("erhua key class %s dedicated key %q collides with the base layout", item.KeyClassID, key)
+			}
+			if _, exists := dedicatedLayoutKeys[key]; exists {
+				return index, fmt.Errorf("duplicate dedicated erhua layout key %q", key)
+			}
+			dedicatedLayoutKeys[key] = struct{}{}
+			index.dedicatedKeyClasses++
 		}
 		index.keyClassByID[item.KeyClassID] = item
-		index.keyClassByCarrier[item.CarrierYinyuanID] = item
+		index.layoutKeyByKeyClass[item.KeyClassID] = key
 	}
-	soundsPerKeyClass := map[string]int{}
-	seenSoundIDs := map[string]struct{}{}
 	for _, item := range bundle.SoundUnits {
-		if item.SoundUnitID == "" || item.QualityFamily == "" || item.RepresentativeIPA == "" || !validToneGrade(item.ToneGrade) {
-			return index, errors.New("erhua sound unit has an empty or invalid field")
+		if item.SoundUnitID == "" || item.BaseYinyuanID == "" || item.QualityFamily == "" || item.RepresentativeIPA == "" || !validToneGrade(item.ToneGrade) || !item.Features.Rhotic {
+			return index, errors.New("erhua derived Yinyuan has an empty or invalid field")
 		}
-		if _, ok := seenSoundIDs[item.SoundUnitID]; ok {
-			return index, fmt.Errorf("duplicate erhua sound unit %s", item.SoundUnitID)
+		if _, ok := index.soundByID[item.SoundUnitID]; ok {
+			return index, fmt.Errorf("duplicate erhua derived Yinyuan ID %s", item.SoundUnitID)
 		}
-		if _, clashesWithKeyClass := index.keyClassByID[item.SoundUnitID]; clashesWithKeyClass {
-			return index, fmt.Errorf("erhua sound unit %s must not reuse a key-class ID", item.SoundUnitID)
-		}
-		if _, clashesWithCarrier := index.keyClassByCarrier[item.SoundUnitID]; clashesWithCarrier {
-			return index, fmt.Errorf("erhua sound unit %s must not reuse a carrier Yinyuan ID", item.SoundUnitID)
-		}
-		seenSoundIDs[item.SoundUnitID] = struct{}{}
 		keyClass, ok := index.keyClassByID[item.KeyClassID]
 		if !ok || keyClass.ToneGrade != item.ToneGrade {
-			return index, fmt.Errorf("erhua sound unit %s has an invalid key-class projection", item.SoundUnitID)
+			return index, fmt.Errorf("erhua derived Yinyuan %s has an invalid key-class projection", item.SoundUnitID)
+		}
+		featureKey := featureProjectionKey(item.BaseYinyuanID, item.Features)
+		if _, ok := index.soundByFeature[featureKey]; ok {
+			return index, fmt.Errorf("duplicate erhua base-feature projection %s", item.BaseYinyuanID)
 		}
 		switch item.AdmissionStatus {
 		case "runtime_pilot":
@@ -145,67 +163,10 @@ func indexErhuaSoundProjection(bundle erhuaSoundProjectionBundle, layout erhuaYi
 		case "research_only":
 			index.researchSoundUnits++
 		default:
-			return index, fmt.Errorf("erhua sound unit %s has unsupported admission status %q", item.SoundUnitID, item.AdmissionStatus)
+			return index, fmt.Errorf("erhua derived Yinyuan %s has unsupported admission status %q", item.SoundUnitID, item.AdmissionStatus)
 		}
-		familyTone := item.QualityFamily + "\x00" + item.ToneGrade
-		if _, ok := index.soundByFamilyTone[familyTone]; ok {
-			return index, fmt.Errorf("duplicate erhua sound family/tone %s/%s", item.QualityFamily, item.ToneGrade)
-		}
-		index.soundByFamilyTone[familyTone] = item
+		index.soundByFeature[featureKey] = item
 		index.soundByID[item.SoundUnitID] = item
-		soundsPerKeyClass[item.KeyClassID]++
-	}
-	for keyClassID := range index.keyClassByID {
-		if soundsPerKeyClass[keyClassID] < 2 {
-			return index, fmt.Errorf("erhua key class %s does not demonstrate many-to-one sound projection", keyClassID)
-		}
-	}
-	for _, item := range bundle.SurfaceClasses {
-		if item.SurfaceClass == "" || item.SoundFamily == "" || len(item.RhoticFinalPositions) == 0 {
-			return index, errors.New("erhua surface class has an empty or invalid field")
-		}
-		if _, ok := index.surfaceClassByID[item.SurfaceClass]; ok {
-			return index, fmt.Errorf("duplicate erhua surface class %s", item.SurfaceClass)
-		}
-		switch item.RuntimeStatus {
-		case "pilot", "research_only":
-		default:
-			return index, fmt.Errorf("erhua surface class %s has unsupported runtime status %q", item.SurfaceClass, item.RuntimeStatus)
-		}
-		positionSet := map[int]struct{}{}
-		for _, position := range item.RhoticFinalPositions {
-			if position < 1 || position > 3 {
-				return index, fmt.Errorf("erhua surface class %s has invalid final position %d", item.SurfaceClass, position)
-			}
-			if _, ok := positionSet[position]; ok {
-				return index, fmt.Errorf("erhua surface class %s repeats final position %d", item.SurfaceClass, position)
-			}
-			positionSet[position] = struct{}{}
-		}
-		for positionText, allowedIDs := range item.RetainedPositionYinyuanIDs {
-			position, err := strconv.Atoi(positionText)
-			if err != nil || position < 1 || position > 3 || len(allowedIDs) == 0 {
-				return index, fmt.Errorf("erhua surface class %s has invalid retained position %q", item.SurfaceClass, positionText)
-			}
-			if _, rhotic := positionSet[position]; rhotic {
-				return index, fmt.Errorf("erhua surface class %s marks position %d both retained and rhotic", item.SurfaceClass, position)
-			}
-			for _, id := range allowedIDs {
-				if len([]rune(layout.YinyuanIDToKey[id])) != 1 {
-					return index, fmt.Errorf("erhua surface class %s references unmapped retained Yinyuan ID %s", item.SurfaceClass, id)
-				}
-			}
-		}
-		for _, tone := range []string{"high", "mid", "low"} {
-			sound, ok := index.soundByFamilyTone[item.SoundFamily+"\x00"+tone]
-			if !ok {
-				return index, fmt.Errorf("erhua surface class %s lacks %s sound unit", item.SurfaceClass, tone)
-			}
-			if item.RuntimeStatus == "pilot" && sound.AdmissionStatus != "runtime_pilot" {
-				return index, fmt.Errorf("pilot erhua surface class %s references research-only sound unit %s", item.SurfaceClass, sound.SoundUnitID)
-			}
-		}
-		index.surfaceClassByID[item.SurfaceClass] = item
 	}
 	return index, nil
 }
@@ -215,8 +176,8 @@ func (index erhuaSoundProjectionIndex) validateRouteLayout(record erhuaAliasReco
 		for mode, code := range route.Codes {
 			var projected strings.Builder
 			for _, id := range code.YinyuanIDs {
-				key, ok := index.layoutKeyByYinyuan[id]
-				if !ok || len([]rune(key)) != 1 {
+				key, ok := index.layoutKeyForID(id)
+				if !ok {
 					return fmt.Errorf("%s has unmapped %s/%s Yinyuan ID %s", record.RecordID, routeName, mode, id)
 				}
 				projected.WriteString(key)
@@ -231,44 +192,22 @@ func (index erhuaSoundProjectionIndex) validateRouteLayout(record erhuaAliasReco
 
 func (index erhuaSoundProjectionIndex) projectFusedRoute(record erhuaAliasRecord) (erhuaProjectedRoute, error) {
 	route := record.Routes["fused_erhua"]
-	surfaceClass, ok := index.surfaceClassByID[route.SurfaceClass]
-	if !ok {
-		return erhuaProjectedRoute{}, fmt.Errorf("%s references unknown fused surface class %q", record.RecordID, route.SurfaceClass)
+	if route.Status != "available" || len(route.AttachedSyllableYinyuanIDs) != 4 {
+		return erhuaProjectedRoute{}, fmt.Errorf("%s has no available four-position feature-derived route", record.RecordID)
 	}
-	if surfaceClass.RuntimeStatus != "pilot" {
-		return erhuaProjectedRoute{}, fmt.Errorf("%s references non-pilot fused surface class %s", record.RecordID, route.SurfaceClass)
-	}
-	if len(route.AttachedSyllableYinyuanIDs) != 4 {
-		return erhuaProjectedRoute{}, fmt.Errorf("%s fused route must have one initial plus three final positions", record.RecordID)
-	}
-	full := route.Codes["full"].YinyuanIDs
-	if len(full) < 4 || !equalStrings(full[len(full)-4:], route.AttachedSyllableYinyuanIDs) {
-		return erhuaProjectedRoute{}, fmt.Errorf("%s fused full code does not end in its attached-syllable tuple", record.RecordID)
+	for _, rewrite := range route.FeatureRewrites {
+		if rewrite.Position < 1 || rewrite.Position > 3 {
+			return erhuaProjectedRoute{}, fmt.Errorf("%s has invalid feature rewrite position %d", record.RecordID, rewrite.Position)
+		}
+		sound, ok := index.soundByFeature[featureProjectionKey(rewrite.BaseYinyuanID, rewrite.Features)]
+		if !ok || sound.AdmissionStatus != "runtime_pilot" {
+			return erhuaProjectedRoute{}, fmt.Errorf("%s has no admitted derived Yinyuan for %s plus features", record.RecordID, rewrite.BaseYinyuanID)
+		}
+		if route.AttachedSyllableYinyuanIDs[rewrite.Position] != sound.SoundUnitID {
+			return erhuaProjectedRoute{}, fmt.Errorf("%s feature rewrite position %d did not produce %s", record.RecordID, rewrite.Position, sound.SoundUnitID)
+		}
 	}
 	result := erhuaProjectedRoute{SoundUnitIDs: append([]string(nil), route.AttachedSyllableYinyuanIDs...)}
-	rhoticPositions := map[int]struct{}{}
-	for _, position := range surfaceClass.RhoticFinalPositions {
-		rhoticPositions[position] = struct{}{}
-		carrierID := route.AttachedSyllableYinyuanIDs[position]
-		keyClass, ok := index.keyClassByCarrier[carrierID]
-		if !ok {
-			return erhuaProjectedRoute{}, fmt.Errorf("%s fused position %d does not use an erhua key carrier", record.RecordID, position)
-		}
-		sound := index.soundByFamilyTone[surfaceClass.SoundFamily+"\x00"+keyClass.ToneGrade]
-		if sound.AdmissionStatus != "runtime_pilot" {
-			return erhuaProjectedRoute{}, fmt.Errorf("%s fused position %d would export research-only sound %s", record.RecordID, position, sound.SoundUnitID)
-		}
-		result.SoundUnitIDs[position] = sound.SoundUnitID
-	}
-	for position := 1; position <= 3; position++ {
-		if _, rhotic := rhoticPositions[position]; rhotic {
-			continue
-		}
-		allowed := surfaceClass.RetainedPositionYinyuanIDs[strconv.Itoa(position)]
-		if !containsExact(allowed, route.AttachedSyllableYinyuanIDs[position]) {
-			return erhuaProjectedRoute{}, fmt.Errorf("%s fused retained position %d has unexpected Yinyuan ID %s", record.RecordID, position, route.AttachedSyllableYinyuanIDs[position])
-		}
-	}
 	projection, err := index.describeSoundKeyProjection(result.SoundUnitIDs)
 	if err != nil {
 		return erhuaProjectedRoute{}, fmt.Errorf("%s: %w", record.RecordID, err)
@@ -282,11 +221,11 @@ func (index erhuaSoundProjectionIndex) describeSoundKeyProjection(ids []string) 
 	for _, id := range ids {
 		if sound, ok := index.soundByID[id]; ok {
 			keyClass := index.keyClassByID[sound.KeyClassID]
-			key := index.layoutKeyByYinyuan[keyClass.CarrierYinyuanID]
+			key := index.layoutKeyByKeyClass[keyClass.KeyClassID]
 			if key == "" {
-				return "", fmt.Errorf("sound unit %s has no physical-key projection", id)
+				return "", fmt.Errorf("derived Yinyuan %s has no physical-key projection", id)
 			}
-			parts = append(parts, fmt.Sprintf("%s→%s→%s(%s)", id, keyClass.KeyClassID, keyClass.CarrierYinyuanID, key))
+			parts = append(parts, fmt.Sprintf("%s+rhotic=%t+nasalized=%t→%s→%s(%s)", sound.BaseYinyuanID, sound.Features.Rhotic, sound.Features.Nasalized, sound.SoundUnitID, keyClass.KeyClassID, key))
 			continue
 		}
 		key := index.layoutKeyByYinyuan[id]
@@ -298,27 +237,53 @@ func (index erhuaSoundProjectionIndex) describeSoundKeyProjection(ids []string) 
 	return strings.Join(parts, "；"), nil
 }
 
-func validToneGrade(value string) bool {
-	return value == "high" || value == "mid" || value == "low"
+func (index erhuaSoundProjectionIndex) layoutKeyForID(id string) (string, bool) {
+	if sound, ok := index.soundByID[id]; ok {
+		key := index.layoutKeyByKeyClass[sound.KeyClassID]
+		return key, len([]rune(key)) == 1
+	}
+	key := index.layoutKeyByYinyuan[id]
+	return key, len([]rune(key)) == 1
 }
+
+func validToneGrade(value string) bool { return value == "high" || value == "mid" || value == "low" }
 
 func equalStrings(left, right []string) bool {
 	if len(left) != len(right) {
 		return false
 	}
-	for index := range left {
-		if left[index] != right[index] {
+	for i := range left {
+		if left[i] != right[i] {
 			return false
 		}
 	}
 	return true
 }
 
-func containsExact(values []string, want string) bool {
-	for _, value := range values {
-		if value == want {
-			return true
-		}
+func (index erhuaSoundProjectionIndex) toneGradeForID(id string) (string, error) {
+	if sound, ok := index.soundByID[id]; ok {
+		return sound.ToneGrade, nil
 	}
-	return false
+	if len(id) != 3 || id[0] != 'M' {
+		return "", fmt.Errorf("%s is not a tonal musical Yinyuan ID", id)
+	}
+	ordinal, err := strconv.Atoi(id[1:])
+	if err != nil || ordinal < 1 {
+		return "", fmt.Errorf("%s is not a tonal musical Yinyuan ID", id)
+	}
+	return []string{"high", "mid", "low"}[(ordinal-1)%3], nil
+}
+
+func (index erhuaSoundProjectionIndex) qualityFamilyForID(id string) (string, bool) {
+	if sound, ok := index.soundByID[id]; ok {
+		return "R:" + sound.QualityFamily, true
+	}
+	if len(id) != 3 || id[0] != 'M' {
+		return "", false
+	}
+	ordinal, err := strconv.Atoi(id[1:])
+	if err != nil || ordinal < 1 {
+		return "", false
+	}
+	return fmt.Sprintf("M:%02d", (ordinal-1)/3), true
 }
