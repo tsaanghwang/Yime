@@ -30,7 +30,7 @@ func TestParticleAStage6CReviewGateIsCompleteReadOnlyAndOffline(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !result.Summary.Passed || result.Summary.ReviewCount != 30 || result.Summary.MatchedCount != 30 || result.Summary.PendingCount != 30 || result.Summary.DecisionCount != 0 || result.Summary.UnresolvedCount != 0 || result.Summary.RuntimeAliasesGenerated != 0 {
+	if !result.Summary.Passed || result.Summary.ReviewCount != 30 || result.Summary.MatchedCount != 30 || result.Summary.PendingCount != 0 || result.Summary.DecisionCount != 30 || result.Summary.ApprovedCount != 30 || result.Summary.UnresolvedCount != 0 || result.Summary.RuntimeAliasesGenerated != 0 {
 		t.Fatalf("unexpected summary: %#v", result.Summary)
 	}
 	if result.Summary.SemanticOnlyCount != 5 || result.Summary.KeyChangingCount != 25 || result.Summary.ThreeModeProjectionRows != 90 {
@@ -61,6 +61,25 @@ func TestParticleAStage6CReviewGateIsCompleteReadOnlyAndOffline(t *testing.T) {
 	}
 	if !reflect.DeepEqual(gotReports, wantReports) {
 		t.Fatalf("reports=%v, want %v", gotReports, wantReports)
+	}
+}
+
+func TestParticleAStage6CUsesRhoticNotationForApicalFrontClass(t *testing.T) {
+	repoRoot, err := filepath.Abs(filepath.Join("..", "..", "..", ".."))
+	if err != nil {
+		t.Fatal(err)
+	}
+	reviews, err := loadParticleAStage6CReviews(DefaultParticleAStage6CConfig(repoRoot).ReviewPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, review := range reviews {
+		if review.ClassID != "PA-APICAL-FRONT" {
+			continue
+		}
+		if !strings.HasSuffix(review.SurfacePinyin, "ɹa5") || strings.HasSuffix(review.SurfacePinyin, "za5") {
+			t.Fatalf("舌尖前类必须以IPA式ɹ标记，不得复用拼音z: %#v", review)
+		}
 	}
 }
 

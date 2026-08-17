@@ -62,7 +62,7 @@ func TestParticleAStage6BProjectionIsCompleteReadOnlyAndOffline(t *testing.T) {
 		t.Fatal(err)
 	}
 	text := string(classSummary)
-	for _, want := range []string{"PA-NG\tnga5\treplace_a5_shouyin\tN26\t'", "PA-APICAL-FRONT\tza5\treplace_a5_shouyin\tN27\t`", "\tresearch_only\tfalse\t"} {
+	for _, want := range []string{"PA-NG\tnga5\treplace_a5_shouyin\tN26\t'", "PA-APICAL-FRONT\tɹa5\treplace_a5_shouyin\tN27\t`", "\tresearch_only\tfalse\t"} {
 		if !strings.Contains(text, want) {
 			t.Fatalf("class summary missing %q", want)
 		}
@@ -71,6 +71,15 @@ func TestParticleAStage6BProjectionIsCompleteReadOnlyAndOffline(t *testing.T) {
 		if strings.HasSuffix(entry.Name(), ".dict.yaml") || strings.HasSuffix(entry.Name(), ".schema.yaml") {
 			t.Fatalf("offline stage emitted runtime file %s", entry.Name())
 		}
+	}
+}
+
+func TestParticleAStage6BApicalNotationDoesNotReuseCanonicalPinyinZ(t *testing.T) {
+	policy := []particleAProjectionClass{{ClassID: "PA-APICAL-FRONT", SurfacePinyin: "ɹa5", TupleStrategy: "replace_a5_shouyin", TargetShouyinID: "N27", SourceScope: "x", AdjudicationStatus: "research_only", Note: "x"}}
+	want := map[string]struct{ pinyin, strategy, onset string }{"PA-APICAL-FRONT": {"ɹa5", "replace_a5_shouyin", "N27"}}
+	item := policy[0]
+	if item.SurfacePinyin != want[item.ClassID].pinyin || item.TargetShouyinID != "N27" || item.SurfacePinyin == "za5" {
+		t.Fatalf("舌尖同化记号不得复用规范拼音 z/N13: %#v", item)
 	}
 }
 

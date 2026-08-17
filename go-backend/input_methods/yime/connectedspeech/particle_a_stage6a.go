@@ -11,28 +11,35 @@ import (
 	"strings"
 )
 
-const ParticleAStage6AToolVersion = "connected-speech-particle-a-stage6a-audit-v1"
+const ParticleAStage6AToolVersion = "connected-speech-particle-a-stage6a-audit-v2"
 
 type ParticleAStage6AConfig struct {
-	RepoRoot          string
-	DataDir           string
-	ScopePath         string
-	OutputDir         string
-	AllowedOutputRoot string
+	RepoRoot           string
+	DataDir            string
+	ScopePath          string
+	PositionPolicyPath string
+	OutputDir          string
+	AllowedOutputRoot  string
 }
 
 type ParticleAStage6ASummary struct {
-	ToolVersion             string          `json:"tool_version"`
-	ScopeClassCount         int             `json:"scope_class_count"`
-	LexiconRowCount         int             `json:"lexicon_row_count"`
-	ExplicitParticleACount  int             `json:"explicit_particle_a_count"`
-	ClassifiedCount         int             `json:"classified_count"`
-	UnresolvedCount         int             `json:"unresolved_count"`
-	RuntimeAliasesGenerated int             `json:"runtime_aliases_generated"`
-	ClassCounts             map[string]int  `json:"class_counts"`
-	InputHashesMatch        bool            `json:"input_hashes_match"`
-	Gates                   map[string]bool `json:"gates"`
-	Passed                  bool            `json:"passed"`
+	ToolVersion              string          `json:"tool_version"`
+	ScopeClassCount          int             `json:"scope_class_count"`
+	LexiconRowCount          int             `json:"lexicon_row_count"`
+	ExplicitParticleACount   int             `json:"explicit_particle_a_count"`
+	ParticleAOccurrenceCount int             `json:"particle_a_occurrence_count"`
+	EligibleWithHostCount    int             `json:"eligible_with_host_count"`
+	InitialNoHostCount       int             `json:"initial_no_host_count"`
+	MedialWithHostCount      int             `json:"medial_with_host_count"`
+	FinalWithHostCount       int             `json:"final_with_host_count"`
+	NonA5WithHostCount       int             `json:"non_a5_with_host_count"`
+	ClassifiedCount          int             `json:"classified_count"`
+	UnresolvedCount          int             `json:"unresolved_count"`
+	RuntimeAliasesGenerated  int             `json:"runtime_aliases_generated"`
+	ClassCounts              map[string]int  `json:"class_counts"`
+	InputHashesMatch         bool            `json:"input_hashes_match"`
+	Gates                    map[string]bool `json:"gates"`
+	Passed                   bool            `json:"passed"`
 }
 
 type ParticleAStage6AManifest struct {
@@ -58,6 +65,16 @@ type particleAScopeClass struct {
 	Note               string
 }
 
+type particleAPositionPolicy struct {
+	PositionClass      string
+	Condition          string
+	Treatment          string
+	CandidatePolicy    string
+	AdjudicationStatus string
+	RuntimeEligible    bool
+	Note               string
+}
+
 type particleADecomposition struct {
 	Final string
 	Tuple YinyuanTuple
@@ -78,11 +95,12 @@ type particleACandidate struct {
 
 func DefaultParticleAStage6AConfig(repoRoot string) ParticleAStage6AConfig {
 	return ParticleAStage6AConfig{
-		RepoRoot:          repoRoot,
-		DataDir:           filepath.Join(repoRoot, "go-backend", "input_methods", "yime", "data"),
-		ScopePath:         filepath.Join(repoRoot, "docs", "project", "connected_speech", "particle_a_stage6a_scope.tsv"),
-		OutputDir:         filepath.Join(repoRoot, ".tmp", "particle-a-stage6a-audit"),
-		AllowedOutputRoot: filepath.Join(repoRoot, ".tmp"),
+		RepoRoot:           repoRoot,
+		DataDir:            filepath.Join(repoRoot, "go-backend", "input_methods", "yime", "data"),
+		ScopePath:          filepath.Join(repoRoot, "docs", "project", "connected_speech", "particle_a_stage6a_scope.tsv"),
+		PositionPolicyPath: filepath.Join(repoRoot, "docs", "project", "connected_speech", "particle_a_position_policy.tsv"),
+		OutputDir:          filepath.Join(repoRoot, ".tmp", "particle-a-stage6a-audit"),
+		AllowedOutputRoot:  filepath.Join(repoRoot, ".tmp"),
 	}
 }
 
@@ -94,10 +112,11 @@ func RunParticleAStage6AAudit(config ParticleAStage6AConfig) (ParticleAStage6ARe
 		return ParticleAStage6AResult{}, err
 	}
 	inputPaths := map[string]string{
-		"scope":         config.ScopePath,
-		"pinyin_codes":  filepath.Join(config.DataDir, "yime_pinyin_codes.tsv"),
-		"decomposition": filepath.Join(config.DataDir, "yime_syllable_decomposition.tsv"),
-		"full_lexicon":  filepath.Join(config.DataDir, "yime_full.dict.yaml"),
+		"scope":           config.ScopePath,
+		"position_policy": config.PositionPolicyPath,
+		"pinyin_codes":    filepath.Join(config.DataDir, "yime_pinyin_codes.tsv"),
+		"decomposition":   filepath.Join(config.DataDir, "yime_syllable_decomposition.tsv"),
+		"full_lexicon":    filepath.Join(config.DataDir, "yime_full.dict.yaml"),
 	}
 	before, err := hashNamedFiles(inputPaths)
 	if err != nil {
@@ -108,6 +127,10 @@ func RunParticleAStage6AAudit(config ParticleAStage6AConfig) (ParticleAStage6ARe
 		return ParticleAStage6AResult{}, err
 	}
 	if err := validateParticleAScope(scope); err != nil {
+		return ParticleAStage6AResult{}, err
+	}
+	positionPolicy, err := loadParticleAPositionPolicy(config.PositionPolicyPath)
+	if err != nil {
 		return ParticleAStage6AResult{}, err
 	}
 	scopeByID := map[string]particleAScopeClass{}
@@ -131,9 +154,43 @@ func RunParticleAStage6AAudit(config ParticleAStage6AConfig) (ParticleAStage6ARe
 	lexiconRows := 0
 	candidates := []particleACandidate{}
 	unresolved := [][]string{{"text", "full_code", "weight", "reason", "detail"}}
+	positionRows := [][]string{{"text", "full_code", "weight", "syllable_index", "position_class", "canonical_a_code", "reading_status", "treatment", "candidate_policy", "runtime_enabled", "note"}}
+	positionCounts, eligiblePositionCounts := map[string]int{}, map[string]int{}
+	particleAOccurrences, eligibleWithHost, nonA5WithHost := 0, 0, 0
 	err = scanRimeDictionary(inputPaths["full_lexicon"], func(entry dictionaryEntry) {
 		lexiconRows++
 		parts := strings.Fields(entry.Code)
+		characters := []rune(entry.Text)
+		if strings.Contains(entry.Text, "啊") && len(characters) != len(parts) {
+			unresolved = append(unresolved, []string{entry.Text, entry.Code, entry.Weight, "text_code_alignment_mismatch", fmt.Sprintf("characters=%d syllables=%d", len(characters), len(parts))})
+			return
+		}
+		for index, character := range characters {
+			if character != '啊' {
+				continue
+			}
+			particleAOccurrences++
+			positionClass := "MEDIAL_WITH_HOST"
+			if index == 0 {
+				positionClass = "INITIAL_NO_HOST"
+			} else if index == len(characters)-1 {
+				positionClass = "FINAL_WITH_HOST"
+			}
+			policy := positionPolicy[positionClass]
+			readingStatus, treatment := "non_a5", "keep_canonical_no_assimilation"
+			if parts[index] == a5Code {
+				readingStatus = "a5"
+				if index > 0 {
+					treatment = "classify_by_previous_final"
+					eligibleWithHost++
+					eligiblePositionCounts[positionClass]++
+				}
+			} else if index > 0 {
+				nonA5WithHost++
+			}
+			positionCounts[positionClass]++
+			positionRows = append(positionRows, []string{entry.Text, entry.Code, entry.Weight, strconv.Itoa(index), positionClass, parts[index], readingStatus, treatment, policy.CandidatePolicy, "false", policy.Note})
+		}
 		if !strings.HasSuffix(entry.Text, "啊") || len(parts) < 2 || parts[len(parts)-1] != a5Code {
 			return
 		}
@@ -190,21 +247,30 @@ func RunParticleAStage6AAudit(config ParticleAStage6AConfig) (ParticleAStage6ARe
 	if err := writeTSV(filepath.Join(config.OutputDir, "unresolved.tsv"), unresolved); err != nil {
 		return ParticleAStage6AResult{}, err
 	}
+	if err := writeTSV(filepath.Join(config.OutputDir, "position_inventory.tsv"), positionRows); err != nil {
+		return ParticleAStage6AResult{}, err
+	}
 	after, err := hashNamedFiles(inputPaths)
 	if err != nil {
 		return ParticleAStage6AResult{}, err
 	}
 	gates := map[string]bool{
-		"scope_is_offline_only":        particleAScopeOffline(scope),
-		"candidate_text_is_preserved":  true,
-		"all_six_classes_represented":  len(classCounts) == 6,
-		"all_explicit_rows_classified": len(unresolved) == 1,
-		"runtime_aliases_remain_zero":  true,
-		"inputs_are_read_only":         equalHashes(before, after),
+		"scope_is_offline_only":           particleAScopeOffline(scope),
+		"candidate_text_is_preserved":     true,
+		"all_six_classes_represented":     len(classCounts) == 6,
+		"all_explicit_rows_classified":    len(unresolved) == 1,
+		"runtime_aliases_remain_zero":     true,
+		"inputs_are_read_only":            equalHashes(before, after),
+		"all_a_occurrences_positioned":    len(positionRows)-1 == particleAOccurrences,
+		"initial_no_host_keeps_canonical": particleAPositionTreatment(positionRows, "INITIAL_NO_HOST", "keep_canonical_no_assimilation"),
+		"with_host_a5_is_eligible":        particleAPositionA5Treatment(positionRows),
+		"with_host_a5_keeps_canonical":    particleAPositionDualTrack(positionRows),
 	}
 	summary := ParticleAStage6ASummary{
 		ToolVersion: ParticleAStage6AToolVersion, ScopeClassCount: len(scope), LexiconRowCount: lexiconRows,
 		ExplicitParticleACount: len(candidates) + len(unresolved) - 1, ClassifiedCount: len(candidates), UnresolvedCount: len(unresolved) - 1,
+		ParticleAOccurrenceCount: particleAOccurrences, EligibleWithHostCount: eligibleWithHost, InitialNoHostCount: positionCounts["INITIAL_NO_HOST"],
+		MedialWithHostCount: eligiblePositionCounts["MEDIAL_WITH_HOST"], FinalWithHostCount: eligiblePositionCounts["FINAL_WITH_HOST"], NonA5WithHostCount: nonA5WithHost,
 		RuntimeAliasesGenerated: 0, ClassCounts: classCounts, InputHashesMatch: equalHashes(before, after), Gates: gates, Passed: allGatesPass(gates),
 	}
 	if err := writeJSON(filepath.Join(config.OutputDir, "input_hashes_before.json"), before); err != nil {
@@ -219,7 +285,7 @@ func RunParticleAStage6AAudit(config ParticleAStage6AConfig) (ParticleAStage6ARe
 	if err := writeParticleAStage6AReport(filepath.Join(config.OutputDir, "REPORT.md"), summary); err != nil {
 		return ParticleAStage6AResult{}, err
 	}
-	outputNames := []string{"REPORT.md", "candidate_inventory.tsv", "class_summary.tsv", "input_hashes_after.json", "input_hashes_before.json", "summary.json", "unresolved.tsv"}
+	outputNames := []string{"REPORT.md", "candidate_inventory.tsv", "class_summary.tsv", "input_hashes_after.json", "input_hashes_before.json", "position_inventory.tsv", "summary.json", "unresolved.tsv"}
 	outputPaths := map[string]string{}
 	for _, name := range outputNames {
 		outputPaths[name] = filepath.Join(config.OutputDir, name)
@@ -240,7 +306,7 @@ func RunParticleAStage6AAudit(config ParticleAStage6AConfig) (ParticleAStage6ARe
 }
 
 func validateParticleAStage6AConfig(config *ParticleAStage6AConfig) error {
-	if config.RepoRoot == "" || config.DataDir == "" || config.ScopePath == "" || config.OutputDir == "" || config.AllowedOutputRoot == "" {
+	if config.RepoRoot == "" || config.DataDir == "" || config.ScopePath == "" || config.PositionPolicyPath == "" || config.OutputDir == "" || config.AllowedOutputRoot == "" {
 		return errors.New("阶段 6A 所有路径均不能为空")
 	}
 	allowed, err := filepath.Abs(config.AllowedOutputRoot)
@@ -314,6 +380,81 @@ func validateParticleAScope(scope []particleAScopeClass) error {
 		return fmt.Errorf("阶段 6A 必须恰有六类，实际 %d", len(seen))
 	}
 	return nil
+}
+
+func loadParticleAPositionPolicy(path string) (map[string]particleAPositionPolicy, error) {
+	header := []string{"position_class", "condition", "treatment", "candidate_policy", "adjudication_status", "runtime_eligible", "note"}
+	rows, err := readParticleAStage6CTSV(path, header)
+	if err != nil {
+		return nil, err
+	}
+	want := map[string]string{
+		"INITIAL_NO_HOST":  "keep_canonical_no_assimilation",
+		"MEDIAL_WITH_HOST": "classify_by_previous_final",
+		"FINAL_WITH_HOST":  "classify_by_previous_final",
+	}
+	result := map[string]particleAPositionPolicy{}
+	for _, row := range rows {
+		runtimeEligible, err := strconv.ParseBool(row[5])
+		if err != nil {
+			return nil, fmt.Errorf("语气词啊位置政策 runtime_eligible 无效: %s", row[5])
+		}
+		item := particleAPositionPolicy{row[0], row[1], row[2], row[3], row[4], runtimeEligible, row[6]}
+		wantCandidatePolicy := "parallel_alias_keep_canonical"
+		if item.PositionClass == "INITIAL_NO_HOST" {
+			wantCandidatePolicy = "canonical_only"
+		}
+		if want[item.PositionClass] == "" || result[item.PositionClass].PositionClass != "" || item.Condition == "" || item.Treatment != want[item.PositionClass] || item.CandidatePolicy != wantCandidatePolicy || item.AdjudicationStatus != "approved" || item.RuntimeEligible || item.Note == "" {
+			return nil, fmt.Errorf("语气词啊位置政策无效: %v", row)
+		}
+		result[item.PositionClass] = item
+	}
+	if len(result) != len(want) {
+		return nil, fmt.Errorf("语气词啊位置政策必须恰有三类，实际 %d", len(result))
+	}
+	return result, nil
+}
+
+func particleAPositionTreatment(rows [][]string, positionClass, treatment string) bool {
+	seen := false
+	for _, row := range rows[1:] {
+		if row[4] != positionClass {
+			continue
+		}
+		seen = true
+		if row[7] != treatment || row[9] != "false" {
+			return false
+		}
+	}
+	return seen
+}
+
+func particleAPositionA5Treatment(rows [][]string) bool {
+	seen := false
+	for _, row := range rows[1:] {
+		if row[4] == "INITIAL_NO_HOST" || row[6] != "a5" {
+			continue
+		}
+		seen = true
+		if row[7] != "classify_by_previous_final" || row[9] != "false" {
+			return false
+		}
+	}
+	return seen
+}
+
+func particleAPositionDualTrack(rows [][]string) bool {
+	seen := false
+	for _, row := range rows[1:] {
+		if row[4] == "INITIAL_NO_HOST" || row[6] != "a5" {
+			continue
+		}
+		seen = true
+		if row[8] != "parallel_alias_keep_canonical" || row[9] != "false" {
+			return false
+		}
+	}
+	return seen
 }
 
 func particleAScopeOffline(scope []particleAScopeClass) bool {
@@ -421,7 +562,7 @@ func stripToneDigit(value string) string {
 }
 
 func writeParticleAStage6AReport(path string, summary ParticleAStage6ASummary) error {
-	lines := []string{"# 阶段 6A：语气词“啊”离线末音分类审计", "", fmt.Sprintf("- 工具版本：`%s`", summary.ToolVersion), fmt.Sprintf("- 核心词典行数：%d", summary.LexiconRowCount), fmt.Sprintf("- 显式‘啊/a5’记录：%d", summary.ExplicitParticleACount), fmt.Sprintf("- 已分类：%d", summary.ClassifiedCount), fmt.Sprintf("- 未决：%d", summary.UnresolvedCount), "- 运行时别名：0", "- 候选文字策略：始终保留原字，不自动改写为‘呀、哇、哪’。", "", "## 六类分布", ""}
+	lines := []string{"# 阶段 6A：语气词“啊”离线末音分类审计", "", fmt.Sprintf("- 工具版本：`%s`", summary.ToolVersion), fmt.Sprintf("- 核心词典行数：%d", summary.LexiconRowCount), fmt.Sprintf("- 既有末尾‘啊/a5’分类基线：%d", summary.ExplicitParticleACount), fmt.Sprintf("- 全库‘啊’出现位置：%d", summary.ParticleAOccurrenceCount), fmt.Sprintf("- 有前接音节且为 a5、可按六类处理：%d（句中位置 %d；句末位置 %d）", summary.EligibleWithHostCount, summary.MedialWithHostCount, summary.FinalWithHostCount), fmt.Sprintf("- 无前接音节、保持原样：%d；有前接音节但不是 a5：%d", summary.InitialNoHostCount, summary.NonA5WithHostCount), fmt.Sprintf("- 已分类：%d", summary.ClassifiedCount), fmt.Sprintf("- 未决：%d", summary.UnresolvedCount), "- 运行时别名：0", "- 候选文字策略：始终保留原字，不自动改写为‘呀、哇、哪’。", "", "## 六类分布", ""}
 	keys := make([]string, 0, len(summary.ClassCounts))
 	for key := range summary.ClassCounts {
 		keys = append(keys, key)
@@ -439,6 +580,6 @@ func writeParticleAStage6AReport(path string, summary ParticleAStage6ASummary) e
 	for _, key := range gateKeys {
 		lines = append(lines, fmt.Sprintf("- `%s`：%t", key, summary.Gates[key]))
 	}
-	lines = append(lines, "", "本阶段不创建派生首音 ID、不投影三模式编码、不生成 Rime 候选。", "")
+	lines = append(lines, "", "词首或独立‘啊’没有可确定的前接末音，保持规范读音；句中和句末的‘啊/a5’只要有明确前接音节，均进入同一六类顺同化范围。本阶段仍不生成 Rime 候选。", "")
 	return os.WriteFile(path, []byte(strings.Join(lines, "\n")), 0o644)
 }

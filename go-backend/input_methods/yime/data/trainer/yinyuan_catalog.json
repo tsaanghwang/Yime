@@ -28,7 +28,7 @@
     {"id":"N24","category":"shouyin","structural_class":"virtual","reference_label":"w","display_name":"虚首音[w]"},
     {"id":"N25","category":"shouyin","structural_class":"virtual","reference_label":"ɥ","display_name":"ü前虚首音[ɥ]","representative_ipa":"ɥ"},
     {"id":"N26","category":"shouyin","structural_class":"real","reference_label":"ŋ","display_name":"语气词啊的同化首音[ŋ]","representative_ipa":"ŋ"},
-    {"id":"N27","category":"shouyin","structural_class":"real","reference_label":"z/ɹ","display_name":"语气词啊的舌尖同化首音[z]/[ɹ]","representative_ipa":"z~ɹ"},
+    {"id":"N27","category":"shouyin","structural_class":"real","reference_label":"ɹ","display_name":"语气词啊的舌尖同化首音[ɹ]","representative_ipa":"ɹ"},
 
     {"id":"M01","category":"yueyin","quality_group":"i","tone_grade":"high","display_name":"高调[i]乐音","representative_ipa":"i˥","covered_pianyin_levels":[5]},
     {"id":"M02","category":"yueyin","quality_group":"i","tone_grade":"mid","display_name":"中调[i]乐音","representative_ipa":"i˦","covered_pianyin_levels":[4]},

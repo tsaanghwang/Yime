@@ -107,7 +107,7 @@ func TestDescribeIDDistinguishesRealAndVirtualShouyin(t *testing.T) {
 		"N24": "w（虚首音）",
 		"N25": "ɥ（ü 前虚首音）",
 		"N26": "ŋ（啊的同化首音）",
-		"N27": "z/ɹ（啊的舌尖同化首音）",
+		"N27": "ɹ（啊的舌尖同化首音）",
 	}
 	for id, label := range want {
 		if got := DescribeID(id); got != label {

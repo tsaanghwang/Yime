@@ -32,7 +32,7 @@ var reservedKeys = map[rune]string{
 // mutually exclusive at the shouyin position.
 var sharedIdentityGroups = [][]string{
 	{"N12", "N26"}, // ordinary zero/virtual onset and particle-a [ŋ]
-	{"N25", "N27"}, // yu-family [ɥ] and particle-a apical [z]/[ɹ]
+	{"N25", "N27"}, // yu-family [ɥ] and particle-a apical [ɹ]
 }
 
 // Profile is the sole editable projection. Yinyuan identity and codec
@@ -58,7 +58,7 @@ func ExpectedIDs() []string {
 }
 
 func DescribeID(id string) string {
-	shouyinLabels := []string{"b", "p", "f", "m", "d", "t", "l", "n", "g", "k", "h", "'（非高呼音前虚首音）", "z", "c", "s", "zh", "ch", "sh", "r [ʐ]/[ɻ]", "j", "q", "x", "y [j]（虚首音）", "w（虚首音）", "ɥ（ü 前虚首音）", "ŋ（啊的同化首音）", "z/ɹ（啊的舌尖同化首音）"}
+	shouyinLabels := []string{"b", "p", "f", "m", "d", "t", "l", "n", "g", "k", "h", "'（非高呼音前虚首音）", "z", "c", "s", "zh", "ch", "sh", "r [ʐ]/[ɻ]", "j", "q", "x", "y [j]（虚首音）", "w（虚首音）", "ɥ（ü 前虚首音）", "ŋ（啊的同化首音）", "ɹ（啊的舌尖同化首音）"}
 	if strings.HasPrefix(id, "N") {
 		if n, err := strconv.Atoi(strings.TrimPrefix(id, "N")); err == nil && n >= 1 && n <= len(shouyinLabels) {
 			return shouyinLabels[n-1]
@@ -255,7 +255,7 @@ func containsString(values []string, wanted string) bool {
 
 // upgradeLegacyProjection keeps stored 57-yinyuan user layouts loadable.  The
 // newly stable identities inherit their mandated shared keys; no old key is
-// moved, and the formerly reserved backtick becomes the new [ɥ]/[z]/[ɹ] key.
+// moved, and the formerly reserved backtick becomes the new [ɥ]/[ɹ] key.
 func upgradeLegacyProjection(p *Profile) {
 	if p == nil || p.Projection == nil || p.Projection["N25"] != "" || p.Projection["N26"] != "" || p.Projection["N27"] != "" {
 		return

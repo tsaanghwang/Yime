@@ -14,7 +14,7 @@ import (
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/layoutdesigner"
 )
 
-const ParticleAStage6BToolVersion = "connected-speech-particle-a-stage6b-projection-v1"
+const ParticleAStage6BToolVersion = "connected-speech-particle-a-stage6b-projection-v2"
 
 type ParticleAStage6BConfig struct {
 	RepoRoot          string
@@ -400,7 +400,7 @@ func loadParticleAStage6BPolicy(path string) ([]particleAProjectionClass, error)
 func validateParticleAStage6BPolicy(policy []particleAProjectionClass) error {
 	want := map[string]struct{ pinyin, strategy, onset string }{
 		"PA-U": {"wa5", "replace_a5_shouyin", "N24"}, "PA-N": {"na5", "replace_a5_shouyin", "N08"},
-		"PA-NG": {"nga5", "replace_a5_shouyin", "N26"}, "PA-APICAL-FRONT": {"za5", "replace_a5_shouyin", "N27"},
+		"PA-NG": {"nga5", "replace_a5_shouyin", "N26"}, "PA-APICAL-FRONT": {"ɹa5", "replace_a5_shouyin", "N27"},
 		"PA-RETROFLEX": {"ra5", "replace_a5_shouyin", "N19"}, "PA-VOWEL-IY": {"ya5", "replace_a5_shouyin", "N23"},
 	}
 	seen := map[string]bool{}

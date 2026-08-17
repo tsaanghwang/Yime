@@ -11,7 +11,7 @@ import (
 	"strings"
 )
 
-const ParticleAStage6CToolVersion = "connected-speech-particle-a-stage6c-review-v1"
+const ParticleAStage6CToolVersion = "connected-speech-particle-a-stage6c-review-v2"
 
 type ParticleAStage6CConfig struct {
 	RepoRoot          string
@@ -184,7 +184,8 @@ func RunParticleAStage6CReview(config ParticleAStage6CConfig) (ParticleAStage6CR
 	gates := map[string]bool{
 		"six_classes_balanced": balanced, "all_review_rows_match_stage6b": matched == len(reviews), "three_mode_rows_complete": len(projectionRows)-1 == matched*3,
 		"semantic_shared_key_is_separate": semanticOnly == 5, "key_changing_examples_present": keyChanging == 25,
-		"all_sources_resolve": len(sources) == 3, "runtime_aliases_remain_zero": true, "inputs_are_read_only": equalHashes(before, after), "unresolved_rows_zero": len(unresolved) == 1,
+		"all_sources_resolve": len(sources) == 3, "all_review_rows_decided": len(decisions) == len(reviews), "all_decisions_approved": approved == len(reviews),
+		"runtime_aliases_remain_zero": true, "inputs_are_read_only": equalHashes(before, after), "unresolved_rows_zero": len(unresolved) == 1,
 	}
 	summary := ParticleAStage6CSummary{ToolVersion: ParticleAStage6CToolVersion, SourceCount: len(sources), ReviewCount: len(reviews), DecisionCount: len(decisions), MatchedCount: matched,
 		PendingCount: len(reviews) - len(decisions), ApprovedCount: approved, DeferredCount: deferred, RejectedCount: rejected, SemanticOnlyCount: semanticOnly, KeyChangingCount: keyChanging,
@@ -443,10 +444,10 @@ func writeParticleAStage6CReport(path string, summary ParticleAStage6CSummary) e
 		keys = append(keys, key)
 	}
 	sort.Strings(keys)
-	lines := []string{"# 阶段6C：语气词‘啊’首批复核门禁", "", fmt.Sprintf("- 复核项：%d；匹配：%d；待人工复核：%d", summary.ReviewCount, summary.MatchedCount, summary.PendingCount), fmt.Sprintf("- 共键语义样本：%d；键码变化样本：%d", summary.SemanticOnlyCount, summary.KeyChangingCount), fmt.Sprintf("- 三模式投影行：%d；未决：%d；运行时别名：0", summary.ThreeModeProjectionRows, summary.UnresolvedCount), "", "## 门禁", ""}
+	lines := []string{"# 阶段6C：语气词‘啊’首批复核门禁", "", fmt.Sprintf("- 复核项：%d；匹配：%d；已核准：%d；待人工复核：%d", summary.ReviewCount, summary.MatchedCount, summary.ApprovedCount, summary.PendingCount), fmt.Sprintf("- 共键语义样本：%d；键码变化样本：%d", summary.SemanticOnlyCount, summary.KeyChangingCount), fmt.Sprintf("- 三模式投影行：%d；未决：%d；运行时别名：0", summary.ThreeModeProjectionRows, summary.UnresolvedCount), "", "## 门禁", ""}
 	for _, key := range keys {
 		lines = append(lines, fmt.Sprintf("- `%s`：%t", key, summary.Gates[key]))
 	}
-	lines = append(lines, "", "本阶段只建立小批量持久化复核入口；全部项目仍为未批准，不生成运行时词典。", "")
+	lines = append(lines, "", "30 条已按句末通常语境核准；本阶段仍不生成运行时词典，运行接入须另走下一阶段门禁。", "")
 	return os.WriteFile(path, []byte(strings.Join(lines, "\n")), 0o644)
 }

@@ -52,7 +52,7 @@
       "id": "zaoyin-contextual",
       "category": "zaoyin",
       "title": "语流派生首音",
-      "description": "ü 前虚首音 [ɥ] 及语气词‘啊’的 [ŋ]、[z]/[ɹ] 条件实现；其中 [ʐ]/[ɻ] 仍归 N19",
+      "description": "ü 前虚首音 [ɥ] 及语气词‘啊’的 [ŋ]、[ɹ] 条件实现；[ɹ] 不等于规范拼音声母 z[ts]，其中 [ʐ]/[ɻ] 仍归 N19",
       "yinyuan_ids": ["N25", "N26", "N27"]
     },
 

@@ -15,7 +15,7 @@ func TestParticleAStage6AAuditIsCompleteAndReadOnly(t *testing.T) {
 	}
 	config := DefaultParticleAStage6AConfig(repoRoot)
 	before := map[string][]byte{}
-	for _, path := range []string{config.ScopePath, filepath.Join(config.DataDir, "yime_pinyin_codes.tsv"), filepath.Join(config.DataDir, "yime_syllable_decomposition.tsv"), filepath.Join(config.DataDir, "yime_full.dict.yaml")} {
+	for _, path := range []string{config.ScopePath, config.PositionPolicyPath, filepath.Join(config.DataDir, "yime_pinyin_codes.tsv"), filepath.Join(config.DataDir, "yime_syllable_decomposition.tsv"), filepath.Join(config.DataDir, "yime_full.dict.yaml")} {
 		payload, err := os.ReadFile(path)
 		if err != nil {
 			t.Fatal(err)
@@ -34,6 +34,9 @@ func TestParticleAStage6AAuditIsCompleteAndReadOnly(t *testing.T) {
 	if len(result.Summary.ClassCounts) != 6 || result.Summary.UnresolvedCount != 0 {
 		t.Fatalf("incomplete classification: %#v", result.Summary)
 	}
+	if result.Summary.ParticleAOccurrenceCount != 6754 || result.Summary.EligibleWithHostCount != 6728 || result.Summary.InitialNoHostCount != 20 || result.Summary.MedialWithHostCount != 71 || result.Summary.FinalWithHostCount != 6657 || result.Summary.NonA5WithHostCount != 6 {
+		t.Fatalf("position policy inventory changed: %#v", result.Summary)
+	}
 	for path, want := range before {
 		got, err := os.ReadFile(path)
 		if err != nil {
@@ -43,7 +46,7 @@ func TestParticleAStage6AAuditIsCompleteAndReadOnly(t *testing.T) {
 			t.Fatalf("audit modified input %s", path)
 		}
 	}
-	wantReports := []string{"REPORT.md", "candidate_inventory.tsv", "class_summary.tsv", "input_hashes_after.json", "input_hashes_before.json", "manifest.json", "summary.json", "unresolved.tsv"}
+	wantReports := []string{"REPORT.md", "candidate_inventory.tsv", "class_summary.tsv", "input_hashes_after.json", "input_hashes_before.json", "manifest.json", "position_inventory.tsv", "summary.json", "unresolved.tsv"}
 	entries, err := os.ReadDir(config.OutputDir)
 	if err != nil {
 		t.Fatal(err)
@@ -64,6 +67,17 @@ func TestParticleAStage6AAuditIsCompleteAndReadOnly(t *testing.T) {
 	text := string(payload)
 	if !strings.Contains(text, "\tpreserve\tresearch_only\tfalse\t") {
 		t.Fatalf("candidate policy missing:\n%s", text[:min(len(text), 1000)])
+	}
+}
+
+func TestParticleAPositionPolicyKeepsInitialAAndClassifiesMedialA5(t *testing.T) {
+	rows := [][]string{
+		{"text", "full_code", "weight", "syllable_index", "position_class", "canonical_a_code", "reading_status", "treatment", "candidate_policy", "runtime_enabled", "note"},
+		{"啊哈", "'fff hfff", "1", "0", "INITIAL_NO_HOST", "'fff", "non_a5", "keep_canonical_no_assimilation", "canonical_only", "false", "x"},
+		{"等啊等", "]ww/ 'ddd ]ww/", "1", "1", "MEDIAL_WITH_HOST", "'ddd", "a5", "classify_by_previous_final", "parallel_alias_keep_canonical", "false", "x"},
+	}
+	if !particleAPositionTreatment(rows, "INITIAL_NO_HOST", "keep_canonical_no_assimilation") || !particleAPositionA5Treatment(rows) || !particleAPositionDualTrack(rows) {
+		t.Fatal("词首啊与句中啊的位置政策没有分离")
 	}
 }
 

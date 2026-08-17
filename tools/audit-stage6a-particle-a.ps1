@@ -31,8 +31,10 @@ func main() {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
-	fmt.Printf("Particle-a Stage 6A audit: complete\nexplicit=%d classified=%d unresolved=%d runtime_aliases=%d passed=%t\n",
-		result.Summary.ExplicitParticleACount, result.Summary.ClassifiedCount, result.Summary.UnresolvedCount,
+	fmt.Printf("Particle-a Stage 6A audit: complete\nfinal_baseline=%d all_a_positions=%d eligible_with_host=%d medial=%d final=%d initial_no_host=%d non_a5_with_host=%d unresolved=%d runtime_aliases=%d passed=%t\n",
+		result.Summary.ExplicitParticleACount, result.Summary.ParticleAOccurrenceCount, result.Summary.EligibleWithHostCount,
+		result.Summary.MedialWithHostCount, result.Summary.FinalWithHostCount, result.Summary.InitialNoHostCount,
+		result.Summary.NonA5WithHostCount, result.Summary.UnresolvedCount,
 		result.Summary.RuntimeAliasesGenerated, result.Summary.Passed)
 }
 '@
