@@ -1376,8 +1376,10 @@ func TestRealRimeMiddleSegmentCorrectionRestoresFullSentence(t *testing.T) {
 	}
 
 	ClearComposition(session.sessionID)
+	// 编辑区内袋下划线的玉编码文字。Keep this fixture aligned with
+	// the bundled full-schema codes while exercising the correction workflow.
 	typeASCII(t, session.sessionID,
-		"bjfa3lkj2mmmnvcl]fdl1jdshuds1jdz]eeeym,.bjfa2lkj=oca6JKL")
+		"bjfa3lkj2mmmnvcl]fdl1jdshuds1jdz]eee`m,.bjfa-sss=oca6JKL")
 	_, _ = GetCommit(session.sessionID)
 	backend := &nativeBackend{sessionID: session.sessionID}
 	ime := newSegmentNavigationIME(backend)
