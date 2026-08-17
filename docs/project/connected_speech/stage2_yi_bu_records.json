@@ -3,7 +3,7 @@
     "schema_version": 1,
     "ruleset_version": "0.2.0",
     "record_id": "cs-stage2-bu-zhi-yu-trial",
-    "record_revision": 1,
+    "record_revision": 2,
     "text": "不至于",
     "canonical_pinyin": "bu4 zhi4 yu2",
     "phenomenon": "tone_sandhi",
@@ -28,12 +28,12 @@
     "canonical_yinyuan_ids": [
       ["N01", "M04", "M05", "M06"],
       ["N16", "M19", "M20", "M21"],
-      ["N23", "M09", "M08", "M07"]
+      ["N25", "M09", "M08", "M07"]
     ],
     "surface_yinyuan_ids": [
       ["N01", "M06", "M05", "M04"],
       ["N16", "M19", "M20", "M21"],
-      ["N23", "M09", "M08", "M07"]
+      ["N25", "M09", "M08", "M07"]
     ],
     "rewrites": [
       {"syllable_index": 0, "position": "huyin", "from_id": "M04", "to_id": "M06", "attributes": ["tone_grade"]},

@@ -2156,16 +2156,17 @@ func TestCompiledSchemaValidationRejectsStaleVersionAndAlphabet(t *testing.T) {
 		t.Fatal(err)
 	}
 	schemaID := "yime_shorthand"
-	source := "schema:\n  version: new\nspeller:\n  alphabet: \"`abc\"\n"
-	compiled := "schema:\n  version: old\nspeller:\n  alphabet: \"abc\"\n"
+	dictionaryID := "yime_sentence_shorthand"
+	source := "schema:\n  version: new\nspeller:\n  alphabet: \"`abc\"\ntranslator:\n  dictionary: " + dictionaryID + "\n"
+	compiled := "schema:\n  version: old\ncustom_phrase:\n  dictionary: \"\"\nspeller:\n  alphabet: \"abc\"\ntranslator:\n  dictionary: " + dictionaryID + "\n"
 	if err := os.WriteFile(filepath.Join(userDir, schemaID+".schema.yaml"), []byte(source), 0o644); err != nil {
 		t.Fatal(err)
 	}
 	for _, name := range []string{
 		schemaID + ".schema.yaml",
-		schemaID + ".prism.bin",
-		schemaID + ".reverse.bin",
-		schemaID + ".table.bin",
+		dictionaryID + ".prism.bin",
+		dictionaryID + ".reverse.bin",
+		dictionaryID + ".table.bin",
 	} {
 		content := []byte(name)
 		if name == schemaID+".schema.yaml" {
