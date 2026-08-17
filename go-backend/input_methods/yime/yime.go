@@ -3236,16 +3236,33 @@ func validateCompiledRimeSchema(userDir, schemaID string) error {
 	if schemaID == "" || schemaID == "." || schemaID == ".." || filepath.Base(schemaID) != schemaID {
 		return fmt.Errorf("当前方案 ID 无效: %q", schemaID)
 	}
-	required := []string{schemaID + ".schema.yaml"}
+	buildDir := filepath.Join(userDir, "build")
+	compiledSchemaName := schemaID + ".schema.yaml"
+	compiledSchemaPath := filepath.Join(buildDir, compiledSchemaName)
+	compiledSchema, err := os.ReadFile(compiledSchemaPath)
+	if err != nil {
+		return fmt.Errorf("当前方案 %s 缺少编译产物 %s: %w", schemaID, compiledSchemaName, err)
+	}
+	if len(compiledSchema) == 0 {
+		return fmt.Errorf("当前方案编译产物为空: %s", compiledSchemaPath)
+	}
+	required := []string{}
 	if strings.HasPrefix(schemaID, "yime_") {
+		dictionaryID := strings.Trim(rimeSchemaSectionScalar(compiledSchema, "translator", "dictionary"), "\"'")
+		if dictionaryID == "" {
+			dictionaryID = schemaID
+		}
+		if dictionaryID == "." || dictionaryID == ".." || filepath.Base(dictionaryID) != dictionaryID {
+			return fmt.Errorf("当前方案 %s 的编译词典 ID 无效: %q", schemaID, dictionaryID)
+		}
 		required = append(required,
-			schemaID+".prism.bin",
-			schemaID+".reverse.bin",
-			schemaID+".table.bin",
+			dictionaryID+".prism.bin",
+			dictionaryID+".reverse.bin",
+			dictionaryID+".table.bin",
 		)
 	}
 	for _, name := range required {
-		path := filepath.Join(userDir, "build", name)
+		path := filepath.Join(buildDir, name)
 		info, err := os.Stat(path)
 		if err != nil {
 			return fmt.Errorf("当前方案 %s 缺少编译产物 %s: %w", schemaID, name, err)
@@ -3261,11 +3278,6 @@ func validateCompiledRimeSchema(userDir, schemaID string) error {
 			return nil
 		}
 		return fmt.Errorf("读取当前方案源配置失败 %s: %w", sourceSchemaPath, sourceErr)
-	}
-	compiledSchemaPath := filepath.Join(userDir, "build", schemaID+".schema.yaml")
-	compiledSchema, err := os.ReadFile(compiledSchemaPath)
-	if err != nil {
-		return fmt.Errorf("读取当前方案编译配置失败 %s: %w", compiledSchemaPath, err)
 	}
 	for _, field := range []string{"version", "alphabet"} {
 		sourceValue := rimeSchemaScalar(sourceSchema, field)
@@ -3283,6 +3295,26 @@ func rimeSchemaScalar(data []byte, field string) string {
 		trimmed := strings.TrimSpace(line)
 		if strings.HasPrefix(trimmed, prefix) {
 			return strings.TrimSpace(strings.TrimPrefix(trimmed, prefix))
+		}
+	}
+	return ""
+}
+
+func rimeSchemaSectionScalar(data []byte, section, field string) string {
+	inSection := false
+	sectionHeader := section + ":"
+	fieldPrefix := field + ":"
+	for _, line := range strings.Split(string(data), "\n") {
+		trimmed := strings.TrimSpace(line)
+		if trimmed == "" {
+			continue
+		}
+		if len(line) == len(strings.TrimLeft(line, " \t")) {
+			inSection = trimmed == sectionHeader
+			continue
+		}
+		if inSection && strings.HasPrefix(trimmed, fieldPrefix) {
+			return strings.TrimSpace(strings.TrimPrefix(trimmed, fieldPrefix))
 		}
 	}
 	return ""
