@@ -19,6 +19,9 @@ var generatedSchemaFiles = []string{
 	"yime_erhua_mixed_variable.schema.yaml",
 	"yime_erhua_mixed_full.schema.yaml",
 	"yime_erhua_mixed_shorthand.schema.yaml",
+	"yime_psc_peripheral_variable.schema.yaml",
+	"yime_psc_peripheral_full.schema.yaml",
+	"yime_psc_peripheral_shorthand.schema.yaml",
 }
 var generatedLexiconFiles = []string{
 	"yime_full.dict.yaml",
@@ -30,7 +33,27 @@ var generatedErhuaOverlayFiles = []string{
 	"yime_erhua_mixed_full.dict.yaml",
 	"yime_erhua_mixed_variable.dict.yaml",
 	"yime_erhua_mixed_shorthand.dict.yaml",
+	"yime_erhua_mixed_sentence_full.dict.yaml",
+	"yime_erhua_mixed_sentence_variable.dict.yaml",
+	"yime_erhua_mixed_sentence_shorthand.dict.yaml",
+	"yime_sentence_full.dict.yaml",
+	"yime_sentence_variable.dict.yaml",
+	"yime_sentence_shorthand.dict.yaml",
+	"yime_third_tone_stage5c_full.dict.yaml",
+	"yime_third_tone_stage5c_variable.dict.yaml",
+	"yime_third_tone_stage5c_shorthand.dict.yaml",
+	"yime_third_tone_stage5c_manifest.json",
+	"yime_erhua_reverse_source.tsv",
 	"yime_erhua_mixed_manifest.json",
+}
+var generatedPSCPeripheralFiles = []string{
+	"yime_psc_peripheral_full.dict.yaml",
+	"yime_psc_peripheral_variable.dict.yaml",
+	"yime_psc_peripheral_shorthand.dict.yaml",
+	"yime_psc_peripheral_sentence_full.dict.yaml",
+	"yime_psc_peripheral_sentence_variable.dict.yaml",
+	"yime_psc_peripheral_sentence_shorthand.dict.yaml",
+	"yime_psc_peripheral_manifest.json",
 }
 var retiredCoreTrialFiles = []string{
 	"yime_core_trial.dict.yaml",
@@ -84,6 +107,15 @@ func RefreshRimeData(sharedDir, userDir string) (bool, error) {
 	if err != nil {
 		return false, err
 	}
+	pscPeripheralChanged, err := refreshGeneratedOverlay(
+		sharedDir,
+		userDir,
+		generatedPSCPeripheralFiles,
+		"PSC 规范低频外围",
+	)
+	if err != nil {
+		return false, err
+	}
 	schemasChanged, err := RefreshRimeSchemas(sharedDir, userDir)
 	if err != nil {
 		return false, err
@@ -92,22 +124,33 @@ func RefreshRimeData(sharedDir, userDir string) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	return selectionChanged || schemasChanged || lexiconChanged || erhuaOverlayChanged || retiredChanged, nil
+	return selectionChanged || schemasChanged || lexiconChanged || erhuaOverlayChanged || pscPeripheralChanged || retiredChanged, nil
 }
 
 func refreshGeneratedErhuaOverlay(sharedDir, userDir string) (bool, error) {
-	sharedManifestPath := filepath.Join(sharedDir, generatedErhuaOverlayFiles[3])
+	return refreshGeneratedOverlay(
+		sharedDir,
+		userDir,
+		generatedErhuaOverlayFiles,
+		"儿化混合",
+	)
+}
+
+func refreshGeneratedOverlay(sharedDir, userDir string, files []string, label string) (bool, error) {
+	manifestName := files[len(files)-1]
+	artifactNames := files[:len(files)-1]
+	sharedManifestPath := filepath.Join(sharedDir, manifestName)
 	sharedManifest, err := os.ReadFile(sharedManifestPath)
 	if errors.Is(err, os.ErrNotExist) {
 		return false, nil
 	}
 	if err != nil {
-		return false, fmt.Errorf("读取共享儿化混合清单失败: %w", err)
+		return false, fmt.Errorf("读取共享%s清单失败: %w", label, err)
 	}
-	userManifest, manifestErr := os.ReadFile(filepath.Join(userDir, generatedErhuaOverlayFiles[3]))
+	userManifest, manifestErr := os.ReadFile(filepath.Join(userDir, manifestName))
 	needsRefresh := manifestErr != nil || !bytes.Equal(userManifest, sharedManifest)
 	if !needsRefresh {
-		for _, name := range generatedErhuaOverlayFiles[:3] {
+		for _, name := range artifactNames {
 			if _, statErr := os.Stat(filepath.Join(userDir, name)); statErr != nil {
 				needsRefresh = true
 				break
@@ -117,17 +160,17 @@ func refreshGeneratedErhuaOverlay(sharedDir, userDir string) (bool, error) {
 	if !needsRefresh {
 		return false, nil
 	}
-	for _, name := range generatedErhuaOverlayFiles[:3] {
+	for _, name := range artifactNames {
 		content, readErr := os.ReadFile(filepath.Join(sharedDir, name))
 		if readErr != nil {
-			return false, fmt.Errorf("读取共享儿化混合词典 %s 失败: %w", name, readErr)
+			return false, fmt.Errorf("读取共享%s词典 %s 失败: %w", label, name, readErr)
 		}
 		if writeErr := os.WriteFile(filepath.Join(userDir, name), content, 0o644); writeErr != nil {
-			return false, fmt.Errorf("更新用户目录儿化混合词典 %s 失败: %w", name, writeErr)
+			return false, fmt.Errorf("更新用户目录%s词典 %s 失败: %w", label, name, writeErr)
 		}
 	}
-	if err := os.WriteFile(filepath.Join(userDir, generatedErhuaOverlayFiles[3]), sharedManifest, 0o644); err != nil {
-		return false, fmt.Errorf("更新用户目录儿化混合清单失败: %w", err)
+	if err := os.WriteFile(filepath.Join(userDir, manifestName), sharedManifest, 0o644); err != nil {
+		return false, fmt.Errorf("更新用户目录%s清单失败: %w", label, err)
 	}
 	return true, nil
 }

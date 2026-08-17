@@ -230,6 +230,39 @@ func TestRealRimeNeutralToneEntryAcrossAllThreeSchemas(t *testing.T) {
 	}
 }
 
+func TestRealRimeDedicatedHRenderedInitialAcrossAllThreeSchemas(t *testing.T) {
+	dataDir := rimeRuntimeTestDataDir(t)
+	codeMap, err := reverselookup.LoadSharedCodeMap(dataDir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	session := newRealRimeSession(t)
+	for _, test := range []struct {
+		schema string
+		mode   reverselookup.Mode
+	}{
+		{"yime_variable", reverselookup.ModeVariable},
+		{"yime_full", reverselookup.ModeFull},
+		{"yime_shorthand", reverselookup.ModeShorthand},
+	} {
+		t.Run(test.schema, func(t *testing.T) {
+			if !SelectSchema(session.sessionID, test.schema) {
+				t.Fatalf("expected %s to be selectable", test.schema)
+			}
+			code, _, encodeErr := reverselookup.EncodeNumericTonePinyin(codeMap, "yu3 yan2", test.mode)
+			if encodeErr != nil {
+				t.Fatal(encodeErr)
+			}
+			if !strings.HasPrefix(code, "`") {
+				t.Fatalf("yu3 must retain N25 backtick in %s, got %q", test.schema, code)
+			}
+			if _, found := findRealRimeCandidateAcrossPages(t, session.sessionID, code, "语言"); !found {
+				t.Fatalf("candidate 语言 missing in %s after %q", test.schema, code)
+			}
+		})
+	}
+}
+
 func TestRealRimeExplicitErhuaMixedRoutesAcrossAllThreeSchemas(t *testing.T) {
 	dataDir := rimeRuntimeTestDataDir(t)
 	session := newRealRimeSessionWithManagedRefresh(t, true)
@@ -253,6 +286,180 @@ func TestRealRimeExplicitErhuaMixedRoutesAcrossAllThreeSchemas(t *testing.T) {
 				if _, found := findRealRimeCandidate(t, session.sessionID, code, "一阵儿"); !found {
 					t.Fatalf("explicit-erhua candidate 一阵儿 missing in %s after %q", schema, code)
 				}
+			}
+
+			sentenceEntries := readBundledErhuaDictionary(t, filepath.Join(dataDir, "yime_erhua_mixed_sentence_"+mode+".dict.yaml"))
+			fusedSentenceCodes := map[string]string{}
+			for _, entry := range sentenceEntries {
+				if entry.Text == "大婶儿" || entry.Text == "打转儿" {
+					fusedSentenceCodes[entry.Text] = strings.ReplaceAll(entry.Code, " ", "")
+				}
+			}
+			if fusedSentenceCodes["大婶儿"] == "" || fusedSentenceCodes["打转儿"] == "" {
+				t.Fatalf("%s lacks sentence spellings for 大婶儿/打转儿: %v", mode, fusedSentenceCodes)
+			}
+			continuousCode := fusedSentenceCodes["大婶儿"] + fusedSentenceCodes["打转儿"]
+			if _, found := findRealRimeCandidateAcrossPages(t, session.sessionID, continuousCode, "大婶儿打转儿"); !found {
+				t.Fatalf("explicit-erhua sentence 大婶儿打转儿 missing in %s after %q", schema, continuousCode)
+			}
+			coreEntriesForSentence := readBundledErhuaDictionary(t, filepath.Join(dataDir, "yime_"+mode+".dict.yaml"))
+			workCode := ""
+			for _, entry := range coreEntriesForSentence {
+				if entry.Text == "工作" {
+					workCode = strings.ReplaceAll(entry.Code, " ", "")
+					break
+				}
+			}
+			if workCode == "" {
+				t.Fatalf("%s lacks core code for 工作", mode)
+			}
+			mixedCode := fusedSentenceCodes["大婶儿"] + workCode
+			if _, found := findRealRimeCandidateAcrossPages(t, session.sessionID, mixedCode, "大婶儿工作"); !found {
+				t.Fatalf("mixed sentence 大婶儿工作 missing in %s after %q", schema, mixedCode)
+			}
+
+			coreSentenceCodes := map[string]string{}
+			for _, entry := range coreEntriesForSentence {
+				if entry.Text == "石头" || entry.Text == "滚动" || entry.Text == "表演" || entry.Text == "选手" {
+					coreSentenceCodes[entry.Text] = strings.ReplaceAll(entry.Code, " ", "")
+				}
+			}
+			if coreSentenceCodes["石头"] == "" || coreSentenceCodes["滚动"] == "" {
+				t.Fatalf("%s lacks core lexical-neutral sentence inputs: %v", mode, coreSentenceCodes)
+			}
+			neutralContinuousCode := coreSentenceCodes["石头"] + coreSentenceCodes["滚动"]
+			if _, found := findRealRimeCandidateAcrossPages(t, session.sessionID, neutralContinuousCode, "石头滚动"); !found {
+				t.Fatalf("lexical-neutral sentence 石头滚动 missing in %s after %q", schema, neutralContinuousCode)
+			}
+
+			pscSentenceEntries := readBundledErhuaDictionary(t, filepath.Join(dataDir, "yime_psc_peripheral_sentence_"+mode+".dict.yaml"))
+			pscNeutralCode := ""
+			for _, entry := range pscSentenceEntries {
+				if entry.Text == "商量" {
+					pscNeutralCode = strings.ReplaceAll(entry.Code, " ", "")
+					break
+				}
+			}
+			if pscNeutralCode == "" {
+				t.Fatalf("%s lacks reviewed PSC neutral-tone sentence spelling for 商量", mode)
+			}
+			pscNeutralContinuousCode := pscNeutralCode + workCode
+			if _, found := findRealRimeCandidateAcrossPages(t, session.sessionID, pscNeutralContinuousCode, "商量工作"); !found {
+				t.Fatalf("reviewed PSC neutral-tone sentence 商量工作 missing in %s after %q", schema, pscNeutralContinuousCode)
+			}
+
+			thirdToneEntries := readBundledErhuaDictionary(t, filepath.Join(dataDir, "yime_third_tone_stage5c_"+mode+".dict.yaml"))
+			thirdToneCodes := map[string]string{}
+			for _, entry := range thirdToneEntries {
+				if entry.Text == "表演" || entry.Text == "选手" {
+					thirdToneCodes[entry.Text] = strings.ReplaceAll(entry.Code, " ", "")
+				}
+			}
+			for _, text := range []string{"表演", "选手"} {
+				if thirdToneCodes[text] == "" {
+					t.Fatalf("%s lacks reviewed third-tone surface code for %s", mode, text)
+				}
+				if _, found := findRealRimeCandidateAcrossPages(t, session.sessionID, thirdToneCodes[text], text); !found {
+					t.Fatalf("reviewed third-tone candidate %s missing in %s after %q", text, schema, thirdToneCodes[text])
+				}
+				if coreSentenceCodes[text] == "" || coreSentenceCodes[text] == thirdToneCodes[text] {
+					t.Fatalf("%s must preserve a distinct canonical code for %s", mode, text)
+				}
+				if _, found := findRealRimeCandidateAcrossPages(t, session.sessionID, coreSentenceCodes[text], text); !found {
+					t.Fatalf("canonical third-tone candidate %s missing in %s after %q", text, schema, coreSentenceCodes[text])
+				}
+			}
+			thirdToneContinuousCode := thirdToneCodes["表演"] + workCode
+			if _, found := findRealRimeCandidateAcrossPages(t, session.sessionID, thirdToneContinuousCode, "表演工作"); !found {
+				t.Fatalf("reviewed third-tone sentence 表演工作 missing in %s after %q", schema, thirdToneContinuousCode)
+			}
+
+			// 刀刃儿 is absent from the curated core: its suffix-compatible
+			// route stays in the PSC low-frequency layer while the explicit
+			// erhua overlay contributes only the fused route.
+			fusedCode := ""
+			for _, entry := range entries {
+				if entry.Text == "刀刃儿" {
+					fusedCode = entry.Code
+					break
+				}
+			}
+			pscEntries := readBundledErhuaDictionary(t, filepath.Join(dataDir, "yime_psc_peripheral_"+mode+".dict.yaml"))
+			suffixCode := ""
+			for _, entry := range pscEntries {
+				if entry.Text == "刀刃儿" {
+					suffixCode = entry.Code
+					break
+				}
+			}
+			if fusedCode == "" || suffixCode == "" || fusedCode == suffixCode {
+				t.Fatalf("%s must expose split low-frequency suffix/fused routes for 刀刃儿: suffix=%q fused=%q", mode, suffixCode, fusedCode)
+			}
+			for _, code := range []string{suffixCode, fusedCode} {
+				if _, found := findRealRimeCandidateAcrossPages(t, session.sessionID, code, "刀刃儿"); !found {
+					t.Fatalf("explicit low-frequency erhua candidate 刀刃儿 missing in %s after %q", schema, code)
+				}
+			}
+
+			// 所有专用派生音元均使用明确登记的 Shift 层键；Rime
+			// 必须保留大写键，不能折叠为基础音元。
+			for _, trial := range []struct {
+				text      string
+				shiftKeys string
+			}{
+				{text: "好玩儿", shiftKeys: "FD"},
+				{text: "单个儿", shiftKeys: "EW"},
+				{text: "香肠儿", shiftKeys: "TY"},
+				{text: "人影儿", shiftKeys: "X"},
+				{text: "加油儿", shiftKeys: "P"},
+				{text: "小鞋儿", shiftKeys: "UI"},
+				{text: "雨点儿", shiftKeys: "S"},
+				{text: "火锅儿", shiftKeys: "R"},
+				{text: "红包儿", shiftKeys: "FP"},
+				{text: "衣兜儿", shiftKeys: "RP"},
+				{text: "泪珠儿", shiftKeys: "P"},
+			} {
+				shiftCode := ""
+				for _, entry := range entries {
+					if entry.Text == trial.text && strings.ContainsAny(entry.Code, trial.shiftKeys) {
+						shiftCode = entry.Code
+						break
+					}
+				}
+				if shiftCode == "" {
+					t.Fatalf("%s overlay lacks dedicated Shift-layer fused code for %s", mode, trial.text)
+				}
+				if _, found := findRealRimeCandidateAcrossPages(t, session.sessionID, shiftCode, trial.text); !found {
+					t.Fatalf("Shift-layer erhua candidate %s missing in %s after %q", trial.text, schema, shiftCode)
+				}
+			}
+		})
+	}
+}
+
+func TestRealRimePSCPeripheralAcrossAllThreeSchemas(t *testing.T) {
+	dataDir := rimeRuntimeTestDataDir(t)
+	session := newRealRimeSessionWithManagedRefresh(t, true)
+	for _, mode := range []string{"variable", "full", "shorthand"} {
+		t.Run(mode, func(t *testing.T) {
+			schema := "yime_" + mode
+			if !SelectSchema(session.sessionID, schema) {
+				t.Fatalf("expected %s to be selectable", schema)
+			}
+			entries := readBundledErhuaDictionary(t, filepath.Join(dataDir, "yime_psc_peripheral_"+mode+".dict.yaml"))
+			code := ""
+			for _, entry := range entries {
+				if entry.Text == "打点" {
+					code = entry.Code
+					break
+				}
+			}
+			if code == "" {
+				t.Fatalf("%s PSC peripheral dictionary lacks 打点", mode)
+			}
+			input := strings.ReplaceAll(code, " ", "")
+			if _, found := findRealRimeCandidateAcrossPages(t, session.sessionID, input, "打点"); !found {
+				t.Fatalf("PSC peripheral candidate 打点 missing in %s after %q", schema, input)
 			}
 		})
 	}
@@ -864,6 +1071,28 @@ func findRealRimeCandidate(t *testing.T, sessionID RimeSessionId, input, text st
 			return index, true
 		}
 	}
+	return -1, false
+}
+
+func findRealRimeCandidateAcrossPages(t *testing.T, sessionID RimeSessionId, input, text string) (int, bool) {
+	t.Helper()
+	ClearComposition(sessionID)
+	typeASCII(t, sessionID, input)
+	for page := 0; page < 100; page++ {
+		menu, ok := GetMenu(sessionID)
+		if !ok {
+			return -1, false
+		}
+		for index, candidate := range menu.Candidates {
+			if candidate.Text == text {
+				return menu.PageNo*menu.PageSize + index, true
+			}
+		}
+		if menu.IsLastPage || !ProcessKey(sessionID, rimeNext, 0) {
+			return -1, false
+		}
+	}
+	t.Fatalf("candidate paging exceeded 100 pages for %q after %q", text, input)
 	return -1, false
 }
 
@@ -1562,7 +1791,7 @@ func TestRealRimeExplicitCandidateForgetAvailableInAllSchemas(t *testing.T) {
 
 func TestRealRimePrintableLayoutKeysAreNeverPagingBindings(t *testing.T) {
 	session := newRealRimeSession(t)
-	for _, key := range []rune{'-', '=', ',', '.', '/'} {
+	for _, key := range []rune{'`', '-', '=', ',', '.', '/'} {
 		t.Run(string(key), func(t *testing.T) {
 			ClearComposition(session.sessionID)
 			typeASCII(t, session.sessionID, "3")
@@ -1896,6 +2125,11 @@ func TestRealRimeAcceptsNewLayoutPunctuationAndShiftCodes(t *testing.T) {
 		{"backslash shouyin", []*pime.Request{{KeyCode: 0xDC, CharCode: '\\'}, {KeyCode: 'J', CharCode: 'j'}, {KeyCode: 'J', CharCode: 'j'}, {KeyCode: 'J', CharCode: 'j'}}},
 		{"shift comma musical", []*pime.Request{{KeyCode: 'H', CharCode: 'h'}, {KeyCode: 0xBC, CharCode: '<', KeyStates: keyStatesDown(vkShift)}, {KeyCode: 0xBC, CharCode: '<', KeyStates: keyStatesDown(vkShift)}, {KeyCode: 0xBC, CharCode: '<', KeyStates: keyStatesDown(vkShift)}}},
 		{"shift letter and punctuation musical", []*pime.Request{{KeyCode: 0xDE, CharCode: '\''}, {KeyCode: 'M', CharCode: 'M', KeyStates: keyStatesDown(vkShift)}, {KeyCode: 0xBC, CharCode: '<', KeyStates: keyStatesDown(vkShift)}, {KeyCode: 0xBE, CharCode: '>', KeyStates: keyStatesDown(vkShift)}}},
+		{"shift FDS a-rhotic", []*pime.Request{{KeyCode: 'H', CharCode: 'h'}, {KeyCode: 'F', CharCode: 'f'}, {KeyCode: 'D', CharCode: 'd'}, {KeyCode: 'O', CharCode: 'o'}, {KeyCode: 0xBD, CharCode: '-'}, {KeyCode: 'S', CharCode: 's'}, {KeyCode: 'S', CharCode: 'S', KeyStates: keyStatesDown(vkShift)}, {KeyCode: 'S', CharCode: 'S', KeyStates: keyStatesDown(vkShift)}}},
+		{"shift REW back-mid-rhotic", []*pime.Request{{KeyCode: 0xDD, CharCode: ']'}, {KeyCode: 'F', CharCode: 'f'}, {KeyCode: 'F', CharCode: 'f'}, {KeyCode: 'A', CharCode: 'a'}, {KeyCode: 'G', CharCode: 'g'}, {KeyCode: 'R', CharCode: 'r'}, {KeyCode: 'E', CharCode: 'E', KeyStates: keyStatesDown(vkShift)}, {KeyCode: 'W', CharCode: 'W', KeyStates: keyStatesDown(vkShift)}}},
+		{"shift QTY nasal-a-rhotic", []*pime.Request{{KeyCode: '1', CharCode: '1'}, {KeyCode: 'J', CharCode: 'j'}, {KeyCode: 'F', CharCode: 'f'}, {KeyCode: 0xBA, CharCode: ';'}, {KeyCode: '8', CharCode: '8'}, {KeyCode: 'S', CharCode: 's'}, {KeyCode: 'T', CharCode: 'T', KeyStates: keyStatesDown(vkShift)}, {KeyCode: 'Y', CharCode: 'Y', KeyStates: keyStatesDown(vkShift)}}},
+		{"shift VCX nasal-back-mid-rhotic", []*pime.Request{{KeyCode: '0', CharCode: '0'}, {KeyCode: 'X', CharCode: 'x'}, {KeyCode: 'C', CharCode: 'c'}, {KeyCode: 'A', CharCode: 'a'}, {KeyCode: 'Y', CharCode: 'y'}, {KeyCode: 'L', CharCode: 'l'}, {KeyCode: 'X', CharCode: 'X', KeyStates: keyStatesDown(vkShift)}, {KeyCode: 'X', CharCode: 'X', KeyStates: keyStatesDown(vkShift)}}},
+		{"shift PAZ u-rhotic", []*pime.Request{{KeyCode: '3', CharCode: '3'}, {KeyCode: 'J', CharCode: 'j'}, {KeyCode: 'F', CharCode: 'f'}, {KeyCode: 'F', CharCode: 'f'}, {KeyCode: 'Y', CharCode: 'y'}, {KeyCode: 'L', CharCode: 'l'}, {KeyCode: 'E', CharCode: 'e'}, {KeyCode: 'P', CharCode: 'P', KeyStates: keyStatesDown(vkShift)}}},
 	}
 
 	for _, test := range tests {

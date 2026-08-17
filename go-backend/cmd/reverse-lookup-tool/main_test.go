@@ -3,8 +3,10 @@
 package main
 
 import (
+	"strings"
 	"testing"
 
+	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/reverselookup"
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/win32ui"
 )
 
@@ -79,7 +81,7 @@ func TestUILayoutExpandsResultListAndKeepsDetailReadable(t *testing.T) {
 	if expanded.resultList.Bottom-compact.resultList.Bottom != 200 {
 		t.Fatalf("result list did not absorb added height: compact=%#v expanded=%#v", compact.resultList, expanded.resultList)
 	}
-	if compact.detailView.Bottom-compact.detailView.Top != 140 || expanded.detailView.Bottom-expanded.detailView.Top != 140 {
+	if compact.detailView.Bottom-compact.detailView.Top != 210 || expanded.detailView.Bottom-expanded.detailView.Top != 210 {
 		t.Fatalf("detail area must remain fully readable: compact=%#v expanded=%#v", compact.detailView, expanded.detailView)
 	}
 	if expanded.searchEdit.Right-compact.searchEdit.Right != 200 {
@@ -112,5 +114,25 @@ func TestBusyProgressSharesStatusRow(t *testing.T) {
 	busyStatus, busyProgress := statusProgressLayout(status, true)
 	if busyProgress.Right != status.Right || busyProgress.Right-busyProgress.Left != 180 || busyStatus.Right >= busyProgress.Left {
 		t.Fatalf("busy status and progress layout invalid: status=%#v progress=%#v", busyStatus, busyProgress)
+	}
+}
+
+func TestFormatResultDetailExplainsFusedErhuaWithoutChangingCanonicalPinyin(t *testing.T) {
+	detail := formatResultDetail(reverselookup.Result{
+		Phrase: "一阵儿", Source: "融合儿化", NumericPinyin: "yi1 zhen4 er5", StandardPinyin: "yī zhèn er",
+		ActiveCode: "yj7UIO", FullCode: "yjjj7UIO", VariableCode: "yj7UIO", ShorthandCode: "yj7UO",
+		ErhuaRecordID: "ERHUA-TEST", ReadingIdentity: "显式词汇化儿化（融合输入别名；规范拼音不改写）",
+		EvidenceSource: "psc_erhua", ErhuaFeatureRuleID: "ERHUA-YINYUAN-CENTRAL-ALL", AttachedSyllable: "zhen4",
+		SourceYinyuanIDs: "N16 M22 M23 M24", DerivedYinyuanIDs: "N16 M22 M23 M24",
+		SoundToKeyProjection: "M22+rhotic=true+nasalized=false→M22→ERHUA-KEY-HIGH(U)",
+	})
+	for _, want := range []string{
+		"数字标调：yi1 zhen4 er5", "标准拼音：yī zhèn er", "读音身份：显式词汇化儿化",
+		"儿化特征规则：ERHUA-YINYUAN-CENTRAL-ALL", "基础音元元组：N16 M22 M23 M24",
+		"派生儿化音元：N16 M22 M23 M24", "音元—键位投影：M22+rhotic=true+nasalized=false→M22→ERHUA-KEY-HIGH(U)",
+	} {
+		if !strings.Contains(detail, want) {
+			t.Fatalf("detail lacks %q:\n%s", want, detail)
+		}
 	}
 }

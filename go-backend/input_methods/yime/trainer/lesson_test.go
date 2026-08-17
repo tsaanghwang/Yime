@@ -137,7 +137,7 @@ func TestFoundationDeclaresSixPracticeTypesInRequiredOrder(t *testing.T) {
 	}
 }
 
-func TestSyllablePracticeUsesAll1728EncodedSyllablesGroupedBy24Shouyin(t *testing.T) {
+func TestSyllablePracticeUsesAll1733EncodedSyllablesGroupedBy25CanonicalShouyin(t *testing.T) {
 	resolver, err := NewResolver(repositoryDataDir(t))
 	if err != nil {
 		t.Fatal(err)
@@ -151,13 +151,13 @@ func TestSyllablePracticeUsesAll1728EncodedSyllablesGroupedBy24Shouyin(t *testin
 		if err != nil {
 			t.Fatalf("mode %s: %v", mode, err)
 		}
-		if len(groups) != 24 {
-			t.Fatalf("mode %s groups=%d want 24 stable shouyin groups", mode, len(groups))
+		if len(groups) != 25 {
+			t.Fatalf("mode %s groups=%d want 25 canonical shouyin groups", mode, len(groups))
 		}
 		total := 0
 		seen := map[string]bool{}
 		seenGroups := map[string]bool{}
-		n23HasY, n23HasHui := false, false
+		n23HasY, n25HasHui := false, false
 		for _, group := range groups {
 			if len(group.Exercises) == 0 {
 				t.Fatalf("mode %s has empty shouyin group %#v", mode, group)
@@ -200,15 +200,17 @@ func TestSyllablePracticeUsesAll1728EncodedSyllablesGroupedBy24Shouyin(t *testin
 				}
 				if group.ID == "syllables-n23" {
 					n23HasY = n23HasY || strings.Contains(exercise.Detail, "首音分析：y")
-					n23HasHui = n23HasHui || strings.Contains(exercise.Detail, "首音分析：ɥ")
+				}
+				if group.ID == "syllables-n25" {
+					n25HasHui = n25HasHui || strings.Contains(exercise.Detail, "首音分析：ɥ")
 				}
 			}
 		}
-		if total != 1728 || len(seen) != 1728 || len(seenGroups) != 24 {
-			t.Fatalf("mode %s exercises=%d identified=%d want exactly 1728 encoded syllables", mode, total, len(seen))
+		if total != 1733 || len(seen) != 1733 || len(seenGroups) != 25 {
+			t.Fatalf("mode %s exercises=%d identified=%d want exactly 1733 encoded syllables", mode, total, len(seen))
 		}
-		if !n23HasY || !n23HasHui {
-			t.Fatalf("mode %s N23 did not combine y and ɥ surface forms", mode)
+		if !n23HasY || !n25HasHui {
+			t.Fatalf("mode %s did not separate y/N23 from ɥ/N25", mode)
 		}
 		for _, canonicalOnly := range []string{"guai2", "kuai1", "ra4", "tin4"} {
 			if seen[canonicalOnly] {
@@ -314,7 +316,7 @@ func TestResolverSeparatesActiveLayoutFromReadOnlyTrainingMetadata(t *testing.T)
 	}
 }
 
-func TestGroupedKeymapCoversAll57IDsFromActiveLayoutExactlyOnce(t *testing.T) {
+func TestGroupedKeymapCoversAll60IDsFromActiveLayoutExactlyOnce(t *testing.T) {
 	resolver, err := NewResolver(repositoryDataDir(t))
 	if err != nil {
 		t.Fatal(err)
@@ -323,8 +325,8 @@ func TestGroupedKeymapCoversAll57IDsFromActiveLayoutExactlyOnce(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(groups) != 17 {
-		t.Fatalf("resolved %d groups, want six zaoyin plus eleven yueyin", len(groups))
+	if len(groups) != 18 {
+		t.Fatalf("resolved %d groups, want seven zaoyin plus eleven yueyin", len(groups))
 	}
 	seen := map[string]bool{}
 	zaoyinGroups, yueyinGroups := 0, 0
@@ -349,7 +351,7 @@ func TestGroupedKeymapCoversAll57IDsFromActiveLayoutExactlyOnce(t *testing.T) {
 			}
 		}
 	}
-	if zaoyinGroups != 6 || yueyinGroups != 11 || len(seen) != 57 {
+	if zaoyinGroups != 7 || yueyinGroups != 11 || len(seen) != 60 {
 		t.Fatalf("coverage zaoyin=%d yueyin=%d ids=%d", zaoyinGroups, yueyinGroups, len(seen))
 	}
 	for _, id := range layoutdesigner.ExpectedIDs() {
@@ -381,7 +383,7 @@ func TestGroupedKeymapKeepsPrototypeAuxiliaryMembersOnCurrentStableIDs(t *testin
 	}
 }
 
-func TestSyllableCompositionReusesSixShouyinGroups(t *testing.T) {
+func TestSyllableCompositionReusesSevenShouyinGroups(t *testing.T) {
 	resolver, err := NewResolver(repositoryDataDir(t))
 	if err != nil {
 		t.Fatal(err)
@@ -390,8 +392,8 @@ func TestSyllableCompositionReusesSixShouyinGroups(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(groups) != 6 {
-		t.Fatalf("shouyin groups=%d want 6", len(groups))
+	if len(groups) != 7 {
+		t.Fatalf("shouyin groups=%d want 7", len(groups))
 	}
 	count := 0
 	for _, group := range groups {
@@ -400,8 +402,8 @@ func TestSyllableCompositionReusesSixShouyinGroups(t *testing.T) {
 		}
 		count += len(group.Exercises)
 	}
-	if count != 24 {
-		t.Fatalf("shouyin exercises=%d want all 24 stable initial IDs", count)
+	if count != 27 {
+		t.Fatalf("shouyin exercises=%d want all 27 stable initial IDs", count)
 	}
 }
 
@@ -553,8 +555,8 @@ func TestCatalogCoversStableIDsAndKeepsAudioOptional(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(catalog.Entries) != 57 {
-		t.Fatalf("catalog has %d entries, want 57", len(catalog.Entries))
+	if len(catalog.Entries) != 60 {
+		t.Fatalf("catalog has %d entries, want 60", len(catalog.Entries))
 	}
 	m03, ok := catalog.Lookup("M03")
 	if !ok {

@@ -1,0 +1,13 @@
+# Rime dictionary
+# GENERATED FILE - core plus reviewed sentence-capable extensions
+---
+name: yime_sentence_full
+version: "yime-sentence-extension-v1"
+sort: by_weight
+use_preset_vocabulary: false
+import_tables:
+  - yime_full
+  - yime_psc_peripheral_sentence_full
+  - yime_erhua_mixed_sentence_full
+  - yime_third_tone_stage5c_full
+...

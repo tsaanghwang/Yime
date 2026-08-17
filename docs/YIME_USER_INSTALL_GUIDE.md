@@ -55,7 +55,7 @@ Get-AuthenticodeSignature .\YIME-<版本>-setup.exe |
 
 ### 编码输入
 
-Yime 使用 24 个首音类和 33 个乐音类 Yinyuan ID。当前试验布局把它们投影到
+Yime 使用 27 个首音类和 33 个乐音类 Yinyuan ID。当前试验布局把它们投影到
 47 个 Base 键和 11 个 Shift 键位；输入编码后从候选窗口选择。
 
 ### 候选选择

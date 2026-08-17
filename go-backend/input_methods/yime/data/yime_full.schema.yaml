@@ -5,9 +5,10 @@
 schema:
   schema_id: yime_full
   name: "Yime 等长模式"
-  version: "2026-08-15-core-1166300-layout-6d00e609f689-rank-v1-erhua-mixed-v1"
+  version: "2026-08-17-core-1166300-layout-58f69f370aea-rank-v1-erhua-mixed-v4-psc-peripheral-v1-sentence-v1-third-tone-v1-alphabet-v2"
   dependencies:
     - yime_erhua_mixed_full
+    - yime_psc_peripheral_full
 
 engine:
   processors:
@@ -28,17 +29,18 @@ engine:
   translators:
     - table_translator@custom_phrase
     - table_translator@erhua_mixed
+    - table_translator@psc_peripheral
     # Keep tail completion alive after an already valid sentence prefix.
     - script_translator
     - punct_translator
 
 speller:
-  alphabet: "1234567890-=qwertyuiop[]\\asdfghjkl;'zxcvbnm,./JKLUIOM<>NG"
+  alphabet: "`1234567890-=qwertyuiop[]\\asdfghjkl;'zxcvbnm,./JKLUIOM<>NGFDSREWQTYVCXPAZ"
   delimiter: " "
 
 translator:
-  dictionary: yime_full
-  user_dict: yime_full_core_1166300_layout_6d00e609f689_rank_v1
+  dictionary: yime_sentence_full
+  user_dict: yime_full_core_1166300_layout_58f69f370aea_rank_v1
   enable_user_dict: true
   enable_sentence: true
   sentence_over_completion: true
@@ -59,6 +61,13 @@ erhua_mixed:
   enable_sentence: false
   enable_completion: true
   initial_quality: 1
+
+psc_peripheral:
+  dictionary: yime_psc_peripheral_full
+  enable_user_dict: false
+  enable_sentence: false
+  enable_completion: true
+  initial_quality: -1
 
 menu:
   page_size: 5

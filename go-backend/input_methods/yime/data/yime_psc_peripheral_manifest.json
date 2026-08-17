@@ -1,0 +1,41 @@
+{
+  "tool_version": "psc-pronunciation-peripheral-runtime-v2",
+  "input_sha256": {
+    "catalog": "6d485cad6ea05cb91fa2282f3d0e8b2b57b1dc27a2f583ea8778836905c6936b",
+    "full_dictionary": "c11dd63d218906bf2eefa810aad8d28005c0add53cbd0584e2ccc2660f95818e",
+    "pinyin_codes": "aa516171f404f706b7d9ac0c9a3fb4aac4f043f3212c2b9ce6c94b38fb8d0071",
+    "shorthand_dictionary": "1bd186a3b81a5dfbe71cfa9706e659d89e22b39c598be73ce61769111309dd1c",
+    "variable_dictionary": "64a82edcce7aa7fc9da66b008a8d3ff288e03e267cf4bd419196737f218f49e8"
+  },
+  "output_sha256": {
+    "yime_psc_peripheral_full.dict.yaml": "3969ef74e6e0b5c14a151a90d9ae6dd39d7de7881be5450bbd0e050189767858",
+    "yime_psc_peripheral_sentence_full.dict.yaml": "b93ac01d1db4731c32d9adbf5d008ac15b9679050b4efe0b469ebf18665c7914",
+    "yime_psc_peripheral_sentence_shorthand.dict.yaml": "d952993a292e1b15a98b497529361e0a10311f67adc0b4f9d1353843db6d7adc",
+    "yime_psc_peripheral_sentence_variable.dict.yaml": "cea75f1c60b3571e82504244a03293cced2aa0d27ca09b8f9b9bf476205921a3",
+    "yime_psc_peripheral_shorthand.dict.yaml": "3b9140cb51deb79c7cf90214333062435ce384fe7ce517396a472e16cc23df49",
+    "yime_psc_peripheral_variable.dict.yaml": "b9e75b5489c3dcd5f56596075683ffa9bccdf925706d14b5960e7dd53f0dc4dd"
+  },
+  "summary": {
+    "tool_version": "psc-pronunciation-peripheral-runtime-v2",
+    "source_record_count": 315,
+    "neutral_tone_record_count": 183,
+    "erhua_record_count": 132,
+    "encoded_record_count": 315,
+    "already_in_core_record_count": 0,
+    "runtime_rows_per_mode": 315,
+    "sentence_rows_per_mode": 315,
+    "fixed_peripheral_weight": 1,
+    "gates": {
+      "candidate_text_unchanged": true,
+      "core_dictionary_files_unchanged": true,
+      "fixed_low_frequency_weight": true,
+      "formal_syllable_chain_complete": true,
+      "only_neutral_tone_or_erhua_selected": true,
+      "reviewed_source_only": true,
+      "sentence_spelling_boundaries_complete": true,
+      "source_primary_forbidden": true,
+      "three_mode_derivation_complete": true
+    },
+    "passed": true
+  }
+}

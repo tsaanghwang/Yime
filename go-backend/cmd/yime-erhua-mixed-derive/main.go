@@ -15,6 +15,8 @@ func main() {
 	dataDir := flag.String("data-dir", "", "baseline three-mode dictionary directory")
 	aliases := flag.String("aliases", "", "explicit erhua alias bundle")
 	annotations := flag.String("annotations", "", "explicit erhua annotation bundle")
+	soundProjection := flag.String("sound-projection", "", "erhua sound-unit to key-class projection bundle")
+	layout := flag.String("layout", "", "canonical Yinyuan-ID to physical-key layout")
 	outputDir := flag.String("output-dir", "", "generated runtime dictionary directory")
 	flag.Parse()
 
@@ -32,6 +34,12 @@ func main() {
 	}
 	if *annotations != "" {
 		config.AnnotationsPath = *annotations
+	}
+	if *soundProjection != "" {
+		config.SoundProjectionPath = *soundProjection
+	}
+	if *layout != "" {
+		config.LayoutPath = *layout
 	}
 	if *outputDir != "" {
 		config.OutputDir = *outputDir

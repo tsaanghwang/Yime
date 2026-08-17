@@ -6,8 +6,9 @@ param(
     [string]$EvidenceManifest,
     [Parameter(Mandatory = $true)]
     [string]$SourceRevision,
-    [Parameter(Mandatory = $true)]
-    [string]$PronunciationEntries,
+    [string]$PronunciationEntries = "",
+    [string]$PrebuiltReverseSource = "",
+    [string]$PreviousCoreSourceManifest = "",
     [string]$OutputDir = "",
     [switch]$DeployToUserDir
 )
@@ -17,9 +18,44 @@ $root = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot "..")).Path
 $goBackend = Join-Path $root "go-backend"
 $resolvedInputPath = (Resolve-Path -LiteralPath $InputPath).Path
 $resolvedEvidencePath = (Resolve-Path -LiteralPath $EvidenceManifest).Path
-$resolvedPronunciationEntries = (Resolve-Path -LiteralPath $PronunciationEntries).Path
 $evidence = Get-Content -LiteralPath $resolvedEvidencePath -Raw -Encoding UTF8 |
     ConvertFrom-Json
+$usingPrebuiltReverseSource = -not [string]::IsNullOrWhiteSpace($PrebuiltReverseSource)
+$resolvedPronunciationEntries = ""
+$resolvedPrebuiltReverseSource = ""
+$previousCoreSource = $null
+if ($usingPrebuiltReverseSource) {
+    if ([string]::IsNullOrWhiteSpace($PreviousCoreSourceManifest)) {
+        throw "-PreviousCoreSourceManifest is required with -PrebuiltReverseSource."
+    }
+    $resolvedPrebuiltReverseSource = (Resolve-Path -LiteralPath $PrebuiltReverseSource).Path
+    $resolvedPreviousCoreSourceManifest = (Resolve-Path -LiteralPath $PreviousCoreSourceManifest).Path
+    $previousCoreSource = Get-Content -LiteralPath $resolvedPreviousCoreSourceManifest -Raw -Encoding UTF8 |
+        ConvertFrom-Json
+    if (-not $previousCoreSource.pronunciation_entries -or
+        -not $previousCoreSource.pronunciation_entries_sha256) {
+        throw "Previous core source manifest has no pronunciation-source evidence."
+    }
+    if (-not $evidence.layout_reprojection -or
+        [bool]$evidence.layout_reprojection.candidate_selection_changed -or
+        [bool]$evidence.layout_reprojection.weights_changed) {
+        throw "Prebuilt reverse source requires layout-only evidence with unchanged selection and weights."
+    }
+    $prebuiltReverseHash = (Get-FileHash -LiteralPath $resolvedPrebuiltReverseSource -Algorithm SHA256).Hash.ToLowerInvariant()
+    if ($prebuiltReverseHash -ne [string]$evidence.layout_reprojection.reverse_source_sha256) {
+        throw "Prebuilt reverse source hash does not match layout-reprojection evidence."
+    }
+    $pronunciationEntriesName = [string]$previousCoreSource.pronunciation_entries
+    $pronunciationEntriesHash = [string]$previousCoreSource.pronunciation_entries_sha256
+}
+else {
+    if ([string]::IsNullOrWhiteSpace($PronunciationEntries)) {
+        throw "-PronunciationEntries is required unless -PrebuiltReverseSource is used."
+    }
+    $resolvedPronunciationEntries = (Resolve-Path -LiteralPath $PronunciationEntries).Path
+    $pronunciationEntriesName = [IO.Path]::GetFileName($resolvedPronunciationEntries)
+    $pronunciationEntriesHash = (Get-FileHash -LiteralPath $resolvedPronunciationEntries -Algorithm SHA256).Hash.ToLowerInvariant()
+}
 
 if (-not $evidence.ranking_evidence.policy_id) {
     throw "Core evidence manifest has no ranking policy."
@@ -42,7 +78,6 @@ if (-not [bool]$characterRanking.core_above_peripheral) {
     throw "Core and peripheral single-character weight ranges overlap."
 }
 $sourceHash = (Get-FileHash -LiteralPath $resolvedInputPath -Algorithm SHA256).Hash.ToLowerInvariant()
-$pronunciationEntriesHash = (Get-FileHash -LiteralPath $resolvedPronunciationEntries -Algorithm SHA256).Hash.ToLowerInvariant()
 if ($sourceHash -ne [string]$evidence.output_sha256) {
     throw "Core dictionary hash does not match the evidence manifest."
 }
@@ -54,7 +89,15 @@ New-Item -ItemType Directory -Force -Path $OutputDir | Out-Null
 $outputPath = (Resolve-Path -LiteralPath $OutputDir).Path
 $reverseCodeMapPath = Join-Path $outputPath "yime_pinyin_codes.tsv"
 if (-not (Test-Path -LiteralPath $reverseCodeMapPath)) {
-    $reverseCodeMapPath = Join-Path $goBackend "input_methods\yime\data\yime_pinyin_codes.tsv"
+    $canonicalReverseCodeMapPath = Join-Path $goBackend "input_methods\yime\data\yime_pinyin_codes.tsv"
+    Copy-Item -LiteralPath $canonicalReverseCodeMapPath -Destination $reverseCodeMapPath -Force
+}
+foreach ($sidecarName in @("yime_syllable_decomposition.tsv", "yime_yinyuan_layout.json")) {
+    $sidecarPath = Join-Path $outputPath $sidecarName
+    if (-not (Test-Path -LiteralPath $sidecarPath)) {
+        Copy-Item -LiteralPath (Join-Path $goBackend "input_methods\yime\data\$sidecarName") `
+            -Destination $sidecarPath -Force
+    }
 }
 $reverseCodeMapHash = (Get-FileHash -LiteralPath $reverseCodeMapPath -Algorithm SHA256).Hash.ToLowerInvariant()
 
@@ -66,14 +109,38 @@ try {
     if ($LASTEXITCODE -ne 0) {
         throw "Yime core derivation failed with exit code $LASTEXITCODE"
     }
-    go run ./cmd/yime-reverse-pinyin-derive `
-        -codes $reverseCodeMapPath `
-        -dictionary (Join-Path $outputPath "yime_full.dict.yaml") `
-        -pronunciations $resolvedPronunciationEntries `
-        -output (Join-Path $outputPath "yime_pinyin_reverse_source.tsv")
-    if ($LASTEXITCODE -ne 0) {
-        throw "Yime reverse-Pinyin source derivation failed with exit code $LASTEXITCODE"
+    if ($usingPrebuiltReverseSource) {
+        Copy-Item -LiteralPath $resolvedPrebuiltReverseSource `
+            -Destination (Join-Path $outputPath "yime_pinyin_reverse_source.tsv") -Force
     }
+    else {
+        go run ./cmd/yime-reverse-pinyin-derive `
+            -codes $reverseCodeMapPath `
+            -dictionary (Join-Path $outputPath "yime_full.dict.yaml") `
+            -pronunciations $resolvedPronunciationEntries `
+            -output (Join-Path $outputPath "yime_pinyin_reverse_source.tsv")
+        if ($LASTEXITCODE -ne 0) {
+            throw "Yime reverse-Pinyin source derivation failed with exit code $LASTEXITCODE"
+        }
+    }
+    go run ./cmd/yime-psc-peripheral-derive `
+        -repo-root $root `
+        -codes $reverseCodeMapPath `
+        -data-dir $outputPath `
+        -output-dir $outputPath
+    if ($LASTEXITCODE -ne 0) {
+        throw "Yime PSC pronunciation peripheral derivation failed with exit code $LASTEXITCODE"
+    }
+    go run ./cmd/yime-third-tone-stage5c-derive `
+        -repo-root $root `
+        -data-dir $outputPath `
+        -output-dir $outputPath
+    if ($LASTEXITCODE -ne 0) {
+        throw "Yime reviewed third-tone Stage 5C derivation failed with exit code $LASTEXITCODE"
+    }
+    # The explicit-erhua generator may inherit the reviewed low-frequency
+    # weight from an exact PSC suffix-compatible entry, so the PSC overlay is
+    # a declared upstream artifact and must be generated first.
     go run ./cmd/yime-erhua-mixed-derive `
         -repo-root $root `
         -data-dir $outputPath `
@@ -104,7 +171,7 @@ $sourceRecord = [ordered]@{
     source_dictionary = [IO.Path]::GetFileName($resolvedInputPath)
     source_dictionary_sha256 = $sourceHash
     source_selection_sha256 = [string]$evidence.selection_tsv_sha256
-    pronunciation_entries = [IO.Path]::GetFileName($resolvedPronunciationEntries)
+    pronunciation_entries = $pronunciationEntriesName
     pronunciation_entries_sha256 = $pronunciationEntriesHash
     reverse_pinyin_source = "yime_pinyin_reverse_source.tsv"
     reverse_pinyin_source_sha256 = $reverseSourceHash
@@ -136,6 +203,18 @@ $sourceRecord = [ordered]@{
     runtime_scope = "curated_phrases_with_all_encoded_character_periphery"
     prototype_scope = @("candidate_pool", "source_evidence", "regression_cases")
 }
+if ($usingPrebuiltReverseSource) {
+    $sourceRecord["layout_reprojection"] = [ordered]@{
+        layout_digest = [string]$evidence.layout_reprojection.layout_digest
+        previous_reverse_pinyin_source_sha256 = [string]$previousCoreSource.reverse_pinyin_source_sha256
+        old_pinyin_codes_sha256 = [string]$evidence.layout_reprojection.old_pinyin_codes_sha256
+        new_pinyin_codes_sha256 = [string]$evidence.layout_reprojection.new_pinyin_codes_sha256
+        changed_dictionary_records = [int64]$evidence.layout_reprojection.changed_dictionary_records
+        changed_reverse_source_rows = [int64]$evidence.layout_reprojection.changed_reverse_source_rows
+        candidate_selection_changed = $false
+        weights_changed = $false
+    }
+}
 $sourceManifestPath = Join-Path $outputPath "yime_core_source_manifest.json"
 $sourceJson = ($sourceRecord | ConvertTo-Json -Depth 8) + [Environment]::NewLine
 [IO.File]::WriteAllText(
@@ -158,7 +237,25 @@ if ($DeployToUserDir) {
         "yime_erhua_mixed_full.dict.yaml",
         "yime_erhua_mixed_variable.dict.yaml",
         "yime_erhua_mixed_shorthand.dict.yaml",
+		"yime_erhua_mixed_sentence_full.dict.yaml",
+		"yime_erhua_mixed_sentence_variable.dict.yaml",
+		"yime_erhua_mixed_sentence_shorthand.dict.yaml",
+		"yime_sentence_full.dict.yaml",
+		"yime_sentence_variable.dict.yaml",
+		"yime_sentence_shorthand.dict.yaml",
+		"yime_third_tone_stage5c_full.dict.yaml",
+		"yime_third_tone_stage5c_variable.dict.yaml",
+		"yime_third_tone_stage5c_shorthand.dict.yaml",
+		"yime_third_tone_stage5c_manifest.json",
         "yime_erhua_mixed_manifest.json",
+        "yime_erhua_reverse_source.tsv",
+        "yime_psc_peripheral_full.dict.yaml",
+        "yime_psc_peripheral_variable.dict.yaml",
+        "yime_psc_peripheral_shorthand.dict.yaml",
+		"yime_psc_peripheral_sentence_full.dict.yaml",
+		"yime_psc_peripheral_sentence_variable.dict.yaml",
+		"yime_psc_peripheral_sentence_shorthand.dict.yaml",
+        "yime_psc_peripheral_manifest.json",
         "yime_pinyin_reverse_source.tsv",
         "yime_lexicon_manifest.json",
         "yime_core_source_manifest.json"

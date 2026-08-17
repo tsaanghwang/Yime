@@ -1,6 +1,7 @@
 package layoutdesigner
 
 import (
+	"encoding/json"
 	"os"
 	"path/filepath"
 	"strings"
@@ -22,7 +23,7 @@ func TestCanonicalProfileMatchesCurrentLayoutDigest(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if digest != "6d00e609f6899a5ba85de857a18e7c9cca60d898c521dce16fac3fa76af532fb" {
+	if digest != "58f69f370aea49e03a48414dcaaf0ebdaef88be0e4fee37e2c4e1497b14976dd" {
 		t.Fatalf("digest=%s", digest)
 	}
 }
@@ -100,9 +101,13 @@ func TestReencodePreservesVirtualShouyinAsSyllableBoundary(t *testing.T) {
 func TestDescribeIDDistinguishesRealAndVirtualShouyin(t *testing.T) {
 	want := map[string]string{
 		"N01": "b",
-		"N12": "'（虚首音）",
-		"N23": "y（虚首音）",
+		"N12": "'（非高呼音前虚首音）",
+		"N19": "r [ʐ]/[ɻ]",
+		"N23": "y [j]（虚首音）",
 		"N24": "w（虚首音）",
+		"N25": "ɥ（ü 前虚首音）",
+		"N26": "ŋ（啊的同化首音）",
+		"N27": "ɹ（啊的舌尖同化首音）",
 	}
 	for id, label := range want {
 		if got := DescribeID(id); got != label {
@@ -117,6 +122,59 @@ func TestValidateRejectsReservedCandidateKey(t *testing.T) {
 	p.Projection["N01"] = "!"
 	if err := p.Validate(); err == nil {
 		t.Fatal("expected reserved-key failure")
+	}
+}
+
+func TestCanonicalProfileAllowsOnlyTheTwoControlledSharedKeyGroups(t *testing.T) {
+	p := defaultProfile(t)
+	if p.Projection["N12"] != "'" || p.Projection["N26"] != "'" {
+		t.Fatalf("N12/N26 must share apostrophe: %#v", p.Projection)
+	}
+	if p.Projection["N25"] != "`" || p.Projection["N27"] != "`" {
+		t.Fatalf("N25/N27 must share backtick: %#v", p.Projection)
+	}
+	p.Projection = cloneProjection(p.Projection)
+	p.Projection["N01"] = "`"
+	if err := p.Validate(); err == nil {
+		t.Fatal("expected unrelated ID on a controlled shared key to fail")
+	}
+}
+
+func TestAssignMovesControlledSharedGroupTogether(t *testing.T) {
+	p := defaultProfile(t)
+	p.Projection = cloneProjection(p.Projection)
+	oldN01 := p.Projection["N01"]
+	if err := p.Assign("N25", oldN01); err != nil {
+		t.Fatal(err)
+	}
+	if p.Projection["N25"] != oldN01 || p.Projection["N27"] != oldN01 {
+		t.Fatalf("shared group split after assign: %#v", p.Projection)
+	}
+	if p.Projection["N01"] != "`" {
+		t.Fatalf("displaced key did not swap to backtick: %#v", p.Projection)
+	}
+}
+
+func TestLoadProfileUpgradesLegacy57IDProjection(t *testing.T) {
+	p := defaultProfile(t)
+	delete(p.Projection, "N25")
+	delete(p.Projection, "N26")
+	delete(p.Projection, "N27")
+	p.BasedOnDigest = "legacy"
+	payload, err := json.Marshal(p)
+	if err != nil {
+		t.Fatal(err)
+	}
+	path := filepath.Join(t.TempDir(), ProfileFileName)
+	if err := os.WriteFile(path, payload, 0o644); err != nil {
+		t.Fatal(err)
+	}
+	upgraded, err := LoadProfile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if upgraded.Projection["N25"] != "`" || upgraded.Projection["N26"] != upgraded.Projection["N12"] || upgraded.Projection["N27"] != "`" || upgraded.BasedOnDigest != "" {
+		t.Fatalf("legacy profile was not upgraded safely: %#v", upgraded)
 	}
 }
 

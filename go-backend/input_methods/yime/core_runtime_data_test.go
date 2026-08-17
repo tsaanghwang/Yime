@@ -52,11 +52,21 @@ type coreSourceManifest struct {
 }
 
 type coreRuntimeProfile struct {
-	DefaultSchema       string   `json:"default_schema"`
-	RuntimeSchemas      []string `json:"runtime_schemas"`
-	RuntimeDictionaries []string `json:"runtime_dictionaries"`
-	CandidateLayers     []string `json:"candidate_layers"`
-	EntryCountPerMode   int      `json:"entry_count_per_mode"`
+	DefaultSchema              string   `json:"default_schema"`
+	RuntimeSchemas             []string `json:"runtime_schemas"`
+	RuntimeSchemaDependencies  []string `json:"runtime_schema_dependencies"`
+	RuntimeDictionaries        []string `json:"runtime_dictionaries"`
+	CandidateLayers            []string `json:"candidate_layers"`
+	ExplicitErhuaReverseSource string   `json:"explicit_erhua_reverse_source"`
+	PSCPeripheralManifest      string   `json:"psc_pronunciation_peripheral_manifest"`
+	PSCPeripheralEntries       int      `json:"psc_pronunciation_peripheral_entries"`
+	PSCPeripheralNeutralTone   int      `json:"psc_pronunciation_peripheral_neutral_tone"`
+	PSCPeripheralErhua         int      `json:"psc_pronunciation_peripheral_erhua"`
+	PSCPeripheralWeight        int      `json:"psc_pronunciation_peripheral_weight"`
+	ThirdToneStage5CManifest   string   `json:"third_tone_stage5c_manifest"`
+	ThirdToneStage5CEntries    int      `json:"third_tone_stage5c_entries"`
+	ThirdToneStage5CWeight     int      `json:"third_tone_stage5c_weight"`
+	EntryCountPerMode          int      `json:"entry_count_per_mode"`
 }
 
 func readJSONFile(t *testing.T, name string, target any) {
@@ -209,7 +219,7 @@ func TestAllCoreModesConnectLearningCustomPhrasesAndSentenceComposition(
 		}
 		content := string(data)
 		checks := []string{
-			"dictionary: yime_" + mode,
+			"dictionary: yime_sentence_" + mode,
 			"user_dict: yime_" + mode + "_core_1166300_",
 			"user_dict: custom_phrase_" + mode,
 			"enable_user_dict: true",

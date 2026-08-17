@@ -1,0 +1,25 @@
+review_id	text	canonical_pinyin	expected_surface_pinyin	stage5a_record_id_snapshot	priority_weight_snapshot	evidence_class	prosodic_status	runtime_status	source_ids	note
+T3-5B-001	领导	ling3 dao3	ling2 dao3	T3-5A-10496	1046771	direct_disyllabic_lexicon_only	pending_human_review	not_approved	T3-SRC-ISO7098,T3-SRC-GBT16159	高频机器预选；需确认词内韵律域及强调读法边界
+T3-5B-002	影响	ying3 xiang3	ying2 xiang3	T3-5A-03535	451201	direct_disyllabic_lexicon_only	pending_human_review	not_approved	T3-SRC-ISO7098,T3-SRC-GBT16159	高频机器预选；未授权运行别名
+T3-5B-003	友好	you3 hao3	you2 hao3	T3-5A-01619	350438	direct_disyllabic_lexicon_only	pending_human_review	not_approved	T3-SRC-ISO7098,T3-SRC-GBT16159	高频机器预选；需确认并列或重读是否阻断
+T3-5B-004	了解	liao3 jie3	liao2 jie3	T3-5A-00469	313258	direct_disyllabic_lexicon_only	pending_human_review	not_approved	T3-SRC-ISO7098,T3-SRC-GBT16159	高频机器预选；未授权运行别名
+T3-5B-005	引导	yin3 dao3	yin2 dao3	T3-5A-03463	157171	direct_disyllabic_lexicon_only	pending_human_review	not_approved	T3-SRC-ISO7098,T3-SRC-GBT16159	高频机器预选；未授权运行别名
+T3-5B-006	小组	xiao3 zu3	xiao2 zu3	T3-5A-02976	156960	direct_disyllabic_lexicon_only	pending_human_review	not_approved	T3-SRC-ISO7098,T3-SRC-GBT16159	高频机器预选；未授权运行别名
+T3-5B-007	选举	xuan3 ju3	xuan2 ju3	T3-5A-09730	126899	direct_disyllabic_lexicon_only	pending_human_review	not_approved	T3-SRC-ISO7098,T3-SRC-GBT16159	高频机器预选；未授权运行别名
+T3-5B-008	永远	yong3 yuan3	yong2 yuan3	T3-5A-06041	117129	direct_disyllabic_lexicon_only	pending_human_review	not_approved	T3-SRC-ISO7098,T3-SRC-GBT16159	高频机器预选；未授权运行别名
+T3-5B-009	选手	xuan3 shou3	xuan2 shou3	T3-5A-09745	113283	direct_disyllabic_lexicon_only	pending_human_review	not_approved	T3-SRC-ISO7098,T3-SRC-GBT16159	高频机器预选；未授权运行别名
+T3-5B-010	品种	pin3 zhong3	pin2 zhong3	T3-5A-02091	107875	direct_disyllabic_lexicon_only	pending_human_review	not_approved	T3-SRC-ISO7098,T3-SRC-GBT16159	高频机器预选；需核对不同义项是否影响韵律边界
+T3-5B-011	有所	you3 suo3	you2 suo3	T3-5A-05193	92804	direct_disyllabic_lexicon_only	pending_human_review	not_approved	T3-SRC-ISO7098,T3-SRC-GBT16159	构式性较强；需确认不能仅凭词典成词自动批准
+T3-5B-012	往往	wang3 wang3	wang2 wang3	T3-5A-03555	92448	direct_disyllabic_lexicon_only	pending_human_review	not_approved	T3-SRC-ISO7098,T3-SRC-GBT16159	重叠形式；需同时核对轻重音边界
+T3-5B-013	表演	biao3 yan3	biao2 yan3	T3-5A-08679	90317	direct_disyllabic_lexicon_only	pending_human_review	not_approved	T3-SRC-ISO7098,T3-SRC-GBT16159	高频机器预选；未授权运行别名
+T3-5B-014	领土	ling3 tu3	ling2 tu3	T3-5A-10493	83763	direct_disyllabic_lexicon_only	pending_human_review	not_approved	T3-SRC-ISO7098,T3-SRC-GBT16159	高频机器预选；未授权运行别名
+T3-5B-015	养老	yang3 lao3	yang2 lao3	T3-5A-01229	76379	direct_disyllabic_lexicon_only	pending_human_review	not_approved	T3-SRC-ISO7098,T3-SRC-GBT16159	高频机器预选；未授权运行别名
+T3-5B-016	引领	yin3 ling3	yin2 ling3	T3-5A-03491	72596	direct_disyllabic_lexicon_only	pending_human_review	not_approved	T3-SRC-ISO7098,T3-SRC-GBT16159	高频机器预选；未授权运行别名
+T3-5B-017	允许	yun3 xu3	yun2 xu3	T3-5A-01140	70150	direct_disyllabic_lexicon_only	pending_human_review	not_approved	T3-SRC-ISO7098,T3-SRC-GBT16159	高频机器预选；未授权运行别名
+T3-5B-018	领取	ling3 qu3	ling2 qu3	T3-5A-10491	62914	direct_disyllabic_lexicon_only	pending_human_review	not_approved	T3-SRC-ISO7098,T3-SRC-GBT16159	高频机器预选；未授权运行别名
+T3-5B-019	演讲	yan3 jiang3	yan2 jiang3	T3-5A-06426	50256	direct_disyllabic_lexicon_only	pending_human_review	not_approved	T3-SRC-ISO7098,T3-SRC-GBT16159	高频机器预选；未授权运行别名
+T3-5B-020	想起	xiang3 qi3	xiang2 qi3	T3-5A-03815	42464	direct_disyllabic_lexicon_only	pending_human_review	not_approved	T3-SRC-ISO7098,T3-SRC-GBT16159	高频机器预选；未授权运行别名
+T3-5B-021	缓解	huan3 jie3	huan2 jie3	T3-5A-07850	36405	direct_disyllabic_lexicon_only	pending_human_review	not_approved	T3-SRC-ISO7098,T3-SRC-GBT16159	高频机器预选；未授权运行别名
+T3-5B-022	勇敢	yong3 gan3	yong2 gan3	T3-5A-01424	35612	direct_disyllabic_lexicon_only	pending_human_review	not_approved	T3-SRC-ISO7098,T3-SRC-GBT16159	高频机器预选；未授权运行别名
+T3-5B-023	享有	xiang3 you3	xiang2 you3	T3-5A-00632	34985	direct_disyllabic_lexicon_only	pending_human_review	not_approved	T3-SRC-ISO7098,T3-SRC-GBT16159	高频机器预选；未授权运行别名
+T3-5B-024	水土	shui3 tu3	shui2 tu3	T3-5A-05918	31168	direct_disyllabic_lexicon_only	pending_human_review	not_approved	T3-SRC-ISO7098,T3-SRC-GBT16159	高频机器预选；需核对并列义和词内义的韵律差异

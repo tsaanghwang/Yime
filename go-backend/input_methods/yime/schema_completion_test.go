@@ -17,11 +17,15 @@ func TestSystemAndUserDictionariesEnableCompletion(t *testing.T) {
 			}
 
 			text := string(content)
+			mode := strings.TrimPrefix(schemaID, "yime_")
+			if !strings.Contains(text, "dictionary: yime_sentence_"+mode) {
+				t.Fatalf("schema %s does not use its sentence-capable aggregate dictionary", schemaID)
+			}
 			if strings.Contains(text, "enable_completion: false") {
 				t.Fatalf("schema %s disables completion for one of its dictionaries", schemaID)
 			}
-			if got := strings.Count(text, "enable_completion: true"); got != 3 {
-				t.Fatalf("schema %s has %d completion-enabled translators, want 3", schemaID, got)
+			if got := strings.Count(text, "enable_completion: true"); got != 4 {
+				t.Fatalf("schema %s has %d completion-enabled translators, want 4", schemaID, got)
 			}
 		})
 	}
@@ -43,12 +47,14 @@ func TestAllSchemasEnableSentenceComposition(t *testing.T) {
 			if got := strings.Count(text, "sentence_over_completion: true"); got != 2 {
 				t.Fatalf("schema %s has %d translators preferring sentences over completion, want 2", schemaID, got)
 			}
-			if got := strings.Count(text, "enable_sentence: false"); got != 1 {
-				t.Fatalf("schema %s has %d sentence-disabled translators, want only the explicit-erhua overlay", schemaID, got)
+			if got := strings.Count(text, "enable_sentence: false"); got != 2 {
+				t.Fatalf("schema %s has %d sentence-disabled translators, want the explicit-erhua and PSC peripheral overlays", schemaID, got)
 			}
-			overlay := strings.Index(text, "erhua_mixed:")
-			if overlay < 0 || !strings.Contains(text[overlay:], "enable_sentence: false") {
-				t.Fatalf("schema %s does not isolate sentence disabling to the explicit-erhua overlay", schemaID)
+			for _, section := range []string{"erhua_mixed:", "psc_peripheral:"} {
+				overlay := strings.Index(text, section)
+				if overlay < 0 || !strings.Contains(text[overlay:], "enable_sentence: false") {
+					t.Fatalf("schema %s does not disable sentences in %s", schemaID, section)
+				}
 			}
 		})
 	}

@@ -11,7 +11,7 @@ const (
 	SyllableCodeLength       = 4
 	ApostropheVirtualShouyin = '\''
 	LayoutVersion            = "rime-layout-key-trial-v1-2026-07-18"
-	LayoutAlphabet           = "1234567890-=qwertyuiop[]\\asdfghjkl;'zxcvbnm,./JKLUIOM<>NG"
+	LayoutAlphabet           = "`1234567890-=qwertyuiop[]\\asdfghjkl;'zxcvbnm,./JKLUIOM<>NGFDSREWQTYVCXPAZ"
 )
 
 // Record contains all runtime representations derived from one canonical code.

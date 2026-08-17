@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "source_project": "Yime-python-prototype",
-  "source_revision": "3b4d4c1b00a91d37b7d5f44c102afb2a0ad4c31b",
+  "source_revision": "b979652d8230be514eb70ba38786d971e5cb07c6",
   "materialized_table": "m_distinct_syllable_inventory",
-  "materialized_numeric_syllable_count": 1728,
-  "materialized_numeric_syllable_sha256": "041aebe5a200df59f191fee9f5768035eb90975a9fe46245184b77504b3f1ac0",
+  "materialized_numeric_syllable_count": 1733,
+  "materialized_numeric_syllable_sha256": "bedca6e1b5eb83daffa50f49d80e184c01f9d3da7a8acb25b6d36c350cca4304",
   "hash_payload": "numeric syllables sorted lexicographically, each followed by LF",
-  "canonical_inventory_count": 1732,
+  "canonical_inventory_count": 1737,
   "canonical_only_syllables": [
     "guai2",
     "kuai1",

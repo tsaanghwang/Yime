@@ -1,16 +1,16 @@
 {
     "schema_version":  1,
     "source_project":  "Yime-python-prototype",
-    "source_revision":  "3b4d4c1b00a91d37b7d5f44c102afb2a0ad4c31b+working-tree-20260806",
+    "source_revision":  "b979652d8230be514eb70ba38786d971e5cb07c6+working-tree-n25n27",
     "source_dictionary":  "two_level_full.dict.yaml",
-    "source_dictionary_sha256":  "5527540dd10290c7b66e82f8722a51b53fc55ccc269ef81bbe5736b42c872b57",
-    "source_selection_sha256":  "2d5d35d43f5277cf3a504832ba20097b86d0934adeafa203c5beabbb7b5873ac",
+    "source_dictionary_sha256":  "9a226cc8829503e75185c9bacd99132d7d821ce7818631a731e758e7300e9ffa",
+    "source_selection_sha256":  "e301da876af4e99da4f42f8ba5d9f79a3010167aeaf504e0097febd140da5ec4",
     "pronunciation_entries":  "entries.tsv",
     "pronunciation_entries_sha256":  "4a99189378a1fbaab3362399f744d81be3c55e9bb7dea057a219666a930f4069",
     "reverse_pinyin_source":  "yime_pinyin_reverse_source.tsv",
-    "reverse_pinyin_source_sha256":  "36279eec3db72bec8b3a6da4f4d497eec7e3e19c8f0be5cda991b8909383f218",
+    "reverse_pinyin_source_sha256":  "293e2ecfb787a4ef18749b3c79a58ec536e71e01ab946cef5bdec5af7b325298",
     "reverse_pinyin_source_rows":  41850,
-    "reverse_pinyin_code_map_sha256":  "fc2f4e6f2edfb8e16f63fe79202bb9ca3c67b0d6284bdd24487dc85dacd05fe7",
+    "reverse_pinyin_code_map_sha256":  "aa516171f404f706b7d9ac0c9a3fb4aac4f043f3212c2b9ce6c94b38fb8d0071",
     "entry_count":  1166300,
     "distinct_texts":  1151400,
     "ranking_evidence":  {
@@ -39,5 +39,15 @@
                             "candidate_pool",
                             "source_evidence",
                             "regression_cases"
-                        ]
+                        ],
+    "layout_reprojection":  {
+                                "layout_digest":  "58f69f370aea49e03a48414dcaaf0ebdaef88be0e4fee37e2c4e1497b14976dd",
+                                "previous_reverse_pinyin_source_sha256":  "36279eec3db72bec8b3a6da4f4d497eec7e3e19c8f0be5cda991b8909383f218",
+                                "old_pinyin_codes_sha256":  "71039436a8f61cd2a6775767869aa7bd136e935aace0b40ee5cadd6fd7e5a8f9",
+                                "new_pinyin_codes_sha256":  "aa516171f404f706b7d9ac0c9a3fb4aac4f043f3212c2b9ce6c94b38fb8d0071",
+                                "changed_dictionary_records":  68147,
+                                "changed_reverse_source_rows":  1177,
+                                "candidate_selection_changed":  false,
+                                "weights_changed":  false
+                            }
 }

@@ -127,13 +127,14 @@ func TestRefreshRimeDataReplacesStaleGeneratedLexicon(t *testing.T) {
 func TestRefreshRimeDataCopiesAndTracksExplicitErhuaOverlay(t *testing.T) {
 	sharedDir := t.TempDir()
 	userDir := t.TempDir()
-	for _, name := range generatedErhuaOverlayFiles[:3] {
+	manifestName := generatedErhuaOverlayFiles[len(generatedErhuaOverlayFiles)-1]
+	for _, name := range generatedErhuaOverlayFiles[:len(generatedErhuaOverlayFiles)-1] {
 		if err := os.WriteFile(filepath.Join(sharedDir, name), []byte("overlay "+name+"\n"), 0o644); err != nil {
 			t.Fatal(err)
 		}
 	}
 	manifest := []byte(`{"tool_version":"explicit-erhua-mixed-runtime-v1"}` + "\n")
-	if err := os.WriteFile(filepath.Join(sharedDir, generatedErhuaOverlayFiles[3]), manifest, 0o644); err != nil {
+	if err := os.WriteFile(filepath.Join(sharedDir, manifestName), manifest, 0o644); err != nil {
 		t.Fatal(err)
 	}
 
@@ -158,7 +159,7 @@ func TestRefreshRimeDataCopiesAndTracksExplicitErhuaOverlay(t *testing.T) {
 	}
 
 	updated := []byte(`{"tool_version":"explicit-erhua-mixed-runtime-v2"}` + "\n")
-	if err := os.WriteFile(filepath.Join(sharedDir, generatedErhuaOverlayFiles[3]), updated, 0o644); err != nil {
+	if err := os.WriteFile(filepath.Join(sharedDir, manifestName), updated, 0o644); err != nil {
 		t.Fatal(err)
 	}
 	changed, err = RefreshRimeData(sharedDir, userDir)
@@ -167,6 +168,41 @@ func TestRefreshRimeDataCopiesAndTracksExplicitErhuaOverlay(t *testing.T) {
 	}
 	if !changed {
 		t.Fatal("updated explicit-erhua overlay manifest must request a Rime rebuild")
+	}
+}
+
+func TestRefreshRimeDataCopiesAndTracksPSCPeripheralOverlay(t *testing.T) {
+	sharedDir := t.TempDir()
+	userDir := t.TempDir()
+	manifestName := generatedPSCPeripheralFiles[len(generatedPSCPeripheralFiles)-1]
+	for _, name := range generatedPSCPeripheralFiles[:len(generatedPSCPeripheralFiles)-1] {
+		if err := os.WriteFile(filepath.Join(sharedDir, name), []byte("psc peripheral "+name+"\n"), 0o644); err != nil {
+			t.Fatal(err)
+		}
+	}
+	manifest := []byte(`{"tool_version":"psc-pronunciation-peripheral-runtime-v1"}` + "\n")
+	if err := os.WriteFile(filepath.Join(sharedDir, manifestName), manifest, 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	changed, err := RefreshRimeData(sharedDir, userDir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !changed {
+		t.Fatal("first PSC peripheral refresh must request a Rime rebuild")
+	}
+	for _, name := range generatedPSCPeripheralFiles {
+		if _, err := os.Stat(filepath.Join(userDir, name)); err != nil {
+			t.Fatalf("expected copied PSC peripheral artifact %s: %v", name, err)
+		}
+	}
+	changed, err = RefreshRimeData(sharedDir, userDir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if changed {
+		t.Fatal("identical PSC peripheral overlay must not force another rebuild")
 	}
 }
 

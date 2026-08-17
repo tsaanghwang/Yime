@@ -1,14 +1,14 @@
 {
   "format_version": 1,
-  "generated_at": "2026-08-06T11:11:07+08:00",
+  "generated_at": "2026-08-17T21:04:21+08:00",
   "source_file": "two_level_full.dict.yaml",
-  "source_sha256": "5527540dd10290c7b66e82f8722a51b53fc55ccc269ef81bbe5736b42c872b57",
+  "source_sha256": "9a226cc8829503e75185c9bacd99132d7d821ce7818631a731e758e7300e9ffa",
   "transform_version": "full-derived-v3-script-spelling",
   "layout_version": "rime-layout-key-trial-v1-2026-07-18",
   "entry_count": 1166300,
   "output_sha256": {
-    "yime_full.dict.yaml": "f4e818a9c7fc15b09626351008d8dbf22c692d50158048a060523bdf2e18ebc4",
-    "yime_shorthand.dict.yaml": "813cb3f3f8855563b1c3bdc34860fedcb02ad8d828cbde93c8e45b12c5800f85",
-    "yime_variable.dict.yaml": "adc963c4d4ffb2444f576d0c5d729e83fd0a57e3eed35ed9a5e66bb8891039ed"
+    "yime_full.dict.yaml": "c11dd63d218906bf2eefa810aad8d28005c0add53cbd0584e2ccc2660f95818e",
+    "yime_shorthand.dict.yaml": "1bd186a3b81a5dfbe71cfa9706e659d89e22b39c598be73ce61769111309dd1c",
+    "yime_variable.dict.yaml": "64a82edcce7aa7fc9da66b008a8d3ff288e03e267cf4bd419196737f218f49e8"
   }
 }

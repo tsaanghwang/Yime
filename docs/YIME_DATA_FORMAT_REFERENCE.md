@@ -53,14 +53,40 @@ ai1	Hffu
 低—中—高的干音，省略中间的中调音元。虚首音是连续输入时的显式音节边界，在变长和省键模式中
 均不删除；其中隔音符号型虚首音 `'` 尤其不能当作冗余字符省略。
 
-**规模**：当前 1728 条数据 + 1 行标题，约 19 KB。实际数量必须与 handoff 清单的
+**规模**：当前 1733 条数据 + 1 行标题，约 19 KB。实际数量必须与 handoff 清单的
 `layout_code_inventory_count` 一致。
 
-`yime_syllable_inventory_manifest.json` 记录原型物化表的来源修订、1728 条数字标调
+`yime_syllable_inventory_manifest.json` 记录原型物化表的来源修订、1733 条数字标调
 音节集合的稳定 SHA-256，以及 canonical-only 清单。Go 门禁会对运行音节排序后逐行
 计算同一哈希，防止没有来源候选的音节重新混入运行清单。
 
 **特殊规则**：含 `ü` 的键会自动生成 `v` 和 `u:` 别名（如 `lü3` → `lv3`、`lu:3`）。
+
+### yime_erhua_reverse_source.tsv
+
+已进入三模式运行附加词典的显式融合儿化路线反查旁表。该文件由儿化混合派生器生成，只负责
+恢复“基础音元如何附加卷舌/鼻化特征、形成派生儿化音元并投影到键位”的解释信息，不参与 Rime
+候选生成。
+
+**格式**：TSV，首行为固定标题行，共 12 列：
+
+| 列 | 说明 |
+|---|---|
+| record_id | 显式儿化来源记录 ID |
+| text | 候选文字 |
+| source_kind | 授权来源类型 |
+| compatibility_numeric_pinyin | 未改写规范词典的儿缀兼容数字拼音 |
+| feature_rule_id | 从基础音元元组生成特征改写的规则 ID |
+| attached_syllable_source | 被儿化附着的原音节 |
+| source_yinyuan_ids | 发生儿化前的四位置基础音元元组 |
+| derived_yinyuan_ids | 施加卷舌/鼻化特征后的派生儿化音元元组 |
+| key_projection | 基础音元 + 特征 → 派生音元 ID → 物理键的投影说明 |
+| full_code | 等长融合码 |
+| variable_code | 变长融合码 |
+| shorthand_code | 省键融合码 |
+
+当前为 89 行记录；实际行数及文件 SHA-256 必须与 `yime_erhua_mixed_manifest.json` 一致。旁表
+缺失时普通反查保持可用，但不显示融合儿化解释。不得据此旁表从词尾“儿”类推未审定词条。
 
 ### pinyin_normalized.json
 
@@ -81,8 +107,8 @@ ai1	Hffu
 
 **声调规则**：1-4 对应四声标记，5 为轻声（无标记）。
 
-**规模**：当前 canonical 审计库存 1732 条，约 33 KB。运行时物化且有布局编码的音节
-为 1728 条；`guai2`、`kuai1`、`ra4`、`tin4` 只保留在 canonical 审计层，不进入
+**规模**：当前 canonical 审计库存 1737 条，约 33 KB。运行时物化且有布局编码的音节
+为 1733 条；`guai2`、`kuai1`、`ra4`、`tin4` 只保留在 canonical 审计层，不进入
 候选、反查或练习题库。其中 `kuai1` 在当前统一来源库中没有单字、词语、接纳或拒绝记录。
 
 ### yime_pua_pinyin.json

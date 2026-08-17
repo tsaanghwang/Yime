@@ -1,0 +1,4 @@
+position_class	condition	treatment	candidate_policy	adjudication_status	runtime_eligible	note
+INITIAL_NO_HOST	“啊”前没有同一显式候选内的音节	keep_canonical_no_assimilation	canonical_only	approved	false	没有可确定的前接末音；保持来源读音，由说话人按语境选择，不生成无依据的同化别名
+MEDIAL_WITH_HOST	“啊/a5”前有明确音节且后面仍有文字	classify_by_previous_final	parallel_alias_keep_canonical	approved	false	按前一音节末音归入语气词六类；A啊A及普通连续语流的结果与语气词顺同化相同；未音变规范码永久保留
+FINAL_WITH_HOST	“啊/a5”前有明确音节且位于候选末尾	classify_by_previous_final	parallel_alias_keep_canonical	approved	false	按前一音节末音归入语气词六类；候选文字和未音变规范码永久保留

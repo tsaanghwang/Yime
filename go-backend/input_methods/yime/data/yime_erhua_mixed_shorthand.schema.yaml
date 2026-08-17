@@ -4,7 +4,7 @@
 schema:
   schema_id: yime_erhua_mixed_shorthand
   name: "Yime 显式儿化混合表（省键依赖）"
-  version: "explicit-erhua-mixed-v1"
+  version: "explicit-erhua-mixed-v4"
 
 translator:
   dictionary: yime_erhua_mixed_shorthand

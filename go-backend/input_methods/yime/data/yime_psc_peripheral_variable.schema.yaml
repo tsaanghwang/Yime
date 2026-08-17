@@ -1,0 +1,13 @@
+# Rime dependency schema
+# Compiles the reviewed PSC low-frequency peripheral dictionary.
+
+schema:
+  schema_id: yime_psc_peripheral_variable
+  name: "Yime PSC 规范低频外围（变长依赖）"
+  version: "psc-pronunciation-peripheral-v1"
+
+translator:
+  dictionary: yime_psc_peripheral_variable
+  enable_user_dict: false
+  enable_sentence: false
+  enable_completion: true

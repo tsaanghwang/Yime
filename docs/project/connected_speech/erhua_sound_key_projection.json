@@ -1,0 +1,309 @@
+{
+  "schema_version": 2,
+  "runtime_enabled": false,
+  "artifact": "erhua_sound_key_projection",
+  "description": "基础音元加卷舌/鼻化特征到派生儿化音元 ID，再到物理键位的投影。表层 IPA 只作说明，不参与编码选择。",
+  "invariants": {
+    "sound_unit_is_not_key": true,
+    "many_sound_units_may_share_one_key_class": true,
+    "dedicated_shift_keys_are_provisional": true,
+    "a_rhotic_input_family_does_not_claim_allophonic_identity": true,
+    "canonical_yinyuan_catalog_unchanged": true,
+    "candidate_text_mutation": "forbidden",
+    "productive_erhua_inference": "forbidden",
+    "research_only_sound_units_exported": false
+    ,"surface_annotation_is_not_an_encoding_source": true
+  },
+  "key_classes": [
+    {
+      "key_class_id": "ERHUA-KEY-HIGH",
+      "tone_grade": "high",
+      "carrier_yinyuan_id": "M22",
+      "purpose": "复用现有高调 [er] 乐音键位；不宣称所有投影到此键的音元都是 [ɚ˥]。"
+    },
+    {
+      "key_class_id": "ERHUA-KEY-MID",
+      "tone_grade": "mid",
+      "carrier_yinyuan_id": "M23",
+      "purpose": "复用现有中调 [er] 乐音键位；不宣称所有投影到此键的音元都是 [ɚ˦]。"
+    },
+    {
+      "key_class_id": "ERHUA-KEY-LOW",
+      "tone_grade": "low",
+      "carrier_yinyuan_id": "M24",
+      "purpose": "复用现有低调 [er] 乐音键位；不宣称所有投影到此键的音元都是 [ɚ˩]。"
+    },
+    {
+      "key_class_id": "ERHUA-KEY-A-RHOTIC-HIGH",
+      "tone_grade": "high",
+      "layout_key": "F",
+      "purpose": "a˞ 高调派生音元的临时专用键：基础 a 高调键 f 的 Shift 层。"
+    },
+    {
+      "key_class_id": "ERHUA-KEY-A-RHOTIC-MID",
+      "tone_grade": "mid",
+      "layout_key": "D",
+      "purpose": "a˞ 中调派生音元的临时专用键：基础 a 中调键 d 的 Shift 层。"
+    },
+    {
+      "key_class_id": "ERHUA-KEY-A-RHOTIC-LOW",
+      "tone_grade": "low",
+      "layout_key": "S",
+      "purpose": "a˞ 低调派生音元的临时专用键：基础 a 低调键 s 的 Shift 层。"
+    },
+    {
+      "key_class_id": "ERHUA-KEY-BACK-MID-RHOTIC-HIGH",
+      "tone_grade": "high",
+      "layout_key": "R",
+      "purpose": "ɤ˞ 高调派生音元的临时专用键：基础 o/ɤ 合并组高调键 r 的 Shift 层。"
+    },
+    {
+      "key_class_id": "ERHUA-KEY-BACK-MID-RHOTIC-MID",
+      "tone_grade": "mid",
+      "layout_key": "E",
+      "purpose": "ɤ˞ 中调派生音元的临时专用键：基础 o/ɤ 合并组中调键 e 的 Shift 层。"
+    },
+    {
+      "key_class_id": "ERHUA-KEY-BACK-MID-RHOTIC-LOW",
+      "tone_grade": "low",
+      "layout_key": "W",
+      "purpose": "ɤ˞ 低调派生音元的临时专用键：基础 o/ɤ 合并组低调键 w 的 Shift 层。"
+    },
+    {
+      "key_class_id": "ERHUA-KEY-NASAL-A-RHOTIC-HIGH",
+      "tone_grade": "high",
+      "layout_key": "Y",
+      "purpose": "ã˞ 高调派生音元的试行专用键；与中调 T、低调 Q 组成低—中—高空间序列。"
+    },
+    {
+      "key_class_id": "ERHUA-KEY-NASAL-A-RHOTIC-MID",
+      "tone_grade": "mid",
+      "layout_key": "T",
+      "purpose": "ã˞ 中调派生音元的试行专用键。"
+    },
+    {
+      "key_class_id": "ERHUA-KEY-NASAL-A-RHOTIC-LOW",
+      "tone_grade": "low",
+      "layout_key": "Q",
+      "purpose": "ã˞ 低调派生音元的试行专用键。"
+    },
+    {
+      "key_class_id": "ERHUA-KEY-NASAL-BACK-MID-RHOTIC-HIGH",
+      "tone_grade": "high",
+      "layout_key": "V",
+      "purpose": "归并 ɤ̃˞ 高调派生音元的试行专用键。"
+    },
+    {
+      "key_class_id": "ERHUA-KEY-NASAL-BACK-MID-RHOTIC-MID",
+      "tone_grade": "mid",
+      "layout_key": "C",
+      "purpose": "归并 ɤ̃˞ 中调派生音元的试行专用键。"
+    },
+    {
+      "key_class_id": "ERHUA-KEY-NASAL-BACK-MID-RHOTIC-LOW",
+      "tone_grade": "low",
+      "layout_key": "X",
+      "purpose": "归并 ɤ̃˞ 低调派生音元的试行专用键。"
+    },
+    {
+      "key_class_id": "ERHUA-KEY-U-RHOTIC-HIGH",
+      "tone_grade": "high",
+      "layout_key": "P",
+      "purpose": "u˞ 高调派生音元的试行专用键。"
+    },
+    {
+      "key_class_id": "ERHUA-KEY-U-RHOTIC-MID",
+      "tone_grade": "mid",
+      "layout_key": "A",
+      "purpose": "u˞ 中调派生音元的试行专用键。"
+    },
+    {
+      "key_class_id": "ERHUA-KEY-U-RHOTIC-LOW",
+      "tone_grade": "low",
+      "layout_key": "Z",
+      "purpose": "u˞ 低调派生音元的试行专用键。"
+    }
+  ],
+  "sound_units": [
+    {
+      "sound_unit_id": "M22",
+      "base_yinyuan_id": "M22",
+      "features": {"rhotic": true, "nasalized": false},
+      "quality_family": "oral_central_rhotic",
+      "tone_grade": "high",
+      "representative_ipa": "ɚ˥",
+      "key_class_id": "ERHUA-KEY-HIGH",
+      "admission_status": "runtime_pilot"
+    },
+    {
+      "sound_unit_id": "M23",
+      "base_yinyuan_id": "M23",
+      "features": {"rhotic": true, "nasalized": false},
+      "quality_family": "oral_central_rhotic",
+      "tone_grade": "mid",
+      "representative_ipa": "ɚ˦",
+      "key_class_id": "ERHUA-KEY-MID",
+      "admission_status": "runtime_pilot"
+    },
+    {
+      "sound_unit_id": "M24",
+      "base_yinyuan_id": "M24",
+      "features": {"rhotic": true, "nasalized": false},
+      "quality_family": "oral_central_rhotic",
+      "tone_grade": "low",
+      "representative_ipa": "ɚ˩",
+      "key_class_id": "ERHUA-KEY-LOW",
+      "admission_status": "runtime_pilot"
+    },
+    {
+      "sound_unit_id": "R04",
+      "base_yinyuan_id": "M10",
+      "features": {"rhotic": true, "nasalized": true},
+      "quality_family": "nasal_rhotic_back_a",
+      "tone_grade": "high",
+      "representative_ipa": "ã˞˥",
+      "key_class_id": "ERHUA-KEY-NASAL-A-RHOTIC-HIGH",
+      "admission_status": "runtime_pilot"
+    },
+    {
+      "sound_unit_id": "R05",
+      "base_yinyuan_id": "M11",
+      "features": {"rhotic": true, "nasalized": true},
+      "quality_family": "nasal_rhotic_back_a",
+      "tone_grade": "mid",
+      "representative_ipa": "ã˞˦",
+      "key_class_id": "ERHUA-KEY-NASAL-A-RHOTIC-MID",
+      "admission_status": "runtime_pilot"
+    },
+    {
+      "sound_unit_id": "R06",
+      "base_yinyuan_id": "M12",
+      "features": {"rhotic": true, "nasalized": true},
+      "quality_family": "nasal_rhotic_back_a",
+      "tone_grade": "low",
+      "representative_ipa": "ã˞˩",
+      "key_class_id": "ERHUA-KEY-NASAL-A-RHOTIC-LOW",
+      "admission_status": "runtime_pilot"
+    },
+    {
+      "sound_unit_id": "R07",
+      "base_yinyuan_id": "M13",
+      "features": {"rhotic": true, "nasalized": true},
+      "quality_family": "nasal_rhotic_back_mid_merged",
+      "tone_grade": "high",
+      "representative_ipa": "ɤ̃˞˥",
+      "key_class_id": "ERHUA-KEY-NASAL-BACK-MID-RHOTIC-HIGH",
+      "admission_status": "runtime_pilot"
+    },
+    {
+      "sound_unit_id": "R08",
+      "base_yinyuan_id": "M14",
+      "features": {"rhotic": true, "nasalized": true},
+      "quality_family": "nasal_rhotic_back_mid_merged",
+      "tone_grade": "mid",
+      "representative_ipa": "ɤ̃˞˦",
+      "key_class_id": "ERHUA-KEY-NASAL-BACK-MID-RHOTIC-MID",
+      "admission_status": "runtime_pilot"
+    },
+    {
+      "sound_unit_id": "R09",
+      "base_yinyuan_id": "M15",
+      "features": {"rhotic": true, "nasalized": true},
+      "quality_family": "nasal_rhotic_back_mid_merged",
+      "tone_grade": "low",
+      "representative_ipa": "ɤ̃˞˩",
+      "key_class_id": "ERHUA-KEY-NASAL-BACK-MID-RHOTIC-LOW",
+      "admission_status": "runtime_pilot"
+    },
+    {
+      "sound_unit_id": "R10",
+      "base_yinyuan_id": "M10",
+      "features": {"rhotic": true, "nasalized": false},
+      "quality_family": "oral_a_rhotic",
+      "tone_grade": "high",
+      "representative_ipa": "a˞˥",
+      "key_class_id": "ERHUA-KEY-A-RHOTIC-HIGH",
+      "admission_status": "runtime_pilot"
+    },
+    {
+      "sound_unit_id": "R11",
+      "base_yinyuan_id": "M11",
+      "features": {"rhotic": true, "nasalized": false},
+      "quality_family": "oral_a_rhotic",
+      "tone_grade": "mid",
+      "representative_ipa": "a˞˦",
+      "key_class_id": "ERHUA-KEY-A-RHOTIC-MID",
+      "admission_status": "runtime_pilot"
+    },
+    {
+      "sound_unit_id": "R12",
+      "base_yinyuan_id": "M12",
+      "features": {"rhotic": true, "nasalized": false},
+      "quality_family": "oral_a_rhotic",
+      "tone_grade": "low",
+      "representative_ipa": "a˞˩",
+      "key_class_id": "ERHUA-KEY-A-RHOTIC-LOW",
+      "admission_status": "runtime_pilot"
+    },
+    {
+      "sound_unit_id": "R13",
+      "base_yinyuan_id": "M13",
+      "features": {"rhotic": true, "nasalized": false},
+      "quality_family": "oral_back_mid_rhotic",
+      "tone_grade": "high",
+      "representative_ipa": "ɤ˞˥",
+      "key_class_id": "ERHUA-KEY-BACK-MID-RHOTIC-HIGH",
+      "admission_status": "runtime_pilot"
+    },
+    {
+      "sound_unit_id": "R14",
+      "base_yinyuan_id": "M14",
+      "features": {"rhotic": true, "nasalized": false},
+      "quality_family": "oral_back_mid_rhotic",
+      "tone_grade": "mid",
+      "representative_ipa": "ɤ˞˦",
+      "key_class_id": "ERHUA-KEY-BACK-MID-RHOTIC-MID",
+      "admission_status": "runtime_pilot"
+    },
+    {
+      "sound_unit_id": "R15",
+      "base_yinyuan_id": "M15",
+      "features": {"rhotic": true, "nasalized": false},
+      "quality_family": "oral_back_mid_rhotic",
+      "tone_grade": "low",
+      "representative_ipa": "ɤ˞˩",
+      "key_class_id": "ERHUA-KEY-BACK-MID-RHOTIC-LOW",
+      "admission_status": "runtime_pilot"
+    },
+    {
+      "sound_unit_id": "R16",
+      "base_yinyuan_id": "M04",
+      "features": {"rhotic": true, "nasalized": false},
+      "quality_family": "oral_u_rhotic",
+      "tone_grade": "high",
+      "representative_ipa": "u˞˥",
+      "key_class_id": "ERHUA-KEY-U-RHOTIC-HIGH",
+      "admission_status": "runtime_pilot"
+    },
+    {
+      "sound_unit_id": "R17",
+      "base_yinyuan_id": "M05",
+      "features": {"rhotic": true, "nasalized": false},
+      "quality_family": "oral_u_rhotic",
+      "tone_grade": "mid",
+      "representative_ipa": "u˞˦",
+      "key_class_id": "ERHUA-KEY-U-RHOTIC-MID",
+      "admission_status": "runtime_pilot"
+    },
+    {
+      "sound_unit_id": "R18",
+      "base_yinyuan_id": "M06",
+      "features": {"rhotic": true, "nasalized": false},
+      "quality_family": "oral_u_rhotic",
+      "tone_grade": "low",
+      "representative_ipa": "u˞˩",
+      "key_class_id": "ERHUA-KEY-U-RHOTIC-LOW",
+      "admission_status": "runtime_pilot"
+    }
+  ]
+}

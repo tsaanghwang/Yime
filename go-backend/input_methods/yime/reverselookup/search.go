@@ -15,6 +15,7 @@ type Index struct {
 	MarkedLookup  map[string]string
 	ReverseLookup map[string]string
 	SourceTruth   map[string][]string
+	ErhuaLookup   map[string][]ErhuaLookupRecord
 	ActiveColumn  string
 }
 
@@ -137,7 +138,7 @@ func (index *Index) Search(term string, containsMatch bool) []Result {
 	results := []Result{}
 	seen := map[string]struct{}{}
 	addResult := func(item Result) {
-		key := item.Phrase + "|" + item.ActiveCode + "|" + item.NumericPinyin
+		key := item.Phrase + "|" + item.ActiveCode + "|" + item.NumericPinyin + "|" + item.ErhuaRecordID
 		if _, ok := seen[key]; ok {
 			return
 		}
@@ -145,8 +146,19 @@ func (index *Index) Search(term string, containsMatch bool) []Result {
 		results = append(results, item)
 	}
 
+	explicitErhua := index.ErhuaLookup[text]
 	for _, item := range resolvePhraseLookupMulti(text, index.UserEntries, index.DictLookup, index.CodeMap, index.ReverseLookup, index.MarkedLookup, index.SourceTruth, index.ActiveColumn) {
+		// A reviewed explicit-erhua record is a complete phrase-level source.
+		// Do not show the character-by-character fallback beside it: shared
+		// syllable codes can make that fallback display a false pronunciation
+		// (for example 儿 being decoded as ren2).
+		if len(explicitErhua) > 0 && item.Source == "逐字拼接" {
+			continue
+		}
 		addResult(item)
+	}
+	for _, record := range explicitErhua {
+		addResult(buildErhuaLookupResult(record, index.Mode, index.MarkedLookup))
 	}
 	if len(results) > 0 && !containsMatch {
 		return results
@@ -180,6 +192,20 @@ func (index *Index) Search(term string, containsMatch bool) []Result {
 			}
 			for _, item := range resolvePhraseLookupMulti(phrase, index.UserEntries, index.DictLookup, index.CodeMap, index.ReverseLookup, index.MarkedLookup, index.SourceTruth, index.ActiveColumn) {
 				addResult(item)
+				if len(results) >= maxSearchResults {
+					break
+				}
+			}
+		}
+		for phrase, records := range index.ErhuaLookup {
+			if len(results) >= maxSearchResults {
+				break
+			}
+			if !strings.Contains(phrase, text) {
+				continue
+			}
+			for _, record := range records {
+				addResult(buildErhuaLookupResult(record, index.Mode, index.MarkedLookup))
 				if len(results) >= maxSearchResults {
 					break
 				}

@@ -33,8 +33,16 @@ func inverseProjection(p Profile) (map[rune]string, error) {
 		return nil, err
 	}
 	result := map[rune]string{}
-	for id, key := range p.Projection {
-		result[[]rune(key)[0]] = id
+	// ExpectedIDs provides deterministic representatives for intentional
+	// shared-key groups.  Every member of such a group is required to stay on
+	// the same key in every valid profile, so re-projection is lossless at the
+	// physical-code layer even though the contextual identity is not decoded.
+	for _, id := range ExpectedIDs() {
+		key := p.Projection[id]
+		r := []rune(key)[0]
+		if result[r] == "" {
+			result[r] = id
+		}
 	}
 	return result, nil
 }

@@ -559,11 +559,11 @@ Weasel、本机目录或 Plum 临时补齐；缺件时直接失败。
 | `yime_core_source_manifest.json` | 来源证据 | 原型修订、输入/筛选哈希和三类排序证据计数 |
 | `yime_lexicon_manifest.json` | 派生清单 | 转换规则、条目数和三模式输出哈希 |
 | `yime_runtime_profile.json` | 发布配置 | 默认方案、三模式文件和四层候选链 |
-| `yime_pinyin_codes.tsv` | 编码映射 | 数字标调拼音→等长码，当前 1728 条；其余模式运行时推导 |
+| `yime_pinyin_codes.tsv` | 编码映射 | 数字标调拼音→等长码，当前 1733 条；其余模式运行时推导 |
 | `yime_syllable_inventory_manifest.json` | 音节集合门禁 | 固定原型物化音节数、集合哈希、来源修订和 canonical-only 清单 |
 | `yime_pua_pinyin.json` | PUA 显示映射 | 候选注释的数字标调拼音→PUA 音元序列 |
 | `fonts/YinYuan-Regular.ttf` | 候选字体 | 音元拼音模式使用的 PUA 字形 |
-| `pinyin_normalized.json` | 拼音归一化 | 数字标调→带调拼音，当前审计库存 1732 条 |
+| `pinyin_normalized.json` | 拼音归一化 | 数字标调→带调拼音，当前审计库存 1737 条 |
 | `essay.txt` | 词频表 | 八股文 |
 | `rime.dll` | 动态库 | librime 运行时 |
 | `rime_deployer.exe` | 可执行文件 | 外部部署工具 |
@@ -579,9 +579,9 @@ Weasel、本机目录或 Plum 临时补齐；缺件时直接失败。
 | 文件 | 格式 | 说明 |
 |------|------|------|
 | `default.custom.yaml` | YAML | 用户方案选择 + page_size 覆盖 |
-| `yime_variable_core_1167057_layout_6d00e609f689_rank_v1.userdb/` | LevelDB | 变长模式排序和整句学习数据 |
-| `yime_full_core_1167057_layout_6d00e609f689_rank_v1.userdb/` | LevelDB | 等长模式排序和整句学习数据 |
-| `yime_shorthand_core_1167057_layout_6d00e609f689_rank_v1.userdb/` | LevelDB | 省键模式排序和整句学习数据 |
+| `yime_variable_core_1166300_layout_58f69f370aea_rank_v1.userdb/` | LevelDB | 变长模式排序和整句学习数据 |
+| `yime_full_core_1166300_layout_58f69f370aea_rank_v1.userdb/` | LevelDB | 等长模式排序和整句学习数据 |
+| `yime_shorthand_core_1166300_layout_58f69f370aea_rank_v1.userdb/` | LevelDB | 省键模式排序和整句学习数据 |
 | `yime_variable.custom.yaml` | YAML | 变长方案自定义（如 page_size） |
 | `yime_full.custom.yaml` | YAML | 等长方案自定义 |
 | `yime_shorthand.custom.yaml` | YAML | 省键方案自定义 |
@@ -792,10 +792,11 @@ go-backend\run_admin_yime_tests.cmd
 ### 6.3 alphabet 字符集
 
 ```
-Full:      1234567890-=qwertyuiop[]\asdfghjkl;'zxcvbnm,./JKLUIOM<>NG
-Variable:  1234567890-=qwertyuiop[]\asdfghjkl;'zxcvbnm,./JKLUIOM<>NG
-Shorthand: 1234567890-=qwertyuiop[]\asdfghjkl;'zxcvbnm,./JKLUIOM<>NG
+Full:      1234567890-=qwertyuiop[]\asdfghjkl;'zxcvbnm,./JKLUIOM<>NGFDSREWQTYVCXPAZ
+Variable:  1234567890-=qwertyuiop[]\asdfghjkl;'zxcvbnm,./JKLUIOM<>NGFDSREWQTYVCXPAZ
+Shorthand: 1234567890-=qwertyuiop[]\asdfghjkl;'zxcvbnm,./JKLUIOM<>NGFDSREWQTYVCXPAZ
 ```
 
-三种 schema 使用同一套 57 字符白名单。码表导入器还会通过 `codemode.LayoutAlphabet`
+三种 schema 使用同一套 72 字符白名单；其中新增的大写字符是显式儿化试点的 Shift 层输入动作，
+现行基础目录包含 60 个音元；`N12/N26` 与 `N25/N27` 分别受控共享物理键，但语义 ID 独立。码表导入器还会通过 `codemode.LayoutAlphabet`
 拒绝布局外字符，避免出现“导入成功但无法击键输入”的词典。

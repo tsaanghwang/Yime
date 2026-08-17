@@ -1,0 +1,13 @@
+# Rime dictionary
+# GENERATED FILE - core plus reviewed sentence-capable extensions
+---
+name: yime_sentence_shorthand
+version: "yime-sentence-extension-v1"
+sort: by_weight
+use_preset_vocabulary: false
+import_tables:
+  - yime_shorthand
+  - yime_psc_peripheral_sentence_shorthand
+  - yime_erhua_mixed_sentence_shorthand
+  - yime_third_tone_stage5c_shorthand
+...

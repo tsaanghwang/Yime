@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 )
 
-const cacheVersion = 2
+const cacheVersion = 3
 
 type cacheHeader struct {
 	Version     int
@@ -22,6 +22,7 @@ type cachePayload struct {
 	UserEntries  []UserPhraseEntry
 	MarkedLookup map[string]string
 	SourceTruth  map[string][]string
+	ErhuaLookup  map[string][]ErhuaLookupRecord
 }
 
 func cachePath(schemaID string) string {
@@ -38,7 +39,8 @@ func sourceTimes(sharedDir, userDir, schemaID string) (map[string]int64, error) 
 	userPhrasePath := filepath.Join(userDir, "yime_user_phrases.txt")
 	dictPath := resolveDictPath(sharedDir, userDir, schemaID)
 	sourceTruthPath := filepath.Join(sharedDir, SourceTruthFileName)
-	paths := []string{codeMapPath, markedPath, userPhrasePath, dictPath, sourceTruthPath}
+	erhuaSourcePath := filepath.Join(sharedDir, ErhuaSourceFileName)
+	paths := []string{codeMapPath, markedPath, userPhrasePath, dictPath, sourceTruthPath, erhuaSourcePath}
 	times := make(map[string]int64, len(paths))
 	for _, path := range paths {
 		info, err := os.Stat(path)
@@ -95,6 +97,7 @@ func loadCachedIndex(sharedDir, userDir, schemaID string) (*Index, bool) {
 		UserEntries:  payload.UserEntries,
 		MarkedLookup: payload.MarkedLookup,
 		SourceTruth:  payload.SourceTruth,
+		ErhuaLookup:  payload.ErhuaLookup,
 	}
 	return index, true
 }
@@ -131,6 +134,7 @@ func saveCachedIndex(sharedDir, userDir string, index *Index) error {
 		UserEntries:  index.UserEntries,
 		MarkedLookup: index.MarkedLookup,
 		SourceTruth:  index.SourceTruth,
+		ErhuaLookup:  index.ErhuaLookup,
 	}
 	return gob.NewEncoder(file).Encode(payload)
 }

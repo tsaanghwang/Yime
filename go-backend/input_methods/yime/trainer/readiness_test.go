@@ -8,7 +8,7 @@ func TestTrainerContentReadinessCoversFingeringAndAllFormalSyllables(t *testing.
 		t.Fatal(err)
 	}
 	readiness := resolver.ContentReadiness()
-	if readiness.YinyuanTotal != 57 || readiness.FingeringCovered != 57 || readiness.EncodedSyllables != 1728 || !readiness.CandidateSimulation {
+	if readiness.YinyuanTotal != 60 || readiness.FingeringCovered != 60 || readiness.EncodedSyllables != 1733 || !readiness.CandidateSimulation {
 		t.Fatalf("readiness=%#v", readiness)
 	}
 	if readiness.AudioAvailable > readiness.AudioDeclared || readiness.AudioDeclared > readiness.YinyuanTotal {

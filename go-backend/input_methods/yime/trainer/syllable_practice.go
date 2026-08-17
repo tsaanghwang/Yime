@@ -67,7 +67,8 @@ func (resolver *Resolver) ResolveSyllablePracticeGroups(mode reverselookup.Mode)
 		})
 	}
 
-	result := make([]ExerciseGroup, 0, 24)
+	result := make([]ExerciseGroup, 0, 25)
+	contextualOnly := map[string]bool{"N26": true, "N27": true}
 	for _, id := range layoutdesigner.ExpectedIDs() {
 		if !strings.HasPrefix(id, "N") {
 			continue
@@ -78,6 +79,9 @@ func (resolver *Resolver) ResolveSyllablePracticeGroups(mode reverselookup.Mode)
 		}
 		exercises := byShouyin[id]
 		if len(exercises) == 0 {
+			if contextualOnly[id] {
+				continue
+			}
 			return nil, fmt.Errorf("首音 %s 没有现存音节", id)
 		}
 		sort.Slice(exercises, func(i, j int) bool {

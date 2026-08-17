@@ -4,7 +4,7 @@
 schema:
   schema_id: yime_erhua_mixed_full
   name: "Yime 显式儿化混合表（等长依赖）"
-  version: "explicit-erhua-mixed-v1"
+  version: "explicit-erhua-mixed-v4"
 
 translator:
   dictionary: yime_erhua_mixed_full

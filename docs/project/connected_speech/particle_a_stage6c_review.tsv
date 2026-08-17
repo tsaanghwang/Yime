@@ -1,0 +1,31 @@
+review_id	text	canonical_pinyin	expected_surface_pinyin	class_id	stage6b_record_id_snapshot	priority_weight_snapshot	evidence_class	review_status	runtime_status	source_ids	note
+PA-6C-001	样子啊	yang4 zi5 a5	yang4 zi5 ɹa5	PA-APICAL-FRONT	PA-6B-00090	1938	input_alias_key_change	pending_human_review	not_approved	PA-SRC-RULE-SPEC,PA-SRC-CORE-LEXICON,PA-SRC-STAGE6B	舌尖前元音类高频样本；ɹ为IPA式记号，不是拼音声母z[ts]；候选文字保持“啊”
+PA-6C-002	日子啊	ri4 zi5 a5	ri4 zi5 ɹa5	PA-APICAL-FRONT	PA-6B-00080	1911	input_alias_key_change	pending_human_review	not_approved	PA-SRC-RULE-SPEC,PA-SRC-CORE-LEXICON,PA-SRC-STAGE6B	舌尖前元音类高频样本；ɹ为IPA式记号
+PA-6C-003	公司啊	gong1 si1 a5	gong1 si1 ɹa5	PA-APICAL-FRONT	PA-6B-00020	1911	input_alias_key_change	pending_human_review	not_approved	PA-SRC-RULE-SPEC,PA-SRC-CORE-LEXICON,PA-SRC-STAGE6B	舌尖前元音类高频样本；ɹ为IPA式记号
+PA-6C-004	如此啊	ru2 ci3 a5	ru2 ci3 ɹa5	PA-APICAL-FRONT	PA-6B-00048	1888	input_alias_key_change	pending_human_review	not_approved	PA-SRC-RULE-SPEC,PA-SRC-CORE-LEXICON,PA-SRC-STAGE6B	舌尖前元音类高频样本；ɹ为IPA式记号
+PA-6C-005	房子啊	fang2 zi5 a5	fang2 zi5 ɹa5	PA-APICAL-FRONT	PA-6B-00072	1865	input_alias_key_change	pending_human_review	not_approved	PA-SRC-RULE-SPEC,PA-SRC-CORE-LEXICON,PA-SRC-STAGE6B	舌尖前元音类高频样本；ɹ为IPA式记号
+PA-6C-006	人啊	ren2 a5	ren2 na5	PA-N	PA-6B-00301	1970	input_alias_key_change	pending_human_review	not_approved	PA-SRC-RULE-SPEC,PA-SRC-CORE-LEXICON,PA-SRC-STAGE6B	n尾类高频样本
+PA-6C-007	方便啊	fang1 bian4 a5	fang1 bian4 na5	PA-N	PA-6B-00919	1950	input_alias_key_change	pending_human_review	not_approved	PA-SRC-RULE-SPEC,PA-SRC-CORE-LEXICON,PA-SRC-STAGE6B	n尾类高频样本
+PA-6C-008	你们啊	ni3 men5 a5	ni3 men5 na5	PA-N	PA-6B-00346	1943	input_alias_key_change	pending_human_review	not_approved	PA-SRC-RULE-SPEC,PA-SRC-CORE-LEXICON,PA-SRC-STAGE6B	n尾类含轻声音节样本；只复核末音条件读法
+PA-6C-009	一点啊	yi4 dian3 a5	yi4 dian3 na5	PA-N	PA-6B-00190	1942	input_alias_key_change	pending_human_review	not_approved	PA-SRC-RULE-SPEC,PA-SRC-CORE-LEXICON,PA-SRC-STAGE6B	n尾类高频样本
+PA-6C-010	天啊	tian1 a5	tian1 na5	PA-N	PA-6B-00589	1935	input_alias_key_change	pending_human_review	not_approved	PA-SRC-RULE-SPEC,PA-SRC-CORE-LEXICON,PA-SRC-STAGE6B	n尾类直接双音节样本
+PA-6C-011	不行啊	bu4 xing2 a5	bu4 xing2 nga5	PA-NG	PA-6B-01605	1989	semantic_only_shared_key	pending_human_review	not_approved	PA-SRC-RULE-SPEC,PA-SRC-CORE-LEXICON,PA-SRC-STAGE6B	N26与N12共键；只验证语义ID不新增输入路径
+PA-6C-012	一样啊	yi2 yang4 a5	yi2 yang4 nga5	PA-NG	PA-6B-01556	1973	semantic_only_shared_key	pending_human_review	not_approved	PA-SRC-RULE-SPEC,PA-SRC-CORE-LEXICON,PA-SRC-STAGE6B	N26与N12共键；只验证语义ID
+PA-6C-013	这样啊	zhe4 yang4 a5	zhe4 yang4 nga5	PA-NG	PA-6B-02497	1950	semantic_only_shared_key	pending_human_review	not_approved	PA-SRC-RULE-SPEC,PA-SRC-CORE-LEXICON,PA-SRC-STAGE6B	N26与N12共键；只验证语义ID
+PA-6C-014	好用啊	hao3 yong4 a5	hao3 yong4 nga5	PA-NG	PA-6B-01901	1942	semantic_only_shared_key	pending_human_review	not_approved	PA-SRC-RULE-SPEC,PA-SRC-CORE-LEXICON,PA-SRC-STAGE6B	N26与N12共键；只验证语义ID
+PA-6C-015	情况啊	qing2 kuang4 a5	qing2 kuang4 nga5	PA-NG	PA-6B-02046	1941	semantic_only_shared_key	pending_human_review	not_approved	PA-SRC-RULE-SPEC,PA-SRC-CORE-LEXICON,PA-SRC-STAGE6B	N26与N12共键；只验证语义ID
+PA-6C-016	是啊	shi4 a5	shi4 ra5	PA-RETROFLEX	PA-6B-02781	2006	input_alias_key_change	pending_human_review	not_approved	PA-SRC-RULE-SPEC,PA-SRC-CORE-LEXICON,PA-SRC-STAGE6B	卷舌类直接双音节样本
+PA-6C-017	就是啊	jiu4 shi4 a5	jiu4 shi4 ra5	PA-RETROFLEX	PA-6B-02727	1944	input_alias_key_change	pending_human_review	not_approved	PA-SRC-RULE-SPEC,PA-SRC-CORE-LEXICON,PA-SRC-STAGE6B	卷舌类高频样本
+PA-6C-018	也是啊	ye3 shi4 a5	ye3 shi4 ra5	PA-RETROFLEX	PA-6B-02625	1914	input_alias_key_change	pending_human_review	not_approved	PA-SRC-RULE-SPEC,PA-SRC-CORE-LEXICON,PA-SRC-STAGE6B	卷舌类高频样本
+PA-6C-019	好事啊	hao3 shi4 a5	hao3 shi4 ra5	PA-RETROFLEX	PA-6B-02710	1912	input_alias_key_change	pending_human_review	not_approved	PA-SRC-RULE-SPEC,PA-SRC-CORE-LEXICON,PA-SRC-STAGE6B	卷舌类高频样本
+PA-6C-020	老师啊	lao3 shi1 a5	lao3 shi1 ra5	PA-RETROFLEX	PA-6B-02862	1911	input_alias_key_change	pending_human_review	not_approved	PA-SRC-RULE-SPEC,PA-SRC-CORE-LEXICON,PA-SRC-STAGE6B	卷舌类高频样本
+PA-6C-021	没有啊	mei2 you3 a5	mei2 you3 wa5	PA-U	PA-6B-03667	1981	input_alias_key_change	pending_human_review	not_approved	PA-SRC-RULE-SPEC,PA-SRC-CORE-LEXICON,PA-SRC-STAGE6B	u尾类高频样本
+PA-6C-022	多好啊	duo1 hao3 a5	duo1 hao3 wa5	PA-U	PA-6B-03256	1978	input_alias_key_change	pending_human_review	not_approved	PA-SRC-RULE-SPEC,PA-SRC-CORE-LEXICON,PA-SRC-STAGE6B	ao按u尾处理的高频样本
+PA-6C-023	好啊	hao3 a5	hao3 wa5	PA-U	PA-6B-03301	1973	input_alias_key_change	pending_human_review	not_approved	PA-SRC-RULE-SPEC,PA-SRC-CORE-LEXICON,PA-SRC-STAGE6B	ao按u尾处理的直接双音节样本
+PA-6C-024	不了啊	bu4 liao3 a5	bu4 liao3 wa5	PA-U	PA-6B-02949	1962	input_alias_key_change	pending_human_review	not_approved	PA-SRC-RULE-SPEC,PA-SRC-CORE-LEXICON,PA-SRC-STAGE6B	iao按u尾处理的高频样本
+PA-6C-025	重要啊	zhong4 yao4 a5	zhong4 yao4 wa5	PA-U	PA-6B-04037	1949	input_alias_key_change	pending_human_review	not_approved	PA-SRC-RULE-SPEC,PA-SRC-CORE-LEXICON,PA-SRC-STAGE6B	ao按u尾处理的高频样本
+PA-6C-026	对啊	dui4 a5	dui4 ya5	PA-VOWEL-IY	PA-6B-05076	2008	input_alias_key_change	pending_human_review	not_approved	PA-SRC-RULE-SPEC,PA-SRC-CORE-LEXICON,PA-SRC-STAGE6B	其余元音尾类直接双音节样本
+PA-6C-027	不对啊	bu2 dui4 a5	bu2 dui4 ya5	PA-VOWEL-IY	PA-6B-04194	1986	input_alias_key_change	pending_human_review	not_approved	PA-SRC-RULE-SPEC,PA-SRC-CORE-LEXICON,PA-SRC-STAGE6B	其余元音尾类高频样本
+PA-6C-028	可以啊	ke3 yi3 a5	ke3 yi3 ya5	PA-VOWEL-IY	PA-6B-04668	1983	input_alias_key_change	pending_human_review	not_approved	PA-SRC-RULE-SPEC,PA-SRC-CORE-LEXICON,PA-SRC-STAGE6B	其余元音尾类高频样本
+PA-6C-029	问题啊	wen4 ti2 a5	wen4 ti2 ya5	PA-VOWEL-IY	PA-6B-06544	1974	input_alias_key_change	pending_human_review	not_approved	PA-SRC-RULE-SPEC,PA-SRC-CORE-LEXICON,PA-SRC-STAGE6B	其余元音尾类高频样本
+PA-6C-030	感觉啊	gan3 jue2 a5	gan3 jue2 ya5	PA-VOWEL-IY	PA-6B-05319	1960	input_alias_key_change	pending_human_review	not_approved	PA-SRC-RULE-SPEC,PA-SRC-CORE-LEXICON,PA-SRC-STAGE6B	其余元音尾类高频样本

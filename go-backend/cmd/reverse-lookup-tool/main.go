@@ -300,7 +300,7 @@ func buildUILayoutForSize(clientW, clientH int32) uiLayout {
 	listTop := rowY + rowH + gap
 	statusBottom := clientH - margin
 	layout.statusLabel = rect{margin, statusBottom - 28, contentRight, statusBottom}
-	layout.detailView = rect{margin, layout.statusLabel.Top - gap - 140, contentRight, layout.statusLabel.Top - gap}
+	layout.detailView = rect{margin, layout.statusLabel.Top - gap - 210, contentRight, layout.statusLabel.Top - gap}
 	layout.resultList = rect{margin, listTop, contentRight, layout.detailView.Top - gap}
 	return layout
 }
@@ -903,11 +903,22 @@ func (state *appState) updateDetail(selected int) {
 		return
 	}
 	item := results[selected]
+	state.setDetail(formatResultDetail(item))
+}
+
+func formatResultDetail(item reverselookup.Result) string {
 	detail := fmt.Sprintf(
 		"词条：%s\r\n来源：%s\r\n数字标调：%s\r\n标准拼音：%s\r\n当前编码：%s\r\n等长：%s\r\n变长：%s\r\n省键：%s",
 		item.Phrase, item.Source, item.NumericPinyin, item.StandardPinyin, item.ActiveCode, item.FullCode, item.VariableCode, item.ShorthandCode,
 	)
-	state.setDetail(detail)
+	if item.ErhuaRecordID == "" {
+		return detail
+	}
+	return detail + fmt.Sprintf(
+		"\r\n\r\n读音身份：%s\r\n证据来源：%s\r\n记录 ID：%s\r\n儿化特征规则：%s\r\n附着音节：%s\r\n基础音元元组：%s\r\n派生儿化音元：%s\r\n音元—键位投影：%s",
+		item.ReadingIdentity, item.EvidenceSource, item.ErhuaRecordID, item.ErhuaFeatureRuleID, item.AttachedSyllable,
+		item.SourceYinyuanIDs, item.DerivedYinyuanIDs, item.SoundToKeyProjection,
+	)
 }
 
 func (state *appState) readSearchText() string {
