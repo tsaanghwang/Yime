@@ -1,0 +1,4 @@
+source_id	source_kind	title	locator	scope_claim	limitation
+PA-SRC-RULE-SPEC	project_rule_specification	语气词“啊”六类前接末音规则	docs/project/MANDARIN_CONNECTED_SPEECH_PLAN.md#阶段-6语气词音变	提供六类条件读法和保持候选原字的工程规则	不是逐条词语的运行时批准
+PA-SRC-CORE-LEXICON	canonical_candidate_record	Yime核心规范词典显式“啊/a5”记录	go-backend/input_methods/yime/data/yime_full.dict.yaml	证明候选文字、规范编码和静态权重确实存在	词典收录本身不证明具体语境必然采用条件读法
+PA-SRC-STAGE6B	machine_projection_audit	阶段6B三模式离线投影	docs/project/connected_speech/STAGE6B_PARTICLE_A_OFFLINE_PROJECTION.md	证明首音位置替换、三模式码长和碰撞可复算	只提供机器证据且不授权运行时别名

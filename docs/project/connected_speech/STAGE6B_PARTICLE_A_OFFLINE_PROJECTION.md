@@ -26,3 +26,6 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\audit-stage6b-partic
 未决均为 0；预测 84 个模式映射进入多候选桶。N26 与 N12 受控共用 `'`，所以 1,057 条
 `PA-NG` 在三模式中已有同文同码路径，但报告仍保留 N26 语义。任何后续增码都会被视为实现错误并
 由测试拦截。全部数字只描述离线试算，运行时别名仍为 0。
+
+首批小规模复核已由[阶段 6C 人工复核门禁](STAGE6C_PARTICLE_A_REVIEW_GATE.md)承接；阶段 6B 的
+全量清单继续只是机器母表，不能整体批准。
