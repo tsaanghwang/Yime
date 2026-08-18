@@ -2,8 +2,10 @@ package userlexicon
 
 import (
 	"bytes"
+	"crypto/sha256"
 	"errors"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -39,16 +41,20 @@ var generatedErhuaOverlayFiles = []string{
 	"yime_sentence_full.dict.yaml",
 	"yime_sentence_variable.dict.yaml",
 	"yime_sentence_shorthand.dict.yaml",
+	"yime_erhua_reverse_source.tsv",
+	"yime_erhua_mixed_manifest.json",
+}
+var generatedThirdToneStage5CFiles = []string{
 	"yime_third_tone_stage5c_full.dict.yaml",
 	"yime_third_tone_stage5c_variable.dict.yaml",
 	"yime_third_tone_stage5c_shorthand.dict.yaml",
 	"yime_third_tone_stage5c_manifest.json",
+}
+var generatedParticleAStage6DFiles = []string{
 	"yime_particle_a_stage6d_full.dict.yaml",
 	"yime_particle_a_stage6d_variable.dict.yaml",
 	"yime_particle_a_stage6d_shorthand.dict.yaml",
 	"yime_particle_a_stage6d_manifest.json",
-	"yime_erhua_reverse_source.tsv",
-	"yime_erhua_mixed_manifest.json",
 }
 var generatedPSCPeripheralFiles = []string{
 	"yime_psc_peripheral_full.dict.yaml",
@@ -111,6 +117,24 @@ func RefreshRimeData(sharedDir, userDir string) (bool, error) {
 	if err != nil {
 		return false, err
 	}
+	thirdToneChanged, err := refreshGeneratedOverlay(
+		sharedDir,
+		userDir,
+		generatedThirdToneStage5CFiles,
+		"上声阶段 5C",
+	)
+	if err != nil {
+		return false, err
+	}
+	particleAChanged, err := refreshGeneratedOverlay(
+		sharedDir,
+		userDir,
+		generatedParticleAStage6DFiles,
+		"语气词啊阶段 6D",
+	)
+	if err != nil {
+		return false, err
+	}
 	pscPeripheralChanged, err := refreshGeneratedOverlay(
 		sharedDir,
 		userDir,
@@ -128,7 +152,7 @@ func RefreshRimeData(sharedDir, userDir string) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	return selectionChanged || schemasChanged || lexiconChanged || erhuaOverlayChanged || pscPeripheralChanged || retiredChanged, nil
+	return selectionChanged || schemasChanged || lexiconChanged || erhuaOverlayChanged || thirdToneChanged || particleAChanged || pscPeripheralChanged || retiredChanged, nil
 }
 
 func refreshGeneratedErhuaOverlay(sharedDir, userDir string) (bool, error) {
@@ -155,7 +179,11 @@ func refreshGeneratedOverlay(sharedDir, userDir string, files []string, label st
 	needsRefresh := manifestErr != nil || !bytes.Equal(userManifest, sharedManifest)
 	if !needsRefresh {
 		for _, name := range artifactNames {
-			if _, statErr := os.Stat(filepath.Join(userDir, name)); statErr != nil {
+			equal, compareErr := generatedFilesEqual(filepath.Join(sharedDir, name), filepath.Join(userDir, name))
+			if compareErr != nil {
+				return false, fmt.Errorf("核对用户目录%s词典 %s 失败: %w", label, name, compareErr)
+			}
+			if !equal {
 				needsRefresh = true
 				break
 			}
@@ -233,7 +261,11 @@ func refreshGeneratedLexicon(sharedDir, userDir string) (bool, error) {
 	needsRefresh := manifestErr != nil || !bytes.Equal(userManifest, sharedManifest)
 	if !needsRefresh {
 		for _, name := range generatedLexiconFiles[:3] {
-			if _, statErr := os.Stat(filepath.Join(userDir, name)); statErr != nil {
+			equal, compareErr := generatedFilesEqual(filepath.Join(sharedDir, name), filepath.Join(userDir, name))
+			if compareErr != nil {
+				return false, fmt.Errorf("核对用户目录词典文件 %s 失败: %w", name, compareErr)
+			}
+			if !equal {
 				needsRefresh = true
 				break
 			}
@@ -255,6 +287,46 @@ func refreshGeneratedLexicon(sharedDir, userDir string) (bool, error) {
 		}
 	}
 	return true, nil
+}
+
+func generatedFilesEqual(sharedPath, userPath string) (bool, error) {
+	sharedInfo, err := os.Stat(sharedPath)
+	if err != nil {
+		return false, err
+	}
+	userInfo, err := os.Stat(userPath)
+	if errors.Is(err, os.ErrNotExist) {
+		return false, nil
+	}
+	if err != nil {
+		return false, err
+	}
+	if sharedInfo.Size() != userInfo.Size() {
+		return false, nil
+	}
+	hashFile := func(path string) ([sha256.Size]byte, error) {
+		file, openErr := os.Open(path)
+		if openErr != nil {
+			return [sha256.Size]byte{}, openErr
+		}
+		defer file.Close()
+		hash := sha256.New()
+		if _, copyErr := io.Copy(hash, file); copyErr != nil {
+			return [sha256.Size]byte{}, copyErr
+		}
+		var sum [sha256.Size]byte
+		copy(sum[:], hash.Sum(nil))
+		return sum, nil
+	}
+	sharedHash, err := hashFile(sharedPath)
+	if err != nil {
+		return false, err
+	}
+	userHash, err := hashFile(userPath)
+	if err != nil {
+		return false, err
+	}
+	return sharedHash == userHash, nil
 }
 
 func copyGeneratedLexiconManifest(sharedDir, userDir string) error {

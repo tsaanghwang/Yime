@@ -3247,6 +3247,7 @@ func validateCompiledRimeSchema(userDir, schemaID string) error {
 		return fmt.Errorf("当前方案编译产物为空: %s", compiledSchemaPath)
 	}
 	required := []string{}
+	compiledDictionaryArtifacts := make(map[string]os.FileInfo)
 	dictionaryID := ""
 	if strings.HasPrefix(schemaID, "yime_") {
 		dictionaryID = strings.Trim(rimeSchemaSectionScalar(compiledSchema, "translator", "dictionary"), "\"'")
@@ -3271,25 +3272,28 @@ func validateCompiledRimeSchema(userDir, schemaID string) error {
 		if info.IsDir() || info.Size() == 0 {
 			return fmt.Errorf("当前方案编译产物为空: %s", path)
 		}
+		compiledDictionaryArtifacts[name] = info
 	}
 	if dictionaryID != "" {
-		sourceDictionaryPath := filepath.Join(userDir, dictionaryID+".dict.yaml")
-		if sourceInfo, statErr := os.Stat(sourceDictionaryPath); statErr == nil {
-			compiledTablePath := filepath.Join(buildDir, dictionaryID+".table.bin")
-			compiledInfo, compiledErr := os.Stat(compiledTablePath)
-			if compiledErr != nil {
-				return fmt.Errorf("当前方案 %s 缺少编译词表 %s: %w", schemaID, compiledTablePath, compiledErr)
+		sourceDictionaryPaths, sourceErr := rimeDictionarySourcePaths(userDir, dictionaryID)
+		if sourceErr != nil {
+			return fmt.Errorf("读取当前方案源词典依赖失败: %w", sourceErr)
+		}
+		for _, sourceDictionaryPath := range sourceDictionaryPaths {
+			sourceInfo, statErr := os.Stat(sourceDictionaryPath)
+			if statErr != nil {
+				return fmt.Errorf("读取当前方案源词典失败 %s: %w", sourceDictionaryPath, statErr)
 			}
-			if sourceInfo.ModTime().After(compiledInfo.ModTime()) {
-				return fmt.Errorf(
-					"当前方案 %s 编译词表已过期: 源词典 %s 新于 %s",
-					schemaID,
-					sourceDictionaryPath,
-					compiledTablePath,
-				)
+			for artifactName, artifactInfo := range compiledDictionaryArtifacts {
+				if sourceInfo.ModTime().After(artifactInfo.ModTime()) {
+					return fmt.Errorf(
+						"当前方案 %s 编译词典产物已过期: 源词典 %s 新于 %s",
+						schemaID,
+						sourceDictionaryPath,
+						filepath.Join(buildDir, artifactName),
+					)
+				}
 			}
-		} else if !os.IsNotExist(statErr) {
-			return fmt.Errorf("读取当前方案源词典失败 %s: %w", sourceDictionaryPath, statErr)
 		}
 	}
 	sourceSchemaPath := filepath.Join(userDir, schemaID+".schema.yaml")
@@ -3300,25 +3304,99 @@ func validateCompiledRimeSchema(userDir, schemaID string) error {
 		}
 		return fmt.Errorf("读取当前方案源配置失败 %s: %w", sourceSchemaPath, sourceErr)
 	}
-	for _, field := range []string{"version", "alphabet"} {
-		sourceValue := rimeSchemaScalar(sourceSchema, field)
-		compiledValue := rimeSchemaScalar(compiledSchema, field)
+	for _, check := range []struct {
+		section string
+		field   string
+	}{
+		{section: "schema", field: "version"},
+		{section: "speller", field: "alphabet"},
+	} {
+		sourceValue := rimeSchemaSectionScalar(sourceSchema, check.section, check.field)
+		compiledValue := rimeSchemaSectionScalar(compiledSchema, check.section, check.field)
 		if sourceValue != "" && sourceValue != compiledValue {
-			return fmt.Errorf("当前方案 %s 编译产物已过期: %s 源值=%q 编译值=%q", schemaID, field, sourceValue, compiledValue)
+			return fmt.Errorf("当前方案 %s 编译产物已过期: %s.%s 源值=%q 编译值=%q", schemaID, check.section, check.field, sourceValue, compiledValue)
 		}
 	}
 	return nil
 }
 
-func rimeSchemaScalar(data []byte, field string) string {
-	prefix := field + ":"
-	for _, line := range strings.Split(string(data), "\n") {
+func rimeDictionarySourcePaths(userDir, rootDictionaryID string) ([]string, error) {
+	queue := []string{rootDictionaryID}
+	visited := make(map[string]bool)
+	paths := make([]string, 0, 8)
+	for len(queue) > 0 {
+		dictionaryID := queue[0]
+		queue = queue[1:]
+		if visited[dictionaryID] {
+			continue
+		}
+		if err := validateRimeDictionaryID(dictionaryID); err != nil {
+			return nil, err
+		}
+		visited[dictionaryID] = true
+		path := filepath.Join(userDir, dictionaryID+".dict.yaml")
+		paths = append(paths, path)
+		imports, err := rimeDictionaryImportsFromFile(path)
+		if err != nil {
+			return nil, fmt.Errorf("%s: %w", path, err)
+		}
+		queue = append(queue, imports...)
+	}
+	return paths, nil
+}
+
+func validateRimeDictionaryID(dictionaryID string) error {
+	dictionaryID = strings.TrimSpace(dictionaryID)
+	if dictionaryID == "" || dictionaryID == "." || dictionaryID == ".." || filepath.Base(dictionaryID) != dictionaryID {
+		return fmt.Errorf("Rime 导入词典 ID 无效: %q", dictionaryID)
+	}
+	return nil
+}
+
+func rimeDictionaryImportsFromFile(path string) ([]string, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	inImports := false
+	importsIndent := -1
+	result := []string{}
+	for scanner.Scan() {
+		line := scanner.Text()
 		trimmed := strings.TrimSpace(line)
-		if strings.HasPrefix(trimmed, prefix) {
-			return strings.TrimSpace(strings.TrimPrefix(trimmed, prefix))
+		if !inImports {
+			if trimmed == "..." {
+				break
+			}
+			if trimmed == "import_tables:" {
+				inImports = true
+				importsIndent = len(line) - len(strings.TrimLeft(line, " \t"))
+			}
+			continue
+		}
+		if trimmed == "" || strings.HasPrefix(trimmed, "#") {
+			continue
+		}
+		indent := len(line) - len(strings.TrimLeft(line, " \t"))
+		if indent <= importsIndent || !strings.HasPrefix(trimmed, "-") {
+			break
+		}
+		value := strings.TrimSpace(strings.TrimPrefix(trimmed, "-"))
+		if comment := strings.Index(value, " #"); comment >= 0 {
+			value = strings.TrimSpace(value[:comment])
+		}
+		value = strings.Trim(strings.TrimSpace(value), "\"'")
+		if value != "" {
+			result = append(result, value)
 		}
 	}
-	return ""
+	if err := scanner.Err(); err != nil {
+		return nil, err
+	}
+	return result, nil
 }
 
 func rimeSchemaSectionScalar(data []byte, section, field string) string {

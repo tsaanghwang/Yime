@@ -230,10 +230,11 @@ PIMELauncher。若 `build/` 或 Go backend 制品被清理，安装会在写系�
 ```powershell
 .\tools\verify-installed-runtime.ps1 `
   -JsonPath .\.tmp\installed-runtime.json `
-  -AllowTextServiceMismatch
+  -AllowTextServiceMismatch `
+  -RequireFreshRimeCache
 ```
 
-`complete` 表示全部哈希一致；`partial` 只允许被宿主锁定的 TSF DLL 暂未替换；其它缺失或不一致均为 `failed`。`dev-install.ps1` 会自动把最近一次报告写到 `.tmp\last-dev-install-verification.json`。
+`complete` 表示文件哈希、安装状态和三套 Rime 编译缓存均一致。非严格模式下，被宿主锁定的 TSF DLL 暂未替换，或 Rime 后台尚未完成 table/reverse/prism 重建，都可能得到 `partial`；使用 `-RequireFreshRimeCache` 时任何缓存缺失或过期均为 `failed`。其它文件缺失或不一致始终为 `failed`。`dev-install.ps1` 会自动把最近一次报告写到 `.tmp\last-dev-install-verification.json`。
 
 语言栏或 TSF 问题必须在安装态至少复现一次；不能用源码目录中的临时 EXE 代替。
 

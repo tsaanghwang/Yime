@@ -1,6 +1,8 @@
 param(
     [string]$RepoRoot = (Split-Path -Parent $PSScriptRoot),
     [string]$InstallRoot = 'C:\Program Files (x86)\YIME',
+    [ValidateRange(1, 300)]
+    [int]$RimeCacheWaitSeconds = 60,
     [switch]$SkipBuild
 )
 
@@ -16,6 +18,7 @@ if (-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administra
         '-File', ('"' + $PSCommandPath + '"'),
         '-RepoRoot', ('"' + $repoRoot + '"'),
         '-InstallRoot', ('"' + $InstallRoot + '"')
+        '-RimeCacheWaitSeconds', $RimeCacheWaitSeconds
     )
     if ($SkipBuild) { $elevatedArgs += '-SkipBuild' }
     # Start-Process -Wait follows the elevated process tree and would wait on
@@ -38,12 +41,29 @@ Write-Host '=== Canonical reinstall (including DLL-lock fallback) ==='
 & cmd.exe /d /c (Join-Path $repoRoot 'Reinstall-PIME-Test.cmd')
 if ($LASTEXITCODE -ne 0) { throw "Reinstall-PIME-Test.cmd failed with exit code $LASTEXITCODE" }
 
+Write-Host "=== Wait up to $RimeCacheWaitSeconds seconds for Rime compiled caches ==="
+$cacheChecker = Join-Path $PSScriptRoot 'check-rime-cache-freshness.ps1'
+$cacheDeadline = [DateTime]::UtcNow.AddSeconds($RimeCacheWaitSeconds)
+$cacheRecords = @()
+do {
+    $cacheRecords = @(& $cacheChecker)
+    if ($cacheRecords.Count -eq 3 -and @($cacheRecords | Where-Object status -ne 'match').Count -eq 0) {
+        break
+    }
+    if ([DateTime]::UtcNow -ge $cacheDeadline) {
+        Write-Warning 'Rime compiled caches did not become fresh before the wait deadline; the strict verifier will report details.'
+        break
+    }
+    Start-Sleep -Seconds 2
+} while ($true)
+
 Write-Host '=== Verify installed hashes, registry and launcher process ==='
 $reportPath = Join-Path $repoRoot '.tmp\last-dev-end-to-end-verification.json'
 & (Join-Path $PSScriptRoot 'verify-installed-runtime.ps1') `
     -RepoRoot $repoRoot `
     -InstallRoot $InstallRoot `
     -JsonPath $reportPath `
-    -RequireRunningLauncher
+    -RequireRunningLauncher `
+    -RequireFreshRimeCache
 
 Write-Host "Developer build/install/runtime verification passed. Report: $reportPath"

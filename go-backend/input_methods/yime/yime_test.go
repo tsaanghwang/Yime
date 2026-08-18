@@ -2163,6 +2163,9 @@ func TestCompiledSchemaValidationRejectsStaleVersionAndAlphabet(t *testing.T) {
 	if err := os.WriteFile(filepath.Join(userDir, schemaID+".schema.yaml"), []byte(source), 0o644); err != nil {
 		t.Fatal(err)
 	}
+	if err := os.WriteFile(filepath.Join(userDir, dictionaryID+".dict.yaml"), []byte("---\nname: "+dictionaryID+"\n...\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
 	for _, name := range []string{
 		schemaID + ".schema.yaml",
 		dictionaryID + ".prism.bin",
@@ -2196,7 +2199,7 @@ func TestCompiledSchemaValidationRejectsDictionaryNewerThanCompiledTable(t *test
 	}
 	schemaID := "yime_full"
 	dictionaryID := "yime_sentence_full"
-	schema := "schema:\n  version: current\nspeller:\n  alphabet: \"abc\"\ntranslator:\n  dictionary: " + dictionaryID + "\n"
+	schema := "custom_phrase:\n  dictionary: \"\"\nschema:\n  version: current\nspeller:\n  alphabet: \"abc\"\ntranslator:\n  dictionary: " + dictionaryID + "\n"
 	if err := os.WriteFile(filepath.Join(userDir, schemaID+".schema.yaml"), []byte(schema), 0o644); err != nil {
 		t.Fatal(err)
 	}
@@ -2233,14 +2236,160 @@ func TestCompiledSchemaValidationRejectsDictionaryNewerThanCompiledTable(t *test
 	if err := os.Chtimes(sourceDictionaryPath, newTime, newTime); err != nil {
 		t.Fatal(err)
 	}
-	if err := validateCompiledRimeSchema(userDir, schemaID); err == nil || !strings.Contains(err.Error(), "编译词表已过期") {
+	if err := validateCompiledRimeSchema(userDir, schemaID); err == nil || !strings.Contains(err.Error(), "编译词典产物已过期") {
 		t.Fatalf("expected stale compiled dictionary rejection, got %v", err)
 	}
-	if err := os.Chtimes(filepath.Join(buildDir, dictionaryID+".table.bin"), newTime.Add(time.Hour), newTime.Add(time.Hour)); err != nil {
-		t.Fatal(err)
+	for _, suffix := range []string{"prism.bin", "reverse.bin", "table.bin"} {
+		if err := os.Chtimes(filepath.Join(buildDir, dictionaryID+"."+suffix), newTime.Add(time.Hour), newTime.Add(time.Hour)); err != nil {
+			t.Fatal(err)
+		}
 	}
 	if err := validateCompiledRimeSchema(userDir, schemaID); err != nil {
 		t.Fatalf("fresh compiled dictionary must pass: %v", err)
+	}
+}
+
+func TestCompiledSchemaValidationRejectsImportedDictionaryNewerThanCompiledTable(t *testing.T) {
+	userDir := t.TempDir()
+	buildDir := filepath.Join(userDir, "build")
+	if err := os.MkdirAll(buildDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	schemaID := "yime_full"
+	dictionaryID := "yime_sentence_full"
+	importedID := "yime_particle_a_stage6d_full"
+	schema := "schema:\n  version: current\nspeller:\n  alphabet: \"abc\"\ntranslator:\n  dictionary: " + dictionaryID + "\n"
+	if err := os.WriteFile(filepath.Join(userDir, schemaID+".schema.yaml"), []byte(schema), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	for _, name := range []string{
+		schemaID + ".schema.yaml",
+		dictionaryID + ".prism.bin",
+		dictionaryID + ".reverse.bin",
+		dictionaryID + ".table.bin",
+	} {
+		content := []byte(name)
+		if name == schemaID+".schema.yaml" {
+			content = []byte(schema)
+		}
+		if err := os.WriteFile(filepath.Join(buildDir, name), content, 0o644); err != nil {
+			t.Fatal(err)
+		}
+	}
+	rootDictionaryPath := filepath.Join(userDir, dictionaryID+".dict.yaml")
+	rootDictionary := "---\nname: " + dictionaryID + "\nimport_tables:\n  - " + importedID + "\n...\n"
+	if err := os.WriteFile(rootDictionaryPath, []byte(rootDictionary), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	importedDictionaryPath := filepath.Join(userDir, importedID+".dict.yaml")
+	if err := os.WriteFile(importedDictionaryPath, []byte("---\nname: "+importedID+"\n...\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	oldTime := time.Now().Add(-3 * time.Hour)
+	compiledTime := time.Now().Add(-2 * time.Hour)
+	newTime := time.Now().Add(-time.Hour)
+	if err := os.Chtimes(rootDictionaryPath, oldTime, oldTime); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Chtimes(importedDictionaryPath, newTime, newTime); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Chtimes(filepath.Join(buildDir, dictionaryID+".table.bin"), compiledTime, compiledTime); err != nil {
+		t.Fatal(err)
+	}
+	if err := validateCompiledRimeSchema(userDir, schemaID); err == nil || !strings.Contains(err.Error(), importedID) {
+		t.Fatalf("expected stale imported dictionary rejection, got %v", err)
+	}
+	for _, suffix := range []string{"prism.bin", "reverse.bin", "table.bin"} {
+		if err := os.Chtimes(filepath.Join(buildDir, dictionaryID+"."+suffix), time.Now(), time.Now()); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err := validateCompiledRimeSchema(userDir, schemaID); err != nil {
+		t.Fatalf("fresh table must cover imported dictionaries: %v", err)
+	}
+}
+
+func TestCompiledSchemaValidationRejectsStaleReverseOrPrism(t *testing.T) {
+	for _, staleSuffix := range []string{"reverse.bin", "prism.bin"} {
+		t.Run(staleSuffix, func(t *testing.T) {
+			userDir := t.TempDir()
+			buildDir := filepath.Join(userDir, "build")
+			if err := os.MkdirAll(buildDir, 0o755); err != nil {
+				t.Fatal(err)
+			}
+			schemaID := "yime_full"
+			dictionaryID := "yime_sentence_full"
+			schema := "schema:\n  version: current\nspeller:\n  alphabet: \"abc\"\ntranslator:\n  dictionary: " + dictionaryID + "\n"
+			if err := os.WriteFile(filepath.Join(userDir, schemaID+".schema.yaml"), []byte(schema), 0o644); err != nil {
+				t.Fatal(err)
+			}
+			if err := os.WriteFile(filepath.Join(userDir, dictionaryID+".dict.yaml"), []byte("---\nname: "+dictionaryID+"\n...\n"), 0o644); err != nil {
+				t.Fatal(err)
+			}
+			if err := os.WriteFile(filepath.Join(buildDir, schemaID+".schema.yaml"), []byte(schema), 0o644); err != nil {
+				t.Fatal(err)
+			}
+			for _, suffix := range []string{"prism.bin", "reverse.bin", "table.bin"} {
+				path := filepath.Join(buildDir, dictionaryID+"."+suffix)
+				if err := os.WriteFile(path, []byte(suffix), 0o644); err != nil {
+					t.Fatal(err)
+				}
+				mtime := time.Now()
+				if suffix == staleSuffix {
+					mtime = mtime.Add(-2 * time.Hour)
+				}
+				if err := os.Chtimes(path, mtime, mtime); err != nil {
+					t.Fatal(err)
+				}
+			}
+			sourceTime := time.Now().Add(-time.Hour)
+			if err := os.Chtimes(filepath.Join(userDir, dictionaryID+".dict.yaml"), sourceTime, sourceTime); err != nil {
+				t.Fatal(err)
+			}
+			err := validateCompiledRimeSchema(userDir, schemaID)
+			if err == nil || !strings.Contains(err.Error(), staleSuffix) {
+				t.Fatalf("expected stale %s rejection, got %v", staleSuffix, err)
+			}
+		})
+	}
+}
+
+func TestCompiledSchemaValidationRejectsMissingRootDictionary(t *testing.T) {
+	userDir := t.TempDir()
+	buildDir := filepath.Join(userDir, "build")
+	if err := os.MkdirAll(buildDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	schemaID := "yime_full"
+	dictionaryID := "yime_sentence_full"
+	schema := "schema:\n  version: current\nspeller:\n  alphabet: \"abc\"\ntranslator:\n  dictionary: " + dictionaryID + "\n"
+	if err := os.WriteFile(filepath.Join(userDir, schemaID+".schema.yaml"), []byte(schema), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(buildDir, schemaID+".schema.yaml"), []byte(schema), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	for _, suffix := range []string{"prism.bin", "reverse.bin", "table.bin"} {
+		if err := os.WriteFile(filepath.Join(buildDir, dictionaryID+"."+suffix), []byte(suffix), 0o644); err != nil {
+			t.Fatal(err)
+		}
+	}
+	err := validateCompiledRimeSchema(userDir, schemaID)
+	if err == nil || !strings.Contains(err.Error(), dictionaryID+".dict.yaml") {
+		t.Fatalf("expected missing root dictionary rejection, got %v", err)
+	}
+}
+
+func TestRimeDictionarySourcePathsRejectsUnsafeImportID(t *testing.T) {
+	userDir := t.TempDir()
+	rootID := "yime_sentence_full"
+	content := "---\nname: " + rootID + "\nimport_tables:\n  - ../outside\n...\n"
+	if err := os.WriteFile(filepath.Join(userDir, rootID+".dict.yaml"), []byte(content), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := rimeDictionarySourcePaths(userDir, rootID); err == nil || !strings.Contains(err.Error(), "ID 无效") {
+		t.Fatalf("expected unsafe import ID rejection, got %v", err)
 	}
 }
 
@@ -3070,6 +3219,9 @@ func TestDeployCommandQueuesConfirmedExternalBuildWithoutNativeRedeploy(t *testi
 	runRimeExternalBuild = func(_, userDir string) bool {
 		buildDir := filepath.Join(userDir, "build")
 		if err := os.MkdirAll(buildDir, 0o755); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(filepath.Join(userDir, "yime_full.dict.yaml"), []byte("---\nname: yime_full\n...\n"), 0o644); err != nil {
 			t.Fatal(err)
 		}
 		for _, name := range []string{

@@ -44,10 +44,11 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass `
   -File .\tools\verify-installed-runtime.ps1 `
   -RepoRoot . `
   -InstallRoot "C:\Program Files (x86)\YIME" `
-  -RequireRunningLauncher
+  -RequireRunningLauncher `
+  -RequireFreshRimeCache
 ```
 
-期望输出为 `Installed runtime verification: complete`。如果结果为 `partial`，只允许原因是被宿主持有的 TSF DLL 暂未替换；重启 Windows 后重新安装并复核。任何其它 `mismatch` 或 `missing` 都应按失败处理。
+期望输出为 `Installed runtime verification: complete`。这份 2026-07-22 记录当时只允许被宿主持有的 TSF DLL 导致 `partial`；现行验证器还会报告 Rime table/reverse/prism 缓存尚未生成或已过期，加入 `-RequireFreshRimeCache` 后这些情况直接失败。任何其它 `mismatch` 或 `missing` 仍应按失败处理。
 
 ## 尚未由本轮覆盖
 

@@ -136,7 +136,7 @@ regsvr32 /u "C:\Program Files (x86)\YIME\x64\PIMETextService.dll"
 - [ ] Clone the repository and confirm the toolchain is installed
 - [ ] If the curated core changed, run `tools\deploy-yime-rime-data.ps1 -InputPath <two_level_full.dict.yaml> -EvidenceManifest <dictionary.manifest.json> -PronunciationEntries <entries.tsv> -SourceRevision <commit>` (see [docs/YIME_RIME_INTEGRATION.md](docs/YIME_RIME_INTEGRATION.md))
 - [ ] Run `.\tools\dev-build-install-verify.ps1` for the complete build → reinstall → installed-runtime verification loop
-- [ ] For a split workflow, run `cmd /c build.bat`, then `.\Reinstall-PIME-Test.cmd` from an elevated prompt, then `tools\verify-installed-runtime.ps1 -RequireRunningLauncher`
+- [ ] For a split workflow, run `cmd /c build.bat`, then `.\Reinstall-PIME-Test.cmd` from an elevated prompt, then `tools\verify-installed-runtime.ps1 -RequireRunningLauncher -RequireFreshRimeCache`
 - [ ] Switch to Yime in a text application and verify: activation, candidates, settings, reverse lookup
 - [ ] Run `.\tools\test-go.ps1`; use `.\tools\test-real-rime.ps1` and `.\tools\test-go-race.ps1` when the affected layer requires them
 
