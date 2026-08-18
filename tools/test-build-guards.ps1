@@ -12,10 +12,12 @@ $coreImporter = Join-Path $root 'tools\import-yime-core-lexicon.ps1'
 $coreSourceManifest = Join-Path $root 'go-backend\input_methods\yime\data\yime_core_source_manifest.json'
 $reversePinyinSource = Join-Path $root 'go-backend\input_methods\yime\data\yime_pinyin_reverse_source.tsv'
 $pinyinCodeMap = Join-Path $root 'go-backend\input_methods\yime\data\yime_pinyin_codes.tsv'
+$systemCandidateExclusions = Join-Path $root 'go-backend\input_methods\yime\data\yime_system_candidate_exclusions.tsv'
 $erhuaMixedManifest = Join-Path $root 'go-backend\input_methods\yime\data\yime_erhua_mixed_manifest.json'
 $erhuaReverseSource = Join-Path $root 'go-backend\input_methods\yime\data\yime_erhua_reverse_source.tsv'
 $pscPeripheralManifest = Join-Path $root 'go-backend\input_methods\yime\data\yime_psc_peripheral_manifest.json'
 $thirdToneStage5CManifest = Join-Path $root 'go-backend\input_methods\yime\data\yime_third_tone_stage5c_manifest.json'
+$particleAStage6DManifest = Join-Path $root 'go-backend\input_methods\yime\data\yime_particle_a_stage6d_manifest.json'
 $installer = Join-Path $root 'installer\installer.nsi'
 $devInstall = Join-Path $root 'tools\dev-install.ps1'
 $buildPrereqs = Join-Path $root 'tools\assert-win32-build-prerequisites.ps1'
@@ -165,6 +167,7 @@ foreach ($guard in @(
     'yime_runtime_profile.json',
     'yime_pinyin_reverse_source.tsv',
     'yime_pinyin_codes.tsv',
+	'yime_system_candidate_exclusions.tsv',
     'yime_erhua_mixed_full.dict.yaml',
     'yime_erhua_mixed_variable.dict.yaml',
     'yime_erhua_mixed_shorthand.dict.yaml',
@@ -178,6 +181,10 @@ foreach ($guard in @(
 	'yime_third_tone_stage5c_variable.dict.yaml',
 	'yime_third_tone_stage5c_shorthand.dict.yaml',
 	'yime_third_tone_stage5c_manifest.json',
+	'yime_particle_a_stage6d_full.dict.yaml',
+	'yime_particle_a_stage6d_variable.dict.yaml',
+	'yime_particle_a_stage6d_shorthand.dict.yaml',
+	'yime_particle_a_stage6d_manifest.json',
     'yime_erhua_mixed_manifest.json',
     'yime_erhua_reverse_source.tsv',
     'yime_erhua_mixed_full.schema.yaml',
@@ -298,6 +305,50 @@ foreach ($mode in @('full', 'variable', 'shorthand')) {
         throw "Third-tone Stage 5C dictionary hash mismatch: $name"
     }
 }
+$particleAStage6D = Get-Content -LiteralPath $particleAStage6DManifest -Raw -Encoding UTF8 | ConvertFrom-Json
+if (-not [bool]$particleAStage6D.summary.passed -or
+    [int64]$particleAStage6D.summary.excluded_candidate_count -ne 42 -or
+    [int64]$particleAStage6D.summary.eligible_candidate_count -ne 6679 -or
+    [int64]$particleAStage6D.summary.eligible_occurrence_count -ne 6680 -or
+    [int64]$particleAStage6D.summary.retained_medial_candidate_count -ne 29 -or
+    [int64]$particleAStage6D.summary.final_candidate_count -ne 6651 -or
+    [int64]$particleAStage6D.summary.key_changing_candidate_count -ne 5618 -or
+    [int64]$particleAStage6D.summary.shared_key_candidate_count -ne 1061 -or
+    [int64]$particleAStage6D.summary.materialized_candidate_count -ne 5618 -or
+    [int64]$particleAStage6D.summary.mode_row_counts.full -ne 5618 -or
+    [int64]$particleAStage6D.summary.mode_row_counts.variable -ne 5618 -or
+    [int64]$particleAStage6D.summary.mode_row_counts.shorthand -ne 5618 -or
+    [int64]$particleAStage6D.summary.three_mode_row_count -ne 16854 -or
+    [int64]$particleAStage6D.summary.fixed_runtime_weight -ne 1 -or
+    -not [bool]$particleAStage6D.summary.canonical_routes_preserved) {
+    throw 'Particle-a Stage 6D runtime manifest did not pass its completeness gates.'
+}
+foreach ($mode in @('full', 'variable', 'shorthand')) {
+    $name = "yime_particle_a_stage6d_${mode}.dict.yaml"
+    $path = Join-Path $root "go-backend\input_methods\yime\data\$name"
+    $hash = (Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash.ToLowerInvariant()
+    if ([string]$particleAStage6D.output_sha256.$name -ne $hash) {
+        throw "Particle-a Stage 6D dictionary hash mismatch: $name"
+    }
+}
+$systemExclusionRows = @(Import-Csv -LiteralPath $systemCandidateExclusions -Delimiter "`t" -Encoding UTF8)
+if ($systemExclusionRows.Count -ne 42) {
+    throw "System candidate exclusion gate has $($systemExclusionRows.Count) rows instead of 42."
+}
+foreach ($row in $systemExclusionRows) {
+    if ($row.category -ne 'unverifiable_particle_a_fragment' -or
+        $row.source_snapshot -ne 'wanxiang' -or
+        $row.decision -ne 'exclude_runtime_candidate' -or
+        [string]::IsNullOrWhiteSpace($row.note)) {
+        throw "System candidate exclusion gate contains an invalid policy row: $($row.text)"
+    }
+    $characters = $row.text.ToCharArray()
+    if ($characters.Count -ne 3 -or
+        [int]$characters[1] -ne 0x554A -or
+        $characters[0] -eq $characters[2]) {
+        throw "System candidate exclusion gate contains a non-medial or reduplicative row: $($row.text)"
+    }
+}
 Write-Host 'Curated core evidence and three-mode package guards passed.'
 $prereqText = Get-Content -LiteralPath $buildPrereqs -Raw
 foreach ($guard in @('stable-i686-pc-windows-msvc', 'GIT_TAG\s+v0\.6\.1', 'RequireBuildArtifacts')) {
@@ -311,7 +362,7 @@ if (-not $buildEnvironmentText.Contains('initialize-dev-environment.ps1') -or -n
     throw 'Build and VS Code CMake entry points must share proxy/PATH initialization.'
 }
 $realRimeText = Get-Content -LiteralPath $realRimeTest -Raw
-foreach ($guard in @('go test -v', 'TestRealRimeKeepsCandidatesWhileCompletingFinalSyllable', 'TestRealRimeExternalBuildAppliesPageSize')) {
+foreach ($guard in @('go test -v', 'TestRealRimeKeepsCandidatesWhileCompletingFinalSyllable', 'TestRealRimeParticleAStage6DDualTrackAcrossAllThreeSchemas', 'TestRealRimeExternalBuildAppliesPageSize')) {
     if (-not $realRimeText.Contains($guard)) {
         throw "Real librime CI guard is missing: $guard"
     }

@@ -20,9 +20,9 @@
     "yime_erhua_mixed_shorthand.dict.yaml": "5fe05e56a22faf9f2f33dd3f0368e8c4baf6983e33d492acf0ef91ff9e6d6eaf",
     "yime_erhua_mixed_variable.dict.yaml": "c4f0091390c575f4e3e0c2a14fdc560fe6b26359e689bea147a104b3741f5aec",
     "yime_erhua_reverse_source.tsv": "896d69089125826e4d2d83601ad4ee60d23ba2f556a9888551097546bc0f3f05",
-    "yime_sentence_full.dict.yaml": "9cbaf8812f412d0482dadba96f88a0fdf7057ea977a5763998fdda96920efff3",
-    "yime_sentence_shorthand.dict.yaml": "b764609e0ca7c5f22112b52b4913922253397611135975d575f5d0783492706f",
-    "yime_sentence_variable.dict.yaml": "1d8a3480b6010defcc168acbba3ec814ac08997a1fbf83e432eae4046713ea09"
+    "yime_sentence_full.dict.yaml": "bdcc06ecb949eb589884f2de1f0d591ac42b331b9327b8a9f2424f5a9375603e",
+    "yime_sentence_shorthand.dict.yaml": "ca26b480507b90b6be0d47e0138ad463d0b367cc5fa1bdbb9b6ef47c232243ab",
+    "yime_sentence_variable.dict.yaml": "3a1569ec196835195a13ea2ccb55f719faf08a4ccb3b8cb82506e1b7bd921e57"
   },
   "summary": {
     "tool_version": "explicit-erhua-yinyuan-feature-runtime-v8",

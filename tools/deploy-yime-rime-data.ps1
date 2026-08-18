@@ -55,6 +55,9 @@ foreach ($mode in @("full", "variable", "shorthand")) {
 	$thirdToneName = "yime_third_tone_stage5c_${mode}.dict.yaml"
 	Copy-Item -LiteralPath (Join-Path $sharedDir $thirdToneName) `
 		-Destination (Join-Path $RimeUserDir $thirdToneName) -Force
+	$particleAName = "yime_particle_a_stage6d_${mode}.dict.yaml"
+	Copy-Item -LiteralPath (Join-Path $sharedDir $particleAName) `
+		-Destination (Join-Path $RimeUserDir $particleAName) -Force
     $pscOverlayName = "yime_psc_peripheral_${mode}.dict.yaml"
     Copy-Item -LiteralPath (Join-Path $sharedDir $pscOverlayName) `
         -Destination (Join-Path $RimeUserDir $pscOverlayName) -Force

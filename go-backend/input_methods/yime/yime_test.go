@@ -9,6 +9,7 @@ import (
 	"strings"
 	"sync"
 	"testing"
+	"time"
 	"unicode/utf8"
 
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/codemode"
@@ -2184,6 +2185,62 @@ func TestCompiledSchemaValidationRejectsStaleVersionAndAlphabet(t *testing.T) {
 	}
 	if err := validateCompiledRimeSchema(userDir, schemaID); err != nil {
 		t.Fatalf("matching source and compiled schemas must pass: %v", err)
+	}
+}
+
+func TestCompiledSchemaValidationRejectsDictionaryNewerThanCompiledTable(t *testing.T) {
+	userDir := t.TempDir()
+	buildDir := filepath.Join(userDir, "build")
+	if err := os.MkdirAll(buildDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	schemaID := "yime_full"
+	dictionaryID := "yime_sentence_full"
+	schema := "schema:\n  version: current\nspeller:\n  alphabet: \"abc\"\ntranslator:\n  dictionary: " + dictionaryID + "\n"
+	if err := os.WriteFile(filepath.Join(userDir, schemaID+".schema.yaml"), []byte(schema), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	for _, name := range []string{
+		schemaID + ".schema.yaml",
+		dictionaryID + ".prism.bin",
+		dictionaryID + ".reverse.bin",
+		dictionaryID + ".table.bin",
+	} {
+		content := []byte(name)
+		if name == schemaID+".schema.yaml" {
+			content = []byte(schema)
+		}
+		if err := os.WriteFile(filepath.Join(buildDir, name), content, 0o644); err != nil {
+			t.Fatal(err)
+		}
+	}
+	sourceDictionaryPath := filepath.Join(userDir, dictionaryID+".dict.yaml")
+	if err := os.WriteFile(sourceDictionaryPath, []byte("name: "+dictionaryID+"\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	oldTime := time.Now().Add(-2 * time.Hour)
+	newTime := time.Now().Add(-time.Hour)
+	for _, name := range []string{
+		schemaID + ".schema.yaml",
+		dictionaryID + ".prism.bin",
+		dictionaryID + ".reverse.bin",
+		dictionaryID + ".table.bin",
+	} {
+		if err := os.Chtimes(filepath.Join(buildDir, name), oldTime, oldTime); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err := os.Chtimes(sourceDictionaryPath, newTime, newTime); err != nil {
+		t.Fatal(err)
+	}
+	if err := validateCompiledRimeSchema(userDir, schemaID); err == nil || !strings.Contains(err.Error(), "编译词表已过期") {
+		t.Fatalf("expected stale compiled dictionary rejection, got %v", err)
+	}
+	if err := os.Chtimes(filepath.Join(buildDir, dictionaryID+".table.bin"), newTime.Add(time.Hour), newTime.Add(time.Hour)); err != nil {
+		t.Fatal(err)
+	}
+	if err := validateCompiledRimeSchema(userDir, schemaID); err != nil {
+		t.Fatalf("fresh compiled dictionary must pass: %v", err)
 	}
 }
 

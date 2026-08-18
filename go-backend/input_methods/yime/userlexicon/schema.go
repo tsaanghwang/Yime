@@ -43,6 +43,10 @@ var generatedErhuaOverlayFiles = []string{
 	"yime_third_tone_stage5c_variable.dict.yaml",
 	"yime_third_tone_stage5c_shorthand.dict.yaml",
 	"yime_third_tone_stage5c_manifest.json",
+	"yime_particle_a_stage6d_full.dict.yaml",
+	"yime_particle_a_stage6d_variable.dict.yaml",
+	"yime_particle_a_stage6d_shorthand.dict.yaml",
+	"yime_particle_a_stage6d_manifest.json",
 	"yime_erhua_reverse_source.tsv",
 	"yime_erhua_mixed_manifest.json",
 }

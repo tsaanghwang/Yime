@@ -143,6 +143,14 @@ func TestRuntimeProfileDeclaresPSCPeripheralWithoutChangingCoreCount(t *testing.
 		!containsString(profile.CandidateLayers, "reviewed_third_tone_low_frequency_alias") {
 		t.Fatalf("runtime profile lacks the reviewed Stage 5C layer: %#v", profile)
 	}
+	if profile.ParticleAStage6DManifest != "yime_particle_a_stage6d_manifest.json" ||
+		profile.ParticleAStage6DEntries != 5618 || profile.ParticleAStage6DWeight != 1 ||
+		profile.ParticleAStage6DScreenedCandidates != 6679 || profile.ParticleAStage6DScreenedOccurrences != 6680 ||
+		profile.ParticleAStage6DSharedKeyCandidates != 1061 || profile.ParticleAStage6DExcludedCandidates != 42 ||
+		profile.ParticleAStage6DRetainedMedialCandidates != 29 ||
+		!containsString(profile.CandidateLayers, "source_screened_particle_a_low_frequency_alias") {
+		t.Fatalf("runtime profile lacks the source-screened Stage 6D layer: %#v", profile)
+	}
 	for _, mode := range []string{"full", "variable", "shorthand"} {
 		if !containsString(profile.RuntimeSchemaDependencies, "yime_psc_peripheral_"+mode) {
 			t.Fatalf("runtime profile lacks PSC peripheral dependency for %s", mode)
@@ -155,6 +163,9 @@ func TestRuntimeProfileDeclaresPSCPeripheralWithoutChangingCoreCount(t *testing.
 		}
 		if !containsString(profile.RuntimeDictionaries, "yime_third_tone_stage5c_"+mode+".dict.yaml") {
 			t.Fatalf("runtime profile lacks Stage 5C dictionary for %s", mode)
+		}
+		if !containsString(profile.RuntimeDictionaries, "yime_particle_a_stage6d_"+mode+".dict.yaml") {
+			t.Fatalf("runtime profile lacks Stage 6D dictionary for %s", mode)
 		}
 	}
 }

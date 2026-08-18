@@ -3247,8 +3247,9 @@ func validateCompiledRimeSchema(userDir, schemaID string) error {
 		return fmt.Errorf("当前方案编译产物为空: %s", compiledSchemaPath)
 	}
 	required := []string{}
+	dictionaryID := ""
 	if strings.HasPrefix(schemaID, "yime_") {
-		dictionaryID := strings.Trim(rimeSchemaSectionScalar(compiledSchema, "translator", "dictionary"), "\"'")
+		dictionaryID = strings.Trim(rimeSchemaSectionScalar(compiledSchema, "translator", "dictionary"), "\"'")
 		if dictionaryID == "" {
 			dictionaryID = schemaID
 		}
@@ -3269,6 +3270,26 @@ func validateCompiledRimeSchema(userDir, schemaID string) error {
 		}
 		if info.IsDir() || info.Size() == 0 {
 			return fmt.Errorf("当前方案编译产物为空: %s", path)
+		}
+	}
+	if dictionaryID != "" {
+		sourceDictionaryPath := filepath.Join(userDir, dictionaryID+".dict.yaml")
+		if sourceInfo, statErr := os.Stat(sourceDictionaryPath); statErr == nil {
+			compiledTablePath := filepath.Join(buildDir, dictionaryID+".table.bin")
+			compiledInfo, compiledErr := os.Stat(compiledTablePath)
+			if compiledErr != nil {
+				return fmt.Errorf("当前方案 %s 缺少编译词表 %s: %w", schemaID, compiledTablePath, compiledErr)
+			}
+			if sourceInfo.ModTime().After(compiledInfo.ModTime()) {
+				return fmt.Errorf(
+					"当前方案 %s 编译词表已过期: 源词典 %s 新于 %s",
+					schemaID,
+					sourceDictionaryPath,
+					compiledTablePath,
+				)
+			}
+		} else if !os.IsNotExist(statErr) {
+			return fmt.Errorf("读取当前方案源词典失败 %s: %w", sourceDictionaryPath, statErr)
 		}
 	}
 	sourceSchemaPath := filepath.Join(userDir, schemaID+".schema.yaml")

@@ -695,6 +695,7 @@ func writeCombinedSentenceDictionary(path, mode string) error {
 		"  - yime_psc_peripheral_sentence_" + mode,
 		"  - yime_erhua_mixed_sentence_" + mode,
 		"  - yime_third_tone_stage5c_" + mode,
+		"  - yime_particle_a_stage6d_" + mode,
 		"...",
 	}
 	return os.WriteFile(path, []byte(strings.Join(lines, "\n")+"\n"), 0o644)
