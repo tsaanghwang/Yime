@@ -30,10 +30,13 @@
 /tools/invoke-build-environment.ps1 @tsaanghwang
 /tools/invoke-cmake.ps1 @tsaanghwang
 /tools/verify-installed-runtime.ps1 @tsaanghwang
+/tools/check-rime-cache-freshness.ps1 @tsaanghwang
+/tools/test-rime-cache-freshness.ps1 @tsaanghwang
 /tools/write-build-manifest.ps1 @tsaanghwang
 /tools/verify-pe-architectures.ps1 @tsaanghwang
 /tools/dev-*.ps1 @tsaanghwang
 /tools/templates/** @tsaanghwang
 /tools/sign-*.ps1 @tsaanghwang
+/tools/import-release-signing-certificate.ps1 @tsaanghwang
 /tools/verify-release-signatures.ps1 @tsaanghwang
 /installer/** @tsaanghwang

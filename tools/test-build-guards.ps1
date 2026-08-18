@@ -18,8 +18,14 @@ $erhuaReverseSource = Join-Path $root 'go-backend\input_methods\yime\data\yime_e
 $pscPeripheralManifest = Join-Path $root 'go-backend\input_methods\yime\data\yime_psc_peripheral_manifest.json'
 $thirdToneStage5CManifest = Join-Path $root 'go-backend\input_methods\yime\data\yime_third_tone_stage5c_manifest.json'
 $particleAStage6DManifest = Join-Path $root 'go-backend\input_methods\yime\data\yime_particle_a_stage6d_manifest.json'
+$rimeCacheChecker = Join-Path $root 'tools\check-rime-cache-freshness.ps1'
+$rimeCacheTests = Join-Path $root 'tools\test-rime-cache-freshness.ps1'
+$releaseCertificateImporter = Join-Path $root 'tools\import-release-signing-certificate.ps1'
 $installer = Join-Path $root 'installer\installer.nsi'
 $devInstall = Join-Path $root 'tools\dev-install.ps1'
+$devStop = Join-Path $root 'tools\dev-stop-pime.ps1'
+$devBuildInstallVerify = Join-Path $root 'tools\dev-build-install-verify.ps1'
+$installedRuntimeVerifier = Join-Path $root 'tools\verify-installed-runtime.ps1'
 $buildPrereqs = Join-Path $root 'tools\assert-win32-build-prerequisites.ps1'
 $buildEnvironment = Join-Path $root 'tools\invoke-build-environment.ps1'
 $cmakeEnvironment = Join-Path $root 'tools\invoke-cmake.ps1'
@@ -66,9 +72,16 @@ $requiredGovernanceGuards = @(
     '.\tools\test-libime2-change-boundary.ps1',
     'libime2-change-report-${{ github.sha }}',
     'name: go-tests',
+    '.\tools\test-rime-cache-freshness.ps1',
     'name: real-rime-tests',
     'name: go-race-msys2',
     'name: installer-package',
+    'name: installer-payload',
+    'name: release-sign-payload',
+    'name: unsigned-installer-package',
+    'name: release-installer-package',
+    'name: release-sign-installer',
+    'Preserve protected installer-package contract',
     'name: core-build',
     'Preserve legacy aggregate build contract',
     'needs: [build-contract, rust-i686-host, native-build, go-tests, real-rime-tests, go-race-msys2]',
@@ -80,6 +93,7 @@ $requiredGovernanceGuards = @(
     '.\tools\write-build-manifest.ps1',
     '.\tools\test-installer-smoke.ps1',
     'go install github.com/tc-hib/go-winres@v0.3.3',
+    'uses: repolevedavaj/install-nsis@c14d0ea1b829818b4e9313d8e009b43f0a65fddd # v1.2.0',
     'uses: actions/download-artifact@v7'
 )
 foreach ($guard in $requiredGovernanceGuards) {
@@ -110,6 +124,9 @@ foreach ($guard in @(
     '/tools/invoke-build-environment.ps1 @tsaanghwang',
     '/tools/invoke-cmake.ps1 @tsaanghwang',
     '/tools/verify-installed-runtime.ps1 @tsaanghwang',
+    '/tools/check-rime-cache-freshness.ps1 @tsaanghwang',
+    '/tools/test-rime-cache-freshness.ps1 @tsaanghwang',
+    '/tools/import-release-signing-certificate.ps1 @tsaanghwang',
     '/tools/write-build-manifest.ps1 @tsaanghwang',
     '/tools/verify-pe-architectures.ps1 @tsaanghwang',
     '/installer/** @tsaanghwang'
@@ -221,6 +238,65 @@ foreach ($guard in @(
     if (-not $coreImporterText.Contains($guard)) {
         throw "Curated core evidence import guard is missing: $guard"
     }
+}
+if ($workflowText -match 'uses:\s*repolevedavaj/install-nsis@(?![0-9a-f]{40}(?:\s|#|$))') {
+    throw 'Third-party NSIS setup must be pinned to a full immutable commit SHA.'
+}
+foreach ($requiredScript in @($rimeCacheChecker, $rimeCacheTests, $releaseCertificateImporter)) {
+    if (-not (Test-Path -LiteralPath $requiredScript -PathType Leaf)) {
+        throw "Required CI/runtime verification script is missing: $requiredScript"
+    }
+}
+$devBuildInstallVerifyText = Get-Content -LiteralPath $devBuildInstallVerify -Raw
+foreach ($guard in @('RimeCacheWaitSeconds', 'check-rime-cache-freshness.ps1', 'RequireFreshRimeCache')) {
+    if (-not $devBuildInstallVerifyText.Contains($guard)) {
+        throw "Developer build/install verification is missing its bounded Rime-cache wait guard: $guard"
+    }
+}
+$installedRuntimeVerifierText = Get-Content -LiteralPath $installedRuntimeVerifier -Raw
+foreach ($guard in @('check-rime-cache-freshness.ps1', 'RequireFreshRimeCache', 'rimeCompiledCaches')) {
+    if (-not $installedRuntimeVerifierText.Contains($guard)) {
+        throw "Installed-runtime verification is missing its Rime-cache evidence guard: $guard"
+    }
+}
+$extractJob = {
+    param([string]$Name)
+    $match = [regex]::Match($workflowText, "(?ms)^  $([regex]::Escape($Name)):\r?\n.*?(?=^  [A-Za-z0-9_-]+:\r?$|\z)")
+    if (-not $match.Success) { throw "CI job is missing: $Name" }
+    $match.Value
+}
+foreach ($jobName in @('release-sign-payload', 'release-sign-installer')) {
+    $jobText = & $extractJob $jobName
+    if (-not $jobText.Contains('secrets.YIME_SIGN_CERT_BASE64')) {
+        throw "Release signing job does not import the protected certificate: $jobName"
+    }
+    foreach ($forbidden in @('repolevedavaj/install-nsis', 'Invoke-WebRequest', 'go install ')) {
+        if ($jobText.Contains($forbidden)) {
+            throw "Release signing job executes untrusted setup after secrets are exposed: $jobName -> $forbidden"
+        }
+    }
+}
+foreach ($jobName in @('unsigned-installer-package', 'release-installer-package')) {
+    $jobText = & $extractJob $jobName
+    if ($jobText.Contains('secrets.YIME_') -or $jobText.Contains('import-release-signing-certificate.ps1')) {
+        throw "NSIS packaging job must not receive release signing secrets: $jobName"
+    }
+}
+$devStopText = Get-Content -LiteralPath $devStop -Raw
+foreach ($guard in @(
+    '-ErrorAction Stop',
+    '$remainingProcesses',
+    'exit 3'
+)) {
+    if (-not $devStopText.Contains($guard)) {
+        throw "PIME stop verification guard is missing: $guard"
+    }
+}
+if ($devStopText -match 'Stop-Process[^\r\n]+-ErrorAction\s+SilentlyContinue') {
+    throw 'dev-stop-pime.ps1 must not suppress Stop-Process failures.'
+}
+if ($devStopText.Contains('Stop-ProcessByName')) {
+    throw 'dev-stop-pime.ps1 must not terminate generic process names outside explicit install roots.'
 }
 $sourceEvidence = Get-Content -LiteralPath $coreSourceManifest -Raw -Encoding UTF8 | ConvertFrom-Json
 $pscDeriveIndex = $coreImporterText.IndexOf('go run ./cmd/yime-psc-peripheral-derive')

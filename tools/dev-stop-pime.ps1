@@ -8,6 +8,7 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+$stopFailures = [Collections.Generic.List[string]]::new()
 
 function Write-Step {
     param([string]$Message)
@@ -31,24 +32,17 @@ function Stop-ProcessByPathPrefix {
         } catch {
             $path = ""
         }
-        if ($path -and $path.StartsWith($PathPrefix, [System.StringComparison]::OrdinalIgnoreCase)) {
+        $normalizedPrefix = [IO.Path]::GetFullPath($PathPrefix).TrimEnd('\', '/') + [IO.Path]::DirectorySeparatorChar
+        $normalizedPath = if ($path) { [IO.Path]::GetFullPath($path) } else { '' }
+        if ($normalizedPath.StartsWith($normalizedPrefix, [System.StringComparison]::OrdinalIgnoreCase)) {
             Write-Step "Stopping $Name pid=$($process.Id)"
-            Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue
-            $stopped++
+            try {
+                Stop-Process -Id $process.Id -Force -ErrorAction Stop
+                $stopped++
+            } catch {
+                $stopFailures.Add("$Name pid=$($process.Id): $($_.Exception.Message)")
+            }
         }
-    }
-    return $stopped
-}
-
-function Stop-ProcessByName {
-    param([string]$Name)
-
-    $stopped = 0
-    $processes = @(Get-Process -Name $Name -ErrorAction SilentlyContinue)
-    foreach ($process in $processes) {
-        Write-Step "Stopping $Name pid=$($process.Id)"
-        Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue
-        $stopped++
     }
     return $stopped
 }
@@ -83,12 +77,37 @@ foreach ($root in $InstallRoots) {
     Stop-ProcessByPathPrefix -Name "yime-trainer" -PathPrefix (Join-Path $root "go-backend") | Out-Null
 }
 
-Stop-ProcessByName -Name "PIMELauncher" | Out-Null
-Stop-ProcessByName -Name "server" | Out-Null
-Stop-ProcessByName -Name "input-toolbar" | Out-Null
-Stop-ProcessByName -Name "yime-trainer" | Out-Null
-
 Start-Sleep -Seconds 2
+
+$remainingProcesses = [Collections.Generic.List[string]]::new()
+foreach ($root in $InstallRoots) {
+    foreach ($target in @(
+        @{ Name = 'PIMELauncher'; Root = $root },
+        @{ Name = 'server'; Root = (Join-Path $root 'go-backend') },
+        @{ Name = 'input-toolbar'; Root = (Join-Path $root 'go-backend') },
+        @{ Name = 'yime-trainer'; Root = (Join-Path $root 'go-backend') }
+    )) {
+        $normalizedPrefix = [IO.Path]::GetFullPath($target.Root).TrimEnd('\', '/') + [IO.Path]::DirectorySeparatorChar
+        foreach ($process in @(Get-Process -Name $target.Name -ErrorAction SilentlyContinue)) {
+            $path = ''
+            try { $path = $process.Path } catch { $path = '' }
+            if ($path -and [IO.Path]::GetFullPath($path).StartsWith($normalizedPrefix, [System.StringComparison]::OrdinalIgnoreCase)) {
+                $remainingProcesses.Add("$($target.Name) pid=$($process.Id) path=$path")
+            }
+        }
+    }
+}
+if ($stopFailures.Count -gt 0 -or $remainingProcesses.Count -gt 0) {
+    if (-not $Quiet) {
+        Write-Host ''
+        Write-Host 'Error: one or more PIME/YIME processes could not be stopped:'
+        foreach ($failure in $stopFailures) { Write-Host "  stop failed: $failure" }
+        foreach ($remaining in $remainingProcesses) { Write-Host "  still running: $remaining" }
+        Write-Host 'Close the listed process or run this command from an elevated PowerShell, then retry.'
+        Write-Host ''
+    }
+    exit 3
+}
 
 $dllUsers = & tasklist.exe /m PIMETextService.dll 2>$null
 if ($LASTEXITCODE -eq 0 -and $dllUsers -and ($dllUsers.Count -gt 1)) {

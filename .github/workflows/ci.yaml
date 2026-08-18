@@ -42,6 +42,12 @@ jobs:
       - name: Run Go regression tests
         shell: pwsh
         run: .\tools\test-go.ps1
+      - name: Run PSC Python tooling regression tests
+        shell: pwsh
+        run: python -m unittest discover -s tools -p "test_*.py" -v
+      - name: Run Rime compiled-cache freshness regression tests
+        shell: pwsh
+        run: .\tools\test-rime-cache-freshness.ps1
 
   real-rime-tests:
     name: real-rime-tests
@@ -170,8 +176,8 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
-  installer-package:
-    name: installer-package
+  installer-payload:
+    name: installer-payload
     runs-on: windows-2022
     needs: [build-contract, rust-i686-host, native-build, go-tests, real-rime-tests, go-race-msys2]
     steps:
@@ -189,10 +195,6 @@ jobs:
       - name: Install pinned go-winres
         shell: pwsh
         run: go install github.com/tc-hib/go-winres@v0.3.3
-      - name: Install NSIS
-        uses: repolevedavaj/install-nsis@v1.2.0
-        with:
-          nsis-version: 3.08
       - name: Build Go backend package
         shell: pwsh
         run: |
@@ -200,51 +202,80 @@ jobs:
           cmd /C build.bat
           if ($LASTEXITCODE -ne 0) { throw "go-backend build failed with exit code $LASTEXITCODE" }
           Pop-Location
+      - name: Upload unsigned installer payload
+        uses: actions/upload-artifact@v6
+        with:
+          name: yime-unsigned-payload-${{ github.sha }}
+          path: |
+            build/PIMELauncher/PIMELauncher.exe
+            build/PIMETextService/Release/PIMETextService.dll
+            build64/PIMETextService/Release/PIMETextService.dll
+            go-backend/build/go-backend
+          if-no-files-found: error
+          retention-days: 14
+
+  release-sign-payload:
+    name: release-sign-payload
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: windows-2022
+    needs: [installer-payload]
+    steps:
+      - uses: actions/checkout@v6
+      - name: Restore unsigned installer payload
+        uses: actions/download-artifact@v7
+        with:
+          name: yime-unsigned-payload-${{ github.sha }}
+          path: .
       - name: Import release signing certificate
-        if: startsWith(github.ref, 'refs/tags/v')
         shell: pwsh
         env:
           YIME_SIGN_CERT_BASE64: ${{ secrets.YIME_SIGN_CERT_BASE64 }}
           YIME_SIGN_CERT_PASSWORD: ${{ secrets.YIME_SIGN_CERT_PASSWORD }}
-        run: |
-          if ([string]::IsNullOrWhiteSpace($env:YIME_SIGN_CERT_BASE64)) {
-            throw 'Tagged releases require YIME_SIGN_CERT_BASE64.'
-          }
-          $pfxPath = Join-Path $env:RUNNER_TEMP 'yime-release.pfx'
-          [IO.File]::WriteAllBytes($pfxPath, [Convert]::FromBase64String($env:YIME_SIGN_CERT_BASE64))
-          try {
-            $password = ConvertTo-SecureString $env:YIME_SIGN_CERT_PASSWORD -AsPlainText -Force
-            $certificate = @(Import-PfxCertificate -FilePath $pfxPath -CertStoreLocation Cert:\CurrentUser\My -Password $password) |
-              Where-Object HasPrivateKey | Select-Object -First 1
-          } finally {
-            Remove-Item -LiteralPath $pfxPath -Force -ErrorAction SilentlyContinue
-          }
-          if (-not $certificate) { throw 'The release certificate could not be imported.' }
-          $signTool = Get-ChildItem "${env:ProgramFiles(x86)}\Windows Kits\10\bin\*\x64\signtool.exe" |
-            Sort-Object FullName -Descending | Select-Object -First 1
-          if (-not $signTool) { throw 'signtool.exe was not found in the Windows SDK.' }
-          "YIME_SIGN_CERT_SHA1=$($certificate.Thumbprint)" | Out-File $env:GITHUB_ENV -Encoding utf8 -Append
-          "YIME_SIGNTOOL_EXE=$($signTool.FullName)" | Out-File $env:GITHUB_ENV -Encoding utf8 -Append
-          'YIME_RELEASE_SIGNING_REQUIRED=1' | Out-File $env:GITHUB_ENV -Encoding utf8 -Append
+        run: .\tools\import-release-signing-certificate.ps1
       - name: Sign release payload
-        if: startsWith(github.ref, 'refs/tags/v')
         shell: pwsh
         run: .\tools\sign-release.ps1 -RequireComplete
+      - name: Verify signed release payload
+        shell: pwsh
+        run: .\tools\verify-release-signatures.ps1
+      - name: Upload signed installer payload
+        uses: actions/upload-artifact@v6
+        with:
+          name: yime-signed-payload-${{ github.sha }}
+          path: |
+            build/PIMELauncher/PIMELauncher.exe
+            build/PIMETextService/Release/PIMETextService.dll
+            build64/PIMETextService/Release/PIMETextService.dll
+            go-backend/build/go-backend
+          if-no-files-found: error
+          retention-days: 14
+
+  unsigned-installer-package:
+    name: unsigned-installer-package
+    if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
+    runs-on: windows-2022
+    needs: [installer-payload]
+    steps:
+      - uses: actions/checkout@v6
+      - name: Restore unsigned installer payload
+        uses: actions/download-artifact@v7
+        with:
+          name: yime-unsigned-payload-${{ github.sha }}
+          path: .
+      - name: Install NSIS in non-secret packaging job
+        uses: repolevedavaj/install-nsis@c14d0ea1b829818b4e9313d8e009b43f0a65fddd # v1.2.0
+        with:
+          nsis-version: 3.08
       - name: Build the installer
         shell: pwsh
         run: |
           Set-Location installer
           & 'C:\Program Files (x86)\NSIS\Bin\makensis.exe' installer.nsi
           if ($LASTEXITCODE -ne 0) { throw "makensis failed with exit code $LASTEXITCODE" }
-      - name: Verify tagged release signatures
-        if: startsWith(github.ref, 'refs/tags/v')
-        shell: pwsh
-        run: .\tools\verify-release-signatures.ps1 -IncludeInstaller
       - name: Write commit-addressed build manifest
         shell: pwsh
         run: .\tools\write-build-manifest.ps1
       - name: Smoke-test unsigned installer on ephemeral runner
-        if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
         shell: pwsh
         run: |
           $installer = Get-ChildItem installer\YIME-*-setup.exe | Select-Object -First 1
@@ -252,12 +283,110 @@ jobs:
           .\tools\test-installer-smoke.ps1 -InstallerPath $installer.FullName
       - uses: actions/upload-artifact@v6
         with:
-          name: ${{ startsWith(github.ref, 'refs/tags/v') && 'YIME-signed-installer' || format('YIME-unsigned-test-installer-{0}', github.sha) }}
+          name: YIME-unsigned-test-installer-${{ github.sha }}
           path: |
             installer/YIME-*-setup.exe
             installer/build-manifest.json
           if-no-files-found: error
           retention-days: 30
+
+  release-installer-package:
+    name: release-installer-package
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: windows-2022
+    needs: [release-sign-payload]
+    steps:
+      - uses: actions/checkout@v6
+      - name: Restore signed installer payload
+        uses: actions/download-artifact@v7
+        with:
+          name: yime-signed-payload-${{ github.sha }}
+          path: .
+      - name: Install NSIS in non-secret packaging job
+        uses: repolevedavaj/install-nsis@c14d0ea1b829818b4e9313d8e009b43f0a65fddd # v1.2.0
+        with:
+          nsis-version: 3.08
+      - name: Build unsigned outer installer
+        shell: pwsh
+        run: |
+          Set-Location installer
+          & 'C:\Program Files (x86)\NSIS\Bin\makensis.exe' installer.nsi
+          if ($LASTEXITCODE -ne 0) { throw "makensis failed with exit code $LASTEXITCODE" }
+      - name: Upload unsigned outer installer
+        uses: actions/upload-artifact@v6
+        with:
+          name: yime-unsigned-outer-installer-${{ github.sha }}
+          path: installer/YIME-*-setup.exe
+          if-no-files-found: error
+          retention-days: 14
+
+  release-sign-installer:
+    name: release-sign-installer
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: windows-2022
+    needs: [release-sign-payload, release-installer-package]
+    steps:
+      - uses: actions/checkout@v6
+      - name: Restore signed installer payload
+        uses: actions/download-artifact@v7
+        with:
+          name: yime-signed-payload-${{ github.sha }}
+          path: .
+      - name: Restore unsigned outer installer
+        uses: actions/download-artifact@v7
+        with:
+          name: yime-unsigned-outer-installer-${{ github.sha }}
+          path: installer
+      - name: Import release signing certificate
+        shell: pwsh
+        env:
+          YIME_SIGN_CERT_BASE64: ${{ secrets.YIME_SIGN_CERT_BASE64 }}
+          YIME_SIGN_CERT_PASSWORD: ${{ secrets.YIME_SIGN_CERT_PASSWORD }}
+        run: .\tools\import-release-signing-certificate.ps1
+      - name: Sign outer installer
+        shell: pwsh
+        run: |
+          $installer = Get-ChildItem installer\YIME-*-setup.exe | Select-Object -First 1
+          if (-not $installer) { throw 'Unsigned outer installer was not found.' }
+          .\tools\sign-file.ps1 -Path $installer.FullName
+      - name: Verify complete tagged release signatures
+        shell: pwsh
+        run: .\tools\verify-release-signatures.ps1 -IncludeInstaller
+      - name: Write commit-addressed signed build manifest
+        shell: pwsh
+        run: .\tools\write-build-manifest.ps1
+      - name: Upload signed installer
+        uses: actions/upload-artifact@v6
+        with:
+          name: YIME-signed-installer
+          path: |
+            installer/YIME-*-setup.exe
+            installer/build-manifest.json
+          if-no-files-found: error
+          retention-days: 30
+
+  installer-package:
+    name: installer-package
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    needs: [installer-payload, unsigned-installer-package, release-sign-installer]
+    steps:
+      - name: Preserve protected installer-package contract
+        shell: bash
+        env:
+          IS_TAG: ${{ startsWith(github.ref, 'refs/tags/v') }}
+          PAYLOAD_RESULT: ${{ needs['installer-payload'].result }}
+          UNSIGNED_RESULT: ${{ needs['unsigned-installer-package'].result }}
+          SIGNED_RESULT: ${{ needs['release-sign-installer'].result }}
+        run: |
+          test "$PAYLOAD_RESULT" = success
+          if test "$IS_TAG" = true; then
+            test "$UNSIGNED_RESULT" = skipped
+            test "$SIGNED_RESULT" = success
+          else
+            test "$UNSIGNED_RESULT" = success
+            test "$SIGNED_RESULT" = skipped
+          fi
 
   core-build:
     name: core-build
