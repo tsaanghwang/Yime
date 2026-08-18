@@ -41,6 +41,7 @@ $requiredRealRimeTests = @(
     'TestRealRimeExplicitCandidateForgetAvailableInAllSchemas'
     'TestRealRimePSCPeripheralAcrossAllThreeSchemas'
     'TestRealRimeExplicitErhuaMixedRoutesAcrossAllThreeSchemas'
+    'TestRealRimeParticleAStage6DDualTrackAcrossAllThreeSchemas'
     'TestRealRimeAcceptsNewLayoutPunctuationAndShiftCodes'
     'TestRealRimeRedeployAppliesPageSize'
     'TestRealRimeExternalBuildAppliesPageSize'

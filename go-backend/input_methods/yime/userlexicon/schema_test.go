@@ -171,6 +171,100 @@ func TestRefreshRimeDataCopiesAndTracksExplicitErhuaOverlay(t *testing.T) {
 	}
 }
 
+func TestRefreshRimeDataTracksConnectedSpeechOverlaysIndependently(t *testing.T) {
+	tests := []struct {
+		name  string
+		files []string
+	}{
+		{name: "third-tone-stage5c", files: generatedThirdToneStage5CFiles},
+		{name: "particle-a-stage6d", files: generatedParticleAStage6DFiles},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			sharedDir := t.TempDir()
+			userDir := t.TempDir()
+			manifestName := test.files[len(test.files)-1]
+			artifactNames := test.files[:len(test.files)-1]
+			for _, name := range artifactNames {
+				if err := os.WriteFile(filepath.Join(sharedDir, name), []byte("v1 "+name+"\n"), 0o644); err != nil {
+					t.Fatal(err)
+				}
+			}
+			if err := os.WriteFile(filepath.Join(sharedDir, manifestName), []byte(`{"version":"v1"}`+"\n"), 0o644); err != nil {
+				t.Fatal(err)
+			}
+
+			changed, err := RefreshRimeData(sharedDir, userDir)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if !changed {
+				t.Fatal("first independent overlay refresh must request a Rime rebuild")
+			}
+
+			updatedArtifact := artifactNames[0]
+			if err := os.WriteFile(filepath.Join(sharedDir, updatedArtifact), []byte("v2 "+updatedArtifact+"\n"), 0o644); err != nil {
+				t.Fatal(err)
+			}
+			if err := os.WriteFile(filepath.Join(sharedDir, manifestName), []byte(`{"version":"v2"}`+"\n"), 0o644); err != nil {
+				t.Fatal(err)
+			}
+			changed, err = RefreshRimeData(sharedDir, userDir)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if !changed {
+				t.Fatal("updated independent overlay manifest must request a Rime rebuild")
+			}
+			got, err := os.ReadFile(filepath.Join(userDir, updatedArtifact))
+			if err != nil {
+				t.Fatal(err)
+			}
+			if string(got) != "v2 "+updatedArtifact+"\n" {
+				t.Fatalf("independent overlay artifact was not refreshed: %q", got)
+			}
+		})
+	}
+}
+
+func TestRefreshRimeDataRepairsModifiedOverlayWhenManifestMatches(t *testing.T) {
+	sharedDir := t.TempDir()
+	userDir := t.TempDir()
+	files := generatedThirdToneStage5CFiles
+	manifestName := files[len(files)-1]
+	artifactNames := files[:len(files)-1]
+	for _, name := range artifactNames {
+		if err := os.WriteFile(filepath.Join(sharedDir, name), []byte("trusted "+name+"\n"), 0o644); err != nil {
+			t.Fatal(err)
+		}
+	}
+	manifest := []byte(`{"version":"stable"}` + "\n")
+	if err := os.WriteFile(filepath.Join(sharedDir, manifestName), manifest, 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := RefreshRimeData(sharedDir, userDir); err != nil {
+		t.Fatal(err)
+	}
+	tampered := artifactNames[0]
+	if err := os.WriteFile(filepath.Join(userDir, tampered), []byte("modified by user or corruption\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	changed, err := RefreshRimeData(sharedDir, userDir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !changed {
+		t.Fatal("modified generated overlay must be repaired even when its manifest is unchanged")
+	}
+	got, err := os.ReadFile(filepath.Join(userDir, tampered))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if want := "trusted " + tampered + "\n"; string(got) != want {
+		t.Fatalf("modified overlay was not repaired: got %q want %q", got, want)
+	}
+}
+
 func TestRefreshRimeDataCopiesAndTracksPSCPeripheralOverlay(t *testing.T) {
 	sharedDir := t.TempDir()
 	userDir := t.TempDir()

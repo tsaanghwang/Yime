@@ -33,6 +33,7 @@ func TestReleasePipelineSignsPayloadInstallerAndUninstaller(t *testing.T) {
 	signer := read(filepath.Join(root, "tools", "sign-release.ps1"))
 	verifier := read(filepath.Join(root, "tools", "verify-release-signatures.ps1"))
 	signFile := read(filepath.Join(root, "tools", "sign-file.ps1"))
+	certificateImporter := read(filepath.Join(root, "tools", "import-release-signing-certificate.ps1"))
 
 	for _, fragment := range []string{"tags: ['v*']", "Import release signing certificate", "sign-release.ps1 -RequireComplete", "verify-release-signatures.ps1 -IncludeInstaller", "YIME-unsigned-test-installer", "installer/YIME-*-setup.exe"} {
 		if !strings.Contains(ci, fragment) {
@@ -135,11 +136,14 @@ func TestReleasePipelineSignsPayloadInstallerAndUninstaller(t *testing.T) {
 	}
 	for _, fragment := range []string{
 		`Stop-ProcessByPathPrefix -Name "input-toolbar"`,
-		`Stop-ProcessByName -Name "input-toolbar"`,
+		`[IO.Path]::GetFullPath($path).StartsWith($normalizedPrefix`,
 	} {
 		if !strings.Contains(devStop, fragment) {
 			t.Fatalf("developer stop flow must release the persistent toolbar executable: missing %q", fragment)
 		}
+	}
+	if strings.Contains(devStop, `Stop-ProcessByName`) {
+		t.Fatal("developer stop flow must not terminate generic process names outside an explicit YIME/PIME install root")
 	}
 	for _, tool := range []string{"input-toolbar.exe", "yime-trainer.exe", "yime-layout-designer.exe"} {
 		if !strings.Contains(signer, tool) {
@@ -205,7 +209,7 @@ func TestReleasePipelineSignsPayloadInstallerAndUninstaller(t *testing.T) {
 			t.Fatalf("build.bat is missing workspace-local Go cache default %q", fragment)
 		}
 	}
-	if !strings.Contains(ci, "Remove-Item -LiteralPath $pfxPath") {
+	if !strings.Contains(certificateImporter, "Remove-Item -LiteralPath $pfxPath") {
 		t.Fatal("release CI must remove the temporary PFX after import")
 	}
 	for _, fragment := range []string{"1.2.840.113549.1.1.1", "1.3.6.1.5.5.7.3.3", "HasPrivateKey", "NotAfter"} {

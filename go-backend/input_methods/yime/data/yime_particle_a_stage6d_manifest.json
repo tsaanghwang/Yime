@@ -1,0 +1,59 @@
+{
+  "tool_version": "connected-speech-particle-a-stage6d-runtime-v2",
+  "input_sha256": {
+    "candidate_exclusions": "ab776ea84c27ae28ab114cb09323b0edfc5ab3a506af339a5848fe26cc472c9e",
+    "decomposition": "ad4beb24cef782e0d4b8ce5767b45bfdb7e76ec7ea0456f3605405cc897f3f94",
+    "full": "c11dd63d218906bf2eefa810aad8d28005c0add53cbd0584e2ccc2660f95818e",
+    "layout": "6c1c1d719f6018f47fe0306730d9aaded279df21fc222b8ed7f79fa7cafb37f0",
+    "pinyin_codes": "aa516171f404f706b7d9ac0c9a3fb4aac4f043f3212c2b9ce6c94b38fb8d0071",
+    "projection_policy": "078066bebcfbec47bb7362c6269f0cb3723669ef4bf46a1f50f4c514e276873f",
+    "runtime_scope": "e376ecfa16192cda84d93832f50606892504fa0aed597af7d96f19d6f96bb404",
+    "scope": "8abd56beb3fcf93885e32d5d6091690e9849149e4f2b6f086d4292e26bd5b498",
+    "shorthand": "1bd186a3b81a5dfbe71cfa9706e659d89e22b39c598be73ce61769111309dd1c",
+    "variable": "64a82edcce7aa7fc9da66b008a8d3ff288e03e267cf4bd419196737f218f49e8"
+  },
+  "output_sha256": {
+    "yime_particle_a_stage6d_full.dict.yaml": "e570b452543845542f0dc0e04233e44aa0ab9cfab12d655d9e811019fbc8064b",
+    "yime_particle_a_stage6d_shorthand.dict.yaml": "e8e34cd76847bfb2cc2b6a3df4f5a76641a40f402fb818a099e06dec24e86b7d",
+    "yime_particle_a_stage6d_variable.dict.yaml": "1b80e35ea9c04a3600fd0a5e60cdba3a2cd6b5743c6c376ddfcfbb478cd53cd0"
+  },
+  "summary": {
+    "tool_version": "connected-speech-particle-a-stage6d-runtime-v2",
+    "excluded_candidate_count": 42,
+    "eligible_candidate_count": 6679,
+    "eligible_occurrence_count": 6680,
+    "retained_medial_candidate_count": 29,
+    "final_candidate_count": 6651,
+    "key_changing_candidate_count": 5618,
+    "shared_key_candidate_count": 1061,
+    "materialized_candidate_count": 5618,
+    "mode_row_counts": {
+      "full": 5618,
+      "shorthand": 5618,
+      "variable": 5618
+    },
+    "three_mode_row_count": 16854,
+    "fixed_runtime_weight": 1,
+    "canonical_routes_preserved": true,
+    "class_occurrence_counts": {
+      "PA-APICAL-FRONT": 179,
+      "PA-N": 1374,
+      "PA-NG": 1061,
+      "PA-RETROFLEX": 320,
+      "PA-U": 1207,
+      "PA-VOWEL-IY": 2539
+    },
+    "gates": {
+      "all_eligible_occurrences_projected": true,
+      "all_six_classes_represented": true,
+      "candidate_text_unchanged": true,
+      "canonical_routes_preserved": true,
+      "fixed_low_initial_weight": true,
+      "inputs_are_read_only": true,
+      "medial_scope_is_reviewed_x_a_x": true,
+      "source_exclusion_scope_exact": true,
+      "three_modes_derived": true
+    },
+    "passed": true
+  }
+}

@@ -2,8 +2,10 @@ param(
     [string]$RepoRoot = (Split-Path -Parent $PSScriptRoot),
     [string]$InstallRoot = 'C:\Program Files (x86)\YIME',
     [string]$JsonPath,
+    [string]$RimeUserDir = $(if ($env:APPDATA) { Join-Path $env:APPDATA 'PIME\Rime' }),
     [switch]$AllowTextServiceMismatch,
-    [switch]$RequireRunningLauncher
+    [switch]$RequireRunningLauncher,
+    [switch]$RequireFreshRimeCache
 )
 
 $ErrorActionPreference = 'Stop'
@@ -90,6 +92,7 @@ foreach ($relativePath in @(
     'input_methods\yime\data\yime_runtime_profile.json',
     'input_methods\yime\data\yime_pinyin_reverse_source.tsv',
     'input_methods\yime\data\yime_pinyin_codes.tsv',
+	'input_methods\yime\data\yime_system_candidate_exclusions.tsv',
     'input_methods\yime\data\yime_erhua_mixed_full.dict.yaml',
     'input_methods\yime\data\yime_erhua_mixed_variable.dict.yaml',
     'input_methods\yime\data\yime_erhua_mixed_shorthand.dict.yaml',
@@ -103,6 +106,10 @@ foreach ($relativePath in @(
 	'input_methods\yime\data\yime_third_tone_stage5c_variable.dict.yaml',
 	'input_methods\yime\data\yime_third_tone_stage5c_shorthand.dict.yaml',
 	'input_methods\yime\data\yime_third_tone_stage5c_manifest.json',
+	'input_methods\yime\data\yime_particle_a_stage6d_full.dict.yaml',
+	'input_methods\yime\data\yime_particle_a_stage6d_variable.dict.yaml',
+	'input_methods\yime\data\yime_particle_a_stage6d_shorthand.dict.yaml',
+	'input_methods\yime\data\yime_particle_a_stage6d_manifest.json',
     'input_methods\yime\data\yime_erhua_mixed_manifest.json',
     'input_methods\yime\data\yime_erhua_reverse_source.tsv',
     'input_methods\yime\data\yime_erhua_mixed_full.schema.yaml',
@@ -166,6 +173,11 @@ if (-not $launcherRunning -and $launcherPathUnavailable -and $registryMatches) {
     }
 }
 
+$rimeCacheRecords = @(& (Join-Path $PSScriptRoot 'check-rime-cache-freshness.ps1') -RimeUserDir $RimeUserDir)
+$rimeCacheIssues = @($rimeCacheRecords | Where-Object {
+    $_.status -notin @('match', 'not-deployed')
+})
+
 $hardFailures = @($files | Where-Object {
     $_.required -and $_.status -ne 'match' -and -not ($AllowTextServiceMismatch -and $_.textService -and $_.status -eq 'mismatch')
 })
@@ -176,13 +188,18 @@ if (-not $registryMatches) {
 if ($RequireRunningLauncher -and -not $launcherRunning) {
     $hardFailures += [pscustomobject]@{ name = 'PIMELauncher process'; status = 'not-running' }
 }
+if ($RequireFreshRimeCache) {
+    foreach ($record in @($rimeCacheRecords | Where-Object { $_.status -ne 'match' })) {
+        $hardFailures += [pscustomobject]@{ name = $record.name; status = $record.status }
+    }
+}
 foreach ($fileName in $retiredLeakage) {
     $hardFailures += [pscustomobject]@{ name = "retired/$fileName"; status = 'runtime-leak' }
 }
 
 $overall = if ($hardFailures.Count -gt 0) {
     'failed'
-} elseif ($allowedDllMismatches.Count -gt 0) {
+} elseif ($allowedDllMismatches.Count -gt 0 -or $rimeCacheIssues.Count -gt 0) {
     'partial'
 } else {
     'complete'
@@ -199,6 +216,7 @@ $report = [ordered]@{
     launcherPathUnavailable = $launcherPathUnavailable
     retiredRuntimeLeakage = @($retiredLeakage)
     files = @($files)
+    rimeCompiledCaches = @($rimeCacheRecords)
 }
 
 if ($JsonPath) {
@@ -208,12 +226,18 @@ if ($JsonPath) {
 }
 
 $report.files | Format-Table name, status -AutoSize
+$report.rimeCompiledCaches | Format-Table name, status, sourceCount -AutoSize
 Write-Host "Installed runtime verification: $overall"
 if ($overall -eq 'failed') {
     throw "Installed runtime verification failed: $($hardFailures.name -join ', ')"
 }
 if ($overall -eq 'partial') {
-    Write-Warning 'Install is partial because one or more loaded TSF DLLs could not be replaced. Reboot, reinstall, and verify again for a complete result.'
+    if ($allowedDllMismatches.Count -gt 0) {
+        Write-Warning 'Install is partial because one or more loaded TSF DLLs could not be replaced. Reboot, reinstall, and verify again for a complete result.'
+    }
+    if ($rimeCacheIssues.Count -gt 0) {
+        Write-Warning 'Install is partial because one or more deployed Rime schemas have missing, invalid, or stale compiled caches. Redeploy those schemas and verify again.'
+    }
 }
 
 [pscustomobject]$report

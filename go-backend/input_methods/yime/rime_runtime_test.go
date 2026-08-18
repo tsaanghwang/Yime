@@ -437,6 +437,44 @@ func TestRealRimeExplicitErhuaMixedRoutesAcrossAllThreeSchemas(t *testing.T) {
 	}
 }
 
+func TestRealRimeParticleAStage6DDualTrackAcrossAllThreeSchemas(t *testing.T) {
+	dataDir := rimeRuntimeTestDataDir(t)
+	session := newRealRimeSessionWithManagedRefresh(t, true)
+	for _, mode := range []string{"variable", "full", "shorthand"} {
+		t.Run(mode, func(t *testing.T) {
+			schema := "yime_" + mode
+			if !SelectSchema(session.sessionID, schema) {
+				t.Fatalf("expected %s to be selectable", schema)
+			}
+			particleAEntries := readBundledErhuaDictionary(t, filepath.Join(dataDir, "yime_particle_a_stage6d_"+mode+".dict.yaml"))
+			coreEntries := readBundledErhuaDictionary(t, filepath.Join(dataDir, "yime_"+mode+".dict.yaml"))
+			for _, text := range []string{"样子啊", "走啊走"} {
+				particleASurfaceCode, particleACanonicalCode := "", ""
+				for _, entry := range particleAEntries {
+					if entry.Text == text {
+						particleASurfaceCode = strings.ReplaceAll(entry.Code, " ", "")
+						break
+					}
+				}
+				for _, entry := range coreEntries {
+					if entry.Text == text {
+						particleACanonicalCode = strings.ReplaceAll(entry.Code, " ", "")
+						break
+					}
+				}
+				if particleASurfaceCode == "" || particleACanonicalCode == "" || particleASurfaceCode == particleACanonicalCode {
+					t.Fatalf("%s must expose distinct particle-a surface/canonical routes for %s: surface=%q canonical=%q", mode, text, particleASurfaceCode, particleACanonicalCode)
+				}
+				for _, code := range []string{particleASurfaceCode, particleACanonicalCode} {
+					if _, found := findRealRimeCandidateAcrossPages(t, session.sessionID, code, text); !found {
+						t.Fatalf("particle-a dual-track candidate %s missing in %s after %q", text, schema, code)
+					}
+				}
+			}
+		})
+	}
+}
+
 func TestRealRimePSCPeripheralAcrossAllThreeSchemas(t *testing.T) {
 	dataDir := rimeRuntimeTestDataDir(t)
 	session := newRealRimeSessionWithManagedRefresh(t, true)
@@ -1880,6 +1918,9 @@ func TestRealRimeBuildsCoreModesFromSingleSchemaList(t *testing.T) {
 				0o644,
 			); err != nil {
 				t.Fatal(err)
+			}
+			if _, err := userlexicon.RefreshRimeData(dataDir, userDir); err != nil {
+				t.Fatalf("refreshing managed Rime data before building %s failed: %v", schemaID, err)
 			}
 			if err := settings.Apply(
 				userDir,

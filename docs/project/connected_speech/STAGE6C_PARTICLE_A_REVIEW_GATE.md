@@ -26,6 +26,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\audit-stage6c-partic
 ```
 
 当前结果为：复核项 30、匹配 30、核准 30、待人工复核 0、共键语义样本 5、键码变化样本 25、
-三模式投影 90、未决 0、运行时别名 0。下一阶段若开展小规模运行时试点，只能处理 25 条真正改变
-物理码的记录；5 条 N26/N12 共键项只登记语义核准，不生成重复词典行。所有批准项均使用
-`parallel_alias_keep_canonical`，不得替换规范输入路径。
+三模式投影 90、未决 0、本复核阶段运行时别名 0。这 30 条后来成为阶段 6D 全量实现前的分层样本
+门禁：25 条验证键码变化，5 条验证 N26/N12 共键时不生成重复行。所有条件读法均使用
+`parallel_alias_keep_canonical`，不得替换规范输入路径。全量运行接入见
+[阶段 6D](STAGE6D_PARTICLE_A_RUNTIME.md)。

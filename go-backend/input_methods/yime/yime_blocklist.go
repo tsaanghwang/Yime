@@ -1,7 +1,12 @@
 package yime
 
 import (
+	"encoding/csv"
+	"fmt"
+	"io"
 	"os"
+	"path/filepath"
+	"strings"
 	"sync"
 	"time"
 
@@ -16,6 +21,17 @@ type blocklistCache struct {
 }
 
 var imeBlocklistCache blocklistCache
+var imeSystemExclusionCache blocklistCache
+
+const systemCandidateExclusionsFileName = "yime_system_candidate_exclusions.tsv"
+
+var resolveSystemCandidateExclusionsPath = func(ime *IME) string {
+	sharedDir := ime.sharedDir()
+	if sharedDir == "" {
+		return ""
+	}
+	return filepath.Join(sharedDir, systemCandidateExclusionsFileName)
+}
 
 func (ime *IME) blocklistPath() string {
 	userDir := ime.userDir()
@@ -26,31 +42,84 @@ func (ime *IME) blocklistPath() string {
 }
 
 func (ime *IME) blockedCandidateSet() map[string]struct{} {
-	path := ime.blocklistPath()
+	userSet := loadCachedCandidateSet(ime.blocklistPath(), &imeBlocklistCache, userblocklist.LoadSet)
+	systemSet := loadCachedCandidateSet(resolveSystemCandidateExclusionsPath(ime), &imeSystemExclusionCache, loadSystemCandidateExclusions)
+	if len(systemSet) == 0 {
+		return userSet
+	}
+	if len(userSet) == 0 {
+		return systemSet
+	}
+	merged := make(map[string]struct{}, len(userSet)+len(systemSet))
+	for text := range systemSet {
+		merged[text] = struct{}{}
+	}
+	for text := range userSet {
+		merged[text] = struct{}{}
+	}
+	return merged
+}
+
+func loadCachedCandidateSet(path string, cache *blocklistCache, loader func(string) (map[string]struct{}, error)) map[string]struct{} {
 	if path == "" {
 		return nil
 	}
 	info, err := os.Stat(path)
 	if err != nil {
-		if os.IsNotExist(err) {
-			return nil
-		}
 		return nil
 	}
 
-	imeBlocklistCache.mu.Lock()
-	defer imeBlocklistCache.mu.Unlock()
-	if imeBlocklistCache.path == path && !info.ModTime().After(imeBlocklistCache.modTime) && imeBlocklistCache.blocked != nil {
-		return imeBlocklistCache.blocked
+	cache.mu.Lock()
+	defer cache.mu.Unlock()
+	if cache.path == path && !info.ModTime().After(cache.modTime) && cache.blocked != nil {
+		return cache.blocked
 	}
-	set, err := userblocklist.LoadSet(path)
+	set, err := loader(path)
 	if err != nil {
-		return imeBlocklistCache.blocked
+		return cache.blocked
 	}
-	imeBlocklistCache.path = path
-	imeBlocklistCache.modTime = info.ModTime()
-	imeBlocklistCache.blocked = set
+	cache.path = path
+	cache.modTime = info.ModTime()
+	cache.blocked = set
 	return set
+}
+
+func loadSystemCandidateExclusions(path string) (map[string]struct{}, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+	reader := csv.NewReader(file)
+	reader.Comma = '\t'
+	reader.FieldsPerRecord = 5
+	header, err := reader.Read()
+	if err != nil {
+		return nil, err
+	}
+	header[0] = strings.TrimPrefix(header[0], "\ufeff")
+	if strings.Join(header, "\t") != "text\tcategory\tsource_snapshot\tdecision\tnote" {
+		return nil, fmt.Errorf("系统候选排除表表头无效")
+	}
+	result := map[string]struct{}{}
+	for {
+		row, err := reader.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return nil, err
+		}
+		text := strings.TrimSpace(row[0])
+		if text == "" || row[1] != "unverifiable_particle_a_fragment" || row[2] == "" || row[3] != "exclude_runtime_candidate" || row[4] == "" {
+			return nil, fmt.Errorf("系统候选排除行无效: %v", row)
+		}
+		if _, exists := result[text]; exists {
+			return nil, fmt.Errorf("系统候选排除项重复: %s", text)
+		}
+		result[text] = struct{}{}
+	}
+	return result, nil
 }
 
 func filterBlockedCandidates(candidates []candidateItem, blocked map[string]struct{}) ([]candidateItem, []int) {
@@ -98,7 +167,7 @@ func (ime *IME) mapCandidateSelectionIndex(visibleIndex int) (int, bool) {
 	if !ime.backendUsesCandidatePaging() {
 		visibleIndex += ime.candidatePageStart
 	}
-	if len(ime.candidateBackendIndexMap) == 0 {
+	if ime.candidateBackendIndexMap == nil {
 		return visibleIndex, true
 	}
 	if visibleIndex < 0 || visibleIndex >= len(ime.candidateBackendIndexMap) {

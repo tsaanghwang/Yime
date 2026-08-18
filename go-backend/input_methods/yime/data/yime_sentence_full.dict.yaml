@@ -10,4 +10,5 @@ import_tables:
   - yime_psc_peripheral_sentence_full
   - yime_erhua_mixed_sentence_full
   - yime_third_tone_stage5c_full
+  - yime_particle_a_stage6d_full
 ...

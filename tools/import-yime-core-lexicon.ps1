@@ -138,6 +138,13 @@ try {
     if ($LASTEXITCODE -ne 0) {
         throw "Yime reviewed third-tone Stage 5C derivation failed with exit code $LASTEXITCODE"
     }
+    go run ./cmd/yime-particle-a-stage6d-derive `
+        -repo-root $root `
+        -data-dir $outputPath `
+        -output-dir $outputPath
+    if ($LASTEXITCODE -ne 0) {
+        throw "Yime reviewed particle-a Stage 6D derivation failed with exit code $LASTEXITCODE"
+    }
     # The explicit-erhua generator may inherit the reviewed low-frequency
     # weight from an exact PSC suffix-compatible entry, so the PSC overlay is
     # a declared upstream artifact and must be generated first.
@@ -247,6 +254,10 @@ if ($DeployToUserDir) {
 		"yime_third_tone_stage5c_variable.dict.yaml",
 		"yime_third_tone_stage5c_shorthand.dict.yaml",
 		"yime_third_tone_stage5c_manifest.json",
+		"yime_particle_a_stage6d_full.dict.yaml",
+		"yime_particle_a_stage6d_variable.dict.yaml",
+		"yime_particle_a_stage6d_shorthand.dict.yaml",
+		"yime_particle_a_stage6d_manifest.json",
         "yime_erhua_mixed_manifest.json",
         "yime_erhua_reverse_source.tsv",
         "yime_psc_peripheral_full.dict.yaml",
