@@ -1919,6 +1919,9 @@ func TestRealRimeBuildsCoreModesFromSingleSchemaList(t *testing.T) {
 			); err != nil {
 				t.Fatal(err)
 			}
+			if _, err := userlexicon.RefreshRimeData(dataDir, userDir); err != nil {
+				t.Fatalf("refreshing managed Rime data before building %s failed: %v", schemaID, err)
+			}
 			if err := settings.Apply(
 				userDir,
 				dataDir,
