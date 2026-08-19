@@ -20,6 +20,8 @@ $thirdToneStage5CManifest = Join-Path $root 'go-backend\input_methods\yime\data\
 $particleAStage6DManifest = Join-Path $root 'go-backend\input_methods\yime\data\yime_particle_a_stage6d_manifest.json'
 $rimeCacheChecker = Join-Path $root 'tools\check-rime-cache-freshness.ps1'
 $rimeCacheTests = Join-Path $root 'tools\test-rime-cache-freshness.ps1'
+$installedParticleAVerifier = Join-Path $root 'tools\verify-installed-particle-a-stage6d.ps1'
+$installedParticleAVerifierTests = Join-Path $root 'tools\test-installed-particle-a-stage6d-verifier.ps1'
 $releaseCertificateImporter = Join-Path $root 'tools\import-release-signing-certificate.ps1'
 $installer = Join-Path $root 'installer\installer.nsi'
 $devInstall = Join-Path $root 'tools\dev-install.ps1'
@@ -73,6 +75,7 @@ $requiredGovernanceGuards = @(
     'libime2-change-report-${{ github.sha }}',
     'name: go-tests',
     '.\tools\test-rime-cache-freshness.ps1',
+    '.\tools\test-installed-particle-a-stage6d-verifier.ps1',
     'name: real-rime-tests',
     'name: go-race-msys2',
     'name: installer-package',
@@ -124,6 +127,8 @@ foreach ($guard in @(
     '/tools/invoke-build-environment.ps1 @tsaanghwang',
     '/tools/invoke-cmake.ps1 @tsaanghwang',
     '/tools/verify-installed-runtime.ps1 @tsaanghwang',
+    '/tools/verify-installed-particle-a-stage6d.ps1 @tsaanghwang',
+    '/tools/test-installed-particle-a-stage6d-verifier.ps1 @tsaanghwang',
     '/tools/check-rime-cache-freshness.ps1 @tsaanghwang',
     '/tools/test-rime-cache-freshness.ps1 @tsaanghwang',
     '/tools/import-release-signing-certificate.ps1 @tsaanghwang',
@@ -242,13 +247,13 @@ foreach ($guard in @(
 if ($workflowText -match 'uses:\s*repolevedavaj/install-nsis@(?![0-9a-f]{40}(?:\s|#|$))') {
     throw 'Third-party NSIS setup must be pinned to a full immutable commit SHA.'
 }
-foreach ($requiredScript in @($rimeCacheChecker, $rimeCacheTests, $releaseCertificateImporter)) {
+foreach ($requiredScript in @($rimeCacheChecker, $rimeCacheTests, $installedParticleAVerifier, $installedParticleAVerifierTests, $releaseCertificateImporter)) {
     if (-not (Test-Path -LiteralPath $requiredScript -PathType Leaf)) {
         throw "Required CI/runtime verification script is missing: $requiredScript"
     }
 }
 $devBuildInstallVerifyText = Get-Content -LiteralPath $devBuildInstallVerify -Raw
-foreach ($guard in @('RimeCacheWaitSeconds', 'check-rime-cache-freshness.ps1', 'RequireFreshRimeCache')) {
+foreach ($guard in @('RimeCacheWaitSeconds', 'check-rime-cache-freshness.ps1', 'RequireFreshRimeCache', 'verify-installed-particle-a-stage6d.ps1')) {
     if (-not $devBuildInstallVerifyText.Contains($guard)) {
         throw "Developer build/install verification is missing its bounded Rime-cache wait guard: $guard"
     }
@@ -351,8 +356,10 @@ if (-not [bool]$pscPeripheral.summary.passed -or
     [int64]$pscPeripheral.summary.source_record_count -ne 315 -or
     [int64]$pscPeripheral.summary.neutral_tone_record_count -ne 183 -or
     [int64]$pscPeripheral.summary.erhua_record_count -ne 132 -or
-    [int64]$pscPeripheral.summary.runtime_rows_per_mode -ne 315 -or
-    [int64]$pscPeripheral.summary.sentence_rows_per_mode -ne 315 -or
+    [int64]$pscPeripheral.summary.encoded_record_count -ne 103 -or
+    [int64]$pscPeripheral.summary.already_in_core_record_count -ne 212 -or
+    [int64]$pscPeripheral.summary.runtime_rows_per_mode -ne 103 -or
+    [int64]$pscPeripheral.summary.sentence_rows_per_mode -ne 103 -or
     [int64]$pscPeripheral.summary.fixed_peripheral_weight -ne 1) {
     throw 'PSC pronunciation peripheral manifest did not pass its completeness gates.'
 }

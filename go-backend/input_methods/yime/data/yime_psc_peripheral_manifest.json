@@ -2,28 +2,28 @@
   "tool_version": "psc-pronunciation-peripheral-runtime-v2",
   "input_sha256": {
     "catalog": "6d485cad6ea05cb91fa2282f3d0e8b2b57b1dc27a2f583ea8778836905c6936b",
-    "full_dictionary": "c11dd63d218906bf2eefa810aad8d28005c0add53cbd0584e2ccc2660f95818e",
+    "full_dictionary": "d461f6354901b6eb587ce9c03ffc5bc3527959ee04396141b23aa751eb675054",
     "pinyin_codes": "aa516171f404f706b7d9ac0c9a3fb4aac4f043f3212c2b9ce6c94b38fb8d0071",
-    "shorthand_dictionary": "1bd186a3b81a5dfbe71cfa9706e659d89e22b39c598be73ce61769111309dd1c",
-    "variable_dictionary": "64a82edcce7aa7fc9da66b008a8d3ff288e03e267cf4bd419196737f218f49e8"
+    "shorthand_dictionary": "fa76a00311bd5086b757e04b2fbc06406eae9db4e84da9f17ddfe8b0d83748fa",
+    "variable_dictionary": "c4fa3f57287ce0bab33f2224da53c27afaf8bdc5f41737268968d1a4eb491f24"
   },
   "output_sha256": {
-    "yime_psc_peripheral_full.dict.yaml": "3969ef74e6e0b5c14a151a90d9ae6dd39d7de7881be5450bbd0e050189767858",
-    "yime_psc_peripheral_sentence_full.dict.yaml": "b93ac01d1db4731c32d9adbf5d008ac15b9679050b4efe0b469ebf18665c7914",
-    "yime_psc_peripheral_sentence_shorthand.dict.yaml": "d952993a292e1b15a98b497529361e0a10311f67adc0b4f9d1353843db6d7adc",
-    "yime_psc_peripheral_sentence_variable.dict.yaml": "cea75f1c60b3571e82504244a03293cced2aa0d27ca09b8f9b9bf476205921a3",
-    "yime_psc_peripheral_shorthand.dict.yaml": "3b9140cb51deb79c7cf90214333062435ce384fe7ce517396a472e16cc23df49",
-    "yime_psc_peripheral_variable.dict.yaml": "b9e75b5489c3dcd5f56596075683ffa9bccdf925706d14b5960e7dd53f0dc4dd"
+    "yime_psc_peripheral_full.dict.yaml": "f387df7557019bed851490370cb3d774d939f46ed34b158b0a4fd4e91329861d",
+    "yime_psc_peripheral_sentence_full.dict.yaml": "5216d599cd28e8c324a0853c377eb4b4bab45a799c9fdbd0d94571ba46ed2a37",
+    "yime_psc_peripheral_sentence_shorthand.dict.yaml": "a68c682e344e705b4b138fdb4d2479e8a6ba50bcd7d01823d044bed2bd4691a3",
+    "yime_psc_peripheral_sentence_variable.dict.yaml": "9158f1201fec36e91227523b1ee5b05096f1396447c54bccf2562eeaea3cc586",
+    "yime_psc_peripheral_shorthand.dict.yaml": "313e151c1779ee05e3deb8bbfeeba20e0e8903937237ceccbeeb7bf88691f520",
+    "yime_psc_peripheral_variable.dict.yaml": "eb3009517c4549580e7caf57a324afaa1dc12605e88a64cd5df1bbfed820281a"
   },
   "summary": {
     "tool_version": "psc-pronunciation-peripheral-runtime-v2",
     "source_record_count": 315,
     "neutral_tone_record_count": 183,
     "erhua_record_count": 132,
-    "encoded_record_count": 315,
-    "already_in_core_record_count": 0,
-    "runtime_rows_per_mode": 315,
-    "sentence_rows_per_mode": 315,
+    "encoded_record_count": 103,
+    "already_in_core_record_count": 212,
+    "runtime_rows_per_mode": 103,
+    "sentence_rows_per_mode": 103,
     "fixed_peripheral_weight": 1,
     "gates": {
       "candidate_text_unchanged": true,

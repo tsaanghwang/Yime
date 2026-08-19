@@ -1,33 +1,33 @@
 {
     "schema_version":  1,
     "source_project":  "Yime-python-prototype",
-    "source_revision":  "b979652d8230be514eb70ba38786d971e5cb07c6+working-tree-n25n27",
+    "source_revision":  "d2f48b0a9f2ead80353f6c6b2e046fc15ba9deb3+working-tree-contextual-runtime-handoff",
     "source_dictionary":  "two_level_full.dict.yaml",
-    "source_dictionary_sha256":  "9a226cc8829503e75185c9bacd99132d7d821ce7818631a731e758e7300e9ffa",
-    "source_selection_sha256":  "e301da876af4e99da4f42f8ba5d9f79a3010167aeaf504e0097febd140da5ec4",
+    "source_dictionary_sha256":  "4ce312cd5082cc19d525abe5842c092e1b1693fcec340b565ca4aa479f226551",
+    "source_selection_sha256":  "8d88e96f411231f7743d9acb289a00c32385a7f37535d07827357928f237d6b2",
     "pronunciation_entries":  "entries.tsv",
-    "pronunciation_entries_sha256":  "4a99189378a1fbaab3362399f744d81be3c55e9bb7dea057a219666a930f4069",
+    "pronunciation_entries_sha256":  "c703878c4fde19ca2f625c630aa9f251c8d72b48082c011e42dc0398ddff27e6",
     "reverse_pinyin_source":  "yime_pinyin_reverse_source.tsv",
-    "reverse_pinyin_source_sha256":  "293e2ecfb787a4ef18749b3c79a58ec536e71e01ab946cef5bdec5af7b325298",
-    "reverse_pinyin_source_rows":  41850,
+    "reverse_pinyin_source_sha256":  "234d2197f1501c4e3f81bb0767889c1c0e57e563f38b1e794b9909c9359df510",
+    "reverse_pinyin_source_rows":  41965,
     "reverse_pinyin_code_map_sha256":  "aa516171f404f706b7d9ac0c9a3fb4aac4f043f3212c2b9ce6c94b38fb8d0071",
-    "entry_count":  1166300,
-    "distinct_texts":  1151400,
+    "entry_count":  1167501,
+    "distinct_texts":  1152157,
     "ranking_evidence":  {
                              "policy_id":  "bcc-primary-lmdg-fallback-structural-floor-v1",
                              "policy_sha256":  "bb9bd3bd63bebc2e449785ca2586a6dd0dae9ad8797fc36e17aed57fba9c3d61",
-                             "direct_bcc":  379512,
-                             "provisional_rime_lmdg":  586954,
-                             "provisional_structural_floor":  184934,
+                             "direct_bcc":  379157,
+                             "provisional_rime_lmdg":  587106,
+                             "provisional_structural_floor":  185894,
                              "missing_selected_source_texts":  0,
                              "raw_bcc_and_lmdg_values_added":  false,
                              "source_priority_separation_passed":  true
                          },
     "character_coverage":  {
                                "distinct_characters":  46095,
-                               "runtime_mapping_entries":  60995,
+                               "runtime_mapping_entries":  61010,
                                "core_distinct_characters":  14000,
-                               "core_reading_entries":  21740,
+                               "core_reading_entries":  21755,
                                "peripheral_distinct_characters":  32095,
                                "peripheral_reading_entries":  39255,
                                "minimum_core_weight":  100000997,
@@ -39,15 +39,5 @@
                             "candidate_pool",
                             "source_evidence",
                             "regression_cases"
-                        ],
-    "layout_reprojection":  {
-                                "layout_digest":  "58f69f370aea49e03a48414dcaaf0ebdaef88be0e4fee37e2c4e1497b14976dd",
-                                "previous_reverse_pinyin_source_sha256":  "36279eec3db72bec8b3a6da4f4d497eec7e3e19c8f0be5cda991b8909383f218",
-                                "old_pinyin_codes_sha256":  "71039436a8f61cd2a6775767869aa7bd136e935aace0b40ee5cadd6fd7e5a8f9",
-                                "new_pinyin_codes_sha256":  "aa516171f404f706b7d9ac0c9a3fb4aac4f043f3212c2b9ce6c94b38fb8d0071",
-                                "changed_dictionary_records":  68147,
-                                "changed_reverse_source_rows":  1177,
-                                "candidate_selection_changed":  false,
-                                "weights_changed":  false
-                            }
+                        ]
 }

@@ -30,6 +30,8 @@
 /tools/invoke-build-environment.ps1 @tsaanghwang
 /tools/invoke-cmake.ps1 @tsaanghwang
 /tools/verify-installed-runtime.ps1 @tsaanghwang
+/tools/verify-installed-particle-a-stage6d.ps1 @tsaanghwang
+/tools/test-installed-particle-a-stage6d-verifier.ps1 @tsaanghwang
 /tools/check-rime-cache-freshness.ps1 @tsaanghwang
 /tools/test-rime-cache-freshness.ps1 @tsaanghwang
 /tools/write-build-manifest.ps1 @tsaanghwang

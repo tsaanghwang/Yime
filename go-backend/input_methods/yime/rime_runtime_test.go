@@ -265,6 +265,10 @@ func TestRealRimeDedicatedHRenderedInitialAcrossAllThreeSchemas(t *testing.T) {
 
 func TestRealRimeExplicitErhuaMixedRoutesAcrossAllThreeSchemas(t *testing.T) {
 	dataDir := rimeRuntimeTestDataDir(t)
+	codeMap, err := reverselookup.LoadSharedCodeMap(dataDir)
+	if err != nil {
+		t.Fatal(err)
+	}
 	session := newRealRimeSessionWithManagedRefresh(t, true)
 	for _, mode := range []string{"variable", "full", "shorthand"} {
 		t.Run(mode, func(t *testing.T) {
@@ -332,20 +336,23 @@ func TestRealRimeExplicitErhuaMixedRoutesAcrossAllThreeSchemas(t *testing.T) {
 				t.Fatalf("lexical-neutral sentence 石头滚动 missing in %s after %q", schema, neutralContinuousCode)
 			}
 
-			pscSentenceEntries := readBundledErhuaDictionary(t, filepath.Join(dataDir, "yime_psc_peripheral_sentence_"+mode+".dict.yaml"))
-			pscNeutralCode := ""
-			for _, entry := range pscSentenceEntries {
-				if entry.Text == "商量" {
-					pscNeutralCode = strings.ReplaceAll(entry.Code, " ", "")
+			coreNeutralCode, _, encodeErr := reverselookup.EncodeNumericTonePinyin(codeMap, "shang1 liang5", reverselookup.Mode(mode))
+			if encodeErr != nil {
+				t.Fatal(encodeErr)
+			}
+			coreNeutralMaterialized := false
+			for _, entry := range coreEntriesForSentence {
+				if entry.Text == "商量" && strings.ReplaceAll(entry.Code, " ", "") == coreNeutralCode {
+					coreNeutralMaterialized = true
 					break
 				}
 			}
-			if pscNeutralCode == "" {
-				t.Fatalf("%s lacks reviewed PSC neutral-tone sentence spelling for 商量", mode)
+			if !coreNeutralMaterialized {
+				t.Fatalf("%s lacks promoted core neutral-tone spelling for 商量 after %q", mode, coreNeutralCode)
 			}
-			pscNeutralContinuousCode := pscNeutralCode + workCode
-			if _, found := findRealRimeCandidateAcrossPages(t, session.sessionID, pscNeutralContinuousCode, "商量工作"); !found {
-				t.Fatalf("reviewed PSC neutral-tone sentence 商量工作 missing in %s after %q", schema, pscNeutralContinuousCode)
+			coreNeutralContinuousCode := coreNeutralCode + workCode
+			if _, found := findRealRimeCandidateAcrossPages(t, session.sessionID, coreNeutralContinuousCode, "商量工作"); !found {
+				t.Fatalf("promoted core neutral-tone sentence 商量工作 missing in %s after %q", schema, coreNeutralContinuousCode)
 			}
 
 			thirdToneEntries := readBundledErhuaDictionary(t, filepath.Join(dataDir, "yime_third_tone_stage5c_"+mode+".dict.yaml"))
@@ -487,17 +494,17 @@ func TestRealRimePSCPeripheralAcrossAllThreeSchemas(t *testing.T) {
 			entries := readBundledErhuaDictionary(t, filepath.Join(dataDir, "yime_psc_peripheral_"+mode+".dict.yaml"))
 			code := ""
 			for _, entry := range entries {
-				if entry.Text == "打点" {
+				if entry.Text == "个头儿" {
 					code = entry.Code
 					break
 				}
 			}
 			if code == "" {
-				t.Fatalf("%s PSC peripheral dictionary lacks 打点", mode)
+				t.Fatalf("%s PSC peripheral dictionary lacks 个头儿", mode)
 			}
 			input := strings.ReplaceAll(code, " ", "")
-			if _, found := findRealRimeCandidateAcrossPages(t, session.sessionID, input, "打点"); !found {
-				t.Fatalf("PSC peripheral candidate 打点 missing in %s after %q", schema, input)
+			if _, found := findRealRimeCandidateAcrossPages(t, session.sessionID, input, "个头儿"); !found {
+				t.Fatalf("PSC peripheral candidate 个头儿 missing in %s after %q", schema, input)
 			}
 		})
 	}
