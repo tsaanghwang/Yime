@@ -1292,6 +1292,76 @@ func TestRealRimeOwnedSegmentRPCMovesWithoutCommittingSentence(t *testing.T) {
 	}
 }
 
+func TestRealRimeLongSessionSwitchesFirstMiddleAndFinalSegments(t *testing.T) {
+	session := newRealRimeSession(t)
+	if !SelectSchema(session.sessionID, "yime_full") {
+		t.Fatal("expected yime_full schema to be selectable")
+	}
+
+	backend := &rawCompositionRuntimeBackend{
+		nativeBackend: &nativeBackend{sessionID: session.sessionID},
+	}
+	pager, ok := interface{}(backend).(backendCandidatePager)
+	if !ok || !pager.UsesBackendCandidatePaging() {
+		t.Fatal("long-session segment regression requires Rime-owned candidate paging")
+	}
+	ime := newSegmentNavigationIME(backend)
+	const cycles = 25
+	const input = "bjjjbjjjbjjj"
+
+	for cycle := 0; cycle < cycles; cycle++ {
+		ClearComposition(session.sessionID)
+		typeASCII(t, session.sessionID, input)
+		_, _ = GetCommit(session.sessionID)
+
+		for _, position := range []string{"first", "middle", "final"} {
+			state := backend.State()
+			segments := ime.compositionSegmentsForState(state)
+			if len(segments) < 3 {
+				t.Fatalf("cycle %d %s: expected at least three segments, got %#v",
+					cycle+1, position, segments)
+			}
+			targetIndex := 0
+			switch position {
+			case "middle":
+				targetIndex = len(segments) / 2
+			case "final":
+				targetIndex = len(segments) - 1
+			}
+			target := segments[targetIndex]
+			req := &pime.Request{
+				SeqNum:    cycle*3 + targetIndex + 1,
+				Method:    "selectCompositionSegment",
+				CursorPos: target.Start,
+				SelEnd:    target.End,
+			}
+			resp := ime.onSelectCompositionSegment(req, pime.NewResponse(req.SeqNum, true))
+			if resp.ReturnValue != 1 || resp.CompositionString == "" {
+				t.Fatalf("cycle %d %s: segment switch lost the live composition: %#v",
+					cycle+1, position, resp)
+			}
+			if resp.CommitString != "" {
+				t.Fatalf("cycle %d %s: segment switch committed unexpectedly: %q",
+					cycle+1, position, resp.CommitString)
+			}
+			active := -1
+			for index, segment := range resp.CompositionSegments {
+				if segment.Active {
+					active = index
+					break
+				}
+			}
+			if active != targetIndex {
+				t.Fatalf("cycle %d %s: active segment=%d, want %d; segments=%#v",
+					cycle+1, position, active, targetIndex, resp.CompositionSegments)
+			}
+			if !pager.UsesBackendCandidatePaging() {
+				t.Fatalf("cycle %d %s: native paging ownership changed", cycle+1, position)
+			}
+		}
+	}
+}
+
 func TestRealRimeOwnedSegmentRPCReachesLaterSegment(t *testing.T) {
 	session := newRealRimeSession(t)
 	if !SelectSchema(session.sessionID, "yime_full") {

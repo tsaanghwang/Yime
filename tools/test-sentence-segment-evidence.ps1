@@ -14,6 +14,7 @@ $outputDirectory = Join-Path $fixtureRoot 'reports'
 
 try {
     New-Item -ItemType Directory -Path (Join-Path $repoRoot 'go-backend\build\go-backend') -Force | Out-Null
+    New-Item -ItemType Directory -Path (Join-Path $repoRoot 'go-backend\input_methods\yime') -Force | Out-Null
     New-Item -ItemType Directory -Path (Join-Path $repoRoot 'build\PIMETextService\Release') -Force | Out-Null
     New-Item -ItemType Directory -Path (Join-Path $repoRoot 'build64\PIMETextService\Release') -Force | Out-Null
     New-Item -ItemType Directory -Path (Join-Path $installRoot 'go-backend') -Force | Out-Null
@@ -29,12 +30,20 @@ try {
         Set-Content -LiteralPath (Join-Path $repoRoot $fixture[0]) -Value $fixture[2] -Encoding UTF8
         Set-Content -LiteralPath (Join-Path $installRoot $fixture[1]) -Value $fixture[2] -Encoding UTF8
     }
+    Set-Content -LiteralPath (Join-Path $repoRoot 'version.txt') -Value '1.4.0-test' -Encoding UTF8 -NoNewline
+    @'
+func (b *nativeBackend) UsesBackendCandidatePaging() bool {
+    return true
+}
+'@ | Set-Content -LiteralPath (Join-Path $repoRoot 'go-backend\input_methods\yime\native_cgo.go') -Encoding UTF8
+    'func TestNativeBackendKeepsRimeOwnedCandidatePaging() {}' |
+        Set-Content -LiteralPath (Join-Path $repoRoot 'go-backend\input_methods\yime\native_cgo_test.go') -Encoding UTF8
 
     @(
-        '2026/07/24 15:00:00 request client=client-a method=selectCompositionSegment seq=42 cursor=0 data=',
+        '2026/07/24 15:00:00 request client=client-a method=selectCompositionSegment seq=42 cursor=0 selStart=0 selEnd=1 data=',
         '2026/07/24 15:00:00 forward client=client-a seq=42 method=selectCompositionSegment guid=test',
         '2026/07/24 15:00:00 response client=other payload={"seqNum":42,"success":false}',
-        '2026/07/24 15:00:00 response client=client-a payload={"seqNum":42,"success":true}',
+        '2026/07/24 15:00:00 response client=client-a payload={"seqNum":42,"success":true,"return":true,"compositionSegments":[{"start":0,"end":1,"active":true},{"start":1,"end":2},{"start":2,"end":3}]}',
         '2026/07/24 15:00:01 request client=client-b method=onKeyDown seq=43 cursor=0 data='
     ) | Set-Content -LiteralPath $logPath -Encoding UTF8
 
@@ -78,22 +87,108 @@ try {
         'server.exe | match',
         'x86/PIMETextService.dll | match',
         'x64/PIMETextService.dll | match',
-        'x64 Notepad | x64 | Notepad | pass | first, middle, and final segments passed',
-        'Codex IDE | x64 | Codex IDE | pass | composition remained active',
-        'x86 SysWOW64 charmap | x86 | C:\Windows\SysWOW64\charmap.exe | pass | x86 installed DLL exercised',
+        'x64 Notepad | x64 | Notepad | pass | 0 | 0 | 0 | 0 | 0 | incomplete | first, middle, and final segments passed',
+        'Codex IDE | x64 | Codex IDE | pass | 0 | 0 | 0 | 0 | 0 | incomplete | composition remained active',
+        'x86 SysWOW64 charmap | x86 | C:\Windows\SysWOW64\charmap.exe | pass | 0 | 0 | 0 | 0 | 0 | incomplete | x86 installed DLL exercised',
         'Transactions with correlated responses: 1',
+        'Classified first/middle/final transactions: 1/0/0',
+        'Status: `guarded`',
         'client=client-a, seq=42',
-        'response client=client-a payload={"seqNum":42,"success":true}'
+        'response client=client-a payload={"seqNum":42,"success":true,"return":true,'
     )) {
         if (-not $report.Contains($fragment)) { throw "Evidence report is missing: $fragment" }
     }
     if ($report.Contains('response client=other')) { throw 'RPC correlation included a response from the wrong client.' }
+    if (-not (Test-Path -LiteralPath $result.AcceptancePath -PathType Leaf)) { throw 'JSON acceptance record was not created.' }
+    $acceptance = Get-Content -LiteralPath $result.AcceptancePath -Raw -Encoding UTF8 | ConvertFrom-Json
+    if ([int]$acceptance.SchemaVersion -ne 2 -or [string]$acceptance.Build.Version -ne '1.4.0-test') {
+        throw 'Acceptance record did not preserve its schema and build version.'
+    }
+    if ([string]$acceptance.PagingOwnership.Owner -ne 'rime-native-backend' -or
+        [string]$acceptance.PagingOwnership.Status -ne 'guarded') {
+        throw 'Acceptance record did not preserve the Rime-owned paging guard.'
+    }
     foreach ($before in $readOnlyInputBefore) {
         $after = Get-Item -LiteralPath $before.Path
         $afterHash = (Get-FileHash -LiteralPath $after.FullName -Algorithm SHA256).Hash
         if ($afterHash -ne $before.Sha256 -or $after.LastWriteTimeUtc -ne $before.ModifiedUtc) {
             throw "Capture modified a read-only PIME evidence input: $($before.Path)"
         }
+    }
+
+    $longSessionLogPath = Join-Path $fixtureRoot 'go_backend_long_session.log'
+    $longSessionLines = [Collections.Generic.List[string]]::new()
+    $sequence = 100
+    foreach ($client in @('notepad-x64', 'codex-x64', 'charmap-x86')) {
+        for ($cycle = 1; $cycle -le 2; $cycle++) {
+            foreach ($target in @(
+                @{ Position = 'first'; Cursor = 0; End = 1; Active = 0 },
+                @{ Position = 'middle'; Cursor = 1; End = 2; Active = 1 },
+                @{ Position = 'final'; Cursor = 2; End = 3; Active = 2 }
+            )) {
+                $sequence++
+                $longSessionLines.Add("2026/07/24 16:00:00 request client=$client method=selectCompositionSegment seq=$sequence cursor=$($target.Cursor) selStart=$($target.Cursor) selEnd=$($target.End) data=")
+                $segments = @(
+                    @{ start = 0; end = 1; active = $target.Active -eq 0 },
+                    @{ start = 1; end = 2; active = $target.Active -eq 1 },
+                    @{ start = 2; end = 3; active = $target.Active -eq 2 }
+                )
+                $payload = @{ seqNum = $sequence; success = $true; 'return' = $true; compositionString = 'abc'; compositionSegments = $segments } | ConvertTo-Json -Compress
+                $longSessionLines.Add("2026/07/24 16:00:00 response client=$client payload=$payload")
+            }
+        }
+    }
+    $longSessionLines | Set-Content -LiteralPath $longSessionLogPath -Encoding UTF8
+    $longSessionResult = & $captureScript `
+        -RepoRoot $repoRoot `
+        -InstallRoot $installRoot `
+        -LogPath $longSessionLogPath `
+        -OutputDirectory $outputDirectory `
+        -ProcessNames '__yime_evidence_fixture_process__' `
+        -MinimumCyclesPerHost 2 `
+        -MinimumCorrelatedRpcTransactions 18 `
+        -NotepadOutcome pass `
+        -NotepadFirstSegmentSwitches 2 `
+        -NotepadMiddleSegmentSwitches 2 `
+        -NotepadFinalSegmentSwitches 2 `
+        -CodexIdeOutcome pass `
+        -CodexIdeFirstSegmentSwitches 2 `
+        -CodexIdeMiddleSegmentSwitches 2 `
+        -CodexIdeFinalSegmentSwitches 2 `
+        -SysWow64CharmapOutcome pass `
+        -SysWow64CharmapFirstSegmentSwitches 2 `
+        -SysWow64CharmapMiddleSegmentSwitches 2 `
+        -SysWow64CharmapFinalSegmentSwitches 2 `
+        -RequireLongSession `
+        -RequireComplete
+    if (-not $longSessionResult.LongSessionComplete -or $longSessionResult.Status -ne 'complete') {
+        throw 'Focused long-session fixture did not satisfy the acceptance gate.'
+    }
+    if ($longSessionResult.RpcSuccessfulTransactionCount -ne 18 -or
+        $longSessionResult.RpcClassifiedPositionCounts.first -ne 6 -or
+        $longSessionResult.RpcClassifiedPositionCounts.middle -ne 6 -or
+        $longSessionResult.RpcClassifiedPositionCounts.final -ne 6) {
+        throw "Long-session RPC classification was incomplete: $($longSessionResult.RpcClassifiedPositionCounts | ConvertTo-Json -Compress)"
+    }
+    $longSessionAcceptance = Get-Content -LiteralPath $longSessionResult.AcceptancePath -Raw -Encoding UTF8 | ConvertFrom-Json
+    if (-not [bool]$longSessionAcceptance.RequireLongSession -or
+        [int]$longSessionAcceptance.RequiredClassifiedTransactionsPerPosition -ne 6) {
+        throw 'Long-session acceptance record omitted its repeatability threshold.'
+    }
+
+    $underCountResult = & $captureScript `
+        -RepoRoot $repoRoot `
+        -InstallRoot $installRoot `
+        -LogPath $longSessionLogPath `
+        -OutputDirectory $outputDirectory `
+        -ProcessNames '__yime_evidence_fixture_process__' `
+        -MinimumCyclesPerHost 2 `
+        -NotepadOutcome pass `
+        -CodexIdeOutcome pass `
+        -SysWow64CharmapOutcome pass `
+        -RequireLongSession
+    if ($underCountResult.Status -ne 'partial' -or $underCountResult.LongSessionComplete) {
+        throw 'Long-session gate accepted hosts without explicit repeated segment counts.'
     }
 
     $partialResult = & $captureScript `

@@ -1,10 +1,34 @@
 package main
 
 import (
+	"bytes"
+	"log"
+	"strings"
 	"testing"
 
 	"github.com/tsaanghwang/Yime/go-backend/pime"
 )
+
+func TestLogRequestSummaryIncludesCompositionSegmentBounds(t *testing.T) {
+	var output bytes.Buffer
+	previous := log.Writer()
+	log.SetOutput(&output)
+	t.Cleanup(func() { log.SetOutput(previous) })
+
+	logRequestSummary("client-long-session", &pime.Request{
+		Method: "selectCompositionSegment", SeqNum: 42,
+		CursorPos: 3, SelStart: 3, SelEnd: 7,
+	})
+	for _, fragment := range []string{
+		"client=client-long-session",
+		"method=selectCompositionSegment",
+		"cursor=3 selStart=3 selEnd=7",
+	} {
+		if !strings.Contains(output.String(), fragment) {
+			t.Fatalf("request summary is missing %q: %s", fragment, output.String())
+		}
+	}
+}
 
 func TestConvertResponseIncludesClearedCompositionState(t *testing.T) {
 	server := NewServer()

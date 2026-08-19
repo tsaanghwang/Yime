@@ -509,15 +509,43 @@ func (ime *IME) rawCaretForCompositionSegment(
 	return 0, -1, false
 }
 
-func (ime *IME) compositionPrefixText(segmentCount int) string {
+func (ime *IME) pendingCompositionPrefixText(state rimeState, segmentCount int) (string, bool) {
 	if segmentCount <= 0 || segmentCount > len(ime.compositionSegmentCache) {
-		return ""
+		return "", false
 	}
+	composition := []rune(state.Composition)
+	offset := 0
 	var prefix strings.Builder
 	for index := 0; index < segmentCount; index++ {
-		prefix.WriteString(ime.compositionSegmentCache[index].Text)
+		for offset < len(composition) && unicode.IsSpace(composition[offset]) {
+			offset++
+		}
+		cached := ime.compositionSegmentCache[index]
+		text := []rune(cached.Text)
+		if hasRunePrefixAt(composition, offset, text) {
+			offset += len(text)
+			continue
+		}
+		code := []rune(cached.Code)
+		if !hasRunePrefixAt(composition, offset, code) {
+			return "", false
+		}
+		offset += len(code)
+		prefix.WriteString(cached.Text)
 	}
-	return prefix.String()
+	return prefix.String(), true
+}
+
+func hasRunePrefixAt(value []rune, offset int, prefix []rune) bool {
+	if offset < 0 || len(prefix) == 0 || offset+len(prefix) > len(value) {
+		return false
+	}
+	for index := range prefix {
+		if value[offset+index] != prefix[index] {
+			return false
+		}
+	}
+	return true
 }
 
 func candidateIndexForExactText(candidates []candidateItem, text string) int {
@@ -572,14 +600,19 @@ func (ime *IME) onSelectCompositionSegment(
 		if navigator.SetCompositionCaret(rawCaret) {
 			state := ime.backend.State()
 			if activeIndex > 0 && state.Composition != "" {
-				prefixText := ime.compositionPrefixText(activeIndex)
-				prefixCandidate := candidateIndexForExactText(
-					state.Candidates, prefixText)
-				if prefixCandidate < 0 ||
-					!ime.backend.SelectCandidate(prefixCandidate) {
+				prefixText, prefixOK := ime.pendingCompositionPrefixText(state, activeIndex)
+				if !prefixOK {
 					return ime.rejectCompositionSegment(resp, state)
 				}
-				state = ime.backend.State()
+				if prefixText != "" {
+					prefixCandidate := candidateIndexForExactText(
+						state.Candidates, prefixText)
+					if prefixCandidate < 0 ||
+						!ime.backend.SelectCandidate(prefixCandidate) {
+						return ime.rejectCompositionSegment(resp, state)
+					}
+					state = ime.backend.State()
+				}
 				targetRawEnd := ime.compositionSegmentCache[activeIndex].RawEnd
 				if state.Composition == "" ||
 					!navigator.SetCompositionCaret(targetRawEnd) {

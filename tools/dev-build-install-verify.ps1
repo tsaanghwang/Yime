@@ -3,6 +3,8 @@ param(
     [string]$InstallRoot = 'C:\Program Files (x86)\YIME',
     [ValidateRange(1, 300)]
     [int]$RimeCacheWaitSeconds = 60,
+    [string]$LongSessionAcceptancePath,
+    [switch]$RequireLongSessionAcceptance,
     [switch]$SkipBuild
 )
 
@@ -21,6 +23,8 @@ if (-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administra
         '-RimeCacheWaitSeconds', $RimeCacheWaitSeconds
     )
     if ($SkipBuild) { $elevatedArgs += '-SkipBuild' }
+    if ($LongSessionAcceptancePath) { $elevatedArgs += @('-LongSessionAcceptancePath', ('"' + $LongSessionAcceptancePath + '"')) }
+    if ($RequireLongSessionAcceptance) { $elevatedArgs += '-RequireLongSessionAcceptance' }
     # Start-Process -Wait follows the elevated process tree and would wait on
     # the intentionally persistent PIMELauncher started by dev-install.ps1.
     # Process.WaitForExit waits only for the elevated PowerShell wrapper.
@@ -59,12 +63,16 @@ do {
 
 Write-Host '=== Verify installed hashes, registry and launcher process ==='
 $reportPath = Join-Path $repoRoot '.tmp\last-dev-end-to-end-verification.json'
-& (Join-Path $PSScriptRoot 'verify-installed-runtime.ps1') `
-    -RepoRoot $repoRoot `
-    -InstallRoot $InstallRoot `
-    -JsonPath $reportPath `
-    -RequireRunningLauncher `
-    -RequireFreshRimeCache
+$verifyArguments = @{
+    RepoRoot = $repoRoot
+    InstallRoot = $InstallRoot
+    JsonPath = $reportPath
+    RequireRunningLauncher = $true
+    RequireFreshRimeCache = $true
+}
+if ($LongSessionAcceptancePath) { $verifyArguments.LongSessionAcceptancePath = $LongSessionAcceptancePath }
+if ($RequireLongSessionAcceptance) { $verifyArguments.RequireLongSessionAcceptance = $true }
+& (Join-Path $PSScriptRoot 'verify-installed-runtime.ps1') @verifyArguments
 
 Write-Host '=== Verify installed particle-a Stage 6D aliases and compiled caches ==='
 & (Join-Path $PSScriptRoot 'verify-installed-particle-a-stage6d.ps1') `

@@ -56,7 +56,7 @@ func stringifyData(data map[string]interface{}) string {
 
 func logRequestSummary(clientID string, req *pime.Request) {
 	log.Printf(
-		"收到请求 client=%s method=%s seq=%d id=%q commandId=%d keyCode=%d charCode=%d repeat=%d scan=%d composing=%q candidates=%d showCandidates=%t cursor=%d data=%s",
+		"收到请求 client=%s method=%s seq=%d id=%q commandId=%d keyCode=%d charCode=%d repeat=%d scan=%d composing=%q candidates=%d showCandidates=%t cursor=%d selStart=%d selEnd=%d data=%s",
 		clientID,
 		req.Method,
 		req.SeqNum,
@@ -70,6 +70,8 @@ func logRequestSummary(clientID string, req *pime.Request) {
 		len(req.CandidateList),
 		req.ShowCandidates,
 		req.CursorPos,
+		req.SelStart,
+		req.SelEnd,
 		stringifyData(req.Data),
 	)
 }
