@@ -141,8 +141,57 @@ Yime 崩溃；必须先核对事件中的实际文件路径。
 且至少存在一组按 `client` 和 `seqNum` 关联到响应的 `selectCompositionSegment` RPC；
 未满足时仍会先保存报告再返回失败。若日志很长，可通过 `-LogTailLines` 增大扫描范围；
 报告默认最多保留最近
-50 组 RPC，可通过 `-MaxRpcTransactions` 调整。SysWOW64 charmap 验收完成后应立即
+500 组 RPC，可通过 `-MaxRpcTransactions` 调整。SysWOW64 charmap 验收完成后应立即
 运行一次并把报告路径记入本节验收记录。
+
+### 长会话三段循环门槛
+
+长会话验收必须在同一宿主会话中依次切换首段、中段和末段，并至少重复 20 轮。
+x64 Notepad、x64 Codex IDE 和 x86 SysWOW64 charmap 都必须单独完成该门槛；只在备注
+中写“已通过”不能替代计数。完成后运行：
+
+```powershell
+.\tools\capture-sentence-segment-evidence.ps1 `
+  -MinimumCyclesPerHost 20 `
+  -MinimumCorrelatedRpcTransactions 180 `
+  -NotepadOutcome pass `
+  -NotepadFirstSegmentSwitches 20 `
+  -NotepadMiddleSegmentSwitches 20 `
+  -NotepadFinalSegmentSwitches 20 `
+  -CodexIdeOutcome pass `
+  -CodexIdeFirstSegmentSwitches 20 `
+  -CodexIdeMiddleSegmentSwitches 20 `
+  -CodexIdeFinalSegmentSwitches 20 `
+  -SysWow64CharmapOutcome pass `
+  -SysWow64CharmapFirstSegmentSwitches 20 `
+  -SysWow64CharmapMiddleSegmentSwitches 20 `
+  -SysWow64CharmapFinalSegmentSwitches 20 `
+  -RequireLongSession `
+  -RequireComplete
+```
+
+新版后端请求日志包含 `cursor`、`selStart` 和 `selEnd`。证据脚本再用响应中的
+`compositionSegments` 将成功 RPC 分类为 `first`、`middle` 或 `final`；长会话状态只有
+在三宿主计数和三类日志计数同时达到门槛时才能成为 `complete`。这条路径不改变候选
+列表，也不接管翻页；报告必须记录 `rime-native-backend` 分页所有权守卫。
+
+每次捕获同时生成 Markdown 证据和 schema 2 JSON 验收记录。JSON 绑定版本、Git
+commit/ref、工作树状态、已安装 `server.exe`、x86/x64 DLL 的 SHA-256，以及可用时的
+`installer/build-manifest.json` 哈希。将 JSON 再交给主安装态 verifier，确认验收后
+二进制没有变化：
+
+```powershell
+$acceptance = Get-ChildItem .\.tmp\sentence-segment-evidence\sentence-segment-acceptance-*.json |
+  Sort-Object LastWriteTimeUtc |
+  Select-Object -Last 1
+.\tools\verify-installed-runtime.ps1 `
+  -LongSessionAcceptancePath $acceptance.FullName `
+  -RequireLongSessionAcceptance `
+  -JsonPath .\.tmp\installed-runtime-with-long-session.json
+```
+
+主 verifier 会重新计算当前安装文件哈希，并拒绝版本、安装根目录、x86/x64 覆盖、
+三段 RPC 数量或 Rime 分页所有权守卫不匹配的记录。
 
 ## 8. 2026-07-24 当前验收记录
 

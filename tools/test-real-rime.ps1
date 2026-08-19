@@ -37,6 +37,7 @@ $requiredRealRimeTests = @(
     'TestRealRimeKeepsCandidatesWhileCompletingFinalSyllable'
     'TestRealRimeNavigatorCanMoveWithinSentenceComposition'
     'TestRealRimeNavigatorSelectionKeepsSentenceComposition'
+    'TestRealRimeLongSessionSwitchesFirstMiddleAndFinalSegments'
     'TestRealRimeQuickForgetAvailableInAllSchemas'
     'TestRealRimeExplicitCandidateForgetAvailableInAllSchemas'
     'TestRealRimePSCPeripheralAcrossAllThreeSchemas'

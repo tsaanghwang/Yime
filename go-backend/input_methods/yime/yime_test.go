@@ -136,6 +136,30 @@ func TestSelectCompositionSegmentUsesOwnedUIRPCPath(t *testing.T) {
 	}
 }
 
+func TestPendingCompositionPrefixTextSkipsAlreadyMaterializedSegments(t *testing.T) {
+	ime := newSegmentNavigationIME(&segmentNavigationTestBackend{})
+	ime.compositionSegmentCache = []cachedCompositionSegment{
+		{Code: "bjjj", Text: "幅", RawStart: 0, RawEnd: 4},
+		{Code: "bjjj", Text: "幅", RawStart: 4, RawEnd: 8},
+		{Code: "bjjj", Text: "幅", RawStart: 8, RawEnd: 12},
+	}
+	for _, test := range []struct {
+		composition string
+		want        string
+	}{
+		{composition: "bjjjbjjjbjjj", want: "幅幅"},
+		{composition: "幅bjjjbjjj", want: "幅"},
+		{composition: "幅幅bjjj", want: ""},
+	} {
+		if got, ok := ime.pendingCompositionPrefixText(rimeState{Composition: test.composition}, 2); !ok || got != test.want {
+			t.Fatalf("composition %q: pending prefix=%q ok=%t, want %q", test.composition, got, ok, test.want)
+		}
+	}
+	if got, ok := ime.pendingCompositionPrefixText(rimeState{Composition: "invalid"}, 2); ok || got != "" {
+		t.Fatalf("invalid composition unexpectedly mapped to pending prefix %q", got)
+	}
+}
+
 func TestSelectCompositionSegmentRejectsOutOfRangeAndReentrantUpdates(t *testing.T) {
 	backend := &segmentNavigationTestBackend{states: []rimeState{{
 		Composition: "ab", CursorPos: 2, SelStart: 0, SelEnd: 2,

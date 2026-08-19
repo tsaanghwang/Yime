@@ -253,7 +253,7 @@ foreach ($requiredScript in @($rimeCacheChecker, $rimeCacheTests, $installedPart
     }
 }
 $devBuildInstallVerifyText = Get-Content -LiteralPath $devBuildInstallVerify -Raw
-foreach ($guard in @('RimeCacheWaitSeconds', 'check-rime-cache-freshness.ps1', 'RequireFreshRimeCache', 'verify-installed-particle-a-stage6d.ps1')) {
+foreach ($guard in @('RimeCacheWaitSeconds', 'check-rime-cache-freshness.ps1', 'RequireFreshRimeCache', 'LongSessionAcceptancePath', 'RequireLongSessionAcceptance', 'verify-installed-particle-a-stage6d.ps1')) {
     if (-not $devBuildInstallVerifyText.Contains($guard)) {
         throw "Developer build/install verification is missing its bounded Rime-cache wait guard: $guard"
     }
@@ -262,6 +262,11 @@ $installedRuntimeVerifierText = Get-Content -LiteralPath $installedRuntimeVerifi
 foreach ($guard in @('check-rime-cache-freshness.ps1', 'RequireFreshRimeCache', 'rimeCompiledCaches')) {
     if (-not $installedRuntimeVerifierText.Contains($guard)) {
         throw "Installed-runtime verification is missing its Rime-cache evidence guard: $guard"
+    }
+}
+foreach ($guard in @('LongSessionAcceptancePath', 'RequireLongSessionAcceptance', 'rime-native-backend', 'RequiredClassifiedTransactionsPerPosition')) {
+    if (-not $installedRuntimeVerifierText.Contains($guard)) {
+        throw "Installed-runtime verification is missing its long-session acceptance guard: $guard"
     }
 }
 $extractJob = {
@@ -445,7 +450,7 @@ if (-not $buildEnvironmentText.Contains('initialize-dev-environment.ps1') -or -n
     throw 'Build and VS Code CMake entry points must share proxy/PATH initialization.'
 }
 $realRimeText = Get-Content -LiteralPath $realRimeTest -Raw
-foreach ($guard in @('go test -v', 'TestRealRimeKeepsCandidatesWhileCompletingFinalSyllable', 'TestRealRimeParticleAStage6DDualTrackAcrossAllThreeSchemas', 'TestRealRimeExternalBuildAppliesPageSize')) {
+foreach ($guard in @('go test -v', 'TestRealRimeKeepsCandidatesWhileCompletingFinalSyllable', 'TestRealRimeLongSessionSwitchesFirstMiddleAndFinalSegments', 'TestRealRimeParticleAStage6DDualTrackAcrossAllThreeSchemas', 'TestRealRimeExternalBuildAppliesPageSize')) {
     if (-not $realRimeText.Contains($guard)) {
         throw "Real librime CI guard is missing: $guard"
     }

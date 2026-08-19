@@ -3,9 +3,11 @@ param(
     [string]$InstallRoot = 'C:\Program Files (x86)\YIME',
     [string]$JsonPath,
     [string]$RimeUserDir = $(if ($env:APPDATA) { Join-Path $env:APPDATA 'PIME\Rime' }),
+    [string]$LongSessionAcceptancePath,
     [switch]$AllowTextServiceMismatch,
     [switch]$RequireRunningLauncher,
-    [switch]$RequireFreshRimeCache
+    [switch]$RequireFreshRimeCache,
+    [switch]$RequireLongSessionAcceptance
 )
 
 $ErrorActionPreference = 'Stop'
@@ -178,6 +180,117 @@ $rimeCacheIssues = @($rimeCacheRecords | Where-Object {
     $_.status -notin @('match', 'not-deployed')
 })
 
+$longSessionAcceptance = [ordered]@{
+    path = if ($LongSessionAcceptancePath) { [IO.Path]::GetFullPath($LongSessionAcceptancePath) } else { $null }
+    exists = $false
+    sha256 = $null
+    status = 'not-provided'
+    capturedAt = $null
+    buildVersion = $null
+    buildCommit = $null
+    issues = @()
+}
+if ($LongSessionAcceptancePath) {
+    $acceptanceIssues = [Collections.Generic.List[string]]::new()
+    if (-not (Test-Path -LiteralPath $LongSessionAcceptancePath -PathType Leaf)) {
+        $longSessionAcceptance.status = 'missing'
+        $acceptanceIssues.Add('acceptance record is missing')
+    } else {
+        $longSessionAcceptance.exists = $true
+        $longSessionAcceptance.sha256 = (Get-FileHash -LiteralPath $LongSessionAcceptancePath -Algorithm SHA256).Hash
+        try {
+            $acceptance = Get-Content -LiteralPath $LongSessionAcceptancePath -Raw -Encoding UTF8 | ConvertFrom-Json
+            $longSessionAcceptance.capturedAt = [string]$acceptance.CapturedAt
+            $longSessionAcceptance.buildVersion = [string]$acceptance.Build.Version
+            $longSessionAcceptance.buildCommit = [string]$acceptance.Build.Commit
+            if ([int]$acceptance.SchemaVersion -ne 2) { $acceptanceIssues.Add('schemaVersion must be 2') }
+            if ([string]$acceptance.Status -ne 'complete') { $acceptanceIssues.Add("record status is $($acceptance.Status)") }
+            if (-not [bool]$acceptance.RequireLongSession) { $acceptanceIssues.Add('record did not require the long-session gate') }
+            if ([IO.Path]::GetFullPath([string]$acceptance.InstallRoot).TrimEnd('\') -ne $installRoot.TrimEnd('\')) {
+                $acceptanceIssues.Add('install root does not match this verification')
+            }
+            $installedVersionPath = Join-Path $installRoot 'version.txt'
+            $installedVersion = if (Test-Path -LiteralPath $installedVersionPath) { (Get-Content -LiteralPath $installedVersionPath -Raw).Trim() } else { $null }
+            if (-not $installedVersion -or [string]$acceptance.Build.Version -ne $installedVersion) {
+                $acceptanceIssues.Add('build version does not match the installed runtime')
+            }
+            $currentCommit = $null
+            try { $currentCommit = (& git -C $repoRoot rev-parse HEAD 2>$null).Trim() } catch {}
+            if (-not $currentCommit -or [string]$acceptance.Build.Commit -ne $currentCommit) {
+                $acceptanceIssues.Add('Git commit does not match the acceptance build')
+            }
+            if ([bool]$acceptance.Build.Manifest.Exists -and [string]$acceptance.Build.Manifest.Status -ne 'match') {
+                $acceptanceIssues.Add('build manifest linkage is not a match')
+            }
+            foreach ($name in @('server.exe', 'x86/PIMETextService.dll', 'x64/PIMETextService.dll')) {
+                $acceptedFile = @($acceptance.FileRecords | Where-Object { [string]$_.Name -eq $name }) | Select-Object -First 1
+                $currentFile = @($files | Where-Object { [string]$_.name -eq $(if ($name -eq 'server.exe') { 'go-backend/server.exe' } else { $name }) }) | Select-Object -First 1
+                if (-not $acceptedFile) {
+                    $acceptanceIssues.Add("missing file record: $name")
+                } elseif ([string]$acceptedFile.Status -ne 'match') {
+                    $acceptanceIssues.Add("accepted file was not build-hash matched: $name")
+                } elseif (-not $currentFile -or [string]$acceptedFile.InstalledSha256 -ne [string]$currentFile.installedHash) {
+                    $acceptanceIssues.Add("installed hash changed after acceptance: $name")
+                }
+            }
+            $architectures = @($acceptance.HostOutcomeRecords | Where-Object LongSessionStatus -eq 'pass' | ForEach-Object { [string]$_.Architecture } | Sort-Object -Unique)
+            if ($architectures -notcontains 'x86' -or $architectures -notcontains 'x64') {
+                $acceptanceIssues.Add('passing long-session hosts must cover x86 and x64')
+            }
+            $minimumCycles = [int]$acceptance.MinimumCyclesPerHost
+            foreach ($hostOutcome in @($acceptance.HostOutcomeRecords)) {
+                if ([string]$hostOutcome.Outcome -ne 'pass' -or
+                    [string]$hostOutcome.LongSessionStatus -ne 'pass' -or
+                    [int]$hostOutcome.FirstSegmentSwitches -lt $minimumCycles -or
+                    [int]$hostOutcome.MiddleSegmentSwitches -lt $minimumCycles -or
+                    [int]$hostOutcome.FinalSegmentSwitches -lt $minimumCycles -or
+                    [int]$hostOutcome.CompletedCycles -lt $minimumCycles) {
+                    $acceptanceIssues.Add("host long-session threshold is not met: $($hostOutcome.Host)")
+                }
+            }
+            if ([string]$acceptance.PagingOwnership.Owner -ne 'rime-native-backend' -or
+                [string]$acceptance.PagingOwnership.Status -ne 'guarded') {
+                $acceptanceIssues.Add('Rime-owned candidate paging guard is not recorded')
+            }
+            $pagingImplementationPath = Join-Path $repoRoot 'go-backend\input_methods\yime\native_cgo.go'
+            $pagingTestPath = Join-Path $repoRoot 'go-backend\input_methods\yime\native_cgo_test.go'
+            if (-not (Test-Path -LiteralPath $pagingImplementationPath -PathType Leaf) -or
+                -not (Test-Path -LiteralPath $pagingTestPath -PathType Leaf)) {
+                $acceptanceIssues.Add('Rime-owned paging guard sources are missing')
+            } else {
+                $pagingImplementationText = Get-Content -LiteralPath $pagingImplementationPath -Raw
+                $pagingTestText = Get-Content -LiteralPath $pagingTestPath -Raw
+                $pagingImplementationHash = (Get-FileHash -LiteralPath $pagingImplementationPath -Algorithm SHA256).Hash
+                $pagingTestHash = (Get-FileHash -LiteralPath $pagingTestPath -Algorithm SHA256).Hash
+                if ($pagingImplementationText -notmatch '(?s)func \(b \*nativeBackend\) UsesBackendCandidatePaging\(\) bool\s*\{.*?return true\s*\}' -or
+                    -not $pagingTestText.Contains('TestNativeBackendKeepsRimeOwnedCandidatePaging') -or
+                    $pagingImplementationHash -ne [string]$acceptance.PagingOwnership.ImplementationSha256 -or
+                    $pagingTestHash -ne [string]$acceptance.PagingOwnership.TestSha256) {
+                    $acceptanceIssues.Add('Rime-owned paging guard changed after acceptance')
+                }
+            }
+            $requiredPerPosition = [int]$acceptance.RequiredClassifiedTransactionsPerPosition
+            if ($minimumCycles -lt 1 -or
+                $requiredPerPosition -ne $minimumCycles * @($acceptance.HostOutcomeRecords).Count) {
+                $acceptanceIssues.Add('classified RPC threshold is inconsistent with the host cycle count')
+            }
+            if ([int]$acceptance.Rpc.SuccessfulTransactionCount -lt [int]$acceptance.MinimumCorrelatedRpcTransactions) {
+                $acceptanceIssues.Add('successful RPC count is below the acceptance threshold')
+            }
+            foreach ($position in @('first', 'middle', 'final')) {
+                if ([int]$acceptance.Rpc.ClassifiedPositionCounts.$position -lt $requiredPerPosition) {
+                    $acceptanceIssues.Add("insufficient classified $position segment RPC evidence")
+                }
+            }
+            $longSessionAcceptance.status = if ($acceptanceIssues.Count -eq 0) { 'match' } else { 'mismatch' }
+        } catch {
+            $acceptanceIssues.Add("acceptance record is invalid: $($_.Exception.Message)")
+            $longSessionAcceptance.status = 'invalid'
+        }
+    }
+    $longSessionAcceptance.issues = @($acceptanceIssues)
+}
+
 $hardFailures = @($files | Where-Object {
     $_.required -and $_.status -ne 'match' -and -not ($AllowTextServiceMismatch -and $_.textService -and $_.status -eq 'mismatch')
 })
@@ -193,13 +306,17 @@ if ($RequireFreshRimeCache) {
         $hardFailures += [pscustomobject]@{ name = $record.name; status = $record.status }
     }
 }
+if ($RequireLongSessionAcceptance -and $longSessionAcceptance.status -ne 'match') {
+    $hardFailures += [pscustomobject]@{ name = 'long-session acceptance'; status = $longSessionAcceptance.status }
+}
 foreach ($fileName in $retiredLeakage) {
     $hardFailures += [pscustomobject]@{ name = "retired/$fileName"; status = 'runtime-leak' }
 }
 
 $overall = if ($hardFailures.Count -gt 0) {
     'failed'
-} elseif ($allowedDllMismatches.Count -gt 0 -or $rimeCacheIssues.Count -gt 0) {
+} elseif ($allowedDllMismatches.Count -gt 0 -or $rimeCacheIssues.Count -gt 0 -or
+    ($LongSessionAcceptancePath -and $longSessionAcceptance.status -ne 'match')) {
     'partial'
 } else {
     'complete'
@@ -217,6 +334,7 @@ $report = [ordered]@{
     retiredRuntimeLeakage = @($retiredLeakage)
     files = @($files)
     rimeCompiledCaches = @($rimeCacheRecords)
+    longSessionAcceptance = [pscustomobject]$longSessionAcceptance
 }
 
 if ($JsonPath) {
@@ -227,6 +345,9 @@ if ($JsonPath) {
 
 $report.files | Format-Table name, status -AutoSize
 $report.rimeCompiledCaches | Format-Table name, status, sourceCount -AutoSize
+if ($LongSessionAcceptancePath -or $RequireLongSessionAcceptance) {
+    [pscustomobject]$longSessionAcceptance | Format-List path, status, sha256, buildVersion, buildCommit, issues
+}
 Write-Host "Installed runtime verification: $overall"
 if ($overall -eq 'failed') {
     throw "Installed runtime verification failed: $($hardFailures.name -join ', ')"
@@ -237,6 +358,9 @@ if ($overall -eq 'partial') {
     }
     if ($rimeCacheIssues.Count -gt 0) {
         Write-Warning 'Install is partial because one or more deployed Rime schemas have missing, invalid, or stale compiled caches. Redeploy those schemas and verify again.'
+    }
+    if ($LongSessionAcceptancePath -and $longSessionAcceptance.status -ne 'match') {
+        Write-Warning 'Install is partial because the long-session acceptance record does not match the installed build and hashes.'
     }
 }
 
