@@ -236,6 +236,17 @@ PIMELauncher。若 `build/` 或 Go backend 制品被清理，安装会在写系�
 
 `complete` 表示文件哈希、安装状态和三套 Rime 编译缓存均一致。非严格模式下，被宿主锁定的 TSF DLL 暂未替换，或 Rime 后台尚未完成 table/reverse/prism 重建，都可能得到 `partial`；使用 `-RequireFreshRimeCache` 时任何缓存缺失或过期均为 `failed`。其它文件缺失或不一致始终为 `failed`。`dev-install.ps1` 会自动把最近一次报告写到 `.tmp\last-dev-install-verification.json`。
 
+Stage 6D 语气词“啊”还应单独闭合安装数据与用户态缓存链：
+
+```powershell
+.\tools\verify-installed-particle-a-stage6d.ps1
+```
+
+该脚本逐模式核对安装清单、Program Files 词典和 `%APPDATA%\PIME\Rime` 已部署词典的 SHA-256
+及 5,618 行全量别名，确认三个主句子词典仍导入对应别名表，并要求 table/reverse/prism 与编译
+schema 缓存全部新鲜。`dev-build-install-verify.ps1` 已把这项检查纳入完整闭环；脚本自身的夹具回归为
+`.\tools\test-installed-particle-a-stage6d-verifier.ps1`。
+
 语言栏或 TSF 问题必须在安装态至少复现一次；不能用源码目录中的临时 EXE 代替。
 
 真实 32 位宿主使用 `C:\Windows\SysWOW64\charmap.exe`。在 64 位 Windows 上，`SysWOW64` 中该文件的 PE machine 应为 `0x014C`；不要用 `System32\charmap.exe` 代替 x86 验证。发布烟雾测试需在该进程中实际激活 YIME，并完成组字、候选和上屏。

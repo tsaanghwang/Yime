@@ -66,4 +66,8 @@ $reportPath = Join-Path $repoRoot '.tmp\last-dev-end-to-end-verification.json'
     -RequireRunningLauncher `
     -RequireFreshRimeCache
 
+Write-Host '=== Verify installed particle-a Stage 6D aliases and compiled caches ==='
+& (Join-Path $PSScriptRoot 'verify-installed-particle-a-stage6d.ps1') `
+    -InstallRoot $InstallRoot | Out-Host
+
 Write-Host "Developer build/install/runtime verification passed. Report: $reportPath"

@@ -48,6 +48,9 @@ jobs:
       - name: Run Rime compiled-cache freshness regression tests
         shell: pwsh
         run: .\tools\test-rime-cache-freshness.ps1
+      - name: Run installed particle-a Stage 6D verifier regression tests
+        shell: pwsh
+        run: .\tools\test-installed-particle-a-stage6d-verifier.ps1
 
   real-rime-tests:
     name: real-rime-tests
