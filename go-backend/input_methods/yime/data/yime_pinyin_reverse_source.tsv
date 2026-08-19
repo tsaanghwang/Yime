@@ -83,12 +83,14 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 一周了	yjkl7rru\eee	yi4 zhou1 le5	yì zhōu le
 一命了	ylkj-je/\eee	yi2 ming4 le5	yí mìng le
 一块了	ylkjqudl\eee	yi2 kuai4 le5	yí kuài le
+一块石头落了地	yjjjqudl9LKJteei\uew\eee]jkl	yi1 kuai4 shi2 tou5 luo4 le5 di4	yī kuài shí tou luò le dì
 一墨	ylkj-rew	yi2 mo4	yí mò
 一墨迹	ylkj-rew3jkl	yi2 mo4 ji4	yí mò jì
 一天了	yjkltjfa\eee	yi4 tian1 le5	yì tiān le
 一定哦	ylkj]je/'wer	yi2 ding4 o2	yí dìng ó
 一差两讹	yjjj8fds\ls/'wer	yi1 cha4 liang3 e2	yī chà liǎng é
 一年了	yjklnlda\eee	yi4 nian2 le5	yì nián le
+一把抓了两头弗露	yjjjbsss7uff\eee\ls/tweu[oiu\uio	yi1 ba3 zhua1 le5 liang3 tou2 fu2 lu4	yī bǎ zhuā le liǎng tóu fú lù
 一抹头	yjjj-rewtweu	yi1 mo4 tou2	yī mò tóu
 一搤	yjjj'rew	yi1 e4	yī è
 一摸	yjkl-rrr	yi4 mo1	yì mō
@@ -108,6 +110,7 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 一笑了事	yjjj1jdo\eee9JKL	yi1 xiao4 le5 shi4	yī xiào le shì
 一笔抹摋	yjjjblll-rew4fds	yi1 bi3 mo4 sa4	yī bǐ mò sà
 一筹莫展	yjjj8weu-rew7ssz	yi1 chou2 mo4 zhan3	yī chóu mò zhǎn
+一粒老鼠屎坏了一锅粥	yjjj\jkl\sso9ooo9LLLhudl\eeeyjjjgurr7rru	yi1 li4 lao3 shu3 shi3 huai4 le5 yi1 guo1 zhou1	yī lì lǎo shǔ shǐ huài le yī guō zhōu
 一致了	ylkj7JKL\eee	yi2 zhi4 le5	yí zhì le
 一般了	yjklbffa\eee	yi4 ban1 le5	yì bān le
 一萼红	ylkj'rewhoe;	yi2 e4 hong2	yí è hóng
@@ -117,6 +120,8 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 一起摸	yjkl2lll-rrr	yi4 qi3 mo1	yì qǐ mō
 一辞莫赞	yjjj5LKJ-rew6fdz	yi1 ci2 mo4 zan4	yī cí mò zàn
 一陌	yjjj-rew	yi1 mo4	yī mò
+一颗老鼠屎坏了一锅汤	yjjjqrrr\sso9ooo9LLLhudl\eeeyjjjgurrtff;	yi1 ke1 lao3 shu3 shi3 huai4 le5 yi1 guo1 tang1	yī kē lǎo shǔ shǐ huài le yī guō tāng
+一颗老鼠屎坏了一锅粥	yjjjqrrr\sso9ooo9LLLhudl\eeeyjjjgurr7rru	yi1 ke1 lao3 shu3 shi3 huai4 le5 yi1 guo1 zhou1	yī kē lǎo shǔ shǐ huài le yī guō zhōu
 一饿	ylkj'rew	yi2 e4	yí è
 一鹗	yjjj'rew	yi1 e4	yī è
 一鹗书	yjjj'rew9uuu	yi1 e4 shu1	yī è shū
@@ -158,6 +163,7 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 万恶滔天	=udz'rewtffutjfa	wan4 e4 tao1 tian1	wàn è tāo tiān
 万恶的	=udz'rew]eee	wan4 e4 de5	wàn è de
 丈二和尚摸不着头脑	7fd/'UIOhwer9ddG-rrrbuio7sdutweunsso	zhang4 er4 he2 shang5 mo1 bu4 zhao2 tou2 nao3	zhàng èr hé shang mō bù zháo tóu nǎo
+丈二金刚摸不着头脑	7fd/'UIO3jvagff;-rrrbiii7sdutweunsso	zhang4 er4 jin1 gang1 mo1 bu5 zhao2 tou2 nao3	zhàng èr jīn gāng mō bu zháo tóu nǎo
 丈夫了	7fd/[uuu\eee	zhang4 fu1 le5	zhàng fū le
 三下了	4ffa1jds\eee	san1 xia4 le5	sān xià le
 三个了	4ffagrew\eee	san1 ge4 le5	sān gè le
@@ -388,6 +394,7 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 下巴了	1jdsbddd\eee	xia4 ba5 le5	xià ba le
 下床了	1jds8od;\eee	xia4 chuang2 le5	xià chuáng le
 下开了	1jdsqffj\eee	xia4 kai1 le5	xià kāi le
+下意识地避开了	1jdsyjkl9LKJ]eeebjklqffj\eee	xia4 yi4 shi2 de5 bi4 kai1 le5	xià yì shí de bì kāi le
 下成了	1jds8we;\eee	xia4 cheng2 le5	xià chéng le
 下手了	1jds9wwo\eee	xia4 shou3 le5	xià shǒu le
 下拉了	1jds\fff\eee	xia4 la1 le5	xià lā le
@@ -707,6 +714,7 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 不明了	buio-le;\eee	bu4 ming2 le5	bù míng le
 不明了地	buio-le;\eee]eee	bu4 ming2 le5 de5	bù míng le de
 不易了	boiuyjkl\eee	bu2 yi4 le5	bú yì le
+不是东风压了西风	boiu9JKL]ur;[rr;yjff\eee1jjj[rr;	bu2 shi4 dong1 feng1 ya1 le5 xi1 feng1	bú shì dōng fēng yā le xī fēng
 不是么	boiu9JKL-eee	bu2 shi4 me5	bú shì me
 不是了	boiu9JKL\eee	bu2 shi4 le5	bú shì le
 不是哦	boiu9JKL'eee	bu2 shi4 o5	bú shì o
@@ -1081,6 +1089,7 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 严格了	yldagwer\eee	yan2 ge2 le5	yán gé le
 严肃了	ylda4uio\eee	yan2 su4 le5	yán sù le
 严重了	ylda7ue/\eee	yan2 zhong4 le5	yán zhòng le
+严重地伤害了	ylda7ue/]eee9ff;hfdl\eee	yan2 zhong4 de5 shang1 hai4 le5	yán zhòng de shāng hài le
 丧了	4fd/\eee	sang4 le5	sàng le
 丧命了	4fd/-je/\eee	sang4 ming4 le5	sàng mìng le
 丧失了	4fd/9JJJ\eee	sang4 shi1 le5	sàng shī le
@@ -1208,6 +1217,9 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 为了情	=ucl\eee2le;	wei4 le5 qing2	wèi le qíng
 为了我	=ucl\eee=oww	wei4 le5 wo3	wèi le wǒ
 为了把	=ucl\eeebsss	wei4 le5 ba3	wèi le bǎ
+为了更好地	=ucl\eeegre/hsso]eee	wei4 le5 geng4 hao3 de5	wèi le gèng hǎo de
+为了更好地改进	=ucl\eeegre/hsso]eeegssl3jcz	wei4 le5 geng4 hao3 de5 gai3 jin4	wèi le gèng hǎo de gǎi jìn
+为了有效地	=ucl\eeeylwo1jdo]eee	wei4 le5 you3 xiao4 de5	wèi le yǒu xiào de
 为了梦	=ucl\eee-re/	wei4 le5 meng4	wèi le mèng
 为了水	=ucl\eee9oxl	wei4 le5 shui3	wèi le shuǐ
 为了爱	=ucl\eee'fdl	wei4 le5 ai4	wèi le ài
@@ -1215,6 +1227,7 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 为了睡	=ucl\eee9ucl	wei4 le5 shui4	wèi le shuì
 为了美	=ucl\eee-xxl	wei4 le5 mei3	wèi le měi
 为了能	=ucl\eeenwe;	wei4 le5 neng2	wèi le néng
+为了能方便地	=ucl\eeenwe;[ff;bjdz]eee	wei4 le5 neng2 fang1 bian4 de5	wèi le néng fāng biàn de
 为了花	=ucl\eeehuff	wei4 le5 hua1	wèi le huā
 为了要	=ucl\eeeyjdo	wei4 le5 yao4	wèi le yào
 为了让	=ucl\eee0fd/	wei4 le5 rang4	wèi le ràng
@@ -1225,6 +1238,7 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 为了降	=ucl\eee3jd/	wei4 le5 jiang4	wèi le jiàng
 为了难	=ucl\eeensda	wei4 le5 nan2	wèi le nán
 为什么	=ucl9xca-eee	wei4 shen2 me5	wèi shén me
+为什么不好好地	=ucl9xca-eeebuiohssohsso]eee	wei4 shen2 me5 bu4 hao3 hao3 de5	wèi shén me bù hǎo hǎo de
 为伍了	=ocj=ooo\eee	wei2 wu3 le5	wéi wǔ le
 为何了	=uclhwer\eee	wei4 he2 le5	wèi hé le
 为口莫学阮嗣宗	=ocjqwwo-rew1.cv0osz4JKL6ur;	wei2 kou3 mo4 xue2 ruan3 si4 zong1	wéi kǒu mò xué ruǎn sì zōng
@@ -1344,6 +1358,8 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 乐颠了馅	\rew]jfa\eee1jdz	le4 dian1 le5 xian4	lè diān le xiàn
 乔装了	2ldu7uf;\eee	qiao2 zhuang1 le5	qiáo zhuāng le
 乖乖了	gufjgufj\eee	guai1 guai1 le5	guāi guāi le
+乖乖地走开了	gufjgufj]eee6wwoqffj\eee	guai1 guai1 de5 zou3 kai1 le5	guāi guāi de zǒu kāi le
+乖乖地闭上了嘴	gufjgufj]eeebjkl9fd/\eee6oxl	guai1 guai1 de5 bi4 shang4 le5 zui3	guāi guāi de bì shàng le zuǐ
 乖了	gufj\eee	guai1 le5	guāi le
 乖哦	gufj'wer	guai1 o2	guāi ó
 乖多了	gufj]urr\eee	guai1 duo1 le5	guāi duō le
@@ -2611,6 +2627,7 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 什么鞋	9xca-eee1lcv	shen2 me5 xie2	shén me xié
 什么题	9xca-eeetlkj	shen2 me5 ti2	shén me tí
 什么风	9xca-eee[rr;	shen2 me5 feng1	shén me fēng
+什么风把你吹来的	9xca-eee[rr;bsssnlll8uvj\sdj]eee	shen2 me5 feng1 ba3 ni3 chui1 lai2 de5	shén me fēng bǎ nǐ chuī lái de
 什么饭	9xca-eee[fdz	shen2 me5 fan4	shén me fàn
 什么香	9xca-eee1jf;	shen2 me5 xiang1	shén me xiāng
 什么马	9xca-eee-sss	shen2 me5 ma3	shén me mǎ
@@ -3518,6 +3535,7 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 会开了	huclqffj\eee	hui4 kai1 le5	huì kāi le
 会弄了	huclnue/\eee	hui4 nong4 le5	huì nòng le
 会很饿	huclhxxz'rew	hui4 hen3 e4	huì hěn è
+会心地笑了	hucl1jva]eee1jdo\eee	hui4 xin1 de5 xiao4 le5	huì xīn de xiào le
 会忘了	hucl=ud/\eee	hui4 wang4 le5	huì wàng le
 会怎么	hucl6xxz-eee	hui4 zen3 me5	huì zěn me
 会恶化	hucl'rewhuds	hui4 e4 hua4	huì è huà
@@ -4867,6 +4885,7 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 倒忘了	]fdo=ud/\eee	dao4 wang4 le5	dào wàng le
 倒戈了	]ssogrrr\eee	dao3 ge1 le5	dǎo gē le
 倒成了	]fdo8we;\eee	dao4 cheng2 le5	dào chéng le
+倒抽了一口气	]sso8rru\eeeyjjjqwwo2jkl	dao3 chou1 le5 yi1 kou3 qi4	dǎo chōu le yī kǒu qì
 倒持泰阿	]fdo8LKJtfdl'rrr	dao4 chi2 tai4 e1	dào chí tài ē
 倒掉了	]fdo]jdo\eee	dao4 diao4 le5	dào diào le
 倒数了	]fdo9ooo\eee	dao4 shu3 le5	dào shǔ le
@@ -5117,7 +5136,9 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 偷了情	trru\eee2le;	tou1 le5 qing2	tōu le qíng
 偷亲了	trru2jva\eee	tou1 qin1 le5	tōu qīn le
 偷人了	trru0xca\eee	tou1 ren2 le5	tōu rén le
+偷偷地溜了出来	trrutrru]eee\jru\eee8uuu\sdj	tou1 tou1 de5 liu1 le5 chu1 lai2	tōu tōu de liū le chū lái
 偷偷摸摸	trrutrru-rrr-rrr	tou1 tou1 mo1 mo1	tōu tōu mō mō
+偷偷摸摸地走	trrutrru-rrr-rrr]eee6wwo	tou1 tou1 mo1 mo1 de5 zou3	tōu tōu mō mō de zǒu
 偷光了	trruguf;\eee	tou1 guang1 le5	tōu guāng le
 偷到了	trru]fdo\eee	tou1 dao4 le5	tōu dào le
 偷去了	trru2m,.\eee	tou1 qu4 le5	tōu qù le
@@ -5247,6 +5268,7 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 像谁了	1jd/9ocj\eee	xiang4 shui2 le5	xiàng shuí le
 像过了	1jd/guew\eee	xiang4 guo4 le5	xiàng guò le
 像进了	1jd/3jcz\eee	xiang4 jin4 le5	xiàng jìn le
+像那么回事儿	1jd/nfds-eeehocj9JKL'III	xiang4 na4 me5 hui2 shi4 er5	xiàng nà me huí shì er
 像隔了	1jd/gwer\eee	xiang4 ge2 le5	xiàng gé le
 像饿了	1jd/'rew\eee	xiang4 e4 le5	xiàng è le
 僫	'rew	e4	è
@@ -5723,6 +5745,7 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 关闭了	gufabjkl\eee	guan1 bi4 le5	guān bì le
 兴夜蛾	1jr;yjcx'wer	xing1 ye4 e2	xīng yè é
 兴奋了	1jr;[vcz\eee	xing1 fen4 le5	xīng fèn le
+兴奋地蹦了起来	1jr;[vcz]eeebre/\eee2lll\sdj	xing1 fen4 de5 beng4 le5 qi3 lai2	xīng fèn de bèng le qǐ lái
 兴建了	1jr;3jdz\eee	xing1 jian4 le5	xīng jiàn le
 兴讹造讪	1jr;'wer6fdo9fdz	xing1 e2 zao4 shan4	xīng é zào shàn
 兴起了	1jr;2lll\eee	xing1 qi3 le5	xīng qǐ le
@@ -6938,6 +6961,7 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 到了零	]fdo\eee\le;	dao4 le5 ling2	dào le líng
 到了龙	]fdo\eee\oe;	dao4 le5 long2	dào le lóng
 到人了	]fdo0xca\eee	dao4 ren2 le5	dào rén le
+到什么山上唱什么歌	]fdo9xca-eee9ffa9fd/8fd/9xca-eeegrrr	dao4 shen2 me5 shan1 shang4 chang4 shen2 me5 ge1	dào shén me shān shàng chàng shén me gē
 到他了	]fdotfff\eee	dao4 ta1 le5	dào tā le
 到位了	]fdo=ucl\eee	dao4 wei4 le5	dào wèi le
 到你了	]fdonlll\eee	dao4 ni3 le5	dào nǐ le
@@ -9458,6 +9482,7 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 吃了回	8JJJ\eeehocj	chi1 le5 hui2	chī le huí
 吃了好	8JJJ\eeehsso	chi1 le5 hao3	chī le hǎo
 吃了它	8JJJ\eeetfff	chi1 le5 ta1	chī le tā
+吃了定心丸	8JJJ\eee]je/1jva=oda	chi1 le5 ding4 xin1 wan2	chī le dìng xīn wán
 吃了屎	8JJJ\eee9LLL	chi1 le5 shi3	chī le shǐ
 吃了我	8JJJ\eee=oww	chi1 le5 wo3	chī le wǒ
 吃了才	8JJJ\eee5sdj	chi1 le5 cai2	chī le cái
@@ -9467,8 +9492,10 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 吃了瘪	8JJJ\eeeblxx	chi1 le5 bie3	chī le biě
 吃了白	8JJJ\eeebsdj	chi1 le5 bai2	chī le bái
 吃了睡	8JJJ\eee9ucl	chi1 le5 shui4	chī le shuì
+吃了砒霜药老虎	8JJJ\eeepjjj9uf;yjdo\ssohooo	chi1 le5 pi1 shuang1 yao4 lao3 hu3	chī le pī shuāng yào lǎo hǔ
 吃了糖	8JJJ\eeetsd;	chi1 le5 tang2	chī le táng
 吃了翔	8JJJ\eee1ld;	chi1 le5 xiang2	chī le xiáng
+吃了老娘洗脚水	8JJJ\eee\ssonld;1lll3lso9oxl	chi1 le5 lao3 niang2 xi3 jiao3 shui3	chī le lǎo niáng xǐ jiǎo shuǐ
 吃了肉	8JJJ\eee0reo	chi1 le5 rou4	chī le ròu
 吃了苦	8JJJ\eeeqooo	chi1 le5 ku3	chī le kǔ
 吃了药	8JJJ\eeeyjdo	chi1 le5 yao4	chī le yào
@@ -9580,6 +9607,7 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 吃饭了	8JJJ[fdz\eee	chi1 fan4 le5	chī fàn le
 吃饭咯	8JJJ[fdz\eee	chi1 fan4 lo5	chī fàn lo
 吃饱了	8JJJbsso\eee	chi1 bao3 le5	chī bǎo le
+吃饱了饭撑的	8JJJbsso\eee[fdz8rr;]eee	chi1 bao3 le5 fan4 cheng1 de5	chī bǎo le fàn chēng de
 吃饿了	8JJJ'rew\eee	chi1 e4 le5	chī è le
 吃馍馍	8JJJ-wer-eee	chi1 mo2 mo5	chī mó mo
 吃香了	8JJJ1jf;\eee	chi1 xiang1 le5	chī xiāng le
@@ -9677,7 +9705,6 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 名额啊	-le;'wer'ddd	ming2 e2 a5	míng é a
 名额少	-le;'wer9sso	ming2 e2 shao3	míng é shǎo
 名额时	-le;'wer9LKJ	ming2 e2 shi2	míng é shí
-名额有限	-le;'werylwo1jdz	ming2 e2 you3 xian4	míng é yǒu xiàn
 后上了	hreo9fd/\eee	hou4 shang4 le5	hòu shàng le
 后下了	hreo1jds\eee	hou4 xia4 le5	hòu xià le
 后为了	hreo=ucl\eee	hou4 wei4 le5	hòu wèi le
@@ -12258,6 +12285,7 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 大处着墨	]fds8uio7oer-rew	da4 chu4 zhuo2 mo4	dà chù zhuó mò
 大处落墨	]fds8uio\uew-rew	da4 chu4 luo4 mo4	dà chù luò mò
 大多了	]fds]urr\eee	da4 duo1 le5	dà duō le
+大大地拖累了	]fds]fds]eeeturr\xxl\eee	da4 da4 de5 tuo1 lei3 le5	dà dà de tuō lěi le
 大天鹅	]fdstjfa'wer	da4 tian1 e2	dà tiān é
 大好了	]fdshsso\eee	da4 hao3 le5	dà hǎo le
 大婚了	]fdshuva\eee	da4 hun1 le5	dà hūn le
@@ -12295,6 +12323,7 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 大极了	]fds3lkj\eee	da4 ji2 le5	dà jí le
 大殿了	]fds]jdz\eee	da4 dian4 le5	dà diàn le
 大气了	]fds2jkl\eee	da4 qi4 le5	dà qì le
+大水冲了龙王庙	]fds9oxl8ur;\eee\oe;=od;-jdo	da4 shui3 chong1 le5 long2 wang2 miao4	dà shuǐ chōng le lóng wáng miào
 大沙漠	]fds9fff-rew	da4 sha1 mo4	dà shā mò
 大沫崓	]fds-rewguio	da4 mo4 gu4	dà mò gù
 大法了	]fds[sss\eee	da4 fa3 le5	dà fǎ le
@@ -12860,6 +12889,7 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 失陷了	9JJJ1jdz\eee	shi1 xian4 le5	shī xiàn le
 头上了	tweu9fd/\eee	tou2 shang4 le5	tóu shàng le
 头上末下	tweu9fd/-rew1jds	tou2 shang4 mo4 xia4	tóu shàng mò xià
+头也不回地走了	tweuylxxbuiohocj]eee6wwo\eee	tou2 ye3 bu4 hui2 de5 zou3 le5	tóu yě bù huí de zǒu le
 头了吧	tweu\eeebddd	tou2 le5 ba5	tóu le ba
 头低了	tweu]jjj\eee	tou2 di1 le5	tóu dī le
 头儿了	tweu'III\eee	tou2 er5 le5	tóu er le
@@ -13289,6 +13319,7 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 好了不	hsso\eeebuio	hao3 le5 bu4	hǎo le bù
 好了么	hsso\eee-eee	hao3 le5 me5	hǎo le me
 好了也	hsso\eeeylxx	hao3 le5 ye3	hǎo le yě
+好了伤疤忘了疼	hsso\eee9ff;bfff=ud/\eeetwe;	hao3 le5 shang1 ba1 wang4 le5 teng2	hǎo le shāng bā wàng le téng
 好了吗	hsso\eee-ddd	hao3 le5 ma5	hǎo le ma
 好了吧	hsso\eeebddd	hao3 le5 ba5	hǎo le ba
 好了呀	hsso\eeeykdd	hao3 le5 ya5	hǎo le ya
@@ -13308,6 +13339,7 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 好了就	hsso\eee3jeo	hao3 le5 jiu4	hǎo le jiù
 好了没	hsso\eee-xcj	hao3 le5 mei2	hǎo le méi
 好了点	hsso\eee]lsz	hao3 le5 dian3	hǎo le diǎn
+好了疮疤忘了痛	hsso\eee8uf;bfff=ud/\eeetue/	hao3 le5 chuang1 ba1 wang4 le5 tong4	hǎo le chuāng bā wàng le tòng
 好了老	hsso\eee\sso	hao3 le5 lao3	hǎo le lǎo
 好事了	hsso9JKL\eee	hao3 shi4 le5	hǎo shì le
 好些了	hsso1jvv\eee	hao3 xie1 le5	hǎo xiē le
@@ -13360,6 +13392,7 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 好开了	hssoqffj\eee	hao3 kai1 le5	hǎo kāi le
 好心了	hsso1jva\eee	hao3 xin1 le5	hǎo xīn le
 好心倒做了驴肝肺	hsso1jva]fdo6uew\eee\.,mgffa[vvj	hao3 xin1 dao4 zuo4 le5 lü2 gan1 fei1	hǎo xīn dào zuò le lǘ gān fēi
+好心做了驴肝肺	hsso1jva6uew\eee\.,mgffa[vcl	hao3 xin1 zuo4 le5 lü2 gan1 fei4	hǎo xīn zuò le lǘ gān fèi
 好忘了	hsso=ud/\eee	hao3 wang4 le5	hǎo wàng le
 好快哦	hssoqudl'wer	hao3 kuai4 o2	hǎo kuài ó
 好恶不同	hsso'rewbuiotoe;	hao3 e4 bu4 tong2	hǎo è bù tóng
@@ -13475,6 +13508,7 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 妈为了	-fff=ucl\eee	ma1 wei4 le5	mā wèi le
 妈买了	-fff-ssl\eee	ma1 mai3 le5	mā mǎi le
 妈了个	-fff\eeegrew	ma1 le5 ge4	mā le gè
+妈了个巴子	-fff\eeegeeebfff6KKK	ma1 le5 ge5 ba1 zi5	mā le ge bā zi
 妈了逼	-fff\eeebjjj	ma1 le5 bi1	mā le bī
 妈做了	-fff6uew\eee	ma1 zuo4 le5	mā zuò le
 妈去了	-fff2m,.\eee	ma1 qu4 le5	mā qù le
@@ -14964,6 +14998,7 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 就是了	3jeo9JKL\eee	jiu4 shi4 le5	jiù shì le
 就是咯	3jeo9JKL\eee	jiu4 shi4 lo5	jiù shì lo
 就是哦	3jeo9JKL'wer	jiu4 shi4 o2	jiù shì ó
+就是西风压了东风	3jeo9JKL1jjj[rr;yjff\eee]ur;[rr;	jiu4 shi4 xi1 feng1 ya1 le5 dong1 feng1	jiù shì xī fēng yā le dōng fēng
 就晕了	3jeo`mva\eee	jiu4 yun1 le5	jiù yūn le
 就晚了	3jeo=osz\eee	jiu4 wan3 le5	jiù wǎn le
 就暗了	3jeo'fdz\eee	jiu4 an4 le5	jiù àn le
@@ -16211,6 +16246,7 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 开往了	qffj=os/\eee	kai1 wang3 le5	kāi wǎng le
 开得了	qffj]eee\eee	kai1 de5 le5	kāi de le
 开心了	qffj1jva\eee	kai1 xin1 le5	kāi xīn le
+开心地离开了	qffj1jva]eee\lkjqffj\eee	kai1 xin1 de5 li2 kai1 le5	kāi xīn de lí kāi le
 开怀了	qffjhodj\eee	kai1 huai2 le5	kāi huái le
 开恩了	qffj'vva\eee	kai1 en1 le5	kāi ēn le
 开悟了	qffj=uio\eee	kai1 wu4 le5	kāi wù le
@@ -16418,7 +16454,6 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 张图了	7ff;toiu\eee	zhang1 tu2 le5	zhāng tú le
 张大了	7ff;]fds\eee	zhang1 da4 le5	zhāng dà le
 张开了	7ff;qffj\eee	zhang1 kai1 le5	zhāng kāi le
-张月娥	7ff;`mcx'wer	zhang1 yue4 e2	zhāng yuè é
 张本继末	7ff;bxxz3jkl-rew	zhang1 ben3 ji4 mo4	zhāng běn jì mò
 张罗了	7ff;\iee\eee	zhang1 luo5 le5	zhāng luo le
 张谔	7ff;'rew	zhang1 e4	zhāng è
@@ -16596,6 +16631,7 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 影帝了	ylw/]jkl\eee	ying3 di4 le5	yǐng dì le
 彷徨了	psd;hod;\eee	pang2 huang2 le5	páng huáng le
 彻底了	8rew]lll\eee	che4 di3 le5	chè dǐ le
+彻底地征服了	8rew]lll]eee7rr;[oiu\eee	che4 di3 de5 zheng1 fu2 le5	chè dǐ de zhēng fú le
 彻查了	8rew8sdf\eee	che4 cha2 le5	chè chá le
 往上了	=os/9fd/\eee	wang3 shang4 le5	wǎng shàng le
 往事了	=os/9JKL\eee	wang3 shi4 le5	wǎng shì le
@@ -16637,6 +16673,7 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 待过了	]fdlguew\eee	dai4 guo4 le5	dài guò le
 待进了	]fdl3jcz\eee	dai4 jin4 le5	dài jìn le
 待遇了	]fdl`m,.\eee	dai4 yu4 le5	dài yù le
+很不幸地碰上了	hxxzbuio1je/]eeepre/9fd/\eee	hen3 bu4 xing4 de5 peng4 shang4 le5	hěn bù xìng de pèng shàng le
 很丑了	hxxz8wwo\eee	hen3 chou3 le5	hěn chǒu le
 很丑恶	hxxz8wwo'rew	hen3 chou3 e4	hěn chǒu è
 很久了	hxxz3lwo\eee	hen3 jiu3 le5	hěn jiǔ le
@@ -16677,6 +16714,8 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 很好哦	hxxzhsso'wer	hen3 hao3 o2	hěn hǎo ó
 很好喔	hxxzhsso'rrr	hen3 hao3 o1	hěn hǎo ō
 很好噢	hxxzhsso'rrr	hen3 hao3 o1	hěn hǎo ō
+很好地解释了	hxxzhsso]eee3lxx9JKL\eee	hen3 hao3 de5 jie3 shi4 le5	hěn hǎo de jiě shì le
+很好地说明了	hxxzhsso]eee9urr-le;\eee	hen3 hao3 de5 shuo1 ming2 le5	hěn hǎo de shuō míng le
 很嫩哦	hxxznvcz'wer	hen3 nen4 o2	hěn nèn ó
 很寂寞	hxxz3jkl-rew	hen3 ji4 mo4	hěn jì mò
 很小了	hxxz1lso\eee	hen3 xiao3 le5	hěn xiǎo le
@@ -16842,6 +16881,7 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 得忘了	]wer=ud/\eee	de2 wang4 le5	dé wàng le
 得快了	]werqudl\eee	de2 kuai4 le5	dé kuài le
 得意了	]weryjkl\eee	de2 yi4 le5	dé yì le
+得意地笑了	]weryjkl]eee1jdo\eee	de2 yi4 de5 xiao4 le5	dé yì de xiào le
 得慌了	]werhuf;\eee	de2 huang1 le5	dé huāng le
 得懂了	]xxl]ow/\eee	dei3 dong3 le5	děi dǒng le
 得成了	]wer8we;\eee	de2 cheng2 le5	dé chéng le
@@ -17627,6 +17667,7 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 急疯了	3lkj[rr;\eee	ji2 feng1 le5	jí fēng le
 急眼了	3lkjylsz\eee	ji2 yan3 le5	jí yǎn le
 急红了	3lkjhoe;\eee	ji2 hong2 le5	jí hóng le
+急赶急地赶来了	3lkjgssz3lkj]eeegssz\sdj\eee	ji2 gan3 ji2 de5 gan3 lai2 le5	jí gǎn jí de gǎn lái le
 急躁了	3lkj6fdo\eee	ji2 zao4 le5	jí zào le
 急迫了	3lkjprew\eee	ji2 po4 le5	jí pò le
 急退了	3lkjtucl\eee	ji2 tui4 le5	jí tuì le
@@ -17973,6 +18014,7 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 恶狠	'rewhxxz	e4 hen3	è hěn
 恶狠狠	'rewhxxzhxxz	e4 hen3 hen3	è hěn hěn
 恶狠狠地	'rewhxxzhxxz]eee	e4 hen3 hen3 de5	è hěn hěn de
+恶狠狠地看着	'rewhxxzhxxz]eeeqfdz7eee	e4 hen3 hen3 de5 kan4 zhe5	è hěn hěn de kàn zhe
 恶狼	'rew\sd;	e4 lang2	è láng
 恶生	'rew9rr;	e4 sheng1	è shēng
 恶男	'rewnsda	e4 nan2	è nán
@@ -18121,6 +18163,7 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 恼了	nsso\eee	nao3 le5	nǎo le
 恼怒了	nssonuio\eee	nao3 nu4 le5	nǎo nù le
 恼火了	nssohoww\eee	nao3 huo3 le5	nǎo huǒ le
+悄悄地调整了	2jfu2jfu]eeetldu7ww/\eee	qiao1 qiao1 de5 tiao2 zheng3 le5	qiāo qiāo de tiáo zhěng le
 悄摸	2jfu-rrr	qiao1 mo1	qiāo mō
 悄摸摸	2jfu-rrr-rrr	qiao1 mo1 mo1	qiāo mō mō
 悄默	2jfu-rew	qiao1 mo4	qiāo mò
@@ -18499,6 +18542,8 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 慢叫了	-fdz3jdo\eee	man4 jiao4 le5	màn jiào le
 慢多了	-fdz]urr\eee	man4 duo1 le5	màn duō le
 慢待了	-fdz]fdl\eee	man4 dai4 le5	màn dài le
+慢慢地变成了	-fdz-fdz]eeebjdz8we;\eee	man4 man4 de5 bian4 cheng2 le5	màn màn de biàn chéng le
+慢慢地认识了	-fdz-fdz]eee0vcz9LKJ\eee	man4 man4 de5 ren4 shi2 le5	màn màn de rèn shí le
 慢慢摸	-fdz-fdz-rrr	man4 man4 mo1	màn màn mō
 慢死了	-fdz4LLL\eee	man4 si3 le5	màn sǐ le
 慢点了	-fdz]lsz\eee	man4 dian3 le5	màn diǎn le
@@ -18602,6 +18647,8 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 成佛了	8we;[wer\eee	cheng2 fo2 le5	chéng fó le
 成全了	8we;2.da\eee	cheng2 quan2 le5	chéng quán le
 成功了	8we;gur;\eee	cheng2 gong1 le5	chéng gōng le
+成功地解决了	8we;gur;]eee3lxx3.cv\eee	cheng2 gong1 de5 jie3 jue2 le5	chéng gōng de jiě jué le
+成功地进行了	8we;gur;]eee3jcz1le;\eee	cheng2 gong1 de5 jin4 xing2 le5	chéng gōng de jìn xíng le
 成名了	8we;-le;\eee	cheng2 ming2 le5	chéng míng le
 成品了	8we;plxz\eee	cheng2 pin3 le5	chéng pǐn le
 成啥了	8we;9sdf\eee	cheng2 sha2 le5	chéng shá le
@@ -19758,7 +19805,6 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 打高了	]sssgffu\eee	da3 gao1 le5	dǎ gāo le
 打鳄鱼	]sss'rew`.,m	da3 e4 yu2	dǎ è yú
 打鸣了	]sss-le;\eee	da3 ming2 le5	dǎ míng le
-打黑除恶	]ssshvvj8oiu'rew	da3 hei1 chu2 e4	dǎ hēi chú è
 打鼓了	]sssgooo\eee	da3 gu3 le5	dǎ gǔ le
 打鼾了	]ssshffa\eee	da3 han1 le5	dǎ hān le
 扔上了	0rr;9fd/\eee	reng1 shang4 le5	rēng shàng le
@@ -20735,6 +20781,7 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 拔了	bsdf\eee	ba2 le5	bá le
 拔了吧	bsdf\eeebddd	ba2 le5 ba5	bá le ba
 拔了牙	bsdf\eeeyldf	ba2 le5 ya2	bá le yá
+拔了萝卜地皮宽	bsdf\eee\oerbeee]jklplkjqufa	ba2 le5 luo2 bo5 di4 pi2 kuan1	bá le luó bo dì pí kuān
 拔光了	bsdfguf;\eee	ba2 guang1 le5	bá guāng le
 拔出了	bsdf8uuu\eee	ba2 chu1 le5	bá chū le
 拔刀了	bsdf]ffu\eee	ba2 dao1 le5	bá dāo le
@@ -21355,6 +21402,7 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 捡了个	3lsz\eeegrew	jian3 le5 ge4	jiǎn le gè
 捡了漏	3lsz\eee\reo	jian3 le5 lou4	jiǎn le lòu
 捡了芝麻	3lsz\eee7JJJ-sdf	jian3 le5 zhi1 ma2	jiǎn le zhī má
+捡了芝麻丢了西瓜	3lsz\eee7JJJ-ddd]jru\eee1jjjguff	jian3 le5 zhi1 ma5 diu1 le5 xi1 gua1	jiǎn le zhī ma diū le xī guā
 捡到了	3lsz]fdo\eee	jian3 dao4 le5	jiǎn dào le
 捡回了	3lszhocj\eee	jian3 hui2 le5	jiǎn huí le
 捡好了	3lszhsso\eee	jian3 hao3 le5	jiǎn hǎo le
@@ -22227,7 +22275,9 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 摸着石头过河	-rrr7eee9LKJteeiguewhwer	mo1 zhe5 shi2 tou5 guo4 he2	mō zhe shí tou guò hé
 摸着黑	-rrr7eeehvvj	mo1 zhe5 hei1	mō zhe hēi
 摸石头	-rrr9LKJteei	mo1 shi2 tou5	mō shí tou
+摸石头过河	-rrr9LKJteeiguewhwer	mo1 shi2 tou5 guo4 he2	mō shí tou guò hé
 摸索	-rrr4iee	mo1 suo5	mō suo
+摸索	-rrr4oww	mo1 suo3	mō suǒ
 摸索中	-rrr4oww7ur;	mo1 suo3 zhong1	mō suǒ zhōng
 摸索了	-rrr4oww\eee	mo1 suo3 le5	mō suǒ le
 摸索出	-rrr4oww8uuu	mo1 suo3 chu1	mō suǒ chū
@@ -22702,6 +22752,7 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 放心了	[fd/1jva\eee	fang4 xin1 le5	fàng xīn le
 放心咯	[fd/1jva\eee	fang4 xin1 lo5	fàng xīn lo
 放心哦	[fd/1jva'wer	fang4 xin1 o2	fàng xīn ó
+放心地走了	[fd/1jva]eee6wwo\eee	fang4 xin1 de5 zou3 le5	fàng xīn de zǒu le
 放慢了	[fd/-fdz\eee	fang4 man4 le5	fàng màn le
 放成了	[fd/8we;\eee	fang4 cheng2 le5	fàng chéng le
 放手了	[fd/9wwo\eee	fang4 shou3 le5	fàng shǒu le
@@ -23157,6 +23208,7 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 无求了	=oiu2leu\eee	wu2 qiu2 le5	wú qiú le
 无泡沫	=oiupfdo-rew	wu2 pao4 mo4	wú pào mò
 无爱了	=oiu'fdl\eee	wu2 ai4 le5	wú ài le
+无牛捉了马耕田	=oiunleu7urr\eee-sssgrr;tlda	wu2 niu2 zhuo1 le5 ma3 geng1 tian2	wú niú zhuō le mǎ gēng tián
 无理了	=oiu\lll\eee	wu2 li3 le5	wú lǐ le
 无用了	=oiu`me/\eee	wu2 yong4 le5	wú yòng le
 无疑了	=oiuylkj\eee	wu2 yi2 le5	wú yí le
@@ -23238,6 +23290,8 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 早改了	6ssogssl\eee	zao3 gai3 le5	zǎo gǎi le
 早散了	6sso4fdz\eee	zao3 san4 le5	zǎo sàn le
 早早了	6sso6sso\eee	zao3 zao3 le5	zǎo zǎo le
+早早地溜掉了	6sso6sso]eee\jru]jdo\eee	zao3 zao3 de5 liu1 diao4 le5	zǎo zǎo de liū diào le
+早早地解决了	6sso6sso]eee3lxx3.cv\eee	zao3 zao3 de5 jie3 jue2 le5	zǎo zǎo de jiě jué le
 早晚了	6sso=osz\eee	zao3 wan3 le5	zǎo wǎn le
 早晨了	6sso8xca\eee	zao3 chen2 le5	zǎo chén le
 早有了	6ssoylwo\eee	zao3 you3 le5	zǎo yǒu le
@@ -23630,8 +23684,10 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 更坏了	gre/hudl\eee	geng4 huai4 le5	gèng huài le
 更堵了	gre/]ooo\eee	geng4 du3 le5	gèng dǔ le
 更多了	gre/]urr\eee	geng4 duo1 le5	gèng duō le
+更多地是为了	gre/]urr]eee9JKL=ucl\eee	geng4 duo1 de5 shi4 wei4 le5	gèng duō de shì wèi le
 更大了	gre/]fds\eee	geng4 da4 le5	gèng dà le
 更好了	gre/hsso\eee	geng4 hao3 le5	gèng hǎo le
+更好地体现了	gre/hsso]eeetlll1jdz\eee	geng4 hao3 de5 ti3 xian4 le5	gèng hǎo de tǐ xiàn le
 更完了	gre/=oda\eee	geng4 wan2 le5	gèng wán le
 更宽了	gre/qufa\eee	geng4 kuan1 le5	gèng kuān le
 更寂寞	gre/3jkl-rew	geng4 ji4 mo4	gèng jì mò
@@ -23874,6 +23930,7 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 有啥了	ylwo9sdf\eee	you3 sha2 le5	yǒu shá le
 有喜了	ylwo1lll\eee	you3 xi3 le5	yǒu xǐ le
 有多么	ylwo]urr-eee	you3 duo1 me5	yǒu duō me
+有多么地在乎你	ylwo]urr-eee]eee6fdlhuuunlll	you3 duo1 me5 de5 zai4 hu1 ni3	yǒu duō me de zài hū nǐ
 有多了	ylwo]urr\eee	you3 duo1 le5	yǒu duō le
 有奖了	ylwo3ls/\eee	you3 jiang3 le5	yǒu jiǎng le
 有娃了	ylwo=odf\eee	you3 wa2 le5	yǒu wá le
@@ -23903,6 +23960,7 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 有房了	ylwo[sd;\eee	you3 fang2 le5	yǒu fáng le
 有才了	ylwo5sdj\eee	you3 cai2 le5	yǒu cái le
 有效了	ylwo1jdo\eee	you3 xiao4 le5	yǒu xiào le
+有效地减轻了	ylwo1jdo]eee3lsz2jr;\eee	you3 xiao4 de5 jian3 qing1 le5	yǒu xiào de jiǎn qīng le
 有救了	ylwo3jeo\eee	you3 jiu4 le5	yǒu jiù le
 有数了	ylwo9uio\eee	you3 shu4 le5	yǒu shù le
 有斤了	ylwo3jva\eee	you3 jin1 le5	yǒu jīn le
@@ -23946,6 +24004,7 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 有这么	ylwo7rew-eee	you3 zhe4 me5	yǒu zhè me
 有那么	ylwonfds-eee	you3 na4 me5	yǒu nà me
 有钱了	ylwo2lda\eee	you3 qian2 le5	yǒu qián le
+有钱使得鬼推磨	ylwo2lda9LLL]eeegoxltuvj-rew	you3 qian2 shi3 de5 gui3 tui1 mo4	yǒu qián shǐ de guǐ tuī mò
 有钱能使鬼推磨	ylwo2ldanwe;9LLLgoxltuvj-rew	you3 qian2 neng2 shi3 gui3 tui1 mo4	yǒu qián néng shǐ guǐ tuī mò
 有错了	ylwo5uew\eee	you3 cuo4 le5	yǒu cuò le
 有问了	ylwo=ucz\eee	you3 wen4 le5	yǒu wèn le
@@ -24644,6 +24703,9 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 极了吧	3lkj\eeebddd	ji2 le5 ba5	jí le ba
 极品了	3lkjplxz\eee	ji2 pin3 le5	jí pǐn le
 极夜蛾	3lkjyjcx'wer	ji2 ye4 e2	jí yè é
+极大地丰富了	3lkj]fds]eee[rr;[uio\eee	ji2 da4 de5 feng1 fu4 le5	jí dà de fēng fù le
+极大地提高了	3lkj]fds]eeetlkjgffu\eee	ji2 da4 de5 ti2 gao1 le5	jí dà de tí gāo le
+极大地调动了	3lkj]fds]eee]jdo]ue/\eee	ji2 da4 de5 diao4 dong4 le5	jí dà de diào dòng le
 极好了	3lkjhsso\eee	ji2 hao3 le5	jí hǎo le
 极恶	3lkj'rew	ji2 e4	jí è
 极恶不赦	3lkj'rewbuio9rew	ji2 e4 bu4 she4	jí è bù shè
@@ -24815,6 +24877,7 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 栋鄂	]ue/'rew	dong4 e4	dòng è
 栋鄂部	]ue/'rewbuio	dong4 e4 bu4	dòng è bù
 树上了	9uio9fd/\eee	shu4 shang4 le5	shù shàng le
+树叶子掉下来都怕打了头	9uioyjcx6KKK]jdo1jds\sdj]rrupfds]sss\eeetweu	shu4 ye4 zi5 diao4 xia4 lai2 dou1 pa4 da3 le5 tou2	shù yè zi diào xià lái dōu pà dǎ le tóu
 树尺蛾	9uio8LLL'wer	shu4 chi3 e2	shù chǐ é
 树末	9uio-rew	shu4 mo4	shù mò
 树砍了	9uioqssz\eee	shu4 kan3 le5	shù kǎn le
@@ -25103,6 +25166,7 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 正拿了	7re/nsdf\eee	zheng4 na2 le5	zhèng ná le
 正末	7re/-rew	zheng4 mo4	zhèng mò
 正来了	7re/\sdj\eee	zheng4 lai2 le5	zhèng lái le
+正清楚地反映了	7re/2jr;8ooo]eee[sszyje/\eee	zheng4 qing1 chu3 de5 fan3 ying4 le5	zhèng qīng chǔ de fǎn yìng le
 正琢磨	7re/6oer-eee	zheng4 zuo2 mo5	zhèng zuó mo
 正确了	7re/2mcx\eee	zheng4 que4 le5	zhèng què le
 正经了	7re/3jr;\eee	zheng4 jing1 le5	zhèng jīng le
@@ -25426,6 +25490,7 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 水陌	9oxl-rew	shui3 mo4	shuǐ mò
 水饺了	9oxl3lso\eee	shui3 jiao3 le5	shuǐ jiǎo le
 永别了	`.w/blcv\eee	yong3 bie2 le5	yǒng bié le
+永远地失去了	`.w/`.sz]eee9JJJ2m,.\eee	yong3 yuan3 de5 shi1 qu4 le5	yǒng yuǎn de shī qù le
 求了吧	2leu\eeebddd	qiu2 le5 ba5	qiú le ba
 求了婚	2leu\eeehuva	qiu2 le5 hun1	qiú le hūn
 求亲了	2leu2jva\eee	qiu2 qin1 le5	qiú qīn le
@@ -25678,6 +25743,7 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 没地	-rew]jkl	mo4 di4	mò dì
 没地了	-xcj]jkl\eee	mei2 di4 le5	méi dì le
 没地里	-rew]jkl\lll	mo4 di4 li3	mò dì lǐ
+没地里的巡检	-rew]jkl\lll]eee1.ca3lsz	mo4 di4 li3 de5 xun2 jian3	mò dì lǐ de xún jiǎn
 没墨	-xcj-rew	mei2 mo4	méi mò
 没墨了	-xcj-rew\eee	mei2 mo4 le5	méi mò le
 没墨水	-xcj-rew9oxl	mei2 mo4 shui3	méi mò shuǐ
@@ -25728,6 +25794,7 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 没有么	-xcjylwo-eee	mei2 you3 me5	méi yǒu me
 没有了	-xcjylwo\eee	mei2 you3 le5	méi yǒu le
 没有什么	-xcjylwo9xca-eee	mei2 you3 shen2 me5	méi yǒu shén me
+没有什么不可能	-xcjylwo9xca-eeebuioqwwwnwe;	mei2 you3 shen2 me5 bu4 ke3 neng2	méi yǒu shén me bù kě néng
 没有哦	-xcjylwo'wer	mei2 you3 o2	méi yǒu ó
 没有喔	-xcjylwo'rrr	mei2 you3 o1	méi yǒu ō
 没有额	-xcjylwo'wer	mei2 you3 e2	méi yǒu é
@@ -26423,6 +26490,8 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 深意了	9vvayjkl\eee	shen1 yi4 le5	shēn yì le
 深挖了	9vva=uff\eee	shen1 wa1 le5	shēn wā le
 深沉了	9vva8xca\eee	shen1 chen2 le5	shēn chén le
+深深地吸了一口气	9vva9vva]eee1jjj\eeeyjklqwwo2jkl	shen1 shen1 de5 xi1 le5 yi4 kou3 qi4	shēn shēn de xī le yì kǒu qì
+深深地感染了	9vva9vva]eeegssz0ssz\eee	shen1 shen1 de5 gan3 ran3 le5	shēn shēn de gǎn rǎn le
 深爱了	9vva'fdl\eee	shen1 ai4 le5	shēn ài le
 深看了	9vvaqfdz\eee	shen1 kan4 le5	shēn kàn le
 深矉蹙頞	9vvaplca5uio'rew	shen1 pin2 cu4 e4	shēn pín cù è
@@ -26523,6 +26592,7 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 渊漠	`mfa-rew	yuan1 mo4	yuān mò
 渊默	`mfa-rew	yuan1 mo4	yuān mò
 渍墨	6JKL-rew	zi4 mo4	zì mò
+渐渐地习惯了	3jdz3jdz]eee1lkjgudz\eee	jian4 jian4 de5 xi2 guan4 le5	jiàn jiàn de xí guàn le
 渐远了	3jdz`.sz\eee	jian4 yuan3 le5	jiàn yuǎn le
 渑厄	-lsz'rew	mian3 e4	miǎn è
 渑阨	-lsz'rew	mian3 e4	miǎn è
@@ -26803,6 +26873,7 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 澡堂了	6ssotsd;\eee	zao3 tang2 le5	zǎo táng le
 激出了	3jjj8uuu\eee	ji1 chu1 le5	jī chū le
 激动了	3jjj]ue/\eee	ji1 dong4 le5	jī dòng le
+激动地哭了	3jjj]ue/]eeequuu\eee	ji1 dong4 de5 ku1 le5	jī dòng de kū le
 激励了	3jjj\jkl\eee	ji1 li4 le5	jī lì le
 激化了	3jjjhuds\eee	ji1 hua4 le5	jī huà le
 激发了	3jjj[fff\eee	ji1 fa1 le5	jī fā le
@@ -26888,6 +26959,7 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 灰心了	huvj1jva\eee	hui1 xin1 le5	huī xīn le
 灰暗了	huvj'fdz\eee	hui1 an4 le5	huī àn le
 灰末	huvj-rew	hui1 mo4	huī mò
+灰溜溜地跑了	huvj\jru\jru]eeepsso\eee	hui1 liu1 liu1 de5 pao3 le5	huī liū liū de pǎo le
 灰漠土	huvj-rewtooo	hui1 mo4 tu3	huī mò tǔ
 灰灯蛾	huvj]rr;'wer	hui1 deng1 e2	huī dēng é
 灰烬了	huvj3jcz\eee	hui1 jin4 le5	huī jìn le
@@ -27184,10 +27256,12 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 烧烤了	9ffuqsso\eee	shao1 kao3 le5	shāo kǎo le
 烧热了	9ffu0rew\eee	shao1 re4 le5	shāo rè le
 烧焦了	9ffu3jfu\eee	shao1 jiao1 le5	shāo jiāo le
+烧煳了卷子	9ffuhoiu\eee3.sz6KKK	shao1 hu2 le5 juan3 zi5	shāo hú le juǎn zi
 烧熟了	9ffu9oiu\eee	shao1 shu2 le5	shāo shú le
 烧着了	9ffu7sdu\eee	shao1 zhao2 le5	shāo zháo le
 烧糊了	9ffuhoiu\eee	shao1 hu2 le5	shāo hú le
 烧红了	9ffuhoe;\eee	shao1 hong2 le5	shāo hóng le
+烧胡了洗脸水	9ffuhoiu\eee1lll\lsz9oxl	shao1 hu2 le5 xi3 lian3 shui3	shāo hú le xǐ liǎn shuǐ
 烧菜了	9ffu5fdl\eee	shao1 cai4 le5	shāo cài le
 烧起了	9ffu2lll\eee	shao1 qi3 le5	shāo qǐ le
 烧过了	9ffuguew\eee	shao1 guo4 le5	shāo guò le
@@ -27195,6 +27269,7 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 烧透了	9ffutreo\eee	shao1 tou4 le5	shāo tòu le
 烧钱了	9ffu2lda\eee	shao1 qian2 le5	shāo qián le
 烧饭了	9ffu[fdz\eee	shao1 fan4 le5	shāo fàn le
+烧香引了鬼来	9ffu1jf;ylxz\eeegoxl\sdj	shao1 xiang1 yin3 le5 gui3 lai2	shāo xiāng yǐn le guǐ lái
 烧鹅	9ffu'wer	shao1 e2	shāo é
 烧鹅仔	9ffu'wer6ssl	shao1 e2 zai3	shāo é zǎi
 烧鹅吧	9ffu'werbddd	shao1 e2 ba5	shāo é ba
@@ -27244,6 +27319,7 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 焚烧了	[xca9ffu\eee	fen2 shao1 le5	fén shāo le
 焦了	3jfu\eee	jiao1 le5	jiāo le
 焦了吧	3jfu\eeebddd	jiao1 le5 ba5	jiāo le ba
+焦了尾巴梢子	3jfu\eee=oxlbfff9ffu6LLL	jiao1 le5 wei3 ba1 shao1 zi3	jiāo le wěi bā shāo zǐ
 焦墨	3jfu-rew	jiao1 mo4	jiāo mò
 焦头烂额	3jfutweu\fdz'wer	jiao1 tou2 lan4 e2	jiāo tóu làn é
 焦急了	3jfu3lkj\eee	jiao1 ji2 le5	jiāo jí le
@@ -27309,6 +27385,7 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 煮沸了	7ooo[vcl\eee	zhu3 fei4 le5	zhǔ fèi le
 煮烂了	7ooo\fdz\eee	zhu3 lan4 le5	zhǔ làn le
 煮熟了	7ooo9oiu\eee	zhu3 shu2 le5	zhǔ shú le
+煮熟的鸭子飞了	7ooo9oiu]eeeyjff6KKK[vvj\eee	zhu3 shu2 de5 ya1 zi5 fei1 le5	zhǔ shú de yā zi fēi le
 煮糊了	7ooohoiu\eee	zhu3 hu2 le5	zhǔ hú le
 煮老了	7ooo\sso\eee	zhu3 lao3 le5	zhǔ lǎo le
 煮软了	7ooo0osz\eee	zhu3 ruan3 le5	zhǔ ruǎn le
@@ -27680,6 +27757,10 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 狠掐了	hxxz2jff\eee	hen3 qia1 le5	hěn qiā le
 狠揍了	hxxz6reo\eee	hen3 zou4 le5	hěn zòu le
 狠毒了	hxxz]oiu\eee	hen3 du2 le5	hěn dú le
+狠狠地亲了一下	hxxzhxxz]eee2jva\eeeyjjj1jds	hen3 hen3 de5 qin1 le5 yi1 xia4	hěn hěn de qīn le yī xià
+狠狠地咬了一口	hxxzhxxz]eeeylso\eeeyjjjqwwo	hen3 hen3 de5 yao3 le5 yi1 kou3	hěn hěn de yǎo le yī kǒu
+狠狠地打击了	hxxzhxxz]eee]sss3jjj\eee	hen3 hen3 de5 da3 ji1 le5	hěn hěn de dǎ jī le
+狠狠地掐了一把	hxxzhxxz]eee2jff\eeeyjjjbsss	hen3 hen3 de5 qia1 le5 yi1 ba3	hěn hěn de qiā le yī bǎ
 狡恶	3lso'rew	jiao3 e4	jiǎo è
 狡猾了	3lsohodf\eee	jiao3 hua2 le5	jiǎo huá le
 狡辩了	3lsobjdz\eee	jiao3 bian4 le5	jiǎo biàn le
@@ -27715,6 +27796,8 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 猛亲了	-ww/2jva\eee	meng3 qin1 le5	měng qīn le
 猛吃了	-ww/8JJJ\eee	meng3 chi1 le5	měng chī le
 猛吸了	-ww/1jjj\eee	meng3 xi1 le5	měng xī le
+猛地抬起了头	-ww/]eeetsdj2lll\eeetweu	meng3 de5 tai2 qi3 le5 tou2	měng de tái qǐ le tóu
+猛地站了起来	-ww/]eee7fdz\eee2lll\sdj	meng3 de5 zhan4 le5 qi3 lai2	měng de zhàn le qǐ lái
 猛多了	-ww/]urr\eee	meng3 duo1 le5	měng duō le
 猛恶	-ww/'rew	meng3 e4	měng è
 猛拍了	-ww/pffj\eee	meng3 pai1 le5	měng pāi le
@@ -27901,6 +27984,7 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 理论了	\lll\ucz\eee	li3 lun4 le5	lǐ lùn le
 理顺了	\lll9ucz\eee	li3 shun4 le5	lǐ shùn le
 琐末	4oww-rew	suo3 mo4	suǒ mò
+琢磨	6oer-eee	zuo2 mo5	zuó mo
 琢磨下	6oer-eee1jds	zuo2 mo5 xia4	zuó mo xià
 琢磨了	6oer-eee\eee	zuo2 mo5 le5	zuó mo le
 琢磨事	6oer-eee9JKL	zuo2 mo5 shi4	zuó mo shì
@@ -28458,6 +28542,7 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 白疼了	bsdjtwe;\eee	bai2 teng2 le5	bái téng le
 白痴了	bsdj8JJJ\eee	bai2 chi1 le5	bái chī le
 白白了	bsdjbsdj\eee	bai2 bai2 le5	bái bái le
+白白地浪费了	bsdjbsdj]eee\fd/[vcl\eee	bai2 bai2 de5 lang4 fei4 le5	bái bái de làng fèi le
 白的了	bsdj]eee\eee	bai2 de5 le5	bái de le
 白皙了	bsdj1jjj\eee	bai2 xi1 le5	bái xī le
 白看了	bsdjqfdz\eee	bai2 kan4 le5	bái kàn le
@@ -29507,6 +29592,7 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 磨	-eee	mo5	mo
 磨	-rew	mo4	mò
 磨了	-wer\eee	mo2 le5	mó le
+磨了半截舌头	-wer\eeebfdz3lcv9werteei	mo2 le5 ban4 jie2 she2 tou5	mó le bàn jié shé tou
 磨了磨	-wer\eee-wer	mo2 le5 mo2	mó le mó
 磨人了	-wer0xca\eee	mo2 ren2 le5	mó rén le
 磨光了	-werguf;\eee	mo2 guang1 le5	mó guāng le
@@ -29749,6 +29835,7 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 科兹莫	qrrr6JJJ-rew	ke1 zi1 mo4	kē zī mò
 科堡鳄	qrrrbsso'rew	ke1 bao3 e4	kē bǎo è
 科学了	qrrr1.cv\eee	ke1 xue2 le5	kē xué le
+科学地总结了	qrrr1.cv]eee6ow/3lcv\eee	ke1 xue2 de5 zong3 jie2 le5	kē xué de zǒng jié le
 科普了	qrrrpooo\eee	ke1 pu3 le5	kē pǔ le
 科考了	qrrrqsso\eee	ke1 kao3 le5	kē kǎo le
 科莫多	qrrr-rew]urr	ke1 mo4 duo1	kē mò duō
@@ -30324,6 +30411,7 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 简化了	3lszhuds\eee	jian3 hua4 le5	jiǎn huà le
 简单么	3lsz]ffa-eee	jian3 dan1 me5	jiǎn dān me
 简单了	3lsz]ffa\eee	jian3 dan1 le5	jiǎn dān le
+简单地看了一下	3lsz]ffa]eeeqfdz\eeeyjjj1jds	jian3 dan1 de5 kan4 le5 yi1 xia4	jiǎn dān de kàn le yī xià
 简墨	3lsz-rew	jian3 mo4	jiǎn mò
 简墨尊俎	3lsz-rew6uva6ooo	jian3 mo4 zun1 zu3	jiǎn mò zūn zǔ
 简明扼要	3lsz-le;'rewyjdo	jian3 ming2 e4 yao4	jiǎn míng è yào
@@ -31516,6 +31604,7 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 罪恶昭著	6ucl'rew7ffu7uio	zui4 e4 zhao1 zhu4	zuì è zhāo zhù
 罪恶深重	6ucl'rew9vva7ue/	zui4 e4 shen1 zhong4	zuì è shēn zhòng
 罪恶滔天	6ucl'rewtffutjfa	zui4 e4 tao1 tian1	zuì è tāo tiān
+罪恶的黑手	6ucl'rew]eeehvvj9wwo	zui4 e4 de5 hei1 shou3	zuì è de hēi shǒu
 罪恶贯盈	6ucl'rewgudzyle;	zui4 e4 guan4 ying2	zuì è guàn yíng
 罪过了	6uclguew\eee	zui4 guo4 le5	zuì guò le
 置办了	7JKLbfdz\eee	zhi4 ban4 le5	zhì bàn le
@@ -32409,6 +32498,7 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 船翻了	8oda[ffa\eee	chuan2 fan1 le5	chuán fān le
 艒	-rew	mo4	mò
 良心了	\ld;1jva\eee	liang2 xin1 le5	liáng xīn le
+良心大大地坏了	\ld;1jva]fds]fds]eeehudl\eee	liang2 xin1 da4 da4 de5 huai4 le5	liáng xīn dà dà de huài le
 良恶性	\ld;'rew1je/	liang2 e4 xing4	liáng è xìng
 良苔蛾	\ld;tsdj'wer	liang2 tai2 e2	liáng tái é
 艰厄	3jfa'rew	jian1 e4	jiān è
@@ -32439,6 +32529,7 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 节鄂	3lcv'rew	jie2 e4	jié è
 芒锷	-sd;'rew	mang2 e4	máng è
 芙笑了	[oiu1jdo\eee	fu2 xiao4 le5	fú xiào le
+芥末	3jcx-eee	jie4 mo5	jiè mo
 芥末	3jcx-rew	jie4 mo4	jiè mò
 芥末吧	3jcx-rewbddd	jie4 mo4 ba5	jiè mò ba
 芥末味	3jcx-rew=ucl	jie4 mo4 wei4	jiè mò wèi
@@ -33289,6 +33380,7 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 葡萄了	poiutsdu\eee	pu2 tao2 le5	pú táo le
 董鄂妃	]ow/'rew[vvj	dong3 e4 fei1	dǒng è fēi
 董鄂氏	]ow/'rew9JKL	dong3 e4 shi4	dǒng è shì
+葫芦里卖的是什么药	hoiu\iii\lll-fdl]eee9JKL9xca-eeeyjdo	hu2 lu5 li3 mai4 de5 shi4 shen2 me5 yao4	hú lu lǐ mài de shì shén me yào
 葬了	6fd/\eee	zang4 le5	zàng le
 葬了吧	6fd/\eeebddd	zang4 le5 ba5	zàng le ba
 葬在了	6fd/6fdl\eee	zang4 zai4 le5	zàng zài le
@@ -34444,6 +34536,7 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 认栽了	0vcz6ffj\eee	ren4 zai1 le5	rèn zāi le
 认清了	0vcz2jr;\eee	ren4 qing1 le5	rèn qīng le
 认真了	0vcz7vva\eee	ren4 zhen1 le5	rèn zhēn le
+认真地看了一下	0vcz7vva]eeeqfdz\eeeyjjj1jds	ren4 zhen1 de5 kan4 le5 yi1 xia4	rèn zhēn de kàn le yī xià
 认知了	0vcz7JJJ\eee	ren4 zhi1 le5	rèn zhī le
 认罪了	0vcz6ucl\eee	ren4 zui4 le5	rèn zuì le
 认蛾眉	0vcz'wer-xcj	ren4 e2 mei2	rèn é méi
@@ -35331,6 +35424,7 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 败北了	bfdlbxxl\eee	bai4 bei3 le5	bài běi le
 败在了	bfdl6fdl\eee	bai4 zai4 le5	bài zài le
 败坏了	bfdlhudl\eee	bai4 huai4 le5	bài huài le
+败坏了赫德莱堡的人	bfdlhudl\eeehrew]wer\sdjpuio]eee0xca	bai4 huai4 le5 he4 de2 lai2 pu4 de5 ren2	bài huài le hè dé lái pù de rén
 败完了	bfdl=oda\eee	bai4 wan2 le5	bài wán le
 败家了	bfdl3jff\eee	bai4 jia1 le5	bài jiā le
 败殁	bfdl-rew	bai4 mo4	bài mò
@@ -35594,6 +35688,8 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 走了吗	6wwo\eee-ddd	zou3 le5 ma5	zǒu le ma
 走了吧	6wwo\eeebddd	zou3 le5 ba5	zǒu le ba
 走了呀	6wwo\eeeykdd	zou3 le5 ya5	zǒu le ya
+走了和尚走不了寺	6wwo\eeehwer9fd/6wwobuio\lso4JKL	zou3 le5 he2 shang4 zou3 bu4 liao3 si4	zǒu le hé shàng zǒu bù liǎo sì
+走了和尚走不了庙	6wwo\eeehwer9fd/6wwobuio\lso-jdo	zou3 le5 he2 shang4 zou3 bu4 liao3 miao4	zǒu le hé shàng zǒu bù liǎo miào
 走了哈	6wwo\eeehfff	zou3 le5 ha1	zǒu le hā
 走了哦	6wwo\eee'wer	zou3 le5 o2	zǒu le ó
 走了啊	6wwo\eee'ddd	zou3 le5 a5	zǒu le a
@@ -35858,6 +35954,8 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 跑了兔	psso\eeetuio	pao3 le5 tu4	pǎo le tù
 跑了吗	psso\eee-ddd	pao3 le5 ma5	pǎo le ma
 跑了吧	psso\eeebddd	pao3 le5 ba5	pǎo le ba
+跑了和尚跑不了寺	psso\eeehwer9fd/pssobuio\eee4JKL	pao3 le5 he2 shang4 pao3 bu4 le5 si4	pǎo le hé shàng pǎo bù le sì
+跑了和尚跑不了庙	psso\eeehwer9fd/pssobuio\eee-jdo	pao3 le5 he2 shang4 pao3 bu4 le5 miao4	pǎo le hé shàng pǎo bù le miào
 跑了啊	psso\eee'ddd	pao3 le5 a5	pǎo le a
 跑什么	psso9xca-eee	pao3 shen2 me5	pǎo shén me
 跑偏了	pssopjfa\eee	pao3 pian1 le5	pǎo piān le
@@ -36372,6 +36470,8 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 轻笑了	2jr;1jdo\eee	qing1 xiao4 le5	qīng xiào le
 轻薄了	2jr;bwer\eee	qing1 bo2 le5	qīng bó le
 轻视了	2jr;9JKL\eee	qing1 shi4 le5	qīng shì le
+轻轻地吻了一下	2jr;2jr;]eee=oxz\eeeyjjj1jds	qing1 qing1 de5 wen3 le5 yi1 xia4	qīng qīng de wěn le yī xià
+轻轻地摇了摇头	2jr;2jr;]eeeyldu\eeeyldutweu	qing1 qing1 de5 yao2 le5 yao2 tou2	qīng qīng de yáo le yáo tóu
 轻轻摸	2jr;2jr;-rrr	qing1 qing1 mo1	qīng qīng mō
 轻饶了	2jr;0sdu\eee	qing1 rao2 le5	qīng ráo le
 轻鳄龙	2jr;'rew\oe;	qing1 e4 long2	qīng è lóng
@@ -36523,6 +36623,7 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 过了头	guew\eeetweu	guo4 le5 tou2	guò le tóu
 过了头地	guew\eeetweu]eee	guo4 le5 tou2 de5	guò le tóu de
 过了年	guew\eeenlda	guo4 le5 nian2	guò le nián
+过了庙不下雨	guew\eee-jdobuio1jds`...	guo4 le5 miao4 bu4 xia4 yu3	guò le miào bù xià yǔ
 过了度	guew\eee]uio	guo4 le5 du4	guò le dù
 过了时	guew\eee9LKJ	guo4 le5 shi2	guò le shí
 过了期	guew\eee2jjj	guo4 le5 qi1	guò le qī
@@ -36535,6 +36636,8 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 过了线	guew\eee1jdz	guo4 le5 xian4	guò le xiàn
 过了节	guew\eee3lcv	guo4 le5 jie2	guò le jié
 过了要	guew\eeeyjdo	guo4 le5 yao4	guò le yào
+过了这个村就没这个店	guew\eee7rewgeee5uva3jeo-xcj7rewgeee]jdz	guo4 le5 zhe4 ge5 cun1 jiu4 mei2 zhe4 ge5 dian4	guò le zhè ge cūn jiù méi zhè ge diàn
+过了这村没这店	guew\eee7rew5uva-xcj7rew]jdz	guo4 le5 zhe4 cun1 mei2 zhe4 dian4	guò le zhè cūn méi zhè diàn
 过了门	guew\eee-xca	guo4 le5 men2	guò le mén
 过人了	guew0xca\eee	guo4 ren2 le5	guò rén le
 过亿了	guewyjkl\eee	guo4 yi4 le5	guò yì le
@@ -37061,6 +37164,7 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 这么搞	7rew-eeegsso	zhe4 me5 gao3	zhè me gǎo
 这么摆	7rew-eeebssl	zhe4 me5 bai3	zhè me bǎi
 这么整	7rew-eee7ww/	zhe4 me5 zheng3	zhè me zhěng
+这么方便地	7rew-eee[ff;bjdz]eee	zhe4 me5 fang1 bian4 de5	zhè me fāng biàn de
 这么早	7rew-eee6sso	zhe4 me5 zao3	zhè me zǎo
 这么晚	7rew-eee=osz	zhe4 me5 wan3	zhè me wǎn
 这么暗	7rew-eee'fdz	zhe4 me5 an4	zhè me àn
@@ -37114,6 +37218,7 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 这么老	7rew-eee\sso	zhe4 me5 lao3	zhè me lǎo
 这么聊	7rew-eee\ldu	zhe4 me5 liao2	zhè me liáo
 这么胖	7rew-eeepfd/	zhe4 me5 pang4	zhè me pàng
+这么自由地	7rew-eee6JKLyleu]eee	zhe4 me5 zi4 you2 de5	zhè me zì yóu de
 这么臭	7rew-eee8reo	zhe4 me5 chou4	zhè me chòu
 这么色	7rew-eee4rew	zhe4 me5 se4	zhè me sè
 这么苦	7rew-eeeqooo	zhe4 me5 ku3	zhè me kǔ
@@ -38091,6 +38196,7 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 都交了	]rru3jfu\eee	dou1 jiao1 le5	dōu jiāo le
 都亮了	]rru\jd/\eee	dou1 liang4 le5	dōu liàng le
 都什么	]rru9xca-eee	dou1 shen2 me5	dōu shén me
+都什么年代了	]rru9xca-eeenlda]fdl\eee	dou1 shen2 me5 nian2 dai4 le5	dōu shén me nián dài le
 都付了	]rru[uio\eee	dou1 fu4 le5	dōu fù le
 都会了	]rruhucl\eee	dou1 hui4 le5	dōu huì le
 都伤了	]rru9ff;\eee	dou1 shang1 le5	dōu shāng le
@@ -39257,6 +39363,7 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 长锈了	7ss/1jeo\eee	zhang3 xiu4 le5	zhǎng xiù le
 长错了	7ss/5uew\eee	zhang3 cuo4 le5	zhǎng cuò le
 长长了	7ss/8sd;\eee	zhang3 chang2 le5	zhǎng cháng le
+长长地舒了口气	8sd;8sd;]eee9uuu\eeeqwwo2jkl	chang2 chang2 de5 shu1 le5 kou3 qi4	cháng cháng de shū le kǒu qì
 长陌	8sd;-rew	chang2 mo4	cháng mò
 长青了	8sd;2jr;\eee	chang2 qing1 le5	cháng qīng le
 长额虾	8sd;'wer1jff	chang2 e2 xia1	cháng é xiā
@@ -39948,6 +40055,7 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 雪藏了	1.xx5sd;\eee	xue3 cang2 le5	xuě cáng le
 零余额	\le;`.,m'wer	ling2 yu2 e2	líng yú é
 零售额	\le;9reo'wer	ling2 shou4 e2	líng shòu é
+零支了米麦无重数	\le;7JJJ\eee-lll-fdl=oiu8oe;9uio	ling2 zhi1 le5 mi3 mai4 wu2 chong2 shu4	líng zhī le mǐ mài wú chóng shù
 零点了	\le;]lsz\eee	ling2 dian3 le5	líng diǎn le
 零饥饿	\le;3jjj'rew	ling2 ji1 e4	líng jī è
 雷了吧	\xcj\eeebddd	lei2 le5 ba5	léi le ba
@@ -40957,6 +41065,7 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 高保额	gffubsso'wer	gao1 bao3 e2	gāo bǎo é
 高傲了	gffu'fdo\eee	gao1 ao4 le5	gāo ào le
 高兴了	gffu1je/\eee	gao1 xing4 le5	gāo xìng le
+高兴地走了	gffu1je/]eee6wwo\eee	gao1 xing4 de5 zou3 le5	gāo xìng de zǒu le
 高冷了	gffu\ww/\eee	gao1 leng3 le5	gāo lěng le
 高出了	gffu8uuu\eee	gao1 chu1 le5	gāo chū le
 高分了	gffu[vva\eee	gao1 fen1 le5	gāo fēn le
@@ -40982,6 +41091,7 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 高罢了	gffubfds\eee	gao1 ba4 le5	gāo bà le
 高考了	gffuqsso\eee	gao1 kao3 le5	gāo kǎo le
 高调了	gffu]jdo\eee	gao1 diao4 le5	gāo diào le
+高质量地完成了	gffu7JKL\jd/]eee=oda8we;\eee	gao1 zhi4 liang4 de5 wan2 cheng2 le5	gāo zhì liàng de wán chéng le
 高贵了	gffugucl\eee	gao1 gui4 le5	gāo guì le
 高超了	gffu8ffu\eee	gao1 chao1 le5	gāo chāo le
 高达了	gffu]sdf\eee	gao1 da2 le5	gāo dá le
@@ -41592,9 +41702,14 @@ text	source_full_code	numeric_pinyin	marked_pinyin
 默默听	-rew-rewtjr;	mo4 mo4 ting1	mò mò tīng
 默默地	-rew-rew]eee	mo4 mo4 de5	mò mò de
 默默地想	-rew-rew]eee1ls/	mo4 mo4 de5 xiang3	mò mò de xiǎng
+默默地承受	-rew-rew]eee8we;9reo	mo4 mo4 de5 cheng2 shou4	mò mò de chéng shòu
+默默地流下了眼泪	-rew-rew]eee\leu1jds\eeeylsz\vcl	mo4 mo4 de5 liu2 xia4 le5 yan3 lei4	mò mò de liú xià le yǎn lèi
+默默地看着	-rew-rew]eeeqfdz7eee	mo4 mo4 de5 kan4 zhe5	mò mò de kàn zhe
+默默地离去	-rew-rew]eee\lkj2m,.	mo4 mo4 de5 li2 qu4	mò mò de lí qù
 默默数	-rew-rew9uio	mo4 mo4 shu4	mò mò shù
 默默无言	-rew-rew=oiuylda	mo4 mo4 wu2 yan2	mò mò wú yán
 默默无闻	-rew-rew=oiu=oca	mo4 mo4 wu2 wen2	mò mò wú wén
+默默无闻地奉献	-rew-rew=oiu=oca]eee[re/1jdz	mo4 mo4 wu2 wen2 de5 feng4 xian4	mò mò wú wén de fèng xiàn
 默默然	-rew-rew0sda	mo4 mo4 ran2	mò mò rán
 默默爱	-rew-rew'fdl	mo4 mo4 ai4	mò mò ài
 默默的	-rew-rew]eee	mo4 mo4 de5	mò mò de

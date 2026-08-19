@@ -351,8 +351,10 @@ if (-not [bool]$pscPeripheral.summary.passed -or
     [int64]$pscPeripheral.summary.source_record_count -ne 315 -or
     [int64]$pscPeripheral.summary.neutral_tone_record_count -ne 183 -or
     [int64]$pscPeripheral.summary.erhua_record_count -ne 132 -or
-    [int64]$pscPeripheral.summary.runtime_rows_per_mode -ne 315 -or
-    [int64]$pscPeripheral.summary.sentence_rows_per_mode -ne 315 -or
+    [int64]$pscPeripheral.summary.encoded_record_count -ne 103 -or
+    [int64]$pscPeripheral.summary.already_in_core_record_count -ne 212 -or
+    [int64]$pscPeripheral.summary.runtime_rows_per_mode -ne 103 -or
+    [int64]$pscPeripheral.summary.sentence_rows_per_mode -ne 103 -or
     [int64]$pscPeripheral.summary.fixed_peripheral_weight -ne 1) {
     throw 'PSC pronunciation peripheral manifest did not pass its completeness gates.'
 }

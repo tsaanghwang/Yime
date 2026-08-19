@@ -34,7 +34,7 @@ func TestParticleAStage6AAuditIsCompleteAndReadOnly(t *testing.T) {
 	if len(result.Summary.ClassCounts) != 6 || result.Summary.UnresolvedCount != 0 {
 		t.Fatalf("incomplete classification: %#v", result.Summary)
 	}
-	if result.Summary.ParticleAOccurrenceCount != 6754 || result.Summary.EligibleWithHostCount != 6728 || result.Summary.InitialNoHostCount != 20 || result.Summary.MedialWithHostCount != 71 || result.Summary.FinalWithHostCount != 6657 || result.Summary.NonA5WithHostCount != 6 {
+	if result.Summary.ParticleAOccurrenceCount != 6755 || result.Summary.EligibleWithHostCount != 6728 || result.Summary.InitialNoHostCount != 21 || result.Summary.MedialWithHostCount != 71 || result.Summary.FinalWithHostCount != 6657 || result.Summary.NonA5WithHostCount != 6 {
 		t.Fatalf("position policy inventory changed: %#v", result.Summary)
 	}
 	for path, want := range before {

@@ -13,8 +13,8 @@ import (
 )
 
 const (
-	curatedCoreEntryCount = 1166300
-	curatedCoreTextCount  = 1151400
+	curatedCoreEntryCount = 1167501
+	curatedCoreTextCount  = 1152157
 	encodedCharacterCount = 46095
 )
 
@@ -126,9 +126,9 @@ func TestCuratedCoreEvidenceAndThreeModeDerivationAreLocked(t *testing.T) {
 		t.Fatalf("invalid ranking evidence: %#v", source)
 	}
 	if source.CharacterCoverage.DistinctCharacters != encodedCharacterCount ||
-		source.CharacterCoverage.RuntimeMappingEntries != 60995 ||
+		source.CharacterCoverage.RuntimeMappingEntries != 61010 ||
 		source.CharacterCoverage.CoreDistinctCharacters != 14000 ||
-		source.CharacterCoverage.CoreReadingEntries != 21740 ||
+		source.CharacterCoverage.CoreReadingEntries != 21755 ||
 		source.CharacterCoverage.PeripheralDistinctCharacters != 32095 ||
 		source.CharacterCoverage.PeripheralReadingEntries != 39255 ||
 		source.CharacterCoverage.MinimumCoreWeight <=
@@ -205,7 +205,7 @@ func TestAllModeDictionariesMaterializeEveryEncodedSingleCharacter(
 		}
 		if entryCount != curatedCoreEntryCount ||
 			len(singleCharacters) != encodedCharacterCount ||
-			singleMappings != 60995 {
+			singleMappings != 61010 {
 			t.Fatalf(
 				"%s encoded-character runtime incomplete: entries=%d characters=%d mappings=%d",
 				mode,
@@ -230,7 +230,7 @@ func TestAllCoreModesConnectLearningCustomPhrasesAndSentenceComposition(
 		content := string(data)
 		checks := []string{
 			"dictionary: yime_sentence_" + mode,
-			"user_dict: yime_" + mode + "_core_1166300_",
+			"user_dict: yime_" + mode + "_core_1167501_",
 			"user_dict: custom_phrase_" + mode,
 			"enable_user_dict: true",
 			"enable_sentence: true",

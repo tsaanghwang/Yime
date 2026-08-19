@@ -243,7 +243,7 @@ func TestApplyRegeneratesLockedArtifactSet(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !strings.Contains(string(schema), "user_dict: yime_full_core_1166300_layout_") || !strings.Contains(string(schema), "_rank_v1") {
+	if !strings.Contains(string(schema), "user_dict: yime_full_core_1167501_layout_") || !strings.Contains(string(schema), "_rank_v1") {
 		t.Fatalf("schema:\n%s", schema)
 	}
 }

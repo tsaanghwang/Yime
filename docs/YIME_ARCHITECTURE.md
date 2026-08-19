@@ -579,9 +579,9 @@ Weasel、本机目录或 Plum 临时补齐；缺件时直接失败。
 | 文件 | 格式 | 说明 |
 |------|------|------|
 | `default.custom.yaml` | YAML | 用户方案选择 + page_size 覆盖 |
-| `yime_variable_core_1166300_layout_58f69f370aea_rank_v1.userdb/` | LevelDB | 变长模式排序和整句学习数据 |
-| `yime_full_core_1166300_layout_58f69f370aea_rank_v1.userdb/` | LevelDB | 等长模式排序和整句学习数据 |
-| `yime_shorthand_core_1166300_layout_58f69f370aea_rank_v1.userdb/` | LevelDB | 省键模式排序和整句学习数据 |
+| `yime_variable_core_1167501_layout_58f69f370aea_rank_v1.userdb/` | LevelDB | 变长模式排序和整句学习数据 |
+| `yime_full_core_1167501_layout_58f69f370aea_rank_v1.userdb/` | LevelDB | 等长模式排序和整句学习数据 |
+| `yime_shorthand_core_1167501_layout_58f69f370aea_rank_v1.userdb/` | LevelDB | 省键模式排序和整句学习数据 |
 | `yime_variable.custom.yaml` | YAML | 变长方案自定义（如 page_size） |
 | `yime_full.custom.yaml` | YAML | 等长方案自定义 |
 | `yime_shorthand.custom.yaml` | YAML | 省键方案自定义 |

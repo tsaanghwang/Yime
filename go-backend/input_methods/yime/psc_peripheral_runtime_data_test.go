@@ -33,10 +33,10 @@ func TestBundledPSCPeripheralIsCompleteLowFrequencyAndThreeMode(t *testing.T) {
 		manifest.Summary.SourceRecordCount != 315 ||
 		manifest.Summary.NeutralToneRecordCount != 183 ||
 		manifest.Summary.ErhuaRecordCount != 132 ||
-		manifest.Summary.EncodedRecordCount != 315 ||
-		manifest.Summary.AlreadyInCoreRecordCount != 0 ||
-		manifest.Summary.RuntimeRowsPerMode != 315 ||
-		manifest.Summary.SentenceRowsPerMode != 315 ||
+		manifest.Summary.EncodedRecordCount != 103 ||
+		manifest.Summary.AlreadyInCoreRecordCount != 212 ||
+		manifest.Summary.RuntimeRowsPerMode != 103 ||
+		manifest.Summary.SentenceRowsPerMode != 103 ||
 		manifest.Summary.FixedPeripheralWeight != 1 ||
 		!manifest.Summary.Passed {
 		t.Fatalf("unexpected PSC peripheral manifest: %#v", manifest)
@@ -82,8 +82,8 @@ func TestBundledPSCPeripheralIsCompleteLowFrequencyAndThreeMode(t *testing.T) {
 		if err := file.Close(); err != nil {
 			t.Fatal(err)
 		}
-		if rows != 315 {
-			t.Fatalf("%s rows=%d, want 315", name, rows)
+		if rows != 103 {
+			t.Fatalf("%s rows=%d, want 103", name, rows)
 		}
 
 		sentenceName := "yime_psc_peripheral_sentence_" + mode + ".dict.yaml"
@@ -95,7 +95,7 @@ func TestBundledPSCPeripheralIsCompleteLowFrequencyAndThreeMode(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if !strings.Contains(string(sentenceData), "大婶儿\t]fds 9xz 'I\t1") && mode == "variable" {
+		if !strings.Contains(string(sentenceData), "个头儿\tgrew tweu 'I\t1") && mode == "variable" {
 			t.Fatalf("%s does not retain PSC syllable boundaries", sentenceName)
 		}
 

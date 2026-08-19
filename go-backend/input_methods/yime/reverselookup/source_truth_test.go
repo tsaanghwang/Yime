@@ -137,8 +137,8 @@ func TestCheckedInSourceTruthPreservesKnownMergedPinyin(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(lookup) != 41849 {
-		t.Fatalf("source truth keys = %d, want 41849", len(lookup))
+	if len(lookup) != 41964 {
+		t.Fatalf("source truth keys = %d, want 41964", len(lookup))
 	}
 	checks := []struct {
 		text string

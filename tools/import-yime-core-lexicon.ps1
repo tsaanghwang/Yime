@@ -14,6 +14,26 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+
+function Replace-ExactlyOnce {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Content,
+        [Parameter(Mandatory = $true)]
+        [string]$Pattern,
+        [Parameter(Mandatory = $true)]
+        [string]$Replacement,
+        [Parameter(Mandatory = $true)]
+        [string]$Label
+    )
+
+    $matches = [regex]::Matches($Content, $Pattern)
+    if ($matches.Count -ne 1) {
+        throw "$Label must match exactly once; found $($matches.Count)."
+    }
+    return [regex]::Replace($Content, $Pattern, $Replacement, 1)
+}
+
 $root = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot "..")).Path
 $goBackend = Join-Path $root "go-backend"
 $resolvedInputPath = (Resolve-Path -LiteralPath $InputPath).Path
@@ -168,6 +188,54 @@ if ([int64]$generated.entry_count -ne [int64]$evidence.total_reading_entries) {
 }
 
 $counts = $evidence.ranking_evidence.distinct_texts_by_source
+$runtimeEntryCount = [int64]$evidence.total_reading_entries
+$runtimeDistinctTexts = [int64]$evidence.total_distinct_texts
+foreach ($mode in @("full", "variable", "shorthand")) {
+    $schemaPath = Join-Path $outputPath "yime_$mode.schema.yaml"
+    if (-not (Test-Path -LiteralPath $schemaPath)) {
+        continue
+    }
+    $schemaText = Get-Content -LiteralPath $schemaPath -Raw -Encoding UTF8
+    $schemaText = Replace-ExactlyOnce `
+        -Content $schemaText `
+        -Pattern 'core-[0-9]+' `
+        -Replacement "core-$runtimeEntryCount" `
+        -Label "yime_$mode schema version core namespace"
+    $schemaText = Replace-ExactlyOnce `
+        -Content $schemaText `
+        -Pattern 'core_[0-9]+' `
+        -Replacement "core_$runtimeEntryCount" `
+        -Label "yime_$mode user dictionary core namespace"
+    [IO.File]::WriteAllText(
+        $schemaPath,
+        $schemaText,
+        [Text.UTF8Encoding]::new($false)
+    )
+}
+
+$runtimeProfilePath = Join-Path $outputPath "yime_runtime_profile.json"
+if (Test-Path -LiteralPath $runtimeProfilePath) {
+    $runtimeProfileText = Get-Content -LiteralPath $runtimeProfilePath -Raw -Encoding UTF8
+    foreach ($replacement in @(
+        @('(?m)("entry_count_per_mode"\s*:\s*)[0-9]+', ('${1}' + $runtimeEntryCount), 'runtime profile entry count'),
+        @('(?m)("distinct_core_texts"\s*:\s*)[0-9]+', ('${1}' + $runtimeDistinctTexts), 'runtime profile distinct text count'),
+        @('(?m)("direct_bcc"\s*:\s*)[0-9]+', ('${1}' + [int64]$counts.direct_bcc), 'runtime profile direct BCC count'),
+        @('(?m)("provisional_rime_lmdg"\s*:\s*)[0-9]+', ('${1}' + [int64]$counts.provisional_rime_lmdg), 'runtime profile Rime LMDG count'),
+        @('(?m)("provisional_structural_floor"\s*:\s*)[0-9]+', ('${1}' + [int64]$counts.provisional_structural_floor), 'runtime profile structural floor count')
+    )) {
+        $runtimeProfileText = Replace-ExactlyOnce `
+            -Content $runtimeProfileText `
+            -Pattern $replacement[0] `
+            -Replacement $replacement[1] `
+            -Label $replacement[2]
+    }
+    [IO.File]::WriteAllText(
+        $runtimeProfilePath,
+        $runtimeProfileText,
+        [Text.UTF8Encoding]::new($false)
+    )
+}
+
 $reverseSourcePath = Join-Path $outputPath "yime_pinyin_reverse_source.tsv"
 $reverseSourceHash = (Get-FileHash -LiteralPath $reverseSourcePath -Algorithm SHA256).Hash.ToLowerInvariant()
 $reverseSourceRows = [Math]::Max(0, (Get-Content -LiteralPath $reverseSourcePath -Encoding UTF8).Count - 1)
