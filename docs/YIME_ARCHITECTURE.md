@@ -518,7 +518,7 @@ Windows 默认运行交接
     ├── build_two_level_runtime_trial.py
     ├── runtime_lexicon_filter_policy.json
     ├── dynamic_candidate_coverage_policy.json（构建时强制 R0–R5 完成门禁）
-    ├── two_level_full.dict.yaml（1,167,057 条运行映射）
+    ├── two_level_full.dict.yaml（1,166,753 条运行映射）
     └── dictionary.manifest.json（来源、筛选、排序证据与输出 SHA-256）
           │
           └── import-yime-core-lexicon.ps1
@@ -555,7 +555,7 @@ Weasel、本机目录或 Plum 临时补齐；缺件时直接失败。
 |------|------|------|
 | `default.yaml` | Rime 配置 | 基础 schema_list、page_size、按键绑定、标点 |
 | `yime_variable/full/shorthand.schema.yaml` | 三模式 Rime 方案 | 动态组句、整句学习、模式专属 userdb 和自定义词 |
-| `yime_variable/full/shorthand.dict.yaml` | 三模式系统词典 | 同一1,167,057条运行映射的三种编码投影，含全部46,095个已编码单字 |
+| `yime_variable/full/shorthand.dict.yaml` | 三模式系统词典 | 同一1,166,753条运行映射的三种编码投影，含全部46,095个已编码单字 |
 | `yime_core_source_manifest.json` | 来源证据 | 原型修订、输入/筛选哈希和三类排序证据计数 |
 | `yime_lexicon_manifest.json` | 派生清单 | 转换规则、条目数和三模式输出哈希 |
 | `yime_runtime_profile.json` | 发布配置 | 默认方案、三模式文件和四层候选链 |
@@ -579,9 +579,9 @@ Weasel、本机目录或 Plum 临时补齐；缺件时直接失败。
 | 文件 | 格式 | 说明 |
 |------|------|------|
 | `default.custom.yaml` | YAML | 用户方案选择 + page_size 覆盖 |
-| `yime_variable_core_1167501_layout_58f69f370aea_rank_v1.userdb/` | LevelDB | 变长模式排序和整句学习数据 |
-| `yime_full_core_1167501_layout_58f69f370aea_rank_v1.userdb/` | LevelDB | 等长模式排序和整句学习数据 |
-| `yime_shorthand_core_1167501_layout_58f69f370aea_rank_v1.userdb/` | LevelDB | 省键模式排序和整句学习数据 |
+| `yime_variable_core_7edf12291392_layout_58f69f370aea_rank_v1.userdb/` | LevelDB | 变长模式排序和整句学习数据 |
+| `yime_full_core_7edf12291392_layout_58f69f370aea_rank_v1.userdb/` | LevelDB | 等长模式排序和整句学习数据 |
+| `yime_shorthand_core_7edf12291392_layout_58f69f370aea_rank_v1.userdb/` | LevelDB | 省键模式排序和整句学习数据 |
 | `yime_variable.custom.yaml` | YAML | 变长方案自定义（如 page_size） |
 | `yime_full.custom.yaml` | YAML | 等长方案自定义 |
 | `yime_shorthand.custom.yaml` | YAML | 省键方案自定义 |
@@ -594,6 +594,8 @@ Weasel、本机目录或 Plum 临时补齐；缺件时直接失败。
 | `yime_blocklist.txt` | 文本 | 用户屏蔽词表源文件 |
 | `build/` | 目录 | Rime 编译缓存 |
 
+`core_<摘要>` 取自 `yime_core_source_manifest.json` 中核心词典 SHA-256 的前 12 位；条目数只作为
+manifest 校验值，不再充当版本身份。这样即使两个核心恰有相同条目数，也不会误用同一份学习库。
 升级时会把可映射的历史学习记录迁移到新的核心命名空间；核心中不存在的历史候选会被过滤。旧的
 过渡方案选择改写为 `yime_variable`，对应生成文件和编译缓存随后删除。冷启动测试仍需备份并
 清空整个用户数据目录，不能只删除其中一份词典文件。
@@ -726,7 +728,7 @@ go test ./input_methods/yime/ -run TestReal -v -count=1
 `TestRealRimeAllSchemasComposeSentence` 对三种模式执行同一条真实 librime 组句验收。
 
 早期 202,290、全量 pypinyin、A/B 和 B-lite 容量档仍保留为离线研究记录，但已经退出默认运行
-基线。当前发布档为两级筛选后的1,167,057条运行映射。验收必须区分三类证据：
+基线。当前发布档为两级筛选后的1,166,753条运行映射。验收必须区分三类证据：
 
 | 证据 | 当前结果 | 能证明什么 |
 |------|----------|------------|

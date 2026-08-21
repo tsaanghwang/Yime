@@ -14,6 +14,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/runtimeidentity"
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/systemlexicon"
 )
 
@@ -25,9 +26,7 @@ type Plan struct {
 	DictionaryEntries int      `json:"dictionary_entries"`
 }
 
-var generatedFiles = []string{ProfileFileName, "yime_pinyin_codes.tsv", "yime_full.dict.yaml", "yime_variable.dict.yaml", "yime_shorthand.dict.yaml", "yime_lexicon_manifest.json", "yime_full.schema.yaml", "yime_variable.schema.yaml", "yime_shorthand.schema.yaml"}
-
-const runtimeCoreUserDBNamespace = "core_1167501"
+var generatedFiles = []string{ProfileFileName, "yime_pinyin_codes.tsv", "yime_full.dict.yaml", "yime_variable.dict.yaml", "yime_shorthand.dict.yaml", "yime_lexicon_manifest.json", runtimeidentity.SourceManifestFileName, "yime_full.schema.yaml", "yime_variable.schema.yaml", "yime_shorthand.schema.yaml"}
 
 func Preview(dataDir string, target Profile) (Plan, error) {
 	source, err := LoadProfile(filepath.Join(dataDir, ProfileFileName))
@@ -90,6 +89,17 @@ func Apply(dataDir string, target Profile) (Plan, error) {
 		return Plan{}, err
 	}
 	defer os.RemoveAll(stage)
+	identity, err := runtimeidentity.Load(dataDir)
+	if err != nil {
+		return Plan{}, err
+	}
+	identityPayload, err := os.ReadFile(filepath.Join(dataDir, runtimeidentity.SourceManifestFileName))
+	if err != nil {
+		return Plan{}, err
+	}
+	if err := os.WriteFile(filepath.Join(stage, runtimeidentity.SourceManifestFileName), identityPayload, 0o644); err != nil {
+		return Plan{}, err
+	}
 	if err := writeCodeMap(filepath.Join(dataDir, "yime_pinyin_codes.tsv"), filepath.Join(stage, "yime_pinyin_codes.tsv"), codec); err != nil {
 		return Plan{}, err
 	}
@@ -123,7 +133,7 @@ func Apply(dataDir string, target Profile) (Plan, error) {
 		if err != nil {
 			return Plan{}, err
 		}
-		updated, err := updateSchema(data, mode, target.Alphabet(), plan.TargetDigest[:12])
+		updated, err := updateSchema(data, mode, target.Alphabet(), plan.TargetDigest[:12], identity.UserDBNamespace())
 		if err != nil {
 			return Plan{}, err
 		}
@@ -245,7 +255,7 @@ func buildDictionaries(entries []systemlexicon.Entry, codec *Codec, version stri
 	return outputs, nil
 }
 
-func updateSchema(data []byte, mode, alphabet, digest string) ([]byte, error) {
+func updateSchema(data []byte, mode, alphabet, digest, coreNamespace string) ([]byte, error) {
 	lines := strings.Split(strings.ReplaceAll(string(data), "\r\n", "\n"), "\n")
 	section := ""
 	seenVersion, seenAlphabet, seenUser := false, false, false
@@ -263,7 +273,7 @@ func updateSchema(data []byte, mode, alphabet, digest string) ([]byte, error) {
 			seenAlphabet = true
 		case section == "translator" && strings.HasPrefix(trim, "user_dict:") && !seenUser:
 			lines[i] = "  user_dict: yime_" + mode + "_" +
-				runtimeCoreUserDBNamespace + "_layout_" + digest + "_rank_v1"
+				coreNamespace + "_layout_" + digest + "_rank_v1"
 			seenUser = true
 		}
 	}

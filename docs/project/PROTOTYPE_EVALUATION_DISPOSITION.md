@@ -20,6 +20,6 @@ Phase 4 不迁移 Python 输入法运行壳，而是把仍有产品价值的评�
 .\tools\evaluation\run.ps1 -Python C:\path\to\python.exe
 ```
 
-报告必须包含锁 ID、1,167,501 条身份、源词典/selection 哈希和布局投影摘要。当前 Windows 包内拼音码表有 1,733 个音节；正式分解清单中尚未进入该批准码表的 `guai2`、`kuai1`、`ra4`、`tin4` 会被显式排除，不能偷偷并入效率基线。
+报告必须包含锁 ID、1,166,753 条身份、源词典/selection 哈希和布局投影摘要。当前 Windows 包内拼音码表有 1,733 个音节；正式分解清单中尚未进入该批准码表的 `guai2`、`kuai1`、`ra4`、`tin4` 会被显式排除，不能偷偷并入效率基线。
 
 布局候选正式采用时，仍只能人工审查后修改 `internal_data/manual_key_layout.json`，再运行布局锁、单仓交接重放、Go/Rime 和安装包门禁。候选 patch 本身不是新真源。

@@ -10,6 +10,8 @@ param(
     [string]$PrebuiltReverseSource = "",
     [string]$PreviousCoreSourceManifest = "",
     [string]$ApprovedTargetLock = "",
+    [string]$SourceDictionaryName = "",
+    [string]$GeneratedAt = "",
     [string]$OutputDir = "",
     [switch]$DeployToUserDir
 )
@@ -111,6 +113,18 @@ else {
     $pronunciationEntriesHash = (Get-FileHash -LiteralPath $resolvedPronunciationEntries -Algorithm SHA256).Hash.ToLowerInvariant()
 }
 
+$logicalSourceDictionary = $SourceDictionaryName
+if ([string]::IsNullOrWhiteSpace($logicalSourceDictionary) -and
+    $previousCoreSource -and $previousCoreSource.source_dictionary) {
+    $logicalSourceDictionary = [string]$previousCoreSource.source_dictionary
+}
+if ([string]::IsNullOrWhiteSpace($logicalSourceDictionary)) {
+    $logicalSourceDictionary = [IO.Path]::GetFileName($resolvedInputPath)
+}
+if ([IO.Path]::GetFileName($logicalSourceDictionary) -ne $logicalSourceDictionary) {
+    throw "SourceDictionaryName must be a file name without a directory."
+}
+
 if (-not $evidence.ranking_evidence.policy_id) {
     throw "Core evidence manifest has no ranking policy."
 }
@@ -140,6 +154,28 @@ if (-not $OutputDir) {
 }
 New-Item -ItemType Directory -Force -Path $OutputDir | Out-Null
 $outputPath = (Resolve-Path -LiteralPath $OutputDir).Path
+$logicalGeneratedAt = $GeneratedAt
+if ([string]::IsNullOrWhiteSpace($logicalGeneratedAt)) {
+    foreach ($candidateManifestPath in @(
+        (Join-Path $outputPath "yime_lexicon_manifest.json"),
+        (Join-Path $goBackend "input_methods\yime\data\yime_lexicon_manifest.json")
+    )) {
+        if (-not (Test-Path -LiteralPath $candidateManifestPath)) {
+            continue
+        }
+        $candidateManifestText = Get-Content -LiteralPath $candidateManifestPath -Raw -Encoding UTF8
+        $candidateManifest = $candidateManifestText | ConvertFrom-Json
+        $generatedAtMatch = [regex]::Match(
+            $candidateManifestText,
+            '(?m)"generated_at"\s*:\s*"([^"]+)"'
+        )
+        if ([string]$candidateManifest.source_sha256 -eq $sourceHash -and
+            $generatedAtMatch.Success) {
+            $logicalGeneratedAt = $generatedAtMatch.Groups[1].Value
+            break
+        }
+    }
+}
 $reverseCodeMapPath = Join-Path $outputPath "yime_pinyin_codes.tsv"
 if (-not (Test-Path -LiteralPath $reverseCodeMapPath)) {
     $canonicalReverseCodeMapPath = Join-Path $goBackend "input_methods\yime\data\yime_pinyin_codes.tsv"
@@ -163,8 +199,12 @@ try {
         throw "Yime core derivation failed with exit code $LASTEXITCODE"
     }
     if ($usingPrebuiltReverseSource) {
-        Copy-Item -LiteralPath $resolvedPrebuiltReverseSource `
-            -Destination (Join-Path $outputPath "yime_pinyin_reverse_source.tsv") -Force
+        $reverseDestination = Join-Path $outputPath "yime_pinyin_reverse_source.tsv"
+        if ([IO.Path]::GetFullPath($resolvedPrebuiltReverseSource) -ne
+            [IO.Path]::GetFullPath($reverseDestination)) {
+            Copy-Item -LiteralPath $resolvedPrebuiltReverseSource `
+                -Destination $reverseDestination -Force
+        }
     }
     else {
         go run ./cmd/yime-reverse-pinyin-derive `
@@ -214,6 +254,24 @@ finally {
 }
 
 $generatedManifestPath = Join-Path $outputPath "yime_lexicon_manifest.json"
+$generatedManifestText = Get-Content -LiteralPath $generatedManifestPath -Raw -Encoding UTF8
+$generatedManifestText = Replace-ExactlyOnce `
+    -Content $generatedManifestText `
+    -Pattern '(?m)("source_file"\s*:\s*)"[^"]+"' `
+    -Replacement ('${1}"' + $logicalSourceDictionary + '"') `
+    -Label "three-mode manifest logical source dictionary"
+if (-not [string]::IsNullOrWhiteSpace($logicalGeneratedAt)) {
+    $generatedManifestText = Replace-ExactlyOnce `
+        -Content $generatedManifestText `
+        -Pattern '(?m)("generated_at"\s*:\s*)"[^"]+"' `
+        -Replacement ('${1}"' + $logicalGeneratedAt + '"') `
+        -Label "three-mode manifest reproducible generation time"
+}
+[IO.File]::WriteAllText(
+    $generatedManifestPath,
+    $generatedManifestText,
+    [Text.UTF8Encoding]::new($false)
+)
 $generated = Get-Content -LiteralPath $generatedManifestPath -Raw -Encoding UTF8 |
     ConvertFrom-Json
 if ([int64]$generated.entry_count -ne [int64]$evidence.total_reading_entries) {
@@ -223,6 +281,7 @@ if ([int64]$generated.entry_count -ne [int64]$evidence.total_reading_entries) {
 $counts = $evidence.ranking_evidence.distinct_texts_by_source
 $runtimeEntryCount = [int64]$evidence.total_reading_entries
 $runtimeDistinctTexts = [int64]$evidence.total_distinct_texts
+$runtimeCoreIdentity = $sourceHash.Substring(0, 12)
 foreach ($mode in @("full", "variable", "shorthand")) {
     $schemaPath = Join-Path $outputPath "yime_$mode.schema.yaml"
     if (-not (Test-Path -LiteralPath $schemaPath)) {
@@ -231,13 +290,13 @@ foreach ($mode in @("full", "variable", "shorthand")) {
     $schemaText = Get-Content -LiteralPath $schemaPath -Raw -Encoding UTF8
     $schemaText = Replace-ExactlyOnce `
         -Content $schemaText `
-        -Pattern 'core-[0-9]+' `
-        -Replacement "core-$runtimeEntryCount" `
+        -Pattern 'core-[0-9a-f]+(?=-layout-)' `
+        -Replacement "core-$runtimeCoreIdentity" `
         -Label "yime_$mode schema version core namespace"
     $schemaText = Replace-ExactlyOnce `
         -Content $schemaText `
-        -Pattern 'core_[0-9]+' `
-        -Replacement "core_$runtimeEntryCount" `
+        -Pattern 'core_[0-9a-f]+(?=_layout_)' `
+        -Replacement "core_$runtimeCoreIdentity" `
         -Label "yime_$mode user dictionary core namespace"
     [IO.File]::WriteAllText(
         $schemaPath,
@@ -276,7 +335,7 @@ $sourceRecord = [ordered]@{
     schema_version = 1
     source_project = "Yime"
     source_revision = $SourceRevision
-    source_dictionary = [IO.Path]::GetFileName($resolvedInputPath)
+    source_dictionary = $logicalSourceDictionary
     source_dictionary_sha256 = $sourceHash
     source_selection_sha256 = [string]$evidence.selection_tsv_sha256
     pronunciation_entries = $pronunciationEntriesName
@@ -311,12 +370,7 @@ $sourceRecord = [ordered]@{
     runtime_scope = "curated_phrases_with_all_encoded_character_periphery"
     offline_tooling_scope = @("candidate_pool", "source_evidence", "regression_cases")
 }
-if ($usingApprovedTarget) {
-    $sourceRecord["approved_target_lock"] = [IO.Path]::GetFileName($resolvedTargetLock)
-    $sourceRecord["historical_source_project"] = [string]$previousCoreSource.source_project
-    $sourceRecord["historical_source_revision"] = [string]$previousCoreSource.source_revision
-}
-elseif ($usingPrebuiltReverseSource) {
+if ($usingPrebuiltReverseSource -and -not $usingApprovedTarget) {
     $sourceRecord["layout_reprojection"] = [ordered]@{
         layout_digest = [string]$evidence.layout_reprojection.layout_digest
         previous_reverse_pinyin_source_sha256 = [string]$previousCoreSource.reverse_pinyin_source_sha256

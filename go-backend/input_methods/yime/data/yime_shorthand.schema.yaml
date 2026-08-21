@@ -5,7 +5,7 @@
 schema:
   schema_id: yime_shorthand
   name: "Yime 省键模式"
-  version: "2026-08-17-core-1167501-layout-58f69f370aea-rank-v1-erhua-mixed-v4-psc-peripheral-v1-sentence-v1-third-tone-v1-alphabet-v2"
+  version: "2026-08-17-core-7edf12291392-layout-58f69f370aea-rank-v1-erhua-mixed-v4-psc-peripheral-v1-sentence-v1-third-tone-v1-alphabet-v2"
   dependencies:
     - yime_erhua_mixed_shorthand
     - yime_psc_peripheral_shorthand
@@ -40,7 +40,7 @@ speller:
 
 translator:
   dictionary: yime_sentence_shorthand
-  user_dict: yime_shorthand_core_1167501_layout_58f69f370aea_rank_v1
+  user_dict: yime_shorthand_core_7edf12291392_layout_58f69f370aea_rank_v1
   enable_user_dict: true
   enable_sentence: true
   sentence_over_completion: true

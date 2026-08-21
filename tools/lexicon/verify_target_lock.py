@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify the immutable Phase 0 Windows lexicon handoff target."""
+"""Verify the approved Windows lexicon handoff target and its artifacts."""
 
 from __future__ import annotations
 

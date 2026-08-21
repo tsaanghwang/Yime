@@ -23,7 +23,7 @@ class VerifyTargetLockTests(unittest.TestCase):
     def test_repository_target_lock_passes(self) -> None:
         report = verify()
         self.assertEqual(report["decision"], "pass")
-        self.assertEqual(report["target"]["entry_count"], 1167501)
+        self.assertEqual(report["target"]["entry_count"], 1166753)
         self.assertEqual(len(report["verified_artifacts"]), 15)
 
     def test_hash_drift_fails_before_semantic_acceptance(self) -> None:

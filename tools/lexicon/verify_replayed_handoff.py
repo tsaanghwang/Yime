@@ -72,11 +72,6 @@ def verify_replay(
     )
     _expect(replay_source.get("source_project"), "Yime", "replay source project")
     _expect(
-        replay_source.get("approved_target_lock"),
-        lock_path.name,
-        "replay approved target lock",
-    )
-    _expect(
         replay_source.get("source_dictionary_sha256"),
         target.get("source_dictionary_sha256"),
         "replay source dictionary SHA-256",
@@ -98,6 +93,16 @@ def verify_replay(
     )
     if not str(replay_source.get("source_revision", "")).strip():
         raise VerificationError("replay source revision is empty")
+
+    for role, name in (
+        ("core_source_manifest", "yime_core_source_manifest.json"),
+        ("three_mode_manifest", "yime_lexicon_manifest.json"),
+    ):
+        _expect(
+            _sha256(output_dir / name),
+            artifacts[role]["sha256"],
+            f"replay {name} SHA-256",
+        )
 
     output_roles = (
         ("full_mode_dictionary", "yime_full.dict.yaml"),

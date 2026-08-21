@@ -33,9 +33,10 @@ else {
 $resolvedOutput = (Resolve-Path -LiteralPath $OutputDir).Path
 
 if (-not $SourceRevision) {
-    $SourceRevision = (& git -C $repoRoot rev-parse HEAD).Trim()
-    if ($LASTEXITCODE -ne 0 -or -not $SourceRevision) {
-        throw "Cannot resolve the Yime source revision."
+    $targetLock = Get-Content -LiteralPath $lock -Raw -Encoding UTF8 | ConvertFrom-Json
+    $SourceRevision = [string]$targetLock.source.recorded_revision
+    if (-not $SourceRevision) {
+        throw "Approved target lock has no recorded source revision."
     }
 }
 

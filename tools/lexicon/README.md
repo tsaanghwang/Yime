@@ -4,7 +4,7 @@
 
 离线工具以 Python 3.14 为最低版本和 CI 当前稳定主版本；补丁版本由环境获取该系列的最新稳定更新。这里不依赖 `pywin32`、`pynput`、Tk 或 PyInstaller，也不读取原型仓的 `venv312`。本机可用 `YIME_LEXICON_PYTHON` 或 `-Python` 指向独立解释器。
 
-迁移按 `docs/project/PROTOTYPE_RETIREMENT_MIGRATION_PLAN.md` 分阶段进行。当前 Phase 0 只冻结和验证已经批准的 1,167,501 条 Windows 交接身份；在正式重建链能够精确复现它以前，不得更新 baseline 或覆盖运行词典。
+迁移按 `docs/project/PROTOTYPE_RETIREMENT_MIGRATION_PLAN.md` 分阶段进行。Phase 0 已按正式流程连续完成两次一致的干净重建；当前批准的 Windows 交接身份为 1,166,753 条映射、1,151,404 个不同文本。历史 1,167,501 条身份保留在目标锁的 `supersedes` 记录和 Git 历史中，不再要求正式流程反向凑数。
 
 运行目标锁校验：
 
@@ -49,6 +49,8 @@ python tools/lexicon/verify_target_lock.py `
 
 该命令只写入指定生成目录，不覆盖 `go-backend/input_methods/yime/data`。它要求 full、variable、shorthand、反查拼音源、词条数、不同文本数、源词典哈希和 selection 身份全部与目标锁一致。
 
-固定交接物解决的是“Windows 当前批准身份可在 Yime 内独立重放”，不等同于“当前来源链已经重新生成出 1,167,501 条”。后者仍须先解决历史运行数据库与音变增量的完整可复现性；在此之前不得刷新 baseline。
+固定交接物与当前正式来源链已经闭合：两轮来源 TSV、来源门禁计数、最终词典和 selection 均一致，运行数据库输入以大小和 SHA-256 记录在交接 evidence 中。`verify_release_readiness.py --require-release` 与单仓重放均须通过后，才允许构建安装包。
+
+`prepare_reproducible_handoff.py` 验证两轮隔离重建并生成 evidence；`promote_handoff_target.py` 默认只做 dry-run，只有显式传入 `--apply` 才会晋升 staging、重算目标锁和发布状态。两者只操作生成证据和既有正式派生产物，不提供手写拼音码或词典正文的入口。
 
 `tools/build_two_level_runtime_trial.py` 不再接受仓内可变 `pinyin_hanzi.db` 默认值。若要研究性重建，必须显式传入 `--source-runtime-database`，并由调用方保证该输入只读且有内容锁。

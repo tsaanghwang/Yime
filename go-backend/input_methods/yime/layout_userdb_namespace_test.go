@@ -8,10 +8,15 @@ import (
 	"testing"
 
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/codemode"
+	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/runtimeidentity"
 )
 
 func TestSchemasIsolateLearnedCandidatesByLayoutProjection(t *testing.T) {
 	const layoutID = "58f69f370aea"
+	identity, err := runtimeidentity.Load("data")
+	if err != nil {
+		t.Fatal(err)
+	}
 	for _, mode := range []string{"full", "variable", "shorthand"} {
 		mode := mode
 		t.Run(mode, func(t *testing.T) {
@@ -20,10 +25,10 @@ func TestSchemasIsolateLearnedCandidatesByLayoutProjection(t *testing.T) {
 				t.Fatal(err)
 			}
 			schema := string(payload)
-			wantVersion := `version: "2026-08-17-core-1167501-layout-` +
+			wantVersion := `version: "2026-08-17-` + identity.CoreVersion() + `-layout-` +
 				layoutID + `-rank-v1-erhua-mixed-v4-psc-peripheral-v1-sentence-v1-third-tone-v1-alphabet-v2"`
 			wantUserDict := "user_dict: yime_" + mode +
-				"_core_1167501_layout_" + layoutID + "_rank_v1"
+				"_" + identity.UserDBNamespace() + "_layout_" + layoutID + "_rank_v1"
 			if !strings.Contains(schema, wantVersion) {
 				t.Fatalf("schema does not identify current layout: want %q", wantVersion)
 			}

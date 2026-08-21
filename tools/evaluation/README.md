@@ -1,6 +1,6 @@
 # Yime 单仓评估工具
 
-本目录替代原型中依赖可变 `pinyin_hanzi.db`、数 GB 候选快照、Tk 候选窗和键盘钩子的评估路径。所有评估首先验证 `tools/lexicon/data/yime_core_target.lock.json`，并记录 1,167,501 条词库身份和唯一布局摘要。
+本目录替代原型中依赖可变 `pinyin_hanzi.db`、数 GB 候选快照、Tk 候选窗和键盘钩子的评估路径。所有评估首先验证 `tools/lexicon/data/yime_core_target.lock.json`，并记录当前批准的 1,166,753 条词库身份和唯一布局摘要。
 
 三模式静态效率：
 
