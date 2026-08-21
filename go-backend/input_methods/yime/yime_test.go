@@ -96,14 +96,15 @@ func (b *segmentNavigationTestBackend) State() rimeState {
 
 func newSegmentNavigationIME(backend rimeBackend) *IME {
 	ime := &IME{
-		TextServiceBase:       pime.NewTextServiceBase(nil),
-		backend:               backend,
-		keysDown:              map[int]bool{},
-		reversePinyinBySchema: map[string]map[string]string{},
-		reversePinyinLoaded:   map[string]bool{},
-		yimePinyinBySchema:    map[string]map[string]string{},
-		yimePinyinLoaded:      map[string]bool{},
-		yimePUAByPinyin:       map[string]string{},
+		TextServiceBase:            pime.NewTextServiceBase(nil),
+		backend:                    backend,
+		keysDown:                   map[int]bool{},
+		reversePinyinBySchema:      map[string]map[string]string{},
+		reversePinyinLoaded:        map[string]bool{},
+		yimePinyinBySchema:         map[string]map[string]string{},
+		yimePinyinLoaded:           map[string]bool{},
+		yimeAlternateCodesBySchema: map[string]map[string]map[string]struct{}{},
+		yimePUAByPinyin:            map[string]string{},
 	}
 	userDir := filepath.Join(os.Getenv("APPDATA"), APP, "Rime")
 	if event, err := runtimechange.Read(userDir); err == nil {
@@ -4855,6 +4856,130 @@ func TestYimePinyinAndKeySequenceCandidateCommentsFollowEveryInputSchema(t *test
 	}
 }
 
+func TestExactCompositionCodeOverridesMergedSameTextReadingAcrossSchemas(t *testing.T) {
+	ime := newTestIME()
+	backend := ime.backend.(*testBackend)
+	ime.reverseLookupDisplayMode = "key_sequence"
+	ime.yimePinyinLoaded = map[string]bool{
+		"yime_variable": true, "yime_full": true, "yime_shorthand": true,
+	}
+	ime.yimePinyinBySchema = map[string]map[string]string{
+		"yime_variable":  {"啊": "'d"},
+		"yime_full":      {"啊": "'ddd"},
+		"yime_shorthand": {"啊": "'d"},
+	}
+	ime.yimeAlternateCodesBySchema = map[string]map[string]map[string]struct{}{
+		"yime_variable":  {"啊": {"'f": {}}},
+		"yime_full":      {"啊": {"'fff": {}}},
+		"yime_shorthand": {"啊": {"'f": {}}},
+	}
+
+	for _, test := range []struct {
+		schema string
+		code   string
+	}{
+		{schema: "yime_variable", code: "'f"},
+		{schema: "yime_full", code: "'fff"},
+		{schema: "yime_shorthand", code: "'f"},
+	} {
+		t.Run(test.schema, func(t *testing.T) {
+			backend.schemaID = test.schema
+			original := []candidateItem{{Text: "啊", Comment: ""}}
+			display := ime.reverseLookupDisplayCandidatesForComposition(original, test.code)
+			if got := display[0].Comment; got != test.code {
+				t.Fatalf("exact composition annotation=%q, want %q", got, test.code)
+			}
+			if original[0].Comment != "" {
+				t.Fatalf("source candidate mutated: %#v", original)
+			}
+		})
+	}
+}
+
+func TestCompositionCodeOnlyOverridesARealTextCodePair(t *testing.T) {
+	ime := newTestIME()
+	backend := ime.backend.(*testBackend)
+	backend.schemaID = "yime_variable"
+	ime.reverseLookupDisplayMode = "key_sequence"
+	ime.yimePinyinLoaded = map[string]bool{"yime_variable": true}
+	ime.yimePinyinBySchema = map[string]map[string]string{
+		"yime_variable": {"啊": "'d"},
+	}
+	ime.yimeAlternateCodesBySchema = map[string]map[string]map[string]struct{}{
+		"yime_variable": {"啊": {"'f": {}}},
+	}
+
+	display := ime.reverseLookupDisplayCandidatesForComposition(
+		[]candidateItem{{Text: "啊"}}, "not-a-real-code")
+	if got := display[0].Comment; got != "'d" {
+		t.Fatalf("unverified composition replaced dictionary annotation: got %q want %q", got, "'d")
+	}
+}
+
+func TestExactCompositionCodeHandlesSingleDoubleAndMultiCharacterCandidates(t *testing.T) {
+	ime := newTestIME()
+	backend := ime.backend.(*testBackend)
+	backend.schemaID = "yime_variable"
+	ime.reverseLookupDisplayMode = "key_sequence"
+	ime.yimePinyinLoaded = map[string]bool{"yime_variable": true}
+	ime.yimePinyinBySchema = map[string]map[string]string{
+		"yime_variable": {
+			"啊":   "'d",
+			"下来":  `1jds\dk`,
+			"不得了": `buio]wer\e`,
+		},
+	}
+	ime.yimeAlternateCodesBySchema = map[string]map[string]map[string]struct{}{
+		"yime_variable": {
+			"啊":   {"'f": {}},
+			"下来":  {`1jds\sdj`: {}},
+			"不得了": {`buio]wer\lso`: {}},
+		},
+	}
+
+	for _, test := range []struct {
+		name string
+		text string
+		code string
+	}{
+		{name: "single", text: "啊", code: "'f"},
+		{name: "double", text: "下来", code: `1jds\sdj`},
+		{name: "multi", text: "不得了", code: `buio]wer\lso`},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			display := ime.reverseLookupDisplayCandidatesForComposition(
+				[]candidateItem{{Text: test.text}}, test.code)
+			if got := display[0].Comment; got != test.code {
+				t.Fatalf("%s exact annotation=%q, want %q", test.text, got, test.code)
+			}
+		})
+	}
+}
+
+func TestApplyStateShowsExactCompositionCodeInsteadOfFirstSameTextCode(t *testing.T) {
+	ime := newTestIME()
+	backend := ime.backend.(*testBackend)
+	backend.schemaID = "yime_variable"
+	ime.reverseLookupDisplayMode = "key_sequence"
+	ime.yimePinyinLoaded = map[string]bool{"yime_variable": true}
+	ime.yimePinyinBySchema = map[string]map[string]string{
+		"yime_variable": {"啊": "'d"},
+	}
+	ime.yimeAlternateCodesBySchema = map[string]map[string]map[string]struct{}{
+		"yime_variable": {"啊": {"'f": {}}},
+	}
+
+	resp := pime.NewResponse(1, true)
+	ime.applyStateToResponse(resp, rimeState{
+		Composition: "'f",
+		Candidates:  []candidateItem{{Text: "啊"}},
+		PageSize:    5,
+	})
+	if got, want := resp.CandidateList, []string{"啊 'f"}; !reflect.DeepEqual(got, want) {
+		t.Fatalf("candidate window=%#v, want %#v", got, want)
+	}
+}
+
 func TestStandardPinyinCandidateCommentsUseSourceTruthAcrossSchemas(t *testing.T) {
 	ime := newTestIME()
 	backend := ime.backend.(*testBackend)
@@ -4979,6 +5104,24 @@ func TestLoadYimeCodeLookupRemovesScriptDictionarySyllableSpaces(t *testing.T) {
 	}
 	if got := loadYimeCodeLookup(path)["过程"]; got != "guew8we;" {
 		t.Fatalf("display code=%q, want uninterrupted runtime keystrokes", got)
+	}
+}
+
+func TestLoadYimeCodeLookupsRetainsAlternateCodesForSameText(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "yime_variable.dict.yaml")
+	content := "---\nname: yime_variable\n...\n啊\t'd\t100\n啊\t'f\t90\n阿\t'f\t80\n"
+	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	primary, alternatives := loadYimeCodeLookups(path)
+	if got := primary["啊"]; got != "'d" {
+		t.Fatalf("primary code=%q, want %q", got, "'d")
+	}
+	if _, ok := alternatives["啊"]["'f"]; !ok {
+		t.Fatalf("alternate exact pair 啊/'f was discarded: %#v", alternatives)
+	}
+	if _, ok := alternatives["阿"]; ok {
+		t.Fatalf("single-code text should not allocate an alternate set: %#v", alternatives["阿"])
 	}
 }
 

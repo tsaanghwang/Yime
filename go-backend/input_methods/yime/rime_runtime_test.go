@@ -3,6 +3,7 @@
 package yime
 
 import (
+	"bufio"
 	"encoding/csv"
 	"os"
 	"os/exec"
@@ -104,6 +105,104 @@ func newRealRimeSessionWithManagedRefresh(t *testing.T, refresh bool) realRimeTe
 	SetOption(sessionID, "ascii_mode", false)
 	t.Logf("ascii_mode after forcing off: %t", GetOption(sessionID, "ascii_mode"))
 	return realRimeTestSession{sessionID: sessionID, userDir: userDir}
+}
+
+// TestRealRimeKeepsExactCodeCandidateVisibleAcrossAllSchemas guards the
+// native half of the same-text/multiple-code case. For example, 啊 has both
+// the variable codes 'd and 'f. Exact 'f entries must remain on the first
+// native page in dictionary-frequency order; the Go display layer then binds
+// the current exact code to Rime's comment-less candidates.
+func TestRealRimeKeepsExactCodeCandidateVisibleAcrossAllSchemas(t *testing.T) {
+	session := newRealRimeSession(t)
+	dataDir := rimeRuntimeTestDataDir(t)
+	tests := []struct {
+		schema string
+		code   string
+	}{
+		{schema: "yime_variable", code: "'f"},
+		{schema: "yime_full", code: "'fff"},
+		{schema: "yime_shorthand", code: "'f"},
+	}
+
+	for _, test := range tests {
+		t.Run(test.schema, func(t *testing.T) {
+			ClearComposition(session.sessionID)
+			if !SelectSchema(session.sessionID, test.schema) {
+				t.Fatalf("SelectSchema(%q) failed", test.schema)
+			}
+			typeASCII(t, session.sessionID, test.code)
+			menu, ok := GetMenu(session.sessionID)
+			if !ok {
+				t.Fatal("GetMenu failed")
+			}
+			want := exactDictionaryTextsByWeight(t,
+				filepath.Join(dataDir, test.schema+".dict.yaml"),
+				test.code, len(menu.Candidates))
+			if len(want) != len(menu.Candidates) {
+				t.Fatalf("dictionary returned %d exact candidates, native page has %d: want=%#v menu=%#v", len(want), len(menu.Candidates), want, menu.Candidates)
+			}
+			for i, candidate := range menu.Candidates {
+				if got := strings.TrimSpace(candidate.Text); got != want[i] {
+					t.Fatalf("native exact candidate %d=%q, want frequency-ranked %q for %s; menu=%#v", i, got, want[i], test.code, menu.Candidates)
+				}
+			}
+			if len(menu.Candidates) == 0 || strings.TrimSpace(menu.Candidates[0].Text) != "啊" {
+				t.Fatalf("exact 啊/%s candidate is not frequency-ranked first: %#v", test.code, menu.Candidates)
+			}
+		})
+	}
+}
+
+func exactDictionaryTextsByWeight(t *testing.T, path, code string, limit int) []string {
+	t.Helper()
+	type weightedText struct {
+		text   string
+		weight float64
+	}
+	file, err := os.Open(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer file.Close()
+	var entries []weightedText
+	scanner := bufio.NewScanner(file)
+	inData := false
+	for scanner.Scan() {
+		line := strings.TrimSpace(scanner.Text())
+		if !inData {
+			inData = line == "..."
+			continue
+		}
+		fields := strings.Split(line, "\t")
+		if len(fields) < 3 || normalizeDisplayCode(fields[1]) != code {
+			continue
+		}
+		weight, err := strconv.ParseFloat(strings.TrimSpace(fields[2]), 64)
+		if err != nil {
+			t.Fatalf("parse dictionary weight in %q: %v", line, err)
+		}
+		entries = append(entries, weightedText{text: strings.TrimSpace(fields[0]), weight: weight})
+	}
+	if err := scanner.Err(); err != nil {
+		t.Fatal(err)
+	}
+	sort.SliceStable(entries, func(i, j int) bool { return entries[i].weight > entries[j].weight })
+	result := make([]string, 0, limit)
+	seen := map[string]struct{}{}
+	for _, entry := range entries {
+		if entry.text == "" {
+			continue
+		}
+		if _, ok := seen[entry.text]; ok {
+			continue
+		}
+		seen[entry.text] = struct{}{}
+		result = append(result, entry.text)
+		if len(result) == limit {
+			break
+		}
+	}
+	return result
 }
 
 func writeRuntimeTestDefaultCustom(t *testing.T, userDir string) {

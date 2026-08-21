@@ -202,6 +202,7 @@ type IME struct {
 	sourcePinyinLoaded          map[string]bool
 	yimePinyinBySchema          map[string]map[string]string
 	yimePinyinLoaded            map[string]bool
+	yimeAlternateCodesBySchema  map[string]map[string]map[string]struct{}
 	pinyinCodeByNumeric         map[string]pinyinCodeRecord
 	pinyinCodeLoaded            bool
 	yimePUAByPinyin             map[string]string
@@ -242,17 +243,18 @@ func New(client *pime.Client) pime.TextService {
 			InlinePreedit:      "composition",
 			SoftCursor:         false,
 		},
-		reverseLookupDisplayMode: "key_sequence",
-		reversePinyinBySchema:    map[string]map[string]string{},
-		reversePinyinLoaded:      map[string]bool{},
-		sourcePinyinBySchema:     map[string]map[string][]string{},
-		sourcePinyinLoaded:       map[string]bool{},
-		yimePinyinBySchema:       map[string]map[string]string{},
-		yimePinyinLoaded:         map[string]bool{},
-		pinyinCodeByNumeric:      map[string]pinyinCodeRecord{},
-		yimePUAByPinyin:          map[string]string{},
-		candidatePageSize:        defaultCandidatePageSize,
-		keysDown:                 map[int]bool{},
+		reverseLookupDisplayMode:   "key_sequence",
+		reversePinyinBySchema:      map[string]map[string]string{},
+		reversePinyinLoaded:        map[string]bool{},
+		sourcePinyinBySchema:       map[string]map[string][]string{},
+		sourcePinyinLoaded:         map[string]bool{},
+		yimePinyinBySchema:         map[string]map[string]string{},
+		yimePinyinLoaded:           map[string]bool{},
+		yimeAlternateCodesBySchema: map[string]map[string]map[string]struct{}{},
+		pinyinCodeByNumeric:        map[string]pinyinCodeRecord{},
+		yimePUAByPinyin:            map[string]string{},
+		candidatePageSize:          defaultCandidatePageSize,
+		keysDown:                   map[int]bool{},
 	}
 }
 
@@ -1104,6 +1106,7 @@ func (ime *IME) pollRuntimeChange() {
 		ime.reversePinyinBySchema = map[string]map[string]string{}
 		ime.yimePinyinLoaded = map[string]bool{}
 		ime.yimePinyinBySchema = map[string]map[string]string{}
+		ime.yimeAlternateCodesBySchema = map[string]map[string]map[string]struct{}{}
 		ime.pinyinCodeLoaded = false
 		ime.pinyinCodeByNumeric = map[string]pinyinCodeRecord{}
 		ime.lexiconChangeRevision = event.LexiconRevision
@@ -1435,7 +1438,7 @@ func (ime *IME) applyStateToResponse(resp *pime.Response, state rimeState) {
 		// multi-character labels so a bare 1..9 never suggests that typing a
 		// digit directly will select a candidate.
 		resp.SetSelLabels = append([]string(nil), yimeCandidateSelectLabels...)
-		displayCandidates := ime.reverseLookupDisplayCandidates(state.Candidates)
+		displayCandidates := ime.reverseLookupDisplayCandidatesForComposition(state.Candidates, state.Composition)
 		filtered, indexMap := filterBlockedCandidates(displayCandidates, ime.blockedCandidateSet())
 		ime.candidateBackendIndexMap = indexMap
 		mappedCursor := remapCandidateCursor(state.CandidateCursor, indexMap)
@@ -2129,25 +2132,38 @@ func (ime *IME) formatCandidates(candidates []candidateItem) []string {
 }
 
 func (ime *IME) reverseLookupDisplayCandidates(candidates []candidateItem) []candidateItem {
+	return ime.reverseLookupDisplayCandidatesForComposition(candidates, "")
+}
+
+func (ime *IME) reverseLookupDisplayCandidatesForComposition(candidates []candidateItem, composition string) []candidateItem {
 	if len(candidates) == 0 {
 		return candidates
+	}
+	exactCode := normalizeDisplayCode(composition)
+	withExactCodes := append([]candidateItem(nil), candidates...)
+	if exactCode != "" {
+		for i := range withExactCodes {
+			if ime.hasExactYimeCode(withExactCodes[i].Text, exactCode) {
+				withExactCodes[i].Comment = exactCode
+			}
+		}
 	}
 
 	switch ime.reverseLookupDisplayMode {
 	case "hidden":
-		display := append([]candidateItem(nil), candidates...)
+		display := withExactCodes
 		for i := range display {
 			display[i].Comment = ""
 		}
 		return display
 	case "standard_pinyin":
-		display := append([]candidateItem(nil), candidates...)
+		display := withExactCodes
 		for i := range display {
 			display[i].Comment = ime.lookupStandardPinyin(display[i].Text, display[i].Comment)
 		}
 		return display
 	case "yime_pinyin":
-		display := append([]candidateItem(nil), candidates...)
+		display := withExactCodes
 		for i := range display {
 			display[i].Comment = ime.lookupYimePinyin(display[i].Text, display[i].Comment)
 		}
@@ -2155,7 +2171,7 @@ func (ime *IME) reverseLookupDisplayCandidates(candidates []candidateItem) []can
 	case "key_sequence":
 		fallthrough
 	default:
-		display := append([]candidateItem(nil), candidates...)
+		display := withExactCodes
 		codeLookup := ime.yimePinyinLookup()
 		for i := range display {
 			display[i].Comment = normalizeDisplayCode(display[i].Comment)
@@ -2396,9 +2412,30 @@ func (ime *IME) yimePinyinLookup() map[string]string {
 		return ime.yimePinyinBySchema[schemaID]
 	}
 	ime.yimePinyinLoaded[schemaID] = true
-	lookup := loadYimeCodeLookup(filepath.Join(ime.sharedDir(), schemaID+".dict.yaml"))
+	lookup, alternatives := loadYimeCodeLookups(filepath.Join(ime.sharedDir(), schemaID+".dict.yaml"))
 	ime.yimePinyinBySchema[schemaID] = lookup
+	if ime.yimeAlternateCodesBySchema == nil {
+		ime.yimeAlternateCodesBySchema = map[string]map[string]map[string]struct{}{}
+	}
+	ime.yimeAlternateCodesBySchema[schemaID] = alternatives
 	return lookup
+}
+
+func (ime *IME) hasExactYimeCode(text, code string) bool {
+	text = strings.TrimSpace(text)
+	code = normalizeDisplayCode(code)
+	if text == "" || code == "" {
+		return false
+	}
+	primary := ime.yimePinyinLookup()
+	if normalizeDisplayCode(primary[text]) == code {
+		return true
+	}
+	if byText := ime.yimeAlternateCodesBySchema[ime.currentSchemaID()]; byText != nil {
+		_, ok := byText[text][code]
+		return ok
+	}
+	return false
 }
 
 func (ime *IME) currentSchemaID() string {
@@ -2969,10 +3006,16 @@ func accentVowel(vowel rune, tone int) rune {
 }
 
 func loadYimeCodeLookup(path string) map[string]string {
+	lookup, _ := loadYimeCodeLookups(path)
+	return lookup
+}
+
+func loadYimeCodeLookups(path string) (map[string]string, map[string]map[string]struct{}) {
 	lookup := map[string]string{}
+	alternatives := map[string]map[string]struct{}{}
 	file, err := os.Open(path)
 	if err != nil {
-		return lookup
+		return lookup, alternatives
 	}
 	defer file.Close()
 
@@ -3001,14 +3044,19 @@ func loadYimeCodeLookup(path string) map[string]string {
 		if text == "" || code == "" {
 			continue
 		}
-		if _, exists := lookup[text]; !exists {
+		if first, exists := lookup[text]; !exists {
 			lookup[text] = code
+		} else if first != code {
+			if alternatives[text] == nil {
+				alternatives[text] = map[string]struct{}{}
+			}
+			alternatives[text][code] = struct{}{}
 		}
 	}
 	if err := scanner.Err(); err != nil {
-		return lookup
+		return lookup, alternatives
 	}
-	return lookup
+	return lookup, alternatives
 }
 
 func loadNumericToMarkedPinyinLookup(path string) map[string]string {
