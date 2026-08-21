@@ -14,7 +14,6 @@ import re
 import sqlite3
 from collections import Counter
 from dataclasses import dataclass
-from datetime import date
 from pathlib import Path
 from typing import Iterable, Mapping
 
@@ -32,6 +31,7 @@ from yime.utils.rime_export import (
     convert_runtime_code_to_layout_keys,
     load_runtime_symbol_to_layout_key,
 )
+from yime.utils.reproducible_build import build_date_text
 from yime.utils.yinyuan_id_chain import layout_projection_digest
 
 
@@ -266,7 +266,7 @@ def _dictionary_text(
         "# Experimental compact component lexicon; replay gate required.",
         "---",
         f"name: {dictionary_name}",
-        f'version: "{date.today().isoformat()}"',
+        f'version: "{build_date_text()}"',
         "sort: by_weight",
         "use_preset_vocabulary: false",
         "...",

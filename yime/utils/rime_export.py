@@ -4,7 +4,6 @@ import argparse
 import json
 import sqlite3
 from dataclasses import dataclass
-from datetime import date
 from pathlib import Path
 from typing import Iterable, Mapping
 
@@ -13,6 +12,7 @@ from yime.canonical_yime_mapping import (
     load_canonical_code_map,
 )
 from yime.utils.code_modes import YimeCodeMode, code_mode_label, lookup_code_column, normalize_code_mode
+from yime.utils.reproducible_build import build_date_text
 from yime.utils.yinyuan_id_chain import (
     layout_projection_digest,
     load_symbol_to_yinyuan_id,
@@ -238,7 +238,7 @@ def build_rime_dict_text(
     code_form: str,
     entries: list[tuple[str, str, int]],
 ) -> str:
-    today = date.today().isoformat()
+    today = build_date_text()
     lines = [
         "# Rime dictionary",
         "# encoding: utf-8",
@@ -264,7 +264,7 @@ def build_rime_schema_text(
     user_dict_name: str,
     alphabet: str,
 ) -> str:
-    today = date.today().isoformat()
+    today = build_date_text()
     return "\n".join(
         [
             "# Rime schema",
