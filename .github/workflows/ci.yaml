@@ -15,6 +15,21 @@ jobs:
   build-contract:
     uses: tsaanghwang/Yime-build-contract/.github/workflows/validate.yml@d93a3e835cae58988792814d300d3c7cc872cfbb
 
+  lexicon-offline-tooling:
+    name: lexicon-offline-tooling
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v6
+      - name: Use current stable Python 3.14 series
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.14'
+          cache: pip
+          cache-dependency-path: tools/lexicon/pyproject.toml
+      - name: Verify offline tool environment and locked handoff
+        shell: pwsh
+        run: .\tools\lexicon\test.ps1
+
   rust-i686-host:
     name: rust-i686-host
     runs-on: windows-2022
