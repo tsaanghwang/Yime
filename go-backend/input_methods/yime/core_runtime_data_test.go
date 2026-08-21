@@ -79,6 +79,25 @@ type coreRuntimeProfile struct {
 	EntryCountPerMode                        int      `json:"entry_count_per_mode"`
 }
 
+type coreTargetLock struct {
+	SchemaVersion int    `json:"schema_version"`
+	LockID        string `json:"lock_id"`
+	Status        string `json:"status"`
+	Target        struct {
+		EntryCount             int    `json:"entry_count"`
+		DistinctTexts          int    `json:"distinct_texts"`
+		SourceDictionarySHA256 string `json:"source_dictionary_sha256"`
+		SourceSelectionSHA256  string `json:"source_selection_sha256"`
+		LayoutProjectionSHA256 string `json:"layout_projection_sha256"`
+	} `json:"target"`
+	Artifacts []struct {
+		Role   string `json:"role"`
+		Path   string `json:"path"`
+		Size   int64  `json:"size"`
+		SHA256 string `json:"sha256"`
+	} `json:"artifacts"`
+}
+
 func readJSONFile(t *testing.T, name string, target any) {
 	t.Helper()
 	data, err := os.ReadFile(filepath.Join("data", name))
@@ -155,6 +174,90 @@ func TestCuratedCoreEvidenceAndThreeModeDerivationAreLocked(t *testing.T) {
 		}
 		if got := fileSHA256(t, filepath.Join("data", name)); got != want {
 			t.Fatalf("%s hash mismatch: got=%s want=%s", name, got, want)
+		}
+	}
+}
+
+func TestPhase0TargetLockMatchesPromotedCoreAndSoundChangeLayers(t *testing.T) {
+	repoRoot := filepath.Clean(filepath.Join("..", "..", ".."))
+	lockPath := filepath.Join(
+		repoRoot,
+		"tools",
+		"lexicon",
+		"data",
+		"yime_core_target.lock.json",
+	)
+	data, err := os.ReadFile(lockPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var lock coreTargetLock
+	if err := json.Unmarshal(data, &lock); err != nil {
+		t.Fatal(err)
+	}
+	if lock.SchemaVersion != 1 ||
+		lock.LockID != "yime-core-1167501-layout-58f69f370aea" ||
+		lock.Status != "approved_windows_handoff_target" ||
+		lock.Target.EntryCount != curatedCoreEntryCount ||
+		lock.Target.DistinctTexts != curatedCoreTextCount ||
+		lock.Target.SourceDictionarySHA256 !=
+			"4ce312cd5082cc19d525abe5842c092e1b1693fcec340b565ca4aa479f226551" ||
+		lock.Target.SourceSelectionSHA256 !=
+			"8d88e96f411231f7743d9acb289a00c32385a7f37535d07827357928f237d6b2" ||
+		lock.Target.LayoutProjectionSHA256 !=
+			"58f69f370aea49e03a48414dcaaf0ebdaef88be0e4fee37e2c4e1497b14976dd" {
+		t.Fatalf("unexpected Phase 0 target lock: %#v", lock.Target)
+	}
+
+	requiredRoles := map[string]bool{
+		"full_mode_dictionary":             false,
+		"variable_mode_dictionary":         false,
+		"shorthand_mode_dictionary":        false,
+		"canonical_layout_projection":      false,
+		"canonical_pinyin_code_map":        false,
+		"reverse_pinyin_source":            false,
+		"core_source_manifest":             false,
+		"three_mode_manifest":              false,
+		"runtime_profile":                  false,
+		"psc_neutral_tone_and_erhua_layer": false,
+		"explicit_erhua_layer":             false,
+		"third_tone_sandhi_layer":          false,
+		"particle_a_sound_change_layer":    false,
+	}
+	for _, artifact := range lock.Artifacts {
+		seen, required := requiredRoles[artifact.Role]
+		if !required {
+			t.Fatalf("unexpected target-lock artifact role: %s", artifact.Role)
+		}
+		if seen {
+			t.Fatalf("duplicate target-lock artifact role: %s", artifact.Role)
+		}
+		path := filepath.Join(repoRoot, filepath.FromSlash(artifact.Path))
+		info, err := os.Stat(path)
+		if err != nil {
+			t.Fatalf("locked artifact %s: %v", artifact.Role, err)
+		}
+		if info.Size() != artifact.Size {
+			t.Fatalf(
+				"locked artifact %s size mismatch: got=%d want=%d",
+				artifact.Role,
+				info.Size(),
+				artifact.Size,
+			)
+		}
+		if got := fileSHA256(t, path); got != artifact.SHA256 {
+			t.Fatalf(
+				"locked artifact %s hash mismatch: got=%s want=%s",
+				artifact.Role,
+				got,
+				artifact.SHA256,
+			)
+		}
+		requiredRoles[artifact.Role] = true
+	}
+	for role, seen := range requiredRoles {
+		if !seen {
+			t.Fatalf("target lock lacks required artifact role: %s", role)
 		}
 	}
 }
