@@ -204,6 +204,7 @@ Check logs at `%LOCALAPPDATA%\PIME\Logs\go_backend.log`.
 | [Release and Signing](docs/YIME_RELEASE_AND_SIGNING.md) | Reproducible builds, Authenticode, packaging, and rollback |
 | [Data Format Reference](docs/YIME_DATA_FORMAT_REFERENCE.md) | TSV/JSON/YAML data file format specifications |
 | [Single-Source Lexicon Refactor](docs/project/SINGLE_SOURCE_LEXICON_REFACTOR.md) | Why and how three maintained code tables became one fixed-length source |
+| [Prototype Retirement Migration Plan](docs/project/PROTOTYPE_RETIREMENT_MIGRATION_PLAN.md) | Phased plan and inventory for moving useful offline tooling into Yime and retiring the Python prototype |
 | [User Install Guide](docs/YIME_USER_INSTALL_GUIDE.md) | Installation and usage instructions for end users |
 | [Troubleshooting](docs/YIME_TROUBLESHOOTING.md) | Common issues and solutions |
 | [Changelog](CHANGELOG.md) | Version change history |
