@@ -41,4 +41,3 @@ ENV-003	.generated/	ignored build/cache directories	generated-cache	delete-after
 ENV-004	yime/reports/	external archive + small tracked regression fixtures	report	classify-and-archive	mixed	no	maybe	report index + fixture provenance	planned	Keep only decisions and minimal regression samples in Git.
 ENV-005	one-off scripts and obsolete tools	docs/archive/prototype-tool-disposition.tsv	legacy-tool	inventory-and-retire	mixed	no	maybe	no production imports + owner review	planned	Every tool receives migrate/archive/delete decision before repository freeze.
 RET-001	Yime-python-prototype repository	remote read-only tag	retirement	freeze	yes	no	yes	fresh clone recovery + two release cycles	deferred	Do not delete or archive before all exit criteria pass.
-
