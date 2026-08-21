@@ -383,7 +383,7 @@ if ($usingPrebuiltReverseSource -and -not $usingApprovedTarget) {
     }
 }
 $sourceManifestPath = Join-Path $outputPath "yime_core_source_manifest.json"
-$sourceJson = ($sourceRecord | ConvertTo-Json -Depth 8) + [Environment]::NewLine
+$sourceJson = ($sourceRecord | ConvertTo-Json -Depth 8) + "`n"
 [IO.File]::WriteAllText(
     $sourceManifestPath,
     $sourceJson,

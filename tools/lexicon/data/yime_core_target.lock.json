@@ -34,8 +34,8 @@
     {
       "role": "canonical_fixed_handoff_evidence",
       "path": "tools/lexicon/handoff/yime_core_fixed.evidence.json",
-      "size": 3396,
-      "sha256": "a9013275f57fdfb264cb7a60aeeeb002523553be3763647eea97811456e57bde"
+      "size": 3282,
+      "sha256": "d452d304e2f18f3264ed938b62b8767a26e8be73d4e46f1c829cf7e95c5d9692"
     },
     {
       "role": "full_mode_dictionary",
@@ -76,8 +76,8 @@
     {
       "role": "core_source_manifest",
       "path": "go-backend/input_methods/yime/data/yime_core_source_manifest.json",
-      "size": 1885,
-      "sha256": "112fdfeb711e2c84b62fcd2c7b5d6dc871052be3760653cd843d14316a2ed15a"
+      "size": 1842,
+      "sha256": "34e63da45ff05388dd985c247a0346c034de2a47a76a252fc0ecfacc0a3e2c97"
     },
     {
       "role": "three_mode_manifest",
