@@ -24,6 +24,8 @@
 /tools/test-go-race.ps1 @tsaanghwang
 /tools/test-go.ps1 @tsaanghwang
 /tools/test-real-rime.ps1 @tsaanghwang
+/tools/lexicon/** @tsaanghwang
+/tools/evaluation/** @tsaanghwang
 /tools/test-installer-smoke.ps1 @tsaanghwang
 /tools/assert-win32-build-prerequisites.ps1 @tsaanghwang
 /tools/initialize-dev-environment.ps1 @tsaanghwang

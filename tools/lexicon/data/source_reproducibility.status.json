@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "decision": "blocked",
+  "target_lock": "yime_core_target.lock.json",
+  "target": {
+    "entry_count": 1167501,
+    "distinct_texts": 1152157,
+    "source_dictionary_sha256": "4ce312cd5082cc19d525abe5842c092e1b1693fcec340b565ca4aa479f226551",
+    "source_selection_sha256": "8d88e96f411231f7743d9acb289a00c32385a7f37535d07827357928f237d6b2"
+  },
+  "latest_clean_rebuild": {
+    "recorded_at": "2026-08-21T15:04:38Z",
+    "entry_count": 1166753,
+    "distinct_texts": 1151404,
+    "source_dictionary_sha256": "7edf122913925291d1259241d3b1494faec9173a478a1658e0959062c1e8f155",
+    "source_selection_sha256": "4ec48d3627b8efa8344d38430f85710570a6576693cc0cd2990dc3fb4e3bac17",
+    "entry_gap_to_target": 748,
+    "distinct_text_gap_to_target": 753
+  },
+  "blocking_reason": "The tracked source-bundle manifest baseline drifted from the clean rebuild, and the clean two-level result did not reproduce the approved 1,167,501-entry target.",
+  "required_resolution": "Trace every difference, including reviewed tone sandhi, neutral tone, erhua and other sound-change increments, back to locked sources and generation steps; then obtain two identical clean rebuilds that match the target hashes.",
+  "safeguards": {
+    "baseline_update_allowed": false,
+    "derived_dictionary_overwrite_allowed": false,
+    "pinyin_code_edit_allowed": false,
+    "tagged_release_allowed": false
+  }
+}
