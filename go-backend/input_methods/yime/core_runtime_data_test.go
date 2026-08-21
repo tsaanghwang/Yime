@@ -2,19 +2,22 @@ package yime
 
 import (
 	"bufio"
+	"bytes"
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
+	"fmt"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 	"testing"
 	"unicode/utf8"
+
+	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/runtimeidentity"
 )
 
 const (
-	curatedCoreEntryCount = 1167501
-	curatedCoreTextCount  = 1152157
 	encodedCharacterCount = 46095
 )
 
@@ -26,7 +29,9 @@ type coreRuntimeManifest struct {
 }
 
 type coreSourceManifest struct {
+	SourceDictionary       string `json:"source_dictionary"`
 	SourceDictionarySHA256 string `json:"source_dictionary_sha256"`
+	SourceSelectionSHA256  string `json:"source_selection_sha256"`
 	EntryCount             int    `json:"entry_count"`
 	DistinctTexts          int    `json:"distinct_texts"`
 	RankingEvidence        struct {
@@ -79,6 +84,25 @@ type coreRuntimeProfile struct {
 	EntryCountPerMode                        int      `json:"entry_count_per_mode"`
 }
 
+type coreTargetLock struct {
+	SchemaVersion int    `json:"schema_version"`
+	LockID        string `json:"lock_id"`
+	Status        string `json:"status"`
+	Target        struct {
+		EntryCount             int    `json:"entry_count"`
+		DistinctTexts          int    `json:"distinct_texts"`
+		SourceDictionarySHA256 string `json:"source_dictionary_sha256"`
+		SourceSelectionSHA256  string `json:"source_selection_sha256"`
+		LayoutProjectionSHA256 string `json:"layout_projection_sha256"`
+	} `json:"target"`
+	Artifacts []struct {
+		Role   string `json:"role"`
+		Path   string `json:"path"`
+		Size   int64  `json:"size"`
+		SHA256 string `json:"sha256"`
+	} `json:"artifacts"`
+}
+
 func readJSONFile(t *testing.T, name string, target any) {
 	t.Helper()
 	data, err := os.ReadFile(filepath.Join("data", name))
@@ -100,24 +124,68 @@ func fileSHA256(t *testing.T, path string) string {
 	return hex.EncodeToString(sum[:])
 }
 
+func loadBundledCoreIdentity(t *testing.T) runtimeidentity.Identity {
+	t.Helper()
+	identity, err := runtimeidentity.Load("data")
+	if err != nil {
+		t.Fatal(err)
+	}
+	return identity
+}
+
+func bundledLayoutProjectionDigest(t *testing.T) string {
+	t.Helper()
+	payload, err := os.ReadFile(filepath.Join("data", "yime_yinyuan_layout.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var layout struct {
+		Projection map[string]string `json:"yinyuan_id_to_key"`
+	}
+	if err := json.Unmarshal(payload, &layout); err != nil {
+		t.Fatal(err)
+	}
+	pairs := make([][2]string, 0, len(layout.Projection))
+	for id, key := range layout.Projection {
+		pairs = append(pairs, [2]string{id, key})
+	}
+	sort.Slice(pairs, func(i, j int) bool {
+		if pairs[i][0] == pairs[j][0] {
+			return pairs[i][1] < pairs[j][1]
+		}
+		return pairs[i][0] < pairs[j][0]
+	})
+	var normalized bytes.Buffer
+	encoder := json.NewEncoder(&normalized)
+	encoder.SetEscapeHTML(false)
+	if err := encoder.Encode(pairs); err != nil {
+		t.Fatal(err)
+	}
+	sum := sha256.Sum256(bytes.TrimSuffix(normalized.Bytes(), []byte{'\n'}))
+	return hex.EncodeToString(sum[:])
+}
+
 func TestCuratedCoreEvidenceAndThreeModeDerivationAreLocked(t *testing.T) {
 	var generated coreRuntimeManifest
 	readJSONFile(t, "yime_lexicon_manifest.json", &generated)
 	var source coreSourceManifest
 	readJSONFile(t, "yime_core_source_manifest.json", &source)
+	identity := loadBundledCoreIdentity(t)
 
-	if generated.EntryCount != curatedCoreEntryCount ||
-		source.EntryCount != curatedCoreEntryCount {
+	if generated.EntryCount != identity.EntryCount ||
+		source.EntryCount != identity.EntryCount {
 		t.Fatalf("unexpected core entry count: generated=%d source=%d",
 			generated.EntryCount, source.EntryCount)
 	}
-	if generated.SourceFile != "two_level_full.dict.yaml" {
+	if generated.SourceFile != source.SourceDictionary {
 		t.Fatalf("unexpected curated core source: %q", generated.SourceFile)
 	}
-	if generated.SourceSHA256 != source.SourceDictionarySHA256 {
+	if generated.SourceSHA256 != source.SourceDictionarySHA256 ||
+		source.SourceDictionarySHA256 != identity.SourceDictionarySHA256 ||
+		source.SourceSelectionSHA256 != identity.SourceSelectionSHA256 {
 		t.Fatal("generated dictionaries and ranking evidence use different sources")
 	}
-	if source.DistinctTexts != curatedCoreTextCount ||
+	if source.DistinctTexts != identity.DistinctTexts ||
 		source.RankingEvidence.PolicyID !=
 			"bcc-primary-lmdg-fallback-structural-floor-v1" ||
 		source.RankingEvidence.MissingSelectedSourceTexts != 0 ||
@@ -159,9 +227,95 @@ func TestCuratedCoreEvidenceAndThreeModeDerivationAreLocked(t *testing.T) {
 	}
 }
 
+func TestPhase0TargetLockMatchesPromotedCoreAndSoundChangeLayers(t *testing.T) {
+	repoRoot := filepath.Clean(filepath.Join("..", "..", ".."))
+	lockPath := filepath.Join(
+		repoRoot,
+		"tools",
+		"lexicon",
+		"data",
+		"yime_core_target.lock.json",
+	)
+	data, err := os.ReadFile(lockPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var lock coreTargetLock
+	if err := json.Unmarshal(data, &lock); err != nil {
+		t.Fatal(err)
+	}
+	identity := loadBundledCoreIdentity(t)
+	wantLockID := fmt.Sprintf("yime-core-%d-layout-%.12s", identity.EntryCount, lock.Target.LayoutProjectionSHA256)
+	if lock.SchemaVersion != 1 ||
+		lock.LockID != wantLockID ||
+		lock.Status != "approved_windows_handoff_target" ||
+		lock.Target.EntryCount != identity.EntryCount ||
+		lock.Target.DistinctTexts != identity.DistinctTexts ||
+		lock.Target.SourceDictionarySHA256 != identity.SourceDictionarySHA256 ||
+		lock.Target.SourceSelectionSHA256 != identity.SourceSelectionSHA256 ||
+		lock.Target.LayoutProjectionSHA256 != bundledLayoutProjectionDigest(t) {
+		t.Fatalf("unexpected Phase 0 target lock: %#v", lock.Target)
+	}
+
+	requiredRoles := map[string]bool{
+		"canonical_fixed_handoff":          false,
+		"canonical_fixed_handoff_evidence": false,
+		"full_mode_dictionary":             false,
+		"variable_mode_dictionary":         false,
+		"shorthand_mode_dictionary":        false,
+		"canonical_layout_projection":      false,
+		"canonical_pinyin_code_map":        false,
+		"reverse_pinyin_source":            false,
+		"core_source_manifest":             false,
+		"three_mode_manifest":              false,
+		"runtime_profile":                  false,
+		"psc_neutral_tone_and_erhua_layer": false,
+		"explicit_erhua_layer":             false,
+		"third_tone_sandhi_layer":          false,
+		"particle_a_sound_change_layer":    false,
+	}
+	for _, artifact := range lock.Artifacts {
+		seen, required := requiredRoles[artifact.Role]
+		if !required {
+			t.Fatalf("unexpected target-lock artifact role: %s", artifact.Role)
+		}
+		if seen {
+			t.Fatalf("duplicate target-lock artifact role: %s", artifact.Role)
+		}
+		path := filepath.Join(repoRoot, filepath.FromSlash(artifact.Path))
+		info, err := os.Stat(path)
+		if err != nil {
+			t.Fatalf("locked artifact %s: %v", artifact.Role, err)
+		}
+		if info.Size() != artifact.Size {
+			t.Fatalf(
+				"locked artifact %s size mismatch: got=%d want=%d",
+				artifact.Role,
+				info.Size(),
+				artifact.Size,
+			)
+		}
+		if got := fileSHA256(t, path); got != artifact.SHA256 {
+			t.Fatalf(
+				"locked artifact %s hash mismatch: got=%s want=%s",
+				artifact.Role,
+				got,
+				artifact.SHA256,
+			)
+		}
+		requiredRoles[artifact.Role] = true
+	}
+	for role, seen := range requiredRoles {
+		if !seen {
+			t.Fatalf("target lock lacks required artifact role: %s", role)
+		}
+	}
+}
+
 func TestAllModeDictionariesMaterializeEveryEncodedSingleCharacter(
 	t *testing.T,
 ) {
+	identity := loadBundledCoreIdentity(t)
 	for _, mode := range []string{"variable", "full", "shorthand"} {
 		file, err := os.Open(
 			filepath.Join("data", "yime_"+mode+".dict.yaml"),
@@ -203,7 +357,7 @@ func TestAllModeDictionariesMaterializeEveryEncodedSingleCharacter(
 		if closeErr != nil {
 			t.Fatal(closeErr)
 		}
-		if entryCount != curatedCoreEntryCount ||
+		if entryCount != identity.EntryCount ||
 			len(singleCharacters) != encodedCharacterCount ||
 			singleMappings != 61010 {
 			t.Fatalf(
@@ -220,6 +374,7 @@ func TestAllModeDictionariesMaterializeEveryEncodedSingleCharacter(
 func TestAllCoreModesConnectLearningCustomPhrasesAndSentenceComposition(
 	t *testing.T,
 ) {
+	identity := loadBundledCoreIdentity(t)
 	for _, mode := range []string{"variable", "full", "shorthand"} {
 		data, err := os.ReadFile(
 			filepath.Join("data", "yime_"+mode+".schema.yaml"),
@@ -230,7 +385,7 @@ func TestAllCoreModesConnectLearningCustomPhrasesAndSentenceComposition(
 		content := string(data)
 		checks := []string{
 			"dictionary: yime_sentence_" + mode,
-			"user_dict: yime_" + mode + "_core_1167501_",
+			"user_dict: yime_" + mode + "_" + identity.UserDBNamespace() + "_",
 			"user_dict: custom_phrase_" + mode,
 			"enable_user_dict: true",
 			"enable_sentence: true",
@@ -249,8 +404,9 @@ func TestRuntimeProfileContainsCoreAndEncodedPeripheryThreeModeChain(
 ) {
 	var profile coreRuntimeProfile
 	readJSONFile(t, "yime_runtime_profile.json", &profile)
+	identity := loadBundledCoreIdentity(t)
 	if profile.DefaultSchema != "yime_variable" ||
-		profile.EntryCountPerMode != curatedCoreEntryCount ||
+		profile.EntryCountPerMode != identity.EntryCount ||
 		profile.SystemCandidateExclusions != systemCandidateExclusionsFileName ||
 		profile.SystemExclusionCount != 42 {
 		t.Fatalf("unexpected runtime profile: %#v", profile)

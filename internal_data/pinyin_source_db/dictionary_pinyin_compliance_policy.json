@@ -1,0 +1,162 @@
+{
+  "schema_version": "dictionary-pinyin-compliance-v1",
+  "scope": "字典拼音进入音节分解与编码之前的第一轮来源合规审查；不是普通话规范认证。",
+  "admitted_finals_by_initial": {
+    "'": "a ai an ang ao e ei en eng er o ou ê",
+    "b": "a ai an ang ao ei en eng i ian iang iao ie in ing o u",
+    "c": "a ai an ang ao e ei en eng i ong ou u uan ui un uo",
+    "ch": "a ai an ang ao e en eng i ong ou u ua uai uan uang ui un uo",
+    "d": "a ai an ang ao e ei en eng i ia ian iao ie in ing iu ong ou u uan ui un uo",
+    "f": "a an ang ei en eng iao o ou u",
+    "g": "a ai an ang ao e ei en eng ong ou u ua uai uan uang ui un uo",
+    "h": "a ai an ang ao e ei en eng m ng ong ou u ua uai uan uang ui un uo",
+    "j": "i ia ian iang iao ie in ing iong iu u uan ue un",
+    "k": "a ai an ang ao e ei en eng ong ou u ua uai uan uang ui un uo",
+    "l": "a ai an ang ao e ei en eng i ia ian iang iao ie in ing iu o ong ou u uan un uo ü üe",
+    "m": "a ai an ang ao e ei en eng i ian iao ie in ing iu o ou u",
+    "n": "a ai an ang ao e ei en eng g i ia ian iang iao ie in ing iu ong ou u uan un uo ü üe",
+    "p": "a ai an ang ao ei en eng i ian iao ie in ing o ou u",
+    "q": "i ia ian iang iao ie in ing iong iu u uan ue un",
+    "r": "a an ang ao e en eng i ong ou u ua uan ui un uo",
+    "s": "a ai an ang ao e en eng i ong ou u uan ui un uo",
+    "sh": "a ai an ang ao e ei en eng i ou u ua uai uan uang ui un uo",
+    "t": "a ai an ang ao e ei eng i ian iao ie in ing ong ou u uan ui un uo",
+    "w": "a ai an ang ei en eng o u",
+    "x": "i ia ian iang iao ie in ing iong iu u uan ue un",
+    "y": "a an ang ao e i in ing o ong ou u uan ue un",
+    "z": "a ai an ang ao e ei en eng i ong ou u uan ui un uo",
+    "zh": "a ai an ang ao e ei en eng i ong ou u ua uai uan uang ui un uo"
+  },
+  "admitted_syllabic_specials": ["m", "n", "ng", "hm", "hng", "ê"],
+  "aliases": {
+    "er5": {
+      "canonical_numeric": "er5",
+      "canonical_marked": "er",
+      "rule_id": "ORTH-ERHUA-R-RESTORE",
+      "reason": "《汉语拼音方案》允许儿化韵尾省写为 r；完整音节编码入口将该省写还原为 er5。"
+    }
+  },
+  "source_corrections": {
+    "U+25948|wong4": {
+      "canonical_numeric": "weng4",
+      "canonical_marked": "wèng",
+      "rule_id": "SRC-CORRECTION-U25948-WENG",
+      "reason": "Unihan 原始值 wòng 不符合 ong 的零声母拼写；澳典与台湾教育部字典旁证为 wèng。"
+    },
+    "U+259B7|wong4": {
+      "canonical_numeric": "weng4",
+      "canonical_marked": "wèng",
+      "rule_id": "SRC-CORRECTION-U259B7-WENG",
+      "reason": "Unihan 原始值 wòng 不符合 ong 的零声母拼写；多个现代字典旁证为 wèng。"
+    }
+  },
+  "source_aliases": {
+    "U+F9E7": {
+      "canonical_codepoint": "U+88CF",
+      "rule_id": "SRC-CJK-COMPATIBILITY-READING-ALIAS",
+      "reason": "Unicode 规范分解将 U+F9E7 映射到 U+88CF；原码点只继承规范统一字已有的 Unihan 普通话读音，不另造读音。"
+    },
+    "U+F92C": {
+      "canonical_codepoint": "U+90CE",
+      "rule_id": "SRC-CJK-COMPATIBILITY-READING-ALIAS",
+      "reason": "Unicode 规范分解将 U+F92C 映射到 U+90CE；原码点只继承规范统一字已有的 Unihan 普通话读音，不另造读音。"
+    },
+    "U+F979": {
+      "canonical_codepoint": "U+51C9",
+      "rule_id": "SRC-CJK-COMPATIBILITY-READING-ALIAS",
+      "reason": "Unicode 规范分解将 U+F979 映射到 U+51C9；原码点只继承规范统一字已有的 Unihan 普通话读音，不另造读音。"
+    },
+    "U+F9F1": {
+      "canonical_codepoint": "U+96A3",
+      "rule_id": "SRC-CJK-COMPATIBILITY-READING-ALIAS",
+      "reason": "Unicode 规范分解将 U+F9F1 映射到 U+96A3；原码点只继承规范统一字已有的 Unihan 普通话读音，不另造读音。"
+    },
+    "U+FA0C": {
+      "canonical_codepoint": "U+5140",
+      "rule_id": "SRC-CJK-COMPATIBILITY-READING-ALIAS",
+      "reason": "Unicode 规范分解将 U+FA0C 映射到 U+5140；原码点只继承规范统一字已有的 Unihan 普通话读音，不另造读音。"
+    },
+    "U+FA0D": {
+      "canonical_codepoint": "U+55C0",
+      "rule_id": "SRC-CJK-COMPATIBILITY-READING-ALIAS",
+      "reason": "Unicode 规范分解将 U+FA0D 映射到 U+55C0；原码点只继承规范统一字已有的 Unihan 普通话读音，不另造读音。"
+    },
+    "U+FA20": {
+      "canonical_codepoint": "U+8612",
+      "rule_id": "SRC-CJK-COMPATIBILITY-READING-ALIAS",
+      "reason": "Unicode 规范分解将 U+FA20 映射到 U+8612；原码点只继承规范统一字已有的 Unihan 普通话读音，不另造读音。"
+    }
+  },
+  "unencoded_pending_codepoints": {
+    "U+3CC9": {
+      "character": "㳉",
+      "rule_id": "SRC-DEFER-MISSING-TRUSTED-MANDARIN-READING",
+      "reason": "Unihan 仅有粤语和越南语字段，没有普通话读音，也没有可继承读音的 Unicode 规范分解；当前暂无可信普通话读音来源，故未予编码，保留待专家或未来来源复核。"
+    },
+    "U+FA0E": {
+      "character": "﨎",
+      "rule_id": "SRC-DEFER-MISSING-TRUSTED-MANDARIN-READING",
+      "reason": "Unicode 没有提供可直接继承读音的一对一规范分解，Unihan 也没有普通话字段；当前暂无可信普通话读音来源，故未予编码，不按相似字形猜读，保留待专家或未来来源复核。"
+    },
+    "U+FA11": {
+      "character": "﨑",
+      "rule_id": "SRC-DEFER-MISSING-TRUSTED-MANDARIN-READING",
+      "reason": "Unicode 没有提供可直接继承读音的一对一规范分解，Unihan 也没有普通话字段；当前暂无可信普通话读音来源，故未予编码，不按相似字形猜读，保留待专家或未来来源复核。"
+    },
+    "U+FA1F": {
+      "character": "﨟",
+      "rule_id": "SRC-DEFER-MISSING-TRUSTED-MANDARIN-READING",
+      "reason": "Unicode 没有提供可直接继承读音的一对一规范分解，Unihan 也没有普通话字段；当前暂无可信普通话读音来源，故未予编码，不按相似字形猜读，保留待专家或未来来源复核。"
+    },
+    "U+FA21": {
+      "character": "﨡",
+      "rule_id": "SRC-DEFER-MISSING-TRUSTED-MANDARIN-READING",
+      "reason": "Unicode 没有提供可直接继承读音的一对一规范分解，Unihan 也没有普通话字段；当前暂无可信普通话读音来源，故未予编码，不按相似字形猜读，保留待专家或未来来源复核。"
+    },
+    "U+FA23": {
+      "character": "﨣",
+      "rule_id": "SRC-DEFER-MISSING-TRUSTED-MANDARIN-READING",
+      "reason": "Unicode 没有提供可直接继承读音的一对一规范分解，Unihan 也没有普通话字段；当前暂无可信普通话读音来源，故未予编码，不按相似字形猜读，保留待专家或未来来源复核。"
+    },
+    "U+FA24": {
+      "character": "﨤",
+      "rule_id": "SRC-DEFER-MISSING-TRUSTED-MANDARIN-READING",
+      "reason": "Unicode 没有提供可直接继承读音的一对一规范分解，Unihan 也没有普通话字段；当前暂无可信普通话读音来源，故未予编码，不按相似字形猜读，保留待专家或未来来源复核。"
+    },
+    "U+FA27": {
+      "character": "﨧",
+      "rule_id": "SRC-DEFER-MISSING-TRUSTED-MANDARIN-READING",
+      "reason": "Unicode 没有提供可直接继承读音的一对一规范分解，Unihan 也没有普通话字段；当前暂无可信普通话读音来源，故未予编码，不按相似字形猜读，保留待专家或未来来源复核。"
+    },
+    "U+FA28": {
+      "character": "﨨",
+      "rule_id": "SRC-DEFER-MISSING-TRUSTED-MANDARIN-READING",
+      "reason": "Unicode 没有提供可直接继承读音的一对一规范分解，Unihan 也没有普通话字段；当前暂无可信普通话读音来源，故未予编码，不按相似字形猜读，保留待专家或未来来源复核。"
+    },
+    "U+FA29": {
+      "character": "﨩",
+      "rule_id": "SRC-DEFER-MISSING-TRUSTED-MANDARIN-READING",
+      "reason": "Unicode 没有提供可直接继承读音的一对一规范分解，Unihan 也没有普通话字段；当前暂无可信普通话读音来源，故未予编码，不按相似字形猜读，保留待专家或未来来源复核。"
+    }
+  },
+  "source_exclusions": {
+    "U+84DD|la5": {
+      "rule_id": "SRC-EXCLUDE-U84DD-LA5",
+      "status": "excluded_obsolete_reading",
+      "reason": "上游单字源保留蓝的 la 旧读；1985 年《普通话异读词审音表》规定“蓝读 lán，在‘苤蓝’中读 lan，不读 la”，故不作为现行普通话单字读音进入解码。",
+      "review_note": "排除 U+84DD 蓝的孤立 la5；保留本调 lan2，并将苤蓝等词中的 lan5 仅作为有来源约束的词境读音处理。"
+    },
+    "U+85CD|la5": {
+      "rule_id": "SRC-EXCLUDE-U85CD-LA5",
+      "status": "excluded_obsolete_reading",
+      "reason": "Unihan kXHC1983 保留《现代汉语词典》1983 年版 la 旧读；1985 年《普通话异读词审音表》规定“蓝读 lán，在‘苤蓝’中读 lan，不读 la”，故不作为现行普通话单字读音进入解码。",
+      "review_note": "排除 U+85CD 藍的孤立 la5；保留本调 lan2，并将苤藍等词中的 lan5 仅作为有来源约束的词境读音处理。"
+    },
+    "U+31FC5|bong4": {
+      "rule_id": "SRC-EXCLUDE-U31FC5-BONG",
+      "status": "excluded_nonstandard_orthography",
+      "reason": "来源记录 bòng，但普通话唇音声母 b 不与 ong 相拼；保留来源证据，不进入音节分解。",
+      "review_note": "字典与 Unicode 资料支持地方读音 bòng；当地以“茨”代写不构成把原字改读 cí 的依据。"
+    }
+  }
+}

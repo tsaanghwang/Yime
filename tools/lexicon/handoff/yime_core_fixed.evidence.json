@@ -1,0 +1,114 @@
+{
+  "schema_version": "yime-approved-core-evidence-v2",
+  "status": "approved_windows_handoff_target",
+  "source_dictionary": "yime_core_fixed.dict.yaml",
+  "output_sha256": "7edf122913925291d1259241d3b1494faec9173a478a1658e0959062c1e8f155",
+  "selection_tsv_sha256": "4ec48d3627b8efa8344d38430f85710570a6576693cc0cd2990dc3fb4e3bac17",
+  "total_reading_entries": 1166753,
+  "total_distinct_texts": 1151404,
+  "distinct_texts_by_length": {
+    "1": 46095,
+    "2": 380091,
+    "3": 655896,
+    "4": 62563,
+    "5": 2588,
+    "6": 1615,
+    "7": 1646,
+    "8": 359,
+    "9": 343,
+    "10": 100,
+    "11": 45,
+    "12": 18,
+    "13": 21,
+    "14": 7,
+    "15": 6,
+    "16": 3,
+    "17": 2,
+    "19": 2,
+    "20": 1,
+    "21": 1,
+    "24": 2
+  },
+  "reading_entries_by_length": {
+    "1": 61010,
+    "2": 380462,
+    "3": 655952,
+    "4": 62570,
+    "5": 2588,
+    "6": 1615,
+    "7": 1646,
+    "8": 359,
+    "9": 343,
+    "10": 100,
+    "11": 45,
+    "12": 18,
+    "13": 21,
+    "14": 7,
+    "15": 6,
+    "16": 3,
+    "17": 2,
+    "19": 2,
+    "20": 1,
+    "21": 1,
+    "24": 2
+  },
+  "single_character_ranking": {
+    "core_maximum_tier": 5,
+    "core_weight_offset": 100000000,
+    "peripheral_weight_offset": 0,
+    "require_core_above_peripheral": true,
+    "core_distinct_characters": 14000,
+    "core_reading_entries": 21755,
+    "peripheral_distinct_characters": 32095,
+    "peripheral_reading_entries": 39255,
+    "minimum_core_weight": 100000997,
+    "maximum_peripheral_weight": 7469,
+    "core_above_peripheral": true
+  },
+  "ranking_evidence": {
+    "policy_id": "bcc-primary-lmdg-fallback-structural-floor-v1",
+    "policy_sha256": "bb9bd3bd63bebc2e449785ca2586a6dd0dae9ad8797fc36e17aed57fba9c3d61",
+    "distinct_texts_by_source": {
+      "direct_bcc": 379513,
+      "provisional_rime_lmdg": 586954,
+      "provisional_structural_floor": 184937
+    },
+    "missing_selected_source_texts": 0,
+    "raw_bcc_and_lmdg_values_added": false
+  },
+  "provenance": {
+    "method": "two_identical_clean_rebuilds",
+    "source_date_epoch": 1787270400,
+    "runtime_database": {
+      "bytes": 5491941376,
+      "sha256": "694a5c984c3784dd2a07f49db454e69d01e08b24ce7de14b45ac10b70e315379"
+    },
+    "source_artifacts": {
+      "entries.tsv": {
+        "bytes": 379950992,
+        "sha256": "c703878c4fde19ca2f625c630aa9f251c8d72b48082c011e42dc0398ddff27e6"
+      },
+      "reading_conflicts.tsv": {
+        "bytes": 7885222,
+        "sha256": "de41f79d9c5b75d25374c041f40200cdba429028e9e74e3e904359daca84f8ff"
+      },
+      "rejected_readings.tsv": {
+        "bytes": 2349,
+        "sha256": "f89b5888713a0ae5e27a586460d0ddec1640cb52c74e13101d3a8e6fe138a0f4"
+      },
+      "unencoded_pending_strings.tsv": {
+        "bytes": 2929,
+        "sha256": "abc5d2aed2efb3d736ceb15a14d4d505adf985b7533994f378f467bbe0a8d17c"
+      },
+      "unresolved_bcc.tsv": {
+        "bytes": 64788892,
+        "sha256": "5c148b8839fd80f8a6b34fce03d78870f286a1a3f1813a49327840bcb1ff78ee"
+      },
+      "character_tiers.tsv": {
+        "bytes": 17453131,
+        "sha256": "05ef6bb19c27f1c846d148804ea2cab06c22ce435ea9f6217d7f43897e8dd905"
+      }
+    },
+    "note": "The current formal process result is the approved Windows handoff identity; no historical entry-count adjustment was applied."
+  }
+}

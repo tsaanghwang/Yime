@@ -1,0 +1,167 @@
+{
+  "schema_version": 1,
+  "catalog_id": "dynamic-candidate-coverage-pilot-decisions",
+  "safeguards": {
+    "source_lexicon_is_read_only": true,
+    "frequency_orders_review_only": true,
+    "missing_context_is_not_negative_evidence": true
+  },
+  "batches": [
+    {
+      "batch_id": "suffix-particle-bcc-ge-10000-v1",
+      "signal": "suffix_particle",
+      "selection": {
+        "minimum_bcc_frequency": 10000,
+        "snapshot_queue_size": 84662,
+        "selected_count": 11
+      },
+      "decisions": [
+        {
+          "text": "为了",
+          "bcc_frequency_at_review": 551076,
+          "candidate_class": "fixed_expression",
+          "integration_policy": "static_keep",
+          "decision_status": "approved",
+          "confidence": 0.99,
+          "rationale": "高频固定介词结构；尾字“了”是词内成分，不能判为确定性无效材料。",
+          "assessor": "codex:dynamic-coverage-pilot"
+        },
+        {
+          "text": "有的",
+          "bcc_frequency_at_review": 314439,
+          "candidate_class": "fixed_expression",
+          "integration_policy": "static_keep",
+          "decision_status": "approved",
+          "confidence": 0.98,
+          "rationale": "可独立使用的代词性固定表达；不能因尾字“的”进入无效材料隔离。",
+          "assessor": "codex:dynamic-coverage-pilot"
+        },
+        {
+          "text": "真的",
+          "bcc_frequency_at_review": 142354,
+          "candidate_class": "lexical_candidate",
+          "integration_policy": "static_keep",
+          "decision_status": "approved",
+          "confidence": 0.97,
+          "rationale": "常用词汇性表达，具有稳定独立候选价值。",
+          "assessor": "codex:dynamic-coverage-pilot"
+        },
+        {
+          "text": "是的",
+          "bcc_frequency_at_review": 134990,
+          "candidate_class": "fixed_expression",
+          "integration_policy": "static_keep",
+          "decision_status": "approved",
+          "confidence": 0.99,
+          "rationale": "稳定应答表达，具有明确独立候选价值。",
+          "assessor": "codex:dynamic-coverage-pilot"
+        },
+        {
+          "text": "除了",
+          "bcc_frequency_at_review": 126849,
+          "candidate_class": "lexical_candidate",
+          "integration_policy": "static_keep",
+          "decision_status": "approved",
+          "confidence": 0.99,
+          "rationale": "常用介词，尾字“了”不是句末助词，也不是确定性无效材料。",
+          "assessor": "codex:dynamic-coverage-pilot"
+        },
+        {
+          "text": "小的",
+          "bcc_frequency_at_review": 101700,
+          "candidate_class": "context_dependent",
+          "integration_policy": "needs_review",
+          "decision_status": "deferred",
+          "confidence": 0.75,
+          "rationale": "可作省略中心语的名词性表达，也可能是上下文片段；缺少 KWIC 和动态召回回放，暂不决定静态去留。",
+          "assessor": "codex:dynamic-coverage-pilot"
+        },
+        {
+          "text": "似的",
+          "bcc_frequency_at_review": 48801,
+          "candidate_class": "fixed_expression",
+          "integration_policy": "static_keep",
+          "decision_status": "approved",
+          "confidence": 0.99,
+          "rationale": "与“般的”同属比拟的字构式族，但预制收益显著更高；保留直接候选，同时作为递归组合部件。",
+          "assessor": "codex:construction-component-evaluation",
+          "evidence": {
+            "construction_family": "de_construction",
+            "particle_system": "structural_particles",
+            "particle_construction": "attributive_de",
+            "construction_subfamily": "similative_de_construction",
+            "construction_variant": "shi_de",
+            "prebuilt_component_decision": "keep_as_display_and_component",
+            "evaluation_target_readings": 213,
+            "reachable_with_component": 213,
+            "reachable_without_component": 213,
+            "minimum_part_count_improved": 173,
+            "total_parts_saved": 173,
+            "bcc_weighted_parts_saved": 0,
+            "new_minimum_segmentation_ambiguities": 18,
+            "minimum_part_count_improvement_ratio": 0.8122,
+            "structural_competition_ratio": 0.0845,
+            "user_visible_output_ambiguities": 0,
+            "evaluation_report": ".generated/construction_component_evaluation_shide/report.json"
+          }
+        },
+        {
+          "text": "别的",
+          "bcc_frequency_at_review": 45117,
+          "candidate_class": "fixed_expression",
+          "integration_policy": "static_keep",
+          "decision_status": "approved",
+          "confidence": 0.98,
+          "rationale": "可独立使用的代词性固定表达，保留静态候选。",
+          "assessor": "codex:dynamic-coverage-pilot"
+        },
+        {
+          "text": "般的",
+          "bcc_frequency_at_review": 25943,
+          "candidate_class": "semi_fixed_construction",
+          "integration_policy": "needs_review",
+          "decision_status": "deferred",
+          "confidence": 0.98,
+          "rationale": "“X般的”构式应由较小部件生成；真实来源 A/B 中预制“般的”仅减少 11 次组合，却新增 32 个最短切分歧义，故不作为核心预制部件。直接候选是否迁移仍等待运行回放。",
+          "assessor": "codex:construction-component-evaluation",
+          "evidence": {
+            "construction_family": "de_construction",
+            "particle_system": "structural_particles",
+            "particle_construction": "attributive_de",
+            "construction_subfamily": "similative_de_construction",
+            "construction_variant": "ban_de",
+            "prebuilt_component_decision": "do_not_prebuild_use_runtime_generation",
+            "evaluation_target_readings": 90,
+            "reachable_with_component": 90,
+            "reachable_without_component": 90,
+            "minimum_part_count_improved": 11,
+            "total_parts_saved": 11,
+            "bcc_weighted_parts_saved": 0,
+            "new_minimum_segmentation_ambiguities": 32,
+            "evaluation_report": ".generated/construction_component_evaluation/report.json"
+          }
+        },
+        {
+          "text": "罢了",
+          "bcc_frequency_at_review": 11894,
+          "candidate_class": "fixed_expression",
+          "integration_policy": "static_keep",
+          "decision_status": "approved",
+          "confidence": 0.99,
+          "rationale": "固定语气表达，整体候选价值明确。",
+          "assessor": "codex:dynamic-coverage-pilot"
+        },
+        {
+          "text": "极了",
+          "bcc_frequency_at_review": 11522,
+          "candidate_class": "semi_fixed_construction",
+          "integration_policy": "static_keep",
+          "decision_status": "approved",
+          "confidence": 0.95,
+          "rationale": "高生产力补语构式，但整体输入频繁且稳定；首批保守保留，后续用动态召回回放复核。",
+          "assessor": "codex:dynamic-coverage-pilot"
+        }
+      ]
+    }
+  ]
+}

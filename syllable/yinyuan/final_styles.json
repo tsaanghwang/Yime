@@ -1,0 +1,139 @@
+{
+  "generated_from": "external_data/finals_IPA_mapping.json",
+  "finals": {
+    "single quality finals": {
+      "i": {
+        "ipa": "i"
+      },
+      "u": {
+        "ipa": "u"
+      },
+      "ü": {
+        "ipa": "ʏ"
+      },
+      "a": {
+        "ipa": "ä"
+      },
+      "o": {
+        "ipa": "o"
+      },
+      "e": {
+        "ipa": "ɤ"
+      },
+      "ê": {
+        "ipa": "e̞"
+      },
+      "_i": {
+        "ipa": "ɿ/ʅ"
+      },
+      "er": {
+        "ipa": "ɚ"
+      },
+      "m": {
+        "ipa": "m̩"
+      },
+      "n": {
+        "ipa": "n̩"
+      },
+      "ng": {
+        "ipa": "ŋ̩"
+      }
+    },
+    "front long finals": {
+      "ai": {
+        "ipa": "aɪ"
+      },
+      "ei": {
+        "ipa": "eɪ"
+      },
+      "ao": {
+        "ipa": "ɑʊ"
+      },
+      "ou": {
+        "ipa": "ɤʊ"
+      },
+      "an": {
+        "ipa": "an"
+      },
+      "en": {
+        "ipa": "ən"
+      },
+      "ang": {
+        "ipa": "ɑŋ"
+      },
+      "eng": {
+        "ipa": "ɤŋ"
+      }
+    },
+    "back long finals": {
+      "ia": {
+        "ipa": "iä"
+      },
+      "ua": {
+        "ipa": "uä"
+      },
+      "io": {
+        "ipa": "io"
+      },
+      "uo": {
+        "ipa": "uo"
+      },
+      "ie": {
+        "ipa": "ie̞"
+      },
+      "üe": {
+        "ipa": "ʏe̞"
+      }
+    },
+    "triple quality finals": {
+      "uai": {
+        "ipa": "uaɪ"
+      },
+      "uei": {
+        "ipa": "ueɪ"
+      },
+      "iao": {
+        "ipa": "iɑʊ"
+      },
+      "iou": {
+        "ipa": "iɤʊ"
+      },
+      "ian": {
+        "ipa": "iɛ̞n"
+      },
+      "uan": {
+        "ipa": "uan"
+      },
+      "üan": {
+        "ipa": "ʏɛ̞n"
+      },
+      "uen": {
+        "ipa": "uən"
+      },
+      "in": {
+        "ipa": "iə̆n"
+      },
+      "ün": {
+        "ipa": "ʏə̆n"
+      },
+      "iang": {
+        "ipa": "iɑŋ"
+      },
+      "uang": {
+        "ipa": "uɑŋ"
+      },
+      "ueng": {
+        "ipa": "uɤŋ"
+      },
+      "ing": {
+        "ipa": "iɘ̠̆ŋ"
+      },
+      "ong": {
+        "ipa": "ʊɘ̠̆ŋ"
+      },
+      "iong": {
+        "ipa": "yɘ̠̆ŋ"
+      }
+    }
+  }
+}

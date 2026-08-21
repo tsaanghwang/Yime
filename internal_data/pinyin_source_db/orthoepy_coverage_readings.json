@@ -1,0 +1,3162 @@
+{
+  "schema_version": "yime-reviewed-orthoepy-readings-v1",
+  "policy": {
+    "purpose": "Add source-attested input coverage only.",
+    "ranking": "Never mark an orthoepy addition as source-primary.",
+    "official_1985": "Direct missing single-character readings may be admitted automatically.",
+    "draft_2016": "Consultation-draft records require an explicit manual approval."
+  },
+  "records": [
+    {
+      "text": "一个当俩",
+      "marked_pinyin": "yī gè dàng liǎ",
+      "numeric_pinyin": "yi1 ge4 dang4 lia3",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "2bccdc2860746dc36dbe1651167538aadf70f50d72359fcef6663a2bd7e90b3e",
+          "source_row": 144,
+          "word_page_number": 18,
+          "section_label": "D",
+          "candidate_kind": "example_phrase",
+          "target_reading": "dàng",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "一个当俩",
+      "marked_pinyin": "yī gè dàng liǎ",
+      "numeric_pinyin": "yi1 ge4 dang4 lia3",
+      "source": "psc_orthoepy_2016_draft",
+      "source_category": "consultation_draft",
+      "source_rank": 95,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "4cad2951883bf42eb0070c3475a2e6584a01ca3b502bfd992905a80e76a261ee",
+          "source_row": 144,
+          "word_page_number": 18,
+          "section_label": "D",
+          "candidate_kind": "example_phrase",
+          "target_reading": "dàng",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "一场大雨",
+      "marked_pinyin": "yì chǎng dà yǔ",
+      "numeric_pinyin": "yi4 chang3 da4 yu3",
+      "source": "psc_orthoepy_2016_draft",
+      "source_category": "consultation_draft",
+      "source_rank": 95,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "cd27de16b2860d510a31ea0cda79b3399d7913ae7c106744964de6c33676ef5f",
+          "source_row": 91,
+          "word_page_number": 12,
+          "section_label": "C",
+          "candidate_kind": "example_phrase",
+          "target_reading": "chǎng",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "一差二错",
+      "marked_pinyin": "yī chā èr cuò",
+      "numeric_pinyin": "yi1 cha1 er4 cuo4",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "e046489be6ee2487643727924c0a28ee98b1342c05d0f0f7e2009eaf64bcfbde",
+          "source_row": 83,
+          "word_page_number": 11,
+          "section_label": "C",
+          "candidate_kind": "example_phrase",
+          "target_reading": "chā",
+          "approval": "automatic_direct_official",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "一差二错",
+      "marked_pinyin": "yī chā èr cuò",
+      "numeric_pinyin": "yi1 cha1 er4 cuo4",
+      "source": "psc_orthoepy_2016_draft",
+      "source_category": "consultation_draft",
+      "source_rank": 95,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "08d9c3c230d84e1d3ee18ca3620ff28bd0a133724ed551e01867b18c1593a10f",
+          "source_row": 83,
+          "word_page_number": 11,
+          "section_label": "C",
+          "candidate_kind": "example_phrase",
+          "target_reading": "chā",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "一幢楼房",
+      "marked_pinyin": "yī zhuàng lóu fáng",
+      "numeric_pinyin": "yi1 zhuang4 lou2 fang2",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "1592ab2b0aa8513d60feed5294d2fe84932defccb80bd8cca17e1616d0d01604",
+          "source_row": 858,
+          "word_page_number": 82,
+          "section_label": "Z",
+          "candidate_kind": "example_phrase",
+          "target_reading": "zhuàng",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "一撮儿匪帮",
+      "marked_pinyin": "yī cuō er fěi bāng",
+      "numeric_pinyin": "yi1 cuo1 er5 fei3 bang1",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "cf37b4e54ce4028cbde23f8e2f51bdad8db6319d219e818eeec924bae978b6d3",
+          "source_row": 134,
+          "word_page_number": 17,
+          "section_label": "C",
+          "candidate_kind": "example_phrase",
+          "target_reading": "cuō",
+          "approval": "approve",
+          "note": "暂不按“儿化”标音法标音"
+        }
+      ]
+    },
+    {
+      "text": "一撮儿毛",
+      "marked_pinyin": "yī zuǒ er máo",
+      "numeric_pinyin": "yi1 zuo3 er5 mao2",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "7c2a80a9c737efaa6e6757ebfa2593963522363269798a2c05dc055d1de9f624",
+          "source_row": 134,
+          "word_page_number": 17,
+          "section_label": "C",
+          "candidate_kind": "example_phrase",
+          "target_reading": "zuǒ",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "一撮儿盐",
+      "marked_pinyin": "yī cuō er yán",
+      "numeric_pinyin": "yi1 cuo1 er5 yan2",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "16e1a4c3c8bfca7f8a59375c539098362f2cfce40069850a8dd2bf47ed60ab8d",
+          "source_row": 134,
+          "word_page_number": 17,
+          "section_label": "C",
+          "candidate_kind": "example_phrase",
+          "target_reading": "cuō",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "一暴",
+      "marked_pinyin": "yī pù",
+      "numeric_pinyin": "yi1 pu4",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "8883ff101cc9af6d71cd6a9d9e1a78d27cf31f35cff5b9c95f489925f8933b7c",
+          "source_row": 28,
+          "word_page_number": 6,
+          "section_label": "B",
+          "candidate_kind": "example_phrase",
+          "target_reading": "pù",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "不差什么",
+      "marked_pinyin": "bù chā shén me",
+      "numeric_pinyin": "bu4 cha1 shen2 me5",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "f7910916401f74101104c4969917d8b83ec18de8f5dc294937d57a00182cf5a0",
+          "source_row": 83,
+          "word_page_number": 11,
+          "section_label": "C",
+          "candidate_kind": "example_phrase",
+          "target_reading": "chā",
+          "approval": "automatic_direct_official",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "丧",
+      "marked_pinyin": "sang",
+      "numeric_pinyin": "sang5",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "fd66dc4d638de742859a0d45395edf9e608c2734e166392cd64385bb4b553e33",
+          "source_row": 575,
+          "word_page_number": 58,
+          "section_label": "S",
+          "candidate_kind": "single_char",
+          "target_reading": "sang",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "中间儿",
+      "marked_pinyin": "zhōng jiàn ér",
+      "numeric_pinyin": "zhong1 jian4 er2",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "5f6463d35511a598f8d40704195370ca0873cbb46ec6bb66f52ed24ea1a17768",
+          "source_row": 296,
+          "word_page_number": 31,
+          "section_label": "J",
+          "candidate_kind": "example_phrase",
+          "target_reading": "jiàn",
+          "approval": "automatic_direct_official",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "交通堵塞",
+      "marked_pinyin": "jiāo tōng dǔ sè",
+      "numeric_pinyin": "jiao1 tong1 du3 se4",
+      "source": "psc_orthoepy_2016_draft",
+      "source_category": "consultation_draft",
+      "source_rank": 95,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "c73eb12d83995b3bc44debd5a7eae4f67d57e6b7e4db52be629f2efe517b9894",
+          "source_row": 579,
+          "word_page_number": 58,
+          "section_label": "S",
+          "candidate_kind": "example_phrase",
+          "target_reading": "sè",
+          "approval": "corrected_approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "伯",
+      "marked_pinyin": "bāi",
+      "numeric_pinyin": "bai1",
+      "source": "psc_orthoepy_2016_draft",
+      "source_category": "consultation_draft",
+      "source_rank": 95,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "ddcfb1d959f05d82ae6ee8b2ff7b6de19a43ff8cc983ab20c73d189601be608e",
+          "source_row": 63,
+          "word_page_number": 9,
+          "section_label": "B",
+          "candidate_kind": "single_char",
+          "target_reading": "bāi",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "伯伯",
+      "marked_pinyin": "bó bo",
+      "numeric_pinyin": "bo2 bo5",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "abc3a9915aa0205037d502fb376679107cd7fd5c6316f54d72cf3a84423ee1fe",
+          "source_row": 63,
+          "word_page_number": 9,
+          "section_label": "B",
+          "candidate_kind": "example_phrase",
+          "target_reading": "bó",
+          "approval": "corrected_approve",
+          "note": "审音：～～（bo），表示第二音节读轻声。"
+        }
+      ]
+    },
+    {
+      "text": "伯伯",
+      "marked_pinyin": "bó bo",
+      "numeric_pinyin": "bo2 bo5",
+      "source": "psc_orthoepy_2016_draft",
+      "source_category": "consultation_draft",
+      "source_rank": 95,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "b24208a8d280f4031d64178ad4a43f0d96c305e1440d6a0d8387806d5d80ef62",
+          "source_row": 63,
+          "word_page_number": 9,
+          "section_label": "B",
+          "candidate_kind": "example_phrase",
+          "target_reading": "bó",
+          "approval": "corrected_approve",
+          "note": "审音：～～（bo）。括号内表示第二音节读轻声。"
+        }
+      ]
+    },
+    {
+      "text": "作揖",
+      "marked_pinyin": "zuō yī",
+      "numeric_pinyin": "zuo1 yi1",
+      "source": "psc_orthoepy_2016_draft",
+      "source_category": "consultation_draft",
+      "source_rank": 95,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "767cc9c2989e44afedb490abf37133005809d82b11a6b456456f01da4fd63653",
+          "source_row": 873,
+          "word_page_number": 83,
+          "section_label": "Z",
+          "candidate_kind": "example_phrase",
+          "target_reading": "zuō",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "作践",
+      "marked_pinyin": "zuō jiàn",
+      "numeric_pinyin": "zuo1 jian4",
+      "source": "psc_orthoepy_2016_draft",
+      "source_category": "consultation_draft",
+      "source_rank": 95,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "9cfb368ef6225084840e83af4c19d95d23ff0d4219e07bc02847e449b3b5bd67",
+          "source_row": 873,
+          "word_page_number": 83,
+          "section_label": "Z",
+          "candidate_kind": "example_phrase",
+          "target_reading": "zuō",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "佣金",
+      "marked_pinyin": "yōng jīn",
+      "numeric_pinyin": "yong1 jin1",
+      "source": "psc_orthoepy_2016_draft",
+      "source_category": "consultation_draft",
+      "source_rank": 95,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "6bda63e27f222f1177b3dd196ca1fbd854d720f38ff53e35e4cdf78aabd0e006",
+          "source_row": 785,
+          "word_page_number": 76,
+          "section_label": "Y",
+          "candidate_kind": "example_phrase",
+          "target_reading": "yōng",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "倾箱倒箧",
+      "marked_pinyin": "qīng xiāng dǎo qiè",
+      "numeric_pinyin": "qing1 xiang1 dao3 qie4",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "137ed0d4cbdd0855829bed2d496009c21b33fd7be89b06ae06fc0b537405eb24",
+          "source_row": 148,
+          "word_page_number": 18,
+          "section_label": "D",
+          "candidate_kind": "example_phrase",
+          "target_reading": "dǎo",
+          "approval": "automatic_direct_official",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "倾箱倒箧",
+      "marked_pinyin": "qīng xiāng dǎo qiè",
+      "numeric_pinyin": "qing1 xiang1 dao3 qie4",
+      "source": "psc_orthoepy_2016_draft",
+      "source_category": "consultation_draft",
+      "source_rank": 95,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "ee5ee2b6430062c185c34e000f55acc7e2a970631aa1747a456117afed9c8dff",
+          "source_row": 148,
+          "word_page_number": 18,
+          "section_label": "D",
+          "candidate_kind": "example_phrase",
+          "target_reading": "dǎo",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "剽悍",
+      "marked_pinyin": "piào hàn",
+      "numeric_pinyin": "piao4 han4",
+      "source": "psc_orthoepy_2016_draft",
+      "source_category": "consultation_draft",
+      "source_rank": 95,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "9a948b91d27a9758b46c8fa234c9271fa912baaca1e8c1abe9c2f3656dd1a6b4",
+          "source_row": 497,
+          "word_page_number": 51,
+          "section_label": "P",
+          "candidate_kind": "example_phrase",
+          "target_reading": "piào",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "剽窃",
+      "marked_pinyin": "piáo qiè",
+      "numeric_pinyin": "piao2 qie4",
+      "source": "psc_orthoepy_2016_draft",
+      "source_category": "consultation_draft",
+      "source_rank": 95,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "89ebec597a7fcae8806f1491769765fa1e805bccd5cc117a0ecd68da2d3221ce",
+          "source_row": 497,
+          "word_page_number": 51,
+          "section_label": "P",
+          "candidate_kind": "example_phrase",
+          "target_reading": "piáo",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "千斤",
+      "marked_pinyin": "qiān jin",
+      "numeric_pinyin": "qian1 jin5",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "66cd7dc1c0d573e718c53b74c48aa2bf8ef183b9cf9caf34009e679c68f3822b",
+          "source_row": 319,
+          "word_page_number": 34,
+          "section_label": "J",
+          "candidate_kind": "example_phrase",
+          "target_reading": "jin",
+          "approval": "automatic_direct_official",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "厚薄不均",
+      "marked_pinyin": "hòu báo bù jūn",
+      "numeric_pinyin": "hou4 bao2 bu4 jun1",
+      "source": "psc_orthoepy_2016_draft",
+      "source_category": "consultation_draft",
+      "source_rank": 95,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "eebe51aadbdd5a987e903ae6877e458c528f1ee7bc7cdc4f2550b81b120009ef",
+          "source_row": 26,
+          "word_page_number": 5,
+          "section_label": "B",
+          "candidate_kind": "example_phrase",
+          "target_reading": "báo",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "受劳累",
+      "marked_pinyin": "shòu láo lèi",
+      "numeric_pinyin": "shou4 lao2 lei4",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "87b30d53faa67b28e970bcfdc5c9c30605cc18e15462c2e4892023523dbdce11",
+          "source_row": 382,
+          "word_page_number": 40,
+          "section_label": "L",
+          "candidate_kind": "example_phrase",
+          "target_reading": "lèi",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "受累",
+      "marked_pinyin": "shòu lèi",
+      "numeric_pinyin": "shou4 lei4",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "5c94117264a0def29154a7b2499f65dd2db5d9e60f33b30b64a3ae3b4d3c255c",
+          "source_row": 382,
+          "word_page_number": 40,
+          "section_label": "L",
+          "candidate_kind": "example_phrase",
+          "target_reading": "lèi",
+          "approval": "automatic_direct_official",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "受累",
+      "marked_pinyin": "shòu lèi",
+      "numeric_pinyin": "shou4 lei4",
+      "source": "psc_orthoepy_2016_draft",
+      "source_category": "consultation_draft",
+      "source_rank": 95,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "5ce28c5ad68922f73e35265bfe7ebdb13b6627749350bcb8b63441363f7410fe",
+          "source_row": 382,
+          "word_page_number": 40,
+          "section_label": "L",
+          "candidate_kind": "example_phrase",
+          "target_reading": "lèi",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "哭丧着脸",
+      "marked_pinyin": "kū sang zhe liǎn",
+      "numeric_pinyin": "ku1 sang5 zhe5 lian3",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "e4b1b13279c6a1bb34f0ed2d2ff760ec6cd7648c61e59db7225b34dcdce601f1",
+          "source_row": 575,
+          "word_page_number": 58,
+          "section_label": "S",
+          "candidate_kind": "example_phrase",
+          "target_reading": "sang",
+          "approval": "automatic_direct_official",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "喷",
+      "marked_pinyin": "pen",
+      "numeric_pinyin": "pen5",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "6916ebed488cf6ce6c682c4bb7fb06668bdaba167ca1867cdc9d9fea691ea99b",
+          "source_row": 489,
+          "word_page_number": 50,
+          "section_label": "P",
+          "candidate_kind": "single_char",
+          "target_reading": "pen",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "嚏喷",
+      "marked_pinyin": "tì pen",
+      "numeric_pinyin": "ti4 pen5",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "f5a84d548510d911f69b3bfb0ef3b9ba28e95ab335629b33a78e4b2be9afcdc4",
+          "source_row": 489,
+          "word_page_number": 50,
+          "section_label": "P",
+          "candidate_kind": "example_phrase",
+          "target_reading": "pen",
+          "approval": "automatic_direct_official",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "圩场",
+      "marked_pinyin": "xū chǎng",
+      "numeric_pinyin": "xu1 chang3",
+      "source": "psc_orthoepy_2016_draft",
+      "source_category": "consultation_draft",
+      "source_rank": 95,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "66b6da9ef33b92b0c899c767247e8b4fd62e50aff02629e1d3271f49767e50ce",
+          "source_row": 91,
+          "word_page_number": 12,
+          "section_label": "C",
+          "candidate_kind": "example_phrase",
+          "target_reading": "chǎng",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "场",
+      "marked_pinyin": "chang",
+      "numeric_pinyin": "chang5",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "ed2bea4484158723328d73706d6574b40403f656f3fc86875119bf5b2c9bc3a3",
+          "source_row": 91,
+          "word_page_number": 12,
+          "section_label": "C",
+          "candidate_kind": "single_char",
+          "target_reading": "chang",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "场",
+      "marked_pinyin": "chang",
+      "numeric_pinyin": "chang5",
+      "source": "psc_orthoepy_2016_draft",
+      "source_category": "consultation_draft",
+      "source_rank": 95,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "cfcbf7281c9191c39c79a0bfac71458053afbfcc183b18b8777f817e56fe699d",
+          "source_row": 91,
+          "word_page_number": 12,
+          "section_label": "C",
+          "candidate_kind": "single_char",
+          "target_reading": "chang",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "堰一湖",
+      "marked_pinyin": "yàn sè hú",
+      "numeric_pinyin": "yan4 se4 hu2",
+      "source": "psc_orthoepy_2016_draft",
+      "source_category": "consultation_draft",
+      "source_rank": 95,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "2f43228560f308c5f2ce622aadaa398da4229bbf866e243e17dd7158c3c6faaa",
+          "source_row": 579,
+          "word_page_number": 58,
+          "section_label": "S",
+          "candidate_kind": "example_phrase",
+          "target_reading": "sè",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "塞",
+      "marked_pinyin": "sè",
+      "numeric_pinyin": "se4",
+      "source": "psc_orthoepy_2016_draft",
+      "source_category": "consultation_draft",
+      "source_rank": 95,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "ddec416b39fa06071404d511c8d5b9dfcf6e195e6c50cb5fb74d2675e2f2e64d",
+          "source_row": 579,
+          "word_page_number": 58,
+          "section_label": "S",
+          "candidate_kind": "single_char",
+          "target_reading": "sè",
+          "approval": "corrected_approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "塞",
+      "marked_pinyin": "sāi",
+      "numeric_pinyin": "sai1",
+      "source": "psc_orthoepy_2016_draft",
+      "source_category": "consultation_draft",
+      "source_rank": 95,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "bc9d75902d4ef4b31ea1d44ed71f14da60d57218440b3f5615eecba697e7e27d",
+          "source_row": 579,
+          "word_page_number": 58,
+          "section_label": "S",
+          "candidate_kind": "single_char",
+          "target_reading": "sāi",
+          "approval": "corrected_approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "大伯子",
+      "marked_pinyin": "dà bǎi zi",
+      "numeric_pinyin": "da4 bai3 zi5",
+      "source": "psc_orthoepy_2016_draft",
+      "source_category": "consultation_draft",
+      "source_rank": 95,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "bb46bf3539fc35b233476077a920364ad0deca72f73fb7bbd9f643b89b38284b",
+          "source_row": 63,
+          "word_page_number": 9,
+          "section_label": "B",
+          "candidate_kind": "example_phrase",
+          "target_reading": "bāi",
+          "approval": "corrected_approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "大王",
+      "marked_pinyin": "dài wáng",
+      "numeric_pinyin": "dai4 wang2",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "7192db82e2a35e277b73622fbb0e2f333c226bc7088a32c7937039942e31fe9d",
+          "source_row": 140,
+          "word_page_number": 17,
+          "section_label": "D",
+          "candidate_kind": "example_phrase",
+          "target_reading": "dài",
+          "approval": "corrected_approve",
+          "note": "～王（如山～王）。“（如山～王）”是对前面的“～王”的举例说明。"
+        }
+      ]
+    },
+    {
+      "text": "大轴子戏",
+      "marked_pinyin": "dà zhòu zi xì",
+      "numeric_pinyin": "da4 zhou4 zi5 xi4",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "637eaaf35e799e4660e1cfd36e0d9436173b3ecd608836dab7a9c674360849f2",
+          "source_row": 849,
+          "word_page_number": 81,
+          "section_label": "Z",
+          "candidate_kind": "example_phrase",
+          "target_reading": "zhòu",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "夹带藏掖",
+      "marked_pinyin": "jiā dài cáng yē",
+      "numeric_pinyin": "jia1 dai4 cang2 ye1",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "d8e84efca30c56d014a11afe6c1d1aaa191e3212500199dd82ac615bd5302a58",
+          "source_row": 291,
+          "word_page_number": 31,
+          "section_label": "J",
+          "candidate_kind": "example_phrase",
+          "target_reading": "jiā",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "夹衣",
+      "marked_pinyin": "jiā yī",
+      "numeric_pinyin": "jia1 yi1",
+      "source": "psc_orthoepy_2016_draft",
+      "source_category": "consultation_draft",
+      "source_rank": 95,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "cfed1f1edb5de38d42c7aa997ebcd25cbc4d40ab6ec2efe641a6809121a5d69c",
+          "source_row": 291,
+          "word_page_number": 31,
+          "section_label": "J",
+          "candidate_kind": "example_phrase",
+          "target_reading": "jiā",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "夹袄",
+      "marked_pinyin": "jiā ǎo",
+      "numeric_pinyin": "jia1 ao3",
+      "source": "psc_orthoepy_2016_draft",
+      "source_category": "consultation_draft",
+      "source_rank": 95,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "4b3148410eb748c23344319621c58dbb82e886e42d3d4babb11bbbb408c0ca3d",
+          "source_row": 291,
+          "word_page_number": 31,
+          "section_label": "J",
+          "candidate_kind": "example_phrase",
+          "target_reading": "jiā",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "夹道儿",
+      "marked_pinyin": "jiā dào er",
+      "numeric_pinyin": "jia1 dao4 er5",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "89104f681789ac1837b08bfcc97e453589de752a8d68d4ea3bfbb8acc1327470",
+          "source_row": 291,
+          "word_page_number": 31,
+          "section_label": "J",
+          "candidate_kind": "example_phrase",
+          "target_reading": "jiā",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "宽绰",
+      "marked_pinyin": "kuān chuo",
+      "numeric_pinyin": "kuan1 chuo5",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "69ed3d570cd51faf5573f6b104af11ab770929e78a6067471ce8ac30ebeea3cd",
+          "source_row": 124,
+          "word_page_number": 16,
+          "section_label": "C",
+          "candidate_kind": "example_phrase",
+          "target_reading": "chuo",
+          "approval": "automatic_direct_official",
+          "note": "审音表明确以无调号 chuo 标示“宽绰”中“绰”的轻声读法；拟增 chuo5，待补齐该音节的音元编码后通过门禁。"
+        }
+      ]
+    },
+    {
+      "text": "寒号虫",
+      "marked_pinyin": "hán háo chóng",
+      "numeric_pinyin": "han2 hao2 chong2",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "9ec04de3bf6185b3bc908dc8a06be269c55635b667b2b0f090f5713f3d3611b9",
+          "source_row": 238,
+          "word_page_number": 26,
+          "section_label": "H",
+          "candidate_kind": "example_phrase",
+          "target_reading": "háo",
+          "approval": "automatic_direct_official",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "尾巴",
+      "marked_pinyin": "yǐ ba",
+      "numeric_pinyin": "yi3 ba5",
+      "source": "psc_orthoepy_2016_draft",
+      "source_category": "consultation_draft",
+      "source_rank": 95,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "24586ed537fb8fbe0afc2a9793ff6d83031e374fc53e6206c3e65d2b192ccc5b",
+          "source_row": 680,
+          "word_page_number": 67,
+          "section_label": "W",
+          "candidate_kind": "example_phrase",
+          "target_reading": "yǐ",
+          "approval": "corrected_approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "山大王",
+      "marked_pinyin": "shān dài wáng",
+      "numeric_pinyin": "shan1 dai4 wang2",
+      "source": "psc_orthoepy_2016_draft",
+      "source_category": "consultation_draft",
+      "source_rank": 95,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "7d4ab8f9a31b863db03304ce40e7743877b29e1e0d350baec799087ca22fce08",
+          "source_row": 140,
+          "word_page_number": 17,
+          "section_label": "D",
+          "candidate_kind": "example_phrase",
+          "target_reading": "dài",
+          "approval": "corrected_approve",
+          "note": "山大王：土匪的别称"
+        }
+      ]
+    },
+    {
+      "text": "山岗子",
+      "marked_pinyin": "shān gǎng zǐ",
+      "numeric_pinyin": "shan1 gang3 zi3",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "e9ad211a55574958b071b4db536c29ca5b5ce177b513e90fe6405742eb9f4fd7",
+          "source_row": 207,
+          "word_page_number": 23,
+          "section_label": "G",
+          "candidate_kind": "example_phrase",
+          "target_reading": "gǎng",
+          "approval": "automatic_direct_official",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "差等",
+      "marked_pinyin": "chā děng",
+      "numeric_pinyin": "cha1 deng3",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "8d9f88bc75034b7e23b977b0a224ebc6dfd1f0fcee47ce52e96f3f3ba52ef0d5",
+          "source_row": 83,
+          "word_page_number": 11,
+          "section_label": "C",
+          "candidate_kind": "example_phrase",
+          "target_reading": "chā",
+          "approval": "automatic_direct_official",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "差等",
+      "marked_pinyin": "chā děng",
+      "numeric_pinyin": "cha1 deng3",
+      "source": "psc_orthoepy_2016_draft",
+      "source_category": "consultation_draft",
+      "source_rank": 95,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "c03efd6dce6064a667242fb3393a50b62cf6c655d779ed047ce5c628ec0ea816",
+          "source_row": 83,
+          "word_page_number": 11,
+          "section_label": "C",
+          "candidate_kind": "example_phrase",
+          "target_reading": "chā",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "带累",
+      "marked_pinyin": "dài lèi",
+      "numeric_pinyin": "dai4 lei4",
+      "source": "psc_orthoepy_2016_draft",
+      "source_category": "consultation_draft",
+      "source_rank": 95,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "93cea526563f2b0d687fdc72287976a3c6a24367bfa1a2631d763fc940e60730",
+          "source_row": 382,
+          "word_page_number": 40,
+          "section_label": "L",
+          "candidate_kind": "example_phrase",
+          "target_reading": "lèi",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "应名儿",
+      "marked_pinyin": "yīng míng ér",
+      "numeric_pinyin": "ying1 ming2 er2",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "0a51cef4cd1089e123b48bcf5be4d0b14fd4f97d0894dc23d85d37f6420349c2",
+          "source_row": 782,
+          "word_page_number": 75,
+          "section_label": "Y",
+          "candidate_kind": "example_phrase",
+          "target_reading": "yīng",
+          "approval": "automatic_direct_official",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "应声",
+      "marked_pinyin": "yìng shēng",
+      "numeric_pinyin": "ying4 sheng1",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "31efb711f0d67f3eb8eec88967b8261d54f81702dddcb8e50480cdcb7ea582dc",
+          "source_row": 782,
+          "word_page_number": 75,
+          "section_label": "Y",
+          "candidate_kind": "example_phrase",
+          "target_reading": "yìng",
+          "approval": "automatic_direct_official",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "应声",
+      "marked_pinyin": "yìng shēng",
+      "numeric_pinyin": "ying4 sheng1",
+      "source": "psc_orthoepy_2016_draft",
+      "source_category": "consultation_draft",
+      "source_rank": 95,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "7e18a07fb572efdc89b3ebce3ed4768289bed0210acec7265bf789d0109d9545",
+          "source_row": 782,
+          "word_page_number": 75,
+          "section_label": "Y",
+          "candidate_kind": "example_phrase",
+          "target_reading": "yìng",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "应届",
+      "marked_pinyin": "yìng jiè",
+      "numeric_pinyin": "ying4 jie4",
+      "source": "psc_orthoepy_2016_draft",
+      "source_category": "consultation_draft",
+      "source_rank": 95,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "b2db8f517792eb310b64d3f8735d3916289d0f2b8769b65e3dea8756ca638c61",
+          "source_row": 782,
+          "word_page_number": 75,
+          "section_label": "Y",
+          "candidate_kind": "example_phrase",
+          "target_reading": "yìng",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "应许",
+      "marked_pinyin": "yìng xǔ",
+      "numeric_pinyin": "ying4 xu3",
+      "source": "psc_orthoepy_2016_draft",
+      "source_category": "consultation_draft",
+      "source_rank": 95,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "b01313a7ab13cb6083d5b9932b10582701b3c0f137a91f31815a53600bdc1b4d",
+          "source_row": 782,
+          "word_page_number": 75,
+          "section_label": "Y",
+          "candidate_kind": "example_phrase",
+          "target_reading": "yìng",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "强迫",
+      "marked_pinyin": "qiáng pò",
+      "numeric_pinyin": "qiang2 po4",
+      "source": "psc_orthoepy_2016_draft",
+      "source_category": "consultation_draft",
+      "source_rank": 95,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "8d09b0959aea4fd41dd1e9c670012442a9ea8c49a1dd4f6ca06ed94297a69257",
+          "source_row": 532,
+          "word_page_number": 54,
+          "section_label": "Q",
+          "candidate_kind": "example_phrase",
+          "target_reading": "qiáng",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "当天",
+      "marked_pinyin": "dāng tiān",
+      "numeric_pinyin": "dang1 tian1",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "2162f6eeadb6da2f499e56fa4e85d021febf825cba43e6b546b8931b31c98ce0",
+          "source_row": 144,
+          "word_page_number": 18,
+          "section_label": "D",
+          "candidate_kind": "example_phrase",
+          "target_reading": "dāng",
+          "approval": "automatic_direct_official",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "当天",
+      "marked_pinyin": "dāng tiān",
+      "numeric_pinyin": "dang1 tian1",
+      "source": "psc_orthoepy_2016_draft",
+      "source_category": "consultation_draft",
+      "source_rank": 95,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "157acdc61aaba36a4cf36a40fb67274ff60857bd5dd79fc46af4771120d9134d",
+          "source_row": 144,
+          "word_page_number": 18,
+          "section_label": "D",
+          "candidate_kind": "example_phrase",
+          "target_reading": "dāng",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "心宽体胖",
+      "marked_pinyin": "xīn kuān tǐ pàng",
+      "numeric_pinyin": "xin1 kuan1 ti3 pang4",
+      "source": "psc_orthoepy_2016_draft",
+      "source_category": "consultation_draft",
+      "source_rank": 95,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "130ca3debe8e5a4bd856048667689cb98a9e06d139013d72af63890284f52c31",
+          "source_row": 482,
+          "word_page_number": 49,
+          "section_label": "P",
+          "candidate_kind": "example_phrase",
+          "target_reading": "pàng",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "心广体胖",
+      "marked_pinyin": "xīn guǎng tǐ pán",
+      "numeric_pinyin": "xin1 guang3 ti3 pan2",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "9ce01d9c0df8b87ef256da0cd7f20f16bec3a7764579eae86ec4748c6425cd98",
+          "source_row": 482,
+          "word_page_number": 49,
+          "section_label": "P",
+          "candidate_kind": "example_phrase",
+          "target_reading": "pán",
+          "approval": "corrected_approve",
+          "note": "心广体～（～为安舒貌）。括号内为前面的例词的注释。"
+        }
+      ]
+    },
+    {
+      "text": "悄悄儿的",
+      "marked_pinyin": "qiāo qiāo er de",
+      "numeric_pinyin": "qiao1 qiao1 er5 de5",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "01a8f57af1b597efb209a5dbf6bab23c455c290216194acc01d497a069e65456",
+          "source_row": 535,
+          "word_page_number": 55,
+          "section_label": "Q",
+          "candidate_kind": "example_phrase",
+          "target_reading": "qiāo",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "悄默声儿的",
+      "marked_pinyin": "qiǎo mò shēng er de",
+      "numeric_pinyin": "qiao3 mo4 sheng1 er5 de5",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "2e3ad7278c68fef66b8613cd9fd481985000253d11d5e20d8dab39fca6556c2e",
+          "source_row": 535,
+          "word_page_number": 55,
+          "section_label": "Q",
+          "candidate_kind": "example_phrase",
+          "target_reading": "qiǎo",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "把屋顶苫上",
+      "marked_pinyin": "bǎ wū dǐng shàn shàng",
+      "numeric_pinyin": "ba3 wu1 ding3 shan4 shang4",
+      "source": "psc_orthoepy_2016_draft",
+      "source_category": "consultation_draft",
+      "source_rank": 95,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "48bf3849bf63cd53957d2676c5b84e4a8bc0b921fff06f489cee5bfd7635ff3c",
+          "source_row": 587,
+          "word_page_number": 59,
+          "section_label": "S",
+          "candidate_kind": "example_phrase",
+          "target_reading": "shàn",
+          "approval": "corrected_approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "把水澄清了",
+      "marked_pinyin": "bǎ shuǐ dèng qīng le",
+      "numeric_pinyin": "ba3 shui3 deng4 qing1 le5",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "101cca0c1445f06267eeaed0ce2976605cbabc8951210b5c7b8d516c20333532",
+          "source_row": 103,
+          "word_page_number": 13,
+          "section_label": "C",
+          "candidate_kind": "example_phrase",
+          "target_reading": "dèng",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "把洞塞住",
+      "marked_pinyin": "bǎ dòng sāi zhù",
+      "numeric_pinyin": "ba3 dong4 sai1 zhu4",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "7b019c93fd5f6e376da7fe645592cbf69261c0cc07df4744576f6c61fcfac7d9",
+          "source_row": 579,
+          "word_page_number": 58,
+          "section_label": "S",
+          "candidate_kind": "example_phrase",
+          "target_reading": "sāi",
+          "approval": "corrected_approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "把瓶口一上",
+      "marked_pinyin": "bǎ píng kǒu sāi shàng",
+      "numeric_pinyin": "ba3 ping2 kou3 sai1 shang4",
+      "source": "psc_orthoepy_2016_draft",
+      "source_category": "consultation_draft",
+      "source_rank": 95,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "e3b94ea90d262d47bb9a2f958959e6b2f97f9e02544ceb64bb501a4a303d4787",
+          "source_row": 579,
+          "word_page_number": 58,
+          "section_label": "S",
+          "candidate_kind": "example_phrase",
+          "target_reading": "sāi",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "捧场",
+      "marked_pinyin": "pěng chǎng",
+      "numeric_pinyin": "peng3 chang3",
+      "source": "psc_orthoepy_2016_draft",
+      "source_category": "consultation_draft",
+      "source_rank": 95,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "abf3b606648618bf8ca4dc514fa1bf178b705063f87bffa46094d24234344f9a",
+          "source_row": 91,
+          "word_page_number": 12,
+          "section_label": "C",
+          "candidate_kind": "example_phrase",
+          "target_reading": "chǎng",
+          "approval": "corrected_approve",
+          "note": "捧场、外场各是一个词"
+        }
+      ]
+    },
+    {
+      "text": "掂掇",
+      "marked_pinyin": "diān duo",
+      "numeric_pinyin": "dian1 duo5",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "500fbeda171e1d6eb0139dfd878a841ec9d7e82afd2e564678813f7740154733",
+          "source_row": 170,
+          "word_page_number": 20,
+          "section_label": "D",
+          "candidate_kind": "example_phrase",
+          "target_reading": "duo",
+          "approval": "automatic_direct_official",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "掇",
+      "marked_pinyin": "duo",
+      "numeric_pinyin": "duo5",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "22c939fd5e5ccce32d68754cd44f552cbdae874d8f4d3b73d512b5801f7a657f",
+          "source_row": 170,
+          "word_page_number": 20,
+          "section_label": "D",
+          "candidate_kind": "single_char",
+          "target_reading": "duo",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "提出的条件他都应了",
+      "marked_pinyin": "tí chū de tiáo jiàn tā dōu yīng le",
+      "numeric_pinyin": "ti2 chu1 de5 tiao2 jian4 ta1 dou1 ying1 le5",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "67126203f4acd7a9290e6d935a6ba9179c45923d4f540bd4d21bf87d812add5a",
+          "source_row": 782,
+          "word_page_number": 75,
+          "section_label": "Y",
+          "candidate_kind": "example_phrase",
+          "target_reading": "yīng",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "撮儿",
+      "marked_pinyin": "cuō er",
+      "numeric_pinyin": "cuo1 er5",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "3490a6370f6291bd85faef021243d3ec381b921511f5ebef4b0ba915271e23ca",
+          "source_row": 134,
+          "word_page_number": 17,
+          "section_label": "C",
+          "candidate_kind": "example_phrase",
+          "target_reading": "cuō",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "散",
+      "marked_pinyin": "san",
+      "numeric_pinyin": "san5",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "b66cb3d122757ae748368724203da090d026dc74401b9c316544e90b650dcd75",
+          "source_row": 574,
+          "word_page_number": 57,
+          "section_label": "S",
+          "candidate_kind": "single_char",
+          "target_reading": "san",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "斤",
+      "marked_pinyin": "jin",
+      "numeric_pinyin": "jin5",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "a9bfb62cba112d3012b335a460f7884be9295c911559c1456e289c1af100777e",
+          "source_row": 319,
+          "word_page_number": 34,
+          "section_label": "J",
+          "candidate_kind": "single_char",
+          "target_reading": "jin",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "是我应下来的任务",
+      "marked_pinyin": "shì wǒ yīng xià lái de rèn wu",
+      "numeric_pinyin": "shi4 wo3 ying1 xia4 lai2 de5 ren4 wu5",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "a1bc15a09b6d1902d9b4d425cf5fe093ae92496de7016e64089c278e346edfac",
+          "source_row": 782,
+          "word_page_number": 75,
+          "section_label": "Y",
+          "candidate_kind": "example_phrase",
+          "target_reading": "yīng",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "晕车",
+      "marked_pinyin": "yūn chē",
+      "numeric_pinyin": "yun1 che1",
+      "source": "psc_orthoepy_2016_draft",
+      "source_category": "consultation_draft",
+      "source_rank": 95,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "ffbebaa6b98278fa817acb0988e1b5e12ee56eaf91077f66d1d9fecc3de0f0d7",
+          "source_row": 801,
+          "word_page_number": 77,
+          "section_label": "Y",
+          "candidate_kind": "example_phrase",
+          "target_reading": "yūn",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "林荫道",
+      "marked_pinyin": "lín yìn dào",
+      "numeric_pinyin": "lin2 yin4 dao4",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "cfa0be2c1aac510b8c91b43b8608e203b8c44bda0a7f528b7a8d4204f330616d",
+          "source_row": 781,
+          "word_page_number": 75,
+          "section_label": "Y",
+          "candidate_kind": "example_phrase",
+          "target_reading": "yìn",
+          "approval": "automatic_direct_official",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "树荫",
+      "marked_pinyin": "shù yìn",
+      "numeric_pinyin": "shu4 yin4",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "f7bbd065fb88e25b0bdf45b7b5a7f89bae09768d1eac0593848fb80f37fbc180",
+          "source_row": 781,
+          "word_page_number": 75,
+          "section_label": "Y",
+          "candidate_kind": "example_phrase",
+          "target_reading": "yìn",
+          "approval": "automatic_direct_official",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "沓",
+      "marked_pinyin": "ta",
+      "numeric_pinyin": "ta5",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "8ad9b618c9f9e22649990318021a75f342d07bf9b1eb0c1036e2f5be686983b8",
+          "source_row": 640,
+          "word_page_number": 64,
+          "section_label": "T",
+          "candidate_kind": "single_char",
+          "target_reading": "ta",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "活塞",
+      "marked_pinyin": "huó sāi",
+      "numeric_pinyin": "huo2 sai1",
+      "source": "psc_orthoepy_2016_draft",
+      "source_category": "consultation_draft",
+      "source_rank": 95,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "57e8ea7de9d522fb493141597b05ce298c7fd0bab4beb5a5097700766e347f7f",
+          "source_row": 579,
+          "word_page_number": 58,
+          "section_label": "S",
+          "candidate_kind": "example_phrase",
+          "target_reading": "sāi",
+          "approval": "corrected_approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "流了点儿血",
+      "marked_pinyin": "liú le diǎn er xiě",
+      "numeric_pinyin": "liu2 le5 dian3 er5 xie3",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "5b938f3cdb40b4c9862c1df7e36cfe24df34a5fbdc9e013c38436d983eab2b05",
+          "source_row": 745,
+          "word_page_number": 72,
+          "section_label": "X",
+          "candidate_kind": "example_phrase",
+          "target_reading": "xiě",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "淋盐",
+      "marked_pinyin": "lìn yán",
+      "numeric_pinyin": "lin4 yan2",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "97b983aa500cdcae37184aa8f536ed1b8ef450f95add0974a38f19ca2338bbd2",
+          "source_row": 396,
+          "word_page_number": 41,
+          "section_label": "L",
+          "candidate_kind": "example_phrase",
+          "target_reading": "lìn",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "淋硝",
+      "marked_pinyin": "lìn xiāo",
+      "numeric_pinyin": "lin4 xiao1",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "3bff66ef232246e79d14ecfcb6136ff1714d895c29f400151f646736825415bb",
+          "source_row": 396,
+          "word_page_number": 41,
+          "section_label": "L",
+          "candidate_kind": "example_phrase",
+          "target_reading": "lìn",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "澄清混乱",
+      "marked_pinyin": "chéng qīng hùn luàn",
+      "numeric_pinyin": "cheng2 qing1 hun4 luan4",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "8f451450deca2e32a949d370e6b3710bfc39471c6da23f76486c0e66f7f11462",
+          "source_row": 103,
+          "word_page_number": 13,
+          "section_label": "C",
+          "candidate_kind": "example_phrase",
+          "target_reading": "chéng",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "澄清问题",
+      "marked_pinyin": "chéng qīng wèn tí",
+      "numeric_pinyin": "cheng2 qing1 wen4 ti2",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "c127823fa4c09a790c83bfe97ed4c6ee7e7b498a055f4c15552e60c426e1b063",
+          "source_row": 103,
+          "word_page_number": 13,
+          "section_label": "C",
+          "candidate_kind": "example_phrase",
+          "target_reading": "chéng",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "煤气熏着了",
+      "marked_pinyin": "méi qì xùn zhe le",
+      "numeric_pinyin": "mei2 qi4 xun4 zhe5 le5",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "9f51d6225483a85758a36fc24ab1c11b51029752790db0bc5233dbaf8616e21e",
+          "source_row": 750,
+          "word_page_number": 73,
+          "section_label": "X",
+          "candidate_kind": "example_phrase",
+          "target_reading": "xùn",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "爆破大王",
+      "marked_pinyin": "bào pò dà wáng",
+      "numeric_pinyin": "bao4 po4 da4 wang2",
+      "source": "psc_orthoepy_2016_draft",
+      "source_category": "consultation_draft",
+      "source_rank": 95,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "253f22c0aeb79b14bcb5f6d6755e6fa4192da532421f14395ce627ac15734f2b",
+          "source_row": 140,
+          "word_page_number": 17,
+          "section_label": "D",
+          "candidate_kind": "example_phrase",
+          "target_reading": "dà",
+          "approval": "corrected_approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "片儿会",
+      "marked_pinyin": "piàn er huì",
+      "numeric_pinyin": "pian4 er5 hui4",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "8203aad32e460f32c3374e7051e030bfceeda6bdd44fe7d9c45682823e5200d4",
+          "source_row": 496,
+          "word_page_number": 50,
+          "section_label": "P",
+          "candidate_kind": "example_phrase",
+          "target_reading": "piàn",
+          "approval": "automatic_direct_official",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "片子",
+      "marked_pinyin": "piàn zi",
+      "numeric_pinyin": "pian4 zi5",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "22d6b31fd459f55231b42bca9db1f652bc1a1652988ae5a3377643ed70e213ad",
+          "source_row": 496,
+          "word_page_number": 50,
+          "section_label": "P",
+          "candidate_kind": "example_phrase",
+          "target_reading": "piàn",
+          "approval": "automatic_direct_official",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "牵累",
+      "marked_pinyin": "qiān lèi",
+      "numeric_pinyin": "qian1 lei4",
+      "source": "psc_orthoepy_2016_draft",
+      "source_category": "consultation_draft",
+      "source_rank": 95,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "1e94c0bdf0c663fd51d9450002b81cb5f3f4c2e2aebb945dc101de78f9e56c2b",
+          "source_row": 382,
+          "word_page_number": 40,
+          "section_label": "L",
+          "candidate_kind": "example_phrase",
+          "target_reading": "lèi",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "瓶塞",
+      "marked_pinyin": "píng sāi",
+      "numeric_pinyin": "ping2 sai1",
+      "source": "psc_orthoepy_2016_draft",
+      "source_category": "consultation_draft",
+      "source_rank": 95,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "373d86c7c942a83fc8d76e72ee220112008acd007dfc074d2bdb1a6ae5063101",
+          "source_row": 579,
+          "word_page_number": 58,
+          "section_label": "S",
+          "candidate_kind": "example_phrase",
+          "target_reading": "sāi",
+          "approval": "corrected_approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "电势差",
+      "marked_pinyin": "diàn shì chā",
+      "numeric_pinyin": "dian4 shi4 cha1",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "b77fedf6ba58708eda60b1e621f6a71c10b65ac9b89c5c5a97a7705e35ef38c5",
+          "source_row": 83,
+          "word_page_number": 11,
+          "section_label": "C",
+          "candidate_kind": "example_phrase",
+          "target_reading": "chā",
+          "approval": "automatic_direct_official",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "电势差",
+      "marked_pinyin": "diàn shì chā",
+      "numeric_pinyin": "dian4 shi4 cha1",
+      "source": "psc_orthoepy_2016_draft",
+      "source_category": "consultation_draft",
+      "source_rank": 95,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "6dcdb46b1998925ee7b256322fefde22d53e9a3cdc69c9965e9bd41cc2db98f1",
+          "source_row": 83,
+          "word_page_number": 11,
+          "section_label": "C",
+          "candidate_kind": "example_phrase",
+          "target_reading": "chā",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "画片儿",
+      "marked_pinyin": "huà piān er",
+      "numeric_pinyin": "hua4 pian1 er5",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "c4f5c24b191a07c3c28eaf20784f8965cdb111b7c8b25f7b578bd257f02f9678",
+          "source_row": 496,
+          "word_page_number": 50,
+          "section_label": "P",
+          "candidate_kind": "example_phrase",
+          "target_reading": "piān",
+          "approval": "automatic_direct_official",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "相片",
+      "marked_pinyin": "xiàng piàn",
+      "numeric_pinyin": "xiang4 pian4",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "a5121a5dd01681cff8b2bc427c34657d8e42f3ec66133a1017218bedeec3040c",
+          "source_row": 496,
+          "word_page_number": 50,
+          "section_label": "P",
+          "candidate_kind": "example_phrase",
+          "target_reading": "piàn",
+          "approval": "automatic_direct_official",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "眯了眼",
+      "marked_pinyin": "mí le yǎn",
+      "numeric_pinyin": "mi2 le5 yan3",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "9dba066dbaa12a0b1bdcc0d328b95e604d937a08fdd0bd43c57966b1eb42cf4f",
+          "source_row": 429,
+          "word_page_number": 44,
+          "section_label": "M",
+          "candidate_kind": "example_phrase",
+          "target_reading": "mí",
+          "approval": "automatic_direct_official",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "着水",
+      "marked_pinyin": "zháo shuǐ",
+      "numeric_pinyin": "zhao2 shui3",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "6838d5832835cdf4e7a2b7fc32dbdd0afb4ec9f84f6441a37dfb7478eb5d5dab",
+          "source_row": 820,
+          "word_page_number": 79,
+          "section_label": "Z",
+          "candidate_kind": "example_phrase",
+          "target_reading": "zháo",
+          "approval": "automatic_direct_official",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "着雨",
+      "marked_pinyin": "zháo yǔ",
+      "numeric_pinyin": "zhao2 yu3",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "5eedaaabc815669347b7d1d326988c6596337a3d1e332dce57870fb5505c0d5b",
+          "source_row": 820,
+          "word_page_number": 79,
+          "section_label": "Z",
+          "candidate_kind": "example_phrase",
+          "target_reading": "zháo",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "碌碡",
+      "marked_pinyin": "liù zhou",
+      "numeric_pinyin": "liu4 zhou5",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "168fae7ecb74b377f02877d99dc1269a7469b16b8c3a933ac2c804bb04b375a8",
+          "source_row": 850,
+          "word_page_number": 81,
+          "section_label": "Z",
+          "candidate_kind": "example_phrase",
+          "target_reading": "zhou",
+          "approval": "automatic_direct_official",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "碡",
+      "marked_pinyin": "zhou",
+      "numeric_pinyin": "zhou5",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "fed768298843b4e6e538d6722cb8855e3137d4183d1119758a78c81fbcb4e944",
+          "source_row": 850,
+          "word_page_number": 81,
+          "section_label": "Z",
+          "candidate_kind": "single_char",
+          "target_reading": "zhou",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "神曲",
+      "marked_pinyin": "shén qū",
+      "numeric_pinyin": "shen2 qu1",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "b5a99d0428796f97c36ada1f47b8da63ddead4a003c742fada1440135e391a59",
+          "source_row": 548,
+          "word_page_number": 56,
+          "section_label": "Q",
+          "candidate_kind": "example_phrase",
+          "target_reading": "qū",
+          "approval": "automatic_direct_official",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "福荫",
+      "marked_pinyin": "fú yìn",
+      "numeric_pinyin": "fu2 yin4",
+      "source": "psc_orthoepy_2016_draft",
+      "source_category": "consultation_draft",
+      "source_rank": 95,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "2211eacec0b9b0017998520217da7ae5f7de33b7e600385551c459792bf58aed",
+          "source_row": 781,
+          "word_page_number": 75,
+          "section_label": "Y",
+          "candidate_kind": "example_phrase",
+          "target_reading": "yìn",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "称意",
+      "marked_pinyin": "chèn yì",
+      "numeric_pinyin": "chen4 yi4",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "e9e73cf6d9bbbe71d0c54a8b86ad0f79e2006ab4ac4df17555322a34634b3877",
+          "source_row": 98,
+          "word_page_number": 13,
+          "section_label": "C",
+          "candidate_kind": "example_phrase",
+          "target_reading": "chèn",
+          "approval": "automatic_direct_official",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "空心吃药",
+      "marked_pinyin": "kòng xīn chī yào",
+      "numeric_pinyin": "kong4 xin1 chi1 yao4",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "7d09d2ef902a59df1ded27355ae8b8df80a343515a9f1c09cc5da040a7138b2a",
+          "source_row": 356,
+          "word_page_number": 38,
+          "section_label": "K",
+          "candidate_kind": "example_phrase",
+          "target_reading": "kòng",
+          "approval": "automatic_direct_official",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "笼括",
+      "marked_pinyin": "lǒng kuò",
+      "numeric_pinyin": "long3 kuo4",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "e741e29b87324fbb3eafbc15a80d377f1f89d7fa624b06247e31e43607c83581",
+          "source_row": 402,
+          "word_page_number": 41,
+          "section_label": "L",
+          "candidate_kind": "example_phrase",
+          "target_reading": "lǒng",
+          "approval": "automatic_direct_official",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "箕",
+      "marked_pinyin": "ji",
+      "numeric_pinyin": "ji5",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "78afe70d287b7223e5fce9bd44d442800c66cef31e9a6edca3808be3f6151923",
+          "source_row": 288,
+          "word_page_number": 31,
+          "section_label": "J",
+          "candidate_kind": "single_char",
+          "target_reading": "ji",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "糖尿症",
+      "marked_pinyin": "táng niào zhèng",
+      "numeric_pinyin": "tang2 niao4 zheng4",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "6784b364f761673e5df347433a7fb8fa309509b454ca90f5712a7237351865ee",
+          "source_row": 461,
+          "word_page_number": 47,
+          "section_label": "N",
+          "candidate_kind": "example_phrase",
+          "target_reading": "niào",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "累及",
+      "marked_pinyin": "lèi jí",
+      "numeric_pinyin": "lei4 ji2",
+      "source": "psc_orthoepy_2016_draft",
+      "source_category": "consultation_draft",
+      "source_rank": 95,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "440766b0c964d6db1b0d38b34b91560c94eb869db807cf20f2a94336cc395f07",
+          "source_row": 382,
+          "word_page_number": 40,
+          "section_label": "L",
+          "candidate_kind": "example_phrase",
+          "target_reading": "lèi",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "红曲",
+      "marked_pinyin": "hóng qū",
+      "numeric_pinyin": "hong2 qu1",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "9c96cca8efe49a43d8909b8dbcb7f7f3359b43fa966ccfc0135457c10b6aee30",
+          "source_row": 548,
+          "word_page_number": 56,
+          "section_label": "Q",
+          "candidate_kind": "example_phrase",
+          "target_reading": "qū",
+          "approval": "automatic_direct_official",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "纸很薄",
+      "marked_pinyin": "zhǐ hěn báo",
+      "numeric_pinyin": "zhi3 hen3 bao2",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "d394178456798ca84ec50d11a549faab5b50f052feeed7e6d64d85fad72ee0e8",
+          "source_row": 26,
+          "word_page_number": 5,
+          "section_label": "B",
+          "candidate_kind": "example_phrase",
+          "target_reading": "báo",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "纸很薄",
+      "marked_pinyin": "zhǐ hěn báo",
+      "numeric_pinyin": "zhi3 hen3 bao2",
+      "source": "psc_orthoepy_2016_draft",
+      "source_category": "consultation_draft",
+      "source_rank": 95,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "06a5da601223f5d308647fd4409caa3207a1f95425d611b33a211c53a4f6157d",
+          "source_row": 26,
+          "word_page_number": 5,
+          "section_label": "B",
+          "candidate_kind": "example_phrase",
+          "target_reading": "báo",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "统",
+      "marked_pinyin": "jì",
+      "numeric_pinyin": "ji4",
+      "source": "psc_orthoepy_2016_draft",
+      "source_category": "consultation_draft",
+      "source_rank": 95,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "5594aaf229f385506a9b7845d628b3eabdfcdc76ccc20c07a59b873e6c0873de",
+          "source_row": 283,
+          "word_page_number": 30,
+          "section_label": "J",
+          "candidate_kind": "single_char",
+          "target_reading": "jì",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "绰",
+      "marked_pinyin": "chuo",
+      "numeric_pinyin": "chuo5",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "e8634cc934aa88e3c93c115548c280fb0e0157e417044ffe29912f1d5503f3fc",
+          "source_row": 124,
+          "word_page_number": 16,
+          "section_label": "C",
+          "candidate_kind": "single_char",
+          "target_reading": "chuo",
+          "approval": "approve",
+          "note": "审音表明确以无调号 chuo 标示“宽绰”中“绰”的轻声读法；拟增 chuo5，待补齐该音节的音元编码后通过门禁。"
+        }
+      ]
+    },
+    {
+      "text": "缉鞋口",
+      "marked_pinyin": "qī xié kǒu",
+      "numeric_pinyin": "qi1 xie2 kou3",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "cd6a61b32fb2620eb8f68b101eeee0f947e5aa00538c2d3c52c671e719d57741",
+          "source_row": 273,
+          "word_page_number": 29,
+          "section_label": "J",
+          "candidate_kind": "example_phrase",
+          "target_reading": "qī",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "脉",
+      "marked_pinyin": "mò",
+      "numeric_pinyin": "mo4",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "902c61a3a9fda141082d1ecf667484f7ec48b9d6c421d253ba71b8826042fd34",
+          "source_row": 418,
+          "word_page_number": 43,
+          "section_label": "M",
+          "candidate_kind": "single_char",
+          "target_reading": "mòmò",
+          "approval": "corrected_approve",
+          "note": "mò 仅用于“脉脉”；原转录把完整例词“脉脉”的读音 mòmò 错挂到单字“脉”上。另应保留词条“脉脉　mò mò”。"
+        }
+      ]
+    },
+    {
+      "text": "脚儿",
+      "marked_pinyin": "jué er",
+      "numeric_pinyin": "jue2 er5",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "1896818b2cd25fe46b305586847c6485465039dbb26d2566f2ea4be28290b00b",
+          "source_row": 304,
+          "word_page_number": 33,
+          "section_label": "J",
+          "candidate_kind": "example_phrase",
+          "target_reading": "jué",
+          "approval": "corrected_approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "芥菜",
+      "marked_pinyin": "gài cài",
+      "numeric_pinyin": "gai4 cai4",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "b171518503a512fb33235ec1e7196f80b089a9ad5913ed0d0d0ab266f1a5580f",
+          "source_row": 313,
+          "word_page_number": 34,
+          "section_label": "J",
+          "candidate_kind": "example_phrase",
+          "target_reading": "gài",
+          "approval": "automatic_direct_official",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "苤蓝",
+      "marked_pinyin": "piě lan",
+      "numeric_pinyin": "pie3 lan5",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "17e8a3cac5240bdd8fdd62224e58ba6a5ee88372444ef4387a8a44707b3557fb",
+          "source_row": 371,
+          "word_page_number": 39,
+          "section_label": "L",
+          "candidate_kind": "example_phrase",
+          "target_reading": "lan",
+          "approval": "automatic_direct_official",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "荒",
+      "marked_pinyin": "huang",
+      "numeric_pinyin": "huang5",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "fcab1672ef3c026353c199bd5f94397ab1e4088a78d7610eda0d73d6abf92bb1",
+          "source_row": 259,
+          "word_page_number": 28,
+          "section_label": "H",
+          "candidate_kind": "single_char",
+          "target_reading": "huang",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "落在后面",
+      "marked_pinyin": "là zài hòu miàn",
+      "numeric_pinyin": "la4 zai4 hou4 mian4",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "baaecdf5dfdc3c4a505e119d214a29ce0498f10c5587fc720b0c1e5dc5f87957",
+          "source_row": 416,
+          "word_page_number": 43,
+          "section_label": "L",
+          "candidate_kind": "example_phrase",
+          "target_reading": "là",
+          "approval": "automatic_direct_official",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "落槽",
+      "marked_pinyin": "luò cáo",
+      "numeric_pinyin": "luo4 cao2",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "a8722f632ab2e2b99c6d4b60ec62f7a23895debb1745f36223325ba4f9c360b3",
+          "source_row": 416,
+          "word_page_number": 43,
+          "section_label": "L",
+          "candidate_kind": "example_phrase",
+          "target_reading": "luò",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "蓝",
+      "marked_pinyin": "lan",
+      "numeric_pinyin": "lan5",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "a88c4aa3e5901f3d67bd2e44662fe738020a4a4f9939e5bc627afe56af8b36ab",
+          "source_row": 371,
+          "word_page_number": 39,
+          "section_label": "L",
+          "candidate_kind": "single_char",
+          "target_reading": "lan",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "血",
+      "marked_pinyin": "xuě",
+      "numeric_pinyin": "xue3",
+      "source": "psc_orthoepy_2016_draft",
+      "source_category": "consultation_draft",
+      "source_rank": 95,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "4f4961cbb523da1db6f4d085593dd38e9d95ac6c738529b5b8b1db2c03208fe4",
+          "source_row": 745,
+          "word_page_number": 72,
+          "section_label": "X",
+          "candidate_kind": "single_char",
+          "target_reading": "xuě",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "血块子",
+      "marked_pinyin": "xiě kuài zi",
+      "numeric_pinyin": "xie3 kuai4 zi5",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "1ebd81d781840064e4320f9518711792cd800df837cdf9d74b3a2e8cd6deaeb7",
+          "source_row": 745,
+          "word_page_number": 72,
+          "section_label": "X",
+          "candidate_kind": "example_phrase",
+          "target_reading": "xiě",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "血晕",
+      "marked_pinyin": "xiě yūn",
+      "numeric_pinyin": "xie3 yun1",
+      "source": "psc_orthoepy_2016_draft",
+      "source_category": "consultation_draft",
+      "source_rank": 95,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "2f214102b3a27723c8d08bb7760462511622d65d388c1ada9bd789dcc0579764",
+          "source_row": 801,
+          "word_page_number": 77,
+          "section_label": "Y",
+          "candidate_kind": "example_phrase",
+          "target_reading": "yūn",
+          "approval": "corrected_approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "视差",
+      "marked_pinyin": "shì chā",
+      "numeric_pinyin": "shi4 cha1",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "10957f72d35579ead46bd8b5b58204553276b3b8aef8e7fc2fb2f1696f2fc713",
+          "source_row": 83,
+          "word_page_number": 11,
+          "section_label": "C",
+          "candidate_kind": "example_phrase",
+          "target_reading": "chā",
+          "approval": "automatic_direct_official",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "视差",
+      "marked_pinyin": "shì chā",
+      "numeric_pinyin": "shi4 cha1",
+      "source": "psc_orthoepy_2016_draft",
+      "source_category": "consultation_draft",
+      "source_rank": 95,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "bc042b59c1d3597b2dd71d336bdd5da9041bbb71dc20bb6e236fc282bd0b62df",
+          "source_row": 83,
+          "word_page_number": 11,
+          "section_label": "C",
+          "candidate_kind": "example_phrase",
+          "target_reading": "chā",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "角儿",
+      "marked_pinyin": "jiǎo er",
+      "numeric_pinyin": "jiao3 er5",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "5bb135d8edf985d31b797ff4a57a48d6a638762f4e98e594a65eb6c0b8125c92",
+          "source_row": 303,
+          "word_page_number": 33,
+          "section_label": "J",
+          "candidate_kind": "example_phrase",
+          "target_reading": "jiǎo",
+          "approval": "automatic_direct_official",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "言差语错",
+      "marked_pinyin": "yán chā yǔ cuò",
+      "numeric_pinyin": "yan2 cha1 yu3 cuo4",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "858a228708e5a8383339f06442d16a40186a39e1e21fe30e4edfe708d79aa4a8",
+          "source_row": 83,
+          "word_page_number": 11,
+          "section_label": "C",
+          "candidate_kind": "example_phrase",
+          "target_reading": "chā",
+          "approval": "automatic_direct_official",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "言差语错",
+      "marked_pinyin": "yán chā yǔ cuò",
+      "numeric_pinyin": "yan2 cha1 yu3 cuo4",
+      "source": "psc_orthoepy_2016_draft",
+      "source_category": "consultation_draft",
+      "source_rank": 95,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "fe8e79332053693663fad075a46fcc6fb30d950acbf530acc64f03125f6fb7f9",
+          "source_row": 83,
+          "word_page_number": 11,
+          "section_label": "C",
+          "candidate_kind": "example_phrase",
+          "target_reading": "chā",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "趄",
+      "marked_pinyin": "qie",
+      "numeric_pinyin": "qie5",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "2886eaf821468cad94ccb8eeb288e743f5beeb381439fd3d8c00fe8b611dd6f6",
+          "source_row": 540,
+          "word_page_number": 55,
+          "section_label": "Q",
+          "candidate_kind": "single_char",
+          "target_reading": "qie",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "运转",
+      "marked_pinyin": "yùn zhuǎn",
+      "numeric_pinyin": "yun4 zhuan3",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "a93889dfbd9ab662e4131831d4c7c887b1b8181ce8846b94a2180820bfec5f54",
+          "source_row": 856,
+          "word_page_number": 81,
+          "section_label": "Z",
+          "candidate_kind": "example_phrase",
+          "target_reading": "zhuǎn",
+          "approval": "automatic_direct_official",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "连累",
+      "marked_pinyin": "lián lèi",
+      "numeric_pinyin": "lian2 lei4",
+      "source": "psc_orthoepy_2016_draft",
+      "source_category": "consultation_draft",
+      "source_rank": 95,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "ea4ca88933eb5c83c3f39d296edd6bc9f24d8a53998c11e3084656ed1039f215",
+          "source_row": 382,
+          "word_page_number": 40,
+          "section_label": "L",
+          "candidate_kind": "example_phrase",
+          "target_reading": "lèi",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "配脚儿",
+      "marked_pinyin": "pèi jué er",
+      "numeric_pinyin": "pei4 jue2 er5",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "546c27a134ff5efd5cf178e7bbbf493bcf61a5dffd903f47bfd3411673e8fc89",
+          "source_row": 303,
+          "word_page_number": 33,
+          "section_label": "J",
+          "candidate_kind": "example_phrase",
+          "target_reading": "jué",
+          "approval": "corrected_approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "钢铁大王",
+      "marked_pinyin": "gāng tiě dà wáng",
+      "numeric_pinyin": "gang1 tie3 da4 wang2",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "21ca6f35b582abf9fce4e7cdc3b9bdd8afb68ba8640539e2dff748dc704febd6",
+          "source_row": 140,
+          "word_page_number": 17,
+          "section_label": "D",
+          "candidate_kind": "example_phrase",
+          "target_reading": "dà",
+          "approval": "corrected_approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "钢铁大王",
+      "marked_pinyin": "gāng tiě dà wáng",
+      "numeric_pinyin": "gang1 tie3 da4 wang2",
+      "source": "psc_orthoepy_2016_draft",
+      "source_category": "consultation_draft",
+      "source_rank": 95,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "f0221a094820907595a4cfd409160e38732fbea871b8956756bc1b07bf041588",
+          "source_row": 140,
+          "word_page_number": 17,
+          "section_label": "D",
+          "candidate_kind": "example_phrase",
+          "target_reading": "dà",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "钻孔",
+      "marked_pinyin": "zuàn kǒng",
+      "numeric_pinyin": "zuan4 kong3",
+      "source": "psc_orthoepy_2016_draft",
+      "source_category": "consultation_draft",
+      "source_rank": 95,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "8ab918501177a2e808d91f92826a309f07a07a2f2321d03c733abbe4ce10c1b3",
+          "source_row": 868,
+          "word_page_number": 83,
+          "section_label": "Z",
+          "candidate_kind": "example_phrase",
+          "target_reading": "zuàn",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "间续",
+      "marked_pinyin": "jiàn xù",
+      "numeric_pinyin": "jian4 xu4",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "72830483dcb1b3712dd3ad3705afa6f42ca3279505597e4d58a9a59eaea5ee1b",
+          "source_row": 296,
+          "word_page_number": 31,
+          "section_label": "J",
+          "candidate_kind": "example_phrase",
+          "target_reading": "jiàn",
+          "approval": "corrected_approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "间距",
+      "marked_pinyin": "jiàn jù",
+      "numeric_pinyin": "jian4 ju4",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "86f45cc0e42599571ce321f7e77bc99dbc766fbf1b5e39d6a0e7aaa370cf35a8",
+          "source_row": 296,
+          "word_page_number": 31,
+          "section_label": "J",
+          "candidate_kind": "example_phrase",
+          "target_reading": "jiàn",
+          "approval": "automatic_direct_official",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "难兄难弟",
+      "marked_pinyin": "nán xiōng nán dì",
+      "numeric_pinyin": "nan2 xiong1 nan2 di4",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "94bc4f4069b29ceb926e3adad33622ab5c5ffaea0f760acfc313329e99442ae2",
+          "source_row": 450,
+          "word_page_number": 46,
+          "section_label": "N",
+          "candidate_kind": "example_phrase",
+          "target_reading": "nán",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "雀盲症",
+      "marked_pinyin": "què máng zhèng",
+      "numeric_pinyin": "que4 mang2 zheng4",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "9a4012166a12b69fdefa4907f79a4b1616b2a76e661d142c01634352d9c061a6",
+          "source_row": 555,
+          "word_page_number": 56,
+          "section_label": "Q",
+          "candidate_kind": "example_phrase",
+          "target_reading": "què",
+          "approval": "corrected_approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "零散",
+      "marked_pinyin": "líng san",
+      "numeric_pinyin": "ling2 san5",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "576ea90d1b1531fe242a0da6d70a70ede48cab7f9d31fcaf3509e0a60073efc7",
+          "source_row": 574,
+          "word_page_number": 57,
+          "section_label": "S",
+          "candidate_kind": "example_phrase",
+          "target_reading": "san",
+          "approval": "automatic_direct_official",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "露光",
+      "marked_pinyin": "lòu guāng",
+      "numeric_pinyin": "lou4 guang1",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "90e8762873a4727493b9a84d82ef4fdabe0c6c58410d1112eaee2a5ca69a8968",
+          "source_row": 407,
+          "word_page_number": 42,
+          "section_label": "L",
+          "candidate_kind": "example_phrase",
+          "target_reading": "lòu",
+          "approval": "automatic_direct_official",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "露头",
+      "marked_pinyin": "lù tóu",
+      "numeric_pinyin": "lu4 tou2",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "67a48f56987621d3c738c83285160f70747f2fb3d73a850d4e925e9190dd865c",
+          "source_row": 407,
+          "word_page_number": 42,
+          "section_label": "L",
+          "candidate_kind": "example_phrase",
+          "target_reading": "lù",
+          "approval": "automatic_direct_official",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "饥荒",
+      "marked_pinyin": "jī huang",
+      "numeric_pinyin": "ji1 huang5",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "5e3db3e6105990b1b70fa57ccfc66344d5157c70a7beb8301ec86b51e2981284",
+          "source_row": 259,
+          "word_page_number": 28,
+          "section_label": "H",
+          "candidate_kind": "example_phrase",
+          "target_reading": "huang",
+          "approval": "automatic_direct_official",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "馏馒头",
+      "marked_pinyin": "liù mán tou",
+      "numeric_pinyin": "liu4 man2 tou5",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "afb8a07b38577c0264755fe79b3dc75e039aabe18353083dd4af84a4827e85fc",
+          "source_row": 399,
+          "word_page_number": 41,
+          "section_label": "L",
+          "candidate_kind": "example_phrase",
+          "target_reading": "liù",
+          "approval": "corrected_approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "马尾儿",
+      "marked_pinyin": "mǎ yǐ er",
+      "numeric_pinyin": "ma3 yi3 er5",
+      "source": "psc_orthoepy_1985",
+      "source_category": "official_orthoepy",
+      "source_rank": 90,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "3c409e24b8cb0ae92321182b92a51e5680e174185a140ac74efe1b653e0168a1",
+          "source_row": 680,
+          "word_page_number": 67,
+          "section_label": "W",
+          "candidate_kind": "example_phrase",
+          "target_reading": "yǐ",
+          "approval": "approve",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "text": "马尾儿",
+      "marked_pinyin": "mǎ yǐ er",
+      "numeric_pinyin": "ma3 yi3 er5",
+      "source": "psc_orthoepy_2016_draft",
+      "source_category": "consultation_draft",
+      "source_rank": 95,
+      "source_primary": false,
+      "evidence": [
+        {
+          "candidate_key": "b11c349f12a95c28cc619317175d08e7c9d4edeed85148b5660eb8a8e00e8b65",
+          "source_row": 680,
+          "word_page_number": 67,
+          "section_label": "W",
+          "candidate_kind": "example_phrase",
+          "target_reading": "yǐ",
+          "approval": "corrected_approve",
+          "note": ""
+        }
+      ]
+    }
+  ],
+  "rejected_at_export": []
+}

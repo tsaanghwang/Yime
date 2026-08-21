@@ -64,8 +64,8 @@
   "psc_pronunciation_peripheral_neutral_tone": 183,
   "psc_pronunciation_peripheral_erhua": 132,
   "psc_pronunciation_peripheral_weight": 1,
-  "entry_count_per_mode": 1167501,
-  "distinct_core_texts": 1152157,
+  "entry_count_per_mode": 1166753,
+  "distinct_core_texts": 1151404,
   "candidate_layers": [
     "explicit_source_backed_erhua_mixed_overlay",
 	"reviewed_sentence_composition_extension",
@@ -81,9 +81,9 @@
   ],
   "ranking_evidence": {
     "policy_id": "bcc-primary-lmdg-fallback-structural-floor-v1",
-    "direct_bcc": 379157,
-    "provisional_rime_lmdg": 587106,
-    "provisional_structural_floor": 185894,
+    "direct_bcc": 379513,
+    "provisional_rime_lmdg": 586954,
+    "provisional_structural_floor": 184937,
     "raw_bcc_and_lmdg_values_added": false
   },
   "prototype_roles": [

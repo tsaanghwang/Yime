@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "source_repository": "Yime-python-prototype",
+  "source_revision": "d769317d0b8014c4e0fe9e860c1952610bdf5dc6",
+  "migration_phase": "phase-2-formal-encoding-and-source-chain",
+  "preserved_paths": [
+    "syllable/",
+    "yime/input_model/",
+    "yime/lexicon_bundle/",
+    "yime/utils/",
+    "yime/connected_speech/",
+    "internal_data/",
+    "external_data/unihan_readings/",
+    "external_data/erhua_yinyuan_feature_rules.json",
+    "external_data/finals_IPA_mapping.json",
+    "external_data/initials_IPA_mapping.json",
+    "external_data/tmp/final_styles_erhua_draft.json",
+    "external_data/tmp/erhua_surface_class_rules.json",
+    "external_data/tmp/erhua_surface_quality_profiles.json",
+    "tests/",
+    "selected tools required by the formal build and audit gates"
+  ],
+  "intentionally_not_migrated": [
+    "yime/input_method/ Python IME runtime and GUI",
+    "pywin32, pynput, Tk, PyInstaller and portable prototype packaging",
+    "yime/pinyin_hanzi.db and database backups",
+    ".generated, dist, build, reports and virtual environments",
+    "prototype runtime database import shims",
+    "obsolete release baseline and prototype-only smoke policy"
+  ],
+  "yime_adaptations": [
+    "AGENTS.md now owns the formal encoding and unique-layout constraints",
+    "yime.utils.numeric_pinyin_code removes the input-method runtime dependency from core_trial_export",
+    "tools.check_layout_change_lock validates the packaged Windows projection against the one editable source",
+    "yime.lexicon_bundle.external_inputs replaces implicit large-file paths with a content lock",
+    "prototype runtime database assertions were removed from source-bundle unit tests"
+  ],
+  "validation": {
+    "python_versions": ["3.12.13 compatibility run", "3.14.7 target run"],
+    "pytest": "404 passed, 15 skipped, 11161 subtests passed",
+    "syllable_rows": 1737,
+    "layout_projection_entries": 60,
+    "external_locked_inputs": 29
+  }
+}

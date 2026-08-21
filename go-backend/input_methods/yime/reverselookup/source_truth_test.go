@@ -1,6 +1,10 @@
 package reverselookup
 
 import (
+	"bufio"
+	"crypto/sha256"
+	"encoding/hex"
+	"encoding/json"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -137,8 +141,50 @@ func TestCheckedInSourceTruthPreservesKnownMergedPinyin(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(lookup) != 41964 {
-		t.Fatalf("source truth keys = %d, want 41964", len(lookup))
+	manifestPayload, err := os.ReadFile(filepath.Join(dataDir, "yime_core_source_manifest.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var manifest struct {
+		ReverseSourceSHA256 string `json:"reverse_pinyin_source_sha256"`
+		ReverseSourceRows   int    `json:"reverse_pinyin_source_rows"`
+	}
+	if err := json.Unmarshal(manifestPayload, &manifest); err != nil {
+		t.Fatal(err)
+	}
+	sourcePath := filepath.Join(dataDir, SourceTruthFileName)
+	sourcePayload, err := os.ReadFile(sourcePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	sum := sha256.Sum256(sourcePayload)
+	if got := hex.EncodeToString(sum[:]); got != manifest.ReverseSourceSHA256 {
+		t.Fatalf("source truth SHA-256 = %s, want manifest %s", got, manifest.ReverseSourceSHA256)
+	}
+	file, err := os.Open(sourcePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer file.Close()
+	rows := 0
+	wantKeys := map[string]struct{}{}
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		if rows == 0 {
+			rows++ // header
+			continue
+		}
+		fields := strings.Split(scanner.Text(), "\t")
+		if len(fields) >= 2 {
+			wantKeys[SourceTruthLookupKey(fields[0], fields[1])] = struct{}{}
+		}
+		rows++
+	}
+	if err := scanner.Err(); err != nil {
+		t.Fatal(err)
+	}
+	if rows-1 != manifest.ReverseSourceRows || len(lookup) != len(wantKeys) {
+		t.Fatalf("source truth rows/keys = %d/%d, manifest rows=%d parsed keys=%d", rows-1, len(lookup), manifest.ReverseSourceRows, len(wantKeys))
 	}
 	checks := []struct {
 		text string

@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "policy_id": "all_encoded_characters_two_level_runtime_v3",
+  "purpose": "Keep every formally encoded single character reachable while materializing a two-level phrase runtime lexicon.",
+  "character_boundary": {
+    "maximum_tier": 8,
+    "expected_distinct_characters": 46095,
+    "expected_source_reading_entries": 61011,
+    "expected_runtime_mapping_entries": 61010,
+    "core_maximum_tier": 5,
+    "core_distinct_characters": 14000,
+    "peripheral_minimum_tier": 6,
+    "peripheral_maximum_tier": 8,
+    "peripheral_distinct_characters": 32095
+  },
+  "single_character_ranking": {
+    "core_weight_offset": 100000000,
+    "peripheral_weight_offset": 0,
+    "require_core_above_peripheral": true
+  },
+  "first_level": {
+    "maximum_text_length": 4,
+    "capacity_base": 202290,
+    "included_source_lengths": {
+      "pypinyin": [2, 3, 4]
+    },
+    "included_wanxiang_category_lengths": {
+      "duoyin": [2, 3],
+      "fangyan": [2, 3],
+      "huaxue": [2, 3],
+      "jichu": [2, 3],
+      "shici": [2, 3],
+      "wuzhong": [2, 3],
+      "yaopin": [2, 3]
+    }
+  },
+  "second_level": {
+    "minimum_text_length": 5,
+    "frequency_cache_capacity": 5000,
+    "retain_selected_long_bridges": true
+  },
+  "long_form_core_migration": {
+    "minimum_text_length": 5,
+    "eligible_candidate_classes": [
+      "lexical_candidate",
+      "productive_phrase"
+    ],
+    "protected_candidate_classes": [
+      "domain_term",
+      "place_name",
+      "person_name"
+    ],
+    "required_evidence": {
+      "bcc_frequency": 0,
+      "dependent_reading_count": 0,
+      "mandatory_static": false,
+      "all_readings_dynamically_recoverable": true
+    },
+    "action": "exclude_from_static_core_keep_dynamic_recoverable",
+    "source_mutation": false,
+    "noise_label": false,
+    "selected_runtime_violation_limit": 0
+  },
+  "dynamic_coverage_gate": {
+    "policy": "internal_data/dynamic_candidate_coverage_policy.json",
+    "require_complete": true
+  },
+  "candidate_ranking_evidence_gate": {
+    "policy": "internal_data/candidate_ranking_evidence_policy.json",
+    "require_complete": true
+  },
+  "safety": {
+    "require_formal_existing_encoding": true,
+    "preserve_full_source_database": true,
+    "filter_materialized_runtime_only": true,
+    "unmatched_selected_readings_are_errors": true
+  },
+  "evaluation": {
+    "fixed_replay_cases": 5830,
+    "scoped_production_top_cases": 2449,
+    "observed_cold_top1": 2440,
+    "observed_cold_top1_rate": 0.9963250306247448,
+    "wilson_95_lower_bound": 0.9930300811292823
+  },
+  "runtime_handoff": {
+    "default_schema": "yime_variable",
+    "runtime_schemas": ["yime_variable", "yime_full", "yime_shorthand"],
+    "windows_dictionaries": [
+      "yime_full.dict.yaml",
+      "yime_variable.dict.yaml",
+      "yime_shorthand.dict.yaml"
+    ],
+    "sidecar_files": [
+      "yime_pinyin_codes.tsv",
+      "yime_syllable_decomposition.tsv",
+      "pinyin_normalized.json",
+      "yime_pua_pinyin.json"
+    ],
+    "windows_profile": "go-backend/input_methods/yime/data/yime_runtime_profile.json",
+    "legacy_large_lexicons_role": [
+      "source_of_truth",
+      "candidate_screening_pool",
+      "regression_test_resource"
+    ],
+    "legacy_large_lexicons_packaged": false
+  }
+}

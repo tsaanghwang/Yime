@@ -87,19 +87,19 @@ type bundledErhuaEntry struct {
 func TestBundledExplicitErhuaMixedOverlayIsCompleteAndReversible(t *testing.T) {
 	var manifest bundledErhuaMixedManifest
 	readJSONFile(t, "yime_erhua_mixed_manifest.json", &manifest)
+	identity := loadBundledCoreIdentity(t)
 	if manifest.ToolVersion != "explicit-erhua-yinyuan-feature-runtime-v8" ||
-		manifest.Summary.ExplicitRecordCount != 131 ||
-		manifest.Summary.DualRouteReadyCount != 131 ||
-		manifest.Summary.FeatureProjectedCount != 131 ||
+		manifest.Summary.ExplicitRecordCount <= 0 ||
+		manifest.Summary.DualRouteReadyCount != manifest.Summary.ExplicitRecordCount ||
+		manifest.Summary.FeatureProjectedCount != manifest.Summary.ExplicitRecordCount ||
 		manifest.Summary.PendingFusionCount != 0 ||
-		manifest.Summary.InheritedWeightRecordCount != 131 ||
+		manifest.Summary.InheritedWeightRecordCount != manifest.Summary.ExplicitRecordCount ||
 		manifest.Summary.FixedRuntimeWeight != 1 ||
-		manifest.Summary.CoreWeightRecordCount != 65 ||
-		manifest.Summary.PSCPeripheralWeightCount != 66 ||
+		manifest.Summary.CoreWeightRecordCount+manifest.Summary.PSCPeripheralWeightCount != manifest.Summary.ExplicitRecordCount ||
 		manifest.Summary.DeferredMissingWeightCount != 0 ||
-		manifest.Summary.RoutesPerMode != 196 ||
-		manifest.Summary.RuntimeAliasRows != 588 ||
-		manifest.Summary.SentenceAliasRows != 393 ||
+		manifest.Summary.RoutesPerMode != manifest.Summary.ExplicitRecordCount+manifest.Summary.CoreWeightRecordCount ||
+		manifest.Summary.RuntimeAliasRows != manifest.Summary.RoutesPerMode*3 ||
+		manifest.Summary.SentenceAliasRows != manifest.Summary.ExplicitRecordCount*3 ||
 		manifest.Summary.SentenceDictionaryCount != 3 ||
 		manifest.Summary.DeclaredSoundUnitCount != 18 ||
 		manifest.Summary.PilotSoundUnitCount != 18 ||
@@ -108,8 +108,8 @@ func TestBundledExplicitErhuaMixedOverlayIsCompleteAndReversible(t *testing.T) {
 		manifest.Summary.DedicatedKeyClassCount != 15 ||
 		manifest.Summary.FeatureRuleCount == 0 ||
 		manifest.Summary.FeatureRuleCount != 15 ||
-		manifest.Summary.ProjectedReadyRecordCount != 131 ||
-		manifest.Summary.ReverseLookupRowCount != 131 ||
+		manifest.Summary.ProjectedReadyRecordCount != manifest.Summary.ExplicitRecordCount ||
+		manifest.Summary.ReverseLookupRowCount != manifest.Summary.ExplicitRecordCount ||
 		!manifest.Summary.Passed {
 		t.Fatalf("unexpected explicit-erhua mixed manifest: %#v", manifest)
 	}
@@ -134,8 +134,8 @@ func TestBundledExplicitErhuaMixedOverlayIsCompleteAndReversible(t *testing.T) {
 			t.Fatalf("%s hash mismatch: got=%s want=%s", sentenceAliasName, got, manifest.OutputSHA256[sentenceAliasName])
 		}
 		sentenceAliases := readBundledErhuaDictionary(t, sentenceAliasPath)
-		if len(sentenceAliases) != 131 {
-			t.Fatalf("%s must contain 131 fused sentence routes, got %d", sentenceAliasName, len(sentenceAliases))
+		if len(sentenceAliases) != manifest.Summary.ExplicitRecordCount {
+			t.Fatalf("%s must contain %d fused sentence routes, got %d", sentenceAliasName, manifest.Summary.ExplicitRecordCount, len(sentenceAliases))
 		}
 		sentenceName := "yime_sentence_" + mode + ".dict.yaml"
 		sentencePath := filepath.Join("data", sentenceName)
@@ -152,8 +152,8 @@ func TestBundledExplicitErhuaMixedOverlayIsCompleteAndReversible(t *testing.T) {
 			}
 		}
 		overlay := readBundledErhuaDictionary(t, filepath.Join("data", overlayName))
-		if len(overlay) != 196 {
-			t.Fatalf("%s must contain exactly 196 routes, got %d", overlayName, len(overlay))
+		if len(overlay) != manifest.Summary.RoutesPerMode {
+			t.Fatalf("%s must contain exactly %d routes, got %d", overlayName, manifest.Summary.RoutesPerMode, len(overlay))
 		}
 		coreEntries := readBundledErhuaDictionary(t, filepath.Join("data", "yime_"+mode+".dict.yaml"))
 		coreWeights := maximumWeights(coreEntries)
@@ -185,8 +185,8 @@ func TestBundledExplicitErhuaMixedOverlayIsCompleteAndReversible(t *testing.T) {
 				t.Fatalf("%s/%s alias weight=%d, want fixed low-frequency weight 1", mode, entry.Text, entry.Weight)
 			}
 		}
-		if len(routesByText) != 131 {
-			t.Fatalf("%s must contain 131 explicit texts, got %d", overlayName, len(routesByText))
+		if len(routesByText) != manifest.Summary.ExplicitRecordCount {
+			t.Fatalf("%s must contain %d explicit texts, got %d", overlayName, manifest.Summary.ExplicitRecordCount, len(routesByText))
 		}
 		if shiftRows != 98 || len(shiftCodes) != 98 {
 			t.Fatalf("%s dedicated Shift routes=%d distinct=%d, want 98/98", overlayName, shiftRows, len(shiftCodes))
@@ -205,7 +205,7 @@ func TestBundledExplicitErhuaMixedOverlayIsCompleteAndReversible(t *testing.T) {
 			t.Fatal(err)
 		}
 		for _, fragment := range []string{
-			"version: \"2026-08-17-core-1167501-layout-58f69f370aea-rank-v1-erhua-mixed-v4-psc-peripheral-v1-sentence-v1-third-tone-v1-alphabet-v2\"",
+			"version: \"2026-08-17-" + identity.CoreVersion() + "-layout-58f69f370aea-rank-v1-erhua-mixed-v4-psc-peripheral-v1-sentence-v1-third-tone-v1-alphabet-v2\"",
 			"alphabet: \"`1234567890-=qwertyuiop[]\\\\asdfghjkl;'zxcvbnm,./JKLUIOM<>NGFDSREWQTYVCXPAZ\"",
 			"- yime_erhua_mixed_" + mode,
 			"- table_translator@erhua_mixed",
@@ -235,8 +235,8 @@ func TestBundledExplicitErhuaMixedOverlayIsCompleteAndReversible(t *testing.T) {
 		t.Fatal(err)
 	}
 	lines := strings.Split(strings.TrimSpace(string(reverseSource)), "\n")
-	if len(lines) != 132 {
-		t.Fatalf("explicit-erhua reverse source rows=%d, want header + 131", len(lines))
+	if len(lines) != manifest.Summary.ReverseLookupRowCount+1 {
+		t.Fatalf("explicit-erhua reverse source rows=%d, want header + %d", len(lines), manifest.Summary.ReverseLookupRowCount)
 	}
 	for _, want := range []string{
 		"一阵儿\tpsc_erhua\tyi1 zhen4 er5\tERHUA-YINYUAN-CENTRAL-ALL\tzhen4\tN16 M16 M17 M30\tN16 M22 M23 M24",

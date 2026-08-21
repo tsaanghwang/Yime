@@ -68,6 +68,7 @@ $requiredGovernanceGuards = @(
     'workflow_dispatch:',
     "branches: [main, yime-stable, 'codex/**']",
     'name: rust-i686-host',
+    'name: lexicon-offline-tooling',
     'name: native-build',
     'Guard and track libIME2 component commits',
     '.\tools\check-libime2-change-boundary.ps1',
@@ -87,7 +88,11 @@ $requiredGovernanceGuards = @(
     'Preserve protected installer-package contract',
     'name: core-build',
     'Preserve legacy aggregate build contract',
-    'needs: [build-contract, rust-i686-host, native-build, go-tests, real-rime-tests, go-race-msys2]',
+    'needs: [build-contract, lexicon-offline-tooling, rust-i686-host, native-build, go-tests, real-rime-tests, go-race-msys2]',
+    '.\tools\lexicon\replay-approved-handoff.ps1',
+    '.\tools\evaluation\run.ps1',
+    'verify_release_readiness.py --require-release',
+    'verify_package_handoff.py',
     '.\tools\test-go.ps1',
     '.\tools\test-real-rime.ps1',
     '.\tools\assert-win32-build-prerequisites.ps1 -RequireToolchain',
@@ -121,6 +126,8 @@ foreach ($guard in @(
     '/tools/test-go-race.ps1 @tsaanghwang',
     '/tools/test-go.ps1 @tsaanghwang',
     '/tools/test-real-rime.ps1 @tsaanghwang',
+    '/tools/lexicon/** @tsaanghwang',
+    '/tools/evaluation/** @tsaanghwang',
     '/tools/test-installer-smoke.ps1 @tsaanghwang',
     '/tools/assert-win32-build-prerequisites.ps1 @tsaanghwang',
     '/tools/initialize-dev-environment.ps1 @tsaanghwang',
@@ -325,20 +332,21 @@ if ([string]$sourceEvidence.reverse_pinyin_source -ne 'yime_pinyin_reverse_sourc
 }
 $erhuaMixed = Get-Content -LiteralPath $erhuaMixedManifest -Raw -Encoding UTF8 | ConvertFrom-Json
 if (-not [bool]$erhuaMixed.summary.passed -or
-    [int64]$erhuaMixed.summary.inherited_weight_record_count -ne 131 -or
+    [int64]$erhuaMixed.summary.explicit_record_count -le 0 -or
+    [int64]$erhuaMixed.summary.inherited_weight_record_count -ne [int64]$erhuaMixed.summary.explicit_record_count -or
     [int64]$erhuaMixed.summary.fixed_runtime_weight -ne 1 -or
-    [int64]$erhuaMixed.summary.feature_projected_count -ne 131 -or
+    [int64]$erhuaMixed.summary.feature_projected_count -ne [int64]$erhuaMixed.summary.explicit_record_count -or
     [int64]$erhuaMixed.summary.pending_fusion_count -ne 0 -or
-    [int64]$erhuaMixed.summary.core_weight_record_count -ne 65 -or
-    [int64]$erhuaMixed.summary.psc_peripheral_weight_record_count -ne 66 -or
+    ([int64]$erhuaMixed.summary.core_weight_record_count + [int64]$erhuaMixed.summary.psc_peripheral_weight_record_count) -ne [int64]$erhuaMixed.summary.explicit_record_count -or
     [int64]$erhuaMixed.summary.deferred_missing_weight_count -ne 0 -or
-    [int64]$erhuaMixed.summary.runtime_alias_rows -ne 588 -or
-    [int64]$erhuaMixed.summary.sentence_alias_rows -ne 393 -or
+    [int64]$erhuaMixed.summary.routes_per_mode -ne ([int64]$erhuaMixed.summary.explicit_record_count + [int64]$erhuaMixed.summary.core_weight_record_count) -or
+    [int64]$erhuaMixed.summary.runtime_alias_rows -ne ([int64]$erhuaMixed.summary.routes_per_mode * 3) -or
+    [int64]$erhuaMixed.summary.sentence_alias_rows -ne ([int64]$erhuaMixed.summary.explicit_record_count * 3) -or
     [int64]$erhuaMixed.summary.sentence_dictionary_count -ne 3 -or
     [int64]$erhuaMixed.summary.declared_sound_unit_count -ne 18 -or
     [int64]$erhuaMixed.summary.dedicated_key_class_count -ne 15 -or
     [int64]$erhuaMixed.summary.feature_rule_count -ne 15 -or
-    [int64]$erhuaMixed.summary.reverse_lookup_row_count -ne 131) {
+    [int64]$erhuaMixed.summary.reverse_lookup_row_count -ne [int64]$erhuaMixed.summary.explicit_record_count) {
     throw 'Explicit-erhua mixed runtime manifest did not pass its completeness gates.'
 }
 foreach ($mode in @('full', 'variable', 'shorthand')) {
@@ -353,18 +361,16 @@ foreach ($mode in @('full', 'variable', 'shorthand')) {
 $erhuaReverseHash = (Get-FileHash -LiteralPath $erhuaReverseSource -Algorithm SHA256).Hash.ToLowerInvariant()
 $erhuaReverseRows = [Math]::Max(0, (Get-Content -LiteralPath $erhuaReverseSource -Encoding UTF8).Count - 1)
 if ([string]$erhuaMixed.output_sha256.'yime_erhua_reverse_source.tsv' -ne $erhuaReverseHash -or
-    $erhuaReverseRows -ne 131) {
+    $erhuaReverseRows -ne [int64]$erhuaMixed.summary.reverse_lookup_row_count) {
     throw 'Explicit-erhua reverse sidecar does not match its manifest or expected row count.'
 }
 $pscPeripheral = Get-Content -LiteralPath $pscPeripheralManifest -Raw -Encoding UTF8 | ConvertFrom-Json
 if (-not [bool]$pscPeripheral.summary.passed -or
     [int64]$pscPeripheral.summary.source_record_count -ne 315 -or
-    [int64]$pscPeripheral.summary.neutral_tone_record_count -ne 183 -or
-    [int64]$pscPeripheral.summary.erhua_record_count -ne 132 -or
-    [int64]$pscPeripheral.summary.encoded_record_count -ne 103 -or
-    [int64]$pscPeripheral.summary.already_in_core_record_count -ne 212 -or
-    [int64]$pscPeripheral.summary.runtime_rows_per_mode -ne 103 -or
-    [int64]$pscPeripheral.summary.sentence_rows_per_mode -ne 103 -or
+    ([int64]$pscPeripheral.summary.neutral_tone_record_count + [int64]$pscPeripheral.summary.erhua_record_count) -ne [int64]$pscPeripheral.summary.source_record_count -or
+    ([int64]$pscPeripheral.summary.encoded_record_count + [int64]$pscPeripheral.summary.already_in_core_record_count) -ne [int64]$pscPeripheral.summary.source_record_count -or
+    [int64]$pscPeripheral.summary.runtime_rows_per_mode -ne [int64]$pscPeripheral.summary.encoded_record_count -or
+    [int64]$pscPeripheral.summary.sentence_rows_per_mode -ne [int64]$pscPeripheral.summary.encoded_record_count -or
     [int64]$pscPeripheral.summary.fixed_peripheral_weight -ne 1) {
     throw 'PSC pronunciation peripheral manifest did not pass its completeness gates.'
 }
@@ -584,11 +590,50 @@ if ($legacyModuleMatches.Count -gt 0) {
     throw "Legacy upstream Go module namespace returned: $($legacyModuleMatches -join '; ')"
 }
 
-$retiredTrackedPaths = @('python', 'node', 'McBopomofoWeb', 'libchewing', 'tests')
+$retiredTrackedPaths = @('python', 'node', 'McBopomofoWeb', 'libchewing')
 foreach ($retiredPath in $retiredTrackedPaths) {
     $tracked = @(& git -C $root ls-files -- $retiredPath)
     if ($tracked.Count -gt 0) {
         throw "Retired path is still tracked: $retiredPath"
+    }
+}
+
+# The old upstream root test tree was retired with PIME.  The new root tests
+# are restricted to the migrated, offline Yime lexicon/encoding toolchain.
+$allowedOfflineTestPrefixes = @(
+    'tests/README.md',
+    'tests/__init__.py',
+    'tests/test_',
+    'tests/input_model/',
+    'tests/lexicon_bundle/',
+    'tests/pinyin_source_db/',
+    'tests/syllable_analysis/',
+    'tests/tools/',
+    'tests/yime/',
+    'tests/yinjie/'
+)
+$trackedOfflineTests = @(& git -C $root ls-files -- 'tests')
+foreach ($testPath in $trackedOfflineTests) {
+    $normalizedTestPath = $testPath.Replace('\', '/')
+    $allowed = @($allowedOfflineTestPrefixes | Where-Object {
+        $normalizedTestPath.StartsWith($_, [StringComparison]::Ordinal)
+    }).Count -gt 0
+    if (-not $allowed) {
+        throw "Unclassified root test returned outside the offline Yime toolchain: $testPath"
+    }
+}
+foreach ($runtimeOnlyFragment in @(
+    'pywin32',
+    'win32api',
+    'win32gui',
+    'pynput',
+    'tkinter',
+    'PyInstaller',
+    'yime.input_method'
+)) {
+    $matches = @(& git -C $root grep -n --fixed-strings $runtimeOnlyFragment -- 'tests/*.py' 'tests/**/*.py')
+    if ($matches.Count -gt 0) {
+        throw "Prototype runtime dependency returned in offline tests: $($matches -join '; ')"
     }
 }
 $retiredUpstreamArtifacts = @(

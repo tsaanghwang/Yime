@@ -8,6 +8,8 @@ import (
 	"testing"
 )
 
+const testCoreSourceManifest = `{"entry_count":12,"distinct_texts":10,"source_dictionary_sha256":"7edf122913925291d1259241d3b1494faec9173a478a1658e0959062c1e8f155","source_selection_sha256":"4ec48d3627b8efa8344d38430f85710570a6576693cc0cd2990dc3fb4e3bac17"}`
+
 func defaultProfile(t *testing.T) Profile {
 	t.Helper()
 	p, err := LoadProfile(filepath.Join("..", "data", ProfileFileName))
@@ -215,6 +217,7 @@ func TestApplyRegeneratesLockedArtifactSet(t *testing.T) {
 	}
 	write("yime_pinyin_codes.tsv", "pinyin_tone\tfull\na1\t]vcx\n")
 	write("yime_full.dict.yaml", "---\nname: yime_full\n...\n词\t]vcx\t10\n")
+	write("yime_core_source_manifest.json", testCoreSourceManifest)
 	for _, mode := range []string{"full", "variable", "shorthand"} {
 		write("yime_"+mode+".schema.yaml", "schema:\n  version: old\nengine:\n  translators:\n    - table_translator@custom_phrase\n    - script_translator\nspeller:\n  alphabet: old\n  delimiter: \" \"\ntranslator:\n  dictionary: yime_"+mode+"\n  user_dict: yime_"+mode+"\n  enable_completion: true\n  enable_sentence: true\n  sentence_over_completion: true\ncustom_phrase:\n  enable_completion: true\n  enable_sentence: true\n  sentence_over_completion: true\n")
 	}
@@ -243,7 +246,7 @@ func TestApplyRegeneratesLockedArtifactSet(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !strings.Contains(string(schema), "user_dict: yime_full_core_1167501_layout_") || !strings.Contains(string(schema), "_rank_v1") {
+	if !strings.Contains(string(schema), "user_dict: yime_full_core_7edf12291392_layout_") || !strings.Contains(string(schema), "_rank_v1") {
 		t.Fatalf("schema:\n%s", schema)
 	}
 }

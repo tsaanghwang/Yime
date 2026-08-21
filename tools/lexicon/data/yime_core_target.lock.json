@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "lock_id": "yime-core-1166753-layout-58f69f370aea",
+  "status": "approved_windows_handoff_target",
+  "source": {
+    "project": "Yime",
+    "recorded_revision": "f8025a1d387b69c82ffd58816b18a3a2f64a83e4",
+    "note": "Approved from two identical clean rebuilds using the formal in-repository source and encoding chain."
+  },
+  "supersedes": {
+    "lock_id": "yime-core-1167501-layout-58f69f370aea",
+    "target": {
+      "entry_count": 1167501,
+      "distinct_texts": 1152157,
+      "source_dictionary_sha256": "4ce312cd5082cc19d525abe5842c092e1b1693fcec340b565ca4aa479f226551",
+      "source_selection_sha256": "8d88e96f411231f7743d9acb289a00c32385a7f37535d07827357928f237d6b2",
+      "layout_projection_sha256": "58f69f370aea49e03a48414dcaaf0ebdaef88be0e4fee37e2c4e1497b14976dd"
+    }
+  },
+  "target": {
+    "entry_count": 1166753,
+    "distinct_texts": 1151404,
+    "source_dictionary_sha256": "7edf122913925291d1259241d3b1494faec9173a478a1658e0959062c1e8f155",
+    "source_selection_sha256": "4ec48d3627b8efa8344d38430f85710570a6576693cc0cd2990dc3fb4e3bac17",
+    "layout_projection_sha256": "58f69f370aea49e03a48414dcaaf0ebdaef88be0e4fee37e2c4e1497b14976dd"
+  },
+  "artifacts": [
+    {
+      "role": "canonical_fixed_handoff",
+      "path": "tools/lexicon/handoff/yime_core_fixed.dict.yaml",
+      "size": 29705517,
+      "sha256": "7edf122913925291d1259241d3b1494faec9173a478a1658e0959062c1e8f155"
+    },
+    {
+      "role": "canonical_fixed_handoff_evidence",
+      "path": "tools/lexicon/handoff/yime_core_fixed.evidence.json",
+      "size": 3282,
+      "sha256": "d452d304e2f18f3264ed938b62b8767a26e8be73d4e46f1c829cf7e95c5d9692"
+    },
+    {
+      "role": "full_mode_dictionary",
+      "path": "go-backend/input_methods/yime/data/yime_full.dict.yaml",
+      "size": 31621303,
+      "sha256": "52f54be1fe06673303c000ee4cff80b399fb50e375d2fd67ef226bfb3465ad1f"
+    },
+    {
+      "role": "variable_mode_dictionary",
+      "path": "go-backend/input_methods/yime/data/yime_variable.dict.yaml",
+      "size": 30155261,
+      "sha256": "90d704d0e0c49f88a373a12fc0715d1dcbaac107d225ca0c411ec13bf006510b"
+    },
+    {
+      "role": "shorthand_mode_dictionary",
+      "path": "go-backend/input_methods/yime/data/yime_shorthand.dict.yaml",
+      "size": 29563931,
+      "sha256": "5cb6e2840d085bee4c969090aa261a4d02617052191cd475fffea6a80ef1396c"
+    },
+    {
+      "role": "canonical_layout_projection",
+      "path": "go-backend/input_methods/yime/data/yime_yinyuan_layout.json",
+      "size": 1023,
+      "sha256": "6c1c1d719f6018f47fe0306730d9aaded279df21fc222b8ed7f79fa7cafb37f0"
+    },
+    {
+      "role": "canonical_pinyin_code_map",
+      "path": "go-backend/input_methods/yime/data/yime_pinyin_codes.tsv",
+      "size": 19448,
+      "sha256": "aa516171f404f706b7d9ac0c9a3fb4aac4f043f3212c2b9ce6c94b38fb8d0071"
+    },
+    {
+      "role": "reverse_pinyin_source",
+      "path": "go-backend/input_methods/yime/data/yime_pinyin_reverse_source.tsv",
+      "size": 2039059,
+      "sha256": "85c9b28b2e46752d56d84fcd924160d260cc9e5cfcbc3c5606d0f4d47c6a319a"
+    },
+    {
+      "role": "core_source_manifest",
+      "path": "go-backend/input_methods/yime/data/yime_core_source_manifest.json",
+      "size": 1842,
+      "sha256": "34e63da45ff05388dd985c247a0346c034de2a47a76a252fc0ecfacc0a3e2c97"
+    },
+    {
+      "role": "three_mode_manifest",
+      "path": "go-backend/input_methods/yime/data/yime_lexicon_manifest.json",
+      "size": 667,
+      "sha256": "672a757372321374268f391c583304d3932d2547783512716903cdf953f62dd8"
+    },
+    {
+      "role": "runtime_profile",
+      "path": "go-backend/input_methods/yime/data/yime_runtime_profile.json",
+      "size": 3764,
+      "sha256": "f40b40e001bea799a45877f524d380e229d1c0499c3ba50a16c5d8ef19091741"
+    },
+    {
+      "role": "psc_neutral_tone_and_erhua_layer",
+      "path": "go-backend/input_methods/yime/data/yime_psc_peripheral_manifest.json",
+      "size": 2073,
+      "sha256": "2e4a3ac0dba4bf497519dc2f60f89ae899f2e34d1bdecbe776490b2273052807"
+    },
+    {
+      "role": "explicit_erhua_layer",
+      "path": "go-backend/input_methods/yime/data/yime_erhua_mixed_manifest.json",
+      "size": 4044,
+      "sha256": "0a1f89dc4df28682924a62f62f2cc224bcf97ca09443ea4e6ee659acbe16091c"
+    },
+    {
+      "role": "third_tone_sandhi_layer",
+      "path": "go-backend/input_methods/yime/data/yime_third_tone_stage5c_manifest.json",
+      "size": 1551,
+      "sha256": "b53b46ef49da894d019b5db4dc281b19aaceec9fe9ec570b26653b8e0c54d82e"
+    },
+    {
+      "role": "particle_a_sound_change_layer",
+      "path": "go-backend/input_methods/yime/data/yime_particle_a_stage6d_manifest.json",
+      "size": 2549,
+      "sha256": "e176793b2359b3d32cef397a8d20a7fc24c24f9c52cf98e381ce240c4b2bba11"
+    }
+  ]
+}

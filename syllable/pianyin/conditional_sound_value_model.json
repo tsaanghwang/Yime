@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "model_id": "yime-conditional-sound-value-model-v1",
+  "status": "research_only",
+  "runtime_enabled": false,
+  "description": "条件音值选择层。把片音实现值、抽象音元登记和语境规则分开；当前只建立来源和数据契约，不接入规范音节编码或运行时候选。",
+  "invariants": [
+    "canonical_dictionary_pinyin_is_unchanged",
+    "canonical_four_yinyuan_slots_are_unchanged",
+    "stable_yinyuan_ids_are_unchanged",
+    "keyboard_layout_is_not_read_or_written",
+    "conditional_rules_are_source_backed_and_removable",
+    "runtime_candidate_generation_remains_disabled"
+  ],
+  "history_evidence": [
+    {
+      "commit": "65968f1d51d34dcb0ff6624932680cc5487bb3ba",
+      "finding": "初始提交已含 yinyuan/unpitched_yinyuan.json、pitched_pianyin.json 和多份乐音归并资料。"
+    },
+    {
+      "commit": "43531d82561302d6d1ddcb2780038adc420b15cd",
+      "finding": "新增 yueyin_yinyuan.json；其 33 组内容后来成为乐音增强登记表的 aliases。"
+    },
+    {
+      "commit": "2ba520cf47c991f1224de808ab40b9b908500148",
+      "finding": "由 zaoyin_yinyuan.json 建立 zaoyin_yinyuan_enhanced.json。"
+    },
+    {
+      "commit": "efcd46cefff68e00dce2f0d7464fe3d4cdd9a68b",
+      "finding": "新增 yueyin_yinyuan_enhanced.json，并把两个增强文件定为稳定语义/运行时登记表。"
+    },
+    {
+      "commit": "0f0698e67402026f43a8e7005fba7b65170b5a36",
+      "finding": "只移动音元资料目录，增强文件内容未改变。"
+    },
+    {
+      "commit": "d6cf9abf3a8424937a91d1dec24826dbb8c5f41d",
+      "finding": "再次只移动音元资料目录，形成当前 syllable/yinyuan 路径。"
+    }
+  ],
+  "source_layers": {
+    "zaoyin_realizations": {
+      "path": "syllable/pianyin/zaoyin_pianyin.json",
+      "role": "upstream_pianyin_realization_inventory",
+      "note": "结构化登记二十一规范声母、零首音、y/w，以及延后的 ɥ、ŋ、语气词啊舌尖同化首音；旧 pianyin_initial.json 不再参与现行来源链。"
+    },
+    "yueyin_quality_and_pitch_classes": {
+      "path": "syllable/yinyuan/variables_of_attributes.json",
+      "role": "upstream_yueyin_normalization_rules",
+      "note": "定义具体音质和五度音高怎样归并为十一组音质乘三档调级。"
+    },
+    "attested_yueyin_slices": {
+      "path": "syllable/yinyuan/pitched_pianyin.json",
+      "role": "derived_attested_pianyin_inventory",
+      "note": "由现行干音片音序列提取；用于限制生产登记表中的别名覆盖面，不单独决定归并规则。"
+    },
+    "canonical_ganyin_decomposition": {
+      "path": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+      "role": "derived_canonical_three_slice_decomposition",
+      "note": "现行规范干音的呼音、主音、末音三段片音序列；是条件替换的规范基线，不是语流表层结果。"
+    }
+  },
+  "stable_registries": {
+    "zaoyin": {
+      "path": "syllable/yinyuan/zaoyin_yinyuan_enhanced.json",
+      "role": "stable_yinyuan_id_and_runtime_registry"
+    },
+    "yueyin": {
+      "path": "syllable/yinyuan/yueyin_yinyuan_enhanced.json",
+      "role": "stable_yinyuan_id_and_runtime_registry"
+    }
+  },
+  "condition_dimensions": [
+    "lexical_or_construction_record",
+    "prosodic_domain",
+    "syllable_index",
+    "slot_index",
+    "left_surface_environment",
+    "right_surface_environment",
+    "tone_layer_result",
+    "source_observation"
+  ],
+  "operation_types": {
+    "select_realization": "只选择同一抽象音元在特定条件下的片音实现，不改变编码用 Yinyuan ID。",
+    "substitute_yinyuan": "实际读音对应另一既有音元时，在固定音元位置内替换为目标 Yinyuan ID；不得增删位置。"
+  },
+  "conditional_rules": []
+}

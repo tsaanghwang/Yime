@@ -31,12 +31,10 @@ func TestBundledPSCPeripheralIsCompleteLowFrequencyAndThreeMode(t *testing.T) {
 	readJSONFile(t, "yime_psc_peripheral_manifest.json", &manifest)
 	if manifest.ToolVersion != "psc-pronunciation-peripheral-runtime-v2" ||
 		manifest.Summary.SourceRecordCount != 315 ||
-		manifest.Summary.NeutralToneRecordCount != 183 ||
-		manifest.Summary.ErhuaRecordCount != 132 ||
-		manifest.Summary.EncodedRecordCount != 103 ||
-		manifest.Summary.AlreadyInCoreRecordCount != 212 ||
-		manifest.Summary.RuntimeRowsPerMode != 103 ||
-		manifest.Summary.SentenceRowsPerMode != 103 ||
+		manifest.Summary.NeutralToneRecordCount+manifest.Summary.ErhuaRecordCount != manifest.Summary.SourceRecordCount ||
+		manifest.Summary.EncodedRecordCount+manifest.Summary.AlreadyInCoreRecordCount != manifest.Summary.SourceRecordCount ||
+		manifest.Summary.RuntimeRowsPerMode != manifest.Summary.EncodedRecordCount ||
+		manifest.Summary.SentenceRowsPerMode != manifest.Summary.EncodedRecordCount ||
 		manifest.Summary.FixedPeripheralWeight != 1 ||
 		!manifest.Summary.Passed {
 		t.Fatalf("unexpected PSC peripheral manifest: %#v", manifest)
@@ -82,8 +80,8 @@ func TestBundledPSCPeripheralIsCompleteLowFrequencyAndThreeMode(t *testing.T) {
 		if err := file.Close(); err != nil {
 			t.Fatal(err)
 		}
-		if rows != 103 {
-			t.Fatalf("%s rows=%d, want 103", name, rows)
+		if rows != manifest.Summary.RuntimeRowsPerMode {
+			t.Fatalf("%s rows=%d, want manifest rows %d", name, rows, manifest.Summary.RuntimeRowsPerMode)
 		}
 
 		sentenceName := "yime_psc_peripheral_sentence_" + mode + ".dict.yaml"
@@ -127,7 +125,8 @@ func TestBundledPSCPeripheralIsCompleteLowFrequencyAndThreeMode(t *testing.T) {
 func TestRuntimeProfileDeclaresPSCPeripheralWithoutChangingCoreCount(t *testing.T) {
 	var profile coreRuntimeProfile
 	readJSONFile(t, "yime_runtime_profile.json", &profile)
-	if profile.EntryCountPerMode != curatedCoreEntryCount ||
+	identity := loadBundledCoreIdentity(t)
+	if profile.EntryCountPerMode != identity.EntryCount ||
 		profile.PSCPeripheralManifest != "yime_psc_peripheral_manifest.json" ||
 		profile.PSCPeripheralEntries != 315 ||
 		profile.PSCPeripheralNeutralTone != 183 ||

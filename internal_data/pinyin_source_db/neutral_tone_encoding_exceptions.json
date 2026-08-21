@@ -1,0 +1,52 @@
+{
+  "schema_version": "neutral-tone-encoding-exceptions-v1",
+  "purpose": "Approve source-attested neutral-only syllables that have no tone-1-to-4 sibling in the current inventory. This registry contains no Yinyuan IDs, codes, or keys.",
+  "exceptions": {
+    "hm5": {
+      "status": "approved",
+      "rule_id": "ENC-NEUTRAL-SPECIAL-EXCEPTION",
+      "decision_basis": "The source-attested syllabic interjection uses the registered h + m analysis, but the current source inventory has no hm1-hm4 sibling. Preserve the attested neutral form without generating the missing lexical tones.",
+      "evidence": [
+        {
+          "source": "unihan",
+          "codepoint": "U+5677",
+          "reading": "hm"
+        }
+      ]
+    },
+    "hng5": {
+      "status": "approved",
+      "rule_id": "ENC-NEUTRAL-SPECIAL-EXCEPTION",
+      "decision_basis": "The source-attested syllabic interjection uses the registered h + ng analysis, but the current source inventory has no hng1-hng4 sibling. Preserve the attested neutral form without generating the missing lexical tones.",
+      "evidence": [
+        {
+          "source": "unihan",
+          "codepoint": "U+54FC",
+          "reading": "hng"
+        }
+      ]
+    },
+    "lo5": {
+      "status": "approved",
+      "rule_id": "ENC-NEUTRAL-SPECIAL-EXCEPTION",
+      "decision_basis": "Unihan and Wanxiang contain attested lo without a lexical-tone sibling in the current inventory. The ordinary l + o structural encoder can encode the reviewed neutral form; this approval does not create lo1-lo4.",
+      "evidence": [
+        {
+          "source": "unihan",
+          "codepoint": "U+54AF",
+          "reading": "lo"
+        },
+        {
+          "source": "unihan",
+          "codepoint": "U+56D6",
+          "reading": "lo"
+        },
+        {
+          "source": "wanxiang",
+          "codepoint": "U+54AF",
+          "reading": "lo"
+        }
+      ]
+    }
+  }
+}

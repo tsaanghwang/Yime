@@ -148,7 +148,7 @@ sort: by_weight
 | 编码 | Yime 编码 | `qu`、`7dgo` |
 | 权重 | 整数，越大越优先 | `240230122` |
 
-**规模**：每种模式当前1,167,057条；实际数量以
+**规模**：每种模式当前1,166,753条；实际数量以
 `yime_lexicon_manifest.json` 的 `entry_count` 为准，不应在导入脚本之外手工调整。
 
 同目录的 `yime_core_source_manifest.json` 记录原型修订、来源/筛选 SHA-256 和 BCC、

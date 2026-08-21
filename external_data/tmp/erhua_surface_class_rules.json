@@ -1,0 +1,552 @@
+{
+  "schema_version": 3,
+  "status": "research_draft_only",
+  "runtime_enabled": false,
+  "policy": "PSC 儿化结果负责来源分组；规范韵母和当前三段基础音质负责规则输入。儿化特征由类规则生成，需大量维护的表层音质从独立附表导入；人工 UI 修改只作为显式例外。",
+  "classes": {
+    "ERHUA-ORAL-AR-A": {
+      "source_results": [
+        "ar"
+      ],
+      "members": [
+        "a"
+      ],
+      "basis": "单韵母 a 保留基础 ä，主音开始卷舌，末段向 ɐ 央化。",
+      "feature_template": {
+        "呼音": {
+          "rhotic": false,
+          "nasalized": false
+        },
+        "主音": {
+          "rhotic": true,
+          "nasalized": false
+        },
+        "末音": {
+          "rhotic": true,
+          "nasalized": false
+        }
+      }
+    },
+    "ERHUA-ORAL-AR-AI-N": {
+      "source_results": [
+        "ar"
+      ],
+      "members": [
+        "ai",
+        "an"
+      ],
+      "basis": "ai/an 的基础主音为 a；韵尾替换后末段向 ɐ 央化，主音与末音携带 rhotic。",
+      "feature_template": {
+        "呼音": {
+          "rhotic": false,
+          "nasalized": false
+        },
+        "主音": {
+          "rhotic": true,
+          "nasalized": false
+        },
+        "末音": {
+          "rhotic": true,
+          "nasalized": false
+        }
+      }
+    },
+    "ERHUA-ORAL-ER": {
+      "source_results": [
+        "er"
+      ],
+      "members": [
+        "_i",
+        "ei",
+        "en"
+      ],
+      "basis": "PSC 均归并为 er；本子类三段均实现为卷舌央元音。",
+      "feature_template": {
+        "呼音": {
+          "rhotic": true,
+          "nasalized": false
+        },
+        "主音": {
+          "rhotic": true,
+          "nasalized": false
+        },
+        "末音": {
+          "rhotic": true,
+          "nasalized": false
+        }
+      }
+    },
+    "ERHUA-ORAL-ER-E": {
+      "source_results": [
+        "er"
+      ],
+      "members": [
+        "e"
+      ],
+      "basis": "e[ɤ] 保留后元音音质，主音开始携带 rhotic；不因来源同写 er 而强制央化为 ə。",
+      "feature_template": {
+        "呼音": {
+          "rhotic": false,
+          "nasalized": false
+        },
+        "主音": {
+          "rhotic": true,
+          "nasalized": false
+        },
+        "末音": {
+          "rhotic": true,
+          "nasalized": false
+        }
+      }
+    },
+    "ERHUA-ORAL-I-ER": {
+      "source_results": [
+        "i:er"
+      ],
+      "members": [
+        "i",
+        "in"
+      ],
+      "basis": "PSC 均归并为 i:er；i 保留在前段，卷舌央元音占主音和末音。",
+      "feature_template": {
+        "呼音": {
+          "rhotic": false,
+          "nasalized": false
+        },
+        "主音": {
+          "rhotic": true,
+          "nasalized": false
+        },
+        "末音": {
+          "rhotic": true,
+          "nasalized": false
+        }
+      }
+    },
+    "ERHUA-ORAL-IAR": {
+      "source_results": [
+        "iar"
+      ],
+      "members": [
+        "ia"
+      ],
+      "basis": "PSC 的 ia 归并为 iar；ian 虽同写 iar，但基础韵核及人工表层标注不同，不再由本模板覆盖。",
+      "feature_template": {
+        "呼音": {
+          "rhotic": false,
+          "nasalized": false
+        },
+        "主音": {
+          "rhotic": true,
+          "nasalized": false
+        },
+        "末音": {
+          "rhotic": true,
+          "nasalized": false
+        }
+      }
+    },
+    "ERHUA-ORAL-UAR-A": {
+      "source_results": [
+        "uar"
+      ],
+      "members": [
+        "ua"
+      ],
+      "basis": "ua 保留介音 u 与基础 ä，主音开始卷舌，末段向 ɐ 央化。",
+      "feature_template": {
+        "呼音": {
+          "rhotic": false,
+          "nasalized": false
+        },
+        "主音": {
+          "rhotic": true,
+          "nasalized": false
+        },
+        "末音": {
+          "rhotic": true,
+          "nasalized": false
+        }
+      }
+    },
+    "ERHUA-ORAL-UAR-AI-N": {
+      "source_results": [
+        "uar"
+      ],
+      "members": [
+        "uai",
+        "uan"
+      ],
+      "basis": "uai/uan 保留介音 u 与基础主音 a；韵尾替换后末段向 ɐ 央化。",
+      "feature_template": {
+        "呼音": {
+          "rhotic": false,
+          "nasalized": false
+        },
+        "主音": {
+          "rhotic": true,
+          "nasalized": false
+        },
+        "末音": {
+          "rhotic": true,
+          "nasalized": false
+        }
+      }
+    },
+    "ERHUA-ORAL-UER": {
+      "source_results": [
+        "uer"
+      ],
+      "members": [
+        "uei",
+        "uen"
+      ],
+      "basis": "PSC 均归并为 uer；u 保留在前段，卷舌央元音占主音和末音。",
+      "feature_template": {
+        "呼音": {
+          "rhotic": false,
+          "nasalized": false
+        },
+        "主音": {
+          "rhotic": true,
+          "nasalized": false
+        },
+        "末音": {
+          "rhotic": true,
+          "nasalized": false
+        }
+      }
+    },
+    "ERHUA-ORAL-UMLAUT-I-ER": {
+      "source_results": [
+        "ü:er"
+      ],
+      "members": [
+        "ü",
+        "ün"
+      ],
+      "basis": "PSC 均归并为 ü:er；本音系规则只登记规范拼音 ü/ün。",
+      "feature_template": {
+        "呼音": {
+          "rhotic": false,
+          "nasalized": false
+        },
+        "主音": {
+          "rhotic": true,
+          "nasalized": false
+        },
+        "末音": {
+          "rhotic": true,
+          "nasalized": false
+        }
+      }
+    },
+    "ERHUA-NASAL-NG": {
+      "source_results_by_member": {
+        "ang": [
+          "ar"
+        ],
+        "eng": [
+          "er"
+        ],
+        "iang": [
+          "iar"
+        ],
+        "uang": [
+          "uar"
+        ],
+        "ueng": [
+          "uer"
+        ],
+        "ing": [
+          "i:er"
+        ],
+        "ong": [
+          "or"
+        ],
+        "iong": [
+          "ior"
+        ]
+      },
+      "members": [
+        "ang",
+        "eng",
+        "iang",
+        "uang",
+        "ueng",
+        "ing",
+        "ong",
+        "iong"
+      ],
+      "basis": "软腭鼻尾 ŋ 不再独立占位；保留呼音，把基础主音同时加鼻化和卷舌特征，并以同一音质填充主音、末音两段。ong/ueng 与其余 -ng 韵母使用同一结构规则。",
+      "feature_template": {
+        "呼音": {
+          "rhotic": false,
+          "nasalized": false
+        },
+        "主音": {
+          "rhotic": true,
+          "nasalized": true
+        },
+        "末音": {
+          "rhotic": true,
+          "nasalized": true
+        }
+      }
+    },
+    "ERHUA-ORAL-IAOR": {
+      "source_results": [
+        "iaor"
+      ],
+      "members": [
+        "iao"
+      ],
+      "basis": "iao 保留呼音和主音，卷舌特征落在末音 ʊ；不把末段特征前扩为主音卷舌。",
+      "feature_template": {
+        "呼音": {
+          "rhotic": false,
+          "nasalized": false
+        },
+        "主音": {
+          "rhotic": false,
+          "nasalized": false
+        },
+        "末音": {
+          "rhotic": true,
+          "nasalized": false
+        }
+      }
+    },
+    "ERHUA-ORAL-IOUR": {
+      "source_results": [
+        "iour"
+      ],
+      "members": [
+        "iou"
+      ],
+      "basis": "iou 保留呼音和主音，卷舌特征落在末音 ʊ；不把末段特征前扩为主音卷舌。",
+      "feature_template": {
+        "呼音": {
+          "rhotic": false,
+          "nasalized": false
+        },
+        "主音": {
+          "rhotic": false,
+          "nasalized": false
+        },
+        "末音": {
+          "rhotic": true,
+          "nasalized": false
+        }
+      }
+    },
+    "ERHUA-ORAL-UR": {
+      "source_results": [
+        "ur"
+      ],
+      "members": [
+        "u"
+      ],
+      "basis": "u 的三段儿化音质由附属音质表给出，卷舌特征覆盖固定三段。",
+      "feature_template": {
+        "呼音": {
+          "rhotic": true,
+          "nasalized": false
+        },
+        "主音": {
+          "rhotic": true,
+          "nasalized": false
+        },
+        "末音": {
+          "rhotic": true,
+          "nasalized": false
+        }
+      }
+    },
+    "ERHUA-ORAL-OR": {
+      "source_results": [
+        "or"
+      ],
+      "members": [
+        "o"
+      ],
+      "basis": "o 保留三段音质，卷舌特征从主音延续到末音。",
+      "feature_template": {
+        "呼音": {
+          "rhotic": false,
+          "nasalized": false
+        },
+        "主音": {
+          "rhotic": true,
+          "nasalized": false
+        },
+        "末音": {
+          "rhotic": true,
+          "nasalized": false
+        }
+      }
+    },
+    "ERHUA-ORAL-AOR": {
+      "source_results": [
+        "aor"
+      ],
+      "members": [
+        "ao"
+      ],
+      "basis": "ao 保留基础三段，卷舌特征落在末音。",
+      "feature_template": {
+        "呼音": {
+          "rhotic": false,
+          "nasalized": false
+        },
+        "主音": {
+          "rhotic": false,
+          "nasalized": false
+        },
+        "末音": {
+          "rhotic": true,
+          "nasalized": false
+        }
+      }
+    },
+    "ERHUA-ORAL-OUR": {
+      "source_results": [
+        "our"
+      ],
+      "members": [
+        "ou"
+      ],
+      "basis": "ou 保留基础三段，卷舌特征落在末音。",
+      "feature_template": {
+        "呼音": {
+          "rhotic": false,
+          "nasalized": false
+        },
+        "主音": {
+          "rhotic": false,
+          "nasalized": false
+        },
+        "末音": {
+          "rhotic": true,
+          "nasalized": false
+        }
+      }
+    },
+    "ERHUA-ORAL-UOR": {
+      "source_results": [
+        "uor"
+      ],
+      "members": [
+        "uo"
+      ],
+      "basis": "uo 保留呼音，卷舌特征从主音延续到末音。",
+      "feature_template": {
+        "呼音": {
+          "rhotic": false,
+          "nasalized": false
+        },
+        "主音": {
+          "rhotic": true,
+          "nasalized": false
+        },
+        "末音": {
+          "rhotic": true,
+          "nasalized": false
+        }
+      }
+    },
+    "ERHUA-ORAL-IER": {
+      "source_results": [
+        "ier"
+      ],
+      "members": [
+        "ie"
+      ],
+      "basis": "ie 的儿化后三段音质由附属音质表给出，卷舌特征从主音延续到末音。",
+      "feature_template": {
+        "呼音": {
+          "rhotic": false,
+          "nasalized": false
+        },
+        "主音": {
+          "rhotic": true,
+          "nasalized": false
+        },
+        "末音": {
+          "rhotic": true,
+          "nasalized": false
+        }
+      }
+    },
+    "ERHUA-ORAL-UMLAUT-ER": {
+      "source_results": [
+        "üer"
+      ],
+      "members": [
+        "üe"
+      ],
+      "basis": "üe 的儿化后三段音质由附属音质表给出，卷舌特征从主音延续到末音。",
+      "feature_template": {
+        "呼音": {
+          "rhotic": false,
+          "nasalized": false
+        },
+        "主音": {
+          "rhotic": true,
+          "nasalized": false
+        },
+        "末音": {
+          "rhotic": true,
+          "nasalized": false
+        }
+      }
+    },
+    "ERHUA-ORAL-IAR-IAN": {
+      "source_results": [
+        "iar"
+      ],
+      "members": [
+        "ian"
+      ],
+      "basis": "ian 去除鼻尾后的儿化后三段音质由附属音质表给出。",
+      "feature_template": {
+        "呼音": {
+          "rhotic": false,
+          "nasalized": false
+        },
+        "主音": {
+          "rhotic": true,
+          "nasalized": false
+        },
+        "末音": {
+          "rhotic": true,
+          "nasalized": false
+        }
+      }
+    },
+    "ERHUA-ORAL-UMLAUT-AR": {
+      "source_results": [
+        "üar"
+      ],
+      "members": [
+        "üan"
+      ],
+      "basis": "üan 去除鼻尾后的儿化后三段音质由附属音质表给出。",
+      "feature_template": {
+        "呼音": {
+          "rhotic": false,
+          "nasalized": false
+        },
+        "主音": {
+          "rhotic": true,
+          "nasalized": false
+        },
+        "末音": {
+          "rhotic": true,
+          "nasalized": false
+        }
+      }
+    }
+  },
+  "quality_profiles_source": "external_data/tmp/erhua_surface_quality_profiles.json"
+}

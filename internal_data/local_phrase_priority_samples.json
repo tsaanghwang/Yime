@@ -1,0 +1,727 @@
+{
+  "version": 1,
+  "source": "yime/reports/runtime_tuning_scan.json baseline.high_collision_focus.buckets + runtime phrase_lexicon_view prefix query",
+  "scope": "single_syllable_prefix",
+  "buckets": [
+    {
+      "lookup_code": "􀀖􀀠􀀡􀀢",
+      "lookup_pinyin_tone": "yi4",
+      "candidate_count": 513,
+      "demand_weight_sum": 72416.0,
+      "collision_demand_score": 37149408.0,
+      "top_current_runtime_texts": [
+        "一",
+        "食",
+        "意",
+        "亦",
+        "易",
+        "义",
+        "议",
+        "亿"
+      ],
+      "target_phrases": [
+        "一般",
+        "亿元",
+        "一直",
+        "一起",
+        "艺术"
+      ],
+      "sample_phrases": [
+        "一般",
+        "亿元",
+        "一直",
+        "一起",
+        "艺术",
+        "一家",
+        "一本",
+        "一名",
+        "一篇",
+        "意思"
+      ]
+    },
+    {
+      "lookup_code": "􀀖􀀦􀀧􀀨",
+      "lookup_pinyin_tone": "yu4",
+      "candidate_count": 330,
+      "demand_weight_sum": 57373.0,
+      "collision_demand_score": 18933090.0,
+      "top_current_runtime_texts": [
+        "与",
+        "玉",
+        "遇",
+        "雨",
+        "欲",
+        "育",
+        "愈",
+        "王"
+      ],
+      "target_phrases": [
+        "预测",
+        "预处理",
+        "预防",
+        "遇到",
+        "预算"
+      ],
+      "sample_phrases": [
+        "预测",
+        "预处理",
+        "预防",
+        "遇到",
+        "预算",
+        "预计",
+        "预期",
+        "预警",
+        "预约",
+        "预订"
+      ]
+    },
+    {
+      "lookup_code": "􀀕􀀠􀀠􀀠",
+      "lookup_pinyin_tone": "xi1",
+      "candidate_count": 335,
+      "demand_weight_sum": 50873.0,
+      "collision_demand_score": 17042455.0,
+      "top_current_runtime_texts": [
+        "西",
+        "吸",
+        "息",
+        "溪",
+        "悉",
+        "稀",
+        "茜",
+        "栖"
+      ],
+      "target_phrases": [
+        "希望",
+        "吸引",
+        "嘻嘻",
+        "西班牙",
+        "吸收"
+      ],
+      "sample_phrases": [
+        "希望",
+        "吸引",
+        "嘻嘻",
+        "西班牙",
+        "吸收",
+        "西方",
+        "西安",
+        "希腊",
+        "西部",
+        "西藏"
+      ]
+    },
+    {
+      "lookup_code": "􀀆􀀠􀀡􀀢",
+      "lookup_pinyin_tone": "li4",
+      "candidate_count": 364,
+      "demand_weight_sum": 44503.0,
+      "collision_demand_score": 16199092.0,
+      "top_current_runtime_texts": [
+        "力",
+        "立",
+        "利",
+        "例",
+        "丽",
+        "粒",
+        "哩",
+        "历"
+      ],
+      "target_phrases": [
+        "例如",
+        "历史",
+        "利用",
+        "力量",
+        "例子"
+      ],
+      "sample_phrases": [
+        "例如",
+        "历史",
+        "利用",
+        "力量",
+        "例子",
+        "利润",
+        "历史上",
+        "利益",
+        "利率",
+        "力度"
+      ]
+    },
+    {
+      "lookup_code": "􀀀􀀠􀀡􀀢",
+      "lookup_pinyin_tone": "bi4",
+      "candidate_count": 310,
+      "demand_weight_sum": 49708.0,
+      "collision_demand_score": 15409480.0,
+      "top_current_runtime_texts": [
+        "佛",
+        "必",
+        "服",
+        "秘",
+        "臂",
+        "被",
+        "闭",
+        "毕"
+      ],
+      "target_phrases": [
+        "避免",
+        "必须",
+        "毕竟",
+        "毕业",
+        "毕业生"
+      ],
+      "sample_phrases": [
+        "避免",
+        "必须",
+        "毕竟",
+        "毕业",
+        "毕业生",
+        "毕业后",
+        "必备",
+        "毕业于",
+        "必点",
+        "必要"
+      ]
+    },
+    {
+      "lookup_code": "􀀏􀀲􀀳􀀴",
+      "lookup_pinyin_tone": "zhi4",
+      "candidate_count": 326,
+      "demand_weight_sum": 42294.0,
+      "collision_demand_score": 13787844.0,
+      "top_current_runtime_texts": [
+        "至",
+        "制",
+        "知",
+        "治",
+        "质",
+        "致",
+        "志",
+        "置"
+      ],
+      "target_phrases": [
+        "质量",
+        "智能",
+        "治疗",
+        "制定",
+        "制作"
+      ],
+      "sample_phrases": [
+        "质量",
+        "智能",
+        "治疗",
+        "制定",
+        "制作",
+        "至少",
+        "智能家居",
+        "制度",
+        "至于",
+        "智能化"
+      ]
+    },
+    {
+      "lookup_code": "􀀓􀀠􀀡􀀢",
+      "lookup_pinyin_tone": "ji4",
+      "candidate_count": 260,
+      "demand_weight_sum": 42620.0,
+      "collision_demand_score": 11081200.0,
+      "top_current_runtime_texts": [
+        "济",
+        "既",
+        "计",
+        "记",
+        "系",
+        "其",
+        "齐",
+        "季"
+      ],
+      "target_phrases": [
+        "技术",
+        "计划",
+        "计算",
+        "技能",
+        "计算机"
+      ],
+      "sample_phrases": [
+        "技术",
+        "计划",
+        "计算",
+        "技能",
+        "计算机",
+        "记者",
+        "技巧",
+        "记录",
+        "继续",
+        "记忆"
+      ]
+    },
+    {
+      "lookup_code": "􀀓􀀠􀀠􀀠",
+      "lookup_pinyin_tone": "ji1",
+      "candidate_count": 217,
+      "demand_weight_sum": 41550.0,
+      "collision_demand_score": 9016350.0,
+      "top_current_runtime_texts": [
+        "几",
+        "机",
+        "期",
+        "积",
+        "鸡",
+        "奇",
+        "其",
+        "击"
+      ],
+      "target_phrases": [
+        "机器",
+        "基金",
+        "基于",
+        "基本",
+        "机器人"
+      ],
+      "sample_phrases": [
+        "机器",
+        "基金",
+        "基于",
+        "基本",
+        "机器人",
+        "机构",
+        "机会",
+        "基础",
+        "机制",
+        "几乎"
+      ]
+    },
+    {
+      "lookup_code": "􀀑􀀲􀀳􀀴",
+      "lookup_pinyin_tone": "shi4",
+      "candidate_count": 198,
+      "demand_weight_sum": 44372.0,
+      "collision_demand_score": 8785656.0,
+      "top_current_runtime_texts": [
+        "似",
+        "是",
+        "事",
+        "市",
+        "式",
+        "氏",
+        "视",
+        "世"
+      ],
+      "target_phrases": [
+        "市场",
+        "适合",
+        "是否",
+        "是个",
+        "世界"
+      ],
+      "sample_phrases": [
+        "市场",
+        "适合",
+        "是否",
+        "是个",
+        "世界",
+        "是在",
+        "视频",
+        "事情",
+        "是指",
+        "是我"
+      ]
+    },
+    {
+      "lookup_code": "􀀖􀀨􀀧􀀦",
+      "lookup_pinyin_tone": "yu2",
+      "candidate_count": 234,
+      "demand_weight_sum": 37439.0,
+      "collision_demand_score": 8760726.0,
+      "top_current_runtime_texts": [
+        "与",
+        "余",
+        "鱼",
+        "予",
+        "逾",
+        "俞",
+        "渝",
+        "于"
+      ],
+      "target_phrases": [
+        "娱乐",
+        "于是",
+        "瑜伽",
+        "余额",
+        "与人"
+      ],
+      "sample_phrases": [
+        "娱乐",
+        "于是",
+        "瑜伽",
+        "余额",
+        "与人",
+        "鱼类",
+        "愉悦",
+        "愉快",
+        "舆论",
+        "鱼肉"
+      ]
+    },
+    {
+      "lookup_code": "􀀓􀀨􀀰􀀯",
+      "lookup_pinyin_tone": "jue2",
+      "candidate_count": 251,
+      "demand_weight_sum": 34600.0,
+      "collision_demand_score": 8684600.0,
+      "top_current_runtime_texts": [
+        "觉",
+        "嚼",
+        "角",
+        "绝",
+        "决",
+        "乙",
+        "掘",
+        "倔"
+      ],
+      "target_phrases": [
+        "觉得",
+        "决策",
+        "角色",
+        "决定",
+        "绝对"
+      ],
+      "sample_phrases": [
+        "觉得",
+        "决策",
+        "角色",
+        "决定",
+        "绝对",
+        "决赛",
+        "决策树",
+        "绝对是",
+        "崛起",
+        "决议"
+      ]
+    },
+    {
+      "lookup_code": "􀀔􀀢􀀡􀀠",
+      "lookup_pinyin_tone": "qi2",
+      "candidate_count": 220,
+      "demand_weight_sum": 38403.0,
+      "collision_demand_score": 8448660.0,
+      "top_current_runtime_texts": [
+        "其",
+        "齐",
+        "奇",
+        "骑",
+        "旗",
+        "棋",
+        "七",
+        "祁"
+      ],
+      "target_phrases": [
+        "其他",
+        "其实",
+        "其中",
+        "其它",
+        "其次"
+      ],
+      "sample_phrases": [
+        "其他",
+        "其实",
+        "其中",
+        "其它",
+        "其次",
+        "其实是",
+        "其实我",
+        "其余",
+        "旗下",
+        "其他人"
+      ]
+    },
+    {
+      "lookup_code": "􀀂􀀥􀀤􀀣",
+      "lookup_pinyin_tone": "fu2",
+      "candidate_count": 231,
+      "demand_weight_sum": 35671.0,
+      "collision_demand_score": 8240001.0,
+      "top_current_runtime_texts": [
+        "服",
+        "佛",
+        "还",
+        "幅",
+        "福",
+        "夫",
+        "扶",
+        "浮"
+      ],
+      "target_phrases": [
+        "服务",
+        "服务员",
+        "符合",
+        "福利",
+        "服装"
+      ],
+      "sample_phrases": [
+        "服务",
+        "服务员",
+        "符合",
+        "福利",
+        "服装",
+        "服务器",
+        "福建",
+        "服用",
+        "扶贫",
+        "幅度"
+      ]
+    },
+    {
+      "lookup_code": "􀀖􀀢􀀡􀀠",
+      "lookup_pinyin_tone": "yi2",
+      "candidate_count": 224,
+      "demand_weight_sum": 34817.0,
+      "collision_demand_score": 7799008.0,
+      "top_current_runtime_texts": [
+        "一",
+        "疑",
+        "遗",
+        "台",
+        "宜",
+        "移",
+        "姨",
+        "蛇"
+      ],
+      "target_phrases": [
+        "一下",
+        "一份",
+        "移动",
+        "一部",
+        "一定"
+      ],
+      "sample_phrases": [
+        "一下",
+        "一份",
+        "移动",
+        "一部",
+        "一定",
+        "一切",
+        "一句话",
+        "一看",
+        "一套",
+        "移民"
+      ]
+    },
+    {
+      "lookup_code": "􀀀􀀮􀀭􀀬",
+      "lookup_pinyin_tone": "bo2",
+      "candidate_count": 202,
+      "demand_weight_sum": 35032.0,
+      "collision_demand_score": 7076464.0,
+      "top_current_runtime_texts": [
+        "薄",
+        "柏",
+        "佛",
+        "伯",
+        "服",
+        "暴",
+        "泊",
+        "跑"
+      ],
+      "target_phrases": [
+        "博物馆",
+        "博士",
+        "博客",
+        "博彩",
+        "博主"
+      ],
+      "sample_phrases": [
+        "博物馆",
+        "博士",
+        "博客",
+        "博彩",
+        "博主",
+        "柏林",
+        "博弈",
+        "脖子",
+        "伯爵",
+        "薄弱"
+      ]
+    },
+    {
+      "lookup_code": "􀀓􀀢􀀡􀀠",
+      "lookup_pinyin_tone": "ji2",
+      "candidate_count": 220,
+      "demand_weight_sum": 30385.0,
+      "collision_demand_score": 6684700.0,
+      "top_current_runtime_texts": [
+        "即",
+        "及",
+        "急",
+        "集",
+        "级",
+        "极",
+        "吉",
+        "疾"
+      ],
+      "target_phrases": [
+        "即可",
+        "疾病",
+        "及时",
+        "集团",
+        "即使"
+      ],
+      "sample_phrases": [
+        "即可",
+        "疾病",
+        "及时",
+        "集团",
+        "即使",
+        "集中",
+        "即将",
+        "级别",
+        "及其",
+        "集成"
+      ]
+    },
+    {
+      "lookup_code": "􀀋􀀬􀀭􀀮",
+      "lookup_pinyin_tone": "e4",
+      "candidate_count": 207,
+      "demand_weight_sum": 28414.0,
+      "collision_demand_score": 5881698.0,
+      "top_current_runtime_texts": [
+        "恶",
+        "啊",
+        "哦",
+        "饿",
+        "喔",
+        "呃",
+        "歹",
+        "厄"
+      ],
+      "target_phrases": [
+        "恶意",
+        "恶劣",
+        "恶化",
+        "恶魔",
+        "遏制"
+      ],
+      "sample_phrases": [
+        "恶意",
+        "恶劣",
+        "恶化",
+        "恶魔",
+        "遏制",
+        "噩梦",
+        "恶搞",
+        "恶性",
+        "鳄鱼",
+        "恶性肿瘤"
+      ]
+    },
+    {
+      "lookup_code": "􀀖􀀩􀀪􀀽",
+      "lookup_pinyin_tone": "yan4",
+      "candidate_count": 179,
+      "demand_weight_sum": 32671.0,
+      "collision_demand_score": 5848109.0,
+      "top_current_runtime_texts": [
+        "咽",
+        "燕",
+        "验",
+        "但",
+        "厌",
+        "宴",
+        "艳",
+        "言"
+      ],
+      "target_phrases": [
+        "验证",
+        "验证集",
+        "验收",
+        "厌恶",
+        "验证码"
+      ],
+      "sample_phrases": [
+        "验证",
+        "验证集",
+        "验收",
+        "厌恶",
+        "验证码",
+        "宴请",
+        "宴会",
+        "燕窝",
+        "验货",
+        "厌烦"
+      ]
+    },
+    {
+      "lookup_code": "􀀆􀀢􀀭􀀾",
+      "lookup_pinyin_tone": "ling2",
+      "candidate_count": 208,
+      "demand_weight_sum": 26632.0,
+      "collision_demand_score": 5539456.0,
+      "top_current_runtime_texts": [
+        "令",
+        "零",
+        "灵",
+        "陵",
+        "棱",
+        "铃",
+        "冷",
+        "龄"
+      ],
+      "target_phrases": [
+        "凌晨",
+        "零售",
+        "灵魂",
+        "灵感",
+        "灵活"
+      ],
+      "sample_phrases": [
+        "凌晨",
+        "零售",
+        "灵魂",
+        "灵感",
+        "灵活",
+        "零食",
+        "灵活性",
+        "零部件",
+        "聆听",
+        "零件"
+      ]
+    },
+    {
+      "lookup_code": "􀀓􀀢􀀰􀀯",
+      "lookup_pinyin_tone": "jie2",
+      "candidate_count": 211,
+      "demand_weight_sum": 26189.0,
+      "collision_demand_score": 5525879.0,
+      "top_current_runtime_texts": [
+        "结",
+        "节",
+        "截",
+        "契",
+        "劫",
+        "洁",
+        "概",
+        "杰"
+      ],
+      "target_phrases": [
+        "结果",
+        "结构",
+        "节目",
+        "结合",
+        "结婚"
+      ],
+      "sample_phrases": [
+        "结果",
+        "结构",
+        "节目",
+        "结合",
+        "结婚",
+        "截至",
+        "结束",
+        "结论",
+        "结束后",
+        "节奏"
+      ]
+    }
+  ]
+}

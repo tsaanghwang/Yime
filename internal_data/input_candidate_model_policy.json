@@ -1,0 +1,113 @@
+{
+  "schema_version": 3,
+  "model_name": "yime_input_candidate_model_v4",
+  "purpose": "Classify input materials and govern static retention, dynamic composition, review, and rejection without creating pronunciation or Yinyuan mappings.",
+  "safeguards": {
+    "source_lexicon_is_read_only": true,
+    "proposals_require_review": true,
+    "dynamic_composition_requires_approved_components": true,
+    "dynamic_composition_uses_only_attested_component_readings": true,
+    "llm_must_not_supply_pinyin_or_encoding": true
+  },
+  "candidate_classes": [
+    "single_character",
+    "lexical_candidate",
+    "fixed_expression",
+    "person_name",
+    "place_name",
+    "organization_name",
+    "domain_term",
+    "semi_fixed_construction",
+    "productive_phrase",
+    "syntactic_fragment",
+    "noise",
+    "context_dependent",
+    "unknown"
+  ],
+  "integration_policies": [
+    "static_keep",
+    "dynamic_component",
+    "dynamic_recoverable",
+    "model_only",
+    "reject",
+    "needs_review"
+  ],
+  "builtin_candidate_rules": {
+    "two_character_dynamic_reachability": {
+      "enabled": true,
+      "text_length": 2,
+      "requires_whole_gated_reading": false,
+      "requires_each_single_character_gated_reading": true,
+      "changes_candidate_disposition": false,
+      "evidence_kind": "dynamic_reachable",
+      "exceptions": [
+        "missing_trusted_mandarin_reading",
+        "missing_single_character_reading",
+        "manual_assessment"
+      ],
+      "reason": "整体没有静态词条读音而左右单字均已有来源门禁合格注音时，只证明技术上可由连续单字输入重建；不据此判断词汇性，不改变待审状态、静态编码资格或最终去留。"
+    }
+  },
+  "source_category_hints": {
+    "wanxiang:mingren": {
+      "priority": 10,
+      "candidate_class": "person_name",
+      "integration_policy": "static_keep",
+      "reason": "万象来源文件明确标为名人材料；仅形成待审建议。"
+    },
+    "wanxiang:renming": {
+      "priority": 10,
+      "candidate_class": "person_name",
+      "integration_policy": "static_keep",
+      "reason": "万象来源文件明确标为人名材料；仅形成待审建议。"
+    },
+    "wanxiang:yiren": {
+      "priority": 10,
+      "candidate_class": "person_name",
+      "integration_policy": "static_keep",
+      "reason": "万象来源文件明确标为艺人材料；仅形成待审建议。"
+    },
+    "wanxiang:diming": {
+      "priority": 20,
+      "candidate_class": "place_name",
+      "integration_policy": "static_keep",
+      "reason": "万象来源文件明确标为地名材料；仅形成待审建议。"
+    },
+    "wanxiang:lianxiang": {
+      "priority": 100,
+      "candidate_class": "productive_phrase",
+      "integration_policy": "model_only",
+      "reason": "万象来源文件明确标为联想材料；是否可动态恢复仍需验证。"
+    },
+    "wanxiang:huaxue": {
+      "priority": 30,
+      "candidate_class": "domain_term",
+      "integration_policy": "static_keep",
+      "reason": "万象来源文件明确标为化学领域材料；仅形成待审建议。"
+    },
+    "wanxiang:yaopin": {
+      "priority": 30,
+      "candidate_class": "domain_term",
+      "integration_policy": "static_keep",
+      "reason": "万象来源文件明确标为药品领域材料；仅形成待审建议。"
+    },
+    "wanxiang:yixue": {
+      "priority": 30,
+      "candidate_class": "domain_term",
+      "integration_policy": "static_keep",
+      "reason": "万象来源文件明确标为医学领域材料；仅形成待审建议。"
+    },
+    "wanxiang:wuzhong": {
+      "priority": 30,
+      "candidate_class": "domain_term",
+      "integration_policy": "static_keep",
+      "reason": "万象来源文件明确标为物种领域材料；仅形成待审建议。"
+    }
+  },
+  "dynamic_composition": {
+    "minimum_parts": 2,
+    "maximum_parts": 6,
+    "maximum_reading_combinations": 128,
+    "part_count_penalty": 1.0
+  }
+}

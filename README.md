@@ -10,7 +10,7 @@ In fixed-length mode, each syllable consists of one *shouyin* followed by a *gan
 
 ## Features
 
-- **Dynamic sentence composition** — a 1,167,057-entry encoded runtime dictionary includes all 46,095 encoded characters plus short components; Rime composes missing longer phrases and learns corrections
+- **Dynamic sentence composition** — a 1,166,753-entry encoded runtime dictionary includes all 46,095 encoded characters plus short components; Rime composes missing longer phrases and learns corrections
 - **Evidence-locked core** — ranking uses BCC first, RIME-LMDG as fallback, and a separate structural floor
 - **Single-source modes** — variable-length, fixed-length, and shorthand all run from the same curated candidate set
 - **Candidate window** — 5–9 candidates per page, vertical or horizontal layout, one-click toggle
@@ -204,6 +204,7 @@ Check logs at `%LOCALAPPDATA%\PIME\Logs\go_backend.log`.
 | [Release and Signing](docs/YIME_RELEASE_AND_SIGNING.md) | Reproducible builds, Authenticode, packaging, and rollback |
 | [Data Format Reference](docs/YIME_DATA_FORMAT_REFERENCE.md) | TSV/JSON/YAML data file format specifications |
 | [Single-Source Lexicon Refactor](docs/project/SINGLE_SOURCE_LEXICON_REFACTOR.md) | Why and how three maintained code tables became one fixed-length source |
+| [Prototype Retirement Migration Plan](docs/project/PROTOTYPE_RETIREMENT_MIGRATION_PLAN.md) | Phased plan and inventory for moving useful offline tooling into Yime and retiring the Python prototype |
 | [User Install Guide](docs/YIME_USER_INSTALL_GUIDE.md) | Installation and usage instructions for end users |
 | [Troubleshooting](docs/YIME_TROUBLESHOOTING.md) | Common issues and solutions |
 | [Changelog](CHANGELOG.md) | Version change history |

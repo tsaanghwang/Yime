@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "decision": "pass",
+  "target_lock": "yime_core_target.lock.json",
+  "target": {
+    "entry_count": 1166753,
+    "distinct_texts": 1151404,
+    "source_dictionary_sha256": "7edf122913925291d1259241d3b1494faec9173a478a1658e0959062c1e8f155",
+    "source_selection_sha256": "4ec48d3627b8efa8344d38430f85710570a6576693cc0cd2990dc3fb4e3bac17"
+  },
+  "latest_clean_rebuild": {
+    "run": "clean-rebuild-b",
+    "recorded_at": "2026-08-21T00:00:00Z",
+    "entry_count": 1166753,
+    "distinct_texts": 1151404,
+    "source_dictionary_sha256": "7edf122913925291d1259241d3b1494faec9173a478a1658e0959062c1e8f155",
+    "source_selection_sha256": "4ec48d3627b8efa8344d38430f85710570a6576693cc0cd2990dc3fb4e3bac17"
+  },
+  "clean_rebuilds": [
+    {
+      "run": "clean-rebuild-a",
+      "recorded_at": "2026-08-21T00:00:00Z",
+      "entry_count": 1166753,
+      "distinct_texts": 1151404,
+      "source_dictionary_sha256": "7edf122913925291d1259241d3b1494faec9173a478a1658e0959062c1e8f155",
+      "source_selection_sha256": "4ec48d3627b8efa8344d38430f85710570a6576693cc0cd2990dc3fb4e3bac17"
+    },
+    {
+      "run": "clean-rebuild-b",
+      "recorded_at": "2026-08-21T00:00:00Z",
+      "entry_count": 1166753,
+      "distinct_texts": 1151404,
+      "source_dictionary_sha256": "7edf122913925291d1259241d3b1494faec9173a478a1658e0959062c1e8f155",
+      "source_selection_sha256": "4ec48d3627b8efa8344d38430f85710570a6576693cc0cd2990dc3fb4e3bac17"
+    }
+  ],
+  "promotion": {
+    "source_revision": "f8025a1d387b69c82ffd58816b18a3a2f64a83e4",
+    "source_date_epoch": 1787270400,
+    "reproducibility_report_sha256": "02b5ba4027d59b060fafc00484a8e4cf39968ea652a3a9b70f614493a6a7d41e",
+    "runtime_database": {
+      "bytes": 5491941376,
+      "sha256": "694a5c984c3784dd2a07f49db454e69d01e08b24ce7de14b45ac10b70e315379"
+    },
+    "previous_target": {
+      "entry_count": 1167501,
+      "distinct_texts": 1152157,
+      "source_dictionary_sha256": "4ce312cd5082cc19d525abe5842c092e1b1693fcec340b565ca4aa479f226551",
+      "source_selection_sha256": "8d88e96f411231f7743d9acb289a00c32385a7f37535d07827357928f237d6b2",
+      "layout_projection_sha256": "58f69f370aea49e03a48414dcaaf0ebdaef88be0e4fee37e2c4e1497b14976dd"
+    },
+    "entry_delta_from_previous_target": -748,
+    "distinct_text_delta_from_previous_target": -753
+  },
+  "blocking_reason": "",
+  "required_resolution": "",
+  "safeguards": {
+    "baseline_update_allowed": true,
+    "derived_dictionary_overwrite_allowed": true,
+    "pinyin_code_edit_allowed": false,
+    "tagged_release_allowed": true
+  }
+}

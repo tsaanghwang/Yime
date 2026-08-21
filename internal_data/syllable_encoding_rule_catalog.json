@@ -1,0 +1,204 @@
+{
+  "schema_version": 1,
+  "purpose": "Explain the provenance and transformations of canonical syllable encodings without creating a parallel Pinyin-to-code table.",
+  "prohibited_fields": [
+    "yinyuan_ids",
+    "symbol_code",
+    "layout_key",
+    "vk_key"
+  ],
+  "rules": {
+    "SRC-UNIHAN": {
+      "layer": "source",
+      "title": "Unihan 单字读音实例",
+      "basis": "internal_data/hanzi_pinyin/pinyin.txt；文件头记录 Unihan kMandarin/kHanyuPinyin 合并来源。",
+      "policy": "只证明该带调音节在当前单字来源中实际出现，不推出同韵母的其他声调。"
+    },
+    "SRC-PHRASE-PINYIN": {
+      "layer": "source",
+      "title": "phrase-pinyin-data 词语读音实例",
+      "basis": "internal_data/phrase_pinyin/phrase_pinyin.txt；文件头和 README 记录上游及校验流程。",
+      "policy": "只证明词语读音中实际出现的带调音节。"
+    },
+    "SRC-REVIEWED-PATCH": {
+      "layer": "source",
+      "title": "经审查的规范拼音补充",
+      "basis": "internal_data/pinyin_source_db/pinyin_normalized_patch.json 与 PATCH_POLICY.md。",
+      "policy": "补充来源缺口或标调事实；不得直接指定音元、Yinyuan ID 或键位。"
+    },
+    "SRC-DICTIONARY-ATTESTED": {
+      "layer": "source_compliance",
+      "title": "字典实例通过第一轮来源合规审查",
+      "basis": "yime/utils/dictionary_pinyin_compliance.py 与 external_data 中的单字、词语来源。",
+      "policy": "只表示来源实例通过字符、声调、形态和已准入声韵结构检查；不把所有字典读音宣称为普通话核心规范音节。"
+    },
+    "SRC-CJK-COMPATIBILITY-READING-ALIAS": {
+      "layer": "source_normalization",
+      "title": "CJK 兼容码点继承规范统一字的来源读音",
+      "basis": "internal_data/pinyin_source_db/dictionary_pinyin_compliance_policy.json 的 source_aliases；映射必须与 Unicode 一对一 NFKC 规范分解完全一致，目标码点必须已有 Unihan 普通话读音。",
+      "policy": "只为经审查登记的兼容码点复制规范统一字已有的来源读音并保留原始 code point；不手写拼音，不扩展到无规范分解的独立表意文字，也不从相似字形猜读。"
+    },
+    "SRC-DEFER-MISSING-TRUSTED-MANDARIN-READING": {
+      "layer": "source_compliance",
+      "title": "暂无可信普通话读音来源的 CJK 码点暂未编码",
+      "basis": "internal_data/pinyin_source_db/dictionary_pinyin_compliance_policy.json 的 unencoded_pending_codepoints；依据 Unihan 普通话字段缺失、Unicode 规范分解情况和独立统一表意文字边界登记。",
+      "policy": "登记码点本身暂不标拼音、不进入音节编码；包含它们的来源字串进入 unencoded_pending_strings，保留原始证据并标为 deferred，等待专家或未来可信普通话来源复核。该状态不等同于噪声、永久拒绝或最终不予编码。"
+    },
+    "SRC-REVIEWED-SYLLABLE-ADMISSION": {
+      "layer": "source_compliance",
+      "title": "有来源而未进入现行音节库的音节审查准入",
+      "basis": "internal_data/pinyin_source_db/syllable_admission_reviews.json 与 tools/audit_missing_source_syllables.py。",
+      "policy": "只让结构合法、已有真实来源实例并经明确审查批准的拼音跨过旧音节表的循环门禁；不得补齐声调，不得记录或手写音元 ID、码元或键位。限定为多字来源的轻声不得扩张为单字音。"
+    },
+    "SRC-CORRECTION-U25948-WENG": {
+      "layer": "source_compliance",
+      "title": "U+25948 的来源拼写校正为 wèng",
+      "basis": "Unihan kHanyuPinyin 原始值 wòng、现代汉语拼音正字法及澳典/台湾教育部字典旁证。",
+      "policy": "只校正 U+25948 的这一条来源记录；不得扩展为通用 wong-to-weng 替换。"
+    },
+    "SRC-CORRECTION-U259B7-WENG": {
+      "layer": "source_compliance",
+      "title": "U+259B7 的来源拼写校正为 wèng",
+      "basis": "Unihan kHanyuPinyin 原始值 wòng、现代汉语拼音正字法及多个现代字典旁证。",
+      "policy": "只校正 U+259B7 的这一条来源记录；不得扩展为通用 wong-to-weng 替换。"
+    },
+    "SRC-EXCLUDE-U31FC5-BONG": {
+      "layer": "source_compliance",
+      "title": "U+31FC5 的来源读音 bòng 保留但不编码",
+      "basis": "Unihan kMandarin、字典地方读音记录及普通话唇音声母不与 ong 相拼的限制。",
+      "policy": "保留原始字形、读音和来源审计；不进入音节分解，不猜改为 cí、bèng 或其他读音。"
+    },
+    "SRC-EXCLUDE-U84DD-LA5": {
+      "layer": "source_compliance",
+      "title": "U+84DD 蓝的 la 旧读保留但不编码",
+      "basis": "上游单字源保留蓝的 la 旧读；1985 年《普通话异读词审音表》规定“蓝读 lán，在‘苤蓝’中读 lan，不读 la”。",
+      "policy": "排除 U+84DD 蓝的孤立 la5 旧读；保留 lan2 单字音和有完整词语来源约束的词内轻声 lan5，不得扩张为全局 la5 排除。"
+    },
+    "SRC-EXCLUDE-U85CD-LA5": {
+      "layer": "source_compliance",
+      "title": "U+85CD 藍的 la 旧读保留但不编码",
+      "basis": "Unihan kXHC1983 的《现代汉语词典》1983 年版索引记录 0669.091:la；1985 年《普通话异读词审音表》规定“蓝读 lán，在‘苤蓝’中读 lan，不读 la”。",
+      "policy": "排除 U+85CD 藍的孤立 la5 旧读；保留 lan2 单字音和有完整词语来源约束的词内轻声 lan5，不得扩张为全局 la5 排除。"
+    },
+    "ORTH-SOURCE-ATTESTED-NEUTRAL": {
+      "layer": "source_normalization",
+      "title": "有来源读音中的轻声音节",
+      "basis": "GB/T 16159-2012《汉语拼音正词法基本规则》5.1规定轻声音节不标声调，变通规则3允许辞书以中圆点提示轻声；internal_data/pinyin_source_db/neutral_tone_source_policy.json 登记各来源的无调解释制度。",
+      "policy": "标调制度完整的来源明确给出无调音节时，先标记为有来源轻声，再由常规轻声派生或经审查的特殊例外进入正式编码链。孤立无调字音不得仅凭词境证据生成单字候选；来源标调制度不明时标记为未定无调。该规则不自动生成词语，也不补齐其他声调。"
+    },
+    "ENC-NEUTRAL-REGULAR-DERIVATION": {
+      "layer": "encoder_derivation",
+      "title": "有本调家族的常规轻声编码派生",
+      "basis": "syllable/codec/neutral_tone_encoding.py；同一表面音节在现行实例清单中至少有一个一至四声成员，并且当前来源实际给出该轻声实例。",
+      "policy": "只为来源中实际出现的轻声调用正式 SyllableEncodingPipeline / YinjieEncoder 生成编码；本调家族只证明声韵结构可按常规处理，不自动补齐未出现的轻声，也不生成轻声单字候选。"
+    },
+    "ENC-NEUTRAL-SPECIAL-EXCEPTION": {
+      "layer": "encoder_derivation",
+      "title": "无本调家族的有来源轻声特殊例外",
+      "basis": "internal_data/pinyin_source_db/neutral_tone_encoding_exceptions.json；每个例外必须记录真实来源、处理依据和批准状态。",
+      "policy": "仅允许登记的来源实例通过正式切分与编码器生成轻声编码；例外表不得保存 Yinyuan ID、码元或键位，不得据此生成同音节的一至四声或扩大到其他字词。"
+    },
+    "ORTH-REGULAR": {
+      "layer": "orthography",
+      "title": "常规声母与韵母切分",
+      "basis": "syllable/analysis/syllable_splitter.py::split_syllable 的常规分支。",
+      "policy": "没有命中特殊拼写规则时，按正式切分器的常规分支处理。"
+    },
+    "ORTH-ZERO-INITIAL": {
+      "layer": "orthography",
+      "title": "零声母音节",
+      "basis": "syllable_encoding_pipeline.py 与 syllable_splitter.py 的零声母分支。",
+      "policy": "元音起始或登记的独立音质使用零首音语义，不从键位反推。"
+    },
+    "ORTH-SYLLABIC-SPECIAL": {
+      "layer": "orthography",
+      "title": "ê、m、n、ng 及 hm/hn/hng 特殊音节",
+      "basis": "SyllableSplitter.SPECIAL_SYLLABLES 与 SyllableEncodingPipeline 的特殊音节分支。",
+      "policy": "仅处理规范音节清单中实际存在的带调形式；不得自动补齐五声。"
+    },
+    "ORTH-ERHUA-R-RESTORE": {
+      "layer": "source_normalization",
+      "title": "儿化韵尾省写 r 还原为 er5",
+      "basis": "《汉语拼音方案》“韵母ㄦ写成 er，用作韵尾的时候写成 r”及现行 source_pinyin 导入口。",
+      "policy": "保留来源形式 r 和儿化韵尾角色；完整音节编码层还原为 er5，不建立 r5 平行编码。"
+    },
+    "ORTH-APICAL-I": {
+      "layer": "orthography",
+      "title": "舌尖元音 i 的内部表示",
+      "basis": "syllable_splitter.py 中 z/c/s/r 与 zh/ch/sh 后 i 转为 _i 的分支。",
+      "policy": "_i 是内部分析标签，不是新的拼音表面写法。"
+    },
+    "ORTH-IU-TO-IOU": {
+      "layer": "orthography",
+      "title": "音节拼写 iu 还原为方案形式 iou",
+      "basis": "SyllableSplitter._split_general_abbreviated_finals。",
+      "policy": "记录同一形式族的还原关系，不建立两套语义编码。"
+    },
+    "ORTH-UI-TO-UEI": {
+      "layer": "orthography",
+      "title": "音节拼写 ui 还原为方案形式 uei",
+      "basis": "SyllableSplitter._split_general_abbreviated_finals。",
+      "policy": "记录同一形式族的还原关系，不建立两套语义编码。"
+    },
+    "ORTH-UN-TO-UEN": {
+      "layer": "orthography",
+      "title": "音节拼写 un 还原为方案形式 uen",
+      "basis": "SyllableSplitter._split_general_abbreviated_finals。",
+      "policy": "记录同一形式族的还原关系，不建立两套语义编码。"
+    },
+    "ORTH-JQX-UMLAUT": {
+      "layer": "orthography",
+      "title": "j/q/x 后 u 字母恢复为 ü 类韵母",
+      "basis": "syllable_splitter.py 的 j/q/x + u/ü 分支。",
+      "policy": "这是音节拼写到内部韵母形式的恢复，不是技术 v 别名。"
+    },
+    "ORTH-Y-UMLAUT": {
+      "layer": "orthography",
+      "title": "yu/yue/yuan/yun 恢复为 ü 类韵母",
+      "basis": "syllable_splitter.py 的 y + u/ü 分支。",
+      "policy": "用虚拟首音与 ü 类韵母表达拼写关系。"
+    },
+    "ORTH-Y-FAMILY": {
+      "layer": "orthography",
+      "title": "y 起始音节的 i 类拼写恢复",
+      "basis": "SyllableSplitter._split_y_standard_family。",
+      "policy": "ya/ye/you 等表面形式恢复为相应 i 类内部干音。"
+    },
+    "ORTH-YO-TO-IO": {
+      "layer": "orthography",
+      "title": "词典实有 yo 分析为 y + io",
+      "basis": "当前 Unihan/词语来源中的 yo 实例与 SyllableSplitter._split_y_standard_family。",
+      "policy": "io 是有词典实例支持的内部干音；只承认来源实际出现的声调，不自动补齐五声。"
+    },
+    "ORTH-YONG-TO-IONG": {
+      "layer": "orthography",
+      "title": "yong 分析为虚拟首音 + iong",
+      "basis": "SyllableSplitter._split_yong_cuokou_placeholder_family。",
+      "policy": "记录表面拼写与内部分析的关系。"
+    },
+    "ORTH-W-FAMILY": {
+      "layer": "orthography",
+      "title": "w 起始音节的 u 类拼写恢复",
+      "basis": "SyllableSplitter._split_w_standard_family。",
+      "policy": "wa/wo/wei/wen/weng 等恢复为相应 u 类内部干音。"
+    },
+    "ORTH-ONG-DISTRIBUTION": {
+      "layer": "source_compliance",
+      "title": "ong 的声韵分布与零声母拼写约束",
+      "basis": "《汉语拼音方案》韵母表、声韵配合事实及 u 行韵母零声母写作 weng 的规定。",
+      "policy": "唇音声母 b/p/m/f 不与 ong 相拼；零声母 ueng 写作 weng，不从 wong 推导新音节。"
+    },
+    "TECH-V-ALIAS": {
+      "layer": "compatibility",
+      "title": "v 表示 ü 的程序拼音别名",
+      "basis": "历史 Rime/微软码表兼容需求及 PinyinNormalizer.normalize_one。",
+      "policy": "只允许在输入兼容边界归一化为 ü；不得作为规范来源或第二套编码。"
+    },
+    "ENC-H-NASAL-ALIAS": {
+      "layer": "encoder_alias",
+      "title": "hm/hn/hng 干音查表归并",
+      "basis": "GanyinEncoder._normalize_ganyin_name。",
+      "policy": "h 保留在首音段，干音查表使用 m/n/ng。"
+    }
+  }
+}

@@ -1,43 +1,43 @@
 {
-    "schema_version":  1,
-    "source_project":  "Yime-python-prototype",
-    "source_revision":  "d2f48b0a9f2ead80353f6c6b2e046fc15ba9deb3+working-tree-contextual-runtime-handoff",
-    "source_dictionary":  "two_level_full.dict.yaml",
-    "source_dictionary_sha256":  "4ce312cd5082cc19d525abe5842c092e1b1693fcec340b565ca4aa479f226551",
-    "source_selection_sha256":  "8d88e96f411231f7743d9acb289a00c32385a7f37535d07827357928f237d6b2",
-    "pronunciation_entries":  "entries.tsv",
-    "pronunciation_entries_sha256":  "c703878c4fde19ca2f625c630aa9f251c8d72b48082c011e42dc0398ddff27e6",
-    "reverse_pinyin_source":  "yime_pinyin_reverse_source.tsv",
-    "reverse_pinyin_source_sha256":  "234d2197f1501c4e3f81bb0767889c1c0e57e563f38b1e794b9909c9359df510",
-    "reverse_pinyin_source_rows":  41965,
-    "reverse_pinyin_code_map_sha256":  "aa516171f404f706b7d9ac0c9a3fb4aac4f043f3212c2b9ce6c94b38fb8d0071",
-    "entry_count":  1167501,
-    "distinct_texts":  1152157,
-    "ranking_evidence":  {
-                             "policy_id":  "bcc-primary-lmdg-fallback-structural-floor-v1",
-                             "policy_sha256":  "bb9bd3bd63bebc2e449785ca2586a6dd0dae9ad8797fc36e17aed57fba9c3d61",
-                             "direct_bcc":  379157,
-                             "provisional_rime_lmdg":  587106,
-                             "provisional_structural_floor":  185894,
-                             "missing_selected_source_texts":  0,
-                             "raw_bcc_and_lmdg_values_added":  false,
-                             "source_priority_separation_passed":  true
-                         },
-    "character_coverage":  {
-                               "distinct_characters":  46095,
-                               "runtime_mapping_entries":  61010,
-                               "core_distinct_characters":  14000,
-                               "core_reading_entries":  21755,
-                               "peripheral_distinct_characters":  32095,
-                               "peripheral_reading_entries":  39255,
-                               "minimum_core_weight":  100000997,
-                               "maximum_peripheral_weight":  7469,
-                               "core_above_peripheral":  true
-                           },
-    "runtime_scope":  "curated_phrases_with_all_encoded_character_periphery",
-    "prototype_scope":  [
-                            "candidate_pool",
-                            "source_evidence",
-                            "regression_cases"
-                        ]
+  "schema_version": 1,
+  "source_project": "Yime",
+  "source_revision": "f8025a1d387b69c82ffd58816b18a3a2f64a83e4",
+  "source_dictionary": "two_level_full.dict.yaml",
+  "source_dictionary_sha256": "7edf122913925291d1259241d3b1494faec9173a478a1658e0959062c1e8f155",
+  "source_selection_sha256": "4ec48d3627b8efa8344d38430f85710570a6576693cc0cd2990dc3fb4e3bac17",
+  "pronunciation_entries": "entries.tsv",
+  "pronunciation_entries_sha256": "c703878c4fde19ca2f625c630aa9f251c8d72b48082c011e42dc0398ddff27e6",
+  "reverse_pinyin_source": "yime_pinyin_reverse_source.tsv",
+  "reverse_pinyin_source_sha256": "85c9b28b2e46752d56d84fcd924160d260cc9e5cfcbc3c5606d0f4d47c6a319a",
+  "reverse_pinyin_source_rows": 41853,
+  "reverse_pinyin_code_map_sha256": "aa516171f404f706b7d9ac0c9a3fb4aac4f043f3212c2b9ce6c94b38fb8d0071",
+  "entry_count": 1166753,
+  "distinct_texts": 1151404,
+  "ranking_evidence": {
+    "policy_id": "bcc-primary-lmdg-fallback-structural-floor-v1",
+    "policy_sha256": "bb9bd3bd63bebc2e449785ca2586a6dd0dae9ad8797fc36e17aed57fba9c3d61",
+    "direct_bcc": 379513,
+    "provisional_rime_lmdg": 586954,
+    "provisional_structural_floor": 184937,
+    "missing_selected_source_texts": 0,
+    "raw_bcc_and_lmdg_values_added": false,
+    "source_priority_separation_passed": true
+  },
+  "character_coverage": {
+    "distinct_characters": 46095,
+    "runtime_mapping_entries": 61010,
+    "core_distinct_characters": 14000,
+    "core_reading_entries": 21755,
+    "peripheral_distinct_characters": 32095,
+    "peripheral_reading_entries": 39255,
+    "minimum_core_weight": 100000997,
+    "maximum_peripheral_weight": 7469,
+    "core_above_peripheral": true
+  },
+  "runtime_scope": "curated_phrases_with_all_encoded_character_periphery",
+  "offline_tooling_scope": [
+    "candidate_pool",
+    "source_evidence",
+    "regression_cases"
+  ]
 }
