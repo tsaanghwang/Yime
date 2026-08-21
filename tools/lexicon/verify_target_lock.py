@@ -114,6 +114,32 @@ def verify(
     source = _load_json(role_paths["core_source_manifest"])
     runtime = _load_json(role_paths["three_mode_manifest"])
     profile = _load_json(role_paths["runtime_profile"])
+    evidence = _load_json(role_paths["canonical_fixed_handoff_evidence"])
+    _expect(
+        _sha256(role_paths["canonical_fixed_handoff"]),
+        target.get("source_dictionary_sha256"),
+        "canonical fixed handoff SHA-256",
+    )
+    _expect(
+        evidence.get("output_sha256"),
+        target.get("source_dictionary_sha256"),
+        "fixed handoff evidence dictionary SHA-256",
+    )
+    _expect(
+        evidence.get("selection_tsv_sha256"),
+        target.get("source_selection_sha256"),
+        "fixed handoff evidence selection SHA-256",
+    )
+    _expect(
+        evidence.get("total_reading_entries"),
+        target.get("entry_count"),
+        "fixed handoff evidence entry_count",
+    )
+    _expect(
+        evidence.get("total_distinct_texts"),
+        target.get("distinct_texts"),
+        "fixed handoff evidence distinct_texts",
+    )
     _expect(source.get("entry_count"), target.get("entry_count"), "source entry_count")
     _expect(
         source.get("distinct_texts"),

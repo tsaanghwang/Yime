@@ -1,0 +1,44 @@
+{
+  "schema_version": "yime-approved-core-evidence-v1",
+  "status": "approved_windows_handoff_target",
+  "source_dictionary": "yime_core_fixed.dict.yaml",
+  "output_sha256": "4ce312cd5082cc19d525abe5842c092e1b1693fcec340b565ca4aa479f226551",
+  "selection_tsv_sha256": "8d88e96f411231f7743d9acb289a00c32385a7f37535d07827357928f237d6b2",
+  "total_reading_entries": 1167501,
+  "total_distinct_texts": 1152157,
+  "distinct_texts_by_length": {
+    "1": 46095
+  },
+  "reading_entries_by_length": {
+    "1": 61010
+  },
+  "single_character_ranking": {
+    "core_maximum_tier": 5,
+    "core_weight_offset": 100000000,
+    "peripheral_weight_offset": 0,
+    "require_core_above_peripheral": true,
+    "core_distinct_characters": 14000,
+    "core_reading_entries": 21755,
+    "peripheral_distinct_characters": 32095,
+    "peripheral_reading_entries": 39255,
+    "minimum_core_weight": 100000997,
+    "maximum_peripheral_weight": 7469,
+    "core_above_peripheral": true
+  },
+  "ranking_evidence": {
+    "policy_id": "bcc-primary-lmdg-fallback-structural-floor-v1",
+    "policy_sha256": "bb9bd3bd63bebc2e449785ca2586a6dd0dae9ad8797fc36e17aed57fba9c3d61",
+    "distinct_texts_by_source": {
+      "direct_bcc": 379157,
+      "provisional_rime_lmdg": 587106,
+      "provisional_structural_floor": 185894
+    },
+    "missing_selected_source_texts": 0,
+    "raw_bcc_and_lmdg_values_added": false
+  },
+  "provenance": {
+    "target_lock": "tools/lexicon/data/yime_core_target.lock.json",
+    "historical_source_revision": "d2f48b0a9f2ead80353f6c6b2e046fc15ba9deb3+working-tree-contextual-runtime-handoff",
+    "note": "This manifest records the approved 1,167,501-entry handoff identity. It does not claim that the historical contextual build is reproducible from current source inputs."
+  }
+}

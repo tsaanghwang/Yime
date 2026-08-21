@@ -9,6 +9,7 @@ param(
     [string]$PronunciationEntries = "",
     [string]$PrebuiltReverseSource = "",
     [string]$PreviousCoreSourceManifest = "",
+    [string]$ApprovedTargetLock = "",
     [string]$OutputDir = "",
     [switch]$DeployToUserDir
 )
@@ -40,7 +41,12 @@ $resolvedInputPath = (Resolve-Path -LiteralPath $InputPath).Path
 $resolvedEvidencePath = (Resolve-Path -LiteralPath $EvidenceManifest).Path
 $evidence = Get-Content -LiteralPath $resolvedEvidencePath -Raw -Encoding UTF8 |
     ConvertFrom-Json
+$sourceHash = (Get-FileHash -LiteralPath $resolvedInputPath -Algorithm SHA256).Hash.ToLowerInvariant()
 $usingPrebuiltReverseSource = -not [string]::IsNullOrWhiteSpace($PrebuiltReverseSource)
+$usingApprovedTarget = -not [string]::IsNullOrWhiteSpace($ApprovedTargetLock)
+if ($usingApprovedTarget -and -not $usingPrebuiltReverseSource) {
+    throw "-ApprovedTargetLock requires -PrebuiltReverseSource."
+}
 $resolvedPronunciationEntries = ""
 $resolvedPrebuiltReverseSource = ""
 $previousCoreSource = $null
@@ -56,14 +62,42 @@ if ($usingPrebuiltReverseSource) {
         -not $previousCoreSource.pronunciation_entries_sha256) {
         throw "Previous core source manifest has no pronunciation-source evidence."
     }
-    if (-not $evidence.layout_reprojection -or
-        [bool]$evidence.layout_reprojection.candidate_selection_changed -or
-        [bool]$evidence.layout_reprojection.weights_changed) {
-        throw "Prebuilt reverse source requires layout-only evidence with unchanged selection and weights."
-    }
     $prebuiltReverseHash = (Get-FileHash -LiteralPath $resolvedPrebuiltReverseSource -Algorithm SHA256).Hash.ToLowerInvariant()
-    if ($prebuiltReverseHash -ne [string]$evidence.layout_reprojection.reverse_source_sha256) {
-        throw "Prebuilt reverse source hash does not match layout-reprojection evidence."
+    if ($usingApprovedTarget) {
+        $resolvedTargetLock = (Resolve-Path -LiteralPath $ApprovedTargetLock).Path
+        $targetLock = Get-Content -LiteralPath $resolvedTargetLock -Raw -Encoding UTF8 |
+            ConvertFrom-Json
+        if ([string]$targetLock.status -ne "approved_windows_handoff_target") {
+            throw "Approved target lock does not identify an approved Windows handoff."
+        }
+        if ($sourceHash -ne [string]$targetLock.target.source_dictionary_sha256 -or
+            $sourceHash -ne [string]$evidence.output_sha256) {
+            throw "Approved replay source dictionary does not match the target lock and evidence."
+        }
+        if ([string]$evidence.selection_tsv_sha256 -ne [string]$targetLock.target.source_selection_sha256) {
+            throw "Approved replay selection identity does not match the target lock."
+        }
+        if ([int64]$evidence.total_reading_entries -ne [int64]$targetLock.target.entry_count -or
+            [int64]$evidence.total_distinct_texts -ne [int64]$targetLock.target.distinct_texts) {
+            throw "Approved replay counts do not match the target lock."
+        }
+        $reverseArtifact = @($targetLock.artifacts | Where-Object role -eq "reverse_pinyin_source") |
+            Select-Object -First 1
+        if (-not $reverseArtifact -or
+            $prebuiltReverseHash -ne [string]$reverseArtifact.sha256 -or
+            $prebuiltReverseHash -ne [string]$previousCoreSource.reverse_pinyin_source_sha256) {
+            throw "Approved replay reverse-Pinyin source does not match the locked target."
+        }
+    }
+    else {
+        if (-not $evidence.layout_reprojection -or
+            [bool]$evidence.layout_reprojection.candidate_selection_changed -or
+            [bool]$evidence.layout_reprojection.weights_changed) {
+            throw "Prebuilt reverse source requires layout-only evidence with unchanged selection and weights."
+        }
+        if ($prebuiltReverseHash -ne [string]$evidence.layout_reprojection.reverse_source_sha256) {
+            throw "Prebuilt reverse source hash does not match layout-reprojection evidence."
+        }
     }
     $pronunciationEntriesName = [string]$previousCoreSource.pronunciation_entries
     $pronunciationEntriesHash = [string]$previousCoreSource.pronunciation_entries_sha256
@@ -97,7 +131,6 @@ if ($singleCharacters -ne ($coreCharacters + $peripheralCharacters)) {
 if (-not [bool]$characterRanking.core_above_peripheral) {
     throw "Core and peripheral single-character weight ranges overlap."
 }
-$sourceHash = (Get-FileHash -LiteralPath $resolvedInputPath -Algorithm SHA256).Hash.ToLowerInvariant()
 if ($sourceHash -ne [string]$evidence.output_sha256) {
     throw "Core dictionary hash does not match the evidence manifest."
 }
@@ -241,7 +274,7 @@ $reverseSourceHash = (Get-FileHash -LiteralPath $reverseSourcePath -Algorithm SH
 $reverseSourceRows = [Math]::Max(0, (Get-Content -LiteralPath $reverseSourcePath -Encoding UTF8).Count - 1)
 $sourceRecord = [ordered]@{
     schema_version = 1
-    source_project = "Yime-python-prototype"
+    source_project = "Yime"
     source_revision = $SourceRevision
     source_dictionary = [IO.Path]::GetFileName($resolvedInputPath)
     source_dictionary_sha256 = $sourceHash
@@ -276,9 +309,14 @@ $sourceRecord = [ordered]@{
         core_above_peripheral = [bool]$characterRanking.core_above_peripheral
     }
     runtime_scope = "curated_phrases_with_all_encoded_character_periphery"
-    prototype_scope = @("candidate_pool", "source_evidence", "regression_cases")
+    offline_tooling_scope = @("candidate_pool", "source_evidence", "regression_cases")
 }
-if ($usingPrebuiltReverseSource) {
+if ($usingApprovedTarget) {
+    $sourceRecord["approved_target_lock"] = [IO.Path]::GetFileName($resolvedTargetLock)
+    $sourceRecord["historical_source_project"] = [string]$previousCoreSource.source_project
+    $sourceRecord["historical_source_revision"] = [string]$previousCoreSource.source_revision
+}
+elseif ($usingPrebuiltReverseSource) {
     $sourceRecord["layout_reprojection"] = [ordered]@{
         layout_digest = [string]$evidence.layout_reprojection.layout_digest
         previous_reverse_pinyin_source_sha256 = [string]$previousCoreSource.reverse_pinyin_source_sha256

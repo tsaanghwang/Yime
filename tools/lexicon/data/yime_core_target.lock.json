@@ -16,6 +16,18 @@
   },
   "artifacts": [
     {
+      "role": "canonical_fixed_handoff",
+      "path": "tools/lexicon/handoff/yime_core_fixed.dict.yaml",
+      "size": 29746247,
+      "sha256": "4ce312cd5082cc19d525abe5842c092e1b1693fcec340b565ca4aa479f226551"
+    },
+    {
+      "role": "canonical_fixed_handoff_evidence",
+      "path": "tools/lexicon/handoff/yime_core_fixed.evidence.json",
+      "size": 1775,
+      "sha256": "3796b6892ad1a545bec631fea065fcaffe6524f69cef8af959026295ea6e94c3"
+    },
+    {
       "role": "full_mode_dictionary",
       "path": "go-backend/input_methods/yime/data/yime_full.dict.yaml",
       "size": 31666504,

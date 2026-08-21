@@ -36,3 +36,19 @@ python tools/lexicon/verify_target_lock.py `
   --external-root D:\YimeLexiconInputs `
   --no-legacy-paths
 ```
+
+## 单仓交接重放
+
+批准的唯一等长源词典保存在 `handoff/yime_core_fixed.dict.yaml`，其来源证据保存在同目录的 `yime_core_fixed.evidence.json`。三模式仍由 Go `codemode` 派生，不在 Python 中维护三份词典。可在全新输出目录中重放并验证：
+
+```powershell
+.\tools\lexicon\replay-approved-handoff.ps1 `
+  -Python C:\path\to\python.exe `
+  -OutputDir .\.generated\approved_core_handoff_replay
+```
+
+该命令只写入指定生成目录，不覆盖 `go-backend/input_methods/yime/data`。它要求 full、variable、shorthand、反查拼音源、词条数、不同文本数、源词典哈希和 selection 身份全部与目标锁一致。
+
+固定交接物解决的是“Windows 当前批准身份可在 Yime 内独立重放”，不等同于“当前来源链已经重新生成出 1,167,501 条”。后者仍须先解决历史运行数据库与音变增量的完整可复现性；在此之前不得刷新 baseline。
+
+`tools/build_two_level_runtime_trial.py` 不再接受仓内可变 `pinyin_hanzi.db` 默认值。若要研究性重建，必须显式传入 `--source-runtime-database`，并由调用方保证该输入只读且有内容锁。

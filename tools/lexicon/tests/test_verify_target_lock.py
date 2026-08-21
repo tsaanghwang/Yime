@@ -24,7 +24,7 @@ class VerifyTargetLockTests(unittest.TestCase):
         report = verify()
         self.assertEqual(report["decision"], "pass")
         self.assertEqual(report["target"]["entry_count"], 1167501)
-        self.assertEqual(len(report["verified_artifacts"]), 13)
+        self.assertEqual(len(report["verified_artifacts"]), 15)
 
     def test_hash_drift_fails_before_semantic_acceptance(self) -> None:
         with tempfile.TemporaryDirectory() as temp:

@@ -210,6 +210,8 @@ func TestPhase0TargetLockMatchesPromotedCoreAndSoundChangeLayers(t *testing.T) {
 	}
 
 	requiredRoles := map[string]bool{
+		"canonical_fixed_handoff":          false,
+		"canonical_fixed_handoff_evidence": false,
 		"full_mode_dictionary":             false,
 		"variable_mode_dictionary":         false,
 		"shorthand_mode_dictionary":        false,

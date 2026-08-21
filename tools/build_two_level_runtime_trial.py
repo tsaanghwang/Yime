@@ -6,7 +6,7 @@ This is the single experimental entry point for:
 2. retaining every tier-1..8 formally encoded single character and the
    source-backed 1-4 character components built from them;
 3. retaining selected long bridges plus a bounded high-weight long cache;
-4. cloning the complete prototype database; and
+4. optionally cloning an explicitly supplied evaluation runtime database; and
 5. activating the selection only on its materialized runtime candidates.
 
 The source bundle and full inventory tables are never reduced.
@@ -62,7 +62,6 @@ DEFAULT_CAPACITY = (
     / "static_lexicon_capacity"
     / "static_capacity.sqlite3"
 )
-DEFAULT_RUNTIME = ROOT / "yime" / "pinyin_hanzi.db"
 DEFAULT_INPUT_MODEL = (
     ROOT / ".generated" / "input_candidate_model" / "input_model.sqlite3"
 )
@@ -324,7 +323,7 @@ def build_trial(
             "status": "skipped",
             "reason": (
                 "Windows dictionary handoff does not require a cloned "
-                "prototype runtime database"
+                "evaluation runtime database"
             ),
         }
 
@@ -381,7 +380,7 @@ def build_trial(
                 else ""
             ),
         },
-        "run_prototype": {
+        "run_evaluation_runtime": {
             "environment_variable": "YIME_RUNTIME_DB_PATH",
             "value": (
                 str(filtered_runtime.resolve())
@@ -411,7 +410,12 @@ def main() -> int:
     parser.add_argument(
         "--source-runtime-database",
         type=Path,
-        default=DEFAULT_RUNTIME,
+        required=True,
+        help=(
+            "Explicit immutable runtime database used only to export the "
+            "production intersection. No repository-local mutable default "
+            "is permitted."
+        ),
     )
     parser.add_argument(
         "--input-model-database",
@@ -432,7 +436,7 @@ def main() -> int:
         action="store_true",
         help=(
             "Build and validate the Windows handoff dictionary without "
-            "cloning or mutating a prototype runtime database."
+            "cloning or mutating the supplied evaluation runtime database."
         ),
     )
     args = parser.parse_args()

@@ -584,11 +584,50 @@ if ($legacyModuleMatches.Count -gt 0) {
     throw "Legacy upstream Go module namespace returned: $($legacyModuleMatches -join '; ')"
 }
 
-$retiredTrackedPaths = @('python', 'node', 'McBopomofoWeb', 'libchewing', 'tests')
+$retiredTrackedPaths = @('python', 'node', 'McBopomofoWeb', 'libchewing')
 foreach ($retiredPath in $retiredTrackedPaths) {
     $tracked = @(& git -C $root ls-files -- $retiredPath)
     if ($tracked.Count -gt 0) {
         throw "Retired path is still tracked: $retiredPath"
+    }
+}
+
+# The old upstream root test tree was retired with PIME.  The new root tests
+# are restricted to the migrated, offline Yime lexicon/encoding toolchain.
+$allowedOfflineTestPrefixes = @(
+    'tests/README.md',
+    'tests/__init__.py',
+    'tests/test_',
+    'tests/input_model/',
+    'tests/lexicon_bundle/',
+    'tests/pinyin_source_db/',
+    'tests/syllable_analysis/',
+    'tests/tools/',
+    'tests/yime/',
+    'tests/yinjie/'
+)
+$trackedOfflineTests = @(& git -C $root ls-files -- 'tests')
+foreach ($testPath in $trackedOfflineTests) {
+    $normalizedTestPath = $testPath.Replace('\', '/')
+    $allowed = @($allowedOfflineTestPrefixes | Where-Object {
+        $normalizedTestPath.StartsWith($_, [StringComparison]::Ordinal)
+    }).Count -gt 0
+    if (-not $allowed) {
+        throw "Unclassified root test returned outside the offline Yime toolchain: $testPath"
+    }
+}
+foreach ($runtimeOnlyFragment in @(
+    'pywin32',
+    'win32api',
+    'win32gui',
+    'pynput',
+    'tkinter',
+    'PyInstaller',
+    'yime.input_method'
+)) {
+    $matches = @(& git -C $root grep -n --fixed-strings $runtimeOnlyFragment -- 'tests/*.py' 'tests/**/*.py')
+    if ($matches.Count -gt 0) {
+        throw "Prototype runtime dependency returned in offline tests: $($matches -join '; ')"
     }
 }
 $retiredUpstreamArtifacts = @(
