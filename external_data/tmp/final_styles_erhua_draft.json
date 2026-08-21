@@ -1,0 +1,5394 @@
+{
+  "schema_version": 3,
+  "draft_id": "final-styles-erhua-working-draft",
+  "status": "working_draft_research_only",
+  "runtime_enabled": false,
+  "derived_from": "external_data/finals_IPA_mapping.json",
+  "description": "以现行韵尾类型表为基础，对齐 PSC 2021 儿化韵类别并增加无调 IPA 工作候选；仅用于来源核对、音质替换建模和后续结构化迁移，不属于现行来源链或运行时编码。",
+  "field_notes": {
+    "erhua_final": "结构化候选列表；空数组表示 PSC 表中无对应类别或不适合作为儿化基础韵，不表示绝对不能儿化。",
+    "source_*": "来源层字段，忠实保存 PSC 类别写法和定位，不因工程判断改写。",
+    "alignment": "项目内部韵母键与来源韵母的对齐；别名和疑点必须显式记录。",
+    "ipa_analysis": "无调表层音质候选及变化范围；working_hypothesis 不能进入运行时编码。"
+  },
+  "finals": {
+    "single quality finals": {
+      "i": {
+        "ipa": "i",
+        "erhua_final": [
+          {
+            "source_id": "PSC-2021-ERHUA",
+            "source_index": 23,
+            "source_page": 2,
+            "source_rule": "i>i:er",
+            "source_base_final": "i",
+            "source_erhua_final": "i:er",
+            "nasalized": false,
+            "examples": [
+              {
+                "hanzi": "垫底儿",
+                "pinyin_nfc": "diàndǐr"
+              },
+              {
+                "hanzi": "肚脐儿",
+                "pinyin_nfc": "dùqír"
+              },
+              {
+                "hanzi": "玩意儿",
+                "pinyin_nfc": "wányìr"
+              }
+            ],
+            "evidence_locator": {
+              "rule_bbox": [
+                54.34,
+                437.79,
+                446.6,
+                455.21
+              ]
+            },
+            "alignment": {
+              "project_final": "i",
+              "status": "exact_or_internal_name"
+            },
+            "ipa_analysis": {
+              "status": "working_hypothesis",
+              "unpitched_candidates": [
+                "iɚ"
+              ],
+              "rhotic_scope": "rhotic_central_transition",
+              "operation": "高前元音保留并接卷舌中央尾"
+            }
+          }
+        ],
+        "erhua_review_status": "psc_aligned_ipa_pending_review",
+        "three_segment_review": {
+          "schema_version": 2,
+          "surface_segment_schema": "quality_features_v1",
+          "decision": "reviewed",
+          "base_segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "base_segments_final": "i",
+          "base_segments_ganyin": "i1",
+          "base_segments": {
+            "呼音": "i",
+            "主音": "i",
+            "末音": "i"
+          },
+          "surface_segments": {
+            "呼音": {
+              "quality": "i",
+              "features": {
+                "rhotic": false,
+                "nasalized": false
+              }
+            },
+            "主音": {
+              "quality": "ə",
+              "features": {
+                "rhotic": true,
+                "nasalized": false
+              }
+            },
+            "末音": {
+              "quality": "ə",
+              "features": {
+                "rhotic": true,
+                "nasalized": false
+              }
+            }
+          },
+          "surface_ipa": "iɚɚ",
+          "note": "韵母为i、ü的韵母\n原儿化韵规则：原韵母i或ü变成韵头，在后面加上er[ɚ]。\n音元系统机制：呼音音质不变，主音音质和末音音质变成er[ɚ]。\n切分结果：iɚɚ(把后两段改为ɚ)。",
+          "revision": 10,
+          "updated_utc": "2026-08-16T09:58:26.902670Z",
+          "runtime_enabled": false,
+          "surface_generation": {
+            "method": "rule_generated",
+            "class_id": "ERHUA-ORAL-I-ER",
+            "rule_version": 3,
+            "quality_profile_version": 1,
+            "quality_profile_source": "external_data/tmp/erhua_surface_quality_profiles.json",
+            "runtime_enabled": false
+          },
+          "surface_class": "ERHUA-ORAL-I-ER",
+          "surface_class_rule_version": 3
+        },
+        "erhua_surface_class": {
+          "class_id": "ERHUA-ORAL-I-ER",
+          "rule_version": 3,
+          "basis": "PSC 均归并为 i:er；i 保留在前段，卷舌央元音占主音和末音。",
+          "technical_alias_of": "",
+          "runtime_enabled": false
+        },
+        "base_foundation": {
+          "schema_version": 1,
+          "ipa_source": "external_data/finals_IPA_mapping.json",
+          "segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "final": "i",
+          "ganyin": "i1",
+          "ipa": "i",
+          "segments": {
+            "呼音": "i",
+            "主音": "i",
+            "末音": "i"
+          }
+        }
+      },
+      "u": {
+        "ipa": "u",
+        "erhua_final": [
+          {
+            "source_id": "PSC-2021-ERHUA",
+            "source_index": 29,
+            "source_page": 2,
+            "source_rule": "u>ur",
+            "source_base_final": "u",
+            "source_erhua_final": "ur",
+            "nasalized": false,
+            "examples": [
+              {
+                "hanzi": "泪珠儿",
+                "pinyin_nfc": "lèizhūr"
+              },
+              {
+                "hanzi": "梨核儿",
+                "pinyin_nfc": "líhúr"
+              },
+              {
+                "hanzi": "没谱儿",
+                "pinyin_nfc": "méipǔr"
+              }
+            ],
+            "evidence_locator": {
+              "rule_bbox": [
+                54.34,
+                681.44,
+                446.6,
+                698.84
+              ]
+            },
+            "alignment": {
+              "project_final": "u",
+              "status": "exact_or_internal_name"
+            },
+            "ipa_analysis": {
+              "status": "working_hypothesis",
+              "unpitched_candidates": [
+                "ʊ˞"
+              ],
+              "rhotic_scope": "rime_nucleus_or_transition",
+              "operation": "高后元音卷舌；fur 类可能另有唇化实现，待逐词审"
+            }
+          }
+        ],
+        "erhua_review_status": "psc_aligned_ipa_pending_review",
+        "three_segment_review": {
+          "schema_version": 2,
+          "surface_segment_schema": "quality_features_v1",
+          "decision": "reviewed",
+          "base_segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "base_segments_final": "u",
+          "base_segments_ganyin": "u1",
+          "base_segments": {
+            "呼音": "u",
+            "主音": "u",
+            "末音": "u"
+          },
+          "surface_segments": {
+            "呼音": {
+              "quality": "u",
+              "features": {
+                "rhotic": false,
+                "nasalized": false
+              }
+            },
+            "主音": {
+              "quality": "ʊ",
+              "features": {
+                "rhotic": true,
+                "nasalized": false
+              }
+            },
+            "末音": {
+              "quality": "ʊ",
+              "features": {
+                "rhotic": true,
+                "nasalized": false
+              }
+            }
+          },
+          "surface_ipa": "uʊ˞ʊ˞",
+          "note": "",
+          "revision": 5,
+          "updated_utc": "2026-08-16T09:39:42.515523Z",
+          "runtime_enabled": false,
+          "surface_generation": {
+            "method": "manual_override",
+            "overrides_class_id": "ERHUA-ORAL-UR",
+            "reason": "UI 中显式修改规则生成结果",
+            "runtime_enabled": false
+          },
+          "surface_class": "ERHUA-ORAL-UR",
+          "surface_class_rule_version": 3
+        },
+        "base_foundation": {
+          "schema_version": 1,
+          "ipa_source": "external_data/finals_IPA_mapping.json",
+          "segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "final": "u",
+          "ganyin": "u1",
+          "ipa": "u",
+          "segments": {
+            "呼音": "u",
+            "主音": "u",
+            "末音": "u"
+          }
+        },
+        "erhua_surface_class": {
+          "class_id": "ERHUA-ORAL-UR",
+          "rule_version": 3,
+          "basis": "u 的三段儿化音质由附属音质表给出，卷舌特征覆盖固定三段。",
+          "technical_alias_of": "",
+          "runtime_enabled": false,
+          "manual_override": true
+        }
+      },
+      "ü": {
+        "ipa": "ʏ",
+        "erhua_final": [
+          {
+            "source_id": "PSC-2021-ERHUA",
+            "source_index": 26,
+            "source_page": 2,
+            "source_rule": "ü>ü:er",
+            "source_base_final": "ü",
+            "source_erhua_final": "ü:er",
+            "nasalized": false,
+            "examples": [
+              {
+                "hanzi": "毛驴儿",
+                "pinyin_nfc": "máolǘr"
+              },
+              {
+                "hanzi": "痰盂儿",
+                "pinyin_nfc": "tányúr"
+              },
+              {
+                "hanzi": "小曲儿",
+                "pinyin_nfc": "xiǎoqǔr"
+              }
+            ],
+            "evidence_locator": {
+              "rule_bbox": [
+                54.34,
+                559.61,
+                446.6,
+                577.01
+              ]
+            },
+            "alignment": {
+              "project_final": "ü",
+              "status": "exact_umlaut_form"
+            },
+            "ipa_analysis": {
+              "status": "working_hypothesis",
+              "unpitched_candidates": [
+                "yɚ"
+              ],
+              "rhotic_scope": "rhotic_central_transition",
+              "operation": "圆唇高前元音保留并接卷舌中央尾"
+            }
+          }
+        ],
+        "erhua_review_status": "psc_aligned_ipa_pending_review",
+        "three_segment_review": {
+          "schema_version": 2,
+          "surface_segment_schema": "quality_features_v1",
+          "decision": "reviewed",
+          "base_segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "base_segments_final": "ü",
+          "base_segments_ganyin": "ü1",
+          "base_segments": {
+            "呼音": "ʏ",
+            "主音": "ʏ",
+            "末音": "ʏ"
+          },
+          "surface_segments": {
+            "呼音": {
+              "quality": "ʏ",
+              "features": {
+                "rhotic": false,
+                "nasalized": false
+              }
+            },
+            "主音": {
+              "quality": "ə",
+              "features": {
+                "rhotic": true,
+                "nasalized": false
+              }
+            },
+            "末音": {
+              "quality": "ə",
+              "features": {
+                "rhotic": true,
+                "nasalized": false
+              }
+            }
+          },
+          "surface_ipa": "ʏɚɚ",
+          "note": "韵母为i、ü的韵母\n原儿化韵规则：原韵母i或ü变成韵头，在后面加上er[ɚ]。\n音元系统机制：呼音音质不变，主音音质和末音音质变成er[ɚ]。\n切分结果：ʏɚɚ(把后两段改为ɚ)。",
+          "revision": 8,
+          "updated_utc": "2026-08-16T09:59:22.719728Z",
+          "runtime_enabled": false,
+          "surface_generation": {
+            "method": "rule_generated",
+            "class_id": "ERHUA-ORAL-UMLAUT-I-ER",
+            "rule_version": 3,
+            "quality_profile_version": 1,
+            "quality_profile_source": "external_data/tmp/erhua_surface_quality_profiles.json",
+            "runtime_enabled": false
+          },
+          "surface_class": "ERHUA-ORAL-UMLAUT-I-ER",
+          "surface_class_rule_version": 3
+        },
+        "erhua_surface_class": {
+          "class_id": "ERHUA-ORAL-UMLAUT-I-ER",
+          "rule_version": 3,
+          "basis": "PSC 均归并为 ü:er；本音系规则只登记规范拼音 ü/ün。",
+          "technical_alias_of": "",
+          "runtime_enabled": false
+        },
+        "base_foundation": {
+          "schema_version": 1,
+          "ipa_source": "external_data/finals_IPA_mapping.json",
+          "segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "final": "ü",
+          "ganyin": "ü1",
+          "ipa": "ʏ",
+          "segments": {
+            "呼音": "ʏ",
+            "主音": "ʏ",
+            "末音": "ʏ"
+          }
+        }
+      },
+      "a": {
+        "ipa": "ä",
+        "erhua_final": [
+          {
+            "source_id": "PSC-2021-ERHUA",
+            "source_index": 1,
+            "source_page": 1,
+            "source_rule": "a>ar",
+            "source_base_final": "a",
+            "source_erhua_final": "ar",
+            "nasalized": false,
+            "examples": [
+              {
+                "hanzi": "板擦儿",
+                "pinyin_nfc": "bǎncār"
+              },
+              {
+                "hanzi": "打杂儿",
+                "pinyin_nfc": "dǎzár"
+              },
+              {
+                "hanzi": "刀把儿",
+                "pinyin_nfc": "dāobàr"
+              }
+            ],
+            "evidence_locator": {
+              "rule_bbox": [
+                54.34,
+                89.76,
+                446.6,
+                107.16
+              ]
+            },
+            "alignment": {
+              "project_final": "a",
+              "status": "exact_or_internal_name"
+            },
+            "ipa_analysis": {
+              "status": "working_hypothesis",
+              "unpitched_candidates": [
+                "a˞",
+                "ɐɚ"
+              ],
+              "rhotic_scope": "rime_nucleus_or_transition",
+              "operation": "韵核卷舌；是否与 an 类合流待审"
+            }
+          }
+        ],
+        "erhua_review_status": "psc_aligned_ipa_pending_review",
+        "three_segment_review": {
+          "schema_version": 2,
+          "surface_segment_schema": "quality_features_v1",
+          "decision": "reviewed",
+          "base_segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "base_segments_final": "a",
+          "base_segments_ganyin": "a1",
+          "base_segments": {
+            "呼音": "ä",
+            "主音": "ä",
+            "末音": "ä"
+          },
+          "surface_segments": {
+            "呼音": {
+              "quality": "ä",
+              "features": {
+                "rhotic": false,
+                "nasalized": false
+              }
+            },
+            "主音": {
+              "quality": "ä",
+              "features": {
+                "rhotic": true,
+                "nasalized": false
+              }
+            },
+            "末音": {
+              "quality": "ɐ",
+              "features": {
+                "rhotic": true,
+                "nasalized": false
+              }
+            }
+          },
+          "surface_ipa": "ää˞ɐ˞",
+          "note": "韵母末尾(实际是韵腹或韵核或更严格地说是韵腹或韵核后段)是a[ä]的韵母\n发音规则：直接在韵母末尾加上卷舌动作，韵母基本不变。\n发音要点：发a时舌尖稍微向上翘卷，抵达卷舌音位置即可。ä 的舌位略微升高一点，和  ɐ 差不多。\n切分结果：ää̈ɐ˞ ('˞'表示卷舌特征。IPA没有表示卷舌特征的组合上标 Combining Diacritical Mark，因此，用 Spacing Modifier Letter 来表示卷舌特征)。",
+          "revision": 19,
+          "updated_utc": "2026-08-16T10:48:05.831058Z",
+          "runtime_enabled": false,
+          "surface_generation": {
+            "method": "manual_override",
+            "overrides_class_id": "ERHUA-ORAL-AR-A",
+            "reason": "UI 中显式修改规则生成结果",
+            "runtime_enabled": false
+          },
+          "surface_class": "ERHUA-ORAL-AR-A",
+          "surface_class_rule_version": 3
+        },
+        "erhua_surface_class": {
+          "class_id": "ERHUA-ORAL-AR-A",
+          "rule_version": 3,
+          "basis": "单韵母 a 保留基础 ä，主音开始卷舌，末段向 ɐ 央化。",
+          "technical_alias_of": "",
+          "runtime_enabled": false,
+          "manual_override": true
+        },
+        "base_foundation": {
+          "schema_version": 1,
+          "ipa_source": "external_data/finals_IPA_mapping.json",
+          "segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "final": "a",
+          "ganyin": "a1",
+          "ipa": "ä",
+          "segments": {
+            "呼音": "ä",
+            "主音": "ä",
+            "末音": "ä"
+          }
+        }
+      },
+      "o": {
+        "ipa": "o",
+        "erhua_final": [
+          {
+            "source_id": "PSC-2021-ERHUA",
+            "source_index": 37,
+            "source_page": 3,
+            "source_rule": "(o)>or",
+            "source_base_final": "(o)",
+            "source_erhua_final": "or",
+            "nasalized": false,
+            "examples": [
+              {
+                "hanzi": "耳膜儿",
+                "pinyin_nfc": "ěrmór"
+              },
+              {
+                "hanzi": "粉末儿",
+                "pinyin_nfc": "fěnmòr"
+              }
+            ],
+            "evidence_locator": {
+              "rule_bbox": [
+                54.34,
+                402.99,
+                446.6,
+                420.39
+              ]
+            },
+            "alignment": {
+              "project_final": "o",
+              "status": "exact_or_internal_name"
+            },
+            "ipa_analysis": {
+              "status": "working_hypothesis",
+              "unpitched_candidates": [
+                "o˞"
+              ],
+              "rhotic_scope": "rime_nucleus_or_transition",
+              "operation": "圆唇后元音韵核卷舌"
+            }
+          }
+        ],
+        "erhua_review_status": "psc_aligned_ipa_pending_review",
+        "three_segment_review": {
+          "schema_version": 2,
+          "surface_segment_schema": "quality_features_v1",
+          "decision": "reviewed",
+          "base_segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "base_segments_final": "o",
+          "base_segments_ganyin": "o1",
+          "base_segments": {
+            "呼音": "o",
+            "主音": "o",
+            "末音": "o"
+          },
+          "surface_segments": {
+            "呼音": {
+              "quality": "o",
+              "features": {
+                "rhotic": false,
+                "nasalized": false
+              }
+            },
+            "主音": {
+              "quality": "o",
+              "features": {
+                "rhotic": true,
+                "nasalized": false
+              }
+            },
+            "末音": {
+              "quality": "o",
+              "features": {
+                "rhotic": true,
+                "nasalized": false
+              }
+            }
+          },
+          "surface_ipa": "oo˞o˞",
+          "note": "",
+          "revision": 8,
+          "updated_utc": "2026-08-14T13:02:42.853860Z",
+          "runtime_enabled": false,
+          "surface_class": "ERHUA-ORAL-OR",
+          "surface_class_rule_version": 3,
+          "surface_generation": {
+            "method": "rule_generated",
+            "class_id": "ERHUA-ORAL-OR",
+            "rule_version": 3,
+            "quality_profile_version": 1,
+            "quality_profile_source": "external_data/tmp/erhua_surface_quality_profiles.json",
+            "runtime_enabled": false
+          }
+        },
+        "base_foundation": {
+          "schema_version": 1,
+          "ipa_source": "external_data/finals_IPA_mapping.json",
+          "segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "final": "o",
+          "ganyin": "o1",
+          "ipa": "o",
+          "segments": {
+            "呼音": "o",
+            "主音": "o",
+            "末音": "o"
+          }
+        },
+        "erhua_surface_class": {
+          "class_id": "ERHUA-ORAL-OR",
+          "rule_version": 3,
+          "basis": "o 保留三段音质，卷舌特征从主音延续到末音。",
+          "technical_alias_of": "",
+          "runtime_enabled": false
+        }
+      },
+      "e": {
+        "ipa": "ɤ",
+        "erhua_final": [
+          {
+            "source_id": "PSC-2021-ERHUA",
+            "source_index": 28,
+            "source_page": 2,
+            "source_rule": "e>er",
+            "source_base_final": "e",
+            "source_erhua_final": "er",
+            "nasalized": false,
+            "examples": [
+              {
+                "hanzi": "挨个儿",
+                "pinyin_nfc": "āigèr"
+              },
+              {
+                "hanzi": "唱歌儿",
+                "pinyin_nfc": "chànggēr"
+              },
+              {
+                "hanzi": "打嗝儿",
+                "pinyin_nfc": "dǎgér"
+              }
+            ],
+            "evidence_locator": {
+              "rule_bbox": [
+                54.34,
+                629.24,
+                446.6,
+                646.64
+              ]
+            },
+            "alignment": {
+              "project_final": "e",
+              "status": "exact_or_internal_name"
+            },
+            "ipa_analysis": {
+              "status": "working_hypothesis",
+              "unpitched_candidates": [
+                "ɤ˞"
+              ],
+              "rhotic_scope": "rime_nucleus_or_transition",
+              "operation": "后元音韵核卷舌"
+            }
+          }
+        ],
+        "erhua_review_status": "psc_aligned_ipa_pending_review",
+        "three_segment_review": {
+          "schema_version": 2,
+          "surface_segment_schema": "quality_features_v1",
+          "decision": "reviewed",
+          "base_segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "base_segments_final": "e",
+          "base_segments_ganyin": "e1",
+          "base_segments": {
+            "呼音": "ɤ",
+            "主音": "ɤ",
+            "末音": "ɤ"
+          },
+          "surface_segments": {
+            "呼音": {
+              "quality": "ɤ",
+              "features": {
+                "rhotic": false,
+                "nasalized": false
+              }
+            },
+            "主音": {
+              "quality": "ɤ",
+              "features": {
+                "rhotic": true,
+                "nasalized": false
+              }
+            },
+            "末音": {
+              "quality": "ɤ",
+              "features": {
+                "rhotic": true,
+                "nasalized": false
+              }
+            }
+          },
+          "surface_ipa": "ɤɤ˞ɤ˞",
+          "note": "韵母末尾(实际是韵腹或韵核，更严格地说，是韵腹或韵核后段)是e[ɤ]的韵母\n发音规则：直接在韵母末尾加上卷舌动作，韵母基本不变。\n发音要点：发e[ɤ] 时舌尖稍微向上翘卷，抵达卷舌音位置即可。",
+          "revision": 16,
+          "updated_utc": "2026-08-14T13:02:47.873069Z",
+          "runtime_enabled": false,
+          "surface_class": "ERHUA-ORAL-ER-E",
+          "surface_class_rule_version": 3,
+          "surface_generation": {
+            "method": "rule_generated",
+            "class_id": "ERHUA-ORAL-ER-E",
+            "rule_version": 3,
+            "quality_profile_version": 1,
+            "quality_profile_source": "external_data/tmp/erhua_surface_quality_profiles.json",
+            "runtime_enabled": false
+          }
+        },
+        "erhua_surface_class": {
+          "class_id": "ERHUA-ORAL-ER-E",
+          "rule_version": 3,
+          "basis": "e[ɤ] 保留后元音音质，主音开始携带 rhotic；不因来源同写 er 而强制央化为 ə。",
+          "technical_alias_of": "",
+          "runtime_enabled": false
+        },
+        "base_foundation": {
+          "schema_version": 1,
+          "ipa_source": "external_data/finals_IPA_mapping.json",
+          "segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "final": "e",
+          "ganyin": "e1",
+          "ipa": "ɤ",
+          "segments": {
+            "呼音": "ɤ",
+            "主音": "ɤ",
+            "末音": "ɤ"
+          }
+        }
+      },
+      "ê": {
+        "ipa": "e̞",
+        "erhua_final": [],
+        "erhua_review_status": "no_psc_category",
+        "erhua_note": "PSC 儿化韵表未给出独立 ê 的儿化类别。",
+        "three_segment_review": {
+          "schema_version": 2,
+          "surface_segment_schema": "quality_features_v1",
+          "decision": "not_applicable",
+          "base_segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "base_segments_final": "ê",
+          "base_segments_ganyin": "ê1",
+          "base_segments": {
+            "呼音": "e̞",
+            "主音": "e̞",
+            "末音": "e̞"
+          },
+          "surface_segments": {
+            "呼音": {
+              "quality": "",
+              "features": {
+                "rhotic": false,
+                "nasalized": false
+              }
+            },
+            "主音": {
+              "quality": "",
+              "features": {
+                "rhotic": false,
+                "nasalized": false
+              }
+            },
+            "末音": {
+              "quality": "",
+              "features": {
+                "rhotic": false,
+                "nasalized": false
+              }
+            }
+          },
+          "surface_ipa": "",
+          "note": "PSC 儿化韵表未给出成音节韵母 ê + er 的儿化情况。",
+          "revision": 5,
+          "updated_utc": "2026-08-14T12:48:15.926503Z",
+          "runtime_enabled": false
+        },
+        "base_foundation": {
+          "schema_version": 1,
+          "ipa_source": "external_data/finals_IPA_mapping.json",
+          "segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "final": "ê",
+          "ganyin": "ê1",
+          "ipa": "e̞",
+          "segments": {
+            "呼音": "e̞",
+            "主音": "e̞",
+            "末音": "e̞"
+          }
+        }
+      },
+      "_i": {
+        "ipa": "ɿ/ʅ",
+        "erhua_final": [
+          {
+            "source_id": "PSC-2021-ERHUA",
+            "source_index": 21,
+            "source_page": 2,
+            "source_rule": "i(前)>er",
+            "source_base_final": "i(前)",
+            "source_erhua_final": "er",
+            "nasalized": false,
+            "examples": [
+              {
+                "hanzi": "瓜子儿",
+                "pinyin_nfc": "guāzǐr"
+              },
+              {
+                "hanzi": "没词儿",
+                "pinyin_nfc": "méicír"
+              },
+              {
+                "hanzi": "石子儿",
+                "pinyin_nfc": "shízǐr"
+              }
+            ],
+            "evidence_locator": {
+              "rule_bbox": [
+                54.34,
+                368.19,
+                446.6,
+                385.59
+              ]
+            },
+            "alignment": {
+              "project_final": "_i",
+              "status": "exact_or_internal_name"
+            },
+            "ipa_analysis": {
+              "status": "working_hypothesis",
+              "unpitched_candidates": [
+                "ɚ"
+              ],
+              "rhotic_scope": "rhotic_central_transition",
+              "operation": "舌尖前元音归入卷舌中央尾"
+            }
+          },
+          {
+            "source_id": "PSC-2021-ERHUA",
+            "source_index": 22,
+            "source_page": 2,
+            "source_rule": "i(后)>er",
+            "source_base_final": "i(后)",
+            "source_erhua_final": "er",
+            "nasalized": false,
+            "examples": [
+              {
+                "hanzi": "记事儿",
+                "pinyin_nfc": "jìshìr"
+              },
+              {
+                "hanzi": "锯齿儿",
+                "pinyin_nfc": "jùchǐr"
+              },
+              {
+                "hanzi": "墨汁儿",
+                "pinyin_nfc": "mòzhīr"
+              }
+            ],
+            "evidence_locator": {
+              "rule_bbox": [
+                54.34,
+                402.99,
+                446.6,
+                420.39
+              ]
+            },
+            "alignment": {
+              "project_final": "_i",
+              "status": "exact_or_internal_name"
+            },
+            "ipa_analysis": {
+              "status": "working_hypothesis",
+              "unpitched_candidates": [
+                "ɚ"
+              ],
+              "rhotic_scope": "rhotic_central_transition",
+              "operation": "舌尖后元音归入卷舌中央尾"
+            }
+          }
+        ],
+        "erhua_review_status": "psc_aligned_ipa_pending_review",
+        "erhua_surface_class": {
+          "class_id": "ERHUA-ORAL-ER",
+          "rule_version": 3,
+          "basis": "PSC 均归并为 er；本子类三段均实现为卷舌央元音。",
+          "technical_alias_of": "",
+          "runtime_enabled": false
+        },
+        "three_segment_review": {
+          "schema_version": 2,
+          "surface_segment_schema": "quality_features_v1",
+          "decision": "reviewed",
+          "base_segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "base_segments_final": "_i",
+          "base_segments_ganyin": "_i1",
+          "base_segments": {
+            "呼音": "ɿ/ʅ",
+            "主音": "ɿ/ʅ",
+            "末音": "ɿ/ʅ"
+          },
+          "surface_segments": {
+            "呼音": {
+              "quality": "ə",
+              "features": {
+                "rhotic": true,
+                "nasalized": false
+              }
+            },
+            "主音": {
+              "quality": "ə",
+              "features": {
+                "rhotic": true,
+                "nasalized": false
+              }
+            },
+            "末音": {
+              "quality": "ə",
+              "features": {
+                "rhotic": true,
+                "nasalized": false
+              }
+            }
+          },
+          "surface_ipa": "ɚɚɚ",
+          "note": "",
+          "revision": 2,
+          "updated_utc": "2026-08-12T05:05:11.367248Z",
+          "runtime_enabled": false,
+          "surface_class": "ERHUA-ORAL-ER",
+          "surface_class_rule_version": 3,
+          "surface_generation": {
+            "method": "rule_generated",
+            "class_id": "ERHUA-ORAL-ER",
+            "rule_version": 3,
+            "quality_profile_version": 1,
+            "quality_profile_source": "external_data/tmp/erhua_surface_quality_profiles.json",
+            "runtime_enabled": false
+          }
+        },
+        "base_foundation": {
+          "schema_version": 1,
+          "ipa_source": "external_data/finals_IPA_mapping.json",
+          "segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "final": "_i",
+          "ganyin": "_i1",
+          "ipa": "ɿ/ʅ",
+          "segments": {
+            "呼音": "ɿ/ʅ",
+            "主音": "ɿ/ʅ",
+            "末音": "ɿ/ʅ"
+          }
+        },
+        "three_segment_review_variants": {
+          "apical_front": {
+            "schema_version": 2,
+            "surface_segment_schema": "quality_features_v1",
+            "decision": "reviewed",
+            "base_segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+            "base_segments_final": "_i",
+            "base_segments_ganyin": "_i1",
+            "base_segments": {
+              "呼音": "ɿ",
+              "主音": "ɿ",
+              "末音": "ɿ"
+            },
+            "surface_segments": {
+              "呼音": {
+                "quality": "ə",
+                "features": {
+                  "rhotic": true,
+                  "nasalized": false
+                }
+              },
+              "主音": {
+                "quality": "ə",
+                "features": {
+                  "rhotic": true,
+                  "nasalized": false
+                }
+              },
+              "末音": {
+                "quality": "ə",
+                "features": {
+                  "rhotic": true,
+                  "nasalized": false
+                }
+              }
+            },
+            "surface_ipa": "ɚɚɚ",
+            "note": "韵母为i[ɿ]、i[ʅ]的韵母\n原儿化韵规则：原韵母变成er[ɚ]。\n音元系统机制：呼音音质、主音音质和末音音质变成er[ɚ]。\n切分结果：ɚɚɚ(把后两段改为ɚ)。",
+            "revision": 4,
+            "updated_utc": "2026-08-16T10:03:13.003449Z",
+            "runtime_enabled": false,
+            "surface_class": "ERHUA-ORAL-ER",
+            "surface_class_rule_version": 3,
+            "surface_generation": {
+              "method": "rule_generated",
+              "class_id": "ERHUA-ORAL-ER",
+              "rule_version": 3,
+              "quality_profile_version": 1,
+              "quality_profile_source": "external_data/tmp/erhua_surface_quality_profiles.json",
+              "runtime_enabled": false
+            },
+            "review_variant": {
+              "variant_id": "apical_front",
+              "record_id": "_i_front",
+              "display_final": "i[ɿ]",
+              "source_index": 21,
+              "source_base_final": "i(前)",
+              "derivation": "按 PSC source_base_final 把规范韵母 _i 的舌尖前、舌尖后记录分列"
+            }
+          },
+          "apical_back": {
+            "schema_version": 2,
+            "surface_segment_schema": "quality_features_v1",
+            "decision": "reviewed",
+            "base_segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+            "base_segments_final": "_i",
+            "base_segments_ganyin": "_i1",
+            "base_segments": {
+              "呼音": "ʅ",
+              "主音": "ʅ",
+              "末音": "ʅ"
+            },
+            "surface_segments": {
+              "呼音": {
+                "quality": "ə",
+                "features": {
+                  "rhotic": true,
+                  "nasalized": false
+                }
+              },
+              "主音": {
+                "quality": "ə",
+                "features": {
+                  "rhotic": true,
+                  "nasalized": false
+                }
+              },
+              "末音": {
+                "quality": "ə",
+                "features": {
+                  "rhotic": true,
+                  "nasalized": false
+                }
+              }
+            },
+            "surface_ipa": "ɚɚɚ",
+            "note": "韵母为i[ɿ]、i[ʅ]的韵母\n原儿化韵规则：原韵母变成er[ɚ]。\n音元系统机制：呼音音质、主音音质和末音音质变成er[ɚ]。\n切分结果：ɚɚɚ(把后两段改为ɚ)。",
+            "revision": 6,
+            "updated_utc": "2026-08-16T10:03:33.497072Z",
+            "runtime_enabled": false,
+            "surface_class": "ERHUA-ORAL-ER",
+            "surface_class_rule_version": 3,
+            "surface_generation": {
+              "method": "rule_generated",
+              "class_id": "ERHUA-ORAL-ER",
+              "rule_version": 3,
+              "quality_profile_version": 1,
+              "quality_profile_source": "external_data/tmp/erhua_surface_quality_profiles.json",
+              "runtime_enabled": false
+            },
+            "review_variant": {
+              "variant_id": "apical_back",
+              "record_id": "_i_back",
+              "display_final": "i[ʅ]",
+              "source_index": 22,
+              "source_base_final": "i(后)",
+              "derivation": "按 PSC source_base_final 把规范韵母 _i 的舌尖前、舌尖后记录分列"
+            }
+          }
+        }
+      },
+      "er": {
+        "ipa": "ɚ",
+        "erhua_final": [],
+        "erhua_review_status": "independent_er_not_erhua_base",
+        "erhua_note": "独立音节 er 不因字面含‘儿’自动归为融合儿化。",
+        "three_segment_review": {
+          "schema_version": 2,
+          "surface_segment_schema": "quality_features_v1",
+          "decision": "not_applicable",
+          "base_segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "base_segments_final": "er",
+          "base_segments_ganyin": "er2",
+          "base_segments": {
+            "呼音": "ɚ",
+            "主音": "ɚ",
+            "末音": "ɚ"
+          },
+          "surface_segments": {
+            "呼音": {
+              "quality": "",
+              "features": {
+                "rhotic": false,
+                "nasalized": false
+              }
+            },
+            "主音": {
+              "quality": "",
+              "features": {
+                "rhotic": false,
+                "nasalized": false
+              }
+            },
+            "末音": {
+              "quality": "",
+              "features": {
+                "rhotic": false,
+                "nasalized": false
+              }
+            }
+          },
+          "surface_ipa": "",
+          "note": "PSC 儿化韵表未给出成音节韵母 er + er 的儿化情况。",
+          "revision": 7,
+          "updated_utc": "2026-08-14T12:48:18.398969Z",
+          "runtime_enabled": false
+        },
+        "base_foundation": {
+          "schema_version": 1,
+          "ipa_source": "external_data/finals_IPA_mapping.json",
+          "segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "final": "er",
+          "ganyin": "er2",
+          "ipa": "ɚ",
+          "segments": {
+            "呼音": "ɚ",
+            "主音": "ɚ",
+            "末音": "ɚ"
+          }
+        }
+      },
+      "m": {
+        "ipa": "m̩",
+        "erhua_final": [],
+        "erhua_review_status": "no_psc_category",
+        "erhua_note": "PSC 儿化韵表未给出音节化 m 的儿化类别。",
+        "three_segment_review": {
+          "schema_version": 2,
+          "surface_segment_schema": "quality_features_v1",
+          "decision": "not_applicable",
+          "base_segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "base_segments_final": "m",
+          "base_segments_ganyin": "m1",
+          "base_segments": {
+            "呼音": "m̩",
+            "主音": "m̩",
+            "末音": "m̩"
+          },
+          "surface_segments": {
+            "呼音": {
+              "quality": "",
+              "features": {
+                "rhotic": false,
+                "nasalized": false
+              }
+            },
+            "主音": {
+              "quality": "",
+              "features": {
+                "rhotic": false,
+                "nasalized": false
+              }
+            },
+            "末音": {
+              "quality": "",
+              "features": {
+                "rhotic": false,
+                "nasalized": false
+              }
+            }
+          },
+          "surface_ipa": "",
+          "note": "PSC 儿化韵表未给出韵母 m + er 的儿化情况。",
+          "revision": 8,
+          "updated_utc": "2026-08-14T12:48:20.534468Z",
+          "runtime_enabled": false
+        },
+        "base_foundation": {
+          "schema_version": 1,
+          "ipa_source": "external_data/finals_IPA_mapping.json",
+          "segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "final": "m",
+          "ganyin": "m1",
+          "ipa": "m̩",
+          "segments": {
+            "呼音": "m̩",
+            "主音": "m̩",
+            "末音": "m̩"
+          }
+        }
+      },
+      "n": {
+        "ipa": "n̩",
+        "erhua_final": [],
+        "erhua_review_status": "no_psc_category",
+        "erhua_note": "PSC 儿化韵表未给出音节化 n 的儿化类别。",
+        "three_segment_review": {
+          "schema_version": 2,
+          "surface_segment_schema": "quality_features_v1",
+          "decision": "not_applicable",
+          "base_segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "base_segments_final": "n",
+          "base_segments_ganyin": "n2",
+          "base_segments": {
+            "呼音": "n̩",
+            "主音": "n̩",
+            "末音": "n̩"
+          },
+          "surface_segments": {
+            "呼音": {
+              "quality": "",
+              "features": {
+                "rhotic": false,
+                "nasalized": false
+              }
+            },
+            "主音": {
+              "quality": "",
+              "features": {
+                "rhotic": false,
+                "nasalized": false
+              }
+            },
+            "末音": {
+              "quality": "",
+              "features": {
+                "rhotic": false,
+                "nasalized": false
+              }
+            }
+          },
+          "surface_ipa": "",
+          "note": "PSC 儿化韵表未给出韵母 n + er 的儿化情况。",
+          "revision": 8,
+          "updated_utc": "2026-08-14T12:48:24.038432Z",
+          "runtime_enabled": false
+        },
+        "base_foundation": {
+          "schema_version": 1,
+          "ipa_source": "external_data/finals_IPA_mapping.json",
+          "segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "final": "n",
+          "ganyin": "n2",
+          "ipa": "n̩",
+          "segments": {
+            "呼音": "n̩",
+            "主音": "n̩",
+            "末音": "n̩"
+          }
+        }
+      },
+      "ng": {
+        "ipa": "ŋ̩",
+        "erhua_final": [],
+        "erhua_review_status": "no_psc_category",
+        "erhua_note": "PSC 儿化韵表未给出音节化 ng 的儿化类别。",
+        "three_segment_review": {
+          "schema_version": 2,
+          "surface_segment_schema": "quality_features_v1",
+          "decision": "not_applicable",
+          "base_segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "base_segments_final": "ng",
+          "base_segments_ganyin": "ng2",
+          "base_segments": {
+            "呼音": "ŋ̩",
+            "主音": "ŋ̩",
+            "末音": "ŋ̩"
+          },
+          "surface_segments": {
+            "呼音": {
+              "quality": "",
+              "features": {
+                "rhotic": false,
+                "nasalized": false
+              }
+            },
+            "主音": {
+              "quality": "",
+              "features": {
+                "rhotic": false,
+                "nasalized": false
+              }
+            },
+            "末音": {
+              "quality": "",
+              "features": {
+                "rhotic": false,
+                "nasalized": false
+              }
+            }
+          },
+          "surface_ipa": "",
+          "note": "PSC 儿化韵表未给出韵母 ng[ŋ̩] + er 的儿化情况。",
+          "revision": 8,
+          "updated_utc": "2026-08-14T12:48:26.327463Z",
+          "runtime_enabled": false
+        },
+        "base_foundation": {
+          "schema_version": 1,
+          "ipa_source": "external_data/finals_IPA_mapping.json",
+          "segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "final": "ng",
+          "ganyin": "ng2",
+          "ipa": "ŋ̩",
+          "segments": {
+            "呼音": "ŋ̩",
+            "主音": "ŋ̩",
+            "末音": "ŋ̩"
+          }
+        }
+      }
+    },
+    "front long finals": {
+      "ai": {
+        "ipa": "aɪ",
+        "erhua_final": [
+          {
+            "source_id": "PSC-2021-ERHUA",
+            "source_index": 2,
+            "source_page": 1,
+            "source_rule": "ai>ar",
+            "source_base_final": "ai",
+            "source_erhua_final": "ar",
+            "nasalized": false,
+            "examples": [
+              {
+                "hanzi": "壶盖儿",
+                "pinyin_nfc": "húgàir"
+              },
+              {
+                "hanzi": "加塞儿",
+                "pinyin_nfc": "jiāsāir"
+              },
+              {
+                "hanzi": "名牌儿",
+                "pinyin_nfc": "míngpáir"
+              }
+            ],
+            "evidence_locator": {
+              "rule_bbox": [
+                54.34,
+                141.96,
+                446.6,
+                159.36
+              ]
+            },
+            "alignment": {
+              "project_final": "ai",
+              "status": "exact_or_internal_name"
+            },
+            "ipa_analysis": {
+              "status": "working_hypothesis",
+              "unpitched_candidates": [
+                "ɐɚ"
+              ],
+              "rhotic_scope": "rhotic_central_transition",
+              "operation": "韵尾滑音脱落并向卷舌中央尾过渡"
+            }
+          }
+        ],
+        "erhua_review_status": "psc_aligned_ipa_pending_review",
+        "three_segment_review": {
+          "schema_version": 2,
+          "surface_segment_schema": "quality_features_v1",
+          "decision": "reviewed",
+          "base_segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "base_segments_final": "ai",
+          "base_segments_ganyin": "ai1",
+          "base_segments": {
+            "呼音": "a",
+            "主音": "a",
+            "末音": "ɪ"
+          },
+          "surface_segments": {
+            "呼音": {
+              "quality": "a",
+              "features": {
+                "rhotic": false,
+                "nasalized": false
+              }
+            },
+            "主音": {
+              "quality": "ɐ",
+              "features": {
+                "rhotic": true,
+                "nasalized": false
+              }
+            },
+            "末音": {
+              "quality": "ɐ",
+              "features": {
+                "rhotic": true,
+                "nasalized": false
+              }
+            }
+          },
+          "surface_ipa": "aɐ˞ɐ˞",
+          "note": "韵尾为i、n的韵母（除in、ün外）\n原儿化韵规则：韵尾脱落，韵腹卷舌。\n音元系统机制：主音音质卷舌且央化（ɐ），末音音质变成卷舌且央化的主音音质。",
+          "revision": 12,
+          "updated_utc": "2026-08-16T10:40:29.209095Z",
+          "runtime_enabled": false,
+          "surface_generation": {
+            "method": "manual_override",
+            "overrides_class_id": "ERHUA-ORAL-AR-AI-N",
+            "reason": "UI 中显式修改规则生成结果",
+            "runtime_enabled": false
+          },
+          "surface_class": "ERHUA-ORAL-AR-AI-N",
+          "surface_class_rule_version": 3
+        },
+        "erhua_surface_class": {
+          "class_id": "ERHUA-ORAL-AR-AI-N",
+          "rule_version": 3,
+          "basis": "ai/an 的基础主音为 a；韵尾替换后末段向 ɐ 央化，主音与末音携带 rhotic。",
+          "technical_alias_of": "",
+          "runtime_enabled": false,
+          "manual_override": true
+        },
+        "base_foundation": {
+          "schema_version": 1,
+          "ipa_source": "external_data/finals_IPA_mapping.json",
+          "segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "final": "ai",
+          "ganyin": "ai1",
+          "ipa": "aɪ",
+          "segments": {
+            "呼音": "a",
+            "主音": "a",
+            "末音": "ɪ"
+          }
+        }
+      },
+      "ei": {
+        "ipa": "eɪ",
+        "erhua_final": [
+          {
+            "source_id": "PSC-2021-ERHUA",
+            "source_index": 13,
+            "source_page": 1,
+            "source_rule": "ei>er",
+            "source_base_final": "ei",
+            "source_erhua_final": "er",
+            "nasalized": false,
+            "examples": [
+              {
+                "hanzi": "刀背儿",
+                "pinyin_nfc": "dāobèir"
+              },
+              {
+                "hanzi": "摸黑儿",
+                "pinyin_nfc": "mōhēir"
+              }
+            ],
+            "evidence_locator": {
+              "rule_bbox": [
+                54.34,
+                681.44,
+                446.6,
+                698.84
+              ]
+            },
+            "alignment": {
+              "project_final": "ei",
+              "status": "exact_or_internal_name"
+            },
+            "ipa_analysis": {
+              "status": "working_hypothesis",
+              "unpitched_candidates": [
+                "ɚ"
+              ],
+              "rhotic_scope": "rhotic_central_transition",
+              "operation": "韵尾滑音脱落，归入卷舌中央尾"
+            }
+          }
+        ],
+        "erhua_review_status": "psc_aligned_ipa_pending_review",
+        "three_segment_review": {
+          "schema_version": 2,
+          "surface_segment_schema": "quality_features_v1",
+          "decision": "reviewed",
+          "base_segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "base_segments_final": "ei",
+          "base_segments_ganyin": "ei1",
+          "base_segments": {
+            "呼音": "e",
+            "主音": "e",
+            "末音": "ɪ"
+          },
+          "surface_segments": {
+            "呼音": {
+              "quality": "ə",
+              "features": {
+                "rhotic": true,
+                "nasalized": false
+              }
+            },
+            "主音": {
+              "quality": "ə",
+              "features": {
+                "rhotic": true,
+                "nasalized": false
+              }
+            },
+            "末音": {
+              "quality": "ə",
+              "features": {
+                "rhotic": true,
+                "nasalized": false
+              }
+            }
+          },
+          "surface_ipa": "ɚɚɚ",
+          "note": "",
+          "revision": 9,
+          "updated_utc": "2026-08-14T08:55:06.254211Z",
+          "runtime_enabled": false,
+          "surface_class": "ERHUA-ORAL-ER",
+          "surface_class_rule_version": 3,
+          "surface_generation": {
+            "method": "rule_generated",
+            "class_id": "ERHUA-ORAL-ER",
+            "rule_version": 3,
+            "quality_profile_version": 1,
+            "quality_profile_source": "external_data/tmp/erhua_surface_quality_profiles.json",
+            "runtime_enabled": false
+          }
+        },
+        "erhua_surface_class": {
+          "class_id": "ERHUA-ORAL-ER",
+          "rule_version": 3,
+          "basis": "PSC 均归并为 er；本子类三段均实现为卷舌央元音。",
+          "technical_alias_of": "",
+          "runtime_enabled": false
+        },
+        "base_foundation": {
+          "schema_version": 1,
+          "ipa_source": "external_data/finals_IPA_mapping.json",
+          "segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "final": "ei",
+          "ganyin": "ei1",
+          "ipa": "eɪ",
+          "segments": {
+            "呼音": "e",
+            "主音": "e",
+            "末音": "ɪ"
+          }
+        }
+      },
+      "ao": {
+        "ipa": "ɑʊ",
+        "erhua_final": [
+          {
+            "source_id": "PSC-2021-ERHUA",
+            "source_index": 32,
+            "source_page": 3,
+            "source_rule": "ao>aor",
+            "source_base_final": "ao",
+            "source_erhua_final": "aor",
+            "nasalized": false,
+            "examples": [
+              {
+                "hanzi": "半道儿",
+                "pinyin_nfc": "bàndàor"
+              },
+              {
+                "hanzi": "灯泡儿",
+                "pinyin_nfc": "dēngpàor"
+              },
+              {
+                "hanzi": "红包儿",
+                "pinyin_nfc": "hóngbāor"
+              }
+            ],
+            "evidence_locator": {
+              "rule_bbox": [
+                54.34,
+                124.56,
+                446.6,
+                141.96
+              ]
+            },
+            "alignment": {
+              "project_final": "ao",
+              "status": "exact_or_internal_name"
+            },
+            "ipa_analysis": {
+              "status": "working_hypothesis",
+              "unpitched_candidates": [
+                "ɑʊ˞",
+                "ɑ˞ʊ˞"
+              ],
+              "rhotic_scope": "terminal_segment",
+              "operation": "末段 ʊ 卷舌；整韵卷舌记法同时保留为待比较候选"
+            }
+          }
+        ],
+        "erhua_review_status": "psc_aligned_ipa_pending_review",
+        "three_segment_review": {
+          "schema_version": 2,
+          "surface_segment_schema": "quality_features_v1",
+          "decision": "reviewed",
+          "base_segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "base_segments_final": "ao",
+          "base_segments_ganyin": "ao1",
+          "base_segments": {
+            "呼音": "ɑ",
+            "主音": "ɑ",
+            "末音": "ʊ"
+          },
+          "surface_segments": {
+            "呼音": {
+              "quality": "ɑ",
+              "features": {
+                "rhotic": false,
+                "nasalized": false
+              }
+            },
+            "主音": {
+              "quality": "ɑ",
+              "features": {
+                "rhotic": true,
+                "nasalized": false
+              }
+            },
+            "末音": {
+              "quality": "ʊ",
+              "features": {
+                "rhotic": true,
+                "nasalized": false
+              }
+            }
+          },
+          "surface_ipa": "ɑɑ˞ʊ˞",
+          "note": "",
+          "revision": 6,
+          "updated_utc": "2026-08-16T09:45:04.289348Z",
+          "runtime_enabled": false,
+          "surface_generation": {
+            "method": "manual_override",
+            "overrides_class_id": "ERHUA-ORAL-AOR",
+            "reason": "UI 中显式修改规则生成结果",
+            "runtime_enabled": false
+          },
+          "surface_class": "ERHUA-ORAL-AOR",
+          "surface_class_rule_version": 3
+        },
+        "base_foundation": {
+          "schema_version": 1,
+          "ipa_source": "external_data/finals_IPA_mapping.json",
+          "segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "final": "ao",
+          "ganyin": "ao1",
+          "ipa": "ɑʊ",
+          "segments": {
+            "呼音": "ɑ",
+            "主音": "ɑ",
+            "末音": "ʊ"
+          }
+        },
+        "erhua_surface_class": {
+          "class_id": "ERHUA-ORAL-AOR",
+          "rule_version": 3,
+          "basis": "ao 保留基础三段，卷舌特征落在末音。",
+          "technical_alias_of": "",
+          "runtime_enabled": false,
+          "manual_override": true
+        }
+      },
+      "ou": {
+        "ipa": "ɤʊ",
+        "erhua_final": [
+          {
+            "source_id": "PSC-2021-ERHUA",
+            "source_index": 34,
+            "source_page": 3,
+            "source_rule": "ou>our",
+            "source_base_final": "ou",
+            "source_erhua_final": "our",
+            "nasalized": false,
+            "examples": [
+              {
+                "hanzi": "个头儿",
+                "pinyin_nfc": "gètóur"
+              },
+              {
+                "hanzi": "老头儿",
+                "pinyin_nfc": "lǎotóur"
+              },
+              {
+                "hanzi": "门口儿",
+                "pinyin_nfc": "ménkǒur"
+              }
+            ],
+            "evidence_locator": {
+              "rule_bbox": [
+                54.34,
+                246.36,
+                446.6,
+                263.79
+              ]
+            },
+            "alignment": {
+              "project_final": "ou",
+              "status": "exact_or_internal_name"
+            },
+            "ipa_analysis": {
+              "status": "working_hypothesis",
+              "unpitched_candidates": [
+                "oʊ˞",
+                "o˞ʊ˞"
+              ],
+              "rhotic_scope": "terminal_segment",
+              "operation": "末段 ʊ 卷舌；整韵卷舌记法同时保留为待比较候选"
+            }
+          }
+        ],
+        "erhua_review_status": "psc_aligned_ipa_pending_review",
+        "three_segment_review": {
+          "schema_version": 2,
+          "surface_segment_schema": "quality_features_v1",
+          "decision": "reviewed",
+          "base_segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "base_segments_final": "ou",
+          "base_segments_ganyin": "ou1",
+          "base_segments": {
+            "呼音": "ɤ",
+            "主音": "ɤ",
+            "末音": "ʊ"
+          },
+          "surface_segments": {
+            "呼音": {
+              "quality": "ɤ",
+              "features": {
+                "rhotic": false,
+                "nasalized": false
+              }
+            },
+            "主音": {
+              "quality": "ɤ",
+              "features": {
+                "rhotic": true,
+                "nasalized": false
+              }
+            },
+            "末音": {
+              "quality": "ʊ",
+              "features": {
+                "rhotic": true,
+                "nasalized": false
+              }
+            }
+          },
+          "surface_ipa": "ɤɤ˞ʊ˞",
+          "note": "",
+          "revision": 6,
+          "updated_utc": "2026-08-16T09:38:06.519464Z",
+          "runtime_enabled": false,
+          "surface_generation": {
+            "method": "manual_override",
+            "overrides_class_id": "ERHUA-ORAL-OUR",
+            "reason": "UI 中显式修改规则生成结果",
+            "runtime_enabled": false
+          },
+          "surface_class": "ERHUA-ORAL-OUR",
+          "surface_class_rule_version": 3
+        },
+        "base_foundation": {
+          "schema_version": 1,
+          "ipa_source": "external_data/finals_IPA_mapping.json",
+          "segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "final": "ou",
+          "ganyin": "ou1",
+          "ipa": "ɤʊ",
+          "segments": {
+            "呼音": "ɤ",
+            "主音": "ɤ",
+            "末音": "ʊ"
+          }
+        },
+        "erhua_surface_class": {
+          "class_id": "ERHUA-ORAL-OUR",
+          "rule_version": 3,
+          "basis": "ou 保留基础三段，卷舌特征落在末音。",
+          "technical_alias_of": "",
+          "runtime_enabled": false,
+          "manual_override": true
+        }
+      },
+      "an": {
+        "ipa": "an",
+        "erhua_final": [
+          {
+            "source_id": "PSC-2021-ERHUA",
+            "source_index": 3,
+            "source_page": 1,
+            "source_rule": "an>ar",
+            "source_base_final": "an",
+            "source_erhua_final": "ar",
+            "nasalized": false,
+            "examples": [
+              {
+                "hanzi": "包干儿",
+                "pinyin_nfc": "bāogānr"
+              },
+              {
+                "hanzi": "笔杆儿",
+                "pinyin_nfc": "bǐgǎnr"
+              },
+              {
+                "hanzi": "快板儿",
+                "pinyin_nfc": "kuàibǎnr"
+              }
+            ],
+            "evidence_locator": {
+              "rule_bbox": [
+                54.34,
+                194.16,
+                446.6,
+                211.56
+              ]
+            },
+            "alignment": {
+              "project_final": "an",
+              "status": "exact_or_internal_name"
+            },
+            "ipa_analysis": {
+              "status": "working_hypothesis",
+              "unpitched_candidates": [
+                "ɐɚ"
+              ],
+              "rhotic_scope": "rhotic_central_transition",
+              "operation": "舌尖鼻尾脱落并向卷舌中央尾过渡"
+            }
+          }
+        ],
+        "erhua_review_status": "psc_aligned_ipa_pending_review",
+        "three_segment_review": {
+          "schema_version": 2,
+          "surface_segment_schema": "quality_features_v1",
+          "decision": "reviewed",
+          "base_segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "base_segments_final": "an",
+          "base_segments_ganyin": "an1",
+          "base_segments": {
+            "呼音": "a",
+            "主音": "a",
+            "末音": "n"
+          },
+          "surface_segments": {
+            "呼音": {
+              "quality": "a",
+              "features": {
+                "rhotic": false,
+                "nasalized": false
+              }
+            },
+            "主音": {
+              "quality": "ɐ",
+              "features": {
+                "rhotic": true,
+                "nasalized": false
+              }
+            },
+            "末音": {
+              "quality": "ɐ",
+              "features": {
+                "rhotic": true,
+                "nasalized": false
+              }
+            }
+          },
+          "surface_ipa": "aɐ˞ɐ˞",
+          "note": "韵尾为i、n的韵母（除in、ün外）\n原儿化韵规则：韵尾脱落，韵腹卷舌。\n音元系统机制：主音音质卷舌且央化（ɐ），末音音质变成卷舌且央化的主音音质。",
+          "revision": 13,
+          "updated_utc": "2026-08-16T10:40:00.573028Z",
+          "runtime_enabled": false,
+          "surface_generation": {
+            "method": "manual_override",
+            "overrides_class_id": "ERHUA-ORAL-AR-AI-N",
+            "reason": "UI 中显式修改规则生成结果",
+            "runtime_enabled": false
+          },
+          "surface_class": "ERHUA-ORAL-AR-AI-N",
+          "surface_class_rule_version": 3
+        },
+        "erhua_surface_class": {
+          "class_id": "ERHUA-ORAL-AR-AI-N",
+          "rule_version": 3,
+          "basis": "ai/an 的基础主音为 a；韵尾替换后末段向 ɐ 央化，主音与末音携带 rhotic。",
+          "technical_alias_of": "",
+          "runtime_enabled": false,
+          "manual_override": true
+        },
+        "base_foundation": {
+          "schema_version": 1,
+          "ipa_source": "external_data/finals_IPA_mapping.json",
+          "segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "final": "an",
+          "ganyin": "an1",
+          "ipa": "an",
+          "segments": {
+            "呼音": "a",
+            "主音": "a",
+            "末音": "n"
+          }
+        }
+      },
+      "en": {
+        "ipa": "ən",
+        "erhua_final": [
+          {
+            "source_id": "PSC-2021-ERHUA",
+            "source_index": 14,
+            "source_page": 1,
+            "source_rule": "en>er",
+            "source_base_final": "en",
+            "source_erhua_final": "er",
+            "nasalized": false,
+            "examples": [
+              {
+                "hanzi": "把门儿",
+                "pinyin_nfc": "bǎménr"
+              },
+              {
+                "hanzi": "别针儿",
+                "pinyin_nfc": "biézhēnr"
+              },
+              {
+                "hanzi": "大婶儿",
+                "pinyin_nfc": "dàshěnr"
+              }
+            ],
+            "evidence_locator": {
+              "rule_bbox": [
+                54.34,
+                716.24,
+                446.6,
+                733.64
+              ]
+            },
+            "alignment": {
+              "project_final": "en",
+              "status": "exact_or_internal_name"
+            },
+            "ipa_analysis": {
+              "status": "working_hypothesis",
+              "unpitched_candidates": [
+                "ɚ"
+              ],
+              "rhotic_scope": "rhotic_central_transition",
+              "operation": "舌尖鼻尾脱落，归入卷舌中央尾"
+            }
+          }
+        ],
+        "erhua_review_status": "psc_aligned_ipa_pending_review",
+        "three_segment_review": {
+          "schema_version": 2,
+          "surface_segment_schema": "quality_features_v1",
+          "decision": "reviewed",
+          "base_segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "base_segments_final": "en",
+          "base_segments_ganyin": "en1",
+          "base_segments": {
+            "呼音": "ə",
+            "主音": "ə",
+            "末音": "n"
+          },
+          "surface_segments": {
+            "呼音": {
+              "quality": "ə",
+              "features": {
+                "rhotic": true,
+                "nasalized": false
+              }
+            },
+            "主音": {
+              "quality": "ə",
+              "features": {
+                "rhotic": true,
+                "nasalized": false
+              }
+            },
+            "末音": {
+              "quality": "ə",
+              "features": {
+                "rhotic": true,
+                "nasalized": false
+              }
+            }
+          },
+          "surface_ipa": "ɚɚɚ",
+          "note": "",
+          "revision": 10,
+          "updated_utc": "2026-08-14T08:55:06.254211Z",
+          "runtime_enabled": false,
+          "surface_class": "ERHUA-ORAL-ER",
+          "surface_class_rule_version": 3,
+          "surface_generation": {
+            "method": "rule_generated",
+            "class_id": "ERHUA-ORAL-ER",
+            "rule_version": 3,
+            "quality_profile_version": 1,
+            "quality_profile_source": "external_data/tmp/erhua_surface_quality_profiles.json",
+            "runtime_enabled": false
+          }
+        },
+        "erhua_surface_class": {
+          "class_id": "ERHUA-ORAL-ER",
+          "rule_version": 3,
+          "basis": "PSC 均归并为 er；本子类三段均实现为卷舌央元音。",
+          "technical_alias_of": "",
+          "runtime_enabled": false
+        },
+        "base_foundation": {
+          "schema_version": 1,
+          "ipa_source": "external_data/finals_IPA_mapping.json",
+          "segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "final": "en",
+          "ganyin": "en1",
+          "ipa": "ən",
+          "segments": {
+            "呼音": "ə",
+            "主音": "ə",
+            "末音": "n"
+          }
+        }
+      },
+      "ang": {
+        "ipa": "ɑŋ",
+        "erhua_final": [
+          {
+            "source_id": "PSC-2021-ERHUA",
+            "source_index": 4,
+            "source_page": 1,
+            "source_rule": "ang>ar(鼻化)",
+            "source_base_final": "ang",
+            "source_erhua_final": "ar",
+            "nasalized": true,
+            "examples": [
+              {
+                "hanzi": "赶趟儿",
+                "pinyin_nfc": "gǎntàngr"
+              },
+              {
+                "hanzi": "瓜瓤儿",
+                "pinyin_nfc": "guārángr"
+              },
+              {
+                "hanzi": "香肠儿",
+                "pinyin_nfc": "xiāngchángr"
+              }
+            ],
+            "evidence_locator": {
+              "rule_bbox": [
+                54.34,
+                263.79,
+                446.6,
+                281.19
+              ]
+            },
+            "alignment": {
+              "project_final": "ang",
+              "status": "exact_or_internal_name"
+            },
+            "ipa_analysis": {
+              "status": "working_hypothesis",
+              "unpitched_candidates": [
+                "ɑ̃˞",
+                "ɐ̃˞"
+              ],
+              "rhotic_scope": "nasalization_plus_rhoticity",
+              "operation": "软腭鼻尾不再独立占位，保留鼻化并卷舌"
+            }
+          }
+        ],
+        "erhua_review_status": "psc_aligned_ipa_pending_review",
+        "three_segment_review": {
+          "schema_version": 2,
+          "surface_segment_schema": "quality_features_v1",
+          "decision": "reviewed",
+          "base_segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "base_segments_final": "ang",
+          "base_segments_ganyin": "ang1",
+          "base_segments": {
+            "呼音": "ɑ",
+            "主音": "ɑ",
+            "末音": "ŋ"
+          },
+          "surface_segments": {
+            "呼音": {
+              "quality": "ɑ",
+              "features": {
+                "rhotic": false,
+                "nasalized": false
+              }
+            },
+            "主音": {
+              "quality": "ɑ",
+              "features": {
+                "rhotic": true,
+                "nasalized": true
+              }
+            },
+            "末音": {
+              "quality": "ɑ",
+              "features": {
+                "rhotic": true,
+                "nasalized": true
+              }
+            }
+          },
+          "surface_ipa": "ɑɑ̃˞ɑ̃˞",
+          "note": "",
+          "revision": 5,
+          "updated_utc": "2026-08-12T01:36:28.058204Z",
+          "runtime_enabled": false,
+          "surface_class": "ERHUA-NASAL-NG",
+          "surface_class_rule_version": 3,
+          "surface_generation": {
+            "method": "rule_generated",
+            "class_id": "ERHUA-NASAL-NG",
+            "rule_version": 3,
+            "quality_profile_version": 1,
+            "quality_profile_source": "external_data/tmp/erhua_surface_quality_profiles.json",
+            "runtime_enabled": false
+          }
+        },
+        "base_foundation": {
+          "schema_version": 1,
+          "ipa_source": "external_data/finals_IPA_mapping.json",
+          "segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "final": "ang",
+          "ganyin": "ang1",
+          "ipa": "ɑŋ",
+          "segments": {
+            "呼音": "ɑ",
+            "主音": "ɑ",
+            "末音": "ŋ"
+          }
+        },
+        "erhua_surface_class": {
+          "class_id": "ERHUA-NASAL-NG",
+          "rule_version": 3,
+          "basis": "软腭鼻尾 ŋ 不再独立占位；保留呼音，把基础主音同时加鼻化和卷舌特征，并以同一音质填充主音、末音两段。ong/ueng 与其余 -ng 韵母使用同一结构规则。",
+          "technical_alias_of": "",
+          "runtime_enabled": false
+        }
+      },
+      "eng": {
+        "ipa": "ɤŋ",
+        "erhua_final": [
+          {
+            "source_id": "PSC-2021-ERHUA",
+            "source_index": 15,
+            "source_page": 2,
+            "source_rule": "eng>er(鼻化)",
+            "source_base_final": "eng",
+            "source_erhua_final": "er",
+            "nasalized": true,
+            "examples": [
+              {
+                "hanzi": "脖颈儿",
+                "pinyin_nfc": "bógěngr"
+              },
+              {
+                "hanzi": "钢镚儿",
+                "pinyin_nfc": "gāngbèngr"
+              },
+              {
+                "hanzi": "夹缝儿",
+                "pinyin_nfc": "jiāfèngr"
+              }
+            ],
+            "evidence_locator": {
+              "rule_bbox": [
+                54.34,
+                124.56,
+                446.6,
+                141.96
+              ]
+            },
+            "alignment": {
+              "project_final": "eng",
+              "status": "exact_or_internal_name"
+            },
+            "ipa_analysis": {
+              "status": "working_hypothesis",
+              "unpitched_candidates": [
+                "ɤ̃˞"
+              ],
+              "rhotic_scope": "nasalization_plus_rhoticity",
+              "operation": "软腭鼻尾转为鼻化兼卷舌"
+            }
+          }
+        ],
+        "erhua_review_status": "psc_aligned_ipa_pending_review",
+        "three_segment_review": {
+          "schema_version": 2,
+          "surface_segment_schema": "quality_features_v1",
+          "decision": "reviewed",
+          "base_segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "base_segments_final": "eng",
+          "base_segments_ganyin": "eng1",
+          "base_segments": {
+            "呼音": "ɤ",
+            "主音": "ɤ",
+            "末音": "ŋ"
+          },
+          "surface_segments": {
+            "呼音": {
+              "quality": "ɤ",
+              "features": {
+                "rhotic": false,
+                "nasalized": false
+              }
+            },
+            "主音": {
+              "quality": "ɤ",
+              "features": {
+                "rhotic": true,
+                "nasalized": true
+              }
+            },
+            "末音": {
+              "quality": "ɤ",
+              "features": {
+                "rhotic": true,
+                "nasalized": true
+              }
+            }
+          },
+          "surface_ipa": "ɤɤ̃˞ɤ̃˞",
+          "note": "",
+          "revision": 4,
+          "updated_utc": "2026-08-12T01:37:09.625411Z",
+          "runtime_enabled": false,
+          "surface_class": "ERHUA-NASAL-NG",
+          "surface_class_rule_version": 3,
+          "surface_generation": {
+            "method": "rule_generated",
+            "class_id": "ERHUA-NASAL-NG",
+            "rule_version": 3,
+            "quality_profile_version": 1,
+            "quality_profile_source": "external_data/tmp/erhua_surface_quality_profiles.json",
+            "runtime_enabled": false
+          }
+        },
+        "base_foundation": {
+          "schema_version": 1,
+          "ipa_source": "external_data/finals_IPA_mapping.json",
+          "segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "final": "eng",
+          "ganyin": "eng1",
+          "ipa": "ɤŋ",
+          "segments": {
+            "呼音": "ɤ",
+            "主音": "ɤ",
+            "末音": "ŋ"
+          }
+        },
+        "erhua_surface_class": {
+          "class_id": "ERHUA-NASAL-NG",
+          "rule_version": 3,
+          "basis": "软腭鼻尾 ŋ 不再独立占位；保留呼音，把基础主音同时加鼻化和卷舌特征，并以同一音质填充主音、末音两段。ong/ueng 与其余 -ng 韵母使用同一结构规则。",
+          "technical_alias_of": "",
+          "runtime_enabled": false
+        }
+      }
+    },
+    "back long finals": {
+      "ia": {
+        "ipa": "iä",
+        "erhua_final": [
+          {
+            "source_id": "PSC-2021-ERHUA",
+            "source_index": 5,
+            "source_page": 1,
+            "source_rule": "ia>iar",
+            "source_base_final": "ia",
+            "source_erhua_final": "iar",
+            "nasalized": false,
+            "examples": [
+              {
+                "hanzi": "掉价儿",
+                "pinyin_nfc": "diàojiàr"
+              },
+              {
+                "hanzi": "豆芽儿",
+                "pinyin_nfc": "dòuyár"
+              },
+              {
+                "hanzi": "一下儿",
+                "pinyin_nfc": "yīxiàr"
+              }
+            ],
+            "evidence_locator": {
+              "rule_bbox": [
+                54.34,
+                298.59,
+                446.6,
+                315.99
+              ]
+            },
+            "alignment": {
+              "project_final": "ia",
+              "status": "exact_or_internal_name"
+            },
+            "ipa_analysis": {
+              "status": "working_hypothesis",
+              "unpitched_candidates": [
+                "ja˞",
+                "jɐɚ"
+              ],
+              "rhotic_scope": "rime_nucleus_or_transition",
+              "operation": "介音保留，韵核卷舌；是否与 ian 类合流待审"
+            }
+          }
+        ],
+        "erhua_review_status": "psc_aligned_ipa_pending_review",
+        "three_segment_review": {
+          "schema_version": 2,
+          "surface_segment_schema": "quality_features_v1",
+          "decision": "reviewed",
+          "base_segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "base_segments_final": "ia",
+          "base_segments_ganyin": "ia1",
+          "base_segments": {
+            "呼音": "i",
+            "主音": "ä",
+            "末音": "ä"
+          },
+          "surface_segments": {
+            "呼音": {
+              "quality": "i",
+              "features": {
+                "rhotic": false,
+                "nasalized": false
+              }
+            },
+            "主音": {
+              "quality": "ä",
+              "features": {
+                "rhotic": true,
+                "nasalized": false
+              }
+            },
+            "末音": {
+              "quality": "ɐ",
+              "features": {
+                "rhotic": true,
+                "nasalized": false
+              }
+            }
+          },
+          "surface_ipa": "iä˞ɐ˞",
+          "note": "韵母末尾(实际是韵腹或韵核或更严格地说是韵腹或韵核后段)是a[ä]的韵母\n发音规则：直接在韵母末尾加上卷舌动作，韵母基本不变。\n发音要点：发a时舌尖稍微向上翘卷，抵达卷舌音位置即可。ä 的舌位略微升高一点，和  ɐ 差不多。\n切分结果：ää̈ɐ˞ ('˞'表示卷舌特征。IPA没有表示卷舌特征的组合上标 Combining Diacritical Mark，因此，用 Spacing Modifier Letter 来表示卷舌特征)。",
+          "revision": 11,
+          "updated_utc": "2026-08-14T10:47:40.280366Z",
+          "runtime_enabled": false,
+          "surface_class": "ERHUA-ORAL-IAR",
+          "surface_class_rule_version": 3,
+          "surface_generation": {
+            "method": "rule_generated",
+            "class_id": "ERHUA-ORAL-IAR",
+            "rule_version": 3,
+            "quality_profile_version": 1,
+            "quality_profile_source": "external_data/tmp/erhua_surface_quality_profiles.json",
+            "runtime_enabled": false
+          }
+        },
+        "erhua_surface_class": {
+          "class_id": "ERHUA-ORAL-IAR",
+          "rule_version": 3,
+          "basis": "PSC 的 ia 归并为 iar；ian 虽同写 iar，但基础韵核及人工表层标注不同，不再由本模板覆盖。",
+          "technical_alias_of": "",
+          "runtime_enabled": false
+        },
+        "base_foundation": {
+          "schema_version": 1,
+          "ipa_source": "external_data/finals_IPA_mapping.json",
+          "segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "final": "ia",
+          "ganyin": "ia1",
+          "ipa": "iä",
+          "segments": {
+            "呼音": "i",
+            "主音": "ä",
+            "末音": "ä"
+          }
+        }
+      },
+      "ua": {
+        "ipa": "uä",
+        "erhua_final": [
+          {
+            "source_id": "PSC-2021-ERHUA",
+            "source_index": 8,
+            "source_page": 1,
+            "source_rule": "ua>uar",
+            "source_base_final": "ua",
+            "source_erhua_final": "uar",
+            "nasalized": false,
+            "examples": [
+              {
+                "hanzi": "大褂儿",
+                "pinyin_nfc": "dàguàr"
+              },
+              {
+                "hanzi": "麻花儿",
+                "pinyin_nfc": "máhuār"
+              },
+              {
+                "hanzi": "马褂儿",
+                "pinyin_nfc": "mǎguàr"
+              }
+            ],
+            "evidence_locator": {
+              "rule_bbox": [
+                54.34,
+                455.21,
+                446.6,
+                472.61
+              ]
+            },
+            "alignment": {
+              "project_final": "ua",
+              "status": "exact_or_internal_name"
+            },
+            "ipa_analysis": {
+              "status": "working_hypothesis",
+              "unpitched_candidates": [
+                "wa˞",
+                "wɐɚ"
+              ],
+              "rhotic_scope": "rime_nucleus_or_transition",
+              "operation": "介音保留，韵核卷舌；是否与 uan 类合流待审"
+            }
+          }
+        ],
+        "erhua_review_status": "psc_aligned_ipa_pending_review",
+        "three_segment_review": {
+          "schema_version": 2,
+          "surface_segment_schema": "quality_features_v1",
+          "decision": "reviewed",
+          "base_segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "base_segments_final": "ua",
+          "base_segments_ganyin": "ua1",
+          "base_segments": {
+            "呼音": "u",
+            "主音": "ä",
+            "末音": "ä"
+          },
+          "surface_segments": {
+            "呼音": {
+              "quality": "u",
+              "features": {
+                "rhotic": false,
+                "nasalized": false
+              }
+            },
+            "主音": {
+              "quality": "ä",
+              "features": {
+                "rhotic": true,
+                "nasalized": false
+              }
+            },
+            "末音": {
+              "quality": "ɐ",
+              "features": {
+                "rhotic": true,
+                "nasalized": false
+              }
+            }
+          },
+          "surface_ipa": "uä˞ɐ˞",
+          "note": "韵母末尾(实际是韵腹或韵核或更严格地说是韵腹或韵核后段)是a[ä]的韵母\n发音规则：直接在韵母末尾加上卷舌动作，韵母基本不变。\n发音要点：发a时舌尖稍微向上翘卷，抵达卷舌音位置即可。ä 的舌位略微升高一点，和  ɐ 差不多。\n切分结果：ää̈ɐ˞ ('˞'表示卷舌特征。IPA没有表示卷舌特征的组合上标 Combining Diacritical Mark，因此，用 Spacing Modifier Letter 来表示卷舌特征)。",
+          "revision": 9,
+          "updated_utc": "2026-08-14T10:47:47.783663Z",
+          "runtime_enabled": false,
+          "surface_class": "ERHUA-ORAL-UAR-A",
+          "surface_class_rule_version": 3,
+          "surface_generation": {
+            "method": "rule_generated",
+            "class_id": "ERHUA-ORAL-UAR-A",
+            "rule_version": 3,
+            "quality_profile_version": 1,
+            "quality_profile_source": "external_data/tmp/erhua_surface_quality_profiles.json",
+            "runtime_enabled": false
+          }
+        },
+        "erhua_surface_class": {
+          "class_id": "ERHUA-ORAL-UAR-A",
+          "rule_version": 3,
+          "basis": "ua 保留介音 u 与基础 ä，主音开始卷舌，末段向 ɐ 央化。",
+          "technical_alias_of": "",
+          "runtime_enabled": false
+        },
+        "base_foundation": {
+          "schema_version": 1,
+          "ipa_source": "external_data/finals_IPA_mapping.json",
+          "segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "final": "ua",
+          "ganyin": "ua1",
+          "ipa": "uä",
+          "segments": {
+            "呼音": "u",
+            "主音": "ä",
+            "末音": "ä"
+          }
+        }
+      },
+      "io": {
+        "ipa": "io",
+        "erhua_final": [],
+        "erhua_review_status": "no_psc_source_pending_review",
+        "erhua_note": "韵母 io 由现行韵母主表同步加入；尚无已对齐的 PSC 儿化类别，等待人工决定是否适用。",
+        "base_foundation": {
+          "schema_version": 1,
+          "ipa_source": "external_data/finals_IPA_mapping.json",
+          "segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "final": "io",
+          "ganyin": "io1",
+          "ipa": "io",
+          "segments": {
+            "呼音": "i",
+            "主音": "o",
+            "末音": "o"
+          }
+        },
+        "three_segment_review": {
+          "schema_version": 2,
+          "surface_segment_schema": "quality_features_v1",
+          "decision": "not_applicable",
+          "base_segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "base_segments_final": "io",
+          "base_segments_ganyin": "io1",
+          "base_segments": {
+            "呼音": "i",
+            "主音": "o",
+            "末音": "o"
+          },
+          "surface_segments": {
+            "呼音": {
+              "quality": "",
+              "features": {
+                "rhotic": false,
+                "nasalized": false
+              }
+            },
+            "主音": {
+              "quality": "",
+              "features": {
+                "rhotic": false,
+                "nasalized": false
+              }
+            },
+            "末音": {
+              "quality": "",
+              "features": {
+                "rhotic": false,
+                "nasalized": false
+              }
+            }
+          },
+          "surface_ipa": "",
+          "note": "PSC 儿化韵表未给出韵母 io + er 的儿化情况。",
+          "revision": 5,
+          "updated_utc": "2026-08-14T12:48:32.410529Z",
+          "runtime_enabled": false
+        }
+      },
+      "uo": {
+        "ipa": "uo",
+        "erhua_final": [
+          {
+            "source_id": "PSC-2021-ERHUA",
+            "source_index": 36,
+            "source_page": 3,
+            "source_rule": "uo>uor",
+            "source_base_final": "uo",
+            "source_erhua_final": "uor",
+            "nasalized": false,
+            "examples": [
+              {
+                "hanzi": "被窝儿",
+                "pinyin_nfc": "bèiwōr"
+              },
+              {
+                "hanzi": "出活儿",
+                "pinyin_nfc": "chūhuór"
+              },
+              {
+                "hanzi": "大伙儿",
+                "pinyin_nfc": "dàhuǒr"
+              }
+            ],
+            "evidence_locator": {
+              "rule_bbox": [
+                54.34,
+                350.79,
+                446.6,
+                368.19
+              ]
+            },
+            "alignment": {
+              "project_final": "uo",
+              "status": "exact_or_internal_name"
+            },
+            "ipa_analysis": {
+              "status": "working_hypothesis",
+              "unpitched_candidates": [
+                "wo˞"
+              ],
+              "rhotic_scope": "rime_nucleus_or_transition",
+              "operation": "介音保留，韵核卷舌"
+            }
+          }
+        ],
+        "erhua_review_status": "psc_aligned_ipa_pending_review",
+        "three_segment_review": {
+          "schema_version": 2,
+          "surface_segment_schema": "quality_features_v1",
+          "decision": "reviewed",
+          "base_segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "base_segments_final": "uo",
+          "base_segments_ganyin": "uo1",
+          "base_segments": {
+            "呼音": "u",
+            "主音": "o",
+            "末音": "o"
+          },
+          "surface_segments": {
+            "呼音": {
+              "quality": "u",
+              "features": {
+                "rhotic": false,
+                "nasalized": false
+              }
+            },
+            "主音": {
+              "quality": "o",
+              "features": {
+                "rhotic": true,
+                "nasalized": false
+              }
+            },
+            "末音": {
+              "quality": "o",
+              "features": {
+                "rhotic": true,
+                "nasalized": false
+              }
+            }
+          },
+          "surface_ipa": "uo˞o˞",
+          "note": "",
+          "revision": 5,
+          "updated_utc": "2026-08-12T09:40:28.362710Z",
+          "runtime_enabled": false,
+          "surface_class": "ERHUA-ORAL-UOR",
+          "surface_class_rule_version": 3,
+          "surface_generation": {
+            "method": "rule_generated",
+            "class_id": "ERHUA-ORAL-UOR",
+            "rule_version": 3,
+            "quality_profile_version": 1,
+            "quality_profile_source": "external_data/tmp/erhua_surface_quality_profiles.json",
+            "runtime_enabled": false
+          }
+        },
+        "base_foundation": {
+          "schema_version": 1,
+          "ipa_source": "external_data/finals_IPA_mapping.json",
+          "segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "final": "uo",
+          "ganyin": "uo1",
+          "ipa": "uo",
+          "segments": {
+            "呼音": "u",
+            "主音": "o",
+            "末音": "o"
+          }
+        },
+        "erhua_surface_class": {
+          "class_id": "ERHUA-ORAL-UOR",
+          "rule_version": 3,
+          "basis": "uo 保留呼音，卷舌特征从主音延续到末音。",
+          "technical_alias_of": "",
+          "runtime_enabled": false
+        }
+      },
+      "ie": {
+        "ipa": "ie̞",
+        "erhua_final": [
+          {
+            "source_id": "PSC-2021-ERHUA",
+            "source_index": 16,
+            "source_page": 2,
+            "source_rule": "ie>ier",
+            "source_base_final": "ie",
+            "source_erhua_final": "ier",
+            "nasalized": false,
+            "examples": [
+              {
+                "hanzi": "半截儿",
+                "pinyin_nfc": "bànjiér"
+              },
+              {
+                "hanzi": "小鞋儿",
+                "pinyin_nfc": "xiǎoxiér"
+              }
+            ],
+            "evidence_locator": {
+              "rule_bbox": [
+                54.34,
+                159.36,
+                446.6,
+                176.76
+              ]
+            },
+            "alignment": {
+              "project_final": "ie",
+              "status": "exact_or_internal_name"
+            },
+            "ipa_analysis": {
+              "status": "working_hypothesis",
+              "unpitched_candidates": [
+                "jɛ˞",
+                "jɚ"
+              ],
+              "rhotic_scope": "rime_nucleus_or_transition",
+              "operation": "介音保留，韵核卷舌并可向中央卷舌音过渡"
+            }
+          }
+        ],
+        "erhua_review_status": "psc_aligned_ipa_pending_review",
+        "three_segment_review": {
+          "schema_version": 2,
+          "surface_segment_schema": "quality_features_v1",
+          "decision": "reviewed",
+          "base_segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "base_segments_final": "ie",
+          "base_segments_ganyin": "ie1",
+          "base_segments": {
+            "呼音": "i",
+            "主音": "e̞",
+            "末音": "e̞"
+          },
+          "surface_segments": {
+            "呼音": {
+              "quality": "i",
+              "features": {
+                "rhotic": false,
+                "nasalized": false
+              }
+            },
+            "主音": {
+              "quality": "e̞",
+              "features": {
+                "rhotic": true,
+                "nasalized": false
+              }
+            },
+            "末音": {
+              "quality": "ə",
+              "features": {
+                "rhotic": true,
+                "nasalized": false
+              }
+            }
+          },
+          "surface_ipa": "ie̞˞ɚ",
+          "note": "",
+          "revision": 5,
+          "updated_utc": "2026-08-14T14:04:45.071169Z",
+          "runtime_enabled": false,
+          "surface_class": "ERHUA-ORAL-IER",
+          "surface_class_rule_version": 3,
+          "surface_generation": {
+            "method": "rule_generated",
+            "class_id": "ERHUA-ORAL-IER",
+            "rule_version": 3,
+            "quality_profile_version": 1,
+            "quality_profile_source": "external_data/tmp/erhua_surface_quality_profiles.json",
+            "runtime_enabled": false
+          }
+        },
+        "base_foundation": {
+          "schema_version": 1,
+          "ipa_source": "external_data/finals_IPA_mapping.json",
+          "segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "final": "ie",
+          "ganyin": "ie1",
+          "ipa": "ie̞",
+          "segments": {
+            "呼音": "i",
+            "主音": "e̞",
+            "末音": "e̞"
+          }
+        },
+        "erhua_surface_class": {
+          "class_id": "ERHUA-ORAL-IER",
+          "rule_version": 3,
+          "basis": "ie 的儿化后三段音质由附属音质表给出，卷舌特征从主音延续到末音。",
+          "technical_alias_of": "",
+          "runtime_enabled": false
+        }
+      },
+      "üe": {
+        "ipa": "ʏe̞",
+        "erhua_final": [
+          {
+            "source_id": "PSC-2021-ERHUA",
+            "source_index": 17,
+            "source_page": 2,
+            "source_rule": "üe>üer",
+            "source_base_final": "üe",
+            "source_erhua_final": "üer",
+            "nasalized": false,
+            "examples": [
+              {
+                "hanzi": "旦角儿",
+                "pinyin_nfc": "dànjuér"
+              },
+              {
+                "hanzi": "主角儿",
+                "pinyin_nfc": "zhǔjuér"
+              }
+            ],
+            "evidence_locator": {
+              "rule_bbox": [
+                54.34,
+                194.16,
+                446.6,
+                211.56
+              ]
+            },
+            "alignment": {
+              "project_final": "üe",
+              "status": "exact_umlaut_form"
+            },
+            "ipa_analysis": {
+              "status": "working_hypothesis",
+              "unpitched_candidates": [
+                "ɥɛ˞",
+                "ɥɚ"
+              ],
+              "rhotic_scope": "rime_nucleus_or_transition",
+              "operation": "撮口介音保留，韵核卷舌并可向中央卷舌音过渡"
+            }
+          }
+        ],
+        "erhua_review_status": "psc_aligned_ipa_pending_review",
+        "three_segment_review": {
+          "schema_version": 2,
+          "surface_segment_schema": "quality_features_v1",
+          "decision": "reviewed",
+          "base_segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "base_segments_final": "üe",
+          "base_segments_ganyin": "üe1",
+          "base_segments": {
+            "呼音": "ʏ",
+            "主音": "e̞",
+            "末音": "e̞"
+          },
+          "surface_segments": {
+            "呼音": {
+              "quality": "ʏ",
+              "features": {
+                "rhotic": false,
+                "nasalized": false
+              }
+            },
+            "主音": {
+              "quality": "e̞",
+              "features": {
+                "rhotic": true,
+                "nasalized": false
+              }
+            },
+            "末音": {
+              "quality": "ə",
+              "features": {
+                "rhotic": true,
+                "nasalized": false
+              }
+            }
+          },
+          "surface_ipa": "ʏe̞˞ɚ",
+          "note": "",
+          "revision": 4,
+          "updated_utc": "2026-08-14T14:04:54.423800Z",
+          "runtime_enabled": false,
+          "surface_class": "ERHUA-ORAL-UMLAUT-ER",
+          "surface_class_rule_version": 3,
+          "surface_generation": {
+            "method": "rule_generated",
+            "class_id": "ERHUA-ORAL-UMLAUT-ER",
+            "rule_version": 3,
+            "quality_profile_version": 1,
+            "quality_profile_source": "external_data/tmp/erhua_surface_quality_profiles.json",
+            "runtime_enabled": false
+          }
+        },
+        "base_foundation": {
+          "schema_version": 1,
+          "ipa_source": "external_data/finals_IPA_mapping.json",
+          "segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "final": "üe",
+          "ganyin": "üe1",
+          "ipa": "ʏe̞",
+          "segments": {
+            "呼音": "ʏ",
+            "主音": "e̞",
+            "末音": "e̞"
+          }
+        },
+        "erhua_surface_class": {
+          "class_id": "ERHUA-ORAL-UMLAUT-ER",
+          "rule_version": 3,
+          "basis": "üe 的儿化后三段音质由附属音质表给出，卷舌特征从主音延续到末音。",
+          "technical_alias_of": "",
+          "runtime_enabled": false
+        }
+      }
+    },
+    "triple quality finals": {
+      "uai": {
+        "ipa": "uaɪ",
+        "erhua_final": [
+          {
+            "source_id": "PSC-2021-ERHUA",
+            "source_index": 9,
+            "source_page": 1,
+            "source_rule": "uai>uar",
+            "source_base_final": "uai",
+            "source_erhua_final": "uar",
+            "nasalized": false,
+            "examples": [
+              {
+                "hanzi": "一块儿",
+                "pinyin_nfc": "yīkuàir"
+              }
+            ],
+            "evidence_locator": {
+              "rule_bbox": [
+                54.34,
+                507.41,
+                446.6,
+                524.81
+              ]
+            },
+            "alignment": {
+              "project_final": "uai",
+              "status": "exact_or_internal_name"
+            },
+            "ipa_analysis": {
+              "status": "working_hypothesis",
+              "unpitched_candidates": [
+                "wɐɚ"
+              ],
+              "rhotic_scope": "rhotic_central_transition",
+              "operation": "介音保留，韵尾滑音脱落并卷舌"
+            }
+          }
+        ],
+        "erhua_review_status": "psc_aligned_ipa_pending_review",
+        "three_segment_review": {
+          "schema_version": 2,
+          "surface_segment_schema": "quality_features_v1",
+          "decision": "reviewed",
+          "base_segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "base_segments_final": "uai",
+          "base_segments_ganyin": "uai1",
+          "base_segments": {
+            "呼音": "u",
+            "主音": "a",
+            "末音": "ɪ"
+          },
+          "surface_segments": {
+            "呼音": {
+              "quality": "u",
+              "features": {
+                "rhotic": false,
+                "nasalized": false
+              }
+            },
+            "主音": {
+              "quality": "ɐ",
+              "features": {
+                "rhotic": true,
+                "nasalized": false
+              }
+            },
+            "末音": {
+              "quality": "ɐ",
+              "features": {
+                "rhotic": true,
+                "nasalized": false
+              }
+            }
+          },
+          "surface_ipa": "uɐ˞ɐ˞",
+          "note": "",
+          "revision": 11,
+          "updated_utc": "2026-08-16T10:45:04.015203Z",
+          "runtime_enabled": false,
+          "surface_generation": {
+            "method": "manual_override",
+            "overrides_class_id": "ERHUA-ORAL-UAR-AI-N",
+            "reason": "UI 中显式修改规则生成结果",
+            "runtime_enabled": false
+          },
+          "surface_class": "ERHUA-ORAL-UAR-AI-N",
+          "surface_class_rule_version": 3
+        },
+        "erhua_surface_class": {
+          "class_id": "ERHUA-ORAL-UAR-AI-N",
+          "rule_version": 3,
+          "basis": "uai/uan 保留介音 u 与基础主音 a；韵尾替换后末段向 ɐ 央化。",
+          "technical_alias_of": "",
+          "runtime_enabled": false,
+          "manual_override": true
+        },
+        "base_foundation": {
+          "schema_version": 1,
+          "ipa_source": "external_data/finals_IPA_mapping.json",
+          "segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "final": "uai",
+          "ganyin": "uai1",
+          "ipa": "uaɪ",
+          "segments": {
+            "呼音": "u",
+            "主音": "a",
+            "末音": "ɪ"
+          }
+        }
+      },
+      "uei": {
+        "ipa": "ueɪ",
+        "erhua_final": [
+          {
+            "source_id": "PSC-2021-ERHUA",
+            "source_index": 18,
+            "source_page": 2,
+            "source_rule": "uei>uer",
+            "source_base_final": "uei",
+            "source_erhua_final": "uer",
+            "nasalized": false,
+            "examples": [
+              {
+                "hanzi": "耳垂儿",
+                "pinyin_nfc": "ěrchuír"
+              },
+              {
+                "hanzi": "墨水儿",
+                "pinyin_nfc": "mòshuǐr"
+              },
+              {
+                "hanzi": "跑腿儿",
+                "pinyin_nfc": "pǎotuǐr"
+              }
+            ],
+            "evidence_locator": {
+              "rule_bbox": [
+                54.34,
+                228.96,
+                446.6,
+                246.36
+              ]
+            },
+            "alignment": {
+              "project_final": "uei",
+              "status": "registered_uei_family"
+            },
+            "ipa_analysis": {
+              "status": "working_hypothesis",
+              "unpitched_candidates": [
+                "wɚ"
+              ],
+              "rhotic_scope": "rhotic_central_transition",
+              "operation": "介音保留，韵尾滑音脱落并转为卷舌中央尾"
+            }
+          }
+        ],
+        "erhua_review_status": "psc_aligned_ipa_pending_review",
+        "three_segment_review": {
+          "schema_version": 2,
+          "surface_segment_schema": "quality_features_v1",
+          "decision": "reviewed",
+          "base_segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "base_segments_final": "uei",
+          "base_segments_ganyin": "uei1",
+          "base_segments": {
+            "呼音": "u",
+            "主音": "e",
+            "末音": "ɪ"
+          },
+          "surface_segments": {
+            "呼音": {
+              "quality": "u",
+              "features": {
+                "rhotic": false,
+                "nasalized": false
+              }
+            },
+            "主音": {
+              "quality": "ə",
+              "features": {
+                "rhotic": true,
+                "nasalized": false
+              }
+            },
+            "末音": {
+              "quality": "ə",
+              "features": {
+                "rhotic": true,
+                "nasalized": false
+              }
+            }
+          },
+          "surface_ipa": "uɚɚ",
+          "note": "",
+          "revision": 4,
+          "updated_utc": "2026-08-12T02:01:25.390104Z",
+          "runtime_enabled": false,
+          "surface_class": "ERHUA-ORAL-UER",
+          "surface_class_rule_version": 3,
+          "surface_generation": {
+            "method": "rule_generated",
+            "class_id": "ERHUA-ORAL-UER",
+            "rule_version": 3,
+            "quality_profile_version": 1,
+            "quality_profile_source": "external_data/tmp/erhua_surface_quality_profiles.json",
+            "runtime_enabled": false
+          }
+        },
+        "erhua_surface_class": {
+          "class_id": "ERHUA-ORAL-UER",
+          "rule_version": 3,
+          "basis": "PSC 均归并为 uer；u 保留在前段，卷舌央元音占主音和末音。",
+          "technical_alias_of": "",
+          "runtime_enabled": false
+        },
+        "base_foundation": {
+          "schema_version": 1,
+          "ipa_source": "external_data/finals_IPA_mapping.json",
+          "segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "final": "uei",
+          "ganyin": "uei1",
+          "ipa": "ueɪ",
+          "segments": {
+            "呼音": "u",
+            "主音": "e",
+            "末音": "ɪ"
+          }
+        }
+      },
+      "iao": {
+        "ipa": "iɑʊ",
+        "erhua_final": [
+          {
+            "source_id": "PSC-2021-ERHUA",
+            "source_index": 33,
+            "source_page": 3,
+            "source_rule": "iao>iaor",
+            "source_base_final": "iao",
+            "source_erhua_final": "iaor",
+            "nasalized": false,
+            "examples": [
+              {
+                "hanzi": "豆角儿",
+                "pinyin_nfc": "dòujiǎor"
+              },
+              {
+                "hanzi": "火苗儿",
+                "pinyin_nfc": "huǒmiáor"
+              },
+              {
+                "hanzi": "开窍儿",
+                "pinyin_nfc": "kāiqiàor"
+              }
+            ],
+            "evidence_locator": {
+              "rule_bbox": [
+                54.34,
+                194.16,
+                446.6,
+                211.56
+              ]
+            },
+            "alignment": {
+              "project_final": "iao",
+              "status": "exact_or_internal_name"
+            },
+            "ipa_analysis": {
+              "status": "working_hypothesis",
+              "unpitched_candidates": [
+                "jɑʊ˞",
+                "jɑ˞ʊ˞"
+              ],
+              "rhotic_scope": "terminal_segment",
+              "operation": "介音保留，末段 ʊ 卷舌；整韵卷舌记法待比较"
+            }
+          }
+        ],
+        "erhua_review_status": "psc_aligned_ipa_pending_review",
+        "three_segment_review": {
+          "schema_version": 2,
+          "surface_segment_schema": "quality_features_v1",
+          "decision": "reviewed",
+          "base_segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "base_segments_final": "iao",
+          "base_segments_ganyin": "iao1",
+          "base_segments": {
+            "呼音": "i",
+            "主音": "ɑ",
+            "末音": "ʊ"
+          },
+          "surface_segments": {
+            "呼音": {
+              "quality": "i",
+              "features": {
+                "rhotic": false,
+                "nasalized": false
+              }
+            },
+            "主音": {
+              "quality": "ɑ",
+              "features": {
+                "rhotic": true,
+                "nasalized": false
+              }
+            },
+            "末音": {
+              "quality": "ʊ",
+              "features": {
+                "rhotic": true,
+                "nasalized": false
+              }
+            }
+          },
+          "surface_ipa": "iɑ˞ʊ˞",
+          "note": "儿化机制：对有韵头的韵母（包括 in、ing 和 ün），韵头不受影响、主音至末音卷舌。",
+          "revision": 8,
+          "updated_utc": "2026-08-16T09:44:54.613287Z",
+          "runtime_enabled": false,
+          "surface_generation": {
+            "method": "manual_override",
+            "overrides_class_id": "ERHUA-ORAL-IAOR",
+            "reason": "UI 中显式修改规则生成结果",
+            "runtime_enabled": false
+          },
+          "surface_class": "ERHUA-ORAL-IAOR",
+          "surface_class_rule_version": 3
+        },
+        "erhua_surface_class": {
+          "class_id": "ERHUA-ORAL-IAOR",
+          "rule_version": 3,
+          "basis": "iao 保留呼音和主音，卷舌特征落在末音 ʊ；不把末段特征前扩为主音卷舌。",
+          "technical_alias_of": "",
+          "runtime_enabled": false,
+          "manual_override": true
+        },
+        "base_foundation": {
+          "schema_version": 1,
+          "ipa_source": "external_data/finals_IPA_mapping.json",
+          "segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "final": "iao",
+          "ganyin": "iao1",
+          "ipa": "iɑʊ",
+          "segments": {
+            "呼音": "i",
+            "主音": "ɑ",
+            "末音": "ʊ"
+          }
+        }
+      },
+      "iou": {
+        "ipa": "iɤʊ",
+        "erhua_final": [
+          {
+            "source_id": "PSC-2021-ERHUA",
+            "source_index": 35,
+            "source_page": 3,
+            "source_rule": "iou>iour",
+            "source_base_final": "iou",
+            "source_erhua_final": "iour",
+            "nasalized": false,
+            "examples": [
+              {
+                "hanzi": "顶牛儿",
+                "pinyin_nfc": "dǐngniúr"
+              },
+              {
+                "hanzi": "加油儿",
+                "pinyin_nfc": "jiāyóur"
+              },
+              {
+                "hanzi": "棉球儿",
+                "pinyin_nfc": "miánqiúr"
+              }
+            ],
+            "evidence_locator": {
+              "rule_bbox": [
+                54.34,
+                315.99,
+                446.6,
+                333.39
+              ]
+            },
+            "alignment": {
+              "project_final": "iou",
+              "status": "registered_iou_family"
+            },
+            "ipa_analysis": {
+              "status": "working_hypothesis",
+              "unpitched_candidates": [
+                "joʊ˞",
+                "jo˞ʊ˞"
+              ],
+              "rhotic_scope": "terminal_segment",
+              "operation": "介音保留，末段 ʊ 卷舌；整韵卷舌记法待比较"
+            }
+          }
+        ],
+        "erhua_review_status": "psc_aligned_ipa_pending_review",
+        "three_segment_review": {
+          "schema_version": 2,
+          "surface_segment_schema": "quality_features_v1",
+          "decision": "reviewed",
+          "base_segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "base_segments_final": "iou",
+          "base_segments_ganyin": "iou1",
+          "base_segments": {
+            "呼音": "i",
+            "主音": "ɤ",
+            "末音": "ʊ"
+          },
+          "surface_segments": {
+            "呼音": {
+              "quality": "i",
+              "features": {
+                "rhotic": false,
+                "nasalized": false
+              }
+            },
+            "主音": {
+              "quality": "ɤ",
+              "features": {
+                "rhotic": true,
+                "nasalized": false
+              }
+            },
+            "末音": {
+              "quality": "ʊ",
+              "features": {
+                "rhotic": true,
+                "nasalized": false
+              }
+            }
+          },
+          "surface_ipa": "iɤ˞ʊ˞",
+          "note": "儿化机制：对有韵头的韵母（包括 in、ing 和 ün），韵头不受影响、主音至末音卷舌。",
+          "revision": 11,
+          "updated_utc": "2026-08-16T09:44:41.102674Z",
+          "runtime_enabled": false,
+          "surface_generation": {
+            "method": "manual_override",
+            "overrides_class_id": "ERHUA-ORAL-IOUR",
+            "reason": "UI 中显式修改规则生成结果",
+            "runtime_enabled": false
+          },
+          "surface_class": "ERHUA-ORAL-IOUR",
+          "surface_class_rule_version": 3
+        },
+        "erhua_surface_class": {
+          "class_id": "ERHUA-ORAL-IOUR",
+          "rule_version": 3,
+          "basis": "iou 保留呼音和主音，卷舌特征落在末音 ʊ；不把末段特征前扩为主音卷舌。",
+          "technical_alias_of": "",
+          "runtime_enabled": false,
+          "manual_override": true
+        },
+        "base_foundation": {
+          "schema_version": 1,
+          "ipa_source": "external_data/finals_IPA_mapping.json",
+          "segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "final": "iou",
+          "ganyin": "iou1",
+          "ipa": "iɤʊ",
+          "segments": {
+            "呼音": "i",
+            "主音": "ɤ",
+            "末音": "ʊ"
+          }
+        }
+      },
+      "ian": {
+        "ipa": "iɛ̞n",
+        "erhua_final": [
+          {
+            "source_id": "PSC-2021-ERHUA",
+            "source_index": 6,
+            "source_page": 1,
+            "source_rule": "ian>iar",
+            "source_base_final": "ian",
+            "source_erhua_final": "iar",
+            "nasalized": false,
+            "examples": [
+              {
+                "hanzi": "半点儿",
+                "pinyin_nfc": "bàndiǎnr"
+              },
+              {
+                "hanzi": "差点儿",
+                "pinyin_nfc": "chàdiǎnr"
+              },
+              {
+                "hanzi": "坎肩儿",
+                "pinyin_nfc": "kǎnjiānr"
+              }
+            ],
+            "evidence_locator": {
+              "rule_bbox": [
+                54.34,
+                333.39,
+                446.6,
+                350.79
+              ]
+            },
+            "alignment": {
+              "project_final": "ian",
+              "status": "exact_or_internal_name"
+            },
+            "ipa_analysis": {
+              "status": "working_hypothesis",
+              "unpitched_candidates": [
+                "jɐɚ"
+              ],
+              "rhotic_scope": "rhotic_central_transition",
+              "operation": "介音保留，舌尖鼻尾脱落并卷舌"
+            }
+          }
+        ],
+        "erhua_review_status": "psc_aligned_ipa_pending_review",
+        "three_segment_review": {
+          "schema_version": 2,
+          "surface_segment_schema": "quality_features_v1",
+          "decision": "reviewed",
+          "base_segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "base_segments_final": "ian",
+          "base_segments_ganyin": "ian1",
+          "base_segments": {
+            "呼音": "i",
+            "主音": "ɛ̞",
+            "末音": "n"
+          },
+          "surface_segments": {
+            "呼音": {
+              "quality": "i",
+              "features": {
+                "rhotic": false,
+                "nasalized": false
+              }
+            },
+            "主音": {
+              "quality": "ɛ̞",
+              "features": {
+                "rhotic": true,
+                "nasalized": false
+              }
+            },
+            "末音": {
+              "quality": "ɐ",
+              "features": {
+                "rhotic": true,
+                "nasalized": false
+              }
+            }
+          },
+          "surface_ipa": "iɛ̞˞ɐ˞",
+          "note": "",
+          "revision": 9,
+          "updated_utc": "2026-08-12T09:55:54.233638Z",
+          "runtime_enabled": false,
+          "surface_class": "ERHUA-ORAL-IAR-IAN",
+          "surface_class_rule_version": 3,
+          "surface_generation": {
+            "method": "rule_generated",
+            "class_id": "ERHUA-ORAL-IAR-IAN",
+            "rule_version": 3,
+            "quality_profile_version": 1,
+            "quality_profile_source": "external_data/tmp/erhua_surface_quality_profiles.json",
+            "runtime_enabled": false
+          }
+        },
+        "base_foundation": {
+          "schema_version": 1,
+          "ipa_source": "external_data/finals_IPA_mapping.json",
+          "segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "final": "ian",
+          "ganyin": "ian1",
+          "ipa": "iɛ̞n",
+          "segments": {
+            "呼音": "i",
+            "主音": "ɛ̞",
+            "末音": "n"
+          }
+        },
+        "erhua_surface_class": {
+          "class_id": "ERHUA-ORAL-IAR-IAN",
+          "rule_version": 3,
+          "basis": "ian 去除鼻尾后的儿化后三段音质由附属音质表给出。",
+          "technical_alias_of": "",
+          "runtime_enabled": false
+        }
+      },
+      "uan": {
+        "ipa": "uan",
+        "erhua_final": [
+          {
+            "source_id": "PSC-2021-ERHUA",
+            "source_index": 10,
+            "source_page": 1,
+            "source_rule": "uan>uar",
+            "source_base_final": "uan",
+            "source_erhua_final": "uar",
+            "nasalized": false,
+            "examples": [
+              {
+                "hanzi": "茶馆儿",
+                "pinyin_nfc": "cháguǎnr"
+              },
+              {
+                "hanzi": "打转儿",
+                "pinyin_nfc": "dǎzhuànr"
+              },
+              {
+                "hanzi": "大腕儿",
+                "pinyin_nfc": "dàwànr"
+              }
+            ],
+            "evidence_locator": {
+              "rule_bbox": [
+                54.34,
+                542.21,
+                446.6,
+                559.61
+              ]
+            },
+            "alignment": {
+              "project_final": "uan",
+              "status": "exact_or_internal_name"
+            },
+            "ipa_analysis": {
+              "status": "working_hypothesis",
+              "unpitched_candidates": [
+                "wɐɚ"
+              ],
+              "rhotic_scope": "rhotic_central_transition",
+              "operation": "介音保留，舌尖鼻尾脱落并卷舌"
+            }
+          }
+        ],
+        "erhua_review_status": "psc_aligned_ipa_pending_review",
+        "three_segment_review": {
+          "schema_version": 2,
+          "surface_segment_schema": "quality_features_v1",
+          "decision": "reviewed",
+          "base_segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "base_segments_final": "uan",
+          "base_segments_ganyin": "uan1",
+          "base_segments": {
+            "呼音": "u",
+            "主音": "a",
+            "末音": "n"
+          },
+          "surface_segments": {
+            "呼音": {
+              "quality": "u",
+              "features": {
+                "rhotic": false,
+                "nasalized": false
+              }
+            },
+            "主音": {
+              "quality": "ɐ",
+              "features": {
+                "rhotic": true,
+                "nasalized": false
+              }
+            },
+            "末音": {
+              "quality": "ɐ",
+              "features": {
+                "rhotic": true,
+                "nasalized": false
+              }
+            }
+          },
+          "surface_ipa": "uɐ˞ɐ˞",
+          "note": "",
+          "revision": 8,
+          "updated_utc": "2026-08-16T10:45:09.030885Z",
+          "runtime_enabled": false,
+          "surface_generation": {
+            "method": "manual_override",
+            "overrides_class_id": "ERHUA-ORAL-UAR-AI-N",
+            "reason": "UI 中显式修改规则生成结果",
+            "runtime_enabled": false
+          },
+          "surface_class": "ERHUA-ORAL-UAR-AI-N",
+          "surface_class_rule_version": 3
+        },
+        "erhua_surface_class": {
+          "class_id": "ERHUA-ORAL-UAR-AI-N",
+          "rule_version": 3,
+          "basis": "uai/uan 保留介音 u 与基础主音 a；韵尾替换后末段向 ɐ 央化。",
+          "technical_alias_of": "",
+          "runtime_enabled": false,
+          "manual_override": true
+        },
+        "base_foundation": {
+          "schema_version": 1,
+          "ipa_source": "external_data/finals_IPA_mapping.json",
+          "segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "final": "uan",
+          "ganyin": "uan1",
+          "ipa": "uan",
+          "segments": {
+            "呼音": "u",
+            "主音": "a",
+            "末音": "n"
+          }
+        }
+      },
+      "üan": {
+        "ipa": "ʏɛ̞n",
+        "erhua_final": [
+          {
+            "source_id": "PSC-2021-ERHUA",
+            "source_index": 12,
+            "source_page": 1,
+            "source_rule": "üan>üar",
+            "source_base_final": "üan",
+            "source_erhua_final": "üar",
+            "nasalized": false,
+            "examples": [
+              {
+                "hanzi": "包圆儿",
+                "pinyin_nfc": "bāoyuánr"
+              },
+              {
+                "hanzi": "出圈儿",
+                "pinyin_nfc": "chūquānr"
+              },
+              {
+                "hanzi": "绕远儿",
+                "pinyin_nfc": "ràoyuǎnr"
+              }
+            ],
+            "evidence_locator": {
+              "rule_bbox": [
+                54.34,
+                629.24,
+                446.6,
+                646.64
+              ]
+            },
+            "alignment": {
+              "project_final": "üan",
+              "status": "exact_umlaut_form"
+            },
+            "ipa_analysis": {
+              "status": "working_hypothesis",
+              "unpitched_candidates": [
+                "ɥɐɚ"
+              ],
+              "rhotic_scope": "rhotic_central_transition",
+              "operation": "撮口介音保留，舌尖鼻尾脱落并卷舌"
+            }
+          }
+        ],
+        "erhua_review_status": "psc_aligned_ipa_pending_review",
+        "three_segment_review": {
+          "schema_version": 2,
+          "surface_segment_schema": "quality_features_v1",
+          "decision": "reviewed",
+          "base_segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "base_segments_final": "üan",
+          "base_segments_ganyin": "üan1",
+          "base_segments": {
+            "呼音": "ʏ",
+            "主音": "ɛ̞",
+            "末音": "n"
+          },
+          "surface_segments": {
+            "呼音": {
+              "quality": "ʏ",
+              "features": {
+                "rhotic": false,
+                "nasalized": false
+              }
+            },
+            "主音": {
+              "quality": "ɛ̞",
+              "features": {
+                "rhotic": true,
+                "nasalized": false
+              }
+            },
+            "末音": {
+              "quality": "ɐ",
+              "features": {
+                "rhotic": true,
+                "nasalized": false
+              }
+            }
+          },
+          "surface_ipa": "ʏɛ̞˞ɐ˞",
+          "note": "",
+          "revision": 6,
+          "updated_utc": "2026-08-14T14:18:54.627586Z",
+          "runtime_enabled": false,
+          "surface_class": "ERHUA-ORAL-UMLAUT-AR",
+          "surface_class_rule_version": 3,
+          "surface_generation": {
+            "method": "rule_generated",
+            "class_id": "ERHUA-ORAL-UMLAUT-AR",
+            "rule_version": 3,
+            "quality_profile_version": 1,
+            "quality_profile_source": "external_data/tmp/erhua_surface_quality_profiles.json",
+            "runtime_enabled": false
+          }
+        },
+        "base_foundation": {
+          "schema_version": 1,
+          "ipa_source": "external_data/finals_IPA_mapping.json",
+          "segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "final": "üan",
+          "ganyin": "üan1",
+          "ipa": "ʏɛ̞n",
+          "segments": {
+            "呼音": "ʏ",
+            "主音": "ɛ̞",
+            "末音": "n"
+          }
+        },
+        "erhua_surface_class": {
+          "class_id": "ERHUA-ORAL-UMLAUT-AR",
+          "rule_version": 3,
+          "basis": "üan 去除鼻尾后的儿化后三段音质由附属音质表给出。",
+          "technical_alias_of": "",
+          "runtime_enabled": false
+        }
+      },
+      "uen": {
+        "ipa": "uən",
+        "erhua_final": [
+          {
+            "source_id": "PSC-2021-ERHUA",
+            "source_index": 19,
+            "source_page": 2,
+            "source_rule": "uen>uer",
+            "source_base_final": "uen",
+            "source_erhua_final": "uer",
+            "nasalized": false,
+            "examples": [
+              {
+                "hanzi": "冰棍儿",
+                "pinyin_nfc": "bīnggùnr"
+              },
+              {
+                "hanzi": "打盹儿",
+                "pinyin_nfc": "dǎdǔnr"
+              },
+              {
+                "hanzi": "光棍儿",
+                "pinyin_nfc": "guānggùnr"
+              }
+            ],
+            "evidence_locator": {
+              "rule_bbox": [
+                54.34,
+                281.19,
+                446.6,
+                298.59
+              ]
+            },
+            "alignment": {
+              "project_final": "uen",
+              "status": "registered_uen_family"
+            },
+            "ipa_analysis": {
+              "status": "working_hypothesis",
+              "unpitched_candidates": [
+                "wɚ"
+              ],
+              "rhotic_scope": "rhotic_central_transition",
+              "operation": "介音保留，舌尖鼻尾脱落并转为卷舌中央尾"
+            }
+          }
+        ],
+        "erhua_review_status": "psc_aligned_ipa_pending_review",
+        "three_segment_review": {
+          "schema_version": 2,
+          "surface_segment_schema": "quality_features_v1",
+          "decision": "reviewed",
+          "base_segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "base_segments_final": "uen",
+          "base_segments_ganyin": "uen1",
+          "base_segments": {
+            "呼音": "u",
+            "主音": "ə",
+            "末音": "n"
+          },
+          "surface_segments": {
+            "呼音": {
+              "quality": "u",
+              "features": {
+                "rhotic": false,
+                "nasalized": false
+              }
+            },
+            "主音": {
+              "quality": "ə",
+              "features": {
+                "rhotic": true,
+                "nasalized": false
+              }
+            },
+            "末音": {
+              "quality": "ə",
+              "features": {
+                "rhotic": true,
+                "nasalized": false
+              }
+            }
+          },
+          "surface_ipa": "uɚɚ",
+          "note": "",
+          "revision": 4,
+          "updated_utc": "2026-08-12T02:01:25.390104Z",
+          "runtime_enabled": false,
+          "surface_class": "ERHUA-ORAL-UER",
+          "surface_class_rule_version": 3,
+          "surface_generation": {
+            "method": "rule_generated",
+            "class_id": "ERHUA-ORAL-UER",
+            "rule_version": 3,
+            "quality_profile_version": 1,
+            "quality_profile_source": "external_data/tmp/erhua_surface_quality_profiles.json",
+            "runtime_enabled": false
+          }
+        },
+        "erhua_surface_class": {
+          "class_id": "ERHUA-ORAL-UER",
+          "rule_version": 3,
+          "basis": "PSC 均归并为 uer；u 保留在前段，卷舌央元音占主音和末音。",
+          "technical_alias_of": "",
+          "runtime_enabled": false
+        },
+        "base_foundation": {
+          "schema_version": 1,
+          "ipa_source": "external_data/finals_IPA_mapping.json",
+          "segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "final": "uen",
+          "ganyin": "uen1",
+          "ipa": "uən",
+          "segments": {
+            "呼音": "u",
+            "主音": "ə",
+            "末音": "n"
+          }
+        }
+      },
+      "in": {
+        "ipa": "iə̆n",
+        "erhua_final": [
+          {
+            "source_id": "PSC-2021-ERHUA",
+            "source_index": 24,
+            "source_page": 2,
+            "source_rule": "in>i:er",
+            "source_base_final": "in",
+            "source_erhua_final": "i:er",
+            "nasalized": false,
+            "examples": [
+              {
+                "hanzi": "脚印儿",
+                "pinyin_nfc": "jiǎoyìnr"
+              },
+              {
+                "hanzi": "送信儿",
+                "pinyin_nfc": "sòngxìnr"
+              },
+              {
+                "hanzi": "有劲儿",
+                "pinyin_nfc": "yǒujìnr"
+              }
+            ],
+            "evidence_locator": {
+              "rule_bbox": [
+                54.34,
+                472.61,
+                446.6,
+                490.01
+              ]
+            },
+            "alignment": {
+              "project_final": "in",
+              "status": "exact_or_internal_name"
+            },
+            "ipa_analysis": {
+              "status": "working_hypothesis",
+              "unpitched_candidates": [
+                "iɚ"
+              ],
+              "rhotic_scope": "rhotic_central_transition",
+              "operation": "舌尖鼻尾脱落，高前元音后接卷舌中央尾"
+            }
+          }
+        ],
+        "erhua_review_status": "psc_aligned_ipa_pending_review",
+        "three_segment_review": {
+          "schema_version": 2,
+          "surface_segment_schema": "quality_features_v1",
+          "decision": "reviewed",
+          "base_segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "base_segments_final": "in",
+          "base_segments_ganyin": "in1",
+          "base_segments": {
+            "呼音": "i",
+            "主音": "ə̆",
+            "末音": "n"
+          },
+          "surface_segments": {
+            "呼音": {
+              "quality": "i",
+              "features": {
+                "rhotic": false,
+                "nasalized": false
+              }
+            },
+            "主音": {
+              "quality": "ə",
+              "features": {
+                "rhotic": true,
+                "nasalized": false
+              }
+            },
+            "末音": {
+              "quality": "ə",
+              "features": {
+                "rhotic": true,
+                "nasalized": false
+              }
+            }
+          },
+          "surface_ipa": "iɚɚ",
+          "note": "",
+          "revision": 5,
+          "updated_utc": "2026-08-12T02:01:25.390104Z",
+          "runtime_enabled": false,
+          "surface_class": "ERHUA-ORAL-I-ER",
+          "surface_class_rule_version": 3,
+          "surface_generation": {
+            "method": "rule_generated",
+            "class_id": "ERHUA-ORAL-I-ER",
+            "rule_version": 3,
+            "quality_profile_version": 1,
+            "quality_profile_source": "external_data/tmp/erhua_surface_quality_profiles.json",
+            "runtime_enabled": false
+          }
+        },
+        "erhua_surface_class": {
+          "class_id": "ERHUA-ORAL-I-ER",
+          "rule_version": 3,
+          "basis": "PSC 均归并为 i:er；i 保留在前段，卷舌央元音占主音和末音。",
+          "technical_alias_of": "",
+          "runtime_enabled": false
+        },
+        "base_foundation": {
+          "schema_version": 1,
+          "ipa_source": "external_data/finals_IPA_mapping.json",
+          "segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "final": "in",
+          "ganyin": "in1",
+          "ipa": "iə̆n",
+          "segments": {
+            "呼音": "i",
+            "主音": "ə̆",
+            "末音": "n"
+          }
+        }
+      },
+      "ün": {
+        "ipa": "ʏə̆n",
+        "erhua_final": [
+          {
+            "source_id": "PSC-2021-ERHUA",
+            "source_index": 27,
+            "source_page": 2,
+            "source_rule": "ün>ü:er",
+            "source_base_final": "ün",
+            "source_erhua_final": "ü:er",
+            "nasalized": false,
+            "examples": [
+              {
+                "hanzi": "合群儿",
+                "pinyin_nfc": "héqúnr"
+              }
+            ],
+            "evidence_locator": {
+              "rule_bbox": [
+                54.34,
+                594.41,
+                446.6,
+                611.81
+              ]
+            },
+            "alignment": {
+              "project_final": "ün",
+              "status": "exact_umlaut_form",
+              "note": "原页可见规则为 ün>ü:er；文本层曾把 n 错抽为 e，现已保留校正证据。"
+            },
+            "ipa_analysis": {
+              "status": "working_hypothesis",
+              "unpitched_candidates": [
+                "yɚ"
+              ],
+              "rhotic_scope": "rhotic_central_transition",
+              "operation": "ün 类韵尾 n 在儿化语音实现中不发音，末位改为卷舌央元音；拼音书写仍保留原韵母 n，并在音节后加 r。"
+            },
+            "source_transcription_correction": {
+              "text_layer_extraction": "üe>ü:er",
+              "verified_visible_rule": "ün>ü:er",
+              "verification_method": "manual_visual_review_of_source_page",
+              "reason": "PDF 文本层把可见字母 n 错映为 e；保留抽取值并以可见原页核定值参与对齐。",
+              "source_page": 2
+            }
+          }
+        ],
+        "erhua_review_status": "psc_aligned_ipa_pending_review",
+        "three_segment_review": {
+          "schema_version": 2,
+          "surface_segment_schema": "quality_features_v1",
+          "decision": "reviewed",
+          "base_segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "base_segments_final": "ün",
+          "base_segments_ganyin": "ün1",
+          "base_segments": {
+            "呼音": "ʏ",
+            "主音": "ə̆",
+            "末音": "n"
+          },
+          "surface_segments": {
+            "呼音": {
+              "quality": "ʏ",
+              "features": {
+                "rhotic": false,
+                "nasalized": false
+              }
+            },
+            "主音": {
+              "quality": "ə",
+              "features": {
+                "rhotic": true,
+                "nasalized": false
+              }
+            },
+            "末音": {
+              "quality": "ə",
+              "features": {
+                "rhotic": true,
+                "nasalized": false
+              }
+            }
+          },
+          "surface_ipa": "ʏɚɚ",
+          "note": "",
+          "revision": 5,
+          "updated_utc": "2026-08-12T02:01:25.390104Z",
+          "runtime_enabled": false,
+          "surface_class": "ERHUA-ORAL-UMLAUT-I-ER",
+          "surface_class_rule_version": 3,
+          "surface_generation": {
+            "method": "rule_generated",
+            "class_id": "ERHUA-ORAL-UMLAUT-I-ER",
+            "rule_version": 3,
+            "quality_profile_version": 1,
+            "quality_profile_source": "external_data/tmp/erhua_surface_quality_profiles.json",
+            "runtime_enabled": false
+          }
+        },
+        "erhua_surface_class": {
+          "class_id": "ERHUA-ORAL-UMLAUT-I-ER",
+          "rule_version": 3,
+          "basis": "PSC 均归并为 ü:er；本音系规则只登记规范拼音 ü/ün。",
+          "technical_alias_of": "",
+          "runtime_enabled": false
+        },
+        "base_foundation": {
+          "schema_version": 1,
+          "ipa_source": "external_data/finals_IPA_mapping.json",
+          "segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "final": "ün",
+          "ganyin": "ün1",
+          "ipa": "ʏə̆n",
+          "segments": {
+            "呼音": "ʏ",
+            "主音": "ə̆",
+            "末音": "n"
+          }
+        }
+      },
+      "iang": {
+        "ipa": "iɑŋ",
+        "erhua_final": [
+          {
+            "source_id": "PSC-2021-ERHUA",
+            "source_index": 7,
+            "source_page": 1,
+            "source_rule": "iang>iar(鼻化)",
+            "source_base_final": "iang",
+            "source_erhua_final": "iar",
+            "nasalized": true,
+            "examples": [
+              {
+                "hanzi": "鼻梁儿",
+                "pinyin_nfc": "bíliángr"
+              },
+              {
+                "hanzi": "花样儿",
+                "pinyin_nfc": "huāyàngr"
+              },
+              {
+                "hanzi": "透亮儿",
+                "pinyin_nfc": "tòuliàngr"
+              }
+            ],
+            "evidence_locator": {
+              "rule_bbox": [
+                54.34,
+                420.39,
+                446.6,
+                437.79
+              ]
+            },
+            "alignment": {
+              "project_final": "iang",
+              "status": "exact_or_internal_name"
+            },
+            "ipa_analysis": {
+              "status": "working_hypothesis",
+              "unpitched_candidates": [
+                "jɑ̃˞",
+                "jɐ̃˞"
+              ],
+              "rhotic_scope": "nasalization_plus_rhoticity",
+              "operation": "介音保留，软腭鼻尾转为鼻化兼卷舌"
+            }
+          }
+        ],
+        "erhua_review_status": "psc_aligned_ipa_pending_review",
+        "three_segment_review": {
+          "schema_version": 2,
+          "surface_segment_schema": "quality_features_v1",
+          "decision": "reviewed",
+          "base_segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "base_segments_final": "iang",
+          "base_segments_ganyin": "iang1",
+          "base_segments": {
+            "呼音": "i",
+            "主音": "ɑ",
+            "末音": "ŋ"
+          },
+          "surface_segments": {
+            "呼音": {
+              "quality": "i",
+              "features": {
+                "rhotic": false,
+                "nasalized": false
+              }
+            },
+            "主音": {
+              "quality": "ɑ",
+              "features": {
+                "rhotic": true,
+                "nasalized": true
+              }
+            },
+            "末音": {
+              "quality": "ɑ",
+              "features": {
+                "rhotic": true,
+                "nasalized": true
+              }
+            }
+          },
+          "surface_ipa": "iɑ̃˞ɑ̃˞",
+          "note": "",
+          "revision": 6,
+          "updated_utc": "2026-08-12T01:38:31.999488Z",
+          "runtime_enabled": false,
+          "surface_class": "ERHUA-NASAL-NG",
+          "surface_class_rule_version": 3,
+          "surface_generation": {
+            "method": "rule_generated",
+            "class_id": "ERHUA-NASAL-NG",
+            "rule_version": 3,
+            "quality_profile_version": 1,
+            "quality_profile_source": "external_data/tmp/erhua_surface_quality_profiles.json",
+            "runtime_enabled": false
+          }
+        },
+        "base_foundation": {
+          "schema_version": 1,
+          "ipa_source": "external_data/finals_IPA_mapping.json",
+          "segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "final": "iang",
+          "ganyin": "iang1",
+          "ipa": "iɑŋ",
+          "segments": {
+            "呼音": "i",
+            "主音": "ɑ",
+            "末音": "ŋ"
+          }
+        },
+        "erhua_surface_class": {
+          "class_id": "ERHUA-NASAL-NG",
+          "rule_version": 3,
+          "basis": "软腭鼻尾 ŋ 不再独立占位；保留呼音，把基础主音同时加鼻化和卷舌特征，并以同一音质填充主音、末音两段。ong/ueng 与其余 -ng 韵母使用同一结构规则。",
+          "technical_alias_of": "",
+          "runtime_enabled": false
+        }
+      },
+      "uang": {
+        "ipa": "uɑŋ",
+        "erhua_final": [
+          {
+            "source_id": "PSC-2021-ERHUA",
+            "source_index": 11,
+            "source_page": 1,
+            "source_rule": "uang>uar(鼻化)",
+            "source_base_final": "uang",
+            "source_erhua_final": "uar",
+            "nasalized": true,
+            "examples": [
+              {
+                "hanzi": "打晃儿",
+                "pinyin_nfc": "dǎhuàngr"
+              },
+              {
+                "hanzi": "蛋黄儿",
+                "pinyin_nfc": "dànhuángr"
+              },
+              {
+                "hanzi": "天窗儿",
+                "pinyin_nfc": "tiānchuāngr"
+              }
+            ],
+            "evidence_locator": {
+              "rule_bbox": [
+                54.34,
+                594.41,
+                446.6,
+                611.81
+              ]
+            },
+            "alignment": {
+              "project_final": "uang",
+              "status": "exact_or_internal_name"
+            },
+            "ipa_analysis": {
+              "status": "working_hypothesis",
+              "unpitched_candidates": [
+                "wɑ̃˞",
+                "wɐ̃˞"
+              ],
+              "rhotic_scope": "nasalization_plus_rhoticity",
+              "operation": "介音保留，软腭鼻尾转为鼻化兼卷舌"
+            }
+          }
+        ],
+        "erhua_review_status": "psc_aligned_ipa_pending_review",
+        "three_segment_review": {
+          "schema_version": 2,
+          "surface_segment_schema": "quality_features_v1",
+          "decision": "reviewed",
+          "base_segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "base_segments_final": "uang",
+          "base_segments_ganyin": "uang1",
+          "base_segments": {
+            "呼音": "u",
+            "主音": "ɑ",
+            "末音": "ŋ"
+          },
+          "surface_segments": {
+            "呼音": {
+              "quality": "u",
+              "features": {
+                "rhotic": false,
+                "nasalized": false
+              }
+            },
+            "主音": {
+              "quality": "ɑ",
+              "features": {
+                "rhotic": true,
+                "nasalized": true
+              }
+            },
+            "末音": {
+              "quality": "ɑ",
+              "features": {
+                "rhotic": true,
+                "nasalized": true
+              }
+            }
+          },
+          "surface_ipa": "uɑ̃˞ɑ̃˞",
+          "note": "",
+          "revision": 4,
+          "updated_utc": "2026-08-12T01:20:31.769714Z",
+          "runtime_enabled": false,
+          "surface_class": "ERHUA-NASAL-NG",
+          "surface_class_rule_version": 3,
+          "surface_generation": {
+            "method": "rule_generated",
+            "class_id": "ERHUA-NASAL-NG",
+            "rule_version": 3,
+            "quality_profile_version": 1,
+            "quality_profile_source": "external_data/tmp/erhua_surface_quality_profiles.json",
+            "runtime_enabled": false
+          }
+        },
+        "base_foundation": {
+          "schema_version": 1,
+          "ipa_source": "external_data/finals_IPA_mapping.json",
+          "segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "final": "uang",
+          "ganyin": "uang1",
+          "ipa": "uɑŋ",
+          "segments": {
+            "呼音": "u",
+            "主音": "ɑ",
+            "末音": "ŋ"
+          }
+        },
+        "erhua_surface_class": {
+          "class_id": "ERHUA-NASAL-NG",
+          "rule_version": 3,
+          "basis": "软腭鼻尾 ŋ 不再独立占位；保留呼音，把基础主音同时加鼻化和卷舌特征，并以同一音质填充主音、末音两段。ong/ueng 与其余 -ng 韵母使用同一结构规则。",
+          "technical_alias_of": "",
+          "runtime_enabled": false
+        }
+      },
+      "ueng": {
+        "ipa": "uɤŋ",
+        "erhua_final": [
+          {
+            "source_id": "PSC-2021-ERHUA",
+            "source_index": 20,
+            "source_page": 2,
+            "source_rule": "ueng>uer(鼻化)",
+            "source_base_final": "ueng",
+            "source_erhua_final": "uer",
+            "nasalized": true,
+            "examples": [
+              {
+                "hanzi": "小瓮儿",
+                "pinyin_nfc": "xiǎowèngr"
+              }
+            ],
+            "evidence_locator": {
+              "rule_bbox": [
+                54.34,
+                333.39,
+                446.6,
+                350.79
+              ]
+            },
+            "alignment": {
+              "project_final": "ueng",
+              "status": "exact_standard_final",
+              "note": "规范拼音 ueng 独立保存；uong 仅作为编码器内部与 ong 合流的名称。"
+            },
+            "ipa_analysis": {
+              "status": "working_hypothesis",
+              "unpitched_candidates": [
+                "wɤ̃˞"
+              ],
+              "rhotic_scope": "nasalization_plus_rhoticity",
+              "operation": "介音保留，软腭鼻尾转为鼻化兼卷舌"
+            }
+          }
+        ],
+        "erhua_review_status": "psc_aligned_surface_deferred",
+        "three_segment_review": {
+          "schema_version": 2,
+          "surface_segment_schema": "quality_features_v1",
+          "decision": "reviewed",
+          "base_segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "base_segments_final": "ueng",
+          "base_segments_ganyin": "ueng1",
+          "base_segments": {
+            "呼音": "u",
+            "主音": "ɤ",
+            "末音": "ŋ"
+          },
+          "surface_segments": {
+            "呼音": {
+              "quality": "u",
+              "features": {
+                "rhotic": false,
+                "nasalized": false
+              }
+            },
+            "主音": {
+              "quality": "ɤ",
+              "features": {
+                "rhotic": true,
+                "nasalized": true
+              }
+            },
+            "末音": {
+              "quality": "ɤ",
+              "features": {
+                "rhotic": true,
+                "nasalized": true
+              }
+            }
+          },
+          "surface_ipa": "uɤ̃˞ɤ̃˞",
+          "note": "从 ong 条目拆出的规范拼音 ueng。基本三段取现有干音派生表；儿化表层须单独复核，不直接沿用 ong 的三段结果。",
+          "revision": 8,
+          "updated_utc": "2026-08-14T13:12:23.179484Z",
+          "runtime_enabled": false,
+          "surface_class": "ERHUA-NASAL-NG",
+          "surface_class_rule_version": 3,
+          "surface_generation": {
+            "method": "rule_generated",
+            "class_id": "ERHUA-NASAL-NG",
+            "rule_version": 3,
+            "quality_profile_version": 1,
+            "quality_profile_source": "external_data/tmp/erhua_surface_quality_profiles.json",
+            "runtime_enabled": false
+          }
+        },
+        "base_foundation": {
+          "schema_version": 1,
+          "ipa_source": "external_data/finals_IPA_mapping.json",
+          "segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "final": "ueng",
+          "ganyin": "ueng1",
+          "ipa": "uɤŋ",
+          "segments": {
+            "呼音": "u",
+            "主音": "ɤ",
+            "末音": "ŋ"
+          }
+        },
+        "erhua_surface_class": {
+          "class_id": "ERHUA-NASAL-NG",
+          "rule_version": 3,
+          "basis": "软腭鼻尾 ŋ 不再独立占位；保留呼音，把基础主音同时加鼻化和卷舌特征，并以同一音质填充主音、末音两段。ong/ueng 与其余 -ng 韵母使用同一结构规则。",
+          "technical_alias_of": "",
+          "runtime_enabled": false
+        }
+      },
+      "ing": {
+        "ipa": "iɘ̠̆ŋ",
+        "erhua_final": [
+          {
+            "source_id": "PSC-2021-ERHUA",
+            "source_index": 25,
+            "source_page": 2,
+            "source_rule": "ing>i:er(鼻化)",
+            "source_base_final": "ing",
+            "source_erhua_final": "i:er",
+            "nasalized": true,
+            "examples": [
+              {
+                "hanzi": "打鸣儿",
+                "pinyin_nfc": "dǎmíngr"
+              },
+              {
+                "hanzi": "蛋清儿",
+                "pinyin_nfc": "dànqīngr"
+              },
+              {
+                "hanzi": "花瓶儿",
+                "pinyin_nfc": "huāpíngr"
+              }
+            ],
+            "evidence_locator": {
+              "rule_bbox": [
+                54.34,
+                507.41,
+                446.6,
+                524.81
+              ]
+            },
+            "alignment": {
+              "project_final": "ing",
+              "status": "exact_or_internal_name"
+            },
+            "ipa_analysis": {
+              "status": "working_hypothesis",
+              "unpitched_candidates": [
+                "iɘ̃˞"
+              ],
+              "rhotic_scope": "nasalization_plus_rhoticity",
+              "operation": "软腭鼻尾转为鼻化，高前元音后部卷舌"
+            }
+          }
+        ],
+        "erhua_review_status": "psc_aligned_ipa_pending_review",
+        "three_segment_review": {
+          "schema_version": 2,
+          "surface_segment_schema": "quality_features_v1",
+          "decision": "reviewed",
+          "base_segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "base_segments_final": "ing",
+          "base_segments_ganyin": "ing1",
+          "base_segments": {
+            "呼音": "i",
+            "主音": "ɘ̠̆",
+            "末音": "ŋ"
+          },
+          "surface_segments": {
+            "呼音": {
+              "quality": "i",
+              "features": {
+                "rhotic": false,
+                "nasalized": false
+              }
+            },
+            "主音": {
+              "quality": "ɘ̠̆",
+              "features": {
+                "rhotic": true,
+                "nasalized": true
+              }
+            },
+            "末音": {
+              "quality": "ɘ̠̆",
+              "features": {
+                "rhotic": true,
+                "nasalized": true
+              }
+            }
+          },
+          "surface_ipa": "iɘ̠̆̃˞ɘ̠̆̃˞",
+          "note": "",
+          "revision": 9,
+          "updated_utc": "2026-08-14T14:38:55.650746Z",
+          "runtime_enabled": false,
+          "surface_class": "ERHUA-NASAL-NG",
+          "surface_class_rule_version": 3,
+          "surface_generation": {
+            "method": "rule_generated",
+            "class_id": "ERHUA-NASAL-NG",
+            "rule_version": 3,
+            "quality_profile_version": 1,
+            "quality_profile_source": "external_data/tmp/erhua_surface_quality_profiles.json",
+            "runtime_enabled": false
+          }
+        },
+        "base_foundation": {
+          "schema_version": 1,
+          "ipa_source": "external_data/finals_IPA_mapping.json",
+          "segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "final": "ing",
+          "ganyin": "ing1",
+          "ipa": "iɘ̠̆ŋ",
+          "segments": {
+            "呼音": "i",
+            "主音": "ɘ̠̆",
+            "末音": "ŋ"
+          }
+        },
+        "erhua_surface_class": {
+          "class_id": "ERHUA-NASAL-NG",
+          "rule_version": 3,
+          "basis": "软腭鼻尾 ŋ 不再独立占位；保留呼音，把基础主音同时加鼻化和卷舌特征，并以同一音质填充主音、末音两段。ong/ueng 与其余 -ng 韵母使用同一结构规则。",
+          "technical_alias_of": "",
+          "runtime_enabled": false
+        }
+      },
+      "ong": {
+        "ipa": "ʊɘ̠̆ŋ",
+        "erhua_final": [
+          {
+            "source_id": "PSC-2021-ERHUA",
+            "source_index": 30,
+            "source_page": 2,
+            "source_rule": "ong>or(鼻化)",
+            "source_base_final": "ong",
+            "source_erhua_final": "or",
+            "nasalized": true,
+            "examples": [
+              {
+                "hanzi": "抽空儿",
+                "pinyin_nfc": "chōukòngr"
+              },
+              {
+                "hanzi": "果冻儿",
+                "pinyin_nfc": "guǒdòngr"
+              },
+              {
+                "hanzi": "胡同儿",
+                "pinyin_nfc": "hútòngr"
+              }
+            ],
+            "evidence_locator": {
+              "rule_bbox": [
+                54.34,
+                733.64,
+                446.6,
+                751.036
+              ]
+            },
+            "alignment": {
+              "project_final": "ong",
+              "status": "exact_standard_final",
+              "note": "规范拼音 ong 独立保存；与 ueng 的 uong 合流仅属于编码器内部表示。"
+            },
+            "ipa_analysis": {
+              "status": "working_hypothesis",
+              "unpitched_candidates": [
+                "ʊ̃˞"
+              ],
+              "rhotic_scope": "nasalization_plus_rhoticity",
+              "operation": "软腭鼻尾转为鼻化，后部卷舌"
+            }
+          }
+        ],
+        "erhua_review_status": "psc_aligned_ipa_pending_review",
+        "three_segment_review": {
+          "schema_version": 2,
+          "surface_segment_schema": "quality_features_v1",
+          "decision": "reviewed",
+          "base_segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "base_segments_final": "ong",
+          "base_segments_ganyin": "ong1",
+          "base_segments": {
+            "呼音": "ʊ",
+            "主音": "ɘ̠̆",
+            "末音": "ŋ"
+          },
+          "surface_segments": {
+            "呼音": {
+              "quality": "ʊ",
+              "features": {
+                "rhotic": false,
+                "nasalized": false
+              }
+            },
+            "主音": {
+              "quality": "ɘ̠̆",
+              "features": {
+                "rhotic": true,
+                "nasalized": true
+              }
+            },
+            "末音": {
+              "quality": "ɘ̠̆",
+              "features": {
+                "rhotic": true,
+                "nasalized": true
+              }
+            }
+          },
+          "surface_ipa": "ʊɘ̠̆̃˞ɘ̠̆̃˞",
+          "note": "",
+          "revision": 8,
+          "updated_utc": "2026-08-14T14:38:55.650746Z",
+          "runtime_enabled": false,
+          "surface_class": "ERHUA-NASAL-NG",
+          "surface_class_rule_version": 3,
+          "surface_generation": {
+            "method": "rule_generated",
+            "class_id": "ERHUA-NASAL-NG",
+            "rule_version": 3,
+            "quality_profile_version": 1,
+            "quality_profile_source": "external_data/tmp/erhua_surface_quality_profiles.json",
+            "runtime_enabled": false
+          }
+        },
+        "base_foundation": {
+          "schema_version": 1,
+          "ipa_source": "external_data/finals_IPA_mapping.json",
+          "segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "final": "ong",
+          "ganyin": "ong1",
+          "ipa": "ʊɘ̠̆ŋ",
+          "segments": {
+            "呼音": "ʊ",
+            "主音": "ɘ̠̆",
+            "末音": "ŋ"
+          }
+        },
+        "erhua_surface_class": {
+          "class_id": "ERHUA-NASAL-NG",
+          "rule_version": 3,
+          "basis": "软腭鼻尾 ŋ 不再独立占位；保留呼音，把基础主音同时加鼻化和卷舌特征，并以同一音质填充主音、末音两段。ong/ueng 与其余 -ng 韵母使用同一结构规则。",
+          "technical_alias_of": "",
+          "runtime_enabled": false
+        }
+      },
+      "iong": {
+        "ipa": "yɘ̠̆ŋ",
+        "erhua_final": [
+          {
+            "source_id": "PSC-2021-ERHUA",
+            "source_index": 31,
+            "source_page": 3,
+            "source_rule": "iong>ior(鼻化)",
+            "source_base_final": "iong",
+            "source_erhua_final": "ior",
+            "nasalized": true,
+            "examples": [
+              {
+                "hanzi": "小熊儿",
+                "pinyin_nfc": "xiǎoxióngr"
+              }
+            ],
+            "evidence_locator": {
+              "rule_bbox": [
+                54.34,
+                89.76,
+                446.6,
+                107.16
+              ]
+            },
+            "alignment": {
+              "project_final": "iong",
+              "status": "exact_or_internal_name"
+            },
+            "ipa_analysis": {
+              "status": "working_hypothesis",
+              "unpitched_candidates": [
+                "jʊ̃˞",
+                "ɥʊ̃˞"
+              ],
+              "rhotic_scope": "nasalization_plus_rhoticity",
+              "operation": "介音保留，软腭鼻尾转为鼻化，后部卷舌"
+            }
+          }
+        ],
+        "erhua_review_status": "psc_aligned_ipa_pending_review",
+        "three_segment_review": {
+          "schema_version": 2,
+          "surface_segment_schema": "quality_features_v1",
+          "decision": "reviewed",
+          "base_segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "base_segments_final": "iong",
+          "base_segments_ganyin": "iong1",
+          "base_segments": {
+            "呼音": "y",
+            "主音": "ɘ̠̆",
+            "末音": "ŋ"
+          },
+          "surface_segments": {
+            "呼音": {
+              "quality": "y",
+              "features": {
+                "rhotic": false,
+                "nasalized": false
+              }
+            },
+            "主音": {
+              "quality": "ɘ̠̆",
+              "features": {
+                "rhotic": true,
+                "nasalized": true
+              }
+            },
+            "末音": {
+              "quality": "ɘ̠̆",
+              "features": {
+                "rhotic": true,
+                "nasalized": true
+              }
+            }
+          },
+          "surface_ipa": "yɘ̠̆̃˞ɘ̠̆̃˞",
+          "note": "",
+          "revision": 9,
+          "updated_utc": "2026-08-14T14:38:55.650746Z",
+          "runtime_enabled": false,
+          "surface_class": "ERHUA-NASAL-NG",
+          "surface_class_rule_version": 3,
+          "surface_generation": {
+            "method": "rule_generated",
+            "class_id": "ERHUA-NASAL-NG",
+            "rule_version": 3,
+            "quality_profile_version": 1,
+            "quality_profile_source": "external_data/tmp/erhua_surface_quality_profiles.json",
+            "runtime_enabled": false
+          }
+        },
+        "base_foundation": {
+          "schema_version": 1,
+          "ipa_source": "external_data/finals_IPA_mapping.json",
+          "segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+          "final": "iong",
+          "ganyin": "iong1",
+          "ipa": "yɘ̠̆ŋ",
+          "segments": {
+            "呼音": "y",
+            "主音": "ɘ̠̆",
+            "末音": "ŋ"
+          }
+        },
+        "erhua_surface_class": {
+          "class_id": "ERHUA-NASAL-NG",
+          "rule_version": 3,
+          "basis": "软腭鼻尾 ŋ 不再独立占位；保留呼音，把基础主音同时加鼻化和卷舌特征，并以同一音质填充主音、末音两段。ong/ueng 与其余 -ng 韵母使用同一结构规则。",
+          "technical_alias_of": "",
+          "runtime_enabled": false
+        }
+      }
+    }
+  },
+  "source_material": {
+    "psc_erhua_categories": {
+      "dataset_key": "psc-2021-erhua-words",
+      "database": "C:\\dev\\PSC-Outline\\psc_outline_ocr.sqlite3",
+      "tables": [
+        "erhua_datasets",
+        "erhua_categories",
+        "erhua_entries"
+      ],
+      "category_count": 37,
+      "policy": "source_rule/source_spelling/nasalized 按数据库原样记录；工程归一和 IPA 分析另字段保存。"
+    },
+    "phonetic_working_basis": {
+      "status": "unreviewed_working_hypothesis",
+      "description": "IPA 候选综合当前 final_styles 无调音质基形、用户提供的儿化记音材料和工程分段假设；用于辨清变化位置，不宣称唯一标准音值，后续须以可引用语音学资料逐类裁决。"
+    }
+  },
+  "review_summary": {
+    "project_final_count": 42,
+    "psc_category_count": 37,
+    "runtime_aliases_generated": 0,
+    "known_source_discrepancies": [],
+    "resolved_source_transcription_issues": [
+      {
+        "source_index": 27,
+        "text_layer_extraction": "üe>ü:er",
+        "verified_visible_rule": "ün>ü:er",
+        "example": "合群儿 héqúnr",
+        "engineering_alignment": "ün",
+        "status": "resolved_by_manual_visual_review"
+      }
+    ]
+  },
+  "three_segment_review_progress": {
+    "schema_version": 1,
+    "total": 43,
+    "pending": 0,
+    "reviewed": 37,
+    "deferred": 0,
+    "not_applicable": 6,
+    "runtime_aliases_generated": 0,
+    "updated_utc": "2026-08-16T10:48:05.831058Z"
+  },
+  "ipa_notation_revision": {
+    "schema_version": 1,
+    "revision_id": "erhua-discussion-ipa-2026-08-11",
+    "scope": "discussion_draft_and_review_display_only",
+    "status": "working_notation",
+    "replacements": [
+      {
+        "from_codepoint": "U+1D00",
+        "to": "ä",
+        "to_codepoints": [
+          "U+0061",
+          "U+0308"
+        ],
+        "count": 37
+      },
+      {
+        "from_codepoint": "U+1D07",
+        "to": "e̞",
+        "to_codepoints": [
+          "U+0065",
+          "U+031E"
+        ],
+        "count": 34
+      },
+      {
+        "from_codepoint": "U+1D1C",
+        "to": "ʊ",
+        "to_codepoints": [
+          "U+028A"
+        ],
+        "count": 20
+      },
+      {
+        "from_codepoint": "U+10791",
+        "to": "ɘ̠",
+        "to_codepoints": [
+          "U+0258",
+          "U+0320"
+        ],
+        "count": 6,
+        "reason": "讨论稿用正常大小的后移央元音表示结构音段，不再以修饰字母字形表示弱化。"
+      },
+      {
+        "from_codepoint": "U+1D4A",
+        "to": "ə",
+        "to_codepoints": [
+          "U+0259"
+        ],
+        "count": 4,
+        "reason": "三段结构中的弱化音质仍用正常大小音标表示。"
+      },
+      {
+        "from_codepoint": "U+1DB9",
+        "action": "removed",
+        "to_codepoints": [],
+        "count": 1,
+        "reason": "删除本轮讨论中新带入、且现行项目表示不再采用的修饰字母。"
+      }
+    ],
+    "retained_symbols": [
+      {
+        "symbol": "ɪ",
+        "codepoint": "U+026A",
+        "decision": "retain_pending_offglide_review",
+        "reason": "ɪ 是现行 IPA 音质符号；是否仅在复元音末段改记 i̯ 需另行判断，不能全局替换。"
+      }
+    ],
+    "formal_final_styles_changed": false,
+    "runtime_artifacts_changed": false,
+    "updated_utc": "2026-08-11T08:47:06.755166Z"
+  },
+  "draft_refresh": {
+    "schema_version": 1,
+    "updated_utc": "2026-08-18T05:06:38.579375Z",
+    "scope": "discussion_draft_and_audit_only",
+    "formal_final_styles_changed": false,
+    "runtime_artifacts_changed": false,
+    "review_decisions_changed": false,
+    "source_transcription_corrections": [
+      27
+    ],
+    "surface_segment_schema_migrated": true,
+    "surface_class_rules_applied": true,
+    "deferred_internal_finals_removed": [
+      "ue"
+    ],
+    "base_foundations_synchronized": true
+  },
+  "surface_segment_model": {
+    "schema_version": 1,
+    "name": "fixed_three_positions_with_parallel_features",
+    "positions": [
+      "呼音",
+      "主音",
+      "末音"
+    ],
+    "segment_record": {
+      "quality": "基础音质字符串，不含卷舌或鼻化显示符号",
+      "features": {
+        "rhotic": "boolean",
+        "nasalized": "boolean"
+      }
+    },
+    "rendering_policy": "显示 IPA 由 quality 与 features 派生；修饰字母或附标不增加片音位置。",
+    "display_notations": {
+      "ipa": "标准 IPA 显示采用 U+02DE ˞ 或预组合 ɚ/ɝ。",
+      "yime_combining_r": "项目显示采用 U+1DCA ᷊（COMBINING LATIN SMALL LETTER R BELOW）；仅表示前一固定片音的 rhotic 特征，不是 IPA 来源转录，并为其上方继续附加音高符号保留位置。"
+    },
+    "runtime_enabled": false
+  },
+  "erhua_surface_class_model": {
+    "schema_version": 3,
+    "status": "research_draft_only",
+    "rules_source": "external_data/tmp/erhua_surface_class_rules.json",
+    "quality_profiles_source": "external_data/tmp/erhua_surface_quality_profiles.json",
+    "class_count": 22,
+    "member_count": 36,
+    "policy": "PSC 儿化结果负责来源分组；规范韵母和当前三段基础音质负责规则输入。儿化特征由类规则生成，需大量维护的表层音质从独立附表导入；人工 UI 修改只作为显式例外。",
+    "runtime_enabled": false
+  },
+  "draft_foundation_sync": {
+    "schema_version": 1,
+    "updated_utc": "2026-08-14T10:09:48.273799Z",
+    "ipa_source": "external_data/finals_IPA_mapping.json",
+    "classification_source": "syllable/yinyuan/final_styles.json",
+    "segments_source": "internal_data/yinyuan_derived/ganyin_to_pianyin_sequence.json",
+    "active_final_count": 42,
+    "added": [],
+    "archived": [],
+    "moved_categories": [],
+    "ipa_changed": [],
+    "base_segments_changed": [
+      "a",
+      "ê",
+      "m",
+      "n",
+      "ng",
+      "ia",
+      "ua",
+      "ie",
+      "üe",
+      "ian",
+      "üan",
+      "in",
+      "ün",
+      "ing",
+      "ong",
+      "iong"
+    ],
+    "surface_review_required": [],
+    "manual_surface_decisions_changed": false,
+    "runtime_artifacts_changed": false
+  },
+  "psc_result_group_index": {
+    "schema_version": 1,
+    "derivation": "由 PSC source_erhua_final、nasalized 与既有韵母对齐结果派生；外部表仅作事后核对，不参与生成",
+    "groups": [
+      {
+        "key": "ar|oral",
+        "label": "ar",
+        "source_erhua_final": "ar",
+        "display_erhua_final": "ar",
+        "nasalized": false,
+        "source_indices": [
+          1,
+          2,
+          3
+        ],
+        "project_finals": [
+          "a",
+          "ai",
+          "an"
+        ]
+      },
+      {
+        "key": "ãr|nasalized",
+        "label": "ãr",
+        "source_erhua_final": "ar",
+        "display_erhua_final": "ãr",
+        "nasalized": true,
+        "source_indices": [
+          4
+        ],
+        "project_finals": [
+          "ang"
+        ]
+      },
+      {
+        "key": "iar|oral",
+        "label": "iar",
+        "source_erhua_final": "iar",
+        "display_erhua_final": "iar",
+        "nasalized": false,
+        "source_indices": [
+          5,
+          6
+        ],
+        "project_finals": [
+          "ia",
+          "ian"
+        ]
+      },
+      {
+        "key": "iãr|nasalized",
+        "label": "iãr",
+        "source_erhua_final": "iar",
+        "display_erhua_final": "iãr",
+        "nasalized": true,
+        "source_indices": [
+          7
+        ],
+        "project_finals": [
+          "iang"
+        ]
+      },
+      {
+        "key": "uar|oral",
+        "label": "uar",
+        "source_erhua_final": "uar",
+        "display_erhua_final": "uar",
+        "nasalized": false,
+        "source_indices": [
+          8,
+          9,
+          10
+        ],
+        "project_finals": [
+          "ua",
+          "uai",
+          "uan"
+        ]
+      },
+      {
+        "key": "uãr|nasalized",
+        "label": "uãr",
+        "source_erhua_final": "uar",
+        "display_erhua_final": "uãr",
+        "nasalized": true,
+        "source_indices": [
+          11
+        ],
+        "project_finals": [
+          "uang"
+        ]
+      },
+      {
+        "key": "üar|oral",
+        "label": "üar",
+        "source_erhua_final": "üar",
+        "display_erhua_final": "üar",
+        "nasalized": false,
+        "source_indices": [
+          12
+        ],
+        "project_finals": [
+          "üan"
+        ]
+      },
+      {
+        "key": "er|oral",
+        "label": "er",
+        "source_erhua_final": "er",
+        "display_erhua_final": "er",
+        "nasalized": false,
+        "source_indices": [
+          13,
+          14,
+          21,
+          22
+        ],
+        "project_finals": [
+          "_i",
+          "ei",
+          "en"
+        ]
+      },
+      {
+        "key": "ẽr|nasalized",
+        "label": "ẽr",
+        "source_erhua_final": "er",
+        "display_erhua_final": "ẽr",
+        "nasalized": true,
+        "source_indices": [
+          15
+        ],
+        "project_finals": [
+          "eng"
+        ]
+      },
+      {
+        "key": "ier|oral",
+        "label": "ier",
+        "source_erhua_final": "ier",
+        "display_erhua_final": "ier",
+        "nasalized": false,
+        "source_indices": [
+          16
+        ],
+        "project_finals": [
+          "ie"
+        ]
+      },
+      {
+        "key": "üer|oral",
+        "label": "üer",
+        "source_erhua_final": "üer",
+        "display_erhua_final": "üer",
+        "nasalized": false,
+        "source_indices": [
+          17
+        ],
+        "project_finals": [
+          "üe"
+        ]
+      },
+      {
+        "key": "uer|oral",
+        "label": "uer",
+        "source_erhua_final": "uer",
+        "display_erhua_final": "uer",
+        "nasalized": false,
+        "source_indices": [
+          18,
+          19
+        ],
+        "project_finals": [
+          "uei",
+          "uen"
+        ]
+      },
+      {
+        "key": "uẽr|nasalized",
+        "label": "uẽr",
+        "source_erhua_final": "uer",
+        "display_erhua_final": "uẽr",
+        "nasalized": true,
+        "source_indices": [
+          20
+        ],
+        "project_finals": [
+          "ueng"
+        ]
+      },
+      {
+        "key": "i:er|oral",
+        "label": "i:er",
+        "source_erhua_final": "i:er",
+        "display_erhua_final": "i:er",
+        "nasalized": false,
+        "source_indices": [
+          23,
+          24
+        ],
+        "project_finals": [
+          "i",
+          "in"
+        ]
+      },
+      {
+        "key": "i:ẽr|nasalized",
+        "label": "i:ẽr",
+        "source_erhua_final": "i:er",
+        "display_erhua_final": "i:ẽr",
+        "nasalized": true,
+        "source_indices": [
+          25
+        ],
+        "project_finals": [
+          "ing"
+        ]
+      },
+      {
+        "key": "ü:er|oral",
+        "label": "ü:er",
+        "source_erhua_final": "ü:er",
+        "display_erhua_final": "ü:er",
+        "nasalized": false,
+        "source_indices": [
+          26,
+          27
+        ],
+        "project_finals": [
+          "ü",
+          "ün"
+        ]
+      },
+      {
+        "key": "er[ɤr]|oral",
+        "label": "er[ɤr]",
+        "source_erhua_final": "er",
+        "display_erhua_final": "er[ɤr]",
+        "nasalized": false,
+        "source_indices": [
+          28
+        ],
+        "project_finals": [
+          "e"
+        ]
+      },
+      {
+        "key": "ur|oral",
+        "label": "ur",
+        "source_erhua_final": "ur",
+        "display_erhua_final": "ur",
+        "nasalized": false,
+        "source_indices": [
+          29
+        ],
+        "project_finals": [
+          "u"
+        ]
+      },
+      {
+        "key": "õr|nasalized",
+        "label": "õr",
+        "source_erhua_final": "or",
+        "display_erhua_final": "õr",
+        "nasalized": true,
+        "source_indices": [
+          30
+        ],
+        "project_finals": [
+          "ong"
+        ]
+      },
+      {
+        "key": "iõr|nasalized",
+        "label": "iõr",
+        "source_erhua_final": "ior",
+        "display_erhua_final": "iõr",
+        "nasalized": true,
+        "source_indices": [
+          31
+        ],
+        "project_finals": [
+          "iong"
+        ]
+      },
+      {
+        "key": "aor|oral",
+        "label": "aor",
+        "source_erhua_final": "aor",
+        "display_erhua_final": "aor",
+        "nasalized": false,
+        "source_indices": [
+          32
+        ],
+        "project_finals": [
+          "ao"
+        ]
+      },
+      {
+        "key": "iaor|oral",
+        "label": "iaor",
+        "source_erhua_final": "iaor",
+        "display_erhua_final": "iaor",
+        "nasalized": false,
+        "source_indices": [
+          33
+        ],
+        "project_finals": [
+          "iao"
+        ]
+      },
+      {
+        "key": "our|oral",
+        "label": "our",
+        "source_erhua_final": "our",
+        "display_erhua_final": "our",
+        "nasalized": false,
+        "source_indices": [
+          34
+        ],
+        "project_finals": [
+          "ou"
+        ]
+      },
+      {
+        "key": "iour|oral",
+        "label": "iour",
+        "source_erhua_final": "iour",
+        "display_erhua_final": "iour",
+        "nasalized": false,
+        "source_indices": [
+          35
+        ],
+        "project_finals": [
+          "iou"
+        ]
+      },
+      {
+        "key": "uor|oral",
+        "label": "uor",
+        "source_erhua_final": "uor",
+        "display_erhua_final": "uor",
+        "nasalized": false,
+        "source_indices": [
+          36
+        ],
+        "project_finals": [
+          "uo"
+        ]
+      },
+      {
+        "key": "or|oral",
+        "label": "or",
+        "source_erhua_final": "or",
+        "display_erhua_final": "or",
+        "nasalized": false,
+        "source_indices": [
+          37
+        ],
+        "project_finals": [
+          "o"
+        ]
+      }
+    ],
+    "runtime_enabled": false
+  }
+}

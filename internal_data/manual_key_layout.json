@@ -1,0 +1,1071 @@
+{
+  "metadata": {
+    "name": "Yime manual key layout",
+    "version": "2026-08-17",
+    "layout_status": "canonical_yinyuan_vk_layout_v1",
+    "symbol_source": "internal_data/key_to_symbol.json",
+    "ergonomic_strategy": "Yinyuan semantics are encoded upstream; this file is the sole final Yinyuan-ID-to-physical-key projection.",
+    "design_warning": "Canonical final projection. Do not create a parallel compact layout or a direct Pinyin-to-key map; regenerate all layout artifacts through the layout change lock.",
+    "yinyuan_id_format": {
+      "noise": "N01-N27",
+      "musical": "M01-M33"
+    },
+    "notes": "yinyuan_id stores the primary stable Nxx/Mxx Yinyuan ID for one physical slot. shared_yinyuan_key_groups is the only allowed representation of controlled many-ID-to-one-key projection. literal_char is allowed only for a key's native ASCII output. Yinyuan IDs use only base and shift; retained AltGr slots are intentionally empty.",
+    "template_scope": "94 printable ASCII key slots in keyboard order plus optional space and selected AltGr slots",
+    "total_slots": 104
+  },
+  "shared_yinyuan_key_groups": [
+    {
+      "owner_yinyuan_id": "N12",
+      "member_yinyuan_ids": ["N12", "N26"],
+      "reason": "非高呼音前虚首音与语气词啊的 [ŋ] 条件首音共享撇号键。"
+    },
+    {
+      "owner_yinyuan_id": "N25",
+      "member_yinyuan_ids": ["N25", "N27"],
+      "reason": "ü 前虚首音 [ɥ] 与语气词啊的舌尖前 [z]/[ɹ] 条件首音共享反引号键。"
+    }
+  ],
+  "layers": [
+    {
+      "order": 1,
+      "row": "number",
+      "physical_key": "`",
+      "output_layer": "base",
+      "display_label": "`",
+      "yinyuan_id": "N25",
+      "literal_char": null,
+      "notes": "N25 owner; N27 shares this key through shared_yinyuan_key_groups"
+    },
+    {
+      "order": 2,
+      "row": "number",
+      "physical_key": "`",
+      "output_layer": "shift",
+      "display_label": "~",
+      "yinyuan_id": null,
+      "literal_char": "~",
+      "notes": ""
+    },
+    {
+      "order": 3,
+      "row": "number",
+      "physical_key": "1",
+      "output_layer": "base",
+      "display_label": "1",
+      "yinyuan_id": "N22",
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 4,
+      "row": "number",
+      "physical_key": "1",
+      "output_layer": "shift",
+      "display_label": "!",
+      "yinyuan_id": null,
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 5,
+      "row": "number",
+      "physical_key": "2",
+      "output_layer": "base",
+      "display_label": "2",
+      "yinyuan_id": "N21",
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 6,
+      "row": "number",
+      "physical_key": "2",
+      "output_layer": "shift",
+      "display_label": "@",
+      "yinyuan_id": null,
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 7,
+      "row": "number",
+      "physical_key": "3",
+      "output_layer": "base",
+      "display_label": "3",
+      "yinyuan_id": "N20",
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 8,
+      "row": "number",
+      "physical_key": "3",
+      "output_layer": "shift",
+      "display_label": "#",
+      "yinyuan_id": null,
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 9,
+      "row": "number",
+      "physical_key": "4",
+      "output_layer": "base",
+      "display_label": "4",
+      "yinyuan_id": "N15",
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 10,
+      "row": "number",
+      "physical_key": "4",
+      "output_layer": "shift",
+      "display_label": "$",
+      "yinyuan_id": null,
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 11,
+      "row": "number",
+      "physical_key": "5",
+      "output_layer": "base",
+      "display_label": "5",
+      "yinyuan_id": "N14",
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 12,
+      "row": "number",
+      "physical_key": "5",
+      "output_layer": "shift",
+      "display_label": "%",
+      "yinyuan_id": null,
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 13,
+      "row": "number",
+      "physical_key": "6",
+      "output_layer": "base",
+      "display_label": "6",
+      "yinyuan_id": "N13",
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 14,
+      "row": "number",
+      "physical_key": "6",
+      "output_layer": "shift",
+      "display_label": "^",
+      "yinyuan_id": null,
+      "literal_char": "^",
+      "notes": ""
+    },
+    {
+      "order": 15,
+      "row": "number",
+      "physical_key": "7",
+      "output_layer": "base",
+      "display_label": "7",
+      "yinyuan_id": "N16",
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 16,
+      "row": "number",
+      "physical_key": "7",
+      "output_layer": "shift",
+      "display_label": "&",
+      "yinyuan_id": null,
+      "literal_char": "&",
+      "notes": ""
+    },
+    {
+      "order": 17,
+      "row": "number",
+      "physical_key": "8",
+      "output_layer": "base",
+      "display_label": "8",
+      "yinyuan_id": "N17",
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 18,
+      "row": "number",
+      "physical_key": "8",
+      "output_layer": "shift",
+      "display_label": "*",
+      "yinyuan_id": null,
+      "literal_char": "*",
+      "notes": ""
+    },
+    {
+      "order": 19,
+      "row": "number",
+      "physical_key": "9",
+      "output_layer": "base",
+      "display_label": "9",
+      "yinyuan_id": "N18",
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 20,
+      "row": "number",
+      "physical_key": "9",
+      "output_layer": "shift",
+      "display_label": "(",
+      "yinyuan_id": null,
+      "literal_char": "(",
+      "notes": ""
+    },
+    {
+      "order": 21,
+      "row": "number",
+      "physical_key": "0",
+      "output_layer": "base",
+      "display_label": "0",
+      "yinyuan_id": "N19",
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 22,
+      "row": "number",
+      "physical_key": "0",
+      "output_layer": "shift",
+      "display_label": ")",
+      "yinyuan_id": null,
+      "literal_char": ")",
+      "notes": ""
+    },
+    {
+      "order": 23,
+      "row": "number",
+      "physical_key": "-",
+      "output_layer": "base",
+      "display_label": "-",
+      "yinyuan_id": "N04",
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 24,
+      "row": "number",
+      "physical_key": "-",
+      "output_layer": "shift",
+      "display_label": "_",
+      "yinyuan_id": null,
+      "literal_char": "_",
+      "notes": ""
+    },
+    {
+      "order": 25,
+      "row": "number",
+      "physical_key": "=",
+      "output_layer": "base",
+      "display_label": "=",
+      "yinyuan_id": "N24",
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 26,
+      "row": "number",
+      "physical_key": "=",
+      "output_layer": "shift",
+      "display_label": "+",
+      "yinyuan_id": null,
+      "literal_char": "+",
+      "notes": ""
+    },
+    {
+      "order": 27,
+      "row": "top",
+      "physical_key": "q",
+      "output_layer": "base",
+      "display_label": "q",
+      "yinyuan_id": "N10",
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 28,
+      "row": "top",
+      "physical_key": "q",
+      "output_layer": "shift",
+      "display_label": "Q",
+      "yinyuan_id": null,
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 29,
+      "row": "top",
+      "physical_key": "w",
+      "output_layer": "base",
+      "display_label": "w",
+      "yinyuan_id": "M15",
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 30,
+      "row": "top",
+      "physical_key": "w",
+      "output_layer": "shift",
+      "display_label": "W",
+      "yinyuan_id": null,
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 31,
+      "row": "top",
+      "physical_key": "e",
+      "output_layer": "base",
+      "display_label": "e",
+      "yinyuan_id": "M14",
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 32,
+      "row": "top",
+      "physical_key": "e",
+      "output_layer": "shift",
+      "display_label": "E",
+      "yinyuan_id": null,
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 33,
+      "row": "top",
+      "physical_key": "r",
+      "output_layer": "base",
+      "display_label": "r",
+      "yinyuan_id": "M13",
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 34,
+      "row": "top",
+      "physical_key": "r",
+      "output_layer": "shift",
+      "display_label": "R",
+      "yinyuan_id": null,
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 35,
+      "row": "top",
+      "physical_key": "t",
+      "output_layer": "base",
+      "display_label": "t",
+      "yinyuan_id": "N06",
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 36,
+      "row": "top",
+      "physical_key": "t",
+      "output_layer": "shift",
+      "display_label": "T",
+      "yinyuan_id": null,
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 37,
+      "row": "top",
+      "physical_key": "y",
+      "output_layer": "base",
+      "display_label": "y",
+      "yinyuan_id": "N23",
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 38,
+      "row": "top",
+      "physical_key": "y",
+      "output_layer": "shift",
+      "display_label": "Y",
+      "yinyuan_id": null,
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 39,
+      "row": "top",
+      "physical_key": "u",
+      "output_layer": "base",
+      "display_label": "u",
+      "yinyuan_id": "M04",
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 40,
+      "row": "top",
+      "physical_key": "u",
+      "output_layer": "shift",
+      "display_label": "U",
+      "yinyuan_id": "M22",
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 41,
+      "row": "top",
+      "physical_key": "i",
+      "output_layer": "base",
+      "display_label": "i",
+      "yinyuan_id": "M05",
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 42,
+      "row": "top",
+      "physical_key": "i",
+      "output_layer": "shift",
+      "display_label": "I",
+      "yinyuan_id": "M23",
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 43,
+      "row": "top",
+      "physical_key": "o",
+      "output_layer": "base",
+      "display_label": "o",
+      "yinyuan_id": "M06",
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 44,
+      "row": "top",
+      "physical_key": "o",
+      "output_layer": "shift",
+      "display_label": "O",
+      "yinyuan_id": "M24",
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 45,
+      "row": "top",
+      "physical_key": "p",
+      "output_layer": "base",
+      "display_label": "p",
+      "yinyuan_id": "N02",
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 46,
+      "row": "top",
+      "physical_key": "p",
+      "output_layer": "shift",
+      "display_label": "P",
+      "yinyuan_id": null,
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 47,
+      "row": "top",
+      "physical_key": "[",
+      "output_layer": "base",
+      "display_label": "[",
+      "yinyuan_id": "N03",
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 48,
+      "row": "top",
+      "physical_key": "[",
+      "output_layer": "shift",
+      "display_label": "{",
+      "yinyuan_id": null,
+      "literal_char": "{",
+      "notes": ""
+    },
+    {
+      "order": 49,
+      "row": "top",
+      "physical_key": "]",
+      "output_layer": "base",
+      "display_label": "]",
+      "yinyuan_id": "N05",
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 50,
+      "row": "top",
+      "physical_key": "]",
+      "output_layer": "shift",
+      "display_label": "}",
+      "yinyuan_id": null,
+      "literal_char": "}",
+      "notes": ""
+    },
+    {
+      "order": 51,
+      "row": "top",
+      "physical_key": "\\",
+      "output_layer": "base",
+      "display_label": "\\",
+      "yinyuan_id": "N07",
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 52,
+      "row": "top",
+      "physical_key": "\\",
+      "output_layer": "shift",
+      "display_label": "|",
+      "yinyuan_id": null,
+      "literal_char": "|",
+      "notes": ""
+    },
+    {
+      "order": 53,
+      "row": "home",
+      "physical_key": "a",
+      "output_layer": "base",
+      "display_label": "a",
+      "yinyuan_id": "M28",
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 54,
+      "row": "home",
+      "physical_key": "a",
+      "output_layer": "shift",
+      "display_label": "A",
+      "yinyuan_id": null,
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 55,
+      "row": "home",
+      "physical_key": "s",
+      "output_layer": "base",
+      "display_label": "s",
+      "yinyuan_id": "M12",
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 56,
+      "row": "home",
+      "physical_key": "s",
+      "output_layer": "shift",
+      "display_label": "S",
+      "yinyuan_id": null,
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 57,
+      "row": "home",
+      "physical_key": "d",
+      "output_layer": "base",
+      "display_label": "d",
+      "yinyuan_id": "M11",
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 58,
+      "row": "home",
+      "physical_key": "d",
+      "output_layer": "shift",
+      "display_label": "D",
+      "yinyuan_id": null,
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 59,
+      "row": "home",
+      "physical_key": "f",
+      "output_layer": "base",
+      "display_label": "f",
+      "yinyuan_id": "M10",
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 60,
+      "row": "home",
+      "physical_key": "f",
+      "output_layer": "shift",
+      "display_label": "F",
+      "yinyuan_id": null,
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 61,
+      "row": "home",
+      "physical_key": "g",
+      "output_layer": "base",
+      "display_label": "g",
+      "yinyuan_id": "N09",
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 62,
+      "row": "home",
+      "physical_key": "g",
+      "output_layer": "shift",
+      "display_label": "G",
+      "yinyuan_id": "M32",
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 63,
+      "row": "home",
+      "physical_key": "h",
+      "output_layer": "base",
+      "display_label": "h",
+      "yinyuan_id": "N11",
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 64,
+      "row": "home",
+      "physical_key": "h",
+      "output_layer": "shift",
+      "display_label": "H",
+      "yinyuan_id": null,
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 65,
+      "row": "home",
+      "physical_key": "j",
+      "output_layer": "base",
+      "display_label": "j",
+      "yinyuan_id": "M01",
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 66,
+      "row": "home",
+      "physical_key": "j",
+      "output_layer": "shift",
+      "display_label": "J",
+      "yinyuan_id": "M19",
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 67,
+      "row": "home",
+      "physical_key": "j",
+      "output_layer": "altgr",
+      "display_label": "AltGr+J",
+      "yinyuan_id": null,
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 68,
+      "row": "home",
+      "physical_key": "k",
+      "output_layer": "base",
+      "display_label": "k",
+      "yinyuan_id": "M02",
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 69,
+      "row": "home",
+      "physical_key": "k",
+      "output_layer": "shift",
+      "display_label": "K",
+      "yinyuan_id": "M20",
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 70,
+      "row": "home",
+      "physical_key": "k",
+      "output_layer": "altgr",
+      "display_label": "AltGr+K",
+      "yinyuan_id": null,
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 71,
+      "row": "home",
+      "physical_key": "l",
+      "output_layer": "base",
+      "display_label": "l",
+      "yinyuan_id": "M03",
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 72,
+      "row": "home",
+      "physical_key": "l",
+      "output_layer": "shift",
+      "display_label": "L",
+      "yinyuan_id": "M21",
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 73,
+      "row": "home",
+      "physical_key": "l",
+      "output_layer": "altgr",
+      "display_label": "AltGr+L",
+      "yinyuan_id": null,
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 74,
+      "row": "home",
+      "physical_key": ";",
+      "output_layer": "base",
+      "display_label": ";",
+      "yinyuan_id": "M31",
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 75,
+      "row": "home",
+      "physical_key": ";",
+      "output_layer": "shift",
+      "display_label": ":",
+      "yinyuan_id": null,
+      "literal_char": ":",
+      "notes": ""
+    },
+    {
+      "order": 76,
+      "row": "home",
+      "physical_key": "'",
+      "output_layer": "base",
+      "display_label": "'",
+      "yinyuan_id": "N12",
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 77,
+      "row": "home",
+      "physical_key": "'",
+      "output_layer": "shift",
+      "display_label": "\"",
+      "yinyuan_id": null,
+      "literal_char": "\"",
+      "notes": ""
+    },
+    {
+      "order": 78,
+      "row": "bottom",
+      "physical_key": "z",
+      "output_layer": "base",
+      "display_label": "z",
+      "yinyuan_id": "M30",
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 79,
+      "row": "bottom",
+      "physical_key": "z",
+      "output_layer": "shift",
+      "display_label": "Z",
+      "yinyuan_id": null,
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 80,
+      "row": "bottom",
+      "physical_key": "x",
+      "output_layer": "base",
+      "display_label": "x",
+      "yinyuan_id": "M18",
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 81,
+      "row": "bottom",
+      "physical_key": "x",
+      "output_layer": "shift",
+      "display_label": "X",
+      "yinyuan_id": null,
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 82,
+      "row": "bottom",
+      "physical_key": "c",
+      "output_layer": "base",
+      "display_label": "c",
+      "yinyuan_id": "M17",
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 83,
+      "row": "bottom",
+      "physical_key": "c",
+      "output_layer": "shift",
+      "display_label": "C",
+      "yinyuan_id": null,
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 84,
+      "row": "bottom",
+      "physical_key": "v",
+      "output_layer": "base",
+      "display_label": "v",
+      "yinyuan_id": "M16",
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 85,
+      "row": "bottom",
+      "physical_key": "v",
+      "output_layer": "shift",
+      "display_label": "V",
+      "yinyuan_id": null,
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 86,
+      "row": "bottom",
+      "physical_key": "b",
+      "output_layer": "base",
+      "display_label": "b",
+      "yinyuan_id": "N01",
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 87,
+      "row": "bottom",
+      "physical_key": "b",
+      "output_layer": "shift",
+      "display_label": "B",
+      "yinyuan_id": null,
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 88,
+      "row": "bottom",
+      "physical_key": "n",
+      "output_layer": "base",
+      "display_label": "n",
+      "yinyuan_id": "N08",
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 89,
+      "row": "bottom",
+      "physical_key": "n",
+      "output_layer": "shift",
+      "display_label": "N",
+      "yinyuan_id": "M29",
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 90,
+      "row": "bottom",
+      "physical_key": "m",
+      "output_layer": "base",
+      "display_label": "m",
+      "yinyuan_id": "M07",
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 91,
+      "row": "bottom",
+      "physical_key": "m",
+      "output_layer": "shift",
+      "display_label": "M",
+      "yinyuan_id": "M25",
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 92,
+      "row": "bottom",
+      "physical_key": ",",
+      "output_layer": "base",
+      "display_label": ",",
+      "yinyuan_id": "M08",
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 93,
+      "row": "bottom",
+      "physical_key": ",",
+      "output_layer": "shift",
+      "display_label": "<",
+      "yinyuan_id": "M26",
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 94,
+      "row": "bottom",
+      "physical_key": ".",
+      "output_layer": "base",
+      "display_label": ".",
+      "yinyuan_id": "M09",
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 95,
+      "row": "bottom",
+      "physical_key": ".",
+      "output_layer": "shift",
+      "display_label": ">",
+      "yinyuan_id": "M27",
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 96,
+      "row": "bottom",
+      "physical_key": "/",
+      "output_layer": "base",
+      "display_label": "/",
+      "yinyuan_id": "M33",
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 97,
+      "row": "bottom",
+      "physical_key": "/",
+      "output_layer": "shift",
+      "display_label": "?",
+      "yinyuan_id": null,
+      "literal_char": "?",
+      "notes": ""
+    },
+    {
+      "order": 98,
+      "row": "space",
+      "physical_key": "space",
+      "output_layer": "base",
+      "display_label": "Space",
+      "yinyuan_id": null,
+      "literal_char": " ",
+      "notes": "可选；如不参与布局可保留为空"
+    },
+    {
+      "order": 99,
+      "row": "space",
+      "physical_key": "space",
+      "output_layer": "shift",
+      "display_label": "Shift+Space",
+      "yinyuan_id": null,
+      "literal_char": " ",
+      "notes": "与生成的 KLC 保持一致"
+    },
+    {
+      "order": 100,
+      "row": "top",
+      "physical_key": "p",
+      "output_layer": "altgr",
+      "display_label": "AltGr+P",
+      "yinyuan_id": null,
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 101,
+      "row": "top",
+      "physical_key": "[",
+      "output_layer": "altgr",
+      "display_label": "AltGr+[",
+      "yinyuan_id": null,
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 102,
+      "row": "top",
+      "physical_key": "]",
+      "output_layer": "altgr",
+      "display_label": "AltGr+]",
+      "yinyuan_id": null,
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 103,
+      "row": "top",
+      "physical_key": "y",
+      "output_layer": "altgr",
+      "display_label": "AltGr+Y",
+      "yinyuan_id": null,
+      "literal_char": null,
+      "notes": ""
+    },
+    {
+      "order": 104,
+      "row": "top",
+      "physical_key": "u",
+      "output_layer": "altgr",
+      "display_label": "AltGr+U",
+      "yinyuan_id": null,
+      "literal_char": null,
+      "notes": ""
+    }
+  ]
+}

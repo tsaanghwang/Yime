@@ -1,0 +1,200 @@
+{
+  "schema_version": 1,
+  "model_id": "yime-zaoyin-pianyin-v1",
+  "status": "runtime_registry",
+  "runtime_enabled": true,
+  "description": "噪音类片音真源。把规范拼音首音、条件音值、规范拼音还原和稳定音元登记分开；N25-N27 已接入稳定音元登记，其中 N26/N27 仍须由经审核的语境规则显式引用，不自动生成候选。",
+  "source_refs": {
+    "SRC-HYPY-1958": {
+      "title": "汉语拼音方案",
+      "authority": "中华人民共和国教育部",
+      "url": "https://hudong.moe.gov.cn/jyb_sjzl/ziliao/A19/195802/t19580201_186000.html",
+      "scope": "二十一声母及零声母拼写体系"
+    },
+    "SRC-TUP-IPA-2022": {
+      "title": "数字化国际中文教育（2022）样章中的汉语拼音与 IPA 对照",
+      "authority": "清华大学出版社",
+      "url": "https://www.tup.tsinghua.edu.cn/upload/books/yz/098309-01.pdf",
+      "scope": "规范声母的主要 IPA 对应及 i/u/ü 的半元音实现 j/w/ɥ"
+    },
+    "SRC-WU-ZERO-1992": {
+      "title": "普通话零声母音节起始段的声学分析",
+      "author": "吴宗济",
+      "publication": "第二届全国人机语音通讯学术会议论文集",
+      "url": "https://chinese-thought.ecnu.edu.cn/b7/b2/c33877a374706/page.htm",
+      "scope": "真零、通音、浊擦音和喉塞音四类零声母起始实现"
+    },
+    "SRC-A-SANDHI-2017": {
+      "title": "香港中文准教师对普通话“啊”音变认知研究",
+      "author": "梁兰馨",
+      "authority": "香港教育大学",
+      "url": "https://www.lib.eduhk.hk/pure-data/pub/201721663/201721663_1.pdf",
+      "scope": "语气词“啊”受前一音节末音影响形成 ya/wa/na/nga，以及舌尖前 ɹa/za、舌尖后或 er 后 ɻa/ʐa"
+    }
+  },
+  "articulatory_memory_groups": {
+    "description": "按大致固定发音部位分组，并参照发音方法排列；用于记忆、练习和后续分组，不改变稳定音元 ID。",
+    "numbering": "memory_no",
+    "group_size": 4,
+    "groups": [
+      {
+        "group_no": 1,
+        "name": "唇音（双唇、唇齿）",
+        "memory_numbers": [1, 2, 3, 4],
+        "members": ["b", "p", "f", "m"]
+      },
+      {
+        "group_no": 2,
+        "name": "上龈音（舌尖中）",
+        "memory_numbers": [5, 6, 7, 8],
+        "members": ["d", "t", "l", "n"]
+      },
+      {
+        "group_no": 3,
+        "name": "软腭音（舌根）",
+        "memory_numbers": [9, 10, 11, 12],
+        "members": ["g", "k", "h", "ŋ"]
+      },
+      {
+        "group_no": 4,
+        "name": "上齿背音（舌尖前）",
+        "memory_numbers": [13, 14, 15, 16],
+        "members": ["z", "c", "s", "a_apical"]
+      },
+      {
+        "group_no": 5,
+        "name": "龈腭间音（卷舌）",
+        "memory_numbers": [17, 18, 19, 20],
+        "members": ["zh", "ch", "sh", "r"]
+      },
+      {
+        "group_no": 6,
+        "name": "硬腭前部音（舌面前）",
+        "memory_numbers": [21, 22, 23, 24],
+        "members": ["j", "q", "x", "y"]
+      },
+      {
+        "group_no": 7,
+        "name": "后置组三项",
+        "group_kind": "mnemonic_tail",
+        "memory_numbers": [25, 26, 27],
+        "members": ["'", "w", "ɥ"],
+        "member_descriptions": {
+          "'": "舌位为非高的乐音前的虚首音",
+          "w": "音质为 [u] 的高乐音前的虚首音",
+          "ɥ": "音质为 [y] 的高乐音前的虚首音"
+        }
+      }
+    ],
+    "notes": [
+      "memory_no 仅表示分类记忆顺序；yinyuan_id 仍是跨文件、布局和运行时使用的稳定标识。",
+      "a_apical 是语气词‘啊’的舌尖条件首音合并标签：在 [ɿ] 后实现为 [ɹa]/[za]，在 [ʅ] 或 er 后实现为 [ɻa]/[ʐa]；放入上齿背组只为保持记忆顺序，不表示四种实现的发音部位完全相同。",
+      "第七组只是四项记忆编排后的后置组三项，不是完整的语音学类别或结构类别。",
+      "虚首音是另一条结构分类轴：除后置组的 '、w、ɥ 外，还包括为保持硬腭前部四项组而排在第六组的 y[j]。"
+    ]
+  },
+  "runtime_projection": {
+    "stable_registry": "syllable/yinyuan/zaoyin_yinyuan_enhanced.json",
+    "active_yinyuan_ids": [
+      "N01", "N02", "N03", "N04", "N05", "N06", "N07", "N08",
+      "N09", "N10", "N11", "N12", "N13", "N14", "N15", "N16",
+      "N17", "N18", "N19", "N20", "N21", "N22", "N23", "N24",
+      "N25", "N26", "N27"
+    ],
+    "compatibility_aliases": {},
+    "deferred_yinyuan_ids": []
+  },
+  "entries": {
+    "b": {"yinyuan_id": "N01", "role": "canonical_initial", "canonical_pinyin_initial": "b", "ipa": ["p"], "activation": "runtime_compatible", "source_refs": ["SRC-HYPY-1958", "SRC-TUP-IPA-2022"]},
+    "p": {"yinyuan_id": "N02", "role": "canonical_initial", "canonical_pinyin_initial": "p", "ipa": ["pʰ"], "activation": "runtime_compatible", "source_refs": ["SRC-HYPY-1958", "SRC-TUP-IPA-2022"]},
+    "f": {"yinyuan_id": "N03", "role": "canonical_initial", "canonical_pinyin_initial": "f", "ipa": ["f"], "activation": "runtime_compatible", "source_refs": ["SRC-HYPY-1958", "SRC-TUP-IPA-2022"]},
+    "m": {"yinyuan_id": "N04", "role": "canonical_initial", "canonical_pinyin_initial": "m", "ipa": ["m"], "activation": "runtime_compatible", "source_refs": ["SRC-HYPY-1958", "SRC-TUP-IPA-2022"]},
+    "d": {"yinyuan_id": "N05", "role": "canonical_initial", "canonical_pinyin_initial": "d", "ipa": ["t"], "activation": "runtime_compatible", "source_refs": ["SRC-HYPY-1958", "SRC-TUP-IPA-2022"]},
+    "t": {"yinyuan_id": "N06", "role": "canonical_initial", "canonical_pinyin_initial": "t", "ipa": ["tʰ"], "activation": "runtime_compatible", "source_refs": ["SRC-HYPY-1958", "SRC-TUP-IPA-2022"]},
+    "l": {"yinyuan_id": "N07", "role": "canonical_initial", "canonical_pinyin_initial": "l", "ipa": ["l"], "activation": "runtime_compatible", "source_refs": ["SRC-HYPY-1958", "SRC-TUP-IPA-2022"]},
+    "n": {"yinyuan_id": "N08", "role": "canonical_initial", "canonical_pinyin_initial": "n", "ipa": ["n"], "activation": "runtime_compatible", "source_refs": ["SRC-HYPY-1958", "SRC-TUP-IPA-2022"]},
+    "g": {"yinyuan_id": "N09", "role": "canonical_initial", "canonical_pinyin_initial": "g", "ipa": ["k"], "activation": "runtime_compatible", "source_refs": ["SRC-HYPY-1958", "SRC-TUP-IPA-2022"]},
+    "k": {"yinyuan_id": "N10", "role": "canonical_initial", "canonical_pinyin_initial": "k", "ipa": ["kʰ"], "activation": "runtime_compatible", "source_refs": ["SRC-HYPY-1958", "SRC-TUP-IPA-2022"]},
+    "h": {"yinyuan_id": "N11", "role": "canonical_initial", "canonical_pinyin_initial": "h", "ipa": ["x"], "activation": "runtime_compatible", "source_refs": ["SRC-HYPY-1958", "SRC-TUP-IPA-2022"]},
+    "'": {
+      "yinyuan_id": "N12",
+      "role": "zero_initial",
+      "structural_role": "virtual_initial",
+      "canonical_pinyin_initial": "",
+      "ipa": ["", "ʔ", "ɣ"],
+      "activation": "runtime_compatible",
+      "source_refs": ["SRC-HYPY-1958", "SRC-WU-ZERO-1992"],
+      "notes": ["空串表示结构上的零首音；ʔ/ɣ 是条件实现，不是规范拼音声母。", "旧双隔音符 '' 仅作为历史工程记号，不再作为独立真源标签。"]
+    },
+    "z": {"yinyuan_id": "N13", "role": "canonical_initial", "canonical_pinyin_initial": "z", "ipa": ["ts"], "activation": "runtime_compatible", "source_refs": ["SRC-HYPY-1958", "SRC-TUP-IPA-2022"]},
+    "c": {"yinyuan_id": "N14", "role": "canonical_initial", "canonical_pinyin_initial": "c", "ipa": ["tsʰ"], "activation": "runtime_compatible", "source_refs": ["SRC-HYPY-1958", "SRC-TUP-IPA-2022"]},
+    "s": {"yinyuan_id": "N15", "role": "canonical_initial", "canonical_pinyin_initial": "s", "ipa": ["s"], "activation": "runtime_compatible", "source_refs": ["SRC-HYPY-1958", "SRC-TUP-IPA-2022"]},
+    "zh": {"yinyuan_id": "N16", "role": "canonical_initial", "canonical_pinyin_initial": "zh", "ipa": ["ʈʂ"], "activation": "runtime_compatible", "source_refs": ["SRC-HYPY-1958", "SRC-TUP-IPA-2022"]},
+    "ch": {"yinyuan_id": "N17", "role": "canonical_initial", "canonical_pinyin_initial": "ch", "ipa": ["ʈʂʰ"], "activation": "runtime_compatible", "source_refs": ["SRC-HYPY-1958", "SRC-TUP-IPA-2022"]},
+    "sh": {"yinyuan_id": "N18", "role": "canonical_initial", "canonical_pinyin_initial": "sh", "ipa": ["ʂ"], "activation": "runtime_compatible", "source_refs": ["SRC-HYPY-1958", "SRC-TUP-IPA-2022"]},
+    "r": {"yinyuan_id": "N19", "role": "canonical_initial", "canonical_pinyin_initial": "r", "ipa": ["ɻ", "ʐ"], "activation": "runtime_compatible", "source_refs": ["SRC-HYPY-1958", "SRC-TUP-IPA-2022"]},
+    "j": {"yinyuan_id": "N20", "role": "canonical_initial", "canonical_pinyin_initial": "j", "ipa": ["tɕ"], "activation": "runtime_compatible", "source_refs": ["SRC-HYPY-1958", "SRC-TUP-IPA-2022"]},
+    "q": {"yinyuan_id": "N21", "role": "canonical_initial", "canonical_pinyin_initial": "q", "ipa": ["tɕʰ"], "activation": "runtime_compatible", "source_refs": ["SRC-HYPY-1958", "SRC-TUP-IPA-2022"]},
+    "x": {"yinyuan_id": "N22", "role": "canonical_initial", "canonical_pinyin_initial": "x", "ipa": ["ɕ"], "activation": "runtime_compatible", "source_refs": ["SRC-HYPY-1958", "SRC-TUP-IPA-2022"]},
+    "y": {
+      "yinyuan_id": "N23",
+      "role": "orthographic_semivowel",
+      "structural_role": "virtual_initial",
+      "canonical_pinyin_initial": "y",
+      "ipa": ["j"],
+      "activation": "runtime_compatible",
+      "source_refs": ["SRC-HYPY-1958", "SRC-TUP-IPA-2022"],
+      "conditions": {"pinyin_families": ["yi", "ya", "ye", "yao", "you", "yan", "yin", "yang", "ying"]}
+    },
+    "w": {
+      "yinyuan_id": "N24",
+      "role": "orthographic_semivowel",
+      "structural_role": "virtual_initial",
+      "canonical_pinyin_initial": "w",
+      "ipa": ["w"],
+      "activation": "runtime_compatible",
+      "source_refs": ["SRC-HYPY-1958", "SRC-TUP-IPA-2022"],
+      "conditions": {"pinyin_families": ["wu", "wa", "wo", "wai", "wei", "wan", "wen", "wang", "weng"]}
+    },
+    "ɥ": {
+      "yinyuan_id": "N25",
+      "role": "orthographic_semivowel",
+      "structural_role": "virtual_initial",
+      "canonical_pinyin_initial": "y",
+      "ipa": ["ɥ"],
+      "activation": "runtime_compatible",
+      "source_refs": ["SRC-TUP-IPA-2022"],
+      "conditions": {"pinyin_families": ["yu", "yue", "yuan", "yun", "yong"]},
+      "canonical_restore": {"strategy": "yu_family_orthography", "target_pinyin_initial": "y"}
+    },
+    "ŋ": {
+      "yinyuan_id": "N26",
+      "role": "contextual_particle_onset",
+      "canonical_pinyin_initial": "",
+      "ipa": ["ŋ"],
+      "activation": "runtime_compatible",
+      "source_refs": ["SRC-A-SANDHI-2017"],
+      "conditions": {"candidate_text": "啊", "left_surface_final": ["ŋ"]},
+      "canonical_restore": {"strategy": "particle_a_zero_initial", "target_pinyin_initial": "'"}
+    },
+    "a_apical": {
+      "yinyuan_id": "N27",
+      "role": "contextual_particle_onset",
+      "canonical_pinyin_initial": "",
+      "ipa": ["ɹ", "z"],
+      "activation": "runtime_compatible",
+      "source_refs": ["SRC-A-SANDHI-2017"],
+      "conditions": {
+        "candidate_text": "啊",
+        "conditional_realizations": [
+          {
+            "when": {"left_surface_final": ["ɿ"]},
+            "surface_forms": ["ɹa", "za"]
+          }
+        ]
+      },
+      "canonical_restore": {"strategy": "particle_a_zero_initial", "target_pinyin_initial": "'"},
+      "notes": ["N27 只登记舌尖前 [ɹ]/[z]；舌尖后 [ɻ]/[ʐ] 继续使用 N19(r)。", "这些形式仍统一还原为规范拼音零首音语气词‘啊’，不还原成规范拼音 r 或 z 声母。"]
+    }
+  }
+}

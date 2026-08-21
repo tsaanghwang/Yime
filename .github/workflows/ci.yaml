@@ -28,7 +28,9 @@ jobs:
           cache-dependency-path: tools/lexicon/pyproject.toml
       - name: Verify offline tool environment and locked handoff
         shell: pwsh
-        run: .\tools\lexicon\test.ps1
+        run: |
+          python -m pip install -e ".\tools\lexicon[test]"
+          .\tools\lexicon\test.ps1
 
   rust-i686-host:
     name: rust-i686-host

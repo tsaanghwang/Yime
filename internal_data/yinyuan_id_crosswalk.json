@@ -1,0 +1,1335 @@
+{
+  "metadata": {
+    "description": "Yinyuan ID/BMP/SPUA-B/physical-key crosswalk generated from current source JSON files.",
+    "runtime_source": "syllable\\codec\\key_to_code.json",
+    "canonical_source": "internal_data\\key_to_symbol.json",
+    "projection_source": "internal_data\\bmp_pua_trial_projection.json",
+    "layout_source": "internal_data\\manual_key_layout.json",
+    "rows": 60,
+    "runtime_projection_mismatches": 0,
+    "bmp_canonical_differences": 60,
+    "rows_with_issues": 0
+  },
+  "rows": [
+    {
+      "yinyuan_id": "N01",
+      "allocation_slot": 1,
+      "category": "initial",
+      "label": "b",
+      "display_labels": [
+        "b"
+      ],
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E4E9",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E4E9",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀀",
+      "canonical_spua_b_codepoint": "U+100000",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "b:base:b"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "yinyuan_id": "N02",
+      "allocation_slot": 2,
+      "category": "initial",
+      "label": "p",
+      "display_labels": [
+        "p"
+      ],
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E4EA",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E4EA",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀁",
+      "canonical_spua_b_codepoint": "U+100001",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "p:base:p"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "yinyuan_id": "N03",
+      "allocation_slot": 3,
+      "category": "initial",
+      "label": "f",
+      "display_labels": [
+        "["
+      ],
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E4EB",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E4EB",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀂",
+      "canonical_spua_b_codepoint": "U+100002",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "[:base:["
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "yinyuan_id": "N04",
+      "allocation_slot": 4,
+      "category": "initial",
+      "label": "m",
+      "display_labels": [
+        "-"
+      ],
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E4EC",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E4EC",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀃",
+      "canonical_spua_b_codepoint": "U+100003",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "-:base:-"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "yinyuan_id": "N05",
+      "allocation_slot": 5,
+      "category": "initial",
+      "label": "d",
+      "display_labels": [
+        "]"
+      ],
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E4ED",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E4ED",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀄",
+      "canonical_spua_b_codepoint": "U+100004",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "]:base:]"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "yinyuan_id": "N06",
+      "allocation_slot": 6,
+      "category": "initial",
+      "label": "t",
+      "display_labels": [
+        "t"
+      ],
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E4EE",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E4EE",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀅",
+      "canonical_spua_b_codepoint": "U+100005",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "t:base:t"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "yinyuan_id": "N07",
+      "allocation_slot": 7,
+      "category": "initial",
+      "label": "l",
+      "display_labels": [
+        "\\"
+      ],
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E4EF",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E4EF",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀆",
+      "canonical_spua_b_codepoint": "U+100006",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "\\:base:\\"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "yinyuan_id": "N08",
+      "allocation_slot": 8,
+      "category": "initial",
+      "label": "n",
+      "display_labels": [
+        "n"
+      ],
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E4F0",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E4F0",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀇",
+      "canonical_spua_b_codepoint": "U+100007",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "n:base:n"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "yinyuan_id": "N09",
+      "allocation_slot": 9,
+      "category": "initial",
+      "label": "g",
+      "display_labels": [
+        "g"
+      ],
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E4F1",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E4F1",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀈",
+      "canonical_spua_b_codepoint": "U+100008",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "g:base:g"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "yinyuan_id": "N10",
+      "allocation_slot": 10,
+      "category": "initial",
+      "label": "k",
+      "display_labels": [
+        "q"
+      ],
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E4F2",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E4F2",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀉",
+      "canonical_spua_b_codepoint": "U+100009",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "q:base:q"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "yinyuan_id": "N11",
+      "allocation_slot": 11,
+      "category": "initial",
+      "label": "h",
+      "display_labels": [
+        "h"
+      ],
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E4F3",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E4F3",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀊",
+      "canonical_spua_b_codepoint": "U+10000A",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "h:base:h"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "yinyuan_id": "N12",
+      "allocation_slot": 12,
+      "category": "initial",
+      "label": "'",
+      "display_labels": [
+        "'"
+      ],
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E4F4",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E4F4",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀋",
+      "canonical_spua_b_codepoint": "U+10000B",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "':base:'"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "yinyuan_id": "N13",
+      "allocation_slot": 13,
+      "category": "initial",
+      "label": "z",
+      "display_labels": [
+        "6"
+      ],
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E4F5",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E4F5",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀌",
+      "canonical_spua_b_codepoint": "U+10000C",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "6:base:6"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "yinyuan_id": "N14",
+      "allocation_slot": 14,
+      "category": "initial",
+      "label": "c",
+      "display_labels": [
+        "5"
+      ],
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E4F6",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E4F6",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀍",
+      "canonical_spua_b_codepoint": "U+10000D",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "5:base:5"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "yinyuan_id": "N15",
+      "allocation_slot": 15,
+      "category": "initial",
+      "label": "s",
+      "display_labels": [
+        "4"
+      ],
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E4F7",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E4F7",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀎",
+      "canonical_spua_b_codepoint": "U+10000E",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "4:base:4"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "yinyuan_id": "N16",
+      "allocation_slot": 16,
+      "category": "initial",
+      "label": "zh",
+      "display_labels": [
+        "7"
+      ],
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E4F8",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E4F8",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀏",
+      "canonical_spua_b_codepoint": "U+10000F",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "7:base:7"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "yinyuan_id": "N17",
+      "allocation_slot": 17,
+      "category": "initial",
+      "label": "ch",
+      "display_labels": [
+        "8"
+      ],
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E4F9",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E4F9",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀐",
+      "canonical_spua_b_codepoint": "U+100010",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "8:base:8"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "yinyuan_id": "N18",
+      "allocation_slot": 18,
+      "category": "initial",
+      "label": "sh",
+      "display_labels": [
+        "9"
+      ],
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E4FA",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E4FA",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀑",
+      "canonical_spua_b_codepoint": "U+100011",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "9:base:9"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "yinyuan_id": "N19",
+      "allocation_slot": 19,
+      "category": "initial",
+      "label": "r",
+      "display_labels": [
+        "0"
+      ],
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E4FB",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E4FB",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀒",
+      "canonical_spua_b_codepoint": "U+100012",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "0:base:0"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "yinyuan_id": "N20",
+      "allocation_slot": 20,
+      "category": "initial",
+      "label": "j",
+      "display_labels": [
+        "3"
+      ],
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E4FC",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E4FC",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀓",
+      "canonical_spua_b_codepoint": "U+100013",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "3:base:3"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "yinyuan_id": "N21",
+      "allocation_slot": 21,
+      "category": "initial",
+      "label": "q",
+      "display_labels": [
+        "2"
+      ],
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E4FD",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E4FD",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀔",
+      "canonical_spua_b_codepoint": "U+100014",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "2:base:2"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "yinyuan_id": "N22",
+      "allocation_slot": 22,
+      "category": "initial",
+      "label": "x",
+      "display_labels": [
+        "1"
+      ],
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E4FE",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E4FE",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀕",
+      "canonical_spua_b_codepoint": "U+100015",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "1:base:1"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "yinyuan_id": "N23",
+      "allocation_slot": 23,
+      "category": "initial",
+      "label": "y",
+      "display_labels": [
+        "y"
+      ],
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E500",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E500",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀖",
+      "canonical_spua_b_codepoint": "U+100016",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "y:base:y"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "yinyuan_id": "N24",
+      "allocation_slot": 24,
+      "category": "initial",
+      "label": "w",
+      "display_labels": [
+        "="
+      ],
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E4FF",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E4FF",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀗",
+      "canonical_spua_b_codepoint": "U+100017",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "=:base:="
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "yinyuan_id": "N25",
+      "allocation_slot": 25,
+      "category": "initial",
+      "label": "ɥ",
+      "display_labels": [
+        "`"
+      ],
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E501",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E501",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀘",
+      "canonical_spua_b_codepoint": "U+100018",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "`:base:`"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "yinyuan_id": "N26",
+      "allocation_slot": 26,
+      "category": "initial",
+      "label": "ŋ",
+      "display_labels": [
+        "'"
+      ],
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E502",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E502",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀙",
+      "canonical_spua_b_codepoint": "U+100019",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "':base:'"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "yinyuan_id": "N27",
+      "allocation_slot": 27,
+      "category": "initial",
+      "label": "a_apical",
+      "display_labels": [
+        "`"
+      ],
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E503",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E503",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀚",
+      "canonical_spua_b_codepoint": "U+10001A",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "`:base:`"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "yinyuan_id": "M01",
+      "allocation_slot": 33,
+      "category": "musical",
+      "label": "ɪ́",
+      "display_labels": [
+        "j"
+      ],
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E509",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E509",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀠",
+      "canonical_spua_b_codepoint": "U+100020",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "j:base:j"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "yinyuan_id": "M02",
+      "allocation_slot": 34,
+      "category": "musical",
+      "label": "ɪ̄",
+      "display_labels": [
+        "k"
+      ],
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E50A",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E50A",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀡",
+      "canonical_spua_b_codepoint": "U+100021",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "k:base:k"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "yinyuan_id": "M03",
+      "allocation_slot": 35,
+      "category": "musical",
+      "label": "ɪ̀",
+      "display_labels": [
+        "l"
+      ],
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E50B",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E50B",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀢",
+      "canonical_spua_b_codepoint": "U+100022",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "l:base:l"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "yinyuan_id": "M04",
+      "allocation_slot": 36,
+      "category": "musical",
+      "label": "ᴜ́",
+      "display_labels": [
+        "u"
+      ],
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E50C",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E50C",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀣",
+      "canonical_spua_b_codepoint": "U+100023",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "u:base:u"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "yinyuan_id": "M05",
+      "allocation_slot": 37,
+      "category": "musical",
+      "label": "ᴜ̄",
+      "display_labels": [
+        "i"
+      ],
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E50D",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E50D",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀤",
+      "canonical_spua_b_codepoint": "U+100024",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "i:base:i"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "yinyuan_id": "M06",
+      "allocation_slot": 38,
+      "category": "musical",
+      "label": "ᴜ̀",
+      "display_labels": [
+        "o"
+      ],
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E50E",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E50E",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀥",
+      "canonical_spua_b_codepoint": "U+100025",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "o:base:o"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "yinyuan_id": "M07",
+      "allocation_slot": 39,
+      "category": "musical",
+      "label": "ʏ́",
+      "display_labels": [
+        "m"
+      ],
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E50F",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E50F",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀦",
+      "canonical_spua_b_codepoint": "U+100026",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "m:base:m"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "yinyuan_id": "M08",
+      "allocation_slot": 40,
+      "category": "musical",
+      "label": "ʏ̄",
+      "display_labels": [
+        ","
+      ],
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E510",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E510",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀧",
+      "canonical_spua_b_codepoint": "U+100027",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        ",:base:,"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "yinyuan_id": "M09",
+      "allocation_slot": 41,
+      "category": "musical",
+      "label": "ʏ̀",
+      "display_labels": [
+        "."
+      ],
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E511",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E511",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀨",
+      "canonical_spua_b_codepoint": "U+100028",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        ".:base:."
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "yinyuan_id": "M10",
+      "allocation_slot": 42,
+      "category": "musical",
+      "label": "ᴀ́",
+      "display_labels": [
+        "f"
+      ],
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E512",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E512",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀩",
+      "canonical_spua_b_codepoint": "U+100029",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "f:base:f"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "yinyuan_id": "M11",
+      "allocation_slot": 43,
+      "category": "musical",
+      "label": "ᴀ̄",
+      "display_labels": [
+        "d"
+      ],
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E513",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E513",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀪",
+      "canonical_spua_b_codepoint": "U+10002A",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "d:base:d"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "yinyuan_id": "M12",
+      "allocation_slot": 44,
+      "category": "musical",
+      "label": "ᴀ̀",
+      "display_labels": [
+        "s"
+      ],
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E514",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E514",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀫",
+      "canonical_spua_b_codepoint": "U+10002B",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "s:base:s"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "yinyuan_id": "M13",
+      "allocation_slot": 45,
+      "category": "musical",
+      "label": "ó",
+      "display_labels": [
+        "r"
+      ],
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E515",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E515",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀬",
+      "canonical_spua_b_codepoint": "U+10002C",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "r:base:r"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "yinyuan_id": "M14",
+      "allocation_slot": 46,
+      "category": "musical",
+      "label": "ō",
+      "display_labels": [
+        "e"
+      ],
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E516",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E516",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀭",
+      "canonical_spua_b_codepoint": "U+10002D",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "e:base:e"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "yinyuan_id": "M15",
+      "allocation_slot": 47,
+      "category": "musical",
+      "label": "ò",
+      "display_labels": [
+        "w"
+      ],
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E517",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E517",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀮",
+      "canonical_spua_b_codepoint": "U+10002E",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "w:base:w"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "yinyuan_id": "M16",
+      "allocation_slot": 48,
+      "category": "musical",
+      "label": "ᴇ́",
+      "display_labels": [
+        "v"
+      ],
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E518",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E518",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀯",
+      "canonical_spua_b_codepoint": "U+10002F",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "v:base:v"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "yinyuan_id": "M17",
+      "allocation_slot": 49,
+      "category": "musical",
+      "label": "ᴇ̄",
+      "display_labels": [
+        "c"
+      ],
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E519",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E519",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀰",
+      "canonical_spua_b_codepoint": "U+100030",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "c:base:c"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "yinyuan_id": "M18",
+      "allocation_slot": 50,
+      "category": "musical",
+      "label": "ᴇ̀",
+      "display_labels": [
+        "x"
+      ],
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E51A",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E51A",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀱",
+      "canonical_spua_b_codepoint": "U+100031",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "x:base:x"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "yinyuan_id": "M19",
+      "allocation_slot": 51,
+      "category": "musical",
+      "label": "󰉺́",
+      "display_labels": [
+        "J"
+      ],
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E51B",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E51B",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀲",
+      "canonical_spua_b_codepoint": "U+100032",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "j:shift:J"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "yinyuan_id": "M20",
+      "allocation_slot": 52,
+      "category": "musical",
+      "label": "󰉺̄",
+      "display_labels": [
+        "K"
+      ],
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E51C",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E51C",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀳",
+      "canonical_spua_b_codepoint": "U+100033",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "k:shift:K"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "yinyuan_id": "M21",
+      "allocation_slot": 53,
+      "category": "musical",
+      "label": "󰉺̀",
+      "display_labels": [
+        "L"
+      ],
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E51D",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E51D",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀴",
+      "canonical_spua_b_codepoint": "U+100034",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "l:shift:L"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "yinyuan_id": "M22",
+      "allocation_slot": 54,
+      "category": "musical",
+      "label": "󰊈́",
+      "display_labels": [
+        "U"
+      ],
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E51E",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E51E",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀵",
+      "canonical_spua_b_codepoint": "U+100035",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "u:shift:U"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "yinyuan_id": "M23",
+      "allocation_slot": 55,
+      "category": "musical",
+      "label": "󰊈̄",
+      "display_labels": [
+        "I"
+      ],
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E51F",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E51F",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀶",
+      "canonical_spua_b_codepoint": "U+100036",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "i:shift:I"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "yinyuan_id": "M24",
+      "allocation_slot": 56,
+      "category": "musical",
+      "label": "󰊈̀",
+      "display_labels": [
+        "O"
+      ],
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E520",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E520",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀷",
+      "canonical_spua_b_codepoint": "U+100037",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "o:shift:O"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "yinyuan_id": "M25",
+      "allocation_slot": 57,
+      "category": "musical",
+      "label": "ḿ",
+      "display_labels": [
+        "M"
+      ],
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E521",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E521",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀸",
+      "canonical_spua_b_codepoint": "U+100038",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "m:shift:M"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "yinyuan_id": "M26",
+      "allocation_slot": 58,
+      "category": "musical",
+      "label": "m̄",
+      "display_labels": [
+        "<"
+      ],
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E522",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E522",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀹",
+      "canonical_spua_b_codepoint": "U+100039",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        ",:shift:<"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "yinyuan_id": "M27",
+      "allocation_slot": 59,
+      "category": "musical",
+      "label": "m̀",
+      "display_labels": [
+        ">"
+      ],
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E523",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E523",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀺",
+      "canonical_spua_b_codepoint": "U+10003A",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        ".:shift:>"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "yinyuan_id": "M28",
+      "allocation_slot": 60,
+      "category": "musical",
+      "label": "ń",
+      "display_labels": [
+        "a"
+      ],
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E524",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E524",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀻",
+      "canonical_spua_b_codepoint": "U+10003B",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "a:base:a"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "yinyuan_id": "M29",
+      "allocation_slot": 61,
+      "category": "musical",
+      "label": "n̄",
+      "display_labels": [
+        "N"
+      ],
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E525",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E525",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀼",
+      "canonical_spua_b_codepoint": "U+10003C",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "n:shift:N"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "yinyuan_id": "M30",
+      "allocation_slot": 62,
+      "category": "musical",
+      "label": "ǹ",
+      "display_labels": [
+        "z"
+      ],
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E526",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E526",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀽",
+      "canonical_spua_b_codepoint": "U+10003D",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "z:base:z"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "yinyuan_id": "M31",
+      "allocation_slot": 63,
+      "category": "musical",
+      "label": "ŋ́",
+      "display_labels": [
+        ";"
+      ],
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E527",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E527",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀾",
+      "canonical_spua_b_codepoint": "U+10003E",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        ";:base:;"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "yinyuan_id": "M32",
+      "allocation_slot": 64,
+      "category": "musical",
+      "label": "ŋ̄",
+      "display_labels": [
+        "G"
+      ],
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E528",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E528",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀀿",
+      "canonical_spua_b_codepoint": "U+10003F",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "g:shift:G"
+      ],
+      "issue_count": 0,
+      "issues": []
+    },
+    {
+      "yinyuan_id": "M33",
+      "allocation_slot": 65,
+      "category": "musical",
+      "label": "ŋ̀",
+      "display_labels": [
+        "/"
+      ],
+      "runtime_bmp_char": "",
+      "runtime_bmp_codepoint": "U+E529",
+      "projection_bmp_char": "",
+      "projection_bmp_codepoint": "U+E529",
+      "projection_matches_runtime": true,
+      "canonical_spua_b_char": "􀁀",
+      "canonical_spua_b_codepoint": "U+100040",
+      "layer_relation": "runtime_bmp_differs_from_canonical",
+      "physical_keys": [
+        "/:base:/"
+      ],
+      "issue_count": 0,
+      "issues": []
+    }
+  ]
+}

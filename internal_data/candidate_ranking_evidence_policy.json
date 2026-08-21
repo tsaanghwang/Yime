@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "policy_id": "bcc-primary-lmdg-fallback-structural-floor-v1",
+  "purpose": "Keep BCC integer counts authoritative, use RIME-LMDG only as a provisional fallback, and use static utility only as a non-frequency tie-break when both corpora are absent.",
+  "providers": {
+    "direct_bcc": {
+      "field": "bcc_frequency",
+      "status": "verified_corpus",
+      "priority": 2
+    },
+    "rime_lmdg": {
+      "field": "wanxiang_weight",
+      "status": "provisional_external_ranking",
+      "priority": 1,
+      "normalization": "percentile_within_text_length_bucket"
+    },
+    "internal_structural_floor": {
+      "field": "static_capacity.utility_score",
+      "status": "provisional_non_frequency_tiebreak",
+      "priority": 0,
+      "normalization": "percentile_within_text_length_bucket",
+      "requires_independent_corpus": true
+    }
+  },
+  "text_length_buckets": [
+    {
+      "id": "length_1",
+      "minimum": 1,
+      "maximum": 1
+    },
+    {
+      "id": "length_2",
+      "minimum": 2,
+      "maximum": 2
+    },
+    {
+      "id": "length_3",
+      "minimum": 3,
+      "maximum": 3
+    },
+    {
+      "id": "length_4",
+      "minimum": 4,
+      "maximum": 4
+    },
+    {
+      "id": "length_5_plus",
+      "minimum": 5,
+      "maximum": null
+    }
+  ],
+  "effective_weight": {
+    "direct_bcc_offset": 2000,
+    "fallback_minimum": 1000,
+    "fallback_maximum": 1999,
+    "structural_minimum": 1,
+    "structural_maximum": 999,
+    "primary_reading_bonus": 0,
+    "awaiting_corpus_base": 0
+  },
+  "safeguards": {
+    "bcc_presence_always_selects_direct_bcc": true,
+    "bcc_and_lmdg_raw_values_are_never_added": true,
+    "fallback_score_is_strictly_below_direct_bcc_score": true,
+    "wanxiang_weight_is_never_written_as_bcc_frequency": true,
+    "fallback_is_marked_provisional": true,
+    "structural_floor_is_not_frequency": true,
+    "missing_lmdg_does_not_block_build": true,
+    "raw_evidence_and_policy_version_are_exported": true
+  }
+}

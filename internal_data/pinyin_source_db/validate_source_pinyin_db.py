@@ -1,0 +1,345 @@
+from __future__ import annotations
+
+import argparse
+import json
+import re
+import sqlite3
+import sys
+from collections import defaultdict
+from pathlib import Path
+from typing import Any
+
+WORKSPACE_ROOT = Path(__file__).resolve().parents[2]
+if str(WORKSPACE_ROOT) not in sys.path:
+    sys.path.insert(0, str(WORKSPACE_ROOT))
+
+from yime.utils.marked_pinyin import (
+    marked_pinyin_to_numeric as marked_phrase_to_numeric,
+    marked_syllable_to_numeric,
+)
+
+
+DEFAULT_DB_PATH = (
+    WORKSPACE_ROOT / ".generated" / "lexicon_source_bundle" / "source_lexicon.sqlite3"
+)
+
+
+CODEPOINT_RE = re.compile(r"^U\+[0-9A-F]{4,6}$")
+NUMERIC_SYLLABLE_RE = re.compile(r"^[a-zêü]+[1-5]$")
+# cspell:disable-next-line
+MARKED_ALLOWED_RE = re.compile(r"^[a-zêüāáǎàēéěèếềīíǐìōóǒòūúǔùǖǘǚǜńňǹḿ̄́̌̀]+$")
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Validate the source pinyin SQLite database.")
+    parser.add_argument("--db", default=str(DEFAULT_DB_PATH), help="SQLite database path")
+    parser.add_argument(
+        "--output",
+        default="",
+        help="Optional JSON report output path. Defaults to <db_dir>/validation_report.json",
+    )
+    parser.add_argument(
+        "--sample-limit",
+        type=int,
+        default=20,
+        help="Maximum number of example issues to keep per category",
+    )
+    return parser.parse_args()
+
+
+def make_report(sample_limit: int) -> dict[str, Any]:
+    return {
+        "summary": {
+            "char_rows": 0,
+            "phrase_rows": 0,
+            "error_count": 0,
+            "warning_count": 0,
+        },
+        "errors": defaultdict(list),
+        "warnings": defaultdict(list),
+        "sample_limit": sample_limit,
+    }
+
+
+def record_issue(report: dict[str, Any], level: str, category: str, detail: dict[str, Any]) -> None:
+    summary_key = "error_count" if level == "errors" else "warning_count"
+    report["summary"][summary_key] += 1
+    if len(report[level][category]) < report["sample_limit"]:
+        report[level][category].append(detail)
+
+
+def codepoint_to_char(codepoint: str) -> str | None:
+    if not CODEPOINT_RE.match(codepoint):
+        return None
+    return chr(int(codepoint[2:], 16))
+
+
+def validate_char_rows(conn: sqlite3.Connection, report: dict[str, Any]) -> None:
+    query = """
+        SELECT id, codepoint, hanzi, marked_pinyin, numeric_pinyin, reading_rank, is_primary
+        FROM char_readings
+        ORDER BY id
+    """
+    primary_counts: dict[str, int] = defaultdict(int)
+
+    for row in conn.execute(query):
+        row_id, codepoint, hanzi, marked_pinyin, numeric_pinyin, reading_rank, is_primary = row
+        report["summary"]["char_rows"] += 1
+        primary_counts[codepoint] += int(bool(is_primary))
+
+        if not CODEPOINT_RE.match(codepoint):
+            record_issue(report, "errors", "invalid_codepoint_format", {
+                "id": row_id,
+                "codepoint": codepoint,
+                "hanzi": hanzi,
+            })
+            continue
+
+        expected_hanzi = codepoint_to_char(codepoint)
+        if expected_hanzi != hanzi:
+            record_issue(report, "errors", "codepoint_hanzi_mismatch", {
+                "id": row_id,
+                "codepoint": codepoint,
+                "hanzi": hanzi,
+                "expected_hanzi": expected_hanzi,
+            })
+
+        if any(char.isdigit() for char in marked_pinyin):
+            record_issue(report, "errors", "marked_pinyin_contains_digit", {
+                "id": row_id,
+                "marked_pinyin": marked_pinyin,
+            })
+
+        if "v" in marked_pinyin.lower():
+            record_issue(report, "errors", "marked_pinyin_contains_technical_v", {
+                "id": row_id,
+                "marked_pinyin": marked_pinyin,
+            })
+
+        if not MARKED_ALLOWED_RE.match(marked_pinyin):
+            record_issue(report, "warnings", "marked_pinyin_has_unexpected_chars", {
+                "id": row_id,
+                "marked_pinyin": marked_pinyin,
+            })
+
+        expected_numeric = marked_syllable_to_numeric(marked_pinyin)
+        if numeric_pinyin != expected_numeric:
+            record_issue(report, "errors", "numeric_pinyin_mismatch", {
+                "id": row_id,
+                "marked_pinyin": marked_pinyin,
+                "numeric_pinyin": numeric_pinyin,
+                "expected_numeric": expected_numeric,
+            })
+
+        if not NUMERIC_SYLLABLE_RE.match(numeric_pinyin):
+            record_issue(report, "errors", "invalid_numeric_pinyin_format", {
+                "id": row_id,
+                "numeric_pinyin": numeric_pinyin,
+            })
+
+        if reading_rank < 1:
+            record_issue(report, "errors", "invalid_reading_rank", {
+                "id": row_id,
+                "reading_rank": reading_rank,
+            })
+
+        if is_primary not in (0, 1):
+            record_issue(report, "errors", "invalid_is_primary_flag", {
+                "id": row_id,
+                "is_primary": is_primary,
+            })
+
+    for codepoint, count in primary_counts.items():
+        if count != 1:
+            record_issue(report, "errors", "primary_reading_count_violation", {
+                "codepoint": codepoint,
+                "primary_count": count,
+            })
+
+
+def validate_phrase_rows(conn: sqlite3.Connection, report: dict[str, Any]) -> None:
+    query = """
+        SELECT id, phrase, phrase_len, marked_pinyin, numeric_pinyin, reading_rank
+        FROM phrase_readings
+        ORDER BY id
+    """
+    for row in conn.execute(query):
+        row_id, phrase, phrase_len, marked_pinyin, numeric_pinyin, reading_rank = row
+        report["summary"]["phrase_rows"] += 1
+
+        if phrase_len != len(phrase):
+            record_issue(report, "warnings", "phrase_len_mismatch", {
+                "id": row_id,
+                "phrase": phrase,
+                "phrase_len": phrase_len,
+                "actual_len": len(phrase),
+            })
+
+        if any(char.isdigit() for char in marked_pinyin):
+            record_issue(report, "errors", "phrase_marked_pinyin_contains_digit", {
+                "id": row_id,
+                "phrase": phrase,
+                "marked_pinyin": marked_pinyin,
+            })
+
+        if "v" in marked_pinyin.lower():
+            record_issue(report, "errors", "phrase_marked_pinyin_contains_technical_v", {
+                "id": row_id,
+                "phrase": phrase,
+                "marked_pinyin": marked_pinyin,
+            })
+
+        expected_numeric = marked_phrase_to_numeric(marked_pinyin)
+        if numeric_pinyin != expected_numeric:
+            record_issue(report, "errors", "phrase_numeric_pinyin_mismatch", {
+                "id": row_id,
+                "phrase": phrase,
+                "marked_pinyin": marked_pinyin,
+                "numeric_pinyin": numeric_pinyin,
+                "expected_numeric": expected_numeric,
+            })
+
+        syllables = numeric_pinyin.split()
+        if not syllables or any(not NUMERIC_SYLLABLE_RE.match(syllable) for syllable in syllables):
+            record_issue(report, "errors", "invalid_phrase_numeric_format", {
+                "id": row_id,
+                "phrase": phrase,
+                "numeric_pinyin": numeric_pinyin,
+            })
+
+        if len(syllables) != len(phrase):
+            record_issue(report, "warnings", "phrase_syllable_count_mismatch", {
+                "id": row_id,
+                "phrase": phrase,
+                "syllable_count": len(syllables),
+                "character_count": len(phrase),
+                "numeric_pinyin": numeric_pinyin,
+            })
+
+        if reading_rank < 1:
+            record_issue(report, "errors", "invalid_phrase_reading_rank", {
+                "id": row_id,
+                "reading_rank": reading_rank,
+            })
+
+
+def validate_source_file_metadata(conn: sqlite3.Connection, report: dict[str, Any]) -> None:
+    rows = list(conn.execute("SELECT source_kind, source_path FROM source_files ORDER BY source_kind"))
+    if not rows:
+        record_issue(report, "errors", "missing_source_files_metadata", {"detail": "source_files table is empty"})
+        return
+
+    for source_kind, source_path in rows:
+        if not Path(source_path).exists():
+            record_issue(report, "warnings", "missing_source_path_on_disk", {
+                "source_kind": source_kind,
+                "source_path": source_path,
+            })
+
+
+def validate_pronunciation_metadata(
+    conn: sqlite3.Connection,
+    report: dict[str, Any],
+) -> None:
+    valid_scopes = {"standalone", "word_context_only"}
+    valid_statuses = {"none", "attested_neutral", "unmarked_ambiguous"}
+    rows = conn.execute(
+        """
+        SELECT id, text, numeric_pinyin, pronunciation_scope,
+               neutral_tone_positions, neutral_tone_status
+        FROM canonical_readings
+        WHERE pronunciation_scope <> 'standalone'
+           OR neutral_tone_positions <> ''
+           OR neutral_tone_status <> 'none'
+        ORDER BY id
+        """
+    )
+    for row_id, text, numeric, scope, positions_text, status in rows:
+        if scope not in valid_scopes:
+            record_issue(report, "errors", "invalid_pronunciation_scope", {
+                "id": row_id, "text": text, "pronunciation_scope": scope,
+            })
+        if status not in valid_statuses:
+            record_issue(report, "errors", "invalid_neutral_tone_status", {
+                "id": row_id, "text": text, "neutral_tone_status": status,
+            })
+        try:
+            positions = tuple(
+                int(item) for item in str(positions_text).split(",") if item
+            )
+        except ValueError:
+            positions = ()
+            record_issue(report, "errors", "invalid_neutral_tone_positions", {
+                "id": row_id, "text": text, "neutral_tone_positions": positions_text,
+            })
+        expected = tuple(
+            index
+            for index, syllable in enumerate(str(numeric).split(), start=1)
+            if syllable.endswith("5")
+        )
+        if positions != expected:
+            record_issue(report, "errors", "neutral_tone_position_mismatch", {
+                "id": row_id, "text": text, "numeric_pinyin": numeric,
+                "neutral_tone_positions": positions_text,
+                "expected_positions": ",".join(str(item) for item in expected),
+            })
+        if bool(positions) == (status == "none"):
+            record_issue(report, "errors", "neutral_tone_status_mismatch", {
+                "id": row_id, "text": text, "neutral_tone_positions": positions_text,
+                "neutral_tone_status": status,
+            })
+
+    leaked = conn.execute(
+        """
+        SELECT COUNT(*)
+        FROM char_readings AS c
+        JOIN canonical_readings AS r ON r.id = c.id
+        WHERE r.pronunciation_scope <> 'standalone'
+        """
+    ).fetchone()[0]
+    if leaked:
+        record_issue(report, "errors", "word_context_reading_leaked_to_char_view", {
+            "row_count": int(leaked),
+        })
+
+
+def finalize_report(report: dict[str, Any]) -> dict[str, Any]:
+    report["errors"] = {key: value for key, value in sorted(report["errors"].items())}
+    report["warnings"] = {key: value for key, value in sorted(report["warnings"].items())}
+    return report
+
+
+def main() -> int:
+    args = parse_args()
+    db_path = Path(args.db)
+    output_path = Path(args.output) if args.output else db_path.with_name("validation_report.json")
+
+    if not db_path.exists():
+        raise FileNotFoundError(f"database file not found: {db_path}")
+
+    report = make_report(args.sample_limit)
+
+    conn = sqlite3.connect(db_path)
+    try:
+        validate_source_file_metadata(conn, report)
+        validate_pronunciation_metadata(conn, report)
+        validate_char_rows(conn, report)
+        validate_phrase_rows(conn, report)
+    finally:
+        conn.close()
+
+    finalized = finalize_report(report)
+    output_path.write_text(json.dumps(finalized, ensure_ascii=False, indent=2), encoding="utf-8")
+
+    print(f"database: {db_path}")
+    print(f"report: {output_path}")
+    print(f"char_rows: {finalized['summary']['char_rows']}")
+    print(f"phrase_rows: {finalized['summary']['phrase_rows']}")
+    print(f"errors: {finalized['summary']['error_count']}")
+    print(f"warnings: {finalized['summary']['warning_count']}")
+
+    return 1 if finalized["summary"]["error_count"] else 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

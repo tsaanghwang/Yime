@@ -1,0 +1,23 @@
+{
+  "schema_version": "neutral-tone-source-policy-v1",
+  "default_unmarked_interpretation": "ambiguous",
+  "purpose": "Declare whether an unmarked syllable in each imported reading source is an explicit neutral-tone notation or merely missing tone information.",
+  "sources": {
+    "unihan": {
+      "unmarked_interpretation": "neutral",
+      "basis": "The checked-in merged Unihan export is normalized as marked Pinyin; unmarked syllables are retained as explicit neutral forms."
+    },
+    "pypinyin": {
+      "unmarked_interpretation": "neutral",
+      "basis": "The checked-in phrase-pinyin export uses marked Pinyin and leaves neutral-tone syllables unmarked."
+    },
+    "psc_candidate_coverage": {
+      "unmarked_interpretation": "neutral",
+      "basis": "The reviewed PSC transcription sources use tone-marked Pinyin and leave lexical neutral-tone syllables unmarked; the candidate catalog preserves the reviewed pair and its provenance."
+    },
+    "wanxiang": {
+      "unmarked_interpretation": "neutral",
+      "basis": "Wanxiang dictionary readings use tone-marked Pinyin and represent neutral-tone syllables without a tone mark."
+    }
+  }
+}

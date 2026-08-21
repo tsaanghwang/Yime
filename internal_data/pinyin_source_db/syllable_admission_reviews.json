@@ -1,0 +1,118 @@
+{
+  "schema_version": "source-syllable-admission-review-v1",
+  "purpose": "Review source-attested, structurally valid syllables missing from the current materialized inventory. This file does not assign Yinyuan IDs, codes, or keys.",
+  "reviews": {
+    "chuo5": {
+      "status": "approved",
+      "canonical_marked": "chuo",
+      "scope": "all_source_records",
+      "rule_id": "ORTH-SOURCE-ATTESTED-NEUTRAL",
+      "decision_basis": "The 1985 orthoepy table directly lists 绰 (一) chuò with 绰绰有余 and (二) unmarked chuo with 宽绰. Admit the reviewed headword reading and its word-context example as non-primary input coverage; do not generalize neutral tone to other 绰 contexts.",
+      "evidence": [
+        {
+          "source": "psc_orthoepy_1985",
+          "text": "宽绰",
+          "reading": "kuān chuo"
+        }
+      ]
+    },
+    "chui5": {
+      "status": "approved",
+      "canonical_marked": "chui",
+      "scope": "word_context_only",
+      "rule_id": "ORTH-SOURCE-ATTESTED-NEUTRAL",
+      "decision_basis": "The reviewed PSC main list and required-neutral-tone list both record 棒槌 as bàngchui. Admit chui5 only in sourced word context; do not create a standalone neutral-tone character candidate.",
+      "evidence": [
+        {
+          "source": "psc_main",
+          "text": "棒槌",
+          "reading": "bàngchui"
+        },
+        {
+          "source": "psc_neutral_tone",
+          "text": "棒槌",
+          "reading": "bàngchui"
+        }
+      ]
+    },
+    "de4": {
+      "status": "approved",
+      "canonical_marked": "dè",
+      "scope": "multi_character_only",
+      "rule_id": "SRC-REVIEWED-SYLLABLE-ADMISSION",
+      "decision_basis": "Wanxiang contains repeated colloquial phrase instances such as 嘚瑟; admission is restricted to multi-character source records.",
+      "evidence": [{"source": "wanxiang", "text": "嘚瑟", "reading": "dè se"}]
+    },
+    "deng2": {
+      "status": "approved",
+      "canonical_marked": "déng",
+      "scope": "word_context_only",
+      "rule_id": "PSC-CONTEXTUAL-SYLLABLE-ADMISSION",
+      "decision_basis": "The reviewed PSC passage pronunciation prompt records 等于 as déngyú. Preserve this source-attested contextual candidate without promoting déng as a general reading of 等.",
+      "evidence": [
+        {
+          "source": "psc_passage",
+          "text": "等于",
+          "reading": "déngyú"
+        }
+      ]
+    },
+    "kuai2": {
+      "status": "approved",
+      "canonical_marked": "kuái",
+      "scope": "all_source_records",
+      "rule_id": "SRC-REVIEWED-SYLLABLE-ADMISSION",
+      "decision_basis": "The local merged Unihan material records U+351E 㔞 as kuài and Wanxiang supplies the source-attested kuái reading; the review preserves the attested form rather than guessing a replacement.",
+      "evidence": [{"source": "wanxiang", "text": "㔞", "reading": "kuái"}, {"source": "unihan-local", "text": "㔞", "reading": "kuài"}]
+    },
+    "lan5": {
+      "status": "approved",
+      "canonical_marked": "lan",
+      "scope": "word_context_only",
+      "rule_id": "ORTH-SOURCE-ATTESTED-NEUTRAL",
+      "decision_basis": "Wanxiang preserves an isolated 藍 lan source row, while word-level evidence places the unmarked syllable in contexts such as 栅栏 and the 汉典 苤藍 page. Preserve it as word-context pronunciation evidence without creating a standalone neutral-tone character candidate.",
+      "evidence": [{"source": "wanxiang", "text": "藍", "reading": "lan"}, {"source": "zdic-word-context", "text": "苤藍", "reading": "piě lɑn", "url": "https://www.zdic.net/hans/%E8%8B%A4%E8%97%8D"}]
+    },
+    "dian5": {
+      "status": "approved",
+      "canonical_marked": "dian",
+      "scope": "word_context_only",
+      "rule_id": "ORTH-SOURCE-ATTESTED-NEUTRAL",
+      "decision_basis": "The reviewed PSC main list and required-neutral-tone list both record 打点 as dǎdian. Admit dian5 only in sourced word context; do not create a standalone neutral-tone character candidate.",
+      "evidence": [
+        {
+          "source": "psc_main",
+          "text": "打点",
+          "reading": "dǎdian"
+        },
+        {
+          "source": "psc_neutral_tone",
+          "text": "打点",
+          "reading": "dǎdian"
+        }
+      ]
+    },
+    "mian1": {
+      "status": "approved",
+      "canonical_marked": "miān",
+      "scope": "word_context_only",
+      "rule_id": "PSC-CONTEXTUAL-SYLLABLE-ADMISSION",
+      "decision_basis": "The reviewed PSC passage pronunciation prompt records 软绵绵 as ruǎnmiānmiān. Preserve this source-attested contextual candidate without promoting miān as a general reading of 绵.",
+      "evidence": [
+        {
+          "source": "psc_passage",
+          "text": "软绵绵",
+          "reading": "ruǎnmiānmiān"
+        }
+      ]
+    },
+    "sa2": {
+      "status": "approved",
+      "canonical_marked": "sá",
+      "scope": "all_source_records",
+      "rule_id": "SRC-REVIEWED-SYLLABLE-ADMISSION",
+      "decision_basis": "Wanxiang supplies repeated regional food-name records using sá; local Unihan-derived material retains other readings, so this is recorded as a source-attested regional variant, not inferred from them.",
+      "evidence": [{"source": "wanxiang", "text": "糁", "reading": "sá"}, {"source": "wanxiang", "text": "鸡肉糁", "reading": "jī ròu sá"}]
+    }
+  }
+}

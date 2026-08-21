@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "policy_id": "dynamic-candidate-coverage-r0-r5-v1",
+  "purpose": "Use the complete attested candidate inventory to measure and improve dynamic reconstruction instead of treating low-frequency material as a deletion queue.",
+  "scope": "source-gated encoded candidate texts",
+  "levels": {
+    "R0": {
+      "name": "invalid_or_quarantined",
+      "action": "repair_or_quarantine",
+      "description": "Explicitly rejected invalid material or a source reading with alignment failure."
+    },
+    "R1": {
+      "name": "unreachable_residual",
+      "action": "add_minimal_component_or_construction",
+      "description": "No reading can be reconstructed from shorter attested components."
+    },
+    "R2": {
+      "name": "partially_reachable",
+      "action": "repair_missing_reading_coverage",
+      "description": "Some readings are reconstructable and some are not."
+    },
+    "R3": {
+      "name": "search_or_ambiguity_risk",
+      "action": "evaluate_intermediate_component_beam_or_cache",
+      "description": "All readings are structurally reachable but decomposition cost or ambiguity exceeds the reliable threshold."
+    },
+    "R4": {
+      "name": "dynamic_recoverable",
+      "action": "serve_dynamically",
+      "description": "All readings are structurally reachable within the reliable search threshold and no static exception applies."
+    },
+    "R5": {
+      "name": "static_foundation_or_evidence_cache",
+      "action": "retain_static_with_reason",
+      "description": "Foundational characters, protected categories, approved static items or utility-selected caches."
+    }
+  },
+  "thresholds": {
+    "maximum_reliable_component_count": 4,
+    "maximum_reliable_minimum_decompositions": 8,
+    "residual_sample_limit": 100
+  },
+  "protected_candidate_classes": [
+    "single_character",
+    "fixed_expression",
+    "person_name",
+    "place_name",
+    "organization_name",
+    "domain_term"
+  ],
+  "invalid_candidate_classes": [
+    "noise"
+  ],
+  "safeguards": {
+    "source_inventory_is_read_only": true,
+    "frequency_is_not_invalidity": true,
+    "dynamic_reachability_is_not_lexical_rejection": true,
+    "unreachable_long_form_is_not_automatically_static": true,
+    "component_or_rule_is_preferred_over_whole_string_promotion": true,
+    "every_encoded_text_receives_one_level": true
+  },
+  "completion_gate": {
+    "maximum_r0_items": 0,
+    "require_all_encoded_texts_classified": true,
+    "require_residual_recommendations": true,
+    "require_runtime_selection_breakdown": true
+  }
+}

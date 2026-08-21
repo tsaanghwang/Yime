@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "purpose": "Layout changes may alter only the final Yinyuan-ID-to-key projection. Numeric Pinyin semantics and Yinyuan identity are protected upstream.",
+  "semantic_entrypoint": "yime.utils.yinyuan_id_chain.encode_numeric_pinyin_to_yinyuan_ids",
+  "semantic_sources": [
+    "syllable/yinyuan/zaoyin_yinyuan_enhanced.json",
+    "syllable/yinyuan/yueyin_yinyuan_enhanced.json"
+  ],
+  "semantic_explanation_source": "internal_data/syllable_encoding_rule_catalog.json",
+  "semantic_audit_artifacts": [
+    "internal_data/yime_syllable_encoding_provenance.tsv",
+    "internal_data/yime_syllable_omissions.tsv"
+  ],
+  "semantic_registry_sha256": "f7d92ca694ce17fc8dd31face25157515e9bad9dcf00e810cd0c95836796dbc2",
+  "pinyin_yinyuan_chain_sha256": "89b9252b390ca0a54ce9a9187003122b58f448de7341c20bbb6a015ef6261004",
+  "syllable_rule_catalog_sha256": "bd7b4155c1b2e8a1ecbc3f89d29a07e9f19066d0823329186c33d0c53a15f7fa",
+  "syllable_provenance_sha256": "4c6178a9d669f44b7d680b1ff37bf2a7f42d4e4c1aaf954f019a5dbfea22b8bd",
+  "canonical_layout_source": "internal_data/manual_key_layout.json",
+  "derived_layout_artifacts": [
+    "internal_data/manual_key_layout.resolved.json",
+    "internal_data/layout_runtime_consistency_report.json",
+    "internal_data/klc_layout_visual_table.md",
+    "internal_data/yinyuan_id_crosswalk.json",
+    "internal_data/yinyuan_id_crosswalk.md",
+    "yinyuan.klc"
+  ],
+  "forbidden_parallel_layout_sources": [
+    "internal_data/windows_trial_layout_v1.json"
+  ],
+  "required_command": "python tools/run_locked_layout_pipeline.py"
+}

@@ -1,0 +1,5534 @@
+{
+  "schema_version": 2,
+  "generated_utc": "2026-08-17T13:21:50.827211Z",
+  "source_catalog": "internal_data/pinyin_source_db/psc_candidate_readings.json",
+  "erhua_yinyuan_feature_source": "external_data/erhua_yinyuan_feature_rules.json",
+  "admission_policy": {
+    "required_text_shape": "at_least_one_han_plus_word_final_er",
+    "required_evidence": "confirmed psc_erhua",
+    "required_compatibility_form": "one syllable per written Han character, final er5",
+    "suffix_or_r_inference": "forbidden",
+    "candidate_text_mutation": "forbidden"
+  },
+  "runtime_enabled": false,
+  "artifact": "explicit_erhua_lexical_annotations",
+  "description": "规范儿化拼音及其来源授权；不是运行时编码表。",
+  "counts": {
+    "catalog_records": 543,
+    "explicit_erhua_evidence_records": 132,
+    "admitted_word_final_records": 131,
+    "excluded_explicit_records": 1,
+    "unannotated_er_suffix_lookalikes": 16
+  },
+  "excluded_explicit_records": [
+    {
+      "text": "高跟儿鞋",
+      "numeric_pinyin": "gao1 gen1 er5 xie2",
+      "reason": "not_at_least_one_han_plus_word_final_er"
+    }
+  ],
+  "records": [
+    {
+      "record_id": "ERHUA-080D5918ACEAE9C0",
+      "record_type": "explicit_word_final_erhua",
+      "text": "一阵儿",
+      "standard_erhua_pinyin": [
+        "yīzhènr"
+      ],
+      "compatibility_marked_pinyin": "yī zhèn er",
+      "compatibility_numeric_pinyin": "yi1 zhen4 er5",
+      "attached_syllable": "zhen4",
+      "attached_final": "en",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "92",
+            "review_state": "confirmed",
+            "source_text": "一阵儿",
+            "source_pinyin": "yīzhènr",
+            "expanded_text": "一阵儿",
+            "expanded_pinyin": "yīzhènr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 92,
+              "source_index": 92,
+              "page_number": 2,
+              "table_order": 1,
+              "row_order": 2,
+              "pair_order": 4,
+              "category_index": 14,
+              "category_rule": "en>er"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-9375DF1997272DCC",
+      "record_type": "explicit_word_final_erhua",
+      "text": "个头儿",
+      "standard_erhua_pinyin": [
+        "gètóur"
+      ],
+      "compatibility_marked_pinyin": "gè tóu er",
+      "compatibility_numeric_pinyin": "ge4 tou2 er5",
+      "attached_syllable": "tou2",
+      "attached_final": "ou",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "178",
+            "review_state": "confirmed",
+            "source_text": "个头儿",
+            "source_pinyin": "gètóur",
+            "expanded_text": "个头儿",
+            "expanded_pinyin": "gètóur",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 178,
+              "source_index": 178,
+              "page_number": 3,
+              "table_order": 1,
+              "row_order": 12,
+              "pair_order": 1,
+              "category_index": 34,
+              "category_rule": "ou>our"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-23ED50C4C015869D",
+      "record_type": "explicit_word_final_erhua",
+      "text": "主角儿",
+      "standard_erhua_pinyin": [
+        "zhǔjuér"
+      ],
+      "compatibility_marked_pinyin": "zhǔ jué er",
+      "compatibility_numeric_pinyin": "zhu3 jue2 er5",
+      "attached_syllable": "jue2",
+      "attached_final": "üe",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "101",
+            "review_state": "confirmed",
+            "source_text": "主角儿",
+            "source_pinyin": "zhǔjuér",
+            "expanded_text": "主角儿",
+            "expanded_pinyin": "zhǔjuér",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 101,
+              "source_index": 101,
+              "page_number": 2,
+              "table_order": 1,
+              "row_order": 9,
+              "pair_order": 2,
+              "category_index": 17,
+              "category_rule": "üe>üer"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-EFA9E17BBCF332B5",
+      "record_type": "explicit_word_final_erhua",
+      "text": "人影儿",
+      "standard_erhua_pinyin": [
+        "rényǐngr"
+      ],
+      "compatibility_marked_pinyin": "rén yǐng er",
+      "compatibility_numeric_pinyin": "ren2 ying3 er5",
+      "attached_syllable": "ying3",
+      "attached_final": "ing",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "135",
+            "review_state": "confirmed",
+            "source_text": "人影儿",
+            "source_pinyin": "rényǐngr",
+            "expanded_text": "人影儿",
+            "expanded_pinyin": "rényǐngr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 135,
+              "source_index": 135,
+              "page_number": 2,
+              "table_order": 1,
+              "row_order": 28,
+              "pair_order": 2,
+              "category_index": 25,
+              "category_rule": "ing>i:er(鼻化)"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-025C446AF1160120",
+      "record_type": "explicit_word_final_erhua",
+      "text": "光棍儿",
+      "standard_erhua_pinyin": [
+        "guānggùnr"
+      ],
+      "compatibility_marked_pinyin": "guāng gùn er",
+      "compatibility_numeric_pinyin": "guang1 gun4 er5",
+      "attached_syllable": "gun4",
+      "attached_final": "uen",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "110",
+            "review_state": "confirmed",
+            "source_text": "光棍儿",
+            "source_pinyin": "guānggùnr",
+            "expanded_text": "光棍儿",
+            "expanded_pinyin": "guānggùnr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 110,
+              "source_index": 110,
+              "page_number": 2,
+              "table_order": 1,
+              "row_order": 14,
+              "pair_order": 3,
+              "category_index": 19,
+              "category_rule": "uen>uer"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-5E9122D4ED515B7B",
+      "record_type": "explicit_word_final_erhua",
+      "text": "冒尖儿",
+      "standard_erhua_pinyin": [
+        "màojiānr"
+      ],
+      "compatibility_marked_pinyin": "mào jiān er",
+      "compatibility_numeric_pinyin": "mao4 jian1 er5",
+      "attached_syllable": "jian1",
+      "attached_final": "ian",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "36",
+            "review_state": "confirmed",
+            "source_text": "冒尖儿",
+            "source_pinyin": "màojiānr",
+            "expanded_text": "冒尖儿",
+            "expanded_pinyin": "màojiānr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 36,
+              "source_index": 36,
+              "page_number": 1,
+              "table_order": 1,
+              "row_order": 17,
+              "pair_order": 3,
+              "category_index": 6,
+              "category_rule": "ian>iar"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-E550B8D7D32F860D",
+      "record_type": "explicit_word_final_erhua",
+      "text": "冰棍儿",
+      "standard_erhua_pinyin": [
+        "bīnggùnr"
+      ],
+      "compatibility_marked_pinyin": "bīng gùn er",
+      "compatibility_numeric_pinyin": "bing1 gun4 er5",
+      "attached_syllable": "gun4",
+      "attached_final": "uen",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "108",
+            "review_state": "confirmed",
+            "source_text": "冰棍儿",
+            "source_pinyin": "bīnggùnr",
+            "expanded_text": "冰棍儿",
+            "expanded_pinyin": "bīnggùnr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 108,
+              "source_index": 108,
+              "page_number": 2,
+              "table_order": 1,
+              "row_order": 14,
+              "pair_order": 1,
+              "category_index": 19,
+              "category_rule": "uen>uer"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-F53944A769A4447B",
+      "record_type": "explicit_word_final_erhua",
+      "text": "出圈儿",
+      "standard_erhua_pinyin": [
+        "chūquānr"
+      ],
+      "compatibility_marked_pinyin": "chū quān er",
+      "compatibility_numeric_pinyin": "chu1 quan1 er5",
+      "attached_syllable": "quan1",
+      "attached_final": "üan",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "69",
+            "review_state": "confirmed",
+            "source_text": "出圈儿",
+            "source_pinyin": "chūquānr",
+            "expanded_text": "出圈儿",
+            "expanded_pinyin": "chūquānr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 69,
+              "source_index": 69,
+              "page_number": 1,
+              "table_order": 1,
+              "row_order": 33,
+              "pair_order": 2,
+              "category_index": 12,
+              "category_rule": "üan>üar"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-903576531472131B",
+      "record_type": "explicit_word_final_erhua",
+      "text": "刀刃儿",
+      "standard_erhua_pinyin": [
+        "dāorènr"
+      ],
+      "compatibility_marked_pinyin": "dāo rèn er",
+      "compatibility_numeric_pinyin": "dao1 ren4 er5",
+      "attached_syllable": "ren4",
+      "attached_final": "en",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "80",
+            "review_state": "confirmed",
+            "source_text": "刀刃儿",
+            "source_pinyin": "dāorènr",
+            "expanded_text": "刀刃儿",
+            "expanded_pinyin": "dāorènr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 80,
+              "source_index": 80,
+              "page_number": 1,
+              "table_order": 1,
+              "row_order": 38,
+              "pair_order": 4,
+              "category_index": 14,
+              "category_rule": "en>er"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-EE0FD97E28C14CB0",
+      "record_type": "explicit_word_final_erhua",
+      "text": "刀背儿",
+      "standard_erhua_pinyin": [
+        "dāobèir"
+      ],
+      "compatibility_marked_pinyin": "dāo bèi er",
+      "compatibility_numeric_pinyin": "dao1 bei4 er5",
+      "attached_syllable": "bei4",
+      "attached_final": "ei",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "75",
+            "review_state": "confirmed",
+            "source_text": "刀背儿",
+            "source_pinyin": "dāobèir",
+            "expanded_text": "刀背儿",
+            "expanded_pinyin": "dāobèir",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 75,
+              "source_index": 75,
+              "page_number": 1,
+              "table_order": 1,
+              "row_order": 36,
+              "pair_order": 1,
+              "category_index": 13,
+              "category_rule": "ei>er"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-7E8612F8E827AA87",
+      "record_type": "explicit_word_final_erhua",
+      "text": "别针儿",
+      "standard_erhua_pinyin": [
+        "biézhēnr"
+      ],
+      "compatibility_marked_pinyin": "bié zhēn er",
+      "compatibility_numeric_pinyin": "bie2 zhen1 er5",
+      "attached_syllable": "zhen1",
+      "attached_final": "en",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "78",
+            "review_state": "confirmed",
+            "source_text": "别针儿",
+            "source_pinyin": "biézhēnr",
+            "expanded_text": "别针儿",
+            "expanded_pinyin": "biézhēnr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 78,
+              "source_index": 78,
+              "page_number": 1,
+              "table_order": 1,
+              "row_order": 38,
+              "pair_order": 2,
+              "category_index": 14,
+              "category_rule": "en>er"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-65808A473DEC0EFA",
+      "record_type": "explicit_word_final_erhua",
+      "text": "加塞儿",
+      "standard_erhua_pinyin": [
+        "jiāsāir"
+      ],
+      "compatibility_marked_pinyin": "jiā sāi er",
+      "compatibility_numeric_pinyin": "jia1 sai1 er5",
+      "attached_syllable": "sai1",
+      "attached_final": "ai",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "9",
+            "review_state": "confirmed",
+            "source_text": "加塞儿",
+            "source_pinyin": "jiāsāir",
+            "expanded_text": "加塞儿",
+            "expanded_pinyin": "jiāsāir",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 9,
+              "source_index": 9,
+              "page_number": 1,
+              "table_order": 1,
+              "row_order": 5,
+              "pair_order": 2,
+              "category_index": 2,
+              "category_rule": "ai>ar"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-C1D28A3B1C8455B0",
+      "record_type": "explicit_word_final_erhua",
+      "text": "加油儿",
+      "standard_erhua_pinyin": [
+        "jiāyóur"
+      ],
+      "compatibility_marked_pinyin": "jiā yóu er",
+      "compatibility_numeric_pinyin": "jia1 you2 er5",
+      "attached_syllable": "you2",
+      "attached_final": "iou",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "188",
+            "review_state": "confirmed",
+            "source_text": "加油儿",
+            "source_pinyin": "jiāyóur",
+            "expanded_text": "加油儿",
+            "expanded_pinyin": "jiāyóur",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 188,
+              "source_index": 188,
+              "page_number": 3,
+              "table_order": 1,
+              "row_order": 16,
+              "pair_order": 2,
+              "category_index": 35,
+              "category_rule": "iou>iour"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-9AFDA00F18F9C87A",
+      "record_type": "explicit_word_final_erhua",
+      "text": "包干儿",
+      "standard_erhua_pinyin": [
+        "bāogānr"
+      ],
+      "compatibility_marked_pinyin": "bāo gān er",
+      "compatibility_numeric_pinyin": "bao1 gan1 er5",
+      "attached_syllable": "gan1",
+      "attached_final": "an",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "13",
+            "review_state": "confirmed",
+            "source_text": "包干儿",
+            "source_pinyin": "bāogānr",
+            "expanded_text": "包干儿",
+            "expanded_pinyin": "bāogānr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 13,
+              "source_index": 13,
+              "page_number": 1,
+              "table_order": 1,
+              "row_order": 8,
+              "pair_order": 1,
+              "category_index": 3,
+              "category_rule": "an>ar"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-71A4FB1F95679036",
+      "record_type": "explicit_word_final_erhua",
+      "text": "半截儿",
+      "standard_erhua_pinyin": [
+        "bànjiér"
+      ],
+      "compatibility_marked_pinyin": "bàn jié er",
+      "compatibility_numeric_pinyin": "ban4 jie2 er5",
+      "attached_syllable": "jie2",
+      "attached_final": "ie",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "98",
+            "review_state": "confirmed",
+            "source_text": "半截儿",
+            "source_pinyin": "bànjiér",
+            "expanded_text": "半截儿",
+            "expanded_pinyin": "bànjiér",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 98,
+              "source_index": 98,
+              "page_number": 2,
+              "table_order": 1,
+              "row_order": 7,
+              "pair_order": 1,
+              "category_index": 16,
+              "category_rule": "ie>ier"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-8695240461F7A857",
+      "record_type": "explicit_word_final_erhua",
+      "text": "单个儿",
+      "standard_erhua_pinyin": [
+        "dāngèr"
+      ],
+      "compatibility_marked_pinyin": "dān gè er",
+      "compatibility_numeric_pinyin": "dan1 ge4 er5",
+      "attached_syllable": "ge4",
+      "attached_final": "e",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "145",
+            "review_state": "confirmed",
+            "source_text": "单个儿",
+            "source_pinyin": "dāngèr",
+            "expanded_text": "单个儿",
+            "expanded_pinyin": "dāngèr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 145,
+              "source_index": 145,
+              "page_number": 2,
+              "table_order": 1,
+              "row_order": 34,
+              "pair_order": 4,
+              "category_index": 28,
+              "category_rule": "e>er"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-6D55207DA802330D",
+      "record_type": "explicit_word_final_erhua",
+      "text": "压根儿",
+      "standard_erhua_pinyin": [
+        "yàgēnr"
+      ],
+      "compatibility_marked_pinyin": "yà gēn er",
+      "compatibility_numeric_pinyin": "ya4 gen1 er5",
+      "attached_syllable": "gen1",
+      "attached_final": "en",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "91",
+            "review_state": "confirmed",
+            "source_text": "压根儿",
+            "source_pinyin": "yàgēnr",
+            "expanded_text": "压根儿",
+            "expanded_pinyin": "yàgēnr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 91,
+              "source_index": 91,
+              "page_number": 2,
+              "table_order": 1,
+              "row_order": 2,
+              "pair_order": 3,
+              "category_index": 14,
+              "category_rule": "en>er"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-7AD406AA1848A43F",
+      "record_type": "explicit_word_final_erhua",
+      "text": "口哨儿",
+      "standard_erhua_pinyin": [
+        "kǒushàor"
+      ],
+      "compatibility_marked_pinyin": "kǒu shào er",
+      "compatibility_numeric_pinyin": "kou3 shao4 er5",
+      "attached_syllable": "shao4",
+      "attached_final": "ao",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "167",
+            "review_state": "confirmed",
+            "source_text": "口哨儿",
+            "source_pinyin": "kǒushàor",
+            "expanded_text": "口哨儿",
+            "expanded_pinyin": "kǒushàor",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 167,
+              "source_index": 167,
+              "page_number": 3,
+              "table_order": 1,
+              "row_order": 6,
+              "pair_order": 2,
+              "category_index": 32,
+              "category_rule": "ao>aor"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-BD52BD2205559D6A",
+      "record_type": "explicit_word_final_erhua",
+      "text": "口罩儿",
+      "standard_erhua_pinyin": [
+        "kǒuzhàor"
+      ],
+      "compatibility_marked_pinyin": "kǒu zhào er",
+      "compatibility_numeric_pinyin": "kou3 zhao4 er5",
+      "attached_syllable": "zhao4",
+      "attached_final": "ao",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "168",
+            "review_state": "confirmed",
+            "source_text": "口罩儿",
+            "source_pinyin": "kǒuzhàor",
+            "expanded_text": "口罩儿",
+            "expanded_pinyin": "kǒuzhàor",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 168,
+              "source_index": 168,
+              "page_number": 3,
+              "table_order": 1,
+              "row_order": 6,
+              "pair_order": 3,
+              "category_index": 32,
+              "category_rule": "ao>aor"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-3F0BD44B6F63E1F9",
+      "record_type": "explicit_word_final_erhua",
+      "text": "叫好儿",
+      "standard_erhua_pinyin": [
+        "jiàohǎor"
+      ],
+      "compatibility_marked_pinyin": "jiào hǎo er",
+      "compatibility_numeric_pinyin": "jiao4 hao3 er5",
+      "attached_syllable": "hao3",
+      "attached_final": "ao",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "165",
+            "review_state": "confirmed",
+            "source_text": "叫好儿",
+            "source_pinyin": "jiàohǎor",
+            "expanded_text": "叫好儿",
+            "expanded_pinyin": "jiàohǎor",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 165,
+              "source_index": 165,
+              "page_number": 3,
+              "table_order": 1,
+              "row_order": 5,
+              "pair_order": 4,
+              "category_index": 32,
+              "category_rule": "ao>aor"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-74AB4C9F047C7B54",
+      "record_type": "explicit_word_final_erhua",
+      "text": "号码儿",
+      "standard_erhua_pinyin": [
+        "hàomǎr"
+      ],
+      "compatibility_marked_pinyin": "hào mǎ er",
+      "compatibility_numeric_pinyin": "hao4 ma3 er5",
+      "attached_syllable": "ma3",
+      "attached_final": "a",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "4",
+            "review_state": "confirmed",
+            "source_text": "号码儿",
+            "source_pinyin": "hàomǎr",
+            "expanded_text": "号码儿",
+            "expanded_pinyin": "hàomǎr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 4,
+              "source_index": 4,
+              "page_number": 1,
+              "table_order": 1,
+              "row_order": 2,
+              "pair_order": 4,
+              "category_index": 1,
+              "category_rule": "a>ar"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-9A061CB43EA87C6D",
+      "record_type": "explicit_word_final_erhua",
+      "text": "合群儿",
+      "standard_erhua_pinyin": [
+        "héqúnr"
+      ],
+      "compatibility_marked_pinyin": "hé qún er",
+      "compatibility_numeric_pinyin": "he2 qun2 er5",
+      "attached_syllable": "qun2",
+      "attached_final": "ün",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "141",
+            "review_state": "confirmed",
+            "source_text": "合群儿",
+            "source_pinyin": "héqúnr",
+            "expanded_text": "合群儿",
+            "expanded_pinyin": "héqúnr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 141,
+              "source_index": 141,
+              "page_number": 2,
+              "table_order": 1,
+              "row_order": 32,
+              "pair_order": 1,
+              "category_index": 27,
+              "category_rule": "üe>ü:er"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-BA244B534089CDDE",
+      "record_type": "explicit_word_final_erhua",
+      "text": "名牌儿",
+      "standard_erhua_pinyin": [
+        "míngpáir"
+      ],
+      "compatibility_marked_pinyin": "míng pái er",
+      "compatibility_numeric_pinyin": "ming2 pai2 er5",
+      "attached_syllable": "pai2",
+      "attached_final": "ai",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "10",
+            "review_state": "confirmed",
+            "source_text": "名牌儿",
+            "source_pinyin": "míngpáir",
+            "expanded_text": "名牌儿",
+            "expanded_pinyin": "míngpáir",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 10,
+              "source_index": 10,
+              "page_number": 1,
+              "table_order": 1,
+              "row_order": 5,
+              "pair_order": 3,
+              "category_index": 2,
+              "category_rule": "ai>ar"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-BCF2A1FDBDC0368D",
+      "record_type": "explicit_word_final_erhua",
+      "text": "后跟儿",
+      "standard_erhua_pinyin": [
+        "hòugēnr"
+      ],
+      "compatibility_marked_pinyin": "hòu gēn er",
+      "compatibility_numeric_pinyin": "hou4 gen1 er5",
+      "attached_syllable": "gen1",
+      "attached_final": "en",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "83",
+            "review_state": "confirmed",
+            "source_text": "后跟儿",
+            "source_pinyin": "hòugēnr",
+            "expanded_text": "后跟儿",
+            "expanded_pinyin": "hòugēnr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 83,
+              "source_index": 83,
+              "page_number": 1,
+              "table_order": 1,
+              "row_order": 39,
+              "pair_order": 3,
+              "category_index": 14,
+              "category_rule": "en>er"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-3C08CAC5CC485DBB",
+      "record_type": "explicit_word_final_erhua",
+      "text": "围嘴儿",
+      "standard_erhua_pinyin": [
+        "wéizuǐr"
+      ],
+      "compatibility_marked_pinyin": "wéi zuǐ er",
+      "compatibility_numeric_pinyin": "wei2 zui3 er5",
+      "attached_syllable": "zui3",
+      "attached_final": "uei",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "105",
+            "review_state": "confirmed",
+            "source_text": "围嘴儿",
+            "source_pinyin": "wéizuǐr",
+            "expanded_text": "围嘴儿",
+            "expanded_pinyin": "wéizuǐr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 105,
+              "source_index": 105,
+              "page_number": 2,
+              "table_order": 1,
+              "row_order": 11,
+              "pair_order": 4,
+              "category_index": 18,
+              "category_rule": "uei>uer"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-F2E7915BBD37AC2A",
+      "record_type": "explicit_word_final_erhua",
+      "text": "图钉儿",
+      "standard_erhua_pinyin": [
+        "túdīngr"
+      ],
+      "compatibility_marked_pinyin": "tú dīng er",
+      "compatibility_numeric_pinyin": "tu2 ding1 er5",
+      "attached_syllable": "ding1",
+      "attached_final": "ing",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "136",
+            "review_state": "confirmed",
+            "source_text": "图钉儿",
+            "source_pinyin": "túdīngr",
+            "expanded_text": "图钉儿",
+            "expanded_pinyin": "túdīngr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 136,
+              "source_index": 136,
+              "page_number": 2,
+              "table_order": 1,
+              "row_order": 28,
+              "pair_order": 3,
+              "category_index": 25,
+              "category_rule": "ing>i:er(鼻化)"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-EBD64026C7B269E0",
+      "record_type": "explicit_word_final_erhua",
+      "text": "垫底儿",
+      "standard_erhua_pinyin": [
+        "diàndǐr"
+      ],
+      "compatibility_marked_pinyin": "diàn dǐ er",
+      "compatibility_numeric_pinyin": "dian4 di3 er5",
+      "attached_syllable": "di3",
+      "attached_final": "i",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "123",
+            "review_state": "confirmed",
+            "source_text": "垫底儿",
+            "source_pinyin": "diàndǐr",
+            "expanded_text": "垫底儿",
+            "expanded_pinyin": "diàndǐr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 123,
+              "source_index": 123,
+              "page_number": 2,
+              "table_order": 1,
+              "row_order": 23,
+              "pair_order": 1,
+              "category_index": 23,
+              "category_rule": "i>i:er"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-C67B4AABEFEAA9C3",
+      "record_type": "explicit_word_final_erhua",
+      "text": "墨汁儿",
+      "standard_erhua_pinyin": [
+        "mòzhīr"
+      ],
+      "compatibility_marked_pinyin": "mò zhī er",
+      "compatibility_numeric_pinyin": "mo4 zhi1 er5",
+      "attached_syllable": "zhi1",
+      "attached_final": "_i",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "122",
+            "review_state": "confirmed",
+            "source_text": "墨汁儿",
+            "source_pinyin": "mòzhīr",
+            "expanded_text": "墨汁儿",
+            "expanded_pinyin": "mòzhīr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 122,
+              "source_index": 122,
+              "page_number": 2,
+              "table_order": 1,
+              "row_order": 21,
+              "pair_order": 3,
+              "category_index": 22,
+              "category_rule": "i(后)>er"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-A7D35D53981F446E",
+      "record_type": "explicit_word_final_erhua",
+      "text": "壶盖儿",
+      "standard_erhua_pinyin": [
+        "húgàir"
+      ],
+      "compatibility_marked_pinyin": "hú gài er",
+      "compatibility_numeric_pinyin": "hu2 gai4 er5",
+      "attached_syllable": "gai4",
+      "attached_final": "ai",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "8",
+            "review_state": "confirmed",
+            "source_text": "壶盖儿",
+            "source_pinyin": "húgàir",
+            "expanded_text": "壶盖儿",
+            "expanded_pinyin": "húgàir",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 8,
+              "source_index": 8,
+              "page_number": 1,
+              "table_order": 1,
+              "row_order": 5,
+              "pair_order": 1,
+              "category_index": 2,
+              "category_rule": "ai>ar"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-AC52913752417D26",
+      "record_type": "explicit_word_final_erhua",
+      "text": "大婶儿",
+      "standard_erhua_pinyin": [
+        "dàshěnr"
+      ],
+      "compatibility_marked_pinyin": "dà shěn er",
+      "compatibility_numeric_pinyin": "da4 shen3 er5",
+      "attached_syllable": "shen3",
+      "attached_final": "en",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "79",
+            "review_state": "confirmed",
+            "source_text": "大婶儿",
+            "source_pinyin": "dàshěnr",
+            "expanded_text": "大婶儿",
+            "expanded_pinyin": "dàshěnr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 79,
+              "source_index": 79,
+              "page_number": 1,
+              "table_order": 1,
+              "row_order": 38,
+              "pair_order": 3,
+              "category_index": 14,
+              "category_rule": "en>er"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-6D119D731CC86A0D",
+      "record_type": "explicit_word_final_erhua",
+      "text": "大褂儿",
+      "standard_erhua_pinyin": [
+        "dàguàr"
+      ],
+      "compatibility_marked_pinyin": "dà guà er",
+      "compatibility_numeric_pinyin": "da4 gua4 er5",
+      "attached_syllable": "gua4",
+      "attached_final": "ua",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "49",
+            "review_state": "confirmed",
+            "source_text": "大褂儿",
+            "source_pinyin": "dàguàr",
+            "expanded_text": "大褂儿",
+            "expanded_pinyin": "dàguàr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 49,
+              "source_index": 49,
+              "page_number": 1,
+              "table_order": 1,
+              "row_order": 23,
+              "pair_order": 1,
+              "category_index": 8,
+              "category_rule": "ua>uar"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-67096750412868DD",
+      "record_type": "explicit_word_final_erhua",
+      "text": "天窗儿",
+      "standard_erhua_pinyin": [
+        "tiānchuāngr"
+      ],
+      "compatibility_marked_pinyin": "tiān chuāng er",
+      "compatibility_numeric_pinyin": "tian1 chuang1 er5",
+      "attached_syllable": "chuang1",
+      "attached_final": "uang",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "67",
+            "review_state": "confirmed",
+            "source_text": "天窗儿",
+            "source_pinyin": "tiānchuāngr",
+            "expanded_text": "天窗儿",
+            "expanded_pinyin": "tiānchuāngr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 67,
+              "source_index": 67,
+              "page_number": 1,
+              "table_order": 1,
+              "row_order": 31,
+              "pair_order": 3,
+              "category_index": 11,
+              "category_rule": "uang>uar(鼻化)"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-5DD9B38EC10382FB",
+      "record_type": "explicit_word_final_erhua",
+      "text": "夹缝儿",
+      "standard_erhua_pinyin": [
+        "jiāfèngr"
+      ],
+      "compatibility_marked_pinyin": "jiā fèng er",
+      "compatibility_numeric_pinyin": "jia1 feng4 er5",
+      "attached_syllable": "feng4",
+      "attached_final": "eng",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "96",
+            "review_state": "confirmed",
+            "source_text": "夹缝儿",
+            "source_pinyin": "jiāfèngr",
+            "expanded_text": "夹缝儿",
+            "expanded_pinyin": "jiāfèngr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 96,
+              "source_index": 96,
+              "page_number": 2,
+              "table_order": 1,
+              "row_order": 5,
+              "pair_order": 3,
+              "category_index": 15,
+              "category_rule": "eng>er(鼻化)"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-50284C8D353FBC0B",
+      "record_type": "explicit_word_final_erhua",
+      "text": "好玩儿",
+      "standard_erhua_pinyin": [
+        "hǎowánr"
+      ],
+      "compatibility_marked_pinyin": "hǎo wán er",
+      "compatibility_numeric_pinyin": "hao3 wan2 er5",
+      "attached_syllable": "wan2",
+      "attached_final": "uan",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "62",
+            "review_state": "confirmed",
+            "source_text": "好玩儿",
+            "source_pinyin": "hǎowánr",
+            "expanded_text": "好玩儿",
+            "expanded_pinyin": "hǎowánr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 62,
+              "source_index": 62,
+              "page_number": 1,
+              "table_order": 1,
+              "row_order": 29,
+              "pair_order": 2,
+              "category_index": 10,
+              "category_rule": "uan>uar"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-2E96BA21F02A2B1A",
+      "record_type": "explicit_word_final_erhua",
+      "text": "媳妇儿",
+      "standard_erhua_pinyin": [
+        "xífur"
+      ],
+      "compatibility_marked_pinyin": "xí fu er",
+      "compatibility_numeric_pinyin": "xi2 fu5 er5",
+      "attached_syllable": "fu5",
+      "attached_final": "u",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "153",
+            "review_state": "confirmed",
+            "source_text": "媳妇儿",
+            "source_pinyin": "xífur",
+            "expanded_text": "媳妇儿",
+            "expanded_pinyin": "xífur",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 153,
+              "source_index": 153,
+              "page_number": 2,
+              "table_order": 1,
+              "row_order": 38,
+              "pair_order": 1,
+              "category_index": 29,
+              "category_rule": "u>ur"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-855B796649BBF8B3",
+      "record_type": "explicit_word_final_erhua",
+      "text": "小丑儿",
+      "standard_erhua_pinyin": [
+        "xiǎochǒur"
+      ],
+      "compatibility_marked_pinyin": "xiǎo chǒu er",
+      "compatibility_numeric_pinyin": "xiao3 chou3 er5",
+      "attached_syllable": "chou3",
+      "attached_final": "ou",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "184",
+            "review_state": "confirmed",
+            "source_text": "小丑儿",
+            "source_pinyin": "xiǎochǒur",
+            "expanded_text": "小丑儿",
+            "expanded_pinyin": "xiǎochǒur",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 184,
+              "source_index": 184,
+              "page_number": 3,
+              "table_order": 1,
+              "row_order": 13,
+              "pair_order": 3,
+              "category_index": 34,
+              "category_rule": "ou>our"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-2CC8DDF0E7E34EBC",
+      "record_type": "explicit_word_final_erhua",
+      "text": "小偷儿",
+      "standard_erhua_pinyin": [
+        "xiǎotōur"
+      ],
+      "compatibility_marked_pinyin": "xiǎo tōu er",
+      "compatibility_numeric_pinyin": "xiao3 tou1 er5",
+      "attached_syllable": "tou1",
+      "attached_final": "ou",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "185",
+            "review_state": "confirmed",
+            "source_text": "小偷儿",
+            "source_pinyin": "xiǎotōur",
+            "expanded_text": "小偷儿",
+            "expanded_pinyin": "xiǎotōur",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 185,
+              "source_index": 185,
+              "page_number": 3,
+              "table_order": 1,
+              "row_order": 13,
+              "pair_order": 4,
+              "category_index": 34,
+              "category_rule": "ou>our"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-0E2D073321A1BF4F",
+      "record_type": "explicit_word_final_erhua",
+      "text": "小曲儿",
+      "standard_erhua_pinyin": [
+        "xiǎoqǔr"
+      ],
+      "compatibility_marked_pinyin": "xiǎo qǔ er",
+      "compatibility_numeric_pinyin": "xiao3 qu3 er5",
+      "attached_syllable": "qu3",
+      "attached_final": "ü",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "140",
+            "review_state": "confirmed",
+            "source_text": "小曲儿",
+            "source_pinyin": "xiǎoqǔr",
+            "expanded_text": "小曲儿",
+            "expanded_pinyin": "xiǎoqǔr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 140,
+              "source_index": 140,
+              "page_number": 2,
+              "table_order": 1,
+              "row_order": 30,
+              "pair_order": 3,
+              "category_index": 26,
+              "category_rule": "ü>ü:er"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-EB874EF9873D2831",
+      "record_type": "explicit_word_final_erhua",
+      "text": "小熊儿",
+      "standard_erhua_pinyin": [
+        "xiǎoxióngr"
+      ],
+      "compatibility_marked_pinyin": "xiǎo xióng er",
+      "compatibility_numeric_pinyin": "xiao3 xiong2 er5",
+      "attached_syllable": "xiong2",
+      "attached_final": "iong",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "161",
+            "review_state": "confirmed",
+            "source_text": "小熊儿",
+            "source_pinyin": "xiǎoxióngr",
+            "expanded_text": "小熊儿",
+            "expanded_pinyin": "xiǎoxióngr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 161,
+              "source_index": 161,
+              "page_number": 3,
+              "table_order": 1,
+              "row_order": 3,
+              "pair_order": 1,
+              "category_index": 31,
+              "category_rule": "iong>ior(鼻化)"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-C6DC8661FDE20103",
+      "record_type": "explicit_word_final_erhua",
+      "text": "小瓮儿",
+      "standard_erhua_pinyin": [
+        "xiǎowèngr"
+      ],
+      "compatibility_marked_pinyin": "xiǎo wèng er",
+      "compatibility_numeric_pinyin": "xiao3 weng4 er5",
+      "attached_syllable": "weng4",
+      "attached_final": "ueng",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "115",
+            "review_state": "confirmed",
+            "source_text": "小瓮儿",
+            "source_pinyin": "xiǎowèngr",
+            "expanded_text": "小瓮儿",
+            "expanded_pinyin": "xiǎowèngr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 115,
+              "source_index": 115,
+              "page_number": 2,
+              "table_order": 1,
+              "row_order": 17,
+              "pair_order": 1,
+              "category_index": 20,
+              "category_rule": "ueng>uer(鼻化)"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-27CE138CBD83589F",
+      "record_type": "explicit_word_final_erhua",
+      "text": "小葱儿",
+      "standard_erhua_pinyin": [
+        "xiǎocōngr"
+      ],
+      "compatibility_marked_pinyin": "xiǎo cōng er",
+      "compatibility_numeric_pinyin": "xiao3 cong1 er5",
+      "attached_syllable": "cong1",
+      "attached_final": "ong",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "160",
+            "review_state": "confirmed",
+            "source_text": "小葱儿",
+            "source_pinyin": "xiǎocōngr",
+            "expanded_text": "小葱儿",
+            "expanded_pinyin": "xiǎocōngr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 160,
+              "source_index": 160,
+              "page_number": 3,
+              "table_order": 1,
+              "row_order": 1,
+              "pair_order": 2,
+              "category_index": 30,
+              "category_rule": "ong>or(鼻化)"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-ADE8AC29892F05F7",
+      "record_type": "explicit_word_final_erhua",
+      "text": "小褂儿",
+      "standard_erhua_pinyin": [
+        "xiǎoguàr"
+      ],
+      "compatibility_marked_pinyin": "xiǎo guà er",
+      "compatibility_numeric_pinyin": "xiao3 gua4 er5",
+      "attached_syllable": "gua4",
+      "attached_final": "ua",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "53",
+            "review_state": "confirmed",
+            "source_text": "小褂儿",
+            "source_pinyin": "xiǎoguàr",
+            "expanded_text": "小褂儿",
+            "expanded_pinyin": "xiǎoguàr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 53,
+              "source_index": 53,
+              "page_number": 1,
+              "table_order": 1,
+              "row_order": 24,
+              "pair_order": 1,
+              "category_index": 8,
+              "category_rule": "ua>uar"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-7958C7EBD7CD2AC9",
+      "record_type": "explicit_word_final_erhua",
+      "text": "小说儿",
+      "standard_erhua_pinyin": [
+        "xiǎoshuōr"
+      ],
+      "compatibility_marked_pinyin": "xiǎo shuō er",
+      "compatibility_numeric_pinyin": "xiao3 shuo1 er5",
+      "attached_syllable": "shuo1",
+      "attached_final": "uo",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "196",
+            "review_state": "confirmed",
+            "source_text": "小说儿",
+            "source_pinyin": "xiǎoshuōr",
+            "expanded_text": "小说儿",
+            "expanded_pinyin": "xiǎoshuōr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 196,
+              "source_index": 196,
+              "page_number": 3,
+              "table_order": 1,
+              "row_order": 19,
+              "pair_order": 2,
+              "category_index": 36,
+              "category_rule": "uo>uor"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-8C093A504BE4BD88",
+      "record_type": "explicit_word_final_erhua",
+      "text": "小鞋儿",
+      "standard_erhua_pinyin": [
+        "xiǎoxiér"
+      ],
+      "compatibility_marked_pinyin": "xiǎo xié er",
+      "compatibility_numeric_pinyin": "xiao3 xie2 er5",
+      "attached_syllable": "xie2",
+      "attached_final": "ie",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "99",
+            "review_state": "confirmed",
+            "source_text": "小鞋儿",
+            "source_pinyin": "xiǎoxiér",
+            "expanded_text": "小鞋儿",
+            "expanded_pinyin": "xiǎoxiér",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 99,
+              "source_index": 99,
+              "page_number": 2,
+              "table_order": 1,
+              "row_order": 7,
+              "pair_order": 2,
+              "category_index": 16,
+              "category_rule": "ie>ier"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-57EA1B8C1C78B137",
+      "record_type": "explicit_word_final_erhua",
+      "text": "开春儿",
+      "standard_erhua_pinyin": [
+        "kāichūnr"
+      ],
+      "compatibility_marked_pinyin": "kāi chūn er",
+      "compatibility_numeric_pinyin": "kai1 chun1 er5",
+      "attached_syllable": "chun1",
+      "attached_final": "uen",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "111",
+            "review_state": "confirmed",
+            "source_text": "开春儿",
+            "source_pinyin": "kāichūnr",
+            "expanded_text": "开春儿",
+            "expanded_pinyin": "kāichūnr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 111,
+              "source_index": 111,
+              "page_number": 2,
+              "table_order": 1,
+              "row_order": 14,
+              "pair_order": 4,
+              "category_index": 19,
+              "category_rule": "uen>uer"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-D83D6501A7078117",
+      "record_type": "explicit_word_final_erhua",
+      "text": "开窍儿",
+      "standard_erhua_pinyin": [
+        "kāiqiàor"
+      ],
+      "compatibility_marked_pinyin": "kāi qiào er",
+      "compatibility_numeric_pinyin": "kai1 qiao4 er5",
+      "attached_syllable": "qiao4",
+      "attached_final": "iao",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "174",
+            "review_state": "confirmed",
+            "source_text": "开窍儿",
+            "source_pinyin": "kāiqiàor",
+            "expanded_text": "开窍儿",
+            "expanded_pinyin": "kāiqiàor",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 174,
+              "source_index": 174,
+              "page_number": 3,
+              "table_order": 1,
+              "row_order": 9,
+              "pair_order": 3,
+              "category_index": 33,
+              "category_rule": "iao>iaor"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-AD8616E411CC33C2",
+      "record_type": "explicit_word_final_erhua",
+      "text": "戏法儿",
+      "standard_erhua_pinyin": [
+        "xìfǎr"
+      ],
+      "compatibility_marked_pinyin": "xì fǎ er",
+      "compatibility_numeric_pinyin": "xi4 fa3 er5",
+      "attached_syllable": "fa3",
+      "attached_final": "a",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "6",
+            "review_state": "confirmed",
+            "source_text": "戏法儿",
+            "source_pinyin": "xìfǎr",
+            "expanded_text": "戏法儿",
+            "expanded_pinyin": "xìfǎr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 6,
+              "source_index": 6,
+              "page_number": 1,
+              "table_order": 1,
+              "row_order": 3,
+              "pair_order": 2,
+              "category_index": 1,
+              "category_rule": "a>ar"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-0A839628F8BB6947",
+      "record_type": "explicit_word_final_erhua",
+      "text": "扇面儿",
+      "standard_erhua_pinyin": [
+        "shànmiànr"
+      ],
+      "compatibility_marked_pinyin": "shàn miàn er",
+      "compatibility_numeric_pinyin": "shan4 mian4 er5",
+      "attached_syllable": "mian4",
+      "attached_final": "ian",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "37",
+            "review_state": "confirmed",
+            "source_text": "扇面儿",
+            "source_pinyin": "shànmiànr",
+            "expanded_text": "扇面儿",
+            "expanded_pinyin": "shànmiànr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 37,
+              "source_index": 37,
+              "page_number": 1,
+              "table_order": 1,
+              "row_order": 17,
+              "pair_order": 4,
+              "category_index": 6,
+              "category_rule": "ian>iar"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-03B3A9CF1B728870",
+      "record_type": "explicit_word_final_erhua",
+      "text": "手套儿",
+      "standard_erhua_pinyin": [
+        "shǒutàor"
+      ],
+      "compatibility_marked_pinyin": "shǒu tào er",
+      "compatibility_numeric_pinyin": "shou3 tao4 er5",
+      "attached_syllable": "tao4",
+      "attached_final": "ao",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "170",
+            "review_state": "confirmed",
+            "source_text": "手套儿",
+            "source_pinyin": "shǒutàor",
+            "expanded_text": "手套儿",
+            "expanded_pinyin": "shǒutàor",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 170,
+              "source_index": 170,
+              "page_number": 3,
+              "table_order": 1,
+              "row_order": 7,
+              "pair_order": 1,
+              "category_index": 32,
+              "category_rule": "ao>aor"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-8620E3C0E74270A2",
+      "record_type": "explicit_word_final_erhua",
+      "text": "手绢儿",
+      "standard_erhua_pinyin": [
+        "shǒujuànr"
+      ],
+      "compatibility_marked_pinyin": "shǒu juàn er",
+      "compatibility_numeric_pinyin": "shou3 juan4 er5",
+      "attached_syllable": "juan4",
+      "attached_final": "üan",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "72",
+            "review_state": "confirmed",
+            "source_text": "手绢儿",
+            "source_pinyin": "shǒujuànr",
+            "expanded_text": "手绢儿",
+            "expanded_pinyin": "shǒujuànr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 72,
+              "source_index": 72,
+              "page_number": 1,
+              "table_order": 1,
+              "row_order": 34,
+              "pair_order": 1,
+              "category_index": 12,
+              "category_rule": "üan>üar"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-E4AE14728DE80DDA",
+      "record_type": "explicit_word_final_erhua",
+      "text": "打晃儿",
+      "standard_erhua_pinyin": [
+        "dǎhuàngr"
+      ],
+      "compatibility_marked_pinyin": "dǎ huàng er",
+      "compatibility_numeric_pinyin": "da3 huang4 er5",
+      "attached_syllable": "huang4",
+      "attached_final": "uang",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "65",
+            "review_state": "confirmed",
+            "source_text": "打晃儿",
+            "source_pinyin": "dǎhuàngr",
+            "expanded_text": "打晃儿",
+            "expanded_pinyin": "dǎhuàngr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 65,
+              "source_index": 65,
+              "page_number": 1,
+              "table_order": 1,
+              "row_order": 31,
+              "pair_order": 1,
+              "category_index": 11,
+              "category_rule": "uang>uar(鼻化)"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-A8BBF43AB7557338",
+      "record_type": "explicit_word_final_erhua",
+      "text": "打转儿",
+      "standard_erhua_pinyin": [
+        "dǎzhuànr"
+      ],
+      "compatibility_marked_pinyin": "dǎ zhuàn er",
+      "compatibility_numeric_pinyin": "da3 zhuan4 er5",
+      "attached_syllable": "zhuan4",
+      "attached_final": "uan",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "58",
+            "review_state": "confirmed",
+            "source_text": "打转儿",
+            "source_pinyin": "dǎzhuànr",
+            "expanded_text": "打转儿",
+            "expanded_pinyin": "dǎzhuànr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 58,
+              "source_index": 58,
+              "page_number": 1,
+              "table_order": 1,
+              "row_order": 28,
+              "pair_order": 2,
+              "category_index": 10,
+              "category_rule": "uan>uar"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-9254694249364F26",
+      "record_type": "explicit_word_final_erhua",
+      "text": "打鸣儿",
+      "standard_erhua_pinyin": [
+        "dǎmíngr"
+      ],
+      "compatibility_marked_pinyin": "dǎ míng er",
+      "compatibility_numeric_pinyin": "da3 ming2 er5",
+      "attached_syllable": "ming2",
+      "attached_final": "ing",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "130",
+            "review_state": "confirmed",
+            "source_text": "打鸣儿",
+            "source_pinyin": "dǎmíngr",
+            "expanded_text": "打鸣儿",
+            "expanded_pinyin": "dǎmíngr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 130,
+              "source_index": 130,
+              "page_number": 2,
+              "table_order": 1,
+              "row_order": 27,
+              "pair_order": 1,
+              "category_index": 25,
+              "category_rule": "ing>i:er(鼻化)"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-E93BD4F5D1335147",
+      "record_type": "explicit_word_final_erhua",
+      "text": "找碴儿",
+      "standard_erhua_pinyin": [
+        "zhǎochár"
+      ],
+      "compatibility_marked_pinyin": "zhǎo chá er",
+      "compatibility_numeric_pinyin": "zhao3 cha2 er5",
+      "attached_syllable": "cha2",
+      "attached_final": "a",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "7",
+            "review_state": "confirmed",
+            "source_text": "找碴儿",
+            "source_pinyin": "zhǎochár",
+            "expanded_text": "找碴儿",
+            "expanded_pinyin": "zhǎochár",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 7,
+              "source_index": 7,
+              "page_number": 1,
+              "table_order": 1,
+              "row_order": 3,
+              "pair_order": 3,
+              "category_index": 1,
+              "category_rule": "a>ar"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-893D9BFB09F0A465",
+      "record_type": "explicit_word_final_erhua",
+      "text": "把门儿",
+      "standard_erhua_pinyin": [
+        "bǎménr"
+      ],
+      "compatibility_marked_pinyin": "bǎ mén er",
+      "compatibility_numeric_pinyin": "ba3 men2 er5",
+      "attached_syllable": "men2",
+      "attached_final": "en",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "77",
+            "review_state": "confirmed",
+            "source_text": "把门儿",
+            "source_pinyin": "bǎménr",
+            "expanded_text": "把门儿",
+            "expanded_pinyin": "bǎménr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 77,
+              "source_index": 77,
+              "page_number": 1,
+              "table_order": 1,
+              "row_order": 38,
+              "pair_order": 1,
+              "category_index": 14,
+              "category_rule": "en>er"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-7A6214B2C4785F40",
+      "record_type": "explicit_word_final_erhua",
+      "text": "抓阄儿",
+      "standard_erhua_pinyin": [
+        "zhuājiūr"
+      ],
+      "compatibility_marked_pinyin": "zhuā jiū er",
+      "compatibility_numeric_pinyin": "zhua1 jiu1 er5",
+      "attached_syllable": "jiu1",
+      "attached_final": "iou",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "190",
+            "review_state": "confirmed",
+            "source_text": "抓阄儿",
+            "source_pinyin": "zhuājiūr",
+            "expanded_text": "抓阄儿",
+            "expanded_pinyin": "zhuājiūr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 190,
+              "source_index": 190,
+              "page_number": 3,
+              "table_order": 1,
+              "row_order": 16,
+              "pair_order": 4,
+              "category_index": 35,
+              "category_rule": "iou>iour"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-1FFCD3E5FB517F0D",
+      "record_type": "explicit_word_final_erhua",
+      "text": "抽空儿",
+      "standard_erhua_pinyin": [
+        "chōukòngr"
+      ],
+      "compatibility_marked_pinyin": "chōu kòng er",
+      "compatibility_numeric_pinyin": "chou1 kong4 er5",
+      "attached_syllable": "kong4",
+      "attached_final": "ong",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "155",
+            "review_state": "confirmed",
+            "source_text": "抽空儿",
+            "source_pinyin": "chōukòngr",
+            "expanded_text": "抽空儿",
+            "expanded_pinyin": "chōukòngr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 155,
+              "source_index": 155,
+              "page_number": 2,
+              "table_order": 1,
+              "row_order": 40,
+              "pair_order": 1,
+              "category_index": 30,
+              "category_rule": "ong>or(鼻化)"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-CCB7ABD14D55C060",
+      "record_type": "explicit_word_final_erhua",
+      "text": "拉链儿",
+      "standard_erhua_pinyin": [
+        "lāliànr"
+      ],
+      "compatibility_marked_pinyin": "lā liàn er",
+      "compatibility_numeric_pinyin": "la1 lian4 er5",
+      "attached_syllable": "lian4",
+      "attached_final": "ian",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "33",
+            "review_state": "confirmed",
+            "source_text": "拉链儿",
+            "source_pinyin": "lāliànr",
+            "expanded_text": "拉链儿",
+            "expanded_pinyin": "lāliànr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 33,
+              "source_index": 33,
+              "page_number": 1,
+              "table_order": 1,
+              "row_order": 16,
+              "pair_order": 4,
+              "category_index": 6,
+              "category_rule": "ian>iar"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-4E7365F76211753A",
+      "record_type": "explicit_word_final_erhua",
+      "text": "提成儿",
+      "standard_erhua_pinyin": [
+        "tíchéngr"
+      ],
+      "compatibility_marked_pinyin": "tí chéng er",
+      "compatibility_numeric_pinyin": "ti2 cheng2 er5",
+      "attached_syllable": "cheng2",
+      "attached_final": "eng",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "97",
+            "review_state": "confirmed",
+            "source_text": "提成儿",
+            "source_pinyin": "tíchéngr",
+            "expanded_text": "提成儿",
+            "expanded_pinyin": "tíchéngr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 97,
+              "source_index": 97,
+              "page_number": 2,
+              "table_order": 1,
+              "row_order": 5,
+              "pair_order": 4,
+              "category_index": 15,
+              "category_rule": "eng>er(鼻化)"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-8C0B895F50A3AC6B",
+      "record_type": "explicit_word_final_erhua",
+      "text": "旦角儿",
+      "standard_erhua_pinyin": [
+        "dànjuér"
+      ],
+      "compatibility_marked_pinyin": "dàn jué er",
+      "compatibility_numeric_pinyin": "dan4 jue2 er5",
+      "attached_syllable": "jue2",
+      "attached_final": "üe",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "100",
+            "review_state": "confirmed",
+            "source_text": "旦角儿",
+            "source_pinyin": "dànjuér",
+            "expanded_text": "旦角儿",
+            "expanded_pinyin": "dànjuér",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 100,
+              "source_index": 100,
+              "page_number": 2,
+              "table_order": 1,
+              "row_order": 9,
+              "pair_order": 1,
+              "category_index": 17,
+              "category_rule": "üe>üer"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-F87CE5C62C05A090",
+      "record_type": "explicit_word_final_erhua",
+      "text": "有数儿",
+      "standard_erhua_pinyin": [
+        "yǒushùr"
+      ],
+      "compatibility_marked_pinyin": "yǒu shù er",
+      "compatibility_numeric_pinyin": "you3 shu4 er5",
+      "attached_syllable": "shu4",
+      "attached_final": "u",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "154",
+            "review_state": "confirmed",
+            "source_text": "有数儿",
+            "source_pinyin": "yǒushùr",
+            "expanded_text": "有数儿",
+            "expanded_pinyin": "yǒushùr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 154,
+              "source_index": 154,
+              "page_number": 2,
+              "table_order": 1,
+              "row_order": 38,
+              "pair_order": 2,
+              "category_index": 29,
+              "category_rule": "u>ur"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-7493F837BDF1128D",
+      "record_type": "explicit_word_final_erhua",
+      "text": "果冻儿",
+      "standard_erhua_pinyin": [
+        "guǒdòngr"
+      ],
+      "compatibility_marked_pinyin": "guǒ dòng er",
+      "compatibility_numeric_pinyin": "guo3 dong4 er5",
+      "attached_syllable": "dong4",
+      "attached_final": "ong",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "156",
+            "review_state": "confirmed",
+            "source_text": "果冻儿",
+            "source_pinyin": "guǒdòngr",
+            "expanded_text": "果冻儿",
+            "expanded_pinyin": "guǒdòngr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 156,
+              "source_index": 156,
+              "page_number": 2,
+              "table_order": 1,
+              "row_order": 40,
+              "pair_order": 2,
+              "category_index": 30,
+              "category_rule": "ong>or(鼻化)"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-117C4C6250769D4E",
+      "record_type": "explicit_word_final_erhua",
+      "text": "栅栏儿",
+      "standard_erhua_pinyin": [
+        "zhàlanr"
+      ],
+      "compatibility_marked_pinyin": "zhà lan er",
+      "compatibility_numeric_pinyin": "zha4 lan5 er5",
+      "attached_syllable": "lan5",
+      "attached_final": "an",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "22",
+            "review_state": "confirmed",
+            "source_text": "栅栏儿",
+            "source_pinyin": "zhàlanr",
+            "expanded_text": "栅栏儿",
+            "expanded_pinyin": "zhàlanr",
+            "input_derivation": "written-er-input-alias",
+            "locator": {
+              "id": 22,
+              "source_index": 22,
+              "page_number": 1,
+              "table_order": 1,
+              "row_order": 10,
+              "pair_order": 2,
+              "category_index": 3,
+              "category_rule": "an>ar"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-04BFA3429829BE25",
+      "record_type": "explicit_word_final_erhua",
+      "text": "梨核儿",
+      "standard_erhua_pinyin": [
+        "líhúr"
+      ],
+      "compatibility_marked_pinyin": "lí hú er",
+      "compatibility_numeric_pinyin": "li2 hu2 er5",
+      "attached_syllable": "hu2",
+      "attached_final": "u",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "150",
+            "review_state": "confirmed",
+            "source_text": "梨核儿",
+            "source_pinyin": "líhúr",
+            "expanded_text": "梨核儿",
+            "expanded_pinyin": "líhúr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 150,
+              "source_index": 150,
+              "page_number": 2,
+              "table_order": 1,
+              "row_order": 37,
+              "pair_order": 2,
+              "category_index": 29,
+              "category_rule": "u>ur"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-9D87CF6CACE661D4",
+      "record_type": "explicit_word_final_erhua",
+      "text": "棉球儿",
+      "standard_erhua_pinyin": [
+        "miánqiúr"
+      ],
+      "compatibility_marked_pinyin": "mián qiú er",
+      "compatibility_numeric_pinyin": "mian2 qiu2 er5",
+      "attached_syllable": "qiu2",
+      "attached_final": "iou",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "189",
+            "review_state": "confirmed",
+            "source_text": "棉球儿",
+            "source_pinyin": "miánqiúr",
+            "expanded_text": "棉球儿",
+            "expanded_pinyin": "miánqiúr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 189,
+              "source_index": 189,
+              "page_number": 3,
+              "table_order": 1,
+              "row_order": 16,
+              "pair_order": 3,
+              "category_index": 35,
+              "category_rule": "iou>iour"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-2A3C2828B88C2753",
+      "record_type": "explicit_word_final_erhua",
+      "text": "模特儿",
+      "standard_erhua_pinyin": [
+        "mótèr"
+      ],
+      "compatibility_marked_pinyin": "mó tè er",
+      "compatibility_numeric_pinyin": "mo2 te4 er5",
+      "attached_syllable": "te4",
+      "attached_final": "e",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "148",
+            "review_state": "confirmed",
+            "source_text": "模特儿",
+            "source_pinyin": "mótèr",
+            "expanded_text": "模特儿",
+            "expanded_pinyin": "mótèr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 148,
+              "source_index": 148,
+              "page_number": 2,
+              "table_order": 1,
+              "row_order": 35,
+              "pair_order": 3,
+              "category_index": 28,
+              "category_rule": "e>er"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-F49C9E76ADAC9D97",
+      "record_type": "explicit_word_final_erhua",
+      "text": "毛驴儿",
+      "standard_erhua_pinyin": [
+        "máolǘr"
+      ],
+      "compatibility_marked_pinyin": "máo lǘ er",
+      "compatibility_numeric_pinyin": "mao2 lü2 er5",
+      "attached_syllable": "lü2",
+      "attached_final": "ü",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "138",
+            "review_state": "confirmed",
+            "source_text": "毛驴儿",
+            "source_pinyin": "máolǘr",
+            "expanded_text": "毛驴儿",
+            "expanded_pinyin": "máolǘr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 138,
+              "source_index": 138,
+              "page_number": 2,
+              "table_order": 1,
+              "row_order": 30,
+              "pair_order": 1,
+              "category_index": 26,
+              "category_rule": "ü>ü:er"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-7B021362CC2D6B3A",
+      "record_type": "explicit_word_final_erhua",
+      "text": "没法儿",
+      "standard_erhua_pinyin": [
+        "méifǎr"
+      ],
+      "compatibility_marked_pinyin": "méi fǎ er",
+      "compatibility_numeric_pinyin": "mei2 fa3 er5",
+      "attached_syllable": "fa3",
+      "attached_final": "a",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "5",
+            "review_state": "confirmed",
+            "source_text": "没法儿",
+            "source_pinyin": "méifǎr",
+            "expanded_text": "没法儿",
+            "expanded_pinyin": "méifǎr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 5,
+              "source_index": 5,
+              "page_number": 1,
+              "table_order": 1,
+              "row_order": 3,
+              "pair_order": 1,
+              "category_index": 1,
+              "category_rule": "a>ar"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-324B1B29B13DC098",
+      "record_type": "explicit_word_final_erhua",
+      "text": "没词儿",
+      "standard_erhua_pinyin": [
+        "méicír"
+      ],
+      "compatibility_marked_pinyin": "méi cí er",
+      "compatibility_numeric_pinyin": "mei2 ci2 er5",
+      "attached_syllable": "ci2",
+      "attached_final": "_i",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "117",
+            "review_state": "confirmed",
+            "source_text": "没词儿",
+            "source_pinyin": "méicír",
+            "expanded_text": "没词儿",
+            "expanded_pinyin": "méicír",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 117,
+              "source_index": 117,
+              "page_number": 2,
+              "table_order": 1,
+              "row_order": 19,
+              "pair_order": 2,
+              "category_index": 21,
+              "category_rule": "i(前)>er"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-FDDF47786B7E0CC6",
+      "record_type": "explicit_word_final_erhua",
+      "text": "泪珠儿",
+      "standard_erhua_pinyin": [
+        "lèizhūr"
+      ],
+      "compatibility_marked_pinyin": "lèi zhū er",
+      "compatibility_numeric_pinyin": "lei4 zhu1 er5",
+      "attached_syllable": "zhu1",
+      "attached_final": "u",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "149",
+            "review_state": "confirmed",
+            "source_text": "泪珠儿",
+            "source_pinyin": "lèizhūr",
+            "expanded_text": "泪珠儿",
+            "expanded_pinyin": "lèizhūr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 149,
+              "source_index": 149,
+              "page_number": 2,
+              "table_order": 1,
+              "row_order": 37,
+              "pair_order": 1,
+              "category_index": 29,
+              "category_rule": "u>ur"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-7FB24F8C67D6449A",
+      "record_type": "explicit_word_final_erhua",
+      "text": "火星儿",
+      "standard_erhua_pinyin": [
+        "huǒxīngr"
+      ],
+      "compatibility_marked_pinyin": "huǒ xīng er",
+      "compatibility_numeric_pinyin": "huo3 xing1 er5",
+      "attached_syllable": "xing1",
+      "attached_final": "ing",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "133",
+            "review_state": "confirmed",
+            "source_text": "火星儿",
+            "source_pinyin": "huǒxīngr",
+            "expanded_text": "火星儿",
+            "expanded_pinyin": "huǒxīngr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 133,
+              "source_index": 133,
+              "page_number": 2,
+              "table_order": 1,
+              "row_order": 27,
+              "pair_order": 4,
+              "category_index": 25,
+              "category_rule": "ing>i:er(鼻化)"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-D00D3D1BA74F6160",
+      "record_type": "explicit_word_final_erhua",
+      "text": "火苗儿",
+      "standard_erhua_pinyin": [
+        "huǒmiáor"
+      ],
+      "compatibility_marked_pinyin": "huǒ miáo er",
+      "compatibility_numeric_pinyin": "huo3 miao2 er5",
+      "attached_syllable": "miao2",
+      "attached_final": "iao",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "173",
+            "review_state": "confirmed",
+            "source_text": "火苗儿",
+            "source_pinyin": "huǒmiáor",
+            "expanded_text": "火苗儿",
+            "expanded_pinyin": "huǒmiáor",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 173,
+              "source_index": 173,
+              "page_number": 3,
+              "table_order": 1,
+              "row_order": 9,
+              "pair_order": 2,
+              "category_index": 33,
+              "category_rule": "iao>iaor"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-A348E08A1BDF978D",
+      "record_type": "explicit_word_final_erhua",
+      "text": "火锅儿",
+      "standard_erhua_pinyin": [
+        "huǒguōr"
+      ],
+      "compatibility_marked_pinyin": "huǒ guō er",
+      "compatibility_numeric_pinyin": "huo3 guo1 er5",
+      "attached_syllable": "guo1",
+      "attached_final": "uo",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "194",
+            "review_state": "confirmed",
+            "source_text": "火锅儿",
+            "source_pinyin": "huǒguōr",
+            "expanded_text": "火锅儿",
+            "expanded_pinyin": "huǒguōr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 194,
+              "source_index": 194,
+              "page_number": 3,
+              "table_order": 1,
+              "row_order": 18,
+              "pair_order": 4,
+              "category_index": 36,
+              "category_rule": "uo>uor"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-0C1E4D97D2932BB2",
+      "record_type": "explicit_word_final_erhua",
+      "text": "灯泡儿",
+      "standard_erhua_pinyin": [
+        "dēngpàor"
+      ],
+      "compatibility_marked_pinyin": "dēng pào er",
+      "compatibility_numeric_pinyin": "deng1 pao4 er5",
+      "attached_syllable": "pao4",
+      "attached_final": "ao",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "163",
+            "review_state": "confirmed",
+            "source_text": "灯泡儿",
+            "source_pinyin": "dēngpàor",
+            "expanded_text": "灯泡儿",
+            "expanded_pinyin": "dēngpàor",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 163,
+              "source_index": 163,
+              "page_number": 3,
+              "table_order": 1,
+              "row_order": 5,
+              "pair_order": 2,
+              "category_index": 32,
+              "category_rule": "ao>aor"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-5E7593A956584771",
+      "record_type": "explicit_word_final_erhua",
+      "text": "烟卷儿",
+      "standard_erhua_pinyin": [
+        "yānjuǎnr"
+      ],
+      "compatibility_marked_pinyin": "yān juǎn er",
+      "compatibility_numeric_pinyin": "yan1 juan3 er5",
+      "attached_syllable": "juan3",
+      "attached_final": "üan",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "73",
+            "review_state": "confirmed",
+            "source_text": "烟卷儿",
+            "source_pinyin": "yānjuǎnr",
+            "expanded_text": "烟卷儿",
+            "expanded_pinyin": "yānjuǎnr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 73,
+              "source_index": 73,
+              "page_number": 1,
+              "table_order": 1,
+              "row_order": 34,
+              "pair_order": 2,
+              "category_index": 12,
+              "category_rule": "üan>üar"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-387D90E0C6ACA43A",
+      "record_type": "explicit_word_final_erhua",
+      "text": "牙刷儿",
+      "standard_erhua_pinyin": [
+        "yáshuār"
+      ],
+      "compatibility_marked_pinyin": "yá shuā er",
+      "compatibility_numeric_pinyin": "ya2 shua1 er5",
+      "attached_syllable": "shua1",
+      "attached_final": "ua",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "55",
+            "review_state": "confirmed",
+            "source_text": "牙刷儿",
+            "source_pinyin": "yáshuār",
+            "expanded_text": "牙刷儿",
+            "expanded_pinyin": "yáshuār",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 55,
+              "source_index": 55,
+              "page_number": 1,
+              "table_order": 1,
+              "row_order": 24,
+              "pair_order": 3,
+              "category_index": 8,
+              "category_rule": "ua>uar"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-35C011F1A2EA5039",
+      "record_type": "explicit_word_final_erhua",
+      "text": "牙签儿",
+      "standard_erhua_pinyin": [
+        "yáqiānr"
+      ],
+      "compatibility_marked_pinyin": "yá qiān er",
+      "compatibility_numeric_pinyin": "ya2 qian1 er5",
+      "attached_syllable": "qian1",
+      "attached_final": "ian",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "41",
+            "review_state": "confirmed",
+            "source_text": "牙签儿",
+            "source_pinyin": "yáqiānr",
+            "expanded_text": "牙签儿",
+            "expanded_pinyin": "yáqiānr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 41,
+              "source_index": 41,
+              "page_number": 1,
+              "table_order": 1,
+              "row_order": 18,
+              "pair_order": 4,
+              "category_index": 6,
+              "category_rule": "ian>iar"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-D941E0B73E998D3B",
+      "record_type": "explicit_word_final_erhua",
+      "text": "瓜子儿",
+      "standard_erhua_pinyin": [
+        "guāzǐr"
+      ],
+      "compatibility_marked_pinyin": "guā zǐ er",
+      "compatibility_numeric_pinyin": "gua1 zi3 er5",
+      "attached_syllable": "zi3",
+      "attached_final": "_i",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "116",
+            "review_state": "confirmed",
+            "source_text": "瓜子儿",
+            "source_pinyin": "guāzǐr",
+            "expanded_text": "瓜子儿",
+            "expanded_pinyin": "guāzǐr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 116,
+              "source_index": 116,
+              "page_number": 2,
+              "table_order": 1,
+              "row_order": 19,
+              "pair_order": 1,
+              "category_index": 21,
+              "category_rule": "i(前)>er"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-1641A7EB7FB0B2E9",
+      "record_type": "explicit_word_final_erhua",
+      "text": "瓜瓤儿",
+      "standard_erhua_pinyin": [
+        "guārángr"
+      ],
+      "compatibility_marked_pinyin": "guā ráng er",
+      "compatibility_numeric_pinyin": "gua1 rang2 er5",
+      "attached_syllable": "rang2",
+      "attached_final": "ang",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "24",
+            "review_state": "confirmed",
+            "source_text": "瓜瓤儿",
+            "source_pinyin": "guārángr",
+            "expanded_text": "瓜瓤儿",
+            "expanded_pinyin": "guārángr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 24,
+              "source_index": 24,
+              "page_number": 1,
+              "table_order": 1,
+              "row_order": 12,
+              "pair_order": 2,
+              "category_index": 4,
+              "category_rule": "ang>ar(鼻化)"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-81A25C8161C2BEB0",
+      "record_type": "explicit_word_final_erhua",
+      "text": "眼镜儿",
+      "standard_erhua_pinyin": [
+        "yǎnjìngr"
+      ],
+      "compatibility_marked_pinyin": "yǎn jìng er",
+      "compatibility_numeric_pinyin": "yan3 jing4 er5",
+      "attached_syllable": "jing4",
+      "attached_final": "ing",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "137",
+            "review_state": "confirmed",
+            "source_text": "眼镜儿",
+            "source_pinyin": "yǎnjìngr",
+            "expanded_text": "眼镜儿",
+            "expanded_pinyin": "yǎnjìngr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 137,
+              "source_index": 137,
+              "page_number": 2,
+              "table_order": 1,
+              "row_order": 28,
+              "pair_order": 4,
+              "category_index": 25,
+              "category_rule": "ing>i:er(鼻化)"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-B3B93B9D26E76106",
+      "record_type": "explicit_word_final_erhua",
+      "text": "砂轮儿",
+      "standard_erhua_pinyin": [
+        "shālúnr"
+      ],
+      "compatibility_marked_pinyin": "shā lún er",
+      "compatibility_numeric_pinyin": "sha1 lun2 er5",
+      "attached_syllable": "lun2",
+      "attached_final": "uen",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "114",
+            "review_state": "confirmed",
+            "source_text": "砂轮儿",
+            "source_pinyin": "shālúnr",
+            "expanded_text": "砂轮儿",
+            "expanded_pinyin": "shālúnr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 114,
+              "source_index": 114,
+              "page_number": 2,
+              "table_order": 1,
+              "row_order": 15,
+              "pair_order": 3,
+              "category_index": 19,
+              "category_rule": "uen>uer"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-5C839FC4FA64709C",
+      "record_type": "explicit_word_final_erhua",
+      "text": "碎步儿",
+      "standard_erhua_pinyin": [
+        "suìbùr"
+      ],
+      "compatibility_marked_pinyin": "suì bù er",
+      "compatibility_numeric_pinyin": "sui4 bu4 er5",
+      "attached_syllable": "bu4",
+      "attached_final": "u",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "152",
+            "review_state": "confirmed",
+            "source_text": "碎步儿",
+            "source_pinyin": "suìbùr",
+            "expanded_text": "碎步儿",
+            "expanded_pinyin": "suìbùr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 152,
+              "source_index": 152,
+              "page_number": 2,
+              "table_order": 1,
+              "row_order": 37,
+              "pair_order": 4,
+              "category_index": 29,
+              "category_rule": "u>ur"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-D601E93EA5421CB5",
+      "record_type": "explicit_word_final_erhua",
+      "text": "笑话儿",
+      "standard_erhua_pinyin": [
+        "xiàohuar"
+      ],
+      "compatibility_marked_pinyin": "xiào hua er",
+      "compatibility_numeric_pinyin": "xiao4 hua5 er5",
+      "attached_syllable": "hua5",
+      "attached_final": "ua",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "54",
+            "review_state": "confirmed",
+            "source_text": "笑话儿",
+            "source_pinyin": "xiàohuar",
+            "expanded_text": "笑话儿",
+            "expanded_pinyin": "xiàohuar",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 54,
+              "source_index": 54,
+              "page_number": 1,
+              "table_order": 1,
+              "row_order": 24,
+              "pair_order": 2,
+              "category_index": 8,
+              "category_rule": "ua>uar"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-97DCCE638FAD19DD",
+      "record_type": "explicit_word_final_erhua",
+      "text": "笔杆儿",
+      "standard_erhua_pinyin": [
+        "bǐgǎnr"
+      ],
+      "compatibility_marked_pinyin": "bǐ gǎn er",
+      "compatibility_numeric_pinyin": "bi3 gan3 er5",
+      "attached_syllable": "gan3",
+      "attached_final": "an",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "14",
+            "review_state": "confirmed",
+            "source_text": "笔杆儿",
+            "source_pinyin": "bǐgǎnr",
+            "expanded_text": "笔杆儿",
+            "expanded_pinyin": "bǐgǎnr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 14,
+              "source_index": 14,
+              "page_number": 1,
+              "table_order": 1,
+              "row_order": 8,
+              "pair_order": 2,
+              "category_index": 3,
+              "category_rule": "an>ar"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-A968141A59DD5479",
+      "record_type": "explicit_word_final_erhua",
+      "text": "粉末儿",
+      "standard_erhua_pinyin": [
+        "fěnmòr"
+      ],
+      "compatibility_marked_pinyin": "fěn mò er",
+      "compatibility_numeric_pinyin": "fen3 mo4 er5",
+      "attached_syllable": "mo4",
+      "attached_final": "o",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "200",
+            "review_state": "confirmed",
+            "source_text": "粉末儿",
+            "source_pinyin": "fěnmòr",
+            "expanded_text": "粉末儿",
+            "expanded_pinyin": "fěnmòr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 200,
+              "source_index": 200,
+              "page_number": 3,
+              "table_order": 1,
+              "row_order": 21,
+              "pair_order": 2,
+              "category_index": 37,
+              "category_rule": "(o)>or"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-EABB9AD6EFA045CA",
+      "record_type": "explicit_word_final_erhua",
+      "text": "红包儿",
+      "standard_erhua_pinyin": [
+        "hóngbāor"
+      ],
+      "compatibility_marked_pinyin": "hóng bāo er",
+      "compatibility_numeric_pinyin": "hong2 bao1 er5",
+      "attached_syllable": "bao1",
+      "attached_final": "ao",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "164",
+            "review_state": "confirmed",
+            "source_text": "红包儿",
+            "source_pinyin": "hóngbāor",
+            "expanded_text": "红包儿",
+            "expanded_pinyin": "hóngbāor",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 164,
+              "source_index": 164,
+              "page_number": 3,
+              "table_order": 1,
+              "row_order": 5,
+              "pair_order": 3,
+              "category_index": 32,
+              "category_rule": "ao>aor"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-023226CBCEE8D87C",
+      "record_type": "explicit_word_final_erhua",
+      "text": "纳闷儿",
+      "standard_erhua_pinyin": [
+        "nàmènr"
+      ],
+      "compatibility_marked_pinyin": "nà mèn er",
+      "compatibility_numeric_pinyin": "na4 men4 er5",
+      "attached_syllable": "men4",
+      "attached_final": "en",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "87",
+            "review_state": "confirmed",
+            "source_text": "纳闷儿",
+            "source_pinyin": "nàmènr",
+            "expanded_text": "纳闷儿",
+            "expanded_pinyin": "nàmènr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 87,
+              "source_index": 87,
+              "page_number": 2,
+              "table_order": 1,
+              "row_order": 1,
+              "pair_order": 3,
+              "category_index": 14,
+              "category_rule": "en>er"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-36CEB04D327B69B8",
+      "record_type": "explicit_word_final_erhua",
+      "text": "纽扣儿",
+      "standard_erhua_pinyin": [
+        "niǔkòur"
+      ],
+      "compatibility_marked_pinyin": "niǔ kòu er",
+      "compatibility_numeric_pinyin": "niu3 kou4 er5",
+      "attached_syllable": "kou4",
+      "attached_final": "ou",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "182",
+            "review_state": "confirmed",
+            "source_text": "纽扣儿",
+            "source_pinyin": "niǔkòur",
+            "expanded_text": "纽扣儿",
+            "expanded_pinyin": "niǔkòur",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 182,
+              "source_index": 182,
+              "page_number": 3,
+              "table_order": 1,
+              "row_order": 13,
+              "pair_order": 1,
+              "category_index": 34,
+              "category_rule": "ou>our"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-78D36B27EEEE859A",
+      "record_type": "explicit_word_final_erhua",
+      "text": "线轴儿",
+      "standard_erhua_pinyin": [
+        "xiànzhóur"
+      ],
+      "compatibility_marked_pinyin": "xiàn zhóu er",
+      "compatibility_numeric_pinyin": "xian4 zhou2 er5",
+      "attached_syllable": "zhou2",
+      "attached_final": "ou",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "183",
+            "review_state": "confirmed",
+            "source_text": "线轴儿",
+            "source_pinyin": "xiànzhóur",
+            "expanded_text": "线轴儿",
+            "expanded_pinyin": "xiànzhóur",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 183,
+              "source_index": 183,
+              "page_number": 3,
+              "table_order": 1,
+              "row_order": 13,
+              "pair_order": 2,
+              "category_index": 34,
+              "category_rule": "ou>our"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-C5CBC6423CEC1FF5",
+      "record_type": "explicit_word_final_erhua",
+      "text": "绕远儿",
+      "standard_erhua_pinyin": [
+        "ràoyuǎnr"
+      ],
+      "compatibility_marked_pinyin": "rào yuǎn er",
+      "compatibility_numeric_pinyin": "rao4 yuan3 er5",
+      "attached_syllable": "yuan3",
+      "attached_final": "üan",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "70",
+            "review_state": "confirmed",
+            "source_text": "绕远儿",
+            "source_pinyin": "ràoyuǎnr",
+            "expanded_text": "绕远儿",
+            "expanded_pinyin": "ràoyuǎnr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 70,
+              "source_index": 70,
+              "page_number": 1,
+              "table_order": 1,
+              "row_order": 33,
+              "pair_order": 3,
+              "category_index": 12,
+              "category_rule": "üan>üar"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-F1CECB54CE30E93E",
+      "record_type": "explicit_word_final_erhua",
+      "text": "绝着儿",
+      "standard_erhua_pinyin": [
+        "juézhāor"
+      ],
+      "compatibility_marked_pinyin": "jué zhāo er",
+      "compatibility_numeric_pinyin": "jue2 zhao1 er5",
+      "attached_syllable": "zhao1",
+      "attached_final": "ao",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "166",
+            "review_state": "confirmed",
+            "source_text": "绝着儿",
+            "source_pinyin": "juézhāor",
+            "expanded_text": "绝着儿",
+            "expanded_pinyin": "juézhāor",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 166,
+              "source_index": 166,
+              "page_number": 3,
+              "table_order": 1,
+              "row_order": 6,
+              "pair_order": 1,
+              "category_index": 32,
+              "category_rule": "ao>aor"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-4A55C607ED28819B",
+      "record_type": "explicit_word_final_erhua",
+      "text": "老头儿",
+      "standard_erhua_pinyin": [
+        "lǎotóur"
+      ],
+      "compatibility_marked_pinyin": "lǎo tóu er",
+      "compatibility_numeric_pinyin": "lao3 tou2 er5",
+      "attached_syllable": "tou2",
+      "attached_final": "ou",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "179",
+            "review_state": "confirmed",
+            "source_text": "老头儿",
+            "source_pinyin": "lǎotóur",
+            "expanded_text": "老头儿",
+            "expanded_pinyin": "lǎotóur",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 179,
+              "source_index": 179,
+              "page_number": 3,
+              "table_order": 1,
+              "row_order": 12,
+              "pair_order": 2,
+              "category_index": 34,
+              "category_rule": "ou>our"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-1450A5233F0FC776",
+      "record_type": "explicit_word_final_erhua",
+      "text": "耳垂儿",
+      "standard_erhua_pinyin": [
+        "ěrchuír"
+      ],
+      "compatibility_marked_pinyin": "ěr chuí er",
+      "compatibility_numeric_pinyin": "er3 chui2 er5",
+      "attached_syllable": "chui2",
+      "attached_final": "uei",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "102",
+            "review_state": "confirmed",
+            "source_text": "耳垂儿",
+            "source_pinyin": "ěrchuír",
+            "expanded_text": "耳垂儿",
+            "expanded_pinyin": "ěrchuír",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 102,
+              "source_index": 102,
+              "page_number": 2,
+              "table_order": 1,
+              "row_order": 11,
+              "pair_order": 1,
+              "category_index": 18,
+              "category_rule": "uei>uer"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-C7519ABDFC608C0D",
+      "record_type": "explicit_word_final_erhua",
+      "text": "耳膜儿",
+      "standard_erhua_pinyin": [
+        "ěrmór"
+      ],
+      "compatibility_marked_pinyin": "ěr mó er",
+      "compatibility_numeric_pinyin": "er3 mo2 er5",
+      "attached_syllable": "mo2",
+      "attached_final": "o",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "199",
+            "review_state": "confirmed",
+            "source_text": "耳膜儿",
+            "source_pinyin": "ěrmór",
+            "expanded_text": "耳膜儿",
+            "expanded_pinyin": "ěrmór",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 199,
+              "source_index": 199,
+              "page_number": 3,
+              "table_order": 1,
+              "row_order": 21,
+              "pair_order": 1,
+              "category_index": 37,
+              "category_rule": "(o)>or"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-CDAAB5E595051302",
+      "record_type": "explicit_word_final_erhua",
+      "text": "肚脐儿",
+      "standard_erhua_pinyin": [
+        "dùqír"
+      ],
+      "compatibility_marked_pinyin": "dù qí er",
+      "compatibility_numeric_pinyin": "du4 qi2 er5",
+      "attached_syllable": "qi2",
+      "attached_final": "i",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "124",
+            "review_state": "confirmed",
+            "source_text": "肚脐儿",
+            "source_pinyin": "dùqír",
+            "expanded_text": "肚脐儿",
+            "expanded_pinyin": "dùqír",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 124,
+              "source_index": 124,
+              "page_number": 2,
+              "table_order": 1,
+              "row_order": 23,
+              "pair_order": 2,
+              "category_index": 23,
+              "category_rule": "i>i:er"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-1DEFF65C1917D263",
+      "record_type": "explicit_word_final_erhua",
+      "text": "胡同儿",
+      "standard_erhua_pinyin": [
+        "hútòngr"
+      ],
+      "compatibility_marked_pinyin": "hú tòng er",
+      "compatibility_numeric_pinyin": "hu2 tong4 er5",
+      "attached_syllable": "tong4",
+      "attached_final": "ong",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "157",
+            "review_state": "confirmed",
+            "source_text": "胡同儿",
+            "source_pinyin": "hútòngr",
+            "expanded_text": "胡同儿",
+            "expanded_pinyin": "hútòngr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 157,
+              "source_index": 157,
+              "page_number": 2,
+              "table_order": 1,
+              "row_order": 40,
+              "pair_order": 3,
+              "category_index": 30,
+              "category_rule": "ong>or(鼻化)"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-03464A312D3D9CBE",
+      "record_type": "explicit_word_final_erhua",
+      "text": "脚印儿",
+      "standard_erhua_pinyin": [
+        "jiǎoyìnr"
+      ],
+      "compatibility_marked_pinyin": "jiǎo yìn er",
+      "compatibility_numeric_pinyin": "jiao3 yin4 er5",
+      "attached_syllable": "yin4",
+      "attached_final": "in",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "127",
+            "review_state": "confirmed",
+            "source_text": "脚印儿",
+            "source_pinyin": "jiǎoyìnr",
+            "expanded_text": "脚印儿",
+            "expanded_pinyin": "jiǎoyìnr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 127,
+              "source_index": 127,
+              "page_number": 2,
+              "table_order": 1,
+              "row_order": 25,
+              "pair_order": 1,
+              "category_index": 24,
+              "category_rule": "in>i:er"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-0E0678A9B50F9CDD",
+      "record_type": "explicit_word_final_erhua",
+      "text": "花样儿",
+      "standard_erhua_pinyin": [
+        "huāyàngr"
+      ],
+      "compatibility_marked_pinyin": "huā yàng er",
+      "compatibility_numeric_pinyin": "hua1 yang4 er5",
+      "attached_syllable": "yang4",
+      "attached_final": "iang",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "47",
+            "review_state": "confirmed",
+            "source_text": "花样儿",
+            "source_pinyin": "huāyàngr",
+            "expanded_text": "花样儿",
+            "expanded_pinyin": "huāyàngr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 47,
+              "source_index": 47,
+              "page_number": 1,
+              "table_order": 1,
+              "row_order": 21,
+              "pair_order": 2,
+              "category_index": 7,
+              "category_rule": "iang>iar(鼻化)"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-F299ECA05D7D5188",
+      "record_type": "explicit_word_final_erhua",
+      "text": "花瓶儿",
+      "standard_erhua_pinyin": [
+        "huāpíngr"
+      ],
+      "compatibility_marked_pinyin": "huā píng er",
+      "compatibility_numeric_pinyin": "hua1 ping2 er5",
+      "attached_syllable": "ping2",
+      "attached_final": "ing",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "132",
+            "review_state": "confirmed",
+            "source_text": "花瓶儿",
+            "source_pinyin": "huāpíngr",
+            "expanded_text": "花瓶儿",
+            "expanded_pinyin": "huāpíngr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 132,
+              "source_index": 132,
+              "page_number": 2,
+              "table_order": 1,
+              "row_order": 27,
+              "pair_order": 3,
+              "category_index": 25,
+              "category_rule": "ing>i:er(鼻化)"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-6E5616ED77817D4C",
+      "record_type": "explicit_word_final_erhua",
+      "text": "花盆儿",
+      "standard_erhua_pinyin": [
+        "huāpénr"
+      ],
+      "compatibility_marked_pinyin": "huā pén er",
+      "compatibility_numeric_pinyin": "hua1 pen2 er5",
+      "attached_syllable": "pen2",
+      "attached_final": "en",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "84",
+            "review_state": "confirmed",
+            "source_text": "花盆儿",
+            "source_pinyin": "huāpénr",
+            "expanded_text": "花盆儿",
+            "expanded_pinyin": "huāpénr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 84,
+              "source_index": 84,
+              "page_number": 1,
+              "table_order": 1,
+              "row_order": 39,
+              "pair_order": 4,
+              "category_index": 14,
+              "category_rule": "en>er"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-A88C2186BEBAC694",
+      "record_type": "explicit_word_final_erhua",
+      "text": "落款儿",
+      "standard_erhua_pinyin": [
+        "luòkuǎnr"
+      ],
+      "compatibility_marked_pinyin": "luò kuǎn er",
+      "compatibility_numeric_pinyin": "luo4 kuan3 er5",
+      "attached_syllable": "kuan3",
+      "attached_final": "uan",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "64",
+            "review_state": "confirmed",
+            "source_text": "落款儿",
+            "source_pinyin": "luòkuǎnr",
+            "expanded_text": "落款儿",
+            "expanded_pinyin": "luòkuǎnr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 64,
+              "source_index": 64,
+              "page_number": 1,
+              "table_order": 1,
+              "row_order": 29,
+              "pair_order": 4,
+              "category_index": 10,
+              "category_rule": "uan>uar"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-B5B6F46138FA2AE2",
+      "record_type": "explicit_word_final_erhua",
+      "text": "蛋清儿",
+      "standard_erhua_pinyin": [
+        "dànqīngr"
+      ],
+      "compatibility_marked_pinyin": "dàn qīng er",
+      "compatibility_numeric_pinyin": "dan4 qing1 er5",
+      "attached_syllable": "qing1",
+      "attached_final": "ing",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "131",
+            "review_state": "confirmed",
+            "source_text": "蛋清儿",
+            "source_pinyin": "dànqīngr",
+            "expanded_text": "蛋清儿",
+            "expanded_pinyin": "dànqīngr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 131,
+              "source_index": 131,
+              "page_number": 2,
+              "table_order": 1,
+              "row_order": 27,
+              "pair_order": 2,
+              "category_index": 25,
+              "category_rule": "ing>i:er(鼻化)"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-ED63E786D42DED09",
+      "record_type": "explicit_word_final_erhua",
+      "text": "蛋黄儿",
+      "standard_erhua_pinyin": [
+        "dànhuángr"
+      ],
+      "compatibility_marked_pinyin": "dàn huáng er",
+      "compatibility_numeric_pinyin": "dan4 huang2 er5",
+      "attached_syllable": "huang2",
+      "attached_final": "uang",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "66",
+            "review_state": "confirmed",
+            "source_text": "蛋黄儿",
+            "source_pinyin": "dànhuángr",
+            "expanded_text": "蛋黄儿",
+            "expanded_pinyin": "dànhuángr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 66,
+              "source_index": 66,
+              "page_number": 1,
+              "table_order": 1,
+              "row_order": 31,
+              "pair_order": 2,
+              "category_index": 11,
+              "category_rule": "uang>uar(鼻化)"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-AD0C67652E48655D",
+      "record_type": "explicit_word_final_erhua",
+      "text": "蜜枣儿",
+      "standard_erhua_pinyin": [
+        "mìzǎor"
+      ],
+      "compatibility_marked_pinyin": "mì zǎo er",
+      "compatibility_numeric_pinyin": "mi4 zao3 er5",
+      "attached_syllable": "zao3",
+      "attached_final": "ao",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "169",
+            "review_state": "confirmed",
+            "source_text": "蜜枣儿",
+            "source_pinyin": "mìzǎor",
+            "expanded_text": "蜜枣儿",
+            "expanded_pinyin": "mìzǎor",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 169,
+              "source_index": 169,
+              "page_number": 3,
+              "table_order": 1,
+              "row_order": 6,
+              "pair_order": 4,
+              "category_index": 32,
+              "category_rule": "ao>aor"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-0ECEC09D04E0BA8E",
+      "record_type": "explicit_word_final_erhua",
+      "text": "衣兜儿",
+      "standard_erhua_pinyin": [
+        "yīdōur"
+      ],
+      "compatibility_marked_pinyin": "yī dōu er",
+      "compatibility_numeric_pinyin": "yi1 dou1 er5",
+      "attached_syllable": "dou1",
+      "attached_final": "ou",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "186",
+            "review_state": "confirmed",
+            "source_text": "衣兜儿",
+            "source_pinyin": "yīdōur",
+            "expanded_text": "衣兜儿",
+            "expanded_pinyin": "yīdōur",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 186,
+              "source_index": 186,
+              "page_number": 3,
+              "table_order": 1,
+              "row_order": 14,
+              "pair_order": 1,
+              "category_index": 34,
+              "category_rule": "ou>our"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-75134624A617EB66",
+      "record_type": "explicit_word_final_erhua",
+      "text": "被窝儿",
+      "standard_erhua_pinyin": [
+        "bèiwōr"
+      ],
+      "compatibility_marked_pinyin": "bèi wō er",
+      "compatibility_numeric_pinyin": "bei4 wo1 er5",
+      "attached_syllable": "wo1",
+      "attached_final": "uo",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "191",
+            "review_state": "confirmed",
+            "source_text": "被窝儿",
+            "source_pinyin": "bèiwōr",
+            "expanded_text": "被窝儿",
+            "expanded_pinyin": "bèiwōr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 191,
+              "source_index": 191,
+              "page_number": 3,
+              "table_order": 1,
+              "row_order": 18,
+              "pair_order": 1,
+              "category_index": 36,
+              "category_rule": "uo>uor"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-7786DE488F280D31",
+      "record_type": "explicit_word_final_erhua",
+      "text": "豆芽儿",
+      "standard_erhua_pinyin": [
+        "dòuyár"
+      ],
+      "compatibility_marked_pinyin": "dòu yá er",
+      "compatibility_numeric_pinyin": "dou4 ya2 er5",
+      "attached_syllable": "ya2",
+      "attached_final": "ia",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "28",
+            "review_state": "confirmed",
+            "source_text": "豆芽儿",
+            "source_pinyin": "dòuyár",
+            "expanded_text": "豆芽儿",
+            "expanded_pinyin": "dòuyár",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 28,
+              "source_index": 28,
+              "page_number": 1,
+              "table_order": 1,
+              "row_order": 14,
+              "pair_order": 2,
+              "category_index": 5,
+              "category_rule": "ia>iar"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-6DA450A4FD744BDC",
+      "record_type": "explicit_word_final_erhua",
+      "text": "豆角儿",
+      "standard_erhua_pinyin": [
+        "dòujiǎor"
+      ],
+      "compatibility_marked_pinyin": "dòu jiǎo er",
+      "compatibility_numeric_pinyin": "dou4 jiao3 er5",
+      "attached_syllable": "jiao3",
+      "attached_final": "iao",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "172",
+            "review_state": "confirmed",
+            "source_text": "豆角儿",
+            "source_pinyin": "dòujiǎor",
+            "expanded_text": "豆角儿",
+            "expanded_pinyin": "dòujiǎor",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 172,
+              "source_index": 172,
+              "page_number": 3,
+              "table_order": 1,
+              "row_order": 9,
+              "pair_order": 1,
+              "category_index": 33,
+              "category_rule": "iao>iaor"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-A43D5C6B101A846F",
+      "record_type": "explicit_word_final_erhua",
+      "text": "赶趟儿",
+      "standard_erhua_pinyin": [
+        "gǎntàngr"
+      ],
+      "compatibility_marked_pinyin": "gǎn tàng er",
+      "compatibility_numeric_pinyin": "gan3 tang4 er5",
+      "attached_syllable": "tang4",
+      "attached_final": "ang",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "23",
+            "review_state": "confirmed",
+            "source_text": "赶趟儿",
+            "source_pinyin": "gǎntàngr",
+            "expanded_text": "赶趟儿",
+            "expanded_pinyin": "gǎntàngr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 23,
+              "source_index": 23,
+              "page_number": 1,
+              "table_order": 1,
+              "row_order": 12,
+              "pair_order": 1,
+              "category_index": 4,
+              "category_rule": "ang>ar(鼻化)"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-81770E28F6172EBB",
+      "record_type": "explicit_word_final_erhua",
+      "text": "跑腿儿",
+      "standard_erhua_pinyin": [
+        "pǎotuǐr"
+      ],
+      "compatibility_marked_pinyin": "pǎo tuǐ er",
+      "compatibility_numeric_pinyin": "pao3 tui3 er5",
+      "attached_syllable": "tui3",
+      "attached_final": "uei",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "104",
+            "review_state": "confirmed",
+            "source_text": "跑腿儿",
+            "source_pinyin": "pǎotuǐr",
+            "expanded_text": "跑腿儿",
+            "expanded_pinyin": "pǎotuǐr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 104,
+              "source_index": 104,
+              "page_number": 2,
+              "table_order": 1,
+              "row_order": 11,
+              "pair_order": 3,
+              "category_index": 18,
+              "category_rule": "uei>uer"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-F6CD5EB267D60294",
+      "record_type": "explicit_word_final_erhua",
+      "text": "跑调儿",
+      "standard_erhua_pinyin": [
+        "pǎodiàor"
+      ],
+      "compatibility_marked_pinyin": "pǎo diào er",
+      "compatibility_numeric_pinyin": "pao3 diao4 er5",
+      "attached_syllable": "diao4",
+      "attached_final": "iao",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "176",
+            "review_state": "confirmed",
+            "source_text": "跑调儿",
+            "source_pinyin": "pǎodiàor",
+            "expanded_text": "跑调儿",
+            "expanded_pinyin": "pǎodiàor",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 176,
+              "source_index": 176,
+              "page_number": 3,
+              "table_order": 1,
+              "row_order": 10,
+              "pair_order": 1,
+              "category_index": 33,
+              "category_rule": "iao>iaor"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-D598E6E746F90024",
+      "record_type": "explicit_word_final_erhua",
+      "text": "跳高儿",
+      "standard_erhua_pinyin": [
+        "tiàogāor"
+      ],
+      "compatibility_marked_pinyin": "tiào gāo er",
+      "compatibility_numeric_pinyin": "tiao4 gao1 er5",
+      "attached_syllable": "gao1",
+      "attached_final": "ao",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "171",
+            "review_state": "confirmed",
+            "source_text": "跳高儿",
+            "source_pinyin": "tiàogāor",
+            "expanded_text": "跳高儿",
+            "expanded_pinyin": "tiàogāor",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 171,
+              "source_index": 171,
+              "page_number": 3,
+              "table_order": 1,
+              "row_order": 7,
+              "pair_order": 2,
+              "category_index": 32,
+              "category_rule": "ao>aor"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-A18088AA38A6FBE4",
+      "record_type": "explicit_word_final_erhua",
+      "text": "送信儿",
+      "standard_erhua_pinyin": [
+        "sòngxìnr"
+      ],
+      "compatibility_marked_pinyin": "sòng xìn er",
+      "compatibility_numeric_pinyin": "song4 xin4 er5",
+      "attached_syllable": "xin4",
+      "attached_final": "in",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "128",
+            "review_state": "confirmed",
+            "source_text": "送信儿",
+            "source_pinyin": "sòngxìnr",
+            "expanded_text": "送信儿",
+            "expanded_pinyin": "sòngxìnr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 128,
+              "source_index": 128,
+              "page_number": 2,
+              "table_order": 1,
+              "row_order": 25,
+              "pair_order": 2,
+              "category_index": 24,
+              "category_rule": "in>i:er"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-F850C555B395A4B1",
+      "record_type": "explicit_word_final_erhua",
+      "text": "透亮儿",
+      "standard_erhua_pinyin": [
+        "tòuliàngr"
+      ],
+      "compatibility_marked_pinyin": "tòu liàng er",
+      "compatibility_numeric_pinyin": "tou4 liang4 er5",
+      "attached_syllable": "liang4",
+      "attached_final": "iang",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "48",
+            "review_state": "confirmed",
+            "source_text": "透亮儿",
+            "source_pinyin": "tòuliàngr",
+            "expanded_text": "透亮儿",
+            "expanded_pinyin": "tòuliàngr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 48,
+              "source_index": 48,
+              "page_number": 1,
+              "table_order": 1,
+              "row_order": 21,
+              "pair_order": 3,
+              "category_index": 7,
+              "category_rule": "iang>iar(鼻化)"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-CC964470933300A6",
+      "record_type": "explicit_word_final_erhua",
+      "text": "逗乐儿",
+      "standard_erhua_pinyin": [
+        "dòulèr"
+      ],
+      "compatibility_marked_pinyin": "dòu lè er",
+      "compatibility_numeric_pinyin": "dou4 le4 er5",
+      "attached_syllable": "le4",
+      "attached_final": "e",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "146",
+            "review_state": "confirmed",
+            "source_text": "逗乐儿",
+            "source_pinyin": "dòulèr",
+            "expanded_text": "逗乐儿",
+            "expanded_pinyin": "dòulèr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 146,
+              "source_index": 146,
+              "page_number": 2,
+              "table_order": 1,
+              "row_order": 35,
+              "pair_order": 1,
+              "category_index": 28,
+              "category_rule": "e>er"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-BB67CF56B1E8501D",
+      "record_type": "explicit_word_final_erhua",
+      "text": "邮戳儿",
+      "standard_erhua_pinyin": [
+        "yóuchuōr"
+      ],
+      "compatibility_marked_pinyin": "yóu chuō er",
+      "compatibility_numeric_pinyin": "you2 chuo1 er5",
+      "attached_syllable": "chuo1",
+      "attached_final": "uo",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "197",
+            "review_state": "confirmed",
+            "source_text": "邮戳儿",
+            "source_pinyin": "yóuchuōr",
+            "expanded_text": "邮戳儿",
+            "expanded_pinyin": "yóuchuōr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 197,
+              "source_index": 197,
+              "page_number": 3,
+              "table_order": 1,
+              "row_order": 19,
+              "pair_order": 3,
+              "category_index": 36,
+              "category_rule": "uo>uor"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-B7EFB5A5B98F72DC",
+      "record_type": "explicit_word_final_erhua",
+      "text": "酒盅儿",
+      "standard_erhua_pinyin": [
+        "jiǔzhōngr"
+      ],
+      "compatibility_marked_pinyin": "jiǔ zhōng er",
+      "compatibility_numeric_pinyin": "jiu3 zhong1 er5",
+      "attached_syllable": "zhong1",
+      "attached_final": "ong",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "158",
+            "review_state": "confirmed",
+            "source_text": "酒盅儿",
+            "source_pinyin": "jiǔzhōngr",
+            "expanded_text": "酒盅儿",
+            "expanded_pinyin": "jiǔzhōngr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 158,
+              "source_index": 158,
+              "page_number": 2,
+              "table_order": 1,
+              "row_order": 40,
+              "pair_order": 4,
+              "category_index": 30,
+              "category_rule": "ong>or(鼻化)"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-CC60C0A7F37F1B38",
+      "record_type": "explicit_word_final_erhua",
+      "text": "针鼻儿",
+      "standard_erhua_pinyin": [
+        "zhēnbír"
+      ],
+      "compatibility_marked_pinyin": "zhēn bí er",
+      "compatibility_numeric_pinyin": "zhen1 bi2 er5",
+      "attached_syllable": "bi2",
+      "attached_final": "i",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "126",
+            "review_state": "confirmed",
+            "source_text": "针鼻儿",
+            "source_pinyin": "zhēnbír",
+            "expanded_text": "针鼻儿",
+            "expanded_pinyin": "zhēnbír",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 126,
+              "source_index": 126,
+              "page_number": 2,
+              "table_order": 1,
+              "row_order": 23,
+              "pair_order": 4,
+              "category_index": 23,
+              "category_rule": "i>i:er"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-DD34F7DB9614EFF3",
+      "record_type": "explicit_word_final_erhua",
+      "text": "锯齿儿",
+      "standard_erhua_pinyin": [
+        "jùchǐr"
+      ],
+      "compatibility_marked_pinyin": "jù chǐ er",
+      "compatibility_numeric_pinyin": "ju4 chi3 er5",
+      "attached_syllable": "chi3",
+      "attached_final": "_i",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "121",
+            "review_state": "confirmed",
+            "source_text": "锯齿儿",
+            "source_pinyin": "jùchǐr",
+            "expanded_text": "锯齿儿",
+            "expanded_pinyin": "jùchǐr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 121,
+              "source_index": 121,
+              "page_number": 2,
+              "table_order": 1,
+              "row_order": 21,
+              "pair_order": 2,
+              "category_index": 22,
+              "category_rule": "i(后)>er"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-5C2BED75CDEA969C",
+      "record_type": "explicit_word_final_erhua",
+      "text": "门口儿",
+      "standard_erhua_pinyin": [
+        "ménkǒur"
+      ],
+      "compatibility_marked_pinyin": "mén kǒu er",
+      "compatibility_numeric_pinyin": "men2 kou3 er5",
+      "attached_syllable": "kou3",
+      "attached_final": "ou",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "180",
+            "review_state": "confirmed",
+            "source_text": "门口儿",
+            "source_pinyin": "ménkǒur",
+            "expanded_text": "门口儿",
+            "expanded_pinyin": "ménkǒur",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 180,
+              "source_index": 180,
+              "page_number": 3,
+              "table_order": 1,
+              "row_order": 12,
+              "pair_order": 3,
+              "category_index": 34,
+              "category_rule": "ou>our"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-76268C1BF2692417",
+      "record_type": "explicit_word_final_erhua",
+      "text": "门槛儿",
+      "standard_erhua_pinyin": [
+        "ménkǎnr"
+      ],
+      "compatibility_marked_pinyin": "mén kǎn er",
+      "compatibility_numeric_pinyin": "men2 kan3 er5",
+      "attached_syllable": "kan3",
+      "attached_final": "an",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "19",
+            "review_state": "confirmed",
+            "source_text": "门槛儿",
+            "source_pinyin": "ménkǎnr",
+            "expanded_text": "门槛儿",
+            "expanded_pinyin": "ménkǎnr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 19,
+              "source_index": 19,
+              "page_number": 1,
+              "table_order": 1,
+              "row_order": 9,
+              "pair_order": 3,
+              "category_index": 3,
+              "category_rule": "an>ar"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-BE7AE173C17CA6E5",
+      "record_type": "explicit_word_final_erhua",
+      "text": "门洞儿",
+      "standard_erhua_pinyin": [
+        "méndòngr"
+      ],
+      "compatibility_marked_pinyin": "mén dòng er",
+      "compatibility_numeric_pinyin": "men2 dong4 er5",
+      "attached_syllable": "dong4",
+      "attached_final": "ong",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "159",
+            "review_state": "confirmed",
+            "source_text": "门洞儿",
+            "source_pinyin": "méndòngr",
+            "expanded_text": "门洞儿",
+            "expanded_pinyin": "méndòngr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 159,
+              "source_index": 159,
+              "page_number": 3,
+              "table_order": 1,
+              "row_order": 1,
+              "pair_order": 1,
+              "category_index": 30,
+              "category_rule": "ong>or(鼻化)"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-93212E5BD85AE39A",
+      "record_type": "explicit_word_final_erhua",
+      "text": "门铃儿",
+      "standard_erhua_pinyin": [
+        "ménlingr"
+      ],
+      "compatibility_marked_pinyin": "mén ling er",
+      "compatibility_numeric_pinyin": "men2 ling5 er5",
+      "attached_syllable": "ling5",
+      "attached_final": "ing",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "134",
+            "review_state": "confirmed",
+            "source_text": "门铃儿",
+            "source_pinyin": "ménlingr",
+            "expanded_text": "门铃儿",
+            "expanded_pinyin": "ménlingr",
+            "input_derivation": "written-er-input-alias",
+            "locator": {
+              "id": 134,
+              "source_index": 134,
+              "page_number": 2,
+              "table_order": 1,
+              "row_order": 28,
+              "pair_order": 1,
+              "category_index": 25,
+              "category_rule": "ing>i:er(鼻化)"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-E300AEA31DEFFDE0",
+      "record_type": "explicit_word_final_erhua",
+      "text": "雨点儿",
+      "standard_erhua_pinyin": [
+        "yǔdiǎnr"
+      ],
+      "compatibility_marked_pinyin": "yǔ diǎn er",
+      "compatibility_numeric_pinyin": "yu3 dian3 er5",
+      "attached_syllable": "dian3",
+      "attached_final": "ian",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "44",
+            "review_state": "confirmed",
+            "source_text": "雨点儿",
+            "source_pinyin": "yǔdiǎnr",
+            "expanded_text": "雨点儿",
+            "expanded_pinyin": "yǔdiǎnr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 44,
+              "source_index": 44,
+              "page_number": 1,
+              "table_order": 1,
+              "row_order": 19,
+              "pair_order": 3,
+              "category_index": 6,
+              "category_rule": "ian>iar"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-F124C6433F861D07",
+      "record_type": "explicit_word_final_erhua",
+      "text": "露馅儿",
+      "standard_erhua_pinyin": [
+        "lòuxiànr"
+      ],
+      "compatibility_marked_pinyin": "lòu xiàn er",
+      "compatibility_numeric_pinyin": "lou4 xian4 er5",
+      "attached_syllable": "xian4",
+      "attached_final": "ian",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "35",
+            "review_state": "confirmed",
+            "source_text": "露馅儿",
+            "source_pinyin": "lòuxiànr",
+            "expanded_text": "露馅儿",
+            "expanded_pinyin": "lòuxiànr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 35,
+              "source_index": 35,
+              "page_number": 1,
+              "table_order": 1,
+              "row_order": 17,
+              "pair_order": 2,
+              "category_index": 6,
+              "category_rule": "ian>iar"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-2C221C542820059E",
+      "record_type": "explicit_word_final_erhua",
+      "text": "鞋带儿",
+      "standard_erhua_pinyin": [
+        "xiédàir"
+      ],
+      "compatibility_marked_pinyin": "xié dài er",
+      "compatibility_numeric_pinyin": "xie2 dai4 er5",
+      "attached_syllable": "dai4",
+      "attached_final": "ai",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "12",
+            "review_state": "confirmed",
+            "source_text": "鞋带儿",
+            "source_pinyin": "xiédàir",
+            "expanded_text": "鞋带儿",
+            "expanded_pinyin": "xiédàir",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 12,
+              "source_index": 12,
+              "page_number": 1,
+              "table_order": 1,
+              "row_order": 6,
+              "pair_order": 1,
+              "category_index": 2,
+              "category_rule": "ai>ar"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-C38664538E8477D1",
+      "record_type": "explicit_word_final_erhua",
+      "text": "饭盒儿",
+      "standard_erhua_pinyin": [
+        "fànhér"
+      ],
+      "compatibility_marked_pinyin": "fàn hé er",
+      "compatibility_numeric_pinyin": "fan4 he2 er5",
+      "attached_syllable": "he2",
+      "attached_final": "e",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "147",
+            "review_state": "confirmed",
+            "source_text": "饭盒儿",
+            "source_pinyin": "fànhér",
+            "expanded_text": "饭盒儿",
+            "expanded_pinyin": "fànhér",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 147,
+              "source_index": 147,
+              "page_number": 2,
+              "table_order": 1,
+              "row_order": 35,
+              "pair_order": 2,
+              "category_index": 28,
+              "category_rule": "e>er"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-83A6ABD1693C1205",
+      "record_type": "explicit_word_final_erhua",
+      "text": "香肠儿",
+      "standard_erhua_pinyin": [
+        "xiāngchángr"
+      ],
+      "compatibility_marked_pinyin": "xiāng cháng er",
+      "compatibility_numeric_pinyin": "xiang1 chang2 er5",
+      "attached_syllable": "chang2",
+      "attached_final": "ang",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "25",
+            "review_state": "confirmed",
+            "source_text": "香肠儿",
+            "source_pinyin": "xiāngchángr",
+            "expanded_text": "香肠儿",
+            "expanded_pinyin": "xiāngchángr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 25,
+              "source_index": 25,
+              "page_number": 1,
+              "table_order": 1,
+              "row_order": 12,
+              "pair_order": 3,
+              "category_index": 4,
+              "category_rule": "ang>ar(鼻化)"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-66D19D4D6D88E3D3",
+      "record_type": "explicit_word_final_erhua",
+      "text": "马褂儿",
+      "standard_erhua_pinyin": [
+        "mǎguàr"
+      ],
+      "compatibility_marked_pinyin": "mǎ guà er",
+      "compatibility_numeric_pinyin": "ma3 gua4 er5",
+      "attached_syllable": "gua4",
+      "attached_final": "ua",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "51",
+            "review_state": "confirmed",
+            "source_text": "马褂儿",
+            "source_pinyin": "mǎguàr",
+            "expanded_text": "马褂儿",
+            "expanded_pinyin": "mǎguàr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 51,
+              "source_index": 51,
+              "page_number": 1,
+              "table_order": 1,
+              "row_order": 23,
+              "pair_order": 3,
+              "category_index": 8,
+              "category_rule": "ua>uar"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-BF72D9D1F9EE70C8",
+      "record_type": "explicit_word_final_erhua",
+      "text": "鱼漂儿",
+      "standard_erhua_pinyin": [
+        "yúpiāor"
+      ],
+      "compatibility_marked_pinyin": "yú piāo er",
+      "compatibility_numeric_pinyin": "yu2 piao1 er5",
+      "attached_syllable": "piao1",
+      "attached_final": "iao",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "177",
+            "review_state": "confirmed",
+            "source_text": "鱼漂儿",
+            "source_pinyin": "yúpiāor",
+            "expanded_text": "鱼漂儿",
+            "expanded_pinyin": "yúpiāor",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 177,
+              "source_index": 177,
+              "page_number": 3,
+              "table_order": 1,
+              "row_order": 10,
+              "pair_order": 2,
+              "category_index": 33,
+              "category_rule": "iao>iaor"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    },
+    {
+      "record_id": "ERHUA-7469E9C837F3DF8E",
+      "record_type": "explicit_word_final_erhua",
+      "text": "鼻梁儿",
+      "standard_erhua_pinyin": [
+        "bíliángr"
+      ],
+      "compatibility_marked_pinyin": "bí liáng er",
+      "compatibility_numeric_pinyin": "bi2 liang2 er5",
+      "attached_syllable": "liang2",
+      "attached_final": "iang",
+      "written_er_position": 2,
+      "authorization": {
+        "policy": "confirmed_explicit_erhua_evidence_only",
+        "source_kind": "psc_erhua",
+        "evidence": [
+          {
+            "source_kind": "psc_erhua",
+            "source_key": "46",
+            "review_state": "confirmed",
+            "source_text": "鼻梁儿",
+            "source_pinyin": "bíliángr",
+            "expanded_text": "鼻梁儿",
+            "expanded_pinyin": "bíliángr",
+            "input_derivation": "source-character-aligned-segmentation",
+            "locator": {
+              "id": 46,
+              "source_index": 46,
+              "page_number": 1,
+              "table_order": 1,
+              "row_order": 21,
+              "pair_order": 1,
+              "category_index": 7,
+              "category_rule": "iang>iar(鼻化)"
+            },
+            "note": ""
+          }
+        ]
+      },
+      "candidate_text_mutation": "forbidden",
+      "productive_inference": "forbidden"
+    }
+  ]
+}

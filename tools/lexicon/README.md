@@ -27,3 +27,12 @@ python tools/lexicon/verify_target_lock.py `
 ```
 
 只有命令返回 0 且 `candidate_exact_match=true`，候选才与当前产品身份相同。
+
+大型 BCC、Unihan、字符目录数据库和 RIME-LMDG 输入不进入 Git。其大小和 SHA-256 记录在 `data/external_inputs.lock.json`；迁移期可验证旧位置，完成外部归档后应设置 `YIME_LEXICON_EXTERNAL_ROOT` 并使用 `--no-legacy-paths` 验证：
+
+```powershell
+.\tools\lexicon\invoke-python.ps1 `
+  tools\lexicon\verify_external_inputs.py `
+  --external-root D:\YimeLexiconInputs `
+  --no-legacy-paths
+```

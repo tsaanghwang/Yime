@@ -1,0 +1,209 @@
+{
+  "schema_version": 1,
+  "policy_id": "mandarin-particle-construction-system-v1",
+  "purpose": "Treat productive particle-bearing forms as typed construction evidence before any invalid-material decision.",
+  "theoretical_model": {
+    "principle": "助词不是依靠独立词汇意义进入核心，而是依靠稳定的语法功能、组合接口和构式生产力进入核心部件层。",
+    "classification_axis": "语言类别说明部件建立什么关系；运行角色说明它是否直接显示、仅供组合或现场生成。两条轴不得混同。",
+    "admission_evidence": [
+      "字形与来源读音同时匹配助词用法",
+      "构式具有明确的左侧或右侧选择要求",
+      "部件能恢复来源已有的更大单位",
+      "固定词汇和专名裁决优先于构式推断",
+      "频率只衡量缓存收益，不判定材料是否无效"
+    ]
+  },
+  "systems": {
+    "structural_particles": {
+      "description": "建立修饰、状语或补语关系的结构助词。",
+      "constructions": {
+        "attributive_de": {
+          "marker": "的",
+          "numeric_pinyin": ["de5"],
+          "marker_position": "noninitial",
+          "attachment": "modifier + 的 + optional_head",
+          "left_requirement": "modifier_or_comparand",
+          "right_requirement": "optional_nominal_head",
+          "interface": "nominal_or_attributive_right_edge"
+        },
+        "adverbial_de": {
+          "marker": "地",
+          "numeric_pinyin": ["de5"],
+          "marker_position": "noninitial",
+          "attachment": "adverbial + 地 + predicate",
+          "left_requirement": "adverbial_modifier",
+          "right_requirement": "predicate",
+          "interface": "requires_right_predicate"
+        },
+        "complement_de": {
+          "marker": "得",
+          "numeric_pinyin": ["de5"],
+          "marker_position": "noninitial",
+          "attachment": "predicate + 得 + complement",
+          "left_requirement": "predicate",
+          "right_requirement": "complement",
+          "interface": "requires_right_complement"
+        }
+      }
+    },
+    "aspectual_particles": {
+      "description": "附着于谓词并标记持续、完成或经历体貌的动态助词。",
+      "constructions": {
+        "durative_zhe": {
+          "marker": "着",
+          "numeric_pinyin": ["zhe5"],
+          "marker_position": "noninitial",
+          "attachment": "predicate + 着",
+          "left_requirement": "predicate",
+          "right_requirement": "optional_argument_or_continuation",
+          "interface": "aspectual_predicate"
+        },
+        "perfective_le": {
+          "marker": "了",
+          "numeric_pinyin": ["le5"],
+          "marker_position": "noninitial",
+          "attachment": "predicate + 了",
+          "left_requirement": "predicate",
+          "right_requirement": "optional_argument_or_continuation",
+          "interface": "aspectual_predicate"
+        },
+        "experiential_guo": {
+          "marker": "过",
+          "numeric_pinyin": ["guo4"],
+          "marker_position": "noninitial",
+          "attachment": "predicate + 过",
+          "left_requirement": "predicate",
+          "right_requirement": "optional_argument_or_continuation",
+          "interface": "aspectual_predicate"
+        }
+      }
+    },
+    "modal_particles": {
+      "description": "作用于小句或句子并表达变化、疑问、持续、建议或语气。",
+      "constructions": {
+        "change_of_state_le": {
+          "marker": "了",
+          "numeric_pinyin": ["le5"],
+          "marker_position": "final",
+          "attachment": "clause + 了",
+          "left_requirement": "clause",
+          "right_requirement": "none",
+          "interface": "clause_final"
+        },
+        "interrogative_ma": {
+          "marker": "吗",
+          "numeric_pinyin": ["ma5"],
+          "marker_position": "final",
+          "attachment": "clause + 吗",
+          "left_requirement": "clause",
+          "right_requirement": "none",
+          "interface": "clause_final"
+        },
+        "continuative_ne": {
+          "marker": "呢",
+          "numeric_pinyin": ["ne5"],
+          "marker_position": "final",
+          "attachment": "clause + 呢",
+          "left_requirement": "clause_or_topic",
+          "right_requirement": "none",
+          "interface": "clause_final"
+        },
+        "suggestive_ba": {
+          "marker": "吧",
+          "numeric_pinyin": ["ba5"],
+          "marker_position": "final",
+          "attachment": "clause + 吧",
+          "left_requirement": "clause",
+          "right_requirement": "none",
+          "interface": "clause_final"
+        },
+        "exclamative_a": {
+          "marker": "啊",
+          "numeric_pinyin": ["a5"],
+          "marker_position": "final",
+          "attachment": "clause + 啊",
+          "left_requirement": "clause",
+          "right_requirement": "none",
+          "interface": "clause_final"
+        },
+        "modal_ma": {
+          "marker": "嘛",
+          "numeric_pinyin": ["ma5"],
+          "marker_position": "final",
+          "attachment": "clause + 嘛",
+          "left_requirement": "clause",
+          "right_requirement": "none",
+          "interface": "clause_final"
+        },
+        "modal_ya": {
+          "marker": "呀",
+          "numeric_pinyin": ["ya5"],
+          "marker_position": "final",
+          "attachment": "clause + 呀",
+          "left_requirement": "clause",
+          "right_requirement": "none",
+          "interface": "clause_final"
+        },
+        "modal_bei": {
+          "marker": "呗",
+          "numeric_pinyin": ["bei5"],
+          "marker_position": "final",
+          "attachment": "clause + 呗",
+          "left_requirement": "clause",
+          "right_requirement": "none",
+          "interface": "clause_final"
+        },
+        "modal_o": {
+          "marker": "哦",
+          "numeric_pinyin": ["o2", "o4", "o5", "e2"],
+          "marker_position": "final",
+          "attachment": "clause + 哦",
+          "left_requirement": "clause",
+          "right_requirement": "none",
+          "interface": "clause_final"
+        },
+        "modal_wa": {
+          "marker": "哇",
+          "numeric_pinyin": ["wa5"],
+          "marker_position": "final",
+          "attachment": "clause + 哇",
+          "left_requirement": "clause",
+          "right_requirement": "none",
+          "interface": "clause_final"
+        },
+        "modal_na": {
+          "marker": "呐",
+          "numeric_pinyin": ["na4"],
+          "marker_position": "final",
+          "attachment": "clause + 呐",
+          "left_requirement": "clause",
+          "right_requirement": "none",
+          "interface": "clause_final"
+        },
+        "modal_me": {
+          "marker": "麽",
+          "numeric_pinyin": ["me5"],
+          "marker_position": "final",
+          "attachment": "clause + 麽",
+          "left_requirement": "clause",
+          "right_requirement": "none",
+          "interface": "clause_final"
+        }
+      }
+    }
+  },
+  "runtime_roles": {
+    "display_and_component": "固定表达可直接显示，也可被更大组合复用。",
+    "component_only_candidate": "有稳定构式接口，但直接显示价值尚未成立。",
+    "runtime_generated": "由更小部件现场组成，不预占核心缓存。",
+    "dynamic_sentence_candidate": "较长的小句或句子只作动态恢复证据。"
+  },
+  "safeguards": {
+    "source_readings_only": true,
+    "lexical_decisions_override_construction_inference": true,
+    "homographs_require_reading_match": true,
+    "typed_interface_required_for_core_admission": true,
+    "frequency_is_utility_not_grammaticality": true,
+    "construction_evidence_is_not_automatic_static_admission": true
+  }
+}

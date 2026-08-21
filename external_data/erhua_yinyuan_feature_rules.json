@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "runtime_enabled": false,
+  "artifact": "erhua_yinyuan_feature_rules",
+  "description": "融合儿化的音元级中间规则。只从规范四音元和特征派生儿化音元；不读取或归纳表层 IPA 标注。",
+  "invariants": {
+    "surface_annotation_is_not_an_encoding_source": true,
+    "candidate_text_mutation": "forbidden",
+    "productive_erhua_inference": "forbidden",
+    "fixed_four_positions": true
+  },
+  "engineering_conventions": {
+    "late_two_position_rhoticization": {
+      "finals": ["ao", "ou", "o", "u"],
+      "rewritten_positions": [2, 3],
+      "preserved_positions": [1],
+      "status": "provisional_input_projection",
+      "note": "暂只把后两段投影为儿化音元，第一段保持平舌；这是为控制 Shift 层键位数量而采用的输入层约定，不主张完整描写北京话表层音值。"
+    }
+  },
+  "target_families": {
+    "existing_central_rhotic": {
+      "base_yinyuan_ids": {"high": "M22", "mid": "M23", "low": "M24"},
+      "features": {"rhotic": true, "nasalized": false}
+    },
+    "oral_a_rhotic": {
+      "base_yinyuan_ids": {"high": "M10", "mid": "M11", "low": "M12"},
+      "features": {"rhotic": true, "nasalized": false}
+    },
+    "oral_back_mid_rhotic": {
+      "base_yinyuan_ids": {"high": "M13", "mid": "M14", "low": "M15"},
+      "features": {"rhotic": true, "nasalized": false}
+    },
+    "oral_u_rhotic": {
+      "base_yinyuan_ids": {"high": "M04", "mid": "M05", "low": "M06"},
+      "features": {"rhotic": true, "nasalized": false}
+    },
+    "nasal_a_rhotic": {
+      "base_yinyuan_ids": {"high": "M10", "mid": "M11", "low": "M12"},
+      "features": {"rhotic": true, "nasalized": true}
+    },
+    "nasal_back_mid_rhotic": {
+      "base_yinyuan_ids": {"high": "M13", "mid": "M14", "low": "M15"},
+      "features": {"rhotic": true, "nasalized": true}
+    }
+  },
+  "rules": [
+    {"rule_id": "ERHUA-YINYUAN-CENTRAL-ALL", "finals": ["_i", "ei", "en"], "rewrites": {"1": "existing_central_rhotic", "2": "existing_central_rhotic", "3": "existing_central_rhotic"}},
+    {"rule_id": "ERHUA-YINYUAN-I-CENTRAL", "finals": ["i", "in"], "rewrites": {"2": "existing_central_rhotic", "3": "existing_central_rhotic"}},
+    {"rule_id": "ERHUA-YINYUAN-U-CENTRAL", "finals": ["uei", "uen"], "rewrites": {"2": "existing_central_rhotic", "3": "existing_central_rhotic"}},
+    {"rule_id": "ERHUA-YINYUAN-UMLAUT-CENTRAL", "finals": ["ü", "ün"], "rewrites": {"2": "existing_central_rhotic", "3": "existing_central_rhotic"}},
+    {"rule_id": "ERHUA-YINYUAN-A-RHOTIC", "finals": ["a", "ai", "an"], "rewrites": {"2": "oral_a_rhotic", "3": "oral_a_rhotic"}},
+    {"rule_id": "ERHUA-YINYUAN-I-A-RHOTIC", "finals": ["ia"], "rewrites": {"2": "oral_a_rhotic", "3": "oral_a_rhotic"}},
+    {"rule_id": "ERHUA-YINYUAN-U-A-RHOTIC", "finals": ["ua", "uan"], "rewrites": {"2": "oral_a_rhotic", "3": "oral_a_rhotic"}},
+    {"rule_id": "ERHUA-YINYUAN-BACK-MID-RHOTIC", "finals": ["e", "o", "uo"], "rewrites": {"2": "oral_back_mid_rhotic", "3": "oral_back_mid_rhotic"}},
+    {"rule_id": "ERHUA-YINYUAN-NASAL-A", "finals": ["ang", "iang", "uang"], "rewrites": {"2": "nasal_a_rhotic", "3": "nasal_a_rhotic"}},
+    {"rule_id": "ERHUA-YINYUAN-NASAL-BACK-MID", "finals": ["eng", "ing", "iong", "ong", "ueng"], "rewrites": {"2": "nasal_back_mid_rhotic", "3": "nasal_back_mid_rhotic"}},
+    {"rule_id": "ERHUA-YINYUAN-IAO", "finals": ["ao", "iao"], "rewrites": {"2": "oral_a_rhotic", "3": "oral_u_rhotic"}},
+    {"rule_id": "ERHUA-YINYUAN-IOU", "finals": ["ou", "iou"], "rewrites": {"2": "oral_back_mid_rhotic", "3": "oral_u_rhotic"}},
+    {"rule_id": "ERHUA-YINYUAN-FRONT-MID-CENTRAL", "finals": ["ie", "üe"], "rewrites": {"2": "existing_central_rhotic", "3": "existing_central_rhotic"}},
+    {"rule_id": "ERHUA-YINYUAN-MEDIAL-A-RHOTIC", "finals": ["ian", "üan"], "rewrites": {"2": "oral_a_rhotic", "3": "oral_a_rhotic"}},
+    {"rule_id": "ERHUA-YINYUAN-U-RHOTIC", "finals": ["u"], "rewrites": {"2": "oral_u_rhotic", "3": "oral_u_rhotic"}}
+  ]
+}

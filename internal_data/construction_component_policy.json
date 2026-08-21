@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "policy_id": "de-suo-construction-components-v2",
+  "purpose": "Plan bounded source-backed de/suo components inside the wider typed construction framework without treating generated strings as lexical words.",
+  "framework_reference": "internal_data/particle_construction_policy.json",
+  "framework_relation": {
+    "de_construction": "structural_particles.attributive_de",
+    "suo_construction": "a separate nominalizing construction retained beside, not inside, the particle system"
+  },
+  "maximum_component_length": 4,
+  "maximum_reported_candidates_per_family": 100,
+  "families": {
+    "de_construction": {
+      "pattern": "{base}的",
+      "anchor": "的",
+      "anchor_position": "suffix",
+      "anchor_numeric_pinyin": "de5",
+      "candidate_class": "semi_fixed_construction",
+      "core_atom": "的",
+      "display_and_component_texts": [
+        "有的",
+        "真的",
+        "是的",
+        "似的",
+        "别的",
+        "总的"
+      ],
+      "subfamilies": {
+        "similative_de_construction": {
+          "description": "比拟标记与“的”结合的构式族；语义同族不强制采用相同预制策略。",
+          "variants": {
+            "shi_de": {
+              "text": "似的",
+              "pattern": "{comparand_or_predicate}似的",
+              "preferred_role": "display_and_component"
+            },
+            "ban_de": {
+              "text": "般的",
+              "pattern": "{comparand}般的",
+              "preferred_role": "runtime_generated"
+            }
+          }
+        }
+      },
+      "description": "Nominalizing or attributive de-construction. Fixed lexical items remain explicit exceptions."
+    },
+    "suo_construction": {
+      "pattern": "所{predicate}",
+      "anchor": "所",
+      "anchor_position": "prefix",
+      "anchor_numeric_pinyin": "suo3",
+      "candidate_class": "semi_fixed_construction",
+      "core_atom": "所",
+      "display_and_component_texts": [
+        "所有",
+        "所以",
+        "所得",
+        "所在",
+        "所谓",
+        "所属",
+        "所需",
+        "所长"
+      ],
+      "description": "Suo nominalization over an attested predicate component. Lexicalized forms remain explicit exceptions."
+    }
+  },
+  "cache_gate": {
+    "minimum_dependent_reading_count": 2,
+    "minimum_ab_improved_target_readings": 2,
+    "minimum_ab_improvement_ratio": 0.5,
+    "maximum_structural_competition_ratio": 0.1,
+    "require_all_readings_dynamically_recoverable": true,
+    "role_after_gate": "component_only",
+    "fallback_role": "runtime_generated"
+  },
+  "safeguards": {
+    "source_readings_only": true,
+    "frequency_is_utility_not_lexicality": true,
+    "fixed_lexical_decisions_override_family_rules": true,
+    "component_only_must_not_imply_direct_display": true,
+    "same_text_paths_are_runtime_deduplicated": true,
+    "no_runtime_removal_before_replay": true,
+    "excluded_candidate_classes": [
+      "person_name",
+      "place_name",
+      "organization_name",
+      "domain_term"
+    ]
+  }
+}

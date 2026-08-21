@@ -1,0 +1,127 @@
+# mandarin_readings_corrections.txt
+# 格式: U+XXXX: reading1,reading2  # 汉字 | status=pending|approved|rejected | origin=manual
+# 可选上下文行（紧挨数据行之前）: # note: ...（依据须可追溯到 Unihan 各列、辞书或规范字表）
+# 仅 status=approved 会在构建时覆盖 mandarin_readings_merged
+
+# note: kMandarin yìng 误；kTGHZ2013/kXHC1983 yíng
+U+241FE: yíng  # 𤇾 | status=approved | origin=manual | common=yíng | source=correction
+
+# note: kTGHZ2013/kXHC1983 bù；kMandarin róu；《通用规范汉字表》bù
+U+2B413: bù,róu  # 𫐓 | status=approved | origin=manual | common=bù | source=correction
+
+# note: kTGHZ2013 è；kMandarin ě；《通用规范汉字表》ě
+U+2BAC7: ě,è  # 𫫇 | status=approved | origin=manual | common=ě | source=correction
+
+# note: kTGHZ2013 bèi；kMandarin pèi；《通用规范汉字表》pèi
+U+2C1D9: pèi,bèi  # 𬇙 | status=approved | origin=manual | common=pèi | source=correction
+
+# note: kTGHZ2013 ǒu；kMandarin ōu；《通用规范汉字表》ōu（扩展区字）
+U+2C27C: ōu,ǒu  # 𬉼 | status=approved | origin=manual | common=ōu | source=correction
+
+# note: kTGHZ2013/kXHC1983 lǒng；kMandarin gōng；《通用规范汉字表》gōng
+U+2C542: gōng,lǒng  # 𬕂 | status=approved | origin=manual | common=gōng | source=correction
+
+# note: kTGHZ2013 huì；kMandarin wèi；《通用规范汉字表》wèi
+U+2CB6C: wèi,huì  # 𬭬 | status=approved | origin=manual | common=wèi | source=correction
+
+# note: kTGHZ2013/kXHC1983 gài；kMandarin qí；《通用规范汉字表》qí
+U+2CBBF: qí,gài  # 𬮿 | status=approved | origin=manual | common=qí | source=correction
+
+# note: kTGHZ2013/kXHC1983 bǔ；kMandarin bū；《通用规范汉字表》bū
+U+2CDD5: bū,bǔ  # 𬷕 | status=approved | origin=manual | common=bū | source=correction
+
+# note: kTGHZ2013 jí；kHanyuPinyin xī,yì,sè；补 xì（多义）
+U+3D14: jí,xī,yì,xì,sè  # 㴔 | status=approved | origin=manual | common=jí | source=correction
+
+# note: kTGHZ2013/kHanyuPinyin mái,wàn 并收
+U+4951: mài,wàn  # 䥑 | status=approved | origin=manual | common=mài | source=correction
+
+# note: kTGHZ2013 cóng；kXHC1983 cōng,cóng；《现代汉语词典》亦收 zòng
+U+4ECE: cóng,cōng,zòng  # 从 | status=approved | origin=manual | common=cóng | source=correction
+
+# note: kMandarin máo；五列无 háo
+U+515E: máo  # 兞 | status=approved | origin=manual | common=máo | source=correction
+
+# note: kMandarin lǐ；五列无 gōng
+U+5163: lǐ  # 兣 | status=approved | origin=manual | common=lǐ | source=correction
+
+# note: kXHC1983 zhǔ；kHanyuPinyin zhú（异体）
+U+529A: zhǔ,zhú  # 劚 | status=approved | origin=manual | common=zhǔ | source=correction
+
+# note: kTGHZ2013/kXHC1983 kuì；kHanyuPinyin guì
+U+532E: kuì,guì  # 匮 | status=approved | origin=manual | common=kuì | source=correction
+
+# note: kTGHZ2013 huá,huà；《通用规范汉字表》huā
+U+534E: huá,huà,huā  # 华 | status=approved | origin=manual | common=huá | source=correction
+
+# note: kTGHZ2013/kXHC1983 ḿ；kMandarin wǔ；《通用规范汉字表》wǔ
+U+5452: wǔ,ḿ  # 呒 | status=approved | origin=manual | common=wǔ | source=correction
+
+# note: kTGHZ2013 ǒu；kXHC1983 òu；补 ōu
+U+5455: ǒu,ōu,òu  # 呕 | status=approved | origin=manual | common=ǒu | source=correction
+
+# note: kTGHZ2013 dā；kMandarin dá；《通用规范汉字表》dá
+U+54D2: dá,dā  # 哒 | status=approved | origin=manual | common=dá | source=correction
+
+# note: kTGHZ2013 mài；kMandarin mà；《通用规范汉字表》mà
+U+551B: mà,mài  # 唛 | status=approved | origin=manual | common=mà | source=correction
+
+# note: kHanyuPinyin/kMandarin xù
+U+55A3: xù  # 喣 | status=approved | origin=manual | common=xù | source=correction
+
+# note: kTGHZ2013 qǐ；kXHC1983 kǎi
+U+5C82: qǐ,kǎi  # 岂 | status=approved | origin=manual | common=qǐ | source=correction
+
+# note: kTGHZ2013 qī；kMandarin yī；《通用规范汉字表》yī
+U+6B39: yī,qī  # 欹 | status=approved | origin=manual | common=yī | source=correction
+
+# note: kTGHZ2013 mǎ；kMandarin mà；《通用规范汉字表》mà
+U+72B8: mà,mǎ  # 犸 | status=approved | origin=manual | common=mà | source=correction
+
+# note: 《通用规范汉字表》三级字 tún；Unihan kMandarin wa 非普通话
+U+74F2: tún  # 瓲 | status=approved | origin=manual | common=tún | source=correction
+
+# note: kTGHZ2013/kXHC1983 dá；kMandarin dā；轻声 da
+U+7629: dā,dá,da  # 瘩 | status=approved | origin=manual | common=dā | source=correction
+
+# note: kTGHZ2013/kXHC1983 fǎ；kMandarin fá；kHanyuPinyin jié,gé
+U+781D: fá,fǎ,jié,gé  # 砝 | status=approved | origin=manual | common=fá | source=correction
+
+# note: Unihan kMandarin 无声调 cao；规范读 cǎo
+U+8279: cǎo  # 艹 | status=approved | origin=manual | common=cǎo | source=correction
+
+# note: kTGHZ2013 dǐ；kMandarin zhǐ；《通用规范汉字表》zhǐ
+U+830B: zhǐ,dǐ  # 茋 | status=approved | origin=manual | common=zhǐ | source=correction
+
+# note: kTGHZ2013/kXHC1983/kHanyuPinyin shì；kHanyuPinyin zhē
+U+87AB: shì,zhē  # 螫 | status=approved | origin=manual | common=shì | source=correction
+
+# note: kTGHZ2013/kXHC1983 xǔ；kHanyuPinyin hǔ
+U+8BB8: xǔ,hǔ  # 许 | status=approved | origin=manual | common=xǔ | source=correction
+
+# note: kTGHZ2013/kXHC1983 piǎn；kMandarin pián；《通用规范汉字表》pián
+U+8C1D: pián,piǎn  # 谝 | status=approved | origin=manual | common=pián | source=correction
+
+# note: kTGHZ2013 轻声 da；kMandarin dá；《通用规范汉字表》dá
+U+8DF6: dá,da  # 跶 | status=approved | origin=manual | common=dá | source=correction
+
+# note: kTGHZ2013/kXHC1983/kHanyuPinyin wǔ；kMandarin wù；《通用规范汉字表》wù
+U+8FD5: wù,wǔ  # 迕 | status=approved | origin=manual | common=wù | source=correction
+
+# note: kTGHZ2013 pō；kXHC1983 fā,pō；kMandarin pò；《通用规范汉字表》pò
+U+9166: pò,pō,fā  # 酦 | status=approved | origin=manual | common=pò | source=correction
+
+# note: kHanyuPinyin kuì,guì
+U+9400: kuì,guì  # 鐀 | status=approved | origin=manual | common=kuì | source=correction
+
+# note: kTGHZ2013/kXHC1983 pō；kMandarin pǒ；《通用规范汉字表》pǒ
+U+9887: pǒ,pō  # 颇 | status=approved | origin=manual | common=pǒ | source=correction
+
+# note: kHanyuPinyin shǔ,zhú,chù；补 chǔ
+U+9E00: shǔ,zhú,chù,chǔ  # 鸀 | status=approved | origin=manual | common=shǔ | source=correction
+
+# note: 日文名用字普通话 mí；Unihan kMandarin mo 为日语训读
+U+9EBF: mí  # 麿 | status=approved | origin=manual | common=mí | source=correction
+
+# note: kTGHZ2013/kXHC1983 mǐn,miǎn；kHanyuPinyin měng
+U+9EFE: mǐn,miǎn,měng  # 黾 | status=approved | origin=manual | common=mǐn | source=correction
