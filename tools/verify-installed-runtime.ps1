@@ -11,6 +11,7 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
+. (Join-Path $PSScriptRoot 'sentence-segment-recorder-record.ps1')
 
 function Get-FileRecord {
     param(
@@ -246,6 +247,48 @@ if ($LongSessionAcceptancePath) {
                     [int]$hostOutcome.FinalSegmentSwitches -lt $minimumCycles -or
                     [int]$hostOutcome.CompletedCycles -lt $minimumCycles) {
                     $acceptanceIssues.Add("host long-session threshold is not met: $($hostOutcome.Host)")
+                }
+            }
+            $recorderRecordProperty = $acceptance.PSObject.Properties['RecorderRecord']
+            if ($null -ne $recorderRecordProperty -and [bool]$recorderRecordProperty.Value.Provided) {
+                $acceptedRecorderRecord = $recorderRecordProperty.Value
+                if ([string]$acceptedRecorderRecord.Status -ne 'match' -or [int]$acceptedRecorderRecord.SchemaVersion -ne 2) {
+                    $acceptanceIssues.Add('recorder record linkage is not a schema 2 match')
+                } else {
+                    try {
+                        $currentRecorderRecord = Get-YimeSentenceSegmentRecorderRecord -Path ([string]$acceptedRecorderRecord.Path)
+                        if ([string]$currentRecorderRecord.Sha256 -ne [string]$acceptedRecorderRecord.Sha256) {
+                            $acceptanceIssues.Add('recorder record changed after acceptance')
+                        }
+                        if ([string]$currentRecorderRecord.SessionId -ne [string]$acceptedRecorderRecord.SessionId -or
+                            [int]$currentRecorderRecord.MinimumCyclesPerHost -ne $minimumCycles -or
+                            [int]$currentRecorderRecord.EventCount -ne [int]$acceptedRecorderRecord.EventCount -or
+                            [string]$currentRecorderRecord.TerminalEvent -ne [string]$acceptedRecorderRecord.TerminalEvent) {
+                            $acceptanceIssues.Add('recorder session identity or terminal snapshot does not match the acceptance')
+                        }
+                        foreach ($recorderHost in @($currentRecorderRecord.HostRecords)) {
+                            $acceptedRecorderHost = @($acceptedRecorderRecord.HostRecords | Where-Object HostId -eq $recorderHost.HostId) | Select-Object -First 1
+                            $acceptedHostOutcome = @($acceptance.HostOutcomeRecords | Where-Object RecorderHostId -eq $recorderHost.HostId) | Select-Object -First 1
+                            if (-not $acceptedRecorderHost -or -not $acceptedHostOutcome -or
+                                [int]$acceptedRecorderHost.First -ne [int]$recorderHost.First -or
+                                [int]$acceptedRecorderHost.Middle -ne [int]$recorderHost.Middle -or
+                                [int]$acceptedRecorderHost.Final -ne [int]$recorderHost.Final -or
+                                [int]$acceptedRecorderHost.Failures -ne [int]$recorderHost.Failures -or
+                                [int]$acceptedHostOutcome.FirstSegmentSwitches -ne [int]$recorderHost.First -or
+                                [int]$acceptedHostOutcome.MiddleSegmentSwitches -ne [int]$recorderHost.Middle -or
+                                [int]$acceptedHostOutcome.FinalSegmentSwitches -ne [int]$recorderHost.Final -or
+                                [int]$acceptedHostOutcome.FailureCount -ne [int]$recorderHost.Failures -or
+                                [int]$acceptedHostOutcome.ForegroundEventCount -ne [int]$recorderHost.ForegroundEventCount) {
+                                $acceptanceIssues.Add("recorder host evidence does not match: $($recorderHost.Host)")
+                            }
+                        }
+                        if (@($currentRecorderRecord.ForegroundIdentityRecords).Count -ne
+                            @($acceptedRecorderRecord.ForegroundIdentityRecords).Count) {
+                            $acceptanceIssues.Add('recorder foreground identity count does not match the acceptance')
+                        }
+                    } catch {
+                        $acceptanceIssues.Add("recorder record is invalid: $($_.Exception.Message)")
+                    }
                 }
             }
             if ([string]$acceptance.PagingOwnership.Owner -ne 'rime-native-backend' -or

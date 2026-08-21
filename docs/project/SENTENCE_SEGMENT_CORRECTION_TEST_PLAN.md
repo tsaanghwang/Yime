@@ -148,7 +148,17 @@ Yime 崩溃；必须先核对事件中的实际文件路径。
 
 长会话验收必须在同一宿主会话中依次切换首段、中段和末段，并至少重复 20 轮。
 x64 Notepad、x64 Codex IDE 和 x86 SysWOW64 charmap 都必须单独完成该门槛；只在备注
-中写“已通过”不能替代计数。完成后运行：
+中写“已通过”不能替代计数。完成后优先使用 `Open-Input-Test-Recorder` 的“复制证据命令”，
+或直接传入其 schema 2 JSONL：
+
+```powershell
+.\tools\capture-sentence-segment-evidence.ps1 `
+  -RecorderRecordPath 'C:\path\to\three-host-record.jsonl' `
+  -RequireComplete
+```
+
+该路径会从经过事件重放校验的记录中读取门槛、三宿主计数、失败与前台身份，并把记录
+SHA-256 写入验收 JSON。以下手工参数入口继续保留兼容性：
 
 ```powershell
 .\tools\capture-sentence-segment-evidence.ps1 `

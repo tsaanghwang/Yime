@@ -2,6 +2,46 @@
 
 本文档说明 Yime 的测试分层、CI 稳定集、真实 Rime 测试和安装态验证。测试强度应随修改风险增加，TSF/语言栏、候选分页和部署路径不能只依赖单元测试。
 
+## 三宿主测试计数框
+
+长会话分段验收可双击仓库根目录的 `Open-Input-Test-Recorder.cmd` 启动旁路计数器。
+计数器本身不提供文本输入框，不能被误当成第四个 TSF 宿主；测试焦点必须始终留在
+x64 Notepad、Codex IDE 或 `C:\Windows\SysWOW64\charmap.exe`。
+
+- 推荐使用 `Ctrl+Alt+J`、`Ctrl+Alt+K`、`Ctrl+Alt+L` 分别记录首段、中段、末段；
+- `Ctrl+Alt+X` 记录当前宿主的一次失败，`Ctrl+Alt+Z` 撤销上一笔；
+- `Ctrl+Alt+F6` 至 `F10` 保留为对应的备用组合，笔记本可能需要同时按 `Fn`；
+- 每次计数都会核对前台进程、可执行文件路径和 x86/x64 架构，不接受其他窗口；
+- 三宿主的首段、中段、末段和完整循环分别实时统计，默认门槛为每宿主 20 轮；
+- 事件自动写入 `%LOCALAPPDATA%\PIME\Yime\ThreeHostTestRecords` 下的 schema 2 JSONL；
+- “复制证据命令”会先写入 `evidence_snapshot`，再生成带 `-RecorderRecordPath` 的直接证据命令。
+
+也可手工把已结束或已固化快照的记录交给证据脚本：
+
+```powershell
+.\tools\capture-sentence-segment-evidence.ps1 `
+  -RecorderRecordPath 'C:\path\to\three-host-record.jsonl' `
+  -RequireComplete
+```
+
+记录文件模式会自动采用文件内的门槛、三宿主首/中/末计数、失败数和前台身份，并自动启用
+长会话门禁。脚本逐事件重放计数，要求最后一笔为 `evidence_snapshot` 或 `session_ended`，
+并拒绝跨会话、累计值不一致、未达门槛或宿主进程/架构/路径不匹配的记录。未传记录文件时，
+原有 `-NotepadOutcome`、`-CodexIdeOutcome`、`-SysWow64CharmapOutcome` 及各计数参数仍可照常使用；
+若同时显式传入这些参数，则必须与 JSONL 一致。
+
+命令行可覆盖每宿主循环门槛，例如：
+
+```powershell
+.\Open-Input-Test-Recorder.cmd -MinimumCyclesPerHost 60
+```
+
+脚本自身逻辑回归可使用：
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\open-input-test-recorder.ps1 -SelfTest
+```
+
 ## 1. 测试层级
 
 | 层级 | 目标 | 运行环境 |

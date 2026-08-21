@@ -3,6 +3,8 @@ param(
     [string]$InstallRoot = 'C:\Program Files (x86)\YIME',
     [string]$LogPath = (Join-Path $env:LOCALAPPDATA 'PIME\Logs\go_backend.log'),
     [string]$OutputDirectory = (Join-Path (Split-Path -Parent $PSScriptRoot) '.tmp\sentence-segment-evidence'),
+    [Alias('RecordPath')]
+    [string]$RecorderRecordPath,
     [int]$LogTailLines = 50000,
     [int]$MaxRpcTransactions = 500,
     [ValidateRange(1, 1000)]
@@ -37,6 +39,8 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
+$captureBoundParameters = @{} + $PSBoundParameters
+. (Join-Path $PSScriptRoot 'sentence-segment-recorder-record.ps1')
 
 function Get-EvidenceFileRecord {
     param(
@@ -332,6 +336,75 @@ function ConvertTo-MarkdownCell {
     return $text
 }
 
+function Assert-RecorderBoundValueMatches {
+    param([string]$ParameterName, $ExpectedValue)
+
+    if ($captureBoundParameters.ContainsKey($ParameterName) -and
+        [string]$captureBoundParameters[$ParameterName] -ne [string]$ExpectedValue) {
+        throw "Recorder record does not match explicitly supplied -$ParameterName ($($captureBoundParameters[$ParameterName]) != $ExpectedValue)."
+    }
+}
+
+$recorderRecord = [pscustomobject][ordered]@{
+    Provided = $false
+    Status = 'manual'
+    SchemaVersion = $null
+    Path = $null
+    Sha256 = $null
+    SessionId = $null
+    MinimumCyclesPerHost = $null
+    EventCount = 0
+    TerminalEvent = $null
+    FirstTimestamp = $null
+    LastTimestamp = $null
+    HostRecords = @()
+    ForegroundIdentityRecords = @()
+}
+if (-not [string]::IsNullOrWhiteSpace($RecorderRecordPath)) {
+    $recorderRecord = Get-YimeSentenceSegmentRecorderRecord -Path $RecorderRecordPath
+    Assert-RecorderBoundValueMatches 'MinimumCyclesPerHost' $recorderRecord.MinimumCyclesPerHost
+    $MinimumCyclesPerHost = [int]$recorderRecord.MinimumCyclesPerHost
+
+    $recorderParameterMap = @{
+        notepad = @{
+            Outcome = 'NotepadOutcome'; First = 'NotepadFirstSegmentSwitches'
+            Middle = 'NotepadMiddleSegmentSwitches'; Final = 'NotepadFinalSegmentSwitches'; Notes = 'NotepadNotes'
+        }
+        codex = @{
+            Outcome = 'CodexIdeOutcome'; First = 'CodexIdeFirstSegmentSwitches'
+            Middle = 'CodexIdeMiddleSegmentSwitches'; Final = 'CodexIdeFinalSegmentSwitches'; Notes = 'CodexIdeNotes'
+        }
+        charmap = @{
+            Outcome = 'SysWow64CharmapOutcome'; First = 'SysWow64CharmapFirstSegmentSwitches'
+            Middle = 'SysWow64CharmapMiddleSegmentSwitches'; Final = 'SysWow64CharmapFinalSegmentSwitches'; Notes = 'SysWow64CharmapNotes'
+        }
+    }
+    foreach ($recorderHost in @($recorderRecord.HostRecords)) {
+        $mapping = $recorderParameterMap[[string]$recorderHost.HostId]
+        $expectedOutcome = if ([int]$recorderHost.Failures -gt 0) { 'fail' } else { 'pass' }
+        Assert-RecorderBoundValueMatches $mapping.Outcome $expectedOutcome
+        Assert-RecorderBoundValueMatches $mapping.First ([int]$recorderHost.First)
+        Assert-RecorderBoundValueMatches $mapping.Middle ([int]$recorderHost.Middle)
+        Assert-RecorderBoundValueMatches $mapping.Final ([int]$recorderHost.Final)
+
+        Set-Variable -Name $mapping.Outcome -Value $expectedOutcome
+        Set-Variable -Name $mapping.First -Value ([int]$recorderHost.First)
+        Set-Variable -Name $mapping.Middle -Value ([int]$recorderHost.Middle)
+        Set-Variable -Name $mapping.Final -Value ([int]$recorderHost.Final)
+        if (-not $captureBoundParameters.ContainsKey($mapping.Notes)) {
+            Set-Variable -Name $mapping.Notes -Value "Recorder schema 2 session $($recorderRecord.SessionId); failures=$($recorderHost.Failures); foreground events=$($recorderHost.ForegroundEventCount)"
+        }
+    }
+    if (-not $captureBoundParameters.ContainsKey('MinimumCorrelatedRpcTransactions')) {
+        $MinimumCorrelatedRpcTransactions = $MinimumCyclesPerHost * 9
+    }
+    if (-not $captureBoundParameters.ContainsKey('MaxRpcTransactions') -and
+        $MaxRpcTransactions -lt $MinimumCorrelatedRpcTransactions) {
+        $MaxRpcTransactions = $MinimumCorrelatedRpcTransactions
+    }
+    $RequireLongSession = $true
+}
+
 if ($LogTailLines -lt 1) { throw 'LogTailLines must be at least 1.' }
 if ($MaxRpcTransactions -lt 1) { throw 'MaxRpcTransactions must be at least 1.' }
 if ($MinimumCorrelatedRpcTransactions -gt $MaxRpcTransactions) {
@@ -377,6 +450,9 @@ $hostOutcomes = @(
         FinalSegmentSwitches = $NotepadFinalSegmentSwitches
         CompletedCycles = [Math]::Min($NotepadFirstSegmentSwitches, [Math]::Min($NotepadMiddleSegmentSwitches, $NotepadFinalSegmentSwitches))
         SessionMinutes = $NotepadSessionMinutes
+        FailureCount = if ($recorderRecord.Provided) { [int](@($recorderRecord.HostRecords | Where-Object HostId -eq 'notepad')[0].Failures) } else { $null }
+        ForegroundEventCount = if ($recorderRecord.Provided) { [int](@($recorderRecord.HostRecords | Where-Object HostId -eq 'notepad')[0].ForegroundEventCount) } else { $null }
+        RecorderHostId = if ($recorderRecord.Provided) { 'notepad' } else { $null }
     }
     [pscustomobject][ordered]@{
         Host = 'Codex IDE'
@@ -389,6 +465,9 @@ $hostOutcomes = @(
         FinalSegmentSwitches = $CodexIdeFinalSegmentSwitches
         CompletedCycles = [Math]::Min($CodexIdeFirstSegmentSwitches, [Math]::Min($CodexIdeMiddleSegmentSwitches, $CodexIdeFinalSegmentSwitches))
         SessionMinutes = $CodexIdeSessionMinutes
+        FailureCount = if ($recorderRecord.Provided) { [int](@($recorderRecord.HostRecords | Where-Object HostId -eq 'codex')[0].Failures) } else { $null }
+        ForegroundEventCount = if ($recorderRecord.Provided) { [int](@($recorderRecord.HostRecords | Where-Object HostId -eq 'codex')[0].ForegroundEventCount) } else { $null }
+        RecorderHostId = if ($recorderRecord.Provided) { 'codex' } else { $null }
     }
     [pscustomobject][ordered]@{
         Host = 'x86 SysWOW64 charmap'
@@ -401,6 +480,9 @@ $hostOutcomes = @(
         FinalSegmentSwitches = $SysWow64CharmapFinalSegmentSwitches
         CompletedCycles = [Math]::Min($SysWow64CharmapFirstSegmentSwitches, [Math]::Min($SysWow64CharmapMiddleSegmentSwitches, $SysWow64CharmapFinalSegmentSwitches))
         SessionMinutes = $SysWow64CharmapSessionMinutes
+        FailureCount = if ($recorderRecord.Provided) { [int](@($recorderRecord.HostRecords | Where-Object HostId -eq 'charmap')[0].Failures) } else { $null }
+        ForegroundEventCount = if ($recorderRecord.Provided) { [int](@($recorderRecord.HostRecords | Where-Object HostId -eq 'charmap')[0].ForegroundEventCount) } else { $null }
+        RecorderHostId = if ($recorderRecord.Provided) { 'charmap' } else { $null }
     }
 )
 
@@ -489,6 +571,16 @@ $markdown.Add('')
 $markdown.Add('A complete report requires an explicit `pass` for every host. `fail` makes the report failed; `blocked`, `not-run`, and `not-recorded` keep it partial.')
 $markdown.Add("When long-session verification is required, every host must complete at least $MinimumCyclesPerHost first/middle/final cycles and the log must contain the corresponding classified RPC evidence.")
 $markdown.Add('')
+$markdown.Add('## Recorder record')
+$markdown.Add('')
+$markdown.Add("- Source: $([char]96)$(ConvertTo-MarkdownCell $recorderRecord.Path)$([char]96)")
+$markdown.Add("- Status: $([char]96)$($recorderRecord.Status)$([char]96)")
+$markdown.Add("- Schema: $(ConvertTo-MarkdownCell $recorderRecord.SchemaVersion)")
+$markdown.Add("- Session: $([char]96)$(ConvertTo-MarkdownCell $recorderRecord.SessionId)$([char]96)")
+$markdown.Add("- SHA-256: $([char]96)$(ConvertTo-MarkdownCell $recorderRecord.Sha256)$([char]96)")
+$markdown.Add("- Terminal event: $([char]96)$(ConvertTo-MarkdownCell $recorderRecord.TerminalEvent)$([char]96)")
+$markdown.Add("- Accepted foreground events: $(@($recorderRecord.ForegroundIdentityRecords).Count)")
+$markdown.Add('')
 $markdown.Add('## Process snapshot')
 $markdown.Add('')
 $markdown.Add('| Process | State | PID | Executable path | Started (UTC) |')
@@ -553,6 +645,7 @@ $acceptance = [pscustomobject][ordered]@{
     Build = $build
     FileRecords = $files
     HostOutcomeRecords = $hostOutcomes
+    RecorderRecord = $recorderRecord
     Rpc = [pscustomobject][ordered]@{
         LogPath = $rpc.LogPath
         LogSha256 = if ($rpc.LogExists) { (Get-FileHash -LiteralPath $rpc.LogPath -Algorithm SHA256).Hash } else { $null }
@@ -564,7 +657,7 @@ $acceptance = [pscustomobject][ordered]@{
     PagingOwnership = $paging
     MarkdownReportPath = $reportPath
 }
-[IO.File]::WriteAllText($jsonReportPath, ($acceptance | ConvertTo-Json -Depth 6), $utf8WithoutBom)
+[IO.File]::WriteAllText($jsonReportPath, ($acceptance | ConvertTo-Json -Depth 8), $utf8WithoutBom)
 
 $summary = [pscustomobject][ordered]@{
     Status = $overall
@@ -575,6 +668,7 @@ $summary = [pscustomobject][ordered]@{
     PagingOwnership = $paging
     ProcessRecords = $processes
     HostOutcomeRecords = $hostOutcomes
+    RecorderRecord = $recorderRecord
     RpcTransactionCount = $rpc.Transactions.Count
     RpcCompleteTransactionCount = $completeRpcTransactions.Count
     RpcSuccessfulTransactionCount = $successfulRpcTransactions.Count

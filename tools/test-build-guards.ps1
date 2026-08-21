@@ -28,6 +28,7 @@ $devInstall = Join-Path $root 'tools\dev-install.ps1'
 $devStop = Join-Path $root 'tools\dev-stop-pime.ps1'
 $devBuildInstallVerify = Join-Path $root 'tools\dev-build-install-verify.ps1'
 $installedRuntimeVerifier = Join-Path $root 'tools\verify-installed-runtime.ps1'
+$sentenceSegmentRecorderReader = Join-Path $root 'tools\sentence-segment-recorder-record.ps1'
 $buildPrereqs = Join-Path $root 'tools\assert-win32-build-prerequisites.ps1'
 $buildEnvironment = Join-Path $root 'tools\invoke-build-environment.ps1'
 $cmakeEnvironment = Join-Path $root 'tools\invoke-cmake.ps1'
@@ -247,7 +248,7 @@ foreach ($guard in @(
 if ($workflowText -match 'uses:\s*repolevedavaj/install-nsis@(?![0-9a-f]{40}(?:\s|#|$))') {
     throw 'Third-party NSIS setup must be pinned to a full immutable commit SHA.'
 }
-foreach ($requiredScript in @($rimeCacheChecker, $rimeCacheTests, $installedParticleAVerifier, $installedParticleAVerifierTests, $releaseCertificateImporter)) {
+foreach ($requiredScript in @($rimeCacheChecker, $rimeCacheTests, $installedParticleAVerifier, $installedParticleAVerifierTests, $releaseCertificateImporter, $sentenceSegmentRecorderReader)) {
     if (-not (Test-Path -LiteralPath $requiredScript -PathType Leaf)) {
         throw "Required CI/runtime verification script is missing: $requiredScript"
     }
@@ -264,7 +265,7 @@ foreach ($guard in @('check-rime-cache-freshness.ps1', 'RequireFreshRimeCache', 
         throw "Installed-runtime verification is missing its Rime-cache evidence guard: $guard"
     }
 }
-foreach ($guard in @('LongSessionAcceptancePath', 'RequireLongSessionAcceptance', 'rime-native-backend', 'RequiredClassifiedTransactionsPerPosition')) {
+foreach ($guard in @('LongSessionAcceptancePath', 'RequireLongSessionAcceptance', 'rime-native-backend', 'RequiredClassifiedTransactionsPerPosition', 'Get-YimeSentenceSegmentRecorderRecord', 'recorder record changed after acceptance')) {
     if (-not $installedRuntimeVerifierText.Contains($guard)) {
         throw "Installed-runtime verification is missing its long-session acceptance guard: $guard"
     }

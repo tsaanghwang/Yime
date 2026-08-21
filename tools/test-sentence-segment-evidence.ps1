@@ -2,6 +2,7 @@ $ErrorActionPreference = 'Stop'
 
 $root = Split-Path -Parent $PSScriptRoot
 $captureScript = Join-Path $PSScriptRoot 'capture-sentence-segment-evidence.ps1'
+$verifyScript = Join-Path $PSScriptRoot 'verify-installed-runtime.ps1'
 $temporaryRoot = [IO.Path]::GetFullPath((Join-Path $root '.tmp'))
 $fixtureRoot = [IO.Path]::GetFullPath((Join-Path $temporaryRoot ('test-sentence-segment-evidence-' + [guid]::NewGuid().ToString('N'))))
 if (-not $fixtureRoot.StartsWith($temporaryRoot + [IO.Path]::DirectorySeparatorChar, [StringComparison]::OrdinalIgnoreCase)) {
@@ -11,6 +12,85 @@ $repoRoot = Join-Path $fixtureRoot 'repo'
 $installRoot = Join-Path $fixtureRoot 'install'
 $logPath = Join-Path $fixtureRoot 'go_backend.log'
 $outputDirectory = Join-Path $fixtureRoot 'reports'
+
+function Write-RecorderFixture {
+    param(
+        [Parameter(Mandatory)][string]$Path,
+        [int]$Cycles = 2,
+        [switch]$AddFailure,
+        [switch]$BadForegroundIdentity,
+        [switch]$TamperFinalCounts,
+        [switch]$OmitTerminalEvent
+    )
+
+    $sessionId = 'fixture-session-' + [guid]::NewGuid().ToString('N')
+    $startedAt = [DateTimeOffset]'2026-07-24T16:00:00+08:00'
+    $fixtureState = [pscustomobject]@{ EventNumber = 0 }
+    $counts = [ordered]@{
+        notepad = [ordered]@{ first = 0; middle = 0; final = 0; failures = 0 }
+        codex = [ordered]@{ first = 0; middle = 0; final = 0; failures = 0 }
+        charmap = [ordered]@{ first = 0; middle = 0; final = 0; failures = 0 }
+    }
+    $records = [Collections.Generic.List[object]]::new()
+    $addRecord = {
+        param([string]$Event, [string]$HostId = '', [string]$Position = '', $Foreground = $null)
+        $fixtureState.EventNumber++
+        $hostCounts = [ordered]@{}
+        foreach ($id in @('notepad', 'codex', 'charmap')) {
+            $completed = [math]::Min($counts[$id].first, [math]::Min($counts[$id].middle, $counts[$id].final))
+            $hostCounts[$id] = [ordered]@{
+                first = $counts[$id].first; middle = $counts[$id].middle; final = $counts[$id].final
+                completed_cycles = $completed; failures = $counts[$id].failures
+            }
+        }
+        $record = [ordered]@{
+            schema_version = 2
+            event = $Event
+            session_id = $sessionId
+            timestamp = $startedAt.AddSeconds($fixtureState.EventNumber).ToString('o')
+            minimum_cycles_per_host = $Cycles
+            host_counts = $hostCounts
+        }
+        if ($HostId) {
+            $record.segment_event_id = "segment-$($fixtureState.EventNumber)"
+            $record.host_id = $HostId
+            $record.position = $Position
+        }
+        if ($null -ne $Foreground) { $record.foreground = $Foreground }
+        $records.Add($record)
+    }
+
+    & $addRecord 'session_started'
+    foreach ($hostId in @('notepad', 'codex', 'charmap')) {
+        $foreground = switch ($hostId) {
+            'notepad' { [ordered]@{ process_id = 101; process_name = 'notepad'; executable = 'C:\Windows\notepad.exe'; architecture = 'x64'; window_title = 'Untitled - Notepad'; window_handle = '0x101'; rejection_reason = $null } }
+            'codex' {
+                if ($BadForegroundIdentity) {
+                    [ordered]@{ process_id = 202; process_name = 'powershell'; executable = 'C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe'; architecture = 'x64'; window_title = 'PowerShell'; window_handle = '0x202'; rejection_reason = $null }
+                } else {
+                    [ordered]@{ process_id = 202; process_name = 'ChatGPT'; executable = 'C:\Program Files\WindowsApps\ChatGPT\ChatGPT.exe'; architecture = 'x64'; window_title = 'Codex'; window_handle = '0x202'; rejection_reason = $null }
+                }
+            }
+            'charmap' { [ordered]@{ process_id = 303; process_name = 'charmap'; executable = 'C:\Windows\SysWOW64\charmap.exe'; architecture = 'x86'; window_title = 'Character Map'; window_handle = '0x303'; rejection_reason = $null } }
+        }
+        for ($cycle = 1; $cycle -le $Cycles; $cycle++) {
+            foreach ($position in @('first', 'middle', 'final')) {
+                $counts[$hostId][$position]++
+                & $addRecord 'segment_result' $hostId $position $foreground
+            }
+        }
+    }
+    if ($AddFailure) {
+        $counts.codex.failures++
+        $foreground = [ordered]@{ process_id = 202; process_name = 'ChatGPT'; executable = 'C:\Program Files\WindowsApps\ChatGPT\ChatGPT.exe'; architecture = 'x64'; window_title = 'Codex'; window_handle = '0x202'; rejection_reason = $null }
+        & $addRecord 'segment_result' 'codex' 'failure' $foreground
+    }
+    if (-not $OmitTerminalEvent) { & $addRecord 'evidence_snapshot' }
+    if ($TamperFinalCounts) { $records[$records.Count - 1].host_counts.notepad.first++ }
+
+    $jsonLines = @($records | ForEach-Object { $_ | ConvertTo-Json -Compress -Depth 7 })
+    [IO.File]::WriteAllLines($Path, $jsonLines, (New-Object Text.UTF8Encoding($false)))
+}
 
 try {
     New-Item -ItemType Directory -Path (Join-Path $repoRoot 'go-backend\build\go-backend') -Force | Out-Null
@@ -31,6 +111,7 @@ try {
         Set-Content -LiteralPath (Join-Path $installRoot $fixture[1]) -Value $fixture[2] -Encoding UTF8
     }
     Set-Content -LiteralPath (Join-Path $repoRoot 'version.txt') -Value '1.4.0-test' -Encoding UTF8 -NoNewline
+    Set-Content -LiteralPath (Join-Path $installRoot 'version.txt') -Value '1.4.0-test' -Encoding UTF8 -NoNewline
     @'
 func (b *nativeBackend) UsesBackendCandidatePaging() bool {
     return true
@@ -38,6 +119,12 @@ func (b *nativeBackend) UsesBackendCandidatePaging() bool {
 '@ | Set-Content -LiteralPath (Join-Path $repoRoot 'go-backend\input_methods\yime\native_cgo.go') -Encoding UTF8
     'func TestNativeBackendKeepsRimeOwnedCandidatePaging() {}' |
         Set-Content -LiteralPath (Join-Path $repoRoot 'go-backend\input_methods\yime\native_cgo_test.go') -Encoding UTF8
+    & git -C $repoRoot init --quiet
+    & git -C $repoRoot config user.email 'fixture@yime.invalid'
+    & git -C $repoRoot config user.name 'Yime Fixture'
+    & git -C $repoRoot add .
+    & git -C $repoRoot commit --quiet -m 'fixture'
+    if ($LASTEXITCODE -ne 0) { throw 'Could not create the evidence fixture Git identity.' }
 
     @(
         '2026/07/24 15:00:00 request client=client-a method=selectCompositionSegment seq=42 cursor=0 selStart=0 selEnd=1 data=',
@@ -174,6 +261,130 @@ func (b *nativeBackend) UsesBackendCandidatePaging() bool {
     if (-not [bool]$longSessionAcceptance.RequireLongSession -or
         [int]$longSessionAcceptance.RequiredClassifiedTransactionsPerPosition -ne 6) {
         throw 'Long-session acceptance record omitted its repeatability threshold.'
+    }
+
+    $recorderPath = Join-Path $fixtureRoot 'three-host-schema2.jsonl'
+    Write-RecorderFixture -Path $recorderPath
+    $recorderResult = & $captureScript `
+        -RepoRoot $repoRoot `
+        -InstallRoot $installRoot `
+        -LogPath $longSessionLogPath `
+        -OutputDirectory $outputDirectory `
+        -ProcessNames '__yime_evidence_fixture_process__' `
+        -RecorderRecordPath $recorderPath `
+        -RequireComplete
+    if ($recorderResult.Status -ne 'complete' -or -not $recorderResult.LongSessionComplete -or
+        -not $recorderResult.RecorderRecord.Provided -or $recorderResult.RecorderRecord.Status -ne 'match') {
+        throw 'Schema 2 recorder record did not produce complete long-session evidence.'
+    }
+    foreach ($hostOutcome in @($recorderResult.HostOutcomeRecords)) {
+        if ($hostOutcome.FirstSegmentSwitches -ne 2 -or $hostOutcome.MiddleSegmentSwitches -ne 2 -or
+            $hostOutcome.FinalSegmentSwitches -ne 2 -or $hostOutcome.FailureCount -ne 0 -or
+            $hostOutcome.ForegroundEventCount -ne 6 -or -not $hostOutcome.RecorderHostId) {
+            throw "Recorder host data was not imported: $($hostOutcome | ConvertTo-Json -Compress)"
+        }
+    }
+    $recorderAcceptance = Get-Content -LiteralPath $recorderResult.AcceptancePath -Raw -Encoding UTF8 | ConvertFrom-Json
+    if (-not [bool]$recorderAcceptance.RequireLongSession -or
+        [int]$recorderAcceptance.MinimumCorrelatedRpcTransactions -ne 18 -or
+        [string]$recorderAcceptance.RecorderRecord.Sha256 -ne (Get-FileHash -LiteralPath $recorderPath -Algorithm SHA256).Hash -or
+        @($recorderAcceptance.RecorderRecord.ForegroundIdentityRecords).Count -ne 18) {
+        throw 'Recorder-backed acceptance record is not suitable for installed-runtime verification.'
+    }
+
+    $rimeFixtureDirectory = Join-Path $fixtureRoot 'rime-user'
+    New-Item -ItemType Directory -Path $rimeFixtureDirectory -Force | Out-Null
+    $verificationJsonPath = Join-Path $fixtureRoot 'installed-runtime-verification.json'
+    try {
+        & $verifyScript `
+            -RepoRoot $repoRoot `
+            -InstallRoot $installRoot `
+            -RimeUserDir $rimeFixtureDirectory `
+            -LongSessionAcceptancePath $recorderResult.AcceptancePath `
+            -JsonPath $verificationJsonPath | Out-Null
+    } catch {
+        if ($_.Exception.Message -notmatch 'Installed runtime verification failed') { throw }
+    }
+    $verification = Get-Content -LiteralPath $verificationJsonPath -Raw -Encoding UTF8 | ConvertFrom-Json
+    if ([string]$verification.longSessionAcceptance.status -ne 'match') {
+        throw "Installed-runtime verifier rejected the recorder-backed acceptance: $($verification.longSessionAcceptance.issues -join '; ')"
+    }
+
+    [IO.File]::AppendAllText($recorderPath, "`r`n", (New-Object Text.UTF8Encoding($false)))
+    $changedVerificationJsonPath = Join-Path $fixtureRoot 'installed-runtime-verification-changed-record.json'
+    try {
+        & $verifyScript `
+            -RepoRoot $repoRoot `
+            -InstallRoot $installRoot `
+            -RimeUserDir $rimeFixtureDirectory `
+            -LongSessionAcceptancePath $recorderResult.AcceptancePath `
+            -JsonPath $changedVerificationJsonPath | Out-Null
+    } catch {
+        if ($_.Exception.Message -notmatch 'Installed runtime verification failed') { throw }
+    }
+    $changedVerification = Get-Content -LiteralPath $changedVerificationJsonPath -Raw -Encoding UTF8 | ConvertFrom-Json
+    if ([string]$changedVerification.longSessionAcceptance.status -ne 'mismatch' -or
+        (@($changedVerification.longSessionAcceptance.issues) -join '; ') -notmatch 'recorder record changed after acceptance') {
+        throw 'Installed-runtime verifier accepted a recorder JSONL that changed after acceptance.'
+    }
+
+    try {
+        & $captureScript `
+            -RepoRoot $repoRoot `
+            -InstallRoot $installRoot `
+            -LogPath $longSessionLogPath `
+            -OutputDirectory $outputDirectory `
+            -ProcessNames '__yime_evidence_fixture_process__' `
+            -RecorderRecordPath $recorderPath `
+            -NotepadFirstSegmentSwitches 3 | Out-Null
+        throw 'Recorder record accepted mismatched explicit manual counts.'
+    } catch {
+        if ($_.Exception.Message -notmatch 'does not match explicitly supplied') { throw }
+    }
+
+    $incompleteRecorderPath = Join-Path $fixtureRoot 'three-host-incomplete.jsonl'
+    Write-RecorderFixture -Path $incompleteRecorderPath -OmitTerminalEvent
+    try {
+        & $captureScript -RepoRoot $repoRoot -InstallRoot $installRoot -LogPath $longSessionLogPath `
+            -OutputDirectory $outputDirectory -RecorderRecordPath $incompleteRecorderPath | Out-Null
+        throw 'Capture accepted an unterminated recorder record.'
+    } catch {
+        if ($_.Exception.Message -notmatch 'Recorder record is incomplete') { throw }
+    }
+
+    $tamperedRecorderPath = Join-Path $fixtureRoot 'three-host-tampered.jsonl'
+    Write-RecorderFixture -Path $tamperedRecorderPath -TamperFinalCounts
+    try {
+        & $captureScript -RepoRoot $repoRoot -InstallRoot $installRoot -LogPath $longSessionLogPath `
+            -OutputDirectory $outputDirectory -RecorderRecordPath $tamperedRecorderPath | Out-Null
+        throw 'Capture accepted recorder counts that did not match event replay.'
+    } catch {
+        if ($_.Exception.Message -notmatch 'host count mismatch') { throw }
+    }
+
+    $identityMismatchPath = Join-Path $fixtureRoot 'three-host-identity-mismatch.jsonl'
+    Write-RecorderFixture -Path $identityMismatchPath -BadForegroundIdentity
+    try {
+        & $captureScript -RepoRoot $repoRoot -InstallRoot $installRoot -LogPath $longSessionLogPath `
+            -OutputDirectory $outputDirectory -RecorderRecordPath $identityMismatchPath | Out-Null
+        throw 'Capture accepted a mismatched foreground host identity.'
+    } catch {
+        if ($_.Exception.Message -notmatch 'foreground identity does not match host codex') { throw }
+    }
+
+    $failureRecorderPath = Join-Path $fixtureRoot 'three-host-failure.jsonl'
+    Write-RecorderFixture -Path $failureRecorderPath -AddFailure
+    $failureRecorderResult = & $captureScript `
+        -RepoRoot $repoRoot `
+        -InstallRoot $installRoot `
+        -LogPath $longSessionLogPath `
+        -OutputDirectory $outputDirectory `
+        -ProcessNames '__yime_evidence_fixture_process__' `
+        -RecorderRecordPath $failureRecorderPath
+    $codexFailure = @($failureRecorderResult.HostOutcomeRecords | Where-Object RecorderHostId -eq 'codex')[0]
+    if ($failureRecorderResult.Status -ne 'failed' -or $codexFailure.Outcome -ne 'fail' -or
+        $codexFailure.FailureCount -ne 1 -or $codexFailure.ForegroundEventCount -ne 7) {
+        throw 'Recorder failure events were not imported into the failed acceptance outcome.'
     }
 
     $underCountResult = & $captureScript `
