@@ -40,6 +40,9 @@ jobs:
       - name: Enforce repository data boundary
         shell: pwsh
         run: python .\tools\lexicon\check_repository_data_boundary.py
+      - name: Verify internal PSC outline snapshot
+        shell: pwsh
+        run: python .\tools\verify_psc_outline_snapshot.py
       - name: Verify offline tool environment and locked handoff
         shell: pwsh
         run: |

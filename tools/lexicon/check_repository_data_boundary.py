@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import json
+import re
 import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
@@ -29,6 +30,9 @@ FORBIDDEN_FUNCTIONAL_FRAGMENTS = {
     "C:/dev/Yime-keyboard-layout",
     "C:\\dev\\Yime-keyboard-layout",
 }
+FORBIDDEN_PSC_OUTLINE_PATH = re.compile(
+    r"(?i)(?<![A-Za-z0-9_])[A-Z]:[\\/](?:[^\\/\r\n]+[\\/])*PSC-Outline(?:[\\/]|$)"
+)
 SCANNED_SUFFIXES = {
     ".bat",
     ".cmd",
@@ -117,11 +121,18 @@ def _check_functional_sources() -> list[str]:
         for fragment in FORBIDDEN_FUNCTIONAL_FRAGMENTS:
             if fragment in text:
                 failures.append(f"{relative} contains forbidden data-source fallback {fragment!r}")
+        machine_path = FORBIDDEN_PSC_OUTLINE_PATH.search(text)
+        if machine_path:
+            failures.append(
+                f"{relative} contains an external PSC outline path {machine_path.group(0)!r}"
+            )
     required_guards = {
         "yime/lexicon_bundle/external_inputs.py": "assert_data_source_allowed",
         "yime/lexicon_bundle/builder.py": "assert_data_source_allowed",
         "tools/lexicon/prepare_reproducible_handoff.py": "assert_data_source_allowed",
         "tools/import-yime-core-lexicon.ps1": "assert-data-source-boundary.ps1",
+        "tools/psc_outline_review_tool.py": "INTERNAL_PSC_ROOT",
+        "tools/verify_psc_outline_snapshot.py": "snapshot_manifest.json",
     }
     for relative, marker in required_guards.items():
         text = (REPO_ROOT / relative).read_text(encoding="utf-8")

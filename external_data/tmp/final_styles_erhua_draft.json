@@ -4832,7 +4832,7 @@
   "source_material": {
     "psc_erhua_categories": {
       "dataset_key": "psc-2021-erhua-words",
-      "database": "C:\\dev\\PSC-Outline\\psc_outline_ocr.sqlite3",
+      "database": "internal_data/psc_outline/psc_outline_ocr.sqlite3",
       "tables": [
         "erhua_datasets",
         "erhua_categories",
