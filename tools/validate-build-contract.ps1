@@ -27,6 +27,8 @@ Require-Text '.github/workflows/ci.yaml' @(
     'build-contract:'
     'name: build-contract / validate-build-contract'
     'run: .\tools\validate-build-contract.ps1'
+    'Verify internal PSC outline snapshot'
+    'run: python .\tools\verify_psc_outline_snapshot.py'
     'core-build:'
     'Install MSYS2 UCRT64 GCC for Go race detector'
     'install: mingw-w64-ucrt-x86_64-gcc'
@@ -63,8 +65,12 @@ Require-Text '.github/CODEOWNERS' @(
     '/CMakeLists.txt'
     '/tools/test-build-guards.ps1'
     '/tools/validate-build-contract.ps1'
+    '/tools/verify_psc_outline_snapshot.py'
+    '/tools/psc_outline_review_tool.py'
+    '/tools/test_psc_outline_review_tool.py'
     '/tools/test-go-race.ps1'
     '/tools/verify-pe-architectures.ps1'
+    '/internal_data/psc_outline/'
     '/installer/'
 )
 

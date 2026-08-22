@@ -20,6 +20,11 @@ from pathlib import Path
 from typing import Any, Sequence
 
 
+REPO_ROOT = Path(__file__).resolve().parents[1]
+INTERNAL_PSC_ROOT = REPO_ROOT / "internal_data" / "psc_outline"
+DEFAULT_DATABASE = INTERNAL_PSC_ROOT / "psc_outline_ocr.sqlite3"
+
+
 DECISION_LABELS = {
     "pending": "待处理",
     "corrected": "已修改",
@@ -442,7 +447,9 @@ def resolve_image_path(item: ReviewItem, database: Path, image_dir: Path | None)
     if image_dir:
         candidates.append(image_dir / f"page-{item.page_number:04d}.png")
     if item.image_path:
-        candidates.append(Path(item.image_path))
+        stored_path = Path(item.image_path)
+        if not stored_path.is_absolute():
+            candidates.append(database.parent / stored_path)
     candidates.append(database.parent / "pages" / f"page-{item.page_number:04d}.png")
     for candidate in candidates:
         if candidate.is_file():
@@ -939,7 +946,7 @@ def build_argument_parser() -> argparse.ArgumentParser:
         "database",
         nargs="?",
         type=Path,
-        default=Path(r"C:\dev\PSC-Outline\psc_outline_ocr.sqlite3"),
+        default=DEFAULT_DATABASE,
     )
     parser.add_argument("--image-dir", type=Path)
     parser.add_argument("--self-test", action="store_true")

@@ -18,6 +18,9 @@
 
 /tools/test-build-guards.ps1 @tsaanghwang
 /tools/validate-build-contract.ps1 @tsaanghwang
+/tools/verify_psc_outline_snapshot.py @tsaanghwang
+/tools/psc_outline_review_tool.py @tsaanghwang
+/tools/test_psc_outline_review_tool.py @tsaanghwang
 /tools/assert-data-source-boundary.ps1 @tsaanghwang
 /tools/data_import_approvals/** @tsaanghwang
 /tools/check-libime2-change-boundary.ps1 @tsaanghwang
@@ -30,6 +33,7 @@
 /tools/lexicon/** @tsaanghwang
 /yime/repository_boundary.py @tsaanghwang
 /tools/evaluation/** @tsaanghwang
+/internal_data/psc_outline/** @tsaanghwang
 /tools/test-installer-smoke.ps1 @tsaanghwang
 /tools/assert-win32-build-prerequisites.ps1 @tsaanghwang
 /tools/initialize-dev-environment.ps1 @tsaanghwang

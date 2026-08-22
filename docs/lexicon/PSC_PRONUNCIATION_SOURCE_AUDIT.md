@@ -117,28 +117,26 @@ flowchart TD
 
 ## 生成比较索引
 
-在原型根目录执行：
+PSC 转录数据库和来源证据现在保存在 Yime 内部快照
+`internal_data/psc_outline/`。审计代码使用
+`yime.lexicon_bundle.psc_audit.run_audit` 读取该数据库，不再搜索原型或机器目录。
 
-```powershell
-.\venv312\Scripts\python.exe tools\audit_psc_pronunciation_source.py
-```
-
-默认 PSC 数据库为 `C:\dev\PSC-Outline\psc_outline_ocr.sqlite3`。生成目录还包含差异索引、输入指纹、
-完整性计数和旧读音审计报告。它们在第一阶段只用于把较可能存在转录异常的记录排到前面，不构成读音
-裁决。
+默认 PSC 数据库为 `internal_data/psc_outline/psc_outline_ocr.sqlite3`。内部目录还包含锁定来源文档、
+OCR 页图、输入指纹和内容清单。生成的差异索引、完整性计数和旧读音审计报告在第一阶段只用于把较可能
+存在转录异常的记录排到前面，不构成读音裁决。
 
 ## 运行第一阶段校核界面
 
-在原型根目录双击或执行：
+在 Yime 根目录执行：
 
 ```powershell
-.\Review-PSC-Audit.cmd
+python .\tools\psc_outline_review_tool.py
 ```
 
-也可从任意目录执行：
+默认数据库和页图均从脚本位置推导，不依赖当前工作目录；也可显式传入另一个数据库：
 
 ```powershell
-& "C:\dev\Yime-python-prototype\Review-PSC-Audit.cmd"
+python .\tools\psc_outline_review_tool.py <database.sqlite3> --image-dir <pages>
 ```
 
 界面默认显示“参照差异（推荐）”，即两边存在形式差异、值得优先回看来源的记录；也可切换到“全部
