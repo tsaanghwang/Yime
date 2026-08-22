@@ -13,7 +13,13 @@ permissions:
 
 jobs:
   build-contract:
-    uses: tsaanghwang/Yime-build-contract/.github/workflows/validate.yml@d93a3e835cae58988792814d300d3c7cc872cfbb
+    name: build-contract / validate-build-contract
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v6
+      - name: Reject weakened YIME build pipelines
+        shell: pwsh
+        run: .\tools\validate-build-contract.ps1
 
   lexicon-offline-tooling:
     name: lexicon-offline-tooling

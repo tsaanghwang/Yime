@@ -17,6 +17,7 @@
 /go-backend/build.bat @tsaanghwang
 
 /tools/test-build-guards.ps1 @tsaanghwang
+/tools/validate-build-contract.ps1 @tsaanghwang
 /tools/assert-data-source-boundary.ps1 @tsaanghwang
 /tools/data_import_approvals/** @tsaanghwang
 /tools/check-libime2-change-boundary.ps1 @tsaanghwang

@@ -6,6 +6,7 @@ $x64Dll = Join-Path $root 'build64\PIMETextService\Release\PIMETextService.dll'
 $launcher = Join-Path $root 'build\PIMELauncher\PIMELauncher.exe'
 $workflow = Join-Path $root '.github\workflows\ci.yaml'
 $codeOwners = Join-Path $root '.github\CODEOWNERS'
+$buildContract = Join-Path $PSScriptRoot 'validate-build-contract.ps1'
 $rootBuild = Join-Path $root 'build.bat'
 $goBuild = Join-Path $root 'go-backend\build.bat'
 $coreImporter = Join-Path $root 'tools\import-yime-core-lexicon.ps1'
@@ -51,6 +52,30 @@ try {
 & $verifier -RepoRoot $root
 
 $workflowText = Get-Content -LiteralPath $workflow -Raw
+& $buildContract
+
+$externalReusableWorkflowPattern = '(?m)^\s*uses:\s+(?!\./)[^/\s]+/[^/\s]+/\.github/workflows/'
+foreach ($forbiddenExample in @(
+    'uses: owner/project/.github/workflows/validate.yml@0123456789abcdef',
+    '  uses: example/policy/.github/workflows/build.yml@0123456789abcdef'
+)) {
+    if ($forbiddenExample -notmatch $externalReusableWorkflowPattern) {
+        throw "Cross-repository reusable-workflow guard missed: $forbiddenExample"
+    }
+}
+foreach ($allowedExample in @(
+    'uses: actions/checkout@v6',
+    'uses: ./.github/workflows/validate.yml'
+)) {
+    if ($allowedExample -match $externalReusableWorkflowPattern) {
+        throw "Cross-repository reusable-workflow guard rejected an allowed action: $allowedExample"
+    }
+}
+if ($workflowText -match $externalReusableWorkflowPattern) {
+    throw "CI must not call a reusable workflow from another repository: $($Matches[0].Trim())"
+}
+Write-Host 'CI cross-repository reusable-workflow rejection test passed.'
+
 $requiredRaceGuards = @(
     'uses: msys2/setup-msys2@v2',
     'install: mingw-w64-ucrt-x86_64-gcc',
@@ -64,7 +89,8 @@ foreach ($guard in $requiredRaceGuards) {
 Write-Host 'CI MSYS2 Go race guard test passed.'
 
 $requiredGovernanceGuards = @(
-    'uses: tsaanghwang/Yime-build-contract/.github/workflows/validate.yml@d93a3e835cae58988792814d300d3c7cc872cfbb',
+    'name: build-contract / validate-build-contract',
+    '.\tools\validate-build-contract.ps1',
     'workflow_dispatch:',
     "branches: [main, yime-stable, 'codex/**']",
     'name: rust-i686-host',
@@ -121,6 +147,7 @@ foreach ($guard in @(
     '/build.bat @tsaanghwang',
     '/CMakeLists.txt @tsaanghwang',
     '/tools/test-build-guards.ps1 @tsaanghwang',
+    '/tools/validate-build-contract.ps1 @tsaanghwang',
     '/tools/assert-data-source-boundary.ps1 @tsaanghwang',
     '/tools/data_import_approvals/** @tsaanghwang',
     '/tools/check-libime2-change-boundary.ps1 @tsaanghwang',
@@ -152,7 +179,7 @@ foreach ($guard in @(
         throw "Protected CODEOWNERS entry is missing: $guard"
     }
 }
-Write-Host 'External build contract and named CI governance guards passed.'
+Write-Host 'In-repository build contract and named CI governance guards passed.'
 
 if ($workflowText.Contains('CORE_RESULT:')) {
     throw 'Independent protected stages must not depend on an aggregate core-build result.'
