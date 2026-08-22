@@ -101,6 +101,11 @@ Require-Text '.cargo/config.toml' @(
     'replace-with = "vendored-sources"'
     'directory = "PIMELauncher/vendor"'
 )
+Require-Text '.gitattributes' @(
+    'PIMELauncher/vendor/** -text -whitespace'
+    'third_party/corrosion/** -text -whitespace'
+    'third_party/go-winres/** -text -whitespace'
+)
 Require-Text 'tools/verify_vendored_build_dependencies.py' @(
     'CORROSION_VERSION = "0.6.1"'
     'CORROSION_COMMIT = "1499b14e4906a2890f5cee1547c8848db261753d"'
