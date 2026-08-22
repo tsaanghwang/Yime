@@ -66,9 +66,10 @@ go-backend/build/
 go-backend/.gotmp/
 go-backend/*.exe
 installer/*.exe
+/installer/build-manifest.json
 .tmp/
 /tmp/
-/.generated/lexicon_external_restore/
+/.generated/
 **/__pycache__/
 *.py[cod]
 PIMELauncher/target/
