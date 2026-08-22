@@ -26,6 +26,7 @@ def main() -> int:
     parser.add_argument("--restore-root", type=Path, required=True)
     parser.add_argument("--evidence", type=Path, required=True)
     parser.add_argument("--lock", type=Path, default=DEFAULT_LOCK)
+    parser.add_argument("--repository-import-approval", type=Path)
     args = parser.parse_args()
     evidence_path = args.evidence.resolve()
     try:
@@ -34,6 +35,7 @@ def main() -> int:
             restore_root=args.restore_root,
             evidence_path=evidence_path,
             lock_path=args.lock,
+            repository_import_approval=args.repository_import_approval,
         )
     except (OSError, ValueError, json.JSONDecodeError, ExternalInputError) as exc:
         print(f"FAIL external input restore drill: {exc}", file=sys.stderr)

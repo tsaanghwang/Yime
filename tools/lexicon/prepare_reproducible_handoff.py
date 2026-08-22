@@ -6,8 +6,19 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import sys
 from pathlib import Path
 from typing import Any
+
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from yime.repository_boundary import (
+    RepositoryBoundaryError,
+    assert_data_source_allowed,
+)
 
 
 SOURCE_ARTIFACTS = (
@@ -76,7 +87,20 @@ def prepare(
     runtime_database: Path,
     expected_runtime_sha256: str,
     source_date_epoch: int,
+    repository_import_approval: Path | None = None,
 ) -> tuple[dict[str, Any], dict[str, Any]]:
+    for input_id, path in (
+        ("handoff_source_a", source_a),
+        ("handoff_trial_a", trial_a),
+        ("handoff_source_b", source_b),
+        ("handoff_trial_b", trial_b),
+        ("handoff_runtime_database", runtime_database),
+    ):
+        assert_data_source_allowed(
+            path,
+            input_id=input_id,
+            approval_path=repository_import_approval,
+        )
     source_manifests = (
         _read_json(source_a / "manifest.json"),
         _read_json(source_b / "manifest.json"),
@@ -212,6 +236,7 @@ def main() -> int:
     parser.add_argument("--source-b", type=Path, required=True)
     parser.add_argument("--trial-b", type=Path, required=True)
     parser.add_argument("--runtime-database", type=Path, required=True)
+    parser.add_argument("--repository-import-approval", type=Path)
     parser.add_argument("--expected-runtime-sha256", required=True)
     parser.add_argument("--source-date-epoch", type=int, required=True)
     parser.add_argument("--output-evidence", type=Path, required=True)
@@ -226,10 +251,15 @@ def main() -> int:
             runtime_database=args.runtime_database.resolve(),
             expected_runtime_sha256=args.expected_runtime_sha256,
             source_date_epoch=args.source_date_epoch,
+            repository_import_approval=(
+                args.repository_import_approval.resolve()
+                if args.repository_import_approval
+                else None
+            ),
         )
         _write_json(args.output_evidence.resolve(), evidence)
         _write_json(args.output_report.resolve(), report)
-    except (KeyError, OSError, VerificationError) as exc:
+    except (KeyError, OSError, RepositoryBoundaryError, VerificationError) as exc:
         print(f"FAIL reproducible handoff preparation: {exc}")
         return 1
     print(json.dumps(report, ensure_ascii=False, indent=2))

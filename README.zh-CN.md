@@ -45,7 +45,8 @@ docs/                    开发文档
 | `yime-stable` | 持续维护的集成分支 |
 | `codex/**` | 受 push CI 覆盖的任务分支 |
 
-编码体系、词典和实验性原型工作在独立的 `Yime-prototype` 仓库中。
+Yime 自己维护编码、词典、布局与离线评估真源。旧 Python 原型是脱离产品链的维护/数据清理工作区；
+Yime 默认禁止读取它或任何其它 Git 仓库。具体门禁见[仓库数据边界](docs/project/YIME_REPOSITORY_DATA_BOUNDARY.md)。
 
 ## 构建要求
 

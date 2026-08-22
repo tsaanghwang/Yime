@@ -12,6 +12,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Iterable, Iterator
 
+from yime.repository_boundary import assert_data_source_allowed
+
 from yime.utils.dictionary_pinyin_compliance import (
     DEFAULT_POLICY_PATH as DEFAULT_SOURCE_COMPLIANCE_POLICY_PATH,
     load_policy as load_source_compliance_policy,
@@ -43,24 +45,6 @@ DEFAULT_ORTHOEPY_COVERAGE_PATH = (
 DEFAULT_PSC_CANDIDATE_COVERAGE_PATH = (
     REPO_ROOT / "internal_data" / "pinyin_source_db" / "psc_candidate_readings.json"
 )
-DEFAULT_WANXIANG_FILES = (
-    "zi.dict.yaml",
-    "jichu.dict.yaml",
-    "lianxiang.dict.yaml",
-    "duoyin.dict.yaml",
-    "diming.dict.yaml",
-    "fangyan.dict.yaml",
-    "huaxue.dict.yaml",
-    "mingren.dict.yaml",
-    "renming.dict.yaml",
-    "shici.dict.yaml",
-    "taifeng.dict.yaml",
-    "wuzhong.dict.yaml",
-    "yaopin.dict.yaml",
-    "yiren.dict.yaml",
-    "yixue.dict.yaml",
-)
-
 BCC_CATEGORY_FILES = (
     ("modern_chinese", "modern_chinese_{kind}_freq.txt"),
     ("news", "news_total_{kind}_freq.txt"),
@@ -98,6 +82,7 @@ class BundleInputs:
     character_tier_sources: CharacterTierSources | None = None
     orthoepy_coverage: Path | None = None
     psc_candidate_coverage: Path | None = None
+    repository_import_approval: Path | None = None
 
 
 @dataclass(frozen=True)
@@ -117,22 +102,14 @@ class BundleResult:
     unresolved_bcc_count: int
 
 
-def default_inputs(wanxiang_root: Path | None = None) -> BundleInputs:
-    root = wanxiang_root or REPO_ROOT.parent / "RIME-LMDG"
-    word_dir = REPO_ROOT / "external_data" / "word_freq"
-    char_dir = REPO_ROOT / "external_data" / "char_freq"
+def default_inputs() -> BundleInputs:
+    """Return only defaults that are owned by the Yime worktree."""
     return BundleInputs(
         unihan=REPO_ROOT / "internal_data" / "hanzi_pinyin" / "pinyin.txt",
         pypinyin_phrases=REPO_ROOT / "internal_data" / "phrase_pinyin" / "phrase_pinyin.txt",
-        bcc_word_files=tuple(
-            CategorizedPath(category, "word", word_dir / pattern.format(kind="word"))
-            for category, pattern in BCC_CATEGORY_FILES
-        ),
-        bcc_char_files=tuple(
-            CategorizedPath(category, "char", char_dir / pattern.format(kind="char"))
-            for category, pattern in BCC_CATEGORY_FILES
-        ),
-        wanxiang_files=tuple(root / "dicts" / name for name in DEFAULT_WANXIANG_FILES),
+        bcc_word_files=(),
+        bcc_char_files=(),
+        wanxiang_files=(),
         decoder_inventory=REPO_ROOT / "yime" / "pinyin_normalized.json",
         source_compliance_policy=DEFAULT_SOURCE_COMPLIANCE_POLICY_PATH,
         character_tier_sources=CharacterTierSources(
@@ -821,34 +798,47 @@ def build_bundle(inputs: BundleInputs, output_dir: Path) -> BundleResult:
     ]
     if invalid_bcc_kinds:
         raise ValueError("invalid BCC source kinds: " + "; ".join(invalid_bcc_kinds))
-    bcc_files = tuple(item.path for item in categorized_bcc)
-    tier_source_paths = (
-        inputs.character_tier_sources.paths()
-        if inputs.character_tier_sources is not None
-        else ()
+    named_source_paths: list[tuple[str, Path]] = [
+        ("unihan", inputs.unihan),
+        ("pypinyin_phrases", inputs.pypinyin_phrases),
+        ("source_compliance_policy", inputs.source_compliance_policy),
+        ("syllable_admission", DEFAULT_ADMISSION_PATH),
+        ("neutral_source_policy", DEFAULT_NEUTRAL_SOURCE_POLICY_PATH),
+        ("decoder_inventory", inputs.decoder_inventory),
+    ]
+    if inputs.orthoepy_coverage is not None:
+        named_source_paths.append(("orthoepy_coverage", inputs.orthoepy_coverage))
+    if inputs.psc_candidate_coverage is not None:
+        named_source_paths.append(
+            ("psc_candidate_coverage", inputs.psc_candidate_coverage)
+        )
+    named_source_paths.extend(
+        (f"bcc_{item.kind}_{item.category}", item.path)
+        for item in categorized_bcc
     )
-    optional_reading_sources = (
-        (inputs.orthoepy_coverage,) if inputs.orthoepy_coverage is not None else ()
-    ) + (
-        (inputs.psc_candidate_coverage,)
-        if inputs.psc_candidate_coverage is not None
-        else ()
+    named_source_paths.extend(
+        (f"wanxiang_{path.name.removesuffix('.dict.yaml')}", path)
+        for path in inputs.wanxiang_files
     )
-    source_paths = (
-        inputs.unihan,
-        inputs.pypinyin_phrases,
-        inputs.source_compliance_policy,
-        *optional_reading_sources,
-        DEFAULT_ADMISSION_PATH,
-        DEFAULT_NEUTRAL_SOURCE_POLICY_PATH,
-        *bcc_files,
-        inputs.decoder_inventory,
-        *inputs.wanxiang_files,
-        *tier_source_paths,
-    )
+    if inputs.character_tier_sources is not None:
+        named_source_paths.extend(
+            (
+                ("unihan_other_mappings", inputs.character_tier_sources.other_mappings),
+                ("unihan_readings", inputs.character_tier_sources.readings),
+                ("character_catalog_db", inputs.character_tier_sources.character_catalog_db),
+                ("yinjie_codebook", inputs.character_tier_sources.yinjie_codebook),
+            )
+        )
+    source_paths = tuple(path for _, path in named_source_paths)
     missing = [str(path) for path in source_paths if not path.is_file()]
     if missing:
         raise FileNotFoundError("missing lexicon bundle inputs: " + "; ".join(missing))
+    for input_id, path in named_source_paths:
+        assert_data_source_allowed(
+            path,
+            input_id=input_id,
+            approval_path=inputs.repository_import_approval,
+        )
 
     output_dir.mkdir(parents=True, exist_ok=True)
     database = output_dir / "source_lexicon.sqlite3"

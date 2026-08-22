@@ -18,7 +18,6 @@ DEFAULT_DB_PATH = (
     / "lexicon_source_bundle"
     / "source_lexicon.sqlite3"
 )
-DEFAULT_WANXIANG_ROOT = WORKSPACE_ROOT.parent / "RIME-LMDG"
 DEFAULT_NORMALIZED_OUTPUT = SCRIPT_DIR / "lexicon_exports" / "pinyin_normalized.json"
 DEFAULT_RUNTIME_NORMALIZED_OUTPUT = WORKSPACE_ROOT / "yime" / "pinyin_normalized.json"
 DEFAULT_YINJIE_OUTPUT = WORKSPACE_ROOT / "syllable" / "codec" / "yinjie_code.json"
@@ -27,7 +26,8 @@ DEFAULT_SUMMARY_OUTPUT = SCRIPT_DIR / "rebuild_summary.json"
 
 class Args(argparse.Namespace):
     db: str
-    wanxiang_root: str
+    external_root: str | None
+    repository_import_approval: str | None
     skip_bundle_build: bool
     normalized_output: str
     runtime_normalized_output: str
@@ -45,7 +45,14 @@ def parse_args() -> Args:
         )
     )
     parser.add_argument("--db", default=str(DEFAULT_DB_PATH), help="SQLite database path")
-    parser.add_argument("--wanxiang-root", default=str(DEFAULT_WANXIANG_ROOT))
+    parser.add_argument(
+        "--external-root",
+        help="Independent content-locked input root; otherwise use YIME_LEXICON_EXTERNAL_ROOT.",
+    )
+    parser.add_argument(
+        "--repository-import-approval",
+        help="Reviewed, time-limited approval for an exceptional cross-repository read.",
+    )
     parser.add_argument(
         "--skip-bundle-build",
         action="store_true",
@@ -161,11 +168,15 @@ def main() -> int:
         build_command = [
             sys.executable,
             str(WORKSPACE_ROOT / "tools" / "build_lexicon_source_bundle.py"),
-            "--wanxiang-root",
-            args.wanxiang_root,
             "--output-dir",
             str(db_path.parent),
         ]
+        if args.external_root:
+            build_command.extend(("--external-root", args.external_root))
+        if args.repository_import_approval:
+            build_command.extend(
+                ("--repository-import-approval", args.repository_import_approval)
+            )
         run_step("build-unified-source", build_command)
     elif not db_path.is_file():
         raise FileNotFoundError(f"unified source database not found: {db_path}")

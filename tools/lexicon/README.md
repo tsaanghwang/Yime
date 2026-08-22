@@ -28,14 +28,17 @@ python tools/lexicon/verify_target_lock.py `
 
 只有命令返回 0 且 `candidate_exact_match=true`，候选才与当前产品身份相同。
 
-大型 BCC、Unihan、字符目录数据库和 RIME-LMDG 输入不进入 Git。其大小和 SHA-256 记录在 `data/external_inputs.lock.json`；迁移期可验证旧位置，完成外部归档后应设置 `YIME_LEXICON_EXTERNAL_ROOT` 并使用 `--no-legacy-paths` 验证：
+大型 BCC、Unihan、字符目录数据库和 RIME-LMDG 输入不进入 Git。其大小和 SHA-256 记录在 `data/external_inputs.lock.json`；必须先放入不属于任何 Git 仓库的独立归档/工作目录，并设置 `YIME_LEXICON_EXTERNAL_ROOT`。锁文件不保存原型或其它仓库路径，也不存在自动回退：
 
 ```powershell
 .\tools\lexicon\invoke-python.ps1 `
   tools\lexicon\verify_external_inputs.py `
-  --external-root D:\YimeLexiconInputs `
-  --no-legacy-paths
+  --external-root D:\YimeLexiconInputs
 ```
+
+若路径位于原型或其它 Git 仓库，命令默认失败。确有必要时，必须先取得明确授权，并在
+`tools/data_import_approvals/` 保存精确到输入 ID、最长 31 天的审查记录；该例外不取代内容哈希和
+正式来源审查。完整政策见[仓库数据边界](../../docs/project/YIME_REPOSITORY_DATA_BOUNDARY.md)。
 
 ## 外部归档恢复演练
 

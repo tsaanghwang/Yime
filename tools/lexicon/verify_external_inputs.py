@@ -25,13 +25,17 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--lock", type=Path, default=DEFAULT_LOCK)
     parser.add_argument("--external-root", type=Path)
-    parser.add_argument("--no-legacy-paths", action="store_true")
+    parser.add_argument("--repository-import-approval", type=Path)
     args = parser.parse_args()
     try:
         paths = resolve_external_inputs(
             args.lock.resolve(),
             external_root=(args.external_root.resolve() if args.external_root else None),
-            allow_legacy_paths=not args.no_legacy_paths,
+            repository_import_approval=(
+                args.repository_import_approval.resolve()
+                if args.repository_import_approval
+                else None
+            ),
         )
     except (OSError, ValueError, ExternalInputError) as exc:
         print(f"FAIL external input lock: {exc}", file=sys.stderr)
