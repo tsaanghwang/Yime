@@ -109,9 +109,9 @@ def parse_args() -> argparse.Namespace:
         help="Content-addressed external input root; otherwise use YIME_LEXICON_EXTERNAL_ROOT.",
     )
     parser.add_argument(
-        "--no-legacy-external-paths",
-        action="store_true",
-        help="Reject transitional C:/dev legacy locations and require --external-root or the environment variable.",
+        "--repository-import-approval",
+        type=Path,
+        help="Reviewed, time-limited approval for an exceptional cross-repository read.",
     )
     parser.add_argument(
         "--output-dir",
@@ -126,7 +126,11 @@ def main() -> int:
     external = resolve_external_inputs(
         args.external_input_lock.resolve(),
         external_root=(args.external_root.resolve() if args.external_root else None),
-        allow_legacy_paths=not args.no_legacy_external_paths,
+        repository_import_approval=(
+            args.repository_import_approval.resolve()
+            if args.repository_import_approval
+            else None
+        ),
     )
     inputs = BundleInputs(
         unihan=args.unihan.resolve(),
@@ -163,6 +167,11 @@ def main() -> int:
                 else external["character_catalog_db"]
             ),
             yinjie_codebook=args.yinjie_codebook.resolve(),
+        ),
+        repository_import_approval=(
+            args.repository_import_approval.resolve()
+            if args.repository_import_approval
+            else None
         ),
     )
     result = build_bundle(inputs, args.output_dir.resolve())

@@ -12,6 +12,11 @@ from pathlib import Path
 from pathlib import PurePosixPath
 from typing import Any
 
+from yime.repository_boundary import (
+    RepositoryBoundaryError,
+    assert_data_source_allowed,
+)
+
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_LOCK = REPO_ROOT / "tools" / "lexicon" / "data" / "external_inputs.lock.json"
@@ -46,6 +51,11 @@ def _lock_records(lock_path: Path) -> tuple[dict[str, Any], list[dict[str, Any]]
     for raw in records:
         if not isinstance(raw, dict):
             raise ExternalInputError("external input record must be an object")
+        if "legacy_path" in raw:
+            raise ExternalInputError(
+                "external input lock must not contain legacy_path; "
+                "repository fallbacks are forbidden"
+            )
         input_id = str(raw.get("id") or "")
         if not input_id or input_id in seen:
             raise ExternalInputError(f"invalid or duplicate external input ID: {input_id!r}")
@@ -136,28 +146,41 @@ def resolve_external_inputs(
     lock_path: Path = DEFAULT_LOCK,
     *,
     external_root: Path | None = None,
-    allow_legacy_paths: bool = True,
+    repository_import_approval: Path | None = None,
 ) -> dict[str, Path]:
     """Return verified paths keyed by stable input ID."""
+    try:
+        lock_path = assert_data_source_allowed(
+            lock_path,
+            input_id="external_input_lock",
+            approval_path=repository_import_approval,
+        )
+    except RepositoryBoundaryError as exc:
+        raise ExternalInputError(str(exc)) from exc
     lock, records = _lock_records(lock_path)
     environment_name = str(lock.get("external_root_environment") or "")
     environment_root = os.environ.get(environment_name, "").strip()
     resolved_root = external_root or (Path(environment_root) if environment_root else None)
+    if resolved_root is None:
+        raise ExternalInputError(
+            "external input root is required; pass --external-root or set "
+            f"{environment_name}. Yime never falls back to a prototype or sibling repository."
+        )
 
     result: dict[str, Path] = {}
     for raw in records:
         input_id = raw["id"]
-        candidates: list[Path] = []
-        if resolved_root is not None:
-            candidates.append(resolved_root / Path(raw["relative_path"]))
-        if allow_legacy_paths:
-            legacy_path = str(raw.get("legacy_path") or "")
-            if legacy_path:
-                candidates.append(Path(legacy_path))
-        path = next((item for item in candidates if item.is_file()), None)
-        if path is None:
-            locations = ", ".join(str(item) for item in candidates) or "no configured path"
-            raise ExternalInputError(f"missing external input {input_id}: {locations}")
+        path = resolved_root / Path(raw["relative_path"])
+        if not path.is_file():
+            raise ExternalInputError(f"missing external input {input_id}: {path}")
+        try:
+            path = assert_data_source_allowed(
+                path,
+                input_id=input_id,
+                approval_path=repository_import_approval,
+            )
+        except RepositoryBoundaryError as exc:
+            raise ExternalInputError(str(exc)) from exc
         _verify_locked_file(path, raw, label="external input")
         result[input_id] = path.resolve()
     return result
@@ -169,12 +192,21 @@ def run_external_input_restore_drill(
     restore_root: Path,
     evidence_path: Path,
     lock_path: Path = DEFAULT_LOCK,
+    repository_import_approval: Path | None = None,
 ) -> dict[str, Any]:
     """Restore a locked archive into a fresh external directory and record evidence."""
     lock_path = lock_path.resolve()
     archive_root = archive_root.resolve()
     restore_root = restore_root.resolve()
     evidence_path = evidence_path.resolve()
+    try:
+        lock_path = assert_data_source_allowed(
+            lock_path,
+            input_id="external_input_lock",
+            approval_path=repository_import_approval,
+        )
+    except RepositoryBoundaryError as exc:
+        raise ExternalInputError(str(exc)) from exc
     lock, records = _lock_records(lock_path)
     started_at = _utc_now()
     evidence: dict[str, Any] = {
@@ -224,6 +256,18 @@ def run_external_input_restore_drill(
         for raw in records:
             current_input = raw["id"]
             archive_path = archive_root / Path(raw["relative_path"])
+            if not archive_path.is_file():
+                raise ExternalInputError(
+                    f"missing archived external input {raw['id']}: {archive_path}"
+                )
+            try:
+                archive_path = assert_data_source_allowed(
+                    archive_path,
+                    input_id=raw["id"],
+                    approval_path=repository_import_approval,
+                )
+            except RepositoryBoundaryError as exc:
+                raise ExternalInputError(str(exc)) from exc
             archive_identity = _verify_locked_file(
                 archive_path, raw, label="archived external input"
             )
@@ -271,7 +315,6 @@ def run_external_input_restore_drill(
         resolved = resolve_external_inputs(
             lock_path,
             external_root=restore_root,
-            allow_legacy_paths=False,
         )
         evidence["verified_input_count"] = len(resolved)
         evidence["decision"] = "pass"
@@ -299,10 +342,22 @@ def verify_external_input_restore_evidence(
     evidence_path: Path,
     *,
     lock_path: Path = DEFAULT_LOCK,
+    repository_import_approval: Path | None = None,
 ) -> dict[str, Any]:
     """Validate restore evidence against the current external-input lock."""
-    lock_path = lock_path.resolve()
-    evidence_path = evidence_path.resolve()
+    try:
+        lock_path = assert_data_source_allowed(
+            lock_path,
+            input_id="external_input_lock",
+            approval_path=repository_import_approval,
+        )
+        evidence_path = assert_data_source_allowed(
+            evidence_path,
+            input_id="external_restore_evidence",
+            approval_path=repository_import_approval,
+        )
+    except RepositoryBoundaryError as exc:
+        raise ExternalInputError(str(exc)) from exc
     lock, records = _lock_records(lock_path)
     evidence = json.loads(evidence_path.read_text(encoding="utf-8"))
     if not isinstance(evidence, dict):

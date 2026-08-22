@@ -44,7 +44,9 @@ docs/                    Development documentation
 | `yime-stable` | Maintained integration branch |
 | `codex/**` | Active task branches covered by push CI |
 
-The encoding, lexicon, and experiment-heavy prototype work lives in the separate `Yime-prototype` repository.
+Yime owns its encoding, lexicon, layout, and offline evaluation sources. The retired Python
+prototype is a detached maintenance/cleanup workspace: Yime never reads it or any sibling Git
+repository by default. See [Repository Data Boundary](docs/project/YIME_REPOSITORY_DATA_BOUNDARY.md).
 
 The current runtime architecture and its qualification evidence are documented in
 [Default Dynamic Lexicon Runtime](docs/DEFAULT_DYNAMIC_LEXICON_RUNTIME.md).

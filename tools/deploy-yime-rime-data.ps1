@@ -8,6 +8,7 @@ param(
     [string]$SourceRevision,
     [Parameter(Mandatory = $true)]
     [string]$PronunciationEntries,
+    [string]$RepositoryImportApproval = "",
     [string]$PimeRoot = "",
     [string]$RimeUserDir = ""
 )
@@ -29,6 +30,7 @@ $importer = Join-Path $PSScriptRoot "import-yime-core-lexicon.ps1"
 & $importer -InputPath $InputPath -EvidenceManifest $EvidenceManifest `
     -SourceRevision $SourceRevision `
     -PronunciationEntries $PronunciationEntries `
+    -RepositoryImportApproval $RepositoryImportApproval `
     -OutputDir $sharedDir
 if ($LASTEXITCODE -ne 0) {
     throw "Yime lexicon import failed with exit code $LASTEXITCODE"

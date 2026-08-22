@@ -13,6 +13,7 @@ param(
     [string]$SourceDictionaryName = "",
     [string]$GeneratedAt = "",
     [string]$OutputDir = "",
+    [string]$RepositoryImportApproval = "",
     [switch]$DeployToUserDir
 )
 
@@ -39,8 +40,16 @@ function Replace-ExactlyOnce {
 
 $root = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot "..")).Path
 $goBackend = Join-Path $root "go-backend"
+$boundaryGuard = Join-Path $PSScriptRoot "assert-data-source-boundary.ps1"
+function Assert-ImportSource {
+    param([string]$SourcePath, [string]$InputId)
+    & $boundaryGuard -Path $SourcePath -InputId $InputId `
+        -ApprovalManifest $RepositoryImportApproval
+}
 $resolvedInputPath = (Resolve-Path -LiteralPath $InputPath).Path
 $resolvedEvidencePath = (Resolve-Path -LiteralPath $EvidenceManifest).Path
+Assert-ImportSource -SourcePath $resolvedInputPath -InputId "core_dictionary"
+Assert-ImportSource -SourcePath $resolvedEvidencePath -InputId "core_evidence_manifest"
 $evidence = Get-Content -LiteralPath $resolvedEvidencePath -Raw -Encoding UTF8 |
     ConvertFrom-Json
 $sourceHash = (Get-FileHash -LiteralPath $resolvedInputPath -Algorithm SHA256).Hash.ToLowerInvariant()
@@ -58,6 +67,8 @@ if ($usingPrebuiltReverseSource) {
     }
     $resolvedPrebuiltReverseSource = (Resolve-Path -LiteralPath $PrebuiltReverseSource).Path
     $resolvedPreviousCoreSourceManifest = (Resolve-Path -LiteralPath $PreviousCoreSourceManifest).Path
+    Assert-ImportSource -SourcePath $resolvedPrebuiltReverseSource -InputId "prebuilt_reverse_source"
+    Assert-ImportSource -SourcePath $resolvedPreviousCoreSourceManifest -InputId "previous_core_source_manifest"
     $previousCoreSource = Get-Content -LiteralPath $resolvedPreviousCoreSourceManifest -Raw -Encoding UTF8 |
         ConvertFrom-Json
     if (-not $previousCoreSource.pronunciation_entries -or
@@ -67,6 +78,7 @@ if ($usingPrebuiltReverseSource) {
     $prebuiltReverseHash = (Get-FileHash -LiteralPath $resolvedPrebuiltReverseSource -Algorithm SHA256).Hash.ToLowerInvariant()
     if ($usingApprovedTarget) {
         $resolvedTargetLock = (Resolve-Path -LiteralPath $ApprovedTargetLock).Path
+        Assert-ImportSource -SourcePath $resolvedTargetLock -InputId "approved_target_lock"
         $targetLock = Get-Content -LiteralPath $resolvedTargetLock -Raw -Encoding UTF8 |
             ConvertFrom-Json
         if ([string]$targetLock.status -ne "approved_windows_handoff_target") {
@@ -109,6 +121,7 @@ else {
         throw "-PronunciationEntries is required unless -PrebuiltReverseSource is used."
     }
     $resolvedPronunciationEntries = (Resolve-Path -LiteralPath $PronunciationEntries).Path
+    Assert-ImportSource -SourcePath $resolvedPronunciationEntries -InputId "pronunciation_entries"
     $pronunciationEntriesName = [IO.Path]::GetFileName($resolvedPronunciationEntries)
     $pronunciationEntriesHash = (Get-FileHash -LiteralPath $resolvedPronunciationEntries -Algorithm SHA256).Hash.ToLowerInvariant()
 }

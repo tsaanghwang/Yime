@@ -69,6 +69,8 @@ $requiredGovernanceGuards = @(
     "branches: [main, yime-stable, 'codex/**']",
     'name: rust-i686-host',
     'name: lexicon-offline-tooling',
+    'Enforce repository data boundary',
+    '.\tools\lexicon\check_repository_data_boundary.py',
     'name: native-build',
     'Guard and track libIME2 component commits',
     '.\tools\check-libime2-change-boundary.ps1',
@@ -119,6 +121,8 @@ foreach ($guard in @(
     '/build.bat @tsaanghwang',
     '/CMakeLists.txt @tsaanghwang',
     '/tools/test-build-guards.ps1 @tsaanghwang',
+    '/tools/assert-data-source-boundary.ps1 @tsaanghwang',
+    '/tools/data_import_approvals/** @tsaanghwang',
     '/tools/check-libime2-change-boundary.ps1 @tsaanghwang',
     '/tools/invoke-libime2-pre-push.ps1 @tsaanghwang',
     '/tools/enable-repository-hooks.ps1 @tsaanghwang',
@@ -127,6 +131,7 @@ foreach ($guard in @(
     '/tools/test-go.ps1 @tsaanghwang',
     '/tools/test-real-rime.ps1 @tsaanghwang',
     '/tools/lexicon/** @tsaanghwang',
+    '/yime/repository_boundary.py @tsaanghwang',
     '/tools/evaluation/** @tsaanghwang',
     '/tools/test-installer-smoke.ps1 @tsaanghwang',
     '/tools/assert-win32-build-prerequisites.ps1 @tsaanghwang',
@@ -237,6 +242,8 @@ foreach ($guard in @(
 }
 $coreImporterText = Get-Content -LiteralPath $coreImporter -Raw
 foreach ($guard in @(
+    'assert-data-source-boundary.ps1',
+    '[string]$RepositoryImportApproval',
     'Get-FileHash -LiteralPath $resolvedInputPath -Algorithm SHA256',
     '$sourceHash -ne [string]$evidence.output_sha256',
     '$evidence.ranking_evidence.policy_id',
