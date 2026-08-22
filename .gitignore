@@ -68,6 +68,7 @@ go-backend/*.exe
 installer/*.exe
 .tmp/
 /tmp/
+/.generated/lexicon_external_restore/
 **/__pycache__/
 *.py[cod]
 PIMELauncher/target/

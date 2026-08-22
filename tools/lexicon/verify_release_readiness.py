@@ -16,6 +16,15 @@ if str(MODULE_DIR) not in sys.path:
 
 from verify_target_lock import DEFAULT_LOCK, REPO_ROOT, VerificationError, verify
 
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from yime.lexicon_bundle.external_inputs import (
+    DEFAULT_LOCK as DEFAULT_EXTERNAL_INPUT_LOCK,
+    ExternalInputError,
+    verify_external_input_restore_evidence,
+)
+
 
 DEFAULT_STATUS = MODULE_DIR / "data" / "source_reproducibility.status.json"
 
@@ -33,6 +42,8 @@ def check_release_readiness(
     lock_path: Path = DEFAULT_LOCK,
     repo_root: Path = REPO_ROOT,
     require_release: bool = False,
+    external_restore_evidence: Path | None = None,
+    external_input_lock_path: Path = DEFAULT_EXTERNAL_INPUT_LOCK,
 ) -> dict[str, Any]:
     locked = verify(lock_path.resolve(), repo_root.resolve())
     status = _load(status_path.resolve())
@@ -79,6 +90,18 @@ def check_release_readiness(
             raise VerificationError(
                 "source reproducibility pass does not authorize tagged release"
             )
+    restore_report: dict[str, Any] = {"decision": "not_checked"}
+    if external_restore_evidence is not None:
+        try:
+            restore_report = verify_external_input_restore_evidence(
+                external_restore_evidence.resolve(),
+                lock_path=external_input_lock_path.resolve(),
+            )
+        except (OSError, ValueError, json.JSONDecodeError, ExternalInputError) as exc:
+            raise VerificationError(
+                f"external input restore evidence is invalid: {exc}"
+            ) from exc
+
     report = {
         "decision": decision,
         "release_allowed": decision == "pass",
@@ -88,6 +111,7 @@ def check_release_readiness(
         "blocking_reason": status.get("blocking_reason", ""),
         "required_resolution": status.get("required_resolution", ""),
         "safeguards": status.get("safeguards", {}),
+        "external_input_restore": restore_report,
     }
     if require_release and decision != "pass":
         latest = status.get("latest_clean_rebuild") or {}
@@ -106,6 +130,10 @@ def main() -> int:
     parser.add_argument("--lock", type=Path, default=DEFAULT_LOCK)
     parser.add_argument("--repo-root", type=Path, default=REPO_ROOT)
     parser.add_argument("--require-release", action="store_true")
+    parser.add_argument("--external-restore-evidence", type=Path)
+    parser.add_argument(
+        "--external-input-lock", type=Path, default=DEFAULT_EXTERNAL_INPUT_LOCK
+    )
     args = parser.parse_args()
     try:
         report = check_release_readiness(
@@ -113,6 +141,8 @@ def main() -> int:
             lock_path=args.lock,
             repo_root=args.repo_root,
             require_release=args.require_release,
+            external_restore_evidence=args.external_restore_evidence,
+            external_input_lock_path=args.external_input_lock,
         )
     except (OSError, json.JSONDecodeError, VerificationError) as exc:
         print(f"FAIL release readiness: {exc}", file=sys.stderr)

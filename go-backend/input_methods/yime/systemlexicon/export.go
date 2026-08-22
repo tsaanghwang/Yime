@@ -22,7 +22,7 @@ func BuildReport(summary Summary, findings []Finding) Report {
 		Findings:    append([]Finding(nil), findings...),
 		Notes: []string{
 			"本报告为只读审查结果，不会修改系统词库。",
-			"如需调整系统词库，请在 Yime-python-prototype 管线中处理并发版。",
+			"如需调整系统词库，请通过本仓 tools/lexicon 的正式离线词库流程处理并发版。",
 		},
 	}
 }

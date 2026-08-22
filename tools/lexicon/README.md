@@ -37,6 +37,36 @@ python tools/lexicon/verify_target_lock.py `
   --no-legacy-paths
 ```
 
+## 外部归档恢复演练
+
+外部归档根目录必须按 `external_inputs.lock.json` 的 `relative_path` 保存全部文件。恢复演练要求归档根目录和恢复根目录都位于 Git 工作树之外，恢复根目录不存在或为空；工具不会把大型数据库复制进仓库。以下命令先完整预检归档，再复制到全新的恢复目录，逐项复核恢复文件的大小和 SHA-256，最后重新打开整棵恢复树验证：
+
+```powershell
+.\tools\lexicon\invoke-python.ps1 `
+  tools\lexicon\restore_external_inputs.py `
+  --archive-root D:\YimeLexiconArchive `
+  --restore-root E:\YimeLexiconRestoreDrill\run-20260822 `
+  --evidence .\.generated\lexicon_external_restore\run-20260822.evidence.json
+```
+
+缺失、大小不符或 SHA-256 不符均返回非零；无论成功或失败，指定证据文件都会被本次结果原子替换，失败证据不能通过发布校验。恢复证据只保存路径、大小、摘要和状态，不包含词库或数据库正文。
+
+发布门禁读取证据时会重新对照当前锁文件身份和每一项归档/恢复摘要，不能只凭 `decision=pass` 放行：
+
+```powershell
+.\tools\lexicon\invoke-python.ps1 `
+  tools\lexicon\verify_release_readiness.py `
+  --require-release `
+  --external-restore-evidence .\.generated\lexicon_external_restore\run-20260822.evidence.json
+```
+
+完整发布验收入口强制要求 `-ExternalRestoreEvidence`；标签 CI 中不带证据的 `verify_release_readiness.py --require-release` 只验证已版本化的来源重现身份，不代替外部归档恢复门禁：
+
+```powershell
+.\tools\lexicon\run-release-acceptance.ps1 `
+  -ExternalRestoreEvidence .\.generated\lexicon_external_restore\run-20260822.evidence.json
+```
+
 ## 单仓交接重放
 
 批准的唯一等长源词典保存在 `handoff/yime_core_fixed.dict.yaml`，其来源证据保存在同目录的 `yime_core_fixed.evidence.json`。三模式仍由 Go `codemode` 派生，不在 Python 中维护三份词典。可在全新输出目录中重放并验证：

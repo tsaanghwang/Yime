@@ -2,13 +2,16 @@
 param(
     [string]$Python = "",
     [string]$OutputDir = "",
-    [string]$PackageRoot = ""
+    [string]$PackageRoot = "",
+    [Parameter(Mandatory = $true)]
+    [string]$ExternalRestoreEvidence
 )
 
 $ErrorActionPreference = "Stop"
 $toolRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $repoRoot = (Resolve-Path -LiteralPath (Join-Path $toolRoot "..\..")).Path
 $runner = Join-Path $toolRoot "invoke-python.ps1"
+$resolvedRestoreEvidence = (Resolve-Path -LiteralPath $ExternalRestoreEvidence).Path
 if (-not $OutputDir) {
     $OutputDir = Join-Path $repoRoot ".generated\release_acceptance"
 }
@@ -19,9 +22,10 @@ $resolvedOutput = (Resolve-Path -LiteralPath $OutputDir).Path
 # before dictionaries, package payloads or installers are regenerated.
 & $runner -Python $Python `
     (Join-Path $toolRoot "verify_release_readiness.py") `
-    --require-release
+    --require-release `
+    --external-restore-evidence $resolvedRestoreEvidence
 if ($LASTEXITCODE -ne 0) {
-    throw "Release acceptance stopped at source reproducibility; no package action is allowed."
+    throw "Release acceptance stopped at source reproducibility or external restore evidence; no package action is allowed."
 }
 
 & (Join-Path $toolRoot "test.ps1") -Python $Python
