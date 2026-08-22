@@ -27,3 +27,4 @@ libIME2/** -text -whitespace
 # Never let platform checkout settings rewrite either upstream snapshot.
 PIMELauncher/vendor/** -text -whitespace
 third_party/corrosion/** -text -whitespace
+third_party/go-winres/** -text -whitespace

@@ -18,6 +18,9 @@ CORROSION_TREE_SHA256 = "3c01b36b86b3b9e0997903a1b0e885d2ae893083c19131b11647540
 CARGO_ROOT = REPO_ROOT / "PIMELauncher"
 CARGO_LOCK = CARGO_ROOT / "Cargo.lock"
 CARGO_VENDOR = CARGO_ROOT / "vendor"
+GO_WINRES_ROOT = REPO_ROOT / "third_party" / "go-winres"
+GO_WINRES_VERSION = "0.3.3"
+GO_WINRES_TREE_SHA256 = "727e8eca52890e48f10fc41dfda6b8a2a7899e308e80e1f8937678df452e9dea"
 
 
 class VerificationError(RuntimeError):
@@ -32,18 +35,18 @@ def sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
-def corrosion_tree_identity() -> tuple[str, int, int]:
-    if not CORROSION_ROOT.is_dir():
-        raise VerificationError(f"missing vendored Corrosion directory: {CORROSION_ROOT}")
+def tree_identity(root: Path) -> tuple[str, int, int]:
+    if not root.is_dir():
+        raise VerificationError(f"missing vendored dependency directory: {root}")
     digest = hashlib.sha256()
     count = 0
     total_bytes = 0
     files = sorted(
-        (path for path in CORROSION_ROOT.rglob("*") if path.is_file()),
-        key=lambda path: path.relative_to(CORROSION_ROOT).as_posix(),
+        (path for path in root.rglob("*") if path.is_file()),
+        key=lambda path: path.relative_to(root).as_posix(),
     )
     for path in files:
-        relative = path.relative_to(CORROSION_ROOT).as_posix()
+        relative = path.relative_to(root).as_posix()
         size = path.stat().st_size
         digest.update(f"{relative}\0{size}\0{sha256(path)}\n".encode("utf-8"))
         count += 1
@@ -55,11 +58,36 @@ def verify_corrosion() -> tuple[int, int]:
     cmake_text = (CORROSION_ROOT / "CMakeLists.txt").read_text(encoding="utf-8")
     if f"VERSION {CORROSION_VERSION}" not in cmake_text:
         raise VerificationError(f"vendored Corrosion is not version {CORROSION_VERSION}")
-    identity, count, total_bytes = corrosion_tree_identity()
+    identity, count, total_bytes = tree_identity(CORROSION_ROOT)
     if identity != CORROSION_TREE_SHA256:
         raise VerificationError(
             "vendored Corrosion tree mismatch: "
             f"expected {CORROSION_TREE_SHA256}, got {identity}"
+        )
+    return count, total_bytes
+
+
+def verify_go_winres() -> tuple[int, int]:
+    go_mod = (GO_WINRES_ROOT / "go.mod").read_text(encoding="utf-8")
+    if "module github.com/tc-hib/go-winres" not in go_mod:
+        raise VerificationError("vendored go-winres module identity mismatch")
+    modules = (GO_WINRES_ROOT / "vendor" / "modules.txt").read_text(
+        encoding="utf-8"
+    )
+    for dependency in (
+        "github.com/tc-hib/winres v0.2.1",
+        "github.com/urfave/cli/v2 v2.25.7",
+        "golang.org/x/image v0.12.0",
+    ):
+        if dependency not in modules:
+            raise VerificationError(
+                f"vendored go-winres dependency is missing: {dependency}"
+            )
+    identity, count, total_bytes = tree_identity(GO_WINRES_ROOT)
+    if identity != GO_WINRES_TREE_SHA256:
+        raise VerificationError(
+            "vendored go-winres tree mismatch: "
+            f"expected {GO_WINRES_TREE_SHA256}, got {identity}"
         )
     return count, total_bytes
 
@@ -144,6 +172,7 @@ def main() -> int:
     try:
         corrosion_files, corrosion_bytes = verify_corrosion()
         crates, crate_files, crate_bytes = verify_cargo_vendor()
+        go_winres_files, go_winres_bytes = verify_go_winres()
     except (OSError, ValueError, KeyError, VerificationError) as exc:
         print(f"FAIL vendored build dependencies: {exc}", file=sys.stderr)
         return 1
@@ -151,7 +180,9 @@ def main() -> int:
         "PASS vendored build dependencies: "
         f"Corrosion v{CORROSION_VERSION} commit {CORROSION_COMMIT} "
         f"({corrosion_files} files, {corrosion_bytes} bytes); "
-        f"{crates} Cargo crates ({crate_files} files, {crate_bytes} bytes)"
+        f"{crates} Cargo crates ({crate_files} files, {crate_bytes} bytes); "
+        f"go-winres v{GO_WINRES_VERSION} "
+        f"({go_winres_files} files, {go_winres_bytes} bytes)"
     )
     return 0
 

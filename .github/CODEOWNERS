@@ -23,6 +23,8 @@
 /tools/validate-build-contract.ps1 @tsaanghwang
 /tools/verify_psc_outline_snapshot.py @tsaanghwang
 /tools/verify_vendored_build_dependencies.py @tsaanghwang
+/tools/toolchain.lock.json @tsaanghwang
+/tools/verify_toolchain_lock.py @tsaanghwang
 /tools/psc_outline_review_tool.py @tsaanghwang
 /tools/test_psc_outline_review_tool.py @tsaanghwang
 /tools/assert-data-source-boundary.ps1 @tsaanghwang

@@ -9,7 +9,8 @@
 - `version.txt` 与构建身份一致；当前未发布开发线使用 `1.4.0-dev`，只有创建正式 `v1.4.0` 标签前才改为 `1.4.0`
 - 不得重新使用已经存在的历史标签。仓库已有 `v1.0.0`、`v1.1.0` 和 `v1.3.0-*`；即使 Yime 作为独立产品首次公开发布，也不能再次创建同名 `v1.0.0` 标签
 - `CHANGELOG.md` 的 `[Unreleased]` 已核对
-- Visual Studio、CMake、Rust、Go、NSIS 和 `go-winres` 可用
+- Visual Studio、Windows SDK、CMake、Rust、Go、Python 和 NSIS 符合 `tools/toolchain.lock.json`；`python tools/verify_toolchain_lock.py` 通过
+- `go-winres` 从 `third_party/go-winres` 的哈希锁定源码与 vendor 依赖离线构建，不从 PATH 或网络获取
 - Rust 已安装 i686 host 工具链：`rustup toolchain install stable-i686-pc-windows-msvc`。Win32 `PIMELauncher` 构建由根 `CMakeLists.txt` 固定 `Rust_TOOLCHAIN` 指向它（Corrosion v0.6.1），x64 host 工具链会因跨编译 build-script 链接错误而失败
 - 发布签名机器已安装受信任提供商签发的 RSA 代码签名证书
 
@@ -38,6 +39,12 @@ Get-FileHash .\build\go-backend\settings-tool.exe -Algorithm SHA256
 ```
 
 对应自动守卫为 `TestBuildScriptKeepsGoExecutableHashesStableAndSupportsSigning`。
+
+## 2.1 Windows 工具链恢复
+
+`tools/toolchain.lock.json` 记录工具版本、官方 URL、安装/验证命令，以及存在单一不可变安装制品时的大小和 SHA-256。Visual Studio Build Tools、Windows SDK、GitHub runner 和 MSYS2 属于组件化环境，清单明确记录组件/通道及不能用单一文件哈希表示的原因，不以空哈希伪装完整锁定。
+
+Git 仓库不保存整套编译器和 SDK。维护发布环境时可按清单预下载已哈希制品，并为 Visual Studio 2022 创建包含所列组件的离线 layout。必要时可以制作一份可离线恢复的 Windows 构建环境包或 VM 镜像。环境包或镜像必须同时保存清单、VS layout catalog、各制品哈希和制作日期，并在隔离机器上执行清单验证、vendored 依赖验证和完整构建后才可作为恢复介质。
 
 ## 3. 发布签名
 

@@ -1,0 +1,130 @@
+{
+  "schema_version": 1,
+  "lock_id": "yime-windows-build-toolchain-20260822",
+  "purpose": "Reconstruct and audit the Windows build environment without committing toolchain binaries to Git.",
+  "offline_recovery_note": "必要时可以制作一份可离线恢复的 Windows 构建环境包或 VM 镜像。",
+  "tools": [
+    {
+      "id": "github_windows_runner",
+      "version": "windows-2022",
+      "role": "CI host image",
+      "acquisition": {
+        "url": "https://github.com/actions/runner-images/blob/main/images/windows/Windows2022-Readme.md",
+        "no_single_artifact_reason": "GitHub-hosted runner images are serviced composite environments; the workflow label and each explicitly installed tool remain independently locked."
+      },
+      "verify": "CI job runs-on equals windows-2022"
+    },
+    {
+      "id": "visual_studio_build_tools",
+      "version": "17.14.30+37203.1",
+      "product": "Visual Studio Build Tools 2022",
+      "role": "MSVC, MSBuild and C++ platform toolset",
+      "components": [
+        "Microsoft.VisualStudio.Workload.VCTools",
+        "Microsoft.VisualStudio.Component.VC.Tools.x86.x64",
+        "Microsoft.VisualStudio.Component.VC.ATL",
+        "Microsoft.VisualStudio.Component.Windows11SDK.26100"
+      ],
+      "acquisition": {
+        "url": "https://aka.ms/vs/17/release/vs_BuildTools.exe",
+        "channel_url": "https://aka.ms/vs/17/release/channel",
+        "offline_layout_guide": "https://learn.microsoft.com/visualstudio/install/create-an-offline-installation-of-visual-studio",
+        "no_single_artifact_reason": "The bootstrapper resolves a signed component graph from the VS 2022 release channel; an offline layout must preserve its catalog and payload manifests."
+      },
+      "verify": "vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -format json"
+    },
+    {
+      "id": "windows_sdk",
+      "version": "10.0.26100.0",
+      "role": "Win32 headers, libraries, signtool and resource tools",
+      "acquisition": {
+        "url": "https://developer.microsoft.com/windows/downloads/windows-sdk/",
+        "no_single_artifact_reason": "The Windows SDK is installed as a signed component set, normally through the locked Visual Studio offline layout."
+      },
+      "verify": "Test-Path '${env:ProgramFiles(x86)}\\Windows Kits\\10\\Include\\10.0.26100.0'"
+    },
+    {
+      "id": "cmake",
+      "version": "4.3.1",
+      "role": "Native build generator",
+      "acquisition": {
+        "url": "https://github.com/Kitware/CMake/releases/download/v4.3.1/cmake-4.3.1-windows-x86_64.msi",
+        "size": 38154240,
+        "sha256": "92ea30f5541abb693a5ac9c1d5f4353369fbc1e8f23a775e3e27f17c5b00212f"
+      },
+      "verify": "cmake --version"
+    },
+    {
+      "id": "go",
+      "version": "1.26.4",
+      "role": "Go backend and vendored go-winres compiler",
+      "acquisition": {
+        "url": "https://go.dev/dl/go1.26.4.windows-amd64.msi",
+        "size": 62287872,
+        "sha256": "55902c036634c7ab3159cf259af692abc86989aaefcc7f75bef888f3263031c4"
+      },
+      "verify": "go version"
+    },
+    {
+      "id": "python",
+      "version": "3.14.7",
+      "role": "Offline lexicon and supply-chain verification",
+      "acquisition": {
+        "url": "https://www.python.org/ftp/python/3.14.7/python-3.14.7-embed-amd64.zip",
+        "size": 12673227,
+        "sha256": "d297e5ff019966817ad8502465176139f2d3d840fa4ed84b13bed399a6ab1f15",
+        "sigstore": "https://www.python.org/ftp/python/3.14.7/python-3.14.7-embed-amd64.zip.sigstore"
+      },
+      "verify": "python --version"
+    },
+    {
+      "id": "rust_i686_host",
+      "version": "1.97.0",
+      "toolchain": "stable-i686-pc-windows-msvc",
+      "commit": "2d8144b7880597b6e6d3dfd63a9a9efae3f533d3",
+      "role": "Win32 PIMELauncher host and target compiler",
+      "acquisition": {
+        "url": "https://static.rust-lang.org/rustup/dist/i686-pc-windows-msvc/rustup-init.exe",
+        "sha256": "f574ea2bd6d798b6072b3a45e3053f3cabcc2cb48d6b4bd59b661b41d675b31a",
+        "channel_manifest_url": "https://static.rust-lang.org/dist/channel-rust-1.97.0.toml",
+        "channel_manifest_sha256": "3804d2666f7c12ce64205baa69b6be52f910b45b158091013264beb7aa1de7f5"
+      },
+      "install": "rustup toolchain install stable-i686-pc-windows-msvc --profile minimal",
+      "verify": "rustup run stable-i686-pc-windows-msvc rustc --version --verbose"
+    },
+    {
+      "id": "nsis",
+      "version": "3.08",
+      "role": "Windows installer compiler",
+      "acquisition": {
+        "url": "https://downloads.sourceforge.net/project/nsis/NSIS%203/3.08/nsis-3.08-setup.exe",
+        "size": 1554195,
+        "sha256": "bbc76be36ecb2fc00d493c91befdaf71654226ad8a4fc4dc338458916bf224d0"
+      },
+      "verify": "makensis.exe /VERSION"
+    },
+    {
+      "id": "msys2_ucrt64_gcc",
+      "version": "CI rolling package snapshot",
+      "role": "Go race detector C compiler only",
+      "acquisition": {
+        "url": "https://packages.msys2.org/packages/mingw-w64-ucrt-x86_64-gcc",
+        "no_single_artifact_reason": "The CI action resolves a signed rolling MSYS2 package database; release binaries do not depend on this race-test toolchain."
+      },
+      "verify": "gcc --version under the MSYS2 UCRT64 environment"
+    },
+    {
+      "id": "go_winres",
+      "version": "0.3.3",
+      "role": "Windows VERSIONINFO resource generator",
+      "supply": "vendored source",
+      "path": "third_party/go-winres",
+      "tree_sha256": "727e8eca52890e48f10fc41dfda6b8a2a7899e308e80e1f8937678df452e9dea",
+      "acquisition": {
+        "url": "https://github.com/tc-hib/go-winres/releases/tag/v0.3.3",
+        "no_single_artifact_reason": "Yime builds the hash-locked source and seven vendored Go modules with -mod=vendor; no downloaded executable is used."
+      },
+      "verify": "python tools/verify_vendored_build_dependencies.py"
+    }
+  ]
+}

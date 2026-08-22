@@ -29,6 +29,8 @@ set "RIME_DATA_DIR=%RIME_DIR%\data"
 set "RIME_RUNTIME_LOCK=%RIME_DIR%\rime_runtime.lock.json"
 set "PACKAGE_RIME_DIR=%PACKAGE_DIR%\input_methods\yime"
 set "PACKAGE_RIME_DATA_DIR=%PACKAGE_RIME_DIR%\data"
+set "GO_WINRES_SOURCE=%PIME_ROOT%\third_party\go-winres"
+set "GO_WINRES=%BUILD_ROOT%\tools\go-winres.exe"
 
 if not defined GOCACHE set "GOCACHE=%PIME_ROOT%\.tmp\go-cache"
 if not defined GOTMPDIR set "GOTMPDIR=%PIME_ROOT%\.tmp\go-tmp"
@@ -175,26 +177,32 @@ set "APP_VERSION=1.0.0"
 if exist "%PIME_ROOT%\version.txt" set /p APP_VERSION=<"%PIME_ROOT%\version.txt"
 set "GO_REPRO_FLAGS=-trimpath -buildvcs=false"
 
-REM Prefer go-winres from PATH, then fall back to the standard GOPATH bin.
-REM Some launchers provide a malformed or incomplete user PATH even though the
-REM installed Go tool remains available under GOPATH\bin.
-set "GO_WINRES="
-for /f "delims=" %%I in ('where.exe go-winres.exe 2^>nul') do if not defined GO_WINRES set "GO_WINRES=%%~fI"
-if not defined GO_WINRES (
-    for /f "usebackq delims=" %%I in (`go env GOPATH`) do (
-        if exist "%%~fI\bin\go-winres.exe" set "GO_WINRES=%%~fI\bin\go-winres.exe"
-    )
+if not exist "%GO_WINRES_SOURCE%\vendor\modules.txt" (
+    echo [ERROR] Vendored go-winres source is incomplete: "%GO_WINRES_SOURCE%"
+    popd
+    exit /b 1
 )
-if not defined GO_WINRES set "GO_WINRES=go-winres"
+if not exist "%BUILD_ROOT%\tools" mkdir "%BUILD_ROOT%\tools" >nul 2>&1
+pushd "%GO_WINRES_SOURCE%"
+go build -mod=vendor -trimpath -buildvcs=false -o "%GO_WINRES%" .
+if errorlevel 1 (
+    echo [ERROR] Failed to build vendored go-winres.
+    popd
+    popd
+    exit /b 1
+)
+popd
 
 echo [INFO] App version: %APP_VERSION%
-echo [INFO] go-winres: "%GO_WINRES%"
+echo [INFO] Vendored go-winres: "%GO_WINRES%"
 
 echo [INFO] Generating Windows VERSIONINFO resources ...
 "%GO_WINRES%" simply --arch amd64 --product-version "%APP_VERSION%" --file-version "%APP_VERSION%" --product-name "YIME" --copyright "Copyright (C) 2026 Yime contributors" --file-description "YIME Go Backend Server" --original-filename "server.exe" --icon input_methods\yime\icon.ico --manifest cli --out rsrc_server
 if errorlevel 1 (
-    echo [WARN] go-winres failed for server.exe, building without VERSIONINFO
+    echo [ERROR] go-winres failed for server.exe.
     if exist rsrc_server_windows_amd64.syso del rsrc_server_windows_amd64.syso
+    popd
+    exit /b 1
 )
 
 echo [INFO] Building server.exe with dynamic DLL loading ...
@@ -213,8 +221,10 @@ echo [INFO] Built: "%SERVER_EXE%"
 echo [INFO] Generating Windows VERSIONINFO resources for reverse-lookup ...
 "%GO_WINRES%" simply --arch amd64 --product-version "%APP_VERSION%" --file-version "%APP_VERSION%" --product-name "YIME" --copyright "Copyright (C) 2026 Yime contributors" --file-description "Yime Reverse Lookup Tool" --original-filename "reverse-lookup.exe" --icon input_methods\yime\icon.ico --manifest gui --out cmd\reverse-lookup-tool\rsrc_reverse
 if errorlevel 1 (
-    echo [WARN] go-winres failed for reverse-lookup.exe, building without VERSIONINFO
+    echo [ERROR] go-winres failed for reverse-lookup.exe.
     if exist cmd\reverse-lookup-tool\rsrc_reverse_windows_amd64.syso del cmd\reverse-lookup-tool\rsrc_reverse_windows_amd64.syso
+    popd
+    exit /b 1
 )
 
 echo [INFO] Building reverse-lookup.exe ...
@@ -233,8 +243,10 @@ echo [INFO] Built: "%REVERSE_LOOKUP_EXE%"
 echo [INFO] Generating Windows VERSIONINFO resources for tool-hub ...
 "%GO_WINRES%" simply --arch amd64 --product-version "%APP_VERSION%" --file-version "%APP_VERSION%" --product-name "YIME" --copyright "Copyright (C) 2026 Yime contributors" --file-description "Yime Tool Hub" --original-filename "tool-hub.exe" --icon input_methods\yime\icon.ico --manifest gui --out cmd\tool-hub\rsrc_hub
 if errorlevel 1 (
-    echo [WARN] go-winres failed for tool-hub.exe, building without VERSIONINFO
+    echo [ERROR] go-winres failed for tool-hub.exe.
     if exist cmd\tool-hub\rsrc_hub_windows_amd64.syso del cmd\tool-hub\rsrc_hub_windows_amd64.syso
+    popd
+    exit /b 1
 )
 
 echo [INFO] Building tool-hub.exe ...
@@ -253,8 +265,10 @@ echo [INFO] Built: "%TOOL_HUB_EXE%"
 echo [INFO] Generating Windows VERSIONINFO resources for yime-trainer ...
 "%GO_WINRES%" simply --arch amd64 --product-version "%APP_VERSION%" --file-version "%APP_VERSION%" --product-name "YIME" --copyright "Copyright (C) 2026 Yime contributors" --file-description "Yime Typing Trainer" --original-filename "yime-trainer.exe" --icon input_methods\yime\icon.ico --manifest gui --out cmd\yime-trainer\rsrc_trainer
 if errorlevel 1 (
-    echo [WARN] go-winres failed for yime-trainer.exe, building without VERSIONINFO
+    echo [ERROR] go-winres failed for yime-trainer.exe.
     if exist cmd\yime-trainer\rsrc_trainer_windows_amd64.syso del cmd\yime-trainer\rsrc_trainer_windows_amd64.syso
+    popd
+    exit /b 1
 )
 
 echo [INFO] Building yime-trainer.exe ...
@@ -272,8 +286,10 @@ echo [INFO] Built: "%YIME_TRAINER_EXE%"
 echo [INFO] Generating Windows VERSIONINFO resources for input-toolbar ...
 "%GO_WINRES%" simply --arch amd64 --product-version "%APP_VERSION%" --file-version "%APP_VERSION%" --product-name "YIME" --copyright "Copyright (C) 2026 Yime contributors" --file-description "Yime Input Method Toolbar" --original-filename "input-toolbar.exe" --icon input_methods\yime\icon.ico --manifest gui --out cmd\input-toolbar\rsrc_input_toolbar
 if errorlevel 1 (
-    echo [WARN] go-winres failed for input-toolbar.exe, building without VERSIONINFO
+    echo [ERROR] go-winres failed for input-toolbar.exe.
     if exist cmd\input-toolbar\rsrc_input_toolbar_windows_amd64.syso del cmd\input-toolbar\rsrc_input_toolbar_windows_amd64.syso
+    popd
+    exit /b 1
 )
 
 echo [INFO] Building input-toolbar.exe ...
@@ -291,8 +307,10 @@ echo [INFO] Built: "%INPUT_TOOLBAR_EXE%"
 echo [INFO] Generating Windows VERSIONINFO resources for lexicon-manager ...
 "%GO_WINRES%" simply --arch amd64 --product-version "%APP_VERSION%" --file-version "%APP_VERSION%" --product-name "YIME" --copyright "Copyright (C) 2026 Yime contributors" --file-description "Yime Lexicon Manager" --original-filename "lexicon-manager.exe" --icon input_methods\yime\icon.ico --manifest gui --out cmd\lexicon-manager\rsrc_lexicon
 if errorlevel 1 (
-    echo [WARN] go-winres failed for lexicon-manager.exe, building without VERSIONINFO
+    echo [ERROR] go-winres failed for lexicon-manager.exe.
     if exist cmd\lexicon-manager\rsrc_lexicon_windows_amd64.syso del cmd\lexicon-manager\rsrc_lexicon_windows_amd64.syso
+    popd
+    exit /b 1
 )
 
 echo [INFO] Building lexicon-manager.exe ...
@@ -311,8 +329,10 @@ echo [INFO] Built: "%LEXICON_MANAGER_EXE%"
 echo [INFO] Generating Windows VERSIONINFO resources for system-lexicon-audit ...
 "%GO_WINRES%" simply --arch amd64 --product-version "%APP_VERSION%" --file-version "%APP_VERSION%" --product-name "YIME" --copyright "Copyright (C) 2026 Yime contributors" --file-description "Yime System Lexicon Audit" --original-filename "system-lexicon-audit.exe" --icon input_methods\yime\icon.ico --manifest gui --out cmd\system-lexicon-audit\rsrc_audit
 if errorlevel 1 (
-    echo [WARN] go-winres failed for system-lexicon-audit.exe, building without VERSIONINFO
+    echo [ERROR] go-winres failed for system-lexicon-audit.exe.
     if exist cmd\system-lexicon-audit\rsrc_audit_windows_amd64.syso del cmd\system-lexicon-audit\rsrc_audit_windows_amd64.syso
+    popd
+    exit /b 1
 )
 
 echo [INFO] Building system-lexicon-audit.exe ...
@@ -340,8 +360,10 @@ echo [INFO] Built: "%LEXICON_PROMOTION_SCAN_EXE%"
 echo [INFO] Generating Windows VERSIONINFO resources for blocklist-manager ...
 "%GO_WINRES%" simply --arch amd64 --product-version "%APP_VERSION%" --file-version "%APP_VERSION%" --product-name "YIME" --copyright "Copyright (C) 2026 Yime contributors" --file-description "Yime User Blocklist Manager" --original-filename "blocklist-manager.exe" --icon input_methods\yime\icon.ico --manifest gui --out cmd\blocklist-manager\rsrc_blocklist
 if errorlevel 1 (
-    echo [WARN] go-winres failed for blocklist-manager.exe, building without VERSIONINFO
+    echo [ERROR] go-winres failed for blocklist-manager.exe.
     if exist cmd\blocklist-manager\rsrc_blocklist_windows_amd64.syso del cmd\blocklist-manager\rsrc_blocklist_windows_amd64.syso
+    popd
+    exit /b 1
 )
 
 echo [INFO] Building blocklist-manager.exe ...
@@ -360,8 +382,10 @@ echo [INFO] Built: "%BLOCKLIST_MANAGER_EXE%"
 echo [INFO] Generating Windows VERSIONINFO resources for settings-tool ...
 "%GO_WINRES%" simply --arch amd64 --product-version "%APP_VERSION%" --file-version "%APP_VERSION%" --product-name "YIME" --copyright "Copyright (C) 2026 Yime contributors" --file-description "Yime Settings Tool" --original-filename "settings-tool.exe" --icon input_methods\yime\icon.ico --manifest gui --out cmd\settings-tool\rsrc_settings
 if errorlevel 1 (
-    echo [WARN] go-winres failed for settings-tool.exe, building without VERSIONINFO
+    echo [ERROR] go-winres failed for settings-tool.exe.
     if exist cmd\settings-tool\rsrc_settings_windows_amd64.syso del cmd\settings-tool\rsrc_settings_windows_amd64.syso
+    popd
+    exit /b 1
 )
 
 echo [INFO] Building settings-tool.exe ...
@@ -380,8 +404,10 @@ echo [INFO] Built: "%SETTINGS_TOOL_EXE%"
 echo [INFO] Generating Windows VERSIONINFO resources for diagnostics-tool ...
 "%GO_WINRES%" simply --arch amd64 --product-version "%APP_VERSION%" --file-version "%APP_VERSION%" --product-name "YIME" --copyright "Copyright (C) 2026 Yime contributors" --file-description "Yime Diagnostics Tool" --original-filename "diagnostics-tool.exe" --icon input_methods\yime\icon.ico --manifest gui --out cmd\diagnostics-tool\rsrc_diagnostics
 if errorlevel 1 (
-    echo [WARN] go-winres failed for diagnostics-tool.exe, building without VERSIONINFO
+    echo [ERROR] go-winres failed for diagnostics-tool.exe.
     if exist cmd\diagnostics-tool\rsrc_diagnostics_windows_amd64.syso del cmd\diagnostics-tool\rsrc_diagnostics_windows_amd64.syso
+    popd
+    exit /b 1
 )
 
 echo [INFO] Building diagnostics-tool.exe ...
@@ -400,8 +426,10 @@ echo [INFO] Built: "%DIAGNOSTICS_TOOL_EXE%"
 echo [INFO] Generating Windows VERSIONINFO resources for yime-layout-designer ...
 "%GO_WINRES%" simply --arch amd64 --product-version "%APP_VERSION%" --file-version "%APP_VERSION%" --product-name "YIME" --copyright "Copyright (C) 2026 Yime contributors" --file-description "Yime Layout Designer" --original-filename "yime-layout-designer.exe" --icon input_methods\yime\icon.ico --manifest gui --out cmd\yime-layout-designer\rsrc_layout_designer
 if errorlevel 1 (
-    echo [WARN] go-winres failed for yime-layout-designer.exe, building without VERSIONINFO
+    echo [ERROR] go-winres failed for yime-layout-designer.exe.
     if exist cmd\yime-layout-designer\rsrc_layout_designer_windows_amd64.syso del cmd\yime-layout-designer\rsrc_layout_designer_windows_amd64.syso
+    popd
+    exit /b 1
 )
 
 echo [INFO] Building yime-layout-designer.exe (graphical and console maintenance tool) ...

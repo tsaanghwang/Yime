@@ -112,6 +112,18 @@ sources and their Cargo checksum manifests are vendored under
 The pinned source is vendored under `third_party/corrosion`; CMake does not
 download it with FetchContent.
 
+## go-winres
+
+- Upstream: https://github.com/tc-hib/go-winres
+- Version: v0.3.3
+- Role: generates Windows VERSIONINFO and manifest resources for Go executables
+- License: ISC
+- Full text: `third_party/go-winres/LICENSE`
+
+The source and all required Go modules are vendored under
+`third_party/go-winres`. Build and CI compile this tool with `-mod=vendor` and
+do not run `go install` or use a machine-global executable.
+
 ## NSIS plug-ins
 
 The installer includes the INetC and md5dll NSIS plug-ins. Their corresponding

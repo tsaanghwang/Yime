@@ -27,6 +27,7 @@ from yime.lexicon_bundle.external_inputs import (
 
 
 DEFAULT_STATUS = MODULE_DIR / "data" / "source_reproducibility.status.json"
+DEFAULT_EXTERNAL_RESTORE_MAX_AGE_DAYS = 90
 
 
 def _load(path: Path) -> dict[str, Any]:
@@ -44,6 +45,7 @@ def check_release_readiness(
     require_release: bool = False,
     external_restore_evidence: Path | None = None,
     external_input_lock_path: Path = DEFAULT_EXTERNAL_INPUT_LOCK,
+    external_restore_max_age_days: int = DEFAULT_EXTERNAL_RESTORE_MAX_AGE_DAYS,
 ) -> dict[str, Any]:
     locked = verify(lock_path.resolve(), repo_root.resolve())
     status = _load(status_path.resolve())
@@ -96,6 +98,7 @@ def check_release_readiness(
             restore_report = verify_external_input_restore_evidence(
                 external_restore_evidence.resolve(),
                 lock_path=external_input_lock_path.resolve(),
+                max_age_days=external_restore_max_age_days,
             )
         except (OSError, ValueError, json.JSONDecodeError, ExternalInputError) as exc:
             raise VerificationError(
@@ -132,6 +135,11 @@ def main() -> int:
     parser.add_argument("--require-release", action="store_true")
     parser.add_argument("--external-restore-evidence", type=Path)
     parser.add_argument(
+        "--external-restore-max-age-days",
+        type=int,
+        default=DEFAULT_EXTERNAL_RESTORE_MAX_AGE_DAYS,
+    )
+    parser.add_argument(
         "--external-input-lock", type=Path, default=DEFAULT_EXTERNAL_INPUT_LOCK
     )
     args = parser.parse_args()
@@ -143,6 +151,7 @@ def main() -> int:
             require_release=args.require_release,
             external_restore_evidence=args.external_restore_evidence,
             external_input_lock_path=args.external_input_lock,
+            external_restore_max_age_days=args.external_restore_max_age_days,
         )
     except (OSError, json.JSONDecodeError, VerificationError) as exc:
         print(f"FAIL release readiness: {exc}", file=sys.stderr)
