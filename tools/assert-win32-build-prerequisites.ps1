@@ -12,12 +12,33 @@ $cmakeText = Get-Content -LiteralPath (Join-Path $repoRoot 'CMakeLists.txt') -Ra
 if ($cmakeText -notmatch 'set\(Rust_TOOLCHAIN\s+"stable-i686-pc-windows-msvc"') {
     throw 'CMake must pin Rust_TOOLCHAIN to stable-i686-pc-windows-msvc.'
 }
-if ($cmakeText -notmatch 'GIT_TAG\s+v0\.6\.1') {
-    throw 'CMake must pin Corrosion to v0.6.1.'
+if ($cmakeText -match '(?m)^\s*(include\(FetchContent\)|FetchContent_)' -or
+    $cmakeText -notmatch 'add_subdirectory\([^\r\n]*third_party/corrosion') {
+    throw 'CMake must use the vendored Corrosion source and must not fetch it from the network.'
 }
 $cargoConfig = Get-Content -LiteralPath (Join-Path $repoRoot 'PIMELauncher\.cargo\config.toml') -Raw
 if ($cargoConfig -notmatch 'target\s*=\s*"i686-pc-windows-msvc"') {
     throw 'PIMELauncher/.cargo/config.toml must target i686-pc-windows-msvc.'
+}
+if ($cargoConfig -notmatch 'offline\s*=\s*true' -or
+    $cargoConfig -notmatch 'replace-with\s*=\s*"vendored-sources"' -or
+    $cargoConfig -notmatch 'directory\s*=\s*"vendor"') {
+    throw 'PIMELauncher Cargo must resolve the locked vendored crates in offline mode.'
+}
+$rootCargoConfig = Get-Content -LiteralPath (Join-Path $repoRoot '.cargo\config.toml') -Raw
+if ($rootCargoConfig -notmatch 'offline\s*=\s*true' -or
+    $rootCargoConfig -notmatch 'replace-with\s*=\s*"vendored-sources"' -or
+    $rootCargoConfig -notmatch 'directory\s*=\s*"PIMELauncher/vendor"') {
+    throw 'Root Cargo configuration must make CMake/Corrosion use vendored crates offline.'
+}
+foreach ($requiredVendorPath in @(
+    'third_party\corrosion\CMakeLists.txt',
+    'third_party\corrosion\LICENSE',
+    'PIMELauncher\vendor'
+)) {
+    if (-not (Test-Path -LiteralPath (Join-Path $repoRoot $requiredVendorPath))) {
+        throw "Required vendored build dependency is missing: $requiredVendorPath"
+    }
 }
 
 if ($RequireToolchain) {

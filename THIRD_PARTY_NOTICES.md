@@ -97,7 +97,20 @@ does not claim ownership of BCC material.
 PIMELauncher statically includes Rust crates resolved by
 `PIMELauncher/Cargo.lock`. Package names, versions, declared SPDX expressions,
 and upstream links are recorded in `LICENSES/RUST-DEPENDENCIES.md`. The
-corresponding package-specific notices remain authoritative.
+corresponding package-specific notices remain authoritative. The locked crate
+sources and their Cargo checksum manifests are vendored under
+`PIMELauncher/vendor` so the build does not contact crates.io.
+
+## Corrosion
+
+- Upstream: https://github.com/corrosion-rs/corrosion
+- Version and commit: v0.6.1, `1499b14e4906a2890f5cee1547c8848db261753d`
+- Role: CMake integration for the Rust PIMELauncher build
+- License: MIT
+- Full text: `third_party/corrosion/LICENSE`
+
+The pinned source is vendored under `third_party/corrosion`; CMake does not
+download it with FetchContent.
 
 ## NSIS plug-ins
 

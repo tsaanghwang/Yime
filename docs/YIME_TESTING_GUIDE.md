@@ -183,13 +183,14 @@ cmd /c build.bat
 # 一次性前置：i686 host 工具链（CMakeLists.txt 已固定 Rust_TOOLCHAIN 指向它）
 rustup toolchain install stable-i686-pc-windows-msvc
 
-# 需要重新拉取 Corrosion（FetchContent）时，git/cmake 不读 WinINET 系统代理，须显式设置
-$env:HTTPS_PROXY = "http://127.0.0.1:1081"; $env:HTTP_PROXY = $env:HTTPS_PROXY
-
 $env:Path = "$env:USERPROFILE\.cargo\bin;" + $env:Path
 cmake -S . -B build -G "Visual Studio 17 2022" -A Win32 "-DCMAKE_POLICY_VERSION_MINIMUM=3.5"
 cmake --build build --config Release
 ```
+
+Corrosion v0.6.1 和 `Cargo.lock` 对应 crates 均已 vendored；上述 configure/build 不访问
+GitHub 或 crates.io。`PIMELauncher/.cargo/config.toml` 强制 Cargo 离线解析，依赖缺失或哈希变化会
+直接失败。Rust i686 host 工具链仍是必须预装的系统级编译器。
 
 构建完成后必须运行架构门禁：
 

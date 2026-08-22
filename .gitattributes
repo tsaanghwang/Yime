@@ -21,3 +21,9 @@ go-backend/input_methods/yime/data/yime_erhua_reverse_source.tsv text eol=lf
 # whitespace is upstream provenance, while new component changes remain
 # reviewable through the libIME2 commit boundary gate.
 libIME2/** -text -whitespace
+
+# Cargo verifies vendored crate files byte-for-byte against each package's
+# .cargo-checksum.json. Corrosion is also guarded by a complete tree digest.
+# Never let platform checkout settings rewrite either upstream snapshot.
+PIMELauncher/vendor/** -text -whitespace
+third_party/corrosion/** -text -whitespace

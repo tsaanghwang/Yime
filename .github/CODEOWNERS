@@ -5,6 +5,7 @@
 /Build.ps1 @tsaanghwang
 /build.bat @tsaanghwang
 /CMakeLists.txt @tsaanghwang
+/.cargo/** @tsaanghwang
 /.githooks/** @tsaanghwang
 /version.txt @tsaanghwang
 
@@ -12,6 +13,8 @@
 /PIMELauncher/Cargo.toml @tsaanghwang
 /PIMELauncher/Cargo.lock @tsaanghwang
 /PIMELauncher/build.rs @tsaanghwang
+/PIMELauncher/vendor/** @tsaanghwang
+/third_party/** @tsaanghwang
 /PIMETextService/CMakeLists.txt @tsaanghwang
 /libIME2/** @tsaanghwang
 /go-backend/build.bat @tsaanghwang
@@ -19,6 +22,7 @@
 /tools/test-build-guards.ps1 @tsaanghwang
 /tools/validate-build-contract.ps1 @tsaanghwang
 /tools/verify_psc_outline_snapshot.py @tsaanghwang
+/tools/verify_vendored_build_dependencies.py @tsaanghwang
 /tools/psc_outline_review_tool.py @tsaanghwang
 /tools/test_psc_outline_review_tool.py @tsaanghwang
 /tools/assert-data-source-boundary.ps1 @tsaanghwang

@@ -34,6 +34,8 @@ Require-Text '.github/workflows/ci.yaml' @(
     'install: mingw-w64-ucrt-x86_64-gcc'
     'rustup toolchain install stable-i686-pc-windows-msvc --profile minimal'
     'rustup run stable-i686-pc-windows-msvc cargo test --verbose'
+    'Verify vendored Win32 build dependencies'
+    'python .\tools\verify_vendored_build_dependencies.py'
     'Build Win32 C++ components'
     'cmake . -Bbuild -G "Visual Studio 17 2022" -A Win32'
     'Build x64 C++ components'
@@ -63,23 +65,40 @@ Require-Text '.github/CODEOWNERS' @(
     '/Build.ps1'
     '/build.bat'
     '/CMakeLists.txt'
+    '/.cargo/'
     '/tools/test-build-guards.ps1'
     '/tools/validate-build-contract.ps1'
     '/tools/verify_psc_outline_snapshot.py'
+    '/tools/verify_vendored_build_dependencies.py'
     '/tools/psc_outline_review_tool.py'
     '/tools/test_psc_outline_review_tool.py'
     '/tools/test-go-race.ps1'
     '/tools/verify-pe-architectures.ps1'
     '/internal_data/psc_outline/'
+    '/PIMELauncher/vendor/'
+    '/third_party/'
     '/installer/'
 )
 
 Require-Text 'CMakeLists.txt' @(
     'Rust_TOOLCHAIN "stable-i686-pc-windows-msvc"'
-    'GIT_TAG v0.6.1'
+    'add_subdirectory(${PROJECT_SOURCE_DIR}/third_party/corrosion)'
 )
 Require-Text 'PIMELauncher/.cargo/config.toml' @(
     'target = "i686-pc-windows-msvc"'
+    'offline = true'
+    'replace-with = "vendored-sources"'
+    'directory = "vendor"'
+)
+Require-Text '.cargo/config.toml' @(
+    'offline = true'
+    'replace-with = "vendored-sources"'
+    'directory = "PIMELauncher/vendor"'
+)
+Require-Text 'tools/verify_vendored_build_dependencies.py' @(
+    'CORROSION_VERSION = "0.6.1"'
+    'CORROSION_COMMIT = "1499b14e4906a2890f5cee1547c8848db261753d"'
+    'CORROSION_TREE_SHA256 = "3c01b36b86b3b9e0997903a1b0e885d2ae893083c19131b11647540718800864"'
 )
 Require-Text 'tools/test-go-race.ps1' @(
     'go test -race ./...'

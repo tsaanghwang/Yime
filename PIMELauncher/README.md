@@ -38,6 +38,11 @@ PIMELauncher is integrated into YIME's build through **CMake** and **Corrosion**
 
 The compiled binary will be automatically placed at `build\PIMELauncher\PIMELauncher.exe`, which is the location expected by the NSIS installer.
 
+Corrosion v0.6.1 and every crate resolved by `Cargo.lock` are committed in the
+Yime repository. Cargo is configured for offline resolution, so this build does
+not download from GitHub or crates.io. The pinned i686 Rust host toolchain must
+still be installed as a system prerequisite.
+
 ### Manual Build (For Development)
 
 You can still build the launcher independently for development purposes:
