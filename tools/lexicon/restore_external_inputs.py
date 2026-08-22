@@ -18,11 +18,17 @@ from yime.lexicon_bundle.external_inputs import (
     ExternalInputError,
     run_external_input_restore_drill,
 )
+from yime.lexicon_bundle.external_archive import (
+    DEFAULT_ARCHIVE_LOCK,
+    materialize_external_archive,
+)
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--archive-root", type=Path, required=True)
+    parser.add_argument("--archive-root", type=Path)
+    parser.add_argument("--archive-url")
+    parser.add_argument("--archive-lock", type=Path, default=DEFAULT_ARCHIVE_LOCK)
     parser.add_argument("--restore-root", type=Path, required=True)
     parser.add_argument("--evidence", type=Path, required=True)
     parser.add_argument("--lock", type=Path, default=DEFAULT_LOCK)
@@ -30,8 +36,14 @@ def main() -> int:
     args = parser.parse_args()
     evidence_path = args.evidence.resolve()
     try:
-        evidence = run_external_input_restore_drill(
+        archive = materialize_external_archive(
             archive_root=args.archive_root,
+            archive_url=args.archive_url,
+            archive_lock_path=args.archive_lock,
+            input_lock_path=args.lock,
+        )
+        evidence = run_external_input_restore_drill(
+            archive_root=Path(archive["archive_root"]),
             restore_root=args.restore_root,
             evidence_path=evidence_path,
             lock_path=args.lock,

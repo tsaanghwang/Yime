@@ -77,10 +77,12 @@ func main() {
 
 ```batch
 echo [INFO] Generating Windows VERSIONINFO resources for my-tool ...
-go-winres simply --arch amd64 --product-version "%APP_VERSION%" --file-version "%APP_VERSION%" --product-name "YIME" --file-description "My Tool Description" --original-filename "my-tool.exe" --manifest gui --out cmd\my-tool\rsrc_mytool
+"%GO_WINRES%" simply --arch amd64 --product-version "%APP_VERSION%" --file-version "%APP_VERSION%" --product-name "YIME" --file-description "My Tool Description" --original-filename "my-tool.exe" --manifest gui --out cmd\my-tool\rsrc_mytool
 if errorlevel 1 (
-    echo [WARN] go-winres failed for my-tool.exe, building without VERSIONINFO
+    echo [ERROR] go-winres failed for my-tool.exe.
     if exist cmd\my-tool\rsrc_mytool_windows_amd64.syso del cmd\my-tool\rsrc_mytool_windows_amd64.syso
+    popd
+    exit /b 1
 )
 
 echo [INFO] Building my-tool.exe ...
@@ -98,9 +100,9 @@ if exist cmd\my-tool\rsrc_mytool_windows_amd64.syso del cmd\my-tool\rsrc_mytool_
 关键参数：
 - `-H=windowsgui`：隐藏控制台窗口
 - `-trimpath -buildvcs=false`：避免源码路径和每次提交的 VCS 修订号改变未修改工具的文件哈希
-- `go-winres simply --icon input_methods\yime\icon.ico`：所有 Go EXE 使用同一产品图标，构建不得回退到不存在的默认 `winres/icon.png`
+- `%GO_WINRES% simply --icon input_methods\yime\icon.ico`：工具由 `third_party/go-winres` 的哈希锁定源码和 vendor 依赖离线构建；所有 Go EXE 使用同一产品图标，构建不得回退到 PATH、网络下载或不存在的默认 `winres/icon.png`
 - `--manifest gui`：生成 GUI 应用 manifest（非 CLI）
-- `go-winres` 生成的 `.syso` 文件放在 `cmd/<tool>/` 目录下，编译后立即清理
+- `go-winres` 生成的 `.syso` 文件放在 `cmd/<tool>/` 目录下，编译后立即清理；资源生成失败必须中止构建，不得降级为缺少 VERSIONINFO 的发布文件
 
 发布构建必须使用受信任提供商签发的 RSA 代码签名证书。设置 `YIME_SIGN_CERT_SHA1` 后，`build.bat` 会用 `signtool.exe` 对全部 Go 可执行文件签名；可通过 `YIME_SIGNTOOL_EXE` 和 `YIME_TIMESTAMP_URL` 指定工具及时间戳服务。VERSIONINFO 只能提供文件身份信息，不能替代 Smart App Control 所要求的可信签名。
 

@@ -101,6 +101,10 @@ $requiredGovernanceGuards = @(
     '.\tools\verify_psc_outline_snapshot.py',
     'Verify vendored Win32 build dependencies',
     '.\tools\verify_vendored_build_dependencies.py',
+    'Verify locked Windows toolchain metadata',
+    '.\tools\verify_toolchain_lock.py',
+    'Verify detached lexicon archive identity',
+    '.\tools\lexicon\verify_external_archive_lock.py',
     'name: native-build',
     'Guard and track libIME2 component commits',
     '.\tools\check-libime2-change-boundary.ps1',
@@ -132,7 +136,6 @@ $requiredGovernanceGuards = @(
     'ctest --test-dir build64 -C Release -R "^PIMERpcResponseTests$" --output-on-failure',
     '.\tools\write-build-manifest.ps1',
     '.\tools\test-installer-smoke.ps1',
-    'go install github.com/tc-hib/go-winres@v0.3.3',
     'uses: repolevedavaj/install-nsis@c14d0ea1b829818b4e9313d8e009b43f0a65fddd # v1.2.0',
     'uses: actions/download-artifact@v7'
 )
@@ -155,6 +158,8 @@ foreach ($guard in @(
     '/tools/validate-build-contract.ps1 @tsaanghwang',
     '/tools/verify_psc_outline_snapshot.py @tsaanghwang',
     '/tools/verify_vendored_build_dependencies.py @tsaanghwang',
+    '/tools/toolchain.lock.json @tsaanghwang',
+    '/tools/verify_toolchain_lock.py @tsaanghwang',
     '/tools/psc_outline_review_tool.py @tsaanghwang',
     '/tools/test_psc_outline_review_tool.py @tsaanghwang',
     '/tools/assert-data-source-boundary.ps1 @tsaanghwang',
@@ -228,6 +233,18 @@ foreach ($guard in @(
     }
 }
 $goBuildText = Get-Content -LiteralPath $goBuild -Raw
+foreach ($guard in @(
+    'third_party\go-winres',
+    'go build -mod=vendor -trimpath -buildvcs=false',
+    '[ERROR] go-winres failed for'
+)) {
+    if (-not $goBuildText.Contains($guard)) {
+        throw "Offline go-winres build guard is missing: $guard"
+    }
+}
+if ($workflowText.Contains('go install github.com/tc-hib/go-winres')) {
+    throw 'CI must not download go-winres during the build.'
+}
 foreach ($guard in @(
     'yime_full.dict.yaml',
     'yime_variable.dict.yaml',

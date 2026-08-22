@@ -7,7 +7,7 @@ import json
 import os
 import shutil
 import tempfile
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from pathlib import PurePosixPath
 from typing import Any
@@ -343,6 +343,7 @@ def verify_external_input_restore_evidence(
     *,
     lock_path: Path = DEFAULT_LOCK,
     repository_import_approval: Path | None = None,
+    max_age_days: int | None = None,
 ) -> dict[str, Any]:
     """Validate restore evidence against the current external-input lock."""
     try:
@@ -392,6 +393,14 @@ def verify_external_input_restore_evidence(
         raise ExternalInputError(
             "external input restore evidence completed_at precedes started_at"
         )
+    if max_age_days is not None:
+        if isinstance(max_age_days, bool) or max_age_days <= 0:
+            raise ExternalInputError("restore evidence max_age_days must be positive")
+        age = datetime.now(timezone.utc) - completed_at
+        if age > timedelta(days=max_age_days):
+            raise ExternalInputError(
+                f"external input restore evidence is older than {max_age_days} days"
+            )
     if evidence["archive_root"] == evidence["restore_root"]:
         raise ExternalInputError(
             "external input restore evidence archive and restore roots are identical"

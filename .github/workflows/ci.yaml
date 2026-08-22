@@ -20,6 +20,10 @@ jobs:
       - name: Reject weakened YIME build pipelines
         shell: pwsh
         run: .\tools\validate-build-contract.ps1
+      - name: Verify locked Windows toolchain metadata
+        run: python .\tools\verify_toolchain_lock.py
+      - name: Verify detached lexicon archive identity
+        run: python .\tools\lexicon\verify_external_archive_lock.py
 
   lexicon-offline-tooling:
     name: lexicon-offline-tooling
@@ -245,9 +249,6 @@ jobs:
         uses: actions/setup-python@v6
         with:
           python-version: '3.14'
-      - name: Install pinned go-winres
-        shell: pwsh
-        run: go install github.com/tc-hib/go-winres@v0.3.3
       - name: Build Go backend package
         shell: pwsh
         run: |

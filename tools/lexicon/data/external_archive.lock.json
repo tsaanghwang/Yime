@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "archive_id": "yime-lexicon-external-inputs-20260821",
+  "archive_root_environment": "YIME_LEXICON_ARCHIVE_ROOT",
+  "archive_url_environment": "YIME_LEXICON_ARCHIVE_URL",
+  "description": "Detached archive for the content-locked lexicon inputs. The URL may be an authorized HTTPS mirror or file URL; the bundle identity is always verified before extraction.",
+  "external_inputs": {
+    "lock_id": "yime-lexicon-external-inputs-20260821",
+    "sha256": "4481981f86ab65e4103f14caafc178de8c140eda64fb0f61883c009266207400",
+    "input_count": 29,
+    "total_bytes": 149393573
+  },
+  "bundle": {
+    "filename": "yime-lexicon-external-inputs-20260821.zip",
+    "format": "zip",
+    "size": 54261822,
+    "sha256": "febf16107068e1434f40a13aef3c326fe6a2e63fb1375520895ee3253c3d9b0d"
+  },
+  "restore_policy": {
+    "maximum_evidence_age_days": 90,
+    "archive_and_restore_must_be_outside_git": true
+  }
+}

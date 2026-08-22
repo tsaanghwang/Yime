@@ -342,6 +342,34 @@ class ExternalInputTests(unittest.TestCase):
                     evidence_path, lock_path=lock_path
                 )
 
+    def test_release_evidence_rejects_expired_restore_drill(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            archive = root / "archive"
+            archived_input = archive / "source" / "sample.txt"
+            archived_input.parent.mkdir(parents=True)
+            archived_input.write_bytes(b"sample\n")
+            lock_path = self._write_lock(root)
+            evidence_path = root / "evidence.json"
+            run_external_input_restore_drill(
+                archive_root=archive,
+                restore_root=root / "restore",
+                evidence_path=evidence_path,
+                lock_path=lock_path,
+            )
+            evidence = json.loads(evidence_path.read_text(encoding="utf-8"))
+            completed_at = datetime.now(timezone.utc) - timedelta(days=91)
+            evidence["started_at"] = (completed_at - timedelta(minutes=1)).isoformat()
+            evidence["completed_at"] = completed_at.isoformat()
+            evidence_path.write_text(json.dumps(evidence), encoding="utf-8")
+
+            with self.assertRaisesRegex(ExternalInputError, "older than 90 days"):
+                verify_external_input_restore_evidence(
+                    evidence_path,
+                    lock_path=lock_path,
+                    max_age_days=90,
+                )
+
 
 if __name__ == "__main__":
     unittest.main()

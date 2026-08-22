@@ -46,13 +46,14 @@ func TestBuildScriptKeepsGoExecutableHashesStableAndSupportsSigning(t *testing.T
 	}
 }
 
-func TestBuildScriptFindsGoWinresOutsidePATH(t *testing.T) {
+func TestBuildScriptBuildsVendoredGoWinresAndFailsClosed(t *testing.T) {
 	script := readBuildScript(t, "build.bat")
 
 	required := []string{
-		`where.exe go-winres.exe`,
-		`go env GOPATH`,
-		`\bin\go-winres.exe`,
+		`set "GO_WINRES_SOURCE=%PIME_ROOT%\third_party\go-winres"`,
+		`set "GO_WINRES=%BUILD_ROOT%\tools\go-winres.exe"`,
+		`go build -mod=vendor -trimpath -buildvcs=false -o "%GO_WINRES%" .`,
+		`[ERROR] Failed to build vendored go-winres.`,
 		`"%GO_WINRES%" simply`,
 	}
 	for _, fragment := range required {
@@ -62,6 +63,9 @@ func TestBuildScriptFindsGoWinresOutsidePATH(t *testing.T) {
 	}
 	if count := strings.Count(script, `"%GO_WINRES%" simply`); count != 11 {
 		t.Fatalf("expected all 11 resource builds to use resolved go-winres, got %d", count)
+	}
+	if count := strings.Count(script, `[ERROR] go-winres failed for`); count != 11 {
+		t.Fatalf("expected all 11 resource failures to stop the build, got %d", count)
 	}
 	for _, fragment := range []string{
 		`--file-description "Yime Typing Trainer"`,
@@ -77,7 +81,11 @@ func TestBuildScriptFindsGoWinresOutsidePATH(t *testing.T) {
 			t.Fatalf("layout designer VERSIONINFO build guard is missing %q", fragment)
 		}
 	}
-	if strings.Contains(script, "\ngo-winres simply") || strings.Contains(script, "\r\ngo-winres simply") {
+	if strings.Contains(script, `where.exe go-winres.exe`) ||
+		strings.Contains(script, `go env GOPATH`) ||
+		strings.Contains(script, "building without VERSIONINFO") ||
+		strings.Contains(script, "\ngo-winres simply") ||
+		strings.Contains(script, "\r\ngo-winres simply") {
 		t.Fatal("resource generation must not rely on a bare go-winres command")
 	}
 }

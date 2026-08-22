@@ -47,17 +47,35 @@ python tools/lexicon/verify_target_lock.py `
 
 ## 外部归档恢复演练
 
-外部归档根目录必须按 `external_inputs.lock.json` 的 `relative_path` 保存全部文件。恢复演练要求归档根目录和恢复根目录都位于 Git 工作树之外，恢复根目录不存在或为空；工具不会把大型数据库复制进仓库。以下命令先完整预检归档，再复制到全新的恢复目录，逐项复核恢复文件的大小和 SHA-256，最后重新打开整棵恢复树验证：
+`data/external_archive.lock.json` 记录确定性 ZIP 的文件名、大小、SHA-256、输入锁身份和 90 天恢复证据时限。ZIP 和解包归档都必须留在 Git 工作树外。先从已经验证的正式输入制作归档：
+
+```powershell
+.\tools\lexicon\invoke-python.ps1 `
+  tools\lexicon\package_external_inputs.py `
+  --source-root C:\YimeData\lexicon-inputs-v1 `
+  --bundle C:\YimeData\yime-lexicon-external-inputs-20260821.zip
+```
+
+输出的 `size` 和 `sha256` 必须与 `external_archive.lock.json` 一致。维护者将 ZIP 上传到授权的 HTTPS 对象存储或离线介质后，设置 `YIME_LEXICON_ARCHIVE_URL`；本地镜像可使用 `file:///C:/...`。工具先验证整个 ZIP，再只解出输入锁列出的成员：
+
+```powershell
+$env:YIME_LEXICON_ARCHIVE_URL = 'file:///C:/YimeData/yime-lexicon-external-inputs-20260821.zip'
+$env:YIME_LEXICON_ARCHIVE_ROOT = 'D:\YimeLexiconArchive\20260821'
+.\tools\lexicon\invoke-python.ps1 tools\lexicon\materialize_external_archive.py
+```
+
+若归档根已经存在，物化命令直接逐文件验证，不要求 URL。可将 `YIME_LEXICON_ARCHIVE_ROOT` 写入用户环境变量；清单绝不保存某台机器的绝对路径，也不搜索其它仓库。
+
+恢复演练要求归档根目录和恢复根目录都位于 Git 工作树之外，恢复根目录不存在或为空；工具不会把大型数据库复制进仓库。以下命令会从环境变量解析稳定归档，完整预检后复制到全新的恢复目录，逐项复核恢复文件的大小和 SHA-256，最后重新打开整棵恢复树验证：
 
 ```powershell
 .\tools\lexicon\invoke-python.ps1 `
   tools\lexicon\restore_external_inputs.py `
-  --archive-root D:\YimeLexiconArchive `
   --restore-root E:\YimeLexiconRestoreDrill\run-20260822 `
   --evidence .\.generated\lexicon_external_restore\run-20260822.evidence.json
 ```
 
-缺失、大小不符或 SHA-256 不符均返回非零；无论成功或失败，指定证据文件都会被本次结果原子替换，失败证据不能通过发布校验。恢复证据只保存路径、大小、摘要和状态，不包含词库或数据库正文。
+缺失、大小不符或 SHA-256 不符均返回非零；无论成功或失败，指定证据文件都会被本次结果原子替换，失败证据不能通过发布校验。恢复证据只保存路径、大小、摘要和状态，不包含词库或数据库正文。至少每 90 天和每次外部输入锁变更后运行一次；超过 90 天的证据会被发布就绪检查拒绝。
 
 发布门禁读取证据时会重新对照当前锁文件身份和每一项归档/恢复摘要，不能只凭 `decision=pass` 放行：
 
