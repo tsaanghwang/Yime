@@ -1,45 +1,52 @@
 # Yime Rime data in PIME
 
-> Status (2026-07-28): production imports one curated, evidence-locked fixed-length core and
-> deterministically derives the full, variable-length, and shorthand runtime dictionaries. All
-> three modes are packaged and share the same user-learning, custom-phrase, and blocklist layers.
-> See [Core Candidate Three-Mode Runtime](DEFAULT_DYNAMIC_LEXICON_RUNTIME.md).
+> Status (2026-08-22): Yime owns the production source, encoding, handoff, runtime derivation and
+> packaging chain. The retired prototype is not an input or fallback. A repository-only replay uses
+> the committed approved handoff; a source-evidence reconstruction additionally requires the
+> content-locked external corpus described below.
 
 This branch prepares PIME to consume Yime through the upstream Go Rime backend.
 
 ## Data flow
 
-1. The prototype builds `.generated\two_level_runtime_trial\two_level_full.dict.yaml` and its
-   `dictionary.manifest.json`. The manifest includes source, selection, ranking-policy, and output
-   hashes.
-2. The Yime importer rejects a dictionary whose SHA-256 or ranking evidence does not match that
-   manifest.
-3. The Go derivation accepts this curated fixed-length core as the only runtime candidate source
-   and writes the full, variable, and shorthand dictionaries plus `yime_lexicon_manifest.json`.
-4. Verified pinyin and display assets are vendored beside those generated dictionaries under
+1. Yime's offline tools verify the 29 external source inputs against
+   `tools/lexicon/data/external_inputs.lock.json`. Those large sources live outside every Git
+   worktree and are addressed only through `YIME_LEXICON_EXTERNAL_ROOT`.
+2. The repository-local source, syllable and encoding pipeline produces and validates the curated
+   fixed-length handoff. The approved handoff, evidence and target lock are committed under
+   `tools/lexicon/handoff/` and `tools/lexicon/data/`.
+3. `replay-approved-handoff.ps1` reproduces the full, variable-length and shorthand dictionaries
+   from that committed handoff without the prototype or external corpus.
+4. Verified pinyin and display assets are committed beside the generated runtime dictionaries under
    `go-backend\input_methods\yime\data`.
-5. Build/install copies the shared data into the installed runtime; Rime deployment then refreshes
+5. Build/install copies the shared data into the installed runtime; Rime deployment refreshes
    `%AppData%\PIME\Rime` and its compiled cache.
 
 ## Prepare local data
 
-Generate the curated core in `C:\dev\Yime-python-prototype`:
+For the repository-only handoff replay, use a new output directory:
 
 ```powershell
-.\venv312\Scripts\python.exe tools\build_two_level_runtime_trial.py
+.\tools\lexicon\replay-approved-handoff.ps1 `
+  -OutputDir .\.generated\approved_core_handoff_replay
 ```
 
-Treat `two_level_full.dict.yaml` and `dictionary.manifest.json` as an atomic pair. Do not combine
-files from different builds.
+This proves that the committed production handoff can regenerate all packaged dictionary modes.
+It does not claim to reconstruct the source database from BCC, Unihan, the character catalog and
+Wanxiang. That stronger release operation intentionally requires an independent, content-locked
+external corpus and restore evidence; see
+[Yime offline lexicon tools](../tools/lexicon/README.md) and
+[repository data boundary](project/YIME_REPOSITORY_DATA_BOUNDARY.md).
 
-From `C:\dev\Yime`:
+When importing a newly reviewed Yime-local candidate, treat the fixed-length dictionary and its
+evidence manifest as an atomic pair. Do not combine files from different builds:
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File tools\deploy-yime-rime-data.ps1 `
   -InputPath C:\path\to\two_level_full.dict.yaml `
   -EvidenceManifest C:\path\to\dictionary.manifest.json `
   -PronunciationEntries C:\path\to\lexicon_source_bundle\entries.tsv `
-  -SourceRevision <prototype-commit>
+  -SourceRevision <yime-source-revision>
 ```
 
 To generate the three dictionaries without deploying them:
@@ -49,7 +56,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tools\import-yime-core-lexic
   -InputPath C:\path\to\two_level_full.dict.yaml `
   -EvidenceManifest C:\path\to\dictionary.manifest.json `
   -PronunciationEntries C:\path\to\lexicon_source_bundle\entries.tsv `
-  -SourceRevision <prototype-commit>
+  -SourceRevision <yime-source-revision>
 ```
 
 There is no variable-mode or shorthand-mode import switch. Those files are
@@ -121,21 +128,21 @@ Rime deployment caches remain local and must not be committed:
 The current Go Yime backend uses `pinyin_normalized.json` for the
 "标准拼音" reverse-lookup display mode.
 
-This file does not originate inside `C:\dev\Yime` itself. Its production source chain is
-kept in `C:\dev\Yime-python-prototype`:
+Its production source chain is maintained by the offline tooling in this repository:
 
-1. Unihan, pypinyin, 万象 and BCC source data pass the first pinyin compliance gate.
+1. Content-locked Unihan, character-catalog, Wanxiang and BCC source data pass the source and
+   pinyin compliance gates through `YIME_LEXICON_EXTERNAL_ROOT`.
 2. `.generated\lexicon_source_bundle\source_lexicon.sqlite3` becomes the source-of-truth database.
 3. The canonical syllable inventory drives `SyllableEncodingPipeline` / `YinjieEncoder`.
-4. Prototype tables and `runtime_candidates_materialized` are rebuilt.
-5. `tools\prepare_windows_yime_lexicon.ps1` exports the complete Windows handoff, including
-   `pinyin_normalized.json`.
+4. Yime's candidate, selection and handoff tools rebuild the reviewed production artifacts.
+5. The approved Windows handoff and its evidence are locked in this repository, including the
+   identity used to verify `pinyin_normalized.json`.
 
-Upstream docs that describe this flow:
+Authoritative documents for this flow:
 
-- `C:\dev\Yime-python-prototype\docs\project\PINYIN_DATA_MIGRATION.md`
-- `C:\dev\Yime-python-prototype\internal_data\pinyin_source_db\README.md`
-- `C:\dev\Yime-python-prototype\scripts\integrate_lexicon_trial.ps1`
+- `docs/lexicon/CURRENT_ARCHITECTURE.md`
+- `docs/lexicon/PINYIN_DATA_MIGRATION.md`
+- `tools/lexicon/README.md`
 
 For the Go backend, we currently vendor the exported JSON into:
 
@@ -148,8 +155,8 @@ The backend then resolves standard-pinyin comments through this runtime path:
 3. numeric-tone pinyin -> marked standard pinyin via `pinyin_normalized.json`
 
 This means "标准拼音" display is tied to the same audited source bundle and handoff run as the
-system dictionary, without importing the prototype runtime DB or candidate-window implementation
-into PIME.
+system dictionary, without importing another repository's runtime database or candidate-window
+implementation into PIME.
 
 The `音元拼音` candidate annotation uses a separate display-only path:
 
@@ -168,10 +175,11 @@ comment unchanged.
 
 ## Maintainer checklist
 
-Use this checklist when prototype dictionary or pinyin data changes.
+Use this checklist when Yime dictionary or pinyin source data changes.
 
-1. Complete the prototype core rebuild and its compliance, coverage, layout, and ranking gates.
-2. Use the paired files in `.generated\two_level_runtime_trial`.
+1. Verify all external inputs against `external_inputs.lock.json`, then complete the Yime-local
+   source rebuild and its compliance, coverage, layout, and ranking gates.
+2. Use the paired files produced in Yime's `.generated\two_level_runtime_trial`.
 3. Verify `dictionary.manifest.json`: selection and policy hashes, source-separated ranking counts,
    zero missing selected texts, and output SHA-256.
 4. Import `two_level_full.dict.yaml` only through
@@ -183,7 +191,7 @@ Use this checklist when prototype dictionary or pinyin data changes.
    `yime_syllable_inventory_manifest.json`.
 6. Confirm `yime_lexicon_manifest.json` and the three generated dictionary hashes, then run the
    stable Go verification suite. The runtime syllable-set count and SHA-256 must equal the
-   prototype materialization manifest, with no runtime-only syllable; declared canonical-only
+   Yime source materialization manifest, with no runtime-only syllable; declared canonical-only
    audit records are allowed.
 7. Run root `Build.cmd` to produce the package. Build does not install it.
 8. Install/reinstall, restart `PIMELauncher` and `server.exe`, redeploy Rime, and compare source,
@@ -202,11 +210,11 @@ Minimum local verification:
 - `音元拼音` prefers the actual candidate code, produces PUA characters, and
   leaves the source ASCII comment unchanged
 
-What not to copy from the prototype repo:
+Do not reintroduce retired or cross-repository inputs such as:
 
 - `yime\pinyin_hanzi.db`
 - `.generated\runtime_candidates_by_code_true.json`
-- the prototype candidate window or SQLite runtime logic
+- a prototype candidate window or SQLite runtime implementation
 
-The Go backend only vendors the marked-pinyin export and continues to use
+The Go backend vendors only the reviewed runtime exports and continues to use
 Rime dictionaries plus `yime_pinyin_codes.tsv` for reverse lookup.
