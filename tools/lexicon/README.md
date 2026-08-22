@@ -36,6 +36,11 @@ python tools/lexicon/verify_target_lock.py `
   --external-root D:\YimeLexiconInputs
 ```
 
+这是“从原始证据完整重建”的发布级前置，不是运行时、普通构建、常规 CI 或已批准交接重放的
+前置。仅克隆仓库时可以运行 `test.ps1`、构建安装包和执行下文的单仓交接重放；直接运行
+`verify_external_inputs.py` 而未提供外部根时，`external input root is required` 是刻意的失败。
+如果刚通过用户级环境变量设置了根目录，需要新开终端，或同时为当前 PowerShell 进程赋值。
+
 若路径位于原型或其它 Git 仓库，命令默认失败。确有必要时，必须先取得明确授权，并在
 `tools/data_import_approvals/` 保存精确到输入 ID、最长 31 天的审查记录；该例外不取代内容哈希和
 正式来源审查。完整政策见[仓库数据边界](../../docs/project/YIME_REPOSITORY_DATA_BOUNDARY.md)。

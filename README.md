@@ -96,9 +96,13 @@ cmd /c build.bat
 The root `build.bat` verifies the pinned i686 host toolchain, builds Win32 and
 x64 native components, builds the Go backend and tools, and runs PE architecture
 guards. Do not repeat the Go build separately for a normal full build. On Windows
-machines with an enabled WinINET proxy, the build wrapper copies that proxy into
-`HTTP_PROXY`/`HTTPS_PROXY` for git and CMake FetchContent without changing the
-global git configuration.
+machines with an enabled WinINET proxy, the build wrapper may expose it to tools
+that explicitly need the network, but the Win32 CMake/Rust build itself resolves
+Corrosion and all locked crates from committed vendored sources. A fresh clone
+therefore needs the compiler toolchains and SDKs, not GitHub or crates.io access.
+The root `.cargo/config.toml` covers CMake/Corrosion invocations, while
+`PIMELauncher/.cargo/config.toml` retains the required i686 target for focused
+launcher builds.
 
 `go-backend\build.bat` remains available for focused backend work. Go tool versions
 come from `version.txt`, and reproducible flags keep hashes stable across unrelated commits.

@@ -99,6 +99,8 @@ $requiredGovernanceGuards = @(
     '.\tools\lexicon\check_repository_data_boundary.py',
     'Verify internal PSC outline snapshot',
     '.\tools\verify_psc_outline_snapshot.py',
+    'Verify vendored Win32 build dependencies',
+    '.\tools\verify_vendored_build_dependencies.py',
     'name: native-build',
     'Guard and track libIME2 component commits',
     '.\tools\check-libime2-change-boundary.ps1',
@@ -148,9 +150,11 @@ foreach ($guard in @(
     '/Build.ps1 @tsaanghwang',
     '/build.bat @tsaanghwang',
     '/CMakeLists.txt @tsaanghwang',
+    '/.cargo/** @tsaanghwang',
     '/tools/test-build-guards.ps1 @tsaanghwang',
     '/tools/validate-build-contract.ps1 @tsaanghwang',
     '/tools/verify_psc_outline_snapshot.py @tsaanghwang',
+    '/tools/verify_vendored_build_dependencies.py @tsaanghwang',
     '/tools/psc_outline_review_tool.py @tsaanghwang',
     '/tools/test_psc_outline_review_tool.py @tsaanghwang',
     '/tools/assert-data-source-boundary.ps1 @tsaanghwang',
@@ -166,6 +170,8 @@ foreach ($guard in @(
     '/yime/repository_boundary.py @tsaanghwang',
     '/tools/evaluation/** @tsaanghwang',
     '/internal_data/psc_outline/** @tsaanghwang',
+    '/PIMELauncher/vendor/** @tsaanghwang',
+    '/third_party/** @tsaanghwang',
     '/tools/test-installer-smoke.ps1 @tsaanghwang',
     '/tools/assert-win32-build-prerequisites.ps1 @tsaanghwang',
     '/tools/initialize-dev-environment.ps1 @tsaanghwang',
@@ -485,7 +491,7 @@ foreach ($row in $systemExclusionRows) {
 }
 Write-Host 'Curated core evidence and three-mode package guards passed.'
 $prereqText = Get-Content -LiteralPath $buildPrereqs -Raw
-foreach ($guard in @('stable-i686-pc-windows-msvc', 'GIT_TAG\s+v0\.6\.1', 'RequireBuildArtifacts')) {
+foreach ($guard in @('stable-i686-pc-windows-msvc', 'third_party/corrosion', 'vendored-sources', 'RequireBuildArtifacts')) {
     if (-not $prereqText.Contains($guard)) {
         throw "Win32 prerequisite guard is missing: $guard"
     }

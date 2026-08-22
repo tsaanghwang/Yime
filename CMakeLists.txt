@@ -53,8 +53,6 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/PIMETextService)
 
 # only build the following components for 32-bit x86 platform
 if("${CMAKE_SIZEOF_VOID_P}" EQUAL "4")
-    include(FetchContent)
-
     # Pin the Rust toolchain to the 32-bit (i686) host so that host == target ==
     # i686-pc-windows-msvc (target set by PIMELauncher/.cargo/config.toml). This
     # AVOIDS cross-compilation: with an x86_64 host, Corrosion (even v0.6.1) leaks
@@ -65,15 +63,11 @@ if("${CMAKE_SIZEOF_VOID_P}" EQUAL "4")
     # stable-i686-pc-windows-msvc  (i686 binaries run on x64 Windows via WoW64).
     set(Rust_TOOLCHAIN "stable-i686-pc-windows-msvc" CACHE STRING "Rust toolchain for 32-bit PIMELauncher build")
 
-    # Corrosion v0.6.1 (2026-01-17) fixes host linker detection for build-scripts
-    # and proc-macros and adds CORROSION_HOST_TARGET_LINKER. v0.6.1 is the latest
-    # release as of 2026-07.
-    FetchContent_Declare(
-        Corrosion
-        GIT_REPOSITORY https://github.com/corrosion-rs/corrosion.git
-        GIT_TAG v0.6.1
-    )
-    FetchContent_MakeAvailable(Corrosion)
+    # Corrosion v0.6.1 is vendored at its pinned upstream commit. Do not replace
+    # this with FetchContent: a fresh Yime checkout must configure without
+    # reaching GitHub. tools/verify_vendored_build_dependencies.py verifies the
+    # complete source tree before CI builds it.
+    add_subdirectory(${PROJECT_SOURCE_DIR}/third_party/corrosion)
 
     add_subdirectory(${PROJECT_SOURCE_DIR}/PIMELauncher)
 endif("${CMAKE_SIZEOF_VOID_P}" EQUAL "4")

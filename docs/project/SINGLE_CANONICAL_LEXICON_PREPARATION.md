@@ -61,16 +61,16 @@
 
 ## 权威规则边界
 
-正式移植或重写前，以下实现是对照基准：
+以下仓内实现是当前对照基准：
 
-- 历史模式统一入口：`C:\dev\Yime-python-prototype\yime\utils\code_modes.py`
-- 历史变长转换：`C:\dev\Yime-python-prototype\syllable\codec\variable_length_yinyuan\transform.py`
-- 历史省键中调省略：`C:\dev\Yime-python-prototype\syllable\codec\input_shorthand\`
+- 模式统一入口：`yime/utils/code_modes.py`
+- 变长转换：`syllable/codec/variable_length_yinyuan/transform.py`
+- 省键中调省略：`syllable/codec/input_shorthand/`
 - 干音音质组和调级元数据：`yinjie_runtime_key_symbol_mapping.json` 与 `key_to_symbol.json`
 
 变长规则当前为：保留首音，并合并组成干音的相邻相同音元；虚首音对应零声母，包括隔音符号型、`y` 型和 `w` 型，继续作为显式音节边界。省键规则在此基础上，还依据干音音质组和调级元数据省略同音质连续段的中调；不再额外删除虚首音。三种模式因此都可把首音位置用于连续输入时的自动分词。对应 schema 同时启用 `enable_sentence` 和 `sentence_over_completion`，避免词条补全候选阻止 Rime 生成整句候选。
 
-`C:\dev\Yime-python-prototype\syllable\codec\yinjie_jianpin_draft.py` 明确是草稿兼容实现，不得作为正式省键规则真源。
+历史 `yinjie_jianpin_draft.py` 草稿已经退出正式链，不得重新引入作为省键规则真源。
 
 必须分开以下三个层次：
 

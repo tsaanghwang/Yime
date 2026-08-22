@@ -158,7 +158,7 @@ git diff --check
 - Go race detector 依赖 MSYS2 UCRT64 GCC；本机由 `tools/test-go-race.ps1` 固化环境，CI 通过 `msys2/setup-msys2` 安装 GCC 并执行同一脚本。`tools/test-build-guards.ps1` 会在 race 步骤或 GCC 安装被删除时失败。
 - 真实 Rime 集成测试继续显式启用，避免普通测试共享本机 librime 全局状态。
 - C++ 调试在 Cursor 里仅 launch 可用；cpptools 1.33.4 的 `pickProcess` 与 Cursor QuickPick 不兼容，attach 配置需在 VS Code 里运行。`ms-vscode.cpptools` 不在 Cursor 的 Open VSX 市场，需从 VS Code Marketplace 下载 win32-x64 VSIX 离线安装。
-- Win32 `build/` 树重建依赖 `rustup toolchain install stable-i686-pc-windows-msvc`（`CMakeLists.txt` 已固定 `Rust_TOOLCHAIN`）；命令行 configure 需要重新拉取 Corrosion 时须设 `HTTPS_PROXY=http://127.0.0.1:1081`（本机 git/cmake 不读 WinINET 系统代理）。
+- Win32 `build/` 树重建依赖 `rustup toolchain install stable-i686-pc-windows-msvc`（`CMakeLists.txt` 已固定 `Rust_TOOLCHAIN`）；Corrosion v0.6.1 与锁定 crates 已纳入仓库，configure/build 不再要求 GitHub 或 crates.io 网络访问。
 - 本机 Smart App Control 为强制模式；未签名 `server.exe` 会产生 CodeIntegrity 3033/3077 审计事件（当前已放行）。在其它 SAC/WDAC 强制机上未签名开发包可能被直接阻止。
 
 ## 7. 文档维护规则

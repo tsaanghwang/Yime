@@ -469,7 +469,8 @@ userblocklist.LoadSet(yime_blocklist.txt)
 
 ### 3.1 词典生成管线
 
-词典由 `Yime-python-prototype` 项目生成，经统一来源、候选整理和编码管线到达 Go 后端：
+词典由 Yime 仓内离线工具链生成，经统一来源、候选整理和编码管线到达 Go 后端。大型原始证据只
+通过 `YIME_LEXICON_EXTERNAL_ROOT` 指向的内容锁定目录提供，不读取旧原型或其它 Git 工作树：
 
 ```
 真实本地上游
@@ -484,7 +485,7 @@ userblocklist.LoadSet(yime_blocklist.txt)
                       ├── BCC 各分域原始计数及汇总频次
                       └── 万象权重（与 BCC 频次分列，不互相替代）
 
-prototype_single_char_import.py / prototype_phrase_import.py
+Yime 仓内规范导入与编码工具
     │
     └── pinyin_hanzi.db
           ├── 单字频率：BCC 原始计数；未命中才使用 Unihan 合成阶梯
@@ -501,7 +502,7 @@ prototype_single_char_import.py / prototype_phrase_import.py
     │     └── R5：基础字符、受保护类别或有证据静态缓存
     └── 不用万象权重、“已收录”或 R 分层反写 BCC 频次
 
-2026-07-28 原型侧已对 2,441,908 个已编码字串完成全量分层，R0 为 0，覆盖门禁通过。R1–R3
+迁移时已对 2,441,908 个已编码字串完成全量分层，R0 为 0，覆盖门禁通过。R1–R3
 保留为动态核心的持续改进队列，不再作为待完成的删除式整理任务；低频、古旧、构式部件和暂时
 不能动态恢复都不能单独构成删除依据。
 
@@ -535,11 +536,12 @@ Windows 默认运行交接
 | BCC 无命中、RIME-LMDG 有证据 | 归一化到 `1000..1999` | 第二优先级，不与 BCC 原始计数相加 |
 | 两者均无命中、结构判定通过 | 归一化到 `1..999` | 第三优先级，保留待补语料标记 |
 
-原型证据清单记录三类不同文本数、策略哈希和 `raw_bcc_and_lmdg_values_added=false`。Yime 不重新
+Yime 证据清单记录三类不同文本数、策略哈希和 `raw_bcc_and_lmdg_values_added=false`。运行时不重新
 计算频率，只验证证据与核心真源哈希一致并原样派生三种编码。
 
-**项目分离现状**：`Yime-python-prototype` 负责候选池、编码证据、两级筛选策略、排序证据和候选
-评测；`Yime` 只接收已通过门禁的核心真源，负责三模式派生、Windows 运行、打包和用户数据。
+**项目分离现状**：Yime 负责候选池、编码证据、两级筛选策略、排序证据、候选评测、三模式派生、
+Windows 运行、打包和用户数据。旧原型仅可清理自身历史数据，不是 Yime 的输入或回退。已批准的
+固定交接与目标锁保存在 Yime；从原始证据重建时另行要求工作树外的内容锁定来源目录。
 `import-yime-core-lexicon.ps1` 在导入前核对证据清单与核心词典 SHA-256；
 `verify-installed-runtime.ps1` 核对三模式安装文件、哈希、启动器身份及已退役方案泄漏。
 
@@ -556,11 +558,11 @@ Weasel、本机目录或 Plum 临时补齐；缺件时直接失败。
 | `default.yaml` | Rime 配置 | 基础 schema_list、page_size、按键绑定、标点 |
 | `yime_variable/full/shorthand.schema.yaml` | 三模式 Rime 方案 | 动态组句、整句学习、模式专属 userdb 和自定义词 |
 | `yime_variable/full/shorthand.dict.yaml` | 三模式系统词典 | 同一1,166,753条运行映射的三种编码投影，含全部46,095个已编码单字 |
-| `yime_core_source_manifest.json` | 来源证据 | 原型修订、输入/筛选哈希和三类排序证据计数 |
+| `yime_core_source_manifest.json` | 来源证据 | Yime 来源修订、输入/筛选哈希和三类排序证据计数 |
 | `yime_lexicon_manifest.json` | 派生清单 | 转换规则、条目数和三模式输出哈希 |
 | `yime_runtime_profile.json` | 发布配置 | 默认方案、三模式文件和四层候选链 |
 | `yime_pinyin_codes.tsv` | 编码映射 | 数字标调拼音→等长码，当前 1733 条；其余模式运行时推导 |
-| `yime_syllable_inventory_manifest.json` | 音节集合门禁 | 固定原型物化音节数、集合哈希、来源修订和 canonical-only 清单 |
+| `yime_syllable_inventory_manifest.json` | 音节集合门禁 | 固定来源物化音节数、集合哈希、来源修订和 canonical-only 清单 |
 | `yime_pua_pinyin.json` | PUA 显示映射 | 候选注释的数字标调拼音→PUA 音元序列 |
 | `fonts/YinYuan-Regular.ttf` | 候选字体 | 音元拼音模式使用的 PUA 字形 |
 | `pinyin_normalized.json` | 拼音归一化 | 数字标调→带调拼音，当前审计库存 1737 条 |
@@ -742,7 +744,7 @@ go test ./input_methods/yime/ -run TestReal -v -count=1
 
 ### 5.4 候选排序证据与长尾保底
 
-原型构建已经把候选排序分成互不混算的四层：有 BCC 时使用 `2000 + bcc_frequency`；
+Yime 离线构建把候选排序分成互不混算的四层：有 BCC 时使用 `2000 + bcc_frequency`；
 无 BCC 而有 RIME-LMDG（万象）权重时，按相同字长桶的百分位映射到 1000–1999；两者都没有时，
 仅用静态容量模型的 `utility_score` 百分位映射到 1–999；连结构证据也没有才保持 0。
 
