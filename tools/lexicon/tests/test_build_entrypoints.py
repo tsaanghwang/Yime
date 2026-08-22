@@ -25,6 +25,14 @@ class BuildEntrypointTests(unittest.TestCase):
         self.assertIn("--source-runtime-database", result.stderr)
         self.assertIn("required", result.stderr)
 
+    def test_release_acceptance_requires_external_restore_evidence(self) -> None:
+        script = (REPO_ROOT / "tools" / "lexicon" / "run-release-acceptance.ps1").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("[Parameter(Mandatory = $true)]", script)
+        self.assertIn("[string]$ExternalRestoreEvidence", script)
+        self.assertIn("--external-restore-evidence $resolvedRestoreEvidence", script)
+
 
 if __name__ == "__main__":
     unittest.main()
