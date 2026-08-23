@@ -4,11 +4,42 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/reverselookup"
 )
+
+const (
+	// Imports are interactive desktop operations. Bound them before parsing so
+	// a user-selected file cannot force unbounded allocation or disk churn.
+	MaxImportFileSize = int64(16 * 1024 * 1024)
+	MaxImportEntries  = 100000
+)
+
+// ValidateImportFile rejects an import before its contents are allocated.
+func ValidateImportFile(path string) error {
+	info, err := os.Stat(path)
+	if err != nil {
+		return err
+	}
+	if !info.Mode().IsRegular() {
+		return fmt.Errorf("导入文件必须是普通文件")
+	}
+	if info.Size() > MaxImportFileSize {
+		return fmt.Errorf("导入文件超过 %d MiB 上限", MaxImportFileSize/(1024*1024))
+	}
+	return nil
+}
+
+// ValidateImportEntryCount bounds the accepted, parsed record set.
+func ValidateImportEntryCount(entries []Entry) error {
+	if len(entries) > MaxImportEntries {
+		return fmt.Errorf("导入词条超过 %d 条上限", MaxImportEntries)
+	}
+	return nil
+}
 
 // EnsureSourceFile creates the source lexicon file with a header when missing.
 func EnsureSourceFile(path string) error {
@@ -81,7 +112,84 @@ func WriteSourceEntries(path string, entries []Entry) error {
 		lines = append(lines, entry.Phrase+"\t"+entry.Pinyin+"\t"+entry.Weight)
 	}
 	content := strings.Join(lines, "\n") + "\n"
-	return os.WriteFile(path, []byte(content), 0o644)
+	return writeSourceFileAtomically(path, []byte(content))
+}
+
+func writeSourceFileAtomically(path string, content []byte) error {
+	dir := filepath.Dir(path)
+	if err := os.MkdirAll(dir, 0o755); err != nil {
+		return err
+	}
+	temporary, err := os.CreateTemp(dir, ".yime-user-lexicon-*.tmp")
+	if err != nil {
+		return err
+	}
+	temporaryPath := temporary.Name()
+	defer os.Remove(temporaryPath)
+	if err := temporary.Chmod(0o644); err != nil {
+		temporary.Close()
+		return err
+	}
+	if _, err := temporary.Write(content); err != nil {
+		temporary.Close()
+		return err
+	}
+	if err := temporary.Sync(); err != nil {
+		temporary.Close()
+		return err
+	}
+	if err := temporary.Close(); err != nil {
+		return err
+	}
+
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		return os.Rename(temporaryPath, path)
+	} else if err != nil {
+		return err
+	}
+
+	backup, err := os.CreateTemp(dir, ".yime-user-lexicon-backup-*.tmp")
+	if err != nil {
+		return err
+	}
+	backupPath := backup.Name()
+	if err := backup.Close(); err != nil {
+		return err
+	}
+	if err := os.Remove(backupPath); err != nil {
+		return err
+	}
+	defer os.Remove(backupPath)
+	if err := os.Rename(path, backupPath); err != nil {
+		return err
+	}
+	if err := os.Rename(temporaryPath, path); err != nil {
+		_ = os.Rename(backupPath, path)
+		return err
+	}
+	return os.Remove(backupPath)
+}
+
+// MergeSourceEntries applies a batch with the same last-write-wins semantics
+// as sequential UpsertSourceEntry calls, but performs no filesystem I/O.
+func MergeSourceEntries(current, imported []Entry) []Entry {
+	result := make([]Entry, len(current))
+	indexByPhrase := make(map[string]int, len(current)+len(imported))
+	for i, entry := range current {
+		result[i] = entry.Clone()
+		if _, exists := indexByPhrase[entry.Phrase]; !exists {
+			indexByPhrase[entry.Phrase] = i
+		}
+	}
+	for _, entry := range imported {
+		if index, exists := indexByPhrase[entry.Phrase]; exists {
+			result[index] = entry.Clone()
+			continue
+		}
+		indexByPhrase[entry.Phrase] = len(result)
+		result = append(result, entry.Clone())
+	}
+	return result
 }
 
 // UpsertSourceEntry inserts or replaces an entry by phrase key.

@@ -24,6 +24,7 @@ $rimeCacheTests = Join-Path $root 'tools\test-rime-cache-freshness.ps1'
 $installedParticleAVerifier = Join-Path $root 'tools\verify-installed-particle-a-stage6d.ps1'
 $installedParticleAVerifierTests = Join-Path $root 'tools\test-installed-particle-a-stage6d-verifier.ps1'
 $releaseCertificateImporter = Join-Path $root 'tools\import-release-signing-certificate.ps1'
+$microsoftAuthenticodeVerifier = Join-Path $root 'tools\verify-microsoft-authenticode.ps1'
 $installer = Join-Path $root 'installer\installer.nsi'
 $devInstall = Join-Path $root 'tools\dev-install.ps1'
 $devStop = Join-Path $root 'tools\dev-stop-pime.ps1'
@@ -188,6 +189,7 @@ foreach ($guard in @(
     '/tools/check-rime-cache-freshness.ps1 @tsaanghwang',
     '/tools/test-rime-cache-freshness.ps1 @tsaanghwang',
     '/tools/import-release-signing-certificate.ps1 @tsaanghwang',
+    '/tools/verify-microsoft-authenticode.ps1 @tsaanghwang',
     '/tools/write-build-manifest.ps1 @tsaanghwang',
     '/tools/verify-pe-architectures.ps1 @tsaanghwang',
     '/installer/** @tsaanghwang'
@@ -317,7 +319,7 @@ foreach ($guard in @(
 if ($workflowText -match 'uses:\s*repolevedavaj/install-nsis@(?![0-9a-f]{40}(?:\s|#|$))') {
     throw 'Third-party NSIS setup must be pinned to a full immutable commit SHA.'
 }
-foreach ($requiredScript in @($rimeCacheChecker, $rimeCacheTests, $installedParticleAVerifier, $installedParticleAVerifierTests, $releaseCertificateImporter)) {
+foreach ($requiredScript in @($rimeCacheChecker, $rimeCacheTests, $installedParticleAVerifier, $installedParticleAVerifierTests, $releaseCertificateImporter, $microsoftAuthenticodeVerifier)) {
     if (-not (Test-Path -LiteralPath $requiredScript -PathType Leaf)) {
         throw "Required CI/runtime verification script is missing: $requiredScript"
     }
@@ -349,6 +351,18 @@ foreach ($jobName in @('release-sign-payload', 'release-sign-installer')) {
     $jobText = & $extractJob $jobName
     if (-not $jobText.Contains('secrets.YIME_SIGN_CERT_BASE64')) {
         throw "Release signing job does not import the protected certificate: $jobName"
+    }
+    foreach ($required in @(
+        'environment: release-signing',
+        'Checkout trusted signing implementation',
+        'ref: ${{ github.event.repository.default_branch }}',
+        'path: .trusted-signing',
+        'persist-credentials: false',
+        '.\.trusted-signing\tools\import-release-signing-certificate.ps1'
+    )) {
+        if (-not $jobText.Contains($required)) {
+            throw "Release signing trust-boundary guard is missing: $jobName -> $required"
+        }
     }
     foreach ($forbidden in @('repolevedavaj/install-nsis', 'Invoke-WebRequest', 'go install ')) {
         if ($jobText.Contains($forbidden)) {
@@ -531,6 +545,19 @@ if ($readmeText.Contains('[Node.js]')) {
 $installerText = Get-Content -LiteralPath $installer -Raw
 if ($installerText -match 'YIME_ENABLE_RETIRED_PIME_BACKENDS|\\python\\|\\node\\|McBopomofo|libchewing') {
     throw 'Retired PIME backend code or paths returned to the YIME installer.'
+}
+foreach ($fragment in @(
+    '!macro DownloadVerifiedVCRedist URL FILE_NAME',
+    'StrCpy $R1 "$PLUGINSDIR\${FILE_NAME}"',
+    'verify-microsoft-authenticode.ps1',
+    'ExecWait ''"$R1"'' $0'
+)) {
+    if (-not $installerText.Contains($fragment)) {
+        throw "Installer VC++ redistributable trust guard is missing: $fragment"
+    }
+}
+if ($installerText -match '\$TEMP\\vc_redist\.' -or $installerText -match 'ExecWait\s+"\$TEMP') {
+    throw 'Installer must not execute VC++ redistributables from a shared TEMP path.'
 }
 $releaseVersion = (Get-Content -LiteralPath (Join-Path $root 'version.txt') -Raw).Trim()
 $numericReleaseVersion = (($releaseVersion -split '-', 2)[0]) + '.0'

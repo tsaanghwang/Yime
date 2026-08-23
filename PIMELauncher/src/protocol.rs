@@ -1,20 +1,50 @@
 use serde_json::Value;
 
-/// Maximum allowed length (in bytes) for a single message line.
-pub const MAX_MESSAGE_LINE_LENGTH: usize = 1048576;
+/// Client-to-launcher messages contain keystrokes and small command payloads;
+/// backend responses have a separate limit. Keeping this boundary small also
+/// bounds incomplete pre-authentication buffers.
+pub const MAX_CLIENT_MESSAGE_LINE_LENGTH: usize = 256 * 1024;
+pub const PROTOCOL_VERSION: u64 = 2;
 
 /// Parses the first line received from a client to determine which backend to use.
 ///
 /// Supports standard `{"method": "init", "id": "{GUID}"}`.
-pub fn parse_client_handshake(first_line: &str) -> Result<String, String> {
-    let json: Value = serde_json::from_str(first_line).map_err(|e| e.to_string())?;
+pub fn prepare_client_handshake(
+    first_line: &str,
+    trust_label: &str,
+    allow_sensitive_commands: bool,
+) -> Result<(String, String), String> {
+    let mut json: Value = serde_json::from_str(first_line).map_err(|e| e.to_string())?;
 
-    if let Some(method) = json["method"].as_str() {
+    let client_version = json
+        .get("protocolVersion")
+        .and_then(Value::as_u64)
+        .unwrap_or(1);
+    if client_version > PROTOCOL_VERSION {
+        return Err(format!(
+            "Unsupported client protocol version {} (launcher supports {})",
+            client_version, PROTOCOL_VERSION
+        ));
+    }
+
+    if let Some(method) = json.get("method").and_then(Value::as_str) {
         if method == "init" {
-            if let Some(guid) = json["id"].as_str() {
-                return Ok(guid.to_string());
+            let guid = json
+                .get("id")
+                .and_then(Value::as_str)
+                .ok_or_else(|| "Missing 'id' field in init message".to_string())?
+                .to_string();
+            let mut capabilities = vec![Value::String("ime.compose".to_string())];
+            if allow_sensitive_commands {
+                capabilities.push(Value::String("ime.command".to_string()));
             }
-            return Err("Missing 'id' field in init message".to_string());
+            json["launcher"] = serde_json::json!({
+                "protocolVersion": PROTOCOL_VERSION,
+                "trustLevel": trust_label,
+                "capabilities": capabilities,
+            });
+            let prepared = serde_json::to_string(&json).map_err(|e| e.to_string())?;
+            return Ok((guid, prepared));
         }
         return Err(format!("Unknown method '{}' in initial message", method));
     }
@@ -54,17 +84,45 @@ mod tests {
             r#"{{"method": "init", "id": "{}"}}"#,
             crate::testing::GUID_TEST_ECHO
         );
-        match parse_client_handshake(&json) {
-            Ok(guid) => assert_eq!(guid, crate::testing::GUID_TEST_ECHO),
+        match prepare_client_handshake(&json, "desktop", true) {
+            Ok((guid, prepared)) => {
+                assert_eq!(guid, crate::testing::GUID_TEST_ECHO);
+                let value: Value = serde_json::from_str(&prepared).unwrap();
+                assert_eq!(value["launcher"]["protocolVersion"], PROTOCOL_VERSION);
+                assert_eq!(value["launcher"]["trustLevel"], "desktop");
+                assert_eq!(value["launcher"]["capabilities"][1], "ime.command");
+            }
             _ => panic!("Expected Init handshake"),
         }
     }
 
     #[test]
     fn test_parse_client_handshake_invalid() {
-        assert!(parse_client_handshake("not json").is_err());
-        assert!(parse_client_handshake(r#"{"method": "unknown"}"#).is_err());
-        assert!(parse_client_handshake(r#"{"method": "init"}"#).is_err()); // missing id
+        assert!(prepare_client_handshake("not json", "restricted", false).is_err());
+        assert!(prepare_client_handshake(r#"{"method": "unknown"}"#, "restricted", false).is_err());
+        assert!(prepare_client_handshake(r#"{"method": "init"}"#, "restricted", false).is_err());
+        assert!(prepare_client_handshake(
+            r#"{"method":"init","id":"x","protocolVersion":99}"#,
+            "restricted",
+            false,
+        )
+        .is_err());
+    }
+
+    #[test]
+    fn test_launcher_overwrites_client_claimed_capabilities() {
+        let (_, prepared) = prepare_client_handshake(
+            r#"{"method":"init","id":"x","launcher":{"trustLevel":"desktop","capabilities":["ime.command"]}}"#,
+            "restricted",
+            false,
+        )
+        .unwrap();
+        let value: Value = serde_json::from_str(&prepared).unwrap();
+        assert_eq!(value["launcher"]["trustLevel"], "restricted");
+        assert_eq!(
+            value["launcher"]["capabilities"],
+            serde_json::json!(["ime.compose"])
+        );
     }
 
     #[test]

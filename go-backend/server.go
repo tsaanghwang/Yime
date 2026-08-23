@@ -22,13 +22,15 @@ var version = "dev"
 
 // Client 客户端连接
 type Client struct {
-	ID              string
-	GUID            string
-	IsWindows8Above bool
-	IsMetroApp      bool
-	IsUiLess        bool
-	IsConsole       bool
-	Service         pime.TextService
+	ID                      string
+	GUID                    string
+	IsWindows8Above         bool
+	IsMetroApp              bool
+	IsUiLess                bool
+	IsConsole               bool
+	LauncherProtocolVersion int
+	AllowCommands           bool
+	Service                 pime.TextService
 }
 
 // ServiceFactory 服务工厂函数
@@ -43,46 +45,34 @@ type Server struct {
 	running   bool
 }
 
-func stringifyData(data map[string]interface{}) string {
-	if len(data) == 0 {
-		return ""
-	}
-	raw, err := json.Marshal(data)
-	if err != nil {
-		return fmt.Sprintf("<marshal error: %v>", err)
-	}
-	return string(raw)
-}
-
 func logRequestSummary(clientID string, req *pime.Request) {
 	log.Printf(
-		"收到请求 client=%s method=%s seq=%d id=%q commandId=%d keyCode=%d charCode=%d repeat=%d scan=%d composing=%q candidates=%d showCandidates=%t cursor=%d selStart=%d selEnd=%d data=%s",
+		"收到请求 client=%s method=%s seq=%d commandId=%d candidates=%d showCandidates=%t cursor=%d selStart=%d selEnd=%d",
 		clientID,
 		req.Method,
 		req.SeqNum,
-		req.ID.StringValue(),
 		req.ID.IntValue(),
-		req.KeyCode,
-		req.CharCode,
-		req.RepeatCount,
-		req.ScanCode,
-		req.CompositionString,
 		len(req.CandidateList),
 		req.ShowCandidates,
 		req.CursorPos,
 		req.SelStart,
 		req.SelEnd,
-		stringifyData(req.Data),
 	)
 }
 
 func logResponseSummary(clientID string, resp map[string]interface{}) {
-	raw, err := json.Marshal(resp)
-	if err != nil {
-		log.Printf("发送响应 client=%s marshal_error=%v", clientID, err)
-		return
+	seq, _ := resp["seqNum"].(int)
+	success, _ := resp["success"].(bool)
+	showCandidates, _ := resp["showCandidates"].(bool)
+	candidateCount := 0
+	if candidates, ok := resp["candidateList"].([]string); ok {
+		candidateCount = len(candidates)
 	}
-	log.Printf("发送响应 client=%s payload=%s", clientID, string(raw))
+	_, hasCommit := resp["commitString"]
+	log.Printf(
+		"发送响应 client=%s seq=%d success=%t candidates=%d showCandidates=%t hasCommit=%t",
+		clientID, seq, success, candidateCount, showCandidates, hasCommit,
+	)
 }
 
 // NewServer 创建服务器
@@ -178,8 +168,15 @@ func (s *Server) handleRequest(clientID string, req *pime.Request) map[string]in
 			guid, _ = req.Data["guid"].(string)
 		}
 		guid = strings.ToLower(guid)
+		if req.Launcher.ProtocolVersion != 0 && req.Launcher.ProtocolVersion != pime.LauncherProtocolVersion {
+			return map[string]interface{}{
+				"seqNum": req.SeqNum, "success": false,
+				"errorCode": "unsupported_launcher_protocol",
+				"error":     "不支持的启动器协议版本",
+			}
+		}
 		if guid == "" {
-			log.Printf("初始化失败 client=%s seq=%d 原因=缺少guid id=%q data=%s", clientID, req.SeqNum, req.ID.StringValue(), stringifyData(req.Data))
+			log.Printf("初始化失败 client=%s seq=%d 原因=缺少guid", clientID, req.SeqNum)
 			return map[string]interface{}{
 				"seqNum":  req.SeqNum,
 				"success": false,
@@ -189,12 +186,15 @@ func (s *Server) handleRequest(clientID string, req *pime.Request) map[string]in
 
 		// 创建客户端
 		client := &Client{
-			ID:              clientID,
-			GUID:            guid,
-			IsWindows8Above: req.IsWindows8Above,
-			IsMetroApp:      req.IsMetroApp,
-			IsUiLess:        req.IsUiLess,
-			IsConsole:       req.IsConsole,
+			ID:                      clientID,
+			GUID:                    guid,
+			IsWindows8Above:         req.IsWindows8Above,
+			IsMetroApp:              req.IsMetroApp,
+			IsUiLess:                req.IsUiLess,
+			IsConsole:               req.IsConsole,
+			LauncherProtocolVersion: req.Launcher.ProtocolVersion,
+			AllowCommands: req.Launcher.ProtocolVersion == pime.LauncherProtocolVersion &&
+				req.Launcher.HasCapability(pime.CapabilityCommand),
 		}
 
 		// 获取输入法服务工厂
@@ -263,6 +263,14 @@ func (s *Server) handleRequest(clientID string, req *pime.Request) map[string]in
 				"seqNum":  req.SeqNum,
 				"success": false,
 				"error":   "客户端未初始化",
+			}
+		}
+		if req.Method == "onCommand" && !client.AllowCommands {
+			log.Printf("请求拒绝 client=%s seq=%d method=%s 原因=启动器未授予命令能力", clientID, req.SeqNum, req.Method)
+			return map[string]interface{}{
+				"seqNum": req.SeqNum, "success": false,
+				"errorCode": "authorization_denied",
+				"error":     "当前客户端无权执行输入法管理命令",
 			}
 		}
 

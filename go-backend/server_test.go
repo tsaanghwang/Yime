@@ -9,7 +9,7 @@ import (
 	"github.com/tsaanghwang/Yime/go-backend/pime"
 )
 
-func TestLogRequestSummaryIncludesCompositionSegmentBounds(t *testing.T) {
+func TestLogRequestSummaryKeepsMetadataAndRedactsInputPayload(t *testing.T) {
 	var output bytes.Buffer
 	previous := log.Writer()
 	log.SetOutput(&output)
@@ -18,6 +18,8 @@ func TestLogRequestSummaryIncludesCompositionSegmentBounds(t *testing.T) {
 	logRequestSummary("client-long-session", &pime.Request{
 		Method: "selectCompositionSegment", SeqNum: 42,
 		CursorPos: 3, SelStart: 3, SelEnd: 7,
+		CompositionString: "sensitive-composition-canary",
+		Data:              map[string]interface{}{"text": "sensitive-data-canary"},
 	})
 	for _, fragment := range []string{
 		"client=client-long-session",
@@ -26,6 +28,37 @@ func TestLogRequestSummaryIncludesCompositionSegmentBounds(t *testing.T) {
 	} {
 		if !strings.Contains(output.String(), fragment) {
 			t.Fatalf("request summary is missing %q: %s", fragment, output.String())
+		}
+	}
+	for _, canary := range []string{"sensitive-composition-canary", "sensitive-data-canary"} {
+		if strings.Contains(output.String(), canary) {
+			t.Fatalf("request summary leaked %q: %s", canary, output.String())
+		}
+	}
+}
+
+func TestLogResponseSummaryRedactsCompositionCandidatesAndCommit(t *testing.T) {
+	var output bytes.Buffer
+	previous := log.Writer()
+	log.SetOutput(&output)
+	t.Cleanup(func() { log.SetOutput(previous) })
+
+	logResponseSummary("client-redaction", map[string]interface{}{
+		"seqNum": 7, "success": true,
+		"compositionString": "sensitive-composition-canary",
+		"candidateList":     []string{"sensitive-candidate-canary"},
+		"commitString":      "sensitive-commit-canary",
+		"showCandidates":    true,
+	})
+
+	for _, fragment := range []string{"client=client-redaction", "seq=7", "candidates=1", "hasCommit=true"} {
+		if !strings.Contains(output.String(), fragment) {
+			t.Fatalf("response summary is missing %q: %s", fragment, output.String())
+		}
+	}
+	for _, canary := range []string{"sensitive-composition-canary", "sensitive-candidate-canary", "sensitive-commit-canary"} {
+		if strings.Contains(output.String(), canary) {
+			t.Fatalf("response summary leaked %q: %s", canary, output.String())
 		}
 	}
 }

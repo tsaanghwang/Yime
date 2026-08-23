@@ -436,8 +436,16 @@ func (state *appState) importLexicon() {
 	if !ok {
 		return
 	}
+	if err := userlexicon.ValidateImportFile(path); err != nil {
+		showMessageBox(err.Error(), 0x10)
+		return
+	}
 	importEntries, err := userlexicon.LoadSourceEntriesWithResolver(path, state.codeMap, state.mode)
 	if err != nil {
+		showMessageBox(err.Error(), 0x10)
+		return
+	}
+	if err := userlexicon.ValidateImportEntryCount(importEntries); err != nil {
 		showMessageBox(err.Error(), 0x10)
 		return
 	}
@@ -480,11 +488,10 @@ func (state *appState) importLexicon() {
 	}
 	filtered := userlexicon.FilterMergeImportEntries(currentEntries, importEntries, selectedConflicts)
 	state.saveUndoSnapshot("导入词库（合并）")
-	for _, entry := range filtered {
-		if _, err := userlexicon.UpsertSourceEntry(state.sourcePath, entry); err != nil {
-			showMessageBox(err.Error(), 0x10)
-			return
-		}
+	merged := userlexicon.MergeSourceEntries(currentEntries, filtered)
+	if err := userlexicon.WriteSourceEntries(state.sourcePath, merged); err != nil {
+		showMessageBox(err.Error(), 0x10)
+		return
 	}
 	state.dirty = true
 	state.refreshList()

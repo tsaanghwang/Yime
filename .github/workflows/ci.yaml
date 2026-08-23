@@ -278,9 +278,17 @@ jobs:
     name: release-sign-payload
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: windows-2022
+    environment: release-signing
     needs: [installer-payload]
     steps:
       - uses: actions/checkout@v6
+      - name: Checkout trusted signing implementation
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          path: .trusted-signing
+          sparse-checkout: tools
+          persist-credentials: false
       - name: Restore unsigned installer payload
         uses: actions/download-artifact@v7
         with:
@@ -291,13 +299,13 @@ jobs:
         env:
           YIME_SIGN_CERT_BASE64: ${{ secrets.YIME_SIGN_CERT_BASE64 }}
           YIME_SIGN_CERT_PASSWORD: ${{ secrets.YIME_SIGN_CERT_PASSWORD }}
-        run: .\tools\import-release-signing-certificate.ps1
+        run: .\.trusted-signing\tools\import-release-signing-certificate.ps1
       - name: Sign release payload
         shell: pwsh
-        run: .\tools\sign-release.ps1 -RequireComplete
+        run: .\.trusted-signing\tools\sign-release.ps1 -Root $env:GITHUB_WORKSPACE -RequireComplete
       - name: Verify signed release payload
         shell: pwsh
-        run: .\tools\verify-release-signatures.ps1
+        run: .\.trusted-signing\tools\verify-release-signatures.ps1 -Root $env:GITHUB_WORKSPACE
       - name: Upload signed installer payload
         uses: actions/upload-artifact@v6
         with:
@@ -384,9 +392,17 @@ jobs:
     name: release-sign-installer
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: windows-2022
+    environment: release-signing
     needs: [release-sign-payload, release-installer-package]
     steps:
       - uses: actions/checkout@v6
+      - name: Checkout trusted signing implementation
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          path: .trusted-signing
+          sparse-checkout: tools
+          persist-credentials: false
       - name: Restore signed installer payload
         uses: actions/download-artifact@v7
         with:
@@ -402,19 +418,19 @@ jobs:
         env:
           YIME_SIGN_CERT_BASE64: ${{ secrets.YIME_SIGN_CERT_BASE64 }}
           YIME_SIGN_CERT_PASSWORD: ${{ secrets.YIME_SIGN_CERT_PASSWORD }}
-        run: .\tools\import-release-signing-certificate.ps1
+        run: .\.trusted-signing\tools\import-release-signing-certificate.ps1
       - name: Sign outer installer
         shell: pwsh
         run: |
           $installer = Get-ChildItem installer\YIME-*-setup.exe | Select-Object -First 1
           if (-not $installer) { throw 'Unsigned outer installer was not found.' }
-          .\tools\sign-file.ps1 -Path $installer.FullName
+          .\.trusted-signing\tools\sign-file.ps1 -Path $installer.FullName
       - name: Verify complete tagged release signatures
         shell: pwsh
-        run: .\tools\verify-release-signatures.ps1 -IncludeInstaller
+        run: .\.trusted-signing\tools\verify-release-signatures.ps1 -Root $env:GITHUB_WORKSPACE -IncludeInstaller
       - name: Write commit-addressed signed build manifest
         shell: pwsh
-        run: .\tools\write-build-manifest.ps1
+        run: .\.trusted-signing\tools\write-build-manifest.ps1 -RepoRoot $env:GITHUB_WORKSPACE
       - name: Upload signed installer
         uses: actions/upload-artifact@v6
         with:

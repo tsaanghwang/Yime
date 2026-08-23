@@ -1,23 +1,38 @@
 use crate::acl::PipeSecurityAttributes;
 use crate::backend_manager::BackendManager;
+use crate::client_identity::{inspect_named_pipe_client, ClientIdentity, ConnectionLimiter};
 use crate::client_session::ClientSession;
 use crate::protocol::{self};
 use futures::StreamExt; // For next() on FramedRead
+use std::sync::Arc;
+use std::time::Duration;
 use tokio::io::{AsyncRead, AsyncWrite};
 use tokio::net::windows::named_pipe::{PipeMode, ServerOptions};
 use tokio_util::codec::{FramedRead, FramedWrite, LinesCodec};
-use tracing::{error, info};
+use tracing::{error, info, warn};
 use uuid::Uuid;
 
 #[derive(Clone)]
 pub struct PipeServer {
     pipe_name: String,
     manager: BackendManager,
+    limiter: Arc<ConnectionLimiter>,
 }
+
+#[cfg(not(test))]
+const HANDSHAKE_TIMEOUT: Duration = Duration::from_secs(3);
+#[cfg(test)]
+const HANDSHAKE_TIMEOUT: Duration = Duration::from_millis(100);
+const MAX_ACTIVE_CLIENTS: usize = 64;
+const MAX_CONNECTIONS_PER_PROCESS: usize = 4;
 
 impl PipeServer {
     pub fn new(pipe_name: String, manager: BackendManager) -> Self {
-        Self { pipe_name, manager }
+        Self {
+            pipe_name,
+            manager,
+            limiter: ConnectionLimiter::new(MAX_ACTIVE_CLIENTS, MAX_CONNECTIONS_PER_PROCESS),
+        }
     }
 
     /// Starts the named pipe server loop.
@@ -51,15 +66,29 @@ impl PipeServer {
 
             match server.connect().await {
                 Ok(_) => {
+                    let identity = inspect_named_pipe_client(&server);
+                    let permit = match self.limiter.try_acquire(identity.process_id) {
+                        Some(permit) => permit,
+                        None => {
+                            warn!(
+                                "Rejecting pipe client pid={} because its connection quota is exhausted",
+                                identity.process_id
+                            );
+                            continue;
+                        }
+                    };
                     info!(
-                        "Client connection accepted on pipe instance (first_instance={}).",
-                        is_first_instance
+                        "Client connection accepted on pipe instance (first_instance={}, pid={}, trust={}).",
+                        is_first_instance,
+                        identity.process_id,
+                        identity.trust_label(),
                     );
                     is_first_instance = false;
                     let manager = self.manager.clone();
                     tokio::spawn(async move {
+                        let _permit = permit;
                         let (reader, writer) = tokio::io::split(server);
-                        Self::handle_client(manager, reader, writer).await;
+                        Self::handle_client_with_identity(manager, reader, writer, identity).await;
                     });
                 }
                 Err(e) => {
@@ -75,8 +104,26 @@ impl PipeServer {
         R: AsyncRead + Unpin + Send + 'static,
         W: AsyncWrite + Unpin + Send + 'static,
     {
+        Self::handle_client_with_identity(
+            manager,
+            pipe_reader,
+            pipe_writer,
+            ClientIdentity::trusted_for_tests(),
+        )
+        .await;
+    }
+
+    async fn handle_client_with_identity<R, W>(
+        manager: BackendManager,
+        pipe_reader: R,
+        pipe_writer: W,
+        identity: ClientIdentity,
+    ) where
+        R: AsyncRead + Unpin + Send + 'static,
+        W: AsyncWrite + Unpin + Send + 'static,
+    {
         let (mut client, backend_name) =
-            match Self::accept_client(&manager, pipe_reader, pipe_writer).await {
+            match Self::accept_client(&manager, pipe_reader, pipe_writer, identity).await {
                 Ok(v) => v,
                 Err(e) => {
                     error!("Failed to accept client: {}", e);
@@ -101,6 +148,7 @@ impl PipeServer {
         manager: &BackendManager,
         pipe_reader: R,
         pipe_writer: W,
+        identity: ClientIdentity,
     ) -> Result<(ClientSession<R, W>, String), String>
     where
         R: AsyncRead + Unpin + Send + 'static,
@@ -111,66 +159,51 @@ impl PipeServer {
 
         let mut line_reader = FramedRead::new(
             pipe_reader,
-            LinesCodec::new_with_max_length(protocol::MAX_MESSAGE_LINE_LENGTH),
+            LinesCodec::new_with_max_length(protocol::MAX_CLIENT_MESSAGE_LINE_LENGTH),
         );
         let line_writer = FramedWrite::new(
             pipe_writer,
-            LinesCodec::new_with_max_length(protocol::MAX_MESSAGE_LINE_LENGTH),
+            LinesCodec::new_with_max_length(protocol::MAX_CLIENT_MESSAGE_LINE_LENGTH),
         );
 
-        let mut backend_name_opt = None;
-        let mut handshake_line = None;
-
         // Phase 1: Wait for initial handshake
-        while let Some(result) = line_reader.next().await {
-            match result {
-                Ok(line) => {
-                    if line.is_empty() {
-                        continue;
+        let (input_method_guid, handshake_line) = tokio::time::timeout(HANDSHAKE_TIMEOUT, async {
+            while let Some(result) = line_reader.next().await {
+                match result {
+                    Ok(line) if line.is_empty() => continue,
+                    Ok(line) => {
+                        return protocol::prepare_client_handshake(
+                            &line,
+                            identity.trust_label(),
+                            identity.allows_sensitive_commands(),
+                        )
+                        .map_err(|e| format!("Handshake error from {}: {}", client_id, e));
                     }
-
-                    let input_method_guid = match protocol::parse_client_handshake(&line) {
-                        Ok(g) => g,
-                        Err(e) => {
-                            return Err(format!("Handshake error from {}: {}", client_id, e));
-                        }
-                    };
-
-                    let backend_name = match manager.resolve_backend(&input_method_guid) {
-                        Some(n) => n,
-                        None => {
-                            let msg = format!(
-                                "Backend not found for text service GUID: {} from {}",
-                                input_method_guid, client_id
-                            );
-                            return Err(msg);
-                        }
-                    };
-
-                    info!(
-                        "Client {} handshake successful, mapped to backend: {}",
-                        client_id, backend_name
-                    );
-
-                    backend_name_opt = Some(backend_name);
-                    handshake_line = Some(line);
-                    break;
-                }
-                Err(e) => {
-                    return Err(format!("Error reading from client {}: {}", client_id, e));
+                    Err(e) => {
+                        return Err(format!("Error reading from client {}: {}", client_id, e));
+                    }
                 }
             }
-        }
+            Err(format!(
+                "Client disconnected before handshake: id={}",
+                client_id
+            ))
+        })
+        .await
+        .map_err(|_| format!("Client handshake timed out: id={}", client_id))??;
 
-        let backend_name = match backend_name_opt {
-            Some(name) => name,
-            None => {
-                return Err(format!(
-                    "Client disconnected before handshake: id={}",
-                    client_id
-                ));
-            }
-        };
+        let backend_name = manager.resolve_backend(&input_method_guid).ok_or_else(|| {
+            format!(
+                "Backend not found for text service GUID: {} from {}",
+                input_method_guid, client_id
+            )
+        })?;
+        info!(
+            "Client {} handshake successful, mapped to backend: {}, trust={}",
+            client_id,
+            backend_name,
+            identity.trust_label(),
+        );
 
         let backend_writer = match manager.get_backend_input(&backend_name).await {
             Some(tx) => tx,
@@ -193,8 +226,7 @@ impl PipeServer {
         );
 
         // Forward the handshake itself to the backend directly via channel
-        let formatted_handshake =
-            protocol::format_backend_input(&client_id, handshake_line.as_deref().unwrap());
+        let formatted_handshake = protocol::format_backend_input(&client_id, &handshake_line);
         if let Err(e) = backend_writer.send(formatted_handshake).await {
             return Err(format!("Failed to forward handshake to backend: {}", e));
         }
@@ -297,6 +329,55 @@ mod tests {
         assert!(
             result.is_ok(),
             "Handler failed to process split UTF-8 character"
+        );
+    }
+
+    #[tokio::test]
+    async fn test_idle_client_is_rejected_after_handshake_timeout() {
+        let manager = BackendManager::new(BackendRegistry::new());
+        let (_client, server) = tokio::io::duplex(64);
+        let (reader, writer) = tokio::io::split(server);
+
+        let error = match PipeServer::accept_client(
+            &manager,
+            reader,
+            writer,
+            ClientIdentity::trusted_for_tests(),
+        )
+        .await
+        {
+            Ok(_) => panic!("an idle pre-authentication client must time out"),
+            Err(error) => error,
+        };
+
+        assert!(
+            error.contains("handshake timed out"),
+            "unexpected error: {error}"
+        );
+    }
+
+    #[tokio::test]
+    async fn test_oversized_pre_authentication_line_is_rejected() {
+        let manager = BackendManager::new(BackendRegistry::new());
+        let oversized = "x".repeat(protocol::MAX_CLIENT_MESSAGE_LINE_LENGTH + 1) + "\n";
+        let reader = Builder::new().read(oversized.as_bytes()).build();
+        let writer = Builder::new().build();
+
+        let error = match PipeServer::accept_client(
+            &manager,
+            reader,
+            writer,
+            ClientIdentity::trusted_for_tests(),
+        )
+        .await
+        {
+            Ok(_) => panic!("an oversized pre-authentication line must be rejected"),
+            Err(error) => error,
+        };
+
+        assert!(
+            error.contains("max line length exceeded"),
+            "unexpected error: {error}"
         );
     }
 }

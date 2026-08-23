@@ -127,6 +127,15 @@ func captureStdout(t *testing.T, fn func()) string {
 
 func sendProtocolMessage(t *testing.T, server *Server, clientID string, payload map[string]interface{}) (string, map[string]interface{}) {
 	t.Helper()
+	if payload["method"] == "init" {
+		if _, exists := payload["launcher"]; !exists {
+			payload["launcher"] = map[string]interface{}{
+				"protocolVersion": pime.LauncherProtocolVersion,
+				"trustLevel":      "desktop",
+				"capabilities":    []string{pime.CapabilityCompose, pime.CapabilityCommand},
+			}
+		}
+	}
 
 	data, err := json.Marshal(payload)
 	if err != nil {
@@ -151,6 +160,51 @@ func sendProtocolMessage(t *testing.T, server *Server, clientID string, payload 
 	}
 
 	return output, response
+}
+
+func TestServerDeniesCommandsWithoutLauncherCapability(t *testing.T) {
+	server := newTestServerWithFixture()
+	sendProtocolMessage(t, server, "restricted-client", map[string]interface{}{
+		"method": "init", "seqNum": 1, "id": testFixtureGUID,
+		"launcher": map[string]interface{}{
+			"protocolVersion": pime.LauncherProtocolVersion,
+			"trustLevel":      "restricted",
+			"capabilities":    []string{pime.CapabilityCompose},
+		},
+	})
+
+	_, response := sendProtocolMessage(t, server, "restricted-client", map[string]interface{}{
+		"method": "onCommand", "seqNum": 2, "id": 3001,
+	})
+	if response["success"] != false || response["errorCode"] != "authorization_denied" {
+		t.Fatalf("expected restricted command denial, got %#v", response)
+	}
+
+	_, response = sendProtocolMessage(t, server, "restricted-client", map[string]interface{}{
+		"method": "filterKeyDown", "seqNum": 3, "keyCode": 0x4E, "charCode": 'n',
+	})
+	if response["success"] != true {
+		t.Fatalf("composition path must remain available, got %#v", response)
+	}
+}
+
+func TestServerRejectsUnsupportedLauncherProtocol(t *testing.T) {
+	server := newTestServerWithFixture()
+	_, response := sendProtocolMessage(t, server, "future-client", map[string]interface{}{
+		"method": "init", "seqNum": 1, "id": testFixtureGUID,
+		"launcher": map[string]interface{}{
+			"protocolVersion": pime.LauncherProtocolVersion + 1,
+			"trustLevel":      "desktop",
+			"capabilities":    []string{pime.CapabilityCompose, pime.CapabilityCommand},
+		},
+	})
+
+	if response["success"] != false || response["errorCode"] != "unsupported_launcher_protocol" {
+		t.Fatalf("expected protocol negotiation failure, got %#v", response)
+	}
+	if server.clients["future-client"] != nil {
+		t.Fatal("unsupported launcher protocol must not register a client")
+	}
 }
 
 func TestServerHandleMessageInitUsesTopLevelID(t *testing.T) {

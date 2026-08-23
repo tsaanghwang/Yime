@@ -1,10 +1,11 @@
 param(
-    [switch]$IncludeInstaller,
-    [switch]$RequireComplete
+	[switch]$IncludeInstaller,
+	[switch]$RequireComplete,
+	[string]$Root = (Split-Path -Parent $PSScriptRoot)
 )
 
 $ErrorActionPreference = 'Stop'
-$root = Split-Path -Parent $PSScriptRoot
+$root = (Resolve-Path -LiteralPath $Root).Path
 $files = @(
     'build\PIMELauncher\PIMELauncher.exe',
     'build\PIMETextService\Release\PIMETextService.dll',

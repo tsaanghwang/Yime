@@ -56,5 +56,6 @@
 /tools/templates/** @tsaanghwang
 /tools/sign-*.ps1 @tsaanghwang
 /tools/import-release-signing-certificate.ps1 @tsaanghwang
+/tools/verify-microsoft-authenticode.ps1 @tsaanghwang
 /tools/verify-release-signatures.ps1 @tsaanghwang
 /installer/** @tsaanghwang
