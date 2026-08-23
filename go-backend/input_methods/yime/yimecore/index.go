@@ -25,7 +25,8 @@ type record struct {
 
 // Index is an immutable, deterministic E0 lookup index.
 type Index struct {
-	records []record
+	records      []record
+	maxCodeBytes int
 }
 
 // NewIndex validates, normalizes and deterministically orders entries.
@@ -77,8 +78,30 @@ func NewIndex(entries []Entry) (*Index, error) {
 		}
 		return records[i].text < records[j].text
 	})
-	return &Index{records: records}, nil
+	maxCodeBytes := 0
+	for _, item := range records {
+		if len(item.code) > maxCodeBytes {
+			maxCodeBytes = len(item.code)
+		}
+	}
+	return &Index{records: records, maxCodeBytes: maxCodeBytes}, nil
 }
+
+func (idx *Index) exact(code string, limit int) []record {
+	if idx == nil || code == "" || limit <= 0 {
+		return nil
+	}
+	start := sort.Search(len(idx.records), func(i int) bool { return idx.records[i].code >= code })
+	result := make([]record, 0, limit)
+	for i := start; i < len(idx.records) && idx.records[i].code == code && len(result) < limit; i++ {
+		result = append(result, idx.records[i])
+	}
+	return result
+}
+
+func (idx *Index) maximumCodeBytes() int { return idx.maxCodeBytes }
+
+func (idx *Index) identity() string { return "synthetic-memory-index" }
 
 func normalizeCode(code string) (string, error) {
 	var normalized strings.Builder

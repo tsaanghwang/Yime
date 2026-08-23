@@ -49,17 +49,18 @@ type IndexBuildResult struct {
 // a compact uint32 offset table. Keeping the payload out of the Go heap makes
 // the experiment comparable with Rime's demand-paged dictionary storage.
 type FileIndex struct {
-	file        *os.File
-	data        []byte
-	unmap       func() error
-	closeOnce   sync.Once
-	mode        string
-	sourceHash  [sha256.Size]byte
-	payloadHash [sha256.Size]byte
-	offsets     []uint32
-	recordsEnd  uint32
-	oneByteTop  [256]shortBucket
-	twoByteTop  []shortBucket
+	file         *os.File
+	data         []byte
+	unmap        func() error
+	closeOnce    sync.Once
+	mode         string
+	sourceHash   [sha256.Size]byte
+	payloadHash  [sha256.Size]byte
+	offsets      []uint32
+	recordsEnd   uint32
+	maxCodeBytes int
+	oneByteTop   [256]shortBucket
+	twoByteTop   []shortBucket
 }
 
 type shortBucket struct {
@@ -402,6 +403,9 @@ func (idx *FileIndex) validateRecordsAndBuildShortPrefixes() error {
 			return fmt.Errorf("record %d content is truncated: %w", position, err)
 		}
 		code := body[:codeLen]
+		if codeLen > idx.maxCodeBytes {
+			idx.maxCodeBytes = codeLen
+		}
 		text := body[codeLen:contentLen]
 		weight := int64(binary.LittleEndian.Uint64(header[4:12]))
 		oneByteBuild[code[0]] = insertShortBuildCandidate(
@@ -511,6 +515,32 @@ func (idx *FileIndex) lookup(prefix string, limit int) []record {
 		result = append(result, record{code: string(item.code), text: string(item.text), weight: item.weight})
 	}
 	return result
+}
+
+func (idx *FileIndex) exact(code string, limit int) []record {
+	if idx == nil || code == "" || limit <= 0 {
+		return nil
+	}
+	codeBytes := []byte(code)
+	start := sort.Search(len(idx.offsets), func(i int) bool {
+		recordCode, _, _, err := idx.recordAt(i)
+		return err != nil || bytes.Compare(recordCode, codeBytes) >= 0
+	})
+	result := make([]record, 0, limit)
+	for i := start; i < len(idx.offsets) && len(result) < limit; i++ {
+		recordCode, text, weight, err := idx.recordAt(i)
+		if err != nil || !bytes.Equal(recordCode, codeBytes) {
+			break
+		}
+		result = append(result, record{code: string(recordCode), text: string(text), weight: weight})
+	}
+	return result
+}
+
+func (idx *FileIndex) maximumCodeBytes() int { return idx.maxCodeBytes }
+
+func (idx *FileIndex) identity() string {
+	return "yime-index-v1:" + idx.mode + ":" + hex.EncodeToString(idx.sourceHash[:])
 }
 
 func (idx *FileIndex) recordsFromShortBucket(bucket *shortBucket, limit int) []record {

@@ -30,11 +30,22 @@ type Event struct {
 // stable for the lifetime of the current input state. Labels such as Shift+1
 // are a text-service concern and never enter this contract.
 type Candidate struct {
-	ID     string `json:"id"`
-	Text   string `json:"text"`
-	Code   string `json:"code"`
-	Weight int64  `json:"weight"`
-	Exact  bool   `json:"exact"`
+	ID       string    `json:"id"`
+	Text     string    `json:"text"`
+	Code     string    `json:"code"`
+	Weight   int64     `json:"weight"`
+	Exact    bool      `json:"exact"`
+	Segments []Segment `json:"segments,omitempty"`
+}
+
+// Segment explains one position-preserving dictionary edge used to build a
+// generated sentence. Start and End are byte offsets in the raw ASCII input.
+type Segment struct {
+	Start    int    `json:"start"`
+	End      int    `json:"end"`
+	Text     string `json:"text"`
+	Code     string `json:"code"`
+	SourceID string `json:"source_id"`
 }
 
 // State is a point-in-time engine snapshot.

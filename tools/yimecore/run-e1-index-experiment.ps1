@@ -1,18 +1,21 @@
 [CmdletBinding()]
 param(
     [int]$Iterations = 100,
-    [string]$OutputRoot
+    [string]$OutputRoot,
+    [ValidateSet('e1', 'e2')]
+    [string]$Stage = 'e1'
 )
 
 $ErrorActionPreference = 'Stop'
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
 $goBackend = Join-Path $repoRoot 'go-backend'
 $dataRoot = Join-Path $goBackend 'input_methods\yime\data'
-$probePath = Join-Path $goBackend 'input_methods\yime\yimecore\testdata\e1_probes.json'
+$probeName = if ($Stage -eq 'e2') { 'e2_sentence_probes.json' } else { 'e1_probes.json' }
+$probePath = Join-Path $goBackend "input_methods\yime\yimecore\testdata\$probeName"
 $allowedRoot = [System.IO.Path]::GetFullPath((Join-Path $repoRoot '.tmp\yimecore-experiment'))
 if ([string]::IsNullOrWhiteSpace($OutputRoot)) {
     $stamp = Get-Date -Format 'yyyyMMdd-HHmmss'
-    $OutputRoot = Join-Path $allowedRoot "e1\$stamp"
+    $OutputRoot = Join-Path $allowedRoot "$Stage\$stamp"
 }
 $outputDir = [System.IO.Path]::GetFullPath($OutputRoot)
 $allowedPrefix = $allowedRoot.TrimEnd([System.IO.Path]::DirectorySeparatorChar) + [System.IO.Path]::DirectorySeparatorChar
@@ -194,7 +197,8 @@ foreach ($modeResult in $modeResults) {
 }
 
 $summary = [ordered]@{
-    tool_version = 'yimecore-e1-index-experiment-v2'
+    tool_version = "yimecore-$Stage-index-experiment-v3"
+    stage = $Stage
     generated_at = (Get-Date).ToUniversalTime().ToString('o')
     git_commit = (& git -C $repoRoot rev-parse HEAD).Trim()
     git_dirty = [bool]((& git -C $repoRoot status --porcelain).Count)
@@ -210,11 +214,19 @@ $summary = [ordered]@{
     all_rime_queries_passed = -not ($rimeModeEvidence.report.passed -contains $false)
     all_latency_gates_passed = -not ($comparisons.latency_gate_passed -contains $false)
     all_memory_gates_passed = -not ($comparisons.memory_gate_passed -contains $false)
-    limitations = @(
-        'whole-word and prefix lookup only',
-        'no segmentation, sentence generation, learning, IPC or TSF',
-        'working-set snapshots compare fresh per-mode command processes after the matched probe workload'
-    )
+    limitations = if ($Stage -eq 'e2') {
+        @(
+            'curated deterministic segmentation and generated-sentence probes only',
+            'no language-model context, user learning, IPC or TSF',
+            'working-set snapshots compare fresh per-mode command processes after the matched probe workload'
+        )
+    } else {
+        @(
+            'whole-word and prefix lookup only',
+            'no learning, IPC or TSF',
+            'working-set snapshots compare fresh per-mode command processes after the matched probe workload'
+        )
+    }
 }
 $summaryPath = Join-Path $outputDir 'summary.json'
 $summary | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath $summaryPath -Encoding utf8
@@ -225,21 +237,25 @@ $sourceFiles = @(
     'go-backend\input_methods\yime\yimecore\engine.go',
     'go-backend\input_methods\yime\yimecore\indexfile.go',
     'go-backend\input_methods\yime\yimecore\indexfile_test.go',
+    'go-backend\input_methods\yime\yimecore\sentence.go',
+    'go-backend\input_methods\yime\yimecore\sentence_test.go',
     'go-backend\input_methods\yime\yimecore\mappedfile_windows.go',
     'go-backend\input_methods\yime\yimecore\mappedfile_other.go',
     'go-backend\input_methods\yime\yimecore\testdata\e1_probes.json',
+    'go-backend\input_methods\yime\yimecore\testdata\e2_sentence_probes.json',
     'go-backend\internal\processmemory\processmemory_windows.go',
     'go-backend\internal\processmemory\processmemory_stub.go',
     'go-backend\cmd\yimecore-index\main.go',
     'go-backend\cmd\yimecore-index-bench\main.go',
     'go-backend\cmd\yimecore-rime-compare\main_windows.go',
     'go-backend\cmd\yimecore-rime-compare\main_stub.go',
-    'tools\yimecore\run-e1-index-experiment.ps1'
+    'tools\yimecore\run-e1-index-experiment.ps1',
+    'tools\yimecore\run-e2-sentence-experiment.ps1'
 )
 $hashes = foreach ($relativePath in $sourceFiles) {
     $absolutePath = Join-Path $repoRoot $relativePath
     if (-not (Test-Path -LiteralPath $absolutePath -PathType Leaf)) {
-        throw "Missing E1 evidence source: $absolutePath"
+        throw "Missing experiment evidence source: $absolutePath"
     }
     $hash = Get-FileHash -Algorithm SHA256 -LiteralPath $absolutePath
     [ordered]@{
@@ -249,11 +265,11 @@ $hashes = foreach ($relativePath in $sourceFiles) {
 }
 $hashes | ConvertTo-Json -Depth 3 | Set-Content -LiteralPath (Join-Path $outputDir 'source-hashes.json') -Encoding utf8
 
-Write-Host "YimeCore E1 index evidence: $outputDir"
+Write-Host "YimeCore $Stage evidence: $outputDir"
 if (-not $summary.all_deterministic -or
     -not $summary.all_queries_passed -or
     -not $summary.all_rime_queries_passed -or
     -not $summary.all_latency_gates_passed -or
     -not $summary.all_memory_gates_passed) {
-    throw "One or more E1 acceptance gates failed; see $summaryPath"
+    throw "One or more $Stage acceptance gates failed; see $summaryPath"
 }

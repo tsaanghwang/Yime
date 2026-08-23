@@ -119,7 +119,7 @@ func main() {
 	}
 	result.ProcessMemory = memory
 	writeJSON(*output, result)
-	fmt.Printf("YimeCore E1 Rime baseline: passed=%t evidence=%s\n", result.Passed, *output)
+	fmt.Printf("YimeCore real-Rime baseline: passed=%t evidence=%s\n", result.Passed, *output)
 	if !result.Passed {
 		os.Exit(1)
 	}
@@ -208,7 +208,7 @@ func writeDefaultCustom(userRoot string) error {
 func summarize(values []time.Duration, batchSize int) latency {
 	sort.Slice(values, func(i, j int) bool { return values[i] < values[j] })
 	return latency{
-		Measurement: "batch-amortized complete nine-probe set", BatchSize: batchSize, Samples: len(values),
+		Measurement: "batch-amortized complete curated probe set", BatchSize: batchSize, Samples: len(values),
 		P50NS: percentile(values, 50).Nanoseconds(), P95NS: percentile(values, 95).Nanoseconds(),
 		P99NS: percentile(values, 99).Nanoseconds(), MaxNS: values[len(values)-1].Nanoseconds(),
 	}

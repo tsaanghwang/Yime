@@ -17,11 +17,12 @@ import (
 	"github.com/tsaanghwang/Yime/go-backend/internal/processmemory"
 )
 
-const toolVersion = "yimecore-index-bench-e1-v1"
+const toolVersion = "yimecore-index-bench-v2"
 
 type probe struct {
-	Text string `json:"text"`
-	Code string `json:"code"`
+	Text      string `json:"text"`
+	Code      string `json:"code"`
+	Generated bool   `json:"generated,omitempty"`
 }
 
 type probeFile struct {
@@ -41,23 +42,24 @@ type latency struct {
 }
 
 type report struct {
-	ToolVersion     string                 `json:"tool_version"`
-	GeneratedAt     string                 `json:"generated_at"`
-	Mode            string                 `json:"mode"`
-	IndexPath       string                 `json:"index_path"`
-	IndexBytes      int64                  `json:"index_bytes"`
-	IndexRecords    int                    `json:"index_records"`
-	IndexOpenNS     int64                  `json:"index_open_ns"`
-	HeapBeforeBytes uint64                 `json:"heap_before_bytes"`
-	HeapAfterBytes  uint64                 `json:"heap_after_bytes"`
-	HeapDeltaBytes  int64                  `json:"heap_delta_bytes"`
-	ProcessMemory   processmemory.Snapshot `json:"process_memory"`
-	Iterations      int                    `json:"iterations"`
-	ProbeCount      int                    `json:"probe_count"`
-	ProbeChecks     map[string]bool        `json:"probe_checks"`
-	Latency         latency                `json:"latency"`
-	Passed          bool                   `json:"passed"`
-	ComparisonScope string                 `json:"comparison_scope"`
+	ToolVersion     string                           `json:"tool_version"`
+	GeneratedAt     string                           `json:"generated_at"`
+	Mode            string                           `json:"mode"`
+	IndexPath       string                           `json:"index_path"`
+	IndexBytes      int64                            `json:"index_bytes"`
+	IndexRecords    int                              `json:"index_records"`
+	IndexOpenNS     int64                            `json:"index_open_ns"`
+	HeapBeforeBytes uint64                           `json:"heap_before_bytes"`
+	HeapAfterBytes  uint64                           `json:"heap_after_bytes"`
+	HeapDeltaBytes  int64                            `json:"heap_delta_bytes"`
+	ProcessMemory   processmemory.Snapshot           `json:"process_memory"`
+	Iterations      int                              `json:"iterations"`
+	ProbeCount      int                              `json:"probe_count"`
+	ProbeChecks     map[string]bool                  `json:"probe_checks"`
+	ProbeCandidates map[string][]engineapi.Candidate `json:"probe_candidates"`
+	Latency         latency                          `json:"latency"`
+	Passed          bool                             `json:"passed"`
+	ComparisonScope string                           `json:"comparison_scope"`
 }
 
 func main() {
@@ -98,8 +100,12 @@ func main() {
 	}
 
 	checks := make(map[string]bool, len(probes))
+	observed := make(map[string][]engineapi.Candidate, len(probes))
 	for _, item := range probes {
-		checks[item.Text+"|"+item.Code] = true
+		key := item.Text + "|" + item.Code
+		ok, candidates := inspectProbe(engine, item)
+		checks[key] = ok
+		observed[key] = candidates
 	}
 	const batchSize = 10
 	durations := make([]time.Duration, 0, (*iterations+batchSize-1)/batchSize)
@@ -132,34 +138,40 @@ func main() {
 		IndexPath: filepath.Clean(*indexPath), IndexBytes: info.Size(), IndexRecords: index.RecordCount(),
 		IndexOpenNS: openElapsed.Nanoseconds(), HeapBeforeBytes: before, HeapAfterBytes: after,
 		HeapDeltaBytes: int64(after) - int64(before), Iterations: *iterations, ProbeCount: len(probes),
-		ProcessMemory: memory, ProbeChecks: checks, Latency: summarize(durations, batchSize), Passed: passed,
-		ComparisonScope: "exact whole-word and prefix session lookup only; no segmentation, learning, IPC or TSF",
+		ProcessMemory: memory, ProbeChecks: checks, ProbeCandidates: observed,
+		Latency: summarize(durations, batchSize), Passed: passed,
+		ComparisonScope: "whole-word, prefix and deterministic generated-sentence session lookup; no learning, IPC or TSF",
 	}
 	writeJSON(*output, report)
-	fmt.Printf("YimeCore E1 query: mode=%s probes=%d passed=%t p95_ns=%d\n", *mode, len(probes), passed, report.Latency.P95NS)
+	fmt.Printf("YimeCore query: mode=%s probes=%d passed=%t p95_ns=%d\n", *mode, len(probes), passed, report.Latency.P95NS)
 	if !passed {
 		os.Exit(1)
 	}
 }
 
 func runProbe(engine *yimecore.Engine, item probe) bool {
+	ok, _ := inspectProbe(engine, item)
+	return ok
+}
+
+func inspectProbe(engine *yimecore.Engine, item probe) (bool, []engineapi.Candidate) {
 	engine.Reset()
 	var result engineapi.Result
 	for _, key := range item.Code {
 		var err error
 		result, err = engine.Apply(engineapi.Event{Operation: engineapi.AppendCode, Code: string(key)})
 		if err != nil {
-			return false
+			return false, nil
 		}
 	}
 	for _, candidate := range result.State.Candidates {
-		if candidate.Text != item.Text || candidate.Code != item.Code || !candidate.Exact {
+		if candidate.Text != item.Text || candidate.Code != item.Code || !candidate.Exact || (item.Generated && len(candidate.Segments) < 2) {
 			continue
 		}
 		selected, err := engine.Select(candidate.ID)
-		return err == nil && selected.Commit == item.Text && selected.State.RawInput == ""
+		return err == nil && selected.Commit == item.Text && selected.State.RawInput == "", result.State.Candidates
 	}
-	return false
+	return false, result.State.Candidates
 }
 
 func loadProbes(path, mode string) []probe {
@@ -186,7 +198,7 @@ func heapAlloc() uint64 {
 func summarize(values []time.Duration, batchSize int) latency {
 	sort.Slice(values, func(i, j int) bool { return values[i] < values[j] })
 	return latency{
-		Measurement: "batch-amortized complete nine-probe set including per-key snapshots and selection",
+		Measurement: "batch-amortized complete curated probe set including per-key snapshots and selection",
 		BatchSize:   batchSize, Samples: len(values),
 		P50NS: percentile(values, 50).Nanoseconds(), P95NS: percentile(values, 95).Nanoseconds(),
 		P99NS: percentile(values, 99).Nanoseconds(), MaxNS: values[len(values)-1].Nanoseconds(),

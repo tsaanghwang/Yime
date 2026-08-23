@@ -11,14 +11,20 @@ const defaultCandidateLimit = 9
 // Engine is the E0 Go session implementation. It intentionally implements
 // only deterministic code input and indexed candidate lookup.
 type Engine struct {
-	index      lookupIndex
-	limit      int
-	rawInput   string
-	candidates []engineapi.Candidate
+	index          lookupIndex
+	limit          int
+	rawInput       string
+	candidates     []engineapi.Candidate
+	exactCache     map[string][]record
+	sentenceInput  string
+	sentenceStates [][]sentencePath
 }
 
 type lookupIndex interface {
 	lookup(prefix string, limit int) []record
+	exact(code string, limit int) []record
+	maximumCodeBytes() int
+	identity() string
 }
 
 var _ engineapi.Engine = (*Engine)(nil)
@@ -67,6 +73,7 @@ func (e *Engine) Apply(event engineapi.Event) (engineapi.Result, error) {
 			return engineapi.Result{}, engineapi.ErrInvalidEvent
 		}
 		e.rawInput = ""
+		e.resetSentenceComposer()
 	default:
 		return engineapi.Result{}, engineapi.ErrInvalidEvent
 	}
@@ -80,6 +87,7 @@ func (e *Engine) Select(candidateID string) (engineapi.Result, error) {
 		if candidate.ID == candidateID {
 			e.rawInput = ""
 			e.candidates = nil
+			e.resetSentenceComposer()
 			return engineapi.Result{State: e.snapshot(), Commit: candidate.Text}, nil
 		}
 	}
@@ -90,6 +98,7 @@ func (e *Engine) Select(candidateID string) (engineapi.Result, error) {
 func (e *Engine) Reset() engineapi.Result {
 	e.rawInput = ""
 	e.candidates = nil
+	e.resetSentenceComposer()
 	return engineapi.Result{State: e.snapshot()}
 }
 
@@ -99,15 +108,55 @@ func (e *Engine) refresh() {
 		return
 	}
 	records := e.index.lookup(e.rawInput, e.limit)
-	candidates := make([]engineapi.Candidate, 0, len(records))
+	candidates := make([]engineapi.Candidate, 0, e.limit)
+	seen := make(map[string]struct{}, e.limit)
 	for _, item := range records {
-		candidates = append(candidates, engineapi.Candidate{
+		if item.code != e.rawInput {
+			continue
+		}
+		candidate := engineapi.Candidate{
 			ID:     item.code + "\x1f" + item.text,
 			Text:   item.text,
 			Code:   item.code,
 			Weight: item.weight,
 			Exact:  item.code == e.rawInput,
-		})
+		}
+		candidates = append(candidates, candidate)
+		seen[candidate.Text+"\x1f"+candidate.Code] = struct{}{}
+		if len(candidates) == e.limit {
+			e.candidates = candidates
+			return
+		}
+	}
+	for _, candidate := range e.composeSentences(e.rawInput, e.limit-len(candidates)) {
+		key := candidate.Text + "\x1f" + candidate.Code
+		if _, exists := seen[key]; exists {
+			continue
+		}
+		candidates = append(candidates, candidate)
+		seen[key] = struct{}{}
+		if len(candidates) == e.limit {
+			e.candidates = candidates
+			return
+		}
+	}
+	for _, item := range records {
+		if item.code == e.rawInput {
+			continue
+		}
+		candidate := engineapi.Candidate{
+			ID: item.code + "\x1f" + item.text, Text: item.text, Code: item.code,
+			Weight: item.weight, Exact: false,
+		}
+		key := candidate.Text + "\x1f" + candidate.Code
+		if _, exists := seen[key]; exists {
+			continue
+		}
+		candidates = append(candidates, candidate)
+		seen[key] = struct{}{}
+		if len(candidates) == e.limit {
+			break
+		}
 	}
 	e.candidates = candidates
 }
@@ -115,7 +164,15 @@ func (e *Engine) refresh() {
 func (e *Engine) snapshot() engineapi.State {
 	result := engineapi.State{RawInput: e.rawInput}
 	if len(e.candidates) > 0 {
-		result.Candidates = append([]engineapi.Candidate(nil), e.candidates...)
+		result.Candidates = cloneCandidates(e.candidates)
+	}
+	return result
+}
+
+func cloneCandidates(source []engineapi.Candidate) []engineapi.Candidate {
+	result := append([]engineapi.Candidate(nil), source...)
+	for i := range result {
+		result[i].Segments = append([]engineapi.Segment(nil), result[i].Segments...)
 	}
 	return result
 }
