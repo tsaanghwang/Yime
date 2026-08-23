@@ -29,6 +29,10 @@
 
 namespace PIME {
 
+constexpr std::size_t kMaxCandidateCount = 9;
+constexpr int kMinCandidatesPerRow = 1;
+constexpr int kMaxCandidatesPerRow = 32;
+
 // Returns true only when the response is a JSON object with "success": true.
 // Never throws, no matter what the response looks like (null, wrong types...).
 inline bool rpcResponseSucceeded(const nlohmann::json& msg) noexcept {
@@ -47,6 +51,69 @@ inline bool rpcReturnBool(const nlohmann::json& msg) noexcept {
 	}
 	const auto it = msg.find("return");
 	return it != msg.end() && it->is_boolean() && it->get<bool>();
+}
+
+// Validates the response-controlled values that become vector indices or
+// integer divisors inside the host process. Reject the whole response before
+// any UI mutation so partially applied attacker state cannot survive.
+inline bool rpcResponseUiFieldsValid(const nlohmann::json& msg) noexcept {
+	if (!msg.is_object()) {
+		return false;
+	}
+	const auto candidates = msg.find("candidateList");
+	if (candidates != msg.end()) {
+		if (!candidates->is_array() || candidates->size() > kMaxCandidateCount) {
+			return false;
+		}
+		for (const auto& candidate : *candidates) {
+			if (!candidate.is_string()) {
+				return false;
+			}
+		}
+	}
+	const auto cursor = msg.find("candidateCursor");
+	if (cursor != msg.end()) {
+		if (!cursor->is_number_integer()) {
+			return false;
+		}
+		const auto value = cursor->get<long long>();
+		if (value < 0) {
+			return false;
+		}
+		if (candidates != msg.end() &&
+			((candidates->empty() && value != 0) ||
+			 (!candidates->empty() && value >= static_cast<long long>(candidates->size())))) {
+			return false;
+		}
+	}
+	const auto customize = msg.find("customizeUI");
+	if (customize != msg.end()) {
+		if (!customize->is_object()) {
+			return false;
+		}
+		const auto perRow = customize->find("candPerRow");
+		if (perRow != customize->end()) {
+			if (!perRow->is_number_integer()) {
+				return false;
+			}
+			const auto value = perRow->get<long long>();
+			if (value < kMinCandidatesPerRow || value > kMaxCandidatesPerRow) {
+				return false;
+			}
+		}
+	}
+	const auto labels = msg.find("setSelLabels");
+	if (labels != msg.end()) {
+		if (!labels->is_array() || labels->empty() || labels->size() > kMaxCandidateCount) {
+			return false;
+		}
+		for (const auto& label : *labels) {
+			if (!label.is_string()) {
+				return false;
+			}
+		}
+	}
+	return true;
 }
 
 // Reads the numeric command id of a menu item. Menu items coming from the

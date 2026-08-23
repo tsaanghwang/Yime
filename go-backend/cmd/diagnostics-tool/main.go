@@ -231,7 +231,9 @@ func (state *appState) createControls() {
 	state.anonHWND = createCheck(state.mainHWND, "匿名化报告", l.optionBoxes[3], idAnonymize)
 	procSendMessageW.Call(uintptr(state.envHWND), 0x00F1, 1, 0)
 	procSendMessageW.Call(uintptr(state.actionsHWND), 0x00F1, 1, 0)
-	procSendMessageW.Call(uintptr(state.logsHWND), 0x00F1, 1, 0)
+	// Raw logs can contain text typed through the IME. Keep them opt-in and
+	// mutually exclusive with the default anonymized issue-ready report.
+	procSendMessageW.Call(uintptr(state.logsHWND), 0x00F1, 0, 0)
 	procSendMessageW.Call(uintptr(state.anonHWND), 0x00F1, 1, 0)
 	createButton(state.mainHWND, "刷新", l.buttons[0], idBtnRefresh)
 	createButton(state.mainHWND, "复制结构化报告", l.buttons[1], idBtnCopy)

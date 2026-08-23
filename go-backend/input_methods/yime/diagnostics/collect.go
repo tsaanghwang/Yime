@@ -35,7 +35,7 @@ func DefaultIssueReadyOptions() ReportOptions {
 	return ReportOptions{
 		IncludeEnvironmentSummary: true,
 		IncludeRecommendedActions: true,
-		IncludeRawLogExcerpt:      true,
+		IncludeRawLogExcerpt:      false,
 		Anonymize:                 true,
 		KeepDriveLetter:           true,
 		AnonymizeMode:             "full",
@@ -109,9 +109,11 @@ func BuildStructuredReport(ctx Context, opts ReportOptions) string {
 		lines = append(lines, "")
 		lines = append(lines, markdownSection(recommendedActionLines(ctx.LogDir))...)
 	}
-	if opts.IncludeRawLogExcerpt {
+	if opts.IncludeRawLogExcerpt && !opts.Anonymize {
 		lines = append(lines, "")
 		lines = append(lines, markdownSection(rawLogExcerptLines(ctx.LogDir, opts.RawLogExcerptMode, opts.ContextWindowRadius))...)
+	} else if opts.IncludeRawLogExcerpt {
+		lines = append(lines, "", "## Raw log excerpt", "", "Omitted because anonymization is enabled; raw logs may contain user input.")
 	}
 	return strings.Join(lines, "\n")
 }
@@ -208,10 +210,8 @@ func logSummary(logDir string) string {
 		}
 		return infoI.ModTime().After(infoJ.ModTime())
 	})
-	latestPath := filepath.Join(logDir, files[0].Name())
 	info, _ := files[0].Info()
-	tail := readLastLine(latestPath)
-	return statusLine("Logs", "ok", fmt.Sprintf("%d files | latest %s @ %s | tail %s", len(files), files[0].Name(), modTime(info), tail))
+	return statusLine("Logs", "ok", fmt.Sprintf("%d files | latest %s @ %s", len(files), files[0].Name(), modTime(info)))
 }
 
 func logInterpretation(logDir string) []string {

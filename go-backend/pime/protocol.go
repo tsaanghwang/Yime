@@ -8,8 +8,29 @@ import (
 
 // 消息类型
 const (
-	MsgPIME = "PIME_MSG"
+	MsgPIME                 = "PIME_MSG"
+	LauncherProtocolVersion = 2
+	CapabilityCompose       = "ime.compose"
+	CapabilityCommand       = "ime.command"
 )
+
+// LauncherContext is injected by PIMELauncher after it inspects the actual
+// named-pipe client token. Client-supplied values are overwritten by the
+// launcher before the handshake reaches the backend.
+type LauncherContext struct {
+	ProtocolVersion int      `json:"protocolVersion"`
+	TrustLevel      string   `json:"trustLevel"`
+	Capabilities    []string `json:"capabilities"`
+}
+
+func (c LauncherContext) HasCapability(want string) bool {
+	for _, capability := range c.Capabilities {
+		if capability == want {
+			return true
+		}
+	}
+	return false
+}
 
 type FlexibleID struct {
 	String string
@@ -67,29 +88,30 @@ func (id FlexibleID) IntValue() int {
 
 // Request PIME请求结构
 type Request struct {
-	Method            string     `json:"method"`
-	SeqNum            int        `json:"seqNum"`
-	ID                FlexibleID `json:"-"`
-	IsWindows8Above   bool       `json:"isWindows8Above,omitempty"`
-	IsMetroApp        bool       `json:"isMetroApp,omitempty"`
-	IsUiLess          bool       `json:"isUiLess,omitempty"`
-	IsConsole         bool       `json:"isConsole,omitempty"`
-	IsKeyboardOpen    bool       `json:"isKeyboardOpen,omitempty"`
-	Opened            bool       `json:"opened,omitempty"`
-	Forced            bool       `json:"forced,omitempty"`
-	CommandType       int        `json:"type,omitempty"`
-	CharCode          int        `json:"charCode,omitempty"`
-	KeyCode           int        `json:"keyCode,omitempty"`
-	RepeatCount       int        `json:"repeatCount,omitempty"`
-	ScanCode          int        `json:"scanCode,omitempty"`
-	IsExtended        bool       `json:"isExtended,omitempty"`
-	KeyStates         KeyStates  `json:"keyStates,omitempty"`
-	CompositionString string     `json:"compositionString,omitempty"`
-	CandidateList     []string   `json:"candidateList,omitempty"`
-	ShowCandidates    bool       `json:"showCandidates,omitempty"`
-	CursorPos         int        `json:"cursorPos,omitempty"`
-	SelStart          int        `json:"selStart,omitempty"`
-	SelEnd            int        `json:"selEnd,omitempty"`
+	Method            string          `json:"method"`
+	SeqNum            int             `json:"seqNum"`
+	ID                FlexibleID      `json:"-"`
+	IsWindows8Above   bool            `json:"isWindows8Above,omitempty"`
+	IsMetroApp        bool            `json:"isMetroApp,omitempty"`
+	IsUiLess          bool            `json:"isUiLess,omitempty"`
+	IsConsole         bool            `json:"isConsole,omitempty"`
+	IsKeyboardOpen    bool            `json:"isKeyboardOpen,omitempty"`
+	Opened            bool            `json:"opened,omitempty"`
+	Forced            bool            `json:"forced,omitempty"`
+	CommandType       int             `json:"type,omitempty"`
+	CharCode          int             `json:"charCode,omitempty"`
+	KeyCode           int             `json:"keyCode,omitempty"`
+	RepeatCount       int             `json:"repeatCount,omitempty"`
+	ScanCode          int             `json:"scanCode,omitempty"`
+	IsExtended        bool            `json:"isExtended,omitempty"`
+	KeyStates         KeyStates       `json:"keyStates,omitempty"`
+	CompositionString string          `json:"compositionString,omitempty"`
+	CandidateList     []string        `json:"candidateList,omitempty"`
+	ShowCandidates    bool            `json:"showCandidates,omitempty"`
+	CursorPos         int             `json:"cursorPos,omitempty"`
+	SelStart          int             `json:"selStart,omitempty"`
+	SelEnd            int             `json:"selEnd,omitempty"`
+	Launcher          LauncherContext `json:"launcher,omitempty"`
 	// 扩展字段
 	Data map[string]interface{} `json:"data,omitempty"`
 }

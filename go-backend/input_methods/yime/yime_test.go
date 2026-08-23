@@ -3742,8 +3742,8 @@ func TestSettingsPackageSupportsStandaloneToolWorkflow(t *testing.T) {
 
 func TestDiagnosticsPackageSupportsStructuredReports(t *testing.T) {
 	opts := diagnostics.DefaultIssueReadyOptions()
-	if !opts.IncludeEnvironmentSummary || !opts.IncludeRecommendedActions || !opts.IncludeRawLogExcerpt {
-		t.Fatalf("expected issue-ready preset to include report sections, got %#v", opts)
+	if !opts.IncludeEnvironmentSummary || !opts.IncludeRecommendedActions || opts.IncludeRawLogExcerpt {
+		t.Fatalf("expected issue-ready preset to include safe report sections without raw logs, got %#v", opts)
 	}
 	report := diagnostics.BuildStructuredReport(diagnostics.Context{
 		UserDir:   t.TempDir(),

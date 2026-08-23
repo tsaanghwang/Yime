@@ -35,7 +35,7 @@ func TestReleasePipelineSignsPayloadInstallerAndUninstaller(t *testing.T) {
 	signFile := read(filepath.Join(root, "tools", "sign-file.ps1"))
 	certificateImporter := read(filepath.Join(root, "tools", "import-release-signing-certificate.ps1"))
 
-	for _, fragment := range []string{"tags: ['v*']", "Import release signing certificate", "sign-release.ps1 -RequireComplete", "verify-release-signatures.ps1 -IncludeInstaller", "YIME-unsigned-test-installer", "installer/YIME-*-setup.exe"} {
+	for _, fragment := range []string{"tags: ['v*']", "environment: release-signing", "Checkout trusted signing implementation", ".trusted-signing\\tools\\sign-release.ps1", ".trusted-signing\\tools\\verify-release-signatures.ps1", "YIME-unsigned-test-installer", "installer/YIME-*-setup.exe"} {
 		if !strings.Contains(ci, fragment) {
 			t.Fatalf("CI release signing chain is missing %q", fragment)
 		}

@@ -73,6 +73,21 @@ static void testMalformedResponsesDoNotThrow() {
 	CHECK(!PIME::rpcReturnBool(json::parse("{\"return\": false}")));
 }
 
+static void testUnsafeCandidateUiResponsesAreRejected() {
+	CHECK(PIME::rpcResponseUiFieldsValid(json::parse(
+		R"({"success":true,"candidateList":["甲","乙"],"candidateCursor":1,"customizeUI":{"candPerRow":10},"setSelLabels":["⇧1","⇧2"]})")));
+	CHECK(!PIME::rpcResponseUiFieldsValid(json::parse(
+		R"({"success":true,"candidateList":["甲"],"candidateCursor":-1})")));
+	CHECK(!PIME::rpcResponseUiFieldsValid(json::parse(
+		R"({"success":true,"candidateList":["甲"],"candidateCursor":2})")));
+	CHECK(!PIME::rpcResponseUiFieldsValid(json::parse(
+		R"({"success":true,"candidateList":["1","2","3","4","5","6","7","8","9","10"]})")));
+	CHECK(!PIME::rpcResponseUiFieldsValid(json::parse(
+		R"({"success":true,"customizeUI":{"candPerRow":0}})")));
+	CHECK(!PIME::rpcResponseUiFieldsValid(json::parse(
+		R"({"success":true,"setSelLabels":["1","2","3","4","5","6","7","8","9","10"]})")));
+}
+
 // Language-bar menus: items may use string ids (submenu parents such as
 // "reverse-lookup") next to numeric command ids such as 44 (反查显示 音元拼音).
 // item.value("id", 0) used to throw type_error.302 on string ids, killing the
@@ -252,11 +267,15 @@ static void testPopupAnchorStaysInsideWorkArea() {
 }
 
 static void testLauncherExecutableValidation() {
-	CHECK(PIME::isExpectedLauncherExecutablePath(LR"(C:\Program Files (x86)\YIME\PIMELauncher.exe)"));
-	CHECK(PIME::isExpectedLauncherExecutablePath(LR"(C:\dev\Yime\build\PIMELauncher\pimelauncher.EXE)"));
-	CHECK(!PIME::isExpectedLauncherExecutablePath(LR"(C:\Windows\System32\cmd.exe)"));
-	CHECK(!PIME::isExpectedLauncherExecutablePath(L"PIMELauncher.exe.bak"));
-	CHECK(PIME::canFallbackToPipeAclAfterProcessQueryFailure(ERROR_ACCESS_DENIED));
+	const std::wstring installed = LR"(C:\Program Files (x86)\YIME\PIMELauncher.exe)";
+	CHECK(PIME::isExpectedLauncherExecutablePath(installed, installed));
+	CHECK(PIME::isExpectedLauncherExecutablePath(
+		LR"(C:/Program Files (x86)/YIME/pimelauncher.EXE)", installed));
+	CHECK(!PIME::isExpectedLauncherExecutablePath(
+		LR"(C:\dev\Yime\build\PIMELauncher\PIMELauncher.exe)", installed));
+	CHECK(!PIME::isExpectedLauncherExecutablePath(LR"(C:\Windows\System32\cmd.exe)", installed));
+	CHECK(!PIME::isExpectedLauncherExecutablePath(L"PIMELauncher.exe.bak", installed));
+	CHECK(!PIME::canFallbackToPipeAclAfterProcessQueryFailure(ERROR_ACCESS_DENIED));
 	CHECK(!PIME::canFallbackToPipeAclAfterProcessQueryFailure(ERROR_INVALID_HANDLE));
 	CHECK(!PIME::canFallbackToPipeAclAfterProcessQueryFailure(ERROR_INSUFFICIENT_BUFFER));
 }
@@ -264,6 +283,7 @@ static void testLauncherExecutableValidation() {
 int main() {
 	testNullResponseDoesNotThrow();
 	testMalformedResponsesDoNotThrow();
+	testUnsafeCandidateUiResponsesAreRejected();
 	testMenuItemsWithMixedIdTypesDoNotThrow();
 	testJsonStringOr();
 	testUiLessCandidateWindowPolicy();

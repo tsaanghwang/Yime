@@ -29,6 +29,20 @@ async fn read_line<R: tokio::io::AsyncBufReadExt + Unpin>(
     line.ok_or_else(|| "EOF unexpected".into())
 }
 
+fn assert_prepared_handshake(reply: &str, expected_guid: &str) {
+    let payload = reply
+        .strip_prefix("REPLY: ")
+        .expect("mock backend reply prefix");
+    let value: serde_json::Value = serde_json::from_str(payload).expect("prepared handshake JSON");
+    assert_eq!(value["method"], "init");
+    assert_eq!(value["id"], expected_guid);
+    assert_eq!(
+        value["launcher"]["protocolVersion"],
+        pimelauncher::protocol::PROTOCOL_VERSION
+    );
+    assert_eq!(value["launcher"]["trustLevel"], "desktop");
+}
+
 async fn setup_test_environment(pipe_name: &str) -> (BackendManager, TempDir) {
     let dir = tempdir().unwrap();
     let pime_root = dir.path().to_path_buf();
@@ -120,7 +134,7 @@ async fn test_integration_full() -> TestResult {
         send_msg(&mut writer, &handshake).await?;
 
         let reply1 = read_line(&mut lines).await?;
-        assert!(reply1.contains(&handshake));
+        assert_prepared_handshake(&reply1, GUID_TEST_ECHO);
 
         // 5. Test client incoming message & 6. Forwarding
         send_msg(&mut writer, "Hello Backend").await?;
@@ -275,7 +289,7 @@ async fn test_fragmented_messages() -> TestResult {
     writer.flush().await?;
 
     let reply = read_line(&mut lines).await?;
-    assert!(reply.contains(&handshake));
+    assert_prepared_handshake(&reply, GUID_TEST_ECHO);
 
     // 2. Send message in chunks with remaining data for next message
     // Chunk A: Start of first message

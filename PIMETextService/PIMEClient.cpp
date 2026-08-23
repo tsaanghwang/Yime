@@ -107,7 +107,7 @@ bool Client::handleRpcResponse(json& msg, Ime::EditSession* session) {
 	// restarting). Reading it with .value()/operator[] would throw and an
 	// exception escaping a TSF COM entry point aborts the host process
 	// (0xc0000409). Always validate before touching the response.
-	if (!rpcResponseSucceeded(msg)) {
+	if (!rpcResponseSucceeded(msg) || !rpcResponseUiFieldsValid(msg)) {
 		return false;
 	}
 	updateStatus(msg, session);
@@ -435,8 +435,10 @@ void Client::updateCandidateList(json& msg, Ime::EditSession* session) {
 
 	const auto& candidateCursorVal = msg["candidateCursor"];
 	if (candidateCursorVal.is_number_integer()) {
-		if (textService_->candidateWindow_ != nullptr) {
-			textService_->candidateWindow_->setCurrentSel(candidateCursorVal.get<int>());
+		const int cursor = candidateCursorVal.get<int>();
+		if (textService_->candidateWindow_ != nullptr && cursor >= 0 &&
+			static_cast<std::size_t>(cursor) < textService_->candidateCount()) {
+			textService_->candidateWindow_->setCurrentSel(cursor);
 			textService_->refreshCandidates();
 		}
 	}
@@ -798,6 +800,7 @@ void Client::onCompositionTerminated(bool forced) {
 
 bool Client::init() {
 	json req = createRpcRequest("init");
+	req["protocolVersion"] = 2;
 	req["id"] = guid_.c_str();  // language profile guid
 	req["isWindows8Above"] = ::IsWindows8OrGreater();
 	req["isMetroApp"] = textService_->isMetroApp();
@@ -937,7 +940,11 @@ bool Client::isPipeCreatedByPIMEServer(HANDLE pipe) {
 	if (!queried) {
 		return canFallbackToPipeAclAfterProcessQueryFailure(queryError);
 	}
-	return isExpectedLauncherExecutablePath(std::wstring(imagePath, imagePathLength));
+	Ime::ImeModule* baseModule = textService_->imeModule();
+	auto* module = static_cast<PIME::ImeModule*>(baseModule);
+	const std::wstring expectedPath = module->programDir() + L"\\PIMELauncher.exe";
+	return isExpectedLauncherExecutablePath(
+		std::wstring(imagePath, imagePathLength), expectedPath);
 }
 
 // establish a connection to the specified pipe and returns its handle

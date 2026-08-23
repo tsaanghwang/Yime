@@ -88,7 +88,11 @@ $env:YIME_TIMESTAMP_URL = "http://timestamp.digicert.com"
 
 `Status` 必须为 `Valid`；验证脚本还会要求签名者指纹等于 `YIME_SIGN_CERT_SHA1`，并确认每个文件都有时间戳证书。
 
-标签 `v*` 会触发正式发布签名门禁。仓库需配置 `YIME_SIGN_CERT_BASE64`（PFX 的 Base64）和 `YIME_SIGN_CERT_PASSWORD`；标签构建缺少密钥会直接失败，临时 PFX 在导入后立即删除。标签产物名为 `YIME-signed-installer`；PR 与普通分支产物名为 `YIME-unsigned-test-installer-{sha}`，不得作为公开发布包。
+标签 `v*` 会触发正式发布签名门禁。仓库必须建立名为 `release-signing` 的 GitHub Environment，并把 `YIME_SIGN_CERT_BASE64`（PFX 的 Base64）和 `YIME_SIGN_CERT_PASSWORD` 设为该 Environment 的 secrets，而不是仓库级 secrets。该 Environment 必须配置至少一名独立 required reviewer，且禁止发起工作流的人自行批准；`v*` 标签还必须通过 ruleset 限制为受保护发布维护者才能创建或更新。缺少密钥或人工批准时，签名任务会直接停住或失败。
+
+签名 job 会把待签名的标签产物与签名实现分开：产物来自标签构建，证书导入、签名、验证和 manifest 脚本则从仓库默认分支独立检出到 `.trusted-signing`，并在证书进入 runner 后只执行这一份受保护实现。`.github/workflows/ci.yaml`、`tools/sign-*.ps1`、`tools/import-release-signing-certificate.ps1`、`tools/verify-*.ps1` 和 `installer/**` 都是 CODEOWNERS 保护面；分支保护必须要求 Code Owner 审批后才能合入默认分支。标签产物名为 `YIME-signed-installer`；PR 与普通分支产物名为 `YIME-unsigned-test-installer-{sha}`，不得作为公开发布包。
+
+安装器仅在系统缺少 VC++ Runtime 时下载 Microsoft redistributable。下载落在 NSIS 随机私有的 `$PLUGINSDIR`，执行前由 `tools/verify-microsoft-authenticode.ps1` 验证 Windows 信任链、Microsoft Corporation 签名者和代码签名 EKU；任何下载或签名异常都会删除文件并中止安装，不能退回共享 `$TEMP` 路径或跳过验证。
 
 ### 3.1 开发包与证书选择
 

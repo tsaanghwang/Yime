@@ -52,6 +52,31 @@ AllowSkipFiles off ; cannot skip a file
 !define HOMEPAGE_URL "https://github.com/tsaanghwang/Yime"
 !define YIME_TIP "0x0804:{35F67E9D-A54D-4177-9697-8B0AB71A9E04}{3F6B5A12-8D44-4E71-9A2E-6B4F9C1D2A30}"
 
+; Downloads an architecture-specific Microsoft redistributable into NSIS's
+; private randomized plugin directory, verifies the Authenticode chain and
+; signer, then launches the exact quoted path. The old fixed $TEMP paths were
+; replaceable by the unelevated user while this installer was running as admin.
+!macro DownloadVerifiedVCRedist URL FILE_NAME
+	StrCpy $R1 "$PLUGINSDIR\${FILE_NAME}"
+	inetc::get "${URL}" "$R1"
+	Pop $R0
+	${If} $R0 != "OK"
+		Delete "$R1"
+		MessageBox MB_ICONSTOP|MB_OK $(DOWNLOAD_VCREDIST_FAILED_MESSAGE)
+		Abort
+	${EndIf}
+	nsExec::ExecToStack '"$SYSDIR\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -NonInteractive -ExecutionPolicy Bypass -File "$PLUGINSDIR\verify-microsoft-authenticode.ps1" -Path "$R1"'
+	Pop $R2
+	Pop $R3
+	${If} $R2 != 0
+		Delete "$R1"
+		MessageBox MB_ICONSTOP|MB_OK "Downloaded Microsoft Visual C++ Redistributable failed Authenticode verification."
+		Abort
+	${EndIf}
+	ExecWait '"$R1"' $0
+	Delete "$R1"
+!macroend
+
 Name "$(PRODUCT_NAME)"
 BrandingText "$(PRODUCT_NAME)"
 
@@ -361,6 +386,8 @@ Function .onInstFailed
 FunctionEnd
 
 Function ensureVCRedist
+	InitPluginsDir
+	File /oname=$PLUGINSDIR\verify-microsoft-authenticode.ps1 "..\tools\verify-microsoft-authenticode.ps1"
 	; Check if we have latest VC++ Redistributable
 	; Reference: https://blogs.msdn.microsoft.com/vcblog/2015/03/03/introducing-the-universal-crt/
 	;            https://docs.python.org/3/using/windows.html#embedded-distribution
@@ -381,16 +408,7 @@ Function ensureVCRedist
 			${OrIfNot} ${FileExists} "$SYSDIR\msvcp140.dll"
 				MessageBox MB_YESNO|MB_ICONQUESTION $(DOWNLOAD_VCREDIST_QUESTION) IDYES +2
 					Abort ; this is skipped if the user select Yes
-				; Download latest VC++ Redistributable (x64 version)
-				inetc::get "https://aka.ms/vs/17/release/vc_redist.x64.exe" "$TEMP\vc_redist.x64.exe"
-				Pop $R0 ; Get the return value
-				${If} $R0 != "OK"
-					MessageBox MB_ICONSTOP|MB_OK $(DOWNLOAD_VCREDIST_FAILED_MESSAGE)
-					Abort
-				${EndIf}
-
-				; Run vcredist installer
-				ExecWait "$TEMP\vc_redist.x64.exe" $0
+				!insertmacro DownloadVerifiedVCRedist "https://aka.ms/vs/17/release/vc_redist.x64.exe" "vc_redist.x64.exe"
 
 				; Check again if we have latest VC++ Redistributable
 				${IfNot} ${FileExists} "$SYSDIR\ucrtbase.dll"
@@ -410,13 +428,7 @@ Function ensureVCRedist
 			${OrIfNot} ${FileExists} "$SYSDIR\msvcp140.dll"
 				MessageBox MB_YESNO|MB_ICONQUESTION $(DOWNLOAD_VCREDIST_QUESTION) IDYES +2
 					Abort
-				inetc::get "https://aka.ms/vs/17/release/vc_redist.arm64.exe" "$TEMP\vc_redist.arm64.exe"
-				Pop $R0
-				${If} $R0 != "OK"
-					MessageBox MB_ICONSTOP|MB_OK $(DOWNLOAD_VCREDIST_FAILED_MESSAGE)
-					Abort
-				${EndIf}
-				ExecWait "$TEMP\vc_redist.arm64.exe" $0
+				!insertmacro DownloadVerifiedVCRedist "https://aka.ms/vs/17/release/vc_redist.arm64.exe" "vc_redist.arm64.exe"
 				${IfNot} ${FileExists} "$SYSDIR\ucrtbase.dll"
 				${OrIfNot} ${FileExists} "$SYSDIR\msvcp140.dll"
 					MessageBox MB_ICONSTOP|MB_OK $(INST_VCREDIST_FAILED_MESSAGE)
@@ -429,16 +441,7 @@ Function ensureVCRedist
 		${Else}
 			MessageBox MB_YESNO|MB_ICONQUESTION $(DOWNLOAD_VCREDIST_QUESTION) IDYES +2
 				Abort ; this is skipped if the user select Yes
-			; Download latest VC++ Redistributable (x86 version)
-			inetc::get "https://aka.ms/vs/17/release/vc_redist.x86.exe" "$TEMP\vc_redist.x86.exe"
-			Pop $R0 ; Get the return value
-			${If} $R0 != "OK"
-				MessageBox MB_ICONSTOP|MB_OK $(DOWNLOAD_VCREDIST_FAILED_MESSAGE)
-				Abort
-			${EndIf}
-
-			; Run vcredist installer
-			ExecWait "$TEMP\vc_redist.x86.exe" $0
+			!insertmacro DownloadVerifiedVCRedist "https://aka.ms/vs/17/release/vc_redist.x86.exe" "vc_redist.x86.exe"
 
 			; Check again if we have latest VC++ Redistributable
 			${IfNot} ${FileExists} "$SYSDIR\ucrtbase.dll"

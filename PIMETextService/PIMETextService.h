@@ -136,6 +136,9 @@ public:
 	void replaceCandidates(std::vector<std::wstring> candidates) {
 		candidates_ = std::move(candidates);
 	}
+	std::size_t candidateCount() const {
+		return candidates_.size();
+	}
 	void replaceCompositionSegments(
 		std::vector<Ime::CompositionSegmentItem> segments);
 	void showCandidates(Ime::EditSession* session);
