@@ -5,6 +5,7 @@
 #include <string_view>
 
 #include "KeyContract.h"
+#include "BrokerEndpoint.h"
 #include "CandidateListUIElement.h"
 #include "CandidatePopup.h"
 #include "LanguageBarItem.h"
@@ -41,6 +42,24 @@ void testKeyContract() {
     constexpr std::wstring_view expected[] = {L"⇧1", L"⇧2", L"⇧3", L"⇧4", L"⇧5", L"⇧6", L"⇧7", L"⇧8", L"⇧9"};
     for (size_t index = 0; index < labels.size(); ++index) {
         expect(labels[index] == expected[index], "candidate label lost Shift marker");
+    }
+}
+
+void testBrokerEndpoint() {
+    using namespace yime::experiment;
+    wchar_t previous[512]{};
+    const DWORD previousLength = GetEnvironmentVariableW(
+        L"YIME_TEXTSERVICE_EXPERIMENT_PIPE", previous, static_cast<DWORD>(std::size(previous)));
+    SetEnvironmentVariableW(L"YIME_TEXTSERVICE_EXPERIMENT_PIPE", nullptr);
+    expect(ResolveBrokerPipeName() == kDefaultBrokerPipe,
+           "ordinary installed hosts must have a stable default Broker endpoint");
+    constexpr wchar_t custom[] = L"\\\\.\\pipe\\YimeBroker.Contract.Override";
+    SetEnvironmentVariableW(L"YIME_TEXTSERVICE_EXPERIMENT_PIPE", custom);
+    expect(ResolveBrokerPipeName() == custom, "test/supervisor Broker endpoint override was ignored");
+    if (previousLength > 0 && previousLength < std::size(previous)) {
+        SetEnvironmentVariableW(L"YIME_TEXTSERVICE_EXPERIMENT_PIPE", previous);
+    } else {
+        SetEnvironmentVariableW(L"YIME_TEXTSERVICE_EXPERIMENT_PIPE", nullptr);
     }
 }
 
@@ -218,6 +237,7 @@ int wmain(int argc, wchar_t** argv) {
         return 2;
     }
     testKeyContract();
+    testBrokerEndpoint();
     testCandidateElement();
     testOwnedCandidatePopup();
     testLanguageBarItem();

@@ -463,19 +463,26 @@ int wmain(int argc, wchar_t** argv) {
         if (!waitForVisibility(popup, false)) {
             throw std::runtime_error("registered focus loss did not hide candidates");
         }
+        const bool hostTerminatedComposition = !IsWindow(popup);
         BOOL crossContextEaten = TRUE;
         require(keystrokes->TestKeyDown('J', 0, &crossContextEaten), "registered cross-context TestKeyDown");
-        if (crossContextEaten) {
-            throw std::runtime_error("registered focus callback did not isolate the old composition");
+        if (hostTerminatedComposition ? !crossContextEaten : crossContextEaten) {
+            throw std::runtime_error(hostTerminatedComposition
+                ? "registered host termination did not reconnect for the new context"
+                : "registered focus callback did not isolate the preserved composition");
         }
-        const bool hostTerminatedComposition = !IsWindow(popup);
         require(threadManager->SetFocus(document), "restore registered document focus");
         if (hostTerminatedComposition) {
-            BOOL postTerminationEaten = TRUE;
+            BOOL postTerminationEaten = FALSE;
             require(keystrokes->TestKeyDown('J', 0, &postTerminationEaten),
                     "registered post-termination TestKeyDown");
-            if (postTerminationEaten) {
-                throw std::runtime_error("registered host termination left the Broker session active");
+            if (!postTerminationEaten) {
+                throw std::runtime_error("registered host termination did not recover the Broker session");
+            }
+            dispatchKey(keystrokes, 'J');
+            const std::wstring recoveredText = readContext(context, clientId);
+            if (recoveredText.empty() || recoveredText.back() != L'j') {
+                throw std::runtime_error("registered host recovery did not apply a fresh composition");
             }
         } else {
             if (!waitForVisibility(popup, true)) {

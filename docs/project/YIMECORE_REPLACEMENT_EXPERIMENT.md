@@ -354,7 +354,7 @@ E6-B6 已建立提权注册后的真实 TSF 宿主门禁：
 
 - 独立 `YimeRegisteredHostTests` 不加载 DLL、不查询试验类工厂，也不直接调用 `ITfKeyEventSink`。它通过系统已注册 Profile 切换当前 TSF 语言和激活试验 TIP，再从 `ITfKeystrokeMgr` 派发按键。
 - 宿主实现最小内存 `ITextStoreACP` 和同步锁协议；composition 写入、selection、候选提交和 `GetTextExt` 全部经 TSF 与宿主 text store 往返。候选窗左上位置必须精确跟随宿主返回的文本范围底边，不能落入 caret 或鼠标降级路径。
-- 激活 Profile 后重新聚焦文档，要求 foreground key sink 出现；切换到第二个 `ITfDocumentMgr` 时由系统自动派发焦点与 composition 终止事件。旧 composition 不得吃新文档按键；若宿主终止 composition，候选 HWND 和 Broker 会话必须清理，返回后也不得继续吃键；若宿主保留 composition，候选窗须隐藏并在返回原文档后恢复。
+- 激活 Profile 后重新聚焦文档，要求 foreground key sink 出现；切换到第二个 `ITfDocumentMgr` 时由系统自动派发焦点与 composition 终止事件。若宿主保留旧 composition，新文档按键必须隔离，候选窗须隐藏并在返回原文档后恢复；若宿主终止 composition，候选 HWND 和旧 Broker 会话必须清理，下一次合法组合键必须建立新会话并从空状态开始，不得继续旧 composition。
 - 注册和宿主运行始终包在精确注销的 `finally` 中；x64 与 x86 依次使用各自 COM 视图，三种编码模式分别启动独立 Broker，任何失败后仍须等待 TSF 枚举收敛并通过 `verify-absent`。
 - Windows 8 以后 language-bar `AddItem` 的 S_OK 允许代表静默忽略；宿主只在 HRESULT 为 S_OK 且返回非空接口时记录 accepted，不再解引用空指针。该辅助观察不替代按键、composition、候选窗、焦点和定位主门禁。
 
@@ -369,6 +369,16 @@ E6-B7 将 B6 已锁定的 Broker、三份索引以及 x86/x64 表层组件组装
 - 试验包只存在于 `.tmp` 证据目录和临时 Program Files 试装目录，不把三份大索引或词库复制进 Git。
 
 B7 仍是未签名的试验目录，不等同于公开 MSI/签名发布包，也未替代第三方桌面应用的真实交互验收。
+
+E6-B8 完成独立试装目录上的第三方桌面应用交互验收：
+
+- 文本服务在未设置环境变量的普通宿主中使用固定默认端点 `\\.\pipe\YimeBroker.YimeCoreTrial.v1`；环境变量只保留给测试和监督进程覆盖。宿主强制结束 composition 后，表层保留端点但关闭旧会话，下一次合法组合键在 100 ms 短门限内重新连接；显式 `Close` 和停用仍永久清除端点。
+- `repoint` 只在既有 Profile 和三项 TSF category 完整时创建或改写当前位宽 COM 路径，支持旧 DLL 仍被宿主占用时切到新的版本化安装目录，不删除、不重注册全局 Profile。x64 与 x86 COM 视图必须同时指向同一独立试装根目录。
+- Microsoft Word x64 真实交互按 `2 -> File 后台 -> 返回文档 -> 2 -> Shift+1` 执行：首次候选窗出现；进入后台后 Word 将旧 composition 作为原始 `2` 结束；返回后第二个 `2` 建立新会话并再次显示候选；`Shift+1` 提交首项“其”。裸数字始终是组合键，候选序号继续是 `⇧1` 至 `⇧9`。
+- B8 证据同时核验 staged/install 两棵目录的逐文件 SHA-256、两个 COM 视图、Word 实际加载模块、安装态 Broker 路径和默认管道命令行；交互观察由明确开关签注，机械路径与哈希验证不能由观察文字代替。
+- 所有试装文件和证据留在 `.tmp` 与独立 Program Files 试验目录；没有读取原型仓库，没有把索引或大词库加入 Git，默认 Rime/PIME 注册和安装保持不变。
+
+B8 证明当前自研 Broker/表层已能在 Word 中完成宿主终止后的新会话恢复，但仍是未签名试验包；x86 桌面 UI 只由注册式内存宿主覆盖，公开签名安装包和更多第三方应用矩阵仍属于发布门禁，而不是本阶段能力阻塞。
 
 ### E7：切换与退役
 

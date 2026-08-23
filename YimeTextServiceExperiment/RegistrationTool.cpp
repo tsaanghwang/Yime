@@ -199,6 +199,18 @@ HRESULT registerAll(const wchar_t* dllPath) {
     return result;
 }
 
+HRESULT repointComServer(const wchar_t* dllPath) {
+    bool profileExists = false;
+    unsigned categoryCount = 0;
+    HRESULT result = profileRegistrationExists(&profileExists);
+    if (SUCCEEDED(result)) result = categoryRegistrationCount(&categoryCount);
+    if (FAILED(result)) return result;
+    if (!profileExists || categoryCount != 3) {
+        return HRESULT_FROM_WIN32(ERROR_NOT_FOUND);
+    }
+    return registerComServer(dllPath);
+}
+
 void writeStatus() {
     bool profileExists = false;
     const HRESULT profileStatus = profileRegistrationExists(&profileExists);
@@ -254,6 +266,15 @@ int wmain(int argc, wchar_t** argv) {
             writeResult(L"register", result);
             exitCode = SUCCEEDED(result) ? 0 : 5;
         }
+    } else if (argc == 3 && std::wstring_view(argv[1]) == L"repoint") {
+        if (!isElevated()) {
+            std::wcout << L"operation=repoint\nblocked=requires_elevated_token\nmutation_performed=false\n";
+            exitCode = 3;
+        } else {
+            const HRESULT result = repointComServer(argv[2]);
+            writeResult(L"repoint", result);
+            exitCode = SUCCEEDED(result) ? 0 : 7;
+        }
     } else if (argc == 2 && std::wstring_view(argv[1]) == L"unregister") {
         if (!isElevated()) {
             std::wcout << L"operation=unregister\nblocked=requires_elevated_token\nmutation_performed=false\n";
@@ -264,7 +285,7 @@ int wmain(int argc, wchar_t** argv) {
             exitCode = SUCCEEDED(result) ? 0 : 6;
         }
     } else {
-        std::wcerr << L"usage: YimeTextServiceRegistration status|verify-absent|register <dll>|unregister\n";
+        std::wcerr << L"usage: YimeTextServiceRegistration status|verify-absent|register <dll>|repoint <dll>|unregister\n";
         exitCode = 2;
     }
     if (uninitialize) CoUninitialize();

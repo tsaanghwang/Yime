@@ -90,12 +90,16 @@ bool BrokerClient::SelectCandidate(const std::string& candidateId, const std::st
 }
 
 void BrokerClient::Close() noexcept {
-    if (IsConnected()) {
-        const uint64_t sequence = ++sequence_;
-        const std::string request = json{{"version", 1}, {"sequence", sequence}, {"session_id", sessionId_}, {"operation", "close"}}.dump();
-        std::string ignoredResponse;
-        std::string ignoredError;
-        Exchange(request, &ignoredResponse, &ignoredError);
+    try {
+        if (IsConnected()) {
+            const uint64_t sequence = ++sequence_;
+            const std::string request = json{{"version", 1}, {"sequence", sequence}, {"session_id", sessionId_}, {"operation", "close"}}.dump();
+            std::string ignoredResponse;
+            std::string ignoredError;
+            Exchange(request, &ignoredResponse, &ignoredError);
+        }
+    } catch (...) {
+        // Destruction and COM deactivation must never terminate the host process.
     }
     Disconnect();
 }

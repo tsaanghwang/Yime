@@ -320,12 +320,16 @@ int wmain(int argc, wchar_t** argv) {
         if (!eaten || !hasComposition(context)) throw std::runtime_error("forced-termination setup failed");
         terminateActiveComposition(context);
         if (hasComposition(context)) throw std::runtime_error("host-forced composition remained active");
-        BOOL testEaten = TRUE;
+        BOOL testEaten = FALSE;
         require(keys->OnTestKeyDown(context, 'J', 0, &testEaten), "post-termination test key");
-        if (testEaten) throw std::runtime_error("host-forced termination did not close the Broker session");
-        eaten = TRUE;
+        if (!testEaten) throw std::runtime_error("host-forced termination did not reconnect the Broker session");
+        eaten = FALSE;
         require(keys->OnKeyDown(context, 'J', 0, &eaten), "post-termination key");
-        if (eaten) throw std::runtime_error("post-termination key was swallowed");
+        const std::wstring recoveredText = readContext(context, clientId);
+        if (!eaten || recoveredText.empty() || recoveredText.back() != L'j' || !hasComposition(context)) {
+            throw std::runtime_error("post-termination key did not start a fresh composition");
+        }
+        std::cout << "host_termination_recovery_verified=true\n";
 
         keys->Release();
         require(processor->Deactivate(), "deactivate processor");

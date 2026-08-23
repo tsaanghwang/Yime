@@ -41,7 +41,7 @@ public:
 
 private:
     ~YimeTextService();
-    HRESULT SetKeyDecision(ITfContext* context, WPARAM virtualKey, BOOL* eaten) const noexcept;
+    HRESULT SetKeyDecision(ITfContext* context, WPARAM virtualKey, BOOL* eaten) noexcept;
     void UpdateCandidateUI(ITfContext* context, const yime::experiment::BrokerUpdate& update,
                            const RECT* compositionRect) noexcept;
     void EndCandidateUI() noexcept;

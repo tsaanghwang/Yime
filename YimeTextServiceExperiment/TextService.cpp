@@ -5,6 +5,7 @@
 
 #include "CompositionEditSession.h"
 #include "CandidateListUIElement.h"
+#include "BrokerEndpoint.h"
 #include "KeyContract.h"
 #include "LanguageBarItem.h"
 #include "ModuleState.h"
@@ -117,13 +118,8 @@ STDMETHODIMP YimeTextService::ActivateEx(ITfThreadMgr* threadManager, TfClientId
         source->Release();
     }
     AddLanguageBar();
-    wchar_t pipeName[256]{};
-    const DWORD pipeLength = GetEnvironmentVariableW(
-        L"YIME_TEXTSERVICE_EXPERIMENT_PIPE", pipeName, static_cast<DWORD>(std::size(pipeName)));
-    if (pipeLength > 0 && pipeLength < std::size(pipeName)) {
-        std::string ignoredError;
-        surface_.Connect(pipeName, 2000, &ignoredError);
-    }
+    std::string ignoredError;
+    surface_.Connect(yime::experiment::ResolveBrokerPipeName(), 2000, &ignoredError);
     return S_OK;
 }
 
@@ -203,11 +199,16 @@ bool YimeTextService::ContextMatchesComposition(ITfContext* context) const noexc
     return !composition_ || !compositionContext_ || compositionContext_ == context;
 }
 
-HRESULT YimeTextService::SetKeyDecision(ITfContext* context, WPARAM virtualKey, BOOL* eaten) const noexcept {
+HRESULT YimeTextService::SetKeyDecision(ITfContext* context, WPARAM virtualKey, BOOL* eaten) noexcept {
     if (!eaten) return E_POINTER;
-    const bool shiftDown = (GetKeyState(VK_SHIFT) & 0x8000) != 0;
-    *eaten = context && CanAcceptKeys() && ContextMatchesComposition(context) &&
-                     surface_.CanHandle(virtualKey, shiftDown) ? TRUE : FALSE;
+    *eaten = FALSE;
+    try {
+        const bool shiftDown = (GetKeyState(VK_SHIFT) & 0x8000) != 0;
+        *eaten = context && CanAcceptKeys() && ContextMatchesComposition(context) &&
+                         surface_.CanHandle(virtualKey, shiftDown) ? TRUE : FALSE;
+    } catch (...) {
+        surface_.DisconnectForRecovery();
+    }
     return S_OK;
 }
 
@@ -219,22 +220,26 @@ STDMETHODIMP YimeTextService::OnKeyDown(ITfContext* context, WPARAM wParam, LPAR
     if (!eaten) return E_POINTER;
     *eaten = FALSE;
     if (!context || !CanAcceptKeys() || !ContextMatchesComposition(context)) return S_OK;
-    const bool shiftDown = (GetKeyState(VK_SHIFT) & 0x8000) != 0;
-    if (!surface_.CanHandle(wParam, shiftDown)) return S_OK;
-    const auto outcome = surface_.HandleVirtualKey(wParam, shiftDown);
-    if (!outcome.handled) return S_OK;
-    RECT compositionRect{};
-    bool compositionRectValid = false;
-    const HRESULT edit = yime::experiment::ApplyBrokerUpdateToContext(
-        context, clientId_, static_cast<ITfCompositionSink*>(this), &composition_,
-        &plannedCompositionTermination_, outcome.update, &compositionRect, &compositionRectValid);
-    if (FAILED(edit)) {
-        surface_.Close();
-        return S_OK;
+    try {
+        const bool shiftDown = (GetKeyState(VK_SHIFT) & 0x8000) != 0;
+        if (!surface_.CanHandle(wParam, shiftDown)) return S_OK;
+        const auto outcome = surface_.HandleVirtualKey(wParam, shiftDown);
+        if (!outcome.handled) return S_OK;
+        RECT compositionRect{};
+        bool compositionRectValid = false;
+        const HRESULT edit = yime::experiment::ApplyBrokerUpdateToContext(
+            context, clientId_, static_cast<ITfCompositionSink*>(this), &composition_,
+            &plannedCompositionTermination_, outcome.update, &compositionRect, &compositionRectValid);
+        if (FAILED(edit)) {
+            surface_.DisconnectForRecovery();
+            return S_OK;
+        }
+        if (composition_) RememberCompositionContext(context);
+        UpdateCandidateUI(context, outcome.update, compositionRectValid ? &compositionRect : nullptr);
+        *eaten = TRUE;
+    } catch (...) {
+        surface_.DisconnectForRecovery();
     }
-    if (composition_) RememberCompositionContext(context);
-    UpdateCandidateUI(context, outcome.update, compositionRectValid ? &compositionRect : nullptr);
-    *eaten = TRUE;
     return S_OK;
 }
 
@@ -262,7 +267,7 @@ STDMETHODIMP YimeTextService::OnCompositionTerminated(TfEditCookie, ITfCompositi
         composition_->Release();
         composition_ = nullptr;
         ForgetCompositionContext();
-        if (!plannedCompositionTermination_) surface_.Close();
+        if (!plannedCompositionTermination_) surface_.DisconnectForRecovery();
     }
     return S_OK;
 }
@@ -351,7 +356,7 @@ void YimeTextService::SelectCandidateFromPopup(unsigned ordinal) noexcept {
         context, clientId_, static_cast<ITfCompositionSink*>(this), &composition_,
         &plannedCompositionTermination_, outcome.update, &compositionRect, &compositionRectValid);
     if (FAILED(edit)) {
-        surface_.Close();
+        surface_.DisconnectForRecovery();
         context->Release();
         return;
     }

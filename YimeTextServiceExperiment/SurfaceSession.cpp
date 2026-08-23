@@ -5,26 +5,44 @@
 namespace yime::experiment {
 
 bool SurfaceSession::Connect(const std::wstring& pipeName, DWORD timeoutMs, std::string* error) {
+    pipeName_ = pipeName;
+    reconnectTimeoutMs_ = timeoutMs < 100 ? timeoutMs : 100;
     current_ = {};
     mutationSequence_ = 0;
     return broker_.Connect(pipeName, timeoutMs, error);
 }
 
-bool SurfaceSession::CanHandle(WPARAM virtualKey, bool shiftDown) const noexcept {
-    if (!broker_.IsConnected()) return false;
+bool SurfaceSession::EnsureConnected(std::string* error) {
+    if (broker_.IsConnected()) return true;
+    if (pipeName_.empty()) {
+        if (error) *error = "Broker endpoint is not configured";
+        return false;
+    }
+    current_ = {};
+    return broker_.Connect(pipeName_, reconnectTimeoutMs_, error);
+}
+
+bool SurfaceSession::CanHandle(WPARAM virtualKey, bool shiftDown) {
     const KeyDecision decision = ClassifyVirtualKey(virtualKey, shiftDown);
     if (decision.route == KeyRoute::AppendComposition) {
         char ignored = 0;
-        return TranslateCompositionKey(virtualKey, shiftDown, &ignored);
+        return TranslateCompositionKey(virtualKey, shiftDown, &ignored) && EnsureConnected(nullptr);
     }
-    return decision.route == KeyRoute::SelectCandidate && decision.candidateOrdinal > 0 &&
+    return broker_.IsConnected() && decision.route == KeyRoute::SelectCandidate && decision.candidateOrdinal > 0 &&
            decision.candidateOrdinal <= current_.candidates.size();
 }
 
 SurfaceOutcome SurfaceSession::HandleVirtualKey(WPARAM virtualKey, bool shiftDown) {
     SurfaceOutcome outcome;
-    if (!CanHandle(virtualKey, shiftDown)) return outcome;
     const KeyDecision decision = ClassifyVirtualKey(virtualKey, shiftDown);
+    if (decision.route == KeyRoute::AppendComposition) {
+        char ignored = 0;
+        if (!TranslateCompositionKey(virtualKey, shiftDown, &ignored)) return outcome;
+        if (!EnsureConnected(&outcome.error)) return outcome;
+    } else if (!CanHandle(virtualKey, shiftDown)) {
+        if (!broker_.IsConnected()) outcome.error = "Broker session is not connected";
+        return outcome;
+    }
     if (decision.route == KeyRoute::SelectCandidate) {
         if (decision.candidateOrdinal == 0 || decision.candidateOrdinal > current_.candidates.size()) return outcome;
         const auto& candidate = current_.candidates[decision.candidateOrdinal - 1];
@@ -37,6 +55,18 @@ SurfaceOutcome SurfaceSession::HandleVirtualKey(WPARAM virtualKey, bool shiftDow
     }
     if (outcome.handled) current_ = outcome.update;
     return outcome;
+}
+
+void SurfaceSession::DisconnectForRecovery() noexcept {
+    broker_.Close();
+    current_ = {};
+}
+
+void SurfaceSession::Close() noexcept {
+    broker_.Close();
+    current_ = {};
+    pipeName_.clear();
+    reconnectTimeoutMs_ = 100;
 }
 
 bool SurfaceSession::TranslateCompositionKey(WPARAM virtualKey, bool shiftDown, char* code) noexcept {

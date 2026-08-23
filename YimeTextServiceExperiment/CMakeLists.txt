@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.20)
 project(YimeTextServiceExperiment LANGUAGES CXX)
 
 add_library(YimeTextServiceExperiment SHARED
+    BrokerEndpoint.cpp
     BrokerClient.cpp
     CandidateListUIElement.cpp
     CandidatePopup.cpp
@@ -22,6 +23,7 @@ set_property(TARGET YimeTextServiceExperiment PROPERTY MSVC_RUNTIME_LIBRARY "Mul
 
 add_executable(YimeTextServiceContractTests
     tests/ContractTests.cpp
+    BrokerEndpoint.cpp
     CandidateListUIElement.cpp
     CandidatePopup.cpp
     KeyContract.cpp

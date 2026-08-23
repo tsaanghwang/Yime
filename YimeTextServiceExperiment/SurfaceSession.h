@@ -17,16 +17,20 @@ class SurfaceSession {
 public:
     bool Connect(const std::wstring& pipeName, DWORD timeoutMs, std::string* error);
     bool IsConnected() const noexcept { return broker_.IsConnected(); }
-    bool CanHandle(WPARAM virtualKey, bool shiftDown) const noexcept;
+    bool CanHandle(WPARAM virtualKey, bool shiftDown);
     SurfaceOutcome HandleVirtualKey(WPARAM virtualKey, bool shiftDown);
-    void Close() noexcept { broker_.Close(); }
+    void DisconnectForRecovery() noexcept;
+    void Close() noexcept;
 
 private:
     static bool TranslateCompositionKey(WPARAM virtualKey, bool shiftDown, char* code) noexcept;
+    bool EnsureConnected(std::string* error);
 
     BrokerClient broker_;
     BrokerUpdate current_;
     uint64_t mutationSequence_ = 0;
+    std::wstring pipeName_;
+    DWORD reconnectTimeoutMs_ = 100;
 };
 
 }  // namespace yime::experiment

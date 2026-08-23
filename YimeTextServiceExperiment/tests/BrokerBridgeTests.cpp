@@ -45,10 +45,16 @@ int wmain(int argc, wchar_t** argv) {
         std::cerr << "pass-through key was consumed\n";
         return 1;
     }
+    surface.DisconnectForRecovery();
+    outcome = surface.HandleVirtualKey('2', false);
+    if (!outcome.handled || outcome.update.rawInput != "2") {
+        std::cerr << "recoverable surface did not reconnect after host termination: " << outcome.error << '\n';
+        return 1;
+    }
     surface.Close();
     outcome = surface.HandleVirtualKey('2', false);
     if (outcome.handled || outcome.error.empty()) {
-        std::cerr << "disconnected surface consumed a key\n";
+        std::cerr << "permanently closed surface consumed a key\n";
         return 1;
     }
     std::cout << "YimeTextService E6-B2a bridge passed; selected=" << selected
