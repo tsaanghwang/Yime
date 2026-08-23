@@ -12,7 +12,8 @@ class LanguageBarItem;
 
 class YimeTextService final : public ITfTextInputProcessorEx,
                               public ITfKeyEventSink,
-                              public ITfCompositionSink {
+                              public ITfCompositionSink,
+                              public ITfThreadMgrEventSink {
 public:
     YimeTextService() noexcept;
 
@@ -31,6 +32,12 @@ public:
     STDMETHODIMP OnKeyUp(ITfContext* context, WPARAM wParam, LPARAM lParam, BOOL* eaten) override;
     STDMETHODIMP OnPreservedKey(ITfContext* context, REFGUID guid, BOOL* eaten) override;
     STDMETHODIMP OnCompositionTerminated(TfEditCookie cookie, ITfComposition* composition) override;
+
+    STDMETHODIMP OnInitDocumentMgr(ITfDocumentMgr* document) override;
+    STDMETHODIMP OnUninitDocumentMgr(ITfDocumentMgr* document) override;
+    STDMETHODIMP OnSetFocus(ITfDocumentMgr* focus, ITfDocumentMgr* previous) override;
+    STDMETHODIMP OnPushContext(ITfContext* context) override;
+    STDMETHODIMP OnPopContext(ITfContext* context) override;
 
 private:
     ~YimeTextService();
@@ -53,7 +60,10 @@ private:
     TfClientId clientId_ = TF_CLIENTID_NULL;
     DWORD activationFlags_ = 0;
     bool keySinkAdvised_ = false;
+    bool threadEventSinkAdvised_ = false;
+    DWORD threadEventSinkCookie_ = TF_INVALID_COOKIE;
     bool keyEventFocused_ = true;
+    bool compositionDocumentFocused_ = true;
     yime::experiment::SurfaceSession surface_;
     ITfComposition* composition_ = nullptr;
     ITfContext* compositionContext_ = nullptr;

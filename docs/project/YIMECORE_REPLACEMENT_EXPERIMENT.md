@@ -350,6 +350,16 @@ E6-B5 已实现宿主要求文本服务自绘时的最小候选窗口和鼠标�
 
 B5 的无 owner 合成上下文不提供可用 `GetTextExt`，因此不能把降级锚点冒充真实应用定位通过。注册后的系统按键汇派发、真实应用文本范围定位和自动焦点回调仍必须在提权的 registered-host 门禁中验证；通过前不批准默认切换。
 
+E6-B6 已建立提权注册后的真实 TSF 宿主门禁：
+
+- 独立 `YimeRegisteredHostTests` 不加载 DLL、不查询试验类工厂，也不直接调用 `ITfKeyEventSink`。它通过系统已注册 Profile 切换当前 TSF 语言和激活试验 TIP，再从 `ITfKeystrokeMgr` 派发按键。
+- 宿主实现最小内存 `ITextStoreACP` 和同步锁协议；composition 写入、selection、候选提交和 `GetTextExt` 全部经 TSF 与宿主 text store 往返。候选窗左上位置必须精确跟随宿主返回的文本范围底边，不能落入 caret 或鼠标降级路径。
+- 激活 Profile 后重新聚焦文档，要求 foreground key sink 出现；切换到第二个 `ITfDocumentMgr` 时由系统自动派发焦点与 composition 终止事件。旧 composition 不得吃新文档按键；若宿主终止 composition，候选 HWND 和 Broker 会话必须清理，返回后也不得继续吃键；若宿主保留 composition，候选窗须隐藏并在返回原文档后恢复。
+- 注册和宿主运行始终包在精确注销的 `finally` 中；x64 与 x86 依次使用各自 COM 视图，三种编码模式分别启动独立 Broker，任何失败后仍须等待 TSF 枚举收敛并通过 `verify-absent`。
+- Windows 8 以后 language-bar `AddItem` 的 S_OK 允许代表静默忽略；宿主只在 HRESULT 为 S_OK 且返回非空接口时记录 accepted，不再解引用空指针。该辅助观察不替代按键、composition、候选窗、焦点和定位主门禁。
+
+B6 仍是专用内存 text-store 宿主，不冒充第三方桌面应用或签名安装包验收。下一步是独立目录的并列试装、卸载回滚和安装态宿主验证；通过前默认 Rime/PIME 路径保持不变。
+
 ### E7：切换与退役
 
 - 只有 E0 至 E6 全部门禁通过，并完成签名安装包真实宿主验收，才提交默认切换提案。

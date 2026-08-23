@@ -65,6 +65,8 @@ STDMETHODIMP YimeTextService::QueryInterface(REFIID iid, void** object) {
         *object = static_cast<ITfKeyEventSink*>(this);
     } else if (IsEqualIID(iid, __uuidof(ITfCompositionSink))) {
         *object = static_cast<ITfCompositionSink*>(this);
+    } else if (IsEqualIID(iid, __uuidof(ITfThreadMgrEventSink))) {
+        *object = static_cast<ITfThreadMgrEventSink*>(this);
     } else {
         return E_NOINTERFACE;
     }
@@ -107,6 +109,13 @@ STDMETHODIMP YimeTextService::ActivateEx(ITfThreadMgr* threadManager, TfClientId
         Deactivate();
         return result;
     }
+    ITfSource* source = nullptr;
+    if (SUCCEEDED(threadManager_->QueryInterface(__uuidof(ITfSource), reinterpret_cast<void**>(&source)))) {
+        threadEventSinkAdvised_ = source->AdviseSink(
+            __uuidof(ITfThreadMgrEventSink), static_cast<ITfThreadMgrEventSink*>(this),
+            &threadEventSinkCookie_) == S_OK;
+        source->Release();
+    }
     AddLanguageBar();
     wchar_t pipeName[256]{};
     const DWORD pipeLength = GetEnvironmentVariableW(
@@ -128,6 +137,15 @@ STDMETHODIMP YimeTextService::Deactivate() {
         }
     }
     keySinkAdvised_ = false;
+    if (threadEventSinkAdvised_) {
+        ITfSource* source = nullptr;
+        if (SUCCEEDED(threadManager_->QueryInterface(__uuidof(ITfSource), reinterpret_cast<void**>(&source)))) {
+            source->UnadviseSink(threadEventSinkCookie_);
+            source->Release();
+        }
+    }
+    threadEventSinkAdvised_ = false;
+    threadEventSinkCookie_ = TF_INVALID_COOKIE;
     RemoveLanguageBar();
     EndCandidateUI();
     surface_.Close();
@@ -139,6 +157,7 @@ STDMETHODIMP YimeTextService::Deactivate() {
     activationFlags_ = 0;
     clientId_ = TF_CLIENTID_NULL;
     keyEventFocused_ = false;
+    compositionDocumentFocused_ = true;
     threadManager_->Release();
     threadManager_ = nullptr;
     return S_OK;
@@ -146,15 +165,29 @@ STDMETHODIMP YimeTextService::Deactivate() {
 
 STDMETHODIMP YimeTextService::OnSetFocus(BOOL foreground) {
     keyEventFocused_ = foreground != FALSE;
-    bool compositionDocumentFocused = true;
-    if (keyEventFocused_ && compositionDocument_ && threadManager_) {
-        ITfDocumentMgr* focus = nullptr;
-        compositionDocumentFocused = SUCCEEDED(threadManager_->GetFocus(&focus)) && focus == compositionDocument_;
-        if (focus) focus->Release();
-    }
-    ShowCandidateUI(CanAcceptKeys() && compositionDocumentFocused);
+    ShowCandidateUI(CanAcceptKeys() && compositionDocumentFocused_);
     return S_OK;
 }
+
+STDMETHODIMP YimeTextService::OnInitDocumentMgr(ITfDocumentMgr*) { return S_OK; }
+
+STDMETHODIMP YimeTextService::OnUninitDocumentMgr(ITfDocumentMgr* document) {
+    if (document && document == compositionDocument_) {
+        compositionDocumentFocused_ = false;
+        ShowCandidateUI(false);
+    }
+    return S_OK;
+}
+
+STDMETHODIMP YimeTextService::OnSetFocus(ITfDocumentMgr* focus, ITfDocumentMgr*) {
+    compositionDocumentFocused_ = !compositionDocument_ || focus == compositionDocument_;
+    ShowCandidateUI(CanAcceptKeys() && compositionDocumentFocused_);
+    return S_OK;
+}
+
+STDMETHODIMP YimeTextService::OnPushContext(ITfContext*) { return S_OK; }
+
+STDMETHODIMP YimeTextService::OnPopContext(ITfContext*) { return S_OK; }
 
 bool YimeTextService::CanAcceptKeys() const noexcept {
     return keyEventFocused_;
@@ -233,6 +266,12 @@ void YimeTextService::RememberCompositionContext(ITfContext* context) noexcept {
     compositionContext_ = context;
     compositionContext_->AddRef();
     context->GetDocumentMgr(&compositionDocument_);
+    if (threadManager_ && compositionDocument_) {
+        ITfDocumentMgr* focus = nullptr;
+        compositionDocumentFocused_ = SUCCEEDED(threadManager_->GetFocus(&focus)) &&
+                                      focus == compositionDocument_;
+        if (focus) focus->Release();
+    }
 }
 
 void YimeTextService::ForgetCompositionContext() noexcept {
@@ -244,6 +283,7 @@ void YimeTextService::ForgetCompositionContext() noexcept {
         compositionContext_->Release();
         compositionContext_ = nullptr;
     }
+    compositionDocumentFocused_ = true;
 }
 
 void YimeTextService::UpdateCandidateUI(ITfContext* context, const yime::experiment::BrokerUpdate& update,
