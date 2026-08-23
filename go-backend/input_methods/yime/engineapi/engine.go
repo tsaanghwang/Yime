@@ -13,6 +13,7 @@ const (
 	Clear
 	PageNext
 	PagePrevious
+	FocusSegment
 )
 
 var (
@@ -24,8 +25,11 @@ var (
 // for AppendCode. Candidate selection deliberately uses stable candidate IDs
 // through Engine.Select instead of host window ordinals.
 type Event struct {
-	Operation Operation `json:"operation"`
-	Code      string    `json:"code,omitempty"`
+	Operation    Operation `json:"operation"`
+	Code         string    `json:"code,omitempty"`
+	CandidateID  string    `json:"candidate_id,omitempty"`
+	SegmentStart int       `json:"segment_start,omitempty"`
+	SegmentEnd   int       `json:"segment_end,omitempty"`
 }
 
 // Candidate is a host-neutral candidate returned by an engine. ID must stay
@@ -64,11 +68,12 @@ type Segment struct {
 
 // State is a point-in-time engine snapshot.
 type State struct {
-	RawInput    string      `json:"raw_input"`
-	Candidates  []Candidate `json:"candidates,omitempty"`
-	PageNumber  int         `json:"page_number,omitempty"`
-	HasPrevious bool        `json:"has_previous,omitempty"`
-	HasNext     bool        `json:"has_next,omitempty"`
+	RawInput      string      `json:"raw_input"`
+	Candidates    []Candidate `json:"candidates,omitempty"`
+	PageNumber    int         `json:"page_number,omitempty"`
+	HasPrevious   bool        `json:"has_previous,omitempty"`
+	HasNext       bool        `json:"has_next,omitempty"`
+	ActiveSegment *Segment    `json:"active_segment,omitempty"`
 }
 
 // Result combines the durable state after a transition with an ephemeral

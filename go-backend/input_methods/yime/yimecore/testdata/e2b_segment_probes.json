@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "source": "current in-repository generated core dictionaries and existing real-Rime bjjj/bj segment-correction acceptance; no prototype repository",
+  "modes": {
+    "full": [{"text":"幅幅","code":"bjjjbjjj"}],
+    "variable": [{"text":"幅幅","code":"bjbj"}],
+    "shorthand": [{"text":"幅幅","code":"bjbj"}]
+  }
+}

@@ -90,7 +90,15 @@ func (e *Engine) extendSentenceLattice(input string, maxCodeBytes int) {
 		if len(e.sentenceStates[start]) == 0 {
 			continue
 		}
+		span := segmentSpan{start: start, end: end}
+		selected, hasSelection := e.segmentChoices[span]
+		if e.segmentOverlapsSelection(span) && !hasSelection {
+			continue
+		}
 		matches := e.exactMatches(input[start:end])
+		if hasSelection {
+			matches = []record{selected}
+		}
 		for _, match := range matches {
 			for _, path := range e.sentenceStates[start] {
 				sourceID := match.source
@@ -111,6 +119,15 @@ func (e *Engine) extendSentenceLattice(input string, maxCodeBytes int) {
 		}
 	}
 	e.sentenceInput = input
+}
+
+func (e *Engine) segmentOverlapsSelection(candidate segmentSpan) bool {
+	for selected := range e.segmentChoices {
+		if candidate.start < selected.end && candidate.end > selected.start {
+			return true
+		}
+	}
+	return false
 }
 
 func (e *Engine) resetSentenceComposer() {
