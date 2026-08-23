@@ -23,6 +23,8 @@ func main() {
 	userJournal := flag.String("user-model-journal", "", "optional durable write-ahead journal")
 	userModelSourceID := flag.String("user-model-source-id", "", "stable user-model namespace across compatible index generations")
 	checkpointEvery := flag.Int("user-model-checkpoint-every", 256, "durable mutations between background snapshots")
+	compactEvery := flag.Int("user-model-compact-every", 4096, "durable mutations between atomic journal compactions")
+	rollbackSnapshot := flag.String("user-model-rollback-snapshot", "", "optional E5-F-compatible v1 rollback snapshot")
 	indexVersion := flag.String("index-version", "", "initial managed index version")
 	indexSHA256 := flag.String("index-sha256", "", "initial managed index file SHA-256")
 	indexControlManifest := flag.String("index-control-manifest", "", "optional watched index control manifest")
@@ -30,6 +32,7 @@ func main() {
 	exitBeforeRequest := flag.Int("experiment-exit-before-request", 0, "E5-B fault injection only")
 	hangBeforeRequest := flag.Int("experiment-hang-before-request", 0, "E5-B fault injection only")
 	exitAfterRequest := flag.Int("experiment-exit-after-request", 0, "E5-F fault injection after durable handling but before response")
+	exitCompactionStage := flag.String("experiment-exit-compaction-stage", "", "E5-G fault injection at a named compaction stage")
 	flag.Parse()
 	if *indexPath == "" || *mode == "" || *trustedClientID == "" {
 		fail(fmt.Errorf("index, mode and trusted-client-id are required"))
@@ -49,14 +52,35 @@ func main() {
 	if *userModelSourceID != "" && *userSnapshot == "" {
 		fail(fmt.Errorf("user-model-source-id requires durable user-model paths"))
 	}
+	if *exitCompactionStage != "" && *userSnapshot == "" {
+		fail(fmt.Errorf("experiment-exit-compaction-stage requires durable user-model paths"))
+	}
 	var builder yimebroker.IndexEngineBuilder
 	if *userSnapshot != "" {
 		modelSourceID := *userModelSourceID
 		if modelSourceID == "" {
 			modelSourceID = index.SourceID()
 		}
+		var compactionHook func(yimebroker.CompactionStage)
+		if *exitCompactionStage != "" {
+			validStage := false
+			for _, stage := range []yimebroker.CompactionStage{yimebroker.CompactionAfterSnapshot, yimebroker.CompactionAfterJournalClose, yimebroker.CompactionAfterJournalReplace} {
+				if string(stage) == *exitCompactionStage {
+					validStage = true
+				}
+			}
+			if !validStage {
+				fail(fmt.Errorf("unknown compaction stage %q", *exitCompactionStage))
+			}
+			compactionHook = func(stage yimebroker.CompactionStage) {
+				if string(stage) == *exitCompactionStage {
+					os.Exit(88)
+				}
+			}
+		}
 		durable, err = yimebroker.OpenDurableUserModel(yimebroker.DurableUserModelConfig{
-			SnapshotPath: *userSnapshot, JournalPath: *userJournal, SourceID: modelSourceID, CheckpointEvery: *checkpointEvery,
+			SnapshotPath: *userSnapshot, JournalPath: *userJournal, RollbackSnapshotPath: *rollbackSnapshot, SourceID: modelSourceID,
+			CheckpointEvery: *checkpointEvery, CompactEvery: *compactEvery, CompactionStageHook: compactionHook,
 		})
 		if err != nil {
 			fail(err)

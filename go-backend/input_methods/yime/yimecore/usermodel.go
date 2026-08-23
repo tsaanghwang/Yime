@@ -16,7 +16,11 @@ import (
 )
 
 const (
-	userModelSchemaVersion   = "yime-user-model-v1"
+	UserModelSchemaVersion1  = "yime-user-model-v1"
+	UserModelSchemaVersion2  = "yime-user-model-v2"
+	userModelSchemaVersion1  = UserModelSchemaVersion1
+	userModelSchemaVersion2  = UserModelSchemaVersion2
+	userModelSchemaVersion   = userModelSchemaVersion2
 	userBoostPerSelection    = int64(1_000_000_000_000)
 	contextBoostPerSelection = int64(500_000_000_000)
 	maximumUserModelItems    = 1_000_000
@@ -37,6 +41,7 @@ type UserModel struct {
 	contexts        map[contextIdentity]uint64
 	appliedRequests map[string]UserMutation
 	mutationWriter  func(UserMutation) error
+	loadedSchema    string
 }
 
 type UserMutation struct {
@@ -82,7 +87,7 @@ func NewUserModel(sourceID string) (*UserModel, error) {
 	if strings.TrimSpace(sourceID) == "" {
 		return nil, fmt.Errorf("user model source ID is required")
 	}
-	return &UserModel{sourceID: sourceID, selections: make(map[candidateIdentity]uint64), contexts: make(map[contextIdentity]uint64), appliedRequests: make(map[string]UserMutation)}, nil
+	return &UserModel{sourceID: sourceID, selections: make(map[candidateIdentity]uint64), contexts: make(map[contextIdentity]uint64), appliedRequests: make(map[string]UserMutation), loadedSchema: userModelSchemaVersion}, nil
 }
 
 // OpenUserModel opens or initializes a model at path. Invalid data is
@@ -113,6 +118,7 @@ func OpenUserModel(path, sourceID string) (*UserModel, error) {
 		return nil, err
 	}
 	model.appliedRequests = cloneMutations(payload.AppliedRequests)
+	model.loadedSchema = payload.SchemaVersion
 	return model, nil
 }
 
@@ -247,6 +253,15 @@ func (m *UserModel) Generation() uint64 {
 	return m.generation
 }
 
+func (m *UserModel) LoadedSchemaVersion() string {
+	if m == nil {
+		return ""
+	}
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	return m.loadedSchema
+}
+
 func (m *UserModel) ApplyRecoveredMutation(mutation UserMutation) error {
 	if m == nil {
 		return fmt.Errorf("%w: nil recovered model", ErrCorruptUserModel)
@@ -308,6 +323,14 @@ func (m *UserModel) SaveTo(path string) error {
 	return m.writeSnapshot(filepath.Clean(path))
 }
 
+// SaveVersion1To writes the E5-F-compatible schema for rollback from v2.
+func (m *UserModel) SaveVersion1To(path string) error {
+	if m == nil || strings.TrimSpace(path) == "" {
+		return fmt.Errorf("user model rollback path is required")
+	}
+	return m.writeSnapshotVersion(filepath.Clean(path), userModelSchemaVersion1)
+}
+
 // Restore validates a backup against this model's source identity, publishes
 // it atomically to the primary path, and only then updates in-memory state.
 func (m *UserModel) Restore(backupPath string) error {
@@ -326,6 +349,7 @@ func (m *UserModel) Restore(backupPath string) error {
 	if err != nil {
 		return err
 	}
+	payload.SchemaVersion = userModelSchemaVersion
 	if err := writeUserModelFile(m.path, payload); err != nil {
 		return err
 	}
@@ -334,14 +358,22 @@ func (m *UserModel) Restore(backupPath string) error {
 	m.selections = selections
 	m.contexts = contexts
 	m.appliedRequests = cloneMutations(payload.AppliedRequests)
+	m.loadedSchema = userModelSchemaVersion
 	m.mu.Unlock()
 	return nil
 }
 
 func (m *UserModel) writeSnapshot(path string) error {
+	return m.writeSnapshotVersion(path, userModelSchemaVersion)
+}
+
+func (m *UserModel) writeSnapshotVersion(path, schemaVersion string) error {
+	if schemaVersion != userModelSchemaVersion1 && schemaVersion != userModelSchemaVersion2 {
+		return fmt.Errorf("unsupported user model schema %q", schemaVersion)
+	}
 	m.mu.RLock()
 	payload := userModelPayload{
-		SchemaVersion:   userModelSchemaVersion,
+		SchemaVersion:   schemaVersion,
 		SourceID:        m.sourceID,
 		Generation:      m.generation,
 		Selections:      encodeSelectionCounts(m.selections),
@@ -349,7 +381,15 @@ func (m *UserModel) writeSnapshot(path string) error {
 		AppliedRequests: cloneMutations(m.appliedRequests),
 	}
 	m.mu.RUnlock()
-	return writeUserModelFile(path, payload)
+	if err := writeUserModelFile(path, payload); err != nil {
+		return err
+	}
+	if path == m.path && schemaVersion == userModelSchemaVersion {
+		m.mu.Lock()
+		m.loadedSchema = schemaVersion
+		m.mu.Unlock()
+	}
+	return nil
 }
 
 func writeUserModelFile(path string, payload userModelPayload) error {
@@ -411,7 +451,7 @@ func readUserModelFile(path, sourceID string) (userModelPayload, error) {
 	if err := ensureJSONEOF(decoder); err != nil {
 		return userModelPayload{}, fmt.Errorf("%w: %v", ErrCorruptUserModel, err)
 	}
-	if file.SchemaVersion != userModelSchemaVersion || file.SourceID != sourceID || len(file.Selections)+len(file.Contexts)+len(file.AppliedRequests) > maximumUserModelItems {
+	if (file.SchemaVersion != userModelSchemaVersion1 && file.SchemaVersion != userModelSchemaVersion2) || file.SourceID != sourceID || len(file.Selections)+len(file.Contexts)+len(file.AppliedRequests) > maximumUserModelItems {
 		return userModelPayload{}, fmt.Errorf("%w: schema, source identity or item count mismatch", ErrCorruptUserModel)
 	}
 	for key, count := range file.Selections {

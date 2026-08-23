@@ -25,19 +25,35 @@ const (
 var ErrCorruptUserJournal = errors.New("corrupt Yime user journal")
 
 type DurableUserModelConfig struct {
-	SnapshotPath    string
-	JournalPath     string
-	SourceID        string
-	CheckpointEvery int
+	SnapshotPath         string
+	JournalPath          string
+	RollbackSnapshotPath string
+	SourceID             string
+	CheckpointEvery      int
+	CompactEvery         int
+	CompactionStageHook  func(CompactionStage)
 }
 
+type CompactionStage string
+
+const (
+	CompactionAfterSnapshot       CompactionStage = "after_snapshot"
+	CompactionAfterJournalClose   CompactionStage = "after_journal_close"
+	CompactionAfterJournalReplace CompactionStage = "after_journal_replace"
+)
+
 type DurableUserModelStats struct {
-	SnapshotGeneration  uint64 `json:"snapshot_generation"`
-	JournalGeneration   uint64 `json:"journal_generation"`
-	RecoveredMutations  int    `json:"recovered_mutations"`
-	TruncatedTailBytes  int64  `json:"truncated_tail_bytes"`
-	CheckpointFailures  int    `json:"checkpoint_failures"`
-	LastCheckpointError string `json:"last_checkpoint_error,omitempty"`
+	SnapshotGeneration   uint64 `json:"snapshot_generation"`
+	JournalGeneration    uint64 `json:"journal_generation"`
+	RecoveredMutations   int    `json:"recovered_mutations"`
+	TruncatedTailBytes   int64  `json:"truncated_tail_bytes"`
+	CheckpointFailures   int    `json:"checkpoint_failures"`
+	LastCheckpointError  string `json:"last_checkpoint_error,omitempty"`
+	Compactions          int    `json:"compactions"`
+	CompactionFailures   int    `json:"compaction_failures"`
+	LastCompactionError  string `json:"last_compaction_error,omitempty"`
+	RollbackSnapshotPath string `json:"rollback_snapshot_path,omitempty"`
+	MigratedFromSchema   string `json:"migrated_from_schema,omitempty"`
 }
 
 type journalPayload struct {
@@ -65,7 +81,11 @@ type DurableUserModel struct {
 	requests        chan durableRequest
 	done            chan struct{}
 	checkpointEvery int
+	compactEvery    int
 	sourceID        string
+	snapshotPath    string
+	journalPath     string
+	compactionHook  func(CompactionStage)
 	previousHash    string
 	journalGen      uint64
 	stats           DurableUserModelStats
@@ -96,9 +116,45 @@ func OpenDurableUserModel(config DurableUserModelConfig) (*DurableUserModel, err
 	if config.CheckpointEvery < 1 || config.CheckpointEvery > 1_000_000 {
 		return nil, errors.New("checkpoint interval is out of range")
 	}
+	if config.CompactEvery == 0 {
+		config.CompactEvery = 4096
+	}
+	if config.CompactEvery < 1 || config.CompactEvery > 10_000_000 {
+		return nil, errors.New("compaction interval is out of range")
+	}
 	model, err := yimecore.OpenUserModel(snapshotPath, config.SourceID)
 	if err != nil {
 		return nil, err
+	}
+	rollbackPath := config.RollbackSnapshotPath
+	if rollbackPath == "" {
+		rollbackPath = snapshotPath + ".v1.rollback"
+	}
+	rollbackPath, err = filepath.Abs(rollbackPath)
+	if err != nil {
+		return nil, err
+	}
+	if strings.EqualFold(rollbackPath, snapshotPath) || strings.EqualFold(rollbackPath, journalPath) {
+		return nil, errors.New("rollback snapshot must differ from snapshot and journal paths")
+	}
+	migratedFrom := ""
+	if model.LoadedSchemaVersion() == yimecore.UserModelSchemaVersion1 {
+		migratedFrom = yimecore.UserModelSchemaVersion1
+		if _, statErr := os.Stat(rollbackPath); errors.Is(statErr, os.ErrNotExist) {
+			if backupErr := model.SaveVersion1To(rollbackPath); backupErr != nil {
+				return nil, fmt.Errorf("create v1 rollback snapshot: %w", backupErr)
+			}
+		} else if statErr != nil {
+			return nil, statErr
+		} else {
+			backup, backupErr := yimecore.OpenUserModel(rollbackPath, config.SourceID)
+			if backupErr != nil {
+				return nil, fmt.Errorf("validate v1 rollback snapshot: %w", backupErr)
+			}
+			if backup.LoadedSchemaVersion() != yimecore.UserModelSchemaVersion1 {
+				return nil, errors.New("rollback snapshot is not schema v1")
+			}
+		}
 	}
 	if err := os.MkdirAll(filepath.Dir(journalPath), 0o700); err != nil {
 		return nil, err
@@ -118,8 +174,10 @@ func OpenDurableUserModel(config DurableUserModelConfig) (*DurableUserModel, err
 	}
 	store := &DurableUserModel{
 		model: model, journal: journal, requests: make(chan durableRequest, 64), done: make(chan struct{}),
-		checkpointEvery: config.CheckpointEvery, sourceID: config.SourceID, previousHash: previousHash, journalGen: journalGeneration,
-		stats: DurableUserModelStats{SnapshotGeneration: model.Generation() - uint64(recovered), JournalGeneration: journalGeneration, RecoveredMutations: recovered, TruncatedTailBytes: truncated},
+		checkpointEvery: config.CheckpointEvery, compactEvery: config.CompactEvery, sourceID: config.SourceID, snapshotPath: snapshotPath, journalPath: journalPath,
+		compactionHook: config.CompactionStageHook, previousHash: previousHash, journalGen: max(journalGeneration, model.Generation()),
+		stats: DurableUserModelStats{SnapshotGeneration: model.Generation() - uint64(recovered), JournalGeneration: max(journalGeneration, model.Generation()),
+			RecoveredMutations: recovered, TruncatedTailBytes: truncated, RollbackSnapshotPath: rollbackPath, MigratedFromSchema: migratedFrom},
 	}
 	go store.run()
 	model.SetMutationWriter(store.persist)
@@ -131,9 +189,7 @@ func (s *DurableUserModel) Model() *yimecore.UserModel { return s.model }
 func (s *DurableUserModel) Stats() DurableUserModelStats {
 	s.statsMu.Lock()
 	defer s.statsMu.Unlock()
-	result := s.stats
-	result.JournalGeneration = s.journalGen
-	return result
+	return s.stats
 }
 
 func (s *DurableUserModel) persist(mutation yimecore.UserMutation) error {
@@ -151,6 +207,7 @@ func (s *DurableUserModel) persist(mutation yimecore.UserMutation) error {
 func (s *DurableUserModel) run() {
 	defer close(s.done)
 	mutationsSinceCheckpoint := 0
+	mutationsSinceCompaction := 0
 	var fatalJournalError error
 	for request := range s.requests {
 		if request.close {
@@ -158,8 +215,10 @@ func (s *DurableUserModel) run() {
 			if request.checkpoint {
 				err = s.model.Save()
 			}
-			if closeErr := s.journal.Close(); err == nil {
-				err = closeErr
+			if s.journal != nil {
+				if closeErr := s.journal.Close(); err == nil {
+					err = closeErr
+				}
 			}
 			if err == nil {
 				err = fatalJournalError
@@ -179,16 +238,113 @@ func (s *DurableUserModel) run() {
 			continue
 		}
 		mutationsSinceCheckpoint++
-		if mutationsSinceCheckpoint >= s.checkpointEvery {
+		mutationsSinceCompaction++
+		if mutationsSinceCompaction >= s.compactEvery {
+			if compactErr := s.compactJournal(); compactErr != nil {
+				s.statsMu.Lock()
+				s.stats.CompactionFailures++
+				s.stats.LastCompactionError = compactErr.Error()
+				s.statsMu.Unlock()
+				if s.journal == nil {
+					fatalJournalError = compactErr
+				}
+			} else {
+				mutationsSinceCheckpoint = 0
+				mutationsSinceCompaction = 0
+			}
+		} else if mutationsSinceCheckpoint >= s.checkpointEvery {
 			if checkpointErr := s.model.Save(); checkpointErr != nil {
 				s.statsMu.Lock()
 				s.stats.CheckpointFailures++
 				s.stats.LastCheckpointError = checkpointErr.Error()
 				s.statsMu.Unlock()
+			} else {
+				s.statsMu.Lock()
+				s.stats.SnapshotGeneration = s.model.Generation()
+				s.statsMu.Unlock()
 			}
 			mutationsSinceCheckpoint = 0
 		}
 	}
+}
+
+func (s *DurableUserModel) compactJournal() (resultErr error) {
+	if err := s.model.Save(); err != nil {
+		return fmt.Errorf("save compaction snapshot: %w", err)
+	}
+	s.statsMu.Lock()
+	s.stats.SnapshotGeneration = s.model.Generation()
+	s.statsMu.Unlock()
+	if s.compactionHook != nil {
+		s.compactionHook(CompactionAfterSnapshot)
+	}
+	if err := s.journal.Sync(); err != nil {
+		return err
+	}
+	if err := s.journal.Close(); err != nil {
+		return err
+	}
+	s.journal = nil
+	defer func() {
+		if s.journal == nil {
+			journal, openErr := os.OpenFile(s.journalPath, os.O_CREATE|os.O_RDWR, 0o600)
+			if openErr == nil {
+				previousHash, journalGeneration, _, _, recoverErr := recoverJournal(journal, s.model, s.sourceID)
+				if recoverErr == nil {
+					_, openErr = journal.Seek(0, io.SeekEnd)
+					s.previousHash = previousHash
+					s.journalGen = max(journalGeneration, s.model.Generation())
+				} else {
+					openErr = recoverErr
+				}
+			}
+			if openErr != nil && journal != nil {
+				_ = journal.Close()
+				journal = nil
+			}
+			if openErr != nil && resultErr == nil {
+				resultErr = openErr
+			}
+			s.journal = journal
+		}
+	}()
+	if s.compactionHook != nil {
+		s.compactionHook(CompactionAfterJournalClose)
+	}
+	directory := filepath.Dir(s.journalPath)
+	temporary, err := os.CreateTemp(directory, ".yime-journal-compact-*.tmp")
+	if err != nil {
+		return err
+	}
+	temporaryPath := temporary.Name()
+	defer os.Remove(temporaryPath)
+	if err := temporary.Sync(); err != nil {
+		_ = temporary.Close()
+		return err
+	}
+	if err := temporary.Close(); err != nil {
+		return err
+	}
+	if err := replaceJournalAtomically(temporaryPath, s.journalPath); err != nil {
+		return err
+	}
+	if s.compactionHook != nil {
+		s.compactionHook(CompactionAfterJournalReplace)
+	}
+	journal, err := os.OpenFile(s.journalPath, os.O_CREATE|os.O_RDWR, 0o600)
+	if err != nil {
+		return err
+	}
+	s.journal = journal
+	s.previousHash = ""
+	s.journalGen = s.model.Generation()
+	s.statsMu.Lock()
+	s.stats.SnapshotGeneration = s.model.Generation()
+	s.stats.JournalGeneration = s.journalGen
+	s.stats.Compactions++
+	s.stats.LastCompactionError = ""
+	s.statsMu.Unlock()
+	return nil
 }
 
 func (s *DurableUserModel) append(mutation yimecore.UserMutation) error {

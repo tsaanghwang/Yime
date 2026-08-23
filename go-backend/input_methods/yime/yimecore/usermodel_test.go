@@ -161,6 +161,44 @@ func TestUserModelAtomicSaveReopenAndSourceBinding(t *testing.T) {
 	}
 }
 
+func TestUserModelV1ToV2MigrationKeepsRollbackAndIdempotency(t *testing.T) {
+	directory := t.TempDir()
+	v1Path := filepath.Join(directory, "model-v1.json")
+	v2Path := filepath.Join(directory, "model-v2.json")
+	rollbackPath := filepath.Join(directory, "rollback-v1.json")
+	model, err := OpenUserModel(v2Path, "migration-source")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := model.observeIdempotent("a1", "候选", "", "migration-request-0001"); err != nil {
+		t.Fatal(err)
+	}
+	if err := model.SaveVersion1To(v1Path); err != nil {
+		t.Fatal(err)
+	}
+	legacy, err := OpenUserModel(v1Path, "migration-source")
+	if err != nil || legacy.LoadedSchemaVersion() != UserModelSchemaVersion1 {
+		t.Fatalf("legacy open = %v schema=%q", err, legacy.LoadedSchemaVersion())
+	}
+	if err := legacy.Save(); err != nil {
+		t.Fatal(err)
+	}
+	migrated, err := OpenUserModel(v1Path, "migration-source")
+	if err != nil || migrated.LoadedSchemaVersion() != UserModelSchemaVersion2 || migrated.Generation() != 1 {
+		t.Fatalf("migrated open = %v schema=%q generation=%d", err, migrated.LoadedSchemaVersion(), migrated.Generation())
+	}
+	if err := migrated.SaveVersion1To(rollbackPath); err != nil {
+		t.Fatal(err)
+	}
+	rollback, err := OpenUserModel(rollbackPath, "migration-source")
+	if err != nil || rollback.LoadedSchemaVersion() != UserModelSchemaVersion1 || rollback.Generation() != 1 {
+		t.Fatalf("rollback open = %v schema=%q generation=%d", err, rollback.LoadedSchemaVersion(), rollback.Generation())
+	}
+	if err := rollback.observeIdempotent("a1", "候选", "", "migration-request-0001"); err != nil || rollback.Generation() != 1 {
+		t.Fatalf("rollback idempotency = %v generation=%d", err, rollback.Generation())
+	}
+}
+
 func TestUserModelBackupRestoreAndCorruptionIsolation(t *testing.T) {
 	directory := t.TempDir()
 	primary := filepath.Join(directory, "primary.json")

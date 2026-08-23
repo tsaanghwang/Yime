@@ -2,9 +2,13 @@ package yimebroker
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
+	"reflect"
+	"sync"
 	"testing"
+	"time"
 
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/engineapi"
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/yimecore"
@@ -74,6 +78,78 @@ func TestDurableUserModelRecoversJournalAndTruncatesTornTail(t *testing.T) {
 		t.Fatalf("recovered retry error=%v generation=%d", err, recovered.Model().Generation())
 	}
 	if err := recovered.Close(); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestDurableUserModelCompactsJournalAndCreatesV1Rollback(t *testing.T) {
+	directory := t.TempDir()
+	snapshot := filepath.Join(directory, "model.json")
+	journal := filepath.Join(directory, "model.journal")
+	rollback := filepath.Join(directory, "model.v1.rollback")
+	seed, err := yimecore.OpenUserModel(snapshot, "compact-test")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := seed.SaveVersion1To(snapshot); err != nil {
+		t.Fatal(err)
+	}
+	var stages []CompactionStage
+	var stagesMu sync.Mutex
+	store, err := OpenDurableUserModel(DurableUserModelConfig{
+		SnapshotPath: snapshot, JournalPath: journal, RollbackSnapshotPath: rollback, SourceID: "compact-test",
+		CheckpointEvery: 100, CompactEvery: 3, CompactionStageHook: func(stage CompactionStage) {
+			stagesMu.Lock()
+			stages = append(stages, stage)
+			stagesMu.Unlock()
+		},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	for generation := 1; generation <= 3; generation++ {
+		mutation := yimecore.UserMutation{Generation: uint64(generation), Kind: yimecore.UserMutationSelect, Code: "a1", Text: "候选", RequestID: fmt.Sprintf("compact-request-%04d", generation)}
+		if err := store.persist(mutation); err != nil {
+			t.Fatal(err)
+		}
+		if err := store.Model().ApplyRecoveredMutation(mutation); err != nil {
+			t.Fatal(err)
+		}
+	}
+	deadline := time.Now().Add(2 * time.Second)
+	for store.Stats().Compactions == 0 && time.Now().Before(deadline) {
+		time.Sleep(10 * time.Millisecond)
+	}
+	stats := store.Stats()
+	if stats.Compactions != 1 || stats.SnapshotGeneration != 3 || stats.MigratedFromSchema != yimecore.UserModelSchemaVersion1 {
+		t.Fatalf("compaction stats = %+v", stats)
+	}
+	info, err := os.Stat(journal)
+	if err != nil || info.Size() != 0 {
+		t.Fatalf("compacted journal info=%v err=%v", info, err)
+	}
+	stagesMu.Lock()
+	gotStages := append([]CompactionStage(nil), stages...)
+	stagesMu.Unlock()
+	wantStages := []CompactionStage{CompactionAfterSnapshot, CompactionAfterJournalClose, CompactionAfterJournalReplace}
+	if !reflect.DeepEqual(gotStages, wantStages) {
+		t.Fatalf("compaction stages = %v", gotStages)
+	}
+	rollbackModel, err := yimecore.OpenUserModel(rollback, "compact-test")
+	if err != nil || rollbackModel.LoadedSchemaVersion() != yimecore.UserModelSchemaVersion1 || rollbackModel.Generation() != 0 {
+		t.Fatalf("rollback model error=%v schema=%q generation=%d", err, rollbackModel.LoadedSchemaVersion(), rollbackModel.Generation())
+	}
+	if err := store.Close(); err != nil {
+		t.Fatal(err)
+	}
+	reopened, err := OpenDurableUserModel(DurableUserModelConfig{SnapshotPath: snapshot, JournalPath: journal, SourceID: "compact-test", CompactEvery: 3})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if reopened.Model().Generation() != 3 || reopened.Stats().RecoveredMutations != 0 {
+		t.Fatalf("reopened generation=%d stats=%+v", reopened.Model().Generation(), reopened.Stats())
+	}
+	if err := reopened.Close(); err != nil {
 		t.Fatal(err)
 	}
 }
