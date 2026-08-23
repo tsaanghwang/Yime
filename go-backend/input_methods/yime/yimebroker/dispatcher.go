@@ -122,23 +122,25 @@ func (d *Dispatcher) open(ctx context.Context, client TrustedClient, request Req
 			current.engine = engine
 		}
 		return engineapi.Result{}, err
-	})
+	}, func() { closeEngine(current.engine) })
 	if timedOut {
 		d.evict(id, current)
 		return errorResponse(request.Sequence, id, CodeTimeout, errors.New("engine creation timed out"))
 	}
 	if outcome.panic != nil {
 		d.evict(id, current)
+		closeEngine(current.engine)
 		return errorResponse(request.Sequence, id, CodeEnginePanic, fmt.Errorf("engine creation panic: %v", outcome.panic))
 	}
 	if outcome.err != nil || current.engine == nil {
 		d.evict(id, current)
+		closeEngine(current.engine)
 		if outcome.err == nil {
 			outcome.err = errors.New("engine factory returned nil")
 		}
 		return errorResponse(request.Sequence, id, CodeEngine, outcome.err)
 	}
-	return Response{Version: ProtocolVersion, Sequence: request.Sequence, SessionID: id, Result: &engineapi.Result{}}
+	return Response{Version: ProtocolVersion, Sequence: request.Sequence, SessionID: id, EngineVersion: engineVersion(current.engine), Result: &engineapi.Result{}}
 }
 
 func (d *Dispatcher) onSession(ctx context.Context, client TrustedClient, request Request) Response {
@@ -163,7 +165,8 @@ func (d *Dispatcher) onSession(ctx context.Context, client TrustedClient, reques
 	current.lastSeq = request.Sequence
 	if request.Operation == CloseSession {
 		d.evict(request.SessionID, current)
-		return Response{Version: ProtocolVersion, Sequence: request.Sequence, SessionID: request.SessionID, Result: &engineapi.Result{}}
+		closeEngine(current.engine)
+		return Response{Version: ProtocolVersion, Sequence: request.Sequence, SessionID: request.SessionID, EngineVersion: engineVersion(current.engine), Result: &engineapi.Result{}}
 	}
 
 	outcome, timedOut := runWithDeadline(ctx, d.config.OperationTimeout, func() (engineapi.Result, error) {
@@ -177,22 +180,23 @@ func (d *Dispatcher) onSession(ctx context.Context, client TrustedClient, reques
 		default:
 			return engineapi.Result{}, errors.New("unsupported session operation")
 		}
-	})
+	}, func() { closeEngine(current.engine) })
 	if timedOut {
 		d.evict(request.SessionID, current)
 		return errorResponse(request.Sequence, request.SessionID, CodeTimeout, errors.New("engine operation timed out; session evicted"))
 	}
 	if outcome.panic != nil {
 		d.evict(request.SessionID, current)
+		closeEngine(current.engine)
 		return errorResponse(request.Sequence, request.SessionID, CodeEnginePanic, fmt.Errorf("engine panic: %v; session evicted", outcome.panic))
 	}
 	if outcome.err != nil {
 		return errorResponse(request.Sequence, request.SessionID, CodeEngine, outcome.err)
 	}
-	return Response{Version: ProtocolVersion, Sequence: request.Sequence, SessionID: request.SessionID, Result: &outcome.result}
+	return Response{Version: ProtocolVersion, Sequence: request.Sequence, SessionID: request.SessionID, EngineVersion: engineVersion(current.engine), Result: &outcome.result}
 }
 
-func runWithDeadline(ctx context.Context, timeout time.Duration, call func() (engineapi.Result, error)) (engineOutcome, bool) {
+func runWithDeadline(ctx context.Context, timeout time.Duration, call func() (engineapi.Result, error), onLateCompletion func()) (engineOutcome, bool) {
 	operationCtx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 	completed := make(chan engineOutcome, 1)
@@ -208,8 +212,27 @@ func runWithDeadline(ctx context.Context, timeout time.Duration, call func() (en
 	case outcome := <-completed:
 		return outcome, false
 	case <-operationCtx.Done():
+		if onLateCompletion != nil {
+			go func() {
+				<-completed
+				onLateCompletion()
+			}()
+		}
 		return engineOutcome{err: operationCtx.Err()}, true
 	}
+}
+
+func closeEngine(engine engineapi.Engine) {
+	if closer, ok := engine.(interface{ Close() error }); ok {
+		_ = closer.Close()
+	}
+}
+
+func engineVersion(engine engineapi.Engine) string {
+	if versioned, ok := engine.(interface{ IndexVersion() string }); ok {
+		return versioned.IndexVersion()
+	}
+	return ""
 }
 
 func (d *Dispatcher) evict(id string, target *session) {

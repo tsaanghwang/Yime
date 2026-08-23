@@ -64,11 +64,12 @@ type ProtocolError struct {
 }
 
 type Response struct {
-	Version   int               `json:"version"`
-	Sequence  uint64            `json:"sequence"`
-	SessionID string            `json:"session_id,omitempty"`
-	Result    *engineapi.Result `json:"result,omitempty"`
-	Error     *ProtocolError    `json:"error,omitempty"`
+	Version       int               `json:"version"`
+	Sequence      uint64            `json:"sequence"`
+	SessionID     string            `json:"session_id,omitempty"`
+	EngineVersion string            `json:"engine_version,omitempty"`
+	Result        *engineapi.Result `json:"result,omitempty"`
+	Error         *ProtocolError    `json:"error,omitempty"`
 }
 
 func DecodeRequest(data []byte) (Request, error) {

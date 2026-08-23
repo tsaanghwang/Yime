@@ -21,7 +21,12 @@ func main() {
 	trustedClientID := flag.String("trusted-client-id", "", "identity bound by the launching transport adapter")
 	userSnapshot := flag.String("user-model-snapshot", "", "optional durable user model snapshot")
 	userJournal := flag.String("user-model-journal", "", "optional durable write-ahead journal")
+	userModelSourceID := flag.String("user-model-source-id", "", "stable user-model namespace across compatible index generations")
 	checkpointEvery := flag.Int("user-model-checkpoint-every", 256, "durable mutations between background snapshots")
+	indexVersion := flag.String("index-version", "", "initial managed index version")
+	indexSHA256 := flag.String("index-sha256", "", "initial managed index file SHA-256")
+	indexControlManifest := flag.String("index-control-manifest", "", "optional watched index control manifest")
+	indexControlStatus := flag.String("index-control-status", "", "status file for watched index control")
 	exitBeforeRequest := flag.Int("experiment-exit-before-request", 0, "E5-B fault injection only")
 	hangBeforeRequest := flag.Int("experiment-hang-before-request", 0, "E5-B fault injection only")
 	flag.Parse()
@@ -40,10 +45,17 @@ func main() {
 	if (*userSnapshot == "") != (*userJournal == "") {
 		fail(fmt.Errorf("user-model-snapshot and user-model-journal must be supplied together"))
 	}
-	var factory yimebroker.EngineFactory
+	if *userModelSourceID != "" && *userSnapshot == "" {
+		fail(fmt.Errorf("user-model-source-id requires durable user-model paths"))
+	}
+	var builder yimebroker.IndexEngineBuilder
 	if *userSnapshot != "" {
+		modelSourceID := *userModelSourceID
+		if modelSourceID == "" {
+			modelSourceID = index.SourceID()
+		}
 		durable, err = yimebroker.OpenDurableUserModel(yimebroker.DurableUserModelConfig{
-			SnapshotPath: *userSnapshot, JournalPath: *userJournal, SourceID: index.SourceID(), CheckpointEvery: *checkpointEvery,
+			SnapshotPath: *userSnapshot, JournalPath: *userJournal, SourceID: modelSourceID, CheckpointEvery: *checkpointEvery,
 		})
 		if err != nil {
 			fail(err)
@@ -53,21 +65,47 @@ func main() {
 				fmt.Fprintln(os.Stderr, err)
 			}
 		}()
-		factory = func() (engineapi.Engine, error) {
-			return yimecore.NewFileEngineWithUserModel(index, 9, durable.Model())
+		builder = func(target *yimecore.FileIndex) (engineapi.Engine, error) {
+			return yimecore.NewFileEngineWithUserModel(target, 9, durable.Model())
 		}
 	} else {
-		factory = func() (engineapi.Engine, error) { return yimecore.NewFileEngine(index, 9) }
+		builder = func(target *yimecore.FileIndex) (engineapi.Engine, error) { return yimecore.NewFileEngine(target, 9) }
+	}
+	var factory yimebroker.EngineFactory = func() (engineapi.Engine, error) { return builder(index) }
+	var manager *yimebroker.IndexManager
+	controlEnabled := *indexControlManifest != "" || *indexControlStatus != "" || *indexVersion != "" || *indexSHA256 != ""
+	if controlEnabled {
+		if *indexControlManifest == "" || *indexControlStatus == "" || *indexVersion == "" || *indexSHA256 == "" {
+			fail(fmt.Errorf("managed index requires version, SHA-256, control manifest and status paths"))
+		}
+		manager, err = yimebroker.OpenIndexManager(yimebroker.IndexSpec{
+			Version: *indexVersion, Mode: *mode, Path: *indexPath, ExpectedSHA256: *indexSHA256,
+		}, builder, nil)
+		if err != nil {
+			fail(err)
+		}
+		defer manager.Close()
+		factory = manager.NewEngine
 	}
 	dispatcher, err := yimebroker.NewDispatcher(factory, yimebroker.Config{})
 	if err != nil {
 		fail(err)
 	}
+	serveContext, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	if manager != nil {
+		go func() {
+			if watchErr := yimebroker.WatchIndexControl(serveContext, *indexControlManifest, *indexControlStatus, manager, 50*time.Millisecond); watchErr != nil {
+				fmt.Fprintln(os.Stderr, watchErr)
+				cancel()
+			}
+		}()
+	}
 	client := yimebroker.TrustedClient{ID: *trustedClientID}
 	if *exitBeforeRequest == 0 && *hangBeforeRequest == 0 {
-		err = yimebroker.ServeLines(context.Background(), os.Stdin, os.Stdout, dispatcher, client)
+		err = yimebroker.ServeLines(serveContext, os.Stdin, os.Stdout, dispatcher, client)
 	} else {
-		err = serveFaultExperiment(context.Background(), dispatcher, client, *exitBeforeRequest, *hangBeforeRequest)
+		err = serveFaultExperiment(serveContext, dispatcher, client, *exitBeforeRequest, *hangBeforeRequest)
 	}
 	if err != nil {
 		fail(err)
