@@ -40,6 +40,9 @@ private:
     void RemoveLanguageBar() noexcept;
     void ShowCandidateUI(bool show) noexcept;
     bool CanAcceptKeys() const noexcept;
+    bool ContextMatchesComposition(ITfContext* context) const noexcept;
+    void RememberCompositionContext(ITfContext* context) noexcept;
+    void ForgetCompositionContext() noexcept;
 
     std::atomic<ULONG> references_{1};
     ITfThreadMgr* threadManager_ = nullptr;
@@ -49,6 +52,8 @@ private:
     bool keyEventFocused_ = true;
     yime::experiment::SurfaceSession surface_;
     ITfComposition* composition_ = nullptr;
+    ITfContext* compositionContext_ = nullptr;
+    ITfDocumentMgr* compositionDocument_ = nullptr;
     bool plannedCompositionTermination_ = false;
     CandidateListUIElement* candidateUI_ = nullptr;
     DWORD candidateUIId_ = 0;

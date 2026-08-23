@@ -1,6 +1,6 @@
 # Yime 自研栈并行替换试验
 
-> 状态：E0、E1、E2-A、E2-B、E3-A、E3-B、E4-A、E4-B、E5-A、E5-B、E5-C、E5-D、E5-E、E5-F、E5-G、E6-A、E6-B1、E6-B2a、E6-B2b、E6-B3a、E6-B3b、E6-B4a、E6-B4b 已通过；未批准切换任何生产组件
+> 状态：E0、E1、E2-A、E2-B、E3-A、E3-B、E4-A、E4-B、E5-A、E5-B、E5-C、E5-D、E5-E、E5-F、E5-G、E6-A、E6-B1、E6-B2a、E6-B2b、E6-B3a、E6-B3b、E6-B4a、E6-B4b、E6-B4c readiness、E6-B4d 已通过；未批准切换任何生产组件
 > 试验分支：`codex/yimecore-replacement-experiment`  
 > 原则：先并行、后比较；逐层验收；失败即保留现状
 
@@ -330,6 +330,14 @@ E6-B4c readiness 已实现独立试验 TIP 的注册与回滚工具，但不把 
 - 未提权时，`register` 在任何写入前返回 `requires_elevated_token` 和专用退出码 3。x86/x64 readiness 回归确认两个注册视图和 TSF Profile 起初均不存在，拒绝注册后仍无残留，生产注册没有改变。
 
 当前 B4c 只完成能力和 fail-closed 门禁。只有在提权进程中完成 x86/x64 的真实 register/status/unregister 循环，并由注册后的宿主自动派发按键与焦点回调，才可把 B4c live 门禁标为通过。
+
+E6-B4d 已实现活动 composition 的跨 `ITfContext` 隔离：
+
+- 表层记录 composition 所属的 `ITfContext` 和 `ITfDocumentMgr`。只要旧 composition 尚未结束，来自其它 context 的 `OnTestKeyDown` 和 `OnKeyDown` 一律不接管，不能把 Broker 状态写入新文档。
+- `OnSetFocus(TRUE)` 会读取线程管理器当前文档；焦点不属于旧 composition 时继续隐藏原候选 UI，返回原文档后才恢复显示。
+- full、variable、shorthand 的 x86/x64 六条路径各建立两份真实 TSF 文档图，确认新文档保持空白、旧预编辑保持 `2jru`、候选不串窗，并在返回旧文档后正常提交。
+
+B4d 验证了跨文档状态不会互相污染，但焦点回调仍由测试经真实 key-sink 接口触发；系统自动派发和真实应用进程切换仍须 B4c live 注册门禁验证。
 
 ### E7：切换与退役
 

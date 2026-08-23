@@ -222,6 +222,33 @@ int wmain(int argc, wchar_t** argv) {
         if (focusEaten || readContext(context, clientId) != L"2jru" || !hasComposition(context)) {
             throw std::runtime_error("focus-loss key changed the active composition");
         }
+        ITfDocumentMgr* otherDocument = nullptr;
+        require(threadManager->CreateDocumentMgr(&otherDocument), "create cross-context document manager");
+        ITfContext* otherContext = nullptr;
+        TfEditCookie otherOwnerCookie = 0;
+        require(otherDocument->CreateContext(clientId, 0, nullptr, &otherContext, &otherOwnerCookie),
+                "create cross-context context");
+        require(otherDocument->Push(otherContext), "push cross-context context");
+        require(threadManager->SetFocus(otherDocument), "focus cross-context document");
+        require(keys->OnSetFocus(TRUE), "focus key sink on cross-context document");
+        focusEaten = TRUE;
+        require(keys->OnTestKeyDown(otherContext, 'J', 0, &focusEaten), "cross-context test key");
+        if (focusEaten) throw std::runtime_error("cross-context test key was claimed by the old composition");
+        focusEaten = TRUE;
+        require(keys->OnKeyDown(otherContext, 'J', 0, &focusEaten), "cross-context key");
+        if (focusEaten || !readContext(otherContext, clientId).empty() ||
+            readContext(context, clientId) != L"2jru" || !hasComposition(context)) {
+            throw std::runtime_error("cross-context key contaminated a TSF document");
+        }
+        candidateElement = findCandidateElement(threadManager);
+        if (!candidateElement) throw std::runtime_error("candidate UI element missing during cross-context isolation");
+        candidateShown = TRUE;
+        require(candidateElement->IsShown(&candidateShown), "read cross-context candidate visibility");
+        candidateElement->Release();
+        if (candidateShown) throw std::runtime_error("old candidate UI was shown on a different document");
+        std::cout << "cross_context_isolation_verified=true\n";
+        require(keys->OnSetFocus(FALSE), "leave cross-context key focus");
+        require(threadManager->SetFocus(document), "restore composition document focus");
         require(keys->OnSetFocus(TRUE), "restore key-sink focus");
         candidateElement = findCandidateElement(threadManager);
         if (!candidateElement) throw std::runtime_error("candidate UI element missing after focus restore");
@@ -230,6 +257,9 @@ int wmain(int argc, wchar_t** argv) {
         candidateElement->Release();
         if (!candidateShown) throw std::runtime_error("candidate UI did not return after focus restore");
         std::cout << "key_focus_transition_verified=true\n";
+        otherDocument->Pop(TF_POPF_ALL);
+        otherContext->Release();
+        otherDocument->Release();
 
         BYTE keyboard[256]{};
         GetKeyboardState(keyboard);

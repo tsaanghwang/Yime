@@ -96,6 +96,7 @@ STDMETHODIMP YimeTextService::Deactivate() {
         composition_->Release();
         composition_ = nullptr;
     }
+    ForgetCompositionContext();
     activationFlags_ = 0;
     clientId_ = TF_CLIENTID_NULL;
     keyEventFocused_ = false;
@@ -106,7 +107,13 @@ STDMETHODIMP YimeTextService::Deactivate() {
 
 STDMETHODIMP YimeTextService::OnSetFocus(BOOL foreground) {
     keyEventFocused_ = foreground != FALSE;
-    ShowCandidateUI(CanAcceptKeys());
+    bool compositionDocumentFocused = true;
+    if (keyEventFocused_ && compositionDocument_ && threadManager_) {
+        ITfDocumentMgr* focus = nullptr;
+        compositionDocumentFocused = SUCCEEDED(threadManager_->GetFocus(&focus)) && focus == compositionDocument_;
+        if (focus) focus->Release();
+    }
+    ShowCandidateUI(CanAcceptKeys() && compositionDocumentFocused);
     return S_OK;
 }
 
@@ -114,10 +121,15 @@ bool YimeTextService::CanAcceptKeys() const noexcept {
     return keyEventFocused_;
 }
 
+bool YimeTextService::ContextMatchesComposition(ITfContext* context) const noexcept {
+    return !composition_ || !compositionContext_ || compositionContext_ == context;
+}
+
 HRESULT YimeTextService::SetKeyDecision(ITfContext* context, WPARAM virtualKey, BOOL* eaten) const noexcept {
     if (!eaten) return E_POINTER;
     const bool shiftDown = (GetKeyState(VK_SHIFT) & 0x8000) != 0;
-    *eaten = context && CanAcceptKeys() && surface_.CanHandle(virtualKey, shiftDown) ? TRUE : FALSE;
+    *eaten = context && CanAcceptKeys() && ContextMatchesComposition(context) &&
+                     surface_.CanHandle(virtualKey, shiftDown) ? TRUE : FALSE;
     return S_OK;
 }
 
@@ -128,7 +140,7 @@ STDMETHODIMP YimeTextService::OnTestKeyDown(ITfContext* context, WPARAM wParam, 
 STDMETHODIMP YimeTextService::OnKeyDown(ITfContext* context, WPARAM wParam, LPARAM, BOOL* eaten) {
     if (!eaten) return E_POINTER;
     *eaten = FALSE;
-    if (!context || !CanAcceptKeys()) return S_OK;
+    if (!context || !CanAcceptKeys() || !ContextMatchesComposition(context)) return S_OK;
     const bool shiftDown = (GetKeyState(VK_SHIFT) & 0x8000) != 0;
     if (!surface_.CanHandle(wParam, shiftDown)) return S_OK;
     const auto outcome = surface_.HandleVirtualKey(wParam, shiftDown);
@@ -140,6 +152,7 @@ STDMETHODIMP YimeTextService::OnKeyDown(ITfContext* context, WPARAM wParam, LPAR
         surface_.Close();
         return S_OK;
     }
+    if (composition_) RememberCompositionContext(context);
     UpdateCandidateUI(context, outcome.update);
     *eaten = TRUE;
     return S_OK;
@@ -168,9 +181,28 @@ STDMETHODIMP YimeTextService::OnCompositionTerminated(TfEditCookie, ITfCompositi
         EndCandidateUI();
         composition_->Release();
         composition_ = nullptr;
+        ForgetCompositionContext();
         if (!plannedCompositionTermination_) surface_.Close();
     }
     return S_OK;
+}
+
+void YimeTextService::RememberCompositionContext(ITfContext* context) noexcept {
+    if (!context || compositionContext_) return;
+    compositionContext_ = context;
+    compositionContext_->AddRef();
+    context->GetDocumentMgr(&compositionDocument_);
+}
+
+void YimeTextService::ForgetCompositionContext() noexcept {
+    if (compositionDocument_) {
+        compositionDocument_->Release();
+        compositionDocument_ = nullptr;
+    }
+    if (compositionContext_) {
+        compositionContext_->Release();
+        compositionContext_ = nullptr;
+    }
 }
 
 void YimeTextService::UpdateCandidateUI(ITfContext* context, const yime::experiment::BrokerUpdate& update) noexcept {
