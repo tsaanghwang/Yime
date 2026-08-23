@@ -9,7 +9,9 @@
 class CandidateListUIElement;
 class LanguageBarItem;
 
-class YimeTextService final : public ITfTextInputProcessorEx, public ITfKeyEventSink, public ITfCompositionSink {
+class YimeTextService final : public ITfTextInputProcessorEx,
+                              public ITfKeyEventSink,
+                              public ITfCompositionSink {
 public:
     YimeTextService() noexcept;
 
@@ -36,12 +38,15 @@ private:
     void EndCandidateUI() noexcept;
     void AddLanguageBar() noexcept;
     void RemoveLanguageBar() noexcept;
+    void ShowCandidateUI(bool show) noexcept;
+    bool CanAcceptKeys() const noexcept;
 
     std::atomic<ULONG> references_{1};
     ITfThreadMgr* threadManager_ = nullptr;
     TfClientId clientId_ = TF_CLIENTID_NULL;
     DWORD activationFlags_ = 0;
     bool keySinkAdvised_ = false;
+    bool keyEventFocused_ = true;
     yime::experiment::SurfaceSession surface_;
     ITfComposition* composition_ = nullptr;
     bool plannedCompositionTermination_ = false;

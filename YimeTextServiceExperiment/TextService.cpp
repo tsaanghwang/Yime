@@ -52,8 +52,9 @@ STDMETHODIMP YimeTextService::ActivateEx(ITfThreadMgr* threadManager, TfClientId
     threadManager_->AddRef();
     clientId_ = clientId;
     activationFlags_ = flags;
-    const bool directTest = GetEnvironmentVariableW(L"YIME_TEXTSERVICE_EXPERIMENT_DIRECT_TEST", nullptr, 0) > 0;
+    keyEventFocused_ = true;
     HRESULT result = S_OK;
+    const bool directTest = GetEnvironmentVariableW(L"YIME_TEXTSERVICE_EXPERIMENT_DIRECT_TEST", nullptr, 0) > 0;
     if (!directTest) {
         ITfKeystrokeMgr* keystrokes = nullptr;
         result = threadManager_->QueryInterface(__uuidof(ITfKeystrokeMgr), reinterpret_cast<void**>(&keystrokes));
@@ -97,17 +98,26 @@ STDMETHODIMP YimeTextService::Deactivate() {
     }
     activationFlags_ = 0;
     clientId_ = TF_CLIENTID_NULL;
+    keyEventFocused_ = false;
     threadManager_->Release();
     threadManager_ = nullptr;
     return S_OK;
 }
 
-STDMETHODIMP YimeTextService::OnSetFocus(BOOL) { return S_OK; }
+STDMETHODIMP YimeTextService::OnSetFocus(BOOL foreground) {
+    keyEventFocused_ = foreground != FALSE;
+    ShowCandidateUI(CanAcceptKeys());
+    return S_OK;
+}
+
+bool YimeTextService::CanAcceptKeys() const noexcept {
+    return keyEventFocused_;
+}
 
 HRESULT YimeTextService::SetKeyDecision(ITfContext* context, WPARAM virtualKey, BOOL* eaten) const noexcept {
     if (!eaten) return E_POINTER;
     const bool shiftDown = (GetKeyState(VK_SHIFT) & 0x8000) != 0;
-    *eaten = context && surface_.CanHandle(virtualKey, shiftDown) ? TRUE : FALSE;
+    *eaten = context && CanAcceptKeys() && surface_.CanHandle(virtualKey, shiftDown) ? TRUE : FALSE;
     return S_OK;
 }
 
@@ -118,7 +128,7 @@ STDMETHODIMP YimeTextService::OnTestKeyDown(ITfContext* context, WPARAM wParam, 
 STDMETHODIMP YimeTextService::OnKeyDown(ITfContext* context, WPARAM wParam, LPARAM, BOOL* eaten) {
     if (!eaten) return E_POINTER;
     *eaten = FALSE;
-    if (!context) return S_OK;
+    if (!context || !CanAcceptKeys()) return S_OK;
     const bool shiftDown = (GetKeyState(VK_SHIFT) & 0x8000) != 0;
     if (!surface_.CanHandle(wParam, shiftDown)) return S_OK;
     const auto outcome = surface_.HandleVirtualKey(wParam, shiftDown);
@@ -203,6 +213,17 @@ void YimeTextService::EndCandidateUI() noexcept {
         candidateUI_->Show(FALSE);
         candidateUI_->Release();
         candidateUI_ = nullptr;
+    }
+}
+
+void YimeTextService::ShowCandidateUI(bool show) noexcept {
+    if (!candidateUI_) return;
+    candidateUI_->Show(show ? TRUE : FALSE);
+    if (!candidateUIRegistered_ || !threadManager_) return;
+    ITfUIElementMgr* manager = nullptr;
+    if (SUCCEEDED(threadManager_->QueryInterface(__uuidof(ITfUIElementMgr), reinterpret_cast<void**>(&manager)))) {
+        manager->UpdateUIElement(candidateUIId_);
+        manager->Release();
     }
 }
 

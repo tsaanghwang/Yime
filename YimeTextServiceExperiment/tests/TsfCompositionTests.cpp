@@ -207,6 +207,30 @@ int wmain(int argc, wchar_t** argv) {
         candidateElement->Release();
         if (firstCandidate != L"⇧1  秋") throw std::runtime_error("candidate UI Shift label or text mismatch");
 
+        require(keys->OnSetFocus(FALSE), "lose key-sink focus");
+        candidateElement = findCandidateElement(threadManager);
+        if (!candidateElement) throw std::runtime_error("candidate UI element disappeared instead of hiding on focus loss");
+        BOOL candidateShown = TRUE;
+        require(candidateElement->IsShown(&candidateShown), "read candidate focus-loss visibility");
+        candidateElement->Release();
+        if (candidateShown) throw std::runtime_error("candidate UI remained shown after focus loss");
+        BOOL focusEaten = TRUE;
+        require(keys->OnTestKeyDown(context, 'J', 0, &focusEaten), "focus-loss test key");
+        if (focusEaten) throw std::runtime_error("focus-loss test key was claimed");
+        focusEaten = TRUE;
+        require(keys->OnKeyDown(context, 'J', 0, &focusEaten), "focus-loss key");
+        if (focusEaten || readContext(context, clientId) != L"2jru" || !hasComposition(context)) {
+            throw std::runtime_error("focus-loss key changed the active composition");
+        }
+        require(keys->OnSetFocus(TRUE), "restore key-sink focus");
+        candidateElement = findCandidateElement(threadManager);
+        if (!candidateElement) throw std::runtime_error("candidate UI element missing after focus restore");
+        candidateShown = FALSE;
+        require(candidateElement->IsShown(&candidateShown), "read candidate focus-restore visibility");
+        candidateElement->Release();
+        if (!candidateShown) throw std::runtime_error("candidate UI did not return after focus restore");
+        std::cout << "key_focus_transition_verified=true\n";
+
         BYTE keyboard[256]{};
         GetKeyboardState(keyboard);
         BYTE shifted[256]{};

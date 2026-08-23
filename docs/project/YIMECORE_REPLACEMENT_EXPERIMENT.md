@@ -1,6 +1,6 @@
 # Yime 自研栈并行替换试验
 
-> 状态：E0、E1、E2-A、E2-B、E3-A、E3-B、E4-A、E4-B、E5-A、E5-B、E5-C、E5-D、E5-E、E5-F、E5-G、E6-A、E6-B1、E6-B2a、E6-B2b、E6-B3a、E6-B3b、E6-B4a 已通过；未批准切换任何生产组件
+> 状态：E0、E1、E2-A、E2-B、E3-A、E3-B、E4-A、E4-B、E5-A、E5-B、E5-C、E5-D、E5-E、E5-F、E5-G、E6-A、E6-B1、E6-B2a、E6-B2b、E6-B3a、E6-B3b、E6-B4a、E6-B4b 已通过；未批准切换任何生产组件
 > 试验分支：`codex/yimecore-replacement-experiment`  
 > 原则：先并行、后比较；逐层验收；失败即保留现状
 
@@ -314,6 +314,14 @@ E6-B4a 已实现无图标的最小语言栏接口与安全降级探针：
 - 独立 x86/x64 契约回归确认接口身份、样式、文字、显示状态、无图标、无菜单和拒绝未知命令 ID；真实 TSF 回归确认未注册服务收到 `S_FALSE` 且系统管理器不保留该项时不会解引用空指针或误走移除路径，候选 UI、composition、Broker 和三种编码模式继续通过。
 
 B4a 不是最终产品语言栏功能。未注册的直接测试服务不会被系统语言栏管理器接纳，因此 `AddItem` 的系统接纳与 `RemoveItem` 生命周期仍须在注册后宿主门禁验证；真实应用回调、焦点切换、鼠标候选交互和 owned popup 也仍属后续门禁。涉及菜单或命令时，必须先增加对应宿主点击路径回归。
+
+E6-B4b 已实现并验证 key-sink 焦点隔离能力：
+
+- `ITfKeyEventSink::OnSetFocus(FALSE)` 后，`OnTestKeyDown` 与 `OnKeyDown` 都不再吃键，当前 composition 文本和 Broker 会话保持不变，候选 UI 元素保留但切换为隐藏。
+- `OnSetFocus(TRUE)` 后候选 UI 恢复显示，原 composition 可继续用 `Shift+1` 提交；停用时仍完整结束候选 UI、composition 引用和 Broker 会话。
+- full、variable、shorthand 的 x86/x64 六条真实 `ITfContext` 路径均验证失焦、复焦和后续提交；原有强制终止、第二轮提交、语言栏安全降级及 Broker 重启回归继续通过。
+
+B4b 验证的是已实现的焦点回调处理逻辑，回调通过真实 `ITfKeyEventSink` 接口直接触发。系统只会在试验 TIP 注册并由宿主激活后自动派发该回调，因此注册后自动派发、跨文档切换和实际应用退出仍是下一门禁，不能由 B4b 代替。
 
 ### E7：切换与退役
 
