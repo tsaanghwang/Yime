@@ -17,7 +17,7 @@ import (
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/yimecore"
 )
 
-const toolVersion = "yimecore-learning-experiment-e3a-v1"
+const toolVersion = "yimecore-learning-experiment-e3b-v2"
 
 type latency struct {
 	Samples   int   `json:"samples"`
@@ -38,7 +38,9 @@ type report struct {
 	InitialCandidates   []engineapi.Candidate `json:"initial_candidates"`
 	SelectedText        string                `json:"selected_text"`
 	PromotedCandidates  []engineapi.Candidate `json:"promoted_candidates"`
+	ContextCandidates   []engineapi.Candidate `json:"context_candidates"`
 	PersistedCandidates []engineapi.Candidate `json:"persisted_candidates"`
+	PersistedContext    []engineapi.Candidate `json:"persisted_context_candidates"`
 	ForgottenCandidates []engineapi.Candidate `json:"forgotten_candidates"`
 	LearnedSnapshotPath string                `json:"learned_snapshot_path"`
 	LearnedSnapshotSHA  string                `json:"learned_snapshot_sha256"`
@@ -48,6 +50,7 @@ type report struct {
 	P99OverheadRatio    float64               `json:"p99_overhead_ratio"`
 	PromotionPassed     bool                  `json:"promotion_passed"`
 	PersistencePassed   bool                  `json:"persistence_passed"`
+	ContextPassed       bool                  `json:"context_passed"`
 	ForgetPassed        bool                  `json:"forget_passed"`
 	LatencyGatePassed   bool                  `json:"latency_gate_passed"`
 	Passed              bool                  `json:"passed"`
@@ -98,6 +101,11 @@ func main() {
 	}
 	promoted := applyCode(engine, code)
 	promotionPassed := len(promoted) > 0 && promoted[0].Text == target.Text && promoted[0].Score.User > 0
+	if _, err := engine.Select(promoted[0].ID); err != nil {
+		fail(err)
+	}
+	contextCandidates := applyCode(engine, code)
+	contextPassed := len(contextCandidates) > 0 && contextCandidates[0].Text == target.Text && contextCandidates[0].Score.Context > 0
 	if err := model.Save(); err != nil {
 		fail(err)
 	}
@@ -115,6 +123,11 @@ func main() {
 	}
 	persisted := applyCode(persistedEngine, code)
 	persistencePassed := len(persisted) > 0 && persisted[0].Text == target.Text && persisted[0].Score.User > 0
+	if _, err := persistedEngine.Select(persisted[0].ID); err != nil {
+		fail(err)
+	}
+	persistedContext := applyCode(persistedEngine, code)
+	contextPassed = contextPassed && len(persistedContext) > 0 && persistedContext[0].Score.Context > 0
 	if !reopened.Forget(code, target.Text) {
 		fail(fmt.Errorf("learned candidate could not be forgotten"))
 	}
@@ -138,6 +151,13 @@ func main() {
 		fail(err)
 	}
 	staticLatency := measure(staticEngine, code, *iterations)
+	learningSeed := applyCode(learnedEngine, code)
+	if len(learningSeed) == 0 {
+		fail(fmt.Errorf("learned latency seed has no candidate"))
+	}
+	if _, err := learnedEngine.Select(learningSeed[0].ID); err != nil {
+		fail(err)
+	}
 	learnedLatency := measure(learnedEngine, code, *iterations)
 	p95Ratio := float64(learnedLatency.P95NS) / float64(staticLatency.P95NS)
 	p99Ratio := float64(learnedLatency.P99NS) / float64(staticLatency.P99NS)
@@ -147,16 +167,17 @@ func main() {
 		ToolVersion: toolVersion, GeneratedAt: time.Now().UTC().Format(time.RFC3339Nano), Mode: *mode,
 		IndexPath: filepath.Clean(*indexPath), IndexSourceID: index.SourceID(), LearningCode: code,
 		InitialCandidates: initial, SelectedText: target.Text, PromotedCandidates: promoted,
-		PersistedCandidates: persisted, ForgottenCandidates: forgotten,
+		ContextCandidates: contextCandidates, PersistedCandidates: persisted,
+		PersistedContext: persistedContext, ForgottenCandidates: forgotten,
 		LearnedSnapshotPath: filepath.Clean(learnedSnapshot), LearnedSnapshotSHA: snapshotHash,
 		StaticLatency: staticLatency, LearnedLatency: learnedLatency,
 		P95OverheadRatio: p95Ratio, P99OverheadRatio: p99Ratio,
-		PromotionPassed: promotionPassed, PersistencePassed: persistencePassed,
+		PromotionPassed: promotionPassed, PersistencePassed: persistencePassed, ContextPassed: contextPassed,
 		ForgetPassed: forgetPassed, LatencyGatePassed: latencyPassed,
 	}
-	result.Passed = result.PromotionPassed && result.PersistencePassed && result.ForgetPassed && result.LatencyGatePassed
+	result.Passed = result.PromotionPassed && result.PersistencePassed && result.ContextPassed && result.ForgetPassed && result.LatencyGatePassed
 	writeJSON(*output, result)
-	fmt.Printf("YimeCore E3-A learning: mode=%s selected=%s passed=%t p95_ratio=%.3f\n", *mode, target.Text, result.Passed, p95Ratio)
+	fmt.Printf("YimeCore E3-B learning: mode=%s selected=%s passed=%t p95_ratio=%.3f\n", *mode, target.Text, result.Passed, p95Ratio)
 	if !result.Passed {
 		os.Exit(1)
 	}

@@ -5,6 +5,8 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/engineapi"
 )
 
 func TestUserLearningPromotesSelectedCandidateWithExplainableScore(t *testing.T) {
@@ -124,5 +126,79 @@ func TestUserModelBackupRestoreAndCorruptionIsolation(t *testing.T) {
 	}
 	if string(after) != string(corrupt) {
 		t.Fatal("corrupt source was modified instead of isolated")
+	}
+}
+
+func TestContextTransitionIsExplainablePersistentAndForgottenWithCandidate(t *testing.T) {
+	index, err := NewIndex([]Entry{
+		{Text: "前文", Code: "c1", Weight: 1000},
+		{Text: "系统", Code: "a1", Weight: 1000},
+		{Text: "目标", Code: "a1", Weight: 900},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	path := filepath.Join(t.TempDir(), "context.json")
+	model, err := OpenUserModel(path, index.identity())
+	if err != nil {
+		t.Fatal(err)
+	}
+	engine, err := NewEngineWithUserModel(index, 9, model)
+	if err != nil {
+		t.Fatal(err)
+	}
+	context := applyCode(t, engine, "c1").State.Candidates[0]
+	if _, err := engine.Select(context.ID); err != nil {
+		t.Fatal(err)
+	}
+	choices := applyCode(t, engine, "a1").State.Candidates
+	var target engineapi.Candidate
+	for _, candidate := range choices {
+		if candidate.Text == "目标" {
+			target = candidate
+		}
+	}
+	if _, err := engine.Select(target.ID); err != nil {
+		t.Fatal(err)
+	}
+	if err := model.Save(); err != nil {
+		t.Fatal(err)
+	}
+
+	reopened, err := OpenUserModel(path, index.identity())
+	if err != nil {
+		t.Fatal(err)
+	}
+	contextEngine, err := NewEngineWithUserModel(index, 9, reopened)
+	if err != nil {
+		t.Fatal(err)
+	}
+	context = applyCode(t, contextEngine, "c1").State.Candidates[0]
+	if _, err := contextEngine.Select(context.ID); err != nil {
+		t.Fatal(err)
+	}
+	withContext := applyCode(t, contextEngine, "a1").State.Candidates[0]
+	if withContext.Text != "目标" || withContext.Score.Context != contextBoostPerSelection || withContext.Score.User != userBoostPerSelection {
+		t.Fatalf("context score = %+v", withContext)
+	}
+	contextEngine.ClearContext()
+	withoutContext := contextEngine.Reset()
+	withoutContext = applyCode(t, contextEngine, "a1")
+	if withoutContext.State.Candidates[0].Score.Context != 0 {
+		t.Fatalf("context survived ClearContext: %+v", withoutContext.State.Candidates[0])
+	}
+	if !reopened.Forget("a1", "目标") {
+		t.Fatal("expected context target to be forgotten")
+	}
+	contextEngine.ClearContext()
+	context = applyCode(t, contextEngine, "c1").State.Candidates[0]
+	if _, err := contextEngine.Select(context.ID); err != nil {
+		t.Fatal(err)
+	}
+	afterForget := applyCode(t, contextEngine, "a1").State.Candidates
+	for _, candidate := range afterForget {
+		if candidate.Text == "目标" && (candidate.Score.Context != 0 || candidate.Score.User != 0) {
+			t.Fatalf("forgotten target retained learned score: %+v", candidate)
+		}
 	}
 }

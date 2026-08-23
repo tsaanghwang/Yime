@@ -82,6 +82,7 @@ foreach ($definition in $definitions) {
         learned_snapshot_sha256 = $learning.learned_snapshot_sha256
         promotion_passed = [bool]$learning.promotion_passed
         persistence_passed = [bool]$learning.persistence_passed
+        context_passed = [bool]$learning.context_passed
         forget_passed = [bool]$learning.forget_passed
         p95_overhead_ratio = $learning.p95_overhead_ratio
         p99_overhead_ratio = $learning.p99_overhead_ratio
@@ -91,8 +92,8 @@ foreach ($definition in $definitions) {
 }
 
 $summary = [ordered]@{
-    tool_version = 'yimecore-e3a-learning-experiment-v1'
-    stage = 'e3a'
+    tool_version = 'yimecore-e3b-context-learning-experiment-v2'
+    stage = 'e3b'
     generated_at = (Get-Date).ToUniversalTime().ToString('o')
     git_commit = (& git -C $repoRoot rev-parse HEAD).Trim()
     git_dirty = [bool]((& git -C $repoRoot status --porcelain).Count)
@@ -103,11 +104,12 @@ $summary = [ordered]@{
     all_indices_verified = -not ($modeResults.index_verified -contains $false)
     all_promotions_passed = -not ($modeResults.promotion_passed -contains $false)
     all_persistence_passed = -not ($modeResults.persistence_passed -contains $false)
+    all_context_passed = -not ($modeResults.context_passed -contains $false)
     all_forget_passed = -not ($modeResults.forget_passed -contains $false)
     all_latency_gates_passed = -not ($modeResults.latency_gate_passed -contains $false)
     real_rime_forget_observation_passed = $true
     limitations = @(
-        'whole-candidate selection frequency only; contextual ranking remains E3-B',
+        'previous-commit bigram counts only; longer context and decay remain future experiments',
         'explicit model flush only; Broker scheduling and crash recovery are not implemented',
         'no Rime userdb read, migration or mutation'
     )
@@ -132,9 +134,9 @@ $hashes = foreach ($relativePath in $sourceFiles) {
 }
 $hashes | ConvertTo-Json -Depth 3 | Set-Content -LiteralPath (Join-Path $outputDir 'source-hashes.json') -Encoding utf8
 
-Write-Host "YimeCore E3-A evidence: $outputDir"
+Write-Host "YimeCore E3-B evidence: $outputDir"
 if (-not $summary.all_indices_verified -or -not $summary.all_promotions_passed -or
-    -not $summary.all_persistence_passed -or -not $summary.all_forget_passed -or
+    -not $summary.all_persistence_passed -or -not $summary.all_context_passed -or -not $summary.all_forget_passed -or
     -not $summary.all_latency_gates_passed -or -not $summary.real_rime_forget_observation_passed) {
-    throw "One or more E3-A gates failed; see $summaryPath"
+    throw "One or more E3-B gates failed; see $summaryPath"
 }

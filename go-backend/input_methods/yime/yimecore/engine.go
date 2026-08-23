@@ -20,6 +20,7 @@ type Engine struct {
 	sentenceInput  string
 	sentenceStates [][]sentencePath
 	userModel      *UserModel
+	previousCommit string
 }
 
 type lookupIndex interface {
@@ -115,7 +116,8 @@ func (e *Engine) Apply(event engineapi.Event) (engineapi.Result, error) {
 func (e *Engine) Select(candidateID string) (engineapi.Result, error) {
 	for _, candidate := range e.candidates {
 		if candidate.ID == candidateID {
-			e.userModel.observe(candidate.Code, candidate.Text)
+			e.userModel.observeWithContext(candidate.Code, candidate.Text, e.previousCommit)
+			e.previousCommit = candidate.Text
 			e.rawInput = ""
 			e.candidates = nil
 			e.resetSentenceComposer()
@@ -184,10 +186,15 @@ func (e *Engine) refresh() {
 
 func (e *Engine) scoreCandidate(candidate *engineapi.Candidate) {
 	candidate.Score.Static = candidate.Weight
+	candidate.Score.Context = e.userModel.contextBoost(e.previousCommit, candidate.Code, candidate.Text)
 	candidate.Score.User = e.userModel.candidateBoost(candidate.Code, candidate.Text)
 	candidate.Score.Total = saturatingAdd(candidate.Score.Static, candidate.Score.Context)
 	candidate.Score.Total = saturatingAdd(candidate.Score.Total, candidate.Score.User)
 }
+
+// ClearContext drops only the session's previous-commit context. It does not
+// clear composition state or learned counts.
+func (e *Engine) ClearContext() { e.previousCommit = "" }
 
 func rankCandidates(candidates []engineapi.Candidate) {
 	sort.SliceStable(candidates, func(i, j int) bool {

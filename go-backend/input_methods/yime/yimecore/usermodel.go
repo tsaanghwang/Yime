@@ -16,10 +16,11 @@ import (
 )
 
 const (
-	userModelSchemaVersion = "yime-user-model-v1"
-	userBoostPerSelection  = int64(1_000_000_000_000)
-	maximumUserModelItems  = 1_000_000
-	maximumSelectionCount  = uint64(1_000_000_000)
+	userModelSchemaVersion   = "yime-user-model-v1"
+	userBoostPerSelection    = int64(1_000_000_000_000)
+	contextBoostPerSelection = int64(500_000_000_000)
+	maximumUserModelItems    = 1_000_000
+	maximumSelectionCount    = uint64(1_000_000_000)
 )
 
 var ErrCorruptUserModel = errors.New("corrupt Yime user model")
@@ -31,7 +32,18 @@ type UserModel struct {
 	path       string
 	sourceID   string
 	generation uint64
-	selections map[string]uint64
+	selections map[candidateIdentity]uint64
+	contexts   map[contextIdentity]uint64
+}
+
+type candidateIdentity struct {
+	code string
+	text string
+}
+
+type contextIdentity struct {
+	previous string
+	candidateIdentity
 }
 
 type userModelPayload struct {
@@ -39,6 +51,7 @@ type userModelPayload struct {
 	SourceID      string            `json:"source_id"`
 	Generation    uint64            `json:"generation"`
 	Selections    map[string]uint64 `json:"selections"`
+	Contexts      map[string]uint64 `json:"contexts,omitempty"`
 }
 
 type userModelFile struct {
@@ -51,7 +64,7 @@ func NewUserModel(sourceID string) (*UserModel, error) {
 	if strings.TrimSpace(sourceID) == "" {
 		return nil, fmt.Errorf("user model source ID is required")
 	}
-	return &UserModel{sourceID: sourceID, selections: make(map[string]uint64)}, nil
+	return &UserModel{sourceID: sourceID, selections: make(map[candidateIdentity]uint64), contexts: make(map[contextIdentity]uint64)}, nil
 }
 
 // OpenUserModel opens or initializes a model at path. Invalid data is
@@ -73,7 +86,14 @@ func OpenUserModel(path, sourceID string) (*UserModel, error) {
 		return nil, err
 	}
 	model.generation = payload.Generation
-	model.selections = payload.Selections
+	model.selections, err = decodeSelectionCounts(payload.Selections)
+	if err != nil {
+		return nil, err
+	}
+	model.contexts, err = decodeContextCounts(payload.Contexts)
+	if err != nil {
+		return nil, err
+	}
 	return model, nil
 }
 
@@ -82,7 +102,7 @@ func (m *UserModel) candidateBoost(code, text string) int64 {
 		return 0
 	}
 	m.mu.RLock()
-	count := m.selections[userCandidateKey(code, text)]
+	count := m.selections[candidateIdentity{code: code, text: text}]
 	m.mu.RUnlock()
 	if count > uint64(math.MaxInt64/userBoostPerSelection) {
 		return math.MaxInt64
@@ -91,13 +111,36 @@ func (m *UserModel) candidateBoost(code, text string) int64 {
 }
 
 func (m *UserModel) observe(code, text string) {
+	m.observeWithContext(code, text, "")
+}
+
+func (m *UserModel) contextBoost(previousText, code, text string) int64 {
+	if m == nil || previousText == "" {
+		return 0
+	}
+	m.mu.RLock()
+	count := m.contexts[contextIdentity{previous: previousText, candidateIdentity: candidateIdentity{code: code, text: text}}]
+	m.mu.RUnlock()
+	if count > uint64(math.MaxInt64/contextBoostPerSelection) {
+		return math.MaxInt64
+	}
+	return int64(count) * contextBoostPerSelection
+}
+
+func (m *UserModel) observeWithContext(code, text, previousText string) {
 	if m == nil || code == "" || text == "" {
 		return
 	}
-	key := userCandidateKey(code, text)
+	key := candidateIdentity{code: code, text: text}
 	m.mu.Lock()
 	if m.selections[key] < maximumSelectionCount {
 		m.selections[key]++
+	}
+	if previousText != "" {
+		contextKey := contextIdentity{previous: previousText, candidateIdentity: key}
+		if m.contexts[contextKey] < maximumSelectionCount {
+			m.contexts[contextKey]++
+		}
 	}
 	m.generation++
 	m.mu.Unlock()
@@ -108,11 +151,16 @@ func (m *UserModel) Forget(code, text string) bool {
 	if m == nil {
 		return false
 	}
-	key := userCandidateKey(code, text)
+	key := candidateIdentity{code: code, text: text}
 	m.mu.Lock()
 	_, found := m.selections[key]
 	if found {
 		delete(m.selections, key)
+		for contextKey := range m.contexts {
+			if contextKey.candidateIdentity == key {
+				delete(m.contexts, contextKey)
+			}
+		}
 		m.generation++
 	}
 	m.mu.Unlock()
@@ -147,12 +195,21 @@ func (m *UserModel) Restore(backupPath string) error {
 	if err != nil {
 		return err
 	}
+	selections, err := decodeSelectionCounts(payload.Selections)
+	if err != nil {
+		return err
+	}
+	contexts, err := decodeContextCounts(payload.Contexts)
+	if err != nil {
+		return err
+	}
 	if err := writeUserModelFile(m.path, payload); err != nil {
 		return err
 	}
 	m.mu.Lock()
 	m.generation = payload.Generation
-	m.selections = payload.Selections
+	m.selections = selections
+	m.contexts = contexts
 	m.mu.Unlock()
 	return nil
 }
@@ -163,7 +220,8 @@ func (m *UserModel) writeSnapshot(path string) error {
 		SchemaVersion: userModelSchemaVersion,
 		SourceID:      m.sourceID,
 		Generation:    m.generation,
-		Selections:    cloneSelectionCounts(m.selections),
+		Selections:    encodeSelectionCounts(m.selections),
+		Contexts:      encodeContextCounts(m.contexts),
 	}
 	m.mu.RUnlock()
 	return writeUserModelFile(path, payload)
@@ -228,12 +286,17 @@ func readUserModelFile(path, sourceID string) (userModelPayload, error) {
 	if err := ensureJSONEOF(decoder); err != nil {
 		return userModelPayload{}, fmt.Errorf("%w: %v", ErrCorruptUserModel, err)
 	}
-	if file.SchemaVersion != userModelSchemaVersion || file.SourceID != sourceID || len(file.Selections) > maximumUserModelItems {
+	if file.SchemaVersion != userModelSchemaVersion || file.SourceID != sourceID || len(file.Selections)+len(file.Contexts) > maximumUserModelItems {
 		return userModelPayload{}, fmt.Errorf("%w: schema, source identity or item count mismatch", ErrCorruptUserModel)
 	}
 	for key, count := range file.Selections {
 		if key == "" || count > maximumSelectionCount {
 			return userModelPayload{}, fmt.Errorf("%w: invalid selection record", ErrCorruptUserModel)
+		}
+	}
+	for key, count := range file.Contexts {
+		if key == "" || count > maximumSelectionCount {
+			return userModelPayload{}, fmt.Errorf("%w: invalid context record", ErrCorruptUserModel)
 		}
 	}
 	payload := file.userModelPayload
@@ -259,12 +322,47 @@ func ensureJSONEOF(decoder *json.Decoder) error {
 	return nil
 }
 
-func cloneSelectionCounts(source map[string]uint64) map[string]uint64 {
+func encodeSelectionCounts(source map[candidateIdentity]uint64) map[string]uint64 {
 	result := make(map[string]uint64, len(source))
 	for key, count := range source {
-		result[key] = count
+		result[key.code+"\x1f"+key.text] = count
 	}
 	return result
 }
 
-func userCandidateKey(code, text string) string { return code + "\x1f" + text }
+func encodeContextCounts(source map[contextIdentity]uint64) map[string]uint64 {
+	result := make(map[string]uint64, len(source))
+	for key, count := range source {
+		result[key.previous+"\x1e"+key.code+"\x1f"+key.text] = count
+	}
+	return result
+}
+
+func decodeSelectionCounts(source map[string]uint64) (map[candidateIdentity]uint64, error) {
+	result := make(map[candidateIdentity]uint64, len(source))
+	for key, count := range source {
+		parts := strings.SplitN(key, "\x1f", 2)
+		if len(parts) != 2 || parts[0] == "" || parts[1] == "" {
+			return nil, fmt.Errorf("%w: invalid candidate identity", ErrCorruptUserModel)
+		}
+		result[candidateIdentity{code: parts[0], text: parts[1]}] = count
+	}
+	return result, nil
+}
+
+func decodeContextCounts(source map[string]uint64) (map[contextIdentity]uint64, error) {
+	result := make(map[contextIdentity]uint64, len(source))
+	for key, count := range source {
+		contextParts := strings.SplitN(key, "\x1e", 2)
+		if len(contextParts) != 2 || contextParts[0] == "" {
+			return nil, fmt.Errorf("%w: invalid context identity", ErrCorruptUserModel)
+		}
+		candidateParts := strings.SplitN(contextParts[1], "\x1f", 2)
+		if len(candidateParts) != 2 || candidateParts[0] == "" || candidateParts[1] == "" {
+			return nil, fmt.Errorf("%w: invalid context candidate identity", ErrCorruptUserModel)
+		}
+		identity := contextIdentity{previous: contextParts[0], candidateIdentity: candidateIdentity{code: candidateParts[0], text: candidateParts[1]}}
+		result[identity] = count
+	}
+	return result, nil
+}
