@@ -1,6 +1,6 @@
 # Yime 自研栈并行替换试验
 
-> 状态：E0、E1、E2-A、E2-B、E3-A、E3-B、E4-A、E4-B、E5-A、E5-B、E5-C、E5-D、E5-E、E5-F、E5-G、E6-A 已通过；未批准切换任何生产组件
+> 状态：E0、E1、E2-A、E2-B、E3-A、E3-B、E4-A、E4-B、E5-A、E5-B、E5-C、E5-D、E5-E、E5-F、E5-G、E6-A、E6-B1 已通过；未批准切换任何生产组件
 > 试验分支：`codex/yimecore-replacement-experiment`  
 > 原则：先并行、后比较；逐层验收；失败即保留现状
 
@@ -262,6 +262,15 @@ E6-A 已完成表层之前的生产形态 IPC 门禁，但尚未实现或注册�
 - E6-A 预验收的每模式 48,012 个并发请求均无协议或提交错误，最差单客户端 p99 为 0.24 ms、最差单次为 1.42 ms，重启后完成连接和 200 轮重放为 180–186 ms。门禁仍采用单次小于 50 ms、重启小于 2 秒；正式证据需在干净提交上重跑并以其数值为准。
 
 E6-A 不处理候选窗、语言栏、焦点/失焦、TSF composition、注册、安装或签名；这些仍属于 E6-B 及发布验收。现有 `PIMETextService.dll`、PIMELauncher、Go TextService、默认 Rime 工厂、注册标识和安装目录均未改变。
+
+E6-B1 已建立不注册、不接 Broker 的最小 C++ COM/TSF 外壳：
+
+- `YimeTextServiceExperiment.dll` 采用与 PIME 及未来生产服务均不共享的试验 CLSID、Profile GUID 和语言栏 GUID，只导出 `DllGetClassObject`、`DllCanUnloadNow`，不导出 `DllRegisterServer`。
+- x86/x64 分别验证类工厂、拒绝 aggregation、`ITfTextInputProcessorEx` 与 `ITfKeyEventSink` 查询、无效激活拒绝、1,000 次重复创建/释放和最终可卸载。
+- 键契约单独锁定：无 Shift 的 `0` 至 `9` 全部是 composition 键；只有 `Shift+1` 至 `Shift+9` 是候选 ordinal；`Shift+0` 不是候选 ordinal；窗口标签固定为 `⇧1` 至 `⇧9`。
+- B1 外壳即使被误加载也始终报告按键未被吃掉。只有 E6-B2 同时完成 Broker 状态转换和 TSF edit session 后，才允许相应键返回 eaten。
+
+E6-B1 没有 composition、候选 UI、语言栏、焦点状态或安装入口，不能冒充可用输入法。它只是把 COM 生命周期、独立身份和最重要的数字键契约先从后续功能中剥离出来验证。
 
 ### E7：切换与退役
 
