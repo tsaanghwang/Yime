@@ -11,6 +11,8 @@ namespace {
 
 using GetClassObject = HRESULT(__stdcall*)(REFCLSID, REFIID, void**);
 
+void require(HRESULT result, const char* operation);
+
 class ReadSession final : public ITfEditSession {
 public:
     explicit ReadSession(ITfContext* context) : context_(context) { context_->AddRef(); }
@@ -67,6 +69,26 @@ bool hasComposition(ITfContext* context) {
     if (value) value->Release();
     values->Release();
     return result == S_OK && fetched == 1;
+}
+
+void terminateActiveComposition(ITfContext* context) {
+    ITfContextOwnerCompositionServices* owner = nullptr;
+    require(context->QueryInterface(__uuidof(ITfContextOwnerCompositionServices),
+                                    reinterpret_cast<void**>(&owner)), "query composition owner");
+    IEnumITfCompositionView* values = nullptr;
+    require(owner->EnumCompositions(&values), "enumerate compositions");
+    ITfCompositionView* value = nullptr;
+    ULONG fetched = 0;
+    const HRESULT next = values->Next(1, &value, &fetched);
+    values->Release();
+    if (next != S_OK || fetched != 1 || !value) {
+        owner->Release();
+        throw std::runtime_error("active composition missing before forced termination");
+    }
+    const HRESULT result = owner->TerminateComposition(value);
+    value->Release();
+    owner->Release();
+    require(result, "terminate composition");
 }
 
 void require(HRESULT result, const char* operation) {
@@ -158,6 +180,18 @@ int wmain(int argc, wchar_t** argv) {
             secondCommit.back() == L'2' || hasComposition(context)) {
             throw std::runtime_error("second TSF commit mismatch");
         }
+
+        eaten = FALSE;
+        require(keys->OnKeyDown(context, '2', 0, &eaten), "forced-termination setup key");
+        if (!eaten || !hasComposition(context)) throw std::runtime_error("forced-termination setup failed");
+        terminateActiveComposition(context);
+        if (hasComposition(context)) throw std::runtime_error("host-forced composition remained active");
+        BOOL testEaten = TRUE;
+        require(keys->OnTestKeyDown(context, 'J', 0, &testEaten), "post-termination test key");
+        if (testEaten) throw std::runtime_error("host-forced termination did not close the Broker session");
+        eaten = TRUE;
+        require(keys->OnKeyDown(context, 'J', 0, &eaten), "post-termination key");
+        if (eaten) throw std::runtime_error("post-termination key was swallowed");
 
         keys->Release();
         require(processor->Deactivate(), "deactivate processor");

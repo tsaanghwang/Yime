@@ -1,6 +1,6 @@
 # Yime 自研栈并行替换试验
 
-> 状态：E0、E1、E2-A、E2-B、E3-A、E3-B、E4-A、E4-B、E5-A、E5-B、E5-C、E5-D、E5-E、E5-F、E5-G、E6-A、E6-B1、E6-B2a、E6-B2b 已通过；未批准切换任何生产组件
+> 状态：E0、E1、E2-A、E2-B、E3-A、E3-B、E4-A、E4-B、E5-A、E5-B、E5-C、E5-D、E5-E、E5-F、E5-G、E6-A、E6-B1、E6-B2a、E6-B2b、E6-B3a 已通过；未批准切换任何生产组件
 > 试验分支：`codex/yimecore-replacement-experiment`  
 > 原则：先并行、后比较；逐层验收；失败即保留现状
 
@@ -289,6 +289,14 @@ E6-B2b 已把 Broker 状态写入真实 TSF 文档上下文：
 - 三模式分别由 x86/x64 DLL 在真实 `ITfContext` 中验证 `2`、`2j`、`2jr`、`2jru` 的预编辑进展、`Shift+1` 提交、composition 消失和第二轮会话复用；Broker 强制重启后重放同一轨迹。
 
 由于 DLL 仍未注册，B2b 使用显式测试环境开关跳过 `AdviseKeyEventSink`，直接调用真实 `ITfKeyEventSink` 和真实 edit session。注册后的按键汇订阅、宿主焦点切换及外部 composition termination 必须在后续并列注册门禁单独验证，B2b 不能代替这些宿主测试。
+
+E6-B3a 已验证宿主主动终止 composition 的恢复边界：
+
+- 在真实 `ITfContext` 中开始第三轮预编辑后，通过 `ITfContextOwnerCompositionServices::TerminateComposition` 模拟宿主强制结束，而不是调用表层自己的正常提交路径。
+- `OnCompositionTerminated` 必须释放表层持有的 composition、关闭对应 Broker 会话；终止后的 `OnTestKeyDown` 和 `OnKeyDown` 都不得再报告 eaten，按键回到宿主。
+- 同一回归同时保留 B2b 的两轮正常提交，证明“正常结束保留会话、外部结束关闭会话”两条路径没有互相污染；三模式 x86/x64 和 Broker 重启重放继续通过。
+
+B3a 仍是未注册的直接 key-sink 调用。实际应用切换、窗口失焦、注册后的 TSF 回调顺序、候选窗口和语言栏尚未验证。
 
 ### E7：切换与退役
 
