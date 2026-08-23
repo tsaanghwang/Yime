@@ -38,6 +38,22 @@ var (
 
 func Current() (Snapshot, error) {
 	handle, _, _ := getCurrentProcess.Call()
+	return snapshot(handle)
+}
+
+func PID(pid int) (Snapshot, error) {
+	if pid <= 0 {
+		return Snapshot{}, fmt.Errorf("invalid process ID %d", pid)
+	}
+	handle, err := syscall.OpenProcess(0x0400|0x0010, false, uint32(pid))
+	if err != nil {
+		return Snapshot{}, fmt.Errorf("OpenProcess failed: %w", err)
+	}
+	defer syscall.CloseHandle(handle)
+	return snapshot(uintptr(handle))
+}
+
+func snapshot(handle uintptr) (Snapshot, error) {
 	var counters processMemoryCountersEx
 	counters.CB = uint32(unsafe.Sizeof(counters))
 	result, _, callErr := getProcessMemoryInfo.Call(

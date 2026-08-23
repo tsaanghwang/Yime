@@ -12,3 +12,7 @@ type Snapshot struct {
 func Current() (Snapshot, error) {
 	return Snapshot{}, fmt.Errorf("process memory snapshot is not implemented on this platform")
 }
+
+func PID(pid int) (Snapshot, error) {
+	return Snapshot{}, fmt.Errorf("process memory snapshot for PID %d is not implemented on this platform", pid)
+}
