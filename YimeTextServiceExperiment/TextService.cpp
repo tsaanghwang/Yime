@@ -165,6 +165,12 @@ STDMETHODIMP YimeTextService::Deactivate() {
 
 STDMETHODIMP YimeTextService::OnSetFocus(BOOL foreground) {
     keyEventFocused_ = foreground != FALSE;
+    if (keyEventFocused_ && compositionDocument_ && threadManager_) {
+        ITfDocumentMgr* focus = nullptr;
+        compositionDocumentFocused_ = SUCCEEDED(threadManager_->GetFocus(&focus)) &&
+                                      focus == compositionDocument_;
+        if (focus) focus->Release();
+    }
     ShowCandidateUI(CanAcceptKeys() && compositionDocumentFocused_);
     return S_OK;
 }
