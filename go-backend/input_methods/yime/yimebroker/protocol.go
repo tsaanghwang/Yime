@@ -58,6 +58,7 @@ type Request struct {
 	Event       engineapi.Event `json:"event,omitempty"`
 	CandidateID string          `json:"candidate_id,omitempty"`
 	MutationID  string          `json:"mutation_id,omitempty"`
+	Mode        string          `json:"mode,omitempty"`
 }
 
 type ProtocolError struct {
@@ -141,19 +142,22 @@ func validateRequest(request Request) error {
 		if request.Sequence != 1 || request.SessionID != "" || request.Event.Operation != 0 || request.CandidateID != "" || request.MutationID != "" {
 			return errors.New("open requires sequence 1 and no session payload")
 		}
+		if request.Mode != "" && request.Mode != "full" && request.Mode != "variable" && request.Mode != "shorthand" {
+			return errors.New("open mode must be full, variable or shorthand")
+		}
 	case ApplyEvent:
-		if request.SessionID == "" || request.Event.Operation == 0 || request.CandidateID != "" || request.MutationID != "" {
+		if request.SessionID == "" || request.Event.Operation == 0 || request.CandidateID != "" || request.MutationID != "" || request.Mode != "" {
 			return errors.New("apply requires session_id and event only")
 		}
 	case Select:
-		if request.SessionID == "" || request.CandidateID == "" || request.Event.Operation != 0 {
+		if request.SessionID == "" || request.CandidateID == "" || request.Event.Operation != 0 || request.Mode != "" {
 			return errors.New("select requires session_id and candidate_id only")
 		}
 		if request.MutationID != "" && !validMutationID(request.MutationID) {
 			return errors.New("mutation_id must be 8-128 ASCII letters, digits, dot, underscore, colon or hyphen")
 		}
 	case ResetSession, CloseSession:
-		if request.SessionID == "" || request.Event.Operation != 0 || request.CandidateID != "" || request.MutationID != "" {
+		if request.SessionID == "" || request.Event.Operation != 0 || request.CandidateID != "" || request.MutationID != "" || request.Mode != "" {
 			return errors.New("reset and close require session_id only")
 		}
 	default:

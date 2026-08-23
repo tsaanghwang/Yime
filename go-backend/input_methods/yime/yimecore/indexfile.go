@@ -506,10 +506,16 @@ func (idx *FileIndex) lookup(prefix string, limit int) []record {
 		return nil
 	}
 	prefixBytes := []byte(prefix)
-	if len(prefixBytes) == 1 {
+	// The one- and two-byte buckets are deliberately only a first-page cache.
+	// Once the engine asks for the look-ahead item used by paging (10, 19,
+	// 28...), fall through to the complete prefix-range scan. Returning the
+	// nine cached positions for a larger request incorrectly reports that short
+	// prefixes have no next page and makes the ordering contract change at the
+	// third input byte.
+	if len(prefixBytes) == 1 && limit <= defaultCandidateLimit {
 		return idx.recordsFromShortBucket(&idx.oneByteTop[prefixBytes[0]], limit)
 	}
-	if len(prefixBytes) == 2 {
+	if len(prefixBytes) == 2 && limit <= defaultCandidateLimit {
 		key := uint16(prefixBytes[0])<<8 | uint16(prefixBytes[1])
 		if idx.twoByteTop != nil {
 			return idx.recordsFromShortBucket(&idx.twoByteTop[key], limit)

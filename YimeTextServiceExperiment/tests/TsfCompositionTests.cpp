@@ -241,7 +241,7 @@ int wmain(int argc, wchar_t** argv) {
         const std::wstring firstCandidate(candidateText ? candidateText : L"");
         SysFreeString(candidateText);
         candidateElement->Release();
-        if (firstCandidate != L"⇧1  秋") throw std::runtime_error("candidate UI Shift label or text mismatch");
+        if (firstCandidate != L"⇧1  秋  2jru") throw std::runtime_error("candidate UI Shift label, text or default key-sequence encoding mismatch");
         HWND candidatePopup = FindWindowW(L"YimeTextServiceExperimentCandidatePopup", nullptr);
         if (!candidatePopup || !IsWindowVisible(candidatePopup)) {
             throw std::runtime_error("owned candidate popup was not visible");

@@ -143,6 +143,50 @@ func TestToolbarDefaultsToVerticalAndRemembersExplicitHorizontal(t *testing.T) {
 	}
 }
 
+func TestExperimentalToolbarDefaultsAndFourEncodingChoices(t *testing.T) {
+	path := filepath.Join(t.TempDir(), toolbarstate.ExperimentFileName)
+	state := loadExperimentalToolbarState(path)
+	if state.ExperimentMode != toolbarstate.ExperimentModeVariable ||
+		state.CandidateFontPreset != toolbarstate.CandidateFontMedium ||
+		state.CandidateAnnotation != toolbarstate.AnnotationKeySequence || state.Vertical {
+		t.Fatalf("experimental toolbar defaults = %#v", state)
+	}
+	mode := state.ExperimentMode
+	for iteration := 0; iteration < 3; iteration++ {
+		mode = nextExperimentMode(mode)
+	}
+	if mode != state.ExperimentMode {
+		t.Fatalf("experiment mode cycle did not return to %q", state.ExperimentMode)
+	}
+	font := state.CandidateFontPreset
+	for iteration := 0; iteration < 3; iteration++ {
+		font = nextCandidateFont(font)
+	}
+	if font != state.CandidateFontPreset {
+		t.Fatalf("candidate font cycle did not return to %q", state.CandidateFontPreset)
+	}
+	annotation := state.CandidateAnnotation
+	for iteration := 0; iteration < 4; iteration++ {
+		annotation = nextCandidateEncoding(annotation)
+	}
+	if annotation != state.CandidateAnnotation {
+		t.Fatalf("candidate encoding cycle did not return to %q", state.CandidateAnnotation)
+	}
+	layout := calculateToolbarLayoutFor(state, experimentalToolbarButtons())
+	if countVisible(layout) != 5 || layout.clientHeight <= 0 || layout.clientWidth <= 0 {
+		t.Fatalf("experimental toolbar layout = %#v", layout)
+	}
+	labels := map[string]bool{}
+	for _, button := range experimentalToolbarButtons() {
+		labels[button.text] = true
+	}
+	for _, expected := range []string{"模式：变长", "字号：中", "音码：键位", "关闭"} {
+		if !labels[expected] {
+			t.Fatalf("experimental toolbar is missing label %q", expected)
+		}
+	}
+}
+
 func TestToolbarMigratesLegacyHorizontalStateToNewVerticalDefaultOnce(t *testing.T) {
 	path := filepath.Join(t.TempDir(), toolbarstate.FileName)
 	legacy, err := toolbarstate.Update(path, "toolbar", func(state *toolbarstate.State) bool {

@@ -16,8 +16,9 @@ import (
 )
 
 const (
-	windowClass  = "YimeInputToolbar"
-	messageTitle = "音元"
+	windowClass           = "YimeInputToolbar"
+	experimentWindowClass = "YimeCoreExperimentalToolbar"
+	messageTitle          = "音元"
 
 	wsExToolWindow = 0x00000080
 	wsExTopmost    = 0x00000008
@@ -196,6 +197,7 @@ type app struct {
 	hwnd         syscall.Handle
 	buttons      map[int]syscall.Handle
 	state        toolbarstate.State
+	experimental bool
 }
 
 func main() {
@@ -206,6 +208,7 @@ func main() {
 	sharedDir := flag.String("SharedDir", "", "Yime shared data directory")
 	helpDir := flag.String("HelpDir", "", "Yime help directory")
 	logDir := flag.String("LogDir", "", "PIME log directory")
+	experimental := flag.Bool("Experimental", false, "Run the independent YimeCore trial toolbar")
 	flag.Parse()
 	if *statePath == "" {
 		showError("缺少 StatePath 参数。")
@@ -220,6 +223,7 @@ func main() {
 		helpDir:      *helpDir,
 		logDir:       *logDir,
 		buttons:      map[int]syscall.Handle{},
+		experimental: *experimental,
 	}
 	if err := instance.run(); err != nil {
 		showError(err.Error())
@@ -231,14 +235,21 @@ func (a *app) run() error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 
-	if win32ui.ActivateExistingWindow(windowClass) {
+	if win32ui.ActivateExistingWindow(a.className()) {
 		return nil
 	}
-	a.state = loadToolbarState(a.statePath)
+	if a.experimental {
+		a.state = loadExperimentalToolbarState(a.statePath)
+	} else {
+		a.state = loadToolbarState(a.statePath)
+	}
 	instance, _, _ := getModuleHandleW.Call(0)
-	className, _ := syscall.UTF16PtrFromString(windowClass)
+	className, _ := syscall.UTF16PtrFromString(a.className())
 	cursor, _, _ := loadCursorW.Call(0, uintptr(32512))
-	icon := win32ui.LoadYimeIcon(instance)
+	icon := uintptr(0)
+	if !a.experimental {
+		icon = win32ui.LoadYimeIcon(instance)
+	}
 	windowProc = syscall.NewCallback(a.wndProc)
 	class := wndClassEx{
 		Size:       uint32(unsafe.Sizeof(wndClassEx{})),
@@ -294,6 +305,13 @@ func (a *app) run() error {
 	return nil
 }
 
+func (a *app) className() string {
+	if a.experimental {
+		return experimentWindowClass
+	}
+	return windowClass
+}
+
 func loadToolbarState(path string) toolbarstate.State {
 	state, err := toolbarstate.Update(path, "toolbar", func(state *toolbarstate.State) bool {
 		if state.OrientationSet && state.ToolbarLayoutVersion >= toolbarstate.LayoutVersion {
@@ -313,6 +331,24 @@ func loadToolbarState(path string) toolbarstate.State {
 		OrientationSet:       true,
 		ToolbarLayoutVersion: toolbarstate.LayoutVersion,
 	}
+}
+
+func loadExperimentalToolbarState(path string) toolbarstate.State {
+	state, err := toolbarstate.Update(path, "yimecore-toolbar", func(state *toolbarstate.State) bool {
+		changed := toolbarstate.NormalizeExperiment(state)
+		if !state.OrientationSet {
+			state.Vertical = false
+			state.OrientationSet = true
+			changed = true
+		}
+		return changed
+	})
+	if err == nil {
+		return state
+	}
+	state = toolbarstate.State{Version: toolbarstate.FormatVersion, Vertical: false, OrientationSet: true}
+	toolbarstate.NormalizeExperiment(&state)
+	return state
 }
 
 func toolbarWindowStyle() uintptr {
@@ -351,7 +387,7 @@ func fitToolbarPosition(x, y, screenWidth, screenHeight, width, height int32) (i
 }
 
 func (a *app) createButtons() {
-	for _, item := range toolbarButtons() {
+	for _, item := range a.buttonDefinitions() {
 		if item.id == idHandle {
 			a.buttons[item.id] = createDragHandle(a.hwnd, item.id, item.text)
 			continue
@@ -376,6 +412,23 @@ func toolbarButtons() []toolbarButton {
 	}
 }
 
+func experimentalToolbarButtons() []toolbarButton {
+	return []toolbarButton{
+		{idHandle, "handle", "│", 64, false},
+		{idLanguage, "mode", "模式：变长", 86, false},
+		{idShape, "font", "字号：中", 78, false},
+		{idPunct, "encoding", "音码：键位", 92, false},
+		{idSettings, "close", "关闭", 54, false},
+	}
+}
+
+func (a *app) buttonDefinitions() []toolbarButton {
+	if a.experimental {
+		return experimentalToolbarButtons()
+	}
+	return toolbarButtons()
+}
+
 func buttonWidthForLayout(button toolbarButton, vertical bool) int32 {
 	if button.id == idHandle && !vertical {
 		return toolbarHandleWidth
@@ -391,11 +444,14 @@ func buttonHeightForLayout(button toolbarButton, vertical bool) int32 {
 }
 
 func calculateToolbarLayout(state toolbarstate.State) toolbarLayout {
+	return calculateToolbarLayoutFor(state, toolbarButtons())
+}
+
+func calculateToolbarLayoutFor(state toolbarstate.State, definitions []toolbarButton) toolbarLayout {
 	hidden := make(map[string]bool, len(state.HiddenButtons))
 	for _, key := range state.HiddenButtons {
 		hidden[key] = true
 	}
-	definitions := toolbarButtons()
 	visible := make([]toolbarButton, 0, len(definitions))
 	for _, button := range definitions {
 		if !button.customizable || !hidden[button.key] {
@@ -470,7 +526,7 @@ func calculateToolbarLayout(state toolbarstate.State) toolbarLayout {
 }
 
 func (a *app) applyLayout() {
-	layout := calculateToolbarLayout(a.state)
+	layout := calculateToolbarLayoutFor(a.state, a.buttonDefinitions())
 	for _, placement := range layout.placements {
 		button := a.buttons[placement.id]
 		if placement.visible {
@@ -605,6 +661,23 @@ func (a *app) wndProc(hwnd syscall.Handle, message uint32, wParam, lParam uintpt
 }
 
 func (a *app) handleCommand(id int) {
+	if a.experimental {
+		switch id {
+		case idLanguage:
+			a.updateState(func(state *toolbarstate.State) { state.ExperimentMode = nextExperimentMode(state.ExperimentMode) })
+		case idShape:
+			a.updateState(func(state *toolbarstate.State) {
+				state.CandidateFontPreset = nextCandidateFont(state.CandidateFontPreset)
+			})
+		case idPunct:
+			a.updateState(func(state *toolbarstate.State) {
+				state.CandidateAnnotation = nextCandidateEncoding(state.CandidateAnnotation)
+			})
+		case idSettings:
+			closeToolbarWindow(a.hwnd)
+		}
+		return
+	}
 	switch id {
 	case idLanguage:
 		a.updateState(func(state *toolbarstate.State) { state.ASCII = !state.ASCII })
@@ -622,6 +695,41 @@ func (a *app) handleCommand(id int) {
 		a.openTrainer()
 	case idSettings:
 		a.showSettingsMenu()
+	}
+}
+
+func nextExperimentMode(value string) string {
+	switch value {
+	case toolbarstate.ExperimentModeVariable:
+		return toolbarstate.ExperimentModeFull
+	case toolbarstate.ExperimentModeFull:
+		return toolbarstate.ExperimentModeShorthand
+	default:
+		return toolbarstate.ExperimentModeVariable
+	}
+}
+
+func nextCandidateFont(value string) string {
+	switch value {
+	case toolbarstate.CandidateFontMedium:
+		return toolbarstate.CandidateFontLarge
+	case toolbarstate.CandidateFontLarge:
+		return toolbarstate.CandidateFontSmall
+	default:
+		return toolbarstate.CandidateFontMedium
+	}
+}
+
+func nextCandidateEncoding(value string) string {
+	switch value {
+	case toolbarstate.AnnotationKeySequence:
+		return toolbarstate.AnnotationYinyuan
+	case toolbarstate.AnnotationYinyuan:
+		return toolbarstate.AnnotationStandardPinyin
+	case toolbarstate.AnnotationStandardPinyin:
+		return toolbarstate.AnnotationHidden
+	default:
+		return toolbarstate.AnnotationKeySequence
 	}
 }
 
@@ -816,7 +924,14 @@ func toggleHiddenButton(hidden []string, key string) []string {
 }
 
 func (a *app) updateState(change func(*toolbarstate.State)) {
-	state, err := toolbarstate.Update(a.statePath, "toolbar", func(state *toolbarstate.State) bool {
+	source := "toolbar"
+	if a.experimental {
+		source = "yimecore-toolbar"
+	}
+	state, err := toolbarstate.Update(a.statePath, source, func(state *toolbarstate.State) bool {
+		if a.experimental {
+			toolbarstate.NormalizeExperiment(state)
+		}
 		change(state)
 		return true
 	})
@@ -834,6 +949,9 @@ func (a *app) refresh() {
 	if err != nil || state.Revision <= a.state.Revision {
 		return
 	}
+	if a.experimental {
+		toolbarstate.NormalizeExperiment(&state)
+	}
 	a.state = state
 	a.updateLabels()
 	a.applyLayout()
@@ -841,6 +959,21 @@ func (a *app) refresh() {
 
 func (a *app) updateLabels() {
 	setWindowLabel(a.buttons[idHandle], dragHandleLabel(a.state))
+	if a.experimental {
+		setButtonText(a.buttons[idLanguage], map[string]string{
+			toolbarstate.ExperimentModeVariable: "模式：变长", toolbarstate.ExperimentModeFull: "模式：等长",
+			toolbarstate.ExperimentModeShorthand: "模式：省键",
+		}[a.state.ExperimentMode])
+		setButtonText(a.buttons[idShape], map[string]string{
+			toolbarstate.CandidateFontSmall: "字号：小", toolbarstate.CandidateFontMedium: "字号：中",
+			toolbarstate.CandidateFontLarge: "字号：大",
+		}[a.state.CandidateFontPreset])
+		setButtonText(a.buttons[idPunct], map[string]string{
+			toolbarstate.AnnotationKeySequence: "音码：键位", toolbarstate.AnnotationYinyuan: "音码：音元",
+			toolbarstate.AnnotationStandardPinyin: "音码：拼音", toolbarstate.AnnotationHidden: "音码：隐藏",
+		}[a.state.CandidateAnnotation])
+		return
+	}
 	setButtonText(a.buttons[idLanguage], choose(a.state.ASCII, "英文", "中文"))
 	setButtonText(a.buttons[idShape], choose(a.state.FullShape, "全宽", "半宽"))
 	setButtonText(a.buttons[idPunct], choose(a.state.ASCIIPunctuation, "英标", "中标"))

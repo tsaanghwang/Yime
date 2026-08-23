@@ -27,7 +27,7 @@ CandidateListUIElement::~CandidateListUIElement() {
 
 void CandidateListUIElement::Update(ITfDocumentMgr* document,
                                     const std::vector<yime::experiment::BrokerCandidate>& candidates,
-                                    size_t selectedIndex) {
+                                    size_t selectedIndex, const std::string& annotationMode) {
     if (document != document_) {
         if (document_) document_->Release();
         document_ = document;
@@ -40,7 +40,17 @@ void CandidateListUIElement::Update(ITfDocumentMgr* document,
     selection_ = count == 0 ? 0u : static_cast<UINT>(std::min(selectedIndex, count - 1));
     candidates_.reserve(count);
     for (size_t index = 0; index < count; ++index) {
-        candidates_.push_back(std::wstring(labels[index]) + L"  " + widen(candidates[index].text));
+        std::string annotation;
+        if (annotationMode == "yinyuan") {
+            annotation = candidates[index].yinyuan;
+        } else if (annotationMode == "standard_pinyin") {
+            annotation = candidates[index].standardPinyin;
+        } else if (annotationMode == "key_sequence") {
+            annotation = candidates[index].code;
+        }
+        std::wstring display = std::wstring(labels[index]) + L"  " + widen(candidates[index].text);
+        if (!annotation.empty()) display += L"  " + widen(annotation);
+        candidates_.push_back(std::move(display));
     }
 }
 

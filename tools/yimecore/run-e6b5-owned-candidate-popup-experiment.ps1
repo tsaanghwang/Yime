@@ -43,6 +43,8 @@ $sourceFiles = @(
     'YimeTextServiceExperiment\CandidateListUIElement.h',
     'YimeTextServiceExperiment\CandidatePopup.h',
     'YimeTextServiceExperiment\CandidatePopup.cpp',
+    'YimeTextServiceExperiment\ExperimentSettings.h',
+    'YimeTextServiceExperiment\ExperimentSettings.cpp',
     'YimeTextServiceExperiment\CompositionEditSession.h',
     'YimeTextServiceExperiment\CompositionEditSession.cpp',
     'YimeTextServiceExperiment\TextService.h',

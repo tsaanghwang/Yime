@@ -36,14 +36,25 @@ type Event struct {
 // stable for the lifetime of the current input state. Labels such as Shift+1
 // are a text-service concern and never enter this contract.
 type Candidate struct {
-	ID       string    `json:"id"`
-	Text     string    `json:"text"`
-	Code     string    `json:"code"`
-	SourceID string    `json:"source_id,omitempty"`
-	Weight   int64     `json:"weight"`
-	Exact    bool      `json:"exact"`
-	Segments []Segment `json:"segments,omitempty"`
-	Score    Score     `json:"score"`
+	ID          string               `json:"id"`
+	Text        string               `json:"text"`
+	Code        string               `json:"code"`
+	SourceID    string               `json:"source_id,omitempty"`
+	Weight      int64                `json:"weight"`
+	Exact       bool                 `json:"exact"`
+	Segments    []Segment            `json:"segments,omitempty"`
+	Score       Score                `json:"score"`
+	Annotations CandidateAnnotations `json:"annotations,omitempty"`
+}
+
+// CandidateAnnotations carries the three display forms supported by the
+// experimental desktop toolbar. KeySequence is copied from Candidate.Code;
+// the other forms are populated only when the canonical runtime data resolves
+// them without guessing.
+type CandidateAnnotations struct {
+	Yinyuan        string `json:"yinyuan,omitempty"`
+	KeySequence    string `json:"key_sequence,omitempty"`
+	StandardPinyin string `json:"standard_pinyin,omitempty"`
 }
 
 // Score keeps the experiment's ranking inputs auditable. Static comes from

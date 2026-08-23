@@ -175,6 +175,8 @@ $sourceFiles = @(
     'YimeTextServiceExperiment\CandidateListUIElement.cpp',
     'YimeTextServiceExperiment\CandidatePopup.h',
     'YimeTextServiceExperiment\CandidatePopup.cpp',
+    'YimeTextServiceExperiment\ExperimentSettings.h',
+    'YimeTextServiceExperiment\ExperimentSettings.cpp',
     'YimeTextServiceExperiment\tests\RegisteredHostTests.cpp',
     'tools\yimecore\run-e6b6-registered-host-experiment.ps1'
 )

@@ -5,6 +5,7 @@
 #include <atomic>
 
 #include "CandidatePopup.h"
+#include "ExperimentSettings.h"
 #include "SurfaceSession.h"
 
 class CandidateListUIElement;
@@ -71,6 +72,7 @@ private:
     bool plannedCompositionTermination_ = false;
     CandidateListUIElement* candidateUI_ = nullptr;
     CandidatePopup candidatePopup_;
+    yime::experiment::ExperimentSettingsCache experimentSettings_;
     DWORD candidateUIId_ = 0;
     bool candidateUIRegistered_ = false;
     bool ownedCandidatePopupRequested_ = false;

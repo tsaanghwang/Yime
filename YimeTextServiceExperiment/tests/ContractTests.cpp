@@ -8,6 +8,7 @@
 #include "BrokerEndpoint.h"
 #include "CandidateListUIElement.h"
 #include "CandidatePopup.h"
+#include "ExperimentSettings.h"
 #include "LanguageBarItem.h"
 #include "YimeTextServiceIds.h"
 
@@ -102,6 +103,26 @@ void testCandidateElement() {
     expect(candidates->GetString(8, &ninth) == S_OK && ninth && std::wstring_view(ninth).find(L"⇧9") == 0,
            "ninth candidate display label mismatch");
     SysFreeString(ninth);
+
+    values[0].code = "yjkl";
+    values[0].yinyuan = "音元序列";
+    values[0].standardPinyin = "qiū";
+    for (const auto& annotation : std::array<std::pair<std::string, std::wstring>, 4>{{
+             {"key_sequence", L"yjkl"}, {"yinyuan", L"音元序列"},
+             {"standard_pinyin", L"qiū"}, {"hidden", L""}}}) {
+        candidates->Update(nullptr, values, 0, annotation.first);
+        BSTR annotated = nullptr;
+        expect(candidates->GetString(0, &annotated) == S_OK && annotated,
+               "annotated candidate was unavailable");
+        const std::wstring display = annotated ? annotated : L"";
+        SysFreeString(annotated);
+        if (annotation.second.empty()) {
+            expect(display == L"⇧1  秋", "hidden candidate encoding remained visible");
+        } else {
+            expect(display.find(annotation.second) != std::wstring::npos,
+                   "selected candidate encoding was not displayed");
+        }
+    }
     BSTR invalid = reinterpret_cast<BSTR>(1);
     expect(candidates->GetString(9, &invalid) == E_INVALIDARG && invalid == nullptr,
            "out-of-range candidate was accepted");
@@ -134,6 +155,17 @@ void testCandidateElement() {
 
 void testOwnedCandidatePopup() {
     CandidatePopup popup;
+    expect(popup.FontPoints() == 12, "candidate popup medium font is not 12 points");
+    popup.SetFontPoints(10);
+    expect(popup.FontPoints() == 10, "candidate popup small font was rejected");
+    popup.SetFontPoints(16);
+    expect(popup.FontPoints() == 16, "candidate popup large font was rejected");
+    popup.SetFontPoints(99);
+    expect(popup.FontPoints() == 12, "candidate popup invalid font did not return to medium");
+    popup.SetUseYinyuanFont(true);
+    expect(popup.UsesYinyuanFont(), "candidate popup did not select the Yinyuan font");
+    popup.SetUseYinyuanFont(false);
+    expect(!popup.UsesYinyuanFont(), "candidate popup did not restore the UI font");
     unsigned selected = 0;
     popup.SetSelectionHandler([](void* context, unsigned ordinal) noexcept {
         *static_cast<unsigned*>(context) = ordinal;
@@ -170,6 +202,16 @@ void testOwnedCandidatePopup() {
     expect(!IsWindowVisible(window), "owned candidate popup did not hide");
     popup.Destroy();
     expect(!IsWindow(window), "owned candidate popup did not destroy its HWND");
+}
+
+void testExperimentSettings() {
+    using namespace yime::experiment;
+    const auto missing = LoadExperimentSettings(L"Z:\\missing-yimecore-experiment-settings.json");
+    expect(missing.mode == "variable", "experiment default mode is not variable");
+    expect(missing.candidateFontPreset == "medium" && missing.candidateFontPoints == 12,
+           "experiment medium font default is not 12 points");
+    expect(missing.candidateAnnotation == "key_sequence",
+           "experiment candidate encoding default is not key sequence");
 }
 
 void testLanguageBarItem() {
@@ -272,6 +314,7 @@ int wmain(int argc, wchar_t** argv) {
     testBrokerEndpoint();
     testCandidateElement();
     testOwnedCandidatePopup();
+    testExperimentSettings();
     testLanguageBarItem();
     testComLifecycle(argv[1]);
     if (failures != 0) return 1;

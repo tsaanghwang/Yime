@@ -104,6 +104,84 @@ function Start-Broker([string]$broker, [string]$index, [string]$mode,
         -PassThru -WindowStyle Hidden -RedirectStandardError $errorLog
 }
 
+function Invoke-MultiModeProbe([string]$broker, [string]$indexRoot, [string]$annotationRoot,
+                               [string]$pipe, [string]$logPath, [string]$errorLog) {
+    $process = Start-Process -FilePath $broker -ArgumentList @(
+        '-index-root', ('"' + $indexRoot + '"'), '-default-mode', 'variable',
+        '-annotation-data-dir', ('"' + $annotationRoot + '"'),
+        '-named-pipe', ('"' + $pipe + '"')) -PassThru -WindowStyle Hidden `
+        -RedirectStandardError $errorLog
+    $client = $null
+    $reader = $null
+    $writer = $null
+    try {
+        Start-Sleep -Milliseconds 250
+        if ($process.HasExited) { throw "multi-mode broker exited with $($process.ExitCode)" }
+        $pipeName = $pipe.Substring('\\.\pipe\'.Length)
+        $client = [IO.Pipes.NamedPipeClientStream]::new('.', $pipeName,
+            [IO.Pipes.PipeDirection]::InOut, [IO.Pipes.PipeOptions]::None)
+        $client.Connect(5000)
+        $reader = [IO.StreamReader]::new($client, [Text.UTF8Encoding]::new($false), $false, 4096, $true)
+        $writer = [IO.StreamWriter]::new($client, [Text.UTF8Encoding]::new($false), 4096, $true)
+        $writer.AutoFlush = $true
+        $cases = @(
+            [ordered]@{ requested_mode = ''; expected_mode = 'variable'; code = 'nlhso' },
+            [ordered]@{ requested_mode = 'variable'; expected_mode = 'variable'; code = 'nlhso' },
+            [ordered]@{ requested_mode = 'full'; expected_mode = 'full'; code = 'nlllhsso' },
+            [ordered]@{ requested_mode = 'shorthand'; expected_mode = 'shorthand'; code = 'nlhso' }
+        )
+        $results = @()
+        foreach ($case in $cases) {
+            $open = [ordered]@{ version = 1; sequence = 1; operation = 'open' }
+            if ($case.requested_mode) { $open.mode = $case.requested_mode }
+            $writer.WriteLine(($open | ConvertTo-Json -Compress))
+            $opened = $reader.ReadLine() | ConvertFrom-Json
+            if ($opened.error -or -not $opened.session_id) {
+                throw "multi-mode open failed for $($case.expected_mode)"
+            }
+            $apply = [ordered]@{
+                version = 1
+                sequence = 2
+                session_id = $opened.session_id
+                operation = 'apply'
+                event = [ordered]@{ operation = 1; code = $case.code }
+            }
+            $writer.WriteLine(($apply | ConvertTo-Json -Depth 5 -Compress))
+            $applied = $reader.ReadLine() | ConvertFrom-Json
+            if ($applied.error) { throw "multi-mode apply failed for $($case.expected_mode)" }
+            $candidate = @($applied.result.state.candidates)[0]
+            if (-not $candidate -or $candidate.text -ne '你好' -or -not $candidate.exact -or
+                $candidate.code -ne $case.code -or
+                $candidate.annotations.key_sequence -ne $case.code -or
+                [string]::IsNullOrWhiteSpace($candidate.annotations.yinyuan) -or
+                $candidate.annotations.standard_pinyin -ne 'nǐ hǎo') {
+                throw "multi-mode candidate or annotation mismatch for $($case.expected_mode)"
+            }
+            $results += [ordered]@{
+                requested_mode = if ($case.requested_mode) { $case.requested_mode } else { '(default)' }
+                resolved_mode = $case.expected_mode
+                code = $candidate.code
+                text = $candidate.text
+                exact = [bool]$candidate.exact
+                key_sequence = $candidate.annotations.key_sequence
+                yinyuan = $candidate.annotations.yinyuan
+                standard_pinyin = $candidate.annotations.standard_pinyin
+            }
+        }
+        [ordered]@{
+            default_mode = 'variable'
+            cases = $results
+            all_modes_and_annotations_verified = $true
+        } | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath $logPath -Encoding utf8
+        return (Get-Content -LiteralPath $logPath -Raw | ConvertFrom-Json)
+    } finally {
+        if ($writer) { $writer.Dispose() }
+        if ($reader) { $reader.Dispose() }
+        if ($client) { $client.Dispose() }
+        Stop-Broker $process
+    }
+}
+
 function Stop-Broker([Diagnostics.Process]$process) {
     if ($process -and -not $process.HasExited) {
         Stop-Process -Id $process.Id -Force
@@ -156,6 +234,7 @@ $artifactRoot = Join-Path $b6Root 'p\p'
 $packageRoot = Join-Path $outputDir 'package'
 New-Item -ItemType Directory -Force (Join-Path $packageRoot 'bin') | Out-Null
 New-Item -ItemType Directory -Force (Join-Path $packageRoot 'indexes') | Out-Null
+New-Item -ItemType Directory -Force (Join-Path $packageRoot 'data\fonts') | Out-Null
 foreach ($architecture in @('x64', 'x86')) {
     New-Item -ItemType Directory -Force (Join-Path $packageRoot $architecture) | Out-Null
 }
@@ -165,6 +244,11 @@ $copies = [ordered]@{
     'indexes/full.yidx' = (Join-Path $artifactRoot 'full\index.yidx')
     'indexes/variable.yidx' = (Join-Path $artifactRoot 'variable\index.yidx')
     'indexes/shorthand.yidx' = (Join-Path $artifactRoot 'shorthand\index.yidx')
+    'data/yime_pinyin_codes.tsv' = (Join-Path $repoRoot 'go-backend\input_methods\yime\data\yime_pinyin_codes.tsv')
+    'data/pinyin_normalized.json' = (Join-Path $repoRoot 'go-backend\input_methods\yime\data\pinyin_normalized.json')
+    'data/yime_pua_pinyin.json' = (Join-Path $repoRoot 'go-backend\input_methods\yime\data\yime_pua_pinyin.json')
+    'data/yime_pinyin_reverse_source.tsv' = (Join-Path $repoRoot 'go-backend\input_methods\yime\data\yime_pinyin_reverse_source.tsv')
+    'data/fonts/YinYuan-Regular.ttf' = (Join-Path $repoRoot 'go-backend\input_methods\yime\data\fonts\YinYuan-Regular.ttf')
 }
 foreach ($architecture in @('x64', 'x86')) {
     $release = Join-Path $artifactRoot "build-$architecture\Release"
@@ -176,9 +260,18 @@ foreach ($entry in $copies.GetEnumerator()) {
     if (-not (Test-Path -LiteralPath $entry.Value)) { throw "missing package source artifact: $($entry.Value)" }
     Copy-Item -LiteralPath $entry.Value -Destination (Join-Path $packageRoot $entry.Key) -Force
 }
+$toolbar = Join-Path $packageRoot 'bin\YimeCoreToolbar.exe'
+Push-Location (Join-Path $repoRoot 'go-backend')
+try {
+    & go build -trimpath -o $toolbar ./cmd/input-toolbar
+    if ($LASTEXITCODE -ne 0) { throw 'experimental toolbar build failed' }
+} finally {
+    Pop-Location
+}
+if (-not (Test-Path -LiteralPath $toolbar)) { throw "missing experimental toolbar: $toolbar" }
 
 $packageManifest = [ordered]@{
-    tool_version = 'yimecore-experimental-package-v1'
+    tool_version = 'yimecore-experimental-package-v2'
     package_id = $packageId
     generated_at = (Get-Date).ToUniversalTime().ToString('o')
     git_commit = $commit
@@ -192,6 +285,7 @@ $packageManifest | ConvertTo-Json -Depth 6 | Set-Content $packageManifestPath -E
 $stagedHandoff = Assert-Package $packageRoot (Join-Path $outputDir 'package-handoff-staged.json')
 
 $installedHandoff = $null
+$multiModeProbe = $null
 $architectureResults = @()
 $installedRemoved = $false
 try {
@@ -200,6 +294,9 @@ try {
     $installedHandoff = Assert-Package $resolvedInstallRoot (Join-Path $outputDir 'package-handoff-installed.json')
 
     $broker = Join-Path $resolvedInstallRoot 'bin\YimeBroker.exe'
+    $multiModeProbe = Invoke-MultiModeProbe $broker (Join-Path $resolvedInstallRoot 'indexes') `
+        (Join-Path $resolvedInstallRoot 'data') "\\.\pipe\YimeBroker-e6b7-multi-$PID" `
+        (Join-Path $outputDir 'multi-mode-probe.json') (Join-Path $outputDir 'multi-mode-broker.err')
     $modeDefinitions = @(
         [ordered]@{ mode = 'full'; index = (Join-Path $resolvedInstallRoot 'indexes\full.yidx') },
         [ordered]@{ mode = 'variable'; index = (Join-Path $resolvedInstallRoot 'indexes\variable.yidx') },
@@ -292,6 +389,36 @@ try {
 
 $sourceFiles = @(
     'docs\project\YIMECORE_REPLACEMENT_EXPERIMENT.md',
+    'go-backend\cmd\input-toolbar\main.go',
+    'go-backend\cmd\input-toolbar\main_test.go',
+    'go-backend\input_methods\yime\candidateannotation\annotation.go',
+    'go-backend\input_methods\yime\candidateannotation\annotation_test.go',
+    'go-backend\input_methods\yime\engineapi\engine.go',
+    'go-backend\input_methods\yime\toolbarstate\state.go',
+    'go-backend\input_methods\yime\toolbarstate\state_test.go',
+    'go-backend\input_methods\yime\yimebroker\dispatcher.go',
+    'go-backend\input_methods\yime\yimebroker\dispatcher_test.go',
+    'go-backend\input_methods\yime\yimebroker\protocol.go',
+    'go-backend\input_methods\yime\yimecore\engine.go',
+    'go-backend\input_methods\yime\yimecore\engine_test.go',
+    'go-backend\input_methods\yime\yimecore\indexfile.go',
+    'go-backend\input_methods\yime\yimecore\indexfile_test.go',
+    'go-backend\cmd\yimebroker\main.go',
+    'YimeTextServiceExperiment\CMakeLists.txt',
+    'YimeTextServiceExperiment\BrokerClient.h',
+    'YimeTextServiceExperiment\BrokerClient.cpp',
+    'YimeTextServiceExperiment\CandidateListUIElement.h',
+    'YimeTextServiceExperiment\CandidateListUIElement.cpp',
+    'YimeTextServiceExperiment\ExperimentSettings.h',
+    'YimeTextServiceExperiment\ExperimentSettings.cpp',
+    'YimeTextServiceExperiment\CandidatePopup.h',
+    'YimeTextServiceExperiment\CandidatePopup.cpp',
+    'YimeTextServiceExperiment\SurfaceSession.h',
+    'YimeTextServiceExperiment\SurfaceSession.cpp',
+    'YimeTextServiceExperiment\TextService.h',
+    'YimeTextServiceExperiment\TextService.cpp',
+    'YimeTextServiceExperiment\tests\ContractTests.cpp',
+    'YimeTextServiceExperiment\tests\TsfCompositionTests.cpp',
     'tools\yimecore\run-e6b7-parallel-package-experiment.ps1'
 )
 $hashes = foreach ($relative in $sourceFiles) {
@@ -302,7 +429,7 @@ $sourceHashes = Join-Path $outputDir 'source-hashes.json'
 $hashes | ConvertTo-Json -Depth 3 | Set-Content $sourceHashes -Encoding utf8
 $allInstalledModes = @($architectureResults | ForEach-Object { $_.modes })
 $summary = [ordered]@{
-    tool_version = 'yime-text-service-e6b7-parallel-package-v1'
+    tool_version = 'yime-text-service-e6b7-parallel-package-v2'
     stage = 'e6b7'
     generated_at = (Get-Date).ToUniversalTime().ToString('o')
     git_commit = $commit
@@ -320,6 +447,10 @@ $summary = [ordered]@{
     install_root = $resolvedInstallRoot
     independent_install_root = $true
     independent_experimental_registration_identity = $true
+    default_mode = $multiModeProbe.default_mode
+    multi_mode_and_candidate_annotations_verified = [bool]$multiModeProbe.all_modes_and_annotations_verified
+    toolbar_packaged = Test-Path -LiteralPath (Join-Path $packageRoot 'bin\YimeCoreToolbar.exe')
+    yinyuan_private_font_packaged = Test-Path -LiteralPath (Join-Path $packageRoot 'data\fonts\YinYuan-Regular.ttf')
     architectures = $architectureResults
     all_x86_x64_three_mode_installed_paths_passed = $allInstalledModes.Count -eq 6 -and
         -not ($allInstalledModes.installed_host_path_verified -contains $false)
@@ -333,7 +464,7 @@ $summary = [ordered]@{
     limitations = @(
         'the package is an unsigned experimental staging tree rather than a public MSI or signed release bundle',
         'the installed host remains the purpose-built in-memory ITextStoreACP application; third-party desktop application acceptance remains separate',
-        'language-bar visual exposure and click behavior remain auxiliary installed-application observations'
+        'multi-index sessions do not yet combine durable user-model learning or live index hot-switch rollback; mode changes intentionally open a new idle session'
     )
 }
 $summaryPath = Join-Path $outputDir 'summary.json'
@@ -341,6 +472,8 @@ $summary | ConvertTo-Json -Depth 9 | Set-Content $summaryPath -Encoding utf8
 Write-Host "YimeTextService E6-B7 evidence: $outputDir"
 if (-not $summary.staged_package_hash_handoff_verified -or
     -not $summary.installed_package_hash_handoff_verified -or
+    -not $summary.multi_mode_and_candidate_annotations_verified -or
+    -not $summary.toolbar_packaged -or -not $summary.yinyuan_private_font_packaged -or
     -not $summary.all_x86_x64_three_mode_installed_paths_passed -or
     -not $summary.all_registration_residue_removed -or
     -not $summary.installed_tree_removed -or

@@ -154,10 +154,67 @@ func TestCompactIndexShortPrefixCacheMatchesInMemoryOrdering(t *testing.T) {
 	}
 	t.Cleanup(func() { _ = fileIndex.Close() })
 	for _, prefix := range []string{"a", "a1"} {
-		memoryRecords := memoryIndex.lookup(prefix, 9)
-		fileRecords := fileIndex.lookup(prefix, 9)
-		if !reflect.DeepEqual(memoryRecords, fileRecords) {
-			t.Fatalf("prefix %q differs:\nmemory=%+v\nfile=%+v", prefix, memoryRecords, fileRecords)
+		for _, limit := range []int{9, 10, 19, 28} {
+			memoryRecords := memoryIndex.lookup(prefix, limit)
+			fileRecords := fileIndex.lookup(prefix, limit)
+			if !reflect.DeepEqual(memoryRecords, fileRecords) {
+				t.Fatalf("prefix %q limit %d differs:\nmemory=%+v\nfile=%+v", prefix, limit, memoryRecords, fileRecords)
+			}
+		}
+	}
+}
+
+func TestCompactIndexShortPrefixesRetainPagingAndOrdering(t *testing.T) {
+	entries := make([]Entry, 0, 80)
+	for i := 0; i < 40; i++ {
+		entries = append(entries,
+			Entry{Text: fmt.Sprintf("一字节-%02d", i), Code: "a" + benchmarkCode(i), Weight: int64(1000 - i)},
+			Entry{Text: fmt.Sprintf("二字节-%02d", i), Code: "b1" + benchmarkCode(i), Weight: int64(1000 - i)},
+		)
+	}
+	source := filepath.Join(t.TempDir(), "paged-short-prefix.dict.yaml")
+	var dictionary strings.Builder
+	dictionary.WriteString("# Rime dictionary\n---\nname: paged-short-prefix\n...\n")
+	for _, entry := range entries {
+		fmt.Fprintf(&dictionary, "%s\t%s\t%d\n", entry.Text, entry.Code, entry.Weight)
+	}
+	if err := os.WriteFile(source, []byte(dictionary.String()), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	path := filepath.Join(t.TempDir(), "paged-short-prefix.yidx")
+	if _, err := BuildIndexFile("full", source, path); err != nil {
+		t.Fatal(err)
+	}
+	index, err := OpenFileIndex(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { _ = index.Close() })
+
+	for _, prefix := range []string{"a", "b1"} {
+		engine, err := NewFileEngine(index, 9)
+		if err != nil {
+			t.Fatal(err)
+		}
+		first := applyCode(t, engine, prefix).State
+		if len(first.Candidates) != 9 || !first.HasNext || first.HasPrevious || first.PageNumber != 0 {
+			t.Fatalf("prefix %q first page = %#v", prefix, first)
+		}
+		firstIDs := make(map[string]struct{}, len(first.Candidates))
+		for _, candidate := range first.Candidates {
+			firstIDs[candidate.ID] = struct{}{}
+		}
+		second, err := engine.Apply(engineapi.Event{Operation: engineapi.PageNext})
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(second.State.Candidates) != 9 || !second.State.HasPrevious || second.State.PageNumber != 1 {
+			t.Fatalf("prefix %q second page = %#v", prefix, second.State)
+		}
+		for _, candidate := range second.State.Candidates {
+			if _, duplicate := firstIDs[candidate.ID]; duplicate {
+				t.Fatalf("prefix %q repeated candidate %q across pages", prefix, candidate.ID)
+			}
 		}
 	}
 }

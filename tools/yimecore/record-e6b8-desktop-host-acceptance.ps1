@@ -112,11 +112,18 @@ if ($hostProcess.ProcessName -ne 'WINWORD' -or $loadedModule.Count -ne 1 -or
 }
 $brokerProcess = Get-CimInstance Win32_Process -Filter "ProcessId = $BrokerProcessId"
 $expectedBroker = Join-Path $resolvedInstallRoot 'bin\YimeBroker.exe'
+$expectedToolbar = Join-Path $resolvedInstallRoot 'bin\YimeCoreToolbar.exe'
 $defaultPipe = '\\.\pipe\YimeBroker.YimeCoreTrial.v1'
 if (-not $brokerProcess -or
     -not $brokerProcess.ExecutablePath.Equals($expectedBroker, [StringComparison]::OrdinalIgnoreCase) -or
-    $brokerProcess.CommandLine.IndexOf($defaultPipe, [StringComparison]::OrdinalIgnoreCase) -lt 0) {
+    $brokerProcess.CommandLine.IndexOf($defaultPipe, [StringComparison]::OrdinalIgnoreCase) -lt 0 -or
+    $brokerProcess.CommandLine.IndexOf('-index-root', [StringComparison]::OrdinalIgnoreCase) -lt 0 -or
+    $brokerProcess.CommandLine.IndexOf('-default-mode variable', [StringComparison]::OrdinalIgnoreCase) -lt 0 -or
+    $brokerProcess.CommandLine.IndexOf('-annotation-data-dir', [StringComparison]::OrdinalIgnoreCase) -lt 0) {
     throw 'the observed desktop host is not using the installed Broker at the default endpoint'
+}
+if (-not (Test-Path -LiteralPath $expectedToolbar -PathType Leaf)) {
+    throw 'the installed experimental desktop toolbar is missing'
 }
 
 $observationsPassed = $InitialCandidateObserved -and $HostTerminationObserved -and
@@ -148,6 +155,10 @@ $sourceFiles = @(
     'YimeTextServiceExperiment\CMakeLists.txt',
     'YimeTextServiceExperiment\CandidateListUIElement.cpp',
     'YimeTextServiceExperiment\CandidateListUIElement.h',
+    'YimeTextServiceExperiment\CandidatePopup.cpp',
+    'YimeTextServiceExperiment\CandidatePopup.h',
+    'YimeTextServiceExperiment\ExperimentSettings.cpp',
+    'YimeTextServiceExperiment\ExperimentSettings.h',
     'YimeTextServiceExperiment\KeyContract.cpp',
     'YimeTextServiceExperiment\KeyContract.h',
     'YimeTextServiceExperiment\RegistrationTool.cpp',
@@ -172,7 +183,7 @@ $sourceHashesPath = Join-Path $outputDir 'source-hashes.json'
 }) | ConvertTo-Json -Depth 4 | Set-Content $sourceHashesPath -Encoding utf8
 
 $summary = [ordered]@{
-    tool_version = 'yime-text-service-e6b8-desktop-host-v1'
+    tool_version = 'yime-text-service-e6b8-desktop-host-v2'
     stage = 'e6b8'
     generated_at = (Get-Date).ToUniversalTime().ToString('o')
     git_commit = $commit
@@ -190,6 +201,9 @@ $summary = [ordered]@{
     both_registry_views_match_install_root = $true
     installed_host_module_verified = $true
     installed_default_endpoint_broker_verified = $true
+    installed_default_variable_mode_verified = $true
+    installed_multi_mode_broker_verified = $true
+    installed_desktop_toolbar_verified = $true
     all_desktop_observations_passed = [bool]$observationsPassed
     production_registration_changed = $false
     production_installation_changed = $false

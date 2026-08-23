@@ -12,7 +12,7 @@ class CandidateListUIElement final : public ITfCandidateListUIElement {
 public:
     CandidateListUIElement() noexcept = default;
     void Update(ITfDocumentMgr* document, const std::vector<yime::experiment::BrokerCandidate>& candidates,
-                size_t selectedIndex = 0);
+                size_t selectedIndex = 0, const std::string& annotationMode = "key_sequence");
     void UpdateEmpty(ITfDocumentMgr* document, std::wstring message);
     const std::vector<std::wstring>& DisplayCandidates() const noexcept { return candidates_; }
 

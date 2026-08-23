@@ -67,6 +67,31 @@ func TestExactCandidatesRankBeforePrefixCompletions(t *testing.T) {
 	}
 }
 
+func TestLexicalPhraseRanksBeforeHigherScoringGeneratedSentence(t *testing.T) {
+	index, err := NewIndex([]Entry{
+		{Text: "词典短语", Code: "ab", Weight: 1},
+		{Text: "甲", Code: "a", Weight: 1_000_000},
+		{Text: "乙", Code: "b", Weight: 1_000_000},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	engine, err := NewEngine(index, 9)
+	if err != nil {
+		t.Fatal(err)
+	}
+	result := applyCode(t, engine, "ab")
+	if len(result.State.Candidates) < 2 {
+		t.Fatalf("lexical/generated fixture produced %#v", result.State.Candidates)
+	}
+	if result.State.Candidates[0].Text != "词典短语" || len(result.State.Candidates[0].Segments) != 0 {
+		t.Fatalf("lexical phrase did not stay first: %#v", result.State.Candidates)
+	}
+	if result.State.Candidates[1].Text != "甲乙" || len(result.State.Candidates[1].Segments) != 2 {
+		t.Fatalf("generated sentence did not follow lexical phrase: %#v", result.State.Candidates)
+	}
+}
+
 func TestBackspaceClearAndSelection(t *testing.T) {
 	engine := testEngine(t)
 	result := applyCode(t, engine, "a12")

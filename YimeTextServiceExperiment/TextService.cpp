@@ -6,6 +6,7 @@
 #include "CompositionEditSession.h"
 #include "CandidateListUIElement.h"
 #include "BrokerEndpoint.h"
+#include "ExperimentSettings.h"
 #include "KeyContract.h"
 #include "LanguageBarItem.h"
 #include "ModuleState.h"
@@ -310,10 +311,12 @@ void YimeTextService::UpdateCandidateUI(ITfContext* context, const yime::experim
         document->Release();
         return;
     }
+    const auto& displaySettings = experimentSettings_.Get();
     if (update.candidates.empty()) {
         candidateUI_->UpdateEmpty(document, L"无匹配候选，按退格修改");
     } else {
-        candidateUI_->Update(document, update.candidates, update.selectedCandidateIndex);
+        candidateUI_->Update(document, update.candidates, update.selectedCandidateIndex,
+                             displaySettings.candidateAnnotation);
     }
     document->Release();
     RECT anchor{};
@@ -335,6 +338,8 @@ void YimeTextService::UpdateCandidateUI(ITfContext* context, const yime::experim
     if (manager) manager->Release();
     const size_t popupSelection = update.candidates.empty() ? static_cast<size_t>(-1)
                                                              : update.selectedCandidateIndex;
+    candidatePopup_.SetFontPoints(displaySettings.candidateFontPoints);
+    candidatePopup_.SetUseYinyuanFont(displaySettings.candidateAnnotation == "yinyuan");
     if (ownedCandidatePopupRequested_ &&
         candidatePopup_.Update(candidateUI_->DisplayCandidates(), anchor, owner,
                                compositionRect != nullptr, popupSelection)) {

@@ -9,9 +9,21 @@ import (
 )
 
 const (
-	FileName      = "yime_input_toolbar_state.json"
-	FormatVersion = 1
-	LayoutVersion = 1
+	FileName           = "yime_input_toolbar_state.json"
+	ExperimentFileName = "yimecore_experimental_toolbar_state.json"
+	FormatVersion      = 1
+	LayoutVersion      = 1
+
+	ExperimentModeFull       = "full"
+	ExperimentModeVariable   = "variable"
+	ExperimentModeShorthand  = "shorthand"
+	CandidateFontSmall       = "small"
+	CandidateFontMedium      = "medium"
+	CandidateFontLarge       = "large"
+	AnnotationHidden         = "hidden"
+	AnnotationYinyuan        = "yinyuan"
+	AnnotationKeySequence    = "key_sequence"
+	AnnotationStandardPinyin = "standard_pinyin"
 )
 
 // State is the small, process-independent contract shared by the Yime backend
@@ -31,6 +43,9 @@ type State struct {
 	OrientationSet       bool     `json:"toolbar_orientation_set,omitempty"`
 	ToolbarLayoutVersion int      `json:"toolbar_layout_version,omitempty"`
 	HiddenButtons        []string `json:"toolbar_hidden_buttons,omitempty"`
+	ExperimentMode       string   `json:"experiment_mode,omitempty"`
+	CandidateFontPreset  string   `json:"candidate_font_preset,omitempty"`
+	CandidateAnnotation  string   `json:"candidate_annotation,omitempty"`
 }
 
 func Path(userDir string) string {
@@ -38,6 +53,44 @@ func Path(userDir string) string {
 		return ""
 	}
 	return filepath.Join(userDir, FileName)
+}
+
+// ExperimentPath is the independent state shared only by the parallel
+// YimeCore text service and its small desktop toolbar.
+func ExperimentPath(localAppData string) string {
+	if localAppData == "" {
+		return ""
+	}
+	return filepath.Join(localAppData, "YimeCore Experimental Trial", ExperimentFileName)
+}
+
+// NormalizeExperiment applies the trial defaults without changing unrelated
+// production-toolbar fields. Variable-length input and the 12-point medium
+// font are intentional defaults; key-sequence comments are primary.
+func NormalizeExperiment(state *State) bool {
+	if state == nil {
+		return false
+	}
+	changed := false
+	switch state.ExperimentMode {
+	case ExperimentModeFull, ExperimentModeVariable, ExperimentModeShorthand:
+	default:
+		state.ExperimentMode = ExperimentModeVariable
+		changed = true
+	}
+	switch state.CandidateFontPreset {
+	case CandidateFontSmall, CandidateFontMedium, CandidateFontLarge:
+	default:
+		state.CandidateFontPreset = CandidateFontMedium
+		changed = true
+	}
+	switch state.CandidateAnnotation {
+	case AnnotationHidden, AnnotationYinyuan, AnnotationKeySequence, AnnotationStandardPinyin:
+	default:
+		state.CandidateAnnotation = AnnotationKeySequence
+		changed = true
+	}
+	return changed
 }
 
 func Read(path string) (State, error) {

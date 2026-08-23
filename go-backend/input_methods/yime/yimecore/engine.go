@@ -250,7 +250,8 @@ func (e *Engine) refresh() {
 	}
 	fetchLimit := (e.pageNumber+1)*e.limit + 1
 	records := e.index.lookup(e.rawInput, fetchLimit)
-	exactCandidates := make([]engineapi.Candidate, 0, fetchLimit)
+	lexicalExactCandidates := make([]engineapi.Candidate, 0, fetchLimit)
+	generatedSentenceCandidates := make([]engineapi.Candidate, 0, fetchLimit)
 	prefixCandidates := make([]engineapi.Candidate, 0, fetchLimit)
 	seen := make(map[string]struct{}, fetchLimit)
 	for _, item := range records {
@@ -265,7 +266,7 @@ func (e *Engine) refresh() {
 		e.scoreCandidate(&candidate)
 		seen[candidate.Text+"\x1f"+candidate.Code] = struct{}{}
 		if candidate.Exact {
-			exactCandidates = append(exactCandidates, candidate)
+			lexicalExactCandidates = append(lexicalExactCandidates, candidate)
 		} else {
 			prefixCandidates = append(prefixCandidates, candidate)
 		}
@@ -276,13 +277,18 @@ func (e *Engine) refresh() {
 			continue
 		}
 		e.scoreCandidate(&candidate)
-		exactCandidates = append(exactCandidates, candidate)
+		generatedSentenceCandidates = append(generatedSentenceCandidates, candidate)
 		seen[key] = struct{}{}
 	}
-	rankCandidates(exactCandidates)
+	// A reviewed lexical entry is a stronger result than a generated sentence
+	// path. Summed single-character frequencies can otherwise push the real
+	// phrase off the first page (for example 你好 below 你郝/尼好). Keep the
+	// three result classes ordered explicitly and rank only within each class.
+	rankCandidates(lexicalExactCandidates)
+	rankCandidates(generatedSentenceCandidates)
 	rankCandidates(prefixCandidates)
 	pool := make([]engineapi.Candidate, 0, fetchLimit)
-	for _, group := range [][]engineapi.Candidate{exactCandidates, prefixCandidates} {
+	for _, group := range [][]engineapi.Candidate{lexicalExactCandidates, generatedSentenceCandidates, prefixCandidates} {
 		for _, candidate := range group {
 			pool = append(pool, candidate)
 			if len(pool) == fetchLimit {

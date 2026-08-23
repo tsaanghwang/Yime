@@ -14,6 +14,7 @@ import (
 )
 
 type EngineFactory func() (engineapi.Engine, error)
+type ModeEngineFactory func(mode string) (engineapi.Engine, error)
 
 type Config struct {
 	MaxSessions          int
@@ -22,12 +23,33 @@ type Config struct {
 }
 
 type Dispatcher struct {
-	factory EngineFactory
-	config  Config
+	factory     EngineFactory
+	modeFactory ModeEngineFactory
+	defaultMode string
+	config      Config
 
 	mu       sync.Mutex
 	sessions map[string]*session
 	nextID   atomic.Uint64
+}
+
+// NewModeDispatcher selects one immutable engine index when a session opens.
+// Existing sessions retain their engine, so changing the toolbar mode never
+// mutates an active composition.
+func NewModeDispatcher(defaultMode string, factory ModeEngineFactory, config Config) (*Dispatcher, error) {
+	if defaultMode != "full" && defaultMode != "variable" && defaultMode != "shorthand" {
+		return nil, errors.New("default mode must be full, variable or shorthand")
+	}
+	if factory == nil {
+		return nil, errors.New("mode engine factory is required")
+	}
+	dispatcher, err := NewDispatcher(func() (engineapi.Engine, error) { return factory(defaultMode) }, config)
+	if err != nil {
+		return nil, err
+	}
+	dispatcher.modeFactory = factory
+	dispatcher.defaultMode = defaultMode
+	return dispatcher, nil
 }
 
 type session struct {
@@ -118,7 +140,17 @@ func (d *Dispatcher) open(ctx context.Context, client TrustedClient, request Req
 	d.mu.Unlock()
 
 	outcome, timedOut := runWithDeadline(ctx, d.config.OperationTimeout, func() (engineapi.Result, error) {
-		engine, err := d.factory()
+		var engine engineapi.Engine
+		var err error
+		if d.modeFactory != nil {
+			mode := request.Mode
+			if mode == "" {
+				mode = d.defaultMode
+			}
+			engine, err = d.modeFactory(mode)
+		} else {
+			engine, err = d.factory()
+		}
 		if err == nil {
 			current.engine = engine
 		}

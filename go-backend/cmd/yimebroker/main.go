@@ -9,8 +9,10 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"time"
 
+	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/candidateannotation"
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/engineapi"
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/yimebroker"
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/yimecore"
@@ -19,6 +21,8 @@ import (
 func main() {
 	indexPath := flag.String("index", "", "validated YimeCore index")
 	mode := flag.String("mode", "", "full, variable or shorthand")
+	indexRoot := flag.String("index-root", "", "directory containing full.yidx, variable.yidx and shorthand.yidx")
+	defaultMode := flag.String("default-mode", "variable", "default mode for multi-index session opens")
 	trustedClientID := flag.String("trusted-client-id", "", "identity bound by the launching transport adapter")
 	namedPipe := flag.String("named-pipe", "", "E6-A local Windows named pipe path")
 	pipeMaxConnections := flag.Int("pipe-max-connections", 64, "maximum concurrent named pipe connections")
@@ -33,11 +37,23 @@ func main() {
 	indexSHA256 := flag.String("index-sha256", "", "initial managed index file SHA-256")
 	indexControlManifest := flag.String("index-control-manifest", "", "optional watched index control manifest")
 	indexControlStatus := flag.String("index-control-status", "", "status file for watched index control")
+	annotationDataDir := flag.String("annotation-data-dir", "", "optional reviewed runtime data for candidate encoding annotations")
 	exitBeforeRequest := flag.Int("experiment-exit-before-request", 0, "E5-B fault injection only")
 	hangBeforeRequest := flag.Int("experiment-hang-before-request", 0, "E5-B fault injection only")
 	exitAfterRequest := flag.Int("experiment-exit-after-request", 0, "E5-F fault injection after durable handling but before response")
 	exitCompactionStage := flag.String("experiment-exit-compaction-stage", "", "E5-G fault injection at a named compaction stage")
 	flag.Parse()
+	if *indexRoot != "" {
+		if *indexPath != "" || *mode != "" {
+			fail(fmt.Errorf("index-root cannot be combined with index or mode"))
+		}
+		if *userSnapshot != "" || *userJournal != "" || *indexControlManifest != "" || *indexControlStatus != "" || *indexVersion != "" || *indexSHA256 != "" {
+			fail(fmt.Errorf("multi-index mode does not yet combine with durable learning or index-control switching"))
+		}
+		runMultiMode(*indexRoot, *defaultMode, *annotationDataDir, *namedPipe, *trustedClientID,
+			*pipeMaxConnections, *pipeMaxConnectionsPerClient)
+		return
+	}
 	if *indexPath == "" || *mode == "" {
 		fail(fmt.Errorf("index and mode are required"))
 	}
@@ -54,6 +70,19 @@ func main() {
 	defer index.Close()
 	if index.Mode() != *mode {
 		fail(fmt.Errorf("index mode %q does not match %q", index.Mode(), *mode))
+	}
+	var annotationResolver *candidateannotation.Resolver
+	if *annotationDataDir != "" {
+		annotationResolver, err = candidateannotation.Load(*annotationDataDir, *mode)
+		if err != nil {
+			fail(fmt.Errorf("load candidate annotations: %w", err))
+		}
+	}
+	decorate := func(engine engineapi.Engine, buildErr error) (engineapi.Engine, error) {
+		if buildErr != nil || annotationResolver == nil {
+			return engine, buildErr
+		}
+		return candidateannotation.Wrap(engine, annotationResolver)
 	}
 	var durable *yimebroker.DurableUserModel
 	if (*userSnapshot == "") != (*userJournal == "") {
@@ -101,10 +130,12 @@ func main() {
 			}
 		}()
 		builder = func(target *yimecore.FileIndex) (engineapi.Engine, error) {
-			return yimecore.NewFileEngineWithUserModel(target, 9, durable.Model())
+			return decorate(yimecore.NewFileEngineWithUserModel(target, 9, durable.Model()))
 		}
 	} else {
-		builder = func(target *yimecore.FileIndex) (engineapi.Engine, error) { return yimecore.NewFileEngine(target, 9) }
+		builder = func(target *yimecore.FileIndex) (engineapi.Engine, error) {
+			return decorate(yimecore.NewFileEngine(target, 9))
+		}
 	}
 	var factory yimebroker.EngineFactory = func() (engineapi.Engine, error) { return builder(index) }
 	var manager *yimebroker.IndexManager
@@ -153,6 +184,70 @@ func main() {
 	}
 	if err != nil {
 		fail(err)
+	}
+}
+
+func runMultiMode(indexRoot, defaultMode, annotationDataDir, namedPipe, trustedClientID string,
+	pipeMaxConnections, pipeMaxConnectionsPerClient int) {
+	if (namedPipe == "") == (trustedClientID == "") {
+		fail(fmt.Errorf("supply exactly one of named-pipe or trusted-client-id"))
+	}
+	modes := []string{"full", "variable", "shorthand"}
+	indices := make(map[string]*yimecore.FileIndex, len(modes))
+	resolvers := make(map[string]*candidateannotation.Resolver, len(modes))
+	for _, mode := range modes {
+		index, err := yimecore.OpenFileIndex(filepath.Join(indexRoot, mode+".yidx"))
+		if err != nil {
+			fail(fmt.Errorf("open %s index: %w", mode, err))
+		}
+		if index.Mode() != mode {
+			_ = index.Close()
+			fail(fmt.Errorf("index file for %s reports mode %q", mode, index.Mode()))
+		}
+		indices[mode] = index
+		if annotationDataDir != "" {
+			resolver, err := candidateannotation.Load(annotationDataDir, mode)
+			if err != nil {
+				closeIndices(indices)
+				fail(fmt.Errorf("load %s candidate annotations: %w", mode, err))
+			}
+			resolvers[mode] = resolver
+		}
+	}
+	defer closeIndices(indices)
+	factory := func(mode string) (engineapi.Engine, error) {
+		index := indices[mode]
+		if index == nil {
+			return nil, fmt.Errorf("unsupported session mode %q", mode)
+		}
+		engine, err := yimecore.NewFileEngine(index, 9)
+		if err != nil || resolvers[mode] == nil {
+			return engine, err
+		}
+		return candidateannotation.Wrap(engine, resolvers[mode])
+	}
+	dispatcher, err := yimebroker.NewModeDispatcher(defaultMode, factory, yimebroker.Config{})
+	if err != nil {
+		fail(err)
+	}
+	serveContext, stopSignals := signal.NotifyContext(context.Background(), os.Interrupt)
+	defer stopSignals()
+	if namedPipe != "" {
+		err = yimebroker.ServeNamedPipe(serveContext, dispatcher, yimebroker.NamedPipeConfig{
+			Name: namedPipe, MaxConnections: pipeMaxConnections, MaxConnectionsPerClient: pipeMaxConnectionsPerClient,
+			OnConnectionError: func(connectionErr error) { fmt.Fprintln(os.Stderr, connectionErr) },
+		})
+	} else {
+		err = yimebroker.ServeLines(serveContext, os.Stdin, os.Stdout, dispatcher, yimebroker.TrustedClient{ID: trustedClientID})
+	}
+	if err != nil {
+		fail(err)
+	}
+}
+
+func closeIndices(indices map[string]*yimecore.FileIndex) {
+	for _, index := range indices {
+		_ = index.Close()
 	}
 }
 

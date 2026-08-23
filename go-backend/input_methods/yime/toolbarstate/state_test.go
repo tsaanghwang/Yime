@@ -47,3 +47,23 @@ func TestUpdateWritesCompleteVersionedStateAndSkipsUnchangedRevision(t *testing.
 		t.Fatalf("state file is incomplete: %#v", got)
 	}
 }
+
+func TestNormalizeExperimentDefaultsAndPreservesValidSelections(t *testing.T) {
+	state := State{}
+	if !NormalizeExperiment(&state) {
+		t.Fatal("empty experiment state did not receive defaults")
+	}
+	if state.ExperimentMode != ExperimentModeVariable || state.CandidateFontPreset != CandidateFontMedium ||
+		state.CandidateAnnotation != AnnotationKeySequence {
+		t.Fatalf("experiment defaults = %#v", state)
+	}
+	if NormalizeExperiment(&state) {
+		t.Fatal("valid experiment state was rewritten")
+	}
+	state.ExperimentMode = ExperimentModeShorthand
+	state.CandidateFontPreset = CandidateFontLarge
+	state.CandidateAnnotation = AnnotationHidden
+	if NormalizeExperiment(&state) {
+		t.Fatal("explicit experiment selections were rewritten")
+	}
+}

@@ -32,6 +32,7 @@ private:
     uint64_t mutationSequence_ = 0;
     std::wstring pipeName_;
     DWORD reconnectTimeoutMs_ = 100;
+    std::string connectedMode_;
 };
 
 }  // namespace yime::experiment

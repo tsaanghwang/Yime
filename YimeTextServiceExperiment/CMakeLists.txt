@@ -8,6 +8,7 @@ add_library(YimeTextServiceExperiment SHARED
     CandidatePopup.cpp
     CompositionEditSession.cpp
     DllEntry.cpp
+    ExperimentSettings.cpp
     KeyContract.cpp
     LanguageBarItem.cpp
     SurfaceSession.cpp
@@ -26,13 +27,14 @@ add_executable(YimeTextServiceContractTests
     BrokerEndpoint.cpp
     CandidateListUIElement.cpp
     CandidatePopup.cpp
+    ExperimentSettings.cpp
     KeyContract.cpp
     LanguageBarItem.cpp
 )
 target_compile_features(YimeTextServiceContractTests PRIVATE cxx_std_17)
 target_compile_definitions(YimeTextServiceContractTests PRIVATE UNICODE _UNICODE WIN32_LEAN_AND_MEAN NOMINMAX)
 target_compile_options(YimeTextServiceContractTests PRIVATE /utf-8 /W4 /EHsc)
-target_include_directories(YimeTextServiceContractTests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(YimeTextServiceContractTests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} "${CMAKE_CURRENT_LIST_DIR}/../json/single_include")
 target_link_libraries(YimeTextServiceContractTests PRIVATE ole32 oleaut32 user32 gdi32)
 set_property(TARGET YimeTextServiceContractTests PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
@@ -43,6 +45,7 @@ add_test(NAME YimeTextServiceContractTests
 add_executable(YimeBrokerBridgeTests
     tests/BrokerBridgeTests.cpp
     BrokerClient.cpp
+    ExperimentSettings.cpp
     KeyContract.cpp
     SurfaceSession.cpp
 )

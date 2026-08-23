@@ -138,6 +138,41 @@ func TestConcurrentSessionsRemainIndependent(t *testing.T) {
 	wait.Wait()
 }
 
+func TestModeDispatcherDefaultsToVariableAndKeepsOpenedSessionsStable(t *testing.T) {
+	indices := map[string]*yimecore.Index{}
+	for _, mode := range []string{"full", "variable", "shorthand"} {
+		index, err := yimecore.NewIndex([]yimecore.Entry{{Text: mode, Code: "a", Weight: 10}})
+		if err != nil {
+			t.Fatal(err)
+		}
+		indices[mode] = index
+	}
+	dispatcher, err := NewModeDispatcher("variable", func(mode string) (engineapi.Engine, error) {
+		return yimecore.NewEngine(indices[mode], 9)
+	}, Config{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	client := TrustedClient{ID: "mode-client"}
+	opened := dispatch(t, dispatcher, client, Request{Version: 1, Sequence: 1, Operation: OpenSession})
+	variable := dispatch(t, dispatcher, client, Request{Version: 1, Sequence: 2, SessionID: opened.SessionID,
+		Operation: ApplyEvent, Event: engineapi.Event{Operation: engineapi.AppendCode, Code: "a"}})
+	if got := variable.Result.State.Candidates[0].Text; got != "variable" {
+		t.Fatalf("default mode candidate = %q", got)
+	}
+
+	fullClient := TrustedClient{ID: "full-mode-client"}
+	fullOpened := dispatch(t, dispatcher, fullClient, Request{Version: 1, Sequence: 1, Operation: OpenSession, Mode: "full"})
+	full := dispatch(t, dispatcher, fullClient, Request{Version: 1, Sequence: 2, SessionID: fullOpened.SessionID,
+		Operation: ApplyEvent, Event: engineapi.Event{Operation: engineapi.AppendCode, Code: "a"}})
+	if got := full.Result.State.Candidates[0].Text; got != "full" {
+		t.Fatalf("explicit mode candidate = %q", got)
+	}
+	if got := variable.Result.State.Candidates[0].Text; got != "variable" {
+		t.Fatalf("opening another mode mutated existing session: %q", got)
+	}
+}
+
 func newMemoryDispatcher(t *testing.T, config Config) *Dispatcher {
 	t.Helper()
 	index, err := yimecore.NewIndex([]yimecore.Entry{{Text: "一", Code: "1", Weight: 10}, {Text: "七", Code: "7", Weight: 9}})

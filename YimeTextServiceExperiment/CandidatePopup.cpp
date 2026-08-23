@@ -1,6 +1,7 @@
 #include "CandidatePopup.h"
 
 #include <algorithm>
+#include <filesystem>
 #include <windowsx.h>
 
 namespace {
@@ -16,6 +17,66 @@ HINSTANCE currentModule() noexcept {
 }  // namespace
 
 CandidatePopup::~CandidatePopup() { Destroy(); }
+
+void CandidatePopup::SetFontPoints(int points) noexcept {
+    const int normalized = points == 10 || points == 16 ? points : 12;
+    if (fontPoints_ == normalized) return;
+    fontPoints_ = normalized;
+    if (font_) {
+        DeleteObject(font_);
+        font_ = nullptr;
+    }
+}
+
+void CandidatePopup::SetUseYinyuanFont(bool useYinyuan) noexcept {
+    if (useYinyuanFont_ == useYinyuan) return;
+    useYinyuanFont_ = useYinyuan;
+    if (font_) {
+        DeleteObject(font_);
+        font_ = nullptr;
+    }
+    if (useYinyuanFont_) {
+        EnsurePrivateYinyuanFont();
+    } else {
+        ReleasePrivateYinyuanFont();
+    }
+}
+
+void CandidatePopup::EnsurePrivateYinyuanFont() noexcept {
+    if (privateYinyuanFontAdded_) return;
+    wchar_t modulePath[MAX_PATH]{};
+    const DWORD length = GetModuleFileNameW(currentModule(), modulePath, MAX_PATH);
+    if (length == 0 || length >= MAX_PATH) return;
+    const auto root = std::filesystem::path(modulePath).parent_path().parent_path();
+    privateYinyuanFontPath_ =
+        (root / L"data" / L"fonts" / L"YinYuan-Regular.ttf").wstring();
+    if (AddFontResourceExW(privateYinyuanFontPath_.c_str(), FR_PRIVATE, nullptr) > 0) {
+        privateYinyuanFontAdded_ = true;
+    } else {
+        privateYinyuanFontPath_.clear();
+    }
+}
+
+void CandidatePopup::ReleasePrivateYinyuanFont() noexcept {
+    if (privateYinyuanFontAdded_) {
+        RemoveFontResourceExW(privateYinyuanFontPath_.c_str(), FR_PRIVATE, nullptr);
+    }
+    privateYinyuanFontAdded_ = false;
+    privateYinyuanFontPath_.clear();
+}
+
+HFONT CandidatePopup::EnsureFont() noexcept {
+    if (font_) return font_;
+    if (useYinyuanFont_) EnsurePrivateYinyuanFont();
+    UINT dpi = 96;
+    if (window_) dpi = GetDpiForWindow(window_);
+    const int height = -MulDiv(fontPoints_, static_cast<int>(dpi), 72);
+    font_ = CreateFontW(height, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE,
+                        DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
+                        CLEARTYPE_QUALITY, DEFAULT_PITCH | FF_DONTCARE,
+                        useYinyuanFont_ ? L"YinYuan" : L"Microsoft YaHei UI");
+    return font_ ? font_ : static_cast<HFONT>(GetStockObject(DEFAULT_GUI_FONT));
+}
 
 bool CandidatePopup::EnsureWindow(HWND owner) noexcept {
     if (window_) {
@@ -52,7 +113,7 @@ bool CandidatePopup::Update(const std::vector<std::wstring>& candidates, const R
 
     HDC dc = GetDC(window_);
     if (!dc) return false;
-    HFONT font = static_cast<HFONT>(GetStockObject(DEFAULT_GUI_FONT));
+    HFONT font = EnsureFont();
     HGDIOBJ previous = SelectObject(dc, font);
     TEXTMETRICW metrics{};
     GetTextMetricsW(dc, &metrics);
@@ -104,6 +165,11 @@ void CandidatePopup::Destroy() noexcept {
     width_ = 0;
     rowHeight_ = 0;
     selectedIndex_ = 0;
+    if (font_) {
+        DeleteObject(font_);
+        font_ = nullptr;
+    }
+    ReleasePrivateYinyuanFont();
 }
 
 RECT CandidatePopup::Bounds() const noexcept {
@@ -121,7 +187,7 @@ void CandidatePopup::Paint() noexcept {
     FillRect(dc, &client, GetSysColorBrush(COLOR_WINDOW));
     SetBkMode(dc, TRANSPARENT);
     SetTextColor(dc, GetSysColor(COLOR_WINDOWTEXT));
-    HGDIOBJ previous = SelectObject(dc, GetStockObject(DEFAULT_GUI_FONT));
+    HGDIOBJ previous = SelectObject(dc, EnsureFont());
     for (size_t index = 0; index < candidates_.size(); ++index) {
         RECT row{padding_, padding_ + static_cast<LONG>(index) * rowHeight_,
                  client.right - padding_, padding_ + static_cast<LONG>(index + 1) * rowHeight_};

@@ -2,6 +2,8 @@
 
 #include <array>
 
+#include "ExperimentSettings.h"
+
 namespace yime::experiment {
 
 bool SurfaceSession::Connect(const std::wstring& pipeName, DWORD timeoutMs, std::string* error) {
@@ -10,18 +12,35 @@ bool SurfaceSession::Connect(const std::wstring& pipeName, DWORD timeoutMs, std:
     current_ = {};
     selectedCandidateIndex_ = 0;
     mutationSequence_ = 0;
-    return broker_.Connect(pipeName, timeoutMs, error);
+    connectedMode_ = LoadExperimentSettings().mode;
+    if (!broker_.Connect(pipeName, timeoutMs, connectedMode_, error)) {
+        connectedMode_.clear();
+        return false;
+    }
+    return true;
 }
 
 bool SurfaceSession::EnsureConnected(std::string* error) {
-    if (broker_.IsConnected()) return true;
+    if (broker_.IsConnected()) {
+        if (!current_.rawInput.empty()) return true;
+    }
+    const std::string desiredMode = LoadExperimentSettings().mode;
+    if (broker_.IsConnected()) {
+        if (desiredMode == connectedMode_) return true;
+        broker_.Close();
+        current_ = {};
+        selectedCandidateIndex_ = 0;
+        connectedMode_.clear();
+    }
     if (pipeName_.empty()) {
         if (error) *error = "Broker endpoint is not configured";
         return false;
     }
     current_ = {};
     selectedCandidateIndex_ = 0;
-    return broker_.Connect(pipeName_, reconnectTimeoutMs_, error);
+    if (!broker_.Connect(pipeName_, reconnectTimeoutMs_, desiredMode, error)) return false;
+    connectedMode_ = desiredMode;
+    return true;
 }
 
 bool SurfaceSession::CanHandle(WPARAM virtualKey, bool shiftDown) {
@@ -96,6 +115,7 @@ void SurfaceSession::DisconnectForRecovery() noexcept {
     broker_.Close();
     current_ = {};
     selectedCandidateIndex_ = 0;
+    connectedMode_.clear();
 }
 
 void SurfaceSession::Close() noexcept {
@@ -104,6 +124,7 @@ void SurfaceSession::Close() noexcept {
     selectedCandidateIndex_ = 0;
     pipeName_.clear();
     reconnectTimeoutMs_ = 100;
+    connectedMode_.clear();
 }
 
 bool SurfaceSession::TranslateCompositionKey(WPARAM virtualKey, bool shiftDown, char* code) noexcept {

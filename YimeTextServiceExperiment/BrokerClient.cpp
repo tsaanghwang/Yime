@@ -17,7 +17,8 @@ std::string windowsError(const char* operation) {
 
 BrokerClient::~BrokerClient() { Close(); }
 
-bool BrokerClient::Connect(const std::wstring& pipeName, DWORD timeoutMs, std::string* error) {
+bool BrokerClient::Connect(const std::wstring& pipeName, DWORD timeoutMs, const std::string& mode,
+                           std::string* error) {
     Close();
     const auto deadline = std::chrono::steady_clock::now() + std::chrono::milliseconds(timeoutMs);
     for (;;) {
@@ -37,7 +38,9 @@ bool BrokerClient::Connect(const std::wstring& pipeName, DWORD timeoutMs, std::s
     }
     sequence_ = 1;
     std::string response;
-    if (!Exchange(json{{"version", 1}, {"sequence", sequence_}, {"operation", "open"}}.dump(), &response, error)) {
+    json request{{"version", 1}, {"sequence", sequence_}, {"operation", "open"}};
+    if (!mode.empty()) request["mode"] = mode;
+    if (!Exchange(request.dump(), &response, error)) {
         Disconnect();
         return false;
     }
@@ -186,7 +189,17 @@ bool BrokerClient::ParseUpdate(const std::string& responseText, uint64_t sequenc
                 update->hasNextPage = state.value("has_next", false);
                 if (state.contains("candidates")) {
                     for (const auto& candidate : state["candidates"]) {
-                        update->candidates.push_back({candidate.at("id").get<std::string>(), candidate.at("text").get<std::string>()});
+                        BrokerCandidate parsed{
+                            candidate.at("id").get<std::string>(),
+                            candidate.at("text").get<std::string>(),
+                            candidate.value("code", ""),
+                        };
+                        if (candidate.contains("annotations")) {
+                            const auto& annotations = candidate["annotations"];
+                            parsed.yinyuan = annotations.value("yinyuan", "");
+                            parsed.standardPinyin = annotations.value("standard_pinyin", "");
+                        }
+                        update->candidates.push_back(std::move(parsed));
                     }
                 }
             }

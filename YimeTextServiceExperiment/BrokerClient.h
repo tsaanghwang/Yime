@@ -12,6 +12,9 @@ namespace yime::experiment {
 struct BrokerCandidate {
     std::string id;
     std::string text;
+    std::string code;
+    std::string yinyuan;
+    std::string standardPinyin;
 };
 
 struct BrokerUpdate {
@@ -31,7 +34,8 @@ public:
     BrokerClient(const BrokerClient&) = delete;
     BrokerClient& operator=(const BrokerClient&) = delete;
 
-    bool Connect(const std::wstring& pipeName, DWORD timeoutMs, std::string* error);
+    bool Connect(const std::wstring& pipeName, DWORD timeoutMs, const std::string& mode,
+                 std::string* error);
     bool ApplyCode(char code, BrokerUpdate* update, std::string* error);
     bool Backspace(BrokerUpdate* update, std::string* error);
     bool PreviousPage(BrokerUpdate* update, std::string* error);

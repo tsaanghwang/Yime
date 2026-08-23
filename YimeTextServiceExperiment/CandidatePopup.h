@@ -23,9 +23,13 @@ public:
     }
     void Show(bool show) noexcept;
     void Destroy() noexcept;
+    void SetFontPoints(int points) noexcept;
+    void SetUseYinyuanFont(bool useYinyuan) noexcept;
 
     HWND Window() const noexcept { return window_; }
     size_t Count() const noexcept { return candidates_.size(); }
+    int FontPoints() const noexcept { return fontPoints_; }
+    bool UsesYinyuanFont() const noexcept { return useYinyuanFont_; }
     RECT Bounds() const noexcept;
 
     static constexpr const wchar_t* ClassName() noexcept {
@@ -38,12 +42,20 @@ private:
     void Reposition(const RECT& anchor) noexcept;
     void Paint() noexcept;
     void SelectAt(LPARAM lParam) noexcept;
+    HFONT EnsureFont() noexcept;
+    void EnsurePrivateYinyuanFont() noexcept;
+    void ReleasePrivateYinyuanFont() noexcept;
 
     HWND window_ = nullptr;
     std::vector<std::wstring> candidates_;
     int width_ = 0;
     int rowHeight_ = 0;
     int padding_ = 8;
+    int fontPoints_ = 12;
+    HFONT font_ = nullptr;
+    bool useYinyuanFont_ = false;
+    bool privateYinyuanFontAdded_ = false;
+    std::wstring privateYinyuanFontPath_;
     size_t selectedIndex_ = 0;
     SelectionHandler selectionHandler_ = nullptr;
     void* selectionContext_ = nullptr;
