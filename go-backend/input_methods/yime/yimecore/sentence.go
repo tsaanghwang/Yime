@@ -11,7 +11,7 @@ import (
 
 const (
 	sentenceBeamWidth       = 64
-	segmentCandidateLimit   = 9
+	segmentCandidateLimit   = 64
 	generatedSegmentPenalty = int64(250_000)
 	maximumExactCacheItems  = 4096
 	maximumSentenceBytes    = 256
@@ -86,7 +86,6 @@ func (e *Engine) extendSentenceLattice(input string, maxCodeBytes int) {
 	if first < 0 {
 		first = 0
 	}
-	sourceID := e.index.identity()
 	for start := first; start < end; start++ {
 		if len(e.sentenceStates[start]) == 0 {
 			continue
@@ -94,6 +93,10 @@ func (e *Engine) extendSentenceLattice(input string, maxCodeBytes int) {
 		matches := e.exactMatches(input[start:end])
 		for _, match := range matches {
 			for _, path := range e.sentenceStates[start] {
+				sourceID := match.source
+				if sourceID == "" {
+					sourceID = e.index.identity()
+				}
 				segments := append([]engineapi.Segment(nil), path.segments...)
 				segments = append(segments, engineapi.Segment{
 					Start: start, End: end, Text: match.text, Code: match.code, SourceID: sourceID,

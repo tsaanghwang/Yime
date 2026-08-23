@@ -165,22 +165,25 @@ func runProbe(sessionID yime.RimeSessionId, item probe) bool {
 			return false
 		}
 	}
-	menu, ok := yime.GetMenu(sessionID)
-	if !ok {
-		return false
-	}
-	index := -1
-	for i, candidate := range menu.Candidates {
-		if candidate.Text == item.Text {
-			index = i
-			break
+	for page := 0; page < 100; page++ {
+		menu, ok := yime.GetMenu(sessionID)
+		if !ok {
+			return false
+		}
+		for i, candidate := range menu.Candidates {
+			if candidate.Text == item.Text {
+				if !yime.SelectCandidate(sessionID, i) {
+					return false
+				}
+				commit, ok := yime.GetCommit(sessionID)
+				return ok && commit.Text == item.Text
+			}
+		}
+		if menu.IsLastPage || !yime.ProcessKey(sessionID, 0xFF56, 0) {
+			return false
 		}
 	}
-	if index < 0 || !yime.SelectCandidate(sessionID, index) {
-		return false
-	}
-	commit, ok := yime.GetCommit(sessionID)
-	return ok && commit.Text == item.Text
+	return false
 }
 
 func loadProbes(path string) probeFile {

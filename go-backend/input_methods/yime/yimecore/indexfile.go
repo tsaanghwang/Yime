@@ -49,18 +49,19 @@ type IndexBuildResult struct {
 // a compact uint32 offset table. Keeping the payload out of the Go heap makes
 // the experiment comparable with Rime's demand-paged dictionary storage.
 type FileIndex struct {
-	file         *os.File
-	data         []byte
-	unmap        func() error
-	closeOnce    sync.Once
-	mode         string
-	sourceHash   [sha256.Size]byte
-	payloadHash  [sha256.Size]byte
-	offsets      []uint32
-	recordsEnd   uint32
-	maxCodeBytes int
-	oneByteTop   [256]shortBucket
-	twoByteTop   []shortBucket
+	file          *os.File
+	data          []byte
+	unmap         func() error
+	closeOnce     sync.Once
+	mode          string
+	sourceHash    [sha256.Size]byte
+	payloadHash   [sha256.Size]byte
+	offsets       []uint32
+	recordsEnd    uint32
+	maxCodeBytes  int
+	oneByteTop    [256]shortBucket
+	twoByteTop    []shortBucket
+	twoByteSparse map[uint16]shortBucket
 }
 
 type shortBucket struct {
@@ -336,9 +337,11 @@ func OpenFileIndex(path string) (*FileIndex, error) {
 		}
 	}
 
-	index := &FileIndex{
-		file: file, mode: mode, offsets: offsets, recordsEnd: uint32(offsetsOffset),
-		twoByteTop: make([]shortBucket, 1<<16),
+	index := &FileIndex{file: file, mode: mode, offsets: offsets, recordsEnd: uint32(offsetsOffset)}
+	if recordCount >= 1<<16 {
+		index.twoByteTop = make([]shortBucket, 1<<16)
+	} else {
+		index.twoByteSparse = make(map[uint16]shortBucket)
 	}
 	copy(index.sourceHash[:], header[28:60])
 	copy(index.payloadHash[:], actualPayloadHash[:])
@@ -430,11 +433,20 @@ func (idx *FileIndex) validateRecordsAndBuildShortPrefixes() error {
 		}
 	}
 	for key, candidates := range twoByteBuild {
+		if idx.twoByteTop != nil {
+			for _, candidate := range candidates {
+				bucket := &idx.twoByteTop[key]
+				bucket.positions[bucket.count] = candidate.position
+				bucket.count++
+			}
+			continue
+		}
+		bucket := shortBucket{}
 		for _, candidate := range candidates {
-			bucket := &idx.twoByteTop[key]
 			bucket.positions[bucket.count] = candidate.position
 			bucket.count++
 		}
+		idx.twoByteSparse[key] = bucket
 	}
 	return nil
 }
@@ -499,7 +511,11 @@ func (idx *FileIndex) lookup(prefix string, limit int) []record {
 	}
 	if len(prefixBytes) == 2 {
 		key := uint16(prefixBytes[0])<<8 | uint16(prefixBytes[1])
-		return idx.recordsFromShortBucket(&idx.twoByteTop[key], limit)
+		if idx.twoByteTop != nil {
+			return idx.recordsFromShortBucket(&idx.twoByteTop[key], limit)
+		}
+		bucket := idx.twoByteSparse[key]
+		return idx.recordsFromShortBucket(&bucket, limit)
 	}
 	start := sort.Search(len(idx.offsets), func(i int) bool {
 		code, _, _, err := idx.recordAt(i)

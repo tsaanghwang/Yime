@@ -11,6 +11,8 @@ const (
 	AppendCode Operation = iota + 1
 	Backspace
 	Clear
+	PageNext
+	PagePrevious
 )
 
 var (
@@ -33,6 +35,7 @@ type Candidate struct {
 	ID       string    `json:"id"`
 	Text     string    `json:"text"`
 	Code     string    `json:"code"`
+	SourceID string    `json:"source_id,omitempty"`
 	Weight   int64     `json:"weight"`
 	Exact    bool      `json:"exact"`
 	Segments []Segment `json:"segments,omitempty"`
@@ -61,8 +64,11 @@ type Segment struct {
 
 // State is a point-in-time engine snapshot.
 type State struct {
-	RawInput   string      `json:"raw_input"`
-	Candidates []Candidate `json:"candidates,omitempty"`
+	RawInput    string      `json:"raw_input"`
+	Candidates  []Candidate `json:"candidates,omitempty"`
+	PageNumber  int         `json:"page_number,omitempty"`
+	HasPrevious bool        `json:"has_previous,omitempty"`
+	HasNext     bool        `json:"has_next,omitempty"`
 }
 
 // Result combines the durable state after a transition with an ephemeral

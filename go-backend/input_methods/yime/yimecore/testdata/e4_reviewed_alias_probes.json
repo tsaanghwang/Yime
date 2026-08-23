@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "source": "existing reviewed runtime dictionaries locked by tools/lexicon/data/yime_core_target.lock.json; no prototype repository and no new rule derivation",
+  "modes": {
+    "full": [
+      {"id":"psc-getour","module":"psc-peripheral","text":"个头儿","code":"grewtweu'III","canonical_code":"grewteei'III"},
+      {"id":"erhua-dashenr","module":"explicit-erhua","text":"大婶儿","code":"]fds9OOO","canonical_code":"]fds9xxz'III","continuation_text":"工作","continuation_code":"gur;6uew"},
+      {"id":"third-tone-biaoyan","module":"third-tone-stage5c","text":"表演","code":"blduylsz","canonical_code":"blsoylsz","continuation_text":"工作","continuation_code":"gur;6uew"},
+      {"id":"particle-a-yangzia","module":"particle-a-stage6d","text":"样子啊","code":"yjd/6KKK`ddd","canonical_code":"yjd/6KKK'ddd"},
+      {"id":"particle-a-zouazou","module":"particle-a-stage6d","text":"走啊走","code":"6wwo=ddd6wwo","canonical_code":"6wwo'ddd6wwo"}
+    ],
+    "variable": [
+      {"id":"psc-getour","module":"psc-peripheral","text":"个头儿","code":"grewtweu'I","canonical_code":"grewtei'I"},
+      {"id":"erhua-dashenr","module":"explicit-erhua","text":"大婶儿","code":"]fds9O","canonical_code":"]fds9xz'I","continuation_text":"工作","continuation_code":"gur;6uew"},
+      {"id":"third-tone-biaoyan","module":"third-tone-stage5c","text":"表演","code":"blduylsz","canonical_code":"blsoylsz","continuation_text":"工作","continuation_code":"gur;6uew"},
+      {"id":"particle-a-yangzia","module":"particle-a-stage6d","text":"样子啊","code":"yjd/6K`d","canonical_code":"yjd/6K'd"},
+      {"id":"particle-a-zouazou","module":"particle-a-stage6d","text":"走啊走","code":"6wo=d6wo","canonical_code":"6wo'd6wo"}
+    ],
+    "shorthand": [
+      {"id":"psc-getour","module":"psc-peripheral","text":"个头儿","code":"grwtweu'I","canonical_code":"grwtei'I"},
+      {"id":"erhua-dashenr","module":"explicit-erhua","text":"大婶儿","code":"]fs9O","canonical_code":"]fs9xz'I","continuation_text":"工作","continuation_code":"gur;6uew"},
+      {"id":"third-tone-biaoyan","module":"third-tone-stage5c","text":"表演","code":"blduylsz","canonical_code":"blsoylsz","continuation_text":"工作","continuation_code":"gur;6uew"},
+      {"id":"particle-a-yangzia","module":"particle-a-stage6d","text":"样子啊","code":"yjd/6K`d","canonical_code":"yjd/6K'd"},
+      {"id":"particle-a-zouazou","module":"particle-a-stage6d","text":"走啊走","code":"6wo=d6wo","canonical_code":"6wo'd6wo"}
+    ]
+  }
+}

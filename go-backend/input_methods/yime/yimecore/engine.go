@@ -21,6 +21,8 @@ type Engine struct {
 	sentenceStates [][]sentencePath
 	userModel      *UserModel
 	previousCommit string
+	pageNumber     int
+	hasNextPage    bool
 }
 
 type lookupIndex interface {
@@ -39,6 +41,12 @@ func NewEngine(index *Index, candidateLimit int) (*Engine, error) {
 
 // NewFileEngine constructs a session over a validated compact E1 index.
 func NewFileEngine(index *FileIndex, candidateLimit int) (*Engine, error) {
+	return newEngine(index, candidateLimit)
+}
+
+// NewBundleEngine constructs a session over an immutable core index and an
+// explicitly selected set of reviewed E4 overlay indexes.
+func NewBundleEngine(index *BundleIndex, candidateLimit int) (*Engine, error) {
 	return newEngine(index, candidateLimit)
 }
 
@@ -92,6 +100,7 @@ func (e *Engine) Apply(event engineapi.Event) (engineapi.Result, error) {
 			return engineapi.Result{}, engineapi.ErrInvalidEvent
 		}
 		e.rawInput += code
+		e.pageNumber = 0
 	case engineapi.Backspace:
 		if event.Code != "" {
 			return engineapi.Result{}, engineapi.ErrInvalidEvent
@@ -99,12 +108,28 @@ func (e *Engine) Apply(event engineapi.Event) (engineapi.Result, error) {
 		if len(e.rawInput) > 0 {
 			e.rawInput = e.rawInput[:len(e.rawInput)-1]
 		}
+		e.pageNumber = 0
 	case engineapi.Clear:
 		if event.Code != "" {
 			return engineapi.Result{}, engineapi.ErrInvalidEvent
 		}
 		e.rawInput = ""
+		e.pageNumber = 0
 		e.resetSentenceComposer()
+	case engineapi.PageNext:
+		if event.Code != "" {
+			return engineapi.Result{}, engineapi.ErrInvalidEvent
+		}
+		if e.rawInput != "" && e.hasNextPage {
+			e.pageNumber++
+		}
+	case engineapi.PagePrevious:
+		if event.Code != "" {
+			return engineapi.Result{}, engineapi.ErrInvalidEvent
+		}
+		if e.pageNumber > 0 {
+			e.pageNumber--
+		}
 	default:
 		return engineapi.Result{}, engineapi.ErrInvalidEvent
 	}
@@ -119,6 +144,8 @@ func (e *Engine) Select(candidateID string) (engineapi.Result, error) {
 			e.userModel.observeWithContext(candidate.Code, candidate.Text, e.previousCommit)
 			e.previousCommit = candidate.Text
 			e.rawInput = ""
+			e.pageNumber = 0
+			e.hasNextPage = false
 			e.candidates = nil
 			e.resetSentenceComposer()
 			return engineapi.Result{State: e.snapshot(), Commit: candidate.Text}, nil
@@ -131,6 +158,8 @@ func (e *Engine) Select(candidateID string) (engineapi.Result, error) {
 func (e *Engine) Reset() engineapi.Result {
 	e.rawInput = ""
 	e.candidates = nil
+	e.pageNumber = 0
+	e.hasNextPage = false
 	e.resetSentenceComposer()
 	return engineapi.Result{State: e.snapshot()}
 }
@@ -138,19 +167,23 @@ func (e *Engine) Reset() engineapi.Result {
 func (e *Engine) refresh() {
 	if e.rawInput == "" {
 		e.candidates = nil
+		e.pageNumber = 0
+		e.hasNextPage = false
 		return
 	}
-	records := e.index.lookup(e.rawInput, e.limit)
-	exactCandidates := make([]engineapi.Candidate, 0, e.limit)
-	prefixCandidates := make([]engineapi.Candidate, 0, e.limit)
-	seen := make(map[string]struct{}, e.limit)
+	fetchLimit := (e.pageNumber+1)*e.limit + 1
+	records := e.index.lookup(e.rawInput, fetchLimit)
+	exactCandidates := make([]engineapi.Candidate, 0, fetchLimit)
+	prefixCandidates := make([]engineapi.Candidate, 0, fetchLimit)
+	seen := make(map[string]struct{}, fetchLimit)
 	for _, item := range records {
 		candidate := engineapi.Candidate{
-			ID:     item.code + "\x1f" + item.text,
-			Text:   item.text,
-			Code:   item.code,
-			Weight: item.weight,
-			Exact:  item.code == e.rawInput,
+			ID:       item.code + "\x1f" + item.text,
+			Text:     item.text,
+			Code:     item.code,
+			SourceID: item.source,
+			Weight:   item.weight,
+			Exact:    item.code == e.rawInput,
 		}
 		e.scoreCandidate(&candidate)
 		seen[candidate.Text+"\x1f"+candidate.Code] = struct{}{}
@@ -160,7 +193,7 @@ func (e *Engine) refresh() {
 			prefixCandidates = append(prefixCandidates, candidate)
 		}
 	}
-	for _, candidate := range e.composeSentences(e.rawInput, e.limit) {
+	for _, candidate := range e.composeSentences(e.rawInput, fetchLimit) {
 		key := candidate.Text + "\x1f" + candidate.Code
 		if _, exists := seen[key]; exists {
 			continue
@@ -171,17 +204,35 @@ func (e *Engine) refresh() {
 	}
 	rankCandidates(exactCandidates)
 	rankCandidates(prefixCandidates)
-	candidates := make([]engineapi.Candidate, 0, e.limit)
+	pool := make([]engineapi.Candidate, 0, fetchLimit)
 	for _, group := range [][]engineapi.Candidate{exactCandidates, prefixCandidates} {
 		for _, candidate := range group {
-			candidates = append(candidates, candidate)
-			if len(candidates) == e.limit {
-				e.candidates = candidates
-				return
+			pool = append(pool, candidate)
+			if len(pool) == fetchLimit {
+				break
 			}
 		}
+		if len(pool) == fetchLimit {
+			break
+		}
 	}
-	e.candidates = candidates
+	start := e.pageNumber * e.limit
+	if start >= len(pool) {
+		if e.pageNumber > 0 {
+			e.pageNumber--
+			e.refresh()
+			return
+		}
+		e.candidates = nil
+		e.hasNextPage = false
+		return
+	}
+	end := start + e.limit
+	if end > len(pool) {
+		end = len(pool)
+	}
+	e.candidates = append(e.candidates[:0], pool[start:end]...)
+	e.hasNextPage = len(pool) > end
 }
 
 func (e *Engine) scoreCandidate(candidate *engineapi.Candidate) {
@@ -212,7 +263,10 @@ func rankCandidates(candidates []engineapi.Candidate) {
 }
 
 func (e *Engine) snapshot() engineapi.State {
-	result := engineapi.State{RawInput: e.rawInput}
+	result := engineapi.State{
+		RawInput: e.rawInput, PageNumber: e.pageNumber,
+		HasPrevious: e.pageNumber > 0, HasNext: e.hasNextPage,
+	}
 	if len(e.candidates) > 0 {
 		result.Candidates = cloneCandidates(e.candidates)
 	}

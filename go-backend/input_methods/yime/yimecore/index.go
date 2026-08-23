@@ -21,6 +21,7 @@ type record struct {
 	text   string
 	code   string
 	weight int64
+	source string
 }
 
 // Index is an immutable, deterministic E0 lookup index.
