@@ -89,7 +89,8 @@ func (d *Dispatcher) HandleJSON(ctx context.Context, client TrustedClient, data 
 	return encoded
 }
 
-func (d *Dispatcher) Dispatch(ctx context.Context, client TrustedClient, request Request) Response {
+func (d *Dispatcher) Dispatch(ctx context.Context, client TrustedClient, request Request) (response Response) {
+	defer func() { response.MutationID = request.MutationID }()
 	if strings.TrimSpace(client.ID) == "" || len(client.ID) > 128 {
 		return errorResponse(request.Sequence, request.SessionID, CodeInvalidClient, errors.New("trusted client ID is required and limited to 128 bytes"))
 	}
@@ -174,6 +175,15 @@ func (d *Dispatcher) onSession(ctx context.Context, client TrustedClient, reques
 		case ApplyEvent:
 			return current.engine.Apply(request.Event)
 		case Select:
+			if request.MutationID != "" {
+				selector, ok := current.engine.(interface {
+					SelectIdempotent(string, string) (engineapi.Result, error)
+				})
+				if !ok {
+					return engineapi.Result{}, errors.New("engine does not support idempotent selection")
+				}
+				return selector.SelectIdempotent(request.CandidateID, request.MutationID)
+			}
 			return current.engine.Select(request.CandidateID)
 		case ResetSession:
 			return current.engine.Reset(), nil

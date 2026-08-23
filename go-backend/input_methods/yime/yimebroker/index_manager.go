@@ -260,6 +260,15 @@ func (e *managedEngine) Select(candidateID string) (engineapi.Result, error) {
 	return e.engine.Select(candidateID)
 }
 
+func (e *managedEngine) SelectIdempotent(candidateID, mutationID string) (engineapi.Result, error) {
+	if selector, ok := e.engine.(interface {
+		SelectIdempotent(string, string) (engineapi.Result, error)
+	}); ok {
+		return selector.SelectIdempotent(candidateID, mutationID)
+	}
+	return engineapi.Result{}, errors.New("managed engine does not support idempotent selection")
+}
+
 func (e *managedEngine) Reset() engineapi.Result { return e.engine.Reset() }
 
 func (e *managedEngine) Close() error {

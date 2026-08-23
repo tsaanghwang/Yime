@@ -9,6 +9,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"unicode"
 
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/engineapi"
 )
@@ -56,6 +57,7 @@ type Request struct {
 	Operation   Operation       `json:"operation"`
 	Event       engineapi.Event `json:"event,omitempty"`
 	CandidateID string          `json:"candidate_id,omitempty"`
+	MutationID  string          `json:"mutation_id,omitempty"`
 }
 
 type ProtocolError struct {
@@ -67,6 +69,7 @@ type Response struct {
 	Version       int               `json:"version"`
 	Sequence      uint64            `json:"sequence"`
 	SessionID     string            `json:"session_id,omitempty"`
+	MutationID    string            `json:"mutation_id,omitempty"`
 	EngineVersion string            `json:"engine_version,omitempty"`
 	Result        *engineapi.Result `json:"result,omitempty"`
 	Error         *ProtocolError    `json:"error,omitempty"`
@@ -135,25 +138,40 @@ func validateRequest(request Request) error {
 	}
 	switch request.Operation {
 	case OpenSession:
-		if request.Sequence != 1 || request.SessionID != "" || request.Event.Operation != 0 || request.CandidateID != "" {
+		if request.Sequence != 1 || request.SessionID != "" || request.Event.Operation != 0 || request.CandidateID != "" || request.MutationID != "" {
 			return errors.New("open requires sequence 1 and no session payload")
 		}
 	case ApplyEvent:
-		if request.SessionID == "" || request.Event.Operation == 0 || request.CandidateID != "" {
+		if request.SessionID == "" || request.Event.Operation == 0 || request.CandidateID != "" || request.MutationID != "" {
 			return errors.New("apply requires session_id and event only")
 		}
 	case Select:
 		if request.SessionID == "" || request.CandidateID == "" || request.Event.Operation != 0 {
 			return errors.New("select requires session_id and candidate_id only")
 		}
+		if request.MutationID != "" && !validMutationID(request.MutationID) {
+			return errors.New("mutation_id must be 8-128 ASCII letters, digits, dot, underscore, colon or hyphen")
+		}
 	case ResetSession, CloseSession:
-		if request.SessionID == "" || request.Event.Operation != 0 || request.CandidateID != "" {
+		if request.SessionID == "" || request.Event.Operation != 0 || request.CandidateID != "" || request.MutationID != "" {
 			return errors.New("reset and close require session_id only")
 		}
 	default:
 		return fmt.Errorf("unsupported operation %q", request.Operation)
 	}
 	return nil
+}
+
+func validMutationID(value string) bool {
+	if len(value) < 8 || len(value) > 128 {
+		return false
+	}
+	for _, character := range value {
+		if character > unicode.MaxASCII || !(unicode.IsLetter(character) || unicode.IsDigit(character) || character == '.' || character == '_' || character == ':' || character == '-') {
+			return false
+		}
+	}
+	return true
 }
 
 func errorResponse(sequence uint64, sessionID string, code ErrorCode, err error) Response {

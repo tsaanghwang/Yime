@@ -80,6 +80,61 @@ func TestUserMutationPersistenceFailureDoesNotCommitOrAdvanceModel(t *testing.T)
 	}
 }
 
+func TestIdempotentSelectionSurvivesSnapshotAndRejectsReuse(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "user-model.json")
+	index, err := NewIndex([]Entry{{Text: "甲", Code: "a1", Weight: 10}, {Text: "乙", Code: "a1", Weight: 9}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	model, err := OpenUserModel(path, index.identity())
+	if err != nil {
+		t.Fatal(err)
+	}
+	engine, err := NewEngineWithUserModel(index, 9, model)
+	if err != nil {
+		t.Fatal(err)
+	}
+	state := applyCode(t, engine, "a1")
+	first := state.State.Candidates[0]
+	second := state.State.Candidates[1]
+	const requestID = "select-request-0001"
+	if result, selectErr := engine.SelectIdempotent(first.ID, requestID); selectErr != nil || result.Commit != first.Text {
+		t.Fatalf("first selection = %+v, %v", result, selectErr)
+	}
+	if model.Generation() != 1 {
+		t.Fatalf("generation after first selection = %d", model.Generation())
+	}
+	state = applyCode(t, engine, "a1")
+	if result, retryErr := engine.SelectIdempotent(state.State.Candidates[0].ID, requestID); retryErr != nil || result.Commit != first.Text || model.Generation() != 1 {
+		t.Fatalf("retry = %+v, %v; generation=%d", result, retryErr, model.Generation())
+	}
+	state = applyCode(t, engine, "a1")
+	var conflictingID string
+	for _, candidate := range state.State.Candidates {
+		if candidate.Text == second.Text {
+			conflictingID = candidate.ID
+		}
+	}
+	if _, conflictErr := engine.SelectIdempotent(conflictingID, requestID); !errors.Is(conflictErr, ErrIdempotencyConflict) || model.Generation() != 1 {
+		t.Fatalf("conflict = %v; generation=%d", conflictErr, model.Generation())
+	}
+	if err := model.Save(); err != nil {
+		t.Fatal(err)
+	}
+	reopened, err := OpenUserModel(path, index.identity())
+	if err != nil {
+		t.Fatal(err)
+	}
+	reopenedEngine, err := NewEngineWithUserModel(index, 9, reopened)
+	if err != nil {
+		t.Fatal(err)
+	}
+	state = applyCode(t, reopenedEngine, "a1")
+	if _, retryErr := reopenedEngine.SelectIdempotent(state.State.Candidates[0].ID, requestID); retryErr != nil || reopened.Generation() != 1 {
+		t.Fatalf("snapshot retry = %v; generation=%d", retryErr, reopened.Generation())
+	}
+}
+
 func TestUserModelAtomicSaveReopenAndSourceBinding(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "user-model.json")
 	model, err := OpenUserModel(path, "index-source-a")

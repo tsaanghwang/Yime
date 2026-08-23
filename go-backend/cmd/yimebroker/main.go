@@ -29,6 +29,7 @@ func main() {
 	indexControlStatus := flag.String("index-control-status", "", "status file for watched index control")
 	exitBeforeRequest := flag.Int("experiment-exit-before-request", 0, "E5-B fault injection only")
 	hangBeforeRequest := flag.Int("experiment-hang-before-request", 0, "E5-B fault injection only")
+	exitAfterRequest := flag.Int("experiment-exit-after-request", 0, "E5-F fault injection after durable handling but before response")
 	flag.Parse()
 	if *indexPath == "" || *mode == "" || *trustedClientID == "" {
 		fail(fmt.Errorf("index, mode and trusted-client-id are required"))
@@ -102,17 +103,17 @@ func main() {
 		}()
 	}
 	client := yimebroker.TrustedClient{ID: *trustedClientID}
-	if *exitBeforeRequest == 0 && *hangBeforeRequest == 0 {
+	if *exitBeforeRequest == 0 && *hangBeforeRequest == 0 && *exitAfterRequest == 0 {
 		err = yimebroker.ServeLines(serveContext, os.Stdin, os.Stdout, dispatcher, client)
 	} else {
-		err = serveFaultExperiment(serveContext, dispatcher, client, *exitBeforeRequest, *hangBeforeRequest)
+		err = serveFaultExperiment(serveContext, dispatcher, client, *exitBeforeRequest, *hangBeforeRequest, *exitAfterRequest)
 	}
 	if err != nil {
 		fail(err)
 	}
 }
 
-func serveFaultExperiment(ctx context.Context, dispatcher *yimebroker.Dispatcher, client yimebroker.TrustedClient, exitBefore, hangBefore int) error {
+func serveFaultExperiment(ctx context.Context, dispatcher *yimebroker.Dispatcher, client yimebroker.TrustedClient, exitBefore, hangBefore, exitAfter int) error {
 	scanner := bufio.NewScanner(os.Stdin)
 	scanner.Buffer(make([]byte, 4096), yimebroker.MaxMessageBytes+1)
 	writer := bufio.NewWriter(os.Stdout)
@@ -130,7 +131,11 @@ func serveFaultExperiment(ctx context.Context, dispatcher *yimebroker.Dispatcher
 				time.Sleep(time.Hour)
 			}
 		}
-		if _, err := writer.Write(dispatcher.HandleJSON(ctx, client, append([]byte(nil), scanner.Bytes()...))); err != nil {
+		response := dispatcher.HandleJSON(ctx, client, append([]byte(nil), scanner.Bytes()...))
+		if requestNumber == exitAfter {
+			os.Exit(87)
+		}
+		if _, err := writer.Write(response); err != nil {
 			return err
 		}
 		if err := writer.WriteByte('\n'); err != nil {

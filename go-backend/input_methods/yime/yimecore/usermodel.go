@@ -24,17 +24,19 @@ const (
 )
 
 var ErrCorruptUserModel = errors.New("corrupt Yime user model")
+var ErrIdempotencyConflict = errors.New("user mutation idempotency conflict")
 
 // UserModel is an independent, session-shareable selection-frequency model.
 // It never mutates the static index and performs no I/O on the key path.
 type UserModel struct {
-	mu             sync.RWMutex
-	path           string
-	sourceID       string
-	generation     uint64
-	selections     map[candidateIdentity]uint64
-	contexts       map[contextIdentity]uint64
-	mutationWriter func(UserMutation) error
+	mu              sync.RWMutex
+	path            string
+	sourceID        string
+	generation      uint64
+	selections      map[candidateIdentity]uint64
+	contexts        map[contextIdentity]uint64
+	appliedRequests map[string]UserMutation
+	mutationWriter  func(UserMutation) error
 }
 
 type UserMutation struct {
@@ -43,6 +45,7 @@ type UserMutation struct {
 	Code         string `json:"code"`
 	Text         string `json:"text"`
 	PreviousText string `json:"previous_text,omitempty"`
+	RequestID    string `json:"request_id,omitempty"`
 }
 
 const (
@@ -61,11 +64,12 @@ type contextIdentity struct {
 }
 
 type userModelPayload struct {
-	SchemaVersion string            `json:"schema_version"`
-	SourceID      string            `json:"source_id"`
-	Generation    uint64            `json:"generation"`
-	Selections    map[string]uint64 `json:"selections"`
-	Contexts      map[string]uint64 `json:"contexts,omitempty"`
+	SchemaVersion   string                  `json:"schema_version"`
+	SourceID        string                  `json:"source_id"`
+	Generation      uint64                  `json:"generation"`
+	Selections      map[string]uint64       `json:"selections"`
+	Contexts        map[string]uint64       `json:"contexts,omitempty"`
+	AppliedRequests map[string]UserMutation `json:"applied_requests,omitempty"`
 }
 
 type userModelFile struct {
@@ -78,7 +82,7 @@ func NewUserModel(sourceID string) (*UserModel, error) {
 	if strings.TrimSpace(sourceID) == "" {
 		return nil, fmt.Errorf("user model source ID is required")
 	}
-	return &UserModel{sourceID: sourceID, selections: make(map[candidateIdentity]uint64), contexts: make(map[contextIdentity]uint64)}, nil
+	return &UserModel{sourceID: sourceID, selections: make(map[candidateIdentity]uint64), contexts: make(map[contextIdentity]uint64), appliedRequests: make(map[string]UserMutation)}, nil
 }
 
 // OpenUserModel opens or initializes a model at path. Invalid data is
@@ -108,6 +112,7 @@ func OpenUserModel(path, sourceID string) (*UserModel, error) {
 	if err != nil {
 		return nil, err
 	}
+	model.appliedRequests = cloneMutations(payload.AppliedRequests)
 	return model, nil
 }
 
@@ -142,13 +147,26 @@ func (m *UserModel) contextBoost(previousText, code, text string) int64 {
 }
 
 func (m *UserModel) observeWithContext(code, text, previousText string) error {
+	return m.observeIdempotent(code, text, previousText, "")
+}
+
+func (m *UserModel) observeIdempotent(code, text, previousText, requestID string) error {
 	if m == nil || code == "" || text == "" {
 		return nil
 	}
 	key := candidateIdentity{code: code, text: text}
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	mutation := UserMutation{Generation: m.generation + 1, Kind: UserMutationSelect, Code: code, Text: text, PreviousText: previousText}
+	if existing, found := m.appliedRequests[requestID]; requestID != "" && found {
+		if existing.Kind == UserMutationSelect && existing.Code == code && existing.Text == text {
+			return nil
+		}
+		return ErrIdempotencyConflict
+	}
+	if requestID != "" && len(m.appliedRequests) >= maximumUserModelItems {
+		return errors.New("user mutation request ledger is full")
+	}
+	mutation := UserMutation{Generation: m.generation + 1, Kind: UserMutationSelect, Code: code, Text: text, PreviousText: previousText, RequestID: requestID}
 	if m.mutationWriter != nil {
 		if err := m.mutationWriter(mutation); err != nil {
 			return err
@@ -164,6 +182,9 @@ func (m *UserModel) observeWithContext(code, text, previousText string) error {
 		}
 	}
 	m.generation++
+	if requestID != "" {
+		m.appliedRequests[requestID] = mutation
+	}
 	return nil
 }
 
@@ -235,6 +256,11 @@ func (m *UserModel) ApplyRecoveredMutation(mutation UserMutation) error {
 	if mutation.Generation != m.generation+1 || mutation.Code == "" || mutation.Text == "" {
 		return fmt.Errorf("%w: invalid recovered mutation", ErrCorruptUserModel)
 	}
+	if mutation.RequestID != "" {
+		if existing, found := m.appliedRequests[mutation.RequestID]; found && (existing.Kind != mutation.Kind || existing.Code != mutation.Code || existing.Text != mutation.Text) {
+			return fmt.Errorf("%w: recovered request conflict", ErrCorruptUserModel)
+		}
+	}
 	key := candidateIdentity{code: mutation.Code, text: mutation.Text}
 	switch mutation.Kind {
 	case UserMutationSelect:
@@ -256,6 +282,9 @@ func (m *UserModel) ApplyRecoveredMutation(mutation UserMutation) error {
 		}
 	default:
 		return fmt.Errorf("%w: unknown mutation kind", ErrCorruptUserModel)
+	}
+	if mutation.RequestID != "" {
+		m.appliedRequests[mutation.RequestID] = mutation
 	}
 	m.generation = mutation.Generation
 	return nil
@@ -304,6 +333,7 @@ func (m *UserModel) Restore(backupPath string) error {
 	m.generation = payload.Generation
 	m.selections = selections
 	m.contexts = contexts
+	m.appliedRequests = cloneMutations(payload.AppliedRequests)
 	m.mu.Unlock()
 	return nil
 }
@@ -311,11 +341,12 @@ func (m *UserModel) Restore(backupPath string) error {
 func (m *UserModel) writeSnapshot(path string) error {
 	m.mu.RLock()
 	payload := userModelPayload{
-		SchemaVersion: userModelSchemaVersion,
-		SourceID:      m.sourceID,
-		Generation:    m.generation,
-		Selections:    encodeSelectionCounts(m.selections),
-		Contexts:      encodeContextCounts(m.contexts),
+		SchemaVersion:   userModelSchemaVersion,
+		SourceID:        m.sourceID,
+		Generation:      m.generation,
+		Selections:      encodeSelectionCounts(m.selections),
+		Contexts:        encodeContextCounts(m.contexts),
+		AppliedRequests: cloneMutations(m.appliedRequests),
 	}
 	m.mu.RUnlock()
 	return writeUserModelFile(path, payload)
@@ -380,7 +411,7 @@ func readUserModelFile(path, sourceID string) (userModelPayload, error) {
 	if err := ensureJSONEOF(decoder); err != nil {
 		return userModelPayload{}, fmt.Errorf("%w: %v", ErrCorruptUserModel, err)
 	}
-	if file.SchemaVersion != userModelSchemaVersion || file.SourceID != sourceID || len(file.Selections)+len(file.Contexts) > maximumUserModelItems {
+	if file.SchemaVersion != userModelSchemaVersion || file.SourceID != sourceID || len(file.Selections)+len(file.Contexts)+len(file.AppliedRequests) > maximumUserModelItems {
 		return userModelPayload{}, fmt.Errorf("%w: schema, source identity or item count mismatch", ErrCorruptUserModel)
 	}
 	for key, count := range file.Selections {
@@ -393,6 +424,11 @@ func readUserModelFile(path, sourceID string) (userModelPayload, error) {
 			return userModelPayload{}, fmt.Errorf("%w: invalid context record", ErrCorruptUserModel)
 		}
 	}
+	for requestID, mutation := range file.AppliedRequests {
+		if requestID == "" || mutation.RequestID != requestID || mutation.Generation == 0 || mutation.Kind == "" || mutation.Code == "" || mutation.Text == "" {
+			return userModelPayload{}, fmt.Errorf("%w: invalid applied request", ErrCorruptUserModel)
+		}
+	}
 	payload := file.userModelPayload
 	payloadBytes, err := json.Marshal(payload)
 	if err != nil {
@@ -403,6 +439,14 @@ func readUserModelFile(path, sourceID string) (userModelPayload, error) {
 		return userModelPayload{}, fmt.Errorf("%w: payload hash mismatch", ErrCorruptUserModel)
 	}
 	return payload, nil
+}
+
+func cloneMutations(source map[string]UserMutation) map[string]UserMutation {
+	result := make(map[string]UserMutation, len(source))
+	for key, mutation := range source {
+		result[key] = mutation
+	}
+	return result
 }
 
 func ensureJSONEOF(decoder *json.Decoder) error {

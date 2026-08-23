@@ -24,6 +24,30 @@ func TestStrictProtocolRejectsIdentityUnknownFieldsAndOversize(t *testing.T) {
 	}
 }
 
+func TestProtocolRestrictsAndEchoesMutationID(t *testing.T) {
+	invalid := []Request{
+		{Version: 1, Sequence: 1, Operation: OpenSession, MutationID: "request-0001"},
+		{Version: 1, Sequence: 2, SessionID: "s", Operation: ResetSession, MutationID: "request-0001"},
+		{Version: 1, Sequence: 2, SessionID: "s", Operation: Select, CandidateID: "c", MutationID: "short"},
+	}
+	for _, request := range invalid {
+		if _, err := EncodeRequest(request); err == nil {
+			t.Fatalf("invalid mutation request encoded: %+v", request)
+		}
+	}
+	dispatcher := newMemoryDispatcher(t, Config{})
+	client := TrustedClient{ID: "idempotent-client"}
+	sessionID := openSession(t, dispatcher, client)
+	state := dispatch(t, dispatcher, client, Request{Version: 1, Sequence: 2, SessionID: sessionID, Operation: ApplyEvent,
+		Event: engineapi.Event{Operation: engineapi.AppendCode, Code: "1"}})
+	const mutationID = "request-0001"
+	selected := dispatch(t, dispatcher, client, Request{Version: 1, Sequence: 3, SessionID: sessionID, Operation: Select,
+		CandidateID: state.Result.State.Candidates[0].ID, MutationID: mutationID})
+	if selected.Error != nil || selected.MutationID != mutationID {
+		t.Fatalf("idempotent response = %+v", selected)
+	}
+}
+
 func TestDispatcherKeepsSessionsIsolatedAndRejectsReplay(t *testing.T) {
 	dispatcher := newMemoryDispatcher(t, Config{})
 	a := TrustedClient{ID: "client-a"}

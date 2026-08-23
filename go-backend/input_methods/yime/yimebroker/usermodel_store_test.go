@@ -38,7 +38,8 @@ func TestDurableUserModelRecoversJournalAndTruncatesTornTail(t *testing.T) {
 			target = candidate.ID
 		}
 	}
-	if _, err := engine.Select(target); err != nil {
+	const requestID = "durable-request-0001"
+	if _, err := engine.SelectIdempotent(target, requestID); err != nil {
 		t.Fatal(err)
 	}
 	if store.Stats().JournalGeneration != 1 {
@@ -67,6 +68,10 @@ func TestDurableUserModelRecoversJournalAndTruncatesTornTail(t *testing.T) {
 	}
 	if first := applyTestCode(t, recoveredEngine, "a1").Candidates[0].Text; first != "学习" {
 		t.Fatalf("recovered ranking = %q", first)
+	}
+	retryState := applyTestCode(t, recoveredEngine, "a1")
+	if _, err := recoveredEngine.SelectIdempotent(retryState.Candidates[0].ID, requestID); err != nil || recovered.Model().Generation() != 1 {
+		t.Fatalf("recovered retry error=%v generation=%d", err, recovered.Model().Generation())
 	}
 	if err := recovered.Close(); err != nil {
 		t.Fatal(err)

@@ -1,6 +1,7 @@
 package yimecore
 
 import (
+	"errors"
 	"fmt"
 	"sort"
 
@@ -180,6 +181,18 @@ func (e *Engine) Apply(event engineapi.Event) (engineapi.Result, error) {
 
 // Select commits a candidate from the current snapshot and clears the input.
 func (e *Engine) Select(candidateID string) (engineapi.Result, error) {
+	return e.selectCandidate(candidateID, "")
+}
+
+// SelectIdempotent commits at most one learning mutation for mutationID.
+func (e *Engine) SelectIdempotent(candidateID, mutationID string) (engineapi.Result, error) {
+	if mutationID == "" {
+		return engineapi.Result{}, errors.New("mutation ID is required")
+	}
+	return e.selectCandidate(candidateID, mutationID)
+}
+
+func (e *Engine) selectCandidate(candidateID, mutationID string) (engineapi.Result, error) {
 	for _, candidate := range e.candidates {
 		if candidate.ID == candidateID {
 			if e.activeSegment != nil {
@@ -197,7 +210,7 @@ func (e *Engine) Select(candidateID string) (engineapi.Result, error) {
 				e.refresh()
 				return engineapi.Result{State: e.snapshot()}, nil
 			}
-			if err := e.userModel.observeWithContext(candidate.Code, candidate.Text, e.previousCommit); err != nil {
+			if err := e.userModel.observeIdempotent(candidate.Code, candidate.Text, e.previousCommit, mutationID); err != nil {
 				return engineapi.Result{}, fmt.Errorf("persist user selection: %w", err)
 			}
 			e.previousCommit = candidate.Text
