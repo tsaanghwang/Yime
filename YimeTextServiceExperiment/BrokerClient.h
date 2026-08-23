@@ -1,0 +1,46 @@
+#pragma once
+
+#include <windows.h>
+
+#include <cstdint>
+#include <string>
+#include <vector>
+
+namespace yime::experiment {
+
+struct BrokerCandidate {
+    std::string id;
+    std::string text;
+};
+
+struct BrokerUpdate {
+    std::string rawInput;
+    std::vector<BrokerCandidate> candidates;
+    std::string commit;
+};
+
+class BrokerClient {
+public:
+    BrokerClient() = default;
+    ~BrokerClient();
+    BrokerClient(const BrokerClient&) = delete;
+    BrokerClient& operator=(const BrokerClient&) = delete;
+
+    bool Connect(const std::wstring& pipeName, DWORD timeoutMs, std::string* error);
+    bool ApplyCode(char code, BrokerUpdate* update, std::string* error);
+    bool SelectCandidate(const std::string& candidateId, const std::string& mutationId,
+                         BrokerUpdate* update, std::string* error);
+    void Close() noexcept;
+    bool IsConnected() const noexcept { return pipe_ != INVALID_HANDLE_VALUE && !sessionId_.empty(); }
+
+private:
+    bool Exchange(const std::string& request, std::string* response, std::string* error);
+    bool ParseUpdate(const std::string& response, uint64_t sequence, BrokerUpdate* update, std::string* error);
+    void Disconnect() noexcept;
+
+    HANDLE pipe_ = INVALID_HANDLE_VALUE;
+    std::string sessionId_;
+    uint64_t sequence_ = 0;
+};
+
+}  // namespace yime::experiment

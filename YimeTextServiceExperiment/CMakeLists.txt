@@ -2,14 +2,17 @@ cmake_minimum_required(VERSION 3.20)
 project(YimeTextServiceExperiment LANGUAGES CXX)
 
 add_library(YimeTextServiceExperiment SHARED
+    BrokerClient.cpp
     DllEntry.cpp
     KeyContract.cpp
+    SurfaceSession.cpp
     TextService.cpp
     YimeTextServiceExperiment.def
 )
 target_compile_features(YimeTextServiceExperiment PRIVATE cxx_std_17)
 target_compile_definitions(YimeTextServiceExperiment PRIVATE UNICODE _UNICODE WIN32_LEAN_AND_MEAN NOMINMAX)
 target_compile_options(YimeTextServiceExperiment PRIVATE /utf-8 /W4 /EHsc)
+target_include_directories(YimeTextServiceExperiment PRIVATE "${CMAKE_CURRENT_LIST_DIR}/../json/single_include")
 target_link_libraries(YimeTextServiceExperiment PRIVATE ole32)
 set_property(TARGET YimeTextServiceExperiment PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
@@ -27,3 +30,15 @@ set_property(TARGET YimeTextServiceContractTests PROPERTY MSVC_RUNTIME_LIBRARY "
 enable_testing()
 add_test(NAME YimeTextServiceContractTests
     COMMAND YimeTextServiceContractTests $<TARGET_FILE:YimeTextServiceExperiment>)
+
+add_executable(YimeBrokerBridgeTests
+    tests/BrokerBridgeTests.cpp
+    BrokerClient.cpp
+    KeyContract.cpp
+    SurfaceSession.cpp
+)
+target_compile_features(YimeBrokerBridgeTests PRIVATE cxx_std_17)
+target_compile_definitions(YimeBrokerBridgeTests PRIVATE UNICODE _UNICODE WIN32_LEAN_AND_MEAN NOMINMAX)
+target_compile_options(YimeBrokerBridgeTests PRIVATE /utf-8 /W4 /EHsc)
+target_include_directories(YimeBrokerBridgeTests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} "${CMAKE_CURRENT_LIST_DIR}/../json/single_include")
+set_property(TARGET YimeBrokerBridgeTests PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")

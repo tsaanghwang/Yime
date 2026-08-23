@@ -1,6 +1,6 @@
 # Yime 自研栈并行替换试验
 
-> 状态：E0、E1、E2-A、E2-B、E3-A、E3-B、E4-A、E4-B、E5-A、E5-B、E5-C、E5-D、E5-E、E5-F、E5-G、E6-A、E6-B1 已通过；未批准切换任何生产组件
+> 状态：E0、E1、E2-A、E2-B、E3-A、E3-B、E4-A、E4-B、E5-A、E5-B、E5-C、E5-D、E5-E、E5-F、E5-G、E6-A、E6-B1、E6-B2a 已通过；未批准切换任何生产组件
 > 试验分支：`codex/yimecore-replacement-experiment`  
 > 原则：先并行、后比较；逐层验收；失败即保留现状
 
@@ -271,6 +271,15 @@ E6-B1 已建立不注册、不接 Broker 的最小 C++ COM/TSF 外壳：
 - B1 外壳即使被误加载也始终报告按键未被吃掉。只有 E6-B2 同时完成 Broker 状态转换和 TSF edit session 后，才允许相应键返回 eaten。
 
 E6-B1 没有 composition、候选 UI、语言栏、焦点状态或安装入口，不能冒充可用输入法。它只是把 COM 生命周期、独立身份和最重要的数字键契约先从后续功能中剥离出来验证。
+
+E6-B2a 已在 TSF edit session 接线前完成 C++ 表层到 Broker 的会话和按键桥：
+
+- `BrokerClient` 只发送协议 v1 的 open/apply/select/close，不发送客户端身份；候选选择使用 Broker 返回的稳定 candidate ID 和独立 mutation ID。
+- `SurfaceSession` 把未按 Shift 的数字、字母和 OEM 标点投影成 composition code，只把 `Shift+1` 至 `Shift+9` 映射到当前候选 ordinal。Broker 写入或解析失败时返回未处理，不能因断管而吞掉宿主按键。
+- 三模式分别用 x86/x64 C++ 桥输入 `2jru`，验证首键 `2` 保留在 raw composition、首候选稳定为同一文本、`Shift+1` 提交该稳定候选并清空 raw input；主动断开后再次输入必须失败且不报告 handled。
+- 每模式强制结束并重新启动 Broker 后重新执行相同桥接轨迹，预验收均在 107 ms 内完成。现有 COM 生命周期和 Shift 标签回归同时继续通过。
+
+E6-B2a 仍在 `ITfContext` 之外运行。把成功的 `BrokerUpdate` 通过同步 TSF edit session 写成预编辑/提交，并在失败时保持宿主文本不变，是 E6-B2b 的独立门禁。
 
 ### E7：切换与退役
 
