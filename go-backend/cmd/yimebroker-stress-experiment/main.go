@@ -13,7 +13,6 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"sort"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -28,6 +27,7 @@ const (
 	toolVersion              = "yimebroker-e5e-concurrent-soak-v1"
 	requestTimeout           = 250 * time.Millisecond
 	minimumDuration          = 30 * time.Second
+	concurrentWarmupDuration = 5 * time.Second
 	minimumRequests          = 100000
 	maximumP95               = 10 * time.Millisecond
 	maximumP99               = 20 * time.Millisecond
@@ -36,6 +36,8 @@ const (
 	maximumRecovery          = 2 * time.Second
 	maximumProcessWorkingSet = 192 * 1024 * 1024
 	maximumTotalGrowth       = 96 * 1024 * 1024
+	latencyBucketWidth       = 10 * time.Microsecond
+	latencyBucketCount       = int(requestTimeout/latencyBucketWidth) + 1
 )
 
 type probe struct {
@@ -55,6 +57,12 @@ type latency struct {
 	P95NS   int64 `json:"p95_ns"`
 	P99NS   int64 `json:"p99_ns"`
 	MaxNS   int64 `json:"max_ns"`
+}
+
+type latencyHistogram struct {
+	Buckets []uint64
+	Samples uint64
+	MaxNS   int64
 }
 
 type memorySample struct {
@@ -83,6 +91,7 @@ type report struct {
 	ProbePath                 string       `json:"probe_path"`
 	ProbeCount                int          `json:"probe_count"`
 	RequestedDurationSeconds  int          `json:"requested_duration_seconds"`
+	ConcurrentWarmupNS        int64        `json:"concurrent_warmup_ns"`
 	ActualDurationNS          int64        `json:"actual_duration_ns"`
 	StandaloneBrokerProcesses int          `json:"standalone_broker_processes"`
 	SharedDispatcherClients   int          `json:"shared_dispatcher_clients"`
@@ -92,6 +101,8 @@ type report struct {
 	Errors                    int64        `json:"errors"`
 	IncorrectCommits          int64        `json:"incorrect_commits"`
 	ThroughputRequestsPerSec  float64      `json:"throughput_requests_per_second"`
+	LatencyHistogramBucketNS  int64        `json:"latency_histogram_bucket_ns"`
+	PercentileSemantics       string       `json:"percentile_semantics"`
 	InProcessLatency          latency      `json:"in_process_latency"`
 	PipeLatency               latency      `json:"pipe_latency"`
 	BaselineMemory            memorySample `json:"baseline_memory"`
@@ -122,7 +133,7 @@ type sessionClient struct {
 
 type workerResult struct {
 	kind              string
-	durations         []time.Duration
+	latencies         latencyHistogram
 	completedRequests int64
 	completedTraces   int64
 	errors            int64
@@ -188,11 +199,11 @@ func main() {
 		allClients = append(allClients, current)
 	}
 
-	for _, current := range allClients {
-		if _, ok, _ := current.runProbe(probes[0], nil); !ok {
-			fail(errors.New("warm-up trace failed"))
-		}
+	warmupElapsed, err := concurrentWarmup(allClients, probes, concurrentWarmupDuration)
+	if err != nil {
+		fail(err)
 	}
+	time.Sleep(250 * time.Millisecond)
 	started := time.Now()
 	baseline := sampleMemory(started, children, &childrenMu)
 	peak := baseline
@@ -233,7 +244,7 @@ func main() {
 			if workerIndex >= *clients {
 				kind = "pipe"
 			}
-			result := workerResult{kind: kind, durations: make([]time.Duration, 0, 8192), clean: true}
+			result := workerResult{kind: kind, latencies: newLatencyHistogram(), clean: true}
 			probeIndex := workerIndex % len(probes)
 			for time.Now().Before(deadline) {
 				if workerIndex == *clients && time.Now().After(injectionAt) && recoveryOnce.CompareAndSwap(false, true) {
@@ -265,7 +276,7 @@ func main() {
 					recoveryMu.Unlock()
 				}
 
-				requests, ok, wasIncorrect := session.runProbe(probes[probeIndex], &result.durations)
+				requests, ok, wasIncorrect := session.runProbe(probes[probeIndex], &result.latencies)
 				result.completedRequests += int64(requests)
 				totalCompleted.Add(int64(requests))
 				if !ok {
@@ -299,14 +310,15 @@ func main() {
 		peak = finalMemory
 	}
 
-	var pipeDurations, dispatcherDurations []time.Duration
+	pipeHistogram := newLatencyHistogram()
+	dispatcherHistogram := newLatencyHistogram()
 	var completedRequests, completedTraces, errorCount, incorrect int64
 	clean := true
 	for item := range results {
 		if item.kind == "pipe" {
-			pipeDurations = append(pipeDurations, item.durations...)
+			pipeHistogram.merge(item.latencies)
 		} else {
-			dispatcherDurations = append(dispatcherDurations, item.durations...)
+			dispatcherHistogram.merge(item.latencies)
 		}
 		completedRequests += item.completedRequests
 		completedTraces += item.completedTraces
@@ -317,8 +329,8 @@ func main() {
 	recoveryMu.Lock()
 	recoveryResult := forcedRecovery
 	recoveryMu.Unlock()
-	inProcessLatency := summarize(dispatcherDurations)
-	pipeLatency := summarize(pipeDurations)
+	inProcessLatency := dispatcherHistogram.summary()
+	pipeLatency := pipeHistogram.summary()
 	throughput := float64(completedRequests) / actualDuration.Seconds()
 	latencyPassed := latencyPassed(inProcessLatency) && latencyPassed(pipeLatency)
 	correctnessPassed := errorCount == 0 && incorrect == 0 && completedRequests >= minimumRequests
@@ -332,9 +344,11 @@ func main() {
 	result := report{
 		ToolVersion: toolVersion, GeneratedAt: time.Now().UTC().Format(time.RFC3339Nano), Mode: *mode,
 		IndexPath: filepath.Clean(*indexPath), IndexSourceID: index.SourceID(), ProbePath: filepath.Clean(*probesPath), ProbeCount: len(probes),
-		RequestedDurationSeconds: int(duration.Seconds()), ActualDurationNS: actualDuration.Nanoseconds(), StandaloneBrokerProcesses: *processes,
+		RequestedDurationSeconds: int(duration.Seconds()), ConcurrentWarmupNS: warmupElapsed.Nanoseconds(), ActualDurationNS: actualDuration.Nanoseconds(), StandaloneBrokerProcesses: *processes,
 		SharedDispatcherClients: *clients, TotalTrustedClients: len(allClients), CompletedRequests: completedRequests, CompletedTraces: completedTraces,
-		Errors: errorCount, IncorrectCommits: incorrect, ThroughputRequestsPerSec: throughput, InProcessLatency: inProcessLatency, PipeLatency: pipeLatency,
+		Errors: errorCount, IncorrectCommits: incorrect, ThroughputRequestsPerSec: throughput, LatencyHistogramBucketNS: latencyBucketWidth.Nanoseconds(),
+		PercentileSemantics: "p50/p95/p99 are conservative upper bounds of fixed-width histogram buckets; max is the exact observed duration",
+		InProcessLatency:    inProcessLatency, PipeLatency: pipeLatency,
 		BaselineMemory: baseline, FinalMemory: finalMemory, PeakMemory: peak, ForcedRecovery: recoveryResult,
 		ActiveSessionsAfterClose: dispatcher.ActiveSessions(), CleanShutdowns: clean, CorrectnessPassed: correctnessPassed,
 		LatencyGatePassed: latencyPassed, ThroughputGatePassed: throughputPassed, MemoryGatePassed: memoryPassed,
@@ -350,11 +364,42 @@ func main() {
 	}
 }
 
-func (c *sessionClient) runProbe(item probe, durations *[]time.Duration) (int, bool, bool) {
+func concurrentWarmup(clients []*sessionClient, probes []probe, duration time.Duration) (time.Duration, error) {
+	started := time.Now()
+	deadline := started.Add(duration)
+	errorsFound := make(chan error, len(clients))
+	var wait sync.WaitGroup
+	for workerIndex, current := range clients {
+		wait.Add(1)
+		go func(index int, session *sessionClient) {
+			defer wait.Done()
+			probeIndex := index % len(probes)
+			for time.Now().Before(deadline) {
+				if _, ok, incorrect := session.runProbe(probes[probeIndex], nil); !ok {
+					if incorrect {
+						errorsFound <- fmt.Errorf("warm-up client %d produced an incorrect result for probe %d", index, probeIndex)
+					} else {
+						errorsFound <- fmt.Errorf("warm-up client %d failed transport for probe %d", index, probeIndex)
+					}
+					return
+				}
+				probeIndex = (probeIndex + 1) % len(probes)
+			}
+		}(workerIndex, current)
+	}
+	wait.Wait()
+	close(errorsFound)
+	for err := range errorsFound {
+		return time.Since(started), err
+	}
+	return time.Since(started), nil
+}
+
+func (c *sessionClient) runProbe(item probe, latencies *latencyHistogram) (int, bool, bool) {
 	completed := 0
 	response, elapsed, err := c.request(yimebroker.ResetSession, engineapi.Event{}, "")
-	if durations != nil {
-		*durations = append(*durations, elapsed)
+	if latencies != nil {
+		latencies.add(elapsed)
 	}
 	if err != nil {
 		return completed, false, false
@@ -366,8 +411,8 @@ func (c *sessionClient) runProbe(item probe, durations *[]time.Duration) (int, b
 	var state engineapi.Result
 	for _, key := range item.Code {
 		response, elapsed, err = c.request(yimebroker.ApplyEvent, engineapi.Event{Operation: engineapi.AppendCode, Code: string(key)}, "")
-		if durations != nil {
-			*durations = append(*durations, elapsed)
+		if latencies != nil {
+			latencies.add(elapsed)
 		}
 		if err != nil {
 			return completed, false, false
@@ -390,8 +435,8 @@ func (c *sessionClient) runProbe(item probe, durations *[]time.Duration) (int, b
 			break
 		}
 		response, elapsed, err = c.request(yimebroker.ApplyEvent, engineapi.Event{Operation: engineapi.PageNext}, "")
-		if durations != nil {
-			*durations = append(*durations, elapsed)
+		if latencies != nil {
+			latencies.add(elapsed)
 		}
 		if err != nil {
 			return completed, false, false
@@ -406,8 +451,8 @@ func (c *sessionClient) runProbe(item probe, durations *[]time.Duration) (int, b
 		return completed, false, true
 	}
 	response, elapsed, err = c.request(yimebroker.Select, engineapi.Event{}, candidateID)
-	if durations != nil {
-		*durations = append(*durations, elapsed)
+	if latencies != nil {
+		latencies.add(elapsed)
 	}
 	if err != nil {
 		return completed, false, false
@@ -584,25 +629,61 @@ func loadProbes(path, mode string) []probe {
 	return file.Modes[mode]
 }
 
-func summarize(values []time.Duration) latency {
-	if len(values) == 0 {
-		return latency{}
-	}
-	sorted := append([]time.Duration(nil), values...)
-	sort.Slice(sorted, func(i, j int) bool { return sorted[i] < sorted[j] })
-	return latency{Samples: len(sorted), P50NS: percentile(sorted, 50).Nanoseconds(), P95NS: percentile(sorted, 95).Nanoseconds(),
-		P99NS: percentile(sorted, 99).Nanoseconds(), MaxNS: sorted[len(sorted)-1].Nanoseconds()}
+func newLatencyHistogram() latencyHistogram {
+	return latencyHistogram{Buckets: make([]uint64, latencyBucketCount)}
 }
 
-func percentile(values []time.Duration, percent int) time.Duration {
-	index := (len(values)*percent + 99) / 100
-	if index < 1 {
-		index = 1
+func (h *latencyHistogram) add(value time.Duration) {
+	if h.Buckets == nil {
+		h.Buckets = make([]uint64, latencyBucketCount)
 	}
-	if index > len(values) {
-		index = len(values)
+	index := int((value + latencyBucketWidth - 1) / latencyBucketWidth)
+	if index >= len(h.Buckets) {
+		index = len(h.Buckets) - 1
 	}
-	return values[index-1]
+	if index < 0 {
+		index = 0
+	}
+	h.Buckets[index]++
+	h.Samples++
+	if value.Nanoseconds() > h.MaxNS {
+		h.MaxNS = value.Nanoseconds()
+	}
+}
+
+func (h *latencyHistogram) merge(other latencyHistogram) {
+	if h.Buckets == nil {
+		h.Buckets = make([]uint64, latencyBucketCount)
+	}
+	for index, count := range other.Buckets {
+		if index >= len(h.Buckets) {
+			break
+		}
+		h.Buckets[index] += count
+	}
+	h.Samples += other.Samples
+	if other.MaxNS > h.MaxNS {
+		h.MaxNS = other.MaxNS
+	}
+}
+
+func (h latencyHistogram) summary() latency {
+	return latency{Samples: int(h.Samples), P50NS: h.percentile(50), P95NS: h.percentile(95), P99NS: h.percentile(99), MaxNS: h.MaxNS}
+}
+
+func (h latencyHistogram) percentile(percent uint64) int64 {
+	if h.Samples == 0 {
+		return 0
+	}
+	target := (h.Samples*percent + 99) / 100
+	var cumulative uint64
+	for index, count := range h.Buckets {
+		cumulative += count
+		if cumulative >= target {
+			return int64(time.Duration(index) * latencyBucketWidth)
+		}
+	}
+	return h.MaxNS
 }
 
 func latencyPassed(value latency) bool {

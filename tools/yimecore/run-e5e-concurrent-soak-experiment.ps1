@@ -70,9 +70,12 @@ foreach ($definition in $definitions) {
         source_sha256 = $build.build.source_sha256
         index_sha256 = $build.build.index_sha256
         index_verified = [bool]$build.verified
+        concurrent_warmup_ns = [long]$evidence.concurrent_warmup_ns
         completed_requests = [long]$evidence.completed_requests
         completed_traces = [long]$evidence.completed_traces
         throughput_requests_per_second = [double]$evidence.throughput_requests_per_second
+        latency_histogram_bucket_ns = [long]$evidence.latency_histogram_bucket_ns
+        percentile_semantics = $evidence.percentile_semantics
         in_process_latency = $evidence.in_process_latency
         pipe_latency = $evidence.pipe_latency
         baseline_memory = $evidence.baseline_memory
@@ -143,6 +146,12 @@ $summary = [ordered]@{
         maximum_forced_recovery_ms = 2000
         maximum_working_set_bytes_per_actual_process_budget = 201326592
         maximum_warm_to_final_working_set_growth_bytes = 100663296
+    }
+    evidence_collection = [ordered]@{
+        latency_histogram_bucket_ns = 10000
+        percentile_values_are_conservative_bucket_upper_bounds = $true
+        maximum_latency_is_exact = $true
+        storage_is_bounded_independently_of_request_count = $true
     }
     modes = $modeResults
     all_indices_verified = -not ($modeResults.index_verified -contains $false)
