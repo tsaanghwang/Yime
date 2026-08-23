@@ -197,7 +197,9 @@ func (e *Engine) Select(candidateID string) (engineapi.Result, error) {
 				e.refresh()
 				return engineapi.Result{State: e.snapshot()}, nil
 			}
-			e.userModel.observeWithContext(candidate.Code, candidate.Text, e.previousCommit)
+			if err := e.userModel.observeWithContext(candidate.Code, candidate.Text, e.previousCommit); err != nil {
+				return engineapi.Result{}, fmt.Errorf("persist user selection: %w", err)
+			}
 			e.previousCommit = candidate.Text
 			e.rawInput = ""
 			e.pageNumber = 0

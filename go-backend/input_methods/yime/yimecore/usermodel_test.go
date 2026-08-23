@@ -56,6 +56,30 @@ func TestUserLearningPromotesSelectedCandidateWithExplainableScore(t *testing.T)
 	}
 }
 
+func TestUserMutationPersistenceFailureDoesNotCommitOrAdvanceModel(t *testing.T) {
+	index, err := NewIndex([]Entry{{Text: "候选", Code: "a1", Weight: 1}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	model, err := NewUserModel(index.identity())
+	if err != nil {
+		t.Fatal(err)
+	}
+	model.SetMutationWriter(func(UserMutation) error { return errors.New("forced journal failure") })
+	engine, err := NewEngineWithUserModel(index, 9, model)
+	if err != nil {
+		t.Fatal(err)
+	}
+	state := applyCode(t, engine, "a1")
+	result, err := engine.Select(state.State.Candidates[0].ID)
+	if err == nil || result.Commit != "" || model.Generation() != 0 {
+		t.Fatalf("failed persistence result=%+v err=%v generation=%d", result, err, model.Generation())
+	}
+	if after := engine.Reset(); after.State.RawInput != "" {
+		t.Fatalf("engine failed to remain usable: %+v", after)
+	}
+}
+
 func TestUserModelAtomicSaveReopenAndSourceBinding(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "user-model.json")
 	model, err := OpenUserModel(path, "index-source-a")

@@ -28,13 +28,27 @@ var ErrCorruptUserModel = errors.New("corrupt Yime user model")
 // UserModel is an independent, session-shareable selection-frequency model.
 // It never mutates the static index and performs no I/O on the key path.
 type UserModel struct {
-	mu         sync.RWMutex
-	path       string
-	sourceID   string
-	generation uint64
-	selections map[candidateIdentity]uint64
-	contexts   map[contextIdentity]uint64
+	mu             sync.RWMutex
+	path           string
+	sourceID       string
+	generation     uint64
+	selections     map[candidateIdentity]uint64
+	contexts       map[contextIdentity]uint64
+	mutationWriter func(UserMutation) error
 }
+
+type UserMutation struct {
+	Generation   uint64 `json:"generation"`
+	Kind         string `json:"kind"`
+	Code         string `json:"code"`
+	Text         string `json:"text"`
+	PreviousText string `json:"previous_text,omitempty"`
+}
+
+const (
+	UserMutationSelect = "select"
+	UserMutationForget = "forget"
+)
 
 type candidateIdentity struct {
 	code string
@@ -111,7 +125,7 @@ func (m *UserModel) candidateBoost(code, text string) int64 {
 }
 
 func (m *UserModel) observe(code, text string) {
-	m.observeWithContext(code, text, "")
+	_ = m.observeWithContext(code, text, "")
 }
 
 func (m *UserModel) contextBoost(previousText, code, text string) int64 {
@@ -127,12 +141,19 @@ func (m *UserModel) contextBoost(previousText, code, text string) int64 {
 	return int64(count) * contextBoostPerSelection
 }
 
-func (m *UserModel) observeWithContext(code, text, previousText string) {
+func (m *UserModel) observeWithContext(code, text, previousText string) error {
 	if m == nil || code == "" || text == "" {
-		return
+		return nil
 	}
 	key := candidateIdentity{code: code, text: text}
 	m.mu.Lock()
+	defer m.mu.Unlock()
+	mutation := UserMutation{Generation: m.generation + 1, Kind: UserMutationSelect, Code: code, Text: text, PreviousText: previousText}
+	if m.mutationWriter != nil {
+		if err := m.mutationWriter(mutation); err != nil {
+			return err
+		}
+	}
 	if m.selections[key] < maximumSelectionCount {
 		m.selections[key]++
 	}
@@ -143,18 +164,30 @@ func (m *UserModel) observeWithContext(code, text, previousText string) {
 		}
 	}
 	m.generation++
-	m.mu.Unlock()
+	return nil
 }
 
 // Forget removes all learned preference for one candidate.
 func (m *UserModel) Forget(code, text string) bool {
+	found, _ := m.ForgetWithError(code, text)
+	return found
+}
+
+func (m *UserModel) ForgetWithError(code, text string) (bool, error) {
 	if m == nil {
-		return false
+		return false, nil
 	}
 	key := candidateIdentity{code: code, text: text}
 	m.mu.Lock()
+	defer m.mu.Unlock()
 	_, found := m.selections[key]
 	if found {
+		mutation := UserMutation{Generation: m.generation + 1, Kind: UserMutationForget, Code: code, Text: text}
+		if m.mutationWriter != nil {
+			if err := m.mutationWriter(mutation); err != nil {
+				return false, err
+			}
+		}
 		delete(m.selections, key)
 		for contextKey := range m.contexts {
 			if contextKey.candidateIdentity == key {
@@ -163,8 +196,69 @@ func (m *UserModel) Forget(code, text string) bool {
 		}
 		m.generation++
 	}
+	return found, nil
+}
+
+func (m *UserModel) SetMutationWriter(writer func(UserMutation) error) {
+	if m == nil {
+		return
+	}
+	m.mu.Lock()
+	m.mutationWriter = writer
 	m.mu.Unlock()
-	return found
+}
+
+func (m *UserModel) SourceID() string {
+	if m == nil {
+		return ""
+	}
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	return m.sourceID
+}
+
+func (m *UserModel) Generation() uint64 {
+	if m == nil {
+		return 0
+	}
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	return m.generation
+}
+
+func (m *UserModel) ApplyRecoveredMutation(mutation UserMutation) error {
+	if m == nil {
+		return fmt.Errorf("%w: nil recovered model", ErrCorruptUserModel)
+	}
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	if mutation.Generation != m.generation+1 || mutation.Code == "" || mutation.Text == "" {
+		return fmt.Errorf("%w: invalid recovered mutation", ErrCorruptUserModel)
+	}
+	key := candidateIdentity{code: mutation.Code, text: mutation.Text}
+	switch mutation.Kind {
+	case UserMutationSelect:
+		if m.selections[key] < maximumSelectionCount {
+			m.selections[key]++
+		}
+		if mutation.PreviousText != "" {
+			contextKey := contextIdentity{previous: mutation.PreviousText, candidateIdentity: key}
+			if m.contexts[contextKey] < maximumSelectionCount {
+				m.contexts[contextKey]++
+			}
+		}
+	case UserMutationForget:
+		delete(m.selections, key)
+		for contextKey := range m.contexts {
+			if contextKey.candidateIdentity == key {
+				delete(m.contexts, contextKey)
+			}
+		}
+	default:
+		return fmt.Errorf("%w: unknown mutation kind", ErrCorruptUserModel)
+	}
+	m.generation = mutation.Generation
+	return nil
 }
 
 // Save writes the current model through a same-directory temporary file and

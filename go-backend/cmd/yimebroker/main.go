@@ -19,6 +19,9 @@ func main() {
 	indexPath := flag.String("index", "", "validated YimeCore index")
 	mode := flag.String("mode", "", "full, variable or shorthand")
 	trustedClientID := flag.String("trusted-client-id", "", "identity bound by the launching transport adapter")
+	userSnapshot := flag.String("user-model-snapshot", "", "optional durable user model snapshot")
+	userJournal := flag.String("user-model-journal", "", "optional durable write-ahead journal")
+	checkpointEvery := flag.Int("user-model-checkpoint-every", 256, "durable mutations between background snapshots")
 	exitBeforeRequest := flag.Int("experiment-exit-before-request", 0, "E5-B fault injection only")
 	hangBeforeRequest := flag.Int("experiment-hang-before-request", 0, "E5-B fault injection only")
 	flag.Parse()
@@ -33,7 +36,29 @@ func main() {
 	if index.Mode() != *mode {
 		fail(fmt.Errorf("index mode %q does not match %q", index.Mode(), *mode))
 	}
-	factory := func() (engineapi.Engine, error) { return yimecore.NewFileEngine(index, 9) }
+	var durable *yimebroker.DurableUserModel
+	if (*userSnapshot == "") != (*userJournal == "") {
+		fail(fmt.Errorf("user-model-snapshot and user-model-journal must be supplied together"))
+	}
+	var factory yimebroker.EngineFactory
+	if *userSnapshot != "" {
+		durable, err = yimebroker.OpenDurableUserModel(yimebroker.DurableUserModelConfig{
+			SnapshotPath: *userSnapshot, JournalPath: *userJournal, SourceID: index.SourceID(), CheckpointEvery: *checkpointEvery,
+		})
+		if err != nil {
+			fail(err)
+		}
+		defer func() {
+			if err := durable.Close(); err != nil {
+				fmt.Fprintln(os.Stderr, err)
+			}
+		}()
+		factory = func() (engineapi.Engine, error) {
+			return yimecore.NewFileEngineWithUserModel(index, 9, durable.Model())
+		}
+	} else {
+		factory = func() (engineapi.Engine, error) { return yimecore.NewFileEngine(index, 9) }
+	}
 	dispatcher, err := yimebroker.NewDispatcher(factory, yimebroker.Config{})
 	if err != nil {
 		fail(err)
