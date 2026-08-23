@@ -2,6 +2,7 @@ package yimecore
 
 import (
 	"fmt"
+	"sort"
 
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/engineapi"
 )
@@ -18,6 +19,7 @@ type Engine struct {
 	exactCache     map[string][]record
 	sentenceInput  string
 	sentenceStates [][]sentencePath
+	userModel      *UserModel
 }
 
 type lookupIndex interface {
@@ -37,6 +39,34 @@ func NewEngine(index *Index, candidateLimit int) (*Engine, error) {
 // NewFileEngine constructs a session over a validated compact E1 index.
 func NewFileEngine(index *FileIndex, candidateLimit int) (*Engine, error) {
 	return newEngine(index, candidateLimit)
+}
+
+// NewFileEngineWithUserModel enables E3 selection learning without changing
+// or coupling the immutable static index to the user data file.
+func NewFileEngineWithUserModel(index *FileIndex, candidateLimit int, model *UserModel) (*Engine, error) {
+	engine, err := newEngine(index, candidateLimit)
+	if err != nil {
+		return nil, err
+	}
+	if model == nil {
+		return nil, fmt.Errorf("user model is required")
+	}
+	engine.userModel = model
+	return engine, nil
+}
+
+// NewEngineWithUserModel is the in-memory-index counterpart used by focused
+// deterministic learning tests.
+func NewEngineWithUserModel(index *Index, candidateLimit int, model *UserModel) (*Engine, error) {
+	engine, err := newEngine(index, candidateLimit)
+	if err != nil {
+		return nil, err
+	}
+	if model == nil {
+		return nil, fmt.Errorf("user model is required")
+	}
+	engine.userModel = model
+	return engine, nil
 }
 
 func newEngine(index lookupIndex, candidateLimit int) (*Engine, error) {
@@ -85,6 +115,7 @@ func (e *Engine) Apply(event engineapi.Event) (engineapi.Result, error) {
 func (e *Engine) Select(candidateID string) (engineapi.Result, error) {
 	for _, candidate := range e.candidates {
 		if candidate.ID == candidateID {
+			e.userModel.observe(candidate.Code, candidate.Text)
 			e.rawInput = ""
 			e.candidates = nil
 			e.resetSentenceComposer()
@@ -108,12 +139,10 @@ func (e *Engine) refresh() {
 		return
 	}
 	records := e.index.lookup(e.rawInput, e.limit)
-	candidates := make([]engineapi.Candidate, 0, e.limit)
+	exactCandidates := make([]engineapi.Candidate, 0, e.limit)
+	prefixCandidates := make([]engineapi.Candidate, 0, e.limit)
 	seen := make(map[string]struct{}, e.limit)
 	for _, item := range records {
-		if item.code != e.rawInput {
-			continue
-		}
 		candidate := engineapi.Candidate{
 			ID:     item.code + "\x1f" + item.text,
 			Text:   item.text,
@@ -121,44 +150,58 @@ func (e *Engine) refresh() {
 			Weight: item.weight,
 			Exact:  item.code == e.rawInput,
 		}
-		candidates = append(candidates, candidate)
+		e.scoreCandidate(&candidate)
 		seen[candidate.Text+"\x1f"+candidate.Code] = struct{}{}
-		if len(candidates) == e.limit {
-			e.candidates = candidates
-			return
+		if candidate.Exact {
+			exactCandidates = append(exactCandidates, candidate)
+		} else {
+			prefixCandidates = append(prefixCandidates, candidate)
 		}
 	}
-	for _, candidate := range e.composeSentences(e.rawInput, e.limit-len(candidates)) {
+	for _, candidate := range e.composeSentences(e.rawInput, e.limit) {
 		key := candidate.Text + "\x1f" + candidate.Code
 		if _, exists := seen[key]; exists {
 			continue
 		}
-		candidates = append(candidates, candidate)
+		e.scoreCandidate(&candidate)
+		exactCandidates = append(exactCandidates, candidate)
 		seen[key] = struct{}{}
-		if len(candidates) == e.limit {
-			e.candidates = candidates
-			return
-		}
 	}
-	for _, item := range records {
-		if item.code == e.rawInput {
-			continue
-		}
-		candidate := engineapi.Candidate{
-			ID: item.code + "\x1f" + item.text, Text: item.text, Code: item.code,
-			Weight: item.weight, Exact: false,
-		}
-		key := candidate.Text + "\x1f" + candidate.Code
-		if _, exists := seen[key]; exists {
-			continue
-		}
-		candidates = append(candidates, candidate)
-		seen[key] = struct{}{}
-		if len(candidates) == e.limit {
-			break
+	rankCandidates(exactCandidates)
+	rankCandidates(prefixCandidates)
+	candidates := make([]engineapi.Candidate, 0, e.limit)
+	for _, group := range [][]engineapi.Candidate{exactCandidates, prefixCandidates} {
+		for _, candidate := range group {
+			candidates = append(candidates, candidate)
+			if len(candidates) == e.limit {
+				e.candidates = candidates
+				return
+			}
 		}
 	}
 	e.candidates = candidates
+}
+
+func (e *Engine) scoreCandidate(candidate *engineapi.Candidate) {
+	candidate.Score.Static = candidate.Weight
+	candidate.Score.User = e.userModel.candidateBoost(candidate.Code, candidate.Text)
+	candidate.Score.Total = saturatingAdd(candidate.Score.Static, candidate.Score.Context)
+	candidate.Score.Total = saturatingAdd(candidate.Score.Total, candidate.Score.User)
+}
+
+func rankCandidates(candidates []engineapi.Candidate) {
+	sort.SliceStable(candidates, func(i, j int) bool {
+		if candidates[i].Score.Total != candidates[j].Score.Total {
+			return candidates[i].Score.Total > candidates[j].Score.Total
+		}
+		if candidates[i].Weight != candidates[j].Weight {
+			return candidates[i].Weight > candidates[j].Weight
+		}
+		if candidates[i].Text != candidates[j].Text {
+			return candidates[i].Text < candidates[j].Text
+		}
+		return candidates[i].ID < candidates[j].ID
+	})
 }
 
 func (e *Engine) snapshot() engineapi.State {

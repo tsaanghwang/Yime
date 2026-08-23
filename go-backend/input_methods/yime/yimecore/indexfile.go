@@ -486,6 +486,9 @@ func (idx *FileIndex) Mode() string { return idx.mode }
 // RecordCount returns the number of unique code/text records.
 func (idx *FileIndex) RecordCount() int { return len(idx.offsets) }
 
+// SourceID binds independent user data to the exact static-index provenance.
+func (idx *FileIndex) SourceID() string { return idx.identity() }
+
 func (idx *FileIndex) lookup(prefix string, limit int) []record {
 	if idx == nil || prefix == "" || limit <= 0 {
 		return nil
