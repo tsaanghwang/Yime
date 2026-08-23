@@ -124,6 +124,11 @@ function Invoke-MultiModeProbe([string]$broker, [string]$indexRoot, [string]$ann
         $reader = [IO.StreamReader]::new($client, [Text.UTF8Encoding]::new($false), $false, 4096, $true)
         $writer = [IO.StreamWriter]::new($client, [Text.UTF8Encoding]::new($false), 4096, $true)
         $writer.AutoFlush = $true
+        # Windows PowerShell 5.1 reads BOM-less scripts through the active ANSI
+        # code page. Construct non-ASCII protocol expectations from code points
+        # so an elevated formal run cannot corrupt the comparison literals.
+        $expectedText = -join [char[]](0x4f60, 0x597d)
+        $expectedPinyin = -join [char[]](0x006e, 0x01d0, 0x0020, 0x0068, 0x01ce, 0x006f)
         $cases = @(
             [ordered]@{ requested_mode = ''; expected_mode = 'variable'; code = 'nlhso' },
             [ordered]@{ requested_mode = 'variable'; expected_mode = 'variable'; code = 'nlhso' },
@@ -150,11 +155,11 @@ function Invoke-MultiModeProbe([string]$broker, [string]$indexRoot, [string]$ann
             $applied = $reader.ReadLine() | ConvertFrom-Json
             if ($applied.error) { throw "multi-mode apply failed for $($case.expected_mode)" }
             $candidate = @($applied.result.state.candidates)[0]
-            if (-not $candidate -or $candidate.text -ne '你好' -or -not $candidate.exact -or
+            if (-not $candidate -or $candidate.text -ne $expectedText -or -not $candidate.exact -or
                 $candidate.code -ne $case.code -or
                 $candidate.annotations.key_sequence -ne $case.code -or
                 [string]::IsNullOrWhiteSpace($candidate.annotations.yinyuan) -or
-                $candidate.annotations.standard_pinyin -ne 'nǐ hǎo') {
+                $candidate.annotations.standard_pinyin -ne $expectedPinyin) {
                 throw "multi-mode candidate or annotation mismatch for $($case.expected_mode)"
             }
             $results += [ordered]@{
