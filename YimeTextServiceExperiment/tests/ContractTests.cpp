@@ -38,6 +38,13 @@ void testKeyContract() {
     }
     expect(ClassifyVirtualKey('0', true).route == KeyRoute::AppendComposition,
            "Shift+0 must not become a candidate ordinal");
+    for (const WPARAM key : {static_cast<WPARAM>(VK_RETURN), static_cast<WPARAM>(VK_SPACE)}) {
+        const auto plain = ClassifyVirtualKey(key, false);
+        expect(plain.route == KeyRoute::SelectCandidate && plain.candidateOrdinal == 1,
+               "plain Enter/Space must select the first visible candidate");
+        expect(ClassifyVirtualKey(key, true).route == KeyRoute::PassThrough,
+               "shifted Enter/Space must retain host behavior");
+    }
     const auto& labels = CandidateLabels();
     constexpr std::wstring_view expected[] = {L"⇧1", L"⇧2", L"⇧3", L"⇧4", L"⇧5", L"⇧6", L"⇧7", L"⇧8", L"⇧9"};
     for (size_t index = 0; index < labels.size(); ++index) {

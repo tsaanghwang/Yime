@@ -296,9 +296,32 @@ int wmain(int argc, wchar_t** argv) {
             throw std::runtime_error("candidate UI remained after commit");
         }
 
+        for (const WPARAM defaultSelectionKey : {static_cast<WPARAM>(VK_SPACE), static_cast<WPARAM>(VK_RETURN)}) {
+            const std::wstring beforeDefaultCommit = readContext(context, clientId);
+            eaten = FALSE;
+            require(keys->OnKeyDown(context, '2', 0, &eaten), "default-selection setup key down");
+            if (!eaten || !hasComposition(context)) {
+                throw std::runtime_error("default-selection setup did not create a composition");
+            }
+            BOOL testEaten = FALSE;
+            require(keys->OnTestKeyDown(context, defaultSelectionKey, 0, &testEaten),
+                    "default-selection test key down");
+            if (!testEaten) throw std::runtime_error("Enter/Space selection was not claimed");
+            eaten = FALSE;
+            require(keys->OnKeyDown(context, defaultSelectionKey, 0, &eaten),
+                    "default-selection key down");
+            const std::wstring afterDefaultCommit = readContext(context, clientId);
+            if (!eaten || afterDefaultCommit.size() <= beforeDefaultCommit.size() ||
+                afterDefaultCommit.back() == L'2' || hasComposition(context)) {
+                throw std::runtime_error("Enter/Space did not commit the first candidate");
+            }
+        }
+        std::cout << "default_candidate_keys_verified=true\n";
+
         eaten = FALSE;
         require(keys->OnKeyDown(context, '2', 0, &eaten), "post-commit key down");
-        if (!eaten || readContext(context, clientId) != L"秋2" || !hasComposition(context)) {
+        const std::wstring preMouseComposition = readContext(context, clientId);
+        if (!eaten || preMouseComposition.empty() || preMouseComposition.back() != L'2' || !hasComposition(context)) {
             throw std::runtime_error("normal commit incorrectly closed the Broker session");
         }
         candidatePopup = FindWindowW(L"YimeTextServiceExperimentCandidatePopup", nullptr);
@@ -309,7 +332,7 @@ int wmain(int argc, wchar_t** argv) {
         GetClientRect(candidatePopup, &popupClient);
         SendMessageW(candidatePopup, WM_LBUTTONUP, 0, MAKELPARAM(20, 10));
         const std::wstring secondCommit = readContext(context, clientId);
-        if (secondCommit.size() != 2 || secondCommit.front() != L'秋' ||
+        if (secondCommit.size() <= preMouseComposition.size() - 1 || secondCommit.front() != L'秋' ||
             secondCommit.back() == L'2' || hasComposition(context)) {
             throw std::runtime_error("mouse-selected TSF commit mismatch");
         }

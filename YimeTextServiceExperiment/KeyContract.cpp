@@ -3,6 +3,9 @@
 namespace yime::experiment {
 
 KeyDecision ClassifyVirtualKey(WPARAM virtualKey, bool shiftDown) noexcept {
+    if (!shiftDown && (virtualKey == VK_RETURN || virtualKey == VK_SPACE)) {
+        return {KeyRoute::SelectCandidate, 1};
+    }
     if (shiftDown && virtualKey >= '1' && virtualKey <= '9') {
         return {KeyRoute::SelectCandidate, static_cast<unsigned>(virtualKey - '0')};
     }

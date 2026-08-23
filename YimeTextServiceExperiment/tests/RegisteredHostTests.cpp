@@ -446,6 +446,18 @@ int wmain(int argc, wchar_t** argv) {
         SetKeyboardState(keyboard);
         if (readContext(context, clientId) != L"秋") throw std::runtime_error("registered candidate commit mismatch");
 
+        for (const WPARAM defaultSelectionKey : {static_cast<WPARAM>(VK_SPACE), static_cast<WPARAM>(VK_RETURN)}) {
+            const std::wstring beforeDefaultCommit = readContext(context, clientId);
+            dispatchKey(keystrokes, '2');
+            dispatchKey(keystrokes, defaultSelectionKey);
+            const std::wstring afterDefaultCommit = readContext(context, clientId);
+            popup = FindWindowW(L"YimeTextServiceExperimentCandidatePopup", nullptr);
+            if (afterDefaultCommit.size() <= beforeDefaultCommit.size() || afterDefaultCommit.back() == L'2' ||
+                (popup && IsWindowVisible(popup))) {
+                throw std::runtime_error("registered Enter/Space did not commit the first candidate");
+            }
+        }
+
         dispatchKey(keystrokes, '2');
         popup = FindWindowW(L"YimeTextServiceExperimentCandidatePopup", nullptr);
         if (!popup || !IsWindowVisible(popup)) {
@@ -500,6 +512,7 @@ int wmain(int argc, wchar_t** argv) {
                   << "registered_focus_outcome="
                   << (hostTerminatedComposition ? "host_terminated_cleanly" : "composition_resumed") << '\n'
                   << "registered_candidate_commit=true\n"
+                  << "registered_default_candidate_keys_verified=true\n"
                   << "architecture_bits=" << sizeof(void*) * 8 << '\n';
 
         profiles->DeactivateProfile(TF_PROFILETYPE_INPUTPROCESSOR, kLanguageId,

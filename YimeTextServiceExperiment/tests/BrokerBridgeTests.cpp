@@ -40,6 +40,26 @@ int wmain(int argc, wchar_t** argv) {
         std::cerr << "Shift+1 stable candidate selection failed: " << outcome.error << '\n';
         return 1;
     }
+    for (const WPARAM defaultSelectionKey : {static_cast<WPARAM>(VK_SPACE), static_cast<WPARAM>(VK_RETURN)}) {
+        for (char character : code) {
+            outcome = surface.HandleVirtualKey(
+                static_cast<WPARAM>(character >= 'a' ? character - 'a' + 'A' : character), false);
+            if (!outcome.handled || !outcome.error.empty()) {
+                std::cerr << "default-selection composition failed: " << outcome.error << '\n';
+                return 1;
+            }
+        }
+        if (outcome.update.candidates.empty()) {
+            std::cerr << "default-selection candidate list is empty\n";
+            return 1;
+        }
+        const std::string expected = outcome.update.candidates.front().text;
+        outcome = surface.HandleVirtualKey(defaultSelectionKey, false);
+        if (!outcome.handled || outcome.update.commit != expected || !outcome.update.rawInput.empty()) {
+            std::cerr << "Enter/Space first-candidate selection failed: " << outcome.error << '\n';
+            return 1;
+        }
+    }
     outcome = surface.HandleVirtualKey(VK_F12, false);
     if (outcome.handled) {
         std::cerr << "pass-through key was consumed\n";
