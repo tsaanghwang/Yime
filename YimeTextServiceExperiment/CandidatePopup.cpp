@@ -38,13 +38,14 @@ bool CandidatePopup::EnsureWindow(HWND owner) noexcept {
 }
 
 bool CandidatePopup::Update(const std::vector<std::wstring>& candidates, const RECT& anchor,
-                            HWND owner, bool textExtentAnchor) noexcept {
+                            HWND owner, bool textExtentAnchor, size_t selectedIndex) noexcept {
     candidates_.assign(candidates.begin(),
                        candidates.begin() + static_cast<std::ptrdiff_t>(std::min<size_t>(9, candidates.size())));
     if (candidates_.empty()) {
         Destroy();
         return true;
     }
+    selectedIndex_ = selectedIndex;
     if (!EnsureWindow(owner)) return false;
     SetPropW(window_, L"YimeTextServiceExperimentTextExtentAnchor",
              reinterpret_cast<HANDLE>(static_cast<UINT_PTR>(textExtentAnchor ? 1 : 0)));
@@ -102,6 +103,7 @@ void CandidatePopup::Destroy() noexcept {
     candidates_.clear();
     width_ = 0;
     rowHeight_ = 0;
+    selectedIndex_ = 0;
 }
 
 RECT CandidatePopup::Bounds() const noexcept {
@@ -123,6 +125,12 @@ void CandidatePopup::Paint() noexcept {
     for (size_t index = 0; index < candidates_.size(); ++index) {
         RECT row{padding_, padding_ + static_cast<LONG>(index) * rowHeight_,
                  client.right - padding_, padding_ + static_cast<LONG>(index + 1) * rowHeight_};
+        if (index == selectedIndex_) {
+            FillRect(dc, &row, GetSysColorBrush(COLOR_HIGHLIGHT));
+            SetTextColor(dc, GetSysColor(COLOR_HIGHLIGHTTEXT));
+        } else {
+            SetTextColor(dc, GetSysColor(COLOR_WINDOWTEXT));
+        }
         DrawTextW(dc, candidates_[index].c_str(), static_cast<int>(candidates_[index].size()),
                   &row, DT_LEFT | DT_VCENTER | DT_SINGLELINE | DT_END_ELLIPSIS | DT_NOPREFIX);
     }

@@ -16,7 +16,7 @@ public:
     CandidatePopup& operator=(const CandidatePopup&) = delete;
 
     bool Update(const std::vector<std::wstring>& candidates, const RECT& anchor, HWND owner,
-                bool textExtentAnchor = false) noexcept;
+                bool textExtentAnchor = false, size_t selectedIndex = 0) noexcept;
     void SetSelectionHandler(SelectionHandler handler, void* context) noexcept {
         selectionHandler_ = handler;
         selectionContext_ = context;
@@ -44,6 +44,7 @@ private:
     int width_ = 0;
     int rowHeight_ = 0;
     int padding_ = 8;
+    size_t selectedIndex_ = 0;
     SelectionHandler selectionHandler_ = nullptr;
     void* selectionContext_ = nullptr;
 };

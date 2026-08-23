@@ -113,7 +113,10 @@ foreach ($architecture in @([ordered]@{ name = 'x64'; bits = 64 },
             if ($testExit -ne 0) { throw "$($architecture.name) $($definition.mode) registered host failed: $testText" }
             $observed = Convert-KeyValue $testText
             foreach ($required in @('registered_key_sink_verified', 'registered_text_extent_anchor',
-                                     'registered_focus_callbacks_verified', 'registered_candidate_commit')) {
+                                     'registered_focus_callbacks_verified', 'registered_candidate_commit',
+                                     'registered_default_candidate_keys_verified',
+                                     'registered_invalid_code_backspace_recovery_verified',
+                                     'registered_direction_and_page_keys_verified')) {
                 if ($observed[$required] -ne 'true') { throw "$testLog missing $required=true" }
             }
             if ([int]$observed.architecture_bits -ne $architecture.bits) {
@@ -126,6 +129,9 @@ foreach ($architecture in @([ordered]@{ name = 'x64'; bits = 64 },
                 registered_text_extent_anchor = $true
                 registered_focus_callbacks_verified = $true
                 registered_candidate_commit = $true
+                registered_default_candidate_keys_verified = $true
+                registered_invalid_code_backspace_recovery_verified = $true
+                registered_direction_and_page_keys_verified = $true
                 registered_language_bar_accepted = $observed.registered_language_bar_accepted -eq 'true'
             }
         }
@@ -157,8 +163,16 @@ $sourceFiles = @(
     'docs\project\YIMECORE_REPLACEMENT_EXPERIMENT.md',
     'YimeTextServiceExperiment\CMakeLists.txt',
     'YimeTextServiceExperiment\RegistrationTool.cpp',
+    'YimeTextServiceExperiment\BrokerClient.h',
+    'YimeTextServiceExperiment\BrokerClient.cpp',
+    'YimeTextServiceExperiment\KeyContract.h',
+    'YimeTextServiceExperiment\KeyContract.cpp',
+    'YimeTextServiceExperiment\SurfaceSession.h',
+    'YimeTextServiceExperiment\SurfaceSession.cpp',
     'YimeTextServiceExperiment\TextService.h',
     'YimeTextServiceExperiment\TextService.cpp',
+    'YimeTextServiceExperiment\CandidateListUIElement.h',
+    'YimeTextServiceExperiment\CandidateListUIElement.cpp',
     'YimeTextServiceExperiment\CandidatePopup.h',
     'YimeTextServiceExperiment\CandidatePopup.cpp',
     'YimeTextServiceExperiment\tests\RegisteredHostTests.cpp',

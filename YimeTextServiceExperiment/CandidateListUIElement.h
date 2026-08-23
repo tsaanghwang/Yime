@@ -11,7 +11,9 @@
 class CandidateListUIElement final : public ITfCandidateListUIElement {
 public:
     CandidateListUIElement() noexcept = default;
-    void Update(ITfDocumentMgr* document, const std::vector<yime::experiment::BrokerCandidate>& candidates);
+    void Update(ITfDocumentMgr* document, const std::vector<yime::experiment::BrokerCandidate>& candidates,
+                size_t selectedIndex = 0);
+    void UpdateEmpty(ITfDocumentMgr* document, std::wstring message);
     const std::vector<std::wstring>& DisplayCandidates() const noexcept { return candidates_; }
 
     STDMETHODIMP QueryInterface(REFIID iid, void** object) override;
@@ -35,5 +37,7 @@ private:
     std::atomic<ULONG> references_{1};
     ITfDocumentMgr* document_ = nullptr;
     std::vector<std::wstring> candidates_;
+    UINT selection_ = 0;
+    bool selectable_ = false;
     BOOL shown_ = FALSE;
 };

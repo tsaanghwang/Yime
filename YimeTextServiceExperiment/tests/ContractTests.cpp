@@ -40,11 +40,24 @@ void testKeyContract() {
            "Shift+0 must not become a candidate ordinal");
     for (const WPARAM key : {static_cast<WPARAM>(VK_RETURN), static_cast<WPARAM>(VK_SPACE)}) {
         const auto plain = ClassifyVirtualKey(key, false);
-        expect(plain.route == KeyRoute::SelectCandidate && plain.candidateOrdinal == 1,
-               "plain Enter/Space must select the first visible candidate");
+        expect(plain.route == KeyRoute::SelectCurrentCandidate,
+               "plain Enter/Space must select the highlighted candidate");
         expect(ClassifyVirtualKey(key, true).route == KeyRoute::PassThrough,
                "shifted Enter/Space must retain host behavior");
     }
+    expect(ClassifyVirtualKey(VK_BACK, false).route == KeyRoute::BackspaceComposition &&
+               ClassifyVirtualKey(VK_BACK, true).route == KeyRoute::BackspaceComposition,
+           "Backspace must edit the Broker composition regardless of Shift state");
+    expect(ClassifyVirtualKey(VK_PRIOR, false).route == KeyRoute::PreviousCandidatePage,
+           "PageUp must request the previous Broker candidate page");
+    expect(ClassifyVirtualKey(VK_NEXT, false).route == KeyRoute::NextCandidatePage,
+           "PageDown must request the next Broker candidate page");
+    expect(ClassifyVirtualKey(VK_UP, false).route == KeyRoute::PreviousCandidate &&
+               ClassifyVirtualKey(VK_DOWN, false).route == KeyRoute::NextCandidate,
+           "Up/Down must move the candidate highlight");
+    expect(ClassifyVirtualKey(VK_LEFT, false).route == KeyRoute::PreviousCandidatePage &&
+               ClassifyVirtualKey(VK_RIGHT, false).route == KeyRoute::NextCandidatePage,
+           "Left/Right must page the Broker candidates");
     const auto& labels = CandidateLabels();
     constexpr std::wstring_view expected[] = {L"⇧1", L"⇧2", L"⇧3", L"⇧4", L"⇧5", L"⇧6", L"⇧7", L"⇧8", L"⇧9"};
     for (size_t index = 0; index < labels.size(); ++index) {
@@ -104,6 +117,18 @@ void testCandidateElement() {
     expect(candidates->Show(TRUE) == S_OK, "candidate Show failed");
     BOOL shown = FALSE;
     expect(candidates->IsShown(&shown) == S_OK && shown, "candidate shown state mismatch");
+    candidates->UpdateEmpty(nullptr, L"无匹配候选，按退格修改");
+    count = 0;
+    expect(candidates->GetCount(&count) == S_OK && count == 1,
+           "empty-result candidate status row missing");
+    BSTR emptyStatus = nullptr;
+    expect(candidates->GetString(0, &emptyStatus) == S_OK && emptyStatus &&
+               std::wstring_view(emptyStatus) == L"无匹配候选，按退格修改",
+           "empty-result candidate status text mismatch");
+    SysFreeString(emptyStatus);
+    selection = 99;
+    expect(candidates->GetSelection(&selection) == E_FAIL && selection == 0,
+           "empty-result status row must not become a selectable candidate");
     candidates->Release();
 }
 

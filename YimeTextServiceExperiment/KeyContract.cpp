@@ -3,8 +3,29 @@
 namespace yime::experiment {
 
 KeyDecision ClassifyVirtualKey(WPARAM virtualKey, bool shiftDown) noexcept {
+    if (virtualKey == VK_BACK) {
+        return {KeyRoute::BackspaceComposition, 0};
+    }
+    if (virtualKey == VK_PRIOR) {
+        return {KeyRoute::PreviousCandidatePage, 0};
+    }
+    if (virtualKey == VK_NEXT) {
+        return {KeyRoute::NextCandidatePage, 0};
+    }
+    if (virtualKey == VK_UP) {
+        return {KeyRoute::PreviousCandidate, 0};
+    }
+    if (virtualKey == VK_DOWN) {
+        return {KeyRoute::NextCandidate, 0};
+    }
+    if (virtualKey == VK_LEFT) {
+        return {KeyRoute::PreviousCandidatePage, 0};
+    }
+    if (virtualKey == VK_RIGHT) {
+        return {KeyRoute::NextCandidatePage, 0};
+    }
     if (!shiftDown && (virtualKey == VK_RETURN || virtualKey == VK_SPACE)) {
-        return {KeyRoute::SelectCandidate, 1};
+        return {KeyRoute::SelectCurrentCandidate, 0};
     }
     if (shiftDown && virtualKey >= '1' && virtualKey <= '9') {
         return {KeyRoute::SelectCandidate, static_cast<unsigned>(virtualKey - '0')};

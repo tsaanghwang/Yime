@@ -8,6 +8,7 @@ bool SurfaceSession::Connect(const std::wstring& pipeName, DWORD timeoutMs, std:
     pipeName_ = pipeName;
     reconnectTimeoutMs_ = timeoutMs < 100 ? timeoutMs : 100;
     current_ = {};
+    selectedCandidateIndex_ = 0;
     mutationSequence_ = 0;
     return broker_.Connect(pipeName, timeoutMs, error);
 }
@@ -19,6 +20,7 @@ bool SurfaceSession::EnsureConnected(std::string* error) {
         return false;
     }
     current_ = {};
+    selectedCandidateIndex_ = 0;
     return broker_.Connect(pipeName_, reconnectTimeoutMs_, error);
 }
 
@@ -28,8 +30,17 @@ bool SurfaceSession::CanHandle(WPARAM virtualKey, bool shiftDown) {
         char ignored = 0;
         return TranslateCompositionKey(virtualKey, shiftDown, &ignored) && EnsureConnected(nullptr);
     }
-    return broker_.IsConnected() && decision.route == KeyRoute::SelectCandidate && decision.candidateOrdinal > 0 &&
-           decision.candidateOrdinal <= current_.candidates.size();
+    if (decision.route == KeyRoute::BackspaceComposition ||
+        decision.route == KeyRoute::PreviousCandidatePage ||
+        decision.route == KeyRoute::NextCandidatePage) {
+        return broker_.IsConnected() && !current_.rawInput.empty();
+    }
+    if (decision.route == KeyRoute::PreviousCandidate || decision.route == KeyRoute::NextCandidate ||
+        decision.route == KeyRoute::SelectCurrentCandidate) {
+        return broker_.IsConnected() && !current_.candidates.empty();
+    }
+    return broker_.IsConnected() && decision.route == KeyRoute::SelectCandidate &&
+           decision.candidateOrdinal > 0 && decision.candidateOrdinal <= current_.candidates.size();
 }
 
 SurfaceOutcome SurfaceSession::HandleVirtualKey(WPARAM virtualKey, bool shiftDown) {
@@ -43,28 +54,54 @@ SurfaceOutcome SurfaceSession::HandleVirtualKey(WPARAM virtualKey, bool shiftDow
         if (!broker_.IsConnected()) outcome.error = "Broker session is not connected";
         return outcome;
     }
-    if (decision.route == KeyRoute::SelectCandidate) {
-        if (decision.candidateOrdinal == 0 || decision.candidateOrdinal > current_.candidates.size()) return outcome;
-        const auto& candidate = current_.candidates[decision.candidateOrdinal - 1];
+    if (decision.route == KeyRoute::SelectCandidate || decision.route == KeyRoute::SelectCurrentCandidate) {
+        const size_t candidateIndex = decision.route == KeyRoute::SelectCurrentCandidate
+                                          ? selectedCandidateIndex_
+                                          : static_cast<size_t>(decision.candidateOrdinal - 1);
+        if (candidateIndex >= current_.candidates.size()) return outcome;
+        const auto& candidate = current_.candidates[candidateIndex];
         const std::string mutation = "e6b2a-surface-" + std::to_string(GetCurrentProcessId()) + "-" + std::to_string(++mutationSequence_);
         outcome.handled = broker_.SelectCandidate(candidate.id, mutation, &outcome.update, &outcome.error);
+    } else if (decision.route == KeyRoute::PreviousCandidate || decision.route == KeyRoute::NextCandidate) {
+        if (decision.route == KeyRoute::PreviousCandidate) {
+            if (selectedCandidateIndex_ > 0) --selectedCandidateIndex_;
+        } else if (selectedCandidateIndex_ + 1 < current_.candidates.size()) {
+            ++selectedCandidateIndex_;
+        }
+        outcome.handled = true;
+        outcome.update = current_;
+    } else if (decision.route == KeyRoute::BackspaceComposition) {
+        outcome.handled = broker_.Backspace(&outcome.update, &outcome.error);
+    } else if (decision.route == KeyRoute::PreviousCandidatePage) {
+        outcome.handled = broker_.PreviousPage(&outcome.update, &outcome.error);
+    } else if (decision.route == KeyRoute::NextCandidatePage) {
+        outcome.handled = broker_.NextPage(&outcome.update, &outcome.error);
     } else {
         char code = 0;
         if (!TranslateCompositionKey(virtualKey, shiftDown, &code)) return outcome;
         outcome.handled = broker_.ApplyCode(code, &outcome.update, &outcome.error);
     }
-    if (outcome.handled) current_ = outcome.update;
+    if (outcome.handled) {
+        if (decision.route != KeyRoute::PreviousCandidate && decision.route != KeyRoute::NextCandidate) {
+            selectedCandidateIndex_ = 0;
+        }
+        if (outcome.update.candidates.empty()) selectedCandidateIndex_ = 0;
+        outcome.update.selectedCandidateIndex = selectedCandidateIndex_;
+        current_ = outcome.update;
+    }
     return outcome;
 }
 
 void SurfaceSession::DisconnectForRecovery() noexcept {
     broker_.Close();
     current_ = {};
+    selectedCandidateIndex_ = 0;
 }
 
 void SurfaceSession::Close() noexcept {
     broker_.Close();
     current_ = {};
+    selectedCandidateIndex_ = 0;
     pipeName_.clear();
     reconnectTimeoutMs_ = 100;
 }

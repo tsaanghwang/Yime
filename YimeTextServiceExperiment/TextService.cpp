@@ -299,7 +299,7 @@ void YimeTextService::ForgetCompositionContext() noexcept {
 
 void YimeTextService::UpdateCandidateUI(ITfContext* context, const yime::experiment::BrokerUpdate& update,
                                         const RECT* compositionRect) noexcept {
-    if (update.rawInput.empty() || update.candidates.empty()) {
+    if (update.rawInput.empty()) {
         EndCandidateUI();
         return;
     }
@@ -310,7 +310,11 @@ void YimeTextService::UpdateCandidateUI(ITfContext* context, const yime::experim
         document->Release();
         return;
     }
-    candidateUI_->Update(document, update.candidates);
+    if (update.candidates.empty()) {
+        candidateUI_->UpdateEmpty(document, L"无匹配候选，按退格修改");
+    } else {
+        candidateUI_->Update(document, update.candidates, update.selectedCandidateIndex);
+    }
     document->Release();
     RECT anchor{};
     HWND owner = candidateOwnerAndFallbackAnchor(context, &anchor);
@@ -329,8 +333,11 @@ void YimeTextService::UpdateCandidateUI(ITfContext* context, const yime::experim
         manager->UpdateUIElement(candidateUIId_);
     }
     if (manager) manager->Release();
+    const size_t popupSelection = update.candidates.empty() ? static_cast<size_t>(-1)
+                                                             : update.selectedCandidateIndex;
     if (ownedCandidatePopupRequested_ &&
-        candidatePopup_.Update(candidateUI_->DisplayCandidates(), anchor, owner, compositionRect != nullptr)) {
+        candidatePopup_.Update(candidateUI_->DisplayCandidates(), anchor, owner,
+                               compositionRect != nullptr, popupSelection)) {
         candidatePopup_.Show(CanAcceptKeys());
     } else {
         candidatePopup_.Show(false);

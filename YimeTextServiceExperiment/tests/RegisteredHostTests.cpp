@@ -413,10 +413,20 @@ int wmain(int argc, wchar_t** argv) {
         if (languageBarItem) languageBarItem->Release();
 
         const std::string code = "2jru";
-        for (char character : code) {
+        for (size_t index = 0; index < code.size(); ++index) {
+            const char character = code[index];
             const WPARAM key = character >= 'a' ? static_cast<WPARAM>(character - 'a' + 'A')
                                                  : static_cast<WPARAM>(character);
             dispatchKey(keystrokes, key);
+            if (index == 0) {
+                for (const WPARAM navigationKey : {static_cast<WPARAM>(VK_DOWN), static_cast<WPARAM>(VK_UP),
+                                                   static_cast<WPARAM>(VK_NEXT), static_cast<WPARAM>(VK_LEFT)}) {
+                    dispatchKey(keystrokes, navigationKey);
+                    if (readContext(context, clientId) != L"2") {
+                        throw std::runtime_error("registered direction/page key escaped into host text");
+                    }
+                }
+            }
         }
         if (readContext(context, clientId) != L"2jru") {
             throw std::runtime_error("registered host composition mismatch");
@@ -433,6 +443,20 @@ int wmain(int argc, wchar_t** argv) {
         owner->GetTextExt(1, 0, 4, &expected, &clipped);
         if (popupBounds.left != expected.left || popupBounds.top != expected.bottom) {
             throw std::runtime_error("registered popup position does not follow the TSF text extent");
+        }
+
+        dispatchKey(keystrokes, 'Z');
+        if (readContext(context, clientId) != L"2jruz" || !IsWindowVisible(popup)) {
+            throw std::runtime_error("registered candidate UI exited on an invalid code");
+        }
+        dispatchKey(keystrokes, VK_BACK);
+        if (readContext(context, clientId) != L"2jru" || !IsWindowVisible(popup)) {
+            throw std::runtime_error("registered Backspace did not restore candidates");
+        }
+        dispatchKey(keystrokes, VK_BACK);
+        dispatchKey(keystrokes, 'U');
+        if (readContext(context, clientId) != L"2jru" || !IsWindowVisible(popup)) {
+            throw std::runtime_error("registered deleted code resurrected after continued input");
         }
 
         BYTE keyboard[256]{};
@@ -513,6 +537,8 @@ int wmain(int argc, wchar_t** argv) {
                   << (hostTerminatedComposition ? "host_terminated_cleanly" : "composition_resumed") << '\n'
                   << "registered_candidate_commit=true\n"
                   << "registered_default_candidate_keys_verified=true\n"
+                  << "registered_invalid_code_backspace_recovery_verified=true\n"
+                  << "registered_direction_and_page_keys_verified=true\n"
                   << "architecture_bits=" << sizeof(void*) * 8 << '\n';
 
         profiles->DeactivateProfile(TF_PROFILETYPE_INPUTPROCESSOR, kLanguageId,

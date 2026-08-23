@@ -194,6 +194,42 @@ int wmain(int argc, wchar_t** argv) {
             if (readContext(context, clientId) != expected || !hasComposition(context)) {
                 throw std::runtime_error("TSF composition text mismatch");
             }
+            if (index == 0) {
+                ITfCandidateListUIElement* navigationElement = findCandidateElement(threadManager);
+                if (!navigationElement) throw std::runtime_error("candidate navigation UI missing");
+                UINT navigationCount = 0;
+                require(navigationElement->GetCount(&navigationCount), "candidate navigation count");
+                navigationElement->Release();
+                if (navigationCount < 2) throw std::runtime_error("candidate navigation needs two candidates");
+                BOOL navigationEaten = FALSE;
+                require(keys->OnKeyDown(context, VK_DOWN, 0, &navigationEaten), "Down candidate key");
+                navigationElement = findCandidateElement(threadManager);
+                UINT navigationSelection = 0;
+                if (!navigationEaten || !navigationElement ||
+                    FAILED(navigationElement->GetSelection(&navigationSelection)) || navigationSelection != 1) {
+                    if (navigationElement) navigationElement->Release();
+                    throw std::runtime_error("Down did not move TSF candidate selection");
+                }
+                navigationElement->Release();
+                navigationEaten = FALSE;
+                require(keys->OnKeyDown(context, VK_UP, 0, &navigationEaten), "Up candidate key");
+                navigationElement = findCandidateElement(threadManager);
+                navigationSelection = 99;
+                if (!navigationEaten || !navigationElement ||
+                    FAILED(navigationElement->GetSelection(&navigationSelection)) || navigationSelection != 0) {
+                    if (navigationElement) navigationElement->Release();
+                    throw std::runtime_error("Up did not restore TSF candidate selection");
+                }
+                navigationElement->Release();
+                for (const WPARAM pageKey : {static_cast<WPARAM>(VK_RIGHT), static_cast<WPARAM>(VK_PRIOR)}) {
+                    navigationEaten = FALSE;
+                    require(keys->OnKeyDown(context, pageKey, 0, &navigationEaten), "candidate page key");
+                    if (!navigationEaten || readContext(context, clientId) != L"2" || !hasComposition(context)) {
+                        throw std::runtime_error("candidate page key escaped into the TSF host");
+                    }
+                }
+                std::cout << "candidate_direction_and_page_keys_verified=true\n";
+            }
         }
         ITfCandidateListUIElement* candidateElement = findCandidateElement(threadManager);
         if (!candidateElement) throw std::runtime_error("TSF candidate UI element was not registered");
@@ -219,6 +255,46 @@ int wmain(int argc, wchar_t** argv) {
         std::cout << "text_extent_anchor="
                   << (GetPropW(candidatePopup, L"YimeTextServiceExperimentTextExtentAnchor") ? "true" : "false")
                   << '\n';
+
+        BOOL invalidEaten = FALSE;
+        require(keys->OnKeyDown(context, 'Z', 0, &invalidEaten), "invalid-code key down");
+        if (!invalidEaten || readContext(context, clientId) != L"2jruz" || !hasComposition(context)) {
+            throw std::runtime_error("invalid code terminated or desynchronized the TSF composition");
+        }
+        candidateElement = findCandidateElement(threadManager);
+        if (!candidateElement) throw std::runtime_error("candidate UI exited on an invalid code");
+        candidateCount = 0;
+        require(candidateElement->GetCount(&candidateCount), "empty candidate UI count");
+        candidateText = nullptr;
+        require(candidateElement->GetString(0, &candidateText), "empty candidate UI status");
+        const std::wstring emptyCandidateStatus(candidateText ? candidateText : L"");
+        SysFreeString(candidateText);
+        candidateElement->Release();
+        if (candidateCount != 1 || emptyCandidateStatus != L"无匹配候选，按退格修改" ||
+            !IsWindowVisible(candidatePopup)) {
+            throw std::runtime_error("invalid-code candidate UI did not preserve a correction affordance");
+        }
+        BOOL backspaceTestEaten = FALSE;
+        require(keys->OnTestKeyDown(context, VK_BACK, 0, &backspaceTestEaten), "Backspace test key down");
+        if (!backspaceTestEaten) throw std::runtime_error("Backspace was not claimed for active raw input");
+        BOOL backspaceEaten = FALSE;
+        require(keys->OnKeyDown(context, VK_BACK, 0, &backspaceEaten), "Backspace key down");
+        if (!backspaceEaten || readContext(context, clientId) != L"2jru" || !hasComposition(context)) {
+            throw std::runtime_error("Backspace did not restore the pre-error Broker state");
+        }
+        backspaceEaten = FALSE;
+        require(keys->OnKeyDown(context, VK_BACK, 0, &backspaceEaten), "second Backspace key down");
+        invalidEaten = FALSE;
+        require(keys->OnKeyDown(context, 'U', 0, &invalidEaten), "continued input after Backspace");
+        if (!backspaceEaten || !invalidEaten || readContext(context, clientId) != L"2jru" ||
+            !hasComposition(context)) {
+            throw std::runtime_error("deleted code resurrected after continued TSF input");
+        }
+        candidatePopup = FindWindowW(L"YimeTextServiceExperimentCandidatePopup", nullptr);
+        if (!candidatePopup || !IsWindowVisible(candidatePopup)) {
+            throw std::runtime_error("candidate UI did not recover after Backspace correction");
+        }
+        std::cout << "invalid_code_backspace_recovery_verified=true\n";
 
         require(keys->OnSetFocus(FALSE), "lose key-sink focus");
         candidateElement = findCandidateElement(threadManager);

@@ -57,13 +57,32 @@ bool BrokerClient::Connect(const std::wstring& pipeName, DWORD timeoutMs, std::s
 }
 
 bool BrokerClient::ApplyCode(char code, BrokerUpdate* update, std::string* error) {
+    return ApplyEvent(1, std::string(1, code), update, error);
+}
+
+bool BrokerClient::Backspace(BrokerUpdate* update, std::string* error) {
+    return ApplyEvent(2, {}, update, error);
+}
+
+bool BrokerClient::PreviousPage(BrokerUpdate* update, std::string* error) {
+    return ApplyEvent(5, {}, update, error);
+}
+
+bool BrokerClient::NextPage(BrokerUpdate* update, std::string* error) {
+    return ApplyEvent(4, {}, update, error);
+}
+
+bool BrokerClient::ApplyEvent(unsigned operation, const std::string& code,
+                              BrokerUpdate* update, std::string* error) {
     if (!IsConnected()) {
         if (error) *error = "Broker session is not connected";
         return false;
     }
     const uint64_t sequence = ++sequence_;
+    json event = {{"operation", operation}};
+    if (!code.empty()) event["code"] = code;
     const json request = {{"version", 1}, {"sequence", sequence}, {"session_id", sessionId_},
-                          {"operation", "apply"}, {"event", {{"operation", 1}, {"code", std::string(1, code)}}}};
+                          {"operation", "apply"}, {"event", std::move(event)}};
     std::string response;
     if (!Exchange(request.dump(), &response, error) || !ParseUpdate(response, sequence, update, error)) {
         Disconnect();
@@ -162,6 +181,9 @@ bool BrokerClient::ParseUpdate(const std::string& responseText, uint64_t sequenc
             if (result.contains("state")) {
                 const auto& state = result["state"];
                 update->rawInput = state.value("raw_input", "");
+                update->pageNumber = state.value("page_number", 0);
+                update->hasPreviousPage = state.value("has_previous", false);
+                update->hasNextPage = state.value("has_next", false);
                 if (state.contains("candidates")) {
                     for (const auto& candidate : state["candidates"]) {
                         update->candidates.push_back({candidate.at("id").get<std::string>(), candidate.at("text").get<std::string>()});

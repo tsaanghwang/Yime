@@ -10,6 +10,12 @@ namespace yime::experiment {
 enum class KeyRoute {
     PassThrough,
     AppendComposition,
+    BackspaceComposition,
+    PreviousCandidate,
+    NextCandidate,
+    PreviousCandidatePage,
+    NextCandidatePage,
+    SelectCurrentCandidate,
     SelectCandidate,
 };
 

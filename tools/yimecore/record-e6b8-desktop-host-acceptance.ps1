@@ -141,10 +141,15 @@ $observationPath = Join-Path $outputDir 'desktop-observation.json'
 } | ConvertTo-Json -Depth 5 | Set-Content $observationPath -Encoding utf8
 
 $sourceFiles = @(
+    'YimeTextServiceExperiment\BrokerClient.h',
     'YimeTextServiceExperiment\BrokerClient.cpp',
     'YimeTextServiceExperiment\BrokerEndpoint.cpp',
     'YimeTextServiceExperiment\BrokerEndpoint.h',
     'YimeTextServiceExperiment\CMakeLists.txt',
+    'YimeTextServiceExperiment\CandidateListUIElement.cpp',
+    'YimeTextServiceExperiment\CandidateListUIElement.h',
+    'YimeTextServiceExperiment\KeyContract.cpp',
+    'YimeTextServiceExperiment\KeyContract.h',
     'YimeTextServiceExperiment\RegistrationTool.cpp',
     'YimeTextServiceExperiment\SurfaceSession.cpp',
     'YimeTextServiceExperiment\SurfaceSession.h',

@@ -28,6 +28,7 @@ private:
 
     BrokerClient broker_;
     BrokerUpdate current_;
+    size_t selectedCandidateIndex_ = 0;
     uint64_t mutationSequence_ = 0;
     std::wstring pipeName_;
     DWORD reconnectTimeoutMs_ = 100;
