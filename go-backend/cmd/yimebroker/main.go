@@ -8,6 +8,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"os/signal"
 	"time"
 
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/engineapi"
@@ -19,6 +20,9 @@ func main() {
 	indexPath := flag.String("index", "", "validated YimeCore index")
 	mode := flag.String("mode", "", "full, variable or shorthand")
 	trustedClientID := flag.String("trusted-client-id", "", "identity bound by the launching transport adapter")
+	namedPipe := flag.String("named-pipe", "", "E6-A local Windows named pipe path")
+	pipeMaxConnections := flag.Int("pipe-max-connections", 64, "maximum concurrent named pipe connections")
+	pipeMaxConnectionsPerClient := flag.Int("pipe-max-connections-per-client", 8, "maximum concurrent named pipe connections per authenticated process")
 	userSnapshot := flag.String("user-model-snapshot", "", "optional durable user model snapshot")
 	userJournal := flag.String("user-model-journal", "", "optional durable write-ahead journal")
 	userModelSourceID := flag.String("user-model-source-id", "", "stable user-model namespace across compatible index generations")
@@ -34,8 +38,14 @@ func main() {
 	exitAfterRequest := flag.Int("experiment-exit-after-request", 0, "E5-F fault injection after durable handling but before response")
 	exitCompactionStage := flag.String("experiment-exit-compaction-stage", "", "E5-G fault injection at a named compaction stage")
 	flag.Parse()
-	if *indexPath == "" || *mode == "" || *trustedClientID == "" {
-		fail(fmt.Errorf("index, mode and trusted-client-id are required"))
+	if *indexPath == "" || *mode == "" {
+		fail(fmt.Errorf("index and mode are required"))
+	}
+	if (*namedPipe == "") == (*trustedClientID == "") {
+		fail(fmt.Errorf("supply exactly one of named-pipe or trusted-client-id"))
+	}
+	if *namedPipe != "" && (*exitBeforeRequest != 0 || *hangBeforeRequest != 0 || *exitAfterRequest != 0) {
+		fail(fmt.Errorf("anonymous-pipe fault injection cannot be combined with named-pipe transport"))
 	}
 	index, err := yimecore.OpenFileIndex(*indexPath)
 	if err != nil {
@@ -116,7 +126,9 @@ func main() {
 	if err != nil {
 		fail(err)
 	}
-	serveContext, cancel := context.WithCancel(context.Background())
+	serveContext, stopSignals := signal.NotifyContext(context.Background(), os.Interrupt)
+	defer stopSignals()
+	serveContext, cancel := context.WithCancel(serveContext)
 	defer cancel()
 	if manager != nil {
 		go func() {
@@ -126,11 +138,18 @@ func main() {
 			}
 		}()
 	}
-	client := yimebroker.TrustedClient{ID: *trustedClientID}
-	if *exitBeforeRequest == 0 && *hangBeforeRequest == 0 && *exitAfterRequest == 0 {
-		err = yimebroker.ServeLines(serveContext, os.Stdin, os.Stdout, dispatcher, client)
+	if *namedPipe != "" {
+		err = yimebroker.ServeNamedPipe(serveContext, dispatcher, yimebroker.NamedPipeConfig{
+			Name: *namedPipe, MaxConnections: *pipeMaxConnections, MaxConnectionsPerClient: *pipeMaxConnectionsPerClient,
+			OnConnectionError: func(connectionErr error) { fmt.Fprintln(os.Stderr, connectionErr) },
+		})
 	} else {
-		err = serveFaultExperiment(serveContext, dispatcher, client, *exitBeforeRequest, *hangBeforeRequest, *exitAfterRequest)
+		client := yimebroker.TrustedClient{ID: *trustedClientID}
+		if *exitBeforeRequest == 0 && *hangBeforeRequest == 0 && *exitAfterRequest == 0 {
+			err = yimebroker.ServeLines(serveContext, os.Stdin, os.Stdout, dispatcher, client)
+		} else {
+			err = serveFaultExperiment(serveContext, dispatcher, client, *exitBeforeRequest, *hangBeforeRequest, *exitAfterRequest)
+		}
 	}
 	if err != nil {
 		fail(err)

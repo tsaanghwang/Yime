@@ -1,6 +1,6 @@
 # Yime 自研栈并行替换试验
 
-> 状态：E0、E1、E2-A、E2-B、E3-A、E3-B、E4-A、E4-B、E5-A、E5-B、E5-C、E5-D、E5-E、E5-F、E5-G 已通过；未批准切换任何生产组件
+> 状态：E0、E1、E2-A、E2-B、E3-A、E3-B、E4-A、E4-B、E5-A、E5-B、E5-C、E5-D、E5-E、E5-F、E5-G、E6-A 已通过；未批准切换任何生产组件
 > 试验分支：`codex/yimecore-replacement-experiment`  
 > 原则：先并行、后比较；逐层验收；失败即保留现状
 
@@ -253,6 +253,15 @@ WAL 因压缩间隔而有界；幂等账本仍以一百万模型项目的硬上�
 - 最后实现薄 C++ TSF/COM 层，不承载词典、音变、排序和用户学习。
 - 以现有 PIMETextService 为黑盒行为基线，重新验证 x86/x64、候选窗、语言栏、失焦、应用退出和重启路径。
 - 新旧文本服务不得共享注册标识或安装目录进行破坏性覆盖；采用并列试装和独立卸载。
+
+E6-A 已完成表层之前的生产形态 IPC 门禁，但尚未实现或注册新 TSF：
+
+- `YimeBroker.exe` 可选择监听本机 Windows 字节流命名管道，同时接受多连接；管道 DACL 只允许当前用户和 Local System，并以 `PIPE_REJECT_REMOTE_CLIENTS` 拒绝远程客户端。第一个实例使用 `FILE_FLAG_FIRST_PIPE_INSTANCE`，防止同名服务被抢占。
+- 每条连接的可信身份由服务端通过 `GetNamedPipeClientProcessId`、客户端进程令牌 SID 和 PID 绑定，协议继续严格拒绝请求 JSON 中自报的身份字段。连接总数和同一客户端连接数均有独立上限，达到总上限时先等待槽位再创建新实例。
+- 独立 C++17 探针分别构建为 x86 和 x64，不链接 PIME、Rime 或 YimeCore。三模式各由四个独立进程并发验证数字编码 `2jru`、候选稳定 ID、幂等选择、提交、严格协议和延迟；另以不同 PID 验证会话不可越权，并在强制结束、重新启动 Broker 后重放同一轨迹。
+- E6-A 预验收的每模式 48,012 个并发请求均无协议或提交错误，最差单客户端 p99 为 0.24 ms、最差单次为 1.42 ms，重启后完成连接和 200 轮重放为 180–186 ms。门禁仍采用单次小于 50 ms、重启小于 2 秒；正式证据需在干净提交上重跑并以其数值为准。
+
+E6-A 不处理候选窗、语言栏、焦点/失焦、TSF composition、注册、安装或签名；这些仍属于 E6-B 及发布验收。现有 `PIMETextService.dll`、PIMELauncher、Go TextService、默认 Rime 工厂、注册标识和安装目录均未改变。
 
 ### E7：切换与退役
 
