@@ -91,6 +91,29 @@ void terminateActiveComposition(ITfContext* context) {
     require(result, "terminate composition");
 }
 
+ITfCandidateListUIElement* findCandidateElement(ITfThreadMgr* threadManager) {
+    ITfUIElementMgr* manager = nullptr;
+    if (FAILED(threadManager->QueryInterface(__uuidof(ITfUIElementMgr), reinterpret_cast<void**>(&manager)))) return nullptr;
+    IEnumTfUIElements* values = nullptr;
+    const HRESULT enumerated = manager->EnumUIElements(&values);
+    manager->Release();
+    if (FAILED(enumerated)) return nullptr;
+    ITfCandidateListUIElement* found = nullptr;
+    for (;;) {
+        ITfUIElement* element = nullptr;
+        ULONG fetched = 0;
+        if (values->Next(1, &element, &fetched) != S_OK || fetched != 1) break;
+        GUID guid{};
+        if (SUCCEEDED(element->GetGUID(&guid)) && IsEqualGUID(guid, GUID_YimeTextServiceExperimentCandidateList)) {
+            element->QueryInterface(__uuidof(ITfCandidateListUIElement), reinterpret_cast<void**>(&found));
+        }
+        element->Release();
+        if (found) break;
+    }
+    values->Release();
+    return found;
+}
+
 void require(HRESULT result, const char* operation) {
     if (FAILED(result)) throw std::runtime_error(std::string(operation) + " failed: " + std::to_string(static_cast<unsigned long>(result)));
 }
@@ -150,6 +173,17 @@ int wmain(int argc, wchar_t** argv) {
                 throw std::runtime_error("TSF composition text mismatch");
             }
         }
+        ITfCandidateListUIElement* candidateElement = findCandidateElement(threadManager);
+        if (!candidateElement) throw std::runtime_error("TSF candidate UI element was not registered");
+        UINT candidateCount = 0;
+        require(candidateElement->GetCount(&candidateCount), "candidate UI count");
+        if (candidateCount == 0 || candidateCount > 9) throw std::runtime_error("candidate UI count exceeds Shift ordinals");
+        BSTR candidateText = nullptr;
+        require(candidateElement->GetString(0, &candidateText), "candidate UI first string");
+        const std::wstring firstCandidate(candidateText ? candidateText : L"");
+        SysFreeString(candidateText);
+        candidateElement->Release();
+        if (firstCandidate != L"⇧1  秋") throw std::runtime_error("candidate UI Shift label or text mismatch");
 
         BYTE keyboard[256]{};
         GetKeyboardState(keyboard);
@@ -164,6 +198,10 @@ int wmain(int argc, wchar_t** argv) {
         if (!eaten) throw std::runtime_error("candidate commit was not eaten");
         if (readContext(context, clientId) != L"秋" || hasComposition(context)) {
             throw std::runtime_error("TSF committed text or composition termination mismatch");
+        }
+        if (ITfCandidateListUIElement* residual = findCandidateElement(threadManager)) {
+            residual->Release();
+            throw std::runtime_error("candidate UI remained after commit");
         }
 
         eaten = FALSE;

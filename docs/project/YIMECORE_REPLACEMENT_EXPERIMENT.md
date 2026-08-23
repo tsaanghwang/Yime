@@ -1,6 +1,6 @@
 # Yime 自研栈并行替换试验
 
-> 状态：E0、E1、E2-A、E2-B、E3-A、E3-B、E4-A、E4-B、E5-A、E5-B、E5-C、E5-D、E5-E、E5-F、E5-G、E6-A、E6-B1、E6-B2a、E6-B2b、E6-B3a 已通过；未批准切换任何生产组件
+> 状态：E0、E1、E2-A、E2-B、E3-A、E3-B、E4-A、E4-B、E5-A、E5-B、E5-C、E5-D、E5-E、E5-F、E5-G、E6-A、E6-B1、E6-B2a、E6-B2b、E6-B3a、E6-B3b 已通过；未批准切换任何生产组件
 > 试验分支：`codex/yimecore-replacement-experiment`  
 > 原则：先并行、后比较；逐层验收；失败即保留现状
 
@@ -297,6 +297,15 @@ E6-B3a 已验证宿主主动终止 composition 的恢复边界：
 - 同一回归同时保留 B2b 的两轮正常提交，证明“正常结束保留会话、外部结束关闭会话”两条路径没有互相污染；三模式 x86/x64 和 Broker 重启重放继续通过。
 
 B3a 仍是未注册的直接 key-sink 调用。实际应用切换、窗口失焦、注册后的 TSF 回调顺序、候选窗口和语言栏尚未验证。
+
+E6-B3b 已实现无皮肤、无图标依赖的最小 TSF 候选 UI 元素：
+
+- `CandidateListUIElement` 实现 `ITfCandidateListUIElement`，通过独立候选 UI GUID 暴露当前文档、候选数、当前项、字符串和单页索引；最多只公布九个与 Shift ordinal 对应的候选。
+- `GetString` 的显示文本固定以前缀 `⇧1` 至 `⇧9` 标明候选 ordinal，不返回裸数字标签。候选选择本身仍使用 Broker 的稳定 candidate ID，显示字符串不进入提交协议。
+- raw composition 出现候选时调用 `ITfUIElementMgr::BeginUIElement`，后续状态更新调用 `UpdateUIElement`，提交、清空、外部 composition termination 或停用时调用 `EndUIElement`。
+- 三模式 x86/x64 的真实 TSF 回归确认候选元素在 composition 期间可枚举、首项为 `⇧1  秋`、候选数不超过九，并在提交后消失；原有正常/强制 termination 路径继续通过。
+
+B3b 只提供可由 TSF 或 UI-less host 渲染的 COM 候选元素；当宿主要求文本服务自绘窗口时，目前尚无 owned popup，因此不能声称所有桌面应用已经有可见候选窗。鼠标选择、窗口定位、最小 owned popup、语言栏和注册后宿主测试仍属后续门禁。
 
 ### E7：切换与退役
 

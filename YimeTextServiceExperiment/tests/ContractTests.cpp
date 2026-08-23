@@ -5,6 +5,7 @@
 #include <string_view>
 
 #include "KeyContract.h"
+#include "CandidateListUIElement.h"
 #include "YimeTextServiceIds.h"
 
 namespace {
@@ -39,6 +40,43 @@ void testKeyContract() {
     for (size_t index = 0; index < labels.size(); ++index) {
         expect(labels[index] == expected[index], "candidate label lost Shift marker");
     }
+}
+
+void testCandidateElement() {
+    auto* candidates = new CandidateListUIElement();
+    std::vector<yime::experiment::BrokerCandidate> values;
+    for (int index = 0; index < 10; ++index) {
+        values.push_back({"candidate-" + std::to_string(index), index == 0 ? "秋" : "候选"});
+    }
+    candidates->Update(nullptr, values);
+    UINT count = 0;
+    expect(candidates->GetCount(&count) == S_OK && count == 9, "candidate list must be capped at nine Shift ordinals");
+    UINT selection = 99;
+    expect(candidates->GetSelection(&selection) == S_OK && selection == 0, "candidate selection mismatch");
+    BSTR first = nullptr;
+    expect(candidates->GetString(0, &first) == S_OK && first && std::wstring_view(first) == L"⇧1  秋",
+           "candidate display label is not Shift-aware");
+    SysFreeString(first);
+    BSTR ninth = nullptr;
+    expect(candidates->GetString(8, &ninth) == S_OK && ninth && std::wstring_view(ninth).find(L"⇧9") == 0,
+           "ninth candidate display label mismatch");
+    SysFreeString(ninth);
+    BSTR invalid = reinterpret_cast<BSTR>(1);
+    expect(candidates->GetString(9, &invalid) == E_INVALIDARG && invalid == nullptr,
+           "out-of-range candidate was accepted");
+    UINT pageCount = 0;
+    expect(candidates->GetPageIndex(nullptr, 0, &pageCount) == E_INVALIDARG && pageCount == 1,
+           "candidate page count probe mismatch");
+    UINT pageIndex = 99;
+    expect(candidates->GetPageIndex(&pageIndex, 1, &pageCount) == S_OK && pageCount == 1 && pageIndex == 0,
+           "candidate page index mismatch");
+    GUID guid{};
+    expect(candidates->GetGUID(&guid) == S_OK && IsEqualGUID(guid, GUID_YimeTextServiceExperimentCandidateList),
+           "candidate element GUID mismatch");
+    expect(candidates->Show(TRUE) == S_OK, "candidate Show failed");
+    BOOL shown = FALSE;
+    expect(candidates->IsShown(&shown) == S_OK && shown, "candidate shown state mismatch");
+    candidates->Release();
 }
 
 void testComLifecycle(const wchar_t* dllPath) {
@@ -111,6 +149,7 @@ int wmain(int argc, wchar_t** argv) {
         return 2;
     }
     testKeyContract();
+    testCandidateElement();
     testComLifecycle(argv[1]);
     if (failures != 0) return 1;
     std::cout << "YimeTextService E6-B1 contracts passed\n";

@@ -6,6 +6,8 @@
 
 #include "SurfaceSession.h"
 
+class CandidateListUIElement;
+
 class YimeTextService final : public ITfTextInputProcessorEx, public ITfKeyEventSink, public ITfCompositionSink {
 public:
     YimeTextService() noexcept;
@@ -29,6 +31,8 @@ public:
 private:
     ~YimeTextService();
     HRESULT SetKeyDecision(ITfContext* context, WPARAM virtualKey, BOOL* eaten) const noexcept;
+    void UpdateCandidateUI(ITfContext* context, const yime::experiment::BrokerUpdate& update) noexcept;
+    void EndCandidateUI() noexcept;
 
     std::atomic<ULONG> references_{1};
     ITfThreadMgr* threadManager_ = nullptr;
@@ -38,4 +42,7 @@ private:
     yime::experiment::SurfaceSession surface_;
     ITfComposition* composition_ = nullptr;
     bool plannedCompositionTermination_ = false;
+    CandidateListUIElement* candidateUI_ = nullptr;
+    DWORD candidateUIId_ = 0;
+    bool candidateUIRegistered_ = false;
 };

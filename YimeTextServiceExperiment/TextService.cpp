@@ -1,8 +1,10 @@
 #include "TextService.h"
 
 #include <iterator>
+#include <new>
 
 #include "CompositionEditSession.h"
+#include "CandidateListUIElement.h"
 #include "KeyContract.h"
 #include "ModuleState.h"
 
@@ -84,6 +86,7 @@ STDMETHODIMP YimeTextService::Deactivate() {
         }
     }
     keySinkAdvised_ = false;
+    EndCandidateUI();
     surface_.Close();
     if (composition_) {
         composition_->Release();
@@ -124,6 +127,7 @@ STDMETHODIMP YimeTextService::OnKeyDown(ITfContext* context, WPARAM wParam, LPAR
         surface_.Close();
         return S_OK;
     }
+    UpdateCandidateUI(context, outcome.update);
     *eaten = TRUE;
     return S_OK;
 }
@@ -148,9 +152,53 @@ STDMETHODIMP YimeTextService::OnPreservedKey(ITfContext*, REFGUID, BOOL* eaten) 
 
 STDMETHODIMP YimeTextService::OnCompositionTerminated(TfEditCookie, ITfComposition* composition) {
     if (composition_ == composition) {
+        EndCandidateUI();
         composition_->Release();
         composition_ = nullptr;
         if (!plannedCompositionTermination_) surface_.Close();
     }
     return S_OK;
+}
+
+void YimeTextService::UpdateCandidateUI(ITfContext* context, const yime::experiment::BrokerUpdate& update) noexcept {
+    if (update.rawInput.empty() || update.candidates.empty()) {
+        EndCandidateUI();
+        return;
+    }
+    ITfDocumentMgr* document = nullptr;
+    if (FAILED(context->GetDocumentMgr(&document))) return;
+    if (!candidateUI_) candidateUI_ = new (std::nothrow) CandidateListUIElement();
+    if (!candidateUI_) {
+        document->Release();
+        return;
+    }
+    candidateUI_->Update(document, update.candidates);
+    document->Release();
+    ITfUIElementMgr* manager = nullptr;
+    if (FAILED(threadManager_->QueryInterface(__uuidof(ITfUIElementMgr), reinterpret_cast<void**>(&manager)))) return;
+    if (!candidateUIRegistered_) {
+        BOOL showOwned = TRUE;
+        candidateUIRegistered_ = SUCCEEDED(manager->BeginUIElement(candidateUI_, &showOwned, &candidateUIId_));
+        if (candidateUIRegistered_) candidateUI_->Show(showOwned);
+    } else {
+        manager->UpdateUIElement(candidateUIId_);
+    }
+    manager->Release();
+}
+
+void YimeTextService::EndCandidateUI() noexcept {
+    if (candidateUIRegistered_ && threadManager_) {
+        ITfUIElementMgr* manager = nullptr;
+        if (SUCCEEDED(threadManager_->QueryInterface(__uuidof(ITfUIElementMgr), reinterpret_cast<void**>(&manager)))) {
+            manager->EndUIElement(candidateUIId_);
+            manager->Release();
+        }
+    }
+    candidateUIRegistered_ = false;
+    candidateUIId_ = 0;
+    if (candidateUI_) {
+        candidateUI_->Show(FALSE);
+        candidateUI_->Release();
+        candidateUI_ = nullptr;
+    }
 }
