@@ -34,6 +34,30 @@ function Convert-KeyValue([string]$text) {
     return $result
 }
 
+function Wait-RegistrationState([string]$tool, [bool]$registered, [string]$logPath) {
+    $timer = [Diagnostics.Stopwatch]::StartNew()
+    $deadline = [DateTime]::UtcNow.AddSeconds(10)
+    do {
+        $text = (& $tool status 2>&1) -join "`n"
+        $exitCode = $LASTEXITCODE
+        $values = Convert-KeyValue $text
+        $expectedBoolean = if ($registered) { 'true' } else { 'false' }
+        $expectedCategories = if ($registered) { 3 } else { 0 }
+        if ($exitCode -eq 0 -and
+            $values.com_registered_current_view -eq $expectedBoolean -and
+            $values.profile_registered -eq $expectedBoolean -and
+            [int]$values.categories_registered_count -eq $expectedCategories) {
+            $timer.Stop()
+            $text | Set-Content $logPath -Encoding utf8
+            return [pscustomobject]@{ values = $values; elapsed_ms = $timer.Elapsed.TotalMilliseconds }
+        }
+        Start-Sleep -Milliseconds 100
+    } while ([DateTime]::UtcNow -lt $deadline)
+    $timer.Stop()
+    $text | Set-Content $logPath -Encoding utf8
+    throw "TSF registration state did not converge to registered=$registered within 10 seconds"
+}
+
 $architectures = @()
 foreach ($architecture in @([ordered]@{ name = 'x64'; bits = 64 }, [ordered]@{ name = 'x86'; bits = 32 })) {
     $buildRoot = Join-Path $payload ("language-bar-payload\candidate-ui-payload\tsf-payload\build-$($architecture.name)\Release")
@@ -44,11 +68,8 @@ foreach ($architecture in @([ordered]@{ name = 'x64'; bits = 64 }, [ordered]@{ n
     }
     $architectureDir = Join-Path $outputDir $architecture.name
     New-Item -ItemType Directory -Force $architectureDir | Out-Null
-    $statusText = (& $tool status 2>&1) -join "`n"
-    $statusExit = $LASTEXITCODE
-    $statusText | Set-Content (Join-Path $architectureDir 'status-before.txt') -Encoding utf8
-    if ($statusExit -ne 0) { throw "$($architecture.name) status failed with $statusExit" }
-    $status = Convert-KeyValue $statusText
+    $preflightObservation = Wait-RegistrationState $tool $false (Join-Path $architectureDir 'status-before.txt')
+    $status = $preflightObservation.values
     if ([int]$status.architecture_bits -ne $architecture.bits -or
         $status.clsid -ne $expectedIds.clsid -or
         $status.profile_guid -ne $expectedIds.profile_guid -or
@@ -63,26 +84,24 @@ foreach ($architecture in @([ordered]@{ name = 'x64'; bits = 64 }, [ordered]@{ n
     $elevated = $status.elevated -eq 'true'
     $liveCycle = $false
     $blocked = $null
+    $registrationVisibilityMs = $null
+    $rollbackVisibilityMs = $null
     if ($elevated) {
         $registerText = (& $tool register $dll 2>&1) -join "`n"
         $registerExit = $LASTEXITCODE
         $registerText | Set-Content (Join-Path $architectureDir 'register.txt') -Encoding utf8
         try {
             if ($registerExit -ne 0) { throw "$($architecture.name) registration failed with $registerExit" }
-            $registeredText = (& $tool status 2>&1) -join "`n"
-            if ($LASTEXITCODE -ne 0) { throw "$($architecture.name) registered status failed" }
-            $registeredText | Set-Content (Join-Path $architectureDir 'status-registered.txt') -Encoding utf8
-            $registered = Convert-KeyValue $registeredText
-            if ($registered.com_registered_current_view -ne 'true' -or $registered.profile_registered -ne 'true' -or
-                [int]$registered.categories_registered_count -ne 3) {
-                throw "$($architecture.name) registration was not observable"
-            }
+            $registeredObservation = Wait-RegistrationState $tool $true (Join-Path $architectureDir 'status-registered.txt')
+            $registrationVisibilityMs = $registeredObservation.elapsed_ms
             $liveCycle = $true
         } finally {
             $unregisterText = (& $tool unregister 2>&1) -join "`n"
             $unregisterExit = $LASTEXITCODE
             $unregisterText | Set-Content (Join-Path $architectureDir 'unregister.txt') -Encoding utf8
             if ($unregisterExit -ne 0) { throw "$($architecture.name) rollback failed with $unregisterExit" }
+            $rollbackObservation = Wait-RegistrationState $tool $false (Join-Path $architectureDir 'status-after.txt')
+            $rollbackVisibilityMs = $rollbackObservation.elapsed_ms
         }
     } else {
         $registerText = (& $tool register $dll 2>&1) -join "`n"
@@ -98,7 +117,7 @@ foreach ($architecture in @([ordered]@{ name = 'x64'; bits = 64 }, [ordered]@{ n
 
     $absentText = (& $tool verify-absent 2>&1) -join "`n"
     $absentExit = $LASTEXITCODE
-    $absentText | Set-Content (Join-Path $architectureDir 'status-after.txt') -Encoding utf8
+    $absentText | Set-Content (Join-Path $architectureDir 'verify-absent-after.txt') -Encoding utf8
     if ($absentExit -ne 0) { throw "$($architecture.name) registration residue detected"
     }
     $architectures += [ordered]@{
@@ -108,6 +127,9 @@ foreach ($architecture in @([ordered]@{ name = 'x64'; bits = 64 }, [ordered]@{ n
         registration_tool_sha256 = (Get-FileHash $tool -Algorithm SHA256).Hash.ToLowerInvariant()
         dll_sha256 = (Get-FileHash $dll -Algorithm SHA256).Hash.ToLowerInvariant()
         live_register_unregister_cycle = $liveCycle
+        preflight_convergence_ms = $preflightObservation.elapsed_ms
+        registration_visibility_ms = $registrationVisibilityMs
+        rollback_visibility_ms = $rollbackVisibilityMs
         blocked_reason = $blocked
         no_residue_after_test = $true
     }

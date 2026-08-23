@@ -327,6 +327,7 @@ E6-B4c readiness 已实现独立试验 TIP 的注册与回滚工具，但不把 
 
 - `YimeTextServiceRegistration.exe` 只操作试验 CLSID、Profile GUID、语言栏 GUID；按当前进程架构选择 x86/x64 COM 注册视图，并通过 Windows Vista 以后推荐的 `ITfInputProcessorProfileMgr` 注册默认启用的简体中文 TSF Profile，再注册键盘 TIP、UIElement 和输入模式 compartment 类别。
 - 注册顺序为 COM server、TSF Profile、TSF categories；任何一步失败都会按相反方向清理精确试验身份。`unregister` 可重复执行，`verify-absent` 同时检查当前 COM 视图、TSF Profile 和三个 category 是否残留。
+- TSF Profile 的系统枚举存在短暂缓存传播延迟；live 门禁对注册可见和注销消失分别作最长 10 秒的有界轮询并记录实际毫秒数，超时仍失败，不能以注册 API 的 S_OK 代替可观察状态。
 - 未提权时，`register` 在任何写入前返回 `requires_elevated_token` 和专用退出码 3。x86/x64 readiness 回归确认两个注册视图和 TSF Profile 起初均不存在，拒绝注册后仍无残留，生产注册没有改变。
 
 当前 B4c 只完成能力和 fail-closed 门禁。只有在提权进程中完成 x86/x64 的真实 register/status/unregister 循环，并由注册后的宿主自动派发按键与焦点回调，才可把 B4c live 门禁标为通过。
