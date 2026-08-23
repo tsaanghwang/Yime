@@ -17,7 +17,7 @@ import (
 	"github.com/tsaanghwang/Yime/go-backend/internal/processmemory"
 )
 
-const toolVersion = "yimecore-e4a-reviewed-bundle-v1"
+const toolVersion = "yimecore-e4b-reviewed-bundle-v2"
 
 type moduleFlags []string
 
@@ -69,17 +69,18 @@ type latency struct {
 }
 
 type report struct {
-	ToolVersion   string                 `json:"tool_version"`
-	GeneratedAt   string                 `json:"generated_at"`
-	Mode          string                 `json:"mode"`
-	CoreIndex     string                 `json:"core_index"`
-	ModuleIndexes map[string]string      `json:"module_indexes"`
-	BundleSource  string                 `json:"bundle_source_id"`
-	ProbeSource   string                 `json:"probe_source"`
-	Checks        []check                `json:"checks"`
-	Latency       latency                `json:"latency"`
-	ProcessMemory processmemory.Snapshot `json:"process_memory"`
-	Passed        bool                   `json:"passed"`
+	ToolVersion   string                          `json:"tool_version"`
+	GeneratedAt   string                          `json:"generated_at"`
+	Mode          string                          `json:"mode"`
+	CoreIndex     string                          `json:"core_index"`
+	ModuleIndexes map[string]string               `json:"module_indexes"`
+	BundleSource  string                          `json:"bundle_source_id"`
+	ProbeSource   string                          `json:"probe_source"`
+	Checks        []check                         `json:"checks"`
+	Coverage      []yimecore.ModuleCoverageReport `json:"coverage"`
+	Latency       latency                         `json:"latency"`
+	ProcessMemory processmemory.Snapshot          `json:"process_memory"`
+	Passed        bool                            `json:"passed"`
 }
 
 func main() {
@@ -154,8 +155,19 @@ func main() {
 		fail(err)
 	}
 	result.ProcessMemory = memory
+	// Keep the resource snapshot comparable with the real-Rime probe process.
+	// Exhaustive coverage intentionally faults many more index pages and runs
+	// only after the matched-workload snapshot has been captured.
+	for _, module := range modules {
+		coverage, err := bundle.AuditModuleCoverage(module.ID, 9)
+		if err != nil {
+			fail(err)
+		}
+		result.Coverage = append(result.Coverage, coverage)
+		result.Passed = result.Passed && coverage.Passed
+	}
 	writeJSON(*outputPath, result)
-	fmt.Printf("YimeCore E4-A bundle: mode=%s passed=%t evidence=%s\n", *mode, result.Passed, *outputPath)
+	fmt.Printf("YimeCore E4-B bundle: mode=%s passed=%t evidence=%s\n", *mode, result.Passed, *outputPath)
 	if !result.Passed {
 		os.Exit(1)
 	}

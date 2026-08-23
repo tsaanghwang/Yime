@@ -9,7 +9,7 @@ $goBackend = Join-Path $repoRoot 'go-backend'
 $dataRoot = Join-Path $goBackend 'input_methods\yime\data'
 $allowedRoot = [IO.Path]::GetFullPath((Join-Path $repoRoot '.tmp\yimecore-experiment'))
 if ([string]::IsNullOrWhiteSpace($OutputRoot)) {
-    $OutputRoot = Join-Path $allowedRoot ('e4\' + (Get-Date -Format 'yyyyMMdd-HHmmss'))
+    $OutputRoot = Join-Path $allowedRoot ('e4b\' + (Get-Date -Format 'yyyyMMdd-HHmmss'))
 }
 $outputDir = [IO.Path]::GetFullPath($OutputRoot)
 $allowedPrefix = $allowedRoot.TrimEnd([IO.Path]::DirectorySeparatorChar) + [IO.Path]::DirectorySeparatorChar
@@ -158,6 +158,7 @@ foreach ($definition in $definitions) {
         bundle_source_id = $bundle.bundle_source_id
         builds = $buildEvidence
         checks = $bundle.checks
+		coverage = $bundle.coverage
         latency = $bundle.latency
         process_memory = $bundle.process_memory
         passed = [bool]$bundle.passed
@@ -205,8 +206,8 @@ foreach ($modeResult in $modeResults) {
 }
 
 $summary = [ordered]@{
-    tool_version = 'yimecore-e4a-connected-speech-bundle-experiment-v1'
-    stage = 'e4a'
+    tool_version = 'yimecore-e4b-connected-speech-bundle-experiment-v2'
+    stage = 'e4b'
     generated_at = (Get-Date).ToUniversalTime().ToString('o')
     git_commit = (& git -C $repoRoot rev-parse HEAD).Trim()
     git_dirty = [bool]((& git -C $repoRoot status --porcelain).Count)
@@ -224,6 +225,7 @@ $summary = [ordered]@{
     all_locked_hashes_verified = -not ($lockChecks.matched -contains $false) -and -not ($manifestChecks.matched -contains $false)
     all_import_closures_verified = -not ($importChecks.matched -contains $false)
     all_bundle_checks_passed = -not ($modeResults.passed -contains $false)
+	all_full_coverage_checks_passed = -not ($modeResults.coverage.passed -contains $false)
     all_rime_checks_passed = -not ($rimeEvidence.passed -contains $false)
     all_latency_gates_passed = -not ($comparisons.latency_gate_passed -contains $false)
     all_memory_gates_passed = -not ($comparisons.memory_gate_passed -contains $false)
@@ -259,9 +261,9 @@ $hashes = foreach ($relativePath in $sourceFiles) {
 }
 $hashes | ConvertTo-Json -Depth 3 | Set-Content -LiteralPath (Join-Path $outputDir 'source-hashes.json') -Encoding utf8
 
-Write-Host "YimeCore E4-A evidence: $outputDir"
+Write-Host "YimeCore E4-B evidence: $outputDir"
 if (-not $summary.all_locked_hashes_verified -or -not $summary.all_import_closures_verified -or
-    -not $summary.all_bundle_checks_passed -or -not $summary.all_rime_checks_passed -or
+    -not $summary.all_bundle_checks_passed -or -not $summary.all_full_coverage_checks_passed -or -not $summary.all_rime_checks_passed -or
     -not $summary.all_latency_gates_passed -or -not $summary.all_memory_gates_passed) {
-    throw "One or more E4-A gates failed; see $summaryPath"
+    throw "One or more E4-B gates failed; see $summaryPath"
 }

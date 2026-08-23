@@ -30,6 +30,21 @@ type BundleIndex struct {
 	sourceID     string
 }
 
+// ModuleCoverageReport is an exhaustive direct-path audit of one reviewed
+// overlay. It distinguishes low-weight paths that require later pages from
+// paths that are inaccessible or shadowed by another source.
+type ModuleCoverageReport struct {
+	ModuleID                       string   `json:"module_id"`
+	IndexedRecords                 int      `json:"indexed_records"`
+	ReachableRecords               int      `json:"reachable_records"`
+	DirectFirstPageRecords         int      `json:"direct_first_page_records"`
+	DirectLaterPageRecords         int      `json:"direct_later_page_records"`
+	MaximumDirectPageNumber        int      `json:"maximum_direct_page_number"`
+	ExactTextRetainedAfterDisable  int      `json:"exact_text_retained_after_disable"`
+	InaccessibleOrShadowedExamples []string `json:"inaccessible_or_shadowed_examples,omitempty"`
+	Passed                         bool     `json:"passed"`
+}
+
 // NewBundleIndex validates and deterministically orders a core index plus the
 // explicitly enabled modules. Omitting one module is the complete rollback
 // mechanism for that module.
@@ -137,3 +152,116 @@ func (idx *BundleIndex) identity() string      { return idx.sourceID }
 
 // SourceID binds later user data and evidence to the exact enabled bundle.
 func (idx *BundleIndex) SourceID() string { return idx.identity() }
+
+// AuditModuleCoverage checks every code/text/weight record in one enabled
+// module against the merged bundle and then against the bundle with that
+// module omitted. This is an offline experiment audit, not a runtime rule
+// evaluator.
+func (idx *BundleIndex) AuditModuleCoverage(moduleID string, pageSize int) (ModuleCoverageReport, error) {
+	if idx == nil {
+		return ModuleCoverageReport{}, fmt.Errorf("bundle index is required")
+	}
+	if pageSize <= 0 {
+		return ModuleCoverageReport{}, fmt.Errorf("page size must be positive")
+	}
+	var module *bundleSource
+	for i := range idx.sources {
+		if idx.sources[i].id == moduleID && moduleID != "core" {
+			module = &idx.sources[i]
+			break
+		}
+	}
+	if module == nil {
+		return ModuleCoverageReport{}, fmt.Errorf("enabled module %q was not found", moduleID)
+	}
+	report := ModuleCoverageReport{ModuleID: moduleID, IndexedRecords: module.index.RecordCount()}
+	enabledCache := make(map[string][]record)
+	disabledCache := make(map[string][]record)
+	for position := 0; position < module.index.RecordCount(); position++ {
+		codeBytes, textBytes, weight, err := module.index.recordAt(position)
+		if err != nil {
+			return ModuleCoverageReport{}, fmt.Errorf("read module %q record %d: %w", moduleID, position, err)
+		}
+		code, text := string(codeBytes), string(textBytes)
+		enabled, exists := enabledCache[code]
+		if !exists {
+			enabled = idx.exactAllExcept(code, "")
+			enabledCache[code] = enabled
+		}
+		ordinal := -1
+		for i, candidate := range enabled {
+			if candidate.code == code && candidate.text == text && candidate.weight == weight && strings.HasPrefix(candidate.source, moduleID+"@") {
+				ordinal = i
+				break
+			}
+		}
+		if ordinal < 0 {
+			if len(report.InaccessibleOrShadowedExamples) < 20 {
+				report.InaccessibleOrShadowedExamples = append(report.InaccessibleOrShadowedExamples, text+"\t"+code)
+			}
+		} else {
+			report.ReachableRecords++
+			page := ordinal / pageSize
+			if page == 0 {
+				report.DirectFirstPageRecords++
+			} else {
+				report.DirectLaterPageRecords++
+			}
+			if page > report.MaximumDirectPageNumber {
+				report.MaximumDirectPageNumber = page
+			}
+		}
+		disabled, exists := disabledCache[code]
+		if !exists {
+			disabled = idx.exactAllExcept(code, moduleID)
+			disabledCache[code] = disabled
+		}
+		for _, candidate := range disabled {
+			if candidate.code == code && candidate.text == text {
+				report.ExactTextRetainedAfterDisable++
+				break
+			}
+		}
+	}
+	report.Passed = report.IndexedRecords > 0 && report.ReachableRecords == report.IndexedRecords
+	return report, nil
+}
+
+func (idx *BundleIndex) exactAllExcept(code, excludedModule string) []record {
+	type selected struct {
+		record
+		priority int
+	}
+	byCandidate := make(map[string]selected)
+	for _, source := range idx.sources {
+		if source.id == excludedModule {
+			continue
+		}
+		for _, item := range source.index.exactAll(code) {
+			item.source = source.id + "@" + source.index.identity()
+			key := item.code + "\x1f" + item.text
+			current, exists := byCandidate[key]
+			if !exists || item.weight > current.weight || (item.weight == current.weight && source.priority < current.priority) {
+				byCandidate[key] = selected{record: item, priority: source.priority}
+			}
+		}
+	}
+	merged := make([]selected, 0, len(byCandidate))
+	for _, item := range byCandidate {
+		merged = append(merged, item)
+	}
+	sort.Slice(merged, func(i, j int) bool {
+		if better(merged[i].record, merged[j].record, code) {
+			return true
+		}
+		if better(merged[j].record, merged[i].record, code) {
+			return false
+		}
+		return merged[i].priority < merged[j].priority
+	})
+	result := make([]record, len(merged))
+	for i := range merged {
+		result[i] = merged[i].record
+	}
+	return result
+}

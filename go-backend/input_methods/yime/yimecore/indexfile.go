@@ -556,6 +556,26 @@ func (idx *FileIndex) exact(code string, limit int) []record {
 	return result
 }
 
+func (idx *FileIndex) exactAll(code string) []record {
+	if idx == nil || code == "" {
+		return nil
+	}
+	codeBytes := []byte(code)
+	start := sort.Search(len(idx.offsets), func(i int) bool {
+		recordCode, _, _, err := idx.recordAt(i)
+		return err != nil || bytes.Compare(recordCode, codeBytes) >= 0
+	})
+	result := make([]record, 0, defaultCandidateLimit)
+	for i := start; i < len(idx.offsets); i++ {
+		recordCode, text, weight, err := idx.recordAt(i)
+		if err != nil || !bytes.Equal(recordCode, codeBytes) {
+			break
+		}
+		result = append(result, record{code: string(recordCode), text: string(text), weight: weight})
+	}
+	return result
+}
+
 func (idx *FileIndex) maximumCodeBytes() int { return idx.maxCodeBytes }
 
 func (idx *FileIndex) identity() string {

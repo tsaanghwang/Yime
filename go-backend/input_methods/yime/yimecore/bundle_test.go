@@ -117,6 +117,15 @@ func TestBundlePagingReachesLowWeightReviewedAlias(t *testing.T) {
 	if err != nil || previous.State.PageNumber != 0 {
 		t.Fatalf("previous page failed: state=%#v err=%v", previous.State, err)
 	}
+	coverage, err := bundle.AuditModuleCoverage("reviewed", 9)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !coverage.Passed || coverage.IndexedRecords != 1 || coverage.ReachableRecords != 1 ||
+		coverage.DirectFirstPageRecords != 0 || coverage.DirectLaterPageRecords != 1 || coverage.MaximumDirectPageNumber != 1 ||
+		coverage.ExactTextRetainedAfterDisable != 0 {
+		t.Fatalf("unexpected exhaustive coverage: %#v", coverage)
+	}
 }
 
 func buildTestFileIndex(t *testing.T, mode, name, body string) *FileIndex {
