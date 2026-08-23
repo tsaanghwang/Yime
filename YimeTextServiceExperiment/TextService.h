@@ -4,6 +4,7 @@
 
 #include <atomic>
 
+#include "CandidatePopup.h"
 #include "SurfaceSession.h"
 
 class CandidateListUIElement;
@@ -34,7 +35,8 @@ public:
 private:
     ~YimeTextService();
     HRESULT SetKeyDecision(ITfContext* context, WPARAM virtualKey, BOOL* eaten) const noexcept;
-    void UpdateCandidateUI(ITfContext* context, const yime::experiment::BrokerUpdate& update) noexcept;
+    void UpdateCandidateUI(ITfContext* context, const yime::experiment::BrokerUpdate& update,
+                           const RECT* compositionRect) noexcept;
     void EndCandidateUI() noexcept;
     void AddLanguageBar() noexcept;
     void RemoveLanguageBar() noexcept;
@@ -43,6 +45,8 @@ private:
     bool ContextMatchesComposition(ITfContext* context) const noexcept;
     void RememberCompositionContext(ITfContext* context) noexcept;
     void ForgetCompositionContext() noexcept;
+    void SelectCandidateFromPopup(unsigned ordinal) noexcept;
+    static void CandidatePopupSelection(void* context, unsigned ordinal) noexcept;
 
     std::atomic<ULONG> references_{1};
     ITfThreadMgr* threadManager_ = nullptr;
@@ -56,8 +60,10 @@ private:
     ITfDocumentMgr* compositionDocument_ = nullptr;
     bool plannedCompositionTermination_ = false;
     CandidateListUIElement* candidateUI_ = nullptr;
+    CandidatePopup candidatePopup_;
     DWORD candidateUIId_ = 0;
     bool candidateUIRegistered_ = false;
+    bool ownedCandidatePopupRequested_ = false;
     LanguageBarItem* languageBarItem_ = nullptr;
     bool languageBarItemAdded_ = false;
 };

@@ -21,9 +21,11 @@ std::wstring widen(const std::string& value) {
 class EditSession final : public ITfEditSession {
 public:
     EditSession(ITfContext* context, ITfCompositionSink* sink, ITfComposition** composition,
-                bool* plannedTermination, const BrokerUpdate& update)
+                bool* plannedTermination, const BrokerUpdate& update, RECT* compositionRect,
+                bool* compositionRectValid)
         : context_(context), sink_(sink), composition_(composition),
-          plannedTermination_(plannedTermination), update_(update) {
+          plannedTermination_(plannedTermination), update_(update), compositionRect_(compositionRect),
+          compositionRectValid_(compositionRectValid) {
         context_->AddRef();
         sink_->AddRef();
     }
@@ -46,7 +48,11 @@ public:
         const std::wstring commit = widen(update_.commit);
         if ((!update_.rawInput.empty() && raw.empty()) || (!update_.commit.empty() && commit.empty())) return E_INVALIDARG;
         if (!commit.empty()) return Commit(cookie, commit);
-        if (!raw.empty()) return SetComposition(cookie, raw);
+        if (!raw.empty()) {
+            const HRESULT result = SetComposition(cookie, raw);
+            if (SUCCEEDED(result)) CaptureCompositionRect(cookie);
+            return result;
+        }
         return EndComposition(cookie, L"");
     }
 
@@ -139,21 +145,40 @@ private:
         return result;
     }
 
+    void CaptureCompositionRect(TfEditCookie cookie) noexcept {
+        if (!compositionRect_ || !compositionRectValid_ || !*composition_) return;
+        ITfRange* range = nullptr;
+        ITfContextView* view = nullptr;
+        BOOL clipped = FALSE;
+        if (SUCCEEDED((*composition_)->GetRange(&range)) &&
+            SUCCEEDED(context_->GetActiveView(&view)) &&
+            SUCCEEDED(view->GetTextExt(cookie, range, compositionRect_, &clipped))) {
+            *compositionRectValid_ = true;
+        }
+        if (view) view->Release();
+        if (range) range->Release();
+    }
+
     std::atomic<ULONG> references_{1};
     ITfContext* context_;
     ITfCompositionSink* sink_;
     ITfComposition** composition_;
     bool* plannedTermination_;
     BrokerUpdate update_;
+    RECT* compositionRect_;
+    bool* compositionRectValid_;
 };
 
 }  // namespace
 
 HRESULT ApplyBrokerUpdateToContext(ITfContext* context, TfClientId clientId,
                                    ITfCompositionSink* sink, ITfComposition** composition,
-                                   bool* plannedTermination, const BrokerUpdate& update) noexcept {
+                                   bool* plannedTermination, const BrokerUpdate& update,
+                                   RECT* compositionRect, bool* compositionRectValid) noexcept {
     if (!context || clientId == TF_CLIENTID_NULL || !sink || !composition || !plannedTermination) return E_INVALIDARG;
-    auto* session = new (std::nothrow) EditSession(context, sink, composition, plannedTermination, update);
+    if (compositionRectValid) *compositionRectValid = false;
+    auto* session = new (std::nothrow) EditSession(context, sink, composition, plannedTermination,
+                                                   update, compositionRect, compositionRectValid);
     if (!session) return E_OUTOFMEMORY;
     HRESULT sessionResult = E_FAIL;
     const HRESULT request = context->RequestEditSession(clientId, session, TF_ES_SYNC | TF_ES_READWRITE, &sessionResult);

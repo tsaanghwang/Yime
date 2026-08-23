@@ -339,6 +339,16 @@ E6-B4d 已实现活动 composition 的跨 `ITfContext` 隔离：
 
 B4d 验证了跨文档状态不会互相污染，但焦点回调仍由测试经真实 key-sink 接口触发；系统自动派发和真实应用进程切换仍须 B4c live 注册门禁验证。
 
+E6-B5 已实现宿主要求文本服务自绘时的最小候选窗口和鼠标选择路径：
+
+- `CandidatePopup` 是无图标、无皮肤的 Win32 `WS_EX_NOACTIVATE` tool window，只使用系统字体和系统颜色。窗口最多显示九项，文本继续来自 `CandidateListUIElement` 的 `⇧1` 至 `⇧9` 标签，不产生裸数字候选序号。
+- `BeginUIElement` 注册失败时由自身窗口显示；注册成功时严格服从宿主返回的 owned-window 决策。窗口不取得键盘焦点，失焦、跨文档、提交、外部终止和停用都会隐藏或销毁。
+- composition 更新的同一次 TSF 写 edit session 会尝试用 `ITfContextView::GetTextExt` 取得预编辑范围。无 context owner 的合成上下文明确记录无法取得文本范围，再降级到上下文 caret、上下文窗口或系统指针位置；窗口始终钳制在所在监视器工作区内。
+- 鼠标松开只接受候选内容行，映射为同一个 `Shift+1` 至 `Shift+9` ordinal，再由 `SurfaceSession` 使用 Broker 稳定 candidate ID 提交；点击边框不触发选择。裸数字键规则没有改变。
+- full、variable、shorthand 的 x86/x64 六条路径均验证自有候选窗可见、焦点与文档隔离、恢复显示、鼠标首项提交以及原有键盘提交和强制终止回归。
+
+B5 的无 owner 合成上下文不提供可用 `GetTextExt`，因此不能把降级锚点冒充真实应用定位通过。注册后的系统按键汇派发、真实应用文本范围定位和自动焦点回调仍必须在提权的 registered-host 门禁中验证；通过前不批准默认切换。
+
 ### E7：切换与退役
 
 - 只有 E0 至 E6 全部门禁通过，并完成签名安装包真实宿主验收，才提交默认切换提案。

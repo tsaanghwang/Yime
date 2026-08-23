@@ -6,6 +6,7 @@
 
 #include "KeyContract.h"
 #include "CandidateListUIElement.h"
+#include "CandidatePopup.h"
 #include "LanguageBarItem.h"
 #include "YimeTextServiceIds.h"
 
@@ -78,6 +79,46 @@ void testCandidateElement() {
     BOOL shown = FALSE;
     expect(candidates->IsShown(&shown) == S_OK && shown, "candidate shown state mismatch");
     candidates->Release();
+}
+
+void testOwnedCandidatePopup() {
+    CandidatePopup popup;
+    unsigned selected = 0;
+    popup.SetSelectionHandler([](void* context, unsigned ordinal) noexcept {
+        *static_cast<unsigned*>(context) = ordinal;
+    }, &selected);
+    std::vector<std::wstring> candidates;
+    for (int index = 1; index <= 10; ++index) {
+        candidates.push_back(L"⇧" + std::to_wstring(index) + L"  候选");
+    }
+    RECT anchor{GetSystemMetrics(SM_CXSCREEN) - 5, GetSystemMetrics(SM_CYSCREEN) - 5,
+                GetSystemMetrics(SM_CXSCREEN) - 4, GetSystemMetrics(SM_CYSCREEN) - 4};
+    expect(popup.Update(candidates, anchor, nullptr), "owned candidate popup update failed");
+    popup.Show(true);
+    const HWND window = popup.Window();
+    expect(window && IsWindow(window), "owned candidate popup window missing");
+    expect(popup.Count() == 9, "owned candidate popup exceeded Shift ordinal count");
+    expect((GetWindowLongPtrW(window, GWL_EXSTYLE) & (WS_EX_NOACTIVATE | WS_EX_TOOLWINDOW)) ==
+               (WS_EX_NOACTIVATE | WS_EX_TOOLWINDOW),
+           "owned candidate popup can activate or enters the taskbar");
+    expect(IsWindowVisible(window), "owned candidate popup did not become visible");
+    SendMessageW(window, WM_LBUTTONUP, 0, MAKELPARAM(20, 10));
+    expect(selected == 1, "owned candidate popup did not route the first mouse row");
+    selected = 0;
+    SendMessageW(window, WM_LBUTTONUP, 0, MAKELPARAM(1, 1));
+    expect(selected == 0, "owned candidate popup accepted a border click");
+    const RECT bounds = popup.Bounds();
+    HMONITOR monitor = MonitorFromRect(&anchor, MONITOR_DEFAULTTONEAREST);
+    MONITORINFO info{};
+    info.cbSize = sizeof(info);
+    expect(GetMonitorInfoW(monitor, &info) != FALSE, "popup monitor work area unavailable");
+    expect(bounds.left >= info.rcWork.left && bounds.top >= info.rcWork.top &&
+               bounds.right <= info.rcWork.right && bounds.bottom <= info.rcWork.bottom,
+           "owned candidate popup escaped the monitor work area");
+    popup.Show(false);
+    expect(!IsWindowVisible(window), "owned candidate popup did not hide");
+    popup.Destroy();
+    expect(!IsWindow(window), "owned candidate popup did not destroy its HWND");
 }
 
 void testLanguageBarItem() {
@@ -178,6 +219,7 @@ int wmain(int argc, wchar_t** argv) {
     }
     testKeyContract();
     testCandidateElement();
+    testOwnedCandidatePopup();
     testLanguageBarItem();
     testComLifecycle(argv[1]);
     if (failures != 0) return 1;

@@ -9,7 +9,46 @@
 #include "LanguageBarItem.h"
 #include "ModuleState.h"
 
-YimeTextService::YimeTextService() noexcept { YimeModuleAddRef(); }
+namespace {
+
+HWND candidateOwnerAndFallbackAnchor(ITfContext* context, RECT* anchor) noexcept {
+    if (!anchor) return nullptr;
+    *anchor = {0, 0, 1, 20};
+    HWND owner = nullptr;
+    ITfContextView* view = nullptr;
+    if (context && SUCCEEDED(context->GetActiveView(&view))) {
+        view->GetWnd(&owner);
+        view->Release();
+    }
+    if (owner) {
+        GUITHREADINFO information{};
+        information.cbSize = sizeof(information);
+        const DWORD thread = GetWindowThreadProcessId(owner, nullptr);
+        if (GetGUIThreadInfo(thread, &information) && information.hwndCaret) {
+            *anchor = information.rcCaret;
+            POINT topLeft{anchor->left, anchor->top};
+            POINT bottomRight{anchor->right, anchor->bottom};
+            ClientToScreen(information.hwndCaret, &topLeft);
+            ClientToScreen(information.hwndCaret, &bottomRight);
+            *anchor = {topLeft.x, topLeft.y, bottomRight.x, bottomRight.y};
+            return owner;
+        }
+        POINT origin{8, 24};
+        ClientToScreen(owner, &origin);
+        *anchor = {origin.x, origin.y, origin.x + 1, origin.y + 20};
+        return owner;
+    }
+    POINT cursor{};
+    if (GetCursorPos(&cursor)) *anchor = {cursor.x, cursor.y, cursor.x + 1, cursor.y + 20};
+    return nullptr;
+}
+
+}  // namespace
+
+YimeTextService::YimeTextService() noexcept {
+    YimeModuleAddRef();
+    candidatePopup_.SetSelectionHandler(CandidatePopupSelection, this);
+}
 
 YimeTextService::~YimeTextService() {
     Deactivate();
@@ -145,15 +184,17 @@ STDMETHODIMP YimeTextService::OnKeyDown(ITfContext* context, WPARAM wParam, LPAR
     if (!surface_.CanHandle(wParam, shiftDown)) return S_OK;
     const auto outcome = surface_.HandleVirtualKey(wParam, shiftDown);
     if (!outcome.handled) return S_OK;
+    RECT compositionRect{};
+    bool compositionRectValid = false;
     const HRESULT edit = yime::experiment::ApplyBrokerUpdateToContext(
         context, clientId_, static_cast<ITfCompositionSink*>(this), &composition_,
-        &plannedCompositionTermination_, outcome.update);
+        &plannedCompositionTermination_, outcome.update, &compositionRect, &compositionRectValid);
     if (FAILED(edit)) {
         surface_.Close();
         return S_OK;
     }
     if (composition_) RememberCompositionContext(context);
-    UpdateCandidateUI(context, outcome.update);
+    UpdateCandidateUI(context, outcome.update, compositionRectValid ? &compositionRect : nullptr);
     *eaten = TRUE;
     return S_OK;
 }
@@ -205,7 +246,8 @@ void YimeTextService::ForgetCompositionContext() noexcept {
     }
 }
 
-void YimeTextService::UpdateCandidateUI(ITfContext* context, const yime::experiment::BrokerUpdate& update) noexcept {
+void YimeTextService::UpdateCandidateUI(ITfContext* context, const yime::experiment::BrokerUpdate& update,
+                                        const RECT* compositionRect) noexcept {
     if (update.rawInput.empty() || update.candidates.empty()) {
         EndCandidateUI();
         return;
@@ -219,16 +261,57 @@ void YimeTextService::UpdateCandidateUI(ITfContext* context, const yime::experim
     }
     candidateUI_->Update(document, update.candidates);
     document->Release();
+    RECT anchor{};
+    HWND owner = candidateOwnerAndFallbackAnchor(context, &anchor);
+    if (compositionRect) anchor = *compositionRect;
     ITfUIElementMgr* manager = nullptr;
-    if (FAILED(threadManager_->QueryInterface(__uuidof(ITfUIElementMgr), reinterpret_cast<void**>(&manager)))) return;
+    const bool hasManager = threadManager_ &&
+        SUCCEEDED(threadManager_->QueryInterface(__uuidof(ITfUIElementMgr), reinterpret_cast<void**>(&manager)));
     if (!candidateUIRegistered_) {
         BOOL showOwned = TRUE;
-        candidateUIRegistered_ = SUCCEEDED(manager->BeginUIElement(candidateUI_, &showOwned, &candidateUIId_));
-        if (candidateUIRegistered_) candidateUI_->Show(showOwned);
-    } else {
+        if (hasManager) {
+            candidateUIRegistered_ = SUCCEEDED(manager->BeginUIElement(candidateUI_, &showOwned, &candidateUIId_));
+        }
+        ownedCandidatePopupRequested_ = !candidateUIRegistered_ || showOwned != FALSE;
+        candidateUI_->Show(CanAcceptKeys() ? TRUE : FALSE);
+    } else if (hasManager) {
         manager->UpdateUIElement(candidateUIId_);
     }
-    manager->Release();
+    if (manager) manager->Release();
+    if (ownedCandidatePopupRequested_ &&
+        candidatePopup_.Update(candidateUI_->DisplayCandidates(), anchor, owner, compositionRect != nullptr)) {
+        candidatePopup_.Show(CanAcceptKeys());
+    } else {
+        candidatePopup_.Show(false);
+    }
+}
+
+void YimeTextService::CandidatePopupSelection(void* context, unsigned ordinal) noexcept {
+    if (context) static_cast<YimeTextService*>(context)->SelectCandidateFromPopup(ordinal);
+}
+
+void YimeTextService::SelectCandidateFromPopup(unsigned ordinal) noexcept {
+    if (ordinal < 1 || ordinal > 9 || !compositionContext_ || !CanAcceptKeys()) return;
+    ITfContext* context = compositionContext_;
+    context->AddRef();
+    const auto outcome = surface_.HandleVirtualKey(static_cast<WPARAM>('0' + ordinal), true);
+    if (!outcome.handled) {
+        context->Release();
+        return;
+    }
+    RECT compositionRect{};
+    bool compositionRectValid = false;
+    const HRESULT edit = yime::experiment::ApplyBrokerUpdateToContext(
+        context, clientId_, static_cast<ITfCompositionSink*>(this), &composition_,
+        &plannedCompositionTermination_, outcome.update, &compositionRect, &compositionRectValid);
+    if (FAILED(edit)) {
+        surface_.Close();
+        context->Release();
+        return;
+    }
+    UpdateCandidateUI(context, outcome.update,
+                      compositionRectValid ? &compositionRect : nullptr);
+    context->Release();
 }
 
 void YimeTextService::EndCandidateUI() noexcept {
@@ -241,6 +324,8 @@ void YimeTextService::EndCandidateUI() noexcept {
     }
     candidateUIRegistered_ = false;
     candidateUIId_ = 0;
+    ownedCandidatePopupRequested_ = false;
+    candidatePopup_.Destroy();
     if (candidateUI_) {
         candidateUI_->Show(FALSE);
         candidateUI_->Release();
@@ -251,6 +336,7 @@ void YimeTextService::EndCandidateUI() noexcept {
 void YimeTextService::ShowCandidateUI(bool show) noexcept {
     if (!candidateUI_) return;
     candidateUI_->Show(show ? TRUE : FALSE);
+    candidatePopup_.Show(show && ownedCandidatePopupRequested_);
     if (!candidateUIRegistered_ || !threadManager_) return;
     ITfUIElementMgr* manager = nullptr;
     if (SUCCEEDED(threadManager_->QueryInterface(__uuidof(ITfUIElementMgr), reinterpret_cast<void**>(&manager)))) {

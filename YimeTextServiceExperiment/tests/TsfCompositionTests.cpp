@@ -206,6 +206,19 @@ int wmain(int argc, wchar_t** argv) {
         SysFreeString(candidateText);
         candidateElement->Release();
         if (firstCandidate != L"⇧1  秋") throw std::runtime_error("candidate UI Shift label or text mismatch");
+        HWND candidatePopup = FindWindowW(L"YimeTextServiceExperimentCandidatePopup", nullptr);
+        if (!candidatePopup || !IsWindowVisible(candidatePopup)) {
+            throw std::runtime_error("owned candidate popup was not visible");
+        }
+        const LONG_PTR popupStyles = GetWindowLongPtrW(candidatePopup, GWL_EXSTYLE);
+        if ((popupStyles & (WS_EX_NOACTIVATE | WS_EX_TOOLWINDOW)) !=
+            (WS_EX_NOACTIVATE | WS_EX_TOOLWINDOW)) {
+            throw std::runtime_error("owned candidate popup activation contract mismatch");
+        }
+        std::cout << "owned_candidate_popup_visible=true\n";
+        std::cout << "text_extent_anchor="
+                  << (GetPropW(candidatePopup, L"YimeTextServiceExperimentTextExtentAnchor") ? "true" : "false")
+                  << '\n';
 
         require(keys->OnSetFocus(FALSE), "lose key-sink focus");
         candidateElement = findCandidateElement(threadManager);
@@ -214,6 +227,7 @@ int wmain(int argc, wchar_t** argv) {
         require(candidateElement->IsShown(&candidateShown), "read candidate focus-loss visibility");
         candidateElement->Release();
         if (candidateShown) throw std::runtime_error("candidate UI remained shown after focus loss");
+        if (IsWindowVisible(candidatePopup)) throw std::runtime_error("owned candidate popup remained visible after focus loss");
         BOOL focusEaten = TRUE;
         require(keys->OnTestKeyDown(context, 'J', 0, &focusEaten), "focus-loss test key");
         if (focusEaten) throw std::runtime_error("focus-loss test key was claimed");
@@ -246,6 +260,7 @@ int wmain(int argc, wchar_t** argv) {
         require(candidateElement->IsShown(&candidateShown), "read cross-context candidate visibility");
         candidateElement->Release();
         if (candidateShown) throw std::runtime_error("old candidate UI was shown on a different document");
+        if (IsWindowVisible(candidatePopup)) throw std::runtime_error("owned candidate popup was shown on a different document");
         std::cout << "cross_context_isolation_verified=true\n";
         require(keys->OnSetFocus(FALSE), "leave cross-context key focus");
         require(threadManager->SetFocus(document), "restore composition document focus");
@@ -256,6 +271,7 @@ int wmain(int argc, wchar_t** argv) {
         require(candidateElement->IsShown(&candidateShown), "read candidate focus-restore visibility");
         candidateElement->Release();
         if (!candidateShown) throw std::runtime_error("candidate UI did not return after focus restore");
+        if (!IsWindowVisible(candidatePopup)) throw std::runtime_error("owned candidate popup did not return after focus restore");
         std::cout << "key_focus_transition_verified=true\n";
         otherDocument->Pop(TF_POPF_ALL);
         otherContext->Release();
@@ -285,15 +301,19 @@ int wmain(int argc, wchar_t** argv) {
         if (!eaten || readContext(context, clientId) != L"秋2" || !hasComposition(context)) {
             throw std::runtime_error("normal commit incorrectly closed the Broker session");
         }
-        SetKeyboardState(shifted);
-        eaten = FALSE;
-        require(keys->OnKeyDown(context, '1', 0, &eaten), "second candidate key down");
-        SetKeyboardState(keyboard);
-        const std::wstring secondCommit = readContext(context, clientId);
-        if (!eaten || secondCommit.size() != 2 || secondCommit.front() != L'秋' ||
-            secondCommit.back() == L'2' || hasComposition(context)) {
-            throw std::runtime_error("second TSF commit mismatch");
+        candidatePopup = FindWindowW(L"YimeTextServiceExperimentCandidatePopup", nullptr);
+        if (!candidatePopup || !IsWindowVisible(candidatePopup)) {
+            throw std::runtime_error("owned candidate popup missing before mouse selection");
         }
+        RECT popupClient{};
+        GetClientRect(candidatePopup, &popupClient);
+        SendMessageW(candidatePopup, WM_LBUTTONUP, 0, MAKELPARAM(20, 10));
+        const std::wstring secondCommit = readContext(context, clientId);
+        if (secondCommit.size() != 2 || secondCommit.front() != L'秋' ||
+            secondCommit.back() == L'2' || hasComposition(context)) {
+            throw std::runtime_error("mouse-selected TSF commit mismatch");
+        }
+        std::cout << "mouse_candidate_selection_verified=true\n";
 
         eaten = FALSE;
         require(keys->OnKeyDown(context, '2', 0, &eaten), "forced-termination setup key");

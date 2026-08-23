@@ -8,6 +8,8 @@ namespace yime::experiment {
 
 HRESULT ApplyBrokerUpdateToContext(ITfContext* context, TfClientId clientId,
                                    ITfCompositionSink* sink, ITfComposition** composition,
-                                   bool* plannedTermination, const BrokerUpdate& update) noexcept;
+                                   bool* plannedTermination, const BrokerUpdate& update,
+                                   RECT* compositionRect = nullptr,
+                                   bool* compositionRectValid = nullptr) noexcept;
 
 }  // namespace yime::experiment
