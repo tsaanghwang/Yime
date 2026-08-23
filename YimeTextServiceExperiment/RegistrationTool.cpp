@@ -48,18 +48,19 @@ bool comRegistrationExists() {
 HRESULT profileRegistrationExists(bool* exists) {
     if (!exists) return E_POINTER;
     *exists = false;
-    ITfInputProcessorProfiles* profiles = nullptr;
+    ITfInputProcessorProfileMgr* profiles = nullptr;
     HRESULT result = CoCreateInstance(CLSID_TF_InputProcessorProfiles, nullptr, CLSCTX_INPROC_SERVER,
-                                      __uuidof(ITfInputProcessorProfiles), reinterpret_cast<void**>(&profiles));
+                                      __uuidof(ITfInputProcessorProfileMgr), reinterpret_cast<void**>(&profiles));
     if (FAILED(result)) return result;
-    IEnumTfLanguageProfiles* values = nullptr;
-    result = profiles->EnumLanguageProfiles(kLanguageId, &values);
+    IEnumTfInputProcessorProfiles* values = nullptr;
+    result = profiles->EnumProfiles(kLanguageId, &values);
     profiles->Release();
     if (FAILED(result)) return result;
-    TF_LANGUAGEPROFILE value{};
+    TF_INPUTPROCESSORPROFILE value{};
     ULONG fetched = 0;
     while (values->Next(1, &value, &fetched) == S_OK && fetched == 1) {
-        if (IsEqualGUID(value.clsid, CLSID_YimeTextServiceExperiment) &&
+        if (value.dwProfileType == TF_PROFILETYPE_INPUTPROCESSOR &&
+            IsEqualGUID(value.clsid, CLSID_YimeTextServiceExperiment) &&
             IsEqualGUID(value.guidProfile, GUID_YimeTextServiceExperimentProfile)) {
             *exists = true;
             break;
@@ -131,18 +132,16 @@ HRESULT unregisterComServer() {
 }
 
 HRESULT registerProfileAndCategories() {
-    ITfInputProcessorProfiles* profiles = nullptr;
+    ITfInputProcessorProfileMgr* profiles = nullptr;
     HRESULT result = CoCreateInstance(CLSID_TF_InputProcessorProfiles, nullptr, CLSCTX_INPROC_SERVER,
-                                      __uuidof(ITfInputProcessorProfiles), reinterpret_cast<void**>(&profiles));
+                                      __uuidof(ITfInputProcessorProfileMgr), reinterpret_cast<void**>(&profiles));
     if (FAILED(result)) return result;
-    result = profiles->Register(CLSID_YimeTextServiceExperiment);
-    if (SUCCEEDED(result)) {
-        profiles->RemoveLanguageProfile(CLSID_YimeTextServiceExperiment, kLanguageId,
-                                        GUID_YimeTextServiceExperimentProfile);
-        result = profiles->AddLanguageProfile(
-            CLSID_YimeTextServiceExperiment, kLanguageId, GUID_YimeTextServiceExperimentProfile,
-            kProfileName, static_cast<ULONG>(std::size(kProfileName) - 1), nullptr, 0, 0);
-    }
+    profiles->UnregisterProfile(CLSID_YimeTextServiceExperiment, kLanguageId,
+                                GUID_YimeTextServiceExperimentProfile, 0);
+    result = profiles->RegisterProfile(
+        CLSID_YimeTextServiceExperiment, kLanguageId, GUID_YimeTextServiceExperimentProfile,
+        kProfileName, static_cast<ULONG>(std::size(kProfileName) - 1), nullptr, 0, 0,
+        nullptr, 0, TRUE, 0);
     profiles->Release();
     if (FAILED(result)) return result;
 
@@ -171,12 +170,11 @@ void unregisterProfileAndCategories() {
         }
         categories->Release();
     }
-    ITfInputProcessorProfiles* profiles = nullptr;
+    ITfInputProcessorProfileMgr* profiles = nullptr;
     if (SUCCEEDED(CoCreateInstance(CLSID_TF_InputProcessorProfiles, nullptr, CLSCTX_INPROC_SERVER,
-                                   __uuidof(ITfInputProcessorProfiles), reinterpret_cast<void**>(&profiles)))) {
-        profiles->RemoveLanguageProfile(CLSID_YimeTextServiceExperiment, kLanguageId,
-                                        GUID_YimeTextServiceExperimentProfile);
-        profiles->Unregister(CLSID_YimeTextServiceExperiment);
+                                   __uuidof(ITfInputProcessorProfileMgr), reinterpret_cast<void**>(&profiles)))) {
+        profiles->UnregisterProfile(CLSID_YimeTextServiceExperiment, kLanguageId,
+                                    GUID_YimeTextServiceExperimentProfile, 0);
         profiles->Release();
     }
 }
@@ -206,7 +204,7 @@ void writeStatus() {
     const HRESULT profileStatus = profileRegistrationExists(&profileExists);
     unsigned categoryCount = 0;
     const HRESULT categoryStatus = categoryRegistrationCount(&categoryCount);
-    std::wcout << L"tool_version=yime-text-service-registration-v1\n"
+    std::wcout << L"tool_version=yime-text-service-registration-v2\n"
                << L"architecture_bits=" << sizeof(void*) * 8 << L"\n"
                << L"elevated=" << (isElevated() ? L"true" : L"false") << L"\n"
                << L"clsid=" << guidText(CLSID_YimeTextServiceExperiment) << L"\n"

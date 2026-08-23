@@ -325,7 +325,7 @@ B4b 验证的是已实现的焦点回调处理逻辑，回调通过真实 `ITfKe
 
 E6-B4c readiness 已实现独立试验 TIP 的注册与回滚工具，但不把 readiness 冒充注册后宿主通过：
 
-- `YimeTextServiceRegistration.exe` 只操作试验 CLSID、Profile GUID、语言栏 GUID；按当前进程架构选择 x86/x64 COM 注册视图，并注册简体中文 TSF Profile、键盘 TIP、UIElement 和输入模式 compartment 类别。
+- `YimeTextServiceRegistration.exe` 只操作试验 CLSID、Profile GUID、语言栏 GUID；按当前进程架构选择 x86/x64 COM 注册视图，并通过 Windows Vista 以后推荐的 `ITfInputProcessorProfileMgr` 注册默认启用的简体中文 TSF Profile，再注册键盘 TIP、UIElement 和输入模式 compartment 类别。
 - 注册顺序为 COM server、TSF Profile、TSF categories；任何一步失败都会按相反方向清理精确试验身份。`unregister` 可重复执行，`verify-absent` 同时检查当前 COM 视图、TSF Profile 和三个 category 是否残留。
 - 未提权时，`register` 在任何写入前返回 `requires_elevated_token` 和专用退出码 3。x86/x64 readiness 回归确认两个注册视图和 TSF Profile 起初均不存在，拒绝注册后仍无残留，生产注册没有改变。
 
