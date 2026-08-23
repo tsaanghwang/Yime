@@ -30,7 +30,7 @@ type Index struct {
 
 // NewIndex validates, normalizes and deterministically orders entries.
 func NewIndex(entries []Entry) (*Index, error) {
-	byKey := make(map[string]record, len(entries))
+	records := make([]record, 0, len(entries))
 	for i, entry := range entries {
 		text := strings.TrimSpace(entry.Text)
 		code, err := normalizeCode(entry.Code)
@@ -40,17 +40,34 @@ func NewIndex(entries []Entry) (*Index, error) {
 		if text == "" {
 			return nil, fmt.Errorf("entry %d: empty candidate text", i)
 		}
-		key := code + "\x1f" + text
-		current, found := byKey[key]
-		if !found || entry.Weight > current.weight {
-			byKey[key] = record{text: text, code: code, weight: entry.Weight}
-		}
+		records = append(records, record{text: text, code: code, weight: entry.Weight})
 	}
 
-	records := make([]record, 0, len(byKey))
-	for _, item := range byKey {
-		records = append(records, item)
+	// Group duplicate code/text pairs without a million-entry map. The first
+	// item in each group carries the highest weight and is retained.
+	sort.Slice(records, func(i, j int) bool {
+		if records[i].code != records[j].code {
+			return records[i].code < records[j].code
+		}
+		if records[i].text != records[j].text {
+			return records[i].text < records[j].text
+		}
+		return records[i].weight > records[j].weight
+	})
+	deduplicated := records[:0]
+	for _, item := range records {
+		if len(deduplicated) > 0 {
+			previous := deduplicated[len(deduplicated)-1]
+			if previous.code == item.code && previous.text == item.text {
+				continue
+			}
+		}
+		deduplicated = append(deduplicated, item)
 	}
+	records = deduplicated
+
+	// Runtime order supports binary-searching by code and deterministic
+	// candidate ranking within one code bucket.
 	sort.Slice(records, func(i, j int) bool {
 		if records[i].code != records[j].code {
 			return records[i].code < records[j].code

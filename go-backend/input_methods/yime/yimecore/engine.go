@@ -11,16 +11,29 @@ const defaultCandidateLimit = 9
 // Engine is the E0 Go session implementation. It intentionally implements
 // only deterministic code input and indexed candidate lookup.
 type Engine struct {
-	index      *Index
+	index      lookupIndex
 	limit      int
 	rawInput   string
 	candidates []engineapi.Candidate
+}
+
+type lookupIndex interface {
+	lookup(prefix string, limit int) []record
 }
 
 var _ engineapi.Engine = (*Engine)(nil)
 
 // NewEngine constructs an isolated engine session.
 func NewEngine(index *Index, candidateLimit int) (*Engine, error) {
+	return newEngine(index, candidateLimit)
+}
+
+// NewFileEngine constructs a session over a validated compact E1 index.
+func NewFileEngine(index *FileIndex, candidateLimit int) (*Engine, error) {
+	return newEngine(index, candidateLimit)
+}
+
+func newEngine(index lookupIndex, candidateLimit int) (*Engine, error) {
 	if index == nil {
 		return nil, fmt.Errorf("index is required")
 	}

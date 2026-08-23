@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "source": "curated from current generated Yime runtime dictionaries; no prototype repository",
+  "modes": {
+    "full": [
+      {"text": "中国", "code": "7ur;goer"},
+      {"text": "你好", "code": "nlllhsso"},
+      {"text": "我们", "code": "=oww-ccN"},
+      {"text": "桌子", "code": "7urr6KKK"},
+      {"text": "电脑", "code": "]jdznsso"},
+      {"text": "表演", "code": "blsoylsz"},
+      {"text": "语言", "code": "`...ylda"},
+      {"text": "选手", "code": "1.sz9wwo"},
+      {"text": "输入法", "code": "9uuu0uio[sss"}
+    ],
+    "variable": [
+      {"text": "中国", "code": "7ur;goer"},
+      {"text": "你好", "code": "nlhso"},
+      {"text": "我们", "code": "=ow-cN"},
+      {"text": "桌子", "code": "7ur6K"},
+      {"text": "电脑", "code": "]jdznso"},
+      {"text": "表演", "code": "blsoylsz"},
+      {"text": "语言", "code": "`.ylda"},
+      {"text": "选手", "code": "1.sz9wo"},
+      {"text": "输入法", "code": "9u0uio[s"}
+    ],
+    "shorthand": [
+      {"text": "中国", "code": "7ur;goer"},
+      {"text": "你好", "code": "nlhso"},
+      {"text": "我们", "code": "=ow-cN"},
+      {"text": "桌子", "code": "7ur6K"},
+      {"text": "电脑", "code": "]jdznso"},
+      {"text": "表演", "code": "blsoylsz"},
+      {"text": "语言", "code": "`.ylda"},
+      {"text": "选手", "code": "1.sz9wo"},
+      {"text": "输入法", "code": "9u0uo[s"}
+    ]
+  }
+}
