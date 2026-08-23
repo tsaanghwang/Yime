@@ -1,5 +1,6 @@
 #include <windows.h>
 #include <msctf.h>
+#include <ctfutb.h>
 
 #include <atomic>
 #include <iostream>
@@ -155,6 +156,27 @@ int wmain(int argc, wchar_t** argv) {
         require(factory->CreateInstance(nullptr, __uuidof(ITfTextInputProcessorEx), reinterpret_cast<void**>(&processor)), "create processor");
         factory->Release();
         require(processor->ActivateEx(threadManager, serviceClientId, 0), "activate processor");
+        ITfLangBarItemMgr* languageBarManager = nullptr;
+        require(threadManager->QueryInterface(__uuidof(ITfLangBarItemMgr),
+                                              reinterpret_cast<void**>(&languageBarManager)),
+                "query language bar manager");
+        ITfLangBarItem* languageBarItem = nullptr;
+        const HRESULT languageBarLookup =
+            languageBarManager->GetItem(GUID_YimeTextServiceExperimentLangBar, &languageBarItem);
+        const bool languageBarManagerAccepted = languageBarLookup == S_OK && languageBarItem;
+        if (languageBarManagerAccepted) {
+            TF_LANGBARITEMINFO languageBarInfo{};
+            require(languageBarItem->GetInfo(&languageBarInfo), "read experiment language bar item");
+            if (!IsEqualGUID(languageBarInfo.clsidService, CLSID_YimeTextServiceExperiment) ||
+                languageBarInfo.dwStyle != TF_LBI_STYLE_BTN_BUTTON) {
+                throw std::runtime_error("experiment language bar identity or style mismatch");
+            }
+            languageBarItem->Release();
+            languageBarItem = nullptr;
+        } else if (languageBarLookup != S_FALSE || languageBarItem != nullptr) {
+            throw std::runtime_error("unexpected unregistered language bar lookup result");
+        }
+        std::cout << "language_bar_manager_accepted=" << (languageBarManagerAccepted ? "true" : "false") << '\n';
         ITfKeyEventSink* keys = nullptr;
         require(processor->QueryInterface(__uuidof(ITfKeyEventSink), reinterpret_cast<void**>(&keys)), "query key sink");
 
@@ -233,6 +255,13 @@ int wmain(int argc, wchar_t** argv) {
 
         keys->Release();
         require(processor->Deactivate(), "deactivate processor");
+        languageBarItem = nullptr;
+        const HRESULT removed = languageBarManager->GetItem(GUID_YimeTextServiceExperimentLangBar, &languageBarItem);
+        if (removed == S_OK || languageBarItem != nullptr) {
+            if (removed == S_OK && languageBarItem) languageBarItem->Release();
+            throw std::runtime_error("experiment language bar item remained after deactivation");
+        }
+        languageBarManager->Release();
         processor->Release();
         document->Pop(TF_POPF_ALL);
         context->Release();

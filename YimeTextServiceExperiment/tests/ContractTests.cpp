@@ -6,6 +6,7 @@
 
 #include "KeyContract.h"
 #include "CandidateListUIElement.h"
+#include "LanguageBarItem.h"
 #include "YimeTextServiceIds.h"
 
 namespace {
@@ -79,6 +80,33 @@ void testCandidateElement() {
     candidates->Release();
 }
 
+void testLanguageBarItem() {
+    auto* item = new LanguageBarItem();
+    TF_LANGBARITEMINFO info{};
+    expect(item->GetInfo(&info) == S_OK, "language bar GetInfo failed");
+    expect(IsEqualGUID(info.clsidService, CLSID_YimeTextServiceExperiment), "language bar service CLSID mismatch");
+    expect(IsEqualGUID(info.guidItem, GUID_YimeTextServiceExperimentLangBar), "language bar item GUID mismatch");
+    expect(info.dwStyle == TF_LBI_STYLE_BTN_BUTTON, "language bar must remain a button without a menu");
+    expect(std::wstring_view(info.szDescription) == L"Yime 自研栈试验版", "language bar description mismatch");
+    DWORD status = ~DWORD{0};
+    expect(item->GetStatus(&status) == S_OK && status == 0, "language bar initial status mismatch");
+    expect(item->Show(FALSE) == S_OK && item->GetStatus(&status) == S_OK &&
+               (status & TF_LBI_STATUS_HIDDEN) != 0,
+           "language bar hide state mismatch");
+    expect(item->Show(TRUE) == S_OK && item->GetStatus(&status) == S_OK &&
+               (status & TF_LBI_STATUS_HIDDEN) == 0,
+           "language bar show state mismatch");
+    HICON icon = reinterpret_cast<HICON>(1);
+    expect(item->GetIcon(&icon) == E_NOTIMPL && icon == nullptr, "language bar unexpectedly supplied an icon");
+    BSTR text = nullptr;
+    expect(item->GetText(&text) == S_OK && text && std::wstring_view(text) == L"Yime 自研栈试验版",
+           "language bar text mismatch");
+    SysFreeString(text);
+    expect(item->InitMenu(nullptr) == E_NOTIMPL, "language bar unexpectedly exposed a menu");
+    expect(item->OnMenuSelect(1) == E_INVALIDARG, "language bar unexpectedly accepted a command ID");
+    item->Release();
+}
+
 void testComLifecycle(const wchar_t* dllPath) {
     HMODULE module = LoadLibraryW(dllPath);
     expect(module != nullptr, "could not load experiment DLL");
@@ -150,6 +178,7 @@ int wmain(int argc, wchar_t** argv) {
     }
     testKeyContract();
     testCandidateElement();
+    testLanguageBarItem();
     testComLifecycle(argv[1]);
     if (failures != 0) return 1;
     std::cout << "YimeTextService E6-B1 contracts passed\n";

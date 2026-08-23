@@ -7,6 +7,7 @@ add_library(YimeTextServiceExperiment SHARED
     CompositionEditSession.cpp
     DllEntry.cpp
     KeyContract.cpp
+    LanguageBarItem.cpp
     SurfaceSession.cpp
     TextService.cpp
     YimeTextServiceExperiment.def
@@ -22,6 +23,7 @@ add_executable(YimeTextServiceContractTests
     tests/ContractTests.cpp
     CandidateListUIElement.cpp
     KeyContract.cpp
+    LanguageBarItem.cpp
 )
 target_compile_features(YimeTextServiceContractTests PRIVATE cxx_std_17)
 target_compile_definitions(YimeTextServiceContractTests PRIVATE UNICODE _UNICODE WIN32_LEAN_AND_MEAN NOMINMAX)

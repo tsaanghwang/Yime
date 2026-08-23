@@ -7,6 +7,7 @@
 #include "SurfaceSession.h"
 
 class CandidateListUIElement;
+class LanguageBarItem;
 
 class YimeTextService final : public ITfTextInputProcessorEx, public ITfKeyEventSink, public ITfCompositionSink {
 public:
@@ -33,6 +34,8 @@ private:
     HRESULT SetKeyDecision(ITfContext* context, WPARAM virtualKey, BOOL* eaten) const noexcept;
     void UpdateCandidateUI(ITfContext* context, const yime::experiment::BrokerUpdate& update) noexcept;
     void EndCandidateUI() noexcept;
+    void AddLanguageBar() noexcept;
+    void RemoveLanguageBar() noexcept;
 
     std::atomic<ULONG> references_{1};
     ITfThreadMgr* threadManager_ = nullptr;
@@ -45,4 +48,6 @@ private:
     CandidateListUIElement* candidateUI_ = nullptr;
     DWORD candidateUIId_ = 0;
     bool candidateUIRegistered_ = false;
+    LanguageBarItem* languageBarItem_ = nullptr;
+    bool languageBarItemAdded_ = false;
 };

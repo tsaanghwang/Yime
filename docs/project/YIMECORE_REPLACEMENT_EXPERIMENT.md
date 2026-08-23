@@ -1,6 +1,6 @@
 # Yime 自研栈并行替换试验
 
-> 状态：E0、E1、E2-A、E2-B、E3-A、E3-B、E4-A、E4-B、E5-A、E5-B、E5-C、E5-D、E5-E、E5-F、E5-G、E6-A、E6-B1、E6-B2a、E6-B2b、E6-B3a、E6-B3b 已通过；未批准切换任何生产组件
+> 状态：E0、E1、E2-A、E2-B、E3-A、E3-B、E4-A、E4-B、E5-A、E5-B、E5-C、E5-D、E5-E、E5-F、E5-G、E6-A、E6-B1、E6-B2a、E6-B2b、E6-B3a、E6-B3b、E6-B4a 已通过；未批准切换任何生产组件
 > 试验分支：`codex/yimecore-replacement-experiment`  
 > 原则：先并行、后比较；逐层验收；失败即保留现状
 
@@ -306,6 +306,14 @@ E6-B3b 已实现无皮肤、无图标依赖的最小 TSF 候选 UI 元素：
 - 三模式 x86/x64 的真实 TSF 回归确认候选元素在 composition 期间可枚举、首项为 `⇧1  秋`、候选数不超过九，并在提交后消失；原有正常/强制 termination 路径继续通过。
 
 B3b 只提供可由 TSF 或 UI-less host 渲染的 COM 候选元素；当宿主要求文本服务自绘窗口时，目前尚无 owned popup，因此不能声称所有桌面应用已经有可见候选窗。鼠标选择、窗口定位、最小 owned popup、语言栏和注册后宿主测试仍属后续门禁。
+
+E6-B4a 已实现无图标的最小语言栏接口与安全降级探针：
+
+- `LanguageBarItem` 实现 `ITfLangBarItemButton`，使用独立试验 GUID 和名称 `Yime 自研栈试验版`；激活时尝试经 `ITfLangBarItemMgr::AddItem` 加入，停用时只对严格返回 `S_OK` 的已加入项调用 `RemoveItem`。
+- 项目只声明普通按钮样式并返回文字，不加载或生成图标，不提供菜单，不分配命令 ID，点击不改变输入状态。
+- 独立 x86/x64 契约回归确认接口身份、样式、文字、显示状态、无图标、无菜单和拒绝未知命令 ID；真实 TSF 回归确认未注册服务收到 `S_FALSE` 且系统管理器不保留该项时不会解引用空指针或误走移除路径，候选 UI、composition、Broker 和三种编码模式继续通过。
+
+B4a 不是最终产品语言栏功能。未注册的直接测试服务不会被系统语言栏管理器接纳，因此 `AddItem` 的系统接纳与 `RemoveItem` 生命周期仍须在注册后宿主门禁验证；真实应用回调、焦点切换、鼠标候选交互和 owned popup 也仍属后续门禁。涉及菜单或命令时，必须先增加对应宿主点击路径回归。
 
 ### E7：切换与退役
 

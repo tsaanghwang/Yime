@@ -6,6 +6,7 @@
 #include "CompositionEditSession.h"
 #include "CandidateListUIElement.h"
 #include "KeyContract.h"
+#include "LanguageBarItem.h"
 #include "ModuleState.h"
 
 YimeTextService::YimeTextService() noexcept { YimeModuleAddRef(); }
@@ -66,6 +67,7 @@ STDMETHODIMP YimeTextService::ActivateEx(ITfThreadMgr* threadManager, TfClientId
         Deactivate();
         return result;
     }
+    AddLanguageBar();
     wchar_t pipeName[256]{};
     const DWORD pipeLength = GetEnvironmentVariableW(
         L"YIME_TEXTSERVICE_EXPERIMENT_PIPE", pipeName, static_cast<DWORD>(std::size(pipeName)));
@@ -86,6 +88,7 @@ STDMETHODIMP YimeTextService::Deactivate() {
         }
     }
     keySinkAdvised_ = false;
+    RemoveLanguageBar();
     EndCandidateUI();
     surface_.Close();
     if (composition_) {
@@ -201,4 +204,29 @@ void YimeTextService::EndCandidateUI() noexcept {
         candidateUI_->Release();
         candidateUI_ = nullptr;
     }
+}
+
+void YimeTextService::AddLanguageBar() noexcept {
+    if (languageBarItem_ || !threadManager_) return;
+    languageBarItem_ = new (std::nothrow) LanguageBarItem();
+    if (!languageBarItem_) return;
+    ITfLangBarItemMgr* manager = nullptr;
+    if (SUCCEEDED(threadManager_->QueryInterface(__uuidof(ITfLangBarItemMgr), reinterpret_cast<void**>(&manager)))) {
+        languageBarItemAdded_ = manager->AddItem(languageBarItem_) == S_OK;
+        manager->Release();
+    }
+}
+
+void YimeTextService::RemoveLanguageBar() noexcept {
+    if (!languageBarItem_) return;
+    if (languageBarItemAdded_ && threadManager_) {
+        ITfLangBarItemMgr* manager = nullptr;
+        if (SUCCEEDED(threadManager_->QueryInterface(__uuidof(ITfLangBarItemMgr), reinterpret_cast<void**>(&manager)))) {
+            manager->RemoveItem(languageBarItem_);
+            manager->Release();
+        }
+    }
+    languageBarItemAdded_ = false;
+    languageBarItem_->Release();
+    languageBarItem_ = nullptr;
 }
