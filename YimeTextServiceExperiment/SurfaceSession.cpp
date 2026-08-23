@@ -10,10 +10,21 @@ bool SurfaceSession::Connect(const std::wstring& pipeName, DWORD timeoutMs, std:
     return broker_.Connect(pipeName, timeoutMs, error);
 }
 
+bool SurfaceSession::CanHandle(WPARAM virtualKey, bool shiftDown) const noexcept {
+    if (!broker_.IsConnected()) return false;
+    const KeyDecision decision = ClassifyVirtualKey(virtualKey, shiftDown);
+    if (decision.route == KeyRoute::AppendComposition) {
+        char ignored = 0;
+        return TranslateCompositionKey(virtualKey, shiftDown, &ignored);
+    }
+    return decision.route == KeyRoute::SelectCandidate && decision.candidateOrdinal > 0 &&
+           decision.candidateOrdinal <= current_.candidates.size();
+}
+
 SurfaceOutcome SurfaceSession::HandleVirtualKey(WPARAM virtualKey, bool shiftDown) {
     SurfaceOutcome outcome;
+    if (!CanHandle(virtualKey, shiftDown)) return outcome;
     const KeyDecision decision = ClassifyVirtualKey(virtualKey, shiftDown);
-    if (decision.route == KeyRoute::PassThrough) return outcome;
     if (decision.route == KeyRoute::SelectCandidate) {
         if (decision.candidateOrdinal == 0 || decision.candidateOrdinal > current_.candidates.size()) return outcome;
         const auto& candidate = current_.candidates[decision.candidateOrdinal - 1];

@@ -1,5 +1,8 @@
 #include "TextService.h"
 
+#include <iterator>
+
+#include "CompositionEditSession.h"
 #include "KeyContract.h"
 #include "ModuleState.h"
 
@@ -18,6 +21,8 @@ STDMETHODIMP YimeTextService::QueryInterface(REFIID iid, void** object) {
         *object = static_cast<ITfTextInputProcessorEx*>(this);
     } else if (IsEqualIID(iid, __uuidof(ITfKeyEventSink))) {
         *object = static_cast<ITfKeyEventSink*>(this);
+    } else if (IsEqualIID(iid, __uuidof(ITfCompositionSink))) {
+        *object = static_cast<ITfCompositionSink*>(this);
     } else {
         return E_NOINTERFACE;
     }
@@ -44,16 +49,27 @@ STDMETHODIMP YimeTextService::ActivateEx(ITfThreadMgr* threadManager, TfClientId
     threadManager_->AddRef();
     clientId_ = clientId;
     activationFlags_ = flags;
-    ITfKeystrokeMgr* keystrokes = nullptr;
-    HRESULT result = threadManager_->QueryInterface(__uuidof(ITfKeystrokeMgr), reinterpret_cast<void**>(&keystrokes));
-    if (SUCCEEDED(result)) {
-        result = keystrokes->AdviseKeyEventSink(clientId_, this, TRUE);
-        keySinkAdvised_ = SUCCEEDED(result);
-        keystrokes->Release();
+    const bool directTest = GetEnvironmentVariableW(L"YIME_TEXTSERVICE_EXPERIMENT_DIRECT_TEST", nullptr, 0) > 0;
+    HRESULT result = S_OK;
+    if (!directTest) {
+        ITfKeystrokeMgr* keystrokes = nullptr;
+        result = threadManager_->QueryInterface(__uuidof(ITfKeystrokeMgr), reinterpret_cast<void**>(&keystrokes));
+        if (SUCCEEDED(result)) {
+            result = keystrokes->AdviseKeyEventSink(clientId_, this, TRUE);
+            keySinkAdvised_ = SUCCEEDED(result);
+            keystrokes->Release();
+        }
     }
     if (FAILED(result)) {
         Deactivate();
         return result;
+    }
+    wchar_t pipeName[256]{};
+    const DWORD pipeLength = GetEnvironmentVariableW(
+        L"YIME_TEXTSERVICE_EXPERIMENT_PIPE", pipeName, static_cast<DWORD>(std::size(pipeName)));
+    if (pipeLength > 0 && pipeLength < std::size(pipeName)) {
+        std::string ignoredError;
+        surface_.Connect(pipeName, 2000, &ignoredError);
     }
     return S_OK;
 }
@@ -68,6 +84,11 @@ STDMETHODIMP YimeTextService::Deactivate() {
         }
     }
     keySinkAdvised_ = false;
+    surface_.Close();
+    if (composition_) {
+        composition_->Release();
+        composition_ = nullptr;
+    }
     activationFlags_ = 0;
     clientId_ = TF_CLIENTID_NULL;
     threadManager_->Release();
@@ -77,23 +98,34 @@ STDMETHODIMP YimeTextService::Deactivate() {
 
 STDMETHODIMP YimeTextService::OnSetFocus(BOOL) { return S_OK; }
 
-HRESULT YimeTextService::SetKeyDecision(WPARAM virtualKey, BOOL* eaten) const noexcept {
+HRESULT YimeTextService::SetKeyDecision(ITfContext* context, WPARAM virtualKey, BOOL* eaten) const noexcept {
     if (!eaten) return E_POINTER;
-    // B1 proves routing only. B2 will set TRUE after a Broker operation and TSF
-    // edit session have both succeeded, so this inert shell cannot swallow keys.
     const bool shiftDown = (GetKeyState(VK_SHIFT) & 0x8000) != 0;
-    const auto decision = yime::experiment::ClassifyVirtualKey(virtualKey, shiftDown);
-    (void)decision;
-    *eaten = FALSE;
+    *eaten = context && surface_.CanHandle(virtualKey, shiftDown) ? TRUE : FALSE;
     return S_OK;
 }
 
-STDMETHODIMP YimeTextService::OnTestKeyDown(ITfContext*, WPARAM wParam, LPARAM, BOOL* eaten) {
-    return SetKeyDecision(wParam, eaten);
+STDMETHODIMP YimeTextService::OnTestKeyDown(ITfContext* context, WPARAM wParam, LPARAM, BOOL* eaten) {
+    return SetKeyDecision(context, wParam, eaten);
 }
 
-STDMETHODIMP YimeTextService::OnKeyDown(ITfContext*, WPARAM wParam, LPARAM, BOOL* eaten) {
-    return SetKeyDecision(wParam, eaten);
+STDMETHODIMP YimeTextService::OnKeyDown(ITfContext* context, WPARAM wParam, LPARAM, BOOL* eaten) {
+    if (!eaten) return E_POINTER;
+    *eaten = FALSE;
+    if (!context) return S_OK;
+    const bool shiftDown = (GetKeyState(VK_SHIFT) & 0x8000) != 0;
+    if (!surface_.CanHandle(wParam, shiftDown)) return S_OK;
+    const auto outcome = surface_.HandleVirtualKey(wParam, shiftDown);
+    if (!outcome.handled) return S_OK;
+    const HRESULT edit = yime::experiment::ApplyBrokerUpdateToContext(
+        context, clientId_, static_cast<ITfCompositionSink*>(this), &composition_,
+        &plannedCompositionTermination_, outcome.update);
+    if (FAILED(edit)) {
+        surface_.Close();
+        return S_OK;
+    }
+    *eaten = TRUE;
+    return S_OK;
 }
 
 STDMETHODIMP YimeTextService::OnTestKeyUp(ITfContext*, WPARAM, LPARAM, BOOL* eaten) {
@@ -111,5 +143,14 @@ STDMETHODIMP YimeTextService::OnKeyUp(ITfContext*, WPARAM, LPARAM, BOOL* eaten) 
 STDMETHODIMP YimeTextService::OnPreservedKey(ITfContext*, REFGUID, BOOL* eaten) {
     if (!eaten) return E_POINTER;
     *eaten = FALSE;
+    return S_OK;
+}
+
+STDMETHODIMP YimeTextService::OnCompositionTerminated(TfEditCookie, ITfComposition* composition) {
+    if (composition_ == composition) {
+        composition_->Release();
+        composition_ = nullptr;
+        if (!plannedCompositionTermination_) surface_.Close();
+    }
     return S_OK;
 }

@@ -4,7 +4,9 @@
 
 #include <atomic>
 
-class YimeTextService final : public ITfTextInputProcessorEx, public ITfKeyEventSink {
+#include "SurfaceSession.h"
+
+class YimeTextService final : public ITfTextInputProcessorEx, public ITfKeyEventSink, public ITfCompositionSink {
 public:
     YimeTextService() noexcept;
 
@@ -22,14 +24,18 @@ public:
     STDMETHODIMP OnTestKeyUp(ITfContext* context, WPARAM wParam, LPARAM lParam, BOOL* eaten) override;
     STDMETHODIMP OnKeyUp(ITfContext* context, WPARAM wParam, LPARAM lParam, BOOL* eaten) override;
     STDMETHODIMP OnPreservedKey(ITfContext* context, REFGUID guid, BOOL* eaten) override;
+    STDMETHODIMP OnCompositionTerminated(TfEditCookie cookie, ITfComposition* composition) override;
 
 private:
     ~YimeTextService();
-    HRESULT SetKeyDecision(WPARAM virtualKey, BOOL* eaten) const noexcept;
+    HRESULT SetKeyDecision(ITfContext* context, WPARAM virtualKey, BOOL* eaten) const noexcept;
 
     std::atomic<ULONG> references_{1};
     ITfThreadMgr* threadManager_ = nullptr;
     TfClientId clientId_ = TF_CLIENTID_NULL;
     DWORD activationFlags_ = 0;
     bool keySinkAdvised_ = false;
+    yime::experiment::SurfaceSession surface_;
+    ITfComposition* composition_ = nullptr;
+    bool plannedCompositionTermination_ = false;
 };

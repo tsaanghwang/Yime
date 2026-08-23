@@ -16,6 +16,8 @@ struct SurfaceOutcome {
 class SurfaceSession {
 public:
     bool Connect(const std::wstring& pipeName, DWORD timeoutMs, std::string* error);
+    bool IsConnected() const noexcept { return broker_.IsConnected(); }
+    bool CanHandle(WPARAM virtualKey, bool shiftDown) const noexcept;
     SurfaceOutcome HandleVirtualKey(WPARAM virtualKey, bool shiftDown);
     void Close() noexcept { broker_.Close(); }
 

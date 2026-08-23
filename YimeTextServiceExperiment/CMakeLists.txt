@@ -3,6 +3,7 @@ project(YimeTextServiceExperiment LANGUAGES CXX)
 
 add_library(YimeTextServiceExperiment SHARED
     BrokerClient.cpp
+    CompositionEditSession.cpp
     DllEntry.cpp
     KeyContract.cpp
     SurfaceSession.cpp
@@ -42,3 +43,11 @@ target_compile_definitions(YimeBrokerBridgeTests PRIVATE UNICODE _UNICODE WIN32_
 target_compile_options(YimeBrokerBridgeTests PRIVATE /utf-8 /W4 /EHsc)
 target_include_directories(YimeBrokerBridgeTests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} "${CMAKE_CURRENT_LIST_DIR}/../json/single_include")
 set_property(TARGET YimeBrokerBridgeTests PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+
+add_executable(YimeTsfCompositionTests tests/TsfCompositionTests.cpp)
+target_compile_features(YimeTsfCompositionTests PRIVATE cxx_std_17)
+target_compile_definitions(YimeTsfCompositionTests PRIVATE UNICODE _UNICODE WIN32_LEAN_AND_MEAN NOMINMAX)
+target_compile_options(YimeTsfCompositionTests PRIVATE /utf-8 /W4 /EHsc)
+target_include_directories(YimeTsfCompositionTests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(YimeTsfCompositionTests PRIVATE ole32)
+set_property(TARGET YimeTsfCompositionTests PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")

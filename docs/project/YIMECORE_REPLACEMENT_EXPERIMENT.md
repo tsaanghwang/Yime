@@ -1,6 +1,6 @@
 # Yime 自研栈并行替换试验
 
-> 状态：E0、E1、E2-A、E2-B、E3-A、E3-B、E4-A、E4-B、E5-A、E5-B、E5-C、E5-D、E5-E、E5-F、E5-G、E6-A、E6-B1、E6-B2a 已通过；未批准切换任何生产组件
+> 状态：E0、E1、E2-A、E2-B、E3-A、E3-B、E4-A、E4-B、E5-A、E5-B、E5-C、E5-D、E5-E、E5-F、E5-G、E6-A、E6-B1、E6-B2a、E6-B2b 已通过；未批准切换任何生产组件
 > 试验分支：`codex/yimecore-replacement-experiment`  
 > 原则：先并行、后比较；逐层验收；失败即保留现状
 
@@ -280,6 +280,15 @@ E6-B2a 已在 TSF edit session 接线前完成 C++ 表层到 Broker 的会话和
 - 每模式强制结束并重新启动 Broker 后重新执行相同桥接轨迹，预验收均在 107 ms 内完成。现有 COM 生命周期和 Shift 标签回归同时继续通过。
 
 E6-B2a 仍在 `ITfContext` 之外运行。把成功的 `BrokerUpdate` 通过同步 TSF edit session 写成预编辑/提交，并在失败时保持宿主文本不变，是 E6-B2b 的独立门禁。
+
+E6-B2b 已把 Broker 状态写入真实 TSF 文档上下文：
+
+- 表层仅在 Broker 操作成功后请求同步 `TF_ES_READWRITE` edit session；edit session 成功写入或提交后才报告 eaten。写会话失败会关闭该试验 Broker 会话并报告未吃键，避免宿主文本与内核状态继续分叉。
+- raw input 通过 `ITfContextComposition::StartComposition` 建立预编辑范围并逐键替换；稳定候选提交先替换 composition range、移动 selection，再结束 composition。
+- 正常提交引起的 `OnCompositionTerminated` 与宿主强制终止分开处理：正常结束保留 Broker 会话，外部终止才关闭会话。回归在首次提交后立即开始第二轮预编辑和提交，防止正常 commit 被误判为故障。
+- 三模式分别由 x86/x64 DLL 在真实 `ITfContext` 中验证 `2`、`2j`、`2jr`、`2jru` 的预编辑进展、`Shift+1` 提交、composition 消失和第二轮会话复用；Broker 强制重启后重放同一轨迹。
+
+由于 DLL 仍未注册，B2b 使用显式测试环境开关跳过 `AdviseKeyEventSink`，直接调用真实 `ITfKeyEventSink` 和真实 edit session。注册后的按键汇订阅、宿主焦点切换及外部 composition termination 必须在后续并列注册门禁单独验证，B2b 不能代替这些宿主测试。
 
 ### E7：切换与退役
 
