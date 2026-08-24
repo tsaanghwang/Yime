@@ -87,3 +87,64 @@ func TestSegmentFocusRejectsUnknownCandidateOrRangeWithoutMutation(t *testing.T)
 		t.Fatalf("invalid focus mutated state: before=%#v after=%#v", before, after)
 	}
 }
+
+func TestFocusedSentenceRowCommitsWhileSegmentChoicesAreVisible(t *testing.T) {
+	index, err := NewIndex([]Entry{
+		{Text: "甲", Code: "ab", Weight: 100}, {Text: "乙", Code: "ab", Weight: 90},
+		{Text: "丙", Code: "cd", Weight: 100},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	engine, err := NewEngine(index, 9)
+	if err != nil {
+		t.Fatal(err)
+	}
+	state := applyBundleCode(t, engine, "abcd")
+	sentence := findBundleCandidate(state.Candidates, "甲丙")
+	if sentence == nil || len(sentence.Segments) != 2 {
+		t.Fatalf("initial sentence missing: %#v", state)
+	}
+	focused, err := engine.Apply(engineapi.Event{
+		Operation: engineapi.FocusSegment, CandidateID: sentence.ID,
+		SegmentStart: sentence.Segments[0].Start, SegmentEnd: sentence.Segments[0].End,
+	})
+	if err != nil || focused.State.ActiveSegment == nil || len(focused.State.Candidates) != 2 {
+		t.Fatalf("first-word sequence missing: result=%#v err=%v", focused, err)
+	}
+	committed, err := engine.Select(sentence.ID)
+	if err != nil || committed.Commit != "甲丙" || committed.State.RawInput != "" {
+		t.Fatalf("focused sentence row did not commit: result=%#v err=%v", committed, err)
+	}
+}
+
+func TestFocusedSentenceCanMoveDirectlyBetweenEditableSegments(t *testing.T) {
+	index, err := NewIndex([]Entry{
+		{Text: "甲", Code: "ab", Weight: 100}, {Text: "乙", Code: "ab", Weight: 90},
+		{Text: "丙", Code: "cd", Weight: 100}, {Text: "丁", Code: "cd", Weight: 90},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	engine, err := NewEngine(index, 9)
+	if err != nil {
+		t.Fatal(err)
+	}
+	state := applyBundleCode(t, engine, "abcd")
+	sentence := findBundleCandidate(state.Candidates, "甲丙")
+	if sentence == nil {
+		t.Fatalf("sentence missing: %#v", state)
+	}
+	_, err = engine.Apply(engineapi.Event{Operation: engineapi.FocusSegment, CandidateID: sentence.ID,
+		SegmentStart: sentence.Segments[0].Start, SegmentEnd: sentence.Segments[0].End})
+	if err != nil {
+		t.Fatal(err)
+	}
+	focused, err := engine.Apply(engineapi.Event{Operation: engineapi.FocusSegment, CandidateID: sentence.ID,
+		SegmentStart: sentence.Segments[1].Start, SegmentEnd: sentence.Segments[1].End})
+	if err != nil || focused.State.ActiveSegment == nil ||
+		focused.State.ActiveSegment.Start != sentence.Segments[1].Start ||
+		findBundleCandidate(focused.State.Candidates, "丁") == nil {
+		t.Fatalf("direct segment switch failed: result=%#v err=%v", focused, err)
+	}
+}

@@ -50,6 +50,91 @@ func (e *Engine) composeSentences(input string, limit int) []engineapi.Candidate
 			Weight: path.score, Exact: true, Segments: path.segments,
 		})
 	}
+	for _, candidate := range e.composeIncompleteTail(input, limit, maxCodeBytes) {
+		result = append(result, candidate)
+	}
+	return result
+}
+
+// composeIncompleteTail carries already completed search-tree paths into the
+// next still-incomplete term. Without this bridge, a valid prefix such as the
+// first three keys of the second word can produce an empty candidate node even
+// though both the completed left path and the right prefix are valid.
+func (e *Engine) composeIncompleteTail(input string, limit, maxCodeBytes int) []engineapi.Candidate {
+	if limit <= 0 || len(input) < 2 || len(e.sentenceStates) <= len(input) {
+		return nil
+	}
+	firstSplit := len(input) - maxCodeBytes + 1
+	if firstSplit < 1 {
+		firstSplit = 1
+	}
+	type completion struct {
+		candidate engineapi.Candidate
+		segments  int
+	}
+	top := make([]completion, 0, limit)
+	seen := make(map[string]struct{}, limit*2)
+	for split := firstSplit; split < len(input); split++ {
+		paths := e.sentenceStates[split]
+		if len(paths) == 0 {
+			continue
+		}
+		suffix := input[split:]
+		matches := e.index.lookup(suffix, limit)
+		for _, match := range matches {
+			if match.code == suffix || !strings.HasPrefix(match.code, suffix) {
+				continue
+			}
+			pathLimit := len(paths)
+			if pathLimit > limit {
+				pathLimit = limit
+			}
+			for _, path := range paths[:pathLimit] {
+				if len(path.segments) == 0 {
+					continue
+				}
+				completedCode := input[:split] + match.code
+				text := path.text + match.text
+				key := completedCode + "\x1f" + text
+				if _, exists := seen[key]; exists {
+					continue
+				}
+				seen[key] = struct{}{}
+				sourceID := match.source
+				if sourceID == "" {
+					sourceID = e.index.identity()
+				}
+				segments := append([]engineapi.Segment(nil), path.segments...)
+				segments = append(segments, engineapi.Segment{
+					Start: split, End: len(input), Text: match.text, Code: match.code, SourceID: sourceID,
+				})
+				weight := saturatingAdd(path.score, lexicalScore(match.weight)-generatedSegmentPenalty)
+				top = append(top, completion{candidate: engineapi.Candidate{
+					ID:   "sentence-prefix\x1f" + input + "\x1f" + completedCode + "\x1f" + text,
+					Text: text, Code: completedCode, Weight: weight, Exact: false, Segments: segments,
+				}, segments: len(segments)})
+			}
+		}
+	}
+	sort.Slice(top, func(i, j int) bool {
+		if top[i].segments != top[j].segments {
+			return top[i].segments < top[j].segments
+		}
+		if top[i].candidate.Weight != top[j].candidate.Weight {
+			return top[i].candidate.Weight > top[j].candidate.Weight
+		}
+		if top[i].candidate.Text != top[j].candidate.Text {
+			return top[i].candidate.Text < top[j].candidate.Text
+		}
+		return top[i].candidate.Code < top[j].candidate.Code
+	})
+	if len(top) > limit {
+		top = top[:limit]
+	}
+	result := make([]engineapi.Candidate, len(top))
+	for index := range top {
+		result[index] = top[index].candidate
+	}
 	return result
 }
 

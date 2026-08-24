@@ -92,6 +92,52 @@ func TestLexicalPhraseRanksBeforeHigherScoringGeneratedSentence(t *testing.T) {
 	}
 }
 
+func TestHigherScoringLexicalPrefixPrecedesGeneratedExactSentence(t *testing.T) {
+	index, err := NewIndex([]Entry{
+		{Text: "低频精确词", Code: "ab", Weight: 1},
+		{Text: "高频整词", Code: "abc", Weight: 1000},
+		{Text: "甲", Code: "a", Weight: 1_000_000},
+		{Text: "乙", Code: "b", Weight: 1_000_000},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	engine, err := NewEngine(index, 9)
+	if err != nil {
+		t.Fatal(err)
+	}
+	result := applyCode(t, engine, "ab")
+	if len(result.State.Candidates) < 3 || result.State.Candidates[0].Text != "高频整词" ||
+		result.State.Candidates[0].Exact || len(result.State.Candidates[0].Segments) != 0 {
+		t.Fatalf("high-frequency lexical prefix did not lead composition: %#v", result.State.Candidates)
+	}
+	if result.State.Candidates[1].Text != "低频精确词" ||
+		result.State.Candidates[2].Text != "甲乙" {
+		t.Fatalf("lexical/generated fallbacks lost their class order: %#v", result.State.Candidates)
+	}
+}
+
+func TestHigherScoringLexicalExactKeepsPriorityDuringSentenceComposition(t *testing.T) {
+	index, err := NewIndex([]Entry{
+		{Text: "高频精确词", Code: "ab", Weight: 1000},
+		{Text: "低频预测词", Code: "abc", Weight: 1},
+		{Text: "甲", Code: "a", Weight: 1_000_000},
+		{Text: "乙", Code: "b", Weight: 1_000_000},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	engine, err := NewEngine(index, 9)
+	if err != nil {
+		t.Fatal(err)
+	}
+	result := applyCode(t, engine, "ab")
+	if len(result.State.Candidates) == 0 || result.State.Candidates[0].Text != "高频精确词" ||
+		!result.State.Candidates[0].Exact {
+		t.Fatalf("strong lexical exact candidate lost priority: %#v", result.State.Candidates)
+	}
+}
+
 func TestBackspaceClearAndSelection(t *testing.T) {
 	engine := testEngine(t)
 	result := applyCode(t, engine, "a12")

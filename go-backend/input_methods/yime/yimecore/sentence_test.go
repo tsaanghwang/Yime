@@ -107,3 +107,76 @@ func TestIncrementalLatticeBackspaceAndDivergentAppendMatchFreshSession(t *testi
 		t.Fatalf("incremental lattice differs after backspace:\nincremental=%+v\nfresh=%+v", incrementalResult.State.Candidates, freshResult.State.Candidates)
 	}
 }
+
+func TestIncompleteSecondTermInheritsCompletedSearchTreePath(t *testing.T) {
+	index, err := NewIndex([]Entry{
+		{Text: "前词", Code: "ab", Weight: 1000},
+		{Text: "后词", Code: "cdef", Weight: 900},
+		{Text: "候选", Code: "cdeg", Weight: 800},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	engine, err := NewEngine(index, 9)
+	if err != nil {
+		t.Fatal(err)
+	}
+	result := applyCode(t, engine, "ab")
+	for _, key := range "cde" {
+		result, err = engine.Apply(engineapi.Event{Operation: engineapi.AppendCode, Code: string(key)})
+		if err != nil {
+			t.Fatal(err)
+		}
+		candidate := findCandidateText(result.State.Candidates, "前词后词")
+		if candidate == nil || candidate.Exact || candidate.Code != "abcdef" || len(candidate.Segments) != 2 {
+			t.Fatalf("incomplete second term %q lost inherited candidate: %#v", result.State.RawInput, result.State.Candidates)
+		}
+	}
+	result, err = engine.Apply(engineapi.Event{Operation: engineapi.AppendCode, Code: "f"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	completed := findCandidateText(result.State.Candidates, "前词后词")
+	if completed == nil || !completed.Exact || completed.Code != "abcdef" || len(completed.Segments) != 2 {
+		t.Fatalf("completed inherited sentence = %#v", result.State.Candidates)
+	}
+
+	engine.Reset()
+	invalid := applyCode(t, engine, "abz")
+	if len(invalid.State.Candidates) != 0 {
+		t.Fatalf("invalid second-term branch inherited stale candidates: %#v", invalid.State.Candidates)
+	}
+}
+
+func TestGeneratedSentenceKeepsFewerSystemLexiconSegmentsFirst(t *testing.T) {
+	index, err := NewIndex([]Entry{
+		{Text: "甲乙", Code: "ab", Weight: 1},
+		{Text: "丙", Code: "c", Weight: 1},
+		{Text: "高", Code: "a", Weight: 1_000_000},
+		{Text: "分", Code: "b", Weight: 1_000_000},
+		{Text: "词", Code: "c", Weight: 1_000_000},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	engine, err := NewEngine(index, 9)
+	if err != nil {
+		t.Fatal(err)
+	}
+	result := applyCode(t, engine, "abc")
+	highWeightThreeSegment := findCandidateText(result.State.Candidates, "高分词")
+	if len(result.State.Candidates) < 2 || result.State.Candidates[0].Text != "甲乙词" ||
+		len(result.State.Candidates[0].Segments) != 2 || highWeightThreeSegment == nil ||
+		len(highWeightThreeSegment.Segments) != 3 || result.State.Candidates[0].Weight >= highWeightThreeSegment.Weight {
+		t.Fatalf("generated sentence ranking ignored the shorter system path: %#v", result.State.Candidates)
+	}
+}
+
+func findCandidateText(candidates []engineapi.Candidate, text string) *engineapi.Candidate {
+	for index := range candidates {
+		if candidates[index].Text == text {
+			return &candidates[index]
+		}
+	}
+	return nil
+}
