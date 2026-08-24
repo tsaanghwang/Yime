@@ -67,6 +67,54 @@ func TestIndexManagerKeepsExistingSessionAndRollsBackTransactionally(t *testing.
 	}
 }
 
+func TestResidentIndexManagerKeepsFullLoadPolicyAcrossSwapAndRollback(t *testing.T) {
+	indexPath, hash := buildManagerFixture(t)
+	observedModes := make([]string, 0, 3)
+	builder := func(index *yimecore.FileIndex) (engineapi.Engine, error) {
+		observedModes = append(observedModes, index.StorageMode())
+		return yimecore.NewFileEngine(index, 9)
+	}
+	manager, err := OpenResidentIndexManager(
+		IndexSpec{Version: "v1", Mode: "full", Path: indexPath, ExpectedSHA256: hash}, builder, nil,
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer manager.Close()
+	v1, err := manager.NewEngine()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := manager.Swap(IndexSpec{Version: "v2", Mode: "full", Path: indexPath, ExpectedSHA256: hash}); err != nil {
+		t.Fatal(err)
+	}
+	v2, err := manager.NewEngine()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := manager.Rollback(); err != nil {
+		t.Fatal(err)
+	}
+	post, err := manager.NewEngine()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(observedModes) != 3 {
+		t.Fatalf("builder calls = %d, want 3", len(observedModes))
+	}
+	for index, mode := range observedModes {
+		if mode != "resident" {
+			t.Fatalf("builder call %d storage mode = %q", index, mode)
+		}
+	}
+	if stats := manager.Stats(); stats.LoadMode != "resident" || stats.ActiveVersion != "v1" || stats.PreviousVersion != "v2" {
+		t.Fatalf("resident rollback stats = %+v", stats)
+	}
+	_ = v1.(interface{ Close() error }).Close()
+	_ = v2.(interface{ Close() error }).Close()
+	_ = post.(interface{ Close() error }).Close()
+}
+
 func TestDispatcherReleasesManagedIndexSessionOnCloseAndLateTimeout(t *testing.T) {
 	indexPath, hash := buildManagerFixture(t)
 	manager, err := OpenIndexManager(IndexSpec{Version: "v1", Mode: "full", Path: indexPath, ExpectedSHA256: hash}, nil, nil)

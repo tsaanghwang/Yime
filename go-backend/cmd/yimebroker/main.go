@@ -1,5 +1,5 @@
-// Command yimebroker is the E5-B standalone process experiment. It is not
-// wired into PIME, TSF, installation, startup registration, or production.
+// Command yimebroker is the standalone YimeCore trial Broker. It is not wired
+// into PIME, the production Rime path, or default startup registration.
 package main
 
 import (
@@ -47,11 +47,20 @@ func main() {
 		if *indexPath != "" || *mode != "" {
 			fail(fmt.Errorf("index-root cannot be combined with index or mode"))
 		}
-		if *userSnapshot != "" || *userJournal != "" || *indexControlManifest != "" || *indexControlStatus != "" || *indexVersion != "" || *indexSHA256 != "" {
-			fail(fmt.Errorf("multi-index mode does not yet combine with durable learning or index-control switching"))
+		if *indexSHA256 != "" {
+			fail(fmt.Errorf("multi-index mode derives one verified SHA-256 per mode; index-sha256 is single-index only"))
 		}
-		runMultiMode(*indexRoot, *defaultMode, *annotationDataDir, *namedPipe, *trustedClientID,
-			*pipeMaxConnections, *pipeMaxConnectionsPerClient)
+		if *exitBeforeRequest != 0 || *hangBeforeRequest != 0 || *exitAfterRequest != 0 || *exitCompactionStage != "" {
+			fail(fmt.Errorf("single-process fault injection is not available in multi-index trial mode"))
+		}
+		runMultiMode(multiModeConfig{
+			indexRoot: *indexRoot, defaultMode: *defaultMode, annotationDataDir: *annotationDataDir,
+			namedPipe: *namedPipe, trustedClientID: *trustedClientID,
+			pipeMaxConnections: *pipeMaxConnections, pipeMaxConnectionsPerClient: *pipeMaxConnectionsPerClient,
+			userSnapshot: *userSnapshot, userJournal: *userJournal, userModelSourceID: *userModelSourceID,
+			checkpointEvery: *checkpointEvery, compactEvery: *compactEvery, rollbackSnapshot: *rollbackSnapshot,
+			indexVersion: *indexVersion, indexControlManifest: *indexControlManifest, indexControlStatus: *indexControlStatus,
+		})
 		return
 	}
 	if *indexPath == "" || *mode == "" {
@@ -187,67 +196,127 @@ func main() {
 	}
 }
 
-func runMultiMode(indexRoot, defaultMode, annotationDataDir, namedPipe, trustedClientID string,
-	pipeMaxConnections, pipeMaxConnectionsPerClient int) {
-	if (namedPipe == "") == (trustedClientID == "") {
+type multiModeConfig struct {
+	indexRoot                   string
+	defaultMode                 string
+	annotationDataDir           string
+	namedPipe                   string
+	trustedClientID             string
+	pipeMaxConnections          int
+	pipeMaxConnectionsPerClient int
+	userSnapshot                string
+	userJournal                 string
+	userModelSourceID           string
+	checkpointEvery             int
+	compactEvery                int
+	rollbackSnapshot            string
+	indexVersion                string
+	indexControlManifest        string
+	indexControlStatus          string
+}
+
+func runMultiMode(config multiModeConfig) {
+	if (config.namedPipe == "") == (config.trustedClientID == "") {
 		fail(fmt.Errorf("supply exactly one of named-pipe or trusted-client-id"))
 	}
 	modes := []string{"full", "variable", "shorthand"}
-	indices := make(map[string]*yimecore.FileIndex, len(modes))
 	resolvers := make(map[string]*candidateannotation.Resolver, len(modes))
 	for _, mode := range modes {
-		index, err := yimecore.OpenFileIndex(filepath.Join(indexRoot, mode+".yidx"))
-		if err != nil {
-			fail(fmt.Errorf("open %s index: %w", mode, err))
-		}
-		if index.Mode() != mode {
-			_ = index.Close()
-			fail(fmt.Errorf("index file for %s reports mode %q", mode, index.Mode()))
-		}
-		indices[mode] = index
-		if annotationDataDir != "" {
-			resolver, err := candidateannotation.Load(annotationDataDir, mode)
+		if config.annotationDataDir != "" {
+			resolver, err := candidateannotation.Load(config.annotationDataDir, mode)
 			if err != nil {
-				closeIndices(indices)
 				fail(fmt.Errorf("load %s candidate annotations: %w", mode, err))
 			}
 			resolvers[mode] = resolver
 		}
 	}
-	defer closeIndices(indices)
-	factory := func(mode string) (engineapi.Engine, error) {
-		index := indices[mode]
-		if index == nil {
-			return nil, fmt.Errorf("unsupported session mode %q", mode)
+	if (config.userSnapshot == "") != (config.userJournal == "") {
+		fail(fmt.Errorf("user-model-snapshot and user-model-journal must be supplied together"))
+	}
+	if config.userSnapshot != "" && config.userModelSourceID == "" {
+		fail(fmt.Errorf("multi-index durable learning requires a stable user-model-source-id"))
+	}
+	var durable *yimebroker.DurableUserModel
+	if config.userSnapshot != "" {
+		var err error
+		durable, err = yimebroker.OpenDurableUserModel(yimebroker.DurableUserModelConfig{
+			SnapshotPath: config.userSnapshot, JournalPath: config.userJournal,
+			RollbackSnapshotPath: config.rollbackSnapshot, SourceID: config.userModelSourceID,
+			CheckpointEvery: config.checkpointEvery, CompactEvery: config.compactEvery,
+		})
+		if err != nil {
+			fail(err)
 		}
-		engine, err := yimecore.NewFileEngine(index, 9)
+		defer func() {
+			if err := durable.Close(); err != nil {
+				fmt.Fprintln(os.Stderr, err)
+			}
+		}()
+	}
+	builder := func(mode string, index *yimecore.FileIndex) (engineapi.Engine, error) {
+		var engine engineapi.Engine
+		var err error
+		if durable != nil {
+			engine, err = yimecore.NewFileEngineWithUserModel(index, 9, durable.Model())
+		} else {
+			engine, err = yimecore.NewFileEngine(index, 9)
+		}
 		if err != nil || resolvers[mode] == nil {
 			return engine, err
 		}
 		return candidateannotation.Wrap(engine, resolvers[mode])
 	}
-	dispatcher, err := yimebroker.NewModeDispatcher(defaultMode, factory, yimebroker.Config{})
+	controlEnabled := config.indexControlManifest != "" || config.indexControlStatus != "" || config.indexVersion != ""
+	if controlEnabled && (config.indexControlManifest == "" || config.indexControlStatus == "" || config.indexVersion == "") {
+		fail(fmt.Errorf("managed multi-index mode requires version, control manifest and status paths"))
+	}
+	initialVersion := config.indexVersion
+	if initialVersion == "" {
+		initialVersion = "trial-initial"
+	}
+	initial := make(map[string]yimebroker.IndexSpec, len(modes))
+	for _, mode := range modes {
+		path := filepath.Join(config.indexRoot, mode+".yidx")
+		hash, err := yimebroker.IndexFileSHA256(path)
+		if err != nil {
+			fail(fmt.Errorf("hash %s index: %w", mode, err))
+		}
+		initial[mode] = yimebroker.IndexSpec{Version: initialVersion, Mode: mode, Path: path, ExpectedSHA256: hash}
+	}
+	// The multi-index YimeCore trial deliberately loads all three system
+	// dictionaries once at Broker startup. This is isolated from the legacy
+	// single-index experiment and from production Rime/PIME.
+	managers, err := yimebroker.OpenResidentModeIndexManager(initial, builder, nil)
+	if err != nil {
+		fail(err)
+	}
+	defer managers.Close()
+	dispatcher, err := yimebroker.NewModeDispatcher(config.defaultMode, managers.NewEngine, yimebroker.Config{})
 	if err != nil {
 		fail(err)
 	}
 	serveContext, stopSignals := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stopSignals()
-	if namedPipe != "" {
+	serveContext, cancel := context.WithCancel(serveContext)
+	defer cancel()
+	if controlEnabled {
+		go func() {
+			if watchErr := yimebroker.WatchModeIndexControl(serveContext, config.indexControlManifest, config.indexControlStatus, managers, 50*time.Millisecond); watchErr != nil {
+				fmt.Fprintln(os.Stderr, watchErr)
+				cancel()
+			}
+		}()
+	}
+	if config.namedPipe != "" {
 		err = yimebroker.ServeNamedPipe(serveContext, dispatcher, yimebroker.NamedPipeConfig{
-			Name: namedPipe, MaxConnections: pipeMaxConnections, MaxConnectionsPerClient: pipeMaxConnectionsPerClient,
+			Name: config.namedPipe, MaxConnections: config.pipeMaxConnections, MaxConnectionsPerClient: config.pipeMaxConnectionsPerClient,
 			OnConnectionError: func(connectionErr error) { fmt.Fprintln(os.Stderr, connectionErr) },
 		})
 	} else {
-		err = yimebroker.ServeLines(serveContext, os.Stdin, os.Stdout, dispatcher, yimebroker.TrustedClient{ID: trustedClientID})
+		err = yimebroker.ServeLines(serveContext, os.Stdin, os.Stdout, dispatcher, yimebroker.TrustedClient{ID: config.trustedClientID})
 	}
 	if err != nil {
 		fail(err)
-	}
-}
-
-func closeIndices(indices map[string]*yimecore.FileIndex) {
-	for _, index := range indices {
-		_ = index.Close()
 	}
 }
 

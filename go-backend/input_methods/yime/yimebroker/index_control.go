@@ -20,18 +20,21 @@ type IndexControlRequest struct {
 	SchemaVersion string     `json:"schema_version"`
 	RequestID     string     `json:"request_id"`
 	Action        string     `json:"action"`
+	Mode          string     `json:"mode,omitempty"`
 	Index         *IndexSpec `json:"index,omitempty"`
 }
 
 type IndexControlStatus struct {
-	SchemaVersion  string            `json:"schema_version"`
-	ObservedAt     string            `json:"observed_at"`
-	RequestID      string            `json:"request_id"`
-	Action         string            `json:"action"`
-	Accepted       bool              `json:"accepted"`
-	Error          string            `json:"error,omitempty"`
-	Manager        IndexManagerStats `json:"manager"`
-	ManifestSHA256 string            `json:"manifest_sha256,omitempty"`
+	SchemaVersion  string                       `json:"schema_version"`
+	ObservedAt     string                       `json:"observed_at"`
+	RequestID      string                       `json:"request_id"`
+	Action         string                       `json:"action"`
+	Mode           string                       `json:"mode,omitempty"`
+	Accepted       bool                         `json:"accepted"`
+	Error          string                       `json:"error,omitempty"`
+	Manager        IndexManagerStats            `json:"manager"`
+	Managers       map[string]IndexManagerStats `json:"managers,omitempty"`
+	ManifestSHA256 string                       `json:"manifest_sha256,omitempty"`
 }
 
 func WatchIndexControl(ctx context.Context, manifestPath, statusPath string, manager *IndexManager, interval time.Duration) error {
@@ -98,6 +101,87 @@ func WatchIndexControl(ctx context.Context, manifestPath, statusPath string, man
 			}
 			status.Accepted = decodeErr == nil
 			status.Manager = manager.Stats()
+			if err := writeIndexControlStatus(statusPath, status); err != nil {
+				return err
+			}
+		}
+	}
+}
+
+// WatchModeIndexControl applies the existing transactional generation switch
+// independently to full, variable and shorthand indices. Swap takes its mode
+// from index.mode; rollback requires an explicit top-level mode because it has
+// no index payload. Status always includes all three active generations.
+func WatchModeIndexControl(ctx context.Context, manifestPath, statusPath string, managers *ModeIndexManager, interval time.Duration) error {
+	if managers == nil || strings.TrimSpace(manifestPath) == "" || strings.TrimSpace(statusPath) == "" {
+		return errors.New("manifest, status and mode index manager are required")
+	}
+	if interval < 10*time.Millisecond {
+		return errors.New("index control interval must be at least 10ms")
+	}
+	if err := writeIndexControlStatus(statusPath, IndexControlStatus{
+		SchemaVersion: IndexControlSchema, ObservedAt: time.Now().UTC().Format(time.RFC3339Nano),
+		RequestID: "startup", Action: "observe", Accepted: true, Managers: managers.Stats(),
+	}); err != nil {
+		return err
+	}
+	ticker := time.NewTicker(interval)
+	defer ticker.Stop()
+	lastDigest := ""
+	for {
+		select {
+		case <-ctx.Done():
+			return nil
+		case <-ticker.C:
+			data, err := os.ReadFile(manifestPath)
+			if errors.Is(err, os.ErrNotExist) {
+				continue
+			}
+			if err != nil {
+				return err
+			}
+			digestBytes := sha256.Sum256(data)
+			digest := hex.EncodeToString(digestBytes[:])
+			if digest == lastDigest {
+				continue
+			}
+			lastDigest = digest
+			request, decodeErr := decodeIndexControl(data)
+			mode := request.Mode
+			status := IndexControlStatus{
+				SchemaVersion: IndexControlSchema, ObservedAt: time.Now().UTC().Format(time.RFC3339Nano),
+				RequestID: request.RequestID, Action: request.Action, Mode: mode, ManifestSHA256: digest,
+			}
+			if decodeErr == nil {
+				switch request.Action {
+				case "swap":
+					if request.Index == nil {
+						decodeErr = errors.New("swap requires index")
+					} else if mode != "" && mode != request.Index.Mode {
+						decodeErr = errors.New("control mode does not match index mode")
+					} else {
+						mode = request.Index.Mode
+						decodeErr = managers.Swap(*request.Index)
+					}
+				case "rollback":
+					if request.Index != nil || mode == "" {
+						decodeErr = errors.New("mode rollback requires mode and no index")
+					} else {
+						decodeErr = managers.Rollback(mode)
+					}
+				default:
+					decodeErr = fmt.Errorf("unsupported index control action %q", request.Action)
+				}
+			}
+			status.Mode = mode
+			status.Accepted = decodeErr == nil
+			if decodeErr != nil {
+				status.Error = decodeErr.Error()
+			}
+			if mode != "" {
+				status.Manager, _ = managers.ModeStats(mode)
+			}
+			status.Managers = managers.Stats()
 			if err := writeIndexControlStatus(statusPath, status); err != nil {
 				return err
 			}

@@ -48,6 +48,115 @@ func TestProtocolRestrictsAndEchoesMutationID(t *testing.T) {
 	}
 }
 
+func TestLegacySurfaceMutationIDsAreScopedPerSession(t *testing.T) {
+	const legacy = "e6b2a-surface-1234-1"
+	first := durableMutationID("s-0000000000000001", legacy)
+	second := durableMutationID("s-0000000000000002", legacy)
+	if first == second || first != "s-0000000000000001:"+legacy || second != "s-0000000000000002:"+legacy {
+		t.Fatalf("legacy mutation IDs were not isolated: first=%q second=%q", first, second)
+	}
+	const current = "e6c-12345678-1234-1234-1234-123456789abc-1"
+	if got := durableMutationID("s-0000000000000001", current); got != current {
+		t.Fatalf("current globally stable mutation ID changed: %q", got)
+	}
+}
+
+func TestLegacySurfaceSelectionsLearnAcrossIndependentSessions(t *testing.T) {
+	index, err := yimecore.NewIndex([]yimecore.Entry{
+		{Text: "甲", Code: "1", Weight: 10},
+		{Text: "乙", Code: "1", Weight: 9},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	model, err := yimecore.NewUserModel("legacy-surface-regression")
+	if err != nil {
+		t.Fatal(err)
+	}
+	dispatcher, err := NewDispatcher(func() (engineapi.Engine, error) {
+		return yimecore.NewEngineWithUserModel(index, 9, model)
+	}, Config{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	client := TrustedClient{ID: "legacy-installed-text-service"}
+	const mutationID = "e6b2a-surface-4321-1"
+	for sessionIndex, candidateIndex := range []int{0, 1} {
+		sessionID := openSession(t, dispatcher, client)
+		state := dispatch(t, dispatcher, client, Request{
+			Version: 1, Sequence: 2, SessionID: sessionID, Operation: ApplyEvent,
+			Event: engineapi.Event{Operation: engineapi.AppendCode, Code: "1"},
+		})
+		selected := dispatch(t, dispatcher, client, Request{
+			Version: 1, Sequence: 3, SessionID: sessionID, Operation: Select,
+			CandidateID: state.Result.State.Candidates[candidateIndex].ID, MutationID: mutationID,
+		})
+		if selected.Error != nil || selected.MutationID != mutationID {
+			t.Fatalf("session %d legacy selection failed: %+v", sessionIndex, selected)
+		}
+	}
+	if got := model.Generation(); got != 2 {
+		t.Fatalf("legacy independent-session selections produced generation %d, want 2", got)
+	}
+}
+
+func TestDispatcherKeepsSentenceCommitAvailableWhileFirstWordChoicesAreVisible(t *testing.T) {
+	index, err := yimecore.NewIndex([]yimecore.Entry{
+		{Text: "甲", Code: "ab", Weight: 100}, {Text: "乙", Code: "ab", Weight: 90},
+		{Text: "丙", Code: "cd", Weight: 100},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	dispatcher, err := NewDispatcher(func() (engineapi.Engine, error) {
+		return yimecore.NewEngine(index, 9)
+	}, Config{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	client := TrustedClient{ID: "dynamic-sentence-ui"}
+	sessionID := openSession(t, dispatcher, client)
+	sequence := uint64(1)
+	var sentence engineapi.Candidate
+	for _, code := range "abcd" {
+		sequence++
+		response := dispatch(t, dispatcher, client, Request{
+			Version: 1, Sequence: sequence, SessionID: sessionID, Operation: ApplyEvent,
+			Event: engineapi.Event{Operation: engineapi.AppendCode, Code: string(code)},
+		})
+		if response.Result == nil {
+			t.Fatalf("sentence input failed: %+v", response)
+		}
+		for _, candidate := range response.Result.State.Candidates {
+			if candidate.Text == "甲丙" {
+				sentence = candidate
+			}
+		}
+	}
+	if len(sentence.Segments) != 2 {
+		t.Fatalf("generated sentence missing: %+v", sentence)
+	}
+	sequence++
+	focused := dispatch(t, dispatcher, client, Request{
+		Version: 1, Sequence: sequence, SessionID: sessionID, Operation: ApplyEvent,
+		Event: engineapi.Event{Operation: engineapi.FocusSegment, CandidateID: sentence.ID,
+			SegmentStart: sentence.Segments[0].Start, SegmentEnd: sentence.Segments[0].End},
+	})
+	if focused.Result == nil || len(focused.Result.State.Candidates) != 2 ||
+		focused.Result.State.Candidates[0].Text != "甲" || focused.Result.State.Candidates[1].Text != "乙" {
+		t.Fatalf("first-word candidate sequence mismatch: %+v", focused)
+	}
+	sequence++
+	committed := dispatch(t, dispatcher, client, Request{
+		Version: 1, Sequence: sequence, SessionID: sessionID, Operation: Select,
+		CandidateID: sentence.ID, MutationID: "dynamic-sentence-row-0001",
+	})
+	if committed.Result == nil || committed.Result.Commit != "甲丙" ||
+		committed.Result.State.RawInput != "" {
+		t.Fatalf("sentence row commit failed while first-word choices were visible: %+v", committed)
+	}
+}
+
 func TestDispatcherKeepsSessionsIsolatedAndRejectsReplay(t *testing.T) {
 	dispatcher := newMemoryDispatcher(t, Config{})
 	a := TrustedClient{ID: "client-a"}
@@ -140,8 +249,9 @@ func TestConcurrentSessionsRemainIndependent(t *testing.T) {
 
 func TestModeDispatcherDefaultsToVariableAndKeepsOpenedSessionsStable(t *testing.T) {
 	indices := map[string]*yimecore.Index{}
+	codes := map[string]string{"full": "af", "variable": "av", "shorthand": "as"}
 	for _, mode := range []string{"full", "variable", "shorthand"} {
-		index, err := yimecore.NewIndex([]yimecore.Entry{{Text: mode, Code: "a", Weight: 10}})
+		index, err := yimecore.NewIndex([]yimecore.Entry{{Text: mode, Code: codes[mode], Weight: 10}})
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -157,19 +267,28 @@ func TestModeDispatcherDefaultsToVariableAndKeepsOpenedSessionsStable(t *testing
 	opened := dispatch(t, dispatcher, client, Request{Version: 1, Sequence: 1, Operation: OpenSession})
 	variable := dispatch(t, dispatcher, client, Request{Version: 1, Sequence: 2, SessionID: opened.SessionID,
 		Operation: ApplyEvent, Event: engineapi.Event{Operation: engineapi.AppendCode, Code: "a"}})
-	if got := variable.Result.State.Candidates[0].Text; got != "variable" {
-		t.Fatalf("default mode candidate = %q", got)
+	if variable.Result.State.RawInput != "a" {
+		t.Fatalf("default mode partial composition = %+v", variable)
 	}
 
 	fullClient := TrustedClient{ID: "full-mode-client"}
 	fullOpened := dispatch(t, dispatcher, fullClient, Request{Version: 1, Sequence: 1, Operation: OpenSession, Mode: "full"})
 	full := dispatch(t, dispatcher, fullClient, Request{Version: 1, Sequence: 2, SessionID: fullOpened.SessionID,
-		Operation: ApplyEvent, Event: engineapi.Event{Operation: engineapi.AppendCode, Code: "a"}})
+		Operation: ApplyEvent, Event: engineapi.Event{Operation: engineapi.AppendCode, Code: "af"}})
 	if got := full.Result.State.Candidates[0].Text; got != "full" {
 		t.Fatalf("explicit mode candidate = %q", got)
 	}
-	if got := variable.Result.State.Candidates[0].Text; got != "variable" {
-		t.Fatalf("opening another mode mutated existing session: %q", got)
+	continued := dispatch(t, dispatcher, client, Request{Version: 1, Sequence: 3, SessionID: opened.SessionID,
+		Operation: ApplyEvent, Event: engineapi.Event{Operation: engineapi.AppendCode, Code: "v"}})
+	if continued.Error != nil || continued.Result.State.RawInput != "av" || continued.Result.State.Candidates[0].Text != "variable" {
+		t.Fatalf("toolbar-style mode change moved active composition: %+v", continued)
+	}
+	shorthandClient := TrustedClient{ID: "shorthand-mode-client"}
+	shorthandOpened := dispatch(t, dispatcher, shorthandClient, Request{Version: 1, Sequence: 1, Operation: OpenSession, Mode: "shorthand"})
+	shorthand := dispatch(t, dispatcher, shorthandClient, Request{Version: 1, Sequence: 2, SessionID: shorthandOpened.SessionID,
+		Operation: ApplyEvent, Event: engineapi.Event{Operation: engineapi.AppendCode, Code: "as"}})
+	if shorthand.Error != nil || shorthand.Result.State.Candidates[0].Text != "shorthand" {
+		t.Fatalf("new idle session did not adopt requested toolbar mode: %+v", shorthand)
 	}
 }
 

@@ -214,7 +214,7 @@ func (d *Dispatcher) onSession(ctx context.Context, client TrustedClient, reques
 				if !ok {
 					return engineapi.Result{}, errors.New("engine does not support idempotent selection")
 				}
-				return selector.SelectIdempotent(request.CandidateID, request.MutationID)
+				return selector.SelectIdempotent(request.CandidateID, durableMutationID(request.SessionID, request.MutationID))
 			}
 			return current.engine.Select(request.CandidateID)
 		case ResetSession:
@@ -236,6 +236,17 @@ func (d *Dispatcher) onSession(ctx context.Context, client TrustedClient, reques
 		return errorResponse(request.Sequence, request.SessionID, CodeEngine, outcome.err)
 	}
 	return Response{Version: ProtocolVersion, Sequence: request.Sequence, SessionID: request.SessionID, EngineVersion: engineVersion(current.engine), Result: &outcome.result}
+}
+
+// durableMutationID prevents the pre-E6-C experimental text service from
+// reusing its process-local selection sequence in multiple surface sessions.
+// E6-C and other callers already supply globally stable IDs and retain their
+// original cross-session idempotency semantics.
+func durableMutationID(sessionID, mutationID string) string {
+	if strings.HasPrefix(mutationID, "e6b2a-surface-") {
+		return sessionID + ":" + mutationID
+	}
+	return mutationID
 }
 
 func runWithDeadline(ctx context.Context, timeout time.Duration, call func() (engineapi.Result, error), onLateCompletion func()) (engineOutcome, bool) {

@@ -78,6 +78,32 @@ func TestCompactIndexBuildIsDeterministicAndQueryable(t *testing.T) {
 	}
 }
 
+func TestResidentCompactIndexLoadsCompletePayloadAndMatchesMappedLookup(t *testing.T) {
+	source := writeIndexFixture(t)
+	path := filepath.Join(t.TempDir(), "resident.yidx")
+	if _, err := BuildIndexFile("variable", source, path); err != nil {
+		t.Fatal(err)
+	}
+	mapped, err := OpenFileIndex(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer mapped.Close()
+	resident, err := OpenResidentFileIndex(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer resident.Close()
+	if mapped.StorageMode() != "mapped" || resident.StorageMode() != "resident" {
+		t.Fatalf("storage modes mapped=%q resident=%q", mapped.StorageMode(), resident.StorageMode())
+	}
+	for _, prefix := range []string{"a", "a1", "b2"} {
+		if got, want := resident.lookup(prefix, 10), mapped.lookup(prefix, 10); !reflect.DeepEqual(got, want) {
+			t.Fatalf("resident prefix %q differs:\nresident=%+v\nmapped=%+v", prefix, got, want)
+		}
+	}
+}
+
 func TestCompactIndexRejectsPayloadCorruption(t *testing.T) {
 	source := writeIndexFixture(t)
 	path := filepath.Join(t.TempDir(), "corrupt.yidx")

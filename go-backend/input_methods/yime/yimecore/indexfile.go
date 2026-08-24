@@ -62,6 +62,7 @@ type FileIndex struct {
 	oneByteTop    [256]shortBucket
 	twoByteTop    []shortBucket
 	twoByteSparse map[uint16]shortBucket
+	storageMode   string
 }
 
 type shortBucket struct {
@@ -258,8 +259,22 @@ func maxHeap(current uint64) uint64 {
 	return current
 }
 
-// OpenFileIndex verifies and opens a versioned E1 index.
+// OpenFileIndex verifies and memory-maps a versioned E1 index. The mapping is
+// intentionally retained for the earlier E1 experiments and single-index
+// compatibility paths.
 func OpenFileIndex(path string) (*FileIndex, error) {
+	return openFileIndex(path, false)
+}
+
+// OpenResidentFileIndex verifies a versioned E1 index and then reads the
+// complete immutable file into process-owned memory. This is the explicit
+// full-system-lexicon loading policy used by the multi-index YimeCore trial;
+// it avoids demand paging while leaving production Rime/PIME untouched.
+func OpenResidentFileIndex(path string) (*FileIndex, error) {
+	return openFileIndex(path, true)
+}
+
+func openFileIndex(path string, resident bool) (*FileIndex, error) {
 	file, err := os.Open(path)
 	if err != nil {
 		return nil, fmt.Errorf("open index: %w", err)
@@ -348,15 +363,38 @@ func OpenFileIndex(path string) (*FileIndex, error) {
 	if err := index.validateRecordsAndBuildShortPrefixes(); err != nil {
 		return nil, err
 	}
-	data, unmap, err := mapIndexFile(file, info.Size())
-	if err != nil {
-		return nil, fmt.Errorf("map index: %w", err)
+	if resident {
+		data, readErr := os.ReadFile(path)
+		if readErr != nil {
+			return nil, fmt.Errorf("preload complete index: %w", readErr)
+		}
+		if int64(len(data)) != info.Size() || len(data) < indexFileHeaderSize ||
+			!bytes.Equal(data[60:92], actualPayloadHash[:]) {
+			return nil, fmt.Errorf("resident index changed while it was being opened")
+		}
+		index.data = data
+		index.storageMode = "resident"
+	} else {
+		data, unmap, mapErr := mapIndexFile(file, info.Size())
+		if mapErr != nil {
+			return nil, fmt.Errorf("map index: %w", mapErr)
+		}
+		index.data = data
+		index.unmap = unmap
+		index.storageMode = "mapped"
 	}
-	index.data = data
-	index.unmap = unmap
 	closeOnError = false
 	runtime.SetFinalizer(index, func(open *FileIndex) { _ = open.Close() })
 	return index, nil
+}
+
+// StorageMode reports whether the immutable index payload is demand-mapped or
+// fully resident. It is exposed for package and latency evidence only.
+func (idx *FileIndex) StorageMode() string {
+	if idx == nil {
+		return ""
+	}
+	return idx.storageMode
 }
 
 // Close releases the index file. Engines must stop using the index first.
@@ -370,8 +408,10 @@ func (idx *FileIndex) Close() error {
 		if idx.unmap != nil {
 			err = idx.unmap()
 		}
-		if closeErr := idx.file.Close(); err == nil {
-			err = closeErr
+		if idx.file != nil {
+			if closeErr := idx.file.Close(); err == nil {
+				err = closeErr
+			}
 		}
 		idx.data = nil
 	})

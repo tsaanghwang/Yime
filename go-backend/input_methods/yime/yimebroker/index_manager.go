@@ -34,6 +34,7 @@ type IndexManagerStats struct {
 	Switches        uint64 `json:"switches"`
 	Rollbacks       uint64 `json:"rollbacks"`
 	Rejected        uint64 `json:"rejected"`
+	LoadMode        string `json:"load_mode"`
 }
 
 type indexGeneration struct {
@@ -53,6 +54,7 @@ type IndexManager struct {
 	retired   map[*indexGeneration]struct{}
 	closed    bool
 	stats     IndexManagerStats
+	resident  bool
 }
 
 type managedEngine struct {
@@ -63,10 +65,20 @@ type managedEngine struct {
 }
 
 func OpenIndexManager(initial IndexSpec, builder IndexEngineBuilder, validator IndexValidator) (*IndexManager, error) {
+	return openIndexManager(initial, builder, validator, false)
+}
+
+// OpenResidentIndexManager keeps every accepted index generation fully loaded
+// in process memory. Swaps and rollbacks retain the same loading policy.
+func OpenResidentIndexManager(initial IndexSpec, builder IndexEngineBuilder, validator IndexValidator) (*IndexManager, error) {
+	return openIndexManager(initial, builder, validator, true)
+}
+
+func openIndexManager(initial IndexSpec, builder IndexEngineBuilder, validator IndexValidator, resident bool) (*IndexManager, error) {
 	if builder == nil {
 		builder = func(index *yimecore.FileIndex) (engineapi.Engine, error) { return yimecore.NewFileEngine(index, 9) }
 	}
-	manager := &IndexManager{builder: builder, validator: validator, retired: make(map[*indexGeneration]struct{})}
+	manager := &IndexManager{builder: builder, validator: validator, retired: make(map[*indexGeneration]struct{}), resident: resident}
 	generation, err := manager.load(initial)
 	if err != nil {
 		return nil, err
@@ -171,7 +183,12 @@ func (m *IndexManager) load(spec IndexSpec) (*indexGeneration, error) {
 	if !strings.EqualFold(actualHash, spec.ExpectedSHA256) {
 		return nil, fmt.Errorf("index SHA-256 mismatch: expected %s, got %s", spec.ExpectedSHA256, actualHash)
 	}
-	index, err := yimecore.OpenFileIndex(spec.Path)
+	var index *yimecore.FileIndex
+	if m.resident {
+		index, err = yimecore.OpenResidentFileIndex(spec.Path)
+	} else {
+		index, err = yimecore.OpenFileIndex(spec.Path)
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -237,6 +254,11 @@ func (m *IndexManager) updateStatsLocked() {
 	m.stats.ActiveSHA256 = ""
 	m.stats.PreviousVersion = ""
 	m.stats.ActiveSessions = 0
+	if m.resident {
+		m.stats.LoadMode = "resident"
+	} else {
+		m.stats.LoadMode = "mapped"
+	}
 	if m.active != nil {
 		m.stats.ActiveVersion = m.active.spec.Version
 		m.stats.ActiveSourceID = m.active.sourceID
@@ -295,3 +317,6 @@ func hashIndexFile(path string) (string, error) {
 	}
 	return hex.EncodeToString(digest.Sum(nil)), nil
 }
+
+// IndexFileSHA256 returns the hash used by transactional index specifications.
+func IndexFileSHA256(path string) (string, error) { return hashIndexFile(path) }
