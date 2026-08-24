@@ -81,7 +81,7 @@ function Wait-RegistrationState([string]$tool, [bool]$registered, [string]$logPa
         $text = (& $tool status 2>&1) -join "`n"
         $values = Convert-KeyValue $text
         $expectedBoolean = if ($registered) { 'true' } else { 'false' }
-        $expectedCategories = if ($registered) { 3 } else { 0 }
+        $expectedCategories = if ($registered) { 5 } else { 0 }
         if ($LASTEXITCODE -eq 0 -and
             $values.com_registered_current_view -eq $expectedBoolean -and
             $values.profile_registered -eq $expectedBoolean -and
@@ -245,7 +245,6 @@ foreach ($architecture in @('x64', 'x86')) {
 }
 
 $copies = [ordered]@{
-    'bin/YimeBroker.exe' = (Join-Path $artifactRoot 'bin\YimeBroker.exe')
     'indexes/full.yidx' = (Join-Path $artifactRoot 'full\index.yidx')
     'indexes/variable.yidx' = (Join-Path $artifactRoot 'variable\index.yidx')
     'indexes/shorthand.yidx' = (Join-Path $artifactRoot 'shorthand\index.yidx')
@@ -266,17 +265,28 @@ foreach ($entry in $copies.GetEnumerator()) {
     Copy-Item -LiteralPath $entry.Value -Destination (Join-Path $packageRoot $entry.Key) -Force
 }
 $toolbar = Join-Path $packageRoot 'bin\YimeCoreToolbar.exe'
+$brokerBuild = Join-Path $packageRoot 'bin\YimeBroker.exe'
+$e6cVerifier = Join-Path $packageRoot 'bin\YimeE6CPackageExperiment.exe'
+$runtimeSupervisor = Join-Path $packageRoot 'bin\YimeCoreTrialRuntime.exe'
 Push-Location (Join-Path $repoRoot 'go-backend')
 try {
+    & go build -trimpath -o $brokerBuild ./cmd/yimebroker
+    if ($LASTEXITCODE -ne 0) { throw 'experimental multi-index Broker build failed' }
     & go build -trimpath -o $toolbar ./cmd/input-toolbar
     if ($LASTEXITCODE -ne 0) { throw 'experimental toolbar build failed' }
+    & go build -trimpath -o $e6cVerifier ./cmd/yimebroker-multimode-experiment
+    if ($LASTEXITCODE -ne 0) { throw 'E6-C package verifier build failed' }
+    & go build -trimpath -ldflags '-H=windowsgui' -o $runtimeSupervisor ./cmd/yimecore-trial-runtime
+    if ($LASTEXITCODE -ne 0) { throw 'E6-C trial runtime supervisor build failed' }
 } finally {
     Pop-Location
 }
-if (-not (Test-Path -LiteralPath $toolbar)) { throw "missing experimental toolbar: $toolbar" }
+foreach ($requiredBinary in @($brokerBuild, $toolbar, $e6cVerifier, $runtimeSupervisor)) {
+    if (-not (Test-Path -LiteralPath $requiredBinary)) { throw "missing experimental binary: $requiredBinary" }
+}
 
 $packageManifest = [ordered]@{
-    tool_version = 'yimecore-experimental-package-v2'
+    tool_version = 'yimecore-experimental-package-v3'
     package_id = $packageId
     generated_at = (Get-Date).ToUniversalTime().ToString('o')
     git_commit = $commit
@@ -291,6 +301,7 @@ $stagedHandoff = Assert-Package $packageRoot (Join-Path $outputDir 'package-hand
 
 $installedHandoff = $null
 $multiModeProbe = $null
+$e6cCapabilities = $null
 $architectureResults = @()
 $installedRemoved = $false
 try {
@@ -299,6 +310,23 @@ try {
     $installedHandoff = Assert-Package $resolvedInstallRoot (Join-Path $outputDir 'package-handoff-installed.json')
 
     $broker = Join-Path $resolvedInstallRoot 'bin\YimeBroker.exe'
+    $e6cState = Join-Path $outputDir 'e6c-state'
+    New-Item -ItemType Directory -Force $e6cState | Out-Null
+    $e6cEvidencePath = Join-Path $outputDir 'e6c-multimode-evidence.json'
+    & (Join-Path $resolvedInstallRoot 'bin\YimeE6CPackageExperiment.exe') `
+        -broker $broker -index-root (Join-Path $resolvedInstallRoot 'indexes') `
+        -snapshot (Join-Path $e6cState 'user-model.json') `
+        -journal (Join-Path $e6cState 'user-model.journal') `
+        -manifest (Join-Path $e6cState 'index-control.json') `
+        -status (Join-Path $e6cState 'index-control-status.json') `
+        -output $e6cEvidencePath
+    if ($LASTEXITCODE -ne 0) { throw "E6-C installed package capability probe failed: $e6cEvidencePath" }
+    $e6cCapabilities = Get-Content -LiteralPath $e6cEvidencePath -Raw | ConvertFrom-Json
+    if (-not $e6cCapabilities.passed -or -not $e6cCapabilities.all_modes_passed -or
+        -not $e6cCapabilities.default_idle_session_is_variable -or
+        $e6cCapabilities.production_rime_pime_changed) {
+        throw "E6-C installed package evidence did not close the limitation: $e6cEvidencePath"
+    }
     $multiModeProbe = Invoke-MultiModeProbe $broker (Join-Path $resolvedInstallRoot 'indexes') `
         (Join-Path $resolvedInstallRoot 'data') "\\.\pipe\YimeBroker-e6b7-multi-$PID" `
         (Join-Path $outputDir 'multi-mode-probe.json') (Join-Path $outputDir 'multi-mode-broker.err')
@@ -403,12 +431,22 @@ $sourceFiles = @(
     'go-backend\input_methods\yime\toolbarstate\state_test.go',
     'go-backend\input_methods\yime\yimebroker\dispatcher.go',
     'go-backend\input_methods\yime\yimebroker\dispatcher_test.go',
+    'go-backend\input_methods\yime\yimebroker\index_control.go',
+    'go-backend\input_methods\yime\yimebroker\index_manager.go',
+    'go-backend\input_methods\yime\yimebroker\mode_index_manager.go',
+    'go-backend\input_methods\yime\yimebroker\mode_index_manager_test.go',
     'go-backend\input_methods\yime\yimebroker\protocol.go',
+    'go-backend\input_methods\yime\yimebroker\usermodel_store.go',
     'go-backend\input_methods\yime\yimecore\engine.go',
     'go-backend\input_methods\yime\yimecore\engine_test.go',
     'go-backend\input_methods\yime\yimecore\indexfile.go',
     'go-backend\input_methods\yime\yimecore\indexfile_test.go',
     'go-backend\cmd\yimebroker\main.go',
+    'go-backend\cmd\yimebroker-multimode-experiment\main.go',
+    'go-backend\cmd\yimecore-trial-runtime\main.go',
+    'go-backend\cmd\yimecore-trial-runtime\main_test.go',
+    'go-backend\cmd\yimecore-trial-runtime\runtime_windows.go',
+    'go-backend\cmd\yimecore-trial-runtime\runtime_stub.go',
     'YimeTextServiceExperiment\CMakeLists.txt',
     'YimeTextServiceExperiment\BrokerClient.h',
     'YimeTextServiceExperiment\BrokerClient.cpp',
@@ -424,7 +462,12 @@ $sourceFiles = @(
     'YimeTextServiceExperiment\TextService.cpp',
     'YimeTextServiceExperiment\tests\ContractTests.cpp',
     'YimeTextServiceExperiment\tests\TsfCompositionTests.cpp',
-    'tools\yimecore\run-e6b7-parallel-package-experiment.ps1'
+    'tools\yimecore\run-e6b7-parallel-package-experiment.ps1',
+    'tools\yimecore\run-e6c-package-experiment.ps1',
+    'tools\yimecore\deploy-e6c-trial-runtime.ps1',
+    'tools\yimecore\start-e6c-trial-runtime.ps1',
+    'tools\yimecore\stop-e6c-trial-runtime.ps1',
+    'tools\yimecore\verify-e6c-trial-runtime.ps1'
 )
 $hashes = foreach ($relative in $sourceFiles) {
     $hash = Get-FileHash (Join-Path $repoRoot $relative) -Algorithm SHA256
@@ -434,7 +477,7 @@ $sourceHashes = Join-Path $outputDir 'source-hashes.json'
 $hashes | ConvertTo-Json -Depth 3 | Set-Content $sourceHashes -Encoding utf8
 $allInstalledModes = @($architectureResults | ForEach-Object { $_.modes })
 $summary = [ordered]@{
-    tool_version = 'yime-text-service-e6b7-parallel-package-v2'
+    tool_version = 'yime-text-service-e6b7-parallel-package-v3'
     stage = 'e6b7'
     generated_at = (Get-Date).ToUniversalTime().ToString('o')
     git_commit = $commit
@@ -454,7 +497,15 @@ $summary = [ordered]@{
     independent_experimental_registration_identity = $true
     default_mode = $multiModeProbe.default_mode
     multi_mode_and_candidate_annotations_verified = [bool]$multiModeProbe.all_modes_and_annotations_verified
+    e6c_durable_learning_and_index_control_evidence_path = $e6cEvidencePath
+    e6c_durable_learning_and_index_control_evidence_sha256 = (Get-FileHash -LiteralPath $e6cEvidencePath -Algorithm SHA256).Hash.ToLowerInvariant()
+    e6c_all_modes_learning_persistence_and_failed_switch_rollback_passed = [bool]$e6cCapabilities.all_modes_passed
+    e6c_default_idle_session_is_variable = [bool]$e6cCapabilities.default_idle_session_is_variable
+    e6c_recovered_user_model_generation = [uint64]$e6cCapabilities.recovered_generation
+    e6c_crash_journal_recovery_passed = [bool]$e6cCapabilities.crash_journal_recovery_passed
+    e6c_limitation_closed = [bool]$e6cCapabilities.passed
     toolbar_packaged = Test-Path -LiteralPath (Join-Path $packageRoot 'bin\YimeCoreToolbar.exe')
+    runtime_supervisor_packaged = Test-Path -LiteralPath (Join-Path $packageRoot 'bin\YimeCoreTrialRuntime.exe')
     yinyuan_private_font_packaged = Test-Path -LiteralPath (Join-Path $packageRoot 'data\fonts\YinYuan-Regular.ttf')
     architectures = $architectureResults
     all_x86_x64_three_mode_installed_paths_passed = $allInstalledModes.Count -eq 6 -and
@@ -468,8 +519,7 @@ $summary = [ordered]@{
     blockers = @()
     limitations = @(
         'the package is an unsigned experimental staging tree rather than a public MSI or signed release bundle',
-        'the installed host remains the purpose-built in-memory ITextStoreACP application; third-party desktop application acceptance remains separate',
-        'multi-index sessions do not yet combine durable user-model learning or live index hot-switch rollback; mode changes intentionally open a new idle session'
+        'the installed host remains the purpose-built in-memory ITextStoreACP application; third-party desktop application acceptance remains separate'
     )
 }
 $summaryPath = Join-Path $outputDir 'summary.json'
@@ -478,7 +528,11 @@ Write-Host "YimeTextService E6-B7 evidence: $outputDir"
 if (-not $summary.staged_package_hash_handoff_verified -or
     -not $summary.installed_package_hash_handoff_verified -or
     -not $summary.multi_mode_and_candidate_annotations_verified -or
-    -not $summary.toolbar_packaged -or -not $summary.yinyuan_private_font_packaged -or
+    -not $summary.e6c_all_modes_learning_persistence_and_failed_switch_rollback_passed -or
+    -not $summary.e6c_default_idle_session_is_variable -or
+    -not $summary.e6c_crash_journal_recovery_passed -or -not $summary.e6c_limitation_closed -or
+    -not $summary.toolbar_packaged -or -not $summary.runtime_supervisor_packaged -or
+    -not $summary.yinyuan_private_font_packaged -or
     -not $summary.all_x86_x64_three_mode_installed_paths_passed -or
     -not $summary.all_registration_residue_removed -or
     -not $summary.installed_tree_removed -or

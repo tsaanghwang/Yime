@@ -124,6 +124,16 @@
       color: var(--accent);
       word-break: break-all;
     }
+    .action {
+      display: inline-block;
+      margin: 0.4rem 0 0.75rem;
+      padding: 0.7rem 1rem;
+      border-radius: 8px;
+      background: var(--accent);
+      color: white;
+      font-weight: 600;
+      text-decoration: none;
+    }
     footer {
       margin-top: 1.25rem;
       color: var(--muted);
@@ -139,6 +149,18 @@
       仓库路径：<span class="path">C:\dev\Yime</span> ·
       快捷打开：<code>Open-Dev-Guide.cmd</code>
     </p>
+
+    <section>
+      <h2>Yime 自研栈试验版：一键构建、安装、重启</h2>
+      <p>点击下面的按钮取得一键入口，再从浏览器下载栏打开。脚本使用纯 ASCII 启动参数，避免 Windows PowerShell 5.1 把 UTF-8 中文解析成乱码。</p>
+      <a class="action" href="../Build-Install-YimeCore-Trial-v3.cmd" download>下载一键构建安装脚本 v3</a>
+      <ol>
+        <li>双击下载的 <code>Build-Install-YimeCore-Trial-v3.cmd</code>；请勿继续运行浏览器先前缓存的旧文件。</li>
+        <li>脚本依次构建并验证 x64/x86、明确执行强制卸载、确认清理后再全新安装试验版。</li>
+        <li>结束时输入 <code>Y</code> 才会重启 Windows；输入 <code>N</code> 会保留窗口并等待手动重启。</li>
+      </ol>
+      <div class="note warn"><strong>重启前先保存工作。</strong>任务栏语言栏由 Windows/Explorer 缓存，安装成功后仍应完成一次整机重启再验收。</div>
+    </section>
 
     <section>
       <h2>脚本分层（没有 bash 版）</h2>
