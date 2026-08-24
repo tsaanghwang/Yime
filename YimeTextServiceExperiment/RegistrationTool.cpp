@@ -3,6 +3,7 @@
 
 #include <iomanip>
 #include <iostream>
+#include <filesystem>
 #include <string>
 #include <string_view>
 
@@ -12,6 +13,13 @@ namespace {
 
 constexpr LANGID kLanguageId = MAKELANGID(LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED);
 constexpr wchar_t kProfileName[] = L"Yime 自研栈试验版";
+constexpr const GUID* kTipCategories[] = {
+    &GUID_TFCAT_TIP_KEYBOARD,
+    &GUID_TFCAT_TIPCAP_UIELEMENTENABLED,
+    &GUID_TFCAT_TIPCAP_INPUTMODECOMPARTMENT,
+    &GUID_YimeTipcapImmersiveSupport,
+    &GUID_YimeTipcapSystraySupport,
+};
 
 std::wstring guidText(REFGUID guid) {
     wchar_t value[39]{};
@@ -77,8 +85,7 @@ HRESULT categoryRegistrationCount(unsigned* count) {
     HRESULT result = CoCreateInstance(CLSID_TF_CategoryMgr, nullptr, CLSCTX_INPROC_SERVER,
                                       __uuidof(ITfCategoryMgr), reinterpret_cast<void**>(&categories));
     if (FAILED(result)) return result;
-    for (const GUID* category : {&GUID_TFCAT_TIP_KEYBOARD, &GUID_TFCAT_TIPCAP_UIELEMENTENABLED,
-                                 &GUID_TFCAT_TIPCAP_INPUTMODECOMPARTMENT}) {
+    for (const GUID* category : kTipCategories) {
         IEnumGUID* values = nullptr;
         result = categories->EnumItemsInCategory(*category, &values);
         if (FAILED(result)) break;
@@ -131,7 +138,13 @@ HRESULT unregisterComServer() {
     return removed == ERROR_SUCCESS || removed == ERROR_FILE_NOT_FOUND ? S_OK : HRESULT_FROM_WIN32(removed);
 }
 
-HRESULT registerProfileAndCategories() {
+HRESULT registerProfileAndCategories(const wchar_t* dllPath) {
+    if (!dllPath || !*dllPath) return E_INVALIDARG;
+    const std::filesystem::path profileIcon =
+        std::filesystem::absolute(dllPath).parent_path().parent_path() / L"profile-icon.ico";
+    if (!std::filesystem::is_regular_file(profileIcon)) {
+        return HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND);
+    }
     ITfInputProcessorProfileMgr* profiles = nullptr;
     HRESULT result = CoCreateInstance(CLSID_TF_InputProcessorProfiles, nullptr, CLSCTX_INPROC_SERVER,
                                       __uuidof(ITfInputProcessorProfileMgr), reinterpret_cast<void**>(&profiles));
@@ -140,7 +153,8 @@ HRESULT registerProfileAndCategories() {
                                 GUID_YimeTextServiceExperimentProfile, 0);
     result = profiles->RegisterProfile(
         CLSID_YimeTextServiceExperiment, kLanguageId, GUID_YimeTextServiceExperimentProfile,
-        kProfileName, static_cast<ULONG>(std::size(kProfileName) - 1), nullptr, 0, 0,
+        kProfileName, static_cast<ULONG>(std::size(kProfileName) - 1), profileIcon.c_str(),
+        static_cast<ULONG>(profileIcon.native().size()), 0,
         nullptr, 0, TRUE, 0);
     profiles->Release();
     if (FAILED(result)) return result;
@@ -149,8 +163,7 @@ HRESULT registerProfileAndCategories() {
     result = CoCreateInstance(CLSID_TF_CategoryMgr, nullptr, CLSCTX_INPROC_SERVER,
                               __uuidof(ITfCategoryMgr), reinterpret_cast<void**>(&categories));
     if (FAILED(result)) return result;
-    for (const GUID* category : {&GUID_TFCAT_TIP_KEYBOARD, &GUID_TFCAT_TIPCAP_UIELEMENTENABLED,
-                                 &GUID_TFCAT_TIPCAP_INPUTMODECOMPARTMENT}) {
+    for (const GUID* category : kTipCategories) {
         result = categories->RegisterCategory(CLSID_YimeTextServiceExperiment, *category,
                                               CLSID_YimeTextServiceExperiment);
         if (FAILED(result)) break;
@@ -163,8 +176,7 @@ void unregisterProfileAndCategories() {
     ITfCategoryMgr* categories = nullptr;
     if (SUCCEEDED(CoCreateInstance(CLSID_TF_CategoryMgr, nullptr, CLSCTX_INPROC_SERVER,
                                    __uuidof(ITfCategoryMgr), reinterpret_cast<void**>(&categories)))) {
-        for (const GUID* category : {&GUID_TFCAT_TIP_KEYBOARD, &GUID_TFCAT_TIPCAP_UIELEMENTENABLED,
-                                     &GUID_TFCAT_TIPCAP_INPUTMODECOMPARTMENT}) {
+        for (const GUID* category : kTipCategories) {
             categories->UnregisterCategory(CLSID_YimeTextServiceExperiment, *category,
                                            CLSID_YimeTextServiceExperiment);
         }
@@ -194,7 +206,7 @@ HRESULT registerAll(const wchar_t* dllPath) {
         return HRESULT_FROM_WIN32(ERROR_ALREADY_EXISTS);
     }
     result = registerComServer(dllPath);
-    if (SUCCEEDED(result)) result = registerProfileAndCategories();
+    if (SUCCEEDED(result)) result = registerProfileAndCategories(dllPath);
     if (FAILED(result)) unregisterAll();
     return result;
 }
@@ -205,7 +217,7 @@ HRESULT repointComServer(const wchar_t* dllPath) {
     HRESULT result = profileRegistrationExists(&profileExists);
     if (SUCCEEDED(result)) result = categoryRegistrationCount(&categoryCount);
     if (FAILED(result)) return result;
-    if (!profileExists || categoryCount != 3) {
+    if (!profileExists || categoryCount != std::size(kTipCategories)) {
         return HRESULT_FROM_WIN32(ERROR_NOT_FOUND);
     }
     return registerComServer(dllPath);
@@ -222,6 +234,9 @@ void writeStatus() {
                << L"clsid=" << guidText(CLSID_YimeTextServiceExperiment) << L"\n"
                << L"profile_guid=" << guidText(GUID_YimeTextServiceExperimentProfile) << L"\n"
                << L"language_bar_guid=" << guidText(GUID_YimeTextServiceExperimentLangBar) << L"\n"
+               << L"com_only_registration_supported=true\n"
+               << L"profile_icon_registration_supported=true\n"
+               << L"taskbar_category_registration_supported=true\n"
                << L"com_registered_current_view=" << (comRegistrationExists() ? L"true" : L"false") << L"\n"
                << L"profile_registered=" << (profileExists ? L"true" : L"false") << L"\n"
                << L"categories_registered_count=" << categoryCount << L"\n"
@@ -275,6 +290,15 @@ int wmain(int argc, wchar_t** argv) {
             writeResult(L"repoint", result);
             exitCode = SUCCEEDED(result) ? 0 : 7;
         }
+    } else if (argc == 3 && std::wstring_view(argv[1]) == L"register-com") {
+        if (!isElevated()) {
+            std::wcout << L"operation=register-com\nblocked=requires_elevated_token\nmutation_performed=false\n";
+            exitCode = 3;
+        } else {
+            const HRESULT result = registerComServer(argv[2]);
+            writeResult(L"register-com", result);
+            exitCode = SUCCEEDED(result) ? 0 : 8;
+        }
     } else if (argc == 2 && std::wstring_view(argv[1]) == L"unregister") {
         if (!isElevated()) {
             std::wcout << L"operation=unregister\nblocked=requires_elevated_token\nmutation_performed=false\n";
@@ -285,7 +309,7 @@ int wmain(int argc, wchar_t** argv) {
             exitCode = SUCCEEDED(result) ? 0 : 6;
         }
     } else {
-        std::wcerr << L"usage: YimeTextServiceRegistration status|verify-absent|register <dll>|repoint <dll>|unregister\n";
+        std::wcerr << L"usage: YimeTextServiceRegistration status|verify-absent|register <dll>|register-com <dll>|repoint <dll>|unregister\n";
         exitCode = 2;
     }
     if (uninitialize) CoUninitialize();

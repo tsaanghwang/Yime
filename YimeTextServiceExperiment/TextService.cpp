@@ -1,5 +1,7 @@
 #include "TextService.h"
 
+#include <cstdio>
+#include <filesystem>
 #include <iterator>
 #include <new>
 
@@ -10,8 +12,38 @@
 #include "KeyContract.h"
 #include "LanguageBarItem.h"
 #include "ModuleState.h"
+#include "YimeTextServiceIds.h"
 
 namespace {
+
+void RecordLanguageBarHostResult(HRESULT managerResult, HRESULT addResult,
+                                 HRESULT statusResult, DWORD managerStatus) noexcept {
+    wchar_t localAppData[MAX_PATH]{};
+    const DWORD length = GetEnvironmentVariableW(L"LOCALAPPDATA", localAppData,
+                                                  static_cast<DWORD>(std::size(localAppData)));
+    if (!length || length >= std::size(localAppData)) return;
+    std::error_code error;
+    const std::filesystem::path evidence = std::filesystem::path(localAppData) /
+        L"YimeCore Experimental Trial" / L"evidence";
+    std::filesystem::create_directories(evidence, error);
+    if (error) return;
+    HANDLE file = CreateFileW((evidence / L"language-bar-host.log").c_str(), FILE_APPEND_DATA,
+                              FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+                              nullptr, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+    if (file == INVALID_HANDLE_VALUE) return;
+    char line[256]{};
+    const int bytes = std::snprintf(
+        line, std::size(line),
+        "pid=%lu architecture_bits=%zu manager_hresult=0x%08lX add_hresult=0x%08lX status_hresult=0x%08lX manager_status=0x%08lX\r\n",
+        GetCurrentProcessId(), sizeof(void*) * 8,
+        static_cast<unsigned long>(managerResult), static_cast<unsigned long>(addResult),
+        static_cast<unsigned long>(statusResult), static_cast<unsigned long>(managerStatus));
+    if (bytes > 0) {
+        DWORD written = 0;
+        WriteFile(file, line, static_cast<DWORD>(bytes), &written, nullptr);
+    }
+    CloseHandle(file);
+}
 
 HWND candidateOwnerAndFallbackAnchor(ITfContext* context, RECT* anchor) noexcept {
     if (!anchor) return nullptr;
@@ -50,6 +82,7 @@ HWND candidateOwnerAndFallbackAnchor(ITfContext* context, RECT* anchor) noexcept
 YimeTextService::YimeTextService() noexcept {
     YimeModuleAddRef();
     candidatePopup_.SetSelectionHandler(CandidatePopupSelection, this);
+    candidatePopup_.SetSegmentHandler(CandidatePopupSegmentSelection, this);
 }
 
 YimeTextService::~YimeTextService() {
@@ -196,6 +229,13 @@ bool YimeTextService::CanAcceptKeys() const noexcept {
     return keyEventFocused_;
 }
 
+bool YimeTextService::ShouldHandleCompositionKeys() noexcept {
+    if (languageBarItem_) languageBarItem_->Refresh();
+    // A state change never migrates or abandons a live composition. English
+    // pass-through begins as soon as that composition reaches its idle state.
+    return CanAcceptKeys() && (!experimentSettings_.Get().asciiMode || composition_ != nullptr);
+}
+
 bool YimeTextService::ContextMatchesComposition(ITfContext* context) const noexcept {
     return !composition_ || !compositionContext_ || compositionContext_ == context;
 }
@@ -205,7 +245,7 @@ HRESULT YimeTextService::SetKeyDecision(ITfContext* context, WPARAM virtualKey, 
     *eaten = FALSE;
     try {
         const bool shiftDown = (GetKeyState(VK_SHIFT) & 0x8000) != 0;
-        *eaten = context && CanAcceptKeys() && ContextMatchesComposition(context) &&
+        *eaten = context && ShouldHandleCompositionKeys() && ContextMatchesComposition(context) &&
                          surface_.CanHandle(virtualKey, shiftDown) ? TRUE : FALSE;
     } catch (...) {
         surface_.DisconnectForRecovery();
@@ -220,7 +260,7 @@ STDMETHODIMP YimeTextService::OnTestKeyDown(ITfContext* context, WPARAM wParam, 
 STDMETHODIMP YimeTextService::OnKeyDown(ITfContext* context, WPARAM wParam, LPARAM, BOOL* eaten) {
     if (!eaten) return E_POINTER;
     *eaten = FALSE;
-    if (!context || !CanAcceptKeys() || !ContextMatchesComposition(context)) return S_OK;
+    if (!context || !ShouldHandleCompositionKeys() || !ContextMatchesComposition(context)) return S_OK;
     try {
         const bool shiftDown = (GetKeyState(VK_SHIFT) & 0x8000) != 0;
         if (!surface_.CanHandle(wParam, shiftDown)) return S_OK;
@@ -312,11 +352,12 @@ void YimeTextService::UpdateCandidateUI(ITfContext* context, const yime::experim
         return;
     }
     const auto& displaySettings = experimentSettings_.Get();
-    if (update.candidates.empty()) {
+    if (update.candidates.empty() && !update.hasSentence) {
         candidateUI_->UpdateEmpty(document, L"无匹配候选，按退格修改");
     } else {
         candidateUI_->Update(document, update.candidates, update.selectedCandidateIndex,
-                             displaySettings.candidateAnnotation);
+                             displaySettings.candidateAnnotation,
+                             update.hasSentence ? &update.sentence : nullptr);
     }
     document->Release();
     RECT anchor{};
@@ -341,8 +382,10 @@ void YimeTextService::UpdateCandidateUI(ITfContext* context, const yime::experim
     candidatePopup_.SetFontPoints(displaySettings.candidateFontPoints);
     candidatePopup_.SetUseYinyuanFont(displaySettings.candidateAnnotation == "yinyuan");
     if (ownedCandidatePopupRequested_ &&
-        candidatePopup_.Update(candidateUI_->DisplayCandidates(), anchor, owner,
-                               compositionRect != nullptr, popupSelection)) {
+        candidatePopup_.Update(candidateUI_->PopupCandidateRows(), anchor, owner,
+                               compositionRect != nullptr, popupSelection,
+                               update.hasSentence ? &update.sentence : nullptr,
+                               update.activeSegmentStart, update.activeSegmentEnd)) {
         candidatePopup_.Show(CanAcceptKeys());
     } else {
         candidatePopup_.Show(false);
@@ -358,6 +401,34 @@ void YimeTextService::SelectCandidateFromPopup(unsigned ordinal) noexcept {
     ITfContext* context = compositionContext_;
     context->AddRef();
     const auto outcome = surface_.HandleVirtualKey(static_cast<WPARAM>('0' + ordinal), true);
+    if (!outcome.handled) {
+        context->Release();
+        return;
+    }
+    RECT compositionRect{};
+    bool compositionRectValid = false;
+    const HRESULT edit = yime::experiment::ApplyBrokerUpdateToContext(
+        context, clientId_, static_cast<ITfCompositionSink*>(this), &composition_,
+        &plannedCompositionTermination_, outcome.update, &compositionRect, &compositionRectValid);
+    if (FAILED(edit)) {
+        surface_.DisconnectForRecovery();
+        context->Release();
+        return;
+    }
+    UpdateCandidateUI(context, outcome.update,
+                      compositionRectValid ? &compositionRect : nullptr);
+    context->Release();
+}
+
+void YimeTextService::CandidatePopupSegmentSelection(void* context, int start, int end) noexcept {
+    if (context) static_cast<YimeTextService*>(context)->FocusSentenceSegmentFromPopup(start, end);
+}
+
+void YimeTextService::FocusSentenceSegmentFromPopup(int start, int end) noexcept {
+    if (!compositionContext_ || !CanAcceptKeys() || start < 0 || end <= start) return;
+    ITfContext* context = compositionContext_;
+    context->AddRef();
+    const auto outcome = surface_.FocusSentenceSegment(start, end);
     if (!outcome.handled) {
         context->Release();
         return;
@@ -413,10 +484,21 @@ void YimeTextService::AddLanguageBar() noexcept {
     languageBarItem_ = new (std::nothrow) LanguageBarItem();
     if (!languageBarItem_) return;
     ITfLangBarItemMgr* manager = nullptr;
-    if (SUCCEEDED(threadManager_->QueryInterface(__uuidof(ITfLangBarItemMgr), reinterpret_cast<void**>(&manager)))) {
-        languageBarItemAdded_ = manager->AddItem(languageBarItem_) == S_OK;
+    const HRESULT managerResult = threadManager_->QueryInterface(
+        __uuidof(ITfLangBarItemMgr), reinterpret_cast<void**>(&manager));
+    HRESULT addResult = E_NOINTERFACE;
+    HRESULT statusResult = E_NOINTERFACE;
+    DWORD managerStatus = 0;
+    if (SUCCEEDED(managerResult)) {
+        addResult = manager->AddItem(languageBarItem_);
+        languageBarItemAdded_ = addResult == S_OK;
+        if (languageBarItemAdded_) {
+            statusResult = manager->GetItemsStatus(1, &GUID_YimeTextServiceExperimentLangBar,
+                                                   &managerStatus);
+        }
         manager->Release();
     }
+    RecordLanguageBarHostResult(managerResult, addResult, statusResult, managerStatus);
 }
 
 void YimeTextService::RemoveLanguageBar() noexcept {

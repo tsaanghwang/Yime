@@ -27,18 +27,25 @@ CandidateListUIElement::~CandidateListUIElement() {
 
 void CandidateListUIElement::Update(ITfDocumentMgr* document,
                                     const std::vector<yime::experiment::BrokerCandidate>& candidates,
-                                    size_t selectedIndex, const std::string& annotationMode) {
+                                    size_t selectedIndex, const std::string& annotationMode,
+                                    const yime::experiment::BrokerCandidate* sentence) {
     if (document != document_) {
         if (document_) document_->Release();
         document_ = document;
         if (document_) document_->AddRef();
     }
     candidates_.clear();
+    popupCandidateRows_.clear();
+    sentenceDisplay_.clear();
     const auto& labels = yime::experiment::CandidateLabels();
     const size_t count = std::min(candidates.size(), labels.size());
     selectable_ = count != 0;
-    selection_ = count == 0 ? 0u : static_cast<UINT>(std::min(selectedIndex, count - 1));
-    candidates_.reserve(count);
+    if (sentence) sentenceDisplay_ = L"句:  " + widen(sentence->text);
+    selection_ = count == 0 ? 0u : static_cast<UINT>(std::min(selectedIndex, count - 1) +
+                                                      (sentenceDisplay_.empty() ? 0 : 1));
+    candidates_.reserve(count + (sentenceDisplay_.empty() ? 0 : 1));
+    popupCandidateRows_.reserve(count);
+    if (!sentenceDisplay_.empty()) candidates_.push_back(sentenceDisplay_);
     for (size_t index = 0; index < count; ++index) {
         std::string annotation;
         if (annotationMode == "yinyuan") {
@@ -50,6 +57,7 @@ void CandidateListUIElement::Update(ITfDocumentMgr* document,
         }
         std::wstring display = std::wstring(labels[index]) + L"  " + widen(candidates[index].text);
         if (!annotation.empty()) display += L"  " + widen(annotation);
+        popupCandidateRows_.push_back(display);
         candidates_.push_back(std::move(display));
     }
 }
@@ -61,7 +69,10 @@ void CandidateListUIElement::UpdateEmpty(ITfDocumentMgr* document, std::wstring 
         if (document_) document_->AddRef();
     }
     candidates_.clear();
+    popupCandidateRows_.clear();
+    sentenceDisplay_.clear();
     candidates_.push_back(std::move(message));
+    popupCandidateRows_.push_back(candidates_.front());
     selection_ = 0;
     selectable_ = false;
 }

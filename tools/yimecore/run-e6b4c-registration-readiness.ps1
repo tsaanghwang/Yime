@@ -42,7 +42,7 @@ function Wait-RegistrationState([string]$tool, [bool]$registered, [string]$logPa
         $exitCode = $LASTEXITCODE
         $values = Convert-KeyValue $text
         $expectedBoolean = if ($registered) { 'true' } else { 'false' }
-        $expectedCategories = if ($registered) { 3 } else { 0 }
+        $expectedCategories = if ($registered) { 5 } else { 0 }
         if ($exitCode -eq 0 -and
             $values.com_registered_current_view -eq $expectedBoolean -and
             $values.profile_registered -eq $expectedBoolean -and

@@ -7,6 +7,7 @@
 #include <string>
 
 #include "YimeTextServiceIds.h"
+#include "ExperimentSettings.h"
 
 namespace {
 
@@ -127,6 +128,18 @@ int wmain(int argc, wchar_t** argv) {
         require(CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED), "CoInitializeEx");
         SetEnvironmentVariableW(L"YIME_TEXTSERVICE_EXPERIMENT_PIPE", argv[2]);
         SetEnvironmentVariableW(L"YIME_TEXTSERVICE_EXPERIMENT_DIRECT_TEST", L"1");
+        wchar_t tempDirectory[MAX_PATH]{};
+        GetTempPathW(MAX_PATH, tempDirectory);
+        const std::wstring localAppData = std::wstring(tempDirectory) + L"yime-tsf-language-bar-" +
+                                          std::to_wstring(GetCurrentProcessId());
+        CreateDirectoryW(localAppData.c_str(), nullptr);
+        SetEnvironmentVariableW(L"LOCALAPPDATA", localAppData.c_str());
+        yime::experiment::ExperimentSettings seededSettings;
+        if (!yime::experiment::ApplyExperimentSettingsCommand(
+                yime::experiment::ExperimentSettingsCommand::Chinese,
+                yime::experiment::ResolveExperimentSettingsPath(), &seededSettings)) {
+            throw std::runtime_error("could not seed Chinese language-bar state");
+        }
         HMODULE module = LoadLibraryW(argv[1]);
         if (!module) throw std::runtime_error("LoadLibraryW failed");
         const auto getClassObject = reinterpret_cast<GetClassObject>(GetProcAddress(module, "DllGetClassObject"));
@@ -161,6 +174,7 @@ int wmain(int argc, wchar_t** argv) {
                                               reinterpret_cast<void**>(&languageBarManager)),
                 "query language bar manager");
         ITfLangBarItem* languageBarItem = nullptr;
+        ITfLangBarItemButton* languageModeButton = nullptr;
         const HRESULT languageBarLookup =
             languageBarManager->GetItem(GUID_YimeTextServiceExperimentLangBar, &languageBarItem);
         const bool languageBarManagerAccepted = languageBarLookup == S_OK && languageBarItem;
@@ -168,9 +182,17 @@ int wmain(int argc, wchar_t** argv) {
             TF_LANGBARITEMINFO languageBarInfo{};
             require(languageBarItem->GetInfo(&languageBarInfo), "read experiment language bar item");
             if (!IsEqualGUID(languageBarInfo.clsidService, CLSID_YimeTextServiceExperiment) ||
-                languageBarInfo.dwStyle != TF_LBI_STYLE_BTN_BUTTON) {
+                (languageBarInfo.dwStyle & TF_LBI_STYLE_BTN_BUTTON) == 0 ||
+                (languageBarInfo.dwStyle & TF_LBI_STYLE_SHOWNINTRAY) != 0) {
                 throw std::runtime_error("experiment language bar identity or style mismatch");
             }
+            require(languageBarItem->QueryInterface(__uuidof(ITfLangBarItemButton),
+                                                    reinterpret_cast<void**>(&languageModeButton)),
+                    "query experiment input-mode button");
+            HICON taskbarModeIcon = nullptr;
+            require(languageModeButton->GetIcon(&taskbarModeIcon), "get taskbar input-mode icon");
+            if (!taskbarModeIcon) throw std::runtime_error("taskbar input-mode icon is empty");
+            DestroyIcon(taskbarModeIcon);
             languageBarItem->Release();
             languageBarItem = nullptr;
         } else if (languageBarLookup != S_FALSE || languageBarItem != nullptr) {
@@ -430,6 +452,58 @@ int wmain(int argc, wchar_t** argv) {
         }
         std::cout << "host_termination_recovery_verified=true\n";
 
+        if (!languageModeButton) throw std::runtime_error("input-mode language-bar button was not registered");
+        BSTR languageText = nullptr;
+        require(languageModeButton->GetText(&languageText), "read Chinese input-mode label");
+        if (!languageText || std::wstring_view(languageText) != L"中") {
+            SysFreeString(languageText);
+            throw std::runtime_error("Chinese input-mode label is not 中");
+        }
+        SysFreeString(languageText);
+        require(languageModeButton->OnClick(TF_LBI_CLK_LEFT, {}, nullptr), "toggle input mode to English");
+        languageText = nullptr;
+        require(languageModeButton->GetText(&languageText), "read English input-mode label");
+        if (!languageText || std::wstring_view(languageText) != L"英") {
+            SysFreeString(languageText);
+            throw std::runtime_error("English input-mode label is not 英");
+        }
+        SysFreeString(languageText);
+
+        // The click records the new global target but must not move the live
+        // composition to another engine halfway through the text.
+        testEaten = FALSE;
+        require(keys->OnTestKeyDown(context, 'K', 0, &testEaten), "English transition live-composition probe");
+        if (!testEaten) throw std::runtime_error("English switch abandoned a live composition");
+        eaten = FALSE;
+        require(keys->OnKeyDown(context, 'K', 0, &eaten), "English transition live-composition key");
+        if (!eaten || !hasComposition(context)) {
+            throw std::runtime_error("live composition did not remain on its original engine");
+        }
+        for (unsigned attempt = 0; attempt < 8 && hasComposition(context); ++attempt) {
+            eaten = FALSE;
+            require(keys->OnKeyDown(context, VK_BACK, 0, &eaten),
+                    "finish original composition before English pass-through");
+            if (!eaten) throw std::runtime_error("original composition backspace was not handled");
+        }
+        if (hasComposition(context)) throw std::runtime_error("original composition did not reach idle");
+        testEaten = TRUE;
+        require(keys->OnTestKeyDown(context, 'L', 0, &testEaten), "English pass-through test key");
+        if (testEaten) throw std::runtime_error("English mode swallowed an idle host key");
+        eaten = TRUE;
+        require(keys->OnKeyDown(context, 'L', 0, &eaten), "English pass-through key");
+        if (eaten) throw std::runtime_error("English mode handled an idle host key");
+
+        require(languageModeButton->OnClick(TF_LBI_CLK_LEFT, {}, nullptr), "toggle input mode to Chinese");
+        testEaten = FALSE;
+        require(keys->OnTestKeyDown(context, 'L', 0, &testEaten), "Chinese mode test key");
+        if (!testEaten) throw std::runtime_error("Chinese mode did not reclaim composition keys");
+        eaten = FALSE;
+        require(keys->OnKeyDown(context, 'L', 0, &eaten), "Chinese mode key");
+        if (!eaten || !hasComposition(context)) throw std::runtime_error("Chinese mode did not start composition");
+        terminateActiveComposition(context);
+        std::cout << "language_bar_chinese_english_transition_verified=true\n";
+
+        languageModeButton->Release();
         keys->Release();
         require(processor->Deactivate(), "deactivate processor");
         languageBarItem = nullptr;

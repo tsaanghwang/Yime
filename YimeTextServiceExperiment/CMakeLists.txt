@@ -11,6 +11,7 @@ add_library(YimeTextServiceExperiment SHARED
     ExperimentSettings.cpp
     KeyContract.cpp
     LanguageBarItem.cpp
+    LanguageBarResources.rc
     SurfaceSession.cpp
     TextService.cpp
     YimeTextServiceExperiment.def
@@ -30,6 +31,7 @@ add_executable(YimeTextServiceContractTests
     ExperimentSettings.cpp
     KeyContract.cpp
     LanguageBarItem.cpp
+    LanguageBarResources.rc
 )
 target_compile_features(YimeTextServiceContractTests PRIVATE cxx_std_17)
 target_compile_definitions(YimeTextServiceContractTests PRIVATE UNICODE _UNICODE WIN32_LEAN_AND_MEAN NOMINMAX)
@@ -53,13 +55,17 @@ target_compile_features(YimeBrokerBridgeTests PRIVATE cxx_std_17)
 target_compile_definitions(YimeBrokerBridgeTests PRIVATE UNICODE _UNICODE WIN32_LEAN_AND_MEAN NOMINMAX)
 target_compile_options(YimeBrokerBridgeTests PRIVATE /utf-8 /W4 /EHsc)
 target_include_directories(YimeBrokerBridgeTests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} "${CMAKE_CURRENT_LIST_DIR}/../json/single_include")
+target_link_libraries(YimeBrokerBridgeTests PRIVATE ole32)
 set_property(TARGET YimeBrokerBridgeTests PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
-add_executable(YimeTsfCompositionTests tests/TsfCompositionTests.cpp)
+add_executable(YimeTsfCompositionTests
+    tests/TsfCompositionTests.cpp
+    ExperimentSettings.cpp
+)
 target_compile_features(YimeTsfCompositionTests PRIVATE cxx_std_17)
 target_compile_definitions(YimeTsfCompositionTests PRIVATE UNICODE _UNICODE WIN32_LEAN_AND_MEAN NOMINMAX)
 target_compile_options(YimeTsfCompositionTests PRIVATE /utf-8 /W4 /EHsc)
-target_include_directories(YimeTsfCompositionTests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(YimeTsfCompositionTests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} "${CMAKE_CURRENT_LIST_DIR}/../json/single_include")
 target_link_libraries(YimeTsfCompositionTests PRIVATE ole32 oleaut32)
 set_property(TARGET YimeTsfCompositionTests PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 

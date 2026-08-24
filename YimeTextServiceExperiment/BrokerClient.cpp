@@ -75,8 +75,15 @@ bool BrokerClient::NextPage(BrokerUpdate* update, std::string* error) {
     return ApplyEvent(4, {}, update, error);
 }
 
+bool BrokerClient::FocusSegment(const std::string& candidateId, int start, int end,
+                                BrokerUpdate* update, std::string* error) {
+    return ApplyEvent(6, {}, update, error, candidateId, start, end);
+}
+
 bool BrokerClient::ApplyEvent(unsigned operation, const std::string& code,
-                              BrokerUpdate* update, std::string* error) {
+                              BrokerUpdate* update, std::string* error,
+                              const std::string& candidateId, int segmentStart,
+                              int segmentEnd) {
     if (!IsConnected()) {
         if (error) *error = "Broker session is not connected";
         return false;
@@ -84,6 +91,11 @@ bool BrokerClient::ApplyEvent(unsigned operation, const std::string& code,
     const uint64_t sequence = ++sequence_;
     json event = {{"operation", operation}};
     if (!code.empty()) event["code"] = code;
+    if (!candidateId.empty()) event["candidate_id"] = candidateId;
+    if (segmentEnd > segmentStart) {
+        event["segment_start"] = segmentStart;
+        event["segment_end"] = segmentEnd;
+    }
     const json request = {{"version", 1}, {"sequence", sequence}, {"session_id", sessionId_},
                           {"operation", "apply"}, {"event", std::move(event)}};
     std::string response;
@@ -187,6 +199,11 @@ bool BrokerClient::ParseUpdate(const std::string& responseText, uint64_t sequenc
                 update->pageNumber = state.value("page_number", 0);
                 update->hasPreviousPage = state.value("has_previous", false);
                 update->hasNextPage = state.value("has_next", false);
+                if (state.contains("active_segment")) {
+                    const auto& active = state["active_segment"];
+                    update->activeSegmentStart = active.value("start", -1);
+                    update->activeSegmentEnd = active.value("end", -1);
+                }
                 if (state.contains("candidates")) {
                     for (const auto& candidate : state["candidates"]) {
                         BrokerCandidate parsed{
@@ -198,6 +215,13 @@ bool BrokerClient::ParseUpdate(const std::string& responseText, uint64_t sequenc
                             const auto& annotations = candidate["annotations"];
                             parsed.yinyuan = annotations.value("yinyuan", "");
                             parsed.standardPinyin = annotations.value("standard_pinyin", "");
+                        }
+                        if (candidate.contains("segments")) {
+                            for (const auto& segment : candidate["segments"]) {
+                                parsed.segments.push_back(BrokerSegment{
+                                    segment.value("start", 0), segment.value("end", 0),
+                                    segment.value("text", ""), segment.value("code", "")});
+                            }
                         }
                         update->candidates.push_back(std::move(parsed));
                     }

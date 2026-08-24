@@ -5,11 +5,40 @@
 #include <iostream>
 #include <string>
 
-int wmain(int argc, wchar_t** argv) {
-    if (argc != 3) {
-        std::cerr << "usage: YimeBrokerBridgeTests <pipe> <multi-page-code>\n";
-        return 2;
+namespace {
+
+bool sendCode(yime::experiment::SurfaceSession* surface, const std::string& code,
+              yime::experiment::SurfaceOutcome* outcome, std::string* error) {
+    if (!surface || !outcome) return false;
+    for (char character : code) {
+        bool shifted = false;
+        WPARAM key = 0;
+        if (character >= 'a' && character <= 'z') {
+            key = static_cast<WPARAM>(character - 'a' + 'A');
+        } else if (character >= '0' && character <= '9') {
+            key = static_cast<WPARAM>(character);
+        } else if (character == ']') {
+            key = VK_OEM_6;
+        } else {
+            if (error) *error = "unsupported bridge-test code character";
+            return false;
+        }
+        *outcome = surface->HandleVirtualKey(key, shifted);
+        if (!outcome->handled || !outcome->error.empty()) {
+            if (error) *error = outcome->error;
+            return false;
+        }
     }
+    return true;
+}
+
+}  // namespace
+
+int wmain(int argc, wchar_t** argv) {
+	if (argc != 3 && argc != 5) {
+		std::cerr << "usage: YimeBrokerBridgeTests <pipe> <multi-page-code> [whole-word-code longer-word-suffix]\n";
+		return 2;
+	}
     yime::experiment::SurfaceSession surface;
     std::string error;
     if (!surface.Connect(argv[1], 5000, &error)) {
@@ -135,6 +164,33 @@ int wmain(int argc, wchar_t** argv) {
             return 1;
         }
     }
+	if (argc == 5) {
+		std::string wholeWordCode;
+		std::string longerWordSuffix;
+		for (const wchar_t* cursor = argv[3]; *cursor; ++cursor) {
+			if (*cursor < 0x20 || *cursor > 0x7e) return 2;
+			wholeWordCode.push_back(static_cast<char>(*cursor));
+		}
+		for (const wchar_t* cursor = argv[4]; *cursor; ++cursor) {
+			if (*cursor < 0x20 || *cursor > 0x7e) return 2;
+			longerWordSuffix.push_back(static_cast<char>(*cursor));
+		}
+		if (!sendCode(&surface, wholeWordCode, &outcome, &error) || !outcome.update.hasSentence ||
+			outcome.update.sentence.text != "本地" || !outcome.update.sentence.segments.empty()) {
+			std::cerr << "system word did not enter the sentence row as a whole: " << error << '\n';
+			return 1;
+		}
+		if (!sendCode(&surface, longerWordSuffix, &outcome, &error) || !outcome.update.hasSentence ||
+			outcome.update.sentence.text != "本地人" || !outcome.update.sentence.segments.empty()) {
+			std::cerr << "longer system word did not replace the shorter sentence row: " << error << '\n';
+			return 1;
+		}
+		outcome = surface.HandleVirtualKey(VK_RETURN, false);
+		if (!outcome.handled || outcome.update.commit != "本地人" || !outcome.update.rawInput.empty()) {
+			std::cerr << "whole system-word sentence commit failed: " << outcome.error << '\n';
+			return 1;
+		}
+	}
     outcome = surface.HandleVirtualKey(VK_F12, false);
     if (outcome.handled) {
         std::cerr << "pass-through key was consumed\n";

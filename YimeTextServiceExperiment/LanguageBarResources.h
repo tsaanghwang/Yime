@@ -1,0 +1,4 @@
+#pragma once
+
+#define IDI_YIME_MODE_CHINESE 101
+#define IDI_YIME_MODE_ENGLISH 102

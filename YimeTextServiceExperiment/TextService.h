@@ -50,11 +50,14 @@ private:
     void RemoveLanguageBar() noexcept;
     void ShowCandidateUI(bool show) noexcept;
     bool CanAcceptKeys() const noexcept;
+    bool ShouldHandleCompositionKeys() noexcept;
     bool ContextMatchesComposition(ITfContext* context) const noexcept;
     void RememberCompositionContext(ITfContext* context) noexcept;
     void ForgetCompositionContext() noexcept;
     void SelectCandidateFromPopup(unsigned ordinal) noexcept;
+    void FocusSentenceSegmentFromPopup(int start, int end) noexcept;
     static void CandidatePopupSelection(void* context, unsigned ordinal) noexcept;
+    static void CandidatePopupSegmentSelection(void* context, int start, int end) noexcept;
 
     std::atomic<ULONG> references_{1};
     ITfThreadMgr* threadManager_ = nullptr;

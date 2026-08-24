@@ -338,7 +338,10 @@ int wmain(int argc, wchar_t** argv) {
                                       WS_OVERLAPPEDWINDOW, 160, 160, 640, 240, nullptr, nullptr,
                                       windowClass.hInstance, nullptr);
         if (!window) throw std::runtime_error("create registered host window failed");
-        ShowWindow(window, SW_SHOWNOACTIVATE);
+        ShowWindow(window, SW_SHOW);
+        SetForegroundWindow(window);
+        SetFocus(window);
+        UpdateWindow(window);
         auto* owner = new ContextOwner(window);
 
         require(CoCreateInstance(CLSID_TF_InputProcessorProfiles, nullptr, CLSCTX_INPROC_SERVER,

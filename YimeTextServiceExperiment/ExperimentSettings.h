@@ -7,6 +7,7 @@
 namespace yime::experiment {
 
 struct ExperimentSettings {
+    bool asciiMode = false;
     std::string mode = "variable";
     std::string candidateFontPreset = "medium";
     std::string candidateAnnotation = "key_sequence";
@@ -14,8 +15,28 @@ struct ExperimentSettings {
     std::int64_t revision = 0;
 };
 
+enum class ExperimentSettingsCommand {
+    ToggleAscii,
+    Chinese,
+    English,
+    ModeVariable,
+    ModeFull,
+    ModeShorthand,
+    FontSmall,
+    FontMedium,
+    FontLarge,
+    AnnotationKeySequence,
+    AnnotationYinyuan,
+    AnnotationStandardPinyin,
+    AnnotationHidden,
+};
+
 std::wstring ResolveExperimentSettingsPath();
 ExperimentSettings LoadExperimentSettings(const std::wstring& path = ResolveExperimentSettingsPath()) noexcept;
+bool ApplyExperimentSettingsCommand(
+    ExperimentSettingsCommand command,
+    const std::wstring& path = ResolveExperimentSettingsPath(),
+    ExperimentSettings* updated = nullptr) noexcept;
 
 // Candidate updates can happen on every keystroke. This cache checks the
 // small state file metadata and only reparses JSON after an atomic replacement.

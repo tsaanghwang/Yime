@@ -2,7 +2,11 @@
 #include <msctf.h>
 
 #include <iostream>
+#include <filesystem>
+#include <fstream>
+#include <string>
 #include <string_view>
+#include <vector>
 
 #include "KeyContract.h"
 #include "BrokerEndpoint.h"
@@ -18,6 +22,92 @@ using GetClassObject = HRESULT(__stdcall*)(REFCLSID, REFIID, void**);
 using CanUnloadNow = HRESULT(__stdcall*)();
 
 int failures = 0;
+
+std::wstring temporaryStatePath(const wchar_t* leaf) {
+    wchar_t directory[MAX_PATH]{};
+    GetTempPathW(MAX_PATH, directory);
+    const auto root = std::filesystem::path(directory) /
+                      (std::wstring(L"yime-language-bar-") + std::to_wstring(GetCurrentProcessId()));
+    std::filesystem::create_directories(root);
+    return (root / leaf).wstring();
+}
+
+class FakeMenu final : public ITfMenu {
+public:
+    struct Entry {
+        UINT id = 0;
+        DWORD flags = 0;
+        std::wstring text;
+        FakeMenu* submenu = nullptr;
+    };
+
+    ~FakeMenu() {
+        for (auto& entry : entries) if (entry.submenu) entry.submenu->Release();
+    }
+    STDMETHODIMP QueryInterface(REFIID iid, void** object) override {
+        if (!object) return E_POINTER;
+        *object = nullptr;
+        if (!IsEqualIID(iid, IID_IUnknown) && !IsEqualIID(iid, __uuidof(ITfMenu))) return E_NOINTERFACE;
+        *object = static_cast<ITfMenu*>(this);
+        AddRef();
+        return S_OK;
+    }
+    STDMETHODIMP_(ULONG) AddRef() override { return ++references_; }
+    STDMETHODIMP_(ULONG) Release() override {
+        const ULONG remaining = --references_;
+        if (!remaining) delete this;
+        return remaining;
+    }
+    STDMETHODIMP AddMenuItem(UINT id, DWORD flags, HBITMAP, HBITMAP, const WCHAR* text,
+                             ULONG count, ITfMenu** submenu) override {
+        Entry entry{id, flags, text ? std::wstring(text, count) : std::wstring(), nullptr};
+        if (submenu) {
+            entry.submenu = new FakeMenu();
+            entry.submenu->AddRef();
+            *submenu = entry.submenu;
+        }
+        entries.push_back(std::move(entry));
+        return S_OK;
+    }
+
+    std::vector<Entry> entries;
+
+private:
+    std::atomic<ULONG> references_{1};
+};
+
+class FakeLanguageBarSink final : public ITfLangBarItemSink {
+public:
+    STDMETHODIMP QueryInterface(REFIID iid, void** object) override {
+        if (!object) return E_POINTER;
+        *object = nullptr;
+        if (!IsEqualIID(iid, IID_IUnknown) && !IsEqualIID(iid, __uuidof(ITfLangBarItemSink))) {
+            return E_NOINTERFACE;
+        }
+        *object = static_cast<ITfLangBarItemSink*>(this);
+        AddRef();
+        return S_OK;
+    }
+    STDMETHODIMP_(ULONG) AddRef() override { return ++references_; }
+    STDMETHODIMP_(ULONG) Release() override { return --references_; }
+    STDMETHODIMP OnUpdate(DWORD flags) override {
+        updates |= flags;
+        ++count;
+        return S_OK;
+    }
+    DWORD updates = 0;
+    unsigned count = 0;
+
+private:
+    std::atomic<ULONG> references_{1};
+};
+
+UINT selectChineseFromPopup(HMENU menu, POINT, void* context) noexcept {
+    auto* seen = static_cast<bool*>(context);
+    *seen = menu && GetMenuItemCount(menu) == 6 && GetSubMenu(menu, 3) &&
+            GetSubMenu(menu, 4) && GetSubMenu(menu, 5);
+    return YIME_LBI_CHINESE;
+}
 
 void expect(bool condition, const char* message) {
     if (!condition) {
@@ -104,6 +194,19 @@ void testCandidateElement() {
            "ninth candidate display label mismatch");
     SysFreeString(ninth);
 
+    yime::experiment::BrokerCandidate sentence{"sentence", "秋候选组成的动态句子"};
+    candidates->Update(nullptr, values, 0, "key_sequence", &sentence);
+    expect(candidates->GetCount(&count) == S_OK && count == 10,
+           "sentence row did not precede nine Shift candidates");
+    BSTR sentenceRow = nullptr;
+    expect(candidates->GetString(0, &sentenceRow) == S_OK && sentenceRow &&
+               std::wstring_view(sentenceRow) == L"句:  秋候选组成的动态句子",
+           "dynamic sentence row label or text mismatch");
+    SysFreeString(sentenceRow);
+    selection = 99;
+    expect(candidates->GetSelection(&selection) == S_OK && selection == 1,
+           "sentence row displaced the first-word candidate selection incorrectly");
+
     values[0].code = "yjkl";
     values[0].yinyuan = "音元序列";
     values[0].standardPinyin = "qiū";
@@ -170,6 +273,10 @@ void testOwnedCandidatePopup() {
     popup.SetSelectionHandler([](void* context, unsigned ordinal) noexcept {
         *static_cast<unsigned*>(context) = ordinal;
     }, &selected);
+    std::array<int, 2> selectedSegment{-1, -1};
+    popup.SetSegmentHandler([](void* context, int start, int end) noexcept {
+        *static_cast<std::array<int, 2>*>(context) = {start, end};
+    }, &selectedSegment);
     std::vector<std::wstring> candidates;
     for (int index = 1; index <= 10; ++index) {
         candidates.push_back(L"⇧" + std::to_wstring(index) + L"  候选");
@@ -190,8 +297,61 @@ void testOwnedCandidatePopup() {
     selected = 0;
     SendMessageW(window, WM_LBUTTONUP, 0, MAKELPARAM(1, 1));
     expect(selected == 0, "owned candidate popup accepted a border click");
+
+    const RECT centeredAnchor{100, 100, 101, 101};
+    yime::experiment::BrokerCandidate editableSentence{"sentence", "甲丙"};
+    editableSentence.segments = {{0, 2, "甲", "ab"}, {2, 4, "丙", "cd"}};
+    expect(popup.Update({L"⇧1  甲  ab", L"⇧2  乙  ab"}, centeredAnchor, nullptr,
+                        false, 0, &editableSentence, 0, 2),
+           "owned sentence popup update failed");
+    popup.Show(true);
+    SendMessageW(window, WM_LBUTTONDOWN, 0, MAKELPARAM(35, 10));
+    SendMessageW(window, WM_LBUTTONUP, 0, MAKELPARAM(35, 10));
+    expect(selectedSegment == std::array<int, 2>{0, 2},
+           "sentence row did not route the clicked editable segment span");
+    RECT client{};
+    GetClientRect(window, &client);
+    const int sentenceRowHeight = (client.bottom - 16) / static_cast<int>(popup.RowCount());
+    selected = 0;
+    SendMessageW(window, WM_LBUTTONUP, 0,
+                 MAKELPARAM(20, 8 + sentenceRowHeight + sentenceRowHeight / 2));
+    expect(selected == 1, "first-word row below the sentence did not retain Shift ordinal one");
+
+    yime::experiment::BrokerCandidate wholeWord{"whole-word", "本地"};
+    selected = 0;
+    selectedSegment = {-1, -1};
+    expect(popup.Update({L"⇧1  本地"}, centeredAnchor, nullptr, false, 0,
+                        &wholeWord, -1, -1),
+           "whole system-word sentence popup update failed");
+    expect(popup.RowCount() == 2, "whole system word did not reserve one sentence row");
+    GetClientRect(window, &client);
+    const int wholeWordRowHeight = (client.bottom - 16) / static_cast<int>(popup.RowCount());
+    SendMessageW(window, WM_LBUTTONDOWN, 0, MAKELPARAM(35, 10));
+    SendMessageW(window, WM_LBUTTONUP, 0, MAKELPARAM(35, 10));
+    expect(selectedSegment == std::array<int, 2>{-1, -1},
+           "whole system-word sentence row exposed a false editable segment");
+    SendMessageW(window, WM_LBUTTONUP, 0,
+                 MAKELPARAM(20, 8 + wholeWordRowHeight + wholeWordRowHeight / 2));
+    expect(selected == 1, "candidate below the whole system-word row lost Shift ordinal one");
+
+    expect(popup.Update({L"⇧1  甲  ab"}, centeredAnchor, nullptr),
+           "short three-part candidate popup update failed");
+    const LONG shortCandidateWidth = popup.Bounds().right - popup.Bounds().left;
+    expect(popup.Update({L"⇧1  很长的候选字词  very-long-key-sequence"}, centeredAnchor, nullptr),
+           "long three-part candidate popup update failed");
+    const LONG fullCandidateWidth = popup.Bounds().right - popup.Bounds().left;
+    expect(fullCandidateWidth > shortCandidateWidth,
+           "candidate label, word, annotation and their gaps did not drive popup width");
+    yime::experiment::BrokerCandidate longSentence{"long-sentence", "这是一个明显长于普通候选默认宽度的动态组句结果"};
+    longSentence.segments = {{0, 1, "这是一个明显长于普通候选默认宽度的动态组句结果", "ab"}};
+    expect(popup.Update({L"⇧1  甲  ab"}, centeredAnchor, nullptr, false, 0,
+                        &longSentence, 0, 1),
+           "long sentence popup update failed");
+    const LONG sentenceWidth = popup.Bounds().right - popup.Bounds().left;
+    expect(sentenceWidth > shortCandidateWidth,
+           "dynamic sentence row did not expand popup beyond candidate width");
     const RECT bounds = popup.Bounds();
-    HMONITOR monitor = MonitorFromRect(&anchor, MONITOR_DEFAULTTONEAREST);
+    HMONITOR monitor = MonitorFromRect(&centeredAnchor, MONITOR_DEFAULTTONEAREST);
     MONITORINFO info{};
     info.cbSize = sizeof(info);
     expect(GetMonitorInfoW(monitor, &info) != FALSE, "popup monitor work area unavailable");
@@ -212,16 +372,38 @@ void testExperimentSettings() {
            "experiment medium font default is not 12 points");
     expect(missing.candidateAnnotation == "key_sequence",
            "experiment candidate encoding default is not key sequence");
+
+    const std::wstring path = temporaryStatePath(L"settings.json");
+    DeleteFileW(path.c_str());
+    ExperimentSettings updated;
+    expect(ApplyExperimentSettingsCommand(ExperimentSettingsCommand::English, path, &updated) &&
+               updated.asciiMode && updated.revision > 0,
+           "language-bar state update did not persist English mode atomically");
+    const auto englishRevision = updated.revision;
+    expect(ApplyExperimentSettingsCommand(ExperimentSettingsCommand::ModeFull, path, &updated) &&
+               updated.asciiMode && updated.mode == "full" && updated.revision > englishRevision,
+           "single-field language-bar update overwrote another trial setting");
+    DeleteFileW(path.c_str());
 }
 
 void testLanguageBarItem() {
-    auto* item = new LanguageBarItem();
+    using namespace yime::experiment;
+    const std::wstring path = temporaryStatePath(L"language-bar.json");
+    DeleteFileW(path.c_str());
+    ExperimentSettings initial;
+    expect(ApplyExperimentSettingsCommand(ExperimentSettingsCommand::Chinese, path, &initial),
+           "could not seed language-bar state");
+    bool popupSeen = false;
+    auto* item = new LanguageBarItem(path, selectChineseFromPopup, &popupSeen);
     TF_LANGBARITEMINFO info{};
     expect(item->GetInfo(&info) == S_OK, "language bar GetInfo failed");
     expect(IsEqualGUID(info.clsidService, CLSID_YimeTextServiceExperiment), "language bar service CLSID mismatch");
     expect(IsEqualGUID(info.guidItem, GUID_YimeTextServiceExperimentLangBar), "language bar item GUID mismatch");
-    expect(info.dwStyle == TF_LBI_STYLE_BTN_BUTTON, "language bar must remain a button without a menu");
-    expect(std::wstring_view(info.szDescription) == L"Yime 自研栈试验版", "language bar description mismatch");
+    expect((info.dwStyle & TF_LBI_STYLE_BTN_BUTTON) != 0 &&
+               (info.dwStyle & TF_LBI_STYLE_SHOWNINTRAY) == 0,
+           "input-mode button must match the PIME-compatible taskbar style");
+    expect(std::wstring_view(info.szDescription) == L"中",
+           "Chinese mode must replace the host CH label with 中");
     DWORD status = ~DWORD{0};
     expect(item->GetStatus(&status) == S_OK && status == 0, "language bar initial status mismatch");
     expect(item->Show(FALSE) == S_OK && item->GetStatus(&status) == S_OK &&
@@ -230,15 +412,65 @@ void testLanguageBarItem() {
     expect(item->Show(TRUE) == S_OK && item->GetStatus(&status) == S_OK &&
                (status & TF_LBI_STATUS_HIDDEN) == 0,
            "language bar show state mismatch");
-    HICON icon = reinterpret_cast<HICON>(1);
-    expect(item->GetIcon(&icon) == E_NOTIMPL && icon == nullptr, "language bar unexpectedly supplied an icon");
+    HICON icon = nullptr;
+    expect(item->GetIcon(&icon) == S_OK && icon,
+           "docked taskbar language bar did not receive the Chinese mode icon");
+    DestroyIcon(icon);
     BSTR text = nullptr;
-    expect(item->GetText(&text) == S_OK && text && std::wstring_view(text) == L"Yime 自研栈试验版",
-           "language bar text mismatch");
+    expect(item->GetText(&text) == S_OK && text && std::wstring_view(text) == L"中",
+           "language bar Chinese text mismatch");
     SysFreeString(text);
-    expect(item->InitMenu(nullptr) == E_NOTIMPL, "language bar unexpectedly exposed a menu");
-    expect(item->OnMenuSelect(1) == E_INVALIDARG, "language bar unexpectedly accepted a command ID");
+    expect(item->InitMenu(nullptr) == E_POINTER,
+           "language bar menu path must validate the host ITfMenu callback");
+
+    auto* menu = new FakeMenu();
+    expect(item->InitMenu(menu) == S_OK && menu->entries.size() == 6,
+           "host right-click path did not build the complete trial menu");
+    expect(menu->entries[3].text == L"输入方案" && menu->entries[3].submenu &&
+               menu->entries[3].submenu->entries.size() == 3,
+           "input scheme cascade is missing");
+    expect(menu->entries[4].text == L"候选字号" && menu->entries[4].submenu &&
+               menu->entries[4].submenu->entries.size() == 3,
+           "candidate font cascade is missing");
+    expect(menu->entries[5].text == L"显示编码" && menu->entries[5].submenu &&
+               menu->entries[5].submenu->entries.size() == 4,
+           "candidate annotation cascade is missing");
+    menu->Release();
+
+    FakeLanguageBarSink sink;
+    ITfSource* source = nullptr;
+    expect(item->QueryInterface(__uuidof(ITfSource), reinterpret_cast<void**>(&source)) == S_OK && source,
+           "language bar does not expose ITfSource updates");
+    DWORD cookie = 0;
+    expect(source && source->AdviseSink(__uuidof(ITfLangBarItemSink), &sink, &cookie) == S_OK,
+           "language bar sink subscription failed");
+    expect(item->OnClick(TF_LBI_CLK_LEFT, {}, nullptr) == S_OK,
+           "desktop language-bar left click did not toggle to English");
+    text = nullptr;
+    expect(item->GetText(&text) == S_OK && text && std::wstring_view(text) == L"英",
+           "English mode must replace the host EN label with 英");
+    SysFreeString(text);
+    icon = nullptr;
+    expect(item->GetIcon(&icon) == S_OK && icon,
+           "docked taskbar language bar did not receive the English mode icon");
+    DestroyIcon(icon);
+    expect((sink.updates & (TF_LBI_TEXT | TF_LBI_ICON)) == (TF_LBI_TEXT | TF_LBI_ICON),
+           "English toggle did not notify the host text and icon slots");
+    expect(item->OnClick(TF_LBI_CLK_RIGHT, {}, nullptr) == S_OK && popupSeen,
+           "docked taskbar right click did not route through the cascading popup");
+    expect(!LoadExperimentSettings(path).asciiMode,
+           "taskbar popup command did not switch back to Chinese");
+    expect(item->OnMenuSelect(YIME_LBI_MODE_FULL) == S_OK &&
+               LoadExperimentSettings(path).mode == "full",
+           "host submenu click did not persist the requested trial mode");
+    expect(item->OnMenuSelect(1) == E_INVALIDARG,
+           "language bar accepted an unknown host command ID");
+    if (source) {
+        expect(source->UnadviseSink(cookie) == S_OK, "language bar sink unsubscribe failed");
+        source->Release();
+    }
     item->Release();
+    DeleteFileW(path.c_str());
 }
 
 void testComLifecycle(const wchar_t* dllPath) {

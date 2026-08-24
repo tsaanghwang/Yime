@@ -9,12 +9,20 @@
 
 namespace yime::experiment {
 
+struct BrokerSegment {
+    int start = 0;
+    int end = 0;
+    std::string text;
+    std::string code;
+};
+
 struct BrokerCandidate {
     std::string id;
     std::string text;
     std::string code;
     std::string yinyuan;
     std::string standardPinyin;
+    std::vector<BrokerSegment> segments;
 };
 
 struct BrokerUpdate {
@@ -25,6 +33,10 @@ struct BrokerUpdate {
     int pageNumber = 0;
     bool hasPreviousPage = false;
     bool hasNextPage = false;
+    bool hasSentence = false;
+    BrokerCandidate sentence;
+    int activeSegmentStart = -1;
+    int activeSegmentEnd = -1;
 };
 
 class BrokerClient {
@@ -40,13 +52,17 @@ public:
     bool Backspace(BrokerUpdate* update, std::string* error);
     bool PreviousPage(BrokerUpdate* update, std::string* error);
     bool NextPage(BrokerUpdate* update, std::string* error);
+    bool FocusSegment(const std::string& candidateId, int start, int end,
+                      BrokerUpdate* update, std::string* error);
     bool SelectCandidate(const std::string& candidateId, const std::string& mutationId,
                          BrokerUpdate* update, std::string* error);
     void Close() noexcept;
     bool IsConnected() const noexcept { return pipe_ != INVALID_HANDLE_VALUE && !sessionId_.empty(); }
 
 private:
-    bool ApplyEvent(unsigned operation, const std::string& code, BrokerUpdate* update, std::string* error);
+    bool ApplyEvent(unsigned operation, const std::string& code, BrokerUpdate* update,
+                    std::string* error, const std::string& candidateId = {},
+                    int segmentStart = 0, int segmentEnd = 0);
     bool Exchange(const std::string& request, std::string* response, std::string* error);
     bool ParseUpdate(const std::string& response, uint64_t sequence, BrokerUpdate* update, std::string* error);
     void Disconnect() noexcept;
