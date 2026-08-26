@@ -247,6 +247,8 @@ type lexiconColumnSpec struct {
 type appState struct {
 	sharedDir         string
 	userDir           string
+	indexRoot         string
+	experimental      bool
 	mode              reverselookup.Mode
 	sourcePath        string
 	rimeLexiconPath   string
@@ -288,6 +290,8 @@ func main() {
 	userDir := flag.String("UserDir", "", "Yime user data directory")
 	mode := flag.String("Mode", "variable", "Yime schema mode: variable, full, shorthand")
 	addMode := flag.Bool("Add", false, "Open the add-phrase dialog immediately after launch")
+	indexRoot := flag.String("IndexRoot", "", "optional YimeCore .yidx directory")
+	experimental := flag.Bool("Experimental", false, "use the isolated YimeCore user lexicon")
 	flag.Parse()
 	if strings.TrimSpace(*sharedDir) == "" || strings.TrimSpace(*userDir) == "" {
 		showMessageBox("缺少 SharedDir 或 UserDir 参数。", 0x10)
@@ -296,6 +300,8 @@ func main() {
 	state := &appState{
 		sharedDir:       strings.TrimSpace(*sharedDir),
 		userDir:         strings.TrimSpace(*userDir),
+		indexRoot:       strings.TrimSpace(*indexRoot),
+		experimental:    *experimental,
 		mode:            reverselookup.Mode(strings.TrimSpace(*mode)),
 		sourcePath:      filepath.Join(strings.TrimSpace(*userDir), userlexicon.SourceFileName),
 		rimeLexiconPath: userlexicon.RimeLexiconPath(strings.TrimSpace(*userDir), strings.TrimSpace(*mode)),
@@ -311,7 +317,13 @@ func runApp(state *appState) error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 
-	if hwnd := findExistingWindow("YimeLexiconManager"); hwnd != 0 {
+	windowClass := "YimeLexiconManager"
+	windowTitle := "词库管理"
+	if state.experimental {
+		windowClass = "YimeCoreTrialLexiconManager"
+		windowTitle = "Yime 试验版用户词库"
+	}
+	if hwnd := findExistingWindow(windowClass); hwnd != 0 {
 		win32ui.PresentMainWindow(hwnd)
 		if state.addOnLoad {
 			procPostMessageW.Call(uintptr(hwnd), wmAppCommand, uintptr(idBtnAdd), 0)
@@ -326,7 +338,7 @@ func runApp(state *appState) error {
 	procInitCommonControlsEx.Call(uintptr(unsafe.Pointer(&icc)))
 
 	instance, _, _ := procGetModuleHandleW.Call(0)
-	className, _ := syscall.UTF16PtrFromString("YimeLexiconManager")
+	className, _ := syscall.UTF16PtrFromString(windowClass)
 	cursor, _, _ := procLoadCursorW.Call(0, uintptr(32512))
 	icon := win32ui.LoadYimeIcon(instance)
 	wndProcCallback = syscall.NewCallback(func(hwnd syscall.Handle, msg uint32, wParam, lParam uintptr) uintptr {
@@ -348,7 +360,7 @@ func runApp(state *appState) error {
 		return fmt.Errorf("RegisterClassEx failed")
 	}
 
-	title, _ := syscall.UTF16PtrFromString("词库管理")
+	title, _ := syscall.UTF16PtrFromString(windowTitle)
 	winW, winH := windowSizeForClient(state.clientW, state.clientH)
 	screenWidth, _, _ := procGetSystemMetrics.Call(0)
 	screenHeight, _, _ := procGetSystemMetrics.Call(1)

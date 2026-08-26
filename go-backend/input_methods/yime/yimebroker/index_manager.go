@@ -291,6 +291,13 @@ func (e *managedEngine) SelectIdempotent(candidateID, mutationID string) (engine
 	return engineapi.Result{}, errors.New("managed engine does not support idempotent selection")
 }
 
+func (e *managedEngine) ForgetCandidate(candidateID string) (engineapi.Result, error) {
+	if forgetter, ok := e.engine.(engineapi.CandidateForgetter); ok {
+		return forgetter.ForgetCandidate(candidateID)
+	}
+	return engineapi.Result{}, errors.New("managed engine does not support candidate forgetting")
+}
+
 func (e *managedEngine) Reset() engineapi.Result { return e.engine.Reset() }
 
 func (e *managedEngine) Close() error {

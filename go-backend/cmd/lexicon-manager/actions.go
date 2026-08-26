@@ -19,6 +19,7 @@ import (
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/toolhub"
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/userlexicon"
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/win32ui"
+	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/yimecore"
 )
 
 var invokeRimeBuild = settings.InvokeRimeBuild
@@ -167,6 +168,23 @@ func (state *appState) loadSystemLexicon() error {
 		return state.systemLexiconErr
 	}
 	state.systemLexiconOnce = true
+
+	if state.experimental && state.indexRoot != "" {
+		index, err := yimecore.OpenFileIndex(filepath.Join(state.indexRoot, string(state.mode)+".yidx"))
+		if err != nil {
+			state.systemLexiconErr = err
+			return err
+		}
+		defer index.Close()
+		state.systemLexicon = make(map[string]struct{}, index.RecordCount())
+		state.systemLexiconErr = index.VisitEntries(func(entry yimecore.Entry) bool {
+			if phrase := strings.TrimSpace(entry.Text); phrase != "" {
+				state.systemLexicon[phrase] = struct{}{}
+			}
+			return true
+		})
+		return state.systemLexiconErr
+	}
 
 	path := systemlexicon.DictPath(state.sharedDir, state.userDir, state.mode)
 	entries, err := systemlexicon.LoadDictFile(path)
@@ -416,6 +434,11 @@ func (state *appState) rebuildAllLexicons() error {
 func (state *appState) rebuildAndDeployAllLexicons() error {
 	if err := state.rebuildAllLexicons(); err != nil {
 		return err
+	}
+	if state.experimental {
+		// The trial Broker reads these generated overlays when it opens a new
+		// session. Existing compositions retain the overlay they started with.
+		return nil
 	}
 	if err := userlexicon.SyncRimeSchemas(state.sharedDir, state.userDir); err != nil {
 		return err

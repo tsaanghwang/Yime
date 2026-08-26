@@ -10,8 +10,29 @@ import (
 	"time"
 
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/runtimechange"
+	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/toolbarstate"
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/userbackup"
 )
+
+func TestExecuteTrialApplyUsesOnlyIsolatedToolbarState(t *testing.T) {
+	path := filepath.Join(t.TempDir(), toolbarstate.ExperimentFileName)
+	err := executeTrialApply(path, trialApplyRequest{
+		mode: toolbarstate.ExperimentModeFull, font: toolbarstate.CandidateFontLarge,
+		annotation: toolbarstate.AnnotationStandardPinyin, ascii: true,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	state, err := toolbarstate.Read(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if state.ExperimentMode != toolbarstate.ExperimentModeFull ||
+		state.CandidateFontPreset != toolbarstate.CandidateFontLarge ||
+		state.CandidateAnnotation != toolbarstate.AnnotationStandardPinyin || !state.ASCII {
+		t.Fatalf("trial settings mismatch: %+v", state)
+	}
+}
 
 func TestSettingsUILayoutFitsVisibleControls(t *testing.T) {
 	withoutHelp := buildSettingsUILayout(false)

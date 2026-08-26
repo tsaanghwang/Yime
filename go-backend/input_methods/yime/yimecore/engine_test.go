@@ -2,6 +2,7 @@ package yimecore
 
 import (
 	"errors"
+	"fmt"
 	"testing"
 
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/engineapi"
@@ -51,19 +52,43 @@ func TestDigitsRemainCompositionCode(t *testing.T) {
 	}
 }
 
-func TestExactCandidatesRankBeforePrefixCompletions(t *testing.T) {
+func TestExactCandidatesDoNotMixWithLongerCompletions(t *testing.T) {
 	engine := testEngine(t)
 	result := applyCode(t, engine, "a1")
-	if len(result.State.Candidates) != 4 {
-		t.Fatalf("candidate count = %d, want 4", len(result.State.Candidates))
+	if len(result.State.Candidates) != 2 {
+		t.Fatalf("candidate count = %d, want only 2 exact matches: %#v", len(result.State.Candidates), result.State.Candidates)
 	}
-	for i := 0; i < 2; i++ {
-		if !result.State.Candidates[i].Exact {
-			t.Fatalf("candidate %d should be exact: %+v", i, result.State.Candidates)
+	for i := range result.State.Candidates {
+		if !result.State.Candidates[i].Exact || result.State.Candidates[i].Code != "a1" {
+			t.Fatalf("candidate %d is not an exact same-code item: %+v", i, result.State.Candidates)
 		}
 	}
 	if result.State.Candidates[0].Text != "一" {
 		t.Fatalf("top candidate = %q, want 一", result.State.Candidates[0].Text)
+	}
+	if result.State.Sentence == nil || result.State.Sentence.Text != "一" {
+		t.Fatalf("top exact match did not enter the independent sentence: %#v", result.State)
+	}
+}
+
+func TestFirstPrefixNodePublishesVisibleCandidates(t *testing.T) {
+	engine := testEngine(t)
+	result := applyCode(t, engine, "a")
+	if len(result.State.Candidates) != 4 || result.State.Candidates[0].Text != "一" {
+		t.Fatalf("first-key prefix candidates missing or misordered: %#v", result.State.Candidates)
+	}
+	for i := range result.State.Candidates {
+		if result.State.Candidates[i].Exact || result.State.Candidates[i].Code == "a" {
+			t.Fatalf("first-key candidate %d is not a prefix completion: %+v", i, result.State.Candidates)
+		}
+	}
+	if result.State.Sentence == nil || result.State.Sentence.Exact || result.State.Sentence.Text != "一" ||
+		result.State.Sentence.Code != "a1" {
+		t.Fatalf("prefix node lost its single temporary sentence prediction: %#v", result.State)
+	}
+	selected, err := engine.Select(result.State.Candidates[0].ID)
+	if err != nil || selected.Commit != "一" || selected.State.RawInput != "" {
+		t.Fatalf("first-key prefix candidate was not selectable: result=%#v err=%v", selected, err)
 	}
 }
 
@@ -81,18 +106,16 @@ func TestLexicalPhraseRanksBeforeHigherScoringGeneratedSentence(t *testing.T) {
 		t.Fatal(err)
 	}
 	result := applyCode(t, engine, "ab")
-	if len(result.State.Candidates) < 2 {
-		t.Fatalf("lexical/generated fixture produced %#v", result.State.Candidates)
-	}
-	if result.State.Candidates[0].Text != "词典短语" || len(result.State.Candidates[0].Segments) != 0 {
+	if len(result.State.Candidates) != 1 || result.State.Candidates[0].Text != "词典短语" ||
+		len(result.State.Candidates[0].Segments) != 0 {
 		t.Fatalf("lexical phrase did not stay first: %#v", result.State.Candidates)
 	}
-	if result.State.Candidates[1].Text != "甲乙" || len(result.State.Candidates[1].Segments) != 2 {
-		t.Fatalf("generated sentence did not follow lexical phrase: %#v", result.State.Candidates)
+	if result.State.Sentence == nil || result.State.Sentence.Text != "词典短语" || len(result.State.Sentence.Segments) != 0 {
+		t.Fatalf("lexical phrase did not own the sentence row: %#v", result.State)
 	}
 }
 
-func TestHigherScoringLexicalPrefixPrecedesGeneratedExactSentence(t *testing.T) {
+func TestLexicalPrefixDoesNotFollowExactCandidates(t *testing.T) {
 	index, err := NewIndex([]Entry{
 		{Text: "低频精确词", Code: "ab", Weight: 1},
 		{Text: "高频整词", Code: "abc", Weight: 1000},
@@ -107,13 +130,49 @@ func TestHigherScoringLexicalPrefixPrecedesGeneratedExactSentence(t *testing.T) 
 		t.Fatal(err)
 	}
 	result := applyCode(t, engine, "ab")
-	if len(result.State.Candidates) < 3 || result.State.Candidates[0].Text != "高频整词" ||
-		result.State.Candidates[0].Exact || len(result.State.Candidates[0].Segments) != 0 {
-		t.Fatalf("high-frequency lexical prefix did not lead composition: %#v", result.State.Candidates)
+	if len(result.State.Candidates) != 1 || result.State.Candidates[0].Text != "低频精确词" ||
+		!result.State.Candidates[0].Exact || len(result.State.Candidates[0].Segments) != 0 {
+		t.Fatalf("visible exact candidate mismatch: %#v", result.State.Candidates)
 	}
-	if result.State.Candidates[1].Text != "低频精确词" ||
-		result.State.Candidates[2].Text != "甲乙" {
-		t.Fatalf("lexical/generated fallbacks lost their class order: %#v", result.State.Candidates)
+	if result.State.Sentence == nil || result.State.Sentence.Text != "低频精确词" {
+		t.Fatalf("exact lexical entry did not outrank generated/predicted paths: %#v", result.State)
+	}
+}
+
+func TestLexicalExactPagesExcludePrefixDescendants(t *testing.T) {
+	entries := make([]Entry, 0, 13)
+	for i := 0; i < 12; i++ {
+		entries = append(entries, Entry{Text: fmt.Sprintf("同码-%02d", i), Code: "a", Weight: int64(100 - i)})
+	}
+	entries = append(entries, Entry{Text: "高分预测", Code: "ab", Weight: 1_000_000})
+	index, err := NewIndex(entries)
+	if err != nil {
+		t.Fatal(err)
+	}
+	engine, err := NewEngine(index, 9)
+	if err != nil {
+		t.Fatal(err)
+	}
+	first := applyCode(t, engine, "a").State
+	if len(first.Candidates) != 9 || !first.HasNext {
+		t.Fatalf("first exact page = %#v", first)
+	}
+	for _, candidate := range first.Candidates {
+		if !candidate.Exact {
+			t.Fatalf("prediction appeared before the exact pool was exhausted: %#v", first.Candidates)
+		}
+	}
+	second, err := engine.Apply(engineapi.Event{Operation: engineapi.PageNext})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(second.State.Candidates) != 3 || second.State.HasNext {
+		t.Fatalf("second page = %#v", second.State)
+	}
+	for i := 0; i < 3; i++ {
+		if !second.State.Candidates[i].Exact || second.State.Candidates[i].Code != "a" {
+			t.Fatalf("second-page exact candidate %d was displaced: %#v", i, second.State.Candidates)
+		}
 	}
 }
 

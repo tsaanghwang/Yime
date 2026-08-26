@@ -11,6 +11,7 @@ import (
 	"math"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 	"sync"
 )
@@ -133,6 +134,38 @@ func (m *UserModel) candidateBoost(code, text string) int64 {
 		return math.MaxInt64
 	}
 	return int64(count) * userBoostPerSelection
+}
+
+func (m *UserModel) learnedCandidates(code string, limit int) []candidateIdentity {
+	if m == nil || code == "" || limit <= 0 {
+		return nil
+	}
+	type learnedCandidate struct {
+		identity candidateIdentity
+		count    uint64
+	}
+	m.mu.RLock()
+	learned := make([]learnedCandidate, 0)
+	for identity, count := range m.selections {
+		if identity.code == code && count > 0 {
+			learned = append(learned, learnedCandidate{identity: identity, count: count})
+		}
+	}
+	m.mu.RUnlock()
+	sort.Slice(learned, func(i, j int) bool {
+		if learned[i].count != learned[j].count {
+			return learned[i].count > learned[j].count
+		}
+		return learned[i].identity.text < learned[j].identity.text
+	})
+	if len(learned) > limit {
+		learned = learned[:limit]
+	}
+	result := make([]candidateIdentity, len(learned))
+	for index := range learned {
+		result[index] = learned[index].identity
+	}
+	return result
 }
 
 func (m *UserModel) observe(code, text string) {

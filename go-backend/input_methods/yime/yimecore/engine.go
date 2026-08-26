@@ -17,6 +17,7 @@ type Engine struct {
 	limit           int
 	rawInput        string
 	candidates      []engineapi.Candidate
+	sentence        *engineapi.Candidate
 	exactCache      map[string][]record
 	sentenceInput   string
 	sentenceStates  [][]sentencePath
@@ -112,7 +113,8 @@ func (e *Engine) Apply(event engineapi.Event) (engineapi.Result, error) {
 			return engineapi.Result{}, engineapi.ErrInvalidEvent
 		}
 		if e.activeSegment != nil || len(e.segmentChoices) > 0 {
-			e.clearSegmentEdits()
+			e.activeSegment = nil
+			e.focusedSentence = nil
 			e.resetSentenceComposer()
 		}
 		e.rawInput += code
@@ -168,6 +170,17 @@ func (e *Engine) Apply(event engineapi.Event) (engineapi.Result, error) {
 				}
 			}
 		}
+		if focused == nil && e.sentence != nil && e.sentence.ID == event.CandidateID {
+			copy := cloneCandidate(*e.sentence)
+			sentence = &copy
+			for i := range copy.Segments {
+				segment := copy.Segments[i]
+				if segment.Start == event.SegmentStart && segment.End == event.SegmentEnd {
+					focused = &segment
+					break
+				}
+			}
+		}
 		for _, candidate := range e.candidates {
 			if focused != nil {
 				break
@@ -185,9 +198,23 @@ func (e *Engine) Apply(event engineapi.Event) (engineapi.Result, error) {
 				}
 			}
 		}
+		if focused == nil && sentence != nil {
+			if expanded, first, ok := e.expandExactWholeSentence(sentence, event.SegmentStart, event.SegmentEnd); ok {
+				sentence = expanded
+				focused = first
+			}
+		}
+		if focused != nil && sentence != nil {
+			if expanded, first, ok := e.resegmentConstruction(sentence, *focused); ok {
+				sentence = expanded
+				focused = first
+			}
+		}
 		if focused == nil || focused.End > len(e.rawInput) {
 			return engineapi.Result{}, engineapi.ErrInvalidEvent
 		}
+		e.sentence = sentence
+		e.seedLearnedSentenceChoices(sentence)
 		e.activeSegment = focused
 		e.focusedSentence = sentence
 		e.pageNumber = 0
@@ -196,6 +223,29 @@ func (e *Engine) Apply(event engineapi.Event) (engineapi.Result, error) {
 	}
 	e.refresh()
 	return engineapi.Result{State: e.snapshot()}, nil
+}
+
+func (e *Engine) seedLearnedSentenceChoices(sentence *engineapi.Candidate) {
+	if sentence == nil || sentence.SourceID != "user-model" || len(sentence.Segments) < 2 ||
+		len(e.segmentChoices) > 0 {
+		return
+	}
+	choices := make(map[segmentSpan]record, len(sentence.Segments))
+	for _, segment := range sentence.Segments {
+		var selected *record
+		for _, match := range e.exactMatches(segment.Code) {
+			if match.text == segment.Text {
+				copy := match
+				selected = &copy
+				break
+			}
+		}
+		if selected == nil {
+			return
+		}
+		choices[segmentSpan{start: segment.Start, end: segment.End}] = *selected
+	}
+	e.segmentChoices = choices
 }
 
 // Select commits a candidate from the current snapshot and clears the input.
@@ -214,6 +264,9 @@ func (e *Engine) SelectIdempotent(candidateID, mutationID string) (engineapi.Res
 func (e *Engine) selectCandidate(candidateID, mutationID string) (engineapi.Result, error) {
 	if e.activeSegment != nil && e.focusedSentence != nil && e.focusedSentence.ID == candidateID {
 		return e.commitCandidate(*e.focusedSentence, mutationID)
+	}
+	if e.activeSegment == nil && e.sentence != nil && e.sentence.ID == candidateID {
+		return e.commitCandidate(*e.sentence, mutationID)
 	}
 	for _, candidate := range e.candidates {
 		if candidate.ID == candidateID {
@@ -239,6 +292,34 @@ func (e *Engine) selectCandidate(candidateID, mutationID string) (engineapi.Resu
 	return engineapi.Result{}, engineapi.ErrUnknownCandidate
 }
 
+// ForgetCandidate removes learned preference for a candidate in the current
+// snapshot without committing or clearing the composition.
+func (e *Engine) ForgetCandidate(candidateID string) (engineapi.Result, error) {
+	var target *engineapi.Candidate
+	if e.sentence != nil && e.sentence.ID == candidateID {
+		copy := cloneCandidate(*e.sentence)
+		target = &copy
+	}
+	if target == nil {
+		for index := range e.candidates {
+			if e.candidates[index].ID == candidateID {
+				copy := cloneCandidate(e.candidates[index])
+				target = &copy
+				break
+			}
+		}
+	}
+	if target == nil {
+		return engineapi.Result{}, engineapi.ErrUnknownCandidate
+	}
+	if _, err := e.userModel.ForgetWithError(target.Code, target.Text); err != nil {
+		return engineapi.Result{}, fmt.Errorf("persist candidate forget: %w", err)
+	}
+	e.pageNumber = 0
+	e.refresh()
+	return engineapi.Result{State: e.snapshot()}, nil
+}
+
 func (e *Engine) commitCandidate(candidate engineapi.Candidate, mutationID string) (engineapi.Result, error) {
 	if err := e.userModel.observeIdempotent(candidate.Code, candidate.Text, e.previousCommit, mutationID); err != nil {
 		return engineapi.Result{}, fmt.Errorf("persist user selection: %w", err)
@@ -248,6 +329,7 @@ func (e *Engine) commitCandidate(candidate engineapi.Candidate, mutationID strin
 	e.pageNumber = 0
 	e.hasNextPage = false
 	e.candidates = nil
+	e.sentence = nil
 	e.clearSegmentEdits()
 	e.resetSentenceComposer()
 	return engineapi.Result{State: e.snapshot(), Commit: candidate.Text}, nil
@@ -257,6 +339,7 @@ func (e *Engine) commitCandidate(candidate engineapi.Candidate, mutationID strin
 func (e *Engine) Reset() engineapi.Result {
 	e.rawInput = ""
 	e.candidates = nil
+	e.sentence = nil
 	e.pageNumber = 0
 	e.hasNextPage = false
 	e.clearSegmentEdits()
@@ -267,6 +350,7 @@ func (e *Engine) Reset() engineapi.Result {
 func (e *Engine) refresh() {
 	if e.rawInput == "" {
 		e.candidates = nil
+		e.sentence = nil
 		e.pageNumber = 0
 		e.hasNextPage = false
 		return
@@ -276,74 +360,49 @@ func (e *Engine) refresh() {
 		return
 	}
 	fetchLimit := (e.pageNumber+1)*e.limit + 1
-	records := e.index.lookup(e.rawInput, fetchLimit)
+	exactRecords := e.index.exact(e.rawInput, fetchLimit)
 	lexicalExactCandidates := make([]engineapi.Candidate, 0, fetchLimit)
-	generatedSentenceCandidates := make([]engineapi.Candidate, 0, fetchLimit)
-	prefixCandidates := make([]engineapi.Candidate, 0, fetchLimit)
-	generatedPrefixCandidates := make([]engineapi.Candidate, 0, fetchLimit)
-	seen := make(map[string]struct{}, fetchLimit)
-	for _, item := range records {
+	seenExact := make(map[string]struct{}, len(exactRecords))
+	for _, item := range exactRecords {
 		candidate := engineapi.Candidate{
-			ID:       item.code + "\x1f" + item.text,
-			Text:     item.text,
-			Code:     item.code,
-			SourceID: item.source,
-			Weight:   item.weight,
-			Exact:    item.code == e.rawInput,
+			ID: item.code + "\x1f" + item.text, Text: item.text, Code: item.code,
+			SourceID: item.source, Weight: item.weight, Exact: true,
 		}
 		e.scoreCandidate(&candidate)
-		seen[candidate.Text+"\x1f"+candidate.Code] = struct{}{}
-		if candidate.Exact {
-			lexicalExactCandidates = append(lexicalExactCandidates, candidate)
-		} else {
-			prefixCandidates = append(prefixCandidates, candidate)
-		}
+		lexicalExactCandidates = append(lexicalExactCandidates, candidate)
+		seenExact[candidate.ID] = struct{}{}
 	}
-	for _, candidate := range e.composeSentences(e.rawInput, fetchLimit) {
-		key := candidate.Text + "\x1f" + candidate.Code
-		if _, exists := seen[key]; exists {
+	for _, identity := range e.userModel.learnedCandidates(e.rawInput, fetchLimit) {
+		candidate := engineapi.Candidate{
+			ID: identity.code + "\x1f" + identity.text, Text: identity.text,
+			Code: identity.code, SourceID: "user-model", Exact: true,
+		}
+		if _, exists := seenExact[candidate.ID]; exists {
 			continue
 		}
 		e.scoreCandidate(&candidate)
-		if candidate.Exact {
-			generatedSentenceCandidates = append(generatedSentenceCandidates, candidate)
-		} else {
-			generatedPrefixCandidates = append(generatedPrefixCandidates, candidate)
-		}
-		seen[key] = struct{}{}
+		lexicalExactCandidates = append(lexicalExactCandidates, candidate)
 	}
-	// A reviewed lexical entry is a stronger result than a generated sentence
-	// path. Summed single-character frequencies can otherwise push the real
-	// phrase off the first page (for example 你好 below 你郝/尼好). Keep the
-	// three result classes ordered explicitly and rank only within each class.
 	rankCandidates(lexicalExactCandidates)
-	rankGeneratedCandidates(generatedSentenceCandidates)
-	rankCandidates(prefixCandidates)
-	rankGeneratedCandidates(generatedPrefixCandidates)
-	lexicalGroups := [][]engineapi.Candidate{lexicalExactCandidates, prefixCandidates}
-	// During a real multi-term composition, a high-frequency system word is a
-	// stronger default than a low-frequency exact spelling assembled from
-	// shorter terms. Keep ordinary one-term input exact-first, and only promote
-	// the lexical prefix when the sentence lattice has an exact competing path
-	// and the prefix has the stronger learned/static/context score.
-	if len(generatedSentenceCandidates) > 0 && len(prefixCandidates) > 0 &&
-		(len(lexicalExactCandidates) == 0 ||
-			prefixCandidates[0].Score.Total > lexicalExactCandidates[0].Score.Total) {
-		lexicalGroups[0], lexicalGroups[1] = lexicalGroups[1], lexicalGroups[0]
-	}
-	pool := make([]engineapi.Candidate, 0, fetchLimit)
-	groups := [][]engineapi.Candidate{lexicalGroups[0], lexicalGroups[1], generatedSentenceCandidates, generatedPrefixCandidates}
-	for _, group := range groups {
-		for _, candidate := range group {
-			pool = append(pool, candidate)
-			if len(pool) == fetchLimit {
-				break
+	e.sentence = e.bestSentence(lexicalExactCandidates, fetchLimit)
+	pool := append([]engineapi.Candidate(nil), lexicalExactCandidates...)
+	if len(pool) == 0 && (e.sentence == nil || !e.sentence.Exact) {
+		records := e.index.lookup(e.rawInput, fetchLimit)
+		pool = make([]engineapi.Candidate, 0, len(records))
+		for _, item := range records {
+			candidate := engineapi.Candidate{
+				ID:       item.code + "\x1f" + item.text,
+				Text:     item.text,
+				Code:     item.code,
+				SourceID: item.source,
+				Weight:   item.weight,
+				Exact:    item.code == e.rawInput,
 			}
-		}
-		if len(pool) == fetchLimit {
-			break
+			e.scoreCandidate(&candidate)
+			pool = append(pool, candidate)
 		}
 	}
+	rankCandidates(pool)
 	start := e.pageNumber * e.limit
 	if start >= len(pool) {
 		if e.pageNumber > 0 {
@@ -372,12 +431,16 @@ func (e *Engine) refreshSegmentCandidates() {
 		return
 	}
 	fetchLimit := (e.pageNumber+1)*e.limit + 1
-	records := e.index.exact(e.rawInput[segment.Start:segment.End], fetchLimit)
+	segmentInput := e.rawInput[segment.Start:segment.End]
+	records := e.index.exact(segmentInput, fetchLimit)
+	if segment.End == len(e.rawInput) {
+		records = e.index.lookup(segmentInput, fetchLimit)
+	}
 	pool := make([]engineapi.Candidate, 0, len(records))
 	for _, item := range records {
 		candidate := engineapi.Candidate{
 			ID: item.code + "\x1f" + item.text, Text: item.text, Code: item.code,
-			SourceID: item.source, Weight: item.weight, Exact: true,
+			SourceID: item.source, Weight: item.weight, Exact: item.code == segmentInput,
 		}
 		e.scoreCandidate(&candidate)
 		pool = append(pool, candidate)
@@ -416,6 +479,9 @@ func (e *Engine) ClearContext() { e.previousCommit = "" }
 
 func rankCandidates(candidates []engineapi.Candidate) {
 	sort.SliceStable(candidates, func(i, j int) bool {
+		if candidates[i].Exact != candidates[j].Exact {
+			return candidates[i].Exact
+		}
 		if candidates[i].Score.Total != candidates[j].Score.Total {
 			return candidates[i].Score.Total > candidates[j].Score.Total
 		}
@@ -431,11 +497,11 @@ func rankCandidates(candidates []engineapi.Candidate) {
 
 func rankGeneratedCandidates(candidates []engineapi.Candidate) {
 	sort.SliceStable(candidates, func(i, j int) bool {
-		if len(candidates[i].Segments) != len(candidates[j].Segments) {
-			return len(candidates[i].Segments) < len(candidates[j].Segments)
-		}
 		if candidates[i].Exact != candidates[j].Exact {
 			return candidates[i].Exact
+		}
+		if len(candidates[i].Segments) != len(candidates[j].Segments) {
+			return len(candidates[i].Segments) < len(candidates[j].Segments)
 		}
 		if candidates[i].Score.Total != candidates[j].Score.Total {
 			return candidates[i].Score.Total > candidates[j].Score.Total
@@ -461,6 +527,13 @@ func (e *Engine) snapshot() engineapi.State {
 	}
 	if len(e.candidates) > 0 {
 		result.Candidates = cloneCandidates(e.candidates)
+	}
+	if e.sentence != nil {
+		sentence := cloneCandidate(*e.sentence)
+		result.Sentence = &sentence
+	} else if e.focusedSentence != nil {
+		sentence := cloneCandidate(*e.focusedSentence)
+		result.Sentence = &sentence
 	}
 	return result
 }

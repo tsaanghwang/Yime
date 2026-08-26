@@ -16,6 +16,7 @@ import (
 
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/runtimechange"
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/settings"
+	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/toolbarstate"
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/toolhub"
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/userbackup"
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/win32ui"
@@ -115,6 +116,8 @@ type settingsUILayout struct {
 
 type appState struct {
 	userDir, sharedDir, helpDir, backupRoot string
+	statePath                               string
+	experimental                            bool
 
 	mainHWND, schemaHWND, pageHWND, reverseHWND, layoutHWND syscall.Handle
 	schemaOptions                                           []settings.SchemaOption
@@ -133,26 +136,77 @@ type applyRequest struct {
 	layout      string
 }
 
+type trialApplyRequest struct {
+	mode       string
+	font       string
+	annotation string
+	ascii      bool
+}
+
 var applySettings = settings.Apply
 var notifyRuntimeChange = runtimechange.Notify
 var invokeRimeBuild = settings.InvokeRimeBuild
+
+func trialAnnotationOptions() []settings.ComboOption {
+	return []settings.ComboOption{
+		{Label: "键位序列", Value: toolbarstate.AnnotationKeySequence},
+		{Label: "音元", Value: toolbarstate.AnnotationYinyuan},
+		{Label: "标准拼音", Value: toolbarstate.AnnotationStandardPinyin},
+		{Label: "隐藏", Value: toolbarstate.AnnotationHidden},
+	}
+}
+
+func trialAsciiOptions() []settings.ComboOption {
+	return []settings.ComboOption{{Label: "中文", Value: "chinese"}, {Label: "英文", Value: "english"}}
+}
+
+func executeTrialApply(path string, request trialApplyRequest) error {
+	_, err := toolbarstate.Update(path, "yimecore-settings-tool", func(state *toolbarstate.State) bool {
+		toolbarstate.NormalizeExperiment(state)
+		changed := state.ExperimentMode != request.mode ||
+			state.CandidateFontPreset != request.font ||
+			state.CandidateAnnotation != request.annotation || state.ASCII != request.ascii
+		state.ExperimentMode = request.mode
+		state.CandidateFontPreset = request.font
+		state.CandidateAnnotation = request.annotation
+		state.ASCII = request.ascii
+		return changed
+	})
+	return err
+}
 
 func main() {
 	userDir := flag.String("UserDir", "", "Yime user data directory")
 	sharedDir := flag.String("SharedDir", "", "Yime shared runtime data directory")
 	helpDir := flag.String("HelpDir", "", "Yime help directory")
+	statePath := flag.String("StatePath", "", "YimeCore trial settings path")
+	experimental := flag.Bool("Experimental", false, "use isolated YimeCore trial settings")
 	_ = flag.String("LogDir", "", "PIME log directory")
 	flag.Parse()
 	if strings.TrimSpace(*userDir) == "" || strings.TrimSpace(*sharedDir) == "" {
 		showError("缺少 UserDir 或 SharedDir 参数。")
 		os.Exit(1)
 	}
+	if *experimental && strings.TrimSpace(*statePath) == "" {
+		showError("试验设置工具缺少 StatePath 参数。")
+		os.Exit(1)
+	}
+	schemaOptions := settings.AvailableSchemaOptions(strings.TrimSpace(*sharedDir))
+	if *experimental {
+		schemaOptions = []settings.SchemaOption{
+			{ID: toolbarstate.ExperimentModeVariable, Label: "变长模式", Enabled: true},
+			{ID: toolbarstate.ExperimentModeFull, Label: "等长模式", Enabled: true},
+			{ID: toolbarstate.ExperimentModeShorthand, Label: "省键模式", Enabled: true},
+		}
+	}
 	state := &appState{
 		userDir:       strings.TrimSpace(*userDir),
 		sharedDir:     strings.TrimSpace(*sharedDir),
 		helpDir:       strings.TrimSpace(*helpDir),
 		backupRoot:    defaultBackupRoot(),
-		schemaOptions: settings.AvailableSchemaOptions(strings.TrimSpace(*sharedDir)),
+		statePath:     strings.TrimSpace(*statePath),
+		experimental:  *experimental,
+		schemaOptions: schemaOptions,
 	}
 	if err := runApp(state); err != nil {
 		showError(err.Error())
@@ -164,7 +218,13 @@ func runApp(state *appState) error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 
-	if win32ui.ActivateExistingWindow("YimeSettingsTool") {
+	windowClass := "YimeSettingsTool"
+	windowTitle := "Yime 设置"
+	if state.experimental {
+		windowClass = "YimeCoreTrialSettingsTool"
+		windowTitle = "Yime 试验版设置"
+	}
+	if win32ui.ActivateExistingWindow(windowClass) {
 		return nil
 	}
 	state.layout = buildSettingsUILayout(state.helpDir != "")
@@ -172,7 +232,7 @@ func runApp(state *appState) error {
 	icc := initCommonControlsEx{Size: uint32(unsafe.Sizeof(initCommonControlsEx{})), ICC: 0x000000FF}
 	procInitCommonControlsEx.Call(uintptr(unsafe.Pointer(&icc)))
 	instance, _, _ := procGetModuleHandleW.Call(0)
-	className, _ := syscall.UTF16PtrFromString("YimeSettingsTool")
+	className, _ := syscall.UTF16PtrFromString(windowClass)
 	cursor, _, _ := procLoadCursorW.Call(0, uintptr(32512))
 	icon := win32ui.LoadYimeIcon(instance)
 	wndProcCallback = syscall.NewCallback(func(hwnd syscall.Handle, msg uint32, wParam, lParam uintptr) uintptr {
@@ -192,7 +252,7 @@ func runApp(state *appState) error {
 	if ret, _, _ := procRegisterClassExW.Call(uintptr(unsafe.Pointer(&wndClass))); ret == 0 {
 		return fmt.Errorf("RegisterClassEx failed")
 	}
-	title, _ := syscall.UTF16PtrFromString("Yime 设置")
+	title, _ := syscall.UTF16PtrFromString(windowTitle)
 	winW, winH := windowSizeForClient(state.layout.clientW, state.layout.clientH)
 	screenWidth, _, _ := procGetSystemMetrics.Call(0)
 	screenHeight, _, _ := procGetSystemMetrics.Call(1)
@@ -235,21 +295,41 @@ func (state *appState) createControls() {
 		text, _ := syscall.UTF16PtrFromString(option.Label)
 		procSendMessageW.Call(uintptr(state.schemaHWND), 0x0143, 0, uintptr(unsafe.Pointer(text)))
 	}
-	createStatic(state.mainHWND, "候选项数", l.pageLabel, 0)
+	pageLabel := "候选项数"
+	if state.experimental {
+		pageLabel = "候选字号"
+	}
+	createStatic(state.mainHWND, pageLabel, l.pageLabel, 0)
 	state.pageHWND = createCombo(state.mainHWND, l.pageCombo, idPageSizeCombo)
-	for size := 5; size <= 9; size++ {
-		text, _ := syscall.UTF16PtrFromString(fmt.Sprintf("%d", size))
+	pageOptions := []string{"5", "6", "7", "8", "9"}
+	if state.experimental {
+		pageOptions = []string{"小", "中", "大"}
+	}
+	for _, option := range pageOptions {
+		text, _ := syscall.UTF16PtrFromString(option)
 		procSendMessageW.Call(uintptr(state.pageHWND), 0x0143, 0, uintptr(unsafe.Pointer(text)))
 	}
 	createStatic(state.mainHWND, "显示编码", l.reverseLabel, 0)
 	state.reverseHWND = createCombo(state.mainHWND, l.reverseCombo, idReverseCombo)
-	for _, option := range settings.ReverseLookupOptions() {
+	reverseOptions := settings.ReverseLookupOptions()
+	if state.experimental {
+		reverseOptions = trialAnnotationOptions()
+	}
+	for _, option := range reverseOptions {
 		text, _ := syscall.UTF16PtrFromString(option.Label)
 		procSendMessageW.Call(uintptr(state.reverseHWND), 0x0143, 0, uintptr(unsafe.Pointer(text)))
 	}
-	createStatic(state.mainHWND, "候选排列", l.layoutLabel, 0)
+	layoutLabel := "候选排列"
+	if state.experimental {
+		layoutLabel = "默认键盘"
+	}
+	createStatic(state.mainHWND, layoutLabel, l.layoutLabel, 0)
 	state.layoutHWND = createCombo(state.mainHWND, l.layoutCombo, idLayoutCombo)
-	for _, option := range settings.CandidateLayoutOptions() {
+	layoutOptions := settings.CandidateLayoutOptions()
+	if state.experimental {
+		layoutOptions = trialAsciiOptions()
+	}
+	for _, option := range layoutOptions {
 		text, _ := syscall.UTF16PtrFromString(option.Label)
 		procSendMessageW.Call(uintptr(state.layoutHWND), 0x0143, 0, uintptr(unsafe.Pointer(text)))
 	}
@@ -308,6 +388,27 @@ func buildSettingsUILayout(withHelp bool) settingsUILayout {
 }
 
 func (state *appState) refreshView() {
+	if state.experimental {
+		snapshot, err := toolbarstate.Read(state.statePath)
+		if err != nil {
+			snapshot = toolbarstate.State{Version: toolbarstate.FormatVersion}
+			toolbarstate.NormalizeExperiment(&snapshot)
+		}
+		setComboBySchema(state.schemaHWND, state.schemaOptions, snapshot.ExperimentMode)
+		font := map[string]string{toolbarstate.CandidateFontSmall: "小",
+			toolbarstate.CandidateFontMedium: "中", toolbarstate.CandidateFontLarge: "大"}[snapshot.CandidateFontPreset]
+		if font == "" {
+			font = "中"
+		}
+		setComboByText(state.pageHWND, font)
+		setComboByValue(state.reverseHWND, trialAnnotationOptions(), snapshot.CandidateAnnotation)
+		ascii := "chinese"
+		if snapshot.ASCII {
+			ascii = "english"
+		}
+		setComboByValue(state.layoutHWND, trialAsciiOptions(), ascii)
+		return
+	}
 	snapshot := settings.LoadSnapshot(state.userDir, state.sharedDir)
 	setComboBySchema(state.schemaHWND, state.schemaOptions, snapshot.SchemaID)
 	setComboByText(state.pageHWND, fmt.Sprintf("%d", settings.NormalizePageSizeValue(snapshot.PageSize)))
@@ -382,6 +483,23 @@ func (state *appState) startApply() {
 		return
 	}
 
+	if state.experimental {
+		request := trialApplyRequest{
+			mode: selectedSchemaID(state.schemaHWND, state.schemaOptions),
+			font: map[string]string{"小": toolbarstate.CandidateFontSmall,
+				"中": toolbarstate.CandidateFontMedium, "大": toolbarstate.CandidateFontLarge}[selectedComboText(state.pageHWND)],
+			annotation: selectedComboValue(state.reverseHWND, trialAnnotationOptions()),
+			ascii:      selectedComboValue(state.layoutHWND, trialAsciiOptions()) == "english",
+		}
+		go func() {
+			err := executeTrialApply(state.statePath, request)
+			state.applyMu.Lock()
+			state.applyErr = err
+			state.applyMu.Unlock()
+			procPostMessageW.Call(uintptr(state.mainHWND), wmAppApplyDone, 0, 0)
+		}()
+		return
+	}
 	request := applyRequest{
 		schemaID:    selectedSchemaID(state.schemaHWND, state.schemaOptions),
 		pageSize:    settings.NormalizePageSizeValue(atoiDefault(selectedComboText(state.pageHWND), 5)),

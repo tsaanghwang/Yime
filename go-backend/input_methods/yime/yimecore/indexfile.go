@@ -538,6 +538,24 @@ func (idx *FileIndex) Mode() string { return idx.mode }
 // RecordCount returns the number of unique code/text records.
 func (idx *FileIndex) RecordCount() int { return len(idx.offsets) }
 
+// VisitEntries exposes copies of validated records to trial-side tools such
+// as reverse lookup and user-lexicon duplicate checking.
+func (idx *FileIndex) VisitEntries(visit func(Entry) bool) error {
+	if idx == nil || visit == nil {
+		return nil
+	}
+	for position := range idx.offsets {
+		code, text, weight, err := idx.recordAt(position)
+		if err != nil {
+			return err
+		}
+		if !visit(Entry{Code: string(code), Text: string(text), Weight: weight}) {
+			break
+		}
+	}
+	return nil
+}
+
 // SourceID binds independent user data to the exact static-index provenance.
 func (idx *FileIndex) SourceID() string { return idx.identity() }
 

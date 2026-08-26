@@ -67,7 +67,8 @@ func TestCompactIndexBuildIsDeterministicAndQueryable(t *testing.T) {
 		t.Fatal(err)
 	}
 	result := applyCode(t, engine, "a1")
-	if len(result.State.Candidates) != 3 || result.State.Candidates[0].Text != "一" || !result.State.Candidates[0].Exact {
+	if len(result.State.Candidates) != 1 || result.State.Candidates[0].Text != "一" || !result.State.Candidates[0].Exact ||
+		result.State.Sentence == nil || result.State.Sentence.Text != "一" {
 		t.Fatalf("unexpected compact-index candidates: %+v", result.State.Candidates)
 	}
 
@@ -194,8 +195,8 @@ func TestCompactIndexShortPrefixesRetainPagingAndOrdering(t *testing.T) {
 	entries := make([]Entry, 0, 80)
 	for i := 0; i < 40; i++ {
 		entries = append(entries,
-			Entry{Text: fmt.Sprintf("一字节-%02d", i), Code: "a" + benchmarkCode(i), Weight: int64(1000 - i)},
-			Entry{Text: fmt.Sprintf("二字节-%02d", i), Code: "b1" + benchmarkCode(i), Weight: int64(1000 - i)},
+			Entry{Text: fmt.Sprintf("一字节-%02d", i), Code: "a", Weight: int64(1000 - i)},
+			Entry{Text: fmt.Sprintf("二字节-%02d", i), Code: "b1", Weight: int64(1000 - i)},
 		)
 	}
 	source := filepath.Join(t.TempDir(), "paged-short-prefix.dict.yaml")

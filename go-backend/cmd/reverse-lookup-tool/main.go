@@ -230,6 +230,7 @@ type uiLayout struct {
 type appState struct {
 	sharedDir          string
 	userDir            string
+	indexRoot          string
 	mode               reverselookup.Mode
 	index              *reverselookup.Index
 	loading            bool
@@ -257,6 +258,7 @@ type appState struct {
 func main() {
 	sharedDir := flag.String("SharedDir", "", "Yime shared runtime data directory")
 	userDir := flag.String("UserDir", "", "Yime user data directory")
+	indexRoot := flag.String("IndexRoot", "", "optional YimeCore .yidx directory")
 	mode := flag.String("Mode", "variable", "Yime schema mode: variable, full, shorthand")
 	flag.Parse()
 
@@ -268,6 +270,7 @@ func main() {
 	state := &appState{
 		sharedDir: strings.TrimSpace(*sharedDir),
 		userDir:   strings.TrimSpace(*userDir),
+		indexRoot: strings.TrimSpace(*indexRoot),
 		mode:      reverselookup.Mode(strings.TrimSpace(*mode)),
 		modeOptions: []modeOption{
 			{Label: "变长", Value: reverselookup.ModeVariable},
@@ -323,7 +326,13 @@ func runWin32App(state *appState) error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 
-	if win32ui.ActivateExistingWindow("YimeReverseLookupTool") {
+	windowClass := "YimeReverseLookupTool"
+	windowTitle := "Yime 反查编码"
+	if state.indexRoot != "" {
+		windowClass = "YimeCoreTrialReverseLookupTool"
+		windowTitle = "Yime 试验版反查编码"
+	}
+	if win32ui.ActivateExistingWindow(windowClass) {
 		return nil
 	}
 
@@ -333,7 +342,7 @@ func runWin32App(state *appState) error {
 	procInitCommonControlsEx.Call(uintptr(unsafe.Pointer(&icc)))
 
 	instance, _, _ := procGetModuleHandleW.Call(0)
-	className, _ := syscall.UTF16PtrFromString("YimeReverseLookupTool")
+	className, _ := syscall.UTF16PtrFromString(windowClass)
 	cursor, _, _ := procLoadCursorW.Call(0, uintptr(32512))
 	icon := win32ui.LoadYimeIcon(instance)
 
@@ -356,7 +365,7 @@ func runWin32App(state *appState) error {
 		return fmt.Errorf("RegisterClassEx failed")
 	}
 
-	title, _ := syscall.UTF16PtrFromString("Yime 反查编码")
+	title, _ := syscall.UTF16PtrFromString(windowTitle)
 	screenWidth, _, _ := procGetSystemMetrics.Call(0)
 	screenHeight, _, _ := procGetSystemMetrics.Call(1)
 	winW, winH := windowSizeForClient(state.layout.clientW, state.layout.clientH)
@@ -705,6 +714,7 @@ func (state *appState) startLoadIndex() {
 
 	sharedDir := state.sharedDir
 	userDir := state.userDir
+	indexRoot := state.indexRoot
 	mode := state.mode
 
 	go func() {
@@ -712,7 +722,13 @@ func (state *appState) startLoadIndex() {
 		if codeMapErr == nil {
 			_, _ = userlexicon.HydrateSourceIfEmpty(userDir, mode, codeMap)
 		}
-		index, err := reverselookup.Load(sharedDir, userDir, mode)
+		var index *reverselookup.Index
+		var err error
+		if indexRoot != "" {
+			index, err = reverselookup.LoadYimeCore(sharedDir, userDir, indexRoot, mode)
+		} else {
+			index, err = reverselookup.Load(sharedDir, userDir, mode)
+		}
 		state.mu.Lock()
 		state.index = index
 		state.loadErr = err

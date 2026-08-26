@@ -1,0 +1,39 @@
+{
+  "schema_version": "yimecore-dynamic-sentence-cases-v1",
+  "description": "Real full-index regression for word-first dynamic extension and resegmentation.",
+  "cases": [
+    {
+      "id": "full-bendi-bendiren",
+      "mode": "full",
+      "steps": [
+        { "input": "bxxz]jkl", "expected_top": "本地", "expected_exact": true, "required_edge": "本地" },
+        { "input": "bxxz]jkl0", "expected_top": "", "expected_exact": false, "required_path": ["本地", "人"] },
+        { "input": "bxxz]jkl0x", "expected_top": "", "expected_exact": false, "required_path": ["本地", "人"] },
+        { "input": "bxxz]jkl0xc", "expected_top": "", "expected_exact": false, "required_path": ["本地", "人"] },
+        { "input": "bxxz]jkl0xca", "expected_top": "本地人", "expected_exact": true, "required_edge": "本地人", "required_path": ["本地", "人"] }
+      ]
+    },
+    {
+      "id": "variable-bendi-bendiren",
+      "mode": "variable",
+      "steps": [
+        { "input": "bxz]jkl", "expected_top": "本地", "expected_exact": true, "required_edge": "本地" },
+        { "input": "bxz]jkl0", "expected_top": "", "expected_exact": false, "required_path": ["本地", "人"] },
+        { "input": "bxz]jkl0x", "expected_top": "", "expected_exact": false, "required_path": ["本地", "人"] },
+        { "input": "bxz]jkl0xc", "expected_top": "", "expected_exact": false, "required_path": ["本地", "人"] },
+        { "input": "bxz]jkl0xca", "expected_top": "本地人", "expected_exact": true, "required_edge": "本地人", "required_path": ["本地", "人"] }
+      ]
+    },
+    {
+      "id": "shorthand-bendi-bendiren",
+      "mode": "shorthand",
+      "steps": [
+        { "input": "bxz]jl", "expected_top": "本地", "expected_exact": true, "required_edge": "本地" },
+        { "input": "bxz]jl0", "expected_top": "", "expected_exact": false, "required_path": ["本地", "人"] },
+        { "input": "bxz]jl0x", "expected_top": "", "expected_exact": false, "required_path": ["本地", "人"] },
+        { "input": "bxz]jl0xc", "expected_top": "", "expected_exact": false, "required_path": ["本地", "人"] },
+        { "input": "bxz]jl0xca", "expected_top": "本地人", "expected_exact": true, "required_edge": "本地人", "required_path": ["本地", "人"] }
+      ]
+    }
+  ]
+}

@@ -1,5 +1,5 @@
 // Command yimecore-trial-runtime keeps the independent YimeCore trial Broker
-// available at its stable endpoint and owns the optional experimental toolbar.
+// available at its stable endpoint and owns the optional native Desktop Tools window.
 package main
 
 import (
@@ -52,7 +52,7 @@ func main() {
 	brokerPath := flag.String("broker", "", "optional Broker executable override")
 	stateRoot := flag.String("state-root", "", "durable per-user trial state root")
 	pipeName := flag.String("pipe", defaultPipeName, "local trial Broker named pipe")
-	noToolbar := flag.Bool("no-toolbar", false, "do not start the experimental toolbar")
+	noToolbar := flag.Bool("no-toolbar", false, "do not start the native Desktop Tools window")
 	stop := flag.Bool("stop", false, "stop the active trial runtime")
 	status := flag.Bool("status", false, "print the last runtime status")
 	flag.Parse()
@@ -130,9 +130,9 @@ func resolveOptions(value options) (options, error) {
 		}
 	}
 	if !value.noToolbar {
-		toolbar := filepath.Join(value.installRoot, "bin", "YimeCoreToolbar.exe")
+		toolbar := desktopToolsPath(value.installRoot)
 		if info, statErr := os.Stat(toolbar); statErr != nil || info.IsDir() {
-			return value, fmt.Errorf("required trial toolbar is unavailable: %s", toolbar)
+			return value, fmt.Errorf("required native Desktop Tools executable is unavailable: %s", toolbar)
 		}
 	}
 	return value, nil
@@ -249,6 +249,7 @@ func brokerArguments(config options) []string {
 		"-index-root", filepath.Join(config.installRoot, "indexes"),
 		"-default-mode", "variable",
 		"-annotation-data-dir", filepath.Join(config.installRoot, "data"),
+		"-user-lexicon-dir", config.stateRoot,
 		"-named-pipe", config.pipeName,
 		"-user-model-snapshot", filepath.Join(modelRoot, "user-model.json"),
 		"-user-model-journal", filepath.Join(modelRoot, "user-model.journal"),
@@ -265,7 +266,7 @@ func startToolbar(config options, logger *log.Logger) *exec.Cmd {
 	if config.noToolbar {
 		return nil
 	}
-	command := exec.Command(filepath.Join(config.installRoot, "bin", "YimeCoreToolbar.exe"),
+	command := exec.Command(desktopToolsPath(config.installRoot),
 		"-StatePath", filepath.Join(config.stateRoot, toolbarstate.ExperimentFileName), "-Experimental")
 	configureChildProcess(command)
 	toolbarLog, err := os.OpenFile(filepath.Join(config.stateRoot, "logs", "toolbar.log"), os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0o600)
@@ -285,6 +286,10 @@ func startToolbar(config options, logger *log.Logger) *exec.Cmd {
 		_ = toolbarLog.Close()
 	}()
 	return command
+}
+
+func desktopToolsPath(installRoot string) string {
+	return filepath.Join(installRoot, "bin", "YimeCoreDesktopTools.exe")
 }
 
 func statusFor(config options, state string, brokerPID, toolbarPID, restarts int, statusErr error) runtimeStatus {

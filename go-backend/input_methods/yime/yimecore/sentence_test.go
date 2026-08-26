@@ -30,10 +30,10 @@ func sentenceEngine(t *testing.T, extra ...Entry) *Engine {
 func TestSentenceComposerBuildsPositionPreservingPath(t *testing.T) {
 	engine := sentenceEngine(t)
 	result := applyCode(t, engine, "bjbj")
-	if len(result.State.Candidates) == 0 || result.State.Candidates[0].Text != "幅幅" {
-		t.Fatalf("generated candidates = %+v", result.State.Candidates)
+	if len(result.State.Candidates) != 0 || result.State.Sentence == nil || result.State.Sentence.Text != "幅幅" {
+		t.Fatalf("generated sentence state = %+v", result.State)
 	}
-	candidate := result.State.Candidates[0]
+	candidate := *result.State.Sentence
 	if !candidate.Exact || len(candidate.Segments) != 2 {
 		t.Fatalf("generated candidate lacks path: %+v", candidate)
 	}
@@ -57,10 +57,10 @@ func TestSentenceComposerBuildsPositionPreservingPath(t *testing.T) {
 func TestSentenceComposerRetainsApostropheAsExplicitBoundary(t *testing.T) {
 	engine := sentenceEngine(t)
 	result := applyCode(t, engine, "bj'f")
-	if len(result.State.Candidates) == 0 || result.State.Candidates[0].Text != "幅啊" {
-		t.Fatalf("boundary candidates = %+v", result.State.Candidates)
+	if result.State.Sentence == nil || result.State.Sentence.Text != "幅啊" {
+		t.Fatalf("boundary sentence = %+v", result.State)
 	}
-	segments := result.State.Candidates[0].Segments
+	segments := result.State.Sentence.Segments
 	if len(segments) != 2 || segments[0].Start != 0 || segments[0].End != 2 || segments[1].Start != 3 || segments[1].End != 4 {
 		t.Fatalf("boundary spans = %+v", segments)
 	}
@@ -75,7 +75,8 @@ func TestDirectExactCandidatePrecedesAndDeduplicatesGeneratedSentence(t *testing
 			count++
 		}
 	}
-	if count != 1 || result.State.Candidates[0].Text != "幅幅" || len(result.State.Candidates[0].Segments) != 0 {
+	if count != 1 || result.State.Candidates[0].Text != "幅幅" || len(result.State.Candidates[0].Segments) != 0 ||
+		result.State.Sentence == nil || result.State.Sentence.ID != result.State.Candidates[0].ID {
 		t.Fatalf("direct/generated merge = %+v", result.State.Candidates)
 	}
 }
@@ -83,11 +84,11 @@ func TestDirectExactCandidatePrecedesAndDeduplicatesGeneratedSentence(t *testing
 func TestSentenceSnapshotsDeepCopySegmentPaths(t *testing.T) {
 	engine := sentenceEngine(t)
 	first := applyCode(t, engine, "bjbj")
-	first.State.Candidates[0].Segments[0].Text = "已修改"
+	first.State.Sentence.Segments[0].Text = "已修改"
 	second := engine.Reset()
 	second = applyCode(t, engine, "bjbj")
-	if second.State.Candidates[0].Segments[0].Text != "幅" {
-		t.Fatalf("snapshot mutated engine path: %+v", second.State.Candidates[0])
+	if second.State.Sentence == nil || second.State.Sentence.Segments[0].Text != "幅" {
+		t.Fatalf("snapshot mutated engine path: %+v", second.State.Sentence)
 	}
 }
 
@@ -103,8 +104,8 @@ func TestIncrementalLatticeBackspaceAndDivergentAppendMatchFreshSession(t *testi
 
 	fresh := sentenceEngine(t)
 	freshResult := applyCode(t, fresh, "bjf")
-	if !reflect.DeepEqual(incrementalResult.State.Candidates, freshResult.State.Candidates) {
-		t.Fatalf("incremental lattice differs after backspace:\nincremental=%+v\nfresh=%+v", incrementalResult.State.Candidates, freshResult.State.Candidates)
+	if !reflect.DeepEqual(incrementalResult.State, freshResult.State) {
+		t.Fatalf("incremental lattice differs after backspace:\nincremental=%+v\nfresh=%+v", incrementalResult.State, freshResult.State)
 	}
 }
 
@@ -127,24 +128,61 @@ func TestIncompleteSecondTermInheritsCompletedSearchTreePath(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		candidate := findCandidateText(result.State.Candidates, "前词后词")
-		if candidate == nil || candidate.Exact || candidate.Code != "abcdef" || len(candidate.Segments) != 2 {
-			t.Fatalf("incomplete second term %q lost inherited candidate: %#v", result.State.RawInput, result.State.Candidates)
+		if findCandidateText(result.State.Candidates, "前词后词") != nil {
+			t.Fatalf("incomplete second term %q leaked a future-code candidate: %#v", result.State.RawInput, result.State.Candidates)
+		}
+		if result.State.Sentence == nil || result.State.Sentence.Text != "前词后词" || result.State.Sentence.Exact {
+			t.Fatalf("incomplete second term %q lost its single temporary sentence: %#v", result.State.RawInput, result.State)
+		}
+		if !hasTracePath(engine.Explain().RetainedPaths, []string{"前词", "后词"}) {
+			t.Fatalf("incomplete second term %q lost its internal inherited path", result.State.RawInput)
 		}
 	}
 	result, err = engine.Apply(engineapi.Event{Operation: engineapi.AppendCode, Code: "f"})
 	if err != nil {
 		t.Fatal(err)
 	}
-	completed := findCandidateText(result.State.Candidates, "前词后词")
+	completed := result.State.Sentence
 	if completed == nil || !completed.Exact || completed.Code != "abcdef" || len(completed.Segments) != 2 {
-		t.Fatalf("completed inherited sentence = %#v", result.State.Candidates)
+		t.Fatalf("completed inherited sentence = %#v", result.State)
 	}
 
 	engine.Reset()
 	invalid := applyCode(t, engine, "abz")
-	if len(invalid.State.Candidates) != 0 {
-		t.Fatalf("invalid second-term branch inherited stale candidates: %#v", invalid.State.Candidates)
+	if len(invalid.State.Candidates) != 0 || invalid.State.Sentence != nil {
+		t.Fatalf("invalid second-term branch inherited stale state: %#v", invalid.State)
+	}
+}
+
+func TestVariableCandidateSortingSentenceStaysCommittable(t *testing.T) {
+	index, err := NewIndex([]Entry{
+		{Text: "候选", Code: "hreo1.sz", Weight: 12989},
+		{Text: "排序", Code: "psdj1m,.", Weight: 4081},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	engine, err := NewEngine(index, 9)
+	if err != nil {
+		t.Fatal(err)
+	}
+	result := applyCode(t, engine, "hreo1.sz")
+	for _, key := range "psdj1m,." {
+		result, err = engine.Apply(engineapi.Event{Operation: engineapi.AppendCode, Code: string(key)})
+		if err != nil {
+			t.Fatal(err)
+		}
+		if result.State.Sentence == nil || result.State.Sentence.Text != "候选排序" {
+			t.Fatalf("input %q lost its temporary sentence: %#v", result.State.RawInput, result.State)
+		}
+	}
+	candidate := result.State.Sentence
+	if candidate == nil || !candidate.Exact || candidate.Code != "hreo1.szpsdj1m,." {
+		t.Fatalf("completed candidate-sorting sentence = %#v", result.State.Candidates)
+	}
+	selected, err := engine.Select(candidate.ID)
+	if err != nil || selected.Commit != "候选排序" || selected.State.RawInput != "" {
+		t.Fatalf("candidate-sorting selection = %+v, %v", selected, err)
 	}
 }
 
@@ -164,11 +202,12 @@ func TestGeneratedSentenceKeepsFewerSystemLexiconSegmentsFirst(t *testing.T) {
 		t.Fatal(err)
 	}
 	result := applyCode(t, engine, "abc")
-	highWeightThreeSegment := findCandidateText(result.State.Candidates, "高分词")
-	if len(result.State.Candidates) < 2 || result.State.Candidates[0].Text != "甲乙词" ||
-		len(result.State.Candidates[0].Segments) != 2 || highWeightThreeSegment == nil ||
-		len(highWeightThreeSegment.Segments) != 3 || result.State.Candidates[0].Weight >= highWeightThreeSegment.Weight {
-		t.Fatalf("generated sentence ranking ignored the shorter system path: %#v", result.State.Candidates)
+	if len(result.State.Candidates) != 0 || result.State.Sentence == nil || result.State.Sentence.Text != "甲乙词" ||
+		len(result.State.Sentence.Segments) != 2 {
+		t.Fatalf("generated sentence ranking ignored the shorter system path: %#v", result.State)
+	}
+	if !hasTracePath(engine.Explain().RetainedPaths, []string{"高", "分", "词"}) {
+		t.Fatal("non-visible alternative path was not retained by the decoder")
 	}
 }
 

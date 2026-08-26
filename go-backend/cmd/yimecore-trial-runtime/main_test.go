@@ -43,6 +43,13 @@ func TestResolveOptionsRequiresCompleteIndependentTrialPackage(t *testing.T) {
 	}
 }
 
+func TestDesktopToolsUsesDedicatedNativeWindowsExecutable(t *testing.T) {
+	root := filepath.Join(`C:\trial package`)
+	if got := desktopToolsPath(root); got != filepath.Join(root, "bin", "YimeCoreDesktopTools.exe") {
+		t.Fatalf("desktop tools path=%q", got)
+	}
+}
+
 func TestBrokerArgumentsPinMultiIndexDurabilityAndTransactionalControl(t *testing.T) {
 	config := options{
 		installRoot: `C:\trial package`, brokerPath: `C:\runtime\YimeBroker.exe`,

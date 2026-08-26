@@ -10,17 +10,142 @@ import (
 )
 
 const (
-	sentenceBeamWidth       = 64
-	segmentCandidateLimit   = 64
-	generatedSegmentPenalty = int64(250_000)
-	maximumExactCacheItems  = 4096
-	maximumSentenceBytes    = 256
+	sentenceBeamWidth        = 64
+	segmentCandidateLimit    = 64
+	sentenceSurfacePathLimit = 4
+	generatedSegmentPenalty  = int64(250_000)
+	maximumExactCacheItems   = 4096
+	maximumSentenceBytes     = 256
+	maximumLearnedTextBytes  = 4096
 )
 
 type sentencePath struct {
 	text     string
 	score    int64
 	segments []engineapi.Segment
+}
+
+// bestSentence returns the single preedit sentence for the current input.
+// Exact dictionary entries win, followed by an exact word-graph path, an
+// incomplete path with a completed left side, and finally one root-prefix
+// prediction. State.Sentence owns the best preedit independently from the
+// selectable exact and prefix candidates published by Engine.refresh.
+func (e *Engine) bestSentence(exact []engineapi.Candidate, limit int) *engineapi.Candidate {
+	var preferredExact *engineapi.Candidate
+	if len(exact) > 0 && len(e.segmentChoices) == 0 {
+		candidate := cloneCandidate(exact[0])
+		preferredExact = &candidate
+		if candidate.SourceID != "user-model" {
+			return preferredExact
+		}
+	}
+	generated := e.composeSentences(e.rawInput, limit)
+	records := e.index.lookup(e.rawInput, limit)
+	for _, item := range records {
+		if item.code == e.rawInput || !strings.HasPrefix(item.code, e.rawInput) {
+			continue
+		}
+		sourceID := item.source
+		if sourceID == "" {
+			sourceID = e.index.identity()
+		}
+		candidate := engineapi.Candidate{
+			ID:       "sentence-prefix\x1f" + e.rawInput + "\x1f" + item.code + "\x1f" + item.text,
+			Text:     item.text,
+			Code:     item.code,
+			SourceID: sourceID,
+			Weight:   item.weight,
+			Exact:    false,
+			Segments: []engineapi.Segment{{
+				Start: 0, End: len(e.rawInput), Text: item.text, Code: item.code, SourceID: sourceID,
+			}},
+		}
+		generated = append(generated, candidate)
+	}
+	for i := range generated {
+		e.scoreCandidate(&generated[i])
+	}
+	rankGeneratedCandidates(generated)
+	if preferredExact != nil {
+		for index := range generated {
+			if generated[index].Exact && generated[index].Code == preferredExact.Code &&
+				generated[index].Text == preferredExact.Text {
+				candidate := cloneCandidate(generated[index])
+				candidate.SourceID = "user-model"
+				return &candidate
+			}
+		}
+		if rebuilt := e.composeLearnedSentence(e.rawInput, preferredExact.Text); rebuilt != nil {
+			e.scoreCandidate(rebuilt)
+			return rebuilt
+		}
+		return preferredExact
+	}
+	if len(generated) == 0 {
+		return nil
+	}
+	candidate := cloneCandidate(generated[0])
+	return &candidate
+}
+
+func (e *Engine) composeLearnedSentence(input, text string) *engineapi.Candidate {
+	if len(input) < 2 || len(input) > maximumSentenceBytes || text == "" ||
+		len(text) > maximumLearnedTextBytes {
+		return nil
+	}
+	maxCodeBytes := e.index.maximumCodeBytes()
+	if maxCodeBytes <= 0 {
+		return nil
+	}
+	states := make([]map[int]sentencePath, len(input)+1)
+	states[0] = map[int]sentencePath{0: {}}
+	for start := 0; start < len(input); start++ {
+		if len(states[start]) == 0 {
+			continue
+		}
+		lastEnd := start + maxCodeBytes
+		if lastEnd > len(input) {
+			lastEnd = len(input)
+		}
+		for textStart, path := range states[start] {
+			for end := start + 1; end <= lastEnd; end++ {
+				for _, match := range e.exactMatches(input[start:end]) {
+					if match.text == "" || !strings.HasPrefix(text[textStart:], match.text) {
+						continue
+					}
+					textEnd := textStart + len(match.text)
+					sourceID := match.source
+					if sourceID == "" {
+						sourceID = e.index.identity()
+					}
+					segments := append([]engineapi.Segment(nil), path.segments...)
+					segments = append(segments, engineapi.Segment{
+						Start: start, End: end, Text: match.text, Code: match.code, SourceID: sourceID,
+					})
+					next := sentencePath{
+						text:     text[:textEnd],
+						score:    saturatingAdd(path.score, lexicalScore(match.weight)-generatedSegmentPenalty),
+						segments: segments,
+					}
+					if states[end] == nil {
+						states[end] = make(map[int]sentencePath)
+					}
+					existing, found := states[end][textEnd]
+					if !found || betterSentencePath(next, existing) {
+						states[end][textEnd] = next
+					}
+				}
+			}
+		}
+	}
+	path, found := states[len(input)][len(text)]
+	if !found || len(path.segments) < 2 || path.text != text {
+		return nil
+	}
+	return &engineapi.Candidate{
+		ID: sentenceCandidateID(input, path), Text: text, Code: input,
+		SourceID: "user-model", Weight: path.score, Exact: true, Segments: path.segments,
+	}
 }
 
 func (e *Engine) composeSentences(input string, limit int) []engineapi.Candidate {
@@ -250,14 +375,36 @@ func saturatingAdd(left, right int64) int64 {
 }
 
 func insertSentencePath(top []sentencePath, item sentencePath, limit int) []sentencePath {
+	itemKey := sentencePathKey(item)
+	sameText := make([]int, 0, sentenceSurfacePathLimit)
 	for i := range top {
 		if top[i].text != item.text {
+			continue
+		}
+		sameText = append(sameText, i)
+		if sentencePathKey(top[i]) != itemKey {
 			continue
 		}
 		if betterSentencePath(item, top[i]) {
 			top[i] = item
 		}
 		sort.Slice(top, func(i, j int) bool { return betterSentencePath(top[i], top[j]) })
+		return top
+	}
+	// Distinct segmentations of the same surface text must survive long enough
+	// for explainable path scoring and future word-context models. Bound their
+	// contribution so one ambiguous surface cannot consume the whole beam.
+	if len(sameText) >= sentenceSurfacePathLimit {
+		worst := sameText[0]
+		for _, position := range sameText[1:] {
+			if betterSentencePath(top[worst], top[position]) {
+				worst = position
+			}
+		}
+		if betterSentencePath(item, top[worst]) {
+			top[worst] = item
+			sort.Slice(top, func(i, j int) bool { return betterSentencePath(top[i], top[j]) })
+		}
 		return top
 	}
 	if len(top) == limit && !betterSentencePath(item, top[len(top)-1]) {

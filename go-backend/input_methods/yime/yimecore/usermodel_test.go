@@ -56,6 +56,166 @@ func TestUserLearningPromotesSelectedCandidateWithExplainableScore(t *testing.T)
 	}
 }
 
+func TestLearnedSentenceIsRecalledAfterModelReopenWithoutAStaticPhrase(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "sentence.json")
+	model, err := OpenUserModel(path, "sentence-source")
+	if err != nil {
+		t.Fatal(err)
+	}
+	composeIndex, err := NewIndex([]Entry{
+		{Text: "甲", Code: "ab", Weight: 100},
+		{Text: "乙", Code: "cd", Weight: 100},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	engine, err := NewEngineWithUserModel(composeIndex, 9, model)
+	if err != nil {
+		t.Fatal(err)
+	}
+	state := applyCode(t, engine, "abcd").State
+	if state.Sentence == nil || state.Sentence.Text != "甲乙" {
+		t.Fatalf("generated sentence = %#v", state.Sentence)
+	}
+	if _, err := engine.Select(state.Sentence.ID); err != nil {
+		t.Fatal(err)
+	}
+	if err := model.Save(); err != nil {
+		t.Fatal(err)
+	}
+
+	reopened, err := OpenUserModel(path, "sentence-source")
+	if err != nil {
+		t.Fatal(err)
+	}
+	recallIndex, err := NewIndex([]Entry{{Text: "占位", Code: "zz", Weight: 1}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	recallEngine, err := NewEngineWithUserModel(recallIndex, 9, reopened)
+	if err != nil {
+		t.Fatal(err)
+	}
+	recalled := applyCode(t, recallEngine, "abcd").State
+	if len(recalled.Candidates) != 1 || recalled.Candidates[0].Text != "甲乙" ||
+		recalled.Candidates[0].SourceID != "user-model" || recalled.Sentence == nil ||
+		recalled.Sentence.Text != "甲乙" {
+		t.Fatalf("learned sentence recall = %#v", recalled)
+	}
+}
+
+func TestForgetLearnedSentenceKeepsCompositionAndRemovesRecall(t *testing.T) {
+	model, err := NewUserModel("forget-sentence")
+	if err != nil {
+		t.Fatal(err)
+	}
+	model.observe("abcd", "甲乙")
+	index, err := NewIndex([]Entry{{Text: "占位", Code: "zz", Weight: 1}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	engine, err := NewEngineWithUserModel(index, 9, model)
+	if err != nil {
+		t.Fatal(err)
+	}
+	before := applyCode(t, engine, "abcd").State
+	if len(before.Candidates) != 1 || before.Candidates[0].Text != "甲乙" {
+		t.Fatalf("learned candidate before forget = %#v", before)
+	}
+	after, err := engine.ForgetCandidate(before.Candidates[0].ID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if after.Commit != "" || after.State.RawInput != "abcd" || len(after.State.Candidates) != 0 ||
+		after.State.Sentence != nil || model.Generation() != 2 {
+		t.Fatalf("state after forget = %#v; generation=%d", after, model.Generation())
+	}
+}
+
+func TestLearnedSentenceKeepsGeneratedSegmentsWhenStillComposable(t *testing.T) {
+	model, err := NewUserModel("learned-segments")
+	if err != nil {
+		t.Fatal(err)
+	}
+	model.observe("abcd", "甲乙")
+	index, err := NewIndex([]Entry{
+		{Text: "甲", Code: "ab", Weight: 100},
+		{Text: "乙", Code: "cd", Weight: 100},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	engine, err := NewEngineWithUserModel(index, 9, model)
+	if err != nil {
+		t.Fatal(err)
+	}
+	state := applyCode(t, engine, "abcd").State
+	if state.Sentence == nil || state.Sentence.Text != "甲乙" ||
+		len(state.Sentence.Segments) != 2 || state.Sentence.SourceID != "user-model" {
+		t.Fatalf("learned composable sentence = %#v", state.Sentence)
+	}
+	if len(state.Candidates) == 0 || state.Candidates[0].Text != "甲乙" ||
+		state.Candidates[0].SourceID != "user-model" {
+		t.Fatalf("learned exact candidate = %#v", state.Candidates)
+	}
+}
+
+func TestLearnedSentenceRebuildsComposablePathPrunedFromBeam(t *testing.T) {
+	entries := make([]Entry, 0, 27)
+	groups := []struct {
+		code  string
+		texts string
+	}{{"ab", "ABCDEFGHI"}, {"cd", "JKLMNOPQR"}, {"ef", "STUVWXYZa"}}
+	for _, group := range groups {
+		for index, text := range group.texts {
+			entries = append(entries, Entry{
+				Text: string(text), Code: group.code, Weight: int64(1000 - index),
+			})
+		}
+	}
+	index, err := NewIndex(entries)
+	if err != nil {
+		t.Fatal(err)
+	}
+	model, err := NewUserModel("learned-pruned-path")
+	if err != nil {
+		t.Fatal(err)
+	}
+	model.observe("abcdef", "IRa")
+	engine, err := NewEngineWithUserModel(index, 9, model)
+	if err != nil {
+		t.Fatal(err)
+	}
+	state := applyCode(t, engine, "abcdef").State
+	if state.Sentence == nil || state.Sentence.Text != "IRa" || len(state.Sentence.Segments) != 3 {
+		t.Fatalf("rebuilt learned sentence = %#v", state.Sentence)
+	}
+	for segmentIndex, expected := range []string{"I", "R", "a"} {
+		if state.Sentence.Segments[segmentIndex].Text != expected {
+			t.Fatalf("rebuilt segments = %#v", state.Sentence.Segments)
+		}
+	}
+	focused, err := engine.Apply(engineapi.Event{
+		Operation: engineapi.FocusSegment, CandidateID: state.Sentence.ID,
+		SegmentStart: state.Sentence.Segments[0].Start, SegmentEnd: state.Sentence.Segments[0].End,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	replacement := findBundleCandidate(focused.State.Candidates, "A")
+	if replacement == nil {
+		t.Fatalf("replacement candidate missing: %#v", focused.State.Candidates)
+	}
+	replaced, err := engine.Select(replacement.ID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if replaced.State.Sentence == nil || replaced.State.Sentence.Text != "ARa" ||
+		len(replaced.State.Sentence.Segments) != 3 {
+		t.Fatalf("learned sentence replacement changed another segment: %#v", replaced.State.Sentence)
+	}
+}
+
 func TestUserMutationPersistenceFailureDoesNotCommitOrAdvanceModel(t *testing.T) {
 	index, err := NewIndex([]Entry{{Text: "候选", Code: "a1", Weight: 1}})
 	if err != nil {
@@ -308,6 +468,7 @@ func TestContextTransitionIsExplainablePersistentAndForgottenWithCandidate(t *te
 		t.Fatal("expected context target to be forgotten")
 	}
 	contextEngine.ClearContext()
+	contextEngine.Reset()
 	context = applyCode(t, contextEngine, "c1").State.Candidates[0]
 	if _, err := contextEngine.Select(context.ID); err != nil {
 		t.Fatal(err)

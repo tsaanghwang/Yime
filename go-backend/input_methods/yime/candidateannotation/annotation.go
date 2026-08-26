@@ -306,6 +306,16 @@ func (e *Engine) SelectIdempotent(candidateID, mutationID string) (engineapi.Res
 	return result, err
 }
 
+func (e *Engine) ForgetCandidate(candidateID string) (engineapi.Result, error) {
+	forgetter, ok := e.inner.(engineapi.CandidateForgetter)
+	if !ok {
+		return engineapi.Result{}, fmt.Errorf("wrapped engine does not support candidate forgetting")
+	}
+	result, err := forgetter.ForgetCandidate(candidateID)
+	e.decorate(&result)
+	return result, err
+}
+
 func (e *Engine) Reset() engineapi.Result {
 	result := e.inner.Reset()
 	e.decorate(&result)

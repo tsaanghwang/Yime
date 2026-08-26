@@ -60,7 +60,11 @@ func TestBundleSentenceSegmentsRetainPerModuleSource(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	candidate := findBundleCandidate(applyBundleCode(t, engine, "xycd").Candidates, "大婶儿工作")
+	state := applyBundleCode(t, engine, "xycd")
+	candidate := state.Sentence
+	if candidate != nil && candidate.Text != "大婶儿工作" {
+		candidate = nil
+	}
 	if candidate == nil || len(candidate.Segments) != 2 {
 		t.Fatalf("mixed sentence missing: %#v", candidate)
 	}

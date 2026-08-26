@@ -38,6 +38,7 @@ func main() {
 	indexControlManifest := flag.String("index-control-manifest", "", "optional watched index control manifest")
 	indexControlStatus := flag.String("index-control-status", "", "status file for watched index control")
 	annotationDataDir := flag.String("annotation-data-dir", "", "optional reviewed runtime data for candidate encoding annotations")
+	userLexiconDir := flag.String("user-lexicon-dir", "", "optional trial-private generated user lexicon directory")
 	exitBeforeRequest := flag.Int("experiment-exit-before-request", 0, "E5-B fault injection only")
 	hangBeforeRequest := flag.Int("experiment-hang-before-request", 0, "E5-B fault injection only")
 	exitAfterRequest := flag.Int("experiment-exit-after-request", 0, "E5-F fault injection after durable handling but before response")
@@ -55,7 +56,8 @@ func main() {
 		}
 		runMultiMode(multiModeConfig{
 			indexRoot: *indexRoot, defaultMode: *defaultMode, annotationDataDir: *annotationDataDir,
-			namedPipe: *namedPipe, trustedClientID: *trustedClientID,
+			userLexiconDir: *userLexiconDir,
+			namedPipe:      *namedPipe, trustedClientID: *trustedClientID,
 			pipeMaxConnections: *pipeMaxConnections, pipeMaxConnectionsPerClient: *pipeMaxConnectionsPerClient,
 			userSnapshot: *userSnapshot, userJournal: *userJournal, userModelSourceID: *userModelSourceID,
 			checkpointEvery: *checkpointEvery, compactEvery: *compactEvery, rollbackSnapshot: *rollbackSnapshot,
@@ -200,6 +202,7 @@ type multiModeConfig struct {
 	indexRoot                   string
 	defaultMode                 string
 	annotationDataDir           string
+	userLexiconDir              string
 	namedPipe                   string
 	trustedClientID             string
 	pipeMaxConnections          int
@@ -256,7 +259,14 @@ func runMultiMode(config multiModeConfig) {
 	builder := func(mode string, index *yimecore.FileIndex) (engineapi.Engine, error) {
 		var engine engineapi.Engine
 		var err error
-		if durable != nil {
+		if config.userLexiconDir != "" {
+			var model *yimecore.UserModel
+			if durable != nil {
+				model = durable.Model()
+			}
+			engine, err = yimecore.NewFileEngineWithUserLexicon(
+				index, 9, filepath.Join(config.userLexiconDir, "custom_phrase_"+mode+".txt"), model)
+		} else if durable != nil {
 			engine, err = yimecore.NewFileEngineWithUserModel(index, 9, durable.Model())
 		} else {
 			engine, err = yimecore.NewFileEngine(index, 9)

@@ -144,6 +144,18 @@ func TestToolbarDefaultsToVerticalAndRemembersExplicitHorizontal(t *testing.T) {
 }
 
 func TestExperimentalToolbarDefaultsAndFourEncodingChoices(t *testing.T) {
+	trial := &app{experimental: true}
+	if got := trial.className(); got != "YimeCoreDesktopToolsWindow" {
+		t.Fatalf("experimental desktop tools class=%q", got)
+	}
+	if got := trial.windowTitle(); got != "Yime 桌面工具" {
+		t.Fatalf("experimental desktop tools title=%q", got)
+	}
+	production := &app{}
+	if production.className() != windowClass || production.windowTitle() != messageTitle {
+		t.Fatal("trial window identity leaked into the production toolbar")
+	}
+
 	path := filepath.Join(t.TempDir(), toolbarstate.ExperimentFileName)
 	state := loadExperimentalToolbarState(path)
 	if state.ExperimentMode != toolbarstate.ExperimentModeVariable ||
@@ -173,14 +185,14 @@ func TestExperimentalToolbarDefaultsAndFourEncodingChoices(t *testing.T) {
 		t.Fatalf("candidate encoding cycle did not return to %q", state.CandidateAnnotation)
 	}
 	layout := calculateToolbarLayoutFor(state, experimentalToolbarButtons())
-	if countVisible(layout) != 5 || layout.clientHeight <= 0 || layout.clientWidth <= 0 {
+	if countVisible(layout) != 8 || layout.clientHeight <= 0 || layout.clientWidth <= 0 {
 		t.Fatalf("experimental toolbar layout = %#v", layout)
 	}
 	labels := map[string]bool{}
 	for _, button := range experimentalToolbarButtons() {
 		labels[button.text] = true
 	}
-	for _, expected := range []string{"模式：变长", "字号：中", "音码：键位", "关闭"} {
+	for _, expected := range []string{"模式：变长", "字号：中", "音码：键位", "半宽", "中标", "简体", "关闭"} {
 		if !labels[expected] {
 			t.Fatalf("experimental toolbar is missing label %q", expected)
 		}

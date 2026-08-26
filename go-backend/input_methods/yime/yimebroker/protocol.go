@@ -25,6 +25,7 @@ const (
 	OpenSession  Operation = "open"
 	ApplyEvent   Operation = "apply"
 	Select       Operation = "select"
+	Forget       Operation = "forget"
 	ResetSession Operation = "reset"
 	CloseSession Operation = "close"
 )
@@ -155,6 +156,10 @@ func validateRequest(request Request) error {
 		}
 		if request.MutationID != "" && !validMutationID(request.MutationID) {
 			return errors.New("mutation_id must be 8-128 ASCII letters, digits, dot, underscore, colon or hyphen")
+		}
+	case Forget:
+		if request.SessionID == "" || request.CandidateID == "" || request.Event.Operation != 0 || request.MutationID != "" || request.Mode != "" {
+			return errors.New("forget requires session_id and candidate_id only")
 		}
 	case ResetSession, CloseSession:
 		if request.SessionID == "" || request.Event.Operation != 0 || request.CandidateID != "" || request.MutationID != "" || request.Mode != "" {

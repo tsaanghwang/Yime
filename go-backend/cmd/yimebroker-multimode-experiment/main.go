@@ -22,7 +22,7 @@ import (
 )
 
 const (
-	toolVersion    = "yimebroker-e6c-multimode-package-v3"
+	toolVersion    = "yimebroker-e6c-multimode-package-v6"
 	requestTimeout = 2 * time.Second
 	controlTimeout = 2 * time.Second
 	startupTimeout = 30 * time.Second
@@ -68,8 +68,12 @@ type modeEvidence struct {
 	V2SessionSurvivedRollback   bool   `json:"v2_session_survived_rollback"`
 	PostRollbackSessionUsedV1   bool   `json:"post_rollback_session_used_v1"`
 	FailedSwitchRollbackPassed  bool   `json:"failed_switch_rollback_passed"`
-	InheritedPartialNodes       int    `json:"inherited_partial_nodes"`
-	IncompleteSecondTermPassed  bool   `json:"incomplete_second_term_passed"`
+	ConvergentPartialNodes      int    `json:"convergent_partial_nodes"`
+	FuturePredictionsHidden     bool   `json:"future_predictions_hidden"`
+	PrefixCandidateCount        int    `json:"prefix_candidate_count"`
+	PrefixSentencePrediction    string `json:"prefix_sentence_prediction"`
+	PrefixCandidatesVisible     bool   `json:"prefix_candidates_visible"`
+	PrefixTreeMonotonic         bool   `json:"prefix_tree_monotonic"`
 	GeneratedSentenceFirst      string `json:"generated_sentence_first"`
 	GeneratedSentencePassed     bool   `json:"generated_sentence_passed"`
 	FirstWordCandidateCount     int    `json:"first_word_candidate_count"`
@@ -217,7 +221,7 @@ func main() {
 		_ = process.closeSession(session)
 		evidence = append(evidence, modeEvidence{
 			Mode: probe.mode, LearningCode: probe.code, LearnedText: probe.text, Selections: selections,
-			InheritedPartialNodes: inheritedNodes, IncompleteSecondTermPassed: inheritedPassed,
+			ConvergentPartialNodes: inheritedNodes, FuturePredictionsHidden: inheritedPassed,
 			GeneratedSentenceFirst: generatedFirst, GeneratedSentencePassed: generatedPassed,
 			FirstWordCandidateCount: firstWordCount, FirstWordSequencePassed: firstWordPassed,
 			SentenceSegmentSwitchPassed: segmentSwitchPassed, FirstWordReplacementPassed: replacementPassed,
@@ -236,6 +240,29 @@ func main() {
 			process.terminate()
 			fail(err)
 		}
+		prefix := probe.code[:1]
+		prefixTreeMonotonic := false
+		if partial.Result != nil {
+			evidence[index].PrefixCandidateCount = len(partial.Result.State.Candidates)
+			prefixCandidatesVisible := len(partial.Result.State.Candidates) > 0
+			seenCompletion := false
+			for _, candidate := range partial.Result.State.Candidates {
+				prefixCandidatesVisible = prefixCandidatesVisible && strings.HasPrefix(candidate.Code, prefix)
+				if candidate.Exact {
+					prefixCandidatesVisible = prefixCandidatesVisible && !seenCompletion && candidate.Code == prefix
+				} else {
+					seenCompletion = true
+					prefixCandidatesVisible = prefixCandidatesVisible && candidate.Code != prefix
+				}
+			}
+			evidence[index].PrefixCandidatesVisible = prefixCandidatesVisible
+			if partial.Result.State.Sentence != nil {
+				evidence[index].PrefixSentencePrediction = partial.Result.State.Sentence.Text
+				prefixTreeMonotonic = !partial.Result.State.Sentence.Exact &&
+					strings.HasPrefix(partial.Result.State.Sentence.Code, prefix)
+			}
+		}
+		evidence[index].PrefixTreeMonotonic = prefixTreeMonotonic
 		badID := "reject-" + probe.mode
 		bad := runControl(*manifest, *status, yimebroker.IndexControlRequest{
 			SchemaVersion: yimebroker.IndexControlSchema, RequestID: badID, Action: "swap",
@@ -336,7 +363,7 @@ func main() {
 	allModes := true
 	for _, item := range evidence {
 		allModes = allModes && item.LearningPersistencePassed && item.FailedSwitchRollbackPassed &&
-			item.IncompleteSecondTermPassed && item.GeneratedSentencePassed &&
+			item.FuturePredictionsHidden && item.PrefixCandidatesVisible && item.PrefixTreeMonotonic && item.GeneratedSentencePassed &&
 			item.FirstWordSequencePassed && item.SentenceSegmentSwitchPassed &&
 			item.FirstWordReplacementPassed &&
 			item.FocusedSentenceCommitPassed
@@ -475,24 +502,25 @@ func (p *brokerProcess) verifyContinuousSentence(probe modeProbe) (int, bool, st
 			return inheritedNodes, false, "", false, fmt.Errorf("%s continuous sentence key %d returned no state", probe.mode, index)
 		}
 		candidates := response.Result.State.Candidates
-		if len(candidates) == 0 {
-			return inheritedNodes, false, "", false, fmt.Errorf("%s continuous sentence lost candidates at second-term key %d", probe.mode, index)
-		}
 		if index < len(probe.sentenceSecond)-1 {
-			inherited := false
 			for _, candidate := range candidates {
-				if strings.HasPrefix(candidate.Text, "你好") {
-					inherited = true
-					break
+				if !candidate.Exact && len(candidate.Segments) >= 2 {
+					return inheritedNodes, false, "", false, fmt.Errorf(
+						"%s second-term node %d exposed an incomplete future sentence %q (%q)",
+						probe.mode, index, candidate.Text, candidate.Code)
 				}
 			}
-			if !inherited {
-				return inheritedNodes, false, "", false, fmt.Errorf("%s second-term node %d did not inherit the completed prefix", probe.mode, index)
+			if response.Result.State.Sentence == nil {
+				return inheritedNodes, false, "", false, fmt.Errorf(
+					"%s second-term node %d lost its temporary sentence", probe.mode, index)
 			}
 			inheritedNodes++
 			continue
 		}
-		first := candidates[0]
+		if response.Result.State.Sentence == nil {
+			return inheritedNodes, false, "", false, fmt.Errorf("%s completed sentence returned no preedit sentence", probe.mode)
+		}
+		first := *response.Result.State.Sentence
 		generatedPassed := first.Text == "你好排序" && first.Exact && len(first.Segments) == 2
 		return inheritedNodes, inheritedNodes == len(probe.sentenceSecond)-1, first.Text, generatedPassed, nil
 	}
@@ -509,14 +537,7 @@ func (p *brokerProcess) verifyDynamicSentence(probe modeProbe) (int, bool, bool,
 	if err != nil {
 		return 0, false, false, false, false, err
 	}
-	var sentence *engineapi.Candidate
-	for index := range state.Candidates {
-		candidate := &state.Candidates[index]
-		if candidate.Exact && len(candidate.Segments) >= 2 && candidate.Segments[0].Start == 0 {
-			sentence = candidate
-			break
-		}
-	}
+	sentence := state.Sentence
 	if sentence == nil {
 		return 0, false, false, false, false, fmt.Errorf("%s dynamic sentence candidate is missing", probe.mode)
 	}
@@ -532,9 +553,11 @@ func (p *brokerProcess) verifyDynamicSentence(probe modeProbe) (int, bool, bool,
 		return 0, false, false, false, false, fmt.Errorf("%s focus first sentence word: %w", probe.mode, err)
 	}
 	choices := focused.Result.State.Candidates
-	sequencePassed := len(choices) > 0 && len(choices) <= 9 && focused.Result.State.ActiveSegment != nil
+	firstInput := state.RawInput[first.Start:first.End]
+	sequencePassed := len(choices) > 0 && len(choices) <= 9 && focused.Result.State.ActiveSegment != nil &&
+		choices[0].Exact && choices[0].Code == first.Code
 	for _, choice := range choices {
-		sequencePassed = sequencePassed && choice.Code == first.Code && len(choice.Segments) == 0
+		sequencePassed = sequencePassed && choice.Exact && choice.Code == firstInput && len(choice.Segments) == 0
 	}
 	if !sequencePassed {
 		return len(choices), false, false, false, false, nil
@@ -549,10 +572,13 @@ func (p *brokerProcess) verifyDynamicSentence(probe modeProbe) (int, bool, bool,
 	segmentSwitchPassed := err == nil && secondFocused.Result != nil &&
 		secondFocused.Result.State.ActiveSegment != nil &&
 		secondFocused.Result.State.ActiveSegment.Start == second.Start &&
-		len(secondFocused.Result.State.Candidates) > 0
+		len(secondFocused.Result.State.Candidates) > 0 &&
+		secondFocused.Result.State.Candidates[0].Exact &&
+		secondFocused.Result.State.Candidates[0].Code == second.Code
 	if segmentSwitchPassed {
+		secondInput := state.RawInput[second.Start:second.End]
 		for _, choice := range secondFocused.Result.State.Candidates {
-			segmentSwitchPassed = segmentSwitchPassed && choice.Code == second.Code
+			segmentSwitchPassed = segmentSwitchPassed && strings.HasPrefix(choice.Code, secondInput)
 		}
 	}
 	if !segmentSwitchPassed {
@@ -579,19 +605,18 @@ func (p *brokerProcess) verifyDynamicSentence(probe modeProbe) (int, bool, bool,
 	if err != nil || replaced.Result == nil {
 		return len(choices), true, true, false, false, fmt.Errorf("%s replace first sentence word: %w", probe.mode, err)
 	}
-	var corrected *engineapi.Candidate
-	for index := range replaced.Result.State.Candidates {
-		candidate := &replaced.Result.State.Candidates[index]
-		if len(candidate.Segments) != len(original.Segments) || candidate.Segments[0].Text != replacement.Text {
-			continue
-		}
+	corrected := replaced.Result.State.Sentence
+	if corrected != nil && (len(corrected.Segments) != len(original.Segments) ||
+		corrected.Segments[0].Text != replacement.Text) {
+		corrected = nil
+	}
+	if corrected != nil {
 		preserved := true
 		for segmentIndex := 1; segmentIndex < len(original.Segments); segmentIndex++ {
-			preserved = preserved && candidate.Segments[segmentIndex].Text == original.Segments[segmentIndex].Text
+			preserved = preserved && corrected.Segments[segmentIndex].Text == original.Segments[segmentIndex].Text
 		}
-		if preserved {
-			corrected = candidate
-			break
+		if !preserved {
+			corrected = nil
 		}
 	}
 	replacementPassed := replaced.Result.Commit == "" && corrected != nil

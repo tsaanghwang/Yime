@@ -81,6 +81,7 @@ type Segment struct {
 type State struct {
 	RawInput      string      `json:"raw_input"`
 	Candidates    []Candidate `json:"candidates,omitempty"`
+	Sentence      *Candidate  `json:"sentence,omitempty"`
 	PageNumber    int         `json:"page_number,omitempty"`
 	HasPrevious   bool        `json:"has_previous,omitempty"`
 	HasNext       bool        `json:"has_next,omitempty"`
@@ -103,4 +104,10 @@ type Engine interface {
 	Apply(Event) (Result, error)
 	Select(candidateID string) (Result, error)
 	Reset() Result
+}
+
+// CandidateForgetter is an optional engine capability. Forgetting a candidate
+// updates learned ranking while preserving the current composition.
+type CandidateForgetter interface {
+	ForgetCandidate(candidateID string) (Result, error)
 }

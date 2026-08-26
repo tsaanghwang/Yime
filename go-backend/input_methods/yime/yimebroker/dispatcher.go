@@ -217,6 +217,12 @@ func (d *Dispatcher) onSession(ctx context.Context, client TrustedClient, reques
 				return selector.SelectIdempotent(request.CandidateID, durableMutationID(request.SessionID, request.MutationID))
 			}
 			return current.engine.Select(request.CandidateID)
+		case Forget:
+			forgetter, ok := current.engine.(engineapi.CandidateForgetter)
+			if !ok {
+				return engineapi.Result{}, errors.New("engine does not support candidate forgetting")
+			}
+			return forgetter.ForgetCandidate(request.CandidateID)
 		case ResetSession:
 			return current.engine.Reset(), nil
 		default:

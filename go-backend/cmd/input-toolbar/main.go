@@ -17,8 +17,9 @@ import (
 
 const (
 	windowClass           = "YimeInputToolbar"
-	experimentWindowClass = "YimeCoreExperimentalToolbar"
+	experimentWindowClass = "YimeCoreDesktopToolsWindow"
 	messageTitle          = "音元"
+	experimentWindowTitle = "Yime 桌面工具"
 
 	wsExToolWindow = 0x00000080
 	wsExTopmost    = 0x00000008
@@ -44,15 +45,18 @@ const (
 	wmNcLButtonDown = 0x00A1
 	htCaption       = 2
 
-	idHandle   = 99
-	idLanguage = 100
-	idShape    = 101
-	idPunct    = 102
-	idScript   = 103
-	idUnicode  = 104
-	idSettings = 105
-	idTrainer  = 106
-	timerID    = 1
+	idHandle    = 99
+	idLanguage  = 100
+	idShape     = 101
+	idPunct     = 102
+	idScript    = 103
+	idUnicode   = 104
+	idSettings  = 105
+	idTrainer   = 106
+	idExpWidth  = 107
+	idExpPunct  = 108
+	idExpScript = 109
+	timerID     = 1
 
 	idMenuOrientation = 200
 	idMenuCandidate   = 201
@@ -266,7 +270,7 @@ func (a *app) run() error {
 		return errors.New("无法注册输入法工具栏窗口")
 	}
 
-	title, _ := syscall.UTF16PtrFromString(messageTitle)
+	title, _ := syscall.UTF16PtrFromString(a.windowTitle())
 	windowStyle := uintptr(toolbarWindowStyle())
 	windowExStyle := uintptr(wsExToolWindow | wsExTopmost)
 	layout := calculateToolbarLayout(a.state)
@@ -310,6 +314,13 @@ func (a *app) className() string {
 		return experimentWindowClass
 	}
 	return windowClass
+}
+
+func (a *app) windowTitle() string {
+	if a.experimental {
+		return experimentWindowTitle
+	}
+	return messageTitle
 }
 
 func loadToolbarState(path string) toolbarstate.State {
@@ -418,6 +429,9 @@ func experimentalToolbarButtons() []toolbarButton {
 		{idLanguage, "mode", "模式：变长", 86, false},
 		{idShape, "font", "字号：中", 78, false},
 		{idPunct, "encoding", "音码：键位", 92, false},
+		{idExpWidth, "output-width", "半宽", 54, false},
+		{idExpPunct, "output-punctuation", "中标", 54, false},
+		{idExpScript, "output-script", "简体", 54, false},
 		{idSettings, "close", "关闭", 54, false},
 	}
 }
@@ -672,6 +686,16 @@ func (a *app) handleCommand(id int) {
 		case idPunct:
 			a.updateState(func(state *toolbarstate.State) {
 				state.CandidateAnnotation = nextCandidateEncoding(state.CandidateAnnotation)
+			})
+		case idExpWidth:
+			a.updateState(func(state *toolbarstate.State) { state.FullShape = !state.FullShape })
+		case idExpPunct:
+			a.updateState(func(state *toolbarstate.State) {
+				state.ASCIIPunctuation = !state.ASCIIPunctuation
+			})
+		case idExpScript:
+			a.updateState(func(state *toolbarstate.State) {
+				state.Traditionalization = !state.Traditionalization
 			})
 		case idSettings:
 			closeToolbarWindow(a.hwnd)
@@ -972,6 +996,9 @@ func (a *app) updateLabels() {
 			toolbarstate.AnnotationKeySequence: "音码：键位", toolbarstate.AnnotationYinyuan: "音码：音元",
 			toolbarstate.AnnotationStandardPinyin: "音码：拼音", toolbarstate.AnnotationHidden: "音码：隐藏",
 		}[a.state.CandidateAnnotation])
+		setButtonText(a.buttons[idExpWidth], choose(a.state.FullShape, "全宽", "半宽"))
+		setButtonText(a.buttons[idExpPunct], choose(a.state.ASCIIPunctuation, "英标", "中标"))
+		setButtonText(a.buttons[idExpScript], choose(a.state.Traditionalization, "繁体", "简体"))
 		return
 	}
 	setButtonText(a.buttons[idLanguage], choose(a.state.ASCII, "英文", "中文"))

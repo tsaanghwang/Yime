@@ -127,10 +127,11 @@ func TestDispatcherKeepsSentenceCommitAvailableWhileFirstWordChoicesAreVisible(t
 		if response.Result == nil {
 			t.Fatalf("sentence input failed: %+v", response)
 		}
-		for _, candidate := range response.Result.State.Candidates {
-			if candidate.Text == "甲丙" {
-				sentence = candidate
-			}
+		if sequence == 2 && len(response.Result.State.Candidates) == 0 {
+			t.Fatalf("first-key candidates were not published by Broker: %+v", response)
+		}
+		if response.Result.State.Sentence != nil && response.Result.State.Sentence.Text == "甲丙" {
+			sentence = *response.Result.State.Sentence
 		}
 	}
 	if len(sentence.Segments) != 2 {
@@ -142,9 +143,14 @@ func TestDispatcherKeepsSentenceCommitAvailableWhileFirstWordChoicesAreVisible(t
 		Event: engineapi.Event{Operation: engineapi.FocusSegment, CandidateID: sentence.ID,
 			SegmentStart: sentence.Segments[0].Start, SegmentEnd: sentence.Segments[0].End},
 	})
-	if focused.Result == nil || len(focused.Result.State.Candidates) != 2 ||
+	if focused.Result == nil || focused.Result.State.Sentence == nil ||
+		focused.Result.State.Sentence.ID != sentence.ID ||
+		focused.Result.State.ActiveSegment == nil ||
+		focused.Result.State.ActiveSegment.Start != sentence.Segments[0].Start ||
+		focused.Result.State.ActiveSegment.End != sentence.Segments[0].End ||
+		len(focused.Result.State.Candidates) != 2 ||
 		focused.Result.State.Candidates[0].Text != "甲" || focused.Result.State.Candidates[1].Text != "乙" {
-		t.Fatalf("first-word candidate sequence mismatch: %+v", focused)
+		t.Fatalf("focused Broker snapshot is incomplete: %+v", focused)
 	}
 	sequence++
 	committed := dispatch(t, dispatcher, client, Request{
@@ -154,6 +160,57 @@ func TestDispatcherKeepsSentenceCommitAvailableWhileFirstWordChoicesAreVisible(t
 	if committed.Result == nil || committed.Result.Commit != "甲丙" ||
 		committed.Result.State.RawInput != "" {
 		t.Fatalf("sentence row commit failed while first-word choices were visible: %+v", committed)
+	}
+}
+
+func TestDispatcherForgetsLearnedCandidateWithoutClearingComposition(t *testing.T) {
+	index, err := yimecore.NewIndex([]yimecore.Entry{
+		{Text: "甲", Code: "a1", Weight: 10},
+		{Text: "乙", Code: "a1", Weight: 9},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	model, err := yimecore.NewUserModel("dispatcher-forget")
+	if err != nil {
+		t.Fatal(err)
+	}
+	modelForSelection, err := yimecore.NewEngineWithUserModel(index, 9, model)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var initial engineapi.Result
+	for _, code := range "a1" {
+		initial, err = modelForSelection.Apply(engineapi.Event{Operation: engineapi.AppendCode, Code: string(code)})
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+	if _, err := modelForSelection.Select(initial.State.Candidates[1].ID); err != nil {
+		t.Fatal(err)
+	}
+	dispatcher, err := NewDispatcher(func() (engineapi.Engine, error) {
+		return yimecore.NewEngineWithUserModel(index, 9, model)
+	}, Config{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	client := TrustedClient{ID: "forget-client"}
+	sessionID := openSession(t, dispatcher, client)
+	state := dispatch(t, dispatcher, client, Request{
+		Version: 1, Sequence: 2, SessionID: sessionID, Operation: ApplyEvent,
+		Event: engineapi.Event{Operation: engineapi.AppendCode, Code: "a1"},
+	})
+	if state.Result == nil || state.Result.State.Candidates[0].Text != "乙" {
+		t.Fatalf("learned order before forget = %#v", state)
+	}
+	forgotten := dispatch(t, dispatcher, client, Request{
+		Version: 1, Sequence: 3, SessionID: sessionID, Operation: Forget,
+		CandidateID: state.Result.State.Candidates[0].ID,
+	})
+	if forgotten.Error != nil || forgotten.Result == nil || forgotten.Result.Commit != "" ||
+		forgotten.Result.State.RawInput != "a1" || forgotten.Result.State.Candidates[0].Text != "甲" {
+		t.Fatalf("Broker forget result = %#v", forgotten)
 	}
 }
 
