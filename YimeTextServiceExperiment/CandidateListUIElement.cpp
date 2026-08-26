@@ -38,24 +38,26 @@ void CandidateListUIElement::Update(ITfDocumentMgr* document,
     popupCandidateRows_.clear();
     sentenceDisplay_.clear();
     const auto& labels = yime::experiment::CandidateLabels();
-    const size_t count = std::min(candidates.size(), labels.size());
+    const bool hasSentence = sentence && !sentence->id.empty();
+    const size_t available = candidates.size();
+    const size_t count = std::min(available, labels.size());
     selectable_ = count != 0;
-    if (sentence) sentenceDisplay_ = L"句:  " + widen(sentence->text);
-    selection_ = count == 0 ? 0u : static_cast<UINT>(std::min(selectedIndex, count - 1) +
-                                                      (sentenceDisplay_.empty() ? 0 : 1));
-    candidates_.reserve(count + (sentenceDisplay_.empty() ? 0 : 1));
+    if (hasSentence) sentenceDisplay_ = L"句: " + widen(sentence->text);
+    const size_t visibleSelection = selectedIndex;
+    selection_ = count == 0 ? 0u : static_cast<UINT>(std::min(visibleSelection, count - 1));
+    candidates_.reserve(count);
     popupCandidateRows_.reserve(count);
-    if (!sentenceDisplay_.empty()) candidates_.push_back(sentenceDisplay_);
     for (size_t index = 0; index < count; ++index) {
+        const auto& candidate = candidates[index];
         std::string annotation;
         if (annotationMode == "yinyuan") {
-            annotation = candidates[index].yinyuan;
+            annotation = candidate.yinyuan;
         } else if (annotationMode == "standard_pinyin") {
-            annotation = candidates[index].standardPinyin;
+            annotation = candidate.standardPinyin;
         } else if (annotationMode == "key_sequence") {
-            annotation = candidates[index].code;
+            annotation = candidate.code;
         }
-        std::wstring display = std::wstring(labels[index]) + L"  " + widen(candidates[index].text);
+        std::wstring display = std::wstring(labels[index]) + L"  " + widen(candidate.text);
         if (!annotation.empty()) display += L"  " + widen(annotation);
         popupCandidateRows_.push_back(display);
         candidates_.push_back(std::move(display));
@@ -71,8 +73,7 @@ void CandidateListUIElement::UpdateEmpty(ITfDocumentMgr* document, std::wstring 
     candidates_.clear();
     popupCandidateRows_.clear();
     sentenceDisplay_.clear();
-    candidates_.push_back(std::move(message));
-    popupCandidateRows_.push_back(candidates_.front());
+	(void)message;
     selection_ = 0;
     selectable_ = false;
 }

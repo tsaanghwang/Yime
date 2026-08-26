@@ -119,6 +119,18 @@ bool applyCommand(ExperimentSettingsCommand command, nlohmann::json& document) {
         document["candidate_annotation"] = "standard_pinyin"; return true;
     case ExperimentSettingsCommand::AnnotationHidden:
         document["candidate_annotation"] = "hidden"; return true;
+    case ExperimentSettingsCommand::PunctuationChinese:
+        document["ascii_punctuation"] = false; return true;
+    case ExperimentSettingsCommand::PunctuationEnglish:
+        document["ascii_punctuation"] = true; return true;
+    case ExperimentSettingsCommand::ShapeHalf:
+        document["full_shape"] = false; return true;
+    case ExperimentSettingsCommand::ShapeFull:
+        document["full_shape"] = true; return true;
+    case ExperimentSettingsCommand::ScriptSimplified:
+        document["traditionalization"] = false; return true;
+    case ExperimentSettingsCommand::ScriptTraditional:
+        document["traditionalization"] = true; return true;
     }
     return false;
 }
@@ -145,6 +157,9 @@ ExperimentSettings LoadExperimentSettings(const std::wstring& path) noexcept {
         nlohmann::json document;
         input >> document;
         settings.asciiMode = document.value("ascii_mode", false);
+        settings.fullShape = document.value("full_shape", false);
+        settings.asciiPunctuation = document.value("ascii_punctuation", false);
+        settings.traditionalization = document.value("traditionalization", false);
         const auto mode = document.value("experiment_mode", settings.mode);
         const auto preset = document.value("candidate_font_preset", settings.candidateFontPreset);
         const auto annotation = document.value("candidate_annotation", settings.candidateAnnotation);

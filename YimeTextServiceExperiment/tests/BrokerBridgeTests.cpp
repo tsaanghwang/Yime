@@ -2,8 +2,10 @@
 
 #include <windows.h>
 
+#include <algorithm>
 #include <iostream>
 #include <string>
+#include <vector>
 
 namespace {
 
@@ -19,6 +21,10 @@ bool sendCode(yime::experiment::SurfaceSession* surface, const std::string& code
             key = static_cast<WPARAM>(character);
         } else if (character == ']') {
             key = VK_OEM_6;
+        } else if (character == ',') {
+            key = VK_OEM_COMMA;
+        } else if (character == '.') {
+            key = VK_OEM_PERIOD;
         } else {
             if (error) *error = "unsupported bridge-test code character";
             return false;
@@ -32,13 +38,120 @@ bool sendCode(yime::experiment::SurfaceSession* surface, const std::string& code
     return true;
 }
 
+bool printableASCII(const wchar_t* value, std::string* converted) {
+    if (!value || !converted) return false;
+    converted->clear();
+    for (const wchar_t* cursor = value; *cursor; ++cursor) {
+        if (*cursor < 0x20 || *cursor > 0x7e) return false;
+        converted->push_back(static_cast<char>(*cursor));
+    }
+    return true;
+}
+
+bool runLongSegmentSession(yime::experiment::SurfaceSession* surface,
+                           const std::string& sentenceCode, std::string* error) {
+    yime::experiment::SurfaceOutcome outcome;
+    if (!sendCode(surface, sentenceCode, &outcome, error) || !outcome.update.hasSentence ||
+        outcome.update.sentence.segments.size() < 3) {
+        if (error && error->empty()) *error = "long-session sentence was not segmented";
+        return false;
+    }
+    const std::string rawInput = outcome.update.rawInput;
+    outcome = surface->HandleVirtualKey(VK_RIGHT, false, true, false);
+    if (!outcome.handled || outcome.update.activeSegmentStart != outcome.update.sentence.segments[0].start ||
+        outcome.update.activeSegmentEnd != outcome.update.sentence.segments[0].end) {
+        if (error) *error = "Ctrl+Right did not focus the first sentence segment";
+        return false;
+    }
+    outcome = surface->HandleVirtualKey(VK_RIGHT, false, true, false);
+    if (!outcome.handled || outcome.update.activeSegmentStart != outcome.update.sentence.segments[1].start ||
+        outcome.update.activeSegmentEnd != outcome.update.sentence.segments[1].end) {
+        if (error) *error = "Ctrl+Right did not advance to the next sentence segment";
+        return false;
+    }
+    outcome = surface->HandleVirtualKey(VK_LEFT, false, true, false);
+    if (!outcome.handled || outcome.update.activeSegmentStart != outcome.update.sentence.segments[0].start ||
+        outcome.update.activeSegmentEnd != outcome.update.sentence.segments[0].end) {
+        if (error) *error = "Ctrl+Left did not return to the previous sentence segment";
+        return false;
+    }
+    constexpr int cycles = 25;
+    for (int cycle = 0; cycle < cycles; ++cycle) {
+        const size_t segmentCount = outcome.update.sentence.segments.size();
+        const size_t targets[] = {0, segmentCount / 2, segmentCount - 1};
+        for (const size_t targetIndex : targets) {
+            const auto before = outcome.update.sentence.segments;
+            const auto target = before[targetIndex];
+            outcome = surface->FocusSentenceSegment(target.start, target.end);
+            if (!outcome.handled || !outcome.update.commit.empty() ||
+                outcome.update.rawInput != rawInput || !outcome.update.hasSentence ||
+                outcome.update.activeSegmentStart != target.start ||
+                outcome.update.activeSegmentEnd != target.end ||
+                outcome.update.sentence.segments.size() != segmentCount) {
+                if (error) *error = "segment focus lost the authoritative Broker snapshot";
+                return false;
+            }
+            const size_t candidateLimit = std::min<size_t>(9, outcome.update.candidates.size());
+            size_t replacementIndex = candidateLimit;
+            for (size_t index = 0; index < candidateLimit; ++index) {
+                if (outcome.update.candidates[index].text != before[targetIndex].text) {
+                    replacementIndex = index;
+                    break;
+                }
+            }
+            if (replacementIndex == candidateLimit) {
+                if (error) *error = "focused segment has no alternate Shift-selectable candidate";
+                return false;
+            }
+            const std::string replacement = outcome.update.candidates[replacementIndex].text;
+            outcome = surface->HandleVirtualKey(static_cast<WPARAM>('1' + replacementIndex), true);
+            if (!outcome.handled || !outcome.update.commit.empty() ||
+                outcome.update.rawInput != rawInput || !outcome.update.hasSentence ||
+                outcome.update.sentence.segments.size() != segmentCount) {
+                if (error) *error = "segment replacement committed or lost the sentence";
+                return false;
+            }
+            for (size_t index = 0; index < segmentCount; ++index) {
+                const std::string expected = index == targetIndex ? replacement : before[index].text;
+                if (outcome.update.sentence.segments[index].text != expected) {
+                    if (error) *error = "segment replacement changed an unrelated sentence segment";
+                    return false;
+                }
+            }
+        }
+    }
+    std::string expectedCommit;
+    for (const auto& segment : outcome.update.sentence.segments) expectedCommit += segment.text;
+    outcome = surface->CommitSentence();
+    if (!outcome.handled || outcome.update.commit != expectedCommit ||
+        !outcome.update.rawInput.empty() || outcome.update.hasSentence) {
+        if (error) *error = "explicit long-session sentence commit failed";
+        return false;
+    }
+    return true;
+}
+
 }  // namespace
 
 int wmain(int argc, wchar_t** argv) {
-	if (argc != 3 && argc != 5) {
-		std::cerr << "usage: YimeBrokerBridgeTests <pipe> <multi-page-code> [whole-word-code longer-word-suffix]\n";
+    if (argc < 3) {
+        std::cerr << "usage: YimeBrokerBridgeTests <pipe> <multi-page-code> [candidate-sorting-code] [whole-word-code longer-word-suffix] [--long-session-code=<code>]\n";
 		return 2;
 	}
+    std::vector<std::string> scenarioArguments;
+    std::string longSessionCode;
+    constexpr char longSessionPrefix[] = "--long-session-code=";
+    for (int index = 3; index < argc; ++index) {
+        std::string argument;
+        if (!printableASCII(argv[index], &argument)) return 2;
+        if (argument.rfind(longSessionPrefix, 0) == 0) {
+            if (!longSessionCode.empty()) return 2;
+            longSessionCode = argument.substr(sizeof(longSessionPrefix) - 1);
+        } else {
+            scenarioArguments.push_back(std::move(argument));
+        }
+    }
+    if (scenarioArguments.size() > 2 || longSessionCode.empty() && argc > 5) return 2;
     yime::experiment::SurfaceSession surface;
     std::string error;
     if (!surface.Connect(argv[1], 5000, &error)) {
@@ -54,15 +167,22 @@ int wmain(int argc, wchar_t** argv) {
             std::cerr << "composition key failed: " << outcome.error << '\n';
             return 1;
         }
-        if (index == 0 && outcome.update.rawInput != "2") {
-            std::cerr << "base digit was not preserved as composition input\n";
-            return 1;
+        if (index == 0) {
+            if (outcome.update.rawInput != "2") {
+                std::cerr << "base digit was not preserved as composition input\n";
+                return 1;
+            }
+            if (outcome.update.candidates.empty()) {
+                std::cerr << "first composition key did not publish candidates\n";
+                return 1;
+            }
         }
     }
     if (outcome.update.rawInput != code || outcome.update.candidates.empty()) {
         std::cerr << "Broker composition state mismatch\n";
         return 1;
     }
+    const std::string selectedCode = outcome.update.candidates.front().code;
     outcome = surface.HandleVirtualKey('Z', false);
     if (!outcome.handled || outcome.update.rawInput != code + "z" || !outcome.update.candidates.empty()) {
         std::cerr << "invalid-code state did not remain editable\n";
@@ -144,6 +264,28 @@ int wmain(int argc, wchar_t** argv) {
         std::cerr << "Enter did not commit the arrow-highlighted candidate\n";
         return 1;
     }
+    if (!sendCode(&surface, pagingCode, &outcome, &error) || outcome.update.candidates.empty() ||
+        outcome.update.candidates.front().text != secondCandidate) {
+        std::cerr << "selected candidate did not become the learned first choice: " << error << '\n';
+        return 1;
+    }
+    outcome = surface.HandleVirtualKey(VK_DELETE, false, true, false);
+    if (!outcome.handled || !outcome.update.commit.empty() || outcome.update.rawInput != pagingCode ||
+        outcome.update.candidates.empty() || outcome.update.candidates.front().id != firstPageFirstId) {
+        std::cerr << "Ctrl+Delete did not forget the learned candidate in place: " << outcome.error << '\n';
+        return 1;
+    }
+    for (size_t index = 0; index < pagingCode.size(); ++index) {
+        outcome = surface.HandleVirtualKey(VK_BACK, false);
+        if (!outcome.handled) {
+            std::cerr << "post-forget composition was no longer editable\n";
+            return 1;
+        }
+    }
+    if (!outcome.update.rawInput.empty()) {
+        std::cerr << "post-forget composition did not clear through Backspace\n";
+        return 1;
+    }
     for (const WPARAM defaultSelectionKey : {static_cast<WPARAM>(VK_SPACE), static_cast<WPARAM>(VK_RETURN)}) {
         for (char character : code) {
             outcome = surface.HandleVirtualKey(
@@ -164,17 +306,24 @@ int wmain(int argc, wchar_t** argv) {
             return 1;
         }
     }
-	if (argc == 5) {
-		std::string wholeWordCode;
-		std::string longerWordSuffix;
-		for (const wchar_t* cursor = argv[3]; *cursor; ++cursor) {
-			if (*cursor < 0x20 || *cursor > 0x7e) return 2;
-			wholeWordCode.push_back(static_cast<char>(*cursor));
-		}
-		for (const wchar_t* cursor = argv[4]; *cursor; ++cursor) {
-			if (*cursor < 0x20 || *cursor > 0x7e) return 2;
-			longerWordSuffix.push_back(static_cast<char>(*cursor));
-		}
+    if (scenarioArguments.size() == 1) {
+        const std::string& sentenceCode = scenarioArguments[0];
+        if (!sendCode(&surface, sentenceCode, &outcome, &error) || !outcome.update.hasSentence ||
+            outcome.update.sentence.text != "候选排序") {
+            std::cerr << "candidate-sorting sentence row mismatch: " << error << '\n';
+            return 1;
+        }
+        outcome = surface.CommitSentence();
+        if (!outcome.handled || outcome.update.commit != "候选排序" ||
+            !outcome.update.rawInput.empty()) {
+            std::cerr << "explicit sentence commit did not commit the candidate-sorting sentence: "
+                      << outcome.error << '\n';
+            return 1;
+        }
+    }
+    if (scenarioArguments.size() == 2) {
+        const std::string& wholeWordCode = scenarioArguments[0];
+        const std::string& longerWordSuffix = scenarioArguments[1];
 		if (!sendCode(&surface, wholeWordCode, &outcome, &error) || !outcome.update.hasSentence ||
 			outcome.update.sentence.text != "本地" || !outcome.update.sentence.segments.empty()) {
 			std::cerr << "system word did not enter the sentence row as a whole: " << error << '\n';
@@ -191,6 +340,10 @@ int wmain(int argc, wchar_t** argv) {
 			return 1;
 		}
 	}
+    if (!longSessionCode.empty() && !runLongSegmentSession(&surface, longSessionCode, &error)) {
+        std::cerr << "long segment session failed: " << error << '\n';
+        return 1;
+    }
     outcome = surface.HandleVirtualKey(VK_F12, false);
     if (outcome.handled) {
         std::cerr << "pass-through key was consumed\n";
@@ -208,7 +361,7 @@ int wmain(int argc, wchar_t** argv) {
         std::cerr << "permanently closed surface consumed a key\n";
         return 1;
     }
-    std::cout << "YimeTextService E6-B2a bridge passed; selected=" << selected
+    std::cout << "YimeTextService E6-B2a bridge passed; selected=" << selectedCode
               << " architecture_bits=" << (sizeof(void*) * 8) << '\n';
     return 0;
 }

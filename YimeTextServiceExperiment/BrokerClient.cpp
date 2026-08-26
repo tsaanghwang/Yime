@@ -123,6 +123,23 @@ bool BrokerClient::SelectCandidate(const std::string& candidateId, const std::st
     return true;
 }
 
+bool BrokerClient::ForgetCandidate(const std::string& candidateId, BrokerUpdate* update,
+                                   std::string* error) {
+    if (!IsConnected()) {
+        if (error) *error = "Broker session is not connected";
+        return false;
+    }
+    const uint64_t sequence = ++sequence_;
+    const json request = {{"version", 1}, {"sequence", sequence}, {"session_id", sessionId_},
+                          {"operation", "forget"}, {"candidate_id", candidateId}};
+    std::string response;
+    if (!Exchange(request.dump(), &response, error) || !ParseUpdate(response, sequence, update, error)) {
+        Disconnect();
+        return false;
+    }
+    return true;
+}
+
 void BrokerClient::Close() noexcept {
     try {
         if (IsConnected()) {
@@ -204,8 +221,7 @@ bool BrokerClient::ParseUpdate(const std::string& responseText, uint64_t sequenc
                     update->activeSegmentStart = active.value("start", -1);
                     update->activeSegmentEnd = active.value("end", -1);
                 }
-                if (state.contains("candidates")) {
-                    for (const auto& candidate : state["candidates"]) {
+                const auto parseCandidate = [](const json& candidate) {
                         BrokerCandidate parsed{
                             candidate.at("id").get<std::string>(),
                             candidate.at("text").get<std::string>(),
@@ -223,7 +239,15 @@ bool BrokerClient::ParseUpdate(const std::string& responseText, uint64_t sequenc
                                     segment.value("text", ""), segment.value("code", "")});
                             }
                         }
-                        update->candidates.push_back(std::move(parsed));
+                        return parsed;
+                };
+                if (state.contains("sentence")) {
+                    update->sentence = parseCandidate(state["sentence"]);
+                    update->hasSentence = !update->sentence.id.empty();
+                }
+                if (state.contains("candidates")) {
+                    for (const auto& candidate : state["candidates"]) {
+                        update->candidates.push_back(parseCandidate(candidate));
                     }
                 }
             }

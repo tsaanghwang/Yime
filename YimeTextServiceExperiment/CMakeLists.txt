@@ -12,6 +12,7 @@ add_library(YimeTextServiceExperiment SHARED
     KeyContract.cpp
     LanguageBarItem.cpp
     LanguageBarResources.rc
+    OutputTransform.cpp
     SurfaceSession.cpp
     TextService.cpp
     YimeTextServiceExperiment.def
@@ -32,6 +33,7 @@ add_executable(YimeTextServiceContractTests
     KeyContract.cpp
     LanguageBarItem.cpp
     LanguageBarResources.rc
+    OutputTransform.cpp
 )
 target_compile_features(YimeTextServiceContractTests PRIVATE cxx_std_17)
 target_compile_definitions(YimeTextServiceContractTests PRIVATE UNICODE _UNICODE WIN32_LEAN_AND_MEAN NOMINMAX)

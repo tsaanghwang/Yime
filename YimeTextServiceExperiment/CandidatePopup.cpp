@@ -4,7 +4,11 @@
 #include <filesystem>
 #include <windowsx.h>
 
+#include "KeyContract.h"
+
 namespace {
+
+constexpr wchar_t kSentenceLabel[] = L"句:";
 
 HINSTANCE currentModule() noexcept {
     HMODULE module = nullptr;
@@ -124,10 +128,9 @@ bool CandidatePopup::Update(const std::vector<std::wstring>& candidates, const R
                                           0});
         }
 		if (sentence->segments.empty() && !sentence->text.empty()) {
-			// A system-lexicon whole word is a committable sentence row but has
-			// no editable subsegments. Render one inert cell so it stays visibly
-			// whole and cannot be mistaken for a character-by-character fallback.
-			sentenceSegments_.push_back({-1, -1, widen(sentence->text), false, 0});
+            const int codeEnd = sentence->code.empty() ? -1 : static_cast<int>(sentence->code.size());
+            sentenceSegments_.push_back({codeEnd < 0 ? -1 : 0, codeEnd,
+                                         widen(sentence->text), false, 0});
 		}
     }
     if (candidates_.empty() && sentenceSegments_.empty()) {
@@ -146,6 +149,10 @@ bool CandidatePopup::Update(const std::vector<std::wstring>& candidates, const R
     TEXTMETRICW metrics{};
     GetTextMetricsW(dc, &metrics);
     rowHeight_ = std::max(20, static_cast<int>(metrics.tmHeight) + 6);
+    SetPropW(window_, L"YimeTextServiceExperimentCandidateRowHeight",
+             reinterpret_cast<HANDLE>(static_cast<UINT_PTR>(rowHeight_)));
+    SetPropW(window_, L"YimeTextServiceExperimentSentenceRow",
+             reinterpret_cast<HANDLE>(static_cast<UINT_PTR>(sentenceSegments_.empty() ? 0 : 1)));
     int textWidth = 0;
     for (const auto& candidate : candidates_) {
         SIZE extent{};
@@ -153,11 +160,21 @@ bool CandidatePopup::Update(const std::vector<std::wstring>& candidates, const R
             textWidth = std::max(textWidth, static_cast<int>(extent.cx));
         }
     }
-    static constexpr wchar_t sentenceLabel[] = L"句:";
-    SIZE labelExtent{};
-    GetTextExtentPoint32W(dc, sentenceLabel, 2, &labelExtent);
-    sentenceLabelWidth_ = labelExtent.cx;
-    int sentenceWidth = sentenceLabelWidth_;
+    std::wstring candidatePrefix(yime::experiment::CandidateLabels().front());
+    candidatePrefix += L"  ";
+    SIZE candidatePrefixExtent{};
+    GetTextExtentPoint32W(dc, candidatePrefix.c_str(), static_cast<int>(candidatePrefix.size()),
+                          &candidatePrefixExtent);
+    textColumnOffset_ = candidatePrefixExtent.cx;
+    SetPropW(window_, L"YimeTextServiceExperimentTextColumnLeft",
+             reinterpret_cast<HANDLE>(static_cast<UINT_PTR>(padding_ + textColumnOffset_)));
+    SetPropW(window_, L"YimeTextServiceExperimentSentenceSegmentCount",
+             reinterpret_cast<HANDLE>(static_cast<UINT_PTR>(sentenceSegments_.size())));
+    SetPropW(window_, L"YimeTextServiceExperimentActiveSegmentStart",
+             reinterpret_cast<HANDLE>(static_cast<UINT_PTR>(activeSegmentStart + 1)));
+    SetPropW(window_, L"YimeTextServiceExperimentActiveSegmentEnd",
+             reinterpret_cast<HANDLE>(static_cast<UINT_PTR>(activeSegmentEnd + 1)));
+    int sentenceWidth = textColumnOffset_;
     for (auto& segment : sentenceSegments_) {
         SIZE extent{};
         GetTextExtentPoint32W(dc, segment.text.c_str(), static_cast<int>(segment.text.size()), &extent);
@@ -205,7 +222,7 @@ void CandidatePopup::Destroy() noexcept {
     }
     candidates_.clear();
     sentenceSegments_.clear();
-    sentenceLabelWidth_ = 0;
+    textColumnOffset_ = 0;
     trackedSegment_ = -1;
     width_ = 0;
     rowHeight_ = 0;
@@ -235,9 +252,8 @@ void CandidatePopup::Paint() noexcept {
     HGDIOBJ previous = SelectObject(dc, EnsureFont());
     size_t rowIndex = 0;
     if (!sentenceSegments_.empty()) {
-        static constexpr wchar_t sentenceLabel[] = L"句:";
-        RECT label{padding_, padding_, padding_ + sentenceLabelWidth_, padding_ + rowHeight_};
-        DrawTextW(dc, sentenceLabel, 2, &label,
+        RECT label{padding_, padding_, padding_ + textColumnOffset_, padding_ + rowHeight_};
+        DrawTextW(dc, kSentenceLabel, lstrlenW(kSentenceLabel), &label,
                   DT_LEFT | DT_VCENTER | DT_SINGLELINE | DT_NOPREFIX);
         int left = label.right;
         for (const auto& segment : sentenceSegments_) {
@@ -269,7 +285,7 @@ void CandidatePopup::Paint() noexcept {
 
 int CandidatePopup::SegmentAt(int x, int y) const noexcept {
     if (sentenceSegments_.empty() || y < padding_ || y >= padding_ + rowHeight_) return -1;
-    int left = padding_ + sentenceLabelWidth_;
+    int left = padding_ + textColumnOffset_;
     for (size_t index = 0; index < sentenceSegments_.size(); ++index) {
         const int right = left + sentenceSegments_[index].width;
 		if (sentenceSegments_[index].start >= 0 &&

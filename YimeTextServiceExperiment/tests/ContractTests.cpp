@@ -4,6 +4,7 @@
 #include <iostream>
 #include <filesystem>
 #include <fstream>
+#include <iterator>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -14,6 +15,7 @@
 #include "CandidatePopup.h"
 #include "ExperimentSettings.h"
 #include "LanguageBarItem.h"
+#include "OutputTransform.h"
 #include "YimeTextServiceIds.h"
 
 namespace {
@@ -104,9 +106,15 @@ private:
 
 UINT selectChineseFromPopup(HMENU menu, POINT, void* context) noexcept {
     auto* seen = static_cast<bool*>(context);
-    *seen = menu && GetMenuItemCount(menu) == 6 && GetSubMenu(menu, 3) &&
-            GetSubMenu(menu, 4) && GetSubMenu(menu, 5);
+    *seen = menu && GetMenuItemCount(menu) == 14 && GetSubMenu(menu, 3) &&
+            GetSubMenu(menu, 4) && GetSubMenu(menu, 5) && GetSubMenu(menu, 6) &&
+            GetSubMenu(menu, 7) && GetSubMenu(menu, 8);
     return YIME_LBI_CHINESE;
+}
+
+bool recordToolLaunch(UINT command, const std::wstring&, void* context) noexcept {
+    *static_cast<UINT*>(context) = command;
+    return true;
 }
 
 void expect(bool condition, const char* message) {
@@ -149,11 +157,69 @@ void testKeyContract() {
     expect(ClassifyVirtualKey(VK_LEFT, false).route == KeyRoute::PreviousCandidatePage &&
                ClassifyVirtualKey(VK_RIGHT, false).route == KeyRoute::NextCandidatePage,
            "Left/Right must page the Broker candidates");
+       expect(ClassifyVirtualKey(VK_LEFT, false, true, false).route == KeyRoute::PreviousSentenceSegment &&
+                        ClassifyVirtualKey(VK_RIGHT, false, true, false).route == KeyRoute::NextSentenceSegment,
+                 "Ctrl+Left/Right must navigate sentence segments");
+       expect(ClassifyVirtualKey(VK_DELETE, false, true, false).route == KeyRoute::ForgetCurrentCandidate,
+                 "Ctrl+Delete must forget the highlighted candidate");
+    for (const WPARAM key : {static_cast<WPARAM>('A'), static_cast<WPARAM>('C'),
+                             static_cast<WPARAM>('V'), static_cast<WPARAM>('X'),
+                             static_cast<WPARAM>('Y'), static_cast<WPARAM>('Z')}) {
+        expect(ClassifyVirtualKey(key, false, true, false).route == KeyRoute::PassThrough,
+               "Ctrl editing shortcut was captured as a composition key");
+    }
+    expect(ClassifyVirtualKey('Z', true, true, false).route == KeyRoute::PassThrough,
+           "Ctrl+Shift+Z redo shortcut was captured as a composition key");
+    expect(ClassifyVirtualKey(VK_DELETE, true, true, false).route == KeyRoute::PassThrough,
+           "Ctrl+Shift+Delete must retain host behavior");
+    ShiftTapTracker shiftTap;
+    expect(shiftTap.OnKeyDown(VK_SHIFT) && shiftTap.OnKeyUp(VK_SHIFT),
+           "single Shift tap did not request a Chinese/English toggle");
+    expect(shiftTap.OnKeyDown(VK_SHIFT) && !shiftTap.OnKeyDown('A') &&
+               !shiftTap.OnKeyUp(VK_SHIFT),
+           "Shift used with another key incorrectly toggled Chinese/English");
     const auto& labels = CandidateLabels();
     constexpr std::wstring_view expected[] = {L"⇧1", L"⇧2", L"⇧3", L"⇧4", L"⇧5", L"⇧6", L"⇧7", L"⇧8", L"⇧9"};
     for (size_t index = 0; index < labels.size(); ++index) {
         expect(labels[index] == expected[index], "candidate label lost Shift marker");
     }
+}
+
+void testOutputTransformContract() {
+    using namespace yime::experiment;
+    ExperimentSettings settings;
+    settings.asciiMode = false;
+    settings.asciiPunctuation = false;
+    std::string commit;
+    expect(!TryDirectOutputKey(VK_OEM_COMMA, false, settings, &commit),
+           "Chinese-mode punctuation stopped being a Yime composition key");
+
+    settings.asciiMode = true;
+    expect(TryDirectOutputKey(VK_OEM_COMMA, false, settings, &commit) && commit == u8"，",
+           "Chinese punctuation did not transform an English pass-through comma");
+    settings.asciiPunctuation = true;
+    expect(!TryDirectOutputKey(VK_OEM_COMMA, false, settings, &commit),
+           "half-width English punctuation should remain host pass-through");
+
+    settings.fullShape = true;
+    expect(TryDirectOutputKey('A', false, settings, &commit) && commit == u8"ａ",
+           "full-width lowercase output transform failed");
+    expect(TryDirectOutputKey('A', true, settings, &commit) && commit == u8"Ａ",
+           "full-width uppercase output transform failed");
+    expect(TryDirectOutputKey(VK_SPACE, false, settings, &commit) && commit == u8"　",
+           "full-width space output transform failed");
+
+    expect(TraditionalizeUtf8(u8"汉字") == u8"漢字",
+           "Simplified candidate text did not receive the Windows Traditional mapping");
+    BrokerUpdate update;
+    update.commit = u8"汉字";
+    update.candidates.push_back({"candidate", u8"汉字"});
+    update.hasSentence = true;
+    update.sentence = {"sentence", u8"汉字"};
+    ApplyTraditionalization(&update);
+    expect(update.commit == u8"漢字" && update.candidates[0].text == u8"漢字" &&
+               update.sentence.text == u8"漢字",
+           "Traditional output was not kept consistent across UI and commit fields");
 }
 
 void testBrokerEndpoint() {
@@ -196,16 +262,27 @@ void testCandidateElement() {
 
     yime::experiment::BrokerCandidate sentence{"sentence", "秋候选组成的动态句子"};
     candidates->Update(nullptr, values, 0, "key_sequence", &sentence);
-    expect(candidates->GetCount(&count) == S_OK && count == 10,
-           "sentence row did not precede nine Shift candidates");
-    BSTR sentenceRow = nullptr;
-    expect(candidates->GetString(0, &sentenceRow) == S_OK && sentenceRow &&
-               std::wstring_view(sentenceRow) == L"句:  秋候选组成的动态句子",
-           "dynamic sentence row label or text mismatch");
-    SysFreeString(sentenceRow);
+    expect(candidates->GetCount(&count) == S_OK && count == 9,
+           "independent sentence row reduced the nine candidate ordinals");
+    expect(candidates->SentenceDisplay() == L"句: 秋候选组成的动态句子",
+		   "independent sentence row must separate the label from preedit text");
+    BSTR firstAlternative = nullptr;
+    expect(candidates->GetString(0, &firstAlternative) == S_OK && firstAlternative &&
+               std::wstring_view(firstAlternative) == L"⇧1  秋",
+           "first candidate below the sentence did not retain Shift+1");
+    SysFreeString(firstAlternative);
     selection = 99;
-    expect(candidates->GetSelection(&selection) == S_OK && selection == 1,
-           "sentence row displaced the first-word candidate selection incorrectly");
+    expect(candidates->GetSelection(&selection) == S_OK && selection == 0,
+           "independent sentence row displaced candidate selection");
+	const auto exactSentence = values.front();
+	candidates->Update(nullptr, values, 0, "key_sequence", &exactSentence);
+	expect(candidates->GetCount(&count) == S_OK && count == 9,
+		   "sentence equality incorrectly removed the Shift+1 exact candidate");
+	firstAlternative = nullptr;
+	expect(candidates->GetString(0, &firstAlternative) == S_OK && firstAlternative &&
+			   std::wstring_view(firstAlternative) == L"⇧1  秋",
+		   "top exact candidate disappeared when it also owned the sentence row");
+	SysFreeString(firstAlternative);
 
     values[0].code = "yjkl";
     values[0].yinyuan = "音元序列";
@@ -243,13 +320,8 @@ void testCandidateElement() {
     expect(candidates->IsShown(&shown) == S_OK && shown, "candidate shown state mismatch");
     candidates->UpdateEmpty(nullptr, L"无匹配候选，按退格修改");
     count = 0;
-    expect(candidates->GetCount(&count) == S_OK && count == 1,
-           "empty-result candidate status row missing");
-    BSTR emptyStatus = nullptr;
-    expect(candidates->GetString(0, &emptyStatus) == S_OK && emptyStatus &&
-               std::wstring_view(emptyStatus) == L"无匹配候选，按退格修改",
-           "empty-result candidate status text mismatch");
-    SysFreeString(emptyStatus);
+    expect(candidates->GetCount(&count) == S_OK && count == 0,
+		   "invalid code exposed a synthetic status candidate");
     selection = 99;
     expect(candidates->GetSelection(&selection) == E_FAIL && selection == 0,
            "empty-result status row must not become a selectable candidate");
@@ -301,12 +373,17 @@ void testOwnedCandidatePopup() {
     const RECT centeredAnchor{100, 100, 101, 101};
     yime::experiment::BrokerCandidate editableSentence{"sentence", "甲丙"};
     editableSentence.segments = {{0, 2, "甲", "ab"}, {2, 4, "丙", "cd"}};
-    expect(popup.Update({L"⇧1  甲  ab", L"⇧2  乙  ab"}, centeredAnchor, nullptr,
+       expect(popup.Update({L"⇧1  甲  ab", L"⇧2  乙  ab"}, centeredAnchor, nullptr,
                         false, 0, &editableSentence, 0, 2),
            "owned sentence popup update failed");
     popup.Show(true);
-    SendMessageW(window, WM_LBUTTONDOWN, 0, MAKELPARAM(35, 10));
-    SendMessageW(window, WM_LBUTTONUP, 0, MAKELPARAM(35, 10));
+    const int textColumnLeft = popup.TextColumnLeft();
+    SendMessageW(window, WM_LBUTTONDOWN, 0, MAKELPARAM(textColumnLeft - 1, 10));
+    SendMessageW(window, WM_LBUTTONUP, 0, MAKELPARAM(textColumnLeft - 1, 10));
+    expect(selectedSegment == std::array<int, 2>{-1, -1},
+           "sentence label spacing leaked into the first segment hit target");
+    SendMessageW(window, WM_LBUTTONDOWN, 0, MAKELPARAM(textColumnLeft, 10));
+    SendMessageW(window, WM_LBUTTONUP, 0, MAKELPARAM(textColumnLeft, 10));
     expect(selectedSegment == std::array<int, 2>{0, 2},
            "sentence row did not route the clicked editable segment span");
     RECT client{};
@@ -315,24 +392,20 @@ void testOwnedCandidatePopup() {
     selected = 0;
     SendMessageW(window, WM_LBUTTONUP, 0,
                  MAKELPARAM(20, 8 + sentenceRowHeight + sentenceRowHeight / 2));
-    expect(selected == 1, "first-word row below the sentence did not retain Shift ordinal one");
+    expect(selected == 1, "first candidate below the independent sentence lost Shift ordinal one");
 
-    yime::experiment::BrokerCandidate wholeWord{"whole-word", "本地"};
+       yime::experiment::BrokerCandidate wholeWord{"whole-word", "本地", "abcdef"};
     selected = 0;
     selectedSegment = {-1, -1};
-    expect(popup.Update({L"⇧1  本地"}, centeredAnchor, nullptr, false, 0,
+    expect(popup.Update({}, centeredAnchor, nullptr, false, 0,
                         &wholeWord, -1, -1),
            "whole system-word sentence popup update failed");
-    expect(popup.RowCount() == 2, "whole system word did not reserve one sentence row");
-    GetClientRect(window, &client);
-    const int wholeWordRowHeight = (client.bottom - 16) / static_cast<int>(popup.RowCount());
-    SendMessageW(window, WM_LBUTTONDOWN, 0, MAKELPARAM(35, 10));
-    SendMessageW(window, WM_LBUTTONUP, 0, MAKELPARAM(35, 10));
-    expect(selectedSegment == std::array<int, 2>{-1, -1},
-           "whole system-word sentence row exposed a false editable segment");
-    SendMessageW(window, WM_LBUTTONUP, 0,
-                 MAKELPARAM(20, 8 + wholeWordRowHeight + wholeWordRowHeight / 2));
-    expect(selected == 1, "candidate below the whole system-word row lost Shift ordinal one");
+    expect(popup.RowCount() == 1, "whole system word was duplicated below its sentence row");
+       SendMessageW(window, WM_LBUTTONDOWN, 0, MAKELPARAM(popup.TextColumnLeft(), 10));
+       SendMessageW(window, WM_LBUTTONUP, 0, MAKELPARAM(popup.TextColumnLeft(), 10));
+       expect(selectedSegment == std::array<int, 2>{0, 6},
+           "whole system-word sentence row did not request recursive expansion");
+    expect(selected == 0, "whole system-word sentence row leaked into candidate ordinal selection");
 
     expect(popup.Update({L"⇧1  甲  ab"}, centeredAnchor, nullptr),
            "short three-part candidate popup update failed");
@@ -394,7 +467,9 @@ void testLanguageBarItem() {
     expect(ApplyExperimentSettingsCommand(ExperimentSettingsCommand::Chinese, path, &initial),
            "could not seed language-bar state");
     bool popupSeen = false;
-    auto* item = new LanguageBarItem(path, selectChineseFromPopup, &popupSeen);
+    UINT launchedTool = 0;
+    auto* item = new LanguageBarItem(path, selectChineseFromPopup, &popupSeen,
+                                     recordToolLaunch, &launchedTool);
     TF_LANGBARITEMINFO info{};
     expect(item->GetInfo(&info) == S_OK, "language bar GetInfo failed");
     expect(IsEqualGUID(info.clsidService, CLSID_YimeTextServiceExperiment), "language bar service CLSID mismatch");
@@ -424,7 +499,7 @@ void testLanguageBarItem() {
            "language bar menu path must validate the host ITfMenu callback");
 
     auto* menu = new FakeMenu();
-    expect(item->InitMenu(menu) == S_OK && menu->entries.size() == 6,
+    expect(item->InitMenu(menu) == S_OK && menu->entries.size() == 14,
            "host right-click path did not build the complete trial menu");
     expect(menu->entries[3].text == L"输入方案" && menu->entries[3].submenu &&
                menu->entries[3].submenu->entries.size() == 3,
@@ -435,6 +510,36 @@ void testLanguageBarItem() {
     expect(menu->entries[5].text == L"显示编码" && menu->entries[5].submenu &&
                menu->entries[5].submenu->entries.size() == 4,
            "candidate annotation cascade is missing");
+    expect(menu->entries[6].text == L"标点样式" && menu->entries[6].submenu &&
+               menu->entries[6].submenu->entries.size() == 2 &&
+               menu->entries[6].submenu->entries[0].id == YIME_LBI_PUNCTUATION_CHINESE &&
+               menu->entries[6].submenu->entries[1].id == YIME_LBI_PUNCTUATION_ENGLISH,
+           "Chinese/English punctuation cascade is missing");
+    expect(menu->entries[7].text == L"字符宽度" && menu->entries[7].submenu &&
+               menu->entries[7].submenu->entries.size() == 2 &&
+               menu->entries[7].submenu->entries[0].id == YIME_LBI_SHAPE_HALF &&
+               menu->entries[7].submenu->entries[1].id == YIME_LBI_SHAPE_FULL,
+           "half/full-width cascade is missing");
+    expect(menu->entries[8].text == L"汉字字形" && menu->entries[8].submenu &&
+               menu->entries[8].submenu->entries.size() == 2 &&
+               menu->entries[8].submenu->entries[0].id == YIME_LBI_SCRIPT_SIMPLIFIED &&
+               menu->entries[8].submenu->entries[1].id == YIME_LBI_SCRIPT_TRADITIONAL,
+           "simplified/traditional cascade is missing");
+    expect((menu->entries[9].flags & TF_LBMENUF_SEPARATOR) != 0,
+           "tool commands are not separated from composition settings");
+    expect(menu->entries[10].id == YIME_LBI_DESKTOP_TOOLS &&
+               menu->entries[10].text == L"桌面工具" &&
+               (menu->entries[10].flags & TF_LBMENUF_CHECKED) == 0,
+           "desktop tools must be present and default off");
+    expect(menu->entries[11].id == YIME_LBI_REVERSE_LOOKUP &&
+               menu->entries[11].text == L"反查编码",
+           "reverse-lookup host click path is missing");
+    expect(menu->entries[12].id == YIME_LBI_USER_LEXICON &&
+               menu->entries[12].text == L"用户词库",
+           "user-lexicon host click path is missing");
+    expect(menu->entries[13].id == YIME_LBI_SETTINGS_TOOL &&
+               menu->entries[13].text == L"设置工具",
+           "settings-tool host click path is missing");
     menu->Release();
 
     FakeLanguageBarSink sink;
@@ -463,14 +568,41 @@ void testLanguageBarItem() {
     expect(item->OnMenuSelect(YIME_LBI_MODE_FULL) == S_OK &&
                LoadExperimentSettings(path).mode == "full",
            "host submenu click did not persist the requested trial mode");
+    expect(item->OnMenuSelect(YIME_LBI_PUNCTUATION_CHINESE) == S_OK &&
+               !LoadExperimentSettings(path).asciiPunctuation,
+           "host submenu click did not select Chinese punctuation");
+    expect(item->OnMenuSelect(YIME_LBI_SHAPE_FULL) == S_OK &&
+               LoadExperimentSettings(path).fullShape,
+           "host submenu click did not select full-width output");
+    expect(item->OnMenuSelect(YIME_LBI_SCRIPT_TRADITIONAL) == S_OK &&
+               LoadExperimentSettings(path).traditionalization,
+           "host submenu click did not select Traditional output");
+    for (const UINT command : {YIME_LBI_DESKTOP_TOOLS, YIME_LBI_REVERSE_LOOKUP,
+                               YIME_LBI_USER_LEXICON, YIME_LBI_SETTINGS_TOOL}) {
+        launchedTool = 0;
+        expect(item->OnMenuSelect(command) == S_OK && launchedTool == command,
+               "language-bar tool command did not reach its exact launcher path");
+    }
     expect(item->OnMenuSelect(1) == E_INVALIDARG,
            "language bar accepted an unknown host command ID");
+    const auto eventPath = std::filesystem::path(path).parent_path() / L"evidence" /
+                           L"language-bar-events.jsonl";
+    std::ifstream eventInput(eventPath, std::ios::binary);
+    const std::string eventText((std::istreambuf_iterator<char>(eventInput)),
+                                std::istreambuf_iterator<char>());
+    expect(eventText.find("\"event\":\"init_menu\"") != std::string::npos &&
+               eventText.find("\"event\":\"left_click\"") != std::string::npos &&
+               eventText.find("\"event\":\"right_click_open\"") != std::string::npos &&
+               eventText.find("\"event\":\"menu_select\"") != std::string::npos,
+           "language-bar host callbacks were not captured in the live evidence stream");
     if (source) {
         expect(source->UnadviseSink(cookie) == S_OK, "language bar sink unsubscribe failed");
         source->Release();
     }
     item->Release();
     DeleteFileW(path.c_str());
+    std::error_code cleanupError;
+    std::filesystem::remove(eventPath, cleanupError);
 }
 
 void testComLifecycle(const wchar_t* dllPath) {
@@ -543,6 +675,7 @@ int wmain(int argc, wchar_t** argv) {
         return 2;
     }
     testKeyContract();
+    testOutputTransformContract();
     testBrokerEndpoint();
     testCandidateElement();
     testOwnedCandidatePopup();

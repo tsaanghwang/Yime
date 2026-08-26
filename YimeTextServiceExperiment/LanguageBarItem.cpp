@@ -1,7 +1,10 @@
 #include "LanguageBarItem.h"
 
 #include <algorithm>
+#include <cstdio>
 #include <cwchar>
+#include <filesystem>
+#include <vector>
 
 #include "YimeTextServiceIds.h"
 #include "LanguageBarResources.h"
@@ -13,6 +16,17 @@ constexpr wchar_t kEnglish[] = L"英";
 constexpr wchar_t kTooltip[] = L"中英文切换；右键打开 Yime 自研栈试验版设置";
 
 BSTR copyText(const wchar_t* text) { return SysAllocString(text); }
+
+std::wstring widenUtf8(const std::string& value) {
+    if (value.empty()) return {};
+    const int length = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, value.data(),
+                                           static_cast<int>(value.size()), nullptr, 0);
+    if (length <= 0) return {};
+    std::wstring result(static_cast<size_t>(length), L'\0');
+    if (MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, value.data(),
+                            static_cast<int>(value.size()), result.data(), length) != length) return {};
+    return result;
+}
 
 const wchar_t* modeText(const yime::experiment::ExperimentSettings& settings) {
     return settings.asciiMode ? kEnglish : kChinese;
@@ -28,6 +42,47 @@ DWORD checked(bool value) { return value ? TF_LBMENUF_CHECKED : 0; }
 
 UINT win32Checked(bool value) { return MF_STRING | (value ? MF_CHECKED : MF_UNCHECKED); }
 
+void recordHostEvent(const std::wstring& settingsPath, const char* event, UINT command,
+                     HRESULT result) noexcept {
+    if (settingsPath.empty() || !event) return;
+    try {
+        const auto settings = yime::experiment::LoadExperimentSettings(settingsPath);
+        const auto evidenceDirectory = std::filesystem::path(settingsPath).parent_path() / L"evidence";
+        std::filesystem::create_directories(evidenceDirectory);
+        const auto path = evidenceDirectory / L"language-bar-events.jsonl";
+        SYSTEMTIME now{};
+        GetSystemTime(&now);
+        char line[1024]{};
+        const int length = std::snprintf(
+            line, sizeof(line),
+            "{\"schema_version\":\"yimecore-language-bar-event-v1\","
+            "\"timestamp\":\"%04u-%02u-%02uT%02u:%02u:%02u.%03uZ\","
+            "\"process_id\":%lu,\"thread_id\":%lu,\"event\":\"%s\","
+            "\"command_id\":%u,\"hresult\":%ld,\"ascii_mode\":%s,"
+            "\"mode\":\"%s\",\"candidate_font_preset\":\"%s\","
+            "\"candidate_annotation\":\"%s\",\"ascii_punctuation\":%s,"
+            "\"full_shape\":%s,\"traditionalization\":%s,\"settings_revision\":%lld}\r\n",
+            now.wYear, now.wMonth, now.wDay, now.wHour, now.wMinute, now.wSecond,
+            now.wMilliseconds, static_cast<unsigned long>(GetCurrentProcessId()),
+            static_cast<unsigned long>(GetCurrentThreadId()), event, command,
+            static_cast<long>(result), settings.asciiMode ? "true" : "false",
+            settings.mode.c_str(), settings.candidateFontPreset.c_str(),
+            settings.candidateAnnotation.c_str(), settings.asciiPunctuation ? "true" : "false",
+            settings.fullShape ? "true" : "false",
+            settings.traditionalization ? "true" : "false",
+            static_cast<long long>(settings.revision));
+        if (length <= 0 || static_cast<size_t>(length) >= sizeof(line)) return;
+        HANDLE file = CreateFileW(path.c_str(), FILE_APPEND_DATA,
+                                  FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+                                  nullptr, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+        if (file == INVALID_HANDLE_VALUE) return;
+        DWORD written = 0;
+        WriteFile(file, line, static_cast<DWORD>(length), &written, nullptr);
+        CloseHandle(file);
+    } catch (...) {
+    }
+}
+
 HMODULE currentModule() noexcept {
     HMODULE module = nullptr;
     GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS |
@@ -36,15 +91,76 @@ HMODULE currentModule() noexcept {
     return module;
 }
 
+std::wstring quoteArgument(const std::wstring& value) {
+    std::wstring quoted = L"\"";
+    size_t slashes = 0;
+    for (const wchar_t character : value) {
+        if (character == L'\\') {
+            ++slashes;
+            continue;
+        }
+        if (character == L'\"') {
+            quoted.append(slashes * 2 + 1, L'\\');
+            quoted.push_back(character);
+            slashes = 0;
+            continue;
+        }
+        quoted.append(slashes, L'\\');
+        slashes = 0;
+        quoted.push_back(character);
+    }
+    quoted.append(slashes * 2, L'\\');
+    quoted.push_back(L'\"');
+    return quoted;
+}
+
+std::filesystem::path trialInstallRoot() {
+    std::vector<wchar_t> path(512);
+    for (;;) {
+        const DWORD length = GetModuleFileNameW(currentModule(), path.data(),
+                                                static_cast<DWORD>(path.size()));
+        if (length == 0) return {};
+        if (length < path.size() - 1) {
+            path.resize(length);
+            break;
+        }
+        path.resize(path.size() * 2);
+    }
+    return std::filesystem::path(path.data()).parent_path().parent_path();
+}
+
+bool startDetached(const std::filesystem::path& executable,
+                   const std::vector<std::wstring>& arguments) noexcept {
+    if (!std::filesystem::is_regular_file(executable)) return false;
+    std::wstring commandLine = quoteArgument(executable.wstring());
+    for (const auto& argument : arguments) {
+        commandLine.push_back(L' ');
+        commandLine += quoteArgument(argument);
+    }
+    STARTUPINFOW startup{};
+    startup.cb = sizeof(startup);
+    PROCESS_INFORMATION process{};
+    const BOOL started = CreateProcessW(executable.c_str(), commandLine.data(), nullptr, nullptr,
+                                        FALSE, CREATE_UNICODE_ENVIRONMENT, nullptr,
+                                        executable.parent_path().c_str(), &startup, &process);
+    if (!started) return false;
+    CloseHandle(process.hThread);
+    CloseHandle(process.hProcess);
+    return true;
+}
+
 }  // namespace
 
 std::atomic<DWORD> LanguageBarItem::nextCookie_{1};
 
 LanguageBarItem::LanguageBarItem(std::wstring settingsPath, PopupPresenter presenter,
-                                 void* presenterContext) noexcept
+                                 void* presenterContext, ToolLauncher toolLauncher,
+                                 void* toolLauncherContext) noexcept
     : settingsPath_(std::move(settingsPath)),
       presenter_(presenter ? presenter : PresentPopup),
-      presenterContext_(presenterContext) {
+      presenterContext_(presenterContext),
+      toolLauncher_(toolLauncher ? toolLauncher : LaunchTool),
+      toolLauncherContext_(toolLauncherContext) {
     lastAsciiMode_ = yime::experiment::LoadExperimentSettings(settingsPath_).asciiMode;
 }
 
@@ -113,15 +229,27 @@ STDMETHODIMP LanguageBarItem::GetTooltipString(BSTR* tooltip) {
 STDMETHODIMP LanguageBarItem::OnClick(TfLBIClick click, POINT point, const RECT*) {
     if (click == TF_LBI_CLK_LEFT) {
         const bool asciiMode = yime::experiment::LoadExperimentSettings(settingsPath_).asciiMode;
-        return Apply(asciiMode ? YIME_LBI_CHINESE : YIME_LBI_ENGLISH) ? S_OK : E_FAIL;
+        const UINT command = asciiMode ? YIME_LBI_CHINESE : YIME_LBI_ENGLISH;
+        const HRESULT result = Apply(command) ? S_OK : E_FAIL;
+        recordHostEvent(settingsPath_, "left_click", command, result);
+        return result;
     }
     if (click != TF_LBI_CLK_RIGHT) return S_OK;
     HMENU menu = BuildPopupMenu();
-    if (!menu) return E_OUTOFMEMORY;
+    if (!menu) {
+        recordHostEvent(settingsPath_, "right_click_open", 0, E_OUTOFMEMORY);
+        return E_OUTOFMEMORY;
+    }
+    recordHostEvent(settingsPath_, "right_click_open", 0, S_OK);
     const UINT command = presenter_(menu, point, presenterContext_);
     DestroyMenu(menu);
-    if (command == 0) return S_OK;
-    return Apply(command) ? S_OK : E_INVALIDARG;
+    if (command == 0) {
+        recordHostEvent(settingsPath_, "right_click_cancel", 0, S_OK);
+        return S_OK;
+    }
+    const HRESULT result = Apply(command) ? S_OK : E_INVALIDARG;
+    recordHostEvent(settingsPath_, "right_click_command", command, result);
+    return result;
 }
 
 STDMETHODIMP LanguageBarItem::InitMenu(ITfMenu* menu) {
@@ -165,10 +293,51 @@ STDMETHODIMP LanguageBarItem::InitMenu(ITfMenu* menu) {
         SUCCEEDED(addMenuItem(annotation, YIME_LBI_ANNOTATION_HIDDEN,
                               checked(settings.candidateAnnotation == "hidden"), L"隐藏"));
     annotation->Release();
-    return annotationOk ? S_OK : E_FAIL;
+    if (!annotationOk) return E_FAIL;
+
+    ITfMenu* punctuation = nullptr;
+    if (FAILED(addMenuItem(menu, 0, TF_LBMENUF_SUBMENU, L"标点样式", &punctuation)) ||
+        !punctuation) return E_FAIL;
+    const bool punctuationOk =
+        SUCCEEDED(addMenuItem(punctuation, YIME_LBI_PUNCTUATION_CHINESE,
+                              checked(!settings.asciiPunctuation), L"中文标点")) &&
+        SUCCEEDED(addMenuItem(punctuation, YIME_LBI_PUNCTUATION_ENGLISH,
+                              checked(settings.asciiPunctuation), L"英文标点"));
+    punctuation->Release();
+    if (!punctuationOk) return E_FAIL;
+
+    ITfMenu* shape = nullptr;
+    if (FAILED(addMenuItem(menu, 0, TF_LBMENUF_SUBMENU, L"字符宽度", &shape)) || !shape) return E_FAIL;
+    const bool shapeOk = SUCCEEDED(addMenuItem(shape, YIME_LBI_SHAPE_HALF,
+                                               checked(!settings.fullShape), L"半宽")) &&
+                         SUCCEEDED(addMenuItem(shape, YIME_LBI_SHAPE_FULL,
+                                               checked(settings.fullShape), L"全宽"));
+    shape->Release();
+    if (!shapeOk) return E_FAIL;
+
+    ITfMenu* script = nullptr;
+    if (FAILED(addMenuItem(menu, 0, TF_LBMENUF_SUBMENU, L"汉字字形", &script)) || !script) return E_FAIL;
+    const bool scriptOk =
+        SUCCEEDED(addMenuItem(script, YIME_LBI_SCRIPT_SIMPLIFIED,
+                              checked(!settings.traditionalization), L"简体")) &&
+        SUCCEEDED(addMenuItem(script, YIME_LBI_SCRIPT_TRADITIONAL,
+                              checked(settings.traditionalization), L"繁体"));
+    script->Release();
+    if (!scriptOk ||
+        FAILED(addMenuItem(menu, 0, TF_LBMENUF_SEPARATOR, nullptr)) ||
+        FAILED(addMenuItem(menu, YIME_LBI_DESKTOP_TOOLS, 0, L"桌面工具")) ||
+        FAILED(addMenuItem(menu, YIME_LBI_REVERSE_LOOKUP, 0, L"反查编码")) ||
+        FAILED(addMenuItem(menu, YIME_LBI_USER_LEXICON, 0, L"用户词库")) ||
+        FAILED(addMenuItem(menu, YIME_LBI_SETTINGS_TOOL, 0, L"设置工具"))) return E_FAIL;
+    recordHostEvent(settingsPath_, "init_menu", 0, S_OK);
+    return S_OK;
 }
 
-STDMETHODIMP LanguageBarItem::OnMenuSelect(UINT id) { return Apply(id) ? S_OK : E_INVALIDARG; }
+STDMETHODIMP LanguageBarItem::OnMenuSelect(UINT id) {
+    const HRESULT result = Apply(id) ? S_OK : E_INVALIDARG;
+    recordHostEvent(settingsPath_, "menu_select", id, result);
+    return result;
+}
 
 STDMETHODIMP LanguageBarItem::GetIcon(HICON* icon) {
     if (!icon) return E_POINTER;
@@ -208,6 +377,10 @@ STDMETHODIMP LanguageBarItem::UnadviseSink(DWORD cookie) {
 }
 
 bool LanguageBarItem::Apply(UINT id) noexcept {
+    if (id == YIME_LBI_DESKTOP_TOOLS || id == YIME_LBI_REVERSE_LOOKUP ||
+        id == YIME_LBI_USER_LEXICON || id == YIME_LBI_SETTINGS_TOOL) {
+        return toolLauncher_ && toolLauncher_(id, settingsPath_, toolLauncherContext_);
+    }
     using Command = yime::experiment::ExperimentSettingsCommand;
     Command command{};
     switch (id) {
@@ -223,6 +396,12 @@ bool LanguageBarItem::Apply(UINT id) noexcept {
     case YIME_LBI_ANNOTATION_YINYUAN: command = Command::AnnotationYinyuan; break;
     case YIME_LBI_ANNOTATION_PINYIN: command = Command::AnnotationStandardPinyin; break;
     case YIME_LBI_ANNOTATION_HIDDEN: command = Command::AnnotationHidden; break;
+    case YIME_LBI_PUNCTUATION_CHINESE: command = Command::PunctuationChinese; break;
+    case YIME_LBI_PUNCTUATION_ENGLISH: command = Command::PunctuationEnglish; break;
+    case YIME_LBI_SHAPE_HALF: command = Command::ShapeHalf; break;
+    case YIME_LBI_SHAPE_FULL: command = Command::ShapeFull; break;
+    case YIME_LBI_SCRIPT_SIMPLIFIED: command = Command::ScriptSimplified; break;
+    case YIME_LBI_SCRIPT_TRADITIONAL: command = Command::ScriptTraditional; break;
     default: return false;
     }
     yime::experiment::ExperimentSettings updated;
@@ -239,7 +418,13 @@ HMENU LanguageBarItem::BuildPopupMenu() const noexcept {
     HMENU mode = CreatePopupMenu();
     HMENU font = CreatePopupMenu();
     HMENU annotation = CreatePopupMenu();
-    if (!root || !mode || !font || !annotation) {
+    HMENU punctuation = CreatePopupMenu();
+    HMENU shape = CreatePopupMenu();
+    HMENU script = CreatePopupMenu();
+    if (!root || !mode || !font || !annotation || !punctuation || !shape || !script) {
+        if (script) DestroyMenu(script);
+        if (shape) DestroyMenu(shape);
+        if (punctuation) DestroyMenu(punctuation);
         if (annotation) DestroyMenu(annotation);
         if (font) DestroyMenu(font);
         if (mode) DestroyMenu(mode);
@@ -262,6 +447,20 @@ HMENU LanguageBarItem::BuildPopupMenu() const noexcept {
     AppendMenuW(annotation, win32Checked(settings.candidateAnnotation == "standard_pinyin"), YIME_LBI_ANNOTATION_PINYIN, L"标准拼音");
     AppendMenuW(annotation, win32Checked(settings.candidateAnnotation == "hidden"), YIME_LBI_ANNOTATION_HIDDEN, L"隐藏");
     AppendMenuW(root, MF_POPUP | MF_STRING, reinterpret_cast<UINT_PTR>(annotation), L"显示编码");
+    AppendMenuW(punctuation, win32Checked(!settings.asciiPunctuation), YIME_LBI_PUNCTUATION_CHINESE, L"中文标点");
+    AppendMenuW(punctuation, win32Checked(settings.asciiPunctuation), YIME_LBI_PUNCTUATION_ENGLISH, L"英文标点");
+    AppendMenuW(root, MF_POPUP | MF_STRING, reinterpret_cast<UINT_PTR>(punctuation), L"标点样式");
+    AppendMenuW(shape, win32Checked(!settings.fullShape), YIME_LBI_SHAPE_HALF, L"半宽");
+    AppendMenuW(shape, win32Checked(settings.fullShape), YIME_LBI_SHAPE_FULL, L"全宽");
+    AppendMenuW(root, MF_POPUP | MF_STRING, reinterpret_cast<UINT_PTR>(shape), L"字符宽度");
+    AppendMenuW(script, win32Checked(!settings.traditionalization), YIME_LBI_SCRIPT_SIMPLIFIED, L"简体");
+    AppendMenuW(script, win32Checked(settings.traditionalization), YIME_LBI_SCRIPT_TRADITIONAL, L"繁体");
+    AppendMenuW(root, MF_POPUP | MF_STRING, reinterpret_cast<UINT_PTR>(script), L"汉字字形");
+    AppendMenuW(root, MF_SEPARATOR, 0, nullptr);
+    AppendMenuW(root, MF_STRING, YIME_LBI_DESKTOP_TOOLS, L"桌面工具");
+    AppendMenuW(root, MF_STRING, YIME_LBI_REVERSE_LOOKUP, L"反查编码");
+    AppendMenuW(root, MF_STRING, YIME_LBI_USER_LEXICON, L"用户词库");
+    AppendMenuW(root, MF_STRING, YIME_LBI_SETTINGS_TOOL, L"设置工具");
     return root;
 }
 
@@ -273,6 +472,40 @@ UINT LanguageBarItem::PresentPopup(HMENU menu, POINT point, void*) noexcept {
                                         point.x, point.y, 0, owner, nullptr);
     if (owner) PostMessageW(owner, WM_NULL, 0, 0);
     return command;
+}
+
+bool LanguageBarItem::LaunchTool(UINT command, const std::wstring& settingsPath,
+                                 void*) noexcept {
+    try {
+        const auto installRoot = trialInstallRoot();
+        if (installRoot.empty() || settingsPath.empty()) return false;
+        const auto stateRoot = std::filesystem::path(settingsPath).parent_path();
+        const auto sharedDir = installRoot / L"data";
+        const auto indexRoot = installRoot / L"indexes";
+        const auto settings = yime::experiment::LoadExperimentSettings(settingsPath);
+        switch (command) {
+        case YIME_LBI_DESKTOP_TOOLS:
+            return startDetached(installRoot / L"bin" / L"YimeCoreDesktopTools.exe",
+                                 {L"-StatePath", settingsPath, L"-Experimental"});
+        case YIME_LBI_REVERSE_LOOKUP:
+            return startDetached(installRoot / L"bin" / L"YimeCoreReverseLookup.exe",
+                                 {L"-SharedDir", sharedDir.wstring(), L"-UserDir", stateRoot.wstring(),
+                                  L"-IndexRoot", indexRoot.wstring(), L"-Mode", widenUtf8(settings.mode)});
+        case YIME_LBI_USER_LEXICON:
+            return startDetached(installRoot / L"bin" / L"YimeCoreLexiconManager.exe",
+                                 {L"-SharedDir", sharedDir.wstring(), L"-UserDir", stateRoot.wstring(),
+                                  L"-IndexRoot", indexRoot.wstring(), L"-Mode", widenUtf8(settings.mode),
+                                  L"-Experimental"});
+        case YIME_LBI_SETTINGS_TOOL:
+            return startDetached(installRoot / L"bin" / L"YimeCoreSettingsTool.exe",
+                                 {L"-UserDir", stateRoot.wstring(), L"-SharedDir", sharedDir.wstring(),
+                                  L"-StatePath", settingsPath, L"-Experimental"});
+        default:
+            return false;
+        }
+    } catch (...) {
+        return false;
+    }
 }
 
 void LanguageBarItem::Refresh() noexcept {

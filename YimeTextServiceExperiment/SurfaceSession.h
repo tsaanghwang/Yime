@@ -18,8 +18,10 @@ public:
     SurfaceSession();
     bool Connect(const std::wstring& pipeName, DWORD timeoutMs, std::string* error);
     bool IsConnected() const noexcept { return broker_.IsConnected(); }
-    bool CanHandle(WPARAM virtualKey, bool shiftDown);
-    SurfaceOutcome HandleVirtualKey(WPARAM virtualKey, bool shiftDown);
+    bool CanHandle(WPARAM virtualKey, bool shiftDown,
+                   bool controlDown = false, bool altDown = false);
+    SurfaceOutcome HandleVirtualKey(WPARAM virtualKey, bool shiftDown,
+                                    bool controlDown = false, bool altDown = false);
     SurfaceOutcome CommitSentence();
     SurfaceOutcome FocusSentenceSegment(int start, int end);
     void DisconnectForRecovery() noexcept;
@@ -27,10 +29,8 @@ public:
 
 private:
     static bool TranslateCompositionKey(WPARAM virtualKey, bool shiftDown, char* code) noexcept;
+    bool FindAdjacentSentenceSegment(bool previous, BrokerSegment* target) const noexcept;
     bool EnsureConnected(std::string* error);
-    bool PrepareDynamicSentence(BrokerUpdate update, BrokerUpdate* prepared,
-                                std::string* error, int preferredStart = -1,
-                                int preferredEnd = -1);
 
     BrokerClient broker_;
     BrokerUpdate current_;
@@ -40,6 +40,8 @@ private:
     std::wstring pipeName_;
     DWORD reconnectTimeoutMs_ = 100;
     std::string connectedMode_;
+    int navigationSegmentStart_ = -1;
+    int navigationSegmentEnd_ = -1;
 };
 
 }  // namespace yime::experiment

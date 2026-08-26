@@ -81,4 +81,5 @@ private:
     bool ownedCandidatePopupRequested_ = false;
     LanguageBarItem* languageBarItem_ = nullptr;
     bool languageBarItemAdded_ = false;
+    yime::experiment::ShiftTapTracker shiftTap_;
 };

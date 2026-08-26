@@ -4,6 +4,7 @@
 #include <filesystem>
 #include <iterator>
 #include <new>
+#include <utility>
 
 #include "CompositionEditSession.h"
 #include "CandidateListUIElement.h"
@@ -12,9 +13,57 @@
 #include "KeyContract.h"
 #include "LanguageBarItem.h"
 #include "ModuleState.h"
+#include "OutputTransform.h"
 #include "YimeTextServiceIds.h"
 
 namespace {
+
+bool IsSelectionDiagnosticKey(WPARAM key) noexcept {
+    return key == VK_RETURN || key == VK_SPACE || key == VK_UP || key == VK_DOWN ||
+           (key >= '1' && key <= '9');
+}
+
+void RecordSelectionKeyHostResult(const char* stage, WPARAM key, bool shiftDown,
+                                  bool controlDown, bool altDown, bool keyFocused,
+                                  bool asciiMode, bool hasComposition, bool contextMatches,
+                                  bool canHandle, bool handled, HRESULT editResult,
+                                  std::string errorText = {}) noexcept {
+    if (!stage || !IsSelectionDiagnosticKey(key)) return;
+    for (char& character : errorText) {
+        if (character == '\r' || character == '\n' || character == '|') character = '_';
+    }
+    wchar_t localAppData[MAX_PATH]{};
+    const DWORD length = GetEnvironmentVariableW(L"LOCALAPPDATA", localAppData,
+                                                  static_cast<DWORD>(std::size(localAppData)));
+    if (!length || length >= std::size(localAppData)) return;
+    std::error_code directoryError;
+    const std::filesystem::path evidence = std::filesystem::path(localAppData) /
+        L"YimeCore Experimental Trial" / L"evidence";
+    std::filesystem::create_directories(evidence, directoryError);
+    if (directoryError) return;
+    HANDLE file = CreateFileW((evidence / L"tsf-key-host.log").c_str(), FILE_APPEND_DATA,
+                              FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+                              nullptr, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+    if (file == INVALID_HANDLE_VALUE) return;
+    SYSTEMTIME now{};
+    GetSystemTime(&now);
+    char line[1024]{};
+    const int bytes = std::snprintf(
+        line, std::size(line),
+        "%04u-%02u-%02uT%02u:%02u:%02u.%03uZ|pid=%lu|tid=%lu|stage=%s|vk=%llu|shift=%d|ctrl=%d|alt=%d|focus=%d|ascii=%d|composition=%d|context=%d|can_handle=%d|handled=%d|edit=0x%08lX|error=%s\r\n",
+        now.wYear, now.wMonth, now.wDay, now.wHour, now.wMinute, now.wSecond,
+        now.wMilliseconds, static_cast<unsigned long>(GetCurrentProcessId()),
+        static_cast<unsigned long>(GetCurrentThreadId()), stage,
+        static_cast<unsigned long long>(key), shiftDown ? 1 : 0, controlDown ? 1 : 0,
+        altDown ? 1 : 0, keyFocused ? 1 : 0, asciiMode ? 1 : 0,
+        hasComposition ? 1 : 0, contextMatches ? 1 : 0, canHandle ? 1 : 0,
+        handled ? 1 : 0, static_cast<unsigned long>(editResult), errorText.c_str());
+    if (bytes > 0 && static_cast<size_t>(bytes) < std::size(line)) {
+        DWORD written = 0;
+        WriteFile(file, line, static_cast<DWORD>(bytes), &written, nullptr);
+    }
+    CloseHandle(file);
+}
 
 void RecordLanguageBarHostResult(HRESULT managerResult, HRESULT addResult,
                                  HRESULT statusResult, DWORD managerStatus) noexcept {
@@ -244,9 +293,29 @@ HRESULT YimeTextService::SetKeyDecision(ITfContext* context, WPARAM virtualKey, 
     if (!eaten) return E_POINTER;
     *eaten = FALSE;
     try {
+        if (virtualKey == VK_SHIFT || virtualKey == VK_LSHIFT || virtualKey == VK_RSHIFT) {
+            *eaten = context && CanAcceptKeys() ? TRUE : FALSE;
+            return S_OK;
+        }
         const bool shiftDown = (GetKeyState(VK_SHIFT) & 0x8000) != 0;
-        *eaten = context && ShouldHandleCompositionKeys() && ContextMatchesComposition(context) &&
-                         surface_.CanHandle(virtualKey, shiftDown) ? TRUE : FALSE;
+        const bool controlDown = (GetKeyState(VK_CONTROL) & 0x8000) != 0;
+        const bool altDown = (GetKeyState(VK_MENU) & 0x8000) != 0;
+        std::string directCommit;
+        if (!controlDown && !altDown && !composition_ &&
+            yime::experiment::TryDirectOutputKey(virtualKey, shiftDown,
+                                                  experimentSettings_.Get(), &directCommit)) {
+            *eaten = context && CanAcceptKeys() ? TRUE : FALSE;
+            return S_OK;
+        }
+        const bool modeAllows = ShouldHandleCompositionKeys();
+        const bool contextMatches = ContextMatchesComposition(context);
+        const bool canHandle = modeAllows && contextMatches &&
+            surface_.CanHandle(virtualKey, shiftDown, controlDown, altDown);
+        *eaten = context && canHandle ? TRUE : FALSE;
+        RecordSelectionKeyHostResult(
+            "test", virtualKey, shiftDown, controlDown, altDown, CanAcceptKeys(),
+            experimentSettings_.Get().asciiMode, composition_ != nullptr, contextMatches,
+            canHandle, *eaten == TRUE, S_OK);
     } catch (...) {
         surface_.DisconnectForRecovery();
     }
@@ -260,39 +329,111 @@ STDMETHODIMP YimeTextService::OnTestKeyDown(ITfContext* context, WPARAM wParam, 
 STDMETHODIMP YimeTextService::OnKeyDown(ITfContext* context, WPARAM wParam, LPARAM, BOOL* eaten) {
     if (!eaten) return E_POINTER;
     *eaten = FALSE;
-    if (!context || !ShouldHandleCompositionKeys() || !ContextMatchesComposition(context)) return S_OK;
+    if (wParam == VK_SHIFT || wParam == VK_LSHIFT || wParam == VK_RSHIFT) {
+        if (context && CanAcceptKeys()) {
+            shiftTap_.OnKeyDown(wParam);
+            *eaten = TRUE;
+        }
+        return S_OK;
+    }
+    shiftTap_.OnKeyDown(wParam);
+    if (!context || !CanAcceptKeys()) {
+        RecordSelectionKeyHostResult("down-no-focus", wParam, false, false, false,
+                                     CanAcceptKeys(), experimentSettings_.Get().asciiMode,
+                                     composition_ != nullptr, false, false, false, S_OK);
+        return S_OK;
+    }
     try {
         const bool shiftDown = (GetKeyState(VK_SHIFT) & 0x8000) != 0;
-        if (!surface_.CanHandle(wParam, shiftDown)) return S_OK;
-        const auto outcome = surface_.HandleVirtualKey(wParam, shiftDown);
-        if (!outcome.handled) return S_OK;
+        const bool controlDown = (GetKeyState(VK_CONTROL) & 0x8000) != 0;
+        const bool altDown = (GetKeyState(VK_MENU) & 0x8000) != 0;
+        std::string directCommit;
+        if (!controlDown && !altDown && !composition_ &&
+            yime::experiment::TryDirectOutputKey(wParam, shiftDown,
+                                                  experimentSettings_.Get(), &directCommit)) {
+            yime::experiment::BrokerUpdate direct;
+            direct.commit = std::move(directCommit);
+            const HRESULT edit = yime::experiment::ApplyBrokerUpdateToContext(
+                context, clientId_, static_cast<ITfCompositionSink*>(this), &composition_,
+                &plannedCompositionTermination_, direct, nullptr, nullptr);
+            if (SUCCEEDED(edit)) *eaten = TRUE;
+            return S_OK;
+        }
+        const bool modeAllows = ShouldHandleCompositionKeys();
+        const bool contextMatches = ContextMatchesComposition(context);
+        if (!modeAllows || !contextMatches) {
+            RecordSelectionKeyHostResult("down-mode-context", wParam, shiftDown, controlDown,
+                                         altDown, CanAcceptKeys(), experimentSettings_.Get().asciiMode,
+                                         composition_ != nullptr, contextMatches, false, false, S_OK);
+            return S_OK;
+        }
+        const bool canHandle = surface_.CanHandle(wParam, shiftDown, controlDown, altDown);
+        if (!canHandle) {
+            RecordSelectionKeyHostResult("down-cannot-handle", wParam, shiftDown, controlDown,
+                                         altDown, CanAcceptKeys(), experimentSettings_.Get().asciiMode,
+                                         composition_ != nullptr, contextMatches, false, false, S_OK);
+            return S_OK;
+        }
+        const auto outcome = surface_.HandleVirtualKey(wParam, shiftDown, controlDown, altDown);
+        if (!outcome.handled) {
+            RecordSelectionKeyHostResult("down-outcome", wParam, shiftDown, controlDown, altDown,
+                                         CanAcceptKeys(), experimentSettings_.Get().asciiMode,
+                                         composition_ != nullptr, contextMatches, canHandle, false,
+                                         S_OK, outcome.error);
+            return S_OK;
+        }
+        auto renderedUpdate = outcome.update;
+        if (experimentSettings_.Get().traditionalization) {
+            yime::experiment::ApplyTraditionalization(&renderedUpdate);
+        }
         RECT compositionRect{};
         bool compositionRectValid = false;
         const HRESULT edit = yime::experiment::ApplyBrokerUpdateToContext(
             context, clientId_, static_cast<ITfCompositionSink*>(this), &composition_,
-            &plannedCompositionTermination_, outcome.update, &compositionRect, &compositionRectValid);
+            &plannedCompositionTermination_, renderedUpdate, &compositionRect, &compositionRectValid);
         if (FAILED(edit)) {
+            RecordSelectionKeyHostResult("down-edit", wParam, shiftDown, controlDown, altDown,
+                                         CanAcceptKeys(), experimentSettings_.Get().asciiMode,
+                                         composition_ != nullptr, contextMatches, canHandle, true,
+                                         edit, outcome.error);
             surface_.DisconnectForRecovery();
             return S_OK;
         }
         if (composition_) RememberCompositionContext(context);
-        UpdateCandidateUI(context, outcome.update, compositionRectValid ? &compositionRect : nullptr);
+        UpdateCandidateUI(context, renderedUpdate, compositionRectValid ? &compositionRect : nullptr);
         *eaten = TRUE;
+        RecordSelectionKeyHostResult("down-success", wParam, shiftDown, controlDown, altDown,
+                                     CanAcceptKeys(), experimentSettings_.Get().asciiMode,
+                                     composition_ != nullptr, contextMatches, canHandle, true,
+                                     edit, outcome.error);
     } catch (...) {
         surface_.DisconnectForRecovery();
     }
     return S_OK;
 }
 
-STDMETHODIMP YimeTextService::OnTestKeyUp(ITfContext*, WPARAM, LPARAM, BOOL* eaten) {
+STDMETHODIMP YimeTextService::OnTestKeyUp(ITfContext* context, WPARAM wParam, LPARAM, BOOL* eaten) {
     if (!eaten) return E_POINTER;
-    *eaten = FALSE;
+    *eaten = context && CanAcceptKeys() &&
+             (wParam == VK_SHIFT || wParam == VK_LSHIFT || wParam == VK_RSHIFT) ? TRUE : FALSE;
     return S_OK;
 }
 
-STDMETHODIMP YimeTextService::OnKeyUp(ITfContext*, WPARAM, LPARAM, BOOL* eaten) {
+STDMETHODIMP YimeTextService::OnKeyUp(ITfContext* context, WPARAM wParam, LPARAM, BOOL* eaten) {
     if (!eaten) return E_POINTER;
     *eaten = FALSE;
+    if (!context || !CanAcceptKeys() ||
+        (wParam != VK_SHIFT && wParam != VK_LSHIFT && wParam != VK_RSHIFT)) return S_OK;
+    const bool toggle = shiftTap_.OnKeyUp(wParam);
+    *eaten = TRUE;
+    if (toggle) {
+        yime::experiment::ExperimentSettings updated;
+        if (yime::experiment::ApplyExperimentSettingsCommand(
+                yime::experiment::ExperimentSettingsCommand::ToggleAscii,
+                yime::experiment::ResolveExperimentSettingsPath(), &updated) && languageBarItem_) {
+            languageBarItem_->Refresh();
+        }
+    }
     return S_OK;
 }
 
@@ -353,7 +494,9 @@ void YimeTextService::UpdateCandidateUI(ITfContext* context, const yime::experim
     }
     const auto& displaySettings = experimentSettings_.Get();
     if (update.candidates.empty() && !update.hasSentence) {
-        candidateUI_->UpdateEmpty(document, L"无匹配候选，按退格修改");
+		document->Release();
+		EndCandidateUI();
+		return;
     } else {
         candidateUI_->Update(document, update.candidates, update.selectedCandidateIndex,
                              displaySettings.candidateAnnotation,
@@ -405,18 +548,19 @@ void YimeTextService::SelectCandidateFromPopup(unsigned ordinal) noexcept {
         context->Release();
         return;
     }
-    RECT compositionRect{};
-    bool compositionRectValid = false;
+    auto renderedUpdate = outcome.update;
+    if (experimentSettings_.Get().traditionalization) {
+        yime::experiment::ApplyTraditionalization(&renderedUpdate);
+    }
     const HRESULT edit = yime::experiment::ApplyBrokerUpdateToContext(
         context, clientId_, static_cast<ITfCompositionSink*>(this), &composition_,
-        &plannedCompositionTermination_, outcome.update, &compositionRect, &compositionRectValid);
+        &plannedCompositionTermination_, renderedUpdate, nullptr, nullptr, true);
     if (FAILED(edit)) {
         surface_.DisconnectForRecovery();
         context->Release();
         return;
     }
-    UpdateCandidateUI(context, outcome.update,
-                      compositionRectValid ? &compositionRect : nullptr);
+    UpdateCandidateUI(context, renderedUpdate, nullptr);
     context->Release();
 }
 
@@ -433,18 +577,19 @@ void YimeTextService::FocusSentenceSegmentFromPopup(int start, int end) noexcept
         context->Release();
         return;
     }
-    RECT compositionRect{};
-    bool compositionRectValid = false;
+    auto renderedUpdate = outcome.update;
+    if (experimentSettings_.Get().traditionalization) {
+        yime::experiment::ApplyTraditionalization(&renderedUpdate);
+    }
     const HRESULT edit = yime::experiment::ApplyBrokerUpdateToContext(
         context, clientId_, static_cast<ITfCompositionSink*>(this), &composition_,
-        &plannedCompositionTermination_, outcome.update, &compositionRect, &compositionRectValid);
+        &plannedCompositionTermination_, renderedUpdate, nullptr, nullptr, true);
     if (FAILED(edit)) {
         surface_.DisconnectForRecovery();
         context->Release();
         return;
     }
-    UpdateCandidateUI(context, outcome.update,
-                      compositionRectValid ? &compositionRect : nullptr);
+    UpdateCandidateUI(context, renderedUpdate, nullptr);
     context->Release();
 }
 

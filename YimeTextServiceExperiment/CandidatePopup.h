@@ -40,6 +40,7 @@ public:
     size_t RowCount() const noexcept { return candidates_.size() + (sentenceSegments_.empty() ? 0 : 1); }
     int FontPoints() const noexcept { return fontPoints_; }
     bool UsesYinyuanFont() const noexcept { return useYinyuanFont_; }
+    int TextColumnLeft() const noexcept { return padding_ + textColumnOffset_; }
     RECT Bounds() const noexcept;
 
     static constexpr const wchar_t* ClassName() noexcept {
@@ -68,7 +69,7 @@ private:
         int width;
     };
     std::vector<SentenceSegmentCell> sentenceSegments_;
-    int sentenceLabelWidth_ = 0;
+    int textColumnOffset_ = 0;
     int trackedSegment_ = -1;
     int width_ = 0;
     int rowHeight_ = 0;

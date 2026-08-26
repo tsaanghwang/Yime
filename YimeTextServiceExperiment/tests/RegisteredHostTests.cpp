@@ -66,6 +66,12 @@ public:
     STDMETHODIMP RequestLock(DWORD flags, HRESULT* sessionResult) override {
         if (!sessionResult) return E_POINTER;
         if (!sink_) return E_UNEXPECTED;
+        if (rejectSynchronousWrites_ && (flags & TS_LF_SYNC) &&
+            (flags & TS_LF_READWRITE) == TS_LF_READWRITE) {
+            ++rejectedSynchronousWrites_;
+            *sessionResult = TS_E_SYNCHRONOUS;
+            return S_OK;
+        }
         if (lockFlags_) {
             *sessionResult = (flags & TS_LF_SYNC) ? TS_E_SYNCHRONOUS : TS_S_ASYNC;
             return S_OK;
@@ -206,6 +212,8 @@ public:
         return S_OK;
     }
     unsigned TextExtentCalls() const noexcept { return textExtentCalls_; }
+    void RejectSynchronousWrites(bool reject) noexcept { rejectSynchronousWrites_ = reject; }
+    unsigned RejectedSynchronousWrites() const noexcept { return rejectedSynchronousWrites_; }
 
 private:
     ~ContextOwner() {
@@ -233,6 +241,8 @@ private:
     LONG selectionStart_ = 0;
     LONG selectionEnd_ = 0;
     std::atomic<unsigned> textExtentCalls_{0};
+    bool rejectSynchronousWrites_ = false;
+    unsigned rejectedSynchronousWrites_ = 0;
 };
 
 class ReadSession final : public ITfEditSession {
@@ -284,6 +294,41 @@ std::wstring readContext(ITfContext* context, TfClientId clientId) {
     require(request, "request read session");
     require(sessionResult, "run read session");
     return text;
+}
+
+ITfCandidateListUIElement* findCandidateElement(ITfThreadMgr* threadManager) {
+    ITfUIElementMgr* manager = nullptr;
+    if (FAILED(threadManager->QueryInterface(__uuidof(ITfUIElementMgr),
+                                             reinterpret_cast<void**>(&manager)))) return nullptr;
+    IEnumTfUIElements* values = nullptr;
+    const HRESULT enumerated = manager->EnumUIElements(&values);
+    manager->Release();
+    if (FAILED(enumerated)) return nullptr;
+    ITfCandidateListUIElement* found = nullptr;
+    for (;;) {
+        ITfUIElement* element = nullptr;
+        ULONG fetched = 0;
+        if (values->Next(1, &element, &fetched) != S_OK || fetched != 1) break;
+        GUID guid{};
+        if (SUCCEEDED(element->GetGUID(&guid)) &&
+            IsEqualGUID(guid, GUID_YimeTextServiceExperimentCandidateList)) {
+            element->QueryInterface(__uuidof(ITfCandidateListUIElement),
+                                    reinterpret_cast<void**>(&found));
+        }
+        element->Release();
+        if (found) break;
+    }
+    values->Release();
+    return found;
+}
+
+std::wstring candidateTextFromRow(const std::wstring& row) {
+    const size_t labelEnd = row.find(L"  ");
+    if (labelEnd == std::wstring::npos) return {};
+    const size_t textStart = labelEnd + 2;
+    const size_t textEnd = row.find(L"  ", textStart);
+    return row.substr(textStart, textEnd == std::wstring::npos ? std::wstring::npos
+                                                               : textEnd - textStart);
 }
 
 bool waitForForeground(ITfKeystrokeMgr* keystrokes) {
@@ -422,10 +467,23 @@ int wmain(int argc, wchar_t** argv) {
                                                  : static_cast<WPARAM>(character);
             dispatchKey(keystrokes, key);
             if (index == 0) {
+                ITfCandidateListUIElement* firstKeyElement = findCandidateElement(threadManager);
+                UINT firstKeyCount = 0;
+                if (!firstKeyElement || FAILED(firstKeyElement->GetCount(&firstKeyCount)) || firstKeyCount == 0) {
+                    if (firstKeyElement) firstKeyElement->Release();
+                    throw std::runtime_error("registered first key did not publish candidate UI");
+                }
+                firstKeyElement->Release();
+                HWND firstKeyPopup = FindWindowW(L"YimeTextServiceExperimentCandidatePopup", nullptr);
+                if (!firstKeyPopup || !IsWindowVisible(firstKeyPopup)) {
+                    throw std::runtime_error("registered first key did not show the owned candidate popup");
+                }
+            }
+            if (index + 1 == code.size()) {
                 for (const WPARAM navigationKey : {static_cast<WPARAM>(VK_DOWN), static_cast<WPARAM>(VK_UP),
                                                    static_cast<WPARAM>(VK_NEXT), static_cast<WPARAM>(VK_LEFT)}) {
                     dispatchKey(keystrokes, navigationKey);
-                    if (readContext(context, clientId) != L"2") {
+                    if (readContext(context, clientId) != L"2jru") {
                         throw std::runtime_error("registered direction/page key escaped into host text");
                     }
                 }
@@ -449,10 +507,11 @@ int wmain(int argc, wchar_t** argv) {
         }
 
         dispatchKey(keystrokes, 'Z');
-        if (readContext(context, clientId) != L"2jruz" || !IsWindowVisible(popup)) {
-            throw std::runtime_error("registered candidate UI exited on an invalid code");
+		if (readContext(context, clientId) != L"2jruz" || (IsWindow(popup) && IsWindowVisible(popup))) {
+			throw std::runtime_error("registered invalid code did not hide all candidate content");
         }
         dispatchKey(keystrokes, VK_BACK);
+		popup = FindWindowW(L"YimeTextServiceExperimentCandidatePopup", nullptr);
         if (readContext(context, clientId) != L"2jru" || !IsWindowVisible(popup)) {
             throw std::runtime_error("registered Backspace did not restore candidates");
         }
@@ -484,6 +543,74 @@ int wmain(int argc, wchar_t** argv) {
                 throw std::runtime_error("registered Enter/Space did not commit the first candidate");
             }
         }
+
+        const std::wstring beforeMouseCommit = readContext(context, clientId);
+        for (const char character : code) {
+            const WPARAM key = character >= 'a'
+                ? static_cast<WPARAM>(character - 'a' + 'A')
+                : static_cast<WPARAM>(character);
+            dispatchKey(keystrokes, key);
+        }
+        popup = FindWindowW(L"YimeTextServiceExperimentCandidatePopup", nullptr);
+        if (!popup || !IsWindowVisible(popup)) {
+            throw std::runtime_error("registered mouse-selection popup missing");
+        }
+        ITfCandidateListUIElement* mouseCandidates = findCandidateElement(threadManager);
+        if (!mouseCandidates) throw std::runtime_error("registered mouse candidate UI missing");
+        UINT mouseCandidateCount = 0;
+        require(mouseCandidates->GetCount(&mouseCandidateCount), "registered mouse candidate count");
+        if (mouseCandidateCount < 2) {
+            mouseCandidates->Release();
+            throw std::runtime_error("registered mouse test needs a second candidate");
+        }
+        BSTR secondCandidateRow = nullptr;
+        require(mouseCandidates->GetString(1, &secondCandidateRow), "registered second mouse candidate");
+        const std::wstring expectedMouseCommit =
+            candidateTextFromRow(secondCandidateRow ? secondCandidateRow : L"");
+        SysFreeString(secondCandidateRow);
+        mouseCandidates->Release();
+        if (expectedMouseCommit.empty()) {
+            throw std::runtime_error("registered second mouse candidate text was empty");
+        }
+        const int rowHeight = static_cast<int>(reinterpret_cast<UINT_PTR>(
+            GetPropW(popup, L"YimeTextServiceExperimentCandidateRowHeight")));
+        const bool hasSentenceRow = GetPropW(popup, L"YimeTextServiceExperimentSentenceRow") != nullptr;
+        RECT popupClient{};
+        GetClientRect(popup, &popupClient);
+        if (rowHeight <= 0 || popupClient.right <= 16) {
+            throw std::runtime_error("registered mouse popup geometry missing");
+        }
+        POINT clickPoint{popupClient.right / 2,
+                         8 + rowHeight * (hasSentenceRow ? 2 : 1) + rowHeight / 2};
+        ClientToScreen(popup, &clickPoint);
+        owner->RejectSynchronousWrites(true);
+        SetCursorPos(clickPoint.x, clickPoint.y);
+        INPUT mouseInput[2]{};
+        mouseInput[0].type = INPUT_MOUSE;
+        mouseInput[0].mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
+        mouseInput[1].type = INPUT_MOUSE;
+        mouseInput[1].mi.dwFlags = MOUSEEVENTF_LEFTUP;
+        if (SendInput(2, mouseInput, sizeof(INPUT)) != 2) {
+            owner->RejectSynchronousWrites(false);
+            throw std::runtime_error("registered physical mouse click injection failed");
+        }
+        for (int attempt = 0; attempt < 100; ++attempt) {
+            pumpMessages();
+            if (!IsWindowVisible(popup)) break;
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        }
+        for (int attempt = 0; attempt < 10; ++attempt) {
+            pumpMessages();
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        }
+        owner->RejectSynchronousWrites(false);
+        const std::wstring afterMouseCommit = readContext(context, clientId);
+        if (owner->RejectedSynchronousWrites() != 0 ||
+            afterMouseCommit != beforeMouseCommit + expectedMouseCommit ||
+            IsWindowVisible(popup)) {
+            throw std::runtime_error("registered physical mouse candidate did not use an asynchronous edit session");
+        }
+        std::cout << "physical_mouse_candidate_selection_verified=true\n";
 
         dispatchKey(keystrokes, '2');
         popup = FindWindowW(L"YimeTextServiceExperimentCandidatePopup", nullptr);

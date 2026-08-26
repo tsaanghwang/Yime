@@ -10,6 +10,7 @@ HRESULT ApplyBrokerUpdateToContext(ITfContext* context, TfClientId clientId,
                                    ITfCompositionSink* sink, ITfComposition** composition,
                                    bool* plannedTermination, const BrokerUpdate& update,
                                    RECT* compositionRect = nullptr,
-                                   bool* compositionRectValid = nullptr) noexcept;
+                                   bool* compositionRectValid = nullptr,
+                                   bool asynchronous = false) noexcept;
 
 }  // namespace yime::experiment

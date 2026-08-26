@@ -120,11 +120,33 @@ void require(HRESULT result, const char* operation) {
     if (FAILED(result)) throw std::runtime_error(std::string(operation) + " failed: " + std::to_string(static_cast<unsigned long>(result)));
 }
 
+void pumpPendingMessages() {
+    for (int attempt = 0; attempt < 10; ++attempt) {
+        MSG message{};
+        while (PeekMessageW(&message, nullptr, 0, 0, PM_REMOVE)) {
+            TranslateMessage(&message);
+            DispatchMessageW(&message);
+        }
+        Sleep(10);
+    }
+}
+
 }  // namespace
 
 int wmain(int argc, wchar_t** argv) {
     try {
-        if (argc != 3) throw std::runtime_error("usage: YimeTsfCompositionTests <dll> <pipe>");
+        if (argc != 3 && argc != 4) {
+            throw std::runtime_error("usage: YimeTsfCompositionTests <dll> <pipe> [long-session-code]");
+        }
+        std::string longSessionCode;
+        if (argc == 4) {
+            for (const wchar_t* cursor = argv[3]; *cursor; ++cursor) {
+                if (*cursor < 0x20 || *cursor > 0x7e) {
+                    throw std::runtime_error("long-session code must be printable ASCII");
+                }
+                longSessionCode.push_back(static_cast<char>(*cursor));
+            }
+        }
         require(CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED), "CoInitializeEx");
         SetEnvironmentVariableW(L"YIME_TEXTSERVICE_EXPERIMENT_PIPE", argv[2]);
         SetEnvironmentVariableW(L"YIME_TEXTSERVICE_EXPERIMENT_DIRECT_TEST", L"1");
@@ -217,6 +239,19 @@ int wmain(int argc, wchar_t** argv) {
                 throw std::runtime_error("TSF composition text mismatch");
             }
             if (index == 0) {
+                ITfCandidateListUIElement* firstKeyElement = findCandidateElement(threadManager);
+                UINT firstKeyCount = 0;
+                if (!firstKeyElement || FAILED(firstKeyElement->GetCount(&firstKeyCount)) || firstKeyCount == 0) {
+                    if (firstKeyElement) firstKeyElement->Release();
+                    throw std::runtime_error("first composition key did not publish candidate UI");
+                }
+                firstKeyElement->Release();
+                HWND firstKeyPopup = FindWindowW(L"YimeTextServiceExperimentCandidatePopup", nullptr);
+                if (!firstKeyPopup || !IsWindowVisible(firstKeyPopup)) {
+                    throw std::runtime_error("first composition key did not show the owned candidate popup");
+                }
+            }
+            if (index + 1 == code.size()) {
                 ITfCandidateListUIElement* navigationElement = findCandidateElement(threadManager);
                 if (!navigationElement) throw std::runtime_error("candidate navigation UI missing");
                 UINT navigationCount = 0;
@@ -246,7 +281,7 @@ int wmain(int argc, wchar_t** argv) {
                 for (const WPARAM pageKey : {static_cast<WPARAM>(VK_RIGHT), static_cast<WPARAM>(VK_PRIOR)}) {
                     navigationEaten = FALSE;
                     require(keys->OnKeyDown(context, pageKey, 0, &navigationEaten), "candidate page key");
-                    if (!navigationEaten || readContext(context, clientId) != L"2" || !hasComposition(context)) {
+                    if (!navigationEaten || readContext(context, clientId) != L"2jru" || !hasComposition(context)) {
                         throw std::runtime_error("candidate page key escaped into the TSF host");
                     }
                 }
@@ -284,17 +319,12 @@ int wmain(int argc, wchar_t** argv) {
             throw std::runtime_error("invalid code terminated or desynchronized the TSF composition");
         }
         candidateElement = findCandidateElement(threadManager);
-        if (!candidateElement) throw std::runtime_error("candidate UI exited on an invalid code");
-        candidateCount = 0;
-        require(candidateElement->GetCount(&candidateCount), "empty candidate UI count");
-        candidateText = nullptr;
-        require(candidateElement->GetString(0, &candidateText), "empty candidate UI status");
-        const std::wstring emptyCandidateStatus(candidateText ? candidateText : L"");
-        SysFreeString(candidateText);
-        candidateElement->Release();
-        if (candidateCount != 1 || emptyCandidateStatus != L"无匹配候选，按退格修改" ||
-            !IsWindowVisible(candidatePopup)) {
-            throw std::runtime_error("invalid-code candidate UI did not preserve a correction affordance");
+		if (candidateElement) {
+			candidateElement->Release();
+			throw std::runtime_error("invalid code exposed candidate content instead of an empty correction state");
+		}
+		if (IsWindow(candidatePopup) && IsWindowVisible(candidatePopup)) {
+			throw std::runtime_error("invalid code left the owned candidate popup visible");
         }
         BOOL backspaceTestEaten = FALSE;
         require(keys->OnTestKeyDown(context, VK_BACK, 0, &backspaceTestEaten), "Backspace test key down");
@@ -396,10 +426,15 @@ int wmain(int argc, wchar_t** argv) {
 
         for (const WPARAM defaultSelectionKey : {static_cast<WPARAM>(VK_SPACE), static_cast<WPARAM>(VK_RETURN)}) {
             const std::wstring beforeDefaultCommit = readContext(context, clientId);
-            eaten = FALSE;
-            require(keys->OnKeyDown(context, '2', 0, &eaten), "default-selection setup key down");
-            if (!eaten || !hasComposition(context)) {
-                throw std::runtime_error("default-selection setup did not create a composition");
+            for (const char character : code) {
+                const WPARAM key = character >= 'a'
+                    ? static_cast<WPARAM>(character - 'a' + 'A')
+                    : static_cast<WPARAM>(character);
+                eaten = FALSE;
+                require(keys->OnKeyDown(context, key, 0, &eaten), "default-selection setup key down");
+                if (!eaten || !hasComposition(context)) {
+                    throw std::runtime_error("default-selection setup did not create a composition");
+                }
             }
             BOOL testEaten = FALSE;
             require(keys->OnTestKeyDown(context, defaultSelectionKey, 0, &testEaten),
@@ -410,16 +445,25 @@ int wmain(int argc, wchar_t** argv) {
                     "default-selection key down");
             const std::wstring afterDefaultCommit = readContext(context, clientId);
             if (!eaten || afterDefaultCommit.size() <= beforeDefaultCommit.size() ||
-                afterDefaultCommit.back() == L'2' || hasComposition(context)) {
+                afterDefaultCommit.back() == L'u' || hasComposition(context)) {
                 throw std::runtime_error("Enter/Space did not commit the first candidate");
             }
         }
         std::cout << "default_candidate_keys_verified=true\n";
 
-        eaten = FALSE;
-        require(keys->OnKeyDown(context, '2', 0, &eaten), "post-commit key down");
+        const std::wstring beforeMouseCommit = readContext(context, clientId);
+        for (const char character : code) {
+            const WPARAM key = character >= 'a'
+                ? static_cast<WPARAM>(character - 'a' + 'A')
+                : static_cast<WPARAM>(character);
+            eaten = FALSE;
+            require(keys->OnKeyDown(context, key, 0, &eaten), "post-commit key down");
+            if (!eaten || !hasComposition(context)) {
+                throw std::runtime_error("mouse-selection setup did not create a composition");
+            }
+        }
         const std::wstring preMouseComposition = readContext(context, clientId);
-        if (!eaten || preMouseComposition.empty() || preMouseComposition.back() != L'2' || !hasComposition(context)) {
+        if (preMouseComposition != beforeMouseCommit + L"2jru" || !hasComposition(context)) {
             throw std::runtime_error("normal commit incorrectly closed the Broker session");
         }
         candidatePopup = FindWindowW(L"YimeTextServiceExperimentCandidatePopup", nullptr);
@@ -428,13 +472,129 @@ int wmain(int argc, wchar_t** argv) {
         }
         RECT popupClient{};
         GetClientRect(candidatePopup, &popupClient);
-        SendMessageW(candidatePopup, WM_LBUTTONUP, 0, MAKELPARAM(20, 10));
+		const bool hasSentenceRow =
+			GetPropW(candidatePopup, L"YimeTextServiceExperimentSentenceRow") != nullptr;
+		const int popupRows = static_cast<int>(candidateCount) + (hasSentenceRow ? 1 : 0);
+		const int rowHeight = (popupClient.bottom - 16) / popupRows;
+		const int candidateRowY = 8 + rowHeight * (hasSentenceRow ? 1 : 0) + rowHeight / 2;
+		SendMessageW(candidatePopup, WM_LBUTTONUP, 0, MAKELPARAM(20, candidateRowY));
+        for (int attempt = 0; attempt < 100; ++attempt) {
+            MSG message{};
+            while (PeekMessageW(&message, nullptr, 0, 0, PM_REMOVE)) {
+                TranslateMessage(&message);
+                DispatchMessageW(&message);
+            }
+            if (!IsWindowVisible(candidatePopup)) break;
+            Sleep(10);
+        }
+        for (int attempt = 0; attempt < 10; ++attempt) {
+            MSG message{};
+            while (PeekMessageW(&message, nullptr, 0, 0, PM_REMOVE)) {
+                TranslateMessage(&message);
+                DispatchMessageW(&message);
+            }
+            Sleep(10);
+        }
         const std::wstring secondCommit = readContext(context, clientId);
-        if (secondCommit.size() <= preMouseComposition.size() - 1 || secondCommit.front() != L'秋' ||
-            secondCommit.back() == L'2' || hasComposition(context)) {
+        if (secondCommit != beforeMouseCommit + L"秋" || hasComposition(context)) {
             throw std::runtime_error("mouse-selected TSF commit mismatch");
         }
         std::cout << "mouse_candidate_selection_verified=true\n";
+
+        if (!longSessionCode.empty()) {
+            const std::wstring beforeLongSession = readContext(context, clientId);
+            for (const char character : longSessionCode) {
+                const WPARAM key = character >= 'a' && character <= 'z'
+                    ? static_cast<WPARAM>(character - 'a' + 'A')
+                    : static_cast<WPARAM>(character);
+                eaten = FALSE;
+                require(keys->OnKeyDown(context, key, 0, &eaten), "long-session setup key");
+                if (!eaten) throw std::runtime_error("long-session setup key was not eaten");
+            }
+            const std::wstring rawLongSession(longSessionCode.begin(), longSessionCode.end());
+            const std::wstring expectedComposition = beforeLongSession + rawLongSession;
+            if (readContext(context, clientId) != expectedComposition || !hasComposition(context)) {
+                throw std::runtime_error("long-session setup did not preserve raw composition");
+            }
+            if (longSessionCode.size() % 3 != 0) {
+                throw std::runtime_error("long-session code must contain three equal spans");
+            }
+            const int spanLength = static_cast<int>(longSessionCode.size() / 3);
+            constexpr int cycles = 25;
+            for (int cycle = 0; cycle < cycles; ++cycle) {
+                for (int targetIndex = 0; targetIndex < 3; ++targetIndex) {
+                    candidatePopup = FindWindowW(L"YimeTextServiceExperimentCandidatePopup", nullptr);
+                    if (!candidatePopup || !IsWindowVisible(candidatePopup)) {
+                        throw std::runtime_error("long-session sentence popup disappeared");
+                    }
+                    const int segmentRowHeight = static_cast<int>(reinterpret_cast<UINT_PTR>(
+                        GetPropW(candidatePopup, L"YimeTextServiceExperimentCandidateRowHeight")));
+                    const int textColumnLeft = static_cast<int>(reinterpret_cast<UINT_PTR>(
+                        GetPropW(candidatePopup, L"YimeTextServiceExperimentTextColumnLeft")));
+                    const size_t segmentCount = static_cast<size_t>(reinterpret_cast<UINT_PTR>(
+                        GetPropW(candidatePopup, L"YimeTextServiceExperimentSentenceSegmentCount")));
+                    if (segmentRowHeight <= 0 || textColumnLeft <= 0 || segmentCount != 3) {
+                        throw std::runtime_error("long-session sentence geometry is incomplete");
+                    }
+                    const int segmentX = textColumnLeft + targetIndex * segmentRowHeight +
+                                         segmentRowHeight / 2;
+                    const int segmentY = 8 + segmentRowHeight / 2;
+                    SendMessageW(candidatePopup, WM_LBUTTONDOWN, 0, MAKELPARAM(segmentX, segmentY));
+                    SendMessageW(candidatePopup, WM_LBUTTONUP, 0, MAKELPARAM(segmentX, segmentY));
+                    pumpPendingMessages();
+                    const int activeStart = static_cast<int>(reinterpret_cast<UINT_PTR>(GetPropW(
+                        candidatePopup, L"YimeTextServiceExperimentActiveSegmentStart"))) - 1;
+                    const int activeEnd = static_cast<int>(reinterpret_cast<UINT_PTR>(GetPropW(
+                        candidatePopup, L"YimeTextServiceExperimentActiveSegmentEnd"))) - 1;
+                    if (activeStart != targetIndex * spanLength ||
+                        activeEnd != (targetIndex + 1) * spanLength) {
+                        throw std::runtime_error("long-session popup activated the wrong raw span");
+                    }
+                    ITfCandidateListUIElement* segmentCandidates = findCandidateElement(threadManager);
+                    UINT segmentCandidateCount = 0;
+                    if (!segmentCandidates ||
+                        FAILED(segmentCandidates->GetCount(&segmentCandidateCount)) ||
+                        segmentCandidateCount < 2) {
+                        if (segmentCandidates) segmentCandidates->Release();
+                        throw std::runtime_error("long-session segment candidates are incomplete");
+                    }
+                    segmentCandidates->Release();
+                    BYTE longKeyboard[256]{};
+                    GetKeyboardState(longKeyboard);
+                    BYTE longShifted[256]{};
+                    CopyMemory(longShifted, longKeyboard, sizeof(longKeyboard));
+                    longShifted[VK_SHIFT] = 0x80;
+                    longShifted[VK_LSHIFT] = 0x80;
+                    SetKeyboardState(longShifted);
+                    eaten = FALSE;
+                    require(keys->OnKeyDown(context, '2', 0, &eaten), "long-session segment selection");
+                    SetKeyboardState(longKeyboard);
+                    pumpPendingMessages();
+                    if (!eaten || readContext(context, clientId) != expectedComposition ||
+                        !hasComposition(context)) {
+                        throw std::runtime_error("long-session segment selection committed early");
+                    }
+                }
+            }
+            ITfCandidateListUIElement* sentenceOnly = findCandidateElement(threadManager);
+            UINT residualCandidateCount = 0;
+            if (!sentenceOnly || FAILED(sentenceOnly->GetCount(&residualCandidateCount)) ||
+                residualCandidateCount != 0) {
+                if (sentenceOnly) sentenceOnly->Release();
+                throw std::runtime_error("long-session probe unexpectedly has a global exact candidate");
+            }
+            sentenceOnly->Release();
+            eaten = FALSE;
+            require(keys->OnKeyDown(context, VK_RETURN, 0, &eaten), "long-session sentence commit");
+            const std::wstring afterLongSession = readContext(context, clientId);
+            if (!eaten || hasComposition(context) ||
+                afterLongSession.size() != beforeLongSession.size() + 3 ||
+                afterLongSession.compare(0, beforeLongSession.size(), beforeLongSession) != 0 ||
+                afterLongSession == expectedComposition) {
+                throw std::runtime_error("long-session sentence did not commit atomically");
+            }
+            std::cout << "long_segment_session_verified=true\n";
+        }
 
         eaten = FALSE;
         require(keys->OnKeyDown(context, '2', 0, &eaten), "forced-termination setup key");
@@ -492,6 +652,63 @@ int wmain(int argc, wchar_t** argv) {
         eaten = TRUE;
         require(keys->OnKeyDown(context, 'L', 0, &eaten), "English pass-through key");
         if (eaten) throw std::runtime_error("English mode handled an idle host key");
+
+        // English mode still belongs to this TIP when output transforms are
+        // enabled. Exercise the complete ITfKeyEventSink -> edit-session path,
+        // rather than only the pure virtual-key mapping helper.
+        if (!yime::experiment::ApplyExperimentSettingsCommand(
+                yime::experiment::ExperimentSettingsCommand::PunctuationChinese,
+                yime::experiment::ResolveExperimentSettingsPath(), &seededSettings)) {
+            throw std::runtime_error("could not enable Chinese punctuation");
+        }
+        const std::wstring beforeChinesePunctuation = readContext(context, clientId);
+        testEaten = FALSE;
+        require(keys->OnTestKeyDown(context, VK_OEM_COMMA, 0, &testEaten),
+                "Chinese punctuation direct-output probe");
+        if (!testEaten) throw std::runtime_error("Chinese punctuation was not claimed in English mode");
+        eaten = FALSE;
+        require(keys->OnKeyDown(context, VK_OEM_COMMA, 0, &eaten),
+                "Chinese punctuation direct output");
+        if (!eaten) throw std::runtime_error("Chinese punctuation direct output was not eaten");
+        if (readContext(context, clientId) != beforeChinesePunctuation + L"，") {
+            throw std::runtime_error("Chinese punctuation did not commit through the TSF edit session");
+        }
+        if (!yime::experiment::ApplyExperimentSettingsCommand(
+                yime::experiment::ExperimentSettingsCommand::PunctuationEnglish,
+                yime::experiment::ResolveExperimentSettingsPath(), &seededSettings)) {
+            throw std::runtime_error("could not restore English punctuation");
+        }
+        testEaten = TRUE;
+        require(keys->OnTestKeyDown(context, VK_OEM_COMMA, 0, &testEaten),
+                "English punctuation pass-through probe");
+        if (testEaten) throw std::runtime_error("English punctuation was swallowed in English mode");
+        if (!yime::experiment::ApplyExperimentSettingsCommand(
+                yime::experiment::ExperimentSettingsCommand::ShapeFull,
+                yime::experiment::ResolveExperimentSettingsPath(), &seededSettings)) {
+            throw std::runtime_error("could not enable full-width output");
+        }
+        const std::wstring beforeFullWidth = readContext(context, clientId);
+        testEaten = FALSE;
+        require(keys->OnTestKeyDown(context, 'A', 0, &testEaten),
+                "full-width direct-output probe");
+        if (!testEaten) throw std::runtime_error("full-width letter was not claimed in English mode");
+        eaten = FALSE;
+        require(keys->OnKeyDown(context, 'A', 0, &eaten), "full-width direct output");
+        if (!eaten) throw std::runtime_error("full-width direct output was not eaten");
+        const std::wstring afterFullWidth = readContext(context, clientId);
+        if (afterFullWidth != beforeFullWidth + L"ａ") {
+            std::cerr << "full_width_before_size=" << beforeFullWidth.size()
+                      << " after_size=" << afterFullWidth.size()
+                      << " last_codepoint=0x" << std::hex
+                      << (afterFullWidth.empty() ? 0u : static_cast<unsigned>(afterFullWidth.back()))
+                      << std::dec << '\n';
+            throw std::runtime_error("full-width letter did not commit through the TSF edit session");
+        }
+        if (!yime::experiment::ApplyExperimentSettingsCommand(
+                yime::experiment::ExperimentSettingsCommand::ShapeHalf,
+                yime::experiment::ResolveExperimentSettingsPath(), &seededSettings)) {
+            throw std::runtime_error("could not restore half-width output");
+        }
 
         require(languageModeButton->OnClick(TF_LBI_CLK_LEFT, {}, nullptr), "toggle input mode to Chinese");
         testEaten = FALSE;

@@ -2,7 +2,26 @@
 
 namespace yime::experiment {
 
-KeyDecision ClassifyVirtualKey(WPARAM virtualKey, bool shiftDown) noexcept {
+KeyDecision ClassifyVirtualKey(WPARAM virtualKey, bool shiftDown,
+                               bool controlDown, bool altDown) noexcept {
+    // Editing and application shortcuts belong to the host. In particular,
+    // Ctrl+A/C/V/X/Y/Z and Ctrl+Shift+Z must never turn their letter into a
+    // Yime composition code while a candidate window is visible.
+    if (altDown) {
+        return {};
+    }
+    if (controlDown) {
+        if (!shiftDown && virtualKey == VK_LEFT) {
+            return {KeyRoute::PreviousSentenceSegment, 0};
+        }
+        if (!shiftDown && virtualKey == VK_RIGHT) {
+            return {KeyRoute::NextSentenceSegment, 0};
+        }
+        if (!shiftDown && virtualKey == VK_DELETE) {
+            return {KeyRoute::ForgetCurrentCandidate, 0};
+        }
+        return {};
+    }
     if (virtualKey == VK_BACK) {
         return {KeyRoute::BackspaceComposition, 0};
     }
@@ -38,6 +57,24 @@ KeyDecision ClassifyVirtualKey(WPARAM virtualKey, bool shiftDown) noexcept {
         return {KeyRoute::AppendComposition, 0};
     }
     return {};
+}
+
+bool ShiftTapTracker::OnKeyDown(WPARAM virtualKey) noexcept {
+    if (virtualKey == VK_SHIFT || virtualKey == VK_LSHIFT || virtualKey == VK_RSHIFT) {
+        armed_ = true;
+        return true;
+    }
+    armed_ = false;
+    return false;
+}
+
+bool ShiftTapTracker::OnKeyUp(WPARAM virtualKey) noexcept {
+    if (virtualKey != VK_SHIFT && virtualKey != VK_LSHIFT && virtualKey != VK_RSHIFT) {
+        return false;
+    }
+    const bool toggle = armed_;
+    armed_ = false;
+    return toggle;
 }
 
 const std::array<std::wstring_view, 9>& CandidateLabels() noexcept {

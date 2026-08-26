@@ -8,6 +8,9 @@ namespace yime::experiment {
 
 struct ExperimentSettings {
     bool asciiMode = false;
+    bool fullShape = false;
+    bool asciiPunctuation = false;
+    bool traditionalization = false;
     std::string mode = "variable";
     std::string candidateFontPreset = "medium";
     std::string candidateAnnotation = "key_sequence";
@@ -29,6 +32,12 @@ enum class ExperimentSettingsCommand {
     AnnotationYinyuan,
     AnnotationStandardPinyin,
     AnnotationHidden,
+    PunctuationChinese,
+    PunctuationEnglish,
+    ShapeHalf,
+    ShapeFull,
+    ScriptSimplified,
+    ScriptTraditional,
 };
 
 std::wstring ResolveExperimentSettingsPath();

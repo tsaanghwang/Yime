@@ -23,14 +23,27 @@ inline constexpr UINT YIME_LBI_ANNOTATION_KEYS = 0x6C30;
 inline constexpr UINT YIME_LBI_ANNOTATION_YINYUAN = 0x6C31;
 inline constexpr UINT YIME_LBI_ANNOTATION_PINYIN = 0x6C32;
 inline constexpr UINT YIME_LBI_ANNOTATION_HIDDEN = 0x6C33;
+inline constexpr UINT YIME_LBI_PUNCTUATION_CHINESE = 0x6C50;
+inline constexpr UINT YIME_LBI_PUNCTUATION_ENGLISH = 0x6C51;
+inline constexpr UINT YIME_LBI_SHAPE_HALF = 0x6C60;
+inline constexpr UINT YIME_LBI_SHAPE_FULL = 0x6C61;
+inline constexpr UINT YIME_LBI_SCRIPT_SIMPLIFIED = 0x6C70;
+inline constexpr UINT YIME_LBI_SCRIPT_TRADITIONAL = 0x6C71;
+inline constexpr UINT YIME_LBI_DESKTOP_TOOLS = 0x6C40;
+inline constexpr UINT YIME_LBI_REVERSE_LOOKUP = 0x6C41;
+inline constexpr UINT YIME_LBI_USER_LEXICON = 0x6C42;
+inline constexpr UINT YIME_LBI_SETTINGS_TOOL = 0x6C43;
 
 class LanguageBarItem final : public ITfLangBarItemButton, public ITfSource {
 public:
     using PopupPresenter = UINT (*)(HMENU menu, POINT point, void* context) noexcept;
+    using ToolLauncher = bool (*)(UINT command, const std::wstring& settingsPath,
+                                  void* context) noexcept;
 
     explicit LanguageBarItem(
         std::wstring settingsPath = yime::experiment::ResolveExperimentSettingsPath(),
-        PopupPresenter presenter = nullptr, void* presenterContext = nullptr) noexcept;
+        PopupPresenter presenter = nullptr, void* presenterContext = nullptr,
+        ToolLauncher toolLauncher = nullptr, void* toolLauncherContext = nullptr) noexcept;
 
     STDMETHODIMP QueryInterface(REFIID iid, void** object) override;
     STDMETHODIMP_(ULONG) AddRef() override;
@@ -55,11 +68,15 @@ private:
     HMENU BuildPopupMenu() const noexcept;
     void Notify(DWORD flags) noexcept;
     static UINT PresentPopup(HMENU menu, POINT point, void* context) noexcept;
+    static bool LaunchTool(UINT command, const std::wstring& settingsPath,
+                           void* context) noexcept;
 
     std::atomic<ULONG> references_{1};
     std::wstring settingsPath_;
     PopupPresenter presenter_ = nullptr;
     void* presenterContext_ = nullptr;
+    ToolLauncher toolLauncher_ = nullptr;
+    void* toolLauncherContext_ = nullptr;
     DWORD status_ = 0;
     bool lastAsciiMode_ = false;
     std::vector<std::pair<DWORD, ITfLangBarItemSink*>> sinks_;

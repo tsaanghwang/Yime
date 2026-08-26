@@ -108,7 +108,22 @@ private:
             ITfInsertAtSelection* insertion = nullptr;
             HRESULT result = context_->QueryInterface(__uuidof(ITfInsertAtSelection), reinterpret_cast<void**>(&insertion));
             if (FAILED(result)) return result;
-            result = insertion->InsertTextAtSelection(cookie, 0, text.data(), static_cast<LONG>(text.size()), nullptr);
+            // Request the inserted range even though the one-shot commit does
+            // not retain it. This is supported by both the TSF document-manager
+            // context used by the regression and real Word text stores.
+            ITfRange* inserted = nullptr;
+            result = insertion->InsertTextAtSelection(cookie, 0, text.data(),
+                                                      static_cast<LONG>(text.size()), &inserted);
+            if (SUCCEEDED(result) && inserted) {
+                result = inserted->Collapse(cookie, TF_ANCHOR_END);
+                if (SUCCEEDED(result)) {
+                    TF_SELECTION selection{};
+                    selection.range = inserted;
+                    selection.style.ase = TF_AE_NONE;
+                    result = context_->SetSelection(cookie, 1, &selection);
+                }
+            }
+            if (inserted) inserted->Release();
             insertion->Release();
             return result;
         }
@@ -174,14 +189,17 @@ private:
 HRESULT ApplyBrokerUpdateToContext(ITfContext* context, TfClientId clientId,
                                    ITfCompositionSink* sink, ITfComposition** composition,
                                    bool* plannedTermination, const BrokerUpdate& update,
-                                   RECT* compositionRect, bool* compositionRectValid) noexcept {
+                                   RECT* compositionRect, bool* compositionRectValid,
+                                   bool asynchronous) noexcept {
     if (!context || clientId == TF_CLIENTID_NULL || !sink || !composition || !plannedTermination) return E_INVALIDARG;
+    if (asynchronous && (compositionRect || compositionRectValid)) return E_INVALIDARG;
     if (compositionRectValid) *compositionRectValid = false;
     auto* session = new (std::nothrow) EditSession(context, sink, composition, plannedTermination,
                                                    update, compositionRect, compositionRectValid);
     if (!session) return E_OUTOFMEMORY;
     HRESULT sessionResult = E_FAIL;
-    const HRESULT request = context->RequestEditSession(clientId, session, TF_ES_SYNC | TF_ES_READWRITE, &sessionResult);
+    const DWORD flags = (asynchronous ? TF_ES_ASYNC : TF_ES_SYNC) | TF_ES_READWRITE;
+    const HRESULT request = context->RequestEditSession(clientId, session, flags, &sessionResult);
     session->Release();
     return FAILED(request) ? request : sessionResult;
 }

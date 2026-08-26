@@ -56,6 +56,8 @@ public:
                       BrokerUpdate* update, std::string* error);
     bool SelectCandidate(const std::string& candidateId, const std::string& mutationId,
                          BrokerUpdate* update, std::string* error);
+    bool ForgetCandidate(const std::string& candidateId, BrokerUpdate* update,
+                         std::string* error);
     void Close() noexcept;
     bool IsConnected() const noexcept { return pipe_ != INVALID_HANDLE_VALUE && !sessionId_.empty(); }
 
