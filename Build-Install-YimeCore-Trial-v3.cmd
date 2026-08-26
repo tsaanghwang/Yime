@@ -1,6 +1,32 @@
 @echo off
 setlocal EnableExtensions
 
+set "YIME_NORESTART=0"
+:parse_args
+if "%~1"=="" goto args_ready
+if /I "%~1"=="/norestart" (
+    set "YIME_NORESTART=1"
+    shift
+    goto parse_args
+)
+if /I "%~1"=="/help" goto usage
+if /I "%~1"=="/?" goto usage
+echo ERROR: Unknown argument: %~1
+echo.
+goto usage_error
+
+:usage
+echo Usage: %~nx0 [/norestart]
+echo.
+echo   /norestart  Build, install, and verify without restarting Windows.
+exit /b 0
+
+:usage_error
+echo Usage: %~nx0 [/norestart]
+exit /b 2
+
+:args_ready
+
 set "YIME_ROOT=C:\dev\Yime"
 if exist "%~dp0tools\yimecore\run-e6c-package-experiment.ps1" (
     for %%I in ("%~dp0.") do set "YIME_ROOT=%%~fI"
@@ -37,7 +63,7 @@ echo YIME_ROOT=%YIME_ROOT%
 echo YIME_POWERSHELL=%YIME_PS%
 echo YIME_OUTPUT=%YIME_OUT%
 echo.
-echo [1/4] Building and verifying the YimeCore trial package...
+echo [1/3] Building and verifying the YimeCore trial package...
 "%YIME_PS%" -NoProfile -ExecutionPolicy Bypass -File "%YIME_ROOT%\tools\yimecore\run-e6c-package-experiment.ps1" -BasePackageRoot "%YIME_BASE%" -OutputRoot "%YIME_OUT%"
 if errorlevel 1 (
     echo.
@@ -47,16 +73,8 @@ if errorlevel 1 (
     exit /b 1
 )
 
-echo [2/4] Force-uninstalling the existing YimeCore trial package...
-"%YIME_PS%" -NoProfile -ExecutionPolicy Bypass -File "%YIME_ROOT%\tools\yimecore\manage-e6c-trial-install.ps1" -Action Uninstall -Force
-if errorlevel 1 (
-    echo.
-    echo UNINSTALL FAILED.
-    pause
-    exit /b 1
-)
-
-echo [3/4] Installing the new trial package from a clean registration state...
+echo [2/3] Installing the new trial package with one administrator confirmation...
+echo The installer performs its own forced pre-cleanup and removes partial state after failure.
 "%YIME_PS%" -NoProfile -ExecutionPolicy Bypass -File "%YIME_ROOT%\tools\yimecore\manage-e6c-trial-install.ps1" -Action Install -PackageRoot "%YIME_OUT%\package" -Force
 if errorlevel 1 (
     echo.
@@ -66,11 +84,24 @@ if errorlevel 1 (
     exit /b 1
 )
 
-echo [4/4] Build, uninstall, and installation completed successfully.
+echo [3/3] Verifying the installed runtime and all three modes...
+"%YIME_PS%" -NoProfile -ExecutionPolicy Bypass -File "%YIME_ROOT%\tools\yimecore\verify-e6c-trial-runtime.ps1"
+if errorlevel 1 (
+    echo.
+    echo INSTALL COMPLETED, BUT LIVE RUNTIME VERIFICATION FAILED.
+    echo Package directory:
+    echo   %YIME_OUT%\package
+    echo Runtime diagnostics:
+    echo   %LOCALAPPDATA%\YimeCore Experimental Trial
+    pause
+    exit /b 1
+)
+
+echo Build, installation, and live runtime verification completed successfully.
 echo Evidence directory:
 echo   %YIME_OUT%
 echo.
-if /I "%~1"=="/norestart" (
+if "%YIME_NORESTART%"=="1" (
     echo Restart skipped by /norestart. Restart Windows before checking the taskbar language item.
     exit /b 0
 )

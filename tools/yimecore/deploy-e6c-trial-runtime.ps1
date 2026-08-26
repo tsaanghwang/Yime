@@ -27,7 +27,12 @@ if (-not $x64DLL.Equals($expectedX64, [StringComparison]::OrdinalIgnoreCase) -or
 $requiredPackageFiles = @(
     $expectedX64,
     $expectedX86,
-    (Join-Path $installRootPath 'bin\YimeCoreToolbar.exe'),
+    (Join-Path $installRootPath 'bin\YimeCoreDesktopTools.exe'),
+    (Join-Path $installRootPath 'bin\YimeCoreReverseLookup.exe'),
+    (Join-Path $installRootPath 'bin\YimeCoreLexiconManager.exe'),
+    (Join-Path $installRootPath 'bin\YimeCoreSettingsTool.exe'),
+    (Join-Path $installRootPath 'bin\YimeCoreExplain.exe'),
+    (Join-Path $installRootPath 'bin\YimeCoreSentenceRegression.exe'),
     (Join-Path $installRootPath 'indexes\full.yidx'),
     (Join-Path $installRootPath 'indexes\variable.yidx'),
     (Join-Path $installRootPath 'indexes\shorthand.yidx'),
@@ -110,8 +115,7 @@ $utf8NoBom = New-Object Text.UTF8Encoding($false)
 [IO.File]::WriteAllText($configPath, (($config | ConvertTo-Json -Depth 4) + "`n"), $utf8NoBom)
 
 $runKey = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Run'
-$runValue = ('"{0}" -install-root "{1}" -broker "{2}" -state-root "{3}"' -f
-    $runtimePath, $installRootPath, $brokerPath, $stateRootPath)
+$runValue = ('"{0}"' -f $runtimePath)
 if ($NoAutoStart) {
     Remove-ItemProperty -LiteralPath $runKey -Name 'YimeCoreExperimentalTrial' -ErrorAction SilentlyContinue
 } else {

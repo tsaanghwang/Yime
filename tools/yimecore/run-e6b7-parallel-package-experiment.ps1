@@ -264,7 +264,7 @@ foreach ($entry in $copies.GetEnumerator()) {
     if (-not (Test-Path -LiteralPath $entry.Value)) { throw "missing package source artifact: $($entry.Value)" }
     Copy-Item -LiteralPath $entry.Value -Destination (Join-Path $packageRoot $entry.Key) -Force
 }
-$toolbar = Join-Path $packageRoot 'bin\YimeCoreToolbar.exe'
+$toolbar = Join-Path $packageRoot 'bin\YimeCoreDesktopTools.exe'
 $brokerBuild = Join-Path $packageRoot 'bin\YimeBroker.exe'
 $e6cVerifier = Join-Path $packageRoot 'bin\YimeE6CPackageExperiment.exe'
 $runtimeSupervisor = Join-Path $packageRoot 'bin\YimeCoreTrialRuntime.exe'
@@ -504,7 +504,7 @@ $summary = [ordered]@{
     e6c_recovered_user_model_generation = [uint64]$e6cCapabilities.recovered_generation
     e6c_crash_journal_recovery_passed = [bool]$e6cCapabilities.crash_journal_recovery_passed
     e6c_limitation_closed = [bool]$e6cCapabilities.passed
-    toolbar_packaged = Test-Path -LiteralPath (Join-Path $packageRoot 'bin\YimeCoreToolbar.exe')
+    toolbar_packaged = Test-Path -LiteralPath (Join-Path $packageRoot 'bin\YimeCoreDesktopTools.exe')
     runtime_supervisor_packaged = Test-Path -LiteralPath (Join-Path $packageRoot 'bin\YimeCoreTrialRuntime.exe')
     yinyuan_private_font_packaged = Test-Path -LiteralPath (Join-Path $packageRoot 'data\fonts\YinYuan-Regular.ttf')
     architectures = $architectureResults

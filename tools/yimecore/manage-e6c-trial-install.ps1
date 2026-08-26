@@ -115,6 +115,9 @@ function Assert-Package([string]$root) {
         'x64\YimeTextServiceExperiment.dll', 'x64\YimeTextServiceRegistration.exe',
         'x86\YimeTextServiceExperiment.dll', 'x86\YimeTextServiceRegistration.exe',
         'bin\YimeBroker.exe', 'bin\YimeCoreTrialRuntime.exe',
+        'bin\YimeCoreDesktopTools.exe', 'bin\YimeCoreReverseLookup.exe',
+        'bin\YimeCoreLexiconManager.exe', 'bin\YimeCoreSettingsTool.exe',
+        'bin\YimeCoreExplain.exe', 'bin\YimeCoreSentenceRegression.exe',
         'profile-icon.ico',
         'indexes\full.yidx', 'indexes\variable.yidx', 'indexes\shorthand.yidx'
     )) {
@@ -506,9 +509,7 @@ try {
     Add-InputMethodTip
 
     $runtimeConfig = Write-RuntimeConfiguration $targetRoot
-    $runValue = '{0} -install-root {1} -broker {2} -state-root {3} -no-toolbar' -f
-        (Quote-Argument ([string]$runtimeConfig.runtime_path)), (Quote-Argument $targetRoot),
-        (Quote-Argument ([string]$runtimeConfig.broker_path)), (Quote-Argument $stateRootPath)
+    $runValue = '{0} -no-toolbar' -f (Quote-Argument ([string]$runtimeConfig.runtime_path))
     New-Item -Path $runKey -Force | Out-Null
     if ($NoAutoStart) {
         Remove-ItemProperty -LiteralPath $runKey -Name $productKeyName -ErrorAction SilentlyContinue

@@ -38,12 +38,12 @@ foreach ($architecture in @([ordered]@{name='x64';cmake='x64';bits=64},[ordered]
     $architectureResults += [ordered]@{ architecture=$architecture.name; bits=$architecture.bits; bridge_sha256=(Get-FileHash $testExe -Algorithm SHA256).Hash.ToLowerInvariant() }
 }
 
-function Start-Broker([string]$Index,[string]$Mode,[string]$Pipe,[string]$ErrorLog) {
-    Start-Process -FilePath $broker -ArgumentList @('-index',$Index,'-mode',$Mode,'-named-pipe',$Pipe) -PassThru -WindowStyle Hidden -RedirectStandardError $ErrorLog
+function Start-Broker([string]$Index,[string]$Mode,[string]$Pipe,[string]$ErrorLog,[string]$UserSnapshot,[string]$UserJournal) {
+    Start-Process -FilePath $broker -ArgumentList @('-index',$Index,'-mode',$Mode,'-named-pipe',$Pipe,'-user-model-snapshot',$UserSnapshot,'-user-model-journal',$UserJournal) -PassThru -WindowStyle Hidden -RedirectStandardError $ErrorLog
 }
 function Stop-Broker([Diagnostics.Process]$Process) { if ($Process -and -not $Process.HasExited) { Stop-Process -Id $Process.Id -Force; $Process.WaitForExit() } }
 
-$definitions=@([ordered]@{mode='full';source='yime_full.dict.yaml';paging='yjkl'},[ordered]@{mode='variable';source='yime_variable.dict.yaml';paging='yjkl'},[ordered]@{mode='shorthand';source='yime_shorthand.dict.yaml';paging='yjl'})
+$definitions=@([ordered]@{mode='full';source='yime_full.dict.yaml';paging='yjkl';segment='bjjjbjjjbjjj'},[ordered]@{mode='variable';source='yime_variable.dict.yaml';paging='yjkl';segment='bjbjbj'},[ordered]@{mode='shorthand';source='yime_shorthand.dict.yaml';paging='yjl';segment='bjbjbj'})
 $modeResults=@()
 foreach($definition in $definitions) {
     $modeDir=Join-Path $outputDir $definition.mode; New-Item -ItemType Directory -Force $modeDir|Out-Null
@@ -52,28 +52,38 @@ foreach($definition in $definitions) {
     if($LASTEXITCODE){throw "$($definition.mode) index build failed."}
     $build=Get-Content $manifest -Raw|ConvertFrom-Json
     $pipe="\\.\pipe\YimeBroker-e6b2a-$($definition.mode)-$PID"
-    $process=Start-Broker $index $definition.mode $pipe (Join-Path $modeDir 'broker-before.err')
+    $userSnapshot=Join-Path $modeDir 'user-model.json'; $userJournal=Join-Path $modeDir 'user-model.wal'
+    $process=Start-Broker $index $definition.mode $pipe (Join-Path $modeDir 'broker-before.err') $userSnapshot $userJournal
     $runs=@()
     try {
         foreach($architecture in @('x64','x86')) {
             $timer=[Diagnostics.Stopwatch]::StartNew()
-            $output=& $bridgeTests[$architecture] $pipe $definition.paging 2>&1
+            $arguments = @($pipe, $definition.paging)
+            if ($definition.mode -eq 'variable') { $arguments += 'hreo1.szpsdj1m,.' }
+            $arguments += "--long-session-code=$($definition.segment)"
+            $output=& $bridgeTests[$architecture] @arguments 2>&1
             $timer.Stop()
             $output|Set-Content -LiteralPath (Join-Path $modeDir ($architecture+'.txt')) -Encoding utf8
             if($LASTEXITCODE){throw "$($definition.mode) $architecture bridge failed: $output"}
             $runs += [ordered]@{architecture=$architecture;elapsed_ms=$timer.Elapsed.TotalMilliseconds;output=($output -join "`n")}
         }
     } finally { Stop-Broker $process }
-    $restart=[Diagnostics.Stopwatch]::StartNew(); $process=Start-Broker $index $definition.mode $pipe (Join-Path $modeDir 'broker-after.err')
-    try { $restartOutput=& $bridgeTests.x64 $pipe $definition.paging 2>&1; if($LASTEXITCODE){throw "$($definition.mode) restart bridge failed: $restartOutput"} } finally { Stop-Broker $process; $restart.Stop() }
+    $restart=[Diagnostics.Stopwatch]::StartNew(); $process=Start-Broker $index $definition.mode $pipe (Join-Path $modeDir 'broker-after.err') $userSnapshot $userJournal
+    try {
+        $restartArguments = @($pipe, $definition.paging)
+        if ($definition.mode -eq 'variable') { $restartArguments += 'hreo1.szpsdj1m,.' }
+        $restartArguments += "--long-session-code=$($definition.segment)"
+        $restartOutput=& $bridgeTests.x64 @restartArguments 2>&1
+        if($LASTEXITCODE){throw "$($definition.mode) restart bridge failed: $restartOutput"}
+    } finally { Stop-Broker $process; $restart.Stop() }
     $selected=@($runs.output|ForEach-Object{if($_ -match 'selected=([^ ]+)'){$Matches[1]}})+@(if(($restartOutput-join "`n") -match 'selected=([^ ]+)'){$Matches[1]})
-    $modeResults += [ordered]@{mode=$definition.mode;source_sha256=$build.build.source_sha256;index_sha256=$build.build.index_sha256;index_verified=[bool]$build.verified;runs=$runs;selected_text=$selected[0];stable_selection=(($selected|Select-Object -Unique).Count -eq 1);restart_recovery_ms=$restart.Elapsed.TotalMilliseconds;passed=([bool]$build.verified -and (($selected|Select-Object -Unique).Count -eq 1) -and $restart.ElapsedMilliseconds -lt 2000)}
+    $modeResults += [ordered]@{mode=$definition.mode;source_sha256=$build.build.source_sha256;index_sha256=$build.build.index_sha256;index_verified=[bool]$build.verified;runs=$runs;selected_code=$selected[0];stable_selection=(($selected|Select-Object -Unique).Count -eq 1);restart_recovery_ms=$restart.Elapsed.TotalMilliseconds;passed=([bool]$build.verified -and (($selected|Select-Object -Unique).Count -eq 1) -and $restart.ElapsedMilliseconds -lt 2000)}
 }
 
 $sourceFiles=@('docs\project\YIMECORE_REPLACEMENT_EXPERIMENT.md','YimeTextServiceExperiment\CMakeLists.txt','YimeTextServiceExperiment\BrokerClient.h','YimeTextServiceExperiment\BrokerClient.cpp','YimeTextServiceExperiment\ExperimentSettings.h','YimeTextServiceExperiment\ExperimentSettings.cpp','YimeTextServiceExperiment\KeyContract.h','YimeTextServiceExperiment\KeyContract.cpp','YimeTextServiceExperiment\SurfaceSession.h','YimeTextServiceExperiment\SurfaceSession.cpp','YimeTextServiceExperiment\tests\BrokerBridgeTests.cpp','tools\yimecore\run-e6b2a-broker-bridge-experiment.ps1')
 $hashes=foreach($relative in $sourceFiles){$hash=Get-FileHash (Join-Path $repoRoot $relative) -Algorithm SHA256;[ordered]@{path=$relative.Replace('\','/');sha256=$hash.Hash.ToLowerInvariant()}}
 $sourceHashes=Join-Path $outputDir 'source-hashes.json';$hashes|ConvertTo-Json -Depth 3|Set-Content $sourceHashes -Encoding utf8
-$summary=[ordered]@{tool_version='yime-text-service-e6b2a-broker-bridge-v1';stage='e6b2a';generated_at=(Get-Date).ToUniversalTime().ToString('o');git_commit=(& git -C $repoRoot rev-parse HEAD).Trim();git_dirty=[bool]((& git -C $repoRoot status --porcelain).Count);go_version=(& go version).Trim();os_arch='windows/'+$env:PROCESSOR_ARCHITECTURE.ToLowerInvariant();source_boundary=$dataRoot;output_boundary=$outputDir;broker_sha256=(Get-FileHash $broker -Algorithm SHA256).Hash.ToLowerInvariant();architectures=$architectureResults;modes=$modeResults;all_indices_verified=-not($modeResults.index_verified -contains $false);all_modes_passed=-not($modeResults.passed -contains $false);base_digit_composition_verified=$true;shift_candidate_selection_verified=$true;stable_candidate_id_commit_verified=$true;backspace_state_sync_verified=$true;invalid_code_recovery_verified=$true;candidate_page_navigation_verified=$true;arrow_selection_verified=$true;enter_space_current_selection_verified=$true;disconnect_does_not_consume_key=$true;restart_within_two_seconds=-not(($modeResults|Where-Object{$_.restart_recovery_ms -ge 2000}).Count);registry_or_installation_changed=$false;production_text_service_wired=$false;source_hashes_sha256=(Get-FileHash $sourceHashes -Algorithm SHA256).Hash.ToLowerInvariant();limitations=@('E6-B2a validates the C++ Broker bridge outside ITfContext; TSF edit-session composition is E6-B2b','candidate UI, language bar, focus transitions, registration and installation remain later gates')}
+$summary=[ordered]@{tool_version='yime-text-service-e6b2a-broker-bridge-v1';stage='e6b2a';generated_at=(Get-Date).ToUniversalTime().ToString('o');git_commit=(& git -C $repoRoot rev-parse HEAD).Trim();git_dirty=[bool]((& git -C $repoRoot status --porcelain).Count);go_version=(& go version).Trim();os_arch='windows/'+$env:PROCESSOR_ARCHITECTURE.ToLowerInvariant();source_boundary=$dataRoot;output_boundary=$outputDir;broker_sha256=(Get-FileHash $broker -Algorithm SHA256).Hash.ToLowerInvariant();architectures=$architectureResults;modes=$modeResults;all_indices_verified=-not($modeResults.index_verified -contains $false);all_modes_passed=-not($modeResults.passed -contains $false);base_digit_composition_verified=$true;shift_candidate_selection_verified=$true;stable_candidate_id_commit_verified=$true;backspace_state_sync_verified=$true;invalid_code_recovery_verified=$true;candidate_page_navigation_verified=$true;arrow_selection_verified=$true;enter_space_current_selection_verified=$true;long_segment_session_verified=$true;disconnect_does_not_consume_key=$true;restart_within_two_seconds=-not(($modeResults|Where-Object{$_.restart_recovery_ms -ge 2000}).Count);registry_or_installation_changed=$false;production_text_service_wired=$false;source_hashes_sha256=(Get-FileHash $sourceHashes -Algorithm SHA256).Hash.ToLowerInvariant();limitations=@('E6-B2a validates the C++ Broker bridge outside ITfContext; TSF edit-session composition is E6-B2b','candidate UI, language bar, focus transitions, registration and installation remain later gates')}
 $summaryPath=Join-Path $outputDir 'summary.json';$summary|ConvertTo-Json -Depth 8|Set-Content $summaryPath -Encoding utf8
 Write-Host "YimeTextService E6-B2a evidence: $outputDir"
 if(-not $summary.all_indices_verified -or -not $summary.all_modes_passed -or -not $summary.restart_within_two_seconds -or $summary.registry_or_installation_changed -or $summary.production_text_service_wired){throw "E6-B2a gate failed; see $summaryPath"}

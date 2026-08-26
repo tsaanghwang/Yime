@@ -21,6 +21,24 @@ foreach ($required in @($config.runtime_path, $config.broker_path, $config.insta
         throw "configured E6-C trial path is unavailable: $required"
     }
 }
+$installRootPath = [IO.Path]::GetFullPath([string]$config.install_root)
+$expectedRuntimePath = Join-Path $installRootPath 'bin\YimeCoreTrialRuntime.exe'
+$expectedBrokerPath = Join-Path $installRootPath 'bin\YimeBroker.exe'
+if (-not ([IO.Path]::GetFullPath([string]$config.runtime_path)).Equals($expectedRuntimePath, [StringComparison]::OrdinalIgnoreCase) -or
+    -not ([IO.Path]::GetFullPath([string]$config.broker_path)).Equals($expectedBrokerPath, [StringComparison]::OrdinalIgnoreCase)) {
+    throw 'configured E6-C runtime binaries are outside their fixed install locations'
+}
+$manifestPath = Join-Path $installRootPath 'package-manifest.json'
+if (-not (Test-Path -LiteralPath $manifestPath -PathType Leaf)) {
+    throw "missing E6-C package manifest: $manifestPath"
+}
+$manifest = Get-Content -LiteralPath $manifestPath -Raw -Encoding UTF8 | ConvertFrom-Json
+$brokerRecord = @($manifest.files | Where-Object { $_.path -eq 'bin/YimeBroker.exe' })
+if ($brokerRecord.Count -ne 1 -or
+    (Get-FileHash -LiteralPath $expectedBrokerPath -Algorithm SHA256).Hash.ToLowerInvariant() -ne
+        [string]$brokerRecord[0].sha256) {
+    throw 'configured E6-C Broker does not match the package manifest'
+}
 
 $argumentLine = '-install-root "{0}" -broker "{1}" -state-root "{2}" -no-toolbar' -f
     ([string]$config.install_root), ([string]$config.broker_path), ([string]$config.state_root)
@@ -34,11 +52,18 @@ do {
             $status = Get-Content -LiteralPath $statusPath -Raw -Encoding UTF8 | ConvertFrom-Json
             if ($status.state -eq 'running' -and [int]$status.broker_pid -gt 0) {
                 $broker = Get-CimInstance Win32_Process -Filter "ProcessId = $([int]$status.broker_pid)"
-                if ($broker -and
-                    $broker.ExecutablePath.Equals([string]$config.broker_path, [StringComparison]::OrdinalIgnoreCase) -and
-                    $broker.CommandLine.IndexOf('-index-root', [StringComparison]::OrdinalIgnoreCase) -ge 0 -and
-                    $broker.CommandLine.IndexOf('-user-model-snapshot', [StringComparison]::OrdinalIgnoreCase) -ge 0 -and
-                    $broker.CommandLine.IndexOf('-index-control-manifest', [StringComparison]::OrdinalIgnoreCase) -ge 0) {
+                $path = if ($broker) { [string]$broker.ExecutablePath } else { '' }
+                $commandLine = if ($broker) { [string]$broker.CommandLine } else { '' }
+                $pathMatchesWhenAvailable = [string]::IsNullOrWhiteSpace($path) -or
+                    ([IO.Path]::GetFullPath($path)).Equals($expectedBrokerPath, [StringComparison]::OrdinalIgnoreCase)
+                $commandLineMatchesWhenAvailable = [string]::IsNullOrWhiteSpace($commandLine) -or
+                    ($commandLine.IndexOf('-index-root', [StringComparison]::OrdinalIgnoreCase) -ge 0 -and
+                     $commandLine.IndexOf('-user-model-snapshot', [StringComparison]::OrdinalIgnoreCase) -ge 0 -and
+                     $commandLine.IndexOf('-index-control-manifest', [StringComparison]::OrdinalIgnoreCase) -ge 0)
+                if ($broker -and [int]$status.runtime_pid -eq $runtime.Id -and
+                    [int]$broker.ParentProcessId -eq $runtime.Id -and
+                    ([string]$broker.Name).Equals('YimeBroker.exe', [StringComparison]::OrdinalIgnoreCase) -and
+                    $pathMatchesWhenAvailable -and $commandLineMatchesWhenAvailable) {
                     $status
                     return
                 }

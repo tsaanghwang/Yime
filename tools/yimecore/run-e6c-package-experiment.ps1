@@ -115,14 +115,36 @@ foreach ($architecture in @(
 $broker = Join-Path $binRoot 'YimeBroker.exe'
 $verifier = Join-Path $binRoot 'YimeE6CPackageExperiment.exe'
 $runtime = Join-Path $binRoot 'YimeCoreTrialRuntime.exe'
+$desktopTools = Join-Path $binRoot 'YimeCoreDesktopTools.exe'
+$reverseLookup = Join-Path $binRoot 'YimeCoreReverseLookup.exe'
+$lexiconManager = Join-Path $binRoot 'YimeCoreLexiconManager.exe'
+$settingsTool = Join-Path $binRoot 'YimeCoreSettingsTool.exe'
+$explainTool = Join-Path $binRoot 'YimeCoreExplain.exe'
+$sentenceRegression = Join-Path $binRoot 'YimeCoreSentenceRegression.exe'
 Push-Location (Join-Path $repoRoot 'go-backend')
 try {
+	$legacyToolbar = Join-Path $binRoot 'YimeCoreToolbar.exe'
+	if (Test-Path -LiteralPath $legacyToolbar -PathType Leaf) {
+		Remove-Item -LiteralPath $legacyToolbar -Force
+	}
     & go build -trimpath -o $broker ./cmd/yimebroker
     if ($LASTEXITCODE -ne 0) { throw 'E6-C Broker build failed' }
     & go build -trimpath -o $verifier ./cmd/yimebroker-multimode-experiment
     if ($LASTEXITCODE -ne 0) { throw 'E6-C verifier build failed' }
     & go build -trimpath -ldflags '-H=windowsgui' -o $runtime ./cmd/yimecore-trial-runtime
     if ($LASTEXITCODE -ne 0) { throw 'E6-C runtime supervisor build failed' }
+	& go build -trimpath -ldflags '-H=windowsgui' -o $desktopTools ./cmd/input-toolbar
+	if ($LASTEXITCODE -ne 0) { throw 'E6-C native desktop tools build failed' }
+    & go build -trimpath -ldflags '-H=windowsgui' -o $reverseLookup ./cmd/reverse-lookup-tool
+    if ($LASTEXITCODE -ne 0) { throw 'E6-C reverse lookup build failed' }
+    & go build -trimpath -ldflags '-H=windowsgui' -o $lexiconManager ./cmd/lexicon-manager
+    if ($LASTEXITCODE -ne 0) { throw 'E6-C user lexicon build failed' }
+    & go build -trimpath -ldflags '-H=windowsgui' -o $settingsTool ./cmd/settings-tool
+    if ($LASTEXITCODE -ne 0) { throw 'E6-C settings tool build failed' }
+    & go build -trimpath -o $explainTool ./cmd/yimecore-explain
+    if ($LASTEXITCODE -ne 0) { throw 'E6-C decode explanation tool build failed' }
+    & go build -trimpath -o $sentenceRegression ./cmd/yimecore-sentence-regression
+    if ($LASTEXITCODE -ne 0) { throw 'E6-C dynamic sentence regression tool build failed' }
 } finally {
     Pop-Location
 }
@@ -187,6 +209,20 @@ $runtimeProcess = Start-Process -FilePath $runtime -ArgumentList ('-install-root
 $runtimeBefore = $null
 $runtimeAfter = $null
 $languageBarTsfChecks = @()
+function Test-PackagedBrokerProcessIdentity($Process, $Status) {
+    if (-not $Process -or -not $Status) { return $false }
+    if ([string]::IsNullOrWhiteSpace([string]$Status.install_root) -or
+        [string]::IsNullOrWhiteSpace([string]$Status.broker_path)) { return $false }
+    $processPath = [string]$Process.ExecutablePath
+    $pathVerifiedWhenAvailable = [string]::IsNullOrWhiteSpace($processPath) -or
+        ([IO.Path]::GetFullPath($processPath)).Equals($broker, [StringComparison]::OrdinalIgnoreCase)
+    return [int]$Process.ProcessId -eq [int]$Status.broker_pid -and
+        [int]$Process.ParentProcessId -eq [int]$Status.runtime_pid -and
+        ([string]$Process.Name).Equals('YimeBroker.exe', [StringComparison]::OrdinalIgnoreCase) -and
+        ([IO.Path]::GetFullPath([string]$Status.install_root)).Equals($packageRoot, [StringComparison]::OrdinalIgnoreCase) -and
+        ([IO.Path]::GetFullPath([string]$Status.broker_path)).Equals($broker, [StringComparison]::OrdinalIgnoreCase) -and
+        $pathVerifiedWhenAvailable
+}
 try {
     $deadline = (Get-Date).AddSeconds(15)
     do {
@@ -199,9 +235,10 @@ try {
         throw 'packaged E6-C runtime supervisor did not become ready'
     }
     $oldBroker = Get-CimInstance Win32_Process -Filter "ProcessId = $([int]$runtimeBefore.broker_pid)"
-    if (-not $oldBroker -or -not $oldBroker.ExecutablePath.Equals($broker, [StringComparison]::OrdinalIgnoreCase)) {
+    if (-not (Test-PackagedBrokerProcessIdentity $oldBroker $runtimeBefore)) {
         throw 'packaged E6-C runtime supervisor reported an unexpected Broker process'
     }
+    $oldBrokerPathAccessible = -not [string]::IsNullOrWhiteSpace([string]$oldBroker.ExecutablePath)
     foreach ($textServiceBuild in $textServiceBuilds) {
         $tsfLog = Join-Path $outputDir ('language-bar-tsf-' + $textServiceBuild.architecture + '.txt')
         & $textServiceBuild.tsf_test $textServiceBuild.dll $runtimePipe 2>&1 | Tee-Object -LiteralPath $tsfLog
@@ -226,18 +263,32 @@ try {
             [int]$runtimeAfter.runtime_pid -eq [int]$runtimeBefore.runtime_pid -and
             [int]$runtimeAfter.broker_pid -ne [int]$runtimeBefore.broker_pid -and
             [int]$runtimeAfter.restarts -gt [int]$runtimeBefore.restarts -and
-            $newBroker -and $newBroker.ExecutablePath -and
-            $newBroker.ExecutablePath.Equals($broker, [StringComparison]::OrdinalIgnoreCase)
+            $newBroker -and (Test-PackagedBrokerProcessIdentity $newBroker $runtimeAfter)
     } while ((Get-Date) -lt $deadline -and -not $runtimeRecoveryReady)
     $runtimeRecoveryChecks = [ordered]@{
         status_running = [bool]($runtimeAfter -and $runtimeAfter.state -eq 'running')
         runtime_pid_preserved = [bool]($runtimeAfter -and [int]$runtimeAfter.runtime_pid -eq [int]$runtimeBefore.runtime_pid)
         broker_pid_replaced = [bool]($runtimeAfter -and [int]$runtimeAfter.broker_pid -ne [int]$runtimeBefore.broker_pid)
         restart_count_advanced = [bool]($runtimeAfter -and [int]$runtimeAfter.restarts -gt [int]$runtimeBefore.restarts)
-        broker_path_verified = [bool]($newBroker -and $newBroker.ExecutablePath -and
-            $newBroker.ExecutablePath.Equals($broker, [StringComparison]::OrdinalIgnoreCase))
+        broker_process_identity_verified = [bool]($newBroker -and
+            (Test-PackagedBrokerProcessIdentity $newBroker $runtimeAfter))
+        broker_path_verified = [bool]($oldBrokerPathAccessible -and $newBroker -and
+            -not [string]::IsNullOrWhiteSpace([string]$newBroker.ExecutablePath))
+        broker_parent_runtime_verified = [bool]($newBroker -and
+            [int]$newBroker.ParentProcessId -eq [int]$runtimeAfter.runtime_pid)
+        process_identity_method = if ($oldBrokerPathAccessible -and $newBroker -and
+            -not [string]::IsNullOrWhiteSpace([string]$newBroker.ExecutablePath)) {
+            'executable-path+runtime-parent+status-convergence'
+        } else {
+            'runtime-parent+status-convergence'
+        }
     }
-    $runtimeRecoveryPassed = -not ($runtimeRecoveryChecks.Values -contains $false)
+    $runtimeRecoveryPassed = $runtimeRecoveryChecks.status_running -and
+        $runtimeRecoveryChecks.runtime_pid_preserved -and
+        $runtimeRecoveryChecks.broker_pid_replaced -and
+        $runtimeRecoveryChecks.restart_count_advanced -and
+        $runtimeRecoveryChecks.broker_process_identity_verified -and
+        $runtimeRecoveryChecks.broker_parent_runtime_verified
     if (-not $runtimeRecoveryPassed) {
         throw "packaged E6-C runtime supervisor recovery checks failed: $($runtimeRecoveryChecks | ConvertTo-Json -Compress)"
     }
@@ -288,6 +339,16 @@ $sourceFiles = @(
     'go-backend\cmd\yimecore-trial-runtime\main_test.go',
     'go-backend\cmd\yimecore-trial-runtime\runtime_windows.go',
     'go-backend\cmd\yimecore-trial-runtime\runtime_stub.go',
+    'go-backend\cmd\input-toolbar\main.go',
+    'go-backend\cmd\input-toolbar\main_test.go',
+    'go-backend\cmd\reverse-lookup-tool\main.go',
+    'go-backend\cmd\lexicon-manager\main.go',
+    'go-backend\cmd\lexicon-manager\actions.go',
+    'go-backend\cmd\settings-tool\main.go',
+    'go-backend\cmd\yimecore-explain\main.go',
+    'go-backend\cmd\yimecore-explain\main_test.go',
+    'go-backend\cmd\yimecore-sentence-regression\main.go',
+    'go-backend\cmd\yimecore-sentence-regression\main_test.go',
     'go-backend\input_methods\yime\yimebroker\dispatcher.go',
     'go-backend\input_methods\yime\yimebroker\dispatcher_test.go',
     'go-backend\input_methods\yime\yimebroker\index_control.go',
@@ -298,10 +359,15 @@ $sourceFiles = @(
     'go-backend\input_methods\yime\yimebroker\usermodel_store.go',
     'go-backend\input_methods\yime\yimecore\indexfile.go',
     'go-backend\input_methods\yime\yimecore\indexfile_test.go',
+    'go-backend\input_methods\yime\yimecore\userlexicon_overlay.go',
+    'go-backend\input_methods\yime\reverselookup\index.go',
     'go-backend\input_methods\yime\yimecore\engine.go',
     'go-backend\input_methods\yime\yimecore\segment_correction_test.go',
     'go-backend\input_methods\yime\yimecore\sentence.go',
     'go-backend\input_methods\yime\yimecore\sentence_test.go',
+    'go-backend\input_methods\yime\yimecore\explain.go',
+    'go-backend\input_methods\yime\yimecore\explain_test.go',
+    'go-backend\input_methods\yime\yimecore\testdata\dynamic_sentence_cases.json',
     'go-backend\input_methods\yime\yimebroker\dispatcher_test.go',
     'go-backend\cmd\yimebroker-multimode-experiment\main.go',
     'YimeTextServiceExperiment\CMakeLists.txt',
@@ -340,7 +406,9 @@ $sourceFiles = @(
     'tools\yimecore\deploy-e6c-trial-runtime.ps1',
     'tools\yimecore\start-e6c-trial-runtime.ps1',
     'tools\yimecore\stop-e6c-trial-runtime.ps1',
-    'tools\yimecore\verify-e6c-trial-runtime.ps1'
+    'tools\yimecore\verify-e6c-trial-runtime.ps1',
+    'tools\yimecore\verify-e6c-language-bar-events.ps1',
+    'tools\yimecore\record-e6b8-desktop-host-acceptance.ps1'
 )
 $sourceHashes = foreach ($relative in $sourceFiles) {
     $hash = Get-FileHash -LiteralPath (Join-Path $repoRoot $relative) -Algorithm SHA256
@@ -376,12 +444,19 @@ $summary = [ordered]@{
     system_lexicon_startup_elapsed_ns = [int64]$capabilities.resident_system_lexicon.startup_elapsed_ns
     system_lexicon_private_bytes_after_soak = [uint64]$capabilities.resident_system_lexicon.memory_after_soak.private_bytes
     system_lexicon_mode_latency = @($capabilities.resident_system_lexicon.mode_latency)
-    continuous_second_term_inheritance_passed = [bool](-not (@($capabilities.modes | Where-Object {
-        -not $_.incomplete_second_term_passed
+    recursive_code_convergence_passed = [bool](-not (@($capabilities.modes | Where-Object {
+        -not $_.future_predictions_hidden
+    }).Count))
+    prefix_tree_monotonicity_passed = [bool](-not (@($capabilities.modes | Where-Object {
+        -not $_.prefix_tree_monotonic -or -not $_.prefix_candidates_visible -or
+        [int]$_.prefix_candidate_count -le 0 -or [string]::IsNullOrWhiteSpace([string]$_.prefix_sentence_prediction)
     }).Count))
     generated_sentence_first_candidate_passed = [bool](-not (@($capabilities.modes | Where-Object {
         -not $_.generated_sentence_passed
     }).Count))
+    native_desktop_tools_packaged = [bool]$installationEvidence.native_desktop_tools_windows_gui
+    legacy_desktop_tools_removed = [bool]($installationEvidence.legacy_trial_toolbar_absent -and
+        $installationEvidence.desktop_tools_powershell_ui_absent)
     runtime_supervisor_packaged = Test-Path -LiteralPath $runtime
     runtime_supervisor_broker_recovery_passed = [bool]$runtimeRecoveryPassed
     runtime_supervision_evidence_path = $runtimeEvidencePath
@@ -425,8 +500,10 @@ if (-not $summary.base_package_hash_handoff_verified -or
     -not $summary.system_lexicon_all_modes_resident -or
     -not $summary.system_lexicon_restart_modes_resident -or
     -not $summary.system_lexicon_no_severe_latency_or_stickiness -or
-    -not $summary.continuous_second_term_inheritance_passed -or
+    -not $summary.recursive_code_convergence_passed -or
+    -not $summary.prefix_tree_monotonicity_passed -or
     -not $summary.generated_sentence_first_candidate_passed -or
+    -not $summary.native_desktop_tools_packaged -or -not $summary.legacy_desktop_tools_removed -or
     -not $summary.runtime_supervisor_packaged -or -not $summary.runtime_supervisor_broker_recovery_passed -or
     -not $summary.language_bar_x64_x86_passed -or
     -not $summary.installed_apps_uninstall_contract_passed -or

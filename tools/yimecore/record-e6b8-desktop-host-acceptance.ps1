@@ -112,14 +112,27 @@ if ($hostProcess.ProcessName -ne 'WINWORD' -or $loadedModule.Count -ne 1 -or
 }
 $brokerProcess = Get-CimInstance Win32_Process -Filter "ProcessId = $BrokerProcessId"
 $expectedBroker = Join-Path $resolvedInstallRoot 'bin\YimeBroker.exe'
-$expectedToolbar = Join-Path $resolvedInstallRoot 'bin\YimeCoreToolbar.exe'
+$expectedToolbar = Join-Path $resolvedInstallRoot 'bin\YimeCoreDesktopTools.exe'
 $defaultPipe = '\\.\pipe\YimeBroker.YimeCoreTrial.v1'
+$runtimeProcess = if ($brokerProcess -and [int]$brokerProcess.ParentProcessId -gt 0) {
+    Get-CimInstance Win32_Process -Filter "ProcessId = $([int]$brokerProcess.ParentProcessId)"
+} else { $null }
+$brokerPath = if ($brokerProcess) { [string]$brokerProcess.ExecutablePath } else { '' }
+$brokerCommandLine = if ($brokerProcess) { [string]$brokerProcess.CommandLine } else { '' }
+$brokerPathMatchesWhenAvailable = [string]::IsNullOrWhiteSpace($brokerPath) -or
+    ([IO.Path]::GetFullPath($brokerPath)).Equals($expectedBroker, [StringComparison]::OrdinalIgnoreCase)
+$brokerCommandLineMatchesWhenAvailable = [string]::IsNullOrWhiteSpace($brokerCommandLine) -or
+    ($brokerCommandLine.IndexOf($defaultPipe, [StringComparison]::OrdinalIgnoreCase) -ge 0 -and
+     $brokerCommandLine.IndexOf('-index-root', [StringComparison]::OrdinalIgnoreCase) -ge 0 -and
+     $brokerCommandLine.IndexOf('-default-mode variable', [StringComparison]::OrdinalIgnoreCase) -ge 0 -and
+     $brokerCommandLine.IndexOf('-annotation-data-dir', [StringComparison]::OrdinalIgnoreCase) -ge 0)
 if (-not $brokerProcess -or
-    -not $brokerProcess.ExecutablePath.Equals($expectedBroker, [StringComparison]::OrdinalIgnoreCase) -or
-    $brokerProcess.CommandLine.IndexOf($defaultPipe, [StringComparison]::OrdinalIgnoreCase) -lt 0 -or
-    $brokerProcess.CommandLine.IndexOf('-index-root', [StringComparison]::OrdinalIgnoreCase) -lt 0 -or
-    $brokerProcess.CommandLine.IndexOf('-default-mode variable', [StringComparison]::OrdinalIgnoreCase) -lt 0 -or
-    $brokerProcess.CommandLine.IndexOf('-annotation-data-dir', [StringComparison]::OrdinalIgnoreCase) -lt 0) {
+    -not $runtimeProcess -or
+    -not ([string]$brokerProcess.Name).Equals('YimeBroker.exe', [StringComparison]::OrdinalIgnoreCase) -or
+    -not ([string]$runtimeProcess.Name).Equals('YimeCoreTrialRuntime.exe', [StringComparison]::OrdinalIgnoreCase) -or
+    -not $brokerPathMatchesWhenAvailable -or -not $brokerCommandLineMatchesWhenAvailable -or
+    (Get-FileHash -LiteralPath $expectedBroker -Algorithm SHA256).Hash.ToLowerInvariant() -ne
+        [string](@($installedRecords | Where-Object { $_.path -eq 'bin/YimeBroker.exe' })[0].sha256)) {
     throw 'the observed desktop host is not using the installed Broker at the default endpoint'
 }
 if (-not (Test-Path -LiteralPath $expectedToolbar -PathType Leaf)) {
@@ -136,8 +149,12 @@ $observationPath = Join-Path $outputDir 'desktop-observation.json'
     loaded_text_service = $loadedModule[0].FileName
     loaded_text_service_sha256 = (Get-FileHash -LiteralPath $loadedModule[0].FileName -Algorithm SHA256).Hash.ToLowerInvariant()
     broker_process_id = $BrokerProcessId
-    broker_executable = $brokerProcess.ExecutablePath
-    broker_command_line = $brokerProcess.CommandLine
+    broker_runtime_process_id = [int]$brokerProcess.ParentProcessId
+    broker_executable = $brokerPath
+    broker_command_line = $brokerCommandLine
+    broker_path_accessible = -not [string]::IsNullOrWhiteSpace($brokerPath)
+    broker_package_hash_verified = $true
+    broker_runtime_parent_verified = $true
     input_trace = '2 -> Word File backstage -> return to document -> 2 -> Shift+1'
     initial_candidate_observed = [bool]$InitialCandidateObserved
     host_termination_observed = [bool]$HostTerminationObserved

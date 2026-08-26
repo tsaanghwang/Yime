@@ -12,8 +12,47 @@ $statusBefore = Get-Content -LiteralPath $statusPath -Raw -Encoding UTF8 | Conve
 if ($statusBefore.state -ne 'running' -or [int]$statusBefore.broker_pid -le 0) {
     throw 'E6-C trial runtime is not running'
 }
+$installRoot = [IO.Path]::GetFullPath([string]$config.install_root)
+$expectedRuntime = [IO.Path]::GetFullPath([string]$config.runtime_path)
+$expectedBroker = [IO.Path]::GetFullPath([string]$config.broker_path)
+$expectedStateRoot = [IO.Path]::GetFullPath([string]$config.state_root)
+if (-not $expectedStateRoot.Equals($stateRootPath, [StringComparison]::OrdinalIgnoreCase) -or
+    -not $expectedRuntime.Equals((Join-Path $installRoot 'bin\YimeCoreTrialRuntime.exe'), [StringComparison]::OrdinalIgnoreCase) -or
+    -not $expectedBroker.Equals((Join-Path $installRoot 'bin\YimeBroker.exe'), [StringComparison]::OrdinalIgnoreCase) -or
+    -not ([IO.Path]::GetFullPath([string]$statusBefore.install_root)).Equals($installRoot, [StringComparison]::OrdinalIgnoreCase) -or
+    -not ([IO.Path]::GetFullPath([string]$statusBefore.broker_path)).Equals($expectedBroker, [StringComparison]::OrdinalIgnoreCase)) {
+    throw 'E6-C trial runtime configuration and status roots do not converge'
+}
+foreach ($requiredPath in @($expectedRuntime, $expectedBroker, (Join-Path $installRoot 'package-manifest.json'))) {
+    if (-not (Test-Path -LiteralPath $requiredPath -PathType Leaf)) {
+        throw "missing installed E6-C identity input: $requiredPath"
+    }
+}
+$packageManifest = Get-Content -LiteralPath (Join-Path $installRoot 'package-manifest.json') -Raw -Encoding UTF8 |
+    ConvertFrom-Json
+$brokerManifestRecord = @($packageManifest.files | Where-Object { $_.path -eq 'bin/YimeBroker.exe' })
+if ($brokerManifestRecord.Count -ne 1) { throw 'installed package manifest has no unique Broker record' }
+$brokerDiskHash = (Get-FileHash -LiteralPath $expectedBroker -Algorithm SHA256).Hash.ToLowerInvariant()
+if ($brokerDiskHash -ne [string]$brokerManifestRecord[0].sha256) {
+    throw 'installed Broker hash does not match the package manifest'
+}
 $pipeName = ([string]$config.pipe_name).Replace('\\.\pipe\', '')
 if ([string]::IsNullOrWhiteSpace($pipeName)) { throw 'invalid E6-C named pipe configuration' }
+
+function Test-BrokerProcessIdentity($Process, $Status) {
+    if (-not $Process -or -not $Status) { return $false }
+    if ([string]::IsNullOrWhiteSpace([string]$Status.install_root) -or
+        [string]::IsNullOrWhiteSpace([string]$Status.broker_path)) { return $false }
+    $path = [string]$Process.ExecutablePath
+    $pathVerifiedWhenAvailable = [string]::IsNullOrWhiteSpace($path) -or
+        ([IO.Path]::GetFullPath($path)).Equals($expectedBroker, [StringComparison]::OrdinalIgnoreCase)
+    return [int]$Process.ProcessId -eq [int]$Status.broker_pid -and
+        [int]$Process.ParentProcessId -eq [int]$Status.runtime_pid -and
+        ([string]$Process.Name).Equals('YimeBroker.exe', [StringComparison]::OrdinalIgnoreCase) -and
+        ([IO.Path]::GetFullPath([string]$Status.install_root)).Equals($installRoot, [StringComparison]::OrdinalIgnoreCase) -and
+        ([IO.Path]::GetFullPath([string]$Status.broker_path)).Equals($expectedBroker, [StringComparison]::OrdinalIgnoreCase) -and
+        $pathVerifiedWhenAvailable
+}
 
 function Invoke-ModeProbe([string]$Mode, [string]$Code) {
     $client = [IO.Pipes.NamedPipeClientStream]::new('.', $pipeName, [IO.Pipes.PipeDirection]::InOut)
@@ -73,11 +112,11 @@ $modes = @(
 )
 $recovery = $null
 if ($ExerciseRecovery) {
-    $expectedBroker = [IO.Path]::GetFullPath([string]$config.broker_path)
     $broker = Get-CimInstance Win32_Process -Filter "ProcessId = $([int]$statusBefore.broker_pid)"
-    if (-not $broker -or -not $broker.ExecutablePath.Equals($expectedBroker, [StringComparison]::OrdinalIgnoreCase)) {
+    if (-not (Test-BrokerProcessIdentity $broker $statusBefore)) {
         throw 'refusing to terminate an unverified Broker process'
     }
+    $pathAccessibleBefore = -not [string]::IsNullOrWhiteSpace([string]$broker.ExecutablePath)
     Stop-Process -Id ([int]$statusBefore.broker_pid) -Force
     $deadline = (Get-Date).AddSeconds(15)
     do {
@@ -90,7 +129,7 @@ if ($ExerciseRecovery) {
             [int]$statusAfter.runtime_pid -eq [int]$statusBefore.runtime_pid -and
             [int]$statusAfter.broker_pid -ne [int]$statusBefore.broker_pid -and
             [int]$statusAfter.restarts -gt [int]$statusBefore.restarts -and $newBroker -and
-            $newBroker.ExecutablePath.Equals($expectedBroker, [StringComparison]::OrdinalIgnoreCase)
+            (Test-BrokerProcessIdentity $newBroker $statusAfter)
     } while ((Get-Date) -lt $deadline -and -not $recovered)
     if (-not $recovered) { throw 'E6-C trial runtime did not recover its Broker' }
     $recovery = [ordered]@{
@@ -100,7 +139,17 @@ if ($ExerciseRecovery) {
         new_broker_pid = [int]$statusAfter.broker_pid
         restarts_before = [int]$statusBefore.restarts
         restarts_after = [int]$statusAfter.restarts
-        broker_path_verified = $true
+        broker_path_verified = [bool]($pathAccessibleBefore -and
+            -not [string]::IsNullOrWhiteSpace([string]$newBroker.ExecutablePath))
+        broker_package_hash_verified = $true
+        broker_parent_runtime_verified = $true
+        pipe_probe_verified = $true
+        process_identity_method = if ($pathAccessibleBefore -and
+            -not [string]::IsNullOrWhiteSpace([string]$newBroker.ExecutablePath)) {
+            'executable-path+package-hash+runtime-parent+pipe-probe'
+        } else {
+            'package-hash+runtime-parent+status-convergence+pipe-probe'
+        }
     }
 }
 
