@@ -2,7 +2,64 @@
 
 package main
 
-import "testing"
+import (
+	"path/filepath"
+	"slices"
+	"testing"
+
+	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/toolhub"
+)
+
+func TestExperimentalToolHubUsesIndependentIdentityAndIsolatedManifest(t *testing.T) {
+	if got := toolHubWindowClass(false); got != "YimeToolHub" {
+		t.Fatalf("production tool hub class=%q", got)
+	}
+	if got := toolHubWindowClass(true); got != "YimeCoreTrialToolHub" {
+		t.Fatalf("trial tool hub class=%q", got)
+	}
+	if got := toolHubWindowTitle(true, "ignored"); got != "Yime 试验版工具中心" {
+		t.Fatalf("trial tool hub title=%q", got)
+	}
+
+	installRoot := filepath.Join(`C:\Program Files`, "YimeCore Experimental Trial", "package")
+	stateRoot := filepath.Join(`C:\Users\tester`, "AppData", "Local", "YimeCore Experimental Trial")
+	statePath := filepath.Join(stateRoot, "yimecore_experimental_toolbar_state.json")
+	manifest, err := buildExperimentalManifest(installRoot, stateRoot, statePath, "shorthand")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if manifest.Title != "Yime 试验版工具中心" || len(manifest.Tools) != 6 {
+		t.Fatalf("trial manifest=%#v", manifest)
+	}
+	entries := map[string]toolhub.Entry{}
+	for _, entry := range manifest.Tools {
+		entries[entry.ID] = entry
+	}
+	for _, id := range []string{"typing-trainer", "lexicon-manager", "reverse-lookup-tool", "settings-tool", "trial-user-data", "trial-shared-data"} {
+		if _, ok := entries[id]; !ok {
+			t.Fatalf("trial manifest missing %q", id)
+		}
+	}
+	for _, id := range []string{"typing-trainer", "lexicon-manager", "reverse-lookup-tool", "settings-tool"} {
+		entry := entries[id]
+		if filepath.Dir(entry.TargetPath) != filepath.Join(installRoot, "bin") {
+			t.Fatalf("%s escaped Trial bin: %#v", id, entry)
+		}
+	}
+	if !slices.Contains(entries["typing-trainer"].Arguments, "-Experimental") ||
+		!slices.Contains(entries["lexicon-manager"].Arguments, "-Experimental") ||
+		!slices.Contains(entries["settings-tool"].Arguments, "-Experimental") {
+		t.Fatalf("Trial identity flags missing: %#v", entries)
+	}
+	if !slices.Contains(entries["typing-trainer"].Arguments, "shorthand") ||
+		!slices.Contains(entries["reverse-lookup-tool"].Arguments, "shorthand") {
+		t.Fatalf("Trial mode missing: %#v", entries)
+	}
+	if entries["trial-user-data"].TargetPath != stateRoot ||
+		entries["trial-shared-data"].TargetPath != filepath.Join(installRoot, "data") {
+		t.Fatalf("Trial directories escaped isolation: %#v", entries)
+	}
+}
 
 func TestToolHubButtonsFormAlignedTwoColumnGrid(t *testing.T) {
 	boxes := toolHubButtonRects(620, toolHubMinimumClientHeight(10), 10)

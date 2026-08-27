@@ -72,10 +72,18 @@ $result = [ordered]@{
     profile_keyboard_icon_packaged = [bool](Test-Path -LiteralPath $profileIcon -PathType Leaf)
     trial_tools_packaged = [bool]((@(
         'YimeCoreDesktopTools.exe', 'YimeCoreReverseLookup.exe',
-        'YimeCoreLexiconManager.exe', 'YimeCoreSettingsTool.exe',
+        'YimeCoreLexiconManager.exe', 'YimeCoreTrainer.exe', 'YimeCoreToolCenter.exe',
+        'YimeCoreSettingsTool.exe',
         'YimeCoreExplain.exe', 'YimeCoreSentenceRegression.exe'
     ) | Where-Object {
         -not (Test-Path -LiteralPath (Join-Path $packageRootPath ('bin\' + $_)) -PathType Leaf)
+    }).Count -eq 0)
+    trainer_data_packaged = [bool]((@(
+        'yime_yinyuan_layout.json', 'yime_syllable_decomposition.tsv', 'yime_full.dict.yaml',
+        'trainer\foundation.json', 'trainer\curriculum.json',
+        'trainer\yinyuan_catalog.json', 'trainer\yinyuan_groups.json'
+    ) | Where-Object {
+        -not (Test-Path -LiteralPath (Join-Path $packageRootPath ('data\' + $_)) -PathType Leaf)
     }).Count -eq 0)
     legacy_trial_toolbar_absent = [bool](-not (Test-Path -LiteralPath `
         (Join-Path $packageRootPath 'bin\YimeCoreToolbar.exe') -PathType Leaf))
@@ -101,6 +109,7 @@ if ($result.installed_apps_entry_planned -ne $true -or
     $result.secondary_architecture_com_only -ne $true -or
     $result.profile_keyboard_icon_packaged -ne $true -or
     $result.trial_tools_packaged -ne $true -or
+    $result.trainer_data_packaged -ne $true -or
     $result.legacy_trial_toolbar_absent -ne $true -or
     $result.native_desktop_tools_windows_gui -ne $true -or
     $result.desktop_tools_powershell_ui_absent -ne $true -or

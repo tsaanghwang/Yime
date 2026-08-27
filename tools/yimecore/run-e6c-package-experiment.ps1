@@ -70,6 +70,31 @@ foreach ($record in $baseRecords) {
     Copy-Item -LiteralPath $source -Destination $destination -Force
 }
 
+$sharedDataRoot = Join-Path $repoRoot 'go-backend\input_methods\yime\data'
+$trainerDataFiles = @(
+    'yime_yinyuan_layout.json',
+    'yime_pinyin_codes.tsv',
+    'yime_full.dict.yaml',
+    'yime_variable.dict.yaml',
+    'yime_shorthand.dict.yaml',
+    'yime_lexicon_manifest.json',
+    'yime_core_source_manifest.json',
+    'yime_full.schema.yaml',
+    'yime_variable.schema.yaml',
+    'yime_shorthand.schema.yaml',
+    'yime_syllable_decomposition.tsv',
+    'trainer\foundation.json',
+    'trainer\curriculum.json',
+    'trainer\yinyuan_catalog.json',
+    'trainer\yinyuan_groups.json'
+)
+foreach ($relative in $trainerDataFiles) {
+    $source = Join-Path $sharedDataRoot $relative
+    $destination = Join-Path (Join-Path $packageRoot 'data') $relative
+    New-Item -ItemType Directory -Path (Split-Path -Parent $destination) -Force | Out-Null
+    Copy-Item -LiteralPath $source -Destination $destination -Force
+}
+
 $textServiceBuilds = @()
 foreach ($architecture in @(
     [ordered]@{ name = 'x64'; platform = 'x64' },
@@ -118,6 +143,8 @@ $runtime = Join-Path $binRoot 'YimeCoreTrialRuntime.exe'
 $desktopTools = Join-Path $binRoot 'YimeCoreDesktopTools.exe'
 $reverseLookup = Join-Path $binRoot 'YimeCoreReverseLookup.exe'
 $lexiconManager = Join-Path $binRoot 'YimeCoreLexiconManager.exe'
+$trainer = Join-Path $binRoot 'YimeCoreTrainer.exe'
+$toolCenter = Join-Path $binRoot 'YimeCoreToolCenter.exe'
 $settingsTool = Join-Path $binRoot 'YimeCoreSettingsTool.exe'
 $explainTool = Join-Path $binRoot 'YimeCoreExplain.exe'
 $sentenceRegression = Join-Path $binRoot 'YimeCoreSentenceRegression.exe'
@@ -139,6 +166,10 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'E6-C reverse lookup build failed' }
     & go build -trimpath -ldflags '-H=windowsgui' -o $lexiconManager ./cmd/lexicon-manager
     if ($LASTEXITCODE -ne 0) { throw 'E6-C user lexicon build failed' }
+    & go build -trimpath -ldflags '-H=windowsgui' -o $trainer ./cmd/yime-trainer
+    if ($LASTEXITCODE -ne 0) { throw 'E6-C trainer build failed' }
+    & go build -trimpath -ldflags '-H=windowsgui' -o $toolCenter ./cmd/tool-hub
+    if ($LASTEXITCODE -ne 0) { throw 'E6-C Tool Center build failed' }
     & go build -trimpath -ldflags '-H=windowsgui' -o $settingsTool ./cmd/settings-tool
     if ($LASTEXITCODE -ne 0) { throw 'E6-C settings tool build failed' }
     & go build -trimpath -o $explainTool ./cmd/yimecore-explain
@@ -344,6 +375,13 @@ $sourceFiles = @(
     'go-backend\cmd\reverse-lookup-tool\main.go',
     'go-backend\cmd\lexicon-manager\main.go',
     'go-backend\cmd\lexicon-manager\actions.go',
+    'go-backend\cmd\yime-trainer\main.go',
+    'go-backend\cmd\yime-trainer\display_windows.go',
+    'go-backend\cmd\yime-trainer\display_windows_test.go',
+    'go-backend\cmd\tool-hub\main.go',
+    'go-backend\cmd\tool-hub\main_test.go',
+    'go-backend\input_methods\yime\toolhub\manifest.go',
+    'go-backend\input_methods\yime\toolhub\launch_windows.go',
     'go-backend\cmd\settings-tool\main.go',
     'go-backend\cmd\yimecore-explain\main.go',
     'go-backend\cmd\yimecore-explain\main_test.go',

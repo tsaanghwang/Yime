@@ -106,7 +106,7 @@ private:
 
 UINT selectChineseFromPopup(HMENU menu, POINT, void* context) noexcept {
     auto* seen = static_cast<bool*>(context);
-    *seen = menu && GetMenuItemCount(menu) == 14 && GetSubMenu(menu, 3) &&
+       *seen = menu && GetMenuItemCount(menu) == 16 && GetSubMenu(menu, 3) &&
             GetSubMenu(menu, 4) && GetSubMenu(menu, 5) && GetSubMenu(menu, 6) &&
             GetSubMenu(menu, 7) && GetSubMenu(menu, 8);
     return YIME_LBI_CHINESE;
@@ -499,7 +499,7 @@ void testLanguageBarItem() {
            "language bar menu path must validate the host ITfMenu callback");
 
     auto* menu = new FakeMenu();
-    expect(item->InitMenu(menu) == S_OK && menu->entries.size() == 14,
+       expect(item->InitMenu(menu) == S_OK && menu->entries.size() == 16,
            "host right-click path did not build the complete trial menu");
     expect(menu->entries[3].text == L"输入方案" && menu->entries[3].submenu &&
                menu->entries[3].submenu->entries.size() == 3,
@@ -537,8 +537,14 @@ void testLanguageBarItem() {
     expect(menu->entries[12].id == YIME_LBI_USER_LEXICON &&
                menu->entries[12].text == L"用户词库",
            "user-lexicon host click path is missing");
-    expect(menu->entries[13].id == YIME_LBI_SETTINGS_TOOL &&
-               menu->entries[13].text == L"设置工具",
+       expect(menu->entries[13].id == YIME_LBI_TRAINER_TOOL &&
+                        menu->entries[13].text == L"指法练习",
+                 "trainer host click path is missing");
+       expect(menu->entries[14].id == YIME_LBI_TOOL_CENTER &&
+                        menu->entries[14].text == L"工具中心",
+                 "tool-center host click path is missing");
+       expect(menu->entries[15].id == YIME_LBI_SETTINGS_TOOL &&
+                        menu->entries[15].text == L"设置工具",
            "settings-tool host click path is missing");
     menu->Release();
 
@@ -578,7 +584,8 @@ void testLanguageBarItem() {
                LoadExperimentSettings(path).traditionalization,
            "host submenu click did not select Traditional output");
     for (const UINT command : {YIME_LBI_DESKTOP_TOOLS, YIME_LBI_REVERSE_LOOKUP,
-                               YIME_LBI_USER_LEXICON, YIME_LBI_SETTINGS_TOOL}) {
+                               YIME_LBI_USER_LEXICON, YIME_LBI_TRAINER_TOOL,
+                               YIME_LBI_TOOL_CENTER, YIME_LBI_SETTINGS_TOOL}) {
         launchedTool = 0;
         expect(item->OnMenuSelect(command) == S_OK && launchedTool == command,
                "language-bar tool command did not reach its exact launcher path");

@@ -130,9 +130,10 @@ func resolveOptions(value options) (options, error) {
 		}
 	}
 	if !value.noToolbar {
-		toolbar := desktopToolsPath(value.installRoot)
-		if info, statErr := os.Stat(toolbar); statErr != nil || info.IsDir() {
-			return value, fmt.Errorf("required native Desktop Tools executable is unavailable: %s", toolbar)
+		for _, tool := range []string{desktopToolsPath(value.installRoot), trainerPath(value.installRoot), toolCenterPath(value.installRoot)} {
+			if info, statErr := os.Stat(tool); statErr != nil || info.IsDir() {
+				return value, fmt.Errorf("required native Trial tool is unavailable: %s", tool)
+			}
 		}
 	}
 	return value, nil
@@ -266,8 +267,7 @@ func startToolbar(config options, logger *log.Logger) *exec.Cmd {
 	if config.noToolbar {
 		return nil
 	}
-	command := exec.Command(desktopToolsPath(config.installRoot),
-		"-StatePath", filepath.Join(config.stateRoot, toolbarstate.ExperimentFileName), "-Experimental")
+	command := exec.Command(desktopToolsPath(config.installRoot), desktopToolsArguments(config)...)
 	configureChildProcess(command)
 	toolbarLog, err := os.OpenFile(filepath.Join(config.stateRoot, "logs", "toolbar.log"), os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0o600)
 	if err != nil {
@@ -290,6 +290,25 @@ func startToolbar(config options, logger *log.Logger) *exec.Cmd {
 
 func desktopToolsPath(installRoot string) string {
 	return filepath.Join(installRoot, "bin", "YimeCoreDesktopTools.exe")
+}
+
+func trainerPath(installRoot string) string {
+	return filepath.Join(installRoot, "bin", "YimeCoreTrainer.exe")
+}
+
+func toolCenterPath(installRoot string) string {
+	return filepath.Join(installRoot, "bin", "YimeCoreToolCenter.exe")
+}
+
+func desktopToolsArguments(config options) []string {
+	return []string{
+		"-StatePath", filepath.Join(config.stateRoot, toolbarstate.ExperimentFileName),
+		"-TrainerTool", trainerPath(config.installRoot),
+		"-ToolCenterTool", toolCenterPath(config.installRoot),
+		"-SharedDir", filepath.Join(config.installRoot, "data"),
+		"-UserDir", config.stateRoot,
+		"-Experimental",
+	}
 }
 
 func statusFor(config options, state string, brokerPID, toolbarPID, restarts int, statusErr error) runtimeStatus {

@@ -328,6 +328,8 @@ STDMETHODIMP LanguageBarItem::InitMenu(ITfMenu* menu) {
         FAILED(addMenuItem(menu, YIME_LBI_DESKTOP_TOOLS, 0, L"桌面工具")) ||
         FAILED(addMenuItem(menu, YIME_LBI_REVERSE_LOOKUP, 0, L"反查编码")) ||
         FAILED(addMenuItem(menu, YIME_LBI_USER_LEXICON, 0, L"用户词库")) ||
+        FAILED(addMenuItem(menu, YIME_LBI_TRAINER_TOOL, 0, L"指法练习")) ||
+        FAILED(addMenuItem(menu, YIME_LBI_TOOL_CENTER, 0, L"工具中心")) ||
         FAILED(addMenuItem(menu, YIME_LBI_SETTINGS_TOOL, 0, L"设置工具"))) return E_FAIL;
     recordHostEvent(settingsPath_, "init_menu", 0, S_OK);
     return S_OK;
@@ -378,7 +380,8 @@ STDMETHODIMP LanguageBarItem::UnadviseSink(DWORD cookie) {
 
 bool LanguageBarItem::Apply(UINT id) noexcept {
     if (id == YIME_LBI_DESKTOP_TOOLS || id == YIME_LBI_REVERSE_LOOKUP ||
-        id == YIME_LBI_USER_LEXICON || id == YIME_LBI_SETTINGS_TOOL) {
+        id == YIME_LBI_USER_LEXICON || id == YIME_LBI_TRAINER_TOOL ||
+        id == YIME_LBI_TOOL_CENTER || id == YIME_LBI_SETTINGS_TOOL) {
         return toolLauncher_ && toolLauncher_(id, settingsPath_, toolLauncherContext_);
     }
     using Command = yime::experiment::ExperimentSettingsCommand;
@@ -460,6 +463,8 @@ HMENU LanguageBarItem::BuildPopupMenu() const noexcept {
     AppendMenuW(root, MF_STRING, YIME_LBI_DESKTOP_TOOLS, L"桌面工具");
     AppendMenuW(root, MF_STRING, YIME_LBI_REVERSE_LOOKUP, L"反查编码");
     AppendMenuW(root, MF_STRING, YIME_LBI_USER_LEXICON, L"用户词库");
+    AppendMenuW(root, MF_STRING, YIME_LBI_TRAINER_TOOL, L"指法练习");
+    AppendMenuW(root, MF_STRING, YIME_LBI_TOOL_CENTER, L"工具中心");
     AppendMenuW(root, MF_STRING, YIME_LBI_SETTINGS_TOOL, L"设置工具");
     return root;
 }
@@ -486,7 +491,10 @@ bool LanguageBarItem::LaunchTool(UINT command, const std::wstring& settingsPath,
         switch (command) {
         case YIME_LBI_DESKTOP_TOOLS:
             return startDetached(installRoot / L"bin" / L"YimeCoreDesktopTools.exe",
-                                 {L"-StatePath", settingsPath, L"-Experimental"});
+                                 {L"-StatePath", settingsPath,
+                                  L"-TrainerTool", (installRoot / L"bin" / L"YimeCoreTrainer.exe").wstring(),
+                                  L"-SharedDir", sharedDir.wstring(), L"-UserDir", stateRoot.wstring(),
+                                  L"-Experimental"});
         case YIME_LBI_REVERSE_LOOKUP:
             return startDetached(installRoot / L"bin" / L"YimeCoreReverseLookup.exe",
                                  {L"-SharedDir", sharedDir.wstring(), L"-UserDir", stateRoot.wstring(),
@@ -496,6 +504,15 @@ bool LanguageBarItem::LaunchTool(UINT command, const std::wstring& settingsPath,
                                  {L"-SharedDir", sharedDir.wstring(), L"-UserDir", stateRoot.wstring(),
                                   L"-IndexRoot", indexRoot.wstring(), L"-Mode", widenUtf8(settings.mode),
                                   L"-Experimental"});
+        case YIME_LBI_TRAINER_TOOL:
+            return startDetached(installRoot / L"bin" / L"YimeCoreTrainer.exe",
+                                 {L"-SharedDir", sharedDir.wstring(), L"-UserDir", stateRoot.wstring(),
+                                  L"-Mode", widenUtf8(settings.mode), L"-Experimental"});
+        case YIME_LBI_TOOL_CENTER:
+            return startDetached(installRoot / L"bin" / L"YimeCoreToolCenter.exe",
+                                 {L"-InstallRoot", installRoot.wstring(),
+                                  L"-StateRoot", stateRoot.wstring(), L"-StatePath", settingsPath,
+                                  L"-Mode", widenUtf8(settings.mode), L"-Experimental"});
         case YIME_LBI_SETTINGS_TOOL:
             return startDetached(installRoot / L"bin" / L"YimeCoreSettingsTool.exe",
                                  {L"-UserDir", stateRoot.wstring(), L"-SharedDir", sharedDir.wstring(),

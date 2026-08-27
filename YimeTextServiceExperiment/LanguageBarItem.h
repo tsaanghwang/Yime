@@ -33,6 +33,8 @@ inline constexpr UINT YIME_LBI_DESKTOP_TOOLS = 0x6C40;
 inline constexpr UINT YIME_LBI_REVERSE_LOOKUP = 0x6C41;
 inline constexpr UINT YIME_LBI_USER_LEXICON = 0x6C42;
 inline constexpr UINT YIME_LBI_SETTINGS_TOOL = 0x6C43;
+inline constexpr UINT YIME_LBI_TRAINER_TOOL = 0x6C44;
+inline constexpr UINT YIME_LBI_TOOL_CENTER = 0x6C45;
 
 class LanguageBarItem final : public ITfLangBarItemButton, public ITfSource {
 public:

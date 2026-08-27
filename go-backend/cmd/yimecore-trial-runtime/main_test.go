@@ -48,6 +48,21 @@ func TestDesktopToolsUsesDedicatedNativeWindowsExecutable(t *testing.T) {
 	if got := desktopToolsPath(root); got != filepath.Join(root, "bin", "YimeCoreDesktopTools.exe") {
 		t.Fatalf("desktop tools path=%q", got)
 	}
+	if got := trainerPath(root); got != filepath.Join(root, "bin", "YimeCoreTrainer.exe") {
+		t.Fatalf("trainer path=%q", got)
+	}
+	if got := toolCenterPath(root); got != filepath.Join(root, "bin", "YimeCoreToolCenter.exe") {
+		t.Fatalf("Tool Center path=%q", got)
+	}
+	config := options{installRoot: root, stateRoot: `C:\trial state`}
+	arguments := desktopToolsArguments(config)
+	for _, expected := range []string{
+		trainerPath(root), toolCenterPath(root), filepath.Join(root, "data"), config.stateRoot, "-Experimental",
+	} {
+		if !slices.Contains(arguments, expected) {
+			t.Fatalf("Desktop Tools arguments lack %q: %v", expected, arguments)
+		}
+	}
 }
 
 func TestBrokerArgumentsPinMultiIndexDurabilityAndTransactionalControl(t *testing.T) {

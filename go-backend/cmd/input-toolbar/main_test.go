@@ -185,14 +185,14 @@ func TestExperimentalToolbarDefaultsAndFourEncodingChoices(t *testing.T) {
 		t.Fatalf("candidate encoding cycle did not return to %q", state.CandidateAnnotation)
 	}
 	layout := calculateToolbarLayoutFor(state, experimentalToolbarButtons())
-	if countVisible(layout) != 8 || layout.clientHeight <= 0 || layout.clientWidth <= 0 {
+	if countVisible(layout) != 10 || layout.clientHeight <= 0 || layout.clientWidth <= 0 {
 		t.Fatalf("experimental toolbar layout = %#v", layout)
 	}
 	labels := map[string]bool{}
 	for _, button := range experimentalToolbarButtons() {
 		labels[button.text] = true
 	}
-	for _, expected := range []string{"模式：变长", "字号：中", "音码：键位", "半宽", "中标", "简体", "关闭"} {
+	for _, expected := range []string{"模式：变长", "字号：中", "音码：键位", "半宽", "中标", "简体", "练习", "工具中心", "关闭"} {
 		if !labels[expected] {
 			t.Fatalf("experimental toolbar is missing label %q", expected)
 		}

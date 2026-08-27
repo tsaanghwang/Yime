@@ -7,6 +7,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"path/filepath"
 	"runtime"
 	"strings"
 	"syscall"
@@ -98,45 +99,124 @@ type point struct{ X, Y int32 }
 type minMaxInfo struct{ Reserved, MaxSize, MaxPosition, MinTrackSize, MaxTrackSize point }
 
 type appState struct {
-	manifest toolhub.Manifest
-	mainHWND syscall.Handle
-	buttons  []syscall.Handle
-	clientW  int32
-	clientH  int32
+	manifest     toolhub.Manifest
+	mainHWND     syscall.Handle
+	buttons      []syscall.Handle
+	clientW      int32
+	clientH      int32
+	experimental bool
 }
 
 func main() {
 	manifestPath := flag.String("ManifestPath", "", "Path to pime_yime_tool_hub.json")
+	installRoot := flag.String("InstallRoot", "", "YimeCore Trial package root")
+	stateRoot := flag.String("StateRoot", "", "YimeCore Trial user state root")
+	statePath := flag.String("StatePath", "", "YimeCore Trial settings path")
+	mode := flag.String("Mode", "variable", "Yime mode: variable, full, shorthand")
+	experimental := flag.Bool("Experimental", false, "Run the independent YimeCore Trial Tool Center")
 	flag.Parse()
-	if strings.TrimSpace(*manifestPath) == "" {
-		showError("缺少 ManifestPath 参数。")
-		os.Exit(1)
-	}
-	data, err := os.ReadFile(*manifestPath)
+	manifest, err := loadManifest(*manifestPath, *installRoot, *stateRoot, *statePath, *mode, *experimental)
 	if err != nil {
-		showError("无法读取工具清单：" + err.Error())
-		os.Exit(1)
-	}
-	manifest := toolhub.Manifest{}
-	if err := json.Unmarshal(data, &manifest); err != nil {
-		showError("工具清单格式错误：" + err.Error())
+		showError(err.Error())
 		os.Exit(1)
 	}
 	if err := toolhub.Validate(manifest); err != nil {
 		showError(err.Error())
 		os.Exit(1)
 	}
-	if err := runApp(&appState{manifest: manifest}); err != nil {
+	if err := runApp(&appState{manifest: manifest, experimental: *experimental}); err != nil {
 		showError(err.Error())
 		os.Exit(1)
 	}
+}
+
+func loadManifest(manifestPath, installRoot, stateRoot, statePath, mode string, experimental bool) (toolhub.Manifest, error) {
+	if experimental {
+		manifest, err := buildExperimentalManifest(installRoot, stateRoot, statePath, mode)
+		if err != nil {
+			return toolhub.Manifest{}, err
+		}
+		if err := validateExperimentalTargets(manifest, stateRoot); err != nil {
+			return toolhub.Manifest{}, err
+		}
+		return manifest, nil
+	}
+	if strings.TrimSpace(manifestPath) == "" {
+		return toolhub.Manifest{}, fmt.Errorf("缺少 ManifestPath 参数")
+	}
+	data, err := os.ReadFile(manifestPath)
+	if err != nil {
+		return toolhub.Manifest{}, fmt.Errorf("无法读取工具清单：%w", err)
+	}
+	manifest := toolhub.Manifest{}
+	if err := json.Unmarshal(data, &manifest); err != nil {
+		return toolhub.Manifest{}, fmt.Errorf("工具清单格式错误：%w", err)
+	}
+	return manifest, nil
+}
+
+func buildExperimentalManifest(installRoot, stateRoot, statePath, mode string) (toolhub.Manifest, error) {
+	installRoot = filepath.Clean(strings.TrimSpace(installRoot))
+	stateRoot = filepath.Clean(strings.TrimSpace(stateRoot))
+	statePath = filepath.Clean(strings.TrimSpace(statePath))
+	if installRoot == "." || stateRoot == "." || statePath == "." {
+		return toolhub.Manifest{}, fmt.Errorf("Trial 工具中心缺少安装目录或状态目录")
+	}
+	switch mode {
+	case "variable", "full", "shorthand":
+	default:
+		return toolhub.Manifest{}, fmt.Errorf("Trial 工具中心不支持输入方案 %q", mode)
+	}
+	relativeStatePath, err := filepath.Rel(stateRoot, statePath)
+	if err != nil || relativeStatePath == ".." || strings.HasPrefix(relativeStatePath, ".."+string(filepath.Separator)) {
+		return toolhub.Manifest{}, fmt.Errorf("Trial 设置文件必须位于 Trial 状态目录内")
+	}
+	binDir := filepath.Join(installRoot, "bin")
+	sharedDir := filepath.Join(installRoot, "data")
+	indexRoot := filepath.Join(installRoot, "indexes")
+	return toolhub.Manifest{
+		Title: "Yime 试验版工具中心",
+		Tools: []toolhub.Entry{
+			{ID: "typing-trainer", Label: "指法练习", ActionType: toolhub.ActionRunExecutable,
+				TargetPath: filepath.Join(binDir, "YimeCoreTrainer.exe"),
+				Arguments:  []string{"-SharedDir", sharedDir, "-UserDir", stateRoot, "-Mode", mode, "-Experimental"}},
+			{ID: "lexicon-manager", Label: "用户词库", ActionType: toolhub.ActionRunExecutable,
+				TargetPath: filepath.Join(binDir, "YimeCoreLexiconManager.exe"),
+				Arguments:  []string{"-SharedDir", sharedDir, "-UserDir", stateRoot, "-IndexRoot", indexRoot, "-Mode", mode, "-Experimental"}},
+			{ID: "reverse-lookup-tool", Label: "反查编码", ActionType: toolhub.ActionRunExecutable,
+				TargetPath: filepath.Join(binDir, "YimeCoreReverseLookup.exe"),
+				Arguments:  []string{"-SharedDir", sharedDir, "-UserDir", stateRoot, "-IndexRoot", indexRoot, "-Mode", mode}},
+			{ID: "settings-tool", Label: "设置工具", ActionType: toolhub.ActionRunExecutable,
+				TargetPath: filepath.Join(binDir, "YimeCoreSettingsTool.exe"),
+				Arguments:  []string{"-UserDir", stateRoot, "-SharedDir", sharedDir, "-StatePath", statePath, "-Experimental"}},
+			{ID: "trial-user-data", Label: "试验版用户数据", ActionType: toolhub.ActionOpenPath, TargetPath: stateRoot},
+			{ID: "trial-shared-data", Label: "试验版共享数据", ActionType: toolhub.ActionOpenPath, TargetPath: sharedDir},
+		},
+	}, nil
+}
+
+func validateExperimentalTargets(manifest toolhub.Manifest, stateRoot string) error {
+	if err := os.MkdirAll(stateRoot, 0o755); err != nil {
+		return fmt.Errorf("无法创建 Trial 状态目录：%w", err)
+	}
+	for _, entry := range manifest.Tools {
+		info, err := os.Stat(entry.TargetPath)
+		if err != nil {
+			return fmt.Errorf("Trial 工具中心缺少目标 %s：%w", entry.Label, err)
+		}
+		if entry.ActionType == toolhub.ActionRunExecutable && info.IsDir() {
+			return fmt.Errorf("Trial 工具目标不是可执行文件：%s", entry.TargetPath)
+		}
+	}
+	return nil
 }
 
 func runApp(state *appState) error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 
-	if win32ui.ActivateExistingWindow("YimeToolHub") {
+	windowClass := toolHubWindowClass(state.experimental)
+	if win32ui.ActivateExistingWindow(windowClass) {
 		return nil
 	}
 
@@ -146,7 +226,7 @@ func runApp(state *appState) error {
 	procInitCommonControlsEx.Call(uintptr(unsafe.Pointer(&icc)))
 
 	instance, _, _ := procGetModuleHandleW.Call(0)
-	className, _ := syscall.UTF16PtrFromString("YimeToolHub")
+	className, _ := syscall.UTF16PtrFromString(windowClass)
 	cursor, _, _ := procLoadCursorW.Call(0, uintptr(32512))
 	icon := win32ui.LoadYimeIcon(instance)
 	wndProcCallback = syscall.NewCallback(func(hwnd syscall.Handle, msg uint32, wParam, lParam uintptr) uintptr {
@@ -168,7 +248,7 @@ func runApp(state *appState) error {
 		return fmt.Errorf("RegisterClassEx failed")
 	}
 
-	title, _ := syscall.UTF16PtrFromString(state.manifest.Title)
+	title, _ := syscall.UTF16PtrFromString(toolHubWindowTitle(state.experimental, state.manifest.Title))
 	winW, winH := windowSizeForClient(state.clientW, state.clientH)
 	screenWidth, _, _ := procGetSystemMetrics.Call(0)
 	screenHeight, _, _ := procGetSystemMetrics.Call(1)
@@ -204,6 +284,20 @@ func runApp(state *appState) error {
 		procDispatchMessageW.Call(uintptr(unsafe.Pointer(&message)))
 	}
 	return nil
+}
+
+func toolHubWindowClass(experimental bool) string {
+	if experimental {
+		return "YimeCoreTrialToolHub"
+	}
+	return "YimeToolHub"
+}
+
+func toolHubWindowTitle(experimental bool, manifestTitle string) string {
+	if experimental {
+		return "Yime 试验版工具中心"
+	}
+	return manifestTitle
 }
 
 func (state *appState) computeLayout() {

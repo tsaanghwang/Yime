@@ -30,13 +30,22 @@ $requiredPackageFiles = @(
     (Join-Path $installRootPath 'bin\YimeCoreDesktopTools.exe'),
     (Join-Path $installRootPath 'bin\YimeCoreReverseLookup.exe'),
     (Join-Path $installRootPath 'bin\YimeCoreLexiconManager.exe'),
+    (Join-Path $installRootPath 'bin\YimeCoreTrainer.exe'),
+    (Join-Path $installRootPath 'bin\YimeCoreToolCenter.exe'),
     (Join-Path $installRootPath 'bin\YimeCoreSettingsTool.exe'),
     (Join-Path $installRootPath 'bin\YimeCoreExplain.exe'),
     (Join-Path $installRootPath 'bin\YimeCoreSentenceRegression.exe'),
     (Join-Path $installRootPath 'indexes\full.yidx'),
     (Join-Path $installRootPath 'indexes\variable.yidx'),
     (Join-Path $installRootPath 'indexes\shorthand.yidx'),
-    (Join-Path $installRootPath 'data\yime_pinyin_codes.tsv')
+    (Join-Path $installRootPath 'data\yime_pinyin_codes.tsv'),
+    (Join-Path $installRootPath 'data\yime_yinyuan_layout.json'),
+    (Join-Path $installRootPath 'data\yime_syllable_decomposition.tsv'),
+    (Join-Path $installRootPath 'data\yime_full.dict.yaml'),
+    (Join-Path $installRootPath 'data\trainer\foundation.json'),
+    (Join-Path $installRootPath 'data\trainer\curriculum.json'),
+    (Join-Path $installRootPath 'data\trainer\yinyuan_catalog.json'),
+    (Join-Path $installRootPath 'data\trainer\yinyuan_groups.json')
 )
 foreach ($required in $requiredPackageFiles) {
     if (-not (Test-Path -LiteralPath $required -PathType Leaf)) {
@@ -62,41 +71,12 @@ if ($inputMethodsAfter -notcontains $experimentalTip -or
     throw 'failed to add the experimental TIP without preserving existing Chinese input methods'
 }
 
-$runtimeBin = Join-Path $stateRootPath 'runtime\bin'
 $configPath = Join-Path $stateRootPath 'runtime-config.json'
-$oldRuntime = Join-Path $runtimeBin 'YimeCoreTrialRuntime.exe'
-if ((Test-Path -LiteralPath $configPath -PathType Leaf) -and
-    (Test-Path -LiteralPath $oldRuntime -PathType Leaf)) {
+if (Test-Path -LiteralPath $configPath -PathType Leaf) {
     & (Join-Path $PSScriptRoot 'stop-e6c-trial-runtime.ps1') -StateRoot $stateRootPath
 }
-New-Item -ItemType Directory -Force $runtimeBin | Out-Null
-$buildRoot = Join-Path $stateRootPath ("runtime\build-{0}" -f $PID)
-$buildRootPath = [IO.Path]::GetFullPath($buildRoot)
-$runtimePrefix = ([IO.Path]::GetFullPath((Join-Path $stateRootPath 'runtime'))).TrimEnd([IO.Path]::DirectorySeparatorChar) + [IO.Path]::DirectorySeparatorChar
-if (-not $buildRootPath.StartsWith($runtimePrefix, [StringComparison]::OrdinalIgnoreCase)) {
-    throw "runtime build staging path escaped its boundary: $buildRootPath"
-}
-if (Test-Path -LiteralPath $buildRoot) {
-    throw "refusing to overwrite runtime build staging path: $buildRoot"
-}
-New-Item -ItemType Directory -Force $buildRoot | Out-Null
-$stagedBroker = Join-Path $buildRoot 'YimeBroker.exe'
-$stagedRuntime = Join-Path $buildRoot 'YimeCoreTrialRuntime.exe'
-Push-Location (Join-Path $repoRoot 'go-backend')
-try {
-    & go test ./cmd/yimecore-trial-runtime ./input_methods/yime/yimebroker
-    if ($LASTEXITCODE -ne 0) { throw 'E6-C runtime regression tests failed' }
-    & go build -trimpath -o $stagedBroker ./cmd/yimebroker
-    if ($LASTEXITCODE -ne 0) { throw 'E6-C multi-index Broker build failed' }
-    & go build -trimpath -ldflags '-H=windowsgui' -o $stagedRuntime ./cmd/yimecore-trial-runtime
-    if ($LASTEXITCODE -ne 0) { throw 'E6-C trial runtime supervisor build failed' }
-} finally {
-    Pop-Location
-}
-$brokerPath = Join-Path $runtimeBin 'YimeBroker.exe'
-$runtimePath = Join-Path $runtimeBin 'YimeCoreTrialRuntime.exe'
-Copy-Item -LiteralPath $stagedBroker -Destination $brokerPath -Force
-Copy-Item -LiteralPath $stagedRuntime -Destination $runtimePath -Force
+$brokerPath = Join-Path $installRootPath 'bin\YimeBroker.exe'
+$runtimePath = Join-Path $installRootPath 'bin\YimeCoreTrialRuntime.exe'
 
 $config = [ordered]@{
     schema_version = 'yimecore-trial-runtime-config-v1'
@@ -143,5 +123,4 @@ $evidencePath = Join-Path $evidenceRoot 'runtime-deployment.json'
     production_rime_pime_changed = $false
     bare_digit_selection_changed = $false
 } | ConvertTo-Json -Depth 7 | Set-Content -LiteralPath $evidencePath -Encoding utf8
-Remove-Item -LiteralPath $buildRoot -Recurse -Force
 Write-Host "E6-C trial runtime is ready: $evidencePath"

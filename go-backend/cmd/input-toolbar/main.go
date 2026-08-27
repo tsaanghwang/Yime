@@ -7,6 +7,7 @@ import (
 	"flag"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"runtime"
 	"syscall"
 	"unsafe"
@@ -45,18 +46,19 @@ const (
 	wmNcLButtonDown = 0x00A1
 	htCaption       = 2
 
-	idHandle    = 99
-	idLanguage  = 100
-	idShape     = 101
-	idPunct     = 102
-	idScript    = 103
-	idUnicode   = 104
-	idSettings  = 105
-	idTrainer   = 106
-	idExpWidth  = 107
-	idExpPunct  = 108
-	idExpScript = 109
-	timerID     = 1
+	idHandle     = 99
+	idLanguage   = 100
+	idShape      = 101
+	idPunct      = 102
+	idScript     = 103
+	idUnicode    = 104
+	idSettings   = 105
+	idTrainer    = 106
+	idExpWidth   = 107
+	idExpPunct   = 108
+	idExpScript  = 109
+	idToolCenter = 110
+	timerID      = 1
 
 	idMenuOrientation = 200
 	idMenuCandidate   = 201
@@ -191,23 +193,25 @@ type point struct {
 }
 
 type app struct {
-	statePath    string
-	settingsTool string
-	trainerTool  string
-	userDir      string
-	sharedDir    string
-	helpDir      string
-	logDir       string
-	hwnd         syscall.Handle
-	buttons      map[int]syscall.Handle
-	state        toolbarstate.State
-	experimental bool
+	statePath      string
+	settingsTool   string
+	trainerTool    string
+	toolCenterTool string
+	userDir        string
+	sharedDir      string
+	helpDir        string
+	logDir         string
+	hwnd           syscall.Handle
+	buttons        map[int]syscall.Handle
+	state          toolbarstate.State
+	experimental   bool
 }
 
 func main() {
 	statePath := flag.String("StatePath", "", "Path to yime_input_toolbar_state.json")
 	settingsTool := flag.String("SettingsTool", "", "Path to settings-tool.exe")
 	trainerTool := flag.String("TrainerTool", "", "Path to yime-trainer.exe")
+	toolCenterTool := flag.String("ToolCenterTool", "", "Path to tool-hub.exe")
 	userDir := flag.String("UserDir", "", "Yime user data directory")
 	sharedDir := flag.String("SharedDir", "", "Yime shared data directory")
 	helpDir := flag.String("HelpDir", "", "Yime help directory")
@@ -219,15 +223,16 @@ func main() {
 		os.Exit(1)
 	}
 	instance := &app{
-		statePath:    *statePath,
-		settingsTool: *settingsTool,
-		trainerTool:  *trainerTool,
-		userDir:      *userDir,
-		sharedDir:    *sharedDir,
-		helpDir:      *helpDir,
-		logDir:       *logDir,
-		buttons:      map[int]syscall.Handle{},
-		experimental: *experimental,
+		statePath:      *statePath,
+		settingsTool:   *settingsTool,
+		trainerTool:    *trainerTool,
+		toolCenterTool: *toolCenterTool,
+		userDir:        *userDir,
+		sharedDir:      *sharedDir,
+		helpDir:        *helpDir,
+		logDir:         *logDir,
+		buttons:        map[int]syscall.Handle{},
+		experimental:   *experimental,
 	}
 	if err := instance.run(); err != nil {
 		showError(err.Error())
@@ -432,6 +437,8 @@ func experimentalToolbarButtons() []toolbarButton {
 		{idExpWidth, "output-width", "半宽", 54, false},
 		{idExpPunct, "output-punctuation", "中标", 54, false},
 		{idExpScript, "output-script", "简体", 54, false},
+		{idTrainer, "trainer", "练习", 64, false},
+		{idToolCenter, "tool-center", "工具中心", 80, false},
 		{idSettings, "close", "关闭", 54, false},
 	}
 }
@@ -697,6 +704,10 @@ func (a *app) handleCommand(id int) {
 			a.updateState(func(state *toolbarstate.State) {
 				state.Traditionalization = !state.Traditionalization
 			})
+		case idTrainer:
+			a.openTrainer()
+		case idToolCenter:
+			a.openToolCenter()
 		case idSettings:
 			closeToolbarWindow(a.hwnd)
 		}
@@ -885,13 +896,40 @@ func (a *app) openTrainer() {
 		showError("没有找到指法练习工具。")
 		return
 	}
-	if err := exec.Command(
-		a.trainerTool,
+	arguments := []string{
 		"-SharedDir", a.sharedDir,
 		"-UserDir", a.userDir,
-		"-Mode", trainerModeFromSchema(a.state.SchemaID),
-	).Start(); err != nil {
+		"-Mode", a.trainerMode(),
+	}
+	if a.experimental {
+		arguments = append(arguments, "-Experimental")
+	}
+	if err := exec.Command(a.trainerTool, arguments...).Start(); err != nil {
 		showError("无法打开指法练习：" + err.Error())
+	}
+}
+
+func (a *app) trainerMode() string {
+	if a.experimental {
+		return a.state.ExperimentMode
+	}
+	return trainerModeFromSchema(a.state.SchemaID)
+}
+
+func (a *app) openToolCenter() {
+	if a.toolCenterTool == "" {
+		showError("没有找到工具中心。")
+		return
+	}
+	arguments := []string{
+		"-InstallRoot", filepath.Dir(a.sharedDir),
+		"-StateRoot", a.userDir,
+		"-StatePath", a.statePath,
+		"-Mode", a.trainerMode(),
+		"-Experimental",
+	}
+	if err := exec.Command(a.toolCenterTool, arguments...).Start(); err != nil {
+		showError("无法打开工具中心：" + err.Error())
 	}
 }
 
