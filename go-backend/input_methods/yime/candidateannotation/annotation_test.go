@@ -7,6 +7,34 @@ import (
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/engineapi"
 )
 
+type configurableEngine struct {
+	limit int
+}
+
+func (e *configurableEngine) Apply(engineapi.Event) (engineapi.Result, error) {
+	return engineapi.Result{}, nil
+}
+func (e *configurableEngine) Select(string) (engineapi.Result, error) { return engineapi.Result{}, nil }
+func (e *configurableEngine) Reset() engineapi.Result                 { return engineapi.Result{} }
+func (e *configurableEngine) SetCandidateLimit(limit int) error {
+	e.limit = limit
+	return nil
+}
+
+func TestAnnotationEngineForwardsCandidateLimit(t *testing.T) {
+	inner := &configurableEngine{}
+	wrapped, err := Wrap(inner, &Resolver{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := wrapped.(interface{ SetCandidateLimit(int) error }).SetCandidateLimit(7); err != nil {
+		t.Fatal(err)
+	}
+	if inner.limit != 7 {
+		t.Fatalf("candidate limit = %d, want 7", inner.limit)
+	}
+}
+
 func TestResolverProvidesThreeCandidateEncodingForms(t *testing.T) {
 	resolver, err := Load("../data", "full")
 	if err != nil {

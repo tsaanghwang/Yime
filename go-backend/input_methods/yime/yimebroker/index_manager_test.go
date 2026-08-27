@@ -126,6 +126,18 @@ func TestDispatcherReleasesManagedIndexSessionOnCloseAndLateTimeout(t *testing.T
 		t.Fatal(err)
 	}
 	client := TrustedClient{ID: "managed"}
+	limited := dispatch(t, dispatcher, client, Request{
+		Version: 1, Sequence: 1, Operation: OpenSession, CandidateLimit: 5,
+	})
+	if limited.Error != nil {
+		t.Fatalf("managed session rejected candidate limit: %+v", limited)
+	}
+	closedLimited := dispatch(t, dispatcher, client, Request{
+		Version: 1, Sequence: 2, SessionID: limited.SessionID, Operation: CloseSession,
+	})
+	if closedLimited.Error != nil || manager.Stats().ActiveSessions != 0 {
+		t.Fatalf("limited managed session leaked: %+v stats=%+v", closedLimited, manager.Stats())
+	}
 	sessionID := openSession(t, dispatcher, client)
 	response := dispatch(t, dispatcher, client, Request{Version: 1, Sequence: 2, SessionID: sessionID, Operation: CloseSession})
 	if response.Error != nil || manager.Stats().ActiveSessions != 0 {

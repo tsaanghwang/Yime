@@ -18,8 +18,10 @@ import (
 )
 
 const (
-	userJournalSchema = "yime-user-journal-v1"
-	maxJournalRecord  = 1024 * 1024
+	userJournalSchemaV1 = "yime-user-journal-v1"
+	userJournalSchemaV2 = "yime-user-journal-v2"
+	userJournalSchema   = userJournalSchemaV2
+	maxJournalRecord    = 1024 * 1024
 )
 
 var ErrCorruptUserJournal = errors.New("corrupt Yime user journal")
@@ -467,7 +469,8 @@ func decodeJournalRecord(data []byte) (journalRecord, error) {
 	if err := ensureJSONEOF(decoder); err != nil {
 		return journalRecord{}, fmt.Errorf("%w: %v", ErrCorruptUserJournal, err)
 	}
-	if record.SchemaVersion != userJournalSchema || record.SourceID == "" || record.RecordSHA256 == "" {
+	if (record.SchemaVersion != userJournalSchemaV1 && record.SchemaVersion != userJournalSchemaV2) ||
+		record.SourceID == "" || record.RecordSHA256 == "" {
 		return journalRecord{}, fmt.Errorf("%w: invalid record header", ErrCorruptUserJournal)
 	}
 	payloadBytes, err := json.Marshal(record.journalPayload)

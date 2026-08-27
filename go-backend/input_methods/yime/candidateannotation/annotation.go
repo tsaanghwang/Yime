@@ -316,6 +316,13 @@ func (e *Engine) ForgetCandidate(candidateID string) (engineapi.Result, error) {
 	return result, err
 }
 
+func (e *Engine) SetCandidateLimit(candidateLimit int) error {
+	if configurable, ok := e.inner.(interface{ SetCandidateLimit(int) error }); ok {
+		return configurable.SetCandidateLimit(candidateLimit)
+	}
+	return fmt.Errorf("wrapped engine does not support candidate limits")
+}
+
 func (e *Engine) Reset() engineapi.Result {
 	result := e.inner.Reset()
 	e.decorate(&result)

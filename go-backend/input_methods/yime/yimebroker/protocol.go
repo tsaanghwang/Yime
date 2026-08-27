@@ -52,14 +52,15 @@ type TrustedClient struct {
 }
 
 type Request struct {
-	Version     int             `json:"version"`
-	Sequence    uint64          `json:"sequence"`
-	SessionID   string          `json:"session_id,omitempty"`
-	Operation   Operation       `json:"operation"`
-	Event       engineapi.Event `json:"event,omitempty"`
-	CandidateID string          `json:"candidate_id,omitempty"`
-	MutationID  string          `json:"mutation_id,omitempty"`
-	Mode        string          `json:"mode,omitempty"`
+	Version        int             `json:"version"`
+	Sequence       uint64          `json:"sequence"`
+	SessionID      string          `json:"session_id,omitempty"`
+	Operation      Operation       `json:"operation"`
+	Event          engineapi.Event `json:"event,omitempty"`
+	CandidateID    string          `json:"candidate_id,omitempty"`
+	MutationID     string          `json:"mutation_id,omitempty"`
+	Mode           string          `json:"mode,omitempty"`
+	CandidateLimit int             `json:"candidate_limit,omitempty"`
 }
 
 type ProtocolError struct {
@@ -146,23 +147,26 @@ func validateRequest(request Request) error {
 		if request.Mode != "" && request.Mode != "full" && request.Mode != "variable" && request.Mode != "shorthand" {
 			return errors.New("open mode must be full, variable or shorthand")
 		}
+		if request.CandidateLimit != 0 && (request.CandidateLimit < 5 || request.CandidateLimit > 9) {
+			return errors.New("open candidate_limit must be between 5 and 9")
+		}
 	case ApplyEvent:
-		if request.SessionID == "" || request.Event.Operation == 0 || request.CandidateID != "" || request.MutationID != "" || request.Mode != "" {
+		if request.SessionID == "" || request.Event.Operation == 0 || request.CandidateID != "" || request.MutationID != "" || request.Mode != "" || request.CandidateLimit != 0 {
 			return errors.New("apply requires session_id and event only")
 		}
 	case Select:
-		if request.SessionID == "" || request.CandidateID == "" || request.Event.Operation != 0 || request.Mode != "" {
+		if request.SessionID == "" || request.CandidateID == "" || request.Event.Operation != 0 || request.Mode != "" || request.CandidateLimit != 0 {
 			return errors.New("select requires session_id and candidate_id only")
 		}
 		if request.MutationID != "" && !validMutationID(request.MutationID) {
 			return errors.New("mutation_id must be 8-128 ASCII letters, digits, dot, underscore, colon or hyphen")
 		}
 	case Forget:
-		if request.SessionID == "" || request.CandidateID == "" || request.Event.Operation != 0 || request.MutationID != "" || request.Mode != "" {
+		if request.SessionID == "" || request.CandidateID == "" || request.Event.Operation != 0 || request.MutationID != "" || request.Mode != "" || request.CandidateLimit != 0 {
 			return errors.New("forget requires session_id and candidate_id only")
 		}
 	case ResetSession, CloseSession:
-		if request.SessionID == "" || request.Event.Operation != 0 || request.CandidateID != "" || request.MutationID != "" || request.Mode != "" {
+		if request.SessionID == "" || request.Event.Operation != 0 || request.CandidateID != "" || request.MutationID != "" || request.Mode != "" || request.CandidateLimit != 0 {
 			return errors.New("reset and close require session_id only")
 		}
 	default:

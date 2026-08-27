@@ -153,6 +153,15 @@ func (d *Dispatcher) open(ctx context.Context, client TrustedClient, request Req
 		}
 		if err == nil {
 			current.engine = engine
+			if request.CandidateLimit != 0 {
+				configurable, ok := engine.(interface{ SetCandidateLimit(int) error })
+				if !ok {
+					return engineapi.Result{}, errors.New("engine does not support candidate_limit")
+				}
+				if err = configurable.SetCandidateLimit(request.CandidateLimit); err != nil {
+					return engineapi.Result{}, err
+				}
+			}
 		}
 		return engineapi.Result{}, err
 	}, func() { closeEngine(current.engine) })

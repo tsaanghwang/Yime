@@ -298,6 +298,13 @@ func (e *managedEngine) ForgetCandidate(candidateID string) (engineapi.Result, e
 	return engineapi.Result{}, errors.New("managed engine does not support candidate forgetting")
 }
 
+func (e *managedEngine) SetCandidateLimit(candidateLimit int) error {
+	if configurable, ok := e.engine.(interface{ SetCandidateLimit(int) error }); ok {
+		return configurable.SetCandidateLimit(candidateLimit)
+	}
+	return errors.New("managed engine does not support candidate limits")
+}
+
 func (e *managedEngine) Reset() engineapi.Result { return e.engine.Reset() }
 
 func (e *managedEngine) Close() error {

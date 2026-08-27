@@ -26,6 +26,44 @@ func TestStrictProtocolRejectsIdentityUnknownFieldsAndOversize(t *testing.T) {
 	}
 }
 
+func TestOpenSessionAppliesCandidateLimitToPaging(t *testing.T) {
+	entries := make([]yimecore.Entry, 7)
+	for index := range entries {
+		entries[index] = yimecore.Entry{Text: string(rune('甲' + index)), Code: "1", Weight: int64(100 - index)}
+	}
+	index, err := yimecore.NewIndex(entries)
+	if err != nil {
+		t.Fatal(err)
+	}
+	dispatcher, err := NewDispatcher(func() (engineapi.Engine, error) {
+		return yimecore.NewEngine(index, 9)
+	}, Config{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	client := TrustedClient{ID: "candidate-limit-client"}
+	opened := dispatch(t, dispatcher, client, Request{
+		Version: 1, Sequence: 1, Operation: OpenSession, CandidateLimit: 5,
+	})
+	if opened.Error != nil {
+		t.Fatalf("open session = %+v", opened)
+	}
+	first := dispatch(t, dispatcher, client, Request{
+		Version: 1, Sequence: 2, SessionID: opened.SessionID, Operation: ApplyEvent,
+		Event: engineapi.Event{Operation: engineapi.AppendCode, Code: "1"},
+	})
+	if first.Error != nil || len(first.Result.State.Candidates) != 5 || !first.Result.State.HasNext {
+		t.Fatalf("first page did not use candidate_limit: %+v", first)
+	}
+	second := dispatch(t, dispatcher, client, Request{
+		Version: 1, Sequence: 3, SessionID: opened.SessionID, Operation: ApplyEvent,
+		Event: engineapi.Event{Operation: engineapi.PageNext},
+	})
+	if second.Error != nil || len(second.Result.State.Candidates) != 2 || !second.Result.State.HasPrevious {
+		t.Fatalf("second page did not use candidate_limit: %+v", second)
+	}
+}
+
 func TestProtocolRestrictsAndEchoesMutationID(t *testing.T) {
 	invalid := []Request{
 		{Version: 1, Sequence: 1, Operation: OpenSession, MutationID: "request-0001"},

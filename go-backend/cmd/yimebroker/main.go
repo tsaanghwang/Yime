@@ -13,7 +13,10 @@ import (
 	"time"
 
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/candidateannotation"
+	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/candidatefilter"
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/engineapi"
+	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/learningconfig"
+	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/professionallexicon"
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/yimebroker"
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/yimecore"
 )
@@ -39,6 +42,10 @@ func main() {
 	indexControlStatus := flag.String("index-control-status", "", "status file for watched index control")
 	annotationDataDir := flag.String("annotation-data-dir", "", "optional reviewed runtime data for candidate encoding annotations")
 	userLexiconDir := flag.String("user-lexicon-dir", "", "optional trial-private generated user lexicon directory")
+	userBlocklist := flag.String("user-blocklist", "", "optional trial-private candidate blocklist")
+	learningConfig := flag.String("learning-config", "", "optional trial-private learning configuration")
+	professionalRoot := flag.String("professional-root", "", "optional installed professional lexicon catalog root")
+	professionalState := flag.String("professional-state", "", "optional trial-private professional lexicon selection")
 	exitBeforeRequest := flag.Int("experiment-exit-before-request", 0, "E5-B fault injection only")
 	hangBeforeRequest := flag.Int("experiment-hang-before-request", 0, "E5-B fault injection only")
 	exitAfterRequest := flag.Int("experiment-exit-after-request", 0, "E5-F fault injection after durable handling but before response")
@@ -56,8 +63,9 @@ func main() {
 		}
 		runMultiMode(multiModeConfig{
 			indexRoot: *indexRoot, defaultMode: *defaultMode, annotationDataDir: *annotationDataDir,
-			userLexiconDir: *userLexiconDir,
-			namedPipe:      *namedPipe, trustedClientID: *trustedClientID,
+			userLexiconDir: *userLexiconDir, userBlocklist: *userBlocklist, learningConfig: *learningConfig,
+			professionalRoot: *professionalRoot, professionalState: *professionalState,
+			namedPipe: *namedPipe, trustedClientID: *trustedClientID,
 			pipeMaxConnections: *pipeMaxConnections, pipeMaxConnectionsPerClient: *pipeMaxConnectionsPerClient,
 			userSnapshot: *userSnapshot, userJournal: *userJournal, userModelSourceID: *userModelSourceID,
 			checkpointEvery: *checkpointEvery, compactEvery: *compactEvery, rollbackSnapshot: *rollbackSnapshot,
@@ -141,7 +149,14 @@ func main() {
 			}
 		}()
 		builder = func(target *yimecore.FileIndex) (engineapi.Engine, error) {
-			return decorate(yimecore.NewFileEngineWithUserModel(target, 9, durable.Model()))
+			model, configErr := enabledUserModel(*learningConfig, durable.Model())
+			if configErr != nil {
+				return nil, configErr
+			}
+			if model == nil {
+				return decorate(yimecore.NewFileEngine(target, 9))
+			}
+			return decorate(yimecore.NewFileEngineWithUserModel(target, 9, model))
 		}
 	} else {
 		builder = func(target *yimecore.FileIndex) (engineapi.Engine, error) {
@@ -203,6 +218,10 @@ type multiModeConfig struct {
 	defaultMode                 string
 	annotationDataDir           string
 	userLexiconDir              string
+	userBlocklist               string
+	learningConfig              string
+	professionalRoot            string
+	professionalState           string
 	namedPipe                   string
 	trustedClientID             string
 	pipeMaxConnections          int
@@ -239,6 +258,18 @@ func runMultiMode(config multiModeConfig) {
 	if config.userSnapshot != "" && config.userModelSourceID == "" {
 		fail(fmt.Errorf("multi-index durable learning requires a stable user-model-source-id"))
 	}
+	var professional *professionallexicon.Set
+	if config.professionalRoot != "" || config.professionalState != "" {
+		if config.professionalRoot == "" || config.professionalState == "" {
+			fail(fmt.Errorf("professional-root and professional-state must be supplied together"))
+		}
+		var err error
+		professional, err = professionallexicon.OpenSelected(config.professionalRoot, config.professionalState)
+		if err != nil {
+			fail(err)
+		}
+		defer professional.Close()
+	}
 	var durable *yimebroker.DurableUserModel
 	if config.userSnapshot != "" {
 		var err error
@@ -259,22 +290,48 @@ func runMultiMode(config multiModeConfig) {
 	builder := func(mode string, index *yimecore.FileIndex) (engineapi.Engine, error) {
 		var engine engineapi.Engine
 		var err error
-		if config.userLexiconDir != "" {
-			var model *yimecore.UserModel
-			if durable != nil {
-				model = durable.Model()
+		var model *yimecore.UserModel
+		if durable != nil {
+			model, err = enabledUserModel(config.learningConfig, durable.Model())
+			if err != nil {
+				return nil, err
 			}
-			engine, err = yimecore.NewFileEngineWithUserLexicon(
-				index, 9, filepath.Join(config.userLexiconDir, "custom_phrase_"+mode+".txt"), model)
-		} else if durable != nil {
-			engine, err = yimecore.NewFileEngineWithUserModel(index, 9, durable.Model())
+		}
+		modules := professional.Modules(mode)
+		if len(modules) > 0 {
+			bundle, bundleErr := yimecore.NewBundleIndex(index, modules)
+			if bundleErr != nil {
+				return nil, bundleErr
+			}
+			if config.userLexiconDir != "" {
+				engine, err = yimecore.NewBundleEngineWithUserLexicon(
+					bundle, 9, filepath.Join(config.userLexiconDir, "custom_phrase_"+mode+".txt"), model)
+			} else if model != nil {
+				engine, err = yimecore.NewBundleEngineWithUserModel(bundle, 9, model)
+			} else {
+				engine, err = yimecore.NewBundleEngine(bundle, 9)
+			}
+		} else if config.userLexiconDir != "" {
+			engine, err = yimecore.NewFileEngineWithUserLexicon(index, 9,
+				filepath.Join(config.userLexiconDir, "custom_phrase_"+mode+".txt"), model)
+		} else if model != nil {
+			engine, err = yimecore.NewFileEngineWithUserModel(index, 9, model)
 		} else {
 			engine, err = yimecore.NewFileEngine(index, 9)
 		}
-		if err != nil || resolvers[mode] == nil {
+		if err != nil {
 			return engine, err
 		}
-		return candidateannotation.Wrap(engine, resolvers[mode])
+		if resolvers[mode] != nil {
+			engine, err = candidateannotation.Wrap(engine, resolvers[mode])
+			if err != nil {
+				return nil, err
+			}
+		}
+		if config.userBlocklist != "" {
+			engine, err = candidatefilter.Wrap(engine, config.userBlocklist)
+		}
+		return engine, err
 	}
 	controlEnabled := config.indexControlManifest != "" || config.indexControlStatus != "" || config.indexVersion != ""
 	if controlEnabled && (config.indexControlManifest == "" || config.indexControlStatus == "" || config.indexVersion == "") {
@@ -328,6 +385,20 @@ func runMultiMode(config multiModeConfig) {
 	if err != nil {
 		fail(err)
 	}
+}
+
+func enabledUserModel(configPath string, model *yimecore.UserModel) (*yimecore.UserModel, error) {
+	if model == nil || configPath == "" {
+		return model, nil
+	}
+	config, err := learningconfig.Load(configPath)
+	if err != nil {
+		return nil, fmt.Errorf("load learning configuration: %w", err)
+	}
+	if !config.Enabled {
+		return nil, nil
+	}
+	return model, nil
 }
 
 func serveFaultExperiment(ctx context.Context, dispatcher *yimebroker.Dispatcher, client yimebroker.TrustedClient, exitBefore, hangBefore, exitAfter int) error {

@@ -176,13 +176,26 @@ func main() {
 	}
 	evidence := make([]modeEvidence, 0, len(probes))
 	const selections = 3
+	continuous := make([]struct {
+		inheritedNodes  int
+		inheritedPassed bool
+		generatedFirst  string
+		generatedPassed bool
+	}, len(probes))
 	for probeIndex := range probes {
-		probe := &probes[probeIndex]
-		inheritedNodes, inheritedPassed, generatedFirst, generatedPassed, sentenceErr := process.verifyContinuousSentence(*probe)
+		inheritedNodes, inheritedPassed, generatedFirst, generatedPassed, sentenceErr :=
+			process.verifyContinuousSentence(probes[probeIndex])
 		if sentenceErr != nil {
 			process.terminate()
 			fail(sentenceErr)
 		}
+		continuous[probeIndex].inheritedNodes = inheritedNodes
+		continuous[probeIndex].inheritedPassed = inheritedPassed
+		continuous[probeIndex].generatedFirst = generatedFirst
+		continuous[probeIndex].generatedPassed = generatedPassed
+	}
+	for probeIndex := range probes {
+		probe := &probes[probeIndex]
 		firstWordCount, firstWordPassed, segmentSwitchPassed, replacementPassed, focusedCommitPassed, dynamicErr :=
 			process.verifyDynamicSentence(*probe)
 		if dynamicErr != nil {
@@ -221,8 +234,10 @@ func main() {
 		_ = process.closeSession(session)
 		evidence = append(evidence, modeEvidence{
 			Mode: probe.mode, LearningCode: probe.code, LearnedText: probe.text, Selections: selections,
-			ConvergentPartialNodes: inheritedNodes, FuturePredictionsHidden: inheritedPassed,
-			GeneratedSentenceFirst: generatedFirst, GeneratedSentencePassed: generatedPassed,
+			ConvergentPartialNodes: continuous[probeIndex].inheritedNodes,
+			FuturePredictionsHidden: continuous[probeIndex].inheritedPassed,
+			GeneratedSentenceFirst: continuous[probeIndex].generatedFirst,
+			GeneratedSentencePassed: continuous[probeIndex].generatedPassed,
 			FirstWordCandidateCount: firstWordCount, FirstWordSequencePassed: firstWordPassed,
 			SentenceSegmentSwitchPassed: segmentSwitchPassed, FirstWordReplacementPassed: replacementPassed,
 			FocusedSentenceCommitPassed: focusedCommitPassed,
@@ -382,8 +397,8 @@ func main() {
 		AllModesPassed:               allModes, CleanRestartPassed: cleanRestart, ProductionRimePIMEChanged: false,
 		ResidentSystemLexicon: resident,
 	}
-	const dynamicSentenceCommitsPerMode = 1
-	result.Passed = result.AllModesPassed && result.CrashJournalRecoveryPassed && result.DefaultIdleSessionIsVariable && result.CleanRestartPassed && result.ResidentSystemLexicon.Passed && result.RecoveredGeneration == uint64(len(probes)*(selections+dynamicSentenceCommitsPerMode)) && !result.ProductionRimePIMEChanged
+	const dynamicSentenceMutationsPerMode = 1
+	result.Passed = result.AllModesPassed && result.CrashJournalRecoveryPassed && result.DefaultIdleSessionIsVariable && result.CleanRestartPassed && result.ResidentSystemLexicon.Passed && result.RecoveredGeneration == uint64(len(probes)*(selections+dynamicSentenceMutationsPerMode)) && !result.ProductionRimePIMEChanged
 	writeJSON(*output, result)
 	fmt.Printf("YimeBroker E6-C package: passed=%t generation=%d modes=%d\n", result.Passed, generation, len(evidence))
 	if !result.Passed {

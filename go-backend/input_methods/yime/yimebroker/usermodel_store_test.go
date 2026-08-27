@@ -1,6 +1,10 @@
 package yimebroker
 
 import (
+	"bytes"
+	"crypto/sha256"
+	"encoding/hex"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"os"
@@ -80,6 +84,111 @@ func TestDurableUserModelRecoversJournalAndTruncatesTornTail(t *testing.T) {
 	if err := recovered.Close(); err != nil {
 		t.Fatal(err)
 	}
+}
+
+func TestDurableSentenceLearningUsesOneJournalRecordAndRecoversAllObservations(t *testing.T) {
+	const sourceID = "durable-sentence-test"
+	directory := t.TempDir()
+	snapshot := filepath.Join(directory, "model.json")
+	journal := filepath.Join(directory, "model.journal")
+	index, err := yimecore.NewIndex([]yimecore.Entry{
+		{Text: "甲", Code: "ab", Weight: 100}, {Text: "乙", Code: "ab", Weight: 90},
+		{Text: "丙", Code: "cd", Weight: 100},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	store, err := OpenDurableUserModel(DurableUserModelConfig{
+		SnapshotPath: snapshot, JournalPath: journal, SourceID: sourceID, CheckpointEvery: 100,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	engine, err := yimecore.NewEngineWithUserModel(index, 9, store.Model())
+	if err != nil {
+		t.Fatal(err)
+	}
+	state := applyTestCode(t, engine, "abcd")
+	if state.Sentence == nil || len(state.Sentence.Segments) != 2 {
+		t.Fatalf("sentence missing: %#v", state)
+	}
+	first := state.Sentence.Segments[0]
+	focused, err := engine.Apply(engineapi.Event{
+		Operation: engineapi.FocusSegment, CandidateID: state.Sentence.ID,
+		SegmentStart: first.Start, SegmentEnd: first.End,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	var replacementID string
+	for _, candidate := range focused.State.Candidates {
+		if candidate.Text == "乙" {
+			replacementID = candidate.ID
+			break
+		}
+	}
+	replaced, err := engine.SelectIdempotent(replacementID, "pending-segment-choice")
+	if err != nil || replaced.State.Sentence == nil || replaced.State.Sentence.Text != "乙丙" ||
+		store.Model().Generation() != 0 {
+		t.Fatalf("pending segment selection failed: result=%#v err=%v generation=%d",
+			replaced, err, store.Model().Generation())
+	}
+	const requestID = "durable-sentence-commit"
+	committed, err := engine.SelectIdempotent(replaced.State.Sentence.ID, requestID)
+	if err != nil || committed.Commit != "乙丙" || store.Model().Generation() != 1 {
+		t.Fatalf("durable sentence commit failed: result=%#v err=%v generation=%d",
+			committed, err, store.Model().Generation())
+	}
+	journalData, err := os.ReadFile(journal)
+	if err != nil || bytes.Count(journalData, []byte{'\n'}) != 1 {
+		t.Fatalf("sentence commit did not use one journal record: err=%v data=%q", err, journalData)
+	}
+	if err := store.abortForTest(); err != nil {
+		t.Fatal(err)
+	}
+
+	recovered, err := OpenDurableUserModel(DurableUserModelConfig{
+		SnapshotPath: snapshot, JournalPath: journal, SourceID: sourceID, CheckpointEvery: 100,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer recovered.Close()
+	if recovered.Model().Generation() != 1 ||
+		!hasLearnedRecord(recovered.Model().LearnedRecords(), "ab", "乙") ||
+		!hasLearnedRecord(recovered.Model().LearnedRecords(), "abcd", "乙丙") {
+		t.Fatalf("recovered sentence observations incomplete: generation=%d records=%#v",
+			recovered.Model().Generation(), recovered.Model().LearnedRecords())
+	}
+	recoveredEngine, err := yimecore.NewEngineWithUserModel(index, 9, recovered.Model())
+	if err != nil {
+		t.Fatal(err)
+	}
+	retry := applyTestCode(t, recoveredEngine, "abcd")
+	if retry.Sentence == nil {
+		t.Fatalf("recovered sentence missing: %#v", retry)
+	}
+	if _, err := recoveredEngine.SelectIdempotent(retry.Sentence.ID, requestID); err != nil ||
+		recovered.Model().Generation() != 1 {
+		t.Fatalf("recovered sentence retry was not idempotent: err=%v generation=%d",
+			err, recovered.Model().Generation())
+	}
+	if err := recovered.Close(); err != nil {
+		t.Fatal(err)
+	}
+	snapshotData, err := os.ReadFile(snapshot)
+	if err != nil || bytes.Contains(snapshotData, []byte(`"observations"`)) {
+		t.Fatalf("v2 snapshot leaked journal-only observations: err=%v data=%s", err, snapshotData)
+	}
+}
+
+func hasLearnedRecord(records []yimecore.LearnedRecord, code, text string) bool {
+	for _, record := range records {
+		if record.Code == code && record.Text == text {
+			return true
+		}
+	}
+	return false
 }
 
 func TestDurableUserModelCompactsJournalAndCreatesV1Rollback(t *testing.T) {
@@ -183,6 +292,31 @@ func TestDurableUserModelRejectsCompleteJournalCorruption(t *testing.T) {
 	}
 	if _, err := OpenDurableUserModel(DurableUserModelConfig{SnapshotPath: snapshot, JournalPath: journal, SourceID: "corrupt-test"}); !errors.Is(err, ErrCorruptUserJournal) {
 		t.Fatalf("corrupt journal error = %v", err)
+	}
+}
+
+func TestDecodeJournalRecordAcceptsVersion1(t *testing.T) {
+	payload := journalPayload{
+		SchemaVersion: userJournalSchemaV1,
+		SourceID:      "legacy-journal-test",
+		Mutation: yimecore.UserMutation{
+			Generation: 1, Kind: yimecore.UserMutationSelect, Code: "a1", Text: "候选",
+		},
+	}
+	payloadBytes, err := json.Marshal(payload)
+	if err != nil {
+		t.Fatal(err)
+	}
+	digest := sha256.Sum256(payloadBytes)
+	recordBytes, err := json.Marshal(journalRecord{
+		journalPayload: payload, RecordSHA256: hex.EncodeToString(digest[:]),
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	decoded, err := decodeJournalRecord(recordBytes)
+	if err != nil || decoded.SchemaVersion != userJournalSchemaV1 || decoded.Mutation.Text != "候选" {
+		t.Fatalf("legacy journal decode failed: record=%#v err=%v", decoded, err)
 	}
 }
 
