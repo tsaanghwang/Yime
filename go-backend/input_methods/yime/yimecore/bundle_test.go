@@ -87,6 +87,35 @@ func TestBundleRejectsModeMismatchAndDuplicateIDs(t *testing.T) {
 	}
 }
 
+func TestBundleSupportsUserLexiconAndLearningLayers(t *testing.T) {
+	core := buildTestFileIndex(t, "variable", "core", "系统\taa\t10\n")
+	module := buildTestFileIndex(t, "variable", "module", "专业\tbb\t20\n")
+	defer core.Close()
+	defer module.Close()
+	bundle, err := NewBundleIndex(core, []BundleModule{{ID: "approved-pack", Index: module}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	model, err := NewUserModel("bundle-layer-test")
+	if err != nil {
+		t.Fatal(err)
+	}
+	userPath := filepath.Join(t.TempDir(), "custom_phrase_variable.txt")
+	if err := os.WriteFile(userPath, []byte("用户\tcc\t30\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	engine, err := NewBundleEngineWithUserLexicon(bundle, 9, userPath, model)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for code, text := range map[string]string{"aa": "系统", "bb": "专业", "cc": "用户"} {
+		state := applyBundleCode(t, engine, code)
+		if len(state.Candidates) != 1 || state.Candidates[0].Text != text {
+			t.Fatalf("%s candidates=%#v", code, state.Candidates)
+		}
+	}
+}
+
 func TestBundlePagingReachesLowWeightReviewedAlias(t *testing.T) {
 	var coreBody strings.Builder
 	for i := 0; i < 10; i++ {
@@ -95,7 +124,7 @@ func TestBundlePagingReachesLowWeightReviewedAlias(t *testing.T) {
 		coreBody.WriteString(fmt.Sprintf("%d\n", 100-i))
 	}
 	core := buildTestFileIndex(t, "full", "core", coreBody.String())
-	alias := buildTestFileIndex(t, "full", "alias", "审定别名\tab\t1\n")
+	alias := buildTestFileIndex(t, "full", "alias", "审\tab\t1\n")
 	defer core.Close()
 	defer alias.Close()
 	bundle, err := NewBundleIndex(core, []BundleModule{{ID: "reviewed", Index: alias}})
@@ -107,14 +136,14 @@ func TestBundlePagingReachesLowWeightReviewedAlias(t *testing.T) {
 		t.Fatal(err)
 	}
 	first := applyBundleCode(t, engine, "ab")
-	if !first.HasNext || first.PageNumber != 0 || findBundleCandidate(first.Candidates, "审定别名") != nil {
+	if !first.HasNext || first.PageNumber != 0 || findBundleCandidate(first.Candidates, "审") != nil {
 		t.Fatalf("unexpected first page: %#v", first)
 	}
 	second, err := engine.Apply(engineapi.Event{Operation: engineapi.PageNext})
 	if err != nil {
 		t.Fatal(err)
 	}
-	if second.State.PageNumber != 1 || !second.State.HasPrevious || findBundleCandidate(second.State.Candidates, "审定别名") == nil {
+	if second.State.PageNumber != 1 || !second.State.HasPrevious || findBundleCandidate(second.State.Candidates, "审") == nil {
 		t.Fatalf("reviewed alias was not reachable on page 2: %#v", second.State)
 	}
 	previous, err := engine.Apply(engineapi.Event{Operation: engineapi.PagePrevious})

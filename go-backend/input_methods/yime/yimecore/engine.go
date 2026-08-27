@@ -13,24 +13,25 @@ const defaultCandidateLimit = 9
 // Engine is the E0 Go session implementation. It intentionally implements
 // only deterministic code input and indexed candidate lookup.
 type Engine struct {
-	index           lookupIndex
-	userLexiconBase *FileIndex
-	userLexiconPath string
-	userLexiconFile lexiconFileSignature
-	limit           int
-	rawInput        string
-	candidates      []engineapi.Candidate
-	sentence        *engineapi.Candidate
-	exactCache      map[string][]record
-	sentenceInput   string
-	sentenceStates  [][]sentencePath
-	userModel       *UserModel
-	previousCommit  string
-	pageNumber      int
-	hasNextPage     bool
-	activeSegment   *engineapi.Segment
-	focusedSentence *engineapi.Candidate
-	segmentChoices  map[segmentSpan]record
+	index             lookupIndex
+	userLexiconBase   lookupIndex
+	userLexiconPath   string
+	userLexiconFile   lexiconFileSignature
+	limit             int
+	rawInput          string
+	candidates        []engineapi.Candidate
+	sentence          *engineapi.Candidate
+	exactCache        map[string][]record
+	sentenceInput     string
+	sentenceStates    [][]sentencePath
+	userModel         *UserModel
+	previousCommit    string
+	pageNumber        int
+	hasNextPage       bool
+	activeSegment     *engineapi.Segment
+	focusedSentence   *engineapi.Candidate
+	publishedSentence *engineapi.Candidate
+	segmentChoices    map[segmentSpan]record
 }
 
 type segmentSpan struct {
@@ -61,6 +62,18 @@ func NewFileEngine(index *FileIndex, candidateLimit int) (*Engine, error) {
 // explicitly selected set of reviewed E4 overlay indexes.
 func NewBundleEngine(index *BundleIndex, candidateLimit int) (*Engine, error) {
 	return newEngine(index, candidateLimit)
+}
+
+func NewBundleEngineWithUserModel(index *BundleIndex, candidateLimit int, model *UserModel) (*Engine, error) {
+	engine, err := newEngine(index, candidateLimit)
+	if err != nil {
+		return nil, err
+	}
+	if model == nil {
+		return nil, fmt.Errorf("user model is required")
+	}
+	engine.userModel = model
+	return engine, nil
 }
 
 // NewFileEngineWithUserModel enables E3 selection learning without changing
@@ -102,6 +115,17 @@ func newEngine(index lookupIndex, candidateLimit int) (*Engine, error) {
 		return nil, fmt.Errorf("candidate limit must be between 1 and 9")
 	}
 	return &Engine{index: index, limit: candidateLimit}, nil
+}
+
+func (e *Engine) SetCandidateLimit(candidateLimit int) error {
+	if candidateLimit < 5 || candidateLimit > 9 {
+		return fmt.Errorf("candidate limit must be between 5 and 9")
+	}
+	if e.rawInput != "" {
+		return errors.New("candidate limit cannot change during composition")
+	}
+	e.limit = candidateLimit
+	return nil
 }
 
 // Apply advances the session by one host-neutral event.
@@ -207,15 +231,12 @@ func (e *Engine) Apply(event engineapi.Event) (engineapi.Result, error) {
 			}
 		}
 		if focused == nil && sentence != nil {
-			if expanded, first, ok := e.expandExactWholeSentence(sentence, event.SegmentStart, event.SegmentEnd); ok {
-				sentence = expanded
-				focused = first
-			}
-		}
-		if focused != nil && sentence != nil {
-			if expanded, first, ok := e.resegmentConstruction(sentence, *focused); ok {
-				sentence = expanded
-				focused = first
+			if len(sentence.Segments) == 0 && event.SegmentStart == 0 &&
+				event.SegmentEnd == len(e.rawInput) && sentence.Text != "" {
+				focused = &engineapi.Segment{
+					Start: 0, End: len(e.rawInput), Text: sentence.Text,
+					Code: sentence.Code, SourceID: sentence.SourceID,
+				}
 			}
 		}
 		if focused == nil || focused.End > len(e.rawInput) {
@@ -225,6 +246,50 @@ func (e *Engine) Apply(event engineapi.Event) (engineapi.Result, error) {
 		e.seedLearnedSentenceChoices(sentence)
 		e.activeSegment = focused
 		e.focusedSentence = sentence
+		e.pageNumber = 0
+	case engineapi.ExpandSegment:
+		if event.Code != "" || event.CandidateID == "" || event.SegmentStart < 0 || event.SegmentEnd <= event.SegmentStart {
+			return engineapi.Result{}, engineapi.ErrInvalidEvent
+		}
+		var sentence *engineapi.Candidate
+		for _, candidate := range []*engineapi.Candidate{e.focusedSentence, e.sentence} {
+			if candidate != nil && candidate.ID == event.CandidateID {
+				copy := cloneCandidate(*candidate)
+				sentence = &copy
+				break
+			}
+		}
+		if sentence == nil {
+			for _, candidate := range e.candidates {
+				if candidate.ID == event.CandidateID {
+					copy := cloneCandidate(candidate)
+					sentence = &copy
+					break
+				}
+			}
+		}
+		var expanded *engineapi.Candidate
+		var first *engineapi.Segment
+		var ok bool
+		if sentence != nil && len(sentence.Segments) == 0 {
+			expanded, first, ok = e.expandExactWholeSentence(sentence, event.SegmentStart, event.SegmentEnd)
+		} else if sentence != nil {
+			for _, segment := range sentence.Segments {
+				if segment.Start == event.SegmentStart && segment.End == event.SegmentEnd {
+					expanded, first, ok = e.resegmentConstruction(sentence, segment)
+					if !ok {
+						expanded, first, ok = e.expandSentenceSegment(sentence, segment)
+					}
+					break
+				}
+			}
+		}
+		if !ok || expanded == nil || first == nil {
+			return engineapi.Result{}, engineapi.ErrInvalidEvent
+		}
+		e.sentence = expanded
+		e.activeSegment = first
+		e.focusedSentence = expanded
 		e.pageNumber = 0
 	default:
 		return engineapi.Result{}, engineapi.ErrInvalidEvent
@@ -270,6 +335,9 @@ func (e *Engine) SelectIdempotent(candidateID, mutationID string) (engineapi.Res
 }
 
 func (e *Engine) selectCandidate(candidateID, mutationID string) (engineapi.Result, error) {
+	if e.publishedSentence != nil && e.publishedSentence.ID == candidateID {
+		return e.commitCandidate(*e.publishedSentence, mutationID)
+	}
 	if e.activeSegment != nil && e.focusedSentence != nil && e.focusedSentence.ID == candidateID {
 		return e.commitCandidate(*e.focusedSentence, mutationID)
 	}
@@ -329,7 +397,20 @@ func (e *Engine) ForgetCandidate(candidateID string) (engineapi.Result, error) {
 }
 
 func (e *Engine) commitCandidate(candidate engineapi.Candidate, mutationID string) (engineapi.Result, error) {
-	if err := e.userModel.observeIdempotent(candidate.Code, candidate.Text, e.previousCommit, mutationID); err != nil {
+	observations := make([]UserObservation, 0, len(candidate.Segments)+1)
+	if len(candidate.Segments) > 1 {
+		previousText := e.previousCommit
+		for _, segment := range candidate.Segments {
+			observations = append(observations, UserObservation{
+				Code: segment.Code, Text: segment.Text, PreviousText: previousText,
+			})
+			previousText = segment.Text
+		}
+	}
+	observations = append(observations, UserObservation{
+		Code: candidate.Code, Text: candidate.Text, PreviousText: e.previousCommit,
+	})
+	if err := e.userModel.observeBatchIdempotent(observations, mutationID); err != nil {
 		return engineapi.Result{}, fmt.Errorf("persist user selection: %w", err)
 	}
 	e.previousCommit = candidate.Text
@@ -368,7 +449,7 @@ func (e *Engine) refresh() {
 		return
 	}
 	fetchLimit := (e.pageNumber+1)*e.limit + 1
-	exactRecords := e.index.exact(e.rawInput, fetchLimit)
+	exactRecords, restrictToSingleCharacter := e.firstSyllableExactRecords(e.rawInput, fetchLimit)
 	lexicalExactCandidates := make([]engineapi.Candidate, 0, fetchLimit)
 	seenExact := make(map[string]struct{}, len(exactRecords))
 	for _, item := range exactRecords {
@@ -381,6 +462,9 @@ func (e *Engine) refresh() {
 		seenExact[candidate.ID] = struct{}{}
 	}
 	for _, identity := range e.userModel.learnedCandidates(e.rawInput, fetchLimit) {
+		if restrictToSingleCharacter && !isSingleCharacter(identity.text) {
+			continue
+		}
 		candidate := engineapi.Candidate{
 			ID: identity.code + "\x1f" + identity.text, Text: identity.text,
 			Code: identity.code, SourceID: "user-model", Exact: true,
@@ -395,7 +479,7 @@ func (e *Engine) refresh() {
 	e.sentence = e.bestSentence(lexicalExactCandidates, fetchLimit)
 	pool := append([]engineapi.Candidate(nil), lexicalExactCandidates...)
 	if len(pool) == 0 && (e.sentence == nil || !e.sentence.Exact) {
-		records := e.index.lookup(e.rawInput, fetchLimit)
+		records := e.sentencePrefixRecords(e.rawInput, fetchLimit)
 		pool = make([]engineapi.Candidate, 0, len(records))
 		for _, item := range records {
 			candidate := engineapi.Candidate{
@@ -441,7 +525,7 @@ func (e *Engine) refreshSegmentCandidates() {
 	fetchLimit := (e.pageNumber+1)*e.limit + 1
 	segmentInput := e.rawInput[segment.Start:segment.End]
 	records := e.index.exact(segmentInput, fetchLimit)
-	if segment.End == len(e.rawInput) {
+	if segment.End == len(e.rawInput) && segment.Code != segmentInput {
 		records = e.index.lookup(segmentInput, fetchLimit)
 	}
 	pool := make([]engineapi.Candidate, 0, len(records))
@@ -454,6 +538,14 @@ func (e *Engine) refreshSegmentCandidates() {
 		pool = append(pool, candidate)
 	}
 	rankCandidates(pool)
+	for index := range pool {
+		if pool[index].Text == segment.Text && pool[index].Code == segment.Code {
+			selected := pool[index]
+			copy(pool[1:index+1], pool[:index])
+			pool[0] = selected
+			break
+		}
+	}
 	start := e.pageNumber * e.limit
 	if start >= len(pool) {
 		if e.pageNumber > 0 {
@@ -474,8 +566,13 @@ func (e *Engine) refreshSegmentCandidates() {
 }
 
 func (e *Engine) scoreCandidate(candidate *engineapi.Candidate) {
+	e.scoreCandidateWithContext(candidate, 0)
+}
+
+func (e *Engine) scoreCandidateWithContext(candidate *engineapi.Candidate, sentenceContext int64) {
 	candidate.Score.Static = candidate.Weight
-	candidate.Score.Context = e.userModel.contextBoost(e.previousCommit, candidate.Code, candidate.Text)
+	candidate.Score.Context = saturatingAdd(sentenceContext,
+		e.userModel.contextBoost(e.previousCommit, candidate.Code, candidate.Text))
 	candidate.Score.User = e.userModel.candidateBoost(candidate.Code, candidate.Text)
 	candidate.Score.Total = saturatingAdd(candidate.Score.Static, candidate.Score.Context)
 	candidate.Score.Total = saturatingAdd(candidate.Score.Total, candidate.Score.User)
@@ -508,8 +605,10 @@ func rankGeneratedCandidates(candidates []engineapi.Candidate) {
 		if candidates[i].Exact != candidates[j].Exact {
 			return candidates[i].Exact
 		}
-		if len(candidates[i].Segments) != len(candidates[j].Segments) {
-			return len(candidates[i].Segments) < len(candidates[j].Segments)
+		if len(candidates[i].Segments) > 1 && len(candidates[j].Segments) > 1 {
+			if priority := compareWordFirstSegments(candidates[i].Segments, candidates[j].Segments); priority != 0 {
+				return priority > 0
+			}
 		}
 		if candidates[i].Score.Total != candidates[j].Score.Total {
 			return candidates[i].Score.Total > candidates[j].Score.Total
@@ -542,6 +641,12 @@ func (e *Engine) snapshot() engineapi.State {
 	} else if e.focusedSentence != nil {
 		sentence := cloneCandidate(*e.focusedSentence)
 		result.Sentence = &sentence
+	}
+	if result.Sentence != nil {
+		sentence := cloneCandidate(*result.Sentence)
+		e.publishedSentence = &sentence
+	} else {
+		e.publishedSentence = nil
 	}
 	return result
 }

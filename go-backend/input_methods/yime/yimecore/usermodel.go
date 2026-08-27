@@ -24,6 +24,7 @@ const (
 	userModelSchemaVersion   = userModelSchemaVersion2
 	userBoostPerSelection    = int64(1_000_000_000_000)
 	contextBoostPerSelection = int64(500_000_000_000)
+	maximumContextSelections = uint64(8)
 	maximumUserModelItems    = 1_000_000
 	maximumSelectionCount    = uint64(1_000_000_000)
 )
@@ -46,12 +47,25 @@ type UserModel struct {
 }
 
 type UserMutation struct {
-	Generation   uint64 `json:"generation"`
-	Kind         string `json:"kind"`
+	Generation   uint64            `json:"generation"`
+	Kind         string            `json:"kind"`
+	Code         string            `json:"code"`
+	Text         string            `json:"text"`
+	PreviousText string            `json:"previous_text,omitempty"`
+	RequestID    string            `json:"request_id,omitempty"`
+	Observations []UserObservation `json:"observations,omitempty"`
+}
+
+type UserObservation struct {
 	Code         string `json:"code"`
 	Text         string `json:"text"`
 	PreviousText string `json:"previous_text,omitempty"`
-	RequestID    string `json:"request_id,omitempty"`
+}
+
+type LearnedRecord struct {
+	Code       string `json:"code"`
+	Text       string `json:"text"`
+	Selections uint64 `json:"selections"`
 }
 
 const (
@@ -179,8 +193,8 @@ func (m *UserModel) contextBoost(previousText, code, text string) int64 {
 	m.mu.RLock()
 	count := m.contexts[contextIdentity{previous: previousText, candidateIdentity: candidateIdentity{code: code, text: text}}]
 	m.mu.RUnlock()
-	if count > uint64(math.MaxInt64/contextBoostPerSelection) {
-		return math.MaxInt64
+	if count > maximumContextSelections {
+		count = maximumContextSelections
 	}
 	return int64(count) * contextBoostPerSelection
 }
@@ -190,14 +204,27 @@ func (m *UserModel) observeWithContext(code, text, previousText string) error {
 }
 
 func (m *UserModel) observeIdempotent(code, text, previousText, requestID string) error {
-	if m == nil || code == "" || text == "" {
+	return m.observeBatchIdempotent([]UserObservation{{
+		Code: code, Text: text, PreviousText: previousText,
+	}}, requestID)
+}
+
+func (m *UserModel) observeBatchIdempotent(observations []UserObservation, requestID string) error {
+	if m == nil || len(observations) == 0 {
 		return nil
 	}
-	key := candidateIdentity{code: code, text: text}
+	for _, observation := range observations {
+		if observation.Code == "" || observation.Text == "" {
+			return nil
+		}
+	}
+	primary := observations[len(observations)-1]
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	if existing, found := m.appliedRequests[requestID]; requestID != "" && found {
-		if existing.Kind == UserMutationSelect && existing.Code == code && existing.Text == text {
+		requested := UserMutation{Kind: UserMutationSelect, Code: primary.Code, Text: primary.Text,
+			PreviousText: primary.PreviousText, Observations: observations}
+		if equivalentSelectionMutation(existing, requested) {
 			return nil
 		}
 		return ErrIdempotencyConflict
@@ -205,23 +232,20 @@ func (m *UserModel) observeIdempotent(code, text, previousText, requestID string
 	if requestID != "" && len(m.appliedRequests) >= maximumUserModelItems {
 		return errors.New("user mutation request ledger is full")
 	}
-	mutation := UserMutation{Generation: m.generation + 1, Kind: UserMutationSelect, Code: code, Text: text, PreviousText: previousText, RequestID: requestID}
+	mutation := UserMutation{Generation: m.generation + 1, Kind: UserMutationSelect,
+		Code: primary.Code, Text: primary.Text, PreviousText: primary.PreviousText, RequestID: requestID}
+	if len(observations) > 1 {
+		mutation.Observations = append([]UserObservation(nil), observations...)
+	}
 	if m.mutationWriter != nil {
 		if err := m.mutationWriter(mutation); err != nil {
 			return err
 		}
 	}
-	if m.selections[key] < maximumSelectionCount {
-		m.selections[key]++
-	}
-	if previousText != "" {
-		contextKey := contextIdentity{previous: previousText, candidateIdentity: key}
-		if m.contexts[contextKey] < maximumSelectionCount {
-			m.contexts[contextKey]++
-		}
-	}
+	m.applySelectionMutationLocked(mutation)
 	m.generation++
 	if requestID != "" {
+		mutation.Observations = nil
 		m.appliedRequests[requestID] = mutation
 	}
 	return nil
@@ -295,33 +319,55 @@ func (m *UserModel) LoadedSchemaVersion() string {
 	return m.loadedSchema
 }
 
+// LearnedRecords returns a stable copy suitable for management and audit tools.
+func (m *UserModel) LearnedRecords() []LearnedRecord {
+	if m == nil {
+		return nil
+	}
+	m.mu.RLock()
+	records := make([]LearnedRecord, 0, len(m.selections))
+	for identity, count := range m.selections {
+		if count > 0 {
+			records = append(records, LearnedRecord{Code: identity.code, Text: identity.text, Selections: count})
+		}
+	}
+	m.mu.RUnlock()
+	sort.Slice(records, func(i, j int) bool {
+		if records[i].Selections != records[j].Selections {
+			return records[i].Selections > records[j].Selections
+		}
+		if records[i].Text != records[j].Text {
+			return records[i].Text < records[j].Text
+		}
+		return records[i].Code < records[j].Code
+	})
+	return records
+}
+
 func (m *UserModel) ApplyRecoveredMutation(mutation UserMutation) error {
 	if m == nil {
 		return fmt.Errorf("%w: nil recovered model", ErrCorruptUserModel)
 	}
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	if mutation.Generation != m.generation+1 || mutation.Code == "" || mutation.Text == "" {
+	if mutation.Generation != m.generation+1 || mutation.Code == "" || mutation.Text == "" ||
+		!validMutationObservations(mutation) {
 		return fmt.Errorf("%w: invalid recovered mutation", ErrCorruptUserModel)
 	}
 	if mutation.RequestID != "" {
-		if existing, found := m.appliedRequests[mutation.RequestID]; found && (existing.Kind != mutation.Kind || existing.Code != mutation.Code || existing.Text != mutation.Text) {
+		if existing, found := m.appliedRequests[mutation.RequestID]; found &&
+			!equivalentSelectionMutation(existing, mutation) {
 			return fmt.Errorf("%w: recovered request conflict", ErrCorruptUserModel)
 		}
 	}
 	key := candidateIdentity{code: mutation.Code, text: mutation.Text}
 	switch mutation.Kind {
 	case UserMutationSelect:
-		if m.selections[key] < maximumSelectionCount {
-			m.selections[key]++
-		}
-		if mutation.PreviousText != "" {
-			contextKey := contextIdentity{previous: mutation.PreviousText, candidateIdentity: key}
-			if m.contexts[contextKey] < maximumSelectionCount {
-				m.contexts[contextKey]++
-			}
-		}
+		m.applySelectionMutationLocked(mutation)
 	case UserMutationForget:
+		if len(mutation.Observations) != 0 {
+			return fmt.Errorf("%w: forget mutation contains observations", ErrCorruptUserModel)
+		}
 		delete(m.selections, key)
 		for contextKey := range m.contexts {
 			if contextKey.candidateIdentity == key {
@@ -332,10 +378,54 @@ func (m *UserModel) ApplyRecoveredMutation(mutation UserMutation) error {
 		return fmt.Errorf("%w: unknown mutation kind", ErrCorruptUserModel)
 	}
 	if mutation.RequestID != "" {
+		mutation.Observations = nil
 		m.appliedRequests[mutation.RequestID] = mutation
 	}
 	m.generation = mutation.Generation
 	return nil
+}
+
+func (m *UserModel) applySelectionMutationLocked(mutation UserMutation) {
+	observations := mutation.Observations
+	if len(observations) == 0 {
+		observations = []UserObservation{{
+			Code: mutation.Code, Text: mutation.Text, PreviousText: mutation.PreviousText,
+		}}
+	}
+	for _, observation := range observations {
+		key := candidateIdentity{code: observation.Code, text: observation.Text}
+		if m.selections[key] < maximumSelectionCount {
+			m.selections[key]++
+		}
+		if observation.PreviousText != "" {
+			contextKey := contextIdentity{previous: observation.PreviousText, candidateIdentity: key}
+			if m.contexts[contextKey] < maximumSelectionCount {
+				m.contexts[contextKey]++
+			}
+		}
+	}
+}
+
+func validMutationObservations(mutation UserMutation) bool {
+	if mutation.Kind != UserMutationSelect {
+		return len(mutation.Observations) == 0
+	}
+	for _, observation := range mutation.Observations {
+		if observation.Code == "" || observation.Text == "" {
+			return false
+		}
+	}
+	if len(mutation.Observations) == 0 {
+		return true
+	}
+	primary := mutation.Observations[len(mutation.Observations)-1]
+	return primary.Code == mutation.Code && primary.Text == mutation.Text &&
+		primary.PreviousText == mutation.PreviousText
+}
+
+func equivalentSelectionMutation(left, right UserMutation) bool {
+	return left.Kind == UserMutationSelect && right.Kind == UserMutationSelect &&
+		left.Code == right.Code && left.Text == right.Text
 }
 
 // Save writes the current model through a same-directory temporary file and
@@ -498,7 +588,9 @@ func readUserModelFile(path, sourceID string) (userModelPayload, error) {
 		}
 	}
 	for requestID, mutation := range file.AppliedRequests {
-		if requestID == "" || mutation.RequestID != requestID || mutation.Generation == 0 || mutation.Kind == "" || mutation.Code == "" || mutation.Text == "" {
+		if requestID == "" || mutation.RequestID != requestID || mutation.Generation == 0 ||
+			mutation.Kind == "" || mutation.Code == "" || mutation.Text == "" ||
+			len(mutation.Observations) != 0 || !validMutationObservations(mutation) {
 			return userModelPayload{}, fmt.Errorf("%w: invalid applied request", ErrCorruptUserModel)
 		}
 	}
@@ -517,6 +609,7 @@ func readUserModelFile(path, sourceID string) (userModelPayload, error) {
 func cloneMutations(source map[string]UserMutation) map[string]UserMutation {
 	result := make(map[string]UserMutation, len(source))
 	for key, mutation := range source {
+		mutation.Observations = append([]UserObservation(nil), mutation.Observations...)
 		result[key] = mutation
 	}
 	return result

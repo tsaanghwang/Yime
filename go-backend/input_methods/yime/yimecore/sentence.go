@@ -5,6 +5,7 @@ import (
 	"math"
 	"sort"
 	"strings"
+	"unicode/utf8"
 
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/engineapi"
 )
@@ -21,6 +22,8 @@ const (
 
 type sentencePath struct {
 	text     string
+	base     int64
+	context  int64
 	score    int64
 	segments []engineapi.Segment
 }
@@ -40,7 +43,7 @@ func (e *Engine) bestSentence(exact []engineapi.Candidate, limit int) *engineapi
 		}
 	}
 	generated := e.composeSentences(e.rawInput, limit)
-	records := e.index.lookup(e.rawInput, limit)
+	records := e.sentencePrefixRecords(e.rawInput, limit)
 	for _, item := range records {
 		if item.code == e.rawInput || !strings.HasPrefix(item.code, e.rawInput) {
 			continue
@@ -63,10 +66,14 @@ func (e *Engine) bestSentence(exact []engineapi.Candidate, limit int) *engineapi
 		generated = append(generated, candidate)
 	}
 	for i := range generated {
-		e.scoreCandidate(&generated[i])
+		e.scoreCandidateWithContext(&generated[i], generated[i].Score.Context)
 	}
 	rankGeneratedCandidates(generated)
 	if preferredExact != nil {
+		if rebuilt := e.composeLearnedSentence(e.rawInput, preferredExact.Text); rebuilt != nil {
+			e.scoreCandidateWithContext(rebuilt, rebuilt.Score.Context)
+			return rebuilt
+		}
 		for index := range generated {
 			if generated[index].Exact && generated[index].Code == preferredExact.Code &&
 				generated[index].Text == preferredExact.Text {
@@ -75,10 +82,6 @@ func (e *Engine) bestSentence(exact []engineapi.Candidate, limit int) *engineapi
 				return &candidate
 			}
 		}
-		if rebuilt := e.composeLearnedSentence(e.rawInput, preferredExact.Text); rebuilt != nil {
-			e.scoreCandidate(rebuilt)
-			return rebuilt
-		}
 		return preferredExact
 	}
 	if len(generated) == 0 {
@@ -86,6 +89,88 @@ func (e *Engine) bestSentence(exact []engineapi.Candidate, limit int) *engineapi
 	}
 	candidate := cloneCandidate(generated[0])
 	return &candidate
+}
+
+func (e *Engine) sentencePrefixRecords(input string, limit int) []record {
+	if !e.isFirstSyllableInput(input) {
+		return e.index.lookup(input, limit)
+	}
+	fetchLimit := segmentCandidateLimit
+	if fetchLimit < limit {
+		fetchLimit = limit
+	}
+	for {
+		source := e.index.lookup(input, fetchLimit)
+		records := singleCharacterRecords(source, limit)
+		if len(records) >= limit {
+			return records
+		}
+		if len(source) < fetchLimit || fetchLimit >= maximumExactCacheItems {
+			if len(records) > 0 {
+				return records
+			}
+			return e.index.lookup(input, limit)
+		}
+		fetchLimit *= 2
+		if fetchLimit > maximumExactCacheItems {
+			fetchLimit = maximumExactCacheItems
+		}
+	}
+}
+
+func (e *Engine) firstSyllableExactRecords(input string, limit int) ([]record, bool) {
+	if !e.isFirstSyllableInput(input) {
+		return e.index.exact(input, limit), false
+	}
+	fetchLimit := segmentCandidateLimit
+	if fetchLimit < limit {
+		fetchLimit = limit
+	}
+	for {
+		source := e.index.exact(input, fetchLimit)
+		records := singleCharacterRecords(source, limit)
+		if len(records) >= limit {
+			return records, true
+		}
+		if len(source) < fetchLimit || fetchLimit >= maximumExactCacheItems {
+			if len(records) > 0 {
+				return records, true
+			}
+			return e.index.exact(input, limit), false
+		}
+		fetchLimit *= 2
+		if fetchLimit > maximumExactCacheItems {
+			fetchLimit = maximumExactCacheItems
+		}
+	}
+}
+
+func (e *Engine) isFirstSyllableInput(input string) bool {
+	for end := 1; end < len(input); end++ {
+		for _, item := range e.exactMatches(input[:end]) {
+			if isSingleCharacter(item.text) {
+				return false
+			}
+		}
+	}
+	return true
+}
+
+func singleCharacterRecords(records []record, limit int) []record {
+	result := make([]record, 0, limit)
+	for _, item := range records {
+		if isSingleCharacter(item.text) {
+			result = append(result, item)
+			if len(result) == limit {
+				break
+			}
+		}
+	}
+	return result
+}
+
+func isSingleCharacter(text string) bool {
+	return utf8.RuneCountInString(text) == 1
 }
 
 func (e *Engine) composeLearnedSentence(input, text string) *engineapi.Candidate {
@@ -124,14 +209,16 @@ func (e *Engine) composeLearnedSentence(input, text string) *engineapi.Candidate
 					})
 					next := sentencePath{
 						text:     text[:textEnd],
-						score:    saturatingAdd(path.score, lexicalScore(match.weight)-generatedSegmentPenalty),
+						base:     saturatingAdd(path.base, e.lexicalRecordScore(match)-generatedSegmentPenalty),
 						segments: segments,
 					}
+					next.context = saturatingAdd(path.context, e.sentenceTransitionBoost(path, match))
+					next.score = saturatingAdd(next.base, next.context)
 					if states[end] == nil {
 						states[end] = make(map[int]sentencePath)
 					}
 					existing, found := states[end][textEnd]
-					if !found || betterSentencePath(next, existing) {
+					if !found || e.betterLearnedSentencePath(next, existing) {
 						states[end][textEnd] = next
 					}
 				}
@@ -144,8 +231,29 @@ func (e *Engine) composeLearnedSentence(input, text string) *engineapi.Candidate
 	}
 	return &engineapi.Candidate{
 		ID: sentenceCandidateID(input, path), Text: text, Code: input,
-		SourceID: "user-model", Weight: path.score, Exact: true, Segments: path.segments,
+		SourceID: "user-model", Weight: path.base, Exact: true, Segments: path.segments,
+		Score: engineapi.Score{Context: path.context},
 	}
+}
+
+func (e *Engine) betterLearnedSentencePath(left, right sentencePath) bool {
+	leftBoost := e.sentencePathLearningBoost(left)
+	rightBoost := e.sentencePathLearningBoost(right)
+	if leftBoost != rightBoost {
+		return leftBoost > rightBoost
+	}
+	return betterSentencePath(left, right)
+}
+
+func (e *Engine) sentencePathLearningBoost(path sentencePath) int64 {
+	previous := e.previousCommit
+	var boost int64
+	for _, segment := range path.segments {
+		boost = saturatingAdd(boost, e.userModel.candidateBoost(segment.Code, segment.Text))
+		boost = saturatingAdd(boost, e.userModel.contextBoost(previous, segment.Code, segment.Text))
+		previous = segment.Text
+	}
+	return boost
 }
 
 func (e *Engine) composeSentences(input string, limit int) []engineapi.Candidate {
@@ -172,7 +280,8 @@ func (e *Engine) composeSentences(input string, limit int) []engineapi.Candidate
 	for _, path := range complete {
 		result = append(result, engineapi.Candidate{
 			ID: sentenceCandidateID(input, path), Text: path.text, Code: input,
-			Weight: path.score, Exact: true, Segments: path.segments,
+			Weight: path.base, Exact: true, Segments: path.segments,
+			Score: engineapi.Score{Context: path.context},
 		})
 	}
 	for _, candidate := range e.composeIncompleteTail(input, limit, maxCodeBytes) {
@@ -196,6 +305,7 @@ func (e *Engine) composeIncompleteTail(input string, limit, maxCodeBytes int) []
 	type completion struct {
 		candidate engineapi.Candidate
 		segments  int
+		score     int64
 	}
 	top := make([]completion, 0, limit)
 	seen := make(map[string]struct{}, limit*2)
@@ -205,7 +315,7 @@ func (e *Engine) composeIncompleteTail(input string, limit, maxCodeBytes int) []
 			continue
 		}
 		suffix := input[split:]
-		matches := e.index.lookup(suffix, limit)
+		matches := e.sentencePrefixRecords(suffix, limit)
 		for _, match := range matches {
 			if match.code == suffix || !strings.HasPrefix(match.code, suffix) {
 				continue
@@ -233,20 +343,23 @@ func (e *Engine) composeIncompleteTail(input string, limit, maxCodeBytes int) []
 				segments = append(segments, engineapi.Segment{
 					Start: split, End: len(input), Text: match.text, Code: match.code, SourceID: sourceID,
 				})
-				weight := saturatingAdd(path.score, lexicalScore(match.weight)-generatedSegmentPenalty)
+				base := saturatingAdd(path.base, e.lexicalRecordScore(match)-generatedSegmentPenalty)
+				context := saturatingAdd(path.context, e.sentenceTransitionBoost(path, match))
+				score := saturatingAdd(base, context)
 				top = append(top, completion{candidate: engineapi.Candidate{
 					ID:   "sentence-prefix\x1f" + input + "\x1f" + completedCode + "\x1f" + text,
-					Text: text, Code: completedCode, Weight: weight, Exact: false, Segments: segments,
-				}, segments: len(segments)})
+					Text: text, Code: completedCode, Weight: base, Exact: false, Segments: segments,
+					Score: engineapi.Score{Context: context},
+				}, segments: len(segments), score: score})
 			}
 		}
 	}
 	sort.Slice(top, func(i, j int) bool {
-		if top[i].segments != top[j].segments {
-			return top[i].segments < top[j].segments
+		if priority := compareWordFirstSegments(top[i].candidate.Segments, top[j].candidate.Segments); priority != 0 {
+			return priority > 0
 		}
-		if top[i].candidate.Weight != top[j].candidate.Weight {
-			return top[i].candidate.Weight > top[j].candidate.Weight
+		if top[i].score != top[j].score {
+			return top[i].score > top[j].score
 		}
 		if top[i].candidate.Text != top[j].candidate.Text {
 			return top[i].candidate.Text < top[j].candidate.Text
@@ -321,9 +434,11 @@ func (e *Engine) extendSentenceLattice(input string, maxCodeBytes int) {
 				})
 				next := sentencePath{
 					text:     path.text + match.text,
-					score:    saturatingAdd(path.score, lexicalScore(match.weight)-generatedSegmentPenalty),
+					base:     saturatingAdd(path.base, e.lexicalRecordScore(match)-generatedSegmentPenalty),
 					segments: segments,
 				}
+				next.context = saturatingAdd(path.context, e.sentenceTransitionBoost(path, match))
+				next.score = saturatingAdd(next.base, next.context)
 				e.sentenceStates[end] = insertSentencePath(e.sentenceStates[end], next, sentenceBeamWidth)
 			}
 		}
@@ -362,6 +477,18 @@ func (e *Engine) exactMatches(code string) []record {
 
 func lexicalScore(weight int64) int64 {
 	return weight
+}
+
+func (e *Engine) lexicalRecordScore(item record) int64 {
+	return saturatingAdd(lexicalScore(item.weight), e.userModel.candidateBoost(item.code, item.text))
+}
+
+func (e *Engine) sentenceTransitionBoost(path sentencePath, item record) int64 {
+	previous := e.previousCommit
+	if len(path.segments) > 0 {
+		previous = path.segments[len(path.segments)-1].Text
+	}
+	return e.userModel.contextBoost(previous, item.code, item.text)
 }
 
 func saturatingAdd(left, right int64) int64 {
@@ -422,8 +549,8 @@ func insertSentencePath(top []sentencePath, item sentencePath, limit int) []sent
 }
 
 func betterSentencePath(left, right sentencePath) bool {
-	if len(left.segments) != len(right.segments) {
-		return len(left.segments) < len(right.segments)
+	if priority := compareWordFirstSegments(left.segments, right.segments); priority != 0 {
+		return priority > 0
 	}
 	if left.score != right.score {
 		return left.score > right.score
@@ -432,6 +559,32 @@ func betterSentencePath(left, right sentencePath) bool {
 		return left.text < right.text
 	}
 	return sentencePathKey(left) < sentencePathKey(right)
+}
+
+func compareWordFirstSegments(left, right []engineapi.Segment) int {
+	// Input-order priority is lexicographic: prefer the longest built-in word
+	// at the first differing segment, then use frequency for an equal shape.
+	count := len(left)
+	if len(right) < count {
+		count = len(right)
+	}
+	for index := 0; index < count; index++ {
+		leftLength := utf8.RuneCountInString(left[index].Text)
+		rightLength := utf8.RuneCountInString(right[index].Text)
+		if leftLength > rightLength {
+			return 1
+		}
+		if leftLength < rightLength {
+			return -1
+		}
+	}
+	if len(left) < len(right) {
+		return 1
+	}
+	if len(left) > len(right) {
+		return -1
+	}
+	return 0
 }
 
 func sentenceCandidateID(input string, path sentencePath) string {

@@ -56,6 +56,24 @@ func TestUserLearningPromotesSelectedCandidateWithExplainableScore(t *testing.T)
 	}
 }
 
+func TestLearnedRecordsAreStableImmutableCopies(t *testing.T) {
+	model, err := NewUserModel("records-test")
+	if err != nil {
+		t.Fatal(err)
+	}
+	model.observe("bb", "乙")
+	model.observe("aa", "甲")
+	model.observe("aa", "甲")
+	records := model.LearnedRecords()
+	if len(records) != 2 || records[0] != (LearnedRecord{Code: "aa", Text: "甲", Selections: 2}) || records[1].Text != "乙" {
+		t.Fatalf("records=%#v", records)
+	}
+	records[0].Text = "changed"
+	if model.LearnedRecords()[0].Text != "甲" {
+		t.Fatal("caller mutated the user model through LearnedRecords")
+	}
+}
+
 func TestLearnedSentenceIsRecalledAfterModelReopenWithoutAStaticPhrase(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "sentence.json")
 	model, err := OpenUserModel(path, "sentence-source")
@@ -478,5 +496,20 @@ func TestContextTransitionIsExplainablePersistentAndForgottenWithCandidate(t *te
 		if candidate.Text == "目标" && (candidate.Score.Context != 0 || candidate.Score.User != 0) {
 			t.Fatalf("forgotten target retained learned score: %+v", candidate)
 		}
+	}
+}
+
+func TestContextTransitionBoostIsBounded(t *testing.T) {
+	model, err := NewUserModel("bounded-context-test")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for count := uint64(0); count < maximumContextSelections+3; count++ {
+		if err := model.observeWithContext("b", "后词", "前词"); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if boost := model.contextBoost("前词", "b", "后词"); boost != int64(maximumContextSelections)*contextBoostPerSelection {
+		t.Fatalf("bounded context boost = %d", boost)
 	}
 }

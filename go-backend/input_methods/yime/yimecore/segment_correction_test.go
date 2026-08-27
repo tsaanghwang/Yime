@@ -1,6 +1,7 @@
 package yimecore
 
 import (
+	"errors"
 	"reflect"
 	"testing"
 
@@ -71,6 +72,210 @@ func TestSegmentCorrectionPreservesOtherSegmentsUntilExplicitSentenceCommit(t *t
 	if err != nil || committed.Commit != "乙丁" || committed.State.RawInput != "" {
 		t.Fatalf("explicit sentence commit failed: result=%#v err=%v", committed, err)
 	}
+}
+
+func TestPublishedSentenceRemainsSelectableUntilAnotherSnapshotIsPublished(t *testing.T) {
+	index, err := NewIndex([]Entry{
+		{Text: "甲", Code: "ab", Weight: 100},
+		{Text: "乙", Code: "ab", Weight: 90},
+		{Text: "丙", Code: "cd", Weight: 100},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	engine, err := NewEngine(index, 9)
+	if err != nil {
+		t.Fatal(err)
+	}
+	published := applyBundleCode(t, engine, "abcd").Sentence
+	if published == nil || published.Text != "甲丙" {
+		t.Fatalf("initial published sentence = %#v", published)
+	}
+
+	engine.segmentChoices = map[segmentSpan]record{
+		{start: 0, end: 2}: {text: "乙", code: "ab", weight: 90, source: index.identity()},
+	}
+	engine.resetSentenceComposer()
+	engine.refresh()
+	if engine.sentence == nil || engine.sentence.Text != "乙丙" || engine.sentence.ID == published.ID {
+		t.Fatalf("internal refresh did not replace the current sentence: %#v", engine.sentence)
+	}
+
+	committed, err := engine.Select(published.ID)
+	if err != nil || committed.Commit != "甲丙" || committed.State.RawInput != "" {
+		t.Fatalf("last published sentence became stale: result=%#v err=%v", committed, err)
+	}
+}
+
+func TestSegmentSelectionLearnsOnlyAfterExplicitSentenceCommit(t *testing.T) {
+	index, err := NewIndex([]Entry{
+		{Text: "之", Code: "ab", Weight: 100}, {Text: "知", Code: "ab", Weight: 90},
+		{Text: "识", Code: "cd", Weight: 100},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	model, err := NewUserModel(index.identity())
+	if err != nil {
+		t.Fatal(err)
+	}
+	engine, err := NewEngineWithUserModel(index, 9, model)
+	if err != nil {
+		t.Fatal(err)
+	}
+	state := applyBundleCode(t, engine, "abcd")
+	if state.Sentence == nil || state.Sentence.Text != "之识" {
+		t.Fatalf("initial static sentence = %#v", state.Sentence)
+	}
+	first := state.Sentence.Segments[0]
+	focused, err := engine.Apply(engineapi.Event{
+		Operation: engineapi.FocusSegment, CandidateID: state.Sentence.ID,
+		SegmentStart: first.Start, SegmentEnd: first.End,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	replacement := findBundleCandidate(focused.State.Candidates, "知")
+	if replacement == nil {
+		t.Fatalf("word replacement missing: %#v", focused.State.Candidates)
+	}
+	replaced, err := engine.SelectIdempotent(replacement.ID, "segment-word-selection")
+	if err != nil || replaced.Commit != "" || replaced.State.Sentence == nil || replaced.State.Sentence.Text != "知识" {
+		t.Fatalf("word replacement committed or failed: result=%#v err=%v", replaced, err)
+	}
+	if model.Generation() != 0 {
+		t.Fatalf("segment replacement learned before commit: generation=%d", model.Generation())
+	}
+
+	engine.Reset()
+	notLearned := applyBundleCode(t, engine, "abcd").Sentence
+	if notLearned == nil || notLearned.Text != "之识" {
+		t.Fatalf("cancelled replacement changed following sentence: %#v", notLearned)
+	}
+
+	first = notLearned.Segments[0]
+	focused, err = engine.Apply(engineapi.Event{
+		Operation: engineapi.FocusSegment, CandidateID: notLearned.ID,
+		SegmentStart: first.Start, SegmentEnd: first.End,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	replacement = findBundleCandidate(focused.State.Candidates, "知")
+	if replacement == nil {
+		t.Fatalf("word replacement missing after reset: %#v", focused.State.Candidates)
+	}
+	replaced, err = engine.SelectIdempotent(replacement.ID, "segment-word-selection")
+	if err != nil || replaced.State.Sentence == nil || replaced.State.Sentence.Text != "知识" {
+		t.Fatalf("second word replacement failed: result=%#v err=%v", replaced, err)
+	}
+	committed, err := engine.SelectIdempotent(replaced.State.Sentence.ID, "sentence-commit")
+	if err != nil || committed.Commit != "知识" || model.Generation() != 1 {
+		t.Fatalf("sentence commit did not atomically learn: result=%#v err=%v generation=%d",
+			committed, err, model.Generation())
+	}
+	records := model.LearnedRecords()
+	if findLearnedRecord(records, "ab", "知") == nil ||
+		findLearnedRecord(records, "abcd", "知识") == nil {
+		t.Fatalf("committed segment and sentence were not learned together: %#v", records)
+	}
+	if boost := model.contextBoost("知", "cd", "识"); boost != contextBoostPerSelection {
+		t.Fatalf("adjacent segment pairing was not learned: boost=%d", boost)
+	}
+
+	learned := applyBundleCode(t, engine, "abcd").Sentence
+	if learned == nil || learned.Text != "知识" || learned.Segments[0].Text != "知" {
+		t.Fatalf("committed word did not tune the following sentence: %#v", learned)
+	}
+}
+
+func TestSentenceLearningPersistenceFailureAppliesNoPartialObservation(t *testing.T) {
+	index, err := NewIndex([]Entry{
+		{Text: "甲", Code: "ab", Weight: 100}, {Text: "乙", Code: "ab", Weight: 90},
+		{Text: "丙", Code: "cd", Weight: 100},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	model, err := NewUserModel(index.identity())
+	if err != nil {
+		t.Fatal(err)
+	}
+	var attempted UserMutation
+	model.SetMutationWriter(func(mutation UserMutation) error {
+		attempted = mutation
+		return errors.New("forced sentence journal failure")
+	})
+	engine, err := NewEngineWithUserModel(index, 9, model)
+	if err != nil {
+		t.Fatal(err)
+	}
+	state := applyBundleCode(t, engine, "abcd")
+	if state.Sentence == nil || len(state.Sentence.Segments) != 2 {
+		t.Fatalf("sentence missing: %#v", state)
+	}
+	result, err := engine.SelectIdempotent(state.Sentence.ID, "failed-sentence-commit")
+	if err == nil || result.Commit != "" || model.Generation() != 0 ||
+		len(model.LearnedRecords()) != 0 {
+		t.Fatalf("failed sentence persistence partially applied: result=%#v err=%v generation=%d records=%#v",
+			result, err, model.Generation(), model.LearnedRecords())
+	}
+	if len(attempted.Observations) != 3 || attempted.Code != "abcd" || attempted.Text != "甲丙" {
+		t.Fatalf("sentence was not offered as one batch mutation: %#v", attempted)
+	}
+}
+
+func TestClearDiscardsPendingSegmentLearning(t *testing.T) {
+	index, err := NewIndex([]Entry{
+		{Text: "甲", Code: "ab", Weight: 100}, {Text: "乙", Code: "ab", Weight: 90},
+		{Text: "丙", Code: "cd", Weight: 100},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	model, err := NewUserModel(index.identity())
+	if err != nil {
+		t.Fatal(err)
+	}
+	engine, err := NewEngineWithUserModel(index, 9, model)
+	if err != nil {
+		t.Fatal(err)
+	}
+	state := applyBundleCode(t, engine, "abcd")
+	first := state.Sentence.Segments[0]
+	focused, err := engine.Apply(engineapi.Event{
+		Operation: engineapi.FocusSegment, CandidateID: state.Sentence.ID,
+		SegmentStart: first.Start, SegmentEnd: first.End,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	replacement := findBundleCandidate(focused.State.Candidates, "乙")
+	if replacement == nil {
+		t.Fatalf("replacement missing: %#v", focused.State.Candidates)
+	}
+	if _, err := engine.SelectIdempotent(replacement.ID, "pending-before-clear"); err != nil {
+		t.Fatal(err)
+	}
+	cleared, err := engine.Apply(engineapi.Event{Operation: engineapi.Clear})
+	if err != nil || cleared.State.RawInput != "" || model.Generation() != 0 ||
+		len(model.LearnedRecords()) != 0 {
+		t.Fatalf("Clear persisted pending learning: result=%#v err=%v generation=%d records=%#v",
+			cleared, err, model.Generation(), model.LearnedRecords())
+	}
+	remaining := applyBundleCode(t, engine, "abcd").Sentence
+	if remaining == nil || remaining.Text != "甲丙" {
+		t.Fatalf("Clear did not discard pending segment choice: %#v", remaining)
+	}
+}
+
+func findLearnedRecord(records []LearnedRecord, code, text string) *LearnedRecord {
+	for index := range records {
+		if records[index].Code == code && records[index].Text == text {
+			return &records[index]
+		}
+	}
+	return nil
 }
 
 func TestSegmentFocusRejectsUnknownCandidateOrRangeWithoutMutation(t *testing.T) {
@@ -153,7 +358,7 @@ func TestFocusedSentenceCanMoveDirectlyBetweenEditableSegments(t *testing.T) {
 	}
 }
 
-func TestOnlyFinalSentenceSegmentPublishesPrefixCompletions(t *testing.T) {
+func TestCompleteSentenceSegmentsPublishOnlyExactAlternatives(t *testing.T) {
 	index, err := NewIndex([]Entry{
 		{Text: "甲", Code: "ab", Weight: 100}, {Text: "乙", Code: "ab", Weight: 90},
 		{Text: "甲长", Code: "abx", Weight: 1000},
@@ -173,7 +378,7 @@ func TestOnlyFinalSentenceSegmentPublishesPrefixCompletions(t *testing.T) {
 	if state.Sentence == nil || len(state.Sentence.Segments) != 3 {
 		t.Fatalf("three-segment sentence missing: %#v", state)
 	}
-	for segmentIndex, forbidden := range []string{"甲长", "丙长"} {
+	for segmentIndex, forbidden := range []string{"甲长", "丙长", "末段补全"} {
 		segment := state.Sentence.Segments[segmentIndex]
 		focused, focusErr := engine.Apply(engineapi.Event{
 			Operation: engineapi.FocusSegment, CandidateID: state.Sentence.ID,
@@ -189,14 +394,6 @@ func TestOnlyFinalSentenceSegmentPublishesPrefixCompletions(t *testing.T) {
 				t.Fatalf("non-final segment %d candidate is not exact: %#v", segmentIndex, candidate)
 			}
 		}
-	}
-	final := state.Sentence.Segments[2]
-	focused, err := engine.Apply(engineapi.Event{
-		Operation: engineapi.FocusSegment, CandidateID: state.Sentence.ID,
-		SegmentStart: final.Start, SegmentEnd: final.End,
-	})
-	if err != nil || findBundleCandidate(focused.State.Candidates, "末段补全") == nil {
-		t.Fatalf("final segment lost prefix completion: state=%#v err=%v", focused.State, err)
 	}
 }
 
@@ -353,7 +550,7 @@ func TestConstructionResegmentationRewritesCompleteSentencePath(t *testing.T) {
 			}
 			middle := state.Sentence.Segments[1]
 			expanded, expandErr := engine.Apply(engineapi.Event{
-				Operation: engineapi.FocusSegment, CandidateID: state.Sentence.ID,
+				Operation: engineapi.ExpandSegment, CandidateID: state.Sentence.ID,
 				SegmentStart: middle.Start, SegmentEnd: middle.End,
 			})
 			if expandErr != nil || expanded.State.Sentence == nil ||
@@ -417,8 +614,17 @@ func TestRecursiveSegmentExpansionOpensExactWholeWord(t *testing.T) {
 		t.Fatalf("exact whole word should start collapsed: %#v", state)
 	}
 
-	expanded, err := engine.Apply(engineapi.Event{
+	focused, err := engine.Apply(engineapi.Event{
 		Operation: engineapi.FocusSegment, CandidateID: state.Sentence.ID,
+		SegmentStart: 0, SegmentEnd: len(state.RawInput),
+	})
+	if err != nil || focused.State.Sentence == nil || len(focused.State.Sentence.Segments) != 0 ||
+		focused.State.ActiveSegment == nil || focused.State.ActiveSegment.Text != "文档保存" {
+		t.Fatalf("exact whole-word focus expanded the word: result=%#v err=%v", focused, err)
+	}
+
+	expanded, err := engine.Apply(engineapi.Event{
+		Operation: engineapi.ExpandSegment, CandidateID: focused.State.Sentence.ID,
 		SegmentStart: 0, SegmentEnd: len(state.RawInput),
 	})
 	if err != nil || expanded.State.Sentence == nil ||
@@ -426,6 +632,178 @@ func TestRecursiveSegmentExpansionOpensExactWholeWord(t *testing.T) {
 		expanded.State.ActiveSegment == nil || expanded.State.ActiveSegment.Text != "文档" {
 		t.Fatalf("exact whole-word expansion failed: result=%#v err=%v", expanded, err)
 	}
+}
+
+func TestExplicitStandaloneWordExpansionAllowsUnlearnedCharacterCombination(t *testing.T) {
+	index, err := NewIndex([]Entry{
+		{Text: "合理", Code: "hwer\\l", Weight: 195_065},
+		{Text: "合", Code: "hwer", Weight: 104_220_652},
+		{Text: "何", Code: "hwer", Weight: 103_392_144},
+		{Text: "理", Code: "\\l", Weight: 104_237_342},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	engine, err := NewEngine(index, 9)
+	if err != nil {
+		t.Fatal(err)
+	}
+	state := applyBundleCode(t, engine, "hwer\\l")
+	if state.Sentence == nil || state.Sentence.Text != "合理" || len(state.Sentence.Segments) != 0 {
+		t.Fatalf("standalone word should start collapsed: %#v", state.Sentence)
+	}
+
+	expanded, err := engine.Apply(engineapi.Event{
+		Operation: engineapi.ExpandSegment, CandidateID: state.Sentence.ID,
+		SegmentStart: 0, SegmentEnd: len(state.RawInput),
+	})
+	if err != nil || expanded.State.Sentence == nil ||
+		!reflect.DeepEqual(segmentTexts(expanded.State.Sentence.Segments), []string{"合", "理"}) ||
+		expanded.State.ActiveSegment == nil || expanded.State.ActiveSegment.Text != "合" {
+		t.Fatalf("standalone word expansion failed: result=%#v err=%v", expanded, err)
+	}
+	replacement := findBundleCandidate(expanded.State.Candidates, "何")
+	if replacement == nil {
+		t.Fatalf("character alternative missing after expansion: %#v", expanded.State.Candidates)
+	}
+
+	replaced, err := engine.Select(replacement.ID)
+	if err != nil || replaced.State.Sentence == nil || replaced.State.Sentence.Text != "何理" ||
+		!reflect.DeepEqual(segmentTexts(replaced.State.Sentence.Segments), []string{"何", "理"}) {
+		t.Fatalf("unlearned character combination failed: result=%#v err=%v", replaced, err)
+	}
+	committed, err := engine.SelectIdempotent(replaced.State.Sentence.ID, "commit-unlearned-he-li")
+	if err != nil || committed.Commit != "何理" || committed.State.RawInput != "" {
+		t.Fatalf("unlearned character combination did not commit: result=%#v err=%v", committed, err)
+	}
+}
+
+func TestExplicitSegmentExpansionRecomposesAcrossFormerWordBoundaries(t *testing.T) {
+	t.Run("research life", func(t *testing.T) {
+		index, err := NewIndex([]Entry{
+			{Text: "研究生", Code: "abc", Weight: 1000},
+			{Text: "研究", Code: "ab", Weight: 900},
+			{Text: "生", Code: "c", Weight: 800},
+			{Text: "名", Code: "d", Weight: 1000},
+			{Text: "命", Code: "d", Weight: 900},
+			{Text: "生命", Code: "cd", Weight: 700},
+			{Text: "问题", Code: "ef", Weight: 600},
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+		model, err := NewUserModel(index.identity())
+		if err != nil {
+			t.Fatal(err)
+		}
+		engine, err := NewEngineWithUserModel(index, 9, model)
+		if err != nil {
+			t.Fatal(err)
+		}
+		state := applyBundleCode(t, engine, "abcdef")
+		if state.Sentence == nil || !reflect.DeepEqual(segmentTexts(state.Sentence.Segments), []string{"研究生", "名", "问题"}) {
+			t.Fatalf("initial research sentence = %#v", state.Sentence)
+		}
+		first := state.Sentence.Segments[0]
+		expanded, err := engine.Apply(engineapi.Event{
+			Operation: engineapi.ExpandSegment, CandidateID: state.Sentence.ID,
+			SegmentStart: first.Start, SegmentEnd: first.End,
+		})
+		if err != nil || expanded.State.ActiveSegment == nil ||
+			!reflect.DeepEqual(segmentTexts(expanded.State.Sentence.Segments), []string{"研究", "生", "名", "问题"}) {
+			t.Fatalf("expanded research sentence = %#v, err=%v", expanded.State, err)
+		}
+		confirmed := findBundleCandidate(expanded.State.Candidates, "研究")
+		if confirmed == nil {
+			t.Fatalf("expanded first child is not selectable: %#v", expanded.State.Candidates)
+		}
+		recomposed, err := engine.Select(confirmed.ID)
+		if err != nil || recomposed.State.Sentence == nil ||
+			!reflect.DeepEqual(segmentTexts(recomposed.State.Sentence.Segments), []string{"研究", "生命", "问题"}) {
+			t.Fatalf("recomposed research sentence = %#v, err=%v", recomposed.State.Sentence, err)
+		}
+		if _, err = engine.SelectIdempotent(recomposed.State.Sentence.ID, "commit-research-life"); err != nil {
+			t.Fatal(err)
+		}
+		reentered := applyBundleCode(t, engine, "abcdef")
+		if reentered.Sentence == nil ||
+			!reflect.DeepEqual(segmentTexts(reentered.Sentence.Segments), []string{"研究", "生命", "问题"}) {
+			t.Fatalf("learned research segmentation = %#v", reentered.Sentence)
+		}
+	})
+
+	t.Run("cover system", func(t *testing.T) {
+		index, err := NewIndex([]Entry{
+			{Text: "这事", Code: "ab", Weight: 1000},
+			{Text: "这是", Code: "ab", Weight: 900},
+			{Text: "这", Code: "a", Weight: 800},
+			{Text: "事", Code: "b", Weight: 800},
+			{Text: "是", Code: "b", Weight: 700},
+			{Text: "是一套", Code: "bcd", Weight: 600},
+			{Text: "一", Code: "c", Weight: 800},
+			{Text: "套", Code: "d", Weight: 800},
+			{Text: "套子", Code: "de", Weight: 500},
+			{Text: "子", Code: "e", Weight: 800},
+			{Text: "系统", Code: "fg", Weight: 500},
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+		model, err := NewUserModel(index.identity())
+		if err != nil {
+			t.Fatal(err)
+		}
+		engine, err := NewEngineWithUserModel(index, 9, model)
+		if err != nil {
+			t.Fatal(err)
+		}
+		state := applyBundleCode(t, engine, "abcdefg")
+		if state.Sentence == nil || !reflect.DeepEqual(segmentTexts(state.Sentence.Segments), []string{"这事", "一", "套子", "系统"}) {
+			t.Fatalf("initial cover-system sentence = %#v", state.Sentence)
+		}
+		first := state.Sentence.Segments[0]
+		expanded, err := engine.Apply(engineapi.Event{
+			Operation: engineapi.ExpandSegment, CandidateID: state.Sentence.ID,
+			SegmentStart: first.Start, SegmentEnd: first.End,
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+		confirmed := findBundleCandidate(expanded.State.Candidates, "这")
+		if confirmed == nil {
+			t.Fatalf("expanded first child is not selectable: %#v", expanded.State.Candidates)
+		}
+		recomposed, err := engine.Select(confirmed.ID)
+		if err != nil || recomposed.State.Sentence == nil ||
+			!reflect.DeepEqual(segmentTexts(recomposed.State.Sentence.Segments), []string{"这", "是一套", "子", "系统"}) {
+			t.Fatalf("first cover-system recomposition = %#v, err=%v", recomposed.State.Sentence, err)
+		}
+		compound := recomposed.State.Sentence.Segments[1]
+		expanded, err = engine.Apply(engineapi.Event{
+			Operation: engineapi.ExpandSegment, CandidateID: recomposed.State.Sentence.ID,
+			SegmentStart: compound.Start, SegmentEnd: compound.End,
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+		confirmed = findBundleCandidate(expanded.State.Candidates, "是")
+		if confirmed == nil {
+			t.Fatalf("expanded second child is not selectable: %#v", expanded.State.Candidates)
+		}
+		recomposed, err = engine.Select(confirmed.ID)
+		if err != nil || recomposed.State.Sentence == nil ||
+			!reflect.DeepEqual(segmentTexts(recomposed.State.Sentence.Segments), []string{"这", "是", "一", "套子", "系统"}) {
+			t.Fatalf("second cover-system recomposition = %#v, err=%v", recomposed.State.Sentence, err)
+		}
+		if _, err = engine.SelectIdempotent(recomposed.State.Sentence.ID, "commit-cover-system"); err != nil {
+			t.Fatal(err)
+		}
+		reentered := applyBundleCode(t, engine, "abcdefg")
+		if reentered.Sentence == nil ||
+			!reflect.DeepEqual(segmentTexts(reentered.Sentence.Segments), []string{"这", "是", "一", "套子", "系统"}) {
+			t.Fatalf("learned cover-system segmentation = %#v", reentered.Sentence)
+		}
+	})
 }
 
 func segmentTexts(segments []engineapi.Segment) []string {

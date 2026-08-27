@@ -1,6 +1,7 @@
 package yimecore
 
 import (
+	"fmt"
 	"reflect"
 	"testing"
 
@@ -208,6 +209,279 @@ func TestGeneratedSentenceKeepsFewerSystemLexiconSegmentsFirst(t *testing.T) {
 	}
 	if !hasTracePath(engine.Explain().RetainedPaths, []string{"高", "分", "词"}) {
 		t.Fatal("non-visible alternative path was not retained by the decoder")
+	}
+}
+
+func TestLearnedBigramReranksEqualShapeInForwardDirectionOnly(t *testing.T) {
+	index, err := NewIndex([]Entry{
+		{Text: "甲", Code: "a", Weight: 100}, {Text: "乙", Code: "a", Weight: 100},
+		{Text: "一", Code: "b", Weight: 100}, {Text: "二", Code: "b", Weight: 100},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	newTestEngine := func(model *UserModel) *Engine {
+		engine, engineErr := NewEngineWithUserModel(index, 9, model)
+		if engineErr != nil {
+			t.Fatal(engineErr)
+		}
+		return engine
+	}
+	baseline, err := NewUserModel(index.identity())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := baseline.observeBatchIdempotent([]UserObservation{
+		{Code: "a", Text: "甲"}, {Code: "a", Text: "乙"},
+		{Code: "b", Text: "一"}, {Code: "b", Text: "二"},
+	}, "no-context"); err != nil {
+		t.Fatal(err)
+	}
+	baselineResult := applyCode(t, newTestEngine(baseline), "ab").State.Sentence
+	if baselineResult == nil {
+		t.Fatal("equal-shape baseline sentence is missing")
+	}
+
+	reverseOnly, err := NewUserModel(index.identity())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := reverseOnly.observeBatchIdempotent([]UserObservation{
+		{Code: "a", Text: "甲", PreviousText: "二"},
+		{Code: "a", Text: "乙", PreviousText: "外"},
+		{Code: "b", Text: "一"},
+		{Code: "b", Text: "二"},
+	}, "reverse-only"); err != nil {
+		t.Fatal(err)
+	}
+	reverseResult := applyCode(t, newTestEngine(reverseOnly), "ab").State.Sentence
+	if reverseResult == nil || reverseResult.Text != baselineResult.Text || reverseResult.Score.Context != 0 {
+		t.Fatalf("reverse transition changed forward sentence ranking: %#v", reverseResult)
+	}
+
+	forward, err := NewUserModel(index.identity())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := forward.observeBatchIdempotent([]UserObservation{
+		{Code: "a", Text: "甲"},
+		{Code: "a", Text: "乙"},
+		{Code: "b", Text: "一", PreviousText: "外"},
+		{Code: "b", Text: "二", PreviousText: "甲"},
+	}, "forward-bigram"); err != nil {
+		t.Fatal(err)
+	}
+	forwardResult := applyCode(t, newTestEngine(forward), "ab").State.Sentence
+	if forwardResult == nil || forwardResult.Text != "甲二" ||
+		forwardResult.Score.Context != contextBoostPerSelection {
+		t.Fatalf("forward transition did not rerank equal-shape sentence: %#v", forwardResult)
+	}
+}
+
+func TestLearnedBigramAccumulatesAcrossThreeSegmentsInForwardDirectionOnly(t *testing.T) {
+	index, err := NewIndex([]Entry{
+		{Text: "甲", Code: "a", Weight: 110}, {Text: "乙", Code: "a", Weight: 100},
+		{Text: "一", Code: "b", Weight: 110}, {Text: "二", Code: "b", Weight: 100},
+		{Text: "上", Code: "c", Weight: 110}, {Text: "下", Code: "c", Weight: 100},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	tests := []struct {
+		name         string
+		observations []UserObservation
+		wantText     string
+		wantContext  int64
+	}{
+		{
+			name: "A to B",
+			observations: []UserObservation{
+				{Code: "a", Text: "甲"}, {Code: "a", Text: "乙"},
+				{Code: "b", Text: "一", PreviousText: "外"}, {Code: "b", Text: "二", PreviousText: "甲"},
+				{Code: "c", Text: "上"}, {Code: "c", Text: "下"},
+			},
+			wantText:    "甲二上",
+			wantContext: contextBoostPerSelection,
+		},
+		{
+			name: "B to C",
+			observations: []UserObservation{
+				{Code: "a", Text: "甲"}, {Code: "a", Text: "乙"},
+				{Code: "b", Text: "一"}, {Code: "b", Text: "二"},
+				{Code: "c", Text: "上", PreviousText: "外"}, {Code: "c", Text: "下", PreviousText: "一"},
+			},
+			wantText:    "甲一下",
+			wantContext: contextBoostPerSelection,
+		},
+		{
+			name: "both sides",
+			observations: []UserObservation{
+				{Code: "a", Text: "甲"}, {Code: "a", Text: "乙"},
+				{Code: "b", Text: "一", PreviousText: "外"}, {Code: "b", Text: "二", PreviousText: "甲"},
+				{Code: "c", Text: "上", PreviousText: "外"}, {Code: "c", Text: "下", PreviousText: "二"},
+			},
+			wantText:    "甲二下",
+			wantContext: 2 * contextBoostPerSelection,
+		},
+		{
+			name: "all reversed",
+			observations: []UserObservation{
+				{Code: "a", Text: "甲", PreviousText: "二"}, {Code: "a", Text: "乙", PreviousText: "外"},
+				{Code: "b", Text: "一", PreviousText: "外"}, {Code: "b", Text: "二", PreviousText: "下"},
+				{Code: "c", Text: "上"}, {Code: "c", Text: "下"},
+			},
+			wantText: "甲一上",
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			model, modelErr := NewUserModel(index.identity())
+			if modelErr != nil {
+				t.Fatal(modelErr)
+			}
+			if modelErr = model.observeBatchIdempotent(test.observations, "three-segment-"+test.name); modelErr != nil {
+				t.Fatal(modelErr)
+			}
+			engine, engineErr := NewEngineWithUserModel(index, 9, model)
+			if engineErr != nil {
+				t.Fatal(engineErr)
+			}
+			result := applyCode(t, engine, "abc").State.Sentence
+			if result == nil || result.Text != test.wantText || len(result.Segments) != 3 ||
+				result.Score.Context != test.wantContext {
+				t.Fatalf("three-segment sentence = %#v, want text %q with context %d", result, test.wantText, test.wantContext)
+			}
+		})
+	}
+}
+
+func TestLearnedBigramCannotOverrideWordFirstStructure(t *testing.T) {
+	index, err := NewIndex([]Entry{
+		{Text: "甲乙", Code: "ab", Weight: 1}, {Text: "丙", Code: "c", Weight: 1},
+		{Text: "高", Code: "a", Weight: 1_000_000}, {Text: "分", Code: "b", Weight: 1_000_000},
+		{Text: "词", Code: "c", Weight: 1_000_000},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	model, err := NewUserModel(index.identity())
+	if err != nil {
+		t.Fatal(err)
+	}
+	for count := uint64(0); count < maximumContextSelections+3; count++ {
+		if err := model.observeBatchIdempotent([]UserObservation{
+			{Code: "a", Text: "高"},
+			{Code: "b", Text: "分", PreviousText: "高"},
+			{Code: "c", Text: "词", PreviousText: "分"},
+		}, "fragment-path-"+fmt.Sprint(count)); err != nil {
+			t.Fatal(err)
+		}
+	}
+	engine, err := NewEngineWithUserModel(index, 9, model)
+	if err != nil {
+		t.Fatal(err)
+	}
+	result := applyCode(t, engine, "abc")
+	if result.State.Sentence == nil || result.State.Sentence.Text != "甲乙词" ||
+		len(result.State.Sentence.Segments) != 2 {
+		t.Fatalf("bigram overrode word-first structure: %#v", result.State.Sentence)
+	}
+	if !hasTracePath(engine.Explain().RetainedPaths, []string{"高", "分", "词"}) {
+		t.Fatal("boosted fragmented path was not retained for explanation")
+	}
+}
+
+func TestFirstSyllablePrefixPublishesOnlySingleCharacterCandidates(t *testing.T) {
+	index, err := NewIndex([]Entry{
+		{Text: "之", Code: "ab", Weight: 100},
+		{Text: "知", Code: "ab", Weight: 90},
+		{Text: "知识", Code: "abcd", Weight: 1_000_000},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	engine, err := NewEngine(index, 9)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, input := range []string{"a", "ab"} {
+		engine.Reset()
+		state := applyCode(t, engine, input).State
+		if state.Sentence == nil || state.Sentence.Text != "之" {
+			t.Fatalf("first-syllable sentence for %q = %#v", input, state.Sentence)
+		}
+		for _, candidate := range state.Candidates {
+			if candidate.Text == "知识" {
+				t.Fatalf("first-syllable input %q published a multi-character candidate: %#v", input, state.Candidates)
+			}
+		}
+	}
+
+	continued := applyCode(t, engine, "c").State
+	if continued.Sentence == nil || continued.Sentence.Text != "知识" {
+		t.Fatalf("second-syllable prefix did not enable the built-in word: %#v", continued)
+	}
+}
+
+func TestIncompleteSentenceTailFindsSingleCharacterBeyondVisibleLookupLimit(t *testing.T) {
+	entries := []Entry{
+		{Text: "本地", Code: "ab", Weight: 100},
+		{Text: "人", Code: "cdef", Weight: 1},
+	}
+	for index := 0; index < 12; index++ {
+		entries = append(entries, Entry{
+			Text: fmt.Sprintf("高频词%d", index), Code: fmt.Sprintf("cd%02d", index), Weight: 10_000,
+		})
+	}
+	lexicon, err := NewIndex(entries)
+	if err != nil {
+		t.Fatal(err)
+	}
+	engine, err := NewEngine(lexicon, 9)
+	if err != nil {
+		t.Fatal(err)
+	}
+	state := applyCode(t, engine, "abcd").State
+	if state.Sentence == nil || state.Sentence.Exact || state.Sentence.Text != "本地人" {
+		t.Fatalf("incomplete sentence tail = %#v", state.Sentence)
+	}
+	want := []string{"本地", "人"}
+	got := make([]string, len(state.Sentence.Segments))
+	for index, segment := range state.Sentence.Segments {
+		got[index] = segment.Text
+	}
+	if !reflect.DeepEqual(got, want) {
+		t.Fatalf("incomplete sentence segments = %v, want %v", got, want)
+	}
+}
+
+func TestSentenceComposerPrefersLongerWordsFromLeftToRight(t *testing.T) {
+	index, err := NewIndex([]Entry{
+		{Text: "之", Code: "ab", Weight: 1_000_000_000},
+		{Text: "知识", Code: "abcd", Weight: 100},
+		{Text: "十分", Code: "cdef", Weight: 1_000_000_000},
+		{Text: "分子", Code: "efgh", Weight: 100},
+		{Text: "子问题", Code: "ghij", Weight: 1_000_000_000},
+		{Text: "问题", Code: "ij", Weight: 100},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	engine, err := NewEngine(index, 9)
+	if err != nil {
+		t.Fatal(err)
+	}
+	state := applyCode(t, engine, "abcdefghij").State
+	if state.Sentence == nil {
+		t.Fatalf("word-first sentence missing: %#v", state)
+	}
+	want := []string{"知识", "分子", "问题"}
+	got := make([]string, len(state.Sentence.Segments))
+	for index, segment := range state.Sentence.Segments {
+		got[index] = segment.Text
+	}
+	if !reflect.DeepEqual(got, want) {
+		t.Fatalf("sentence segments = %v, want left-to-right word-first %v", got, want)
 	}
 }
 

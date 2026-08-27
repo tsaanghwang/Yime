@@ -52,11 +52,11 @@ func TestDigitsRemainCompositionCode(t *testing.T) {
 	}
 }
 
-func TestExactCandidatesDoNotMixWithLongerCompletions(t *testing.T) {
+func TestFirstSyllableExactCandidatesExcludeMultiCharacterItems(t *testing.T) {
 	engine := testEngine(t)
 	result := applyCode(t, engine, "a1")
-	if len(result.State.Candidates) != 2 {
-		t.Fatalf("candidate count = %d, want only 2 exact matches: %#v", len(result.State.Candidates), result.State.Candidates)
+	if len(result.State.Candidates) != 1 {
+		t.Fatalf("candidate count = %d, want only the exact single character: %#v", len(result.State.Candidates), result.State.Candidates)
 	}
 	for i := range result.State.Candidates {
 		if !result.State.Candidates[i].Exact || result.State.Candidates[i].Code != "a1" {
@@ -74,7 +74,7 @@ func TestExactCandidatesDoNotMixWithLongerCompletions(t *testing.T) {
 func TestFirstPrefixNodePublishesVisibleCandidates(t *testing.T) {
 	engine := testEngine(t)
 	result := applyCode(t, engine, "a")
-	if len(result.State.Candidates) != 4 || result.State.Candidates[0].Text != "一" {
+	if len(result.State.Candidates) != 1 || result.State.Candidates[0].Text != "一" {
 		t.Fatalf("first-key prefix candidates missing or misordered: %#v", result.State.Candidates)
 	}
 	for i := range result.State.Candidates {
@@ -89,6 +89,37 @@ func TestFirstPrefixNodePublishesVisibleCandidates(t *testing.T) {
 	selected, err := engine.Select(result.State.Candidates[0].ID)
 	if err != nil || selected.Commit != "一" || selected.State.RawInput != "" {
 		t.Fatalf("first-key prefix candidate was not selectable: result=%#v err=%v", selected, err)
+	}
+}
+
+func TestFirstSyllableSingleCharactersKeepTheirOwnPages(t *testing.T) {
+	entries := make([]Entry, 0, 27)
+	for index := 0; index < 20; index++ {
+		entries = append(entries, Entry{Text: fmt.Sprintf("高频多字-%02d", index), Code: "ab", Weight: int64(10_000 - index)})
+	}
+	for index, text := range []string{"甲", "乙", "丙", "丁", "戊", "己", "庚"} {
+		entries = append(entries, Entry{Text: text, Code: "ab", Weight: int64(100 - index)})
+	}
+	index, err := NewIndex(entries)
+	if err != nil {
+		t.Fatal(err)
+	}
+	engine, err := NewEngine(index, 5)
+	if err != nil {
+		t.Fatal(err)
+	}
+	first := applyCode(t, engine, "ab").State
+	if len(first.Candidates) != 5 || !first.HasNext {
+		t.Fatalf("first single-character page = %#v", first)
+	}
+	for _, candidate := range first.Candidates {
+		if !isSingleCharacter(candidate.Text) {
+			t.Fatalf("multi-character item leaked onto first page: %#v", candidate)
+		}
+	}
+	second, err := engine.Apply(engineapi.Event{Operation: engineapi.PageNext})
+	if err != nil || len(second.State.Candidates) != 2 || second.State.HasNext {
+		t.Fatalf("second single-character page = %#v err=%v", second.State, err)
 	}
 }
 

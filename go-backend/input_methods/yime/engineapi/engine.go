@@ -14,6 +14,7 @@ const (
 	PageNext
 	PagePrevious
 	FocusSegment
+	ExpandSegment
 )
 
 var (

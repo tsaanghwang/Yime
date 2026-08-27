@@ -176,7 +176,8 @@ func runCase(indexRoot string, item regressionCase) (caseResult, error) {
 				break
 			}
 		}
-		actual.Passed = actual.ActualTop == expected.ExpectedTop && actual.ActualExact == expected.ExpectedExact &&
+		topPassed := expected.ExpectedTop == "" || actual.ActualTop == expected.ExpectedTop
+		actual.Passed = topPassed && actual.ActualExact == expected.ExpectedExact &&
 			actual.EdgeFound && actual.PathFound
 		result.Steps = append(result.Steps, actual)
 		result.Passed = result.Passed && actual.Passed
