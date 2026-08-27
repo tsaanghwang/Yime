@@ -12,10 +12,12 @@ import (
 
 // Context carries runtime paths for diagnostics collection.
 type Context struct {
-	UserDir   string
-	SharedDir string
-	HelpDir   string
-	LogDir    string
+	UserDir      string
+	SharedDir    string
+	HelpDir      string
+	LogDir       string
+	InstallRoot  string
+	Experimental bool
 }
 
 // ReportOptions controls structured report generation.
@@ -45,6 +47,9 @@ func DefaultIssueReadyOptions() ReportOptions {
 }
 
 func BuildStatusReport(ctx Context) string {
+	if ctx.Experimental {
+		return buildTrialStatusReport(ctx)
+	}
 	sections := []string{
 		"== Findings ==",
 	}
@@ -84,6 +89,58 @@ func BuildStatusReport(ctx Context) string {
 	return strings.Join(sections, "\n")
 }
 
+func buildTrialStatusReport(ctx Context) string {
+	installRoot := ctx.InstallRoot
+	if installRoot == "" && ctx.SharedDir != "" {
+		installRoot = filepath.Dir(filepath.Clean(ctx.SharedDir))
+	}
+	binDir := filepath.Join(installRoot, "bin")
+	lines := []string{
+		"== Findings ==",
+	}
+	if !pathExists(installRoot) || !pathExists(ctx.SharedDir) {
+		lines = append(lines, "判定：试验版安装包或共享数据目录不可用。")
+	} else if !pathExists(ctx.UserDir) {
+		lines = append(lines, "判定：试验版用户状态目录尚未创建。")
+	} else {
+		lines = append(lines, "判定：未发现明显阻断项；请结合 runtime 状态和 Trial 日志继续排查。")
+	}
+	lines = append(lines,
+		"", "== Trial paths ==",
+		pathCheck("Install root", installRoot),
+		pathCheck("State root", ctx.UserDir),
+		pathCheck("Shared data", ctx.SharedDir),
+		pathCheck("Help docs", ctx.HelpDir),
+		pathCheck("Trial logs", ctx.LogDir),
+		"", "== Installed Trial runtime ==",
+	)
+	for _, name := range []string{
+		"YimeCoreTrialRuntime.exe", "YimeBroker.exe", "YimeCoreDesktopTools.exe", "YimeCoreToolCenter.exe",
+		"YimeCoreTrainer.exe", "YimeCoreLayoutDesigner.exe", "YimeCoreLexiconManager.exe",
+		"YimeCoreReverseLookup.exe", "YimeCoreSettingsTool.exe", "YimeCoreDiagnostics.exe",
+	} {
+		lines = append(lines, fileCheck(name, filepath.Join(binDir, name)))
+	}
+	lines = append(lines,
+		"", "== Running Trial processes ==",
+		processSummary("YimeCoreTrialRuntime"),
+		processSummary("YimeBroker"),
+		"", "== Trial state ==",
+		fileCheck("runtime-config.json", filepath.Join(ctx.UserDir, "runtime-config.json")),
+		fileCheck("runtime-status.json", filepath.Join(ctx.UserDir, "runtime-status.json")),
+		fileCheck("toolbar state", filepath.Join(ctx.UserDir, "yimecore_experimental_toolbar_state.json")),
+		fileCheck("settings state", filepath.Join(ctx.UserDir, "yime_settings_state.json")),
+		fileCheck("layout generation", filepath.Join(ctx.UserDir, "layout", "current.json")),
+		fileCheck("index control status", filepath.Join(ctx.UserDir, "index-control", "status.json")),
+		fileCheck("user lexicon source", filepath.Join(ctx.UserDir, "yime_user_phrases.txt")),
+		"", "== Trial logs ==",
+		logSummary(ctx.LogDir),
+		"", "== Log interpretation ==",
+	)
+	lines = append(lines, logInterpretation(ctx.LogDir)...)
+	return strings.Join(lines, "\n")
+}
+
 func BuildStructuredReport(ctx Context, opts ReportOptions) string {
 	lines := []string{
 		"# Yime Diagnostics Report",
@@ -119,6 +176,22 @@ func BuildStructuredReport(ctx Context, opts ReportOptions) string {
 }
 
 func environmentSummaryLines(ctx Context) []string {
+	if ctx.Experimental {
+		installRoot := ctx.InstallRoot
+		if installRoot == "" {
+			installRoot = filepath.Dir(filepath.Clean(ctx.SharedDir))
+		}
+		return []string{
+			"== Environment summary ==",
+			statusLine("Generated at", "time", time.Now().Format("2006-01-02 15:04:05")),
+			statusLine("Trial install root", "path", installRoot),
+			statusLine("Trial runtime", processStateLabel("YimeCoreTrialRuntime"), "snapshot"),
+			statusLine("YimeBroker", processStateLabel("YimeBroker"), "snapshot"),
+			statusLine("State root", "path", ctx.UserDir),
+			statusLine("Shared data", "path", ctx.SharedDir),
+			statusLine("Trial logs", "path", ctx.LogDir),
+		}
+	}
 	return []string{
 		"== Environment summary ==",
 		statusLine("Generated at", "time", time.Now().Format("2006-01-02 15:04:05")),

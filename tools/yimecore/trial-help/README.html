@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Yime 试验版使用帮助</title>
+  <style>
+    :root { color-scheme: light; --ink: #17201d; --muted: #52615b; --line: #cad5cf; --accent: #006c59; --paper: #f6f8f6; }
+    body { margin: 0; background: var(--paper); color: var(--ink); font: 16px/1.7 "Microsoft YaHei UI", sans-serif; }
+    main { max-width: 860px; margin: 0 auto; padding: 48px 28px 72px; }
+    h1 { font-size: 30px; margin: 0 0 8px; letter-spacing: 0; }
+    h2 { font-size: 20px; margin: 34px 0 8px; padding-top: 18px; border-top: 1px solid var(--line); letter-spacing: 0; }
+    p, li { color: var(--muted); }
+    code { color: var(--accent); background: #e7efeb; padding: 2px 5px; }
+    kbd { border: 1px solid #9dafaa; border-bottom-width: 2px; background: #fff; padding: 1px 6px; }
+  </style>
+</head>
+<body><main>
+  <h1>Yime “元”试验版</h1>
+  <p>这是与正式版 PIME/Rime 独立运行的 YimeCore 试验环境。安装文件位于独立的 Program Files 包目录，个人状态位于 <code>%LOCALAPPDATA%\YimeCore Experimental Trial</code>。</p>
+
+  <h2>候选与输入</h2>
+  <ul>
+    <li>数字键始终用于继续组码，不直接选择候选。</li>
+    <li>使用 <kbd>Shift</kbd>+<kbd>1</kbd> 到 <kbd>Shift</kbd>+<kbd>9</kbd> 选择候选，候选标签显示为 ⇧1 到 ⇧9。</li>
+    <li>工具中心中的“设置工具”用于调整试验版候选和工具栏状态。</li>
+  </ul>
+
+  <h2>工具中心</h2>
+  <p>“键盘布局”会在 Trial 状态目录中生成并校验 full、variable、shorthand 三套独立索引，然后重启 Trial runtime。它不会部署 Rime，也不会修改正式版用户目录。</p>
+  <p>“用户词库”“反查编码”和“指法练习”会跟随当前 Trial 布局。“诊断工具”只收集 Trial 安装、runtime、Broker、状态文件和 Trial 日志。</p>
+
+  <h2>数据与恢复</h2>
+  <p>“试验版用户数据”可打开个人状态目录。“试验版共享数据”可查看当前安装包的只读基础数据。自定义键盘布局保存在个人状态目录的 <code>layout</code> 子目录中。</p>
+  <p>遇到问题时先打开“诊断工具”，刷新并复制匿名化结构化报告，再参照“用户反馈”提交必要信息。</p>
+</main></body>
+</html>
