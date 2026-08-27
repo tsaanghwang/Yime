@@ -112,7 +112,7 @@ if ($hostProcess.ProcessName -ne 'WINWORD' -or $loadedModule.Count -ne 1 -or
 }
 $brokerProcess = Get-CimInstance Win32_Process -Filter "ProcessId = $BrokerProcessId"
 $expectedBroker = Join-Path $resolvedInstallRoot 'bin\YimeBroker.exe'
-$expectedToolbar = Join-Path $resolvedInstallRoot 'bin\YimeCoreDesktopTools.exe'
+$expectedToolbar = Join-Path $resolvedInstallRoot 'bin\YimeCoreInputToolbar.exe'
 $defaultPipe = '\\.\pipe\YimeBroker.YimeCoreTrial.v1'
 $runtimeProcess = if ($brokerProcess -and [int]$brokerProcess.ParentProcessId -gt 0) {
     Get-CimInstance Win32_Process -Filter "ProcessId = $([int]$brokerProcess.ParentProcessId)"

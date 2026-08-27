@@ -115,9 +115,13 @@ function Assert-Package([string]$root) {
         'x64\YimeTextServiceExperiment.dll', 'x64\YimeTextServiceRegistration.exe',
         'x86\YimeTextServiceExperiment.dll', 'x86\YimeTextServiceRegistration.exe',
         'bin\YimeBroker.exe', 'bin\YimeCoreTrialRuntime.exe',
-        'bin\YimeCoreDesktopTools.exe', 'bin\YimeCoreReverseLookup.exe',
+        'bin\YimeCoreInputToolbar.exe', 'bin\YimeCoreReverseLookup.exe',
         'bin\YimeCoreLexiconManager.exe', 'bin\YimeCoreTrainer.exe',
         'bin\YimeCoreToolCenter.exe', 'bin\YimeCoreSettingsTool.exe',
+        'bin\YimeCoreLexiconCenter.exe', 'bin\YimeCoreBlocklistManager.exe',
+        'bin\YimeCoreSystemLexiconAudit.exe', 'bin\YimeCoreLearningManager.exe',
+        'bin\YimeCorePromotionScan.exe',
+		'bin\YimeCoreProfessionalLexicon.exe',
 		'bin\YimeCoreLayoutDesigner.exe', 'bin\YimeCoreDiagnostics.exe',
         'bin\YimeCoreExplain.exe', 'bin\YimeCoreSentenceRegression.exe',
         'profile-icon.ico',
@@ -125,7 +129,8 @@ function Assert-Package([string]$root) {
         'data\yime_yinyuan_layout.json', 'data\yime_syllable_decomposition.tsv',
         'data\yime_full.dict.yaml', 'data\trainer\foundation.json',
         'data\trainer\curriculum.json', 'data\trainer\yinyuan_catalog.json',
-		'data\trainer\yinyuan_groups.json',
+		'data\trainer\yinyuan_groups.json', 'data\dynamic_sentence_cases.json',
+        'professional-lexicons\catalog.json',
 		'help\README.html', 'help\trial-feedback.html', 'help\diagnostics.html'
     )) {
         if (-not (Test-Path -LiteralPath (Join-Path $resolved $required) -PathType Leaf)) {

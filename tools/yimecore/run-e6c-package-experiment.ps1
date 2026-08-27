@@ -94,6 +94,10 @@ foreach ($relative in $trainerDataFiles) {
     New-Item -ItemType Directory -Path (Split-Path -Parent $destination) -Force | Out-Null
     Copy-Item -LiteralPath $source -Destination $destination -Force
 }
+$dynamicSentenceCaseSource = Join-Path $repoRoot `
+    'go-backend\input_methods\yime\yimecore\testdata\dynamic_sentence_cases.json'
+$dynamicSentenceCasePackage = Join-Path $packageRoot 'data\dynamic_sentence_cases.json'
+Copy-Item -LiteralPath $dynamicSentenceCaseSource -Destination $dynamicSentenceCasePackage -Force
 
 $textServiceBuilds = @()
 foreach ($architecture in @(
@@ -140,11 +144,17 @@ foreach ($architecture in @(
 $broker = Join-Path $binRoot 'YimeBroker.exe'
 $verifier = Join-Path $binRoot 'YimeE6CPackageExperiment.exe'
 $runtime = Join-Path $binRoot 'YimeCoreTrialRuntime.exe'
-$desktopTools = Join-Path $binRoot 'YimeCoreDesktopTools.exe'
+$inputToolbar = Join-Path $binRoot 'YimeCoreInputToolbar.exe'
 $reverseLookup = Join-Path $binRoot 'YimeCoreReverseLookup.exe'
 $lexiconManager = Join-Path $binRoot 'YimeCoreLexiconManager.exe'
 $trainer = Join-Path $binRoot 'YimeCoreTrainer.exe'
 $toolCenter = Join-Path $binRoot 'YimeCoreToolCenter.exe'
+$lexiconCenter = Join-Path $binRoot 'YimeCoreLexiconCenter.exe'
+$blocklistManager = Join-Path $binRoot 'YimeCoreBlocklistManager.exe'
+$systemLexiconAudit = Join-Path $binRoot 'YimeCoreSystemLexiconAudit.exe'
+$learningManager = Join-Path $binRoot 'YimeCoreLearningManager.exe'
+$promotionScan = Join-Path $binRoot 'YimeCorePromotionScan.exe'
+$professionalLexicon = Join-Path $binRoot 'YimeCoreProfessionalLexicon.exe'
 $layoutDesigner = Join-Path $binRoot 'YimeCoreLayoutDesigner.exe'
 $diagnosticsTool = Join-Path $binRoot 'YimeCoreDiagnostics.exe'
 $settingsTool = Join-Path $binRoot 'YimeCoreSettingsTool.exe'
@@ -152,18 +162,20 @@ $explainTool = Join-Path $binRoot 'YimeCoreExplain.exe'
 $sentenceRegression = Join-Path $binRoot 'YimeCoreSentenceRegression.exe'
 Push-Location (Join-Path $repoRoot 'go-backend')
 try {
-	$legacyToolbar = Join-Path $binRoot 'YimeCoreToolbar.exe'
-	if (Test-Path -LiteralPath $legacyToolbar -PathType Leaf) {
-		Remove-Item -LiteralPath $legacyToolbar -Force
-	}
+    foreach ($legacyTool in @('YimeCoreToolbar.exe', 'YimeCoreDesktopTools.exe')) {
+        $legacyToolPath = Join-Path $binRoot $legacyTool
+        if (Test-Path -LiteralPath $legacyToolPath -PathType Leaf) {
+            Remove-Item -LiteralPath $legacyToolPath -Force
+        }
+    }
     & go build -trimpath -o $broker ./cmd/yimebroker
     if ($LASTEXITCODE -ne 0) { throw 'E6-C Broker build failed' }
     & go build -trimpath -o $verifier ./cmd/yimebroker-multimode-experiment
     if ($LASTEXITCODE -ne 0) { throw 'E6-C verifier build failed' }
     & go build -trimpath -ldflags '-H=windowsgui' -o $runtime ./cmd/yimecore-trial-runtime
     if ($LASTEXITCODE -ne 0) { throw 'E6-C runtime supervisor build failed' }
-	& go build -trimpath -ldflags '-H=windowsgui' -o $desktopTools ./cmd/input-toolbar
-	if ($LASTEXITCODE -ne 0) { throw 'E6-C native desktop tools build failed' }
+    & go build -trimpath -ldflags '-H=windowsgui' -o $inputToolbar ./cmd/input-toolbar
+    if ($LASTEXITCODE -ne 0) { throw 'E6-C native input toolbar build failed' }
     & go build -trimpath -ldflags '-H=windowsgui' -o $reverseLookup ./cmd/reverse-lookup-tool
     if ($LASTEXITCODE -ne 0) { throw 'E6-C reverse lookup build failed' }
     & go build -trimpath -ldflags '-H=windowsgui' -o $lexiconManager ./cmd/lexicon-manager
@@ -172,6 +184,18 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'E6-C trainer build failed' }
     & go build -trimpath -ldflags '-H=windowsgui' -o $toolCenter ./cmd/tool-hub
     if ($LASTEXITCODE -ne 0) { throw 'E6-C Tool Center build failed' }
+    & go build -trimpath -ldflags '-H=windowsgui' -o $lexiconCenter ./cmd/tool-hub
+    if ($LASTEXITCODE -ne 0) { throw 'E6-C Lexicon Center build failed' }
+    & go build -trimpath -ldflags '-H=windowsgui' -o $blocklistManager ./cmd/blocklist-manager
+    if ($LASTEXITCODE -ne 0) { throw 'E6-C blocklist manager build failed' }
+    & go build -trimpath -ldflags '-H=windowsgui' -o $systemLexiconAudit ./cmd/system-lexicon-audit
+    if ($LASTEXITCODE -ne 0) { throw 'E6-C system lexicon audit build failed' }
+    & go build -trimpath -ldflags '-H=windowsgui' -o $learningManager ./cmd/learning-manager
+    if ($LASTEXITCODE -ne 0) { throw 'E6-C learning manager build failed' }
+    & go build -trimpath -ldflags '-H=windowsgui' -o $promotionScan ./cmd/lexicon-promotion-scan
+    if ($LASTEXITCODE -ne 0) { throw 'E6-C promotion scan build failed' }
+    & go build -trimpath -ldflags '-H=windowsgui' -o $professionalLexicon ./cmd/professional-lexicon-manager
+    if ($LASTEXITCODE -ne 0) { throw 'E6-C professional lexicon manager build failed' }
     & go build -trimpath -ldflags '-H=windowsgui' -o $layoutDesigner ./cmd/yime-layout-designer
     if ($LASTEXITCODE -ne 0) { throw 'E6-C layout designer build failed' }
     & go build -trimpath -ldflags '-H=windowsgui' -o $diagnosticsTool ./cmd/diagnostics-tool
@@ -185,6 +209,19 @@ try {
 } finally {
     Pop-Location
 }
+
+$dynamicSentenceEvidencePath = Join-Path $outputDir 'dynamic-sentence-regression.json'
+& $sentenceRegression -index-root $indexRoot -cases $dynamicSentenceCasePackage `
+    -output $dynamicSentenceEvidencePath
+if ($LASTEXITCODE -ne 0) { throw 'E6-C dynamic sentence regression failed' }
+$dynamicSentenceEvidence = Get-Content -LiteralPath $dynamicSentenceEvidencePath -Raw -Encoding UTF8 |
+    ConvertFrom-Json
+if (-not $dynamicSentenceEvidence.passed) { throw 'E6-C dynamic sentence regression did not pass' }
+
+$professionalRoot = Join-Path $packageRoot 'professional-lexicons'
+New-Item -ItemType Directory -Path $professionalRoot -Force | Out-Null
+Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'professional-lexicons\catalog.json') `
+    -Destination (Join-Path $professionalRoot 'catalog.json') -Force
 
 $maintenanceRoot = Join-Path $packageRoot 'maintenance'
 New-Item -ItemType Directory -Path $maintenanceRoot -Force | Out-Null
@@ -373,6 +410,7 @@ $languageBarEvidencePath = Join-Path $outputDir 'language-bar-evidence.json'
 
 $sourceFiles = @(
     'docs\project\YIMECORE_REPLACEMENT_EXPERIMENT.md',
+    'docs\project\DYNAMIC_SENTENCE_COMPOSITION_REQUIREMENTS.md',
     'go-backend\cmd\yimebroker\main.go',
     'go-backend\cmd\yimebroker-multimode-experiment\main.go',
     'go-backend\cmd\yimecore-trial-runtime\main.go',
@@ -400,12 +438,16 @@ $sourceFiles = @(
     'go-backend\input_methods\yime\toolhub\manifest.go',
     'go-backend\input_methods\yime\toolhub\launch_windows.go',
     'go-backend\cmd\settings-tool\main.go',
+    'go-backend\cmd\settings-tool\main_test.go',
+    'go-backend\cmd\settings-tool\documents_windows.go',
+    'go-backend\input_methods\yime\toolbarstate\state.go',
     'go-backend\cmd\yimecore-explain\main.go',
     'go-backend\cmd\yimecore-explain\main_test.go',
     'go-backend\cmd\yimecore-sentence-regression\main.go',
     'go-backend\cmd\yimecore-sentence-regression\main_test.go',
     'go-backend\input_methods\yime\yimebroker\dispatcher.go',
     'go-backend\input_methods\yime\yimebroker\dispatcher_test.go',
+    'go-backend\input_methods\yime\yimebroker\protocol.go',
     'go-backend\input_methods\yime\yimebroker\index_control.go',
     'go-backend\input_methods\yime\yimebroker\index_manager.go',
     'go-backend\input_methods\yime\yimebroker\index_manager_test.go',
@@ -415,11 +457,20 @@ $sourceFiles = @(
     'go-backend\input_methods\yime\yimecore\indexfile.go',
     'go-backend\input_methods\yime\yimecore\indexfile_test.go',
     'go-backend\input_methods\yime\yimecore\userlexicon_overlay.go',
+    'go-backend\input_methods\yime\candidateannotation\annotation.go',
+    'go-backend\input_methods\yime\candidateannotation\annotation_test.go',
+    'go-backend\input_methods\yime\candidatefilter\filter.go',
+    'go-backend\input_methods\yime\candidatefilter\filter_test.go',
     'go-backend\input_methods\yime\reverselookup\index.go',
     'go-backend\input_methods\yime\yimecore\engine.go',
+    'go-backend\input_methods\yime\yimecore\engine_test.go',
+    'go-backend\input_methods\yime\yimecore\bundle_test.go',
+    'go-backend\input_methods\yime\yimecore\construction.go',
     'go-backend\input_methods\yime\yimecore\segment_correction_test.go',
     'go-backend\input_methods\yime\yimecore\sentence.go',
     'go-backend\input_methods\yime\yimecore\sentence_test.go',
+    'go-backend\input_methods\yime\yimecore\usermodel.go',
+    'go-backend\input_methods\yime\yimecore\usermodel_test.go',
     'go-backend\input_methods\yime\yimecore\explain.go',
     'go-backend\input_methods\yime\yimecore\explain_test.go',
     'go-backend\input_methods\yime\yimecore\testdata\dynamic_sentence_cases.json',
@@ -464,6 +515,7 @@ $sourceFiles = @(
     'tools\yimecore\verify-e6c-trial-runtime.ps1',
     'tools\yimecore\verify-e6c-language-bar-events.ps1',
     'tools\yimecore\trial-help\README.html',
+    'tools\yimecore\trial-help\settings-and-data.html',
     'tools\yimecore\trial-help\trial-feedback.html',
     'tools\yimecore\trial-help\diagnostics.html',
     'tools\yimecore\record-e6b8-desktop-host-acceptance.ps1'
@@ -512,9 +564,12 @@ $summary = [ordered]@{
     generated_sentence_first_candidate_passed = [bool](-not (@($capabilities.modes | Where-Object {
         -not $_.generated_sentence_passed
     }).Count))
-    native_desktop_tools_packaged = [bool]$installationEvidence.native_desktop_tools_windows_gui
+    dynamic_sentence_real_indexes_passed = [bool]$dynamicSentenceEvidence.passed
+    dynamic_sentence_evidence_path = $dynamicSentenceEvidencePath
+    dynamic_sentence_evidence_sha256 = (Get-FileHash -LiteralPath $dynamicSentenceEvidencePath -Algorithm SHA256).Hash.ToLowerInvariant()
+    native_input_toolbar_packaged = [bool]$installationEvidence.native_input_toolbar_windows_gui
     legacy_desktop_tools_removed = [bool]($installationEvidence.legacy_trial_toolbar_absent -and
-        $installationEvidence.desktop_tools_powershell_ui_absent)
+        $installationEvidence.input_toolbar_powershell_ui_absent)
     runtime_supervisor_packaged = Test-Path -LiteralPath $runtime
     runtime_supervisor_broker_recovery_passed = [bool]$runtimeRecoveryPassed
     runtime_supervision_evidence_path = $runtimeEvidencePath
@@ -561,7 +616,8 @@ if (-not $summary.base_package_hash_handoff_verified -or
     -not $summary.recursive_code_convergence_passed -or
     -not $summary.prefix_tree_monotonicity_passed -or
     -not $summary.generated_sentence_first_candidate_passed -or
-    -not $summary.native_desktop_tools_packaged -or -not $summary.legacy_desktop_tools_removed -or
+    -not $summary.dynamic_sentence_real_indexes_passed -or
+    -not $summary.native_input_toolbar_packaged -or -not $summary.legacy_desktop_tools_removed -or
     -not $summary.runtime_supervisor_packaged -or -not $summary.runtime_supervisor_broker_recovery_passed -or
     -not $summary.language_bar_x64_x86_passed -or
     -not $summary.installed_apps_uninstall_contract_passed -or

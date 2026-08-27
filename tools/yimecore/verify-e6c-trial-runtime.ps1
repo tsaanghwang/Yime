@@ -30,11 +30,25 @@ foreach ($requiredPath in @($expectedRuntime, $expectedBroker, (Join-Path $insta
 }
 $packageManifest = Get-Content -LiteralPath (Join-Path $installRoot 'package-manifest.json') -Raw -Encoding UTF8 |
     ConvertFrom-Json
-$brokerManifestRecord = @($packageManifest.files | Where-Object { $_.path -eq 'bin/YimeBroker.exe' })
-if ($brokerManifestRecord.Count -ne 1) { throw 'installed package manifest has no unique Broker record' }
-$brokerDiskHash = (Get-FileHash -LiteralPath $expectedBroker -Algorithm SHA256).Hash.ToLowerInvariant()
-if ($brokerDiskHash -ne [string]$brokerManifestRecord[0].sha256) {
-    throw 'installed Broker hash does not match the package manifest'
+function Assert-InstalledManifestFile([string]$relativePath) {
+    $records = @($packageManifest.files | Where-Object { $_.path -eq $relativePath })
+    if ($records.Count -ne 1) { throw "installed package manifest has no unique record: $relativePath" }
+    $path = Join-Path $installRoot $relativePath.Replace('/', '\')
+    if (-not (Test-Path -LiteralPath $path -PathType Leaf)) {
+        throw "installed package file is missing: $relativePath"
+    }
+    $diskHash = (Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash.ToLowerInvariant()
+    if ($diskHash -ne [string]$records[0].sha256) {
+        throw "installed file hash does not match the package manifest: $relativePath"
+    }
+    return $path
+}
+foreach ($relativePath in @(
+    'bin/YimeCoreTrialRuntime.exe', 'bin/YimeBroker.exe',
+    'bin/YimeCoreSentenceRegression.exe', 'data/dynamic_sentence_cases.json',
+    'x64/YimeTextServiceExperiment.dll', 'x86/YimeTextServiceExperiment.dll'
+)) {
+    $null = Assert-InstalledManifestFile $relativePath
 }
 $pipeName = ([string]$config.pipe_name).Replace('\\.\pipe\', '')
 if ([string]::IsNullOrWhiteSpace($pipeName)) { throw 'invalid E6-C named pipe configuration' }
@@ -110,6 +124,19 @@ $modes = @(
     (Invoke-ModeProbe 'variable' 'bj'),
     (Invoke-ModeProbe 'shorthand' 'bl')
 )
+$evidenceRoot = Join-Path $stateRootPath 'evidence'
+New-Item -ItemType Directory -Force $evidenceRoot | Out-Null
+$dynamicSentenceEvidencePath = Join-Path $evidenceRoot 'installed-dynamic-sentence-regression.json'
+$sentenceRegression = Join-Path $installRoot 'bin\YimeCoreSentenceRegression.exe'
+$dynamicSentenceCases = Join-Path $installRoot 'data\dynamic_sentence_cases.json'
+& $sentenceRegression -index-root (Join-Path $installRoot 'indexes') `
+    -cases $dynamicSentenceCases -output $dynamicSentenceEvidencePath
+if ($LASTEXITCODE -ne 0) { throw 'installed E6-C dynamic sentence regression failed' }
+$dynamicSentenceEvidence = Get-Content -LiteralPath $dynamicSentenceEvidencePath -Raw -Encoding UTF8 |
+    ConvertFrom-Json
+if (-not $dynamicSentenceEvidence.passed) {
+    throw 'installed E6-C dynamic sentence regression did not pass'
+}
 $recovery = $null
 if ($ExerciseRecovery) {
     $broker = Get-CimInstance Win32_Process -Filter "ProcessId = $([int]$statusBefore.broker_pid)"
@@ -153,8 +180,6 @@ if ($ExerciseRecovery) {
     }
 }
 
-$evidenceRoot = Join-Path $stateRootPath 'evidence'
-New-Item -ItemType Directory -Force $evidenceRoot | Out-Null
 $evidencePath = Join-Path $evidenceRoot 'live-runtime-verification.json'
 [ordered]@{
     schema_version = 'yimecore-e6c-live-runtime-v1'
@@ -162,6 +187,9 @@ $evidencePath = Join-Path $evidenceRoot 'live-runtime-verification.json'
     pipe_name = [string]$config.pipe_name
     modes = $modes
     all_modes_usable = $modes.Count -eq 3 -and -not ($modes.candidate_count -contains 0)
+    dynamic_sentence_real_indexes_passed = [bool]$dynamicSentenceEvidence.passed
+    dynamic_sentence_evidence_path = $dynamicSentenceEvidencePath
+    dynamic_sentence_evidence_sha256 = (Get-FileHash -LiteralPath $dynamicSentenceEvidencePath -Algorithm SHA256).Hash.ToLowerInvariant()
     recovery = $recovery
     user_model_mutated_by_probe = $false
     production_rime_pime_changed = $false

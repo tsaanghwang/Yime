@@ -36,7 +36,7 @@ $sentinelPreserved = (Test-Path -LiteralPath $sentinel -PathType Leaf) -and
     ((Get-Content -LiteralPath $sentinel -Raw) -eq $sentinelValue)
 $managerText = Get-Content -LiteralPath $manager -Raw
 $profileIcon = Join-Path $packageRootPath 'profile-icon.ico'
-$desktopTools = Join-Path $packageRootPath 'bin\YimeCoreDesktopTools.exe'
+$inputToolbar = Join-Path $packageRootPath 'bin\YimeCoreInputToolbar.exe'
 function Get-PeSubsystem([string]$path) {
     $stream = [IO.File]::OpenRead($path)
     try {
@@ -49,8 +49,8 @@ function Get-PeSubsystem([string]$path) {
         $stream.Dispose()
     }
 }
-$desktopToolsSubsystem = if (Test-Path -LiteralPath $desktopTools -PathType Leaf) {
-    Get-PeSubsystem $desktopTools
+$inputToolbarSubsystem = if (Test-Path -LiteralPath $inputToolbar -PathType Leaf) {
+    Get-PeSubsystem $inputToolbar
 } else { 0 }
 $autoStartTemplate = [regex]::Match($managerText,
     '(?m)^\s*\$runValue\s*=\s*''\{0\} -no-toolbar'' -f \(Quote-Argument \(\[string\]\$runtimeConfig\.runtime_path\)\)\s*$')
@@ -71,13 +71,19 @@ $result = [ordered]@{
     secondary_architecture_com_only = [bool]($managerText -match 'Invoke-Registration \$x86Tool ''register-com''')
     profile_keyboard_icon_packaged = [bool](Test-Path -LiteralPath $profileIcon -PathType Leaf)
     trial_tools_packaged = [bool]((@(
-        'YimeCoreDesktopTools.exe', 'YimeCoreReverseLookup.exe',
+        'YimeCoreInputToolbar.exe', 'YimeCoreReverseLookup.exe',
         'YimeCoreLexiconManager.exe', 'YimeCoreTrainer.exe', 'YimeCoreToolCenter.exe',
+        'YimeCoreLexiconCenter.exe', 'YimeCoreBlocklistManager.exe',
+        'YimeCoreSystemLexiconAudit.exe', 'YimeCoreLearningManager.exe',
+        'YimeCorePromotionScan.exe',
+		'YimeCoreProfessionalLexicon.exe',
 		'YimeCoreSettingsTool.exe', 'YimeCoreLayoutDesigner.exe', 'YimeCoreDiagnostics.exe',
         'YimeCoreExplain.exe', 'YimeCoreSentenceRegression.exe'
     ) | Where-Object {
         -not (Test-Path -LiteralPath (Join-Path $packageRootPath ('bin\' + $_)) -PathType Leaf)
     }).Count -eq 0)
+    professional_catalog_packaged = [bool](Test-Path -LiteralPath `
+        (Join-Path $packageRootPath 'professional-lexicons\catalog.json') -PathType Leaf)
     help_files_packaged = [bool]((@(
         'README.html', 'trial-feedback.html', 'diagnostics.html'
     ) | Where-Object {
@@ -86,15 +92,20 @@ $result = [ordered]@{
     trainer_data_packaged = [bool]((@(
         'yime_yinyuan_layout.json', 'yime_syllable_decomposition.tsv', 'yime_full.dict.yaml',
         'trainer\foundation.json', 'trainer\curriculum.json',
-        'trainer\yinyuan_catalog.json', 'trainer\yinyuan_groups.json'
+        'trainer\yinyuan_catalog.json', 'trainer\yinyuan_groups.json',
+        'dynamic_sentence_cases.json'
     ) | Where-Object {
         -not (Test-Path -LiteralPath (Join-Path $packageRootPath ('data\' + $_)) -PathType Leaf)
     }).Count -eq 0)
     legacy_trial_toolbar_absent = [bool](-not (Test-Path -LiteralPath `
-        (Join-Path $packageRootPath 'bin\YimeCoreToolbar.exe') -PathType Leaf))
-    native_desktop_tools_windows_gui = [bool]($desktopToolsSubsystem -eq 2)
-    desktop_tools_powershell_ui_absent = [bool](@(Get-ChildItem -LiteralPath $packageRootPath `
-        -Recurse -File -Filter '*DesktopTools*.ps1').Count -eq 0)
+        (Join-Path $packageRootPath 'bin\YimeCoreToolbar.exe') -PathType Leaf) -and
+        -not (Test-Path -LiteralPath `
+        (Join-Path $packageRootPath 'bin\YimeCoreDesktopTools.exe') -PathType Leaf))
+    native_input_toolbar_windows_gui = [bool]($inputToolbarSubsystem -eq 2)
+    input_toolbar_powershell_ui_absent = [bool](@(Get-ChildItem -LiteralPath $packageRootPath `
+        -Recurse -File -Filter '*.ps1' | Where-Object {
+            $_.Name -like '*DesktopTools*' -or $_.Name -like '*InputToolbar*'
+        }).Count -eq 0)
     registration_state_convergence_wait = [bool]($managerText.Contains('function Wait-RegistrationState'))
     taskbar_language_bar_categories = [bool]$plan.taskbar_language_bar_categories
     windows_native_language_bar_only = [bool]($managerText.Contains('-no-toolbar'))
@@ -117,8 +128,8 @@ if ($result.installed_apps_entry_planned -ne $true -or
 	$result.help_files_packaged -ne $true -or
     $result.trainer_data_packaged -ne $true -or
     $result.legacy_trial_toolbar_absent -ne $true -or
-    $result.native_desktop_tools_windows_gui -ne $true -or
-    $result.desktop_tools_powershell_ui_absent -ne $true -or
+    $result.native_input_toolbar_windows_gui -ne $true -or
+    $result.input_toolbar_powershell_ui_absent -ne $true -or
     $result.registration_state_convergence_wait -ne $true -or
     $result.taskbar_language_bar_categories -ne $true -or
     $result.windows_native_language_bar_only -ne $true -or

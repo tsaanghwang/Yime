@@ -27,7 +27,7 @@ if (-not $x64DLL.Equals($expectedX64, [StringComparison]::OrdinalIgnoreCase) -or
 $requiredPackageFiles = @(
     $expectedX64,
     $expectedX86,
-    (Join-Path $installRootPath 'bin\YimeCoreDesktopTools.exe'),
+    (Join-Path $installRootPath 'bin\YimeCoreInputToolbar.exe'),
     (Join-Path $installRootPath 'bin\YimeCoreReverseLookup.exe'),
     (Join-Path $installRootPath 'bin\YimeCoreLexiconManager.exe'),
     (Join-Path $installRootPath 'bin\YimeCoreTrainer.exe'),

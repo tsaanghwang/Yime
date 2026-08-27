@@ -97,6 +97,17 @@ if errorlevel 1 (
     exit /b 1
 )
 
+echo Opening the installed YimeCore Trial Tool Center...
+"%YIME_PS%" -NoProfile -ExecutionPolicy Bypass -File "%YIME_ROOT%\tools\yimecore\open-e6c-trial-tool-center.ps1"
+if errorlevel 1 (
+    echo.
+    echo INSTALL AND LIVE RUNTIME VERIFICATION PASSED, BUT TOOL CENTER LAUNCH FAILED.
+    echo You can retry with:
+    echo   "%YIME_PS%" -NoProfile -ExecutionPolicy Bypass -File "%YIME_ROOT%\tools\yimecore\open-e6c-trial-tool-center.ps1"
+    pause
+    exit /b 1
+)
+
 echo Build, installation, and live runtime verification completed successfully.
 echo Evidence directory:
 echo   %YIME_OUT%
