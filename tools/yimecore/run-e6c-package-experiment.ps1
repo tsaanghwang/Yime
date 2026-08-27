@@ -145,6 +145,8 @@ $reverseLookup = Join-Path $binRoot 'YimeCoreReverseLookup.exe'
 $lexiconManager = Join-Path $binRoot 'YimeCoreLexiconManager.exe'
 $trainer = Join-Path $binRoot 'YimeCoreTrainer.exe'
 $toolCenter = Join-Path $binRoot 'YimeCoreToolCenter.exe'
+$layoutDesigner = Join-Path $binRoot 'YimeCoreLayoutDesigner.exe'
+$diagnosticsTool = Join-Path $binRoot 'YimeCoreDiagnostics.exe'
 $settingsTool = Join-Path $binRoot 'YimeCoreSettingsTool.exe'
 $explainTool = Join-Path $binRoot 'YimeCoreExplain.exe'
 $sentenceRegression = Join-Path $binRoot 'YimeCoreSentenceRegression.exe'
@@ -170,6 +172,10 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'E6-C trainer build failed' }
     & go build -trimpath -ldflags '-H=windowsgui' -o $toolCenter ./cmd/tool-hub
     if ($LASTEXITCODE -ne 0) { throw 'E6-C Tool Center build failed' }
+    & go build -trimpath -ldflags '-H=windowsgui' -o $layoutDesigner ./cmd/yime-layout-designer
+    if ($LASTEXITCODE -ne 0) { throw 'E6-C layout designer build failed' }
+    & go build -trimpath -ldflags '-H=windowsgui' -o $diagnosticsTool ./cmd/diagnostics-tool
+    if ($LASTEXITCODE -ne 0) { throw 'E6-C diagnostics tool build failed' }
     & go build -trimpath -ldflags '-H=windowsgui' -o $settingsTool ./cmd/settings-tool
     if ($LASTEXITCODE -ne 0) { throw 'E6-C settings tool build failed' }
     & go build -trimpath -o $explainTool ./cmd/yimecore-explain
@@ -190,6 +196,9 @@ Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'Force-Uninstall-YimeCore-Trial.
     -Destination (Join-Path $packageRoot 'Force-Uninstall-YimeCore-Trial.cmd') -Force
 Copy-Item -LiteralPath (Join-Path $repoRoot 'YimeTextServiceExperiment\assets\yimecore-trial-profile.ico') `
     -Destination (Join-Path $packageRoot 'profile-icon.ico') -Force
+$helpRoot = Join-Path $packageRoot 'help'
+New-Item -ItemType Directory -Path $helpRoot -Force | Out-Null
+Copy-Item -Path (Join-Path $PSScriptRoot 'trial-help\*.html') -Destination $helpRoot -Force
 
 $commit = (& git -C $repoRoot rev-parse HEAD).Trim()
 $packageManifest = [ordered]@{
@@ -380,6 +389,14 @@ $sourceFiles = @(
     'go-backend\cmd\yime-trainer\display_windows_test.go',
     'go-backend\cmd\tool-hub\main.go',
     'go-backend\cmd\tool-hub\main_test.go',
+    'go-backend\cmd\yime-layout-designer\gui_windows.go',
+    'go-backend\cmd\yime-layout-designer\trial_windows_test.go',
+    'go-backend\input_methods\yime\layoutdesigner\trial_apply.go',
+    'go-backend\input_methods\yime\layoutdesigner\trial_apply_test.go',
+    'go-backend\cmd\diagnostics-tool\main.go',
+    'go-backend\cmd\diagnostics-tool\main_test.go',
+    'go-backend\input_methods\yime\diagnostics\collect.go',
+    'go-backend\input_methods\yime\diagnostics\collect_test.go',
     'go-backend\input_methods\yime\toolhub\manifest.go',
     'go-backend\input_methods\yime\toolhub\launch_windows.go',
     'go-backend\cmd\settings-tool\main.go',
@@ -446,6 +463,9 @@ $sourceFiles = @(
     'tools\yimecore\stop-e6c-trial-runtime.ps1',
     'tools\yimecore\verify-e6c-trial-runtime.ps1',
     'tools\yimecore\verify-e6c-language-bar-events.ps1',
+    'tools\yimecore\trial-help\README.html',
+    'tools\yimecore\trial-help\trial-feedback.html',
+    'tools\yimecore\trial-help\diagnostics.html',
     'tools\yimecore\record-e6b8-desktop-host-acceptance.ps1'
 )
 $sourceHashes = foreach ($relative in $sourceFiles) {

@@ -33,6 +33,8 @@ $requiredPackageFiles = @(
     (Join-Path $installRootPath 'bin\YimeCoreTrainer.exe'),
     (Join-Path $installRootPath 'bin\YimeCoreToolCenter.exe'),
     (Join-Path $installRootPath 'bin\YimeCoreSettingsTool.exe'),
+	(Join-Path $installRootPath 'bin\YimeCoreLayoutDesigner.exe'),
+	(Join-Path $installRootPath 'bin\YimeCoreDiagnostics.exe'),
     (Join-Path $installRootPath 'bin\YimeCoreExplain.exe'),
     (Join-Path $installRootPath 'bin\YimeCoreSentenceRegression.exe'),
     (Join-Path $installRootPath 'indexes\full.yidx'),
@@ -45,7 +47,10 @@ $requiredPackageFiles = @(
     (Join-Path $installRootPath 'data\trainer\foundation.json'),
     (Join-Path $installRootPath 'data\trainer\curriculum.json'),
     (Join-Path $installRootPath 'data\trainer\yinyuan_catalog.json'),
-    (Join-Path $installRootPath 'data\trainer\yinyuan_groups.json')
+    (Join-Path $installRootPath 'data\trainer\yinyuan_groups.json'),
+    (Join-Path $installRootPath 'help\README.html'),
+    (Join-Path $installRootPath 'help\trial-feedback.html'),
+    (Join-Path $installRootPath 'help\diagnostics.html')
 )
 foreach ($required in $requiredPackageFiles) {
     if (-not (Test-Path -LiteralPath $required -PathType Leaf)) {

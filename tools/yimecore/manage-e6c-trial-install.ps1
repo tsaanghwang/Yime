@@ -118,13 +118,15 @@ function Assert-Package([string]$root) {
         'bin\YimeCoreDesktopTools.exe', 'bin\YimeCoreReverseLookup.exe',
         'bin\YimeCoreLexiconManager.exe', 'bin\YimeCoreTrainer.exe',
         'bin\YimeCoreToolCenter.exe', 'bin\YimeCoreSettingsTool.exe',
+		'bin\YimeCoreLayoutDesigner.exe', 'bin\YimeCoreDiagnostics.exe',
         'bin\YimeCoreExplain.exe', 'bin\YimeCoreSentenceRegression.exe',
         'profile-icon.ico',
         'indexes\full.yidx', 'indexes\variable.yidx', 'indexes\shorthand.yidx',
         'data\yime_yinyuan_layout.json', 'data\yime_syllable_decomposition.tsv',
         'data\yime_full.dict.yaml', 'data\trainer\foundation.json',
         'data\trainer\curriculum.json', 'data\trainer\yinyuan_catalog.json',
-        'data\trainer\yinyuan_groups.json'
+		'data\trainer\yinyuan_groups.json',
+		'help\README.html', 'help\trial-feedback.html', 'help\diagnostics.html'
     )) {
         if (-not (Test-Path -LiteralPath (Join-Path $resolved $required) -PathType Leaf)) {
             throw "incomplete E6-C trial package: $required"

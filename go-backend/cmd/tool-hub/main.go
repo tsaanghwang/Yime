@@ -13,6 +13,7 @@ import (
 	"syscall"
 	"unsafe"
 
+	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/layoutdesigner"
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/toolhub"
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/win32ui"
 )
@@ -174,23 +175,40 @@ func buildExperimentalManifest(installRoot, stateRoot, statePath, mode string) (
 	binDir := filepath.Join(installRoot, "bin")
 	sharedDir := filepath.Join(installRoot, "data")
 	indexRoot := filepath.Join(installRoot, "indexes")
+	effectiveDataDir := sharedDir
+	if generation, loadErr := layoutdesigner.LoadTrialLayoutGeneration(stateRoot); loadErr == nil {
+		effectiveDataDir = generation.DataDir
+		indexRoot = generation.IndexRoot
+	} else if !os.IsNotExist(loadErr) {
+		return toolhub.Manifest{}, fmt.Errorf("无法读取 Trial 布局 generation：%w", loadErr)
+	}
+	helpDir := filepath.Join(installRoot, "help")
 	return toolhub.Manifest{
 		Title: "Yime 试验版工具中心",
 		Tools: []toolhub.Entry{
 			{ID: "typing-trainer", Label: "指法练习", ActionType: toolhub.ActionRunExecutable,
 				TargetPath: filepath.Join(binDir, "YimeCoreTrainer.exe"),
-				Arguments:  []string{"-SharedDir", sharedDir, "-UserDir", stateRoot, "-Mode", mode, "-Experimental"}},
+				Arguments:  []string{"-SharedDir", effectiveDataDir, "-UserDir", stateRoot, "-Mode", mode, "-Experimental"}},
+			{ID: "keyboard-layout", Label: "键盘布局", ActionType: toolhub.ActionRunExecutable,
+				TargetPath: filepath.Join(binDir, "YimeCoreLayoutDesigner.exe"),
+				Arguments:  []string{"-SharedDir", sharedDir, "-UserDir", stateRoot, "-Experimental"}},
 			{ID: "lexicon-manager", Label: "用户词库", ActionType: toolhub.ActionRunExecutable,
 				TargetPath: filepath.Join(binDir, "YimeCoreLexiconManager.exe"),
-				Arguments:  []string{"-SharedDir", sharedDir, "-UserDir", stateRoot, "-IndexRoot", indexRoot, "-Mode", mode, "-Experimental"}},
+				Arguments:  []string{"-SharedDir", effectiveDataDir, "-UserDir", stateRoot, "-IndexRoot", indexRoot, "-Mode", mode, "-Experimental"}},
 			{ID: "reverse-lookup-tool", Label: "反查编码", ActionType: toolhub.ActionRunExecutable,
 				TargetPath: filepath.Join(binDir, "YimeCoreReverseLookup.exe"),
-				Arguments:  []string{"-SharedDir", sharedDir, "-UserDir", stateRoot, "-IndexRoot", indexRoot, "-Mode", mode}},
+				Arguments:  []string{"-SharedDir", effectiveDataDir, "-UserDir", stateRoot, "-IndexRoot", indexRoot, "-Mode", mode}},
 			{ID: "settings-tool", Label: "设置工具", ActionType: toolhub.ActionRunExecutable,
 				TargetPath: filepath.Join(binDir, "YimeCoreSettingsTool.exe"),
 				Arguments:  []string{"-UserDir", stateRoot, "-SharedDir", sharedDir, "-StatePath", statePath, "-Experimental"}},
+			{ID: "diagnostics-tool", Label: "诊断工具", ActionType: toolhub.ActionRunExecutable,
+				TargetPath: filepath.Join(binDir, "YimeCoreDiagnostics.exe"),
+				Arguments: []string{"-UserDir", stateRoot, "-SharedDir", sharedDir, "-HelpDir", helpDir,
+					"-LogDir", filepath.Join(stateRoot, "logs"), "-InstallRoot", installRoot, "-Experimental"}},
 			{ID: "trial-user-data", Label: "试验版用户数据", ActionType: toolhub.ActionOpenPath, TargetPath: stateRoot},
 			{ID: "trial-shared-data", Label: "试验版共享数据", ActionType: toolhub.ActionOpenPath, TargetPath: sharedDir},
+			{ID: "usage-help", Label: "使用帮助", ActionType: toolhub.ActionOpenPath, TargetPath: filepath.Join(helpDir, "README.html")},
+			{ID: "user-feedback", Label: "用户反馈", ActionType: toolhub.ActionOpenPath, TargetPath: filepath.Join(helpDir, "trial-feedback.html")},
 		},
 	}, nil
 }

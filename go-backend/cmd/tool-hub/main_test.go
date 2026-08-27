@@ -28,27 +28,33 @@ func TestExperimentalToolHubUsesIndependentIdentityAndIsolatedManifest(t *testin
 	if err != nil {
 		t.Fatal(err)
 	}
-	if manifest.Title != "Yime 试验版工具中心" || len(manifest.Tools) != 6 {
+	if manifest.Title != "Yime 试验版工具中心" || len(manifest.Tools) != 10 {
 		t.Fatalf("trial manifest=%#v", manifest)
 	}
 	entries := map[string]toolhub.Entry{}
 	for _, entry := range manifest.Tools {
 		entries[entry.ID] = entry
 	}
-	for _, id := range []string{"typing-trainer", "lexicon-manager", "reverse-lookup-tool", "settings-tool", "trial-user-data", "trial-shared-data"} {
+	for _, id := range []string{"typing-trainer", "keyboard-layout", "lexicon-manager", "reverse-lookup-tool", "settings-tool", "diagnostics-tool", "trial-user-data", "trial-shared-data", "usage-help", "user-feedback"} {
 		if _, ok := entries[id]; !ok {
 			t.Fatalf("trial manifest missing %q", id)
 		}
 	}
-	for _, id := range []string{"typing-trainer", "lexicon-manager", "reverse-lookup-tool", "settings-tool"} {
+	for _, id := range []string{"typing-trainer", "keyboard-layout", "lexicon-manager", "reverse-lookup-tool", "settings-tool", "diagnostics-tool"} {
 		entry := entries[id]
 		if filepath.Dir(entry.TargetPath) != filepath.Join(installRoot, "bin") {
 			t.Fatalf("%s escaped Trial bin: %#v", id, entry)
 		}
 	}
+	if entries["keyboard-layout"].Label != "键盘布局" || entries["diagnostics-tool"].Label != "诊断工具" ||
+		entries["usage-help"].Label != "使用帮助" || entries["user-feedback"].Label != "用户反馈" {
+		t.Fatalf("Trial labels were not migrated: %#v", entries)
+	}
 	if !slices.Contains(entries["typing-trainer"].Arguments, "-Experimental") ||
+		!slices.Contains(entries["keyboard-layout"].Arguments, "-Experimental") ||
 		!slices.Contains(entries["lexicon-manager"].Arguments, "-Experimental") ||
-		!slices.Contains(entries["settings-tool"].Arguments, "-Experimental") {
+		!slices.Contains(entries["settings-tool"].Arguments, "-Experimental") ||
+		!slices.Contains(entries["diagnostics-tool"].Arguments, "-Experimental") {
 		t.Fatalf("Trial identity flags missing: %#v", entries)
 	}
 	if !slices.Contains(entries["typing-trainer"].Arguments, "shorthand") ||
@@ -58,6 +64,10 @@ func TestExperimentalToolHubUsesIndependentIdentityAndIsolatedManifest(t *testin
 	if entries["trial-user-data"].TargetPath != stateRoot ||
 		entries["trial-shared-data"].TargetPath != filepath.Join(installRoot, "data") {
 		t.Fatalf("Trial directories escaped isolation: %#v", entries)
+	}
+	if entries["usage-help"].TargetPath != filepath.Join(installRoot, "help", "README.html") ||
+		entries["user-feedback"].TargetPath != filepath.Join(installRoot, "help", "trial-feedback.html") {
+		t.Fatalf("Trial help escaped installed help root: %#v", entries)
 	}
 }
 
