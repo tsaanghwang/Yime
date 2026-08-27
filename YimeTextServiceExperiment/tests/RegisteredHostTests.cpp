@@ -507,8 +507,8 @@ int wmain(int argc, wchar_t** argv) {
         }
 
         dispatchKey(keystrokes, 'Z');
-		if (readContext(context, clientId) != L"2jruz" || (IsWindow(popup) && IsWindowVisible(popup))) {
-			throw std::runtime_error("registered invalid code did not hide all candidate content");
+        if (readContext(context, clientId) != L"2jruz" || !IsWindow(popup) || !IsWindowVisible(popup)) {
+            throw std::runtime_error("registered invalid code did not keep correction status visible");
         }
         dispatchKey(keystrokes, VK_BACK);
 		popup = FindWindowW(L"YimeTextServiceExperimentCandidatePopup", nullptr);

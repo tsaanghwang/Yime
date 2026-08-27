@@ -25,6 +25,9 @@ KeyDecision ClassifyVirtualKey(WPARAM virtualKey, bool shiftDown,
     if (virtualKey == VK_BACK) {
         return {KeyRoute::BackspaceComposition, 0};
     }
+	if (virtualKey == VK_ESCAPE) {
+		return {KeyRoute::ClearComposition, 0};
+	}
     if (virtualKey == VK_PRIOR) {
         return {KeyRoute::PreviousCandidatePage, 0};
     }

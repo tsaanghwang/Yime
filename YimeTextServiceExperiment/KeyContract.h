@@ -11,6 +11,7 @@ enum class KeyRoute {
     PassThrough,
     AppendComposition,
     BackspaceComposition,
+	ClearComposition,
     PreviousCandidate,
     NextCandidate,
     PreviousCandidatePage,

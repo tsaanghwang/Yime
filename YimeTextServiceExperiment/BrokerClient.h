@@ -47,13 +47,17 @@ public:
     BrokerClient& operator=(const BrokerClient&) = delete;
 
     bool Connect(const std::wstring& pipeName, DWORD timeoutMs, const std::string& mode,
+                 int candidateLimit,
                  std::string* error);
     bool ApplyCode(char code, BrokerUpdate* update, std::string* error);
     bool Backspace(BrokerUpdate* update, std::string* error);
+	bool Clear(BrokerUpdate* update, std::string* error);
     bool PreviousPage(BrokerUpdate* update, std::string* error);
     bool NextPage(BrokerUpdate* update, std::string* error);
     bool FocusSegment(const std::string& candidateId, int start, int end,
                       BrokerUpdate* update, std::string* error);
+    bool ExpandSegment(const std::string& candidateId, int start, int end,
+                       BrokerUpdate* update, std::string* error);
     bool SelectCandidate(const std::string& candidateId, const std::string& mutationId,
                          BrokerUpdate* update, std::string* error);
     bool ForgetCandidate(const std::string& candidateId, BrokerUpdate* update,

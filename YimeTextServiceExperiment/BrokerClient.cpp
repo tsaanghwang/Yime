@@ -18,7 +18,7 @@ std::string windowsError(const char* operation) {
 BrokerClient::~BrokerClient() { Close(); }
 
 bool BrokerClient::Connect(const std::wstring& pipeName, DWORD timeoutMs, const std::string& mode,
-                           std::string* error) {
+                           int candidateLimit, std::string* error) {
     Close();
     const auto deadline = std::chrono::steady_clock::now() + std::chrono::milliseconds(timeoutMs);
     for (;;) {
@@ -40,6 +40,7 @@ bool BrokerClient::Connect(const std::wstring& pipeName, DWORD timeoutMs, const 
     std::string response;
     json request{{"version", 1}, {"sequence", sequence_}, {"operation", "open"}};
     if (!mode.empty()) request["mode"] = mode;
+    if (candidateLimit >= 5 && candidateLimit <= 9) request["candidate_limit"] = candidateLimit;
     if (!Exchange(request.dump(), &response, error)) {
         Disconnect();
         return false;
@@ -67,6 +68,10 @@ bool BrokerClient::Backspace(BrokerUpdate* update, std::string* error) {
     return ApplyEvent(2, {}, update, error);
 }
 
+bool BrokerClient::Clear(BrokerUpdate* update, std::string* error) {
+	return ApplyEvent(3, {}, update, error);
+}
+
 bool BrokerClient::PreviousPage(BrokerUpdate* update, std::string* error) {
     return ApplyEvent(5, {}, update, error);
 }
@@ -78,6 +83,11 @@ bool BrokerClient::NextPage(BrokerUpdate* update, std::string* error) {
 bool BrokerClient::FocusSegment(const std::string& candidateId, int start, int end,
                                 BrokerUpdate* update, std::string* error) {
     return ApplyEvent(6, {}, update, error, candidateId, start, end);
+}
+
+bool BrokerClient::ExpandSegment(const std::string& candidateId, int start, int end,
+                                 BrokerUpdate* update, std::string* error) {
+    return ApplyEvent(7, {}, update, error, candidateId, start, end);
 }
 
 bool BrokerClient::ApplyEvent(unsigned operation, const std::string& code,

@@ -17,6 +17,9 @@ bool sendCode(yime::experiment::SurfaceSession* surface, const std::string& code
         WPARAM key = 0;
         if (character >= 'a' && character <= 'z') {
             key = static_cast<WPARAM>(character - 'a' + 'A');
+        } else if (character >= 'A' && character <= 'Z') {
+            key = static_cast<WPARAM>(character);
+            shifted = true;
         } else if (character >= '0' && character <= '9') {
             key = static_cast<WPARAM>(character);
         } else if (character == ']') {
@@ -25,6 +28,8 @@ bool sendCode(yime::experiment::SurfaceSession* surface, const std::string& code
             key = VK_OEM_COMMA;
         } else if (character == '.') {
             key = VK_OEM_PERIOD;
+        } else if (character == '/') {
+            key = VK_OEM_2;
         } else {
             if (error) *error = "unsupported bridge-test code character";
             return false;
@@ -131,22 +136,81 @@ bool runLongSegmentSession(yime::experiment::SurfaceSession* surface,
     return true;
 }
 
+bool runCorrectedSentenceCommit(yime::experiment::SurfaceSession* surface,
+                                const std::string& sentenceCode, WPARAM commitKey,
+                                std::string* error) {
+    yime::experiment::SurfaceOutcome outcome;
+    if (!sendCode(surface, sentenceCode, &outcome, error) || !outcome.update.hasSentence ||
+        outcome.update.sentence.segments.empty()) {
+        if (error && error->empty()) *error = "corrected sentence was not segmented";
+        return false;
+    }
+    const auto first = outcome.update.sentence.segments.front();
+    outcome = surface->FocusSentenceSegment(first.start, first.end);
+    if (!outcome.handled) {
+        if (error) *error = "corrected sentence first segment was not focusable";
+        return false;
+    }
+    size_t replacementIndex = outcome.update.candidates.size();
+    for (size_t index = 0; index < outcome.update.candidates.size(); ++index) {
+        if (outcome.update.candidates[index].text == u8"这是") {
+            replacementIndex = index;
+            break;
+        }
+    }
+    if (replacementIndex >= 9 || replacementIndex >= outcome.update.candidates.size()) {
+        if (error) *error = "corrected sentence replacement was not Shift-selectable";
+        return false;
+    }
+    outcome = surface->HandleVirtualKey(static_cast<WPARAM>('1' + replacementIndex), true);
+    if (!outcome.handled || !outcome.update.commit.empty() ||
+        outcome.update.sentence.text != u8"这是一套子系统") {
+        if (error) *error = "local sentence correction committed early or produced the wrong sentence";
+        return false;
+    }
+    const size_t candidateCountAfterCorrection = outcome.update.candidates.size();
+    const std::string firstCandidateAfterCorrection = candidateCountAfterCorrection == 0
+                                                          ? std::string{}
+                                                          : outcome.update.candidates.front().text;
+    outcome = commitKey == 0 ? surface->CommitSentence()
+                             : surface->HandleVirtualKey(commitKey, false);
+    if (!outcome.handled || outcome.update.commit != u8"这是一套子系统" ||
+        !outcome.update.rawInput.empty() || outcome.update.hasSentence) {
+        if (error) {
+            *error = "corrected sentence commit returned raw code or stale state: key=" +
+                     std::to_string(commitKey) + " handled=" +
+                     std::to_string(outcome.handled ? 1 : 0) + " error=" + outcome.error +
+                     " commit=" + outcome.update.commit +
+                     " raw=" + outcome.update.rawInput + " candidates_after_correction=" +
+                     std::to_string(candidateCountAfterCorrection) + " first_candidate=" +
+                     firstCandidateAfterCorrection;
+        }
+        return false;
+    }
+    return true;
+}
+
 }  // namespace
 
 int wmain(int argc, wchar_t** argv) {
     if (argc < 3) {
-        std::cerr << "usage: YimeBrokerBridgeTests <pipe> <multi-page-code> [candidate-sorting-code] [whole-word-code longer-word-suffix] [--long-session-code=<code>]\n";
+        std::cerr << "usage: YimeBrokerBridgeTests <pipe> <multi-page-code> [candidate-sorting-code] [whole-word-code longer-word-suffix] [--long-session-code=<code>] [--corrected-sentence-code=<code>]\n";
 		return 2;
 	}
     std::vector<std::string> scenarioArguments;
     std::string longSessionCode;
+    std::string correctedSentenceCode;
     constexpr char longSessionPrefix[] = "--long-session-code=";
+    constexpr char correctedSentencePrefix[] = "--corrected-sentence-code=";
     for (int index = 3; index < argc; ++index) {
         std::string argument;
         if (!printableASCII(argv[index], &argument)) return 2;
         if (argument.rfind(longSessionPrefix, 0) == 0) {
             if (!longSessionCode.empty()) return 2;
             longSessionCode = argument.substr(sizeof(longSessionPrefix) - 1);
+        } else if (argument.rfind(correctedSentencePrefix, 0) == 0) {
+            if (!correctedSentenceCode.empty()) return 2;
+            correctedSentenceCode = argument.substr(sizeof(correctedSentencePrefix) - 1);
         } else {
             scenarioArguments.push_back(std::move(argument));
         }
@@ -286,6 +350,16 @@ int wmain(int argc, wchar_t** argv) {
         std::cerr << "post-forget composition did not clear through Backspace\n";
         return 1;
     }
+    if (!sendCode(&surface, code, &outcome, &error)) {
+        std::cerr << "Escape cancellation composition failed: " << error << '\n';
+        return 1;
+    }
+    outcome = surface.HandleVirtualKey(VK_ESCAPE, false);
+    if (!outcome.handled || !outcome.update.rawInput.empty() || !outcome.update.commit.empty() ||
+        outcome.update.hasSentence) {
+        std::cerr << "Escape did not cancel the Broker composition\n";
+        return 1;
+    }
     for (const WPARAM defaultSelectionKey : {static_cast<WPARAM>(VK_SPACE), static_cast<WPARAM>(VK_RETURN)}) {
         for (char character : code) {
             outcome = surface.HandleVirtualKey(
@@ -329,6 +403,23 @@ int wmain(int argc, wchar_t** argv) {
 			std::cerr << "system word did not enter the sentence row as a whole: " << error << '\n';
 			return 1;
 		}
+        const int wholeWordEnd = static_cast<int>(outcome.update.sentence.code.size());
+        outcome = surface.FocusSentenceSegment(0, wholeWordEnd);
+        if (!outcome.handled || outcome.update.sentence.text != "本地" ||
+            !outcome.update.sentence.segments.empty() || outcome.update.activeSegmentStart != 0 ||
+            outcome.update.activeSegmentEnd != wholeWordEnd) {
+            std::cerr << "single-click whole-word focus expanded or rejected the virtual segment: "
+                      << outcome.error << '\n';
+            return 1;
+        }
+        outcome = surface.ExpandSentenceSegment(0, wholeWordEnd);
+        std::string expandedText;
+        for (const auto& segment : outcome.update.sentence.segments) expandedText += segment.text;
+        if (!outcome.handled || outcome.update.sentence.segments.size() < 2 || expandedText != "本地") {
+            std::cerr << "explicit whole-word expansion did not produce registered child segments: "
+                      << outcome.error << '\n';
+            return 1;
+        }
 		if (!sendCode(&surface, longerWordSuffix, &outcome, &error) || !outcome.update.hasSentence ||
 			outcome.update.sentence.text != "本地人" || !outcome.update.sentence.segments.empty()) {
 			std::cerr << "longer system word did not replace the shorter sentence row: " << error << '\n';
@@ -343,6 +434,15 @@ int wmain(int argc, wchar_t** argv) {
     if (!longSessionCode.empty() && !runLongSegmentSession(&surface, longSessionCode, &error)) {
         std::cerr << "long segment session failed: " << error << '\n';
         return 1;
+    }
+    if (!correctedSentenceCode.empty()) {
+        for (const WPARAM commitKey : {static_cast<WPARAM>(VK_SPACE),
+                                      static_cast<WPARAM>(VK_RETURN), static_cast<WPARAM>(0)}) {
+            if (!runCorrectedSentenceCommit(&surface, correctedSentenceCode, commitKey, &error)) {
+                std::cerr << "corrected sentence commit failed: " << error << '\n';
+                return 1;
+            }
+        }
     }
     outcome = surface.HandleVirtualKey(VK_F12, false);
     if (outcome.handled) {

@@ -18,6 +18,7 @@ public:
     const std::vector<std::wstring>& DisplayCandidates() const noexcept { return candidates_; }
     const std::vector<std::wstring>& PopupCandidateRows() const noexcept { return popupCandidateRows_; }
     const std::wstring& SentenceDisplay() const noexcept { return sentenceDisplay_; }
+	const std::wstring& StatusDisplay() const noexcept { return statusDisplay_; }
 
     STDMETHODIMP QueryInterface(REFIID iid, void** object) override;
     STDMETHODIMP_(ULONG) AddRef() override;
@@ -42,6 +43,7 @@ private:
     std::vector<std::wstring> candidates_;
     std::vector<std::wstring> popupCandidateRows_;
     std::wstring sentenceDisplay_;
+	std::wstring statusDisplay_;
     UINT selection_ = 0;
     bool selectable_ = false;
     BOOL shown_ = FALSE;

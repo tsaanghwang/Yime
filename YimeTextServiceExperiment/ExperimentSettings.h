@@ -12,6 +12,8 @@ struct ExperimentSettings {
     bool asciiPunctuation = false;
     bool traditionalization = false;
     std::string mode = "variable";
+    int candidatePageSize = 5;
+    std::string candidateLayout = "vertical";
     std::string candidateFontPreset = "medium";
     std::string candidateAnnotation = "key_sequence";
     int candidateFontPoints = 12;

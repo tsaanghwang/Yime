@@ -24,6 +24,7 @@ public:
                                     bool controlDown = false, bool altDown = false);
     SurfaceOutcome CommitSentence();
     SurfaceOutcome FocusSentenceSegment(int start, int end);
+    SurfaceOutcome ExpandSentenceSegment(int start, int end);
     void DisconnectForRecovery() noexcept;
     void Close() noexcept;
 
@@ -40,6 +41,7 @@ private:
     std::wstring pipeName_;
     DWORD reconnectTimeoutMs_ = 100;
     std::string connectedMode_;
+    int connectedCandidateLimit_ = 0;
     int navigationSegmentStart_ = -1;
     int navigationSegmentEnd_ = -1;
 };

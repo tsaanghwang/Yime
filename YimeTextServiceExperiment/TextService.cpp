@@ -131,7 +131,9 @@ HWND candidateOwnerAndFallbackAnchor(ITfContext* context, RECT* anchor) noexcept
 YimeTextService::YimeTextService() noexcept {
     YimeModuleAddRef();
     candidatePopup_.SetSelectionHandler(CandidatePopupSelection, this);
+    candidatePopup_.SetSentenceHandler(CandidatePopupSentenceSelection, this);
     candidatePopup_.SetSegmentHandler(CandidatePopupSegmentSelection, this);
+    candidatePopup_.SetSegmentExpandHandler(CandidatePopupSegmentExpansion, this);
 }
 
 YimeTextService::~YimeTextService() {
@@ -494,9 +496,7 @@ void YimeTextService::UpdateCandidateUI(ITfContext* context, const yime::experim
     }
     const auto& displaySettings = experimentSettings_.Get();
     if (update.candidates.empty() && !update.hasSentence) {
-		document->Release();
-		EndCandidateUI();
-		return;
+        candidateUI_->UpdateEmpty(document, L"无匹配候选，按退格修改");
     } else {
         candidateUI_->Update(document, update.candidates, update.selectedCandidateIndex,
                              displaySettings.candidateAnnotation,
@@ -524,11 +524,14 @@ void YimeTextService::UpdateCandidateUI(ITfContext* context, const yime::experim
                                                              : update.selectedCandidateIndex;
     candidatePopup_.SetFontPoints(displaySettings.candidateFontPoints);
     candidatePopup_.SetUseYinyuanFont(displaySettings.candidateAnnotation == "yinyuan");
-    if (ownedCandidatePopupRequested_ &&
+    candidatePopup_.SetHorizontal(displaySettings.candidateLayout == "horizontal");
+    const bool needsOwnedStatus = !candidateUI_->StatusDisplay().empty();
+    if ((ownedCandidatePopupRequested_ || needsOwnedStatus) &&
         candidatePopup_.Update(candidateUI_->PopupCandidateRows(), anchor, owner,
                                compositionRect != nullptr, popupSelection,
                                update.hasSentence ? &update.sentence : nullptr,
-                               update.activeSegmentStart, update.activeSegmentEnd)) {
+                               update.activeSegmentStart, update.activeSegmentEnd,
+							   needsOwnedStatus ? &candidateUI_->StatusDisplay() : nullptr)) {
         candidatePopup_.Show(CanAcceptKeys());
     } else {
         candidatePopup_.Show(false);
@@ -537,6 +540,10 @@ void YimeTextService::UpdateCandidateUI(ITfContext* context, const yime::experim
 
 void YimeTextService::CandidatePopupSelection(void* context, unsigned ordinal) noexcept {
     if (context) static_cast<YimeTextService*>(context)->SelectCandidateFromPopup(ordinal);
+}
+
+void YimeTextService::CandidatePopupSentenceSelection(void* context) noexcept {
+    if (context) static_cast<YimeTextService*>(context)->SelectSentenceFromPopup();
 }
 
 void YimeTextService::SelectCandidateFromPopup(unsigned ordinal) noexcept {
@@ -564,8 +571,37 @@ void YimeTextService::SelectCandidateFromPopup(unsigned ordinal) noexcept {
     context->Release();
 }
 
+void YimeTextService::SelectSentenceFromPopup() noexcept {
+    if (!compositionContext_ || !CanAcceptKeys()) return;
+    ITfContext* context = compositionContext_;
+    context->AddRef();
+    const auto outcome = surface_.CommitSentence();
+    if (!outcome.handled) {
+        context->Release();
+        return;
+    }
+    auto renderedUpdate = outcome.update;
+    if (experimentSettings_.Get().traditionalization) {
+        yime::experiment::ApplyTraditionalization(&renderedUpdate);
+    }
+    const HRESULT edit = yime::experiment::ApplyBrokerUpdateToContext(
+        context, clientId_, static_cast<ITfCompositionSink*>(this), &composition_,
+        &plannedCompositionTermination_, renderedUpdate, nullptr, nullptr, true);
+    if (FAILED(edit)) {
+        surface_.DisconnectForRecovery();
+        context->Release();
+        return;
+    }
+    UpdateCandidateUI(context, renderedUpdate, nullptr);
+    context->Release();
+}
+
 void YimeTextService::CandidatePopupSegmentSelection(void* context, int start, int end) noexcept {
     if (context) static_cast<YimeTextService*>(context)->FocusSentenceSegmentFromPopup(start, end);
+}
+
+void YimeTextService::CandidatePopupSegmentExpansion(void* context, int start, int end) noexcept {
+    if (context) static_cast<YimeTextService*>(context)->ExpandSentenceSegmentFromPopup(start, end);
 }
 
 void YimeTextService::FocusSentenceSegmentFromPopup(int start, int end) noexcept {
@@ -573,6 +609,31 @@ void YimeTextService::FocusSentenceSegmentFromPopup(int start, int end) noexcept
     ITfContext* context = compositionContext_;
     context->AddRef();
     const auto outcome = surface_.FocusSentenceSegment(start, end);
+    if (!outcome.handled) {
+        context->Release();
+        return;
+    }
+    auto renderedUpdate = outcome.update;
+    if (experimentSettings_.Get().traditionalization) {
+        yime::experiment::ApplyTraditionalization(&renderedUpdate);
+    }
+    const HRESULT edit = yime::experiment::ApplyBrokerUpdateToContext(
+        context, clientId_, static_cast<ITfCompositionSink*>(this), &composition_,
+        &plannedCompositionTermination_, renderedUpdate, nullptr, nullptr, true);
+    if (FAILED(edit)) {
+        surface_.DisconnectForRecovery();
+        context->Release();
+        return;
+    }
+    UpdateCandidateUI(context, renderedUpdate, nullptr);
+    context->Release();
+}
+
+void YimeTextService::ExpandSentenceSegmentFromPopup(int start, int end) noexcept {
+    if (!compositionContext_ || !CanAcceptKeys() || start < 0 || end <= start) return;
+    ITfContext* context = compositionContext_;
+    context->AddRef();
+    const auto outcome = surface_.ExpandSentenceSegment(start, end);
     if (!outcome.handled) {
         context->Release();
         return;

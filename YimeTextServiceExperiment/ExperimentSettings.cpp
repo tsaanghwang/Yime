@@ -22,6 +22,10 @@ bool validAnnotation(const std::string& annotation) noexcept {
            annotation == "key_sequence" || annotation == "standard_pinyin";
 }
 
+bool validCandidateLayout(const std::string& layout) noexcept {
+    return layout == "vertical" || layout == "horizontal";
+}
+
 int pointsForPreset(const std::string& preset) noexcept {
     if (preset == "small") return 10;
     if (preset == "large") return 16;
@@ -161,9 +165,13 @@ ExperimentSettings LoadExperimentSettings(const std::wstring& path) noexcept {
         settings.asciiPunctuation = document.value("ascii_punctuation", false);
         settings.traditionalization = document.value("traditionalization", false);
         const auto mode = document.value("experiment_mode", settings.mode);
+        const auto pageSize = document.value("candidate_page_size", settings.candidatePageSize);
+        const auto layout = document.value("candidate_layout", settings.candidateLayout);
         const auto preset = document.value("candidate_font_preset", settings.candidateFontPreset);
         const auto annotation = document.value("candidate_annotation", settings.candidateAnnotation);
         if (validMode(mode)) settings.mode = mode;
+        if (pageSize >= 5 && pageSize <= 9) settings.candidatePageSize = pageSize;
+        if (validCandidateLayout(layout)) settings.candidateLayout = layout;
         if (preset == "small" || preset == "medium" || preset == "large") {
             settings.candidateFontPreset = preset;
         }
@@ -198,6 +206,8 @@ bool ApplyExperimentSettingsCommand(ExperimentSettingsCommand command, const std
         document["updated_at"] = utcTimestamp();
         document["source"] = "yimecore-language-bar";
         if (!document.contains("experiment_mode")) document["experiment_mode"] = "variable";
+        if (!document.contains("candidate_page_size")) document["candidate_page_size"] = 5;
+        if (!document.contains("candidate_layout")) document["candidate_layout"] = "vertical";
         if (!document.contains("candidate_font_preset")) document["candidate_font_preset"] = "medium";
         if (!document.contains("candidate_annotation")) document["candidate_annotation"] = "key_sequence";
 

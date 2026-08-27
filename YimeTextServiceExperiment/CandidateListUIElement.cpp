@@ -37,6 +37,7 @@ void CandidateListUIElement::Update(ITfDocumentMgr* document,
     candidates_.clear();
     popupCandidateRows_.clear();
     sentenceDisplay_.clear();
+	statusDisplay_.clear();
     const auto& labels = yime::experiment::CandidateLabels();
     const bool hasSentence = sentence && !sentence->id.empty();
     const size_t available = candidates.size();
@@ -73,7 +74,7 @@ void CandidateListUIElement::UpdateEmpty(ITfDocumentMgr* document, std::wstring 
     candidates_.clear();
     popupCandidateRows_.clear();
     sentenceDisplay_.clear();
-	(void)message;
+	statusDisplay_ = std::move(message);
     selection_ = 0;
     selectable_ = false;
 }

@@ -11,6 +11,14 @@ namespace yime::experiment {
 
 namespace {
 
+bool IsKnownSentenceSegment(const BrokerCandidate& sentence, int start, int end) noexcept {
+    for (const auto& segment : sentence.segments) {
+        if (segment.start == start && segment.end == end) return true;
+    }
+    return sentence.segments.empty() && !sentence.text.empty() && start == 0 &&
+           end == static_cast<int>(sentence.code.size());
+}
+
 }  // namespace
 
 SurfaceSession::SurfaceSession() {
@@ -36,9 +44,12 @@ bool SurfaceSession::Connect(const std::wstring& pipeName, DWORD timeoutMs, std:
     selectedCandidateIndex_ = 0;
     navigationSegmentStart_ = -1;
     navigationSegmentEnd_ = -1;
-    connectedMode_ = LoadExperimentSettings().mode;
-    if (!broker_.Connect(pipeName, timeoutMs, connectedMode_, error)) {
+    const auto settings = LoadExperimentSettings();
+    connectedMode_ = settings.mode;
+    connectedCandidateLimit_ = settings.candidatePageSize;
+    if (!broker_.Connect(pipeName, timeoutMs, connectedMode_, connectedCandidateLimit_, error)) {
         connectedMode_.clear();
+        connectedCandidateLimit_ = 0;
         return false;
     }
     return true;
@@ -48,15 +59,18 @@ bool SurfaceSession::EnsureConnected(std::string* error) {
     if (broker_.IsConnected()) {
         if (!current_.rawInput.empty()) return true;
     }
-    const std::string desiredMode = LoadExperimentSettings().mode;
+    const auto settings = LoadExperimentSettings();
+    const std::string desiredMode = settings.mode;
+    const int desiredCandidateLimit = settings.candidatePageSize;
     if (broker_.IsConnected()) {
-        if (desiredMode == connectedMode_) return true;
+        if (desiredMode == connectedMode_ && desiredCandidateLimit == connectedCandidateLimit_) return true;
         broker_.Close();
         current_ = {};
         selectedCandidateIndex_ = 0;
         navigationSegmentStart_ = -1;
         navigationSegmentEnd_ = -1;
         connectedMode_.clear();
+        connectedCandidateLimit_ = 0;
     }
     if (pipeName_.empty()) {
         if (error) *error = "Broker endpoint is not configured";
@@ -66,8 +80,9 @@ bool SurfaceSession::EnsureConnected(std::string* error) {
     selectedCandidateIndex_ = 0;
     navigationSegmentStart_ = -1;
     navigationSegmentEnd_ = -1;
-    if (!broker_.Connect(pipeName_, reconnectTimeoutMs_, desiredMode, error)) return false;
+    if (!broker_.Connect(pipeName_, reconnectTimeoutMs_, desiredMode, desiredCandidateLimit, error)) return false;
     connectedMode_ = desiredMode;
+    connectedCandidateLimit_ = desiredCandidateLimit;
     return true;
 }
 
@@ -78,7 +93,8 @@ bool SurfaceSession::CanHandle(WPARAM virtualKey, bool shiftDown,
         char ignored = 0;
         return TranslateCompositionKey(virtualKey, shiftDown, &ignored) && EnsureConnected(nullptr);
     }
-    if (decision.route == KeyRoute::BackspaceComposition ||
+        if (decision.route == KeyRoute::BackspaceComposition ||
+		decision.route == KeyRoute::ClearComposition ||
         decision.route == KeyRoute::PreviousCandidatePage ||
         decision.route == KeyRoute::NextCandidatePage) {
         return broker_.IsConnected() && !current_.rawInput.empty();
@@ -159,6 +175,8 @@ SurfaceOutcome SurfaceSession::HandleVirtualKey(WPARAM virtualKey, bool shiftDow
         outcome.update = current_;
     } else if (decision.route == KeyRoute::BackspaceComposition) {
         outcome.handled = broker_.Backspace(&outcome.update, &outcome.error);
+	} else if (decision.route == KeyRoute::ClearComposition) {
+		outcome.handled = broker_.Clear(&outcome.update, &outcome.error);
     } else if (decision.route == KeyRoute::PreviousCandidatePage) {
         outcome.handled = broker_.PreviousPage(&outcome.update, &outcome.error);
     } else if (decision.route == KeyRoute::NextCandidatePage) {
@@ -205,19 +223,28 @@ SurfaceOutcome SurfaceSession::CommitSentence() {
 SurfaceOutcome SurfaceSession::FocusSentenceSegment(int start, int end) {
     SurfaceOutcome outcome;
     if (!broker_.IsConnected() || !current_.hasSentence || start < 0 || end <= start) return outcome;
-    bool known = false;
-    for (const auto& segment : current_.sentence.segments) {
-        if (segment.start == start && segment.end == end) {
-            known = true;
-            break;
-        }
-    }
-    if (!known) return outcome;
+    if (!IsKnownSentenceSegment(current_.sentence, start, end)) return outcome;
     outcome.handled = broker_.FocusSegment(current_.sentence.id, start, end,
                                            &outcome.update, &outcome.error);
     if (outcome.handled) {
         navigationSegmentStart_ = start;
         navigationSegmentEnd_ = end;
+        selectedCandidateIndex_ = 0;
+        outcome.update.selectedCandidateIndex = 0;
+        current_ = outcome.update;
+    }
+    return outcome;
+}
+
+SurfaceOutcome SurfaceSession::ExpandSentenceSegment(int start, int end) {
+    SurfaceOutcome outcome;
+    if (!broker_.IsConnected() || !current_.hasSentence || start < 0 || end <= start) return outcome;
+    if (!IsKnownSentenceSegment(current_.sentence, start, end)) return outcome;
+    outcome.handled = broker_.ExpandSegment(current_.sentence.id, start, end,
+                                            &outcome.update, &outcome.error);
+    if (outcome.handled) {
+        navigationSegmentStart_ = outcome.update.activeSegmentStart;
+        navigationSegmentEnd_ = outcome.update.activeSegmentEnd;
         selectedCandidateIndex_ = 0;
         outcome.update.selectedCandidateIndex = 0;
         current_ = outcome.update;
@@ -257,6 +284,7 @@ void SurfaceSession::DisconnectForRecovery() noexcept {
     navigationSegmentStart_ = -1;
     navigationSegmentEnd_ = -1;
     connectedMode_.clear();
+    connectedCandidateLimit_ = 0;
 }
 
 void SurfaceSession::Close() noexcept {

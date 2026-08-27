@@ -100,7 +100,7 @@ bool CandidatePopup::EnsureWindow(HWND owner) noexcept {
     }
     WNDCLASSEXW windowClass{};
     windowClass.cbSize = sizeof(windowClass);
-    windowClass.style = CS_HREDRAW | CS_VREDRAW;
+    windowClass.style = CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
     windowClass.lpfnWndProc = WindowProcedure;
     windowClass.hInstance = currentModule();
     windowClass.hCursor = LoadCursorW(nullptr, IDC_ARROW);
@@ -116,10 +116,12 @@ bool CandidatePopup::EnsureWindow(HWND owner) noexcept {
 bool CandidatePopup::Update(const std::vector<std::wstring>& candidates, const RECT& anchor,
                             HWND owner, bool textExtentAnchor, size_t selectedIndex,
                             const yime::experiment::BrokerCandidate* sentence,
-                            int activeSegmentStart, int activeSegmentEnd) noexcept {
+                            int activeSegmentStart, int activeSegmentEnd,
+							const std::wstring* status) noexcept {
     candidates_.assign(candidates.begin(),
                        candidates.begin() + static_cast<std::ptrdiff_t>(std::min<size_t>(9, candidates.size())));
     sentenceSegments_.clear();
+	status_ = status ? *status : std::wstring();
     if (sentence) {
         for (const auto& segment : sentence->segments) {
             sentenceSegments_.push_back({segment.start, segment.end, widen(segment.text),
@@ -133,7 +135,7 @@ bool CandidatePopup::Update(const std::vector<std::wstring>& candidates, const R
                                          widen(sentence->text), false, 0});
 		}
     }
-    if (candidates_.empty() && sentenceSegments_.empty()) {
+    if (candidates_.empty() && sentenceSegments_.empty() && status_.empty()) {
         Destroy();
         return true;
     }
@@ -154,10 +156,20 @@ bool CandidatePopup::Update(const std::vector<std::wstring>& candidates, const R
     SetPropW(window_, L"YimeTextServiceExperimentSentenceRow",
              reinterpret_cast<HANDLE>(static_cast<UINT_PTR>(sentenceSegments_.empty() ? 0 : 1)));
     int textWidth = 0;
+    candidateWidths_.clear();
+    candidateWidths_.reserve(candidates_.size());
     for (const auto& candidate : candidates_) {
         SIZE extent{};
         if (GetTextExtentPoint32W(dc, candidate.c_str(), static_cast<int>(candidate.size()), &extent)) {
-            textWidth = std::max(textWidth, static_cast<int>(extent.cx));
+            const int candidateWidth = std::max(rowHeight_, static_cast<int>(extent.cx) + 12);
+            candidateWidths_.push_back(candidateWidth);
+            if (horizontal_) {
+                textWidth += candidateWidth;
+            } else {
+                textWidth = std::max(textWidth, static_cast<int>(extent.cx));
+            }
+        } else {
+            candidateWidths_.push_back(rowHeight_);
         }
     }
     std::wstring candidatePrefix(yime::experiment::CandidateLabels().front());
@@ -180,6 +192,11 @@ bool CandidatePopup::Update(const std::vector<std::wstring>& candidates, const R
         GetTextExtentPoint32W(dc, segment.text.c_str(), static_cast<int>(segment.text.size()), &extent);
         segment.width = std::max(rowHeight_, static_cast<int>(extent.cx) + 8);
         sentenceWidth += segment.width;
+    }
+    SIZE statusExtent{};
+    if (!status_.empty() &&
+        GetTextExtentPoint32W(dc, status_.c_str(), static_cast<int>(status_.size()), &statusExtent)) {
+        textWidth = std::max(textWidth, static_cast<int>(statusExtent.cx));
     }
     SelectObject(dc, previous);
     ReleaseDC(window_, dc);
@@ -221,7 +238,9 @@ void CandidatePopup::Destroy() noexcept {
         window_ = nullptr;
     }
     candidates_.clear();
+    candidateWidths_.clear();
     sentenceSegments_.clear();
+	status_.clear();
     textColumnOffset_ = 0;
     trackedSegment_ = -1;
     width_ = 0;
@@ -267,9 +286,20 @@ void CandidatePopup::Paint() noexcept {
         }
         rowIndex = 1;
     }
+    if (!status_.empty()) {
+        RECT statusRow{padding_, padding_ + static_cast<LONG>(rowIndex) * rowHeight_,
+            client.right - padding_, padding_ + static_cast<LONG>(rowIndex + 1) * rowHeight_};
+        SetTextColor(dc, GetSysColor(COLOR_GRAYTEXT));
+        DrawTextW(dc, status_.c_str(), static_cast<int>(status_.size()), &statusRow,
+            DT_LEFT | DT_VCENTER | DT_SINGLELINE | DT_END_ELLIPSIS | DT_NOPREFIX);
+        ++rowIndex;
+    }
+    int candidateLeft = padding_;
     for (size_t index = 0; index < candidates_.size(); ++index) {
-        RECT row{padding_, padding_ + static_cast<LONG>(rowIndex + index) * rowHeight_,
-                 client.right - padding_, padding_ + static_cast<LONG>(rowIndex + index + 1) * rowHeight_};
+        const LONG top = padding_ + static_cast<LONG>(rowIndex + (horizontal_ ? 0 : index)) * rowHeight_;
+        RECT row{horizontal_ ? candidateLeft : padding_, top,
+                 horizontal_ ? candidateLeft + candidateWidths_[index] : client.right - padding_,
+                 top + rowHeight_};
         if (index == selectedIndex_) {
             FillRect(dc, &row, GetSysColorBrush(COLOR_HIGHLIGHT));
             SetTextColor(dc, GetSysColor(COLOR_HIGHLIGHTTEXT));
@@ -277,7 +307,12 @@ void CandidatePopup::Paint() noexcept {
             SetTextColor(dc, GetSysColor(COLOR_WINDOWTEXT));
         }
         DrawTextW(dc, candidates_[index].c_str(), static_cast<int>(candidates_[index].size()),
-                  &row, DT_LEFT | DT_VCENTER | DT_SINGLELINE | DT_END_ELLIPSIS | DT_NOPREFIX);
+                  &row, (horizontal_ ? DT_CENTER : DT_LEFT) | DT_VCENTER | DT_SINGLELINE |
+                            DT_END_ELLIPSIS | DT_NOPREFIX);
+        if (horizontal_) {
+            FrameRect(dc, &row, static_cast<HBRUSH>(GetStockObject(LTGRAY_BRUSH)));
+            candidateLeft = row.right;
+        }
     }
     SelectObject(dc, previous);
     EndPaint(window_, &paint);
@@ -317,15 +352,45 @@ void CandidatePopup::SelectAt(LPARAM lParam) noexcept {
         }
         return;
     }
+    if (!sentenceSegments_.empty() && y >= padding_ && y < padding_ + rowHeight_ &&
+        x >= padding_ && x < padding_ + textColumnOffset_) {
+        if (sentenceHandler_) sentenceHandler_(sentenceContext_);
+        return;
+    }
     if (!selectionHandler_) return;
     RECT client{};
     GetClientRect(window_, &client);
     if (x < padding_ || x >= client.right - padding_ || y < padding_) return;
     const size_t row = static_cast<size_t>((y - padding_) / rowHeight_);
     if (!sentenceSegments_.empty() && row == 0) return;
-    const size_t index = row - (sentenceSegments_.empty() ? 0 : 1);
+    size_t index = row - (sentenceSegments_.empty() ? 0 : 1);
+    if (!status_.empty()) {
+        if (index == 0) return;
+        --index;
+    }
+    if (horizontal_) {
+        if (index != 0) return;
+        int left = padding_;
+        index = candidates_.size();
+        for (size_t candidateIndex = 0; candidateIndex < candidateWidths_.size(); ++candidateIndex) {
+            const int right = left + candidateWidths_[candidateIndex];
+            if (x >= left && x < right) {
+                index = candidateIndex;
+                break;
+            }
+            left = right;
+        }
+    }
     if (index >= candidates_.size()) return;
     selectionHandler_(selectionContext_, static_cast<unsigned>(index + 1));
+}
+
+void CandidatePopup::ExpandAt(LPARAM lParam) noexcept {
+    const int index = SegmentAt(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+    if (index < 0 || !segmentExpandHandler_ ||
+        index >= static_cast<int>(sentenceSegments_.size())) return;
+    const auto& segment = sentenceSegments_[index];
+    segmentExpandHandler_(segmentExpandContext_, segment.start, segment.end);
 }
 
 LRESULT CALLBACK CandidatePopup::WindowProcedure(HWND window, UINT message, WPARAM wParam,
@@ -349,6 +414,9 @@ LRESULT CALLBACK CandidatePopup::WindowProcedure(HWND window, UINT message, WPAR
             return 0;
         case WM_LBUTTONUP:
             if (self) self->SelectAt(lParam);
+            return 0;
+        case WM_LBUTTONDBLCLK:
+            if (self) self->ExpandAt(lParam);
             return 0;
         case WM_NCDESTROY:
             SetWindowLongPtrW(window, GWLP_USERDATA, 0);

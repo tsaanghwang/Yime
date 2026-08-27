@@ -10,6 +10,7 @@
 class CandidatePopup final {
 public:
     using SelectionHandler = void (*)(void* context, unsigned ordinal) noexcept;
+    using SentenceHandler = void (*)(void* context) noexcept;
     using SegmentHandler = void (*)(void* context, int start, int end) noexcept;
 
     CandidatePopup() noexcept = default;
@@ -21,25 +22,39 @@ public:
     bool Update(const std::vector<std::wstring>& candidates, const RECT& anchor, HWND owner,
                 bool textExtentAnchor = false, size_t selectedIndex = 0,
                 const yime::experiment::BrokerCandidate* sentence = nullptr,
-                int activeSegmentStart = -1, int activeSegmentEnd = -1) noexcept;
+                int activeSegmentStart = -1, int activeSegmentEnd = -1,
+				const std::wstring* status = nullptr) noexcept;
     void SetSelectionHandler(SelectionHandler handler, void* context) noexcept {
         selectionHandler_ = handler;
         selectionContext_ = context;
+    }
+    void SetSentenceHandler(SentenceHandler handler, void* context) noexcept {
+        sentenceHandler_ = handler;
+        sentenceContext_ = context;
     }
     void SetSegmentHandler(SegmentHandler handler, void* context) noexcept {
         segmentHandler_ = handler;
         segmentContext_ = context;
     }
+    void SetSegmentExpandHandler(SegmentHandler handler, void* context) noexcept {
+        segmentExpandHandler_ = handler;
+        segmentExpandContext_ = context;
+    }
     void Show(bool show) noexcept;
     void Destroy() noexcept;
     void SetFontPoints(int points) noexcept;
     void SetUseYinyuanFont(bool useYinyuan) noexcept;
+    void SetHorizontal(bool horizontal) noexcept { horizontal_ = horizontal; }
 
     HWND Window() const noexcept { return window_; }
     size_t Count() const noexcept { return candidates_.size(); }
-    size_t RowCount() const noexcept { return candidates_.size() + (sentenceSegments_.empty() ? 0 : 1); }
+    size_t RowCount() const noexcept {
+        return (candidates_.empty() ? 0 : horizontal_ ? 1 : candidates_.size()) +
+			   (sentenceSegments_.empty() ? 0 : 1) + (status_.empty() ? 0 : 1);
+    }
     int FontPoints() const noexcept { return fontPoints_; }
     bool UsesYinyuanFont() const noexcept { return useYinyuanFont_; }
+    bool IsHorizontal() const noexcept { return horizontal_; }
     int TextColumnLeft() const noexcept { return padding_ + textColumnOffset_; }
     RECT Bounds() const noexcept;
 
@@ -54,6 +69,7 @@ private:
     void Paint() noexcept;
     void TrackAt(LPARAM lParam) noexcept;
     void SelectAt(LPARAM lParam) noexcept;
+    void ExpandAt(LPARAM lParam) noexcept;
     int SegmentAt(int x, int y) const noexcept;
     HFONT EnsureFont() noexcept;
     void EnsurePrivateYinyuanFont() noexcept;
@@ -61,6 +77,7 @@ private:
 
     HWND window_ = nullptr;
     std::vector<std::wstring> candidates_;
+    std::vector<int> candidateWidths_;
     struct SentenceSegmentCell {
         int start;
         int end;
@@ -69,6 +86,7 @@ private:
         int width;
     };
     std::vector<SentenceSegmentCell> sentenceSegments_;
+	std::wstring status_;
     int textColumnOffset_ = 0;
     int trackedSegment_ = -1;
     int width_ = 0;
@@ -77,11 +95,16 @@ private:
     int fontPoints_ = 12;
     HFONT font_ = nullptr;
     bool useYinyuanFont_ = false;
+    bool horizontal_ = false;
     bool privateYinyuanFontAdded_ = false;
     std::wstring privateYinyuanFontPath_;
     size_t selectedIndex_ = 0;
     SelectionHandler selectionHandler_ = nullptr;
     void* selectionContext_ = nullptr;
+    SentenceHandler sentenceHandler_ = nullptr;
+    void* sentenceContext_ = nullptr;
     SegmentHandler segmentHandler_ = nullptr;
     void* segmentContext_ = nullptr;
+    SegmentHandler segmentExpandHandler_ = nullptr;
+    void* segmentExpandContext_ = nullptr;
 };

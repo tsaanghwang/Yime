@@ -325,7 +325,7 @@ STDMETHODIMP LanguageBarItem::InitMenu(ITfMenu* menu) {
     script->Release();
     if (!scriptOk ||
         FAILED(addMenuItem(menu, 0, TF_LBMENUF_SEPARATOR, nullptr)) ||
-        FAILED(addMenuItem(menu, YIME_LBI_DESKTOP_TOOLS, 0, L"桌面工具")) ||
+        FAILED(addMenuItem(menu, YIME_LBI_INPUT_TOOLBAR, 0, L"输入法工具栏")) ||
         FAILED(addMenuItem(menu, YIME_LBI_REVERSE_LOOKUP, 0, L"反查编码")) ||
         FAILED(addMenuItem(menu, YIME_LBI_USER_LEXICON, 0, L"用户词库")) ||
         FAILED(addMenuItem(menu, YIME_LBI_TRAINER_TOOL, 0, L"指法练习")) ||
@@ -379,7 +379,7 @@ STDMETHODIMP LanguageBarItem::UnadviseSink(DWORD cookie) {
 }
 
 bool LanguageBarItem::Apply(UINT id) noexcept {
-    if (id == YIME_LBI_DESKTOP_TOOLS || id == YIME_LBI_REVERSE_LOOKUP ||
+    if (id == YIME_LBI_INPUT_TOOLBAR || id == YIME_LBI_REVERSE_LOOKUP ||
         id == YIME_LBI_USER_LEXICON || id == YIME_LBI_TRAINER_TOOL ||
         id == YIME_LBI_TOOL_CENTER || id == YIME_LBI_SETTINGS_TOOL) {
         return toolLauncher_ && toolLauncher_(id, settingsPath_, toolLauncherContext_);
@@ -460,7 +460,7 @@ HMENU LanguageBarItem::BuildPopupMenu() const noexcept {
     AppendMenuW(script, win32Checked(settings.traditionalization), YIME_LBI_SCRIPT_TRADITIONAL, L"繁体");
     AppendMenuW(root, MF_POPUP | MF_STRING, reinterpret_cast<UINT_PTR>(script), L"汉字字形");
     AppendMenuW(root, MF_SEPARATOR, 0, nullptr);
-    AppendMenuW(root, MF_STRING, YIME_LBI_DESKTOP_TOOLS, L"桌面工具");
+    AppendMenuW(root, MF_STRING, YIME_LBI_INPUT_TOOLBAR, L"输入法工具栏");
     AppendMenuW(root, MF_STRING, YIME_LBI_REVERSE_LOOKUP, L"反查编码");
     AppendMenuW(root, MF_STRING, YIME_LBI_USER_LEXICON, L"用户词库");
     AppendMenuW(root, MF_STRING, YIME_LBI_TRAINER_TOOL, L"指法练习");
@@ -489,11 +489,15 @@ bool LanguageBarItem::LaunchTool(UINT command, const std::wstring& settingsPath,
         const auto indexRoot = installRoot / L"indexes";
         const auto settings = yime::experiment::LoadExperimentSettings(settingsPath);
         switch (command) {
-        case YIME_LBI_DESKTOP_TOOLS:
-            return startDetached(installRoot / L"bin" / L"YimeCoreDesktopTools.exe",
+        case YIME_LBI_INPUT_TOOLBAR:
+            return startDetached(installRoot / L"bin" / L"YimeCoreInputToolbar.exe",
                                  {L"-StatePath", settingsPath,
+                                  L"-SettingsTool", (installRoot / L"bin" / L"YimeCoreSettingsTool.exe").wstring(),
                                   L"-TrainerTool", (installRoot / L"bin" / L"YimeCoreTrainer.exe").wstring(),
+                                  L"-ToolCenterTool", (installRoot / L"bin" / L"YimeCoreToolCenter.exe").wstring(),
                                   L"-SharedDir", sharedDir.wstring(), L"-UserDir", stateRoot.wstring(),
+                                  L"-HelpDir", (installRoot / L"help").wstring(),
+                                  L"-LogDir", (stateRoot / L"logs").wstring(),
                                   L"-Experimental"});
         case YIME_LBI_REVERSE_LOOKUP:
             return startDetached(installRoot / L"bin" / L"YimeCoreReverseLookup.exe",

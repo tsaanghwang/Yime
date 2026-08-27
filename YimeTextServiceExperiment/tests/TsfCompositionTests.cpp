@@ -319,12 +319,20 @@ int wmain(int argc, wchar_t** argv) {
             throw std::runtime_error("invalid code terminated or desynchronized the TSF composition");
         }
         candidateElement = findCandidateElement(threadManager);
-		if (candidateElement) {
-			candidateElement->Release();
-			throw std::runtime_error("invalid code exposed candidate content instead of an empty correction state");
-		}
-		if (IsWindow(candidatePopup) && IsWindowVisible(candidatePopup)) {
-			throw std::runtime_error("invalid code left the owned candidate popup visible");
+        if (!candidateElement) {
+            throw std::runtime_error("invalid code removed the empty correction UI state");
+        }
+        candidateCount = 99;
+        require(candidateElement->GetCount(&candidateCount), "empty correction candidate count");
+        UINT emptySelection = 99;
+        if (candidateCount != 0 || candidateElement->GetSelection(&emptySelection) != E_FAIL ||
+            emptySelection != 0) {
+            candidateElement->Release();
+            throw std::runtime_error("invalid code exposed a selectable synthetic candidate");
+        }
+        candidateElement->Release();
+        if (!IsWindow(candidatePopup) || !IsWindowVisible(candidatePopup)) {
+            throw std::runtime_error("invalid code did not keep the owned correction status visible");
         }
         BOOL backspaceTestEaten = FALSE;
         require(keys->OnTestKeyDown(context, VK_BACK, 0, &backspaceTestEaten), "Backspace test key down");
@@ -347,6 +355,26 @@ int wmain(int argc, wchar_t** argv) {
             throw std::runtime_error("candidate UI did not recover after Backspace correction");
         }
         std::cout << "invalid_code_backspace_recovery_verified=true\n";
+        BOOL escapeTestEaten = FALSE;
+        require(keys->OnTestKeyDown(context, VK_ESCAPE, 0, &escapeTestEaten), "Escape test key down");
+        BOOL escapeEaten = FALSE;
+        require(keys->OnKeyDown(context, VK_ESCAPE, 0, &escapeEaten), "Escape key down");
+        if (!escapeTestEaten || !escapeEaten || !readContext(context, clientId).empty() ||
+            hasComposition(context) || IsWindowVisible(candidatePopup)) {
+            throw std::runtime_error("Escape did not cancel the active TSF composition");
+        }
+        for (const WPARAM key : {static_cast<WPARAM>('2'), static_cast<WPARAM>('J'),
+                               static_cast<WPARAM>('R'), static_cast<WPARAM>('U')}) {
+            BOOL restartEaten = FALSE;
+            require(keys->OnKeyDown(context, key, 0, &restartEaten), "post-Escape composition key");
+            if (!restartEaten) throw std::runtime_error("post-Escape composition key was not handled");
+        }
+        candidatePopup = FindWindowW(L"YimeTextServiceExperimentCandidatePopup", nullptr);
+        if (readContext(context, clientId) != L"2jru" || !hasComposition(context) ||
+            !candidatePopup || !IsWindowVisible(candidatePopup)) {
+            throw std::runtime_error("composition did not restart after Escape cancellation");
+        }
+        std::cout << "escape_cancellation_verified=true\n";
 
         require(keys->OnSetFocus(FALSE), "lose key-sink focus");
         candidateElement = findCandidateElement(threadManager);
@@ -470,14 +498,21 @@ int wmain(int argc, wchar_t** argv) {
         if (!candidatePopup || !IsWindowVisible(candidatePopup)) {
             throw std::runtime_error("owned candidate popup missing before mouse selection");
         }
+        candidateElement = findCandidateElement(threadManager);
+        candidateCount = 0;
+        if (!candidateElement || FAILED(candidateElement->GetCount(&candidateCount)) || candidateCount == 0) {
+            if (candidateElement) candidateElement->Release();
+            throw std::runtime_error("candidate UI did not recover before mouse selection");
+        }
+        candidateElement->Release();
         RECT popupClient{};
         GetClientRect(candidatePopup, &popupClient);
-		const bool hasSentenceRow =
-			GetPropW(candidatePopup, L"YimeTextServiceExperimentSentenceRow") != nullptr;
-		const int popupRows = static_cast<int>(candidateCount) + (hasSentenceRow ? 1 : 0);
-		const int rowHeight = (popupClient.bottom - 16) / popupRows;
-		const int candidateRowY = 8 + rowHeight * (hasSentenceRow ? 1 : 0) + rowHeight / 2;
-		SendMessageW(candidatePopup, WM_LBUTTONUP, 0, MAKELPARAM(20, candidateRowY));
+        const bool hasSentenceRow =
+            GetPropW(candidatePopup, L"YimeTextServiceExperimentSentenceRow") != nullptr;
+        const int popupRows = static_cast<int>(candidateCount) + (hasSentenceRow ? 1 : 0);
+        const int rowHeight = (popupClient.bottom - 16) / popupRows;
+        const int candidateRowY = 8 + rowHeight * (hasSentenceRow ? 1 : 0) + rowHeight / 2;
+        SendMessageW(candidatePopup, WM_LBUTTONUP, 0, MAKELPARAM(20, candidateRowY));
         for (int attempt = 0; attempt < 100; ++attempt) {
             MSG message{};
             while (PeekMessageW(&message, nullptr, 0, 0, PM_REMOVE)) {

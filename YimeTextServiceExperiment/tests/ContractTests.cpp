@@ -147,6 +147,9 @@ void testKeyContract() {
     expect(ClassifyVirtualKey(VK_BACK, false).route == KeyRoute::BackspaceComposition &&
                ClassifyVirtualKey(VK_BACK, true).route == KeyRoute::BackspaceComposition,
            "Backspace must edit the Broker composition regardless of Shift state");
+	expect(ClassifyVirtualKey(VK_ESCAPE, false).route == KeyRoute::ClearComposition &&
+			   ClassifyVirtualKey(VK_ESCAPE, true).route == KeyRoute::ClearComposition,
+		   "Escape must cancel the Broker composition regardless of Shift state");
     expect(ClassifyVirtualKey(VK_PRIOR, false).route == KeyRoute::PreviousCandidatePage,
            "PageUp must request the previous Broker candidate page");
     expect(ClassifyVirtualKey(VK_NEXT, false).route == KeyRoute::NextCandidatePage,
@@ -325,6 +328,8 @@ void testCandidateElement() {
     selection = 99;
     expect(candidates->GetSelection(&selection) == E_FAIL && selection == 0,
            "empty-result status row must not become a selectable candidate");
+	expect(candidates->StatusDisplay() == L"无匹配候选，按退格修改",
+		   "empty-result status message was discarded");
     candidates->Release();
 }
 
@@ -341,14 +346,25 @@ void testOwnedCandidatePopup() {
     expect(popup.UsesYinyuanFont(), "candidate popup did not select the Yinyuan font");
     popup.SetUseYinyuanFont(false);
     expect(!popup.UsesYinyuanFont(), "candidate popup did not restore the UI font");
+       popup.SetHorizontal(true);
+       expect(popup.IsHorizontal(), "candidate popup did not select horizontal layout");
+       popup.SetHorizontal(false);
     unsigned selected = 0;
     popup.SetSelectionHandler([](void* context, unsigned ordinal) noexcept {
         *static_cast<unsigned*>(context) = ordinal;
     }, &selected);
+       bool selectedSentence = false;
+       popup.SetSentenceHandler([](void* context) noexcept {
+              *static_cast<bool*>(context) = true;
+       }, &selectedSentence);
     std::array<int, 2> selectedSegment{-1, -1};
     popup.SetSegmentHandler([](void* context, int start, int end) noexcept {
         *static_cast<std::array<int, 2>*>(context) = {start, end};
     }, &selectedSegment);
+       std::array<int, 2> expandedSegment{-1, -1};
+       popup.SetSegmentExpandHandler([](void* context, int start, int end) noexcept {
+              *static_cast<std::array<int, 2>*>(context) = {start, end};
+       }, &expandedSegment);
     std::vector<std::wstring> candidates;
     for (int index = 1; index <= 10; ++index) {
         candidates.push_back(L"⇧" + std::to_wstring(index) + L"  候选");
@@ -369,6 +385,25 @@ void testOwnedCandidatePopup() {
     selected = 0;
     SendMessageW(window, WM_LBUTTONUP, 0, MAKELPARAM(1, 1));
     expect(selected == 0, "owned candidate popup accepted a border click");
+       const std::wstring emptyStatus = L"无匹配候选，按退格修改";
+       selected = 0;
+       expect(popup.Update({}, anchor, nullptr, false, 0, nullptr, -1, -1, &emptyStatus),
+                 "owned candidate popup rejected empty-result status");
+       expect(popup.RowCount() == 1, "empty-result status did not occupy one independent row");
+       SendMessageW(window, WM_LBUTTONUP, 0, MAKELPARAM(20, 10));
+       expect(selected == 0, "empty-result status became a selectable candidate");
+
+    popup.SetHorizontal(true);
+    expect(popup.Update({L"⇧1  甲", L"⇧2  乙"}, anchor, nullptr),
+           "horizontal candidate popup update failed");
+    expect(popup.RowCount() == 1, "horizontal candidates were not kept on one row");
+    RECT horizontalClient{};
+    GetClientRect(window, &horizontalClient);
+    selected = 0;
+    SendMessageW(window, WM_LBUTTONUP, 0,
+                 MAKELPARAM(horizontalClient.right - 10, horizontalClient.bottom / 2));
+    expect(selected == 2, "horizontal candidate popup did not route the second cell");
+    popup.SetHorizontal(false);
 
     const RECT centeredAnchor{100, 100, 101, 101};
     yime::experiment::BrokerCandidate editableSentence{"sentence", "甲丙"};
@@ -377,15 +412,20 @@ void testOwnedCandidatePopup() {
                         false, 0, &editableSentence, 0, 2),
            "owned sentence popup update failed");
     popup.Show(true);
+    selected = 0;
     const int textColumnLeft = popup.TextColumnLeft();
     SendMessageW(window, WM_LBUTTONDOWN, 0, MAKELPARAM(textColumnLeft - 1, 10));
     SendMessageW(window, WM_LBUTTONUP, 0, MAKELPARAM(textColumnLeft - 1, 10));
-    expect(selectedSegment == std::array<int, 2>{-1, -1},
-           "sentence label spacing leaked into the first segment hit target");
+    expect(selectedSentence, "sentence label did not route whole-sentence selection");
+    expect(selected == 0 && selectedSegment == std::array<int, 2>{-1, -1},
+           "sentence label leaked into candidate or segment selection");
     SendMessageW(window, WM_LBUTTONDOWN, 0, MAKELPARAM(textColumnLeft, 10));
     SendMessageW(window, WM_LBUTTONUP, 0, MAKELPARAM(textColumnLeft, 10));
     expect(selectedSegment == std::array<int, 2>{0, 2},
            "sentence row did not route the clicked editable segment span");
+    SendMessageW(window, WM_LBUTTONDBLCLK, 0, MAKELPARAM(textColumnLeft, 10));
+    expect(expandedSegment == std::array<int, 2>{0, 2},
+           "sentence row did not route the double-clicked segment for expansion");
     RECT client{};
     GetClientRect(window, &client);
     const int sentenceRowHeight = (client.bottom - 16) / static_cast<int>(popup.RowCount());
@@ -445,6 +485,8 @@ void testExperimentSettings() {
            "experiment medium font default is not 12 points");
     expect(missing.candidateAnnotation == "key_sequence",
            "experiment candidate encoding default is not key sequence");
+    expect(missing.candidatePageSize == 5 && missing.candidateLayout == "vertical",
+           "experiment candidate count/layout defaults do not match the production UI");
 
     const std::wstring path = temporaryStatePath(L"settings.json");
     DeleteFileW(path.c_str());
@@ -527,10 +569,10 @@ void testLanguageBarItem() {
            "simplified/traditional cascade is missing");
     expect((menu->entries[9].flags & TF_LBMENUF_SEPARATOR) != 0,
            "tool commands are not separated from composition settings");
-    expect(menu->entries[10].id == YIME_LBI_DESKTOP_TOOLS &&
-               menu->entries[10].text == L"桌面工具" &&
+       expect(menu->entries[10].id == YIME_LBI_INPUT_TOOLBAR &&
+                        menu->entries[10].text == L"输入法工具栏" &&
                (menu->entries[10].flags & TF_LBMENUF_CHECKED) == 0,
-           "desktop tools must be present and default off");
+                 "input toolbar must be present and default off");
     expect(menu->entries[11].id == YIME_LBI_REVERSE_LOOKUP &&
                menu->entries[11].text == L"反查编码",
            "reverse-lookup host click path is missing");
@@ -583,7 +625,7 @@ void testLanguageBarItem() {
     expect(item->OnMenuSelect(YIME_LBI_SCRIPT_TRADITIONAL) == S_OK &&
                LoadExperimentSettings(path).traditionalization,
            "host submenu click did not select Traditional output");
-    for (const UINT command : {YIME_LBI_DESKTOP_TOOLS, YIME_LBI_REVERSE_LOOKUP,
+    for (const UINT command : {YIME_LBI_INPUT_TOOLBAR, YIME_LBI_REVERSE_LOOKUP,
                                YIME_LBI_USER_LEXICON, YIME_LBI_TRAINER_TOOL,
                                YIME_LBI_TOOL_CENTER, YIME_LBI_SETTINGS_TOOL}) {
         launchedTool = 0;
