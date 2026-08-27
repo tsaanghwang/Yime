@@ -15,6 +15,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/layoutdesigner"
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/toolbarstate"
 )
 
@@ -25,11 +26,14 @@ const (
 )
 
 type options struct {
-	installRoot string
-	brokerPath  string
-	stateRoot   string
-	pipeName    string
-	noToolbar   bool
+	installRoot  string
+	brokerPath   string
+	stateRoot    string
+	pipeName     string
+	noToolbar    bool
+	indexRoot    string
+	dataDir      string
+	indexVersion string
 }
 
 type runtimeStatus struct {
@@ -45,6 +49,9 @@ type runtimeStatus struct {
 	PipeName      string `json:"pipe_name"`
 	Restarts      int    `json:"restarts"`
 	LastError     string `json:"last_error,omitempty"`
+	IndexRoot     string `json:"index_root,omitempty"`
+	DataDir       string `json:"data_dir,omitempty"`
+	IndexVersion  string `json:"index_version,omitempty"`
 }
 
 func main() {
@@ -128,6 +135,16 @@ func resolveOptions(value options) (options, error) {
 		if info, statErr := os.Stat(required); statErr != nil || info.IsDir() {
 			return value, fmt.Errorf("required trial file is unavailable: %s", required)
 		}
+	}
+	value.indexRoot = filepath.Join(value.installRoot, "indexes")
+	value.dataDir = filepath.Join(value.installRoot, "data")
+	value.indexVersion = "installed-v1"
+	if generation, loadErr := layoutdesigner.LoadTrialLayoutGeneration(value.stateRoot); loadErr == nil {
+		value.indexRoot = generation.IndexRoot
+		value.dataDir = generation.DataDir
+		value.indexVersion = generation.Version
+	} else if !errors.Is(loadErr, os.ErrNotExist) {
+		return value, fmt.Errorf("load Trial layout generation: %w", loadErr)
 	}
 	if !value.noToolbar {
 		for _, tool := range []string{desktopToolsPath(value.installRoot), trainerPath(value.installRoot), toolCenterPath(value.installRoot)} {
@@ -215,7 +232,7 @@ func run(config options, statusPath string) error {
 }
 
 func startBroker(config options, logger *log.Logger) (*exec.Cmd, <-chan error, error) {
-	modelRoot := filepath.Join(config.stateRoot, "user-model")
+	modelRoot := trialModelRoot(config)
 	controlRoot := filepath.Join(config.stateRoot, "index-control")
 	if err := os.MkdirAll(modelRoot, 0o755); err != nil {
 		return nil, nil, err
@@ -244,23 +261,48 @@ func startBroker(config options, logger *log.Logger) (*exec.Cmd, <-chan error, e
 }
 
 func brokerArguments(config options) []string {
-	modelRoot := filepath.Join(config.stateRoot, "user-model")
+	modelRoot := trialModelRoot(config)
 	controlRoot := filepath.Join(config.stateRoot, "index-control")
 	return []string{
-		"-index-root", filepath.Join(config.installRoot, "indexes"),
+		"-index-root", trialIndexRoot(config),
 		"-default-mode", "variable",
-		"-annotation-data-dir", filepath.Join(config.installRoot, "data"),
+		"-annotation-data-dir", trialDataDir(config),
 		"-user-lexicon-dir", config.stateRoot,
 		"-named-pipe", config.pipeName,
 		"-user-model-snapshot", filepath.Join(modelRoot, "user-model.json"),
 		"-user-model-journal", filepath.Join(modelRoot, "user-model.journal"),
-		"-user-model-source-id", modelSourceID,
+		"-user-model-source-id", modelSourceID + ":" + trialIndexVersion(config),
 		"-user-model-checkpoint-every", "256",
 		"-user-model-compact-every", "4096",
-		"-index-version", "installed-v1",
+		"-index-version", trialIndexVersion(config),
 		"-index-control-manifest", filepath.Join(controlRoot, "request.json"),
 		"-index-control-status", filepath.Join(controlRoot, "status.json"),
 	}
+}
+
+func trialIndexRoot(config options) string {
+	if config.indexRoot != "" {
+		return config.indexRoot
+	}
+	return filepath.Join(config.installRoot, "indexes")
+}
+
+func trialDataDir(config options) string {
+	if config.dataDir != "" {
+		return config.dataDir
+	}
+	return filepath.Join(config.installRoot, "data")
+}
+
+func trialIndexVersion(config options) string {
+	if config.indexVersion != "" {
+		return config.indexVersion
+	}
+	return "installed-v1"
+}
+
+func trialModelRoot(config options) string {
+	return filepath.Join(config.stateRoot, "user-model", trialIndexVersion(config))
 }
 
 func startToolbar(config options, logger *log.Logger) *exec.Cmd {
@@ -316,6 +358,7 @@ func statusFor(config options, state string, brokerPID, toolbarPID, restarts int
 		SchemaVersion: statusSchema, State: state, UpdatedAt: time.Now().UTC().Format(time.RFC3339Nano),
 		RuntimePID: os.Getpid(), BrokerPID: brokerPID, ToolbarPID: toolbarPID, InstallRoot: config.installRoot,
 		BrokerPath: config.brokerPath, StateRoot: config.stateRoot, PipeName: config.pipeName, Restarts: restarts,
+		IndexRoot: trialIndexRoot(config), DataDir: trialDataDir(config), IndexVersion: trialIndexVersion(config),
 	}
 	if statusErr != nil {
 		value.LastError = statusErr.Error()

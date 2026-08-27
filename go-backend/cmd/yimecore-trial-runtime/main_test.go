@@ -71,18 +71,37 @@ func TestBrokerArgumentsPinMultiIndexDurabilityAndTransactionalControl(t *testin
 		stateRoot: `C:\user state`, pipeName: defaultPipeName,
 	}
 	arguments := brokerArguments(config)
+	modelRoot := filepath.Join(config.stateRoot, "user-model", "installed-v1")
 	for _, expected := range []string{
 		"-index-root", filepath.Join(config.installRoot, "indexes"),
 		"-default-mode", "variable",
 		"-named-pipe", defaultPipeName,
-		"-user-model-snapshot", filepath.Join(config.stateRoot, "user-model", "user-model.json"),
-		"-user-model-journal", filepath.Join(config.stateRoot, "user-model", "user-model.journal"),
-		"-user-model-source-id", modelSourceID,
+		"-user-model-snapshot", filepath.Join(modelRoot, "user-model.json"),
+		"-user-model-journal", filepath.Join(modelRoot, "user-model.journal"),
+		"-user-model-source-id", modelSourceID + ":installed-v1",
 		"-index-control-manifest", filepath.Join(config.stateRoot, "index-control", "request.json"),
 		"-index-control-status", filepath.Join(config.stateRoot, "index-control", "status.json"),
 	} {
 		if !slices.Contains(arguments, expected) {
 			t.Fatalf("Broker arguments lack %q: %v", expected, arguments)
+		}
+	}
+}
+
+func TestBrokerArgumentsAdoptPublishedTrialLayoutGeneration(t *testing.T) {
+	config := options{
+		installRoot: `C:\trial package`, stateRoot: `C:\user state`, pipeName: defaultPipeName,
+		indexRoot: `C:\user state\layout\generations\layout-123\indexes`,
+		dataDir:   `C:\user state\layout\generations\layout-123\data`, indexVersion: "layout-123",
+	}
+	arguments := brokerArguments(config)
+	for _, expected := range []string{
+		config.indexRoot, config.dataDir, "layout-123",
+		filepath.Join(config.stateRoot, "user-model", "layout-123", "user-model.json"),
+		modelSourceID + ":layout-123",
+	} {
+		if !slices.Contains(arguments, expected) {
+			t.Fatalf("generation Broker arguments lack %q: %v", expected, arguments)
 		}
 	}
 }
