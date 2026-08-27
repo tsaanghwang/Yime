@@ -3,10 +3,30 @@
 package main
 
 import (
+	"path/filepath"
 	"testing"
 
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/trainer"
 )
+
+func TestExperimentalTrainerUsesIndependentWindowIdentity(t *testing.T) {
+	if got := trainerWindowClass(false); got != "YimeTrainer" {
+		t.Fatalf("production trainer class=%q", got)
+	}
+	if got := trainerWindowTitle(false); got != "Yime 音元指法练习" {
+		t.Fatalf("production trainer title=%q", got)
+	}
+	if got := trainerWindowClass(true); got != "YimeCoreTrialTrainer" {
+		t.Fatalf("trial trainer class=%q", got)
+	}
+	if got := trainerWindowTitle(true); got != "Yime 试验版音元指法练习" {
+		t.Fatalf("trial trainer title=%q", got)
+	}
+	trialRoot := filepath.Join(t.TempDir(), "YimeCore Experimental Trial")
+	if got := trainerPreferencesDirectory(trialRoot, true); got != filepath.Join(trialRoot, "trainer") {
+		t.Fatalf("trial trainer preferences=%q", got)
+	}
+}
 
 func sampleLayoutMetrics() layoutMetrics {
 	return layoutMetrics{
