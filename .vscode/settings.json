@@ -143,5 +143,6 @@
     ],
     "cSpell.useCustomDecorations": false,
     "cSpell.diagnosticLevel": "Hint",
-    "terminal.integrated.fontFamily": "monospace"
+    "terminal.integrated.fontFamily": "monospace",
+    "chat.agent.maxRequests": 100
 }
