@@ -43,10 +43,13 @@ func TestResolveOptionsRequiresCompleteIndependentTrialPackage(t *testing.T) {
 	}
 }
 
-func TestDesktopToolsUsesDedicatedNativeWindowsExecutable(t *testing.T) {
+func TestInputToolbarUsesDedicatedNativeWindowsExecutable(t *testing.T) {
 	root := filepath.Join(`C:\trial package`)
-	if got := desktopToolsPath(root); got != filepath.Join(root, "bin", "YimeCoreDesktopTools.exe") {
-		t.Fatalf("desktop tools path=%q", got)
+	if got := inputToolbarPath(root); got != filepath.Join(root, "bin", "YimeCoreInputToolbar.exe") {
+		t.Fatalf("input toolbar path=%q", got)
+	}
+	if got := settingsToolPath(root); got != filepath.Join(root, "bin", "YimeCoreSettingsTool.exe") {
+		t.Fatalf("settings tool path=%q", got)
 	}
 	if got := trainerPath(root); got != filepath.Join(root, "bin", "YimeCoreTrainer.exe") {
 		t.Fatalf("trainer path=%q", got)
@@ -55,12 +58,13 @@ func TestDesktopToolsUsesDedicatedNativeWindowsExecutable(t *testing.T) {
 		t.Fatalf("Tool Center path=%q", got)
 	}
 	config := options{installRoot: root, stateRoot: `C:\trial state`}
-	arguments := desktopToolsArguments(config)
+	arguments := inputToolbarArguments(config)
 	for _, expected := range []string{
-		trainerPath(root), toolCenterPath(root), filepath.Join(root, "data"), config.stateRoot, "-Experimental",
+		settingsToolPath(root), trainerPath(root), toolCenterPath(root), filepath.Join(root, "data"),
+		filepath.Join(root, "help"), filepath.Join(config.stateRoot, "logs"), config.stateRoot, "-Experimental",
 	} {
 		if !slices.Contains(arguments, expected) {
-			t.Fatalf("Desktop Tools arguments lack %q: %v", expected, arguments)
+			t.Fatalf("input toolbar arguments lack %q: %v", expected, arguments)
 		}
 	}
 }
@@ -79,6 +83,10 @@ func TestBrokerArgumentsPinMultiIndexDurabilityAndTransactionalControl(t *testin
 		"-user-model-snapshot", filepath.Join(modelRoot, "user-model.json"),
 		"-user-model-journal", filepath.Join(modelRoot, "user-model.journal"),
 		"-user-model-source-id", modelSourceID + ":installed-v1",
+		"-user-blocklist", filepath.Join(config.stateRoot, "yime_blocklist.txt"),
+		"-learning-config", filepath.Join(config.stateRoot, "learning.json"),
+		"-professional-root", filepath.Join(config.installRoot, "professional-lexicons"),
+		"-professional-state", filepath.Join(config.stateRoot, "professional-lexicons.json"),
 		"-index-control-manifest", filepath.Join(config.stateRoot, "index-control", "request.json"),
 		"-index-control-status", filepath.Join(config.stateRoot, "index-control", "status.json"),
 	} {

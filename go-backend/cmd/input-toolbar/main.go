@@ -18,9 +18,9 @@ import (
 
 const (
 	windowClass           = "YimeInputToolbar"
-	experimentWindowClass = "YimeCoreDesktopToolsWindow"
+	experimentWindowClass = "YimeCoreInputToolbarWindow"
 	messageTitle          = "音元"
-	experimentWindowTitle = "Yime 桌面工具"
+	experimentWindowTitle = "Yime 元版输入法工具栏"
 
 	wsExToolWindow = 0x00000080
 	wsExTopmost    = 0x00000008
@@ -46,24 +46,21 @@ const (
 	wmNcLButtonDown = 0x00A1
 	htCaption       = 2
 
-	idHandle     = 99
-	idLanguage   = 100
-	idShape      = 101
-	idPunct      = 102
-	idScript     = 103
-	idUnicode    = 104
-	idSettings   = 105
-	idTrainer    = 106
-	idExpWidth   = 107
-	idExpPunct   = 108
-	idExpScript  = 109
-	idToolCenter = 110
-	timerID      = 1
+	idHandle   = 99
+	idLanguage = 100
+	idShape    = 101
+	idPunct    = 102
+	idScript   = 103
+	idUnicode  = 104
+	idSettings = 105
+	idTrainer  = 106
+	timerID    = 1
 
 	idMenuOrientation = 200
 	idMenuCandidate   = 201
 	idMenuSystem      = 202
 	idMenuHide        = 203
+	idMenuToolCenter  = 204
 	idMenuButtonBase  = 300
 
 	toolbarMargin       = int32(8)
@@ -255,10 +252,7 @@ func (a *app) run() error {
 	instance, _, _ := getModuleHandleW.Call(0)
 	className, _ := syscall.UTF16PtrFromString(a.className())
 	cursor, _, _ := loadCursorW.Call(0, uintptr(32512))
-	icon := uintptr(0)
-	if !a.experimental {
-		icon = win32ui.LoadYimeIcon(instance)
-	}
+	icon := win32ui.LoadYimeIcon(instance)
 	windowProc = syscall.NewCallback(a.wndProc)
 	class := wndClassEx{
 		Size:       uint32(unsafe.Sizeof(wndClassEx{})),
@@ -352,9 +346,10 @@ func loadToolbarState(path string) toolbarstate.State {
 func loadExperimentalToolbarState(path string) toolbarstate.State {
 	state, err := toolbarstate.Update(path, "yimecore-toolbar", func(state *toolbarstate.State) bool {
 		changed := toolbarstate.NormalizeExperiment(state)
-		if !state.OrientationSet {
-			state.Vertical = false
+		if !state.OrientationSet || state.ToolbarLayoutVersion < toolbarstate.LayoutVersion {
+			state.Vertical = true
 			state.OrientationSet = true
+			state.ToolbarLayoutVersion = toolbarstate.LayoutVersion
 			changed = true
 		}
 		return changed
@@ -362,7 +357,10 @@ func loadExperimentalToolbarState(path string) toolbarstate.State {
 	if err == nil {
 		return state
 	}
-	state = toolbarstate.State{Version: toolbarstate.FormatVersion, Vertical: false, OrientationSet: true}
+	state = toolbarstate.State{
+		Version: toolbarstate.FormatVersion, Vertical: true, OrientationSet: true,
+		ToolbarLayoutVersion: toolbarstate.LayoutVersion,
+	}
 	toolbarstate.NormalizeExperiment(&state)
 	return state
 }
@@ -428,25 +426,7 @@ func toolbarButtons() []toolbarButton {
 	}
 }
 
-func experimentalToolbarButtons() []toolbarButton {
-	return []toolbarButton{
-		{idHandle, "handle", "│", 64, false},
-		{idLanguage, "mode", "模式：变长", 86, false},
-		{idShape, "font", "字号：中", 78, false},
-		{idPunct, "encoding", "音码：键位", 92, false},
-		{idExpWidth, "output-width", "半宽", 54, false},
-		{idExpPunct, "output-punctuation", "中标", 54, false},
-		{idExpScript, "output-script", "简体", 54, false},
-		{idTrainer, "trainer", "练习", 64, false},
-		{idToolCenter, "tool-center", "工具中心", 80, false},
-		{idSettings, "close", "关闭", 54, false},
-	}
-}
-
 func (a *app) buttonDefinitions() []toolbarButton {
-	if a.experimental {
-		return experimentalToolbarButtons()
-	}
 	return toolbarButtons()
 }
 
@@ -682,37 +662,6 @@ func (a *app) wndProc(hwnd syscall.Handle, message uint32, wParam, lParam uintpt
 }
 
 func (a *app) handleCommand(id int) {
-	if a.experimental {
-		switch id {
-		case idLanguage:
-			a.updateState(func(state *toolbarstate.State) { state.ExperimentMode = nextExperimentMode(state.ExperimentMode) })
-		case idShape:
-			a.updateState(func(state *toolbarstate.State) {
-				state.CandidateFontPreset = nextCandidateFont(state.CandidateFontPreset)
-			})
-		case idPunct:
-			a.updateState(func(state *toolbarstate.State) {
-				state.CandidateAnnotation = nextCandidateEncoding(state.CandidateAnnotation)
-			})
-		case idExpWidth:
-			a.updateState(func(state *toolbarstate.State) { state.FullShape = !state.FullShape })
-		case idExpPunct:
-			a.updateState(func(state *toolbarstate.State) {
-				state.ASCIIPunctuation = !state.ASCIIPunctuation
-			})
-		case idExpScript:
-			a.updateState(func(state *toolbarstate.State) {
-				state.Traditionalization = !state.Traditionalization
-			})
-		case idTrainer:
-			a.openTrainer()
-		case idToolCenter:
-			a.openToolCenter()
-		case idSettings:
-			closeToolbarWindow(a.hwnd)
-		}
-		return
-	}
 	switch id {
 	case idLanguage:
 		a.updateState(func(state *toolbarstate.State) { state.ASCII = !state.ASCII })
@@ -730,41 +679,6 @@ func (a *app) handleCommand(id int) {
 		a.openTrainer()
 	case idSettings:
 		a.showSettingsMenu()
-	}
-}
-
-func nextExperimentMode(value string) string {
-	switch value {
-	case toolbarstate.ExperimentModeVariable:
-		return toolbarstate.ExperimentModeFull
-	case toolbarstate.ExperimentModeFull:
-		return toolbarstate.ExperimentModeShorthand
-	default:
-		return toolbarstate.ExperimentModeVariable
-	}
-}
-
-func nextCandidateFont(value string) string {
-	switch value {
-	case toolbarstate.CandidateFontMedium:
-		return toolbarstate.CandidateFontLarge
-	case toolbarstate.CandidateFontLarge:
-		return toolbarstate.CandidateFontSmall
-	default:
-		return toolbarstate.CandidateFontMedium
-	}
-}
-
-func nextCandidateEncoding(value string) string {
-	switch value {
-	case toolbarstate.AnnotationKeySequence:
-		return toolbarstate.AnnotationYinyuan
-	case toolbarstate.AnnotationYinyuan:
-		return toolbarstate.AnnotationStandardPinyin
-	case toolbarstate.AnnotationStandardPinyin:
-		return toolbarstate.AnnotationHidden
-	default:
-		return toolbarstate.AnnotationKeySequence
 	}
 }
 
@@ -798,6 +712,9 @@ func (a *app) showSettingsMenu() {
 	appendPopupMenuItem(menu, mfString, idMenuHide, "隐藏")
 	appendPopupMenuItem(menu, mfSeparator, 0, "")
 	appendPopupMenuItem(menu, mfString, idMenuCandidate, "候选")
+	if a.experimental {
+		appendPopupMenuItem(menu, mfString, idMenuToolCenter, "工具中心")
+	}
 	appendPopupMenuItem(menu, mfString, idMenuSystem, "系统")
 
 	var cursor point
@@ -874,6 +791,10 @@ func (a *app) handleSettingsMenuCommand(command int) {
 		closeToolbarWindow(a.hwnd)
 	case idMenuCandidate:
 		a.openCandidateSettings()
+	case idMenuToolCenter:
+		if a.experimental {
+			a.openToolCenter()
+		}
 	case idMenuSystem:
 		if err := exec.Command("explorer.exe", "ms-settings:regionlanguage").Start(); err != nil {
 			showError("无法打开 Windows 输入法设置：" + err.Error())
@@ -949,13 +870,13 @@ func (a *app) openCandidateSettings() {
 		showError("没有找到设置工具。")
 		return
 	}
-	if err := exec.Command(
-		a.settingsTool,
-		"-UserDir", a.userDir,
-		"-SharedDir", a.sharedDir,
-		"-HelpDir", a.helpDir,
-		"-LogDir", a.logDir,
-	).Start(); err != nil {
+	arguments := []string{"-UserDir", a.userDir, "-SharedDir", a.sharedDir}
+	if a.experimental {
+		arguments = append(arguments, "-StatePath", a.statePath, "-Experimental")
+	} else {
+		arguments = append(arguments, "-HelpDir", a.helpDir, "-LogDir", a.logDir)
+	}
+	if err := exec.Command(a.settingsTool, arguments...).Start(); err != nil {
 		showError("无法打开设置工具：" + err.Error())
 	}
 }
@@ -1021,24 +942,6 @@ func (a *app) refresh() {
 
 func (a *app) updateLabels() {
 	setWindowLabel(a.buttons[idHandle], dragHandleLabel(a.state))
-	if a.experimental {
-		setButtonText(a.buttons[idLanguage], map[string]string{
-			toolbarstate.ExperimentModeVariable: "模式：变长", toolbarstate.ExperimentModeFull: "模式：等长",
-			toolbarstate.ExperimentModeShorthand: "模式：省键",
-		}[a.state.ExperimentMode])
-		setButtonText(a.buttons[idShape], map[string]string{
-			toolbarstate.CandidateFontSmall: "字号：小", toolbarstate.CandidateFontMedium: "字号：中",
-			toolbarstate.CandidateFontLarge: "字号：大",
-		}[a.state.CandidateFontPreset])
-		setButtonText(a.buttons[idPunct], map[string]string{
-			toolbarstate.AnnotationKeySequence: "音码：键位", toolbarstate.AnnotationYinyuan: "音码：音元",
-			toolbarstate.AnnotationStandardPinyin: "音码：拼音", toolbarstate.AnnotationHidden: "音码：隐藏",
-		}[a.state.CandidateAnnotation])
-		setButtonText(a.buttons[idExpWidth], choose(a.state.FullShape, "全宽", "半宽"))
-		setButtonText(a.buttons[idExpPunct], choose(a.state.ASCIIPunctuation, "英标", "中标"))
-		setButtonText(a.buttons[idExpScript], choose(a.state.Traditionalization, "繁体", "简体"))
-		return
-	}
 	setButtonText(a.buttons[idLanguage], choose(a.state.ASCII, "英文", "中文"))
 	setButtonText(a.buttons[idShape], choose(a.state.FullShape, "全宽", "半宽"))
 	setButtonText(a.buttons[idPunct], choose(a.state.ASCIIPunctuation, "英标", "中标"))

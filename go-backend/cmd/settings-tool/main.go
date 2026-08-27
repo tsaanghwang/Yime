@@ -111,6 +111,8 @@ type settingsUILayout struct {
 	pageLabel, pageCombo                                     rect
 	reverseLabel, reverseCombo                               rect
 	layoutLabel, layoutCombo                                 rect
+	fontLabel, fontCombo                                     rect
+	asciiLabel, asciiCombo                                   rect
 	applyButton, backupButton, restoreButton, openHelpButton rect
 }
 
@@ -120,6 +122,7 @@ type appState struct {
 	experimental                            bool
 
 	mainHWND, schemaHWND, pageHWND, reverseHWND, layoutHWND syscall.Handle
+	fontHWND, asciiHWND                                     syscall.Handle
 	schemaOptions                                           []settings.SchemaOption
 	layout                                                  settingsUILayout
 
@@ -138,6 +141,8 @@ type applyRequest struct {
 
 type trialApplyRequest struct {
 	mode       string
+	pageSize   int
+	layout     string
 	font       string
 	annotation string
 	ascii      bool
@@ -164,9 +169,12 @@ func executeTrialApply(path string, request trialApplyRequest) error {
 	_, err := toolbarstate.Update(path, "yimecore-settings-tool", func(state *toolbarstate.State) bool {
 		toolbarstate.NormalizeExperiment(state)
 		changed := state.ExperimentMode != request.mode ||
+			state.CandidatePageSize != request.pageSize || state.CandidateLayout != request.layout ||
 			state.CandidateFontPreset != request.font ||
 			state.CandidateAnnotation != request.annotation || state.ASCII != request.ascii
 		state.ExperimentMode = request.mode
+		state.CandidatePageSize = request.pageSize
+		state.CandidateLayout = request.layout
 		state.CandidateFontPreset = request.font
 		state.CandidateAnnotation = request.annotation
 		state.ASCII = request.ascii
@@ -203,7 +211,7 @@ func main() {
 		userDir:       strings.TrimSpace(*userDir),
 		sharedDir:     strings.TrimSpace(*sharedDir),
 		helpDir:       strings.TrimSpace(*helpDir),
-		backupRoot:    defaultBackupRoot(),
+		backupRoot:    defaultBackupRoot(*experimental),
 		statePath:     strings.TrimSpace(*statePath),
 		experimental:  *experimental,
 		schemaOptions: schemaOptions,
@@ -227,7 +235,7 @@ func runApp(state *appState) error {
 	if win32ui.ActivateExistingWindow(windowClass) {
 		return nil
 	}
-	state.layout = buildSettingsUILayout(state.helpDir != "")
+	state.layout = buildSettingsUILayout(state.helpDir != "", state.experimental)
 
 	icc := initCommonControlsEx{Size: uint32(unsafe.Sizeof(initCommonControlsEx{})), ICC: 0x000000FF}
 	procInitCommonControlsEx.Call(uintptr(unsafe.Pointer(&icc)))
@@ -295,16 +303,9 @@ func (state *appState) createControls() {
 		text, _ := syscall.UTF16PtrFromString(option.Label)
 		procSendMessageW.Call(uintptr(state.schemaHWND), 0x0143, 0, uintptr(unsafe.Pointer(text)))
 	}
-	pageLabel := "候选项数"
-	if state.experimental {
-		pageLabel = "候选字号"
-	}
-	createStatic(state.mainHWND, pageLabel, l.pageLabel, 0)
+	createStatic(state.mainHWND, "候选项数", l.pageLabel, 0)
 	state.pageHWND = createCombo(state.mainHWND, l.pageCombo, idPageSizeCombo)
 	pageOptions := []string{"5", "6", "7", "8", "9"}
-	if state.experimental {
-		pageOptions = []string{"小", "中", "大"}
-	}
 	for _, option := range pageOptions {
 		text, _ := syscall.UTF16PtrFromString(option)
 		procSendMessageW.Call(uintptr(state.pageHWND), 0x0143, 0, uintptr(unsafe.Pointer(text)))
@@ -319,19 +320,32 @@ func (state *appState) createControls() {
 		text, _ := syscall.UTF16PtrFromString(option.Label)
 		procSendMessageW.Call(uintptr(state.reverseHWND), 0x0143, 0, uintptr(unsafe.Pointer(text)))
 	}
-	layoutLabel := "候选排列"
-	if state.experimental {
-		layoutLabel = "默认键盘"
-	}
-	createStatic(state.mainHWND, layoutLabel, l.layoutLabel, 0)
+	createStatic(state.mainHWND, "候选排列", l.layoutLabel, 0)
 	state.layoutHWND = createCombo(state.mainHWND, l.layoutCombo, idLayoutCombo)
 	layoutOptions := settings.CandidateLayoutOptions()
 	if state.experimental {
-		layoutOptions = trialAsciiOptions()
+		layoutOptions = []settings.ComboOption{
+			{Label: "竖排", Value: toolbarstate.CandidateLayoutVertical},
+			{Label: "横排", Value: toolbarstate.CandidateLayoutHorizontal},
+		}
 	}
 	for _, option := range layoutOptions {
 		text, _ := syscall.UTF16PtrFromString(option.Label)
 		procSendMessageW.Call(uintptr(state.layoutHWND), 0x0143, 0, uintptr(unsafe.Pointer(text)))
+	}
+	if state.experimental {
+		createStatic(state.mainHWND, "候选字号", l.fontLabel, 0)
+		state.fontHWND = createCombo(state.mainHWND, l.fontCombo, idPageSizeCombo+10)
+		for _, option := range []string{"小", "中", "大"} {
+			text, _ := syscall.UTF16PtrFromString(option)
+			procSendMessageW.Call(uintptr(state.fontHWND), 0x0143, 0, uintptr(unsafe.Pointer(text)))
+		}
+		createStatic(state.mainHWND, "默认键盘", l.asciiLabel, 0)
+		state.asciiHWND = createCombo(state.mainHWND, l.asciiCombo, idLayoutCombo+10)
+		for _, option := range trialAsciiOptions() {
+			text, _ := syscall.UTF16PtrFromString(option.Label)
+			procSendMessageW.Call(uintptr(state.asciiHWND), 0x0143, 0, uintptr(unsafe.Pointer(text)))
+		}
 	}
 	// The selected controls already show the current configuration; do not
 	// duplicate it in a developer-oriented "current configuration" summary.
@@ -343,7 +357,7 @@ func (state *appState) createControls() {
 	}
 }
 
-func buildSettingsUILayout(withHelp bool) settingsUILayout {
+func buildSettingsUILayout(withHelp, experimental bool) settingsUILayout {
 	const (
 		margin     = int32(16)
 		labelW     = int32(96)
@@ -365,8 +379,14 @@ func buildSettingsUILayout(withHelp bool) settingsUILayout {
 	l.pageLabel, l.pageCombo = row(1)
 	l.reverseLabel, l.reverseCombo = row(2)
 	l.layoutLabel, l.layoutCombo = row(3)
+	rowCount := int32(4)
+	if experimental {
+		l.fontLabel, l.fontCombo = row(4)
+		l.asciiLabel, l.asciiCombo = row(5)
+		rowCount = 6
+	}
 
-	buttonY := margin + 4*(rowH+rowGap) + 8
+	buttonY := margin + rowCount*(rowH+rowGap) + 8
 	buttons := []*rect{&l.applyButton, &l.backupButton, &l.restoreButton}
 	if withHelp {
 		buttons = append(buttons, &l.openHelpButton)
@@ -395,18 +415,23 @@ func (state *appState) refreshView() {
 			toolbarstate.NormalizeExperiment(&snapshot)
 		}
 		setComboBySchema(state.schemaHWND, state.schemaOptions, snapshot.ExperimentMode)
+		setComboByText(state.pageHWND, fmt.Sprintf("%d", snapshot.CandidatePageSize))
+		setComboByValue(state.layoutHWND, []settings.ComboOption{
+			{Label: "竖排", Value: toolbarstate.CandidateLayoutVertical},
+			{Label: "横排", Value: toolbarstate.CandidateLayoutHorizontal},
+		}, snapshot.CandidateLayout)
 		font := map[string]string{toolbarstate.CandidateFontSmall: "小",
 			toolbarstate.CandidateFontMedium: "中", toolbarstate.CandidateFontLarge: "大"}[snapshot.CandidateFontPreset]
 		if font == "" {
 			font = "中"
 		}
-		setComboByText(state.pageHWND, font)
+		setComboByText(state.fontHWND, font)
 		setComboByValue(state.reverseHWND, trialAnnotationOptions(), snapshot.CandidateAnnotation)
 		ascii := "chinese"
 		if snapshot.ASCII {
 			ascii = "english"
 		}
-		setComboByValue(state.layoutHWND, trialAsciiOptions(), ascii)
+		setComboByValue(state.asciiHWND, trialAsciiOptions(), ascii)
 		return
 	}
 	snapshot := settings.LoadSnapshot(state.userDir, state.sharedDir)
@@ -486,10 +511,16 @@ func (state *appState) startApply() {
 	if state.experimental {
 		request := trialApplyRequest{
 			mode: selectedSchemaID(state.schemaHWND, state.schemaOptions),
+			pageSize: settings.NormalizePageSizeValue(
+				atoiDefault(selectedComboText(state.pageHWND), 5)),
+			layout: selectedComboValue(state.layoutHWND, []settings.ComboOption{
+				{Label: "竖排", Value: toolbarstate.CandidateLayoutVertical},
+				{Label: "横排", Value: toolbarstate.CandidateLayoutHorizontal},
+			}),
 			font: map[string]string{"小": toolbarstate.CandidateFontSmall,
-				"中": toolbarstate.CandidateFontMedium, "大": toolbarstate.CandidateFontLarge}[selectedComboText(state.pageHWND)],
+				"中": toolbarstate.CandidateFontMedium, "大": toolbarstate.CandidateFontLarge}[selectedComboText(state.fontHWND)],
 			annotation: selectedComboValue(state.reverseHWND, trialAnnotationOptions()),
-			ascii:      selectedComboValue(state.layoutHWND, trialAsciiOptions()) == "english",
+			ascii:      selectedComboValue(state.asciiHWND, trialAsciiOptions()) == "english",
 		}
 		go func() {
 			err := executeTrialApply(state.statePath, request)
@@ -564,10 +595,11 @@ func (state *appState) finishBackup() {
 		showError("备份失败：" + err.Error())
 		return
 	}
-	showInfo(fmt.Sprintf(
-		"可移植用户数据备份已经创建。\n\n备份包括设置、用户词库、屏蔽词表和 Rime 同步数据。\n如需保留自动学习词频，请先在语言栏执行“设置 → 数据维护 → 同步数据…”。\n\n运行中被锁定的 *.userdb 数据库不会直接复制。\n\n位置：%s",
-		path,
-	))
+	if state.experimental {
+		showInfo(fmt.Sprintf("元试验版用户数据备份已经创建。\n\n备份与音试产版数据完全分离。\n\n位置：%s", path))
+		return
+	}
+	showInfo(fmt.Sprintf("可移植用户数据备份已经创建。\n\n备份包括设置、用户词库、屏蔽词表和 Rime 同步数据。\n如需保留自动学习词频，请先在语言栏执行“设置 → 数据维护 → 同步数据…”。\n\n运行中被锁定的 *.userdb 数据库不会直接复制。\n\n位置：%s", path))
 }
 
 func (state *appState) startRestore() {
@@ -580,17 +612,24 @@ func (state *appState) startRestore() {
 		showError(err.Error())
 		return
 	}
-	if !showConfirm(fmt.Sprintf(
-		"将恢复最近一次完整备份：\n%s\n\n恢复前会自动备份当前用户数据，随后重新构建 Rime。是否继续？",
-		snapshot.Path,
-	)) {
+	confirmation := fmt.Sprintf("将恢复最近一次完整备份：\n%s\n\n恢复前会自动备份当前用户数据，随后重新构建 Rime。是否继续？", snapshot.Path)
+	if state.experimental {
+		confirmation = fmt.Sprintf("将恢复最近一次元试验版备份：\n%s\n\n恢复前会自动备份当前 Trial 数据。是否继续？", snapshot.Path)
+	}
+	if !showConfirm(confirmation) {
 		return
 	}
 	if !state.beginOperation("Yime 设置（正在恢复……）") {
 		return
 	}
 	go func() {
-		safety, restoreErr := executeRestore(state.userDir, state.sharedDir, state.backupRoot, snapshot, time.Now())
+		var safety userbackup.Snapshot
+		var restoreErr error
+		if state.experimental {
+			safety, restoreErr = executeTrialRestore(state.userDir, state.backupRoot, snapshot, time.Now())
+		} else {
+			safety, restoreErr = executeRestore(state.userDir, state.sharedDir, state.backupRoot, snapshot, time.Now())
+		}
 		state.applyMu.Lock()
 		state.applyErr = restoreErr
 		if safety.Path != "" {
@@ -599,6 +638,20 @@ func (state *appState) startRestore() {
 		state.applyMu.Unlock()
 		procPostMessageW.Call(uintptr(state.mainHWND), wmAppRestoreDone, 0, 0)
 	}()
+}
+
+func executeTrialRestore(userDir, backupRoot string, snapshot userbackup.Snapshot, now time.Time) (userbackup.Snapshot, error) {
+	if err := userbackup.Validate(snapshot); err != nil {
+		return userbackup.Snapshot{}, err
+	}
+	safety, err := userbackup.Create(userDir, backupRoot, "恢复前", now)
+	if err != nil {
+		return userbackup.Snapshot{}, fmt.Errorf("创建恢复前安全备份失败：%w", err)
+	}
+	if err := userbackup.Restore(snapshot, userDir); err != nil {
+		return safety, err
+	}
+	return safety, nil
 }
 
 func executeRestore(userDir, sharedDir, backupRoot string, snapshot userbackup.Snapshot, now time.Time) (userbackup.Snapshot, error) {
@@ -635,6 +688,10 @@ func (state *appState) finishRestore() {
 		return
 	}
 	state.refreshView()
+	if state.experimental {
+		showInfo("元试验版用户数据已经恢复；新设置会在下一次输入时载入。\n\n" + info)
+		return
+	}
 	showInfo("可移植用户数据已经恢复，Rime 已重新构建并通知 YIME 重新加载。\n\n" + info)
 }
 
@@ -659,7 +716,11 @@ func (state *appState) finishOperation() (error, string) {
 	state.applyErr = nil
 	state.operationInfo = ""
 	state.applyRunning = false
-	setWindowText(state.mainHWND, "Yime 设置")
+	windowTitle := "Yime 设置"
+	if state.experimental {
+		windowTitle = "Yime 试验版设置"
+	}
+	setWindowText(state.mainHWND, windowTitle)
 	return err, info
 }
 

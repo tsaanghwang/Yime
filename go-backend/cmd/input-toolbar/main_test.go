@@ -143,13 +143,13 @@ func TestToolbarDefaultsToVerticalAndRemembersExplicitHorizontal(t *testing.T) {
 	}
 }
 
-func TestExperimentalToolbarDefaultsAndFourEncodingChoices(t *testing.T) {
+func TestExperimentalToolbarUsesProductionSurfaceWithIsolatedIdentity(t *testing.T) {
 	trial := &app{experimental: true}
-	if got := trial.className(); got != "YimeCoreDesktopToolsWindow" {
-		t.Fatalf("experimental desktop tools class=%q", got)
+	if got := trial.className(); got != "YimeCoreInputToolbarWindow" {
+		t.Fatalf("experimental input toolbar class=%q", got)
 	}
-	if got := trial.windowTitle(); got != "Yime 桌面工具" {
-		t.Fatalf("experimental desktop tools title=%q", got)
+	if got := trial.windowTitle(); got != "Yime 元版输入法工具栏" {
+		t.Fatalf("experimental input toolbar title=%q", got)
 	}
 	production := &app{}
 	if production.className() != windowClass || production.windowTitle() != messageTitle {
@@ -160,41 +160,22 @@ func TestExperimentalToolbarDefaultsAndFourEncodingChoices(t *testing.T) {
 	state := loadExperimentalToolbarState(path)
 	if state.ExperimentMode != toolbarstate.ExperimentModeVariable ||
 		state.CandidateFontPreset != toolbarstate.CandidateFontMedium ||
-		state.CandidateAnnotation != toolbarstate.AnnotationKeySequence || state.Vertical {
+		state.CandidateAnnotation != toolbarstate.AnnotationKeySequence || !state.Vertical ||
+		state.ToolbarLayoutVersion != toolbarstate.LayoutVersion {
 		t.Fatalf("experimental toolbar defaults = %#v", state)
 	}
-	mode := state.ExperimentMode
-	for iteration := 0; iteration < 3; iteration++ {
-		mode = nextExperimentMode(mode)
-	}
-	if mode != state.ExperimentMode {
-		t.Fatalf("experiment mode cycle did not return to %q", state.ExperimentMode)
-	}
-	font := state.CandidateFontPreset
-	for iteration := 0; iteration < 3; iteration++ {
-		font = nextCandidateFont(font)
-	}
-	if font != state.CandidateFontPreset {
-		t.Fatalf("candidate font cycle did not return to %q", state.CandidateFontPreset)
-	}
-	annotation := state.CandidateAnnotation
-	for iteration := 0; iteration < 4; iteration++ {
-		annotation = nextCandidateEncoding(annotation)
-	}
-	if annotation != state.CandidateAnnotation {
-		t.Fatalf("candidate encoding cycle did not return to %q", state.CandidateAnnotation)
-	}
-	layout := calculateToolbarLayoutFor(state, experimentalToolbarButtons())
-	if countVisible(layout) != 10 || layout.clientHeight <= 0 || layout.clientWidth <= 0 {
+	layout := calculateToolbarLayoutFor(state, trial.buttonDefinitions())
+	if countVisible(layout) != countVisible(calculateToolbarLayout(state)) ||
+		layout.clientHeight <= 0 || layout.clientWidth <= 0 {
 		t.Fatalf("experimental toolbar layout = %#v", layout)
 	}
-	labels := map[string]bool{}
-	for _, button := range experimentalToolbarButtons() {
-		labels[button.text] = true
-	}
-	for _, expected := range []string{"模式：变长", "字号：中", "音码：键位", "半宽", "中标", "简体", "练习", "工具中心", "关闭"} {
-		if !labels[expected] {
-			t.Fatalf("experimental toolbar is missing label %q", expected)
+	if got, want := trial.buttonDefinitions(), toolbarButtons(); len(got) != len(want) {
+		t.Fatalf("Trial toolbar button count=%d want production count=%d", len(got), len(want))
+	} else {
+		for index := range want {
+			if got[index] != want[index] {
+				t.Fatalf("Trial button %d=%#v want production %#v", index, got[index], want[index])
+			}
 		}
 	}
 }

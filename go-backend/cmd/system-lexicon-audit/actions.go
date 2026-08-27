@@ -12,6 +12,7 @@ import (
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/reverselookup"
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/systemlexicon"
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/win32ui"
+	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/yimecore"
 )
 
 func (state *appState) startLoadAudit() {
@@ -25,9 +26,9 @@ func (state *appState) startLoadAudit() {
 	state.setStatus("正在扫描系统词库，请稍候...")
 	state.updateControlState()
 	mode := state.currentMode()
-	dictPath := systemlexicon.DictPath(state.sharedDir, state.userDir, mode)
+	dictPath := state.auditSourcePath(mode)
 	go func() {
-		entries, err := systemlexicon.LoadDictFile(dictPath)
+		entries, err := state.loadAuditEntries(dictPath)
 		var findings []systemlexicon.Finding
 		var summary systemlexicon.Summary
 		if err == nil {
@@ -45,6 +46,30 @@ func (state *appState) startLoadAudit() {
 		state.mu.Unlock()
 		procPostMessageW.Call(uintptr(state.mainHWND), wmAppLoadDone, 0, 0)
 	}()
+}
+
+func (state *appState) auditSourcePath(mode reverselookup.Mode) string {
+	if state.experimental {
+		return filepath.Join(state.indexRoot, string(mode)+".yidx")
+	}
+	return systemlexicon.DictPath(state.sharedDir, state.userDir, mode)
+}
+
+func (state *appState) loadAuditEntries(path string) ([]systemlexicon.Entry, error) {
+	if !state.experimental {
+		return systemlexicon.LoadDictFile(path)
+	}
+	index, err := yimecore.OpenFileIndex(path)
+	if err != nil {
+		return nil, err
+	}
+	defer index.Close()
+	entries := make([]systemlexicon.Entry, 0, index.RecordCount())
+	err = index.VisitEntries(func(entry yimecore.Entry) bool {
+		entries = append(entries, systemlexicon.Entry{Text: entry.Text, Code: entry.Code, Weight: int(entry.Weight)})
+		return true
+	})
+	return entries, err
 }
 
 func (state *appState) onLoadDone() {

@@ -100,12 +100,13 @@ type point struct{ X, Y int32 }
 type minMaxInfo struct{ Reserved, MaxSize, MaxPosition, MinTrackSize, MaxTrackSize point }
 
 type appState struct {
-	manifest     toolhub.Manifest
-	mainHWND     syscall.Handle
-	buttons      []syscall.Handle
-	clientW      int32
-	clientH      int32
-	experimental bool
+	manifest      toolhub.Manifest
+	mainHWND      syscall.Handle
+	buttons       []syscall.Handle
+	clientW       int32
+	clientH       int32
+	experimental  bool
+	lexiconCenter bool
 }
 
 func main() {
@@ -113,10 +114,20 @@ func main() {
 	installRoot := flag.String("InstallRoot", "", "YimeCore Trial package root")
 	stateRoot := flag.String("StateRoot", "", "YimeCore Trial user state root")
 	statePath := flag.String("StatePath", "", "YimeCore Trial settings path")
+	sharedDir := flag.String("SharedDir", "", "effective YimeCore Trial data directory")
+	userDir := flag.String("UserDir", "", "YimeCore Trial user state directory")
+	indexRoot := flag.String("IndexRoot", "", "effective YimeCore Trial index directory")
 	mode := flag.String("Mode", "variable", "Yime mode: variable, full, shorthand")
 	experimental := flag.Bool("Experimental", false, "Run the independent YimeCore Trial Tool Center")
+	lexiconCenter := flag.Bool("LexiconCenter", false, "Run the independent YimeCore Trial Lexicon Center")
 	flag.Parse()
-	manifest, err := loadManifest(*manifestPath, *installRoot, *stateRoot, *statePath, *mode, *experimental)
+	var manifest toolhub.Manifest
+	var err error
+	if *lexiconCenter {
+		manifest, err = buildExperimentalLexiconManifest(*installRoot, *userDir, *sharedDir, *indexRoot, *mode)
+	} else {
+		manifest, err = loadManifest(*manifestPath, *installRoot, *stateRoot, *statePath, *mode, *experimental)
+	}
 	if err != nil {
 		showError(err.Error())
 		os.Exit(1)
@@ -125,10 +136,50 @@ func main() {
 		showError(err.Error())
 		os.Exit(1)
 	}
-	if err := runApp(&appState{manifest: manifest, experimental: *experimental}); err != nil {
+	if err := runApp(&appState{manifest: manifest, experimental: *experimental, lexiconCenter: *lexiconCenter}); err != nil {
 		showError(err.Error())
 		os.Exit(1)
 	}
+}
+
+func buildExperimentalLexiconManifest(installRoot, userDir, sharedDir, indexRoot, mode string) (toolhub.Manifest, error) {
+	installRoot = filepath.Clean(strings.TrimSpace(installRoot))
+	userDir = filepath.Clean(strings.TrimSpace(userDir))
+	sharedDir = filepath.Clean(strings.TrimSpace(sharedDir))
+	indexRoot = filepath.Clean(strings.TrimSpace(indexRoot))
+	if installRoot == "." || userDir == "." || sharedDir == "." || indexRoot == "." {
+		return toolhub.Manifest{}, fmt.Errorf("Trial 词库管理缺少安装目录、状态目录、数据目录或索引目录")
+	}
+	switch mode {
+	case "variable", "full", "shorthand":
+	default:
+		return toolhub.Manifest{}, fmt.Errorf("Trial 词库管理不支持输入方案 %q", mode)
+	}
+	binDir := filepath.Join(installRoot, "bin")
+	common := []string{"-UserDir", userDir, "-IndexRoot", indexRoot, "-Mode", mode, "-Experimental"}
+	return toolhub.Manifest{
+		Title: "Yime 试验版词库管理",
+		Tools: []toolhub.Entry{
+			{ID: "user-lexicon-manager", Label: "用户词库管理", ActionType: toolhub.ActionRunExecutable,
+				TargetPath: filepath.Join(binDir, "YimeCoreLexiconManager.exe"),
+				Arguments:  append([]string{"-SharedDir", sharedDir}, common...)},
+			{ID: "user-blocklist-manager", Label: "用户屏蔽词语", ActionType: toolhub.ActionRunExecutable,
+				TargetPath: filepath.Join(binDir, "YimeCoreBlocklistManager.exe"),
+				Arguments:  []string{"-UserDir", userDir, "-Experimental"}},
+			{ID: "self-learning-manager", Label: "自学词语管理", ActionType: toolhub.ActionRunExecutable,
+				TargetPath: filepath.Join(binDir, "YimeCoreLearningManager.exe"),
+				Arguments:  append([]string{"-InstallRoot", installRoot}, common...)},
+			{ID: "system-lexicon-audit", Label: "内置词库审查", ActionType: toolhub.ActionRunExecutable,
+				TargetPath: filepath.Join(binDir, "YimeCoreSystemLexiconAudit.exe"),
+				Arguments:  append([]string{"-SharedDir", sharedDir}, common...)},
+			{ID: "lexicon-promotion-scan", Label: "高频新词扫描", ActionType: toolhub.ActionRunExecutable,
+				TargetPath: filepath.Join(binDir, "YimeCorePromotionScan.exe"),
+				Arguments:  append([]string{"-InstallRoot", installRoot}, common...)},
+			{ID: "professional-lexicon-manager", Label: "专业词库加载", ActionType: toolhub.ActionRunExecutable,
+				TargetPath: filepath.Join(binDir, "YimeCoreProfessionalLexicon.exe"),
+				Arguments:  append([]string{"-InstallRoot", installRoot}, common...)},
+		},
+	}, nil
 }
 
 func loadManifest(manifestPath, installRoot, stateRoot, statePath, mode string, experimental bool) (toolhub.Manifest, error) {
@@ -192,15 +243,17 @@ func buildExperimentalManifest(installRoot, stateRoot, statePath, mode string) (
 			{ID: "keyboard-layout", Label: "键盘布局", ActionType: toolhub.ActionRunExecutable,
 				TargetPath: filepath.Join(binDir, "YimeCoreLayoutDesigner.exe"),
 				Arguments:  []string{"-SharedDir", sharedDir, "-UserDir", stateRoot, "-Experimental"}},
-			{ID: "lexicon-manager", Label: "用户词库", ActionType: toolhub.ActionRunExecutable,
-				TargetPath: filepath.Join(binDir, "YimeCoreLexiconManager.exe"),
-				Arguments:  []string{"-SharedDir", effectiveDataDir, "-UserDir", stateRoot, "-IndexRoot", indexRoot, "-Mode", mode, "-Experimental"}},
+			{ID: "lexicon-center", Label: "词库管理", ActionType: toolhub.ActionRunExecutable,
+				TargetPath: filepath.Join(binDir, "YimeCoreLexiconCenter.exe"),
+				Arguments: []string{"-InstallRoot", installRoot, "-SharedDir", effectiveDataDir,
+					"-UserDir", stateRoot, "-IndexRoot", indexRoot, "-Mode", mode, "-Experimental", "-LexiconCenter"}},
 			{ID: "reverse-lookup-tool", Label: "反查编码", ActionType: toolhub.ActionRunExecutable,
 				TargetPath: filepath.Join(binDir, "YimeCoreReverseLookup.exe"),
 				Arguments:  []string{"-SharedDir", effectiveDataDir, "-UserDir", stateRoot, "-IndexRoot", indexRoot, "-Mode", mode}},
 			{ID: "settings-tool", Label: "设置工具", ActionType: toolhub.ActionRunExecutable,
 				TargetPath: filepath.Join(binDir, "YimeCoreSettingsTool.exe"),
-				Arguments:  []string{"-UserDir", stateRoot, "-SharedDir", sharedDir, "-StatePath", statePath, "-Experimental"}},
+				Arguments: []string{"-UserDir", stateRoot, "-SharedDir", sharedDir, "-HelpDir", helpDir,
+					"-StatePath", statePath, "-Experimental"}},
 			{ID: "diagnostics-tool", Label: "诊断工具", ActionType: toolhub.ActionRunExecutable,
 				TargetPath: filepath.Join(binDir, "YimeCoreDiagnostics.exe"),
 				Arguments: []string{"-UserDir", stateRoot, "-SharedDir", sharedDir, "-HelpDir", helpDir,
@@ -233,7 +286,7 @@ func runApp(state *appState) error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 
-	windowClass := toolHubWindowClass(state.experimental)
+	windowClass := toolHubWindowClass(state.experimental, state.lexiconCenter)
 	if win32ui.ActivateExistingWindow(windowClass) {
 		return nil
 	}
@@ -266,7 +319,7 @@ func runApp(state *appState) error {
 		return fmt.Errorf("RegisterClassEx failed")
 	}
 
-	title, _ := syscall.UTF16PtrFromString(toolHubWindowTitle(state.experimental, state.manifest.Title))
+	title, _ := syscall.UTF16PtrFromString(toolHubWindowTitle(state.experimental, state.lexiconCenter, state.manifest.Title))
 	winW, winH := windowSizeForClient(state.clientW, state.clientH)
 	screenWidth, _, _ := procGetSystemMetrics.Call(0)
 	screenHeight, _, _ := procGetSystemMetrics.Call(1)
@@ -304,14 +357,20 @@ func runApp(state *appState) error {
 	return nil
 }
 
-func toolHubWindowClass(experimental bool) string {
+func toolHubWindowClass(experimental, lexiconCenter bool) string {
+	if lexiconCenter {
+		return "YimeCoreTrialLexiconCenter"
+	}
 	if experimental {
 		return "YimeCoreTrialToolHub"
 	}
 	return "YimeToolHub"
 }
 
-func toolHubWindowTitle(experimental bool, manifestTitle string) string {
+func toolHubWindowTitle(experimental, lexiconCenter bool, manifestTitle string) string {
+	if lexiconCenter {
+		return "Yime 试验版词库管理"
+	}
 	if experimental {
 		return "Yime 试验版工具中心"
 	}

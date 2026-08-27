@@ -17,7 +17,8 @@ import (
 func TestExecuteTrialApplyUsesOnlyIsolatedToolbarState(t *testing.T) {
 	path := filepath.Join(t.TempDir(), toolbarstate.ExperimentFileName)
 	err := executeTrialApply(path, trialApplyRequest{
-		mode: toolbarstate.ExperimentModeFull, font: toolbarstate.CandidateFontLarge,
+		mode: toolbarstate.ExperimentModeFull, pageSize: 7, layout: toolbarstate.CandidateLayoutHorizontal,
+		font:       toolbarstate.CandidateFontLarge,
 		annotation: toolbarstate.AnnotationStandardPinyin, ascii: true,
 	})
 	if err != nil {
@@ -28,6 +29,7 @@ func TestExecuteTrialApplyUsesOnlyIsolatedToolbarState(t *testing.T) {
 		t.Fatal(err)
 	}
 	if state.ExperimentMode != toolbarstate.ExperimentModeFull ||
+		state.CandidatePageSize != 7 || state.CandidateLayout != toolbarstate.CandidateLayoutHorizontal ||
 		state.CandidateFontPreset != toolbarstate.CandidateFontLarge ||
 		state.CandidateAnnotation != toolbarstate.AnnotationStandardPinyin || !state.ASCII {
 		t.Fatalf("trial settings mismatch: %+v", state)
@@ -35,8 +37,8 @@ func TestExecuteTrialApplyUsesOnlyIsolatedToolbarState(t *testing.T) {
 }
 
 func TestSettingsUILayoutFitsVisibleControls(t *testing.T) {
-	withoutHelp := buildSettingsUILayout(false)
-	withHelp := buildSettingsUILayout(true)
+	withoutHelp := buildSettingsUILayout(false, false)
+	withHelp := buildSettingsUILayout(true, false)
 
 	if withoutHelp.clientW != withoutHelp.layoutCombo.Right+16 {
 		t.Fatalf("window should fit the widest visible row: width=%d right=%d", withoutHelp.clientW, withoutHelp.layoutCombo.Right)
@@ -62,7 +64,7 @@ func TestSettingsUILayoutFitsVisibleControls(t *testing.T) {
 }
 
 func TestSettingsUILayoutReplacesOpenDirectoryWithBackupAndRestore(t *testing.T) {
-	layout := buildSettingsUILayout(true)
+	layout := buildSettingsUILayout(true, false)
 	if layout.backupButton.Right <= layout.backupButton.Left || layout.restoreButton.Right <= layout.restoreButton.Left {
 		t.Fatal("backup and restore buttons must both be visible")
 	}
@@ -82,6 +84,32 @@ func TestSettingsUILayoutReplacesOpenDirectoryWithBackupAndRestore(t *testing.T)
 		if index > 0 && button.Left-buttons[index-1].Right != wantGap {
 			t.Fatalf("button %d is not evenly distributed: %#v", index, buttons)
 		}
+	}
+}
+
+func TestTrialSettingsUILayoutMergesProductionAndTrialControls(t *testing.T) {
+	layout := buildSettingsUILayout(true, true)
+	rows := []struct {
+		label rect
+		combo rect
+	}{
+		{layout.schemaLabel, layout.schemaCombo},
+		{layout.pageLabel, layout.pageCombo},
+		{layout.reverseLabel, layout.reverseCombo},
+		{layout.layoutLabel, layout.layoutCombo},
+		{layout.fontLabel, layout.fontCombo},
+		{layout.asciiLabel, layout.asciiCombo},
+	}
+	for index, row := range rows {
+		if row.label.Right <= row.label.Left || row.combo.Right <= row.combo.Left {
+			t.Fatalf("trial settings row %d is not visible: %#v", index, row)
+		}
+		if index > 0 && row.label.Top <= rows[index-1].label.Bottom {
+			t.Fatalf("trial settings rows %d and %d overlap: %#v", index-1, index, rows)
+		}
+	}
+	if layout.applyButton.Top <= layout.asciiLabel.Bottom || layout.clientH != layout.applyButton.Bottom+16 {
+		t.Fatalf("trial button row does not follow all merged controls: %#v", layout)
 	}
 }
 
@@ -218,6 +246,48 @@ func TestExecuteRestoreCreatesSafetyBackupRebuildsAndNotifiesBothScopes(t *testi
 	data, err := os.ReadFile(filepath.Join(live, "default.custom.yaml"))
 	if err != nil || string(data) != "restored" {
 		t.Fatalf("restored config mismatch: %q, %v", data, err)
+	}
+}
+
+func TestExecuteTrialRestoreStaysIndependentFromRime(t *testing.T) {
+	oldBuild := invokeRimeBuild
+	oldNotify := notifyRuntimeChange
+	defer func() {
+		invokeRimeBuild = oldBuild
+		notifyRuntimeChange = oldNotify
+	}()
+	invokeRimeBuild = func(string, string) error {
+		t.Fatal("Trial restore must not rebuild production Rime")
+		return nil
+	}
+	notifyRuntimeChange = func(string, string, bool) (runtimechange.Event, error) {
+		t.Fatal("Trial restore must not notify the production runtime")
+		return runtimechange.Event{}, nil
+	}
+
+	backupSource := t.TempDir()
+	if err := os.WriteFile(filepath.Join(backupSource, toolbarstate.ExperimentFileName), []byte("restored"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	backupRoot := t.TempDir()
+	snapshot, err := userbackup.Create(backupSource, backupRoot, "试验版用户数据", time.Now().Add(-time.Hour))
+	if err != nil {
+		t.Fatal(err)
+	}
+	live := t.TempDir()
+	if err := os.WriteFile(filepath.Join(live, toolbarstate.ExperimentFileName), []byte("current"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	safety, err := executeTrialRestore(live, backupRoot, snapshot, time.Now())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if safety.Manifest.Purpose != "pre-restore-safety" {
+		t.Fatalf("Trial restore did not create a safety snapshot: %#v", safety)
+	}
+	data, err := os.ReadFile(filepath.Join(live, toolbarstate.ExperimentFileName))
+	if err != nil || string(data) != "restored" {
+		t.Fatalf("Trial restored state mismatch: %q, %v", data, err)
 	}
 }
 

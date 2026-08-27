@@ -42,3 +42,12 @@ func TestBlocklistColumnAndUndoLabels(t *testing.T) {
 		t.Fatalf("unexpected undo labels")
 	}
 }
+
+func TestBlocklistTrialUsesIndependentWindowIdentity(t *testing.T) {
+	if blocklistWindowClass(false) != "YimeUserBlocklistManager" || blocklistWindowTitle(false) != "用户屏蔽词表" {
+		t.Fatal("production blocklist identity changed")
+	}
+	if blocklistWindowClass(true) != "YimeCoreTrialBlocklistManager" || blocklistWindowTitle(true) != "Yime 试验版用户屏蔽词语" {
+		t.Fatal("Trial blocklist identity is not isolated")
+	}
+}

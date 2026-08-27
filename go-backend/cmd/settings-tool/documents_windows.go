@@ -60,10 +60,13 @@ func utf16StringFromPointer(ptr *uint16) string {
 	return syscall.UTF16ToString(units)
 }
 
-func defaultBackupRoot() string {
+func defaultBackupRoot(experimental bool) string {
 	documents := windowsDocumentsDirectory()
 	if documents == "" {
 		return ""
+	}
+	if experimental {
+		return filepath.Join(documents, "Yime 元试验版备份")
 	}
 	return filepath.Join(documents, "YIME 备份")
 }

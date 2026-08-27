@@ -147,7 +147,7 @@ func resolveOptions(value options) (options, error) {
 		return value, fmt.Errorf("load Trial layout generation: %w", loadErr)
 	}
 	if !value.noToolbar {
-		for _, tool := range []string{desktopToolsPath(value.installRoot), trainerPath(value.installRoot), toolCenterPath(value.installRoot)} {
+		for _, tool := range []string{inputToolbarPath(value.installRoot), trainerPath(value.installRoot), toolCenterPath(value.installRoot)} {
 			if info, statErr := os.Stat(tool); statErr != nil || info.IsDir() {
 				return value, fmt.Errorf("required native Trial tool is unavailable: %s", tool)
 			}
@@ -268,6 +268,10 @@ func brokerArguments(config options) []string {
 		"-default-mode", "variable",
 		"-annotation-data-dir", trialDataDir(config),
 		"-user-lexicon-dir", config.stateRoot,
+		"-user-blocklist", filepath.Join(config.stateRoot, "yime_blocklist.txt"),
+		"-learning-config", filepath.Join(config.stateRoot, "learning.json"),
+		"-professional-root", filepath.Join(config.installRoot, "professional-lexicons"),
+		"-professional-state", filepath.Join(config.stateRoot, "professional-lexicons.json"),
 		"-named-pipe", config.pipeName,
 		"-user-model-snapshot", filepath.Join(modelRoot, "user-model.json"),
 		"-user-model-journal", filepath.Join(modelRoot, "user-model.journal"),
@@ -309,7 +313,7 @@ func startToolbar(config options, logger *log.Logger) *exec.Cmd {
 	if config.noToolbar {
 		return nil
 	}
-	command := exec.Command(desktopToolsPath(config.installRoot), desktopToolsArguments(config)...)
+	command := exec.Command(inputToolbarPath(config.installRoot), inputToolbarArguments(config)...)
 	configureChildProcess(command)
 	toolbarLog, err := os.OpenFile(filepath.Join(config.stateRoot, "logs", "toolbar.log"), os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0o600)
 	if err != nil {
@@ -330,8 +334,12 @@ func startToolbar(config options, logger *log.Logger) *exec.Cmd {
 	return command
 }
 
-func desktopToolsPath(installRoot string) string {
-	return filepath.Join(installRoot, "bin", "YimeCoreDesktopTools.exe")
+func inputToolbarPath(installRoot string) string {
+	return filepath.Join(installRoot, "bin", "YimeCoreInputToolbar.exe")
+}
+
+func settingsToolPath(installRoot string) string {
+	return filepath.Join(installRoot, "bin", "YimeCoreSettingsTool.exe")
 }
 
 func trainerPath(installRoot string) string {
@@ -342,13 +350,16 @@ func toolCenterPath(installRoot string) string {
 	return filepath.Join(installRoot, "bin", "YimeCoreToolCenter.exe")
 }
 
-func desktopToolsArguments(config options) []string {
+func inputToolbarArguments(config options) []string {
 	return []string{
 		"-StatePath", filepath.Join(config.stateRoot, toolbarstate.ExperimentFileName),
+		"-SettingsTool", settingsToolPath(config.installRoot),
 		"-TrainerTool", trainerPath(config.installRoot),
 		"-ToolCenterTool", toolCenterPath(config.installRoot),
 		"-SharedDir", filepath.Join(config.installRoot, "data"),
 		"-UserDir", config.stateRoot,
+		"-HelpDir", filepath.Join(config.installRoot, "help"),
+		"-LogDir", filepath.Join(config.stateRoot, "logs"),
 		"-Experimental",
 	}
 }

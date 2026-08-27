@@ -115,7 +115,7 @@ func buildTrialStatusReport(ctx Context) string {
 		"", "== Installed Trial runtime ==",
 	)
 	for _, name := range []string{
-		"YimeCoreTrialRuntime.exe", "YimeBroker.exe", "YimeCoreDesktopTools.exe", "YimeCoreToolCenter.exe",
+		"YimeCoreTrialRuntime.exe", "YimeBroker.exe", "YimeCoreInputToolbar.exe", "YimeCoreToolCenter.exe",
 		"YimeCoreTrainer.exe", "YimeCoreLayoutDesigner.exe", "YimeCoreLexiconManager.exe",
 		"YimeCoreReverseLookup.exe", "YimeCoreSettingsTool.exe", "YimeCoreDiagnostics.exe",
 	} {
