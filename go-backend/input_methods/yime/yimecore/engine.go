@@ -14,6 +14,9 @@ const defaultCandidateLimit = 9
 // only deterministic code input and indexed candidate lookup.
 type Engine struct {
 	index           lookupIndex
+	userLexiconBase *FileIndex
+	userLexiconPath string
+	userLexiconFile lexiconFileSignature
 	limit           int
 	rawInput        string
 	candidates      []engineapi.Candidate
@@ -111,6 +114,11 @@ func (e *Engine) Apply(event engineapi.Event) (engineapi.Result, error) {
 		code, err := normalizeCode(event.Code)
 		if err != nil || len(code) != len(event.Code) {
 			return engineapi.Result{}, engineapi.ErrInvalidEvent
+		}
+		if e.rawInput == "" {
+			if err := e.reloadUserLexiconIfChanged(); err != nil {
+				return engineapi.Result{}, err
+			}
 		}
 		if e.activeSegment != nil || len(e.segmentChoices) > 0 {
 			e.activeSegment = nil

@@ -412,9 +412,9 @@ func (state *appState) finishApplyLexicon() {
 	state.dirty = false
 	state.refreshList()
 	state.addOperationHistory("应用用户词库并重建三种模式")
-	setWindowText(state.statusHWND, "已重建三套用户词库；活动输入会话将在下一次操作前刷新。")
+	setWindowText(state.statusHWND, "已重建三套用户词库；活动输入会话将在下一次空闲输入时采用。")
 	state.updateToolbarState()
-	showNoticeDialog(state.mainHWND, "应用完成", "用户词库格式校验通过，已重建 variable / full / shorthand 三套用户词库。活动输入会话将在下一次操作前刷新。")
+	showNoticeDialog(state.mainHWND, "应用完成", "用户词库格式校验通过，已重建 variable / full / shorthand 三套用户词库。活动输入会话将在下一次空闲输入时采用。")
 }
 
 func (state *appState) rebuildAllLexicons() error {

@@ -3,6 +3,8 @@ package yimebroker
 import (
 	"context"
 	"encoding/json"
+	"os"
+	"path/filepath"
 	"strings"
 	"sync"
 	"testing"
@@ -346,6 +348,65 @@ func TestModeDispatcherDefaultsToVariableAndKeepsOpenedSessionsStable(t *testing
 		Operation: ApplyEvent, Event: engineapi.Event{Operation: engineapi.AppendCode, Code: "as"}})
 	if shorthand.Error != nil || shorthand.Result.State.Candidates[0].Text != "shorthand" {
 		t.Fatalf("new idle session did not adopt requested toolbar mode: %+v", shorthand)
+	}
+}
+
+func TestModeDispatcherReloadsTrialUserLexiconAfterReset(t *testing.T) {
+	root := t.TempDir()
+	dictionary := filepath.Join(root, "system.dict.yaml")
+	if err := os.WriteFile(dictionary, []byte("---\nname: test\n...\n系统词\tab\t10\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	indexPath := filepath.Join(root, "variable.yidx")
+	if _, err := yimecore.BuildIndexFile("variable", dictionary, indexPath); err != nil {
+		t.Fatal(err)
+	}
+	index, err := yimecore.OpenFileIndex(indexPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer index.Close()
+	lexiconPath := filepath.Join(root, "custom_phrase_variable.txt")
+	if err := os.WriteFile(lexiconPath, []byte("旧用户词\tab\t9999\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	dispatcher, err := NewModeDispatcher("variable", func(mode string) (engineapi.Engine, error) {
+		if mode != "variable" {
+			t.Fatalf("unexpected mode %q", mode)
+		}
+		return yimecore.NewFileEngineWithUserLexicon(index, 9, lexiconPath, nil)
+	}, Config{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	client := TrustedClient{ID: "trial-user-lexicon-client"}
+	opened := dispatch(t, dispatcher, client, Request{Version: 1, Sequence: 1, Operation: OpenSession, Mode: "variable"})
+	first := dispatch(t, dispatcher, client, Request{Version: 1, Sequence: 2, SessionID: opened.SessionID,
+		Operation: ApplyEvent, Event: engineapi.Event{Operation: engineapi.AppendCode, Code: "a"}})
+	if first.Error != nil {
+		t.Fatalf("start composition = %+v", first)
+	}
+	if err := os.WriteFile(lexiconPath, []byte("新用户词\tab\t9999\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	active := dispatch(t, dispatcher, client, Request{Version: 1, Sequence: 3, SessionID: opened.SessionID,
+		Operation: ApplyEvent, Event: engineapi.Event{Operation: engineapi.AppendCode, Code: "b"}})
+	if active.Error != nil || len(active.Result.State.Candidates) == 0 || active.Result.State.Candidates[0].Text != "旧用户词" {
+		t.Fatalf("active composition changed overlay generation: %+v", active)
+	}
+	reset := dispatch(t, dispatcher, client, Request{Version: 1, Sequence: 4, SessionID: opened.SessionID, Operation: ResetSession})
+	if reset.Error != nil {
+		t.Fatalf("reset session = %+v", reset)
+	}
+	for sequence, code := range []string{"a", "b"} {
+		response := dispatch(t, dispatcher, client, Request{Version: 1, Sequence: uint64(sequence + 5), SessionID: opened.SessionID,
+			Operation: ApplyEvent, Event: engineapi.Event{Operation: engineapi.AppendCode, Code: code}})
+		if response.Error != nil {
+			t.Fatalf("next composition = %+v", response)
+		}
+		if code == "b" && (len(response.Result.State.Candidates) == 0 || response.Result.State.Candidates[0].Text != "新用户词") {
+			t.Fatalf("same Broker session did not adopt new overlay: %+v", response)
+		}
 	}
 }
 

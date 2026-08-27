@@ -41,7 +41,7 @@ func RebuildRimeLexicon(sourcePath, targetPath string, codeMap map[string]revers
 		content.WriteString(entry.Weight)
 		content.WriteByte('\n')
 	}
-	return os.WriteFile(targetPath, []byte(content.String()), 0o644)
+	return writeSourceFileAtomically(targetPath, []byte(content.String()))
 }
 
 // RebuildAllRimeLexicons regenerates the three derived Rime user lexicons
