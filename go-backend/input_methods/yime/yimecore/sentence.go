@@ -66,12 +66,12 @@ func (e *Engine) bestSentence(exact []engineapi.Candidate, limit int) *engineapi
 		generated = append(generated, candidate)
 	}
 	for i := range generated {
-		e.scoreCandidateWithContext(&generated[i], generated[i].Score.Context)
+		e.scoreComposedCandidateWithContext(&generated[i], generated[i].Score.Context)
 	}
 	rankGeneratedCandidates(generated)
 	if preferredExact != nil {
 		if rebuilt := e.composeLearnedSentence(e.rawInput, preferredExact.Text); rebuilt != nil {
-			e.scoreCandidateWithContext(rebuilt, rebuilt.Score.Context)
+			e.scoreComposedCandidateWithContext(rebuilt, rebuilt.Score.Context)
 			return rebuilt
 		}
 		for index := range generated {
@@ -229,6 +229,7 @@ func (e *Engine) composeLearnedSentence(input, text string) *engineapi.Candidate
 	if !found || len(path.segments) < 2 || path.text != text {
 		return nil
 	}
+	path = e.collapseExactSegmentGroups(path)
 	return &engineapi.Candidate{
 		ID: sentenceCandidateID(input, path), Text: text, Code: input,
 		SourceID: "user-model", Weight: path.base, Exact: true, Segments: path.segments,

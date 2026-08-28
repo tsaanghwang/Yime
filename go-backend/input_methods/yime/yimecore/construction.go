@@ -6,6 +6,71 @@ import (
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/engineapi"
 )
 
+func (e *Engine) exactSurfaceRecord(code, text string) (record, bool) {
+	for _, match := range e.exactMatches(code) {
+		if match.text == text {
+			return match, true
+		}
+	}
+	return record{}, false
+}
+
+func (e *Engine) collapseExactSegmentGroups(path sentencePath) sentencePath {
+	if len(path.segments) < 2 {
+		return path
+	}
+	collapsed := make([]engineapi.Segment, 0, len(path.segments))
+	changed := false
+	for start := 0; start < len(path.segments); {
+		merged := false
+		for end := len(path.segments); end >= start+2; end-- {
+			contiguous := true
+			var text strings.Builder
+			for index := start; index < end; index++ {
+				if index > start && path.segments[index-1].End != path.segments[index].Start {
+					contiguous = false
+					break
+				}
+				text.WriteString(path.segments[index].Text)
+			}
+			first := path.segments[start]
+			last := path.segments[end-1]
+			if !contiguous || first.Start < 0 || last.End > len(e.rawInput) {
+				continue
+			}
+			code := e.rawInput[first.Start:last.End]
+			match, found := e.exactSurfaceRecord(code, text.String())
+			if !found {
+				continue
+			}
+			sourceID := match.source
+			if sourceID == "" {
+				sourceID = e.index.identity()
+			}
+			collapsed = append(collapsed, engineapi.Segment{
+				Start: first.Start, End: last.End, Text: match.text,
+				Code: match.code, SourceID: sourceID,
+			})
+			start = end
+			changed = true
+			merged = true
+			break
+		}
+		if !merged {
+			collapsed = append(collapsed, path.segments[start])
+			start++
+		}
+	}
+	if !changed {
+		return path
+	}
+	rebuilt, ok := e.pathForSegments(collapsed)
+	if !ok {
+		return path
+	}
+	return rebuilt
+}
+
 type constructionRule struct {
 	anchorParts         []string
 	wholeRightSlots     []string
@@ -50,6 +115,7 @@ func (e *Engine) expandSentenceSegment(sentence *engineapi.Candidate, focused en
 	expanded.Weight = path.base
 	expanded.Score.Context = path.context
 	expanded.Segments = segments
+	e.scoreComposedCandidateWithContext(&expanded, path.context)
 	first := expanded.Segments[focusedIndex]
 	return &expanded, &first, true
 }
@@ -91,8 +157,8 @@ func (e *Engine) decomposeSurfaceSegment(segment engineapi.Segment) (sentencePat
 						Start: start, End: end, Text: match.text, Code: match.code, SourceID: sourceID,
 					})
 					next := sentencePath{
-						text: segment.Text[:textEnd],
-						base: saturatingAdd(path.base, e.lexicalRecordScore(match)-generatedSegmentPenalty),
+						text:     segment.Text[:textEnd],
+						base:     saturatingAdd(path.base, e.lexicalRecordScore(match)-generatedSegmentPenalty),
 						segments: segments,
 					}
 					next.context = saturatingAdd(path.context, e.sentenceTransitionBoost(path, match))
@@ -164,7 +230,7 @@ func (e *Engine) resegmentConstruction(sentence *engineapi.Candidate, focused en
 		if focused.Text != strings.Join(rule.anchorParts, "") {
 			continue
 		}
-		anchor, anchorScore, ok := e.sourceSegmentsForTexts(focused.Start, focused.End, rule.anchorParts)
+		anchor, _, ok := e.sourceSegmentsForTexts(focused.Start, focused.End, rule.anchorParts)
 		if !ok || len(anchor) < 2 {
 			continue
 		}
@@ -182,7 +248,7 @@ func (e *Engine) resegmentConstruction(sentence *engineapi.Candidate, focused en
 		if !ok {
 			continue
 		}
-		right, rightScore, ok := e.sourceSegmentsForTexts(rightStart, rightEnd, rightTexts)
+		right, _, ok := e.sourceSegmentsForTexts(rightStart, rightEnd, rightTexts)
 		if !ok {
 			continue
 		}
@@ -190,15 +256,16 @@ func (e *Engine) resegmentConstruction(sentence *engineapi.Candidate, focused en
 		segments := append([]engineapi.Segment(nil), sentence.Segments[:focusedIndex]...)
 		segments = append(segments, anchor...)
 		segments = append(segments, right...)
-		base := saturatingAdd(anchorScore, rightScore)
-		context := e.segmentSequenceContextBoost(segments)
-		path := sentencePath{text: sentence.Text, base: base, context: context,
-			score: saturatingAdd(base, context), segments: segments}
+		path, ok := e.pathForSegments(segments)
+		if !ok {
+			continue
+		}
 		expanded := cloneCandidate(*sentence)
 		expanded.ID = sentenceCandidateID(e.rawInput, path)
 		expanded.Weight = path.base
 		expanded.Score.Context = path.context
 		expanded.Segments = segments
+		e.scoreComposedCandidateWithContext(&expanded, path.context)
 		first := expanded.Segments[focusedIndex]
 		return &expanded, &first, true
 	}
@@ -287,6 +354,7 @@ func (e *Engine) expandExactWholeSentence(sentence *engineapi.Candidate, start, 
 		}
 		expanded := cloneCandidate(candidate)
 		expanded.SourceID = sentence.SourceID
+		e.scoreComposedCandidateWithContext(&expanded, expanded.Score.Context)
 		first := expanded.Segments[0]
 		return &expanded, &first, true
 	}

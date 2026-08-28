@@ -35,6 +35,7 @@ type Engine struct {
 	rejectedCandidate *engineapi.Candidate
 	segmentChoices    map[segmentSpan]record
 	recalledChoices   map[segmentSpan]struct{}
+	expandedParents   map[segmentSpan]record
 }
 
 type segmentSpan struct {
@@ -264,6 +265,7 @@ func (e *Engine) Apply(event engineapi.Event) (engineapi.Result, error) {
 		_, recalled := e.recalledChoices[focusedSpan]
 		if expanded, first, ok := e.expandImplicitSentenceSegment(
 			sentence, focusedSpan, recalled || alreadyActive); ok {
+			e.rememberExpandedParent(sentence, focusedSpan)
 			e.releaseSegmentChoicesForExpansion(segmentSpan{
 				start: event.SegmentStart,
 				end:   event.SegmentEnd,
@@ -305,6 +307,9 @@ func (e *Engine) Apply(event engineapi.Event) (engineapi.Result, error) {
 			}
 			return engineapi.Result{}, engineapi.ErrInvalidEvent
 		}
+		e.rememberExpandedParent(sentence, segmentSpan{
+			start: event.SegmentStart, end: event.SegmentEnd,
+		})
 		e.releaseSegmentChoicesForExpansion(segmentSpan{
 			start: event.SegmentStart,
 			end:   event.SegmentEnd,
@@ -388,6 +393,136 @@ func (e *Engine) releaseSegmentChoicesForExpansion(expanded segmentSpan) {
 	}
 }
 
+func (e *Engine) rememberExpandedParent(sentence *engineapi.Candidate, span segmentSpan) {
+	if sentence == nil || span.start < 0 || span.end > len(e.rawInput) || span.start >= span.end {
+		return
+	}
+	text := ""
+	if len(sentence.Segments) == 0 && span.start == 0 && span.end == len(e.rawInput) {
+		text = sentence.Text
+	} else {
+		for _, segment := range sentence.Segments {
+			if segment.Start == span.start && segment.End == span.end {
+				text = segment.Text
+				break
+			}
+		}
+	}
+	parent, found := e.exactSurfaceRecord(e.rawInput[span.start:span.end], text)
+	if !found {
+		return
+	}
+	if e.expandedParents == nil {
+		e.expandedParents = make(map[segmentSpan]record)
+	}
+	e.expandedParents[span] = parent
+}
+
+func (e *Engine) collapseConfirmedExpandedParents() {
+	for {
+		collapsed := false
+		for parentSpan, parent := range e.expandedParents {
+			spans := make([]segmentSpan, 0)
+			for span := range e.segmentChoices {
+				if span.start >= parentSpan.start && span.end <= parentSpan.end {
+					spans = append(spans, span)
+				}
+			}
+			sort.Slice(spans, func(i, j int) bool { return spans[i].start < spans[j].start })
+			next := parentSpan.start
+			text := ""
+			for _, span := range spans {
+				if span.start != next {
+					break
+				}
+				text += e.segmentChoices[span].text
+				next = span.end
+			}
+			if len(spans) < 2 || next != parentSpan.end || text != parent.text {
+				continue
+			}
+			for _, span := range spans {
+				delete(e.segmentChoices, span)
+				delete(e.recalledChoices, span)
+			}
+			e.segmentChoices[parentSpan] = parent
+			delete(e.expandedParents, parentSpan)
+			collapsed = true
+			break
+		}
+		if !collapsed {
+			break
+		}
+	}
+	if len(e.expandedParents) == 0 {
+		e.expandedParents = nil
+	}
+	if len(e.recalledChoices) == 0 {
+		e.recalledChoices = nil
+	}
+}
+
+func (e *Engine) collapseConfirmedLexiconWords() {
+	for {
+		spans := make([]segmentSpan, 0, len(e.segmentChoices))
+		for span := range e.segmentChoices {
+			spans = append(spans, span)
+		}
+		sort.Slice(spans, func(i, j int) bool { return spans[i].start < spans[j].start })
+		collapsed := false
+		for start := 0; start < len(spans) && !collapsed; start++ {
+			for end := len(spans); end >= start+2; end-- {
+				first := spans[start]
+				last := spans[end-1]
+				if first.start < 0 || last.end > len(e.rawInput) {
+					continue
+				}
+				next := first.start
+				text := ""
+				for _, span := range spans[start:end] {
+					if span.start != next {
+						break
+					}
+					text += e.segmentChoices[span].text
+					next = span.end
+				}
+				if next != last.end {
+					continue
+				}
+				combinedSpan := segmentSpan{start: first.start, end: last.end}
+				if combinedSpan.start == 0 && combinedSpan.end == len(e.rawInput) {
+					continue
+				}
+				combined, found := e.exactSurfaceRecord(e.rawInput[combinedSpan.start:combinedSpan.end], text)
+				if !found {
+					continue
+				}
+				for _, span := range spans[start:end] {
+					delete(e.segmentChoices, span)
+					delete(e.recalledChoices, span)
+				}
+				for parentSpan := range e.expandedParents {
+					if parentSpan.start < combinedSpan.end && parentSpan.end > combinedSpan.start {
+						delete(e.expandedParents, parentSpan)
+					}
+				}
+				e.segmentChoices[combinedSpan] = combined
+				collapsed = true
+				break
+			}
+		}
+		if !collapsed {
+			break
+		}
+	}
+	if len(e.expandedParents) == 0 {
+		e.expandedParents = nil
+	}
+	if len(e.recalledChoices) == 0 {
+		e.recalledChoices = nil
+	}
+}
+
 func (e *Engine) seedLearnedSentenceChoices(sentence *engineapi.Candidate) {
 	if sentence == nil || sentence.SourceID != "user-model" || len(sentence.Segments) < 2 ||
 		len(e.segmentChoices) > 0 {
@@ -450,6 +585,8 @@ func (e *Engine) selectCandidate(candidateID, mutationID string) (engineapi.Resu
 					text: candidate.Text, code: candidate.Code, weight: candidate.Weight, source: candidate.SourceID,
 				}
 				delete(e.recalledChoices, span)
+				e.collapseConfirmedExpandedParents()
+				e.collapseConfirmedLexiconWords()
 				if len(e.recalledChoices) == 0 {
 					e.recalledChoices = nil
 				}
@@ -542,6 +679,15 @@ func (e *Engine) ForgetCandidate(candidateID string) (engineapi.Result, error) {
 }
 
 func (e *Engine) commitCandidate(candidate engineapi.Candidate, mutationID string) (engineapi.Result, error) {
+	if len(candidate.Segments) > 1 {
+		path, ok := e.pathForSegments(candidate.Segments)
+		if ok {
+			path = e.collapseExactSegmentGroups(path)
+			candidate.Weight = path.base
+			candidate.Score.Context = path.context
+			candidate.Segments = path.segments
+		}
+	}
 	observations := make([]UserObservation, 0, len(candidate.Segments)+2)
 	if rejected := e.rejectedCandidate; rejected != nil && rejected.Code == candidate.Code && rejected.Text != candidate.Text {
 		observations = append(observations, UserObservation{
@@ -738,6 +884,36 @@ func (e *Engine) scoreCandidateWithContext(candidate *engineapi.Candidate, sente
 	candidate.Score.Total = saturatingAdd(candidate.Score.Total, candidate.Score.Reranker)
 }
 
+func (e *Engine) scoreComposedCandidateWithContext(candidate *engineapi.Candidate, sentenceContext int64) {
+	if len(candidate.Segments) < 2 {
+		e.scoreCandidateWithContext(candidate, sentenceContext)
+		return
+	}
+	var staticScore int64
+	var segmentUserScore int64
+	for _, segment := range candidate.Segments {
+		match, found := e.exactSurfaceRecord(segment.Code, segment.Text)
+		if !found {
+			e.scoreCandidateWithContext(candidate, sentenceContext)
+			return
+		}
+		staticScore = saturatingAdd(staticScore, lexicalScore(match.weight)-generatedSegmentPenalty)
+		segmentUserScore = saturatingAdd(segmentUserScore,
+			e.userModel.candidateBoost(segment.Code, segment.Text))
+	}
+	candidate.Score.Static = staticScore
+	candidate.Score.Context = saturatingAdd(sentenceContext,
+		e.userModel.contextBoost(e.previousCommit, candidate.Code, candidate.Text))
+	candidate.Score.User = saturatingAdd(segmentUserScore,
+		e.userModel.candidateBoost(candidate.Code, candidate.Text))
+	if e.linearReranker {
+		candidate.Score.Reranker = e.userModel.sentenceRerankerScore(candidate.Segments)
+	}
+	candidate.Score.Total = saturatingAdd(candidate.Score.Static, candidate.Score.Context)
+	candidate.Score.Total = saturatingAdd(candidate.Score.Total, candidate.Score.User)
+	candidate.Score.Total = saturatingAdd(candidate.Score.Total, candidate.Score.Reranker)
+}
+
 // ClearContext drops only the session's previous-commit context. It does not
 // clear composition state or learned counts.
 func (e *Engine) ClearContext() { e.previousCommit = "" }
@@ -816,6 +992,7 @@ func (e *Engine) clearSegmentEdits() {
 	e.focusedSentence = nil
 	e.segmentChoices = nil
 	e.recalledChoices = nil
+	e.expandedParents = nil
 }
 
 func cloneCandidates(source []engineapi.Candidate) []engineapi.Candidate {
