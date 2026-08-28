@@ -131,6 +131,7 @@ HWND candidateOwnerAndFallbackAnchor(ITfContext* context, RECT* anchor) noexcept
 YimeTextService::YimeTextService() noexcept {
     YimeModuleAddRef();
     candidatePopup_.SetSelectionHandler(CandidatePopupSelection, this);
+    candidatePopup_.SetForgetHandler(CandidatePopupForget, this);
     candidatePopup_.SetSentenceHandler(CandidatePopupSentenceSelection, this);
     candidatePopup_.SetSegmentHandler(CandidatePopupSegmentSelection, this);
     candidatePopup_.SetSegmentExpandHandler(CandidatePopupSegmentExpansion, this);
@@ -542,6 +543,10 @@ void YimeTextService::CandidatePopupSelection(void* context, unsigned ordinal) n
     if (context) static_cast<YimeTextService*>(context)->SelectCandidateFromPopup(ordinal);
 }
 
+void YimeTextService::CandidatePopupForget(void* context, unsigned ordinal) noexcept {
+    if (context) static_cast<YimeTextService*>(context)->ForgetCandidateFromPopup(ordinal);
+}
+
 void YimeTextService::CandidatePopupSentenceSelection(void* context) noexcept {
     if (context) static_cast<YimeTextService*>(context)->SelectSentenceFromPopup();
 }
@@ -566,6 +571,23 @@ void YimeTextService::SelectCandidateFromPopup(unsigned ordinal) noexcept {
         surface_.DisconnectForRecovery();
         context->Release();
         return;
+    }
+    UpdateCandidateUI(context, renderedUpdate, nullptr);
+    context->Release();
+}
+
+void YimeTextService::ForgetCandidateFromPopup(unsigned ordinal) noexcept {
+    if (ordinal < 1 || ordinal > 9 || !compositionContext_ || !CanAcceptKeys()) return;
+    ITfContext* context = compositionContext_;
+    context->AddRef();
+    const auto outcome = surface_.ForgetCandidate(static_cast<size_t>(ordinal - 1));
+    if (!outcome.handled) {
+        context->Release();
+        return;
+    }
+    auto renderedUpdate = outcome.update;
+    if (experimentSettings_.Get().traditionalization) {
+        yime::experiment::ApplyTraditionalization(&renderedUpdate);
     }
     UpdateCandidateUI(context, renderedUpdate, nullptr);
     context->Release();

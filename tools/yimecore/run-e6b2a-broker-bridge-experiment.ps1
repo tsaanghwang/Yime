@@ -43,7 +43,7 @@ function Start-Broker([string]$Index,[string]$Mode,[string]$Pipe,[string]$ErrorL
 }
 function Stop-Broker([Diagnostics.Process]$Process) { if ($Process -and -not $Process.HasExited) { Stop-Process -Id $Process.Id -Force; $Process.WaitForExit() } }
 
-$definitions=@([ordered]@{mode='full';source='yime_full.dict.yaml';paging='yjkl';segment='bjjjbjjjbjjj'},[ordered]@{mode='variable';source='yime_variable.dict.yaml';paging='yjkl';segment='bjbjbj'},[ordered]@{mode='shorthand';source='yime_shorthand.dict.yaml';paging='yjl';segment='bjbjbj'})
+$definitions=@([ordered]@{mode='full';source='yime_full.dict.yaml';paging='yjkl';segment='bjjjbjjjbjjj'},[ordered]@{mode='variable';source='yime_variable.dict.yaml';paging='yjkl';segment='bjbjbj';stableWord='2.da\jklboiu9JKL2.da\jkl'},[ordered]@{mode='shorthand';source='yime_shorthand.dict.yaml';paging='yjl';segment='bjbjbj'})
 $modeResults=@()
 foreach($definition in $definitions) {
     $modeDir=Join-Path $outputDir $definition.mode; New-Item -ItemType Directory -Force $modeDir|Out-Null
@@ -61,6 +61,7 @@ foreach($definition in $definitions) {
             $arguments = @($pipe, $definition.paging)
             if ($definition.mode -eq 'variable') { $arguments += 'hreo1.szpsdj1m,.' }
             $arguments += "--long-session-code=$($definition.segment)"
+            if ($definition.stableWord) { $arguments += "--stable-word-code=$($definition.stableWord)" }
             $output=& $bridgeTests[$architecture] @arguments 2>&1
             $timer.Stop()
             $output|Set-Content -LiteralPath (Join-Path $modeDir ($architecture+'.txt')) -Encoding utf8
@@ -73,6 +74,7 @@ foreach($definition in $definitions) {
         $restartArguments = @($pipe, $definition.paging)
         if ($definition.mode -eq 'variable') { $restartArguments += 'hreo1.szpsdj1m,.' }
         $restartArguments += "--long-session-code=$($definition.segment)"
+        if ($definition.stableWord) { $restartArguments += "--stable-word-code=$($definition.stableWord)" }
         $restartOutput=& $bridgeTests.x64 @restartArguments 2>&1
         if($LASTEXITCODE){throw "$($definition.mode) restart bridge failed: $restartOutput"}
     } finally { Stop-Broker $process; $restart.Stop() }

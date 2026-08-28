@@ -353,6 +353,15 @@ void testOwnedCandidatePopup() {
     popup.SetSelectionHandler([](void* context, unsigned ordinal) noexcept {
         *static_cast<unsigned*>(context) = ordinal;
     }, &selected);
+       unsigned forgotten = 0;
+       bool forgetMenuPresented = false;
+       popup.SetForgetHandler([](void* context, unsigned ordinal) noexcept {
+              *static_cast<unsigned*>(context) = ordinal;
+       }, &forgotten);
+       popup.SetForgetMenuPresenter([](HMENU, POINT, HWND, void* context) noexcept -> UINT {
+              *static_cast<bool*>(context) = true;
+              return 1;
+       }, &forgetMenuPresented);
        bool selectedSentence = false;
        popup.SetSentenceHandler([](void* context) noexcept {
               *static_cast<bool*>(context) = true;
@@ -382,9 +391,17 @@ void testOwnedCandidatePopup() {
     expect(IsWindowVisible(window), "owned candidate popup did not become visible");
     SendMessageW(window, WM_LBUTTONUP, 0, MAKELPARAM(20, 10));
     expect(selected == 1, "owned candidate popup did not route the first mouse row");
+    SendMessageW(window, WM_RBUTTONUP, 0, MAKELPARAM(20, 10));
+    expect(forgetMenuPresented && forgotten == 1,
+           "owned candidate popup did not route quick forget for the clicked row");
     selected = 0;
+    forgotten = 0;
+    forgetMenuPresented = false;
     SendMessageW(window, WM_LBUTTONUP, 0, MAKELPARAM(1, 1));
     expect(selected == 0, "owned candidate popup accepted a border click");
+    SendMessageW(window, WM_RBUTTONUP, 0, MAKELPARAM(1, 1));
+    expect(!forgetMenuPresented && forgotten == 0,
+           "owned candidate popup offered quick forget outside a candidate row");
        const std::wstring emptyStatus = L"无匹配候选，按退格修改";
        selected = 0;
        expect(popup.Update({}, anchor, nullptr, false, 0, nullptr, -1, -1, &emptyStatus),

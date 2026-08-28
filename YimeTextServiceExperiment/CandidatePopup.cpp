@@ -9,6 +9,8 @@
 namespace {
 
 constexpr wchar_t kSentenceLabel[] = L"句:";
+constexpr wchar_t kQuickForgetLabel[] = L"快速遗忘（清除学习）";
+constexpr UINT kQuickForgetCommand = 1;
 
 HINSTANCE currentModule() noexcept {
     HMODULE module = nullptr;
@@ -331,6 +333,31 @@ int CandidatePopup::SegmentAt(int x, int y) const noexcept {
     return -1;
 }
 
+int CandidatePopup::CandidateAt(int x, int y) const noexcept {
+    if (rowHeight_ <= 0) return -1;
+    RECT client{};
+    GetClientRect(window_, &client);
+    if (x < padding_ || x >= client.right - padding_ || y < padding_) return -1;
+    const size_t row = static_cast<size_t>((y - padding_) / rowHeight_);
+    const size_t leadingRows = (sentenceSegments_.empty() ? 0 : 1) + (status_.empty() ? 0 : 1);
+    if (row < leadingRows) return -1;
+    size_t index = row - leadingRows;
+    if (horizontal_) {
+        if (index != 0) return -1;
+        int left = padding_;
+        index = candidates_.size();
+        for (size_t candidateIndex = 0; candidateIndex < candidateWidths_.size(); ++candidateIndex) {
+            const int right = left + candidateWidths_[candidateIndex];
+            if (x >= left && x < right) {
+                index = candidateIndex;
+                break;
+            }
+            left = right;
+        }
+    }
+    return index < candidates_.size() ? static_cast<int>(index) : -1;
+}
+
 void CandidatePopup::TrackAt(LPARAM lParam) noexcept {
     trackedSegment_ = SegmentAt(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
     if (trackedSegment_ >= 0) SetCapture(window_);
@@ -358,31 +385,37 @@ void CandidatePopup::SelectAt(LPARAM lParam) noexcept {
         return;
     }
     if (!selectionHandler_) return;
-    RECT client{};
-    GetClientRect(window_, &client);
-    if (x < padding_ || x >= client.right - padding_ || y < padding_) return;
-    const size_t row = static_cast<size_t>((y - padding_) / rowHeight_);
-    if (!sentenceSegments_.empty() && row == 0) return;
-    size_t index = row - (sentenceSegments_.empty() ? 0 : 1);
-    if (!status_.empty()) {
-        if (index == 0) return;
-        --index;
-    }
-    if (horizontal_) {
-        if (index != 0) return;
-        int left = padding_;
-        index = candidates_.size();
-        for (size_t candidateIndex = 0; candidateIndex < candidateWidths_.size(); ++candidateIndex) {
-            const int right = left + candidateWidths_[candidateIndex];
-            if (x >= left && x < right) {
-                index = candidateIndex;
-                break;
-            }
-            left = right;
-        }
-    }
-    if (index >= candidates_.size()) return;
+    const int index = CandidateAt(x, y);
+    if (index < 0) return;
     selectionHandler_(selectionContext_, static_cast<unsigned>(index + 1));
+}
+
+UINT CandidatePopup::PresentPopup(HMENU menu, POINT point, HWND owner, void*) noexcept {
+    return TrackPopupMenu(menu, TPM_RETURNCMD | TPM_NONOTIFY | TPM_RIGHTBUTTON,
+                          point.x, point.y, 0, owner, nullptr);
+}
+
+void CandidatePopup::ForgetAt(LPARAM lParam) noexcept {
+    if (!forgetHandler_) return;
+    const int index = CandidateAt(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+    if (index < 0) return;
+    selectedIndex_ = static_cast<size_t>(index);
+    InvalidateRect(window_, nullptr, TRUE);
+    UpdateWindow(window_);
+    HMENU menu = CreatePopupMenu();
+    if (!menu) return;
+    if (!AppendMenuW(menu, MF_STRING, kQuickForgetCommand, kQuickForgetLabel)) {
+        DestroyMenu(menu);
+        return;
+    }
+    POINT point{GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)};
+    ClientToScreen(window_, &point);
+    const auto presenter = popupPresenter_ ? popupPresenter_ : PresentPopup;
+    const UINT command = presenter(menu, point, window_, popupPresenterContext_);
+    DestroyMenu(menu);
+    if (command == kQuickForgetCommand) {
+        forgetHandler_(forgetContext_, static_cast<unsigned>(index + 1));
+    }
 }
 
 void CandidatePopup::ExpandAt(LPARAM lParam) noexcept {
@@ -417,6 +450,9 @@ LRESULT CALLBACK CandidatePopup::WindowProcedure(HWND window, UINT message, WPAR
             return 0;
         case WM_LBUTTONDBLCLK:
             if (self) self->ExpandAt(lParam);
+            return 0;
+        case WM_RBUTTONUP:
+            if (self) self->ForgetAt(lParam);
             return 0;
         case WM_NCDESTROY:
             SetWindowLongPtrW(window, GWLP_USERDATA, 0);

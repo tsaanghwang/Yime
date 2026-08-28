@@ -55,10 +55,12 @@ private:
     void RememberCompositionContext(ITfContext* context) noexcept;
     void ForgetCompositionContext() noexcept;
     void SelectCandidateFromPopup(unsigned ordinal) noexcept;
+    void ForgetCandidateFromPopup(unsigned ordinal) noexcept;
     void SelectSentenceFromPopup() noexcept;
     void FocusSentenceSegmentFromPopup(int start, int end) noexcept;
     void ExpandSentenceSegmentFromPopup(int start, int end) noexcept;
     static void CandidatePopupSelection(void* context, unsigned ordinal) noexcept;
+    static void CandidatePopupForget(void* context, unsigned ordinal) noexcept;
     static void CandidatePopupSentenceSelection(void* context) noexcept;
     static void CandidatePopupSegmentSelection(void* context, int start, int end) noexcept;
     static void CandidatePopupSegmentExpansion(void* context, int start, int end) noexcept;

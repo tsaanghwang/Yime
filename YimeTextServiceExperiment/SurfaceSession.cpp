@@ -151,10 +151,10 @@ SurfaceOutcome SurfaceSession::HandleVirtualKey(WPARAM virtualKey, bool shiftDow
         return FocusSentenceSegment(target.start, target.end);
     }
     if (decision.route == KeyRoute::ForgetCurrentCandidate) {
-        const std::string candidateId = selectedCandidateIndex_ < current_.candidates.size()
-                                            ? current_.candidates[selectedCandidateIndex_].id
-                                            : current_.sentence.id;
-        outcome.handled = broker_.ForgetCandidate(candidateId, &outcome.update, &outcome.error);
+        if (selectedCandidateIndex_ < current_.candidates.size()) {
+            return ForgetCandidate(selectedCandidateIndex_);
+        }
+        outcome.handled = broker_.ForgetCandidate(current_.sentence.id, &outcome.update, &outcome.error);
     } else
     if (decision.route == KeyRoute::SelectCandidate || decision.route == KeyRoute::SelectCurrentCandidate) {
         const size_t candidateIndex = decision.route == KeyRoute::SelectCurrentCandidate
@@ -201,6 +201,19 @@ SurfaceOutcome SurfaceSession::HandleVirtualKey(WPARAM virtualKey, bool shiftDow
         }
         if (outcome.update.candidates.empty()) selectedCandidateIndex_ = 0;
         outcome.update.selectedCandidateIndex = selectedCandidateIndex_;
+        current_ = outcome.update;
+    }
+    return outcome;
+}
+
+SurfaceOutcome SurfaceSession::ForgetCandidate(size_t candidateIndex) {
+    SurfaceOutcome outcome;
+    if (!broker_.IsConnected() || candidateIndex >= current_.candidates.size()) return outcome;
+    outcome.handled = broker_.ForgetCandidate(current_.candidates[candidateIndex].id,
+                                               &outcome.update, &outcome.error);
+    if (outcome.handled) {
+        selectedCandidateIndex_ = 0;
+        outcome.update.selectedCandidateIndex = 0;
         current_ = outcome.update;
     }
     return outcome;

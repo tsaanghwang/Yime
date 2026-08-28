@@ -22,6 +22,7 @@ public:
                    bool controlDown = false, bool altDown = false);
     SurfaceOutcome HandleVirtualKey(WPARAM virtualKey, bool shiftDown,
                                     bool controlDown = false, bool altDown = false);
+    SurfaceOutcome ForgetCandidate(size_t candidateIndex);
     SurfaceOutcome CommitSentence();
     SurfaceOutcome FocusSentenceSegment(int start, int end);
     SurfaceOutcome ExpandSentenceSegment(int start, int end);

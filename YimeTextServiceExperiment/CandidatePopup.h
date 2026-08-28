@@ -10,8 +10,11 @@
 class CandidatePopup final {
 public:
     using SelectionHandler = void (*)(void* context, unsigned ordinal) noexcept;
+    using ForgetHandler = void (*)(void* context, unsigned ordinal) noexcept;
     using SentenceHandler = void (*)(void* context) noexcept;
     using SegmentHandler = void (*)(void* context, int start, int end) noexcept;
+    using PopupPresenter = UINT (*)(HMENU menu, POINT point, HWND owner,
+                                    void* context) noexcept;
 
     CandidatePopup() noexcept = default;
     ~CandidatePopup();
@@ -27,6 +30,14 @@ public:
     void SetSelectionHandler(SelectionHandler handler, void* context) noexcept {
         selectionHandler_ = handler;
         selectionContext_ = context;
+    }
+    void SetForgetHandler(ForgetHandler handler, void* context) noexcept {
+        forgetHandler_ = handler;
+        forgetContext_ = context;
+    }
+    void SetForgetMenuPresenter(PopupPresenter presenter, void* context) noexcept {
+        popupPresenter_ = presenter;
+        popupPresenterContext_ = context;
     }
     void SetSentenceHandler(SentenceHandler handler, void* context) noexcept {
         sentenceHandler_ = handler;
@@ -69,8 +80,11 @@ private:
     void Paint() noexcept;
     void TrackAt(LPARAM lParam) noexcept;
     void SelectAt(LPARAM lParam) noexcept;
+    void ForgetAt(LPARAM lParam) noexcept;
     void ExpandAt(LPARAM lParam) noexcept;
     int SegmentAt(int x, int y) const noexcept;
+    int CandidateAt(int x, int y) const noexcept;
+    static UINT PresentPopup(HMENU menu, POINT point, HWND owner, void* context) noexcept;
     HFONT EnsureFont() noexcept;
     void EnsurePrivateYinyuanFont() noexcept;
     void ReleasePrivateYinyuanFont() noexcept;
@@ -101,6 +115,10 @@ private:
     size_t selectedIndex_ = 0;
     SelectionHandler selectionHandler_ = nullptr;
     void* selectionContext_ = nullptr;
+    ForgetHandler forgetHandler_ = nullptr;
+    void* forgetContext_ = nullptr;
+    PopupPresenter popupPresenter_ = nullptr;
+    void* popupPresenterContext_ = nullptr;
     SentenceHandler sentenceHandler_ = nullptr;
     void* sentenceContext_ = nullptr;
     SegmentHandler segmentHandler_ = nullptr;
